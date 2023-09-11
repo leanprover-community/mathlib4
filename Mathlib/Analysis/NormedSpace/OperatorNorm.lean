@@ -206,6 +206,10 @@ theorem le_of_op_norm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : E) : ‖f x‖ ≤ c
   f.le_of_op_norm_le_of_le h le_rfl
 #align continuous_linear_map.le_of_op_norm_le ContinuousLinearMap.le_of_op_norm_le
 
+theorem op_norm_le_iff {f : E →SL[σ₁₂] F} {M : ℝ} (hMp : 0 ≤ M) :
+    ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M * ‖x‖ :=
+  ⟨f.le_of_op_norm_le, op_norm_le_bound f hMp⟩
+
 theorem ratio_le_op_norm : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_nonneg_of_le_mul (norm_nonneg _) f.op_norm_nonneg (le_op_norm _ _)
 #align continuous_linear_map.ratio_le_op_norm ContinuousLinearMap.ratio_le_op_norm
@@ -1188,7 +1192,7 @@ variable [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 �
 
 /-- Scalar multiplication as a continuous bilinear map. -/
 def lsmul : 𝕜' →L[𝕜] E →L[𝕜] E :=
-  ((Algebra.lsmul 𝕜 E).toLinearMap : 𝕜' →ₗ[𝕜] E →ₗ[𝕜] E).mkContinuous₂ 1 fun c x => by
+  ((Algebra.lsmul 𝕜 𝕜 E).toLinearMap : 𝕜' →ₗ[𝕜] E →ₗ[𝕜] E).mkContinuous₂ 1 fun c x => by
     simpa only [one_mul] using norm_smul_le c x
 #align continuous_linear_map.lsmul ContinuousLinearMap.lsmul
 
@@ -1982,3 +1986,64 @@ if there is some positive constant C such that `C * ‖u‖ * ‖u‖ ≤ B u u`
 def IsCoercive [NormedAddCommGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
   ∃ C, 0 < C ∧ ∀ u, C * ‖u‖ * ‖u‖ ≤ B u u
 #align is_coercive IsCoercive
+
+section Equicontinuous
+
+variable {ι : Type _} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+  [RingHomIsometric σ₁₂] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
+
+/-- Equivalent characterizations for equicontinuity of a family of continuous linear maps
+between normed spaces. See also `WithSeminorms.equicontinuous_TFAE` for similar characterizations
+between spaces satisfying `WithSeminorms`. -/
+protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
+    [ EquicontinuousAt ((↑) ∘ f) 0,
+      Equicontinuous ((↑) ∘ f),
+      UniformEquicontinuous ((↑) ∘ f),
+      ∃ C, ∀ i x, ‖f i x‖ ≤ C * ‖x‖,
+      ∃ C ≥ 0, ∀ i x, ‖f i x‖ ≤ C * ‖x‖,
+      ∃ C, ∀ i, ‖f i‖ ≤ C,
+      ∃ C ≥ 0, ∀ i, ‖f i‖ ≤ C,
+      BddAbove (Set.range (‖f ·‖)),
+      (⨆ i, (‖f i‖₊ : ENNReal)) < ⊤ ] := by
+  -- `1 ↔ 2 ↔ 3` follows from `uniformEquicontinuous_of_equicontinuousAt_zero`
+  tfae_have 1 → 3
+  · exact uniformEquicontinuous_of_equicontinuousAt_zero f
+  tfae_have 3 → 2
+  · exact UniformEquicontinuous.equicontinuous
+  tfae_have 2 → 1
+  · exact fun H ↦ H 0
+  -- `4 ↔ 5 ↔ 6 ↔ 7 ↔ 8 ↔ 9` is morally trivial, we just have to use a lot of rewriting
+  -- and `congr` lemmas
+  tfae_have 4 ↔ 5
+  · rw [exists_ge_and_iff_exists]
+    exact fun C₁ C₂ hC ↦ forall₂_imp fun i x ↦ le_trans' <| by gcongr
+  tfae_have 5 ↔ 7
+  · refine exists_congr (fun C ↦ and_congr_right fun hC ↦ forall_congr' fun i ↦ ?_)
+    rw [ContinuousLinearMap.op_norm_le_iff hC]
+  tfae_have 7 ↔ 8
+  · simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_range_iff]
+  tfae_have 6 ↔ 8
+  · simp_rw [bddAbove_def, Set.forall_range_iff]
+  tfae_have 8 ↔ 9
+  · rw [ENNReal.iSup_coe_lt_top (fun i ↦ ‖f i‖₊), ← NNReal.bddAbove_coe, ← Set.range_comp]
+    rfl
+  -- `3 ↔ 4` is the interesting part of the result. It is essentially a combination of
+  -- `WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm` which turns
+  -- equicontinuity into existence of some continuous seminorm and
+  -- `Seminorm.bound_of_continuous_normedSpace` which characterize such seminorms.
+  tfae_have 3 ↔ 4
+  · refine ((norm_withSeminorms 𝕜₂ F).uniformEquicontinuous_iff_exists_continuous_seminorm _).trans
+      ?_
+    rw [forall_const]
+    constructor
+    · intro ⟨p, hp, hpf⟩
+      rcases p.bound_of_continuous_normedSpace hp with ⟨C, -, hC⟩
+      exact ⟨C, fun i x ↦ (hpf i x).trans (hC x)⟩
+    · intro ⟨C, hC⟩
+      refine ⟨C.toNNReal • normSeminorm 𝕜 E,
+        ((norm_withSeminorms 𝕜 E).continuous_seminorm 0).const_smul C.toNNReal, fun i x ↦ ?_⟩
+      refine (hC i x).trans (mul_le_mul_of_nonneg_right (C.le_coe_toNNReal) (norm_nonneg x))
+  tfae_finish
+
+end Equicontinuous

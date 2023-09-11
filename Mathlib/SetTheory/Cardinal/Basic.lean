@@ -364,18 +364,18 @@ theorem lift_monotone : Monotone lift :=
 #align cardinal.lift_monotone Cardinal.lift_monotone
 
 instance : Zero Cardinal.{u} :=
-  ⟨#PEmpty⟩
+  -- `PEmpty` might be more canonical, but this is convenient for defeq with natCast
+  ⟨lift #(Fin 0)⟩
 
 instance : Inhabited Cardinal.{u} :=
   ⟨0⟩
 
 theorem mk_eq_zero (α : Type u) [IsEmpty α] : #α = 0 :=
-  (Equiv.equivPEmpty α).cardinal_eq
+  (Equiv.equivOfIsEmpty α (ULift (Fin 0))).cardinal_eq
 #align cardinal.mk_eq_zero Cardinal.mk_eq_zero
 
 @[simp]
-theorem lift_zero : lift 0 = 0 :=
-  mk_congr (Equiv.equivPEmpty _)
+theorem lift_zero : lift 0 = 0 := mk_eq_zero _
 #align cardinal.lift_zero Cardinal.lift_zero
 
 @[simp]
@@ -400,18 +400,19 @@ theorem mk_ne_zero (α : Type u) [Nonempty α] : #α ≠ 0 :=
 #align cardinal.mk_ne_zero Cardinal.mk_ne_zero
 
 instance : One Cardinal.{u} :=
-  ⟨#PUnit⟩
+  -- `PUnit` might be more canonical, but this is convenient for defeq with natCast
+  ⟨lift #(Fin 1)⟩
 
 instance : Nontrivial Cardinal.{u} :=
   ⟨⟨1, 0, mk_ne_zero _⟩⟩
 
 theorem mk_eq_one (α : Type u) [Unique α] : #α = 1 :=
-  (Equiv.equivPUnit α).cardinal_eq
+  (Equiv.equivOfUnique α (ULift (Fin 1))).cardinal_eq
 #align cardinal.mk_eq_one Cardinal.mk_eq_one
 
 theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
   ⟨fun ⟨f⟩ => ⟨fun _ _ => f.injective (Subsingleton.elim _ _)⟩, fun ⟨h⟩ =>
-    ⟨⟨fun _ => PUnit.unit, fun _ _ _ => h _ _⟩⟩⟩
+    ⟨fun _ => ULift.up 0, fun _ _ _ => h _ _⟩⟩
 #align cardinal.le_one_iff_subsingleton Cardinal.le_one_iff_subsingleton
 
 @[simp]
@@ -429,10 +430,8 @@ theorem add_def (α β : Type u) : #α + #β = #(Sum α β) :=
   rfl
 #align cardinal.add_def Cardinal.add_def
 
--- Porting note: Should this be changed to
--- `⟨fun n => lift #(Fin n)⟩` in the future?
 instance : NatCast Cardinal.{u} :=
-  ⟨Nat.unaryCast⟩
+  ⟨fun n => lift #(Fin n)⟩
 
 @[simp]
 theorem mk_sum (α : Type u) (β : Type v) : #(α ⊕ β) = lift.{v, u} #α + lift.{u, v} #β :=
@@ -440,8 +439,8 @@ theorem mk_sum (α : Type u) (β : Type v) : #(α ⊕ β) = lift.{v, u} #α + li
 #align cardinal.mk_sum Cardinal.mk_sum
 
 @[simp]
-theorem mk_option {α : Type u} : #(Option α) = #α + 1 :=
-  (Equiv.optionEquivSumPUnit α).cardinal_eq
+theorem mk_option {α : Type u} : #(Option α) = #α + 1 := by
+  rw [(Equiv.optionEquivSumPUnit.{u, u} α).cardinal_eq, mk_sum, mk_eq_one PUnit, lift_id, lift_id]
 #align cardinal.mk_option Cardinal.mk_option
 
 @[simp]
@@ -450,16 +449,13 @@ theorem mk_psum (α : Type u) (β : Type v) : #(PSum α β) = lift.{v} #α + lif
 #align cardinal.mk_psum Cardinal.mk_psum
 
 @[simp]
-theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α := by
-  refine Fintype.induction_empty_option ?_ ?_ ?_ α (h_fintype := h)
-  · intro α β h e hα
-    letI := Fintype.ofEquiv β e.symm
-    rwa [mk_congr e, Fintype.card_congr e] at hα
-  · rfl
-  · intro α h hα
-    simp [hα]
-    rfl
-#align cardinal.mk_fintype Cardinal.mk_fintype
+theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α :=
+  mk_congr (Fintype.equivOfCardEq (by simp))
+
+protected theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
+  change #(ULift.{u} (Fin (n+1))) = # (ULift.{u} (Fin n)) + 1
+  rw [← mk_option, mk_fintype, mk_fintype]
+  simp only [Fintype.card_ulift, Fintype.card_fin, Fintype.card_option]
 
 instance : Mul Cardinal.{u} :=
   ⟨map₂ Prod fun _ _ _ _ => Equiv.prodCongr⟩
@@ -505,12 +501,12 @@ theorem lift_power (a b : Cardinal.{u}) : lift.{v} (a ^ b) = ((lift.{v} a) ^ (li
 
 @[simp]
 theorem power_zero {a : Cardinal} : (a ^ 0) = 1 :=
-  inductionOn a fun α => mk_congr <| Equiv.pemptyArrowEquivPUnit α
+  inductionOn a fun _ => mk_eq_one _
 #align cardinal.power_zero Cardinal.power_zero
 
 @[simp]
-theorem power_one {a : Cardinal} : (a ^ 1) = a :=
-  inductionOn a fun α => mk_congr <| Equiv.punitArrowEquiv α
+theorem power_one {a : Cardinal.{u}} : (a ^ 1) = a :=
+  inductionOn a fun α => mk_congr (Equiv.funUnique (ULift.{u} (Fin 1)) α)
 #align cardinal.power_one Cardinal.power_one
 
 theorem power_add {a b c : Cardinal} : (a ^ (b + c)) = (a ^ b) * (a ^ c) :=
@@ -522,21 +518,25 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   one := 1
   add := (· + ·)
   mul := (· * ·)
-  zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum PEmpty α
-  add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α PEmpty
+  zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum (ULift (Fin 0)) α
+  add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α (ULift (Fin 0))
   add_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumAssoc α β γ
   add_comm a b := inductionOn₂ a b fun α β => mk_congr <| Equiv.sumComm α β
-  zero_mul a := inductionOn a fun α => mk_congr <| Equiv.pemptyProd α
-  mul_zero a := inductionOn a fun α => mk_congr <| Equiv.prodPEmpty α
-  one_mul a := inductionOn a fun α => mk_congr <| Equiv.punitProd α
-  mul_one a := inductionOn a fun α => mk_congr <| Equiv.prodPUnit α
+  zero_mul a := inductionOn a fun α => mk_eq_zero _
+  mul_zero a := inductionOn a fun α => mk_eq_zero _
+  one_mul a := inductionOn a fun α => mk_congr <| Equiv.uniqueProd α (ULift (Fin 1))
+  mul_one a := inductionOn a fun α => mk_congr <| Equiv.prodUnique α (ULift (Fin 1))
   mul_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodAssoc α β γ
   mul_comm := mul_comm'
   left_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodSumDistrib α β γ
   right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
   npow n c := c^n
   npow_zero := @power_zero
-  npow_succ n c := show (c ^ (n + 1)) = c * (c ^ n) by rw [power_add, power_one, mul_comm']
+  npow_succ n c := show (c ^ (n + 1 : ℕ)) = c * (c ^ n)
+    by rw [Cardinal.cast_succ, power_add, power_one, mul_comm']
+  natCast := (fun n => lift.{u} #(Fin n) : ℕ → Cardinal.{u})
+  natCast_zero := rfl
+  natCast_succ := Cardinal.cast_succ
 
 /-! Porting note: Deprecated section. Remove. -/
 section deprecated
@@ -556,7 +556,7 @@ end deprecated
 
 @[simp]
 theorem one_power {a : Cardinal} : (1 ^ a) = 1 :=
-  inductionOn a fun α => (Equiv.arrowPUnitEquivPUnit α).cardinal_eq
+  inductionOn a fun _ => mk_eq_one _
 #align cardinal.one_power Cardinal.one_power
 
 -- Porting note : simp can prove this
@@ -599,8 +599,7 @@ theorem pow_cast_right (a : Cardinal.{u}) (n : ℕ) : (a^(↑n : Cardinal.{u})) 
 #align cardinal.pow_cast_right Cardinal.pow_cast_right
 
 @[simp]
-theorem lift_one : lift 1 = 1 :=
-  mk_congr <| Equiv.ulift.trans Equiv.punitEquivPUnit
+theorem lift_one : lift 1 = 1 := mk_eq_one _
 #align cardinal.lift_one Cardinal.lift_one
 
 @[simp]
@@ -1312,7 +1311,7 @@ theorem nat_lt_lift_iff {n : ℕ} {a : Cardinal.{u}} : n < lift.{v} a ↔ n < a 
   rw [← lift_natCast.{v,u}, lift_lt]
 #align cardinal.nat_lt_lift_iff Cardinal.nat_lt_lift_iff
 
-theorem lift_mk_fin (n : ℕ) : lift #(Fin n) = n := by simp
+theorem lift_mk_fin (n : ℕ) : lift #(Fin n) = n := rfl
 #align cardinal.lift_mk_fin Cardinal.lift_mk_fin
 
 theorem mk_coe_finset {α : Type u} {s : Finset α} : #s = ↑(Finset.card s) := by simp
@@ -1372,9 +1371,11 @@ theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) :=
 #align cardinal.nat_cast_injective Cardinal.natCast_injective
 
 @[simp, norm_cast]
-theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n :=
-  (add_one_le_succ _).antisymm (succ_le_of_lt <| natCast_lt.2 <| Nat.lt_succ_self _)
-#align cardinal.nat_succ Cardinal.nat_succ
+theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
+  rw [Nat.cast_succ]
+  refine (add_one_le_succ _).antisymm (succ_le_of_lt ?_)
+  rw [← Nat.cast_succ]
+  exact natCast_lt.2 (Nat.lt_succ_self _)
 
 @[simp]
 theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
@@ -1768,6 +1769,11 @@ theorem toNat_eq_iff {c : Cardinal} {n : ℕ} (hn : n ≠ 0) : toNat c = n ↔ c
       (congr_arg _ h),
     fun h => (congr_arg toNat h).trans (toNat_cast n)⟩
 #align cardinal.to_nat_eq_iff Cardinal.toNat_eq_iff
+
+/-- A version of `toNat_eq_iff` for literals -/
+theorem toNat_eq_ofNat {c : Cardinal} {n : ℕ} [Nat.AtLeastTwo n] :
+    toNat c = OfNat.ofNat n ↔ c = OfNat.ofNat n :=
+  toNat_eq_iff <| Nat.cast_ne_zero.mpr <| OfNat.ofNat_ne_zero n
 
 @[simp]
 theorem toNat_eq_one {c : Cardinal} : toNat c = 1 ↔ c = 1 := by

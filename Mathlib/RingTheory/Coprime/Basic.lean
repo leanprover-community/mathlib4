@@ -76,6 +76,11 @@ theorem IsCoprime.ne_zero [Nontrivial R] {p : Fin 2 → R} (h : IsCoprime (p 0) 
   exact not_isCoprime_zero_zero h
 #align is_coprime.ne_zero IsCoprime.ne_zero
 
+theorem IsCoprime.ne_zero_or_ne_zero [Nontrivial R] (h : IsCoprime x y) : x ≠ 0 ∨ y ≠ 0 := by
+  apply not_or_of_imp
+  rintro rfl rfl
+  exact not_isCoprime_zero_zero h
+
 theorem isCoprime_one_left : IsCoprime 1 x :=
   ⟨1, 0, by rw [one_mul, zero_mul, add_zero]⟩
 #align is_coprime_one_left isCoprime_one_left

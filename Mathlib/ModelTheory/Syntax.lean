@@ -1020,17 +1020,17 @@ def graph (f : L.Functions n) : L.Formula (Fin (n + 1)) :=
 #align first_order.language.formula.graph FirstOrder.Language.Formula.graph
 
 /-- The negation of a formula. -/
-protected nonrec def not (φ : L.Formula α) : L.Formula α :=
+protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
   φ.not
 #align first_order.language.formula.not FirstOrder.Language.Formula.not
 
 /-- The implication between formulas, as a formula. -/
-protected def imp : L.Formula α → L.Formula α → L.Formula α :=
+protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 #align first_order.language.formula.imp FirstOrder.Language.Formula.imp
 
 /-- The biimplication between formulas, as a formula. -/
-protected nonrec def iff (φ ψ : L.Formula α) : L.Formula α :=
+protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
 #align first_order.language.formula.iff FirstOrder.Language.Formula.iff
 

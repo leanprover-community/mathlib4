@@ -23,7 +23,7 @@ We compute the discriminant of a `p ^ n`-th cyclotomic extension.
 
 universe u v
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Algebra Polynomial Nat IsPrimitiveRoot PowerBasis
 

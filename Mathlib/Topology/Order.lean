@@ -81,11 +81,11 @@ theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
   rw [nhds_def]
   refine le_antisymm (biInf_mono fun s ⟨as, sg⟩ => ⟨as, .basic _ sg⟩) ?_
   refine le_iInf₂ fun s ⟨ha, hs⟩ => ?_; clear ‹s ∈ { s | a ∈ s ∧ IsOpen s }›
-  induction hs
-  case basic hs => exact iInf₂_le _ ⟨ha, hs⟩
-  case univ => exact le_top.trans_eq principal_univ.symm
-  case inter hs ht => exact (le_inf (hs ha.1) (ht ha.2)).trans_eq inf_principal
-  case sUnion _S hS =>
+  induction hs with
+  | basic _ hs => exact iInf₂_le _ ⟨ha, hs⟩
+  | univ => exact le_top.trans_eq principal_univ.symm
+  | inter _ _ _ _ hs ht => exact (le_inf (hs ha.1) (ht ha.2)).trans_eq inf_principal
+  | sUnion _ _ hS =>
     let ⟨t, htS, hat⟩ := ha
     exact (hS t htS hat).trans (principal_mono.2 <| subset_sUnion_of_mem htS)
 #align topological_space.nhds_generate_from TopologicalSpace.nhds_generateFrom
@@ -255,12 +255,12 @@ theorem isOpen_implies_isOpen_iff : (∀ s, IsOpen[t₁] s → IsOpen[t₂] s) �
 /-- The only open sets in the indiscrete topology are the empty set and the whole space. -/
 theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
   ⟨fun h => by
-    induction h
-    case basic h => exact False.elim h
-    case univ => exact .inr rfl
-    case inter h₁ h₂ =>
+    induction h with
+    | basic _ h => exact False.elim h
+    | univ => exact .inr rfl
+    | inter _ _ _ _ h₁ h₂ =>
       rcases h₁ with (rfl | rfl) <;> rcases h₂ with (rfl | rfl) <;> simp
-    case sUnion _ ih => exact sUnion_mem_empty_univ ih, by
+    | sUnion _ _ ih => exact sUnion_mem_empty_univ ih, by
       rintro (rfl | rfl)
       exacts [@isOpen_empty _ ⊤, @isOpen_univ _ ⊤]⟩
 #align topological_space.is_open_top_iff TopologicalSpace.isOpen_top_iff

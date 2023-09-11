@@ -32,20 +32,20 @@ Equiv, MulEquiv, AddEquiv
 
 variable {F α β A B M N P Q G H : Type _}
 
-/-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/  
-@[to_additive (attr := simps) 
-  "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"] 
-def OneHom.inverse [One M] [One N] 
-    (f : OneHom M N) (g : N → M) 
-    (h₁ : Function.LeftInverse g f) : 
-  OneHom N M := 
+/-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
+@[to_additive (attr := simps)
+  "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
+def OneHom.inverse [One M] [One N]
+    (f : OneHom M N) (g : N → M)
+    (h₁ : Function.LeftInverse g f) :
+  OneHom N M :=
   { toFun := g,
     map_one' := by rw [← f.map_one, h₁] }
 
 /-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
-@[to_additive (attr := simps) 
+@[to_additive (attr := simps)
   "Makes an additive inverse from a bijection which preserves addition."]
-def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) 
+def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
     (h₁ : Function.LeftInverse g f)
     (h₂ : Function.RightInverse g f) : N →ₙ* M where
   toFun := g
@@ -58,12 +58,12 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
 #align add_hom.inverse AddHom.inverse
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
-@[to_additive (attr := simps) 
+@[to_additive (attr := simps)
   "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
 def MonoidHom.inverse {A B : Type _} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
   { (f : OneHom A B).inverse g h₁,
-    (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g } 
+    (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g }
 #align monoid_hom.inverse MonoidHom.inverse
 #align add_monoid_hom.inverse AddMonoidHom.inverse
 #align monoid_hom.inverse_apply MonoidHom.inverse_apply
@@ -126,13 +126,14 @@ variable (F)
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) (F : Type _)
+instance (priority := 100) instMulHomClass (F : Type _)
     [Mul M] [Mul N] [h : MulEquivClass F M N] : MulHomClass F M N :=
   { h with coe := h.coe, coe_injective' := FunLike.coe_injective' }
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
+instance (priority := 100) instMonoidHomClass
+    [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
     MonoidHomClass F M N :=
   { MulEquivClass.instMulHomClass F with
     coe := fun _ => _,

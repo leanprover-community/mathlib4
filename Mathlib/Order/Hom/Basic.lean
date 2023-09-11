@@ -232,7 +232,7 @@ protected theorem mono (f : α →o β) : Monotone f :=
 for the projection names. Maybe we should change this. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Todo: all other FunLike classes use `apply` instead of `coe`
+/- Porting note: TODO: all other FunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
@@ -248,7 +248,11 @@ theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
   FunLike.coe_injective h
 #align order_hom.ext OrderHom.ext
 
-#noalign order_hom.coe_eq
+@[simp] theorem coe_eq (f : α →o β) : OrderHomClass.toOrderHom f = f := rfl
+
+@[simp] theorem _root_.OrderHomClass.coe_coe {F} [OrderHomClass F α β] (f : F) :
+    ⇑(f : α →o β) = f :=
+  rfl
 
 -- porting note: todo: drop name once we don't need `#align`
 /-- One can lift an unbundled monotone function to a bundled one. -/
@@ -309,17 +313,11 @@ theorem apply_mono {f g : α →o β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ 
 
 /-- Curry/uncurry as an order isomorphism between `α × β →o γ` and `α →o β →o γ`. -/
 def curry : (α × β →o γ) ≃o (α →o β →o γ) where
-  toFun f :=
-    ⟨fun x => ⟨Function.curry f x, fun y₁ y₂ h => f.mono ⟨le_rfl, h⟩⟩, fun x₁ x₂ h y =>
-      f.mono ⟨h, le_rfl⟩⟩
-  invFun f :=
-    ⟨Function.uncurry fun x => f x, fun x y h => (f.mono h.1 x.2).trans <| (f y.1).mono h.2⟩
-  left_inv f := by
-    ext ⟨x, y⟩
-    rfl
-  right_inv f := by
-    ext x y
-    rfl
+  toFun f := ⟨fun x ↦ ⟨Function.curry f x, fun _ _ h ↦ f.mono ⟨le_rfl, h⟩⟩, fun _ _ h _ =>
+    f.mono ⟨h, le_rfl⟩⟩
+  invFun f := ⟨Function.uncurry fun x ↦ f x, fun x y h ↦ (f.mono h.1 x.2).trans ((f y.1).mono h.2)⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' := by simp [le_def]
 #align order_hom.curry OrderHom.curry
 
@@ -459,8 +457,8 @@ of monotone maps to `β` and `γ`. -/
 def prodIso : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
   toFun f := (fst.comp f, snd.comp f)
   invFun f := f.1.prod f.2
-  left_inv f := by ext <;> rfl
-  right_inv f := by ext <;> rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' := forall_and.symm
 #align order_hom.prod_iso OrderHom.prodIso
 #align order_hom.prod_iso_apply OrderHom.prodIso_apply
@@ -513,12 +511,8 @@ maps `Π i, α →o π i`. -/
 def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   toFun f i := (Pi.evalOrderHom i).comp f
   invFun := pi
-  left_inv f := by
-    ext x i
-    rfl
-  right_inv f := by
-    ext x i
-    rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' := forall_swap
 #align order_hom.pi_iso OrderHom.piIso
 #align order_hom.pi_iso_apply OrderHom.piIso_apply
@@ -554,8 +548,8 @@ protected def dual : (α →o β) ≃ (αᵒᵈ →o βᵒᵈ) where
   toFun f := ⟨(OrderDual.toDual : β → βᵒᵈ) ∘ (f : α → β) ∘
     (OrderDual.ofDual : αᵒᵈ → α), f.mono.dual⟩
   invFun f := ⟨OrderDual.ofDual ∘ f ∘ OrderDual.toDual, f.mono.dual⟩
-  left_inv _ := ext _ _ rfl
-  right_inv _ := ext _ _ rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align order_hom.dual OrderHom.dual
 #align order_hom.dual_apply_coe OrderHom.dual_apply_coe
 #align order_hom.dual_symm_apply_coe OrderHom.dual_symm_apply_coe

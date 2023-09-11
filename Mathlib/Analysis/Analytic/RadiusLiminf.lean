@@ -27,8 +27,7 @@ open Filter Asymptotics
 
 namespace FormalMultilinearSeries
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
--- porting note: see lean4#2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 variable (p : FormalMultilinearSeries 𝕜 E F)
 

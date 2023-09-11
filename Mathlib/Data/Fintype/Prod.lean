@@ -41,7 +41,7 @@ theorem toFinset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.o
 
 end Set
 
-instance (α β : Type _) [Fintype α] [Fintype β] : Fintype (α × β) :=
+instance instFintypeProd (α β : Type _) [Fintype α] [Fintype β] : Fintype (α × β) :=
   ⟨univ ×ˢ univ, fun ⟨a, b⟩ => by simp⟩
 
 @[simp]

@@ -66,6 +66,11 @@ example [Group G] (g h : G) : g * g⁻¹ * h = h := by
   rw [mul_inv_self]
   rw [one_mul]
 
+/--
+info: Try this: rw [← @Nat.prime_iff]
+-- "no goals"
+-/
+#guard_msgs in
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
   rw?!
 
@@ -94,6 +99,19 @@ example : foo x = 1 ↔ ∃ k : ℤ, x = k := by
 
 lemma six_eq_seven : 6 = 7 := sorry
 
+/--
+info: Try this: rw [six_eq_seven]
+-- ∀ (x : ℕ), x ≤ 7
+---
+info: Try this: rw [← @Nat.cast_eq_ofNat]
+-- ∀ (x : ℕ), x ≤ ↑6
+---
+info: Try this: rw [← @Nat.cast_ofNat]
+-- ∀ (x : ℕ), x ≤ ↑6
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
 example : ∀ (x : ℕ), x ≤ 6 := by
   rw?!
   guard_target = ∀ (x : ℕ), x ≤ 7
@@ -103,3 +121,12 @@ example : ∀ (x : ℕ) (w : x ≤ 6), x ≤ 8 := by
   rw?!
   guard_target = ∀ (x : ℕ) (w : x ≤ 7), x ≤ 8
   admit
+
+-- check we can look inside let expressions
+/--
+info: Try this: rw [@AddCommMonoidWithOne.add_comm]
+-- "no goals"
+-/
+#guard_msgs in
+example (n : ℕ) : let y := 3; n + y = 3 + n := by
+  rw?!

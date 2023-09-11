@@ -66,7 +66,7 @@ free module, rank, invariant basis number, IBN
 
 noncomputable section
 
-open Classical BigOperators
+open BigOperators
 
 open Function
 

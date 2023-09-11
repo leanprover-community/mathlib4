@@ -164,7 +164,7 @@ only on a type synonym of the original module.)
 -/
 noncomputable def ofModule' (M : Type _) [AddCommMonoid M] [Module k M]
     [Module (MonoidAlgebra k G) M] [IsScalarTower k (MonoidAlgebra k G) M] : Representation k G M :=
-  (MonoidAlgebra.lift k G (M →ₗ[k] M)).symm (Algebra.lsmul k M)
+  (MonoidAlgebra.lift k G (M →ₗ[k] M)).symm (Algebra.lsmul k k M)
 #align representation.of_module' Representation.ofModule'
 
 section

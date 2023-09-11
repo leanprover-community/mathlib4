@@ -487,7 +487,7 @@ def propEquivPUnit {p : Prop} (h : p) : p ≃ PUnit.{0} := @equivPUnit p <| uniq
 /-- `ULift α` is equivalent to `α`. -/
 @[simps (config := { fullyApplied := false }) apply]
 protected def ulift {α : Type v} : ULift.{u} α ≃ α :=
-  ⟨ULift.down, ULift.up, ULift.up_down, fun _ => rfl⟩
+  ⟨ULift.down, ULift.up, ULift.up_down, ULift.down_up.{v, u}⟩
 #align equiv.ulift Equiv.ulift
 #align equiv.ulift_apply Equiv.ulift_apply
 

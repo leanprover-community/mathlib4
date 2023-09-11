@@ -72,7 +72,7 @@ instance orderBot [Preorder β] [OrderBot β] : OrderBot (α →o β) where
   bot_le _ _ := bot_le
 
 @[simps]
-instance [Preorder β] [OrderTop β] : Top (α →o β) where
+instance instTopOrderHom [Preorder β] [OrderTop β] : Top (α →o β) where
   top := const α ⊤
 
 instance orderTop [Preorder β] [OrderTop β] : OrderTop (α →o β) where

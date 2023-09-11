@@ -1357,6 +1357,28 @@ lemma bound_of_shell_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι)
 
 end ShellLemmas
 
+section NontriviallyNormedField
+
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
+lemma bddAbove_of_absorbent {p : ι → Seminorm 𝕜 E} {s : Set E} (hs : Absorbent 𝕜 s)
+    (h : ∀ x ∈ s, BddAbove (range fun i ↦ p i x)) :
+    BddAbove (range p) := by
+  rw [Seminorm.bddAbove_range_iff]
+  intro x
+  rcases hs x with ⟨r, hr, hrx⟩
+  rcases exists_lt_norm 𝕜 r with ⟨k, hk⟩
+  have hk0 : k ≠ 0 := norm_pos_iff.mp (hr.trans hk)
+  have : k⁻¹ • x ∈ s := by
+    rw [← mem_smul_set_iff_inv_smul_mem₀ hk0]
+    exact hrx k hk.le
+  rcases h (k⁻¹ • x) this with ⟨M, hM⟩
+  refine ⟨‖k‖ * M, forall_range_iff.mpr fun i ↦ ?_⟩
+  have := (forall_range_iff.mp hM) i
+  rwa [map_smul_eq_mul, norm_inv, inv_mul_le_iff (hr.trans hk)] at this
+
+end NontriviallyNormedField
+
 end Seminorm
 
 /-! ### The norm as a seminorm -/

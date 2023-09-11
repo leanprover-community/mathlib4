@@ -136,8 +136,10 @@ def preordCatToPartOrdCatForgetAdjunction :
 set_option linter.uppercaseLean3 false in
 #align Preord_to_PartOrd_forget_adjunction preordCatToPartOrdCatForgetAdjunction
 
+-- The `simpNF` linter would complain as `Functor.comp_obj`, `PreordCat.dual_obj` both apply to LHS
+-- of `preordCatToPartOrdCatCompToDualIsoToDualCompPreordCatToPartOrdCat_hom_app_coe`
 /-- `PreordCatToPartOrdCat` and `OrderDual` commute. -/
-@[simps!]
+@[simps! inv_app_coe, simps! (config := .lemmasOnly) hom_app_coe]
 def preordCatToPartOrdCatCompToDualIsoToDualCompPreordCatToPartOrdCat :
     preordCatToPartOrdCat.{u} ⋙ PartOrdCat.dual ≅ PreordCat.dual ⋙ preordCatToPartOrdCat :=
   NatIso.ofComponents (fun _ => PartOrdCat.Iso.mk <| OrderIso.dualAntisymmetrization _)

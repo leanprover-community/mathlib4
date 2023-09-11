@@ -21,7 +21,7 @@ variable {G H : Type _}
 
 @[to_additive]
 instance [OrderedCommGroup G] [OrderedCommGroup H] : OrderedCommGroup (G × H) :=
-  { Prod.instCommGroupProd, Prod.instPartialOrderProd G H, Prod.instOrderedCancelCommMonoidProd
+  { Prod.instCommGroup, Prod.instPartialOrder G H, Prod.instOrderedCancelCommMonoid
     with }
 
 end Prod

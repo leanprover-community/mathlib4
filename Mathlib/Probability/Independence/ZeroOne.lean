@@ -31,6 +31,7 @@ variable {Ω ι : Type _} {m m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 ∨ μ t = ∞ := by
+  rw [IndepSet_iff] at h_indep
   specialize h_indep t t (measurableSet_generateFrom (Set.mem_singleton t))
     (measurableSet_generateFrom (Set.mem_singleton t))
   by_cases h0 : μ t = 0

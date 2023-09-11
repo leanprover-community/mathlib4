@@ -857,7 +857,7 @@ open IsLocalization
 
 section
 
-instance [Subsingleton R] : Unique (Localization M) where
+instance instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
   uniq a := show a = mk 1 1 from
     Localization.induction_on a fun _ => by
       congr <;> apply Subsingleton.elim

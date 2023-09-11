@@ -454,7 +454,8 @@ protected irreducible_def smul [SMul R M] [IsScalarTower R M M] (c : R) (z : Loc
         simp only [mul_smul_comm, ht]))
 #align localization.smul Localization.smul
 
-instance [SMul R M] [IsScalarTower R M M] : SMul R (Localization S) where smul := Localization.smul
+instance instSMulLocalization [SMul R M] [IsScalarTower R M M] : SMul R (Localization S) where
+  smul := Localization.smul
 
 theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
     c • (mk a b : Localization S) = mk (c • a) b := by

@@ -38,10 +38,11 @@ variable {α α₁ α₂ : Type _} {β : α → Type _} {β₁ : α₁ → Type 
 
 namespace Sigma
 
-instance [Inhabited α] [Inhabited (β default)] : Inhabited (Sigma β) :=
+instance instInhabitedSigma [Inhabited α] [Inhabited (β default)] : Inhabited (Sigma β) :=
   ⟨⟨default, default⟩⟩
 
-instance [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] : DecidableEq (Sigma β)
+instance instDecidableEqSigma [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] :
+    DecidableEq (Sigma β)
   | ⟨a₁, b₁⟩, ⟨a₂, b₂⟩ =>
     match a₁, b₁, a₂, b₂, h₁ a₁ a₂ with
     | _, b₁, _, b₂, isTrue (Eq.refl _) =>

@@ -325,7 +325,7 @@ namespace IsGroupHom
 open IsSubmonoid IsSubgroup
 
 /-- `ker f : Set G` is the underlying subset of the kernel of a map `G → H`. -/
-@[to_additive "`ker f : set A` is the underlying subset of the kernel of a map `A → B`"]
+@[to_additive "`ker f : Set A` is the underlying subset of the kernel of a map `A → B`"]
 def ker [Group H] (f : G → H) : Set G :=
   preimage f (trivial H)
 #align is_group_hom.ker IsGroupHom.ker
@@ -745,7 +745,7 @@ theorem normalClosure_mono {s t : Set G} : s ⊆ t → normalClosure s ⊆ norma
 end Group
 
 /-- Create a bundled subgroup from a set `s` and `[IsSubgroup s]`. -/
-@[to_additive "Create a bundled additive subgroup from a set `s` and `[is_add_subgroup s]`."]
+@[to_additive "Create a bundled additive subgroup from a set `s` and `[IsAddSubgroup s]`."]
 def Subgroup.of [Group G] {s : Set G} (h : IsSubgroup s) : Subgroup G
     where
   carrier := s

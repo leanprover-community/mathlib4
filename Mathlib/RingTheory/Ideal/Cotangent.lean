@@ -114,10 +114,8 @@ theorem toCotangent_to_quotient_square (x : I) :
 #align ideal.to_cotangent_to_quotient_square Ideal.toCotangent_to_quotient_square
 
 /-- `I ⧸ I ^ 2` as an ideal of `R ⧸ I ^ 2`. -/
-def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) := by
-  haveI : @RingHomSurjective R (R ⧸ I ^ 2) _ _ _ := ⟨Ideal.Quotient.mk_surjective⟩
-  let rq := Quotient.mk (I ^ 2)
-  exact Submodule.map rq.toSemilinearMap I
+def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
+  Submodule.map (Quotient.mk (I ^ 2)|>.toSemilinearMap) I
 #align ideal.cotangent_ideal Ideal.cotangentIdeal
 
 theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by

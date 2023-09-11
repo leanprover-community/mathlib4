@@ -295,3 +295,12 @@ example : { f : Nat → Nat // f = id } :=
 -- Regression test. From fixing a "declaration has metavariables" bug
 example (h : z = y) : (x = y ∨ x = z) → x = y := by
   congr! with (rfl|rfl)
+
+example {α} [AddCommMonoid α] [PartialOrder α] {a b c d e f g : α} :
+    (a + b) + (c + d) + (e + f) + g ≤ a + d + e + f + c + g + b := by
+  ac_change a + d + e + f + c + g + b ≤ _; rfl
+
+example {α} [AddCommMonoid α] [PartialOrder α] {a b c d e f g : α} :
+    (a + b) + (c + d) + (e + f) + g ≤ a + d + e + f + c + b + g := by
+  ac_change a + d + e + f + c + g + b ≤ a + d + e + f + c + g + b
+  rfl

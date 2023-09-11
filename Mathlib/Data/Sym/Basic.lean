@@ -255,7 +255,7 @@ theorem cons_equiv_eq_equiv_cons (α : Type _) (n : ℕ) (a : α) (s : Sym α n)
   rfl
 #align sym.cons_equiv_eq_equiv_cons Sym.cons_equiv_eq_equiv_cons
 
-instance : Zero (Sym α 0) :=
+instance instZeroSym : Zero (Sym α 0) :=
   ⟨⟨0, rfl⟩⟩
 
 instance : EmptyCollection (Sym α 0) :=

@@ -125,11 +125,13 @@ theorem Injective.of_comp {g : γ → α} (I : Injective (f ∘ g)) : Injective 
   I <| show f (g x) = f (g y) from congr_arg f h
 #align function.injective.of_comp Function.Injective.of_comp
 
+@[simp]
 theorem Injective.of_comp_iff {f : α → β} (hf : Injective f) (g : γ → α) :
     Injective (f ∘ g) ↔ Injective g :=
   ⟨Injective.of_comp, hf.comp⟩
 #align function.injective.of_comp_iff Function.Injective.of_comp_iff
 
+@[simp]
 theorem Injective.of_comp_iff' (f : α → β) {g : γ → α} (hg : Bijective g) :
     Injective (f ∘ g) ↔ Injective f :=
 ⟨ λ h x y => let ⟨_, hx⟩ := hg.surjective x
@@ -167,11 +169,13 @@ theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjecti
   ⟨g x, h⟩
 #align function.surjective.of_comp Function.Surjective.of_comp
 
+@[simp]
 theorem Surjective.of_comp_iff (f : α → β) {g : γ → α} (hg : Surjective g) :
     Surjective (f ∘ g) ↔ Surjective f :=
   ⟨Surjective.of_comp, fun h ↦ h.comp hg⟩
 #align function.surjective.of_comp_iff Function.Surjective.of_comp_iff
 
+@[simp]
 theorem Surjective.of_comp_iff' (hf : Bijective f) (g : γ → α) :
     Surjective (f ∘ g) ↔ Surjective g :=
   ⟨fun h x ↦
@@ -433,6 +437,10 @@ noncomputable def invFun {α : Sort u} {β} [Nonempty α] (f : α → β) : β �
 theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b :=
   by simp only [invFun, dif_pos h, h.choose_spec]
 #align function.inv_fun_eq Function.invFun_eq
+
+theorem apply_invFun_apply {α : Type u₁} {β : Type u₂} {f : α → β} {a : α} :
+    f (@invFun _ _ ⟨a⟩ f (f a)) = f a :=
+  @invFun_eq _ _ ⟨a⟩ _ _ ⟨_, rfl⟩
 
 theorem invFun_neg (h : ¬∃ a, f a = b) : invFun f b = Classical.choice ‹_› :=
   dif_neg h

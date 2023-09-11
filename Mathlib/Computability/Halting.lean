@@ -333,8 +333,6 @@ protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f
   simp [(Part.bind_some_eq_map _ _).symm]; exact hf.bind hg
 #align nat.partrec'.map Nat.Partrec'.map
 
-attribute [-instance] Part.instZeroPart
-
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
   vector-valued functions.-/
 def Vec {n m} (f : Vector ℕ n → Vector ℕ m) :=

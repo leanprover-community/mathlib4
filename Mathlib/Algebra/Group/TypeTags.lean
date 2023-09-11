@@ -131,11 +131,11 @@ instance [h: Infinite α] : Infinite (Additive α) := h
 
 instance [h: Infinite α] : Infinite (Multiplicative α) := h
 
-instance [Nontrivial α] : Nontrivial (Additive α) :=
+instance instNontrivialAdditive [Nontrivial α] : Nontrivial (Additive α) :=
   ofMul.injective.nontrivial
 #align additive.nontrivial instNontrivialAdditive
 
-instance [Nontrivial α] : Nontrivial (Multiplicative α) :=
+instance instNontrivialMultiplicative [Nontrivial α] : Nontrivial (Multiplicative α) :=
   ofAdd.injective.nontrivial
 #align multiplicative.nontrivial instNontrivialMultiplicative
 

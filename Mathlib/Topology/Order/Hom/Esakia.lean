@@ -122,6 +122,8 @@ instance : CoeFun (PseudoEpimorphism α β) fun _ => α → β :=
   FunLike.hasCoeToFun
 
 @[simp]
+theorem toOrderHom_eq_coe (f : PseudoEpimorphism α β) : ⇑f.toOrderHom = f := rfl
+
 theorem toFun_eq_coe {f : PseudoEpimorphism α β} : f.toFun = (f : α → β) := rfl
 #align pseudo_epimorphism.to_fun_eq_coe PseudoEpimorphism.toFun_eq_coe
 

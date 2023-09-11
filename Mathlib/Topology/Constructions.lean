@@ -43,22 +43,27 @@ variable {α : Type u} {β : Type v} {γ δ ε ζ : Type _}
 
 section Constructions
 
-instance {p : α → Prop} [t : TopologicalSpace α] : TopologicalSpace (Subtype p) :=
+instance instTopologicalSpaceSubtype {p : α → Prop} [t : TopologicalSpace α] :
+    TopologicalSpace (Subtype p) :=
   induced (↑) t
 
 instance {r : α → α → Prop} [t : TopologicalSpace α] : TopologicalSpace (Quot r) :=
   coinduced (Quot.mk r) t
 
-instance {s : Setoid α} [t : TopologicalSpace α] : TopologicalSpace (Quotient s) :=
+instance instTopologicalSpaceQuotient {s : Setoid α} [t : TopologicalSpace α] :
+    TopologicalSpace (Quotient s) :=
   coinduced Quotient.mk' t
 
-instance [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] : TopologicalSpace (α × β) :=
+instance instTopologicalSpaceProd [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] :
+    TopologicalSpace (α × β) :=
   induced Prod.fst t₁ ⊓ induced Prod.snd t₂
 
-instance [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] : TopologicalSpace (α ⊕ β) :=
+instance instTopologicalSpaceSum [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] :
+    TopologicalSpace (α ⊕ β) :=
   coinduced Sum.inl t₁ ⊔ coinduced Sum.inr t₂
 
-instance {β : α → Type v} [t₂ : ∀ a, TopologicalSpace (β a)] : TopologicalSpace (Sigma β) :=
+instance instTopologicalSpaceSigma {β : α → Type v} [t₂ : ∀ a, TopologicalSpace (β a)] :
+    TopologicalSpace (Sigma β) :=
   ⨆ a, coinduced (Sigma.mk a) (t₂ a)
 
 instance Pi.topologicalSpace {β : α → Type v} [t₂ : (a : α) → TopologicalSpace (β a)] :
@@ -1623,3 +1628,21 @@ instance [TopologicalSpace α] [DiscreteTopology α] : DiscreteTopology (ULift �
   embedding_uLift_down.discreteTopology
 
 end ULift
+
+section Monad
+
+variable [TopologicalSpace α] {β : Set α} {γ : Set β}
+
+theorem IsOpen.trans (hγ : IsOpen γ) (hβ : IsOpen β) : IsOpen (γ : Set α) := by
+  rcases isOpen_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
+  convert IsOpen.inter hβ hδ
+  ext
+  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+
+theorem IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : Set α) := by
+  rcases isClosed_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
+  convert IsClosed.inter hβ hδ
+  ext
+  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+
+end Monad

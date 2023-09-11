@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
 -/
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.InvariantBasisNumber
@@ -29,7 +30,7 @@ import Mathlib.SetTheory.Cardinal.Cofinality
   at most that of the target.
 * `LinearMap.rank_le_of_surjective`: the target of a surjective linear map has dimension
   at most that of that source.
-* `basisFintypeOfFiniteSpans`:
+* `basis_finite_of_finite_spans`:
   the existence of a finite spanning set implies that any basis is finite.
 * `infinite_basis_le_maximal_linearIndependent`:
   if `b` is an infinite basis for a module `M`,
@@ -81,7 +82,7 @@ variable {K : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Ty
 
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type _}
 
-open Classical BigOperators Cardinal Basis Submodule Function Set
+open BigOperators Cardinal Basis Submodule Function Set
 
 section Module
 
@@ -198,10 +199,10 @@ theorem LinearEquiv.rank_eq (f : M ≃ₗ[R] M₁) : Module.rank R M = Module.ra
   Cardinal.lift_inj.1 f.lift_rank_eq
 #align linear_equiv.rank_eq LinearEquiv.rank_eq
 
-theorem rank_eq_of_injective (f : M →ₗ[R] M₁) (h : Injective f) :
-    Module.rank R M = Module.rank R (LinearMap.range f) :=
-  (LinearEquiv.ofInjective f h).rank_eq
-#align rank_eq_of_injective rank_eq_of_injective
+theorem rank_range_of_injective (f : M →ₗ[R] M₁) (h : Injective f) :
+    Module.rank R (LinearMap.range f) = Module.rank R M :=
+  (LinearEquiv.ofInjective f h).rank_eq.symm
+#align rank_eq_of_injective rank_range_of_injective
 
 /-- Pushforwards of submodules along a `LinearEquiv` have the same dimension. -/
 theorem LinearEquiv.rank_map_eq (f : M ≃ₗ[R] M₁) (p : Submodule R M) :
@@ -318,10 +319,13 @@ theorem LinearIndependent.set_finite_of_isNoetherian [IsNoetherian R M] {s : Set
 /--
 Over any nontrivial ring, the existence of a finite spanning set implies that any basis is finite.
 -/
-def basisFintypeOfFiniteSpans (w : Set M) [Fintype w] (s : span R w = ⊤) {ι : Type w}
-    (b : Basis ι R M) : Fintype ι := by
+lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = ⊤) {ι : Type w}
+    (b : Basis ι R M) : Finite ι := by
+  classical
+  haveI := hw.to_subtype
+  cases nonempty_fintype w
   -- We'll work by contradiction, assuming `ι` is infinite.
-  apply fintypeOfNotInfinite _
+  rw [← not_infinite_iff_finite]
   intro i
   -- Let `S` be the union of the supports of `x ∈ w` expressed as linear combinations of `b`.
   -- This is a finite set since `w` is finite.
@@ -346,7 +350,7 @@ def basisFintypeOfFiniteSpans (w : Set M) [Fintype w] (s : span R w = ⊤) {ι :
   -- giving the desire contradiction.
   refine' b.linearIndependent.not_mem_span_image _ k'
   exact nm
-#align basis_fintype_of_finite_spans basisFintypeOfFiniteSpans
+#align basis_fintype_of_finite_spans basis_finite_of_finite_spansₓ
 
 -- From [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
 /-- Over any ring `R`, if `b` is a basis for a module `M`,
@@ -535,11 +539,13 @@ variable {M : Type v} [AddCommGroup M] [Module R M]
 have the same cardinalities. -/
 theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
     Cardinal.lift.{w'} #ι = Cardinal.lift.{w} #ι' := by
+  classical
   haveI := nontrivial_of_invariantBasisNumber R
   cases fintypeOrInfinite ι
-  · -- `v` is a finite basis, so by `basisFintypeOfFiniteSpans` so is `v'`.
-    haveI : Fintype (range v) := Set.fintypeRange v
-    haveI := basisFintypeOfFiniteSpans _ v.span_eq v'
+  · -- `v` is a finite basis, so by `basis_finite_of_finite_spans` so is `v'`.
+    -- haveI : Finite (range v) := Set.finite_range v
+    haveI := basis_finite_of_finite_spans _ (Set.finite_range v) v.span_eq v'
+    cases nonempty_fintype ι'
     -- We clean up a little:
     rw [Cardinal.mk_fintype, Cardinal.mk_fintype]
     simp only [Cardinal.lift_natCast, Cardinal.natCast_inj]
@@ -603,7 +609,8 @@ but still assumes we have a finite spanning set.
 theorem basis_le_span' {ι : Type _} (b : Basis ι R M) {w : Set M} [Fintype w] (s : span R w = ⊤) :
     #ι ≤ Fintype.card w := by
   haveI := nontrivial_of_invariantBasisNumber R
-  haveI := basisFintypeOfFiniteSpans w s b
+  haveI := basis_finite_of_finite_spans w (toFinite _) s b
+  cases nonempty_fintype ι
   rw [Cardinal.mk_fintype ι]
   simp only [Cardinal.natCast_le]
   exact Basis.le_span'' b s
@@ -720,6 +727,7 @@ we handle the case where the basis `b` is infinite.
 -/
 theorem linearIndependent_le_infinite_basis {ι : Type _} (b : Basis ι R M) [Infinite ι] {κ : Type _}
     (v : κ → M) (i : LinearIndependent R v) : #κ ≤ #ι := by
+  classical
   by_contra h
   rw [not_le, ← Cardinal.mk_finset_of_infinite ι] at h
   let Φ := fun k : κ => (b.repr (v k)).support
@@ -741,6 +749,7 @@ then the cardinality of `s` is bounded by the cardinality of `b`.
 -/
 theorem linearIndependent_le_basis {ι : Type _} (b : Basis ι R M) {κ : Type _} (v : κ → M)
     (i : LinearIndependent R v) : #κ ≤ #ι := by
+  classical
   -- We split into cases depending on whether `ι` is infinite.
   cases fintypeOrInfinite ι
   · rw [Cardinal.mk_fintype ι] -- When `ι` is finite, we have `linearIndependent_le_span`,
@@ -800,6 +809,7 @@ theorem Basis.mk_range_eq_rank (v : Basis ι R M) : #(range v) = Module.rank R M
 cardinality of the basis. -/
 theorem rank_eq_card_basis {ι : Type w} [Fintype ι] (h : Basis ι R M) :
     Module.rank R M = Fintype.card ι := by
+  classical
   haveI := nontrivial_of_invariantBasisNumber R
   rw [← h.mk_range_eq_rank, Cardinal.mk_fintype, Set.card_range_of_injective h.injective]
 #align rank_eq_card_basis rank_eq_card_basis

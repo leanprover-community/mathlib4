@@ -26,7 +26,7 @@ This file records basic facts about uniformly locally doubling measures.
 -/
 
 -- Porting note: for 2 ^ n in exists_eventually_forall_measure_closedBall_le_mul
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 

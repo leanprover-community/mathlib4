@@ -62,7 +62,7 @@ instance [Monoid M] [Zero α] [SMulZeroClass M α] :
   smul := (· • ·)
   smul_zero m := smul_zero (m : M)
 
-instance [Monoid M] [AddZeroClass α] [DistribSMul M α] :
+instance instDistribSMulUnits [Monoid M] [AddZeroClass α] [DistribSMul M α] :
     DistribSMul Mˣ α where smul_add m := smul_add (m : M)
 
 instance [Monoid M] [AddMonoid α] [DistribMulAction M α] : DistribMulAction Mˣ α :=

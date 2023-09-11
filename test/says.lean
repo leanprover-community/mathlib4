@@ -63,6 +63,12 @@ example : True := by
   simp says
   trivial
 
+set_option says.verify true in
+example : Nat := by
+  simp? says simp only
+  -- This is a comment to test that `says` ignores following comments.
+  exact 0
+
 set_option says.no_verify_in_CI true in
 example : True := by
   simp says

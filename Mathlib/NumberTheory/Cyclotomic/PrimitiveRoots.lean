@@ -71,7 +71,7 @@ variable {p n : ℕ+} (A : Type w) (B : Type z) (K : Type u) {L : Type v} (C : T
 
 variable [CommRing A] [CommRing B] [Algebra A B] [IsCyclotomicExtension {n} A B]
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 section Zeta
 
 namespace IsCyclotomicExtension

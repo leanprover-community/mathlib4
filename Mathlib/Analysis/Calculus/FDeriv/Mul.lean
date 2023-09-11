@@ -11,13 +11,14 @@ import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 # Multiplicative operations on derivatives
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `analysis/calculus/fderiv/basic.lean`.
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 
 * multiplication of a function by a scalar function
 * multiplication of two scalar functions
-* inverse function (assuming that it exists; the inverse function theorem is in `../inverse.lean`)
+* inverse function (assuming that it exists; the inverse function theorem is in
+  `Mathlib/Analysis/Calculus/Inverse.lean`)
 -/
 
 
@@ -565,8 +566,8 @@ end AlgebraInverse
 
 /-! ### Derivative of the inverse in a division ring
 
-Note these lemmas are primed as they need `complete_space R`, whereas the other lemmas in
-`deriv/inv.lean` do not, but instead need `nontrivially_normed_field R`.
+Note these lemmas are primed as they need `CompleteSpace R`, whereas the other lemmas in
+`Mathlib/Analysis/Calculus/Deriv/Inv.lean` do not, but instead need `NontriviallyNormedField R`.
 -/
 
 section DivisionRingInverse
@@ -599,7 +600,7 @@ theorem fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRig
   (hasFDerivAt_inv' hx).fderiv
 #align fderiv_inv' fderiv_inv'
 
-/-- Non-commutative version of `fderiv_within_inv` -/
+/-- Non-commutative version of `fderivWithin_inv` -/
 theorem fderivWithin_inv' {s : Set R} {x : R} (hx : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x => x⁻¹) s x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ := by
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv' hx) hxs]

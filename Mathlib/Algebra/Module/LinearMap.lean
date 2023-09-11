@@ -210,7 +210,7 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
 #noalign LinearMap.has_coe_to_fun
 
 -- Porting note: adding this instance prevents a timeout in `ext_ring_op`
-instance {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
+instance instFunLike {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
   { AddHomClass.toFunLike with }
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
@@ -1101,6 +1101,18 @@ instance _root_.Module.End.smulCommClass' [SMul S R] [IsScalarTower S R M] :
     SMulCommClass (Module.End R M) S (Module.End R M) :=
   SMulCommClass.symm _ _ _
 #align module.End.smul_comm_class' Module.End.smulCommClass'
+
+theorem _root_.Module.End_isUnit_apply_inv_apply_of_isUnit
+    {f : Module.End R M} (h : IsUnit f) (x : M) :
+    f (h.unit.inv x) = x :=
+  show (f * h.unit.inv) x = x by simp
+#align module.End_is_unit_apply_inv_apply_of_is_unit Module.End_isUnit_apply_inv_apply_of_isUnit
+
+theorem _root_.Module.End_isUnit_inv_apply_apply_of_isUnit
+    {f : Module.End R M} (h : IsUnit f) (x : M) :
+    h.unit.inv (f x) = x :=
+  (by simp : (h.unit.inv * f) x = x)
+#align module.End_is_unit_inv_apply_apply_of_is_unit Module.End_isUnit_inv_apply_apply_of_isUnit
 
 end
 

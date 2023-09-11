@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.ListM.Basic
+import Std.Data.MLList.Basic
 
 /-!
 # Reading from handles, files, and processes as lazy lists.
@@ -11,13 +11,13 @@ import Mathlib.Data.ListM.Basic
 
 open System IO.FS
 
-namespace ListM
+namespace MLList
 
 variable [Monad m]
 
 /-- Read lines of text from a handle, as a lazy list in `IO`. -/
-def linesFromHandle (h : Handle) : ListM IO String :=
-  ListM.iterate (do
+def linesFromHandle (h : Handle) : MLList IO String :=
+  MLList.iterate (do
     let line ← h.getLine
     -- This copies the logic from `IO.FS.lines`.
     if line.length == 0 then
@@ -32,7 +32,7 @@ def linesFromHandle (h : Handle) : ListM IO String :=
   |>.takeWhile (·.isSome) |>.map (fun o => o.getD "")
 
 /-- Read lines of text from a file, as a lazy list in `IO`. -/
-def lines (f : FilePath) : ListM IO String := .squash do
+def lines (f : FilePath) : MLList IO String := .squash fun _ => do
   return linesFromHandle (← Handle.mk f Mode.read)
 
 open IO.Process in
@@ -40,7 +40,7 @@ open IO.Process in
 Run a command with given input on `stdio`,
 returning `stdout` as a lazy list in `IO`.
 -/
-def runCmd (cmd : String) (args : Array String) (input : String := "") : ListM IO String := do
+def runCmd (cmd : String) (args : Array String) (input : String := "") : MLList IO String := do
   let child ← spawn
     { cmd := cmd, args := args, stdin := .piped, stdout := .piped, stderr := .piped }
   linesFromHandle (← put child input).stdout

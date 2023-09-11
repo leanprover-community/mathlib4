@@ -246,12 +246,8 @@ theorem squarefree_iff_minSqFac {n : ℕ} : Squarefree n ↔ n.minSqFac = none :
 instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
   decidable_of_iff' _ squarefree_iff_minSqFac
 
---Porting note: norm_num now cannot close the first subgoal
 theorem squarefree_two : Squarefree 2 := by
-  rw [squarefree_iff_nodup_factors]
-  · rw [Nat.factors_prime prime_two]
-    exact List.nodup_singleton 2
-  · norm_num
+  rw [squarefree_iff_nodup_factors] <;> norm_num
 #align nat.squarefree_two Nat.squarefree_two
 
 theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :

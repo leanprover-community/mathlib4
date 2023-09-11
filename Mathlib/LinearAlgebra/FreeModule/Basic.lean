@@ -80,15 +80,19 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
 variable [AddCommMonoid N] [Module R N]
 
 /-- If `Module.Free R M` then `ChooseBasisIndex R M` is the `ι` which indexes the basis
-  `ι → M`. -/
-def ChooseBasisIndex :=
-  (exists_basis (R := R) (M := M)).some.1
+  `ι → M`. Note that this is defined such that this type is finite if `R` is trivial. -/
+def ChooseBasisIndex : Type _ :=
+  ((Module.free_iff_set R M).mp ‹_›).choose
 #align module.free.choose_basis_index Module.Free.ChooseBasisIndex
+
+/-- There is no hope of computing this, but we add the instance anyway to avoid fumbling with
+`open scoped Classical`. -/
+noncomputable instance : DecidableEq (ChooseBasisIndex R M) := Classical.decEq _
 
 /-- If `Module.Free R M` then `chooseBasis : ι → M` is the basis.
 Here `ι = ChooseBasisIndex R M`. -/
 noncomputable def chooseBasis : Basis (ChooseBasisIndex R M) R M :=
-  (exists_basis (R := R) (M := M)).some.2
+  ((Module.free_iff_set R M).mp ‹_›).choose_spec.some
 #align module.free.choose_basis Module.Free.chooseBasis
 
 /-- The isomorphism `M ≃ₗ[R] (ChooseBasisIndex R M →₀ R)`. -/
@@ -201,15 +205,5 @@ instance tensor : Module.Free R (M ⊗[R] N) :=
 #align module.free.tensor Module.Free.tensor
 
 end CommRing
-
-section DivisionRing
-
-variable [DivisionRing R] [AddCommGroup M] [Module R M]
-
-instance (priority := 100) of_divisionRing : Module.Free R M :=
-  of_basis (Basis.ofVectorSpace R M)
-#align module.free.of_division_ring Module.Free.of_divisionRing
-
-end DivisionRing
 
 end Module.Free

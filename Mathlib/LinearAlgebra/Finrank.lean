@@ -34,7 +34,7 @@ You should not assume that there has been any effort to state lemmas as generall
 
 universe u v v' w
 
-open Classical Cardinal
+open Cardinal
 
 open Cardinal Submodule Module Function
 
@@ -64,6 +64,14 @@ theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank K V = ↑n) : finrank K
   rw [toNat_cast] at h
   exact_mod_cast h
 #align finite_dimensional.finrank_eq_of_rank_eq FiniteDimensional.finrank_eq_of_rank_eq
+
+lemma rank_eq_one_iff_finrank_eq_one : Module.rank K V = 1 ↔ finrank K V = 1 :=
+  Cardinal.toNat_eq_one.symm
+
+/-- This is like `rank_eq_one_iff_finrank_eq_one` but works for `2`, `3`, `4`, ... -/
+lemma rank_eq_ofNat_iff_finrank_eq_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
+    Module.rank K V = OfNat.ofNat n ↔ finrank K V = OfNat.ofNat n :=
+  Cardinal.toNat_eq_ofNat.symm
 
 theorem finrank_le_of_rank_le {n : ℕ} (h : Module.rank K V ≤ ↑n) : finrank K V ≤ n := by
   rwa [← Cardinal.toNat_le_iff_le_of_lt_aleph0, toNat_cast] at h
@@ -319,10 +327,11 @@ theorem finrank_span_finset_le_card (s : Finset V) : (s : Set V).finrank K ≤ s
 #align finrank_span_finset_le_card finrank_span_finset_le_card
 
 theorem finrank_range_le_card {ι : Type _} [Fintype ι] {b : ι → V} :
-    (Set.range b).finrank K ≤ Fintype.card ι :=
-  (finrank_span_le_card _).trans <| by
-    rw [Set.toFinset_range]
-    exact Finset.card_image_le
+    (Set.range b).finrank K ≤ Fintype.card ι := by
+  classical
+  refine (finrank_span_le_card _).trans ?_
+  rw [Set.toFinset_range]
+  exact Finset.card_image_le
 #align finrank_range_le_card finrank_range_le_card
 
 theorem finrank_span_eq_card {ι : Type _} [Fintype ι] {b : ι → V} (hb : LinearIndependent K b) :
@@ -374,6 +383,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type _} [Finty
     (spans : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) :
     LinearIndependent K b :=
   linearIndependent_iff'.mpr fun s g dependent i i_mem_s => by
+    classical
     by_contra gx_ne_zero
     -- We'll derive a contradiction by showing `b '' (univ \ {i})` of cardinality `n - 1`
     -- spans a vector space of dimension `n`.

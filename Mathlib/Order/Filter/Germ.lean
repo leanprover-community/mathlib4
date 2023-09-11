@@ -628,10 +628,10 @@ section Module
 variable {M N R : Type _}
 
 @[to_additive]
-instance hasSmul' [SMul M β] : SMul (Germ l M) (Germ l β) :=
+instance instSMul' [SMul M β] : SMul (Germ l M) (Germ l β) :=
   ⟨map₂ (· • ·)⟩
-#align filter.germ.has_smul' Filter.Germ.hasSmul'
-#align filter.germ.has_vadd' Filter.Germ.hasVadd'
+#align filter.germ.has_smul' Filter.Germ.instSMul'
+#align filter.germ.has_vadd' Filter.Germ.instVAdd'
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_smul' [SMul M β] (c : α → M) (f : α → β) : ↑(c • f) = (c : Germ l M) • (f : Germ l β) :=
@@ -736,8 +736,7 @@ theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y 
   liftRel_const_iff
 #align filter.germ.const_le_iff Filter.Germ.const_le_iff
 
-instance preorder [Preorder β] : Preorder (Germ l β)
-    where
+instance preorder [Preorder β] : Preorder (Germ l β) where
   le := (· ≤ ·)
   le_refl f := inductionOn f <| EventuallyLE.refl l
   le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ => EventuallyLE.trans

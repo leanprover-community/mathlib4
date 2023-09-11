@@ -49,6 +49,7 @@ theorem condexp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
   refine' Memℒp.induction_stronglyMeasurable hle₁ ENNReal.one_ne_top _ _ _ _ hfint _
   · exact ⟨f, hf, EventuallyEq.rfl⟩
   · intro c t hmt _
+    rw [Indep_iff] at hindp
     rw [integral_indicator (hle₁ _ hmt), set_integral_const, smul_smul, ← ENNReal.toReal_mul,
       mul_comm, ← hindp _ _ hmt hms, set_integral_indicator (hle₁ _ hmt), set_integral_const,
       Set.inter_comm]

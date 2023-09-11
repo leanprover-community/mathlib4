@@ -491,7 +491,7 @@ theorem lex_inr_inl : ¬Lex r s (inr b) (inl a) :=
   fun.
 #align sum.lex_inr_inl Sum.lex_inr_inl
 
-instance [DecidableRel r] [DecidableRel s] : DecidableRel (Lex r s)
+instance instDecidableRelSumLex [DecidableRel r] [DecidableRel s] : DecidableRel (Lex r s)
   | inl _, inl _ => decidable_of_iff' _ lex_inl_inl
   | inl _, inr _ => Decidable.isTrue (Lex.sep _ _)
   | inr _, inl _ => Decidable.isFalse lex_inr_inl

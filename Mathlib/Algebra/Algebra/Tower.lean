@@ -30,28 +30,50 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁) (M : Type v₁)
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
-
-variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
+variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
 variable {A}
 
+
 /-- The `R`-algebra morphism `A → End (M)` corresponding to the representation of the algebra `A`
-on the `R`-module `M`.
+on the `B`-module `M`.
 
 This is a stronger version of `DistribMulAction.toLinearMap`, and could also have been
-called `Algebra.toModuleEnd`. -/
-def lsmul : A →ₐ[R] Module.End R M where
-  toFun := DistribMulAction.toLinearMap R M
+called `Algebra.toModuleEnd`.
+
+The typeclasses correspond to the situation where the types act on each other as
+```
+R ----→ B
+| ⟍     |
+|   ⟍   |
+↓     ↘ ↓
+A ----→ M
+```
+where the diagram commutes, the action by `R` commutes with everything, and the action by `A` and
+`B` on `M` commute.
+
+Typically this is most useful with `B = R` as `Algebra.lsmul R R A : A →ₐ[R] Module.End R M`.
+However this can be used to get the fact that left-multiplication by `A` is right `A`-linear, and
+vice versa, as
+```lean
+example : A →ₐ[R] Module.End Aᵐᵒᵖ A := Algebra.lsmul R Aᵐᵒᵖ A
+example : Aᵐᵒᵖ →ₐ[R] Module.End A A := Algebra.lsmul R A A
+```
+respectively; though `LinearMap.mulLeft` and `LinearMap.mulRight` can also be used here.
+-/
+def lsmul : A →ₐ[R] Module.End B M where
+  toFun := DistribMulAction.toLinearMap B M
   map_one' := LinearMap.ext fun _ => one_smul A _
   map_mul' a b := LinearMap.ext <| smul_assoc a b
   map_zero' := LinearMap.ext fun _ => zero_smul A _
   map_add' _a _b := LinearMap.ext fun _ => add_smul _ _ _
   commutes' r := LinearMap.ext <| algebraMap_smul A r
-#align algebra.lsmul Algebra.lsmul
+#align algebra.lsmul Algebra.lsmulₓ
 
 @[simp]
-theorem lsmul_coe (a : A) : (lsmul R M a : M → M) = (· • ·) a := rfl
+theorem lsmul_coe (a : A) : (lsmul R B M a : M → M) = (· • ·) a := rfl
 #align algebra.lsmul_coe Algebra.lsmul_coe
 
 end Algebra
@@ -354,13 +376,13 @@ section Ring
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
-
-variable [AddCommGroup M] [Module A M] [Module R M] [IsScalarTower R A M]
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [AddCommGroup M] [Module R M] [Module A M] [Module B M]
+variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
 theorem lsmul_injective [NoZeroSMulDivisors A M] {x : A} (hx : x ≠ 0) :
-    Function.Injective (lsmul R M x) :=
-  smul_right_injective _ hx
+    Function.Injective (lsmul R B M x) :=
+  smul_right_injective M hx
 #align algebra.lsmul_injective Algebra.lsmul_injective
 
 end Algebra
