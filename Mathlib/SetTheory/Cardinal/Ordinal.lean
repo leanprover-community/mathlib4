@@ -1057,7 +1057,7 @@ theorem mk_finsupp_lift_of_infinite' (α : Type u) (β : Type v) [Nonempty α] [
   · rw [mk_finsupp_lift_of_fintype]
     have : ℵ₀ ≤ (#β).lift := aleph0_le_lift.2 (aleph0_le_mk β)
     rw [max_eq_right (le_trans _ this), power_nat_eq this]
-    exacts[Fintype.card_pos, lift_le_aleph0.2 (lt_aleph0_of_finite _).le]
+    exacts [Fintype.card_pos, lift_le_aleph0.2 (lt_aleph0_of_finite _).le]
   · apply mk_finsupp_lift_of_infinite
 #align cardinal.mk_finsupp_lift_of_infinite' Cardinal.mk_finsupp_lift_of_infinite'
 

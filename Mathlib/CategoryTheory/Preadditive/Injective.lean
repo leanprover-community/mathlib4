@@ -216,7 +216,7 @@ section EnoughInjectives
 variable [EnoughInjectives C]
 
 /-- `Injective.under X` provides an arbitrarily chosen injective object equipped with
-an monomorphism `Injective.ι : X ⟶  Injective.under X`.
+a monomorphism `Injective.ι : X ⟶  Injective.under X`.
 -/
 def under (X : C) : C :=
   (EnoughInjectives.presentation X).some.J

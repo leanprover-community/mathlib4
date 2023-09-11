@@ -116,7 +116,7 @@ theorem pow_le_of_le_log {b x y : ℕ} (hy : y ≠ 0) (h : x ≤ log b y) : b ^ 
 
 theorem le_log_of_pow_le {b x y : ℕ} (hb : 1 < b) (h : b ^ x ≤ y) : x ≤ log b y := by
   rcases ne_or_eq y 0 with (hy | rfl)
-  exacts[(pow_le_iff_le_log hb hy).1 h, (h.not_lt (pow_pos (zero_lt_one.trans hb) _)).elim]
+  exacts [(pow_le_iff_le_log hb hy).1 h, (h.not_lt (pow_pos (zero_lt_one.trans hb) _)).elim]
 #align nat.le_log_of_pow_le Nat.le_log_of_pow_le
 
 theorem pow_log_le_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : b ^ log b x ≤ x :=

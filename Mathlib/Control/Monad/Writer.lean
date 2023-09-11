@@ -2,8 +2,14 @@
 Copyright (c) 2019 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, E.W.Ayers
+
+! This file was ported from Lean 3 source module control.monad.writer
+! leanprover-community/mathlib commit 9407b03373c8cd201df99d6bc5514fc2db44054f
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Writer monads
@@ -45,9 +51,15 @@ instance [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
 
 namespace WriterT
 
-protected def mk {ω : Type u} (cmd :  M (α × ω)) : WriterT ω M α:= cmd
+@[inline]
+protected def mk {ω : Type u} (cmd :  M (α × ω)) : WriterT ω M α := cmd
+@[inline]
 protected def run {ω : Type u} (cmd : WriterT ω M α) : M (α × ω) := cmd
+@[inline]
 protected def runThe (ω : Type u) (cmd : WriterT ω M α) : M (α × ω) := cmd
+
+@[ext]
+protected theorem ext {ω : Type u} (x x' : WriterT ω M α) (h : x.run = x'.run) : x = x' := h
 
 variable {ω : Type u} {α β : Type u}
 
@@ -59,6 +71,7 @@ monoids with `Mul` and `One` can make `WriterT` cumbersome to use.
 
 This is used to derive instances for both `[EmptyCollection ω] [Append ω]` and `[Monoid ω]`.
 -/
+@[reducible, inline]
 def monad (empty : ω) (append : ω → ω → ω) : Monad (WriterT ω M) where
   map := fun f (cmd : M _) ↦ WriterT.mk $ (fun (a,w) ↦ (f a, w)) <$> cmd
   pure := fun a ↦ pure (f := M) (a, empty)
@@ -67,6 +80,7 @@ def monad (empty : ω) (append : ω → ω → ω) : Monad (WriterT ω M) where
       (fun (b, w₂) ↦ (b, append w₁ w₂)) <$> (f a)
 
 /-- Lift an `M` to a `WriterT ω M`, using the given `empty` as the monoid unit. -/
+@[inline]
 protected def liftTell (empty : ω) : MonadLift M (WriterT ω M) where
   monadLift := fun cmd ↦ WriterT.mk $ (fun a ↦ (a, empty)) <$> cmd
 
@@ -74,6 +88,13 @@ instance [EmptyCollection ω] [Append ω] : Monad (WriterT ω M) := monad ∅ (�
 instance [EmptyCollection ω] : MonadLift M (WriterT ω M) := WriterT.liftTell ∅
 instance [Monoid ω] : Monad (WriterT ω M) := monad 1 (· * ·)
 instance [Monoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 1
+
+instance [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
+  (bind_pure_comp := by
+    intros; simp [Bind.bind, Functor.map, Pure.pure, WriterT.mk, bind_pure_comp])
+  (id_map := by intros; simp [Functor.map, WriterT.mk])
+  (pure_bind := by intros; simp [Bind.bind, Pure.pure, WriterT.mk])
+  (bind_assoc := by intros; simp [Bind.bind, mul_assoc, WriterT.mk, ← bind_pure_comp])
 
 instance : MonadWriter ω (WriterT ω M) where
   tell := fun w ↦ WriterT.mk $ pure (⟨⟩, w)
@@ -92,4 +113,39 @@ instance [MonadLiftT M (WriterT ω M)] : MonadControl M (WriterT ω M) where
 instance : MonadFunctor M (WriterT ω M) where
   monadMap := fun k (w : M _) ↦ WriterT.mk $ k w
 
+@[inline] protected def adapt {ω' : Type u} {α : Type u} (f : ω → ω') :
+    WriterT ω M α → WriterT ω' M α :=
+  fun cmd ↦ WriterT.mk $ Prod.map id f <$> cmd
+
 end WriterT
+
+/-- Adapt a monad stack, changing the type of its top-most environment.
+
+This class is comparable to [Control.Lens.Magnify](https://hackage.haskell.org/package/lens-4.15.4/docs/Control-Lens-Zoom.html#t:Magnify),
+but does not use lenses (why would it), and is derived automatically for any transformer
+implementing `MonadFunctor`.
+-/
+class MonadWriterAdapter (ω : outParam (Type u)) (m : Type u → Type v) where
+  adaptWriter {α : Type u} : (ω → ω) → m α → m α
+
+export MonadWriterAdapter (adaptWriter)
+
+/-- Transitivity.
+
+see Note [lower instance priority] -/
+instance (priority := 100) monadWriterAdapterTrans {n : Type u → Type v}
+    [MonadWriterAdapter ω m] [MonadFunctor m n] : MonadWriterAdapter ω n where
+  adaptWriter f := monadMap (fun {α} ↦ (adaptWriter f : m α → m α))
+
+instance [Monad m] : MonadWriterAdapter ω (WriterT ω m) where
+  adaptWriter := WriterT.adapt
+
+/-- reduce the equivalence between two writer monads to the equivalence between
+their underlying monad -/
+def WriterT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁}
+    {α₁ ω₁ : Type u₀} {α₂ ω₂ : Type u₁} (F : (m₁ (α₁ × ω₁)) ≃ (m₂ (α₂ × ω₂))) :
+    WriterT ω₁ m₁ α₁ ≃ WriterT ω₂ m₂ α₂ where
+  toFun (f : m₁ _) := WriterT.mk $ F f
+  invFun (f : m₂ _) := WriterT.mk $ F.symm f
+  left_inv (f : m₁ _) := congr_arg WriterT.mk $ F.left_inv f
+  right_inv (f : m₂ _) := congr_arg WriterT.mk $ F.right_inv f

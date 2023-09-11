@@ -22,7 +22,7 @@ functor rather than a subtype, preserving the principle of equivalence. For exam
 define exponential ideals.
 
 The essential image can also be seen as a subcategory of the target category, and witnesses that
-a functor decomposes into a essentially surjective functor and a fully faithful functor.
+a functor decomposes into an essentially surjective functor and a fully faithful functor.
 (TODO: show that this decomposition forms an orthogonal factorisation system).
 -/
 

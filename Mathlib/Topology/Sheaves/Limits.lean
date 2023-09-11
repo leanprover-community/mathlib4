@@ -46,7 +46,7 @@ theorem isSheaf_of_isLimit [HasLimits C] {X : TopCat} (F : J ⥤ Presheaf.{v} C 
   let F' : J ⥤ Sheaf C X :=
     { obj := fun j => ⟨F.obj j, H j⟩
       map := fun f => ⟨F.map f⟩ }
-  let e : F' ⋙ Sheaf.forget C X ≅ F := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  let e : F' ⋙ Sheaf.forget C X ≅ F := NatIso.ofComponents fun _ => Iso.refl _
   exact Presheaf.isSheaf_of_iso
     ((isLimitOfPreserves (Sheaf.forget C X) (limit.isLimit F')).conePointsIsoOfNatIso hc e)
     (limit F').2

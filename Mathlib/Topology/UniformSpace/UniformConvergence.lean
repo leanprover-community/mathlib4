@@ -355,7 +355,7 @@ theorem tendstoUniformlyOn_singleton_iff_tendsto :
 #align tendsto_uniformly_on_singleton_iff_tendsto tendstoUniformlyOn_singleton_iff_tendsto
 
 /-- If a sequence `g` converges to some `b`, then the sequence of constant functions
-`λ n, λ a, g n` converges to the constant function `λ a, b` on any set `s` -/
+`fun n ↦ fun a ↦ g n` converges to the constant function `fun a ↦ b` on any set `s` -/
 theorem Filter.Tendsto.tendstoUniformlyOnFilter_const {g : ι → β} {b : β} (hg : Tendsto g p (𝓝 b))
     (p' : Filter α) :
     TendstoUniformlyOnFilter (fun n : ι => fun _ : α => g n) (fun _ : α => b) p p' := by
@@ -363,7 +363,7 @@ theorem Filter.Tendsto.tendstoUniformlyOnFilter_const {g : ι → β} {b : β} (
 #align filter.tendsto.tendsto_uniformly_on_filter_const Filter.Tendsto.tendstoUniformlyOnFilter_const
 
 /-- If a sequence `g` converges to some `b`, then the sequence of constant functions
-`λ n, λ a, g n` converges to the constant function `λ a, b` on any set `s` -/
+`fun n ↦ fun a ↦ g n` converges to the constant function `fun a ↦ b` on any set `s` -/
 theorem Filter.Tendsto.tendstoUniformlyOn_const {g : ι → β} {b : β} (hg : Tendsto g p (𝓝 b))
     (s : Set α) : TendstoUniformlyOn (fun n : ι => fun _ : α => g n) (fun _ : α => b) p s :=
   tendstoUniformlyOn_iff_tendstoUniformlyOnFilter.mpr (hg.tendstoUniformlyOnFilter_const (𝓟 s))

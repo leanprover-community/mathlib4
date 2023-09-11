@@ -87,27 +87,16 @@ def comp : ∀ {o₁ o₂ o₃ : Pairwise ι} (_ : Hom o₁ o₂) (_ : Hom o₂ 
 
 section
 
--- porting note: aesop_cat does not support local attributes yet so that
--- proofs had to be provided for the Category structure on `Pairwise ι`
---attribute [local tidy] tactic.case_bash
+open Lean Elab Tactic in
+/-- A helper tactic for `aesop_cat` and `Pairwise`. -/
+def pairwiseCases : TacticM Unit := do
+  evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
 
+attribute [local aesop safe tactic (rule_sets [CategoryTheory])] pairwiseCases in
 instance : Category (Pairwise ι) where
   Hom := Hom
   id := id
   comp f g := comp f g
-  assoc := fun f g h => by
-    cases f
-    . aesop_cat
-    . aesop_cat
-    all_goals {
-      cases g
-      aesop_cat }
-  comp_id := fun f => by
-    cases f
-    all_goals { aesop_cat }
-  id_comp := fun f => by
-    cases f
-    all_goals { aesop_cat }
 
 end
 
@@ -145,8 +134,6 @@ and the morphisms to the obvious inequalities.
 def diagram : Pairwise ι ⥤ α where
   obj := diagramObj U
   map := diagramMap U
-  map_id := fun _ => rfl
-  map_comp := fun _ _ => rfl
 #align category_theory.pairwise.diagram CategoryTheory.Pairwise.diagram
 
 end
@@ -169,8 +156,7 @@ def coconeιApp : ∀ o : Pairwise ι, diagramObj U o ⟶ iSup U
 @[simps]
 def cocone : Cocone (diagram U) where
   pt := iSup U
-  ι :=
-    { app := coconeιApp U }
+  ι := { app := coconeιApp U }
 #align category_theory.pairwise.cocone CategoryTheory.Pairwise.cocone
 
 /-- Given a function `U : ι → α` for `[CompleteLattice α]`,

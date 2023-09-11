@@ -22,8 +22,8 @@ if not os.path.exists('port-repos/mathlib'):
 GITHUB_TOKEN_FILE = 'port-repos/github-token'
 github_token = open(GITHUB_TOKEN_FILE).read().strip()
 
-mathlib3_root = 'port-repos/mathlib/src'
-mathlib4_root = 'Mathlib/'
+mathlib3_root = 'port-repos/mathlib'
+mathlib4_root = './'
 
 source_module_re = re.compile(r"^! .*source module (.*)$")
 commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
@@ -31,18 +31,22 @@ import_re = re.compile(r"^import ([^ ]*)")
 
 def mk_label(path: Path) -> str:
     rel = path.relative_to(Path(mathlib3_root))
+    rel = Path(*rel.parts[1:])
     return str(rel.with_suffix('')).replace(os.sep, '.')
 
-graph = nx.DiGraph()
-
+paths = []
 for path in Path(mathlib3_root).glob('**/*.lean'):
-    if path.relative_to(mathlib3_root).parts[0] in ['tactic', 'meta']:
+    if path.relative_to(mathlib3_root).parts[0] not in ['src', 'archive', 'counterexamples']:
         continue
+    if path.relative_to(mathlib3_root).parts[1] in ['tactic', 'meta']:
+        continue
+    paths.append(path)
+
+graph = nx.DiGraph()
+for path in paths:
     graph.add_node(mk_label(path))
 
-for path in Path(mathlib3_root).glob('**/*.lean'):
-    if path.relative_to(mathlib3_root).parts[0] in ['tactic', 'meta']:
-        continue
+for path in paths:
     label = mk_label(path)
     for line in path.read_text().split('\n'):
         m = import_re.match(line)
@@ -75,8 +79,8 @@ def get_mathlib4_module_commit_info(contents):
 # lean 3 module name -> { mathlib4_file, mathlib3_hash }
 data = dict()
 for path4 in Path(mathlib4_root).glob('**/*.lean'):
-    if path4.relative_to(mathlib4_root).parts[0] in \
-       ['Init', 'Lean', 'Mathport', 'Tactic', 'Testing', 'Util']:
+    # we definitely do not want to look in `port-repos` here!
+    if path4.relative_to(mathlib4_root).parts[0] not in ('Mathlib', 'Archive', 'Counterexamples'):
         continue
     module, repo, commit = get_mathlib4_module_commit_info(path4.read_text())
     if module is None:
@@ -96,7 +100,7 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
         mathlib4_pr = None
 
     data[module] = {
-        'mathlib4_file': 'Mathlib/' + str(path4.relative_to(mathlib4_root)),
+        'mathlib4_file': str(path4.relative_to(mathlib4_root)),
         'mathlib4_pr': mathlib4_pr,
         'source': dict(repo=repo, commit=commit)
     }

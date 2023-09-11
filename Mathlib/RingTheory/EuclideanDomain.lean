@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
 
 ! This file was ported from Lean 3 source module ring_theory.euclidean_domain
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
+! leanprover-community/mathlib commit bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -34,13 +34,13 @@ open EuclideanDomain Set Ideal
 
 section GCDMonoid
 
-variable {R : Type _} [EuclideanDomain R] [GCDMonoid R]
+variable {R : Type _} [EuclideanDomain R] [GCDMonoid R] {p q : R}
 
-theorem gcd_ne_zero_of_left (p q : R) (hp : p ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
+theorem gcd_ne_zero_of_left (hp : p ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
   hp <| eq_zero_of_zero_dvd (h ▸ gcd_dvd_left p q)
 #align gcd_ne_zero_of_left gcd_ne_zero_of_left
 
-theorem gcd_ne_zero_of_right (p q : R) (hp : q ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
+theorem gcd_ne_zero_of_right (hp : q ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
   hp <| eq_zero_of_zero_dvd (h ▸ gcd_dvd_right p q)
 #align gcd_ne_zero_of_right gcd_ne_zero_of_right
 
@@ -59,6 +59,15 @@ theorem right_div_gcd_ne_zero {p q : R} (hq : q ≠ 0) : q / GCDMonoid.gcd p q �
   rw [mul_comm, EuclideanDomain.mul_div_cancel _ pq0]
   exact r0
 #align right_div_gcd_ne_zero right_div_gcd_ne_zero
+
+theorem isCoprime_div_gcd_div_gcd (hq : q ≠ 0) :
+    IsCoprime (p / GCDMonoid.gcd p q) (q / GCDMonoid.gcd p q) :=
+  (gcd_isUnit_iff _ _).1 <|
+    isUnit_gcd_of_eq_mul_gcd
+        (EuclideanDomain.mul_div_cancel' (gcd_ne_zero_of_right hq) <| gcd_dvd_left _ _).symm
+        (EuclideanDomain.mul_div_cancel' (gcd_ne_zero_of_right hq) <| gcd_dvd_right _ _).symm <|
+      gcd_ne_zero_of_right hq
+#align is_coprime_div_gcd_div_gcd isCoprime_div_gcd_div_gcd
 
 end GCDMonoid
 

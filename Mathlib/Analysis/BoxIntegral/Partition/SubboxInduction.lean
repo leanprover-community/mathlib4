@@ -48,7 +48,7 @@ namespace Prepartition
 def splitCenter (I : Box ι) : Prepartition I where
   boxes := Finset.univ.map (Box.splitCenterBoxEmb I)
   le_of_mem' := by simp [I.splitCenterBox_le]
-  PairwiseDisjoint := by
+  pairwiseDisjoint := by
     rw [Finset.coe_map, Finset.coe_univ, image_univ]
     rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩ Hne
     exact I.disjoint_splitCenterBox (mt (congr_arg _) Hne)

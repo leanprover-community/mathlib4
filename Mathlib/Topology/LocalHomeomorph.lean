@@ -893,7 +893,7 @@ theorem restr_trans (s : Set α) : (e.restr s).trans e' = (e.trans e').restr s :
   toLocalEquiv_injective <| LocalEquiv.restr_trans e.toLocalEquiv e'.toLocalEquiv (interior s)
 #align local_homeomorph.restr_trans LocalHomeomorph.restr_trans
 
-/-- Postcompose a local homeomorphism with an homeomorphism.
+/-- Postcompose a local homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
 @[simps! (config := { fullyApplied := false })]
 def transHomeomorph (e' : β ≃ₜ γ) : LocalHomeomorph α γ where
@@ -908,7 +908,7 @@ theorem trans_equiv_eq_trans (e' : β ≃ₜ γ) : e.transHomeomorph e' = e.tran
   toLocalEquiv_injective <| LocalEquiv.transEquiv_eq_trans _ _
 #align local_homeomorph.trans_equiv_eq_trans LocalHomeomorph.trans_equiv_eq_trans
 
-/-- Precompose a local homeomorphism with an homeomorphism.
+/-- Precompose a local homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
 @[simps! (config := { fullyApplied := false })]
 def _root_.Homeomorph.transLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α γ where
@@ -1222,7 +1222,7 @@ def homeomorphOfImageSubsetSource {s : Set α} {t : Set β} (hs : s ⊆ e.source
     continuous_invFun := (e.continuousOn_symm.mono h₂).restrict_mapsTo h₃ }
 #align local_homeomorph.homeomorph_of_image_subset_source LocalHomeomorph.homeomorphOfImageSubsetSource
 
-/-- A local homeomrphism defines a homeomorphism between its source and target. -/
+/-- A local homeomorphism defines a homeomorphism between its source and target. -/
 @[simps!] -- porting note: new `simps`
 def toHomeomorphSourceTarget : e.source ≃ₜ e.target :=
   e.homeomorphOfImageSubsetSource subset_rfl e.image_source_eq_target

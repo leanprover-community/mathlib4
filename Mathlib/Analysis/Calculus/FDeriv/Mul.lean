@@ -24,9 +24,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 -/
 
 
-open Filter Asymptotics ContinuousLinearMap Set Metric
-
-open Topology Classical NNReal Filter Asymptotics ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Metric Topology Classical NNReal ENNReal
 
 noncomputable section
 
@@ -164,12 +162,12 @@ theorem fderiv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt
 
 end ClmCompApply
 
-section Smul
+section SMul
 
 /-! ### Derivative of the product of a scalar-valued function and a vector-valued function
 
 If `c` is a differentiable scalar-valued function and `f` is a differentiable vector-valued
-function, then `λ x, c x • f x` is differentiable as well. Lemmas in this section works for
+function, then `fun x ↦ c x • f x` is differentiable as well. Lemmas in this section works for
 function `c` taking values in the base field, as well as in a normed algebra over the base
 field: e.g., they work for `c : E → ℂ` and `f : E → F` provided that `F` is a complex
 normed vector space.
@@ -272,7 +270,7 @@ theorem fderiv_smul_const (hc : DifferentiableAt 𝕜 c x) (f : F) :
   (hc.hasFDerivAt.smul_const f).fderiv
 #align fderiv_smul_const fderiv_smul_const
 
-end Smul
+end SMul
 
 section Mul
 

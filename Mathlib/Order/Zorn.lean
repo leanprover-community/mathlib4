@@ -36,7 +36,7 @@ walkthrough:
 1. Know what relation on which type/set you're looking for. See Variants above. You can discharge
   some conditions to Zorn's lemma directly using a `_nonempty` variant.
 2. Write down the definition of your type/set, put a `suffices : ∃ m, ∀ a, m ≺ a → a ≺ m, { ... },`
-  (or whatever you actually need) followed by a `apply some_version_of_zorn`.
+  (or whatever you actually need) followed by an `apply some_version_of_zorn`.
 3. Fill in the details. This is where you start talking about chains.
 
 A typical proof using Zorn could look like this (TODO: update to mathlib4)

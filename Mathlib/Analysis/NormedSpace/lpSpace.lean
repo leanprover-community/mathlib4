@@ -63,7 +63,7 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issu
 
 noncomputable section
 
-open scoped NNReal ENNReal BigOperators
+open scoped NNReal ENNReal BigOperators Function
 
 variable {α : Type _} {E : α → Type _} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
 
@@ -213,7 +213,6 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
       have : 0 ≤ ‖f i‖ ^ p.toReal := Real.rpow_nonneg_of_nonneg (norm_nonneg _) p.toReal
       simp only [abs_of_nonneg, this] at hi
       contrapose! hi
-      rw [not_le] at hi
       exact Real.rpow_le_rpow_of_exponent_ge' (norm_nonneg _) hi.le hq.le hpq'
 #align mem_ℓp.of_exponent_ge Memℓp.of_exponent_ge
 
@@ -324,6 +323,9 @@ def lp (E : α → Type _) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : 
   add_mem' := Memℓp.add
   neg_mem' := Memℓp.neg
 #align lp lp
+
+scoped[lp] notation "ℓ^∞(" ι ", " E ")" => lp (fun i : ι => E) ∞
+scoped[lp] notation "ℓ^∞(" ι ")" => lp (fun i : ι => ℝ) ∞
 
 namespace lp
 
@@ -1185,7 +1187,7 @@ theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Metric.Bounded (Set.range F
     exact sum_rpow_le_of_tendsto hp.ne (eventually_of_forall hCF) hf
 #align lp.mem_ℓp_of_tendsto lp.memℓp_of_tendsto
 
-/-- If a sequence is Cauchy in the `lp E p` topology and pointwise convergent to a element `f` of
+/-- If a sequence is Cauchy in the `lp E p` topology and pointwise convergent to an element `f` of
 `lp E p`, then it converges to `f` in the `lp E p` topology. -/
 theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp E p}
     (hf : Tendsto (id fun i => F i : ℕ → ∀ a, E a) atTop (𝓝 f)) : Tendsto F atTop (𝓝 f) := by
@@ -1217,3 +1219,41 @@ instance completeSpace : CompleteSpace (lp E p) :=
 end Topology
 
 end lp
+
+section Lipschitz
+
+open ENNReal lp
+
+lemma LipschitzWith.uniformly_bounded [PseudoMetricSpace α] (g : α → ι → ℝ) {K : ℝ≥0}
+    (hg : ∀ i, LipschitzWith K (g · i)) (a₀ : α) (hga₀b : Memℓp (g a₀) ∞) (a : α) :
+    Memℓp (g a) ∞ := by
+  rcases hga₀b with ⟨M, hM⟩
+  use ↑K * dist a a₀ + M
+  rintro - ⟨i, rfl⟩
+  calc
+    |g a i| = |g a i - g a₀ i + g a₀ i| := by simp
+    _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add _ _
+    _ ≤ ↑K * dist a a₀ + M := by
+        gcongr
+        . exact lipschitzWith_iff_dist_le_mul.1 (hg i) a a₀
+        . exact hM ⟨i, rfl⟩
+
+theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι)) (s : Set α) (K : ℝ≥0) :
+    LipschitzOnWith K f s ↔ ∀ i : ι, LipschitzOnWith K (fun a : α ↦ f a i) s := by
+  simp_rw [lipschitzOnWith_iff_dist_le_mul]
+  constructor
+  · intro hfl i x hx y hy
+    calc
+      dist (f x i) (f y i) ≤ dist (f x) (f y) := lp.norm_apply_le_norm top_ne_zero (f x - f y) i
+      _ ≤ K * dist x y := hfl x hx y hy
+  · intro hgl x hx y hy
+    apply lp.norm_le_of_forall_le; positivity
+    intro i
+    apply hgl i x hx y hy
+
+theorem LipschitzWith.coordinate [PseudoMetricSpace α] {f : α → ℓ^∞(ι)} (K : ℝ≥0) :
+    LipschitzWith K f ↔ ∀ i : ι, LipschitzWith K (fun a : α ↦ f a i) := by
+  simp_rw [← lipschitz_on_univ]
+  apply LipschitzOnWith.coordinate
+
+end Lipschitz

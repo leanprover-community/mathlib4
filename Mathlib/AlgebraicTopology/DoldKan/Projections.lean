@@ -56,7 +56,7 @@ set_option linter.uppercaseLean3 false in
 -- porting note: `P_zero` and `P_succ` have been added to ease the port, because
 -- `unfold P` would sometimes unfold to a `match` rather than the induction formula
 lemma P_zero : (P 0 : K[X] ⟶ K[X]) = 𝟙 _ := rfl
-lemma P_succ (q : ℕ): (P (q+1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
+lemma P_succ (q : ℕ) : (P (q+1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
 
 /-- All the `P q` coincide with `𝟙 _` in degree 0. -/
 @[simp]

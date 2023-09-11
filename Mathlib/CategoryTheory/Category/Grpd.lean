@@ -117,8 +117,6 @@ set_option linter.uppercaseLean3 false in
 
 section Products
 
---attribute [local tidy] tactic.discrete_cases
-
 /-- Construct the product over an indexed family of groupoids, as a fan. -/
 def piLimitFan ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.Fan F :=
   Limits.Fan.mk (@of (∀ j : J, F j) _) fun j => CategoryTheory.Pi.eval _ j

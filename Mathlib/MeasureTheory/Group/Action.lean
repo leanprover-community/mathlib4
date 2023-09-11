@@ -23,9 +23,7 @@ some basic properties of such measures.
 -/
 
 
-open ENNReal NNReal Pointwise Topology
-
-open MeasureTheory MeasureTheory.Measure Set Function
+open ENNReal NNReal Pointwise Topology MeasureTheory MeasureTheory.Measure Set Function
 
 namespace MeasureTheory
 
@@ -159,7 +157,7 @@ theorem smulInvariantMeasure_tfae :
 
 /-- Equivalent definitions of a measure invariant under an additive action of a group.
 
-- 0: `vadd_invariant_measure G α μ`;
+- 0: `VAddInvariantMeasure G α μ`;
 
 - 1: for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under
      vector addition `(c +ᵥ ·)` is equal to the measure of `s`;

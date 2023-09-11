@@ -69,7 +69,7 @@ theorem digitsAux_def (b : ℕ) (h : 2 ≤ b) (n : ℕ) (w : 0 < n) :
 /-- `digits b n` gives the digits, in little-endian order,
 of a natural number `n` in a specified base `b`.
 
-In any base, we have `ofDigits b L = L.foldr (λ x y, x + b * y) 0`.
+In any base, we have `ofDigits b L = L.foldr (fun x y ↦ x + b * y) 0`.
 * For any `2 ≤ b`, we have `l < b` for any `l ∈ digits b n`,
   and the last digit is not zero.
   This uniquely specifies the behaviour of `digits b`.

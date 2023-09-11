@@ -1817,10 +1817,10 @@ instance monad : Monad WSeq where
   this type of construction.
 
 instance lawfulMonad : LawfulMonad WSeq :=
-{ id_map := @map_id,
-  bind_pure_comp := @bind_ret,
-  pure_bind := @ret_bind,
-  bind_assoc := @bind_assoc }
+  { id_map := @map_id,
+    bind_pure_comp := @bind_ret,
+    pure_bind := @ret_bind,
+    bind_assoc := @bind_assoc }
 -/
 end WSeq
 

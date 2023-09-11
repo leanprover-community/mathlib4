@@ -703,7 +703,7 @@ theorem quotientSubgroupOfEmbeddingOfLe_apply_mk (H : Subgroup α) (h : s ≤ t)
 #align add_subgroup.quotient_add_subgroup_of_embedding_of_le_apply_mk AddSubgroup.quotientAddSubgroupOfEmbeddingOfLe_apply_mk
 
 /-- If `s ≤ t`, then there is a map `H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H`. -/
-@[to_additive "If `s ≤ t`, then there is an map `H ⧸ s.addSubgroupOf H → H ⧸ t.addSubgroupOf H`."]
+@[to_additive "If `s ≤ t`, then there is a map `H ⧸ s.addSubgroupOf H → H ⧸ t.addSubgroupOf H`."]
 def quotientSubgroupOfMapOfLe (H : Subgroup α) (h : s ≤ t) :
     H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H :=
   Quotient.map' id fun a b => by
@@ -722,7 +722,7 @@ theorem quotientSubgroupOfMapOfLe_apply_mk (H : Subgroup α) (h : s ≤ t) (g : 
 #align add_subgroup.quotient_add_subgroup_of_map_of_le_apply_mk AddSubgroup.quotientAddSubgroupOfMapOfLe_apply_mk
 
 /-- If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`. -/
-@[to_additive "If `s ≤ t`, then there is an map `α ⧸ s → α ⧸ t`."]
+@[to_additive "If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`."]
 def quotientMapOfLe (h : s ≤ t) : α ⧸ s → α ⧸ t :=
   Quotient.map' id fun a b => by
     simp_rw [leftRel_eq]

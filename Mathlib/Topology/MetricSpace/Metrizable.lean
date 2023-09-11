@@ -226,7 +226,7 @@ theorem exists_embedding_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Embedding f := 
       exact (f UV).continuous.tendsto x (closedBall_mem_nhds _ δ0)
     refine' this.mono fun y hy => (BoundedContinuousFunction.dist_le δ0.le).2 fun UV => _
     cases' le_total δ (ε UV) with hle hle
-    exacts[hy _ hle, (Real.dist_le_of_mem_Icc (hf0ε _ _) (hf0ε _ _)).trans (by rwa [sub_zero])]
+    exacts [hy _ hle, (Real.dist_le_of_mem_Icc (hf0ε _ _) (hf0ε _ _)).trans (by rwa [sub_zero])]
 #align topological_space.exists_embedding_l_infty TopologicalSpace.exists_embedding_l_infty
 
 /-- *Urysohn's metrization theorem* (Tychonoff's version): a T₃ topological space with second

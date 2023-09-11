@@ -543,7 +543,7 @@ protected theorem add_left_cancel_iff {a b c : PartENat} (ha : a ≠ ⊤) : a + 
 
 section WithTop
 
-/-- Computably converts an `PartENat` to a `ℕ∞`. -/
+/-- Computably converts a `PartENat` to a `ℕ∞`. -/
 def toWithTop (x : PartENat) [Decidable x.Dom] : ℕ∞ :=
   x.toOption
 #align part_enat.to_with_top PartENat.toWithTop

@@ -57,6 +57,11 @@ theorem comp_apply {X Y Z : ∀ i, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (i) :
   rfl
 #align category_theory.pi.comp_apply CategoryTheory.Pi.comp_apply
 
+-- Porting note: need to add an additional `ext` lemma.
+@[ext]
+lemma ext {X Y : ∀ i, C i} {f g : X ⟶ Y} (w : ∀ i, f i = g i) : f = g :=
+  funext (w ·)
+
 /--
 The evaluation functor at `i : I`, sending an `I`-indexed family of objects to the object over `i`.
 -/
@@ -77,10 +82,10 @@ instance (f : J → I) : (j : J) → Category ((C ∘ f) j) := by
   dsimp
   infer_instance
 
-/-- Pull back an `I`-indexed family of objects to an `J`-indexed family, along a function `J → I`.
+/-- Pull back an `I`-indexed family of objects to a `J`-indexed family, along a function `J → I`.
 -/
 @[simps]
-def comap (h : J → I) : (∀ i, C i) ⥤  (∀ j, C (h j)) where
+def comap (h : J → I) : (∀ i, C i) ⥤ (∀ j, C (h j)) where
   obj f i := f (h i)
   map α i := α (h i)
 #align category_theory.pi.comap CategoryTheory.Pi.comap
@@ -92,7 +97,7 @@ pulling back a grading along the identity function,
 and the identity functor. -/
 @[simps]
 def comapId : comap C (id : I → I) ≅ 𝟭 (∀ i, C i) where
-  hom := { app := fun X => 𝟙 X, naturality := by simp only [comap]; aesop_cat}
+  hom := { app := fun X => 𝟙 X }
   inv := { app := fun X => 𝟙 X }
 #align category_theory.pi.comap_id CategoryTheory.Pi.comapId
 
@@ -108,22 +113,12 @@ pulling back along their composition
 -/
 @[simps!]
 def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ comap C (g ∘ f) where
-  hom := {
-    app := fun X b => 𝟙 (X (g (f b)))
-    naturality := fun X Y f' => by simp only [comap,Function.comp]; funext; simp
-    }
-  inv := {
-    app := fun X b => 𝟙 (X (g (f b)))
-    naturality := fun X Y f' => by simp only [comap,Function.comp]; funext; simp
-    }
-  hom_inv_id := by
-    simp only [comap]
-    ext Y
-    simp [CategoryStruct.comp,CategoryStruct.id]
-  inv_hom_id := by
-    simp only [comap]
-    ext X
-    simp [CategoryStruct.comp,CategoryStruct.id]
+  hom :=
+  { app := fun X b => 𝟙 (X (g (f b)))
+    naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
+  inv :=
+  { app := fun X b => 𝟙 (X (g (f b)))
+    naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
 #align category_theory.pi.comap_comp CategoryTheory.Pi.comapComp
 
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
@@ -164,25 +159,12 @@ def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : Sum I J, Sum.elim C D s wher
       map := fun {Y} {Y'} f s =>
         match s with
         | .inl i => 𝟙 (X i)
-        | .inr j => f j
-      map_id := fun Y => by
-          dsimp
-          simp only [CategoryStruct.id]
-          funext s
-          match s with
-          | .inl i => simp
-          | .inr j => simp
-      map_comp := fun {Y₁} {Y₂} {Y₃} f g => by funext s; cases s; repeat {simp} }
+        | .inr j => f j }
   map {X} {X'} f :=
     { app := fun Y s =>
         match s with
         | .inl i => f i
-        | .inr j => 𝟙 (Y j)
-      naturality := fun {Y} {Y'} g => by funext s; cases s; repeat {simp} }
-  map_id := fun X => by
-    ext Y; dsimp; simp only [CategoryStruct.id]; funext s; cases s; repeat {simp}
-  map_comp := fun f g => by
-    ext Y; dsimp; simp only [CategoryStruct.comp]; funext s; cases s; repeat {simp}
+        | .inr j => 𝟙 (Y j) }
 #align category_theory.pi.sum CategoryTheory.Pi.sum
 
 end
@@ -294,7 +276,6 @@ variable {F G : ∀ i, C i ⥤ D i}
 @[simps!]
 def pi (α : ∀ i, F i ⟶ G i) : Functor.pi F ⟶ Functor.pi G where
   app f i := (α i).app (f i)
-  naturality := fun X Y f => by simp [Functor.pi,CategoryStruct.comp]
 #align category_theory.nat_trans.pi CategoryTheory.NatTrans.pi
 
 end NatTrans

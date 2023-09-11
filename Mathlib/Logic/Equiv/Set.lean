@@ -404,7 +404,7 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
       sumCongr (Equiv.refl _)
         (by
           refine' (Set.union' (· ∉ s) _ _).symm
-          exacts[fun x hx => hx.2, fun x hx => not_not_intro hx.1])
+          exacts [fun x hx => hx.2, fun x hx => not_not_intro hx.1])
     _ ≃ Sum s t := by
       { rw [(_ : t \ s ∪ s ∩ t = t)]
         rw [union_comm, inter_comm, inter_union_diff] }

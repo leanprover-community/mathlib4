@@ -54,7 +54,7 @@ def FrobeniusNumber (n : ℕ) (s : Set ℕ) : Prop :=
 
 variable {m n : ℕ}
 
-/-- The **Chicken Mcnugget theorem** stating that the Frobenius number
+/-- The **Chicken McNugget theorem** stating that the Frobenius number
   of positive numbers `m` and `n` is `m * n - m - n`. -/
 theorem frobeniusNumber_pair (cop : coprime m n) (hm : 1 < m) (hn : 1 < n) :
     FrobeniusNumber (m * n - m - n) {m, n} := by

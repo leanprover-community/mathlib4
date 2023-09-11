@@ -257,7 +257,7 @@ theorem sInf_singleton {a : α} : sInf {a} = a :=
 
 end
 
-/-- A complete lattice is a bounded lattice which has iSupema and infima for every subset. -/
+/-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type _) extends Lattice α, CompleteSemilatticeSup α,
   CompleteSemilatticeInf α, Top α, Bot α where
   /-- Any element is less than the top one. -/
@@ -279,12 +279,12 @@ provided; for example, if `inf` is known explicitly, construct the `CompleteLatt
 instance as
 ```
 instance : CompleteLattice my_T :=
-{ inf := better_inf,
-  le_inf := ...,
-  inf_le_right := ...,
-  inf_le_left := ...
-  -- don't care to fix sup, sSup, bot, top
-  ..completeLatticeOfInf my_T _ }
+  { inf := better_inf,
+    le_inf := ...,
+    inf_le_right := ...,
+    inf_le_left := ...
+    -- don't care to fix sup, sSup, bot, top
+    ..completeLatticeOfInf my_T _ }
 ```
 -/
 def completeLatticeOfInf (α : Type _) [H1 : PartialOrder α] [H2 : InfSet α]
@@ -328,12 +328,12 @@ provided; for example, if `inf` is known explicitly, construct the `CompleteLatt
 instance as
 ```
 instance : CompleteLattice my_T :=
-{ inf := better_inf,
-  le_inf := ...,
-  inf_le_right := ...,
-  inf_le_left := ...
-  -- don't care to fix sup, sInf, bot, top
-  ..completeLatticeOfSup my_T _ }
+  { inf := better_inf,
+    le_inf := ...,
+    inf_le_right := ...,
+    inf_le_left := ...
+    -- don't care to fix sup, sInf, bot, top
+    ..completeLatticeOfSup my_T _ }
 ```
 -/
 def completeLatticeOfSup (α : Type _) [H1 : PartialOrder α] [H2 : SupSet α]
@@ -1330,7 +1330,7 @@ theorem iSup_and' {p q : Prop} {s : p → q → α} :
   Eq.symm iSup_and
 #align supr_and' iSup_and'
 
-/-- The symmetric case of `iInf_and`, useful for rewriting into a infimum over a conjunction -/
+/-- The symmetric case of `iInf_and`, useful for rewriting into an infimum over a conjunction -/
 theorem iInf_and' {p q : Prop} {s : p → q → α} :
     (⨅ (h₁ : p) (h₂ : q), s h₁ h₂) = ⨅ h : p ∧ q, s h.1 h.2 :=
   Eq.symm iInf_and

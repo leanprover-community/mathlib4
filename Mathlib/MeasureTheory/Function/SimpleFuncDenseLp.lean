@@ -444,6 +444,8 @@ variable [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddCommGroup F] (p :
 
 variable (E)
 
+-- Porting note: the proofs were rewritten in tactic mode to avoid an
+-- "unknown free variable '_uniq.546677'" error.
 /-- `Lp.simpleFunc` is a subspace of Lp consisting of equivalence classes of an integrable simple
     function. -/
 def simpleFunc : AddSubgroup (Lp E p μ) where

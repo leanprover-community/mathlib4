@@ -147,7 +147,7 @@ section Indep
 @[symm]
 theorem IndepSets.symm {s₁ s₂ : Set (Set Ω)} [MeasurableSpace Ω] {μ : Measure Ω}
     (h : IndepSets s₁ s₂ μ) : IndepSets s₂ s₁ μ := by
-  intro t1 t2 ht1 ht2;
+  intro t1 t2 ht1 ht2
   rw [Set.inter_comm, mul_comm]; exact h t2 t1 ht2 ht1
 #align probability_theory.indep_sets.symm ProbabilityTheory.IndepSets.symm
 
@@ -259,7 +259,7 @@ theorem indepSets_singleton_iff [MeasurableSpace Ω] {s t : Set Ω} {μ : Measur
 
 end Indep
 
-/-! ### Deducing `indep` from `Indep` -/
+/-! ### Deducing `Indep` from `iIndep` -/
 
 
 section FromIndepToIndep
@@ -340,7 +340,7 @@ section FromPiSystemsToMeasurableSpaces
 /-! ### Independence of generating π-systems implies independence of measurable space structures -/
 
 
-private theorem indep_sets.indep_aux {m2 : MeasurableSpace Ω} {m : MeasurableSpace Ω}
+private theorem IndepSets.indep_aux {m2 : MeasurableSpace Ω} {m : MeasurableSpace Ω}
     {μ : Measure Ω} [IsProbabilityMeasure μ] {p1 p2 : Set (Set Ω)} (h2 : m2 ≤ m)
     (hp2 : IsPiSystem p2) (hpm2 : m2 = generateFrom p2) (hyp : IndepSets p1 p2 μ) {t1 t2 : Set Ω}
     (ht1 : t1 ∈ p1) (ht2m : MeasurableSet[m2] t2) : μ (t1 ∩ t2) = μ t1 * μ t2 := by
@@ -375,7 +375,7 @@ theorem IndepSets.indep {m1 m2 : MeasurableSpace Ω} {m : MeasurableSpace Ω} {�
     rw [hpm1]
     exact measurableSet_generateFrom ht
   rw [Measure.restrict_apply ht1, Measure.smul_apply, smul_eq_mul, mul_comm]
-  exact indep_sets.indep_aux h2 hp2 hpm2 hyp ht ht2
+  exact IndepSets.indep_aux h2 hp2 hpm2 hyp ht ht2
 #align probability_theory.indep_sets.indep ProbabilityTheory.IndepSets.indep
 
 theorem IndepSets.indep' {_m : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabilityMeasure μ]
@@ -588,9 +588,9 @@ section IndepSet
 
 /-! ### Independence of measurable sets
 
-We prove the following equivalences on `indep_set`, for measurable sets `s, t`.
-* `indep_set s t μ ↔ μ (s ∩ t) = μ s * μ t`,
-* `indep_set s t μ ↔ indep_sets {s} {t} μ`.
+We prove the following equivalences on `IndepSet`, for measurable sets `s, t`.
+* `IndepSet s t μ ↔ μ (s ∩ t) = μ s * μ t`,
+* `IndepSet s t μ ↔ IndepSets {s} {t} μ`.
 -/
 
 

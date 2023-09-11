@@ -49,7 +49,7 @@ to currently deserve its own treatment.
 `IsBoundedLinearMap` is effectively an unbundled version of `ContinuousLinearMap` (defined
 in `Topology.Algebra.Module.Basic`, theory over normed spaces developed in
 `Analysis.NormedSpace.OperatorNorm`), albeit the name disparity. A bundled
-`ContinuousLinearMap` is to be preferred over a `IsBoundedLinearMap` hypothesis. Historical
+`ContinuousLinearMap` is to be preferred over an `IsBoundedLinearMap` hypothesis. Historical
 artifact, really.
 -/
 
@@ -268,7 +268,7 @@ section BilinearMap
 namespace ContinuousLinearMap
 
 /-! We prove some computation rules for continuous (semi-)bilinear maps in their first argument.
-  If `f` is a continuuous bilinear map, to use the corresponding rules for the second argument, use
+  If `f` is a continuous bilinear map, to use the corresponding rules for the second argument, use
   `(f _).map_add` and similar.
 
 We have to assume that `F` and `G` are normed spaces in this section, to use

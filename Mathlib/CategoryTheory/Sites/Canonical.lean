@@ -143,8 +143,7 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
   · intro Y f hf
     have : Sieve.pullback f (bind R fun T (k : T ⟶ X) (_ : R k) => pullback k S) =
         R.pullback f := by
-      ext Z
-      intro g
+      ext Z g
       constructor
       · rintro ⟨W, k, l, hl, _, comm⟩
         rw [pullback_apply, ← comm]

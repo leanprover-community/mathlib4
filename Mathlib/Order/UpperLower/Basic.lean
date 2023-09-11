@@ -29,8 +29,8 @@ This file defines upper and lower sets in an order.
 * `lowerClosure`: The least lower set containing a set.
 * `UpperSet.Ici`: Principal upper set. `Set.Ici` as an upper set.
 * `UpperSet.Ioi`: Strict principal upper set. `Set.Ioi` as an upper set.
-* `LowerSet.Iic`: Principal lower set. `Set.Iic` as an lower set.
-* `LowerSet.Iio`: Strict principal lower set. `Set.Iio` as an lower set.
+* `LowerSet.Iic`: Principal lower set. `Set.Iic` as a lower set.
+* `LowerSet.Iio`: Strict principal lower set. `Set.Iio` as a lower set.
 
 ## Notation
 

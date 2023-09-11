@@ -322,7 +322,7 @@ theorem decode_zero : (decode 0 : Option Bool) = some false :=
 #align encodable.decode_zero Encodable.decode_zero
 
 @[simp]
-theorem decode_one : (decode 1: Option Bool) = some true :=
+theorem decode_one : (decode 1 : Option Bool) = some true :=
   rfl
 #align encodable.decode_one Encodable.decode_one
 
@@ -333,7 +333,7 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
     rfl
   have : 1 ≤ n / 2 := by
     rw [Nat.le_div_iff_mul_le]
-    exacts[h, by decide]
+    exacts [h, by decide]
   cases' exists_eq_succ_of_ne_zero (_root_.ne_of_gt this) with m e
   simp [decodeSum, div2_val]; cases bodd n <;> simp [e]
 #align encodable.decode_ge_two Encodable.decode_ge_two
@@ -646,7 +646,7 @@ protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (h
 theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directed r f) (n : ℕ) :
     r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
   dsimp [Directed.sequence]
-  generalize eq : hf.sequence f n = p
+  generalize hf.sequence f n = p
   cases' h : (decode n: Option α) with a
   · exact (Classical.choose_spec (hf p p)).1
   · exact (Classical.choose_spec (hf p a)).1

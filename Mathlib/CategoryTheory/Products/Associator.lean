@@ -46,8 +46,8 @@ def inverseAssociator : C × D × E ⥤ (C × D) × E
 -/
 def associativity : (C × D) × E ≌ C × D × E :=
   Equivalence.mk (associator C D E) (inverseAssociator C D E)
-    (NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
-    (NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
+    (NatIso.ofComponents fun X => eqToIso (by simp))
+    (NatIso.ofComponents fun X => eqToIso (by simp))
 #align category_theory.prod.associativity CategoryTheory.prod.associativity
 
 instance associatorIsEquivalence : IsEquivalence (associator C D E) :=

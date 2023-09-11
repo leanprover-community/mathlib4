@@ -466,7 +466,7 @@ theorem IsNoetherian.disjoint_partialSups_eventually_bot [I : IsNoetherian R M]
 
 /-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial.
 -/
-noncomputable def IsNoetherian.equivPunitOfProdInjective [IsNoetherian R M] (f : M × N →ₗ[R] M)
+noncomputable def IsNoetherian.equivPUnitOfProdInjective [IsNoetherian R M] (f : M × N →ₗ[R] M)
     (i : Injective f) : N ≃ₗ[R] PUnit.{w + 1} := by
   apply Nonempty.some
   obtain ⟨n, w⟩ :=
@@ -477,7 +477,7 @@ noncomputable def IsNoetherian.equivPunitOfProdInjective [IsNoetherian R M] (f :
   refine (LinearMap.tailingLinearEquiv f i n).symm ≪≫ₗ ?_
   rw [w]
   apply Submodule.botEquivPUnit
-#align is_noetherian.equiv_punit_of_prod_injective IsNoetherian.equivPunitOfProdInjective
+#align is_noetherian.equiv_punit_of_prod_injective IsNoetherian.equivPUnitOfProdInjective
 
 end
 

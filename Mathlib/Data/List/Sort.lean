@@ -255,7 +255,7 @@ theorem Sorted.insertionSort_eq : ∀ {l : List α} (_ : Sorted r l), insertionS
   | [a], _ => rfl
   | a :: b :: l, h => by
     rw [insertionSort, Sorted.insertionSort_eq, orderedInsert, if_pos]
-    exacts[rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
+    exacts [rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
 #align list.sorted.insertion_sort_eq List.Sorted.insertionSort_eq
 
 section TotalAndTransitive

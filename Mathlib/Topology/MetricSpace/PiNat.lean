@@ -366,7 +366,7 @@ theorem isOpen_cylinder (x : ∀ n, E n) (n : ℕ) : IsOpen (cylinder x n) := by
 #align pi_nat.is_open_cylinder PiNat.isOpen_cylinder
 
 theorem isTopologicalBasis_cylinders :
-    IsTopologicalBasis { s : Set (∀ n, E n) | ∃ (x : ∀ n, E n)(n : ℕ), s = cylinder x n } := by
+    IsTopologicalBasis { s : Set (∀ n, E n) | ∃ (x : ∀ n, E n) (n : ℕ), s = cylinder x n } := by
   apply isTopologicalBasis_of_open_of_nhds
   · rintro u ⟨x, n, rfl⟩
     apply isOpen_cylinder
@@ -515,7 +515,7 @@ theorem firstDiff_lt_shortestPrefixDiff {s : Set (∀ n, E n)} (hs : IsClosed s)
   have A := exists_disjoint_cylinder hs hx
   rw [shortestPrefixDiff, dif_pos A]
   have B := Nat.find_spec A
-  contrapose! B; rw [not_lt] at B -- porting note: why this `rw` is needed?
+  contrapose! B
   rw [not_disjoint_iff_nonempty_inter]
   refine' ⟨y, hy, _⟩
   rw [mem_cylinder_comm]

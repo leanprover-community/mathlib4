@@ -38,9 +38,7 @@ namespace Finset
 @[to_additive]
 theorem prod_range [CommMonoid β] {n : ℕ} (f : ℕ → β) :
     (∏ i in Finset.range n, f i) = ∏ i : Fin n, f i :=
-  prod_bij' (fun k w => ⟨k, mem_range.mp w⟩) (fun _ _ => mem_univ _)
-    (fun _ _ => congr_arg _ (Fin.val_mk _).symm) (fun a _ => a) (fun a _ => mem_range.mpr a.prop)
-    (fun _ _ => Fin.val_mk _) fun _ _ => Fin.eta _ _
+  (Fin.prod_univ_eq_prod_range _ _).symm
 #align finset.prod_range Finset.prod_range
 #align finset.sum_range Finset.sum_range
 

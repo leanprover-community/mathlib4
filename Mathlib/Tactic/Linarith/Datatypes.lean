@@ -72,11 +72,11 @@ This function assumes that `l` is sorted in decreasing order of the first argume
 that is, it will return `none` as soon as it finds a key smaller than `n`.
 -/
 def get (n : Nat) : Linexp → Option Int
-| [] => none
-| ((a, b)::t) =>
-  if a < n then none
-  else if a = n then some b
-  else get n t
+  | [] => none
+  | ((a, b)::t) =>
+    if a < n then none
+    else if a = n then some b
+    else get n t
 
 /--
 `l.contains n` is true iff `n` is the first element of a pair in `l`.
@@ -87,9 +87,9 @@ def contains (n : Nat) : Linexp → Bool := Option.isSome ∘ get n
 `l.zfind n` returns the value associated with key `n` if there is one, and 0 otherwise.
 -/
 def zfind (n : Nat) (l : Linexp) : Int :=
-match l.get n with
-| none => 0
-| some v => v
+  match l.get n with
+  | none => 0
+  | some v => v
 
 /-- `l.vars` returns the list of variables that occur in `l`. -/
 def vars (l : Linexp) : List Nat :=
@@ -99,15 +99,15 @@ def vars (l : Linexp) : List Nat :=
 Defines a lex ordering on `Linexp`. This function is performance critical.
 -/
 def cmp : Linexp → Linexp → Ordering
-| [], [] => Ordering.eq
-| [], _ => Ordering.lt
-| _, [] => Ordering.gt
-| ((n1,z1)::t1), ((n2,z2)::t2) =>
-  if n1 < n2 then Ordering.lt
-  else if n2 < n1 then Ordering.gt
-  else if z1 < z2 then Ordering.lt
-  else if z2 < z1 then Ordering.gt
-  else cmp t1 t2
+  | [], [] => Ordering.eq
+  | [], _ => Ordering.lt
+  | _, [] => Ordering.gt
+  | ((n1,z1)::t1), ((n2,z2)::t2) =>
+    if n1 < n2 then Ordering.lt
+    else if n2 < n1 then Ordering.gt
+    else if z1 < z2 then Ordering.lt
+    else if z2 < z1 then Ordering.gt
+    else cmp t1 t2
 
 end Linexp
 
@@ -116,7 +116,7 @@ end Linexp
 /-- The three-element type `Ineq` is used to represent the strength of a comparison between
 terms. -/
 inductive Ineq : Type
-| eq | le | lt
+  | eq | le | lt
 deriving DecidableEq, Inhabited, Repr
 
 namespace Ineq
@@ -126,32 +126,32 @@ namespace Ineq
 then `t1 + t2 (max R1 R2) 0`.
 -/
 def max : Ineq → Ineq → Ineq
-| lt, _ => lt
-| _, lt => lt
-| le, _ => le
-| _, le => le
-| eq, eq => eq
+  | lt, _ => lt
+  | _, lt => lt
+  | le, _ => le
+  | _, le => le
+  | eq, eq => eq
 
 /-- `Ineq` is ordered `eq < le < lt`. -/
 def cmp : Ineq → Ineq → Ordering
-| eq, eq => Ordering.eq
-| eq, _ => Ordering.lt
-| le, le => Ordering.eq
-| le, lt => Ordering.lt
-| lt, lt => Ordering.eq
-| _, _ => Ordering.gt
+  | eq, eq => Ordering.eq
+  | eq, _ => Ordering.lt
+  | le, le => Ordering.eq
+  | le, lt => Ordering.lt
+  | lt, lt => Ordering.eq
+  | _, _ => Ordering.gt
 
 /-- Prints an `Ineq` as the corresponding infix symbol. -/
 def toString : Ineq → String
-| eq => "="
-| le => "≤"
-| lt => "<"
+  | eq => "="
+  | le => "≤"
+  | lt => "<"
 
 /-- Finds the name of a multiplicative lemma corresponding to an inequality strength. -/
 def toConstMulName : Ineq → Name
-| lt => ``mul_neg
-| le => ``mul_nonpos
-| eq => ``mul_eq
+  | lt => ``mul_neg
+  | le => ``mul_nonpos
+  | eq => ``mul_eq
 
 instance : ToString Ineq := ⟨toString⟩
 
@@ -197,11 +197,11 @@ def Comp.add (c1 c2 : Comp) : Comp :=
 
 /-- `Comp` has a lex order. First the `ineq`s are compared, then the `coeff`s. -/
 def Comp.cmp : Comp → Comp → Ordering
-| ⟨str1, coeffs1⟩, ⟨str2, coeffs2⟩ =>
-  match str1.cmp str2 with
-  | Ordering.lt => Ordering.lt
-  | Ordering.gt => Ordering.gt
-  | Ordering.eq => coeffs1.cmp coeffs2
+  | ⟨str1, coeffs1⟩, ⟨str2, coeffs2⟩ =>
+    match str1.cmp str2 with
+    | Ordering.lt => Ordering.lt
+    | Ordering.gt => Ordering.gt
+    | Ordering.eq => coeffs1.cmp coeffs2
 
 /--
 A `Comp` represents a contradiction if its expression has no coefficients and its strength is <,
@@ -218,7 +218,7 @@ instance Comp.ToFormat : ToFormat Comp :=
 /-! ### Control -/
 
 /--
-A preprocessor transforms a proof of a proposition into a proof of a different propositon.
+A preprocessor transforms a proof of a proposition into a proof of a different proposition.
 The return type is `List Expr`, since some preprocessing steps may create multiple new hypotheses,
 and some may remove a hypothesis from the list.
 A "no-op" preprocessor should return its input as a singleton list.

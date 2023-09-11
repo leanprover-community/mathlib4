@@ -153,7 +153,7 @@ theorem IsClosable.closureIsClosable {f : E →ₗ.[R] F} (hf : f.IsClosable) : 
 #align linear_pmap.is_closable.closure_is_closable LinearPMap.IsClosable.closureIsClosable
 
 theorem isClosable_iff_exists_closed_extension {f : E →ₗ.[R] F} :
-    f.IsClosable ↔ ∃ (g : E →ₗ.[R] F)(_ : g.IsClosed), f ≤ g :=
+    f.IsClosable ↔ ∃ (g : E →ₗ.[R] F) (_ : g.IsClosed), f ≤ g :=
   ⟨fun h => ⟨f.closure, h.closure_isClosed, f.le_closure⟩, fun ⟨_, hg, h⟩ =>
     hg.isClosable.leIsClosable h⟩
 #align linear_pmap.is_closable_iff_exists_closed_extension LinearPMap.isClosable_iff_exists_closed_extension
@@ -178,11 +178,10 @@ Note that we don't require that `f` is closable, due to the definition of the cl
 theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
   refine' ⟨f.le_closure.1, _⟩
   congr
-  ext x
+  ext x y hxy
   · simp only [domRestrict_domain, Submodule.mem_inf, and_iff_left_iff_imp]
     intro hx
     exact f.le_closure.1 hx
-  intro y hxy
   let z : f.closure.domain := ⟨y.1, f.le_closure.1 y.2⟩
   have hyz : (y : E) = z := by simp
   rw [f.le_closure.2 hyz]

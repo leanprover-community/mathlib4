@@ -345,7 +345,7 @@ theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irred
 #align discrete_valuation_ring.associated_pow_irreducible DiscreteValuationRing.associated_pow_irreducible
 
 theorem eq_unit_mul_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irreducible ϖ) :
-    ∃ (n : ℕ)(u : Rˣ), x = u * ϖ ^ n := by
+    ∃ (n : ℕ) (u : Rˣ), x = u * ϖ ^ n := by
   obtain ⟨n, hn⟩ := associated_pow_irreducible hx hirr
   obtain ⟨u, rfl⟩ := hn.symm
   use n, u

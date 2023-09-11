@@ -65,7 +65,7 @@ theorem lieIdeal_oper_eq_span :
 #align lie_submodule.lie_ideal_oper_eq_span LieSubmodule.lieIdeal_oper_eq_span
 
 /-- See also `LieSubmodule.lieIdeal_oper_eq_linear_span'` and
-`lie_submodule.lie_ideal_oper_eq_tensor_map_range`. -/
+`LieSubmodule.lieIdeal_oper_eq_tensor_map_range`. -/
 theorem lieIdeal_oper_eq_linear_span :
     (↑⁅I, N⁆ : Submodule R M) =
       Submodule.span R { m | ∃ (x : I) (n : N), ⁅(x : L), (n : M)⁆ = m } := by

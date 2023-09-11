@@ -49,7 +49,7 @@ is continuous in both arguments. We use the same class for all kinds of multipli
 including (semi)modules and algebras. -/
 class ContinuousSMul (M X : Type _) [SMul M X] [TopologicalSpace M] [TopologicalSpace X] :
   Prop where
-  /-- The calar multiplication `(•)` is continuous. -/
+  /-- The scalar multiplication `(•)` is continuous. -/
   continuous_smul : Continuous fun p : M × X => p.1 • p.2
 #align has_continuous_smul ContinuousSMul
 

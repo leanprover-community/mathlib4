@@ -48,7 +48,7 @@ variable (𝕜 : Type _) {V V₁ V₂ V₃ V₄ : Type _} {P₁ : Type _} (P P�
   [PseudoMetricSpace P₂] [PseudoMetricSpace P₃] [PseudoMetricSpace P₄] [NormedAddTorsor V P]
   [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂] [NormedAddTorsor V₃ P₃] [NormedAddTorsor V₄ P₄]
 
-/-- An `𝕜`-affine isometric embedding of one normed add-torsor over a normed `𝕜`-space into
+/-- A `𝕜`-affine isometric embedding of one normed add-torsor over a normed `𝕜`-space into
 another. -/
 structure AffineIsometry extends P →ᵃ[𝕜] P₂ where
   norm_map : ∀ x : V, ‖linear x‖ = ‖x‖
@@ -308,7 +308,7 @@ end AffineSubspace
 
 variable (𝕜 P P₂)
 
-/-- A affine isometric equivalence between two normed vector spaces. -/
+/-- An affine isometric equivalence between two normed vector spaces. -/
 structure AffineIsometryEquiv extends P ≃ᵃ[𝕜] P₂ where
   norm_map : ∀ x, ‖linear x‖ = ‖x‖
 #align affine_isometry_equiv AffineIsometryEquiv
@@ -363,7 +363,7 @@ theorem ext {e e' : P ≃ᵃⁱ[𝕜] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   toAffineEquiv_injective <| AffineEquiv.ext h
 #align affine_isometry_equiv.ext AffineIsometryEquiv.ext
 
-/-- Reinterpret a `AffineIsometryEquiv` as a `AffineIsometry`. -/
+/-- Reinterpret an `AffineIsometryEquiv` as an `AffineIsometry`. -/
 def toAffineIsometry : P →ᵃⁱ[𝕜] P₂ :=
   ⟨e.1.toAffineMap, e.2⟩
 #align affine_isometry_equiv.to_affine_isometry AffineIsometryEquiv.toAffineIsometry
@@ -441,7 +441,7 @@ protected theorem isometry : Isometry e :=
   e.toAffineIsometry.isometry
 #align affine_isometry_equiv.isometry AffineIsometryEquiv.isometry
 
-/-- Reinterpret a `AffineIsometryEquiv` as an `IsometryEquiv`. -/
+/-- Reinterpret an `AffineIsometryEquiv` as an `IsometryEquiv`. -/
 def toIsometryEquiv : P ≃ᵢ P₂ :=
   ⟨e.toAffineEquiv.toEquiv, e.isometry⟩
 #align affine_isometry_equiv.to_isometry_equiv AffineIsometryEquiv.toIsometryEquiv
@@ -456,7 +456,7 @@ theorem range_eq_univ (e : P ≃ᵃⁱ[𝕜] P₂) : Set.range e = Set.univ := b
   exact IsometryEquiv.range_eq_univ _
 #align affine_isometry_equiv.range_eq_univ AffineIsometryEquiv.range_eq_univ
 
-/-- Reinterpret a `AffineIsometryEquiv` as an `Homeomorph`. -/
+/-- Reinterpret an `AffineIsometryEquiv` as a `Homeomorph`. -/
 def toHomeomorph : P ≃ₜ P₂ :=
   e.toIsometryEquiv.toHomeomorph
 #align affine_isometry_equiv.to_homeomorph AffineIsometryEquiv.toHomeomorph
@@ -484,7 +484,7 @@ protected theorem continuousWithinAt {s x} : ContinuousWithinAt e s x :=
 
 variable (𝕜 P)
 
-/-- Identity map as a `AffineIsometryEquiv`. -/
+/-- Identity map as an `AffineIsometryEquiv`. -/
 def refl : P ≃ᵃⁱ[𝕜] P :=
   ⟨AffineEquiv.refl 𝕜 P, fun _ => rfl⟩
 #align affine_isometry_equiv.refl AffineIsometryEquiv.refl
@@ -549,7 +549,7 @@ theorem toHomeomorph_symm : e.toHomeomorph.symm = e.symm.toHomeomorph :=
   rfl
 #align affine_isometry_equiv.to_homeomorph_symm AffineIsometryEquiv.toHomeomorph_symm
 
-/-- Composition of `AffineIsometryEquiv`s as a `AffineIsometryEquiv`. -/
+/-- Composition of `AffineIsometryEquiv`s as an `AffineIsometryEquiv`. -/
 def trans (e' : P₂ ≃ᵃⁱ[𝕜] P₃) : P ≃ᵃⁱ[𝕜] P₃ :=
   ⟨e.toAffineEquiv.trans e'.toAffineEquiv, fun _ => (e'.norm_map _).trans (e.norm_map _)⟩
 #align affine_isometry_equiv.trans AffineIsometryEquiv.trans
@@ -720,44 +720,44 @@ theorem vaddConst_toAffineEquiv (p : P) :
 variable (𝕜)
 
 /-- `p' ↦ p -ᵥ p'` as an affine isometric equivalence. -/
-def constVsub (p : P) : P ≃ᵃⁱ[𝕜] V :=
+def constVSub (p : P) : P ≃ᵃⁱ[𝕜] V :=
   { AffineEquiv.constVSub 𝕜 p with norm_map := norm_neg }
-#align affine_isometry_equiv.const_vsub AffineIsometryEquiv.constVsub
+#align affine_isometry_equiv.const_vsub AffineIsometryEquiv.constVSub
 
 variable {𝕜}
 
 @[simp]
-theorem coe_constVsub (p : P) : ⇑(constVsub 𝕜 p) = (· -ᵥ ·) p :=
+theorem coe_constVSub (p : P) : ⇑(constVSub 𝕜 p) = (· -ᵥ ·) p :=
   rfl
-#align affine_isometry_equiv.coe_const_vsub AffineIsometryEquiv.coe_constVsub
+#align affine_isometry_equiv.coe_const_vsub AffineIsometryEquiv.coe_constVSub
 
 @[simp]
-theorem symm_constVsub (p : P) :
-    (constVsub 𝕜 p).symm =
+theorem symm_constVSub (p : P) :
+    (constVSub 𝕜 p).symm =
       (LinearIsometryEquiv.neg 𝕜).toAffineIsometryEquiv.trans (vaddConst 𝕜 p) := by
   ext
   rfl
-#align affine_isometry_equiv.symm_const_vsub AffineIsometryEquiv.symm_constVsub
+#align affine_isometry_equiv.symm_const_vsub AffineIsometryEquiv.symm_constVSub
 
 variable (𝕜 P)
 
 /-- Translation by `v` (that is, the map `p ↦ v +ᵥ p`) as an affine isometric automorphism of `P`.
 -/
-def constVadd (v : V) : P ≃ᵃⁱ[𝕜] P :=
+def constVAdd (v : V) : P ≃ᵃⁱ[𝕜] P :=
   { AffineEquiv.constVAdd 𝕜 P v with norm_map := fun _ => rfl }
-#align affine_isometry_equiv.const_vadd AffineIsometryEquiv.constVadd
+#align affine_isometry_equiv.const_vadd AffineIsometryEquiv.constVAdd
 
 variable {𝕜 P}
 
 @[simp]
-theorem coe_constVadd (v : V) : ⇑(constVadd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (· +ᵥ ·) v :=
+theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (· +ᵥ ·) v :=
   rfl
-#align affine_isometry_equiv.coe_const_vadd AffineIsometryEquiv.coe_constVadd
+#align affine_isometry_equiv.coe_const_vadd AffineIsometryEquiv.coe_constVAdd
 
 @[simp]
-theorem constVadd_zero : constVadd 𝕜 P (0 : V) = refl 𝕜 P :=
+theorem constVAdd_zero : constVAdd 𝕜 P (0 : V) = refl 𝕜 P :=
   ext <| zero_vadd V
-#align affine_isometry_equiv.const_vadd_zero AffineIsometryEquiv.constVadd_zero
+#align affine_isometry_equiv.const_vadd_zero AffineIsometryEquiv.constVAdd_zero
 
 /-- The map `g` from `V` to `V₂` corresponding to a map `f` from `P` to `P₂`, at a base point `p`,
 is an isometry if `f` is one. -/
@@ -771,7 +771,7 @@ variable (𝕜)
 
 /-- Point reflection in `x` as an affine isometric automorphism. -/
 def pointReflection (x : P) : P ≃ᵃⁱ[𝕜] P :=
-  (constVsub 𝕜 x).trans (vaddConst 𝕜 x)
+  (constVSub 𝕜 x).trans (vaddConst 𝕜 x)
 #align affine_isometry_equiv.point_reflection AffineIsometryEquiv.pointReflection
 
 variable {𝕜}
@@ -883,8 +883,7 @@ This is the affine version of `Submodule.equivMapOfInjective`.
 @[simps]
 noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E] (φ : P₁ →ᵃ[𝕜] P₂)
     (hφ : Function.Injective φ) : E ≃ᵃ[𝕜] E.map φ :=
-  { Equiv.Set.image _ (E : Set P₁)
-      hφ with
+  { Equiv.Set.image _ (E : Set P₁) hφ with
     linear :=
       (E.direction.equivMapOfInjective φ.linear (φ.linear_injective_iff.mpr hφ)).trans
         (LinearEquiv.ofEq _ _ (AffineSubspace.map_direction _ _).symm)

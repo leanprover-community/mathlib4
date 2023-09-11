@@ -34,9 +34,9 @@ order...
 Maximal elements don't have a sensible successor. Thus the naïve typeclass
 ```lean
 class NaiveSuccOrder (α : Type _) [Preorder α] :=
-(succ : α → α)
-(succ_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
-(lt_succ_iff : ∀ {a b}, a < succ b ↔ a ≤ b)
+  (succ : α → α)
+  (succ_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
+  (lt_succ_iff : ∀ {a b}, a < succ b ↔ a ≤ b)
 ```
 can't apply to an `OrderTop` because plugging in `a = b = ⊤` into either of `succ_le_iff` and
 `lt_succ_iff` yields `⊤ < ⊤` (or more generally `m < m` for a maximal element `m`).
@@ -51,7 +51,7 @@ combination of `SuccOrder α` and `NoMaxOrder α`.
 Is `GaloisConnection pred succ` always true? If not, we should introduce
 ```lean
 class SuccPredOrder (α : Type _) [Preorder α] extends SuccOrder α, PredOrder α :=
-(pred_succ_gc : GaloisConnection (pred : α → α) succ)
+  (pred_succ_gc : GaloisConnection (pred : α → α) succ)
 ```
 `Covby` should help here.
 -/

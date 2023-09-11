@@ -35,6 +35,7 @@ instance : BundledHom.ParentProjection @PartialOrder.toPreorder :=
 
 deriving instance LargeCategory for PartOrdCat
 
+-- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory PartOrdCat :=
   BundledHom.concreteCategory _
 
@@ -91,8 +92,8 @@ set_option linter.uppercaseLean3 false in
 def dualEquiv : PartOrdCat ≌ PartOrdCat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
 #align PartOrd.dual_equiv PartOrdCat.dualEquiv
 

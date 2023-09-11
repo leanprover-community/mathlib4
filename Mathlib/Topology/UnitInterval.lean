@@ -129,7 +129,7 @@ theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
 -- Porting note: Proof used to be `by continuity!`
 @[continuity]
 theorem continuous_symm : Continuous σ :=
-(continuous_const.add continuous_induced_dom.neg).subtype_mk _
+  (continuous_const.add continuous_induced_dom.neg).subtype_mk _
 #align unit_interval.continuous_symm unitInterval.continuous_symm
 
 instance : ConnectedSpace I :=
@@ -175,7 +175,7 @@ theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc
 #align unit_interval.mul_pos_mem_iff unitInterval.mul_pos_mem_iff
 
 theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
-constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
+  constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
 #align unit_interval.two_mul_sub_one_mem_iff unitInterval.two_mul_sub_one_mem_iff
 
 end unitInterval

@@ -38,13 +38,13 @@ The top element `⊤` is the trivial quotient, meaning that every element of `X`
 to a point. Given `h : A ≤ B`, the map `A → B` is `DiscreteQuotient.ofLE h`.
 
 Whenever `X` is a locally connected space, the type `DiscreteQuotient X` is also endowed with an
-instance of a `OrderBot`, where the bot element `⊥` is given by the `connectedComponentSetoid`,
+instance of an `OrderBot`, where the bot element `⊥` is given by the `connectedComponentSetoid`,
 i.e., `x ~ y` means that `x` and `y` belong to the same connected component. In particular, if `X`
 is a discrete topological space, then `x ~ y` is equivalent (propositionally, not definitionally) to
 `x = y`.
 
-Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LEComap f A B` for `A :
-DiscreteQuotient X` and `B : DiscreteQuotient Y`, asserting that `f` descends to `A → B`.  If
+Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LEComap f A B` for
+`A : DiscreteQuotient X` and `B : DiscreteQuotient Y`, asserting that `f` descends to `A → B`. If
 `cond : DiscreteQuotient.LEComap h A B`, the function `A → B` is obtained by
 `DiscreteQuotient.map f cond`.
 

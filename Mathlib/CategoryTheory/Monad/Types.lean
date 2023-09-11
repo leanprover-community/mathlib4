@@ -84,7 +84,7 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
     refine' NatIso.ofComponents (fun X => Iso.refl X) fun f => _
     change f >=> pure = pure >=> f
     simp [functor_norm]
-  counitIso := NatIso.ofComponents (fun X => Iso.refl X) fun f => by aesop_cat
+  counitIso := NatIso.ofComponents fun X => Iso.refl X
 #align category_theory.eq CategoryTheory.eq
 
 end

@@ -86,7 +86,7 @@ theorem pointed_innerDualCone : s.innerDualCone.Pointed := fun x _ => by rw [inn
 #align pointed_inner_dual_cone pointed_innerDualCone
 
 /-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
-linear map `λ y, ⟪x, y⟫`. -/
+linear map `fun y ↦ ⟪x, y⟫`. -/
 theorem innerDualCone_singleton (x : H) :
     ({x} : Set H).innerDualCone = (ConvexCone.positive ℝ ℝ).comap (innerₛₗ ℝ x) :=
   ConvexCone.ext fun _ => forall_eq

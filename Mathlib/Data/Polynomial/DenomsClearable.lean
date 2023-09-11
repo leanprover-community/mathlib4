@@ -40,7 +40,7 @@ element `bi = 1 / i b` of `K` such that clearing the denominators of
 the fraction equals `i D`.
 -/
 def DenomsClearable (a b : R) (N : ℕ) (f : R[X]) (i : R →+* K) : Prop :=
-  ∃ (D : R)(bi : K), bi * i b = 1 ∧ i D = i b ^ N * eval (i a * bi) (f.map i)
+  ∃ (D : R) (bi : K), bi * i b = 1 ∧ i D = i b ^ N * eval (i a * bi) (f.map i)
 #align denoms_clearable DenomsClearable
 
 theorem denomsClearable_zero (N : ℕ) (a : R) (bu : bi * i b = 1) : DenomsClearable a b N 0 i :=

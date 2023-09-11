@@ -240,7 +240,7 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
 -- porting note: new
 @[to_additive (attr := simp)]
 theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=
-prodAux_eq _
+  prodAux_eq _
 
 @[to_additive (attr := simp)]
 theorem lift_symm_apply (f : FreeMonoid α →* M) : lift.symm f = f ∘ of := rfl
@@ -249,7 +249,7 @@ theorem lift_symm_apply (f : FreeMonoid α →* M) : lift.symm f = f ∘ of := r
 
 @[to_additive]
 theorem lift_apply (f : α → M) (l : FreeMonoid α) : lift f l = ((toList l).map f).prod :=
-prodAux_eq _
+  prodAux_eq _
 #align free_monoid.lift_apply FreeMonoid.lift_apply
 #align free_add_monoid.lift_apply FreeAddMonoid.lift_apply
 
@@ -269,9 +269,9 @@ theorem lift_restrict (f : FreeMonoid α →* M) : lift (f ∘ of) = f := lift.a
 #align free_add_monoid.lift_restrict FreeAddMonoid.lift_restrict
 
 @[to_additive]
-theorem comp_lift (g : M →* N) (f : α → M) : g.comp (lift f) = lift (g ∘ f) :=
--- Porting note: replace ext by FreeMonoid.hom_eq
-  FreeMonoid.hom_eq (by simp)
+theorem comp_lift (g : M →* N) (f : α → M) : g.comp (lift f) = lift (g ∘ f) := by
+  ext
+  simp
 #align free_monoid.comp_lift FreeMonoid.comp_lift
 #align free_add_monoid.comp_lift FreeAddMonoid.comp_lift
 

@@ -273,11 +273,13 @@ theorem Imp.swap : a → b → c ↔ b → a → c := ⟨Function.swap, Function
 #align imp.swap Imp.swap
 
 alias not_congr ← Iff.not
+#align iff.not Iff.not
+
 theorem Iff.not_left (h : a ↔ ¬b) : ¬a ↔ b := h.not.trans not_not
+#align iff.not_left Iff.not_left
+
 theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
 #align iff.not_right Iff.not_right
-#align iff.not_left Iff.not_left
-#align iff.not Iff.not
 
 /-! ### Declarations about `Xor'` -/
 
@@ -293,29 +295,33 @@ theorem xor_comm (a b) : Xor' a b = Xor' b a := by simp [Xor', and_comm, or_comm
 instance : IsCommutative Prop Xor' := ⟨xor_comm⟩
 
 @[simp] theorem xor_self (a : Prop) : Xor' a a = False := by simp [Xor']
+#align xor_self xor_self
+
 @[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by by_cases a <;> simp [*]
+#align xor_not_left xor_not_left
+
 @[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by by_cases a <;> simp [*]
+#align xor_not_right xor_not_right
+
 theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by simp [Xor', or_comm, and_comm]
+#align xor_not_not xor_not_not
+
 protected theorem Xor'.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
 #align xor.or Xor'.or
-#align xor_not_not xor_not_not
-#align xor_not_right xor_not_right
-#align xor_not_left xor_not_left
-#align xor_self xor_self
 
 /-! ### Declarations about `and` -/
 
 alias and_congr ← Iff.and
+#align iff.and Iff.and
 #align and_congr_left and_congr_leftₓ -- reorder implicits
 #align and_congr_right' and_congr_right'ₓ -- reorder implicits
 #align and.right_comm and_right_comm
 #align and_and_distrib_left and_and_left
 #align and_and_distrib_right and_and_right
 alias and_rotate ↔ And.rotate _
+#align and.rotate And.rotate
 #align and.congr_right_iff and_congr_right_iff
 #align and.congr_left_iff and_congr_left_iffₓ -- reorder implicits
-#align and.rotate And.rotate
-#align iff.and Iff.and
 
 theorem and_symm_right (a b : α) (p : Prop) : p ∧ a = b ↔ p ∧ b = a := by simp [eq_comm]
 theorem and_symm_left (a b : α) (p : Prop) : a = b ∧ p ↔ b = a ∧ p := by simp [eq_comm]
@@ -323,12 +329,12 @@ theorem and_symm_left (a b : α) (p : Prop) : a = b ∧ p ↔ b = a ∧ p := by 
 /-! ### Declarations about `or` -/
 
 alias or_congr ← Iff.or
+#align iff.or Iff.or
 #align or_congr_left' or_congr_left
 #align or_congr_right' or_congr_rightₓ -- reorder implicits
 #align or.right_comm or_right_comm
 alias or_rotate ↔ Or.rotate _
 #align or.rotate Or.rotate
-#align iff.or Iff.or
 
 @[deprecated Or.imp]
 theorem or_of_or_of_imp_of_imp (h₁ : a ∨ b) (h₂ : a → c) (h₃ : b → d) : c ∨ d := Or.imp h₂ h₃ h₁
@@ -477,11 +483,13 @@ theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) := Decidable.and_iff_no
 #align not_xor not_xor
 
 theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬ (P ↔ Q) := (not_xor P Q).not_right
+#align xor_iff_not_iff xor_iff_not_iff
+
 theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
+#align xor_iff_iff_not xor_iff_iff_not
+
 theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 #align xor_iff_not_iff' xor_iff_not_iff'
-#align xor_iff_iff_not xor_iff_iff_not
-#align xor_iff_not_iff xor_iff_not_iff
 
 end Propositional
 
@@ -871,6 +879,13 @@ theorem Exists.snd {b : Prop} {p : b → Prop} : ∀ h : Exists p, p h.fst
   | ⟨_, h⟩ => h
 #align Exists.snd Exists.snd
 
+theorem Prop.exists_iff {p : Prop → Prop} : (∃ h, p h) ↔ p False ∨ p True :=
+  ⟨fun ⟨h₁, h₂⟩ ↦ by_cases (fun H : h₁ ↦ .inr <| by simpa only [H] using h₂)
+    (fun H ↦ .inl <| by simpa only [H] using h₂), fun h ↦ h.elim (.intro _) (.intro _)⟩
+
+theorem Prop.forall_iff {p : Prop → Prop} : (∀ h, p h) ↔ p False ∧ p True :=
+  ⟨fun H ↦ ⟨H _, H _⟩, fun ⟨h₁, h₂⟩ h ↦ by by_cases H : h <;> simpa only [H]⟩
+
 theorem exists_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃ h' : p, q h') ↔ q h :=
   @exists_const (q h) p ⟨h⟩
 #align exists_prop_of_true exists_prop_of_true
@@ -1133,7 +1148,7 @@ theorem ite_eq_iff : ite P a b = c ↔ P ∧ a = c ∨ ¬P ∧ b = c :=
 #align ite_eq_iff ite_eq_iff
 
 theorem eq_ite_iff : a = ite P b c ↔ P ∧ a = b ∨ ¬P ∧ a = c :=
-eq_comm.trans <| ite_eq_iff.trans <| (Iff.rfl.and eq_comm).or (Iff.rfl.and eq_comm)
+  eq_comm.trans <| ite_eq_iff.trans <| (Iff.rfl.and eq_comm).or (Iff.rfl.and eq_comm)
 
 theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
   ⟨fun he ↦ ⟨fun h ↦ (dif_pos h).symm.trans he, fun h ↦ (dif_neg h).symm.trans he⟩, fun he ↦
@@ -1152,9 +1167,10 @@ theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dit
 #align dite_eq_right_iff dite_eq_right_iff
 
 @[simp] theorem ite_eq_left_iff : ite P a b = a ↔ ¬P → b = a := dite_eq_left_iff
+#align ite_eq_left_iff ite_eq_left_iff
+
 @[simp] theorem ite_eq_right_iff : ite P a b = b ↔ P → a = b := dite_eq_right_iff
 #align ite_eq_right_iff ite_eq_right_iff
-#align ite_eq_left_iff ite_eq_left_iff
 
 theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := by
   rw [Ne.def, dite_eq_left_iff, not_forall]

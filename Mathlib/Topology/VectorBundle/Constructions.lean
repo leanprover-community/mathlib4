@@ -21,7 +21,7 @@ This file contains several standard constructions on vector bundles:
 
 * `VectorBundle.prod`: for vector bundles `E₁` and `E₂` with scalar field `𝕜` over a common base,
   a vector bundle structure on their direct sum `E₁ ×ᵇ E₂` (the notation stands for
-  `λ x, E₁ x × E₂ x`).
+  `fun x ↦ E₁ x × E₂ x`).
 
 * `VectorBundle.pullback`: for a vector bundle `E` over `B`, a vector bundle structure on its
   pullback `f *ᵖ E` by a map `f : B' → B` (the notation is a type synonym for `E ∘ f`).
@@ -145,7 +145,7 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
       show (e₁.prod e₂).coordChangeL 𝕜 (e₁'.prod e₂') b (v₁, v₂) =
         (e₁.coordChangeL 𝕜 e₁' b v₁, e₂.coordChangeL 𝕜 e₂' b v₂)
       rw [e₁.coordChangeL_apply e₁', e₂.coordChangeL_apply e₂', (e₁.prod e₂).coordChangeL_apply']
-      exacts[rfl, hb, ⟨hb.1.2, hb.2.2⟩, ⟨hb.1.1, hb.2.1⟩]
+      exacts [rfl, hb, ⟨hb.1.2, hb.2.2⟩, ⟨hb.1.1, hb.2.1⟩]
 #align vector_bundle.prod VectorBundle.prod
 
 variable {𝕜 F₁ E₁ F₂ E₂}

@@ -83,7 +83,7 @@ namespace ContinuousMap
 variable {α β γ δ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
-instance : ContinuousMapClass C(α, β) α β where
+instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
   coe := ContinuousMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
   map_continuous := ContinuousMap.continuous_toFun
@@ -465,6 +465,7 @@ variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 def toContinuousMap (e : α ≃ₜ β) : C(α, β) :=
   ⟨e, e.continuous_toFun⟩
 #align homeomorph.to_continuous_map Homeomorph.toContinuousMap
+#align homeomorph.to_continuous_map_apply Homeomorph.toContinuousMap_apply
 
 /-- `Homeomorph.toContinuousMap` as a coercion. -/
 instance : Coe (α ≃ₜ β) C(α, β) :=

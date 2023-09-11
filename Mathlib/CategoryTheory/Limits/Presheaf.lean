@@ -74,18 +74,16 @@ The functor `restrictedYoneda` is isomorphic to the identity functor when evalua
 embedding.
 -/
 def restrictedYonedaYoneda : restrictedYoneda (yoneda : C ⥤ Cᵒᵖ ⥤ Type u₁) ≅ 𝟭 _ :=
-  NatIso.ofComponents
-    (fun P =>
-      NatIso.ofComponents (fun X => yonedaSectionsSmall X.unop _) @ fun X Y f =>
-        funext fun x => by
-          dsimp
-          have : x.app X (CategoryStruct.id (Opposite.unop X)) =
-              (x.app X (𝟙 (Opposite.unop X)))
-               := by rfl
-          rw [this]
-          rw [← FunctorToTypes.naturality _ _ x f (𝟙 _)]
-          simp only [id_comp, Functor.op_obj, Opposite.unop_op, yoneda_obj_map, comp_id])
-    @fun _ _ _ => rfl
+  NatIso.ofComponents fun P =>
+    NatIso.ofComponents (fun X => yonedaSectionsSmall X.unop _) @ fun X Y f =>
+      funext fun x => by
+        dsimp
+        have : x.app X (CategoryStruct.id (Opposite.unop X)) =
+            (x.app X (𝟙 (Opposite.unop X)))
+              := by rfl
+        rw [this]
+        rw [← FunctorToTypes.naturality _ _ x f (𝟙 _)]
+        simp only [id_comp, Functor.op_obj, Opposite.unop_op, yoneda_obj_map, comp_id]
 #align category_theory.colimit_adj.restricted_yoneda_yoneda CategoryTheory.ColimitAdj.restrictedYonedaYoneda
 
 /-- (Implementation). The equivalence of homsets which helps construct the left adjoint to
@@ -151,6 +149,7 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
 -- stuck (and hence can see through definitional equalities). The previous lemma shows that
 -- `(extendAlongYoneda A).obj P` is definitionally a colimit, and the ext lemma is just
 -- a special case of `CategoryTheory.Limits.colimit.hom_ext`.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext] lemma extendAlongYoneda_obj.hom_ext {P : Cᵒᵖ ⥤ Type u₁}
     {f f' : (extendAlongYoneda A).obj P ⟶ X}
     (w : ∀ j, colimit.ι ((CategoryOfElements.π P).leftOp ⋙ A) j ≫ f =
@@ -223,8 +222,7 @@ noncomputable def isExtensionAlongYoneda :
       -- porting note: this is slightly different to the `change` in mathlib3 which
       -- didn't work
       change (colimit.desc _ _ ≫ _) = colimit.desc _ _ ≫ _
-      apply colimit.hom_ext
-      intro j
+      ext
       rw [colimit.ι_desc_assoc, colimit.ι_desc_assoc]
       change (colimit.ι _ _ ≫ 𝟙 _) ≫ colimit.desc _ _ = _
       rw [comp_id, colimit.ι_desc]

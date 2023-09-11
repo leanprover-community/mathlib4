@@ -624,9 +624,9 @@ indexed family whose index type is the subtype corresponding to that
 subset. -/
 theorem eq_affineCombination_subset_iff_eq_affineCombination_subtype {p0 : P} {s : Set ι}
     {p : ι → P} :
-    (∃ (fs : Finset ι)(_ : ↑fs ⊆ s)(w : ι → k)(_ : (∑ i in fs, w i) = 1),
+    (∃ (fs : Finset ι) (_ : ↑fs ⊆ s) (w : ι → k) (_ : (∑ i in fs, w i) = 1),
         p0 = fs.affineCombination k p w) ↔
-      ∃ (fs : Finset s)(w : s → k)(_ : (∑ i in fs, w i) = 1),
+      ∃ (fs : Finset s) (w : s → k) (_ : (∑ i in fs, w i) = 1),
         p0 = fs.affineCombination k (fun i : s => p i) w := by
   simp_rw [affineCombination_apply, eq_vadd_iff_vsub_eq]
   exact eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype

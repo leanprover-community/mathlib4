@@ -598,10 +598,10 @@ diagonal form by elementary operations, then one deduces it for matrices over `F
 theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
     (IH :
       ∀ M : Matrix (Fin r) (Fin r) 𝕜,
-        ∃ (L₀ L₀' : List (TransvectionStruct (Fin r) 𝕜))(D₀ : Fin r → 𝕜),
+        ∃ (L₀ L₀' : List (TransvectionStruct (Fin r) 𝕜)) (D₀ : Fin r → 𝕜),
           (L₀.map toMatrix).prod ⬝ M ⬝ (L₀'.map toMatrix).prod = diagonal D₀)
     (M : Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜) :
-    ∃ (L L' : List (TransvectionStruct (Sum (Fin r) Unit) 𝕜))(D : Sum (Fin r) Unit → 𝕜),
+    ∃ (L L' : List (TransvectionStruct (Sum (Fin r) Unit) 𝕜)) (D : Sum (Fin r) Unit → 𝕜),
       (L.map toMatrix).prod ⬝ M ⬝ (L'.map toMatrix).prod = diagonal D := by
   rcases exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec M with ⟨L₁, L₁', hM⟩
   let M' := (L₁.map toMatrix).prod ⬝ M ⬝ (L₁'.map toMatrix).prod
@@ -615,7 +615,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
       diagonal (Sum.elim D₀ fun _ => c) by
     simpa [Matrix.mul_assoc]
   have : M' = fromBlocks M'' 0 0 (diagonal fun _ => c) := by
-    -- porting note: simplyfied proof, because `congr` didn't work anymore
+    -- porting note: simplified proof, because `congr` didn't work anymore
     rw [← fromBlocks_toBlocks M', hM.1, hM.2]
     rfl
   rw [this]
@@ -628,10 +628,10 @@ variable {n p} [Fintype n] [Fintype p]
 theorem reindex_exists_list_transvec_mul_mul_list_transvec_eq_diagonal (M : Matrix p p 𝕜)
     (e : p ≃ n)
     (H :
-      ∃ (L L' : List (TransvectionStruct n 𝕜))(D : n → 𝕜),
+      ∃ (L L' : List (TransvectionStruct n 𝕜)) (D : n → 𝕜),
         (L.map toMatrix).prod ⬝ Matrix.reindexAlgEquiv 𝕜 e M ⬝ (L'.map toMatrix).prod =
           diagonal D) :
-    ∃ (L L' : List (TransvectionStruct p 𝕜))(D : p → 𝕜),
+    ∃ (L L' : List (TransvectionStruct p 𝕜)) (D : p → 𝕜),
       (L.map toMatrix).prod ⬝ M ⬝ (L'.map toMatrix).prod = diagonal D := by
   rcases H with ⟨L₀, L₀', D₀, h₀⟩
   refine' ⟨L₀.map (reindexEquiv e.symm), L₀'.map (reindexEquiv e.symm), D₀ ∘ e, _⟩
@@ -650,7 +650,7 @@ See `exists_list_transvec_mul_mul_list_transvec_eq_diagonal` for the general ver
 from this one and reindexing). -/
 theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux (n : Type) [Fintype n]
     [DecidableEq n] (M : Matrix n n 𝕜) :
-    ∃ (L L' : List (TransvectionStruct n 𝕜))(D : n → 𝕜),
+    ∃ (L L' : List (TransvectionStruct n 𝕜)) (D : n → 𝕜),
       (L.map toMatrix).prod ⬝ M ⬝ (L'.map toMatrix).prod = diagonal D := by
   induction' hn : Fintype.card n with r IH generalizing n M
   · refine' ⟨List.nil, List.nil, fun _ => 1, _⟩
@@ -670,7 +670,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux (n : Type) [F
 
 /-- Any matrix can be reduced to diagonal form by elementary operations. -/
 theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal (M : Matrix n n 𝕜) :
-    ∃ (L L' : List (TransvectionStruct n 𝕜))(D : n → 𝕜),
+    ∃ (L L' : List (TransvectionStruct n 𝕜)) (D : n → 𝕜),
       (L.map toMatrix).prod ⬝ M ⬝ (L'.map toMatrix).prod = diagonal D := by
   have e : n ≃ Fin (Fintype.card n) := Fintype.equivOfCardEq (by simp)
   apply reindex_exists_list_transvec_mul_mul_list_transvec_eq_diagonal M e
@@ -680,7 +680,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal (M : Matrix n n �
 /-- Any matrix can be written as the product of transvections, a diagonal matrix, and
 transvections.-/
 theorem exists_list_transvec_mul_diagonal_mul_list_transvec (M : Matrix n n 𝕜) :
-    ∃ (L L' : List (TransvectionStruct n 𝕜))(D : n → 𝕜),
+    ∃ (L L' : List (TransvectionStruct n 𝕜)) (D : n → 𝕜),
       M = (L.map toMatrix).prod ⬝ diagonal D ⬝ (L'.map toMatrix).prod := by
   rcases exists_list_transvec_mul_mul_list_transvec_eq_diagonal M with ⟨L, L', D, h⟩
   refine' ⟨L.reverse.map TransvectionStruct.inv, L'.reverse.map TransvectionStruct.inv, D, _⟩

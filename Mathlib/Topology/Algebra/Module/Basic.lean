@@ -5,7 +5,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
   Heather Macbeth
 
 ! This file was ported from Lean 3 source module topology.algebra.module.basic
-! leanprover-community/mathlib commit f430769b562e0cedef59ee1ed968d67e0e0c86ba
+! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1154,6 +1154,19 @@ theorem range_coprod [Module R₁ M₂] [Module R₁ M₃] [ContinuousAdd M₃] 
   LinearMap.range_coprod _ _
 #align continuous_linear_map.range_coprod ContinuousLinearMap.range_coprod
 
+theorem comp_fst_add_comp_snd [Module R₁ M₂] [Module R₁ M₃] [ContinuousAdd M₃] (f : M₁ →L[R₁] M₃)
+    (g : M₂ →L[R₁] M₃) :
+    f.comp (ContinuousLinearMap.fst R₁ M₁ M₂) + g.comp (ContinuousLinearMap.snd R₁ M₁ M₂) =
+      f.coprod g :=
+  rfl
+#align continuous_linear_map.comp_fst_add_comp_snd ContinuousLinearMap.comp_fst_add_comp_snd
+
+theorem coprod_inl_inr [ContinuousAdd M₁] [ContinuousAdd M'₁] :
+    (ContinuousLinearMap.inl R₁ M₁ M'₁).coprod (ContinuousLinearMap.inr R₁ M₁ M'₁) =
+      ContinuousLinearMap.id R₁ (M₁ × M'₁) :=
+  by apply coe_injective; apply LinearMap.coprod_inl_inr
+#align continuous_linear_map.coprod_inl_inr ContinuousLinearMap.coprod_inl_inr
+
 section
 
 variable {R S : Type _} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂] [Module R S]
@@ -1674,7 +1687,7 @@ def restrictScalars (f : M →L[A] M₂) : M →L[R] M₂ :=
 
 variable {R}
 
-@[simp] -- @[norm_cast] -- Porting note: This theorem can't be an `norm_cast` theorem.
+@[simp] -- @[norm_cast] -- Porting note: This theorem can't be a `norm_cast` theorem.
 theorem coe_restrictScalars (f : M →L[A] M₂) :
     (f.restrictScalars R : M →ₗ[R] M₂) = (f : M →ₗ[A] M₂).restrictScalars R :=
   rfl

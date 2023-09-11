@@ -124,7 +124,7 @@ theorem coe_basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) :
         zero_apply]
 #align finsupp.coe_basis Finsupp.coe_basis
 
-/-- The basis on `ι →₀ M` with basis vectors `λ i, single i 1`. -/
+/-- The basis on `ι →₀ M` with basis vectors `fun i ↦ single i 1`. -/
 @[simps]
 protected def basisSingleOne : Basis ι R (ι →₀ R) :=
   Basis.ofRepr (LinearEquiv.refl _ _)

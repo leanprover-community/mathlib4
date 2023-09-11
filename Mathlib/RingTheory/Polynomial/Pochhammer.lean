@@ -143,7 +143,7 @@ theorem pochhammer_mul (n m : ℕ) :
       Nat.succ_eq_add_one, ← add_assoc, pochhammer_succ_right, Nat.cast_add, add_assoc]
 #align pochhammer_mul pochhammer_mul
 
-theorem pochhammer_nat_eq_ascFactorial (n : ℕ):
+theorem pochhammer_nat_eq_ascFactorial (n : ℕ) :
     ∀ k, (pochhammer ℕ k).eval (n + 1) = n.ascFactorial k
   | 0 => by rw [pochhammer_zero, eval_one, Nat.ascFactorial_zero]
   | t + 1 => by

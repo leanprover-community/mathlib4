@@ -36,7 +36,7 @@ The main definitions for this file are
   composite, and is coprime with `b` (this last condition is automatically true if `n` divides
   `b ^ (n - 1) - 1`, but some sources include it in the definition).
 
-Note that all composite numbers are pseudoprimes to base 0 and 1, and that the definiton of
+Note that all composite numbers are pseudoprimes to base 0 and 1, and that the definition of
 `ProbablePrime` in this file implies that all numbers are probable primes to bases 0 and 1, and
 that 0 and 1 are probable primes to any base.
 
@@ -244,15 +244,8 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   -- If `b` is even, then `b^p` is also even, so `2 ∣ b^p + b`
   -- If `b` is odd, then `b^p` is also odd, so `2 ∣ b^p + b`
   have ha₂ : 2 ∣ b ^ p + b := by
-    by_cases h : Even b
-    · replace h : 2 ∣ b := even_iff_two_dvd.mp h
-      have : p ≠ 0 := by linarith
-      have : 2 ∣ b ^ p := dvd_pow h this
-      exact dvd_add this h
-    · have h : Odd b := Nat.odd_iff_not_even.mpr h
-      have : Odd (b ^ p) := Odd.pow h
-      have : Even (b ^ p + b) := Odd.add_odd this h
-      exact even_iff_two_dvd.mp this
+    -- Porting note: golfed
+    rw [← even_iff_two_dvd, Nat.even_add, Nat.even_pow' p_prime.ne_zero]
   -- Since `b` isn't divisible by `p`, `b` is coprime with `p`. we can use Fermat's Little Theorem
   -- to prove this.
   have ha₃ : p ∣ b ^ (p - 1) - 1 := by

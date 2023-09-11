@@ -429,7 +429,7 @@ theorem mem_keys_of_mem_keys_kerase {a₁ a₂} {l : List (Sigma β)} :
 #align list.mem_keys_of_mem_keys_kerase List.mem_keys_of_mem_keys_kerase
 
 theorem exists_of_kerase {a : α} {l : List (Sigma β)} (h : a ∈ l.keys) :
-    ∃ (b : β a)(l₁ l₂ : List (Sigma β)),
+    ∃ (b : β a) (l₁ l₂ : List (Sigma β)),
       a ∉ l₁.keys ∧ l = l₁ ++ ⟨a, b⟩ :: l₂ ∧ kerase a l = l₁ ++ l₂ := by
   induction l
   case nil => cases h

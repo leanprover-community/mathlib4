@@ -14,8 +14,8 @@ import Mathlib.Order.Filter.Basic
 # Product and coproduct filters
 
 In this file we define `Filter.prod f g` (notation: `f ×ˢ g`) and `Filter.coprod f g`. The product
-of two filters is the largest filter `l` such that `Filter.Tendsto Prod.fst l f` and `Filter.Tendsto
-Prod.snd l g`.
+of two filters is the largest filter `l` such that `Filter.Tendsto Prod.fst l f` and
+`Filter.Tendsto Prod.snd l g`.
 
 ## Implementation details
 

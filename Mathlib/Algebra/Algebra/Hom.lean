@@ -77,9 +77,9 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
 def toAlgHom {F : Type _} [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
-{ (f : A →+* B) with
-    toFun := f
-    commutes' := AlgHomClass.commutes f }
+  { (f : A →+* B) with
+      toFun := f
+      commutes' := AlgHomClass.commutes f }
 
 instance coeTC {F : Type _} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
@@ -570,7 +570,7 @@ variable {M G : Type _} (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R 
 
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
-/-- Each element of the monoid defines a algebra homomorphism.
+/-- Each element of the monoid defines an algebra homomorphism.
 
 This is a stronger version of `MulSemiringAction.toRingHom` and
 `DistribMulAction.toLinearMap`. -/

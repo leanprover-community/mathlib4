@@ -50,7 +50,7 @@ namespace FreeRing
 
 variable {α : Type u}
 
-/-- The canonical map from α to `FreeRring α`. -/
+/-- The canonical map from α to `FreeRing α`. -/
 def of (x : α) : FreeRing α :=
   FreeAbelianGroup.of (FreeMonoid.of x)
 #align free_ring.of FreeRing.of

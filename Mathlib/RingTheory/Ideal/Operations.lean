@@ -1072,7 +1072,7 @@ theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp :
     le_trans (Finset.inf_le his) hip⟩
 #align ideal.is_prime.inf_le' Ideal.IsPrime.inf_le'
 
--- Porting note: needed to add explicit coerecions (· : Set R).
+-- Porting note: needed to add explicit coercions (· : Set R).
 theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=
   ⟨fun h =>
@@ -1113,7 +1113,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     rw [Finset.coe_empty, Set.biUnion_empty, Set.union_empty, subset_union] at h
     simpa only [exists_prop, Finset.not_mem_empty, false_and_iff, exists_false, or_false_iff]
   classical
-    replace hn : ∃ (i : ι)(t : Finset ι), i ∉ t ∧ insert i t = s ∧ t.card = n :=
+    replace hn : ∃ (i : ι) (t : Finset ι), i ∉ t ∧ insert i t = s ∧ t.card = n :=
       Finset.card_eq_succ.1 hn
     rcases hn with ⟨i, t, hit, rfl, hn⟩
     replace hp : IsPrime (f i) ∧ ∀ x ∈ t, IsPrime (f x) := (t.forall_mem_insert _ _).1 hp
@@ -1127,7 +1127,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
       have hiu : i ∉ u := mt Finset.mem_insert_of_mem hit
       have hn' : (insert i u).card = n := by
         rwa [Finset.card_insert_of_not_mem] at hn⊢
-        exacts[hiu, hju]
+        exacts [hiu, hju]
       have h' : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ k ∈ (↑(insert i u) : Set ι), f k := by
         rw [Finset.coe_insert] at h ⊢
         rw [Finset.coe_insert] at h
@@ -1710,14 +1710,16 @@ end Surjective
 @[simp]
 theorem map_of_equiv (I : Ideal R) (f : R ≃+* S) :
     (I.map (f : R →+* S)).map (f.symm : S →+* R) = I := by
-  simp [← RingEquiv.toRingHom_eq_coe, map_map]
+  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, map_map,
+    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, map_id]
 #align ideal.map_of_equiv Ideal.map_of_equiv
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `comap f.symm (comap f) = I`. -/
 @[simp]
 theorem comap_of_equiv (I : Ideal R) (f : R ≃+* S) :
     (I.comap (f.symm : S →+* R)).comap (f : R →+* S) = I := by
-  simp [← RingEquiv.toRingHom_eq_coe, comap_comap]
+  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, comap_comap,
+    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, comap_id]
 #align ideal.comap_of_equiv Ideal.comap_of_equiv
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f I = comap f.symm I`. -/

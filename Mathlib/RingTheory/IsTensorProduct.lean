@@ -12,14 +12,14 @@ import Mathlib.RingTheory.TensorProduct
 import Mathlib.Algebra.Module.ULift
 
 /-!
-# The characteristice predicate of tensor product
+# The characteristic predicate of tensor product
 
 ## Main definitions
 
 - `IsTensorProduct`: A predicate on `f : M₁ →ₗ[R] M₂ →ₗ[R] M` expressing that `f` realizes `M` as
   the tensor product of `M₁ ⊗[R] M₂`. This is defined by requiring the lift `M₁ ⊗[R] M₂ → M` to be
   bijective.
-- `IsBaseChange`: A predicate on an `R`-algebra `S` and a map `f : M →ₗ[R] N` with `N` being a
+- `IsBaseChange`: A predicate on an `R`-algebra `S` and a map `f : M →ₗ[R] N` with `N` being an
   `S`-module, expressing that `f` realizes `N` as the base change of `M` along `R → S`.
 - `Algebra.IsPushout`: A predicate on the following diagram of scalar towers
   ```

@@ -44,15 +44,15 @@ as well as preserving arithmetic operations.
 For the bundled equivalences, we provide lemmas that they reduce to
 `AddMonoidAlgebra.toDirectSum`:
 
-* `add_monoid_algebra_add_equiv_direct_sum_apply`
+* `addMonoidAlgebraAddEquivDirectSum_apply`
 * `add_monoid_algebra_lequiv_direct_sum_apply`
-* `add_monoid_algebra_add_equiv_direct_sum_symm_apply`
+* `addMonoidAlgebraAddEquivDirectSum_symm_apply`
 * `add_monoid_algebra_lequiv_direct_sum_symm_apply`
 
 ## Implementation notes
 
-This file largely just copies the API of `data/Finsupp/to_dfinsupp`, and reuses the proofs.
-Recall that `AddMonoidAlgebra M ι` is defeq to `ι →₀ M` and `⨁ i : ι, M` is defeq to
+This file largely just copies the API of `Mathlib/Data/Finsupp/ToDfinsupp.lean`, and reuses the
+proofs. Recall that `AddMonoidAlgebra M ι` is defeq to `ι →₀ M` and `⨁ i : ι, M` is defeq to
 `Π₀ i : ι, M`.
 
 Note that there is no `AddMonoidAlgebra` equivalent to `Finsupp.single`, so many statements
@@ -69,7 +69,7 @@ open DirectSum
 
 section Defs
 
-/-- Interpret a `AddMonoidAlgebra` as a homogenous `DirectSum`. -/
+/-- Interpret an `AddMonoidAlgebra` as a homogenous `DirectSum`. -/
 def AddMonoidAlgebra.toDirectSum [Semiring M] (f : AddMonoidAlgebra M ι) : ⨁ _ : ι, M :=
   Finsupp.toDfinsupp f
 #align add_monoid_algebra.to_direct_sum AddMonoidAlgebra.toDirectSum
@@ -86,7 +86,7 @@ theorem AddMonoidAlgebra.toDirectSum_single (i : ι) (m : M) :
 
 variable [∀ m : M, Decidable (m ≠ 0)]
 
-/-- Interpret a homogenous `DirectSum` as a `AddMonoidAlgebra`. -/
+/-- Interpret a homogenous `DirectSum` as an `AddMonoidAlgebra`. -/
 def DirectSum.toAddMonoidAlgebra (f : ⨁ _ : ι, M) : AddMonoidAlgebra M ι :=
   Dfinsupp.toFinsupp f
 #align direct_sum.to_add_monoid_algebra DirectSum.toAddMonoidAlgebra

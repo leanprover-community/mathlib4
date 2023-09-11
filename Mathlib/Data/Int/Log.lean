@@ -33,7 +33,7 @@ import Data.Fin.VecNotation
 import Mathlib.Data.Rat.Floor
 
 def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
-⌊q * ((b : ℚ) ^ (n - Int.log b q))⌋₊ % b
+  ⌊q * ((b : ℚ) ^ (n - Int.log b q))⌋₊ % b
 
 #eval digits 10 (1/7) ∘ ((↑) : Fin 8 → ℕ)
 -- ![1, 4, 2, 8, 5, 7, 1, 4]

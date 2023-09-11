@@ -26,7 +26,7 @@ For instance, in ℕ along a function `u`, this is `inf_n (sup_{k ≥ n} u k)` (
 decreases with `n`, so this is in fact a limit.). There is however a difficulty: it is well possible
 that `u` is not bounded on the whole space, only eventually (think of `limsup (fun x ↦ 1/x)` on ℝ.
 Then there is no guarantee that the quantity above really decreases (the value of the `sup`
-beforehand isnot really well defined, as one can not use ∞), so that the Inf could be anything.
+beforehand is not really well defined, as one can not use ∞), so that the Inf could be anything.
 So one can not use this `inf sup ...` definition in conditionally complete lattices, and one has
 to use a less tractable definition.
 

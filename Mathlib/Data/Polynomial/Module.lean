@@ -15,7 +15,7 @@ import Mathlib.RingTheory.FiniteType
 
 In this file, we define the polynomial module for an `R`-module `M`, i.e. the `R[X]`-module `M[X]`.
 
-This is defined as an type alias `PolynomialModule R M := ℕ →₀ M`, since there might be different
+This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since there might be different
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
 
 -/
@@ -150,7 +150,7 @@ theorem monomial_smul_apply (i : ℕ) (r : R) (g : PolynomialModule R M) (n : �
   · simp only [smul_zero, zero_apply, ite_self]
   · simp only [smul_add, add_apply, hp, hq]
     split_ifs
-    exacts[rfl, zero_add 0]
+    exacts [rfl, zero_add 0]
   · rw [monomial_smul_single, single_apply, single_apply, smul_ite, smul_zero, ← ite_and]
     congr
     rw [eq_iff_iff]
@@ -167,7 +167,7 @@ theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
   induction' f using Polynomial.induction_on' with p q hp hq
   · rw [add_smul, Finsupp.add_apply, hp, hq, coeff_add, add_smul]
     split_ifs
-    exacts[rfl, zero_add 0]
+    exacts [rfl, zero_add 0]
   · rw [monomial_smul_single, single_apply, coeff_monomial, ite_smul, zero_smul]
     by_cases h : i ≤ n
     · simp_rw [eq_tsub_iff_add_eq_of_le h, if_pos h]

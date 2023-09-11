@@ -153,7 +153,7 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S)
     · refine' ⟨inferInstance, (Ideal.mk_ker.trans e).symm.trans_le (Ideal.comap_mono bot_le)⟩
     · refine' (Ideal.comap_mono hq').trans _
       rw [Ideal.comap_map_of_surjective]
-      exacts[sup_le rfl.le this, Ideal.Quotient.mk_surjective]
+      exacts [sup_le rfl.le this, Ideal.Quotient.mk_surjective]
 #align ideal.exists_comap_eq_of_mem_minimal_primes Ideal.exists_comap_eq_of_mem_minimalPrimes
 
 theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)

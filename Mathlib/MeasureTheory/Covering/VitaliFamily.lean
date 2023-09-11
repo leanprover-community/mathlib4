@@ -190,10 +190,10 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
   setsAt x := v.setsAt x ∪ { a | MeasurableSet a ∧ (interior a).Nonempty ∧ ¬a ⊆ closedBall x δ }
   MeasurableSet' x a ha := by
     cases' ha with ha ha
-    exacts[v.MeasurableSet' _ _ ha, ha.1]
+    exacts [v.MeasurableSet' _ _ ha, ha.1]
   nonempty_interior x a ha := by
     cases' ha with ha ha
-    exacts[v.nonempty_interior _ _ ha, ha.2.1]
+    exacts [v.nonempty_interior _ _ ha, ha.2.1]
   Nontrivial := by
     intro x ε εpos
     rcases v.Nontrivial x ε εpos with ⟨a, ha, h'a⟩

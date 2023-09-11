@@ -70,7 +70,7 @@ Thus we can't say that the bounded operators `H →L[ℂ] H` form a `VonNeumannA
 (although we will later construct the instance `WStarAlgebra (H →L[ℂ] H)`),
 and instead will use `⊤ : VonNeumannAlgebra H`.
 -/
--- porting note: I don't think the nonempty intance linter exists yet
+-- porting note: I don't think the nonempty instance linter exists yet
 structure VonNeumannAlgebra (H : Type u) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [CompleteSpace H] extends StarSubalgebra ℂ (H →L[ℂ] H) where
   /-- The double commutant (a.k.a. centralizer) of a `VonNeumannAlgebra` is itself. -/

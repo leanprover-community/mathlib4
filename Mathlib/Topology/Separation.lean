@@ -485,7 +485,7 @@ theorem t1Space_TFAE (α : Type u) [ TopologicalSpace α ] :
   tfae_have 1 → 4
   · simp only [continuous_def, CofiniteTopology.isOpen_iff']
     rintro H s (rfl | hs)
-    exacts[isOpen_empty, compl_compl s ▸ (@Set.Finite.isClosed _ _ H _ hs).isOpen_compl]
+    exacts [isOpen_empty, compl_compl s ▸ (@Set.Finite.isClosed _ _ H _ hs).isOpen_compl]
   tfae_have 4 → 2
   · exact fun h x => (CofiniteTopology.isClosed_iff.2 <| Or.inr (finite_singleton _)).preimage h
   tfae_have 2 ↔ 10
@@ -716,9 +716,9 @@ theorem Dense.diff_singleton [T1Space α] {s : Set α} (hs : Dense s) (x : α) [
 obtains a dense set. -/
 theorem Dense.diff_finset [T1Space α] [∀ x : α, NeBot (𝓝[≠] x)] {s : Set α} (hs : Dense s)
     (t : Finset α) : Dense (s \ t) := by
-  induction t using Finset.induction_on -- with x s _ ih hd
-  case empty =>  simpa using hs
-  case insert ih =>
+  induction t using Finset.induction_on with
+  | empty =>  simpa using hs
+  | insert _ ih =>
     rw [Finset.coe_insert, ← union_singleton, ← diff_diff]
     exact ih.diff_singleton _
 #align dense.diff_finset Dense.diff_finset
@@ -754,8 +754,8 @@ theorem ContinuousAt.eventually_ne [TopologicalSpace β] [T1Space β] {g : α �
 /-- To prove a function to a `T1Space` is continuous at some point `a`, it suffices to prove that
 `f` admits *some* limit at `a`. -/
 theorem continuousAt_of_tendsto_nhds [TopologicalSpace β] [T1Space β] {f : α → β} {a : α} {b : β}
-    (h : Tendsto f (𝓝 a) (𝓝 b)) : ContinuousAt f a :=
-  show Tendsto f (𝓝 a) (𝓝 <| f a) by rwa [eq_of_tendsto_nhds h]
+    (h : Tendsto f (𝓝 a) (𝓝 b)) : ContinuousAt f a := by
+  rwa [ContinuousAt, eq_of_tendsto_nhds h]
 #align continuous_at_of_tendsto_nhds continuousAt_of_tendsto_nhds
 
 @[simp]
@@ -1279,7 +1279,7 @@ theorem Bornology.relativelyCompact_eq_inCompact [T2Space α] :
 #align bornology.relatively_compact_eq_in_compact Bornology.relativelyCompact_eq_inCompact
 
 /-- If `V : ι → Set α` is a decreasing family of compact sets then any neighborhood of
-`⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhd_of_compact'` where we
+`⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhds_of_isCompact'` where we
 don't need to assume each `V i` closed because it follows from compactness since `α` is
 assumed to be Hausdorff. -/
 theorem exists_subset_nhds_of_isCompact [T2Space α] {ι : Type _} [Nonempty ι] {V : ι → Set α}
@@ -1803,7 +1803,7 @@ theorem normalSpaceOfT3SecondCountable [SecondCountableTopology α] [T3Space α]
   · simp only [disjoint_left, mem_iUnion, mem_diff, not_exists, not_and, not_forall, not_not]
     rintro a ⟨u, huU, hau, haV⟩ v hvV hav
     cases' le_total (Encodable.encode u) (Encodable.encode v) with hle hle
-    exacts[⟨u, huU, hle, subset_closure hau⟩, (haV _ hvV hle <| subset_closure hav).elim]
+    exacts [⟨u, huU, hle, subset_closure hau⟩, (haV _ hvV hle <| subset_closure hav).elim]
 #align normal_space_of_t3_second_countable normalSpaceOfT3SecondCountable
 
 end Normality
@@ -1858,7 +1858,7 @@ instance [T5Space α] : T5Space (SeparationQuotient α) where
   completely_normal s t hd₁ hd₂ := by
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
     apply T5Space.completely_normal <;> rw [← preimage_mk_closure]
-    exacts[hd₁.preimage mk, hd₂.preimage mk]
+    exacts [hd₁.preimage mk, hd₂.preimage mk]
 
 end CompletelyNormal
 

@@ -27,7 +27,7 @@ preserves the measure `μ × ν`, which means that
 ```
   ∫ x, ∫ y, h x y ∂ν ∂μ = ∫ x, ∫ y, h (y * x) x⁻¹ ∂ν ∂μ
 ```
-If we apply this to `h x y := e x * f y⁻¹ / ν ((λ h, h * y⁻¹) ⁻¹' s)`, we can rewrite the RHS to
+If we apply this to `h x y := e x * f y⁻¹ / ν ((fun h ↦ h * y⁻¹) ⁻¹' s)`, we can rewrite the RHS to
 `μ(t)`, and the LHS to `c * μ(s)`, where `c = c(ν)` does not depend on `μ`.
 Applying this to `μ` and to `ν` gives `μ (t) / μ (s) = ν (t) / ν (s)`, which is the uniqueness up to
 scalar multiplication.

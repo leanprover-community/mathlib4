@@ -382,8 +382,7 @@ def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
         ext
         exact fac G hG
       · rintro ⟨G₁, hG₁⟩ ⟨G₂, hG₂⟩ f
-        apply NatTrans.ext
-        ext1
+        ext
         apply NatTransExtension.app_eq)
 #align category_theory.localization.construction.whiskering_left_equivalence.counit_iso CategoryTheory.Localization.Construction.WhiskeringLeftEquivalence.counitIso
 
@@ -398,8 +397,7 @@ def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D
   unitIso := WhiskeringLeftEquivalence.unitIso W D
   counitIso := WhiskeringLeftEquivalence.counitIso W D
   functor_unitIso_comp F := by
-    apply NatTrans.ext
-    ext1
+    ext
     simp only [WhiskeringLeftEquivalence.unitIso_hom, eqToHom_app, eqToHom_refl,
       WhiskeringLeftEquivalence.counitIso_hom, eqToHom_map, eqToHom_trans]
     rfl

@@ -11,6 +11,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Prime
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Primality prover

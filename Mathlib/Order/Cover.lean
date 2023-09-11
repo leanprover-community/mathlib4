@@ -169,7 +169,7 @@ theorem wcovby_iff_le_and_eq_or_eq : a ⩿ b ↔ a ≤ b ∧ ∀ c, a ≤ c → 
 
 theorem Wcovby.le_and_le_iff (h : a ⩿ b) : a ≤ c ∧ c ≤ b ↔ c = a ∨ c = b := by
   refine' ⟨fun h2 => h.eq_or_eq h2.1 h2.2, _⟩; rintro (rfl | rfl);
-  exacts[⟨le_rfl, h.le⟩, ⟨h.le, le_rfl⟩]
+  exacts [⟨le_rfl, h.le⟩, ⟨h.le, le_rfl⟩]
 #align wcovby.le_and_le_iff Wcovby.le_and_le_iff
 
 theorem Wcovby.Icc_eq (h : a ⩿ b) : Icc a b = {a, b} := by

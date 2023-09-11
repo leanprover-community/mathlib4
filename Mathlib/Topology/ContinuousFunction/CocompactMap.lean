@@ -198,7 +198,7 @@ end Basics
 
 end CocompactMap
 
-/-- A homemomorphism is a cocompact map. -/
+/-- A homeomorphism is a cocompact map. -/
 @[simps]
 def Homeomorph.toCocompactMap {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
     (f : α ≃ₜ β) : CocompactMap α β where

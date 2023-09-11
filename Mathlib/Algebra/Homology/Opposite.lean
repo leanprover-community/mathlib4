@@ -71,9 +71,7 @@ def homologyOp {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     homology g.op f.op (by rw [← op_comp, w, op_zero]) ≅ Opposite.op (homology f g w) :=
   cokernelIsoOfEq (imageToKernel_op _ _ w) ≪≫ cokernelEpiComp _ _ ≪≫ cokernelCompIsIso _ _ ≪≫
     cokernelOpOp _ ≪≫ (homologyIsoKernelDesc _ _ _ ≪≫
-    kernelIsoOfEq (by
-    -- Porting note: broken ext
-      apply coequalizer.hom_ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
+    kernelIsoOfEq (by ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
     kernelCompMono _ (image.ι g)).op
 #align homology_op homologyOp
 
@@ -83,9 +81,7 @@ def homologyUnop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0)
     homology g.unop f.unop (by rw [← unop_comp, w, unop_zero]) ≅ Opposite.unop (homology f g w) :=
   cokernelIsoOfEq (imageToKernel_unop _ _ w) ≪≫ cokernelEpiComp _ _ ≪≫ cokernelCompIsIso _ _ ≪≫
     cokernelUnopUnop _ ≪≫ (homologyIsoKernelDesc _ _ _ ≪≫
-    kernelIsoOfEq (by
-    -- Porting note: broken ext
-      apply coequalizer.hom_ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
+    kernelIsoOfEq (by ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
     kernelCompMono _ (image.ι g)).unop
 #align homology_unop homologyUnop
 
@@ -175,11 +171,7 @@ def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInve
 /-- Auxiliary definition for `opEquivalence`. -/
 def opCounitIso : opInverse V c ⋙ opFunctor V c ≅ 𝟭 (HomologicalComplex Vᵒᵖ c.symm) :=
   NatIso.ofComponents
-    (fun X => HomologicalComplex.Hom.isoOfComponents (fun i => Iso.refl _) fun i j _ => by simp)
-    (by
-      intro X Y f
-      ext
-      simp)
+    fun X => HomologicalComplex.Hom.isoOfComponents fun i => Iso.refl _
 #align homological_complex.op_counit_iso HomologicalComplex.opCounitIso
 
 /-- Given a category of complexes with objects in `V`, there is a natural equivalence between its
@@ -235,11 +227,7 @@ def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c 
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopCounitIso : unopInverse V c ⋙ unopFunctor V c ≅ 𝟭 (HomologicalComplex V c.symm) :=
   NatIso.ofComponents
-    (fun X => HomologicalComplex.Hom.isoOfComponents (fun i => Iso.refl _) fun i j _ => by simp)
-    (by
-      intro X Y f
-      ext
-      simp)
+    fun X => HomologicalComplex.Hom.isoOfComponents fun i => Iso.refl _
 #align homological_complex.unop_counit_iso HomologicalComplex.unopCounitIso
 
 /-- Given a category of complexes with objects in `Vᵒᵖ`, there is a natural equivalence between its

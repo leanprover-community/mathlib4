@@ -55,8 +55,7 @@ def N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ) where
       p := PInfty
       idem := PInfty_idem }
   map f :=
-    { f := PInfty ≫ AlternatingFaceMapComplex.map f
-      comm := by aesop_cat }
+    { f := PInfty ≫ AlternatingFaceMapComplex.map f }
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁ AlgebraicTopology.DoldKan.N₁
 

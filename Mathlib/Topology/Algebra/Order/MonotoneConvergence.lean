@@ -129,7 +129,7 @@ variable [ConditionallyCompleteLattice α] [SupConvergenceClass α] {f : ι → 
 theorem tendsto_atTop_ciSup (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
     Tendsto f atTop (𝓝 (⨆ i, f i)) := by
   cases isEmpty_or_nonempty ι
-  exacts[tendsto_of_isEmpty, tendsto_atTop_isLUB h_mono (isLUB_ciSup hbdd)]
+  exacts [tendsto_of_isEmpty, tendsto_atTop_isLUB h_mono (isLUB_ciSup hbdd)]
 #align tendsto_at_top_csupr tendsto_atTop_ciSup
 
 theorem tendsto_atBot_ciSup (h_anti : Antitone f) (hbdd : BddAbove <| range f) :

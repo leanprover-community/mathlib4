@@ -18,7 +18,7 @@ import Mathlib.CategoryTheory.Preadditive.Basic
 # Every NonPreadditiveAbelian category is preadditive
 
 In mathlib, we define an abelian category as a preadditive category with a zero object,
-kernels and cokernels, products and coproducts and in which every monomorphism and epimorphis is
+kernels and cokernels, products and coproducts and in which every monomorphism and epimorphism is
 normal.
 
 While virtually every interesting abelian category has a natural preadditive structure (which is why
@@ -366,7 +366,7 @@ theorem sub_self {X Y : C} (a : X ⟶ Y) : a - a = 0 := by
 theorem lift_sub_lift {X Y : C} (a b c d : X ⟶ Y) :
     prod.lift a b - prod.lift c d = prod.lift (a - c) (b - d) := by
   simp only [sub_def]
-  apply prod.hom_ext
+  ext
   · rw [Category.assoc, σ_comp, prod.lift_map_assoc, prod.lift_fst, prod.lift_fst, prod.lift_fst]
   · rw [Category.assoc, σ_comp, prod.lift_map_assoc, prod.lift_snd, prod.lift_snd, prod.lift_snd]
 #align category_theory.non_preadditive_abelian.lift_sub_lift CategoryTheory.NonPreadditiveAbelian.lift_sub_lift

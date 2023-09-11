@@ -1122,7 +1122,7 @@ def bfamilyOfFamily {ι : Type u} : (ι → α) → ∀ a < type (@WellOrderingR
   bfamilyOfFamily' WellOrderingRel
 #align ordinal.bfamily_of_family Ordinal.bfamilyOfFamily
 
-/-- Converts a family indexed by an `Ordinal.{u}` to one indexed by an `Type u` using a specified
+/-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a specified
 well-ordering. -/
 def familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o} (ho : type r = o)
     (f : ∀ a < o, α) : ι → α := fun i =>
@@ -1726,7 +1726,7 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein ((· < ·) : o.out.α �
 
 theorem sup_typein_limit {o : Ordinal} (ho : ∀ a, a < o → succ a < o) :
     sup.{u, u} (typein ((· < ·) : o.out.α → o.out.α → Prop)) = o := by
-  -- Portinh note: `rwa` → `rw` & `assumption`
+  -- Porting note: `rwa` → `rw` & `assumption`
   rw [(sup_eq_lsub_iff_succ.{u, u} (typein (· < ·))).2] <;> rw [lsub_typein o]; assumption
 #align ordinal.sup_typein_limit Ordinal.sup_typein_limit
 

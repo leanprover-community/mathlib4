@@ -12,33 +12,9 @@ import Mathlib.Tactic.GCongr.Core
 The core implementation of the `gcongr` ("generalized congruence") tactic is in the file
 `Tactic.GCongr.Core`.  In this file we set it up for use across the library by tagging a minimal
 set of lemmas with the attribute `@[gcongr]` and by listing `positivity` as a first-pass
-discharger for side goals (`gcongr_discharger`) and four simple tactics as first-pass dischargers
-for main goals (`@[gcongr_forward]`). -/
+discharger for side goals (`gcongr_discharger`). -/
 
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
-
-namespace Mathlib.Tactic.GCongr
-open Lean Meta
-
-/-- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive. -/
-@[gcongr_forward] def exactRefl : ForwardExt where
-  eval h goal := do
-    let m ← mkFreshExprMVar none
-    goal.exact (← mkAppOptM ``Eq.subst #[h, m])
-    goal.rfl
-
-/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-@[gcongr_forward] def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.exact (← mkAppM ``le_of_lt #[h])
-
-/-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
-@[gcongr_forward] def symmExact : ForwardExt where
-  eval h goal := do (← goal.symm).exact h
-
-@[gcongr_forward] def exact : ForwardExt where
-  eval := MVarId.exact
-
-end Mathlib.Tactic.GCongr
 
 /-! # ≤, - -/
 

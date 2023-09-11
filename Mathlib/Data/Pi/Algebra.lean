@@ -130,7 +130,7 @@ theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i 
 #align pi.smul_def Pi.smul_def
 #align pi.vadd_def Pi.vadd_def
 
-@[to_additive (attr := simp, to_additive) (reorder:= 2 3, 5 6) smul_const]
+@[to_additive (attr := simp, to_additive) (reorder := 2 3, 5 6) smul_const]
 theorem const_pow [Pow α β] (a : α) (b : β) : const I a ^ b = const I (a ^ b) :=
   rfl
 #align pi.const_pow Pi.const_pow
@@ -365,7 +365,7 @@ theorem extend_one [One γ] (f : α → β) : Function.extend f (1 : α → γ) 
 #align function.extend_zero Function.extend_zero
 
 @[to_additive]
-theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ):
+theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ) :
     Function.extend f (g₁ * g₂) (e₁ * e₂) = Function.extend f g₁ e₁ * Function.extend f g₂ e₂ := by
   classical
   funext x

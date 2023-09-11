@@ -119,8 +119,8 @@ theorem toEnd_def [Monoid α] (x : α) : toEnd α x = x :=
 See <https://stacks.math.columbia.edu/tag/001F> --
 although we do not characterize when the functor is full or faithful.
 -/
-def mapHom (α : Type u) (β : Type v) [Monoid α] [Monoid β] : (α →* β) ≃ SingleObj α ⥤ SingleObj β
-    where
+def mapHom (α : Type u) (β : Type v) [Monoid α] [Monoid β] :
+    (α →* β) ≃ SingleObj α ⥤ SingleObj β where
   toFun f :=
     { obj := id
       map := ⇑f

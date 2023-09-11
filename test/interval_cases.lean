@@ -162,3 +162,13 @@ In Lean 3 this one didn't work! It reported:
 example (n : ℕ) (w₁ : n > 1000000) (w₁ : n < 1000002) : n < 2000000 := by
   interval_cases n
   norm_num
+
+section
+
+variable (d : ℕ)
+
+example (h : d ≤ 0) : d = 0 := by
+  interval_cases d
+  rfl
+
+end

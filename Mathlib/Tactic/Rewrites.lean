@@ -14,14 +14,14 @@ import Mathlib.Control.Basic
 /-!
 # The `rewrites` tactic.
 
-`rewrites` tries to find a lemma which can rewrite the goal.
+`rw?` tries to find a lemma which can rewrite the goal.
 
-`rewrites` should not be left in proofs; it is a search tool, like `library_search`.
+`rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
 Suggestions are printed as `rw [h]` or `rw [←h]`.
 
 ## Future work
-It would be nice to have `rewrites at h`.
+It would be nice to have `rw? at h`.
 
 We could also try discharging side goals via `assumption` or `solve_by_elim`.
 
@@ -63,7 +63,7 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
     | _ => return #[]
 
 /-- Insert a lemma into the discrimination tree. -/
--- Recall that `rewrites` caches the discrimination tree on disk.
+-- Recall that `rw?` caches the discrimination tree on disk.
 -- If you are modifying this file, you will probably want to delete
 -- `build/lib/MathlibExtras/Rewrites.extra`
 -- so that the cache is rebuilt.
@@ -76,7 +76,7 @@ def addLemma (name : Name) (constInfo : ConstantInfo)
 
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × Bool × Nat)) :=
-  DiscrTreeCache.mk "rewrites: init cache" processLemma
+  DiscrTreeCache.mk "rw?: init cache" processLemma
     -- Sort so lemmas with longest names come first.
     -- This is counter-intuitive, but the way that `DiscrTree.getMatch` returns results
     -- means that the results come in "batches", with more specific matches *later*.
@@ -98,7 +98,7 @@ initialize cachedData : CachedData (Name × Bool × Nat) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
     let (d, r) ← unpickle (DiscrTree (Name × Bool × Nat) true) path
-    return ⟨r, ← DiscrTreeCache.mk "rewrites: using cache" processLemma (init := some d)⟩
+    return ⟨r, ← DiscrTreeCache.mk "rw?: using cache" processLemma (init := some d)⟩
   else
     return ⟨none, ← buildDiscrTree⟩
 
@@ -107,7 +107,7 @@ Retrieve the current cache of lemmas.
 -/
 def rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) := cachedData.cache
 
-/-- Data structure recording a potential rewrite to report from the `rewrites` tactic. -/
+/-- Data structure recording a potential rewrite to report from the `rw?` tactic. -/
 structure RewriteResult where
   name : Name
   symm : Bool
@@ -185,24 +185,24 @@ def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × B
 open Lean.Parser.Tactic
 
 /--
-`rewrites` tries to find a lemma which can rewrite the goal.
+`rw?` tries to find a lemma which can rewrite the goal.
 
-`rewrites` should not be left in proofs; it is a search tool, like `library_search`.
+`rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
 Suggestions are printed as `rw [h]` or `rw [←h]`.
-`rewrites!` is the "I'm feeling lucky" mode, and will run the first rewrite it finds.
+`rw?!` is the "I'm feeling lucky" mode, and will run the first rewrite it finds.
 -/
-syntax (name := rewrites') "rewrites" "!"? : tactic
+syntax (name := rewrites') "rw?" "!"? : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic |
-    `(tactic| rewrites%$tk $[!%$lucky]?) => do
+    `(tactic| rw?%$tk $[!%$lucky]?) => do
   let goal ← getMainGoal
   goal.withContext do
     let results ← rewrites (← rewriteLemmas.get) goal
     reportOutOfHeartbeats `rewrites tk
     if results.isEmpty then
-      throwError "rewrites could not find any lemmas which can rewrite the goal"
+      throwError "rw? could not find any lemmas which can rewrite the goal"
     for r in results do
       let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
       addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm newGoal
@@ -214,5 +214,5 @@ elab_rules : tactic |
           evalTactic (← `(tactic| rfl))
       | _ => failure
 
-@[inherit_doc rewrites'] macro "rewrites!" : tactic =>
-  `(tactic| rewrites !)
+@[inherit_doc rewrites'] macro "rw?!" : tactic =>
+  `(tactic| rw? !)

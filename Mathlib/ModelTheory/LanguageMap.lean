@@ -229,7 +229,7 @@ protected structure Injective : Prop where
   onRelation {n} : Function.Injective fun R : L.Relations n => onRelation ϕ R
 #align first_order.language.Lhom.injective FirstOrder.Language.LHom.Injective
 
-/-- Pulls a `L`-structure along a language map `ϕ : L →ᴸ L'`, and then expands it
+/-- Pulls an `L`-structure along a language map `ϕ : L →ᴸ L'`, and then expands it
   to an `L'`-structure arbitrarily. -/
 noncomputable def defaultExpansion (ϕ : L →ᴸ L')
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => onFunction ϕ f)]

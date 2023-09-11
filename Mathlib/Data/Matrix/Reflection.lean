@@ -25,7 +25,7 @@ This allows "proof by reflection", where we prove `A = !![A 0 0, A 0 1;  A 1 0, 
 The definitions in this file should normally not be used directly; the intent is for the
 corresponding `*_eq` lemmas to be used in a place where they are definitionally unfolded.
 
-## Main definitionss
+## Main definitions
 
 * `Matrix.transposeᵣ`
 * `Matrix.dotProductᵣ`
@@ -91,7 +91,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
     (∃ x, P x) ↔ ∃ a b c d e f, P !![a, b, c; d, e, f] :=
   (exists_iff _).symm
 
-/-- `matrix.tranpose` with better defeq for `Fin` -/
+/-- `Matrix.transpose` with better defeq for `Fin` -/
 def transposeᵣ : ∀ {m n}, Matrix (Fin m) (Fin n) α → Matrix (Fin n) (Fin m) α
   | _, 0, _ => of ![]
   | _, _ + 1, A =>

@@ -53,7 +53,7 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
     rintro ⟨x, hx⟩
     rw [mem_nonZeroDivisors_iff_ne_zero] at hx
     simpa only [eq_intCast, isUnit_iff_ne_zero, Int.cast_eq_zero, Ne.def, Subtype.coe_mk] using hx
-  surj':= by
+  surj' := by
     rintro ⟨n, d, hd, h⟩
     refine' ⟨⟨n, ⟨d, _⟩⟩, Rat.mul_den_eq_num⟩
     rw [mem_nonZeroDivisors_iff_ne_zero, Int.coe_nat_ne_zero_iff_pos]
@@ -166,7 +166,7 @@ theorem mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / 
 #align is_fraction_ring.mk'_eq_div IsFractionRing.mk'_eq_div
 
 theorem div_surjective (z : K) :
-    ∃ (x y : A)(hy : y ∈ nonZeroDivisors A), algebraMap _ _ x / algebraMap _ _ y = z :=
+    ∃ (x y : A) (hy : y ∈ nonZeroDivisors A), algebraMap _ _ x / algebraMap _ _ y = z :=
   let ⟨x, ⟨y, hy⟩, h⟩ := mk'_surjective (nonZeroDivisors A) z
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
 #align is_fraction_ring.div_surjective IsFractionRing.div_surjective
@@ -302,7 +302,7 @@ instance [Nontrivial R] : Nontrivial (FractionRing R) :=
 
 /-- Porting note: if the fields of this instance are explicitly defined as they were
 in mathlib3, the last instance in this file suffers a TC timeout -/
-noncomputable instance : Field (FractionRing A) := IsFractionRing.toField A
+noncomputable instance field : Field (FractionRing A) := IsFractionRing.toField A
 
 @[simp]
 theorem mk_eq_div {r s} :

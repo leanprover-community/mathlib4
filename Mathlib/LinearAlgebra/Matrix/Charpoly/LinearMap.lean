@@ -13,7 +13,7 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 
-# Calyley-Hamilton theorem for f.g. modules.
+# Cayley-Hamilton theorem for f.g. modules.
 
 Given a fixed finite spanning set `b : ι → M` of a `R`-module `M`, we say that a matrix `M`
 represents an endomorphism `f : M →ₗ[R] M` if the matrix as an endomorphism of `ι → R` commutes
@@ -34,7 +34,7 @@ variable (b : ι → M) (hb : Submodule.span R (Set.range b) = ⊤)
 
 open BigOperators Polynomial
 
-/-- The composition of a matrix (as an endomporphism of `ι → R`) with the projection
+/-- The composition of a matrix (as an endomorphism of `ι → R`) with the projection
 `(ι → R) →ₗ[R] M`.  -/
 def PiToModule.fromMatrix [DecidableEq ι] : Matrix ι ι R →ₗ[R] (ι → R) →ₗ[R] M :=
   (LinearMap.llcomp R _ _ _ (Fintype.total R R b)).comp algEquivMatrix'.symm.toLinearMap

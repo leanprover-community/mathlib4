@@ -380,7 +380,7 @@ def Pi.constMonoidHom (α β : Type _) [MulOneClass β] : β →* α → β wher
 
 See also `MonoidHom.eval`. -/
 @[to_additive (attr := simps) "Coercion of an `AddMonoidHom` into a function is itself
-a `AddMonoidHom`.
+an `AddMonoidHom`.
 
 See also `AddMonoidHom.eval`."]
 def MonoidHom.coeFn (α β : Type _) [MulOneClass α] [CommMonoid β] : (α →* β) →* α → β where

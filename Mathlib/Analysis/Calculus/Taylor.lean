@@ -353,10 +353,8 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
     -- The rest is a trivial calculation
     rw [abs_mul, abs_pow, abs_inv, Nat.abs_cast]
     -- Porting note: was `mono* with 0 ≤ (n ! : ℝ)⁻¹; any_goals positivity; linarith [hx.1, hyx]`
-    have : 0 ≤ (n ! : ℝ)⁻¹ := by simp only [inv_nonneg, Nat.cast_nonneg]
-    refine' mul_le_mul_of_nonneg_left (pow_le_pow_of_le_left _ _ n) this
-    · simp only [abs_nonneg]
-    · rw [abs_of_nonneg, abs_of_nonneg] <;> linarith
+    gcongr
+    rw [abs_of_nonneg, abs_of_nonneg] <;> linarith
   -- Apply the mean value theorem for vector valued functions:
   have A : ∀ t ∈ Icc a x, HasDerivWithinAt (fun y => taylorWithinEval f n (Icc a b) y x)
       (((↑n !)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) (Icc a x) t := by

@@ -26,7 +26,7 @@ Note, when `A` is a *unital* `R`-algebra, then `Unitization R A` constructs a ne
 identity different from the old one, and so in general `Unitization R A` and `A` will not be
 isomorphic even in the unital case. This approach actually has nice functorial properties.
 
-There is a natural coercion from `A` to `Unitization R A` given by `λ a, (0, a)`, the image
+There is a natural coercion from `A` to `Unitization R A` given by `fun a ↦ (0, a)`, the image
 of which is a proper ideal (TODO), and when `R` is a field this ideal is maximal. Moreover,
 this ideal is always an essential ideal (it has nontrivial intersection with every other nontrivial
 ideal).
@@ -496,6 +496,18 @@ instance semiring [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarT
 instance commSemiring [CommSemiring R] [NonUnitalCommSemiring A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : CommSemiring (Unitization R A) :=
   { Unitization.commMonoid, Unitization.nonAssocSemiring with }
+
+instance nonAssocRing [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
+    NonAssocRing (Unitization R A) :=
+  { Unitization.addCommGroup, Unitization.nonAssocSemiring with }
+
+instance ring [CommRing R] [NonUnitalRing A] [Module R A] [IsScalarTower R A A]
+    [SMulCommClass R A A] : Ring (Unitization R A) :=
+  { Unitization.addCommGroup, Unitization.semiring with }
+
+instance commRing [CommRing R] [NonUnitalCommRing A] [Module R A] [IsScalarTower R A A]
+    [SMulCommClass R A A] : CommRing (Unitization R A) :=
+  { Unitization.addCommGroup, Unitization.commSemiring with }
 
 variable (R A)
 

@@ -371,7 +371,7 @@ variable (P L)
   and which has three points in general position. -/
 class ProjectivePlane extends HasPoints P L, HasLines P L where
   exists_config :
-    ∃ (p₁ p₂ p₃ : P)(l₁ l₂ l₃ : L),
+    ∃ (p₁ p₂ p₃ : P) (l₁ l₂ l₃ : L),
       p₁ ∉ l₂ ∧ p₁ ∉ l₃ ∧ p₂ ∉ l₁ ∧ p₂ ∈ l₂ ∧ p₂ ∈ l₃ ∧ p₃ ∉ l₁ ∧ p₃ ∈ l₂ ∧ p₃ ∉ l₃
 #align configuration.projective_plane Configuration.ProjectivePlane
 

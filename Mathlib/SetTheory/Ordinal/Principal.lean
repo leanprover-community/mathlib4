@@ -26,7 +26,7 @@ We define principal or indecomposable ordinals, and we prove the standard proper
 
 ### Todo
 * Prove that exponential principal ordinals are 0, 1, 2, ω, or epsilon numbers, i.e. fixed points
-  of `λ x, ω ^ x`.
+  of `fun x ↦ ω ^ x`.
 -/
 
 universe u v w
@@ -166,7 +166,7 @@ theorem principal_add_iff_add_left_eq_self {o : Ordinal} :
 #align ordinal.principal_add_iff_add_left_eq_self Ordinal.principal_add_iff_add_left_eq_self
 
 theorem exists_lt_add_of_not_principal_add {a} (ha : ¬Principal (· + ·) a) :
-    ∃ (b c : _) (_ : b < a)(_ : c < a), b + c = a := by
+    ∃ (b c : _) (_ : b < a) (_ : c < a), b + c = a := by
   unfold Principal at ha
   push_neg  at ha
   rcases ha with ⟨b, c, hb, hc, H⟩

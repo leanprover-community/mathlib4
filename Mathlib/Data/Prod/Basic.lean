@@ -113,9 +113,10 @@ theorem mk.inj_right {α β : Type _} (b : β) :
 #align prod.mk.inj_right Prod.mk.inj_right
 
 lemma mk_inj_left : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
+#align prod.mk_inj_left Prod.mk_inj_left
+
 lemma mk_inj_right : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
 #align prod.mk_inj_right Prod.mk_inj_right
-#align prod.mk_inj_left Prod.mk_inj_left
 
 theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
   rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
@@ -257,7 +258,7 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRef
   ⟨Lex.refl_right _ _⟩
 
 instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
-⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
+  ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :

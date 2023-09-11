@@ -44,10 +44,7 @@ variable {C : Type u₃} [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
 def Cone.toCostructuredArrow (F : J ⥤ C) : Cone F ⥤ CostructuredArrow (const J) F
     where
   obj c := CostructuredArrow.mk c.π
-  map f :=
-    CostructuredArrow.homMk f.Hom <| by
-      ext
-      simp
+  map f := CostructuredArrow.homMk f.Hom
 #align category_theory.limits.cone.to_costructured_arrow CategoryTheory.Limits.Cone.toCostructuredArrow
 
 /-- Construct a cone on `F` from an object of the category `(Δ ↓ F)`. This is part of an
@@ -76,9 +73,8 @@ Similarly for `Cocone.equivStructuredArrow`.
 @[simps! (config := { notRecursive := [`PLift, `ULift] })]
 def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (const J) F :=
   Equivalence.mk (Cone.toCostructuredArrow F) (Cone.fromCostructuredArrow F)
-    (NatIso.ofComponents Cones.eta (by aesop_cat))
-    (NatIso.ofComponents (fun c => (CostructuredArrow.eta _).symm)
-      (by intros ; apply CostructuredArrow.ext ; aesop_cat))
+    (NatIso.ofComponents Cones.eta)
+    (NatIso.ofComponents fun c => (CostructuredArrow.eta _).symm)
 #align category_theory.limits.cone.equiv_costructured_arrow CategoryTheory.Limits.Cone.equivCostructuredArrow
 
 /-- A cone is a limit cone iff it is terminal. -/
@@ -137,10 +133,7 @@ def IsLimit.ofReflectsConeTerminal {F : J ⥤ C} {F' : K ⥤ D} (G : Cone F ⥤ 
 def Cocone.toStructuredArrow (F : J ⥤ C) : Cocone F ⥤ StructuredArrow F (const J)
     where
   obj c := StructuredArrow.mk c.ι
-  map f :=
-    StructuredArrow.homMk f.Hom <| by
-      ext
-      simp
+  map f := StructuredArrow.homMk f.Hom
 #align category_theory.limits.cocone.to_structured_arrow CategoryTheory.Limits.Cocone.toStructuredArrow
 
 /-- Construct a cocone on `F` from an object of the category `(F ↓ Δ)`. This is part of an
@@ -162,9 +155,8 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
 @[simps! (config := { notRecursive := [`PLift, `ULift] })]
 def Cocone.equivStructuredArrow (F : J ⥤ C) : Cocone F ≌ StructuredArrow F (const J) :=
   Equivalence.mk (Cocone.toStructuredArrow F) (Cocone.fromStructuredArrow F)
-    (NatIso.ofComponents Cocones.eta (by aesop_cat))
-    (NatIso.ofComponents (fun c => (StructuredArrow.eta _).symm)
-      (by intros ; apply StructuredArrow.ext ; aesop_cat))
+    (NatIso.ofComponents Cocones.eta)
+    (NatIso.ofComponents fun c => (StructuredArrow.eta _).symm)
 #align category_theory.limits.cocone.equiv_structured_arrow CategoryTheory.Limits.Cocone.equivStructuredArrow
 
 /-- A cocone is a colimit cocone iff it is initial. -/

@@ -126,7 +126,7 @@ def sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) 
 
 theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β)
     (x : Sigma γ) :
-    x ∈ sigmaLift f a b ↔ ∃ (ha : a.1 = x.1)(hb : b.1 = x.1), x.2 ∈ f (ha ▸ a.2) (hb ▸ b.2) := by
+    x ∈ sigmaLift f a b ↔ ∃ (ha : a.1 = x.1) (hb : b.1 = x.1), x.2 ∈ f (ha ▸ a.2) (hb ▸ b.2) := by
   obtain ⟨⟨i, a⟩, j, b⟩ := a, b
   obtain rfl | h := Decidable.eq_or_ne i j
   · constructor

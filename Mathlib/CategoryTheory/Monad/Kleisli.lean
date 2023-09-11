@@ -102,9 +102,7 @@ def adj : toKleisli T ⊣ fromKleisli T :=
 
 /-- The composition of the adjunction gives the original functor. -/
 def toKleisliCompFromKleisliIsoSelf : toKleisli T ⋙ fromKleisli T ≅ T :=
-  NatIso.ofComponents (fun X => Iso.refl _) fun f => by
-    dsimp
-    simp
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.kleisli.adjunction.to_kleisli_comp_from_kleisli_iso_self CategoryTheory.Kleisli.Adjunction.toKleisliCompFromKleisliIsoSelf
 
 end Adjunction
@@ -182,9 +180,7 @@ def adj : fromCokleisli U ⊣ toCokleisli U :=
 
 /-- The composition of the adjunction gives the original functor. -/
 def toCokleisliCompFromCokleisliIsoSelf : toCokleisli U ⋙ fromCokleisli U ≅ U :=
-  NatIso.ofComponents (fun X => Iso.refl _) fun f => by
-    dsimp
-    simp
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.cokleisli.adjunction.to_cokleisli_comp_from_cokleisli_iso_self CategoryTheory.Cokleisli.Adjunction.toCokleisliCompFromCokleisliIsoSelf
 
 end Adjunction
@@ -192,4 +188,3 @@ end Adjunction
 end Cokleisli
 
 end CategoryTheory
-

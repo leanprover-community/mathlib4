@@ -151,14 +151,14 @@ by providing isomorphisms between the domains and codomains,
 and a proof that the square commutes. -/
 @[simps!]
 def isoMk {f g : Arrow T} (l : f.left ≅ g.left) (r : f.right ≅ g.right)
-    (h : l.hom ≫ g.hom = f.hom ≫ r.hom) : f ≅ g :=
+    (h : l.hom ≫ g.hom = f.hom ≫ r.hom := by aesop_cat) : f ≅ g :=
   Comma.isoMk l r h
 #align category_theory.arrow.iso_mk CategoryTheory.Arrow.isoMk
 
 /-- A variant of `Arrow.isoMk` that creates an iso between two `Arrow.mk`s with a better type
 signature. -/
 abbrev isoMk' {W X Y Z : T} (f : W ⟶ X) (g : Y ⟶ Z) (e₁ : W ≅ Y) (e₂ : X ≅ Z)
-    (h : e₁.hom ≫ g = f ≫ e₂.hom) : Arrow.mk f ≅ Arrow.mk g :=
+    (h : e₁.hom ≫ g = f ≫ e₂.hom := by aesop_cat) : Arrow.mk f ≅ Arrow.mk g :=
   Arrow.isoMk e₁ e₂ h
 #align category_theory.arrow.iso_mk' CategoryTheory.Arrow.isoMk'
 
@@ -332,7 +332,7 @@ end Functor
 isomorphic arrows in `D`. -/
 def Arrow.isoOfNatIso {C D : Type _} [Category C] [Category D] {F G : C ⥤ D} (e : F ≅ G)
     (f : Arrow C) : F.mapArrow.obj f ≅ G.mapArrow.obj f :=
-  Arrow.isoMk (e.app f.left) (e.app f.right) (by simp)
+  Arrow.isoMk (e.app f.left) (e.app f.right)
 #align category_theory.arrow.iso_of_nat_iso CategoryTheory.Arrow.isoOfNatIso
 
 end CategoryTheory

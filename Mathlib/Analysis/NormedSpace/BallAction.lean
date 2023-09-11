@@ -157,45 +157,45 @@ section SMulCommClass
 
 variable [SMulCommClass 𝕜 𝕜' E]
 
-instance sMulCommClass_closedBall_closedBall_closedBall :
+instance instSMulCommClass_closedBall_closedBall_closedBall :
     SMulCommClass (closedBall (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (closedBall (0 : E) r) :=
   ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
-#align smul_comm_class_closed_ball_closed_ball_closed_ball sMulCommClass_closedBall_closedBall_closedBall
+#align smul_comm_class_closed_ball_closed_ball_closed_ball instSMulCommClass_closedBall_closedBall_closedBall
 
-instance sMulCommClass_closedBall_closedBall_ball :
+instance instSMulCommClass_closedBall_closedBall_ball :
     SMulCommClass (closedBall (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (ball (0 : E) r) :=
   ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
-#align smul_comm_class_closed_ball_closed_ball_ball sMulCommClass_closedBall_closedBall_ball
+#align smul_comm_class_closed_ball_closed_ball_ball instSMulCommClass_closedBall_closedBall_ball
 
-instance sMulCommClass_sphere_closedBall_closedBall :
+instance instSMulCommClass_sphere_closedBall_closedBall :
     SMulCommClass (sphere (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (closedBall (0 : E) r) :=
   ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
-#align smul_comm_class_sphere_closed_ball_closed_ball sMulCommClass_sphere_closedBall_closedBall
+#align smul_comm_class_sphere_closed_ball_closed_ball instSMulCommClass_sphere_closedBall_closedBall
 
-instance sMulCommClass_sphere_closedBall_ball :
+instance instSMulCommClass_sphere_closedBall_ball :
     SMulCommClass (sphere (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (ball (0 : E) r) :=
   ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
-#align smul_comm_class_sphere_closed_ball_ball sMulCommClass_sphere_closedBall_ball
+#align smul_comm_class_sphere_closed_ball_ball instSMulCommClass_sphere_closedBall_ball
 
-instance sMulCommClass_sphere_ball_ball [NormedAlgebra 𝕜 𝕜'] :
+instance instSMulCommClass_sphere_ball_ball [NormedAlgebra 𝕜 𝕜'] :
     SMulCommClass (sphere (0 : 𝕜) 1) (ball (0 : 𝕜') 1) (ball (0 : 𝕜') 1) :=
   ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : 𝕜')⟩
-#align smul_comm_class_sphere_ball_ball sMulCommClass_sphere_ball_ball
+#align smul_comm_class_sphere_ball_ball instSMulCommClass_sphere_ball_ball
 
-instance sMulCommClass_sphere_sphere_closedBall :
+instance instSMulCommClass_sphere_sphere_closedBall :
     SMulCommClass (sphere (0 : 𝕜) 1) (sphere (0 : 𝕜') 1) (closedBall (0 : E) r) :=
   ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
-#align smul_comm_class_sphere_sphere_closed_ball sMulCommClass_sphere_sphere_closedBall
+#align smul_comm_class_sphere_sphere_closed_ball instSMulCommClass_sphere_sphere_closedBall
 
-instance sMulCommClass_sphere_sphere_ball :
+instance instSMulCommClass_sphere_sphere_ball :
     SMulCommClass (sphere (0 : 𝕜) 1) (sphere (0 : 𝕜') 1) (ball (0 : E) r) :=
   ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
-#align smul_comm_class_sphere_sphere_ball sMulCommClass_sphere_sphere_ball
+#align smul_comm_class_sphere_sphere_ball instSMulCommClass_sphere_sphere_ball
 
-instance sMulCommClass_sphere_sphere_sphere :
+instance instSMulCommClass_sphere_sphere_sphere :
     SMulCommClass (sphere (0 : 𝕜) 1) (sphere (0 : 𝕜') 1) (sphere (0 : E) r) :=
   ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
-#align smul_comm_class_sphere_sphere_sphere sMulCommClass_sphere_sphere_sphere
+#align smul_comm_class_sphere_sphere_sphere instSMulCommClass_sphere_sphere_sphere
 
 end SMulCommClass
 

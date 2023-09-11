@@ -392,7 +392,7 @@ section Subperm
   a permutation of `l₂`. This is an analogue of `l₁ ⊆ l₂` which respects
   multiplicities of elements, and is used for the `≤` relation on multisets. -/
 def Subperm (l₁ l₂ : List α) : Prop :=
-  ∃ (l : _)(_ : l ~ l₁), l <+ l₂
+  ∃ (l : _) (_ : l ~ l₁), l <+ l₂
 #align list.subperm List.Subperm
 
 /-- `Subperm l₁ l₂`, denoted `l₁ <+~ l₂`, means that `l₁` is a sublist of
@@ -1236,15 +1236,15 @@ theorem length_permutations (l : List α) : length (permutations l) = (length l)
 #align list.length_permutations List.length_permutations
 
 theorem mem_permutations_of_perm_lemma {is l : List α}
-    (H : l ~ [] ++ is → (∃ (ts' : _)(_ : ts' ~ []), l = ts' ++ is) ∨ l ∈ permutationsAux is []) :
+    (H : l ~ [] ++ is → (∃ (ts' : _) (_ : ts' ~ []), l = ts' ++ is) ∨ l ∈ permutationsAux is []) :
     l ~ is → l ∈ permutations is := by simpa [permutations, perm_nil] using H
 #align list.mem_permutations_of_perm_lemma List.mem_permutations_of_perm_lemma
 
 theorem mem_permutationsAux_of_perm :
     ∀ {ts is l : List α},
-      l ~ is ++ ts → (∃ (is' : _)(_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is := by
+      l ~ is ++ ts → (∃ (is' : _) (_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is := by
   show ∀ (ts is l : List α),
-      l ~ is ++ ts → (∃ (is' : _)(_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is
+      l ~ is ++ ts → (∃ (is' : _) (_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is
   refine' permutationsAux.rec (by simp) _
   intro t ts is IH1 IH2 l p
   rw [permutationsAux_cons, mem_foldr_permutationsAux2]

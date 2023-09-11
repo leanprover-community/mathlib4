@@ -368,8 +368,8 @@ def sheafEquivSheafOfTypes : Sheaf J (Type w) ≌ SheafOfTypes J where
   inverse :=
     { obj := fun S => ⟨S.val, (isSheaf_iff_isSheaf_of_type _ _).2 S.2⟩
       map := fun f => ⟨f.val⟩ }
-  unitIso := NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
-  counitIso := NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+  unitIso := NatIso.ofComponents fun X => Iso.refl _
+  counitIso := NatIso.ofComponents fun X => Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_equiv_SheafOfTypes CategoryTheory.sheafEquivSheafOfTypes
 
@@ -441,14 +441,6 @@ instance Sheaf.Hom.addCommGroup : AddCommGroup (P ⟶ Q) :=
 
 instance : Preadditive (Sheaf J A) where
   homGroup P Q := Sheaf.Hom.addCommGroup
-  add_comp P Q R f f' g := by
-    ext
-    dsimp
-    simp
-  comp_add P Q R f g g' := by
-    ext
-    dsimp
-    simp
 
 end Preadditive
 

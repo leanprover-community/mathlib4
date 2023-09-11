@@ -60,7 +60,7 @@ def Sieve.generateSingleton {X Y : C} (f : Y ⟶ X) : Sieve X where
 
 lemma Sieve.generateSingleton_eq {X Y : C} (f : Y ⟶ X) :
     Sieve.generate (Presieve.singleton f) = Sieve.generateSingleton f := by
-  ext Z ; intro g
+  ext Z g
   constructor
   · rintro ⟨W,i,p,⟨⟩,rfl⟩
     exact ⟨i,rfl⟩
@@ -228,7 +228,8 @@ def Sieve.generateFamily {B : C} {α : Type _} (X : α → C) (π : (a : α) →
 
 lemma Sieve.generateFamily_eq {B : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B)) :
     Sieve.generate (Presieve.ofArrows X π) = Sieve.generateFamily X π := by
-  ext Y ; intro g ;  constructor
+  ext Y g
+  constructor
   · rintro ⟨W, g, f, ⟨a⟩, rfl⟩
     exact ⟨a, g, rfl⟩
   · rintro ⟨a, g, rfl⟩

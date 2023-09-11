@@ -62,7 +62,7 @@ respects multiplication, i.e. the product of an element of degree `i` and an ele
 is an element of degree `i + j`.
 
 Note that the fact that `A` is internally-graded, `GradedAlgebra 𝒜`, implies an externally-graded
-algebra structure `DirectSum.GAlgebra R (λ i, ↥(𝒜 i))`, which in turn makes available an
+algebra structure `DirectSum.GAlgebra R (fun i ↦ ↥(𝒜 i))`, which in turn makes available an
 `Algebra R (⨁ i, 𝒜 i)` instance.
 -/
 class GradedRing (𝒜 : ι → σ) extends SetLike.GradedMonoid 𝒜, DirectSum.Decomposition 𝒜

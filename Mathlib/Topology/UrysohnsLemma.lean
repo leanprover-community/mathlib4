@@ -98,7 +98,7 @@ variable [NormalSpace X]
 namespace CU
 
 /-- Due to `normal_exists_closure_subset`, for each `c : CU X` there exists an open set `u`
-such chat `c.C ⊆ u` and `closure u ⊆ c.U`. `c.left` is the pair `(c.C, u)`. -/
+such that `c.C ⊆ u` and `closure u ⊆ c.U`. `c.left` is the pair `(c.C, u)`. -/
 @[simps C]
 def left (c : CU X) : CU X where
   C := c.C
@@ -109,7 +109,7 @@ def left (c : CU X) : CU X where
 #align urysohns.CU.left Urysohns.CU.left
 
 /-- Due to `normal_exists_closure_subset`, for each `c : CU X` there exists an open set `u`
-such chat `c.C ⊆ u` and `closure u ⊆ c.U`. `c.right` is the pair `(closure u, c.U)`. -/
+such that `c.C ⊆ u` and `closure u ⊆ c.U`. `c.right` is the pair `(closure u, c.U)`. -/
 @[simps U]
 def right (c : CU X) : CU X where
   C := closure (normal_exists_closure_subset c.closed_C c.open_U c.subset).choose

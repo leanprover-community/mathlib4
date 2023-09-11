@@ -41,10 +41,14 @@ abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1
   ⟨Prod.fst ∘ Subtype.val, by apply Continuous.comp <;> continuity⟩
 #align Top.pullback_fst TopCat.pullbackFst
 
+@[simp] lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
+
 /-- The second projection from the pullback. -/
 abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ Y :=
   ⟨Prod.snd ∘ Subtype.val, by apply Continuous.comp <;> continuity⟩
 #align Top.pullback_snd TopCat.pullbackSnd
+
+@[simp] lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl
 
 /-- The explicit pullback cone of `X, Y` given by `{ p : X × Y // f p.1 = g p.2 }`. -/
 def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
@@ -52,9 +56,8 @@ def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
     (by
       dsimp [pullbackFst, pullbackSnd, Function.comp]
       ext ⟨x, h⟩
-      simp only [TopCat.comp_app]
-      simp only [hom_apply]
-      simp [h, ← hom_apply])
+      rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk]
+      exact h)
 #align Top.pullback_cone TopCat.pullbackCone
 
 /-- The constructed cone is a limit. -/
@@ -73,15 +76,13 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
         }
       refine' ⟨_, _, _⟩
       · delta pullbackCone
-        apply Faithful.map_injective (F := (forget TopCat))
         ext a
-        rw [TopCat.comp_app]
-        simp [hom_apply]
+        rw [comp_apply, ContinuousMap.coe_mk]
+        rfl
       · delta pullbackCone
-        apply Faithful.map_injective (F := (forget TopCat))
         ext a
-        rw [TopCat.comp_app]
-        simp [hom_apply]
+        rw [comp_apply, ContinuousMap.coe_mk]
+        rfl
       · intro m h₁ h₂
         -- Porting note: used to be ext x
         apply ContinuousMap.ext; intro x
@@ -141,7 +142,7 @@ theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z}
       ⟨⟨(pullback.fst : pullback f g ⟶ _) x, (pullback.snd : pullback f g ⟶ _) x⟩, by
         simpa using ConcreteCategory.congr_hom pullback.condition x⟩ := by
   apply Subtype.ext; apply Prod.ext
-  exacts[ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_fst f g) x,
+  exacts [ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_fst f g) x,
     ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_snd f g) x]
 #align Top.pullback_iso_prod_subtype_hom_apply TopCat.pullbackIsoProdSubtype_hom_apply
 
@@ -165,14 +166,12 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     simp only [← comp_apply, Set.mem_setOf_eq]
     congr 1
     simp [pullback.condition]
-  · intro h
+  · rintro (h : f (_, _).1 = g (_, _).2)
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
     apply Concrete.limit_ext
-    rintro ⟨⟨⟩⟩
-    · conv_rhs => rw [hom_apply]
-      simp
-    · conv_rhs => rw [hom_apply]
-      simp
+    rintro ⟨⟨⟩⟩ <;>
+    rw [←comp_apply, prod.comp_lift, ←comp_apply, limit.lift_π] <;>
+    simp
 #align Top.range_pullback_to_prod TopCat.range_pullback_to_prod
 
 theorem inducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -195,7 +194,9 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   ext
   constructor
   · rintro ⟨y, rfl⟩
-    simp
+    simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range, ←comp_apply, limit.lift_π,
+      PullbackCone.mk_pt, PullbackCone.mk_π_app]
+    simp only [comp_apply, exists_apply_eq_apply, and_self]
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
   have : f₁ x₁ = f₂ x₂ := by
     apply (TopCat.mono_iff_injective _).mp H₃
@@ -204,13 +205,11 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
     simp only [← comp_apply, pullback.condition]
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
   apply Concrete.limit_ext
-  rintro (_ | _ | _)
-  · simp only [TopCat.comp_app, limit.lift_π_apply, Category.assoc, PullbackCone.mk_π_app_one, hx₁,
-      pullbackIsoProdSubtype_inv_fst_apply, Subtype.coe_mk]
-    simp only [← comp_apply]
-    have : pullback.fst ≫ g₁ = limit.π (cospan g₁ g₂) none := by
-      apply limit.w _ WalkingCospan.Hom.inl
-    rw [this]
+  rintro (_ | _ | _) <;>
+  simp only [←comp_apply, Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
+  · simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply,
+      pullbackFst_apply, hx₁]
+    rw [← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl, comp_apply (g := g₁)]
   · simp [hx₁]
   · simp [hx₂]
 #align Top.range_pullback_map TopCat.range_pullback_map
@@ -310,7 +309,8 @@ theorem embedding_of_pullback_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y �
   convert H₂.comp (snd_embedding_of_left_embedding H₁ g)
   erw [← coe_comp]
   congr
-  exact (limit.w _ WalkingCospan.Hom.inr).symm
+  rw [←limit.w _ WalkingCospan.Hom.inr]
+  rfl
 #align Top.embedding_of_pullback_embeddings TopCat.embedding_of_pullback_embeddings
 
 theorem snd_openEmbedding_of_left_openEmbedding {X Y S : TopCat} {f : X ⟶ S} (H : OpenEmbedding f)
@@ -338,7 +338,8 @@ theorem openEmbedding_of_pullback_open_embeddings {X Y S : TopCat} {f : X ⟶ S}
   convert H₂.comp (snd_openEmbedding_of_left_openEmbedding H₁ g)
   erw [← coe_comp]
   congr
-  exact (limit.w _ WalkingCospan.Hom.inr).symm
+  rw [←(limit.w _ WalkingCospan.Hom.inr)]
+  rfl
 #align Top.open_embedding_of_pullback_open_embeddings TopCat.openEmbedding_of_pullback_open_embeddings
 
 theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}

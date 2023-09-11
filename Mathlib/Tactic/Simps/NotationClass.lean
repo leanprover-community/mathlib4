@@ -64,7 +64,7 @@ def copyFirst : findArgType := λ _ _ args => return (args.push <| args[0]?.getD
 def copySecond : findArgType := λ _ _ args => return (args.push <| args[1]?.getD default).map some
 
 /-- Find arguments by prepending `ℕ` and duplicating the first argument. Used for `nsmul`. -/
-def nsmulArgs: findArgType := λ _ _ args =>
+def nsmulArgs : findArgType := λ _ _ args =>
   return #[Expr.const `Nat [], args[0]?.getD default] ++ args |>.map some
 
 /-- Find arguments by prepending `ℤ` and duplicating the first argument. Used for `zsmul`. -/
@@ -93,7 +93,7 @@ structure AutomaticProjectionData where
   /-- `className` is the name of the class we are looking for. -/
   className : Name
   /-- `isNotation` is a boolean that specifies whether this is notation
-    (false for the coercions `FunLike` and SetLike`). If this is set to true, we add the current
+    (false for the coercions `FunLike` and `SetLike`). If this is set to true, we add the current
     class as hypothesis during type-class synthesis. -/
   isNotation := true
   /-- The method to find the arguments of the class. -/

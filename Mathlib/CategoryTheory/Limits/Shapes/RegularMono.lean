@@ -52,7 +52,7 @@ class RegularMono (f : X ⟶ Y) where
   /-- Another map from the codomain of `f` to `Z` -/
   right : Y ⟶ Z
   /-- `f` equalizes the two maps -/
-  w : f ≫ left = f ≫ right
+  w : f ≫ left = f ≫ right := by aesop_cat
   /-- `f` is the equalizer of the two maps -/
   isLimit : IsLimit (Fork.ofι f w)
 #align category_theory.regular_mono CategoryTheory.RegularMono
@@ -77,12 +77,11 @@ instance equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
 #align category_theory.equalizer_regular CategoryTheory.equalizerRegular
 
 /-- Every split monomorphism is a regular monomorphism. -/
-instance (priority := 100) RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] : RegularMono f
-    where
+instance (priority := 100) RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] :
+    RegularMono f where
   Z := Y
   left := 𝟙 Y
   right := retraction f ≫ f
-  w := by aesop_cat
   isLimit := isSplitMonoEqualizes f
 #align category_theory.regular_mono.of_is_split_mono CategoryTheory.RegularMono.ofIsSplitMono
 
@@ -192,7 +191,7 @@ class RegularEpi (f : X ⟶ Y) where
   /-- Two maps to the domain of `f` -/
   (left right : W ⟶ X)
   /-- `f` coequalizes the two maps -/
-  w : left ≫ f = right ≫ f
+  w : left ≫ f = right ≫ f := by aesop_cat
   /-- `f` is the coequalizer -/
   isColimit : IsColimit (Cofork.ofπ f w)
 #align category_theory.regular_epi CategoryTheory.RegularEpi
@@ -212,7 +211,8 @@ instance coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
   w := coequalizer.condition g h
   isColimit :=
     Cofork.IsColimit.mk _ (fun s => colimit.desc _ s) (by simp) fun s m w => by
-      apply coequalizer.hom_ext; simp [← w]
+      apply coequalizer.hom_ext
+      simp [← w]
 #align category_theory.coequalizer_regular CategoryTheory.coequalizerRegular
 
 /-- Every split epimorphism is a regular epimorphism. -/
@@ -221,7 +221,6 @@ instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : 
   W := X
   left := 𝟙 X
   right := f ≫ section_ f
-  w := by aesop_cat
   isColimit := isSplitEpiCoequalizes f
 #align category_theory.regular_epi.of_split_epi CategoryTheory.RegularEpi.ofSplitEpi
 

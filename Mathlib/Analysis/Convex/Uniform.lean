@@ -86,10 +86,10 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
   have hxy' : ε / 3 ≤ ‖x' - y'‖ :=
     calc
       ε / 3 = ε - (ε / 3 + ε / 3) := by ring
-      _ ≤ ‖x - y‖ - (‖x' - x‖ + ‖y' - y‖) :=
-        (sub_le_sub hxy
-          (add_le_add ((h₂ _ hx hx'.le).trans <| min_le_of_right_le <| min_le_left _ _) <|
-            (h₂ _ hy hy'.le).trans <| min_le_of_right_le <| min_le_left _ _))
+      _ ≤ ‖x - y‖ - (‖x' - x‖ + ‖y' - y‖) := by
+        gcongr
+        · exact (h₂ _ hx hx'.le).trans <| min_le_of_right_le <| min_le_left _ _
+        · exact (h₂ _ hy hy'.le).trans <| min_le_of_right_le <| min_le_left _ _
       _ ≤ _ := by
         have : ∀ x' y', x - y = x' - y' + (x - x') + (y' - y) := fun _ _ => by abel
         rw [sub_le_iff_le_add, norm_sub_rev _ x, ← add_assoc, this]
@@ -109,7 +109,8 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
       norm_num -- Porting note: these three extra lines needed to make `exact` work
       have : 3 * (δ / 3) * (1 / 3) = δ / 3 := by linarith
       rw [this, mul_comm]
-      exact mul_le_mul_of_nonneg_left (min_le_of_right_le <| min_le_right _ _) three_pos.le
+      gcongr
+      exact min_le_of_right_le <| min_le_right _ _
 #align exists_forall_closed_ball_dist_add_le_two_sub exists_forall_closed_ball_dist_add_le_two_sub
 
 theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : ℝ) :

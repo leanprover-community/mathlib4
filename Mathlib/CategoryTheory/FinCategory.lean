@@ -106,12 +106,8 @@ noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α
 /-- The constructed category (`AsType α`) is equivalent to `ObjAsType α`. -/
 noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α :=
   Equivalence.mk (asTypeToObjAsType α) (objAsTypeToAsType α)
-    (NatIso.ofComponents Iso.refl fun _ => by
-      dsimp
-      simp)
-    (NatIso.ofComponents Iso.refl fun _ => by
-      dsimp
-      simp)
+    (NatIso.ofComponents Iso.refl)
+    (NatIso.ofComponents Iso.refl)
 #align category_theory.fin_category.as_type_equiv_obj_as_type CategoryTheory.FinCategory.asTypeEquivObjAsType
 
 noncomputable instance asTypeFinCategory : FinCategory (AsType α) where

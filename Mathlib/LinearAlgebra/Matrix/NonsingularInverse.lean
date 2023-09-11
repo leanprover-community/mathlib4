@@ -180,6 +180,11 @@ instance invertibleTranspose [Invertible A] : Invertible Aᵀ :=
   invertibleOfDetInvertible Aᵀ
 #align matrix.invertible_transpose Matrix.invertibleTranspose
 
+-- porting note: added because Lean can no longer find this instance automatically
+/-- The conjugate transpose of an invertible matrix is invertible. -/
+instance invertibleConjTranspose [StarRing α] [Invertible A] : Invertible Aᴴ :=
+  Invertible.star A
+
 /-- A matrix is invertible if the transpose is invertible. -/
 def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A := by
   rw [← transpose_transpose A]

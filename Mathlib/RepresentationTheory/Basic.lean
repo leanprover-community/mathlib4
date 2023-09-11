@@ -27,7 +27,7 @@ representations.
   * Representation.character
   * Representation.tprod
   * Representation.linHom
-  * Represensation.dual
+  * Representation.dual
 
 ## Implementation notes
 
@@ -44,7 +44,7 @@ section
 
 variable (k G V : Type _) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
-/-- A representation of `G` on the `k`-module `V` is an homomorphism `G →* (V →ₗ[k] V)`.
+/-- A representation of `G` on the `k`-module `V` is a homomorphism `G →* (V →ₗ[k] V)`.
 -/
 abbrev Representation :=
   G →* V →ₗ[k] V

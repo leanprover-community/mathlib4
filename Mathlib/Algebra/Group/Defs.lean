@@ -124,13 +124,13 @@ section Mul
 variable [Mul G]
 
 /-- `leftMul g` denotes left multiplication by `g` -/
-@[to_additive "`left_add g` denotes left addition by `g`"]
+@[to_additive "`leftAdd g` denotes left addition by `g`"]
 def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
 #align left_mul leftMul
 #align left_add leftAdd
 
 /-- `rightMul g` denotes right multiplication by `g` -/
-@[to_additive "`right_add g` denotes right addition by `g`"]
+@[to_additive "`rightAdd g` denotes right addition by `g`"]
 def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
 #align right_mul rightMul
 #align right_add rightAdd

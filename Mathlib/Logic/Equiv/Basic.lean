@@ -62,7 +62,7 @@ def pprodEquivProd : PProd α β ≃ α × β where
 
 /-- Product of two equivalences, in terms of `PProd`. If `α ≃ β` and `γ ≃ δ`, then
 `PProd α γ ≃ PProd β δ`. -/
--- porting note: in Lean 3 this had @[congr]`
+-- porting note: in Lean 3 this had `@[congr]`
 @[simps apply]
 def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β δ where
   toFun x := ⟨e₁ x.1, e₂ x.2⟩
@@ -1028,7 +1028,7 @@ def natEquivNatSumPUnit : ℕ ≃ Sum ℕ PUnit where
   right_inv := by rintro (_ | _) <;> rfl
 #align equiv.nat_equiv_nat_sum_punit Equiv.natEquivNatSumPUnit
 
-/-- `ℕ ⊕ Punit` is equivalent to `ℕ`. -/
+/-- `ℕ ⊕ PUnit` is equivalent to `ℕ`. -/
 def natSumPUnitEquivNat : Sum ℕ PUnit ≃ ℕ :=
   natEquivNatSumPUnit.symm
 #align equiv.nat_sum_punit_equiv_nat Equiv.natSumPUnitEquivNat
@@ -1315,7 +1315,7 @@ def piSplitAt {α : Type _} [DecidableEq α] (i : α) (β : α → Type _) :
   invFun f j := if h : j = i then h.symm.rec f.1 else f.2 ⟨j, h⟩
   right_inv f := by
     ext x
-    exacts[dif_pos rfl, (dif_neg x.2).trans (by cases x; rfl)]
+    exacts [dif_pos rfl, (dif_neg x.2).trans (by cases x; rfl)]
   left_inv f := by
     ext x
     dsimp only
@@ -1430,7 +1430,7 @@ where `p : β → Prop`, permuting only the `b : β` that satisfy `p b`.
 This can be used to extend the domain across a function `f : α → β`,
 keeping everything outside of `Set.range f` fixed. For this use-case `Equiv` given by `f` can
 be constructed by `Equiv.of_leftInverse'` or `Equiv.of_leftInverse` when there is a known
-inverse, or `Equiv.ofInjective` in the general case.`.
+inverse, or `Equiv.ofInjective` in the general case.
 -/
 def Perm.extendDomain : Perm β' :=
   (permCongr f e).subtypeCongr (Equiv.refl _)

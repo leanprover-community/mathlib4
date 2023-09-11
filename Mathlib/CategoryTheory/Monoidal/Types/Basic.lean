@@ -18,9 +18,7 @@ import Mathlib.Logic.Equiv.Fin
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits MonoidalCategory
 
 open Tactic
 

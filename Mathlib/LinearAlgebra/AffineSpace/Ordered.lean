@@ -178,7 +178,7 @@ Given an interval `[a, b]` and a point `c ∈ (a, b)`, `c = lineMap a b r`, ther
 say that the point `(c, f c)` is above/below the segment `[(a, f a), (b, f b)]`:
 
 * compare `f c` to `lineMap (f a) (f b) r`;
-* compare `slope f a c` to `slope `f a b`;
+* compare `slope f a c` to `slope f a b`;
 * compare `slope f c b` to `slope f a b`;
 * compare `slope f a c` to `slope f c b`.
 

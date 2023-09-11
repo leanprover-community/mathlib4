@@ -95,9 +95,7 @@ less than or equal to the sum of the maximum values of the summands.
 
 universe u v
 
-open Finset
-
-open Classical BigOperators NNReal ENNReal
+open Finset Classical BigOperators NNReal ENNReal
 
 set_option linter.uppercaseLean3 false
 
@@ -107,7 +105,7 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issu
 
 variable {ι : Type u} (s : Finset ι)
 
-section GeomMeanLeArithMean
+section GeomMeanLEArithMean
 
 /-! ### AM-GM inequality -/
 
@@ -244,7 +242,7 @@ theorem geom_mean_le_arith_mean4_weighted {w₁ w₂ w₃ w₄ p₁ p₂ p₃ p�
 
 end Real
 
-end GeomMeanLeArithMean
+end GeomMeanLEArithMean
 
 section Young
 
@@ -508,7 +506,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
     refine' le_trans (Lp_add_le s f g hp) (add_le_add _ _) <;>
         rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr pos)] <;>
       refine' sum_le_tsum _ (fun _ _ => zero_le _) _
-    exacts[hf, hg]
+    exacts [hf, hg]
   have bdd : BddAbove (Set.range fun s => ∑ i in s, (f i + g i) ^ p) := by
     refine' ⟨((∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p)) ^ p, _⟩
     rintro a ⟨s, rfl⟩
@@ -642,7 +640,7 @@ theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.IsConjugateExponent q) {A B
   lift g to ι → ℝ≥0 using hg
   lift A to ℝ≥0 using hA
   lift B to ℝ≥0 using hB
-  norm_cast  at hf_sum hg_sum
+  norm_cast at hf_sum hg_sum
   obtain ⟨C, hC, H⟩ := NNReal.inner_le_Lp_mul_Lq_hasSum hpq hf_sum hg_sum
   refine' ⟨C, C.prop, hC, _⟩
   norm_cast

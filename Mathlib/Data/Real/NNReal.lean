@@ -383,7 +383,7 @@ protected theorem coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NN
 #align nnreal.coe_mono NNReal.coe_mono
 
 @[gcongr]
-theorem _root_.NNReal.toReal_le_toReal {x y : NNReal} (h : x ≤ y) : (x:ℝ) ≤ y := NNReal.coe_mono h
+theorem _root_.NNReal.toReal_le_toReal {x y : NNReal} (h : x ≤ y) : (x : ℝ) ≤ y := NNReal.coe_mono h
 
 protected theorem _root_.Real.toNNReal_mono : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max h (le_refl 0)

@@ -857,7 +857,7 @@ theorem toMatrix_lsmul (x : R) :
   toMatrix_distrib_mul_action_toLinearMap b x
 #align algebra.to_matrix_lsmul Algebra.toMatrix_lsmul
 
-/-- `leftMulMatrix b x` is the matrix corresponding to the linear map `λ y, x * y`.
+/-- `leftMulMatrix b x` is the matrix corresponding to the linear map `fun y ↦ x * y`.
 
 `leftMulMatrix_eq_repr_mul` gives a formula for the entries of `leftMulMatrix`.
 

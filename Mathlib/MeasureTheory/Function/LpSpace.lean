@@ -107,11 +107,9 @@ def Lp {α} (E : Type _) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : �
   neg_mem' {f} hf := by rwa [Set.mem_setOf_eq, snorm_congr_ae (AEEqFun.coeFn_neg f), snorm_neg]
 #align measure_theory.Lp MeasureTheory.Lp
 
--- mathport name: measure_theory.L1
-scoped notation:25 α " →₁[" μ "] " E => MeasureTheory.Lp (α := α) E 1 μ
-
--- mathport name: measure_theory.L2
-scoped notation:25 α " →₂[" μ "] " E => MeasureTheory.Lp (α := α) E 2 μ
+-- Porting note: calling the first argument `α` breaks the `(α := ·)` notation
+scoped notation:25 α' " →₁[" μ "] " E => MeasureTheory.Lp (α := α') E 1 μ
+scoped notation:25 α' " →₂[" μ "] " E => MeasureTheory.Lp (α := α') E 2 μ
 
 namespace Memℒp
 
@@ -511,7 +509,7 @@ instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E] : IsSc
   smul_assoc k k' f := Subtype.ext <| smul_assoc k k' (f : α →ₘ[μ] E)
 
 instance instBoundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp E p μ) :=
-  -- TODO: add `BoundedSMul.of_nnnorm_smul_le
+  -- TODO: add `BoundedSMul.of_nnnorm_smul_le`
   BoundedSMul.of_norm_smul_le fun r f => by
     suffices (‖r • f‖₊ : ℝ≥0∞) ≤ ‖r‖₊ * ‖f‖₊ by exact_mod_cast this
     rw [nnnorm_def, nnnorm_def, ENNReal.coe_toNNReal (Lp.snorm_ne_top _),

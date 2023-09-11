@@ -564,12 +564,14 @@ theorem norm_eq_mul_conj (n : ℤ√d) : (norm n : ℤ√d) = n * star n := by
 @[simp]
 theorem norm_neg (x : ℤ√d) : (-x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
+  -- See https://github.com/leanprover-community/mathlib4/issues/5026
   Zsqrtd.coe_int_inj <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
 #align zsqrtd.norm_neg Zsqrtd.norm_neg
 
 @[simp]
 theorem norm_conj (x : ℤ√d) : (star x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
+  -- See https://github.com/leanprover-community/mathlib4/issues/5026
   Zsqrtd.coe_int_inj <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
 #align zsqrtd.norm_conj Zsqrtd.norm_conj
 

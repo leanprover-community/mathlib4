@@ -201,7 +201,7 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
 
 /-- The original functor factors through the induced functor. -/
 def lift.isLift : functor r ⋙ lift r F H ≅ F :=
-  NatIso.ofComponents (fun X ↦ Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents fun X ↦ Iso.refl _
 #align category_theory.quotient.lift.is_lift CategoryTheory.Quotient.lift.isLift
 
 @[simp]

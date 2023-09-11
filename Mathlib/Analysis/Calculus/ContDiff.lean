@@ -932,12 +932,12 @@ theorem contDiff_prodAssoc_symm : ContDiff 𝕜 ⊤ <| (Equiv.prodAssoc E F G).s
 /-! ### Bundled derivatives are smooth -/
 
 /-- One direction of `contDiffWithinAt_succ_iff_hasFDerivWithinAt`, but where all derivatives
-taken within the same set. Version for partial derivatives / functions with parameters.  f x` is a
+taken within the same set. Version for partial derivatives / functions with parameters.  `f x` is a
 `C^n+1` family of functions and `g x` is a `C^n` family of points, then the derivative of `f x` at
 `g x` depends in a `C^n` way on `x`. We give a general version of this fact relative to sets which
-may not have unique derivatives, in the following form.  If `f : E × F → G` is `C^n+1` at `(x₀,
-g(x₀))` in `(s ∪ {x₀}) × t ⊆ E × F` and `g : E → F` is `C^n` at `x₀` within some set `s ⊆ E`, then
-there is a function `f' : E → F →L[𝕜] G` that is `C^n` at `x₀` within `s` such that for all `x`
+may not have unique derivatives, in the following form.  If `f : E × F → G` is `C^n+1` at
+`(x₀, g(x₀))` in `(s ∪ {x₀}) × t ⊆ E × F` and `g : E → F` is `C^n` at `x₀` within some set `s ⊆ E`,
+then there is a function `f' : E → F →L[𝕜] G` that is `C^n` at `x₀` within `s` such that for all `x`
 sufficiently close to `x₀` within `s ∪ {x₀}` the function `y ↦ f x y` has derivative `f' x` at `g x`
 within `t ⊆ F`.  For convenience, we return an explicit set of `x`'s where this holds that is a
 subset of `s ∪ {x₀}`.  We need one additional condition, namely that `t` is a neighborhood of
@@ -1219,7 +1219,7 @@ theorem ContDiffOn.add {s : Set E} {f g : E → F} (hf : ContDiffOn 𝕜 n f s)
 variable {i : ℕ}
 
 /-- The iterated derivative of the sum of two functions is the sum of the iterated derivatives.
-See also `iteratedFDerivWithin_add_apply'`, which uses the spelling `(λ x, f x + g x)`
+See also `iteratedFDerivWithin_add_apply'`, which uses the spelling `(fun x ↦ f x + g x)`
 instead of `f + g`. -/
 theorem iteratedFDerivWithin_add_apply {f g : E → F} (hf : ContDiffOn 𝕜 i f s)
     (hg : ContDiffOn 𝕜 i g s) (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
@@ -1230,7 +1230,7 @@ theorem iteratedFDerivWithin_add_apply {f g : E → F} (hf : ContDiffOn 𝕜 i f
 #align iterated_fderiv_within_add_apply iteratedFDerivWithin_add_apply
 
 /-- The iterated derivative of the sum of two functions is the sum of the iterated derivatives.
-This is the same as `iteratedFDerivWithin_add_apply`, but using the spelling `(λ x, f x + g x)`
+This is the same as `iteratedFDerivWithin_add_apply`, but using the spelling `(fun x ↦ f x + g x)`
 instead of `f + g`, which can be handy for some rewrites.
 TODO: use one form consistently. -/
 theorem iteratedFDerivWithin_add_apply' {f g : E → F} (hf : ContDiffOn 𝕜 i f s)
@@ -1896,7 +1896,7 @@ theorem contDiff_clm_apply_iff {n : ℕ∞} {f : E → F →L[𝕜] G} [FiniteDi
 /-- This is a useful lemma to prove that a certain operation preserves functions being `C^n`.
 When you do induction on `n`, this gives a useful characterization of a function being `C^(n+1)`,
 assuming you have already computed the derivative. The advantage of this version over
-`contDiff_succ_iff_fderiv` is that both occurences of `ContDiff` are for functions with the same
+`contDiff_succ_iff_fderiv` is that both occurrences of `ContDiff` are for functions with the same
 domain and codomain (`E` and `F`). This is not the case for `contDiff_succ_iff_fderiv`, which
 often requires an inconvenient need to generalize `F`, which results in universe issues
 (see the discussion in the section of `ContDiff.comp`).
@@ -2016,7 +2016,7 @@ theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith {E F : Type _} [NormedAddC
   (exists_gt _).imp <| hf.exists_lipschitzOnWith_of_nnnorm_lt hs
 #align has_ftaylor_series_up_to_on.exists_lipschitz_on_with HasFTaylorSeriesUpToOn.exists_lipschitzOnWith
 
-/-- If `f` is `C^1` within a conves set `s` at `x`, then it is Lipschitz on a neighborhood of `x`
+/-- If `f` is `C^1` within a convex set `s` at `x`, then it is Lipschitz on a neighborhood of `x`
 within `s`. -/
 theorem ContDiffWithinAt.exists_lipschitzOnWith {E F : Type _} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F} {s : Set E} {x : E}

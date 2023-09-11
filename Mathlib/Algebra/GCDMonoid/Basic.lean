@@ -281,7 +281,7 @@ class GCDMonoid (α : Type _) [CancelCommMonoidWithZero α] where
   gcd_dvd_left : ∀ a b, gcd a b ∣ a
   /-- The GCD is a divisor of the second element. -/
   gcd_dvd_right : ∀ a b, gcd a b ∣ b
-  /-- Tny common divisor of both elements is a divisor of the GCD. -/
+  /-- Any common divisor of both elements is a divisor of the GCD. -/
   dvd_gcd : ∀ {a b c}, a ∣ c → a ∣ b → a ∣ gcd c b
   /-- The product of two elements is `Associated` with the product of their GCD and LCM. -/
   gcd_mul_lcm : ∀ a b, Associated (gcd a b * lcm a b) (a * b)

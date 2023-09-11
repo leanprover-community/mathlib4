@@ -134,7 +134,7 @@ theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj
 /-- `Opens.map f` and `OpenNhds.map f` form a commuting square (up to natural isomorphism)
 with the inclusion functors into `Opens X`. -/
 def inclusionMapIso (x : X) : inclusion (f x) ⋙ Opens.map f ≅ map f x ⋙ inclusion x :=
-  NatIso.ofComponents (fun U => by constructor; rfl; rfl; exact 𝟙 _; exact 𝟙 _) (by simp)
+  NatIso.ofComponents fun U => by constructor; rfl; rfl; exact 𝟙 _; exact 𝟙 _
 #align topological_space.open_nhds.inclusion_map_iso TopologicalSpace.OpenNhds.inclusionMapIso
 
 @[simp]

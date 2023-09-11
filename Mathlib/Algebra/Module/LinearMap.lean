@@ -398,7 +398,7 @@ end Pointwise
 variable (M M₂)
 
 /-- A typeclass for `SMul` structures which can be moved through a `LinearMap`.
-This typeclass is generated automatically from a `IsScalarTower` instance, but exists so that
+This typeclass is generated automatically from an `IsScalarTower` instance, but exists so that
 we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be moved even if
 `R` does not support negation.
 -/
@@ -989,7 +989,7 @@ section Module
 
 variable [Semiring S] [Module S M₂] [SMulCommClass R₂ S M₂]
 
-instance : Module S (M →ₛₗ[σ₁₂] M₂)
+instance module : Module S (M →ₛₗ[σ₁₂] M₂)
     where
   add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
   zero_smul _ := ext fun _ ↦ zero_smul _ _

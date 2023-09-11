@@ -334,7 +334,7 @@ theorem natDegree_monomial [DecidableEq R] (i : ℕ) (r : R) :
 theorem natDegree_monomial_le (a : R) {m : ℕ} : (monomial m a).natDegree ≤ m := by
   rw [Polynomial.natDegree_monomial]
   split_ifs
-  exacts[Nat.zero_le _, rfl.le]
+  exacts [Nat.zero_le _, rfl.le]
 #align polynomial.nat_degree_monomial_le Polynomial.natDegree_monomial_le
 
 theorem natDegree_monomial_eq (i : ℕ) {r : R} (r0 : r ≠ 0) : (monomial i r).natDegree = i :=

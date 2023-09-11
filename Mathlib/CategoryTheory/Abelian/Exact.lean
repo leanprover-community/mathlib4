@@ -152,7 +152,7 @@ def isColimitCoimage (h : Exact f g) :
       (by rw [← cokernel.π_desc f u hu, ← Category.assoc, h.2, zero_comp]))
     (by aesop_cat) _
   intros _ _ _ _ hm
-  apply coequalizer.hom_ext
+  ext
   rw [hm, cokernel.π_desc]
 #align category_theory.abelian.is_colimit_coimage CategoryTheory.Abelian.isColimitCoimage
 
@@ -366,7 +366,7 @@ variable [PreservesFiniteLimits L] [PreservesFiniteColimits L]
 
 /-- A functor preserving finite limits and finite colimits preserves exactness. The converse
 result is also true, see `Functor.preservesFiniteLimitsOfMapExact` and
-`Functor.preservesFiniteCoimitsOfMapExact`. -/
+`Functor.preservesFiniteColimitsOfMapExact`. -/
 theorem map_exact {X Y Z : A} (f : X ⟶ Y) (g : Y ⟶ Z) (e1 : Exact f g) :
     Exact (L.map f) (L.map g) := by
   let hcoker := isColimitOfHasCokernelOfPreservesColimit L f
