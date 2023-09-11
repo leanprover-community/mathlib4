@@ -14,7 +14,7 @@ import Mathlib.Algebra.Order.Monoid.Units
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- The units of an ordered commutative monoid form an ordered commutative group. -/
 @[to_additive

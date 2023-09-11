@@ -36,7 +36,7 @@ dedekind domain, dedekind ring
 -/
 
 
-variable (R A K : Type _) [CommRing R] [CommRing A] [Field K]
+variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
 
 open scoped nonZeroDivisors Polynomial
 
@@ -57,7 +57,7 @@ open scoped BigOperators
 
 variable [Algebra A K] [IsFractionRing A K]
 
-variable (L : Type _) [Field L] (C : Type _) [CommRing C]
+variable (L : Type*) [Field L] (C : Type*) [CommRing C]
 
 variable [Algebra K L] [Algebra A L] [IsScalarTower A K L]
 
@@ -92,7 +92,7 @@ variable [FiniteDimensional K L]
 
 variable {A K L}
 
-theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type _} [Fintype ι]
+theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι]
     [DecidableEq ι] (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     LinearMap.range ((Algebra.linearMap C L).restrictScalars A) ≤
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
@@ -118,7 +118,7 @@ theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type _
   exact isIntegral_trace (isIntegral_mul hx (hb_int i))
 #align is_integral_closure.range_le_span_dual_basis IsIntegralClosure.range_le_span_dualBasis
 
-theorem integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type _} [Fintype ι] [DecidableEq ι]
+theorem integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     Subalgebra.toSubmodule (integralClosure A L) ≤
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
@@ -251,12 +251,13 @@ Can't be an instance since `A`, `K` or `L` can't be inferred. See also the insta
 `integralClosure.isDedekindDomain_fractionRing` where `K := FractionRing A`
 and `C := integralClosure A L`.
 -/
-theorem IsIntegralClosure.isDedekindDomain [h : IsDedekindDomain A] : IsDedekindDomain C :=
-  haveI : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension A K L C
-  ⟨IsIntegralClosure.isNoetherianRing A K L C, h.dimensionLEOne.isIntegralClosure L _,
+theorem IsIntegralClosure.isDedekindDomain [IsDedekindDomain A] : IsDedekindDomain C :=
+  have : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension A K L C
+  { IsIntegralClosure.isNoetherianRing A K L C,
+    Ring.DimensionLEOne.isIntegralClosure A L C,
     (isIntegrallyClosed_iff L).mpr fun {x} hx =>
       ⟨IsIntegralClosure.mk' C x (isIntegral_trans (IsIntegralClosure.isIntegral_algebra A L) _ hx),
-        IsIntegralClosure.algebraMap_mk' _ _ _⟩⟩
+        IsIntegralClosure.algebraMap_mk' _ _ _⟩ with : IsDedekindDomain C }
 #align is_integral_closure.is_dedekind_domain IsIntegralClosure.isDedekindDomain
 
 /- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a Dedekind domain,

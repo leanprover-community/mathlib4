@@ -35,12 +35,12 @@ open scoped TensorProduct
 /-- Homogenous tensor powers $M^{\otimes n}$. `⨂[R]^n M` is a shorthand for
 `⨂[R] (i : Fin n), M`. -/
 @[reducible]
-def TensorPower (R : Type _) (n : ℕ) (M : Type _) [CommSemiring R] [AddCommMonoid M]
+def TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMonoid M]
     [Module R M] : Type _ :=
   ⨂[R] _ : Fin n, M
 #align tensor_power TensorPower
 
-variable {R : Type _} {M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 scoped[TensorProduct] notation:100 "⨂[" R "]^" n:arg => TensorPower R n
 
@@ -49,7 +49,7 @@ namespace PiTensorProduct
 /-- Two dependent pairs of tensor products are equal if their index is equal and the contents
 are equal after a canonical reindexing. -/
 @[ext]
-theorem gradedMonoid_eq_of_reindex_cast {ιι : Type _} {ι : ιι → Type _} :
+theorem gradedMonoid_eq_of_reindex_cast {ιι : Type*} {ι : ιι → Type*} :
     ∀ {a b : GradedMonoid fun ii => ⨂[R] _ : ι ii, M} (h : a.fst = b.fst),
       reindex R M (Equiv.cast <| congr_arg ι h) a.snd = b.snd → a = b
   | ⟨ai, a⟩, ⟨bi, b⟩ => fun (hi : ai = bi) (h : reindex R M _ a = b) => by

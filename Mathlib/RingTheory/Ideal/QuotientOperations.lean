@@ -153,7 +153,7 @@ theorem mem_quotient_iff_mem {I J : Ideal R} (hIJ : I ≤ J) {x : R} :
 
 section QuotientAlgebra
 
-variable (R₁ R₂ : Type _) {A B : Type _}
+variable (R₁ R₂ : Type*) {A B : Type*}
 
 variable [CommSemiring R₁] [CommSemiring R₂] [CommRing A] [CommRing B]
 
@@ -412,7 +412,7 @@ theorem quotientMap_surjective {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : 
 #align ideal.quotient_map_surjective Ideal.quotientMap_surjective
 
 /-- Commutativity of a square is preserved when taking quotients by an ideal. -/
-theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type _} [CommRing R'] [CommRing S'] {f : R →+* S}
+theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type*} [CommRing R'] [CommRing S'] {f : R →+* S}
     {f' : R' →+* S'} {g : R →+* R'} {g' : S →+* S'} (hfg : f'.comp g = g'.comp f) (I : Ideal S') :
     -- Porting note: was losing track of I
     let leq := le_of_eq (_root_.trans (comap_comap (I := I) f g') (hfg ▸ comap_comap (I := I) g f'))
@@ -663,7 +663,7 @@ end Algebra
 
 section AlgebraQuotient
 
-variable (R) {A : Type _} [CommSemiring R] [CommRing A] [Algebra R A] (I J : Ideal A)
+variable (R) {A : Type*} [CommSemiring R] [CommRing A] [Algebra R A] (I J : Ideal A)
 
 /-- The natural algebra homomorphism `A / I → A / (I ⊔ J)`. -/
 def quotLeftToQuotSupₐ : A ⧸ I →ₐ[R] A ⧸ I ⊔ J :=

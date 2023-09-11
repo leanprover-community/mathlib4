@@ -23,6 +23,8 @@ if `X : SimplicialObject C` with `C` a preadditive category,
 `X.map θ.op ≫ P_infty.f n = 0`. It follows from the more precise
 statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
@@ -33,7 +35,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C]
+variable {C : Type*} [Category C] [Preadditive C]
 
 theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ} {φ : Y ⟶ X _[n + 1]}
     (v : HigherFacesVanish q φ) (hnbq : n + 1 = b + q) :

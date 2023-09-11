@@ -41,7 +41,7 @@ example we want hyperbolic space to carry the instance `IsUnifLocDoublingMeasure
 volumes grow exponentially in hyperbolic space. To be really explicit, consider the hyperbolic plane
 of curvature -1, the area of a disc of radius `ε` is `A(ε) = 2π(cosh(ε) - 1)` so
 `A(2ε)/A(ε) ~ exp(ε)`. -/
-class IsUnifLocDoublingMeasure {α : Type _} [MetricSpace α] [MeasurableSpace α]
+class IsUnifLocDoublingMeasure {α : Type*} [MetricSpace α] [MeasurableSpace α]
   (μ : Measure α) : Prop where
   exists_measure_closedBall_le_mul'' :
     ∃ C : ℝ≥0, ∀ᶠ ε in 𝓝[>] 0, ∀ x, μ (closedBall x (2 * ε)) ≤ C * μ (closedBall x ε)
@@ -49,7 +49,7 @@ class IsUnifLocDoublingMeasure {α : Type _} [MetricSpace α] [MeasurableSpace �
 
 namespace IsUnifLocDoublingMeasure
 
-variable {α : Type _} [MetricSpace α] [MeasurableSpace α] (μ : Measure α)
+variable {α : Type*} [MetricSpace α] [MeasurableSpace α] (μ : Measure α)
   [IsUnifLocDoublingMeasure μ]
 
 -- Porting note: added for missing infer kinds

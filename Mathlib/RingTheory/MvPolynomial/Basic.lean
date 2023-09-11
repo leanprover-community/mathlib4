@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 
@@ -55,9 +56,15 @@ instance [CharP R p] : CharP (MvPolynomial σ R) p where
 
 end CharP
 
+section CharZero
+
+instance [CharZero R] : CharZero (MvPolynomial σ R) := CharP.charP_to_charZero (MvPolynomial σ R)
+
+end CharZero
+
 section Homomorphism
 
-theorem mapRange_eq_map {R S : Type _} [CommRing R] [CommRing S] (p : MvPolynomial σ R)
+theorem mapRange_eq_map {R S : Type*} [CommRing R] [CommRing S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
   -- `Finsupp.mapRange_finset_sum` expects `f : R →+ S`
   change Finsupp.mapRange (f : R →+ S) (f : R →+ S).map_zero p = map f p

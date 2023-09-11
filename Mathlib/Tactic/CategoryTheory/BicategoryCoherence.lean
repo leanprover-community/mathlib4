@@ -24,6 +24,8 @@ tactic is given in `Mathlib.Tactic.CategoryTheory.Coherence` at the same time as
 tactic for monoidal categories.
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

@@ -28,11 +28,11 @@ MulAut, AddAut
 -/
 
 
-variable {A : Type _} {M : Type _} {G : Type _}
+variable {A : Type*} {M : Type*} {G : Type*}
 
 /-- The group of multiplicative automorphisms. -/
 @[to_additive (attr := reducible) "The group of additive automorphisms."]
-def MulAut (M : Type _) [Mul M] :=
+def MulAut (M : Type*) [Mul M] :=
   M ≃* M
 #align mul_aut MulAut
 #align add_aut AddAut

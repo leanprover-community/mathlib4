@@ -17,13 +17,13 @@ This typeclass is primarily for use by homomorphisms like `MonoidHom` and `Linea
 
 A typical type of morphisms should be declared as:
 ```
-structure MyHom (A B : Type _) [MyClass A] [MyClass B] :=
+structure MyHom (A B : Type*) [MyClass A] [MyClass B] :=
   (toFun : A → B)
   (map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
 namespace MyHom
 
-variables (A B : Type _) [MyClass A] [MyClass B]
+variables (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "morphism class" design below:
 instance : FunLike (MyHom A B) A (λ _, B) :=
@@ -53,11 +53,11 @@ Continuing the example above:
 ```
 /-- `MyHomClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyHom`. -/
-class MyHomClass (F : Type _) (A B : outParam <| Type _) [MyClass A] [MyClass B]
+class MyHomClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
   extends FunLike F A (λ _, B) :=
 (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
 
-@[simp] lemma map_op {F A B : Type _} [MyClass A] [MyClass B] [MyHomClass F A B]
+@[simp] lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyHomClass F A B]
   (f : F) (x y : A) : f (MyClass.op x y) = MyClass.op (f x) (f y) :=
 MyHomClass.map_op
 
@@ -74,15 +74,15 @@ The second step is to add instances of your new `MyHomClass` for all types exten
 Typically, you can just declare a new class analogous to `MyHomClass`:
 
 ```
-structure CoolerHom (A B : Type _) [CoolClass A] [CoolClass B]
+structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B]
   extends MyHom A B :=
 (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
-class CoolerHomClass (F : Type _) (A B : outParam <| Type _) [CoolClass A] [CoolClass B]
+class CoolerHomClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
   extends MyHomClass F A B :=
 (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
-@[simp] lemma map_cool {F A B : Type _} [CoolClass A] [CoolClass B] [CoolerHomClass F A B]
+@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerHomClass F A B]
   (f : F) : f CoolClass.cool = CoolClass.cool :=
 MyHomClass.map_op
 
@@ -100,7 +100,7 @@ Then any declaration taking a specific type of morphisms as parameter can instea
 class you just defined:
 ```
 -- Compare with: lemma do_something (f : MyHom A B) : sorry := sorry
-lemma do_something {F : Type _} [MyHomClass F A B] (f : F) : sorry := sorry
+lemma do_something {F : Type*} [MyHomClass F A B] (f : F) : sorry := sorry
 ```
 
 This means anything set up for `MyHom`s will automatically work for `CoolerHomClass`es,
@@ -122,7 +122,7 @@ This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
 @[notation_class * toFun Simps.findCoercionArgs]
-class FunLike (F : Sort _) (α : outParam (Sort _)) (β : outParam <| α → Sort _) where
+class FunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort*) where
   /-- The coercion from `F` to a function. -/
   coe : F → ∀ a : α, β a
   /-- The coercion to functions must be injective. -/
@@ -136,7 +136,7 @@ section Dependent
 
 /-! ### `FunLike F α β` where `β` depends on `a : α` -/
 
-variable (F α : Sort _) (β : α → Sort _)
+variable (F α : Sort*) (β : α → Sort*)
 
 namespace FunLike
 
@@ -202,7 +202,7 @@ section NonDependent
 
 /-! ### `FunLike F α (λ _, β)` where `β` does not depend on `a : α` -/
 
-variable {F α β : Sort _} [i : FunLike F α fun _ ↦ β]
+variable {F α β : Sort*} [i : FunLike F α fun _ ↦ β]
 
 namespace FunLike
 

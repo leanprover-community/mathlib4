@@ -17,6 +17,8 @@ TODO: Define pullbacks of open embeddings.
 
 -/
 
+set_option autoImplicit true
+
 open CategoryTheory
 
 namespace Stonean

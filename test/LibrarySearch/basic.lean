@@ -4,6 +4,8 @@ import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Quot
 import Mathlib.Data.Nat.Prime
 
+set_option autoImplicit true
+
 -- Enable this option for tracing:
 -- set_option trace.Tactic.librarySearch true
 -- And this option to trace all candidate lemmas before application.

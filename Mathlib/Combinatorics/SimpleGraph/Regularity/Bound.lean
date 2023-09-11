@@ -62,7 +62,7 @@ end SzemerediRegularity
 
 open SzemerediRegularity
 
-variable {α : Type _} [DecidableEq α] [Fintype α] {P : Finpartition (univ : Finset α)}
+variable {α : Type*} [DecidableEq α] [Fintype α] {P : Finpartition (univ : Finset α)}
   {u : Finset α} {ε : ℝ}
 
 local notation3 (prettyPrint := false)
@@ -227,7 +227,7 @@ theorem bound_pos : 0 < bound ε l :=
   (initialBound_pos ε l).trans_le <| initialBound_le_bound ε l
 #align szemeredi_regularity.bound_pos SzemerediRegularity.bound_pos
 
-variable {ι 𝕜 : Type _} [LinearOrderedField 𝕜] (r : ι → ι → Prop) [DecidableRel r] {s t : Finset ι}
+variable {ι 𝕜 : Type*} [LinearOrderedField 𝕜] (r : ι → ι → Prop) [DecidableRel r] {s t : Finset ι}
   {x : 𝕜}
 
 theorem mul_sq_le_sum_sq (hst : s ⊆ t) (f : ι → 𝕜) (hs : x ^ 2 ≤ ((∑ i in s, f i) / s.card) ^ 2)

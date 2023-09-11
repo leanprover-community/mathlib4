@@ -52,17 +52,17 @@ private lemma coe_two : ENNReal.toReal 2 = (2 : ℝ) := rfl
 -- consider `eVariationOn` in `Mathlib.Analysis.BoundedVariation`.
 /-- The `ℝ≥0∞`-valued variance of a real-valued random variable defined as the Lebesgue integral of
 `(X - 𝔼[X])^2`. -/
-def evariance {Ω : Type _} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ≥0∞ :=
+def evariance {Ω : Type*} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ≥0∞ :=
   ∫⁻ ω, (‖X ω - μ[X]‖₊ : ℝ≥0∞) ^ 2 ∂μ
 #align probability_theory.evariance ProbabilityTheory.evariance
 
 /-- The `ℝ`-valued variance of a real-valued random variable defined by applying `ENNReal.toReal`
 to `evariance`. -/
-def variance {Ω : Type _} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ :=
+def variance {Ω : Type*} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ :=
   (evariance X μ).toReal
 #align probability_theory.variance ProbabilityTheory.variance
 
-variable {Ω : Type _} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω}
+variable {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω}
 
 theorem _root_.MeasureTheory.Memℒp.evariance_lt_top [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
     evariance X μ < ∞ := by
@@ -196,7 +196,7 @@ theorem variance_smul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
   variance_mul c X μ
 #align probability_theory.variance_smul ProbabilityTheory.variance_smul
 
-theorem variance_smul' {A : Type _} [CommSemiring A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
+theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
     (μ : Measure Ω) : variance (c • X) μ = c ^ 2 • variance X μ := by
   convert variance_smul (algebraMap A ℝ c) X μ using 1
   · congr; simp only [algebraMap_smul]
@@ -317,7 +317,7 @@ theorem IndepFun.variance_add [@IsProbabilityMeasure Ω _ ℙ] {X Y : Ω → ℝ
 -- Porting note: supplied `MeasurableSpace Ω` argument of `hs`, `h` by unification
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
-theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type _} {X : ι → Ω → ℝ}
+theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X : ι → Ω → ℝ}
     {s : Finset ι} (hs : ∀ i ∈ s, @Memℒp _ _ _ (_) (X i) 2 ℙ)
     (h : Set.Pairwise ↑s fun i j => @IndepFun _ _ _ (_) _ _ (X i) (X j) ℙ) :
     Var[∑ i in s, X i] = ∑ i in s, Var[X i] := by

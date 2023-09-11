@@ -227,7 +227,7 @@ open Complex Filter
 
 open Topology
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem continuousAt_clog {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) : ContinuousAt log x := by
   refine' ContinuousAt.add _ _

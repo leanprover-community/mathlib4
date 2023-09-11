@@ -7,6 +7,8 @@ import Mathlib.Tactic.Basic
 import Std.Tactic.Simpa
 import Mathlib.Data.Array.Basic
 
+set_option autoImplicit true
+
 structure UFModel (n) where
   parent : Fin n → Fin n
   rank : Nat → Nat
@@ -59,7 +61,7 @@ def setParentBump {n} (m : UFModel n) (x y : Fin n)
 
 end UFModel
 
-structure UFNode (α : Type _) where
+structure UFNode (α : Type*) where
   parent : Nat
   value : α
   rank : Nat

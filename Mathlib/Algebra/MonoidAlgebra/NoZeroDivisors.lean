@@ -46,7 +46,7 @@ namespace AddMonoidAlgebra
 
 open Finsupp
 
-variable {R A : Type _} [Semiring R]
+variable {R A : Type*} [Semiring R]
 
 /-- The coefficient of a monomial in a product `f * g` that can be reached in at most one way
 as a product of monomials in the supports of `f` and `g` is a product. -/

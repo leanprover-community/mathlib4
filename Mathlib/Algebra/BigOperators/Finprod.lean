@@ -79,7 +79,7 @@ open Function Set
 -- Porting note: Used to be section Sort
 section sort
 
-variable {G M N : Type _} {α β ι : Sort _} [CommMonoid M] [CommMonoid N]
+variable {G M N : Type*} {α β ι : Sort*} [CommMonoid M] [CommMonoid N]
 
 open BigOperators
 
@@ -278,13 +278,13 @@ theorem finprod_induction {f : α → M} (p : M → Prop) (hp₀ : p 1)
 #align finprod_induction finprod_induction
 #align finsum_induction finsum_induction
 
-theorem finprod_nonneg {R : Type _} [OrderedCommSemiring R] {f : α → R} (hf : ∀ x, 0 ≤ f x) :
+theorem finprod_nonneg {R : Type*} [OrderedCommSemiring R] {f : α → R} (hf : ∀ x, 0 ≤ f x) :
     0 ≤ ∏ᶠ x, f x :=
   finprod_induction (fun x => 0 ≤ x) zero_le_one (fun _ _ => mul_nonneg) hf
 #align finprod_nonneg finprod_nonneg
 
 @[to_additive finsum_nonneg]
-theorem one_le_finprod' {M : Type _} [OrderedCommMonoid M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
+theorem one_le_finprod' {M : Type*} [OrderedCommMonoid M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
     1 ≤ ∏ᶠ i, f i :=
   finprod_induction _ le_rfl (fun _ _ => one_le_mul) hf
 #align one_le_finprod' one_le_finprod'
@@ -331,7 +331,7 @@ theorem MulEquiv.map_finprod (g : M ≃* N) (f : α → M) : g (∏ᶠ i, f i) =
 
 /-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `(support f).Finite` instead, see `finsum_smul'`. -/
-theorem finsum_smul {R M : Type _} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+theorem finsum_smul {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
     (f : ι → R) (x : M) : (∑ᶠ i, f i) • x = ∑ᶠ i, f i • x := by
   rcases eq_or_ne x 0 with (rfl | hx); · simp
   exact ((smulAddHom R M).flip x).map_finsum_of_injective (smul_left_injective R hx) _
@@ -339,7 +339,7 @@ theorem finsum_smul {R M : Type _} [Ring R] [AddCommGroup M] [Module R M] [NoZer
 
 /-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `(support f).Finite` instead, see `smul_finsum'`. -/
-theorem smul_finsum {R M : Type _} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+theorem smul_finsum {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
     (c : R) (f : ι → M) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i := by
   rcases eq_or_ne c 0 with (rfl | hc); · simp
   exact (smulAddHom R M c).map_finsum_of_injective (smul_right_injective M hc) _
@@ -356,7 +356,7 @@ end sort
 -- Porting note: Used to be section Type
 section type
 
-variable {α β ι G M N : Type _} [CommMonoid M] [CommMonoid N]
+variable {α β ι G M N : Type*} [CommMonoid M] [CommMonoid N]
 
 open BigOperators
 
@@ -591,7 +591,7 @@ theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : �
 #align finsum_eq_zero_of_forall_eq_zero finsum_eq_zero_of_forall_eq_zero
 
 @[to_additive finsum_pos']
-theorem one_lt_finprod' {M : Type _} [OrderedCancelCommMonoid M] {f : ι → M}
+theorem one_lt_finprod' {M : Type*} [OrderedCancelCommMonoid M] {f : ι → M}
     (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : (mulSupport f).Finite) : 1 < ∏ᶠ i, f i := by
   rcases h' with ⟨i, hi⟩
   rw [finprod_eq_prod _ hf]
@@ -701,13 +701,13 @@ theorem finprod_pow (hf : (mulSupport f).Finite) (n : ℕ) : (∏ᶠ i, f i) ^ n
 
 /-- See also `finsum_smul` for a version that works even when the support of `f` is not finite,
 but with slightly stronger typeclass requirements. -/
-theorem finsum_smul' {R M : Type _} [Semiring R] [AddCommMonoid M] [Module R M] {f : ι → R}
+theorem finsum_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {f : ι → R}
     (hf : (support f).Finite) (x : M) : (∑ᶠ i, f i) • x = ∑ᶠ i, f i • x :=
   ((smulAddHom R M).flip x).map_finsum hf
 
 /-- See also `smul_finsum` for a version that works even when the support of `f` is not finite,
 but with slightly stronger typeclass requirements. -/
-theorem smul_finsum' {R M : Type _} [Semiring R] [AddCommMonoid M] [Module R M] (c : R) {f : ι → M}
+theorem smul_finsum' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (c : R) {f : ι → M}
     (hf : (support f).Finite) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i :=
   (smulAddHom R M c).map_finsum hf
 
@@ -1158,13 +1158,13 @@ theorem finprod_mem_induction (p : M → Prop) (hp₀ : p 1) (hp₁ : ∀ x y, p
 #align finprod_mem_induction finprod_mem_induction
 #align finsum_mem_induction finsum_mem_induction
 
-theorem finprod_cond_nonneg {R : Type _} [OrderedCommSemiring R] {p : α → Prop} {f : α → R}
+theorem finprod_cond_nonneg {R : Type*} [OrderedCommSemiring R] {p : α → Prop} {f : α → R}
     (hf : ∀ x, p x → 0 ≤ f x) : 0 ≤ ∏ᶠ (x) (_ : p x), f x :=
   finprod_nonneg fun x => finprod_nonneg <| hf x
 #align finprod_cond_nonneg finprod_cond_nonneg
 
 @[to_additive]
-theorem single_le_finprod {M : Type _} [OrderedCommMonoid M] (i : α) {f : α → M}
+theorem single_le_finprod {M : Type*} [OrderedCommMonoid M] (i : α) {f : α → M}
     (hf : (mulSupport f).Finite) (h : ∀ j, 1 ≤ f j) : f i ≤ ∏ᶠ j, f j := by
   classical calc
       f i ≤ ∏ j in insert i hf.toFinset, f j :=
@@ -1174,7 +1174,7 @@ theorem single_le_finprod {M : Type _} [OrderedCommMonoid M] (i : α) {f : α �
 #align single_le_finprod single_le_finprod
 #align single_le_finsum single_le_finsum
 
-theorem finprod_eq_zero {M₀ : Type _} [CommMonoidWithZero M₀] (f : α → M₀) (x : α) (hx : f x = 0)
+theorem finprod_eq_zero {M₀ : Type*} [CommMonoidWithZero M₀] (f : α → M₀) (x : α) (hx : f x = 0)
     (hf : (mulSupport f).Finite) : ∏ᶠ x, f x = 0 := by
   nontriviality
   rw [finprod_eq_prod f hf]
@@ -1209,12 +1209,12 @@ theorem prod_finprod_comm (s : Finset α) (f : α → β → M) (h : ∀ a ∈ s
 #align prod_finprod_comm prod_finprod_comm
 #align sum_finsum_comm sum_finsum_comm
 
-theorem mul_finsum {R : Type _} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
+theorem mul_finsum {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
     (r * ∑ᶠ a : α, f a) = ∑ᶠ a : α, r * f a :=
   (AddMonoidHom.mulLeft r).map_finsum h
 #align mul_finsum mul_finsum
 
-theorem finsum_mul {R : Type _} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
+theorem finsum_mul {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
     (∑ᶠ a : α, f a) * r = ∑ᶠ a : α, f a * r :=
   (AddMonoidHom.mulRight r).map_finsum h
 #align finsum_mul finsum_mul
@@ -1272,7 +1272,7 @@ theorem finprod_mem_finset_product (s : Finset (α × β)) (f : α × β → M) 
 #align finsum_mem_finset_product finsum_mem_finset_product
 
 @[to_additive]
-theorem finprod_mem_finset_product₃ {γ : Type _} (s : Finset (α × β × γ)) (f : α × β × γ → M) :
+theorem finprod_mem_finset_product₃ {γ : Type*} (s : Finset (α × β × γ)) (f : α × β × γ → M) :
     (∏ᶠ (abc) (_ : abc ∈ s), f abc) = ∏ᶠ (a) (b) (c) (_ : (a, b, c) ∈ s), f (a, b, c) := by
   classical
     rw [finprod_mem_finset_product']
@@ -1291,7 +1291,7 @@ theorem finprod_curry (f : α × β → M) (hf : (mulSupport f).Finite) :
 #align finsum_curry finsum_curry
 
 @[to_additive]
-theorem finprod_curry₃ {γ : Type _} (f : α × β × γ → M) (h : (mulSupport f).Finite) :
+theorem finprod_curry₃ {γ : Type*} (f : α × β × γ → M) (h : (mulSupport f).Finite) :
     ∏ᶠ abc, f abc = ∏ᶠ (a) (b) (c), f (a, b, c) := by
   rw [finprod_curry f h]
   congr

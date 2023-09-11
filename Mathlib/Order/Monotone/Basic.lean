@@ -64,7 +64,7 @@ open Function OrderDual
 
 universe u v w
 
-variable {ι : Type _} {α : Type u} {β : Type v} {γ : Type w} {δ : Type _} {π : ι → Type _}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {π : ι → Type*}
   {r : α → α → Prop}
 
 section MonotoneDef

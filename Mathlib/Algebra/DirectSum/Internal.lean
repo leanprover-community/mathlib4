@@ -43,7 +43,7 @@ internally graded ring
 
 open DirectSum BigOperators
 
-variable {ι : Type _} {σ S R : Type _}
+variable {ι : Type*} {σ S R : Type*}
 
 instance AddCommMonoid.ofSubmonoidOnSemiring [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R]
     (A : ι → σ) : ∀ i, AddCommMonoid (A i) := fun i => by infer_instance

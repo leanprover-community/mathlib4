@@ -50,7 +50,7 @@ open Function Set
 
 namespace Order
 
-variable {P : Type _}
+variable {P : Type*}
 
 /-- An ideal on an order `P` is a subset of `P` that is
   - nonempty
@@ -546,7 +546,7 @@ end Cofinal
 
 section IdealOfCofinals
 
-variable [Preorder P] (p : P) {ι : Type _} [Encodable ι] (𝒟 : ι → Cofinal P)
+variable [Preorder P] (p : P) {ι : Type*} [Encodable ι] (𝒟 : ι → Cofinal P)
 
 /-- Given a starting point, and a countable family of cofinal sets,
   this is an increasing sequence that intersects each cofinal set. -/

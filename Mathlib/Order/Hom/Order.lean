@@ -27,7 +27,7 @@ monotone map, bundled morphism
 
 namespace OrderHom
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section Preorder
 
@@ -88,13 +88,13 @@ theorem sInf_apply [CompleteLattice β] (s : Set (α →o β)) (x : α) :
   rfl
 #align order_hom.Inf_apply OrderHom.sInf_apply
 
-theorem iInf_apply {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) (x : α) :
+theorem iInf_apply {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) (x : α) :
     (⨅ i, f i) x = ⨅ i, f i x :=
   (sInf_apply _ _).trans iInf_range
 #align order_hom.infi_apply OrderHom.iInf_apply
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) :
+theorem coe_iInf {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) :
     ((⨅ i, f i : α →o β) : α → β) = ⨅ i, (f i : α → β) := by
   funext x; simp [iInf_apply]
 #align order_hom.coe_infi OrderHom.coe_iInf
@@ -108,13 +108,13 @@ theorem sSup_apply [CompleteLattice β] (s : Set (α →o β)) (x : α) :
   rfl
 #align order_hom.Sup_apply OrderHom.sSup_apply
 
-theorem iSup_apply {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) (x : α) :
+theorem iSup_apply {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) (x : α) :
     (⨆ i, f i) x = ⨆ i, f i x :=
   (sSup_apply _ _).trans iSup_range
 #align order_hom.supr_apply OrderHom.iSup_apply
 
 @[simp, norm_cast]
-theorem coe_iSup {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) :
+theorem coe_iSup {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) :
     ((⨆ i, f i : α →o β) : α → β) = ⨆ i, (f i : α → β) := by
   funext x; simp [iSup_apply]
 #align order_hom.coe_supr OrderHom.coe_iSup
@@ -130,7 +130,7 @@ instance [CompleteLattice β] : CompleteLattice (α →o β) :=
     sInf_le := fun s f hf x => iInf_le_of_le f (iInf_le _ hf)
     }
 
-theorem iterate_sup_le_sup_iff {α : Type _} [SemilatticeSup α] (f : α →o α) :
+theorem iterate_sup_le_sup_iff {α : Type*} [SemilatticeSup α] (f : α →o α) :
     (∀ n₁ n₂ a₁ a₂, f^[n₁ + n₂] (a₁ ⊔ a₂) ≤ f^[n₁] a₁ ⊔ f^[n₂] a₂) ↔
       ∀ a₁ a₂, f (a₁ ⊔ a₂) ≤ f a₁ ⊔ a₂ := by
   constructor <;> intro h

@@ -240,7 +240,7 @@ of the morphisms in `C`.
 -/
 -- Porting note: Removed has_nonempty_instance nolint
 @[nolint unusedArguments]
-def Free (_ : Type _) (C : Type u) :=
+def Free (_ : Type*) (C : Type u) :=
   C
 #align category_theory.Free CategoryTheory.Free
 
@@ -249,11 +249,11 @@ def Free (_ : Type _) (C : Type u) :=
 It may be preferable to use `(Free.embedding R C).obj X` instead;
 this functor can also be used to lift morphisms.
 -/
-def Free.of (R : Type _) {C : Type u} (X : C) : Free R C :=
+def Free.of (R : Type*) {C : Type u} (X : C) : Free R C :=
   X
 #align category_theory.Free.of CategoryTheory.Free.of
 
-variable (R : Type _) [CommRing R] (C : Type u) [Category.{v} C]
+variable (R : Type*) [CommRing R] (C : Type u) [Category.{v} C]
 
 open Finsupp
 

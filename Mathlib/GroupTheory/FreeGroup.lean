@@ -745,7 +745,7 @@ theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) =
 See note [partially-applied ext lemmas]. -/
 @[to_additive (attr := ext) "Two homomorphisms out of a free additive group are equal if they are
   equal on generators. See note [partially-applied ext lemmas]."]
-theorem ext_hom {G : Type _} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f (of a) = g (of a)) :
+theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f (of a) = g (of a)) :
     f = g :=
   lift.symm.injective <| funext h
 #align free_group.ext_hom FreeGroup.ext_hom

@@ -51,7 +51,7 @@ colex, colexicographic, binary
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Finset
 open BigOperators
@@ -111,7 +111,7 @@ theorem Nat.sum_two_pow_lt {k : ℕ} {A : Finset ℕ} (h₁ : ∀ {x}, x ∈ A �
 namespace Colex
 
 /-- Strictly monotone functions preserve the colex ordering. -/
-theorem hom_lt_iff {β : Type _} [LinearOrder α] [DecidableEq β] [Preorder β] {f : α → β}
+theorem hom_lt_iff {β : Type*} [LinearOrder α] [DecidableEq β] [Preorder β] {f : α → β}
     (h₁ : StrictMono f) (A B : Finset α) :
     (A.image f).toColex < (B.image f).toColex ↔ A.toColex < B.toColex := by
   simp only [Colex.lt_def, not_exists, mem_image, exists_prop, not_and]
@@ -239,7 +239,7 @@ example [LinearOrder α] : IsStrictTotalOrder (Finset.Colex α) (· < ·) :=
   inferInstance
 
 /-- Strictly monotone functions preserve the colex ordering. -/
-theorem hom_le_iff {β : Type _} [LinearOrder α] [LinearOrder β] {f : α → β} (h₁ : StrictMono f)
+theorem hom_le_iff {β : Type*} [LinearOrder α] [LinearOrder β] {f : α → β} (h₁ : StrictMono f)
     (A B : Finset α) : (A.image f).toColex ≤ (B.image f).toColex ↔ A.toColex ≤ B.toColex := by
   rw [le_iff_le_iff_lt_iff_lt, hom_lt_iff h₁]
 #align colex.hom_le_iff Colex.hom_le_iff

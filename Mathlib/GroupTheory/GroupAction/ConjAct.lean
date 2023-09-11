@@ -34,7 +34,7 @@ is that some theorems about the group actions will not apply when since this
 -/
 
 
-variable (α M G G₀ R K : Type _)
+variable (α M G G₀ R K : Type*)
 
 /-- A type alias for a group `G`. `ConjAct G` acts on `G` by conjugation -/
 def ConjAct : Type _ :=
@@ -82,7 +82,7 @@ def toConjAct : G ≃* ConjAct G :=
 #align conj_act.to_conj_act ConjAct.toConjAct
 
 /-- A recursor for `ConjAct`, for use as `induction x using ConjAct.rec` when `x : ConjAct G`. -/
-protected def rec {C : ConjAct G → Sort _} (h : ∀ g, C (toConjAct g)) : ∀ g, C g :=
+protected def rec {C : ConjAct G → Sort*} (h : ∀ g, C (toConjAct g)) : ∀ g, C g :=
   h
 #align conj_act.rec ConjAct.rec
 
@@ -308,6 +308,11 @@ theorem mem_orbit_conjAct {g h : G} : g ∈ orbit (ConjAct G) h ↔ IsConj g h :
 theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
   funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
 #align conj_act.orbit_rel_conj_act ConjAct.orbitRel_conjAct
+
+theorem orbit_eq_carrier_conjClasses [Group G] (g : G) :
+    orbit (ConjAct G) g = (ConjClasses.mk g).carrier := by
+  ext h
+  rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]
 
 theorem stabilizer_eq_centralizer (g : G) :
     stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=

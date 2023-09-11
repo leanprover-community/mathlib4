@@ -24,7 +24,7 @@ set of subsets of `α` which is closed under finite intersections.
 -/
 
 
-variable {α : Type _} (S : Set (Set α))
+variable {α : Type*} (S : Set (Set α))
 
 /-- A structure encapsulating the fact that a set of sets is closed under finite intersection. -/
 structure FiniteInter : Prop where

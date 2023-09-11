@@ -141,6 +141,8 @@ instances could be added when needed (in that case, one also needs to add instan
 integral, fundamental theorem of calculus, FTC-1, FTC-2, change of variables in integrals
 -/
 
+set_option autoImplicit true
+
 noncomputable section
 
 open TopologicalSpace (SecondCountableTopology)
@@ -149,7 +151,7 @@ open MeasureTheory Set Classical Filter Function
 
 open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
 
-variable {ι 𝕜 E F A : Type _} [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
 
 namespace intervalIntegral
 

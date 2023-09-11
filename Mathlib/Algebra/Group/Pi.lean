@@ -31,7 +31,7 @@ This file defines instances for group, monoid, semigroup and related structures 
 
 universe u v w
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 variable {I : Type u}
 
@@ -42,7 +42,7 @@ variable {f : I → Type v}
 variable (x y : ∀ i, f i) (i j : I)
 
 @[to_additive]
-theorem Set.preimage_one {α β : Type _} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
+theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
     (1 : α → β) ⁻¹' s = if (1 : β) ∈ s then Set.univ else ∅ :=
   Set.preimage_const 1 s
 #align set.preimage_one Set.preimage_one
@@ -315,7 +315,7 @@ def Pi.evalMulHom (i : I) : (∀ i, f i) →ₙ* f i where
 
 /-- `Function.const` as a `MulHom`. -/
 @[to_additive (attr := simps) "`Function.const` as an `AddHom`."]
-def Pi.constMulHom (α β : Type _) [Mul β] :
+def Pi.constMulHom (α β : Type*) [Mul β] :
     β →ₙ* α → β where
   toFun := Function.const α
   map_mul' _ _ := rfl
@@ -330,7 +330,7 @@ See also `MulHom.eval`. -/
 @[to_additive (attr := simps) "Coercion of an `AddHom` into a function is itself an `AddHom`.
 
 See also `AddHom.eval`."]
-def MulHom.coeFn (α β : Type _) [Mul α] [CommSemigroup β] :
+def MulHom.coeFn (α β : Type*) [Mul α] [CommSemigroup β] :
     (α →ₙ* β) →ₙ* α → β where
   toFun g := g
   map_mul' _ _ := rfl
@@ -343,7 +343,7 @@ def MulHom.coeFn (α β : Type _) [Mul α] [CommSemigroup β] :
 homomorphism `f` between `α` and `β`. -/
 @[to_additive (attr := simps) "Additive semigroup homomorphism between the function spaces `I → α`
 and `I → β`, induced by an additive semigroup homomorphism `f` between `α` and `β`"]
-protected def MulHom.compLeft {α β : Type _} [Mul α] [Mul β] (f : α →ₙ* β) (I : Type _) :
+protected def MulHom.compLeft {α β : Type*} [Mul α] [Mul β] (f : α →ₙ* β) (I : Type*) :
     (I → α) →ₙ* I → β where
   toFun h := f ∘ h
   map_mul' _ _ := by ext; simp
@@ -375,7 +375,7 @@ def Pi.evalMonoidHom (i : I) : (∀ i, f i) →* f i where
 
 /-- `Function.const` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`Function.const` as an `AddMonoidHom`."]
-def Pi.constMonoidHom (α β : Type _) [MulOneClass β] : β →* α → β where
+def Pi.constMonoidHom (α β : Type*) [MulOneClass β] : β →* α → β where
   toFun := Function.const α
   map_one' := rfl
   map_mul' _ _ := rfl
@@ -391,7 +391,7 @@ See also `MonoidHom.eval`. -/
 an `AddMonoidHom`.
 
 See also `AddMonoidHom.eval`."]
-def MonoidHom.coeFn (α β : Type _) [MulOneClass α] [CommMonoid β] : (α →* β) →* α → β where
+def MonoidHom.coeFn (α β : Type*) [MulOneClass α] [CommMonoid β] : (α →* β) →* α → β where
   toFun g := g
   map_one' := rfl
   map_mul' _ _ := rfl
@@ -405,8 +405,8 @@ homomorphism `f` between `α` and `β`. -/
 @[to_additive (attr := simps)
   "Additive monoid homomorphism between the function spaces `I → α` and `I → β`, induced by an
   additive monoid homomorphism `f` between `α` and `β`"]
-protected def MonoidHom.compLeft {α β : Type _} [MulOneClass α] [MulOneClass β] (f : α →* β)
-    (I : Type _) : (I → α) →* I → β where
+protected def MonoidHom.compLeft {α β : Type*} [MulOneClass α] [MulOneClass β] (f : α →* β)
+    (I : Type*) : (I → α) →* I → β where
   toFun h := f ∘ h
   map_one' := by ext; dsimp; simp
   map_mul' _ _ := by ext; simp
@@ -582,7 +582,7 @@ theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i
 #align pi.update_eq_sub_add_single Pi.update_eq_div_mul_mulSingle
 
 @[to_additive]
-theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type _} [CommMonoid M]
+theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : I → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n := by

@@ -10,6 +10,8 @@ import Mathlib.Lean.CoreM
 # Truncate a `MLList` when running out of available heartbeats.
 -/
 
+set_option autoImplicit true
+
 open Lean.Core (CoreM)
 
 /-- Take an initial segment of a `MetaM` lazy list,

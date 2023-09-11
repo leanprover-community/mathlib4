@@ -106,7 +106,7 @@ theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensiona
 
 Note this cannot be an instance as Lean cannot infer `L`.
 -/
-theorem left (K L : Type _) [Field K] [Algebra F K] [Ring L] [Nontrivial L] [Algebra F L]
+theorem left (K L : Type*) [Field K] [Algebra F K] [Ring L] [Nontrivial L] [Algebra F L]
     [Algebra K L] [IsScalarTower F K L] [FiniteDimensional F L] : FiniteDimensional F K :=
   FiniteDimensional.of_injective (IsScalarTower.toAlgHom F K L).toLinearMap (RingHom.injective _)
 #align finite_dimensional.left FiniteDimensional.left

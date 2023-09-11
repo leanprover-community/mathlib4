@@ -36,7 +36,7 @@ open Topology
 
 section DivisionRing
 
-variable {K : Type _} [DivisionRing K] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀]
+variable {K : Type*} [DivisionRing K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 section ValuationTopologicalDivisionRing
 
@@ -137,7 +137,7 @@ namespace Valued
 
 open UniformSpace
 
-variable {K : Type _} [Field K] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
+variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
 
 local notation "hat " => Completion
 

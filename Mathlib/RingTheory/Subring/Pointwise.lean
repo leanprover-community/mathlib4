@@ -27,7 +27,7 @@ keep them in sync.
 
 open Set
 
-variable {M R : Type _}
+variable {M R : Type*}
 
 namespace Subring
 

@@ -55,7 +55,7 @@ Defined by convention to be `0` if the space has infinite rank.
 For a vector space `V` over a field `K`, this is the same as the finite dimension
 of `V` over `K`.
 -/
-noncomputable def finrank (R V : Type _) [Semiring R] [AddCommGroup V] [Module R V] : ℕ :=
+noncomputable def finrank (R V : Type*) [Semiring R] [AddCommGroup V] [Module R V] : ℕ :=
   Cardinal.toNat (Module.rank R V)
 #align finite_dimensional.finrank FiniteDimensional.finrank
 
@@ -136,7 +136,7 @@ theorem finrank_eq_card_basis {ι : Type w} [Fintype ι] (h : Basis ι K V) :
 
 /-- If a vector space (or module) has a finite basis, then its dimension (or rank) is equal to the
 cardinality of the basis. This lemma uses a `Finset` instead of indexed types. -/
-theorem finrank_eq_card_finset_basis {ι : Type w} {b : Finset ι} (h : Basis.{w} b K V) :
+theorem finrank_eq_card_finset_basis {ι : Type w} {b : Finset ι} (h : Basis b K V) :
     finrank K V = Finset.card b := by rw [finrank_eq_card_basis h, Fintype.card_coe]
 #align finite_dimensional.finrank_eq_card_finset_basis FiniteDimensional.finrank_eq_card_finset_basis
 
@@ -222,7 +222,7 @@ open FiniteDimensional
 
 variable [Ring K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂] [Module K V₂]
 
-variable {R M M₂ : Type _} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
+variable {R M M₂ : Type*} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
 
 variable [Module R M] [Module R M₂]
 
@@ -326,7 +326,7 @@ theorem finrank_span_finset_le_card (s : Finset V) : (s : Set V).finrank K ≤ s
     _ = s.card := by simp
 #align finrank_span_finset_le_card finrank_span_finset_le_card
 
-theorem finrank_range_le_card {ι : Type _} [Fintype ι] {b : ι → V} :
+theorem finrank_range_le_card {ι : Type*} [Fintype ι] {b : ι → V} :
     (Set.range b).finrank K ≤ Fintype.card ι := by
   classical
   refine (finrank_span_le_card _).trans ?_
@@ -334,7 +334,7 @@ theorem finrank_range_le_card {ι : Type _} [Fintype ι] {b : ι → V} :
   exact Finset.card_image_le
 #align finrank_range_le_card finrank_range_le_card
 
-theorem finrank_span_eq_card {ι : Type _} [Fintype ι] {b : ι → V} (hb : LinearIndependent K b) :
+theorem finrank_span_eq_card {ι : Type*} [Fintype ι] {b : ι → V} (hb : LinearIndependent K b) :
     finrank K (span K (Set.range b)) = Fintype.card ι :=
   finrank_eq_of_rank_eq
     (by
@@ -379,7 +379,7 @@ section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
-theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type _} [Fintype ι] {b : ι → V}
+theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintype ι] {b : ι → V}
     (spans : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) :
     LinearIndependent K b :=
   linearIndependent_iff'.mpr fun s g dependent i i_mem_s => by
@@ -427,7 +427,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type _} [Finty
 
 /-- A finite family of vectors is linearly independent if and only if
 its cardinality equals the dimension of its span. -/
-theorem linearIndependent_iff_card_eq_finrank_span {ι : Type _} [Fintype ι] {b : ι → V} :
+theorem linearIndependent_iff_card_eq_finrank_span {ι : Type*} [Fintype ι] {b : ι → V} :
     LinearIndependent K b ↔ Fintype.card ι = (Set.range b).finrank K := by
   constructor
   · intro h
@@ -452,19 +452,19 @@ theorem linearIndependent_iff_card_eq_finrank_span {ι : Type _} [Fintype ι] {b
     convert (linearIndependent_of_top_le_span_of_card_eq_finrank hs hc).map' _ hi
 #align linear_independent_iff_card_eq_finrank_span linearIndependent_iff_card_eq_finrank_span
 
-theorem linearIndependent_iff_card_le_finrank_span {ι : Type _} [Fintype ι] {b : ι → V} :
+theorem linearIndependent_iff_card_le_finrank_span {ι : Type*} [Fintype ι] {b : ι → V} :
     LinearIndependent K b ↔ Fintype.card ι ≤ (Set.range b).finrank K := by
   rw [linearIndependent_iff_card_eq_finrank_span, finrank_range_le_card.le_iff_eq]
 #align linear_independent_iff_card_le_finrank_span linearIndependent_iff_card_le_finrank_span
 
 /-- A family of `finrank K V` vectors forms a basis if they span the whole space. -/
-noncomputable def basisOfTopLeSpanOfCardEqFinrank {ι : Type _} [Fintype ι] (b : ι → V)
+noncomputable def basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι → V)
     (le_span : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) : Basis ι K V :=
   Basis.mk (linearIndependent_of_top_le_span_of_card_eq_finrank le_span card_eq) le_span
 #align basis_of_top_le_span_of_card_eq_finrank basisOfTopLeSpanOfCardEqFinrank
 
 @[simp]
-theorem coe_basisOfTopLeSpanOfCardEqFinrank {ι : Type _} [Fintype ι] (b : ι → V)
+theorem coe_basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι → V)
     (le_span : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) :
     ⇑(basisOfTopLeSpanOfCardEqFinrank b le_span card_eq) = b :=
   Basis.coe_mk _ _
@@ -530,7 +530,7 @@ section SubalgebraRank
 
 open Module
 
-variable {F E : Type _} [CommRing F] [Ring E] [Algebra F E]
+variable {F E : Type*} [CommRing F] [Ring E] [Algebra F E]
 
 @[simp]
 theorem Subalgebra.rank_toSubmodule (S : Subalgebra F E) :

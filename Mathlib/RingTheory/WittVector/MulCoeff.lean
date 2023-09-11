@@ -36,7 +36,7 @@ namespace WittVector
 
 variable (p : ℕ) [hp : Fact p.Prime]
 
-variable {k : Type _} [CommRing k]
+variable {k : Type*} [CommRing k]
 
 local notation "𝕎" => WittVector p
 

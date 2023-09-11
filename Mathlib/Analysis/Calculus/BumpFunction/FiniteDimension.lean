@@ -31,7 +31,7 @@ open Set Metric TopologicalSpace Function Asymptotics MeasureTheory FiniteDimens
 
 open scoped Pointwise Topology NNReal BigOperators Convolution
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 section
 
@@ -507,7 +507,7 @@ variable {E}
 
 end HelperDefinitions
 
-instance (priority := 100) {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] : HasContDiffBump E := by
   refine' ⟨⟨_⟩⟩
   borelize E

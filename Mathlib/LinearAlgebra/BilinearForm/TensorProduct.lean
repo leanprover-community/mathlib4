@@ -23,7 +23,7 @@ import Mathlib.LinearAlgebra.TensorProduct
 
 universe u v w
 
-variable {ι : Type _} {R : Type _} {M₁ M₂ : Type _}
+variable {ι : Type*} {R : Type*} {M₁ M₂ : Type*}
 
 open TensorProduct
 
@@ -58,6 +58,15 @@ theorem tensorDistrib_tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M₂) (
 protected def tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M₂) : BilinForm R (M₁ ⊗[R] M₂) :=
   tensorDistrib (R := R) (B₁ ⊗ₜ[R] B₂)
 #align bilin_form.tmul BilinForm.tmul
+
+attribute [ext] TensorProduct.ext in
+/-- A tensor product of symmetric bilinear forms is symmetric. -/
+lemma IsSymm.tmul {B₁ : BilinForm R M₁} {B₂ : BilinForm R M₂}
+    (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
+  rw [isSymm_iff_flip R]
+  apply toLin.injective
+  ext x₁ x₂ y₁ y₂
+  exact (congr_arg₂ (HMul.hMul) (hB₁ x₁ y₁) (hB₂ x₂ y₂)).symm
 
 end CommSemiring
 

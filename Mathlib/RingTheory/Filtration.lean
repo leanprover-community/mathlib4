@@ -169,13 +169,13 @@ set_option linter.uppercaseLean3 false in
 #align ideal.filtration.bot_N Ideal.Filtration.bot_N
 
 @[simp]
-theorem iSup_N {ι : Sort _} (f : ι → I.Filtration M) : (iSup f).N = ⨆ i, (f i).N :=
+theorem iSup_N {ι : Sort*} (f : ι → I.Filtration M) : (iSup f).N = ⨆ i, (f i).N :=
   congr_arg sSup (Set.range_comp _ _).symm
 set_option linter.uppercaseLean3 false in
 #align ideal.filtration.supr_N Ideal.Filtration.iSup_N
 
 @[simp]
-theorem iInf_N {ι : Sort _} (f : ι → I.Filtration M) : (iInf f).N = ⨅ i, (f i).N :=
+theorem iInf_N {ι : Sort*} (f : ι → I.Filtration M) : (iInf f).N = ⨅ i, (f i).N :=
   congr_arg sInf (Set.range_comp _ _).symm
 set_option linter.uppercaseLean3 false in
 #align ideal.filtration.infi_N Ideal.Filtration.iInf_N

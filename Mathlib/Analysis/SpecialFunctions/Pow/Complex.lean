@@ -13,6 +13,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Log
 We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 open Classical Real Topology Filter ComplexConjugate Finset Set
 
@@ -55,7 +56,7 @@ theorem cpow_eq_zero_iff (x y : ℂ) : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
 theorem zero_cpow {x : ℂ} (h : x ≠ 0) : (0 : ℂ) ^ x = 0 := by simp [cpow_def, *]
 #align complex.zero_cpow Complex.zero_cpow
 
-theorem zero_cpow_eq_iff {x : ℂ} {a : ℂ} : 0 ^ x = a ↔ x ≠ 0 ∧ a = 0 ∨ x = 0 ∧ a = 1 := by
+theorem zero_cpow_eq_iff {x : ℂ} {a : ℂ} : (0 : ℂ) ^ x = a ↔ x ≠ 0 ∧ a = 0 ∨ x = 0 ∧ a = 1 := by
   constructor
   · intro hyp
     simp only [cpow_def, eq_self_iff_true, if_true] at hyp
@@ -72,7 +73,7 @@ theorem zero_cpow_eq_iff {x : ℂ} {a : ℂ} : 0 ^ x = a ↔ x ≠ 0 ∧ a = 0 �
     · exact cpow_zero _
 #align complex.zero_cpow_eq_iff Complex.zero_cpow_eq_iff
 
-theorem eq_zero_cpow_iff {x : ℂ} {a : ℂ} : a = 0 ^ x ↔ x ≠ 0 ∧ a = 0 ∨ x = 0 ∧ a = 1 := by
+theorem eq_zero_cpow_iff {x : ℂ} {a : ℂ} : a = (0 : ℂ) ^ x ↔ x ≠ 0 ∧ a = 0 ∨ x = 0 ∧ a = 1 := by
   rw [← zero_cpow_eq_iff, eq_comm]
 #align complex.eq_zero_cpow_iff Complex.eq_zero_cpow_iff
 
@@ -111,9 +112,8 @@ theorem cpow_sub {x : ℂ} (y z : ℂ) (hx : x ≠ 0) : x ^ (y - z) = x ^ y / x 
 theorem cpow_neg_one (x : ℂ) : x ^ (-1 : ℂ) = x⁻¹ := by simpa using cpow_neg x 1
 #align complex.cpow_neg_one Complex.cpow_neg_one
 
--- Porting note: couldn't find a way to use `^` for the RHS
 @[simp, norm_cast]
-theorem cpow_nat_cast (x : ℂ) : ∀ n : ℕ, x ^ (n : ℂ) = HPow.hPow x (n : ℕ)
+theorem cpow_nat_cast (x : ℂ) : ∀ n : ℕ, x ^ (n : ℂ) = x ^ n
   | 0 => by simp
   | n + 1 =>
     if hx : x = 0 then by
@@ -123,14 +123,14 @@ theorem cpow_nat_cast (x : ℂ) : ∀ n : ℕ, x ^ (n : ℂ) = HPow.hPow x (n : 
 #align complex.cpow_nat_cast Complex.cpow_nat_cast
 
 @[simp]
-theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = HPow.hPow x (2 : ℕ) := by
+theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = x ^ (2 : ℕ) := by
   rw [← cpow_nat_cast]
   simp only [Nat.cast_ofNat]
 #align complex.cpow_two Complex.cpow_two
 
 open Int in
 @[simp, norm_cast]
-theorem cpow_int_cast (x : ℂ) : ∀ n : ℤ, x ^ (n : ℂ) = HPow.hPow x n
+theorem cpow_int_cast (x : ℂ) : ∀ n : ℤ, x ^ (n : ℂ) = x ^ n
   | (n : ℕ) => by simp
   | -[n+1] => by
     rw [zpow_negSucc]
@@ -138,7 +138,7 @@ theorem cpow_int_cast (x : ℂ) : ∀ n : ℤ, x ^ (n : ℂ) = HPow.hPow x n
       cpow_nat_cast]
 #align complex.cpow_int_cast Complex.cpow_int_cast
 
-theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : HPow.hPow (x ^ (n⁻¹ : ℂ)) n = x := by
+theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ)) ^ n = x := by
   suffices im (log x * (n⁻¹ : ℂ)) ∈ Ioc (-π) π by
     rw [← cpow_nat_cast, ← cpow_mul _ this.1 this.2, inv_mul_cancel, cpow_one]
     exact_mod_cast hn

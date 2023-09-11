@@ -166,7 +166,7 @@ theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
     simp only [sum_apply]
     dsimp
   · simp_rw [← RingHom.map_pow, ← (scalar.commute _ _).eq]
-    simp only [coe_scalar, Matrix.one_mul, RingHom.id_apply, Pi.smul_apply, smul_eq_mul, mul_eq_mul,
+    simp only [coe_scalar, Matrix.one_mul, RingHom.id_apply, Pi.smul_apply, smul_eq_mul,
       Algebra.smul_mul_assoc]
     -- porting note: the `have` was present and unused also in the original
     --have h : ∀ x : ℕ, (fun (e : ℕ) (a : R) => r ^ e * a) x 0 = 0 := by simp
@@ -199,7 +199,7 @@ end Matrix
 
 variable {p : ℕ} [Fact p.Prime]
 
-theorem matPolyEquiv_eq_x_pow_sub_c {K : Type _} (k : ℕ) [Field K] (M : Matrix n n K) :
+theorem matPolyEquiv_eq_x_pow_sub_c {K : Type*} (k : ℕ) [Field K] (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
   -- porting note: `i` and `j` are used later on, but were not mentioned in mathlib3

@@ -33,7 +33,7 @@ open Set Real
 
 open NNReal
 
-variable {𝕜 𝕜₂ E F G : Type _}
+variable {𝕜 𝕜₂ E F G : Type*}
 
 /-! # General constructions -/
 

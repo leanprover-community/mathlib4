@@ -18,7 +18,7 @@ open TopologicalSpace Set Filter
 
 open Topology Filter
 
-variable {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 instance : TopologicalSpace (List α) :=
   TopologicalSpace.mkOfNhds (traverse nhds)
@@ -76,7 +76,7 @@ theorem List.tendsto_cons {a : α} {l : List α} :
   rw [nhds_cons, Tendsto, Filter.map_prod]; exact le_rfl
 #align list.tendsto_cons List.tendsto_cons
 
-theorem Filter.Tendsto.cons {α : Type _} {f : α → β} {g : α → List β} {a : Filter α} {b : β}
+theorem Filter.Tendsto.cons {α : Type*} {f : α → β} {g : α → List β} {a : Filter α} {b : β}
     {l : List β} (hf : Tendsto f a (𝓝 b)) (hg : Tendsto g a (𝓝 l)) :
     Tendsto (fun a => List.cons (f a) (g a)) a (𝓝 (b::l)) :=
   List.tendsto_cons.comp (Tendsto.prod_mk hf hg)
@@ -84,7 +84,7 @@ theorem Filter.Tendsto.cons {α : Type _} {f : α → β} {g : α → List β} {
 
 namespace List
 
-theorem tendsto_cons_iff {β : Type _} {f : List α → β} {b : Filter β} {a : α} {l : List α} :
+theorem tendsto_cons_iff {β : Type*} {f : List α → β} {b : Filter β} {a : α} {l : List α} :
     Tendsto f (𝓝 (a::l)) b ↔ Tendsto (fun p : α × List α => f (p.1::p.2)) (𝓝 a ×ˢ 𝓝 l) b := by
   have : 𝓝 (a::l) = (𝓝 a ×ˢ 𝓝 l).map fun p : α × List α => p.1::p.2 := by
     simp only [nhds_cons, Filter.prod_eq, (Filter.map_def _ _).symm,
@@ -97,7 +97,7 @@ theorem continuous_cons : Continuous fun x : α × List α => (x.1::x.2 : List �
   continuous_iff_continuousAt.mpr fun ⟨_x, _y⟩ => continuousAt_fst.cons continuousAt_snd
 #align list.continuous_cons List.continuous_cons
 
-theorem tendsto_nhds {β : Type _} {f : List α → β} {r : List α → Filter β}
+theorem tendsto_nhds {β : Type*} {f : List α → β} {r : List α → Filter β}
     (h_nil : Tendsto f (pure []) (r []))
     (h_cons :
       ∀ l a,

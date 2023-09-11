@@ -39,7 +39,7 @@ concept, formal concept analysis, intent, extend, attribute
 
 open Function OrderDual Set
 
-variable {ι : Sort _} {α β γ : Type _} {κ : ι → Sort _} (r : α → β → Prop) {s s₁ s₂ : Set α}
+variable {ι : Sort*} {α β γ : Type*} {κ : ι → Sort*} (r : α → β → Prop) {s s₁ s₂ : Set α}
   {t t₁ t₂ : Set β}
 
 /-! ### Intent and extent -/

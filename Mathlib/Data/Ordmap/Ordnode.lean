@@ -63,6 +63,8 @@ ordered map, ordered set, data structure
 
 -/
 
+set_option autoImplicit true
+
 
 
 /- ./././Mathport/Syntax/Translate/Command.lean:355:30: infer kinds are unsupported in Lean 4:
@@ -80,7 +82,7 @@ compile_inductive% Ordnode
 
 namespace Ordnode
 
-variable {α : Type _}
+variable {α : Type*}
 
 instance : EmptyCollection (Ordnode α) :=
   ⟨nil⟩

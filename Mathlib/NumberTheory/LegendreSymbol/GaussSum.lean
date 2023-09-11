@@ -210,7 +210,7 @@ theorem Char.card_pow_char_pow {χ : MulChar R R'} (hχ : IsQuadratic χ) (ψ : 
 
 /-- When `F` and `F'` are finite fields and `χ : F → F'` is a nontrivial quadratic character,
 then `(χ(-1) * #F)^(#F'/2) = χ(#F')`. -/
-theorem Char.card_pow_card {F : Type _} [Field F] [Fintype F] {F' : Type _} [Field F'] [Fintype F']
+theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field F'] [Fintype F']
     {χ : MulChar F F'} (hχ₁ : IsNontrivial χ) (hχ₂ : IsQuadratic χ)
     (hch₁ : ringChar F' ≠ ringChar F) (hch₂ : ringChar F' ≠ 2) :
     (χ (-1) * Fintype.card F) ^ (Fintype.card F' / 2) = χ (Fintype.card F') := by
@@ -263,7 +263,7 @@ open ZMod
 -- See https://github.com/leanprover-community/mathlib4/issues/5028
 set_option maxHeartbeats 800000 in
 /-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈#F` in `F`. -/
-theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
+theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
     (2 : F) ^ (Fintype.card F / 2) = χ₈ (Fintype.card F) := by
   have hp2 : ∀ n : ℕ, (2 ^ n : F) ≠ 0 := fun n => pow_ne_zero n (Ring.two_ne_zero hF)
   obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)

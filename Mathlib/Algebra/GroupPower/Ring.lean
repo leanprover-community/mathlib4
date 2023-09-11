@@ -22,7 +22,7 @@ Further lemmas about ordered semirings and rings can be found in `Algebra.GroupP
 
 -/
 
-variable {R S M : Type _}
+variable {R S M : Type*}
 
 section MonoidWithZero
 
@@ -201,7 +201,6 @@ theorem neg_pow (a : R) (n : ℕ) : (-a) ^ n = (-1) ^ n * a ^ n :=
 section
 set_option linter.deprecated false
 
-@[simp]
 theorem neg_pow_bit0 (a : R) (n : ℕ) : (-a) ^ bit0 n = a ^ bit0 n := by
   rw [pow_bit0', neg_mul_neg, pow_bit0']
 #align neg_pow_bit0 neg_pow_bit0
@@ -213,7 +212,6 @@ theorem neg_pow_bit1 (a : R) (n : ℕ) : (-a) ^ bit1 n = -a ^ bit1 n := by
 
 end
 
-@[simp]
 theorem neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
 #align neg_sq neg_sq
 
