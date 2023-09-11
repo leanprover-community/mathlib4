@@ -5,12 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 Ported by: Winston Yin
 
 ! This file was ported from Lean 3 source module data.set.intervals.group
-! leanprover-community/mathlib commit 740acc0e6f9adf4423f92a485d0456fc271482da
+! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.GroupPower.Lemmas
 

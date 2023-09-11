@@ -49,6 +49,7 @@ import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.PermuteGoals
+import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
@@ -68,6 +69,7 @@ import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Slice
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
@@ -77,6 +79,7 @@ import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
+import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
 import Mathlib.Util.Syntax
 import Mathlib.Util.WithWeakNamespace
@@ -216,7 +219,6 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
-/- S -/ syntax (name := polyrith) "polyrith" (&" only")? (" [" term,* "]")? : tactic
 
 /- S -/ syntax (name := omega) "omega" (&" manual")? (&" nat" <|> &" int")? : tactic
 
@@ -226,9 +228,6 @@ syntax termList := " [" term,* "]"
 /- M -/ syntax (name := reassoc) "reassoc" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := reassoc!) "reassoc!" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := deriveReassocProof) "derive_reassoc_proof" : tactic
-
-/- M -/ syntax (name := sliceLHS) "slice_lhs " num num " => " Conv.convSeq : tactic
-/- M -/ syntax (name := sliceRHS) "slice_rhs " num num " => " Conv.convSeq : tactic
 
 /- S -/ syntax (name := subtypeInstance) "subtype_instance" : tactic
 
@@ -255,9 +254,6 @@ syntax termList := " [" term,* "]"
 
 /- B -/ syntax (name := tidy) "tidy" (config)? : tactic
 /- B -/ syntax (name := tidy?) "tidy?" (config)? : tactic
-
-/- B -/ syntax (name := wlog) "wlog " binderIdent " : " term
-  (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := elementwise!) "elementwise!" (ppSpace (colGt ident))* : tactic
@@ -308,8 +304,6 @@ namespace Conv
 
 -- https://github.com/leanprover-community/mathlib/issues/2882
 /- M -/ syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
-
-/- M -/ syntax (name := slice) "slice " num num : conv
 
 end Conv
 end Tactic

@@ -141,7 +141,9 @@ partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     | ~q(($a : ℕ) • ($b : «$α»)) => pure <| (← parse sℕ .nat a).mul (← parse sα c b)
     | _ => els
   | ``HPow.hPow, _ | ``Pow.pow, _ => match e with
-    | ~q($a ^ $b) => pure <| (← parse sα c a).pow (← parse sℕ .nat b)
+    | ~q($a ^ $b) =>
+      try pure <| (← parse sα c a).pow (.const (← (← NormNum.derive (u := .zero) b).toRat))
+      catch _ => els
     | _ => els
   | ``Neg.neg, some _ => match e with
     | ~q(-$a) => pure <| (← parse sα c a).neg

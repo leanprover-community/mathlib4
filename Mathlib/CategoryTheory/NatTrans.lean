@@ -65,7 +65,7 @@ Without this, we would have `NatTrans.app η X`.
 -/
 @[app_unexpander NatTrans.app] def
   unexpandNatTransApp : Lean.PrettyPrinter.Unexpander
-  | `($_ $η $X)  => set_option hygiene false in `($(η).app $X)
+  | `($_ $η $(X)*)  => set_option hygiene false in `($(η).app $(X)*)
   | _            => throw ()
 
 -- TODO Perhaps we should just turn on `ext` in aesop?

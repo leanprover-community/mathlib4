@@ -38,7 +38,6 @@ example : Nat := by
 def foo (a b c : Nat) := if a < b then c else 0
 
 example : foo 1 2 3 = 3 := by
-  show (if _ then _ else _) = _
   change (if _ then _ else _) = _
   change ite _ _ _ = _
   change (if _ < _ then _ else _) = _
@@ -69,3 +68,8 @@ example (x y : Nat) (h : x = y) : True := by
   · exact 4
   guard_hyp h : (if 1 < 2 then x else 4) = y
   · trivial
+
+example : let x := 22; let y : Nat := x; let z : Fin (y + 1) := 0; z.1 < y + 1 := by
+  intro x y z -- `z` was erroneously marked as unused
+  change _ at y
+  exact z.2

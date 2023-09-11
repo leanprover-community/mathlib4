@@ -448,8 +448,7 @@ theorem comp_isOpenMap_iff' (h : α ≃ₜ β) {f : β → γ} : IsOpenMap (f �
 #align homeomorph.comp_is_open_map_iff' Homeomorph.comp_isOpenMap_iff'
 
 /-- If two sets are equal, then they are homeomorphic. -/
-def setCongr {s t : Set α} (h : s = t) : s ≃ₜ t
-    where
+def setCongr {s t : Set α} (h : s = t) : s ≃ₜ t where
   continuous_toFun := continuous_inclusion h.subset
   continuous_invFun := continuous_inclusion h.symm.subset
   toEquiv := Equiv.setCongr h
@@ -510,15 +509,15 @@ def prodAssoc : (α × β) × γ ≃ₜ α × β × γ where
 
 /-- `α × {*}` is homeomorphic to `α`. -/
 @[simps! (config := { fullyApplied := false }) apply]
-def prodPunit : α × PUnit ≃ₜ α where
+def prodPUnit : α × PUnit ≃ₜ α where
   toEquiv := Equiv.prodPUnit α
   continuous_toFun := continuous_fst
   continuous_invFun := continuous_id.prod_mk continuous_const
-#align homeomorph.prod_punit Homeomorph.prodPunit
+#align homeomorph.prod_punit Homeomorph.prodPUnit
 
 /-- `{*} × α` is homeomorphic to `α`. -/
 def punitProd : PUnit × α ≃ₜ α :=
-  (prodComm _ _).trans (prodPunit _)
+  (prodComm _ _).trans (prodPUnit _)
 #align homeomorph.punit_prod Homeomorph.punitProd
 
 @[simp] theorem coe_punitProd : ⇑(punitProd α) = Prod.snd := rfl
@@ -588,8 +587,7 @@ end Distrib
 
 /-- If `ι` has a unique element, then `ι → α` is homeomorphic to `α`. -/
 @[simps! (config := { fullyApplied := false })]
-def funUnique (ι α : Type _) [Unique ι] [TopologicalSpace α] : (ι → α) ≃ₜ α
-    where
+def funUnique (ι α : Type _) [Unique ι] [TopologicalSpace α] : (ι → α) ≃ₜ α where
   toEquiv := Equiv.funUnique ι α
   continuous_toFun := continuous_apply _
   continuous_invFun := continuous_pi fun _ => continuous_id
@@ -597,8 +595,7 @@ def funUnique (ι α : Type _) [Unique ι] [TopologicalSpace α] : (ι → α) �
 
 /-- Homeomorphism between dependent functions `Π i : Fin 2, α i` and `α 0 × α 1`. -/
 @[simps! (config := { fullyApplied := false })]
-def piFinTwo.{u} (α : Fin 2 → Type u) [∀ i, TopologicalSpace (α i)] : (∀ i, α i) ≃ₜ α 0 × α 1
-    where
+def piFinTwo.{u} (α : Fin 2 → Type u) [∀ i, TopologicalSpace (α i)] : (∀ i, α i) ≃ₜ α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
   continuous_toFun := (continuous_apply 0).prod_mk (continuous_apply 1)
   continuous_invFun := continuous_pi <| Fin.forall_fin_two.2 ⟨continuous_fst, continuous_snd⟩
@@ -710,7 +707,7 @@ theorem continuous_symm_of_equiv_compact_to_t2 [CompactSpace α] [T2Space β] {f
 /-- Continuous equivalences from a compact space to a T2 space are homeomorphisms.
 
 This is not true when T2 is weakened to T1
-(see `continuous.homeo_of_equiv_compact_to_t2.t1_counterexample`). -/
+(see `Continuous.homeoOfEquivCompactToT2.t1_counterexample`). -/
 @[simps toEquiv] -- porting note: was `@[simps]`
 def homeoOfEquivCompactToT2 [CompactSpace α] [T2Space β] {f : α ≃ β} (hf : Continuous f) : α ≃ₜ β :=
   { f with

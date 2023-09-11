@@ -195,25 +195,25 @@ section deprecated
 set_option linter.deprecated false
 
 /-- `castPosNum` casts a `PosNum` into any type which has `1` and `+`. -/
-@[deprecated] def castPosNum : PosNum → α
+@[deprecated, coe] def castPosNum : PosNum → α
   | 1 => 1
   | PosNum.bit0 a => bit0 (castPosNum a)
   | PosNum.bit1 a => bit1 (castPosNum a)
 #align cast_pos_num castPosNum
 
 /-- `castNum` casts a `Num` into any type which has `0`, `1` and `+`. -/
-@[deprecated] def castNum [Zero α] : Num → α
+@[deprecated, coe] def castNum [Zero α] : Num → α
   | 0 => 0
   | Num.pos p => castPosNum p
 #align cast_num castNum
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) posNumCoe : CoeTC PosNum α :=
+@[deprecated] instance (priority := 900) posNumCoe : CoeHTCT PosNum α :=
   ⟨castPosNum⟩
 #align pos_num_coe posNumCoe
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) numNatCoe [Zero α] : CoeTC Num α :=
+@[deprecated] instance (priority := 900) numNatCoe [Zero α] : CoeHTCT Num α :=
   ⟨castNum⟩
 #align num_nat_coe numNatCoe
 
@@ -672,14 +672,14 @@ set_option linter.deprecated false
 variable {α : Type _} [Zero α] [One α] [Add α] [Neg α]
 
 /-- `castZNum` casts a `ZNum` into any type which has `0`, `1`, `+` and `neg` -/
-@[deprecated] def castZNum : ZNum → α
+@[deprecated, coe] def castZNum : ZNum → α
   | 0 => 0
   | ZNum.pos p => p
   | ZNum.neg p => -p
 #align cast_znum castZNum
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) znumCoe : CoeTC ZNum α :=
+@[deprecated] instance (priority := 900) znumCoe : CoeHTCT ZNum α :=
   ⟨castZNum⟩
 #align znum_coe znumCoe
 

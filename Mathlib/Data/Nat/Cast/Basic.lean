@@ -256,6 +256,12 @@ theorem map_natCast [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
   map_natCast' f <| map_one f
 #align map_nat_cast map_natCast
 
+--Porting note: new theorem
+@[simp]
+theorem map_ofNat [RingHomClass F R S] (f : F)  (n : ℕ) [Nat.AtLeastTwo n] :
+    (f (OfNat.ofNat n) : S) = OfNat.ofNat n :=
+  map_natCast f n
+
 theorem ext_nat [RingHomClass F ℕ R] (f g : F) : f = g :=
   ext_nat' f g <| by simp only [map_one f, map_one g]
 #align ext_nat ext_nat

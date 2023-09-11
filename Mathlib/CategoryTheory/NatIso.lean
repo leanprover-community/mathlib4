@@ -69,7 +69,7 @@ Without this, we would have `Iso.app η X`.
 -/
 @[app_unexpander Iso.app] def
   unexpandIsoApp : Lean.PrettyPrinter.Unexpander
-  | `($_ $η $X)  => set_option hygiene false in `($(η).app $X)
+  | `($_ $η $(X)*)  => set_option hygiene false in `($(η).app $(X)*)
   | _            => throw ()
 
 @[reassoc (attr := simp)]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module data.set.basic
-! leanprover-community/mathlib commit 75608affb24b4f48699fbcd38f227827f7793771
+! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1024,6 +1024,14 @@ theorem union_inter_cancel_right {s t : Set α} : (s ∪ t) ∩ t = t :=
   inter_eq_self_of_subset_right <| subset_union_right _ _
 #align set.union_inter_cancel_right Set.union_inter_cancel_right
 
+theorem inter_setOf_eq_sep (s : Set α) (p : α → Prop) : s ∩ {a | p a} = {a ∈ s | p a} :=
+  rfl
+#align set.inter_set_of_eq_sep Set.inter_setOf_eq_sep
+
+theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a ∈ s | p a} :=
+  inter_comm _ _
+#align set.set_of_inter_eq_sep Set.setOf_inter_eq_sep
+
 /-! ### Distributivity laws -/
 
 
@@ -1302,6 +1310,9 @@ theorem empty_ssubset_singleton : (∅ : Set α) ⊂ {a} :=
 theorem singleton_subset_iff {a : α} {s : Set α} : {a} ⊆ s ↔ a ∈ s :=
   forall_eq
 #align set.singleton_subset_iff Set.singleton_subset_iff
+
+theorem singleton_subset_singleton : ({a} : Set α) ⊆ {b} ↔ a = b := by simp
+#align set.singleton_subset_singleton Set.singleton_subset_singleton
 
 theorem set_compr_eq_eq_singleton {a : α} : { b | b = a } = {a} :=
   rfl
@@ -1587,6 +1598,14 @@ lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
 
 lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
 #align set.subset_diff Set.subset_diff
+
+theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (s ∩ u) :=
+  inf_sdiff_distrib_left _ _ _
+#align set.inter_diff_distrib_left Set.inter_diff_distrib_left
+
+theorem inter_diff_distrib_right (s t u : Set α) : s \ t ∩ u = (s ∩ u) \ (t ∩ u) :=
+  inf_sdiff_distrib_right _ _ _
+#align set.inter_diff_distrib_right Set.inter_diff_distrib_right
 
 /-! ### Lemmas about complement -/
 
@@ -2017,9 +2036,20 @@ sdiff_eq_self_iff_disjoint.2 $ by simp [h]
 #align set.diff_singleton_eq_self Set.diff_singleton_eq_self
 
 @[simp]
+theorem diff_singleton_sSubset {s : Set α} {a : α} : s \ {a} ⊂ s ↔ a ∈ s :=
+  sdiff_le.lt_iff_ne.trans <| sdiff_eq_left.not.trans <| by simp
+#align set.diff_singleton_ssubset Set.diff_singleton_sSubset
+
+@[simp]
 theorem insert_diff_singleton {a : α} {s : Set α} : insert a (s \ {a}) = insert a s := by
   simp [insert_eq, union_diff_self, -union_singleton, -singleton_union]
 #align set.insert_diff_singleton Set.insert_diff_singleton
+
+theorem insert_diff_singleton_comm (hab : a ≠ b) (s : Set α) :
+    insert a (s \ {b}) = insert a s \ {b} := by
+  simp_rw [← union_singleton, union_diff_distrib,
+    diff_singleton_eq_self (mem_singleton_iff.not.2 hab.symm)]
+#align set.insert_diff_singleton_comm Set.insert_diff_singleton_comm
 
 --Porting note: removed `simp` attribute because `simp` can prove it
 theorem diff_self {s : Set α} : s \ s = ∅ :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.multiset.finset_ops
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -287,3 +287,8 @@ theorem ndinter_eq_zero_iff_disjoint {s t : Multiset α} : ndinter s t = 0 ↔ D
 #align multiset.ndinter_eq_zero_iff_disjoint Multiset.ndinter_eq_zero_iff_disjoint
 
 end Multiset
+
+-- Porting note: `assert_not_exists` has not been ported yet.
+-- -- Assert that we define `finset` without the material on the set lattice.
+-- -- Note that we cannot put this in `data.finset.basic` because we proved relevant lemmas there.
+-- assert_not_exists set.sInter

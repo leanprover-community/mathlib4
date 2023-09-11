@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Scott Morrison, Floris van Doorn
 -/
-import Mathlib.Tactic.ToAdditive
+import Lean
 
 /-!
 # `addRelatedDecl`
@@ -33,13 +33,14 @@ Arguments:
   given the type, value, and universe variables of the original declaration,
   should construct the value of the new declaration,
   along with the names of its universe variables.
-* `thisAttr : Option Name` is the name of the attribute that requested this construction,
-  if relevant.
-* `attrs` is the attributes that should be applied to the new declaration,
-  e.g. in the usage `@[reassoc (attr := simp)`.
+* `attrs` is the attributes that should be applied to both the new and the original declaration,
+  e.g. in the usage `@[reassoc (attr := simp)]`.
+  We apply it to both declarations, to have the same behavior as `to_additive`, and to shorten some
+  attribute commands. Note that `@[elementwise (attr := simp), reassoc (attr := simp)]` will try
+  to apply `simp` twice to the current declaration, but that causes no issues.
 -/
 def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
-    (thisAttr : Option Name) (attrs? : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
+    (attrs? : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
     (construct : Expr → Expr → List Name → MetaM (Expr × List Name)) :
     MetaM Unit := do
   let tgt := match src with
@@ -66,6 +67,8 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
   | _ => throwError "Constant {src} is not a theorem or definition."
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
-  if let some thisAttr := thisAttr then
-    let attrs := match attrs? with | some attrs => attrs | none => #[]
-    _ ← Term.TermElabM.run' <| ToAdditive.applyAttributes ref attrs thisAttr src tgt
+  let attrs := match attrs? with | some attrs => attrs | none => #[]
+  _ ← Term.TermElabM.run' <| do
+    let attrs ← elabAttrs attrs
+    Term.applyAttributes src attrs
+    Term.applyAttributes tgt attrs

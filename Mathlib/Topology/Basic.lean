@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module topology.basic
-! leanprover-community/mathlib commit 88b8a77d63a702923d9bee05e9e454ebc22aa766
+! leanprover-community/mathlib commit e8da5f215e815d9ed3455f0216ef52b53e05438a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -175,10 +175,6 @@ theorem isOpen_interᵢ [Finite ι] {s : ι → Set α} (h : ∀ i, IsOpen (s i)
   isOpen_interₛ (finite_range _) (forall_range_iff.2 h)
 #align is_open_Inter isOpen_interᵢ
 
-theorem isOpen_interᵢ_prop {p : Prop} {s : p → Set α} (h : ∀ h : p, IsOpen (s h)) :
-    IsOpen (interᵢ s) := by by_cases p <;> simp [*]
-#align is_open_Inter_prop isOpen_interᵢ_prop
-
 theorem isOpen_binterᵢ_finset {s : Finset β} {f : β → Set α} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
   isOpen_binterᵢ s.finite_toSet h
@@ -260,17 +256,11 @@ theorem isClosed_bunionᵢ {s : Set β} {f : β → Set α} (hs : s.Finite) (h :
   exact isOpen_binterᵢ hs h
 #align is_closed_bUnion isClosed_bunionᵢ
 
--- porting note: generalized to `ι : Sort _`
 theorem isClosed_unionᵢ [Finite ι] {s : ι → Set α} (h : ∀ i, IsClosed (s i)) :
     IsClosed (⋃ i, s i) := by
   simp only [← isOpen_compl_iff, compl_unionᵢ] at *
   exact isOpen_interᵢ h
 #align is_closed_Union isClosed_unionᵢ
-
-@[deprecated isClosed_unionᵢ]
-theorem isClosed_unionᵢ_prop {p : Prop} {s : p → Set α} (h : ∀ h : p, IsClosed (s h)) :
-    IsClosed (unionᵢ s) := by by_cases p <;> simp [*]
-#align is_closed_Union_prop isClosed_unionᵢ_prop
 
 theorem isClosed_imp {p q : α → Prop} (hp : IsOpen { x | p x }) (hq : IsClosed { x | q x }) :
     IsClosed { x | p x → q x } := by

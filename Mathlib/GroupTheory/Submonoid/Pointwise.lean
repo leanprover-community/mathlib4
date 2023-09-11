@@ -553,7 +553,7 @@ protected theorem mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : 
 theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
   apply le_antisymm
   · refine mul_le.2 fun a ha b hb => ?_
-    rw [← AddMonoidHom.mul_right_apply, ← AddSubmonoid.mem_comap]
+    rw [← AddMonoidHom.mulRight_apply, ← AddSubmonoid.mem_comap]
     refine (closure_le.2 fun a' ha' => ?_) ha
     change b ∈ (closure (S * T)).comap (AddMonoidHom.mulLeft a')
     refine (closure_le.2 fun b' hb' => ?_) hb

@@ -362,7 +362,7 @@ theorem adjoin_rootSet_eq_range [Algebra F K] [Algebra F L] {p : F[X]}
 theorem eq_prod_roots_of_splits {p : K[X]} {i : K →+* L} (hsplit : Splits i p) :
     p.map i = C (i p.leadingCoeff) * ((p.map i).roots.map fun a => X - C a).prod := by
   rw [← leadingCoeff_map]; symm
-  apply c_leadingCoeff_mul_prod_multiset_X_sub_C
+  apply C_leadingCoeff_mul_prod_multiset_X_sub_C
   rw [natDegree_map]; exact (natDegree_eq_card_roots hsplit).symm
 #align polynomial.eq_prod_roots_of_splits Polynomial.eq_prod_roots_of_splits
 
@@ -462,7 +462,7 @@ theorem splits_iff_card_roots {p : K[X]} :
     rw [splits_iff_exists_multiset (RingHom.id K)]
     use p.roots
     simp only [RingHom.id_apply, map_id]
-    exact (c_leadingCoeff_mul_prod_multiset_X_sub_C hroots).symm
+    exact (C_leadingCoeff_mul_prod_multiset_X_sub_C hroots).symm
 #align polynomial.splits_iff_card_roots Polynomial.splits_iff_card_roots
 
 theorem aeval_root_derivative_of_splits [Algebra K L] {P : K[X]} (hmo : P.Monic)

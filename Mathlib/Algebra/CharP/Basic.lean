@@ -4,14 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 
 ! This file was ported from Lean 3 source module algebra.char_p.basic
-! leanprover-community/mathlib commit 05a78c9451101108e638a0f213fb1bed82483545
+! leanprover-community/mathlib commit ceb887ddf3344dab425292e497fa2af91498437c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Multiplicity
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Nilpotent
 
@@ -22,7 +20,79 @@ import Mathlib.RingTheory.Nilpotent
 
 universe u v
 
-variable (R : Type u)
+open Finset
+
+open BigOperators
+
+variable {R : Type _}
+
+namespace Commute
+
+variable [Semiring R] {p : ℕ} {x y : R}
+
+protected theorem add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :
+    (x + y) ^ p ^ n =
+      x ^ p ^ n + y ^ p ^ n +
+        p * ∑ k in Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) := by
+  trans x ^ p ^ n + y ^ p ^ n + ∑ k in Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k
+  · simp_rw [h.add_pow, ← Nat.Ico_zero_eq_range, Nat.Ico_succ_right, Icc_eq_cons_Ico (zero_le _),
+      Finset.sum_cons, Ico_eq_cons_Ioo (pow_pos hp.pos _), Finset.sum_cons, tsub_self, tsub_zero,
+      pow_zero, Nat.choose_zero_right, Nat.choose_self, Nat.cast_one, mul_one, one_mul, ← add_assoc]
+  · congr 1
+    simp_rw [Finset.mul_sum, Nat.cast_comm, mul_assoc _ _ (p : R), ← Nat.cast_mul]
+    refine' Finset.sum_congr rfl fun i hi => _
+    rw [mem_Ioo] at hi
+    rw [Nat.div_mul_cancel (hp.dvd_choose_pow hi.1.ne' hi.2.ne)]
+#align commute.add_pow_prime_pow_eq Commute.add_pow_prime_pow_eq
+
+protected theorem add_pow_prime_eq (hp : p.Prime) (h : Commute x y) :
+    (x + y) ^ p =
+      x ^ p + y ^ p + p * ∑ k in Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
+  by simpa using h.add_pow_prime_pow_eq hp 1
+#align commute.add_pow_prime_eq Commute.add_pow_prime_eq
+
+protected theorem exists_add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :
+    ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * r :=
+  ⟨_, h.add_pow_prime_pow_eq hp n⟩
+#align commute.exists_add_pow_prime_pow_eq Commute.exists_add_pow_prime_pow_eq
+
+protected theorem exists_add_pow_prime_eq (hp : p.Prime) (h : Commute x y) :
+    ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * r :=
+  ⟨_, h.add_pow_prime_eq hp⟩
+#align commute.exists_add_pow_prime_eq Commute.exists_add_pow_prime_eq
+
+end Commute
+
+section CommSemiring
+
+variable [CommSemiring R] {p : ℕ} {x y : R}
+
+theorem add_pow_prime_pow_eq (hp : p.Prime) (x y : R) (n : ℕ) :
+    (x + y) ^ p ^ n =
+      x ^ p ^ n + y ^ p ^ n +
+        p * ∑ k in Finset.Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) :=
+  (Commute.all x y).add_pow_prime_pow_eq hp n
+#align add_pow_prime_pow_eq add_pow_prime_pow_eq
+
+theorem add_pow_prime_eq (hp : p.Prime) (x y : R) :
+    (x + y) ^ p =
+      x ^ p + y ^ p + p * ∑ k in Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
+  (Commute.all x y).add_pow_prime_eq hp
+#align add_pow_prime_eq add_pow_prime_eq
+
+theorem exists_add_pow_prime_pow_eq (hp : p.Prime) (x y : R) (n : ℕ) :
+    ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * r :=
+  (Commute.all x y).exists_add_pow_prime_pow_eq hp n
+#align exists_add_pow_prime_pow_eq exists_add_pow_prime_pow_eq
+
+theorem exists_add_pow_prime_eq (hp : p.Prime) (x y : R) :
+    ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * r :=
+  (Commute.all x y).exists_add_pow_prime_eq hp
+#align exists_add_pow_prime_eq exists_add_pow_prime_eq
+
+end CommSemiring
+
+variable (R)
 
 /-- The generator of the kernel of the unique homomorphism ℕ → R for a semiring R.
 
@@ -46,6 +116,7 @@ theorem CharP.cast_eq_zero_iff (R : Type u) [AddMonoidWithOne R] (p : ℕ) [Char
   (x : R) = 0 ↔ p ∣ x :=
 CharP.cast_eq_zero_iff' (R := R) (p := p) x
 
+@[simp]
 theorem CharP.cast_eq_zero [AddMonoidWithOne R] (p : ℕ) [CharP R p] : (p : R) = 0 :=
   (CharP.cast_eq_zero_iff R p p).2 (dvd_refl p)
 #align char_p.cast_eq_zero CharP.cast_eq_zero
@@ -162,39 +233,22 @@ theorem eq_zero [CharZero R] : ringChar R = 0 :=
   eq R 0
 #align ring_char.eq_zero ringChar.eq_zero
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 #align ring_char.nat.cast_ring_char ringChar.Nat.cast_ringChar
 
 end ringChar
 
-theorem add_pow_char_of_commute [Semiring R] {p : ℕ} [Fact p.Prime] [CharP R p] (x y : R)
+theorem add_pow_char_of_commute [Semiring R] {p : ℕ} [hp : Fact p.Prime] [CharP R p] (x y : R)
     (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p := by
-  rw [Commute.add_pow h, Finset.sum_range_succ_comm, tsub_self, pow_zero, Nat.choose_self]
-  rw [Nat.cast_one, mul_one, mul_one]; congr 1
-  convert Finset.sum_eq_single (f := fun (x_1 : ℕ) => x ^ x_1 * y ^ (p - x_1) * (Nat.choose p x_1))
-    (s := Finset.range p) 0
-    (by
-      intro b h1 h2
-      suffices (p.choose b : R) = 0 by
-        simp [this]
-      rw [CharP.cast_eq_zero_iff R p]
-      exact Nat.Prime.dvd_choose_self Fact.out h2 (Finset.mem_range.1 h1))
-    (by
-      intro h1
-      contrapose! h1
-      rw [Finset.mem_range]
-      exact Nat.Prime.pos Fact.out)
-  simp only [mul_one, one_mul, Nat.choose_zero_right, tsub_zero, Nat.cast_one, pow_zero]
+  let ⟨r, hr⟩ := h.exists_add_pow_prime_eq hp.out
+  simp [hr]
 #align add_pow_char_of_commute add_pow_char_of_commute
 
-theorem add_pow_char_pow_of_commute [Semiring R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ}
+theorem add_pow_char_pow_of_commute [Semiring R] {p n : ℕ} [hp : Fact p.Prime] [CharP R p]
     (x y : R) (h : Commute x y) : (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n := by
-  induction n with
-  | zero => simp
-  | succ n n_ih =>
-      rw [pow_succ', pow_mul, pow_mul, pow_mul, n_ih]
-      apply add_pow_char_of_commute; apply Commute.pow_pow h
+  let ⟨r, hr⟩ := h.exists_add_pow_prime_pow_eq hp.out n
+  simp [hr]
 #align add_pow_char_pow_of_commute add_pow_char_pow_of_commute
 
 theorem sub_pow_char_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p] (x y : R)
@@ -509,7 +563,7 @@ end Semiring
 section Ring
 
 variable [Ring R] [NoZeroDivisors R] [Nontrivial R] [Finite R]
--- porting note: redundant binder annotation update
+-- porting note: removed redundant binder annotation update `(R)`
 
 theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
   Or.resolve_right (char_is_prime_or_zero R p) (char_ne_zero_of_finite R p)
@@ -589,12 +643,11 @@ end
 section
 
 variable [NonAssocRing R] [Fintype R] (n : ℕ)
--- porting note: redundant binder annotation update
+-- porting note: removed redundant binder annotation update `(R)`
 
 theorem charP_of_ne_zero (hn : Fintype.card R = n) (hR : ∀ i < n, (i : R) = 0 → i = 0) :
     CharP R n :=
-  { cast_eq_zero_iff' :=
-      by
+  { cast_eq_zero_iff' := by
       have H : (n : R) = 0 := by rw [← hn, CharP.cast_card_eq_zero]
       intro k
       constructor
@@ -660,8 +713,7 @@ theorem Int.cast_injOn_of_ringChar_ne_two {R : Type _} [NonAssocRing R] [Nontriv
   by_contra hf
   replace ha : a = 0 ∨ a = 1 ∨ a = -1 := ha
   replace hb : b = 0 ∨ b = 1 ∨ b = -1 := hb
-  have hh : a - b = 1 ∨ b - a = 1 ∨ a - b = 2 ∨ b - a = 2 :=
-    by
+  have hh : a - b = 1 ∨ b - a = 1 ∨ a - b = 2 ∨ b - a = 2 := by
     rcases ha with (ha | ha | ha) <;> rcases hb with (hb | hb | hb)
     pick_goal 5
     pick_goal 9
@@ -687,7 +739,7 @@ end
 namespace NeZero
 
 variable [AddMonoidWithOne R] {r : R} {n p : ℕ} {a : ℕ+}
--- porting note: redundant binder annotation update
+-- porting note: removed redundant binder annotation update `(R)`
 
 theorem of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
   ⟨(CharP.cast_eq_zero_iff R p n).not.mpr h⟩

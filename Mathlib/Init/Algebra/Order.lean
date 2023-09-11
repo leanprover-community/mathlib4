@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Deniz Aydin
 -/
 import Mathlib.Init.Logic
+import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.SplitIfs
 
 /-!
 # Orders
@@ -214,9 +216,23 @@ if a ≤ b then b else a
 def minDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
 if a ≤ b then a else b
 
+/-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
+introducing the arguments and trying the following approaches in order:
+
+1. seeing if `rfl` works
+2. seeing if the `compare` at hand is nonetheless essentially `compareOfLessAndEq`, but, because of
+implicit arguments, requires us to unfold the defs and split the `if`s in the definition of
+`compareOfLessAndEq`
+3. seeing if we can split by cases on the arguments, then see if the defs work themselves out
+  (useful when `compare` is defined via a `match` statement, as it is for `Bool`) -/
+macro "compareOfLessAndEq_rfl" : tactic =>
+  `(tactic| (intros a b; first | rfl |
+    (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
+    (induction a <;> induction b <;> simp only [])))
+
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
-class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α :=
+class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α :=
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
@@ -232,6 +248,10 @@ class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α :=
   min_def : ∀ a b, min a b = if a ≤ b then a else b := by intros; rfl
   /-- The minimum function is equivalent to the one you get from `maxOfLe`. -/
   max_def : ∀ a b, max a b = if a ≤ b then b else a := by intros; rfl
+  compare a b := compareOfLessAndEq a b
+  /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
+  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
+    compareOfLessAndEq_rfl
 
 variable [LinearOrder α]
 
@@ -336,5 +356,55 @@ h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
 theorem le_imp_le_of_lt_imp_lt {β} [Preorder α] [LinearOrder β]
   {a b : α} {c d : β} (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
 le_of_not_lt $ λ h' => not_le_of_gt (H h') h
+
+section Ord
+
+theorem compare_lt_iff_lt {a b : α} : (compare a b = .lt) ↔ a < b := by
+  rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
+  split_ifs <;> simp only [*, lt_irrefl]
+
+theorem compare_gt_iff_gt {a b : α} : (compare a b = .gt) ↔ a > b := by
+  rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
+  split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt]
+  case _ h₁ h₂ =>
+    have h : b < a := lt_trichotomy a b |>.resolve_left h₁ |>.resolve_left h₂
+    exact true_iff_iff.2 h
+
+theorem compare_eq_iff_eq {a b : α} : (compare a b = .eq) ↔ a = b := by
+  rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
+  split_ifs <;> simp only []
+  case _ h   => exact false_iff_iff.2 <| ne_iff_lt_or_gt.2 <| .inl h
+  case _ _ h => exact true_iff_iff.2 h
+  case _ _ h => exact false_iff_iff.2 h
+
+theorem compare_le_iff_le {a b : α} : (compare a b ≠ .gt) ↔ a ≤ b := by
+  cases h : compare a b <;> simp only []
+  · exact true_iff_iff.2 <| le_of_lt <| compare_lt_iff_lt.1 h
+  · exact true_iff_iff.2 <| le_of_eq <| compare_eq_iff_eq.1 h
+  · exact false_iff_iff.2 <| not_le_of_gt <| compare_gt_iff_gt.1 h
+
+theorem compare_ge_iff_ge {a b : α} : (compare a b ≠ .lt) ↔ a ≥ b := by
+  cases h : compare a b <;> simp only []
+  · exact false_iff_iff.2 <| (lt_iff_not_ge a b).1 <| compare_lt_iff_lt.1 h
+  · exact true_iff_iff.2 <| le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
+  · exact true_iff_iff.2 <| le_of_lt <| compare_gt_iff_gt.1 h
+
+theorem compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.toRel a b := by
+  cases o <;> simp only [Ordering.toRel]
+  · exact compare_lt_iff_lt
+  · exact compare_eq_iff_eq
+  · exact compare_gt_iff_gt
+
+instance : Std.TransCmp (compare (α := α)) where
+  symm a b := by
+    cases h : compare a b <;>
+    simp only [Ordering.swap] <;> symm
+    · exact compare_gt_iff_gt.2 <| compare_lt_iff_lt.1 h
+    · exact compare_eq_iff_eq.2 <| compare_eq_iff_eq.1 h |>.symm
+    · exact compare_lt_iff_lt.2 <| compare_gt_iff_gt.1 h
+  le_trans := fun h₁ h₂ ↦
+    compare_le_iff_le.2 <| le_trans (compare_le_iff_le.1 h₁) (compare_le_iff_le.1 h₂)
+
+end Ord
 
 end LinearOrder
