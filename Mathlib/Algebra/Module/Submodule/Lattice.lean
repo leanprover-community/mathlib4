@@ -25,6 +25,8 @@ to unify the APIs where possible.
 
 -/
 
+set_option autoImplicit true
+
 
 variable {R S M : Type*}
 

@@ -419,7 +419,6 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
         congr }
   is_extension m := by
     dsimp
-    simp only [LinearPMap.mk_apply, LinearMap.coe_mk]
     rw [(extensionOfMax i f).is_extension,
       ExtensionOfMaxAdjoin.extensionToFun_wd i f h _ ⟨i m, _⟩ 0 _, map_zero, add_zero]
     simp

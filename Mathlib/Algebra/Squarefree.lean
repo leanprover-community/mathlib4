@@ -163,7 +163,7 @@ theorem irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r 
   have : x ≠ 0 := by
     rintro rfl
     apply hr
-    simpa only [zero_dvd_iff, MulZeroClass.mul_zero] using hx
+    simpa only [zero_dvd_iff, mul_zero] using hx
   obtain ⟨j, hj₁, hj₂⟩ := WfDvdMonoid.exists_irreducible_factor i this
   exact h _ hj₁ ((mul_dvd_mul hj₂ hj₂).trans hx)
 #align irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree

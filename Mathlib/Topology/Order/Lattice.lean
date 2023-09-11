@@ -24,6 +24,8 @@ class `TopologicalLattice` as a topological space and lattice `L` extending `Con
 topological, lattice
 -/
 
+set_option autoImplicit true
+
 
 open Filter
 

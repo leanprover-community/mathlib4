@@ -7,7 +7,8 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 import Mathlib.CategoryTheory.Limits.Opposites
 
-/-! RightHomology of short complexes
+/-!
+# Right Homology of short complexes
 
 In this file, we define the dual notions to those defined in
 `Algebra.Homology.ShortComplex.LeftHomology`. In particular, if `S : ShortComplex C` is
@@ -22,9 +23,11 @@ Similarly, we define `S.opcycles` to be the `Q` field.
 
 In `Homology.lean`, when `S` has two compatible left and right homology data
 (i.e. they give the same `H` up to a canonical isomorphism), we shall define
-`[S.HasHomology]` and `S.homology` (TODO).
+`[S.HasHomology]` and `S.homology`.
 
 -/
+
+set_option autoImplicit true
 
 namespace CategoryTheory
 
@@ -37,7 +40,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C]
 
 /-- A right homology data for a short complex `S` consists of morphisms `p : S.X₂ ⟶ Q` and
 `ι : H ⟶ Q` such that `p` identifies `Q` to the kernel of `f : S.X₁ ⟶ S.X₂`,
-and that `ι` identifies `H` to the kernel of the induced map `g' : Q ⟶ S.X₃` --/
+and that `ι` identifies `H` to the kernel of the induced map `g' : Q ⟶ S.X₃` -/
 structure RightHomologyData where
   /-- a choice of cokernel of `S.f : S.X₁ ⟶ S.X₂`-/
   Q : C
@@ -446,7 +449,7 @@ def ofIsColimitCokernelCofork (φ : S₁ ⟶ S₂)
 
 variable (S)
 
-/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the right homology map
 data (for the identity of `S`) which relates the right homology data
 `RightHomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
 @[simps]
@@ -458,7 +461,7 @@ def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
   φQ := 𝟙 _
   φH := c.ι
 
-/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the right homology map
 data (for the identity of `S`) which relates the right homology data `ofZeros` and
 `ofIsColimitCokernelCofork`. -/
 @[simps]
@@ -1235,6 +1238,29 @@ noncomputable def rightHomologyIsoKernelDesc [S.HasRightHomology] [HasCokernel S
     [HasKernel (cokernel.desc S.f S.g S.zero)] :
     S.rightHomology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
   (RightHomologyData.ofHasCokernelOfHasKernel S).rightHomologyIso
+
+/-! The following lemmas and instance gives a sufficient condition for a morphism
+of short complexes to induce an isomorphism on opcycles. -/
+
+lemma isIso_opcyclesMap'_of_isIso_of_epi (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₁ : Epi φ.τ₁)
+    (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    IsIso (opcyclesMap' φ h₁ h₂) := by
+  refine' ⟨h₂.descQ (inv φ.τ₂ ≫ h₁.p) _, _, _⟩
+  · simp only [← cancel_epi φ.τ₁, comp_zero, φ.comm₁₂_assoc, IsIso.hom_inv_id_assoc, h₁.wp]
+  · simp only [← cancel_epi h₁.p, p_opcyclesMap'_assoc, h₂.p_descQ,
+      IsIso.hom_inv_id_assoc, comp_id]
+  · simp only [← cancel_epi h₂.p, h₂.p_descQ_assoc, assoc, p_opcyclesMap',
+      IsIso.inv_hom_id_assoc, comp_id]
+
+lemma isIso_opcyclesMap_of_isIso_of_epi' (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₁ : Epi φ.τ₁)
+    [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    IsIso (opcyclesMap φ) :=
+  isIso_opcyclesMap'_of_isIso_of_epi φ h₂ h₁ _ _
+
+instance isIso_opcyclesMap_of_isIso_of_epi (φ : S₁ ⟶ S₂) [IsIso φ.τ₂] [Epi φ.τ₁]
+    [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    IsIso (opcyclesMap φ) :=
+  isIso_opcyclesMap_of_isIso_of_epi' φ inferInstance inferInstance
 
 end ShortComplex
 

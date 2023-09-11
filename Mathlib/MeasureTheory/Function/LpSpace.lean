@@ -281,6 +281,9 @@ theorem nnnorm_toLp (f : α → E) (hf : Memℒp f p μ) :
   NNReal.eq <| norm_toLp f hf
 #align measure_theory.Lp.nnnorm_to_Lp MeasureTheory.Lp.nnnorm_toLp
 
+theorem coe_nnnorm_toLp {f : α → E} (hf : Memℒp f p μ) : (‖hf.toLp f‖₊ : ℝ≥0∞) = snorm f p μ := by
+  rw [nnnorm_toLp f hf, ENNReal.coe_toNNReal hf.2.ne]
+
 theorem dist_def (f g : Lp E p μ) : dist f g = (snorm (⇑f - ⇑g) p μ).toReal := by
   simp_rw [dist, norm_def]
   refine congr_arg _ ?_
@@ -523,7 +526,6 @@ section NormedSpace
 
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
-set_option synthInstance.maxHeartbeats 30000 in
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (Lp E p μ) where
   norm_smul_le _ _ := norm_smul_le _ _
 #align measure_theory.Lp.normed_space MeasureTheory.Lp.instNormedSpace
@@ -551,6 +553,8 @@ For a set `s` with `(hs : MeasurableSet s)` and `(hμs : μ s < ∞)`, we build
 
 
 section Indicator
+
+set_option autoImplicit true
 
 variable {c : E} {f : α → E} {hf : AEStronglyMeasurable f μ}
 
@@ -675,6 +679,20 @@ theorem memℒp_indicator_iff_restrict (hs : MeasurableSet s) :
   simp [Memℒp, aestronglyMeasurable_indicator_iff hs, snorm_indicator_eq_snorm_restrict hs]
 #align measure_theory.mem_ℒp_indicator_iff_restrict MeasureTheory.memℒp_indicator_iff_restrict
 
+/-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
+`ℒ^q` for any `q ≤ p`. -/
+theorem Memℒp.memℒp_of_exponent_le_of_measure_support_ne_top
+    {p q : ℝ≥0∞} {f : α → E} (hfq : Memℒp f q μ) {s : Set α} (hf : ∀ x, x ∉ s → f x = 0)
+    (hs : μ s ≠ ∞) (hpq : p ≤ q) : Memℒp f p μ := by
+  have : (toMeasurable μ s).indicator f = f := by
+    apply Set.indicator_eq_self.2
+    apply Function.support_subset_iff'.2 (fun x hx ↦ hf x ?_)
+    contrapose! hx
+    exact subset_toMeasurable μ s hx
+  rw [← this, memℒp_indicator_iff_restrict (measurableSet_toMeasurable μ s)] at hfq ⊢
+  have : Fact (μ (toMeasurable μ s) < ∞) := ⟨by simpa [lt_top_iff_ne_top] using hs⟩
+  exact memℒp_of_exponent_le hfq hpq
+
 theorem memℒp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E) (hμsc : c = 0 ∨ μ s ≠ ∞) :
     Memℒp (s.indicator fun _ => c) p μ := by
   rw [memℒp_indicator_iff_restrict hs]
@@ -771,14 +789,25 @@ theorem norm_indicatorConstLp_le :
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
   exact ENNReal.rpow_ne_top_of_nonneg (by positivity) hμs
 
+theorem edist_indicatorConstLp_eq_nnnorm {t : Set α} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) :
+    edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
+      ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖₊ := by
+  unfold indicatorConstLp
+  rw [Lp.edist_toLp_toLp, snorm_indicator_sub_indicator, Lp.coe_nnnorm_toLp]
+
+theorem dist_indicatorConstLp_eq_norm {t : Set α} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) :
+    dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
+      ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖ := by
+  rw [Lp.dist_edist, edist_indicatorConstLp_eq_nnnorm, ENNReal.coe_toReal, Lp.coe_nnnorm]
+
 @[simp]
-theorem indicatorConst_empty :
+theorem indicatorConstLp_empty :
     indicatorConstLp p MeasurableSet.empty (by simp : μ ∅ ≠ ∞) c = 0 := by
   rw [Lp.eq_zero_iff_ae_eq_zero]
   convert indicatorConstLp_coeFn (E := E)
   simp [Set.indicator_empty']
   rfl
-#align measure_theory.indicator_const_empty MeasureTheory.indicatorConst_empty
+#align measure_theory.indicator_const_empty MeasureTheory.indicatorConstLp_empty
 
 theorem memℒp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
@@ -792,10 +821,7 @@ theorem memℒp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (supp
 /-- The indicator of a disjoint union of two sets is the sum of the indicators of the sets. -/
 theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (c : E) :
-    indicatorConstLp p (hs.union ht)
-        ((measure_union_le s t).trans_lt
-            (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne
-        c =
+    indicatorConstLp p (hs.union ht) (measure_union_ne_top hμs hμt) c =
       indicatorConstLp p hs hμs c + indicatorConstLp p ht hμt c := by
   ext1
   refine' indicatorConstLp_coeFn.trans (EventuallyEq.trans _ (Lp.coeFn_add _ _).symm)
@@ -1167,7 +1193,6 @@ theorem add_compLpL [Fact (1 ≤ p)] (L L' : E →L[𝕜] F) :
     (L + L').compLpL p μ = L.compLpL p μ + L'.compLpL p μ := by ext1 f; exact add_compLp L L' f
 #align continuous_linear_map.add_comp_LpL ContinuousLinearMap.add_compLpL
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem smul_compLpL [Fact (1 ≤ p)] {𝕜'} [NormedRing 𝕜'] [Module 𝕜' F] [BoundedSMul 𝕜' F]
     [SMulCommClass 𝕜 𝕜' F] (c : 𝕜') (L : E →L[𝕜] F) : (c • L).compLpL p μ = c • L.compLpL p μ := by
   ext1 f; exact smul_compLp c L f
@@ -1449,7 +1474,7 @@ private theorem snorm'_sum_norm_sub_le_tsum_of_cauchy_snorm' {f : ℕ → α →
     fun n => funext fun x => by simp
   rw [hgf_norm_diff]
   refine' (snorm'_sum_le (fun i _ => ((hf (i + 1)).sub (hf i)).norm) hp1).trans _
-  simp_rw [← Pi.sub_apply, snorm'_norm]
+  simp_rw [snorm'_norm]
   refine' (Finset.sum_le_sum _).trans (sum_le_tsum _ (fun m _ => zero_le _) ENNReal.summable)
   exact fun m _ => (h_cau m (m + 1) m (Nat.le_succ m) (le_refl m)).le
 

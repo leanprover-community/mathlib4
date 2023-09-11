@@ -23,6 +23,8 @@ More generally, a list of elements of `a` can be reinterpreted as a path from `s
 itself using `pathEquivList`.
 -/
 
+set_option autoImplicit true
+
 
 namespace Quiver
 

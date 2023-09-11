@@ -33,6 +33,8 @@ isomorphisms.
 * `≃r`: `RelIso`
 -/
 
+set_option autoImplicit true
+
 
 open Function
 
@@ -450,7 +452,6 @@ theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
   · exact RelHomClass.acc (Quotient.mkRelHom H) a
   · intro ac
     induction' ac with _ _ IH
-    dsimp at IH
     refine' ⟨_, fun q h => _⟩
     obtain ⟨a', rfl⟩ := q.exists_rep
     exact IH a' h
@@ -474,7 +475,7 @@ theorem wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
     exact acc_lift₂_iff.2 (wf.apply a)
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
 
-alias wellFounded_lift₂_iff ↔ WellFounded.of_quotient_lift₂ WellFounded.quotient_lift₂
+alias ⟨WellFounded.of_quotient_lift₂, WellFounded.quotient_lift₂⟩ := wellFounded_lift₂_iff
 #align well_founded.of_quotient_lift₂ WellFounded.of_quotient_lift₂
 #align well_founded.quotient_lift₂ WellFounded.quotient_lift₂
 
@@ -484,7 +485,7 @@ theorem wellFounded_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} 
   wellFounded_lift₂_iff (H := H)
 #align well_founded_lift_on₂'_iff wellFounded_liftOn₂'_iff
 
-alias wellFounded_liftOn₂'_iff ↔ WellFounded.of_quotient_liftOn₂' WellFounded.quotient_liftOn₂'
+alias ⟨WellFounded.of_quotient_liftOn₂', WellFounded.quotient_liftOn₂'⟩ := wellFounded_liftOn₂'_iff
 #align well_founded.of_quotient_lift_on₂' WellFounded.of_quotient_liftOn₂'
 #align well_founded.quotient_lift_on₂' WellFounded.quotient_liftOn₂'
 
