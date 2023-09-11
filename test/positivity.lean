@@ -2,11 +2,13 @@ import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-! # Tests for the `positivity` tactic
 
 This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 -/
+set_option autoImplicit true
 
 open Function Nat NNReal ENNReal
 
@@ -81,6 +83,18 @@ end
 -- example [Zero α] [PartialOrder α] {a : α} (ha : 0 ≤ a) : 0 ≤ const ι a := by positivity
 -- example [Nonempty ι] [Zero α] [PartialOrder α] {a : α} (ha : 0 < a) : 0 < const ι a := by positivity
 
+section ite
+variable {p : Prop} [Decidable p] {a b : ℤ}
+
+example (ha : 0 < a) (hb : 0 < b) : 0 < ite p a b := by positivity
+example (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ ite p a b := by positivity
+example (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ ite p a b := by positivity
+example (ha : 0 < a) (hb : b ≠ 0) : ite p a b ≠ 0 := by positivity
+example (ha : a ≠ 0) (hb : 0 < b) : ite p a b ≠ 0 := by positivity
+example (ha : a ≠ 0) (hb : b ≠ 0) : ite p a b ≠ 0 := by positivity
+
+end ite
+
 example {a b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < min a b := by positivity
 example {a b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ min a b := by positivity
 example {a b : ℚ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ min a b := by positivity
@@ -150,8 +164,6 @@ example {a : ℤ} (ha : 3 < a) : 0 < a + a := by positivity
 example {a b : ℚ} (ha : 3 < a) (hb : 4 ≤ b) : 0 < 3 + a * b / 7 + b + 7 + 14 := by positivity
 
 example {a b : ℤ} (ha : 3 < a) (hb : 4 ≤ b) : 0 < 3 + a * b / 7 + b + 7 + 14 := by positivity
-
--- example {a : ℤ} (ha : 0 < a) : 0 < a / a := by positivity
 
 /-! ### Exponentiation -/
 
@@ -240,6 +252,18 @@ example (n : ℕ) : 0 < n ! := by positivity
 -- example {α : Type _} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
 
 example {r : ℝ} : 0 < Real.exp r := by positivity
+
+example {n : ℕ} : 0 ≤ Real.log n := by positivity
+example {n : ℤ} : 0 ≤ Real.log n := by positivity
+example : 0 < Real.log 2 := by positivity
+example : 0 < Real.log 1.01 := by positivity
+example : 0 ≠ Real.log 0.99 := by positivity
+example : 0 < Real.log (-2) := by positivity
+example : 0 < Real.log (-1.01) := by positivity
+example : 0 ≠ Real.log (-0.99) := by positivity
+example : 0 ≤ Real.log 1 := by positivity
+example : 0 ≤ Real.log 0 := by positivity
+example : 0 ≤ Real.log (-1) := by positivity
 
 example {V : Type _} [NormedCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
 example {V : Type _} [NormedAddCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity

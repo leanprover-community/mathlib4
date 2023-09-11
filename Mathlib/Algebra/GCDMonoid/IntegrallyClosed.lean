@@ -2,15 +2,12 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebra.gcd_monoid.integrally_closed
-! leanprover-community/mathlib commit 2032a878972d5672e7c27c957e7a6e297b044973
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
+
+#align_import algebra.gcd_monoid.integrally_closed from "leanprover-community/mathlib"@"2032a878972d5672e7c27c957e7a6e297b044973"
 
 /-!
 
@@ -21,7 +18,7 @@ import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
 open scoped BigOperators Polynomial
 
-variable {R A : Type _} [CommRing R] [IsDomain R] [GCDMonoid R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [IsDomain R] [GCDMonoid R] [CommRing A] [Algebra R A]
 
 theorem IsLocalization.surj_of_gcd_domain (M : Submonoid R) [IsLocalization M A] (z : A) :
     ∃ a b : R, IsUnit (gcd a b) ∧ z * algebraMap R A b = algebraMap R A a := by

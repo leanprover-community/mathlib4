@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Jannis Limperg
-
-! This file was ported from Lean 3 source module control.ulift
-! leanprover-community/mathlib commit 99e8971dc62f1f7ecf693d75e75fbbabd55849de
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Mathport.Rename
+
+#align_import control.ulift from "leanprover-community/mathlib"@"99e8971dc62f1f7ecf693d75e75fbbabd55849de"
 
 /-!
 # Monadic instances for `ULift` and `PLift`

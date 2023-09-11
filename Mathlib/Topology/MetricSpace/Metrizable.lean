@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.metrizable
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.UniformSpace.Cauchy
+
+#align_import topology.metric_space.metrizable from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Metrizability of a T₃ topological space with second countable topology
@@ -32,23 +29,23 @@ open BoundedContinuousFunction Filter Topology
 
 namespace TopologicalSpace
 
-variable {ι X Y : Type _} {π : ι → Type _} [TopologicalSpace X] [TopologicalSpace Y] [Finite ι]
+variable {ι X Y : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y] [Finite ι]
   [∀ i, TopologicalSpace (π i)]
 
 /-- A topological space is *pseudo metrizable* if there exists a pseudo metric space structure
 compatible with the topology. To endow such a space with a compatible distance, use
 `letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X`. -/
-class PseudoMetrizableSpace (X : Type _) [t : TopologicalSpace X] : Prop where
+class PseudoMetrizableSpace (X : Type*) [t : TopologicalSpace X] : Prop where
   exists_pseudo_metric : ∃ m : PseudoMetricSpace X, m.toUniformSpace.toTopologicalSpace = t
 #align topological_space.pseudo_metrizable_space TopologicalSpace.PseudoMetrizableSpace
 
-instance (priority := 100) _root_.PseudoMetricSpace.toPseudoMetrizableSpace {X : Type _}
+instance (priority := 100) _root_.PseudoMetricSpace.toPseudoMetrizableSpace {X : Type*}
     [m : PseudoMetricSpace X] : PseudoMetrizableSpace X :=
   ⟨⟨m, rfl⟩⟩
 #align pseudo_metric_space.to_pseudo_metrizable_space PseudoMetricSpace.toPseudoMetrizableSpace
 
 /-- Construct on a metrizable space a metric compatible with the topology. -/
-noncomputable def pseudoMetrizableSpacePseudoMetric (X : Type _) [TopologicalSpace X]
+noncomputable def pseudoMetrizableSpacePseudoMetric (X : Type*) [TopologicalSpace X]
     [h : PseudoMetrizableSpace X] : PseudoMetricSpace X :=
   h.exists_pseudo_metric.choose.replaceTopology h.exists_pseudo_metric.choose_spec.symm
 #align topological_space.pseudo_metrizable_space_pseudo_metric TopologicalSpace.pseudoMetrizableSpacePseudoMetric
@@ -74,7 +71,7 @@ instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
   rcases h with ⟨_, hm⟩
   rw [← hm]
   exact @UniformSpace.firstCountableTopology X PseudoMetricSpace.toUniformSpace
-    EMetric.instIsCountablyGeneratedProdUniformityToUniformSpace
+    EMetric.instIsCountablyGeneratedUniformity
 #align topological_space.pseudo_metrizable_space.first_countable_topology TopologicalSpace.PseudoMetrizableSpace.firstCountableTopology
 
 instance PseudoMetrizableSpace.subtype [PseudoMetrizableSpace X] (s : Set X) :
@@ -92,11 +89,11 @@ instance pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (π i)] :
 /-- A topological space is metrizable if there exists a metric space structure compatible with the
 topology. To endow such a space with a compatible distance, use
 `letI : MetricSpace X := TopologicalSpace.metrizableSpaceMetric X`. -/
-class MetrizableSpace (X : Type _) [t : TopologicalSpace X] : Prop where
+class MetrizableSpace (X : Type*) [t : TopologicalSpace X] : Prop where
   exists_metric : ∃ m : MetricSpace X, m.toUniformSpace.toTopologicalSpace = t
 #align topological_space.metrizable_space TopologicalSpace.MetrizableSpace
 
-instance (priority := 100) _root_.MetricSpace.toMetrizableSpace {X : Type _} [m : MetricSpace X] :
+instance (priority := 100) _root_.MetricSpace.toMetrizableSpace {X : Type*} [m : MetricSpace X] :
     MetrizableSpace X :=
   ⟨⟨m, rfl⟩⟩
 #align metric_space.to_metrizable_space MetricSpace.toMetrizableSpace
@@ -108,7 +105,7 @@ instance (priority := 100) MetrizableSpace.toPseudoMetrizableSpace [h : Metrizab
 #align topological_space.metrizable_space.to_pseudo_metrizable_space TopologicalSpace.MetrizableSpace.toPseudoMetrizableSpace
 
 /-- Construct on a metrizable space a metric compatible with the topology. -/
-noncomputable def metrizableSpaceMetric (X : Type _) [TopologicalSpace X] [h : MetrizableSpace X] :
+noncomputable def metrizableSpaceMetric (X : Type*) [TopologicalSpace X] [h : MetrizableSpace X] :
     MetricSpace X :=
   h.exists_metric.choose.replaceTopology h.exists_metric.choose_spec.symm
 #align topological_space.metrizable_space_metric TopologicalSpace.metrizableSpaceMetric
@@ -142,6 +139,12 @@ instance metrizableSpace_pi [∀ i, MetrizableSpace (π i)] : MetrizableSpace (�
   infer_instance
 #align topological_space.metrizable_space_pi TopologicalSpace.metrizableSpace_pi
 
+theorem IsSeparable.secondCountableTopology [PseudoMetrizableSpace X] {s : Set X}
+    (hs : IsSeparable s) : SecondCountableTopology s := by
+  letI := pseudoMetrizableSpacePseudoMetric X
+  have := hs.separableSpace
+  exact UniformSpace.secondCountable_of_separable s
+
 variable (X)
 variable [T3Space X] [SecondCountableTopology X]
 
@@ -162,7 +165,7 @@ theorem exists_embedding_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Embedding f := 
   · exact ⟨fun x => (f x).extend (Encodable.encode' s) 0,
       (BoundedContinuousFunction.isometry_extend (Encodable.encode' s) (0 : ℕ →ᵇ ℝ)).embedding.comp
         hf⟩
-  have hd : ∀ UV : s, Disjoint (closure UV.1.1) (UV.1.2ᶜ) :=
+  have hd : ∀ UV : s, Disjoint (closure UV.1.1) UV.1.2ᶜ :=
     fun UV => disjoint_compl_right.mono_right (compl_subset_compl.2 UV.2.2)
   -- Choose a sequence of `εₙ > 0`, `n : s`, that is bounded above by `1` and tends to zero
   -- along the `cofinite` filter.
@@ -173,7 +176,7 @@ theorem exists_embedding_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Embedding f := 
   /- For each `UV = (U, V) ∈ s` we use Urysohn's lemma to choose a function `f UV` that is equal to
     zero on `U` and is equal to `ε UV` on the complement to `V`. -/
   have : ∀ UV : s, ∃ f : C(X, ℝ),
-      EqOn f 0 UV.1.1 ∧ EqOn f (fun _ => ε UV) (UV.1.2ᶜ) ∧ ∀ x, f x ∈ Icc 0 (ε UV) := by
+      EqOn f 0 UV.1.1 ∧ EqOn f (fun _ => ε UV) UV.1.2ᶜ ∧ ∀ x, f x ∈ Icc 0 (ε UV) := by
     intro UV
     rcases exists_continuous_zero_one_of_closed isClosed_closure
         (hB.isOpen UV.2.1.2).isClosed_compl (hd UV) with

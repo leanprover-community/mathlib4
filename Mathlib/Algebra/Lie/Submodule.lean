@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.submodule
-! leanprover-community/mathlib commit 9822b65bfc4ac74537d77ae318d27df1df662471
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.RingTheory.Noetherian
+
+#align_import algebra.lie.submodule from "leanprover-community/mathlib"@"9822b65bfc4ac74537d77ae318d27df1df662471"
 
 /-!
 # Lie submodules of a Lie algebra
@@ -172,7 +169,7 @@ instance : LieRingModule L N where
   lie_add := by intro x m n; apply SetCoe.ext; apply lie_add
   leibniz_lie := by intro x y m; apply SetCoe.ext; apply leibniz_lie
 
-instance module' {S : Type _} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
+instance module' {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S N :=
   N.toSubmodule.module'
 #align lie_submodule.module' LieSubmodule.module'
@@ -180,7 +177,7 @@ instance module' {S : Type _} [Semiring S] [SMul S R] [Module S M] [IsScalarTowe
 instance : Module R N :=
   N.toSubmodule.module
 
-instance {S : Type _} [Semiring S] [SMul S R] [SMul Sᵐᵒᵖ R] [Module S M] [Module Sᵐᵒᵖ M]
+instance {S : Type*} [Semiring S] [SMul S R] [SMul Sᵐᵒᵖ R] [Module S M] [Module Sᵐᵒᵖ M]
     [IsScalarTower S R M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] : IsCentralScalar S N :=
   N.toSubmodule.isCentralScalar
 
@@ -270,13 +267,13 @@ instance LieIdeal.lieAlgebra (I : LieIdeal R L) : LieAlgebra R I :=
 #align lie_ideal.lie_algebra LieIdeal.lieAlgebra
 
 /-- Transfer the `LieRingModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
-instance LieIdeal.lieRingModule {R L : Type _} [CommRing R] [LieRing L] [LieAlgebra R L]
+instance LieIdeal.lieRingModule {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
     (I : LieIdeal R L) [LieRingModule L M] : LieRingModule I M :=
   LieSubalgebra.lieRingModule (I : LieSubalgebra R L)
 #align lie_ideal.lie_ring_module LieIdeal.lieRingModule
 
 @[simp]
-theorem LieIdeal.coe_bracket_of_module {R L : Type _} [CommRing R] [LieRing L] [LieAlgebra R L]
+theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
     (I : LieIdeal R L) [LieRingModule L M] (x : I) (m : M) : ⁅x, m⁆ = ⁅(↑x : L), m⁆ :=
   LieSubalgebra.coe_bracket_of_module (I : LieSubalgebra R L) x m
 #align lie_ideal.coe_bracket_of_module LieIdeal.coe_bracket_of_module
@@ -408,7 +405,7 @@ instance : InfSet (LieSubmodule R L M) :=
     { sInf {((s : Submodule R M)) | s ∈ S} with
       lie_mem := fun {x m} h ↦ by
         simp only [Submodule.mem_carrier, mem_iInter, Submodule.sInf_coe, mem_setOf_eq,
-          forall_apply_eq_imp_iff₂, forall_exists_index, and_imp] at h⊢
+          forall_apply_eq_imp_iff₂, forall_exists_index, and_imp] at h ⊢
         intro N hN; apply N.lie_mem (h N hN) }⟩
 
 @[simp]
@@ -498,7 +495,7 @@ theorem mem_sup (x : M) : x ∈ N ⊔ N' ↔ ∃ y ∈ N, ∃ z ∈ N', y + z = 
   rw [← mem_coeSubmodule, sup_coe_toSubmodule, Submodule.mem_sup]; exact Iff.rfl
 #align lie_submodule.mem_sup LieSubmodule.mem_sup
 
-nonrec theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [eq_bot_iff];  exact Iff.rfl
+nonrec theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [eq_bot_iff]; exact Iff.rfl
 #align lie_submodule.eq_bot_iff LieSubmodule.eq_bot_iff
 
 instance subsingleton_of_bot : Subsingleton (LieSubmodule R L ↑(⊥ : LieSubmodule R L M)) := by
@@ -707,7 +704,7 @@ def map : LieSubmodule R L M' :=
     lie_mem := fun {x m'} h ↦ by
       rcases h with ⟨m, hm, hfm⟩; use ⁅x, m⁆; constructor
       · apply N.lie_mem hm
-      · norm_cast  at hfm; simp [hfm] }
+      · norm_cast at hfm; simp [hfm] }
 #align lie_submodule.map LieSubmodule.map
 
 @[simp]
@@ -748,6 +745,7 @@ theorem map_sup : (N ⊔ N₂).map f = N.map f ⊔ N₂.map f :=
   (gc_map_comap f).l_sup
 #align lie_submodule.map_sup LieSubmodule.map_sup
 
+@[simp]
 theorem mem_map (m' : M') : m' ∈ N.map f ↔ ∃ m, m ∈ N ∧ f m = m' :=
   Submodule.mem_map
 #align lie_submodule.mem_map LieSubmodule.mem_map
@@ -864,7 +862,7 @@ theorem map_mono : Monotone (map f) := fun I₁ I₂ h ↦ by
 
 @[mono]
 theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by
-  rw [← SetLike.coe_subset_coe] at h⊢
+  rw [← SetLike.coe_subset_coe] at h ⊢
   dsimp only [SetLike.coe]
   exact Set.preimage_mono h
 #align lie_ideal.comap_mono LieIdeal.comap_mono
@@ -884,8 +882,7 @@ same as ideals of `L` contained in `I`. -/
 instance subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩
-  change x ∈ (⊥ : LieIdeal _ _) at hx
-  rw [LieSubmodule.mem_bot] at hx
+  rw [LieSubmodule.bot_coeSubmodule, Submodule.mem_bot] at hx
   subst hx
   simp only [Submodule.mk_eq_zero, LieSubmodule.mem_bot, LieSubmodule.mem_top]
 #align lie_ideal.subsingleton_of_bot LieIdeal.subsingleton_of_bot
@@ -1042,12 +1039,12 @@ theorem mem_map_of_surjective {y : L'} (h₁ : Function.Surjective f) (h₂ : y 
   rw [← LieSubmodule.mem_coeSubmodule, coe_map_of_surjective h₁, Submodule.mem_map] at h₂
   obtain ⟨x, hx, rfl⟩ := h₂
   use ⟨x, hx⟩
-  rfl
+  rw [LieHom.coe_toLinearMap]
 #align lie_ideal.mem_map_of_surjective LieIdeal.mem_map_of_surjective
 
 theorem bot_of_map_eq_bot {I : LieIdeal R L} (h₁ : Function.Injective f) (h₂ : I.map f = ⊥) :
     I = ⊥ := by
-  rw [← f.ker_eq_bot] at h₁; change comap f ⊥ = ⊥ at h₁
+  rw [← f.ker_eq_bot, LieHom.ker] at h₁
   rw [eq_bot_iff, map_le_iff_le_comap, h₁] at h₂
   rw [eq_bot_iff]; exact h₂
 #align lie_ideal.bot_of_map_eq_bot LieIdeal.bot_of_map_eq_bot
@@ -1092,7 +1089,7 @@ theorem map_comap_eq (h : f.IsIdealMorphism) : map f (comap f J) = f.idealRange 
   · rw [le_inf_iff]; exact ⟨f.map_le_idealRange _, map_comap_le⟩
   · rw [f.isIdealMorphism_def] at h
     rw [← SetLike.coe_subset_coe, LieSubmodule.inf_coe, ← coe_toSubalgebra, h]
-    rintro y ⟨⟨x, h₁⟩, h₂⟩; rw [← h₁] at h₂⊢; exact mem_map h₂
+    rintro y ⟨⟨x, h₁⟩, h₂⟩; rw [← h₁] at h₂ ⊢; exact mem_map h₂
 #align lie_ideal.map_comap_eq LieIdeal.map_comap_eq
 
 @[simp]

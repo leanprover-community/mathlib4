@@ -2,15 +2,12 @@
 Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
-
-! This file was ported from Lean 3 source module topology.instances.complex
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.FieldTheory.IntermediateField
 import Mathlib.Topology.Algebra.UniformRing
+
+#align_import topology.instances.complex from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Some results about the topology of ℂ
@@ -31,7 +28,7 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
     have :=
       (Subalgebra.isSimpleOrder_of_finrank finrank_real_complex).eq_bot_or_eq_top
         (Subfield.toIntermediateField K this).toSubalgebra
-    simp_rw [← SetLike.coe_set_eq] at this⊢
+    simp_rw [← SetLike.coe_set_eq] at this ⊢
     convert this using 2
     simp only [RingHom.coe_fieldRange, Algebra.coe_bot, coe_algebraMap]
     rfl

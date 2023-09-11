@@ -2,11 +2,6 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.order.nonneg.ring
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.Order.Ring.Defs
@@ -14,6 +9,8 @@ import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.LatticeIntervals
+
+#align_import algebra.order.nonneg.ring from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
 # The type of nonnegative elements
@@ -32,7 +29,7 @@ When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
 ## Implementation Notes
 
 Instead of `{x : α // 0 ≤ x}` we could also use `Set.Ici (0 : α)`, which is definitionally equal.
-However, using the explicit subtype has a big advantage: when writing and element explicitly
+However, using the explicit subtype has a big advantage: when writing an element explicitly
 with a proof of nonnegativity as `⟨x, hx⟩`, the `hx` is expected to have type `0 ≤ x`. If we would
 use `Ici 0`, then the type is expected to be `x ∈ Ici 0`. Although these types are definitionally
 equal, this often confuses the elaborator. Similar problems arise when doing cases on an element.
@@ -42,7 +39,7 @@ The disadvantage is that we have to duplicate some instances about `Set.Ici` to 
 
 open Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Nonneg
 
@@ -75,7 +72,7 @@ instance distribLattice [DistribLattice α] {a : α} : DistribLattice { x : α /
 
 instance densely_ordered [Preorder α] [DenselyOrdered α] {a : α} :
     DenselyOrdered { x : α // a ≤ x } :=
-  show DenselyOrdered (Ici a) from instDenselyOrderedElemLtToLTMemSetInstMembershipSet
+  show DenselyOrdered (Ici a) from Set.instDenselyOrdered
 #align nonneg.densely_ordered Nonneg.densely_ordered
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
@@ -92,15 +89,10 @@ The `Set.Ici` data fields are definitionally equal, but that requires unfolding 
 definitions, so type-class inference won't see this. -/
 @[reducible]
 protected noncomputable def conditionallyCompleteLinearOrderBot [ConditionallyCompleteLinearOrder α]
-    {a : α} (h : sSup ∅ ≤ a) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
+    (a : α) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
   { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
-    csSup_empty :=
-      (Function.funext_iff.1 (@subset_sSup_def α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩) ∅).trans <|
-        Subtype.eq <| by
-          rw [bot_eq]
-          cases' h.lt_or_eq with h2 h2
-          · simp [h2.not_le]
-          simp [h2] }
+    csSup_empty := by
+      rw [@subset_sSup_def α (Set.Ici a) _ _ ⟨⟨a, le_rfl⟩⟩]; simp [bot_eq] }
 #align nonneg.conditionally_complete_linear_order_bot Nonneg.conditionallyCompleteLinearOrderBot
 
 instance inhabited [Preorder α] {a : α} : Inhabited { x : α // a ≤ x } :=

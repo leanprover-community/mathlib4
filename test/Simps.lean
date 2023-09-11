@@ -4,10 +4,12 @@ import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Prod.Basic
+import Mathlib.Tactic.Common
 
 -- set_option trace.simps.debug true
 -- set_option trace.simps.verbose true
 -- set_option pp.universes true
+set_option autoImplicit true
 
 open Lean Meta Elab Term Command Simps
 
@@ -327,7 +329,7 @@ run_cmd liftTermElabM <| do
   let env ← getEnv
   guard <| env.find? `specify.specify1_fst |>.isSome
   guard <| env.find? `specify.specify2_snd |>.isSome
-  guard <| env.find? `specify.specify3_snd_fst  |>.isSome
+  guard <| env.find? `specify.specify3_snd_fst |>.isSome
   guard <| env.find? `specify.specify4_snd_snd |>.isSome
   guard <| env.find? `specify.specify4_snd |>.isSome
   guard <| env.find? `specify.specify5_fst |>.isSome
@@ -803,8 +805,7 @@ example {x : Set ℕ} (h : Set.univ = x) : Nat.SetPlus1.s = x := by
 def Nat.SetPlus2 : SetPlus ℕ := ⟨Set.univ, 1, trivial⟩
 
 example {x : Set ℕ} (h : Set.univ = x) : Nat.SetPlus2.s = x := by
-  dsimp only [Nat.SetPlus2_s]
-  -- successIfFail { rw [h] } -- todo
+  fail_if_success { rw [h] }
   exact h
 
 @[simps (config := {rhsMd := .default})]
@@ -941,13 +942,12 @@ example (h : false) (x y : { x : Fin (Nat.add 3 0) // 1 + 1 = 2 }) : myTypeDef.A
   guard_target = { _x : Fin 3 // True } = Unit
   /- note: calling only one of `simp` or `dsimp` does not produce the current target
   as the following tests show. -/
-  -- successIfFail { guard_hyp x : { x : Fin 3 // true } }
+  fail_if_success { guard_hyp x : { _x : Fin 3 // true } }
   dsimp at x
-  -- successIfFail { guard_hyp x : { x : Fin 3 // true } }
+  fail_if_success { guard_hyp x : { _x : Fin 3 // true } }
   simp at y
-  -- successIfFail { guard_hyp y : { x : Fin 3 // true } }
+  fail_if_success { guard_hyp y : { _x : Fin 3 // true } }
   simp at x
-  dsimp at y
   guard_hyp x : { _x : Fin 3 // True }
   guard_hyp y : { _x : Fin 3 // True }
   contradiction
@@ -1174,13 +1174,13 @@ initialize_simps_projections MyGroup
 /-! Test that the automatic projection module doesn't throw an error if we have a projection name
 unrelated to one of the classes. -/
 
-class MyGOne {ι} [Zero ι] (A : ι → Type _)  where
+class MyGOne {ι} [Zero ι] (A : ι → Type _) where
   /-- The term `one` of grade 0 -/
   one : A 0
 
 initialize_simps_projections MyGOne
 
-class Artificial (n : Nat)  where
+class Artificial (n : Nat) where
   /-- The term `one` of grade 0 -/
   one : Nat
 

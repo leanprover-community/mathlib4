@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
-
-! This file was ported from Lean 3 source module data.list.big_operators.basic
-! leanprover-community/mathlib commit 6c5f73fd6f6cc83122788a80a27cdd54663609f4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.List.Forall2
+
+#align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
 
 /-!
 # Sums and products from lists
@@ -20,7 +17,7 @@ counterparts. These are defined in [`Data.List.Defs`](./defs).
 -/
 
 
-variable {ι α M N P M₀ G R : Type _}
+variable {ι α M N P M₀ G R : Type*}
 
 namespace List
 
@@ -99,10 +96,10 @@ theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι
 #align list.sum_hom_rel List.sum_hom_rel
 
 @[to_additive]
-theorem prod_hom (l : List M) {F : Type _} [MonoidHomClass F M N] (f : F) :
+theorem prod_hom (l : List M) {F : Type*} [MonoidHomClass F M N] (f : F) :
     (l.map f).prod = f l.prod := by
   simp only [prod, foldl_map, ← map_one f]
-  exact l.foldl_hom f (. * .) (. * f .) 1 (fun x y => (map_mul f x y).symm)
+  exact l.foldl_hom f (· * ·) (· * f ·) 1 (fun x y => (map_mul f x y).symm)
 #align list.prod_hom List.prod_hom
 #align list.sum_hom List.sum_hom
 
@@ -122,7 +119,7 @@ theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * 
 #align list.sum_hom₂ List.sum_hom₂
 
 @[to_additive (attr := simp)]
-theorem prod_map_mul {α : Type _} [CommMonoid α] {l : List ι} {f g : ι → α} :
+theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α} :
     (l.map fun i => f i * g i).prod = (l.map f).prod * (l.map g).prod :=
   l.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 #align list.prod_map_mul List.prod_map_mul
@@ -136,7 +133,7 @@ theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
 #align list.prod_map_neg List.prod_map_neg
 
 @[to_additive]
-theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type _} [MonoidHomClass G M N] (g : G) :
+theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [MonoidHomClass G M N] (g : G) :
     (L.map (g ∘ f)).prod = g (L.map f).prod := by rw [← prod_hom, map_map]
 #align list.prod_map_hom List.prod_map_hom
 #align list.sum_map_hom List.sum_map_hom
@@ -151,7 +148,7 @@ theorem prod_isUnit : ∀ {L : List M} (_ : ∀ m ∈ L, IsUnit m), IsUnit L.pro
 #align list.sum_is_add_unit List.sum_isAddUnit
 
 @[to_additive]
-theorem prod_isUnit_iff {α : Type _} [CommMonoid α] {L : List α} :
+theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
   refine' ⟨fun h => _, prod_isUnit⟩
   induction' L with m L ih
@@ -283,10 +280,10 @@ theorem Sublist.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (�
   induction h
   case slnil => rfl
   case cons l₁ l₂ a _ ih' =>
-    simp only [prod_cons, forall_mem_cons] at h₁⊢
+    simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     exact (ih' h₁.2).trans (le_mul_of_one_le_left' h₁.1)
   case cons₂ l₁ l₂ a _ ih' =>
-    simp only [prod_cons, forall_mem_cons] at h₁⊢
+    simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     exact mul_le_mul_left' (ih' h₁.2) _
 #align list.sublist.prod_le_prod' List.Sublist.prod_le_prod'
 #align list.sublist.sum_le_sum List.Sublist.sum_le_sum
@@ -316,7 +313,7 @@ theorem prod_lt_prod' [Preorder M] [CovariantClass M M (· * ·) (· < ·)]
     (h₁ : ∀ i ∈ l, f i ≤ g i) (h₂ : ∃ i ∈ l, f i < g i) : (l.map f).prod < (l.map g).prod := by
   induction' l with i l ihl
   · rcases h₂ with ⟨_, ⟨⟩, _⟩
-  simp only [forall_mem_cons, exists_mem_cons, map_cons, prod_cons] at h₁ h₂⊢
+  simp only [forall_mem_cons, exists_mem_cons, map_cons, prod_cons] at h₁ h₂ ⊢
   cases h₂
   · exact mul_lt_mul_of_lt_of_le ‹_› (prod_le_prod' h₁.2)
   · exact mul_lt_mul_of_le_of_lt h₁.1 <| ihl h₁.2 ‹_›
@@ -508,7 +505,7 @@ theorem single_le_prod [OrderedCommMonoid M] {l : List M} (hl₁ : ∀ x ∈ l, 
     ∀ x ∈ l, x ≤ l.prod := by
   induction l
   · simp
-  simp_rw [prod_cons, forall_mem_cons] at hl₁⊢
+  simp_rw [prod_cons, forall_mem_cons] at hl₁ ⊢
   constructor
   case cons.left => exact le_mul_of_one_le_right' (one_le_prod_of_one_le hl₁.2)
   case cons.right hd tl ih => exact fun x H => le_mul_of_one_le_of_le hl₁.1 (ih hl₁.right x H)
@@ -544,7 +541,7 @@ theorem sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → 
     (hadd : ∀ x y, f (x + y) ≤ max (f x) (f y)) (l : List M) : f l.sum ≤ (l.map f).foldr max 0 := by
   induction' l with hd tl IH
   · simpa using h0
-  simp only [List.sum_cons, List.foldr_map, List.foldr] at IH⊢
+  simp only [List.sum_cons, List.foldr_map, List.foldr] at IH ⊢
   exact (hadd _ _).trans (max_le_max le_rfl IH)
 #align list.sum_le_foldr_max List.sum_le_foldr_max
 
@@ -585,7 +582,7 @@ theorem prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R
 
 /-- A variant of `List.prod_pos` for `CanonicallyOrderedCommSemiring`. -/
 @[simp] lemma _root_.CanonicallyOrderedCommSemiring.list_prod_pos
-    {α : Type _} [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
+    {α : Type*} [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
     ∀ {l : List α}, 0 < l.prod ↔ (∀ x ∈ l, (0 : α) < x)
   | [] => by simp
   | (x :: xs) => by simp_rw [prod_cons, forall_mem_cons, CanonicallyOrderedCommSemiring.mul_pos,
@@ -690,7 +687,7 @@ section MonoidHom
 variable [Monoid M] [Monoid N]
 
 @[to_additive]
-theorem map_list_prod {F : Type _} [MonoidHomClass F M N] (f : F) (l : List M) :
+theorem map_list_prod {F : Type*} [MonoidHomClass F M N] (f : F) (l : List M) :
     f l.prod = (l.map f).prod :=
   (l.prod_hom f).symm
 #align map_list_prod map_list_prod

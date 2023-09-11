@@ -2,13 +2,10 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.set_family.compression.uv
-! leanprover-community/mathlib commit 6f8ab7de1c4b78a68ab8cf7dd83d549eb78a68a1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SetFamily.Shadow
+
+#align_import combinatorics.set_family.compression.uv from "leanprover-community/mathlib"@"6f8ab7de1c4b78a68ab8cf7dd83d549eb78a68a1"
 
 /-!
 # UV-compressions
@@ -54,7 +51,7 @@ compression, UV-compression, shadow
 
 open Finset
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- UV-compression is injective on the elements it moves. See `UV.compress`. -/
 theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
@@ -183,7 +180,7 @@ theorem compress_mem_compression (ha : a ∈ s) : compress u v a ∈ 𝓒 u v s 
 -- This is a special case of `compress_mem_compression` once we have `compression_idem`.
 theorem compress_mem_compression_of_mem_compression (ha : a ∈ 𝓒 u v s) :
     compress u v a ∈ compression u v s := by
-  rw [mem_compression] at ha⊢
+  rw [mem_compression] at ha ⊢
   simp only [compress_idem, exists_prop]
   obtain ⟨_, ha⟩ | ⟨_, b, hb, rfl⟩ := ha
   · exact Or.inl ⟨ha, ha⟩
@@ -211,7 +208,6 @@ theorem card_compression (u v : α) (s : Finset α) : (𝓒 u v s).card = s.card
   · rw [disjoint_iff_inter_eq_empty]
     exact filter_inter_filter_neg_eq _ _ _
   intro a ha b hb hab
-  dsimp at hab
   rw [mem_coe, mem_filter, Function.comp_apply] at ha hb
   rw [compress] at ha hab
   split_ifs at ha hab with has
@@ -323,10 +319,10 @@ that `𝒜` is `(u.erase x, v.erase y)`-compressed. This is the key fact about c
 Kruskal-Katona. -/
 theorem shadow_compression_subset_compression_shadow (u v : Finset α)
     (huv : ∀ x ∈ u, ∃ y ∈ v, IsCompressed (u.erase x) (v.erase y) 𝒜) :
-    (∂ ) (𝓒 u v 𝒜) ⊆ 𝓒 u v ((∂ ) 𝒜) := by
+    ∂ (𝓒 u v 𝒜) ⊆ 𝓒 u v (∂ 𝒜) := by
   set 𝒜' := 𝓒 u v 𝒜
-  suffices H : ∀ s ∈ (∂ ) 𝒜',
-      s ∉ (∂ ) 𝒜 → u ⊆ s ∧ Disjoint v s ∧ (s ∪ v) \ u ∈ (∂ ) 𝒜 ∧ (s ∪ v) \ u ∉ (∂ ) 𝒜'
+  suffices H : ∀ s ∈ ∂ 𝒜',
+      s ∉ ∂ 𝒜 → u ⊆ s ∧ Disjoint v s ∧ (s ∪ v) \ u ∈ ∂ 𝒜 ∧ (s ∪ v) \ u ∉ ∂ 𝒜'
   · rintro s hs'
     rw [mem_compression]
     by_cases hs : s ∈ 𝒜.shadow
@@ -431,7 +427,7 @@ such that `𝒜` is `(u.erase x, v.erase y)`-compressed. This is the key UV-comp
 Kruskal-Katona. -/
 theorem card_shadow_compression_le (u v : Finset α)
     (huv : ∀ x ∈ u, ∃ y ∈ v, IsCompressed (u.erase x) (v.erase y) 𝒜) :
-    ((∂ ) (𝓒 u v 𝒜)).card ≤ ((∂ ) 𝒜).card :=
+    (∂ (𝓒 u v 𝒜)).card ≤ (∂ 𝒜).card :=
   (card_le_of_subset <| shadow_compression_subset_compression_shadow _ _ huv).trans
     (card_compression _ _ _).le
 #align uv.card_shadow_compression_le UV.card_shadow_compression_le

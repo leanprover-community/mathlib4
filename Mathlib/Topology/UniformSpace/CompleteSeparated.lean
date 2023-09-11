@@ -2,15 +2,12 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.uniform_space.complete_separated
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.UniformSpace.Separation
 import Mathlib.Topology.DenseEmbedding
+
+#align_import topology.uniform_space.complete_separated from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
 /-!
 # Theory of complete separated uniform spaces.
@@ -23,7 +20,7 @@ open Filter
 
 open Topology Filter
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- In a separated space, a complete set is closed. -/
 theorem IsComplete.isClosed [UniformSpace α] [SeparatedSpace α] {s : Set α} (h : IsComplete s) :
@@ -39,9 +36,9 @@ namespace DenseInducing
 
 open Filter
 
-variable [TopologicalSpace α] {β : Type _} [TopologicalSpace β]
+variable [TopologicalSpace α] {β : Type*} [TopologicalSpace β]
 
-variable {γ : Type _} [UniformSpace γ] [CompleteSpace γ] [SeparatedSpace γ]
+variable {γ : Type*} [UniformSpace γ] [CompleteSpace γ] [SeparatedSpace γ]
 
 theorem continuous_extend_of_cauchy {e : α → β} {f : α → γ} (de : DenseInducing e)
     (h : ∀ b : β, Cauchy (map f (comap e <| 𝓝 b))) : Continuous (de.extend f) :=

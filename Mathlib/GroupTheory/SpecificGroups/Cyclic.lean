@@ -2,11 +2,6 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module group_theory.specific_groups.cyclic
-! leanprover-community/mathlib commit 0f6670b8af2dff699de1c0b4b49039b31bc13c46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Nat.Totient
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.Group
 import Mathlib.GroupTheory.Exponent
+
+#align_import group_theory.specific_groups.cyclic from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 
 /-!
 # Cyclic groups
@@ -92,7 +89,7 @@ def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
 variable [Group α]
 
 @[to_additive MonoidAddHom.map_add_cyclic]
-theorem MonoidHom.map_cyclic {G : Type _} [Group G] [h : IsCyclic G] (σ : G →* G) :
+theorem MonoidHom.map_cyclic {G : Type*} [Group G] [h : IsCyclic G] (σ : G →* G) :
     ∃ m : ℤ, ∀ g : G, σ g = g ^ m := by
   obtain ⟨h, hG⟩ := IsCyclic.exists_generator (α := G)
   obtain ⟨m, hm⟩ := hG (σ h)
@@ -199,7 +196,7 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
             cases' k with k k
             · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_ofNat, ←Int.ofNat_eq_coe, hk]
               exact hx₁
-            . rw [Int.natAbs_negSucc, ← Subgroup.inv_mem_iff H]; simp_all⟩
+            · rw [Int.natAbs_negSucc, ← Subgroup.inv_mem_iff H]; simp_all⟩
     ⟨⟨⟨g ^ Nat.find hex, (Nat.find_spec hex).2⟩, fun ⟨x, hx⟩ =>
         let ⟨k, hk⟩ := hg x
         have hk : g ^ k = x := hk
@@ -266,7 +263,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
       let ⟨m, hm⟩ := Nat.gcd_dvd_right n (Fintype.card α)
       have hm0 : 0 < m :=
         Nat.pos_of_ne_zero fun hm0 => by
-          rw [hm0, MulZeroClass.mul_zero, Fintype.card_eq_zero_iff] at hm
+          rw [hm0, mul_zero, Fintype.card_eq_zero_iff] at hm
           exact hm.elim' 1
       simp only [Set.toFinset_card, SetLike.coe_sort_coe]
       rw [← orderOf_eq_card_zpowers, orderOf_pow g, orderOf_eq_card_of_forall_mem_zpowers hg]
@@ -419,7 +416,7 @@ theorem IsCyclic.card_orderOf_eq_totient [IsCyclic α] [Fintype α] {d : ℕ}
   classical apply card_orderOf_eq_totient_aux₂ (fun n => IsCyclic.card_pow_eq_one_le) hd
 #align is_cyclic.card_order_of_eq_totient IsCyclic.card_orderOf_eq_totient
 
-theorem IsAddCyclic.card_orderOf_eq_totient {α : Type _} [AddGroup α] [IsAddCyclic α]
+theorem IsAddCyclic.card_orderOf_eq_totient {α : Type*} [AddGroup α] [IsAddCyclic α]
     [Fintype α] {d : ℕ} (hd : d ∣ Fintype.card α) :
     (univ.filter fun a : α => addOrderOf a = d).card = totient d := by
   obtain ⟨g, hg⟩ := id ‹IsAddCyclic α›
@@ -454,7 +451,7 @@ section QuotientCenter
 
 open Subgroup
 
-variable {G : Type _} {H : Type _} [Group G] [Group H]
+variable {G : Type*} {H : Type*} [Group G] [Group H]
 
 /-- A group is commutative if the quotient by the center is cyclic.
   Also see `commGroup_of_cycle_center_quotient` for the `CommGroup` instance. -/

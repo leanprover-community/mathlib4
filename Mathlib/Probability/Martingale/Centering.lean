@@ -2,13 +2,10 @@
 Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.martingale.centering
-! leanprover-community/mathlib commit bea6c853b6edbd15e9d0941825abd04d77933ed0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Martingale.Basic
+
+#align_import probability.martingale.centering from "leanprover-community/mathlib"@"bea6c853b6edbd15e9d0941825abd04d77933ed0"
 
 /-!
 # Centering lemma for stochastic processes
@@ -40,7 +37,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators
 
 namespace MeasureTheory
 
-variable {Ω E : Type _} {m0 : MeasurableSpace Ω} {μ : Measure Ω} [NormedAddCommGroup E]
+variable {Ω E : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} [NormedAddCommGroup E]
   [NormedSpace ℝ E] [CompleteSpace E] {f : ℕ → Ω → E} {ℱ : Filtration ℕ m0} {n : ℕ}
 
 /-- Any `ℕ`-indexed stochastic process can be written as the sum of a martingale and a predictable

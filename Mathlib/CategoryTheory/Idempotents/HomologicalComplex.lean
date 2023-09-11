@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.idempotents.homological_complex
-! leanprover-community/mathlib commit 200eda15d8ff5669854ff6bcc10aaf37cb70498f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.CategoryTheory.Idempotents.Karoubi
+
+#align_import category_theory.idempotents.homological_complex from "leanprover-community/mathlib"@"200eda15d8ff5669854ff6bcc10aaf37cb70498f"
 
 /-!
 # Idempotent completeness and homological complexes
@@ -28,7 +25,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type _} [Category C] [Preadditive C] {ι : Type _} {c : ComplexShape ι}
+variable {C : Type*} [Category C] [Preadditive C] {ι : Type*} {c : ComplexShape ι}
 
 namespace Idempotents
 
@@ -201,7 +198,7 @@ def karoubiHomologicalComplexEquivalence :
   counitIso := KaroubiHomologicalComplexEquivalence.counitIso
 #align category_theory.idempotents.karoubi_homological_complex_equivalence CategoryTheory.Idempotents.karoubiHomologicalComplexEquivalence
 
-variable (α : Type _) [AddRightCancelSemigroup α] [One α]
+variable (α : Type*) [AddRightCancelSemigroup α] [One α]
 
 /-- The equivalence `Karoubi (ChainComplex C α) ≌ ChainComplex (Karoubi C) α`. -/
 @[simps!]
@@ -218,7 +215,7 @@ def karoubiCochainComplexEquivalence :
 
 instance [IsIdempotentComplete C] : IsIdempotentComplete (HomologicalComplex C c) := by
   rw [isIdempotentComplete_iff_of_equivalence
-      ((toKaroubi_equivalence C).mapHomologicalComplex c),
+      ((toKaroubiEquivalence C).mapHomologicalComplex c),
     ← isIdempotentComplete_iff_of_equivalence (karoubiHomologicalComplexEquivalence C c)]
   infer_instance
 

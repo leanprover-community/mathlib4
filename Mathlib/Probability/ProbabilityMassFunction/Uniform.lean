@@ -2,13 +2,10 @@
 Copyright (c) 2022 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
-
-! This file was ported from Lean 3 source module probability.probability_mass_function.uniform
-! leanprover-community/mathlib commit e50b8c261b0a000b806ec0e1356b41945eda61f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
+
+#align_import probability.probability_mass_function.uniform from "leanprover-community/mathlib"@"e50b8c261b0a000b806ec0e1356b41945eda61f7"
 
 /-!
 # Uniform Probability Mass Functions
@@ -31,7 +28,7 @@ noncomputable section
 
 namespace Pmf
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open scoped Classical BigOperators NNReal ENNReal
 
@@ -86,7 +83,7 @@ theorem toOuterMeasure_uniformOfFinset_apply :
     (uniformOfFinset s hs).toOuterMeasure t = ∑' x, if x ∈ t then uniformOfFinset s hs x else 0 :=
       toOuterMeasure_apply (uniformOfFinset s hs) t
     _ = ∑' x, if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
-      (tsum_congr fun x => by simp_rw [uniformOfFinset_apply, and_comm, ← ite_and, and_comm])
+      (tsum_congr fun x => by simp_rw [uniformOfFinset_apply, ← ite_and, and_comm])
     _ = ∑ x in s.filter (· ∈ t), if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
       (tsum_eq_sum fun x hx => if_neg fun h => hx (Finset.mem_filter.2 h))
     _ = ∑ _x in s.filter (· ∈ t), (s.card : ℝ≥0∞)⁻¹ :=
@@ -111,7 +108,7 @@ end UniformOfFinset
 section UniformOfFintype
 
 /-- The uniform pmf taking the same uniform value on all of the fintype `α` -/
-def uniformOfFintype (α : Type _) [Fintype α] [Nonempty α] : Pmf α :=
+def uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] : Pmf α :=
   uniformOfFinset Finset.univ Finset.univ_nonempty
 #align pmf.uniform_of_fintype Pmf.uniformOfFintype
 
@@ -124,7 +121,7 @@ theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card 
 #align pmf.uniform_of_fintype_apply Pmf.uniformOfFintype_apply
 
 @[simp]
-theorem support_uniformOfFintype (α : Type _) [Fintype α] [Nonempty α] :
+theorem support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
     (uniformOfFintype α).support = ⊤ :=
   Set.ext fun x => by simp [mem_support_iff]
 #align pmf.support_uniform_of_fintype Pmf.support_uniformOfFintype

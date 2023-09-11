@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.HeytAlg
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Category.BddDistLatCat
 import Mathlib.Order.Heyting.Hom
+
+#align_import order.category.HeytAlg from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # The category of Heyting algebras
@@ -30,19 +27,19 @@ def HeytAlgCat :=
 
 namespace HeytAlgCat
 
-instance : CoeSort HeytAlgCat (Type _) :=
+instance : CoeSort HeytAlgCat (Type*) :=
   Bundled.coeSort
 
 instance (X : HeytAlgCat) : HeytingAlgebra X :=
   X.str
 
 /-- Construct a bundled `HeytAlgCat` from a `HeytingAlgebra`. -/
-def of (α : Type _) [HeytingAlgebra α] : HeytAlgCat :=
+def of (α : Type*) [HeytingAlgebra α] : HeytAlgCat :=
   Bundled.of α
 #align HeytAlg.of HeytAlgCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [HeytingAlgebra α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [HeytingAlgebra α] : ↥(of α) = α :=
   rfl
 #align HeytAlg.coe_of HeytAlgCat.coe_of
 

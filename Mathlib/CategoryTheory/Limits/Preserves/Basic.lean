@@ -2,13 +2,10 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Reid Barton, Bhavik Mehta, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.basic
-! leanprover-community/mathlib commit e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
+
+#align_import category_theory.limits.preserves.basic from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
 /-!
 # Preservation and reflection of (co)limits.
@@ -84,7 +81,7 @@ class PreservesColimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) wher
 -- This should be used with explicit universe variables.
 /-- `PreservesLimitsOfSize.{v u} F` means that `F` sends all limit cones over any
 diagram `J ⥤ C` to limit cones, where `J : Type u` with `[Category.{v} J]`. -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 class PreservesLimitsOfSize (F : C ⥤ D) where
   preservesLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesLimitsOfShape J F := by
     infer_instance
@@ -100,7 +97,7 @@ abbrev PreservesLimits (F : C ⥤ D) :=
 -- This should be used with explicit universe variables.
 /-- `PreservesColimitsOfSize.{v u} F` means that `F` sends all colimit cocones over any
 diagram `J ⥤ C` to colimit cocones, where `J : Type u` with `[Category.{v} J]`. -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 class PreservesColimitsOfSize (F : C ⥤ D) where
   preservesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesColimitsOfShape J F := by
     infer_instance
@@ -184,8 +181,8 @@ instance idPreservesColimits : PreservesColimitsOfSize.{w', w} (𝟭 C) where
       preservesColimit := fun {K} =>
         ⟨fun {c} h =>
           ⟨fun s => h.desc ⟨s.pt, fun j => s.ι.app j, fun j j' f => s.ι.naturality f⟩, by
-            cases K ; rcases c with ⟨_, _, _⟩ ; intro s j ; cases s ; exact h.fac _ j, by
-            cases K ; rcases c with ⟨_, _, _⟩ ; intro s m w ; rcases s with ⟨_, _, _⟩ ;
+            cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_preserves_colimits CategoryTheory.Limits.idPreservesColimits
 
@@ -397,7 +394,7 @@ whenever the image of a cone over some `K : J ⥤ C` under `F` is a limit cone i
 the cone was already a limit cone in `C`.
 Note that we do not assume a priori that `D` actually has any limits.
 -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 class ReflectsLimitsOfSize (F : C ⥤ D) where
   reflectsLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsLimitsOfShape J F := by
     infer_instance
@@ -418,7 +415,7 @@ whenever the image of a cocone over some `K : J ⥤ C` under `F` is a colimit co
 the cocone was already a colimit cocone in `C`.
 Note that we do not assume a priori that `D` actually has any colimits.
 -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 class ReflectsColimitsOfSize (F : C ⥤ D) where
   reflectsColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsColimitsOfShape J F := by
     infer_instance
@@ -508,8 +505,8 @@ instance idReflectsLimits : ReflectsLimitsOfSize.{w, w'} (𝟭 C) where
       reflectsLimit := fun {K} =>
         ⟨fun {c} h =>
           ⟨fun s => h.lift ⟨s.pt, fun j => s.π.app j, fun j j' f => s.π.naturality f⟩, by
-            cases K ; rcases c with ⟨_, _, _⟩ ; intro s j ; cases s ; exact h.fac _ j, by
-            cases K ; rcases c with ⟨_, _, _⟩ ; intro s m w ; rcases s with ⟨_, _, _⟩ ;
+            cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_reflects_limits CategoryTheory.Limits.idReflectsLimits
 
@@ -519,8 +516,8 @@ instance idReflectsColimits : ReflectsColimitsOfSize.{w, w'} (𝟭 C) where
       reflectsColimit := fun {K} =>
         ⟨fun {c} h =>
           ⟨fun s => h.desc ⟨s.pt, fun j => s.ι.app j, fun j j' f => s.ι.naturality f⟩, by
-            cases K ; rcases c with ⟨_, _, _⟩ ; intro s j ; cases s ; exact h.fac _ j, by
-            cases K ; rcases c with ⟨_, _, _⟩ ; intro s m w ; rcases s with ⟨_, _, _⟩ ;
+            cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_reflects_colimits CategoryTheory.Limits.idReflectsColimits
 

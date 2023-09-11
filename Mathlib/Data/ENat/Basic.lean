@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.enat.basic
-! leanprover-community/mathlib commit ceb887ddf3344dab425292e497fa2af91498437c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.Ring.WithTop
+
+#align_import data.enat.basic from "leanprover-community/mathlib"@"ceb887ddf3344dab425292e497fa2af91498437c"
 
 /-!
 # Definition and basic properties of extended natural numbers
@@ -36,7 +33,7 @@ deriving Zero,
   CanonicallyOrderedCommSemiring, Nontrivial,
   LinearOrder, Bot, Top, CanonicallyLinearOrderedAddMonoid, Sub,
   LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
-  -- OrderBot, OrderTop, OrderedSub,  SuccOrder, WellFoundedLt, CharZero
+  -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero
 #align enat ENat
 
 -- Porting Note: In `Data.Nat.ENatPart` proofs timed out when having
@@ -95,6 +92,10 @@ instance canLift : CanLift ℕ∞ ℕ (↑) fun n => n ≠ ⊤ :=
   WithTop.canLift
 #align enat.can_lift ENat.canLift
 
+instance : WellFoundedRelation ℕ∞ where
+  rel := (· < ·)
+  wf := IsWellFounded.wf
+
 /-- Conversion of `ℕ∞` to `ℕ` sending `∞` to `0`. -/
 def toNat : MonoidWithZeroHom ℕ∞ ℕ
     where
@@ -117,19 +118,19 @@ theorem toNat_top : toNat ⊤ = 0 :=
 --Porting note: new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
-def recTopCoe {C : ℕ∞ → Sort _} (h₁ : C ⊤) (h₂ : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
+def recTopCoe {C : ℕ∞ → Sort*} (h₁ : C ⊤) (h₂ : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
 | none => h₁
 | Option.some a => h₂ a
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
-theorem recTopCoe_top {C : ℕ∞ → Sort _} (d : C ⊤) (f : ∀ a : ℕ, C a) :
+theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) :
     @recTopCoe C d f ⊤ = d :=
   rfl
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
-theorem recTopCoe_coe {C : ℕ∞ → Sort _} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
+theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
     @recTopCoe C d f ↑x = f x :=
   rfl
 
@@ -157,7 +158,7 @@ theorem coe_toNat_eq_self : ENat.toNat (n : ℕ∞) = n ↔ n ≠ ⊤ :=
   ENat.recTopCoe (by simp) (fun _ => by simp [toNat_coe]) n
 #align enat.coe_to_nat_eq_self ENat.coe_toNat_eq_self
 
-alias coe_toNat_eq_self ↔ _ coe_toNat
+alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
 #align enat.coe_to_nat ENat.coe_toNat
 
 theorem coe_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
@@ -205,13 +206,16 @@ theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
   Order.le_of_lt_succ <| n.succ_def.symm ▸ h
 #align enat.le_of_lt_add_one ENat.le_of_lt_add_one
 
+theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
+  WithTop.le_coe_iff
+
 @[elab_as_elim]
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
     (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
   have A : ∀ n : ℕ, P n := fun n => Nat.recOn n h0 hsuc
   cases a
-  . exact htop A
-  . exact A _
+  · exact htop A
+  · exact A _
 #align enat.nat_induction ENat.nat_induction
 
 end ENat

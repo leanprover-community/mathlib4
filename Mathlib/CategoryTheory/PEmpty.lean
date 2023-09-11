@@ -2,21 +2,16 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.pempty
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.DiscreteCategory
+
+#align_import category_theory.pempty from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
 /-!
 # The empty category
 
 Defines a category structure on `PEmpty`, and the unique functor `PEmpty ⥤ C` for any category `C`.
 -/
-
--- Porting note: this file stressed Lean a good deal despite its length
 
 universe w v u
 -- morphism levels before object levels. See note [CategoryTheory universes].

@@ -2,11 +2,6 @@
 Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu
-
-! This file was ported from Lean 3 source module data.real.golden_ratio
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Nat.Fib
@@ -14,6 +9,8 @@ import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Algebra.LinearRecurrence
 import Mathlib.Tactic.NormNum.NatFib
+
+#align_import data.real.golden_ratio from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # The golden ratio and its conjugate
@@ -165,7 +162,7 @@ theorem goldConj_irrational : Irrational ψ := by
 
 section Fibrec
 
-variable {α : Type _} [CommSemiring α]
+variable {α : Type*} [CommSemiring α]
 
 /-- The recurrence relation satisfied by the Fibonacci sequence. -/
 def fibRec : LinearRecurrence α where
@@ -178,7 +175,7 @@ section Poly
 open Polynomial
 
 /-- The characteristic polynomial of `fibRec` is `X² - (X + 1)`. -/
-theorem fibRec_charPoly_eq {β : Type _} [CommRing β] :
+theorem fibRec_charPoly_eq {β : Type*} [CommRing β] :
     fibRec.charPoly = X ^ 2 - (X + (1 : β[X])) := by
   rw [fibRec, LinearRecurrence.charPoly]
   simp [Finset.sum_fin_eq_sum_range, Finset.sum_range_succ', ← smul_X_eq_monomial]

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.tensor_product
-! leanprover-community/mathlib commit 657df4339ae6ceada048c8a2980fb10e393143ec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Abelian
+
+#align_import algebra.lie.tensor_product from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
 /-!
 # Tensor products of Lie modules
@@ -210,11 +207,8 @@ open TensorProduct.LieModule
 open LieModule
 
 variable {L : Type v} {M : Type w}
-
 variable [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable (I : LieIdeal R L) (N : LieSubmodule R L M)
 
 /-- A useful alternative characterisation of Lie ideal operations on Lie submodules.
@@ -224,7 +218,7 @@ applying the action of `L` on `M`, we obtain morphism of Lie modules `f : I ⊗ 
 
 This lemma states that `⁅I, N⁆ = range f`. -/
 theorem lieIdeal_oper_eq_tensor_map_range :
-    ⁅I, N⁆ = ((toModuleHom R L M).comp (mapIncl I N : (↥I) ⊗ (↥N) →ₗ⁅R,L⁆ L ⊗ M)).range := by
+    ⁅I, N⁆ = ((toModuleHom R L M).comp (mapIncl I N : (↥I) ⊗[R] (↥N) →ₗ⁅R,L⁆ L ⊗[R] M)).range := by
   rw [← coe_toSubmodule_eq_iff, lieIdeal_oper_eq_linear_span, LieModuleHom.coeSubmodule_range,
     LieModuleHom.coe_linearMap_comp, LinearMap.range_comp, mapIncl_def, coe_linearMap_map,
     TensorProduct.map_range_eq_span_tmul, Submodule.map_span]

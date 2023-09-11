@@ -2,15 +2,12 @@
 Copyright (c) 2021 Patrick Stevens. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Thomas Browning
-Ported by: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module data.nat.choose.central
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
+
+#align_import data.nat.choose.central from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Central binomial coefficients
@@ -94,7 +91,7 @@ theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * c
   · norm_num [centralBinom, choose]
   obtain ⟨n, rfl⟩ : ∃ m, n = m + 1 := Nat.exists_eq_succ_of_ne_zero (Nat.not_eq_zero_of_lt hn)
   calc
-    4 ^ (n + 1) < 4 * (n * centralBinom n) := lt_of_eq_of_lt (pow_succ'' n 4) $
+    4 ^ (n + 1) < 4 * (n * centralBinom n) := lt_of_eq_of_lt pow_succ' $
       (mul_lt_mul_left <| zero_lt_four' ℕ).mpr (IH n n.lt_succ_self (Nat.le_of_lt_succ hn))
     _ ≤ 2 * (2 * n + 1) * centralBinom n := by rw [← mul_assoc]; linarith
     _ = (n + 1) * centralBinom (n + 1) := (succ_mul_centralBinom_succ n).symm
@@ -113,8 +110,8 @@ theorem four_pow_le_two_mul_self_mul_centralBinom :
   | n + 4, _ =>
     calc
       4 ^ (n+4) ≤ (n+4) * centralBinom (n+4) := (four_pow_lt_mul_centralBinom _ le_add_self).le
-      _ ≤ 2 * (n+4) * centralBinom (n+4) := by rw [mul_assoc];
-                                               refine' le_mul_of_pos_left zero_lt_two
+      _ ≤ 2 * (n+4) * centralBinom (n+4) := by
+        rw [mul_assoc]; refine' le_mul_of_pos_left zero_lt_two
 #align nat.four_pow_le_two_mul_self_mul_central_binom Nat.four_pow_le_two_mul_self_mul_centralBinom
 
 theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by

@@ -2,15 +2,13 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
-
-! This file was ported from Lean 3 source module algebra.gcd_monoid.basic
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Regular
+import Mathlib.Tactic.Common
+
+#align_import algebra.gcd_monoid.basic from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`
@@ -67,13 +65,13 @@ divisibility, gcd, lcm, normalize
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 -- Porting note: mathlib3 had a `@[protect_proj]` here, but adding `protected` to all the fields
 -- adds unnecessary clutter to later code
 /-- Normalization monoid: multiplying with `normUnit` gives a normal form for associated
 elements. -/
-class NormalizationMonoid (α : Type _) [CancelCommMonoidWithZero α] where
+class NormalizationMonoid (α : Type*) [CancelCommMonoidWithZero α] where
   /-- `normUnit` assigns to each element of the monoid a unit of the monoid. -/
   normUnit : α → αˣ
   /-- The proposition that `normUnit` maps `0` to the identity. -/
@@ -272,7 +270,7 @@ end Associates
 `lcm` (least common multiple) operations, determined up to a unit. The type class focuses on `gcd`
 and we derive the corresponding `lcm` facts from `gcd`.
 -/
-class GCDMonoid (α : Type _) [CancelCommMonoidWithZero α] where
+class GCDMonoid (α : Type*) [CancelCommMonoidWithZero α] where
   /-- The greatest common divisor between two elements. -/
   gcd : α → α → α
   /-- The least common multiple between two elements. -/
@@ -297,7 +295,7 @@ class GCDMonoid (α : Type _) [CancelCommMonoidWithZero α] where
 supremum, `1` is bottom, and `0` is top. The type class focuses on `gcd` and we derive the
 corresponding `lcm` facts from `gcd`.
 -/
-class NormalizedGCDMonoid (α : Type _) [CancelCommMonoidWithZero α] extends NormalizationMonoid α,
+class NormalizedGCDMonoid (α : Type*) [CancelCommMonoidWithZero α] extends NormalizationMonoid α,
   GCDMonoid α where
   /-- The GCD is normalized to itself. -/
   normalize_gcd : ∀ a b, normalize (gcd a b) = gcd a b
@@ -513,7 +511,7 @@ theorem dvd_gcd_mul_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) : k
 #align dvd_gcd_mul_of_dvd_mul dvd_gcd_mul_of_dvd_mul
 
 theorem dvd_mul_gcd_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) : k ∣ m * gcd k n := by
-  rw [mul_comm] at H⊢
+  rw [mul_comm] at H ⊢
   exact dvd_gcd_mul_of_dvd_mul H
 #align dvd_mul_gcd_of_dvd_mul dvd_mul_gcd_of_dvd_mul
 
@@ -534,8 +532,8 @@ theorem exists_dvd_and_dvd_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m *
     simp
   · obtain ⟨a, ha⟩ := gcd_dvd_left k m
     refine' ⟨gcd k m, a, gcd_dvd_right _ _, _, ha⟩
-    suffices h : gcd k m * a ∣ gcd k m * n
-    · cases' h with b hb
+    suffices h : gcd k m * a ∣ gcd k m * n by
+      cases' h with b hb
       use b
       rw [mul_assoc] at hb
       apply mul_left_cancel₀ h0 hb
@@ -633,7 +631,7 @@ theorem exists_associated_pow_of_mul_eq_pow [GCDMonoid α] {a b c : α} (hab : I
     exact gcd_zero_right' a
   obtain rfl | hk := k.eq_zero_or_pos
   · use 1
-    rw [pow_zero] at h⊢
+    rw [pow_zero] at h ⊢
     use Units.mkOfMulEqOne _ _ h
     rw [Units.val_mkOfMulEqOne, one_mul]
   have hc : c ∣ a * b := by
@@ -662,21 +660,21 @@ theorem exists_eq_pow_of_mul_eq_pow [GCDMonoid α] [Unique αˣ] {a b c : α} (h
   ⟨d, (associated_iff_eq.mp hd).symm⟩
 #align exists_eq_pow_of_mul_eq_pow exists_eq_pow_of_mul_eq_pow
 
-theorem gcd_greatest {α : Type _} [CancelCommMonoidWithZero α] [NormalizedGCDMonoid α] {a b d : α}
+theorem gcd_greatest {α : Type*} [CancelCommMonoidWithZero α] [NormalizedGCDMonoid α] {a b d : α}
     (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : α, e ∣ a → e ∣ b → e ∣ d) :
     GCDMonoid.gcd a b = normalize d :=
   haveI h := hd _ (GCDMonoid.gcd_dvd_left a b) (GCDMonoid.gcd_dvd_right a b)
   gcd_eq_normalize h (GCDMonoid.dvd_gcd hda hdb)
 #align gcd_greatest gcd_greatest
 
-theorem gcd_greatest_associated {α : Type _} [CancelCommMonoidWithZero α] [GCDMonoid α] {a b d : α}
+theorem gcd_greatest_associated {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α] {a b d : α}
     (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : α, e ∣ a → e ∣ b → e ∣ d) :
     Associated d (GCDMonoid.gcd a b) :=
   haveI h := hd _ (GCDMonoid.gcd_dvd_left a b) (GCDMonoid.gcd_dvd_right a b)
   associated_of_dvd_dvd (GCDMonoid.dvd_gcd hda hdb) h
 #align gcd_greatest_associated gcd_greatest_associated
 
-theorem isUnit_gcd_of_eq_mul_gcd {α : Type _} [CancelCommMonoidWithZero α] [GCDMonoid α]
+theorem isUnit_gcd_of_eq_mul_gcd {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α]
     {x y x' y' : α} (ex : x = gcd x y * x') (ey : y = gcd x y * y') (h : gcd x y ≠ 0) :
     IsUnit (gcd x' y') := by
   rw [← associated_one_iff_isUnit]
@@ -685,7 +683,7 @@ theorem isUnit_gcd_of_eq_mul_gcd {α : Type _} [CancelCommMonoidWithZero α] [GC
   rw [← ex, ← ey, mul_one]
 #align is_unit_gcd_of_eq_mul_gcd isUnit_gcd_of_eq_mul_gcd
 
-theorem extract_gcd {α : Type _} [CancelCommMonoidWithZero α] [GCDMonoid α] (x y : α) :
+theorem extract_gcd {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α] (x y : α) :
     ∃ x' y', x = gcd x y * x' ∧ y = gcd x y * y' ∧ IsUnit (gcd x' y') := by
   by_cases h : gcd x y = 0
   · obtain ⟨rfl, rfl⟩ := (gcd_eq_zero_iff x y).1 h
@@ -930,7 +928,7 @@ instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
       -- Porting note: Lean4 seems to need help specifying `g₁` and `g₂`
       refine' associated_iff_eq.mp (associated_of_dvd_dvd _ _)
       · exact (@lcm_dvd_iff _ _ g₁ ..).mpr ⟨@dvd_lcm_left _ _ g₂ _ _, @dvd_lcm_right _ _ g₂ _ _⟩
-      · exact lcm_dvd_iff.mpr ⟨@dvd_lcm_left  _ _ g₁ _ _, @dvd_lcm_right _ _ g₁  _ _⟩
+      · exact lcm_dvd_iff.mpr ⟨@dvd_lcm_left _ _ g₁ _ _, @dvd_lcm_right _ _ g₁ _ _⟩
     cases g₁
     cases g₂
     dsimp only at hgcd hlcm
@@ -1106,7 +1104,6 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
         have h1 : gcd a b ≠ 0 := by
           have hab : a * b ≠ 0 := mul_ne_zero a0 hb
           contrapose! hab
-          push_neg at hab
           rw [← normalize_eq_zero, ← this, hab, zero_mul]
         have h2 : normalize (gcd a b * l) = gcd a b * l := by rw [this, normalize_idem]
         rw [← normalize_gcd] at this
@@ -1353,7 +1350,7 @@ end Constructors
 
 namespace CommGroupWithZero
 
-variable (G₀ : Type _) [CommGroupWithZero G₀] [DecidableEq G₀]
+variable (G₀ : Type*) [CommGroupWithZero G₀] [DecidableEq G₀]
 
 -- Porting note: very slow; improve performance?
 -- see Note [lower instance priority]

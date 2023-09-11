@@ -2,13 +2,10 @@
 Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jujian Zhang
-
-! This file was ported from Lean 3 source module number_theory.liouville.liouville_number
-! leanprover-community/mathlib commit 04e80bb7e8510958cd9aacd32fe2dc147af0b9f1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Liouville.Basic
+
+#align_import number_theory.liouville.liouville_number from "leanprover-community/mathlib"@"04e80bb7e8510958cd9aacd32fe2dc147af0b9f1"
 
 /-!
 

@@ -2,17 +2,14 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.nat.totient
-! leanprover-community/mathlib commit 5cc2dfdd3e92f340411acea4427d701dc7ed26f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Two
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.Monotonicity
+
+#align_import data.nat.totient from "leanprover-community/mathlib"@"5cc2dfdd3e92f340411acea4427d701dc7ed26f8"
 
 /-!
 # Euler's totient function
@@ -87,7 +84,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   conv_lhs => rw [← Nat.mod_add_div n a]
   induction' n / a with i ih
   · rw [← filter_coprime_Ico_eq_totient a k]
-    simp only [add_zero, mul_one, MulZeroClass.mul_zero, le_of_lt (mod_lt n a_pos),
+    simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos),
       Nat.zero_eq, zero_add]
     --Porting note: below line was `mono`
     refine Finset.card_mono ?_
@@ -139,7 +136,7 @@ theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
 theorem totient_mul {m n : ℕ} (h : m.coprime n) : φ (m * n) = φ m * φ n :=
   if hmn0 : m * n = 0 then by
     cases' Nat.mul_eq_zero.1 hmn0 with h h <;>
-      simp only [totient_zero, MulZeroClass.mul_zero, MulZeroClass.zero_mul, h]
+      simp only [totient_zero, mul_zero, zero_mul, h]
   else by
     haveI : NeZero (m * n) := ⟨hmn0⟩
     haveI : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
@@ -286,7 +283,7 @@ We prove several different statements of this formula. -/
 theorem totient_eq_prod_factorization {n : ℕ} (hn : n ≠ 0) :
     φ n = n.factorization.prod fun p k => p ^ (k - 1) * (p - 1) := by
   rw [multiplicative_factorization φ (@totient_mul) totient_one hn]
-  apply Finsupp.prod_congr  _
+  apply Finsupp.prod_congr _
   intro p hp
   have h := zero_lt_iff.mpr (Finsupp.mem_support_iff.mp hp)
   rw [totient_prime_pow (prime_of_mem_factorization hp) h]

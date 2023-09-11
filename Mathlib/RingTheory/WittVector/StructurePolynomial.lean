@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.structure_polynomial
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Finite.Polynomial
 import Mathlib.NumberTheory.Basic
 import Mathlib.RingTheory.WittVector.WittPolynomial
+
+#align_import ring_theory.witt_vector.structure_polynomial from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Witt structure polynomials
@@ -57,7 +54,7 @@ of `wittStructureInt Φ n` from the integers to the rationals,
 one obtains `wittStructureRat Φ n`.
 Ultimately, the proof of `map_wittStructureInt` relies on
 ```
-dvd_sub_pow_of_dvd_sub {R : Type _} [CommRing R] {p : ℕ} {a b : R} :
+dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
     (p : R) ∣ a - b → ∀ (k : ℕ), (p : R) ^ (k + 1) ∣ a ^ p ^ k - b ^ p ^ k
 ```
 
@@ -100,7 +97,7 @@ open Finsupp (single)
 -- We disable this locally, and probably it should be disabled globally in mathlib.
 attribute [-simp] coe_eval₂Hom
 
-variable {p : ℕ} {R : Type _} {idx : Type _} [CommRing R]
+variable {p : ℕ} {R : Type*} {idx : Type*} [CommRing R]
 
 open scoped Witt
 
@@ -220,7 +217,7 @@ theorem bind₁_rename_expand_wittPolynomial (Φ : MvPolynomial idx ℤ) (n : �
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [map_bind₁, map_rename, map_expand, rename_expand, map_wittPolynomial]
   have key := (wittStructureRat_prop p (map (Int.castRingHom ℚ) Φ) n).symm
-  apply_fun expand p  at key
+  apply_fun expand p at key
   simp only [expand_bind₁] at key
   rw [key]; clear key
   apply eval₂Hom_congr' rfl _ rfl
@@ -243,11 +240,11 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
       Nat.cast_one, Nat.zero_eq]
   -- prepare a useful equation for rewriting
   have key := bind₁_rename_expand_wittPolynomial Φ n IH
-  apply_fun map (Int.castRingHom (ZMod (p ^ (n + 1))))  at key
+  apply_fun map (Int.castRingHom (ZMod (p ^ (n + 1)))) at key
   conv_lhs at key => simp only [map_bind₁, map_rename, map_expand, map_wittPolynomial]
   -- clean up and massage
   rw [Nat.succ_eq_add_one, C_dvd_iff_zmod, RingHom.map_sub, sub_eq_zero, map_bind₁]
-  simp only [map_rename, map_wittPolynomial, wittPolynomial_zMod_self]
+  simp only [map_rename, map_wittPolynomial, wittPolynomial_zmod_self]
   rw [key]; clear key IH
   rw [bind₁, aeval_wittPolynomial, map_sum, map_sum, Finset.sum_congr rfl]
   intro k hk
@@ -324,7 +321,7 @@ theorem eq_wittStructureInt (Φ : MvPolynomial idx ℤ) (φ : ℕ → MvPolynomi
   apply ExistsUnique.unique (wittStructureRat_existsUnique p (map (Int.castRingHom ℚ) Φ))
   · intro n
     specialize h n
-    apply_fun map (Int.castRingHom ℚ)  at h
+    apply_fun map (Int.castRingHom ℚ) at h
     simpa only [map_bind₁, ← eval₂Hom_map_hom, eval₂Hom_C_left, map_rename, map_wittPolynomial,
       AlgHom.coe_toRingHom] using h
   · intro n; apply wittStructureRat_prop
@@ -347,7 +344,7 @@ theorem witt_structure_prop (Φ : MvPolynomial idx ℤ) (n) :
   · simp only [map_rename, map_wittPolynomial]
 #align witt_structure_prop witt_structure_prop
 
-theorem wittStructureInt_rename {σ : Type _} (Φ : MvPolynomial idx ℤ) (f : idx → σ) (n : ℕ) :
+theorem wittStructureInt_rename {σ : Type*} (Φ : MvPolynomial idx ℤ) (f : idx → σ) (n : ℕ) :
     wittStructureInt p (rename f Φ) n = rename (Prod.map f id) (wittStructureInt p Φ n) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [map_rename, map_wittStructureInt, wittStructureRat, rename_bind₁, rename_rename,

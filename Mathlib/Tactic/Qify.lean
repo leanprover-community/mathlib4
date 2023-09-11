@@ -5,9 +5,8 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.NormCast
-import Mathlib.Tactic.Qify.Attr
 import Mathlib.Tactic.Zify
-import Mathlib.Data.Rat.Cast
+import Mathlib.Data.Rat.Cast.Order
 
 /-!
 # `qify` tactic

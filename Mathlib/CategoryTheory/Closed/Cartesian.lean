@@ -2,11 +2,6 @@
 Copyright (c) 2020 Bhavik Mehta, Edward Ayers, Thomas Read. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers, Thomas Read
-
-! This file was ported from Lean 3 source module category_theory.closed.cartesian
-! leanprover-community/mathlib commit 239d882c4fb58361ee8b3b39fb2091320edef10a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
@@ -15,6 +10,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Closed.Monoidal
+
+#align_import category_theory.closed.cartesian from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
 
 /-!
 # Cartesian closed categories
@@ -321,9 +318,9 @@ def zeroMul {I : C} (t : IsInitial I) : A ⨯ I ≅ I where
   hom := Limits.prod.snd
   inv := t.to _
   hom_inv_id := by
-    have : (prod.snd : A ⨯ I ⟶ I) = CartesianClosed.uncurry (t.to _)
-    rw [← curry_eq_iff]
-    apply t.hom_ext
+    have : (prod.snd : A ⨯ I ⟶ I) = CartesianClosed.uncurry (t.to _) := by
+      rw [← curry_eq_iff]
+      apply t.hom_ext
     rw [this, ← uncurry_natural_right, ← eq_curry_iff]
     apply t.hom_ext
   inv_hom_id := t.hom_ext _ _
@@ -339,7 +336,7 @@ def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C w
   hom := default
   inv := CartesianClosed.curry ((mulZero t).hom ≫ t.to _)
   hom_inv_id := by
-    -- Porting note: mathport thought that the `mulZero` here was `MulZeroClass.mul_zero`!
+    -- Porting note: mathport thought that the `mulZero` here was `mul_zero`!
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (mulZero t).inv]
     apply t.hom_ext
 #align category_theory.pow_zero CategoryTheory.powZero
@@ -410,15 +407,17 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
     { isAdj := by
         haveI q : Exponentiable (e.inverse.obj X) := inferInstance
         have : IsLeftAdjoint (prod.functor.obj (e.inverse.obj X)) := q.isAdj
-        have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅ prod.functor.obj (e.inverse.obj X)
-        apply NatIso.ofComponents _ _
-        · intro Y
-          apply asIso (prodComparison e.inverse X (e.functor.obj Y)) ≪≫ _
-          apply prod.mapIso (Iso.refl _) (e.unitIso.app Y).symm
-        · intro Y Z g
-          dsimp
-          simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
-          -- I wonder if it would be a good idea to make `map_comp` a simp lemma the other way round
+        have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅
+            prod.functor.obj (e.inverse.obj X) := by
+          apply NatIso.ofComponents _ _
+          · intro Y
+            apply asIso (prodComparison e.inverse X (e.functor.obj Y)) ≪≫ _
+            apply prod.mapIso (Iso.refl _) (e.unitIso.app Y).symm
+          · intro Y Z g
+            dsimp
+            simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
+            -- I wonder if it would be a good idea to
+            -- make `map_comp` a simp lemma the other way round
         · have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
             Adjunction.leftAdjointOfNatIso this.symm
           have : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=

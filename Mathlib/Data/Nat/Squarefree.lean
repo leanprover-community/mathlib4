@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module data.nat.squarefree
-! leanprover-community/mathlib commit 3c1368cac4abd5a5cbe44317ba7e87379d51ed88
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Squarefree
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.RingTheory.Int.Basic
+
+#align_import data.nat.squarefree from "leanprover-community/mathlib"@"3c1368cac4abd5a5cbe44317ba7e87379d51ed88"
 
 /-!
 # Lemmas about squarefreeness of natural numbers
@@ -33,6 +30,13 @@ theorem squarefree_iff_nodup_factors {n : ℕ} (h0 : n ≠ 0) : Squarefree n ↔
   rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors h0, Nat.factors_eq]
   simp
 #align nat.squarefree_iff_nodup_factors Nat.squarefree_iff_nodup_factors
+
+end Nat
+
+theorem Squarefree.nodup_factors {n : ℕ} (hn : Squarefree n) : n.factors.Nodup :=
+  (Nat.squarefree_iff_nodup_factors hn.ne_zero).mp hn
+
+namespace Nat
 
 theorem squarefree_iff_prime_squarefree {n : ℕ} : Squarefree n ↔ ∀ x, Prime x → ¬x * x ∣ n :=
   squarefree_iff_irreducible_sq_not_dvd_of_exists_irreducible ⟨_, prime_two⟩
@@ -117,7 +121,7 @@ def minSqFacAux : ℕ → ℕ → Option ℕ
         lt_of_le_of_lt (Nat.sub_le_sub_right (Nat.sqrt_le_sqrt <| Nat.div_le_self _ _) k) this
         if k ∣ n' then some k else minSqFacAux n' (k + 2)
       else minSqFacAux n (k + 2)
-termination_by  _ n k => sqrt n + 2 - k
+termination_by _ n k => sqrt n + 2 - k
 #align nat.min_sq_fac_aux Nat.minSqFacAux
 
 /-- Returns the smallest prime factor `p` of `n` such that `p^2 ∣ n`, or `none` if there is no
@@ -146,7 +150,7 @@ theorem minSqFacProp_div (n) {k} (pk : Prime k) (dk : k ∣ n) (dkk : ¬k * k �
         contradiction
     (coprime_mul_iff_right.2 ⟨this, this⟩).mul_dvd_of_dvd_of_dvd dk dp
   cases' o with d
-  · rw [MinSqFacProp, squarefree_iff_prime_squarefree] at H⊢
+  · rw [MinSqFacProp, squarefree_iff_prime_squarefree] at H ⊢
     exact fun p pp dp => H p pp ((dvd_div_iff dk).2 (this _ pp dp))
   · obtain ⟨H1, H2, H3⟩ := H
     simp only [dvd_div_iff dk] at H2 H3
@@ -154,46 +158,45 @@ theorem minSqFacProp_div (n) {k} (pk : Prime k) (dk : k ∣ n) (dkk : ¬k * k �
 #align nat.min_sq_fac_prop_div Nat.minSqFacProp_div
 
 --Porting note: I had to replace two uses of `by decide` by `linarith`.
-theorem minSqFacAux_has_prop :
-    ∀ {n : ℕ} (k),
-      0 < n → ∀ i, k = 2 * i + 3 → (∀ m, Prime m → m ∣ n → k ≤ m) → MinSqFacProp n (minSqFacAux n k)
-  | n, k => fun n0 i e ih => by
-    rw [minSqFacAux]
-    by_cases h : n < k * k <;> simp [h]
-    · refine' squarefree_iff_prime_squarefree.2 fun p pp d => _
-      have := ih p pp (dvd_trans ⟨_, rfl⟩ d)
-      have := Nat.mul_le_mul this this
-      exact not_le_of_lt h (le_trans this (le_of_dvd n0 d))
-    have k2 : 2 ≤ k := by
-      subst e
-      linarith
-    have k0 : 0 < k := lt_of_lt_of_le (by decide) k2
-    have IH : ∀ n', n' ∣ n → ¬k ∣ n' → MinSqFacProp n' (n'.minSqFacAux (k + 2)) := by
-      intro n' nd' nk
-      have hn' := le_of_dvd n0 nd'
-      refine'
-        have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k :=
-          lt_of_le_of_lt (Nat.sub_le_sub_right (Nat.sqrt_le_sqrt hn') _) (Nat.minFac_lemma n k h)
-        @minSqFacAux_has_prop n' (k + 2) (pos_of_dvd_of_pos nd' n0) (i + 1)
-          (by simp [e, left_distrib]) fun m m2 d => _
-      cases' Nat.eq_or_lt_of_le (ih m m2 (dvd_trans d nd')) with me ml
-      · subst me
-        contradiction
-      apply (Nat.eq_or_lt_of_le ml).resolve_left
-      intro me
-      rw [← me, e] at d
-      change 2 * (i + 2) ∣ n' at d
-      have := ih _ prime_two (dvd_trans (dvd_of_mul_right_dvd d) nd')
-      rw [e] at this
-      exact absurd this (by linarith)
-    have pk : k ∣ n → Prime k := by
-      refine' fun dk => prime_def_minFac.2 ⟨k2, le_antisymm (minFac_le k0) _⟩
-      exact ih _ (minFac_prime (ne_of_gt k2)) (dvd_trans (minFac_dvd _) dk)
-    split_ifs with dk dkk
-    · exact ⟨pk dk, (Nat.dvd_div_iff dk).1 dkk, fun p pp d => ih p pp (dvd_trans ⟨_, rfl⟩ d)⟩
-    · specialize IH (n / k) (div_dvd_of_dvd dk) dkk
-      exact minSqFacProp_div _ (pk dk) dk (mt (Nat.dvd_div_iff dk).2 dkk) IH
-    · exact IH n (dvd_refl _) dk termination_by' ⟨_, (measure fun ⟨n, k⟩ => Nat.sqrt n + 2 - k).wf⟩
+theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
+    (ih : ∀ m, Prime m → m ∣ n → k ≤ m) : MinSqFacProp n (minSqFacAux n k) := by
+  rw [minSqFacAux]
+  by_cases h : n < k * k <;> simp [h]
+  · refine' squarefree_iff_prime_squarefree.2 fun p pp d => _
+    have := ih p pp (dvd_trans ⟨_, rfl⟩ d)
+    have := Nat.mul_le_mul this this
+    exact not_le_of_lt h (le_trans this (le_of_dvd n0 d))
+  have k2 : 2 ≤ k := by
+    subst e
+    linarith
+  have k0 : 0 < k := lt_of_lt_of_le (by decide) k2
+  have IH : ∀ n', n' ∣ n → ¬k ∣ n' → MinSqFacProp n' (n'.minSqFacAux (k + 2)) := by
+    intro n' nd' nk
+    have hn' := le_of_dvd n0 nd'
+    refine'
+      have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k :=
+        lt_of_le_of_lt (Nat.sub_le_sub_right (Nat.sqrt_le_sqrt hn') _) (Nat.minFac_lemma n k h)
+      @minSqFacAux_has_prop n' (k + 2) (pos_of_dvd_of_pos nd' n0) (i + 1)
+        (by simp [e, left_distrib]) fun m m2 d => _
+    cases' Nat.eq_or_lt_of_le (ih m m2 (dvd_trans d nd')) with me ml
+    · subst me
+      contradiction
+    apply (Nat.eq_or_lt_of_le ml).resolve_left
+    intro me
+    rw [← me, e] at d
+    change 2 * (i + 2) ∣ n' at d
+    have := ih _ prime_two (dvd_trans (dvd_of_mul_right_dvd d) nd')
+    rw [e] at this
+    exact absurd this (by linarith)
+  have pk : k ∣ n → Prime k := by
+    refine' fun dk => prime_def_minFac.2 ⟨k2, le_antisymm (minFac_le k0) _⟩
+    exact ih _ (minFac_prime (ne_of_gt k2)) (dvd_trans (minFac_dvd _) dk)
+  split_ifs with dk dkk
+  · exact ⟨pk dk, (Nat.dvd_div_iff dk).1 dkk, fun p pp d => ih p pp (dvd_trans ⟨_, rfl⟩ d)⟩
+  · specialize IH (n / k) (div_dvd_of_dvd dk) dkk
+    exact minSqFacProp_div _ (pk dk) dk (mt (Nat.dvd_div_iff dk).2 dkk) IH
+  · exact IH n (dvd_refl _) dk
+termination_by _ => n.sqrt + 2 - k
 #align nat.min_sq_fac_aux_has_prop Nat.minSqFacAux_has_prop
 
 theorem minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
@@ -250,13 +253,14 @@ theorem squarefree_iff_minSqFac {n : ℕ} : Squarefree n ↔ n.minSqFac = none :
 instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
   decidable_of_iff' _ squarefree_iff_minSqFac
 
---Porting note: norm_num now cannot close the first subgoal
 theorem squarefree_two : Squarefree 2 := by
-  rw [squarefree_iff_nodup_factors]
-  · rw [Nat.factors_prime prime_two]
-    exact List.nodup_singleton 2
-  · norm_num
+  rw [squarefree_iff_nodup_factors] <;> norm_num
 #align nat.squarefree_two Nat.squarefree_two
+
+theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :
+    n.divisors.filter Squarefree = n.divisors :=
+  Finset.ext fun d => ⟨@Finset.filter_subset _ _ _ _ d, fun hd =>
+    Finset.mem_filter.mpr ⟨hd, hn.squarefree_of_dvd (Nat.dvd_of_mem_divisors hd) ⟩⟩
 
 open UniqueFactorizationMonoid
 
@@ -282,7 +286,6 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
       rw [Finset.mem_powerset, ← Finset.val_le_iff, Multiset.toFinset_val] at hs
       have hs0 : s.val.prod ≠ 0 := by
         rw [Ne.def, Multiset.prod_eq_zero_iff]
-        simp only [exists_prop, id.def, exists_eq_right]
         intro con
         apply
           not_irreducible_zero
@@ -314,9 +317,9 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
 
 open BigOperators
 
-theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type _} [AddCommMonoid α]
+theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type*} [AddCommMonoid α]
     {f : ℕ → α} :
-    (∑ i in n.divisors.filter Squarefree, f i) =
+    ∑ i in n.divisors.filter Squarefree, f i =
       ∑ i in (UniqueFactorizationMonoid.normalizedFactors n).toFinset.powerset, f i.val.prod := by
   rw [Finset.sum_eq_multiset_sum, divisors_filter_squarefree h0, Multiset.map_map,
     Finset.sum_eq_multiset_sum]
@@ -374,6 +377,18 @@ theorem squarefree_mul {m n : ℕ} (hmn : m.coprime n) :
   refine' ball_congr fun p hp => _
   simp only [hmn.isPrimePow_dvd_mul (hp.isPrimePow.pow two_ne_zero), not_or]
 #align nat.squarefree_mul Nat.squarefree_mul
+
+theorem coprime_of_squarefree_mul {m n : ℕ} (h : Squarefree (m * n)) : m.coprime n :=
+  coprime_of_dvd fun p hp hm hn => squarefree_iff_prime_squarefree.mp h p hp (mul_dvd_mul hm hn)
+
+theorem squarefree_mul_iff {m n : ℕ} :
+    Squarefree (m * n) ↔ m.coprime n ∧ Squarefree m ∧ Squarefree n :=
+  ⟨fun h => ⟨coprime_of_squarefree_mul h, (squarefree_mul $ coprime_of_squarefree_mul h).mp h⟩,
+    fun h => (squarefree_mul h.1).mpr h.2⟩
+
+theorem prod_factors_toFinset_of_squarefree {n : ℕ} (hn : Squarefree n) :
+    ∏ p in n.factors.toFinset, p = n := by
+  rw [List.prod_toFinset _ hn.nodup_factors, List.map_id'', Nat.prod_factors hn.ne_zero]
 
 end Nat
 

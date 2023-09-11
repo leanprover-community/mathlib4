@@ -2,15 +2,12 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.locally_convex.abs_convex
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Convex.Gauge
+
+#align_import analysis.locally_convex.abs_convex from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Absolutely convex sets
@@ -43,7 +40,7 @@ open NormedField Set
 
 open BigOperators NNReal Pointwise Topology
 
-variable {𝕜 E F G ι : Type _}
+variable {𝕜 E F G ι : Type*}
 
 section NontriviallyNormedField
 
@@ -176,7 +173,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   -- We have to show that the intersection contains zero, is open, balanced, and convex
   refine'
     ⟨mem_iInter₂.mpr fun _ _ => by simp [Seminorm.mem_ball_zero, hr],
-      isOpen_biInter (t.finite_toSet) fun S _ => _,
+      isOpen_biInter_finset fun S _ => _,
       balanced_iInter₂ fun _ _ => Seminorm.balanced_ball_zero _ _,
       convex_iInter₂ fun _ _ => Seminorm.convex_ball _ _ _⟩
   -- The only nontrivial part is to show that the ball is open

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
-
-! This file was ported from Lean 3 source module seminorm_lattice_not_distrib
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Seminorm
+
+#align_import seminorm_lattice_not_distrib from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 # The lattice of seminorms is not distributive
@@ -48,7 +45,7 @@ noncomputable def q2 : Seminorm ℝ (ℝ × ℝ) :=
 #align counterexample.seminorm_not_distrib.q2 Counterexample.SeminormNotDistrib.q2
 
 theorem eq_one : (p ⊔ q1 ⊓ q2) (1, 1) = 1 := by
-  suffices (⨅ x : ℝ × ℝ, q1 x + q2 (1 - x)) ≤ 1 by simpa
+  suffices ⨅ x : ℝ × ℝ, q1 x + q2 (1 - x) ≤ 1 by simpa
   apply ciInf_le_of_le bddBelow_range_add ((0, 1) : ℝ × ℝ); dsimp [q1, q2]
   simp only [abs_zero, smul_zero, sub_self, add_zero, zero_le_one]
 #align counterexample.seminorm_not_distrib.eq_one Counterexample.SeminormNotDistrib.eq_one

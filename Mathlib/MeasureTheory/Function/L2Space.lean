@@ -2,15 +2,12 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.l2_space
-! leanprover-community/mathlib commit 83a66c8775fa14ee5180c85cab98e970956401ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.IsROrC.Lemmas
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 import Mathlib.MeasureTheory.Integral.SetIntegral
+
+#align_import measure_theory.function.l2_space from "leanprover-community/mathlib"@"83a66c8775fa14ee5180c85cab98e970956401ad"
 
 /-! # `L^2` space
 
@@ -28,7 +25,7 @@ is also an inner product space, with inner product defined as `inner f g = ∫ a
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 set_option linter.uppercaseLean3 false
 
@@ -42,7 +39,7 @@ namespace MeasureTheory
 
 section
 
-variable {α F : Type _} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup F]
+variable {α F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup F]
 
 theorem Memℒp.integrable_sq {f : α → ℝ} (h : Memℒp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
   simpa [← memℒp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.two_ne_top
@@ -66,9 +63,9 @@ end
 
 section InnerProductSpace
 
-variable {α : Type _} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
+variable {α : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
 
-variable {E 𝕜 : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {E 𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 -- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
@@ -96,7 +93,7 @@ theorem Integrable.inner_const (hf : Integrable f μ) (c : E) : Integrable (fun 
 variable [CompleteSpace E] [NormedSpace ℝ E]
 
 theorem _root_.integral_inner {f : α → E} (hf : Integrable f μ) (c : E) :
-    (∫ x, ⟪c, f x⟫ ∂μ) = ⟪c, ∫ x, f x ∂μ⟫ :=
+    ∫ x, ⟪c, f x⟫ ∂μ = ⟪c, ∫ x, f x ∂μ⟫ :=
   ((innerSL 𝕜 c).restrictScalars ℝ).integral_comp_comm hf
 #align integral_inner integral_inner
 
@@ -108,7 +105,7 @@ variable (𝕜)
 -- local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
 theorem _root_.integral_eq_zero_of_forall_integral_inner_eq_zero (f : α → E) (hf : Integrable f μ)
-    (hf_int : ∀ c : E, (∫ x, ⟪c, f x⟫ ∂μ) = 0) : (∫ x, f x ∂μ) = 0 := by
+    (hf_int : ∀ c : E, ∫ x, ⟪c, f x⟫ ∂μ = 0) : ∫ x, f x ∂μ = 0 := by
   specialize hf_int (∫ x, f x ∂μ); rwa [integral_inner hf, inner_self_eq_zero] at hf_int
 #align integral_eq_zero_of_forall_integral_inner_eq_zero integral_eq_zero_of_forall_integral_inner_eq_zero
 
@@ -116,7 +113,7 @@ end InnerProductSpace
 
 namespace L2
 
-variable {α E F 𝕜 : Type _} [IsROrC 𝕜] [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
+variable {α E F 𝕜 : Type*} [IsROrC 𝕜] [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
   [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
 
 -- mathport name: «expr⟪ , ⟫»
@@ -158,7 +155,7 @@ theorem inner_def (f g : α →₂[μ] E) : ⟪f, g⟫ = ∫ a : α, ⟪f a, g a
 #align measure_theory.L2.inner_def MeasureTheory.L2.inner_def
 
 theorem integral_inner_eq_sq_snorm (f : α →₂[μ] E) :
-    (∫ a, ⟪f a, f a⟫ ∂μ) = ENNReal.toReal (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ (2 : ℝ) ∂μ) := by
+    ∫ a, ⟪f a, f a⟫ ∂μ = ENNReal.toReal (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ (2 : ℝ) ∂μ) := by
   simp_rw [inner_self_eq_norm_sq_to_K]
   norm_cast
   rw [integral_eq_lintegral_of_nonneg_ae]
@@ -285,7 +282,7 @@ end L2
 
 section InnerContinuous
 
-variable {α : Type _} [TopologicalSpace α] [MeasureSpace α] [BorelSpace α] {𝕜 : Type _} [IsROrC 𝕜]
+variable {α : Type*} [TopologicalSpace α] [MeasureSpace α] [BorelSpace α] {𝕜 : Type*} [IsROrC 𝕜]
 
 variable (μ : Measure α) [IsFiniteMeasure μ]
 

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.quotient
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Submodule
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.LinearAlgebra.Isomorphisms
+
+#align_import algebra.lie.quotient from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 # Quotients of Lie algebras and Lie modules
@@ -57,7 +54,7 @@ instance addCommGroup : AddCommGroup (M ⧸ N) :=
   Submodule.Quotient.addCommGroup _
 #align lie_submodule.quotient.add_comm_group LieSubmodule.Quotient.addCommGroup
 
-instance module' {S : Type _} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
+instance module' {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S (M ⧸ N) :=
   Submodule.Quotient.module' _
 #align lie_submodule.quotient.module' LieSubmodule.Quotient.module'
@@ -66,7 +63,7 @@ instance module : Module R (M ⧸ N) :=
   Submodule.Quotient.module _
 #align lie_submodule.quotient.module LieSubmodule.Quotient.module
 
-instance isCentralScalar {S : Type _} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M]
+instance isCentralScalar {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     [SMul Sᵐᵒᵖ R] [Module Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] :
     IsCentralScalar S (M ⧸ N) :=
   Submodule.Quotient.isCentralScalar _
@@ -222,7 +219,7 @@ end LieSubmodule
 
 namespace LieHom
 
-variable {R L L' : Type _}
+variable {R L L' : Type*}
 
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
 

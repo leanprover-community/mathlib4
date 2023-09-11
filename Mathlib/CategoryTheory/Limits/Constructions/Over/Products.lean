@@ -2,16 +2,13 @@
 Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.constructions.over.products
-! leanprover-community/mathlib commit ac3ae212f394f508df43e37aa093722fa9b65d31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Over
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+#align_import category_theory.limits.constructions.over.products from "leanprover-community/mathlib"@"ac3ae212f394f508df43e37aa093722fa9b65d31"
 
 /-!
 # Products in the over category
@@ -164,8 +161,6 @@ theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B
 #align category_theory.over.construct_products.over_finite_products_of_finite_wide_pullbacks CategoryTheory.Over.ConstructProducts.over_finiteProducts_of_finiteWidePullbacks
 
 end ConstructProducts
-
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- Construct terminal object in the over category. This isn't an instance as it's not typically the
 way we want to define terminal objects.

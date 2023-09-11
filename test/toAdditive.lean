@@ -6,6 +6,7 @@ import Mathlib.Util.Time
 import Qq.MetaM
 open Qq Lean Meta Elab Command ToAdditive
 
+set_option autoImplicit true
 -- work in a namespace so that it doesn't matter if names clash
 namespace Test
 
@@ -47,13 +48,13 @@ instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 5⟩
 def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^ (n ^ m)
 
 theorem foo2_works : foo2 2 3 (PLift.up 2) = Nat.pow 2 5 := by decide
-theorem bar2_works : bar2 2 3 (PLift.up 2) =  2 * 5 := by decide
+theorem bar2_works : bar2 2 3 (PLift.up 2) = 2 * 5 := by decide
 
 @[to_additive bar3]
 def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x
 
 theorem foo3_works : foo3 2 3 = Nat.pow 2 3 := by decide
-theorem bar3_works : bar3 2 3 =  2 * 3 := by decide
+theorem bar3_works : bar3 2 3 = 2 * 3 := by decide
 
 @[to_additive bar4]
 def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
@@ -72,7 +73,7 @@ def foo6 {α} [my_has_pow α ℕ] : α → ℕ → α := @my_has_pow.pow α ℕ 
 -- def foo7 := @my_has_pow.pow
 
 -- theorem foo7_works : foo7 2 3 = Nat.pow 2 3 := by decide
--- theorem bar7_works : bar7 2 3 =  2 * 3 := by decide
+-- theorem bar7_works : bar7 2 3 = 2 * 3 := by decide
 
 /-- Check that we don't additivize `Nat` expressions. -/
 @[to_additive bar8]
@@ -89,12 +90,12 @@ theorem bar9_works : bar9 = 1 := by decide
 @[to_additive bar10]
 def foo10 (n m : ℕ) := HPow.hPow n m + n * m * 2 + 1 * 0 + 37 * 1 + 2
 
-theorem bar10_works : bar10 = foo10 := by rfl
+theorem bar10_works : bar10 = foo10 := rfl
 
 @[to_additive bar11]
 def foo11 (n : ℕ) (m : ℤ) := n * m * 2 + 1 * 0 + 37 * 1 + 2
 
-theorem bar11_works : bar11 = foo11 := by rfl
+theorem bar11_works : bar11 = foo11 := rfl
 
 @[to_additive bar12]
 def foo12 (_ : Nat) (_ : Int) : Fin 37 := ⟨2, by decide⟩

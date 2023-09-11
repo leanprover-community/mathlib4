@@ -2,13 +2,10 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module measure_theory.decomposition.unsigned_hahn
-! leanprover-community/mathlib commit 0f1becb755b3d008b242c622e248a70556ad19e6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+
+#align_import measure_theory.decomposition.unsigned_hahn from "leanprover-community/mathlib"@"0f1becb755b3d008b242c622e248a70556ad19e6"
 
 /-!
 # Unsigned Hahn decomposition theorem
@@ -33,7 +30,7 @@ open Classical Topology ENNReal
 
 namespace MeasureTheory
 
-variable {α : Type _} [MeasurableSpace α] {μ ν : Measure α}
+variable {α : Type*} [MeasurableSpace α] {μ ν : Measure α}
 
 /-- **Hahn decomposition theorem** -/
 theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
@@ -96,7 +93,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     exact MeasurableSet.biInter (to_countable _) fun i _ => he₁ _
   have f_subset_f : ∀ {a b c d}, a ≤ b → c ≤ d → f a d ⊆ f b c := by
     intro a b c d hab hcd
-    simp_rw [Finset.inf_eq_iInf, Finset.inf_eq_iInf]
+    simp_rw [Finset.inf_eq_iInf]
     exact biInter_subset_biInter_left (Finset.Ico_subset_Ico hab <| Nat.succ_le_succ hcd)
   have f_succ : ∀ n m, n ≤ m → f n (m + 1) = f n m ∩ e (m + 1) := by
     intro n m hnm
@@ -118,7 +115,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
             simp only [pow_add, pow_one, le_sub_iff_add_le]
             linarith
           _ = γ - (1 / 2) ^ (n + 1) + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ n) := by
-            simp only [sub_eq_add_neg] ; abel
+            simp only [sub_eq_add_neg]; abel
           _ ≤ d (e (n + 1)) + d (f m n) := (add_le_add (le_of_lt <| he₂ _) ih)
           _ ≤ d (e (n + 1)) + d (f m n \ e (n + 1)) + d (f m (n + 1)) := by
             rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (hf _ _) (he₁ _), add_assoc]
@@ -134,7 +131,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   have γ_le_d_s : γ ≤ d s := by
     have hγ : Tendsto (fun m : ℕ => γ - 2 * (1 / 2) ^ m) atTop (𝓝 γ) := by
       suffices Tendsto (fun m : ℕ => γ - 2 * (1 / 2) ^ m) atTop (𝓝 (γ - 2 * 0)) by
-        simpa only [MulZeroClass.mul_zero, tsub_zero]
+        simpa only [mul_zero, tsub_zero]
       exact
         tendsto_const_nhds.sub <|
           tendsto_const_nhds.mul <|
@@ -161,7 +158,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     have : 0 ≤ d t :=
       (add_le_add_iff_left γ).1 <|
         calc
-          γ + 0 ≤ d s := by rw [add_zero] ; exact γ_le_d_s
+          γ + 0 ≤ d s := by rw [add_zero]; exact γ_le_d_s
           _ = d (s \ t) + d t := by rw [d_split _ _ hs ht, inter_eq_self_of_subset_right hts]
           _ ≤ γ + d t := add_le_add (d_le_γ _ (hs.diff ht)) le_rfl
 
@@ -175,7 +172,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
           _ = d (s ∪ t) := by
             rw [d_split _ _ (hs.union ht) ht, union_diff_right, union_inter_cancel_right,
               (subset_compl_iff_disjoint_left.1 hts).sdiff_eq_left]
-          _ ≤ γ + 0 := by rw [add_zero] ; exact d_le_γ _ (hs.union ht)
+          _ ≤ γ + 0 := by rw [add_zero]; exact d_le_γ _ (hs.union ht)
 
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
     simpa only [sub_le_iff_le_add, zero_add] using this

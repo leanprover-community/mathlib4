@@ -2,13 +2,10 @@
 Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.moments
-! leanprover-community/mathlib commit 85453a2a14be8da64caf15ca50930cf4c6e5d8de
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Variance
+
+#align_import probability.moments from "leanprover-community/mathlib"@"85453a2a14be8da64caf15ca50930cf4c6e5d8de"
 
 /-!
 # Moments and moment generating function
@@ -48,7 +45,7 @@ open scoped BigOperators MeasureTheory ProbabilityTheory ENNReal NNReal
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type _} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω}
+variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω}
 
 /-- Moment of a real random variable, `μ[X ^ p]`. -/
 def moment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=

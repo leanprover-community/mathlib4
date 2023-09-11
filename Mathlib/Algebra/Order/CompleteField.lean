@@ -2,15 +2,12 @@
 Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.order.complete_field
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Algebra.Order.Pointwise
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+#align_import algebra.order.complete_field from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Conditionally complete linear ordered fields
@@ -48,7 +45,7 @@ reals, conditionally complete, ordered field, uniqueness
 -/
 
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 noncomputable section
 
@@ -59,7 +56,7 @@ open scoped Classical Pointwise
 /-- A field which is both linearly ordered and conditionally complete with respect to the order.
 This axiomatizes the reals. -/
 -- @[protect_proj] -- Porting note: does not exist anymore
-class ConditionallyCompleteLinearOrderedField (α : Type _) extends
+class ConditionallyCompleteLinearOrderedField (α : Type*) extends
     LinearOrderedField α, ConditionallyCompleteLinearOrder α
 #align conditionally_complete_linear_ordered_field ConditionallyCompleteLinearOrderedField
 
@@ -186,7 +183,7 @@ def inducedMap (x : α) : β :=
 
 variable [Archimedean α]
 
-theorem inducedMap_mono : Monotone (inducedMap α β) := fun _ _  h =>
+theorem inducedMap_mono : Monotone (inducedMap α β) := fun _ _ h =>
   csSup_le_csSup (cutMap_bddAbove β _) (cutMap_nonempty β _) (cutMap_mono β h)
 #align linear_ordered_field.induced_map_mono LinearOrderedField.inducedMap_mono
 
@@ -262,12 +259,11 @@ theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ c
   obtain ⟨q, hb, rfl⟩ := hb
   obtain ⟨q', hq', hqq', hqa⟩ := exists_rat_pow_btwn two_ne_zero hb (mul_self_pos.2 ha.ne')
   trans (q' : β) ^ 2
-  exact_mod_cast hqq'.le
-  rw [pow_two] at hqa ⊢
-  push_cast at hqa
-  exact mul_self_le_mul_self (by exact_mod_cast hq'.le)
-    (le_csSup (cutMap_bddAbove β a) <|
-      coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self ha.le hqa)
+  · exact_mod_cast hqq'.le
+  · rw [pow_two] at hqa ⊢
+    exact mul_self_le_mul_self (by exact_mod_cast hq'.le)
+      (le_csSup (cutMap_bddAbove β a) <|
+        coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self ha.le hqa)
 #align linear_ordered_field.le_induced_map_mul_self_of_mem_cut_map LinearOrderedField.le_inducedMap_mul_self_of_mem_cutMap
 
 /-- Preparatory lemma for `inducedOrderRingHom`. -/
@@ -305,7 +301,7 @@ def inducedOrderRingHom : α →+*o β :=
         · convert this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]
           · simp_rw [AddMonoidHom.map_neg, neg_mul, mul_neg, neg_neg]
-        · simp only [MulZeroClass.mul_zero, AddMonoidHom.map_zero]
+        · simp only [mul_zero, AddMonoidHom.map_zero]
         · exact this x h
         -- prove that the (Sup of rationals less than x) ^ 2 is the Sup of the set of rationals less
         -- than (x ^ 2) by showing it is an upper bound and any smaller number is not an upper bound
@@ -362,7 +358,7 @@ end LinearOrderedField
 
 section Real
 
-variable {R S : Type _} [OrderedRing R] [LinearOrderedRing S]
+variable {R S : Type*} [OrderedRing R] [LinearOrderedRing S]
 
 theorem ringHom_monotone (hR : ∀ r : R, 0 ≤ r → ∃ s : R, s ^ 2 = r) (f : R →+* S) : Monotone f :=
   (monotone_iff_map_nonneg f).2 fun r h => by

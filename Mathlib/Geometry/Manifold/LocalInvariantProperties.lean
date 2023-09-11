@@ -2,13 +2,10 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
-
-! This file was ported from Lean 3 source module geometry.manifold.local_invariant_properties
-! leanprover-community/mathlib commit be2c24f56783935652cefffb4bfca7e4b25d167e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.ChartedSpace
+
+#align_import geometry.manifold.local_invariant_properties from "leanprover-community/mathlib"@"431589bce478b2229eba14b14a283250428217db"
 
 /-!
 # Local properties invariant under a groupoid
@@ -52,9 +49,9 @@ noncomputable section
 
 open Classical Manifold Topology
 
-open Set Filter
+open Set Filter TopologicalSpace
 
-variable {H M H' M' X : Type _}
+variable {H M H' M' X : Type*}
 
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 
@@ -545,6 +542,26 @@ theorem liftProp_id (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y) :
   exact fun x ↦ hG.congr' ((chartAt H x).eventually_right_inverse <| mem_chart_target H x) (hQ _)
 #align structure_groupoid.local_invariant_prop.lift_prop_id StructureGroupoid.LocalInvariantProp.liftProp_id
 
+theorem liftPropAt_iff_comp_inclusion (hG : LocalInvariantProp G G' P) {U V : Opens M} (hUV : U ≤ V)
+    (f : V → M') (x : U) :
+    LiftPropAt P f (Set.inclusion hUV x) ↔ LiftPropAt P (f ∘ Set.inclusion hUV : U → M') x := by
+  congrm ?_ ∧ ?_
+  · simp [continuousWithinAt_univ,
+      (TopologicalSpace.Opens.openEmbedding_of_le hUV).continuousAt_iff]
+  · apply hG.congr_iff
+    exact (TopologicalSpace.Opens.chartAt_inclusion_symm_eventuallyEq hUV).fun_comp
+      (chartAt H' (f (Set.inclusion hUV x)) ∘ f)
+#align structure_groupoid.local_invariant_prop.lift_prop_at_iff_comp_inclusion StructureGroupoid.LocalInvariantProp.liftPropAt_iff_comp_inclusion
+
+theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalInvariantProp G G Q)
+    (hQ : ∀ y, Q id univ y) {U V : Opens M} (hUV : U ≤ V) :
+    LiftProp Q (Set.inclusion hUV : U → V) := by
+  intro x
+  show LiftPropAt Q (id ∘ inclusion hUV) x
+  rw [← hG.liftPropAt_iff_comp_inclusion hUV]
+  apply hG.liftProp_id hQ
+#align structure_groupoid.local_invariant_prop.lift_prop_inclusion StructureGroupoid.LocalInvariantProp.liftProp_inclusion
+
 end LocalInvariantProp
 
 section LocalStructomorph
@@ -651,7 +668,7 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_source_iff {G : Struc
   f.isLocalStructomorphWithinAt_iff' Subset.rfl this
 #align local_homeomorph.is_local_structomorph_within_at_source_iff LocalHomeomorph.isLocalStructomorphWithinAt_source_iff
 
-variable {H₁ : Type _} [TopologicalSpace H₁] {H₂ : Type _} [TopologicalSpace H₂] {H₃ : Type _}
+variable {H₁ : Type*} [TopologicalSpace H₁] {H₂ : Type*} [TopologicalSpace H₂] {H₃ : Type*}
   [TopologicalSpace H₃] [ChartedSpace H₁ H₂] [ChartedSpace H₂ H₃] {G₁ : StructureGroupoid H₁}
   [HasGroupoid H₂ G₁] [ClosedUnderRestriction G₁] (G₂ : StructureGroupoid H₂) [HasGroupoid H₃ G₂]
 

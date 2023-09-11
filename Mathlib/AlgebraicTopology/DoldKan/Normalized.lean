@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.normalized
-! leanprover-community/mathlib commit d1d69e99ed34c95266668af4e288fc1c598b9a7f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.FunctorN
+
+#align_import algebraic_topology.dold_kan.normalized from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -26,6 +23,8 @@ the Dold-Kan equivalence
 `CategoryTheory.Abelian.DoldKan.equivalence : SimplicialObject A ≌ ChainComplex A ℕ`
 with a functor (definitionally) equal to `normalizedMooreComplex A`.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
@@ -40,7 +39,7 @@ namespace DoldKan
 
 universe v
 
-variable {A : Type _} [Category A] [Abelian A] {X : SimplicialObject A}
+variable {A : Type*} [Category A] [Abelian A] {X : SimplicialObject A}
 
 theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
     HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by

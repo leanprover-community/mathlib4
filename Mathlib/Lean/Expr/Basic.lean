@@ -16,6 +16,8 @@ This file defines basic operations on the types expr, name, declaration, level, 
 This file is mostly for non-tactics.
 -/
 
+set_option autoImplicit true
+
 namespace Lean
 
 namespace BinderInfo
@@ -94,14 +96,14 @@ Note: this declaration also occurs as `shouldIgnore` in the Lean 4 file `test/le
 def isInternal' (declName : Name) : Bool :=
   declName.isInternal ||
   match declName with
-  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
+  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s
   | _        => true
 
 
 open Meta
 
 -- from Lean.Server.Completion
-def isBlackListed (declName : Name) : MetaM Bool := do
+def isBlackListed (declName : Name) : CoreM Bool := do
   if declName == ``sorryAx then return true
   if declName matches .str _ "inj" then return true
   if declName matches .str _ "noConfusionType" then return true
@@ -113,6 +115,16 @@ def isBlackListed (declName : Name) : MetaM Bool := do
 
 end Name
 
+namespace NameSet
+
+/-- The union of two `NameSet`s. -/
+def append (s t : NameSet) : NameSet :=
+  s.mergeBy (fun _ _ _ => .unit) t
+
+instance : Append NameSet where
+  append := NameSet.append
+
+end NameSet
 
 namespace ConstantInfo
 
@@ -193,6 +205,10 @@ def bvarIdx? : Expr → Option Nat
 def getAppFnArgs (e : Expr) : Name × Array Expr :=
   withApp e λ e a => (e.constName, a)
 
+/-- Like `Expr.getUsedConstants`, but produce a `NameSet`. -/
+def getUsedConstants' (e : Expr) : NameSet :=
+  e.foldConsts {} fun c cs => cs.insert c
+
 /-- Turn an expression that is a natural number literal into a natural number. -/
 def natLit! : Expr → Nat
   | lit (Literal.natVal v) => v
@@ -216,6 +232,11 @@ def isConstantApplication (e : Expr) :=
     | e, 0  => !e.hasLooseBVar (depth - 1)
     | _, _ => false
 
+/-- Counts the immediate depth of a nested `let` expression. -/
+def letDepth : Expr → Nat
+  | .letE _ _ _ b _ => b.letDepth + 1
+  | _ => 0
+
 open Meta
 
 /-- Check that an expression contains no metavariables (after instantiation). -/
@@ -235,6 +256,8 @@ def ofNat (α : Expr) (n : Nat) : MetaM Expr := do
 def ofInt (α : Expr) : Int → MetaM Expr
   | Int.ofNat n => Expr.ofNat α n
   | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
+
+section recognizers
 
 /--
   Return `some n` if `e` is one of the following
@@ -260,6 +283,28 @@ def zero? (e : Expr) : Bool :=
   | some 0 => true
   | _ => false
 
+/-- `Lean.Expr.le? p` take `e : Expr` as input.
+If `e` represents `a ≤ b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
+otherwise, it returns `none`. -/
+@[inline] def le? (p : Expr) : Option (Expr × Expr × Expr) := do
+  let (type, _, lhs, rhs) ← p.app4? ``LE.le
+  return (type, lhs, rhs)
+
+/-- Given a proposition `ty` that is an `Eq`, `Iff`, or `HEq`, returns `(tyLhs, lhs, tyRhs, rhs)`,
+where `lhs : tyLhs` and `rhs : tyRhs`,
+and where `lhs` is related to `rhs` by the respective relation.
+
+See also `Lean.Expr.iff?`, `Lean.Expr.eq?`, and `Lean.Expr.heq?`. -/
+def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
+  if let some (lhs, rhs) := ty.iff? then
+    some (.sort .zero, lhs, .sort .zero, rhs)
+  else if let some (ty, lhs, rhs) := ty.eq? then
+    some (ty, lhs, ty, rhs)
+  else
+    ty.heq?
+
+end recognizers
+
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a
   | e => pure e
@@ -267,7 +312,7 @@ def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M
 def modifyAppArg (modifier : Expr → Expr) : Expr → Expr :=
   modifyAppArgM (M := Id) modifier
 
-def modifyRevArg (modifier : Expr → Expr) : Nat → Expr  → Expr
+def modifyRevArg (modifier : Expr → Expr) : Nat → Expr → Expr
   | 0 => modifyAppArg modifier
   | (i+1) => modifyAppArg (modifyRevArg modifier i)
 
@@ -370,11 +415,64 @@ def rewriteType (e eq : Expr) : MetaM Expr := do
 
 end Expr
 
+/-- Return all names appearing in the type or value of a `ConstantInfo`. -/
+def ConstantInfo.getUsedConstants (c : ConstantInfo) : NameSet :=
+  let tc := c.type.getUsedConstants'
+  match c.value? with
+  | none => tc
+  | some v => tc ++ v.getUsedConstants'
+
 /-- Get the projections that are projections to parent structures. Similar to `getParentStructures`,
   except that this returns the (last component of the) projection names instead of the parent names.
 -/
 def getFieldsToParents (env : Environment) (structName : Name) : Array Name :=
   getStructureFields env structName |>.filter fun fieldName =>
     isSubobjectField? env structName fieldName |>.isSome
+
+/-- Return the name of the module in which a declaration was defined. -/
+def Environment.getModuleFor? (env : Environment) (declName : Name) : Option Name :=
+  match env.getModuleIdxFor? declName with
+  | none =>
+    if env.constants.map₂.contains declName then
+      env.header.mainModule
+    else
+      none
+  | some idx => env.header.moduleNames[idx.toNat]!
+
+/--
+Return the names of the modules in which constants used in the specified declaration were defined.
+
+Note that this will *not* account for tactics and syntax used in the declaration,
+so the results may not suffice as imports.
+-/
+def Name.requiredModules (n : Name) : CoreM NameSet := do
+  let env ← getEnv
+  let mut requiredModules : NameSet := {}
+  let ci ← getConstInfo n
+  for n in ci.getUsedConstants do
+    match env.getModuleFor? n with
+    | some m =>
+      if ¬ (`Init).isPrefixOf m then
+        requiredModules := requiredModules.insert m
+    | none => pure ()
+  return requiredModules
+
+/--
+Return the names of the modules in which constants used in the current file were defined.
+
+Note that this will *not* account for tactics and syntax used in the file,
+so the results may not suffice as imports.
+-/
+def Environment.requiredModules (env : Environment) : NameSet := Id.run do
+  let localConstantInfos := env.constants.map₂
+  let mut requiredModules : NameSet := {}
+  for (_, ci) in localConstantInfos do
+    for n in ci.getUsedConstants do
+      match env.getModuleFor? n with
+      | some m =>
+        if ¬ (`Init).isPrefixOf m then
+          requiredModules := requiredModules.insert m
+      | none => pure ()
+  return requiredModules
 
 end Lean

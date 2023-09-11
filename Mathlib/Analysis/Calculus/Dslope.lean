@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.dslope
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.Deriv.Inv
+
+#align_import analysis.calculus.dslope from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Slope of a differentiable function
@@ -27,7 +24,7 @@ open scoped Classical Topology Filter
 
 open Function Set Filter
 
-variable {𝕜 E : Type _} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- `dslope f a b` is defined as `slope f a b = (b - a)⁻¹ • (f b - f a)` for `a ≠ b` and
 `deriv f a` for `a = b`. -/
@@ -46,7 +43,7 @@ theorem dslope_of_ne (f : 𝕜 → E) (h : b ≠ a) : dslope f a b = slope f a b
   update_noteq h _ _
 #align dslope_of_ne dslope_of_ne
 
-theorem ContinuousLinearMap.dslope_comp {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+theorem ContinuousLinearMap.dslope_comp {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     (f : E →L[𝕜] F) (g : 𝕜 → E) (a b : 𝕜) (H : a = b → DifferentiableAt 𝕜 g a) :
     dslope (f ∘ g) a b = f (dslope g a b) := by
   rcases eq_or_ne b a with (rfl | hne)
@@ -55,7 +52,7 @@ theorem ContinuousLinearMap.dslope_comp {F : Type _} [NormedAddCommGroup F] [Nor
   · simpa only [dslope_of_ne _ hne] using f.toLinearMap.slope_comp g a b
 #align continuous_linear_map.dslope_comp ContinuousLinearMap.dslope_comp
 
-theorem eqOn_dslope_slope (f : 𝕜 → E) (a : 𝕜) : EqOn (dslope f a) (slope f a) ({a}ᶜ) := fun _ =>
+theorem eqOn_dslope_slope (f : 𝕜 → E) (a : 𝕜) : EqOn (dslope f a) (slope f a) {a}ᶜ := fun _ =>
   dslope_of_ne f
 #align eq_on_dslope_slope eqOn_dslope_slope
 
@@ -78,7 +75,7 @@ theorem dslope_sub_smul_of_ne (f : 𝕜 → E) (h : b ≠ a) :
 #align dslope_sub_smul_of_ne dslope_sub_smul_of_ne
 
 theorem eqOn_dslope_sub_smul (f : 𝕜 → E) (a : 𝕜) :
-    EqOn (dslope (fun x => (x - a) • f x) a) f ({a}ᶜ) := fun _ => dslope_sub_smul_of_ne f
+    EqOn (dslope (fun x => (x - a) • f x) a) f {a}ᶜ := fun _ => dslope_sub_smul_of_ne f
 #align eq_on_dslope_sub_smul eqOn_dslope_sub_smul
 
 theorem dslope_sub_smul [DecidableEq 𝕜] (f : 𝕜 → E) (a : 𝕜) :

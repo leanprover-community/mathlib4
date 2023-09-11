@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma
-
-! This file was ported from Lean 3 source module ring_theory.non_zero_divisors
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # Non-zero divisors
@@ -29,7 +26,7 @@ Use the statement `open nonZeroDivisors` to access this notation in your own cod
 section nonZeroDivisors
 
 /-- The submonoid of non-zero-divisors of a `MonoidWithZero` `R`. -/
-def nonZeroDivisors (R : Type _) [MonoidWithZero R] : Submonoid R where
+def nonZeroDivisors (R : Type*) [MonoidWithZero R] : Submonoid R where
   carrier := { x | ∀ z, z * x = 0 → z = 0 }
   one_mem' _ hz := by rwa [mul_one] at hz
   mul_mem' hx₁ hx₂ _ hz := by
@@ -42,7 +39,7 @@ scoped[nonZeroDivisors] notation:9000 R "⁰" => nonZeroDivisors R
 
 open nonZeroDivisors
 
-variable {M M' M₁ R R' F : Type _} [MonoidWithZero M] [MonoidWithZero M'] [CommMonoidWithZero M₁]
+variable {M M' M₁ R R' F : Type*} [MonoidWithZero M] [MonoidWithZero M'] [CommMonoidWithZero M₁]
   [Ring R] [CommRing R']
 
 theorem mem_nonZeroDivisors_iff {r : M} : r ∈ M⁰ ↔ ∀ x, x * r = 0 → x = 0 := Iff.rfl
@@ -103,7 +100,7 @@ theorem mul_mem_nonZeroDivisors {a b : M₁} : a * b ∈ M₁⁰ ↔ a ∈ M₁�
     rw [mul_assoc, hx]
 #align mul_mem_non_zero_divisors mul_mem_nonZeroDivisors
 
-theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type _} [GroupWithZero G₀] {x : G₀}
+theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
     (hx : x ∈ nonZeroDivisors G₀) : IsUnit x :=
   ⟨⟨x, x⁻¹, mul_inv_cancel (nonZeroDivisors.ne_zero hx),
     inv_mul_cancel (nonZeroDivisors.ne_zero hx)⟩, rfl⟩

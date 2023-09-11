@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.gauss_lemma
-! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Localization.Integral
 import Mathlib.RingTheory.IntegrallyClosed
+
+#align_import ring_theory.polynomial.gauss_lemma from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
 /-!
 # Gauss's Lemma
@@ -42,7 +39,7 @@ Gauss's Lemma is one of a few results pertaining to irreducibility of primitive 
 
 open scoped nonZeroDivisors Polynomial
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 section IsIntegrallyClosed
 
@@ -52,7 +49,7 @@ open integralClosure
 
 open IsIntegrallyClosed
 
-variable (K : Type _) [Field K] [Algebra R K]
+variable (K : Type*) [Field K] [Algebra R K]
 
 theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) {g : K[X]}
     (hg : g.Monic) (hd : g ∣ f.map (algebraMap R K)) :
@@ -68,7 +65,7 @@ theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) 
     rw [IsScalarTower.algebraMap_eq R K, coeff_map, ← eval₂_map, eval₂_at_apply] at he
     rw [eval₂_eq_eval_map]; apply (injective_iff_map_eq_zero _).1 _ _ he
     · apply RingHom.injective
-  rw [IsScalarTower.algebraMap_eq R K _, ← map_map]
+  rw [aroots_def, IsScalarTower.algebraMap_eq R K _, ← map_map]
   refine' Multiset.mem_of_le (roots.le_of_dvd ((hf.map _).map _).ne_zero _) ha
   exact map_dvd (algebraMap K g.SplittingField) hd
 #align integral_closure.mem_lifts_of_monic_of_dvd_map integralClosure.mem_lifts_of_monic_of_dvd_map
@@ -100,8 +97,7 @@ theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]}
       (integralClosure.mem_lifts_of_monic_of_dvd_map K hf (monic_mul_leadingCoeff_inv g_ne_0)
         g_mul_dvd)
   refine' ⟨map algeq.toAlgHom.toRingHom _, _⟩
-  · -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5072): was `use`
-    exact Classical.choose H
+  · use! Classical.choose H
   · rw [map_map, this]
     exact Classical.choose_spec H
 set_option linter.uppercaseLean3 false in
@@ -113,7 +109,7 @@ namespace Polynomial
 
 section
 
-variable {S : Type _} [CommRing S] [IsDomain S]
+variable {S : Type*} [CommRing S] [IsDomain S]
 
 variable {φ : R →+* S} (hinj : Function.Injective φ) {f : R[X]} (hf : f.IsPrimitive)
 
@@ -139,7 +135,7 @@ end
 
 section FractionMap
 
-variable {K : Type _} [Field K] [Algebra R K] [IsFractionRing R K]
+variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 theorem IsPrimitive.isUnit_iff_isUnit_map {p : R[X]} (hp : p.IsPrimitive) :
     IsUnit p ↔ IsUnit (p.map (algebraMap R K)) :=

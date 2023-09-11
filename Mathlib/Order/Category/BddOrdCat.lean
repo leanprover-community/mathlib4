@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.BddOrd
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.Order.Category.PartOrdCat
 import Mathlib.Order.Hom.Bounded
+
+#align_import order.category.BddOrd from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # The category of bounded orders
@@ -33,7 +30,7 @@ structure BddOrdCat where
 
 namespace BddOrdCat
 
-instance : CoeSort BddOrdCat (Type _) :=
+instance : CoeSort BddOrdCat (Type*) :=
   InducedCategory.hasCoeToSort toPartOrd
 
 instance (X : BddOrdCat) : PartialOrder X :=
@@ -42,13 +39,13 @@ instance (X : BddOrdCat) : PartialOrder X :=
 attribute [instance] BddOrdCat.isBoundedOrder
 
 /-- Construct a bundled `BddOrdCat` from a `Fintype` `PartialOrder`. -/
-def of (α : Type _) [PartialOrder α] [BoundedOrder α] : BddOrdCat :=
+def of (α : Type*) [PartialOrder α] [BoundedOrder α] : BddOrdCat :=
   -- Porting note: was ⟨⟨α⟩⟩, see https://github.com/leanprover-community/mathlib4/issues/4998
   ⟨{ α := α }⟩
 #align BddOrd.of BddOrdCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [PartialOrder α] [BoundedOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [PartialOrder α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddOrd.coe_of BddOrdCat.coe_of
 

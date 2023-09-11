@@ -6,6 +6,8 @@ Authors: Arthur Paulino
 import Lean.Data.Json.Parser
 import Cache.Hashing
 
+set_option autoImplicit true
+
 namespace Cache.Requests
 
 /-- Azure blob URL -/
@@ -31,7 +33,7 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
   -- We sort the list so that the large files in `MathlibExtras` are requested first.
   hashMap.toArray.qsort (fun ⟨p₁, _⟩ ⟨_, _⟩ => p₁.components.head? = "MathlibExtras")
     |>.foldlM (init := "") fun acc ⟨_, hash⟩ => do
-    let fileName := hash.asTarGz
+    let fileName := hash.asLTar
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code
     -- this does not exactly match the requirements for quoting for curl:
     -- ```
@@ -47,7 +49,7 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
 
 /-- Calls `curl` to download a single file from the server to `CACHEDIR` (`.cache`) -/
 def downloadFile (hash : UInt64) : IO Bool := do
-  let fileName := hash.asTarGz
+  let fileName := hash.asLTar
   let url ← mkFileURL fileName none
   let path := IO.CACHEDIR / fileName
   let out ← IO.Process.output
@@ -60,7 +62,7 @@ def downloadFile (hash : UInt64) : IO Bool := do
 
 /-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) -/
 def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
-  let hashMap := if forceDownload then hashMap else hashMap.filter (← IO.getLocalCacheSet) false
+  let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
   if size > 0 then
     IO.mkDir IO.CACHEDIR
@@ -103,6 +105,10 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
           msg := msg ++ s!", {failed} failed"
         IO.eprintln msg
       IO.FS.removeFile IO.CURLCFG
+      if success + failed < done then
+        IO.eprintln "Warning: some files were not found in the cache."
+        IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
+        IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
       pure failed
     else
       let r ← hashMap.foldM (init := []) fun acc _ hash => do
@@ -114,11 +120,11 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
   else IO.println "No files to download"
 
 /-- Downloads missing files, and unpacks files. -/
-def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) (decompress : Bool) :
+def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
     IO Unit := do
   downloadFiles hashMap forceDownload parallel
   if decompress then
-    IO.unpackCache hashMap
+    IO.unpackCache hashMap forceUnpack
 
 end Get
 

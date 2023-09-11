@@ -2,17 +2,14 @@
 Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.dickson
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Chebyshev
 import Mathlib.RingTheory.Ideal.LocalRing
+
+#align_import ring_theory.polynomial.dickson from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Dickson polynomials
@@ -57,7 +54,7 @@ namespace Polynomial
 
 open Polynomial
 
-variable {R S : Type _} [CommRing R] [CommRing S] (k : ℕ) (a : R)
+variable {R S : Type*} [CommRing R] [CommRing S] (k : ℕ) (a : R)
 
 /-- `dickson` is the `n`-th (generalised) Dickson polynomial of the `k`-th kind associated to the
 element `a ∈ R`. -/
@@ -111,7 +108,7 @@ theorem dickson_two_zero : ∀ n : ℕ, dickson 2 (0 : R) n = X ^ n
     norm_num
   | 1 => by simp only [dickson_one, pow_one]
   | n + 2 => by
-    simp only [dickson_add_two, C_0, MulZeroClass.zero_mul, sub_zero]
+    simp only [dickson_add_two, C_0, zero_mul, sub_zero]
     rw [dickson_two_zero (n + 1), pow_add X (n + 1) 1, mul_comm, pow_one]
 #align polynomial.dickson_two_zero Polynomial.dickson_two_zero
 
@@ -244,7 +241,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         intro H
         have : φ.eval 0 = 0 := by rw [H, eval_zero]
         simpa [eval_X, eval_one, eval_pow, eval_sub, sub_zero, eval_add, eval_mul,
-          MulZeroClass.mul_zero, sq, zero_add, one_ne_zero]
+          mul_zero, sq, zero_add, one_ne_zero]
       classical
         convert(φ.roots ∪ {0}).toFinset.finite_toSet using 1
         ext1 y

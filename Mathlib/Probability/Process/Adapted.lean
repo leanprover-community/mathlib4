@@ -2,14 +2,11 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.process.adapted
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Process.Filtration
 import Mathlib.Topology.Instances.Discrete
+
+#align_import probability.process.adapted from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Adapted and progressively measurable processes
@@ -44,7 +41,7 @@ open scoped Classical MeasureTheory NNReal ENNReal Topology BigOperators
 
 namespace MeasureTheory
 
-variable {Ω β ι : Type _} {m : MeasurableSpace Ω} [TopologicalSpace β] [Preorder ι]
+variable {Ω β ι : Type*} {m : MeasurableSpace Ω} [TopologicalSpace β] [Preorder ι]
   {u v : ι → Ω → β} {f : Filtration ι m}
 
 /-- A sequence of functions `u` is adapted to a filtration `f` if for all `i`,

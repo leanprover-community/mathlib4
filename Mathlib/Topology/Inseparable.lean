@@ -2,15 +2,12 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.inseparable
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.ContinuousOn
+
+#align_import topology.inseparable from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Inseparable points in a topological space
@@ -42,7 +39,7 @@ topological space, separation setoid
 
 open Set Filter Function Topology List
 
-variable {X Y Z α ι : Type _} {π : ι → Type _} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [∀ i, TopologicalSpace (π i)] {x y z : X} {s : Set X} {f : X → Y}
 
 /-!
@@ -83,7 +80,7 @@ theorem specializes_TFAE (x y : X) :
   tfae_have 2 → 3
   · exact fun h s hso hy => h (hso.mem_nhds hy)
   tfae_have 3 → 4
-  · exact fun h s hsc hx => of_not_not fun hy => h (sᶜ) hsc.isOpen_compl hy hx
+  · exact fun h s hsc hx => of_not_not fun hy => h sᶜ hsc.isOpen_compl hy hx
   tfae_have 4 → 5
   · exact fun h => h _ isClosed_closure (subset_closure <| mem_singleton _)
   tfae_have 6 ↔ 5
@@ -106,11 +103,14 @@ theorem specializes_iff_pure : x ⤳ y ↔ pure x ≤ 𝓝 y :=
   (specializes_TFAE x y).out 0 1
 #align specializes_iff_pure specializes_iff_pure
 
-alias specializes_iff_nhds ↔ Specializes.nhds_le_nhds _
+alias ⟨Specializes.nhds_le_nhds, _⟩ := specializes_iff_nhds
 #align specializes.nhds_le_nhds Specializes.nhds_le_nhds
 
-alias specializes_iff_pure ↔ Specializes.pure_le_nhds _
+alias ⟨Specializes.pure_le_nhds, _⟩ := specializes_iff_pure
 #align specializes.pure_le_nhds Specializes.pure_le_nhds
+
+theorem sInter_nhds_sets_eq_specializes : ⋂₀ (𝓝 x).sets = {y | y ⤳ x} :=
+  Set.ext fun _ ↦ specializes_iff_pure.symm
 
 theorem specializes_iff_forall_open : x ⤳ y ↔ ∀ s : Set X, IsOpen s → y ∈ s → x ∈ s :=
   (specializes_TFAE x y).out 0 2
@@ -140,14 +140,14 @@ theorem specializes_iff_mem_closure : x ⤳ y ↔ y ∈ closure ({x} : Set X) :=
   (specializes_TFAE x y).out 0 4
 #align specializes_iff_mem_closure specializes_iff_mem_closure
 
-alias specializes_iff_mem_closure ↔ Specializes.mem_closure _
+alias ⟨Specializes.mem_closure, _⟩ := specializes_iff_mem_closure
 #align specializes.mem_closure Specializes.mem_closure
 
 theorem specializes_iff_closure_subset : x ⤳ y ↔ closure ({y} : Set X) ⊆ closure {x} :=
   (specializes_TFAE x y).out 0 5
 #align specializes_iff_closure_subset specializes_iff_closure_subset
 
-alias specializes_iff_closure_subset ↔ Specializes.closure_subset _
+alias ⟨Specializes.closure_subset, _⟩ := specializes_iff_closure_subset
 #align specializes.closure_subset Specializes.closure_subset
 
 -- porting note: new lemma

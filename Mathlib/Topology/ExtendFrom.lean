@@ -2,13 +2,10 @@
 Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.extend_from
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
+
+#align_import topology.extend_from from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
 /-!
 # Extending a function from a subset
@@ -34,7 +31,7 @@ open Topology
 
 open Filter Set
 
-variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- Extend a function from a set `A`. The resulting function `g` is such that
 at any `x₀`, if `f` converges to some `y` as `x` tends to `x₀` within `A`,

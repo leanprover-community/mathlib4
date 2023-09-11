@@ -4,18 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro
 -/
 import Qq.MetaM
-import Mathlib.Logic.Nontrivial
+import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.SolveByElim
 
 /-! # The `nontriviality` tactic. -/
 
-namespace Mathlib.Tactic.Nontriviality
-open Lean Elab Meta Tactic Linter Std.Linter UnreachableTactic Qq
+set_option autoImplicit true
 
-/-- The `@[nontriviality]` simp set is used by the `nontriviality` tactic to automatically
-discharge theorems about the trivial case (where we know `Subsingleton α` and many theorems
-in e.g. groups are trivially true). -/
-register_simp_attr nontriviality
+namespace Mathlib.Tactic.Nontriviality
+open Lean Elab Meta Tactic Qq
 
 theorem subsingleton_or_nontrivial_elim {p : Prop} {α : Type u}
     (h₁ : Subsingleton α → p) (h₂ : Nontrivial α → p) : p :=
@@ -66,9 +63,9 @@ The `nontriviality` tactic will first look for strict inequalities amongst the h
 and use these to derive the `Nontrivial` instance directly.
 
 Otherwise, it will perform a case split on `Subsingleton α ∨ Nontrivial α`, and attempt to discharge
-the `Subsingleton` goal using `simp [lemmas, nontriviality]`, where `[lemmas]` is a list of
-additional `simp` lemmas that can be passed to `nontriviality` using the syntax
-`nontriviality α using [lemmas]`.
+the `Subsingleton` goal using `simp [h₁, h₂, ..., hₙ, nontriviality]`, where `[h₁, h₂, ..., hₙ]` is
+a list of additional `simp` lemmas that can be passed to `nontriviality` using the syntax
+`nontriviality α using h₁, h₂, ..., hₙ`.
 
 ```
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
@@ -93,7 +90,7 @@ def myeq {α : Type} (a b : α) : Prop := a = b
 
 example {α : Type} (a b : α) (h : a = b) : myeq a b := by
   success_if_fail nontriviality α -- Fails
-  nontriviality α using [myeq] -- There is now a `nontrivial α` hypothesis available
+  nontriviality α using myeq -- There is now a `nontrivial α` hypothesis available
   assumption
 ```
 -/

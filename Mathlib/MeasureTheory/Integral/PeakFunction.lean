@@ -2,14 +2,11 @@
 Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.integral.peak_function
-! leanprover-community/mathlib commit 13b0d72fd8533ba459ac66e9a885e35ffabb32b2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
+
+#align_import measure_theory.integral.peak_function from "leanprover-community/mathlib"@"13b0d72fd8533ba459ac66e9a885e35ffabb32b2"
 
 /-!
 # Integrals against peak functions
@@ -34,7 +31,7 @@ Note that there are related results about convolution with respect to peak funct
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
@@ -42,13 +39,13 @@ open scoped Topology ENNReal
 
 /-- This lemma exists for finsets, but not for sets currently. porting note: move to
 data.set.basic after the port. -/
-theorem Set.disjoint_sdiff_inter {α : Type _} (s t : Set α) : Disjoint (s \ t) (s ∩ t) :=
+theorem Set.disjoint_sdiff_inter {α : Type*} (s t : Set α) : Disjoint (s \ t) (s ∩ t) :=
   disjoint_of_subset_right (inter_subset_right _ _) disjoint_sdiff_left
 #align set.disjoint_sdiff_inter Set.disjoint_sdiff_inter
 
 open Set
 
-variable {α E ι : Type _} {hm : MeasurableSpace α} {μ : Measure α} [TopologicalSpace α]
+variable {α E ι : Type*} {hm : MeasurableSpace α} {μ : Measure α} [TopologicalSpace α]
   [BorelSpace α] [NormedAddCommGroup E] [NormedSpace ℝ E] {g : α → E} {l : Filter ι} {x₀ : α}
   {s : Set α} {φ : ι → α → ℝ}
 
@@ -56,7 +53,7 @@ variable {α E ι : Type _} {hm : MeasurableSpace α} {μ : Measure α} [Topolog
 `g` is integrable and continuous at `x₀`, then `φᵢ • g` is eventually integrable. -/
 theorem integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt (hs : MeasurableSet s)
     (hlφ : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 l (s \ u))
-    (hiφ : ∀ᶠ i in l, (∫ x in s, φ i x ∂μ) = 1) (hmg : IntegrableOn g s μ)
+    (hiφ : ∀ᶠ i in l, ∫ x in s, φ i x ∂μ = 1) (hmg : IntegrableOn g s μ)
     (hcg : ContinuousWithinAt g s x₀) : ∀ᶠ i in l, IntegrableOn (fun x => φ i x • g x) s μ := by
   obtain ⟨u, u_open, x₀u, hu⟩ : ∃ u, IsOpen u ∧ x₀ ∈ u ∧ ∀ x ∈ u ∩ s, g x ∈ ball (g x₀) 1
   exact mem_nhdsWithin.1 (hcg (ball_mem_nhds _ zero_lt_one))
@@ -88,7 +85,7 @@ where one assumes additionally `g x₀ = 0`. -/
 theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
     (hs : MeasurableSet s) (hnφ : ∀ᶠ i in l, ∀ x ∈ s, 0 ≤ φ i x)
     (hlφ : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 l (s \ u))
-    (hiφ : ∀ᶠ i in l, (∫ x in s, φ i x ∂μ) = 1) (hmg : IntegrableOn g s μ) (h'g : g x₀ = 0)
+    (hiφ : ∀ᶠ i in l, ∫ x in s, φ i x ∂μ = 1) (hmg : IntegrableOn g s μ) (h'g : g x₀ = 0)
     (hcg : ContinuousWithinAt g s x₀) :
     Tendsto (fun i : ι => ∫ x in s, φ i x • g x ∂μ) l (𝓝 0) := by
   refine' Metric.tendsto_nhds.2 fun ε εpos => _
@@ -98,7 +95,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
         (𝓝 ((0 * ∫ x in s, ‖g x‖ ∂μ) + 0)) := by
       apply Tendsto.mono_left _ nhdsWithin_le_nhds
       exact (tendsto_id.mul tendsto_const_nhds).add tendsto_id
-    rw [MulZeroClass.zero_mul, zero_add] at A
+    rw [zero_mul, zero_add] at A
     exact (((tendsto_order.1 A).2 ε εpos).and self_mem_nhdsWithin).exists
   suffices ∀ᶠ i in l, ‖∫ x in s, φ i x • g x ∂μ‖ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + δ by
     filter_upwards [this] with i hi
@@ -228,7 +225,7 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
       _root_.continuousOn_iff.1 hc x₀ h₀ (Ioi (0 : ℝ)) isOpen_Ioi hnc₀
     apply (hμ u u_open x₀_u).trans_le
     exact measure_mono fun x hx => ⟨ne_of_gt (pow_pos (a := c x) (hu hx) _), hx.2⟩
-  have hiφ : ∀ n, (∫ x in s, φ n x ∂μ) = 1 := fun n => by
+  have hiφ : ∀ n, ∫ x in s, φ n x ∂μ = 1 := fun n => by
     rw [integral_mul_left, inv_mul_cancel (P n).ne']
   have A : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 atTop (s \ u) := by
     intro u u_open x₀u
@@ -273,7 +270,7 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
       apply Tendsto.mul tendsto_const_nhds _
       apply tendsto_pow_atTop_nhds_0_of_lt_1 (div_nonneg t_pos t'_pos.le)
       exact (div_lt_one t'_pos).2 tt'
-    rw [MulZeroClass.mul_zero] at N
+    rw [mul_zero] at N
     refine' tendstoUniformlyOn_iff.2 fun ε εpos => _
     filter_upwards [(tendsto_order.1 N).2 ε εpos] with n hn x hx
     simp only [Pi.zero_apply, dist_zero_left, Real.norm_of_nonneg (hnφ n x hx.1)]

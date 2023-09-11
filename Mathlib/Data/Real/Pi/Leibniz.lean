@@ -2,20 +2,17 @@
 Copyright (c) 2020 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
-
-! This file was ported from Lean 3 source module data.real.pi.leibniz
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+
+#align_import data.real.pi.leibniz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-! ### Leibniz's Series for Pi -/
 
 
 namespace Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Filter Set
 
@@ -46,7 +43,7 @@ open scoped Classical BigOperators Topology Real
   and `f u - f 0` from the bounds on `f'` (note that `f 0 = 0`). -/
 theorem tendsto_sum_pi_div_four :
     Tendsto (fun k => ∑ i in Finset.range k, (-(1 : ℝ)) ^ i / (2 * i + 1)) atTop (𝓝 (π / 4)) := by
-  rw [tendsto_iff_norm_tendsto_zero, ← tendsto_zero_iff_norm_tendsto_zero]
+  rw [tendsto_iff_norm_sub_tendsto_zero, ← tendsto_zero_iff_norm_tendsto_zero]
   -- (1) We introduce a useful sequence `u` of values in [0,1], then prove that another sequence
   --     constructed from `u` tends to `0` at `+∞`
   let u := fun k : ℕ => (k : NNReal) ^ (-1 / (2 * (k : ℝ) + 1))

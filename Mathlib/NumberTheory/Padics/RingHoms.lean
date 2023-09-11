@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module number_theory.padics.ring_homs
-! leanprover-community/mathlib commit 565eb991e264d0db702722b4bde52ee5173c9950
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Padics.PadicIntegers
+
+#align_import number_theory.padics.ring_homs from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
 
 /-!
 
@@ -164,7 +161,7 @@ theorem zmod_congr_of_sub_mem_max_ideal (x : ℤ_[p]) (m n : ℕ) (hm : x - m �
   have := zmod_congr_of_sub_mem_span_aux 1 x m n
   simp only [pow_one] at this
   specialize this hm hn
-  apply_fun ZMod.castHom (show p ∣ p ^ 1 by rw [pow_one]) (ZMod p)  at this
+  apply_fun ZMod.castHom (show p ∣ p ^ 1 by rw [pow_one]) (ZMod p) at this
   simp only [map_intCast] at this
   simpa only [Int.cast_ofNat] using this
 #align padic_int.zmod_congr_of_sub_mem_max_ideal PadicInt.zmod_congr_of_sub_mem_max_ideal
@@ -186,7 +183,7 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
   use n
   constructor
   · exact_mod_cast hnp
-  simp only [norm_def, coe_sub, Subtype.coe_mk, coe_nat_cast] at hn⊢
+  simp only [norm_def, coe_sub, Subtype.coe_mk, coe_nat_cast] at hn ⊢
   rw [show (x - n : ℚ_[p]) = x - r + (r - n) by ring]
   apply lt_of_le_of_lt (padicNormE.nonarchimedean _ _)
   apply max_lt hr
@@ -344,7 +341,6 @@ theorem dvd_appr_sub_appr (x : ℤ_[p]) (m n : ℕ) (h : m ≤ n) : p ^ m ∣ x.
   dsimp [appr]
   split_ifs with h
   · exact ih
-  dsimp
   rw [add_comm, add_tsub_assoc_of_le (appr_mono _ (Nat.le_add_right m k))]
   apply dvd_add _ ih
   apply dvd_mul_of_dvd_left
@@ -366,7 +362,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
   simp only [map_natCast, ZMod.nat_cast_self, RingHom.map_pow, RingHom.map_mul, ZMod.nat_cast_val]
   have hc' : c ≠ 0 := by
     rintro rfl
-    simp only [MulZeroClass.mul_zero] at hc
+    simp only [mul_zero] at hc
     contradiction
   conv_rhs =>
     congr
@@ -387,7 +383,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
     rw [DiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
     exact irreducible_p
   · rw [zero_pow hc0]
-    simp only [sub_zero, ZMod.cast_zero, MulZeroClass.mul_zero]
+    simp only [sub_zero, ZMod.cast_zero, mul_zero]
     rw [unitCoeff_spec hc']
     exact (dvd_pow_self (p : ℤ_[p]) hc0.ne').mul_left _
 #align padic_int.appr_spec PadicInt.appr_spec
@@ -480,7 +476,7 @@ section lift
 
 open CauSeq PadicSeq
 
-variable {R : Type _} [NonAssocSemiring R] (f : ∀ k : ℕ, R →+* ZMod (p ^ k))
+variable {R : Type*} [NonAssocSemiring R] (f : ∀ k : ℕ, R →+* ZMod (p ^ k))
   (f_compat : ∀ (k1 k2) (hk : k1 ≤ k2), (ZMod.castHom (pow_dvd_pow p hk) _).comp (f k2) = f k1)
 
 /-- Given a family of ring homs `f : Π n : ℕ, R →+* ZMod (p ^ n)`,
@@ -579,7 +575,7 @@ theorem limNthHom_spec (r : R) :
     ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, ‖limNthHom f_compat r - nthHom f r n‖ < ε := by
   intro ε hε
   obtain ⟨ε', hε'0, hε'⟩ : ∃ v : ℚ, (0 : ℝ) < v ∧ ↑v < ε := exists_rat_btwn hε
-  norm_cast  at hε'0
+  norm_cast at hε'0
   obtain ⟨N, hN⟩ := padicNormE.defn (nthHomSeq f_compat r) hε'0
   use N
   intro n hn
@@ -663,7 +659,7 @@ theorem lift_unique (g : R →+* ℤ_[p]) (hg : ∀ n, (toZModPow n).comp g = f 
 theorem lift_self (z : ℤ_[p]) : @lift p _ ℤ_[p] _ toZModPow zmod_cast_comp_toZModPow z = z := by
   show _ = RingHom.id _ z
   rw [@lift_unique p _ ℤ_[p] _ _ zmod_cast_comp_toZModPow (RingHom.id ℤ_[p])]
-  intro ; rw [RingHom.comp_id]
+  intro; rw [RingHom.comp_id]
 #align padic_int.lift_self PadicInt.lift_self
 
 end lift
@@ -677,7 +673,7 @@ theorem ext_of_toZModPow {x y : ℤ_[p]} : (∀ n, toZModPow n x = toZModPow n y
     rfl
 #align padic_int.ext_of_to_zmod_pow PadicInt.ext_of_toZModPow
 
-theorem toZModPow_eq_iff_ext {R : Type _} [NonAssocSemiring R] {g g' : R →+* ℤ_[p]} :
+theorem toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R →+* ℤ_[p]} :
     (∀ n, (toZModPow n).comp g = (toZModPow n).comp g') ↔ g = g' := by
   constructor
   · intro hg

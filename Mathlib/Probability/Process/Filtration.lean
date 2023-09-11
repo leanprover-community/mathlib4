@@ -2,13 +2,10 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.process.filtration
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
+
+#align_import probability.process.filtration from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Filtrations
@@ -43,13 +40,15 @@ namespace MeasureTheory
 
 /-- A `Filtration` on a measurable space `Ω` with σ-algebra `m` is a monotone
 sequence of sub-σ-algebras of `m`. -/
-structure Filtration {Ω : Type _} (ι : Type _) [Preorder ι] (m : MeasurableSpace Ω) where
+structure Filtration {Ω : Type*} (ι : Type*) [Preorder ι] (m : MeasurableSpace Ω) where
   seq : ι → MeasurableSpace Ω
   mono' : Monotone seq
   le' : ∀ i : ι, seq i ≤ m
 #align measure_theory.filtration MeasureTheory.Filtration
 
-variable {Ω β ι : Type _} {m : MeasurableSpace Ω}
+attribute [coe] Filtration.seq
+
+variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
 
 instance [Preorder ι] : CoeFun (Filtration ι m) fun _ => ι → MeasurableSpace Ω :=
   ⟨fun f => f.seq⟩
@@ -68,7 +67,7 @@ protected theorem le (f : Filtration ι m) (i : ι) : f i ≤ m :=
 
 @[ext]
 protected theorem ext {f g : Filtration ι m} (h : (f : ι → MeasurableSpace Ω) = g) : f = g := by
-  cases f; cases g; simp only; congr
+  cases f; cases g; congr
 #align measure_theory.filtration.ext MeasureTheory.Filtration.ext
 
 variable (ι)
@@ -104,7 +103,7 @@ instance : Sup (Filtration ι m) :=
         sup_le ((f.mono hij).trans le_sup_left) ((g.mono hij).trans le_sup_right)
       le' := fun i => sup_le (f.le i) (g.le i) }⟩
 
--- @[norm_cast] -- Porting note: no longer involves casting (new-style structures)
+@[norm_cast]
 theorem coeFn_sup {f g : Filtration ι m} : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 #align measure_theory.filtration.coe_fn_sup MeasureTheory.Filtration.coeFn_sup
@@ -116,7 +115,7 @@ instance : Inf (Filtration ι m) :=
         le_inf (inf_le_left.trans (f.mono hij)) (inf_le_right.trans (g.mono hij))
       le' := fun i => inf_le_left.trans (f.le i) }⟩
 
--- @[norm_cast] -- Porting note: no longer involves casting (new-style structures)
+@[norm_cast]
 theorem coeFn_inf {f g : Filtration ι m} : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
   rfl
 #align measure_theory.filtration.coe_fn_inf MeasureTheory.Filtration.coeFn_inf
@@ -217,17 +216,16 @@ class SigmaFiniteFiltration [Preorder ι] (μ : Measure Ω) (f : Filtration ι m
 #align measure_theory.sigma_finite_filtration MeasureTheory.SigmaFiniteFiltration
 
 instance sigmaFinite_of_sigmaFiniteFiltration [Preorder ι] (μ : Measure Ω) (f : Filtration ι m)
-    [hf : SigmaFiniteFiltration μ f] (i : ι) : SigmaFinite (μ.trim (f.le i)) := by
-  apply hf.SigmaFinite
+    [hf : SigmaFiniteFiltration μ f] (i : ι) : SigmaFinite (μ.trim (f.le i)) :=
+  hf.SigmaFinite _
 #align measure_theory.sigma_finite_of_sigma_finite_filtration MeasureTheory.sigmaFinite_of_sigmaFiniteFiltration
 
--- can't exact here
 instance (priority := 100) IsFiniteMeasure.sigmaFiniteFiltration [Preorder ι] (μ : Measure Ω)
     (f : Filtration ι m) [IsFiniteMeasure μ] : SigmaFiniteFiltration μ f :=
   ⟨fun n => by infer_instance⟩
 #align measure_theory.is_finite_measure.sigma_finite_filtration MeasureTheory.IsFiniteMeasure.sigmaFiniteFiltration
 
-/-- Given a integrable function `g`, the conditional expectations of `g` with respect to a
+/-- Given an integrable function `g`, the conditional expectations of `g` with respect to a
 filtration is uniformly integrable. -/
 theorem Integrable.uniformIntegrable_condexp_filtration [Preorder ι] {μ : Measure Ω}
     [IsFiniteMeasure μ] {f : Filtration ι m} {g : Ω → ℝ} (hg : Integrable g μ) :
@@ -294,16 +292,15 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     ext x
     simp [Set.indicator_const_preimage_eq_union]
   · rintro t ⟨n, ht⟩
-    suffices MeasurableSpace.generateFrom {t | ∃ _ : n ≤ i,
+    suffices MeasurableSpace.generateFrom {t | n ≤ i ∧
       MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ => 1 : Ω → β)) mβ] t} ≤
-        MeasurableSpace.generateFrom {t | ∃ (j : ι) (_ : j ≤ i), s j = t} by
-      -- Porting note: was `exact this _ ht`
-      convert this _ _ <;> simp_all only [exists_prop]
+        MeasurableSpace.generateFrom {t | ∃ (j : ι), j ≤ i ∧ s j = t} by
+      exact this _ ht
     refine' generateFrom_le _
     rintro t ⟨hn, u, _, hu'⟩
     obtain heq | heq | heq | heq := Set.indicator_const_preimage (s n) u (1 : β)
     pick_goal 4; rw [Set.mem_singleton_iff] at heq
-    all_goals rw [heq] at hu' ; rw [← hu']
+    all_goals rw [heq] at hu'; rw [← hu']
     exacts [measurableSet_empty _, MeasurableSet.univ, measurableSet_generateFrom ⟨n, hn, rfl⟩,
       MeasurableSet.compl (measurableSet_generateFrom ⟨n, hn, rfl⟩)]
 #align measure_theory.filtration.filtration_of_set_eq_natural MeasureTheory.Filtration.filtrationOfSet_eq_natural
@@ -312,7 +309,7 @@ end
 
 section Limit
 
-variable {E : Type _} [Zero E] [TopologicalSpace E] {ℱ : Filtration ι m} {f : ι → Ω → E}
+variable {E : Type*} [Zero E] [TopologicalSpace E] {ℱ : Filtration ι m} {f : ι → Ω → E}
   {μ : Measure Ω}
 
 /-- Given a process `f` and a filtration `ℱ`, if `f` converges to some `g` almost everywhere and
@@ -338,7 +335,7 @@ theorem stronglyMeasurable_limit_process' : StronglyMeasurable[m] (limitProcess 
   stronglyMeasurable_limitProcess.mono (sSup_le fun _ ⟨_, hn⟩ => hn ▸ ℱ.le _)
 #align measure_theory.filtration.strongly_measurable_limit_process' MeasureTheory.Filtration.stronglyMeasurable_limit_process'
 
-theorem memℒp_limitProcess_of_snorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type _} [NormedAddCommGroup F]
+theorem memℒp_limitProcess_of_snorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [NormedAddCommGroup F]
     {ℱ : Filtration ℕ m} {f : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (f n) μ)
     (hbdd : ∀ n, snorm (f n) p μ ≤ R) : Memℒp (limitProcess f ℱ μ) p μ := by
   rw [limitProcess]

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.module.ulift
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Module.Equiv
+
+#align_import algebra.module.ulift from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # `ULift` instances for module and multiplicative actions
@@ -80,7 +77,7 @@ instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M 
 #align ulift.smul_zero_class ULift.smulZeroClass
 
 instance smulZeroClass' [Zero M] [SMulZeroClass R M] : SMulZeroClass R (ULift M) where
-  smul_zero c := by { ext;  simp [smul_zero] }
+  smul_zero c := by { ext; simp [smul_zero] }
 #align ulift.smul_zero_class' ULift.smulZeroClass'
 
 instance distribSmul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) M where
@@ -163,15 +160,15 @@ instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M
     smul_add := smul_add }
 #align ulift.module' ULift.module'
 
-/-- The `R`-linear equivalence between `ULift M` and `M`. -/
+/-- The `R`-linear equivalence between `ULift M` and `M`.
+
+This is a linear version of `AddEquiv.ulift`. -/
 @[simps apply symm_apply]
 def moduleEquiv [Semiring R] [AddCommMonoid M] [Module R M] : ULift.{w} M ≃ₗ[R] M where
   toFun := ULift.down
   invFun := ULift.up
   map_smul' _ _ := rfl
-  map_add' _ _ := rfl
-  left_inv := ULift.up_down
-  right_inv := ULift.down_up.{v, w}
+  __ := AddEquiv.ulift
 #align ulift.module_equiv ULift.moduleEquiv
 
 end ULift

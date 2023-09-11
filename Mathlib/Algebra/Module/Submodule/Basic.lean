@@ -2,16 +2,13 @@
 Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.module.submodule.basic
-! leanprover-community/mathlib commit 8130e5155d637db35907c272de9aec9dc851c03a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import algebra.module.submodule.basic from "leanprover-community/mathlib"@"8130e5155d637db35907c272de9aec9dc851c03a"
 
 /-!
 
@@ -181,14 +178,23 @@ end Submodule
 
 namespace SMulMemClass
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type _} [SetLike A M]
+variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
   [AddSubmonoidClass A M] [SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `Module` over `SMulMemClass`.
 /-- A submodule of a `Module` is a `Module`.  -/
 instance (priority := 75) toModule : Module R S' :=
-  Subtype.coe_injective.module R (AddSubmonoidClass.Subtype S') (SetLike.val_smul S')
+  Subtype.coe_injective.module R (AddSubmonoidClass.subtype S') (SetLike.val_smul S')
 #align submodule_class.to_module SMulMemClass.toModule
+
+/-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
+this to manually derive `Module` on specific types. -/
+def toModule' (S R' R A : Type*) [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
+    [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
+    Module R' s :=
+  haveI : SMulMemClass S R' A := SMulMemClass.ofIsScalarTower S R' R A
+  SMulMemClass.toModule s
 
 /-- The natural `R`-linear map from a submodule of an `R`-module `M` to `M`. -/
 protected def subtype : S' →ₗ[R] M where
@@ -278,7 +284,7 @@ instance isScalarTower [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTow
   p.toSubMulAction.isScalarTower
 #align submodule.is_scalar_tower Submodule.isScalarTower
 
-instance isScalarTower' {S' : Type _} [SMul S R] [SMul S M] [SMul S' R] [SMul S' M] [SMul S S']
+instance isScalarTower' {S' : Type*} [SMul S R] [SMul S M] [SMul S' R] [SMul S' M] [SMul S S']
     [IsScalarTower S' R M] [IsScalarTower S S' M] [IsScalarTower S R M] : IsScalarTower S S' p :=
   p.toSubMulAction.isScalarTower'
 #align submodule.is_scalar_tower' Submodule.isScalarTower'
@@ -388,7 +394,7 @@ theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in
 section AddAction
 
 /-! ### Additive actions by `Submodule`s
-These instances transfer the action by an element `m : M` of a `R`-module `M` written as `m +ᵥ a`
+These instances transfer the action by an element `m : M` of an `R`-module `M` written as `m +ᵥ a`
 onto the action by an element `s : S` of a submodule `S : Submodule R M` such that
 `s +ᵥ a = (s : M) +ᵥ a`.
 These instances work particularly well in conjunction with `add_group.to_add_action`, enabling
@@ -396,7 +402,7 @@ These instances work particularly well in conjunction with `add_group.to_add_act
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 instance [VAdd M α] : VAdd p α :=
   p.toAddSubmonoid.vadd

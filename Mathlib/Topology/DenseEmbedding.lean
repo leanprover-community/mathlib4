@@ -2,14 +2,11 @@
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.dense_embedding
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Bases
+
+#align_import topology.dense_embedding from "leanprover-community/mathlib"@"148aefbd371a25f1cff33c85f20c661ce3155def"
 
 /-!
 # Dense embeddings
@@ -17,8 +14,8 @@ import Mathlib.Topology.Bases
 This file defines three properties of functions:
 
 * `DenseRange f`      means `f` has dense image;
-* `DenseInducing i`   means `i` is also `Inducing`;
-* `DenseEmbedding e`  means `e` is also an `Embedding`.
+* `DenseInducing i`   means `i` is also `Inducing`, namely it induces the topology on its codomain;
+* `DenseEmbedding e`  means `e` is further an `Embedding`, namely it is injective and `Inducing`.
 
 The main theorem `continuous_extend` gives a criterion for a function
 `f : X → Z` to a T₃ space Z to extend along a dense embedding
@@ -34,7 +31,7 @@ open Set Filter
 
 open Classical Topology Filter
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 /-- `i : α → β` is "dense inducing" if it has dense range and the topology on `α`
   is the one induced by `i` from the topology on `β`. -/
@@ -85,7 +82,7 @@ theorem dense_image (di : DenseInducing i) {s : Set α} : Dense (i '' s) ↔ Den
 
 /-- If `i : α → β` is a dense embedding with dense complement of the range, then any compact set in
 `α` has empty interior. -/
-theorem interior_compact_eq_empty [T2Space β] (di : DenseInducing i) (hd : Dense (range iᶜ))
+theorem interior_compact_eq_empty [T2Space β] (di : DenseInducing i) (hd : Dense (range i)ᶜ)
     {s : Set α} (hs : IsCompact s) : interior s = ∅ := by
   refine' eq_empty_iff_forall_not_mem.2 fun x hx => _
   rw [mem_interior_iff_mem_nhds] at hx
@@ -274,7 +271,7 @@ protected theorem prod {e₁ : α → β} {e₂ : γ → δ} (de₁ : DenseEmbed
 
 /-- The dense embedding of a subtype inside its closure. -/
 @[simps]
-def subtypeEmb {α : Type _} (p : α → Prop) (e : α → β) (x : { x // p x }) :
+def subtypeEmb {α : Type*} (p : α → Prop) (e : α → β) (x : { x // p x }) :
     { x // x ∈ closure (e '' { x | p x }) } :=
   ⟨e x, subset_closure <| mem_image_of_mem e x.prop⟩
 #align dense_embedding.subtype_emb DenseEmbedding.subtypeEmb
@@ -298,7 +295,7 @@ theorem dense_image {s : Set α} : Dense (e '' s) ↔ Dense s :=
 
 end DenseEmbedding
 
-theorem denseEmbedding_id {α : Type _} [TopologicalSpace α] : DenseEmbedding (id : α → α) :=
+theorem denseEmbedding_id {α : Type*} [TopologicalSpace α] : DenseEmbedding (id : α → α) :=
   { embedding_id with dense := denseRange_id }
 #align dense_embedding_id denseEmbedding_id
 
@@ -368,9 +365,9 @@ end
 
 -- Bourbaki GT III §3 no.4 Proposition 7 (generalised to any dense-inducing map to a T₃ space)
 theorem Filter.HasBasis.hasBasis_of_denseInducing [TopologicalSpace α] [TopologicalSpace β]
-    [T3Space β] {ι : Type _} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
+    [T3Space β] {ι : Type*} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
     {f : α → β} (hf : DenseInducing f) : (𝓝 (f x)).HasBasis p fun i => closure <| f '' s i := by
-  rw [Filter.hasBasis_iff] at h⊢
+  rw [Filter.hasBasis_iff] at h ⊢
   intro T
   refine' ⟨fun hT => _, fun hT => _⟩
   · obtain ⟨T', hT₁, hT₂, hT₃⟩ := exists_mem_nhds_isClosed_subset hT

@@ -2,11 +2,6 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.category.NonemptyFinLinOrd
-! leanprover-community/mathlib commit fa4a805d16a9cd9c96e0f8edeb57dc5a07af1a19
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Finite
@@ -14,6 +9,8 @@ import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.LinOrdCat
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+
+#align_import order.category.NonemptyFinLinOrd from "leanprover-community/mathlib"@"fa4a805d16a9cd9c96e0f8edeb57dc5a07af1a19"
 
 /-!
 # Nonempty finite linear orders
@@ -31,13 +28,13 @@ universe u v
 open CategoryTheory CategoryTheory.Limits
 
 /-- A typeclass for nonempty finite linear orders. -/
-class NonemptyFinLinOrd (α : Type _) extends Fintype α, LinearOrder α where
+class NonemptyFinLinOrd (α : Type*) extends Fintype α, LinearOrder α where
   Nonempty : Nonempty α := by infer_instance
 #align nonempty_fin_lin_ord NonemptyFinLinOrd
 
 attribute [instance] NonemptyFinLinOrd.Nonempty
 
-instance (priority := 100) NonemptyFinLinOrd.toBoundedOrder (α : Type _) [NonemptyFinLinOrd α] :
+instance (priority := 100) NonemptyFinLinOrd.toBoundedOrder (α : Type*) [NonemptyFinLinOrd α] :
     BoundedOrder α :=
   Fintype.toBoundedOrder α
 #align nonempty_fin_lin_ord.to_bounded_order NonemptyFinLinOrd.toBoundedOrder
@@ -53,7 +50,7 @@ instance ULift.nonemptyFinLinOrd (α : Type u) [NonemptyFinLinOrd α] :
   { LinearOrder.lift' Equiv.ulift (Equiv.injective _) with }
 #align ulift.nonempty_fin_lin_ord ULift.nonemptyFinLinOrd
 
-instance (α : Type _) [NonemptyFinLinOrd α] : NonemptyFinLinOrd αᵒᵈ :=
+instance (α : Type*) [NonemptyFinLinOrd α] : NonemptyFinLinOrd αᵒᵈ :=
   { OrderDual.fintype α with }
 
 /-- The category of nonempty finite linear orders. -/
@@ -73,17 +70,17 @@ deriving instance LargeCategory for NonemptyFinLinOrdCat
 instance : ConcreteCategory NonemptyFinLinOrdCat :=
   BundledHom.concreteCategory _
 
-instance : CoeSort NonemptyFinLinOrdCat (Type _) :=
+instance : CoeSort NonemptyFinLinOrdCat (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled `NonemptyFinLinOrdCat` from the underlying type and typeclass. -/
-def of (α : Type _) [NonemptyFinLinOrd α] : NonemptyFinLinOrdCat :=
+def of (α : Type*) [NonemptyFinLinOrd α] : NonemptyFinLinOrdCat :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.of NonemptyFinLinOrdCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [NonemptyFinLinOrd α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [NonemptyFinLinOrd α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.coe_of NonemptyFinLinOrdCat.coe_of
@@ -153,8 +150,8 @@ theorem mono_iff_injective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
   intro
   intro a₁ a₂ h
   let X := NonemptyFinLinOrdCat.of (ULift (Fin 1))
-  let g₁ : X ⟶ A := ⟨fun _ => a₁, fun _ _  _ => by rfl⟩
-  let g₂ : X ⟶ A := ⟨fun _ => a₂, fun _ _  _ => by rfl⟩
+  let g₁ : X ⟶ A := ⟨fun _ => a₁, fun _ _ _ => by rfl⟩
+  let g₂ : X ⟶ A := ⟨fun _ => a₂, fun _ _ _ => by rfl⟩
   change g₁ (ULift.up (0 : Fin 1)) = g₂ (ULift.up (0 : Fin 1))
   have eq : g₁ ≫ f = g₂ ≫ f := by
     ext
@@ -225,7 +222,7 @@ instance : SplitEpiCategory NonemptyFinLinOrdCat.{u} :=
     · intro a b
       contrapose
       intro h
-      simp only [not_le] at h⊢
+      simp only [not_le] at h ⊢
       suffices b ≤ a by
         apply lt_of_le_of_ne this
         rintro rfl

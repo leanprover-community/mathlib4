@@ -2,16 +2,13 @@
 Copyright (c) 2022 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
-
-! This file was ported from Lean 3 source module imo.imo1975_q1
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Nat.Interval
 import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.Algebra.BigOperators.Ring
+
+#align_import imo.imo1975_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 1975 Q1
@@ -45,8 +42,8 @@ theorem imo1975_q1 :
   have hσy : ∑ i : ℕ in Finset.Icc 1 n, y i ^ 2 = ∑ i : ℕ in Finset.Icc 1 n, y (σ i) ^ 2 := by
     rw [← Equiv.Perm.sum_comp σ (Finset.Icc 1 n) _ hσ]
   -- let's cancel terms appearing on both sides
-  rw [hσy, add_le_add_iff_right, ← neg_le_neg_iff, neg_sub, neg_sub, sub_le_sub_iff_right]
-  simp_rw [mul_assoc, ← Finset.mul_sum]; norm_num
+  rw [hσy, add_le_add_iff_right, sub_le_sub_iff_left]
+  simp only [gt_iff_lt, Nat.lt_one_iff, mul_assoc, ← Finset.mul_sum, zero_lt_two, mul_le_mul_left]
   -- what's left to prove is a version of the rearrangement inequality
   apply MonovaryOn.sum_mul_comp_perm_le_sum_mul _ hσ
   -- finally we need to show that `x` and `y` 'vary' together on `[1, n]` and this is due to both of

@@ -2,15 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module order.rel_iso.basic
-! leanprover-community/mathlib commit f29120f82f6e24a6f6579896dfa2de6769fec962
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Order.RelClasses
+
+#align_import order.rel_iso.basic from "leanprover-community/mathlib"@"f29120f82f6e24a6f6579896dfa2de6769fec962"
 
 /-!
 # Relation homomorphisms, embeddings, isomorphisms
@@ -36,17 +33,19 @@ isomorphisms.
 * `≃r`: `RelIso`
 -/
 
+set_option autoImplicit true
+
 
 open Function
 
 universe u v w
 
-variable {α β γ δ : Type _} {r : α → α → Prop} {s : β → β → Prop}
+variable {α β γ δ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop} {u : δ → δ → Prop}
 
 /-- A relation homomorphism with respect to a given pair of relations `r` and `s`
 is a function `f : α → β` such that `r a b → s (f a) (f b)`. -/
-structure RelHom {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) where
+structure RelHom {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) where
   /-- The underlying function of a `RelHom` -/
   toFun : α → β
   /-- A `RelHom` sends related elements to related elements -/
@@ -65,7 +64,7 @@ satisfy `r a b → s (f a) (f b)`.
 The relations `r` and `s` are `outParam`s since figuring them out from a goal is a higher-order
 matching problem that Lean usually can't do unaided.
 -/
-class RelHomClass (F : Type _) {α β : outParam <| Type _} (r : outParam <| α → α → Prop)
+class RelHomClass (F : Type*) {α β : outParam <| Type*} (r : outParam <| α → α → Prop)
   (s : outParam <| β → β → Prop) extends FunLike F α fun _ => β where
   /-- A `RelHomClass` sends related elements to related elements -/
   map_rel : ∀ (f : F) {a b}, r a b → s (f a) (f b)
@@ -77,7 +76,7 @@ end
 
 namespace RelHomClass
 
-variable {F : Type _}
+variable {F : Type*}
 
 protected theorem isIrrefl [RelHomClass F r s] (f : F) : ∀ [IsIrrefl β s], IsIrrefl α r
   | ⟨H⟩ => ⟨fun _ h => H _ (map_rel f h)⟩
@@ -201,7 +200,7 @@ theorem Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
-structure RelEmbedding {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends α ↪ β where
+structure RelEmbedding {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends α ↪ β where
   /-- Elements are related iff they are related after apply a `RelEmbedding` -/
   map_rel_iff' : ∀ {a b}, s (toEmbedding a) (toEmbedding b) ↔ r a b
 #align rel_embedding RelEmbedding
@@ -211,7 +210,7 @@ is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
 infixl:25 " ↪r " => RelEmbedding
 
 /-- The induced relation on a subtype is an embedding under the natural inclusion. -/
-def Subtype.relEmbedding {X : Type _} (r : X → X → Prop) (p : X → Prop) :
+def Subtype.relEmbedding {X : Type*} (r : X → X → Prop) (p : X → Prop) :
     (Subtype.val : Subtype p → X) ⁻¹'o r ↪r r :=
   ⟨Embedding.subtype p, Iff.rfl⟩
 #align subtype.rel_embedding Subtype.relEmbedding
@@ -256,7 +255,7 @@ def Simps.apply (h : r ↪r s) : α → β :=
 initialize_simps_projections RelEmbedding (toFun → apply)
 
 @[simp]
-theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β)  = f :=
+theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β) = f :=
   rfl
 #align rel_embedding.coe_fn_to_embedding RelEmbedding.coe_toEmbedding
 
@@ -453,7 +452,6 @@ theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
   · exact RelHomClass.acc (Quotient.mkRelHom H) a
   · intro ac
     induction' ac with _ _ IH
-    dsimp at IH
     refine' ⟨_, fun q h => _⟩
     obtain ⟨a', rfl⟩ := q.exists_rep
     exact IH a' h
@@ -477,7 +475,7 @@ theorem wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
     exact acc_lift₂_iff.2 (wf.apply a)
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
 
-alias wellFounded_lift₂_iff ↔ WellFounded.of_quotient_lift₂ WellFounded.quotient_lift₂
+alias ⟨WellFounded.of_quotient_lift₂, WellFounded.quotient_lift₂⟩ := wellFounded_lift₂_iff
 #align well_founded.of_quotient_lift₂ WellFounded.of_quotient_lift₂
 #align well_founded.quotient_lift₂ WellFounded.quotient_lift₂
 
@@ -487,7 +485,7 @@ theorem wellFounded_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} 
   wellFounded_lift₂_iff (H := H)
 #align well_founded_lift_on₂'_iff wellFounded_liftOn₂'_iff
 
-alias wellFounded_liftOn₂'_iff ↔ WellFounded.of_quotient_liftOn₂' WellFounded.quotient_liftOn₂'
+alias ⟨WellFounded.of_quotient_liftOn₂', WellFounded.quotient_liftOn₂'⟩ := wellFounded_liftOn₂'_iff
 #align well_founded.of_quotient_lift_on₂' WellFounded.of_quotient_liftOn₂'
 #align well_founded.quotient_lift_on₂' WellFounded.quotient_liftOn₂'
 
@@ -619,7 +617,7 @@ def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u wh
 end RelEmbedding
 
 /-- A relation isomorphism is an equivalence that is also a relation embedding. -/
-structure RelIso {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends α ≃ β where
+structure RelIso {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends α ≃ β where
   /-- Elements are related iff they are related after apply a `RelIso` -/
   map_rel_iff' : ∀ {a b}, s (toEquiv a) (toEquiv b) ↔ r a b
 #align rel_iso RelIso
@@ -843,7 +841,7 @@ lexicographic orders on the sum.
 def sumLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso α₁ β₁ r₁ s₁) (e₂ : @RelIso α₂ β₂ r₂ s₂) :
     Sum.Lex r₁ r₂ ≃r Sum.Lex s₁ s₂ :=
   ⟨Equiv.sumCongr e₁.toEquiv e₂.toEquiv, @fun a b => by
-    cases' e₁ with f hf ; cases' e₂ with g hg ; cases a <;> cases b <;> simp [hf, hg]⟩
+    cases' e₁ with f hf; cases' e₂ with g hg; cases a <;> cases b <;> simp [hf, hg]⟩
 #align rel_iso.sum_lex_congr RelIso.sumLexCongr
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the

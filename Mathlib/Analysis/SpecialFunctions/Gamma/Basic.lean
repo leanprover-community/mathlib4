@@ -2,15 +2,12 @@
 Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.gamma.basic
-! leanprover-community/mathlib commit cca40788df1b8755d5baf17ab2f27dacc2e17acb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.ExpDecay
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.MellinTransform
+
+#align_import analysis.special_functions.gamma.basic from "leanprover-community/mathlib"@"cca40788df1b8755d5baf17ab2f27dacc2e17acb"
 
 /-!
 # The Gamma function
@@ -227,13 +224,12 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
       (Gamma_integrand_deriv_integrable_B hs hX),
     intervalIntegral.integral_neg, neg_add, neg_neg] at int_eval
   rw [eq_sub_of_add_eq int_eval, sub_neg_eq_add, neg_sub, add_comm, add_sub]
-  simp only [sub_left_inj, add_left_inj]
   have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
       (fun x => s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
   rw [this]
   have t := @integral_const_mul 0 X volume _ _ s fun x : ℝ => (-x).exp * x ^ (s - 1)
-  dsimp at t ; rw [← t, ofReal_zero, zero_cpow]
-  · rw [MulZeroClass.mul_zero, add_zero]; congr 2; ext1; ring
+  rw [← t, ofReal_zero, zero_cpow]
+  · rw [mul_zero, add_zero]; congr 2; ext1; ring
   · contrapose! hs; rw [hs, zero_re]
 #align complex.partial_Gamma_add_one Complex.partialGamma_add_one
 
@@ -418,7 +414,7 @@ theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : 
     DifferentiableAt ℂ (GammaAux n) s := by
   induction' n with n hn generalizing s
   · refine' (hasDerivAt_GammaIntegral _).differentiableAt
-    rw [Nat.cast_zero] at h1 ; linarith
+    rw [Nat.cast_zero] at h1; linarith
   · dsimp only [GammaAux]
     specialize hn (s + 1)
     have a : 1 - (s + 1).re < ↑n := by
@@ -426,7 +422,6 @@ theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : 
     have b : ∀ m : ℕ, s + 1 ≠ -m := by
       intro m; have := h2 (1 + m)
       contrapose! this
-      push_neg at this
       rw [← eq_sub_iff_add_eq] at this
       simpa using this
     refine' DifferentiableAt.div (DifferentiableAt.comp _ (hn a b) _) _ _

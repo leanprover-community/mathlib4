@@ -2,15 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.essential_image
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.FullSubcategory
+
+#align_import category_theory.essential_image from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
 /-!
 # Essential image of a functor
@@ -79,7 +75,7 @@ theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : F.obj Y ∈ essImage F :=
   ⟨Y, ⟨Iso.refl _⟩⟩
 #align category_theory.functor.obj_mem_ess_image CategoryTheory.Functor.obj_mem_essImage
 
-/-- The essential image of a functor, interpreted of a full subcategory of the target category. -/
+/-- The essential image of a functor, interpreted as a full subcategory of the target category. -/
 -- Porting note: no hasNonEmptyInstance linter yet
 def EssImageSubcategory (F : C ⥤ D) :=
   FullSubcategory F.essImage
@@ -138,9 +134,8 @@ class EssSurj (F : C ⥤ D) : Prop where
   mem_essImage (Y : D) : Y ∈ F.essImage
 #align category_theory.ess_surj CategoryTheory.EssSurj
 
-instance :
-    EssSurj
-      F.toEssImage where mem_essImage := fun ⟨_, hY⟩ =>
+instance EssSurj.toEssImage : EssSurj F.toEssImage where
+  mem_essImage := fun ⟨_, hY⟩ =>
     ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
 
 variable (F) [EssSurj F]
@@ -158,15 +153,21 @@ def Functor.objObjPreimageIso (Y : D) : F.obj (F.objPreimage Y) ≅ Y :=
   Functor.essImage.getIso _
 #align category_theory.functor.obj_obj_preimage_iso CategoryTheory.Functor.objObjPreimageIso
 
-/-- The induced functor of a faithful functor is faithful -/
+/-- The induced functor of a faithful functor is faithful. -/
 instance Faithful.toEssImage (F : C ⥤ D) [Faithful F] : Faithful F.toEssImage :=
   Faithful.of_comp_iso F.toEssImageCompEssentialImageInclusion
 #align category_theory.faithful.to_ess_image CategoryTheory.Faithful.toEssImage
 
-/-- The induced functor of a full functor is full -/
+/-- The induced functor of a full functor is full. -/
 instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
   haveI := Full.ofIso F.toEssImageCompEssentialImageInclusion.symm
   Full.ofCompFaithful F.toEssImage F.essImageInclusion
 #align category_theory.full.to_ess_image CategoryTheory.Full.toEssImage
+
+instance instEssSurjId : EssSurj (𝟭 C) where
+  mem_essImage Y := ⟨Y, ⟨Iso.refl _⟩⟩
+
+theorem Iso.map_essSurj {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where
+  mem_essImage Y := Functor.essImage.ofNatIso α (EssSurj.mem_essImage Y)
 
 end CategoryTheory

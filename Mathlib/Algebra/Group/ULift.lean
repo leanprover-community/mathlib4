@@ -2,15 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.group.ulift
-! leanprover-community/mathlib commit 564bcc44d2b394a50c0cd6340c14a6b02a50a99a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.GroupWithZero.InjSurj
+
+#align_import algebra.group.ulift from "leanprover-community/mathlib"@"564bcc44d2b394a50c0cd6340c14a6b02a50a99a"
 
 /-!
 # `ULift` instances for groups and monoids
@@ -25,7 +23,7 @@ We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 
 universe u v
 
-variable {α : Type u} {β : Type _} {x y : ULift.{v} α}
+variable {α : Type u} {β : Type*} {x y : ULift.{v} α}
 
 namespace ULift
 
