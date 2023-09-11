@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Std.Tactic.TryThis
+import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
@@ -35,7 +36,7 @@ private def isBlackListed (declName : Name) : MetaM Bool := do
   if declName matches .str _ "inj" then return true
   if declName matches .str _ "noConfusionType" then return true
   let env ← getEnv
-  pure $ declName.isInternal
+  pure $ declName.isInternal'
    || isAuxRecursor env declName
    || isNoConfusion env declName
   <||> isRec declName <||> isMatcher declName

@@ -235,6 +235,8 @@ protected theorem mono (f : α →o β) : Monotone f :=
 for the projection names. Maybe we should change this. -/
 def Simps.coe (f : α →o β) : α → β := f
 
+/- Todo: all other FunLike classes use `apply` instead of `coe`
+for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
 @[simp] lemma toFun_eq_coe (f : α →o β) : f.toFun = f := rfl

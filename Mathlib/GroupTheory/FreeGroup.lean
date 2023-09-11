@@ -995,7 +995,7 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
   invFun x := of () ^ x
   left_inv := by
     rintro ⟨L⟩
-    simp [MonoidHom.Simps.apply]
+    simp
     exact List.recOn L
      (by rfl)
      (fun ⟨⟨⟩, b⟩ tl ih => by

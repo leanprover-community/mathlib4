@@ -339,6 +339,10 @@ example (h : False) : False := by norm_num1 at h
 example : True := by norm_num1
 -- example : True ∧ True := by norm_num1
 
+/-!
+# Nat operations
+-/
+
 section Nat.sub
 
 example : 10 - 1 = 9 := by norm_num1
@@ -352,6 +356,21 @@ example : 5 * (2 - 3) = 0 := by norm_num1
 example : 10 - 5 * 5 + (7 - 3) * 6 = 27 - 3 := by norm_num1
 
 end Nat.sub
+
+section Nat.mod
+
+example : 10 % 1 = 0 := by norm_num1
+example : 5 % 4 = 1 := by norm_num1
+example : (9 % 4) % (12 % 8) = 1 := by norm_num1
+example : 0 % 10 = 0 := by norm_num1
+example : 10 % 0 = 10 := by norm_num1
+example : 1 % 1 = 0 := by norm_num1
+
+end Nat.mod
+
+/-!
+# Numbers in algebraic structures
+-/
 
 -- noncomputable def foo : ℝ := 1
 
@@ -454,6 +473,7 @@ section Transparency
 
 example : Add.add 10 2 = 12 := by norm_num1
 example : Nat.sub 10 1 = 9 := by norm_num1
+example : Nat.mod 10 5 = 0 := by norm_num1
 example : Sub.sub 10 1 = 9 := by norm_num1
 example : Sub.sub 10 (-2) = 12 := by norm_num1
 example : Mul.mul 10 1 = 10 := by norm_num1

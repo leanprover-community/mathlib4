@@ -23,7 +23,7 @@ it attempts to avoid reordering hypotheses, and the original is cleared if possi
 def replace (g : MVarId) (hyp : FVarId) (proof : Expr) (typeNew : Option Expr := none) :
     MetaM AssertAfterResult :=
   g.withContext do
-    let typeNew ← Option.getDM (pure typeNew) (inferType proof)
+    let typeNew ← typeNew.getDM (inferType proof)
     let ldecl ← hyp.getDecl
     -- `typeNew` may contain variables that occur after `hyp`.
     -- Thus, we use the auxiliary function `findMaxFVar` to ensure `typeNew` is well-formed
@@ -45,7 +45,7 @@ where
 /-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
 def note (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
     MetaM (FVarId × MVarId) := do
-  (← g.assert h (← Option.getDM (pure t) (inferType v)) v).intro1P
+  (← g.assert h (← t.getDM (inferType v)) v).intro1P
 
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
