@@ -341,7 +341,7 @@ theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 :=
 -/
 
 
---@[mono] -- Porting note: restore mono attribute
+@[mono]
 theorem div_le_div_of_le (hc : 0 ≤ c) (h : a ≤ b) : a / c ≤ b / c := by
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
   exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 hc)
@@ -386,7 +386,7 @@ theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤
   rw [le_div_iff d0, div_mul_eq_mul_div, div_le_iff b0]
 #align div_le_div_iff div_le_div_iff
 
--- @[mono] -- Porting note: restore mono attribute
+@[mono]
 theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d := by
   rw [div_le_div_iff (hd.trans_le hbd) hd]
   exact mul_le_mul hac hbd hd.le hc

@@ -211,8 +211,7 @@ theorem ofAntisymmetrization_lt_ofAntisymmetrization_iff {a b : Antisymmetrizati
   simp
 #align of_antisymmetrization_lt_of_antisymmetrization_iff ofAntisymmetrization_lt_ofAntisymmetrization_iff
 
--- Porting note: `mono` tactic not implemented yet.
--- @[mono]
+@[mono]
 theorem toAntisymmetrization_mono : Monotone (@toAntisymmetrization α (· ≤ ·) _) := fun _ _ => id
 #align to_antisymmetrization_mono toAntisymmetrization_mono
 

@@ -307,7 +307,7 @@ theorem copy_eq (e : LocalEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β �
 #align local_equiv.copy_eq LocalEquiv.copy_eq
 
 /-- Associate to a `LocalEquiv` an `Equiv` between the source and the target. -/
-protected def toEquiv : Equiv e.source e.target where
+protected def toEquiv : e.source ≃ e.target where
   toFun x := ⟨e x, e.map_source x.mem⟩
   invFun y := ⟨e.symm y, e.map_target y.mem⟩
   left_inv := fun ⟨_, hx⟩ => Subtype.eq <| e.left_inv hx
@@ -751,6 +751,9 @@ theorem trans_refl : e.trans (LocalEquiv.refl β) = e :=
 theorem refl_trans : (LocalEquiv.refl α).trans e = e :=
   LocalEquiv.ext (fun x => rfl) (fun x => rfl) (by simp [trans_source, preimage_id])
 #align local_equiv.refl_trans LocalEquiv.refl_trans
+
+theorem trans_ofSet (s : Set β) : e.trans (ofSet s) = e.restr (e ⁻¹' s) :=
+  LocalEquiv.ext (fun _ => rfl) (fun _ => rfl) rfl
 
 theorem trans_refl_restr (s : Set β) : e.trans ((LocalEquiv.refl β).restr s) = e.restr (e ⁻¹' s) :=
   LocalEquiv.ext (fun x => rfl) (fun x => rfl) (by simp [trans_source])

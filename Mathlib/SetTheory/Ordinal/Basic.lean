@@ -128,7 +128,7 @@ attribute [instance] WellOrder.wo
 
 namespace WellOrder
 
-instance : Inhabited WellOrder :=
+instance inhabited : Inhabited WellOrder :=
   ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty EmptyRelation)⟩⟩
 
 @[simp]
@@ -174,13 +174,13 @@ def type (r : α → α → Prop) [wo : IsWellOrder α r] : Ordinal :=
   ⟦⟨α, r, wo⟩⟧
 #align ordinal.type Ordinal.type
 
-instance : Zero Ordinal :=
+instance hasZero : Zero Ordinal :=
   ⟨type <| @EmptyRelation PEmpty⟩
 
-instance : Inhabited Ordinal :=
+instance inhabited : Inhabited Ordinal :=
   ⟨0⟩
 
-instance : One Ordinal :=
+instance hasOne : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
 /-- The order type of an element inside a well order. For the embedding as a principal segment, see
@@ -293,7 +293,7 @@ protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
   type_ne_zero_of_nonempty _
 #align ordinal.one_ne_zero Ordinal.one_ne_zero
 
-instance : Nontrivial Ordinal.{u} :=
+instance nontrivial : Nontrivial Ordinal.{u} :=
   ⟨⟨1, 0, Ordinal.one_ne_zero⟩⟩
 
 --@[simp] -- Porting note: not in simp nf, added aux lemma below
@@ -316,7 +316,7 @@ theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
 /-! ### The order on ordinals -/
 
 
-instance : PartialOrder Ordinal
+instance partialOrder : PartialOrder Ordinal
     where
   le a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≼i s))
@@ -387,7 +387,7 @@ protected theorem zero_le (o : Ordinal) : 0 ≤ o :=
   inductionOn o fun _ r _ => (InitialSeg.ofIsEmpty _ r).ordinal_type_le
 #align ordinal.zero_le Ordinal.zero_le
 
-instance : OrderBot Ordinal where
+instance orderBot : OrderBot Ordinal where
   bot := 0
   bot_le := Ordinal.zero_le
 
@@ -413,7 +413,7 @@ theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
   eq_bot_or_bot_lt
 #align ordinal.eq_zero_or_pos Ordinal.eq_zero_or_pos
 
-instance : ZeroLEOneClass Ordinal :=
+instance zeroLEOneClass : ZeroLEOneClass Ordinal :=
   ⟨Ordinal.zero_le _⟩
 
 instance NeZero.one : NeZero (1 : Ordinal) :=
@@ -574,7 +574,7 @@ theorem lt_wf : @WellFounded Ordinal (· < ·) :=
           exact IH _ ((typein_lt_typein r).1 h)⟩⟩
 #align ordinal.lt_wf Ordinal.lt_wf
 
-instance : WellFoundedRelation Ordinal :=
+instance wellFoundedRelation : WellFoundedRelation Ordinal :=
   ⟨(· < ·), lt_wf⟩
 
 /-- Reformulation of well founded induction on ordinals as a lemma that works with the
@@ -885,12 +885,12 @@ the addition, together with properties of the other operations, are proved in
 
 /-- `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
   every element of `o₁` is smaller than every element of `o₂`. -/
-instance : Add Ordinal.{u} :=
+instance hasAdd : Add Ordinal.{u} :=
   ⟨fun o₁ o₂ =>
     Quotient.liftOn₂ o₁ o₂ (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => type (Sum.Lex r s))
       fun _ _ _ _ ⟨f⟩ ⟨g⟩ => Quot.sound ⟨RelIso.sumLexCongr f g⟩⟩
 
-instance : AddMonoidWithOne Ordinal.{u}
+instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u}
     where
   add := (· + ·)
   zero := 0
@@ -977,7 +977,7 @@ theorem le_add_left (a b : Ordinal) : a ≤ b + a := by
   simpa only [zero_add] using add_le_add_right (Ordinal.zero_le b) a
 #align ordinal.le_add_left Ordinal.le_add_left
 
-instance : LinearOrder Ordinal :=
+instance linearOrder : LinearOrder Ordinal :=
   {inferInstanceAs (PartialOrder Ordinal) with
     le_total := fun a b =>
       match lt_or_eq_of_le (le_add_left b a), lt_or_eq_of_le (le_add_right a b) with
@@ -999,10 +999,10 @@ instance : LinearOrder Ordinal :=
                   exact Or.inr (Or.inl h)]
     decidable_le := Classical.decRel _ }
 
-instance : WellFoundedLT Ordinal :=
+instance wellFoundedLT : WellFoundedLT Ordinal :=
   ⟨lt_wf⟩
 
-instance : IsWellOrder Ordinal (· < ·) where
+instance isWellOrder : IsWellOrder Ordinal (· < ·) where
 
 instance : ConditionallyCompleteLinearOrderBot Ordinal :=
   IsWellOrder.conditionallyCompleteLinearOrderBot _
@@ -1055,10 +1055,10 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
             cases' (hf b).1 h with w h
             exact ⟨Sum.inl w, h⟩⟩
 
-instance : NoMaxOrder Ordinal :=
+instance noMaxOrder : NoMaxOrder Ordinal :=
   ⟨fun _ => ⟨_, succ_le_iff'.1 le_rfl⟩⟩
 
-instance : SuccOrder Ordinal.{u} :=
+instance succOrder : SuccOrder Ordinal.{u} :=
   SuccOrder.ofSuccLeIff (fun o => o + 1) succ_le_iff'
 
 @[simp]

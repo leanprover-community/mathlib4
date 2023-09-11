@@ -385,7 +385,7 @@ theorem of_sections {f : α → β}
       𝓝 (f x) = map f (map g (𝓝 (f x))) := by rw [map_map, hgf.comp_eq_id, map_id]
       _ ≤ map f (𝓝 (g (f x))) := map_mono hgc
       _ = map f (𝓝 x) := by rw [hgx]
-      
+
 #align is_open_map.of_sections IsOpenMap.of_sections
 
 theorem of_inverse {f : α → β} {f' : β → α} (h : Continuous f') (l_inv : LeftInverse f f')
@@ -558,6 +558,10 @@ theorem OpenEmbedding.tendsto_nhds_iff {ι : Type _} {f : ι → β} {g : β →
     (hg : OpenEmbedding g) : Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) :=
   hg.toEmbedding.tendsto_nhds_iff
 #align open_embedding.tendsto_nhds_iff OpenEmbedding.tendsto_nhds_iff
+
+theorem OpenEmbedding.tendsto_nhds_iff' {f : α → β} (hf : OpenEmbedding f) {g : β → γ}
+    {l : Filter γ} {a : α} : Tendsto (g ∘ f) (𝓝 a) l ↔ Tendsto g (𝓝 (f a)) l := by
+  rw [Tendsto, ← map_map, hf.map_nhds_eq]; rfl
 
 theorem OpenEmbedding.continuous {f : α → β} (hf : OpenEmbedding f) : Continuous f :=
   hf.toEmbedding.continuous

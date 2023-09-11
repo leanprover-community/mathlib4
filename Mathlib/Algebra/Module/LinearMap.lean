@@ -460,15 +460,19 @@ are defined by an action of `R` on `S` (formally, we have two scalar towers), th
 map from `M` to `M₂` is `R`-linear.
 
 See also `LinearMap.map_smul_of_tower`. -/
-def restrictScalars (fₗ : M →ₗ[S] M₂) : M →ₗ[R] M₂
-    where
+@[coe] def restrictScalars (fₗ : M →ₗ[S] M₂) : M →ₗ[R] M₂ where
   toFun := fₗ
   map_add' := fₗ.map_add
   map_smul' := fₗ.map_smul_of_tower
 #align linear_map.restrict_scalars LinearMap.restrictScalars
 
-@[simp]
-theorem coe_restrictScalars (fₗ : M →ₗ[S] M₂) : ⇑(restrictScalars R fₗ) = fₗ :=
+-- porting note: generalized from `Algebra` to `Compatible SMul`
+instance coeIsScalarTower : CoeHTCT (M →ₗ[S] M₂) (M →ₗ[R] M₂) :=
+  ⟨restrictScalars R⟩
+#align linear_map.coe_is_scalar_tower LinearMap.coeIsScalarTower
+
+@[simp, norm_cast]
+theorem coe_restrictScalars (f : M →ₗ[S] M₂) : ((f : M →ₗ[R] M₂) : M → M₂) = f :=
   rfl
 #align linear_map.coe_restrict_scalars LinearMap.coe_restrictScalars
 

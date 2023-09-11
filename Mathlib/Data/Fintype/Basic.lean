@@ -653,7 +653,7 @@ theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toF
   ⟨fun h => by rw [← s.coe_toFinset, h, t.coe_toFinset], fun h => by simp [h] ⟩
 #align set.to_finset_inj Set.toFinset_inj
 
---@[mono] Porting note: not implemented yet
+@[mono]
 theorem toFinset_subset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
   simp [Finset.subset_iff, Set.subset_def]
 #align set.to_finset_subset_to_finset Set.toFinset_subset_toFinset
@@ -673,7 +673,7 @@ theorem ssubset_toFinset {s : Finset α} [Fintype t] : s ⊂ t.toFinset ↔ ↑s
   rw [← Finset.coe_ssubset, coe_toFinset]
 #align set.ssubset_to_finset Set.ssubset_toFinset
 
---@[mono] Porting note: not implemented yet
+@[mono]
 theorem toFinset_ssubset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊂ t.toFinset ↔ s ⊂ t := by
   simp only [Finset.ssubset_def, toFinset_subset_toFinset, ssubset_def]
 #align set.to_finset_ssubset_to_finset Set.toFinset_ssubset_toFinset

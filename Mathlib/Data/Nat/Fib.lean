@@ -100,8 +100,7 @@ theorem fib_add_two {n : ℕ} : fib (n + 2) = fib n + fib (n + 1) := by
 theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp [fib_add_two]
 #align nat.fib_le_fib_succ Nat.fib_le_fib_succ
 
--- porting note: At the time of this port in time attribute @[mono] is unknown
--- @[mono]
+@[mono]
 theorem fib_mono : Monotone fib :=
   monotone_nat_of_le_succ fun _ => fib_le_fib_succ
 #align nat.fib_mono Nat.fib_mono

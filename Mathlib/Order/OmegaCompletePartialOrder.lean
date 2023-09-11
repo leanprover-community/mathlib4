@@ -147,8 +147,7 @@ theorem map_comp : (c.map f).map g = c.map (g.comp f) :=
   rfl
 #align omega_complete_partial_order.chain.map_comp OmegaCompletePartialOrder.Chain.map_comp
 
--- porting note: no [mono] yet
--- @[mono]
+@[mono]
 theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
   fun i => by simp [mem_map_iff]; intros; exists i; apply h
 #align omega_complete_partial_order.chain.map_le_map OmegaCompletePartialOrder.Chain.map_le_map
@@ -215,8 +214,7 @@ theorem ωSup_total {c : Chain α} {x : α} (h : ∀ i, c i ≤ x ∨ x ≤ c i)
       Or.inr <| le_ωSup_of_le _ this)
 #align omega_complete_partial_order.ωSup_total OmegaCompletePartialOrder.ωSup_total
 
--- porting note: no [mono] yet
--- @[mono]
+@[mono]
 theorem ωSup_le_ωSup_of_le {c₀ c₁ : Chain α} (h : c₀ ≤ c₁) : ωSup c₀ ≤ ωSup c₁ :=
   (ωSup_le _ _) fun i => by
     obtain ⟨_, h⟩ := h i
@@ -638,8 +636,7 @@ protected theorem monotone (f : α →𝒄 β) : Monotone f :=
   omega_complete_partial_order.continuous_hom.monotone
   OmegaCompletePartialOrder.ContinuousHom.monotone
 
--- porting note: no [mono] yet
--- @[mono]
+@[mono]
 theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
   OrderHom.apply_mono (show (f : α →o β) ≤ g from h₁) h₂
 #align
