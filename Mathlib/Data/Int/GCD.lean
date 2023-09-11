@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.int.gcd
-! leanprover-community/mathlib commit d4f69d96f3532729da8ebb763f4bc26fcf640f06
+! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -306,13 +306,13 @@ theorem gcd_mul_right (i j k : ℤ) : gcd (i * j) (k * j) = gcd i k * natAbs j :
   apply Nat.gcd_mul_right
 #align int.gcd_mul_right Int.gcd_mul_right
 
-theorem gcd_pos_of_non_zero_left {i : ℤ} (j : ℤ) (i_non_zero : i ≠ 0) : 0 < gcd i j :=
-  Nat.gcd_pos_of_pos_left (natAbs j) (natAbs_pos.2 i_non_zero)
-#align int.gcd_pos_of_non_zero_left Int.gcd_pos_of_non_zero_left
+theorem gcd_pos_of_ne_zero_left {i : ℤ} (j : ℤ) (hi : i ≠ 0) : 0 < gcd i j :=
+  Nat.gcd_pos_of_pos_left _ $ natAbs_pos.2 hi
+#align int.gcd_pos_of_ne_zero_left Int.gcd_pos_of_ne_zero_left
 
-theorem gcd_pos_of_non_zero_right (i : ℤ) {j : ℤ} (j_non_zero : j ≠ 0) : 0 < gcd i j :=
-  Nat.gcd_pos_of_pos_right (natAbs i) (natAbs_pos.2 j_non_zero)
-#align int.gcd_pos_of_non_zero_right Int.gcd_pos_of_non_zero_right
+theorem gcd_pos_of_ne_zero_right (i : ℤ) {j : ℤ} (hj : j ≠ 0) : 0 < gcd i j :=
+  Nat.gcd_pos_of_pos_right _ $ natAbs_pos.2 hj
+#align int.gcd_pos_of_ne_zero_right Int.gcd_pos_of_ne_zero_right
 
 theorem gcd_eq_zero_iff {i j : ℤ} : gcd i j = 0 ↔ i = 0 ∧ j = 0 := by
   rw [gcd, Nat.gcd_eq_zero_iff, natAbs_eq_zero, natAbs_eq_zero]
@@ -430,7 +430,7 @@ theorem gcd_least_linear {a b : ℤ} (ha : a ≠ 0) :
     IsLeast { n : ℕ | 0 < n ∧ ∃ x y : ℤ, ↑n = a * x + b * y } (a.gcd b) := by
   simp_rw [← gcd_dvd_iff]
   constructor
-  · simpa [and_true_iff, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_non_zero_left b ha
+  · simpa [and_true_iff, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_ne_zero_left b ha
   · simp only [lowerBounds, and_imp, Set.mem_setOf_eq]
     exact fun n hn_pos hn => Nat.le_of_dvd hn_pos hn
 #align int.gcd_least_linear Int.gcd_least_linear

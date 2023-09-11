@@ -112,10 +112,10 @@ set_option linter.deprecated false in
 #align two_smul' two_smul'
 
 @[simp]
-theorem inv_of_two_smul_add_inv_of_two_smul [Invertible (2 : R)] (x : M) :
+theorem invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
     (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
   Convex.combo_self invOf_two_add_invOf_two _
-#align inv_of_two_smul_add_inv_of_two_smul inv_of_two_smul_add_inv_of_two_smul
+#align inv_of_two_smul_add_inv_of_two_smul invOf_two_smul_add_invOf_two_smul
 
 /-- Pullback a `Module` structure along an injective additive monoid homomorphism.
 See note [reducible non-instances]. -/

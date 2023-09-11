@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.multiset.basic
-! leanprover-community/mathlib commit 2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4
+! leanprover-community/mathlib commit 06a655b5fcfbda03502f9158bbf6c0f1400886f9
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -158,9 +158,9 @@ protected theorem induction {p : Multiset α → Prop} (empty : p 0)
 #align multiset.induction Multiset.induction
 
 @[elab_as_elim]
-protected theorem induction_on {p : Multiset α → Prop} (s : Multiset α) (h₁ : p 0)
-    (h₂ : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : p s :=
-  Multiset.induction h₁ h₂ s
+protected theorem induction_on {p : Multiset α → Prop} (s : Multiset α) (empty : p 0)
+    (cons : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : p s :=
+  Multiset.induction empty cons s
 #align multiset.induction_on Multiset.induction_on
 
 theorem cons_swap (a b : α) (s : Multiset α) : a ::ₘ b ::ₘ s = b ::ₘ a ::ₘ s :=
@@ -3044,9 +3044,9 @@ def Pairwise (r : α → α → Prop) (m : Multiset α) : Prop :=
 #align multiset.pairwise Multiset.Pairwise
 
 @[simp]
-theorem pairwise_nil (r : α → α → Prop) : Multiset.Pairwise r 0 :=
+theorem pairwise_zero (r : α → α → Prop) : Multiset.Pairwise r 0 :=
   ⟨[], rfl, List.Pairwise.nil⟩
-#align multiset.pairwise_nil Multiset.pairwise_nil
+#align multiset.pairwise_zero Multiset.pairwise_zero
 
 theorem pairwise_coe_iff {r : α → α → Prop} {l : List α} :
     Multiset.Pairwise r l ↔ ∃ l' : List α, l ~ l' ∧ l'.Pairwise r :=

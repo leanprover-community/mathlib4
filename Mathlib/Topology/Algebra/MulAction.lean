@@ -160,7 +160,7 @@ instance Units.continuousSMul : ContinuousSMul Mˣ X
 end Monoid
 
 @[to_additive]
-instance [SMul M X] [SMul M Y] [ContinuousSMul M X] [ContinuousSMul M Y] :
+instance Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [ContinuousSMul M Y] :
     ContinuousSMul M (X × Y) :=
   ⟨(continuous_fst.smul (continuous_fst.comp continuous_snd)).prod_mk
       (continuous_fst.smul (continuous_snd.comp continuous_snd))⟩

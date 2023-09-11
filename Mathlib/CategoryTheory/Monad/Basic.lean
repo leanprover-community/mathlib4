@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta, Adam Topaz
 
 ! This file was ported from Lean 3 source module category_theory.monad.basic
-! leanprover-community/mathlib commit 1995c7bbdbb0adb1b6d5acdc654f6cf46ed96cfa
+! leanprover-community/mathlib commit 9c6816cab5872990d450d2c2e7832176167b1c07
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -309,12 +309,6 @@ def monadToFunctor : Monad C ⥤ C ⥤ C where
 
 instance : Faithful (monadToFunctor C) where
 
-/-- Porting note: removed @[simp] as simpNF says the LHS reduces to
-  (monadToFunctor C).mapIso (Iso.mk (MonadHom.mk f.hom) (MonadHom.mk f.inv)).
-  But upon adding a new simp lemma with this LHS and the hypotheses necessary to
-  make the lemma statement type-check, simpNF raises a new complaint:
-  "Left-hand side does not simplify, when using the simp lemma on itself.
-  This usually means that it will never apply." -/
 theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N) (f_η f_μ) :
     (monadToFunctor _).mapIso (MonadIso.mk f f_η f_μ) = f := by
   ext
@@ -334,12 +328,6 @@ def comonadToFunctor : Comonad C ⥤ C ⥤ C where
 
 instance : Faithful (comonadToFunctor C) where
 
-/-- Porting note: removed @[simp] as simpNF says the LHS reduces to
-  (comonadToFunctor C).mapIso (Iso.mk (ComonadHom.mk f.hom) (ComonadHom.mk f.inv)).
-  But upon adding a new simp lemma with this LHS and the hypotheses necessary to
-  make the lemma statement type-check, simpNF raises a new complaint:
-  "Left-hand side does not simplify, when using the simp lemma on itself.
-  This usually means that it will never apply." -/
 theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N) (f_ε f_δ) :
     (comonadToFunctor _).mapIso (ComonadIso.mk f f_ε f_δ) = f := by
   ext

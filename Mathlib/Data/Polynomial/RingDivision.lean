@@ -886,7 +886,7 @@ variable [CommRing T]
 
 /-- The set of distinct roots of `p` in `E`.
 
-If you have a non-separable polynomial, use `polynomial.roots` for the multiset
+If you have a non-separable polynomial, use `Polynomial.roots` for the multiset
 where multiple roots have the appropriate multiplicity. -/
 def rootSet (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Set S :=
   (p.map (algebraMap T S)).roots.toFinset

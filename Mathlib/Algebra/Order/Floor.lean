@@ -1050,7 +1050,7 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
     rw [← Nat.cast_add, Nat.mod_add_div m n]
 #align int.fract_div_nat_cast_eq_div_nat_cast_mod Int.fract_div_natCast_eq_div_natCast_mod
 
--- TODO Generalise this to allow `n : ℤ` using `int.fmod` instead of `int.mod`.
+-- TODO Generalise this to allow `n : ℤ` using `Int.fmod` instead of `Int.mod`.
 theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     fract ((m : k) / n) = ↑(m % n) / n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
@@ -1642,7 +1642,7 @@ theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (Floor
   cases H₁; cases H₂; congr
 #align subsingleton_floor_ring subsingleton_floorRing
 
--- Porting note: the `positivity` extensions for `int.floor`, `int.ceil`, `ceil` are TODO for now
+-- Porting note: the `positivity` extensions for `Int.floor`, `Int.ceil`, `ceil` are TODO for now
 
 -- namespace Tactic
 

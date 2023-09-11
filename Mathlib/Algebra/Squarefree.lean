@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 
 ! This file was ported from Lean 3 source module algebra.squarefree
-! leanprover-community/mathlib commit 79de90f7beca025f469dcda978ae655c4d985946
+! leanprover-community/mathlib commit 00d163e35035c3577c1c79fa53b68de17781ffc1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -265,3 +265,18 @@ theorem dvd_pow_iff_dvd_of_squarefree {x y : R} {n : ℕ} (hsq : Squarefree x) (
 #align unique_factorization_monoid.dvd_pow_iff_dvd_of_squarefree UniqueFactorizationMonoid.dvd_pow_iff_dvd_of_squarefree
 
 end UniqueFactorizationMonoid
+
+namespace Int
+
+@[simp]
+theorem squarefree_natAbs {n : ℤ} : Squarefree n.natAbs ↔ Squarefree n := by
+  simp_rw [Squarefree, natAbs_surjective.forall, ← natAbs_mul, natAbs_dvd_natAbs,
+    isUnit_iff_natAbs_eq, Nat.isUnit_iff]
+#align int.squarefree_nat_abs Int.squarefree_natAbs
+
+@[simp]
+theorem squarefree_coe_nat {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
+  rw [← squarefree_natAbs, natAbs_ofNat]
+#align int.squarefree_coe_nat Int.squarefree_coe_nat
+
+end Int
