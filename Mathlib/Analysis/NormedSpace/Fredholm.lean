@@ -4,6 +4,7 @@ import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Topology.Algebra.Module.LocallyConvex
 import Mathlib.Analysis.NormedSpace.Complemented
 import Mathlib.FieldTheory.Finiteness
+import Mathlib.Topology.Algebra.Module.Basic
 
 open Cardinal
 open Function
@@ -14,6 +15,15 @@ variable {K U V W : Type} [Field K]
   [AddCommGroup U] [Module K U]
   [AddCommGroup V] [Module K V]
   [AddCommGroup W] [Module K W]
+
+variable {𝕜 : Type*} [TopologicalSpace 𝕜] [LinearOrderedField 𝕜]
+variable {E: Type*} [TopologicalSpace E] [AddCommGroup E] [Module 𝕜 E] [Module ℝ 𝕜] [Module ℝ E]
+    [IsScalarTower ℝ 𝕜 E] [LocallyConvexSpace 𝕜 E]
+
+
+variable {I : Type}
+lemma freeSubmoduleIsClosedComplemented  (F : Submodule 𝕜 E) (f : F ≃L[𝕜] I → 𝕜) :
+    Submodule.ClosedComplemented F := by sorry
 
 def isFiniteRank (A : V →ₗ[K] W) : Prop :=
   rank A < ℵ₀
