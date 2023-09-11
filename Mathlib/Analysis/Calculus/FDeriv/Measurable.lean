@@ -437,7 +437,7 @@ theorem measurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [Mea
 
 
 theorem stronglyMeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
-    [h : SecondCountableTopology F] (f : 𝕜 → F) : StronglyMeasurable (deriv f) := by
+    [SecondCountableTopology F] (f : 𝕜 → F) : StronglyMeasurable (deriv f) := by
   borelize F
   exact (measurable_deriv f).stronglyMeasurable
 #align strongly_measurable_deriv stronglyMeasurable_deriv
@@ -846,13 +846,13 @@ theorem measurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] :
 #align measurable_deriv_within_Ioi measurable_derivWithin_Ioi
 
 theorem stronglyMeasurable_derivWithin_Ioi [SecondCountableTopology F] :
-    StronglyMeasurable fun x => derivWithin f (Ioi x) x := by
+    StronglyMeasurable (fun x ↦ derivWithin f (Ioi x) x) := by
   borelize F
   exact (measurable_derivWithin_Ioi f).stronglyMeasurable
 #align strongly_measurable_deriv_within_Ioi stronglyMeasurable_derivWithin_Ioi
 
 theorem stronglyMeasurable_derivWithin_Ioi_of_continuous {f : ℝ → F} (hf : Continuous f) :
-    StronglyMeasurable fun x => derivWithin f (Ioi x) x := by
+    StronglyMeasurable (fun x ↦ derivWithin f (Ioi x) x) := by
   simpa [derivWithin_Ioi_eq_Ici] using stronglyMeasurable_derivWithin_Ici_of_continuous hf
 
 theorem aemeasurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] (μ : Measure ℝ) :
@@ -867,7 +867,7 @@ theorem aestronglyMeasurable_derivWithin_Ioi [SecondCountableTopology F] (μ : M
 
 theorem aestronglyMeasurable_derivWithin_Ioi_of_continuous {f : ℝ → F} (hf : Continuous f)
     (μ : Measure ℝ) :
-    AEStronglyMeasurable (fun x => derivWithin f (Ioi x) x) μ :=
+    AEStronglyMeasurable (fun x ↦ derivWithin f (Ioi x) x) μ :=
   (stronglyMeasurable_derivWithin_Ioi_of_continuous hf).aestronglyMeasurable
 
 end RightDeriv
