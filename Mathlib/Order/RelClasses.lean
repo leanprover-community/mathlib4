@@ -291,6 +291,11 @@ theorem WellFoundedRelation.asymmetric {α : Sort _} [WellFoundedRelation α] {a
   fun hab hba => WellFoundedRelation.asymmetric hba hab
 termination_by _ => a
 
+lemma WellFounded.prod_lex {ra : α → α → Prop} {rb : β → β → Prop} (ha : WellFounded ra)
+    (hb : WellFounded rb) : WellFounded (Prod.Lex ra rb) :=
+  (Prod.lex ⟨_, ha⟩ ⟨_, hb⟩).wf
+#align prod.lex_wf WellFounded.prod_lex
+
 namespace IsWellFounded
 
 variable (r) [IsWellFounded α r]
@@ -489,7 +494,7 @@ instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder �
   wf := wellFounded_of_isEmpty r
 
 instance [IsWellFounded α r] [IsWellFounded β s] : IsWellFounded (α × β) (Prod.Lex r s) :=
-  ⟨(Prod.lex (IsWellFounded.toWellFoundedRelation _) (IsWellFounded.toWellFoundedRelation _)).wf⟩
+  ⟨IsWellFounded.wf.prod_lex IsWellFounded.wf⟩
 
 instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Lex r s) where
   trichotomous := fun ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ =>
@@ -505,8 +510,6 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
     cases' h₁ with a₁ a₂ b₁ b₂ ab a₁ b₁ b₂ ab <;> cases' h₂ with _ _ c₁ c₂ bc _ _ c₂ bc
     exacts [.left _ _ (_root_.trans ab bc), .left _ _ ab, .left _ _ bc,
       .right _ (_root_.trans ab bc)]
-  wf := (Prod.lex (IsWellFounded.toWellFoundedRelation _)
-    (IsWellFounded.toWellFoundedRelation _)).wf
 
 instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
   ⟨InvImage.wf f IsWellFounded.wf⟩

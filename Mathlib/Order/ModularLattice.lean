@@ -273,7 +273,7 @@ theorem wellFounded_lt_exact_sequence {β γ : Type _} [PartialOrder β] [Preord
         cases' lt_or_eq_of_le (inf_le_inf_right K (le_of_lt hAB)) with h h
         · exact Or.inl h
         · exact Or.inr ⟨h, sup_lt_sup_of_lt_of_inf_le_inf hAB (le_of_eq h.symm)⟩)
-    (InvImage.wf _ (Prod.lex ⟨_, h₁⟩ ⟨_, h₂⟩).wf)
+    (InvImage.wf _ (h₁.prod_lex h₂))
 #align well_founded_lt_exact_sequence wellFounded_lt_exact_sequence
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
