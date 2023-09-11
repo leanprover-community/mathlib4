@@ -72,6 +72,22 @@ theorem isNat_le_false [OrderedSemiring α] [CharZero α] {a b : α} {a' b' : �
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble a' b' = false) : ¬a ≤ b :=
   not_le_of_lt (isNat_lt_true hb ha h)
 
+theorem isInt_le_true [OrderedRing α] : {a b : α} → {a' b' : ℤ} →
+    IsInt a a' → IsInt b b' → decide (a' ≤ b') → a ≤ b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_mono <| of_decide_eq_true h
+
+theorem isInt_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {a' b' : ℤ} →
+    IsInt a a' → IsInt b b' → decide (a' < b') → a < b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_lt.2 <| of_decide_eq_true h
+
+theorem isInt_le_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
+    (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' < a')) : ¬a ≤ b :=
+  not_le_of_lt (isInt_lt_true hb ha h)
+
+theorem isInt_lt_false [OrderedRing α] {a b : α} {a' b' : ℤ}
+    (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
+  not_lt_of_le (isInt_le_true hb ha h)
+
 /-- The `norm_num` extension which identifies expressions of the form `a ≤ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ ≤ _] def evalLE : NormNumExt where eval {v β} e := do

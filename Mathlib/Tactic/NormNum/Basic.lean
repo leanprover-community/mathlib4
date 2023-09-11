@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Rat.Basic
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Tactic.HaveI
@@ -483,27 +482,6 @@ theorem isNat_lt_false [OrderedSemiring α] {a b : α} {a' b' : ℕ}
 
 theorem isInt_eq_true [Ring α] : {a b : α} → {z : ℤ} → IsInt a z → IsInt b z → a = b
   | _, _, _, ⟨rfl⟩, ⟨rfl⟩ => rfl
-
-theorem isInt_le_true [OrderedRing α] : {a b : α} → {a' b' : ℤ} →
-    IsInt a a' → IsInt b b' → decide (a' ≤ b') → a ≤ b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_mono <| of_decide_eq_true h
-
-theorem isInt_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {a' b' : ℤ} →
-    IsInt a a' → IsInt b b' → decide (a' < b') → a < b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_lt.2 <| of_decide_eq_true h
-
-theorem isInt_le_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
-    (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' < a')) : ¬a ≤ b :=
-  not_le_of_lt (isInt_lt_true hb ha h)
-
-theorem isInt_lt_false [OrderedRing α] {a b : α} {a' b' : ℤ}
-    (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
-  not_lt_of_le (isInt_le_true hb ha h)
-
-theorem Rat.invOf_denom_swap [Ring α] (n₁ n₂ : ℤ) (a₁ a₂ : α)
-    [Invertible a₁] [Invertible a₂] : n₁ * ⅟a₁ = n₂ * ⅟a₂ ↔ n₁ * a₂ = n₂ * a₁ := by
-  rw [mul_invOf_eq_iff_eq_mul_right, ← Int.commute_cast, mul_assoc,
-    ← mul_left_eq_iff_eq_invOf_mul, Int.commute_cast]
 
 theorem isRat_eq_true [Ring α] : {a b : α} → {n : ℤ} → {d : ℕ} →
     IsRat a n d → IsRat b n d → a = b
