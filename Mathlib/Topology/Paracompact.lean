@@ -34,7 +34,7 @@ We also prove the following facts.
 * Every paracompact Hausdorff space is normal. This statement is not an instance to avoid loops in
   the instance graph.
 
-* Every `EMetricSpace` is a paracompact space, see instance `EMetricSpace.ParacompactSpace` in
+* Every `EMetricSpace` is a paracompact space, see instance `EMetric.instParacompactSpace` in
   `Topology/EMetricSpace/Paracompact`.
 
 ## TODO

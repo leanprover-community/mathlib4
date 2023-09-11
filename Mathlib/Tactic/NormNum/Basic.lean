@@ -404,6 +404,10 @@ lemma isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} →
     IsRat (a / b) cn cd
   | _, _, _, _, h => by simp [div_eq_mul_inv]; exact h
 
+/-- Helper function to synthesize a typed `DivisionRing α` expression. -/
+def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
+  return ← synthInstanceQ (q(DivisionRing $α) : Q(Type u)) <|> throwError "not a division ring"
+
 /-- The `norm_num` extension which identifies expressions of the form `a / b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ / _, Div.div _ _] def evalDiv : NormNumExt where eval {u α} e := do

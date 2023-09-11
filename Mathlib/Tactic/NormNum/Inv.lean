@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Algebra.Field.Basic
 
 /-!
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
@@ -118,7 +119,7 @@ such that `norm_num` successfully recognises `a`. -/
   let .app f (a : Q($α)) ← whnfR e | failure
   let ra ← derive a
   let dα ← inferDivisionRing α
-  let _i ← inferCharZeroOfDivisionRing? dα
+  let i ← inferCharZeroOfDivisionRing? dα
   guard <|← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
   haveI' : $e =Q $a⁻¹ := ⟨⟩
   assumeInstancesCommute
@@ -128,7 +129,7 @@ such that `norm_num` successfully recognises `a`. -/
     let ⟨qa, na, da, pa⟩ ← ra.toRat' dα
     let qb := qa⁻¹
     if qa > 0 then
-      if let some _i := _i then
+      if let some i := i then
         have lit : Q(ℕ) := na.appArg!
         haveI : $na =Q Int.ofNat $lit := ⟨⟩
         have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
@@ -141,7 +142,7 @@ such that `norm_num` successfully recognises `a`. -/
         assumeInstancesCommute
         return .isNat inst n (q(isRat_inv_one $pa))
     else if qa < 0 then
-      if let some _i := _i then
+      if let some i := i then
         have lit : Q(ℕ) := na.appArg!
         haveI : $na =Q Int.negOfNat $lit := ⟨⟩
         have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)

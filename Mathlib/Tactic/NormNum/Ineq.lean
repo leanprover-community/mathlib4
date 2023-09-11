@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.Eq
 import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Monoid.WithTop
 
 /-!
 # `norm_num` extensions for inequalities.
