@@ -5,7 +5,7 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Group.Commute
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
 
