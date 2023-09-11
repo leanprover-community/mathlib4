@@ -754,6 +754,11 @@ protected def map' (f : α → β) (h : (s₁.r ⇒ s₂.r) f f) : Quotient s₁
 #align quotient.map' Quotient.map'
 
 @[simp]
+theorem map'_mk (f : α → β) (h) (x : α) :
+    (Quotient.mk s₁ x).map' f h = Quotient.mk s₂ (f x) :=
+  rfl
+
+@[simp]
 theorem map'_mk'' (f : α → β) (h) (x : α) :
     (Quotient.mk'' x : Quotient s₁).map' f h = (Quotient.mk'' (f x) : Quotient s₂) :=
   rfl
@@ -808,6 +813,7 @@ theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out' = q :=
   q.out_eq
 #align quotient.out_eq' Quotient.out_eq'
 
+@[simp]
 theorem out'_eq (q : Quotient s₁) : Quotient.mk _ q.out' = q :=
   q.out_eq
 
@@ -832,10 +838,10 @@ protected theorem liftOn₂'_mk [t : Setoid β] (f : α → β → γ) (h) (a : 
 #align quotient.lift_on₂'_mk Quotient.liftOn₂'_mk
 
 @[simp]
-theorem map'_mk [t : Setoid β] (f : α → β) (h) (x : α) :
-    (Quotient.mk s x).map' f h = (Quotient.mk t (f x)) :=
+theorem map'_mk' [t : Setoid β] (f : α → β) (h) (x : α) :
+    (Quotient.mk' x).map' f h = (Quotient.mk' (f x)) :=
   rfl
-#align quotient.map'_mk Quotient.map'_mk
+#align quotient.map'_mk Quotient.map'_mk'
 
 end
 
