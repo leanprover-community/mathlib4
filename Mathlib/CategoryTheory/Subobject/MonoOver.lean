@@ -434,8 +434,8 @@ instance faithful_exists (f : X ⟶ Y) : Faithful («exists» f) where
 def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=
   NatIso.ofComponents (by
     intro Z
-    suffices : (forget _).obj ((«exists» f).obj Z) ≅ (forget _).obj ((map f).obj Z)
-    apply (forget _).preimageIso this
+    suffices (forget _).obj ((«exists» f).obj Z) ≅ (forget _).obj ((map f).obj Z) by
+      apply (forget _).preimageIso this
     apply Over.isoMk _ _
     apply imageMonoIsoSource (Z.arrow ≫ f)
     apply imageMonoIsoSource_hom_self)
