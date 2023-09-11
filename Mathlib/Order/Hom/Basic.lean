@@ -96,6 +96,9 @@ abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
 
+@[simp (default+1)]
+lemma OrderEmbedding.coe_toEmbedding [LE α] [LE β] (f : α ↪o β) : ⇑f.toEmbedding = f := rfl
+
 /-- An order isomorphism is an equivalence such that `a ≤ b ↔ (f a) ≤ (f b)`.
 This definition is an abbreviation of `RelIso (≤) (≤)`. -/
 abbrev OrderIso (α β : Type*) [LE α] [LE β] :=

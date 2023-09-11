@@ -30,7 +30,7 @@ theorem map_valEmbedding_univ : (Finset.univ : Finset (Fin n)).map Fin.valEmbedd
 @[simp]
 theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).toEmbedding := by
   ext i
-  simp only [mem_Ioi, mem_map, mem_univ, Function.Embedding.coeFn_mk, exists_true_left]
+  simp only [mem_Ioi, mem_map, mem_univ, OrderEmbedding.coe_toEmbedding, exists_true_left]
   constructor
   · refine' cases _ _ i
     · rintro ⟨⟨⟩⟩

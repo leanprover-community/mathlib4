@@ -119,6 +119,7 @@ lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.di
 -- @[simps! (config := { fullyApplied := false })]
 def map : Chain β :=
   f.comp c
+@[simp] theorem map_coe : c.map f = f ∘ c := rfl
 #align omega_complete_partial_order.chain.map OmegaCompletePartialOrder.Chain.map
 
 @[simp] theorem map_coe : ⇑(map c f) = f ∘ c := rfl
@@ -162,6 +163,7 @@ that have the same index. -/
 -- @[simps!]
 def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) :=
   OrderHom.prod c₀ c₁
+@[simp] theorem zip_coe (c₀ : Chain α) (c₁ : Chain β) (x : ℕ) : zip c₀ c₁ x = (c₀ x, c₁ x) := rfl
 #align omega_complete_partial_order.chain.zip OmegaCompletePartialOrder.Chain.zip
 
 @[simp] theorem zip_coe (c₀ : Chain α) (c₁ : Chain β) (n : ℕ) : c₀.zip c₁ n = (c₀ n, c₁ n) := rfl
