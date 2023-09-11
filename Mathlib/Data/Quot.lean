@@ -808,6 +808,9 @@ theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out' = q :=
   q.out_eq
 #align quotient.out_eq' Quotient.out_eq'
 
+theorem out'_eq (q : Quotient s₁) : Quotient.mk _ q.out' = q :=
+  q.out_eq
+
 theorem mk_out' (a : α) : @Setoid.r α s₁ (Quotient.mk'' a : Quotient s₁).out' a :=
   Quotient.exact (Quotient.out_eq _)
 #align quotient.mk_out' Quotient.mk_out'

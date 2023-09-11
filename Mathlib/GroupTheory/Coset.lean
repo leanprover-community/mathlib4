@@ -611,9 +611,9 @@ noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
       Equiv.sigmaCongrRight fun L => by
         rw [← eq_class_eq_leftCoset]
         show
-          (_root_.Subtype fun x : α => Quotient.mk'' x = L) ≃
-            _root_.Subtype fun x : α => Quotient.mk'' x = Quotient.mk'' _
-        simp [-Quotient.eq'']
+          (_root_.Subtype fun x : α => Quotient.mk _ x = L) ≃
+            _root_.Subtype fun x : α => Quotient.mk _ x = Quotient.mk _ _
+        simp only [Quotient.out'_eq]
         rfl
     _ ≃ Σ _L : α ⧸ s, s := Equiv.sigmaCongrRight fun L => leftCosetEquivSubgroup _
     _ ≃ (α ⧸ s) × s := Equiv.sigmaEquivProd _ _

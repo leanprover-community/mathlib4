@@ -46,7 +46,7 @@ theorem Quotient.finChoiceAux_eq {ι : Type*} [DecidableEq ι] {α : ι → Type
     ∀ (l : List ι) (f : ∀ i ∈ l, α i), (Quotient.finChoiceAux l fun i h => ⟦f i h⟧) = ⟦f⟧
   | [], f => Quotient.sound fun i h => nomatch List.not_mem_nil _ h
   | i :: l, f => by
-    simp [Quotient.finChoiceAux, Quotient.finChoiceAux_eq l, -Quotient.eq]
+    simp only [finChoiceAux, Quotient.finChoiceAux_eq l, eq_mpr_eq_cast, lift_mk]
     refine' Quotient.sound fun j h => _
     by_cases e : j = i <;> simp [e] <;> try exact Setoid.refl _
     subst j; exact Setoid.refl _

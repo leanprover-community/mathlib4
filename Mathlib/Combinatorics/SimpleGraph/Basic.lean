@@ -791,7 +791,7 @@ theorem Dart.symm_ne (d : G.Dart) : d.symm ≠ d :=
 
 theorem dart_edge_eq_iff : ∀ d₁ d₂ : G.Dart, d₁.edge = d₂.edge ↔ d₁ = d₂ ∨ d₁ = d₂.symm := by
   rintro ⟨p, hp⟩ ⟨q, hq⟩
-  simp [Sym2.mk''_eq_mk''_iff, -Quotient.eq]
+  simp only [Dart.edge_mk, Sym2.mk''_eq_mk''_iff, Dart.mk.injEq, Dart.symm_mk]
 #align simple_graph.dart_edge_eq_iff SimpleGraph.dart_edge_eq_iff
 
 theorem dart_edge_eq_mk'_iff :
