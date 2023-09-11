@@ -587,7 +587,7 @@ lemma measure_prod_compl_eq_zero {α β : Type*}
   simp [s_ae_univ, t_ae_univ]
 
 -- Place where?
-lemma NullMeasurableSet.prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+lemma MeasureTheory.NullMeasurableSet.prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     {μ : Measure α} {ν : Measure β} [SigmaFinite ν] {s : Set α} {t : Set β}
     (s_mble : NullMeasurableSet s μ) (t_mble : NullMeasurableSet t ν) :
     NullMeasurableSet (s ×ˢ t) (μ.prod ν) := by
@@ -607,7 +607,7 @@ lemma NullMeasurableSet.prod {α β : Type*} [MeasurableSpace α] [MeasurableSpa
 lemma nullMeasurableSet_fst_mem {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     {μ : Measure α} {ν : Measure β} [SigmaFinite ν] {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × β | p.fst ∈ s} (μ.prod ν) := by
-  convert nullMeasurableSet_prod (ν := ν) (t := univ) s_mble nullMeasurableSet_univ
+  convert s_mble.prod (ν := ν) nullMeasurableSet_univ
   ext p
   simp only [mem_setOf_eq, mem_prod, mem_univ, and_true]
 
