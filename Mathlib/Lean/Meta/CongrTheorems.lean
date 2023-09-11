@@ -108,6 +108,8 @@ This is the interpretation of the `CongrArgKind`s in the generated congruence th
 * `.subsingletonInst` corresponds to having two arguments `(x : α) (x' : α')` for which the
   congruence generator was able to prove that `HEq x x'` already. This is a slight abuse of
   this `CongrArgKind` since this is used even for types that are not subsingleton typeclasses.
+
+Note that the first entry in this array is for the function itself.
 -/
 partial def mkRichHCongr (fType : Expr) (info : FunInfo)
     (fixedFun : Bool := false) (fixedParams : Array Bool := #[])
@@ -149,7 +151,7 @@ partial def mkRichHCongr (fType : Expr) (info : FunInfo)
       let mut hs'' := #[] -- eq' parameters that are actually used beyond those in `fParams`
       let mut pfVars := #[] -- eq' parameters that can be solved for already
       let mut pfVals := #[] -- the values to use for these parameters
-      let mut kinds' := #[]
+      let mut kinds' : Array CongrArgKind := #[if fixedFun then .fixed else .eq]
       for i in [0 : info.getArity] do
         hs'' := hs''.push xs[i]!
         if let some (_, eq', _) := eqs[i]! then
@@ -165,6 +167,7 @@ partial def mkRichHCongr (fType : Expr) (info : FunInfo)
             kinds' := kinds'.push kinds[i]!
         else
           kinds' := kinds'.push .fixed
+      trace[Meta.CongrTheorems] "CongrArgKinds: {repr kinds'}"
       -- Take `proof`, abstract the pfVars and provide the solved-for proofs (as an
       -- optimization for proof term size) then abstract the remaining variables.
       -- The `usedOnly` probably has no affect.
@@ -172,7 +175,9 @@ partial def mkRichHCongr (fType : Expr) (info : FunInfo)
       -- complexity, but it shouldn't be too bad since they're some applications of just variables.
       let proof' ← mkLambdaFVars fParams (← mkLambdaFVars (usedOnly := true) hs''
                     (mkAppN (← mkLambdaFVars pfVars (proof.beta vals')) pfVals))
-      return {proof := proof', type := ← inferType proof', argKinds := kinds'}
+      let congrType' ← inferType proof'
+      trace[Meta.CongrTheorems] "rich congrType: {congrType'}"
+      return {proof := proof', type := congrType', argKinds := kinds'}
 where
   /-- Similar to doing `forallBoundedTelescope` twice, but makes use of the `fixed` array, which
   is used as a hint for whether both variables should be the same. This is only a hint though,
