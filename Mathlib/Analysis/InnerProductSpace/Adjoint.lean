@@ -65,6 +65,8 @@ namespace ContinuousLinearMap
 
 variable [CompleteSpace E] [CompleteSpace G]
 
+-- Note: made noncomputable to stop excess compilation
+-- leanprover-community/mathlib4#7103
 /-- The adjoint, as a continuous conjugate-linear map. This is only meant as an auxiliary
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
