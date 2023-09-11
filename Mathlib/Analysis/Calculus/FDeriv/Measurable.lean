@@ -435,7 +435,6 @@ theorem measurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [Mea
   simpa only [fderiv_deriv] using measurable_fderiv_apply_const 𝕜 f 1
 #align measurable_deriv measurable_deriv
 
-
 theorem stronglyMeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
     [SecondCountableTopology F] (f : 𝕜 → F) : StronglyMeasurable (deriv f) := by
   borelize F
