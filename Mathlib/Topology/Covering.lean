@@ -183,10 +183,91 @@ protected theorem IsFiberBundle.isCoveringMap {F : Type*} [TopologicalSpace F] [
     (hf : ∀ x : X, ∃ e : Trivialization F f, x ∈ e.baseSet) : IsCoveringMap f :=
   IsCoveringMap.mk f (fun _ => F) (fun x => Classical.choose (hf x)) fun x =>
     Classical.choose_spec (hf x)
-#align is_fiber_bundle.is_covering_map IsFiberBundle.isCoveringMap
+#align is_fiber_bundle.IsCoveringMap IsFiberBundle.isCoveringMap
 
 protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [TopologicalSpace F]
     [DiscreteTopology F] [TopologicalSpace (Bundle.TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
     [FiberBundle F E] : IsCoveringMap (π F E) :=
   IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩
-#align fiber_bundle.is_covering_map FiberBundle.isCoveringMap
+#align fiber_bundle.IsCoveringMap FiberBundle.isCoveringMap
+
+namespace isCoveringMap
+
+
+
+lemma clopen_set_intersect_ConnectedComponents_whole_set (Y: Type*) [TopologicalSpace Y]
+  (S : Set Y) (hS : IsClopen S) (w : ∀ x : Y, ∃ y ∈ connectedComponent x, y ∈ S) :
+  S = Set.univ := by
+  apply Set.eq_univ_of_forall
+  intro x
+  obtain ⟨y, hy, h⟩ := w x
+  exact hS.connectedComponent_subset h (connectedComponent_eq hy ▸ mem_connectedComponent)
+
+
+open TopologicalSpace
+
+lemma is_open_inter_of_coe_preim {X : Type*} [TopologicalSpace X] (s t : Set X) (hs : IsOpen s)
+  (h : IsOpen (((↑)  : s → X) ⁻¹' t)) : IsOpen (t ∩ s) := by
+  let ⟨a, b, c⟩ := inducing_subtype_val.isOpen_iff.mp h
+  exact Subtype.preimage_coe_eq_preimage_coe_iff.mp c ▸ b.inter hs
+
+lemma is_open_of_is_open_coe (Y:Type*) [TopologicalSpace Y] (A: Set Y)
+(hA : ∀ x : Y, ∃ (U : Set Y) (_ : U ∈ nhds x), IsOpen (((↑) : U → Y) ⁻¹' A)) : IsOpen A := by
+  refine' isOpen_iff_forall_mem_open.mpr (fun x hx => _)
+  let ⟨U, hU1, hU2⟩ := hA x
+  let ⟨V, hV1, hV2, hV3⟩ := mem_nhds_iff.mp hU1
+  exact ⟨A ∩ V, Set.inter_subset_left A V,
+    is_open_inter_of_coe_preim V A hV2 ((continuous_inclusion hV1).isOpen_preimage _ hU2), hx, hV3⟩
+
+lemma is_closed_of_is_closed_coe (Y:Type*) [TopologicalSpace Y] (A: Set Y)
+(hA : ∀ x : Y, ∃ (U : Set Y) (_ : U ∈ nhds x), IsClosed (((↑ ) : U → Y) ⁻¹' A)) : IsClosed A :=
+ ⟨ is_open_of_is_open_coe Y Aᶜ (fun x  => by
+ let ⟨U, hU,hN⟩ := hA x
+ exact ⟨ U,  hU , hN.1 ⟩) ⟩
+
+lemma is_clopen_of_is_clopen_coe (Y:Type*) [TopologicalSpace Y] (A: Set Y)
+(hA : ∀ x : Y, ∃ (U : Set Y) (hU : U ∈ nhds x), IsClopen (((↑ ) : U → Y) ⁻¹' A)) : IsClopen A :=
+⟨is_open_of_is_open_coe  Y A (fun x => by
+let  ⟨ z,hz,hhz⟩:= hA x
+exact ⟨ z,hz,hhz.1⟩  ) ,
+ is_closed_of_is_closed_coe  Y A (fun x => by
+ let ⟨z,hz,hhz⟩:= hA x
+ exact ⟨ z,hz,hhz.2⟩  )⟩
+
+theorem clopen_equalizer_of_discrete {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+  [DiscreteTopology Y] {f g : X → Y} (hf : Continuous f) (hg : Continuous g) :
+  IsClopen {x : X | f x = g x} := (isClopen_discrete (Set.diagonal Y)).preimage (hf.prod_mk hg)
+
+
+lemma tautology : true := sorry
+
+theorem uniqueness_of_homotopy_lifting (Y : Type*) [TopologicalSpace Y] (hf : IsCoveringMap f)
+  (H₁ H₂ : ContinuousMap Y E) (h : f ∘ H₁ = f ∘ H₂)
+  (hC : ∀ x : Y, ∃ y ∈ connectedComponent x, H₁ y = H₂ y) :
+  H₁ = H₂ := by
+  refine' FunLike.ext H₁ H₂ (Set.eq_univ_iff_forall.mp
+    (clopen_set_intersect_ConnectedComponents_whole_set _ _
+    (is_clopen_of_is_clopen_coe _ _ (fun x => _)) hC))
+
+
+  let t := (hf (f (H₁ x))).toTrivialization
+  let U := (f ∘ H₁) ⁻¹' t.baseSet
+  refine' ⟨U, (t.open_baseSet.preimage (hf.continuous.comp H₁.continuous)).mem_nhds
+    ((hf (f (H₁ x)))).mem_toTrivialization_baseSet, _⟩
+  change IsClopen {y : U | H₁ y = H₂ y}
+  have h0 : ∀ y : U, f (H₁ y) = f (H₂ y) := fun y => congr_fun h y
+  have h1 : ∀ y : U, f (H₁ y) ∈ t.baseSet := Subtype.prop
+  have h2 : ∀ y : U, f (H₂ y) ∈ t.baseSet := fun y => h0 y ▸ h1 y
+  have key : ∀ y : U, H₁ y = H₂ y ↔ (t (H₁ y)).2 = (t (H₂ y)).2
+  { refine' fun y => ⟨congr_arg (Prod.snd ∘ t), fun m => _⟩
+    have h0 : f (H₁ y) = f (H₂ y) := congr_fun h y
+    rw [←t.coe_fst' (h1 y), ←t.coe_fst' (h2 y)] at h0
+    refine' t.injOn (t.mem_source.mpr (h1 y)) (t.mem_source.mpr (h2 y)) (Prod.ext h0 m) }
+  simp_rw [key]
+  haveI := (hf (f (H₁ x))).1
+  simp only [←t.mem_source] at h1 h2
+  refine' clopen_equalizer_of_discrete
+    (continuous_snd.comp (t.continuous_toFun.comp_continuous (H₁.2.comp continuous_subtype_val) h1))
+     (continuous_snd.comp (t.continuous_toFun.comp_continuous (H₂.2.comp continuous_subtype_val) h2))
+
+end isCoveringMap
