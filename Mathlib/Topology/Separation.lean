@@ -109,7 +109,7 @@ theorem separatedNhds_iff_disjoint {s t : Set α} : SeparatedNhds s t ↔ Disjoi
     exists_and_left, and_assoc, and_comm, and_left_comm]
 #align separated_nhds_iff_disjoint separatedNhds_iff_disjoint
 
-alias separatedNhds_iff_disjoint ↔ SeparatedNhds.disjoint_nhdsSet _
+alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
 
 namespace SeparatedNhds
 
@@ -1608,7 +1608,7 @@ theorem specializes_comm {a b : α} : a ⤳ b ↔ b ⤳ a := by
   simp only [← (disjoint_nhds_nhds_iff_not_specializes (α := α)).not_left, disjoint_comm]
 #align specializes_comm specializes_comm
 
-alias specializes_comm ↔ Specializes.symm _
+alias ⟨Specializes.symm, _⟩ := specializes_comm
 #align specializes.symm Specializes.symm
 
 theorem specializes_iff_inseparable {a b : α} : a ⤳ b ↔ Inseparable a b :=

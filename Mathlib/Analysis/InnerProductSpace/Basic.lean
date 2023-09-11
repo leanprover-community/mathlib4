@@ -245,7 +245,7 @@ theorem inner_smul_right (x y : F) {r : 𝕜} : ⟪x, r • y⟫ = r * ⟪x, y�
 
 theorem inner_zero_left (x : F) : ⟪0, x⟫ = 0 := by
   rw [← zero_smul 𝕜 (0 : F), inner_smul_left];
-    simp only [MulZeroClass.zero_mul, RingHom.map_zero]
+    simp only [zero_mul, RingHom.map_zero]
 #align inner_product_space.core.inner_zero_left InnerProductSpace.Core.inner_zero_left
 
 theorem inner_zero_right (x : F) : ⟪x, 0⟫ = 0 := by
@@ -330,7 +330,7 @@ showing the core is a normed group.
 -/
 theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ := by
   rcases eq_or_ne x 0 with (rfl | hx)
-  · simpa only [inner_zero_left, map_zero, MulZeroClass.zero_mul, norm_zero] using le_rfl
+  · simpa only [inner_zero_left, map_zero, zero_mul, norm_zero] using le_rfl
   · have hx' : 0 < normSqF x := inner_self_nonneg.lt_of_ne' (mt normSq_eq_zero.1 hx)
     rw [← sub_nonneg, ← mul_nonneg_iff_right_nonneg_of_pos hx', ← normSq, ← normSq,
       norm_inner_symm y, ← sq, ← cauchy_schwarz_aux]
@@ -555,7 +555,7 @@ theorem DFinsupp.inner_sum {ι : Type*} [dec : DecidableEq ι] {α : ι → Type
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
-  rw [← zero_smul 𝕜 (0 : E), inner_smul_left, RingHom.map_zero, MulZeroClass.zero_mul]
+  rw [← zero_smul 𝕜 (0 : E), inner_smul_left, RingHom.map_zero, zero_mul]
 #align inner_zero_left inner_zero_left
 
 theorem inner_re_zero_left (x : E) : re ⟪0, x⟫ = 0 := by
@@ -731,7 +731,7 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E
     convert Finset.sum_eq_single (β := 𝕜) i ?_ ?_
     · rw [inner_smul_right]
     · intro j _hj hji
-      rw [inner_smul_right, ho i j hji.symm, MulZeroClass.mul_zero]
+      rw [inner_smul_right, ho i j hji.symm, mul_zero]
     · exact fun h => False.elim (h hi)
   simpa [hg, hz] using h'
 #align linear_independent_of_ne_zero_of_inner_eq_zero linearIndependent_of_ne_zero_of_inner_eq_zero
@@ -1031,7 +1031,7 @@ theorem norm_add_sq (x y : E) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * re ⟪x, y�
   rw [← inner_conj_symm, conj_re]
 #align norm_add_sq norm_add_sq
 
-alias norm_add_sq ← norm_add_pow_two
+alias norm_add_pow_two := norm_add_sq
 #align norm_add_pow_two norm_add_pow_two
 
 /-- Expand the square -/
@@ -1040,7 +1040,7 @@ theorem norm_add_sq_real (x y : F) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * ⟪x, y
   simpa using h
 #align norm_add_sq_real norm_add_sq_real
 
-alias norm_add_sq_real ← norm_add_pow_two_real
+alias norm_add_pow_two_real := norm_add_sq_real
 #align norm_add_pow_two_real norm_add_pow_two_real
 
 /-- Expand the square -/
@@ -1063,7 +1063,7 @@ theorem norm_sub_sq (x y : E) : ‖x - y‖ ^ 2 = ‖x‖ ^ 2 - 2 * re ⟪x, y�
     sub_eq_add_neg]
 #align norm_sub_sq norm_sub_sq
 
-alias norm_sub_sq ← norm_sub_pow_two
+alias norm_sub_pow_two := norm_sub_sq
 #align norm_sub_pow_two norm_sub_pow_two
 
 /-- Expand the square -/
@@ -1071,7 +1071,7 @@ theorem norm_sub_sq_real (x y : F) : ‖x - y‖ ^ 2 = ‖x‖ ^ 2 - 2 * ⟪x, y
   @norm_sub_sq ℝ _ _ _ _ _ _
 #align norm_sub_sq_real norm_sub_sq_real
 
-alias norm_sub_sq_real ← norm_sub_pow_two_real
+alias norm_sub_pow_two_real := norm_sub_sq_real
 #align norm_sub_pow_two_real norm_sub_pow_two_real
 
 /-- Expand the square -/
@@ -1736,8 +1736,8 @@ theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι
   simp_rw [sum_inner, inner_sum, real_inner_smul_left, real_inner_smul_right,
     real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two, ← div_sub_div_same,
     ← div_add_div_same, mul_sub_left_distrib, left_distrib, Finset.sum_sub_distrib,
-    Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.sum_mul, h₁, h₂, MulZeroClass.zero_mul,
-    MulZeroClass.mul_zero, Finset.sum_const_zero, zero_add, zero_sub, Finset.mul_sum, neg_div,
+    Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.sum_mul, h₁, h₂, zero_mul,
+    mul_zero, Finset.sum_const_zero, zero_add, zero_sub, Finset.mul_sum, neg_div,
     Finset.sum_div, mul_div_assoc, mul_assoc]
 #align inner_sum_smul_sum_smul_of_sum_eq_zero inner_sum_smul_sum_smul_of_sum_eq_zero
 
@@ -1796,8 +1796,6 @@ theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
 set_option linter.uppercaseLean3 false in
 #align innerSL_apply_norm innerSL_apply_norm
 
-set_option synthInstance.maxHeartbeats 80000 in
--- porting note: I'm not sure why the maxHeartbeats needed to be so high here
 /-- The inner product as a continuous sesquilinear map, with the two arguments flipped. -/
 def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
   @ContinuousLinearMap.flipₗᵢ' 𝕜 𝕜 𝕜 E E 𝕜 _ _ _ _ _ _ _ _ _ (RingHom.id 𝕜) (starRingEnd 𝕜) _ _
@@ -1818,8 +1816,7 @@ namespace ContinuousLinearMap
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
 -- Note: odd and expensive build behavior is explicitly turned off using `noncomputable`
-set_option maxHeartbeats 500000 in
-set_option synthInstance.maxHeartbeats 100000 in
+set_option synthInstance.maxHeartbeats 40000 in
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
 as a continuous linear map. -/
 noncomputable def toSesqForm : (E →L[𝕜] E') →L[𝕜] E' →L⋆[𝕜] E →L[𝕜] 𝕜 :=

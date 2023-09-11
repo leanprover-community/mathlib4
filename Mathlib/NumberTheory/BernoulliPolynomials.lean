@@ -102,7 +102,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
     Polynomial.derivative (bernoulli (k + 1)) = (k + 1) * bernoulli k := by
   simp_rw [bernoulli, derivative_sum, derivative_monomial, Nat.sub_sub, Nat.add_sub_add_right]
   -- LHS sum has an extra term, but the coefficient is zero:
-  rw [range_add_one, sum_insert not_mem_range_self, tsub_self, cast_zero, MulZeroClass.mul_zero,
+  rw [range_add_one, sum_insert not_mem_range_self, tsub_self, cast_zero, mul_zero,
     map_zero, zero_add, mul_sum]
   -- the rest of the sum is termwise equal:
   refine' sum_congr (by rfl) fun m _ => _
@@ -115,7 +115,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
 theorem derivative_bernoulli (k : ℕ) :
   Polynomial.derivative (bernoulli k) = k * bernoulli (k - 1) := by
   cases k with
-  | zero => rw [Nat.cast_zero, MulZeroClass.zero_mul, bernoulli_zero, derivative_one]
+  | zero => rw [Nat.cast_zero, zero_mul, bernoulli_zero, derivative_one]
   | succ k => exact_mod_cast derivative_bernoulli_add_one k
 #align polynomial.derivative_bernoulli Polynomial.derivative_bernoulli
 
@@ -237,7 +237,7 @@ theorem bernoulli_generating_function (t : A) :
     Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ]
   -- last term is zero so kill with `add_zero`
   simp only [RingHom.map_sub, tsub_self, constantCoeff_one, constantCoeff_exp,
-    coeff_zero_eq_constantCoeff, MulZeroClass.mul_zero, sub_self, add_zero]
+    coeff_zero_eq_constantCoeff, mul_zero, sub_self, add_zero]
   -- Let's multiply both sides by (n+1)! (OK because it's a unit)
   have hnp1 : IsUnit ((n + 1)! : ℚ) := IsUnit.mk0 _ (by exact_mod_cast factorial_ne_zero (n + 1))
   rw [← (hnp1.map (algebraMap ℚ A)).mul_right_inj]

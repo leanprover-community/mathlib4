@@ -203,7 +203,7 @@ theorem measurable_iff_le_map {m₁ : MeasurableSpace α} {m₂ : MeasurableSpac
   Iff.rfl
 #align measurable_iff_le_map measurable_iff_le_map
 
-alias measurable_iff_le_map ↔ Measurable.le_map Measurable.of_le_map
+alias ⟨Measurable.le_map, Measurable.of_le_map⟩ := measurable_iff_le_map
 #align measurable.le_map Measurable.le_map
 #align measurable.of_le_map Measurable.of_le_map
 
@@ -212,7 +212,7 @@ theorem measurable_iff_comap_le {m₁ : MeasurableSpace α} {m₂ : MeasurableSp
   comap_le_iff_le_map.symm
 #align measurable_iff_comap_le measurable_iff_comap_le
 
-alias measurable_iff_comap_le ↔ Measurable.comap_le Measurable.of_comap_le
+alias ⟨Measurable.comap_le, Measurable.of_comap_le⟩ := measurable_iff_comap_le
 #align measurable.comap_le Measurable.comap_le
 #align measurable.of_comap_le Measurable.of_comap_le
 
@@ -569,7 +569,7 @@ theorem Measurable.subtype_coe {p : β → Prop} {f : α → Subtype p} (hf : Me
   measurable_subtype_coe.comp hf
 #align measurable.subtype_coe Measurable.subtype_coe
 
-alias Measurable.subtype_coe ← Measurable.subtype_val
+alias Measurable.subtype_val := Measurable.subtype_coe
 
 @[measurability]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
@@ -1026,7 +1026,7 @@ theorem Measurable.sumMap {_ : MeasurableSpace γ} {_ : MeasurableSpace δ} {f :
     MeasurableSet (Sum.inl '' s : Set (α ⊕ β)) ↔ MeasurableSet s := by
   simp [measurableSet_sum_iff, Sum.inl_injective.preimage_image]
 
-alias measurableSet_inl_image ↔ _ MeasurableSet.inl_image
+alias ⟨_, MeasurableSet.inl_image⟩ := measurableSet_inl_image
 #align measurable_set.inl_image MeasurableSet.inl_image
 
 -- porting note: new
@@ -1034,7 +1034,7 @@ alias measurableSet_inl_image ↔ _ MeasurableSet.inl_image
     MeasurableSet (Sum.inr '' s : Set (α ⊕ β)) ↔ MeasurableSet s := by
   simp [measurableSet_sum_iff, Sum.inr_injective.preimage_image]
 
-alias measurableSet_inr_image ↔ _ MeasurableSet.inr_image
+alias ⟨_, MeasurableSet.inr_image⟩ := measurableSet_inr_image
 #align measurable_set_inr_image measurableSet_inr_image
 
 theorem measurableSet_range_inl [MeasurableSpace α] :
@@ -1746,8 +1746,8 @@ theorem principal_isMeasurablyGenerated_iff {s : Set α} :
   rwa [← this]
 #align filter.principal_is_measurably_generated_iff Filter.principal_isMeasurablyGenerated_iff
 
-alias principal_isMeasurablyGenerated_iff ↔
-  _ _root_.MeasurableSet.principal_isMeasurablyGenerated
+alias ⟨_, _root_.MeasurableSet.principal_isMeasurablyGenerated⟩ :=
+  principal_isMeasurablyGenerated_iff
 #align measurable_set.principal_is_measurably_generated MeasurableSet.principal_isMeasurablyGenerated
 
 instance iInf_isMeasurablyGenerated {f : ι → Filter α} [∀ i, IsMeasurablyGenerated (f i)] :

@@ -92,7 +92,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       suffices Integrable (e * f) from this.hasSum_intervalIntegral_comp_add_int.tsum_eq
       apply integrable_of_summable_norm_Icc
       convert hf ⟨Icc 0 1, isCompact_Icc⟩ using 1
-      simp_rw [ContinuousMap.comp_apply, mul_comp] at eadd ⊢
+      simp_rw [mul_comp] at eadd ⊢
       simp_rw [eadd]
       exact funext fun n => neK ⟨Icc 0 1, isCompact_Icc⟩ _
     -- Minor tidying to finish

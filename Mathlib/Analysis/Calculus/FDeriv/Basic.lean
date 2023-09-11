@@ -387,7 +387,7 @@ theorem hasFDerivWithinAt_univ : HasFDerivWithinAt f f' univ x ↔ HasFDerivAt f
   rfl
 #align has_fderiv_within_at_univ hasFDerivWithinAt_univ
 
-alias hasFDerivWithinAt_univ ↔ HasFDerivWithinAt.hasFDerivAt_of_univ _
+alias ⟨HasFDerivWithinAt.hasFDerivAt_of_univ, _⟩ := hasFDerivWithinAt_univ
 #align has_fderiv_within_at.has_fderiv_at_of_univ HasFDerivWithinAt.hasFDerivAt_of_univ
 
 theorem hasFDerivWithinAt_insert {y : E} :
@@ -400,7 +400,7 @@ theorem hasFDerivWithinAt_insert {y : E} :
   simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
 #align has_fderiv_within_at_insert hasFDerivWithinAt_insert
 
-alias hasFDerivWithinAt_insert ↔ HasFDerivWithinAt.of_insert HasFDerivWithinAt.insert'
+alias ⟨HasFDerivWithinAt.of_insert, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
 #align has_fderiv_within_at.of_insert HasFDerivWithinAt.of_insert
 #align has_fderiv_within_at.insert' HasFDerivWithinAt.insert'
 

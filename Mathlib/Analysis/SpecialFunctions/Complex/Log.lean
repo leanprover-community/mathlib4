@@ -121,7 +121,7 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
   · simp [hx]
   rw [inv_def, log_mul_ofReal, Real.log_inv, ofReal_neg, ← sub_eq_neg_add, log_conj_eq_ite]
   · simp_rw [log, map_add, map_mul, conj_ofReal, conj_I, normSq_eq_abs, Real.log_pow,
-      Nat.cast_two, ofReal_mul, ofReal_bit0, ofReal_one, neg_add, mul_neg, two_mul, neg_neg]
+      Nat.cast_two, ofReal_mul, neg_add, mul_neg, neg_neg]
     norm_num; rw [two_mul] -- Porting note: added to simplify `↑2`
     split_ifs
     · rw [add_sub_right_comm, sub_add_cancel']
@@ -173,7 +173,7 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
       simp [Set.preimage, hne]
 #align complex.countable_preimage_exp Complex.countable_preimage_exp
 
-alias countable_preimage_exp ↔ _ _root_.Set.Countable.preimage_cexp
+alias ⟨_, _root_.Set.Countable.preimage_cexp⟩ := countable_preimage_exp
 #align set.countable.preimage_cexp Set.Countable.preimage_cexp
 
 theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)

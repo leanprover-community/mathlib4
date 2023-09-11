@@ -1938,7 +1938,7 @@ theorem toTopologicalSpace_injective :
 
 @[to_additive (attr := ext)]
 theorem ext' {f g : GroupTopology α} (h : f.IsOpen = g.IsOpen) : f = g :=
-  toTopologicalSpace_injective <| topologicalSpace_eq h
+  toTopologicalSpace_injective <| TopologicalSpace.ext h
 #align group_topology.ext' GroupTopology.ext'
 #align add_group_topology.ext' AddGroupTopology.ext'
 

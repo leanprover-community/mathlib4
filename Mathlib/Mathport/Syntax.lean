@@ -14,7 +14,6 @@ import Mathlib.Order.Filter.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith

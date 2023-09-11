@@ -1896,7 +1896,7 @@ theorem ext_iff_of_iUnion_eq_univ [Countable ι] {s : ι → Set α} (hs : ⋃ i
   rw [← restrict_iUnion_congr, hs, restrict_univ, restrict_univ]
 #align measure_theory.measure.ext_iff_of_Union_eq_univ MeasureTheory.Measure.ext_iff_of_iUnion_eq_univ
 
-alias ext_iff_of_iUnion_eq_univ ↔ _ ext_of_iUnion_eq_univ
+alias ⟨_, ext_of_iUnion_eq_univ⟩ := ext_iff_of_iUnion_eq_univ
 #align measure_theory.measure.ext_of_Union_eq_univ MeasureTheory.Measure.ext_of_iUnion_eq_univ
 
 /-- Two measures are equal if they have equal restrictions on a spanning collection of sets
@@ -1906,7 +1906,7 @@ theorem ext_iff_of_biUnion_eq_univ {S : Set ι} {s : ι → Set α} (hc : S.Coun
   rw [← restrict_biUnion_congr hc, hs, restrict_univ, restrict_univ]
 #align measure_theory.measure.ext_iff_of_bUnion_eq_univ MeasureTheory.Measure.ext_iff_of_biUnion_eq_univ
 
-alias ext_iff_of_biUnion_eq_univ ↔ _ ext_of_biUnion_eq_univ
+alias ⟨_, ext_of_biUnion_eq_univ⟩ := ext_iff_of_biUnion_eq_univ
 #align measure_theory.measure.ext_of_bUnion_eq_univ MeasureTheory.Measure.ext_of_biUnion_eq_univ
 
 /-- Two measures are equal if they have equal restrictions on a spanning collection of sets
@@ -1916,7 +1916,7 @@ theorem ext_iff_of_sUnion_eq_univ {S : Set (Set α)} (hc : S.Countable) (hs : �
   ext_iff_of_biUnion_eq_univ hc <| by rwa [← sUnion_eq_biUnion]
 #align measure_theory.measure.ext_iff_of_sUnion_eq_univ MeasureTheory.Measure.ext_iff_of_sUnion_eq_univ
 
-alias ext_iff_of_sUnion_eq_univ ↔ _ ext_of_sUnion_eq_univ
+alias ⟨_, ext_of_sUnion_eq_univ⟩ := ext_iff_of_sUnion_eq_univ
 #align measure_theory.measure.ext_of_sUnion_eq_univ MeasureTheory.Measure.ext_of_sUnion_eq_univ
 
 theorem ext_of_generateFrom_of_cover {S T : Set (Set α)} (h_gen : ‹_› = generateFrom S)
@@ -2112,14 +2112,14 @@ theorem absolutelyContinuous_of_le (h : μ ≤ ν) : μ ≪ ν := fun s hs =>
   nonpos_iff_eq_zero.1 <| hs ▸ le_iff'.1 h s
 #align measure_theory.measure.absolutely_continuous_of_le MeasureTheory.Measure.absolutelyContinuous_of_le
 
-alias absolutelyContinuous_of_le ← _root_.LE.le.absolutelyContinuous
+alias _root_.LE.le.absolutelyContinuous := absolutelyContinuous_of_le
 #align has_le.le.absolutely_continuous LE.le.absolutelyContinuous
 
 theorem absolutelyContinuous_of_eq (h : μ = ν) : μ ≪ ν :=
   h.le.absolutelyContinuous
 #align measure_theory.measure.absolutely_continuous_of_eq MeasureTheory.Measure.absolutelyContinuous_of_eq
 
-alias absolutelyContinuous_of_eq ← _root_.Eq.absolutelyContinuous
+alias _root_.Eq.absolutelyContinuous := absolutelyContinuous_of_eq
 #align eq.absolutely_continuous Eq.absolutelyContinuous
 
 namespace AbsolutelyContinuous
@@ -2169,12 +2169,12 @@ theorem ae_le_iff_absolutelyContinuous : μ.ae ≤ ν.ae ↔ μ ≪ ν :=
     exact fun hs => h hs, fun h s hs => h hs⟩
 #align measure_theory.measure.ae_le_iff_absolutely_continuous MeasureTheory.Measure.ae_le_iff_absolutelyContinuous
 
-alias ae_le_iff_absolutelyContinuous ↔
-  _root_.LE.le.absolutelyContinuous_of_ae AbsolutelyContinuous.ae_le
+alias ⟨_root_.LE.le.absolutelyContinuous_of_ae, AbsolutelyContinuous.ae_le⟩ :=
+  ae_le_iff_absolutelyContinuous
 #align has_le.le.absolutely_continuous_of_ae LE.le.absolutelyContinuous_of_ae
 #align measure_theory.measure.absolutely_continuous.ae_le MeasureTheory.Measure.AbsolutelyContinuous.ae_le
 
-alias AbsolutelyContinuous.ae_le ← ae_mono'
+alias ae_mono' := AbsolutelyContinuous.ae_le
 #align measure_theory.measure.ae_mono' MeasureTheory.Measure.ae_mono'
 
 theorem AbsolutelyContinuous.ae_eq (h : μ ≪ ν) {f g : α → δ} (h' : f =ᵐ[ν] g) : f =ᵐ[μ] g :=
@@ -3928,7 +3928,7 @@ theorem inf_ae_iff : μ.FiniteAtFilter (f ⊓ μ.ae) ↔ μ.FiniteAtFilter f := 
   exact measure_mono_ae (mem_of_superset hu fun x hu ht => ⟨ht, hu⟩)
 #align measure_theory.measure.finite_at_filter.inf_ae_iff MeasureTheory.Measure.FiniteAtFilter.inf_ae_iff
 
-alias inf_ae_iff ↔ of_inf_ae _
+alias ⟨of_inf_ae, _⟩ := inf_ae_iff
 #align measure_theory.measure.finite_at_filter.of_inf_ae MeasureTheory.Measure.FiniteAtFilter.of_inf_ae
 
 theorem filter_mono_ae (h : f ⊓ μ.ae ≤ g) (hg : μ.FiniteAtFilter g) : μ.FiniteAtFilter f :=

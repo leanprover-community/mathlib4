@@ -332,7 +332,7 @@ theorem realize_foldr_sup (l : List (L.BoundedFormula α n)) (v : α → M) (xs 
     (l.foldr (· ⊔ ·) ⊥).Realize v xs ↔ ∃ φ ∈ l, BoundedFormula.Realize φ v xs := by
   induction' l with φ l ih
   · simp
-  · simp_rw [List.foldr_cons, realize_sup, ih, exists_prop, List.mem_cons, or_and_right, exists_or,
+  · simp_rw [List.foldr_cons, realize_sup, ih, List.mem_cons, or_and_right, exists_or,
       exists_eq_left]
 #align first_order.language.bounded_formula.realize_foldr_sup FirstOrder.Language.BoundedFormula.realize_foldr_sup
 

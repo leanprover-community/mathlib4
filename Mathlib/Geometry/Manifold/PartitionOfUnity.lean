@@ -236,7 +236,7 @@ theorem isSubordinate_toPartitionOfUnity :
   Iff.rfl
 #align smooth_partition_of_unity.is_subordinate_to_partition_of_unity SmoothPartitionOfUnity.isSubordinate_toPartitionOfUnity
 
-alias isSubordinate_toPartitionOfUnity ↔ _ IsSubordinate.toPartitionOfUnity
+alias ⟨_, IsSubordinate.toPartitionOfUnity⟩ := isSubordinate_toPartitionOfUnity
 #align smooth_partition_of_unity.is_subordinate.to_partition_of_unity SmoothPartitionOfUnity.IsSubordinate.toPartitionOfUnity
 
 /-- If `f` is a smooth partition of unity on a set `s : Set M` subordinate to a family of open sets
@@ -431,7 +431,7 @@ theorem isSubordinate_toBumpCovering {f : SmoothBumpCovering ι I M s} {U : M �
   Iff.rfl
 #align smooth_bump_covering.is_subordinate_to_bump_covering SmoothBumpCovering.isSubordinate_toBumpCovering
 
-alias isSubordinate_toBumpCovering ↔ _ IsSubordinate.toBumpCovering
+alias ⟨_, IsSubordinate.toBumpCovering⟩ := isSubordinate_toBumpCovering
 #align smooth_bump_covering.is_subordinate.to_bump_covering SmoothBumpCovering.IsSubordinate.toBumpCovering
 
 /-- Every `SmoothBumpCovering` defines a smooth partition of unity. -/

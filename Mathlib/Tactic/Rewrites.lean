@@ -3,8 +3,8 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Util.Pickle
-import Mathlib.Data.MLList.Heartbeats
+import Std.Util.Pickle
+import Std.Data.MLList.Heartbeats
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.SolveByElim

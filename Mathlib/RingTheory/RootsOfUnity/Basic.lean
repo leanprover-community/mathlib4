@@ -492,7 +492,7 @@ theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod
   subst n
   simp only [iff_def, ← pow_mul, h.pow_eq_one, eq_self_iff_true, true_and_iff]
   intro l hl
-  -- Porting note: was `by rintro rfl; simpa only [Nat.not_lt_zero, MulZeroClass.zero_mul] using hn`
+  -- Porting note: was `by rintro rfl; simpa only [Nat.not_lt_zero, zero_mul] using hn`
   have ha0 : a ≠ 0 := left_ne_zero_of_mul hn.ne'
   rw [← mul_dvd_mul_iff_left ha0]
   exact h.dvd_of_pow_eq_one _ hl
@@ -907,7 +907,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ+} (h : IsPrimi
     rintro ⟨a, ⟨d, hd⟩, ha⟩
     have hazero : 0 < a := by
       contrapose! hd with ha0
-      simp_all only [nonpos_iff_eq_zero, MulZeroClass.zero_mul]
+      simp_all only [nonpos_iff_eq_zero, zero_mul]
       exact n.ne_zero
     rw [mem_primitiveRoots hazero] at ha
     rw [hd, pow_mul, ha.pow_eq_one, one_pow]

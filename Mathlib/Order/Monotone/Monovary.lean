@@ -376,18 +376,22 @@ theorem AntivaryOn.comp_antitoneOn_right (h : AntivaryOn f g s) (hg : AntitoneOn
   h hj hi <| hg.reflect_lt (mem_image_of_mem _ hi) (mem_image_of_mem _ hj) hij
 #align antivary_on.comp_antitone_on_right AntivaryOn.comp_antitoneOn_right
 
+@[symm]
 protected theorem Monovary.symm (h : Monovary f g) : Monovary g f := fun _ _ hf =>
   le_of_not_lt fun hg => hf.not_le <| h hg
 #align monovary.symm Monovary.symm
 
+@[symm]
 protected theorem Antivary.symm (h : Antivary f g) : Antivary g f := fun _ _ hf =>
   le_of_not_lt fun hg => hf.not_le <| h hg
 #align antivary.symm Antivary.symm
 
+@[symm]
 protected theorem MonovaryOn.symm (h : MonovaryOn f g s) : MonovaryOn g f s := fun _ hi _ hj hf =>
   le_of_not_lt fun hg => hf.not_le <| h hj hi hg
 #align monovary_on.symm MonovaryOn.symm
 
+@[symm]
 protected theorem AntivaryOn.symm (h : AntivaryOn f g s) : AntivaryOn g f s := fun _ hi _ hj hf =>
   le_of_not_lt fun hg => hf.not_le <| h hi hj hg
 #align antivary_on.symm AntivaryOn.symm

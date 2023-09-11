@@ -266,7 +266,7 @@ variable {α}
 instance instLowerSetTopologyDual [Preorder α] [TopologicalSpace α] [UpperSetTopology α] :
     LowerSetTopology (αᵒᵈ) where
   topology_eq_lowerSetTopology := by
-    refine topologicalSpace_eq ?_
+    ext
     rw [(UpperSetTopology.topology_eq (α))]
 
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
@@ -371,7 +371,7 @@ variable {α}
 instance instUpperSetTopologyDual [Preorder α] [TopologicalSpace α] [LowerSetTopology α] :
     UpperSetTopology (αᵒᵈ) where
   topology_eq_upperSetTopology := by
-    refine topologicalSpace_eq ?_
+    ext
     rw [(LowerSetTopology.topology_eq (α))]
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to

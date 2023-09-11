@@ -520,7 +520,7 @@ theorem sin_ne_zero_iff {x : ℝ} : sin x ≠ 0 ↔ ∀ n : ℤ, (n : ℝ) * π 
 
 theorem sin_eq_zero_iff_cos_eq {x : ℝ} : sin x = 0 ↔ cos x = 1 ∨ cos x = -1 := by
   rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq x, sq, sq, ← sub_eq_iff_eq_add, sub_self]
-  exact ⟨fun h => by rw [h, MulZeroClass.mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
+  exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
 #align real.sin_eq_zero_iff_cos_eq Real.sin_eq_zero_iff_cos_eq
 
 theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * π) = x :=
@@ -1098,7 +1098,7 @@ open Real
 
 theorem sin_eq_zero_iff_cos_eq {z : ℂ} : sin z = 0 ↔ cos z = 1 ∨ cos z = -1 := by
   rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, ← sub_eq_iff_eq_add, sub_self]
-  exact ⟨fun h => by rw [h, MulZeroClass.mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
+  exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
 #align complex.sin_eq_zero_iff_cos_eq Complex.sin_eq_zero_iff_cos_eq
 
 @[simp]

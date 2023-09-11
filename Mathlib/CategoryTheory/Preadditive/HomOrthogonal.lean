@@ -100,7 +100,6 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
   right_inv z := by
     ext i ⟨j, w⟩ ⟨k, ⟨⟩⟩
     simp only [eqToHom_refl, biproduct.matrix_components, Category.id_comp]
-    simp only [Set.mem_preimage, Set.mem_singleton_iff]
     split_ifs with h
     · simp
     · exfalso

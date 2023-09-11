@@ -138,7 +138,7 @@ private theorem smul_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f : ℍ → ℂ) (c : 
   ring
 
 private theorem zero_slash (k : ℤ) (A : GL(2, ℝ)⁺) : (0 : ℍ → ℂ) ∣[k]A = 0 :=
-  funext fun _ => by simp only [slash, Pi.zero_apply, MulZeroClass.zero_mul]
+  funext fun _ => by simp only [slash, Pi.zero_apply, zero_mul]
 
 instance : SlashAction ℤ GL(2, ℝ)⁺ (ℍ → ℂ) ℂ where
   map := slash

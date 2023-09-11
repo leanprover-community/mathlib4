@@ -380,10 +380,10 @@ theorem dist_eq_norm_div' (a b : E) : dist a b = ‖b / a‖ := by rw [dist_comm
 #align dist_eq_norm_div' dist_eq_norm_div'
 #align dist_eq_norm_sub' dist_eq_norm_sub'
 
-alias dist_eq_norm_sub ← dist_eq_norm
+alias dist_eq_norm := dist_eq_norm_sub
 #align dist_eq_norm dist_eq_norm
 
-alias dist_eq_norm_sub' ← dist_eq_norm'
+alias dist_eq_norm' := dist_eq_norm_sub'
 #align dist_eq_norm' dist_eq_norm'
 
 @[to_additive]
@@ -584,10 +584,10 @@ theorem norm_le_norm_add_norm_div (u v : E) : ‖v‖ ≤ ‖u‖ + ‖u / v‖ 
 #align norm_le_norm_add_norm_div norm_le_norm_add_norm_div
 #align norm_le_norm_add_norm_sub norm_le_norm_add_norm_sub
 
-alias norm_le_norm_add_norm_sub' ← norm_le_insert'
+alias norm_le_insert' := norm_le_norm_add_norm_sub'
 #align norm_le_insert' norm_le_insert'
 
-alias norm_le_norm_add_norm_sub ← norm_le_insert
+alias norm_le_insert := norm_le_norm_add_norm_sub
 #align norm_le_insert norm_le_insert
 
 @[to_additive]
@@ -673,10 +673,10 @@ theorem bounded_iff_forall_norm_le' : Bounded s ↔ ∃ C, ∀ x ∈ s, ‖x‖ 
 #align bounded_iff_forall_norm_le' bounded_iff_forall_norm_le'
 #align bounded_iff_forall_norm_le bounded_iff_forall_norm_le
 
-alias bounded_iff_forall_norm_le' ↔ Metric.Bounded.exists_norm_le' _
+alias ⟨Metric.Bounded.exists_norm_le', _⟩ := bounded_iff_forall_norm_le'
 #align metric.bounded.exists_norm_le' Metric.Bounded.exists_norm_le'
 
-alias bounded_iff_forall_norm_le ↔ Metric.Bounded.exists_norm_le _
+alias ⟨Metric.Bounded.exists_norm_le, _⟩ := bounded_iff_forall_norm_le
 #align metric.bounded.exists_norm_le Metric.Bounded.exists_norm_le
 
 attribute [to_additive existing Metric.Bounded.exists_norm_le] Metric.Bounded.exists_norm_le'
@@ -800,7 +800,7 @@ theorem lipschitzOnWith_iff_norm_div_le {f : E → F} {C : ℝ≥0} :
 #align lipschitz_on_with_iff_norm_div_le lipschitzOnWith_iff_norm_div_le
 #align lipschitz_on_with_iff_norm_sub_le lipschitzOnWith_iff_norm_sub_le
 
-alias lipschitzOnWith_iff_norm_div_le ↔ LipschitzOnWith.norm_div_le _
+alias ⟨LipschitzOnWith.norm_div_le, _⟩ := lipschitzOnWith_iff_norm_div_le
 #align lipschitz_on_with.norm_div_le LipschitzOnWith.norm_div_le
 
 attribute [to_additive] LipschitzOnWith.norm_div_le
@@ -819,7 +819,7 @@ theorem lipschitzWith_iff_norm_div_le {f : E → F} {C : ℝ≥0} :
 #align lipschitz_with_iff_norm_div_le lipschitzWith_iff_norm_div_le
 #align lipschitz_with_iff_norm_sub_le lipschitzWith_iff_norm_sub_le
 
-alias lipschitzWith_iff_norm_div_le ↔ LipschitzWith.norm_div_le _
+alias ⟨LipschitzWith.norm_div_le, _⟩ := lipschitzWith_iff_norm_div_le
 #align lipschitz_with.norm_div_le LipschitzWith.norm_div_le
 
 attribute [to_additive] LipschitzWith.norm_div_le
@@ -865,7 +865,7 @@ theorem MonoidHomClass.isometry_iff_norm [MonoidHomClass 𝓕 E F] (f : 𝓕) :
 #align monoid_hom_class.isometry_iff_norm MonoidHomClass.isometry_iff_norm
 #align add_monoid_hom_class.isometry_iff_norm AddMonoidHomClass.isometry_iff_norm
 
-alias MonoidHomClass.isometry_iff_norm ↔ _ MonoidHomClass.isometry_of_norm
+alias ⟨_, MonoidHomClass.isometry_of_norm⟩ := MonoidHomClass.isometry_iff_norm
 #align monoid_hom_class.isometry_of_norm MonoidHomClass.isometry_of_norm
 
 attribute [to_additive] MonoidHomClass.isometry_of_norm
@@ -903,7 +903,7 @@ theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
 #align nndist_eq_nnnorm_div nndist_eq_nnnorm_div
 #align nndist_eq_nnnorm_sub nndist_eq_nnnorm_sub
 
-alias nndist_eq_nnnorm_sub ← nndist_eq_nnnorm
+alias nndist_eq_nnnorm := nndist_eq_nnnorm_sub
 #align nndist_eq_nnnorm nndist_eq_nnnorm
 
 @[to_additive (attr := simp) nnnorm_zero]
@@ -956,10 +956,10 @@ theorem nnnorm_le_nnnorm_add_nnnorm_div' (a b : E) : ‖a‖₊ ≤ ‖b‖₊ +
 #align nnnorm_le_nnnorm_add_nnnorm_div' nnnorm_le_nnnorm_add_nnnorm_div'
 #align nnnorm_le_nnnorm_add_nnnorm_sub' nnnorm_le_nnnorm_add_nnnorm_sub'
 
-alias nnnorm_le_nnnorm_add_nnnorm_sub' ← nnnorm_le_insert'
+alias nnnorm_le_insert' := nnnorm_le_nnnorm_add_nnnorm_sub'
 #align nnnorm_le_insert' nnnorm_le_insert'
 
-alias nnnorm_le_nnnorm_add_nnnorm_sub ← nnnorm_le_insert
+alias nnnorm_le_insert := nnnorm_le_nnnorm_add_nnnorm_sub
 #align nnnorm_le_insert nnnorm_le_insert
 
 @[to_additive]
@@ -2026,7 +2026,7 @@ theorem eq_of_norm_div_le_zero (h : ‖a / b‖ ≤ 0) : a = b := by
 #align eq_of_norm_div_le_zero eq_of_norm_div_le_zero
 #align eq_of_norm_sub_le_zero eq_of_norm_sub_le_zero
 
-alias norm_div_eq_zero_iff ↔ eq_of_norm_div_eq_zero _
+alias ⟨eq_of_norm_div_eq_zero, _⟩ := norm_div_eq_zero_iff
 #align eq_of_norm_div_eq_zero eq_of_norm_div_eq_zero
 
 attribute [to_additive] eq_of_norm_div_eq_zero
@@ -2084,7 +2084,7 @@ theorem hasCompactSupport_norm_iff : (HasCompactSupport fun x => ‖f x‖) ↔ 
   hasCompactSupport_comp_left norm_eq_zero
 #align has_compact_support_norm_iff hasCompactSupport_norm_iff
 
-alias hasCompactSupport_norm_iff ↔ _ HasCompactSupport.norm
+alias ⟨_, HasCompactSupport.norm⟩ := hasCompactSupport_norm_iff
 #align has_compact_support.norm HasCompactSupport.norm
 
 theorem Continuous.bounded_above_of_compact_support (hf : Continuous f) (h : HasCompactSupport f) :

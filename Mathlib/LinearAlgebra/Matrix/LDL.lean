@@ -42,7 +42,7 @@ local notation "⟪" x ", " y "⟫ₑ" => @inner 𝕜 _ _ ((PiLp.equiv 2 _).symm
 
 open Matrix
 
-open scoped Matrix
+open scoped Matrix ComplexOrder
 
 variable {S : Matrix n n 𝕜} [Fintype n] (hS : S.PosDef)
 
