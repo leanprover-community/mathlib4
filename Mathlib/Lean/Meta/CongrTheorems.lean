@@ -249,6 +249,7 @@ where
     if ← mvarId.subsingletonElim then return
     -- We have no more tricks.
     throwError "was not able to solve for proof"
+  /-- Driver for `trySolveCore`. -/
   trySolve (ty : Expr) : MetaM (Option Expr) := observing? do
     let mvar ← mkFreshExprMVar ty
     trace[Meta.CongrTheorems] "trySolve {mvar.mvarId!}"
