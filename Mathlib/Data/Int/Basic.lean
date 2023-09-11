@@ -7,7 +7,6 @@ import Mathlib.Init.Data.Int.Order
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Order.Monotone.Basic
-import Mathlib.Logic.Nontrivial
 
 #align_import data.int.basic from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
 
@@ -18,6 +17,8 @@ This file contains:
 * instances on `ℤ`. The stronger one is `Int.linearOrderedCommRing`.
 * some basic lemmas about integers
 -/
+
+set_option autoImplicit true
 
 open Nat
 

@@ -74,7 +74,7 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
 
 new_exceptions = False
 
-def is_in_comment(enumerate_lines):
+def annotate_comments(enumerate_lines):
     """
     Take a list of tuples of enumerated lines of the form
     (line_number, line, ...)
@@ -98,7 +98,7 @@ def is_in_comment(enumerate_lines):
             continue
         yield line_nr, line, *rem, False
 
-def is_in_string(enumerate_lines):
+def annotate_strings(enumerate_lines):
     """
     Take a list of tuples of enumerated lines of the form
     (line_number, line, ...)
@@ -135,15 +135,15 @@ def is_in_string(enumerate_lines):
 def set_option_check(lines, path):
     errors = []
     newlines = []
-    for line_nr, line, in_comment, in_string in is_in_string(is_in_comment(lines)):
+    for line_nr, line, in_comment, in_string in annotate_strings(annotate_comments(lines)):
         if line.strip().startswith('set_option') and not in_comment and not in_string:
-            option_prefix = line.strip().split(' ')[1].split('.')[0]
+            option_prefix = line.strip().split(' ', 2)[1].split('.', 1)[0]
             # forbidden options: pp, profiler, trace
             if option_prefix in {'pp', 'profiler', 'trace'}:
                 errors += [(ERR_OPT, line_nr, path)]
                 # skip adding this line to newlines so that we suggest removal
                 continue
-        newlines.append((line_nr,line))
+        newlines.append((line_nr, line))
     return errors, newlines
 
 def line_endings_check(lines, path):
@@ -164,25 +164,22 @@ def long_lines_check(lines, path):
     # TODO: find a good way to break long lines
     # TODO: some string literals (in e.g. tactic output messages) can be excepted from this rule
     for line_nr, line in lines:
-        # "!" excludes the porting marker comment
-        if "http" in line or "#align" in line or line[0] == '!':
+        if "http" in line or "#align" in line:
             continue
         if len(line) > 101:
             errors += [(ERR_LIN, line_nr, path)]
     return errors, lines
 
 def import_only_check(lines, path):
-    import_only_file = True
-    for _, line, is_comment in is_in_comment(lines):
+    for _, line, is_comment in annotate_comments(lines):
         if is_comment:
             continue
         imports = line.split()
         if imports[0] == "#align_import":
             continue
         if imports[0] != "import":
-            import_only_file = False
-            break
-    return import_only_file
+            return False
+    return True
 
 def regular_check(lines, path):
     errors = []
@@ -230,7 +227,7 @@ def regular_check(lines, path):
 
 def banned_import_check(lines, path):
     errors = []
-    for line_nr, line, is_comment in is_in_comment(lines):
+    for line_nr, line, is_comment in annotate_comments(lines):
         if is_comment:
             continue
         imports = line.split()
@@ -253,8 +250,7 @@ def isolated_by_dot_semicolon_check(lines, path):
                 errors += [(ERR_IBY, line_nr, path)]
         if line.lstrip().startswith(". "):
             errors += [(ERR_DOT, line_nr, path)]
-            i = line.find(".")
-            line = i*" " + "·" + line[i+1:] # ideally we would replace with count=1 but that's not ok python 3.8
+            line = line.replace(". ", "· ", 1)
         if line.strip() in (".", "·"):
             errors += [(ERR_DOT, line_nr, path)]
         if " ;" in line:
@@ -327,15 +323,14 @@ def lint(path, fix=False):
             errs,newlines = banned_import_check(newlines, path)
             format_errors(errs)
     # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
-    if not fix or (not new_exceptions) or enum_lines == newlines:
-        return
-    path.with_name(path.name + '.bak').write_text("".join(l for _,l in newlines), encoding = "utf8")
-    shutil.move(path.with_name(path.name + '.bak'), path)
+    if fix and new_exceptions and enum_lines != newlines:
+        path.with_name(path.name + '.bak').write_text("".join(l for _,l in newlines), encoding = "utf8")
+        shutil.move(path.with_name(path.name + '.bak'), path)
 
 fix = "--fix" in sys.argv
-sys.argv[:] = (arg for arg in sys.argv if arg != "--fix")
+argv = (arg for arg in sys.argv[1:] if arg != "--fix")
 
-for filename in sys.argv[1:]:
+for filename in argv:
     lint(Path(filename), fix=fix)
 
 if new_exceptions:

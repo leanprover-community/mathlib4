@@ -203,7 +203,7 @@ def kroneckerMapBilinear [CommSemiring R] [AddCommMonoid α] [AddCommMonoid β] 
     kroneckerMap_smul_right _ _ fun a => (f a).map_smul r
 #align matrix.kronecker_map_bilinear Matrix.kroneckerMapBilinear
 
-/-- `Matrix.kroneckerMapBilinear` commutes with `⬝` if `f` commutes with `*`.
+/-- `Matrix.kroneckerMapBilinear` commutes with `*` if `f` does.
 
 This is primarily used with `R = ℕ` to prove `Matrix.mul_kronecker_mul`. -/
 theorem kroneckerMapBilinear_mul_mul [CommSemiring R] [Fintype m] [Fintype m']
@@ -211,8 +211,8 @@ theorem kroneckerMapBilinear_mul_mul [CommSemiring R] [Fintype m] [Fintype m']
     [Module R α] [Module R β] [Module R γ] (f : α →ₗ[R] β →ₗ[R] γ)
     (h_comm : ∀ a b a' b', f (a * b) (a' * b') = f a a' * f b b') (A : Matrix l m α)
     (B : Matrix m n α) (A' : Matrix l' m' β) (B' : Matrix m' n' β) :
-    kroneckerMapBilinear f (A ⬝ B) (A' ⬝ B') =
-      kroneckerMapBilinear f A A' ⬝ kroneckerMapBilinear f B B' := by
+    kroneckerMapBilinear f (A * B) (A' * B') =
+      kroneckerMapBilinear f A A' * kroneckerMapBilinear f B B' := by
   ext ⟨i, i'⟩ ⟨j, j'⟩
   simp only [kroneckerMapBilinear_apply_apply, mul_apply, ← Finset.univ_product_univ,
     Finset.sum_product, kroneckerMap_apply]
@@ -241,7 +241,7 @@ theorem det_kroneckerMapBilinear [CommSemiring R] [Fintype m] [Fintype n] [Decid
       det (A.map fun a => f a 1) ^ Fintype.card n * det (B.map fun b => f 1 b) ^ Fintype.card m :=
   calc
     det (kroneckerMapBilinear f A B) =
-        det (kroneckerMapBilinear f A 1 ⬝ kroneckerMapBilinear f 1 B) :=
+        det (kroneckerMapBilinear f A 1 * kroneckerMapBilinear f 1 B) :=
       by rw [← kroneckerMapBilinear_mul_mul f h_comm, Matrix.mul_one, Matrix.one_mul]
     _ = det (blockDiagonal fun _ => A.map fun a => f a 1) *
         det (blockDiagonal fun _ => B.map fun b => f 1 b) := by
@@ -291,12 +291,12 @@ hypotheses which can be filled by properties of `*`. -/
 
 -- @[simp] -- Porting note: simp can prove this
 theorem zero_kronecker [MulZeroClass α] (B : Matrix n p α) : (0 : Matrix l m α) ⊗ₖ B = 0 :=
-  kroneckerMap_zero_left _ MulZeroClass.zero_mul B
+  kroneckerMap_zero_left _ zero_mul B
 #align matrix.zero_kronecker Matrix.zero_kronecker
 
 -- @[simp] -- Porting note: simp can prove this
 theorem kronecker_zero [MulZeroClass α] (A : Matrix l m α) : A ⊗ₖ (0 : Matrix n p α) = 0 :=
-  kroneckerMap_zero_right _ MulZeroClass.mul_zero A
+  kroneckerMap_zero_right _ mul_zero A
 #align matrix.kronecker_zero Matrix.kronecker_zero
 
 theorem add_kronecker [Distrib α] (A₁ A₂ : Matrix l m α) (B : Matrix n p α) :
@@ -321,24 +321,24 @@ theorem kronecker_smul [Monoid R] [Monoid α] [MulAction R α] [SMulCommClass R 
 
 theorem diagonal_kronecker_diagonal [MulZeroClass α] [DecidableEq m] [DecidableEq n] (a : m → α)
     (b : n → α) : diagonal a ⊗ₖ diagonal b = diagonal fun mn => a mn.1 * b mn.2 :=
-  kroneckerMap_diagonal_diagonal _ MulZeroClass.zero_mul MulZeroClass.mul_zero _ _
+  kroneckerMap_diagonal_diagonal _ zero_mul mul_zero _ _
 #align matrix.diagonal_kronecker_diagonal Matrix.diagonal_kronecker_diagonal
 
 theorem kronecker_diagonal [MulZeroClass α] [DecidableEq n] (A : Matrix l m α) (b : n → α) :
     A ⊗ₖ diagonal b = blockDiagonal fun i => MulOpposite.op (b i) • A :=
-  kroneckerMap_diagonal_right _ MulZeroClass.mul_zero _ _
+  kroneckerMap_diagonal_right _ mul_zero _ _
 #align matrix.kronecker_diagonal Matrix.kronecker_diagonal
 
 theorem diagonal_kronecker [MulZeroClass α] [DecidableEq l] (a : l → α) (B : Matrix m n α) :
     diagonal a ⊗ₖ B =
       Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _) (blockDiagonal fun i => a i • B) :=
-  kroneckerMap_diagonal_left _ MulZeroClass.zero_mul _ _
+  kroneckerMap_diagonal_left _ zero_mul _ _
 #align matrix.diagonal_kronecker Matrix.diagonal_kronecker
 
 -- @[simp] -- Porting note: simp can prove this
 theorem one_kronecker_one [MulZeroOneClass α] [DecidableEq m] [DecidableEq n] :
     (1 : Matrix m m α) ⊗ₖ (1 : Matrix n n α) = 1 :=
-  kroneckerMap_one_one _ MulZeroClass.zero_mul MulZeroClass.mul_zero (one_mul _)
+  kroneckerMap_one_one _ zero_mul mul_zero (one_mul _)
 #align matrix.one_kronecker_one Matrix.one_kronecker_one
 
 theorem kronecker_one [MulZeroOneClass α] [DecidableEq n] (A : Matrix l m α) :
@@ -355,7 +355,7 @@ theorem one_kronecker [MulZeroOneClass α] [DecidableEq l] (B : Matrix m n α) :
 
 theorem mul_kronecker_mul [Fintype m] [Fintype m'] [CommSemiring α] (A : Matrix l m α)
     (B : Matrix m n α) (A' : Matrix l' m' α) (B' : Matrix m' n' α) :
-    (A ⬝ B) ⊗ₖ (A' ⬝ B') = A ⊗ₖ A' ⬝ B ⊗ₖ B' :=
+    (A * B) ⊗ₖ (A' * B') = A ⊗ₖ A' * B ⊗ₖ B' :=
   kroneckerMapBilinear_mul_mul (Algebra.lmul ℕ α).toLinearMap mul_mul_mul_comm A B A' B'
 #align matrix.mul_kronecker_mul Matrix.mul_kronecker_mul
 
@@ -546,7 +546,8 @@ theorem one_kroneckerTMul_one [DecidableEq m] [DecidableEq n] :
 #align matrix.one_kronecker_tmul_one Matrix.one_kroneckerTMul_one
 
 theorem mul_kroneckerTMul_mul [Fintype m] [Fintype m'] (A : Matrix l m α) (B : Matrix m n α)
-    (A' : Matrix l' m' β) (B' : Matrix m' n' β) : (A ⬝ B) ⊗ₖₜ[R] (A' ⬝ B') = A ⊗ₖₜ A' ⬝ B ⊗ₖₜ B' :=
+    (A' : Matrix l' m' β) (B' : Matrix m' n' β) :
+    (A * B) ⊗ₖₜ[R] (A' * B') = A ⊗ₖₜ[R] A' * B ⊗ₖₜ[R] B' :=
   kroneckerMapBilinear_mul_mul (TensorProduct.mk R α β) tmul_mul_tmul A B A' B'
 #align matrix.mul_kronecker_tmul_mul Matrix.mul_kroneckerTMul_mul
 

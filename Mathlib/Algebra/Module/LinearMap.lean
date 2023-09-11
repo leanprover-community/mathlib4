@@ -275,6 +275,21 @@ theorem id_coe : ((LinearMap.id : M →ₗ[R] M) : M → M) = _root_.id :=
   rfl
 #align linear_map.id_coe LinearMap.id_coe
 
+/-- A generalisation of `LinearMap.id` that constructs the identity function
+as a `σ`-semilinear map for any ring homomorphism `σ` which we know is the identity. -/
+@[simps]
+def id' {σ : R →+* R} [RingHomId σ] : M →ₛₗ[σ] M where
+  toFun x := x
+  map_add' x y := rfl
+  map_smul' r x := by
+    have := (RingHomId.eq_id : σ = _)
+    subst this
+    rfl
+
+@[simp, norm_cast]
+theorem id'_coe {σ : R →+* R} [RingHomId σ] : ((id' : M →ₛₗ[σ] M) : M → M) = _root_.id :=
+  rfl
+
 end
 
 section
@@ -555,10 +570,12 @@ theorem id_comp : id.comp f = f :=
 
 variable {f g} {f' : M₂ →ₛₗ[σ₂₃] M₃} {g' : M₁ →ₛₗ[σ₁₂] M₂}
 
+@[simp]
 theorem cancel_right (hg : Function.Surjective g) : f.comp g = f'.comp g ↔ f = f' :=
   ⟨fun h ↦ ext <| hg.forall.2 (ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 #align linear_map.cancel_right LinearMap.cancel_right
 
+@[simp]
 theorem cancel_left (hf : Function.Injective f) : f.comp g = f.comp g' ↔ g = g' :=
   ⟨fun h ↦ ext fun x ↦ hf <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
 #align linear_map.cancel_left LinearMap.cancel_left

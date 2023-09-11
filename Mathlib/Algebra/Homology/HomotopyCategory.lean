@@ -15,6 +15,8 @@ import Mathlib.CategoryTheory.Quotient
 with chain maps identified when they are homotopic.
 -/
 
+set_option autoImplicit true
+
 
 universe v u
 

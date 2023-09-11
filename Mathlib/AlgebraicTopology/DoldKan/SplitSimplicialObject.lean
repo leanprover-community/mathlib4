@@ -7,7 +7,7 @@ import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
 import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
-#align_import algebraic_topology.dold_kan.split_simplicial_object from "leanprover-community/mathlib"@"31019c2504b17f85af7e0577585fad996935a317"
+#align_import algebraic_topology.dold_kan.split_simplicial_object from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -16,6 +16,8 @@ import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 In this file we define a functor `nondegComplex : SimplicialObject.Split C ⥤ ChainComplex C ℕ`
 when `C` is a preadditive category with finite coproducts, and get an isomorphism
 `toKaroubiNondegComplexFunctorIsoN₁ : nondegComplex ⋙ toKaroubi _ ≅ forget C ⋙ DoldKan.N₁`.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 

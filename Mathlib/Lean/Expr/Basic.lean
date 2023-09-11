@@ -16,6 +16,8 @@ This file defines basic operations on the types expr, name, declaration, level, 
 This file is mostly for non-tactics.
 -/
 
+set_option autoImplicit true
+
 namespace Lean
 
 namespace BinderInfo
@@ -230,6 +232,11 @@ def isConstantApplication (e : Expr) :=
     | e, 0  => !e.hasLooseBVar (depth - 1)
     | _, _ => false
 
+/-- Counts the immediate depth of a nested `let` expression. -/
+def letDepth : Expr → Nat
+  | .letE _ _ _ b _ => b.letDepth + 1
+  | _ => 0
+
 open Meta
 
 /-- Check that an expression contains no metavariables (after instantiation). -/
@@ -249,6 +256,8 @@ def ofNat (α : Expr) (n : Nat) : MetaM Expr := do
 def ofInt (α : Expr) : Int → MetaM Expr
   | Int.ofNat n => Expr.ofNat α n
   | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
+
+section recognizers
 
 /--
   Return `some n` if `e` is one of the following
@@ -273,6 +282,28 @@ def zero? (e : Expr) : Bool :=
   match e.numeral? with
   | some 0 => true
   | _ => false
+
+/-- `Lean.Expr.le? p` take `e : Expr` as input.
+If `e` represents `a ≤ b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
+otherwise, it returns `none`. -/
+@[inline] def le? (p : Expr) : Option (Expr × Expr × Expr) := do
+  let (type, _, lhs, rhs) ← p.app4? ``LE.le
+  return (type, lhs, rhs)
+
+/-- Given a proposition `ty` that is an `Eq`, `Iff`, or `HEq`, returns `(tyLhs, lhs, tyRhs, rhs)`,
+where `lhs : tyLhs` and `rhs : tyRhs`,
+and where `lhs` is related to `rhs` by the respective relation.
+
+See also `Lean.Expr.iff?`, `Lean.Expr.eq?`, and `Lean.Expr.heq?`. -/
+def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
+  if let some (lhs, rhs) := ty.iff? then
+    some (.sort .zero, lhs, .sort .zero, rhs)
+  else if let some (ty, lhs, rhs) := ty.eq? then
+    some (ty, lhs, ty, rhs)
+  else
+    ty.heq?
+
+end recognizers
 
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a

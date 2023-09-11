@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 import Mathlib.Tactic.Positivity
 import Mathlib.Topology.Algebra.Order.Compact
-import Mathlib.Topology.MetricSpace.EMetricSpace
+import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Bornology.Constructions
 
 #align_import topology.metric_space.basic from "leanprover-community/mathlib"@"8047de4d911cdef39c2d646165eea972f7f9f539"
@@ -143,7 +143,7 @@ theorem PseudoMetricSpace.ext {α : Type*} {m m' : PseudoMetricSpace α}
   congr
   · ext x y : 2
     rw [hed, hed']
-  · exact uniformSpace_eq (hU.trans hU'.symm)
+  · exact UniformSpace.ext (hU.trans hU'.symm)
   · ext : 2
     rw [← Filter.mem_sets, ← Filter.mem_sets, hB, hB']
 #align pseudo_metric_space.ext PseudoMetricSpace.ext
@@ -726,7 +726,7 @@ theorem isBounded_iff_nndist {s : Set α} :
 
 theorem toUniformSpace_eq :
     ‹PseudoMetricSpace α›.toUniformSpace = .ofDist dist dist_self dist_comm dist_triangle :=
-  uniformSpace_eq PseudoMetricSpace.uniformity_dist
+  UniformSpace.ext PseudoMetricSpace.uniformity_dist
 #align metric.to_uniform_space_eq Metric.toUniformSpace_eq
 
 theorem uniformity_basis_dist :
@@ -1487,7 +1487,7 @@ theorem Filter.Tendsto.congr_dist {ι : Type*} {f₁ f₂ : ι → α} {p : Filt
   h₁.congr_uniformity <| tendsto_uniformity_iff_dist_tendsto_zero.2 h
 #align filter.tendsto.congr_dist Filter.Tendsto.congr_dist
 
-alias Filter.Tendsto.congr_dist ← tendsto_of_tendsto_of_dist
+alias tendsto_of_tendsto_of_dist := Filter.Tendsto.congr_dist
 #align tendsto_of_tendsto_of_dist tendsto_of_tendsto_of_dist
 
 theorem tendsto_iff_of_dist {ι : Type*} {f₁ f₂ : ι → α} {p : Filter ι} {a : α}
@@ -1951,6 +1951,18 @@ theorem closedBall_zero' (x : α) : closedBall x 0 = closure {x} :=
     (closure_minimal (singleton_subset_iff.2 (dist_self x).le) isClosed_ball)
 #align metric.closed_ball_zero' Metric.closedBall_zero'
 
+lemma eventually_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
+    ∀ᶠ r in 𝓝 (0 : ℝ), IsCompact (closedBall x r) := by
+  rcases local_compact_nhds (x := x) (n := univ) univ_mem with ⟨s, hs, -, s_compact⟩
+  filter_upwards [eventually_closedBall_subset hs] with r hr
+  exact isCompact_of_isClosed_subset s_compact isClosed_ball hr
+
+lemma exists_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
+    ∃ r, 0 < r ∧ IsCompact (closedBall x r) := by
+  have : ∀ᶠ r in 𝓝[>] 0, IsCompact (closedBall x r) :=
+    eventually_nhdsWithin_of_eventually_nhds (eventually_isCompact_closedBall x)
+  simpa only [and_comm] using (this.and self_mem_nhdsWithin).exists
+
 theorem dense_iff {s : Set α} : Dense s ↔ ∀ x, ∀ r > 0, (ball x r ∩ s).Nonempty :=
   forall_congr' fun x => by
     simp only [mem_closure_iff, Set.Nonempty, exists_prop, mem_inter_iff, mem_ball', and_comm]
@@ -2175,7 +2187,7 @@ theorem finite_cover_balls_of_compact {α : Type u} [PseudoMetricSpace α] {s : 
   ⟨t, hts, t.finite_toSet, ht⟩
 #align finite_cover_balls_of_compact finite_cover_balls_of_compact
 
-alias finite_cover_balls_of_compact ← IsCompact.finite_cover_balls
+alias IsCompact.finite_cover_balls := finite_cover_balls_of_compact
 #align is_compact.finite_cover_balls IsCompact.finite_cover_balls
 
 end Compact
@@ -2475,7 +2487,7 @@ theorem bounded_of_finite {s : Set α} (h : s.Finite) : Bounded s :=
   h.isCompact.bounded
 #align metric.bounded_of_finite Metric.bounded_of_finite
 
-alias bounded_of_finite ← _root_.Set.Finite.bounded
+alias _root_.Set.Finite.bounded := bounded_of_finite
 #align set.finite.bounded Set.Finite.bounded
 
 /-- A singleton is bounded -/
@@ -3026,6 +3038,12 @@ theorem uniformEmbedding_bot_of_pairwise_le_dist {β : Type*} {ε : ℝ} (hε : 
     @UniformEmbedding _ _ ⊥ (by infer_instance) f :=
   uniformEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
 #align metric.uniform_embedding_bot_of_pairwise_le_dist Metric.uniformEmbedding_bot_of_pairwise_le_dist
+
+theorem Finite_bounded_inter_isClosed [ProperSpace α] {K s : Set α} [DiscreteTopology s]
+    (hK : Metric.Bounded K) (hs : IsClosed s) : Set.Finite (K ∩ s) := by
+  refine Set.Finite.subset (IsCompact.finite ?_ ?_) (Set.inter_subset_inter_left s subset_closure)
+  · exact IsCompact.inter_right (Metric.Bounded.isCompact_closure hK) hs
+  · exact DiscreteTopology.of_subset inferInstance (Set.inter_subset_right _ s)
 
 end Metric
 
