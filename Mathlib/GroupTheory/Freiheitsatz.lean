@@ -78,10 +78,8 @@ theorem MulAut.conj_zpow_apply {G : Type*} [Group G]
   rw [← map_zpow, MulAut.conj_apply]
 
 def freeGroupEquivSemidirectProduct {α : Type*} [DecidableEq α] (a : α) :
-    FreeGroup α ≃*
-    FreeGroup ({b // b ≠ a} × Multiplicative ℤ)
-      ⋊[(FreeGroup.mapPermHom _).comp (prodPerm _)]
-      (Multiplicative ℤ) :=
+    FreeGroup α ≃* FreeGroup ({b // b ≠ a} × Multiplicative ℤ)
+      ⋊[(FreeGroup.mapPermHom _).comp (prodPerm _)] (Multiplicative ℤ) :=
   MonoidHom.toMulEquiv
     (FreeGroup.lift
       (fun b =>
@@ -108,4 +106,22 @@ def freeGroupEquivSemidirectProduct {α : Type*} [DecidableEq α] (a : α) :
         simp [mapPermHom, prodPerm])
       (MonoidHom.ext_mint (by simp)))
 
+axiom FreeGroup.vars {α : Type*} : FreeGroup α → Finset α
+
 end Equivs
+
+namespace OneRelator
+
+variable {α : Type*}
+#print Finset.sup
+def HNNExtensionWord (r : FreeGroup α) (t : α) :
+
+def HNNExtensionType {α : Type*} (r : FreeGroup α) (t : α) : Type* :=
+  { p : α × Multiplicative ℤ //
+      ∃ z₁ z₂, (p.1, z₁) ∈ r.vars ∧ (p.1, z₂ ∈ r.vars) ∧
+      z₁ ≤ p.2 ∧ p.2 ≤ z₂   }
+
+def equivHNNExtension {α : Type*} (r : FreeGroup α) (t : α) :
+
+
+end OneRelator
