@@ -436,25 +436,56 @@ end ext
 
 end Semiring
 
-section Ring
 
-variable {R : Type u} [CommRing R]
+section NonUnitalNonAssocRing
 
-variable {A : Type v₁} [Ring A] [Algebra R A]
+variable [CommRing R] [NonUnitalNonAssocRing A] [NonUnitalNonAssocRing B]
+variable [Module R A] [Module R B]
+variable [SMulCommClass R A A] [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
 
-variable {B : Type v₂} [Ring B] [Algebra R B]
+instance instNonUnitalNonAssocRing : NonUnitalNonAssocRing (A ⊗[R] B) where
+  toAddCommGroup := TensorProduct.addCommGroup
+  __ := instNonUnitalNonAssocSemiring
 
-instance instRing : Ring (A ⊗[R] B) where
-  zsmul := SubNegMonoid.zsmul
-  zsmul_zero' := SubNegMonoid.zsmul_zero'
-  zsmul_succ' := SubNegMonoid.zsmul_succ'
-  zsmul_neg' := SubNegMonoid.zsmul_neg'
+end NonUnitalNonAssocRing
+
+section NonAssocRing
+
+variable [CommRing R] [NonAssocRing A] [NonAssocRing B]
+variable [Module R A] [Module R B]
+variable [SMulCommClass R A A] [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
+
+instance instNonAssocRing : NonAssocRing (A ⊗[R] B) where
+  toAddCommGroup := TensorProduct.addCommGroup
+  __ := instNonAssocSemiring
   intCast z := z ⊗ₜ (1 : B)
   intCast_ofNat n := by simp [natCast_def]
   intCast_negSucc n := by simp [natCast_def, add_tmul, neg_tmul, one_def]
-  add_left_neg := add_left_neg
 
 theorem intCast_def (z : ℤ) : (z : A ⊗[R] B) = (z : A) ⊗ₜ (1 : B) := rfl
+
+end NonAssocRing
+
+section NonUnitalRing
+
+variable [CommRing R] [NonUnitalRing A] [NonUnitalRing B]
+variable [Module R A] [Module R B]
+variable [SMulCommClass R A A] [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
+
+instance instNonUnitalRing : NonUnitalRing (A ⊗[R] B) where
+  toAddCommGroup := TensorProduct.addCommGroup
+  __ := instNonUnitalSemiring
+
+end NonUnitalRing
+
+section Ring
+variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+
+instance instRing : Ring (A ⊗[R] B) where
+  toSemiring := instSemiring
+  __ := TensorProduct.addCommGroup
+  __ := instNonAssocRing
+
 
 -- verify there are no diamonds
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl
@@ -464,11 +495,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type u} [CommRing R]
-
-variable {A : Type v₁} [CommRing A] [Algebra R A]
-
-variable {B : Type v₂} [CommRing B] [Algebra R B]
+variable [CommRing R] [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
 
 instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
