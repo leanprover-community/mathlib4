@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Hom.Group.Basic
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Basic
 
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
@@ -59,59 +58,7 @@ theorem coe_castRingHom [NonAssocSemiring α] : (castRingHom α : ℕ → α) = 
   rfl
 #align nat.coe_cast_ring_hom Nat.coe_castRingHom
 
-section OrderedSemiring
-/- Note: even though the section indicates `OrderedSemiring`, which is the common use case,
-we use a generic collection of instances so that it applies in other settings (e.g., in a
-`StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
 
-variable [AddCommMonoidWithOne α] [PartialOrder α]
-variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
-
-@[mono]
-theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
-  monotone_nat_of_le_succ fun n ↦ by
-    rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
-#align nat.mono_cast Nat.mono_cast
-
-@[simp low]
-theorem cast_nonneg' (n : ℕ) : 0 ≤ (n : α) :=
-  @Nat.cast_zero α _ ▸ mono_cast (Nat.zero_le n)
-
--- without this more specific version Lean often chokes
-@[simp]
-theorem cast_nonneg {α} [OrderedSemiring α] (n : ℕ) : 0 ≤ (n : α) :=
-  cast_nonneg' n
-#align nat.cast_nonneg Nat.cast_nonneg
-
-section Nontrivial
-
-variable [NeZero (1 : α)]
-
-theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 :=
-  zero_lt_one.trans_le <| le_add_of_nonneg_left n.cast_nonneg'
-#align nat.cast_add_one_pos Nat.cast_add_one_pos
-
-@[simp low]
-theorem cast_pos' {n : ℕ} : (0 : α) < n ↔ 0 < n := by cases n <;> simp [cast_add_one_pos]
-
--- without this more specific version Lean often chokes
-@[simp]
-theorem cast_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} : (0 : α) < n ↔ 0 < n := cast_pos'
-#align nat.cast_pos Nat.cast_pos
-
-end Nontrivial
-
-end OrderedSemiring
-
-@[simp, norm_cast]
-theorem cast_min [LinearOrderedSemiring α] {a b : ℕ} : ((min a b : ℕ) : α) = min (a : α) b :=
-  (@mono_cast α _).map_min
-#align nat.cast_min Nat.cast_min
-
-@[simp, norm_cast]
-theorem cast_max [LinearOrderedSemiring α] {a b : ℕ} : ((max a b : ℕ) : α) = max (a : α) b :=
-  (@mono_cast α _).map_max
-#align nat.cast_max Nat.cast_max
 
 theorem coe_nat_dvd [Semiring α] {m n : ℕ} (h : m ∣ n) : (m : α) ∣ (n : α) :=
   map_dvd (Nat.castRingHom α) h
@@ -259,56 +206,5 @@ theorem Sum.elim_natCast_natCast {α β γ : Type*} [NatCast γ] (n : ℕ) :
   @Sum.elim_lam_const_lam_const α β γ n
 #align sum.elim_nat_cast_nat_cast Sum.elim_natCast_natCast
 
-/-! ### Order dual -/
-
-
-open OrderDual
-
-instance [h : NatCast α] : NatCast αᵒᵈ :=
-  h
-
-instance [h : AddMonoidWithOne α] : AddMonoidWithOne αᵒᵈ :=
-  h
-
-instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ :=
-  h
-
-@[simp]
-theorem toDual_natCast [NatCast α] (n : ℕ) : toDual (n : α) = n :=
-  rfl
-#align to_dual_nat_cast toDual_natCast
-
-@[simp]
-theorem ofDual_natCast [NatCast α] (n : ℕ) : (ofDual n : α) = n :=
-  rfl
-#align of_dual_nat_cast ofDual_natCast
-
-/-! ### Lexicographic order -/
-
-
-instance [h : NatCast α] : NatCast (Lex α) :=
-  h
-
-instance [h : AddMonoidWithOne α] : AddMonoidWithOne (Lex α) :=
-  h
-
-instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne (Lex α) :=
-  h
-
-@[simp]
-theorem toLex_natCast [NatCast α] (n : ℕ) : toLex (n : α) = n :=
-  rfl
-#align to_lex_nat_cast toLex_natCast
-
-@[simp]
-theorem ofLex_natCast [NatCast α] (n : ℕ) : (ofLex n : α) = n :=
-  rfl
-#align of_lex_nat_cast ofLex_natCast
-
--- Guard against import creep regression.
-assert_not_exists CharZero
-assert_not_exists Commute.zero_right
-assert_not_exists Commute.add_right
-assert_not_exists abs_eq_max_neg
-assert_not_exists natCast_ne
-assert_not_exists MulOpposite.natCast
+-- Guard against import creep.
+assert_not_exists OrderedCommGroup

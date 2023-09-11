@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Rat.Basic
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Tactic.HaveI

@@ -546,8 +546,8 @@ theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
   · simp [h, HDiv.hDiv, Rat.div, Div.div]
     unfold Rat.inv
     have h₁ : 0 < d := Nat.pos_iff_ne_zero.2 h
-    have h₂ : ¬ (d : ℤ) < 0 := by simp only [not_lt, Nat.cast_nonneg]
-    simp [h, h₁, h₂, ←Rat.normalize_eq_mk', Rat.normalize_eq_mkRat, ← mkRat_one,
+    have h₂ : ¬ (d : ℤ) < 0 := of_decide_eq_false rfl
+    simp [h₁, h₂, ←Rat.normalize_eq_mk', Rat.normalize_eq_mkRat, ← mkRat_one,
       Rat.mkRat_mul_mkRat]
 
 end Rat
