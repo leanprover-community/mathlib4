@@ -34,9 +34,9 @@ lemma equiv_lemma {x y : E} {o m: ℝ} (h₁ : o > 0) (h₂ : o < 1):
 o * (f x - m / 2 * ‖x‖ ^ 2) + (1 - o) * (f y - m / 2 * ‖y‖ ^ 2)
   + m / 2 * ‖o • x + (1 - o) • y‖ ^ 2 =
     o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * ‖x - y‖ ^ 2 :=
-  calc o * (f x - m / 2 * ‖x‖ ^ 2) + (1 - o) * (f y - m / 2 * ‖y‖ ^ 2) 
+  calc o * (f x - m / 2 * ‖x‖ ^ 2) + (1 - o) * (f y - m / 2 * ‖y‖ ^ 2)
         + m / 2 * ‖o • x + (1 - o) • y‖ ^ 2
-          = o * f x + (1 - o) * f y - m / 2 * o 
+          = o * f x + (1 - o) * f y - m / 2 * o
             * (1 - o) * (‖x‖ ^ 2 - 2 * inner x y + ‖y‖ ^ 2) := by
               simp only [Real.rpow_two]
               rw [norm_add_sq_real, norm_smul, norm_smul, real_inner_smul_left, inner_smul_right]
