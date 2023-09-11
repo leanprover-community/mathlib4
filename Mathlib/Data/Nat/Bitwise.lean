@@ -237,12 +237,12 @@ lemma bitwise'_bit' {f : Bool → Bool → Bool} (a m b n)
   . apply Or.inr hbn
   . apply Or.inr ham
 
-theorem div2_succ_succ (x) :
+lemma div2_succ_succ (x) :
     div2 (x + 2) = (div2 x) + 1 := by
   simp only [div2_succ, bodd_succ, Bool.cond_not]
   cases bodd x <;> simp only [cond_false, cond_true]
 
-theorem div2_eq_zero {x : ℕ} :
+lemma div2_eq_zero {x : ℕ} :
     div2 x = 0 → x = 0 ∨ x = 1 := by
   intro h
   rcases x with ⟨⟩ | ⟨⟩ | x
@@ -253,12 +253,12 @@ theorem div2_eq_zero {x : ℕ} :
     contradiction
 
 lemma bitwise_eq_bitwise' (f) :
-  bitwise f = bitwise' f := by
+    bitwise f = bitwise' f := by
   funext x y
   have ⟨k, hk⟩ : ∃ k, k = x+y := by use x+y
   induction' k using Nat.strongInductionOn with k ih generalizing x y
-  by_cases h1: x= 0
-  <;> by_cases h2: y= 0
+  by_cases h1 : x = 0
+  <;> by_cases h2 : y = 0
   · unfold bitwise
     simp [h1, h2]
   · unfold bitwise bitwise'; simp[h1]; aesop
