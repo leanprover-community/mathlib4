@@ -71,11 +71,3 @@ theorem toLex_natCast [NatCast α] (n : ℕ) : toLex (n : α) = n :=
 theorem ofLex_natCast [NatCast α] (n : ℕ) : (ofLex n : α) = n :=
   rfl
 #align of_lex_nat_cast ofLex_natCast
-
--- Guard against import creep regression.
-assert_not_exists CharZero
-assert_not_exists Commute.zero_right
-assert_not_exists Commute.add_right
-assert_not_exists abs_eq_max_neg
-assert_not_exists natCast_ne
-assert_not_exists MulOpposite.natCast

@@ -206,5 +206,11 @@ theorem Sum.elim_natCast_natCast {α β γ : Type*} [NatCast γ] (n : ℕ) :
   @Sum.elim_lam_const_lam_const α β γ n
 #align sum.elim_nat_cast_nat_cast Sum.elim_natCast_natCast
 
--- Guard against import creep.
+-- Guard against import creep regression.
 assert_not_exists OrderedCommGroup
+assert_not_exists CharZero
+assert_not_exists Commute.zero_right
+assert_not_exists Commute.add_right
+assert_not_exists abs_eq_max_neg
+assert_not_exists natCast_ne
+assert_not_exists MulOpposite.natCast
