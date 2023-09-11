@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.Triangulated.Orthogonal
 import Mathlib.CategoryTheory.Abelian.InjectiveResolution
@@ -87,19 +87,63 @@ lemma homComplex_exactAt_of_KInjective [L.IsKInjective] (hK : ∀ (n : ℤ), K.E
 
 namespace HomComplex
 
+namespace Cochain
+
 variable {K L}
 
-def Cochain.eqUpTo {n : ℤ} (α β : Cochain K L n) (p₀ : ℤ) : Prop :=
+def EqUpTo {n : ℤ} (α β : Cochain K L n) (p₀ : ℤ) : Prop :=
   ∀ (p q : ℤ) (hpq : p + n = q), p ≤ p₀ → α.v p q hpq = β.v p q hpq
+
+namespace Induction
+
+variable {d : ℤ} {X : ℕ → Set (Cochain K L d)} (φ : ∀ (n : ℕ), X n → X (n+1))
+   {p₀ : ℤ} (hφ : ∀ (n : ℕ) (x : X n), (φ n x).1.EqUpTo x.1 (p₀ + n)) (x₀ : X 0)
+
+def sequence : ∀ n, X n
+  | 0 => x₀
+  | n+1 => φ n (sequence n)
+
+lemma sequence_eqUpTo (n₁ n₂ : ℕ) (h : n₁ ≤ n₂) :
+    (sequence φ x₀ n₁).1.EqUpTo (sequence φ x₀ n₂).1 (p₀ + n₁) := by
+  obtain ⟨k, rfl⟩ : ∃ (k : ℕ), n₂ = n₁ + k := Nat.exists_eq_add_of_le h
+  clear h
+  revert n₁
+  induction' k with k hk
+  · intro n₁ p q hpq _
+    simp only [Nat.zero_eq, Nat.add_zero]
+  · intro n₁ p q hpq hp
+    rw [hk n₁ p q hpq hp, ← hφ (n₁ + k) (sequence φ x₀ (n₁ + k)) p q hpq
+      (by rw [Nat.cast_add, ← add_assoc]; linarith)]
+    rfl
+
+def limitSequence (_ : ∀ (n : ℕ) (x : X n), (φ n x).1.EqUpTo x.1 (p₀ + n)) (x₀ : X 0) :
+    Cochain K L d :=
+  Cochain.mk (fun p q hpq => (sequence φ x₀ (p-p₀).toNat).1.v p q hpq)
+
+lemma limitSequence_eqUpTo (n : ℕ) :
+    (limitSequence φ hφ x₀).EqUpTo (sequence φ x₀ n).1 (p₀ + n) := by
+  intro p q hpq hp
+  dsimp [limitSequence]
+  refine' sequence_eqUpTo φ hφ _ _ _ _ _ _ _ _
+  · rw [Int.toNat_le]
+    linarith
+  · linarith [Int.self_le_toNat (p - p₀)]
+
+end Induction
+
+end Cochain
 
 end HomComplex
 
-namespace IsKInjectiveOfInjective
+variable {K L}
 
-lemma step (f : K ⟶ L) (α : Cochain K L (-1)) (n : ℤ) (hK : K.ExactAt (n+1)) [Injective (L.X (n+1))]
-    (hα : (δ (-1) 0 α).eqUpTo (Cochain.ofHom f) n) :
+lemma isKInjective_of_injective_aux
+    (f : K ⟶ L) (α : Cochain K L (-1)) (n m : ℤ) (hnm : n + 1 = m)
+    (hK : K.ExactAt m) [Injective (L.X m)]
+    (hα : (δ (-1) 0 α).EqUpTo (Cochain.ofHom f) n) :
     ∃ (h : K.X (n + 2) ⟶ L.X (n+1)),
-    (δ (-1) 0 (α + Cochain.single h (-1))).eqUpTo (Cochain.ofHom f) (n + 1) := by
+    (δ (-1) 0 (α + Cochain.single h (-1))).EqUpTo (Cochain.ofHom f) m := by
+  subst hnm
   let u := f.f (n + 1) - α.v (n+1) n (by linarith) ≫ L.d n (n+1) -
     K.d (n+1) (n+2) ≫ α.v (n+2) (n+1) (by linarith)
   have hu : K.d n (n+1) ≫ u = 0 := by
@@ -131,6 +175,35 @@ lemma step (f : K ⟶ L) (α : Cochain K L (-1)) (n : ℤ) (hK : K.ExactAt (n+1)
       Cochain.ofHom_v, hh]
     abel
 
-end IsKInjectiveOfInjective
+example : ℕ := 42
+
+variable (L)
+
+lemma isKInjective_of_injective (d : ℤ) [L.IsStrictlyGE d] [∀ (n : ℤ), Injective (L.X n)] :
+    L.IsKInjective := ⟨fun K hK f => by
+  let X : ℕ → Set (Cochain K L (-1)) := fun n α => (δ (-1) 0 α).EqUpTo (Cochain.ofHom f) (n + d - 1)
+  let x₀ : X 0 := ⟨0, fun p q hpq hp => by
+    apply IsZero.eq_of_tgt
+    apply L.isZero_of_isStrictlyGE d
+    simp only [Nat.cast_zero, zero_add] at hp
+    linarith⟩
+  let φ : ∀ n, X n → X (n+1) := fun n α =>
+    ⟨_, (isKInjective_of_injective_aux f α.1 (n + d - 1) ((n + 1 : ℕ) + d - 1)
+      (by simp; linarith) (hK _) α.2).choose_spec⟩
+  have hφ : ∀ (k : ℕ) (x : X k), (φ k x).1.EqUpTo x.1 (d + k) := fun k x p q hpq hp => by
+    dsimp
+    simp only [add_right_eq_self]
+    apply Cochain.single_v_eq_zero
+    linarith
+  refine' ⟨(Cochain.equivHomotopy f 0).symm ⟨Cochain.Induction.limitSequence φ hφ x₀, _⟩⟩
+  rw [Cochain.ofHom_zero, add_zero]
+  ext n
+  let k₀ : ℕ := (n - d + 1).toNat
+  have := Int.self_le_toNat (n - d + 1)
+  rw [← (Cochain.Induction.sequence φ x₀ k₀).2 n n (add_zero n) (by linarith),
+    δ_v (-1) 0 (neg_add_self 1) _ n n (by linarith) (n-1) (n+1) rfl (by linarith),
+    δ_v (-1) 0 (neg_add_self 1) _ n n (by linarith) (n-1) (n+1) rfl (by linarith),
+    Cochain.Induction.limitSequence_eqUpTo φ hφ x₀ k₀ n (n-1) (by linarith) (by linarith),
+    Cochain.Induction.limitSequence_eqUpTo φ hφ x₀ k₀ (n+1) n (by linarith) (by linarith)]⟩
 
 end CochainComplex
