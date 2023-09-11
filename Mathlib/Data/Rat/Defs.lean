@@ -7,9 +7,7 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.PNat.Defs
+import Mathlib.Algebra.GroupWithZero.Basic
 
 #align_import data.rat.defs from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
@@ -548,7 +546,7 @@ theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
   · simp [h, HDiv.hDiv, Rat.div, Div.div]
     unfold Rat.inv
     have h₁ : 0 < d := Nat.pos_iff_ne_zero.2 h
-    have h₂ : ¬ (d : ℤ) < 0 := by simp
+    have h₂ : ¬ (d : ℤ) < 0 := by simp only [not_lt, Nat.cast_nonneg]
     simp [h, h₁, h₂, ←Rat.normalize_eq_mk', Rat.normalize_eq_mkRat, ← mkRat_one,
       Rat.mkRat_mul_mkRat]
 
@@ -556,3 +554,6 @@ end Rat
 
 -- Guard against import creep.
 assert_not_exists Field
+assert_not_exists PNat
+assert_not_exists Nat.dvd_mul
+assert_not_exists IsDomain.toCancelMonoidWithZero
