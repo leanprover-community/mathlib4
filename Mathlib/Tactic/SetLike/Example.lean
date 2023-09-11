@@ -11,10 +11,8 @@ in the library. They are only included here in order to determine whether this i
 good approach and to make testing easier.
 -/
 
--- currently `aesop` fails to apply this lemma for explicit numerals
--- so it can't prove things like `37 ∈ S` which come up sometimes.
 lemma ofNat_mem [Ring R] (S : Subring R) (n : ℕ) [n.AtLeastTwo] :
-    OfNat.ofNat (α := R) n ∈ S := by
+    no_index (OfNat.ofNat (α := R) n) ∈ S := by
   rw [←Nat.cast_eq_ofNat]; exact natCast_mem S n
 
 attribute [set_like]
@@ -23,20 +21,22 @@ attribute [set_like]
   add_mem
   neg_mem
   sub_mem
+  mul_mem
+  zpow_mem
+  pow_mem
   star_mem
   algebraMap_mem
   nsmul_mem
   zsmul_mem
-  pow_mem
   natCast_mem
   coe_int_mem
   ofNat_mem
 
--- we wan `nsmul_mem` and `zsmul_mem` to trigger before these
-attribute [aesop safe 2 apply (rule_sets [SetLike])] SMulMemClass.smul_mem mul_mem
+-- we want `nsmul_mem` and `zsmul_mem` to trigger before this
+attribute [aesop safe 2 apply (rule_sets [SetLike])] SMulMemClass.smul_mem
 
 example [Ring R] (S : Subring R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m : ℕ) :
-    n • x ^ 3 - y + z ^ m ∈ S := by
+    n • x ^ 3 - 2 • y + z ^ m ∈ S := by
   set_like
 
 -- These lemmas need to exist so that the `set_like` tactic can apply them
@@ -125,4 +125,7 @@ example [Monoid M] (x : M) (n : ℕ) : x ^ n ∈ Submonoid.closure {x} := by
   set_like
 
 example [Monoid M] (x y z w : M) (n : ℕ) : (x * y) ^ n * w ∈ Submonoid.closure {x, y, z, w} := by
+  set_like
+
+example [Group M] (x : M) (n : ℤ) : x ^ n ∈ Subgroup.closure {x} := by
   set_like
