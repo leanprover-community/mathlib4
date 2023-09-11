@@ -1,27 +1,24 @@
 /-
-Copyright (c) 2023 Mohanad ahmed. All rights reserved.
+Copyright (c) 2023 Mohanad Ahmed. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mohanad Ahmed
 -/
 
-
-import Mathlib.Data.Matrix.Rank
 import Mathlib.Data.Matrix.ColumnRowPartitioned
+import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.SVD.svdReindex
-
-
 
 /-! # Singular Value Decomposition
 
-This file provides proves the SVD theorem which decomposes a real/complex matrix into left
+This file provides the SVD theorem which decomposes a real/complex matrix into left
 eigenvectors, singular values block diagonal matrix and right eigenvectors.
 
-Any matrix A (M × N) with rank r = A.rank and  with elements in ℝ or ℂ fields can be decompsed
+Any matrix A (M × N) with rank r = A.rank and with elements in the field ℝ or ℂ can be decomposed
 into three matrices:
   U: an M × M matrix containing the left eigenvectors of the matrix
   S: an M × N matrix with an r × r block in the upper left corner with nonzero singular values
   V: an N × N matrix containing the right eigenvectors of the matrix
-  Note that
+Note that
   S is a block matrix S = [S₁₁, S₁₂; S₂₁, S₂₂] with
   - S₁₁: a diagonal r × r matrix and
   - S₁₂: r × (N - r) zero matrix, S₂₁ : (M - r) × r zero matrix and
@@ -42,11 +39,11 @@ corresponding eigenvectors from AᴴA and AAᴴ using similar rearrangements. Th
 We then proceed to transfer some of the lemmas we need about eigenvector matrices (for example that
 they are unitary: i.e. inverse is conjugate transpose.). Note that since invertibility in mathlib is
 defined for square matrices while our matrices are partitioned i.e. N × (N₁ ⊕ N₂) and N ≃ (N ⊕ N₂)
-Lean cannot apply the Invertible definition. We workaround this were necessary.
+Lean cannot apply the Invertible definition. We work around this where necessary.
 
-Lemma `reduced_spectral_theorem` (`reduced_spectral_theorem'`) shows that AᴴA and AAᴴ, can be
+Lemma `reduced_spectral_theorem` (`reduced_spectral_theorem'`) shows that AᴴA and AAᴴ can be
 reduced to products containing only the non-zero singular eigenvectors. This is later used in
-proving the main SVD theroem. A few lemmas are provided about the invertibility of the non-zero
+proving the main SVD theorem. A few lemmas are provided about the invertibility of the non-zero
 singular values matrix: `svdσ_inv`, `σ_inv_μ_σ_inv_eq_one`, `IsUnit_det_svdσ`,
 `IsUnit_det_svdσ_mapK` and `svdσ_inv_mapK`.
 
@@ -59,8 +56,8 @@ Singular Value decomposition, SVD
 -/
 
 
-variable {𝕂: Type}[IsROrC 𝕂][DecidableEq 𝕂]
-variable {M N: ℕ}
+variable {𝕂 : Type*} [IsROrC 𝕂] [DecidableEq 𝕂]
+variable {M N : ℕ}
 
 open Matrix BigOperators
 
