@@ -346,6 +346,16 @@ theorem eval₂_at_nat_cast {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) :
 #align polynomial.eval₂_at_nat_cast Polynomial.eval₂_at_nat_cast
 
 @[simp]
+theorem eval₂_at_ofNat {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) [n.AtLeastTwo] :
+    p.eval₂ f (no_index (OfNat.ofNat n)) = f (p.eval (OfNat.ofNat n)) := by
+  simp [OfNat.ofNat]
+
+@[simp]
+lemma eval₂_ofNat {S : Type*} [Semiring S] (n : ℕ) [n.AtLeastTwo] (f : R →+* S) (a : S) :
+    (no_index (OfNat.ofNat n : R[X])).eval₂ f a = OfNat.ofNat n := by
+  simp [OfNat.ofNat]
+
+@[simp]
 theorem eval_C : (C a).eval x = a :=
   eval₂_C _ _
 #align polynomial.eval_C Polynomial.eval_C
@@ -353,6 +363,11 @@ theorem eval_C : (C a).eval x = a :=
 @[simp]
 theorem eval_nat_cast {n : ℕ} : (n : R[X]).eval x = n := by simp only [← C_eq_nat_cast, eval_C]
 #align polynomial.eval_nat_cast Polynomial.eval_nat_cast
+
+@[simp]
+lemma eval_ofNat (n : ℕ) [n.AtLeastTwo] (a : R) :
+    (no_index (OfNat.ofNat n : R[X])).eval a = OfNat.ofNat n := by
+  simp [OfNat.ofNat]
 
 @[simp]
 theorem eval_X : X.eval x = x :=
