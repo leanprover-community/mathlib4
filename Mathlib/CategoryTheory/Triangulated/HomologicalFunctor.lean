@@ -107,15 +107,19 @@ lemma IsHomological.of_iso {F₁ F₂ : C ⥤ A} [F₁.PreservesZeroMorphisms]
     (F₁.map_distinguished_exact T hT)
 
 def homologicalKernel [F.IsHomological] :
-    Triangulated.Subcategory C where
-  set := fun X => ∀ (n : ℤ), IsZero (F.obj (X⟦n⟧))
-  zero := fun n => by rw [IsZero.iff_id_eq_zero, ← F.map_id, ← Functor.map_id,
-    id_zero, Functor.map_zero, Functor.map_zero]
-  shift := fun X a hX b =>
-    IsZero.of_iso (hX (a + b)) (F.mapIso ((shiftFunctorAdd C a b).app X).symm)
-  ext₂ := fun T hT h₁ h₃ n => (F.map_distinguished_exact _
-    (Triangle.shift_distinguished T hT n)).isZero_of_both_zeros
-      (IsZero.eq_of_src (h₁ n) _ _) (IsZero.eq_of_tgt (h₃ n) _ _)
+    Triangulated.Subcategory C := Triangulated.Subcategory.mk'
+  (fun X => ∀ (n : ℤ), IsZero (F.obj (X⟦n⟧)))
+  (fun n => by rw [IsZero.iff_id_eq_zero, ← F.map_id, ← Functor.map_id,
+    id_zero, Functor.map_zero, Functor.map_zero])
+  (fun X a hX b =>
+    IsZero.of_iso (hX (a + b)) (F.mapIso ((shiftFunctorAdd C a b).app X).symm))
+  (fun T hT h₁ h₃ n => (F.map_distinguished_exact _
+      (Triangle.shift_distinguished T hT n)).isZero_of_both_zeros
+      (IsZero.eq_of_src (h₁ n) _ _) (IsZero.eq_of_tgt (h₃ n) _ _))
+
+instance [F.IsHomological] : F.homologicalKernel.set.RespectsIso := by
+  dsimp only [homologicalKernel]
+  infer_instance
 
 lemma mem_homologicalKernel_iff [F.IsHomological] [F.ShiftSequence ℤ]
     (X : C) : X ∈ F.homologicalKernel.set ↔

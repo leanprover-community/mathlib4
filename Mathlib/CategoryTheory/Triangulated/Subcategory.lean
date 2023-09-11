@@ -82,23 +82,54 @@ variable (C : Type _) [Category C] [HasZeroObject C] [HasShift C ℤ]
 
 structure Subcategory where
   set : Set C
-  zero : 0 ∈ set
+  zero' : ∃ (Z : C) (_ : IsZero Z), Z ∈ set
   shift : ∀ (X : C) (n : ℤ) (_ : X ∈ set), X⟦n⟧ ∈ set
-  ext₂ : ∀ (T : Triangle C) (_ : T ∈ distTriang C), T.obj₁ ∈ set → T.obj₃ ∈ set → T.obj₂ ∈ set
+  ext₂' : ∀ (T : Triangle C) (_ : T ∈ distTriang C), T.obj₁ ∈ set → T.obj₃ ∈ set → T.obj₂ ∈ set.isoClosure
 
 namespace Subcategory
 
 variable {C}
-variable (S : Subcategory C)
 
-instance : S.set.RespectsIso := ⟨fun X Y e hX => by
-  refine' S.ext₂ (Triangle.mk e.hom (0 : Y ⟶ 0) 0) _ hX S.zero
+section
+
+variable (set : Set C) (zero : 0 ∈ set)
+  (shift : ∀ (X : C) (n : ℤ) (_ : X ∈ set), X⟦n⟧ ∈ set)
+  (ext₂ : ∀ (T : Triangle C) (_ : T ∈ distTriang C), T.obj₁ ∈ set → T.obj₃ ∈ set → T.obj₂ ∈ set)
+
+def mk' : Subcategory C where
+  set := set
+  zero' := ⟨0, isZero_zero _, zero⟩
+  shift := shift
+  ext₂' T hT h₁ h₃ := set.subset_isoClosure (ext₂ T hT h₁ h₃)
+
+instance : (mk' set zero shift ext₂).set.RespectsIso := ⟨fun X Y e hX => by
+  refine' ext₂ (Triangle.mk e.hom (0 : Y ⟶ 0) 0) _ hX zero
   refine' isomorphic_distinguished _ (contractible_distinguished X) _ _
   exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
     (by aesop_cat) (by aesop_cat) (by aesop_cat)⟩
 
-lemma zero' (X : C) (hX : IsZero X) : X ∈ S.set :=
-  Set.mem_of_iso S.set hX.isoZero.symm S.zero
+end
+
+variable (S : Subcategory C) [S.set.RespectsIso]
+
+variable {S}
+
+lemma ext₂ (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : T.obj₁ ∈ S.set)
+    (h₃ : T.obj₃ ∈ S.set) : T.obj₂ ∈ S.set := by
+  simpa only [S.set.isoClosure_eq_self] using S.ext₂' T hT h₁ h₃
+
+variable (S)
+
+noncomputable def zeroObject : C := S.zero'.choose
+
+lemma isZero_zeroObject : IsZero S.zeroObject := S.zero'.choose_spec.choose
+
+lemma zeroObject_mem : S.zeroObject ∈ S.set := S.zero'.choose_spec.choose_spec
+
+lemma zero'' (X : C) (hX : IsZero X) : X ∈ S.set :=
+  S.set.mem_of_iso (S.isZero_zeroObject.isoZero.trans hX.isoZero.symm) S.zeroObject_mem
+
+lemma zero : 0 ∈ S.set := S.zero'' _ (isZero_zero _)
 
 def W : MorphismProperty C := fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
   (_ : Triangle.mk f g h ∈ distTriang C), Z ∈ S.set
@@ -142,7 +173,6 @@ lemma W.mk' {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₁ ∈ S.set) 
   simpa only [W_eq_W'] using W'.mk hT h
 
 variable (S)
-
 
 instance instContainsIdentitiesW : S.W.ContainsIdentities :=
   ⟨fun X => ⟨_, _, _, contractible_distinguished X, S.zero⟩⟩
@@ -367,7 +397,7 @@ instance : Pretriangulated S.category where
 
 instance : S.ι.IsTriangulated := ⟨fun _ hT => hT⟩
 
-inductive setSpan (S : Set C) : C → Prop
+/-inductive setSpan (S : Set C) : C → Prop
   | subset (X : C) (hX : X ∈ S) : setSpan S X
   | zero : setSpan S 0
   | shift (X : C) (n : ℤ) (hX : setSpan S X) : setSpan S (X⟦n⟧)
@@ -520,7 +550,7 @@ instance : CompleteLattice (Subcategory C) where
         rw [← (shiftFunctor C n).map_id, hX, Functor.map_zero]
       ext₂ := fun T hT h₁ h₃ => T.isZero₂_of_isZero₁₃ hT h₁ h₃ }
   le_top _ _ _ := Set.mem_univ _
-  bot_le := fun A X (hX : IsZero X) => A.zero' _ hX
+  bot_le := fun A X (hX : IsZero X) => A.zero' _ hX-/
 
 end Subcategory
 
@@ -534,7 +564,7 @@ open Category Limits
 
 variable {C : Type _} [Category C] [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C] [IsTriangulated C]
-  (S : Triangulated.Subcategory C)
+  (S : Triangulated.Subcategory C) [S.set.RespectsIso]
 
 noncomputable example : Pretriangulated S.W.Localization := inferInstance
 noncomputable example : IsTriangulated S.W.Localization := inferInstance

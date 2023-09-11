@@ -53,6 +53,9 @@ noncomputable instance Quotient.functor_commShift [r.IsCompatibleWithShift A] :
     (Quotient.functor r).CommShift A :=
   Functor.CommShift.ofInduced _ _ _ _ _
 
+lemma Quotient.functor_obj_shift [r.IsCompatibleWithShift A] (X : C) (n : A) :
+    ((Quotient.functor r).obj X)⟦n⟧ = (Quotient.functor r).obj (X⟦n⟧) := rfl
+
 -- the construction is made irreducible in order to prevent timeouts and abuse of defeq
 attribute [irreducible] HasShift.quotient Quotient.functor_commShift
 

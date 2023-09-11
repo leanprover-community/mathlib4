@@ -20,6 +20,10 @@ def subcategoryAcyclic :
     Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) :=
   Functor.homologicalKernel (homologyFunctor C (ComplexShape.up ℤ) 0)
 
+instance : (subcategoryAcyclic C).set.RespectsIso := by
+  dsimp only [subcategoryAcyclic]
+  infer_instance
+
 lemma mem_subCategoryAcyclic_iff (X : HomotopyCategory C (ComplexShape.up ℤ)) :
     X ∈ (subcategoryAcyclic C).set ↔ ∀ (n : ℤ), IsZero ((homologyFunctor _ _ n).obj X) :=
   Functor.mem_homologicalKernel_iff _ X

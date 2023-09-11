@@ -1,8 +1,12 @@
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 
-open CategoryTheory Category Limits Pretriangulated Limits
+open CategoryTheory Category Limits Pretriangulated Limits ZeroObject
 
-variable {C : Type _} [Category C] [Abelian C]
+variable {C : Type _} [Category C]
+
+section preadditive
+
+variable [Preadditive C]
 
 namespace CochainComplex
 
@@ -22,35 +26,19 @@ class IsStrictlyGE : Prop where
 lemma isZero_of_isStrictlyGE (i : ℤ) (hi : i < n) [K.IsStrictlyGE n] :
     IsZero (K.X i) := IsStrictlyGE.isZero i hi
 
-class IsLE : Prop where
-  isZero (i : ℤ) (hi : n < i) : IsZero (K.homology i)
-
-lemma isZero_of_isLE (i : ℤ) (hi : n < i) [K.IsLE n] :
-    IsZero (K.homology i) := IsLE.isZero i hi
-
-class IsGE : Prop where
-  isZero (i : ℤ) (hi : i < n) : IsZero (K.homology i)
-
-lemma isZero_of_isGE (i : ℤ) (hi : i < n) [K.IsGE n] :
-    IsZero (K.homology i) := IsGE.isZero i hi
-
-instance (K : CochainComplex C ℤ) [K.IsStrictlyLE n] : K.IsLE n := ⟨fun i hi =>
-  K.isZero_homology_of_isZero _ (K.isZero_of_isStrictlyLE n i hi)⟩
-
-instance (K : CochainComplex C ℤ) [K.IsStrictlyGE n] : K.IsGE n := ⟨fun i hi =>
-  K.isZero_homology_of_isZero _ (K.isZero_of_isStrictlyGE n i hi)⟩
-
 lemma isStrictLE_of_LE (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyLE p] :
   K.IsStrictlyLE q := ⟨fun i hi => K.isZero_of_isStrictlyLE p i (by linarith)⟩
 
 lemma isStrictLE_of_GE (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyGE q] :
   K.IsStrictlyGE p := ⟨fun i hi => K.isZero_of_isStrictlyGE q i (by linarith)⟩
 
-lemma isLE_of_LE (p q : ℤ) (hpq : p ≤ q) [K.IsLE p] :
-  K.IsLE q := ⟨fun i hi => K.isZero_of_isLE p i (by linarith)⟩
+lemma isStrictlyLE_shift [K.IsStrictlyLE n] (a n' : ℤ) (h : a + n' = n) :
+    (K⟦a⟧).IsStrictlyLE n' := ⟨fun i hi =>
+  IsZero.of_iso (K.isZero_of_isStrictlyLE n _ (by linarith)) (K.shiftFunctorObjXIso a i _ rfl)⟩
 
-lemma isGE_of_GE (p q : ℤ) (hpq : p ≤ q) [K.IsGE q] :
-  K.IsGE p := ⟨fun i hi => K.isZero_of_isGE q i (by linarith)⟩
+lemma isStrictlyGE_shift [K.IsStrictlyGE n] (a n' : ℤ) (h : a + n' = n) :
+    (K⟦a⟧).IsStrictlyGE n' := ⟨fun i hi =>
+  IsZero.of_iso (K.isZero_of_isStrictlyGE n _ (by linarith)) (K.shiftFunctorObjXIso a i _ rfl)⟩
 
 variable {K L}
 
@@ -62,33 +50,9 @@ lemma isStrictlyGE_of_iso [K.IsStrictlyGE n] : L.IsStrictlyGE n := ⟨fun i hi =
   IsZero.of_iso (K.isZero_of_isStrictlyGE n i hi)
     ((eval _ _ i).mapIso e.symm)⟩
 
-lemma isLE_of_iso [K.IsLE n] : L.IsLE n := ⟨fun i hi =>
-  IsZero.of_iso (K.isZero_of_isLE n i hi)
-    ((homologyFunctor _ _ i).mapIso e.symm)⟩
+variable(K)
 
-lemma isGE_of_iso [K.IsGE n] : L.IsGE n := ⟨fun i hi =>
-  IsZero.of_iso (K.isZero_of_isGE n i hi)
-    ((homologyFunctor _ _ i).mapIso e.symm)⟩
-
-variable (K)
-
-lemma isStrictlyLE_shift [K.IsStrictlyLE n] (a n' : ℤ) (h : a + n' = n) :
-    (K⟦a⟧).IsStrictlyLE n' := ⟨fun i hi =>
-  IsZero.of_iso (K.isZero_of_isStrictlyLE n _ (by linarith)) (K.shiftFunctorObjXIso a i _ rfl)⟩
-
-lemma isStrictlyGE_shift [K.IsStrictlyGE n] (a n' : ℤ) (h : a + n' = n) :
-    (K⟦a⟧).IsStrictlyGE n' := ⟨fun i hi =>
-  IsZero.of_iso (K.isZero_of_isStrictlyGE n _ (by linarith)) (K.shiftFunctorObjXIso a i _ rfl)⟩
-
-lemma isLE_shift [K.IsLE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsLE n' := ⟨fun i hi =>
-  IsZero.of_iso (K.isZero_of_isLE n (a+i) (by linarith))
-    (((homologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)⟩
-
-lemma isGE_shift [K.IsGE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsGE n' := ⟨fun i hi =>
-  IsZero.of_iso (K.isZero_of_isGE n (a+i) (by linarith))
-    (((homologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)⟩
-
-lemma exists_iso_single (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
+lemma exists_iso_single [HasZeroObject C] (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
     ∃ (M : C), Nonempty (K ≅ (single _ _ n).obj M) := by
   refine' ⟨K.X n, ⟨_⟩⟩
   refine' HomologicalComplex.Hom.isoOfComponents _ _
@@ -114,25 +78,93 @@ lemma exists_iso_single (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
       . exact isZero_zero _
       . linarith
 
-instance (A : C) (n : ℤ) :
+instance [HasZeroObject C] (A : C) (n : ℤ) :
     IsStrictlyLE ((single C (ComplexShape.up ℤ) n).obj A) n := ⟨fun i hi => by
     dsimp
     rw [if_neg (by linarith)]
     exact isZero_zero _⟩
 
-instance (A : C) (n : ℤ) :
+instance [HasZeroObject C] (A : C) (n : ℤ) :
     IsStrictlyLE ((singleFunctor C n).obj A) n :=
   (inferInstance : IsStrictlyLE ((single C (ComplexShape.up ℤ) n).obj A) n)
 
-instance (A : C) (n : ℤ) :
+instance [HasZeroObject C] (A : C) (n : ℤ) :
     IsStrictlyGE ((single C (ComplexShape.up ℤ) n).obj A) n := ⟨fun i hi => by
     dsimp
     rw [if_neg (by linarith)]
     exact isZero_zero _⟩
 
-instance (A : C) (n : ℤ) :
+instance [HasZeroObject C] (A : C) (n : ℤ) :
     IsStrictlyGE ((singleFunctor C n).obj A) n :=
   (inferInstance : IsStrictlyGE ((single C (ComplexShape.up ℤ) n).obj A) n)
+
+instance [HasZeroObject C] (n : ℤ) : IsStrictlyGE (0 : CochainComplex C ℤ) n :=
+  ⟨fun i _ => by
+    rw [IsZero.iff_id_eq_zero]
+    change (eval _ _ i).map (𝟙 (0 : CochainComplex C ℤ)) = 0
+    simp only [id_zero, eval_map, zero_f]⟩
+
+instance [HasZeroObject C] (n : ℤ) : IsStrictlyLE (0 : CochainComplex C ℤ) n :=
+  ⟨fun i _ => by
+    rw [IsZero.iff_id_eq_zero]
+    change (eval _ _ i).map (𝟙 (0 : CochainComplex C ℤ)) = 0
+    simp only [id_zero, eval_map, zero_f]⟩
+
+end CochainComplex
+
+end preadditive
+
+variable [Abelian C]
+
+namespace CochainComplex
+
+open HomologicalComplex
+
+variable (K L : CochainComplex C ℤ) (e : K ≅ L) (n : ℤ)
+
+class IsLE : Prop where
+  isZero (i : ℤ) (hi : n < i) : IsZero (K.homology i)
+
+lemma isZero_of_isLE (i : ℤ) (hi : n < i) [K.IsLE n] :
+    IsZero (K.homology i) := IsLE.isZero i hi
+
+class IsGE : Prop where
+  isZero (i : ℤ) (hi : i < n) : IsZero (K.homology i)
+
+lemma isZero_of_isGE (i : ℤ) (hi : i < n) [K.IsGE n] :
+    IsZero (K.homology i) := IsGE.isZero i hi
+
+instance (K : CochainComplex C ℤ) [K.IsStrictlyLE n] : K.IsLE n := ⟨fun i hi =>
+  K.isZero_homology_of_isZero _ (K.isZero_of_isStrictlyLE n i hi)⟩
+
+instance (K : CochainComplex C ℤ) [K.IsStrictlyGE n] : K.IsGE n := ⟨fun i hi =>
+  K.isZero_homology_of_isZero _ (K.isZero_of_isStrictlyGE n i hi)⟩
+
+lemma isLE_of_LE (p q : ℤ) (hpq : p ≤ q) [K.IsLE p] :
+  K.IsLE q := ⟨fun i hi => K.isZero_of_isLE p i (by linarith)⟩
+
+lemma isGE_of_GE (p q : ℤ) (hpq : p ≤ q) [K.IsGE q] :
+  K.IsGE p := ⟨fun i hi => K.isZero_of_isGE q i (by linarith)⟩
+
+variable {K L}
+
+lemma isLE_of_iso [K.IsLE n] : L.IsLE n := ⟨fun i hi =>
+  IsZero.of_iso (K.isZero_of_isLE n i hi)
+    ((homologyFunctor _ _ i).mapIso e.symm)⟩
+
+lemma isGE_of_iso [K.IsGE n] : L.IsGE n := ⟨fun i hi =>
+  IsZero.of_iso (K.isZero_of_isGE n i hi)
+    ((homologyFunctor _ _ i).mapIso e.symm)⟩
+
+variable (K)
+
+lemma isLE_shift [K.IsLE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsLE n' := ⟨fun i hi =>
+  IsZero.of_iso (K.isZero_of_isLE n (a+i) (by linarith))
+    (((homologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)⟩
+
+lemma isGE_shift [K.IsGE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsGE n' := ⟨fun i hi =>
+  IsZero.of_iso (K.isZero_of_isGE n (a+i) (by linarith))
+    (((homologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)⟩
 
 end CochainComplex
 

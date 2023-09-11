@@ -952,29 +952,37 @@ lemma isGE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : t.IsG
   obtain ⟨f', hf'⟩ := Triangle.coyoneda_exact₂ _ hT f (t.zero _ (n-1) n (by linarith))
   rw [hf', t.zero f' (n-1) n (by linarith), zero_comp]
 
-def minus : Triangulated.Subcategory C where
-  set X := ∃ (n : ℤ), t.IsLE X n
-  zero := ⟨0, inferInstance⟩
-  shift := by
-    rintro X n ⟨i, hX⟩
-    exact ⟨i - n, t.isLE_shift _ i n (i - n) (by linarith)⟩
-  ext₂ := by
-    rintro T hT ⟨i₁, hi₁⟩ ⟨i₃, hi₃⟩
+def minus : Triangulated.Subcategory C := Triangulated.Subcategory.mk'
+  (fun X => ∃ (n : ℤ), t.IsLE X n)
+  ⟨0, inferInstance⟩
+  (fun X n => by
+    rintro ⟨i, hX⟩
+    exact ⟨i - n, t.isLE_shift _ i n (i - n) (by linarith)⟩)
+  (fun T hT => by
+    rintro ⟨i₁, hi₁⟩ ⟨i₃, hi₃⟩
     exact ⟨max i₁ i₃, t.isLE₂ T hT _ (t.isLE_of_LE _ _ _ (le_max_left i₁ i₃))
-      (t.isLE_of_LE _ _ _ (le_max_right i₁ i₃))⟩
+      (t.isLE_of_LE _ _ _ (le_max_right i₁ i₃))⟩)
 
-def plus : Triangulated.Subcategory C where
-  set X := ∃ (n : ℤ), t.IsGE X n
-  zero := ⟨0, inferInstance⟩
-  shift := by
-    rintro X n ⟨i, hX⟩
-    exact ⟨i - n, t.isGE_shift _ i n (i - n) (by linarith)⟩
-  ext₂ := by
-    rintro T hT ⟨i₁, hi₁⟩ ⟨i₃, hi₃⟩
+instance : t.minus.set.RespectsIso := by
+  dsimp only [minus]
+  infer_instance
+
+def plus : Triangulated.Subcategory C := Triangulated.Subcategory.mk'
+  (fun X => ∃ (n : ℤ), t.IsGE X n)
+  ⟨0, inferInstance⟩
+  (fun X n => by
+    rintro ⟨i, hX⟩
+    exact ⟨i - n, t.isGE_shift _ i n (i - n) (by linarith)⟩)
+  (fun T hT => by
+    rintro ⟨i₁, hi₁⟩ ⟨i₃, hi₃⟩
     exact ⟨min i₁ i₃, t.isGE₂ T hT _ (t.isGE_of_GE _ _ _ (min_le_left i₁ i₃))
-      (t.isGE_of_GE _ _ _ (min_le_right i₁ i₃))⟩
+      (t.isGE_of_GE _ _ _ (min_le_right i₁ i₃))⟩)
 
-def bounded : Triangulated.Subcategory C := t.plus ⊓ t.minus
+instance : t.plus.set.RespectsIso := by
+  dsimp only [plus]
+  infer_instance
+
+--def bounded : Triangulated.Subcategory C := t.plus ⊓ t.minus
 
 noncomputable def natTransTruncLEOfLE (a b : ℤ) (h : a ≤ b) :
     t.truncLE a ⟶ t.truncLE b :=
