@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 Ported by: Kevin Buzzard, Ruben Vorster, Scott Morrison, Eric Rodriguez
 
 ! This file was ported from Lean 3 source module logic.equiv.basic
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -105,7 +105,7 @@ def pprodEquivProdPLift : PProd α β ≃ PLift α × PLift β :=
 /-- Product of two equivalences. If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then `α₁ × β₁ ≃ α₂ × β₂`. This is
 `Prod.map` as an equivalence. -/
 -- porting note: in Lean 3 there was also a @[congr] tag
-@[simps apply]
+@[simps (config := .asFn) apply]
 def prodCongr (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ :=
   ⟨Prod.map e₁ e₂, Prod.map e₁.symm e₂.symm, fun ⟨a, b⟩ => by simp, fun ⟨a, b⟩ => by simp⟩
 #align equiv.prod_congr Equiv.prodCongr

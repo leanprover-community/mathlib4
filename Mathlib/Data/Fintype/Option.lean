@@ -98,12 +98,11 @@ theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
     (h_empty : P PEmpty) (h_option : ∀ (α) [Fintype α], P α → P (Option α)) (α : Type u)
     [h_fintype : Fintype α] : P α := by
   obtain ⟨p⟩ :=
-    let f_empty := (fun i => by convert h_empty; simp)
+    let f_empty := fun i => by convert h_empty
     let h_option : ∀ {α : Type u} [Fintype α] [DecidableEq α],
           (∀ (h : Fintype α), P α) → ∀ (h : Fintype (Option α)), P (Option α)  := by
       rintro α hα - Pα hα'
       convert h_option α (Pα _)
-      simp
     @truncRecEmptyOption (fun α => ∀ h, @P α h) (@fun α β e hα hβ => @of_equiv α β hβ e (hα _))
       f_empty h_option α _ (Classical.decEq α)
   · exact p _

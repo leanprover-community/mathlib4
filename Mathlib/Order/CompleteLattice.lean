@@ -664,7 +664,7 @@ theorem Equiv.supᵢ_comp {g : ι' → α} (e : ι ≃ ι') : (⨆ x, g (e x)) =
 protected theorem Function.Surjective.supᵢ_congr {g : ι' → α} (h : ι → ι') (h1 : Surjective h)
     (h2 : ∀ x, g (h x) = f x) : (⨆ x, f x) = ⨆ y, g y := by
   convert h1.supᵢ_comp g
-  exact (funext h2).symm
+  exact (h2 _).symm
 #align function.surjective.supr_congr Function.Surjective.supᵢ_congr
 
 protected theorem Equiv.supᵢ_congr {g : ι' → α} (e : ι ≃ ι') (h : ∀ x, g (e x) = f x) :

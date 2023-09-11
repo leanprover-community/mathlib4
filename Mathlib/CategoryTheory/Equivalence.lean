@@ -93,6 +93,9 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
       𝟙 (functor.obj X) := by aesop_cat
 #align category_theory.equivalence CategoryTheory.Equivalence
+#align category_theory.equivalence.unit_iso CategoryTheory.Equivalence.unitIso
+#align category_theory.equivalence.counit_iso CategoryTheory.Equivalence.counitIso
+#align category_theory.equivalence.functor_unit_iso_comp CategoryTheory.Equivalence.functor_unitIso_comp
 
 /-- We infix the usual notation for an equivalence -/
 infixr:10 " ≌ " => Equivalence
@@ -496,6 +499,9 @@ class IsEquivalence (F : C ⥤ D) where mk' ::
         𝟙 (F.obj X) := by
     aesop_cat
 #align category_theory.is_equivalence CategoryTheory.IsEquivalence
+#align category_theory.is_equivalence.unit_iso CategoryTheory.IsEquivalence.unitIso
+#align category_theory.is_equivalence.counit_iso CategoryTheory.IsEquivalence.counitIso
+#align category_theory.is_equivalence.functor_unit_iso_comp CategoryTheory.IsEquivalence.functor_unitIso_comp
 
 attribute [reassoc (attr := simp)] IsEquivalence.functor_unitIso_comp
 

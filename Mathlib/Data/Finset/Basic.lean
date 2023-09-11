@@ -2940,11 +2940,10 @@ theorem nonempty_range_succ : (range <| n + 1).Nonempty :=
 #align finset.nonempty_range_succ Finset.nonempty_range_succ
 
 @[simp]
-theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ :=
-  by
-  convert filter_eq (range n) m
+theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ := by
+  convert filter_eq (range n) m using 2
   · ext
-    simp_rw [@eq_comm _ m]
+    rw [eq_comm]
   · simp
 #align finset.range_filter_eq Finset.range_filter_eq
 

@@ -174,8 +174,8 @@ theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : 
   show (a₁, a₂) ∈ { p : α × α | p.1 ≤ p.2 } from t.isClosed_le'.mem_of_tendsto this h
 #align le_of_tendsto_of_tendsto le_of_tendsto_of_tendsto
 
-alias le_of_tendsto_of_tendsto ← tendsto_le_of_eventuallyLe
-#align tendsto_le_of_eventually_le tendsto_le_of_eventuallyLe
+alias le_of_tendsto_of_tendsto ← tendsto_le_of_eventuallyLE
+#align tendsto_le_of_eventually_le tendsto_le_of_eventuallyLE
 
 theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∀ x, f x ≤ g x) : a₁ ≤ a₂ :=
@@ -1088,7 +1088,7 @@ theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopol
 theorem nhdsWithin_Iic_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
   convert @nhdsWithin_Ici_basis' αᵒᵈ _ _ _ (toDual a) ha
-  exact funext fun x => (@dual_Ico _ _ _ _).symm
+  exact (@dual_Ico _ _ _ _).symm
 #align nhds_within_Iic_basis' nhdsWithin_Iic_basis'
 
 theorem nhdsWithin_Ici_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMaxOrder α]
@@ -1658,8 +1658,8 @@ theorem nhdsWithin_Iio_basis' {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis
   ⟨fun _ => mem_nhdsWithin_Iio_iff_exists_Ioo_subset' h⟩
 
 theorem nhdsWithin_Iio_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
-    convert nhdsWithin_Ioi_eq_bot_iff (a := OrderDual.toDual a)
-    exact funext <| fun _ => propext ofDual_covby_ofDual_iff
+    convert nhdsWithin_Ioi_eq_bot_iff (a := OrderDual.toDual a) using 4
+    exact ofDual_covby_ofDual_iff
 
 open List in
 /-- The following statements are equivalent:

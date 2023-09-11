@@ -1446,14 +1446,14 @@ instance [Semiring α] [MulSemiringAction R α] (S : Subring R) : MulSemiringAct
   inferInstanceAs (MulSemiringAction S.toSubmonoid α)
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.sMulCommClass_left : SMulCommClass (center R) R R :=
-  Subsemiring.center.sMulCommClass_left
-#align subring.center.smul_comm_class_left Subring.center.sMulCommClass_left
+instance center.smulCommClass_left : SMulCommClass (center R) R R :=
+  Subsemiring.center.smulCommClass_left
+#align subring.center.smul_comm_class_left Subring.center.smulCommClass_left
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.sMulCommClass_right : SMulCommClass R (center R) R :=
-  Subsemiring.center.sMulCommClass_right
-#align subring.center.smul_comm_class_right Subring.center.sMulCommClass_right
+instance center.smulCommClass_right : SMulCommClass R (center R) R :=
+  Subsemiring.center.smulCommClass_right
+#align subring.center.smul_comm_class_right Subring.center.smulCommClass_right
 
 end Subring
 

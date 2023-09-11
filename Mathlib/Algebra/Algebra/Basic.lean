@@ -902,16 +902,16 @@ theorem NoZeroSMulDivisors.trans (R A M : Type _) [CommRing R] [Ring A] [IsDomai
 variable {A}
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsScalarTower.to_sMulCommClass : SMulCommClass R A M :=
+instance (priority := 100) IsScalarTower.to_smulCommClass : SMulCommClass R A M :=
   ⟨fun r a m => by
     rw [algebra_compatible_smul A r (a • m), smul_smul, Algebra.commutes, mul_smul, ←
       algebra_compatible_smul]⟩
-#align is_scalar_tower.to_smul_comm_class IsScalarTower.to_sMulCommClass
+#align is_scalar_tower.to_smul_comm_class IsScalarTower.to_smulCommClass
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsScalarTower.to_sMulCommClass' : SMulCommClass A R M :=
+instance (priority := 100) IsScalarTower.to_smulCommClass' : SMulCommClass A R M :=
   SMulCommClass.symm _ _ _
-#align is_scalar_tower.to_smul_comm_class' IsScalarTower.to_sMulCommClass'
+#align is_scalar_tower.to_smul_comm_class' IsScalarTower.to_smulCommClass'
 
 theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a • m :=
   smul_comm _ _ _

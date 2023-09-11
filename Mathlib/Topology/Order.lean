@@ -913,15 +913,18 @@ theorem nhds_false : 𝓝 False = ⊤ :=
   TopologicalSpace.nhds_generateFrom.trans <| by simp [@and_comm (_ ∈ _)]
 #align nhds_false nhds_false
 
-theorem continuous_Prop {p : α → Prop} : Continuous p ↔ IsOpen { x | p x } :=
-  ⟨fun h : Continuous p => by
-    have : IsOpen (p ⁻¹' {True}) := isOpen_singleton_true.preimage h
-    simpa [preimage] using this,
-   fun h : IsOpen { x | p x } =>
-    continuous_generateFrom fun s (hs : s = {True}) => by simp [hs, preimage, h]⟩
+theorem tendsto_nhds_true {l : Filter α} {p : α → Prop} :
+    Tendsto p l (𝓝 True) ↔ ∀ᶠ x in l, p x := by simp
+
+theorem tendsto_nhds_Prop {l : Filter α} {p : α → Prop} {q : Prop} :
+    Tendsto p l (𝓝 q) ↔ (q → ∀ᶠ x in l, p x) := by
+  by_cases q <;> simp [*]
+
+theorem continuous_Prop {p : α → Prop} : Continuous p ↔ IsOpen { x | p x } := by
+  simp only [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_Prop, isOpen_iff_mem_nhds]; rfl
 #align continuous_Prop continuous_Prop
 
-theorem isOpen_iff_continuous_mem {s : Set α} : IsOpen s ↔ Continuous fun x => x ∈ s :=
+theorem isOpen_iff_continuous_mem {s : Set α} : IsOpen s ↔ Continuous (· ∈ s) :=
   continuous_Prop.symm
 #align is_open_iff_continuous_mem isOpen_iff_continuous_mem
 

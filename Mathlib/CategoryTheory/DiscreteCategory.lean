@@ -105,6 +105,9 @@ instance [Subsingleton α] : Subsingleton (Discrete α) :=
     ext
     apply Subsingleton.elim⟩
 
+instance (X Y : Discrete α) : Subsingleton (X ⟶ Y) :=
+  show Subsingleton (ULift (PLift _)) from inferInstance
+
 /-
 Porting note: It seems that `aesop` currently has no way to add lemmas locally.
 

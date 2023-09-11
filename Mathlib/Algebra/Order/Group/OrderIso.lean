@@ -44,7 +44,7 @@ def OrderIso.inv : α ≃o αᵒᵈ where
 #align order_iso.inv OrderIso.inv
 #align order_iso.neg OrderIso.neg
 #align order_iso.inv_apply OrderIso.inv_apply
-#align order_iso.inv_symm_apply OrderIso.inv_symmApply
+#align order_iso.inv_symm_apply OrderIso.inv_symm_apply
 
 end
 

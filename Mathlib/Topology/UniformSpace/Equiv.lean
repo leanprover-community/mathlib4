@@ -86,8 +86,7 @@ def Simps.symm_apply (h : α ≃ᵤ β) : β → α :=
   h.symm
 #align uniform_equiv.simps.symm_apply UniformEquiv.Simps.symm_apply
 
-initialize_simps_projections UniformEquiv (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
-  -toEquiv)
+initialize_simps_projections UniformEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp]
 theorem coe_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv = h :=
@@ -201,7 +200,7 @@ def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f
   { toFun := f
     invFun := g
     left_inv := by convert f.left_inv
-    right_inv := by convert f.right_inv
+    right_inv := by convert f.right_inv using 1
     uniformContinuous_toFun := f.uniformContinuous
     uniformContinuous_invFun := by convert f.symm.uniformContinuous }
 #align uniform_equiv.change_inv UniformEquiv.changeInv

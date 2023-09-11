@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 
 ! This file was ported from Lean 3 source module group_theory.subgroup.basic
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
+! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -127,6 +127,13 @@ class AddSubgroupClass (S G : Type _) [SubNegMonoid G] [SetLike S G] extends Add
 
 attribute [to_additive] InvMemClass SubgroupClass
 
+@[to_additive (attr := simp)]
+theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
+    {x : G} : x⁻¹ ∈ H ↔ x ∈ H :=
+  ⟨fun h => inv_inv x ▸ inv_mem h, inv_mem⟩
+#align inv_mem_iff inv_mem_iff
+#align neg_mem_iff neg_mem_iff
+
 variable {M S : Type _} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
@@ -149,15 +156,9 @@ theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
 
 variable [SetLike S G] [SubgroupClass S G]
 
-@[to_additive (attr := simp)]
-theorem inv_mem_iff {x : G} : x⁻¹ ∈ H ↔ x ∈ H :=
-  ⟨fun h => inv_inv x ▸ inv_mem h, inv_mem⟩
-#align inv_mem_iff inv_mem_iff
-#align neg_mem_iff neg_mem_iff
-
 @[to_additive]
-theorem div_mem_comm_iff {a b : G} : a / b ∈ H ↔ b / a ∈ H := by
-  rw [← inv_mem_iff, div_eq_mul_inv, div_eq_mul_inv, mul_inv_rev, inv_inv]
+theorem div_mem_comm_iff {a b : G} : a / b ∈ H ↔ b / a ∈ H :=
+  inv_div b a ▸ inv_mem_iff
 #align div_mem_comm_iff div_mem_comm_iff
 #align sub_mem_comm_iff sub_mem_comm_iff
 
@@ -507,7 +508,7 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 #align subgroup.to_add_subgroup Subgroup.toAddSubgroup
-#align subgroup.to_add_subgroup_symm_apply_coe Subgroup.toAddSubgroup_symmApply_coe
+#align subgroup.to_add_subgroup_symm_apply_coe Subgroup.toAddSubgroup_symm_apply_coe
 #align subgroup.to_add_subgroup_apply_coe Subgroup.toAddSubgroup_apply_coe
 
 /-- Additive subgroup of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
@@ -526,7 +527,7 @@ def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) wher
   map_rel_iff' := Iff.rfl
 #align add_subgroup.to_subgroup AddSubgroup.toSubgroup
 #align add_subgroup.to_subgroup_apply_coe AddSubgroup.toSubgroup_apply_coe
-#align add_subgroup.to_subgroup_symm_apply_coe AddSubgroup.toSubgroup_symmApply_coe
+#align add_subgroup.to_subgroup_symm_apply_coe AddSubgroup.toSubgroup_symm_apply_coe
 
 /-- Subgroups of an additive group `Multiplicative A` are isomorphic to additive subgroups of `A`.
 -/
@@ -856,8 +857,8 @@ def topEquiv : (⊤ : Subgroup G) ≃* G :=
   Submonoid.topEquiv
 #align subgroup.top_equiv Subgroup.topEquiv
 #align add_subgroup.top_equiv AddSubgroup.topEquiv
-#align subgroup.top_equiv_symm_apply_coe Subgroup.topEquiv_symmApply_coe
-#align add_subgroup.top_equiv_symm_apply_coe AddSubgroup.topEquiv_symmApply_coe
+#align subgroup.top_equiv_symm_apply_coe Subgroup.topEquiv_symm_apply_coe
+#align add_subgroup.top_equiv_symm_apply_coe AddSubgroup.topEquiv_symm_apply_coe
 #align add_subgroup.top_equiv_apply AddSubgroup.topEquiv_apply
 
 /-- The trivial subgroup `{1}` of an group `G`. -/
@@ -1611,8 +1612,8 @@ def subgroupOfEquivOfLe {G : Type _} [Group G] {H K : Subgroup G} (h : H ≤ K) 
   map_mul' _g _h := rfl
 #align subgroup.subgroup_of_equiv_of_le Subgroup.subgroupOfEquivOfLe
 #align add_subgroup.add_subgroup_of_equiv_of_le AddSubgroup.addSubgroupOfEquivOfLe
-#align subgroup.subgroup_of_equiv_of_le_symm_apply_coe_coe Subgroup.subgroupOfEquivOfLe_symmApply_coe_coe
-#align add_subgroup.subgroup_of_equiv_of_le_symm_apply_coe_coe AddSubgroup.addSubgroupOfEquivOfLe_symmApply_coe_coe
+#align subgroup.subgroup_of_equiv_of_le_symm_apply_coe_coe Subgroup.subgroupOfEquivOfLe_symm_apply_coe_coe
+#align add_subgroup.subgroup_of_equiv_of_le_symm_apply_coe_coe AddSubgroup.addSubgroupOfEquivOfLe_symm_apply_coe_coe
 #align subgroup.subgroup_of_equiv_of_le_apply_coe Subgroup.subgroupOfEquivOfLe_apply_coe
 #align add_subgroup.subgroup_of_equiv_of_le_apply_coe AddSubgroup.addSubgroupOfEquivOfLe_apply_coe
 
@@ -2170,7 +2171,7 @@ theorem mem_normalizer_iff {g : G} : g ∈ H.normalizer ↔ ∀ h, h ∈ H ↔ g
 
 @[to_additive]
 theorem mem_normalizer_iff'' {g : G} : g ∈ H.normalizer ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H := by
-  rw [← inv_mem_iff, mem_normalizer_iff, inv_inv]
+  rw [← inv_mem_iff (x := g), mem_normalizer_iff, inv_inv]
 #align subgroup.mem_normalizer_iff'' Subgroup.mem_normalizer_iff''
 #align add_subgroup.mem_normalizer_iff'' AddSubgroup.mem_normalizer_iff''
 

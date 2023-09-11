@@ -365,12 +365,11 @@ theorem CompleteLattice.independent_iff_supIndep [CompleteLattice α] {s : Finse
   classical
     rw [Finset.supIndep_iff_disjoint_erase]
     refine' Subtype.forall.trans (forall₂_congr fun a b => _)
-    -- Porting note: `congr` doesn't seem to work with ↔
-    rw [Finset.sup_eq_supᵢ, ←eq_iff_iff]
-    congr 1
+    rw [Finset.sup_eq_supᵢ]
+    congr! 1
     refine' supᵢ_subtype.trans _
-    congr 1 with x
-    simp [supᵢ_and, @supᵢ_comm _ (x ∈ s)]
+    congr! 1
+    simp [supᵢ_and, @supᵢ_comm _ (_ ∈ s)]
 #align complete_lattice.independent_iff_sup_indep CompleteLattice.independent_iff_supIndep
 
 alias CompleteLattice.independent_iff_supIndep ↔

@@ -118,8 +118,6 @@ theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
   -- porting note: brute force instance declaration `[Fintype (Setoid.classes (Setoid.ker C))]`
   haveI : Fintype (Setoid.classes (Setoid.ker C)) := by assumption
   convert Setoid.card_classes_ker_le C
-  -- porting note: convert would have handled this already in Lean 3:
-  apply Subsingleton.elim
 #align simple_graph.coloring.card_color_classes_le SimpleGraph.Coloring.card_colorClasses_le
 
 theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)

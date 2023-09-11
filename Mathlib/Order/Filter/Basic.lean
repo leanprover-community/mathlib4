@@ -1620,22 +1620,22 @@ section LE
 variable [LE β] {l : Filter α}
 
 /-- A function `f` is eventually less than or equal to a function `g` at a filter `l`. -/
-def EventuallyLe (l : Filter α) (f g : α → β) : Prop :=
+def EventuallyLE (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x ≤ g x
-#align filter.eventually_le Filter.EventuallyLe
+#align filter.eventually_le Filter.EventuallyLE
 
 @[inherit_doc]
-notation:50 f " ≤ᶠ[" l:50 "] " g:50 => EventuallyLe l f g
+notation:50 f " ≤ᶠ[" l:50 "] " g:50 => EventuallyLE l f g
 
-theorem EventuallyLe.congr {f f' g g' : α → β} (H : f ≤ᶠ[l] g) (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') :
+theorem EventuallyLE.congr {f f' g g' : α → β} (H : f ≤ᶠ[l] g) (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') :
     f' ≤ᶠ[l] g' :=
   H.mp <| hg.mp <| hf.mono fun x hf hg H => by rwa [hf, hg] at H
-#align filter.eventually_le.congr Filter.EventuallyLe.congr
+#align filter.eventually_le.congr Filter.EventuallyLE.congr
 
-theorem eventuallyLe_congr {f f' g g' : α → β} (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') :
+theorem eventuallyLE_congr {f f' g g' : α → β} (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') :
     f ≤ᶠ[l] g ↔ f' ≤ᶠ[l] g' :=
   ⟨fun H => H.congr hf hg, fun H => H.congr hf.symm hg.symm⟩
-#align filter.eventually_le_congr Filter.eventuallyLe_congr
+#align filter.eventually_le_congr Filter.eventuallyLE_congr
 
 end LE
 
@@ -1648,18 +1648,18 @@ theorem EventuallyEq.le (h : f =ᶠ[l] g) : f ≤ᶠ[l] g :=
 #align filter.eventually_eq.le Filter.EventuallyEq.le
 
 @[refl]
-theorem EventuallyLe.refl (l : Filter α) (f : α → β) : f ≤ᶠ[l] f :=
+theorem EventuallyLE.refl (l : Filter α) (f : α → β) : f ≤ᶠ[l] f :=
   EventuallyEq.rfl.le
-#align filter.eventually_le.refl Filter.EventuallyLe.refl
+#align filter.eventually_le.refl Filter.EventuallyLE.refl
 
-theorem EventuallyLe.rfl : f ≤ᶠ[l] f :=
-  EventuallyLe.refl l f
-#align filter.eventually_le.rfl Filter.EventuallyLe.rfl
+theorem EventuallyLE.rfl : f ≤ᶠ[l] f :=
+  EventuallyLE.refl l f
+#align filter.eventually_le.rfl Filter.EventuallyLE.rfl
 
 @[trans]
-theorem EventuallyLe.trans (H₁ : f ≤ᶠ[l] g) (H₂ : g ≤ᶠ[l] h) : f ≤ᶠ[l] h :=
+theorem EventuallyLE.trans (H₁ : f ≤ᶠ[l] g) (H₂ : g ≤ᶠ[l] h) : f ≤ᶠ[l] h :=
   H₂.mp <| H₁.mono fun _ => le_trans
-#align filter.eventually_le.trans Filter.EventuallyLe.trans
+#align filter.eventually_le.trans Filter.EventuallyLE.trans
 
 @[trans]
 theorem EventuallyEq.trans_le (H₁ : f =ᶠ[l] g) (H₂ : g ≤ᶠ[l] h) : f ≤ᶠ[l] h :=
@@ -1667,26 +1667,26 @@ theorem EventuallyEq.trans_le (H₁ : f =ᶠ[l] g) (H₂ : g ≤ᶠ[l] h) : f �
 #align filter.eventually_eq.trans_le Filter.EventuallyEq.trans_le
 
 @[trans]
-theorem EventuallyLe.trans_eq (H₁ : f ≤ᶠ[l] g) (H₂ : g =ᶠ[l] h) : f ≤ᶠ[l] h :=
+theorem EventuallyLE.trans_eq (H₁ : f ≤ᶠ[l] g) (H₂ : g =ᶠ[l] h) : f ≤ᶠ[l] h :=
   H₁.trans H₂.le
-#align filter.eventually_le.trans_eq Filter.EventuallyLe.trans_eq
+#align filter.eventually_le.trans_eq Filter.EventuallyLE.trans_eq
 
 end Preorder
 
-theorem EventuallyLe.antisymm [PartialOrder β] {l : Filter α} {f g : α → β} (h₁ : f ≤ᶠ[l] g)
+theorem EventuallyLE.antisymm [PartialOrder β] {l : Filter α} {f g : α → β} (h₁ : f ≤ᶠ[l] g)
     (h₂ : g ≤ᶠ[l] f) : f =ᶠ[l] g :=
   h₂.mp <| h₁.mono fun _ => le_antisymm
-#align filter.eventually_le.antisymm Filter.EventuallyLe.antisymm
+#align filter.eventually_le.antisymm Filter.EventuallyLE.antisymm
 
-theorem eventuallyLe_antisymm_iff [PartialOrder β] {l : Filter α} {f g : α → β} :
+theorem eventuallyLE_antisymm_iff [PartialOrder β] {l : Filter α} {f g : α → β} :
     f =ᶠ[l] g ↔ f ≤ᶠ[l] g ∧ g ≤ᶠ[l] f := by
-  simp only [EventuallyEq, EventuallyLe, le_antisymm_iff, eventually_and]
-#align filter.eventually_le_antisymm_iff Filter.eventuallyLe_antisymm_iff
+  simp only [EventuallyEq, EventuallyLE, le_antisymm_iff, eventually_and]
+#align filter.eventually_le_antisymm_iff Filter.eventuallyLE_antisymm_iff
 
-theorem EventuallyLe.le_iff_eq [PartialOrder β] {l : Filter α} {f g : α → β} (h : f ≤ᶠ[l] g) :
+theorem EventuallyLE.le_iff_eq [PartialOrder β] {l : Filter α} {f g : α → β} (h : f ≤ᶠ[l] g) :
     g ≤ᶠ[l] f ↔ g =ᶠ[l] f :=
   ⟨fun h' => h'.antisymm h, EventuallyEq.le⟩
-#align filter.eventually_le.le_iff_eq Filter.EventuallyLe.le_iff_eq
+#align filter.eventually_le.le_iff_eq Filter.EventuallyLE.le_iff_eq
 
 theorem Eventually.ne_of_lt [Preorder β] {l : Filter α} {f g : α → β} (h : ∀ᶠ x in l, f x < g x) :
     ∀ᶠ x in l, f x ≠ g x :=
@@ -1709,71 +1709,71 @@ theorem Eventually.lt_top_iff_ne_top [PartialOrder β] [OrderTop β] {l : Filter
 #align filter.eventually.lt_top_iff_ne_top Filter.Eventually.lt_top_iff_ne_top
 
 @[mono]
-theorem EventuallyLe.inter {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) (h' : s' ≤ᶠ[l] t') :
+theorem EventuallyLE.inter {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) (h' : s' ≤ᶠ[l] t') :
     (s ∩ s' : Set α) ≤ᶠ[l] (t ∩ t' : Set α) :=
   h'.mp <| h.mono fun _ => And.imp
-#align filter.eventually_le.inter Filter.EventuallyLe.inter
+#align filter.eventually_le.inter Filter.EventuallyLE.inter
 
 @[mono]
-theorem EventuallyLe.union {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) (h' : s' ≤ᶠ[l] t') :
+theorem EventuallyLE.union {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) (h' : s' ≤ᶠ[l] t') :
     (s ∪ s' : Set α) ≤ᶠ[l] (t ∪ t' : Set α) :=
   h'.mp <| h.mono fun _ => Or.imp
-#align filter.eventually_le.union Filter.EventuallyLe.union
+#align filter.eventually_le.union Filter.EventuallyLE.union
 
 @[mono]
-theorem EventuallyLe.compl {s t : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) :
+theorem EventuallyLE.compl {s t : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) :
     (tᶜ : Set α) ≤ᶠ[l] (sᶜ : Set α) :=
   h.mono fun _ => mt
-#align filter.eventually_le.compl Filter.EventuallyLe.compl
+#align filter.eventually_le.compl Filter.EventuallyLE.compl
 
 @[mono]
-theorem EventuallyLe.diff {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) (h' : t' ≤ᶠ[l] s') :
+theorem EventuallyLE.diff {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) (h' : t' ≤ᶠ[l] s') :
     (s \ s' : Set α) ≤ᶠ[l] (t \ t' : Set α) :=
   h.inter h'.compl
-#align filter.eventually_le.diff Filter.EventuallyLe.diff
+#align filter.eventually_le.diff Filter.EventuallyLE.diff
 
-theorem EventuallyLe.mul_le_mul [MulZeroClass β] [PartialOrder β] [PosMulMono β] [MulPosMono β]
+theorem EventuallyLE.mul_le_mul [MulZeroClass β] [PartialOrder β] [PosMulMono β] [MulPosMono β]
     {l : Filter α} {f₁ f₂ g₁ g₂ : α → β} (hf : f₁ ≤ᶠ[l] f₂) (hg : g₁ ≤ᶠ[l] g₂) (hg₀ : 0 ≤ᶠ[l] g₁)
     (hf₀ : 0 ≤ᶠ[l] f₂) : f₁ * g₁ ≤ᶠ[l] f₂ * g₂ := by
   filter_upwards [hf, hg, hg₀, hf₀] with x using _root_.mul_le_mul
-#align filter.eventually_le.mul_le_mul Filter.EventuallyLe.mul_le_mul
+#align filter.eventually_le.mul_le_mul Filter.EventuallyLE.mul_le_mul
 
-@[to_additive EventuallyLe.add_le_add]
-theorem EventuallyLe.mul_le_mul' [Mul β] [Preorder β] [CovariantClass β β (· * ·) (· ≤ ·)]
+@[to_additive EventuallyLE.add_le_add]
+theorem EventuallyLE.mul_le_mul' [Mul β] [Preorder β] [CovariantClass β β (· * ·) (· ≤ ·)]
     [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {l : Filter α} {f₁ f₂ g₁ g₂ : α → β}
     (hf : f₁ ≤ᶠ[l] f₂) (hg : g₁ ≤ᶠ[l] g₂) : f₁ * g₁ ≤ᶠ[l] f₂ * g₂ := by
   filter_upwards [hf, hg] with x hfx hgx using _root_.mul_le_mul' hfx hgx
-#align filter.eventually_le.mul_le_mul' Filter.EventuallyLe.mul_le_mul'
-#align filter.eventually_le.add_le_add Filter.EventuallyLe.add_le_add
+#align filter.eventually_le.mul_le_mul' Filter.EventuallyLE.mul_le_mul'
+#align filter.eventually_le.add_le_add Filter.EventuallyLE.add_le_add
 
-theorem EventuallyLe.mul_nonneg [OrderedSemiring β] {l : Filter α} {f g : α → β} (hf : 0 ≤ᶠ[l] f)
+theorem EventuallyLE.mul_nonneg [OrderedSemiring β] {l : Filter α} {f g : α → β} (hf : 0 ≤ᶠ[l] f)
     (hg : 0 ≤ᶠ[l] g) : 0 ≤ᶠ[l] f * g := by filter_upwards [hf, hg] with x using _root_.mul_nonneg
-#align filter.eventually_le.mul_nonneg Filter.EventuallyLe.mul_nonneg
+#align filter.eventually_le.mul_nonneg Filter.EventuallyLE.mul_nonneg
 
 theorem eventually_sub_nonneg [OrderedRing β] {l : Filter α} {f g : α → β} :
     0 ≤ᶠ[l] g - f ↔ f ≤ᶠ[l] g :=
   eventually_congr <| eventually_of_forall fun _ => sub_nonneg
 #align filter.eventually_sub_nonneg Filter.eventually_sub_nonneg
 
-theorem EventuallyLe.sup [SemilatticeSup β] {l : Filter α} {f₁ f₂ g₁ g₂ : α → β} (hf : f₁ ≤ᶠ[l] f₂)
+theorem EventuallyLE.sup [SemilatticeSup β] {l : Filter α} {f₁ f₂ g₁ g₂ : α → β} (hf : f₁ ≤ᶠ[l] f₂)
     (hg : g₁ ≤ᶠ[l] g₂) : f₁ ⊔ g₁ ≤ᶠ[l] f₂ ⊔ g₂ := by
   filter_upwards [hf, hg] with x hfx hgx using sup_le_sup hfx hgx
-#align filter.eventually_le.sup Filter.EventuallyLe.sup
+#align filter.eventually_le.sup Filter.EventuallyLE.sup
 
-theorem EventuallyLe.sup_le [SemilatticeSup β] {l : Filter α} {f g h : α → β} (hf : f ≤ᶠ[l] h)
+theorem EventuallyLE.sup_le [SemilatticeSup β] {l : Filter α} {f g h : α → β} (hf : f ≤ᶠ[l] h)
     (hg : g ≤ᶠ[l] h) : f ⊔ g ≤ᶠ[l] h := by
   filter_upwards [hf, hg] with x hfx hgx using _root_.sup_le hfx hgx
-#align filter.eventually_le.sup_le Filter.EventuallyLe.sup_le
+#align filter.eventually_le.sup_le Filter.EventuallyLE.sup_le
 
-theorem EventuallyLe.le_sup_of_le_left [SemilatticeSup β] {l : Filter α} {f g h : α → β}
+theorem EventuallyLE.le_sup_of_le_left [SemilatticeSup β] {l : Filter α} {f g h : α → β}
     (hf : h ≤ᶠ[l] f) : h ≤ᶠ[l] f ⊔ g :=
   hf.mono fun _ => _root_.le_sup_of_le_left
-#align filter.eventually_le.le_sup_of_le_left Filter.EventuallyLe.le_sup_of_le_left
+#align filter.eventually_le.le_sup_of_le_left Filter.EventuallyLE.le_sup_of_le_left
 
-theorem EventuallyLe.le_sup_of_le_right [SemilatticeSup β] {l : Filter α} {f g h : α → β}
+theorem EventuallyLE.le_sup_of_le_right [SemilatticeSup β] {l : Filter α} {f g h : α → β}
     (hg : h ≤ᶠ[l] g) : h ≤ᶠ[l] f ⊔ g :=
   hg.mono fun _ => _root_.le_sup_of_le_right
-#align filter.eventually_le.le_sup_of_le_right Filter.EventuallyLe.le_sup_of_le_right
+#align filter.eventually_le.le_sup_of_le_right Filter.EventuallyLE.le_sup_of_le_right
 
 theorem join_le {f : Filter (Filter α)} {l : Filter α} (h : ∀ᶠ m in f, m ≤ l) : join f ≤ l :=
   fun _ hs => h.mono fun _ hm => hm hs
@@ -2706,10 +2706,10 @@ theorem eventuallyEq_bind {f : Filter α} {m : α → Filter β} {g₁ g₂ : β
 #align filter.eventually_eq_bind Filter.eventuallyEq_bind
 
 @[simp]
-theorem eventuallyLe_bind [LE γ] {f : Filter α} {m : α → Filter β} {g₁ g₂ : β → γ} :
+theorem eventuallyLE_bind [LE γ] {f : Filter α} {m : α → Filter β} {g₁ g₂ : β → γ} :
     g₁ ≤ᶠ[bind f m] g₂ ↔ ∀ᶠ x in f, g₁ ≤ᶠ[m x] g₂ :=
   Iff.rfl
-#align filter.eventually_le_bind Filter.eventuallyLe_bind
+#align filter.eventually_le_bind Filter.eventuallyLE_bind
 
 theorem mem_bind' {s : Set β} {f : Filter α} {m : α → Filter β} :
     s ∈ bind f m ↔ { a | s ∈ m a } ∈ f :=
@@ -3103,9 +3103,9 @@ theorem Set.EqOn.eventuallyEq_of_mem {α β} {s : Set α} {l : Filter α} {f g :
   h.eventuallyEq.filter_mono <| Filter.le_principal_iff.2 hl
 #align set.eq_on.eventually_eq_of_mem Set.EqOn.eventuallyEq_of_mem
 
-theorem HasSubset.Subset.eventuallyLe {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
+theorem HasSubset.Subset.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
   Filter.eventually_of_forall h
-#align has_subset.subset.eventually_le HasSubset.Subset.eventuallyLe
+#align has_subset.subset.eventually_le HasSubset.Subset.eventuallyLE
 
 theorem Set.MapsTo.tendsto {α β} {s : Set α} {t : Set β} {f : α → β} (h : MapsTo f s t) :
     Filter.Tendsto f (𝓟 s) (𝓟 t) :=

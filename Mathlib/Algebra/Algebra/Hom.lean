@@ -75,11 +75,17 @@ instance (priority := 100) linearMapClass {_ : CommSemiring R} {_ : Semiring A} 
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 #align alg_hom_class.linear_map_class AlgHomClass.linearMapClass
 
-instance coeTC {F : Type _} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) where
-  coe f :=
-  { (f : A →+* B) with
+-- Porting note: A new definition underlying a coercion `↑`.
+/-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
+`AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
+@[coe]
+def toAlgHom {F : Type _} [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
+{ (f : A →+* B) with
     toFun := f
     commutes' := AlgHomClass.commutes f }
+
+instance coeTC {F : Type _} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
+  ⟨AlgHomClass.toAlgHom⟩
 #align alg_hom_class.alg_hom.has_coe_t AlgHomClass.coeTC
 
 end AlgHomClass
@@ -115,7 +121,7 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
 def Simps.apply {R α β : Type _} [CommSemiring R]
     [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
 
-initialize_simps_projections AlgHom (toRingHom_toMonoidHom_toOneHom_toFun → apply)
+initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
 protected theorem coe_coe {F : Type _} [AlgHomClass F R A B] (f : F) : ⇑(f : A →ₐ[R] B) = f :=

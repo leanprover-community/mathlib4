@@ -1048,9 +1048,7 @@ noncomputable def finsetEquivSet [Fintype α] : Finset α ≃ Set α
     where
   toFun := (↑)
   invFun := by classical exact fun s => s.toFinset
-  left_inv s := by
-    { classical convert Finset.toFinset_coe s
-      simp }
+  left_inv s := by convert Finset.toFinset_coe s
   right_inv s := by classical exact s.coe_toFinset
 #align fintype.finset_equiv_set Fintype.finsetEquivSet
 

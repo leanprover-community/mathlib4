@@ -92,7 +92,7 @@ def Submonoid.toAddSubmonoid : Submonoid M ≃o AddSubmonoid (Additive M) where
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 #align submonoid.to_add_submonoid Submonoid.toAddSubmonoid
-#align submonoid.to_add_submonoid_symm_apply_coe Submonoid.toAddSubmonoid_symmApply_coe
+#align submonoid.to_add_submonoid_symm_apply_coe Submonoid.toAddSubmonoid_symm_apply_coe
 #align submonoid.to_add_submonoid_apply_coe Submonoid.toAddSubmonoid_apply_coe
 
 /-- Additive submonoids of an additive monoid `Additive M` are isomorphic to submonoids of `M`. -/
@@ -140,7 +140,7 @@ def AddSubmonoid.toSubmonoid : AddSubmonoid A ≃o Submonoid (Multiplicative A) 
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 #align add_submonoid.to_submonoid AddSubmonoid.toSubmonoid
-#align add_submonoid.to_submonoid_symm_apply_coe AddSubmonoid.toSubmonoid_symmApply_coe
+#align add_submonoid.to_submonoid_symm_apply_coe AddSubmonoid.toSubmonoid_symm_apply_coe
 #align add_submonoid.to_submonoid_apply_coe AddSubmonoid.toSubmonoid_apply_coe
 
 /-- Submonoids of a monoid `Multiplicative A` are isomorphic to additive submonoids of `A`. -/
@@ -800,7 +800,7 @@ def topEquiv : (⊤ : Submonoid M) ≃* M where
 #align submonoid.top_equiv Submonoid.topEquiv
 #align add_submonoid.top_equiv AddSubmonoid.topEquiv
 #align submonoid.top_equiv_apply Submonoid.topEquiv_apply
-#align submonoid.top_equiv_symm_apply_coe Submonoid.topEquiv_symmApply_coe
+#align submonoid.top_equiv_symm_apply_coe Submonoid.topEquiv_symm_apply_coe
 
 @[to_additive (attr := simp)]
 theorem topEquiv_toMonoidHom : (topEquiv : _ ≃* M).toMonoidHom = (⊤ : Submonoid M).subtype :=
@@ -1427,8 +1427,8 @@ def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
 #align add_equiv.of_left_inverse' AddEquiv.ofLeftInverse'
 #align mul_equiv.of_left_inverse'_apply MulEquiv.ofLeftInverse'_apply
 #align add_equiv.of_left_inverse'_apply AddEquiv.ofLeftInverse'_apply
-#align mul_equiv.of_left_inverse'_symm_apply MulEquiv.ofLeftInverse'_symmApply
-#align add_equiv.of_left_inverse'_symm_apply AddEquiv.ofLeftInverse'_symmApply
+#align mul_equiv.of_left_inverse'_symm_apply MulEquiv.ofLeftInverse'_symm_apply
+#align add_equiv.of_left_inverse'_symm_apply AddEquiv.ofLeftInverse'_symm_apply
 
 /-- A `MulEquiv` `φ` between two monoids `M` and `N` induces a `MulEquiv` between
 a submonoid `S ≤ M` and the submonoid `φ(S) ≤ N`.

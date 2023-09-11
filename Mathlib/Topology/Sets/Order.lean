@@ -42,7 +42,7 @@ instance : SetLike (ClopenUpperSet α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : ClopenUpperSet α) : Set α := s
 
-initialize_simps_projections ClopenUpperSet (toClopens_carrier → coe)
+initialize_simps_projections ClopenUpperSet (carrier → coe)
 
 theorem upper (s : ClopenUpperSet α) : IsUpperSet (s : Set α) :=
   s.upper'

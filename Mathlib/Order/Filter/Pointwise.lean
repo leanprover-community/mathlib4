@@ -1288,19 +1288,19 @@ instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α 
 #align filter.vadd_assoc_class Filter.vaddAssocClass
 
 @[to_additive vaddAssocClass']
-instance is_scalar_tower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Filter β) (Filter γ) :=
   ⟨fun a f g => by
     refine' (map_map₂_distrib_left fun _ _ => _).symm
     exact (smul_assoc a _ _).symm⟩
-#align filter.is_scalar_tower' Filter.is_scalar_tower'
+#align filter.is_scalar_tower' Filter.isScalarTower'
 #align filter.vadd_assoc_class' Filter.vaddAssocClass'
 
 @[to_additive vaddAssocClass'']
-instance is_scalar_tower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Filter α) (Filter β) (Filter γ) :=
   ⟨fun _ _ _ => map₂_assoc smul_assoc⟩
-#align filter.is_scalar_tower'' Filter.is_scalar_tower''
+#align filter.is_scalar_tower'' Filter.isScalarTower''
 #align filter.vadd_assoc_class'' Filter.vaddAssocClass''
 
 @[to_additive]

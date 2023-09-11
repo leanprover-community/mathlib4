@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 
 ! This file was ported from Lean 3 source module topology.algebra.group_with_zero
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
+! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -141,6 +141,13 @@ theorem ContinuousOn.inv₀ (hf : ContinuousOn f s) (h0 : ∀ x ∈ s, f x ≠ 0
 #align continuous_on.inv₀ ContinuousOn.inv₀
 
 end Inv₀
+
+/-- If `G₀` is a group with zero with topology such that `x ↦ x⁻¹` is continuous at all nonzero
+points. Then the coercion `G₀ˣ → G₀` is a topological embedding. -/
+theorem Units.embedding_val₀ [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] :
+    Embedding (val : G₀ˣ → G₀) :=
+  embedding_val_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono <| fun _ ↦ IsUnit.ne_zero
+#align units.embedding_coe₀ Units.embedding_val₀
 
 /-!
 ### Continuity of division

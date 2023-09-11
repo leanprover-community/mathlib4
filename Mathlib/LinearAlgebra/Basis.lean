@@ -825,7 +825,6 @@ theorem eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submod
   simp only [Function.const_apply, Fin.default_eq_zero, Submodule.coe_mk, Finset.univ_unique,
     Function.comp_const, Finset.sum_singleton] at sum_eq
   convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
-  rwa [Nat.lt_one_iff] at hi
 #align eq_bot_of_rank_eq_zero Basis.eq_bot_of_rank_eq_zero
 
 end NoZeroSMulDivisors

@@ -200,7 +200,7 @@ def image {α β : Type _} (e : α ≃ β) (s : Set α) :
 namespace Set
 
 
---Porting note: Removed attribute @[simps apply symmApply]
+--Porting note: Removed attribute @[simps apply symm_apply]
 /-- `univ α` is equivalent to `α`. -/
 protected def univ (α) : @univ α ≃ α :=
   ⟨Subtype.val, fun a => ⟨a, trivial⟩, fun ⟨_, _⟩ => rfl, fun _ => rfl⟩
@@ -268,7 +268,7 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
     rfl, fun ⟨⟩ => rfl⟩
 #align equiv.set.singleton Equiv.Set.singleton
 
---Porting note: Removed attribute @[simps apply symmApply]
+--Porting note: Removed attribute @[simps apply symm_apply]
 /-- Equal sets are equivalent.
 
 TODO: this is the same as `Equiv.setCongr`! -/

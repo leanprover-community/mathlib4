@@ -129,8 +129,9 @@ instance funLike : FunLike (α →₀ M) α fun _ => M :=
 
 /-- Helper instance for when there are too many metavariables to apply the `FunLike` instance
 directly. -/
-instance : CoeFun (α →₀ M) fun _ => α → M :=
+instance coeFun : CoeFun (α →₀ M) fun _ => α → M :=
   inferInstance
+#align finsupp.has_coe_to_fun Finsupp.coeFun
 
 @[ext]
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
@@ -164,6 +165,7 @@ theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0)
 
 instance zero : Zero (α →₀ M) :=
   ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (not_mem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
+#align finsupp.has_zero Finsupp.zero
 
 @[simp]
 theorem coe_zero : ⇑(0 : α →₀ M) = 0 :=
@@ -179,8 +181,9 @@ theorem support_zero : (0 : α →₀ M).support = ∅ :=
   rfl
 #align finsupp.support_zero Finsupp.support_zero
 
-instance : Inhabited (α →₀ M) :=
+instance inhabited : Inhabited (α →₀ M) :=
   ⟨0⟩
+#align finsupp.inhabited Finsupp.inhabited
 
 @[simp]
 theorem mem_support_iff {f : α →₀ M} : ∀ {a : α}, a ∈ f.support ↔ f a ≠ 0 :=
@@ -226,8 +229,9 @@ theorem nonzero_iff_exists {f : α →₀ M} : f ≠ 0 ↔ ∃ a : α, f a ≠ 0
 theorem card_support_eq_zero {f : α →₀ M} : card f.support = 0 ↔ f = 0 := by simp
 #align finsupp.card_support_eq_zero Finsupp.card_support_eq_zero
 
-instance [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
+instance decidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
   decidable_of_iff (f.support = g.support ∧ ∀ a ∈ f.support, f a = g a) ext_iff'.symm
+#align finsupp.decidable_eq Finsupp.decidableEq
 
 theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
   f.fun_support_eq.symm ▸ f.support.finite_toSet
@@ -441,10 +445,11 @@ theorem single_swap (a₁ a₂ : α) (b : M) : single a₁ b a₂ = single a₂ 
   classical simp only [single_apply, eq_comm]
 #align finsupp.single_swap Finsupp.single_swap
 
-instance [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) := by
+instance nontrivial [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) := by
   inhabit α
   rcases exists_ne (0 : M) with ⟨x, hx⟩
   exact nontrivial_of_ne (single default x) 0 (mt single_eq_zero.1 hx)
+#align finsupp.nontrivial Finsupp.nontrivial
 
 theorem unique_single [Unique α] (x : α →₀ M) : x = single default (x default) :=
   ext <| Unique.forall_iff.2 single_eq_same.symm
@@ -962,6 +967,7 @@ variable [AddZeroClass M]
 
 instance add : Add (α →₀ M) :=
   ⟨zipWith (· + ·) (add_zero 0)⟩
+#align finsupp.has_add Finsupp.add
 
 @[simp]
 theorem coe_add (f g : α →₀ M) : ⇑(f + g) = f + g :=
@@ -999,6 +1005,7 @@ theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a 
 
 instance addZeroClass : AddZeroClass (α →₀ M) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
+#align finsupp.add_zero_class Finsupp.addZeroClass
 
 /-- `Finsupp.single` as an `AddMonoidHom`.
 
@@ -1203,14 +1210,17 @@ instance hasNatScalar : SMul ℕ (α →₀ M) :=
 
 instance addMonoid : AddMonoid (α →₀ M) :=
   FunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+#align finsupp.add_monoid Finsupp.addMonoid
 
 end AddMonoid
 
 instance addCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
   FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+#align finsupp.add_comm_monoid Finsupp.addCommMonoid
 
-instance [NegZeroClass G] : Neg (α →₀ G) :=
+instance neg [NegZeroClass G] : Neg (α →₀ G) :=
   ⟨mapRange Neg.neg neg_zero⟩
+#align finsupp.has_neg Finsupp.neg
 
 @[simp]
 theorem coe_neg [NegZeroClass G] (g : α →₀ G) : ⇑(-g) = -g :=
@@ -1231,8 +1241,9 @@ theorem mapRange_neg' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G
   mapRange_neg (map_neg f) v
 #align finsupp.map_range_neg' Finsupp.mapRange_neg'
 
-instance [SubNegZeroMonoid G] : Sub (α →₀ G) :=
+instance sub [SubNegZeroMonoid G] : Sub (α →₀ G) :=
   ⟨zipWith Sub.sub (sub_zero _)⟩
+#align finsupp.has_sub Finsupp.sub
 
 @[simp]
 theorem coe_sub [SubNegZeroMonoid G] (g₁ g₂ : α →₀ G) : ⇑(g₁ - g₂) = g₁ - g₂ :=
@@ -1261,12 +1272,14 @@ instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
   ⟨fun n v => v.mapRange ((· • ·) n) (zsmul_zero _)⟩
 #align finsupp.has_int_scalar Finsupp.hasIntScalar
 
-instance [AddGroup G] : AddGroup (α →₀ G) :=
+instance addGroup [AddGroup G] : AddGroup (α →₀ G) :=
   FunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+#align finsupp.add_group Finsupp.addGroup
 
-instance [AddCommGroup G] : AddCommGroup (α →₀ G) :=
+instance addCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
   FunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
     rfl
+#align finsupp.add_comm_group Finsupp.addCommGroup
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}
     (hu : u ≠ 0) (hv : v ≠ 0) :

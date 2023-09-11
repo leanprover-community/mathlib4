@@ -970,7 +970,7 @@ def associatesEquivOfUniqueUnits : Associates α ≃* α where
   right_inv _ := (Associates.out_mk _).trans <| normalize_eq _
   map_mul' := Associates.out_mul
 #align associates_equiv_of_unique_units associatesEquivOfUniqueUnits
-#align associates_equiv_of_unique_units_symm_apply associatesEquivOfUniqueUnits_symmApply
+#align associates_equiv_of_unique_units_symm_apply associatesEquivOfUniqueUnits_symm_apply
 #align associates_equiv_of_unique_units_apply associatesEquivOfUniqueUnits_apply
 
 end UniqueUnit

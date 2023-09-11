@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module group_theory.subgroup.pointwise
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
+! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -34,14 +34,15 @@ open Set
 
 open Pointwise
 
-variable {α G A S : Type _} [Group G] [AddGroup A] {s : Set G}
+variable {α G A S : Type _}
 
 @[to_additive (attr := simp)]
-theorem inv_coe_set [SetLike S G] [SubgroupClass S G] {H : S} : (H : Set G)⁻¹ = H := by
-  ext
-  simp
+theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
+  Set.ext fun _ => inv_mem_iff
 #align inv_coe_set inv_coe_set
 #align neg_coe_set neg_coe_set
+
+variable [Group G] [AddGroup A] {s : Set G}
 
 namespace Subgroup
 

@@ -474,9 +474,9 @@ protected def symm (e : α ≃+*o β) : β ≃+*o α :=
 #align order_ring_iso.symm OrderRingIso.symm
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (e : α ≃+*o β) : β → α :=
+def Simps.symm_apply (e : α ≃+*o β) : β → α :=
   e.symm
-#align order_ring_iso.simps.symm_apply OrderRingIso.Simps.symmApply
+#align order_ring_iso.simps.symm_apply OrderRingIso.Simps.symm_apply
 
 @[simp]
 theorem symm_symm (e : α ≃+*o β) : e.symm.symm = e :=

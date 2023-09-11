@@ -44,8 +44,8 @@ theorem prod_Ico_add' [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [Locall
 @[to_additive]
 theorem prod_Ico_add [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [LocallyFiniteOrder α]
     (f : α → β) (a b c : α) : (∏ x in Ico a b, f (c + x)) = ∏ x in Ico (a + c) (b + c), f x := by
-  convert prod_Ico_add' f a b c
-  simp_rw [add_comm]
+  convert prod_Ico_add' f a b c using 2
+  rw [add_comm]
 #align finset.prod_Ico_add Finset.prod_Ico_add
 #align finset.sum_Ico_add Finset.sum_Ico_add
 

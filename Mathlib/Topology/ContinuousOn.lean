@@ -1204,7 +1204,7 @@ theorem IsOpen.ite' {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
   classical
     simp only [isOpen_iff_continuous_mem, Set.ite] at *
     convert continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn
-    ext x
+    rename_i x
     by_cases hx : x ∈ t <;> simp [hx]
 #align is_open.ite' IsOpen.ite'
 
@@ -1290,4 +1290,3 @@ theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} 
       ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
 #align continuous_within_at_prod_iff continuousWithinAt_prod_iff
-

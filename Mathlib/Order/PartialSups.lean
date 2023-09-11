@@ -110,7 +110,7 @@ theorem partialSups_mono : Monotone (partialSups : (ℕ → α) → ℕ →o α)
 -/
 def partialSups.gi : GaloisInsertion (partialSups : (ℕ → α) → ℕ →o α) (↑) where
   choice f h :=
-    ⟨f, by convert (partialSups f).monotone; exact (le_partialSups f).antisymm h⟩
+    ⟨f, by convert (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
   gc f g := by
     refine' ⟨(le_partialSups f).trans, fun h => _⟩
     convert partialSups_mono h

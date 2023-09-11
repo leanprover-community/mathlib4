@@ -89,8 +89,7 @@ def evalCasesBash : TacticM Unit := do
     (← `(tactic| casesm* WidePullbackShape _, 
       (_: WidePullbackShape _) ⟶  (_ : WidePullbackShape _) ))
 
--- attribute [local tidy] tactic.case_bash -- Porting note: removed
-attribute [aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash 
+attribute [local aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash
 
 instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by 
   constructor
@@ -167,7 +166,6 @@ def uliftEquivalence :
     (equivalenceOfEquiv _ (Equiv.ulift.{w', w}.symm : J ≃ ULift.{w'} J))
 #align category_theory.limits.wide_pullback_shape.ulift_equivalence CategoryTheory.Limits.WidePullbackShape.uliftEquivalence
 
-erase_aesop_rules [safe tactic evalCasesBash (rule_sets [CategoryTheory])] 
 end WidePullbackShape
 
 namespace WidePushoutShape
@@ -205,8 +203,7 @@ def evalCasesBash' : TacticM Unit := do
     (← `(tactic| casesm* WidePushoutShape _,  
       (_: WidePushoutShape _) ⟶  (_ : WidePushoutShape _) ))
 
--- attribute [local tidy] tactic.case_bash -- Porting note: removed
-attribute [aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash'
+attribute [local aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash'
 
 instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by 
   constructor
@@ -267,7 +264,6 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
           cases j <;> cases j' <;> cases f <;> refine id _  <;> dsimp <;> simp [w] } }
 #align category_theory.limits.wide_pushout_shape.mk_cocone CategoryTheory.Limits.WidePushoutShape.mkCocone
 
-erase_aesop_rules [safe tactic evalCasesBash' (rule_sets [CategoryTheory])] 
 end WidePushoutShape
 
 variable (C : Type u) [Category.{v} C]

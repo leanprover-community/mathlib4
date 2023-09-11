@@ -62,7 +62,7 @@ instance field [Field β] : Field β* :=
   { Germ.commRing, Germ.divisionRing with }
 
 theorem coe_lt [Preorder β] {f g : α → β} : (f : β*) < g ↔ ∀* x, f x < g x := by
-  simp only [lt_iff_le_not_le, eventually_and, coe_le, eventually_not, EventuallyLe]
+  simp only [lt_iff_le_not_le, eventually_and, coe_le, eventually_not, EventuallyLE]
 #align filter.germ.coe_lt Filter.Germ.coe_lt
 
 theorem coe_pos [Preorder β] [Zero β] {f : α → β} : 0 < (f : β*) ↔ ∀* x, 0 < f x :=
