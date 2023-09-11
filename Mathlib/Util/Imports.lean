@@ -136,7 +136,7 @@ Note that this will *not* account for tactics and syntax used in the file,
 so the results may not suffice as imports.
 -/
 def Lean.Environment.minimalRequiredModules (env : Environment) : Array Name :=
-  let required := env.requiredModules.toArray
+  let required := env.requiredModules.toArray.erase env.header.mainModule
   let redundant := findRedundantImports env required
   required.filter fun n => ¬ redundant.contains n
 
