@@ -68,6 +68,9 @@ instance : CompleteLinearOrder EReal :=
 instance : LinearOrderedAddCommMonoid EReal :=
   inferInstanceAs (LinearOrderedAddCommMonoid (WithBot (WithTop ℝ)))
 
+instance : AddCommMonoidWithOne EReal :=
+  inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop ℝ)))
+
 instance : DenselyOrdered EReal :=
   inferInstanceAs (DenselyOrdered (WithBot (WithTop ℝ)))
 
