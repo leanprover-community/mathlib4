@@ -105,6 +105,8 @@ set_option maxRecDepth 8000 in
 example : Nat.Prime (2 ^ 25 - 39) := by norm_num1
 example : ¬ Nat.Prime ((2 ^ 19 - 1) * (2 ^ 25 - 39)) := by norm_num1
 
+example : Nat.Prime 341 := by norm_num (config := {decide := false})
+
 example : Nat.minFac 0 = 2 := by norm_num1
 example : Nat.minFac 1 = 1 := by norm_num1
 example : Nat.minFac (9 - 7) = 2 := by norm_num1
