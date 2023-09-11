@@ -42,7 +42,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
     IO.mkDir IO.CACHEDIR
     IO.println s!"Attempting to download {size} file(s)"
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
-    let out ← IO.runCmd "curl"
+    let out ← IO.runCurl
       #["--request", "GET", "--parallel", "--fail", "--silent",
         "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString] false
     IO.FS.removeFile IO.CURLCFG
@@ -85,10 +85,10 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
     IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames token)
     IO.println s!"Attempting to upload {size} file(s)"
     if overwrite then
-      discard $ IO.runCmd "curl" #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "--parallel",
+      discard $ IO.runCurl #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "--parallel",
         "-K", IO.CURLCFG.toString]
     else
-      discard $ IO.runCmd "curl" #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
+      discard $ IO.runCurl #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
         "-H", "If-None-Match: *", "--parallel", "-K", IO.CURLCFG.toString]
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
@@ -119,7 +119,7 @@ def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit 
   let params := if overwrite
     then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
     else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-  discard $ IO.runCmd "curl" $ params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
+  discard $ IO.runCurl $ params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
   IO.FS.removeFile path
 
 end Commit
@@ -149,7 +149,7 @@ Example: `["f/39476538726384726.tar.gz", "Sat, 24 Dec 2022 17:33:01 GMT"]`
 -/
 def getFilesInfo (q : QueryType) : IO $ List (String × String) := do
   IO.println s!"Downloading info list of {q.desc}"
-  let ret ← IO.runCmd "curl" #["-X", "GET", s!"{URL}?comp=list&restype=container{q.prefix}"]
+  let ret ← IO.runCurl #["-X", "GET", s!"{URL}?comp=list&restype=container{q.prefix}"]
   match ret.splitOn "<Name>" with
   | [] => formatError
   | [_] => return default

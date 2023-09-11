@@ -49,15 +49,15 @@ export UniformContinuousConstVAdd (uniformContinuous_const_vadd)
 
 export UniformContinuousConstSMul (uniformContinuous_const_smul)
 
-instance AddMonoid.hasUniformContinuousConstSMul_nat [AddGroup X] [UniformAddGroup X] :
+instance AddMonoid.uniformContinuousConstSMul_nat [AddGroup X] [UniformAddGroup X] :
     UniformContinuousConstSMul ℕ X :=
   ⟨uniformContinuous_const_nsmul⟩
-#align add_monoid.has_uniform_continuous_const_smul_nat AddMonoid.hasUniformContinuousConstSMul_nat
+#align add_monoid.has_uniform_continuous_const_smul_nat AddMonoid.uniformContinuousConstSMul_nat
 
-instance AddGroup.hasUniformContinuousConstSMul_int [AddGroup X] [UniformAddGroup X] :
+instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [UniformAddGroup X] :
     UniformContinuousConstSMul ℤ X :=
   ⟨uniformContinuous_const_zsmul⟩
-#align add_group.has_uniform_continuous_const_smul_int AddGroup.hasUniformContinuousConstSMul_int
+#align add_group.has_uniform_continuous_const_smul_int AddGroup.uniformContinuousConstSMul_int
 
 /-- A `DistribMulAction` that is continuous on a uniform group is uniformly continuous.
 This can't be an instance due to it forming a loop with
@@ -85,10 +85,10 @@ instance Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [UniformAddGr
 -- Porting note: needs Lean4#2074
 instance : Module Rᵐᵒᵖ R := Semiring.toOppositeModule
 /-- The action of `Semiring.toOppositeModule` is uniformly continuous. -/
-instance Ring.has_uniform_continuous_const_op_smul [Ring R] [UniformSpace R] [UniformAddGroup R]
+instance Ring.uniformContinuousConstSMul_op [Ring R] [UniformSpace R] [UniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul Rᵐᵒᵖ R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
-#align ring.has_uniform_continuous_const_op_smul Ring.has_uniform_continuous_const_op_smul
+#align ring.has_uniform_continuous_const_op_smul Ring.uniformContinuousConstSMul_op
 
 end instances
 
@@ -115,7 +115,7 @@ theorem UniformContinuous.const_smul [UniformContinuousConstSMul M X] {f : Y →
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/
 @[to_additive "If an additive action is central, then its right action is uniform
-continuous when its left action,is."]
+continuous when its left action is."]
 instance (priority := 100) UniformContinuousConstSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X]
     [UniformContinuousConstSMul M X] : UniformContinuousConstSMul Mᵐᵒᵖ X :=
   ⟨MulOpposite.rec' fun c =>
@@ -156,7 +156,7 @@ noncomputable instance : SMul M (Completion X) :=
   ⟨fun c => Completion.map ((· • ·) c)⟩
 
 @[to_additive]
-theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map ((· • ·) c) x :=
+theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·) x :=
   rfl
 #align uniform_space.completion.smul_def UniformSpace.Completion.smul_def
 #align uniform_space.completion.vadd_def UniformSpace.Completion.vadd_def

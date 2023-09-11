@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.alist
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit f808feb6c18afddb25e66a71d317643cf7fb5fbb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -274,6 +274,12 @@ theorem insert_entries_of_neg {a} {b : β a} {s : AList β} (h : a ∉ s) :
     (insert a b s).entries = ⟨a, b⟩ :: s.entries := by rw [insert_entries, kerase_of_not_mem_keys h]
 #align alist.insert_entries_of_neg AList.insert_entries_of_neg
 
+-- Todo: rename to `insert_of_not_mem`.
+theorem insert_of_neg {a} {b : β a} {s : AList β} (h : a ∉ s) :
+    insert a b s = ⟨⟨a, b⟩ :: s.entries, nodupKeys_cons.2 ⟨h, s.2⟩⟩ :=
+  ext <| insert_entries_of_neg h
+#align alist.insert_of_neg AList.insert_of_neg
+
 @[simp]
 theorem insert_empty (a) (b : β a) : insert a b ∅ = singleton a b :=
   rfl
@@ -338,6 +344,57 @@ theorem toAList_cons (a : α) (b : β a) (xs : List (Sigma β)) :
     List.toAList (⟨a, b⟩ :: xs) = insert a b xs.toAList :=
   rfl
 #align alist.to_alist_cons AList.toAList_cons
+
+theorem mk_cons_eq_insert (c : Sigma β) (l : List (Sigma β)) (h : (c :: l).NodupKeys) :
+    (⟨c :: l, h⟩ : AList β) = insert c.1 c.2 ⟨l, nodupKeys_of_nodupKeys_cons h⟩ := by
+  simpa [insert] using (kerase_of_not_mem_keys <| not_mem_keys_of_nodupKeys_cons h).symm
+#align alist.mk_cons_eq_insert AList.mk_cons_eq_insert
+
+/-- Recursion on an `alist`, using `insert`. Use as `induction l using alist.insert_rec`. -/
+@[elab_as_elim]
+def insertRec {C : AList β → Sort _} (H0 : C ∅)
+    (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
+    ∀ l : AList β, C l
+  | ⟨[], _⟩ => H0
+  | ⟨c :: l, h⟩ => by
+    rw [mk_cons_eq_insert]
+    refine' IH _ _ _ _ (insertRec H0 IH _)
+    exact not_mem_keys_of_nodupKeys_cons h
+#align alist.insert_rec AList.insertRec
+
+-- Test that the `induction` tactic works on `insert_rec`.
+example (l : AList β) : True := by induction l using AList.insertRec <;> trivial
+
+@[simp]
+theorem insertRec_empty {C : AList β → Sort _} (H0 : C ∅)
+    (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
+    @insertRec α β _ C H0 IH ∅ = H0 := by
+  change @insertRec α β _ C H0 IH ⟨[], _⟩ = H0
+  rw [insertRec]
+#align alist.insert_rec_empty AList.insertRec_empty
+
+theorem insertRec_insert {C : AList β → Sort _} (H0 : C ∅)
+    (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {c : Sigma β}
+    {l : AList β} (h : c.1 ∉ l) :
+    @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) := by
+  cases' l with l hl
+  suffices
+    HEq (@insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩)
+      (IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩))
+    by
+    cases c
+    apply eq_of_heq
+    convert this <;> rw [insert_of_neg h]
+  rw [insertRec]
+  apply cast_heq
+#align alist.insert_rec_insert AList.insertRec_insert
+
+theorem insertRec_insert_mk {C : AList β → Sort _} (H0 : C ∅)
+    (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {a : α} (b : β a)
+    {l : AList β} (h : a ∉ l) :
+    @insertRec α β _ C H0 IH (l.insert a b) = IH a b l h (@insertRec α β _ C H0 IH l) :=
+  @insertRec_insert α β _ C H0 IH ⟨a, b⟩ l h
+#align alist.recursion_insert_mk AList.insertRec_insert_mk
 
 /-! ### extract -/
 

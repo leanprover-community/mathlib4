@@ -17,7 +17,7 @@ import Mathlib.GroupTheory.GroupAction.Defs
 This file defines the actions on the opposite type `SMul R Mᵐᵒᵖ`, and actions by the opposite
 type, `SMul Rᵐᵒᵖ M`.
 
-Note that `MulOpposite.instSMulMulOpposite` is provided in an earlier file as it is needed to
+Note that `MulOpposite.smul` is provided in an earlier file as it is needed to
 provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
 -/
 

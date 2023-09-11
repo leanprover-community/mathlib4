@@ -177,51 +177,51 @@ attribute [nolint simpComm] AddOpposite.unop_inj
 variable (α)
 
 @[to_additive]
-instance [Nontrivial α] : Nontrivial αᵐᵒᵖ :=
+instance nontrivial [Nontrivial α] : Nontrivial αᵐᵒᵖ :=
   op_injective.nontrivial
 
 @[to_additive]
-instance [Inhabited α] : Inhabited αᵐᵒᵖ :=
+instance inhabited [Inhabited α] : Inhabited αᵐᵒᵖ :=
   ⟨op default⟩
 
 @[to_additive]
-instance [Subsingleton α] : Subsingleton αᵐᵒᵖ :=
+instance subsingleton [Subsingleton α] : Subsingleton αᵐᵒᵖ :=
   unop_injective.subsingleton
 
 @[to_additive]
-instance [Unique α] : Unique αᵐᵒᵖ :=
+instance unique [Unique α] : Unique αᵐᵒᵖ :=
   Unique.mk' _
 
 @[to_additive]
-instance [IsEmpty α] : IsEmpty αᵐᵒᵖ :=
+instance isEmpty [IsEmpty α] : IsEmpty αᵐᵒᵖ :=
   Function.isEmpty unop
 
-instance [Zero α] : Zero αᵐᵒᵖ where zero := op 0
+instance zero [Zero α] : Zero αᵐᵒᵖ where zero := op 0
 
 @[to_additive]
-instance [One α] : One αᵐᵒᵖ where one := op 1
+instance one [One α] : One αᵐᵒᵖ where one := op 1
 
-instance [Add α] : Add αᵐᵒᵖ where add x y := op (unop x + unop y)
+instance add [Add α] : Add αᵐᵒᵖ where add x y := op (unop x + unop y)
 
-instance [Sub α] : Sub αᵐᵒᵖ where sub x y := op (unop x - unop y)
+instance sub [Sub α] : Sub αᵐᵒᵖ where sub x y := op (unop x - unop y)
 
-instance [Neg α] : Neg αᵐᵒᵖ where neg x := op $ -unop x
+instance neg [Neg α] : Neg αᵐᵒᵖ where neg x := op $ -unop x
 
-instance [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ :=
-  { MulOpposite.instNegMulOpposite α with neg_neg := fun _ => unop_injective $ neg_neg _ }
-
-@[to_additive]
-instance [Mul α] : Mul αᵐᵒᵖ where mul x y := op (unop y * unop x)
+instance involutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ :=
+  { MulOpposite.neg α with neg_neg := fun _ => unop_injective $ neg_neg _ }
 
 @[to_additive]
-instance [Inv α] : Inv αᵐᵒᵖ where inv x := op $ (unop x)⁻¹
+instance mul [Mul α] : Mul αᵐᵒᵖ where mul x y := op (unop y * unop x)
 
 @[to_additive]
-instance [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ :=
-  { MulOpposite.instInvMulOpposite α with inv_inv := fun _ => unop_injective $ inv_inv _ }
+instance inv [Inv α] : Inv αᵐᵒᵖ where inv x := op $ (unop x)⁻¹
 
 @[to_additive]
-instance (R : Type _) [SMul R α] : SMul R αᵐᵒᵖ where smul c x := op (c • unop x)
+instance involutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ :=
+  { MulOpposite.inv α with inv_inv := fun _ => unop_injective $ inv_inv _ }
+
+@[to_additive]
+instance smul (R : Type _) [SMul R α] : SMul R αᵐᵒᵖ where smul c x := op (c • unop x)
 
 section
 
@@ -355,7 +355,7 @@ end MulOpposite
 
 namespace AddOpposite
 
-instance [One α] : One αᵃᵒᵖ where one := op 1
+instance one [One α] : One αᵃᵒᵖ where one := op 1
 
 @[simp]
 theorem op_one [One α] : op (1 : α) = 1 :=
@@ -379,7 +379,7 @@ theorem unop_eq_one_iff [One α] {a : αᵃᵒᵖ} : unop a = 1 ↔ a = 1 :=
 
 attribute [nolint simpComm] unop_eq_one_iff
 
-instance [Mul α] : Mul αᵃᵒᵖ where mul a b := op (unop a * unop b)
+instance mul [Mul α] : Mul αᵃᵒᵖ where mul a b := op (unop a * unop b)
 
 @[simp]
 theorem op_mul [Mul α] (a b : α) : op (a * b) = op a * op b :=
@@ -391,10 +391,10 @@ theorem unop_mul [Mul α] (a b : αᵃᵒᵖ) : unop (a * b) = unop a * unop b :
   rfl
 #align add_opposite.unop_mul AddOpposite.unop_mul
 
-instance [Inv α] : Inv αᵃᵒᵖ where inv a := op (unop a)⁻¹
+instance inv [Inv α] : Inv αᵃᵒᵖ where inv a := op (unop a)⁻¹
 
-instance [InvolutiveInv α] : InvolutiveInv αᵃᵒᵖ :=
-  { AddOpposite.instInvAddOpposite with inv_inv := fun _ => unop_injective $ inv_inv _ }
+instance involutiveInv [InvolutiveInv α] : InvolutiveInv αᵃᵒᵖ :=
+  { AddOpposite.inv with inv_inv := fun _ => unop_injective $ inv_inv _ }
 
 @[simp]
 theorem op_inv [Inv α] (a : α) : op a⁻¹ = (op a)⁻¹ :=
@@ -406,7 +406,7 @@ theorem unop_inv [Inv α] (a : αᵃᵒᵖ) : unop a⁻¹ = (unop a)⁻¹ :=
   rfl
 #align add_opposite.unop_inv AddOpposite.unop_inv
 
-instance [Div α] : Div αᵃᵒᵖ where div a b := op (unop a / unop b)
+instance div [Div α] : Div αᵃᵒᵖ where div a b := op (unop a / unop b)
 
 @[simp]
 theorem op_div [Div α] (a b : α) : op (a / b) = op a / op b :=

@@ -207,12 +207,12 @@ theorem rename_eval₂ (g : τ → MvPolynomial σ R) :
       simp [*]
 #align mv_polynomial.rename_eval₂ MvPolynomial.rename_eval₂
 
-theorem rename_prodmk_eval₂ (j : τ) (g : σ → MvPolynomial σ R) :
+theorem rename_prod_mk_eval₂ (j : τ) (g : σ → MvPolynomial σ R) :
     rename (Prod.mk j) (p.eval₂ C g) = p.eval₂ C fun x => rename (Prod.mk j) (g x) := by
   apply MvPolynomial.induction_on p <;>
     · intros
       simp [*]
-#align mv_polynomial.rename_prodmk_eval₂ MvPolynomial.rename_prodmk_eval₂
+#align mv_polynomial.rename_prodmk_eval₂ MvPolynomial.rename_prod_mk_eval₂
 
 theorem eval₂_rename_prod_mk (g : σ × τ → S) (i : σ) (p : MvPolynomial τ R) :
     (rename (Prod.mk i) p).eval₂ f g = eval₂ f (fun j => g (i, j)) p := by

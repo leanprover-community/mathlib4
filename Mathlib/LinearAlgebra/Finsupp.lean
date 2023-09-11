@@ -905,8 +905,8 @@ def sumFinsuppLEquivProdFinsupp {α β : Type _} : (Sum α β →₀ M) ≃ₗ[R
       intros
       ext <;>
         -- Porting note: `add_equiv.to_fun_eq_coe` →
-        --               `Equiv.toFun_as_coe` & `AddEquiv.coe_toEquiv`
-        simp only [Equiv.toFun_as_coe, AddEquiv.coe_toEquiv, Prod.smul_fst,
+        --               `Equiv.toFun_as_coe` & `AddEquiv.toEquiv_eq_coe` & `AddEquiv.coe_toEquiv`
+        simp only [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe, AddEquiv.coe_toEquiv, Prod.smul_fst,
           Prod.smul_snd, smul_apply,
           snd_sumFinsuppAddEquivProdFinsupp, fst_sumFinsuppAddEquivProdFinsupp,
           RingHom.id_apply] }

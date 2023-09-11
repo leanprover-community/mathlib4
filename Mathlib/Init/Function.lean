@@ -43,9 +43,6 @@ f x
 @[inherit_doc onFun]
 infixl:2 " on " => onFun
 
-@[inherit_doc combine]
-notation f " -[" op "]- " g => combine f op g
-
 theorem left_id (f : α → β) : id ∘ f = f := rfl
 
 theorem right_id (f : α → β) : f ∘ id = f := rfl

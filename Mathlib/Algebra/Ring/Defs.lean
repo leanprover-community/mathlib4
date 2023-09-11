@@ -333,7 +333,7 @@ class NonUnitalRing (α : Type _) extends NonUnitalNonAssocRing α, NonUnitalSem
 
 /-- A unital but not-necessarily-associative ring. -/
 class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
-    AddGroupWithOne α
+    AddCommGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R

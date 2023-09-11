@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 
 ! This file was ported from Lean 3 source module combinatorics.simple_graph.basic
-! leanprover-community/mathlib commit db53863fb135228820ee0b08e8dce9349a3d911b
+! leanprover-community/mathlib commit c6ef6387ede9983aee397d442974e61f89dfd87b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -46,8 +46,9 @@ finitely many vertices.
   graph isomorphisms. Note that a graph embedding is a stronger notion than an
   injective graph homomorphism, since its image is an induced subgraph.
 
-* `BooleanAlgebra` instance: Under the subgraph relation, `SimpleGraph` forms a `BooleanAlgebra`.
-  In other words, this is the lattice of spanning subgraphs of the complete graph.
+* `CompleteBooleanAlgebra` instance: Under the subgraph relation, `SimpleGraph` forms a
+  `CompleteBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs of
+  the complete graph.
 
 ## Notations
 
@@ -70,8 +71,6 @@ finitely many vertices.
 * If the vertex type of a graph is finite, we refer to its cardinality as `CardVerts`.
 
 ## Todo
-
-* Upgrade boolean algebra instance to a `CompleteBooleanAlgebra`.
 
 * This is the simplest notion of an unoriented graph.  This should
   eventually fit into a more complete combinatorics hierarchy which
@@ -182,7 +181,7 @@ def completeBipartiteGraph (V W : Type _) : SimpleGraph (Sum V W)
 
 namespace SimpleGraph
 
-variable {𝕜 : Type _} {V : Type u} {W : Type v} {X : Type w} (G : SimpleGraph V)
+variable {ι : Sort _} {𝕜 : Type _} {V : Type u} {W : Type v} {X : Type w} (G : SimpleGraph V)
   (G' : SimpleGraph W) {a b c u v w : V} {e : Sym2 V}
 
 @[simp]
@@ -220,6 +219,15 @@ theorem ne_of_adj_of_not_adj {v w x : V} (h : G.Adj v x) (hn : ¬G.Adj w x) : v 
   hn (h' ▸ h)
 #align simple_graph.ne_of_adj_of_not_adj SimpleGraph.ne_of_adj_of_not_adj
 
+theorem adj_injective : Injective (Adj : SimpleGraph V → V → V → Prop) :=
+  SimpleGraph.ext
+#align simple_graph.adj_injective SimpleGraph.adj_injective
+
+@[simp]
+theorem adj_inj {G H : SimpleGraph V} : G.Adj = H.Adj ↔ G = H :=
+  adj_injective.eq_iff
+#align simple_graph.adj_inj SimpleGraph.adj_inj
+
 section Order
 
 /-- The relation that one `SimpleGraph` is a subgraph of another.
@@ -237,10 +245,10 @@ theorem isSubgraph_eq_le : (IsSubgraph : SimpleGraph V → SimpleGraph V → Pro
 #align simple_graph.is_subgraph_eq_le SimpleGraph.isSubgraph_eq_le
 
 /-- The supremum of two graphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
-instance : Sup (SimpleGraph V) :=
-  ⟨fun x y =>
+instance : Sup (SimpleGraph V) where
+  sup x y :=
     { Adj := x.Adj ⊔ y.Adj
-      symm := fun v w h => by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }⟩
+      symm := fun v w h => by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w :=
@@ -248,10 +256,10 @@ theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v 
 #align simple_graph.sup_adj SimpleGraph.sup_adj
 
 /-- The infimum of two graphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
-instance : Inf (SimpleGraph V) :=
-  ⟨fun x y =>
+instance : Inf (SimpleGraph V) where
+  inf x y :=
     { Adj := x.Adj ⊓ y.Adj
-      symm := fun v w h => by rwa [Pi.inf_apply, Pi.inf_apply, x.adj_comm, y.adj_comm] }⟩
+      symm := fun v w h => by rwa [Pi.inf_apply, Pi.inf_apply, x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem inf_adj (x y : SimpleGraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w :=
@@ -261,11 +269,11 @@ theorem inf_adj (x y : SimpleGraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v 
 /-- We define `Gᶜ` to be the `SimpleGraph V` such that no two adjacent vertices in `G`
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent
 (still ensuring that vertices are not adjacent to themselves). -/
-instance : HasCompl (SimpleGraph V) :=
-  ⟨fun G =>
+instance hasCompl : HasCompl (SimpleGraph V) where
+  compl G :=
     { Adj := fun v w => v ≠ w ∧ ¬G.Adj v w
       symm := fun v w ⟨hne, _⟩ => ⟨hne.symm, by rwa [adj_comm]⟩
-      loopless := fun v ⟨hne, _⟩ => (hne rfl).elim }⟩
+      loopless := fun v ⟨hne, _⟩ => (hne rfl).elim }
 
 @[simp]
 theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ ¬G.Adj v w :=
@@ -273,19 +281,70 @@ theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ �
 #align simple_graph.compl_adj SimpleGraph.compl_adj
 
 /-- The difference of two graphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
-instance : SDiff (SimpleGraph V) :=
-  ⟨fun x y =>
+instance sdiff : SDiff (SimpleGraph V) where
+  sdiff x y :=
     { Adj := x.Adj \ y.Adj
-      symm := fun v w h => by change x.Adj w v ∧ ¬y.Adj w v; rwa [x.adj_comm, y.adj_comm] }⟩
+      symm := fun v w h => by change x.Adj w v ∧ ¬y.Adj w v; rwa [x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w ∧ ¬y.Adj v w :=
   Iff.rfl
 #align simple_graph.sdiff_adj SimpleGraph.sdiff_adj
 
-instance : BooleanAlgebra (SimpleGraph V) :=
-  { PartialOrder.lift Adj
-    (by intro _ _ h; ext; simp only [h]) with
+instance supSet : SupSet (SimpleGraph V) where
+  supₛ s :=
+    { Adj := fun a b => ∃ G ∈ s, Adj G a b
+      symm := fun a b => Exists.imp $ fun _ => And.imp_right Adj.symm
+      loopless := by
+        rintro a ⟨G, _, ha⟩
+        exact ha.ne rfl }
+
+instance infSet : InfSet (SimpleGraph V) where
+  infₛ s :=
+    { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
+      symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
+      loopless := fun _ h => h.2 rfl }
+
+@[simp]
+theorem supₛ_adj {s : Set (SimpleGraph V)} {a b : V} : (supₛ s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
+  Iff.rfl
+#align simple_graph.Sup_adj SimpleGraph.supₛ_adj
+
+@[simp]
+theorem infₛ_adj {s : Set (SimpleGraph V)} : (infₛ s).Adj a b ↔ (∀ G ∈ s, Adj G a b) ∧ a ≠ b :=
+  Iff.rfl
+#align simple_graph.Inf_adj SimpleGraph.infₛ_adj
+
+@[simp]
+theorem supᵢ_adj {f : ι → SimpleGraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).Adj a b := by simp [supᵢ]
+#align simple_graph.supr_adj SimpleGraph.supᵢ_adj
+
+@[simp]
+theorem infᵢ_adj {f : ι → SimpleGraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) ∧ a ≠ b := by
+  simp [infᵢ]
+#align simple_graph.infi_adj SimpleGraph.infᵢ_adj
+
+theorem infₛ_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
+    (infₛ s).Adj a b ↔ ∀ G ∈ s, Adj G a b :=
+  infₛ_adj.trans <|
+    and_iff_left_of_imp <| by
+      obtain ⟨G, hG⟩ := hs
+      exact fun h => (h _ hG).ne
+#align simple_graph.Inf_adj_of_nonempty SimpleGraph.infₛ_adj_of_nonempty
+
+theorem infᵢ_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
+    (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by
+  rw [infᵢ, infₛ_adj_of_nonempty (Set.range_nonempty _), Set.forall_range_iff]
+#align simple_graph.infi_adj_of_nonempty SimpleGraph.infᵢ_adj_of_nonempty
+
+/-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.adj a b → H.adj a b`. -/
+instance distribLattice : DistribLattice (SimpleGraph V) :=
+  { show DistribLattice (SimpleGraph V) from
+      adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
+    le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
+
+instance completeBooleanAlgebra : CompleteBooleanAlgebra (SimpleGraph V) :=
+  { SimpleGraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
     inf := (· ⊓ ·)
@@ -295,23 +354,27 @@ instance : BooleanAlgebra (SimpleGraph V) :=
     bot := emptyGraph V
     le_top := fun x v w h => x.ne_of_adj h
     bot_le := fun x v w h => h.elim
-    sup_le := fun x y z hxy hyz v w h => h.casesOn (fun h => hxy h) fun h => hyz h
     sdiff_eq := fun x y => by
       ext (v w)
       refine' ⟨fun h => ⟨h.1, ⟨_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
       rintro rfl
       exact x.irrefl h.1
-    le_sup_left := fun x y v w h => Or.inl h
-    le_sup_right := fun x y v w h => Or.inr h
-    le_inf := fun x y z hxy hyz v w h => ⟨hxy h, hyz h⟩
-    le_sup_inf := by aesop_graph
-    inf_compl_le_bot := fun a v w h => False.elim <| h.2.2 h.1
-    top_le_sup_compl := fun a v w ne => by
-      by_cases h : a.Adj v w
+    inf_compl_le_bot := fun G v w h => False.elim <| h.2.2 h.1
+    top_le_sup_compl := fun G v w hvw => by
+      by_cases G.Adj v w
       · exact Or.inl h
-      · exact Or.inr ⟨ne, h⟩
-    inf_le_left := fun x y v w h => h.1
-    inf_le_right := fun x y v w h => h.2 }
+      · exact Or.inr ⟨hvw, h⟩
+    supₛ := supₛ
+    le_supₛ := fun s G hG a b hab => ⟨G, hG, hab⟩
+    supₛ_le := fun s G hG a b => by
+      rintro ⟨H, hH, hab⟩
+      exact hG _ hH hab
+    infₛ := infₛ
+    infₛ_le := fun s G hG a b hab => hab.1 hG
+    le_infₛ := fun s G hG a b hab => ⟨fun H hH => hG _ hH hab, hab.ne⟩
+    inf_supₛ_le_supᵢ_inf := fun G s a b hab => by simpa using hab
+    infᵢ_sup_le_sup_infₛ := fun G s a b hab => by
+      simpa [forall_and, forall_or_left, or_and_right, and_iff_left_of_imp Adj.ne] using hab }
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
@@ -1040,7 +1103,7 @@ def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V
     where
   Adj := G.Adj \ Sym2.ToRel s
   symm a b := by simp [adj_comm, Sym2.eq_swap]
-  loopless a := by simp [sdiff] -- porting note: used to be handled by `obviously`
+  loopless a := by simp [SDiff.sdiff] -- porting note: used to be handled by `obviously`
 #align simple_graph.delete_edges SimpleGraph.deleteEdges
 
 @[simp]

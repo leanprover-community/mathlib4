@@ -13,6 +13,7 @@ import Mathlib.Topology.Connected
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.TFAE
 
 /-!
 # Locally constant functions
@@ -50,33 +51,19 @@ protected theorem tfae (f : X → Y) :
       ∀ x, IsOpen { x' | f x' = f x },
       ∀ y, IsOpen (f ⁻¹' {y}),
       ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x] := by
-  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil]
-  · exact fun h x => (h {f x}).mem_nhds rfl
-  · exact fun h x => isOpen_iff_mem_nhds.2 fun y (hy : f y = f x) => hy ▸ h _
-  · intro h y
-    rcases em (y ∈ range f) with (⟨x, rfl⟩ | hy)
-    · exact h x
-    · simp only [preimage_eq_empty (disjoint_singleton_left.2 hy), isOpen_empty]
+  tfae_have 1 → 4; exact fun h y => h {y}
+  tfae_have 4 → 3; exact fun h x => h (f x)
+  tfae_have 3 → 2; exact fun h x => IsOpen.mem_nhds (h x) rfl
+  tfae_have 2 → 5
   · intro h x
-    rcases mem_nhds_iff.1 ((h (f x)).mem_nhds rfl) with ⟨U, hUf, hU, hx⟩
-    exact ⟨U, hU, hx, hUf⟩
-  · refine fun h s => isOpen_iff_forall_mem_open.2 fun x hx => ?_
-    rcases h x with ⟨U, hUo, hxU, hUf⟩
-    exact ⟨U, fun z hz => mem_preimage.2 <| (hUf z hz).symm ▸ hx, hUo, hxU⟩
-  -- porting note: todo: use `tfae_have`/`tfae_finish`; auto translated code below
-  -- tfae_have 1 → 4; exact fun h y => h {y}
-  -- tfae_have 4 → 3; exact fun h x => h (f x)
-  -- tfae_have 3 → 2; exact fun h x => IsOpen.mem_nhds (h x) rfl
-  -- tfae_have 2 → 5
-  -- · intro h x
-  --   rcases mem_nhds_iff.1 (h x) with ⟨U, eq, hU, hx⟩
-  --   exact ⟨U, hU, hx, Eq⟩
-  -- tfae_have 5 → 1
-  -- · intro h s
-  --   refine' isOpen_iff_forall_mem_open.2 fun x hx => _
-  --   rcases h x with ⟨U, hU, hxU, eq⟩
-  --   exact ⟨U, fun x' hx' => mem_preimage.2 <| (Eq x' hx').symm ▸ hx, hU, hxU⟩
-  -- tfae_finish
+    rcases mem_nhds_iff.1 (h x) with ⟨U, eq, hU, hx⟩
+    exact ⟨U, hU, hx, eq⟩
+  tfae_have 5 → 1
+  · intro h s
+    refine' isOpen_iff_forall_mem_open.2 fun x hx => _
+    rcases h x with ⟨U, hU, hxU, eq⟩
+    exact ⟨U, fun x' hx' => mem_preimage.2 <| (eq x' hx').symm ▸ hx, hU, hxU⟩
+  tfae_finish
 #align is_locally_constant.tfae IsLocallyConstant.tfae
 
 @[nontriviality]

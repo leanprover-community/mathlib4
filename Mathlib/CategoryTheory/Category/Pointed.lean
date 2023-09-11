@@ -57,9 +57,9 @@ theorem coe_of {X : Type _} (point : X) : ↥(of point) = X :=
 set_option linter.uppercaseLean3 false in
 #align Pointed.coe_of Pointed.coe_of
 
-alias of ← _root_.prod.Pointed
+alias of ← _root_.Prod.Pointed
 set_option linter.uppercaseLean3 false in
-#align prod.Pointed prod.Pointed
+#align prod.Pointed Prod.Pointed
 
 instance : Inhabited Pointed :=
   ⟨of ((), ())⟩
@@ -114,8 +114,7 @@ set_option linter.uppercaseLean3 false in
 /-- Constructs a isomorphism between pointed types from an equivalence that preserves the point
 between them. -/
 @[simps]
-def Iso.mk {α β : Pointed} (e : α ≃ β) (he : e α.point = β.point) : α ≅ β
-    where
+def Iso.mk {α β : Pointed} (e : α ≃ β) (he : e α.point = β.point) : α ≅ β where
   hom := ⟨e, he⟩
   inv := ⟨e.symm, e.symm_apply_eq.2 he.symm⟩
   hom_inv_id := Pointed.Hom.ext _ _ e.symm_comp_self

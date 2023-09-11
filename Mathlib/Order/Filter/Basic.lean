@@ -2236,6 +2236,10 @@ theorem map_comap (f : Filter β) (m : α → β) : (f.comap m).map m = f ⊓ �
   exact sub hxt
 #align filter.map_comap Filter.map_comap
 
+theorem map_comap_setCoe_val (f : Filter β) (s : Set β) :
+    (f.comap ((↑) : s → β)).map (↑) = f ⊓ 𝓟 s := by
+  rw [map_comap, Subtype.range_val]
+
 theorem map_comap_of_mem {f : Filter β} {m : α → β} (hf : range m ∈ f) : (f.comap m).map m = f := by
   rw [map_comap, inf_eq_left.2 (le_principal_iff.2 hf)]
 #align filter.map_comap_of_mem Filter.map_comap_of_mem

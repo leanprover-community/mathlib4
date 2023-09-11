@@ -191,7 +191,7 @@ theorem zipWith_swap_prod_support' (l l' : List α) :
 #align list.zip_with_swap_prod_support' List.zipWith_swap_prod_support'
 
 theorem zipWith_swap_prod_support [Fintype α] (l l' : List α) :
-    (zipWith swap l l').prod.Support ≤ l.toFinset ⊔ l'.toFinset := by
+    (zipWith swap l l').prod.support ≤ l.toFinset ⊔ l'.toFinset := by
   intro x hx
   have hx' : x ∈ { x | (zipWith swap l l').prod x ≠ x } := by simpa using hx
   simpa using zipWith_swap_prod_support' _ _ hx'
@@ -202,7 +202,7 @@ theorem support_formPerm_le' : { x | formPerm l x ≠ x } ≤ l.toFinset := by
   simpa [Finset.subset_iff] using tail_subset l
 #align list.support_form_perm_le' List.support_formPerm_le'
 
-theorem support_formPerm_le [Fintype α] : Support (formPerm l) ≤ l.toFinset := by
+theorem support_formPerm_le [Fintype α] : support (formPerm l) ≤ l.toFinset := by
   intro x hx
   have hx' : x ∈ { x | formPerm l x ≠ x } := by simpa using hx
   simpa using support_formPerm_le' _ hx'
@@ -263,7 +263,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
 #align list.support_form_perm_of_nodup' List.support_formPerm_of_nodup'
 
 theorem support_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
-    Support (formPerm l) = l.toFinset := by
+    support (formPerm l) = l.toFinset := by
   rw [← Finset.coe_inj]
   convert support_formPerm_of_nodup' _ h h'
   simp [Set.ext_iff]

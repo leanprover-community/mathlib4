@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.with_bot
-! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
+! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -52,6 +52,9 @@ instance bot : Bot (WithBot α) :=
 
 instance inhabited : Inhabited (WithBot α) :=
   ⟨⊥⟩
+
+instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
+  Option.nontrivial
 
 open Function
 
@@ -577,6 +580,9 @@ instance top : Top (WithTop α) :=
 
 instance inhabited : Inhabited (WithTop α) :=
   ⟨⊤⟩
+
+instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
+  Option.nontrivial
 
 protected theorem «forall» {p : WithTop α → Prop} : (∀ x, p x) ↔ p ⊤ ∧ ∀ x : α, p x :=
   Option.forall

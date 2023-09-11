@@ -122,3 +122,6 @@ example (a : Nat) : 1 * f a * 1 = f (a + 0) := by
   have ha : a + 0 = a := by ring
   rw [ha] -- goal has mdata
   ring1
+
+-- Powers in the exponent get evaluated correctly
+example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring

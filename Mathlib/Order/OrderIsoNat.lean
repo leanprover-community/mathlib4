@@ -144,12 +144,7 @@ theorem orderEmbeddingOfSet_apply [DecidablePred (· ∈ s)] {n : ℕ} :
 @[simp]
 theorem Subtype.orderIsoOfNat_apply [dP : DecidablePred (· ∈ s)] {n : ℕ} :
     Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
-  simp only [orderIsoOfNat, RelIso.ofSurjective_apply,
-    RelEmbedding.orderEmbeddingOfLTEmbedding_apply, RelEmbedding.coe_natLt]
-  suffices (fun a => Classical.propDecidable (a ∈ s)) = (fun a => dP a) by
-    rw [this]
-  simp
-  -- Porting note: This proof was simply `by simp [orderIsoOfNat]; congr`
+  simp [orderIsoOfNat]; congr!
 #align nat.subtype.order_iso_of_nat_apply Nat.Subtype.orderIsoOfNat_apply
 
 variable (s)
@@ -236,21 +231,14 @@ theorem WellFounded.monotone_chain_condition' [Preorder α] :
     exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
 #align well_founded.monotone_chain_condition' WellFounded.monotone_chain_condition'
 
---porting note: congrm tactic doesn't exist so this proof is much messier
 /-- The "monotone chain condition" below is sometimes a convenient form of well foundedness. -/
 theorem WellFounded.monotone_chain_condition [PartialOrder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m :=
   WellFounded.monotone_chain_condition'.trans <| by
-  refine' ⟨fun h a => _, fun h a => _⟩ <;> specialize h a <;> cases' h with n h <;>
-      use n <;> intro m hmn <;> specialize h m hmn
-  · rw [lt_iff_le_and_ne] at h
-    push_neg at h
-    apply h
-    simp [a.mono hmn]
-  · rw [lt_iff_le_and_ne]
-    push_neg
-    intro _
-    exact h
+  -- porting note: was congrm ∀ a, ∃ n, ∀ m (h : n ≤ m), (_ : Prop)
+  congr! 4
+  rename_i a n m
+  simp (config := {contextual := true}) [lt_iff_le_and_ne, fun h => a.mono h]
 #align well_founded.monotone_chain_condition WellFounded.monotone_chain_condition
 
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered

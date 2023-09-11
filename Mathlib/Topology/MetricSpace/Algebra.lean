@@ -15,16 +15,16 @@ import Mathlib.Topology.MetricSpace.Lipschitz
 /-!
 # Compatibility of algebraic operations with metric space structures
 
-In this file we define mixin typeclasses `has_lipschitz_mul`, `has_lipschitz_add`,
-`has_bounded_smul` expressing compatibility of multiplication, addition and scalar-multiplication
+In this file we define mixin typeclasses `LipschitzMul`, `LipschitzAdd`,
+`BoundedSMul` expressing compatibility of multiplication, addition and scalar-multiplication
 operations with an underlying metric space structure.  The intended use case is to abstract certain
 properties shared by normed groups and by `R≥0`.
 
 ## Implementation notes
 
-We deduce a `has_continuous_mul` instance from `has_lipschitz_mul`, etc.  In principle there should
+We deduce a `ContinuousMul` instance from `LipschitzMul`, etc.  In principle there should
 be an intermediate typeclass for uniform spaces, but the algebraic hierarchy there (see
-`uniform_group`) is structured differently.
+`UniformGroup`) is structured differently.
 
 -/
 
@@ -37,13 +37,13 @@ variable (α β : Type _) [PseudoMetricSpace α] [PseudoMetricSpace β]
 
 section LipschitzMul
 
-/-- Class `has_lipschitz_add M` says that the addition `(+) : X × X → X` is Lipschitz jointly in
+/-- Class `LipschitzAdd M` says that the addition `(+) : X × X → X` is Lipschitz jointly in
 the two arguments. -/
 class LipschitzAdd [AddMonoid β] : Prop where
   lipschitz_add : ∃ C, LipschitzWith C fun p : β × β => p.1 + p.2
 #align has_lipschitz_add LipschitzAdd
 
-/-- Class `has_lipschitz_mul M` says that the multiplication `(*) : X × X → X` is Lipschitz jointly
+/-- Class `LipschitzMul M` says that the multiplication `(*) : X × X → X` is Lipschitz jointly
 in the two arguments. -/
 @[to_additive]
 class LipschitzMul [Monoid β] : Prop where
@@ -105,7 +105,7 @@ instance MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
 #align mul_opposite.has_lipschitz_mul MulOpposite.lipschitzMul
 #align add_opposite.has_lipschitz_add AddOpposite.lipschitzAdd
 
--- this instance could be deduced from `normed_add_comm_group.has_lipschitz_add`, but we prove it
+-- this instance could be deduced from `NormedAddCommGroup.lipschitzAdd`, but we prove it
 -- separately here so that it is available earlier in the hierarchy
 instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
   lipschitz_add := ⟨2, LipschitzWith.of_dist_le_mul <| fun p q => by
@@ -115,7 +115,7 @@ instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
     exact add_le_add (le_max_left _ _) (le_max_right _ _)⟩
 #align real.has_lipschitz_add Real.hasLipschitzAdd
 
--- this instance has the same proof as `add_submonoid.has_lipschitz_add`, but the former can't
+-- this instance has the same proof as `AddSubmonoid.lipschitzAdd`, but the former can't
 -- directly be applied here since `ℝ≥0` is a subtype of `ℝ`, not an additive submonoid.
 instance NNReal.hasLipschitzAdd : LipschitzAdd ℝ≥0 where
   lipschitz_add := ⟨LipschitzAdd.C ℝ, by
@@ -125,7 +125,7 @@ instance NNReal.hasLipschitzAdd : LipschitzAdd ℝ≥0 where
 
 end LipschitzMul
 
-section BoundedSmul
+section BoundedSMul
 
 variable [Zero α] [Zero β] [SMul α β]
 
@@ -133,26 +133,25 @@ variable [Zero α] [Zero β] [SMul α β]
 distinguished points `0`, requiring compatibility of the action in the sense that
 `dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂` and
 `dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0`. -/
-class BoundedSmul : Prop where
+class BoundedSMul : Prop where
   dist_smul_pair' : ∀ x : α, ∀ y₁ y₂ : β, dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂
   dist_pair_smul' : ∀ x₁ x₂ : α, ∀ y : β, dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0
-#align has_bounded_smul BoundedSmul
+#align has_bounded_smul BoundedSMul
 
 variable {α β}
-variable [BoundedSmul α β]
+variable [BoundedSMul α β]
 
 theorem dist_smul_pair (x : α) (y₁ y₂ : β) : dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂ :=
-  BoundedSmul.dist_smul_pair' x y₁ y₂
+  BoundedSMul.dist_smul_pair' x y₁ y₂
 #align dist_smul_pair dist_smul_pair
 
 theorem dist_pair_smul (x₁ x₂ : α) (y : β) : dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0 :=
-  BoundedSmul.dist_pair_smul' x₁ x₂ y
+  BoundedSMul.dist_pair_smul' x₁ x₂ y
 #align dist_pair_smul dist_pair_smul
 
 -- see Note [lower instance priority]
-/-- The typeclass `has_bounded_smul` on a metric-space scalar action implies continuity of the
-action. -/
-instance (priority := 100) BoundedSmul.continuousSMul : ContinuousSMul α β where
+/-- The typeclass `BoundedSMul` on a metric-space scalar action implies continuity of the action. -/
+instance (priority := 100) BoundedSMul.continuousSMul : ContinuousSMul α β where
   continuous_smul := by
     rw [Metric.continuous_iff]
     rintro ⟨a, b⟩ ε ε0
@@ -170,30 +169,30 @@ instance (priority := 100) BoundedSmul.continuousSMul : ContinuousSMul α β whe
           have : dist b' 0 ≤ δ + dist b 0 := (dist_triangle _ _ _).trans <| add_le_add_right hb.le _
           mono* <;> apply_rules [dist_nonneg, le_of_lt]
       _ < ε := hδε
-#align has_bounded_smul.has_continuous_smul BoundedSmul.continuousSMul
+#align has_bounded_smul.has_continuous_smul BoundedSMul.continuousSMul
 
--- this instance could be deduced from `normed_space.has_bounded_smul`, but we prove it separately
+-- this instance could be deduced from `NormedSpace.boundedSMul`, but we prove it separately
 -- here so that it is available earlier in the hierarchy
-instance Real.hasBoundedSmul : BoundedSmul ℝ ℝ where
+instance Real.boundedSMul : BoundedSMul ℝ ℝ where
   dist_smul_pair' x y₁ y₂ := by simpa [Real.dist_eq, mul_sub] using (abs_mul x (y₁ - y₂)).le
   dist_pair_smul' x₁ x₂ y := by simpa [Real.dist_eq, sub_mul] using (abs_mul (x₁ - x₂) y).le
-#align real.has_bounded_smul Real.hasBoundedSmul
+#align real.has_bounded_smul Real.boundedSMul
 
-instance NNReal.hasBoundedSmul : BoundedSmul ℝ≥0 ℝ≥0 where
+instance NNReal.boundedSMul : BoundedSMul ℝ≥0 ℝ≥0 where
   dist_smul_pair' x y₁ y₂ := by convert dist_smul_pair (x : ℝ) (y₁ : ℝ) y₂ using 1
   dist_pair_smul' x₁ x₂ y := by convert dist_pair_smul (x₁ : ℝ) x₂ (y : ℝ) using 1
-#align nnreal.has_bounded_smul NNReal.hasBoundedSmul
+#align nnreal.has_bounded_smul NNReal.boundedSMul
 
 /-- If a scalar is central, then its right action is bounded when its left action is. -/
-instance BoundedSmul.op [SMul αᵐᵒᵖ β] [IsCentralScalar α β] : BoundedSmul αᵐᵒᵖ β where
+instance BoundedSMul.op [SMul αᵐᵒᵖ β] [IsCentralScalar α β] : BoundedSMul αᵐᵒᵖ β where
   dist_smul_pair' :=
     MulOpposite.rec' fun x y₁ y₂ => by simpa only [op_smul_eq_smul] using dist_smul_pair x y₁ y₂
   dist_pair_smul' :=
     MulOpposite.rec' fun x₁ =>
       MulOpposite.rec' fun x₂ y => by simpa only [op_smul_eq_smul] using dist_pair_smul x₁ x₂ y
-#align has_bounded_smul.op BoundedSmul.op
+#align has_bounded_smul.op BoundedSMul.op
 
-end BoundedSmul
+end BoundedSMul
 
 instance [Monoid α] [LipschitzMul α] : LipschitzAdd (Additive α) :=
   ⟨@LipschitzMul.lipschitz_mul α _ _ _⟩
@@ -204,4 +203,3 @@ instance [AddMonoid α] [LipschitzAdd α] : LipschitzMul (Multiplicative α) :=
 @[to_additive]
 instance [Monoid α] [LipschitzMul α] : LipschitzMul αᵒᵈ :=
   ‹LipschitzMul α›
-

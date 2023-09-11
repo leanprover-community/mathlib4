@@ -51,7 +51,7 @@ instance : Inhabited (Tree α) :=
 
 open Std (RBNode)
 
-/-- Makes a `tree α` out of a red-black tree. -/
+/-- Makes a `Tree α` out of a red-black tree. -/
 def ofRBNode : RBNode α → Tree α
   | RBNode.nil => nil
   | RBNode.node _color l key r => node key (ofRBNode l) (ofRBNode r)
@@ -88,8 +88,8 @@ def getOrElse (n : PosNum) (t : Tree α) (v : α) : α :=
   (t.get n).getD v
 #align tree.get_or_else Tree.getOrElse
 
-/-- Apply a function to each value in the tree.  This is the `map` function for the `tree` functor.
-TODO: implement `traversable tree`. -/
+/-- Apply a function to each value in the tree.  This is the `map` function for the `Tree` functor.
+TODO: implement `Traversable Tree`. -/
 def map {β} (f : α → β) : Tree α → Tree β
   | nil => nil
   | node a l r => node (f a) (map f l) (map f r)
@@ -147,7 +147,6 @@ def right : Tree α → Tree α
   | node _ _l r => r
 #align tree.right Tree.right
 
--- mathport name: «expr △ »
 -- Notation for making a node with `Unit` data
 scoped infixr:65 " △ " => Tree.node ()
 

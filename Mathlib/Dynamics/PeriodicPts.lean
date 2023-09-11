@@ -518,7 +518,7 @@ theorem periodicOrbit_eq_nil_of_not_periodic_pt (h : x ∉ periodicPts f) :
 @[simp]
 theorem mem_periodicOrbit_iff (hx : x ∈ periodicPts f) :
     y ∈ periodicOrbit f x ↔ ∃ n, (f^[n]) x = y := by
-  simp only [periodicOrbit, Cycle.mem_coe_iff, List.mem_map', List.mem_range]
+  simp only [periodicOrbit, Cycle.mem_coe_iff, List.mem_map, List.mem_range]
   use fun ⟨a, _, ha'⟩ => ⟨a, ha'⟩
   rintro ⟨n, rfl⟩
   use n % minimalPeriod f x, mod_lt _ (minimalPeriod_pos_of_mem_periodicPts hx)

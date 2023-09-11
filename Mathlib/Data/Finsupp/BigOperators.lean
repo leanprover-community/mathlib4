@@ -93,7 +93,7 @@ theorem List.support_sum_eq [AddMonoid M] (l : List (ι →₀ M))
     · rw [← List.foldr_map, ← Finset.bot_eq_empty, List.foldr_sup_eq_sup_toFinset,
         Finset.disjoint_sup_right]
       intro f hf
-      simp only [List.mem_toFinset, List.mem_map'] at hf
+      simp only [List.mem_toFinset, List.mem_map] at hf
       obtain ⟨f, hf, rfl⟩ := hf
       exact hl.left _ hf
 #align list.support_sum_eq List.support_sum_eq

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 
 ! This file was ported from Lean 3 source module data.set.pointwise.smul
-! leanprover-community/mathlib commit 7b78d1776212a91ecc94cf601f83bdcc46b04213
+! leanprover-community/mathlib commit 517cc149e0b515d2893baa376226ed10feb319c7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -699,6 +699,20 @@ theorem vsub_interᵢ₂_subset (s : Set β) (t : ∀ i, κ i → Set β) :
 end VSub
 
 open Pointwise
+
+@[to_additive]
+theorem image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : Set β) :
+    (∀ b, f (a • b) = a • f b) → f '' (a • s) = a • f '' s :=
+  image_comm
+#align set.image_smul_comm Set.image_smul_comm
+#align set.image_vadd_comm Set.image_vadd_comm
+
+@[to_additive]
+theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] (f : F) (a : α)
+    (s : Set α) : f '' (a • s) = f a • f '' s :=
+  image_comm <| map_mul _ _
+#align set.image_smul_distrib Set.image_smul_distrib
+#align set.image_vadd_distrib Set.image_vadd_distrib
 
 section SMulWithZero
 

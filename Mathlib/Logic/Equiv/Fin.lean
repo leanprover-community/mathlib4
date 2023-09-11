@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 
 ! This file was ported from Lean 3 source module logic.equiv.fin
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
+! leanprover-community/mathlib commit bd835ef554f37ef9b804f0903089211f89cb370b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Logic.Equiv.Defs
 
 /-!
@@ -490,6 +491,41 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
 #align fin_prod_fin_equiv finProdFinEquiv
 #align fin_prod_fin_equiv_apply_val finProdFinEquiv_apply_val
 #align fin_prod_fin_equiv_symm_apply finProdFinEquiv_symm_apply
+
+/-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
+This is like `finProdFinEquiv.symm` but with `m` infinite.
+See `Nat.div_mod_unique` for a similar propositional statement. -/
+@[simps]
+def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
+  toFun a := (a / n, ↑a)
+  invFun p := p.1 * n + ↑p.2
+  -- TODO: is there a canonical order of `*` and `+` here?
+  left_inv a := Nat.div_add_mod' _ _
+  right_inv p := by
+    refine' Prod.ext _ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
+    dsimp only
+    rw [add_comm, Nat.add_mul_div_right _ _ (NeZero.pos n), Nat.div_eq_of_lt p.2.is_lt, zero_add]
+#align nat.div_mod_equiv Nat.divModEquiv
+
+/-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
+See `Int.ediv_emod_unique` for a similar propositional statement. -/
+@[simps]
+def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
+  -- TODO: could cast from int directly if we import `data.zmod.defs`, though there are few lemmas
+  -- about that coercion.
+  toFun a := (a / n, ↑(a.natMod n))
+  invFun p := p.1 * n + ↑p.2
+  left_inv a := by
+    simp_rw [Fin.coe_ofNat_eq_mod, Int.coe_nat_mod, Int.natMod,
+      Int.toNat_of_nonneg (Int.emod_nonneg _ <| NeZero.ne ↑n), Int.emod_emod,
+      Int.ediv_add_emod']
+  right_inv := fun ⟨q, r, hrn⟩ => by
+    simp only [Fin.val_mk, Prod.mk.inj_iff, Fin.ext_iff]
+    obtain ⟨h1, h2⟩ := Int.coe_nat_nonneg r, Int.ofNat_lt.2 hrn
+    rw [add_comm, Int.add_mul_ediv_right _ _ (NeZero.ne ↑n), Int.ediv_eq_zero_of_lt h1 h2,
+      Int.natMod, Int.add_mul_emod_self, Int.emod_eq_of_lt h1 h2, Int.toNat_coe_nat]
+    exact ⟨zero_add q, Fin.val_cast_of_lt hrn⟩
+#align int.div_mod_equiv Int.divModEquiv
 
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
 values are retained. This is the `OrderIso` version of `Fin.castLe`. -/

@@ -66,18 +66,19 @@ namespace Submodule
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-instance : SetLike (Submodule R M) M
-    where
+instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+#align submodule.set_like Submodule.setLike
 
-instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M
-    where
+instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
   zero_mem _ := AddSubmonoid.zero_mem' _
   add_mem := AddSubsemigroup.add_mem' _
+#align submodule.add_submonoid_class Submodule.addSubmonoidClass
 
-instance : SubmoduleClass (Submodule R M) R M where
+instance submoduleClass : SubmoduleClass (Submodule R M) R M where
   smul_mem {s} c _ h := SubMulAction.smul_mem' s.toSubMulAction c h
+#align submodule.submodule_class Submodule.submoduleClass
 
 @[simp]
 theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid ↔ x ∈ p :=
@@ -115,8 +116,7 @@ theorem carrier_inj : p.carrier = q.carrier ↔ p = q :=
 
 /-- Copy of a submodule with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M
-    where
+protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M where
   carrier := s
   zero_mem' := by simpa [hs] using p.zero_mem'
   add_mem' := hs.symm ▸ p.add_mem'
@@ -264,29 +264,35 @@ theorem smul_mem_iff' [Group G] [MulAction G M] [SMul G R] [IsScalarTower G R M]
   p.toSubMulAction.smul_mem_iff' g
 #align submodule.smul_mem_iff' Submodule.smul_mem_iff'
 
-instance : Add p :=
+instance add : Add p :=
   ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩
+#align submodule.has_add Submodule.add
 
-instance : Zero p :=
+instance zero : Zero p :=
   ⟨⟨0, zero_mem _⟩⟩
+#align submodule.has_zero Submodule.zero
 
-instance : Inhabited p :=
+instance inhabited : Inhabited p :=
   ⟨0⟩
+#align submodule.inhabited Submodule.inhabited
 
-instance [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S p :=
+instance smul [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S p :=
   ⟨fun c x => ⟨c • x.1, smul_of_tower_mem _ c x.2⟩⟩
+#align submodule.has_smul Submodule.smul
 
-instance [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTower S R p :=
+instance isScalarTower [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTower S R p :=
   p.toSubMulAction.isScalarTower
+#align submodule.is_scalar_tower Submodule.isScalarTower
 
 instance isScalarTower' {S' : Type _} [SMul S R] [SMul S M] [SMul S' R] [SMul S' M] [SMul S S']
     [IsScalarTower S' R M] [IsScalarTower S S' M] [IsScalarTower S R M] : IsScalarTower S S' p :=
   p.toSubMulAction.isScalarTower'
 #align submodule.is_scalar_tower' Submodule.isScalarTower'
 
-instance [SMul S R] [SMul S M] [IsScalarTower S R M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M]
+instance isCentralScalar [SMul S R] [SMul S M] [IsScalarTower S R M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M]
     [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] : IsCentralScalar S p :=
   p.toSubMulAction.isCentralScalar
+#align submodule.is_central_scalar Submodule.isCentralScalar
 
 protected theorem nonempty : (p : Set M).Nonempty :=
   ⟨0, p.zero_mem⟩
@@ -337,10 +343,11 @@ theorem coe_mem (x : p) : (x : M) ∈ p :=
 
 variable (p)
 
-instance : AddCommMonoid p :=
+instance addCommMonoid : AddCommMonoid p :=
   { p.toAddSubmonoid.toAddCommMonoid with
     add := (· + ·)
     zero := 0 }
+#align submodule.add_comm_monoid Submodule.addCommMonoid
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
   { (show MulAction S p from p.toSubMulAction.mulAction') with
@@ -353,8 +360,9 @@ instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Mo
     smul_add := fun a x y => Subtype.ext (smul_add a (x : M) (y : M)) }
 #align submodule.module' Submodule.module'
 
-instance : Module R p :=
+instance module : Module R p :=
   p.module'
+#align submodule.module Submodule.module
 
 instance noZeroSMulDivisors [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R p :=
   ⟨fun {c} {x : p} h =>
@@ -392,8 +400,7 @@ variable (S) [Semiring S] [Module S M] [Module R M] [SMul S R] [IsScalarTower S 
 /-- `V.restrict_scalars S` is the `S`-submodule of the `S`-module given by restriction of scalars,
 corresponding to `V`, an `R`-submodule of the original `R`-module.
 -/
-def restrictScalars (V : Submodule R M) : Submodule S M
-    where
+def restrictScalars (V : Submodule R M) : Submodule S M where
   carrier := V
   zero_mem' := V.zero_mem
   smul_mem' c _ h := V.smul_of_tower_mem c h
@@ -433,14 +440,15 @@ instance restrictScalars.origModule (p : Submodule R M) : Module R (p.restrictSc
   (by infer_instance : Module R p)
 #align submodule.restrict_scalars.orig_module Submodule.restrictScalars.origModule
 
-instance (p : Submodule R M) : IsScalarTower S R (p.restrictScalars S)
-    where smul_assoc r s x := Subtype.ext <| smul_assoc r s (x : M)
+instance restrictScalars.isScalarTower (p : Submodule R M) :
+    IsScalarTower S R (p.restrictScalars S) where
+  smul_assoc r s x := Subtype.ext <| smul_assoc r s (x : M)
+#align submodule.restrict_scalars.is_scalar_tower Submodule.restrictScalars.isScalarTower
 
 /-- `restrictScalars S` is an embedding of the lattice of `R`-submodules into
 the lattice of `S`-submodules. -/
 @[simps]
-def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M
-    where
+def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
   toFun := restrictScalars S
   inj' := restrictScalars_injective S R M
   map_rel_iff' := by simp [SetLike.le_def]
@@ -472,8 +480,9 @@ variable (p p' : Submodule R M)
 
 variable {r : R} {x y : M}
 
-instance [Module R M] : AddSubgroupClass (Submodule R M) M :=
+instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
   { Submodule.addSubmonoidClass with neg_mem := fun p {_} => p.toSubMulAction.neg_mem }
+#align submodule.add_subgroup_class Submodule.addSubgroupClass
 
 protected theorem neg_mem (hx : x ∈ p) : -x ∈ p :=
   neg_mem hx
@@ -549,11 +558,12 @@ theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
 #align submodule.sub_mem_iff_right Submodule.sub_mem_iff_right
 
-instance : AddCommGroup p :=
+instance addCommGroup : AddCommGroup p :=
   { p.toAddSubgroup.toAddCommGroup with
     add := (· + ·)
     zero := 0
     neg := Neg.neg }
+#align submodule.add_comm_group Submodule.addCommGroup
 
 end AddCommGroup
 

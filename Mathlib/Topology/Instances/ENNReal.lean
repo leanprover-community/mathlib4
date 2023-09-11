@@ -387,7 +387,8 @@ protected theorem Tendsto.mul_const {f : Filter α} {m : α → ℝ≥0∞} {a b
 theorem tendsto_finset_prod_of_ne_top {ι : Type _} {f : ι → α → ℝ≥0∞} {x : Filter α} {a : ι → ℝ≥0∞}
     (s : Finset ι) (h : ∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) (h' : ∀ i ∈ s, a i ≠ ∞) :
     Tendsto (fun b => ∏ c in s, f c b) x (𝓝 (∏ c in s, a c)) := by
-  induction' s using Finset.induction with a s has IH; · simp [tendsto_const_nhds]
+  induction' s using Finset.induction with a s has IH
+  · simp [tendsto_const_nhds]
   simp only [Finset.prod_insert has]
   apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))
   · right
@@ -1488,7 +1489,8 @@ namespace Real
 `ℝ≥0∞`. -/
 theorem ediam_eq {s : Set ℝ} (h : Bounded s) :
     EMetric.diam s = ENNReal.ofReal (supₛ s - infₛ s) := by
-  rcases eq_empty_or_nonempty s with (rfl | hne); · simp
+  rcases eq_empty_or_nonempty s with (rfl | hne)
+  · simp
   refine' le_antisymm (Metric.ediam_le_of_forall_dist_le fun x hx y hy => _) _
   · have := Real.subset_Icc_infₛ_supₛ_of_bounded h
     exact Real.dist_le_of_mem_Icc (this hx) (this hy)
@@ -1570,5 +1572,3 @@ theorem edist_le_tsum_of_edist_le_of_tendsto₀ {f : ℕ → α} (d : ℕ → �
 #align edist_le_tsum_of_edist_le_of_tendsto₀ edist_le_tsum_of_edist_le_of_tendsto₀
 
 end
-
---section

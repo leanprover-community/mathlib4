@@ -1408,4 +1408,3 @@ theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)
 end Algebra
 
 end CommRing
-#lint

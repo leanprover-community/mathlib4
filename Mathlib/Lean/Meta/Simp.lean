@@ -179,9 +179,11 @@ def simpTheoremsOfNames (lemmas : List Name) : MetaM SimpTheorems := do
 -- TODO We need to write a `mkSimpContext` in `MetaM`
 -- that supports all the bells and whistles in `simp`.
 -- It should generalize this, and another partial implementation in `Tactic.Simps.Basic`.
-def simpOnlyNames (lemmas : List Name) (e : Expr) : MetaM Simp.Result := do
+def simpOnlyNames (lemmas : List Name) (e : Expr) (config : Simp.Config := {}) :
+    MetaM Simp.Result := do
   (·.1) <$> simp e
-    { simpTheorems := #[← simpTheoremsOfNames lemmas], congrTheorems := ← getSimpCongrTheorems }
+    { simpTheorems := #[← simpTheoremsOfNames lemmas], congrTheorems := ← getSimpCongrTheorems,
+      config := config }
 
 /--
 Given a simplifier `S : Expr → MetaM Simp.Result`,
@@ -193,6 +195,22 @@ def simpType (S : Expr → MetaM Simp.Result) (e : Expr) : MetaM Expr := do
   | ⟨ty', none, _⟩ => mkExpectedTypeHint e ty'
   -- We use `mkExpectedTypeHint` in this branch as well, in order to preserve the binder types.
   | ⟨ty', some prf, _⟩ => mkExpectedTypeHint (← mkEqMP prf e) ty'
+
+/-- Independently simplify both the left-hand side and the right-hand side
+of an equality. The equality is allowed to be under binders.
+Returns the simplified equality and a proof of it. -/
+def simpEq (S : Expr → MetaM Simp.Result) (type pf : Expr) : MetaM (Expr × Expr) := do
+  forallTelescope type fun fvars type => do
+    let .app (.app (.app (.const `Eq [u]) α) lhs) rhs := type | throwError "simpEq expecting Eq"
+    let ⟨lhs', lhspf?, _⟩ ← S lhs
+    let ⟨rhs', rhspf?, _⟩ ← S rhs
+    let mut pf' := mkAppN pf fvars
+    if let some lhspf := lhspf? then
+      pf' ← mkEqTrans (← mkEqSymm lhspf) pf'
+    if let some rhspf := rhspf? then
+      pf' ← mkEqTrans pf' rhspf
+    let type' := mkApp3 (mkConst ``Eq [u]) α lhs' rhs'
+    return (← mkForallFVars fvars type', ← mkLambdaFVars fvars pf')
 
 /-- Checks whether `declName` is in `SimpTheorems` as either a lemma or definition to unfold. -/
 def SimpTheorems.contains (d : SimpTheorems) (declName : Name) :=

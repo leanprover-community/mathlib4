@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.cast.basic
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit acebd8d49928f6ed8920e502a6c90674e75bd441
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -296,22 +296,6 @@ theorem Nat.castRingHom_nat : Nat.castRingHom ℕ = RingHom.id ℕ :=
 instance Nat.uniqueRingHom {R : Type _} [NonAssocSemiring R] : Unique (ℕ →+* R) where
   default := Nat.castRingHom R
   uniq := RingHom.eq_natCast'
-
-namespace MulOpposite
-
-variable [AddMonoidWithOne α]
-
-@[simp, norm_cast]
-theorem op_natCast (n : ℕ) : op (n : α) = n :=
-  rfl
-#align mul_opposite.op_nat_cast MulOpposite.op_natCast
-
-@[simp, norm_cast]
-theorem unop_natCast (n : ℕ) : unop (n : αᵐᵒᵖ) = n :=
-  rfl
-#align mul_opposite.unop_nat_cast MulOpposite.unop_natCast
-
-end MulOpposite
 
 namespace Pi
 

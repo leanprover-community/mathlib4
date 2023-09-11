@@ -792,8 +792,8 @@ See the documentation on the `congr!` syntax.
 
 The `depth?` argument controls the depth of the recursion. If `none`, then it uses a reasonably
 large bound that is linear in the expression depth. -/
-def Lean.MVarId.congrN! (mvarId : MVarId) (depth? : Option Nat) (config : Congr!.Config := {}) :
-    MetaM (List MVarId) := do
+def Lean.MVarId.congrN! (mvarId : MVarId)
+    (depth? : Option Nat := none) (config : Congr!.Config := {}) : MetaM (List MVarId) := do
   let ty ← withReducible <| mvarId.getType'
   -- A reasonably large yet practically bounded default recursion depth.
   let defaultDepth := max 1000000 (8 * (1 + ty.approxDepth.toNat))

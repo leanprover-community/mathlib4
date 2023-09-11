@@ -575,7 +575,7 @@ theorem exists_list_of_mem_closure {s : Set G} {a : G} (h : a ∈ closure s) :
     ⟨[], List.forall_mem_nil _, rfl⟩
     (fun {x} _ ⟨L, HL1, HL2⟩ =>
       ⟨L.reverse.map Inv.inv, fun x hx =>
-        let ⟨y, hy1, hy2⟩ := List.exists_of_mem_map' hx
+        let ⟨y, hy1, hy2⟩ := List.exists_of_mem_map hx
         hy2 ▸ Or.imp id (by rw [inv_inv]; exact id) (HL1 _ <| List.mem_reverse'.1 hy1).symm,
         HL2 ▸
           List.recOn L inv_one.symm fun hd tl ih => by

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.mv_polynomial.basic
-! leanprover-community/mathlib commit 65902a4a1a39ff6fdfb657a35dde2579dbb4a155
+! leanprover-community/mathlib commit 2d5739b61641ee4e7e53eca5688a08f66f2e6a60
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -455,7 +455,7 @@ theorem ringHom_ext {A : Type _} [Semiring A] {f g : MvPolynomial σ R →+* A}
 #align mv_polynomial.ring_hom_ext MvPolynomial.ringHom_ext
 
 /-- See note [partially-applied ext lemmas]. -/
-@[ext 1001]
+@[ext 1100]
 theorem ringHom_ext' {A : Type _} [Semiring A] {f g : MvPolynomial σ R →+* A}
     (hC : f.comp C = g.comp C) (hX : ∀ i, f (X i) = g (X i)) : f = g :=
   ringHom_ext (RingHom.ext_iff.1 hC) hX
@@ -471,7 +471,7 @@ theorem is_id (f : MvPolynomial σ R →+* MvPolynomial σ R) (hC : f.comp C = C
   hom_eq_hom f (RingHom.id _) hC hX p
 #align mv_polynomial.is_id MvPolynomial.is_id
 
-@[ext 1001]
+@[ext 1100]
 theorem algHom_ext' {A B : Type _} [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B]
     {f g : MvPolynomial σ A →ₐ[R] B}
     (h₁ :
@@ -481,7 +481,7 @@ theorem algHom_ext' {A B : Type _} [CommSemiring A] [CommSemiring B] [Algebra R 
   AlgHom.coe_ringHom_injective (MvPolynomial.ringHom_ext' (congr_arg AlgHom.toRingHom h₁) h₂)
 #align mv_polynomial.alg_hom_ext' MvPolynomial.algHom_ext'
 
-@[ext 1002]
+@[ext 1200]
 theorem algHom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : MvPolynomial σ R →ₐ[R] A}
     (hf : ∀ i : σ, f (X i) = g (X i)) : f = g :=
   AddMonoidAlgebra.algHom_ext' (mulHom_ext' fun X : σ => MonoidHom.ext_mnat (hf X))
@@ -1382,6 +1382,10 @@ section Aeval
 variable [Algebra R S₁] [CommSemiring S₂]
 
 variable (f : σ → S₁)
+
+theorem algebraMap_apply (r : R) :
+  algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
+#align mv_polynomial.algebra_map_apply MvPolynomial.algebraMap_apply
 
 /-- A map `σ → S₁` where `S₁` is an algebra over `R` generates an `R`-algebra homomorphism
 from multivariate polynomials over `σ` to `S₁`. -/

@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 Ported by: Jon Eugster
 
 ! This file was ported from Lean 3 source module algebra.order.monoid.with_top
-! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
+! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -15,7 +15,8 @@ import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
 
-/-! # Adjoining top/bottom elements to ordered monoids. -/
+/-! # Adjoining top/bottom elements to ordered monoids.
+-/
 
 universe u v
 
@@ -46,6 +47,18 @@ theorem coe_eq_one {a : α} : (a : WithTop α) = 1 ↔ a = 1 :=
   coe_eq_coe
 #align with_top.coe_eq_one WithTop.coe_eq_one
 #align with_top.coe_eq_zero WithTop.coe_eq_zero
+
+@[to_additive (attr := simp)]
+theorem untop_one : (1 : WithTop α).untop coe_ne_top = 1 :=
+  rfl
+#align with_top.untop_one WithTop.untop_one
+#align with_top.untop_zero WithTop.untop_zero
+
+@[to_additive (attr := simp)]
+theorem untop_one' (d : α) : (1 : WithTop α).untop' d = 1 :=
+  rfl
+#align with_top.untop_one' WithTop.untop_one'
+#align with_top.untop_zero' WithTop.untop_zero'
 
 @[to_additive (attr := simp, norm_cast) coe_nonneg]
 theorem one_le_coe [LE α] {a : α} : 1 ≤ (a : WithTop α) ↔ 1 ≤ a :=
@@ -479,6 +492,18 @@ theorem coe_eq_one [One α] {a : α} : (a : WithBot α) = 1 ↔ a = 1 :=
   WithTop.coe_eq_one
 #align with_bot.coe_eq_one WithBot.coe_eq_one
 #align with_bot.coe_eq_zero WithBot.coe_eq_zero
+
+@[to_additive (attr := simp)]
+theorem unbot_one [One α] : (1 : WithBot α).unbot coe_ne_bot = 1 :=
+  rfl
+#align with_bot.unbot_one WithBot.unbot_one
+#align with_bot.unbot_zero WithBot.unbot_zero
+
+@[to_additive (attr := simp)]
+theorem unbot_one' [One α] (d : α) : (1 : WithBot α).unbot' d = 1 :=
+  rfl
+#align with_bot.unbot_one' WithBot.unbot_one'
+#align with_bot.unbot_zero' WithBot.unbot_zero'
 
 @[to_additive (attr := simp, norm_cast) coe_nonneg]
 theorem one_le_coe [One α] [LE α] {a : α} : 1 ≤ (a : WithBot α) ↔ 1 ≤ a :=

@@ -83,7 +83,9 @@ theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a 
 #align multiset.nodup_iff_ne_cons_cons Multiset.nodup_iff_ne_cons_cons
 
 theorem nodup_iff_count_le_one [DecidableEq α] {s : Multiset α} : Nodup s ↔ ∀ a, count a s ≤ 1 :=
-  Quot.induction_on s fun _l => List.nodup_iff_count_le_one
+  Quot.induction_on s fun _l => by
+    simp only [quot_mk_to_coe'', coe_nodup, mem_coe, coe_count]
+    apply List.nodup_iff_count_le_one
 #align multiset.nodup_iff_count_le_one Multiset.nodup_iff_count_le_one
 
 @[simp]

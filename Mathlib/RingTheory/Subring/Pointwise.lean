@@ -13,7 +13,7 @@ import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.Data.Set.Pointwise.Basic
 
-/-! # Pointwise instances on `subring`s
+/-! # Pointwise instances on `Subring`s
 
 This file provides the action `Subring.pointwiseMulAction` which matches the action of
 `mulActionSet`.
@@ -41,8 +41,7 @@ variable [Monoid M] [Ring R] [MulSemiringAction M R]
 /-- The action on a subring corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseMulAction : MulAction M (Subring R)
-    where
+protected def pointwiseMulAction : MulAction M (Subring R) where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
   one_smul S := (congr_arg (fun f => S.map f) (RingHom.ext <| one_smul M)).trans S.map_id
   mul_smul _ _ S :=
@@ -138,7 +137,7 @@ theorem subset_pointwise_smul_iff {a : M} {S T : Subring R} : S ≤ a • T ↔ 
   subset_set_smul_iff
 #align subring.subset_pointwise_smul_iff Subring.subset_pointwise_smul_iff
 
-/-! TODO: add `equiv_smul` like we have for subgroup. -/
+/-! TODO: add `equivSMul` like we have for subgroup. -/
 
 
 end Group
