@@ -73,12 +73,17 @@ theorem map_fundamentalDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K 
     show f.symm x = f.toEquiv.symm x by rfl, ← Set.mem_image_equiv]
   rfl
 
+@[simp]
 theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
-    fundamentalDomain b = fundamentalDomain (b.reindex e) := by
+    fundamentalDomain (b.reindex e) = fundamentalDomain b := by
   ext
   simp_rw [mem_fundamentalDomain, Basis.repr_reindex_apply]
   rw [Equiv.forall_congr' e]
   simp_rw [implies_true]
+
+lemma fundamentalDomain_pi_basisFun [Fintype ι] :
+    fundamentalDomain (Pi.basisFun ℝ ι) = Set.pi Set.univ fun _ : ι ↦ Set.Ico (0 : ℝ) 1 := by
+  ext; simp
 
 variable [FloorRing K]
 
@@ -327,12 +332,10 @@ theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace
     ext
     simp [Basis.toMatrix_apply, LinearMap.toMatrix_apply, LinearEquiv.coe_coe, Basis.equiv_apply]
 
+@[simp]
 theorem volume_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ (ι → ℝ)) :
     volume (fundamentalDomain b) = ENNReal.ofReal |(Matrix.of b).det| := by
-  rw [measure_fundamentalDomain b volume (b₀ := Pi.basisFun ℝ ι),
-    show fundamentalDomain (Pi.basisFun ℝ ι) = Set.pi Set.univ fun _ : ι => Set.Ico (0 : ℝ) 1 by
-      ext; simp only [mem_fundamentalDomain, Pi.basisFun_repr, Set.mem_Ico, Set.mem_pi,
-        Set.mem_univ, forall_true_left],
+  rw [measure_fundamentalDomain b volume (b₀ := Pi.basisFun ℝ ι), fundamentalDomain_pi_basisFun,
     volume_pi, Measure.pi_pi, Real.volume_Ico, sub_zero, ENNReal.ofReal_one, Finset.prod_const_one,
     mul_one, ← Matrix.det_transpose]
   rfl
