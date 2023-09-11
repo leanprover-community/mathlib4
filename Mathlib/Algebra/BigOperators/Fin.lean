@@ -204,7 +204,7 @@ theorem prod_univ_add {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) �
 @[to_additive]
 theorem prod_trunc {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M)
     (hf : ∀ j : Fin b, f (natAdd a j) = 1) :
-    (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castLe (Nat.le.intro rfl) i) := by
+    (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castLE (Nat.le.intro rfl) i) := by
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
   rfl
 #align fin.prod_trunc Fin.prod_trunc

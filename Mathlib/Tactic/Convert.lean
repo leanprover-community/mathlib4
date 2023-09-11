@@ -97,7 +97,7 @@ elab_rules : tactic
 | `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]?) => withMainContext do
   let config ← Congr!.elabConfig (mkOptionalNode cfg)
   let (e, gs) ← elabTermWithHoles (allowNaturalHoles := true) term
-    (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) (← getMainTag)
+    (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) `convert
   liftMetaTactic fun g ↦ return (← g.convert e sym.isSome (n.map (·.getNat)) config) ++ gs
 
 -- FIXME restore when `add_tactic_doc` is ported.

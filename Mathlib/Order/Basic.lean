@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module order.basic
-! leanprover-community/mathlib commit de87d5053a9fe5cbde723172c0fb7e27e7436473
+! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -383,6 +383,10 @@ theorem le_iff_eq_or_lt [PartialOrder α] {a b : α} : a ≤ b ↔ a = b ∨ a <
 theorem lt_iff_le_and_ne [PartialOrder α] {a b : α} : a < b ↔ a ≤ b ∧ a ≠ b :=
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
 #align lt_iff_le_and_ne lt_iff_le_and_ne
+
+theorem eq_iff_not_lt_of_le {α} [PartialOrder α] {x y : α} : x ≤ y → y = x ↔ ¬x < y := by
+  rw [lt_iff_le_and_ne, not_and, Classical.not_not, eq_comm]
+#align eq_iff_not_lt_of_le eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
 protected theorem Decidable.eq_iff_le_not_lt [PartialOrder α] [@DecidableRel α (· ≤ ·)] {a b : α} :

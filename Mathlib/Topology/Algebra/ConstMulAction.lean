@@ -45,8 +45,6 @@ Hausdorff, discrete group, properly discontinuous, quotient space
 
 open Topology Pointwise Filter Set TopologicalSpace
 
-attribute [local instance] MulAction.orbitRel
-
 /-- Class `ContinuousConstSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is continuous in the second argument. We use the same class for all kinds of multiplicative
 actions, including (semi)modules and algebras.
@@ -486,6 +484,7 @@ export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
 @[to_additive "The quotient map by a group action is open, i.e. the quotient by a group
 action is an open quotient. "]
 theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
+    letI := MulAction.orbitRel Γ T
     IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := fun U hU => by
   rw [isOpen_coinduced, MulAction.quotient_preimage_image_eq_union_mul U]
   exact isOpen_unionᵢ fun γ => isOpenMap_smul γ U hU
@@ -498,6 +497,7 @@ space is t2."]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Space T]
     [LocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
     T2Space (Quotient (MulAction.orbitRel Γ T)) := by
+  letI := MulAction.orbitRel Γ T
   set Q := Quotient (MulAction.orbitRel Γ T)
   rw [t2Space_iff_nhds]
   let f : T → Q := Quotient.mk'

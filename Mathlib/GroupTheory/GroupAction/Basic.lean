@@ -282,8 +282,6 @@ def orbitRel : Setoid β where
 #align mul_action.orbit_rel MulAction.orbitRel
 #align add_action.orbit_rel AddAction.orbitRel
 
-attribute [local instance] orbitRel
-
 variable {α} {β}
 
 /-- When you take a set `U` in `β`, push it down to the quotient, and pull back, you get the union
@@ -292,7 +290,9 @@ of the orbit of `U` under `α`. -/
       "When you take a set `U` in `β`, push it down to the quotient, and pull back, you get the
       union of the orbit of `U` under `α`."]
 theorem quotient_preimage_image_eq_union_mul (U : Set β) :
+    letI := orbitRel α β
     Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ a : α, (· • ·) a '' U := by
+  letI := orbitRel α β
   set f : β → Quotient (MulAction.orbitRel α β) := Quotient.mk'
   ext x
   constructor
@@ -313,7 +313,9 @@ theorem quotient_preimage_image_eq_union_mul (U : Set β) :
 
 @[to_additive]
 theorem disjoint_image_image_iff {U V : Set β} :
+    letI := orbitRel α β
     Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ a : α, a • x ∉ V := by
+  letI := orbitRel α β
   set f : β → Quotient (MulAction.orbitRel α β) := Quotient.mk'
   refine'
     ⟨fun h x x_in_U a a_in_V =>
@@ -329,6 +331,7 @@ theorem disjoint_image_image_iff {U V : Set β} :
 
 @[to_additive]
 theorem image_inter_image_iff (U V : Set β) :
+    letI := orbitRel α β
     Quotient.mk' '' U ∩ Quotient.mk' '' V = ∅ ↔ ∀ x ∈ U, ∀ a : α, a • x ∉ V :=
   Set.disjoint_iff_inter_eq_empty.symm.trans disjoint_image_image_iff
 #align mul_action.image_inter_image_iff MulAction.image_inter_image_iff
@@ -372,7 +375,7 @@ theorem orbitRel.Quotient.mem_orbit {b : β} {x : orbitRel.Quotient α β} :
 /-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/
 @[to_additive "Note that `hφ = quotient.out_eq'` is a useful choice here."]
 theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient α β)
-    {φ : orbitRel.Quotient α β → β} (hφ : RightInverse φ Quotient.mk') :
+    {φ : orbitRel.Quotient α β → β} (hφ : letI := orbitRel α β; RightInverse φ Quotient.mk') :
     orbitRel.Quotient.orbit x = MulAction.orbit α (φ x) := by
   conv_lhs => rw [← hφ x]
 #align mul_action.orbit_rel.quotient.orbit_eq_orbit_out MulAction.orbitRel.Quotient.orbit_eq_orbit_out
@@ -393,6 +396,7 @@ This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instea
       This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
       `AddAction.orbit`, to avoid mentioning `Quotient.out'`. "]
 def selfEquivSigmaOrbits' : β ≃ Σω : Ω, ω.orbit :=
+  letI := orbitRel α β
   calc
     β ≃ Σω : Ω, { b // Quotient.mk' b = ω } := (Equiv.sigmaFiberEquiv Quotient.mk').symm
     _ ≃ Σω : Ω, ω.orbit :=

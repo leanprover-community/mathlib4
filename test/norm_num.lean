@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Simon Hudon All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon, Mario Carneiro
+Authors: Simon Hudon, Mario Carneiro, Thomas Murrills
 -/
 
 import Mathlib.Tactic.NormNum
@@ -56,6 +56,33 @@ example (h : x = 1) : x = (1/5 + 4/5 : ℚ) := by norm_num1; exact h
 example (h : x = 1) : x = (5 * 5⁻¹ : ℚ) := by norm_num1; exact h
 example (h : x = 1) : x = (6/5 - 1/5 : ℚ) := by norm_num1; exact h
 example (h : x = 1) : x = ((6/5) ^ 0 : ℚ) := by norm_num1; exact h
+
+section ConstructorsEtc
+
+example : Int.ofNat 3 = 3 := by norm_num1
+
+example : mkRat 3 4 = 3/4 := by norm_num1
+example : mkRat 6 8 = 3/4 := by norm_num1
+example : mkRat 5 0 = 0 := by norm_num1
+example : mkRat (10 + 6) (5 * 4) = 4/5 := by norm_num1
+
+end ConstructorsEtc
+
+section ScientificNotation
+
+variable [DivisionRing α] [CharZero α]
+
+example : (0.1 : ℚ) = 1/10 := by norm_num1
+example : (3.14 : ℚ) = 157/50 := by norm_num1
+example : (3.14159 : ℚ) = 314159/100000 := by norm_num1
+example : (0.1 : α) = 1/10 := by norm_num1
+example : (3.14 : α) = 157/50 := by norm_num1
+example : (3.14159 : α) = 314159/100000 := by norm_num1
+
+example : (42e7 : ℚ) = 420000000 := by norm_num1
+example : (42e7 : α) = 420000000 := by norm_num1
+
+end ScientificNotation
 
 /-
 # `=` and `≠`

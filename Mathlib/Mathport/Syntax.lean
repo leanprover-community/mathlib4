@@ -354,3 +354,12 @@ namespace Command
 /- E -/ syntax (name := assertNoInstance) "assert_no_instance " term : command
 
 end Command
+
+namespace Term
+
+/- M -/ syntax (name := matrixNotation)
+  "!![" sepBy1(term,+,?, ";", "; ", allowTrailingSep) "]" : term
+/- M -/ syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
+/- M -/ syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
+
+end Term

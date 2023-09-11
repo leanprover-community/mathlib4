@@ -531,11 +531,11 @@ theorem char_is_prime_of_two_le (p : ℕ) [hc : CharP R p] (hp : 2 ≤ p) : Nat.
   Or.elim (eq_zero_or_eq_zero_of_mul_eq_zero this)
     (fun hd : (d : R) = 0 =>
       have : p ∣ d := (cast_eq_zero_iff R p d).mp hd
-      show d = 1 ∨ d = p from Or.inr (dvd_antisymm ⟨e, hmul⟩ this))
+      show d = 1 ∨ d = p from Or.inr (this.antisymm' ⟨e, hmul⟩))
     fun he : (e : R) = 0 =>
     have : p ∣ e := (cast_eq_zero_iff R p e).mp he
     have : e ∣ p := dvd_of_mul_left_eq d (Eq.symm hmul)
-    have : e = p := dvd_antisymm ‹e ∣ p› ‹p ∣ e›
+    have : e = p := ‹e ∣ p›.antisymm ‹p ∣ e›
     have h₀ : 0 < p := two_pos.trans_le hp
     have : d * p = 1 * p := by rw [‹e = p›] at hmul; rw [one_mul]; exact Eq.symm hmul
     show d = 1 ∨ d = p from Or.inl (mul_right_cancel₀ h₀.ne' this)

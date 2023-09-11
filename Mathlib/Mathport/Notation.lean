@@ -87,14 +87,9 @@ macro doc:(docComment)? attrs:(Parser.Term.attributes)? ak:Term.attrKind
       let init ← init.replaceM fun
         | Syntax.ident _ _ id .. => pure $ boundNames.find? id
         | _ => pure none
-      let args := mkNullNode #[.mkAntiquotSuffixSpliceNode `sepBy
-        (.mkAntiquotNode `term (← `(Syntax.TSepArray.ofElems ($id:ident).getElems))) ",*"]
-      let args := #[
-        Lean.mkAtom "(", x, y, Lean.mkAtom "=>", scopedTerm, Lean.mkAtom ")", init,
-        Lean.mkAtom "[", args, Lean.mkAtom "]"]
-      let stx ← show MacroM Syntax.Term from match kind with
-        | `(foldKind| foldl) => pure ⟨mkNode ``expandFoldl (#[Lean.mkAtom "expandFoldl%"] ++ args)⟩
-        | `(foldKind| foldr) => pure ⟨mkNode ``expandFoldr (#[Lean.mkAtom "expandFoldr%"] ++ args)⟩
+      let stx ← match kind with
+        | `(foldKind| foldl) => `(expand_foldl% ($x $y => $scopedTerm) $init [$$(.ofElems $id),*])
+        | `(foldKind| foldr) => `(expand_foldr% ($x $y => $scopedTerm) $init [$$(.ofElems $id),*])
         | _ => Macro.throwUnsupported
       boundNames := boundNames.insert id.getId stx
     | `(notation3Item| $lit:ident : (scoped $scopedId:ident => $scopedTerm)) =>

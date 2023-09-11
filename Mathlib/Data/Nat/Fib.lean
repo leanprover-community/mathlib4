@@ -202,7 +202,7 @@ theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + 
   have : fib n ≤ 2 * fib (n + 1) :=
     le_trans (fib_le_fib_succ) (mul_comm 2 _ ▸ le_mul_of_pos_right two_pos)
   zify [this]
-  ring_nf
+  ring
 #align nat.fib_bit1_succ Nat.fib_bit1_succ
 
 end deprecated

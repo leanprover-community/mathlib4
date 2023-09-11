@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module group_theory.submonoid.membership
-! leanprover-community/mathlib commit 2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4
+! leanprover-community/mathlib commit e655e4ea5c6d02854696f97494997ba4c31be802
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -438,6 +438,10 @@ theorem mem_powers (n : M) : n ∈ powers n :=
   ⟨1, pow_one _⟩
 #align submonoid.mem_powers Submonoid.mem_powers
 
+theorem coe_powers (x : M) : ↑(powers x) = Set.range fun n : ℕ => x ^ n :=
+  rfl
+#align submonoid.coe_powers Submonoid.coe_powers
+
 theorem mem_powers_iff (x z : M) : x ∈ powers z ↔ ∃ n : ℕ, z ^ n = x :=
   Iff.rfl
 #align submonoid.mem_powers_iff Submonoid.mem_powers_iff
@@ -619,6 +623,9 @@ attribute [to_additive existing multiples] Submonoid.powers
 
 attribute [to_additive (attr := simp) mem_multiples] Submonoid.mem_powers
 #align add_submonoid.mem_multiples AddSubmonoid.mem_multiples
+
+attribute [to_additive (attr := norm_cast) coe_multiples] Submonoid.coe_powers
+#align add_submonoid.coe_multiples AddSubmonoid.coe_multiples
 
 attribute [to_additive mem_multiples_iff] Submonoid.mem_powers_iff
 #align add_submonoid.mem_multiples_iff AddSubmonoid.mem_multiples_iff

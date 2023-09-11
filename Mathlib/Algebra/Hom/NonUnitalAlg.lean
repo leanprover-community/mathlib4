@@ -78,17 +78,17 @@ class NonUnitalAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (T
 
 namespace NonUnitalAlgHomClass
 
--- Porting note: Made following instance non-dangerous through [...] -> {_ : ...} replacement
+-- Porting note: Made following instance non-dangerous through [...] -> [...] replacement
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass {F R A B : Type _}
-    {_ : Monoid R} {_ : NonUnitalNonAssocSemiring A} {_ : DistribMulAction R A}
-    {_ : NonUnitalNonAssocSemiring B} {_ : DistribMulAction R B}
+    [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
     [NonUnitalAlgHomClass F R A B] : NonUnitalRingHomClass F A B :=
   { ‹NonUnitalAlgHomClass F R A B› with coe := (⇑) }
 #align non_unital_alg_hom_class.non_unital_alg_hom_class.to_non_unital_ring_hom_class NonUnitalAlgHomClass.toNonUnitalRingHomClass
 
-variable {_ : Semiring R} {_ : NonUnitalNonAssocSemiring A} {_ : Module R A}
-  {_ : NonUnitalNonAssocSemiring B} {_ : Module R B}
+variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+  [NonUnitalNonAssocSemiring B] [Module R B]
 
 -- see Note [lower instance priority]
 instance (priority := 100) {F : Type _} [NonUnitalAlgHomClass F R A B] : LinearMapClass F R A B :=
@@ -414,11 +414,11 @@ end NonUnitalAlgHom
 
 namespace AlgHom
 
-variable {R A B} {_ : CommSemiring R} {_ : Semiring A} {_ : Semiring B} {_ : Algebra R A}
-  {_ : Algebra R B}
+variable {R A B} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+  [Algebra R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) {F : Type _} [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
+instance (priority := 100) [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
   { ‹AlgHomClass F R A B› with map_smul := map_smul }
 
 /-- A unital morphism of algebras is a `NonUnitalAlgHom`. -/

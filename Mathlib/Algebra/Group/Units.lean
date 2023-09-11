@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 
 ! This file was ported from Lean 3 source module algebra.group.units
-! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -551,6 +551,28 @@ theorem divp_eq_divp_iff {x y : α} {ux uy : αˣ} : x /ₚ ux = y /ₚ uy ↔ x
 theorem divp_mul_divp (x y : α) (ux uy : αˣ) : x /ₚ ux * (y /ₚ uy) = x * y /ₚ (ux * uy) := by
   rw [divp_mul_eq_mul_divp, divp_assoc', divp_divp_eq_divp_mul]
 #align divp_mul_divp divp_mul_divp
+
+variable [Subsingleton αˣ] {a b : α}
+
+@[to_additive]
+theorem eq_one_of_mul_right (h : a * b = 1) : a = 1 :=
+  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ (by rwa [mul_comm]) h) 1
+#align eq_one_of_mul_right eq_one_of_mul_right
+#align eq_zero_of_add_right eq_zero_of_add_right
+
+@[to_additive]
+theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 :=
+  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ h <| by rwa [mul_comm]) 1
+#align eq_one_of_mul_left eq_one_of_mul_left
+#align eq_zero_of_add_left eq_zero_of_add_left
+
+@[to_additive (attr := simp)]
+theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
+  ⟨fun h => ⟨eq_one_of_mul_right h, eq_one_of_mul_left h⟩, by
+    rintro ⟨rfl, rfl⟩
+    exact mul_one _⟩
+#align mul_eq_one mul_eq_one
+#align add_eq_zero add_eq_zero
 
 end CommMonoid
 

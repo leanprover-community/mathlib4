@@ -106,13 +106,7 @@ namespace NonUnitalRingHom
 
 section coe
 
-/-!
-Throughout this section, some `Semiring` arguments are specified with `{}` instead of `[]`.
-See note [implicit instance arguments].
--/
-
-
-variable {_ : NonUnitalNonAssocSemiring α} {_ : NonUnitalNonAssocSemiring β}
+variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 
 instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
   coe f := f.toFun
@@ -179,7 +173,7 @@ end coe
 
 section
 
-variable {_ : NonUnitalNonAssocSemiring α} {_ : NonUnitalNonAssocSemiring β}
+variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 variable (f : α →ₙ+* β) {x y : α}
 
 @[ext]
@@ -246,7 +240,7 @@ theorem coe_mulHom_id : (NonUnitalRingHom.id α : α →ₙ* α) = MulHom.id α 
   rfl
 #align non_unital_ring_hom.coe_mul_hom_id NonUnitalRingHom.coe_mulHom_id
 
-variable {_ : NonUnitalNonAssocSemiring γ}
+variable [NonUnitalNonAssocSemiring γ]
 
 /-- Composition of non-unital ring homomorphisms is a non-unital ring homomorphism. -/
 def comp (g : β →ₙ+* γ) (f : α →ₙ+* β) : α →ₙ+* γ :=

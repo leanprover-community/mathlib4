@@ -307,7 +307,7 @@ theorem orderEmbOfFin_boundaries :
 `Fin n` at the relevant position. -/
 def embedding (i : Fin c.length) : Fin (c.blocksFun i) ↪o Fin n :=
   (Fin.natAdd <| c.sizeUpTo i).trans <|
-    Fin.castLe <|
+    Fin.castLE <|
       calc
         c.sizeUpTo i + c.blocksFun i = c.sizeUpTo (i + 1) := (c.sizeUpTo_succ _).symm
         _ ≤ c.sizeUpTo c.length := monotone_sum_take _ i.2

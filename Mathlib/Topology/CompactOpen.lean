@@ -321,7 +321,7 @@ variable (α β)
 /-- The coevaluation map `β → C(α, β × α)` sending a point `x : β` to the continuous function
 on `α` sending `y` to `(x, y)`. -/
 def coev (b : β) : C(α, β × α) :=
-  ⟨Prod.mk b, continuous_const.prod_mk continuous_id⟩
+  { toFun := Prod.mk b }
 #align continuous_map.coev ContinuousMap.coev
 
 variable {α β}

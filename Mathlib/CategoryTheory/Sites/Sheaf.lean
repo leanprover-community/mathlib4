@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Bhavik Mehta
 
 ! This file was ported from Lean 3 source module category_theory.sites.sheaf
-! leanprover-community/mathlib commit a67ec23dd8dc08195d77b6df2cd21f9c64989131
+! leanprover-community/mathlib commit 2efd2423f8d25fa57cf7a179f5d8652ab4d0df44
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

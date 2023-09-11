@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes
 
 ! This file was ported from Lean 3 source module ring_theory.multiplicity
-! leanprover-community/mathlib commit ceb887ddf3344dab425292e497fa2af91498437c
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -427,8 +427,8 @@ protected theorem neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
     PartENat.natCast_inj.1 (by
       rw [PartENat.natCast_get]
       exact Eq.symm
-        (unique ((dvd_neg _ _).2 (pow_multiplicity_dvd _))
-          (mt (dvd_neg _ _).1 (is_greatest' _ (lt_succ_self _)))))
+              (unique (pow_multiplicity_dvd _).neg_right
+                (mt dvd_neg.1 (is_greatest' _ (lt_succ_self _)))))
 #align multiplicity.neg multiplicity.neg
 
 theorem Int.natAbs (a : ℕ) (b : ℤ) : multiplicity a b.natAbs = multiplicity (a : ℤ) b := by
@@ -443,9 +443,8 @@ theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity
   · apply PartENat.le_of_lt_add_one
     cases' PartENat.ne_top_iff.mp (PartENat.ne_top_of_lt h) with k hk
     rw [hk]
-    rw_mod_cast [multiplicity_lt_iff_neg_dvd]
+    rw_mod_cast [multiplicity_lt_iff_neg_dvd, dvd_add_right]
     intro h_dvd
-    rw [← dvd_add_iff_right] at h_dvd
     · apply multiplicity.is_greatest _ h_dvd
       rw [hk, ←Nat.succ_eq_add_one]
       norm_cast

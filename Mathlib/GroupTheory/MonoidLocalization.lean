@@ -214,12 +214,11 @@ instance inhabited : Inhabited (Localization S) := Con.Quotient.inhabited
 #align add_localization.inhabited addLocalization.inhabited
 
 /-- Multiplication in a `Localization` is defined as `⟨a, b⟩ * ⟨c, d⟩ = ⟨a * c, b * d⟩`. -/
--- Porting note: replaced irreducible_def by @[irreducible] to prevent an error with protected
-@[to_additive (attr := irreducible)
-    "Addition in an `addLocalization` is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨a + c, b + d⟩`.
+@[to_additive "Addition in an `addLocalization` is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨a + c, b + d⟩`.
 Should not be confused with the ring localization counterpart `Localization.add`, which maps
 `⟨a, b⟩ + ⟨c, d⟩` to `⟨d * a + b * c, b * d⟩`."]
-protected def mul : Localization S → Localization S → Localization S := (r S).commMonoid.mul
+protected irreducible_def mul : Localization S → Localization S → Localization S :=
+  (r S).commMonoid.mul
 #align localization.mul Localization.mul
 #align add_localization.add addLocalization.add
 
@@ -227,13 +226,11 @@ protected def mul : Localization S → Localization S → Localization S := (r S
 instance : Mul (Localization S) := ⟨Localization.mul S⟩
 
 /-- The identity element of a `Localization` is defined as `⟨1, 1⟩`. -/
-@[to_additive (attr := irreducible)
-    "The identity element of an `addLocalization` is defined as `⟨0, 0⟩`.
+@[to_additive "The identity element of an `addLocalization` is defined as `⟨0, 0⟩`.
 
 Should not be confused with the ring localization counterpart `Localization.zero`,
 which is defined as `⟨0, 1⟩`."]
--- Porting note: replaced irreducible_def by @[irreducible] to prevent an error with protected
-protected def one : Localization S := (r S).commMonoid.one
+protected irreducible_def one : Localization S := (r S).commMonoid.one
 #align localization.one Localization.one
 #align add_localization.zero addLocalization.zero
 
@@ -245,36 +242,32 @@ instance : One (Localization S) := ⟨Localization.one S⟩
 This is a separate `irreducible` def to ensure the elaborator doesn't waste its time
 trying to unify some huge recursive definition with itself, but unfolded one step less.
 -/
-@[to_additive (attr := irreducible)
-    "Multiplication with a natural in an `AddLocalization` is defined as
+@[to_additive "Multiplication with a natural in an `AddLocalization` is defined as
 `n • ⟨a, b⟩ = ⟨n • a, n • b⟩`.
 
 This is a separate `irreducible` def to ensure the elaborator doesn't waste its time
 trying to unify some huge recursive definition with itself, but unfolded one step less."]
--- Porting note: replaced irreducible_def by @[irreducible] to prevent an error with protected
-protected def npow : ℕ → Localization S → Localization S := (r S).commMonoid.npow
+protected irreducible_def npow : ℕ → Localization S → Localization S := (r S).commMonoid.npow
 #align localization.npow Localization.npow
 #align add_localization.nsmul addLocalization.nsmul
-
--- Porting note: remove the attribute `local` because of error:
--- invalid attribute 'semireducible', must be global
-attribute [semireducible] Localization.mul Localization.one Localization.npow
 
 @[to_additive]
 instance : CommMonoid (Localization S) where
   mul := (· * ·)
   one := 1
-  mul_assoc :=
-    show ∀ x y z : Localization S, x * y * z = x * (y * z) from (r S).commMonoid.mul_assoc
-  mul_comm := show ∀ x y : Localization S, x * y = y * x from (r S).commMonoid.mul_comm
-  mul_one := show ∀ x : Localization S, x * 1 = x from (r S).commMonoid.mul_one
-  one_mul := show ∀ x : Localization S, 1 * x = x from (r S).commMonoid.one_mul
+  mul_assoc x y z := show (x.mul S y).mul S z = x.mul S (y.mul S z) by
+    rw [Localization.mul]; apply (r S).commMonoid.mul_assoc
+  mul_comm x y := show x.mul S y = y.mul S x by
+    rw [Localization.mul]; apply (r S).commMonoid.mul_comm
+  mul_one x := show x.mul S (.one S) = x by
+    rw [Localization.mul, Localization.one]; apply (r S).commMonoid.mul_one
+  one_mul x := show (Localization.one S).mul S x = x by
+    rw [Localization.mul, Localization.one]; apply (r S).commMonoid.one_mul
   npow := Localization.npow S
-  npow_zero :=
-    show ∀ x : Localization S, Localization.npow S 0 x = 1 from (r S).commMonoid.npow_zero
-  npow_succ :=
-    show ∀ (n : ℕ) (x : Localization S), Localization.npow S n.succ x = x * Localization.npow S n x
-      from (r S).commMonoid.npow_succ
+  npow_zero x := show Localization.npow S 0 x = .one S by
+    rw [Localization.npow, Localization.one]; apply (r S).commMonoid.npow_zero
+  npow_succ n x := show .npow S n.succ x = x.mul S (.npow S n x) by
+    rw [Localization.npow, Localization.mul]; apply (r S).commMonoid.npow_succ
 
 variable {S}
 
@@ -309,17 +302,20 @@ def rec {p : Localization S → Sort u} (f : ∀ (a : M) (b : S), p (mk a b))
 #align add_localization.rec addLocalization.rec
 
 @[to_additive]
-theorem mk_mul (a c : M) (b d : S) : mk a b * mk c d = mk (a * c) (b * d) := rfl
+theorem mk_mul (a c : M) (b d : S) : mk a b * mk c d = mk (a * c) (b * d) :=
+  show Localization.mul S _ _ = _ by rw [Localization.mul]; rfl
 #align localization.mk_mul Localization.mk_mul
 #align add_localization.mk_add addLocalization.mk_add
 
 @[to_additive]
-theorem mk_one : mk 1 (1 : S) = 1 := rfl
+theorem mk_one : mk 1 (1 : S) = 1 :=
+  show mk _ _ = .one S by rw [Localization.one]; rfl
 #align localization.mk_one Localization.mk_one
 #align add_localization.mk_zero addLocalization.mk_zero
 
 @[to_additive]
-theorem mk_pow (n : ℕ) (a : M) (b : S) : mk a b ^ n = mk (a ^ n) (b ^ n) := rfl
+theorem mk_pow (n : ℕ) (a : M) (b : S) : mk a b ^ n = mk (a ^ n) (b ^ n) :=
+  show Localization.npow S _ _ = _ by rw [Localization.npow]; rfl
 #align localization.mk_pow Localization.mk_pow
 #align add_localization.mk_nsmul addLocalization.mk_nsmul
 
@@ -424,9 +420,7 @@ section Scalar
 variable {R R₁ R₂ : Type _}
 
 /-- Scalar multiplication in a monoid localization is defined as `c • ⟨a, b⟩ = ⟨c • a, b⟩`. -/
--- Porting note: replaced irreducible_def by @[irreducible] to prevent an error with protected
-@[irreducible]
-protected def smul [SMul R M] [IsScalarTower R M M] (c : R) (z : Localization S) :
+protected irreducible_def smul [SMul R M] [IsScalarTower R M M] (c : R) (z : Localization S) :
   Localization S :=
     Localization.liftOn z (fun a b ↦ mk (c • a) b)
       (fun {a a' b b'} h ↦ mk_eq_mk_iff.2 (by
@@ -447,7 +441,7 @@ instance [SMul R M] [IsScalarTower R M M] : SMul R (Localization S) where smul :
 
 theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
     c • (mk a b : Localization S) = mk (c • a) b := by
- delta HSMul.hSMul instHSMul SMul.smul instSMulLocalization Localization.smul
+ simp only [HSMul.hSMul, instHSMul, SMul.smul, instSMulLocalization, Localization.smul]
  show liftOn (mk a b) (fun a b => mk (c • a) b) _ = _
  exact liftOn_mk (fun a b => mk (c • a) b) _ a b
 #align localization.smul_mk Localization.smul_mk
@@ -1811,37 +1805,27 @@ end Submonoid
 
 namespace Localization
 
--- Porting note: removed local since attribute 'semireducible' must be global
-attribute [semireducible] Localization
-
 /-- The zero element in a Localization is defined as `(0, 1)`.
 
 Should not be confused with `AddLocalization.zero` which is `(0, 0)`. -/
--- Porting note: replaced irreducible_def by @[irreducible] to prevent an error with protected
-@[irreducible]
-protected def zero : Localization S :=
+protected irreducible_def zero : Localization S :=
   mk 0 1
 #align localization.zero Localization.zero
 
 instance : Zero (Localization S) := ⟨Localization.zero S⟩
-
--- Porting note: removed local since attribute 'semireducible' must be global
-attribute [semireducible] Localization.zero Localization.mul
-
-instance : CommMonoidWithZero (Localization S) :=
-{ zero_mul := fun x ↦ Localization.induction_on x <| by
-      intro
-      refine mk_eq_mk_iff.mpr (r_of_eq (by simp [zero_mul, mul_zero]))
-  mul_zero := fun x ↦ Localization.induction_on x <| by
-      intro
-      refine mk_eq_mk_iff.mpr (r_of_eq (by simp [zero_mul, mul_zero])) }
 
 variable {S}
 
 theorem mk_zero (x : S) : mk 0 (x : S) = 0 :=
   calc
     mk 0 x = mk 0 1 := mk_eq_mk_iff.mpr (r_of_eq (by simp))
-    _ = 0 := rfl
+    _ = Localization.zero S := (Localization.zero_def S).symm
+
+instance : CommMonoidWithZero (Localization S) where
+  zero_mul := fun x ↦ Localization.induction_on x fun y => by
+    simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, zero_mul, r_of_eq]
+  mul_zero := fun x ↦ Localization.induction_on x fun y => by
+    simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, zero_mul, r_of_eq]
 
 #align localization.mk_zero Localization.mk_zero
 

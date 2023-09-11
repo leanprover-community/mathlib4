@@ -226,25 +226,6 @@ theorem popn_empty {n : ℕ} : "".popn n = "" := by
   simp [popn]
 #align string.popn_empty String.popn_empty
 
-end String
-
-theorem List.lt_iff_lex_lt [LinearOrder α] (l l' : List α) :
-    lt l l' ↔ Lex (· < ·) l l' := by
-  constructor <;>
-  intro h
-  · induction h with
-    | nil b bs => exact Lex.nil
-    | @head a as b bs hab => apply Lex.rel; assumption
-    | @tail a as b bs hab hba _ ih =>
-      have heq : a = b := _root_.le_antisymm (le_of_not_lt hba) (le_of_not_lt hab)
-      subst b; apply Lex.cons; assumption
-  · induction h with
-    | @nil a as => apply lt.nil
-    | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
-    | @rel a as b bs h => apply lt.head; assumption
-
-namespace String
-
 instance : LinearOrder String where
   le_refl a := le_iff_toList_le.mpr le_rfl
   le_trans a b c := by

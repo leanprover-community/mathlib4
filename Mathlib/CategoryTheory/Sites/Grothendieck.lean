@@ -517,6 +517,8 @@ structure Relation (S : J.Cover X) where
   w : g₁ ≫ f₁ = g₂ ≫ f₂
 #align category_theory.grothendieck_topology.cover.relation CategoryTheory.GrothendieckTopology.Cover.Relation
 
+attribute [reassoc] Relation.w
+
 /-- Map a `Arrow` along a refinement `S ⟶ T`. -/
 @[simps]
 def Arrow.map {S T : J.Cover X} (I : S.Arrow) (f : S ⟶ T) : T.Arrow :=

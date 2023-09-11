@@ -156,6 +156,13 @@ end Rat
 
 end DivisionRing
 
+section OfScientific
+
+instance DivisionRing.toOfScientific [DivisionRing K] : OfScientific K where
+  ofScientific (m : ℕ) (b : Bool) (d : ℕ) := Rat.ofScientific m b d
+
+end OfScientific
+
 section Field
 
 variable [Field K]

@@ -156,7 +156,7 @@ theorem map_sub_le_max : f (x - y) ≤ max (f x) (f y) := by
 end NonarchAddGroupSeminormClass
 
 -- See note [lower instance priority]
-instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass {_ : AddGroup E}
+instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass [AddGroup E]
     [NonarchAddGroupSeminormClass F E] : AddGroupSeminormClass F E ℝ :=
   { ‹NonarchAddGroupSeminormClass F E› with
     map_add_le_add := fun f x y =>
@@ -170,7 +170,7 @@ instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass 
 #align nonarch_add_group_seminorm_class.to_add_group_seminorm_class NonarchAddGroupSeminormClass.toAddGroupSeminormClass
 
 -- See note [lower instance priority]
-instance (priority := 100) NonarchAddGroupNormClass.toAddGroupNormClass {_ : AddGroup E}
+instance (priority := 100) NonarchAddGroupNormClass.toAddGroupNormClass [AddGroup E]
     [NonarchAddGroupNormClass F E] : AddGroupNormClass F E ℝ :=
   { ‹NonarchAddGroupNormClass F E› with
     map_add_le_add := map_add_le_add

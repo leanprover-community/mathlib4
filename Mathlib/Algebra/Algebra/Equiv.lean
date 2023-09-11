@@ -56,10 +56,9 @@ class AlgEquivClass (F : Type _) (R A B : outParam (Type _)) [CommSemiring R] [S
 
 namespace AlgEquivClass
 
--- Porting note: Replaced instances [...] with {_ : ...} below to make them not dangerous
 -- See note [lower instance priority]
-instance (priority := 100) toAlgHomClass (F R A B : Type _) {_ : CommSemiring R} {_ : Semiring A}
-    {_ : Semiring B} {_ : Algebra R A} {_ : Algebra R B} [h : AlgEquivClass F R A B] :
+instance (priority := 100) toAlgHomClass (F R A B : Type _) [CommSemiring R] [Semiring A]
+    [Semiring B] [Algebra R A] [Algebra R B] [h : AlgEquivClass F R A B] :
     AlgHomClass F R A B :=
   { h with
     coe := (⇑)
@@ -68,8 +67,8 @@ instance (priority := 100) toAlgHomClass (F R A B : Type _) {_ : CommSemiring R}
     map_one := map_one }
 #align alg_equiv_class.to_alg_hom_class AlgEquivClass.toAlgHomClass
 
-instance (priority := 100) toLinearEquivClass (F R A B : Type _) {_ : CommSemiring R}
-    {_ : Semiring A} {_ : Semiring B} {_ : Algebra R A} {_ : Algebra R B}
+instance (priority := 100) toLinearEquivClass (F R A B : Type _) [CommSemiring R]
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=
   { h with map_smulₛₗ := fun f => map_smulₛₗ f }
 #align alg_equiv_class.to_linear_equiv_class AlgEquivClass.toLinearEquivClass

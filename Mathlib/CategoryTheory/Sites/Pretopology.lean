@@ -20,7 +20,7 @@ satisfying certain closure conditions.
 We show that a pretopology generates a genuine Grothendieck topology, and every topology has
 a maximal pretopology which generates it.
 
-The pretopology associated to a topological space is defined in `spaces.lean`.
+The pretopology associated to a topological space is defined in `Spaces.lean`.
 
 ## Tags
 
@@ -80,7 +80,8 @@ instance : CoeFun (Pretopology C) fun _ => ∀ X : C, Set (Presieve X) :=
 
 variable {C}
 
-instance LE : LE (Pretopology C) where le K₁ K₂ := (K₁ : ∀ X : C, Set (Presieve X)) ≤ K₂
+instance LE : LE (Pretopology C) where
+  le K₁ K₂ := (K₁ : ∀ X : C, Set (Presieve X)) ≤ K₂
 
 theorem le_def {K₁ K₂ : Pretopology C} : K₁ ≤ K₂ ↔ (K₁ : ∀ X : C, Set (Presieve X)) ≤ K₂ :=
   Iff.rfl

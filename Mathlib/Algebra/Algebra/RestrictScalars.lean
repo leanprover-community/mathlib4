@@ -108,7 +108,7 @@ module structure over `R`.
 
 The preferred way of setting this up is `[Module R M] [Module S M] [IsScalarTower R S M]`.
 -/
-instance [Module S M] : Module R (RestrictScalars R S M) :=
+instance RestrictScalars.module [Module S M] : Module R (RestrictScalars R S M) :=
   Module.compHom M (algebraMap R S)
 
 /-- This instance is only relevant when `RestrictScalars.moduleOrig` is available as an instance.

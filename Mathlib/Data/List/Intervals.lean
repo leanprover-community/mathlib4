@@ -14,7 +14,7 @@ import Mathlib.Data.Bool.Basic
 /-!
 # Intervals in ℕ
 
-This file defines intervals of naturals. `list.Ico m n` is the list of integers greater than `m`
+This file defines intervals of naturals. `List.Ico m n` is the list of integers greater than `m`
 and strictly less than `n`.
 
 ## TODO

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 
 ! This file was ported from Lean 3 source module combinatorics.simple_graph.connectivity
-! leanprover-community/mathlib commit 13cd3e89b30352d5b1b7349f5537ea18ba878e40
+! leanprover-community/mathlib commit e876965f7ee86f683b44e2f462ab5bfb47f993b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1963,104 +1963,99 @@ def ConnectedComponent := Quot G.Reachable
 def connectedComponentMk (v : V) : G.ConnectedComponent := Quot.mk G.Reachable v
 #align simple_graph.connected_component_mk SimpleGraph.connectedComponentMk
 
+variable {G G' G''}
+
+namespace ConnectedComponent
+
 @[simps]
-instance ConnectedComponent.inhabited [Inhabited V] : Inhabited G.ConnectedComponent :=
+instance inhabited [Inhabited V] : Inhabited G.ConnectedComponent :=
   ⟨G.connectedComponentMk default⟩
 #align simple_graph.connected_component.inhabited SimpleGraph.ConnectedComponent.inhabited
 
-section connectedComponent
-
-variable {G}
-
 @[elab_as_elim]
-protected theorem ConnectedComponent.ind {β : G.ConnectedComponent → Prop}
+protected theorem ind {β : G.ConnectedComponent → Prop}
     (h : ∀ v : V, β (G.connectedComponentMk v)) (c : G.ConnectedComponent) : β c :=
   Quot.ind h c
 #align simple_graph.connected_component.ind SimpleGraph.ConnectedComponent.ind
 
 @[elab_as_elim]
-protected theorem ConnectedComponent.ind₂ {β : G.ConnectedComponent → G.ConnectedComponent → Prop}
+protected theorem ind₂ {β : G.ConnectedComponent → G.ConnectedComponent → Prop}
     (h : ∀ v w : V, β (G.connectedComponentMk v) (G.connectedComponentMk w))
     (c d : G.ConnectedComponent) : β c d :=
   Quot.induction_on₂ c d h
 #align simple_graph.connected_component.ind₂ SimpleGraph.ConnectedComponent.ind₂
 
-protected theorem ConnectedComponent.sound {v w : V} :
+protected theorem sound {v w : V} :
     G.Reachable v w → G.connectedComponentMk v = G.connectedComponentMk w :=
   Quot.sound
 #align simple_graph.connected_component.sound SimpleGraph.ConnectedComponent.sound
 
-protected theorem ConnectedComponent.exact {v w : V} :
+protected theorem exact {v w : V} :
     G.connectedComponentMk v = G.connectedComponentMk w → G.Reachable v w :=
   @Quotient.exact _ G.reachableSetoid _ _
 #align simple_graph.connected_component.exact SimpleGraph.ConnectedComponent.exact
 
 @[simp]
-protected theorem ConnectedComponent.eq {v w : V} :
+protected theorem eq {v w : V} :
     G.connectedComponentMk v = G.connectedComponentMk w ↔ G.Reachable v w :=
   @Quotient.eq' _ G.reachableSetoid _ _
 #align simple_graph.connected_component.eq SimpleGraph.ConnectedComponent.eq
 
 /-- The `ConnectedComponent` specialization of `Quot.lift`. Provides the stronger
 assumption that the vertices are connected by a path. -/
-protected def ConnectedComponent.lift {β : Sort _} (f : V → β)
+protected def lift {β : Sort _} (f : V → β)
     (h : ∀ (v w : V) (p : G.Walk v w), p.IsPath → f v = f w) : G.ConnectedComponent → β :=
   Quot.lift f fun v w (h' : G.Reachable v w) => h'.elim_path fun hp => h v w hp hp.2
 #align simple_graph.connected_component.lift SimpleGraph.ConnectedComponent.lift
 
 @[simp]
-protected theorem ConnectedComponent.lift_mk {β : Sort _} {f : V → β}
+protected theorem lift_mk {β : Sort _} {f : V → β}
     {h : ∀ (v w : V) (p : G.Walk v w), p.IsPath → f v = f w} {v : V} :
     ConnectedComponent.lift f h (G.connectedComponentMk v) = f v :=
   rfl
 #align simple_graph.connected_component.lift_mk SimpleGraph.ConnectedComponent.lift_mk
 
-protected theorem ConnectedComponent.exists {p : G.ConnectedComponent → Prop} :
+protected theorem «exists» {p : G.ConnectedComponent → Prop} :
     (∃ c : G.ConnectedComponent, p c) ↔ ∃ v, p (G.connectedComponentMk v) :=
   (surjective_quot_mk G.Reachable).exists
 #align simple_graph.connected_component.exists SimpleGraph.ConnectedComponent.exists
 
-protected theorem ConnectedComponent.forall {p : G.ConnectedComponent → Prop} :
+protected theorem «forall» {p : G.ConnectedComponent → Prop} :
     (∀ c : G.ConnectedComponent, p c) ↔ ∀ v, p (G.connectedComponentMk v) :=
   (surjective_quot_mk G.Reachable).forall
 #align simple_graph.connected_component.forall SimpleGraph.ConnectedComponent.forall
 
-theorem Preconnected.subsingleton_connectedComponent (h : G.Preconnected) :
+theorem _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent (h : G.Preconnected) :
     Subsingleton G.ConnectedComponent :=
   ⟨ConnectedComponent.ind₂ fun v w => ConnectedComponent.sound (h v w)⟩
 #align simple_graph.preconnected.subsingleton_connected_component SimpleGraph.Preconnected.subsingleton_connectedComponent
 
 /-- The map on connected components induced by a graph homomorphism. -/
-def ConnectedComponent.map {V : Type _} {G : SimpleGraph V} {V' : Type _} {G' : SimpleGraph V'}
-    (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
+def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
   C.lift (fun v => G'.connectedComponentMk (φ v)) fun _ _ p _ =>
     ConnectedComponent.eq.mpr (p.map φ).reachable
 #align simple_graph.connected_component.map SimpleGraph.ConnectedComponent.map
 
 @[simp]
-theorem ConnectedComponent.map_mk {V : Type _} {G : SimpleGraph V} {V' : Type _}
-    {G' : SimpleGraph V'} (φ : G →g G') (v : V) :
+theorem map_mk (φ : G →g G') (v : V) :
     (G.connectedComponentMk v).map φ = G'.connectedComponentMk (φ v) :=
   rfl
 #align simple_graph.connected_component.map_mk SimpleGraph.ConnectedComponent.map_mk
 
 @[simp]
-theorem ConnectedComponent.map_id (C : ConnectedComponent G) : C.map Hom.id = C := by
+theorem map_id (C : ConnectedComponent G) : C.map Hom.id = C := by
   refine' C.ind _
   exact fun _ => rfl
 #align simple_graph.connected_component.map_id SimpleGraph.ConnectedComponent.map_id
 
 @[simp]
-theorem ConnectedComponent.map_comp {V' : Type _} {G' : SimpleGraph V'} {V'' : Type _}
-    {G'' : SimpleGraph V''} (C : G.ConnectedComponent) (φ : G →g G') (ψ : G' →g G'') :
+theorem map_comp (C : G.ConnectedComponent) (φ : G →g G') (ψ : G' →g G'') :
     (C.map φ).map ψ = C.map (ψ.comp φ) := by
   refine' C.ind _
   exact fun _ => rfl
 #align simple_graph.connected_component.map_comp SimpleGraph.ConnectedComponent.map_comp
 
-end connectedComponent
-
-variable {G}
+end ConnectedComponent
 
 /-- A subgraph is connected if it is connected as a simple graph. -/
 abbrev Subgraph.Connected (H : G.Subgraph) : Prop :=
@@ -2100,7 +2095,7 @@ theorem Connected.set_univ_walk_nonempty (hconn : G.Connected) (u v : V) :
 
 namespace Walk
 
-variable {G'} {u v w : V}
+variable {u v w : V}
 
 /-- The subgraph consisting of the vertices and edges of the walk. -/
 @[simp]

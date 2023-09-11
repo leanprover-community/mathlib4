@@ -286,11 +286,12 @@ section SeminormedRing
 
 variable [SeminormedRing α]
 
+set_option synthInstance.etaExperiment true in
 /-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the norm.
 
 See note [implicit instance arguments]. -/
-instance Subalgebra.seminormedRing {𝕜 : Type _} {_ : CommRing 𝕜} {E : Type _} [SeminormedRing E]
-    {_ : Algebra 𝕜 E} (s : Subalgebra 𝕜 E) : SeminormedRing s :=
+instance Subalgebra.seminormedRing {𝕜 : Type _} [CommRing 𝕜] {E : Type _} [SeminormedRing E]
+    [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : SeminormedRing s :=
   { s.toSubmodule.seminormedAddCommGroup, s.toRing with
     norm_mul := fun a b => norm_mul_le a.1 b.1 }
 #align subalgebra.semi_normed_ring Subalgebra.seminormedRing
@@ -298,8 +299,8 @@ instance Subalgebra.seminormedRing {𝕜 : Type _} {_ : CommRing 𝕜} {E : Type
 /-- A subalgebra of a normed ring is also a normed ring, with the restriction of the norm.
 
 See note [implicit instance arguments]. -/
-instance Subalgebra.normedRing {𝕜 : Type _} {_ : CommRing 𝕜} {E : Type _} [NormedRing E]
-    {_ : Algebra 𝕜 E} (s : Subalgebra 𝕜 E) : NormedRing s :=
+instance Subalgebra.normedRing {𝕜 : Type _} [CommRing 𝕜] {E : Type _} [NormedRing E]
+    [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : NormedRing s :=
   { s.seminormedRing with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align subalgebra.normed_ring Subalgebra.normedRing

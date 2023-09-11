@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module algebra.group_with_zero.units.basic
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit df5e9937a06fdd349fc60106f54b84d47b1434f0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -275,15 +275,6 @@ instance (priority := 10) GroupWithZero.noZeroDivisors : NoZeroDivisors G₀ :=
       exact (Units.mk0 a h.1 * Units.mk0 b h.2).ne_zero }
 #align group_with_zero.no_zero_divisors GroupWithZero.noZeroDivisors
 
--- see Note [lower instance priority]
-instance (priority := 10) GroupWithZero.cancelMonoidWithZero : CancelMonoidWithZero G₀ :=
-  { (‹_› : GroupWithZero G₀) with
-    mul_left_cancel_of_ne_zero := @fun x y z hx h => by
-      rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z],
-    mul_right_cancel_of_ne_zero := @fun x y z hy h => by
-      rw [← mul_inv_cancel_right₀ hy x, h, mul_inv_cancel_right₀ hy z] }
-#align group_with_zero.cancel_monoid_with_zero GroupWithZero.cancelMonoidWithZero
-
 -- Can't be put next to the other `mk0` lemmas because it depends on the
 -- `NoZeroDivisors` instance, which depends on `mk0`.
 @[simp]
@@ -325,11 +316,11 @@ section CommGroupWithZero
 variable [CommGroupWithZero G₀] {a b c d : G₀}
 
 -- see Note [lower instance priority]
-instance (priority := 10) CommGroupWithZero.cancelCommMonoidWithZero :
+instance (priority := 10) CommGroupWithZero.toCancelCommMonoidWithZero :
     CancelCommMonoidWithZero G₀ :=
-  { GroupWithZero.cancelMonoidWithZero,
+  { GroupWithZero.toCancelMonoidWithZero,
     CommGroupWithZero.toCommMonoidWithZero with }
-#align comm_group_with_zero.cancel_comm_monoid_with_zero CommGroupWithZero.cancelCommMonoidWithZero
+#align comm_group_with_zero.to_cancel_comm_monoid_with_zero CommGroupWithZero.toCancelCommMonoidWithZero
 
 -- See note [lower instance priority]
 instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid : DivisionCommMonoid G₀ :=

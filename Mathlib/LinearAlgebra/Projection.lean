@@ -298,12 +298,12 @@ def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
     ((p →ₗ[R₁] F) × (q →ₗ[R₁] F)) ≃ₗ[R₁] E →ₗ[R₁] F :=
   { ofIsComplProd h with
     invFun := fun φ => ⟨φ.domRestrict p, φ.domRestrict q⟩
-    left_inv := by
-      intro φ; ext x
+    left_inv := fun φ ↦ by
+      ext x
       · exact ofIsCompl_left_apply h x
       · exact ofIsCompl_right_apply h x
-    right_inv := by
-      intro φ; ext x
+    right_inv := fun φ ↦ by
+      ext x
       obtain ⟨a, b, hab, _⟩ := existsUnique_add_of_isCompl h x
       rw [← hab]; simp }
 #align linear_map.of_is_compl_prod_equiv LinearMap.ofIsComplProdEquiv
@@ -436,13 +436,12 @@ theorem isCompl {f : E →ₗ[R] E} (h : IsProj p f) : IsCompl p (ker f) := by
 theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
     f = (p.prodEquivOfIsCompl (ker f) h.isCompl).toLinearMap ∘ₗ
         prodMap id 0 ∘ₗ (p.prodEquivOfIsCompl (ker f) h.isCompl).symm.toLinearMap := by
-  refine' (LinearMap.cancel_right (p.prodEquivOfIsCompl (ker f) h.isCompl).surjective).1 _
-  ext ⟨x, y⟩
-  simp only [coe_comp, LinearEquiv.coe_toLinearMap, coe_inl, Function.comp_apply,
-    LinearEquiv.ofTop_apply, LinearEquiv.ofInjective_apply, coprod_apply, Submodule.coeSubtype,
-    coe_zero, add_zero, prodEquivOfIsCompl_symm_apply_left, prodMap_apply, id_coe, id.def,
-    zero_apply, coe_prodEquivOfIsCompl', h.map_id x x.2,
-    map_add, map_coe_ker, prodEquivOfIsCompl_symm_apply_right, Prod.mk_add_mk, zero_add]
+  rw [← LinearMap.comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
+  ext x y
+  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inl, coprod_apply, coeSubtype,
+      _root_.map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
+  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, _root_.map_zero,
+      coeSubtype, zero_add, map_coe_ker, prodMap_apply, zero_apply, add_zero]
 #align linear_map.is_proj.eq_conj_prod_map' LinearMap.IsProj.eq_conj_prod_map'
 
 end IsProj

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison, David Wärn
 
 ! This file was ported from Lean 3 source module category_theory.groupoid
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
+! leanprover-community/mathlib commit 2efd2423f8d25fa57cf7a179f5d8652ab4d0df44
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -12,12 +12,12 @@ import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Combinatorics.Quiver.ConnectedComponent
+import Mathlib.Combinatorics.Quiver.Symmetric
 
 /-!
 # Groupoids
 
-We define `Groupoid` as a typeclass extending `category`,
+We define `Groupoid` as a typeclass extending `Category`,
 asserting that all morphisms have inverses.
 
 The instance `IsIso.ofGroupoid (f : X ⟶ Y) : IsIso f` means that you can then write
@@ -49,6 +49,8 @@ class Groupoid (obj : Type u) extends Category.{v} obj : Type max u (v + 1) wher
   /-- `f` composed with `inv f` is the identity -/
   comp_inv : ∀ {X Y : obj} (f : X ⟶ Y), comp f (inv f) = id X := by aesop_cat
 #align category_theory.groupoid CategoryTheory.Groupoid
+
+initialize_simps_projections Groupoid (-Hom)
 
 /-- A `LargeGroupoid` is a groupoid
 where the objects live in `Type (u+1)` while the morphisms live in `Type u`.

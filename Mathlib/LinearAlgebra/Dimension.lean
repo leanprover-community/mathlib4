@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
 
 ! This file was ported from Lean 3 source module linear_algebra.dimension
-! leanprover-community/mathlib commit 45ce3929e3bf9a086a216feea3b1ab6c14bf0e67
+! leanprover-community/mathlib commit b5b5dd5a47b5744260e2c9185013075ce9dadccd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -727,6 +727,12 @@ theorem linearIndependent_le_span {ι : Type _} (v : ι → M) (i : LinearIndepe
   rw [s]
   exact le_top
 #align linear_independent_le_span linearIndependent_le_span
+
+/-- A version of `linearIndependent_le_span` for `Finset`. -/
+theorem linearIndependent_le_span_finset {ι : Type _} (v : ι → M) (i : LinearIndependent R v)
+    (w : Finset M) (s : span R (w : Set M) = ⊤) : (#ι) ≤ w.card := by
+  simpa only [Finset.coe_sort_coe, Fintype.card_coe] using linearIndependent_le_span v i w s
+#align linear_independent_le_span_finset linearIndependent_le_span_finset
 
 /-- An auxiliary lemma for `linearIndependent_le_basis`:
 we handle the case where the basis `b` is infinite.

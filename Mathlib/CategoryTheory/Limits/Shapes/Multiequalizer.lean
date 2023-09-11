@@ -459,7 +459,7 @@ noncomputable def ofPiFork (c : Fork I.fstPiMap I.sndPiMap) : Multifork I where
         rintro (_ | _) (_ | _) (_ | _ | _)
         · simp
         · simp
-        · dsimp ; rw [c.condition_assoc] ; simp
+        · dsimp; rw [c.condition_assoc]; simp
         · simp }
 #align category_theory.limits.multifork.of_pi_fork CategoryTheory.Limits.Multifork.ofPiFork
 
@@ -525,14 +525,11 @@ noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPi
           (by
             rintro (_ | _) <;> dsimp <;>
               simp [← Fork.app_one_eq_ι_comp_left, -Fork.app_one_eq_ι_comp_left]))
-      fun {K₁ K₂} f => by dsimp ; ext ; simp
+      fun {K₁ K₂} f => by dsimp; ext; simp
   counitIso :=
     NatIso.ofComponents
-      (fun K =>
-        Fork.ext (Iso.refl _)
-          (by dsimp ; ext ⟨j⟩ ; dsimp ; simp
-            ))
-      fun {K₁ K₂} f => by dsimp ; ext ; simp
+      (fun K => Fork.ext (Iso.refl _) (by dsimp; ext ⟨j⟩; dsimp; simp))
+      fun {K₁ K₂} f => by dsimp; ext; simp
 #align category_theory.limits.multicospan_index.multifork_equiv_pi_fork CategoryTheory.Limits.MulticospanIndex.multiforkEquivPiFork
 
 end MulticospanIndex
@@ -690,8 +687,8 @@ variable (I : MultispanIndex C) [HasCoproduct I.left] [HasCoproduct I.right]
 @[simps]
 noncomputable def toSigmaCoforkFunctor : Multicofork I ⥤ Cofork I.fstSigmaMap I.sndSigmaMap where
   obj := Multicofork.toSigmaCofork
-  map {K₁ K₂} f := {
-    Hom := f.Hom
+  map {K₁ K₂} f :=
+  { Hom := f.Hom
     w := by
       rintro (_|_)
       all_goals {
@@ -729,9 +726,9 @@ noncomputable def multicoforkEquivSigmaCofork :
   unitIso :=
     NatIso.ofComponents (fun K => Cocones.ext (Iso.refl _) (by
       rintro (_ | _)
-      { dsimp; simp }
+      · dsimp; simp
       -- porting note; `dsimp, simp` worked in mathlib3.
-      { dsimp [Multicofork.ofSigmaCofork]; simp } ))
+      · dsimp [Multicofork.ofSigmaCofork]; simp ))
       fun {K₁ K₂} f => by
         -- porting note: in mathlib3 `ext` works and I don't
         -- really understand why it doesn't work here

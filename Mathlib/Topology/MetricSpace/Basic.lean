@@ -2726,9 +2726,10 @@ theorem diam_ball {r : ℝ} (h : 0 ≤ r) : diam (ball x r) ≤ 2 * r :=
 
 /-- If a family of complete sets with diameter tending to `0` is such that each finite intersection
 is nonempty, then the total intersection is also nonempty. -/
-theorem _root_.IsComplete.nonempty_interᵢ_of_nonempty_bInter {s : ℕ → Set α} (h0 : IsComplete (s 0))
-    (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, Bounded (s n)) (h : ∀ N, (⋂ n ≤ N, s n).Nonempty)
-    (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) : (⋂ n, s n).Nonempty := by
+theorem _root_.IsComplete.nonempty_interᵢ_of_nonempty_binterᵢ {s : ℕ → Set α}
+    (h0 : IsComplete (s 0)) (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, Bounded (s n))
+    (h : ∀ N, (⋂ n ≤ N, s n).Nonempty) (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) :
+    (⋂ n, s n).Nonempty := by
   let u N := (h N).some
   have I : ∀ n N, n ≤ N → u N ∈ s n := by
     intro n N hn
@@ -2746,15 +2747,15 @@ theorem _root_.IsComplete.nonempty_interᵢ_of_nonempty_bInter {s : ℕ → Set 
   apply (hs n).mem_of_tendsto xlim
   filter_upwards [Ici_mem_atTop n]with p hp
   exact I n p hp
-#align is_complete.nonempty_Inter_of_nonempty_bInter IsComplete.nonempty_interᵢ_of_nonempty_bInter
+#align is_complete.nonempty_Inter_of_nonempty_bInter IsComplete.nonempty_interᵢ_of_nonempty_binterᵢ
 
 /-- In a complete space, if a family of closed sets with diameter tending to `0` is such that each
 finite intersection is nonempty, then the total intersection is also nonempty. -/
-theorem nonempty_interᵢ_of_nonempty_bInter [CompleteSpace α] {s : ℕ → Set α}
+theorem nonempty_interᵢ_of_nonempty_binterᵢ [CompleteSpace α] {s : ℕ → Set α}
     (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, Bounded (s n)) (h : ∀ N, (⋂ n ≤ N, s n).Nonempty)
     (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) : (⋂ n, s n).Nonempty :=
-  (hs 0).isComplete.nonempty_interᵢ_of_nonempty_bInter hs h's h h'
-#align metric.nonempty_Inter_of_nonempty_bInter Metric.nonempty_interᵢ_of_nonempty_bInter
+  (hs 0).isComplete.nonempty_interᵢ_of_nonempty_binterᵢ hs h's h h'
+#align metric.nonempty_Inter_of_nonempty_bInter Metric.nonempty_interᵢ_of_nonempty_binterᵢ
 
 end Diam
 

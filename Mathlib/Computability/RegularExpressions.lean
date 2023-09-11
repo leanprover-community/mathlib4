@@ -226,16 +226,16 @@ theorem one_rmatch_iff (x : List α) : rmatch 1 x ↔ x = [] := by
 
 theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] := by
   cases' x with _ x
-  . exact of_decide_eq_true rfl
+  · exact of_decide_eq_true rfl
   cases' x with head tail
-  . rw [rmatch, deriv]
+  · rw [rmatch, deriv]
     split_ifs
-    . tauto
-    . simp [List.singleton_inj]; tauto
-  . rw [rmatch, rmatch, deriv]
+    · tauto
+    · simp [List.singleton_inj]; tauto
+  · rw [rmatch, rmatch, deriv]
     split_ifs with h
-    . simp only [deriv_one, zero_rmatch, cons.injEq, and_false]
-    . simp only [deriv_zero, zero_rmatch, cons.injEq, and_false]
+    · simp only [deriv_one, zero_rmatch, cons.injEq, and_false]
+    · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false]
 #align regular_expression.char_rmatch_iff RegularExpression.char_rmatch_iff
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :

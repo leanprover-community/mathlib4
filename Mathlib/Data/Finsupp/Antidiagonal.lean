@@ -10,6 +10,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Multiset.Antidiagonal
+import Mathlib.Init.IteSimp
 
 /-!
 # The `Finsupp` counterpart of `Multiset.antidiagonal`.
@@ -61,10 +62,8 @@ theorem antidiagonal_filter_fst_eq (f g : α →₀ ℕ)
     ((antidiagonal f).filter fun p ↦ p.1 = g) = if g ≤ f then {(g, f - g)} else ∅ := by
   ext ⟨a, b⟩
   suffices a = g → (a + b = f ↔ g ≤ f ∧ b = f - g) by
-    have h₁ : (if g ≤ f then a = g ∧ b = f - g else False) ↔ g ≤ f ∧ a = g ∧ b = f - g := by
-      by_cases h : g ≤ f <;> simp [h]
     simpa [apply_ite (fun f ↦ (a, b) ∈ f), mem_filter, mem_antidiagonal, mem_singleton,
-      Prod.mk.inj_iff, h₁, ← and_assoc, @and_right_comm _ (a = _), and_congr_left_iff]
+      Prod.mk.inj_iff, ← and_assoc, @and_right_comm _ (a = _), and_congr_left_iff]
   rintro rfl
   constructor
   · rintro rfl
@@ -78,10 +77,8 @@ theorem antidiagonal_filter_snd_eq (f g : α →₀ ℕ)
     ((antidiagonal f).filter fun p ↦ p.2 = g) = if g ≤ f then {(f - g, g)} else ∅ := by
   ext ⟨a, b⟩
   suffices b = g → (a + b = f ↔ g ≤ f ∧ a = f - g) by
-    have h₁ : (if g ≤ f then a = f - g ∧ b = g else False) ↔ g ≤ f ∧ a = f - g ∧ b = g := by
-      by_cases h : g ≤ f <;> simp [h]
     simpa [apply_ite (fun f ↦ (a, b) ∈ f), mem_filter, mem_antidiagonal, mem_singleton,
-      Prod.mk.inj_iff, h₁, ← and_assoc, and_congr_left_iff]
+      Prod.mk.inj_iff, ← and_assoc, and_congr_left_iff]
   rintro rfl
   constructor
   · rintro rfl

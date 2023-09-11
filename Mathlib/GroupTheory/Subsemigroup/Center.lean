@@ -172,8 +172,10 @@ instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decida
 
 /-- The center of a semigroup is commutative. -/
 @[to_additive "The center of an additive semigroup is commutative."]
-instance : CommSemigroup (center M) :=
+instance center.commSemigroup : CommSemigroup (center M) :=
   { MulMemClass.toSemigroup (center M) with mul_comm := fun _ b => Subtype.ext <| b.2 _ }
+#align subsemigroup.center.comm_semigroup Subsemigroup.center.commSemigroup
+#align add_subsemigroup.center.add_comm_semigroup AddSubsemigroup.center.addCommSemigroup
 
 end
 

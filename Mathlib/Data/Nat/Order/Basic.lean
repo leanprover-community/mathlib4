@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.order.basic
-! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -288,21 +288,6 @@ theorem sub_succ' (m n : ℕ) : m - n.succ = m - n - 1 :=
 #align nat.sub_succ' Nat.sub_succ'
 
 /-! ### `mul` -/
-
-
-theorem mul_eq_one_iff : ∀ {m n : ℕ}, m * n = 1 ↔ m = 1 ∧ n = 1
-  | 0, 0 => by decide
-  | 0, 1 => by decide
-  | 1, 0 => by decide
-  | m + 2, 0 => by simp
-  | 0, n + 2 => by simp
-  | m + 1, n + 1 =>
-    ⟨fun h => by
-      simp only [succ_mul, mul_succ, add_succ, one_mul, mul_one, (add_assoc _ _ _).symm,
-          ← succ_eq_add_one, add_eq_zero_iff, (show 1 = succ 0 from rfl), succ_inj'] at h
-      simp [h],
-      fun h => by simp only [h, mul_one]⟩
-#align nat.mul_eq_one_iff Nat.mul_eq_one_iff
 
 theorem succ_mul_pos (m : ℕ) (hn : 0 < n) : 0 < succ m * n :=
   mul_pos (succ_pos m) hn

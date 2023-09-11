@@ -259,25 +259,13 @@ and multivariable polynomials in one of the types,
 with coefficents in multivariable polynomials in the other type.
 -/
 def sumRingEquiv : MvPolynomial (Sum S₁ S₂) R ≃+* MvPolynomial S₁ (MvPolynomial S₂ R) := by
-  apply
-    @mvPolynomialEquivMvPolynomial R (Sum S₁ S₂) _ _ _ _ (sumToIter R S₁ S₂) (iterToSum R S₁ S₂)
-  · refine' RingHom.ext fun p => _
-    rw [RingHom.comp_apply]
-    convert hom_eq_hom ((sumToIter R S₁ S₂).comp ((iterToSum R S₁ S₂).comp C)) C _ _ p
-    · ext1 a
-      dsimp
-      rw [iterToSum_C_C R S₁ S₂, sumToIter_C R S₁ S₂]
-    · intro c
-      dsimp
-      rw [iterToSum_C_X R S₁ S₂, sumToIter_Xr R S₁ S₂]
-  · intro b
-    rw [iterToSum_X R S₁ S₂, sumToIter_Xl R S₁ S₂]
-  · ext1 a
-    rw [RingHom.comp_apply, RingHom.comp_apply, sumToIter_C R S₁ S₂, iterToSum_C_C R S₁ S₂]
-  · intro n
-    cases' n with b c
-    · rw [sumToIter_Xl, iterToSum_X]
-    · rw [sumToIter_Xr, iterToSum_C_X]
+  apply mvPolynomialEquivMvPolynomial R (Sum S₁ S₂) _ _ (sumToIter R S₁ S₂) (iterToSum R S₁ S₂)
+  · refine RingHom.ext (hom_eq_hom _ _ ?hC ?hX)
+    case hC => ext1; simp only [RingHom.comp_apply, iterToSum_C_C, sumToIter_C]
+    case hX => intro; simp only [RingHom.comp_apply, iterToSum_C_X, sumToIter_Xr]
+  · simp [iterToSum_X, sumToIter_Xl]
+  · ext1; simp only [RingHom.comp_apply, sumToIter_C, iterToSum_C_C]
+  · rintro ⟨⟩ <;> simp only [sumToIter_Xl, iterToSum_X, sumToIter_Xr, iterToSum_C_X]
 #align mv_polynomial.sum_ring_equiv MvPolynomial.sumRingEquiv
 
 /-- The algebra isomorphism between multivariable polynomials in a sum of two types,

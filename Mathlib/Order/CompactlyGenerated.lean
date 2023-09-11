@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 
 ! This file was ported from Lean 3 source module order.compactly_generated
-! leanprover-community/mathlib commit 861a26926586cd46ff80264d121cdb6fa0e35cc1
+! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -204,30 +204,16 @@ theorem finset_sup_compact_of_compact {α β : Type _} [CompleteLattice α] {f :
 #align complete_lattice.finset_sup_compact_of_compact CompleteLattice.finset_sup_compact_of_compact
 
 theorem WellFounded.isSupFiniteCompact (h : WellFounded ((· > ·) : α → α → Prop)) :
-    IsSupFiniteCompact α := by
-  intro s
-  let p : Set α := { x | ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = x }
-  have hp : p.Nonempty := by
-    use ⊥, ∅
+    IsSupFiniteCompact α := fun s =>
+  by
+  let S := { x | ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = x }
+  obtain ⟨m, ⟨t, ⟨ht₁, rfl⟩⟩, hm⟩ := h.has_min S ⟨⊥, ∅, by simp⟩
+  refine' ⟨t, ht₁, (supₛ_le _ _ fun y hy => _).antisymm _⟩
+  · classical
+    rw [eq_of_le_of_not_lt (Finset.sup_mono (t.subset_insert y))
+        (hm _ ⟨insert y t, by simp [Set.insert_subset, hy, ht₁]⟩)]
     simp
-  obtain ⟨m, ⟨t, ⟨ht₁, ht₂⟩⟩, hm⟩ := WellFounded.wellFounded_iff_has_max'.mp h p hp
-  use t
-  simp only [ht₁, ht₂, true_and_iff]
-  apply le_antisymm
-  · apply supₛ_le
-    intro y hy
-    classical
-      have hy' : (insert y t).sup id ∈ p := by
-        use insert y t
-        simp
-        rw [Set.insert_subset]
-        exact ⟨hy, ht₁⟩
-      have hm' : m ≤ (insert y t).sup id := by
-        rw [← ht₂]
-        exact Finset.sup_mono (t.subset_insert y)
-      rw [← hm _ hy' hm']
-      simp
-  · rw [← ht₂, Finset.sup_id_eq_supₛ]
+  · rw [Finset.sup_id_eq_supₛ]
     exact supₛ_le_supₛ ht₁
 #align complete_lattice.well_founded.is_Sup_finite_compact CompleteLattice.WellFounded.isSupFiniteCompact
 

@@ -98,8 +98,8 @@ class OrderRingIsoClass (F : Type _) (α β : outParam (Type _)) [Mul α] [Add �
 #align order_ring_iso_class OrderRingIsoClass
 
 -- See note [lower priority instance]
-instance (priority := 100) OrderRingHomClass.toOrderAddMonoidHomClass {_ :NonAssocSemiring α}
-    {_ : Preorder α} {_ :NonAssocSemiring β} {_ : Preorder β} [OrderRingHomClass F α β] :
+instance (priority := 100) OrderRingHomClass.toOrderAddMonoidHomClass [NonAssocSemiring α]
+    [Preorder α] [NonAssocSemiring β] [Preorder β] [OrderRingHomClass F α β] :
     OrderAddMonoidHomClass F α β :=
   { ‹OrderRingHomClass F α β› with }
 #align
@@ -107,8 +107,8 @@ instance (priority := 100) OrderRingHomClass.toOrderAddMonoidHomClass {_ :NonAss
   OrderRingHomClass.toOrderAddMonoidHomClass
 
 -- See note [lower priority instance]
-instance (priority := 100) OrderRingHomClass.toOrderMonoidWithZeroHomClass {_ : NonAssocSemiring α}
-    {_ : Preorder α} {_ : NonAssocSemiring β} {_ : Preorder β} [OrderRingHomClass F α β] :
+instance (priority := 100) OrderRingHomClass.toOrderMonoidWithZeroHomClass [NonAssocSemiring α]
+    [Preorder α] [NonAssocSemiring β] [Preorder β] [OrderRingHomClass F α β] :
     OrderMonoidWithZeroHomClass F α β :=
   { ‹OrderRingHomClass F α β› with }
 #align
@@ -116,15 +116,14 @@ instance (priority := 100) OrderRingHomClass.toOrderMonoidWithZeroHomClass {_ : 
   OrderRingHomClass.toOrderMonoidWithZeroHomClass
 
 -- See note [lower instance priority]
--- porting note: replaced []'s with {_ : }'s to prevent dangerous instances
-instance (priority := 100) OrderRingIsoClass.toOrderIsoClass {_ : Mul α}  {_ : Add α}  {_ :LE α}
-  {_ :Mul β} {_ :Add β}  {_ : LE β} [OrderRingIsoClass F α β] : OrderIsoClass F α β :=
+instance (priority := 100) OrderRingIsoClass.toOrderIsoClass [Mul α] [Add α] [LE α]
+  [Mul β] [Add β]  [LE β] [OrderRingIsoClass F α β] : OrderIsoClass F α β :=
   { ‹OrderRingIsoClass F α β› with }
 #align order_ring_iso_class.to_order_iso_class OrderRingIsoClass.toOrderIsoClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderRingIsoClass.toOrderRingHomClass {_ :NonAssocSemiring α}
-  {_ : Preorder α} {_ :NonAssocSemiring β} {_ : Preorder β} [OrderRingIsoClass F α β] :
+instance (priority := 100) OrderRingIsoClass.toOrderRingHomClass [NonAssocSemiring α]
+  [Preorder α] [NonAssocSemiring β] [Preorder β] [OrderRingIsoClass F α β] :
     OrderRingHomClass F α β :=
   { monotone := fun f _ _ => (map_le_map_iff f).2
     -- porting note: used to be the following which times out

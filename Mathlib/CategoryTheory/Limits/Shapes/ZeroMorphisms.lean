@@ -55,9 +55,9 @@ class HasZeroMorphisms where
   /-- Every morphism space has zero -/
   [Zero : ∀ X Y : C, Zero (X ⟶ Y)]
   /-- `f` composed with `0` is `0` -/
-  comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) := by aesop
+  comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) := by aesop_cat
   /-- `0` composed with `f` is `0` -/
-  zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z) := by aesop
+  zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z) := by aesop_cat
 #align category_theory.limits.has_zero_morphisms CategoryTheory.Limits.HasZeroMorphisms
 #align category_theory.limits.has_zero_morphisms.comp_zero' CategoryTheory.Limits.HasZeroMorphisms.comp_zero
 #align category_theory.limits.has_zero_morphisms.zero_comp' CategoryTheory.Limits.HasZeroMorphisms.zero_comp

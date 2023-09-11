@@ -155,7 +155,7 @@ namespace Fin
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
   (finRotate (i + 1)).extendDomain
-    (Equiv.ofLeftInverse' (Fin.castLe (Nat.succ_le_of_lt i.is_lt)).toEmbedding (↑)
+    (Equiv.ofLeftInverse' (Fin.castLE (Nat.succ_le_of_lt i.is_lt)).toEmbedding (↑)
       (by
         intro x
         ext
@@ -173,14 +173,14 @@ theorem cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
     cycleRange i j = if j = i then 0 else j + 1 := by
   cases n
   · exact Subsingleton.elim (α := Fin 1) _ _  --Porting note; was `simp`
-  have : j = (Fin.castLe (Nat.succ_le_of_lt i.is_lt)).toEmbedding
+  have : j = (Fin.castLE (Nat.succ_le_of_lt i.is_lt)).toEmbedding
     ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ :=
     by simp
   ext
   rw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
     Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
-    viaFintypeEmbedding_apply_image, coe_castLe, coe_finRotate]
-  simp only [Fin.ext_iff, val_last, val_mk, val_zero, Fin.eta, castLe_mk]
+    viaFintypeEmbedding_apply_image, coe_castLE, coe_finRotate]
+  simp only [Fin.ext_iff, val_last, val_mk, val_zero, Fin.eta, castLE_mk]
   split_ifs with heq
   · rfl
   · rw [Fin.val_add_one_of_lt]

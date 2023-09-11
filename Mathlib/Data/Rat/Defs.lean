@@ -251,6 +251,15 @@ theorem divInt_neg_one_one : -1 /. 1 = -1 :=
     rfl
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
 
+theorem divInt_one (n : ℤ) : n /. 1 = n :=
+  show divInt _ _ = _ by
+    rw [divInt]
+    simp [mkRat, normalize]
+    rfl
+
+theorem mkRat_one {n : ℤ} : mkRat n 1 = n := by
+  simp [Rat.mkRat_eq, Rat.divInt_one]
+
 #align rat.mul_one Rat.mul_one
 #align rat.one_mul Rat.one_mul
 #align rat.mul_comm Rat.mul_comm
@@ -540,6 +549,17 @@ theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
 #align rat.coe_int_inj Rat.coe_int_inj
 
 end Casts
+
+theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
+  simp [mkRat]
+  by_cases d = 0
+  · simp [h]
+  · simp [h, HDiv.hDiv, Rat.div, Div.div]
+    unfold Rat.inv
+    have h₁ : 0 < d := Nat.pos_iff_ne_zero.2 h
+    have h₂ : ¬ (d : ℤ) < 0 := by simp
+    simp [h, h₁, h₂, ←Rat.normalize_eq_mk', Rat.normalize_eq_mkRat, ← mkRat_one,
+      Rat.mkRat_mul_mkRat]
 
 end Rat
 

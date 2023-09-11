@@ -228,7 +228,7 @@ theorem orderOf_one : orderOf (1 : G) = 1 := by
 
 @[to_additive (attr := simp) AddMonoid.addOrderOf_eq_one_iff]
 theorem orderOf_eq_one_iff : orderOf x = 1 ↔ x = 1 := by
-  rw [orderOf, is_fixed_point_iff_minimalPeriod_eq_one, IsFixedPt, mul_one]
+  rw [orderOf, minimalPeriod_eq_one_iff_isFixedPt, IsFixedPt, mul_one]
 #align order_of_eq_one_iff orderOf_eq_one_iff
 #align add_monoid.order_of_eq_one_iff AddMonoid.addOrderOf_eq_one_iff
 
@@ -237,7 +237,6 @@ theorem pow_eq_mod_orderOf {n : ℕ} : x ^ n = x ^ (n % orderOf x) :=
   calc
     x ^ n = x ^ (n % orderOf x + orderOf x * (n / orderOf x)) := by rw [Nat.mod_add_div]
     _ = x ^ (n % orderOf x) := by simp [pow_add, pow_mul, pow_orderOf_eq_one]
-
 #align pow_eq_mod_order_of pow_eq_mod_orderOf
 #align nsmul_eq_mod_add_order_of nsmul_eq_mod_addOrderOf
 
@@ -259,6 +258,27 @@ theorem orderOf_pow_dvd (n : ℕ) : orderOf (x ^ n) ∣ orderOf x := by
   rw [orderOf_dvd_iff_pow_eq_one, pow_right_comm, pow_orderOf_eq_one, one_pow]
 #align order_of_pow_dvd orderOf_pow_dvd
 #align add_order_of_smul_dvd addOrderOf_smul_dvd
+
+@[to_additive]
+theorem pow_injective_of_lt_orderOf (x : G) (hn : n < orderOf x) (hm : m < orderOf x)
+    (eq : x ^ n = x ^ m) :
+    n = m :=
+  eq_of_lt_minimalPeriod_of_iterate_eq hn hm (by simpa only [mul_left_iterate, mul_one] )
+#align pow_injective_of_lt_order_of pow_injective_of_lt_orderOf
+#align nsmul_injective_of_lt_add_order_of nsmul_injective_of_lt_addOrderOf
+
+@[to_additive mem_multiples_iff_mem_range_addOrderOf']
+theorem mem_powers_iff_mem_range_order_of' [DecidableEq G] (hx : 0 < orderOf x) :
+    y ∈ Submonoid.powers x ↔ y ∈ (Finset.range (orderOf x)).image ((x ^ ·) : ℕ → G) :=
+  Finset.mem_range_iff_mem_finset_range_of_mod_eq' hx fun _ => pow_eq_mod_orderOf.symm
+#align mem_powers_iff_mem_range_order_of' mem_powers_iff_mem_range_order_of'
+#align mem_multiples_iff_mem_range_add_order_of' mem_multiples_iff_mem_range_addOrderOf'
+
+@[to_additive]
+theorem pow_eq_one_iff_modEq : x ^ n = 1 ↔ n ≡ 0 [MOD orderOf x] := by
+  rw [modEq_zero_iff_dvd, orderOf_dvd_iff_pow_eq_one]
+#align pow_eq_one_iff_modeq pow_eq_one_iff_modEq
+#align nsmul_eq_zero_iff_modeq nsmul_eq_zero_iff_modEq
 
 @[to_additive]
 theorem orderOf_map_dvd {H : Type _} [Monoid H] (ψ : G →* H) (x : G) : orderOf (ψ x) ∣ orderOf x :=
@@ -466,26 +486,6 @@ section CancelMonoid
 variable [LeftCancelMonoid G] (x y)
 
 @[to_additive]
-theorem pow_injective_of_lt_orderOf (hn : n < orderOf x) (hm : m < orderOf x) (eq : x ^ n = x ^ m) :
-    n = m :=
-  eq_of_lt_minimalPeriod_of_iterate_eq hn hm (by simpa only [mul_left_iterate, mul_one] )
-#align pow_injective_of_lt_order_of pow_injective_of_lt_orderOf
-#align nsmul_injective_of_lt_add_order_of nsmul_injective_of_lt_addOrderOf
-
-@[to_additive mem_multiples_iff_mem_range_addOrderOf']
-theorem mem_powers_iff_mem_range_order_of' [DecidableEq G] (hx : 0 < orderOf x) :
-    y ∈ Submonoid.powers x ↔ y ∈ (Finset.range (orderOf x)).image ((· ^ ·) x : ℕ → G) :=
-  Finset.mem_range_iff_mem_finset_range_of_mod_eq' hx fun _ => pow_eq_mod_orderOf.symm
-#align mem_powers_iff_mem_range_order_of' mem_powers_iff_mem_range_order_of'
-#align mem_multiples_iff_mem_range_add_order_of' mem_multiples_iff_mem_range_addOrderOf'
-
-@[to_additive]
-theorem pow_eq_one_iff_modEq : x ^ n = 1 ↔ n ≡ 0 [MOD orderOf x] := by
-  rw [modEq_zero_iff_dvd, orderOf_dvd_iff_pow_eq_one]
-#align pow_eq_one_iff_modeq pow_eq_one_iff_modEq
-#align nsmul_eq_zero_iff_modeq nsmul_eq_zero_iff_modEq
-
-@[to_additive]
 theorem pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
   wlog hmn : m ≤ n generalizing m n
   · rw [eq_comm, ModEq.comm, this (le_of_not_le hmn)]
@@ -504,11 +504,22 @@ theorem injective_pow_iff_not_isOfFinOrder {x : G} :
 #align injective_nsmul_iff_not_is_of_fin_add_order injective_nsmul_iff_not_isOfFinAddOrder
 
 @[to_additive]
+theorem pow_inj_mod {n m : ℕ} : x ^ n = x ^ m ↔ n % orderOf x = m % orderOf x :=
+  pow_eq_pow_iff_modEq x
+#align pow_inj_mod pow_inj_mod
+#align nsmul_inj_mod nsmul_inj_mod
+
+@[to_additive]
+theorem pow_inj_iff_of_orderOf_eq_zero (h : orderOf x = 0) {n m : ℕ} : x ^ n = x ^ m ↔ n = m := by
+  rw [pow_eq_pow_iff_modEq, h, modEq_zero_iff]
+#align pow_inj_iff_of_order_of_eq_zero pow_inj_iff_of_orderOf_eq_zero
+#align nsmul_inj_iff_of_add_order_of_eq_zero nsmul_inj_iff_of_addOrderOf_eq_zero
+
+@[to_additive]
 theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
     { y : G | ¬IsOfFinOrder y }.Infinite := by
   let s := { n | 0 < n }.image fun n : ℕ => x ^ n
-  have hs : s ⊆ { y : G | ¬IsOfFinOrder y } :=
-    by
+  have hs : s ⊆ { y : G | ¬IsOfFinOrder y } := by
     rintro - ⟨n, hn : 0 < n, rfl⟩ (contra : IsOfFinOrder (x ^ n))
     apply h
     rw [isOfFinOrder_iff_pow_eq_one] at contra⊢
@@ -573,32 +584,8 @@ theorem zpow_eq_mod_orderOf : x ^ i = x ^ (i % (orderOf x : ℤ)) :=
   calc
     x ^ i = _ := by rw [← Int.emod_add_ediv i (orderOf x)]
     _ = x ^ (i % (orderOf x : ℤ)) := by simp [zpow_add, zpow_mul, pow_orderOf_eq_one]
-
 #align zpow_eq_mod_order_of zpow_eq_mod_orderOf
 #align zsmul_eq_mod_add_order_of zsmul_eq_mod_addOrderOf
-
-@[to_additive]
-theorem pow_inj_iff_of_orderOf_eq_zero (h : orderOf x = 0) {n m : ℕ} : x ^ n = x ^ m ↔ n = m := by
-  rw [orderOf_eq_zero_iff, isOfFinOrder_iff_pow_eq_one] at h
-  push_neg  at h
-  induction' n with n IH generalizing m
-  · cases' m with m
-    · simp
-    · simpa [eq_comm] using h m.succ m.zero_lt_succ
-  · cases m
-    · simpa using h n.succ n.zero_lt_succ
-    · simp [_root_.pow_succ, IH]
-#align pow_inj_iff_of_order_of_eq_zero pow_inj_iff_of_orderOf_eq_zero
-#align nsmul_inj_iff_of_add_order_of_eq_zero nsmul_inj_iff_of_addOrderOf_eq_zero
-
-@[to_additive]
-theorem pow_inj_mod {n m : ℕ} : x ^ n = x ^ m ↔ n % orderOf x = m % orderOf x := by
-  cases' (orderOf x).zero_le.eq_or_lt with hx hx
-  · simp [pow_inj_iff_of_orderOf_eq_zero, hx.symm]
-  rw [pow_eq_mod_orderOf, @pow_eq_mod_orderOf _ _ _ m]
-  exact ⟨pow_injective_of_lt_orderOf _ (Nat.mod_lt _ hx) (Nat.mod_lt _ hx), fun h => congr_arg _ h⟩
-#align pow_inj_mod pow_inj_mod
-#align nsmul_inj_mod nsmul_inj_mod
 
 @[to_additive (attr := simp) zsmul_smul_addOrderOf]
 theorem zpow_pow_orderOf : (x ^ i) ^ orderOf x = 1 := by
@@ -690,9 +677,15 @@ theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n 
                 let ⟨m, hm⟩ := h.2
                 rw [hm, pow_mul, pow_orderOf_eq_one, one_pow], fun h =>
                 ⟨orderOf_le_of_pow_eq_one hn.bot_lt h, orderOf_dvd_of_pow_eq_one h⟩⟩))
-
 #align sum_card_order_of_eq_card_pow_eq_one sum_card_orderOf_eq_card_pow_eq_one
 #align sum_card_add_order_of_eq_card_nsmul_eq_zero sum_card_addOrderOf_eq_card_nsmul_eq_zero
+
+@[to_additive ]
+theorem orderOf_le_card_univ [Fintype G] : orderOf x ≤ Fintype.card G :=
+  Finset.le_card_of_inj_on_range ((· ^ ·) x) (fun _ _ => Finset.mem_univ _) fun _ hi _ hj =>
+    pow_injective_of_lt_orderOf x hi hj
+#align order_of_le_card_univ orderOf_le_card_univ
+#align add_order_of_le_card_univ addOrderOf_le_card_univ
 
 end FiniteMonoid
 
@@ -709,13 +702,6 @@ theorem exists_pow_eq_one [Finite G] (x : G) : IsOfFinOrder x := by
   exact Set.Infinite.mono (Set.subset_univ _) (infinite_not_isOfFinOrder H)
 #align exists_pow_eq_one exists_pow_eq_one
 #align exists_nsmul_eq_zero exists_nsmul_eq_zero
-
-@[to_additive ]
-theorem orderOf_le_card_univ [Fintype G] : orderOf x ≤ Fintype.card G :=
-  Finset.le_card_of_inj_on_range ((· ^ ·) x) (fun _ _ => Finset.mem_univ _) fun _ hi _ hj =>
-    pow_injective_of_lt_orderOf x hi hj
-#align order_of_le_card_univ orderOf_le_card_univ
-#align add_order_of_le_card_univ addOrderOf_le_card_univ
 
 /-- This is the same as `orderOf_pos'` but with one fewer explicit assumption since this is
   automatic in case of a finite cancellative monoid.-/
