@@ -877,7 +877,7 @@ lemma rightShift_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : �
 variable (K L)
 
 @[simps]
-lemma rightShiftEquiv (n a n' : ℤ) (hn' : n' + a = n) :
+def rightShiftEquiv (n a n' : ℤ) (hn' : n' + a = n) :
     Cochain K L n ≃ Cochain K (L⟦a⟧) n' where
   toFun γ := γ.rightShift a n' hn'
   invFun γ := γ.rightUnshift n hn'
@@ -1084,6 +1084,66 @@ lemma δ_shift (a m : ℤ) :
       smul_add, comp_zsmul, zsmul_comp, smul_smul, mul_comm a.negOnePow]
   . rw [δ_shape _ _ hnm, δ_shape _ _ hnm, shift_zero, smul_zero]
 
+def single {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) :
+    Cochain K L n :=
+  Cochain.mk (fun p' q' _ =>
+    if h : p = p' ∧ q = q'
+      then (K.XIsoOfEq h.1).inv ≫ f ≫ (L.XIsoOfEq h.2).hom
+      else 0)
+
+@[simp]
+lemma single_v {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (hpq : p + n = q) :
+    (single f n).v p q hpq = f := by
+  dsimp [single]
+  rw [if_pos, id_comp, comp_id]
+  tauto
+
+lemma single_v_eq_zero {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ) (hpq' : p' + n = q')
+    (hp' : p' ≠ p) :
+    (single f n).v p' q' hpq' = 0 := by
+  dsimp [single]
+  rw [dif_neg]
+  intro h
+  exact hp' (by linarith)
+
+lemma single_v_eq_zero' {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ) (hpq' : p' + n = q')
+    (hq' : q' ≠ q) :
+    (single f n).v p' q' hpq' = 0 := by
+  dsimp [single]
+  rw [dif_neg]
+  intro h
+  exact hq' (by linarith)
+
+lemma δ_single {p q : ℤ} (f : K.X p ⟶ L.X q) (n m : ℤ) (hm : n + 1 = m)
+    (p' q' : ℤ) (hp' : p' + 1 = p) (hq' : q + 1 = q') :
+    δ n m (single f n) = single (f ≫ L.d q q') m + m.negOnePow • single (K.d p' p ≫ f) m := by
+  ext p'' q'' hpq''
+  rw [δ_v n m hm (single f n) p'' q'' (by linarith) (q''-1) (p''+1) rfl (by linarith),
+    add_v, zsmul_v]
+  congr 1
+  · by_cases p'' = p
+    · subst h
+      by_cases q = q'' - 1
+      · subst h
+        obtain rfl : q' = q'' := by linarith
+        simp only [single_v]
+      · rw [single_v_eq_zero', single_v_eq_zero', zero_comp]
+        all_goals
+          intro
+          exact h (by linarith)
+    · rw [single_v_eq_zero _ _ _ _ _ h, single_v_eq_zero _ _ _ _ _ h, zero_comp]
+  · subst hm
+    by_cases q'' = q
+    · subst h
+      by_cases p'' = p'
+      · subst h
+        obtain rfl : p = p''+1 := by linarith
+        simp
+      · rw [single_v_eq_zero _ _ _ _ _ h, single_v_eq_zero, comp_zero, smul_zero]
+        intro
+        apply h
+        linarith
+    · simp only [single_v_eq_zero' _ _ _ _ _ h, comp_zero, smul_zero]
 
 end Cochain
 
