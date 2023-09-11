@@ -274,6 +274,29 @@ theorem MeasureTheory.QuotientVolumeEqVolumePreimage.quotient_is_haar
 
 local notation "π" => @QuotientGroup.mk G _ Γ
 
+
+-- note: is `IsFiniteMeasure` necessary? transport `K` by group action to have nontrivial
+-- intersection with `s` and then work with the closure of that intersection?
+instance [LocallyCompactSpace G] [QuotientVolumeEqVolumePreimage μ]
+    [i : HasFundamentalDomain (Subgroup.opposite Γ) G] :
+    IsHaarMeasure μ where
+      lt_top_of_isCompact := by
+        intro K cpt_K
+        obtain ⟨s, fund_dom_s⟩ := i
+        rw [projection_respects_measure fund_dom_s cpt_K.measurableSet]
+        sorry
+      map_mul_left_eq_self := fun _ ↦ map_mul_left_eq_self _ _
+      open_pos := by
+        intro U openU nonemptyU
+        obtain ⟨s, fund_dom_s⟩ := i
+        rw [projection_respects_measure fund_dom_s openU.measurableSet]
+        haveI i' : IsOpenPosMeasure (volume : Measure G) := inferInstance
+        sorry
+        --apply IsOpenPosMeasure.open_pos
+
+
+#exit
+
 -- note: is `IsFiniteMeasure` necessary? transport `K` by group action to have nontrivial
 -- intersection with `s` and then work with the closure of that intersection?
 instance [LocallyCompactSpace G] [QuotientVolumeEqVolumePreimage μ]
