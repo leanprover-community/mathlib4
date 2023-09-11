@@ -5,7 +5,8 @@ Authors: Yury Kudryashov
 
 Some proofs and docs came from `algebra/commute` (c) Neil Strickland
 -/
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Tactic.Cases
 
 #align_import algebra.group.semiconj from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -115,56 +116,6 @@ section Monoid
 
 variable [Monoid M]
 
-/-- If `a` semiconjugates a unit `x` to a unit `y`, then it semiconjugates `x⁻¹` to `y⁻¹`. -/
-@[to_additive "If `a` semiconjugates an additive unit `x` to an additive unit `y`, then it
-semiconjugates `-x` to `-y`."]
-lemma units_inv_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy a ↑x⁻¹ ↑y⁻¹ :=
-  calc
-    a * ↑x⁻¹ = ↑y⁻¹ * (y * a) * ↑x⁻¹ := by rw [Units.inv_mul_cancel_left]
-    _        = ↑y⁻¹ * a              := by rw [← h.eq, mul_assoc, Units.mul_inv_cancel_right]
-#align semiconj_by.units_inv_right SemiconjBy.units_inv_right
-#align add_semiconj_by.add_units_neg_right AddSemiconjBy.addUnits_neg_right
-
-@[to_additive (attr := simp)]
-lemma units_inv_right_iff {a : M} {x y : Mˣ} : SemiconjBy a ↑x⁻¹ ↑y⁻¹ ↔ SemiconjBy a x y :=
-  ⟨units_inv_right, units_inv_right⟩
-#align semiconj_by.units_inv_right_iff SemiconjBy.units_inv_right_iff
-#align add_semiconj_by.add_units_neg_right_iff AddSemiconjBy.addUnits_neg_right_iff
-
-/-- If a unit `a` semiconjugates `x` to `y`, then `a⁻¹` semiconjugates `y` to `x`. -/
-@[to_additive "If an additive unit `a` semiconjugates `x` to `y`, then `-a` semiconjugates `y` to
-`x`."]
-lemma units_inv_symm_left {a : Mˣ} {x y : M} (h : SemiconjBy (↑a) x y) : SemiconjBy (↑a⁻¹) y x :=
-  calc
-    ↑a⁻¹ * y = ↑a⁻¹ * (y * a * ↑a⁻¹) := by rw [Units.mul_inv_cancel_right]
-    _ = x * ↑a⁻¹ := by rw [← h.eq, ← mul_assoc, Units.inv_mul_cancel_left]
-#align semiconj_by.units_inv_symm_left SemiconjBy.units_inv_symm_left
-#align add_semiconj_by.add_units_neg_symm_left AddSemiconjBy.addUnits_neg_symm_left
-
-@[to_additive (attr := simp)]
-lemma units_inv_symm_left_iff {a : Mˣ} {x y : M} : SemiconjBy (↑a⁻¹) y x ↔ SemiconjBy (↑a) x y :=
-  ⟨units_inv_symm_left, units_inv_symm_left⟩
-#align semiconj_by.units_inv_symm_left_iff SemiconjBy.units_inv_symm_left_iff
-#align add_semiconj_by.add_units_neg_symm_left_iff AddSemiconjBy.addUnits_neg_symm_left_iff
-
-@[to_additive]
-lemma units_val {a x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy (a : M) x y :=
-  congr_arg Units.val h
-#align semiconj_by.units_coe SemiconjBy.units_val
-#align add_semiconj_by.add_units_coe AddSemiconjBy.addUnits_val
-
-@[to_additive]
-lemma units_of_val {a x y : Mˣ} (h : SemiconjBy (a : M) x y) : SemiconjBy a x y :=
-  Units.ext h
-#align semiconj_by.units_of_coe SemiconjBy.units_of_val
-#align add_semiconj_by.add_units_of_coe AddSemiconjBy.addUnits_of_val
-
-@[to_additive (attr := simp)]
-lemma units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x y :=
-  ⟨units_of_val, units_val⟩
-#align semiconj_by.units_coe_iff SemiconjBy.units_val_iff
-#align add_semiconj_by.add_units_coe_iff AddSemiconjBy.addUnits_val_iff
-
 @[to_additive (attr := simp)]
 lemma pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x ^ n) (y ^ n) := by
   induction' n with n ih
@@ -177,53 +128,9 @@ lemma pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x ^
 
 end Monoid
 
-section DivisionMonoid
-
-variable [DivisionMonoid G] {a x y : G}
-
-@[to_additive (attr := simp)]
-lemma inv_inv_symm_iff : SemiconjBy a⁻¹ x⁻¹ y⁻¹ ↔ SemiconjBy a y x :=
-  inv_involutive.injective.eq_iff.symm.trans <| by
-    rw [mul_inv_rev, mul_inv_rev, inv_inv, inv_inv, inv_inv, eq_comm, SemiconjBy]
-#align semiconj_by.inv_inv_symm_iff SemiconjBy.inv_inv_symm_iff
-#align add_semiconj_by.neg_neg_symm_iff AddSemiconjBy.neg_neg_symm_iff
-
-@[to_additive]
-lemma inv_inv_symm : SemiconjBy a x y → SemiconjBy a⁻¹ y⁻¹ x⁻¹ :=
-  inv_inv_symm_iff.2
-#align semiconj_by.inv_inv_symm SemiconjBy.inv_inv_symm
-#align add_semiconj_by.neg_neg_symm AddSemiconjBy.neg_neg_symm
-
-end DivisionMonoid
-
 section Group
 
 variable [Group G] {a x y : G}
-
-@[to_additive (attr := simp)]
-lemma inv_right_iff : SemiconjBy a x⁻¹ y⁻¹ ↔ SemiconjBy a x y :=
-  @units_inv_right_iff G _ a ⟨x, x⁻¹, mul_inv_self x, inv_mul_self x⟩
-    ⟨y, y⁻¹, mul_inv_self y, inv_mul_self y⟩
-#align semiconj_by.inv_right_iff SemiconjBy.inv_right_iff
-#align add_semiconj_by.neg_right_iff AddSemiconjBy.neg_right_iff
-
-@[to_additive]
-lemma inv_right : SemiconjBy a x y → SemiconjBy a x⁻¹ y⁻¹ :=
-  inv_right_iff.2
-#align semiconj_by.inv_right SemiconjBy.inv_right
-#align add_semiconj_by.neg_right AddSemiconjBy.neg_right
-
-@[to_additive (attr := simp)]
-lemma inv_symm_left_iff : SemiconjBy a⁻¹ y x ↔ SemiconjBy a x y :=
-  @units_inv_symm_left_iff G _ ⟨a, a⁻¹, mul_inv_self a, inv_mul_self a⟩ _ _
-#align semiconj_by.inv_symm_left_iff SemiconjBy.inv_symm_left_iff
-#align add_semiconj_by.neg_symm_left_iff AddSemiconjBy.neg_symm_left_iff
-
-@[to_additive]
-lemma inv_symm_left : SemiconjBy a x y → SemiconjBy a⁻¹ y x :=
-  inv_symm_left_iff.2
-#align semiconj_by.inv_symm_left SemiconjBy.inv_symm_left
-#align add_semiconj_by.neg_symm_left AddSemiconjBy.neg_symm_left
 
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
 @[to_additive "`a` semiconjugates `x` to `a + x + -a`."]
@@ -241,10 +148,3 @@ lemma semiconjBy_iff_eq [CancelCommMonoid M] {a x y : M} : SemiconjBy a x y ↔ 
   ⟨fun h => mul_left_cancel (h.trans (mul_comm _ _)), fun h => by rw [h, SemiconjBy, mul_comm]⟩
 #align semiconj_by_iff_eq semiconjBy_iff_eq
 #align add_semiconj_by_iff_eq addSemiconjBy_iff_eq
-
-/-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
-@[to_additive AddUnits.mk_addSemiconjBy "`a` semiconjugates `x` to `a + x + -a`."]
-lemma Units.mk_semiconjBy [Monoid M] (u : Mˣ) (x : M) : SemiconjBy (↑u) x (u * x * ↑u⁻¹) := by
-  unfold SemiconjBy; rw [Units.inv_mul_cancel_right]
-#align units.mk_semiconj_by Units.mk_semiconjBy
-#align add_units.mk_semiconj_by AddUnits.mk_addSemiconjBy

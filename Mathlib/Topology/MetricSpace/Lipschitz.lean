@@ -27,10 +27,10 @@ uniformly continuous.
 ## Main definitions and lemmas
 
 * `LipschitzWith K f`: states that `f` is Lipschitz with constant `K : ℝ≥0`
-* `LipschitzOnWith K f`: states that `f` is Lipschitz with constant `K : ℝ≥0` on a set `s`
+* `LipschitzOnWith K f s`: states that `f` is Lipschitz with constant `K : ℝ≥0` on a set `s`
 * `LipschitzWith.uniformContinuous`: a Lipschitz function is uniformly continuous
-* `LipschitzOnWith.uniformContinuousOn`: a function which is Lipschitz on a set is uniformly
-  continuous on that set.
+* `LipschitzOnWith.uniformContinuousOn`: a function which is Lipschitz on a set `s` is uniformly
+  continuous on `s`.
 
 
 ## Implementation notes
@@ -50,7 +50,7 @@ open Filter Function Set Topology NNReal ENNReal
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
 /-- A function `f` is Lipschitz continuous with constant `K ≥ 0` if for all `x, y`
-we have `dist (f x) (f y) ≤ K * dist x y` -/
+we have `dist (f x) (f y) ≤ K * dist x y`. -/
 def LipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :=
   ∀ x y, edist (f x) (f y) ≤ K * edist x y
 #align lipschitz_with LipschitzWith
@@ -66,17 +66,19 @@ alias ⟨LipschitzWith.dist_le_mul, LipschitzWith.of_dist_le_mul⟩ := lipschitz
 #align lipschitz_with.of_dist_le_mul LipschitzWith.of_dist_le_mul
 
 /-- A function `f` is Lipschitz continuous with constant `K ≥ 0` on `s` if for all `x, y` in `s`
-we have `dist (f x) (f y) ≤ K * dist x y` -/
+we have `dist (f x) (f y) ≤ K * dist x y`. -/
 def LipschitzOnWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β)
     (s : Set α) :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → edist (f x) (f y) ≤ K * edist x y
 #align lipschitz_on_with LipschitzOnWith
 
+/-- Every function is Lipschitz on the empty set (with any Lipschitz constant). -/
 @[simp]
 lemma lipschitzOnWith_empty [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :
     LipschitzOnWith K f ∅ := fun _ => False.elim
 #align lipschitz_on_with_empty lipschitzOnWith_empty
 
+/-- Being Lipschitz on a set is monotone w.r.t. that set. -/
 lemma LipschitzOnWith.mono [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {s t : Set α}
     {f : α → β} (hf : LipschitzOnWith K f t) (h : s ⊆ t) : LipschitzOnWith K f s :=
   fun _x x_in _y y_in => hf (h x_in) (h y_in)
@@ -94,6 +96,7 @@ alias ⟨LipschitzOnWith.dist_le_mul, LipschitzOnWith.of_dist_le_mul⟩ :=
 #align lipschitz_on_with.dist_le_mul LipschitzOnWith.dist_le_mul
 #align lipschitz_on_with.of_dist_le_mul LipschitzOnWith.of_dist_le_mul
 
+/-- `f` is Lipschitz iff it is Lipschitz on the entire space. -/
 @[simp]
 lemma lipschitzOn_univ [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {f : α → β} :
     LipschitzOnWith K f univ ↔ LipschitzWith K f := by simp [LipschitzOnWith, LipschitzWith]
@@ -185,17 +188,18 @@ lemma edist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥0�
     _ < d := ENNReal.mul_lt_of_lt_div' h
 #align lipschitz_with.edist_lt_of_edist_lt_div LipschitzWith.edist_lt_of_edist_lt_div
 
-/-- A Lipschitz function is uniformly continuous -/
+/-- A Lipschitz function is uniformly continuous. -/
 protected lemma uniformContinuous (hf : LipschitzWith K f) : UniformContinuous f :=
   EMetric.uniformContinuous_iff.2 fun ε εpos =>
     ⟨ε / K, ENNReal.div_pos_iff.2 ⟨ne_of_gt εpos, ENNReal.coe_ne_top⟩, hf.edist_lt_of_edist_lt_div⟩
 #align lipschitz_with.uniform_continuous LipschitzWith.uniformContinuous
 
-/-- A Lipschitz function is continuous -/
+/-- A Lipschitz function is continuous. -/
 protected lemma continuous (hf : LipschitzWith K f) : Continuous f :=
   hf.uniformContinuous.continuous
 #align lipschitz_with.continuous LipschitzWith.continuous
 
+/-- Constant functions are Lipschitz (with any constant). -/
 protected lemma const (b : β) : LipschitzWith 0 fun _ : α => b := fun x y => by
   simp only [edist_self, zero_le]
 #align lipschitz_with.const LipschitzWith.const
@@ -203,6 +207,7 @@ protected lemma const (b : β) : LipschitzWith 0 fun _ : α => b := fun x y => b
 protected lemma const' (b : β) {K : ℝ≥0} : LipschitzWith K fun _ : α => b := fun x y => by
   simp only [edist_self, zero_le]
 
+/-- The identity is 1-Lipschitz. -/
 protected lemma id : LipschitzWith 1 (@id α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
 #align lipschitz_with.id LipschitzWith.id
@@ -222,10 +227,12 @@ protected lemma eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [Fi
   LipschitzWith.of_edist_le fun f g => by convert edist_le_pi_edist f g i
 #align lipschitz_with.eval LipschitzWith.eval
 
+/-- The restriction of a `K`-Lipschitz function is `K`-Lipschitz. -/
 protected lemma restrict (hf : LipschitzWith K f) (s : Set α) : LipschitzWith K (s.restrict f) :=
   fun x y => hf x y
 #align lipschitz_with.restrict LipschitzWith.restrict
 
+/-- The composition of Lipschitz functions is Lipschitz. -/
 protected lemma comp {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} (hf : LipschitzWith Kf f)
     (hg : LipschitzWith Kg g) : LipschitzWith (Kf * Kg) (f ∘ g) := fun x y =>
   calc
