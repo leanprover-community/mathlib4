@@ -74,8 +74,7 @@ theorem charpoly_sub_diagonal_degree_lt :
   apply Submodule.smul_mem (degreeLT R (Fintype.card n - 1)) ↑↑(Equiv.Perm.sign c)
   rw [mem_degreeLT]
   apply lt_of_le_of_lt degree_le_natDegree _
-  rw [Nat.cast_withBot, Nat.cast_withBot] -- porting note: added
-  rw [WithBot.coe_lt_coe]
+  rw [Nat.cast_lt]
   apply lt_of_le_of_lt _ (Equiv.Perm.fixed_point_card_lt_of_ne_one (ne_of_mem_erase hc))
   apply le_trans (Polynomial.natDegree_prod_le univ fun i : n => charmatrix M (c i) i) _
   rw [card_eq_sum_ones]; rw [sum_filter]; apply sum_le_sum
@@ -88,8 +87,7 @@ theorem charpoly_coeff_eq_prod_coeff_of_le {k : ℕ} (h : Fintype.card n - 1 ≤
   apply eq_of_sub_eq_zero; rw [← coeff_sub]
   apply Polynomial.coeff_eq_zero_of_degree_lt
   apply lt_of_lt_of_le (charpoly_sub_diagonal_degree_lt M) ?_
-  rw [Nat.cast_withBot, Nat.cast_withBot] -- porting note: added
-  rw [WithBot.coe_le_coe]; apply h
+  rw [Nat.cast_le]; apply h
 #align matrix.charpoly_coeff_eq_prod_coeff_of_le Matrix.charpoly_coeff_eq_prod_coeff_of_le
 
 theorem det_of_card_zero (h : Fintype.card n = 0) (M : Matrix n n R) : M.det = 1 := by
@@ -119,8 +117,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   exact h1
   rw [h1]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
-  rw [Nat.cast_withBot, Nat.cast_withBot] -- porting note: added
-  rw [WithBot.coe_lt_coe]
+  rw [Nat.cast_lt]
   rw [← Nat.pred_eq_sub_one]
   apply Nat.pred_lt
   apply h
@@ -146,8 +143,7 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   rw [← neg_sub]
   rw [degree_neg]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
-  rw [Nat.cast_withBot, Nat.cast_withBot] -- porting note: added
-  rw [WithBot.coe_lt_coe]
+  rw [Nat.cast_lt]
   rw [← Nat.pred_eq_sub_one]
   apply Nat.pred_lt
   apply h
@@ -309,10 +305,11 @@ lemma reverse_charpoly (M : Matrix n n R) :
 @[simp] lemma coeff_charpolyRev_eq_neg_trace (M : Matrix n n R) :
     coeff M.charpolyRev 1 = - trace M := by
   nontriviality R
-  cases isEmpty_or_nonempty n; simp [charpolyRev, coeff_one]
-  simp [trace_eq_neg_charpoly_coeff M, ← M.reverse_charpoly, nextCoeff]
+  cases isEmpty_or_nonempty n
+  · simp [charpolyRev, coeff_one]
+  · simp [trace_eq_neg_charpoly_coeff M, ← M.reverse_charpoly, nextCoeff]
 
-lemma isUnit_charpolyRev_of_IsNilpotent (hM : IsNilpotent M) :
+lemma isUnit_charpolyRev_of_isNilpotent (hM : IsNilpotent M) :
     IsUnit M.charpolyRev := by
   obtain ⟨k, hk⟩ := hM
   replace hk : 1 - (X : R[X]) • M.map C ∣ 1 := by
@@ -324,9 +321,10 @@ lemma isUnit_charpolyRev_of_IsNilpotent (hM : IsNilpotent M) :
 
 lemma isNilpotent_trace_of_isNilpotent (hM : IsNilpotent M) :
     IsNilpotent (trace M) := by
-  cases isEmpty_or_nonempty n; simp
+  cases isEmpty_or_nonempty n
+  · simp
   suffices IsNilpotent (coeff (charpolyRev M) 1) by simpa using this
-  exact (isUnit_iff_coeff_isUnit_isNilpotent.mp (isUnit_charpolyRev_of_IsNilpotent hM)).2
+  exact (isUnit_iff_coeff_isUnit_isNilpotent.mp (isUnit_charpolyRev_of_isNilpotent hM)).2
     _ one_ne_zero
 
 lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
@@ -337,7 +335,7 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
     conv_lhs => rw [← modByMonic_add_div p monic_X]
     simp [modByMonic_X]
   have : IsNilpotent (p /ₘ X) :=
-    (Polynomial.isUnit_iff'.mp (isUnit_charpolyRev_of_IsNilpotent hM)).2
+    (Polynomial.isUnit_iff'.mp (isUnit_charpolyRev_of_isNilpotent hM)).2
   have aux : (M.charpoly - X ^ (Fintype.card n)).natDegree ≤ M.charpoly.natDegree :=
     le_trans (natDegree_sub_le _ _) (by simp)
   rw [← isNilpotent_reflect_iff aux, reflect_sub, ← reverse, M.reverse_charpoly]
