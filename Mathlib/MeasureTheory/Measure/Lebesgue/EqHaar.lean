@@ -95,7 +95,7 @@ open MeasureTheory MeasureTheory.Measure
 theorem Basis.map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedAddCommGroup F]
     [NormedSpace ℝ E] [NormedSpace ℝ F] [MeasurableSpace E] [MeasurableSpace F] [BorelSpace E]
     [BorelSpace F] [SecondCountableTopology F] [SigmaCompactSpace F]
-    (b : Basis ι ℝ E)  (f : E ≃L[ℝ] F) :
+    (b : Basis ι ℝ E) (f : E ≃L[ℝ] F) :
     map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
   have : IsAddHaarMeasure (map f b.addHaar) :=
     AddEquiv.isAddHaarMeasure_map b.addHaar f.toAddEquiv f.continuous f.symm.continuous
