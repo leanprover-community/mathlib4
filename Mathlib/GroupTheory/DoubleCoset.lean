@@ -93,7 +93,7 @@ theorem rel_iff {H K : Subgroup G} {x y : G} :
 
 theorem bot_rel_eq_leftRel (H : Subgroup G) :
     (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
-  ext (a b)
+  ext a b
   rw [rel_iff, Setoid.Rel, QuotientGroup.leftRel_apply]
   constructor
   · rintro ⟨a, rfl : a = 1, b, hb, rfl⟩
@@ -105,7 +105,7 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
 
 theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
     (setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
-  ext (a b)
+  ext a b
   rw [rel_iff, Setoid.Rel, QuotientGroup.rightRel_apply]
   constructor
   · rintro ⟨b, hb, a, rfl : a = 1, rfl⟩
@@ -160,7 +160,7 @@ theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
   simpa [out_eq'] using mk_eq_of_doset_eq (eq_of_not_disjoint h)
 #align doset.disjoint_out' Doset.disjoint_out'
 
-theorem union_quotToDoset (H K : Subgroup G) : (⋃ q, quotToDoset H K q) = Set.univ := by
+theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
   ext x
   simp only [Set.mem_iUnion, quotToDoset, mem_doset, SetLike.mem_coe, exists_prop, Set.mem_univ,
     iff_true_iff]
@@ -171,7 +171,7 @@ theorem union_quotToDoset (H K : Subgroup G) : (⋃ q, quotToDoset H K q) = Set.
 #align doset.union_quot_to_doset Doset.union_quotToDoset
 
 theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
-    (⋃ k : K, rightCoset (↑H) (a * k)) = doset a H K := by
+    ⋃ k : K, rightCoset (↑H) (a * k) = doset a H K := by
   ext x
   simp only [mem_rightCoset_iff, exists_prop, mul_inv_rev, Set.mem_iUnion, mem_doset,
     Subgroup.mem_carrier, SetLike.mem_coe]
@@ -185,7 +185,7 @@ theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
 #align doset.doset_union_right_coset Doset.doset_union_rightCoset
 
 theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
-    (⋃ h : H, leftCoset (h * a : G) K) = doset a H K := by
+    ⋃ h : H, leftCoset (h * a : G) K = doset a H K := by
   ext x
   simp only [mem_leftCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doset]
   constructor

@@ -241,7 +241,7 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
   have hy : 0 < y := by linarith
   have hy' : 0 < y ^ p := rpow_pos_of_pos hy _
   have H1 : y ^ (p - 1 + 1) = y ^ (p - 1) * y := rpow_add_one hy.ne' _
-  ring_nf  at H1
+  ring_nf at H1
   trans p * y ^ (p - 1)
   · have h3 : 0 < y - x := by linarith only [hxy]
     have hyx'' : x / y < 1 := by rwa [div_lt_one hy]

@@ -110,7 +110,7 @@ def limitCone (F : J ⥤ ModuleCatMax.{v, w, u} R) : Cone F where
 -/
 def limitConeIsLimit (F : J ⥤ ModuleCatMax.{v, w, u} R) : IsLimit (limitCone.{v, w} F) := by
   refine' IsLimit.ofFaithful (forget (ModuleCat R)) (Types.limitConeIsLimit.{v, w} _)
-    (fun s => ⟨⟨(Types.limitConeIsLimit.{v, w} _).lift ((forget (ModuleCat R)).mapCone s), _⟩ , _⟩)
+    (fun s => ⟨⟨(Types.limitConeIsLimit.{v, w} _).lift ((forget (ModuleCat R)).mapCone s), _⟩, _⟩)
     (fun s => rfl)
   all_goals
     intros
@@ -137,6 +137,9 @@ lemma hasLimitsOfSize : HasLimitsOfSize.{v, v} (ModuleCatMax.{v, w, u} R) where
 instance hasLimits : HasLimits (ModuleCat.{w} R) :=
   ModuleCat.hasLimitsOfSize.{w, w, u}
 #align Module.has_limits ModuleCat.hasLimits
+
+instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
+  ModuleCat.hasLimitsOfSize.{u, u, u}
 
 /-- An auxiliary declaration to speed up typechecking.
 -/

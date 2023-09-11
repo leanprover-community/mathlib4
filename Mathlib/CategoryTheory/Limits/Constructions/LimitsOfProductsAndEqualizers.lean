@@ -352,7 +352,7 @@ theorem hasColimit_of_coequalizer_and_coproduct (F : J ⥤ C) [HasColimit (Discr
 
 /-- A colimit can be realised as a quotient of a coproduct. -/
 noncomputable def colimitQuotientCoproduct [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) :
-    (∐ fun j => F.obj j) ⟶ colimit F :=
+    ∐ (fun j => F.obj j) ⟶ colimit F :=
   coequalizer.π _ _ ≫ (colimit.isoColimitCocone (colimitCoconeOfCoequalizerAndCoproduct F)).inv
 #align category_theory.limits.colimit_quotient_coproduct CategoryTheory.Limits.colimitQuotientCoproduct
 

@@ -40,7 +40,7 @@ variable {α : Type _} {m0 : MeasurableSpace α} {μ μ₁ μ₂ ν ν₁ ν₂ 
 /-- Two measures `μ`, `ν` are said to be mutually singular if there exists a measurable set `s`
 such that `μ s = 0` and `ν sᶜ = 0`. -/
 def MutuallySingular {_ : MeasurableSpace α} (μ ν : Measure α) : Prop :=
-  ∃ s : Set α, MeasurableSet s ∧ μ s = 0 ∧ ν (sᶜ) = 0
+  ∃ s : Set α, MeasurableSet s ∧ μ s = 0 ∧ ν sᶜ = 0
 #align measure_theory.measure.mutually_singular MeasureTheory.Measure.MutuallySingular
 
 -- mathport name: measure.mutually_singular

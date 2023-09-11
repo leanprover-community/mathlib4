@@ -586,7 +586,7 @@ protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α
     inf_compl_le_bot := fun x => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · simp
-      . simp
+      · simp
     top_le_sup_compl := fun x => by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp }
 #align is_simple_order.boolean_algebra IsSimpleOrder.booleanAlgebra
 
@@ -907,7 +907,7 @@ theorem isCoatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
 #align set.is_coatom_iff Set.isCoatom_iff
 
 theorem isCoatom_singleton_compl (x : α) : IsCoatom ({x}ᶜ : Set α) :=
-  (isCoatom_iff ({x}ᶜ)).mpr ⟨x, rfl⟩
+  (isCoatom_iff {x}ᶜ).mpr ⟨x, rfl⟩
 #align set.is_coatom_singleton_compl Set.isCoatom_singleton_compl
 
 instance : IsAtomistic (Set α) where

@@ -335,7 +335,7 @@ theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
 bounded `iSup` can be produced from taking a finite number of non-zero elements from the `S i` that
 satisfy `p i`, coercing them to `γ`, and summing them. -/
 theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N) :
-    (⨆ (i) (_ : p i), S i) =
+    ⨆ (i) (_ : p i), S i =
       LinearMap.range
         (LinearMap.comp
           (Dfinsupp.lsum ℕ (M := fun i ↦ ↥(S i)) (fun i => (S i).subtype))

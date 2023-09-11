@@ -58,7 +58,7 @@ def pullback.snd : pullback f g ⟶ Y where
 
 @[reassoc]
 lemma pullback.condition : pullback.fst f g ≫ f = pullback.snd f g ≫ g := by
-  ext ⟨_,h⟩ ; exact h
+  ext ⟨_,h⟩; exact h
 
 /--
 Construct a morphism to the explicit pullback given morphisms to the factors
@@ -67,7 +67,7 @@ This is essentially the universal property of the pullback.
 -/
 def pullback.lift {Z : CompHaus.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
     Z ⟶ pullback f g where
-  toFun := fun z => ⟨⟨a z, b z⟩, by apply_fun (fun q => q z) at w ; exact w⟩
+  toFun := fun z => ⟨⟨a z, b z⟩, by apply_fun (fun q => q z) at w; exact w⟩
   continuous_toFun := by
     apply Continuous.subtype_mk
     rw [continuous_prod_mk]
@@ -138,7 +138,7 @@ def finiteCoproduct.desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) :
   toFun := fun ⟨a,x⟩ => e a x
   continuous_toFun := by
     apply continuous_sigma
-    intro a ; exact (e a).continuous
+    intro a; exact (e a).continuous
 
 @[reassoc (attr := simp)]
 lemma finiteCoproduct.ι_desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :

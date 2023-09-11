@@ -63,7 +63,7 @@ theorem r.isEquiv : IsEquiv _ (r S M) :=
       -- Put everything in the same shape, sorting the terms using `simp`
       have hu1' := congr_arg ((· • ·) (u2 * s3)) hu1.symm
       have hu2' := congr_arg ((· • ·) (u1 * s1)) hu2.symm
-      simp only [← mul_smul, smul_assoc, mul_assoc, mul_comm, mul_left_comm] at hu1' hu2'⊢
+      simp only [← mul_smul, smul_assoc, mul_assoc, mul_comm, mul_left_comm] at hu1' hu2' ⊢
       rw [hu2', hu1']
     symm := fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => ⟨u, hu.symm⟩ }
 #align localized_module.r.is_equiv LocalizedModule.r.isEquiv
@@ -247,7 +247,7 @@ instance {A : Type _} [Semiring A] [Algebra R A] {S : Submonoid R} :
           rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨b₁, t₁⟩ ⟨b₂, t₂⟩ ⟨u₁, e₁⟩ ⟨u₂, e₂⟩
           rw [mk_eq]
           use u₁ * u₂
-          dsimp only at e₁ e₂⊢
+          dsimp only at e₁ e₂ ⊢
           rw [eq_comm]
           trans (u₁ • t₁ • a₁) • u₂ • t₂ • a₂
           rw [e₁, e₂]; swap; rw [eq_comm]
@@ -319,7 +319,7 @@ instance : SMul (Localization S) (LocalizedModule S M)
             refine' mk_eq.mpr ⟨u, _⟩
             have h' := congr_arg ((· • ·) (s • r)) h
             simp only [← mul_smul, smul_eq_mul, mul_comm, mul_left_comm, Submonoid.smul_def,
-              Submonoid.coe_mul] at h'⊢
+              Submonoid.coe_mul] at h' ⊢
             rw [h'])))
       (by
         induction' x using LocalizedModule.induction_on with m t
@@ -328,8 +328,8 @@ instance : SMul (Localization S) (LocalizedModule S M)
         obtain ⟨u, eq1⟩ := Localization.r_iff_exists.mp h
         use u
         have eq1' := congr_arg (· • t • m) eq1
-        simp only [← mul_smul, smul_assoc, Submonoid.smul_def, Submonoid.coe_mul] at eq1'⊢
-        ring_nf  at eq1'⊢
+        simp only [← mul_smul, smul_assoc, Submonoid.smul_def, Submonoid.coe_mul] at eq1' ⊢
+        ring_nf at eq1' ⊢
         rw [eq1']))
 
 theorem mk_smul_mk (r : R) (m : M) (s t : S) :

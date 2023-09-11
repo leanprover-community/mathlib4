@@ -94,7 +94,7 @@ def LoopSpace :=
 #align loop_space LoopSpace
 
 -- mathport name: exprΩ
-scoped[Topology] notation "Ω" => LoopSpace
+scoped[Topology.Homotopy] notation "Ω" => LoopSpace
 
 instance LoopSpace.inhabited : Inhabited (Path x x) :=
   ⟨Path.refl x⟩
@@ -107,7 +107,9 @@ def GenLoop : Set C(I^N, X) :=
   {p | ∀ y ∈ Cube.boundary N, p y = x}
 #align gen_loop GenLoop
 
-scoped[Topology] notation "Ω^" => GenLoop
+scoped[Topology.Homotopy] notation "Ω^" => GenLoop
+
+open Topology.Homotopy
 
 variable {N X x}
 
@@ -429,7 +431,7 @@ def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
   invFun y := ⟨ContinuousMap.const _ y, fun _ ⟨i, _⟩ => isEmptyElim i⟩
   left_inv f := by ext; exact congr_arg f (Subsingleton.elim _ _)
   right_inv _ := rfl
-  continuous_toFun := (ContinuousMap.continuous_eval_const' (0 : N → I)).comp continuous_induced_dom
+  continuous_toFun := (ContinuousMap.continuous_eval_const (0 : N → I)).comp continuous_induced_dom
   continuous_invFun := ContinuousMap.const'.2.subtype_mk _
 #align gen_loop_homeo_of_is_empty genLoopHomeoOfIsEmpty
 

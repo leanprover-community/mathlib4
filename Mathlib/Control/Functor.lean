@@ -30,9 +30,6 @@ This module provides additional lemmas, definitions, and instances for `Functor`
 functor, applicative
 -/
 
-
-attribute [functor_norm] seq_assoc pure_seq map_pure seq_map_assoc map_seq
-
 universe u v w
 
 section Functor
@@ -43,7 +40,7 @@ variable {α β γ : Type u}
 
 variable [Functor F] [LawfulFunctor F]
 
-theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := by apply funext <;> apply id_map
+theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := funext id_map
 #align functor.map_id Functor.map_id
 
 theorem Functor.map_comp_map (f : α → β) (g : β → γ) :

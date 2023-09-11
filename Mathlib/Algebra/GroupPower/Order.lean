@@ -403,10 +403,10 @@ theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_succ_of_ne_zero hn with ⟨k, rfl⟩
   induction' k with k ih;
-  . have eqn : Nat.succ Nat.zero = 1 := rfl
+  · have eqn : Nat.succ Nat.zero = 1 := rfl
     rw [eqn]
     simp only [pow_one, le_refl]
-  . let n := k.succ
+  · let n := k.succ
     have h1 := add_nonneg (mul_nonneg hx (pow_nonneg hy n)) (mul_nonneg hy (pow_nonneg hx n))
     have h2 := add_nonneg hx hy
     calc

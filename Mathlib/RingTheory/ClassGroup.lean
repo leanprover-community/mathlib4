@@ -19,7 +19,7 @@ inside its field of fractions.
 
 ## Main definitions
  - `toPrincipalIdeal` sends an invertible `x : K` to an invertible fractional ideal
- - `ClassGroup` is the quotient of invertible fractional ideals modulo `to_principal_ideal.range`
+ - `ClassGroup` is the quotient of invertible fractional ideals modulo `toPrincipalIdeal.range`
  - `ClassGroup.mk0` sends a nonzero integral ideal in a Dedekind domain to its class
 
 ## Main results

@@ -203,25 +203,25 @@ theorem deriv.comp (hh₂ : DifferentiableAt 𝕜' h₂ (h x)) (hh : Differentia
 
 protected nonrec theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
-    HasDerivAtFilter (f^[n]) (f' ^ n) x L := by
+    HasDerivAtFilter f^[n] (f' ^ n) x L := by
   have := hf.iterate hL hx n
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
 #align has_deriv_at_filter.iterate HasDerivAtFilter.iterate
 
 protected nonrec theorem HasDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivAt f f' x)
-    (hx : f x = x) (n : ℕ) : HasDerivAt (f^[n]) (f' ^ n) x :=
+    (hx : f x = x) (n : ℕ) : HasDerivAt f^[n] (f' ^ n) x :=
   hf.iterate _ (have := hf.tendsto_nhds le_rfl; by rwa [hx] at this) hx n
 #align has_deriv_at.iterate HasDerivAt.iterate
 
 protected theorem HasDerivWithinAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivWithinAt f f' s x)
-    (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : HasDerivWithinAt (f^[n]) (f' ^ n) s x := by
+    (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : HasDerivWithinAt f^[n] (f' ^ n) s x := by
   have := HasFDerivWithinAt.iterate hf hx hs n
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
 #align has_deriv_within_at.iterate HasDerivWithinAt.iterate
 
 protected nonrec  theorem HasStrictDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasStrictDerivAt f f' x) (hx : f x = x) (n : ℕ) :
-    HasStrictDerivAt (f^[n]) (f' ^ n) x := by
+    HasStrictDerivAt f^[n] (f' ^ n) x := by
   have := hf.iterate hx n
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
 #align has_strict_deriv_at.iterate HasStrictDerivAt.iterate
@@ -277,4 +277,3 @@ theorem fderiv.comp_deriv (hl : DifferentiableAt 𝕜 l (f x)) (hf : Differentia
 #align fderiv.comp_deriv fderiv.comp_deriv
 
 end CompositionVector
-

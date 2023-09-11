@@ -71,7 +71,7 @@ theorem εClosure_univ : M.εClosure univ = univ :=
 
 /-- `M.stepSet S a` is the union of the ε-closure of `M.step s a` for all `s ∈ S`. -/
 def stepSet (S : Set σ) (a : α) : Set σ :=
-  ⋃ s ∈ S, M.εClosure <| M.step s a
+  ⋃ s ∈ S, M.εClosure (M.step s a)
 #align ε_NFA.step_set εNFA.stepSet
 
 variable {M}

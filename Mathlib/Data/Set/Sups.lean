@@ -175,11 +175,11 @@ theorem sups_inter_subset_right : s ⊻ (t₁ ∩ t₂) ⊆ s ⊻ t₁ ∩ s ⊻
 
 variable (s t u)
 
-theorem iUnion_image_sup_left : (⋃ a ∈ s, (· ⊔ ·) a '' t) = s ⊻ t :=
+theorem iUnion_image_sup_left : ⋃ a ∈ s, (· ⊔ ·) a '' t = s ⊻ t :=
   iUnion_image_left _
 #align set.Union_image_sup_left Set.iUnion_image_sup_left
 
-theorem iUnion_image_sup_right : (⋃ b ∈ t, (· ⊔ b) '' s) = s ⊻ t :=
+theorem iUnion_image_sup_right : ⋃ b ∈ t, (· ⊔ b) '' s = s ⊻ t :=
   iUnion_image_right _
 #align set.Union_image_sup_right Set.iUnion_image_sup_right
 
@@ -330,11 +330,11 @@ theorem infs_inter_subset_right : s ⊼ (t₁ ∩ t₂) ⊆ s ⊼ t₁ ∩ s ⊼
 
 variable (s t u)
 
-theorem iUnion_image_inf_left : (⋃ a ∈ s, (· ⊓ ·) a '' t) = s ⊼ t :=
+theorem iUnion_image_inf_left : ⋃ a ∈ s, (· ⊓ ·) a '' t = s ⊼ t :=
   iUnion_image_left _
 #align set.Union_image_inf_left Set.iUnion_image_inf_left
 
-theorem iUnion_image_inf_right : (⋃ b ∈ t, (· ⊓ b) '' s) = s ⊼ t :=
+theorem iUnion_image_inf_right : ⋃ b ∈ t, (· ⊓ b) '' s = s ⊼ t :=
   iUnion_image_right _
 #align set.Union_image_inf_right Set.iUnion_image_inf_right
 

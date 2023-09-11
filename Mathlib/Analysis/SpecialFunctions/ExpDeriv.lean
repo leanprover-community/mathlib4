@@ -55,7 +55,7 @@ theorem deriv_exp : deriv exp = exp :=
 #align complex.deriv_exp Complex.deriv_exp
 
 @[simp]
-theorem iter_deriv_exp : ∀ n : ℕ, (deriv^[n]) exp = exp
+theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 #align complex.iter_deriv_exp Complex.iter_deriv_exp
@@ -205,7 +205,7 @@ theorem deriv_exp : deriv exp = exp :=
 #align real.deriv_exp Real.deriv_exp
 
 @[simp]
-theorem iter_deriv_exp : ∀ n : ℕ, (deriv^[n]) exp = exp
+theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 #align real.iter_deriv_exp Real.iter_deriv_exp

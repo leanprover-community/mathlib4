@@ -40,7 +40,7 @@ noncomputable def πSummand [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A
     X.obj Δ ⟶ s.N A.1.unop.len := by
   refine' (s.iso Δ).inv ≫ Sigma.desc fun B => _
   by_cases B = A
-  · exact eqToHom (by subst h ; rfl)
+  · exact eqToHom (by subst h; rfl)
   · exact 0
 #align simplicial_object.splitting.π_summand SimplicialObject.Splitting.πSummand
 

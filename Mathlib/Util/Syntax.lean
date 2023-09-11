@@ -25,5 +25,5 @@ The given array does not include the separators.
 
 Like `Syntax.SepArray.ofElems` but for typed syntax.
 -/
-def Syntax.TSepArray.ofElems (elems : Array (TSyntax k)) : TSepArray k sep :=
+def Syntax.TSepArray.ofElems {sep} (elems : Array (TSyntax k)) : TSepArray k sep :=
   .mk (SepArray.ofElems (sep := sep) elems).1

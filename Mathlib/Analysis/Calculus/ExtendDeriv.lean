@@ -46,8 +46,8 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     -- one can assume without loss of generality that `x` belongs to the closure of `s`, as the
     -- statement is empty otherwise
     by_cases hx : x ∉ closure s
-    · rw [← closure_closure] at hx ; exact hasFDerivWithinAt_of_not_mem_closure hx
-    push_neg  at hx
+    · rw [← closure_closure] at hx; exact hasFDerivWithinAt_of_not_mem_closure hx
+    push_neg at hx
     rw [HasFDerivWithinAt, HasFDerivAtFilter, Asymptotics.isLittleO_iff]
     /- One needs to show that `‖f y - f x - f' (y - x)‖ ≤ ε ‖y - x‖` for `y` close to `x` in
       `closure s`, where `ε` is an arbitrary positive constant. By continuity of the functions, it

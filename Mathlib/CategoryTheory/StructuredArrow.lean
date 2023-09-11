@@ -83,7 +83,7 @@ theorem mk_hom_eq_self (f : S ⟶ T.obj Y) : (mk f).hom = f :=
 
 @[reassoc (attr := simp)]
 theorem w {A B : StructuredArrow S T} (f : A ⟶ B) : A.hom ≫ T.map f.right = B.hom := by
-  have := f.w ; aesop_cat
+  have := f.w; aesop_cat
 #align category_theory.structured_arrow.w CategoryTheory.StructuredArrow.w
 
 @[simp]
@@ -228,8 +228,6 @@ instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
 #align category_theory.structured_arrow.proj_reflects_iso CategoryTheory.StructuredArrow.proj_reflectsIsomorphisms
 
 open CategoryTheory.Limits
-
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- The identity structured arrow is initial. -/
 def mkIdInitial [Full T] [Faithful T] : IsInitial (mk (𝟙 (T.obj Y))) where
@@ -455,8 +453,6 @@ instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
 
 open CategoryTheory.Limits
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 /-- The identity costructured arrow is terminal. -/
 def mkIdTerminal [Full S] [Faithful S] : IsTerminal (mk (𝟙 (S.obj Y))) where
   lift c := homMk (S.preimage c.pt.hom)
@@ -581,12 +577,12 @@ def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X => (StructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk] ; simp )
+          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp )
     (NatIso.ofComponents
       (fun X => CostructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk] ; simp )
+          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp )
 #align category_theory.structured_arrow_op_equivalence CategoryTheory.structuredArrowOpEquivalence
 
 /-- For a functor `F : C ⥤ D` and an object `d : D`, the category of costructured arrows
@@ -601,12 +597,12 @@ def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X => (CostructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk] ; simp )
+          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp )
     (NatIso.ofComponents
       (fun X => StructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk] ; simp )
+          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp )
 #align category_theory.costructured_arrow_op_equivalence CategoryTheory.costructuredArrowOpEquivalence
 
 end CategoryTheory

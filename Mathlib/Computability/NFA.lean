@@ -111,7 +111,7 @@ def accepts : Language α := fun x => ∃ S ∈ M.accept, S ∈ M.eval x
 
 theorem mem_accepts : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by rfl
 
-/-- `M.toDFA` is a `DFA` constructed from a `NFA` `M` using the subset construction. The
+/-- `M.toDFA` is a `DFA` constructed from an `NFA` `M` using the subset construction. The
   states is the type of `Set`s of `M.state` and the step function is `M.stepSet`. -/
 def toDFA : DFA α (Set σ) where
   step := M.stepSet

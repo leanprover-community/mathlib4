@@ -253,10 +253,10 @@ def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
 ring. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
-  map_one' := by apply Quot.sound ; apply Relation.one
-  map_mul' := by intros ; apply Quot.sound ; apply Relation.mul
-  map_zero' := by apply Quot.sound ; apply Relation.zero
-  map_add' := by intros ; apply Quot.sound ; apply Relation.add
+  map_one' := by apply Quot.sound; apply Relation.one
+  map_mul' := by intros; apply Quot.sound; apply Relation.mul
+  map_zero' := by apply Quot.sound; apply Relation.zero
+  map_add' := by intros; apply Quot.sound; apply Relation.add
 #align CommRing.colimits.cocone_morphism CommRingCat.Colimits.coconeMorphism
 
 @[simp]

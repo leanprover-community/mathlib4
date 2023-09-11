@@ -25,19 +25,19 @@ coefficients.
 
 ## Multiplicity calculations
 
-* `Nat.multiplicity_factorial`: Legendre's Theorem. The multiplicity of `p` in `n!` is
+* `Nat.Prime.multiplicity_factorial`: Legendre's Theorem. The multiplicity of `p` in `n!` is
   `n/p + ... + n/p^b` for any `b` such that `n/p^(b + 1) = 0`.
-* `Nat.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than that of
-  `n!`.
-* `Nat.multiplicity_choose`: The multiplicity of `p` in `n.choose k` is the number of carries when
-  `k` and`n - k` are added in base `p`.
+* `Nat.Prime.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than
+  that of `n!`.
+* `Nat.Prime.multiplicity_choose`: The multiplicity of `p` in `n.choose k` is the number of carries
+   when `k` and`n - k` are added in base `p`.
 
 ## Other declarations
 
 * `Nat.multiplicity_eq_card_pow_dvd`: The multiplicity of `m` in `n` is the number of positive
   natural numbers `i` such that `m ^ i` divides `n`.
 * `Nat.multiplicity_two_factorial_lt`: The multiplicity of `2` in `n!` is strictly less than `n`.
-* `Nat.prime.multiplicity_something`: Specialization of `multiplicity.something` to a prime in the
+* `Nat.Prime.multiplicity_something`: Specialization of `multiplicity.something` to a prime in the
   naturals. Avoids having to provide `p ≠ 1` and other trivialities, along with translating between
   `Prime` and `Nat.Prime`.
 
@@ -173,11 +173,11 @@ theorem multiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
 #align nat.prime.multiplicity_factorial_le_div_pred Nat.Prime.multiplicity_factorial_le_div_pred
 
 theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
-    (∑ i in Finset.Ico 1 b, n / p ^ i) =
+    ∑ i in Finset.Ico 1 b, n / p ^ i =
       ((∑ i in Finset.Ico 1 b, k / p ^ i) + ∑ i in Finset.Ico 1 b, (n - k) / p ^ i) +
         ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
   calc
-    (∑ i in Finset.Ico 1 b, n / p ^ i) = ∑ i in Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
+    ∑ i in Finset.Ico 1 b, n / p ^ i = ∑ i in Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
       simp only [add_tsub_cancel_of_le hkn]
     _ = ∑ i in Finset.Ico 1 b,
           (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) :=

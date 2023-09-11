@@ -64,7 +64,7 @@ theorem LDL.lowerInv_eq_gramSchmidtBasis :
             (Pi.basisFun 𝕜 n)))ᵀ := by
   letI := NormedAddCommGroup.ofMatrix hS.transpose
   letI := InnerProductSpace.ofMatrix hS.transpose
-  ext (i j)
+  ext i j
   rw [LDL.lowerInv, Basis.coePiBasisFun.toMatrix_eq_transpose, coe_gramSchmidtBasis]
   rfl
 #align LDL.lower_inv_eq_gram_schmidt_basis LDL.lowerInv_eq_gramSchmidtBasis
@@ -103,7 +103,7 @@ theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 
 /-- Inverse statement of **LDL decomposition**: we can conjugate a positive definite matrix
 by some lower triangular matrix and get a diagonal matrix. -/
 theorem LDL.diag_eq_lowerInv_conj : LDL.diag hS = LDL.lowerInv hS ⬝ S ⬝ (LDL.lowerInv hS)ᴴ := by
-  ext (i j)
+  ext i j
   by_cases hij : i = j
   · simp only [diag, diagEntries, EuclideanSpace.inner_piLp_equiv_symm, star_star, hij,
     diagonal_apply_eq, Matrix.mul_assoc]

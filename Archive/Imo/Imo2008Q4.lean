@@ -93,7 +93,7 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
     field_simp [ne_of_gt hb] at H₂
     have hb₁ : b ^ 4 = 1 := by linear_combination -H₂
     obtain hb₂ := abs_eq_one_of_pow_eq_one b 4 (show 4 ≠ 0 by norm_num) hb₁
-    rw [abs_of_pos hb] at hb₂ ; rw [hb₂] at hfb₁ ; exact hfb₁ h₁
+    rw [abs_of_pos hb] at hb₂; rw [hb₂] at hfb₁; exact hfb₁ h₁
   -- f(ab) = 1/ab → a^4 = 1 → a = 1 → f(a) = 1/a → false
   · have hb_ne_0 : b ≠ 0 := ne_of_gt hb
     field_simp [hab₂] at H₂

@@ -38,7 +38,7 @@ For more on how to use traversable, consider the Haskell tutorial:
   * `Traversable` type class - exposes the `traverse` function
   * `sequence` - based on `traverse`,
     turns a collection of effects into an effect returning a collection
-  * `IsLawfulTraversable` - laws for a traversable functor
+  * `LawfulTraversable` - laws for a traversable functor
   * `ApplicativeTransformation` - the notion of a natural transformation for applicative functors
 
 ## Tags
@@ -250,7 +250,7 @@ send the composition of applicative functors to the composition of the
 `traverse` of each, send each function `f` to `fun x ↦ f <$> x`, and
 satisfy a naturality condition with respect to applicative
 transformations. -/
-class IsLawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
+class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
     Type (u + 1) where
   /-- `traverse` plays well with `pure` of the identity monad-/
   id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
@@ -268,12 +268,12 @@ class IsLawfulTraversable (t : Type u → Type u) [Traversable t] extends Lawful
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G]
       (η : ApplicativeTransformation F G) {α β} (f : α → F β) (x : t α),
       η (traverse f x) = traverse (@η _ ∘ f) x
-#align is_lawful_traversable IsLawfulTraversable
+#align is_lawful_traversable LawfulTraversable
 
 instance : Traversable Id :=
   ⟨id⟩
 
-instance : IsLawfulTraversable Id := by refine' { .. } <;> intros <;> rfl
+instance : LawfulTraversable Id := by refine' { .. } <;> intros <;> rfl
 
 section
 

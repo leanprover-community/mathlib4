@@ -183,7 +183,6 @@ noncomputable instance _root_.Module.End.divisionRing
         haveI := IsSimpleModule.nontrivial R M
         have h := exists_pair_ne M
         contrapose! h
-        push_neg at h -- Porting note: needed to hit this again here. regression?
         intro x y
         simp_rw [ext_iff, one_apply, zero_apply] at h
         rw [← h x, h y]⟩

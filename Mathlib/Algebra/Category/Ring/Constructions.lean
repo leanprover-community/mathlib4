@@ -159,7 +159,7 @@ instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRin
   apply hasStrictTerminalObjects_of_terminal_is_strict (CommRingCat.of PUnit)
   intro X f
   refine ⟨⟨⟨1, rfl, fun _ _ => rfl⟩, by ext; rfl, ?_⟩⟩
-  ext (x : X)
+  ext x
   have e : (0 : X) = 1 := by
     rw [← f.map_one, ← f.map_zero]
     congr
@@ -204,8 +204,7 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
       FunctorToTypes.map_comp_apply, forget_map, coe_of, RingHom.prod_apply] <;>
     rfl
   uniq s m h := by
-    dsimp
-    ext (x : s.pt)
+    ext x
     change m x = (BinaryFan.fst s x, BinaryFan.snd s x)
     have eq1 := congr_hom (h ⟨WalkingPair.left⟩) x
     have eq2 := congr_hom (h ⟨WalkingPair.right⟩) x

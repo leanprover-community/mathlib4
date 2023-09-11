@@ -58,7 +58,7 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [Topologi
     rw [← f.domain.coe_mk x₀ (Submodule.mem_span_singleton_self _), hφ₁,
       LinearPMap.mkSpanSingleton'_apply_self]
   have hφ₄ : ∀ x ∈ s, φ x < 1 := fun x hx =>
-    (hφ₂ x).trans_lt (gauge_lt_one_of_mem_of_open hs₁ hs₀ hs₂ hx)
+    (hφ₂ x).trans_lt (gauge_lt_one_of_mem_of_open hs₂ hx)
   · refine' ⟨⟨φ, _⟩, hφ₃, hφ₄⟩
     refine'
       φ.continuous_of_nonzero_on_open _ (hs₂.vadd (-x₀)) (Nonempty.vadd_set ⟨0, hs₀⟩)
@@ -206,7 +206,7 @@ theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
 
 /-- A closed convex set is the intersection of the halfspaces containing it. -/
 theorem iInter_halfspaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
-    (⋂ l : E →L[ℝ] ℝ, { x | ∃ y ∈ s, l x ≤ l y }) = s := by
+    ⋂ l : E →L[ℝ] ℝ, { x | ∃ y ∈ s, l x ≤ l y } = s := by
   rw [Set.iInter_setOf]
   refine' Set.Subset.antisymm (fun x hx => _) fun x hx l => ⟨x, hx, le_rfl⟩
   by_contra h

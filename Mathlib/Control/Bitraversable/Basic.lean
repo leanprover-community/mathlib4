@@ -29,8 +29,8 @@ and value respectively with `Bitraverse f g : AList key val → IO (AList key' v
 ## Main definitions
 
 * `Bitraversable`: Bare typeclass to hold the `Bitraverse` function.
-* `IsLawfulBitraversable`: Typeclass for the laws of the `Bitraverse` function. Similar to
-  `IsLawfulTraversable`.
+* `LawfulBitraversable`: Typeclass for the laws of the `Bitraverse` function. Similar to
+  `LawfulTraversable`.
 
 ## References
 
@@ -62,7 +62,7 @@ def bisequence {t m} [Bitraversable t] [Applicative m] {α β} : t (m α) (m β)
 open Functor
 
 /-- Bifunctor. This typeclass asserts that a lawless bitraversable bifunctor is lawful. -/
-class IsLawfulBitraversable (t : Type u → Type u → Type u) [Bitraversable t] extends
+class LawfulBitraversable (t : Type u → Type u → Type u) [Bitraversable t] extends
   LawfulBifunctor t where
   -- Porting note: need to specify `m := Id` because `id` no longer has a `Monad` instance
   id_bitraverse : ∀ {α β} (x : t α β), bitraverse (m := Id) pure pure x = pure x
@@ -78,11 +78,11 @@ class IsLawfulBitraversable (t : Type u → Type u → Type u) [Bitraversable t]
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G]
       (η : ApplicativeTransformation F G) {α α' β β'} (f : α → F β) (f' : α' → F β') (x : t α α'),
       η (bitraverse f f' x) = bitraverse (@η _ ∘ f) (@η _ ∘ f') x
-#align is_lawful_bitraversable IsLawfulBitraversable
+#align is_lawful_bitraversable LawfulBitraversable
 
-export IsLawfulBitraversable (id_bitraverse comp_bitraverse bitraverse_eq_bimap_id)
+export LawfulBitraversable (id_bitraverse comp_bitraverse bitraverse_eq_bimap_id)
 
-open IsLawfulBitraversable
+open LawfulBitraversable
 
 attribute [higher_order bitraverse_id_id] id_bitraverse
 
@@ -90,4 +90,4 @@ attribute [higher_order bitraverse_comp] comp_bitraverse
 
 attribute [higher_order] binaturality bitraverse_eq_bimap_id
 
-export IsLawfulBitraversable (bitraverse_id_id bitraverse_comp)
+export LawfulBitraversable (bitraverse_id_id bitraverse_comp)

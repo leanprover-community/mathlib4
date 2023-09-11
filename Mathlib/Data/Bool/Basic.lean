@@ -311,7 +311,7 @@ theorem not_and : ∀ a b : Bool, (!(a && b)) = (!a || !b) := by decide
 theorem not_or : ∀ a b : Bool, (!(a || b)) = (!a && !b) := by decide
 #align bool.bnot_bor Bool.not_or
 
-theorem not_inj : ∀ {a b : Bool}, !a = !b → a = b := by decide
+theorem not_inj : ∀ {a b : Bool}, (!a) = !b → a = b := by decide
 #align bool.bnot_inj Bool.not_inj
 
 -- Porting note: having to unfold here is not pretty.
@@ -411,5 +411,15 @@ theorem injective_iff {α : Sort _} {f : Bool → α} : Function.Injective f ↔
 theorem apply_apply_apply (f : Bool → Bool) (x : Bool) : f (f (f x)) = f x := by
   cases x <;> cases h₁ : f true <;> cases h₂ : f false <;> simp only [h₁, h₂]
 #align bool.apply_apply_apply Bool.apply_apply_apply
+
+/-- `xor3 x y c` is `((x XOR y) XOR c)`. -/
+protected def xor3 (x y c : Bool) :=
+  xor (xor x y) c
+#align bitvec.xor3 Bool.xor3
+
+/-- `carry x y c` is `x && y || x && c || y && c`. -/
+protected def carry (x y c : Bool) :=
+  x && y || x && c || y && c
+#align bitvec.carry Bool.carry
 
 end Bool

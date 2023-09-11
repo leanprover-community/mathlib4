@@ -131,6 +131,18 @@ protected def xor : Bitvec n → Bitvec n → Bitvec n :=
   map₂ xor
 #align bitvec.xor Bitvec.xor
 
+instance : Complement (Bitvec n) :=
+⟨Bitvec.not⟩
+
+instance : AndOp (Bitvec n) :=
+⟨Bitvec.and⟩
+
+instance : OrOp (Bitvec n) :=
+⟨Bitvec.or⟩
+
+instance : Xor (Bitvec n) :=
+⟨Bitvec.xor⟩
+
 end Bitwise
 
 /-! ### Arithmetic operators -/
@@ -140,16 +152,6 @@ section Arith
 
 variable {n : ℕ}
 
-/-- `xor3 x y c` is `((x XOR y) XOR c)`. -/
-protected def xor3 (x y c : Bool) :=
-  xor (xor x y) c
-#align bitvec.xor3 Bitvec.xor3
-
-/-- `carry x y c` is `x && y || x && c || y && c`. -/
-protected def carry (x y c : Bool) :=
-  x && y || x && c || y && c
-#align bitvec.carry Bitvec.carry
-
 /-- `neg x` is the two's complement of `x`. -/
 protected def neg (x : Bitvec n) : Bitvec n :=
   let f y c := (y || c, xor y c)
@@ -158,7 +160,7 @@ protected def neg (x : Bitvec n) : Bitvec n :=
 
 /-- Add with carry (no overflow) -/
 def adc (x y : Bitvec n) (c : Bool) : Bitvec (n + 1) :=
-  let f x y c := (Bitvec.carry x y c, Bitvec.xor3 x y c)
+  let f x y c := (Bool.carry x y c, Bool.xor3 x y c)
   let ⟨c, z⟩ := Vector.mapAccumr₂ f x y c
   c ::ᵥ z
 #align bitvec.adc Bitvec.adc
@@ -170,7 +172,7 @@ protected def add (x y : Bitvec n) : Bitvec n :=
 
 /-- Subtract with borrow -/
 def sbb (x y : Bitvec n) (b : Bool) : Bool × Bitvec n :=
-  let f x y c := (Bitvec.carry (not x) y c, Bitvec.xor3 x y c)
+  let f x y c := (Bool.carry (not x) y c, Bool.xor3 x y c)
   Vector.mapAccumr₂ f x y b
 #align bitvec.sbb Bitvec.sbb
 
@@ -343,3 +345,11 @@ instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ult x y) :=
 
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ugt x y) :=
   decEq _ _
+
+instance {n} : HShiftLeft (Bitvec n) Nat (Bitvec n) := ⟨Bitvec.shl⟩
+
+instance {n} : HShiftRight (Bitvec n) Nat (Bitvec n) := ⟨Bitvec.ushr⟩
+
+instance {n} : ShiftLeft (Bitvec n) := ⟨fun x y => x <<< y.toNat⟩
+
+instance {n} : ShiftRight (Bitvec n) := ⟨fun x y => x >>> y.toNat⟩

@@ -154,7 +154,7 @@ def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D wher
   obj := mapCommMon
   map α :=
     { app := fun A => { hom := α.app A.X }
-      naturality := by intros ; ext ; simp }
+      naturality := by intros; ext; simp }
 set_option linter.uppercaseLean3 false in
 #align category_theory.lax_braided_functor.map_CommMon_functor CategoryTheory.LaxBraidedFunctor.mapCommMonFunctor
 
@@ -202,7 +202,7 @@ def unitIso :
       LaxBraidedFunctor.mkIso
         (MonoidalNatIso.ofComponents
           (fun _ => F.toLaxMonoidalFunctor.toFunctor.mapIso (eqToIso (by ext)))
-          (by rintro ⟨⟩ ⟨⟩ f ; aesop_cat) (by aesop_cat) (by aesop_cat)))
+          (by rintro ⟨⟩ ⟨⟩ f; aesop_cat) (by aesop_cat) (by aesop_cat)))
 set_option linter.uppercaseLean3 false in
 #align CommMon_.equiv_lax_braided_functor_punit.unit_iso CommMon_.EquivLaxBraidedFunctorPunit.unitIso
 

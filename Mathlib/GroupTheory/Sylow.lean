@@ -139,7 +139,7 @@ theorem coe_subtype (h : ↑P ≤ N) : ↑(P.subtype h) = subgroupOf (↑P) N :=
 
 theorem subtype_injective {P Q : Sylow p G} {hP : ↑P ≤ N} {hQ : ↑Q ≤ N}
     (h : P.subtype hP = Q.subtype hQ) : P = Q := by
-  rw [SetLike.ext_iff] at h⊢
+  rw [SetLike.ext_iff] at h ⊢
   exact fun g => ⟨fun hg => (h ⟨g, hP hg⟩).mp hg, fun hg => (h ⟨g, hQ hg⟩).mpr hg⟩
 #align sylow.subtype_injective Sylow.subtype_injective
 
@@ -159,7 +159,7 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
                 ⟨R, ⟨R, rfl⟩, R.1.mul_mem hg (T hh)⟩ },
           fun ⟨g, _, ⟨S, rfl⟩, hg⟩ => by
           refine' Exists.imp (fun k hk => _) (hc1 S.2 ⟨g, hg⟩)
-          rwa [Subtype.ext_iff, coe_pow] at hk⊢, fun M hM g hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
+          rwa [Subtype.ext_iff, coe_pow] at hk ⊢, fun M hM g hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
       P hP)
     fun {Q} ⟨hQ1, hQ2, hQ3⟩ => ⟨⟨Q, hQ1, hQ3 _⟩, hQ2⟩
 #align is_p_group.exists_le_sylow IsPGroup.exists_le_sylow

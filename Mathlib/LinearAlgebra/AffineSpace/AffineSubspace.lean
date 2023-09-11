@@ -521,6 +521,21 @@ theorem spanPoints_subset_coe_of_subset_coe {s : Set P} {s1 : AffineSubspace k P
 
 end AffineSubspace
 
+namespace Submodule
+
+variable {k V : Type _} [Ring k] [AddCommGroup V] [Module k V]
+
+@[simp]
+theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
+    x ∈ p.toAffineSubspace ↔ x ∈ p :=
+  Iff.rfl
+
+@[simp]
+theorem toAffineSubspace_direction (s : Submodule k V) : s.toAffineSubspace.direction = s := by
+  ext x; simp [← s.toAffineSubspace.vadd_mem_iff_mem_direction _ s.zero_mem]
+
+end Submodule
+
 theorem AffineMap.lineMap_mem {k V P : Type _} [Ring k] [AddCommGroup V] [Module k V]
     [AddTorsor V P] {Q : AffineSubspace k P} {p₀ p₁ : P} (c : k) (h₀ : p₀ ∈ Q) (h₁ : p₁ ∈ Q) :
     AffineMap.lineMap p₀ p₁ c ∈ Q := by
@@ -745,6 +760,7 @@ theorem top_coe : ((⊤ : AffineSubspace k P) : Set P) = Set.univ :=
 variable {P}
 
 /-- All points are in `⊤`. -/
+@[simp]
 theorem mem_top (p : P) : p ∈ (⊤ : AffineSubspace k P) :=
   Set.mem_univ p
 #align affine_subspace.mem_top AffineSubspace.mem_top
@@ -1352,7 +1368,7 @@ theorem vadd_right_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
 /-- The span of two points that lie in an affine subspace is contained in that subspace. -/
 theorem affineSpan_pair_le_of_mem_of_mem {p₁ p₂ : P} {s : AffineSubspace k P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) : line[k, p₁, p₂] ≤ s := by
-  rw [affineSpan_le, Set.insert_subset, Set.singleton_subset_iff]
+  rw [affineSpan_le, Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨hp₁, hp₂⟩
 #align affine_span_pair_le_of_mem_of_mem affineSpan_pair_le_of_mem_of_mem
 
@@ -1634,14 +1650,16 @@ theorem comap_top {f : P₁ →ᵃ[k] P₂} : (⊤ : AffineSubspace k P₂).coma
   exact preimage_univ (f := f)
 #align affine_subspace.comap_top AffineSubspace.comap_top
 
+@[simp] theorem comap_bot (f : P₁ →ᵃ[k] P₂) : comap f ⊥ = ⊥ := rfl
+
 @[simp]
 theorem comap_id (s : AffineSubspace k P₁) : s.comap (AffineMap.id k P₁) = s :=
-  coe_injective rfl
+  rfl
 #align affine_subspace.comap_id AffineSubspace.comap_id
 
 theorem comap_comap (s : AffineSubspace k P₃) (f : P₁ →ᵃ[k] P₂) (g : P₂ →ᵃ[k] P₃) :
     (s.comap g).comap f = s.comap (g.comp f) :=
-  coe_injective rfl
+  rfl
 #align affine_subspace.comap_comap AffineSubspace.comap_comap
 
 -- lemmas about map and comap derived from the galois connection

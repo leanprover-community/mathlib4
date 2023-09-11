@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 
 ! This file was ported from Lean 3 source module data.finite.card
-! leanprover-community/mathlib commit dde670c9a3f503647fd5bfdf1037bad526d3397a
+! leanprover-community/mathlib commit 3ff3f2d6a3118b8711063de7111a0d77a53219a8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -193,6 +193,17 @@ theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
 
 end Finite
 
+namespace PartENat
+
+theorem card_eq_coe_nat_card (α : Type _) [Finite α] : card α = Nat.card α := by
+  unfold PartENat.card
+  apply symm
+  rw [Cardinal.natCast_eq_toPartENat_iff]
+  exact Finite.cast_card_eq_mk
+#align part_enat.card_of_finite PartENat.card_eq_coe_nat_card
+
+end PartENat
+
 namespace Set
 
 theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + Nat.card t := by
@@ -206,4 +217,3 @@ theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + 
 #align set.card_union_le Set.card_union_le
 
 end Set
-

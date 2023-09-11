@@ -39,18 +39,18 @@ variable (F K : Type _) [Field F] [Field K] [Algebra F K]
 /-- Typeclass for normal field extension: `K` is a normal extension of `F` iff the minimal
 polynomial of every element `x` in `K` splits in `K`, i.e. every conjugate of `x` is in `K`. -/
 class Normal : Prop where
-  is_algebraic' : Algebra.IsAlgebraic F K
+  isAlgebraic' : Algebra.IsAlgebraic F K
   splits' (x : K) : Splits (algebraMap F K) (minpoly F x)
 #align normal Normal
 
 variable {F K}
 
 theorem Normal.isAlgebraic (_ : Normal F K) (x : K) : IsAlgebraic F x :=
-  Normal.is_algebraic' x
+  Normal.isAlgebraic' x
 #align normal.is_algebraic Normal.isAlgebraic
 
 theorem Normal.isIntegral (h : Normal F K) (x : K) : IsIntegral F x :=
-  isAlgebraic_iff_isIntegral.mp (h.is_algebraic' x)
+  isAlgebraic_iff_isIntegral.mp (h.isAlgebraic' x)
 #align normal.is_integral Normal.isIntegral
 
 theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpoly F x) :=
@@ -89,8 +89,7 @@ theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] 
       (Multiset.mem_toFinset.mpr <|
         (mem_roots <|
               mt (Polynomial.map_eq_zero <| algebraMap F K).1 <|
-                Finset.prod_ne_zero_iff.2 fun x _ => _).2
-          _)
+                Finset.prod_ne_zero_iff.2 fun x _ => _).2 _)
   · exact minpoly.ne_zero (h.isIntegral (s x))
   rw [IsRoot.def, eval_map, ← aeval_def, AlgHom.map_prod]
   exact Finset.prod_eq_zero (Finset.mem_univ _) (minpoly.aeval _ _)
@@ -162,7 +161,6 @@ theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F 
 -- salient in the future, or at least taking a closer look at the algebra instances it uses.
 attribute [-instance] AdjoinRoot.instSMulAdjoinRoot
 
-set_option maxHeartbeats 300000 in
 theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · have := hFEp.adjoin_rootSet
@@ -523,7 +521,7 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
     apply PowerBasis.lift_gen
     change aeval y (minpoly F (AdjoinSimple.gen F x)) = 0
     suffices : minpoly F (AdjoinSimple.gen F x) = minpoly F x
-    . exact this ▸ aeval_eq_zero_of_mem_rootSet (Multiset.mem_toFinset.mpr hy)
+    · exact this ▸ aeval_eq_zero_of_mem_rootSet (Multiset.mem_toFinset.mpr hy)
     exact minpoly_gen ((isIntegral_algebraMap_iff (algebraMap K L).injective).mp
       (h.isIntegral (algebraMap K L x)))
 

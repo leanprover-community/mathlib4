@@ -81,7 +81,7 @@ theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsLimit o → ∃ a < o, Set.Ioo 
   by_cases ho' : IsLimit o
   · simp only [(nhdsBasis_Ioc ho'.1).mem_iff, ho', true_implies]
     refine exists_congr fun a => and_congr_right fun ha => ?_
-    simp only [← Set.Ioo_insert_right ha, Set.insert_subset, ho, true_and]
+    simp only [← Set.Ioo_insert_right ha, Set.insert_subset_iff, ho, true_and]
   · simp [nhds_eq_pure.2 ho', ho, ho']
 #align ordinal.is_open_iff Ordinal.isOpen_iff
 

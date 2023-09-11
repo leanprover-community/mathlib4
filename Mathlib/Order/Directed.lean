@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.directed
-! leanprover-community/mathlib commit e8cf0cfec5fcab9baf46dc17d30c5e22048468be
+! leanprover-community/mathlib commit 3efd324a3a31eaa40c9d5bfc669c4fafee5f9423
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -57,7 +57,7 @@ def DirectedOn (s : Set α) :=
 variable {r r'}
 
 theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype.val : s → α) := by
-  simp [Directed, DirectedOn] ; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
+  simp [Directed, DirectedOn]; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
 #align directed_on_iff_directed directedOn_iff_directed
 
 alias directedOn_iff_directed ↔ DirectedOn.directed_val _
@@ -166,6 +166,10 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
   ⟨a ⊓ b, H ha hb, inf_le_left, inf_le_right⟩
 #align directed_on_of_inf_mem directedOn_of_inf_mem
 
+theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i j =>
+  Or.casesOn (total_of r (f i) (f j)) (fun h => ⟨j, h, refl _⟩) fun h => ⟨i, refl _, h⟩
+#align is_total.directed IsTotal.directed
+
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
 class IsDirected (α : Type _) (r : α → α → Prop) : Prop where
@@ -199,8 +203,8 @@ theorem directedOn_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
 #align directed_on_univ_iff directedOn_univ_iff
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r :=
-  ⟨fun a b => Or.casesOn (total_of r a b) (fun h => ⟨b, h, refl _⟩) fun h => ⟨a, refl _, h⟩⟩
+instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r := by
+  rw [← directed_id_iff]; exact IsTotal.directed _
 #align is_total.to_is_directed IsTotal.to_isDirected
 
 theorem isDirected_mono [IsDirected α r] (h : ∀ ⦃a b⦄, r a b → s a b) : IsDirected α s :=

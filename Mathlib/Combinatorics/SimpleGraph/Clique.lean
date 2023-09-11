@@ -20,7 +20,7 @@ adjacent.
 ## Main declarations
 
 * `SimpleGraph.IsClique`: Predicate for a set of vertices to be a clique.
-* `SimpleGraph.IsNClique`: Predicate for a set of vertices to be a `n`-clique.
+* `SimpleGraph.IsNClique`: Predicate for a set of vertices to be an `n`-clique.
 * `SimpleGraph.cliqueFinset`: Finset of `n`-cliques of a graph.
 * `SimpleGraph.CliqueFree`: Predicate for a graph to have no `n`-cliques.
 
@@ -100,7 +100,7 @@ section NClique
 
 variable {n : ℕ} {s : Finset α}
 
-/-- A `n`-clique in a graph is a set of `n` vertices which are pairwise connected. -/
+/-- An `n`-clique in a graph is a set of `n` vertices which are pairwise connected. -/
 structure IsNClique (n : ℕ) (s : Finset α) : Prop where
   clique : G.IsClique s
   card_eq : s.card = n

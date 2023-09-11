@@ -109,7 +109,7 @@ theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ �
 theorem commutator_commutator_eq_bot_of_rotate (h1 : ⁅⁅H₂, H₃⁆, H₁⁆ = ⊥) (h2 : ⁅⁅H₃, H₁⁆, H₂⁆ = ⊥) :
     ⁅⁅H₁, H₂⁆, H₃⁆ = ⊥ := by
   simp_rw [commutator_eq_bot_iff_le_centralizer, commutator_le,
-    mem_centralizer_iff_commutator_eq_one, ← commutatorElement_def] at h1 h2⊢
+    mem_centralizer_iff_commutator_eq_one, ← commutatorElement_def] at h1 h2 ⊢
   intro x hx y hy z hz
   trans x * z * ⁅y, ⁅z⁻¹, x⁻¹⁆⁆⁻¹ * z⁻¹ * y * ⁅x⁻¹, ⁅y⁻¹, z⁆⁆⁻¹ * y⁻¹ * x⁻¹
   · group

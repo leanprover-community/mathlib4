@@ -183,7 +183,7 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
   obtain ⟨hxs, hx⟩ := hx
   specialize hx hxs N
   rw [Egorov.mem_notConvergentSeq_iff] at hx
-  push_neg  at hx
+  push_neg at hx
   rw [dist_comm]
   exact lt_of_le_of_lt (hx n hn) hN
 #align measure_theory.egorov.tendsto_uniformly_on_diff_Union_not_convergent_seq MeasureTheory.Egorov.tendstoUniformlyOn_diff_iUnionNotConvergentSeq
@@ -216,7 +216,7 @@ theorem tendstoUniformlyOn_of_ae_tendsto (hf : ∀ n, StronglyMeasurable (f n))
 theorem tendstoUniformlyOn_of_ae_tendsto' [IsFiniteMeasure μ] (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) {ε : ℝ}
     (hε : 0 < ε) :
-    ∃ t, MeasurableSet t ∧ μ t ≤ ENNReal.ofReal ε ∧ TendstoUniformlyOn f g atTop (tᶜ) := by
+    ∃ t, MeasurableSet t ∧ μ t ≤ ENNReal.ofReal ε ∧ TendstoUniformlyOn f g atTop tᶜ := by
   have ⟨t, _, ht, htendsto⟩ := tendstoUniformlyOn_of_ae_tendsto hf hg MeasurableSet.univ
     (measure_ne_top μ Set.univ) (by filter_upwards [hfg] with _ htendsto _ using htendsto) hε
   refine' ⟨_, ht, _⟩

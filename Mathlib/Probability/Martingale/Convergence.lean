@@ -96,7 +96,7 @@ as required.
 Implementationwise, we have `tendsto_of_no_upcrossings` which shows that
 a bounded sequence converges if it does not visit below $a$ and above $b$ infinitely often
 for all $a, b ∈ s$ for some dense set $s$. So, we may skip the first step provided we can prove
-that the realizations are bounded almost everywhere. Indeed, suppose $(|f_n(\omega)|)$ is not
+that the realizations are bounded almost everywhere. Indeed, suppose $|f_n(\omega)|$ is not
 bounded, then either $f_n(\omega) \to \pm \infty$ or one of $\limsup f_n(\omega)$ or
 $\liminf f_n(\omega)$ equals $\pm \infty$ while the other is finite. But the first case
 contradicts $\liminf |f_n(\omega)| < \infty$ while the second case contradicts finite upcrossings.
@@ -205,7 +205,7 @@ theorem Submartingale.exists_ae_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submar
 
 theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, snorm (f n) 1 μ ≤ R) :
-    ∀ᵐ ω ∂μ.trim (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _ : (⨆ n, ℱ n) ≤ m0),
+    ∀ᵐ ω ∂μ.trim (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
       ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   rw [@ae_iff _ (⨆ n, ℱ n) _ _, trim_measurableSet_eq]
   · exact hf.exists_ae_tendsto_of_bdd hbdd
@@ -224,7 +224,7 @@ theorem Submartingale.ae_tendsto_limitProcess [IsFiniteMeasure μ] (hf : Submart
     rw [limitProcess, dif_pos this]
     exact (Classical.choose_spec this).2
   set g' : Ω → ℝ := fun ω => if h : ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) then h.choose else 0
-  have hle : (⨆ n, ℱ n) ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
+  have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hg' : ∀ᵐ ω ∂μ.trim hle, Tendsto (fun n => f n ω) atTop (𝓝 (g' ω)) := by
     filter_upwards [hf.exists_ae_trim_tendsto_of_bdd hbdd] with ω hω
     simp_rw [dif_pos hω]
@@ -311,7 +311,7 @@ required.
 Similar to the a.e. martingale convergence theorem, rather than showing the existence of the
 limiting process, we phrase the L¹-martingale convergence theorem by proving that a submartingale
 does converge in L¹ to its `limitProcess`. However, in contrast to the a.e. martingale convergence
-theorem, we do not need to introduce a L¹ version of `Filtration.limitProcess` as the L¹ limit
+theorem, we do not need to introduce an L¹ version of `Filtration.limitProcess` as the L¹ limit
 and the a.e. limit of a submartingale coincide.
 
 -/
@@ -366,7 +366,7 @@ theorem Martingale.ae_eq_condexp_limitProcess (hf : Martingale f ℱ μ)
     (hf.submartingale.tendsto_snorm_one_limitProcess hbdd) n
 #align measure_theory.martingale.ae_eq_condexp_limit_process MeasureTheory.Martingale.ae_eq_condexp_limitProcess
 
-/-- Part c of the **L¹ martingale convergnce theorem**: Given a integrable function `g` which
+/-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
 `𝔼[g | ℱ n]` converges almost everywhere to `g`.
 
@@ -375,7 +375,7 @@ This martingale also converges to `g` in L¹ and this result is provided by
 theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
     ∀ᵐ x ∂μ, Tendsto (fun n => (μ[g|ℱ n]) x) atTop (𝓝 (g x)) := by
-  have hle : (⨆ n, ℱ n) ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
+  have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hunif : UniformIntegrable (fun n => μ[g|ℱ n]) 1 μ :=
     hg.uniformIntegrable_condexp_filtration
   obtain ⟨R, hR⟩ := hunif.2.2
@@ -422,7 +422,7 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     exact tsum_congr fun n => heq _ (measure_lt_top _ _)
 #align measure_theory.integrable.tendsto_ae_condexp MeasureTheory.Integrable.tendsto_ae_condexp
 
-/-- Part c of the **L¹ martingale convergnce theorem**: Given a integrable function `g` which
+/-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
 `𝔼[g | ℱ n]` converges in L¹ to `g`.
 

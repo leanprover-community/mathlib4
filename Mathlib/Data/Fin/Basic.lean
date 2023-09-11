@@ -36,9 +36,9 @@ This file expands on the development in the core library.
 * `Fin.cases` : define `f : Π i : Fin n.succ, C i` by separately handling the cases `i = 0` and
   `i = Fin.succ j`, `j : Fin n`, defined using `Fin.induction`.
 * `Fin.reverseInduction`: reverse induction on `i : Fin (n + 1)`; given `C (Fin.last n)` and
-  `∀ i : Fin n, C (Fin.succ i) → C (Fin.castSucc i)`, constructs all values `C i` by going down;
+  `∀ i : Fin n, C (Fin.succ i) → C (Fin.castSuccEmb i)`, constructs all values `C i` by going down;
 * `Fin.lastCases`: define `f : Π i, Fin (n + 1), C i` by separately handling the cases
-  `i = Fin.last n` and `i = Fin.castSucc j`, a special case of `Fin.reverseInduction`;
+  `i = Fin.last n` and `i = Fin.castSuccEmb j`, a special case of `Fin.reverseInduction`;
 * `Fin.addCases`: define a function on `Fin (m + n)` by separately handling the cases
   `Fin.castAdd n i` and `Fin.natAdd m i`;
 * `Fin.succAbove_cases`: given `i : Fin (n + 1)`, define a function on `Fin (n + 1)` by separately
@@ -52,10 +52,10 @@ This file expands on the development in the core library.
 * `Fin.valOrderEmbedding` : coercion to natural numbers as an `OrderEmbedding`;
 * `Fin.succEmbedding` : `Fin.succ` as an `OrderEmbedding`;
 * `Fin.castLE h` : embed `Fin n` into `Fin m`, `h : n ≤ m`;
-* `Fin.cast` : order isomorphism between `Fin n` and `Fin m` provided that `n = m`,
+* `Fin.castIso` : order isomorphism between `Fin n` and `Fin m` provided that `n = m`,
   see also `Equiv.finCongr`;
 * `Fin.castAdd m` : embed `Fin n` into `Fin (n+m)`;
-* `Fin.castSucc` : embed `Fin n` into `Fin (n+1)`;
+* `Fin.castSuccEmb` : embed `Fin n` into `Fin (n+1)`;
 * `Fin.succAbove p` : embed `Fin n` into `Fin (n + 1)` with a hole around `p`;
 * `Fin.addNat m i` : add `m` on `i` on the right, generalizes `Fin.succ`;
 * `Fin.natAdd n i` adds `n` on `i` on the left;
@@ -237,6 +237,16 @@ protected theorem heq_fun_iff {α : Sort _} {k l : ℕ} (h : k = l) {f : Fin k �
   simp [Function.funext_iff]
 #align fin.heq_fun_iff Fin.heq_fun_iff
 
+/-- Assume `k = l` and `k' = l'`.
+If two functions `Fin k → Fin k' → α` and `Fin l → Fin l' → α` are equal on each pair,
+then they coincide (in the heq sense). -/
+protected theorem heq_fun₂_iff {α : Sort _} {k l k' l' : ℕ} (h : k = l) (h' : k' = l')
+  {f : Fin k → Fin k' → α} {g : Fin l → Fin l' → α} :
+    HEq f g ↔ ∀ (i : Fin k) (j : Fin k'), f i j = g ⟨(i : ℕ), h ▸ i.2⟩ ⟨(j : ℕ), h' ▸ j.2⟩ := by
+  subst h
+  subst h'
+  simp [Function.funext_iff]
+
 protected theorem heq_ext_iff {k l : ℕ} (h : k = l) {i : Fin k} {j : Fin l} :
     HEq i j ↔ (i : ℕ) = (j : ℕ) := by
   subst h
@@ -255,14 +265,14 @@ theorem forall_iff {p : Fin n → Prop} : (∀ i, p i) ↔ ∀ i h, p ⟨i, h⟩
 lemma ite_val {n : ℕ} {c : Prop} [Decidable c] {x : c → Fin n} (y : ¬c → Fin n) :
     (if h : c then x h else y h).val = if h : c then (x h).val else (y h).val := by
   by_cases c
-  . simp only [dif_pos h]
-  . simp only [dif_neg h]
+  · simp only [dif_pos h]
+  · simp only [dif_neg h]
 
 lemma dite_val {n : ℕ} {c : Prop} [Decidable c] {x y : Fin n} :
     (if c then x else y).val = if c then x.val else y.val := by
   by_cases c
-  . simp only [if_pos h]
-  . simp only [if_neg h]
+  · simp only [if_pos h]
+  · simp only [if_neg h]
 
 end coe
 
@@ -437,82 +447,82 @@ theorem eq_succ_of_ne_zero {n : ℕ} {i : Fin (n + 1)} (hi : i ≠ 0) : ∃ j : 
 #align fin.eq_succ_of_ne_zero Fin.eq_succ_of_ne_zero
 
 /-- The antitone involution `Fin n → Fin n` given by `i ↦ n-(i+1)`. -/
-def rev : Equiv.Perm (Fin n) :=
+def revPerm : Equiv.Perm (Fin n) :=
   (Involutive.toPerm fun i => ⟨n - (i + 1), tsub_lt_self i.pos (Nat.succ_pos _)⟩) fun i =>
     ext <| by
       dsimp only
       rw [← tsub_tsub, tsub_tsub_cancel_of_le (Nat.add_one_le_iff.2 i.is_lt),
         add_tsub_cancel_right]
-#align fin.rev Fin.rev
+#align fin.rev Fin.revPerm
 
--- porting note: dot notation of the form `i.rev` is broken here and throughout
+-- porting note: dot notation of the form `i.revPerm` is broken here and throughout
 @[simp]
-theorem val_rev (i : Fin n) : (rev i : ℕ) = n - (i + 1) :=
+theorem val_revPerm (i : Fin n) : (revPerm i : ℕ) = n - (i + 1) :=
   rfl
-#align fin.coe_rev Fin.val_rev
+#align fin.coe_rev Fin.val_revPerm
 
-theorem rev_involutive : Involutive (@rev n) :=
+theorem revPerm_involutive : Involutive (@revPerm n) :=
   Involutive.toPerm_involutive _
-#align fin.rev_involutive Fin.rev_involutive
+#align fin.rev_involutive Fin.revPerm_involutive
 
-theorem rev_injective : Injective (@rev n) :=
-  rev_involutive.injective
-#align fin.rev_injective Fin.rev_injective
+theorem revPerm_injective : Injective (@revPerm n) :=
+  revPerm_involutive.injective
+#align fin.rev_injective Fin.revPerm_injective
 
-theorem rev_surjective : Surjective (@rev n) :=
-  rev_involutive.surjective
-#align fin.rev_surjective Fin.rev_surjective
+theorem revPerm_surjective : Surjective (@revPerm n) :=
+  revPerm_involutive.surjective
+#align fin.rev_surjective Fin.revPerm_surjective
 
-theorem rev_bijective : Bijective (@rev n) :=
-  rev_involutive.bijective
-#align fin.rev_bijective Fin.rev_bijective
+theorem revPerm_bijective : Bijective (@revPerm n) :=
+  revPerm_involutive.bijective
+#align fin.rev_bijective Fin.revPerm_bijective
 
 -- @[simp] -- Porting note: simp can prove this
-theorem rev_inj {i j : Fin n} : rev i = rev j ↔ i = j :=
-  rev_injective.eq_iff
-#align fin.rev_inj Fin.rev_inj
+theorem revPerm_inj {i j : Fin n} : revPerm i = revPerm j ↔ i = j :=
+  revPerm_injective.eq_iff
+#align fin.rev_inj Fin.revPerm_inj
 
 @[simp]
-theorem rev_rev (i : Fin n) : rev (rev i) = i :=
-  rev_involutive _
-#align fin.rev_rev Fin.rev_rev
+theorem revPerm_revPerm (i : Fin n) : revPerm (revPerm i) = i :=
+  revPerm_involutive _
+#align fin.rev_rev Fin.revPerm_revPerm
 
 @[simp]
-theorem rev_symm : (@rev n).symm = rev :=
+theorem revPerm_symm : (@revPerm n).symm = revPerm :=
   rfl
-#align fin.rev_symm Fin.rev_symm
+#align fin.rev_symm Fin.revPerm_symm
 
-theorem rev_eq {n a : ℕ} (i : Fin (n + 1)) (h : n = a + i) :
-    rev i = ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro h.symm)⟩ := by
+theorem revPerm_eq {n a : ℕ} (i : Fin (n + 1)) (h : n = a + i) :
+    revPerm i = ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro h.symm)⟩ := by
   ext
   dsimp
   conv_lhs =>
     congr
     rw [h]
   rw [add_assoc, add_tsub_cancel_right]
-#align fin.rev_eq Fin.rev_eq
+#align fin.rev_eq Fin.revPerm_eq
 
 @[simp]
-theorem rev_le_rev {i j : Fin n} : rev i ≤ rev j ↔ j ≤ i := by
-  simp only [le_iff_val_le_val, val_rev, tsub_le_tsub_iff_left (Nat.add_one_le_iff.2 j.is_lt),
+theorem revPerm_le_revPerm {i j : Fin n} : revPerm i ≤ revPerm j ↔ j ≤ i := by
+  simp only [le_iff_val_le_val, val_revPerm, tsub_le_tsub_iff_left (Nat.add_one_le_iff.2 j.is_lt),
     add_le_add_iff_right, iff_self]
-#align fin.rev_le_rev Fin.rev_le_rev
+#align fin.rev_le_rev Fin.revPerm_le_revPerm
 
 @[simp]
-theorem rev_lt_rev {i j : Fin n} : rev i < rev j ↔ j < i :=
-  lt_iff_lt_of_le_iff_le rev_le_rev
-#align fin.rev_lt_rev Fin.rev_lt_rev
+theorem revPerm_lt_revPerm {i j : Fin n} : revPerm i < revPerm j ↔ j < i :=
+  lt_iff_lt_of_le_iff_le revPerm_le_revPerm
+#align fin.rev_lt_rev Fin.revPerm_lt_revPerm
 
 /-- `Fin.rev n` as an order-reversing isomorphism. -/
 @[simps! apply toEquiv]
 def revOrderIso {n} : (Fin n)ᵒᵈ ≃o Fin n :=
-  ⟨OrderDual.ofDual.trans rev, rev_le_rev⟩
+  ⟨OrderDual.ofDual.trans revPerm, revPerm_le_revPerm⟩
 #align fin.rev_order_iso Fin.revOrderIso
 #align fin.rev_order_iso_apply Fin.revOrderIso_apply
 #align fin.rev_order_iso_to_equiv Fin.revOrderIso_toEquiv
 
 @[simp]
-theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual (rev i) :=
+theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual (revPerm i) :=
   rfl
 #align fin.rev_order_iso_symm_apply Fin.revOrderIso_symm_apply
 
@@ -1057,69 +1067,69 @@ theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
   funext (castLE_castLE km mn)
 #align fin.cast_le_comp_cast_le Fin.castLE_comp_castLE
 
-/-- `cast eq i` embeds `i` into an equal `Fin` type, see also `Equiv.finCongr`. -/
-def cast (eq : n = m) : Fin n ≃o Fin m where
+/-- `castIso eq i` embeds `i` into an equal `Fin` type, see also `Equiv.finCongr`. -/
+def castIso (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨castLE eq.le, castLE eq.symm.le, fun _ => eq_of_veq rfl, fun _ => eq_of_veq rfl⟩
   map_rel_iff' := Iff.rfl
-#align fin.cast Fin.cast
+#align fin.cast Fin.castIso
 
 @[simp]
-theorem symm_cast (h : n = m) : (cast h).symm = cast h.symm := by simp
-#align fin.symm_cast Fin.symm_cast
+theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by simp
+#align fin.symm_cast Fin.symm_castIso
 
-theorem coe_cast (h : n = m) (i : Fin n) : (cast h i : ℕ) = i := by simp
-#align fin.coe_cast Fin.coe_cast
+theorem coe_castIso (h : n = m) (i : Fin n) : (castIso h i : ℕ) = i := by simp
+#align fin.coe_cast Fin.coe_castIso
 
 @[simp]
-theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : cast h (0 : Fin n) =
+theorem castIso_zero {n' : ℕ} [NeZero n] {h : n = n'} : castIso h (0 : Fin n) =
     by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} :=
   ext rfl
-#align fin.cast_zero Fin.cast_zero
+#align fin.cast_zero Fin.castIso_zero
 
 @[simp]
-theorem cast_last {n' : ℕ} {h : n + 1 = n' + 1} : cast h (last n) = last n' :=
-  ext (by rw [coe_cast, val_last, val_last, Nat.succ_injective h])
-#align fin.cast_last Fin.cast_last
+theorem castIso_last {n' : ℕ} {h : n + 1 = n' + 1} : castIso h (last n) = last n' :=
+  ext (by rw [coe_castIso, val_last, val_last, Nat.succ_injective h])
+#align fin.cast_last Fin.castIso_last
 
 @[simp]
-theorem cast_mk (h : n = m) (i : ℕ) (hn : i < n) :
-    cast h ⟨i, hn⟩ = ⟨i, lt_of_lt_of_le hn h.le⟩ := by
+theorem castIso_mk (h : n = m) (i : ℕ) (hn : i < n) :
+    castIso h ⟨i, hn⟩ = ⟨i, lt_of_lt_of_le hn h.le⟩ := by
   ext
   simp
-#align fin.cast_mk Fin.cast_mk
+#align fin.cast_mk Fin.castIso_mk
 
 @[simp]
-theorem cast_trans {k : ℕ} (h : n = m) (h' : m = k) {i : Fin n} :
-    cast h' (cast h i) = cast (Eq.trans h h') i := by
+theorem castIso_trans {k : ℕ} (h : n = m) (h' : m = k) {i : Fin n} :
+    castIso h' (castIso h i) = castIso (Eq.trans h h') i := by
   ext
   simp
-#align fin.cast_trans Fin.cast_trans
+#align fin.cast_trans Fin.castIso_trans
 
 @[simp]
-theorem cast_refl (h : n = n := rfl) : cast h = OrderIso.refl (Fin n) := by
+theorem castIso_refl (h : n = n := rfl) : castIso h = OrderIso.refl (Fin n) := by
   ext
   simp
-#align fin.cast_refl Fin.cast_refl
+#align fin.cast_refl Fin.castIso_refl
 
 theorem castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} :
-    (castLE h' : Fin m → Fin n) = Fin.cast h :=
+    (castLE h' : Fin m → Fin n) = Fin.castIso h :=
   funext fun _ => by ext; simp
 #align fin.cast_le_of_eq Fin.castLE_of_eq
 
-/-- While in many cases `Fin.cast` is better than `Equiv.cast`/`cast`, sometimes we want to apply
+/-- While in many cases `Fin.castIso` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
-theorem cast_to_equiv (h : n = m) : (cast h).toEquiv = Equiv.cast (h ▸ rfl) := by
+theorem castIso_to_equiv (h : n = m) : (castIso h).toEquiv = Equiv.cast (h ▸ rfl) := by
   subst h
   simp
-#align fin.cast_to_equiv Fin.cast_to_equiv
+#align fin.cast_to_equiv Fin.castIso_to_equiv
 
-/-- While in many cases `Fin.cast` is better than `Equiv.cast`/`cast`, sometimes we want to apply
+/-- While in many cases `Fin.castIso` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
-theorem cast_eq_cast (h : n = m) : (cast h : Fin n → Fin m) = cast (h ▸ rfl) := by
+theorem castIso_eq_cast (h : n = m) : (castIso h : Fin n → Fin m) = cast (h ▸ rfl) := by
   subst h
   ext
   simp
-#align fin.cast_eq_cast Fin.cast_eq_cast
+#align fin.cast_eq_cast Fin.castIso_eq_cast
 
 /-- `castAdd m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAdd` and `Fin.addNat`. -/
 def castAdd (m) : Fin n ↪o Fin (n + m) :=
@@ -1132,9 +1142,9 @@ theorem coe_castAdd (m : ℕ) (i : Fin n) : (castAdd m i : ℕ) = i :=
 #align fin.coe_cast_add Fin.coe_castAdd
 
 @[simp]
-theorem castAdd_zero : (castAdd 0 : Fin n → Fin (n + 0)) = cast rfl := by
+theorem castAdd_zero : (castAdd 0 : Fin n → Fin (n + 0)) = castIso rfl := by
   ext
-  simp only [Nat.add_zero, cast_refl, OrderIso.refl_apply]
+  simp only [Nat.add_zero, castIso_refl, OrderIso.refl_apply]
   rfl
 #align fin.cast_add_zero Fin.castAdd_zero
 
@@ -1160,79 +1170,79 @@ theorem castLT_castAdd (m : ℕ) (i : Fin n) : castLT (castAdd m i) (castAdd_lt 
   simp
 #align fin.cast_lt_cast_add Fin.castLT_castAdd
 
-/-- For rewriting in the reverse direction, see `Fin.cast_castAdd_left`. -/
-theorem castAdd_cast {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
-    castAdd m (Fin.cast h i) = Fin.cast (congr_arg (. + m) h) (castAdd m i) :=
+/-- For rewriting in the reverse direction, see `Fin.castIso_castAdd_left`. -/
+theorem castAdd_castIso {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
+    castAdd m (Fin.castIso h i) = Fin.castIso (congr_arg (. + m) h) (castAdd m i) :=
   ext rfl
-#align fin.cast_add_cast Fin.castAdd_cast
+#align fin.cast_add_cast Fin.castAdd_castIso
 
-theorem cast_castAdd_left {n n' m : ℕ} (i : Fin n') (h : n' + m = n + m) :
-    cast h (castAdd m i) = castAdd m (cast (add_right_cancel h) i) := by
+theorem castIso_castAdd_left {n n' m : ℕ} (i : Fin n') (h : n' + m = n + m) :
+    castIso h (castAdd m i) = castAdd m (castIso (add_right_cancel h) i) := by
   ext
   simp
-#align fin.cast_cast_add_left Fin.cast_castAdd_left
+#align fin.cast_cast_add_left Fin.castIso_castAdd_left
 
 @[simp]
-theorem cast_castAdd_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
-    cast h (castAdd m' i) = castAdd m i := by
+theorem castIso_castAdd_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
+    castIso h (castAdd m' i) = castAdd m i := by
   ext
   simp
-#align fin.cast_cast_add_right Fin.cast_castAdd_right
+#align fin.cast_cast_add_right Fin.castIso_castAdd_right
 
 theorem castAdd_castAdd {m n p : ℕ} (i : Fin m) :
-    castAdd p (castAdd n i) = cast (add_assoc _ _ _).symm (castAdd (n + p) i) := by
+    castAdd p (castAdd n i) = castIso (add_assoc _ _ _).symm (castAdd (n + p) i) := by
   ext
   simp
 #align fin.cast_add_cast_add Fin.castAdd_castAdd
 
-/-- The cast of the successor is the successor of the cast. See `Fin.succ_cast_eq` for rewriting in
-the reverse direction. -/
+/-- The cast of the successor is the successor of the cast.
+See `Fin.succ_castIso_eq` for rewriting in the reverse direction. -/
 @[simp]
-theorem cast_succ_eq {n' : ℕ} (i : Fin n) (h : n.succ = n'.succ) :
-    cast h i.succ = (cast (Nat.succ.inj h) i).succ :=
+theorem castIso_succ_eq {n' : ℕ} (i : Fin n) (h : n.succ = n'.succ) :
+    castIso h i.succ = (castIso (Nat.succ.inj h) i).succ :=
   ext <| by simp
-#align fin.cast_succ_eq Fin.cast_succ_eq
+#align fin.cast_succ_eq Fin.castIso_succ_eq
 
-theorem succ_cast_eq {n' : ℕ} (i : Fin n) (h : n = n') :
-    (cast h i).succ = cast (by rw [h]) i.succ :=
+theorem succ_castIso_eq {n' : ℕ} (i : Fin n) (h : n = n') :
+    (castIso h i).succ = castIso (by rw [h]) i.succ :=
   ext <| by simp
-#align fin.succ_cast_eq Fin.succ_cast_eq
+#align fin.succ_cast_eq Fin.succ_castIso_eq
 
-/-- `castSucc i` embeds `i : Fin n` in `Fin (n+1)`. -/
-def castSucc : Fin n ↪o Fin (n + 1) :=
+/-- `castSuccEmb i` embeds `i : Fin n` in `Fin (n+1)`. -/
+def castSuccEmb : Fin n ↪o Fin (n + 1) :=
   castAdd 1
-#align fin.cast_succ Fin.castSucc
+#align fin.cast_succ Fin.castSuccEmb
 
 @[simp]
-theorem coe_castSucc (i : Fin n) : (Fin.castSucc i : ℕ) = i :=
+theorem coe_castSuccEmb (i : Fin n) : (Fin.castSuccEmb i : ℕ) = i :=
   rfl
-#align fin.coe_cast_succ Fin.coe_castSucc
+#align fin.coe_cast_succ Fin.coe_castSuccEmb
 
 @[simp]
-theorem castSucc_mk (n i : ℕ) (h : i < n) : castSucc ⟨i, h⟩ = ⟨i, Nat.lt.step h⟩ :=
+theorem castSuccEmb_mk (n i : ℕ) (h : i < n) : castSuccEmb ⟨i, h⟩ = ⟨i, Nat.lt.step h⟩ :=
   rfl
-#align fin.cast_succ_mk Fin.castSucc_mk
+#align fin.cast_succ_mk Fin.castSuccEmb_mk
 
 @[simp]
-theorem cast_castSucc {n' : ℕ} {h : n + 1 = n' + 1} {i : Fin n} :
-    cast h (castSucc i) = castSucc (cast (Nat.succ_injective h) i) := by
+theorem castIso_castSuccEmb {n' : ℕ} {h : n + 1 = n' + 1} {i : Fin n} :
+    castIso h (castSuccEmb i) = castSuccEmb (castIso (Nat.succ_injective h) i) := by
   ext
-  simp only [coe_cast, coe_castSucc]
-#align fin.cast_cast_succ Fin.cast_castSucc
+  simp only [coe_castIso, coe_castSuccEmb]
+#align fin.cast_cast_succ Fin.castIso_castSuccEmb
 
-theorem castSucc_lt_succ (i : Fin n) : Fin.castSucc i < i.succ :=
-  lt_iff_val_lt_val.2 <| by simp only [coe_castSucc, val_succ, Nat.lt_succ_self]
-#align fin.cast_succ_lt_succ Fin.castSucc_lt_succ
+theorem castSuccEmb_lt_succ (i : Fin n) : Fin.castSuccEmb i < i.succ :=
+  lt_iff_val_lt_val.2 <| by simp only [coe_castSuccEmb, val_succ, Nat.lt_succ_self]
+#align fin.cast_succ_lt_succ Fin.castSuccEmb_lt_succ
 
-theorem le_castSucc_iff {i : Fin (n + 1)} {j : Fin n} : i ≤ Fin.castSucc j ↔ i < j.succ := by
+theorem le_castSuccEmb_iff {i : Fin (n + 1)} {j : Fin n} : i ≤ Fin.castSuccEmb j ↔ i < j.succ := by
   simpa [lt_iff_val_lt_val, le_iff_val_le_val] using Nat.succ_le_succ_iff.symm
-#align fin.le_cast_succ_iff Fin.le_castSucc_iff
+#align fin.le_cast_succ_iff Fin.le_castSuccEmb_iff
 
-theorem castSucc_lt_iff_succ_le {n : ℕ} {i : Fin n} {j : Fin (n + 1)} :
-    Fin.castSucc i < j ↔ i.succ ≤ j := by
-  simpa only [lt_iff_val_lt_val, le_iff_val_le_val, val_succ, Fin.coe_castSucc] using
+theorem castSuccEmb_lt_iff_succ_le {n : ℕ} {i : Fin n} {j : Fin (n + 1)} :
+    Fin.castSuccEmb i < j ↔ i.succ ≤ j := by
+  simpa only [lt_iff_val_lt_val, le_iff_val_le_val, val_succ, Fin.coe_castSuccEmb] using
     Nat.lt_iff_add_one_le
-#align fin.cast_succ_lt_iff_succ_le Fin.castSucc_lt_iff_succ_le
+#align fin.cast_succ_lt_iff_succ_le Fin.castSuccEmb_lt_iff_succ_le
 
 @[simp]
 theorem succ_last (n : ℕ) : (last n).succ = last n.succ :=
@@ -1245,97 +1255,100 @@ theorem succ_eq_last_succ {n : ℕ} (i : Fin n.succ) : i.succ = last (n + 1) ↔
 #align fin.succ_eq_last_succ Fin.succ_eq_last_succ
 
 @[simp]
-theorem castSucc_castLT (i : Fin (n + 1)) (h : (i : ℕ) < n) : castSucc (castLT i h) = i :=
+theorem castSuccEmb_castLT (i : Fin (n + 1)) (h : (i : ℕ) < n) : castSuccEmb (castLT i h) = i :=
   Fin.eq_of_veq rfl
-#align fin.cast_succ_cast_lt Fin.castSucc_castLT
+#align fin.cast_succ_cast_lt Fin.castSuccEmb_castLT
 
 @[simp]
-theorem castLT_castSucc {n : ℕ} (a : Fin n) (h : (a : ℕ) < n) : castLT (castSucc a) h = a := by
+theorem castLT_castSuccEmb {n : ℕ} (a : Fin n) (h : (a : ℕ) < n) :
+    castLT (castSuccEmb a) h = a := by
   cases a; rfl
-#align fin.cast_lt_cast_succ Fin.castLT_castSucc
+#align fin.cast_lt_cast_succ Fin.castLT_castSuccEmb
 
 --@[simp] Porting note: simp can prove it
-theorem castSucc_lt_castSucc_iff {a b : Fin n} : Fin.castSucc a < Fin.castSucc b ↔ a < b :=
-  (@castSucc n).lt_iff_lt
-#align fin.cast_succ_lt_cast_succ_iff Fin.castSucc_lt_castSucc_iff
+theorem castSuccEmb_lt_castSuccEmb_iff {a b : Fin n} :
+    Fin.castSuccEmb a < Fin.castSuccEmb b ↔ a < b :=
+  (@castSuccEmb n).lt_iff_lt
+#align fin.cast_succ_lt_cast_succ_iff Fin.castSuccEmb_lt_castSuccEmb_iff
 
-theorem castSucc_injective (n : ℕ) : Injective (@Fin.castSucc n) :=
-  (castSucc : Fin n ↪o _).injective
-#align fin.cast_succ_injective Fin.castSucc_injective
+theorem castSuccEmb_injective (n : ℕ) : Injective (@Fin.castSuccEmb n) :=
+  (castSuccEmb : Fin n ↪o _).injective
+#align fin.cast_succ_injective Fin.castSuccEmb_injective
 
-theorem castSucc_inj {a b : Fin n} : castSucc a = castSucc b ↔ a = b :=
-  (castSucc_injective n).eq_iff
-#align fin.cast_succ_inj Fin.castSucc_inj
+theorem castSuccEmb_inj {a b : Fin n} : castSuccEmb a = castSuccEmb b ↔ a = b :=
+  (castSuccEmb_injective n).eq_iff
+#align fin.cast_succ_inj Fin.castSuccEmb_inj
 
-theorem castSucc_lt_last (a : Fin n) : castSucc a < last n :=
+theorem castSuccEmb_lt_last (a : Fin n) : castSuccEmb a < last n :=
   lt_iff_val_lt_val.mpr a.is_lt
-#align fin.cast_succ_lt_last Fin.castSucc_lt_last
+#align fin.cast_succ_lt_last Fin.castSuccEmb_lt_last
 
 @[simp]
-theorem castSucc_zero [NeZero n] : castSucc (0 : Fin n) = 0 :=
+theorem castSuccEmb_zero [NeZero n] : castSuccEmb (0 : Fin n) = 0 :=
   ext rfl
-#align fin.cast_succ_zero Fin.castSucc_zero
+#align fin.cast_succ_zero Fin.castSuccEmb_zero
 
 @[simp]
-theorem castSucc_one {n : ℕ} : castSucc (1 : Fin (n + 2)) = 1 :=
+theorem castSuccEmb_one {n : ℕ} : castSuccEmb (1 : Fin (n + 2)) = 1 :=
   rfl
-#align fin.cast_succ_one Fin.castSucc_one
+#align fin.cast_succ_one Fin.castSuccEmb_one
 
-/-- `castSucc i` is positive when `i` is positive -/
-theorem castSucc_pos [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSucc i := by
+/-- `castSuccEmb i` is positive when `i` is positive -/
+theorem castSuccEmb_pos [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSuccEmb i := by
   simpa [lt_iff_val_lt_val] using h
-#align fin.cast_succ_pos Fin.castSucc_pos
+#align fin.cast_succ_pos Fin.castSuccEmb_pos
 
 @[simp]
-theorem castSucc_eq_zero_iff [NeZero n] (a : Fin n) : castSucc a = 0 ↔ a = 0 :=
+theorem castSuccEmb_eq_zero_iff [NeZero n] (a : Fin n) : castSuccEmb a = 0 ↔ a = 0 :=
   Fin.ext_iff.trans <| (Fin.ext_iff.trans <| by simp).symm
-#align fin.cast_succ_eq_zero_iff Fin.castSucc_eq_zero_iff
+#align fin.cast_succ_eq_zero_iff Fin.castSuccEmb_eq_zero_iff
 
-theorem castSucc_ne_zero_iff [NeZero n] (a : Fin n) : castSucc a ≠ 0 ↔ a ≠ 0 :=
-  not_iff_not.mpr <| castSucc_eq_zero_iff a
-#align fin.cast_succ_ne_zero_iff Fin.castSucc_ne_zero_iff
+theorem castSuccEmb_ne_zero_iff [NeZero n] (a : Fin n) : castSuccEmb a ≠ 0 ↔ a ≠ 0 :=
+  not_iff_not.mpr <| castSuccEmb_eq_zero_iff a
+#align fin.cast_succ_ne_zero_iff Fin.castSuccEmb_ne_zero_iff
 
-theorem castSucc_fin_succ (n : ℕ) (j : Fin n) : castSucc (Fin.succ j) = Fin.succ (castSucc j) := by
+theorem castSuccEmb_fin_succ (n : ℕ) (j : Fin n) :
+    castSuccEmb (Fin.succ j) = Fin.succ (castSuccEmb j) := by
   simp [Fin.ext_iff]
-#align fin.cast_succ_fin_succ Fin.castSucc_fin_succ
+#align fin.cast_succ_fin_succ Fin.castSuccEmb_fin_succ
 
 @[norm_cast, simp]
-theorem coe_eq_castSucc {a : Fin n} : (a : Fin (n + 1)) = castSucc a := by
+theorem coe_eq_castSuccEmb {a : Fin n} : (a : Fin (n + 1)) = castSuccEmb a := by
   ext
   exact val_cast_of_lt (Nat.lt.step a.is_lt)
-#align fin.coe_eq_cast_succ Fin.coe_eq_castSucc
+#align fin.coe_eq_cast_succ Fin.coe_eq_castSuccEmb
 
 @[simp]
-theorem coeSucc_eq_succ {a : Fin n} : (castSucc a) + 1 = a.succ := by
+theorem coeSucc_eq_succ {a : Fin n} : (castSuccEmb a) + 1 = a.succ := by
   cases n
   · exact @finZeroElim (fun _ => _) a
   · simp [a.is_lt, eq_iff_veq, add_def, Nat.mod_eq_of_lt]
 #align fin.coe_succ_eq_succ Fin.coeSucc_eq_succ
 
-theorem lt_succ {a : Fin n} : castSucc a < a.succ := by
-  rw [castSucc, lt_iff_val_lt_val, coe_castAdd, val_succ]
+theorem lt_succ {a : Fin n} : castSuccEmb a < a.succ := by
+  rw [castSuccEmb, lt_iff_val_lt_val, coe_castAdd, val_succ]
   exact lt_add_one a.val
 #align fin.lt_succ Fin.lt_succ
 
 @[simp]
-theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
+theorem range_castSuccEmb {n : ℕ} : Set.range (castSuccEmb : Fin n → Fin n.succ) =
     ({ i | (i : ℕ) < n } : Set (Fin n.succ)) :=
   range_castLE le_self_add
-#align fin.range_cast_succ Fin.range_castSucc
+#align fin.range_cast_succ Fin.range_castSuccEmb
 
-theorem exists_castSucc_eq {n : ℕ} {i : Fin (n + 1)} : (∃ j, castSucc j = i) ↔ i ≠ last n :=
-  ⟨fun ⟨j, hj⟩ => hj ▸ j.castSucc_lt_last.ne, fun hi => ⟨i.castLT $ Fin.val_lt_last hi, rfl⟩⟩
+theorem exists_castSuccEmb_eq {n : ℕ} {i : Fin (n + 1)} : (∃ j, castSuccEmb j = i) ↔ i ≠ last n :=
+  ⟨fun ⟨j, hj⟩ => hj ▸ j.castSuccEmb_lt_last.ne, fun hi => ⟨i.castLT $ Fin.val_lt_last hi, rfl⟩⟩
 
 @[simp]
-theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
-    ((Equiv.ofInjective castSucc (castSucc_injective _)).symm ⟨i, hi⟩ : ℕ) = i := by
-  rw [← coe_castSucc]
+theorem coe_of_injective_castSuccEmb_symm {n : ℕ} (i : Fin n.succ) (hi) :
+    ((Equiv.ofInjective castSuccEmb (castSuccEmb_injective _)).symm ⟨i, hi⟩ : ℕ) = i := by
+  rw [← coe_castSuccEmb]
   exact congr_arg val (Equiv.apply_ofInjective_symm _ _)
-#align fin.coe_of_injective_cast_succ_symm Fin.coe_of_injective_castSucc_symm
+#align fin.coe_of_injective_cast_succ_symm Fin.coe_of_injective_castSuccEmb_symm
 
-theorem succ_castSucc {n : ℕ} (i : Fin n) : i.castSucc.succ = castSucc i.succ :=
+theorem succ_castSuccEmb {n : ℕ} (i : Fin n) : i.castSuccEmb.succ = castSuccEmb i.succ :=
   Fin.ext (by simp)
-#align fin.succ_cast_succ Fin.succ_castSucc
+#align fin.succ_cast_succ Fin.succ_castSuccEmb
 
 /-- `addNat m i` adds `m` to `i`, generalizes `Fin.succ`. -/
 def addNat (m) : Fin n ↪o Fin (n + m) :=
@@ -1364,28 +1377,28 @@ theorem addNat_mk (n i : ℕ) (hi : i < m) : addNat n ⟨i, hi⟩ = ⟨i + n, ad
 #align fin.add_nat_mk Fin.addNat_mk
 
 @[simp]
-theorem cast_addNat_zero {n n' : ℕ} (i : Fin n) (h : n + 0 = n') :
-    cast h (addNat 0 i) = cast ((add_zero _).symm.trans h) i :=
+theorem castIso_addNat_zero {n n' : ℕ} (i : Fin n) (h : n + 0 = n') :
+    castIso h (addNat 0 i) = castIso ((add_zero _).symm.trans h) i :=
   ext <| add_zero _
-#align fin.cast_add_nat_zero Fin.cast_addNat_zero
+#align fin.cast_add_nat_zero Fin.castIso_addNat_zero
 
-/-- For rewriting in the reverse direction, see `Fin.cast_addNat_left`. -/
-theorem addNat_cast {n n' m : ℕ} (i : Fin n') (h : n' = n) :
-    addNat m (cast h i) = cast (congr_arg (. + m) h) (addNat m i) :=
+/-- For rewriting in the reverse direction, see `Fin.castIso_addNat_left`. -/
+theorem addNat_castIso {n n' m : ℕ} (i : Fin n') (h : n' = n) :
+    addNat m (castIso h i) = castIso (congr_arg (. + m) h) (addNat m i) :=
   ext rfl
-#align fin.add_nat_cast Fin.addNat_cast
+#align fin.add_nat_cast Fin.addNat_castIso
 
-theorem cast_addNat_left {n n' m : ℕ} (i : Fin n') (h : n' + m = n + m) :
-    cast h (addNat m i) = addNat m (cast (add_right_cancel h) i) := by
+theorem castIso_addNat_left {n n' m : ℕ} (i : Fin n') (h : n' + m = n + m) :
+    castIso h (addNat m i) = addNat m (castIso (add_right_cancel h) i) := by
   ext
   simp
-#align fin.cast_add_nat_left Fin.cast_addNat_left
+#align fin.cast_add_nat_left Fin.castIso_addNat_left
 
 @[simp]
-theorem cast_addNat_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
-    cast h (addNat m' i) = addNat m i :=
+theorem castIso_addNat_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
+    castIso h (addNat m' i) = addNat m i :=
   ext <| (congr_arg ((· + ·) (i : ℕ)) (add_left_cancel h) : _)
-#align fin.cast_add_nat_right Fin.cast_addNat_right
+#align fin.cast_add_nat_right Fin.castIso_addNat_right
 
 /-- `natAdd n i` adds `n` to `i` "on the left". -/
 def natAdd (n) {m} : Fin m ↪o Fin (n + m) :=
@@ -1407,71 +1420,74 @@ theorem le_coe_natAdd (m : ℕ) (i : Fin n) : m ≤ natAdd m i :=
   Nat.le_add_right _ _
 #align fin.le_coe_nat_add Fin.le_coe_natAdd
 
-theorem natAdd_zero {n : ℕ} : Fin.natAdd 0 = (Fin.cast (zero_add n).symm).toRelEmbedding := by
+theorem natAdd_zero {n : ℕ} : Fin.natAdd 0 = (Fin.castIso (zero_add n).symm).toRelEmbedding := by
   ext
   simp
 #align fin.nat_add_zero Fin.natAdd_zero
 
-/-- For rewriting in the reverse direction, see `Fin.cast_natAdd_right`. -/
-theorem natAdd_cast {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
-    natAdd m (cast h i) = cast (congr_arg _ h) (natAdd m i) := by
+/-- For rewriting in the reverse direction, see `Fin.castIso_natAdd_right`. -/
+theorem natAdd_castIso {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
+    natAdd m (castIso h i) = castIso (congr_arg _ h) (natAdd m i) := by
   ext
   simp
-#align fin.nat_add_cast Fin.natAdd_cast
+#align fin.nat_add_cast Fin.natAdd_castIso
 
-theorem cast_natAdd_right {n n' m : ℕ} (i : Fin n') (h : m + n' = m + n) :
-    cast h (natAdd m i) = natAdd m (cast (add_left_cancel h) i) := by
+theorem castIso_natAdd_right {n n' m : ℕ} (i : Fin n') (h : m + n' = m + n) :
+    castIso h (natAdd m i) = natAdd m (castIso (add_left_cancel h) i) := by
   ext
   simp
-#align fin.cast_nat_add_right Fin.cast_natAdd_right
+#align fin.cast_nat_add_right Fin.castIso_natAdd_right
 
 @[simp]
-theorem cast_natAdd_left {n m m' : ℕ} (i : Fin n) (h : m' + n = m + n) :
-    cast h (natAdd m' i) = natAdd m i :=
+theorem castIso_natAdd_left {n m m' : ℕ} (i : Fin n) (h : m' + n = m + n) :
+    castIso h (natAdd m' i) = natAdd m i :=
   ext <| (congr_arg (· + (i : ℕ)) (add_right_cancel h) : _)
-#align fin.cast_nat_add_left Fin.cast_natAdd_left
+#align fin.cast_nat_add_left Fin.castIso_natAdd_left
 
 theorem castAdd_natAdd (p m : ℕ) {n : ℕ} (i : Fin n) :
-    castAdd p (natAdd m i) = cast (add_assoc _ _ _).symm (natAdd m (castAdd p i)) := by
+    castAdd p (natAdd m i) = castIso (add_assoc _ _ _).symm (natAdd m (castAdd p i)) := by
   ext
   simp
 #align fin.cast_add_nat_add Fin.castAdd_natAdd
 
 theorem natAdd_castAdd (p m : ℕ) {n : ℕ} (i : Fin n) :
-    natAdd m (castAdd p i) = cast (add_assoc _ _ _) (castAdd p (natAdd m i)) := by
+    natAdd m (castAdd p i) = castIso (add_assoc _ _ _) (castAdd p (natAdd m i)) := by
   ext
   simp
 #align fin.nat_add_cast_add Fin.natAdd_castAdd
 
 theorem natAdd_natAdd (m n : ℕ) {p : ℕ} (i : Fin p) :
-    natAdd m (natAdd n i) = cast (add_assoc _ _ _) (natAdd (m + n) i) :=
+    natAdd m (natAdd n i) = castIso (add_assoc _ _ _) (natAdd (m + n) i) :=
   ext <| (add_assoc _ _ _).symm
 #align fin.nat_add_nat_add Fin.natAdd_natAdd
 
 @[simp]
-theorem cast_natAdd_zero {n n' : ℕ} (i : Fin n) (h : 0 + n = n') :
-    cast h (natAdd 0 i) = cast ((zero_add _).symm.trans h) i :=
+theorem castIso_natAdd_zero {n n' : ℕ} (i : Fin n) (h : 0 + n = n') :
+    castIso h (natAdd 0 i) = castIso ((zero_add _).symm.trans h) i :=
   ext <| zero_add _
-#align fin.cast_nat_add_zero Fin.cast_natAdd_zero
+#align fin.cast_nat_add_zero Fin.castIso_natAdd_zero
 
 @[simp]
-theorem cast_natAdd (n : ℕ) {m : ℕ} (i : Fin m) : cast (add_comm _ _) (natAdd n i) = addNat n i :=
+theorem castIso_natAdd (n : ℕ) {m : ℕ} (i : Fin m) :
+    castIso (add_comm _ _) (natAdd n i) = addNat n i :=
   ext <| add_comm _ _
-#align fin.cast_nat_add Fin.cast_natAdd
+#align fin.cast_nat_add Fin.castIso_natAdd
 
 @[simp]
-theorem cast_addNat {n : ℕ} (m : ℕ) (i : Fin n) : cast (add_comm _ _) (addNat m i) = natAdd m i :=
+theorem castIso_addNat {n : ℕ} (m : ℕ) (i : Fin n) :
+    castIso (add_comm _ _) (addNat m i) = natAdd m i :=
   ext <| add_comm _ _
-#align fin.cast_add_nat Fin.cast_addNat
+#align fin.cast_add_nat Fin.castIso_addNat
 
 @[simp]
 theorem natAdd_last {m n : ℕ} : natAdd n (last m) = last (n + m) :=
   rfl
 #align fin.nat_add_last Fin.natAdd_last
 
-theorem natAdd_castSucc {m n : ℕ} {i : Fin m} : natAdd n (castSucc i) = castSucc (natAdd n i) :=
+theorem natAdd_castSuccEmb {m n : ℕ} {i : Fin m} :
+    natAdd n (castSuccEmb i) = castSuccEmb (natAdd n i) :=
   rfl
-#align fin.nat_add_cast_succ Fin.natAdd_castSucc
+#align fin.nat_add_cast_succ Fin.natAdd_castSuccEmb
 
 end Succ
 
@@ -1587,10 +1603,10 @@ theorem subNat_mk {i : ℕ} (h₁ : i < n + m) (h₂ : m ≤ i) :
 #align fin.sub_nat_mk Fin.subNat_mk
 
 @[simp]
-theorem pred_castSucc_succ (i : Fin n) :
-    pred (castSucc i.succ) (ne_of_gt (castSucc_pos i.succ_pos)) = castSucc i := by
+theorem pred_castSuccEmb_succ (i : Fin n) :
+    pred (castSuccEmb i.succ) (ne_of_gt (castSuccEmb_pos i.succ_pos)) = castSuccEmb i := by
   simp [eq_iff_veq]
-#align fin.pred_cast_succ_succ Fin.pred_castSucc_succ
+#align fin.pred_cast_succ_succ Fin.pred_castSuccEmb_succ
 
 @[simp]
 theorem addNat_subNat {i : Fin (n + m)} (h : m ≤ i) : addNat m (subNat m i h) = i :=
@@ -1604,9 +1620,9 @@ theorem subNat_addNat (i : Fin n) (m : ℕ) (h : m ≤ addNat m i := le_coe_addN
 #align fin.sub_nat_add_nat Fin.subNat_addNat
 
 @[simp]
-theorem natAdd_subNat_cast {i : Fin (n + m)} (h : n ≤ i) :
-    natAdd n (subNat n (cast (add_comm _ _) i) h) = i := by simp [← cast_addNat]
-#align fin.nat_add_sub_nat_cast Fin.natAdd_subNat_cast
+theorem natAdd_subNat_castIso {i : Fin (n + m)} (h : n ≤ i) :
+    natAdd n (subNat n (castIso (add_comm _ _) i) h) = i := by simp [← castIso_addNat]
+#align fin.nat_add_sub_nat_cast Fin.natAdd_subNat_castIso
 
 end Pred
 
@@ -1678,11 +1694,11 @@ theorem succRecOn_succ {C : ∀ n, Fin n → Sort _} {H0 Hs} {n} (i : Fin n) :
 
 /-- Define `C i` by induction on `i : Fin (n + 1)` via induction on the underlying `Nat` value.
 This function has two arguments: `h0` handles the base case on `C 0`,
-and `hs` defines the inductive step using `C i.castSucc`.
+and `hs` defines the inductive step using `C i.castSuccEmb`.
 -/
 @[elab_as_elim]
 def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
-    (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) :
+    (hs : ∀ i : Fin n, C (castSuccEmb i) → C i.succ) :
     ∀ i : Fin (n + 1), C i := by
   rintro ⟨i, hi⟩
   induction' i with i IH
@@ -1694,11 +1710,11 @@ def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
 --Porting note: This proof became a lot more complicated
 @[simp]
 theorem induction_zero {C : Fin (n + 1) → Sort _} : ∀ (h0 : C 0)
-    (hs : ∀ i : Fin n, C (castSucc i) → C i.succ),
+    (hs : ∀ i : Fin n, C (castSuccEmb i) → C i.succ),
     (induction h0 hs : ∀ i : Fin (n + 1), C i) 0 = h0 :=
   have : ⟨0, Nat.zero_lt_succ n⟩ = (0 : Fin (n + 1)) := by simp only [mk_zero]
   Eq.recOn (motive := fun (i : Fin (n + 1)) (h : ⟨0, Nat.zero_lt_succ n⟩ = i) =>
-      ∀ (h0 : C i) (hs : ∀ i : Fin n, C (castSucc i) → C i.succ),
+      ∀ (h0 : C i) (hs : ∀ i : Fin n, C (castSuccEmb i) → C i.succ),
         (show ∀ i : Fin (n + 1), C i from induction
           (by simp [← h] at h0; exact h0) hs) i = h0)
     this
@@ -1707,20 +1723,20 @@ theorem induction_zero {C : Fin (n + 1) → Sort _} : ∀ (h0 : C 0)
 
 @[simp]
 theorem induction_succ {C : Fin (n + 1) → Sort _} (h0 : C 0)
-    (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) (i : Fin n) :
-    (induction h0 hs : ∀ i : Fin (n+1), C i) i.succ = hs i (induction h0 hs (castSucc i)) :=
+    (hs : ∀ i : Fin n, C (castSuccEmb i) → C i.succ) (i : Fin n) :
+    (induction h0 hs : ∀ i : Fin (n+1), C i) i.succ = hs i (induction h0 hs (castSuccEmb i)) :=
   by cases i; rfl
 #align fin.induction_succ Fin.induction_succ
 
 /-- Define `C i` by induction on `i : Fin (n + 1)` via induction on the underlying `Nat` value.
 This function has two arguments: `h0` handles the base case on `C 0`,
-and `hs` defines the inductive step using `C i.castSucc`.
+and `hs` defines the inductive step using `C i.castSuccEmb`.
 
 A version of `Fin.induction` taking `i : Fin (n + 1)` as the first argument.
 -/
 @[elab_as_elim]
 def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0 : C 0)
-    (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) : C i :=
+    (hs : ∀ i : Fin n, C (castSuccEmb i) → C i.succ) : C i :=
   induction h0 hs i
 #align fin.induction_on Fin.inductionOn
 
@@ -1784,56 +1800,56 @@ and `hs` defines the inductive step using `C i.succ`, inducting downwards.
 -/
 @[elab_as_elim]
 def reverseInduction {C : Fin (n + 1) → Sort _} (hlast : C (Fin.last n))
-    (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) (i : Fin (n + 1)) : C i :=
+    (hs : ∀ i : Fin n, C i.succ → C (castSuccEmb i)) (i : Fin (n + 1)) : C i :=
   if hi : i = Fin.last n then _root_.cast (congr_arg C hi.symm) hlast
   else
     let j : Fin n := ⟨i, lt_of_le_of_ne (Nat.le_of_lt_succ i.2) fun h => hi (Fin.ext h)⟩
     have _ : n - i < n + 1 - i :=
       lt_of_eq_of_lt (Nat.add_sub_add_right ..).symm
         (Nat.sub_lt_sub_left i.2 (Nat.lt_succ_self i))
-    have hi : i = Fin.castSucc j := Fin.ext rfl
+    have hi : i = Fin.castSuccEmb j := Fin.ext rfl
     _root_.cast (congr_arg C hi.symm) (hs _ (reverseInduction hlast hs j.succ))
 termination_by _ => n + 1 - i
 #align fin.reverse_induction Fin.reverseInduction
 
 @[simp]
 theorem reverse_induction_last {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (Fin.last n))
-    (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) :
+    (hs : ∀ i : Fin n, C i.succ → C (castSuccEmb i)) :
     (reverseInduction h0 hs (Fin.last n) : C (Fin.last n)) = h0 := by
-  rw [reverseInduction] ; simp
+  rw [reverseInduction]; simp
 #align fin.reverse_induction_last Fin.reverse_induction_last
 
 @[simp]
-theorem reverse_induction_castSucc {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (Fin.last n))
-    (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) (i : Fin n) :
-    (reverseInduction h0 hs (castSucc i) :
-    C (castSucc i)) = hs i (reverseInduction h0 hs i.succ) := by
-  rw [reverseInduction, dif_neg (_root_.ne_of_lt (Fin.castSucc_lt_last i))]
+theorem reverse_induction_castSuccEmb {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (Fin.last n))
+    (hs : ∀ i : Fin n, C i.succ → C (castSuccEmb i)) (i : Fin n) :
+    (reverseInduction h0 hs (castSuccEmb i) :
+    C (castSuccEmb i)) = hs i (reverseInduction h0 hs i.succ) := by
+  rw [reverseInduction, dif_neg (_root_.ne_of_lt (Fin.castSuccEmb_lt_last i))]
   cases i
   rfl
-#align fin.reverse_induction_cast_succ Fin.reverse_induction_castSucc
+#align fin.reverse_induction_cast_succ Fin.reverse_induction_castSuccEmb
 
 /-- Define `f : Π i : Fin n.succ, C i` by separately handling the cases `i = Fin.last n` and
-`i = j.castSucc`, `j : Fin n`. -/
+`i = j.castSuccEmb`, `j : Fin n`. -/
 @[elab_as_elim]
 def lastCases {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (Fin.last n))
-    (hcast : ∀ i : Fin n, C (castSucc i)) (i : Fin (n + 1)) : C i :=
+    (hcast : ∀ i : Fin n, C (castSuccEmb i)) (i : Fin (n + 1)) : C i :=
   reverseInduction hlast (fun i _ => hcast i) i
 #align fin.last_cases Fin.lastCases
 
 @[simp]
 theorem lastCases_last {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (Fin.last n))
-    (hcast : ∀ i : Fin n, C (castSucc i)) :
+    (hcast : ∀ i : Fin n, C (castSuccEmb i)) :
     (Fin.lastCases hlast hcast (Fin.last n) : C (Fin.last n)) = hlast :=
   reverse_induction_last _ _
 #align fin.last_cases_last Fin.lastCases_last
 
 @[simp]
-theorem lastCases_castSucc {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (Fin.last n))
-    (hcast : ∀ i : Fin n, C (castSucc i)) (i : Fin n) :
-    (Fin.lastCases hlast hcast (Fin.castSucc i) : C (Fin.castSucc i)) = hcast i :=
-  reverse_induction_castSucc _ _ _
-#align fin.last_cases_cast_succ Fin.lastCases_castSucc
+theorem lastCases_castSuccEmb {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (Fin.last n))
+    (hcast : ∀ i : Fin n, C (castSuccEmb i)) (i : Fin n) :
+    (Fin.lastCases hlast hcast (Fin.castSuccEmb i) : C (Fin.castSuccEmb i)) = hcast i :=
+  reverse_induction_castSuccEmb _ _ _
+#align fin.last_cases_cast_succ Fin.lastCases_castSuccEmb
 
 /-- Define `f : Π i : Fin (m + n), C i` by separately handling the cases `i = castAdd n i`,
 `j : Fin m` and `i = natAdd m j`, `j : Fin n`. -/
@@ -1841,7 +1857,7 @@ theorem lastCases_castSucc {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (Fi
 def addCases {m n : ℕ} {C : Fin (m + n) → Sort u} (hleft : ∀ i, C (castAdd n i))
     (hright : ∀ i, C (natAdd m i)) (i : Fin (m + n)) : C i :=
   if hi : (i : ℕ) < m then (castAdd_castLT n i hi) ▸ (hleft (castLT i hi))
-  else (natAdd_subNat_cast (le_of_not_lt hi)) ▸ (hright _)
+  else (natAdd_subNat_castIso (le_of_not_lt hi)) ▸ (hright _)
 #align fin.add_cases Fin.addCases
 
 @[simp]
@@ -1866,14 +1882,14 @@ theorem addCases_right {m n : ℕ} {C : Fin (m + n) → Sort _} (hleft : ∀ i, 
 end Rec
 
 theorem liftFun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} :
-    ((· < ·) ⇒ r) f f ↔ ∀ i : Fin n, r (f (castSucc i)) (f i.succ) := by
+    ((· < ·) ⇒ r) f f ↔ ∀ i : Fin n, r (f (castSuccEmb i)) (f i.succ) := by
   constructor
   · intro H i
-    exact H i.castSucc_lt_succ
+    exact H i.castSuccEmb_lt_succ
   · refine' fun H i => Fin.induction _ _
     · exact fun h => (h.not_le (zero_le i)).elim
     · intro j ihj hij
-      rw [← le_castSucc_iff] at hij
+      rw [← le_castSuccEmb_iff] at hij
       rcases hij.eq_or_lt with (rfl | hlt)
       exacts [H j, _root_.trans (ihj hlt) (H j)]
 #align fin.lift_fun_iff_succ Fin.liftFun_iff_succ
@@ -1881,26 +1897,26 @@ theorem liftFun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] {
 /-- A function `f` on `Fin (n + 1)` is strictly monotone if and only if `f i < f (i + 1)`
 for all `i`. -/
 theorem strictMono_iff_lt_succ {α : Type _} [Preorder α] {f : Fin (n + 1) → α} :
-    StrictMono f ↔ ∀ i : Fin n, f (castSucc i) < f i.succ :=
+    StrictMono f ↔ ∀ i : Fin n, f (castSuccEmb i) < f i.succ :=
   liftFun_iff_succ (· < ·)
 #align fin.strict_mono_iff_lt_succ Fin.strictMono_iff_lt_succ
 
 /-- A function `f` on `Fin (n + 1)` is monotone if and only if `f i ≤ f (i + 1)` for all `i`. -/
 theorem monotone_iff_le_succ {α : Type _} [Preorder α] {f : Fin (n + 1) → α} :
-    Monotone f ↔ ∀ i : Fin n, f (castSucc i) ≤ f i.succ :=
+    Monotone f ↔ ∀ i : Fin n, f (castSuccEmb i) ≤ f i.succ :=
   monotone_iff_forall_lt.trans <| liftFun_iff_succ (· ≤ ·)
 #align fin.monotone_iff_le_succ Fin.monotone_iff_le_succ
 
 /-- A function `f` on `Fin (n + 1)` is strictly antitone if and only if `f (i + 1) < f i`
 for all `i`. -/
 theorem strictAnti_iff_succ_lt {α : Type _} [Preorder α] {f : Fin (n + 1) → α} :
-    StrictAnti f ↔ ∀ i : Fin n, f i.succ < f (castSucc i) :=
+    StrictAnti f ↔ ∀ i : Fin n, f i.succ < f (castSuccEmb i) :=
   liftFun_iff_succ (· > ·)
 #align fin.strict_anti_iff_succ_lt Fin.strictAnti_iff_succ_lt
 
 /-- A function `f` on `Fin (n + 1)` is antitone if and only if `f (i + 1) ≤ f i` for all `i`. -/
 theorem antitone_iff_succ_le {α : Type _} [Preorder α] {f : Fin (n + 1) → α} :
-    Antitone f ↔ ∀ i : Fin n, f i.succ ≤ f (castSucc i) :=
+    Antitone f ↔ ∀ i : Fin n, f i.succ ≤ f (castSuccEmb i) :=
   antitone_iff_forall_lt.trans <| liftFun_iff_succ (· ≥ ·)
 #align fin.antitone_iff_succ_le Fin.antitone_iff_succ_le
 
@@ -2005,8 +2021,8 @@ theorem sub_one_lt_iff {n : ℕ} {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
   not_iff_not.1 <| by simp only [not_lt, le_sub_one_iff, le_zero_iff]
 #align fin.sub_one_lt_iff Fin.sub_one_lt_iff
 
-theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
-  ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_rev, Nat.succ_sub_succ_eq_sub]
+theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.revPerm i :=
+  ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_revPerm, Nat.succ_sub_succ_eq_sub]
 #align fin.last_sub Fin.last_sub
 
 end AddGroup
@@ -2014,10 +2030,10 @@ end AddGroup
 section SuccAbove
 
 theorem succAbove_aux (p : Fin (n + 1)) :
-    StrictMono fun i : Fin n => if (castSucc i) < p then (castSucc i) else i.succ :=
-  (castSucc : Fin n ↪o _).strictMono.ite (succEmbedding n).strictMono
-    (fun _ _ hij hj => lt_trans ((castSucc : Fin n ↪o _).lt_iff_lt.2 hij) hj) fun i =>
-    (castSucc_lt_succ i).le
+    StrictMono fun i : Fin n => if (castSuccEmb i) < p then (castSuccEmb i) else i.succ :=
+  (castSuccEmb : Fin n ↪o _).strictMono.ite (succEmbedding n).strictMono
+    (fun _ _ hij hj => lt_trans ((castSuccEmb : Fin n ↪o _).lt_iff_lt.2 hij) hj) fun i =>
+    (castSuccEmb_lt_succ i).le
 #align fin.succ_above_aux Fin.succAbove_aux
 
 /-- `succAbove p i` embeds `Fin n` into `Fin (n + 1)` with a hole around `p`. -/
@@ -2026,16 +2042,16 @@ def succAbove (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
 #align fin.succ_above Fin.succAbove
 
 /-- Embedding `i : Fin n` into `Fin (n + 1)` with a hole around `p : Fin (n + 1)`
-embeds `i` by `castSucc` when the resulting `i.castSucc < p`. -/
-theorem succAbove_below (p : Fin (n + 1)) (i : Fin n) (h : castSucc i < p) :
-    p.succAbove i = castSucc i := if_pos h
+embeds `i` by `castSuccEmb` when the resulting `i.castSuccEmb < p`. -/
+theorem succAbove_below (p : Fin (n + 1)) (i : Fin n) (h : castSuccEmb i < p) :
+    p.succAbove i = castSuccEmb i := if_pos h
 #align fin.succ_above_below Fin.succAbove_below
 
 @[simp]
 theorem succAbove_ne_zero_zero [NeZero n] {a : Fin (n + 1)} (ha : a ≠ 0) : a.succAbove 0 = 0 := by
   rw [Fin.succAbove_below]
   · simp
-  · simp only [castSucc_zero]
+  · simp only [castSuccEmb_zero]
     exact bot_lt_iff_ne_bot.mpr ha
 #align fin.succ_above_ne_zero_zero Fin.succAbove_ne_zero_zero
 
@@ -2055,44 +2071,44 @@ theorem succAbove_zero : ⇑(succAbove (0 : Fin (n + 1))) = Fin.succ :=
   rfl
 #align fin.succ_above_zero Fin.succAbove_zero
 
-/-- Embedding `Fin n` into `Fin (n + 1)` with a hole around `last n` embeds by `castSucc`. -/
+/-- Embedding `Fin n` into `Fin (n + 1)` with a hole around `last n` embeds by `castSuccEmb`. -/
 @[simp]
-theorem succAbove_last : succAbove (Fin.last n) = castSucc := by
+theorem succAbove_last : succAbove (Fin.last n) = castSuccEmb := by
   ext
-  simp only [succAbove_below, castSucc_lt_last]
+  simp only [succAbove_below, castSuccEmb_lt_last]
 #align fin.succ_above_last Fin.succAbove_last
 
-theorem succAbove_last_apply (i : Fin n) : succAbove (Fin.last n) i = castSucc i := by
+theorem succAbove_last_apply (i : Fin n) : succAbove (Fin.last n) i = castSuccEmb i := by
   rw [succAbove_last]
 #align fin.succ_above_last_apply Fin.succAbove_last_apply
 
 /-- Embedding `i : Fin n` into `Fin (n + 1)` with a hole around `p : Fin (n + 1)`
 embeds `i` by `succ` when the resulting `p < i.succ`. -/
-theorem succAbove_above (p : Fin (n + 1)) (i : Fin n) (h : p ≤ castSucc i) :
+theorem succAbove_above (p : Fin (n + 1)) (i : Fin n) (h : p ≤ castSuccEmb i) :
     p.succAbove i = i.succ := by simp [succAbove, h.not_lt]
 #align fin.succ_above_above Fin.succAbove_above
 
 /-- Embedding `i : Fin n` into `Fin (n + 1)` is always about some hole `p`. -/
-theorem succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) : castSucc i < p ∨ p ≤ castSucc i :=
-  lt_or_ge (castSucc i) p
+theorem succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) : castSuccEmb i < p ∨ p ≤ castSuccEmb i :=
+  lt_or_ge (castSuccEmb i) p
 #align fin.succ_above_lt_ge Fin.succAbove_lt_ge
 
 /-- Embedding `i : Fin n` into `Fin (n + 1)` is always about some hole `p`. -/
-theorem succAbove_lt_gt (p : Fin (n + 1)) (i : Fin n) : castSucc i < p ∨ p < i.succ :=
+theorem succAbove_lt_gt (p : Fin (n + 1)) (i : Fin n) : castSuccEmb i < p ∨ p < i.succ :=
   Or.casesOn (succAbove_lt_ge p i) (fun h => Or.inl h) fun h =>
-    Or.inr (lt_of_le_of_lt h (castSucc_lt_succ i))
+    Or.inr (lt_of_le_of_lt h (castSuccEmb_lt_succ i))
 #align fin.succ_above_lt_gt Fin.succAbove_lt_gt
 
 /-- Embedding `i : Fin n` into `Fin (n + 1)` using a pivot `p` that is greater
 results in a value that is less than `p`. -/
 @[simp]
-theorem succAbove_lt_iff (p : Fin (n + 1)) (i : Fin n) : p.succAbove i < p ↔ castSucc i < p := by
+theorem succAbove_lt_iff (p : Fin (n + 1)) (i : Fin n) : p.succAbove i < p ↔ castSuccEmb i < p := by
   refine' Iff.intro _ _
   · intro h
     cases' succAbove_lt_ge p i with H H
     · exact H
     · rw [succAbove_above _ _ H] at h
-      exact lt_trans (castSucc_lt_succ i) h
+      exact lt_trans (castSuccEmb_lt_succ i) h
   · intro h
     rw [succAbove_below _ _ h]
     exact h
@@ -2100,7 +2116,7 @@ theorem succAbove_lt_iff (p : Fin (n + 1)) (i : Fin n) : p.succAbove i < p ↔ c
 
 /-- Embedding `i : Fin n` into `Fin (n + 1)` using a pivot `p` that is lesser
 results in a value that is greater than `p`. -/
-theorem lt_succAbove_iff (p : Fin (n + 1)) (i : Fin n) : p < p.succAbove i ↔ p ≤ castSucc i := by
+theorem lt_succAbove_iff (p : Fin (n + 1)) (i : Fin n) : p < p.succAbove i ↔ p ≤ castSuccEmb i := by
   refine' Iff.intro _ _
   · intro h
     cases' succAbove_lt_ge p i with H H
@@ -2109,29 +2125,29 @@ theorem lt_succAbove_iff (p : Fin (n + 1)) (i : Fin n) : p < p.succAbove i ↔ p
     · exact H
   · intro h
     rw [succAbove_above _ _ h]
-    exact lt_of_le_of_lt h (castSucc_lt_succ i)
+    exact lt_of_le_of_lt h (castSuccEmb_lt_succ i)
 #align fin.lt_succ_above_iff Fin.lt_succAbove_iff
 
 /-- Embedding `i : Fin n` into `Fin (n + 1)` with a hole around `p : Fin (n + 1)`
 never results in `p` itself -/
 theorem succAbove_ne (p : Fin (n + 1)) (i : Fin n) : p.succAbove i ≠ p := by
   intro eq
-  by_cases H : castSucc i < p
+  by_cases H : castSuccEmb i < p
   · simp [lt_irrefl, ← succAbove_below _ _ H, eq] at H
-  · simpa [← succAbove_above _ _ (le_of_not_lt H), eq, H] using castSucc_lt_succ i
+  · simpa [← succAbove_above _ _ (le_of_not_lt H), eq, H] using castSuccEmb_lt_succ i
 #align fin.succ_above_ne Fin.succAbove_ne
 
 /-- Embedding a positive `Fin n` results in a positive `Fin (n + 1)` -/
 theorem succAbove_pos [NeZero n] (p : Fin (n + 1)) (i : Fin n) (h : 0 < i) : 0 < p.succAbove i := by
-  by_cases H : castSucc i < p
-  · simpa [succAbove_below _ _ H] using castSucc_pos h
+  by_cases H : castSuccEmb i < p
+  · simpa [succAbove_below _ _ H] using castSuccEmb_pos h
   · simp [succAbove_above _ _ (le_of_not_lt H)]
 #align fin.succ_above_pos Fin.succAbove_pos
 
 @[simp]
 theorem succAbove_castLT {x y : Fin (n + 1)} (h : x < y)
     (hx : x.1 < n := lt_of_lt_of_le h y.le_last) : y.succAbove (x.castLT hx) = x := by
-  rw [succAbove_below, castSucc_castLT]
+  rw [succAbove_below, castSuccEmb_castLT]
   exact h
 #align fin.succ_above_cast_lt Fin.succAbove_castLT
 
@@ -2142,12 +2158,12 @@ theorem succAbove_pred {x y : Fin (n + 1)} (h : x < y) (hy : y ≠ 0 := (x.zero_
   simpa [le_iff_val_le_val] using Nat.le_pred_of_lt h
 #align fin.succ_above_pred Fin.succAbove_pred
 
-theorem castLT_succAbove {x : Fin n} {y : Fin (n + 1)} (h : castSucc x < y)
+theorem castLT_succAbove {x : Fin n} {y : Fin (n + 1)} (h : castSuccEmb x < y)
     (h' : (y.succAbove x).1 < n := lt_of_lt_of_le ((succAbove_lt_iff _ _).2 h) (le_last y)) :
-    (y.succAbove x).castLT h' = x := by simp only [succAbove_below _ _ h, castLT_castSucc]
+    (y.succAbove x).castLT h' = x := by simp only [succAbove_below _ _ h, castLT_castSuccEmb]
 #align fin.cast_lt_succ_above Fin.castLT_succAbove
 
-theorem pred_succAbove {x : Fin n} {y : Fin (n + 1)} (h : y ≤ castSucc x)
+theorem pred_succAbove {x : Fin n} {y : Fin (n + 1)} (h : y ≤ castSuccEmb x)
     (h' : y.succAbove x ≠ 0 := (y.zero_le.trans_lt <| (lt_succAbove_iff _ _).2 h).ne') :
     (y.succAbove x).pred h' = x := by simp only [succAbove_above _ _ h, pred_succ]
 #align fin.pred_succ_above Fin.pred_succAbove
@@ -2193,7 +2209,7 @@ theorem succAbove_right_inj {x : Fin (n + 1)} : x.succAbove a = x.succAbove b �
 
 /-- `succAbove` is injective at the pivot -/
 theorem succAbove_left_injective : Injective (@succAbove n) := fun _ _ h => by
-  simpa [range_succAbove] using congr_arg (fun f : Fin n ↪o Fin (n + 1) => Set.range fᶜ) h
+  simpa [range_succAbove] using congr_arg (fun f : Fin n ↪o Fin (n + 1) => (Set.range f)ᶜ) h
 #align fin.succ_above_left_injective Fin.succAbove_left_injective
 
 /-- `succAbove` is injective at the pivot -/
@@ -2209,19 +2225,19 @@ theorem zero_succAbove {n : ℕ} (i : Fin n) : (0 : Fin (n + 1)).succAbove i = i
 
 @[simp]
 theorem succ_succAbove_zero {n : ℕ} [NeZero n] (i : Fin n) : succAbove i.succ 0 = 0 :=
-  succAbove_below i.succ 0 (by simp only [castSucc_zero, succ_pos])
+  succAbove_below i.succ 0 (by simp only [castSuccEmb_zero, succ_pos])
 #align fin.succ_succ_above_zero Fin.succ_succAbove_zero
 
 @[simp]
 theorem succ_succAbove_succ {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.succ.succAbove j.succ = (i.succAbove j).succ :=
-  (lt_or_ge (castSucc j) i).elim
+  (lt_or_ge (castSuccEmb j) i).elim
     (fun h => by
-      have h' : castSucc j.succ < i.succ := by simpa [lt_iff_val_lt_val] using h
+      have h' : castSuccEmb j.succ < i.succ := by simpa [lt_iff_val_lt_val] using h
       ext
       simp [succAbove_below _ _ h, succAbove_below _ _ h'])
     fun h => by
-    have h' : i.succ ≤ castSucc j.succ := by simpa [le_iff_val_le_val] using h
+    have h' : i.succ ≤ castSuccEmb j.succ := by simpa [le_iff_val_le_val] using h
     ext
     simp [succAbove_above _ _ h, succAbove_above _ _ h']
 #align fin.succ_succ_above_succ Fin.succ_succAbove_succ
@@ -2260,8 +2276,10 @@ section PredAbove
 
 /-- `predAbove p i` embeds `i : Fin (n+1)` into `Fin n` by subtracting one if `p < i`. -/
 def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
-  if h : castSucc p < i then i.pred (_root_.ne_of_lt (lt_of_le_of_lt (zero_le (castSucc p)) h)).symm
-  else i.castLT (lt_of_le_of_lt (le_of_not_lt h) p.2)
+  if h : castSuccEmb p < i then
+    i.pred (_root_.ne_of_lt (lt_of_le_of_lt (zero_le (castSuccEmb p)) h)).symm
+  else
+    i.castLT (lt_of_le_of_lt (le_of_not_lt h) p.2)
 #align fin.pred_above Fin.predAbove
 
 theorem predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
@@ -2283,7 +2301,7 @@ theorem predAbove_left_monotone (i : Fin (n + 1)) :
   split_ifs with ha hb hb
   · rfl
   · exact pred_le _
-  · have : b < a := castSucc_lt_castSucc_iff.mpr (hb.trans_le (le_of_not_gt ha))
+  · have : b < a := castSuccEmb_lt_castSuccEmb_iff.mpr (hb.trans_le (le_of_not_gt ha))
     exact absurd H this.not_le
   · rfl
 #align fin.pred_above_left_monotone Fin.predAbove_left_monotone
@@ -2310,18 +2328,18 @@ theorem castPred_one : castPred (1 : Fin (n + 2)) = 1 := by
 theorem predAbove_zero {i : Fin (n + 2)} (hi : i ≠ 0) : predAbove 0 i = i.pred hi := by
   dsimp [predAbove]
   rw [dif_pos]
-  simp only [castSucc_zero]
+  simp only [castSuccEmb_zero]
   exact (pos_iff_ne_zero _).mpr hi
 #align fin.pred_above_zero Fin.predAbove_zero
 
 @[simp]
 theorem castPred_last : castPred (last (n + 1)) = last n :=
-  eq_of_veq (by simp [castPred, predAbove, castSucc_lt_last])
+  eq_of_veq (by simp [castPred, predAbove, castSuccEmb_lt_last])
 #align fin.cast_pred_last Fin.castPred_last
 
 --Porting note: removing @[simp]. `castPred_mk'` has `simp` attribute instead
 theorem castPred_mk (n i : ℕ) (h : i < n + 1) : castPred ⟨i, lt_succ_of_lt h⟩ = ⟨i, h⟩ := by
-  have : ¬castSucc (last n) < ⟨i, lt_succ_of_lt h⟩ := by
+  have : ¬castSuccEmb (last n) < ⟨i, lt_succ_of_lt h⟩ := by
     simpa [lt_iff_val_lt_val] using le_of_lt_succ h
   simp [castPred, predAbove, this]
 #align fin.cast_pred_mk Fin.castPred_mk
@@ -2338,9 +2356,9 @@ theorem coe_castPred {n : ℕ} (a : Fin (n + 2)) (hx : a < Fin.last _) :
   exact hx
 #align fin.coe_cast_pred Fin.coe_castPred
 
-theorem predAbove_below (p : Fin (n + 1)) (i : Fin (n + 2)) (h : i ≤ castSucc p) :
+theorem predAbove_below (p : Fin (n + 1)) (i : Fin (n + 2)) (h : i ≤ castSuccEmb p) :
     p.predAbove i = i.castPred := by
-  have : i ≤ castSucc (last n) := h.trans p.le_last
+  have : i ≤ castSuccEmb (last n) := h.trans p.le_last
   simp [predAbove, castPred, h.not_lt, this.not_lt]
 #align fin.pred_above_below Fin.predAbove_below
 
@@ -2353,8 +2371,8 @@ theorem predAbove_last_apply (i : Fin n) : predAbove (Fin.last n) i = i.castPred
   rw [predAbove_last]
 #align fin.pred_above_last_apply Fin.predAbove_last_apply
 
-theorem predAbove_above (p : Fin n) (i : Fin (n + 1)) (h : castSucc p < i) :
-    p.predAbove i = i.pred ((castSucc p).zero_le.trans_lt h).ne.symm := by simp [predAbove, h]
+theorem predAbove_above (p : Fin n) (i : Fin (n + 1)) (h : castSuccEmb p < i) :
+    p.predAbove i = i.pred ((castSuccEmb p).zero_le.trans_lt h).ne.symm := by simp [predAbove, h]
 #align fin.pred_above_above Fin.predAbove_above
 
 theorem castPred_monotone : Monotone (@castPred n) :=
@@ -2364,8 +2382,8 @@ theorem castPred_monotone : Monotone (@castPred n) :=
 /-- Sending `Fin (n+1)` to `Fin n` by subtracting one from anything above `p`
 then back to `Fin (n+1)` with a gap around `p` is the identity away from `p`. -/
 @[simp]
-theorem succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p) :
-    p.castSucc.succAbove (p.predAbove i) = i := by
+theorem succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSuccEmb p) :
+    p.castSuccEmb.succAbove (p.predAbove i) = i := by
   dsimp [predAbove, succAbove]
   rcases p with ⟨p, _⟩
   rcases i with ⟨i, _⟩
@@ -2388,7 +2406,7 @@ theorem succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p)
 then back to `Fin n` by subtracting one from anything above `p` is the identity. -/
 @[simp]
 theorem predAbove_succAbove (p : Fin n) (i : Fin n) :
-    p.predAbove ((castSucc p).succAbove i) = i := by
+    p.predAbove ((castSuccEmb p).succAbove i) = i := by
   dsimp [predAbove, succAbove]
   rcases p with ⟨p, _⟩
   rcases i with ⟨i, _⟩
@@ -2402,34 +2420,35 @@ theorem predAbove_succAbove (p : Fin n) (i : Fin n) :
     contradiction
 #align fin.pred_above_succ_above Fin.predAbove_succAbove
 
-theorem castSucc_pred_eq_pred_castSucc {a : Fin (n + 1)} (ha : a ≠ 0)
-    (ha' := a.castSucc_ne_zero_iff.mpr ha) : castSucc (a.pred ha) = (castSucc a).pred ha' := by
+theorem castSuccEmb_pred_eq_pred_castSuccEmb {a : Fin (n + 1)} (ha : a ≠ 0)
+    (ha' := a.castSuccEmb_ne_zero_iff.mpr ha) :
+    castSuccEmb (a.pred ha) = (castSuccEmb a).pred ha' := by
   cases a
   rfl
-#align fin.cast_succ_pred_eq_pred_cast_succ Fin.castSucc_pred_eq_pred_castSucc
+#align fin.cast_succ_pred_eq_pred_cast_succ Fin.castSuccEmb_pred_eq_pred_castSuccEmb
 
 /-- `pred` commutes with `succAbove`. -/
 theorem pred_succAbove_pred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) (hb : b ≠ 0)
     (hk := succAbove_ne_zero ha hb) :
     (a.pred ha).succAbove (b.pred hb) = (a.succAbove b).pred hk := by
-  obtain hbelow | habove := lt_or_le (castSucc b) a
+  obtain hbelow | habove := lt_or_le (castSuccEmb b) a
   -- `rwa` uses them
   · rw [Fin.succAbove_below]
-    · rwa [castSucc_pred_eq_pred_castSucc, Fin.pred_inj, Fin.succAbove_below]
-    · rwa [castSucc_pred_eq_pred_castSucc, pred_lt_pred_iff]
+    · rwa [castSuccEmb_pred_eq_pred_castSuccEmb, Fin.pred_inj, Fin.succAbove_below]
+    · rwa [castSuccEmb_pred_eq_pred_castSuccEmb, pred_lt_pred_iff]
   · rw [Fin.succAbove_above]
     have : (b.pred hb).succ = b.succ.pred (Fin.succ_ne_zero _) := by rw [succ_pred, pred_succ]
     · rwa [this, Fin.pred_inj, Fin.succAbove_above]
-    · rwa [castSucc_pred_eq_pred_castSucc, Fin.pred_le_pred_iff]
+    · rwa [castSuccEmb_pred_eq_pred_castSuccEmb, Fin.pred_le_pred_iff]
 #align fin.pred_succ_above_pred Fin.pred_succAbove_pred
 
 /-- `succ` commutes with `predAbove`. -/
 @[simp]
 theorem succ_predAbove_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
     a.succ.predAbove b.succ = (a.predAbove b).succ := by
-  obtain h₁ | h₂ := lt_or_le (castSucc a) b
+  obtain h₁ | h₂ := lt_or_le (castSuccEmb a) b
   · rw [Fin.predAbove_above _ _ h₁, Fin.succ_pred, Fin.predAbove_above, Fin.pred_succ]
-    simpa only [lt_iff_val_lt_val, coe_castSucc, val_succ, add_lt_add_iff_right] using
+    simpa only [lt_iff_val_lt_val, coe_castSuccEmb, val_succ, add_lt_add_iff_right] using
       h₁
   · cases' n with n
     · exfalso
@@ -2437,10 +2456,11 @@ theorem succ_predAbove_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
     · rw [Fin.predAbove_below a b h₂,
         Fin.predAbove_below a.succ b.succ
           (by
-            simpa only [le_iff_val_le_val, val_succ, coe_castSucc, add_le_add_iff_right] using h₂)]
+            simpa only [le_iff_val_le_val, val_succ, coe_castSuccEmb, add_le_add_iff_right]
+              using h₂)]
       ext
       have h₀ : (b : ℕ) < n + 1 := by
-        simp only [le_iff_val_le_val, coe_castSucc] at h₂
+        simp only [le_iff_val_le_val, coe_castSuccEmb] at h₂
         simpa only [lt_succ_iff] using h₂.trans a.is_le
       have h₁ : (b.succ : ℕ) < n + 2 := by
         rw [← Nat.succ_lt_succ_iff] at h₀
@@ -2449,15 +2469,16 @@ theorem succ_predAbove_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
 #align fin.succ_pred_above_succ Fin.succ_predAbove_succ
 
 @[simp]
-theorem castPred_castSucc (i : Fin (n + 1)) : castPred (castSucc i) = i := by
+theorem castPred_castSuccEmb (i : Fin (n + 1)) : castPred (castSuccEmb i) = i := by
   simp [castPred, predAbove, not_lt.mpr (le_last i)]
-#align fin.cast_pred_cast_succ Fin.castPred_castSucc
+#align fin.cast_pred_cast_succ Fin.castPred_castSuccEmb
 
-theorem castSucc_castPred {i : Fin (n + 2)} (h : i < last (n + 1)) : castSucc i.castPred = i := by
+theorem castSuccEmb_castPred {i : Fin (n + 2)} (h : i < last (n + 1)) :
+    castSuccEmb i.castPred = i := by
   rw [castPred, predAbove, dif_neg]
   · simp [Fin.eq_iff_veq]
   · exact h.not_le
-#align fin.cast_succ_cast_pred Fin.castSucc_castPred
+#align fin.cast_succ_cast_pred Fin.castSuccEmb_castPred
 
 theorem coe_castPred_le_self (i : Fin (n + 2)) : (i.castPred : ℕ) ≤ i := by
   rcases i.le_last.eq_or_lt with (rfl | h)
@@ -2471,7 +2492,7 @@ theorem coe_castPred_lt_iff {i : Fin (n + 2)} : (i.castPred : ℕ) < i ↔ i = F
   rcases i.le_last.eq_or_lt with (rfl | H)
   · simp
   · simp only [_root_.ne_of_lt H]
-    rw [← castSucc_castPred H]
+    rw [← castSuccEmb_castPred H]
     simp
 #align fin.coe_cast_pred_lt_iff Fin.coe_castPred_lt_iff
 
@@ -2480,7 +2501,7 @@ theorem lt_last_iff_coe_castPred {i : Fin (n + 2)} :
   rcases i.le_last.eq_or_lt with (rfl | H)
   · simp
   · simp only [H]
-    rw [← castSucc_castPred H]
+    rw [← castSuccEmb_castPred H]
     simp
 #align fin.lt_last_iff_coe_cast_pred Fin.lt_last_iff_coe_castPred
 

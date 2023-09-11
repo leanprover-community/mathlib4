@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finset.pointwise
-! leanprover-community/mathlib commit 5e526d18cea33550268dcbbddcb822d5cde40654
+! leanprover-community/mathlib commit eba7871095e834365616b5e43c8c7bb0b37058d0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -2025,6 +2025,37 @@ theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
 #align finset.card_smul_finset Finset.card_smul_finset
 #align finset.card_vadd_finset Finset.card_vadd_finset
 
+/-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
+the size of `t` divides the size of `s • t`. -/
+@[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
+distinct!), then the size of `t` divides the size of `s +ᵥ t`."]
+theorem card_dvd_card_smul_right {s : Finset α} :
+    ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
+  card_dvd_card_image₂_right fun _ _ => MulAction.injective _
+#align finset.card_dvd_card_smul_right Finset.card_dvd_card_smul_right
+#align finset.card_dvd_card_vadd_right Finset.card_dvd_card_vadd_right
+
+variable [DecidableEq α]
+
+/-- If the right cosets of `s` by elements of `t` are disjoint (but not necessarily distinct!), then
+the size of `s` divides the size of `s * t`. -/
+@[to_additive "If the right cosets of `s` by elements of `t` are disjoint (but not necessarily
+distinct!), then the size of `s` divides the size of `s + t`."]
+theorem card_dvd_card_mul_left {s t : Finset α} :
+    ((fun b => s.image fun a => a * b) '' (t : Set α)).PairwiseDisjoint id →
+      s.card ∣ (s * t).card :=
+  card_dvd_card_image₂_left fun _ _ => mul_left_injective _
+#align finset.card_dvd_card_mul_left Finset.card_dvd_card_mul_left
+#align finset.card_dvd_card_add_left Finset.card_dvd_card_add_left
+
+/-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
+the size of `t` divides the size of `s * t`. -/
+@[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
+distinct!), then the size of `t` divides the size of `s + t`."]
+theorem card_dvd_card_mul_right {s t : Finset α} :
+    ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s * t).card :=
+  card_dvd_card_image₂_right fun _ _ => mul_right_injective _
+
 end Group
 
 section GroupWithZero
@@ -2072,7 +2103,7 @@ theorem smul_finset_symm_diff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ 
 theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
   coe_injective <| by
     rw [← coe_subset] at hs
-    push_cast at hs⊢
+    push_cast at hs ⊢
     exact Set.smul_univ₀ hs
 #align finset.smul_univ₀ Finset.smul_univ₀
 

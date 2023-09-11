@@ -8,6 +8,7 @@ Authors: Chris Hughes, Michael Stoll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Init.Data.Int.CompLemmas
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 
 /-!
@@ -64,7 +65,8 @@ theorem euler_criterion_units (x : (ZMod p)ˣ) : (∃ y : (ZMod p)ˣ, y ^ 2 = x)
 theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ a ^ (p / 2) = 1 := by
   apply (iff_congr _ (by simp [Units.ext_iff])).mp (euler_criterion_units p (Units.mk0 a ha))
   simp only [Units.ext_iff, sq, Units.val_mk0, Units.val_mul]
-  constructor; · rintro ⟨y, hy⟩; exact ⟨y, hy.symm⟩
+  constructor
+  · rintro ⟨y, hy⟩; exact ⟨y, hy.symm⟩
   · rintro ⟨y, rfl⟩
     have hy : y ≠ 0 := by
       rintro rfl
@@ -125,7 +127,9 @@ theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) :
       rw [legendreSym, quadraticChar_eq_one_of_char_two hc ha]
       revert ha
       push_cast
-      generalize (a : ZMod 2) = b; fin_cases b; tauto; simp
+      generalize (a : ZMod 2) = b; fin_cases b
+      · tauto
+      · simp
   · convert quadraticChar_eq_pow_of_char_ne_two' hc (a : ZMod p)
     norm_cast
     congr
@@ -177,7 +181,9 @@ theorem sq_one {a : ℤ} (ha : (a : ZMod p) ≠ 0) : legendreSym p a ^ 2 = 1 :=
 
 /-- The Legendre symbol of `a^2` at `p` is 1 if `p ∤ a`. -/
 theorem sq_one' {a : ℤ} (ha : (a : ZMod p) ≠ 0) : legendreSym p (a ^ 2) = 1 := by
-  exact_mod_cast quadraticChar_sq_one' ha
+  dsimp only [legendreSym] 
+  rw [Int.cast_pow]
+  exact quadraticChar_sq_one' ha
 #align legendre_sym.sq_one' legendreSym.sq_one'
 
 /-- The Legendre symbol depends only on `a` mod `p`. -/
@@ -252,8 +258,7 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
   have ha : (a : ZMod p) ≠ 0 := by
     intro hf
     rw [(eq_zero_iff p a).mpr hf] at h
-    -- porting note: `zero_ne_neg_of_ne` not ported. Fixed by using `linarith` instead
-    linarith
+    exact Int.zero_ne_neg_of_ne zero_ne_one h
   by_contra hf
   cases' imp_iff_or_not.mp (not_and'.mp hf) with hx hy
   · rw [eq_one_of_sq_sub_mul_sq_eq_zero' ha hx hxy, eq_neg_self_iff] at h

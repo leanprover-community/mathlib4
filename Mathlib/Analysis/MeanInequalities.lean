@@ -115,8 +115,8 @@ namespace Real
 /-- AM-GM inequality: the **geometric mean is less than or equal to the arithmetic mean**, weighted
 version for real-valued nonnegative functions. -/
 theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
-    (hw' : (∑ i in s, w i) = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
-    (∏ i in s, z i ^ w i) ≤ ∑ i in s, w i * z i := by
+    (hw' : ∑ i in s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∏ i in s, z i ^ w i ≤ ∑ i in s, w i * z i := by
   -- If some number `z i` equals zero and has non-zero weight, then LHS is 0 and RHS is nonnegative.
   by_cases A : ∃ i ∈ s, z i = 0 ∧ w i ≠ 0
   · rcases A with ⟨i, his, hzi, hwi⟩
@@ -139,10 +139,10 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
 #align real.geom_mean_le_arith_mean_weighted Real.geom_mean_le_arith_mean_weighted
 
 theorem geom_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
-    (hw' : (∑ i in s, w i) = 1) (hz : ∀ i ∈ s, 0 ≤ z i) (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) :
-    (∏ i in s, z i ^ w i) = x :=
+    (hw' : ∑ i in s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) :
+    ∏ i in s, z i ^ w i = x :=
   calc
-    (∏ i in s, z i ^ w i) = ∏ i in s, x ^ w i := by
+    ∏ i in s, z i ^ w i = ∏ i in s, x ^ w i := by
       refine' prod_congr rfl fun i hi => _
       cases' eq_or_ne (w i) 0 with h₀ h₀
       · rw [h₀, rpow_zero, rpow_zero]
@@ -157,10 +157,10 @@ theorem geom_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw : ∀ i 
       exact hz i his
 #align real.geom_mean_weighted_of_constant Real.geom_mean_weighted_of_constant
 
-theorem arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw' : (∑ i in s, w i) = 1)
-    (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) : (∑ i in s, w i * z i) = x :=
+theorem arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw' : ∑ i in s, w i = 1)
+    (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) : ∑ i in s, w i * z i = x :=
   calc
-    (∑ i in s, w i * z i) = ∑ i in s, w i * x := by
+    ∑ i in s, w i * z i = ∑ i in s, w i * x := by
       refine' sum_congr rfl fun i hi => _
       cases' eq_or_ne (w i) 0 with hwi hwi
       · rw [hwi, MulZeroClass.zero_mul, MulZeroClass.zero_mul]
@@ -169,8 +169,8 @@ theorem arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw' : (∑
 #align real.arith_mean_weighted_of_constant Real.arith_mean_weighted_of_constant
 
 theorem geom_mean_eq_arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
-    (hw' : (∑ i in s, w i) = 1) (hz : ∀ i ∈ s, 0 ≤ z i) (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) :
-    (∏ i in s, z i ^ w i) = ∑ i in s, w i * z i := by
+    (hw' : ∑ i in s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) :
+    ∏ i in s, z i ^ w i = ∑ i in s, w i * z i := by
   rw [geom_mean_weighted_of_constant, arith_mean_weighted_of_constant] <;> assumption
 #align real.geom_mean_eq_arith_mean_weighted_of_constant Real.geom_mean_eq_arith_mean_weighted_of_constant
 
@@ -180,7 +180,7 @@ namespace NNReal
 
 /-- The geometric mean is less than or equal to the arithmetic mean, weighted version
 for `NNReal`-valued functions. -/
-theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ≥0) (hw' : (∑ i in s, w i) = 1) :
+theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ≥0) (hw' : ∑ i in s, w i = 1) :
     (∏ i in s, z i ^ (w i : ℝ)) ≤ ∑ i in s, w i * z i := by
   exact_mod_cast
     Real.geom_mean_le_arith_mean_weighted _ _ _ (fun i _ => (w i).coe_nonneg)
@@ -299,7 +299,7 @@ theorem young_inequality (a b : ℝ≥0∞) {p q : ℝ} (hpq : p.IsConjugateExpo
   · refine' le_trans le_top (le_of_eq _)
     repeat rw [div_eq_mul_inv]
     cases' h with h h <;> rw [h] <;> simp [h, hpq.pos, hpq.symm.pos]
-  push_neg  at h
+  push_neg at h
   -- if a ≠ ⊤ and b ≠ ⊤, use the nnreal version: nnreal.young_inequality_real
   rw [← coe_toNNReal h.left, ← coe_toNNReal h.right, ← coe_mul, coe_rpow_of_nonneg _ hpq.nonneg,
     coe_rpow_of_nonneg _ hpq.symm.nonneg, ENNReal.ofReal, ENNReal.ofReal, ←
@@ -320,12 +320,12 @@ section HolderMinkowski
 namespace NNReal
 
 private theorem inner_le_Lp_mul_Lp_of_norm_le_one (f g : ι → ℝ≥0) {p q : ℝ}
-    (hpq : p.IsConjugateExponent q) (hf : (∑ i in s, f i ^ p) ≤ 1) (hg : (∑ i in s, g i ^ q) ≤ 1) :
-    (∑ i in s, f i * g i) ≤ 1 := by
+    (hpq : p.IsConjugateExponent q) (hf : ∑ i in s, f i ^ p ≤ 1) (hg : ∑ i in s, g i ^ q ≤ 1) :
+    ∑ i in s, f i * g i ≤ 1 := by
   have hp_ne_zero : Real.toNNReal p ≠ 0 := (zero_lt_one.trans hpq.one_lt_nnreal).ne.symm
   have hq_ne_zero : Real.toNNReal q ≠ 0 := (zero_lt_one.trans hpq.symm.one_lt_nnreal).ne.symm
   calc
-    (∑ i in s, f i * g i) ≤ ∑ i in s, (f i ^ p / Real.toNNReal p + g i ^ q / Real.toNNReal q) :=
+    ∑ i in s, f i * g i ≤ ∑ i in s, (f i ^ p / Real.toNNReal p + g i ^ q / Real.toNNReal q) :=
       Finset.sum_le_sum fun i _ => young_inequality_real (f i) (g i) hpq
     _ = (∑ i in s, f i ^ p) / Real.toNNReal p + (∑ i in s, g i ^ q) / Real.toNNReal q := by
       rw [sum_add_distrib, sum_div, sum_div]
@@ -336,8 +336,8 @@ private theorem inner_le_Lp_mul_Lp_of_norm_le_one (f g : ι → ℝ≥0) {p q : 
     _ = 1 := hpq.inv_add_inv_conj_nnreal
 
 private theorem inner_le_Lp_mul_Lp_of_norm_eq_zero (f g : ι → ℝ≥0) {p q : ℝ}
-    (hpq : p.IsConjugateExponent q) (hf : (∑ i in s, f i ^ p) = 0) :
-    (∑ i in s, f i * g i) ≤ (∑ i in s, f i ^ p) ^ (1 / p) * (∑ i in s, g i ^ q) ^ (1 / q) := by
+    (hpq : p.IsConjugateExponent q) (hf : ∑ i in s, f i ^ p = 0) :
+    ∑ i in s, f i * g i ≤ (∑ i in s, f i ^ p) ^ (1 / p) * (∑ i in s, g i ^ q) ^ (1 / q) := by
   simp only [hf, hpq.ne_zero, one_div, sum_eq_zero_iff, zero_rpow, MulZeroClass.zero_mul,
     inv_eq_zero, Ne.def, not_false_iff, le_zero_iff, mul_eq_zero]
   intro i his
@@ -349,12 +349,12 @@ private theorem inner_le_Lp_mul_Lp_of_norm_eq_zero (f g : ι → ℝ≥0) {p q :
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. Version for sums over finite sets,
 with `ℝ≥0`-valued functions. -/
 theorem inner_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjugateExponent q) :
-    (∑ i in s, f i * g i) ≤ (∑ i in s, f i ^ p) ^ (1 / p) * (∑ i in s, g i ^ q) ^ (1 / q) := by
-  by_cases hF_zero : (∑ i in s, f i ^ p) = 0
+    ∑ i in s, f i * g i ≤ (∑ i in s, f i ^ p) ^ (1 / p) * (∑ i in s, g i ^ q) ^ (1 / q) := by
+  by_cases hF_zero : ∑ i in s, f i ^ p = 0
   · exact inner_le_Lp_mul_Lp_of_norm_eq_zero s f g hpq hF_zero
-  by_cases hG_zero : (∑ i in s, g i ^ q) = 0
+  by_cases hG_zero : ∑ i in s, g i ^ q = 0
   · calc
-      (∑ i in s, f i * g i) = ∑ i in s, g i * f i := by
+      ∑ i in s, f i * g i = ∑ i in s, g i * f i := by
         congr with i
         rw [mul_comm]
       _ ≤ (∑ i in s, g i ^ q) ^ (1 / q) * (∑ i in s, f i ^ p) ^ (1 / p) :=
@@ -384,9 +384,9 @@ functions. For an alternative version, convenient if the infinite sums are alrea
 theorem inner_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsConjugateExponent q)
     (hf : Summable fun i => f i ^ p) (hg : Summable fun i => g i ^ q) :
     (Summable fun i => f i * g i) ∧
-      (∑' i, f i * g i) ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
+      ∑' i, f i * g i ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
   have H₁ : ∀ s : Finset ι,
-      (∑ i in s, f i * g i) ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
+      ∑ i in s, f i * g i ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
     intro s
     refine' le_trans (inner_le_Lp_mul_Lq s f g hpq) (mul_le_mul _ _ bot_le bot_le)
     · rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr hpq.pos)]
@@ -409,7 +409,7 @@ theorem summable_mul_of_Lp_Lq {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsConj
 
 theorem inner_le_Lp_mul_Lq_tsum' {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsConjugateExponent q)
     (hf : Summable fun i => f i ^ p) (hg : Summable fun i => g i ^ q) :
-    (∑' i, f i * g i) ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) :=
+    ∑' i, f i * g i ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) :=
   (inner_le_Lp_mul_Lq_tsum hpq hf hg).2
 #align nnreal.inner_le_Lp_mul_Lq_tsum' NNReal.inner_le_Lp_mul_Lq_tsum'
 
@@ -450,11 +450,11 @@ theorem rpow_sum_le_const_mul_sum_rpow (f : ι → ℝ≥0) {p : ℝ} (hp : 1 �
 /-- The `L_p` seminorm of a vector `f` is the greatest value of the inner product
 `∑ i in s, f i * g i` over functions `g` of `L_q` seminorm less than or equal to one. -/
 theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjugateExponent q) :
-    IsGreatest ((fun g : ι → ℝ≥0 => ∑ i in s, f i * g i) '' { g | (∑ i in s, g i ^ q) ≤ 1 })
+    IsGreatest ((fun g : ι → ℝ≥0 => ∑ i in s, f i * g i) '' { g | ∑ i in s, g i ^ q ≤ 1 })
       ((∑ i in s, f i ^ p) ^ (1 / p)) := by
   constructor
   · use fun i => f i ^ p / f i / (∑ i in s, f i ^ p) ^ (1 / q)
-    by_cases hf : (∑ i in s, f i ^ p) = 0
+    by_cases hf : ∑ i in s, f i ^ p = 0
     · simp [hf, hpq.ne_zero, hpq.symm.ne_zero]
     · have A : p + q - q ≠ 0 := by simp [hpq.ne_zero]
       have B : ∀ y : ℝ≥0, y * y ^ p / y = y ^ p := by
@@ -554,7 +554,7 @@ variable (f g : ι → ℝ) {p q : ℝ}
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. Version for sums over finite sets,
 with real-valued functions. -/
 theorem inner_le_Lp_mul_Lq (hpq : IsConjugateExponent p q) :
-    (∑ i in s, f i * g i) ≤ (∑ i in s, |f i| ^ p) ^ (1 / p) * (∑ i in s, |g i| ^ q) ^ (1 / q) := by
+    ∑ i in s, f i * g i ≤ (∑ i in s, |f i| ^ p) ^ (1 / p) * (∑ i in s, |g i| ^ q) ^ (1 / q) := by
   have :=
     NNReal.coe_le_coe.2
       (NNReal.inner_le_Lp_mul_Lq s (fun i => ⟨_, abs_nonneg (f i)⟩) (fun i => ⟨_, abs_nonneg (g i)⟩)
@@ -597,7 +597,7 @@ variable {f g}
 with real-valued nonnegative functions. -/
 theorem inner_le_Lp_mul_Lq_of_nonneg (hpq : IsConjugateExponent p q) (hf : ∀ i ∈ s, 0 ≤ f i)
     (hg : ∀ i ∈ s, 0 ≤ g i) :
-    (∑ i in s, f i * g i) ≤ (∑ i in s, f i ^ p) ^ (1 / p) * (∑ i in s, g i ^ q) ^ (1 / q) := by
+    ∑ i in s, f i * g i ≤ (∑ i in s, f i ^ p) ^ (1 / p) * (∑ i in s, g i ^ q) ^ (1 / q) := by
   convert inner_le_Lp_mul_Lq s f g hpq using 3 <;> apply sum_congr rfl <;> intro i hi <;>
     simp only [abs_of_nonneg, hf i hi, hg i hi]
 #align real.inner_le_Lp_mul_Lq_of_nonneg Real.inner_le_Lp_mul_Lq_of_nonneg
@@ -609,10 +609,10 @@ see `inner_le_Lp_mul_Lq_hasSum_of_nonneg`. -/
 theorem inner_le_Lp_mul_Lq_tsum_of_nonneg (hpq : p.IsConjugateExponent q) (hf : ∀ i, 0 ≤ f i)
     (hg : ∀ i, 0 ≤ g i) (hf_sum : Summable fun i => f i ^ p) (hg_sum : Summable fun i => g i ^ q) :
     (Summable fun i => f i * g i) ∧
-      (∑' i, f i * g i) ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
+      ∑' i, f i * g i ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
   lift f to ι → ℝ≥0 using hf
   lift g to ι → ℝ≥0 using hg
-  norm_cast  at *
+  norm_cast at *
   exact NNReal.inner_le_Lp_mul_Lq_tsum hpq hf_sum hg_sum
 #align real.inner_le_Lp_mul_Lq_tsum_of_nonneg Real.inner_le_Lp_mul_Lq_tsum_of_nonneg
 
@@ -624,7 +624,7 @@ theorem summable_mul_of_Lp_Lq_of_nonneg (hpq : p.IsConjugateExponent q) (hf : �
 
 theorem inner_le_Lp_mul_Lq_tsum_of_nonneg' (hpq : p.IsConjugateExponent q) (hf : ∀ i, 0 ≤ f i)
     (hg : ∀ i, 0 ≤ g i) (hf_sum : Summable fun i => f i ^ p) (hg_sum : Summable fun i => g i ^ q) :
-    (∑' i, f i * g i) ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) :=
+    ∑' i, f i * g i ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) :=
   (inner_le_Lp_mul_Lq_tsum_of_nonneg hpq hf hg hf_sum hg_sum).2
 #align real.inner_le_Lp_mul_Lq_tsum_of_nonneg' Real.inner_le_Lp_mul_Lq_tsum_of_nonneg'
 
@@ -705,7 +705,7 @@ theorem Lp_add_le_hasSum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : 
   lift g to ι → ℝ≥0 using hg
   lift A to ℝ≥0 using hA
   lift B to ℝ≥0 using hB
-  norm_cast  at hfA hgB
+  norm_cast at hfA hgB
   obtain ⟨C, hC₁, hC₂⟩ := NNReal.Lp_add_le_hasSum hp hfA hgB
   use C
   norm_cast
@@ -722,13 +722,13 @@ variable (f g : ι → ℝ≥0∞) {p q : ℝ}
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. Version for sums over finite sets,
 with `ℝ≥0∞`-valued functions. -/
 theorem inner_le_Lp_mul_Lq (hpq : p.IsConjugateExponent q) :
-    (∑ i in s, f i * g i) ≤ (∑ i in s, f i ^ p) ^ (1 / p) * (∑ i in s, g i ^ q) ^ (1 / q) := by
+    ∑ i in s, f i * g i ≤ (∑ i in s, f i ^ p) ^ (1 / p) * (∑ i in s, g i ^ q) ^ (1 / q) := by
   by_cases H : (∑ i in s, f i ^ p) ^ (1 / p) = 0 ∨ (∑ i in s, g i ^ q) ^ (1 / q) = 0
   · replace H : (∀ i ∈ s, f i = 0) ∨ ∀ i ∈ s, g i = 0
     · simpa [ENNReal.rpow_eq_zero_iff, hpq.pos, hpq.symm.pos, asymm hpq.pos, asymm hpq.symm.pos,
         sum_eq_zero_iff_of_nonneg] using H
     have : ∀ i ∈ s, f i * g i = 0 := fun i hi => by cases' H with H H <;> simp [H i hi]
-    have : (∑ i in s, f i * g i) = ∑ i in s, 0 := sum_congr rfl this
+    have : ∑ i in s, f i * g i = ∑ i in s, 0 := sum_congr rfl this
     simp [this]
   push_neg at H
   by_cases H' : (∑ i in s, f i ^ p) ^ (1 / p) = ⊤ ∨ (∑ i in s, g i ^ q) ^ (1 / q) = ⊤

@@ -106,7 +106,7 @@ def OrderIso.finTwoArrowIso (α : Type _) [Preorder α] : (Fin 2 → α) ≃o α
 
 /-- The 'identity' equivalence between `Fin n` and `Fin m` when `n = m`. -/
 def finCongr (h : m = n) : Fin m ≃ Fin n :=
-  (Fin.cast h).toEquiv
+  (Fin.castIso h).toEquiv
 #align fin_congr finCongr
 
 @[simp] theorem finCongr_apply_mk (h : m = n) (k : ℕ) (w : k < m) :
@@ -148,12 +148,12 @@ theorem finSuccEquiv'_succAbove (i : Fin (n + 1)) (j : Fin n) :
   @Fin.insertNth_apply_succAbove n (fun _ => Option (Fin n)) i _ _ _
 #align fin_succ_equiv'_succ_above finSuccEquiv'_succAbove
 
-theorem finSuccEquiv'_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
-    (finSuccEquiv' i) (Fin.castSucc m) = m := by
+theorem finSuccEquiv'_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSuccEmb m < i) :
+    (finSuccEquiv' i) (Fin.castSuccEmb m) = m := by
   rw [← Fin.succAbove_below _ _ h, finSuccEquiv'_succAbove]
 #align fin_succ_equiv'_below finSuccEquiv'_below
 
-theorem finSuccEquiv'_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
+theorem finSuccEquiv'_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSuccEmb m) :
     (finSuccEquiv' i) m.succ = some m := by
   rw [← Fin.succAbove_above _ _ h, finSuccEquiv'_succAbove]
 #align fin_succ_equiv'_above finSuccEquiv'_above
@@ -169,22 +169,22 @@ theorem finSuccEquiv'_symm_some (i : Fin (n + 1)) (j : Fin n) :
   rfl
 #align fin_succ_equiv'_symm_some finSuccEquiv'_symm_some
 
-theorem finSuccEquiv'_symm_some_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
-    (finSuccEquiv' i).symm (some m) = Fin.castSucc m :=
+theorem finSuccEquiv'_symm_some_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSuccEmb m < i) :
+    (finSuccEquiv' i).symm (some m) = Fin.castSuccEmb m :=
   Fin.succAbove_below i m h
 #align fin_succ_equiv'_symm_some_below finSuccEquiv'_symm_some_below
 
-theorem finSuccEquiv'_symm_some_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
+theorem finSuccEquiv'_symm_some_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSuccEmb m) :
     (finSuccEquiv' i).symm (some m) = m.succ :=
   Fin.succAbove_above i m h
 #align fin_succ_equiv'_symm_some_above finSuccEquiv'_symm_some_above
 
-theorem finSuccEquiv'_symm_coe_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
-    (finSuccEquiv' i).symm m = Fin.castSucc m :=
+theorem finSuccEquiv'_symm_coe_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSuccEmb m < i) :
+    (finSuccEquiv' i).symm m = Fin.castSuccEmb m :=
   finSuccEquiv'_symm_some_below h
 #align fin_succ_equiv'_symm_coe_below finSuccEquiv'_symm_coe_below
 
-theorem finSuccEquiv'_symm_coe_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
+theorem finSuccEquiv'_symm_coe_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSuccEmb m) :
     (finSuccEquiv' i).symm m = m.succ :=
   finSuccEquiv'_symm_some_above h
 #align fin_succ_equiv'_symm_coe_above finSuccEquiv'_symm_coe_above
@@ -222,21 +222,21 @@ theorem finSuccEquiv'_zero : finSuccEquiv' (0 : Fin (n + 1)) = finSuccEquiv n :=
   rfl
 #align fin_succ_equiv'_zero finSuccEquiv'_zero
 
-theorem finSuccEquiv'_last_apply_castSucc (i : Fin n) :
-    finSuccEquiv' (Fin.last n) (Fin.castSucc i) = i := by
+theorem finSuccEquiv'_last_apply_castSuccEmb (i : Fin n) :
+    finSuccEquiv' (Fin.last n) (Fin.castSuccEmb i) = i := by
   rw [← Fin.succAbove_last, finSuccEquiv'_succAbove]
 
 theorem finSuccEquiv'_last_apply {i : Fin (n + 1)} (h : i ≠ Fin.last n) :
     finSuccEquiv' (Fin.last n) i = Fin.castLT i (Fin.val_lt_last h) := by
-  rcases Fin.exists_castSucc_eq.2 h with ⟨i, rfl⟩
-  rw [finSuccEquiv'_last_apply_castSucc]
+  rcases Fin.exists_castSuccEmb_eq.2 h with ⟨i, rfl⟩
+  rw [finSuccEquiv'_last_apply_castSuccEmb]
   rfl
 #align fin_succ_equiv'_last_apply finSuccEquiv'_last_apply
 
 theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) (hj : j ≠ i) :
     finSuccEquiv' i j = (i.castLT (Fin.val_lt_last hi)).predAbove j := by
   rcases Fin.exists_succAbove_eq hj with ⟨j, rfl⟩
-  rcases Fin.exists_castSucc_eq.2 hi with ⟨i, rfl⟩
+  rcases Fin.exists_castSuccEmb_eq.2 hi with ⟨i, rfl⟩
   simp
 #align fin_succ_equiv'_ne_last_apply finSuccEquiv'_ne_last_apply
 
@@ -270,9 +270,9 @@ def finSuccEquivLast : Fin (n + 1) ≃ Option (Fin n) :=
 #align fin_succ_equiv_last finSuccEquivLast
 
 @[simp]
-theorem finSuccEquivLast_castSucc (i : Fin n) : finSuccEquivLast (Fin.castSucc i) = some i :=
+theorem finSuccEquivLast_castSuccEmb (i : Fin n) : finSuccEquivLast (Fin.castSuccEmb i) = some i :=
   finSuccEquiv'_below i.2
-#align fin_succ_equiv_last_cast_succ finSuccEquivLast_castSucc
+#align fin_succ_equiv_last_cast_succ finSuccEquivLast_castSuccEmb
 
 @[simp]
 theorem finSuccEquivLast_last : finSuccEquivLast (Fin.last n) = none := by
@@ -280,7 +280,8 @@ theorem finSuccEquivLast_last : finSuccEquivLast (Fin.last n) = none := by
 #align fin_succ_equiv_last_last finSuccEquivLast_last
 
 @[simp]
-theorem finSuccEquivLast_symm_some (i : Fin n) : finSuccEquivLast.symm (some i) = Fin.castSucc i :=
+theorem finSuccEquivLast_symm_some (i : Fin n) :
+    finSuccEquivLast.symm (some i) = Fin.castSuccEmb i :=
   finSuccEquiv'_symm_some_below i.2
 #align fin_succ_equiv_last_symm_some finSuccEquivLast_symm_some
 #align fin_succ_equiv_last_symm_coe finSuccEquivLast_symm_some

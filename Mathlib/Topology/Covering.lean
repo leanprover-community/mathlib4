@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 
 ! This file was ported from Lean 3 source module topology.covering
-! leanprover-community/mathlib commit b8c810e2aac4a30bf8cda1e1c38d4f2e6065b2e7
+! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -189,7 +189,7 @@ protected theorem IsFiberBundle.isCoveringMap {F : Type _} [TopologicalSpace F] 
 #align is_fiber_bundle.is_covering_map IsFiberBundle.isCoveringMap
 
 protected theorem FiberBundle.isCoveringMap {F : Type _} {E : X → Type _} [TopologicalSpace F]
-    [DiscreteTopology F] [TopologicalSpace (Bundle.TotalSpace E)] [∀ x, TopologicalSpace (E x)]
-    [FiberBundle F E] : IsCoveringMap (π E) :=
+    [DiscreteTopology F] [TopologicalSpace (Bundle.TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
+    [FiberBundle F E] : IsCoveringMap (π F E) :=
   IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩
 #align fiber_bundle.is_covering_map FiberBundle.isCoveringMap

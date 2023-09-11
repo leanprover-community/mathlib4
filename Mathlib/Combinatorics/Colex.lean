@@ -396,7 +396,7 @@ instance [LinearOrder α] [Fintype α] : BoundedOrder (Finset.Colex α) :=
 /-- For subsets of ℕ, we can show that colex is equivalent to binary. -/
 theorem sum_two_pow_lt_iff_lt (A B : Finset ℕ) :
     ((∑ i in A, 2 ^ i) < ∑ i in B, 2 ^ i) ↔ A.toColex < B.toColex := by
-  have z : ∀ A B : Finset ℕ, A.toColex < B.toColex → (∑ i in A, 2 ^ i) < ∑ i in B, 2 ^ i := by
+  have z : ∀ A B : Finset ℕ, A.toColex < B.toColex → ∑ i in A, 2 ^ i < ∑ i in B, 2 ^ i := by
     intro A B
     rw [← sdiff_lt_sdiff_iff_lt, Colex.lt_def]
     rintro ⟨k, z, kA, kB⟩

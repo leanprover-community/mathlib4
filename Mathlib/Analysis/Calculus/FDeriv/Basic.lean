@@ -1029,6 +1029,7 @@ theorem differentiableOn_id : DifferentiableOn 𝕜 id s :=
   differentiable_id.differentiableOn
 #align differentiable_on_id differentiableOn_id
 
+@[simp]
 theorem fderiv_id : fderiv 𝕜 id x = id 𝕜 E :=
   HasFDerivAt.fderiv (hasFDerivAt_id x)
 #align fderiv_id fderiv_id

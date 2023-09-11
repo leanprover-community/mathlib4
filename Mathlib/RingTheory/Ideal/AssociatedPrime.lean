@@ -99,7 +99,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
   rw [Submodule.mem_annihilator_span_singleton] at ha hab
   have H₁ : (R ∙ y).annihilator ≤ (R ∙ a • y).annihilator := by
     intro c hc
-    rw [Submodule.mem_annihilator_span_singleton] at hc⊢
+    rw [Submodule.mem_annihilator_span_singleton] at hc ⊢
     rw [smul_comm, hc, smul_zero]
   have H₂ : (Submodule.span R {a • y}).annihilator ≠ ⊤ := by
     rwa [Ne.def, Submodule.annihilator_eq_top_iff, Submodule.span_singleton_eq_bot]

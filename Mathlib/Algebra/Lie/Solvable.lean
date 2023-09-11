@@ -94,7 +94,7 @@ theorem derivedSeriesOfIdeal_add (k l : ℕ) : D (k + l) I = D k (D l I) := by
 theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J) (h₂ : l ≤ k) :
     D k I ≤ D l J := by
   revert l; induction' k with k ih <;> intro l h₂
-  · rw [Nat.zero_eq, le_zero_iff] at h₂ ; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
+  · rw [Nat.zero_eq, le_zero_iff] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
   · have h : l = k.succ ∨ l ≤ k := by rwa [le_iff_eq_or_lt, Nat.lt_succ_iff] at h₂
     cases' h with h h
     · rw [h, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ]
@@ -175,7 +175,7 @@ theorem derivedSeries_add_eq_bot {k l : ℕ} {I J : LieIdeal R L} (hI : derivedS
     (hJ : derivedSeries R J l = ⊥) : derivedSeries R (I + J) (k + l) = ⊥ := by
   rw [LieIdeal.derivedSeries_eq_bot_iff] at hI hJ ⊢
   rw [← le_bot_iff]
-  let D := derivedSeriesOfIdeal R L; change D k I = ⊥ at hI ; change D l J = ⊥ at hJ
+  let D := derivedSeriesOfIdeal R L; change D k I = ⊥ at hI; change D l J = ⊥ at hJ
   calc
     D (k + l) (I + J) ≤ D k I + D l J := derivedSeriesOfIdeal_add_le_add I J k l
     _ ≤ ⊥ := by rw [hI, hJ]; simp
@@ -318,7 +318,7 @@ theorem derivedSeries_of_derivedLength_succ (I : LieIdeal R L) (k : ℕ) :
   have hs : ∀ k₁ k₂ : ℕ, k₁ ≤ k₂ → k₁ ∈ s → k₂ ∈ s := by
     intro k₁ k₂ h₁₂ h₁
     suffices derivedSeriesOfIdeal R L k₂ I ≤ ⊥ by exact eq_bot_iff.mpr this
-    change derivedSeriesOfIdeal R L k₁ I = ⊥ at h₁ ; rw [← h₁]
+    change derivedSeriesOfIdeal R L k₁ I = ⊥ at h₁; rw [← h₁]
     exact derivedSeriesOfIdeal_antitone I h₁₂
   exact Nat.sInf_upward_closed_eq_succ_iff hs k
 #align lie_algebra.derived_series_of_derived_length_succ LieAlgebra.derivedSeries_of_derivedLength_succ
@@ -348,7 +348,7 @@ theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
   dsimp only [derivedAbelianOfIdeal]
   cases' h : derivedLengthOfIdeal R L I with k
   · exact isLieAbelian_bot R L
-  · rw [derivedSeries_of_derivedLength_succ] at h ; exact h.1
+  · rw [derivedSeries_of_derivedLength_succ] at h; exact h.1
 #align lie_algebra.abelian_derived_abelian_of_ideal LieAlgebra.abelian_derivedAbelianOfIdeal
 
 theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
@@ -358,7 +358,7 @@ theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
   have hne : s ≠ ∅ := by
     obtain ⟨k, hk⟩ := id hI
     refine' Set.Nonempty.ne_empty ⟨k, _⟩
-    rw [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk ; exact hk
+    rw [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk; exact hk
   simp [hne]
 #align lie_algebra.derived_length_zero LieAlgebra.derivedLength_zero
 

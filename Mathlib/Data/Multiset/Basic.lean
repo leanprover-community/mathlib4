@@ -1468,7 +1468,7 @@ nonrec def pmap {p : α → Prop} (f : ∀ a, p a → β) (s : Multiset α) : (�
       have H₁ : ∀ a ∈ l₁, p a := fun a h => H₂ a (pp.subset h)
       have : ∀ {s₂ e H}, @Eq.ndrec (Multiset α) l₁ (fun s => (∀ a ∈ s, p a) → Multiset β)
           (fun _ => ↑(pmap f l₁ H₁)) s₂ e H = ↑(pmap f l₁ H₁) := by
-        intro s₂ e _ ; subst e; rfl
+        intro s₂ e _; subst e; rfl
       this.trans <| Quot.sound <| pp.pmap f
 #align multiset.pmap Multiset.pmap
 

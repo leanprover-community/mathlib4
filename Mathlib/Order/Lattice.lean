@@ -899,7 +899,7 @@ end LinearOrder
 theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [IsTotal α (· ≤ ·)] :
     (· ⊔ ·) = (maxDefault : α → α → α) := by
-  ext (x y)
+  ext x y
   unfold maxDefault
   split_ifs with h'
   exacts [sup_of_le_right h', sup_of_le_left $ (total_of (· ≤ ·) x y).resolve_left h']
@@ -908,7 +908,7 @@ theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α �
 theorem inf_eq_minDefault [SemilatticeInf α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [IsTotal α (· ≤ ·)] :
     (· ⊓ ·) = (minDefault : α → α → α) := by
-  ext (x y)
+  ext x y
   unfold minDefault
   split_ifs with h'
   exacts [inf_of_le_left h', inf_of_le_right $ (total_of (· ≤ ·) x y).resolve_left h']

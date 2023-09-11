@@ -789,7 +789,7 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M y
     refine' ⟨⟨h x, _, _, s.prop, rfl⟩, _⟩
-    dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply] at e⊢
+    dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply] at e ⊢
     convert e <;> exact h.symm_apply_apply _
   · intro x y
     rw [RingHom.algebraMap_toAlgebra, RingHom.comp_apply, RingHom.comp_apply,
@@ -864,7 +864,7 @@ protected irreducible_def add (z w : Localization M) : Localization M :=
     @fun a a' b b' c c' d d' h1 h2 =>
     mk_eq_mk_iff.2
       (by
-        rw [r_eq_r'] at h1 h2⊢
+        rw [r_eq_r'] at h1 h2 ⊢
         cases' h1 with t₅ ht₅
         cases' h2 with t₆ ht₆
         use t₅ * t₆
@@ -1100,7 +1100,7 @@ protected irreducible_def neg (z : Localization M) : Localization M :=
   Localization.liftOn z (fun a b => mk (-a) b) @fun a b c d h =>
     mk_eq_mk_iff.2
       (by
-        rw [r_eq_r'] at h⊢
+        rw [r_eq_r'] at h ⊢
         cases' h with t ht
         use t
         rw [mul_neg, mul_neg, ht]

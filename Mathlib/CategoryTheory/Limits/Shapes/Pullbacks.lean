@@ -737,7 +737,7 @@ def isLimitOfFactors (f : X ⟶ Z) (g : Y ⟶ Z) (h : W ⟶ Z) [Mono h] (x : X �
     ⟨hs.lift (PullbackCone.mk t.fst t.snd <| by rw [← hxh, ← hyh, this]),
       ⟨hs.fac _ WalkingCospan.left, hs.fac _ WalkingCospan.right, fun hr hr' => by
         apply PullbackCone.IsLimit.hom_ext hs <;>
-              simp only [PullbackCone.mk_fst, PullbackCone.mk_snd] at hr hr'⊢ <;>
+              simp only [PullbackCone.mk_fst, PullbackCone.mk_snd] at hr hr' ⊢ <;>
             simp only [hr, hr'] <;>
           symm
         exacts [hs.fac _ WalkingCospan.left, hs.fac _ WalkingCospan.right]⟩⟩
@@ -986,11 +986,11 @@ def isColimitOfFactors (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) [Epi h] (x : W 
     rw [← hhx, ← hhy, Category.assoc, Category.assoc, t.condition]),
       ⟨hs.fac _ WalkingSpan.left, hs.fac _ WalkingSpan.right, fun hr hr' => by
         apply PushoutCocone.IsColimit.hom_ext hs;
-        · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr'⊢
+        · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr' ⊢
           simp only [hr, hr']
           symm
           exact hs.fac _ WalkingSpan.left
-        · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr'⊢
+        · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr' ⊢
           simp only [hr, hr']
           symm
           exact hs.fac _ WalkingSpan.right⟩⟩
@@ -2699,6 +2699,13 @@ instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [h : Ca
   haveI I := @hasWidePullbacks_shrink.{0, w} D h h'
   infer_instance
 #align category_theory.limits.has_pullbacks_of_has_wide_pullbacks CategoryTheory.Limits.hasPullbacks_of_hasWidePullbacks
+
+-- see Note [lower instance priority]
+/-- Having wide pushout at any universe level implies having binary pushouts. -/
+instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [h : Category.{v} D]
+    [h' : HasWidePushouts.{w} D] : HasPushouts.{v,u} D := by
+  haveI I := @hasWidePushouts_shrink.{0, w} D h h'
+  infer_instance
 
 variable {C}
 

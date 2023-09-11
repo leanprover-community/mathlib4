@@ -168,8 +168,7 @@ theorem dvd_gcd {a : α} : (∀ b ∈ s, a ∣ f b) → a ∣ s.gcd f :=
 theorem gcd_insert [DecidableEq β] {b : β} :
     (insert b s : Finset β).gcd f = GCDMonoid.gcd (f b) (s.gcd f) := by
   by_cases h : b ∈ s
-  ·
-    rw [insert_eq_of_mem h,
+  · rw [insert_eq_of_mem h,
       (gcd_eq_right_iff (f b) (s.gcd f) (Multiset.normalize_gcd (s.1.map f))).2 (gcd_dvd h)]
   apply fold_insert h
 #align finset.gcd_insert Finset.gcd_insert
@@ -276,7 +275,7 @@ theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
     · refine' ⟨fun _ ↦ 1, fun b hb ↦ by rw [h b hb, gcd_eq_zero_iff.2 h, mul_one], _⟩
       rw [gcd_eq_gcd_image, image_const hs, gcd_singleton, id, normalize_one]
     · choose g' hg using @gcd_dvd _ _ _ _ s f
-      push_neg  at h
+      push_neg at h
       refine' ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ _,
           extract_gcd' f _ h <| fun b hb ↦ _⟩
       simp only [hb, hg, dite_true]

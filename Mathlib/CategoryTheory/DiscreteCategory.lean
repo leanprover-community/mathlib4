@@ -47,7 +47,7 @@ universe v₁ v₂ v₃ u₁ u₁' u₂ u₃
 /-- A wrapper for promoting any type to a category,
 with the only morphisms being equalities.
 -/
-@[ext]
+@[ext, aesop safe cases (rule_sets [CategoryTheory])]
 structure Discrete (α : Type u₁) where
   /-- A wrapper for promoting any type to a category,
   with the only morphisms being equalities. -/

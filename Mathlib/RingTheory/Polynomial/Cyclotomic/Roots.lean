@@ -72,7 +72,7 @@ theorem _root_.IsPrimitiveRoot.isRoot_cyclotomic (hpos : 0 < n) {μ : R} (h : Is
   rwa [← mem_primitiveRoots hpos] at h
 #align is_primitive_root.is_root_cyclotomic IsPrimitiveRoot.isRoot_cyclotomic
 
-private theorem is_root_cyclotomic_iff' {n : ℕ} {K : Type _} [Field K] {μ : K} [NeZero (n : K)] :
+private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type _} [Field K] {μ : K} [NeZero (n : K)] :
     IsRoot (cyclotomic n K) μ ↔ IsPrimitiveRoot μ n := by
   -- in this proof, `o` stands for `orderOf μ`
   have hnpos : 0 < n := (NeZero.of_neZero_natCast K).out.bot_lt
@@ -94,7 +94,7 @@ private theorem is_root_cyclotomic_iff' {n : ℕ} {K : Type _} [Field K] {μ : K
   have key : i < n := (Nat.le_of_dvd ho hio).trans_lt ((Nat.le_of_dvd hnpos hμn).lt_of_ne hnμ)
   have key' : i ∣ n := hio.trans hμn
   rw [← Polynomial.dvd_iff_isRoot] at hμ hiμ
-  have hni : {i, n} ⊆ n.divisors := by simpa [Finset.insert_subset, key'] using hnpos.ne'
+  have hni : {i, n} ⊆ n.divisors := by simpa [Finset.insert_subset_iff, key'] using hnpos.ne'
   obtain ⟨k, hk⟩ := hiμ
   obtain ⟨j, hj⟩ := hμ
   have := prod_cyclotomic_eq_X_pow_sub_one hnpos K
@@ -110,7 +110,7 @@ theorem isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :
   have hf : Function.Injective _ := IsFractionRing.injective R (FractionRing R)
   haveI : NeZero (n : FractionRing R) := NeZero.nat_of_injective hf
   rw [← isRoot_map_iff hf, ← IsPrimitiveRoot.map_iff_of_injective hf, map_cyclotomic, ←
-    is_root_cyclotomic_iff']
+    isRoot_cyclotomic_iff']
 #align polynomial.is_root_cyclotomic_iff Polynomial.isRoot_cyclotomic_iff
 
 theorem roots_cyclotomic_nodup [NeZero (n : R)] : (cyclotomic n R).roots.Nodup := by

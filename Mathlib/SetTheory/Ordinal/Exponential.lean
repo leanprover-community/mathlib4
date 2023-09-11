@@ -156,8 +156,7 @@ theorem opow_le_opow_left {a b : Ordinal} (c) (ab : a ≤ b) : (a^c) ≤ (b^c) :
     · simp only [opow_zero, le_refl]
     · intro c IH
       simpa only [opow_succ] using mul_le_mul' IH ab
-    ·
-      exact fun c l IH =>
+    · exact fun c l IH =>
         (opow_le_of_limit a0 l).2 fun b' h =>
           (IH _ h).trans (opow_le_opow_right ((Ordinal.pos_iff_ne_zero.2 a0).trans_le ab) h.le)
 #align ordinal.opow_le_opow_left Ordinal.opow_le_opow_left

@@ -120,7 +120,7 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
         ext1
         simp only [hmap, coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply,
           conjCle_apply, starRingEnd_self_apply]
-      rw [minor₁] at h₂⊢
+      rw [minor₁] at h₂ ⊢
       refine' isConformalMap_complex_linear_conj _
       contrapose! h₂ with w
       simp only [w, restrictScalars_zero, zero_comp]

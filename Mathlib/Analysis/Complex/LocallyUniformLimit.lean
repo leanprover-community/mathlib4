@@ -99,9 +99,8 @@ theorem norm_cderiv_sub_lt (hr : 0 < r) (hfg : ∀ w ∈ sphere z r, ‖f w - g 
 theorem _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthickening δ K))
     (hδ : 0 < δ) (hFn : ∀ᶠ n in φ, ContinuousOn (F n) (cthickening δ K)) :
     TendstoUniformlyOn (cderiv δ ∘ F) (cderiv δ f) φ K := by
-  by_cases φ = ⊥
-  · simp only [h, TendstoUniformlyOn, eventually_bot, imp_true_iff]
-  haveI : φ.NeBot := neBot_iff.2 h
+  rcases φ.eq_or_neBot with rfl | hne
+  · simp only [TendstoUniformlyOn, eventually_bot, imp_true_iff]
   have e1 : ContinuousOn f (cthickening δ K) := TendstoUniformlyOn.continuousOn hF hFn
   rw [tendstoUniformlyOn_iff] at hF ⊢
   rintro ε hε
@@ -167,9 +166,8 @@ theorem _root_.TendstoLocallyUniformlyOn.deriv (hf : TendstoLocallyUniformlyOn F
     (hF : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) U) (hU : IsOpen U) :
     TendstoLocallyUniformlyOn (deriv ∘ F) (deriv f) φ U := by
   rw [tendstoLocallyUniformlyOn_iff_forall_isCompact hU]
-  by_cases φ = ⊥
-  · simp only [h, TendstoUniformlyOn, eventually_bot, imp_true_iff]
-  haveI : φ.NeBot := neBot_iff.2 h
+  rcases φ.eq_or_neBot with rfl | hne
+  · simp only [TendstoUniformlyOn, eventually_bot, imp_true_iff]
   rintro K hKU hK
   obtain ⟨δ, hδ, hK4, h⟩ := exists_cthickening_tendstoUniformlyOn hf hF hK hU hKU
   refine' h.congr_right fun z hz => cderiv_eq_deriv hU (hf.differentiableOn hF hU) hδ _

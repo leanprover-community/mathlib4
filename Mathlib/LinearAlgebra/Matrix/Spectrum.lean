@@ -87,7 +87,7 @@ theorem eigenvectorMatrixInv_apply (i j : n) :
 #align matrix.is_hermitian.eigenvector_matrix_inv_apply Matrix.IsHermitian.eigenvectorMatrixInv_apply
 
 theorem conjTranspose_eigenvectorMatrixInv : hA.eigenvectorMatrixInvᴴ = hA.eigenvectorMatrix := by
-  ext (i j)
+  ext i j
   rw [conjTranspose_apply, eigenvectorMatrixInv_apply, eigenvectorMatrix_apply, star_star]
 #align matrix.is_hermitian.conj_transpose_eigenvector_matrix_inv Matrix.IsHermitian.conjTranspose_eigenvectorMatrixInv
 
@@ -103,7 +103,7 @@ For the spectral theorem on linear maps, see
 theorem spectral_theorem :
     hA.eigenvectorMatrixInv ⬝ A = diagonal ((↑) ∘ hA.eigenvalues) ⬝ hA.eigenvectorMatrixInv := by
   rw [eigenvectorMatrixInv, PiLp.basis_toMatrix_basisFun_mul]
-  ext (i j)
+  ext i j
   have := isHermitian_iff_isSymmetric.1 hA
   convert this.eigenvectorBasis_apply_self_apply finrank_euclideanSpace (EuclideanSpace.single j 1)
     ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm i) using 1

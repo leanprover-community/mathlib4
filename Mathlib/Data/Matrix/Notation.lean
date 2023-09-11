@@ -171,7 +171,7 @@ theorem col_empty (v : Fin 0 → α) : col v = vecEmpty :=
 
 @[simp]
 theorem col_cons (x : α) (u : Fin m → α) : col (vecCons x u) = vecCons (fun _ => x) (col u) := by
-  ext (i j)
+  ext i j
   refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
 #align matrix.col_cons Matrix.col_cons
 
@@ -204,7 +204,7 @@ theorem transpose_empty_cols (A : Matrix (Fin 0) m' α) : Aᵀ = of fun _ => ![]
 @[simp]
 theorem cons_transpose (v : n' → α) (A : Matrix (Fin m) n' α) :
     (of (vecCons v A))ᵀ = of fun i => vecCons (v i) (Aᵀ i) := by
-  ext (i j)
+  ext i j
   refine' Fin.cases _ _ j <;> simp
 #align matrix.cons_transpose Matrix.cons_transpose
 
@@ -216,7 +216,7 @@ theorem head_transpose (A : Matrix m' (Fin n.succ) α) :
 
 @[simp]
 theorem tail_transpose (A : Matrix m' (Fin n.succ) α) : vecTail (of.symm Aᵀ) = (vecTail ∘ A)ᵀ := by
-  ext (i j)
+  ext i j
   rfl
 #align matrix.tail_transpose Matrix.tail_transpose
 
@@ -224,7 +224,7 @@ end Transpose
 
 section Mul
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
 theorem empty_mul [Fintype n'] (A : Matrix (Fin 0) n' α) (B : Matrix n' o' α) : A ⬝ B = of ![] :=
@@ -250,7 +250,7 @@ theorem mul_val_succ [Fintype n'] (A : Matrix (Fin m.succ) n' α) (B : Matrix n'
 @[simp]
 theorem cons_mul [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (B : Matrix n' o' α) :
     of (vecCons v A) ⬝ B = of (vecCons (vecMul v B) (of.symm (of A ⬝ B))) := by
-  ext (i j)
+  ext i j
   refine' Fin.cases _ _ i
   · rfl
   simp [mul_val_succ]
@@ -260,7 +260,7 @@ end Mul
 
 section VecMul
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
 theorem empty_vecMul (v : Fin 0 → α) (B : Matrix (Fin 0) o' α) : vecMul v B = 0 :=
@@ -295,7 +295,7 @@ end VecMul
 
 section MulVec
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
 theorem empty_mulVec [Fintype n'] (A : Matrix (Fin 0) n' α) (v : n' → α) : mulVec A v = ![] :=
@@ -325,7 +325,7 @@ end MulVec
 
 section VecMulVec
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
 theorem empty_vecMulVec (v : Fin 0 → α) (w : n' → α) : vecMulVec v w = ![] :=
@@ -347,7 +347,7 @@ theorem cons_vecMulVec (x : α) (v : Fin m → α) (w : n' → α) :
 @[simp]
 theorem vecMulVec_cons (v : m' → α) (x : α) (w : Fin n → α) :
     vecMulVec v (vecCons x w) = fun i => v i • vecCons x w := by
-  ext (i j)
+  ext i j
   rw [vecMulVec_apply, Pi.smul_apply, smul_eq_mul]
 #align matrix.vec_mul_vec_cons Matrix.vecMulVec_cons
 
@@ -355,7 +355,7 @@ end VecMulVec
 
 section Smul
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 -- @[simp] -- Porting note: simp can prove this
 theorem smul_mat_empty {m' : Type _} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=
@@ -382,7 +382,7 @@ theorem submatrix_empty (A : Matrix m' n' α) (row : Fin 0 → m') (col : o' →
 @[simp]
 theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (col : o' → n') :
     submatrix A (vecCons i row) col = vecCons (fun j => A i (col j)) (submatrix A row col) := by
-  ext (i j)
+  ext i j
   refine' Fin.cases _ _ i <;> simp [submatrix]
 #align matrix.submatrix_cons_row Matrix.submatrix_cons_row
 
@@ -409,19 +409,19 @@ section One
 variable [Zero α] [One α]
 
 theorem one_fin_two : (1 : Matrix (Fin 2) (Fin 2) α) = !![1, 0; 0, 1] := by
-  ext (i j)
+  ext i j
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.one_fin_two Matrix.one_fin_two
 
 theorem one_fin_three : (1 : Matrix (Fin 3) (Fin 3) α) = !![1, 0, 0; 0, 1, 0; 0, 0, 1] := by
-  ext (i j)
+  ext i j
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.one_fin_three Matrix.one_fin_three
 
 end One
 
 theorem eta_fin_two (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] := by
-  ext (i j)
+  ext i j
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.eta_fin_two Matrix.eta_fin_two
 
@@ -429,7 +429,7 @@ theorem eta_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
     A = !![A 0 0, A 0 1, A 0 2;
            A 1 0, A 1 1, A 1 2;
            A 2 0, A 2 1, A 2 2] := by
-  ext (i j)
+  ext i j
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.eta_fin_three Matrix.eta_fin_three
 
@@ -438,7 +438,7 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
        a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂;
                       b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
                                      a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] := by
-  ext (i j)
+  ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul, dotProduct, Fin.sum_univ_succ]
 #align matrix.mul_fin_two Matrix.mul_fin_two
 
@@ -452,7 +452,7 @@ theorem mul_fin_three [AddCommMonoid α] [Mul α]
     !![a₁₁*b₁₁ + a₁₂*b₂₁ + a₁₃*b₃₁, a₁₁*b₁₂ + a₁₂*b₂₂ + a₁₃*b₃₂, a₁₁*b₁₃ + a₁₂*b₂₃ + a₁₃*b₃₃;
        a₂₁*b₁₁ + a₂₂*b₂₁ + a₂₃*b₃₁, a₂₁*b₁₂ + a₂₂*b₂₂ + a₂₃*b₃₂, a₂₁*b₁₃ + a₂₂*b₂₃ + a₂₃*b₃₃;
        a₃₁*b₁₁ + a₃₂*b₂₁ + a₃₃*b₃₁, a₃₁*b₁₂ + a₃₂*b₂₂ + a₃₃*b₃₂, a₃₁*b₁₃ + a₃₂*b₂₃ + a₃₃*b₃₃] := by
-  ext (i j)
+  ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul, dotProduct, Fin.sum_univ_succ, ← add_assoc]
 #align matrix.mul_fin_three Matrix.mul_fin_three
 

@@ -51,7 +51,7 @@ def normalMono (hf : Mono f) : NormalMono f where
           (LinearEquiv.toModuleIso'
             ((Submodule.quotEquivOfEqBot _ (ker_eq_bot_of_mono _)).symm ≪≫ₗ
               (LinearMap.quotKerEquivRange f ≪≫ₗ
-              LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext ; rfl
+              LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext; rfl
 set_option linter.uppercaseLean3 false in
 #align Module.normal_mono ModuleCat.normalMono
 
@@ -73,7 +73,7 @@ def normalEpi (hf : Epi f) : NormalEpi f where
           (LinearEquiv.toModuleIso'
             (Submodule.quotEquivOfEq _ _ (Submodule.range_subtype _) ≪≫ₗ
                 LinearMap.quotKerEquivRange f ≪≫ₗ
-              LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <| by ext ; rfl
+              LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <| by ext; rfl
 set_option linter.uppercaseLean3 false in
 #align Module.normal_epi ModuleCat.normalEpi
 

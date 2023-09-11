@@ -88,7 +88,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         erw [SimplicialObject.δ_comp_σ_self, SimplicialObject.δ_comp_σ_self_assoc,
           SimplicialObject.δ_comp_σ_succ, comp_id,
           SimplicialObject.δ_comp_σ_of_le X
-            (show (0 : Fin 2) ≤ Fin.castSucc 0 by rw [Fin.castSucc_zero]),
+            (show (0 : Fin 2) ≤ Fin.castSuccEmb 0 by rw [Fin.castSuccEmb_zero]),
           SimplicialObject.δ_comp_σ_self_assoc, SimplicialObject.δ_comp_σ_succ_assoc]
         simp only [add_right_neg, add_zero, zero_add]
       · rw [← id_comp (X.σ i), ← (P_add_Q_f q n.succ : _ = 𝟙 (X.obj _)), add_comp, add_comp,
@@ -103,16 +103,16 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         simp only [Nat.succ_eq_add_one] at hi
         obtain ⟨k, hk⟩ := Nat.le.dest (Nat.lt_succ_iff.mp (Fin.is_lt j))
         rw [add_comm] at hk
-        have hi' : i = Fin.castSucc ⟨i, by linarith⟩ := by
+        have hi' : i = Fin.castSuccEmb ⟨i, by linarith⟩ := by
           ext
-          simp only [Fin.castSucc_mk, Fin.eta]
-        have eq := hq j.rev.succ (by
-          simp only [← hk, Fin.rev_eq j hk.symm, Nat.succ_eq_add_one, Fin.succ_mk, Fin.val_mk]
+          simp only [Fin.castSuccEmb_mk, Fin.eta]
+        have eq := hq j.revPerm.succ (by
+          simp only [← hk, Fin.revPerm_eq j hk.symm, Nat.succ_eq_add_one, Fin.succ_mk, Fin.val_mk]
           linarith)
         rw [HomologicalComplex.comp_f, assoc, assoc, assoc, hi',
           SimplicialObject.σ_comp_σ_assoc, reassoc_of% eq, zero_comp, comp_zero, comp_zero,
           comp_zero]
-        simp only [Fin.rev_eq j hk.symm, Fin.le_iff_val_le_val, Fin.val_mk]
+        simp only [Fin.revPerm_eq j hk.symm, Fin.le_iff_val_le_val, Fin.val_mk]
         linarith
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.σ_comp_P_eq_zero AlgebraicTopology.DoldKan.σ_comp_P_eq_zero

@@ -172,7 +172,7 @@ theorem natDegree_multiset_prod' (h : (t.map fun f => leadingCoeff f).prod ≠ 0
     t.prod.natDegree = (t.map fun f => natDegree f).sum := by
   revert h
   refine' Multiset.induction_on t _ fun a t ih ht => _; · simp
-  rw [Multiset.map_cons, Multiset.prod_cons] at ht⊢
+  rw [Multiset.map_cons, Multiset.prod_cons] at ht ⊢
   rw [Multiset.sum_cons, Polynomial.natDegree_mul', ih]
   · apply right_ne_zero_of_mul ht
   · rwa [Polynomial.leadingCoeff_multiset_prod']
@@ -274,7 +274,7 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
     contrapose! h
     obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp ht
     exact ⟨_, ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩, one_ne_zero⟩
-  congr ; rw [natDegree_multiset_prod_of_monic] <;> · simp [natDegree_X_sub_C, monic_X_sub_C]
+  congr; rw [natDegree_multiset_prod_of_monic] <;> · simp [natDegree_X_sub_C, monic_X_sub_C]
 set_option linter.uppercaseLean3 false in
 #align polynomial.multiset_prod_X_sub_C_coeff_card_pred Polynomial.multiset_prod_X_sub_C_coeff_card_pred
 

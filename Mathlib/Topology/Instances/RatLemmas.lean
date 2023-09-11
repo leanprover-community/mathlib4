@@ -46,7 +46,7 @@ theorem interior_compact_eq_empty (hs : IsCompact s) : interior s = ∅ :=
   denseEmbedding_coe_real.toDenseInducing.interior_compact_eq_empty dense_irrational hs
 #align rat.interior_compact_eq_empty Rat.interior_compact_eq_empty
 
-theorem dense_compl_compact (hs : IsCompact s) : Dense (sᶜ) :=
+theorem dense_compl_compact (hs : IsCompact s) : Dense sᶜ :=
   interior_eq_empty_iff_dense_compl.1 (interior_compact_eq_empty hs)
 #align rat.dense_compl_compact Rat.dense_compl_compact
 
@@ -86,7 +86,7 @@ instance : TotallyDisconnectedSpace ℚ := by
   refine' ⟨fun s hsu hs x hx y hy => _⟩; clear hsu
   by_contra' H : x ≠ y
   wlog hlt : x < y
-  . refine' this s hs y hy x hx H.symm <| H.lt_or_lt.resolve_left hlt <;> assumption
+  · refine' this s hs y hy x hx H.symm <| H.lt_or_lt.resolve_left hlt <;> assumption
   rcases exists_irrational_btwn (Rat.cast_lt.2 hlt) with ⟨z, hz, hxz, hzy⟩
   have := hs.image _ continuous_coe_real.continuousOn
   rw [isPreconnected_iff_ordConnected] at this

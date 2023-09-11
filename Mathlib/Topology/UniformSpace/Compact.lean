@@ -95,14 +95,14 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     rw [le_iff_forall_inf_principal_compl]
     intro V V_in
     by_contra H
-    haveI : NeBot (F ⊓ 𝓟 (Vᶜ)) := ⟨H⟩
+    haveI : NeBot (F ⊓ 𝓟 Vᶜ) := ⟨H⟩
     -- Hence compactness would give us a cluster point (x, y) for F ⊓ 𝓟 Vᶜ
-    obtain ⟨⟨x, y⟩, hxy⟩ : ∃ p : γ × γ, ClusterPt p (F ⊓ 𝓟 (Vᶜ)) := cluster_point_of_compact _
+    obtain ⟨⟨x, y⟩, hxy⟩ : ∃ p : γ × γ, ClusterPt p (F ⊓ 𝓟 Vᶜ) := cluster_point_of_compact _
     -- In particular (x, y) is a cluster point of 𝓟 Vᶜ, hence is not in the interior of V,
     -- and a fortiori not in Δ, so x ≠ y
     have clV : ClusterPt (x, y) (𝓟 <| Vᶜ) := hxy.of_inf_right
     have : (x, y) ∉ interior V := by
-      have : (x, y) ∈ closure (Vᶜ) := by rwa [mem_closure_iff_clusterPt]
+      have : (x, y) ∈ closure Vᶜ := by rwa [mem_closure_iff_clusterPt]
       rwa [closure_compl] at this
     have diag_subset : diagonal γ ⊆ interior V := subset_interior_iff_mem_nhdsSet.2 V_in
     have x_ne_y : x ≠ y := mt (@diag_subset (x, y)) this

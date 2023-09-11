@@ -473,7 +473,7 @@ namespace Set
 theorem wcovby_insert (x : α) (s : Set α) : s ⩿ insert x s := by
   refine' wcovby_of_eq_or_eq (subset_insert x s) fun t hst h2t => _
   by_cases h : x ∈ t
-  · exact Or.inr (subset_antisymm h2t <| insert_subset.mpr ⟨h, hst⟩)
+  · exact Or.inr (subset_antisymm h2t <| insert_subset_iff.mpr ⟨h, hst⟩)
   · refine' Or.inl (subset_antisymm _ hst)
     rwa [← diff_singleton_eq_self h, diff_singleton_subset_iff]
 #align set.wcovby_insert Set.wcovby_insert
@@ -500,7 +500,7 @@ theorem swap_covby_swap : x.swap ⋖ y.swap ↔ x ⋖ y :=
 
 theorem fst_eq_or_snd_eq_of_wcovby : x ⩿ y → x.1 = y.1 ∨ x.2 = y.2 := by
   refine' fun h => of_not_not fun hab => _
-  push_neg  at hab
+  push_neg at hab
   exact
     h.2 (mk_lt_mk.2 <| Or.inl ⟨hab.1.lt_of_le h.1.1, le_rfl⟩)
       (mk_lt_mk.2 <| Or.inr ⟨le_rfl, hab.2.lt_of_le h.1.2⟩)

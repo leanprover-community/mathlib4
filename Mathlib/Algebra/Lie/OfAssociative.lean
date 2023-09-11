@@ -241,7 +241,7 @@ theorem LieAlgebra.ad_apply (x y : L) : LieAlgebra.ad R L x y = ⁅x, y⁆ :=
 
 @[simp]
 theorem LieModule.toEndomorphism_module_end :
-    LieModule.toEndomorphism R (Module.End R M) M = LieHom.id := by ext (g m); simp [lie_eq_smul]
+    LieModule.toEndomorphism R (Module.End R M) M = LieHom.id := by ext g m; simp [lie_eq_smul]
 #align lie_module.to_endomorphism_module_End LieModule.toEndomorphism_module_end
 
 theorem LieSubalgebra.toEndomorphism_eq (K : LieSubalgebra R L) {x : K} :
@@ -288,7 +288,7 @@ open LieAlgebra
 
 theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type v) [Ring A] [Algebra R A] :
     (ad R A : A → Module.End R A) = LinearMap.mulLeft R - LinearMap.mulRight R := by
-  ext (a b); simp [LieRing.of_associative_ring_bracket]
+  ext a b; simp [LieRing.of_associative_ring_bracket]
 #align lie_algebra.ad_eq_lmul_left_sub_lmul_right LieAlgebra.ad_eq_lmul_left_sub_lmul_right
 
 theorem LieSubalgebra.ad_comp_incl_eq (K : LieSubalgebra R L) (x : K) :
@@ -305,7 +305,7 @@ def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [A
     (A' : Subalgebra R A) : LieSubalgebra R A :=
   { Subalgebra.toSubmodule A' with
     lie_mem' := fun {x y} hx hy => by
-      change ⁅x, y⁆ ∈ A'; change x ∈ A' at hx ; change y ∈ A' at hy
+      change ⁅x, y⁆ ∈ A'; change x ∈ A' at hx; change y ∈ A' at hy
       rw [LieRing.of_associative_ring_bracket]
       have hxy := A'.mul_mem hx hy
       have hyx := A'.mul_mem hy hx

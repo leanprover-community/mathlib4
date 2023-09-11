@@ -1147,7 +1147,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS
     Subring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubmonoid) (⨆ i, (S i).toAddSubgroup)
       (Submonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
       (AddSubgroup.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
-  suffices (⨆ i, S i) ≤ U by intro h; simpa using (this h)
+  suffices ⨆ i, S i ≤ U by intro h; simpa using (this h)
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
 #align subring.mem_supr_of_directed Subring.mem_iSup_of_directed
 

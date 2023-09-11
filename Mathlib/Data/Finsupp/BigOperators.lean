@@ -56,7 +56,7 @@ theorem Multiset.support_sum_subset [AddCommMonoid M] (s : Multiset (ι →₀ M
 
 theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
     (s.sum id).support ⊆ Finset.sup s Finsupp.support := by
-  classical convert Multiset.support_sum_subset s.1 ; simp
+  classical convert Multiset.support_sum_subset s.1; simp
 #align finset.support_sum_subset Finset.support_sum_subset
 
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :

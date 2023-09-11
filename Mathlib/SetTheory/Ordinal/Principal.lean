@@ -70,7 +70,7 @@ theorem principal_one_iff {op : Ordinal → Ordinal → Ordinal} : Principal op 
 #align ordinal.principal_one_iff Ordinal.principal_one_iff
 
 theorem Principal.iterate_lt {op : Ordinal → Ordinal → Ordinal} {a o : Ordinal} (hao : a < o)
-    (ho : Principal op o) (n : ℕ) : (op a^[n]) a < o := by
+    (ho : Principal op o) (n : ℕ) : (op a)^[n] a < o := by
   induction' n with n hn
   · rwa [Function.iterate_zero]
   · rw [Function.iterate_succ']
@@ -113,7 +113,7 @@ theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordin
   rw [lt_nfp] at *
   cases' ha with m hm
   cases' hb with n hn
-  cases' le_total ((blsub₂.{u, u} op^[m]) o) ((blsub₂.{u, u} op^[n]) o) with h h
+  cases' le_total ((blsub₂.{u, u} op)^[m] o) ((blsub₂.{u, u} op)^[n] o) with h h
   · use n + 1
     rw [Function.iterate_succ']
     exact lt_blsub₂ op (hm.trans_le h) hn
@@ -168,7 +168,7 @@ theorem principal_add_iff_add_left_eq_self {o : Ordinal} :
 theorem exists_lt_add_of_not_principal_add {a} (ha : ¬Principal (· + ·) a) :
     ∃ (b c : _) (_ : b < a) (_ : c < a), b + c = a := by
   unfold Principal at ha
-  push_neg  at ha
+  push_neg at ha
   rcases ha with ⟨b, c, hb, hc, H⟩
   refine'
     ⟨b, _, hb, lt_of_le_of_ne (sub_le_self a b) fun hab => _, Ordinal.add_sub_cancel_of_le hb.le⟩
@@ -366,7 +366,7 @@ theorem mul_lt_omega_opow {a b c : Ordinal} (c0 : 0 < c) (ha : a < (omega^c)) (h
 theorem mul_omega_opow_opow {a b : Ordinal} (a0 : 0 < a) (h : a < (omega^omega^b)) :
     a * (omega^omega^b) = (omega^omega^b) := by
   by_cases b0 : b = 0;
-  · rw [b0, opow_zero, opow_one] at h⊢
+  · rw [b0, opow_zero, opow_one] at h ⊢
     exact mul_omega a0 h
   refine'
     le_antisymm _

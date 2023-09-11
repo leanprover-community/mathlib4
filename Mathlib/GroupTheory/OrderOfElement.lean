@@ -516,7 +516,7 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   have hs : s ⊆ { y : G | ¬IsOfFinOrder y } := by
     rintro - ⟨n, hn : 0 < n, rfl⟩ (contra : IsOfFinOrder (x ^ n))
     apply h
-    rw [isOfFinOrder_iff_pow_eq_one] at contra⊢
+    rw [isOfFinOrder_iff_pow_eq_one] at contra ⊢
     obtain ⟨m, hm, hm'⟩ := contra
     exact ⟨n * m, mul_pos hn hm, by rwa [pow_mul]⟩
   suffices s.Infinite by exact this.mono hs
@@ -689,9 +689,9 @@ variable [LeftCancelMonoid G] [AddLeftCancelMonoid A]
 -- TODO: Use this to show that a finite left cancellative monoid is a group.
 @[to_additive]
 theorem exists_pow_eq_one [Finite G] (x : G) : IsOfFinOrder x := by
-  have H : (Set.univ : Set G).Finite := Set.univ.toFinite
-  contrapose! H -- Porting note: `contrapose!` doesn't like `this`
-  exact Set.Infinite.mono (Set.subset_univ _) (infinite_not_isOfFinOrder H)
+  have : (Set.univ : Set G).Finite := Set.univ.toFinite
+  contrapose! this
+  exact Set.Infinite.mono (Set.subset_univ _) (infinite_not_isOfFinOrder this)
 #align exists_pow_eq_one exists_pow_eq_one
 #align exists_nsmul_eq_zero exists_nsmul_eq_zero
 
@@ -763,7 +763,7 @@ theorem finEquivPowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℕ
   mapping `i • a` to `i • b`."]
 noncomputable def powersEquivPowers [Finite G] (h : orderOf x = orderOf y) :
     (Submonoid.powers x : Set G) ≃ (Submonoid.powers y : Set G) :=
-  (finEquivPowers x).symm.trans ((Fin.cast h).toEquiv.trans (finEquivPowers y))
+  (finEquivPowers x).symm.trans ((Fin.castIso h).toEquiv.trans (finEquivPowers y))
 #align powers_equiv_powers powersEquivPowers
 #align multiples_equiv_multiples multiplesEquivMultiples
 
@@ -869,7 +869,7 @@ theorem finEquivZpowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : �
   mapping `i • a` to `i • b`."]
 noncomputable def zpowersEquivZpowers [Finite G] (h : orderOf x = orderOf y) :
     (Subgroup.zpowers x : Set G) ≃ (Subgroup.zpowers y : Set G) :=
-  (finEquivZpowers x).symm.trans ((Fin.cast h).toEquiv.trans (finEquivZpowers y))
+  (finEquivZpowers x).symm.trans ((Fin.castIso h).toEquiv.trans (finEquivZpowers y))
 #align zpowers_equiv_zpowers zpowersEquivZpowers
 #align zmultiples_equiv_zmultiples zmultiplesEquivZmultiples
 
@@ -1088,7 +1088,7 @@ theorem orderOf_abs_ne_one (h : |x| ≠ 1) : orderOf x = 0 := by
 #align order_of_abs_ne_one orderOf_abs_ne_one
 
 theorem LinearOrderedRing.orderOf_le_two : orderOf x ≤ 2 := by
-  cases' ne_or_eq (|x|) 1 with h h
+  cases' ne_or_eq |x| 1 with h h
   · simp [orderOf_abs_ne_one h]
   rcases eq_or_eq_neg_of_abs_eq h with (rfl | rfl)
   · simp

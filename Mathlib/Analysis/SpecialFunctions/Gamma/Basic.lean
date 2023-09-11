@@ -232,7 +232,7 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
       (fun x => s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
   rw [this]
   have t := @integral_const_mul 0 X volume _ _ s fun x : ℝ => (-x).exp * x ^ (s - 1)
-  dsimp at t ; rw [← t, ofReal_zero, zero_cpow]
+  dsimp at t; rw [← t, ofReal_zero, zero_cpow]
   · rw [MulZeroClass.mul_zero, add_zero]; congr 2; ext1; ring
   · contrapose! hs; rw [hs, zero_re]
 #align complex.partial_Gamma_add_one Complex.partialGamma_add_one
@@ -418,7 +418,7 @@ theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : 
     DifferentiableAt ℂ (GammaAux n) s := by
   induction' n with n hn generalizing s
   · refine' (hasDerivAt_GammaIntegral _).differentiableAt
-    rw [Nat.cast_zero] at h1 ; linarith
+    rw [Nat.cast_zero] at h1; linarith
   · dsimp only [GammaAux]
     specialize hn (s + 1)
     have a : 1 - (s + 1).re < ↑n := by
@@ -426,7 +426,6 @@ theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : 
     have b : ∀ m : ℕ, s + 1 ≠ -m := by
       intro m; have := h2 (1 + m)
       contrapose! this
-      push_neg at this
       rw [← eq_sub_iff_add_eq] at this
       simpa using this
     refine' DifferentiableAt.div (DifferentiableAt.comp _ (hn a b) _) _ _

@@ -252,14 +252,14 @@ theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set
   simp_rw [Set.mem_smul_set, Set.mem_sep_iff]
   constructor
   · rintro ⟨hr, hx⟩
-    simp_rw [mem_Ioi] at hr⊢
+    simp_rw [mem_Ioi] at hr ⊢
     rw [← mem_smul_set_iff_inv_smul_mem₀ hr.ne'] at hx
     have := smul_pos (inv_pos.2 ha') hr
     refine' ⟨a⁻¹ • r, ⟨this, _⟩, smul_inv_smul₀ ha'.ne' _⟩
     rwa [← mem_smul_set_iff_inv_smul_mem₀ this.ne', smul_assoc,
       mem_smul_set_iff_inv_smul_mem₀ (inv_ne_zero ha'.ne'), inv_inv]
   · rintro ⟨r, ⟨hr, hx⟩, rfl⟩
-    rw [mem_Ioi] at hr⊢
+    rw [mem_Ioi] at hr ⊢
     rw [← mem_smul_set_iff_inv_smul_mem₀ hr.ne'] at hx
     have := smul_pos ha' hr
     refine' ⟨this, _⟩
@@ -279,18 +279,18 @@ theorem gauge_smul_left_of_nonneg [MulActionWithZero α E] [SMulCommClass α ℝ
   simp_rw [Set.mem_smul_set, Set.mem_sep_iff]
   constructor
   · rintro ⟨hr, y, hy, h⟩
-    simp_rw [mem_Ioi] at hr⊢
+    simp_rw [mem_Ioi] at hr ⊢
     refine' ⟨a • r, ⟨smul_pos ha' hr, _⟩, inv_smul_smul₀ ha'.ne' _⟩
     rwa [smul_inv₀, smul_assoc, ← h, inv_smul_smul₀ ha'.ne']
   · rintro ⟨r, ⟨hr, hx⟩, rfl⟩
-    rw [mem_Ioi] at hr⊢
+    rw [mem_Ioi] at hr ⊢
     refine' ⟨smul_pos (inv_pos.2 ha') hr, r⁻¹ • x, hx, _⟩
     rw [smul_inv₀, smul_assoc, inv_inv]
 #align gauge_smul_left_of_nonneg gauge_smul_left_of_nonneg
 
 theorem gauge_smul_left [Module α E] [SMulCommClass α ℝ ℝ] [IsScalarTower α ℝ ℝ]
     [IsScalarTower α ℝ E] {s : Set E} (symmetric : ∀ x ∈ s, -x ∈ s) (a : α) :
-    gauge (a • s) = (|a|)⁻¹ • gauge s := by
+    gauge (a • s) = |a|⁻¹ • gauge s := by
   rw [← gauge_smul_left_of_nonneg (abs_nonneg a)]
   obtain h | h := abs_choice a
   · rw [h]
@@ -330,25 +330,18 @@ section TopologicalSpace
 
 variable [TopologicalSpace E] [ContinuousSMul ℝ E]
 
+open Filter in
 theorem interior_subset_gauge_lt_one (s : Set E) : interior s ⊆ { x | gauge s x < 1 } := by
   intro x hx
-  let f : ℝ → E := fun t => t • x
-  have hf : Continuous f := by continuity
-  let s' := f ⁻¹' interior s
-  have hs' : IsOpen s' := hf.isOpen_preimage _ isOpen_interior
-  have one_mem : (1 : ℝ) ∈ s' := by simpa only [Set.mem_preimage, one_smul]
-  obtain ⟨ε, hε₀, hε⟩ := (Metric.nhds_basis_closedBall.1 _).1 (isOpen_iff_mem_nhds.1 hs' 1 one_mem)
-  rw [Real.closedBall_eq_Icc] at hε
-  have hε₁ : 0 < 1 + ε := hε₀.trans (lt_one_add ε)
-  have : (1 + ε)⁻¹ < 1 := by
-    rw [inv_lt_one_iff]
-    right
-    linarith
-  refine' (gauge_le_of_mem (inv_nonneg.2 hε₁.le) _).trans_lt this
-  rw [mem_inv_smul_set_iff₀ hε₁.ne']
-  exact
-    interior_subset
-      (hε ⟨(sub_le_self _ hε₀.le).trans ((le_add_iff_nonneg_right _).2 hε₀.le), le_rfl⟩)
+  have H₁ : Tendsto (fun r : ℝ ↦ r⁻¹ • x) (𝓝[<] 1) (𝓝 ((1 : ℝ)⁻¹ • x)) :=
+    ((tendsto_id.inv₀ one_ne_zero).smul tendsto_const_nhds).mono_left inf_le_left
+  rw [inv_one, one_smul] at H₁
+  have H₂ : ∀ᶠ r in 𝓝[<] (1 : ℝ), x ∈ r • s ∧ 0 < r ∧ r < 1
+  · filter_upwards [H₁ (mem_interior_iff_mem_nhds.1 hx), Ioo_mem_nhdsWithin_Iio' one_pos]
+    intro r h₁ h₂
+    exact ⟨(mem_smul_set_iff_inv_smul_mem₀ h₂.1.ne' _ _).2 h₁, h₂⟩
+  rcases H₂.exists with ⟨r, hxr, hr₀, hr₁⟩
+  exact (gauge_le_of_mem hr₀.le hxr).trans_lt hr₁
 #align interior_subset_gauge_lt_one interior_subset_gauge_lt_one
 
 theorem gauge_lt_one_eq_self_of_open (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : IsOpen s) :
@@ -358,17 +351,20 @@ theorem gauge_lt_one_eq_self_of_open (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈
   exact hs₂.interior_eq.symm
 #align gauge_lt_one_eq_self_of_open gauge_lt_one_eq_self_of_open
 
-theorem gauge_lt_one_of_mem_of_open (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : IsOpen s) {x : E}
-    (hx : x ∈ s) : gauge s x < 1 := by rwa [← gauge_lt_one_eq_self_of_open hs₁ hs₀ hs₂] at hx
-#align gauge_lt_one_of_mem_of_open gauge_lt_one_of_mem_of_open
+-- porting note: droped unneeded assumptions
+theorem gauge_lt_one_of_mem_of_open (hs₂ : IsOpen s) {x : E} (hx : x ∈ s) :
+    gauge s x < 1 :=
+  interior_subset_gauge_lt_one s <| by rwa [hs₂.interior_eq]
+#align gauge_lt_one_of_mem_of_open gauge_lt_one_of_mem_of_openₓ
 
-theorem gauge_lt_of_mem_smul (x : E) (ε : ℝ) (hε : 0 < ε) (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s)
-    (hs₂ : IsOpen s) (hx : x ∈ ε • s) : gauge s x < ε := by
+-- porting note: droped unneeded assumptions
+theorem gauge_lt_of_mem_smul (x : E) (ε : ℝ) (hε : 0 < ε) (hs₂ : IsOpen s) (hx : x ∈ ε • s) :
+    gauge s x < ε := by
   have : ε⁻¹ • x ∈ s := by rwa [← mem_smul_set_iff_inv_smul_mem₀ hε.ne']
-  have h_gauge_lt := gauge_lt_one_of_mem_of_open hs₁ hs₀ hs₂ this
+  have h_gauge_lt := gauge_lt_one_of_mem_of_open hs₂ this
   rwa [gauge_smul_of_nonneg (inv_nonneg.2 hε.le), smul_eq_mul, inv_mul_lt_iff hε, mul_one]
     at h_gauge_lt
-#align gauge_lt_of_mem_smul gauge_lt_of_mem_smul
+#align gauge_lt_of_mem_smul gauge_lt_of_mem_smulₓ
 
 end TopologicalSpace
 
@@ -404,7 +400,7 @@ variable {hs₀ : Balanced 𝕜 s} {hs₁ : Convex ℝ s} {hs₂ : Absorbent ℝ
 
 theorem gaugeSeminorm_lt_one_of_open (hs : IsOpen s) {x : E} (hx : x ∈ s) :
     gaugeSeminorm hs₀ hs₁ hs₂ x < 1 :=
-  gauge_lt_one_of_mem_of_open hs₁ hs₂.zero_mem hs hx
+  gauge_lt_one_of_mem_of_open hs hx
 #align gauge_seminorm_lt_one_of_open gaugeSeminorm_lt_one_of_open
 
 theorem gaugeSeminorm_ball_one (hs : IsOpen s) : (gaugeSeminorm hs₀ hs₁ hs₂).ball 0 1 = s := by

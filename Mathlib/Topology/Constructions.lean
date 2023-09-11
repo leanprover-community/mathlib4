@@ -268,7 +268,7 @@ def of : α ≃ CofiniteTopology α :=
 instance [Inhabited α] : Inhabited (CofiniteTopology α) where default := of default
 
 instance : TopologicalSpace (CofiniteTopology α) where
-  IsOpen s := s.Nonempty → Set.Finite (sᶜ)
+  IsOpen s := s.Nonempty → Set.Finite sᶜ
   isOpen_univ := by simp
   isOpen_inter s t := by
     rintro hs ht ⟨x, hxs, hxt⟩
@@ -628,7 +628,7 @@ theorem prod_generateFrom_generateFrom_eq {α β : Type _} {s : Set (Set α)} {t
     (le_inf
       (coinduced_le_iff_le_induced.mp <|
         le_generateFrom fun u hu =>
-          have : (⋃ v ∈ t, u ×ˢ v) = Prod.fst ⁻¹' u := by
+          have : ⋃ v ∈ t, u ×ˢ v = Prod.fst ⁻¹' u := by
             simp_rw [← prod_iUnion, ← sUnion_eq_biUnion, ht, prod_univ]
           show G.IsOpen (Prod.fst ⁻¹' u) by
             rw [← this]
@@ -637,7 +637,7 @@ theorem prod_generateFrom_generateFrom_eq {α β : Type _} {s : Set (Set α)} {t
                 isOpen_iUnion fun hv => GenerateOpen.basic _ ⟨_, hu, _, hv, rfl⟩)
       (coinduced_le_iff_le_induced.mp <|
         le_generateFrom fun v hv =>
-          have : (⋃ u ∈ s, u ×ˢ v) = Prod.snd ⁻¹' v := by
+          have : ⋃ u ∈ s, u ×ˢ v = Prod.snd ⁻¹' v := by
             simp_rw [← iUnion_prod_const, ← sUnion_eq_biUnion, hs, univ_prod]
           show G.IsOpen (Prod.snd ⁻¹' v) by
             rw [← this]
@@ -1401,7 +1401,7 @@ theorem pi_generateFrom_eq_finite {π : ι → Type _} {g : ∀ a, Set (Set (π 
     letI := generateFrom { t | ∃ s : ∀ a, Set (π a), (∀ a, s a ∈ g a) ∧ t = pi univ s }
     refine isOpen_iff_forall_mem_open.2 fun f hf => ?_
     choose c hcg hfc using fun a => sUnion_eq_univ_iff.1 (hg a) (f a)
-    refine ⟨pi i t ∩ pi (↑iᶜ : Set ι) c, inter_subset_left _ _, ?_, ⟨hf, fun a _ => hfc a⟩⟩
+    refine ⟨pi i t ∩ pi ((↑i)ᶜ : Set ι) c, inter_subset_left _ _, ?_, ⟨hf, fun a _ => hfc a⟩⟩
     rw [← univ_pi_piecewise]
     refine GenerateOpen.basic _ ⟨_, fun a => ?_, rfl⟩
     by_cases a ∈ i <;> simp [*]
@@ -1532,6 +1532,22 @@ theorem continuous_sigma {f : Sigma σ → α} (hf : ∀ i, Continuous fun a => 
     Continuous f :=
   continuous_sigma_iff.2 hf
 #align continuous_sigma continuous_sigma
+
+/-- A map defined on a sigma type (a.k.a. the disjoint union of an indexed family of topological
+spaces) is inducing iff its restriction to each component is inducing and each the image of each
+component under `f` can be separated from the images of all other components by an open set. -/
+theorem inducing_sigma {f : Sigma σ → α} :
+    Inducing f ↔ (∀ i, Inducing (f ∘ Sigma.mk i)) ∧
+      (∀ i, ∃ U, IsOpen U ∧ ∀ x, f x ∈ U ↔ x.1 = i) := by
+  refine ⟨fun h ↦ ⟨fun i ↦ h.comp embedding_sigmaMk.1, fun i ↦ ?_⟩, ?_⟩
+  · rcases h.isOpen_iff.1 (isOpen_range_sigmaMk (i := i)) with ⟨U, hUo, hU⟩
+    refine ⟨U, hUo, ?_⟩
+    simpa [Set.ext_iff] using hU
+  · refine fun ⟨h₁, h₂⟩ ↦ inducing_iff_nhds.2 fun ⟨i, x⟩ ↦ ?_
+    rw [Sigma.nhds_mk, (h₁ i).nhds_eq_comap, comp_apply, ← comap_comap, map_comap_of_mem]
+    rcases h₂ i with ⟨U, hUo, hU⟩
+    filter_upwards [preimage_mem_comap <| hUo.mem_nhds <| (hU _).2 rfl] with y hy
+    simpa [hU] using hy
 
 @[simp 1100]
 theorem continuous_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} :

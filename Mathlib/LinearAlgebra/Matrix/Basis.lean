@@ -79,20 +79,20 @@ theorem toMatrix_eq_toMatrix_constr [Fintype ι] [DecidableEq ι] (v : ι → M)
 -- TODO (maybe) Adjust the definition of `Basis.toMatrix` to eliminate the transpose.
 theorem coePiBasisFun.toMatrix_eq_transpose [Fintype ι] :
     ((Pi.basisFun R ι).toMatrix : Matrix ι ι R → Matrix ι ι R) = Matrix.transpose := by
-  ext (M i j)
+  ext M i j
   rfl
 #align basis.coe_pi_basis_fun.to_matrix_eq_transpose Basis.coePiBasisFun.toMatrix_eq_transpose
 
 @[simp]
 theorem toMatrix_self [DecidableEq ι] : e.toMatrix e = 1 := by
   unfold Basis.toMatrix
-  ext (i j)
+  ext i j
   simp [Basis.equivFun, Matrix.one_apply, Finsupp.single_apply, eq_comm]
 #align basis.to_matrix_self Basis.toMatrix_self
 
 theorem toMatrix_update [DecidableEq ι'] (x : M) :
     e.toMatrix (Function.update v j x) = Matrix.updateColumn (e.toMatrix v) j (e.repr x) := by
-  ext (i' k)
+  ext i' k
   rw [Basis.toMatrix, Matrix.updateColumn_apply, e.toMatrix_apply]
   split_ifs with h
   · rw [h, update_same j x v]
@@ -103,7 +103,7 @@ theorem toMatrix_update [DecidableEq ι'] (x : M) :
 @[simp]
 theorem toMatrix_unitsSMul [DecidableEq ι] (e : Basis ι R₂ M₂) (w : ι → R₂ˣ) :
     e.toMatrix (e.unitsSMul w) = diagonal ((↑) ∘ w) := by
-  ext (i j)
+  ext i j
   by_cases h : i = j
   · simp [h, toMatrix_apply, unitsSMul_apply, Units.smul_def]
   · simp [h, toMatrix_apply, unitsSMul_apply, Units.smul_def, Ne.symm h]
@@ -117,7 +117,7 @@ theorem toMatrix_isUnitSMul [DecidableEq ι] (e : Basis ι R₂ M₂) {w : ι �
 #align basis.to_matrix_is_unit_smul Basis.toMatrix_isUnitSMul
 
 @[simp]
-theorem sum_toMatrix_smul_self [Fintype ι] : (∑ i : ι, e.toMatrix v i j • e i) = v j := by
+theorem sum_toMatrix_smul_self [Fintype ι] : ∑ i : ι, e.toMatrix v i j • e i = v j := by
   simp_rw [e.toMatrix_apply, e.sum_repr]
 #align basis.sum_to_matrix_smul_self Basis.sum_toMatrix_smul_self
 
@@ -139,13 +139,13 @@ and matrices, making the matrix whose columns are the vectors `v i` written in t
 def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix ι ι R where
   toFun := e.toMatrix
   map_add' v w := by
-    ext (i j)
+    ext i j
     change _ = _ + _
     rw [e.toMatrix_apply, Pi.add_apply, LinearEquiv.map_add]
     rfl
   map_smul' := by
     intro c v
-    ext (i j)
+    ext i j
     dsimp only []
     rw [e.toMatrix_apply, Pi.smul_apply, LinearEquiv.map_smul]
     rfl
@@ -156,7 +156,7 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
     exact e.sum_toMatrix_smul_self v j
   right_inv := by
     intro m
-    ext (k l)
+    ext k l
     simp only [e.toMatrix_apply, ← e.equivFun_apply, ← e.equivFun_symm_apply,
       LinearEquiv.apply_symm_apply]
 #align basis.to_matrix_equiv Basis.toMatrixEquiv
@@ -217,7 +217,7 @@ theorem basis_toMatrix_basisFun_mul (b : Basis ι R (ι → R)) (A : Matrix ι �
     b.toMatrix (Pi.basisFun R ι) ⬝ A = of fun i j => b.repr (Aᵀ j) i := by
   classical
     simp only [basis_toMatrix_mul _ _ (Pi.basisFun R ι), Matrix.toLin_eq_toLin']
-    ext (i j)
+    ext i j
     rw [LinearMap.toMatrix_apply, Matrix.toLin'_apply, Pi.basisFun_apply,
       Matrix.mulVec_stdBasis_apply, Matrix.of_apply]
 #align basis_to_matrix_basis_fun_mul basis_toMatrix_basisFun_mul
@@ -248,7 +248,7 @@ theorem Basis.toMatrix_mul_toMatrix {ι'' : Type _} [Fintype ι'] (b'' : ι'' �
   haveI := Classical.decEq ι
   haveI := Classical.decEq ι'
   haveI := Classical.decEq ι''
-  ext (i j)
+  ext i j
   simp only [Matrix.mul_apply, Basis.toMatrix_apply, Basis.sum_repr_mul_repr]
 #align basis.to_matrix_mul_to_matrix Basis.toMatrix_mul_toMatrix
 

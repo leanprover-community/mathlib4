@@ -25,13 +25,13 @@ open Cardinal
 
 /-- The cardinality of the complex numbers, as a type. -/
 @[simp]
-theorem mk_complex : (#ℂ) = 𝔠 := by
+theorem mk_complex : #ℂ = 𝔠 := by
   rw [mk_congr Complex.equivRealProd, mk_prod, lift_id, mk_real, continuum_mul_self]
 #align mk_complex mk_complex
 
 /-- The cardinality of the complex numbers, as a set. -/
 -- @[simp] -- Porting note: simp can prove this
-theorem mk_univ_complex : (#(Set.univ : Set ℂ)) = 𝔠 := by rw [mk_univ, mk_complex]
+theorem mk_univ_complex : #(Set.univ : Set ℂ) = 𝔠 := by rw [mk_univ, mk_complex]
 #align mk_univ_complex mk_univ_complex
 
 /-- The complex numbers are not countable. -/

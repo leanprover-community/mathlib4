@@ -104,7 +104,7 @@ def cut {ι : Type _} (s : Finset ι) (n : ℕ) : Finset (ι → ℕ) :=
   Finset.filter (fun f => s.sum f = n)
     ((s.pi fun _ => range (n + 1)).map
       ⟨fun f i => if h : i ∈ s then f i h else 0, fun f g h => by
-        ext (i hi); simpa [dif_pos hi] using congr_fun h i⟩)
+        ext i hi; simpa [dif_pos hi] using congr_fun h i⟩)
 #align theorems_100.cut Theorems100.cut
 
 theorem mem_cut {ι : Type _} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
@@ -292,7 +292,7 @@ theorem num_series' [Field α] (i : ℕ) :
           rw [Nat.mul_sub_left_distrib, ← hp, ← a_left, mul_one, Nat.add_sub_cancel]
         · rintro ⟨rfl, rfl⟩
           match p with
-          | 0 => rw [MulZeroClass.mul_zero] at hp ; cases hp
+          | 0 => rw [MulZeroClass.mul_zero] at hp; cases hp
           | p + 1 => rw [hp]; simp [mul_add]
       · suffices
           (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (Nat.antidiagonal n.succ)).card =

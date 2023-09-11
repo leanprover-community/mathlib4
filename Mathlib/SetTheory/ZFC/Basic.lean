@@ -1407,9 +1407,9 @@ theorem map_isFunc {f : ZFSet → ZFSet} [Definable 1 f] {x y : ZFSet} :
 
 /-- Given a predicate `p` on ZFC sets. `hereditarily p x` means that `x` has property `p` and the
 members of `x` are all `hereditarily p`. -/
-def Hereditarily (p : ZFSet → Prop) : ZFSet → Prop
-  | x => p x ∧ ∀ y ∈ x, Hereditarily p y
-termination_by' ⟨_, mem_wf⟩
+def Hereditarily (p : ZFSet → Prop) (x : ZFSet) : Prop :=
+  p x ∧ ∀ y ∈ x, Hereditarily p y
+termination_by _ => x
 #align Set.hereditarily ZFSet.Hereditarily
 
 section Hereditarily

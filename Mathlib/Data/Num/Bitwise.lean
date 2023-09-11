@@ -9,7 +9,8 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Num.Basic
-import Mathlib.Data.Bitvec.Defs
+import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Vector.Basic
 
 /-!
 # Bitwise operations using binary representation of integers
@@ -344,7 +345,7 @@ open SNum
       `0 : SNum` and `(-1) : SNum`. -/
 def drec' {C : SNum → Sort _} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) :
     ∀ p : NzsNum, C p
-  | msb b => by rw [← bit_one] ; exact s b (SNum.zero (Not b)) (z (Not b))
+  | msb b => by rw [← bit_one]; exact s b (SNum.zero (Not b)) (z (Not b))
   | bit b p => s b p (drec' z s p)
 #align nzsnum.drec' NzsNum.drec'
 
@@ -426,7 +427,7 @@ def bits : SNum → ∀ n, Vector Bool n
       `a` represents a carry bit. -/
 def cAdd : SNum → SNum → Bool → SNum :=
   rec' (fun a p c ↦ czAdd c a p) fun a p IH ↦
-    rec' (fun b c ↦ czAdd c b (a :: p)) fun b q _ c ↦ Bitvec.xor3 a b c :: IH q (Bitvec.carry a b c)
+    rec' (fun b c ↦ czAdd c b (a :: p)) fun b q _ c ↦ Bool.xor3 a b c :: IH q (Bool.carry a b c)
 #align snum.cadd SNum.cAdd
 
 /-- Add two `SNum`s. -/
