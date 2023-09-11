@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
-import Mathlib.Topology.MetricSpace.EMetricParacompact
+import Mathlib.Topology.EMetricSpace.Paracompact
 
 #align_import analysis.fourier.riemann_lebesgue_lemma from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
