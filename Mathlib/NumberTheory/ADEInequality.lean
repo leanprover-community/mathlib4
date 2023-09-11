@@ -38,7 +38,6 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 -/
 
 
-set_option pp.proofs true
 namespace ADEInequality
 
 open Multiset
@@ -160,7 +159,7 @@ theorem admissible_E8 : Admissible E8 :=
 theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < sumInv pqr := by
   rw [Admissible]
   rintro (⟨p', q', H⟩ | ⟨n, H⟩ | H | H | H)
-  . rw [← H, A', sumInv_pqr, add_assoc]
+  · rw [← H, A', sumInv_pqr, add_assoc]
     simp only [lt_add_iff_pos_right, PNat.one_coe, inv_one, Nat.cast_one]
     apply add_pos <;> simp only [PNat.pos, Nat.cast_pos, inv_pos]
   · rw [← H, D', sumInv_pqr]
