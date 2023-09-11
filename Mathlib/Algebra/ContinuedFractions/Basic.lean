@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Kappelmann
+Authors: Kevin Kappelmann, Miyahara Kō
 -/
 import Mathlib.Data.Seq.Seq
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Data.PNat.Defs
-import Mathlib.Data.Int.CharZero
+import Mathlib.Order.Filter.Partial
+import Mathlib.Topology.Basic
 
 #align_import algebra.continued_fractions.basic from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -20,12 +19,12 @@ convergents. We follow the naming conventions from Wikipedia and [wall2018analyt
 
 ## Main definitions
 
-1. Generalised continued fractions (gcfs)
+1. Generalised continued fractions (gcfs) and finite gcfs
 2. Simple continued fractions (scfs)
 3. (Regular) continued fractions ((r)cfs)
-4. Computation of convergents using the recurrence relation in `convergents`.
-5. Computation of convergents by directly evaluating the fraction described by the gcf in
-`convergents'`.
+4. Computation of finite gcfs using the recurrence relation in `eval?`
+5. Computation of finite gcfs by directly evaluating the fraction in `evalF?`
+6. Computation of potentially infinite gcfs
 
 ## Implementation notes
 
@@ -42,6 +41,10 @@ fractions. We hence just call them continued fraction in the library.
 
 numerics, number theory, approximations, fractions
 -/
+
+universe u v w
+
+open Function Stream'.Seq Filter
 
 /-! ### Definitions -/
 
@@ -62,7 +65,7 @@ $$
 where `h` is called the *head term* or *integer part*, the `aᵢ` are called the
 *partial numerators* and the `bᵢ` the *partial denominators* of the gcf.
 We store the sequence of partial numerators and denominators in a sequence of pairs `s`.
-For convenience, one often writes `[h; (a₀, b₀), (a₁, b₁), (a₂, b₂),...]`.
+For convenience, one often writes `CF[h; (a₀, b₀), (a₁, b₁), (a₂, b₂),...]`.
 -/
 @[ext]
 structure GCF (α : Type*) where
@@ -82,7 +85,7 @@ namespace GCF
 @[simps]
 def ofInteger (a : α) : GCF α where
   h := a
-  s := Stream'.Seq.nil
+  s := nil
 #align generalized_continued_fraction.of_integer GCF.ofInteger
 
 instance [Inhabited α] : Inhabited (GCF α) where
@@ -150,13 +153,50 @@ def toGCF (f : FGCF α) : GCF α where
 instance : Coe (FGCF α) (GCF α) where
   coe := toGCF
 
-/-- Take the head and the first `n` partial numerator and denominator pairs of the gcf. -/
+theorem toGCF_injective : Injective ((↑) : FGCF α → GCF α) := by
+  rintro ⟨h₁, l₁⟩ ⟨h₂, l₂⟩ h
+  simpa [toGCF] using h
+
+@[simp, norm_cast]
+theorem toGCF_inj {f₁ f₂ : FGCF α} : (↑f₁ : GCF α) = ↑f₂ ↔ f₁ = f₂ :=
+  toGCF_injective.eq_iff
+
+@[simp]
+theorem toGCF_terminates (f : FGCF α) : (↑f : GCF α).Terminates := by simp [GCF.Terminates]
+
+theorem _root_.GCF.exists_eq_FGCF_iff {g : GCF α} : (∃ f : FGCF α, ↑f = g) ↔ g.Terminates where
+  mp  := by rintro ⟨f, rfl⟩; exact f.toGCF_terminates
+  mpr := by
+    intro hg; rcases g with ⟨h, s⟩
+    use ⟨h, s.toList hg⟩
+    simp [comp, toGCF]
+
+instance : CanLift (GCF α) (FGCF α) (↑) GCF.Terminates where
+  prf _ h := GCF.exists_eq_FGCF_iff.mpr h
+
+@[simp, norm_cast]
+theorem toGCF_ofInteger (a : α) : (↑(FGCF.ofInteger a) : GCF α) = GCF.ofInteger a := by
+  ext1 <;> simp
+
+/-- Take the head term and the first `n` pairs of a partial numerator and denominator. -/
 @[simps]
 def _root_.GCF.take (g : GCF α) (n : ℕ) : FGCF α where
   h := g.h
   l := g.s.take n
 
+open Std in
+instance [Repr α] : Repr (FGCF α) where
+  reprPrec a _ :=
+    let _ : ToFormat α := ⟨repr⟩
+    match a with
+    | { h, l := [] } => Format.bracket "CF[" (format h) "]"
+    | { h, l := as } =>
+      Format.bracket "CF["
+        (format h ++ (";" ++ Format.line) ++ Format.joinSep as ("," ++ Format.line)) "]"
+
 end FGCF
+
+open FGCF hiding toGCF
 
 /-- A generalized continued fraction is a *simple continued fraction* if all partial numerators are
 equal to one.
@@ -169,7 +209,7 @@ $$
 $$
 -/
 def GCF.IsSCF [One α] (g : GCF α) : Prop := ∀ aₙ ∈ g.partNums, aₙ = 1
-#align generalized_continued_fraction.is_simple_continued_fraction GCF.IsSCFₓ
+#align generalized_continued_fraction.is_simple_continued_fraction GCF.IsSCF
 
 /-- A *simple continued fraction* (scf) is a generalized continued fraction (gcf) whose partial
 numerators are equal to one.
@@ -180,7 +220,7 @@ $$
                                       {b_2 + \dfrac{1}
                                                    {b_3 + \dots}}}}
 $$
-For convenience, one often writes `[h; b₀, b₁, b₂,...]`.
+For convenience, one often writes `CF[h; b₀, b₁, b₂,...]`.
 In contrast to generalized continued fraction, We store only partial denominators in a sequence
 `sb`.
  -/
@@ -200,7 +240,7 @@ variable [One α]
 @[simps]
 def ofInteger (a : α) : SCF α where
   h  := a
-  sb := Stream'.Seq.nil
+  sb := nil
 #align simple_continued_fraction.of_integer SCF.ofInteger
 
 instance [Inhabited α] : Inhabited (SCF α) where
@@ -215,10 +255,10 @@ def toGCF (s : SCF α) : GCF α where
 instance : Coe (SCF α) (GCF α) where
   coe := toGCF
 
-theorem toGCF_injective : Function.Injective ((↑) : SCF α → GCF α) := by
+theorem toGCF_injective : Injective ((↑) : SCF α → GCF α) := by
   rintro ⟨h₁, s₁⟩ ⟨h₂, s₂⟩ h
-  have hi : Function.Injective (Stream'.Seq.map (((1, ·)) : α → α × α)) :=
-    Stream'.Seq.map_injective (Prod.mk.inj_left 1)
+  have hi : Injective (Stream'.Seq.map (((1, ·)) : α → α × α)) :=
+    map_injective (Prod.mk.inj_left 1)
   simpa [hi.eq_iff, toGCF] using h
 
 @[simp, norm_cast]
@@ -233,7 +273,7 @@ theorem _root_.GCF.exists_eq_SCF_iff {g : GCF α} : (∃ s : SCF α, ↑s = g) �
   mpr := by
     intro hg; rcases g with ⟨h, s⟩
     use ⟨h, s.map Prod.snd⟩
-    simp [Function.comp, toGCF]
+    simp [comp, toGCF]
     convert Stream'.Seq.map_id s using 1
     symm; apply Stream'.Seq.map_congr
     simpa [IsSCF, partNums] using hg
@@ -277,7 +317,7 @@ namespace CF
 @[simps]
 def ofInteger (a : ℤ) : CF α where
   h  := a
-  sb := Stream'.Seq.nil
+  sb := nil
 #align continued_fraction.of_integer CF.ofInteger
 
 instance : Inhabited (CF α) where
@@ -292,10 +332,9 @@ def toSCF [NatCast α] [IntCast α] (c : CF α) : SCF α where
 instance [NatCast α] [IntCast α] : Coe (CF α) (SCF α) where
   coe := toSCF
 
-theorem toSCF_injective [AddGroupWithOne α] [CharZero α] :
-    Function.Injective ((↑) : CF α → SCF α) := by
+theorem toSCF_injective [AddGroupWithOne α] [CharZero α] : Injective ((↑) : CF α → SCF α) := by
   rintro ⟨h₁, sb₁⟩ ⟨h₂, sb₂⟩ h
-  have hi : Function.Injective (Stream'.Seq.map (((↑)) : ℕ+ → α)) :=
+  have hi : Injective (Stream'.Seq.map (((↑)) : ℕ+ → α)) :=
     Stream'.Seq.map_injective (Nat.cast_injective.comp Subtype.val_injective)
   simpa [Int.cast_inj, hi.eq_iff, toSCF] using h
 
@@ -312,11 +351,11 @@ theorem _root_.SCF.exists_eq_CF_iff [AddGroupWithOne α] [CharZero α] {s : SCF 
   mp  := by rintro ⟨c, rfl⟩; exact c.toSCF_isCF
   mpr := by
     rcases s with ⟨h, sb⟩; rintro ⟨⟨sh, rfl⟩, hs⟩
-    use ⟨sh, sb.map (Function.invFun (↑))⟩
-    simp [Function.comp, toSCF]
+    use ⟨sh, sb.map (invFun (↑))⟩
+    simp [comp, toSCF]
     convert Stream'.Seq.map_id sb using 1
     symm; apply Stream'.Seq.map_congr; intro a ha
-    simp [Function.invFun_eq (hs a ha)]
+    simp [invFun_eq (hs a ha)]
 
 instance [AddGroupWithOne α] [CharZero α] : CanLift (SCF α) (CF α) (↑) IsCF where
   prf _ h := SCF.exists_eq_CF_iff.mpr h
@@ -334,82 +373,126 @@ end CF
 
 open CF
 
-/-!
-### Computation of Convergents
-
-We now define how to compute the convergents of a gcf. There are two standard ways to do this:
-directly evaluating the (infinite) fraction described by the fgcf or using a recurrence relation.
-These computations are equivalent as shown in
-`Algebra.ContinuedFractions.ConvergentsEquiv`.
--/
-
--- Fix a division ring for the computations.
 variable {K : Type*} [DivisionRing K]
 
 /-!
-We start with the definition of the recurrence relation. Given a gcf `g`, for all `n ≥ 1`, we define
+### Computation of finite generalized continued fractions
+
+We now define how to evaluate finite gcfs. There are two standard ways to do this:
+directly evaluating the fraction described by the gcf or using a recurrence relation.
+These computations are equivalent as shown in `Algebra.ContinuedFractions.EvalEquiv`.
+-/
+
+namespace FGCF
+
+/-!
+We start with the definition of the recurrence relation. Given a finite gcf `f`, for all `n ≥ 1`,
+we define
 - `A₋₁ = 1,  A₀ = h,  Aₙ = bₙ₋₁ * Aₙ₋₁ + aₙ₋₁ * Aₙ₋₂`, and
 - `B₋₁ = 0,  B₀ = 1,  Bₙ = bₙ₋₁ * Bₙ₋₁ + aₙ₋₁ * Bₙ₋₂`.
 
-`Aₙ, Bₙ` are called the *nth continuants*, `Aₙ` the *nth numerator*, and `Bₙ` the
-*nth denominator* of `g`. The *nth convergent* of `g` is given by `Aₙ / Bₙ`.
+The value of `f` is given by `Aₙ / Bₙ` where `Aₙ, Bₙ` are the last values.
 -/
 
 #noalign generalized_continued_fraction.next_numerator
 #noalign generalized_continued_fraction.next_denominator
-#noalign generalized_continued_fraction.next_continuants
-
-/-- Returns the continuants `⟨Aₙ₋₁, Bₙ₋₁⟩` of `g`. -/
-def continuantsAux (g : GCF K) : ℕ → Pair K
-  | 0 => ⟨1, 0⟩
-  | 1 => ⟨g.h, 1⟩
-  | n + 2 =>
-    match g.s.get? n with
-    | none => continuantsAux g (n + 1)
-    | some gp =>
-      ⟨gp.b * (continuantsAux g (n + 1)).a + gp.a * (continuantsAux g n).a,
-        gp.b * (continuantsAux g (n + 1)).b + gp.a * (continuantsAux g n).b⟩
-#align generalized_continued_fraction.continuants_aux GCF.continuantsAux
-
-/-- Returns the continuants `⟨Aₙ, Bₙ⟩` of `g`. -/
-def continuants (g : GCF K) (n : ℕ) : Pair K :=
-  g.continuantsAux (n + 1)
-#align generalized_continued_fraction.continuants GCF.continuants
-
-/-- Returns the numerators `Aₙ` of `g`. -/
-def numerators (g : GCF K) (n : ℕ) : K :=
-  (g.continuants n).a
-#align generalized_continued_fraction.numerators GCF.numerators
-
-/-- Returns the denominators `Bₙ` of `g`. -/
-def denominators (g : GCF K) (n : ℕ) : K :=
-  (g.continuants n).b
-#align generalized_continued_fraction.denominators GCF.denominators
-
-/-- Returns the convergents `Aₙ / Bₙ` of `g`, where `Aₙ, Bₙ` are the nth continuants of `g`. -/
-def convergents (g : GCF K) (n : ℕ) : K :=
-  g.numerators n / g.denominators n
-#align generalized_continued_fraction.convergents GCF.convergents
 
 /--
-Returns the approximation of the fraction described by the given sequence up to a given position n.
-For example, `convergents'Aux [(1, 2), (3, 4), (5, 6)] 2 = 1 / (2 + 3 / 4)` and
-`convergents'Aux [(1, 2), (3, 4), (5, 6)] 0 = 0`.
+Returns the next continuants `((Aₙ₋₁, Bₙ₋₁), (Aₙ, Bₙ))` using these:
+- `Aₙ = bₙ₋₁ * Aₙ₋₁ + aₙ₋₁ * Aₙ₋₂`
+- `Bₙ = bₙ₋₁ * Bₙ₋₁ + aₙ₋₁ * Bₙ₋₂`
+where `c` is `(aₙ₋₁, bₙ₋₁)` and `p` is `((Aₙ₋₂, Bₙ₋₂), (Aₙ₋₁, Bₙ₋₁))`.
+We should give previous continuants because it is used in the next calculation.
 -/
-def convergents'Aux : Stream'.Seq (Pair K) → ℕ → K
-  | _, 0 => 0
-  | s, n + 1 =>
-    match s.head with
-    | none => 0
-    | some gp => gp.a / (gp.b + convergents'Aux s.tail n)
-#align generalized_continued_fraction.convergents'_aux GCF.convergents'Aux
+@[simps]
+def nextContinuants (p : (K × K) × (K × K)) (c : K × K) : (K × K) × (K × K) :=
+  (p.2, (c.2 * p.2.1 + c.1 * p.1.1, c.2 * p.2.2 + c.1 * p.1.2))
+#align generalized_continued_fraction.next_continuants FGCF.nextContinuantsₓ
 
-/-- Returns the convergents of `g` by evaluating the fraction described by `g` up to a given
-position `n`. For example, `convergents' [9; (1, 2), (3, 4), (5, 6)] 2 = 9 + 1 / (2 + 3 / 4)` and
-`convergents' [9; (1, 2), (3, 4), (5, 6)] 0 = 9`
+#noalign generalized_continued_fraction.continuants_aux
+
+/-- Returns the last continuant `(Aₙ, Bₙ)` of `f`. -/
+def continuant (f : FGCF K) : K × K :=
+  Prod.snd (f.l.foldl nextContinuants ((1, 0), (f.h, 1)))
+#align generalized_continued_fraction.continuants FGCF.continuantₓ
+
+/-- Returns the last numerator `Aₙ` of `f`. -/
+abbrev numerator (f : FGCF K) : K :=
+  f.continuant.1
+#align generalized_continued_fraction.numerators FGCF.numeratorₓ
+
+/-- Returns the last denominator `Bₙ` of `f`. -/
+abbrev denominator (f : FGCF K) : K :=
+  f.continuant.2
+#align generalized_continued_fraction.denominators FGCF.denominatorₓ
+
+/-- Returns the value of `f` using a recurrence relation.
+This is not defined if the denominator is `0` because the convergence of gcfs is given by discarding
+convergents whose denominator is `0`.. -/
+def eval? [DecidableEq K] (f : FGCF K) : Option K :=
+  if f.denominator = 0 then
+    none
+  else
+    some (f.numerator / f.denominator)
+
+/-- Returns the value of the fraction part of fgcf by directly evaluating the fraction. For example:
+```lean
+  evalF? CF[9; (1, 2), (3, 4), (5, 6)]
+= 9 + 1 / (2 + 3 / (4 + 5 / 6))
+= 713 / 76
+```
+If `0` is appreared in the denominator, the fraction is dealed as infinity. For example:
+```lean
+  evalF? CF[9; (1, 2), (3, 4), (5, 0)]
+= 9 + 1 / (2 + 3 / (4 + 5 / 0))
+= 9 + 1 / (2 + 3 / (4 + ∞))
+= 9 + 1 / (2 + 0)
+= 19 / 2
+```
 -/
-def convergents' (g : GCF K) (n : ℕ) : K :=
-  g.h + convergents'Aux g.s n
-#align generalized_continued_fraction.convergents' GCF.convergents'
+def evalF? [DecidableEq K] (f : FGCF K) : Option K :=
+  (loop f.l).map (f.h + ·)
+where
+  /-- Returns the value of `f` by directly evaluating the fraction.
+  If `0` is appreared in the denominator, the fraction is dealed as infinity.
+  For example, `evalF?.loop [(1, 2), (3, 4), (5, 6)] = 9 + 1 / (2 + 3 / (4 + 5 / 6)) = 29 / 76` and
+  `evalF?.loop [(1, 2), (3, 4), (5, 0)] = 1 / 2`.
+  -/
+  loop [DecidableEq K] : List (K × K) → Option K
+    | []     => some 0
+    | p :: l =>
+      match loop l with
+      | some k =>
+        if p.2 + k = 0 then
+          none
+        else
+          some (p.1 / (p.2 + k))
+      | none   => some 0
+#align generalized_continued_fraction.convergents' FGCF.evalF?ₓ
+#align generalized_continued_fraction.convergents'_aux FGCF.evalF?.loopₓ
+
+end FGCF
+
+/-!
+### Computation of potentially infinite gcfs
+
+The value of potentially infinite gcfs is given by the limit of the value of its head finite gcfs.
+If the gcf is finite, the value given by this way coincides with the value as finite gcfs as shown
+in `Algebra.ContinuedFractions.Computation.CorrectnessTerminating`.
+-/
+
+namespace GCF
+
+/-- Returns the convergents of `g` by the value of `g.take n`. This should be partial function
+because the convergence of gcfs is given by discarding convergents whose denominator is `0`. -/
+def convergents [DecidableEq K] (g : GCF K) : ℕ →. K :=
+  fun n => ↑(g.take n).eval?
+#align generalized_continued_fraction.convergents GCF.convergentsₓ
+
+open Classical in
+/-- The value of potentially infinite gcfs is given by the limit of the value of its head finite
+gcfs. -/
+def HasValue [TopologicalSpace K] (g : GCF K) (v : K) : Prop :=
+  PTendsto g.convergents atTop (nhds v)
 
 end GCF
