@@ -460,7 +460,7 @@ theorem mrange_lift (f : M →* P) (g : N →* P) :
 end Lift
 
 section ToProd
-  
+
 variable {M N : Type*} [Monoid M] [Monoid N]
 
 @[to_additive] instance : Monoid (M ⋆ N) := Con.monoid _
