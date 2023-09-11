@@ -16,6 +16,10 @@ open Lean Meta Qq
 
 namespace Mathlib.Meta.NormNum
 
+theorem isNat_eq_false [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
+    IsNat a a' → IsNat b b' → Nat.beq a' b' = false → ¬a = b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact Nat.ne_of_beq_eq_false h
+
 theorem isInt_eq_false [Ring α] [CharZero α] : {a b : α} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → decide (a' = b') = false → ¬a = b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact of_decide_eq_false h

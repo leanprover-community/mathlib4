@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.Clear!
@@ -417,24 +417,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   assumeInstancesCommute
   return .isRat' dα qa na da q(isRat_div $pa)
 
-/-! # Constructor-like operations -/
-
-theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat b nb →
-    IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
-  | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
-
-/-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
-such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
-@[norm_num mkRat _ _] def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e):= do
-  let .app (.app (.const ``mkRat _) (a : Q(ℤ))) (b : Q(ℕ)) ← whnfR e | failure
-  haveI' : $e =Q mkRat $a $b := ⟨⟩
-  let ra ← derive a
-  let some ⟨_, na, pa⟩ := ra.toInt (q(Int.instRingInt) : Q(Ring Int)) | failure
-  let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
-  let rab ← derive q($na / $nb : Rat)
-  let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.divisionRing)
-  return .isRat' _ q n d q(isRat_mkRat $pa $pb $p)
-
 /-! # Logic -/
 
 /-- The `norm_num` extension which identifies `True`. -/
@@ -468,10 +450,6 @@ theorem isNat_eq_true [AddMonoidWithOne α] : {a b : α} → {c : ℕ} →
 
 theorem ble_eq_false {x y : ℕ} : x.ble y = false ↔ y < x := by
   rw [← Nat.not_le, ← Bool.not_eq_true, Nat.ble_eq]
-
-theorem isNat_eq_false [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
-    IsNat a a' → IsNat b b' → Nat.beq a' b' = false → ¬a = b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact Nat.ne_of_beq_eq_false h
 
 theorem isInt_eq_true [Ring α] : {a b : α} → {z : ℤ} → IsInt a z → IsInt b z → a = b
   | _, _, _, ⟨rfl⟩, ⟨rfl⟩ => rfl
