@@ -194,9 +194,7 @@ theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv 
 #align ADE_inequality.lt_three ADEInequality.lt_three
 
 theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 := by
-  have h4 : (0 : ℚ) < 4 :=
-  by
-    norm_num
+  have h4 : (0 : ℚ) < 4 := by norm_num
   contrapose! H
   rw [sumInv_pqr]
   have h4r := H.trans hqr
