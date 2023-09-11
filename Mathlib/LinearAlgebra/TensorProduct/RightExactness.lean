@@ -97,14 +97,6 @@ theorem rTensor.surjective (hg : Function.Surjective g) :
     obtain ⟨y, rfl⟩ := hy
     exact ⟨x + y, map_add _ _ _⟩
 
--- Johan, Kevin : do you prefer this?
-example (hg : Function.Surjective g) :
-    Function.Surjective (rTensor Q g) := by
-  rw [← LinearMap.comm_comp_lTensor_comp_comm_eq]
-  simp only [coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective,
-    EquivLike.surjective_comp, EquivLike.comp_surjective]
-  exact lTensor.surjective Q hg
-
 end Semiring
 
 variable {R : Type*} [CommRing R]
@@ -140,8 +132,8 @@ def lTensor.toFun :
   rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp, ← lTensor_comp,
     hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
 
-/-- The inverse map in `lTensor.equiv_ofRightInverse` (computably, given a right inverse)-/
-def lTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h g) :
+/-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse)-/
+def lTensor.inverse_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) := by
   rw [exact_iff] at hfg
   apply TensorProduct.lift
@@ -159,9 +151,9 @@ def lTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
     apply le_comap_range_lTensor f
     simp only [← hfg, mem_ker, map_sub, map_smul, hgh _, sub_self]
 
-lemma lTensor.inverse_ofRightInverse_apply
+lemma lTensor.inverse_of_rightInverse_apply
     {h : P → N} (hgh : Function.RightInverse h g) (y : Q ⊗[R] N) :
-    (lTensor.inverse_ofRightInverse Q hfg hgh) ((lTensor Q g) y) =
+    (lTensor.inverse_of_rightInverse Q hfg hgh) ((lTensor Q g) y) =
       Submodule.Quotient.mk (p := (LinearMap.range (lTensor Q f))) y := by
   simp only [← LinearMap.comp_apply, ← Submodule.mkQ_apply]
   rw [exact_iff] at hfg
@@ -169,7 +161,7 @@ lemma lTensor.inverse_ofRightInverse_apply
   apply TensorProduct.ext'
   intro n q
   simp only [coe_comp, Function.comp_apply, lTensor_tmul, Submodule.mkQ_apply]
-  simp only [lTensor.inverse_ofRightInverse]
+  simp only [lTensor.inverse_of_rightInverse]
   simp only [TensorProduct.lift.tmul, coe_mk, AddHom.coe_mk, mk₂_apply]
   simp only [flip_apply, coe_mk, AddHom.coe_mk, coe_comp, Function.comp_apply, mk_apply,
     Submodule.mkQ_apply]
@@ -177,54 +169,54 @@ lemma lTensor.inverse_ofRightInverse_apply
   apply le_comap_range_lTensor f n
   rw [← hfg, mem_ker, map_sub, sub_eq_zero, hgh]
 
-lemma lTensor.inverse_ofRightInverse_comp_rTensor
+lemma lTensor.inverse_of_rightInverse_comp_rTensor
     {h : P → N} (hgh : Function.RightInverse h g) :
-    (lTensor.inverse_ofRightInverse Q hfg hgh).comp (lTensor Q g) =
+    (lTensor.inverse_of_rightInverse Q hfg hgh).comp (lTensor Q g) =
       Submodule.mkQ (p := LinearMap.range (lTensor Q f)) := by
   rw [LinearMap.ext_iff]
   intro y
   simp only [coe_comp, Function.comp_apply, Submodule.mkQ_apply,
-    lTensor.inverse_ofRightInverse_apply]
+    lTensor.inverse_of_rightInverse_apply]
 
 /-- The inverse map in `lTensor.equiv` -/
 noncomputable
 def lTensor.inverse :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) :=
-  lTensor.inverse_ofRightInverse Q hfg
+  lTensor.inverse_of_rightInverse Q hfg
     (Function.rightInverse_surjInv hg)
 
 lemma lTensor.inverse_apply (y : Q ⊗[R] N) :
     (lTensor.inverse Q hfg hg) ((lTensor Q g) y) =
       Submodule.Quotient.mk (p := (LinearMap.range (lTensor Q f))) y := by
-  simp only [lTensor.inverse, lTensor.inverse_ofRightInverse_apply]
+  simp only [lTensor.inverse, lTensor.inverse_of_rightInverse_apply]
 
 lemma lTensor.inverse_comp_rTensor :
     (lTensor.inverse Q hfg hg).comp (lTensor Q g) =
       Submodule.mkQ (p := LinearMap.range (lTensor Q f)) := by
-  rw [lTensor.inverse, lTensor.inverse_ofRightInverse_comp_rTensor]
+  rw [lTensor.inverse, lTensor.inverse_of_rightInverse_comp_rTensor]
 
 /-- For a surjective `f : N →ₗ[R] P`,
   the natural equivalence between `Q ⊗ N ⧸ (image of ker f)` to `Q ⊗ P`
-  (computably, given a left inverse) -/
-def lTensor.equiv_ofRightInverse {h : P → N} (hgh : Function.RightInverse h g) :
+  (computably, given a right inverse) -/
+def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) := {
   lTensor.toFun Q hfg with
-  invFun    := lTensor.inverse_ofRightInverse Q hfg hgh
+  invFun    := lTensor.inverse_of_rightInverse Q hfg hgh
   left_inv  := fun y ↦ by
     simp only [lTensor.toFun, AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := Submodule.mkQ_surjective _ y
-    simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, lTensor.inverse_ofRightInverse_apply]
+    simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, lTensor.inverse_of_rightInverse_apply]
   right_inv := fun z ↦ by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := lTensor.surjective Q (hgh.surjective) z
-    rw [lTensor.inverse_ofRightInverse_apply]
+    rw [lTensor.inverse_of_rightInverse_apply]
     simp only [lTensor.toFun, Submodule.liftQ_apply] }
 
 /-- For a surjective `f : N →ₗ[R] P`,
   the natural equivalence between `Q ⊗ N ⧸ (image of ker f)` to `Q ⊗ P` -/
 noncomputable def lTensor.equiv :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) :=
-  lTensor.equiv_ofRightInverse  Q hfg (Function.rightInverse_surjInv hg)
+  lTensor.linearEquiv_of_rightInverse  Q hfg (Function.rightInverse_surjInv hg)
 
 /-- Tensoring an exact pair on the left gives an exact pair -/
 theorem lTensor_exact : Exact (lTensor Q f) (lTensor Q g) := by
@@ -242,72 +234,6 @@ lemma lTensor_mkQ (N : Submodule R M) :
   rw [← exact_iff]
   exact lTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
 
--- Tentative version for `rTensor` using `lTensor` and `TensorProduct.comm``
-
-lemma comm_comp_rTensor_eq_lTensor_comp_comm {g : N →ₗ[R] P} :
-    (TensorProduct.comm R P Q) ∘ₗ (rTensor Q g) =
-      lTensor Q g ∘ₗ (TensorProduct.comm R N Q) := by
-  exact TensorProduct.ext rfl
-
-lemma comm_comp_lTensor_eq_rTensor_comp_comm {g : N →ₗ[R] P} :
-    (TensorProduct.comm R Q P) ∘ₗ (lTensor Q g) =
-      rTensor Q g ∘ₗ (TensorProduct.comm R Q N) := by
-  exact TensorProduct.ext rfl
-
-lemma comm_range_rTensor_eq_range_lTensor : Submodule.map (TensorProduct.comm R N Q) (range (rTensor Q f)) = range (lTensor Q f) := by
-  change Submodule.map (TensorProduct.comm R N Q).toLinearMap _ = _
-  rw [← LinearMap.range_comp, comm_comp_rTensor_eq_lTensor_comp_comm,
-    LinearMap.range_comp, LinearEquiv.range, Submodule.map_top]
-
-lemma comm_range_lTensor_eq_range_rTensor : Submodule.map (TensorProduct.comm R Q N) (range (lTensor Q f)) = range (rTensor Q f) := by
-  change Submodule.map (TensorProduct.comm R Q N).toLinearMap _ = _
-  rw [← LinearMap.range_comp, comm_comp_lTensor_eq_rTensor_comp_comm,
-    LinearMap.range_comp, LinearEquiv.range, Submodule.map_top]
-
-lemma rTensor_range_eq :
-  (N ⊗[R] Q ⧸ range (rTensor Q f)) ≃ₗ[R]
-    (Q ⊗[R] N ⧸ range (lTensor Q f)) := by
-    apply Submodule.Quotient.equiv _ _ (TensorProduct.comm R N Q)
-    exact comm_range_rTensor_eq_range_lTensor Q
-
-noncomputable def rTensor.equiv' :
-    (N ⊗[R] Q ⧸ range (rTensor Q f)) ≃ₗ[R] (P ⊗[R] Q) :=
-  ((Submodule.Quotient.equiv _ _ (TensorProduct.comm R N Q)
-    (comm_range_rTensor_eq_range_lTensor Q)).trans
-    (lTensor.equiv Q hfg hg)).trans (TensorProduct.comm R Q P)
-
-def rTensor.equiv_ofRightInverse' {h : P → N} (hgh : Function.RightInverse h g) :
-    (N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f)) ≃ₗ[R] P ⊗[R] Q :=
-  ((Submodule.Quotient.equiv _ _ (TensorProduct.comm R N Q)
-    (comm_range_rTensor_eq_range_lTensor Q)).trans
-      (lTensor.equiv_ofRightInverse Q hfg hgh)).trans (TensorProduct.comm R Q P)
-
-lemma rTensor.equiv'_apply_tmul (n : N) (q : Q) :
-    rTensor.equiv' Q hfg hg (Submodule.Quotient.mk (n ⊗ₜ[R] q)) =
-      g n ⊗ₜ[R] q := by
-  unfold rTensor.equiv'
-  simp only [LinearEquiv.trans_apply, Submodule.Quotient.equiv_apply, Submodule.mapQ_apply, LinearEquiv.coe_coe,
-    comm_tmul]
-  rfl
-
-lemma rTensor.inverse_comp_rTensor'
-        {h : P → N} (hgh : Function.RightInverse h g) :
-    (rTensor.equiv_ofRightInverse' Q hfg hgh).symm ∘ (rTensor Q g) =
-      Submodule.mkQ (p := LinearMap.range (rTensor Q f)) := by
-  rw [LinearEquiv.symm_comp_eq, ← LinearEquiv.coe_coe, ← LinearMap.coe_comp]
-  apply congr_arg
-  apply TensorProduct.ext'
-  intro n q
-  rfl
-
-lemma rTensor.equiv'_inverse_ofRightInverse_apply
-    {h : P → N} (hgh : Function.RightInverse h g) (y : N ⊗[R] Q) :
-    (rTensor.equiv_ofRightInverse' Q hfg hgh).symm ((rTensor Q g) y) =
-      Submodule.Quotient.mk (p := LinearMap.range (rTensor Q f)) y := by
-  rw [← LinearEquiv.coe_coe, ← Submodule.mkQ_apply, ← LinearMap.comp_apply]
-  apply congr_fun
-  simp only [coe_comp, LinearEquiv.coe_coe]
-  apply rTensor.inverse_comp_rTensor'
 
 /-- The direct map in `rTensor.equiv` -/
 def rTensor.toFun :
@@ -316,9 +242,8 @@ def rTensor.toFun :
   rw [range_le_iff_comap, ← ker_comp, ← rTensor_comp,
     hfg.linearMap_comp_eq_zero, rTensor_zero, ker_zero]
 
-/-- The inverse map in `rTensor.equiv_ofRightInverse`
-  (computably, given a right inverse) -/
-def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h g) :
+/-- The inverse map in `rTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
+def rTensor.inverse_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) := by
   rw [exact_iff] at hfg
   refine
@@ -335,9 +260,9 @@ def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
     apply le_comap_range_rTensor f
     simp only [← hfg, mem_ker, map_sub, map_smul, hgh _, sub_self]
 
-lemma rTensor.inverse_ofRightInverse_apply
+lemma rTensor.inverse_of_rightInverse_apply
     {h : P → N} (hgh : Function.RightInverse h g) (y : N ⊗[R] Q) :
-    (rTensor.inverse_ofRightInverse Q hfg hgh) ((rTensor Q g) y) =
+    (rTensor.inverse_of_rightInverse Q hfg hgh) ((rTensor Q g) y) =
       Submodule.Quotient.mk (p := LinearMap.range (rTensor Q f)) y := by
   simp only [← LinearMap.comp_apply, ← Submodule.mkQ_apply]
   rw [exact_iff] at hfg
@@ -345,7 +270,7 @@ lemma rTensor.inverse_ofRightInverse_apply
   apply TensorProduct.ext'
   intro n q
   simp only [coe_comp, Function.comp_apply, rTensor_tmul, Submodule.mkQ_apply]
-  simp only [rTensor.inverse_ofRightInverse]
+  simp only [rTensor.inverse_of_rightInverse]
   simp only [TensorProduct.lift.tmul, coe_mk, AddHom.coe_mk, mk₂_apply]
   simp only [coe_comp, Function.comp_apply, mk_apply, Submodule.mkQ_apply]
   rw [Submodule.Quotient.eq, ← TensorProduct.sub_tmul]
@@ -356,12 +281,12 @@ lemma rTensor.inverse_ofRightInverse_apply
 noncomputable
 def rTensor.inverse :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) :=
-  rTensor.inverse_ofRightInverse Q hfg (Function.rightInverse_surjInv hg)
+  rTensor.inverse_of_rightInverse Q hfg (Function.rightInverse_surjInv hg)
 
 lemma rTensor.inverse_apply (y : N ⊗[R] Q) :
     (rTensor.inverse Q hfg hg) ((rTensor Q g) y) =
       Submodule.Quotient.mk (p := LinearMap.range (rTensor Q f)) y := by
-  rw [rTensor.inverse, rTensor.inverse_ofRightInverse_apply]
+  rw [rTensor.inverse, rTensor.inverse_of_rightInverse_apply]
 
 lemma rTensor.inverse_comp_rTensor :
     (rTensor.inverse Q hfg hg).comp (rTensor Q g) =
@@ -372,27 +297,27 @@ lemma rTensor.inverse_comp_rTensor :
 
 /-- For a surjective `f : N →ₗ[R] P`,
   the natural equivalence between `N ⊗[R] Q ⧸ (range (rTensor Q f))` and `P ⊗[R] Q`
-  (computably, given a left inverse) -/
-def rTensor.equiv_ofRightInverse
+  (computably, given a right inverse) -/
+def rTensor.equiv_of_rightInverse
     {h : P → N} (hgh : Function.RightInverse h g) :
     ((N ⊗[R] Q) ⧸ (range (rTensor Q f))) ≃ₗ[R] (P ⊗[R] Q) := {
   rTensor.toFun Q hfg with
-  invFun    := rTensor.inverse_ofRightInverse Q hfg hgh
+  invFun    := rTensor.inverse_of_rightInverse Q hfg hgh
   left_inv  := fun y ↦ by
     simp only [rTensor.toFun, AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := Submodule.mkQ_surjective _ y
-    simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, rTensor.inverse_ofRightInverse_apply]
+    simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, rTensor.inverse_of_rightInverse_apply]
   right_inv := fun z ↦ by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := rTensor.surjective Q hgh.surjective z
-    rw [rTensor.inverse_ofRightInverse_apply]
+    rw [rTensor.inverse_of_rightInverse_apply]
     simp only [rTensor.toFun, Submodule.liftQ_apply] }
 
 /-- For a surjective `f : N →ₗ[R] P`,
   the natural equivalence between `N ⊗[R] Q ⧸ (range (rTensor Q f))` and `P ⊗[R] Q` -/
 noncomputable def rTensor.equiv :
     ((N ⊗[R] Q) ⧸ (LinearMap.range (rTensor Q f))) ≃ₗ[R] (P ⊗[R] Q) :=
-  rTensor.equiv_ofRightInverse Q hfg (Function.rightInverse_surjInv hg)
+  rTensor.equiv_of_rightInverse Q hfg (Function.rightInverse_surjInv hg)
 
 /-- Tensoring an exact pair on the right gives an exact pair -/
 theorem rTensor_exact : Exact (rTensor Q f) (rTensor Q g) := by
@@ -671,3 +596,86 @@ theorem Algebra.TensorProduct.map_ker (hf : Function.Surjective f) (hg : Functio
   rfl
 
 end Algebras
+
+
+
+#exit
+
+
+
+-- Johan, Kevin : do you prefer this?
+example (hg : Function.Surjective g) :
+    Function.Surjective (rTensor Q g) := by
+  rw [← LinearMap.comm_comp_lTensor_comp_comm_eq]
+  simp only [coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective,
+    EquivLike.surjective_comp, EquivLike.comp_surjective]
+  exact lTensor.surjective Q hg
+
+
+
+-- Tentative version for `rTensor` using `lTensor` and `TensorProduct.comm``
+
+lemma comm_comp_rTensor_eq_lTensor_comp_comm {g : N →ₗ[R] P} :
+    (TensorProduct.comm R P Q) ∘ₗ (rTensor Q g) =
+      lTensor Q g ∘ₗ (TensorProduct.comm R N Q) := by
+  exact TensorProduct.ext rfl
+
+lemma comm_comp_lTensor_eq_rTensor_comp_comm {g : N →ₗ[R] P} :
+    (TensorProduct.comm R Q P) ∘ₗ (lTensor Q g) =
+      rTensor Q g ∘ₗ (TensorProduct.comm R Q N) := by
+  exact TensorProduct.ext rfl
+
+lemma comm_range_rTensor_eq_range_lTensor : Submodule.map (TensorProduct.comm R N Q) (range (rTensor Q f)) = range (lTensor Q f) := by
+  change Submodule.map (TensorProduct.comm R N Q).toLinearMap _ = _
+  rw [← LinearMap.range_comp, comm_comp_rTensor_eq_lTensor_comp_comm,
+    LinearMap.range_comp, LinearEquiv.range, Submodule.map_top]
+
+lemma comm_range_lTensor_eq_range_rTensor : Submodule.map (TensorProduct.comm R Q N) (range (lTensor Q f)) = range (rTensor Q f) := by
+  change Submodule.map (TensorProduct.comm R Q N).toLinearMap _ = _
+  rw [← LinearMap.range_comp, comm_comp_lTensor_eq_rTensor_comp_comm,
+    LinearMap.range_comp, LinearEquiv.range, Submodule.map_top]
+
+lemma rTensor_range_eq :
+  (N ⊗[R] Q ⧸ range (rTensor Q f)) ≃ₗ[R]
+    (Q ⊗[R] N ⧸ range (lTensor Q f)) := by
+    apply Submodule.Quotient.equiv _ _ (TensorProduct.comm R N Q)
+    exact comm_range_rTensor_eq_range_lTensor Q
+
+noncomputable def rTensor.equiv' :
+    (N ⊗[R] Q ⧸ range (rTensor Q f)) ≃ₗ[R] (P ⊗[R] Q) :=
+  ((Submodule.Quotient.equiv _ _ (TensorProduct.comm R N Q)
+    (comm_range_rTensor_eq_range_lTensor Q)).trans
+    (lTensor.equiv Q hfg hg)).trans (TensorProduct.comm R Q P)
+
+def rTensor.equiv_of_rightInverse' {h : P → N} (hgh : Function.RightInverse h g) :
+    (N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f)) ≃ₗ[R] P ⊗[R] Q :=
+  ((Submodule.Quotient.equiv _ _ (TensorProduct.comm R N Q)
+    (comm_range_rTensor_eq_range_lTensor Q)).trans
+      (lTensor.equiv_of_rightInverse Q hfg hgh)).trans (TensorProduct.comm R Q P)
+
+lemma rTensor.equiv'_apply_tmul (n : N) (q : Q) :
+    rTensor.equiv' Q hfg hg (Submodule.Quotient.mk (n ⊗ₜ[R] q)) =
+      g n ⊗ₜ[R] q := by
+  unfold rTensor.equiv'
+  simp only [LinearEquiv.trans_apply, Submodule.Quotient.equiv_apply, Submodule.mapQ_apply, LinearEquiv.coe_coe,
+    comm_tmul]
+  rfl
+
+lemma rTensor.inverse_comp_rTensor'
+        {h : P → N} (hgh : Function.RightInverse h g) :
+    (rTensor.equiv_of_rightInverse' Q hfg hgh).symm ∘ (rTensor Q g) =
+      Submodule.mkQ (p := LinearMap.range (rTensor Q f)) := by
+  rw [LinearEquiv.symm_comp_eq, ← LinearEquiv.coe_coe, ← LinearMap.coe_comp]
+  apply congr_arg
+  apply TensorProduct.ext'
+  intro n q
+  rfl
+
+lemma rTensor.equiv'_inverse_of_rightInverse_apply
+    {h : P → N} (hgh : Function.RightInverse h g) (y : N ⊗[R] Q) :
+    (rTensor.equiv_of_rightInverse' Q hfg hgh).symm ((rTensor Q g) y) =
+      Submodule.Quotient.mk (p := LinearMap.range (rTensor Q f)) y := by
+  rw [← LinearEquiv.coe_coe, ← Submodule.mkQ_apply, ← LinearMap.comp_apply]
+  apply congr_fun
+  simp only [coe_comp, LinearEquiv.coe_coe]
+  apply rTensor.inverse_comp_rTensor'
