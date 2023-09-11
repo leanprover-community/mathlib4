@@ -13,9 +13,6 @@ import Mathlib.Tactic.TFAE
 
 This file states the Fermat Last Theorem. We provide a statement over a general semiring with
 specific exponent, along with the usual statement over the naturals.
-
-The goal of this folder is to gather special cases of FLT: `n = 3`, `n = 4`, FLT for regular primes,
-FLT over entire functions...
 -/
 
 open List
