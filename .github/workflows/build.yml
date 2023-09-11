@@ -169,6 +169,13 @@ jobs:
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
+      - name: check the cache
+        run: |
+          lake exe cache get
+          # We pipe the output of `lake build` to a file,
+          # and if we find " Building " in that file we kill `lake build`, and error.
+          lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building " && kill $! ))
+
       - name: build archive
         run: |
           # Note: we should not be including `Archive` and `Countexamples` in the cache.
