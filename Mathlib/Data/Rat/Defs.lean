@@ -5,7 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Data.Int.Dvd.Basic
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.PNat.Defs
@@ -83,10 +84,6 @@ lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
   · rintro rfl
     exact zero_mk _ _ _
   · exact congr_arg num
-
-private theorem gcd_abs_dvd_left {a b} : (Nat.gcd (Int.natAbs a) b : ℤ) ∣ a :=
-  Int.dvd_natAbs.1 <| Int.coe_nat_dvd.2 <| Nat.gcd_dvd_left (Int.natAbs a) b
--- Porting note: no #align here as the declaration is private.
 
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
