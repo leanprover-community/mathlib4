@@ -9,7 +9,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.Int.Basic
 import Lean.Linter.Deprecated
 /-!
@@ -328,12 +328,8 @@ def toZNumNeg : Num → ZNum
 #align num.to_znum_neg Num.toZNumNeg
 
 /-- Converts a `Nat` to a `Num`. -/
-def ofNat' : ℕ → Num
-  | 0 => 0
-  | n + 1 => if (n + 1) % 2 = 0
-    then Num.bit0 (ofNat' ((n + 1) / 2))
-    else Num.bit1 (ofNat' ((n + 1) / 2))
-decreasing_by (exact Nat.div_lt_self (Nat.succ_pos n) (Nat.le_refl 2))
+def ofNat' : ℕ → Num :=
+  Nat.binaryRec 0 (fun b _ => cond b Num.bit1 Num.bit0)
 #align num.of_nat' Num.ofNat'
 
 end Num

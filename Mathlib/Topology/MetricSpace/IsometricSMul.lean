@@ -509,7 +509,7 @@ instance Prod.isometricSMul'' {N} [Mul M] [PseudoEMetricSpace M] [IsometricSMul 
 
 @[to_additive]
 instance Units.isometricSMul [Monoid M] : IsometricSMul Mˣ X :=
-  ⟨fun c => by convert isometry_smul X (c : M)⟩
+  ⟨fun c => isometry_smul X (c : M)⟩
 #align units.has_isometric_smul Units.isometricSMul
 #align add_units.has_isometric_vadd AddUnits.isometricVAdd
 

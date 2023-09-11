@@ -276,6 +276,8 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   rw [← Stream'.head_drop]
   apply FP.cons
   rcases le_iff_exists_add.mp (Nat.succ_le_of_lt ij) with ⟨d, hd⟩
+  -- Porting note: need to fix breakage of Set notation
+  change _ ∈ FP _
   have := FP.singleton (a.drop i).tail d
   rw [Stream'.tail_eq_drop, Stream'.nth_drop, Stream'.nth_drop] at this
   convert this

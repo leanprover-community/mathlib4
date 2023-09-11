@@ -21,14 +21,15 @@ and return the resulting goals.
 With `sym = true`, reverses the equality in `v`, and uses `Eq.mpr v e` instead.
 With `depth = some n`, calls `MVarId.congrN! n` instead, with `n` as the max recursion depth.
 -/
-def Lean.MVarId.convert (e : Expr) (sym : Bool) (depth : Option Nat := none) (g : MVarId) :
+def Lean.MVarId.convert (e : Expr) (sym : Bool)
+    (depth : Option Nat := none) (config : Congr!.Config := {}) (g : MVarId) :
     MetaM (List MVarId) := do
-  let src ← whnfD (← inferType e)
+  let src ← inferType e
   let tgt ← g.getType
   let v ← mkFreshExprMVar (← mkAppM ``Eq (if sym then #[src, tgt] else #[tgt, src]))
   g.assign (← mkAppM (if sym then ``Eq.mp else ``Eq.mpr) #[v, e])
   let m := v.mvarId!
-  try m.congrN! (depth.getD 1000000)
+  try m.congrN! depth config
   catch _ => return [m]
 
 /--
@@ -45,13 +46,21 @@ e : prime (2 * n + 1)
 ⊢ prime (n + n + 1)
 ```
 
-the tactic `convert e` will change the goal to
+the tactic `convert e using 2` will change the goal to
 
 ```lean
 ⊢ n + n = 2 * n
 ```
 
 In this example, the new goal can be solved using `ring`.
+
+The `using 2` indicates it should iterate the congruence algorithm up to two times,
+where `convert e` would use an unrestricted number of iterations and lead to two
+impossible goals: `⊢ HAdd.hAdd = HMul.hMul` and `⊢ n = 2`.
+
+A variant configuration is `convert (config := .unfoldSameFun) e`, which only equates function
+applications for the same function (while doing so at the higher `default` transparency).
+This gives the same goal of `⊢ n + n = 2 * n` without needing `using 2`.
 
 The `convert` tactic applies congruence lemmas eagerly before reducing,
 therefore it can fail in cases where `exact` succeeds:
@@ -75,14 +84,21 @@ would produce a new goal `⊢ n + n + 1 = 2 * n + 1`.
 Refer to the `congr!` tactic to understand the congruence operations. One of its many
 features is that if `x y : t` and an instance `Subsingleton t` is in scope,
 then any goals of the form `x = y` are solved automatically.
+
+The `convert` tactic also takes a configuration option, for example
+```lean
+convert (config := {transparency := .default}) h
+```
+These are passed to `congr!`. See `Congr!.Config` for options.
 -/
-syntax (name := convert) "convert " "← "? term (" using " num)? : tactic
+syntax (name := convert) "convert" (Parser.Tactic.config)? "← "? term (" using " num)? : tactic
 
 elab_rules : tactic
-| `(tactic| convert $[←%$sym]? $term $[using $n]?) => withMainContext do
-  let (e, gs) ← elabTermWithHoles term
+| `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]?) => withMainContext do
+  let config ← Congr!.elabConfig (mkOptionalNode cfg)
+  let (e, gs) ← elabTermWithHoles (allowNaturalHoles := true) term
     (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) (← getMainTag)
-  liftMetaTactic fun g ↦ return (← g.convert e sym.isSome (n.map (·.getNat))) ++ gs
+  liftMetaTactic fun g ↦ return (← g.convert e sym.isSome (n.map (·.getNat)) config) ++ gs
 
 -- FIXME restore when `add_tactic_doc` is ported.
 -- add_tactic_doc
@@ -98,9 +114,14 @@ it will generate equality proof obligations using `congr! n` to resolve discrepa
 `convert_to` is similar to `convert`, but `convert_to` takes a type (the desired subgoal) while
 `convert` takes a proof term.
 That is, `convert_to g using n` is equivalent to `convert (?_ : g) using n`.
+
+The syntax for `convert_to` is the same as for `convert`, and it has variations such as
+`convert_to ← g` and `convert_to (config := {transparency := .default}) g`.
 -/
-syntax (name := convertTo) "convert_to " term (" using " num)? : tactic
+syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? "← "? term (" using " num)? : tactic
 
 macro_rules
-| `(tactic| convert_to $term $[using $n]?) =>
-  `(tactic| convert (?_ : $term) $[using $n]?)
+| `(tactic| convert_to $[$cfg]? $[←%$sym]? $term) =>
+  `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using 1)
+| `(tactic| convert_to $[$cfg]? $[←%$sym]? $term using $n) =>
+  `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using $n)

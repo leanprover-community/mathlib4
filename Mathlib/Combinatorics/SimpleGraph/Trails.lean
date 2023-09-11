@@ -158,7 +158,6 @@ theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v 
   · right
     convert_to _ = ({u, v} : Finset V).card
     · simp [hn]
-    · simp only [List.insert, List.mem_singleton, hn]; rfl
     · congr
       ext x
       simp [hn, imp_iff_not_or]

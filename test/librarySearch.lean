@@ -4,6 +4,7 @@ import Mathlib.Algebra.Order.Ring.Canonical
 
 noncomputable section
 
+set_option maxHeartbeats 400000 in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by library_search)
 example : 0 ≠ 1 + 1 := ne_of_lt (by library_search)
 example (x y : Nat) : x + y = y + x := by library_search
@@ -20,10 +21,10 @@ example (X : Type) (P : Prop) (x : X) (h : ∀ x : X, x = x → P) : P := by lib
 
 example (α : Prop) : α → α := by library_search -- says: `exact id`
 
-example (p : Prop) : (¬¬p) → p := by library_search -- says: `exact not_not.mp`
-example (a b : Prop) (h : a ∧ b) : a := by library_search -- says: `exact h.left`
-
-example (P Q : Prop) : (¬ Q → ¬ P) → (P → Q) := by library_search
+-- Note: these examples no longer work after we turned off lemmas with discrimination key `#[*]`.
+-- example (p : Prop) : (¬¬p) → p := by library_search -- says: `exact not_not.mp`
+-- example (a b : Prop) (h : a ∧ b) : a := by library_search -- says: `exact h.left`
+-- example (P Q : Prop) : (¬ Q → ¬ P) → (P → Q) := by library_search -- say: `exact Function.mtr`
 
 example (a b : ℕ) : a + b = b + a :=
 by library_search -- says: `exact add_comm a b`
@@ -76,19 +77,16 @@ end synonym
 example : ∀ P : Prop, ¬(P ↔ ¬P) := by library_search
 
 -- We even find `iff` results:
-
 example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by library_search -- says `exact (Nat.dvd_add_iff_left h₁).mpr h₂`
 
-example {α : Sort u} (h : Empty) : α := by library_search
-example {α : Type _} (h : Empty) : α := by library_search
-
-example (f : A → C) (g : B → C) : (A ⊕ B) → C := by library_search
+-- Note: these examples no longer work after we turned off lemmas with discrimination key `#[*]`.
+-- example {α : Sort u} (h : Empty) : α := by library_search -- says `exact Empty.elim h`
+-- example (f : A → C) (g : B → C) : (A ⊕ B) → C := by library_search -- says `exact Sum.elim f g`
+-- example (n : ℕ) (r : ℚ) : ℚ := by library_search using n, r -- exact nsmulRec n r
 
 opaque f : ℕ → ℕ
 axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by library_search
-
-theorem nonzero_gt_one (n : ℕ) : ¬ n = 0 → n ≥ 1 := by library_search   -- `exact nat.pos_of_ne_zero`
 
 example (L _M : List (List ℕ)) : List ℕ := by library_search using L
 
@@ -101,9 +99,6 @@ example (n m : ℕ) : ℕ := by library_search using n, m -- exact rightAdd n m
 
 example (P Q : List ℕ) (_h : ℕ) : List ℕ :=
 by library_search using P, Q -- exact P ∩ Q
-
-example (n : ℕ) (r : ℚ) : ℚ :=
-by library_search using n, r -- exact nsmulRec n r
 
 -- Check that we don't use sorryAx:
 -- (see https://github.com/leanprover-community/mathlib4/issues/226)

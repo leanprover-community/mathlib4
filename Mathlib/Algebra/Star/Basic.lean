@@ -495,7 +495,7 @@ variable [NonUnitalRing R] [PartialOrder R] [StarOrderedRing R]
 theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
     star c * a * c ≤ star c * b * c := by
   rw [← sub_nonneg] at hab⊢
-  convert conjugate_nonneg hab c
+  convert conjugate_nonneg hab c using 1
   simp only [mul_sub, sub_mul]
 #align conjugate_le_conjugate conjugate_le_conjugate
 

@@ -735,9 +735,10 @@ theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingC
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
   rcases p with ⟨p⟩
   simp only [erase_def, degree, coeff, support]
-  convert sup_mono (f := ((↑) : ℕ → WithBot ℕ)) (erase_subset n p.support)
-  -- Porting note: `exact` is required.
-  exact Finsupp.support_erase
+  -- Porting note: simpler convert-free proof to be explicit about definition unfolding
+  apply sup_mono
+  rw [Finsupp.support_erase]
+  apply Finset.erase_subset
 #align polynomial.degree_erase_le Polynomial.degree_erase_le
 
 theorem degree_erase_lt (hp : p ≠ 0) : degree (p.erase (natDegree p)) < degree p := by

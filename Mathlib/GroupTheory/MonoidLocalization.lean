@@ -186,7 +186,6 @@ theorem r_eq_r' : r S = r' S :=
       convert b.symm (b.mul (H (t * q)) (b.refl (x, y))) using 1
       dsimp only [Prod.mk_mul_mk, Submonoid.coe_mul] at ht ⊢
       simp_rw [mul_assoc, ht, mul_comm y q]
-      rfl
 #align localization.r_eq_r' Localization.r_eq_r'
 #align add_localization.r_eq_r' addLocalization.r_eq_r'
 

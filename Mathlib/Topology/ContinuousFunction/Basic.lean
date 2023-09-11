@@ -452,14 +452,14 @@ theorem coe_trans : (f.trans g : C(α, γ)) = (g : C(β, γ)).comp f :=
 
 /-- Left inverse to a continuous map from a homeomorphism, mirroring `Equiv.symm_comp_self`. -/
 @[simp]
-theorem symm_comp_to_continuousMap : (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α :=
+theorem symm_comp_toContinuousMap : (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α :=
   by rw [← coe_trans, self_trans_symm, coe_refl]
-#align homeomorph.symm_comp_to_continuous_map Homeomorph.symm_comp_to_continuousMap
+#align homeomorph.symm_comp_to_continuous_map Homeomorph.symm_comp_toContinuousMap
 
 /-- Right inverse to a continuous map from a homeomorphism, mirroring `Equiv.self_comp_symm`. -/
 @[simp]
-theorem to_continuousMap_comp_symm : (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β :=
+theorem toContinuousMap_comp_symm : (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β :=
   by rw [← coe_trans, symm_trans_self, coe_refl]
-#align homeomorph.to_continuous_map_comp_symm Homeomorph.to_continuousMap_comp_symm
+#align homeomorph.to_continuous_map_comp_symm Homeomorph.toContinuousMap_comp_symm
 
 end Homeomorph

@@ -285,7 +285,7 @@ theorem noncommProd_insert_of_not_mem [DecidableEq α] (s : Finset α) (a : α) 
   calc noncommProd (insert a s) f comm
      = Multiset.noncommProd ((insert a s).val.map f) _ := rfl
    _ = Multiset.noncommProd (f a ::ₘ s.1.map f)
-     (by convert noncommProd_lemma _ f comm
+     (by convert noncommProd_lemma _ f comm using 3
          simp [@eq_comm _ (f a)]) := by
        { congr
          rw [insert_val_of_not_mem ha, Multiset.map_cons] }
@@ -302,7 +302,7 @@ theorem noncommProd_insert_of_not_mem' [DecidableEq α] (s : Finset α) (a : α)
   calc noncommProd (insert a s) f comm
      = Multiset.noncommProd ((insert a s).val.map f) _ := rfl
    _ = Multiset.noncommProd (f a ::ₘ s.1.map f)
-     (by convert noncommProd_lemma _ f comm
+     (by convert noncommProd_lemma _ f comm using 3
          simp [@eq_comm _ (f a)]) := by
        { congr
          rw [insert_val_of_not_mem ha, Multiset.map_cons] }

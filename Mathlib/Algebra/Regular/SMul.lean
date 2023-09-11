@@ -238,7 +238,7 @@ variable {G : Type _} [Group G]
 of the inverse given by groups, since there is no `LeftCancelSMul` typeclass. -/
 theorem isSMulRegular_of_group [MulAction G R] (g : G) : IsSMulRegular R g := by
   intro x y h
-  convert congr_arg ((· • ·) g⁻¹) h using 1 <;> simp [← smul_assoc]
+  convert congr_arg (g⁻¹ • ·) h using 1 <;> simp [← smul_assoc]
 #align is_smul_regular_of_group isSMulRegular_of_group
 
 end Group

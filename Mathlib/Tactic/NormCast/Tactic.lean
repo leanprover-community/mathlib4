@@ -7,7 +7,7 @@ Authors: Paul-Nicolas Madelaine, Robert Y. Lewis, Mario Carneiro, Gabriel Ebner
 import Std.Tactic.NormCast.Ext
 import Std.Tactic.CoeExt
 import Mathlib.Tactic.SudoSetOption
-import Mathlib.Util.Simp
+import Mathlib.Lean.Meta.Simp
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Nat.Cast.Defs
 

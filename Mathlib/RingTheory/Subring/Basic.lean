@@ -1358,7 +1358,7 @@ end Subring
 
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by
-  convert AddSubgroup.zsmul_mem G h k
+  convert AddSubgroup.zsmul_mem G h k using 1
   simp
 #align add_subgroup.int_mul_mem AddSubgroup.int_mul_mem
 

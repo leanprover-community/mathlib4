@@ -822,7 +822,6 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       · exact c.zero_mem
       · exact c.getLast_mem
       · convert hj1
-        rwa [Fin.ext_iff]
     · simp only [or_iff_not_imp_left]
       intro i_mem i_ne_zero i_ne_last
       simp [Fin.ext_iff] at i_ne_zero i_ne_last
@@ -1033,11 +1032,10 @@ theorem Composition.toCompositionAsSet_blocks (c : Composition n) :
   suffices H : ∀ i ≤ d.blocks.length, (d.blocks.take i).sum = (c.blocks.take i).sum
   exact eq_of_sum_take_eq length_eq H
   intro i hi
-  have i_lt : i < d.boundaries.card :=
-    by
-    convert Nat.lt_succ_iff.2 hi
-    convert d.card_boundaries_eq_succ_length
-    exact length_ofFn _
+  have i_lt : i < d.boundaries.card := by
+    -- porting note: relied on `convert` unfolding definitions, switched to using a `simpa`
+    simpa [CompositionAsSet.blocks, length_ofFn, Nat.succ_eq_add_one,
+      d.card_boundaries_eq_succ_length] using Nat.lt_succ_iff.2 hi
   have i_lt' : i < c.boundaries.card := i_lt
   have i_lt'' : i < c.length + 1 := by rwa [c.card_boundaries_eq_succ_length] at i_lt'
   have A :

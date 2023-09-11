@@ -95,10 +95,9 @@ instance yonedaFull : Full (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
 
 See <https://stacks.math.columbia.edu/tag/001P>.
 -/
-instance yoneda_faithful : Faithful (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁)
-    where
-      map_injective {X} {Y} f g p := by
-        convert congr_fun (congr_app p (op X)) (𝟙 X) <;> dsimp <;> simp
+instance yoneda_faithful : Faithful (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
+  map_injective {X} {Y} f g p := by
+    convert congr_fun (congr_app p (op X)) (𝟙 X) using 1 <;> dsimp <;> simp
 #align category_theory.yoneda.yoneda_faithful CategoryTheory.Yoneda.yoneda_faithful
 
 /-- Extensionality via Yoneda. The typical usage would be

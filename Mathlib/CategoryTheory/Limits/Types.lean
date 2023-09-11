@@ -79,6 +79,9 @@ instance : HasLimits (Type u) :=
 instance hasLimit (F : J ⥤ Type max v u) : HasLimit F :=
   (Types.hasLimitsOfSize.{v, u}.has_limits_of_shape J).has_limit F
 
+instance hasLimit' (F : J ⥤ Type v) : HasLimit F :=
+  hasLimit.{v, v} F
+
 /-- The equivalence between a limiting cone of `F` in `Type u` and the "concrete" definition as the
 sections of `F`.
 -/
@@ -304,7 +307,7 @@ instance hasColimit (F : J ⥤ Type max v u) : HasColimit F :=
   (Types.hasColimitsOfSize.{v, u}.has_colimits_of_shape J).has_colimit F
 
 instance hasColimit' (F : J ⥤ Type max v) : HasColimit F :=
-  (Types.hasColimitsOfSize.{v, v}.has_colimits_of_shape J).has_colimit F
+  hasColimit.{v, v} F
 
 /-- The equivalence between the abstract colimit of `F` in `Type u`
 and the "concrete" definition as a quotient.

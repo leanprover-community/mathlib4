@@ -87,7 +87,7 @@ theorem IsSubgroup.of_div (s : Set G) (one_mem : (1 : G) ∈ s)
     (div_mem : ∀ {a b : G}, a ∈ s → b ∈ s → a * b⁻¹ ∈ s) : IsSubgroup s :=
   have inv_mem : ∀ a, a ∈ s → a⁻¹ ∈ s := fun a ha => by
     have : 1 * a⁻¹ ∈ s := div_mem one_mem ha
-    convert this
+    convert this using 1
     rw [one_mul]
   { inv_mem := inv_mem _
     mul_mem := fun {a b} ha hb => by

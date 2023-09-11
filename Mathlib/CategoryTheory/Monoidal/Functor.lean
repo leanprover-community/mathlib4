@@ -273,7 +273,7 @@ theorem ε_hom_inv_id : F.ε ≫ F.εIso.inv = 𝟙 _ :=
 noncomputable def commTensorLeft (X : C) :
     F.toFunctor ⋙ tensorLeft (F.toFunctor.obj X) ≅ tensorLeft X ⋙ F.toFunctor :=
   NatIso.ofComponents (fun Y => F.μIso X Y) @fun Y Z f => by
-    convert F.μ_natural (𝟙 X) f
+    convert F.μ_natural (𝟙 X) f using 2
     simp
 #align category_theory.monoidal_functor.comm_tensor_left CategoryTheory.MonoidalFunctor.commTensorLeft
 
@@ -282,7 +282,7 @@ noncomputable def commTensorLeft (X : C) :
 noncomputable def commTensorRight (X : C) :
     F.toFunctor ⋙ tensorRight (F.toFunctor.obj X) ≅ tensorRight X ⋙ F.toFunctor :=
   NatIso.ofComponents (fun Y => F.μIso Y X) @fun Y Z f => by
-    convert F.μ_natural f (𝟙 X)
+    convert F.μ_natural f (𝟙 X) using 2
     simp
 #align category_theory.monoidal_functor.comm_tensor_right CategoryTheory.MonoidalFunctor.commTensorRight
 

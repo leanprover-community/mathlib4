@@ -40,10 +40,9 @@ theorem range_of_succ (f : ℕ → α) : {f 0} ∪ range (f ∘ succ) = range f 
 theorem range_rec {α : Type _} (x : α) (f : ℕ → α → α) :
     (Set.range fun n => Nat.rec x f n : Set α) =
       {x} ∪ Set.range fun n => Nat.rec (f 0 x) (f ∘ succ) n := by
-  convert (range_of_succ (fun n => Nat.rec x f n : ℕ → α)).symm
+  convert (range_of_succ (fun n => Nat.rec x f n : ℕ → α)).symm using 4
   dsimp
-  apply congr_arg Set.range
-  ext n
+  rename_i n
   induction' n with n ihn
   · rfl
   · dsimp at ihn⊢

@@ -232,7 +232,7 @@ instance whiskerLeft_isIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso �
 @[simp]
 theorem inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] :
   inv (f ◁ η) = f ◁ inv η := by
-  aesop_cat
+  aesop_cat_nonterminal
   simp only [← whiskerLeft_comp, whiskerLeft_id, IsIso.hom_inv_id]
 #align category_theory.bicategory.inv_whisker_left CategoryTheory.Bicategory.inv_whiskerLeft
 
@@ -252,7 +252,7 @@ instance whiskerRight_isIso {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso 
 @[simp]
 theorem inv_whiskerRight {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] :
     inv (η ▷ h) = inv η ▷ h := by
-  aesop_cat
+  aesop_cat_nonterminal
   simp only [← comp_whiskerRight, id_whiskerRight, IsIso.hom_inv_id]
 #align category_theory.bicategory.inv_whisker_right CategoryTheory.Bicategory.inv_whiskerRight
 

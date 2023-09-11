@@ -65,7 +65,7 @@ echo "Applying automated fixes"
 (
     cd $GIT_WORK_TREE;
     sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
-    sed -i '/^import/{s/[.]Gcd/.GCD/g; s/[.]Modeq/.ModEq/g; s/[.]Nary/.NAry/g; s/[.]Peq/.PEq/g; s/[.]Pfun/.PFun/g; s/[.]Pnat/.PNat/g; s/[.]Smul/.SMul/g; s/[.]Zmod/.ZMod/g}' "$mathlib4_path"
+    sed -i '/^import/{s/[.]Gcd/.GCD/g; s/[.]Modeq/.ModEq/g; s/[.]Nary/.NAry/g; s/[.]Peq/.PEq/g; s/[.]Pfun/.PFun/g; s/[.]Pnat/.PNat/g; s/[.]Smul/.SMul/g; s/[.]Zmod/.ZMod/g; s/[.]Nnreal/.NNReal/g; s/[.]Ennreal/ENNReal/g}' "$mathlib4_path"
 
     # awk script taken from https://github.com/leanprover-community/mathlib4/pull/1523
     awk '{do {{if (match($0, "^  by$") && length(p) < 98 && (!(match(p, "^[ \t]*--.*$")))) {p=p " by";} else {if (NR!=1) {print p}; p=$0}}} while (getline == 1) if (getline==0) print p}' "$mathlib4_path" > "$mathlib4_path.tmp"

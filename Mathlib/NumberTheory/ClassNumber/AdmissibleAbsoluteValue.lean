@@ -69,7 +69,8 @@ theorem exists_partition {ι : Type _} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b
   let e := Fintype.equivFin ι
   obtain ⟨t, ht⟩ := h.exists_partition' (Fintype.card ι) hε hb (A ∘ e.symm)
   refine' ⟨t ∘ e, fun i₀ i₁ h ↦ _⟩
-  convert ht (e i₀) (e i₁) h <;> simp only [e.symm_apply_apply]
+  convert (config := {transparency := .default})
+    ht (e i₀) (e i₁) h <;> simp only [e.symm_apply_apply]
 #align absolute_value.is_admissible.exists_partition AbsoluteValue.IsAdmissible.exists_partition
 
 /-- Any large enough family of vectors in `R^n` has a pair of elements

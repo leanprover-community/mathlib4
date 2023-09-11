@@ -147,7 +147,8 @@ instance Function.Embedding.finite {α β : Sort _} [Finite β] : Finite (α ↪
 #align function.embedding.finite Function.Embedding.finite
 
 instance Equiv.finite_right {α β : Sort _} [Finite β] : Finite (α ≃ β) :=
-  Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by convert FunLike.congr_fun h
+  Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by
+    convert FunLike.congr_fun h using 0
 #align equiv.finite_right Equiv.finite_right
 
 instance Equiv.finite_left {α β : Sort _} [Finite α] : Finite (α ≃ β) :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.order.group.abs
-! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
+! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -88,13 +88,13 @@ theorem abs_neg (a : α) : |(-a)| = |a| := by rw [abs_eq_max_neg, max_comm, neg_
 #align abs_neg abs_neg
 
 theorem eq_or_eq_neg_of_abs_eq {a b : α} (h : |a| = b) : a = b ∨ a = -b := by
-  simpa only [← h, eq_comm, eq_neg_iff_eq_neg] using abs_choice a
+  simpa only [← h, eq_comm (a := |a|), neg_eq_iff_eq_neg] using abs_choice a
 #align eq_or_eq_neg_of_abs_eq eq_or_eq_neg_of_abs_eq
 
 theorem abs_eq_abs {a b : α} : |a| = |b| ↔ a = b ∨ a = -b := by
   refine' ⟨fun h => _, fun h => _⟩
   · obtain rfl | rfl := eq_or_eq_neg_of_abs_eq h <;>
-      simpa only [neg_eq_iff_neg_eq, neg_inj, or_comm, @eq_comm _ (-b)] using abs_choice b
+      simpa only [neg_eq_iff_eq_neg (a := |b|), neg_inj, or_comm] using abs_choice b
   · cases' h with h h <;>
     simp [h, abs_neg]
 #align abs_eq_abs abs_eq_abs

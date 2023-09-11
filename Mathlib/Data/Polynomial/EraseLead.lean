@@ -230,7 +230,7 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
   · intro f df f0
     rw [← eraseLead_add_C_mul_X_pow f]
     cases c
-    · convert P_C_mul_pow f.natDegree f.leadingCoeff ?_ df
+    · convert P_C_mul_pow f.natDegree f.leadingCoeff ?_ df using 1
       · convert zero_add (C (leadingCoeff f) * X ^ f.natDegree)
         rw [← card_support_eq_zero, eraseLead_card_support f0]
       · rw [leadingCoeff_ne_zero, Ne.def, ← card_support_eq_zero, f0]

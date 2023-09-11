@@ -359,7 +359,7 @@ def GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommGrou
 #align group_norm.to_normed_comm_group GroupNorm.toNormedCommGroup
 #align add_group_norm.to_normed_add_comm_group AddGroupNorm.toNormedAddCommGroup
 
-instance : NormedAddCommGroup PUnit
+instance PUnit.normedAddCommGroup : NormedAddCommGroup PUnit
     where
   norm := Function.const _ 0
   dist_eq _ _ := rfl
@@ -778,7 +778,7 @@ theorem NormedCommGroup.nhds_one_basis_norm_lt :
 @[to_additive]
 theorem NormedCommGroup.uniformity_basis_dist :
     (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst / p.snd‖ < ε } := by
-  convert Metric.uniformity_basis_dist (α := E)
+  convert Metric.uniformity_basis_dist (α := E) using 1
   simp [dist_eq_norm_div]
 #align normed_comm_group.uniformity_basis_dist NormedCommGroup.uniformity_basis_dist
 #align normed_add_comm_group.uniformity_basis_dist NormedAddCommGroup.uniformity_basis_dist
@@ -1023,7 +1023,7 @@ end Nnnorm
 @[to_additive]
 theorem tendsto_iff_norm_tendsto_one {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖) a (𝓝 0) := by
-  convert tendsto_iff_dist_tendsto_zero (f := f) (x := a) (a := b)
+  convert tendsto_iff_dist_tendsto_zero (f := f) (x := a) (a := b) using 1
   simp [dist_eq_norm_div]
 #align tendsto_iff_norm_tendsto_one tendsto_iff_norm_tendsto_one
 #align tendsto_iff_norm_tendsto_zero tendsto_iff_norm_tendsto_zero

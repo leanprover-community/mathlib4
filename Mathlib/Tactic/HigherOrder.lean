@@ -3,9 +3,10 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-
-import Lean.Attributes
-import Mathlib.Mathport.Syntax
+import Lean.Elab.Term
+import Lean.Meta.Tactic.Apply
+import Lean.Meta.Tactic.Assumption
+import Lean.Elab.DeclarationRange
 import Mathlib.Control.SimpSet
 
 /-!
@@ -17,6 +18,12 @@ higher-order functions.
 -/
 
 open Lean Name Meta Elab Expr Term
+
+namespace Lean.Parser.Attr
+
+syntax (name := higherOrder) "higher_order" (ppSpace ident)? : attr
+
+end Lean.Parser.Attr
 
 namespace Tactic
 

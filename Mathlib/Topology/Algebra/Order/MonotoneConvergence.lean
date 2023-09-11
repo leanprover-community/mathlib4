@@ -103,7 +103,7 @@ theorem tendsto_atTop_isLUB (h_mono : Monotone f) (ha : IsLUB (Set.range f) a) :
 #align tendsto_at_top_is_lub tendsto_atTop_isLUB
 
 theorem tendsto_atBot_isLUB (h_anti : Antitone f) (ha : IsLUB (Set.range f) a) :
-    Tendsto f atBot (𝓝 a) := by convert tendsto_atTop_isLUB h_anti.dual_left ha
+    Tendsto f atBot (𝓝 a) := by convert tendsto_atTop_isLUB h_anti.dual_left ha using 1
 #align tendsto_at_bot_is_lub tendsto_atBot_isLUB
 
 end IsLUB
@@ -113,11 +113,11 @@ section IsGLB
 variable [Preorder α] [InfConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atBot_isGLB (h_mono : Monotone f) (ha : IsGLB (Set.range f) a) :
-    Tendsto f atBot (𝓝 a) := by convert tendsto_atTop_isLUB h_mono.dual ha.dual
+    Tendsto f atBot (𝓝 a) := by convert tendsto_atTop_isLUB h_mono.dual ha.dual using 1
 #align tendsto_at_bot_is_glb tendsto_atBot_isGLB
 
 theorem tendsto_atTop_isGLB (h_anti : Antitone f) (ha : IsGLB (Set.range f) a) :
-    Tendsto f atTop (𝓝 a) := by convert tendsto_atBot_isLUB h_anti.dual ha.dual
+    Tendsto f atTop (𝓝 a) := by convert tendsto_atBot_isLUB h_anti.dual ha.dual using 1
 #align tendsto_at_top_is_glb tendsto_atTop_isGLB
 
 end IsGLB
@@ -133,7 +133,7 @@ theorem tendsto_atTop_csupᵢ (h_mono : Monotone f) (hbdd : BddAbove <| range f)
 #align tendsto_at_top_csupr tendsto_atTop_csupᵢ
 
 theorem tendsto_atBot_csupᵢ (h_anti : Antitone f) (hbdd : BddAbove <| range f) :
-    Tendsto f atBot (𝓝 (⨆ i, f i)) := by convert tendsto_atTop_csupᵢ h_anti.dual hbdd.dual
+    Tendsto f atBot (𝓝 (⨆ i, f i)) := by convert tendsto_atTop_csupᵢ h_anti.dual hbdd.dual using 1
 #align tendsto_at_bot_csupr tendsto_atBot_csupᵢ
 
 end Csupᵢ
@@ -143,11 +143,11 @@ section Cinfᵢ
 variable [ConditionallyCompleteLattice α] [InfConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atBot_cinfᵢ (h_mono : Monotone f) (hbdd : BddBelow <| range f) :
-    Tendsto f atBot (𝓝 (⨅ i, f i)) := by convert tendsto_atTop_csupᵢ h_mono.dual hbdd.dual
+    Tendsto f atBot (𝓝 (⨅ i, f i)) := by convert tendsto_atTop_csupᵢ h_mono.dual hbdd.dual using 1
 #align tendsto_at_bot_cinfi tendsto_atBot_cinfᵢ
 
 theorem tendsto_atTop_cinfᵢ (h_anti : Antitone f) (hbdd : BddBelow <| range f) :
-    Tendsto f atTop (𝓝 (⨅ i, f i)) := by convert tendsto_atBot_csupᵢ h_anti.dual hbdd.dual
+    Tendsto f atTop (𝓝 (⨅ i, f i)) := by convert tendsto_atBot_csupᵢ h_anti.dual hbdd.dual using 1
 #align tendsto_at_top_cinfi tendsto_atTop_cinfᵢ
 
 end Cinfᵢ

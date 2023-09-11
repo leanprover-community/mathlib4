@@ -305,32 +305,32 @@ set_option linter.uppercaseLean3 false in
 #align complex.I Complex.I
 
 @[simp]
-theorem i_re : I.re = 0 :=
+theorem I_re : I.re = 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align complex.I_re Complex.i_re
+#align complex.I_re Complex.I_re
 
 @[simp]
-theorem i_im : I.im = 1 :=
+theorem I_im : I.im = 1 :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align complex.I_im Complex.i_im
+#align complex.I_im Complex.I_im
 
 @[simp]
-theorem i_mul_I : I * I = -1 :=
+theorem I_mul_I : I * I = -1 :=
   ext_iff.2 <| by simp
 set_option linter.uppercaseLean3 false in
-#align complex.I_mul_I Complex.i_mul_I
+#align complex.I_mul_I Complex.I_mul_I
 
-theorem i_mul (z : ℂ) : I * z = ⟨-z.im, z.re⟩ :=
+theorem I_mul (z : ℂ) : I * z = ⟨-z.im, z.re⟩ :=
   ext_iff.2 <| by simp
 set_option linter.uppercaseLean3 false in
-#align complex.I_mul Complex.i_mul
+#align complex.I_mul Complex.I_mul
 
-theorem i_ne_zero : (I : ℂ) ≠ 0 :=
+theorem I_ne_zero : (I : ℂ) ≠ 0 :=
   mt (congr_arg im) zero_ne_one.symm
 set_option linter.uppercaseLean3 false in
-#align complex.I_ne_zero Complex.i_ne_zero
+#align complex.I_ne_zero Complex.I_ne_zero
 
 theorem mk_eq_add_mul_I (a b : ℝ) : Complex.mk a b = a + b * I :=
   ext_iff.2 <| by simp [ofReal']
@@ -350,13 +350,13 @@ theorem mul_I_im (z : ℂ) : (z * I).im = z.re := by simp
 set_option linter.uppercaseLean3 false in
 #align complex.mul_I_im Complex.mul_I_im
 
-theorem i_mul_re (z : ℂ) : (I * z).re = -z.im := by simp
+theorem I_mul_re (z : ℂ) : (I * z).re = -z.im := by simp
 set_option linter.uppercaseLean3 false in
-#align complex.I_mul_re Complex.i_mul_re
+#align complex.I_mul_re Complex.I_mul_re
 
-theorem i_mul_im (z : ℂ) : (I * z).im = z.re := by simp
+theorem I_mul_im (z : ℂ) : (I * z).im = z.re := by simp
 set_option linter.uppercaseLean3 false in
-#align complex.I_mul_im Complex.i_mul_im
+#align complex.I_mul_im Complex.I_mul_im
 
 @[simp]
 theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * I := by
@@ -469,14 +469,27 @@ theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
 section
 set_option linter.deprecated false
 @[simp]
-theorem i_pow_bit0 (n : ℕ) : I ^ bit0 n = (-1) ^ n := by rw [pow_bit0', Complex.i_mul_I]
+theorem I_pow_bit0 (n : ℕ) : I ^ bit0 n = (-1) ^ n := by rw [pow_bit0', Complex.I_mul_I]
 set_option linter.uppercaseLean3 false in
-#align complex.I_pow_bit0 Complex.i_pow_bit0
+#align complex.I_pow_bit0 Complex.I_pow_bit0
 
 @[simp]
-theorem i_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1) ^ n * I := by rw [pow_bit1', Complex.i_mul_I]
+theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1) ^ n * I := by rw [pow_bit1', Complex.I_mul_I]
 set_option linter.uppercaseLean3 false in
-#align complex.I_pow_bit1 Complex.i_pow_bit1
+#align complex.I_pow_bit1 Complex.I_pow_bit1
+
+--Porting note: new theorem
+@[simp, norm_cast]
+theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ) : ℂ) = OfNat.ofNat n :=
+  rfl
+
+@[simp]
+theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℂ).re = OfNat.ofNat n :=
+  rfl
+
+@[simp]
+theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℂ).im = 0 :=
+  rfl
 
 end
 /-! ### Complex conjugation -/
@@ -681,9 +694,9 @@ theorem ofReal_eq_coe (r : ℝ) : ofReal r = r :=
 #align complex.of_real_eq_coe Complex.ofReal_eq_coe
 
 @[simp]
-theorem i_sq : I ^ 2 = -1 := by rw [sq, i_mul_I]
+theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
 set_option linter.uppercaseLean3 false in
-#align complex.I_sq Complex.i_sq
+#align complex.I_sq Complex.I_sq
 
 @[simp]
 theorem sub_re (z w : ℂ) : (z - w).re = z.re - w.re :=
@@ -759,14 +772,14 @@ noncomputable instance : Field ℂ := {
 section
 set_option linter.deprecated false
 @[simp]
-theorem i_zpow_bit0 (n : ℤ) : I ^ bit0 n = (-1) ^ n := by rw [zpow_bit0', i_mul_I]
+theorem I_zpow_bit0 (n : ℤ) : I ^ bit0 n = (-1) ^ n := by rw [zpow_bit0', I_mul_I]
 set_option linter.uppercaseLean3 false in
-#align complex.I_zpow_bit0 Complex.i_zpow_bit0
+#align complex.I_zpow_bit0 Complex.I_zpow_bit0
 
 @[simp]
-theorem i_zpow_bit1 (n : ℤ) : I ^ bit1 n = (-1) ^ n * I := by rw [zpow_bit1', i_mul_I]
+theorem I_zpow_bit1 (n : ℤ) : I ^ bit1 n = (-1) ^ n * I := by rw [zpow_bit1', I_mul_I]
 set_option linter.uppercaseLean3 false in
-#align complex.I_zpow_bit1 Complex.i_zpow_bit1
+#align complex.I_zpow_bit1 Complex.I_zpow_bit1
 
 end
 
@@ -794,7 +807,7 @@ theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : ℂ) = (r : ℂ) ^ n 
 
 @[simp]
 theorem div_I (z : ℂ) : z / I = -(z * I) :=
-  (div_eq_iff_mul_eq i_ne_zero).2 <| by simp [mul_assoc]
+  (div_eq_iff_mul_eq I_ne_zero).2 <| by simp [mul_assoc]
 set_option linter.uppercaseLean3 false in
 #align complex.div_I Complex.div_I
 
@@ -885,7 +898,7 @@ theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
 theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
   have : (↑2 : ℝ ) * I = 2 * I := by rfl
   simp only [sub_conj, ofReal_mul, ofReal_one, ofReal_bit0, mul_right_comm, this,
-    mul_div_cancel_left _ (mul_ne_zero two_ne_zero i_ne_zero : 2 * I ≠ 0)]
+    mul_div_cancel_left _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 
 
 #align complex.im_eq_sub_conj Complex.im_eq_sub_conj
@@ -935,20 +948,15 @@ private theorem abs_add (z w : ℂ) : (abs z + w) ≤ (abs z) + abs w :=
 -- #align complex.abs_theory.abs_add complex.abs_theory.abs_add
 
 /-- The complex absolute value function, defined as the square root of the norm squared. -/
-noncomputable def Complex.abs : AbsoluteValue ℂ ℝ
-    where
+noncomputable def _root_.Complex.abs : AbsoluteValue ℂ ℝ where
   toFun x := abs x
   map_mul' := abs_mul
   nonneg' := abs_nonneg'
   eq_zero' _ := (Real.sqrt_eq_zero <| normSq_nonneg _).trans normSq_eq_zero
   add_le' := abs_add
-#align complex.abs Complex.AbsTheory.Complex.abs
+#align complex.abs Complex.abs
 
 end AbsTheory
-
--- Porting note: Added this to make the following work.
--- Hope this is as intended. Also the name has been expanded.
-open Complex.AbsTheory
 
 theorem abs_def : (Complex.abs : ℂ → ℝ) = fun z => (normSq z).sqrt :=
   rfl
@@ -1104,13 +1112,13 @@ theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max 
 theorem abs_re_div_abs_le_one (z : ℂ) : |z.re / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
   else by simp_rw [_root_.abs_div, abs_abs,
-    div_le_iff (AbsoluteValue.pos Complex.AbsTheory.Complex.abs hz), one_mul, abs_re_le_abs]
+    div_le_iff (AbsoluteValue.pos Complex.abs hz), one_mul, abs_re_le_abs]
 #align complex.abs_re_div_abs_le_one Complex.abs_re_div_abs_le_one
 
 theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
   else by simp_rw [_root_.abs_div, abs_abs,
-    div_le_iff (AbsoluteValue.pos Complex.AbsTheory.Complex.abs hz), one_mul, abs_im_le_abs]
+    div_le_iff (AbsoluteValue.pos Complex.abs hz), one_mul, abs_im_le_abs]
 #align complex.abs_im_div_abs_le_one Complex.abs_im_div_abs_le_one
 
 -- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`

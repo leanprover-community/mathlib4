@@ -10,6 +10,7 @@ Authors: Mario Carneiro, Neil Strickland
 -/
 
 import Mathlib.Algebra.NeZero
+import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Lift
@@ -299,7 +300,7 @@ instance Nat.canLiftPNat : CanLift ℕ ℕ+ (↑) (fun n => 0 < n) :=
 instance Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=
   ⟨fun n hn =>
     ⟨Nat.toPNat' (Int.natAbs n), by
-      rw [Nat.toPNat'_coe, if_pos (Int.natAbs_pos.2 hn.ne'), Int.ofNat_eq_coe,
+      rw [Nat.toPNat'_coe, if_pos (Int.natAbs_pos.2 hn.ne'),
         Int.natAbs_of_nonneg hn.le]⟩⟩
 #align int.can_lift_pnat Int.canLiftPNat
 

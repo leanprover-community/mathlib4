@@ -22,40 +22,33 @@ open Lean Parser Tactic Elab Tactic Meta
 
 initialize registerTraceClass `apply_fun
 
-/--
-Helper function to fill implicit arguments with metavariables.
--/
-partial def fillImplicitArgumentsWithFreshMVars (e : Expr) : MetaM Expr := do
-  match ← inferType e with
-  | Expr.forallE _ _ _ .implicit
-  | Expr.forallE _ _ _ .instImplicit => do
-    fillImplicitArgumentsWithFreshMVars (mkApp e (← mkFreshExprMVar none))
-  | _                    => pure e
-
 /-- Apply a function to a hypothesis. -/
-def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
-    MetaM (List MVarId) := do
+def applyFunHyp (f : TSyntax `term) (using? : Option Expr) (h : FVarId) (g : MVarId) :
+    TacticM (List MVarId) := do
   let d ← h.getDecl
   let (prf, newGoals) ← match (← whnfR (← instantiateMVars d.type)).getAppFnArgs with
-  | (``Eq, #[α, _, _]) => do
-    -- We have to jump through a hoop here!
-    -- At this point Lean may think `f` is a dependently-typed function,
-    -- so we can't just feed it to `congrArg`.
-    -- To solve this, we first fill any implicit arguments for `f` with metavariables,
-    -- and then try to unify with a metavariable `_ : α → _`
-    -- (i.e. an arrow, but with the target as some fresh type metavariable).
-    -- (Arguably `Lean.Meta.mkCongrArg` could do this all itself.)
-    let arrow ← mkFreshExprMVar (← mkArrow α (← mkFreshTypeMVar))
-    let f' ← fillImplicitArgumentsWithFreshMVars f
-    if ¬ (← isDefEq f' arrow) then
-      throwError "Can not use `apply_fun` with a dependently typed function."
-    pure (← mkCongrArg f' d.toExpr, [])
+  | (``Eq, #[_, lhs, rhs]) => do
+    let (eq', gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+      withoutRecover <| runTermElab <| do
+        let f ← Term.elabTerm f none
+        let lhs' ← Term.elabAppArgs f #[] #[.expr lhs] none false false
+        let rhs' ← Term.elabAppArgs f #[] #[.expr rhs] none false false
+        unless ← isDefEq (← inferType lhs') (← inferType rhs') do
+          let msg ← mkHasTypeButIsExpectedMsg (← inferType rhs') (← inferType lhs')
+          throwError "In generated equality, right-hand side {msg}"
+        let eq ← mkEq lhs'.headBeta rhs'.headBeta
+        Term.synthesizeSyntheticMVarsUsingDefault
+        instantiateMVars eq
+    let mvar ← mkFreshExprMVar eq'
+    let [] ← mvar.mvarId!.congrN | throwError "`apply_fun` could not construct congruence"
+    pure (mvar, gs)
   | (``LE.le, _) =>
     let (monotone_f, newGoals) ← match using? with
     -- Use the expression passed with `using`
     | some r => pure (r, [])
     -- Create a new `Monotone f` goal
     | none => do
+      let f ← elabTermForApply f
       let ng ← mkFreshExprMVar (← mkAppM ``Monotone #[f])
       -- TODO attempt to solve this goal using `mono` when it has been ported,
       -- via `synthesizeUsing`.
@@ -128,9 +121,10 @@ example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) :
 syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
 
 elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
-  let f ← elabTermForApply f
   let P ← P.mapM (elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
-    (atLocal := fun h ↦ liftMetaTactic <| applyFunHyp f P h)
-    (atTarget := liftMetaTactic <| applyFunTarget f P)
+    (atLocal := fun h ↦ do replaceMainGoal <| ← applyFunHyp f P h (← getMainGoal))
+    (atTarget := withMainContext do
+      let f ← elabTermForApply f
+      liftMetaTactic fun g => applyFunTarget f P g)
     (failed := fun _ ↦ throwError "apply_fun failed")

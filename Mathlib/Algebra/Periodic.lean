@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 
 ! This file was ported from Lean 3 source module algebra.periodic
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
+! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -371,7 +371,7 @@ protected theorem Antiperiodic.funext [Add α] [Neg β] (h : Antiperiodic f c) :
 
 protected theorem Antiperiodic.funext' [Add α] [InvolutiveNeg β] (h : Antiperiodic f c) :
     (fun x => -f (x + c)) = f :=
-  (eq_neg_iff_eq_neg.mp h.funext).symm
+  neg_eq_iff_eq_neg.mpr h.funext
 #align function.antiperiodic.funext' Function.Antiperiodic.funext'
 
 /-- If a function is `antiperiodic` with antiperiod `c`, then it is also `periodic` with period
@@ -405,7 +405,7 @@ theorem Antiperiodic.int_odd_mul_antiperiodic [Ring α] [InvolutiveNeg β] (h : 
 #align function.antiperiodic.int_odd_mul_antiperiodic Function.Antiperiodic.int_odd_mul_antiperiodic
 
 theorem Antiperiodic.sub_eq [AddGroup α] [InvolutiveNeg β] (h : Antiperiodic f c) (x : α) :
-    f (x - c) = -f x := by simp only [eq_neg_iff_eq_neg.mp (h (x - c)), sub_add_cancel]
+    f (x - c) = -f x := by simp only [← neg_eq_iff_eq_neg, ← h (x - c), sub_add_cancel]
 #align function.antiperiodic.sub_eq Function.Antiperiodic.sub_eq
 
 theorem Antiperiodic.sub_eq' [AddCommGroup α] [Neg β] (h : Antiperiodic f c) :

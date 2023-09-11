@@ -87,10 +87,30 @@ attribute [aesop norm unfold (rule_sets [SimpleGraph])] Symmetric
 attribute [aesop norm unfold (rule_sets [SimpleGraph])] Irreflexive
 
 -- porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
+/--
+A variant of the `aesop` tactic for use in the graph library. Changes relative
+to standard `aesop`:
+
+- We use the `SimpleGraph` rule set in addition to the default rule sets.
+- We instruct Aesop's `intro` rule to unfold with `default` transparency.
+- We instruct Aesop to fail if it can't fully solve the goal. This allows us to
+  use `aesop_graph` for auto-params.
+-/
 macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause*: tactic =>
   `(tactic|
     aesop $c*
-      (options := { introsTransparency? := some .default })
+      (options := { introsTransparency? := some .default, terminal := true })
+      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
+
+/--
+A variant of `aesop_graph` which does not fail if it is unable to solve the
+goal. Use this only for exploration! Nonterminal Aesop is even worse than
+nonterminal `simp`.
+-/
+macro (name := aesop_graph_nonterminal) "aesop_graph_nonterminal" c:Aesop.tactic_clause*: tactic =>
+  `(tactic|
+    aesop $c*
+      (options := { introsTransparency? := some .default, warnOnNonterminal := false })
       (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
 
 open Finset Function

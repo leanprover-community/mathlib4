@@ -450,7 +450,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
   apply Nat.mul_le_mul_left
   refine' le_trans _ (Nat.le_add_left _ _)
   have : 0 < l.getLast hl := by rwa [pos_iff_ne_zero]
-  convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this
+  convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
   rw [Nat.mul_one]
 #align nat.pow_length_le_mul_of_digits Nat.pow_length_le_mul_ofDigits
 
@@ -544,7 +544,8 @@ theorem modEq_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) : n ≡ (digits
     congr
     · skip
     · rw [← ofDigits_digits b' n]
-  convert ofDigits_modEq b' b (digits b' n) <;> exact h.symm
+  convert ofDigits_modEq b' b (digits b' n)
+  exact h.symm
 #align nat.modeq_digits_sum Nat.modEq_digits_sum
 
 theorem modEq_three_digits_sum (n : ℕ) : n ≡ (digits 10 n).sum [MOD 3] :=

@@ -74,7 +74,7 @@ instance [MulOneClass Y] : MulOneClass (LocallyConstant X Y) :=
   Function.Injective.mulOneClass FunLike.coe FunLike.coe_injective' rfl fun _ _ => rfl
 
 /-- `coe_fn` is a `monoid_hom`. -/
-@[to_additive "`coe_fn` is an `add_monoid_hom`.", simps]
+@[to_additive (attr := simps) "`coe_fn` is an `add_monoid_hom`."]
 def coeFnMonoidHom [MulOneClass Y] : LocallyConstant X Y →* X → Y where
   toFun := FunLike.coe
   map_one' := rfl
@@ -83,7 +83,7 @@ def coeFnMonoidHom [MulOneClass Y] : LocallyConstant X Y →* X → Y where
 #align locally_constant.coe_fn_add_monoid_hom LocallyConstant.coeFnAddMonoidHom
 
 /-- The constant-function embedding, as a multiplicative monoid hom. -/
-@[to_additive "The constant-function embedding, as an additive monoid hom.", simps]
+@[to_additive (attr := simps) "The constant-function embedding, as an additive monoid hom."]
 def constMonoidHom [MulOneClass Y] : Y →* LocallyConstant X Y where
   toFun := const X
   map_one' := rfl
