@@ -304,7 +304,7 @@ protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul 
 instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
   mul_assoc := Algebra.TensorProduct.mul_assoc
 
-end NonUnital
+end NonUnitalSemiring
 
 section Semiring
 
