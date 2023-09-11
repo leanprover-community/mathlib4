@@ -83,8 +83,7 @@ set_option linter.uppercaseLean3 false -- A B D
 
 noncomputable section
 
-open Set Metric Asymptotics Filter ContinuousLinearMap MeasureTheory
-open TopologicalSpace (SecondCountableTopology)
+open Set Metric Asymptotics Filter ContinuousLinearMap MeasureTheory TopologicalSpace
 open scoped Topology
 
 namespace ContinuousLinearMap
@@ -436,11 +435,39 @@ theorem measurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [Mea
   simpa only [fderiv_deriv] using measurable_fderiv_apply_const 𝕜 f 1
 #align measurable_deriv measurable_deriv
 
+
 theorem stronglyMeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
-    [SecondCountableTopology F] (f : 𝕜 → F) : StronglyMeasurable (deriv f) := by
+    [h : SecondCountableTopology F] (f : 𝕜 → F) : StronglyMeasurable (deriv f) := by
   borelize F
   exact (measurable_deriv f).stronglyMeasurable
 #align strongly_measurable_deriv stronglyMeasurable_deriv
+
+theorem range_deriv_subset_closure_range (f : 𝕜 → F) :
+    range (deriv f) ⊆ closure (Submodule.span 𝕜 (range f)) := by
+  rintro - ⟨p, rfl⟩
+  by_cases H : DifferentiableAt 𝕜 f p
+  · apply mem_closure_of_tendsto (hasDerivAt_iff_tendsto_slope.1 H.hasDerivAt)
+    apply eventually_of_forall (fun t ↦ ?_)
+    simp only [slope, vsub_eq_sub, SetLike.mem_coe]
+    refine Submodule.smul_mem _ _ (Submodule.sub_mem _ ?_ ?_)
+    · exact Submodule.subset_span (mem_range_self t)
+    · exact Submodule.subset_span (mem_range_self p)
+  · rw [deriv_zero_of_not_differentiableAt H]
+    exact subset_closure (zero_mem _)
+
+theorem stronglyMeasurable_deriv_of_continuous [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
+    [h : SecondCountableTopologyEither 𝕜 F] {f : 𝕜 → F} (hf : Continuous f) :
+    StronglyMeasurable (deriv f) := by
+  borelize F
+  rcases h.out with h𝕜|hF
+  · apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_deriv f, ?_⟩
+    have Z := range_deriv_subset_closure_range f
+    apply (IsSeparable.span _).closure.mono Z
+    rw [← image_univ]
+    exact (isSeparable_of_separableSpace univ).image hf
+  · exact (measurable_deriv f).stronglyMeasurable
+
+#exit
 
 theorem aemeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
     [BorelSpace F] (f : 𝕜 → F) (μ : Measure 𝕜) : AEMeasurable (deriv f) μ :=

@@ -182,6 +182,7 @@ def DifferentiableAt (f : E → F) (x : E) :=
 /-- If `f` has a derivative at `x` within `s`, then `fderivWithin 𝕜 f s x` is such a derivative.
 Otherwise, it is set to `0`. -/
 def fderivWithin (f : E → F) (s : Set E) (x : E) : E →L[𝕜] F :=
+  if 𝓝[s\{x}] x = ⊥ then 0 else
   if h : ∃ f', HasFDerivWithinAt f f' s x then Classical.choose h else 0
 #align fderiv_within fderivWithin
 
@@ -507,12 +508,35 @@ theorem DifferentiableWithinAt.differentiableAt (h : DifferentiableWithinAt 𝕜
   h.imp fun _ hf' => hf'.hasFDerivAt hs
 #align differentiable_within_at.differentiable_at DifferentiableWithinAt.differentiableAt
 
+/-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
+as this statement is empty. -/
+theorem HasFDerivWithinAt_of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) :
+    HasFDerivWithinAt f f' s x := by
+  by_cases hx : x ∈ s
+  · have : s = s\{x} ∪ {x} := by simpa using (insert_eq_self.2 hx).symm
+    have A : 𝓝[s] x = 𝓝[s\{x}] x ⊔ 𝓟 {x} := by
+      conv_lhs => rw [this]
+      simp only [union_singleton, nhdsWithin_insert, sup_comm, principal_singleton]
+    simp [HasFDerivWithinAt, HasFDerivAtFilter, A, h]
+  · rw [diff_singleton_eq_self hx] at h
+    simp [HasFDerivWithinAt, HasFDerivAtFilter, h]
+
+/-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
+as this statement is empty. -/
+theorem hasFDerivWithinAt_of_not_mem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x := by
+  simp only [mem_closure_iff_nhdsWithin_neBot, neBot_iff, Ne.def, Classical.not_not] at h
+  simp [HasFDerivWithinAt, HasFDerivAtFilter, h, IsLittleO, IsBigOWith]
+#align has_fderiv_within_at_of_not_mem_closure hasFDerivWithinAt_of_not_mem_closure
+
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
-  dsimp only [fderivWithin]
-  dsimp only [DifferentiableWithinAt] at h
-  rw [dif_pos h]
-  exact Classical.choose_spec h
+  by_cases H : 𝓝[s\{x}] x = ⊥
+  · exact HasFDerivWithinAt_of_nhdsWithin_eq_bot H
+  · dsimp only [fderivWithin]
+    rw [if_neg H]
+    dsimp only [DifferentiableWithinAt] at h
+    rw [dif_pos h]
+    exact Classical.choose_spec h
 #align differentiable_within_at.has_fderiv_within_at DifferentiableWithinAt.hasFDerivWithinAt
 
 theorem DifferentiableAt.hasFDerivAt (h : DifferentiableAt 𝕜 f x) :
@@ -583,13 +607,6 @@ protected theorem HasFDerivWithinAt.fderivWithin (h : HasFDerivWithinAt f f' s x
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = f' :=
   (hxs.eq h h.differentiableWithinAt.hasFDerivWithinAt).symm
 #align has_fderiv_within_at.fderiv_within HasFDerivWithinAt.fderivWithin
-
-/-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
-as this statement is empty. -/
-theorem hasFDerivWithinAt_of_not_mem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x := by
-  simp only [mem_closure_iff_nhdsWithin_neBot, neBot_iff, Ne.def, Classical.not_not] at h
-  simp [HasFDerivWithinAt, HasFDerivAtFilter, h, IsLittleO, IsBigOWith]
-#align has_fderiv_within_at_of_not_mem_closure hasFDerivWithinAt_of_not_mem_closure
 
 theorem DifferentiableWithinAt.mono (h : DifferentiableWithinAt 𝕜 f t x) (st : s ⊆ t) :
     DifferentiableWithinAt 𝕜 f s x := by
@@ -662,17 +679,29 @@ theorem fderivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
 #align fderiv_within_subset fderivWithin_subset
 
 theorem fderivWithin_inter (ht : t ∈ 𝓝 x) : fderivWithin 𝕜 f (s ∩ t) x = fderivWithin 𝕜 f s x := by
-  simp only [fderivWithin, hasFDerivWithinAt_inter ht]
+  have A : 𝓝[(s ∩ t) \ {x}] x = 𝓝[s \ {x}] x := by
+    have : (s ∩ t) \ {x} = (s \ {x}) ∩ t := by rw [inter_comm, inter_diff_assoc, inter_comm]
+    rw [this, ← nhdsWithin_restrict' _ ht]
+  simp [fderivWithin, A, hasFDerivWithinAt_inter ht]
 #align fderiv_within_inter fderivWithin_inter
 
-theorem fderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x := by
-  simp only [fderiv, fderivWithin, HasFDerivAt, HasFDerivWithinAt, nhdsWithin_eq_nhds.2 h]
-#align fderiv_within_of_mem_nhds fderivWithin_of_mem_nhds
-
 @[simp]
-theorem fderivWithin_univ : fderivWithin 𝕜 f univ = fderiv 𝕜 f :=
-  funext fun _ => fderivWithin_of_mem_nhds univ_mem
+theorem fderivWithin_univ : fderivWithin 𝕜 f univ = fderiv 𝕜 f := by
+  ext1 x
+  by_cases H : 𝓝[univ \ {x}] x = ⊥
+  · have : Subsingleton E := by
+      apply not_nontrivial_iff_subsingleton.1
+      contrapose! H
+      have : (𝓝[{x}ᶜ] x).NeBot := Module.punctured_nhds_neBot 𝕜 E x
+      rw [compl_eq_univ_diff] at this
+      exact NeBot.ne this
+    exact Subsingleton.elim _ _
+  · simp [fderivWithin, fderiv, H]
 #align fderiv_within_univ fderivWithin_univ
+
+theorem fderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x := by
+  rw [← fderivWithin_univ, ← univ_inter s, fderivWithin_inter h]
+#align fderiv_within_of_mem_nhds fderivWithin_of_mem_nhds
 
 theorem fderivWithin_of_open (hs : IsOpen s) (hx : x ∈ s) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x :=
   fderivWithin_of_mem_nhds (hs.mem_nhds hx)
@@ -828,7 +857,11 @@ theorem differentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
 
 theorem fderivWithin_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x := by
-  simp only [fderivWithin, hasFDerivWithinAt_congr_set' y h]
+  have : s =ᶠ[𝓝[{x}ᶜ] x] t := nhdsWithin_compl_singleton_le x y h
+  have : 𝓝[s \ {x}] x = 𝓝[t \ {x}] x := by
+    simpa only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', diff_eq,
+      inter_comm] using this
+  simp only [fderivWithin, hasFDerivWithinAt_congr_set' y h, this]
 #align fderiv_within_congr_set' fderivWithin_congr_set'
 
 theorem fderivWithin_congr_set (h : s =ᶠ[𝓝 x] t) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
