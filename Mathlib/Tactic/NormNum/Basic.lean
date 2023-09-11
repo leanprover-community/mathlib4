@@ -5,11 +5,11 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Rat.Basic
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.Clear!
+
 /-!
 ## `norm_num` basic plugins
 
@@ -466,20 +466,12 @@ theorem isNat_eq_true [AddMonoidWithOne α] : {a b : α} → {c : ℕ} →
     IsNat a c → IsNat b c → a = b
   | _, _, _, ⟨rfl⟩, ⟨rfl⟩ => rfl
 
-theorem isNat_le_true [OrderedSemiring α] : {a b : α} → {a' b' : ℕ} →
-    IsNat a a' → IsNat b b' → Nat.ble a' b' = true → a ≤ b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Nat.mono_cast (Nat.le_of_ble_eq_true h)
-
 theorem ble_eq_false {x y : ℕ} : x.ble y = false ↔ y < x := by
   rw [← Nat.not_le, ← Bool.not_eq_true, Nat.ble_eq]
 
 theorem isNat_eq_false [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.beq a' b' = false → ¬a = b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact Nat.ne_of_beq_eq_false h
-
-theorem isNat_lt_false [OrderedSemiring α] {a b : α} {a' b' : ℕ}
-    (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
-  not_lt_of_le (isNat_le_true hb ha h)
 
 theorem isInt_eq_true [Ring α] : {a b : α} → {z : ℤ} → IsInt a z → IsInt b z → a = b
   | _, _, _, ⟨rfl⟩, ⟨rfl⟩ => rfl
