@@ -18,6 +18,8 @@ but with the conclusions simplified used the axioms for a category
 
 This is useful for generating lemmas which the simplifier can use even on expressions
 that are already right associated.
+
+There is also a term elaborator `reassoc_of% t` for use within proofs.
 -/
 
 open Lean Meta Elab Tactic
@@ -80,5 +82,15 @@ initialize registerBuiltinAttribute {
     let stx := match stx? with | some stx => stx | none => #[]
     _ ← Term.TermElabM.run' <| ToAdditive.applyAttributes ref stx `reassoc src tgt
   | _ => throwUnsupportedSyntax }
+
+open Term in
+/--
+`reassoc_of% t`, where `t` is
+an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a `∀` binder),
+produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
+but with compositions fully right associated and identities removed.
+-/
+elab "reassoc_of% " t:term : term => do
+  reassocExpr (← elabTerm t none)
 
 end CategoryTheory

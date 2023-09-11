@@ -335,7 +335,7 @@ theorem lift_le {a b : Cardinal.{u}} : lift.{v, u} a ≤ lift.{v, u} b ↔ a ≤
 /-- `Cardinal.lift` as an `OrderEmbedding`. -/
 @[simps! (config := { fullyApplied := false })]
 def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
-  OrderEmbedding.ofMapLeIff lift.{u, v} fun _ _ => lift_le
+  OrderEmbedding.ofMapLEIff lift.{u, v} fun _ _ => lift_le
 #align cardinal.lift_order_embedding Cardinal.liftOrderEmbedding
 
 theorem lift_injective : Injective lift.{u, v} :=

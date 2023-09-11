@@ -987,6 +987,35 @@ theorem div_congr {R} [DivisionRing R] {a a' b b' c : R} (_ : a = a') (_ : b = b
 /-- A precomputed `Cache` for `ℕ`. -/
 def Cache.nat : Cache sℕ := { rα := none, dα := none, czα := some q(inferInstance) }
 
+/-- Checks whether `e` would be processed by `eval` as a ring expression,
+or otherwise if it is an atom or something simplifiable via `norm_num`.
+
+We use this in `ring_ng` to avoid rewriting atoms unnecessarily.
+
+Returns:
+* `none` if `eval` would process `e` as an algebraic ring expression
+* `some none` if `eval` would treat `e` as an atom.
+* `some (some r)` if `eval` would not process `e` as an algebraic ring expression,
+  but `NormNum.derive` can nevertheless simplify `e`, with result `r`.
+-/
+-- Note this is not the same as whether the result of `eval` is an atom. (e.g. consider `x + 0`.)
+def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+    (c : Cache sα) (e : Q($α)) : AtomM (Option (Option (Result (ExSum sα) e))) := do
+  let els := try
+      pure <| some (evalCast sα (← derive e))
+    catch _ => pure (some none)
+  let .const n _ := (← withReducible <| whnf e).getAppFn | els
+  match n, c.rα, c.dα with
+  | ``HAdd.hAdd, _, _ | ``Add.add, _, _
+  | ``HMul.hMul, _, _ | ``Mul.mul, _, _
+  | ``HSMul.hSMul, _, _
+  | ``HPow.hPow, _, _ | ``Pow.pow, _, _
+  | ``Neg.neg, some _, _
+  | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _
+  | ``Inv.inv, _, some _
+  | ``HDiv.hDiv, _, some _ | ``Div.div, _, some _ => pure none
+  | _, _, _ => els
+
 /--
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.

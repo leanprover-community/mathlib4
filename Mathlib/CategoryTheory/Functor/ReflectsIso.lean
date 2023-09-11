@@ -67,7 +67,7 @@ instance (F : C ⥤ D) (G : D ⥤ E) [ReflectsIsomorphisms F] [ReflectsIsomorphi
 
 instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms
     [Balanced C] (F : C ⥤ D) [ReflectsMonomorphisms F] [ReflectsEpimorphisms F] :
-    ReflectsIsomorphisms F where 
+    ReflectsIsomorphisms F where
   reflects f hf := by
     skip
     haveI : Epi f := epi_of_epi_map F inferInstance
@@ -78,4 +78,3 @@ instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_refl
 end ReflectsIso
 
 end CategoryTheory
-

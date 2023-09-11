@@ -694,20 +694,20 @@ protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
 -/
-def ofMapLeIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀ a b, f a ≤ f b ↔ a ≤ b) :
+def ofMapLEIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀ a b, f a ≤ f b ↔ a ≤ b) :
     α ↪o β :=
   RelEmbedding.ofMapRelIff f hf
-#align order_embedding.of_map_le_iff OrderEmbedding.ofMapLeIff
+#align order_embedding.of_map_le_iff OrderEmbedding.ofMapLEIff
 
 @[simp]
-theorem coe_ofMapLeIff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
-    ⇑ofMapLeIff f h = f :=
+theorem coe_ofMapLEIff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
+    ⇑ofMapLEIff f h = f :=
   rfl
-#align order_embedding.coe_of_map_le_iff OrderEmbedding.coe_ofMapLeIff
+#align order_embedding.coe_of_map_le_iff OrderEmbedding.coe_ofMapLEIff
 
 /-- A strictly monotone map from a linear order is an order embedding. -/
 def ofStrictMono {α β} [LinearOrder α] [Preorder β] (f : α → β) (h : StrictMono f) : α ↪o β :=
-  ofMapLeIff f fun _ _ => h.le_iff_le
+  ofMapLEIff f fun _ _ => h.le_iff_le
 #align order_embedding.of_strict_mono OrderEmbedding.ofStrictMono
 
 @[simp]

@@ -1220,7 +1220,7 @@ theorem Function.LeftInverse.closed_range [T2Space α] {f : α → β} {g : β �
   have : EqOn (g ∘ f) id (closure <| range g) :=
     h.rightInvOn_range.eqOn.closure (hg.comp hf) continuous_id
   isClosed_of_closure_subset fun x hx => ⟨f x, this hx⟩
-      
+
 #align function.left_inverse.closed_range Function.LeftInverse.closed_range
 
 theorem Function.LeftInverse.closedEmbedding [T2Space α] {f : α → β} {g : β → α}

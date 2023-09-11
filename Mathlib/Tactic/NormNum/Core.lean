@@ -37,9 +37,6 @@ structure IsNat [AddMonoidWithOne α] (a : α) (n : ℕ) : Prop where
   /-- The element is equal to the coercion of the natural number. -/
   out : a = n
 
-attribute [to_additive_fixed_numeral 4] IsNat IsNat.out IsNat.mk
-
-@[to_additive_fixed_numeral]
 theorem IsNat.raw_refl (n : ℕ) : IsNat n n := ⟨rfl⟩
 
 /--
@@ -47,25 +44,20 @@ A "raw nat cast" is an expression of the form `(Nat.rawCast lit : α)` where `li
 natural number literal. These expressions are used by tactics like `ring` to decrease the number
 of typeclass arguments required in each use of a number literal at type `α`.
 -/
-@[simp, to_additive_fixed_numeral 3] def _root_.Nat.rawCast [AddMonoidWithOne α] (n : ℕ) : α := n
+@[simp] def _root_.Nat.rawCast [AddMonoidWithOne α] (n : ℕ) : α := n
 
-@[to_additive_fixed_numeral 3]
 theorem IsNat.to_eq [AddMonoidWithOne α] {n} : {a a' : α} → IsNat a n → n = a' → a = a'
   | _, _, ⟨rfl⟩, rfl => rfl
 
-@[to_additive_fixed_numeral 3]
 theorem IsNat.to_raw_eq [AddMonoidWithOne α] : IsNat (a : α) n → a = n.rawCast
   | ⟨e⟩ => e
 
-@[to_additive_fixed_numeral 3]
 theorem IsNat.of_raw (α) [AddMonoidWithOne α] (n : ℕ) : IsNat (n.rawCast : α) n := ⟨rfl⟩
 
 /-- Assert that an element of a ring is equal to the coercion of some integer. -/
 structure IsInt [Ring α] (a : α) (n : ℤ) : Prop where
   /-- The element is equal to the coercion of the integer. -/
   out : a = n
-
-attribute [to_additive_fixed_numeral 4] IsInt IsInt.out IsInt.mk
 
 /--
 A "raw int cast" is an expression of the form:
@@ -77,29 +69,23 @@ A "raw int cast" is an expression of the form:
 tactics like `ring` to decrease the number of typeclass arguments required in each use of a number
 literal at type `α`.
 -/
-@[simp, to_additive_fixed_numeral 3] def _root_.Int.rawCast [Ring α] (n : ℤ) : α := n
+@[simp] def _root_.Int.rawCast [Ring α] (n : ℤ) : α := n
 
-@[to_additive_fixed_numeral 4]
 theorem IsInt.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsInt a (.ofNat n) → IsNat a n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-@[to_additive_fixed_numeral 4]
 theorem IsNat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsInt a (.ofNat n)
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-@[to_additive_fixed_numeral 3]
 theorem IsInt.to_raw_eq [Ring α] : IsInt (a : α) n → a = n.rawCast
   | ⟨e⟩ => e
 
-@[to_additive_fixed_numeral 3]
 theorem IsInt.of_raw (α) [Ring α] (n : ℤ) : IsInt (n.rawCast : α) n := ⟨rfl⟩
 
-@[to_additive_fixed_numeral 3]
 theorem IsInt.neg_to_eq {α} [Ring α] {n} :
     {a a' : α} → IsInt a (.negOfNat n) → n = a' → a = -a'
   | _, _, ⟨rfl⟩, rfl => by simp [Int.negOfNat_eq, Int.cast_neg]
 
-@[to_additive_fixed_numeral 3]
 theorem IsInt.nonneg_to_eq {α} [Ring α] {n}
     {a a' : α} (h : IsInt a (.ofNat n)) (e : n = a') : a = a' := h.to_isNat.to_eq e
 
@@ -123,7 +109,6 @@ although this is not part of the definition.
 inductive IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) : Prop
   | mk (inv : Invertible (denom : α)) (eq : a = num * ⅟(denom : α))
 
-attribute [to_additive_fixed_numeral 4 5] IsRat IsRat.mk
 /--
 A "raw rat cast" is an expression of the form:
 
@@ -134,46 +119,37 @@ A "raw rat cast" is an expression of the form:
 This representation is used by tactics like `ring` to decrease the number of typeclass arguments
 required in each use of a number literal at type `α`.
 -/
-@[simp, to_additive_fixed_numeral 3 4]
+@[simp]
 def _root_.Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
 
-@[to_additive_fixed_numeral 4]
 theorem IsRat.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsRat a (.ofNat n) (nat_lit 1) → IsNat a n
   | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
 
-@[to_additive_fixed_numeral 4]
 theorem IsNat.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsRat a (.ofNat n) (nat_lit 1)
   | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
 
-@[to_additive_fixed_numeral 4]
 theorem IsRat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsRat a n (nat_lit 1) → IsInt a n
   | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
 
-@[to_additive_fixed_numeral 4]
 theorem IsInt.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsInt a n → IsRat a n (nat_lit 1)
   | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
 
-@[to_additive_fixed_numeral 2 3]
 theorem IsRat.to_raw_eq [DivisionRing α] : ∀ {a}, IsRat (a : α) n d → a = Rat.rawCast n d
   | _, ⟨inv, rfl⟩ => by simp [div_eq_mul_inv]
 
-@[to_additive_fixed_numeral 3 4]
 theorem IsRat.neg_to_eq {α} [DivisionRing α] {n d} :
     {a n' d' : α} → IsRat a (.negOfNat n) d → n = n' → d = d' → a = -(n' / d')
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
 
-@[to_additive_fixed_numeral 3 4]
 theorem IsRat.nonneg_to_eq {α} [DivisionRing α] {n d} :
     {a n' d' : α} → IsRat a (.ofNat n) d → n = n' → d = d' → a = n' / d'
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
 
-@[to_additive_fixed_numeral 3 4]
 theorem IsRat.of_raw (α) [DivisionRing α] (n : ℤ) (d : ℕ)
     (h : (d : α) ≠ 0) : IsRat (Rat.rawCast n d : α) n d :=
   have := invertibleOfNonzero h
   ⟨this, by simp [div_eq_mul_inv]⟩
 
-@[to_additive_fixed_numeral 4 5]
 theorem IsRat.den_nz {α} [DivisionRing α] {a n d} : IsRat (a : α) n d → (d : α) ≠ 0
   | ⟨_, _⟩ => nonzero_of_invertible (d : α)
 

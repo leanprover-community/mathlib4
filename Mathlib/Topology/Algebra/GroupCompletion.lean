@@ -16,9 +16,9 @@ import Mathlib.Topology.UniformSpace.Completion
 # Completion of topological groups:
 
 This files endows the completion of a topological abelian group with a group structure.
-More precisely the instance `UniformSpace.Completion.instAddGroup` builds an abelian group structure
+More precisely the instance `UniformSpace.Completion.addGroup` builds an abelian group structure
 on the completion of an abelian group endowed with a compatible uniform structure.
-Then the instance `UniformSpace.Completion.instUniformAddGroup` proves this group structure is
+Then the instance `UniformSpace.Completion.uniformAddGroup` proves this group structure is
 compatible with the completed uniform structure. The compatibility condition is `UniformAddGroup`.
 
 ## Main declarations:
@@ -156,7 +156,7 @@ instance : SubNegMonoid (Completion α) :=
             rw [← coe_smul, show (Int.negSucc n) • a = -((n.succ : ℤ) • a) from
               SubNegMonoid.zsmul_neg' n a, coe_neg, coe_smul] }
 
-instance instAddGroup : AddGroup (Completion α) :=
+instance addGroup : AddGroup (Completion α) :=
   { (inferInstance : SubNegMonoid $ Completion α) with
     add_left_neg := fun a ↦
       Completion.induction_on a
@@ -167,7 +167,7 @@ instance instAddGroup : AddGroup (Completion α) :=
           rw_mod_cast [add_left_neg]
           rfl }
 
-instance instUniformAddGroup : UniformAddGroup (Completion α) :=
+instance uniformAddGroup : UniformAddGroup (Completion α) :=
   ⟨uniformContinuous_map₂ Sub.sub⟩
 
 instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :

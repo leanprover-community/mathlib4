@@ -83,12 +83,12 @@ def validateCurl : IO Bool := do
     | maj :: min :: _ =>
       let (maj, min) := (maj.toNat!, min.toNat!)
       if maj > 7 then return true
-      if maj == 7 && min >= 69 then
+      if maj == 7 && min >= 70 then
         if min < 81 then
           IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
         return true
       else
-        IO.println s!"`curl` version is required to be ≥7.69. Found {v}. Exiting..."
+        IO.println s!"`curl` version is required to be ≥7.70. Found {v}. Exiting..."
         return false
     | _ => throw $ IO.userError "Invalidly formatted version of `curl`"
   | _ => throw $ IO.userError "Invalidly formatted response from `curl --version`"

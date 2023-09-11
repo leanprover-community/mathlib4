@@ -38,7 +38,6 @@ theorem isNat_one (α) [AddMonoidWithOne α] : IsNat (One.one : α) (nat_lit 1) 
   match e with
   | ~q(One.one) => return (.isNat sα (mkRawNatLit 1) q(isNat_one $α) : Result q(One.one))
 
-@[to_additive_fixed_numeral 4]
 theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
     (h : n = a) : IsNat a n := ⟨h.symm⟩
 
@@ -53,7 +52,6 @@ theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
     guard <|← isDefEq a e
     return .isNat sα n (q(isNat_ofNat $α $pa) : Expr)
 
-@[to_additive_fixed_numeral 3 4]
 theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
@@ -66,11 +64,9 @@ theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
     let pa : Q(IsNat $a $na) := pa
     return (.isNat sα na q(@isNat_cast $α _ $a $na $pa) : Result q(Nat.cast $a : $α))
 
-@[to_additive_fixed_numeral 3 4]
 theorem isNat_int_cast {R} [Ring R] (n : ℤ) (m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-@[to_additive_fixed_numeral 3 4]
 theorem isInt_cast {R} [Ring R] (n m : ℤ) :
     IsInt n m → IsInt (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
@@ -89,18 +85,15 @@ theorem isInt_cast {R} [Ring R] (n m : ℤ) :
       return (.isNegNat rα na q(isInt_cast $a (.negOfNat $na) $pa) : Result q(Int.cast $a : $α))
     | _ => failure
 
-@[to_additive_fixed_numeral 5 6 7 10]
 theorem isNat_add {α} [AddMonoidWithOne α] : {a b : α} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.add a' b' = c → IsNat (a + b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Nat.cast_add _ _).symm⟩
 
-@[to_additive_fixed_numeral 5 6 7 10]
 theorem isInt_add {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.add a' b' = c → IsInt (a + b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_add ..).symm⟩
 
 /-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
-@[to_additive_fixed_numeral 3]
 def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
     ∀ (a : α) [Invertible a], a = k * b → Invertible b
   | _, ⟨c, hc1, hc2⟩, rfl => by
@@ -109,12 +102,10 @@ def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
     exact ⟨_, hc1, hc2⟩
 
 /-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
-@[to_additive_fixed_numeral 3 4 5 7]
 def invertibleOfMul' {α} [Semiring α] {a k b : ℕ} [Invertible (a : α)]
     (h : a = k * b) : Invertible (b : α) := invertibleOfMul k (b:α) ↑a (by simp [h])
 
 -- TODO: clean up and move it somewhere in mathlib? It's a bit much for this file
-@[to_additive_fixed_numeral 5 6 7 8 9 10 11 14 15]
 theorem isRat_add {α} [Ring α] {a b : α} {na nb nc : ℤ} {da db dc k : ℕ} :
     IsRat a na da → IsRat b nb db →
     Int.add (Int.mul na db) (Int.mul nb da) = Int.mul k nc →
@@ -184,12 +175,10 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return (.isNat sα c q(isNat_add $pa $pb $r) : Result q($a + $b))
   core
 
-@[to_additive_fixed_numeral 4 5 7]
 theorem isInt_neg {α} [Ring α] : {a : α} → {a' b : ℤ} →
     IsInt a a' → Int.neg a' = b → IsInt (-a) b
   | _, _, _, ⟨rfl⟩, rfl => ⟨(Int.cast_neg ..).symm⟩
 
-@[to_additive_fixed_numeral 4 5 6 8]
 theorem isRat_neg {α} [Ring α] : {a : α} → {n n' : ℤ} → {d : ℕ} →
     IsRat a n d → Int.neg n = n' → IsRat (-a) n' d
   | _, _, _, _, ⟨h, rfl⟩, rfl => ⟨h, by rw [← neg_mul, ← Int.cast_neg]; rfl⟩
@@ -225,12 +214,10 @@ such that `norm_num` successfully recognises `a`. -/
     | .isRat dα .. => ratArm dα
   core
 
-@[to_additive_fixed_numeral 5 6 7 10]
 theorem isInt_sub {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.sub a' b' = c → IsInt (a - b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_sub ..).symm⟩
 
-@[to_additive_fixed_numeral 5 6 7 8 9 10 11 14 15]
 theorem isRat_sub {α} [Ring α] {a b : α} {na nb nc : ℤ} {da db dc k : ℕ}
     (ra : IsRat a na da) (rb : IsRat b nb db)
     (h₁ : Int.sub (Int.mul na db) (Int.mul nb da) = Int.mul k nc)
@@ -279,17 +266,14 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     | .isNat _ .., .isNat _ .. => intArm rα
   core
 
-@[to_additive_fixed_numeral 5 6 7 10]
 theorem isNat_mul {α} [Semiring α] : {a b : α} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.mul a' b' = c → IsNat (a * b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Nat.cast_mul ..).symm⟩
 
-@[to_additive_fixed_numeral 5 6 7 10]
 theorem isInt_mul {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.mul a' b' = c → IsInt (a * b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_mul ..).symm⟩
 
-@[to_additive_fixed_numeral 5 6 7 8 9 10 11 14 15]
 theorem isRat_mul {α} [Ring α] {a b : α} {na nb nc : ℤ} {da db dc k : ℕ} :
     IsRat a na da → IsRat b nb db →
     Int.mul na nb = Int.mul k nc →
@@ -351,17 +335,14 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return (.isNat mα c (q(isNat_mul (α := $α) $pa $pb $r) : Expr) : Result q($a * $b))
   core
 
-@[to_additive_fixed_numeral 4 5 6 7 10]
 theorem isNat_pow {α} [Semiring α] : {a : α} → {b a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.pow a' b' = c → IsNat (a ^ b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
-@[to_additive_fixed_numeral 4 5 6 7 10]
 theorem isInt_pow {α} [Ring α] : {a : α} → {b : ℕ} → {a' : ℤ} → {b' : ℕ} → {c : ℤ} →
     IsInt a a' → IsNat b b' → Int.pow a' b' = c → IsInt (a ^ b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
-@[to_additive_fixed_numeral 4 5 6 7 8 9 12 13]
 theorem isRat_pow {α} [Ring α] {a : α} {an cn : ℤ} {ad b b' cd : ℕ} :
     IsRat a an ad → IsNat b b' →
     Int.pow an b' = cn → Nat.pow ad b' = cd →
@@ -406,7 +387,6 @@ def evalPow : NormNumExt where eval {u α} e := do
       return (.isRat' dα qc nc dc (q(isRat_pow $pa $pb $r1 $r2) : Expr) : Result q($a ^ $b))
   core
 
-@[to_additive_fixed_numeral 5 6]
 theorem isRat_inv_pos {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.ofNat (Nat.succ n)) d → IsRat a⁻¹ (.ofNat d) (Nat.succ n) := by
   rintro ⟨_, rfl⟩
@@ -425,7 +405,6 @@ theorem isRat_inv_neg_one {α} [DivisionRing α] : {a : α} →
     IsInt a (.negOfNat (nat_lit 1)) → IsInt a⁻¹ (.negOfNat (nat_lit 1))
   | _, ⟨rfl⟩ => ⟨by simp [inv_neg_one]⟩
 
-@[to_additive_fixed_numeral 5 6]
 theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.negOfNat (Nat.succ n)) d → IsRat a⁻¹ (.negOfNat d) (Nat.succ n) := by
   rintro ⟨_, rfl⟩
@@ -478,7 +457,6 @@ such that `norm_num` successfully recognises `a`. -/
       return (.isNat inst _z (q(isRat_inv_zero $pa) : Expr) : Result q($a⁻¹))
   core
 
-@[to_additive_fixed_numeral 5 6]
 theorem isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
     IsRat (a / b) cn cd
   | _, _, _, _, h => by simp [div_eq_mul_inv]; exact h
@@ -519,78 +497,63 @@ such that `norm_num` successfully recognises `a`. -/
 
 /-! # (In)equalities -/
 
-@[to_additive_fixed_numeral 5 6 9]
 theorem isNat_eq_true [AddMonoidWithOne α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.beq a' b' = true → a = b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => congr_arg Nat.cast <| Nat.eq_of_beq_eq_true h
 
-@[to_additive_fixed_numeral 5 6 9]
 theorem isNat_le_true [OrderedSemiring α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.ble a' b' = true → a ≤ b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Nat.mono_cast (Nat.le_of_ble_eq_true h)
 
-@[to_additive_fixed_numeral 6 7 10]
 theorem isNat_lt_true [OrderedSemiring α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.ble b' a' = false → a < b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h =>
     Nat.cast_lt.2 <| Nat.not_le.1 <| Nat.not_le_of_not_ble_eq_true <| ne_true_of_eq_false h
 
-@[to_additive_fixed_numeral 6 7 10]
 theorem isNat_eq_false [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.beq a' b' = false → ¬a = b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact Nat.ne_of_beq_eq_false h
 
-@[to_additive_fixed_numeral 6 7 10]
 theorem isNat_le_false [OrderedSemiring α] [CharZero α] {a b : α} {a' b' : ℕ}
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble a' b' = false) : ¬a ≤ b :=
   not_le_of_lt (isNat_lt_true hb ha h)
 
-@[to_additive_fixed_numeral 6 7 10]
 theorem isNat_lt_false [OrderedSemiring α] {a b : α} {a' b' : ℕ}
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
   not_lt_of_le (isNat_le_true hb ha h)
 
-@[to_additive_fixed_numeral 5]
 theorem isInt_eq_true [Ring α] : {a b : α} → {z : ℤ} → IsInt a z → IsInt b z → a = b
   | _, _, _, ⟨rfl⟩, ⟨rfl⟩ => rfl
 
-@[to_additive_fixed_numeral 5]
 theorem isInt_le_true [OrderedRing α] : {a b : α} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → decide (a' ≤ b') → a ≤ b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_mono <| of_decide_eq_true h
 
-@[to_additive_fixed_numeral 6 7 10]
 theorem isInt_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → decide (a' < b') → a < b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_lt.2 <| of_decide_eq_true h
 
-@[to_additive_fixed_numeral 6 7 10]
 theorem isInt_eq_false [Ring α] [CharZero α] : {a b : α} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → decide (a' = b') = false → ¬a = b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact of_decide_eq_false h
 
-@[to_additive_fixed_numeral 6 7 10]
 theorem isInt_le_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' < a')) : ¬a ≤ b :=
   not_le_of_lt (isInt_lt_true hb ha h)
 
-@[to_additive_fixed_numeral 5 6 9]
 theorem isInt_lt_false [OrderedRing α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
   not_lt_of_le (isInt_le_true hb ha h)
 
-@[to_additive_fixed_numeral 3 4]
 theorem Rat.invOf_denom_swap [Ring α] (n₁ n₂ : ℤ) (a₁ a₂ : α)
     [Invertible a₁] [Invertible a₂] : n₁ * ⅟a₁ = n₂ * ⅟a₂ ↔ n₁ * a₂ = n₂ * a₁ := by
   rw [mul_invOf_eq_iff_eq_mul_right, ← Int.commute_cast, mul_assoc,
     ← mul_left_eq_iff_eq_invOf_mul, Int.commute_cast]
 
-@[to_additive_fixed_numeral 5 6]
 theorem isRat_eq_true [Ring α] : {a b : α} → {n : ℤ} → {d : ℕ} →
     IsRat a n d → IsRat b n d → a = b
   | _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩ => by congr; apply Subsingleton.elim
 
-@[to_additive_fixed_numeral 5 6 7 8 11]
 theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db →
     decide (Int.mul na (.ofNat db) ≤ Int.mul nb (.ofNat da)) → a ≤ b
@@ -602,7 +565,6 @@ theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → 
     rw [← mul_assoc, Int.commute_cast] at h
     simp at h; rwa [Int.commute_cast] at h
 
-@[to_additive_fixed_numeral 6 7 8 9 12]
 theorem isRat_lt_true [LinearOrderedRing α] [Nontrivial α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db < nb * da) → a < b
   | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
@@ -614,19 +576,16 @@ theorem isRat_lt_true [LinearOrderedRing α] [Nontrivial α] : {a b : α} → {n
     simp at h
     rwa [Int.commute_cast] at h
 
-@[to_additive_fixed_numeral 6 7 8 9 12]
 theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db →
     decide (Int.mul na (.ofNat db) = Int.mul nb (.ofNat da)) = false → ¬a = b
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
     rw [Rat.invOf_denom_swap]; exact_mod_cast of_decide_eq_false h
 
-@[to_additive_fixed_numeral 6 7 8 9 12]
 theorem isRat_le_false [LinearOrderedRing α] [Nontrivial α] {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
   not_le_of_lt (isRat_lt_true hb ha h)
 
-@[to_additive_fixed_numeral 5 6 7 8 11]
 theorem isRat_lt_false [LinearOrderedRing α] {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
   not_lt_of_le (isRat_le_true hb ha h)
@@ -807,7 +766,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 /-! # Nat operations -/
 
-@[to_additive_fixed_numeral]
 theorem isNat_natSub : {a b : ℕ} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.sub a' b' = c → IsNat (a - b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩

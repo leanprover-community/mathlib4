@@ -67,20 +67,20 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
     [IsEquivalence F] {X Y : C} {f : X ⟶ Y} (hf : NormalMono (F.map f)) : NormalMono f where
   Z := F.objPreimage hf.Z
   g := Full.preimage (hf.g ≫ (F.objObjPreimageIso hf.Z).inv)
-  w := F.map_injective <| by 
-    have reassoc' {W : D} (h : hf.Z ⟶  W) : F.map f ≫ hf.g ≫ h = 0 ≫ h := by 
+  w := F.map_injective <| by
+    have reassoc' {W : D} (h : hf.Z ⟶  W) : F.map f ≫ hf.g ≫ h = 0 ≫ h := by
       rw [← Category.assoc, eq_whisker hf.w]
     simp [reassoc']
-  isLimit := 
+  isLimit :=
     @ReflectsLimit.reflects C _ D _ _ _ _ F _ _ <|
       IsLimit.ofConeEquiv (Cones.postcomposeEquivalence (@compNatIso C _ _ _ _ _ D _ _ F _)) <|
-        IsLimit.ofIsoLimit 
-          (IsLimit.ofIsoLimit  
-            (IsKernel.ofCompIso _ _ (F.objObjPreimageIso hf.Z) (by 
-              simp only [Full.witness, Category.assoc, Iso.inv_hom_id, Category.comp_id]) 
+        IsLimit.ofIsoLimit
+          (IsLimit.ofIsoLimit
+            (IsKernel.ofCompIso _ _ (F.objObjPreimageIso hf.Z) (by
+              simp only [Full.witness, Category.assoc, Iso.inv_hom_id, Category.comp_id])
             hf.isLimit)
             (ofιCongr (Category.comp_id _).symm))
-        <| by apply Iso.symm; apply isoOfι  -- Porting note: very fiddly unification here 
+        <| by apply Iso.symm; apply isoOfι  -- Porting note: very fiddly unification here
 #align category_theory.equivalence_reflects_normal_mono CategoryTheory.equivalenceReflectsNormalMono
 
 end
@@ -110,8 +110,8 @@ def normalOfIsPullbackSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
     NormalMono g where
   Z := hn.Z
   g := k ≫ hn.g
-  w := by 
-    have reassoc' {W : C} (h' : S ⟶  W) : f ≫ h ≫ h' = g ≫ k ≫ h' := by 
+  w := by
+    have reassoc' {W : C} (h' : S ⟶  W) : f ≫ h ≫ h' = g ≫ k ≫ h' := by
       simp only [← Category.assoc, eq_whisker comm]
     rw [← reassoc', hn.w, HasZeroMorphisms.comp_zero]
   isLimit := by
@@ -154,7 +154,7 @@ def normalMonoOfMono [NormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMono 
 #align category_theory.normal_mono_of_mono CategoryTheory.normalMonoOfMono
 
 instance (priority := 100) regularMonoCategoryOfNormalMonoCategory [NormalMonoCategory C] :
-    RegularMonoCategory C where 
+    RegularMonoCategory C where
   regularMonoOfMono f _ := by
     haveI := normalMonoOfMono f
     infer_instance
@@ -196,7 +196,7 @@ def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMor
           (IsColimit.ofIsoColimit
             (IsCokernel.ofIsoComp _ _ (F.objObjPreimageIso hf.W).symm (by simp) hf.isColimit)
             (ofπCongr (Category.id_comp _).symm))
-          <| by apply Iso.symm; apply isoOfπ  
+          <| by apply Iso.symm; apply isoOfπ
 #align category_theory.equivalence_reflects_normal_epi CategoryTheory.equivalenceReflectsNormalEpi
 
 end
@@ -226,8 +226,8 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
     NormalEpi h where
   W := gn.W
   g := gn.g ≫ f
-  w := by 
-    have reassoc' {W : C} (h' : R ⟶  W) :  gn.g ≫ g ≫ h' = 0 ≫ h' := by 
+  w := by
+    have reassoc' {W : C} (h' : R ⟶  W) :  gn.g ≫ g ≫ h' = 0 ≫ h' := by
       rw [← Category.assoc, eq_whisker gn.w]
     rw [Category.assoc, comm, reassoc', zero_comp]
   isColimit := by
@@ -316,11 +316,10 @@ def normalEpiOfEpi [NormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :=
 #align category_theory.normal_epi_of_epi CategoryTheory.normalEpiOfEpi
 
 instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [NormalEpiCategory C] :
-    RegularEpiCategory C where 
+    RegularEpiCategory C where
   regularEpiOfEpi f _ := by
     haveI := normalEpiOfEpi f
     infer_instance
 #align category_theory.regular_epi_category_of_normal_epi_category CategoryTheory.regularEpiCategoryOfNormalEpiCategory
 
 end CategoryTheory
-

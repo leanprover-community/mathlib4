@@ -168,7 +168,7 @@ def combinedIsColimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.
 
 noncomputable section
 
-instance functorCategoryHasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (K ⥤ C) where 
+instance functorCategoryHasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (K ⥤ C) where
   has_limit F :=
     HasLimit.mk
       { cone := combineCones F fun _ => getLimitCone _
@@ -176,7 +176,7 @@ instance functorCategoryHasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfSha
 #align category_theory.limits.functor_category_has_limits_of_shape CategoryTheory.Limits.functorCategoryHasLimitsOfShape
 
 instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] : HasColimitsOfShape J (K ⥤ C)
-    where 
+    where
   has_colimit _ :=
     HasColimit.mk
       { cocone := combineCocones _ fun _ => getColimitCocone _
@@ -184,22 +184,22 @@ instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] : HasColimit
 #align category_theory.limits.functor_category_has_colimits_of_shape CategoryTheory.Limits.functorCategoryHasColimitsOfShape
 
 -- Porting note: previously Lean could see through the binders and infer_instance sufficed
-instance functorCategoryHasLimitsOfSize [HasLimitsOfSize.{v₁, u₁} C] : 
-    HasLimitsOfSize.{v₁, u₁} (K ⥤ C) where  
-  has_limits_of_shape := fun _ _ => inferInstance 
+instance functorCategoryHasLimitsOfSize [HasLimitsOfSize.{v₁, u₁} C] :
+    HasLimitsOfSize.{v₁, u₁} (K ⥤ C) where
+  has_limits_of_shape := fun _ _ => inferInstance
 #align category_theory.limits.functor_category_has_limits_of_size CategoryTheory.Limits.functorCategoryHasLimitsOfSize
 
 -- Porting note: previously Lean could see through the binders and infer_instance sufficed
 instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
-    HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where 
-  has_colimits_of_shape := fun _ _ => inferInstance 
+    HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where
+  has_colimits_of_shape := fun _ _ => inferInstance
 #align category_theory.limits.functor_category_has_colimits_of_size CategoryTheory.Limits.functorCategoryHasColimitsOfSize
 
 instance evaluationPreservesLimitsOfShape [HasLimitsOfShape J C] (k : K) :
-    PreservesLimitsOfShape J ((evaluation K C).obj k) where 
-  preservesLimit {F} := by 
-    -- Porting note: added a let because X was not inferred  
-    let X : (k:K)  → LimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k) := 
+    PreservesLimitsOfShape J ((evaluation K C).obj k) where
+  preservesLimit {F} := by
+    -- Porting note: added a let because X was not inferred
+    let X : (k:K)  → LimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k) :=
       fun k => getLimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
     exact preservesLimitOfPreservesLimitCone (combinedIsLimit _ _) <|
       IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
@@ -263,10 +263,10 @@ theorem limit_obj_ext {H : J ⥤ K ⥤ C} [HasLimitsOfShape J C] {k : K} {W : C}
 #align category_theory.limits.limit_obj_ext CategoryTheory.Limits.limit_obj_ext
 
 instance evaluationPreservesColimitsOfShape [HasColimitsOfShape J C] (k : K) :
-    PreservesColimitsOfShape J ((evaluation K C).obj k) where 
+    PreservesColimitsOfShape J ((evaluation K C).obj k) where
   preservesColimit {F} := by
-    -- Porting note: added a let because X was not inferred 
-    let X : (k:K)  → ColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k) := 
+    -- Porting note: added a let because X was not inferred
+    let X : (k:K)  → ColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k) :=
       fun k => getColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
     refine preservesColimitOfPreservesColimitCocone (combinedIsColimit _ _) <|
       IsColimit.ofIsoColimit (colimit.isColimit _) (evaluateCombinedCocones F X k).symm
@@ -366,7 +366,7 @@ instance preservesLimitsConst : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _
 #align category_theory.limits.preserves_limits_const CategoryTheory.Limits.preservesLimitsConst
 
 instance evaluationPreservesColimits [HasColimits C] (k : K) :
-    PreservesColimits ((evaluation K C).obj k) where 
+    PreservesColimits ((evaluation K C).obj k) where
   preservesColimitsOfShape := by skip; infer_instance
 #align category_theory.limits.evaluation_preserves_colimits CategoryTheory.Limits.evaluationPreservesColimits
 
@@ -414,8 +414,8 @@ def limitIsoFlipCompLim [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) : limit F ≅
 
 /-- A variant of `limitIsoFlipCompLim` where the arguemnts of `F` are flipped. -/
 @[simps!]
-def limitFlipIsoCompLim [HasLimitsOfShape J C] (F : K ⥤ J ⥤ C) : limit F.flip ≅ F ⋙ lim := 
-  let f := fun k => 
+def limitFlipIsoCompLim [HasLimitsOfShape J C] (F : K ⥤ J ⥤ C) : limit F.flip ≅ F ⋙ lim :=
+  let f := fun k =>
     limitObjIsoLimitCompEvaluation F.flip k ≪≫ HasLimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f <| by aesop_cat
 #align category_theory.limits.limit_flip_iso_comp_lim CategoryTheory.Limits.limitFlipIsoCompLim
@@ -439,8 +439,8 @@ def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colim
 /-- A variant of `colimit_iso_flip_comp_colim` where the arguemnts of `F` are flipped. -/
 @[simps!]
 def colimitFlipIsoCompColim [HasColimitsOfShape J C] (F : K ⥤ J ⥤ C) : colimit F.flip ≅ F ⋙ colim :=
-  let f := fun k => 
-      colimitObjIsoColimitCompEvaluation _ _ ≪≫ HasColimit.isoOfNatIso (flipCompEvaluation _ _) 
+  let f := fun k =>
+      colimitObjIsoColimitCompEvaluation _ _ ≪≫ HasColimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f <| by aesop_cat
 #align category_theory.limits.colimit_flip_iso_comp_colim CategoryTheory.Limits.colimitFlipIsoCompColim
 
@@ -453,5 +453,4 @@ def colimitIsoSwapCompColim [HasColimitsOfShape J C] (G : J ⥤ K ⥤ C) :
   colimitIsoFlipCompColim G ≪≫ isoWhiskerRight (flipIsoCurrySwapUncurry _) _
 #align category_theory.limits.colimit_iso_swap_comp_colim CategoryTheory.Limits.colimitIsoSwapCompColim
 
-end 
-
+end

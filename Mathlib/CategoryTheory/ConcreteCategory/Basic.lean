@@ -71,7 +71,7 @@ def forget (C : Type v) [Category C] [ConcreteCategory.{u} C] : C ⥤ Type u :=
   ConcreteCategory.Forget
 #align category_theory.forget CategoryTheory.forget
 
-instance ConcreteCategory.types : ConcreteCategory (Type u) where 
+instance ConcreteCategory.types : ConcreteCategory (Type u) where
   Forget := 𝟭 _
 #align category_theory.concrete_category.types CategoryTheory.ConcreteCategory.types
 
@@ -108,9 +108,9 @@ attribute [local instance] ConcreteCategory.hasCoeToFun
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations.-/
 theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x = g x) : f = g := by
-  apply @Faithful.map_injective C _ (Type w) _ (forget C) _ X Y 
+  apply @Faithful.map_injective C _ (Type w) _ (forget C) _ X Y
   dsimp [forget]
-  funext x 
+  funext x
   exact w x
 #align category_theory.concrete_category.hom_ext CategoryTheory.ConcreteCategory.hom_ext
 
@@ -133,12 +133,12 @@ theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) =
   (forget _).map_comp f g
 #align category_theory.coe_comp CategoryTheory.coe_comp
 
--- Porting note: removed @[simp] since simp can prove this 
+-- Porting note: removed @[simp] since simp can prove this
 theorem id_apply {X : C} (x : X) : (𝟙 X : X → X) x = x :=
   congr_fun ((forget _).map_id X) x
 #align category_theory.id_apply CategoryTheory.id_apply
 
--- Porting note: removed @[simp] since simp can prove this 
+-- Porting note: removed @[simp] since simp can prove this
 theorem comp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
   congr_fun ((forget _).map_comp _ _) x
 #align category_theory.comp_apply CategoryTheory.comp_apply
@@ -238,7 +238,7 @@ instance forget₂_preservesEpimorphisms (C : Type v) (D : Type v') [Category C]
 #align category_theory.forget₂_preserves_epimorphisms CategoryTheory.forget₂_preservesEpimorphisms
 
 instance InducedCategory.concreteCategory {C : Type v} {D : Type v'} [Category D]
-    [ConcreteCategory D] (f : C → D) : ConcreteCategory (InducedCategory D f) where 
+    [ConcreteCategory D] (f : C → D) : ConcreteCategory (InducedCategory D f) where
   Forget := inducedFunctor f ⋙ forget D
 #align category_theory.induced_category.concrete_category CategoryTheory.InducedCategory.concreteCategory
 
@@ -249,7 +249,7 @@ instance InducedCategory.hasForget₂ {C : Type v} {D : Type v'} [Category D] [C
 #align category_theory.induced_category.has_forget₂ CategoryTheory.InducedCategory.hasForget₂
 
 instance FullSubcategory.concreteCategory {C : Type v} [Category C] [ConcreteCategory C]
-    (Z : C → Prop) : ConcreteCategory (FullSubcategory Z) where 
+    (Z : C → Prop) : ConcreteCategory (FullSubcategory Z) where
   Forget := fullSubcategoryInclusion Z ⋙ forget C
 #align category_theory.full_subcategory.concrete_category CategoryTheory.FullSubcategoryₓ.concreteCategory
 
@@ -279,4 +279,3 @@ def hasForgetToType (C : Type v) [Category C] [ConcreteCategory C] : HasForget�
 #align category_theory.has_forget_to_Type CategoryTheory.hasForgetToType
 
 end CategoryTheory
-

@@ -145,9 +145,9 @@ namespace CompositionSeries
 
 variable {X : Type u} [Lattice X] [JordanHolderLattice X]
 
-instance hasCoeFun : CoeFun (CompositionSeries X) fun x => Fin (x.length + 1) → X where
+instance coeFun : CoeFun (CompositionSeries X) fun x => Fin (x.length + 1) → X where
   coe := CompositionSeries.series
-#align composition_series.has_coe_to_fun CompositionSeries.hasCoeFun
+#align composition_series.has_coe_to_fun CompositionSeries.coeFun
 
 instance inhabited [Inhabited X] : Inhabited (CompositionSeries X) :=
   ⟨{  length := 0
@@ -184,9 +184,9 @@ protected theorem inj (s : CompositionSeries X) {i j : Fin s.length.succ} : s i 
   s.injective.eq_iff
 #align composition_series.inj CompositionSeries.inj
 
-instance hasMembership : Membership X (CompositionSeries X) :=
+instance membership : Membership X (CompositionSeries X) :=
   ⟨fun x s => x ∈ Set.range s⟩
-#align composition_series.has_mem CompositionSeries.hasMembership
+#align composition_series.has_mem CompositionSeries.membership
 
 theorem mem_def {x : X} {s : CompositionSeries X} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
@@ -199,7 +199,7 @@ theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) 
   exact le_total i j
 #align composition_series.total CompositionSeries.total
 
-/-- The ordered `list X` of elements of a `CompositionSeries X`. -/
+/-- The ordered `List X` of elements of a `CompositionSeries X`. -/
 def toList (s : CompositionSeries X) : List X :=
   List.ofFn s
 #align composition_series.to_list CompositionSeries.toList
@@ -432,8 +432,7 @@ theorem mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
       conv_rhs => rw [← Nat.succ_sub_one s.length, Nat.succ_sub h]
       exact i.2
     -- Porting note: Was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
-    simp [top, Fin.ext_iff, ne_of_lt hi, -Set.mem_range]
-    apply Set.mem_range_self
+    simp [top, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
   · intro h
     exact mem_eraseTop_of_ne_of_mem h.1 h.2
 #align composition_series.mem_erase_top CompositionSeries.mem_eraseTop

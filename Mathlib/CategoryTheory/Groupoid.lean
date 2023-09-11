@@ -42,7 +42,7 @@ universe v v₂ u u₂
 -- morphism levels before object levels. See note [CategoryTheory universes].
 /-- A `Groupoid` is a category such that all morphisms are isomorphisms. -/
 class Groupoid (obj : Type u) extends Category.{v} obj : Type max u (v + 1) where
-  /-- The inverse morphism -/ 
+  /-- The inverse morphism -/
   inv : ∀ {X Y : obj}, (X ⟶ Y) → (Y ⟶ X)
   /-- `inv f` composed `f` is the identity -/
   inv_comp : ∀ {X Y : obj} (f : X ⟶ Y), comp (inv f) f = id Y := by aesop_cat
@@ -98,7 +98,7 @@ theorem Groupoid.reverse_eq_inv (f : X ⟶ Y) : Quiver.reverse f = Groupoid.inv 
 #align category_theory.groupoid.reverse_eq_inv CategoryTheory.Groupoid.reverse_eq_inv
 
 instance functorMapReverse {D : Type _} [Groupoid D] (F : C ⥤ D) : F.toPrefunctor.MapReverse
-    where 
+    where
       map_reverse' f := by
         simp only [Quiver.reverse, Quiver.HasReverse.reverse', Groupoid.inv_eq_inv,
           Functor.map_inv]
@@ -133,10 +133,10 @@ variable {C : Type u} [Category.{v} C]
 
 /-- A category where every morphism `IsIso` is a groupoid. -/
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) : Groupoid.{v} C
-    where 
+    where
       inv := fun f => CategoryTheory.inv f
-      comp_inv := by aesop_cat 
-      inv_comp := fun f => Classical.choose_spec (all_is_iso f).out|>.right  
+      comp_inv := by aesop_cat
+      inv_comp := fun f => Classical.choose_spec (all_is_iso f).out|>.right
 #align category_theory.groupoid.of_is_iso CategoryTheory.Groupoid.ofIsIso
 
 /-- A category with a unique morphism between any two objects is a groupoid -/
@@ -158,10 +158,10 @@ section
 
 instance groupoidPi {I : Type u} {J : I → Type u₂} [∀ i, Groupoid.{v} (J i)] :
     Groupoid.{max u v} (∀ i : I, J i)
-    where 
+    where
       inv f := fun i : I => Groupoid.inv (f i)
-      comp_inv := fun f => by funext i; apply Groupoid.comp_inv  
-      inv_comp := fun f => by funext i; apply Groupoid.inv_comp  
+      comp_inv := fun f => by funext i; apply Groupoid.comp_inv
+      inv_comp := fun f => by funext i; apply Groupoid.inv_comp
 #align category_theory.groupoid_pi CategoryTheory.groupoidPi
 
 instance groupoidProd {α : Type u} {β : Type v} [Groupoid.{u₂} α] [Groupoid.{v₂} β] :

@@ -38,12 +38,12 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
     { cone :=
         PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by rw [Category.assoc, equalizer.condition]; simp
       isLimit :=
-        PullbackCone.IsLimit.mk _ (fun s => equalizer.lift 
+        PullbackCone.IsLimit.mk _ (fun s => equalizer.lift
           (prod.lift (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)) <| by
               rw [← Category.assoc, limit.lift_π, ← Category.assoc, limit.lift_π];
                 exact PullbackCone.condition _)
           (by simp) (by simp) fun s m h₁ h₂ => by
-          apply equalizer.hom_ext 
+          apply equalizer.hom_ext
           apply prod.hom_ext
           · dsimp; simpa using h₁
           · simpa using h₂ }
@@ -104,4 +104,3 @@ theorem hasPushouts_of_hasBinaryCoproducts_of_hasCoequalizers (C : Type u) [Cate
 end
 
 end CategoryTheory.Limits
-

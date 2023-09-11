@@ -993,7 +993,7 @@ infinite. This version eliminates some cases by assuming that `P` is symmetric a
 `P (-x) y` for all `x`, `y`. -/
 @[elab_as_elim]
 theorem induction₂_symm_neg {P : EReal → EReal → Prop}
-    (symm : Symmetric P) (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤) 
+    (symm : Symmetric P) (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤)
     (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (coe_coe : ∀ x y : ℝ, P x y) :
     ∀ x y, P x y :=
   have neg_right : ∀ {x y}, P x y → P x (-y) := fun h => symm <| neg_left <| symm h

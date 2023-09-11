@@ -69,7 +69,7 @@ The following notation is localized in `quandles`:
 * `x ◃⁻¹ y` is `Rack.inv_act x y`
 * `S →◃ S'` is `ShelfHom S S'`
 
-Use `open_locale quandles` to use these.
+Use `open quandles` to use these.
 
 ## Todo
 
@@ -509,7 +509,6 @@ instance (n : ℕ) : Quandle (Dihedral n)
     intro x
     simp only [dihedralAct]
     ring_nf
-    rw [mul_two, add_sub_cancel]
 
 end Quandle
 

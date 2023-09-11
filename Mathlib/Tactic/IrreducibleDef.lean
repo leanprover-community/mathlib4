@@ -82,6 +82,7 @@ macro mods:declModifiers "irreducible_def" n_id:declId declSig:optDeclSig val:de
     { scopes with name := scopes.name.appendAfter "_def" }
   `(stop_at_first_error
     def definition$[.{$us,*}]? $declSig:optDeclSig $val
+    set_option genInjectivity false in -- generates awful simp lemmas
     structure Wrapper$[.{$us,*}]? where
       value : type_of% @definition.{$us',*}
       prop : Eq @value @(delta% @definition)

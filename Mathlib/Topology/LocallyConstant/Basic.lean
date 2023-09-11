@@ -288,7 +288,7 @@ theorem congr_fun {f g : LocallyConstant X Y} (h : f = g) (x : X) : f x = g x :=
 #align locally_constant.congr_fun LocallyConstant.congr_fun
 
 theorem congr_arg (f : LocallyConstant X Y) {x y : X} (h : x = y) : f x = f y :=
-  FunLike.congr_arg f h 
+  FunLike.congr_arg f h
 #align locally_constant.congr_arg LocallyConstant.congr_arg
 
 theorem coe_injective : @Function.Injective (LocallyConstant X Y) (X → Y) (↑) := fun _ _ =>
@@ -567,7 +567,7 @@ theorem mulIndicator_apply_eq_if (hU : IsClopen U) :
 variable {a}
 
 @[to_additive]
-theorem mulIndicator_of_mem (hU : IsClopen U) (h : a ∈ U) : f.mulIndicator hU a = f a := 
+theorem mulIndicator_of_mem (hU : IsClopen U) (h : a ∈ U) : f.mulIndicator hU a = f a :=
   Set.mulIndicator_of_mem h _
 #align locally_constant.mul_indicator_of_mem LocallyConstant.mulIndicator_of_mem
 #align locally_constant.indicator_of_mem LocallyConstant.indicator_of_mem

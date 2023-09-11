@@ -20,7 +20,7 @@ This file defines the direct sum of abelian groups, indexed by a discrete type.
 ## Notation
 
 `⨁ i, β i` is the n-ary direct sum `DirectSum`.
-This notation is in the `DirectSum` locale, accessible after `open_locale DirectSum`.
+This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 
 ## References
 
@@ -35,7 +35,7 @@ variable (ι : Type v) [dec_ι : DecidableEq ι] (β : ι → Type w)
 
 /-- `DirectSum β` is the direct sum of a family of additive commutative monoids `β i`.
 
-Note: `open_locale DirectSum` will enable the notation `⨁ i, β i` for `DirectSum β`. -/
+Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum β`. -/
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   -- Porting note: Failed to synthesize
   -- Π₀ i, β i deriving AddCommMonoid, Inhabited

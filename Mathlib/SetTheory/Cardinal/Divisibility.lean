@@ -132,7 +132,7 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
   wlog hℵ₀b : ℵ₀ ≤ b
   refine' (this h c b _ _ hc hb hℵ₀.symm hn (hℵ₀.resolve_left hℵ₀b)).symm <;> try assumption
   rwa [mul_comm] at hbc
-  rwa [mul_comm] at h' 
+  rwa [mul_comm] at h'
   exact Or.inl (dvd_of_le_of_aleph0_le hn ((nat_lt_aleph0 n).le.trans hℵ₀b) hℵ₀b)
 #align cardinal.nat_is_prime_iff Cardinal.nat_is_prime_iff
 
@@ -160,4 +160,3 @@ theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n 
 #align cardinal.is_prime_pow_iff Cardinal.isPrimePow_iff
 
 end Cardinal
-

@@ -63,7 +63,7 @@ theorem eq_one_or_neg_one_of_mul_eq_one' {z w : ℤ} (h : z * w = 1) :
 #align int.eq_one_or_neg_one_of_mul_eq_one' Int.eq_one_or_neg_one_of_mul_eq_one'
 
 theorem eq_of_mul_eq_one {z w : ℤ} (h : z * w = 1) : z = w :=
-  (eq_one_or_neg_one_of_mul_eq_one' h).elim 
+  (eq_one_or_neg_one_of_mul_eq_one' h).elim
     (and_imp.2 (·.trans ·.symm)) (and_imp.2 (·.trans ·.symm))
 #align int.eq_of_mul_eq_one Int.eq_of_mul_eq_one
 

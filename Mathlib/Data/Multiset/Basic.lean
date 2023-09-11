@@ -2636,7 +2636,7 @@ theorem map_le_map_iff {f : α → β} (hf : Function.Injective f) {s t : Multis
 image under `f`. -/
 @[simps!]
 def mapEmbedding (f : α ↪ β) : Multiset α ↪o Multiset β :=
-  OrderEmbedding.ofMapLeIff (map f) fun _ _ => map_le_map_iff f.inj'
+  OrderEmbedding.ofMapLEIff (map f) fun _ _ => map_le_map_iff f.inj'
 #align multiset.map_embedding Multiset.mapEmbedding
 #align multiset.map_embedding_apply Multiset.mapEmbedding_apply
 

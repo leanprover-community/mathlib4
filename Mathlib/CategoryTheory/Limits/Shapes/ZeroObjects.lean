@@ -193,13 +193,13 @@ section
 
 variable [HasZeroObject C]
 
-/-- Construct a `HasZero C` for a category with a zero object.
-This can not be a global instance as it will trigger for every `HasZero C` typeclass search.
+/-- Construct a `Zero C` for a category with a zero object.
+This can not be a global instance as it will trigger for every `Zero C` typeclass search.
 -/
-protected def HasZeroObject.hasZero : Zero C where zero := HasZeroObject.zero.choose
-#align category_theory.limits.has_zero_object.has_zero CategoryTheory.Limits.HasZeroObject.hasZero
+protected def HasZeroObject.zero' : Zero C where zero := HasZeroObject.zero.choose
+#align category_theory.limits.has_zero_object.has_zero CategoryTheory.Limits.HasZeroObject.zero'
 
-scoped[ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.hasZero
+scoped[ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.zero'
 
 open ZeroObject
 
@@ -315,9 +315,9 @@ def zeroIsoTerminal [HasTerminal C] : 0 ≅ ⊤_ C :=
   zeroIsTerminal.uniqueUpToIso terminalIsTerminal
 #align category_theory.limits.has_zero_object.zero_iso_terminal CategoryTheory.Limits.HasZeroObject.zeroIsoTerminal
 
-instance (priority := 100) has_strict_initial : InitialMonoClass C :=
+instance (priority := 100) initialMonoClass : InitialMonoClass C :=
   InitialMonoClass.of_isInitial zeroIsInitial fun X => by infer_instance
-#align category_theory.limits.has_zero_object.has_strict_initial CategoryTheory.Limits.HasZeroObject.has_strict_initial
+#align category_theory.limits.has_zero_object.has_strict_initial CategoryTheory.Limits.HasZeroObject.initialMonoClass
 
 end HasZeroObject
 

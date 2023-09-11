@@ -39,7 +39,7 @@ theorem TopologicalRing.of_norm {R 𝕜 : Type _} [NonUnitalNonAssocRing R] [Lin
     rcases exists_pos_mul_lt ε0 c with ⟨δ, δ0, hδ⟩
     refine ⟨δ, δ0, fun x hx ↦ (hf _).trans_lt ?_⟩
     exact (mul_le_mul_of_nonneg_left (le_of_lt hx) c0).trans_lt hδ
-  apply TopologicalRing.of_add_group_of_nhds_zero
+  apply TopologicalRing.of_addGroup_of_nhds_zero
   case hmul =>
     refine ((nhds_basis.prod nhds_basis).tendsto_iff nhds_basis).2 fun ε ε0 ↦ ?_
     refine ⟨(1, ε), ⟨one_pos, ε0⟩, fun (x, y) ⟨hx, hy⟩ => ?_⟩

@@ -66,7 +66,7 @@ namespace Finset
 /-- Given a finset on `α`, lift it to being a finset on `Option α`
 using `Option.some` and then insert `Option.none`. -/
 def insertNone : Finset α ↪o Finset (Option α) :=
-  (OrderEmbedding.ofMapLeIff fun s => cons none (s.map Embedding.some) <| by simp) fun s t => by
+  (OrderEmbedding.ofMapLEIff fun s => cons none (s.map Embedding.some) <| by simp) fun s t => by
     rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset]
 #align finset.insert_none Finset.insertNone
 

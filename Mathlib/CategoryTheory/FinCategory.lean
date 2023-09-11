@@ -39,7 +39,7 @@ instance discreteFintype {α : Type _} [Fintype α] : Fintype (Discrete α) :=
 #align category_theory.discrete_fintype CategoryTheory.discreteFintype
 
 instance discreteHomFintype {α : Type _} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
-  apply instFintypeULift
+  apply ULift.fintype
 #align category_theory.discrete_hom_fintype CategoryTheory.discreteHomFintype
 
 /-- A category with a `Fintype` of objects, and a `Fintype` for each morphism space. -/
@@ -139,8 +139,8 @@ instance finCategoryOpposite {J : Type v} [SmallCategory J] [FinCategory J] : Fi
 instance finCategoryUlift {J : Type v} [SmallCategory J] [FinCategory J] :
     FinCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J))
     where
-  fintypeObj := instFintypeULift J
-  fintypeHom := fun _ _ => instFintypeULift _
+  fintypeObj := ULift.fintype J
+  fintypeHom := fun _ _ => ULift.fintype _
 #align category_theory.fin_category_ulift CategoryTheory.finCategoryUlift
 
 end CategoryTheory

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gabriel Ebner
+Authors: Gabriel Ebner, Scott Morrison
 -/
 import Std.Tactic.TryThis
 import Mathlib.Lean.Expr.Basic
@@ -41,14 +41,36 @@ private def isBlackListed (declName : Name) : MetaM Bool := do
    || isNoConfusion env declName
   <||> isRec declName <||> isMatcher declName
 
-initialize librarySearchLemmas : DeclCache (DiscrTree Name true) ←
+/--
+A "modifier" for a declaration.
+* `none` indicates the original declaration,
+* `symm` indicates that (possibly after binders) the declaration is an `=`,
+  and we want to consider the symmetric version,
+* `mp` indicates that (possibly after binders) the declaration is an `iff`,
+  and we want to consider the forward direction,
+* `mpr` similarly, but for the backward direction.
+-/
+inductive DeclMod
+| none | symm | mp | mpr
+deriving DecidableEq
+
+initialize librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) ←
   DeclCache.mk "librarySearch: init cache" {} fun name constInfo lemmas => do
     if constInfo.isUnsafe then return lemmas
     if ← isBlackListed name then return lemmas
-    withNewMCtxDepth do
-      let (_, _, type) ← withReducible <| forallMetaTelescopeReducing constInfo.type
-      let keys ← withReducible <| DiscrTree.mkPath type
-      pure $ lemmas.insertCore keys name
+    withNewMCtxDepth do withReducible do
+      let (_, _, type) ← forallMetaTelescopeReducing constInfo.type
+      let keys ← DiscrTree.mkPath type
+      let lemmas := lemmas.insertCore keys (name, .none)
+      match type.getAppFnArgs with
+      | (``Eq, #[_, lhs, rhs]) => do
+        let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
+        pure (lemmas.insertCore keys_symm (name, .symm))
+      | (``Iff, #[lhs, rhs]) => do
+        let keys_mp ← DiscrTree.mkPath rhs
+        let keys_mpr ← DiscrTree.mkPath lhs
+        pure <| (lemmas.insertCore keys_mp (name, .mp)).insertCore keys_mpr (name, .mpr)
+      | _ => pure lemmas
 
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (required : List Expr) (depth) := do
@@ -75,7 +97,7 @@ unless the goal was completely solved.)
 (Note that if `solveByElim` solves some but not all subsidiary goals,
 this is not currently tracked.)
 -/
-def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List Expr)
+def librarySearch (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s) (required : List Expr)
     (solveByElimDepth := 6) : MetaM <| Option (Array <| MetavarContext × List MVarId) := do
   profileitM Exception "librarySearch" (← getOptions) do
   let ty ← goal.getType
@@ -91,11 +113,17 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List E
   catch _ =>
     set state0
 
-  for lem in ← lemmas.getMatch ty do
+  for (lem, mod) in ← lemmas.getMatch ty do
     trace[Tactic.librarySearch] "{lem}"
     let result ← withTraceNode `Tactic.librarySearch (return m!"{exceptOptionEmoji ·} trying {lem}")
       try
-        let newGoals ← goal.apply (← mkConstWithFreshMVarLevels lem)
+        let lem ← mkConstWithFreshMVarLevels lem
+        let lem ← match mod with
+        | .none => pure lem
+        | .symm => mapForallTelescope (fun e => mkAppM ``Eq.symm #[e]) lem
+        | .mp => mapForallTelescope (fun e => mkAppM ``Iff.mp #[e]) lem
+        | .mpr => mapForallTelescope (fun e => mkAppM ``Iff.mpr #[e]) lem
+        let newGoals ← goal.apply lem
         (try
           for newGoal in newGoals do
             trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
@@ -140,10 +168,10 @@ elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?
     if let some suggestions ← librarySearch goal (← librarySearchLemmas.get) required then
       for suggestion in suggestions do
         withMCtx suggestion.1 do
-          addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
+          addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
       admitGoal goal
     else
-      addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
+      addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
 
 open Elab Term in
 elab tk:"library_search%" : term <= expectedType => do
@@ -153,8 +181,8 @@ elab tk:"library_search%" : term <= expectedType => do
     if let some suggestions ← librarySearch introdGoal (← librarySearchLemmas.get) [] then
       for suggestion in suggestions do
         withMCtx suggestion.1 do
-          addTermSuggestion tk (← instantiateMVars goal)
+          addTermSuggestion tk (← instantiateMVars goal).headBeta
       mkSorry expectedType (synthetic := true)
     else
-      addTermSuggestion tk (← instantiateMVars goal)
+      addTermSuggestion tk (← instantiateMVars goal).headBeta
       instantiateMVars goal

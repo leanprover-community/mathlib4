@@ -315,7 +315,6 @@ theorem nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Inv
 
 #align nonzero_of_invertible nonzero_of_invertible
 
-@[to_additive_fixed_numeral 4]
 theorem pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
   Nat.zero_lt_of_ne_zero fun h => nonzero_of_invertible (n : α) (h ▸ Nat.cast_zero)
 

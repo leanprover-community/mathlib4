@@ -220,10 +220,9 @@ nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} 
   rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
 #align nnreal.has_sum_nat_add_iff NNReal.hasSum_nat_add_iff
 
-nonrec theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
-    (∑' i, f i) = (∑ i in range k, f i) + ∑' i, f (i + k) := by
-  rw [← NNReal.coe_eq, coe_tsum, NNReal.coe_add, coe_sum, coe_tsum,
-    sum_add_tsum_nat_add k (NNReal.summable_coe.2 hf)]
+theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
+    (∑' i, f i) = (∑ i in range k, f i) + ∑' i, f (i + k) :=
+  (sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 hf).symm
 #align nnreal.sum_add_tsum_nat_add NNReal.sum_add_tsum_nat_add
 
 theorem infᵢ_real_pos_eq_infᵢ_nNReal_pos [CompleteLattice α] {f : ℝ → α} :

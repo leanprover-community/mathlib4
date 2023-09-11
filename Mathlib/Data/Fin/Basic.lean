@@ -656,7 +656,6 @@ protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
   simp [eq_iff_veq, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.zero_add Fin.zero_add
 
-@[to_additive_fixed_numeral]
 instance [NeZero n] : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a (NeZero.pos n)
 
