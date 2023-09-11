@@ -142,15 +142,17 @@ namespace TensorProduct
 
 section Semiring
 
-variable {R : Type u} [CommSemiring R]
-
-variable {A : Type v₁} [Semiring A] [Algebra R A]
-
-variable {B : Type v₂} [Semiring B] [Algebra R B]
+variable {R : Type u} {S : Type*} {A : Type v₁} {B : Type v₂}
 
 /-!
 ### The `R`-algebra structure on `A ⊗[R] B`
 -/
+
+section NonUnitalNonAssocSemiring
+
+variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
+variable [Module R A] [Module R B]
+variable [SMulCommClass R A A] [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
 
 
 /-- (Implementation detail)
@@ -195,40 +197,6 @@ theorem mul_apply (a₁ a₂ : A) (b₁ b₂ : B) :
   rfl
 #align algebra.tensor_product.mul_apply Algebra.TensorProduct.mul_apply
 
-#noalign algebra.tensor_product.mul_assoc'
-
-protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
-  -- restate as an equality of morphisms so that we can use `ext`
-  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    exact FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this x) y) z
-  ext xa xb ya yb za zb
-  exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
-#align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
-
-protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
-#align algebra.tensor_product.one_mul Algebra.TensorProduct.one_mul
-
-protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
-#align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
-
-instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
-
-theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
-  rfl
-#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
-
-instance : AddMonoidWithOne (A ⊗[R] B) where
-  natCast n := n ⊗ₜ 1
-  natCast_zero := by simp
-  natCast_succ n := by simp [add_tmul, one_def]
-
-theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
-
-instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
-
 -- providing this instance separately makes some downstream code substantially faster
 instance instMul : Mul (A ⊗[R] B) where
   mul a b := mul a b
@@ -239,37 +207,11 @@ theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
   rfl
 #align algebra.tensor_product.tmul_mul_tmul Algebra.TensorProduct.tmul_mul_tmul
 
--- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
--- appears to help performance.
-instance instSemiring : Semiring (A ⊗[R] B) where
+instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (A ⊗[R] B) where
   left_distrib a b c := by simp [HMul.hMul, Mul.mul]
   right_distrib a b c := by simp [HMul.hMul, Mul.mul]
   zero_mul a := by simp [HMul.hMul, Mul.mul]
   mul_zero a := by simp [HMul.hMul, Mul.mul]
-  mul_assoc := Algebra.TensorProduct.mul_assoc
-  one_mul := Algebra.TensorProduct.one_mul
-  mul_one := Algebra.TensorProduct.mul_one
-  natCast_zero := AddMonoidWithOne.natCast_zero
-  natCast_succ := AddMonoidWithOne.natCast_succ
-
-@[simp]
-theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[R] (b ^ k) := by
-  induction' k with k ih
-  · simp [one_def]
-  · simp [pow_succ, ih]
-#align algebra.tensor_product.tmul_pow Algebra.TensorProduct.tmul_pow
-
-/-- The ring morphism `A →+* A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
-@[simps]
-def includeLeftRingHom : A →+* A ⊗[R] B where
-  toFun a := a ⊗ₜ 1
-  map_zero' := by simp
-  map_add' := by simp [add_tmul]
-  map_one' := rfl
-  map_mul' := by simp
-#align algebra.tensor_product.include_left_ring_hom Algebra.TensorProduct.includeLeftRingHom
-
-variable {S : Type*}
 
 -- we want `isScalarTower_right` to take priority since it's better for unification elsewhere
 instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
@@ -302,6 +244,101 @@ instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
       | add x y hx hy => simp [smul_add, add_mul _, *]
     | add x y hx hy => simp [smul_add, mul_add _, *]
 #align algebra.tensor_product.smul_comm_class_right Algebra.TensorProduct.sMulCommClass_right
+
+end NonUnitalNonAssocSemiring
+
+section NonAssocSemiring
+
+variable [CommSemiring R] [NonAssocSemiring A] [NonAssocSemiring B]
+variable [Module R A] [Module R B]
+variable [SMulCommClass R A A] [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
+
+instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
+
+theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
+  rfl
+#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
+
+instance instAddCommMonoidWithOne : AddCommMonoidWithOne (A ⊗[R] B) where
+  natCast n := n ⊗ₜ 1
+  natCast_zero := by simp
+  natCast_succ n := by simp [add_tmul, one_def]
+  add_comm := add_comm
+
+theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
+
+instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
+
+protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
+  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
+#align algebra.tensor_product.one_mul Algebra.TensorProduct.one_mul
+
+protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
+  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
+#align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
+
+
+instance instNonAssocSemiring : NonAssocSemiring (A ⊗[R] B) where
+  one_mul := Algebra.TensorProduct.one_mul
+  mul_one := Algebra.TensorProduct.mul_one
+  toNonUnitalNonAssocSemiring := instNonUnitalNonAssocSemiring
+  __ := instAddCommMonoidWithOne
+
+end NonAssocSemiring
+
+section NonUnitalSemiring
+
+variable [CommSemiring R] [NonUnitalSemiring A] [NonUnitalSemiring B]
+variable [Module R A] [Module R B]
+variable [SMulCommClass R A A] [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
+
+protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
+  -- restate as an equality of morphisms so that we can use `ext`
+  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
+      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
+    exact FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this x) y) z
+  ext xa xb ya yb za zb
+  exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
+#align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
+
+instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
+  mul_assoc := Algebra.TensorProduct.mul_assoc
+
+end NonUnital
+
+section Semiring
+
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+-- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
+-- appears to help performance.
+instance instSemiring : Semiring (A ⊗[R] B) where
+  left_distrib a b c := by simp [HMul.hMul, Mul.mul]
+  right_distrib a b c := by simp [HMul.hMul, Mul.mul]
+  zero_mul a := by simp [HMul.hMul, Mul.mul]
+  mul_zero a := by simp [HMul.hMul, Mul.mul]
+  mul_assoc := Algebra.TensorProduct.mul_assoc
+  one_mul := Algebra.TensorProduct.one_mul
+  mul_one := Algebra.TensorProduct.mul_one
+  natCast_zero := AddMonoidWithOne.natCast_zero
+  natCast_succ := AddMonoidWithOne.natCast_succ
+
+@[simp]
+theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[R] (b ^ k) := by
+  induction' k with k ih
+  · simp [one_def]
+  · simp [pow_succ, ih]
+#align algebra.tensor_product.tmul_pow Algebra.TensorProduct.tmul_pow
+
+/-- The ring morphism `A →+* A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
+@[simps]
+def includeLeftRingHom : A →+* A ⊗[R] B where
+  toFun a := a ⊗ₜ 1
+  map_zero' := by simp
+  map_add' := by simp [add_tmul]
+  map_one' := rfl
+  map_mul' := by simp
+#align algebra.tensor_product.include_left_ring_hom Algebra.TensorProduct.includeLeftRingHom
 
 variable [CommSemiring S] [Algebra S A]
 
