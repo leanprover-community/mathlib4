@@ -175,8 +175,6 @@ lemma isKInjective_of_injective_aux
       Cochain.ofHom_v, hh]
     abel
 
-example : ℕ := 42
-
 variable (L)
 
 lemma isKInjective_of_injective (d : ℤ) [L.IsStrictlyGE d] [∀ (n : ℤ), Injective (L.X n)] :
