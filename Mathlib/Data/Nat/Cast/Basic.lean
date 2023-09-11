@@ -6,7 +6,8 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Hom.Group.Basic
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Data.Nat.Basic
 
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -101,18 +102,6 @@ theorem cast_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} : (0 : α) 
 end Nontrivial
 
 end OrderedSemiring
-
-/-- A version of `Nat.cast_sub` that works for `ℝ≥0` and `ℚ≥0`. Note that this proof doesn't work
-for `ℕ∞` and `ℝ≥0∞`, so we use type-specific lemmas for these types. -/
-@[simp, norm_cast]
-theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
-  cases' le_total m n with h h
-  · rw [tsub_eq_zero_of_le h, cast_zero, tsub_eq_zero_of_le]
-    exact mono_cast h
-  · rcases le_iff_exists_add'.mp h with ⟨m, rfl⟩
-    rw [add_tsub_cancel_right, cast_add, add_tsub_cancel_right]
-#align nat.cast_tsub Nat.cast_tsub
 
 @[simp, norm_cast]
 theorem cast_min [LinearOrderedSemiring α] {a b : ℕ} : ((min a b : ℕ) : α) = min (a : α) b :=
