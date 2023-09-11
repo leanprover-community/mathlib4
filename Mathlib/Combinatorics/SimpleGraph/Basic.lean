@@ -137,7 +137,7 @@ structure SimpleGraph (V : Type u) where
 
 /-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
 @[simps]
-def SimpleGraph.mk' :
+def SimpleGraph.mk' {V : Type u} :
     {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where
   toFun x := ⟨fun v w ↦ x.1 v w, fun v w ↦ by simp [x.2.1], fun v ↦ by simp [x.2.2]⟩
   inj' := by
@@ -147,6 +147,8 @@ def SimpleGraph.mk' :
     funext v w
     simpa [Bool.coe_bool_iff] using congr_fun₂ h v w
 
+/-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
+and filtering on whether they are symmetric and irreflexive. -/
 instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) where
   elems := Finset.univ.map SimpleGraph.mk'
   complete := by
