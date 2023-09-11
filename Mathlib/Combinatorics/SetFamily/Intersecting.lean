@@ -45,7 +45,7 @@ def Intersecting (s : Set α) : Prop :=
   ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ¬Disjoint a b
 #align set.intersecting Set.Intersecting
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem Intersecting.mono (h : t ⊆ s) (hs : s.Intersecting) : t.Intersecting := fun _a ha _b hb =>
   hs (h ha) (h hb)
 #align set.intersecting.mono Set.Intersecting.mono

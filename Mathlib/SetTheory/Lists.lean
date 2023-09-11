@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module set_theory.lists
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 497d1e06409995dd8ec95301fa8d8f3480187f4c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -39,11 +39,9 @@ This calls for a two-steps definition of ZFA lists:
 * `Lists' α true`: Proper ZFA prelists. Defined inductively from the empty ZFA prelist
   (`Lists'.nil`) and from appending a ZFA prelist to a proper ZFA prelist (`Lists'.cons a l`).
 * `Lists α`: ZFA lists. Sum of the atoms and proper ZFA prelists.
-
-## TODO
-
-The next step is to define ZFA sets as lists quotiented by `Lists.Equiv`.
-(-/
+* `Finsets α`: ZFA sets. Defined as `Lists` quotiented by `Lists.Equiv`, the extensional
+  equivalence.
+-/
 
 
 variable {α : Type _}
@@ -110,10 +108,11 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
       ofList (toList l') = l'
     from this _ rfl
   fun b h l => by
-    induction l; · cases h
+    induction l with
+    | atom => cases h
     -- Porting note: case nil was not covered.
-    case nil => simp
-    case cons' b a l _ IH =>
+    | nil => simp
+    | cons' b a _ IH =>
       intro l'
       -- Porting note: Previous code was:
       -- change l' with cons' a l
@@ -138,7 +137,6 @@ end
 #align lists.equiv Lists.Equiv
 #align lists'.subset Lists'.Subset
 
--- mathport name: «expr ~ »
 local infixl:50 " ~ " => Lists.Equiv
 
 /-- Equivalence of ZFA lists. Defined inductively. -/
@@ -166,8 +164,7 @@ theorem mem_cons {a y l} : a ∈ @cons α y l ↔ a ~ y ∨ a ∈ l := by
   simp [mem_def, or_and_right, exists_or]
 #align lists'.mem_cons Lists'.mem_cons
 
-theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l₂ ↔ a ∈ l₂ ∧ l₁ ⊆ l₂ :=
-  by
+theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l₂ ↔ a ∈ l₂ ∧ l₁ ⊆ l₂ := by
   refine' ⟨fun h => _, fun ⟨⟨a', m, e⟩, s⟩ => Subset.cons e m s⟩
   generalize h' : Lists'.cons a l₁ = l₁' at h
   cases' h with l a' a'' l l' e m s;
@@ -188,18 +185,18 @@ theorem Subset.refl {l : Lists' α true} : l ⊆ l := by
   rw [← Lists'.of_toList l]; exact ofList_subset (List.Subset.refl _)
 #align lists'.subset.refl Lists'.Subset.refl
 
-theorem subset_nil {l : Lists' α true} : l ⊆ Lists'.nil → l = Lists'.nil :=
-  by
+theorem subset_nil {l : Lists' α true} : l ⊆ Lists'.nil → l = Lists'.nil := by
   rw [← of_toList l]
-  induction toList l <;> intro h; · rfl
-  rcases cons_subset.1 h with ⟨⟨_, ⟨⟩, _⟩, _⟩
+  induction toList l <;> intro h
+  · rfl
+  · rcases cons_subset.1 h with ⟨⟨_, ⟨⟩, _⟩, _⟩
 #align lists'.subset_nil Lists'.subset_nil
 
-theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂) (_ : a ∈ l₁.toList),  a ∈ l₂
+theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂) (_ : a ∈ l₁.toList), a ∈ l₂
   | nil, _, Lists'.Subset.nil, h => by cases h
   | cons' a0 l0, l₂, s, h => by
     cases' s with _ _ _ _ _ e m s
-    simp at h
+    simp only [toList, Sigma.eta, List.find?, List.mem_cons] at h
     rcases h with (rfl | h)
     · exact ⟨_, m, e⟩
     · exact mem_of_subset' s h
@@ -209,9 +206,9 @@ theorem subset_def {l₁ l₂ : Lists' α true} : l₁ ⊆ l₂ ↔ ∀ a ∈ l�
   ⟨fun H a => mem_of_subset' H, fun H =>
     by
     rw [← of_toList l₁]
-    revert H; induction' toList l₁ with h t t_ih <;> intro
+    revert H; induction' toList l₁ with h t t_ih <;> intro H
     · exact Subset.nil
-    · rename _ => H; simp at *
+    · simp only [ofList, List.find?, List.mem_cons, forall_eq_or_imp] at *
       exact cons_subset.2 ⟨H.1, t_ih H.2⟩⟩
 #align lists'.subset_def Lists'.subset_def
 
@@ -299,10 +296,10 @@ def mem (a : Lists α) : Lists α → Prop
 instance : Membership (Lists α) (Lists α) :=
   ⟨mem⟩
 
-theorem is_list_of_mem {a : Lists α} : ∀ {l : Lists α}, a ∈ l → IsList l
+theorem isList_of_mem {a : Lists α} : ∀ {l : Lists α}, a ∈ l → IsList l
   | ⟨_, Lists'.nil⟩, _ => rfl
   | ⟨_, Lists'.cons' _ _⟩, _ => rfl
-#align lists.is_list_of_mem Lists.is_list_of_mem
+#align lists.is_list_of_mem Lists.isList_of_mem
 
 theorem Equiv.antisymm_iff {l₁ l₂ : Lists' α true} : of' l₁ ~ of' l₂ ↔ l₁ ⊆ l₂ ∧ l₂ ⊆ l₁ := by
   refine' ⟨fun h => _, fun ⟨h₁, h₂⟩ => Equiv.antisymm h₁ h₂⟩
@@ -321,8 +318,7 @@ theorem Equiv.symm {l₁ l₂ : Lists α} (h : l₁ ~ l₂) : l₂ ~ l₁ := by
   cases' h with _ _ _ h₁ h₂ <;> [rfl, exact Equiv.antisymm h₂ h₁]
 #align lists.equiv.symm Lists.Equiv.symm
 
-theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l₃ → l₁ ~ l₃ :=
-  by
+theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l₃ → l₁ ~ l₃ := by
   let trans := fun l₁ : Lists α => ∀ ⦃l₂ l₃⦄, l₁ ~ l₂ → l₂ ~ l₃ → l₁ ~ l₃
   suffices PProd (∀ l₁, trans l₁) (∀ (l : Lists' α true), ∀ l' ∈ l.toList, trans l') by exact this.1
   apply inductionMut
@@ -353,7 +349,7 @@ theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l�
     -- simpa [IH₁] using IH
     --
     -- Assumption fails.
-    simp [IH₁]
+    simp only [Lists'.toList, Sigma.eta, List.find?, List.mem_cons, forall_eq_or_imp]
     constructor
     . intros l₂ l₃ h₁ h₂
       exact IH₁ h₁ h₂
@@ -481,6 +477,6 @@ instance : Inhabited (Finsets α) :=
 instance [DecidableEq α] : DecidableEq (Finsets α) := by
   unfold Finsets
   -- porting notes: infer_instance does not work for some reason
-  exact (@instDecidableEqQuotient_1 _ _ (fun _ _ => Lists.Equiv.decidable _ _))
+  exact (Quotient.decidableEq (d := fun _ _ => Lists.Equiv.decidable _ _))
 
 end Finsets

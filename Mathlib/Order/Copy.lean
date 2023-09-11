@@ -43,8 +43,8 @@ def BoundedOrder.copy {h : LE α} {h' : LE α} (c : @BoundedOrder α h')
 with possibly different definitional equalities. -/
 def Lattice.copy (c : Lattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : HasSup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : HasInf α).inf) : Lattice α := by
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf) : Lattice α := by
   refine' { le := le, sup := sup, inf := inf, lt := fun a b ↦ le a b ∧ ¬ le b a.. }
   · intros; simp [eq_le]
   · intro _ _ _ hab hbc; rw [eq_le] at hab hbc ⊢; exact le_trans hab hbc
@@ -64,8 +64,8 @@ def Lattice.copy (c : Lattice α)
 with possibly different definitional equalities. -/
 def DistribLattice.copy (c : DistribLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : HasSup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : HasInf α).inf) : DistribLattice α := by
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf) : DistribLattice α := by
   refine' { le := le, sup := sup, inf := inf, lt := fun a b ↦ le a b ∧ ¬ le b a.. }
   · intros; simp [eq_le]
   · intro _ _ _ hab hbc; rw [eq_le] at hab hbc ⊢; exact le_trans hab hbc
@@ -89,8 +89,8 @@ def CompleteLattice.copy (c : CompleteLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : HasSup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : HasInf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
     (supₛ : Set α → α) (eq_supₛ : supₛ = (by infer_instance : SupSet α).supₛ)
     (infₛ : Set α → α) (eq_infₛ : infₛ = (by infer_instance : InfSet α).infₛ) :
     CompleteLattice α := by
@@ -111,8 +111,8 @@ equalities. -/
 def Frame.copy (c : Frame α) (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : HasSup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : HasInf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
     (supₛ : Set α → α) (eq_supₛ : supₛ = (by infer_instance : SupSet α).supₛ)
     (infₛ : Set α → α) (eq_infₛ : infₛ = (by infer_instance : InfSet α).infₛ) : Frame α :=
   { CompleteLattice.copy (@Frame.toCompleteLattice α c) le eq_le top eq_top bot eq_bot
@@ -128,8 +128,8 @@ equalities. -/
 def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : HasSup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : HasInf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
     (supₛ : Set α → α) (eq_supₛ : supₛ = (by infer_instance : SupSet α).supₛ)
     (infₛ : Set α → α) (eq_infₛ : infₛ = (by infer_instance : InfSet α).infₛ) : Coframe α :=
   { CompleteLattice.copy (@Coframe.toCompleteLattice α c) le eq_le top eq_top bot eq_bot sup
@@ -144,8 +144,8 @@ def CompleteDistribLattice.copy (c : CompleteDistribLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : HasSup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : HasInf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
     (supₛ : Set α → α) (eq_supₛ : supₛ = (by infer_instance : SupSet α).supₛ)
     (infₛ : Set α → α) (eq_infₛ : infₛ = (by infer_instance : InfSet α).infₛ) :
     CompleteDistribLattice α :=
@@ -161,8 +161,8 @@ def CompleteDistribLattice.copy (c : CompleteDistribLattice α)
 with possibly different definitional equalities. -/
 def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : HasSup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : HasInf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
     (supₛ : Set α → α) (eq_supₛ : supₛ = (by infer_instance : SupSet α).supₛ)
     (infₛ : Set α → α) (eq_infₛ : infₛ = (by infer_instance : InfSet α).infₛ) :
     ConditionallyCompleteLattice α := by

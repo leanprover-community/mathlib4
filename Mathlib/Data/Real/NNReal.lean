@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module data.real.nnreal
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
+! leanprover-community/mathlib commit b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -767,20 +767,6 @@ theorem sum_div {ι} (s : Finset ι) (f : ι → ℝ≥0) (b : ℝ≥0) :
   Finset.sum_div
 #align nnreal.sum_div NNReal.sum_div
 
-@[deprecated _root_.inv_pos]
-protected nonrec theorem inv_pos {r : ℝ≥0} : 0 < r⁻¹ ↔ 0 < r := inv_pos
-#align nnreal.inv_pos NNReal.inv_pos
-
-@[deprecated _root_.div_pos] -- todo: add an `iff` version
-protected nonrec theorem div_pos {r p : ℝ≥0} (hr : 0 < r) (hp : 0 < p) : 0 < r / p :=
-  div_pos hr hp
-#align nnreal.div_pos NNReal.div_pos
-
-@[deprecated div_self_le_one]
-theorem div_self_le (r : ℝ≥0) : r / r ≤ 1 :=
-  div_self_le_one r
-#align nnreal.div_self_le NNReal.div_self_le
-
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
   rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel h]
@@ -873,19 +859,6 @@ theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) 
     rwa [mul_assoc, inv_mul_cancel hx, mul_one] at this
 #align nnreal.le_of_forall_lt_one_mul_le NNReal.le_of_forall_lt_one_mul_le
 
-@[deprecated _root_.div_add_div_same]
-nonrec theorem div_add_div_same (a b c : ℝ≥0) : a / c + b / c = (a + b) / c :=
-  div_add_div_same _ _ _
-#align nnreal.div_add_div_same NNReal.div_add_div_same
-
-@[deprecated _root_.half_pos]
-nonrec theorem half_pos {a : ℝ≥0} (h : 0 < a) : 0 < a / 2 := half_pos h
-#align nnreal.half_pos NNReal.half_pos
-
-@[deprecated _root_.add_halves]
-nonrec theorem add_halves (a : ℝ≥0) : a / 2 + a / 2 = a := add_halves _
-#align nnreal.add_halves NNReal.add_halves
-
 nonrec theorem half_le_self (a : ℝ≥0) : a / 2 ≤ a :=
   half_le_self bot_le
 #align nnreal.half_le_self NNReal.half_le_self
@@ -894,30 +867,10 @@ nonrec theorem half_lt_self {a : ℝ≥0} (h : a ≠ 0) : a / 2 < a :=
   half_lt_self h.bot_lt
 #align nnreal.half_lt_self NNReal.half_lt_self
 
-@[deprecated _root_.two_inv_lt_one]
-nonrec theorem two_inv_lt_one : (2⁻¹ : ℝ≥0) < 1 := two_inv_lt_one
-#align nnreal.two_inv_lt_one NNReal.two_inv_lt_one
-
 theorem div_lt_one_of_lt {a b : ℝ≥0} (h : a < b) : a / b < 1 := by
   rwa [div_lt_iff, one_mul]
   exact ne_of_gt (lt_of_le_of_lt (zero_le _) h)
 #align nnreal.div_lt_one_of_lt NNReal.div_lt_one_of_lt
-
-@[field_simps, deprecated _root_.div_add_div]
-nonrec theorem div_add_div (a : ℝ≥0) {b : ℝ≥0} (c : ℝ≥0) {d : ℝ≥0} (hb : b ≠ 0) (hd : d ≠ 0) :
-    a / b + c / d = (a * d + b * c) / (b * d) :=
-  div_add_div _ _ hb hd
-#align nnreal.div_add_div NNReal.div_add_div
-
-@[field_simps, deprecated _root_.add_div']
-nonrec theorem add_div' (a b c : ℝ≥0) (hc : c ≠ 0) : b + a / c = (b * c + a) / c :=
-  add_div' _ _ _ hc
-#align nnreal.add_div' NNReal.add_div'
-
-@[field_simps, deprecated _root_.div_add']
-nonrec theorem div_add' (a b c : ℝ≥0) (hc : c ≠ 0) : a / c + b = (a + b * c) / c :=
-  div_add' _ _ _ hc
-#align nnreal.div_add' NNReal.div_add'
 
 theorem _root_.Real.toNNReal_inv {x : ℝ} : Real.toNNReal x⁻¹ = (Real.toNNReal x)⁻¹ := by
   cases' le_total 0 x with hx hx
@@ -940,18 +893,9 @@ theorem inv_lt_one_iff {x : ℝ≥0} (hx : x ≠ 0) : x⁻¹ < 1 ↔ 1 < x := by
   rw [← one_div, div_lt_iff hx, one_mul]
 #align nnreal.inv_lt_one_iff NNReal.inv_lt_one_iff
 
-@[deprecated _root_.inv_lt_one]
-nonrec theorem inv_lt_one {x : ℝ≥0} (hx : 1 < x) : x⁻¹ < 1 := inv_lt_one hx
-#align nnreal.inv_lt_one NNReal.inv_lt_one
-
 theorem zpow_pos {x : ℝ≥0} (hx : x ≠ 0) (n : ℤ) : 0 < x ^ n :=
   zpow_pos_of_pos hx.bot_lt _
 #align nnreal.zpow_pos NNReal.zpow_pos
-
-@[deprecated inv_lt_inv₀]
-theorem inv_lt_inv_iff {x y : ℝ≥0} (hx : x ≠ 0) (hy : y ≠ 0) : y⁻¹ < x⁻¹ ↔ x < y :=
-  inv_lt_inv₀ hy hx
-#align nnreal.inv_lt_inv_iff NNReal.inv_lt_inv_iff
 
 theorem inv_lt_inv {x y : ℝ≥0} (hx : x ≠ 0) (h : x < y) : y⁻¹ < x⁻¹ :=
   inv_lt_inv_of_lt hx.bot_lt h

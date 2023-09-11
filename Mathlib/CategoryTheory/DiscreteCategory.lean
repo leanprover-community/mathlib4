@@ -44,7 +44,7 @@ universe v₁ v₂ v₃ u₁ u₁' u₂ u₃
 
 -- This is intentionally a structure rather than a type synonym
 -- to enforce using `DiscreteEquiv` (or `Discrete.mk` and `Discrete.as`) to move between
--- `discrete α` and `α`. Otherwise there is too much API leakage.
+-- `Discrete α` and `α`. Otherwise there is too much API leakage.
 /-- A wrapper for promoting any type to a category,
 with the only morphisms being equalities.
 -/
@@ -64,8 +64,7 @@ theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X
 
 /-- `Discrete α` is equivalent to the original type `α`.-/
 @[simps]
-def discreteEquiv {α : Type u₁} : Discrete α ≃ α
-    where
+def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   toFun := Discrete.as
   invFun := Discrete.mk
   left_inv := by aesop_cat
@@ -82,8 +81,7 @@ somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`.
 
 See <https://stacks.math.columbia.edu/tag/001A>
 -/
-instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α)
-    where
+instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
   Hom X Y := ULift (PLift (X.as = Y.as))
   id X := ULift.up (PLift.up rfl)
   comp {X Y Z} g f := by
@@ -166,8 +164,7 @@ instance {I : Type u₁} {i j : Discrete I} (f : i ⟶ j) : IsIso f :=
   ⟨⟨Discrete.eqToHom (eq_of_hom f).symm, by aesop_cat⟩⟩
 
 /-- Any function `I → C` gives a functor `Discrete I ⥤ C`.-/
-def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C
-    where
+def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
   obj := F ∘ Discrete.as
   map {X Y} f := by
     dsimp
@@ -249,8 +246,7 @@ def compNatIsoDiscrete {I : Type u₁} {D : Type u₃} [Category.{v₃} D] (F : 
 an equivalence between the corresponding `discrete` categories.
 -/
 @[simps]
-def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ Discrete J
-    where
+def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ Discrete J where
   functor := Discrete.functor (Discrete.mk ∘ (e : I → J))
   inverse := Discrete.functor (Discrete.mk ∘ (e.symm : J → I))
   unitIso :=
@@ -269,8 +265,7 @@ def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ D
 
 /-- We can convert an equivalence of `discrete` categories to a type-level `Equiv`. -/
 @[simps]
-def equivOfEquivalence {α : Type u₁} {β : Type u₂} (h : Discrete α ≌ Discrete β) : α ≃ β
-    where
+def equivOfEquivalence {α : Type u₁} {β : Type u₂} (h : Discrete α ≌ Discrete β) : α ≃ β where
   toFun := Discrete.as ∘ h.functor.obj ∘ Discrete.mk
   invFun := Discrete.as ∘ h.inverse.obj ∘ Discrete.mk
   left_inv a := by simpa using eq_of_hom (h.unitIso.app (Discrete.mk a)).2

@@ -105,7 +105,7 @@ noncomputable def finsum {M α} [AddCommMonoid M] (f : α → M) : M :=
 -- Porting note: replaced irreducible_def with def and an irreducible tag here.
 /-- Product of `f x` as `x` ranges over the elements of the multiplicative support of `f`, if it's
 finite. One otherwise. -/
-@[to_additive (attr:= irreducible)]
+@[to_additive existing (attr:= irreducible)]
 noncomputable def finprod (f : α → M) : M :=
   if h : (mulSupport (f ∘ PLift.down)).Finite then ∏ i in h.toFinset, f i.down else 1
 #align finprod finprod

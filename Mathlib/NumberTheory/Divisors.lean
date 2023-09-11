@@ -19,7 +19,7 @@ This file defines sets of divisors of a natural number. This is particularly use
 for defining Dirichlet convolution.
 
 ## Main Definitions
-Let `n : ℕ`. All of the following definitions are in the `nat` namespace:
+Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
  * `divisors n` is the `Finset` of natural numbers that divide `n`.
  * `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
  * `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
@@ -34,11 +34,7 @@ divisors, perfect numbers
 -/
 
 
-open Classical
-
-open BigOperators
-
-open Finset
+open BigOperators Classical Finset
 
 namespace Nat
 
@@ -447,7 +443,8 @@ theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ
 theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     properDivisors (p ^ k) = (Finset.range k).map ⟨Nat.pow p, pow_right_injective pp.two_le⟩ := by
   ext a
-  simp [pp, Nat.lt_succ_iff]
+  simp only [mem_properDivisors, Nat.isUnit_iff, mem_map, mem_range, Function.Embedding.coeFn_mk,
+    pow_eq]
   have := mem_properDivisors_prime_pow pp k (x := a)
   rw [mem_properDivisors] at this
   rw [this]
@@ -498,7 +495,8 @@ theorem prime_divisors_eq_to_filter_divisors_prime (n : ℕ) :
 @[simp]
 theorem image_div_divisors_eq_divisors (n : ℕ) :
     image (fun x : ℕ => n / x) n.divisors = n.divisors := by
-  by_cases hn : n = 0; · simp [hn]
+  by_cases hn : n = 0
+  · simp [hn]
   ext a
   constructor
   · rw [mem_image]

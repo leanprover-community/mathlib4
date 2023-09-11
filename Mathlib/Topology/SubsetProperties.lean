@@ -1311,7 +1311,7 @@ theorem unionᵢ_compactCovering : (⋃ n, compactCovering α n) = univ := by
   exact (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).2
 #align Union_compact_covering unionᵢ_compactCovering
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem compactCovering_subset ⦃m n : ℕ⦄ (h : m ≤ n) : compactCovering α m ⊆ compactCovering α n :=
   monotone_accumulate h
 #align compact_covering_subset compactCovering_subset
@@ -1408,7 +1408,7 @@ theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) :=
   Subset.trans (K.subset_interior_succ n) interior_subset
 #align compact_exhaustion.subset_succ CompactExhaustion.subset_succ
 
--- porting note: todo: restore @[mono]
+@[mono]
 protected theorem subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
   show K m ≤ K n from monotone_nat_of_le_succ K.subset_succ h
 #align compact_exhaustion.subset CompactExhaustion.subset

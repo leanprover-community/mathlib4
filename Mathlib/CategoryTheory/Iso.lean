@@ -148,6 +148,8 @@ theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 #align category_theory.iso.refl_symm CategoryTheory.Iso.refl_symm
 
+-- Porting note: It seems that the trans `trans` attribute isn't working properly
+-- in this case, so we have to manually add a `Trans` instance (with a `simps` tag).
 /-- Composition of two isomorphisms -/
 @[trans, simps]
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
@@ -157,6 +159,7 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
 #align category_theory.iso.trans_hom CategoryTheory.Iso.trans_hom
 #align category_theory.iso.trans_inv CategoryTheory.Iso.trans_inv
 
+@[simps]
 instance : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
   trans := trans
 

@@ -289,6 +289,36 @@ def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → Term
 | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
 | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
 
+/-- If `e` has a structure as type with field `fieldName`, `mkDirectProjection e fieldName` creates
+the projection expression `e.fieldName` -/
+def mkDirectProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
+  let type ← whnf (← inferType e)
+  let .const structName us := type.getAppFn | throwError "{e} doesn't have a structure as type"
+  let some projName := getProjFnForField? (← getEnv) structName fieldName |
+    throwError "{structName} doesn't have field {fieldName}"
+  return mkAppN (.const projName us) (type.getAppArgs.push e)
+
+/-- If `e` has a structure as type with field `fieldName` (either directly or in a parent
+structure), `mkProjection e fieldName` creates the projection expression `e.fieldName` -/
+def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
+  let .const structName _ := (← whnf (←inferType e)).getAppFn |
+    throwError "{e} doesn't have a structure as type"
+  let some baseStruct := findField? (← getEnv) structName fieldName |
+    throwError "No parent of {structName} has field {fieldName}"
+  let mut e := e
+  for projName in (getPathToBaseStructure? (← getEnv) baseStruct structName).get! do
+    let type ← whnf (← inferType e)
+    let .const _structName us := type.getAppFn | throwError "{e} doesn't have a structure as type"
+    e := mkAppN (.const projName us) (type.getAppArgs.push e)
+  mkDirectProjection e fieldName
+
 end Expr
+
+/-- Get the projections that are projections to parent structures. Similar to `getParentStructures`,
+  except that this returns the (last component of the) projection names instead of the parent names.
+-/
+def getFieldsToParents (env : Environment) (structName : Name) : Array Name :=
+  getStructureFields env structName |>.filter fun fieldName =>
+    isSubobjectField? env structName fieldName |>.isSome
 
 end Lean

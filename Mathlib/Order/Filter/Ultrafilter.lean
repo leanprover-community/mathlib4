@@ -340,9 +340,9 @@ def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
     simp only [mem_bind', mem_coe, ← compl_mem_iff_not_mem, compl_setOf, compl_compl]
 #align ultrafilter.bind Ultrafilter.bind
 
-instance hasBind : Bind Ultrafilter :=
+instance instBind : Bind Ultrafilter :=
   ⟨@Ultrafilter.bind⟩
-#align ultrafilter.has_bind Ultrafilter.hasBind
+#align ultrafilter.has_bind Ultrafilter.instBind
 
 instance functor : Functor Ultrafilter where map := @Ultrafilter.map
 #align ultrafilter.functor Ultrafilter.functor

@@ -25,9 +25,9 @@ a join-semilattice structure.
 - `Order.IsPFilter P`: a predicate for when a `Set P` is a filter.
 
 
-Note the relation between `order/Filter` and `order/pfilter`: for any
+Note the relation between `Order/Filter` and `Order/PFilter`: for any
 type `α`, `Filter α` represents the same mathematical object as
-`pfilter (Set α)`.
+`PFilter (Set α)`.
 
 ## References
 
@@ -193,4 +193,3 @@ end CompleteSemilatticeInf
 end PFilter
 
 end Order
-

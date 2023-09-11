@@ -537,7 +537,7 @@ theorem sub_nonempty {a b : Ordinal} : { o | a ≤ b + o }.Nonempty :=
 #align ordinal.sub_nonempty Ordinal.sub_nonempty
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
-instance hasSub : Sub Ordinal :=
+instance sub : Sub Ordinal :=
   ⟨fun a b => infₛ { o | a ≤ b + o }⟩
 
 theorem le_add_sub (a b : Ordinal) : a ≤ b + (a - b) :=
@@ -875,7 +875,7 @@ theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.None
 #align ordinal.div_nonempty Ordinal.div_nonempty
 
 /-- `a / b` is the unique ordinal `o` satisfying `a = b * o + o'` with `o' < b`. -/
-instance hasDiv : Div Ordinal :=
+instance div : Div Ordinal :=
   ⟨fun a b => if _h : b = 0 then 0 else infₛ { o | a < b * succ o }⟩
 
 @[simp]
@@ -1024,7 +1024,7 @@ instance isAntisymm : IsAntisymm Ordinal (· ∣ ·) :=
 
 /-- `a % b` is the unique ordinal `o'` satisfying
   `a = b * o + o'` with `o' < b`. -/
-instance hasMod : Mod Ordinal :=
+instance mod : Mod Ordinal :=
   ⟨fun a b => a - b * (a / b)⟩
 
 theorem mod_def (a b : Ordinal) : a % b = a - b * (a / b) :=

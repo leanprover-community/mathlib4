@@ -54,7 +54,7 @@ See note [reducible non-instances]. -/
   to_additive Function.Injective.linearOrderedCancelAddCommMonoid
       "Pullback a `LinearOrderedCancelAddCommMonoid` under an injective map."]
 def Function.Injective.linearOrderedCancelCommMonoid {β : Type _} [One β] [Mul β] [Pow β ℕ]
-    [HasSup β] [HasInf β] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
+    [Sup β] [Inf β] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrderedCancelCommMonoid β :=

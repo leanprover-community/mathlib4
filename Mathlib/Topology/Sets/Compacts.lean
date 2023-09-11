@@ -76,10 +76,10 @@ theorem carrier_eq_coe (s : Compacts α) : s.carrier = s :=
   rfl
 #align topological_space.compacts.carrier_eq_coe TopologicalSpace.Compacts.carrier_eq_coe
 
-instance : HasSup (Compacts α) :=
+instance : Sup (Compacts α) :=
   ⟨fun s t => ⟨s ∪ t, s.isCompact.union t.isCompact⟩⟩
 
-instance [T2Space α] : HasInf (Compacts α) :=
+instance [T2Space α] : Inf (Compacts α) :=
   ⟨fun s t => ⟨s ∩ t, s.isCompact.inter t.isCompact⟩⟩
 
 instance [CompactSpace α] : Top (Compacts α) :=
@@ -227,7 +227,7 @@ theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
 @[simp] -- porting note: new lemma
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
 
-instance : HasSup (NonemptyCompacts α) :=
+instance : Sup (NonemptyCompacts α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono <| subset_union_left _ _⟩⟩
 
 instance [CompactSpace α] [Nonempty α] : Top (NonemptyCompacts α) :=
@@ -336,7 +336,7 @@ theorem carrier_eq_coe (s : PositiveCompacts α) : s.carrier = s :=
 theorem coe_toCompacts (s : PositiveCompacts α) : (s.toCompacts : Set α) = s :=
   rfl
 
-instance : HasSup (PositiveCompacts α) :=
+instance : Sup (PositiveCompacts α) :=
   ⟨fun s t =>
     ⟨s.toCompacts ⊔ t.toCompacts,
       s.interior_nonempty.mono <| interior_mono <| subset_union_left _ _⟩⟩
@@ -444,10 +444,10 @@ theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.compact_opens.coe_mk TopologicalSpace.CompactOpens.coe_mk
 
-instance : HasSup (CompactOpens α) :=
+instance : Sup (CompactOpens α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.isOpen.union t.isOpen⟩⟩
 
-instance [QuasiSeparatedSpace α] : HasInf (CompactOpens α) :=
+instance [QuasiSeparatedSpace α] : Inf (CompactOpens α) :=
   ⟨fun U V =>
     ⟨⟨(U : Set α) ∩ (V : Set α),
         QuasiSeparatedSpace.inter_isCompact U.1.1 V.1.1 U.2 U.1.2 V.2 V.1.2⟩,

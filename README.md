@@ -47,24 +47,27 @@ The HTML files can then be found in `build/doc`.
 
 ### Dependencies
 If you want to update dependencies, use `lake update -Kdoc=on`.
-This will update the `lean_packages/manifest.json` file correctly.
+This will update the `lake-manifest.json` file correctly.
 You will need to make a PR after committing the changes to this file.
 
 ## Using `mathlib4` as a dependency
 
-If you want to start a project that uses `mathlib4` as a dependency, you can run:
-```
-lake new MyProject math
-```
+To start a new project that uses mathlib4 as a dependency:
 
-Important: the command above requires a more recent toolchain set as default, which can be done with, for example:
-```
-elan default leanprover/lean4:nightly-2023-02-04
-```
+1. Open a folder that contains no file named `lean-toolchain`.
+2. Update your default toolchain to one that is sufficiently recent with `elan default leanprover/lean4:nightly-2023-02-04`
 
-Or, if you already have a project and you want to be able to use `mathlib4`, add these lines to your `lakefile.lean`:
+3. Run `lake new <your_project_name> math`.
+4. You now have a folder named `your_project_name` that contains a new `lake` project. The `lakefile.lean` folder is configured with the `mathlib4` dependency.
+5. Change your current directory to the project folder and run `lake update`. This step downloads `mathlib4` as well as its dependencies.
+6. Run `cp lake-packages/mathlib/lean-toolchain .` to make sure your new project uses the same Lean version as `mathlib4`.
+7. (Optional) In order to save time compiling all of mathlib and its dependencies, run `lake exe cache get`. This step requires that you have `curl 7.69`  or higher.
+8. Run `lake build`. If you have get no build errors, you are good to go!
+
+
+If you already have a project and you want to use `mathlib4`, add these lines to your `lakefile.lean`:
 ```
-require mathlib4 from git
+require mathlib from git
   "https://github.com/leanprover-community/mathlib4" @ "<REVISION>"
 ```
 Where `<REVISION>` can be a commit hash, a branch or a tag. You can check [this section](https://github.com/leanprover/lake/#adding-dependencies) from Lake's README for more info.
@@ -78,4 +81,4 @@ It means that you can call `lake exe cache` on your project if you're using `mat
 However, make sure to follow these guidelines:
 * Call `lake exe cache get` (or other `cache` commands) from the root directory of your project
 * If your project depends on `std4` or `quote4`, let `mathlib4` pull them transitively. That is, don't `require` them on your `lakefile.lean`
-
+* Make sure that your project uses the same Lean 4 toolchain as the one used in `mathlib4`

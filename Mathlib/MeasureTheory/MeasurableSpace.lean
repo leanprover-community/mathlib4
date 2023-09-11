@@ -1725,7 +1725,7 @@ theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ 
   rfl
 #align measurable_set.coe_union MeasurableSet.coe_union
 
-noncomputable instance : HasSup (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∪ y⟩
 
 -- porting note: new lemma
@@ -1740,7 +1740,7 @@ theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ 
   rfl
 #align measurable_set.coe_inter MeasurableSet.coe_inter
 
-noncomputable instance : HasInf (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∩ y⟩
 
 -- porting note: new lemma

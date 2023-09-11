@@ -130,7 +130,7 @@ protected def prod (r : Setoid α) (s : Setoid β) :
 #align setoid.prod Setoid.prod
 
 /-- The infimum of two equivalence relations. -/
-instance : HasInf (Setoid α) :=
+instance : Inf (Setoid α) :=
   ⟨fun r s =>
     ⟨fun x y => r.Rel x y ∧ s.Rel x y,
       ⟨fun x => ⟨r.refl' x, s.refl' x⟩, fun h => ⟨r.symm' h.1, s.symm' h.2⟩, fun h1 h2 =>
@@ -174,7 +174,7 @@ instance : PartialOrder (Setoid α) where
 instance completeLattice : CompleteLattice (Setoid α) :=
   { (completeLatticeOfInf (Setoid α)) fun _ =>
       ⟨fun _ hr _ _ h => h _ hr, fun _ hr _ _ h _ hr' => hr hr' h⟩ with
-    inf := HasInf.inf
+    inf := Inf.inf
     inf_le_left := fun _ _ _ _ h => h.1
     inf_le_right := fun _ _ _ _ h => h.2
     le_inf := fun _ _ _ h1 h2 _ _ h => ⟨h1 h, h2 h⟩

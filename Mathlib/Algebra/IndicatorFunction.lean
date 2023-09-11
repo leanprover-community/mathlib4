@@ -53,7 +53,7 @@ noncomputable def indicator {M} [Zero M] (s : Set α) (f : α → M) : α → M
 #align set.indicator Set.indicator
 
 /-- `mulIndicator s f a` is `f a` if `a ∈ s`, `1` otherwise.  -/
-@[to_additive]
+@[to_additive existing]
 noncomputable def mulIndicator (s : Set α) (f : α → M) : α → M
   | x =>
     haveI := Classical.decPred (· ∈ s)
@@ -819,8 +819,7 @@ theorem mulIndicator_le_mulIndicator (h : f a ≤ g a) : mulIndicator s f a ≤ 
 #align set.mul_indicator_le_mul_indicator Set.mulIndicator_le_mulIndicator
 #align set.indicator_le_indicator Set.indicator_le_indicator
 
--- Porting note: Unknown attribute mono
---attribute [mono] mulIndicator_le_mulIndicator indicator_le_indicator
+attribute [mono] mulIndicator_le_mulIndicator indicator_le_indicator
 
 @[to_additive]
 theorem mulIndicator_le_mulIndicator_of_subset (h : s ⊆ t) (hf : ∀ a, 1 ≤ f a) (a : α) :

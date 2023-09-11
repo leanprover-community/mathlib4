@@ -214,8 +214,8 @@ section PartialProd
 
 variable [Monoid α] {n : ℕ}
 
-/-- For `f = (a₁, ..., aₙ)` in `αⁿ`, `partial_prod f` is `(1, a₁, a₁a₂, ..., a₁...aₙ)` in `αⁿ⁺¹`. -/
-@[to_additive "For `f = (a₁, ..., aₙ)` in `αⁿ`, `partial_sum f` is\n
+/-- For `f = (a₁, ..., aₙ)` in `αⁿ`, `partialProd f` is `(1, a₁, a₁a₂, ..., a₁...aₙ)` in `αⁿ⁺¹`. -/
+@[to_additive "For `f = (a₁, ..., aₙ)` in `αⁿ`, `partialSum f` is\n
 `(0, a₁, a₁ + a₂, ..., a₁ + ... + aₙ)` in `αⁿ⁺¹`."]
 def partialProd (f : Fin n → α) (i : Fin (n + 1)) : α :=
   ((List.ofFn f).take i).prod
@@ -253,7 +253,7 @@ theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
 
 -- Porting note:
 -- 1) Changed `i` in statement to `(Fin.castLt i (Nat.lt_succ_of_lt i.2))` because of
---    coersion issues. Might need to be fixed later.
+--    coercion issues. Might need to be fixed later.
 -- 2) The current proof is really bad! It should be redone once `assoc_rw` is
 --    implemented and `rw` knows that `i.succ = i + 1`.
 -- 3) The original Mathport output was:
@@ -345,22 +345,6 @@ theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i := b
 end CommMonoid
 
 -- Porting note: Statement had deprecated `L.nthLe i i.is_lt` instead of `L.get i`.
-theorem alternatingSum_eq_finset_sum {G : Type _} [AddCommGroup G] :
-    ∀ (L : List G), alternatingSum L = ∑ i : Fin L.length, (-1 : ℤ) ^ (i : ℕ) • L.get i
-  | [] => by
-    rw [alternatingSum, Finset.sum_eq_zero]
-    rintro ⟨i, ⟨⟩⟩
-  | g::[] => by simp
-  | g::h::L =>
-    calc g + -h + L.alternatingSum
-      = g + -h + ∑ i : Fin L.length, (-1 : ℤ) ^ (i : ℕ) • L.get i :=
-        congr_arg _ (alternatingSum_eq_finset_sum _)
-    _ = ∑ i : Fin (L.length + 2), (-1 : ℤ) ^ (i : ℕ) • List.get (g::h::L) i := by
-        { rw [Fin.sum_univ_succ, Fin.sum_univ_succ, add_assoc]
-          simp [Nat.succ_eq_add_one, pow_add]}
-#align list.alternating_sum_eq_finset_sum List.alternatingSum_eq_finset_sum
-
--- Porting note: Statement had deprecated `L.nthLe i i.is_lt` instead of `L.get i`.
 @[to_additive]
 theorem alternatingProd_eq_finset_prod {G : Type _} [CommGroup G] :
     ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L.get i ^ (-1 : ℤ) ^ (i : ℕ)
@@ -378,5 +362,6 @@ theorem alternatingProd_eq_finset_prod {G : Type _} [CommGroup G] :
         { rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
           simp [Nat.succ_eq_add_one, pow_add]}
 #align list.alternating_prod_eq_finset_prod List.alternatingProd_eq_finset_prod
+#align list.alternating_sum_eq_finset_sum List.alternatingSum_eq_finset_sum
 
 end List

@@ -96,9 +96,7 @@ def Simps.apply (e : LocalHomeomorph α β) : α → β := e
 def Simps.symm_apply (e : LocalHomeomorph α β) : β → α := e.symm
 #align local_homeomorph.simps.symm_apply LocalHomeomorph.Simps.symm_apply
 
-initialize_simps_projections LocalHomeomorph (toLocalEquiv_toFun → apply,
-  toLocalEquiv_invFun → symm_apply, toLocalEquiv_source → source, toLocalEquiv_target → target,
-  -toLocalEquiv)
+initialize_simps_projections LocalHomeomorph (toFun → apply, invFun → symm_apply)
 
 protected theorem continuousOn : ContinuousOn e e.source :=
   e.continuous_toFun

@@ -66,6 +66,10 @@ structure Ideal (P) [LE P] extends LowerSet P where
   directed' : DirectedOn (· ≤ ·) carrier
 #align order.ideal Order.Ideal
 
+-- Porting note: todo: remove this configuration and use the default configuration.
+-- We keep this to be consistent with Lean 3.
+initialize_simps_projections Ideal (+toLowerSet, -carrier)
+
 /-- A subset of a preorder `P` is an ideal if it is
   - nonempty
   - upward directed (any pair of elements in the ideal has an upper bound in the ideal)
@@ -356,7 +360,7 @@ section SemilatticeSupDirected
 variable [SemilatticeSup P] [IsDirected P (· ≥ ·)] {x : P} {I J K s t : Ideal P}
 
 /-- The infimum of two ideals of a co-directed order is their intersection. -/
-instance : HasInf (Ideal P) :=
+instance : Inf (Ideal P) :=
   ⟨fun I J ↦
     { toLowerSet := I.toLowerSet ⊓ J.toLowerSet
       nonempty' := inter_nonempty I J
@@ -364,7 +368,7 @@ instance : HasInf (Ideal P) :=
 
 /-- The supremum of two ideals of a co-directed order is the union of the down sets of the pointwise
 supremum of `I` and `J`. -/
-instance : HasSup (Ideal P) :=
+instance : Sup (Ideal P) :=
   ⟨fun I J ↦
     { carrier := { x | ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j }
       nonempty' := by

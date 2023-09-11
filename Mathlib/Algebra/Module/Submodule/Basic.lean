@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.module.submodule.basic
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -38,7 +38,11 @@ universe u'' u' u v w
 
 variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 
-/-- `SubmoduleClass S R M` says `S` is a type of submodules `s ≤ M`. -/
+/--
+`SubmoduleClass S R M` says `S` is a type of submodules `s ≤ M`.
+
+Note that only `R` is marked as `outParam` since `M` is already supplied by the `SetLike` class.
+-/
 class SubmoduleClass (S : Type _) (R : outParam <| Type _) (M : Type _) [AddZeroClass M] [SMul R M]
   [SetLike S M] [AddSubmonoidClass S M] extends SMulMemClass S R M
 #align submodule_class SubmoduleClass
@@ -137,8 +141,7 @@ theorem toAddSubmonoid_eq : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
   toAddSubmonoid_injective.eq_iff
 #align submodule.to_add_submonoid_eq Submodule.toAddSubmonoid_eq
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem toAddSubmonoid_strictMono : StrictMono (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
   fun _ _ => id
 #align submodule.to_add_submonoid_strict_mono Submodule.toAddSubmonoid_strictMono
@@ -147,8 +150,7 @@ theorem toAddSubmonoid_le : p.toAddSubmonoid ≤ q.toAddSubmonoid ↔ p ≤ q :=
   Iff.rfl
 #align submodule.to_add_submonoid_le Submodule.toAddSubmonoid_le
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
   toAddSubmonoid_strictMono.monotone
 #align submodule.to_add_submonoid_mono Submodule.toAddSubmonoid_mono
@@ -166,14 +168,12 @@ theorem toSubMulAction_eq : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
   toSubMulAction_injective.eq_iff
 #align submodule.to_sub_mul_action_eq Submodule.toSubMulAction_eq
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem toSubMulAction_strictMono :
     StrictMono (toSubMulAction : Submodule R M → SubMulAction R M) := fun _ _ => id
 #align submodule.to_sub_mul_action_strict_mono Submodule.toSubMulAction_strictMono
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem toSubMulAction_mono : Monotone (toSubMulAction : Submodule R M → SubMulAction R M) :=
   toSubMulAction_strictMono.monotone
 #align submodule.to_sub_mul_action_mono Submodule.toSubMulAction_mono
@@ -503,8 +503,7 @@ theorem toAddSubgroup_eq : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
   toAddSubgroup_injective.eq_iff
 #align submodule.to_add_subgroup_eq Submodule.toAddSubgroup_eq
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   fun _ _ => id
 #align submodule.to_add_subgroup_strict_mono Submodule.toAddSubgroup_strictMono
@@ -513,8 +512,7 @@ theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
   Iff.rfl
 #align submodule.to_add_subgroup_le Submodule.toAddSubgroup_le
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   toAddSubgroup_strictMono.monotone
 #align submodule.to_add_subgroup_mono Submodule.toAddSubgroup_mono

@@ -20,7 +20,7 @@ can be viewed as a `LargeCategory` in our framework.
 
 Lean can not transparently view a function as a morphism in this category, and needs a hint in
 order to be able to type check. We provide the abbreviation `asHom f` to guide type checking,
-as well as a corresponding notation `↾ f`. (Entered as `\upr `.) 
+as well as a corresponding notation `↾ f`. (Entered as `\upr `.)
 
 We provide various simplification lemmas for functors and natural transformations valued in `Type`.
 
@@ -42,7 +42,7 @@ universe v v' w u u'
 
 /- The `@[to_additive]` attribute is just a hint that expressions involving this instance can
   still be additivized. -/
-@[to_additive CategoryTheory.types]
+@[to_additive existing CategoryTheory.types]
 instance types : LargeCategory (Type u)
     where
   Hom a b := a → b
@@ -177,11 +177,11 @@ end FunctorToTypes
 /-- The isomorphism between a `Type` which has been `ulift`ed to the same universe,
 and the original type.
 -/
-def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where 
+def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
   hom a := a.1
-  inv a := .up a  
-  hom_inv_id := by aesop_cat 
-  inv_hom_id := by aesop_cat 
+  inv a := .up a
+  hom_inv_id := by aesop_cat
+  inv_hom_id := by aesop_cat
 #align category_theory.ulift_trivial CategoryTheory.uliftTrivial
 
 /-- The functor embedding `Type u` into `Type (max u v)`.
@@ -221,7 +221,7 @@ def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := fun _ => x
 #align category_theory.hom_of_element CategoryTheory.homOfElement
 
 theorem homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfElement y ↔ x = y :=
-  ⟨fun H => congr_fun H PUnit.unit, by aesop⟩  
+  ⟨fun H => congr_fun H PUnit.unit, by aesop⟩
 #align category_theory.hom_of_element_eq_iff CategoryTheory.homOfElement_eq_iff
 
 /-- A morphism in `Type` is a monomorphism if and only if it is injective.
@@ -267,9 +267,9 @@ allows us to use these functors in category theory. -/
 def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] : Type u ⥤ Type v
     where
   obj := m
-  map f := Functor.map f  
-  map_id := fun α => by funext X; apply id_map  /- Porting note: original proof is via 
-  `fun α => _root_.Functor.map_id` but I cannot get Lean to find this. Reproduced its 
+  map f := Functor.map f
+  map_id := fun α => by funext X; apply id_map  /- Porting note: original proof is via
+  `fun α => _root_.Functor.map_id` but I cannot get Lean to find this. Reproduced its
   original proof -/
   map_comp f g := funext fun a => LawfulFunctor.comp_map f g _
 #align category_theory.of_type_functor CategoryTheory.ofTypeFunctor

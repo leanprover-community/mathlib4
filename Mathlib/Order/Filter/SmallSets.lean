@@ -89,7 +89,7 @@ theorem HasAntitoneBasis.tendsto_smallSets {ι} [Preorder ι] {s : ι → Set α
   tendsto_smallSets_iff.2 fun _t ht => hl.eventually_subset ht
 #align filter.has_antitone_basis.tendsto_small_sets Filter.HasAntitoneBasis.tendsto_smallSets
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem monotone_smallSets : Monotone (@smallSets α) :=
   monotone_lift' monotone_id monotone_const
 #align filter.monotone_small_sets Filter.monotone_smallSets

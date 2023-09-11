@@ -266,8 +266,7 @@ theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) : succ a
   by rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
 #align order.succ_le_succ_iff_of_not_is_max Order.succ_le_succ_iff_of_not_isMax
 
---porting notes: no mono
-@[simp] --, mono]
+@[simp, mono]
 theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
   by_cases hb : IsMax b
   · by_cases hba : b ≤ a
@@ -642,8 +641,7 @@ theorem le_pred_iff_of_not_isMin (ha : ¬IsMin a) : b ≤ pred a ↔ b < a :=
   ⟨fun h => h.trans_lt <| pred_lt_of_not_isMin ha, le_pred_of_lt⟩
 #align order.le_pred_iff_of_not_is_min Order.le_pred_iff_of_not_isMin
 
--- porting notes -- no mono
-@[simp] --, mono]
+@[simp, mono]
 theorem pred_le_pred {a b : α} (h : a ≤ b) : pred a ≤ pred b :=
   succ_le_succ h.dual
 #align order.pred_le_pred Order.pred_le_pred

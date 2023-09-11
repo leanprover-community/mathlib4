@@ -612,7 +612,7 @@ def ContinuousHom.Simps.apply (h : α →𝒄 β) : α → β :=
   omega_complete_partial_order.continuous_hom.simps.apply
   OmegaCompletePartialOrder.ContinuousHom.Simps.apply
 
-initialize_simps_projections ContinuousHom (toOrderHom_toFun → apply, -toOrderHom)
+initialize_simps_projections ContinuousHom (toFun → apply)
 
 end
 

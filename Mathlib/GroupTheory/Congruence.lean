@@ -336,7 +336,7 @@ variable {c}
 
 /-- The inductive principle used to prove propositions about the elements of a quotient by a
     congruence relation. -/
-@[elab_as_elim, to_additive "The inductive principle used to prove propositions about
+@[to_additive (attr := elab_as_elim) "The inductive principle used to prove propositions about
 the elements of a quotient by an additive congruence relation."]
 protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : ∀ x : M, C x) : C q :=
   Quotient.inductionOn' q H
@@ -344,7 +344,7 @@ protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : �
 #align add_con.induction_on AddCon.induction_on
 
 /-- A version of `con.induction_on` for predicates which take two arguments. -/
-@[elab_as_elim, to_additive "A version of `add_con.induction_on` for predicates which take
+@[to_additive (attr := elab_as_elim) "A version of `add_con.induction_on` for predicates which take
 two arguments."]
 protected theorem induction_on₂ {d : Con N} {C : c.Quotient → d.Quotient → Prop} (p : c.Quotient)
     (q : d.Quotient) (H : ∀ (x : M) (y : N), C x y) : C p q :=
@@ -1173,7 +1173,7 @@ instance _root_.AddCon.Quotient.nsmul {M : Type _} [AddMonoid M] (c : AddCon M) 
     where smul n := (Quotient.map' ((· • ·) n)) fun _ _ => c.nsmul n
 #align add_con.quotient.has_nsmul AddCon.Quotient.nsmul
 
-@[to_additive AddCon.Quotient.nsmul]
+@[to_additive existing AddCon.Quotient.nsmul]
 instance {M : Type _} [Monoid M] (c : Con M) : Pow c.Quotient ℕ
     where pow x n := Quotient.map' (fun x => x ^ n) (fun _ _ => c.pow n) x
 
@@ -1265,7 +1265,7 @@ instance _root_.AddCon.Quotient.zsmul {M : Type _} [AddGroup M] (c : AddCon M) :
 
 /-- The integer power induced on the quotient by a congruence relation on a type with a
     division. -/
-@[to_additive AddCon.Quotient.zsmul]
+@[to_additive existing AddCon.Quotient.zsmul]
 instance zpowinst : Pow c.Quotient ℤ :=
   ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
 #align con.has_zpow Con.zpowinst

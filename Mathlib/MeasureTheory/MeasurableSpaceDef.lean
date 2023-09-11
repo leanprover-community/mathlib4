@@ -425,7 +425,7 @@ instance : CompleteLattice (MeasurableSpace α) :=
 
 instance : Inhabited (MeasurableSpace α) := ⟨⊤⟩
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem generateFrom_mono {s t : Set (Set α)} (h : s ⊆ t) : generateFrom s ≤ generateFrom t :=
   giGenerateFrom.gc.monotone_l h
 #align measurable_space.generate_from_mono MeasurableSpace.generateFrom_mono

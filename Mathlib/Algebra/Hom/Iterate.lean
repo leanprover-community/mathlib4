@@ -110,7 +110,7 @@ theorem iterate_map_zsmul (f : G →+ G) (n : ℕ) (m : ℤ) (x : G) : (f^[n]) (
   f.toMultiplicative.iterate_map_zpow n x m
 #align add_monoid_hom.iterate_map_zsmul AddMonoidHom.iterate_map_zsmul
 
-attribute [to_additive (reorder := 5)] MonoidHom.iterate_map_zpow
+attribute [to_additive existing (reorder := 5)] MonoidHom.iterate_map_zpow
 
 end AddMonoidHom
 

@@ -186,7 +186,7 @@ class ConditionallyCompleteLinearOrder (α : Type _) extends ConditionallyComple
 
 instance (α : Type _) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
 { ‹ConditionallyCompleteLinearOrder α› with
-  max := HasSup.sup, min := HasInf.inf,
+  max := Sup.sup, min := Inf.inf,
   min_def := fun a b ↦ by
     by_cases hab : a = b
     · simp [hab]
@@ -274,7 +274,7 @@ end
 section OrderDual
 
 instance (α : Type _) [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice αᵒᵈ :=
-  { instHasInfOrderDual α, instHasSupOrderDual α, OrderDual.lattice α with
+  { instInfOrderDual α, instSupOrderDual α, OrderDual.lattice α with
     le_csupₛ := @ConditionallyCompleteLattice.cinfₛ_le α _
     csupₛ_le := @ConditionallyCompleteLattice.le_cinfₛ α _
     le_cinfₛ := @ConditionallyCompleteLattice.csupₛ_le α _
@@ -1193,10 +1193,10 @@ theorem isGLB_infₛ (s : Set (WithTop α)) : IsGLB s (infₛ s) := by
 
 noncomputable instance : CompleteLinearOrder (WithTop α) :=
   { WithTop.linearOrder, WithTop.lattice, WithTop.orderTop, WithTop.orderBot with
-    sup := HasSup.sup
+    sup := Sup.sup
     le_supₛ := fun s => (isLUB_supₛ s).1
     supₛ_le := fun s => (isLUB_supₛ s).2
-    inf := HasInf.inf
+    inf := Inf.inf
     le_infₛ := fun s => (isGLB_infₛ s).2
     infₛ_le := fun s => (isGLB_infₛ s).1 }
 

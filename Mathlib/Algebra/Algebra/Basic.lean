@@ -93,7 +93,7 @@ all be relaxed independently; for instance, this allows us to:
   which when `R' = Rˣ` lets us talk about the "algebra-like" action of `Rˣ` on an
   `R`-algebra `A`.
 
-While `alg_hom R A B` cannot be used in the second approach, `non_unital_alg_hom R A B` still can.
+While `AlgHom R A B` cannot be used in the second approach, `NonUnitalAlgHom R A B` still can.
 
 You should always use the first approach when working with associative unital algebras, and mimic
 the second approach only when you need to weaken a condition on either `R` or `A`.
@@ -249,9 +249,9 @@ variable (R A : Type _) [Field R] [DivisionRing A] [Algebra R A]
 
 -- porting note: todo: drop implicit args
 @[norm_cast]
-theorem coe_rat_cast (q : ℚ) : ↑(q : R) = (q : A) :=
+theorem coe_ratCast (q : ℚ) : ↑(q : R) = (q : A) :=
   @map_ratCast (R →+* A) R A _ _ _ (algebraMap R A) q
-#align algebra_map.coe_rat_cast algebraMap.coe_rat_cast
+#align algebra_map.coe_rat_cast algebraMap.coe_ratCast
 
 end FieldDivisionRing
 
@@ -384,7 +384,7 @@ instance _root_.IsScalarTower.right : IsScalarTower R A A :=
   ⟨fun x y z => by rw [smul_eq_mul, smul_eq_mul, smul_def, smul_def, mul_assoc]⟩
 #align is_scalar_tower.right IsScalarTower.right
 
--- TODO: set up `is_scalar_tower.smul_comm_class` earlier so that we can actually prove this using
+-- TODO: set up `IsScalarTower.smulCommClass` earlier so that we can actually prove this using
 -- `mul_smul_comm s x y`.
 
 /-- This is just a special case of the global `mul_smul_comm` lemma that requires less typeclass
@@ -485,8 +485,7 @@ section ULift
 
 instance _root_.ULift.algebra : Algebra R (ULift A) :=
   { ULift.module',
-    (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp
-      (algebraMap R A) with
+    (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp (algebraMap R A) with
     toFun := fun r => ULift.up (algebraMap R A r)
     commutes' := fun r x => ULift.down_injective <| Algebra.commutes r x.down
     smul_def' := fun r x => ULift.down_injective <| Algebra.smul_def' r x.down }
@@ -504,7 +503,7 @@ theorem _root_.ULift.down_algebraMap (r : R) : (algebraMap R (ULift A) r).down =
 
 end ULift
 
-/-- Algebra over a subsemiring. This builds upon `subsemiring.module`. -/
+/-- Algebra over a subsemiring. This builds upon `Subsemiring.module`. -/
 instance ofSubsemiring (S : Subsemiring R) : Algebra S A where
   toRingHom := (algebraMap R A).comp S.subtype
   smul := (· • ·)
@@ -525,7 +524,7 @@ theorem algebraMap_ofSubsemiring_apply (S : Subsemiring R) (x : S) : algebraMap 
   rfl
 #align algebra.algebra_map_of_subsemiring_apply Algebra.algebraMap_ofSubsemiring_apply
 
-/-- Algebra over a subring. This builds upon `subring.module`. -/
+/-- Algebra over a subring. This builds upon `Subring.module`. -/
 instance ofSubring {R A : Type _} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
     Algebra S A where -- porting note: don't use `toSubsemiring` because of a timeout
   toRingHom := (algebraMap R A).comp S.subtype
@@ -604,11 +603,11 @@ variable {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
 
 instance : Algebra R Aᵐᵒᵖ where
   toRingHom := (algebraMap R A).toOpposite fun x y => Algebra.commutes _ _
-  smul_def' := fun c x => unop_injective <| by
-    dsimp
-    simp only [op_mul, Algebra.smul_def, Algebra.commutes, op_unop]
-  commutes' := fun r => MulOpposite.rec' fun x => by
-    dsimp; simp only [← op_mul, Algebra.commutes]
+  smul_def' c x := unop_injective <| by
+    simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul, op_mul,
+      Algebra.smul_def, Algebra.commutes, op_unop]
+  commutes' r := MulOpposite.rec' fun x => by
+    simp only [RingHom.toOpposite_apply, Function.comp_apply, ← op_mul, Algebra.commutes]
 
 @[simp]
 theorem algebraMap_apply (c : R) : algebraMap R Aᵐᵒᵖ c = op (algebraMap R A c) :=
@@ -720,7 +719,7 @@ variable {R : Type _} [Semiring R]
 
 -- Lower the priority so that `Algebra.id` is picked most of the time when working with
 -- `ℕ`-algebras. This is only an issue since `Algebra.id` and `algebraNat` are not yet defeq.
--- TODO: fix this by adding an `of_nat` field to semirings.
+-- TODO: fix this by adding an `ofNat` field to semirings.
 /-- Semiring ⥤ ℕ-Alg -/
 instance (priority := 99) algebraNat : Algebra ℕ R where
   commutes' := Nat.cast_commute
@@ -776,7 +775,7 @@ variable (R : Type _) [Ring R]
 
 -- Lower the priority so that `Algebra.id` is picked most of the time when working with
 -- `ℤ`-algebras. This is only an issue since `Algebra.id ℤ` and `algebraInt ℤ` are not yet defeq.
--- TODO: fix this by adding an `of_int` field to rings.
+-- TODO: fix this by adding an `ofInt` field to rings.
 /-- Ring ⥤ ℤ-Alg -/
 instance (priority := 99) algebraInt : Algebra ℤ R where
   commutes' := Int.cast_commute
@@ -807,7 +806,7 @@ open Algebra
 /-- If `algebraMap R A` is injective and `A` has no zero divisors,
 `R`-multiples in `A` are zero only if one of the factors is zero.
 
-Cannot be an instance because there is no `injective (algebraMap R A)` typeclass.
+Cannot be an instance because there is no `Injective (algebraMap R A)` typeclass.
 -/
 theorem of_algebraMap_injective [CommSemiring R] [Semiring A] [Algebra R A] [NoZeroDivisors A]
     (h : Function.Injective (algebraMap R A)) : NoZeroSMulDivisors R A :=
@@ -881,10 +880,10 @@ theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 #align algebra_map_smul algebraMap_smul
 
-theorem int_cast_smul {k V : Type _} [CommRing k] [AddCommGroup V] [Module k V] (r : ℤ) (x : V) :
+theorem intCast_smul {k V : Type _} [CommRing k] [AddCommGroup V] [Module k V] (r : ℤ) (x : V) :
     (r : k) • x = r • x :=
   algebraMap_smul k r x
-#align int_cast_smul int_cast_smul
+#align int_cast_smul intCast_smul
 
 theorem NoZeroSMulDivisors.trans (R A M : Type _) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
@@ -910,9 +909,9 @@ instance (priority := 100) IsScalarTower.to_sMulCommClass : SMulCommClass R A M 
 #align is_scalar_tower.to_smul_comm_class IsScalarTower.to_sMulCommClass
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsScalarTower.to_smul_comm_class' : SMulCommClass A R M :=
+instance (priority := 100) IsScalarTower.to_sMulCommClass' : SMulCommClass A R M :=
   SMulCommClass.symm _ _ _
-#align is_scalar_tower.to_smul_comm_class' IsScalarTower.to_smul_comm_class'
+#align is_scalar_tower.to_smul_comm_class' IsScalarTower.to_sMulCommClass'
 
 theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a • m :=
   smul_comm _ _ _
@@ -940,8 +939,8 @@ end LinearMap
 end IsScalarTower
 
 /-! TODO: The following lemmas no longer involve `Algebra` at all, and could be moved closer
-to `Algebra/Module/submodule.lean`. Currently this is tricky because `ker`, `range`, `⊤`, and `⊥`
-are all defined in `linear_algebra/basic.lean`. -/
+to `Algebra/Module/Submodule.lean`. Currently this is tricky because `ker`, `range`, `⊤`, and `⊥`
+are all defined in `LinearAlgebra/Basic.lean`. -/
 
 section Module
 

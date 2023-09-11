@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module logic.basic
-! leanprover-community/mathlib commit 1c521b4fb909320eca16b2bb6f8b5b0490b1cb5e
+! leanprover-community/mathlib commit 13cd3e89b30352d5b1b7349f5537ea18ba878e40
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -560,8 +560,16 @@ theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → S
   by subst t; rfl
 
 theorem rec_heq_of_heq {C : α → Sort _} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
-    HEq (@Eq.ndrec α a C x b e) y := by subst e; exact h
+    HEq (e ▸ x) y := by subst e; exact h
 #align rec_heq_of_heq rec_heq_of_heq
+
+theorem rec_heq_iff_heq {C : α → Sort _} {x : C a} {y : β} {e : a = b} :
+    HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
+#align rec_heq_iff_heq rec_heq_iff_heq
+
+theorem heq_rec_iff_heq {C : α → Sort _} {x : β} {y : C a} {e : a = b} :
+    HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
+#align heq_rec_iff_heq heq_rec_iff_heq
 
 protected theorem Eq.congr (h₁ : x₁ = y₁) (h₂ : x₂ = y₂) : x₁ = x₂ ↔ y₁ = y₂ := by
   subst h₁; subst h₂; rfl

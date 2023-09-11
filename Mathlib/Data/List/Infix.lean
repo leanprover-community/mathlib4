@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.infix
-! leanprover-community/mathlib commit 6d0adfa76594f304b4650d098273d4366edeb61b
+! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -342,6 +342,20 @@ theorem mem_of_mem_take (h : a ∈ l.take n) : a ∈ l :=
 #align list.mem_of_mem_take List.mem_of_mem_take
 
 #align list.mem_of_mem_drop List.mem_of_mem_drop
+
+lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
+  calc l.dropSlice n m = take n l ++ drop m (drop n l) := by rw [dropSlice_eq, drop_drop, add_comm]
+  _ <+ take n l ++ drop n l := (Sublist.refl _).append (drop_sublist _ _)
+  _ = _ := take_append_drop _ _
+#align list.slice_sublist List.dropSlice_sublist
+
+lemma dropSlice_subset (n m : ℕ) (l : List α) : l.dropSlice n m ⊆ l :=
+  (dropSlice_sublist n m l).subset
+#align list.slice_subset List.dropSlice_subset
+
+lemma mem_of_mem_dropSlice {n m : ℕ} {l : List α} {a : α} (h : a ∈ l.dropSlice n m) : a ∈ l :=
+  dropSlice_subset n m l h
+#align list.mem_of_mem_slice List.mem_of_mem_dropSlice
 
 theorem takeWhile_prefix (p : α → Bool) : l.takeWhile p <+: l :=
   ⟨l.dropWhile p, takeWhile_append_drop p l⟩

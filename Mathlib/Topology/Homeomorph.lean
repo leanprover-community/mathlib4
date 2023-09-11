@@ -88,8 +88,7 @@ def Simps.symm_apply (h : α ≃ₜ β) : β → α :=
   h.symm
 #align homeomorph.simps.symm_apply Homeomorph.Simps.symm_apply
 
-initialize_simps_projections Homeomorph (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
-  -toEquiv)
+initialize_simps_projections Homeomorph (toFun → apply, invFun → symm_apply)
 
 @[simp]
 theorem coe_toEquiv (h : α ≃ₜ β) : ⇑h.toEquiv = h :=

@@ -73,8 +73,7 @@ section
 
 variable (C : Type u₁) [Category.{v₁} C]
 
-initialize_simps_projections Functor (toPrefunctor_obj → obj,
-  toPrefunctor_map → map, -toPrefunctor)
+initialize_simps_projections Functor
 
 -- We don't use `@[simps]` here because we want `C` implicit for the simp lemmas.
 /-- `𝟭 C` is the identity functor on a category `C`. -/

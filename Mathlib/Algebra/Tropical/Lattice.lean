@@ -34,21 +34,21 @@ variable {R S : Type _}
 
 open Tropical
 
-instance [HasSup R] : HasSup (Tropical R) where
+instance [Sup R] : Sup (Tropical R) where
   sup x y := trop (untrop x ⊔ untrop y)
 
-instance [HasInf R] : HasInf (Tropical R) where
+instance [Inf R] : Inf (Tropical R) where
   inf x y := trop (untrop x ⊓ untrop y)
 
 instance [SemilatticeInf R] : SemilatticeInf (Tropical R) :=
-  { instHasInfTropical,
+  { instInfTropical,
     Tropical.instPartialOrderTropical with
     le_inf := fun _ _ _ ↦ @SemilatticeInf.le_inf R _ _ _ _
     inf_le_left := fun _ _ ↦ inf_le_left
     inf_le_right := fun _ _ ↦ inf_le_right }
 
 instance [SemilatticeSup R] : SemilatticeSup (Tropical R) :=
-  { instHasSupTropical,
+  { instSupTropical,
     Tropical.instPartialOrderTropical with
     sup_le := fun _ _ _ ↦ @SemilatticeSup.sup_le R _ _ _ _
     le_sup_left := fun _ _ ↦ le_sup_left
@@ -62,7 +62,7 @@ instance [SupSet R] : SupSet (Tropical R) where supₛ s := trop (supₛ (untrop
 instance [InfSet R] : InfSet (Tropical R) where infₛ s := trop (infₛ (untrop '' s))
 
 instance [ConditionallyCompleteLattice R] : ConditionallyCompleteLattice (Tropical R) :=
-  { @instHasInfTropical R _, @instHasSupTropical R _,
+  { @instInfTropical R _, @instSupTropical R _,
     instLatticeTropical with
     le_csupₛ  := fun _s _x hs hx ↦
       le_csupₛ (untrop_monotone.map_bddAbove hs) (Set.mem_image_of_mem untrop hx)

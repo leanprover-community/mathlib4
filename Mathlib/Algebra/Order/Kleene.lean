@@ -245,7 +245,7 @@ theorem le_kstar : a ≤ a∗ :=
   le_trans (le_mul_of_one_le_left' one_le_kstar) kstar_mul_le_kstar
 #align le_kstar le_kstar
 
--- @[mono] -- Porting note: unknown attribute [mono]
+@[mono]
 theorem kstar_mono : Monotone (KStar.kstar : α → α) :=
   fun _ _ h ↦
     kstar_le_of_mul_le_left one_le_kstar <| kstar_mul_le (h.trans le_kstar) <| mul_kstar_le_kstar
@@ -366,7 +366,7 @@ namespace Function.Injective
 /-- Pullback an `IdemSemiring` instance along an injective function. -/
 @[reducible]
 protected def idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β]
-    [NatCast β] [HasSup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
+    [NatCast β] [Sup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
@@ -382,7 +382,7 @@ protected def idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul β
 /-- Pullback an `IdemCommSemiring` instance along an injective function. -/
 @[reducible]
 protected def idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ]
-    [SMul ℕ β] [NatCast β] [HasSup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
+    [SMul ℕ β] [NatCast β] [Sup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
@@ -395,7 +395,7 @@ protected def idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add β]
 /-- Pullback a `KleeneAlgebra` instance along an injective function. -/
 @[reducible]
 protected def kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β]
-    [NatCast β] [HasSup β] [Bot β] [KStar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
+    [NatCast β] [Sup β] [Bot β] [KStar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥)
