@@ -44,7 +44,7 @@ def actionAsFunctor : SingleObj M ⥤ Type u where
   map_comp f g := funext fun x => (smul_smul g f x).symm
 #align category_theory.action_as_functor CategoryTheory.actionAsFunctor
 
-/-- A multiplicative action M ↻ X induces a category strucure on X, where a morphism
+/-- A multiplicative action M ↻ X induces a category structure on X, where a morphism
  from x to y is a scalar taking x to y. Due to implementation details, the object type
  of this category is not equal to X, but is in bijection with X. -/
 def ActionCategory :=

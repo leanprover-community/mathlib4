@@ -24,7 +24,7 @@ open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `positivity` extensions. -/
-syntax (name := positivity) "positivity" term,+ : attr
+syntax (name := positivity) "positivity " term,+ : attr
 
 lemma ne_of_ne_of_eq' (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
 

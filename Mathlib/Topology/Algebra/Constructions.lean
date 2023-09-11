@@ -13,7 +13,7 @@ import Mathlib.Topology.Homeomorph
 /-!
 # Topological space structure on the opposite monoid and on the units group
 
-In this file we define `TopologicalSpace` structure on `Mᵐᵒᵖ`, `Mᵃᵒᵖ`, `Mˣ`, and `add_units M`.
+In this file we define `TopologicalSpace` structure on `Mᵐᵒᵖ`, `Mᵃᵒᵖ`, `Mˣ`, and `AddUnits M`.
 This file does not import definitions of a topological monoid and/or a continuous multiplicative
 action, so we postpone the proofs of `HasContinuousMul Mᵐᵒᵖ` etc till we have these definitions.
 

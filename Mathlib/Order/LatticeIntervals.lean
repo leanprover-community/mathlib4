@@ -172,7 +172,7 @@ protected def orderTop [Preorder α] {a b : α} (h : a ≤ b) : OrderTop (Icc a 
   (isGreatest_Icc h).orderTop
 #align set.Icc.order_top Set.Icc.orderTop
 
-/-- `Icc a b` is a `bounded_order` whenever `a ≤ b`. -/
+/-- `Icc a b` is a `BoundedOrder` whenever `a ≤ b`. -/
 @[reducible]
 protected def boundedOrder [Preorder α] {a b : α} (h : a ≤ b) : BoundedOrder (Icc a b) :=
   { Icc.orderTop h, Icc.orderBot h with }

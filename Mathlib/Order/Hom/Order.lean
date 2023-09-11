@@ -124,11 +124,11 @@ theorem coe_iSup {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) :
 
 instance [CompleteLattice β] : CompleteLattice (α →o β) :=
   { (_ : Lattice (α →o β)), OrderHom.orderTop, OrderHom.orderBot with
-    -- sSup := SupSet.sSup   -- Porting note: removed, unecessary?
+    -- sSup := SupSet.sSup   -- Porting note: removed, unnecessary?
     -- Porting note: Added `by apply`, was `fun s f hf x => le_iSup_of_le f (le_iSup _ hf)`
     le_sSup := fun s f hf x => le_iSup_of_le f (by apply le_iSup _ hf)
     sSup_le := fun s f hf x => iSup₂_le fun g hg => hf g hg x
-    --inf := sInf      -- Porting note: removed, unecessary?
+    --inf := sInf      -- Porting note: removed, unnecessary?
     le_sInf := fun s f hf x => le_iInf₂ fun g hg => hf g hg x
     sInf_le := fun s f hf x => iInf_le_of_le f (iInf_le _ hf)
     }

@@ -73,7 +73,7 @@ variable {β}
 
 -- mathport name: «exprΠ₀ , »
 /-- `Π₀ i, β i` denotes the type of dependent functions with finite support `Dfinsupp β`. -/
-notation3"Π₀ "(...)", "r:(scoped f => Dfinsupp f) => r
+notation3 "Π₀ "(...)", "r:(scoped f => Dfinsupp f) => r
 
 -- mathport name: «expr →ₚ »
 @[inherit_doc]
@@ -609,7 +609,7 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (Π₀ i, β i) :=
   FunLike.coe_injective.unique
 #align dfinsupp.unique_of_is_empty Dfinsupp.uniqueOfIsEmpty
 
-/-- Given `Fintype ι`, `equivFunOnFintype` is the `equiv` between `Π₀ i, β i` and `Π i, β i`.
+/-- Given `Fintype ι`, `equivFunOnFintype` is the `Equiv` between `Π₀ i, β i` and `Π i, β i`.
   (All dependent functions on a finite type are finitely supported.) -/
 @[simps apply]
 def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i
@@ -972,7 +972,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
         · right; exact if_pos H3
         · left; exact H3
       right
-      split_ifs <;> [rfl, exact H2]
+      split_ifs <;> [rfl; exact H2]
     have H3 : ∀ aux, (⟨fun j : ι => ite (j = i) 0 (f j), Trunc.mk ⟨i ::ₘ s, aux⟩⟩ : Π₀ i, β i) =
         ⟨fun j : ι => ite (j = i) 0 (f j), Trunc.mk ⟨s, H2⟩⟩ :=
       fun _ ↦ ext fun _ => rfl
@@ -1035,7 +1035,7 @@ end AddMonoid
 @[simp]
 theorem mk_add [∀ i, AddZeroClass (β i)] {s : Finset ι} {x y : ∀ i : (↑s : Set ι), β i} :
     mk s (x + y) = mk s x + mk s y :=
-  ext fun i => by simp only [add_apply, mk_apply]; split_ifs <;> [rfl, rw [zero_add]]
+  ext fun i => by simp only [add_apply, mk_apply]; split_ifs <;> [rfl; rw [zero_add]]
 #align dfinsupp.mk_add Dfinsupp.mk_add
 
 @[simp]
@@ -1046,13 +1046,13 @@ theorem mk_zero [∀ i, Zero (β i)] {s : Finset ι} : mk s (0 : ∀ i : (↑s :
 @[simp]
 theorem mk_neg [∀ i, AddGroup (β i)] {s : Finset ι} {x : ∀ i : (↑s : Set ι), β i.1} :
     mk s (-x) = -mk s x :=
-  ext fun i => by simp only [neg_apply, mk_apply]; split_ifs <;> [rfl, rw [neg_zero]]
+  ext fun i => by simp only [neg_apply, mk_apply]; split_ifs <;> [rfl; rw [neg_zero]]
 #align dfinsupp.mk_neg Dfinsupp.mk_neg
 
 @[simp]
 theorem mk_sub [∀ i, AddGroup (β i)] {s : Finset ι} {x y : ∀ i : (↑s : Set ι), β i.1} :
     mk s (x - y) = mk s x - mk s y :=
-  ext fun i => by simp only [sub_apply, mk_apply]; split_ifs <;> [rfl, rw [sub_zero]]
+  ext fun i => by simp only [sub_apply, mk_apply]; split_ifs <;> [rfl; rw [sub_zero]]
 #align dfinsupp.mk_sub Dfinsupp.mk_sub
 
 /-- If `s` is a subset of `ι` then `mk_addGroupHom s` is the canonical additive
@@ -1071,7 +1071,7 @@ variable [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i
 @[simp]
 theorem mk_smul {s : Finset ι} (c : γ) (x : ∀ i : (↑s : Set ι), β (i : ι)) :
     mk s (c • x) = c • mk s x :=
-  ext fun i => by simp only [smul_apply, mk_apply]; split_ifs <;> [rfl, rw [smul_zero]]
+  ext fun i => by simp only [smul_apply, mk_apply]; split_ifs <;> [rfl; rw [smul_zero]]
 #align dfinsupp.mk_smul Dfinsupp.mk_smul
 
 @[simp]
@@ -1126,7 +1126,7 @@ theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 
 theorem eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by
   change f = mk f.support fun i => f i.1
   ext i
-  by_cases h : f i ≠ 0 <;> [skip, rw [not_not] at h] <;> simp [h]
+  by_cases h : f i ≠ 0 <;> [skip; rw [not_not] at h] <;> simp [h]
 #align dfinsupp.eq_mk_support Dfinsupp.eq_mk_support
 
 @[simp]
@@ -1524,7 +1524,7 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`.-/
-noncomputable def sigmaUncurry [∀ i j, Zero (δ i j)]
+def sigmaUncurry [∀ i j, Zero (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
     (f : Π₀ (i) (j), δ i j) :
     Π₀ i : Σi, _, δ i.1 i.2 where
@@ -1962,7 +1962,7 @@ bounded `iSup` can be produced from taking a finite number of non-zero elements 
 satisfy `p i`, coercing them to `γ`, and summing them. -/
 theorem _root_.AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop) [DecidablePred p]
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
-    (⨆ (i) (_h : p i), S i) = -- Porting note: Removing `h` results in a timeout
+    (⨆ (i) (_ : p i), S i) = -- Porting note: Removing `h` results in a timeout
       AddMonoidHom.mrange ((sumAddHom fun i => (S i).subtype).comp (filterAddMonoidHom _ p)) := by
   apply le_antisymm
   · refine' iSup₂_le fun i hi y hy => ⟨Dfinsupp.single i ⟨y, hy⟩, _⟩
@@ -1992,7 +1992,7 @@ theorem _root_.AddSubmonoid.mem_iSup_iff_exists_dfinsupp' [AddCommMonoid γ] (S 
 
 theorem _root_.AddSubmonoid.mem_bsupr_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p]
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) (x : γ) :
-    (x ∈ ⨆ (i) (_h : p i), S i) ↔ -- Porting note: Removing `h` gives an error.
+    (x ∈ ⨆ (i) (_ : p i), S i) ↔
       ∃ f : Π₀ i, S i, Dfinsupp.sumAddHom (fun i => (S i).subtype) (f.filter p) = x :=
   SetLike.ext_iff.mp (AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom p S) x
 #align add_submonoid.mem_bsupr_iff_exists_dfinsupp AddSubmonoid.mem_bsupr_iff_exists_dfinsupp
@@ -2014,20 +2014,9 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i �
     where
   toFun := sumAddHom
   invFun F i := F.comp (singleAddHom β i)
-  left_inv x := by
-    ext
-    simp
-  right_inv ψ := by
-    classical
-    ext x
-    apply Dfinsupp.induction x
-    · simp
-    intros i b f _ _ IH
-    simp [IH]
-  map_add' F G := by
-    classical
-    ext
-    simp [sumAddHom_apply, sum, Finset.sum_add_distrib]
+  left_inv x := by ext; simp
+  right_inv ψ := by ext; simp
+  map_add' F G := by ext; simp
 #align dfinsupp.lift_add_hom Dfinsupp.liftAddHom
 #align dfinsupp.lift_add_hom_apply Dfinsupp.liftAddHom_apply
 #align dfinsupp.lift_add_hom_symm_apply Dfinsupp.liftAddHom_symm_apply

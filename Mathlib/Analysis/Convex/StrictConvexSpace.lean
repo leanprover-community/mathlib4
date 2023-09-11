@@ -224,7 +224,7 @@ theorem not_sameRay_iff_norm_add_lt : ¬SameRay ℝ x y ↔ ‖x + y‖ < ‖x�
 #align not_same_ray_iff_norm_add_lt not_sameRay_iff_norm_add_lt
 
 theorem sameRay_iff_norm_sub : SameRay ℝ x y ↔ ‖x - y‖ = |‖x‖ - ‖y‖| :=
-  ⟨SameRay.norm_sub (F := E), fun h =>
+  ⟨SameRay.norm_sub, fun h =>
     Classical.not_not.1 fun h' => (abs_lt_norm_sub_of_not_sameRay h').ne' h⟩
 #align same_ray_iff_norm_sub sameRay_iff_norm_sub
 

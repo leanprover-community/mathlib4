@@ -34,9 +34,7 @@ This file defines upper and lower sets in an order.
 
 ## Notation
 
-* `×ˢ` is notation for `Set.prod`, defined elsewhere;
-* `×ᵘˢ` is notation for `UpperSet.prod`;
-* `×ˡˢ` is notation for `LowerSet.prod`.
+* `×ˢ` is notation for `UpperSet.prod` / `LowerSet.prod`.
 
 ## Notes
 
@@ -1537,105 +1535,105 @@ def prod : UpperSet (α × β) :=
   ⟨s ×ˢ t, s.2.prod t.2⟩
 #align upper_set.prod UpperSet.prod
 
-@[inherit_doc]
-infixr:82 " ×ᵘˢ " => prod
+instance instSProd : SProd (UpperSet α) (UpperSet β) (UpperSet (α × β)) where
+  sprod := UpperSet.prod
 
 @[simp, norm_cast]
-theorem coe_prod : (↑(s ×ᵘˢ t) : Set (α × β)) = (s : Set α) ×ˢ t :=
+theorem coe_prod : ((s ×ˢ t : UpperSet (α × β)) : Set (α × β)) = (s : Set α) ×ˢ t :=
   rfl
 #align upper_set.coe_prod UpperSet.coe_prod
 
 @[simp]
-theorem mem_prod {s : UpperSet α} {t : UpperSet β} : x ∈ s ×ᵘˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
+theorem mem_prod {s : UpperSet α} {t : UpperSet β} : x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
   Iff.rfl
 #align upper_set.mem_prod UpperSet.mem_prod
 
-theorem Ici_prod (x : α × β) : Ici x = Ici x.1 ×ᵘˢ Ici x.2 :=
+theorem Ici_prod (x : α × β) : Ici x = Ici x.1 ×ˢ Ici x.2 :=
   rfl
 #align upper_set.Ici_prod UpperSet.Ici_prod
 
 @[simp]
-theorem Ici_prod_Ici (a : α) (b : β) : Ici a ×ᵘˢ Ici b = Ici (a, b) :=
+theorem Ici_prod_Ici (a : α) (b : β) : Ici a ×ˢ Ici b = Ici (a, b) :=
   rfl
 #align upper_set.Ici_prod_Ici UpperSet.Ici_prod_Ici
 
 @[simp]
-theorem prod_top : s ×ᵘˢ (⊤ : UpperSet β) = ⊤ :=
+theorem prod_top : s ×ˢ (⊤ : UpperSet β) = ⊤ :=
   ext prod_empty
 #align upper_set.prod_top UpperSet.prod_top
 
 @[simp]
-theorem top_prod : (⊤ : UpperSet α) ×ᵘˢ t = ⊤ :=
+theorem top_prod : (⊤ : UpperSet α) ×ˢ t = ⊤ :=
   ext empty_prod
 #align upper_set.top_prod UpperSet.top_prod
 
 @[simp]
-theorem bot_prod_bot : (⊥ : UpperSet α) ×ᵘˢ (⊥ : UpperSet β) = ⊥ :=
+theorem bot_prod_bot : (⊥ : UpperSet α) ×ˢ (⊥ : UpperSet β) = ⊥ :=
   ext univ_prod_univ
 #align upper_set.bot_prod_bot UpperSet.bot_prod_bot
 
 @[simp]
-theorem sup_prod : (s₁ ⊔ s₂) ×ᵘˢ t = s₁ ×ᵘˢ t ⊔ s₂ ×ᵘˢ t :=
+theorem sup_prod : (s₁ ⊔ s₂) ×ˢ t = s₁ ×ˢ t ⊔ s₂ ×ˢ t :=
   ext inter_prod
 #align upper_set.sup_prod UpperSet.sup_prod
 
 @[simp]
-theorem prod_sup : s ×ᵘˢ (t₁ ⊔ t₂) = s ×ᵘˢ t₁ ⊔ s ×ᵘˢ t₂ :=
+theorem prod_sup : s ×ˢ (t₁ ⊔ t₂) = s ×ˢ t₁ ⊔ s ×ˢ t₂ :=
   ext prod_inter
 #align upper_set.prod_sup UpperSet.prod_sup
 
 @[simp]
-theorem inf_prod : (s₁ ⊓ s₂) ×ᵘˢ t = s₁ ×ᵘˢ t ⊓ s₂ ×ᵘˢ t :=
+theorem inf_prod : (s₁ ⊓ s₂) ×ˢ t = s₁ ×ˢ t ⊓ s₂ ×ˢ t :=
   ext union_prod
 #align upper_set.inf_prod UpperSet.inf_prod
 
 @[simp]
-theorem prod_inf : s ×ᵘˢ (t₁ ⊓ t₂) = s ×ᵘˢ t₁ ⊓ s ×ᵘˢ t₂ :=
+theorem prod_inf : s ×ˢ (t₁ ⊓ t₂) = s ×ˢ t₁ ⊓ s ×ˢ t₂ :=
   ext prod_union
 #align upper_set.prod_inf UpperSet.prod_inf
 
-theorem prod_sup_prod : s₁ ×ᵘˢ t₁ ⊔ s₂ ×ᵘˢ t₂ = (s₁ ⊔ s₂) ×ᵘˢ (t₁ ⊔ t₂) :=
+theorem prod_sup_prod : s₁ ×ˢ t₁ ⊔ s₂ ×ˢ t₂ = (s₁ ⊔ s₂) ×ˢ (t₁ ⊔ t₂) :=
   ext prod_inter_prod
 #align upper_set.prod_sup_prod UpperSet.prod_sup_prod
 
 variable {s s₁ s₂ t t₁ t₂}
 
 @[mono]
-theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ᵘˢ t₁ ≤ s₂ ×ᵘˢ t₂ :=
+theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ˢ t₁ ≤ s₂ ×ˢ t₂ :=
   Set.prod_mono
 #align upper_set.prod_mono UpperSet.prod_mono
 
-theorem prod_mono_left : s₁ ≤ s₂ → s₁ ×ᵘˢ t ≤ s₂ ×ᵘˢ t :=
+theorem prod_mono_left : s₁ ≤ s₂ → s₁ ×ˢ t ≤ s₂ ×ˢ t :=
   Set.prod_mono_left
 #align upper_set.prod_mono_left UpperSet.prod_mono_left
 
-theorem prod_mono_right : t₁ ≤ t₂ → s ×ᵘˢ t₁ ≤ s ×ᵘˢ t₂ :=
+theorem prod_mono_right : t₁ ≤ t₂ → s ×ˢ t₁ ≤ s ×ˢ t₂ :=
   Set.prod_mono_right
 #align upper_set.prod_mono_right UpperSet.prod_mono_right
 
 @[simp]
-theorem prod_self_le_prod_self : s₁ ×ᵘˢ s₁ ≤ s₂ ×ᵘˢ s₂ ↔ s₁ ≤ s₂ :=
+theorem prod_self_le_prod_self : s₁ ×ˢ s₁ ≤ s₂ ×ˢ s₂ ↔ s₁ ≤ s₂ :=
   prod_self_subset_prod_self
 #align upper_set.prod_self_le_prod_self UpperSet.prod_self_le_prod_self
 
 @[simp]
-theorem prod_self_lt_prod_self : s₁ ×ᵘˢ s₁ < s₂ ×ᵘˢ s₂ ↔ s₁ < s₂ :=
+theorem prod_self_lt_prod_self : s₁ ×ˢ s₁ < s₂ ×ˢ s₂ ↔ s₁ < s₂ :=
   prod_self_ssubset_prod_self
 #align upper_set.prod_self_lt_prod_self UpperSet.prod_self_lt_prod_self
 
-theorem prod_le_prod_iff : s₁ ×ᵘˢ t₁ ≤ s₂ ×ᵘˢ t₂ ↔ s₁ ≤ s₂ ∧ t₁ ≤ t₂ ∨ s₂ = ⊤ ∨ t₂ = ⊤ :=
+theorem prod_le_prod_iff : s₁ ×ˢ t₁ ≤ s₂ ×ˢ t₂ ↔ s₁ ≤ s₂ ∧ t₁ ≤ t₂ ∨ s₂ = ⊤ ∨ t₂ = ⊤ :=
   prod_subset_prod_iff.trans <| by simp
 #align upper_set.prod_le_prod_iff UpperSet.prod_le_prod_iff
 
 @[simp]
-theorem prod_eq_top : s ×ᵘˢ t = ⊤ ↔ s = ⊤ ∨ t = ⊤ := by
+theorem prod_eq_top : s ×ˢ t = ⊤ ↔ s = ⊤ ∨ t = ⊤ := by
   simp_rw [SetLike.ext'_iff]
   exact prod_eq_empty_iff
 #align upper_set.prod_eq_top UpperSet.prod_eq_top
 
 @[simp]
 theorem codisjoint_prod :
-    Codisjoint (s₁ ×ᵘˢ t₁) (s₂ ×ᵘˢ t₂) ↔ Codisjoint s₁ s₂ ∨ Codisjoint t₁ t₂ := by
+    Codisjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) ↔ Codisjoint s₁ s₂ ∨ Codisjoint t₁ t₂ := by
   simp_rw [codisjoint_iff, prod_sup_prod, prod_eq_top]
 #align upper_set.codisjoint_prod UpperSet.codisjoint_prod
 
@@ -1649,98 +1647,99 @@ variable (s s₁ s₂ : LowerSet α) (t t₁ t₂ : LowerSet β) {x : α × β}
 def prod : LowerSet (α × β) := ⟨s ×ˢ t, s.2.prod t.2⟩
 #align lower_set.prod LowerSet.prod
 
-@[inherit_doc]
-infixr:82 " ×ˡˢ " => LowerSet.prod
+instance instSProd : SProd (LowerSet α) (LowerSet β) (LowerSet (α × β)) where
+  sprod := LowerSet.prod
 
-@[simp, norm_cast] theorem coe_prod : (↑(s ×ˡˢ t) : Set (α × β)) = s ×ˢ t := rfl
+@[simp, norm_cast]
+theorem coe_prod : ((s ×ˢ t : LowerSet (α × β)) : Set (α × β)) = (s : Set α) ×ˢ t := rfl
 #align lower_set.coe_prod LowerSet.coe_prod
 
 @[simp]
-theorem mem_prod {s : LowerSet α} {t : LowerSet β} : x ∈ s ×ˡˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
+theorem mem_prod {s : LowerSet α} {t : LowerSet β} : x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
   Iff.rfl
 #align lower_set.mem_prod LowerSet.mem_prod
 
-theorem Iic_prod (x : α × β) : Iic x = Iic x.1 ×ˡˢ Iic x.2 :=
+theorem Iic_prod (x : α × β) : Iic x = Iic x.1 ×ˢ Iic x.2 :=
   rfl
 #align lower_set.Iic_prod LowerSet.Iic_prod
 
 @[simp]
-theorem Ici_prod_Ici (a : α) (b : β) : Iic a ×ˡˢ Iic b = Iic (a, b) :=
+theorem Ici_prod_Ici (a : α) (b : β) : Iic a ×ˢ Iic b = Iic (a, b) :=
   rfl
 #align lower_set.Ici_prod_Ici LowerSet.Ici_prod_Ici
 
 @[simp]
-theorem prod_bot : s ×ˡˢ (⊥ : LowerSet β) = ⊥ :=
+theorem prod_bot : s ×ˢ (⊥ : LowerSet β) = ⊥ :=
   ext prod_empty
 #align lower_set.prod_bot LowerSet.prod_bot
 
 @[simp]
-theorem bot_prod : (⊥ : LowerSet α) ×ˡˢ t = ⊥ :=
+theorem bot_prod : (⊥ : LowerSet α) ×ˢ t = ⊥ :=
   ext empty_prod
 #align lower_set.bot_prod LowerSet.bot_prod
 
 @[simp]
-theorem top_prod_top : (⊤ : LowerSet α) ×ˡˢ (⊤ : LowerSet β) = ⊤ :=
+theorem top_prod_top : (⊤ : LowerSet α) ×ˢ (⊤ : LowerSet β) = ⊤ :=
   ext univ_prod_univ
 #align lower_set.top_prod_top LowerSet.top_prod_top
 
 @[simp]
-theorem inf_prod : (s₁ ⊓ s₂) ×ˡˢ t = s₁ ×ˡˢ t ⊓ s₂ ×ˡˢ t :=
+theorem inf_prod : (s₁ ⊓ s₂) ×ˢ t = s₁ ×ˢ t ⊓ s₂ ×ˢ t :=
   ext inter_prod
 #align lower_set.inf_prod LowerSet.inf_prod
 
 @[simp]
-theorem prod_inf : s ×ˡˢ (t₁ ⊓ t₂) = s ×ˡˢ t₁ ⊓ s ×ˡˢ t₂ :=
+theorem prod_inf : s ×ˢ (t₁ ⊓ t₂) = s ×ˢ t₁ ⊓ s ×ˢ t₂ :=
   ext prod_inter
 #align lower_set.prod_inf LowerSet.prod_inf
 
 @[simp]
-theorem sup_prod : (s₁ ⊔ s₂) ×ˡˢ t = s₁ ×ˡˢ t ⊔ s₂ ×ˡˢ t :=
+theorem sup_prod : (s₁ ⊔ s₂) ×ˢ t = s₁ ×ˢ t ⊔ s₂ ×ˢ t :=
   ext union_prod
 #align lower_set.sup_prod LowerSet.sup_prod
 
 @[simp]
-theorem prod_sup : s ×ˡˢ (t₁ ⊔ t₂) = s ×ˡˢ t₁ ⊔ s ×ˡˢ t₂ :=
+theorem prod_sup : s ×ˢ (t₁ ⊔ t₂) = s ×ˢ t₁ ⊔ s ×ˢ t₂ :=
   ext prod_union
 #align lower_set.prod_sup LowerSet.prod_sup
 
-theorem prod_inf_prod : s₁ ×ˡˢ t₁ ⊓ s₂ ×ˡˢ t₂ = (s₁ ⊓ s₂) ×ˡˢ (t₁ ⊓ t₂) :=
+theorem prod_inf_prod : s₁ ×ˢ t₁ ⊓ s₂ ×ˢ t₂ = (s₁ ⊓ s₂) ×ˢ (t₁ ⊓ t₂) :=
   ext prod_inter_prod
 #align lower_set.prod_inf_prod LowerSet.prod_inf_prod
 
 variable {s s₁ s₂ t t₁ t₂}
 
-theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ˡˢ t₁ ≤ s₂ ×ˡˢ t₂ := Set.prod_mono
+theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ˢ t₁ ≤ s₂ ×ˢ t₂ := Set.prod_mono
 #align lower_set.prod_mono LowerSet.prod_mono
 
-theorem prod_mono_left : s₁ ≤ s₂ → s₁ ×ˡˢ t ≤ s₂ ×ˡˢ t := Set.prod_mono_left
+theorem prod_mono_left : s₁ ≤ s₂ → s₁ ×ˢ t ≤ s₂ ×ˢ t := Set.prod_mono_left
 #align lower_set.prod_mono_left LowerSet.prod_mono_left
 
-theorem prod_mono_right : t₁ ≤ t₂ → s ×ˡˢ t₁ ≤ s ×ˡˢ t₂ := Set.prod_mono_right
+theorem prod_mono_right : t₁ ≤ t₂ → s ×ˢ t₁ ≤ s ×ˢ t₂ := Set.prod_mono_right
 #align lower_set.prod_mono_right LowerSet.prod_mono_right
 
 @[simp]
-theorem prod_self_le_prod_self : s₁ ×ˡˢ s₁ ≤ s₂ ×ˡˢ s₂ ↔ s₁ ≤ s₂ :=
+theorem prod_self_le_prod_self : s₁ ×ˢ s₁ ≤ s₂ ×ˢ s₂ ↔ s₁ ≤ s₂ :=
   prod_self_subset_prod_self
 #align lower_set.prod_self_le_prod_self LowerSet.prod_self_le_prod_self
 
 @[simp]
-theorem prod_self_lt_prod_self : s₁ ×ˡˢ s₁ < s₂ ×ˡˢ s₂ ↔ s₁ < s₂ :=
+theorem prod_self_lt_prod_self : s₁ ×ˢ s₁ < s₂ ×ˢ s₂ ↔ s₁ < s₂ :=
   prod_self_ssubset_prod_self
 #align lower_set.prod_self_lt_prod_self LowerSet.prod_self_lt_prod_self
 
-theorem prod_le_prod_iff : s₁ ×ˡˢ t₁ ≤ s₂ ×ˡˢ t₂ ↔ s₁ ≤ s₂ ∧ t₁ ≤ t₂ ∨ s₁ = ⊥ ∨ t₁ = ⊥ :=
+theorem prod_le_prod_iff : s₁ ×ˢ t₁ ≤ s₂ ×ˢ t₂ ↔ s₁ ≤ s₂ ∧ t₁ ≤ t₂ ∨ s₁ = ⊥ ∨ t₁ = ⊥ :=
   prod_subset_prod_iff.trans <| by simp
 #align lower_set.prod_le_prod_iff LowerSet.prod_le_prod_iff
 
 @[simp]
-theorem prod_eq_bot : s ×ˡˢ t = ⊥ ↔ s = ⊥ ∨ t = ⊥ := by
+theorem prod_eq_bot : s ×ˢ t = ⊥ ↔ s = ⊥ ∨ t = ⊥ := by
   simp_rw [SetLike.ext'_iff]
   exact prod_eq_empty_iff
 #align lower_set.prod_eq_bot LowerSet.prod_eq_bot
 
 @[simp]
-theorem disjoint_prod : Disjoint (s₁ ×ˡˢ t₁) (s₂ ×ˡˢ t₂) ↔ Disjoint s₁ s₂ ∨ Disjoint t₁ t₂ := by
+theorem disjoint_prod : Disjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) ↔ Disjoint s₁ s₂ ∨ Disjoint t₁ t₂ := by
   simp_rw [disjoint_iff, prod_inf_prod, prod_eq_bot]
 #align lower_set.disjoint_prod LowerSet.disjoint_prod
 
@@ -1748,14 +1747,14 @@ end LowerSet
 
 @[simp]
 theorem upperClosure_prod (s : Set α) (t : Set β) :
-    upperClosure (s ×ˢ t) = upperClosure s ×ᵘˢ upperClosure t := by
+    upperClosure (s ×ˢ t) = upperClosure s ×ˢ upperClosure t := by
   ext
   simp [Prod.le_def, @and_and_and_comm _ (_ ∈ t)]
 #align upper_closure_prod upperClosure_prod
 
 @[simp]
 theorem lowerClosure_prod (s : Set α) (t : Set β) :
-    lowerClosure (s ×ˢ t) = lowerClosure s ×ˡˢ lowerClosure t := by
+    lowerClosure (s ×ˢ t) = lowerClosure s ×ˢ lowerClosure t := by
   ext
   simp [Prod.le_def, @and_and_and_comm _ (_ ∈ t)]
 #align lower_closure_prod lowerClosure_prod

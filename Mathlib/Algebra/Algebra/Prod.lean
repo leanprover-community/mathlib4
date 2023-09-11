@@ -15,7 +15,7 @@ import Mathlib.Algebra.Algebra.Hom
 
 The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 
-## Main defintions
+## Main definitions
 
 * `Pi.algebra`
 * `Pi.evalAlgHom`

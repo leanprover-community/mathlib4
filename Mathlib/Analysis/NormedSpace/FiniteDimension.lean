@@ -564,7 +564,7 @@ def ContinuousLinearEquiv.piRing (ι : Type _) [Fintype ι] [DecidableEq ι] :
       rw [← nsmul_eq_mul]
       refine op_norm_le_bound _ (nsmul_nonneg (norm_nonneg g) (Fintype.card ι)) fun t => ?_
       simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
-        LinearMap.coe_to_continuous_linear_map', LinearEquiv.piRing_symm_apply]
+        LinearMap.coe_toContinuousLinearMap', LinearEquiv.piRing_symm_apply]
       apply le_trans (norm_sum_le _ _)
       rw [smul_mul_assoc]
       refine' Finset.sum_le_card_nsmul _ _ _ fun i _ => _

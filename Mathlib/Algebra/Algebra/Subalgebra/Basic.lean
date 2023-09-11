@@ -374,7 +374,8 @@ instance algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A] [IsScalarTower R'
     smul_def' := fun c x => Subtype.eq <| Algebra.smul_def _ _ }
 #align subalgebra.algebra' Subalgebra.algebra'
 
-instance : Algebra R S := S.algebra'
+instance algebra : Algebra R S := S.algebra'
+#align subalgebra.algebra Subalgebra.algebra
 
 end
 
@@ -1110,7 +1111,7 @@ def prod : Subalgebra R (A × B) :=
 #align subalgebra.prod Subalgebra.prod
 
 @[simp]
-theorem coe_prod : (prod S S₁ : Set (A × B)) = S ×ˢ S₁ :=
+theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ (S₁ : Set B) :=
   rfl
 #align subalgebra.coe_prod Subalgebra.coe_prod
 

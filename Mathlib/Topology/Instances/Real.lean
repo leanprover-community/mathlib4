@@ -67,7 +67,7 @@ instance : ProperSpace ℝ where
 instance : SecondCountableTopology ℝ := secondCountable_of_proper
 
 theorem Real.isTopologicalBasis_Ioo_rat :
-    @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_h : a < b), {Ioo (a : ℝ) b}) :=
+    @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
   isTopologicalBasis_of_open_of_nhds (by simp (config := { contextual := true }) [isOpen_Ioo])
     fun a v hav hv =>
     let ⟨l, u, ⟨hl, hu⟩, h⟩ := mem_nhds_iff_exists_Ioo_subset.mp (IsOpen.mem_nhds hv hav)
@@ -237,7 +237,7 @@ theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact
   simp [Real.ball_eq_Ioo, Set.finite_Ioo]
 #align int.tendsto_coe_cofinite Int.tendsto_coe_cofinite
 
-/-- For nonzero `a`, the "multiples of `a`" map `zmultiples_hom` from `ℤ` to `ℝ` is discrete, i.e.
+/-- For nonzero `a`, the "multiples of `a`" map `zmultiplesHom` from `ℤ` to `ℝ` is discrete, i.e.
 inverse images of compact sets are finite. -/
 theorem tendsto_zmultiplesHom_cofinite {a : ℝ} (ha : a ≠ 0) :
     Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) := by

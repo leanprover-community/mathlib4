@@ -837,7 +837,7 @@ theorem liftAux_inrHom : liftAux (inrHom R' M) (inr_mul_inr R') = AlgHom.id R' (
 `TrivSqZeroExt R M →ₐ[R] A` for every linear map `M →ₗ[R] A` whose range has no non-zero
 products.
 
-This isomorphism is named to match the very similar `complex.lift`. -/
+This isomorphism is named to match the very similar `Complex.lift`. -/
 @[simps]
 def lift : { f : M →ₗ[R'] A // ∀ x y, f x * f y = 0 } ≃ (tsze R' M →ₐ[R'] A) where
   toFun f := liftAux f f.prop

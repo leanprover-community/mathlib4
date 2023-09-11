@@ -15,7 +15,7 @@ import Mathlib.Data.Set.Finite
 # Hall's Marriage Theorem for finite index types
 
 This module proves the basic form of Hall's theorem.
-In constrast to the theorem described in `Combinatorics.Hall.Basic`, this
+In contrast to the theorem described in `Combinatorics.Hall.Basic`, this
 version requires that the indexed family `t : ι → Finset α` have `ι` be finite.
 The `Combinatorics.Hall.Basic` module applies a compactness argument to this version
 to remove the `Finite` constraint on `ι`.

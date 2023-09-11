@@ -38,7 +38,7 @@ namespace List
 
 variable {α : Type _} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
 
-/-! ### `disjoint` -/
+/-! ### `Disjoint` -/
 
 
 section Disjoint

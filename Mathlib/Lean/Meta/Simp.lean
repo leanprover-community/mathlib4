@@ -171,19 +171,30 @@ def addSimpAttrFromSyntax (declName : Name) (ext : SimpExtension) (attrKind : At
 
 end Simp
 
-/-- Construct a `SimpTheorems` from a list of names. (i.e. as with `simp only`). -/
-def simpTheoremsOfNames (lemmas : List Name) : MetaM SimpTheorems := do
-  lemmas.foldlM (·.addConst ·) (← simpOnlyBuiltins.foldlM (·.addConst ·) {})
+/-- Construct a `SimpTheorems` from a list of names. -/
+def simpTheoremsOfNames (lemmas : List Name := []) (simpOnly : Bool := false) :
+    MetaM SimpTheorems := do
+  lemmas.foldlM (·.addConst ·)
+    (if simpOnly then
+      ← simpOnlyBuiltins.foldlM (·.addConst ·) {}
+    else
+      ← getSimpTheorems)
 
-/-- Simplify an expression using only a list of lemmas specified by name. -/
 -- TODO We need to write a `mkSimpContext` in `MetaM`
 -- that supports all the bells and whistles in `simp`.
 -- It should generalize this, and another partial implementation in `Tactic.Simps.Basic`.
+
+/-- Construct a `Simp.Context` from a list of names. -/
+def Simp.Context.ofNames (lemmas : List Name := []) (simpOnly : Bool := false)
+    (config : Simp.Config := {}) : MetaM Simp.Context := do pure <|
+  { simpTheorems := #[← simpTheoremsOfNames lemmas simpOnly],
+    congrTheorems := ← Lean.Meta.getSimpCongrTheorems,
+    config := config }
+
+/-- Simplify an expression using only a list of lemmas specified by name. -/
 def simpOnlyNames (lemmas : List Name) (e : Expr) (config : Simp.Config := {}) :
     MetaM Simp.Result := do
-  (·.1) <$> simp e
-    { simpTheorems := #[← simpTheoremsOfNames lemmas], congrTheorems := ← getSimpCongrTheorems,
-      config := config }
+  (·.1) <$> simp e (← Simp.Context.ofNames lemmas true config)
 
 /--
 Given a simplifier `S : Expr → MetaM Simp.Result`,

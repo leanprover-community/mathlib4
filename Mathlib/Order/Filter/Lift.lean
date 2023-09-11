@@ -421,7 +421,7 @@ section Prod
 variable {f : Filter α}
 
 theorem prod_def {f : Filter α} {g : Filter β} :
-    f ×ᶠ g = f.lift fun s => g.lift' fun t => s ×ˢ t := by
+    f ×ˢ g = f.lift fun s => g.lift' fun t => s ×ˢ t := by
   simpa only [Filter.lift', Filter.lift, (f.basis_sets.prod g.basis_sets).eq_biInf,
     iInf_prod, iInf_and] using iInf_congr fun i => iInf_comm
 #align filter.prod_def Filter.prod_def
@@ -429,12 +429,12 @@ theorem prod_def {f : Filter α} {g : Filter β} :
 alias mem_prod_self_iff ← mem_prod_same_iff
 #align filter.mem_prod_same_iff Filter.mem_prod_same_iff
 
-theorem prod_same_eq : f ×ᶠ f = f.lift' fun t : Set α => t ×ˢ t :=
+theorem prod_same_eq : f ×ˢ f = f.lift' fun t : Set α => t ×ˢ t :=
   f.basis_sets.prod_self.eq_biInf
 #align filter.prod_same_eq Filter.prod_same_eq
 
 theorem tendsto_prod_self_iff {f : α × α → β} {x : Filter α} {y : Filter β} :
-    Filter.Tendsto f (x ×ᶠ x) y ↔ ∀ W ∈ y, ∃ U ∈ x, ∀ x x' : α, x ∈ U → x' ∈ U → f (x, x') ∈ W := by
+    Filter.Tendsto f (x ×ˢ x) y ↔ ∀ W ∈ y, ∃ U ∈ x, ∀ x x' : α, x ∈ U → x' ∈ U → f (x, x') ∈ W := by
   simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
 #align filter.tendsto_prod_self_iff Filter.tendsto_prod_self_iff
 
@@ -442,7 +442,7 @@ variable {α₁ : Type _} {α₂ : Type _} {β₁ : Type _} {β₂ : Type _}
 
 theorem prod_lift_lift {f₁ : Filter α₁} {f₂ : Filter α₂} {g₁ : Set α₁ → Filter β₁}
     {g₂ : Set α₂ → Filter β₂} (hg₁ : Monotone g₁) (hg₂ : Monotone g₂) :
-    f₁.lift g₁ ×ᶠ f₂.lift g₂ = f₁.lift fun s => f₂.lift fun t => g₁ s ×ᶠ g₂ t := by
+    f₁.lift g₁ ×ˢ f₂.lift g₂ = f₁.lift fun s => f₂.lift fun t => g₁ s ×ˢ g₂ t := by
   simp only [prod_def, lift_assoc hg₁]
   apply congr_arg; funext x
   rw [lift_comm]
@@ -452,9 +452,9 @@ theorem prod_lift_lift {f₁ : Filter α₁} {f₂ : Filter α₂} {g₁ : Set �
 
 theorem prod_lift'_lift' {f₁ : Filter α₁} {f₂ : Filter α₂} {g₁ : Set α₁ → Set β₁}
     {g₂ : Set α₂ → Set β₂} (hg₁ : Monotone g₁) (hg₂ : Monotone g₂) :
-    f₁.lift' g₁ ×ᶠ f₂.lift' g₂ = f₁.lift fun s => f₂.lift' fun t => g₁ s ×ˢ g₂ t :=
+    f₁.lift' g₁ ×ˢ f₂.lift' g₂ = f₁.lift fun s => f₂.lift' fun t => g₁ s ×ˢ g₂ t :=
   calc
-    f₁.lift' g₁ ×ᶠ f₂.lift' g₂ = f₁.lift fun s => f₂.lift fun t => 𝓟 (g₁ s) ×ᶠ 𝓟 (g₂ t) :=
+    f₁.lift' g₁ ×ˢ f₂.lift' g₂ = f₁.lift fun s => f₂.lift fun t => 𝓟 (g₁ s) ×ˢ 𝓟 (g₂ t) :=
       prod_lift_lift (monotone_principal.comp hg₁) (monotone_principal.comp hg₂)
     _ = f₁.lift fun s => f₂.lift fun t => 𝓟 (g₁ s ×ˢ g₂ t) := by
       { simp only [prod_principal_principal] }

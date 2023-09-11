@@ -85,7 +85,7 @@ If no counter-examples are found, `slim_check` behaves like `admit`.
 `slim_check` can also be invoked using `#eval`:
 
 ```lean
-#eval SlimCheck.Testable.check (∀ (α : Type) (xs ys : list α), xs ++ ys = ys ++ xs)
+#eval SlimCheck.Testable.check (∀ (α : Type) (xs ys : List α), xs ++ ys = ys ++ xs)
 -- ===================
 -- Found problems!
 

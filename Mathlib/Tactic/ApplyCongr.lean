@@ -80,7 +80,7 @@ def Lean.Elab.Tactic.applyCongr (q : Option Expr) : TacticM Unit := do
     let newGoals ← mainGoal.apply congrTheoremExpr { newGoals := .nonDependentOnly }
     newGoals.mapM fun newGoal => Prod.snd <$> newGoal.intros)
 
-syntax (name := Lean.Parser.Tactic.applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
+syntax (name := Lean.Parser.Tactic.applyCongr) "apply_congr" (ppSpace colGt term)? : conv
 
 -- TODO: add `apply_congr with h` to specify hypothesis name
 -- https://github.com/leanprover-community/mathlib/issues/2882

@@ -74,7 +74,7 @@ instance : LinearOrderedAddCommMonoid EReal :=
 instance : DenselyOrdered EReal :=
   inferInstanceAs (DenselyOrdered (WithBot (WithTop ℝ)))
 
-/-- The canonical inclusion froms reals to ereals. Registered as a coercion. -/
+/-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
 @[coe] def Real.toEReal : ℝ → EReal := some ∘ some
 #align real.to_ereal Real.toEReal
 

@@ -39,7 +39,7 @@ instance [HasLimits C] (X : TopCat) : CreatesLimits (Sheaf.forget C X) :=
   Sheaf.createsLimits.{u, v, v}
 
 instance [HasLimits C] (X : TopCat) : HasLimitsOfSize.{v} (Sheaf.{v} C X) :=
-  has_limits_of_has_limits_creates_limits (Sheaf.forget C X)
+  hasLimits_of_hasLimits_createsLimits (Sheaf.forget C X)
 
 theorem isSheaf_of_isLimit [HasLimits C] {X : TopCat} (F : J ⥤ Presheaf.{v} C X)
     (H : ∀ j, (F.obj j).IsSheaf) {c : Cone F} (hc : IsLimit c) : c.pt.IsSheaf := by

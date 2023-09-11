@@ -1410,7 +1410,7 @@ theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract
 
 theorem round_le (x : α) (z : ℤ) : |x - round x| ≤ |x - z| := by
   rw [abs_sub_round_eq_min, min_le_iff]
-  rcases le_or_lt (z : α) x with (hx | hx) <;> [left, right]
+  rcases le_or_lt (z : α) x with (hx | hx) <;> [left; right]
   · conv_rhs => rw [abs_eq_self.mpr (sub_nonneg.mpr hx), ← fract_add_floor x, add_sub_assoc]
     simpa only [le_add_iff_nonneg_right, sub_nonneg, cast_le] using le_floor.mpr hx
   · rw [abs_eq_neg_self.mpr (sub_neg.mpr hx).le]

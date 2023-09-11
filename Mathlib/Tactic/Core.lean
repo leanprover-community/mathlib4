@@ -66,10 +66,40 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option
 def setProtected {m : Type → Type} [MonadEnv m] (nm : Name) : m Unit :=
   modifyEnv (addProtected · nm)
 
-namespace Parser.Tactic
+open private getIntrosSize from Lean.Meta.Tactic.Intro in
+/-- Introduce variables, giving them names from a specified list. -/
+def MVarId.introsWithBinderIdents
+    (g : MVarId) (ids : List (TSyntax ``binderIdent)) :
+    MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
+  let type ← g.getType
+  let type ← instantiateMVars type
+  let n := getIntrosSize type
+  if n == 0 then
+    return (ids, #[], g)
+  let mut ids := ids
+  let mut names := #[]
+  for _ in [0:n] do
+    names := names.push (ids.headD (Unhygienic.run `(binderIdent| _)))
+    ids := ids.tail
+  let (xs, g) ← g.introN n <| names.toList.map fun stx =>
+    match stx.raw with
+    | `(binderIdent| $n:ident) => n.getId
+    | _ => `_
+  g.withContext do
+    for n in names, fvar in xs do
+      (Expr.fvar fvar).addLocalVarInfoForBinderIdent n
+  return (ids, xs, g)
 
-syntax withArgs := " with " (colGt ident)+
+end Lean
+
+namespace Mathlib.Tactic
+
+-- FIXME: we cannot write this line when `Lean.Parser.Tactic` is open,
+-- or it will get an extra `group`
+syntax withArgs := " with" (ppSpace colGt ident)+
 syntax usingArg := " using " term
+
+open Lean Parser.Tactic
 
 /-- Extract the arguments from a `simpArgs` syntax as an array of syntaxes -/
 def getSimpArgs : Syntax → TacticM (Array Syntax)
@@ -97,8 +127,7 @@ the tactic is applied recursively to the generated subgoals until it eventually 
 -/
 macro "repeat1 " seq:tacticSeq : tactic => `(tactic| (($seq); repeat $seq))
 
-end Parser.Tactic
-end Lean
+end Mathlib.Tactic
 
 namespace Lean.Elab.Tactic
 

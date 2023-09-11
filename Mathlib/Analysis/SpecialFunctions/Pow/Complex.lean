@@ -192,7 +192,7 @@ theorem inv_cpow (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : x⁻¹ ^ n = (x ^ n)�
   rw [inv_cpow_eq_ite, if_neg hx]
 #align complex.inv_cpow Complex.inv_cpow
 
-/-- `complex.inv_cpow_eq_ite` with the `ite` on the other side. -/
+/-- `Complex.inv_cpow_eq_ite` with the `ite` on the other side. -/
 theorem inv_cpow_eq_ite' (x : ℂ) (n : ℂ) :
     (x ^ n)⁻¹ = if x.arg = π then conj (x⁻¹ ^ conj n) else x⁻¹ ^ n := by
   rw [inv_cpow_eq_ite, apply_ite conj, conj_conj, conj_conj]
@@ -258,7 +258,7 @@ end Complex
 --       pure (c, (expr.const Pos []).mk_app [a, b, b', c, hb, h])
 -- #align norm_num.prove_rpow' norm_num.prove_rpow'
 
--- /-- Evaluate `complex.cpow a b` where `a` is a rational numeral and `b` is an integer. -/
+-- /-- Evaluate `Complex.cpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_cpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` cpow_pos `` cpow_neg `` Complex.cpow_zero q(ℂ) q(ℂ) q((1 : ℂ))
 -- #align norm_num.prove_cpow norm_num.prove_cpow

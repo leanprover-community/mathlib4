@@ -1099,7 +1099,7 @@ variable (L)
 
 /-- A sentence indicating that a structure has `n` distinct elements. -/
 protected def Sentence.cardGe (n : ℕ) : L.Sentence :=
-  (((((List.finRange n).product (List.finRange n)).filter fun ij : _ × _ => ij.1 ≠ ij.2).map
+  ((((List.finRange n ×ˢ List.finRange n).filter fun ij : _ × _ => ij.1 ≠ ij.2).map
           fun ij : _ × _ => ∼((&ij.1).bdEqual &ij.2)).foldr
       (· ⊓ ·) ⊤).exs
 #align first_order.language.sentence.card_ge FirstOrder.Language.Sentence.cardGe

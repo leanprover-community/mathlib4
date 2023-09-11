@@ -74,7 +74,7 @@ structure MulChar extends MonoidHom R R' where
   map_nonunit' : ∀ a : R, ¬IsUnit a → toFun a = 0
 #align mul_char MulChar
 
-/-- This is the corresponding extension of `monoid_hom_class`. -/
+/-- This is the corresponding extension of `MonoidHomClass`. -/
 class MulCharClass (F : Type _) (R R' : outParam <| Type _) [CommMonoid R]
   [CommMonoidWithZero R'] extends MonoidHomClass F R R' where
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
@@ -255,9 +255,9 @@ theorem coe_equivToUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(equivToUnitHom χ
 #align mul_char.coe_equiv_to_unit_hom MulChar.coe_equivToUnitHom
 
 @[simp]
-theorem equiv_unit_hom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = f a :=
+theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = f a :=
   ofUnitHom_coe f a
-#align mul_char.equiv_unit_hom_symm_coe MulChar.equiv_unit_hom_symm_coe
+#align mul_char.equiv_unit_hom_symm_coe MulChar.equivToUnitHom_symm_coe
 
 /-!
 ### Commutative group structure on multiplicative characters
@@ -275,7 +275,7 @@ protected theorem map_zero {R : Type u} [CommMonoidWithZero R] [Nontrivial R] (�
     χ (0 : R) = 0 := by rw [map_nonunit χ not_isUnit_zero]
 #align mul_char.map_zero MulChar.map_zero
 
-/-- If the domain is a ring `R`, then `χ (ring_char R) = 0`. -/
+/-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
 theorem map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
     χ (ringChar R) = 0 := by rw [ringChar.Nat.cast_ringChar, χ.map_zero]
 #align mul_char.map_ring_char MulChar.map_ringChar
@@ -325,8 +325,7 @@ protected theorem mul_one (χ : MulChar R R') : χ * 1 = χ := by
 
 /-- The inverse of a multiplicative character. We define it as `inverse ∘ χ`. -/
 noncomputable def inv (χ : MulChar R R') : MulChar R R' :=
-  { MonoidWithZero.inverse.toMonoidHom.comp
-      χ.toMonoidHom with
+  { MonoidWithZero.inverse.toMonoidHom.comp χ.toMonoidHom with
     toFun := fun a => MonoidWithZero.inverse (χ a)
     map_nonunit' := fun a ha => by simp [map_nonunit _ ha] }
 #align mul_char.inv MulChar.inv

@@ -57,8 +57,8 @@ docstrings instead of the names.
 
 * `Ordinal.infinite_pigeonhole`: pigeonhole principle for cardinals, formulated using cofinality;
 
-* `measure_theory.exists_nonempty_inter_of_measure_univ_lt_tsum_measure`,
-  `measure_theory.exists_nonempty_inter_of_measure_univ_lt_sum_measure`: pigeonhole principle in a
+* `MeasureTheory.exists_nonempty_inter_of_measure_univ_lt_tsum_measure`,
+  `MeasureTheory.exists_nonempty_inter_of_measure_univ_lt_sum_measure`: pigeonhole principle in a
   measure space.
 
 ## Tags

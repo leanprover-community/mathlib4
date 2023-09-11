@@ -1203,7 +1203,7 @@ variable [CancelCommMonoidWithZero α]
 `Multiset α` produced by `normalizedFactors` are only unique up to associated elements, while the
 multisets in `FactorSet α` are unique by equality and restricted to irreducible elements. This
 gives us a representation of each element as a unique multisets (or the added ⊤ for 0), which has a
-complete lattice struture. Infimum is the greatest common divisor and supremum is the least common
+complete lattice structure. Infimum is the greatest common divisor and supremum is the least common
 multiple.
 -/
 @[reducible]
@@ -1973,7 +1973,7 @@ noncomputable def fintypeSubtypeDvd {M : Type _} [CancelCommMonoidWithZero M]
   -- and has image exactly the divisors of `y`.
   refine'
     Fintype.ofFinset
-      (((normalizedFactors y).powerset.toFinset.product (Finset.univ : Finset Mˣ)).image fun s =>
+      (((normalizedFactors y).powerset.toFinset ×ˢ (Finset.univ : Finset Mˣ)).image fun s =>
         (s.snd : M) * s.fst.prod)
       fun x => _
   simp only [exists_prop, Finset.mem_image, Finset.mem_product, Finset.mem_univ, and_true_iff,

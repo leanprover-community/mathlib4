@@ -311,7 +311,7 @@ theorem univ_filter_exists (f : α → β) [Fintype β] [DecidablePred fun y => 
   simp
 #align finset.univ_filter_exists Finset.univ_filter_exists
 
-/-- Note this is a special case of `(finset.image_preimage f univ _).symm`. -/
+/-- Note this is a special case of `(Finset.image_preimage f univ _).symm`. -/
 theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y => y ∈ Set.range f]
     [DecidableEq β] : (Finset.univ.filter fun y => y ∈ Set.range f) = Finset.univ.image f := by
   letI : DecidablePred (fun y => ∃ x, f x = y) := by simpa using ‹_›
@@ -1160,7 +1160,7 @@ end Fintype
 
 section Trunc
 
-/-- For `s : Multiset α`, we can lift the existential statement that `∃ x, x ∈ s` to a `trunc α`.
+/-- For `s : Multiset α`, we can lift the existential statement that `∃ x, x ∈ s` to a `Trunc α`.
 -/
 def truncOfMultisetExistsMem {α} (s : Multiset α) : (∃ x, x ∈ s) → Trunc α :=
   Quotient.recOnSubsingleton s fun l h =>

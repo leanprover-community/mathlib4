@@ -9,6 +9,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Basic
+import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
 
 /-!
 # The derivative of bounded linear maps
@@ -61,9 +62,9 @@ There are currently two variants of these in mathlib, the bundled version
 predicate `IsBoundedLinearMap`). We give statements for both versions. -/
 
 
-protected theorem ContinuousLinearMap.hasStrictFderivAt {x : E} : HasStrictFDerivAt e e x :=
+protected theorem ContinuousLinearMap.hasStrictFDerivAt {x : E} : HasStrictFDerivAt e e x :=
   (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
-#align continuous_linear_map.has_strict_fderiv_at ContinuousLinearMap.hasStrictFderivAt
+#align continuous_linear_map.has_strict_fderiv_at ContinuousLinearMap.hasStrictFDerivAt
 
 protected theorem ContinuousLinearMap.hasFDerivAtFilter : HasFDerivAtFilter e e x L :=
   (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]

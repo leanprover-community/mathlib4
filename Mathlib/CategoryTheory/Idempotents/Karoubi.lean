@@ -43,7 +43,7 @@ consider `P` as a direct factor of `X` and up to unique isomorphism, it is deter
 obvious idempotent `X ⟶ P ⟶ X` which is the projection onto `P` with kernel `Q`. More generally,
 one may define a formal direct factor of an object `X : C` : it consists of an idempotent
 `p : X ⟶ X` which is thought as the "formal image" of `p`. The type `Karoubi C` shall be the
-type of the objects of the karoubi enveloppe of `C`. It makes sense for any category `C`. -/
+type of the objects of the karoubi envelope of `C`. It makes sense for any category `C`. -/
 structure Karoubi where
   /-- an object of the underlying category -/
   X : C

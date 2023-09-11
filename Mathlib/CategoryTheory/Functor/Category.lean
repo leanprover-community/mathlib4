@@ -57,7 +57,7 @@ namespace NatTrans
 -- Porting note: the behaviour of `ext` has changed here.
 -- We need to provide a copy of the `NatTrans.ext` lemma,
 -- written in terms of `F ⟶ G` rather than `NatTrans F G`,
--- or the `ext` will not retrieve it from the cache.
+-- or `ext` will not retrieve it from the cache.
 @[ext]
 theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext _ _ w
 

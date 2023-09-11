@@ -230,7 +230,7 @@ on `C(s, β)` for `s` a compact subset of `α`.  The key point of the proof is t
 compact subsets of `α` is equal to the union of compact subsets of the compact subsets of `α`. -/
 theorem compactOpen_eq_sInf_induced :
     (ContinuousMap.compactOpen : TopologicalSpace C(α, β)) =
-      ⨅ (s : Set α) (_hs : IsCompact s),
+      ⨅ (s : Set α) (_ : IsCompact s),
         TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen := by
   refine' le_antisymm _ _
   · refine' le_iInf₂ _
@@ -283,7 +283,7 @@ theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space 
     exact ⟨f.restrict s, tendsto_compactOpen_restrict hf s⟩
   · intro h
     choose f hf using h
-    -- By uniqueness of limits in a `t2_space`, since `fun i ↦ F i x` tends to both `f s₁ hs₁ x` and
+    -- By uniqueness of limits in a `T2Space`, since `fun i ↦ F i x` tends to both `f s₁ hs₁ x` and
     -- `f s₂ hs₂ x`, we have `f s₁ hs₁ x = f s₂ hs₂ x`
     have h :
       ∀ (s₁) (hs₁ : IsCompact s₁) (s₂) (hs₂ : IsCompact s₂) (x : α) (hxs₁ : x ∈ s₁) (hxs₂ : x ∈ s₂),
@@ -368,7 +368,7 @@ theorem continuous_of_continuous_uncurry (f : α → C(β, γ))
 
 /-- The curried form of a continuous map `α × β → γ` as a continuous map `α → C(β, γ)`.
     If `a × β` is locally compact, this is continuous. If `α` and `β` are both locally
-    compact, then this is a homeomorphism, see `homeomorph.curry`. -/
+    compact, then this is a homeomorphism, see `Homeomorph.curry`. -/
 def curry (f : C(α × β, γ)) : C(α, C(β, γ)) :=
   ⟨_, continuous_curry' f⟩
 #align continuous_map.curry ContinuousMap.curry
@@ -395,7 +395,7 @@ theorem continuous_uncurry_of_continuous [LocallyCompactSpace β] (f : C(α, C(�
 
 /-- The uncurried form of a continuous map `α → C(β, γ)` as a continuous map `α × β → γ` (if `β` is
     locally compact). If `α` is also locally compact, then this is a homeomorphism between the two
-    function spaces, see `homeomorph.curry`. -/
+    function spaces, see `Homeomorph.curry`. -/
 @[simps]
 def uncurry [LocallyCompactSpace β] (f : C(α, C(β, γ))) : C(α × β, γ) :=
   ⟨_, continuous_uncurry_of_continuous f⟩

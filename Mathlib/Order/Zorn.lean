@@ -43,7 +43,7 @@ A typical proof using Zorn could look like this (TODO: update to mathlib4)
 ```lean
 lemma zorny_lemma : zorny_statement :=
 begin
-  let s : set α := {x | whatever x},
+  let s : Set α := {x | whatever x},
   suffices : ∃ x ∈ s, ∀ y ∈ s, y ⊆ x → y = x, -- or with another operator
   { exact proof_post_zorn },
   apply zorn_subset, -- or another variant

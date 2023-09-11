@@ -178,22 +178,25 @@ theorem of_eq_tot {f : ℕ →. ℕ} {g : ℕ → ℕ} (hf : Partrec f) (H : ∀
 #align nat.partrec.of_eq_tot Nat.Partrec.of_eq_tot
 
 theorem of_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : Partrec f := by
-  induction hf
-  case zero => exact zero
-  case succ => exact succ
-  case left => exact left
-  case right => exact right
-  case pair f g _ _ pf pg =>
+  induction hf with
+  | zero => exact zero
+  | succ => exact succ
+  | left => exact left
+  | right => exact right
+  | pair _ _ pf pg =>
     refine' (pf.pair pg).of_eq_tot fun n => _
     simp [Seq.seq]
-  case comp f g _ _ pf pg =>
+  | comp _ _ pf pg =>
     refine' (pf.comp pg).of_eq_tot fun n => _
     simp
-  case prec f g _ _ pf pg =>
+  | prec _ _ pf pg =>
     refine' (pf.prec pg).of_eq_tot fun n => _
-    simp
-    induction' n.unpair.2 with m IH; · simp
-    simp; exact ⟨_, IH, rfl⟩
+    simp only [unpaired, PFun.coe_val, bind_eq_bind]
+    induction n.unpair.2 with
+    | zero => simp
+    | succ m IH =>
+      simp only [mem_bind_iff, mem_some_iff]
+      exact ⟨_, IH, rfl⟩
 #align nat.partrec.of_primrec Nat.Partrec.of_primrec
 
 protected theorem some : Partrec some :=
@@ -764,14 +767,10 @@ open Computable
 
 theorem option_some_iff {f : α →. σ} : (Partrec fun a => (f a).map Option.some) ↔ Partrec f :=
   ⟨fun h => (Nat.Partrec.ppred.comp h).of_eq fun n => by
-      simp [Part.bind_assoc]
-      -- Porting note: `simp` can't match `Part.some ∘ f` with `fun x => Part.some (f x)`,
-      --               so `conv` & `erw` are needed.
-      conv_lhs =>
-        congr
-        · skip
-        · ext x
-          erw [bind_some_eq_map],
+      -- Porting note: needed to help with applying bind_some_eq_map because `Function.comp` got
+      -- less reducible.
+      simp [Part.bind_assoc, ← Function.comp_apply (f := Part.some) (g := encode), bind_some_eq_map,
+        -Function.comp_apply],
     fun hf => hf.map (option_some.comp snd).to₂⟩
 #align partrec.option_some_iff Partrec.option_some_iff
 

@@ -144,7 +144,7 @@ instance commApplicative : CommApplicative Finset :=
       simp_rw [seq_def, fmap_def, sup_image, sup_eq_biUnion]
       change (s.biUnion fun a => t.image fun b => (a, b))
         = t.biUnion fun b => s.image fun a => (a, b)
-      trans s.product t <;> [rw [product_eq_biUnion], rw [product_eq_biUnion_right]] }
+      trans s ×ˢ t <;> [rw [product_eq_biUnion]; rw [product_eq_biUnion_right]] }
 
 end Applicative
 

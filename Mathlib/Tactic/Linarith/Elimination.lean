@@ -249,7 +249,7 @@ in decreasing order.
 structure LinarithData : Type where
   /-- The largest variable index that has not been (officially) eliminated. -/
   maxVar : ℕ
-  /-- The set of comparisions. -/
+  /-- The set of comparisons. -/
   comps : PCompSet
 
 /--

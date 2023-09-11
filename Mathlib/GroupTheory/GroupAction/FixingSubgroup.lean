@@ -21,7 +21,7 @@ and relates it to the set of fixed points via a Galois connection.
 
 ## Main definitions
 
-* `fixingSubmonoid M s` : in the presence of `MulAction M α` (with `monoid M`)
+* `fixingSubmonoid M s` : in the presence of `MulAction M α` (with `Monoid M`)
   it is the `Submonoid M` consisting of elements which fix `s : Set α` pointwise.
 
 * `fixingSubmonoid_fixedPoints_gc M α` is the `GaloisConnection`

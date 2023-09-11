@@ -25,7 +25,7 @@ the notion of cluster point of a sequence `u` is `MapClusterPt x atTop u`.
 
 For topological spaces `α` and `β`, a function `f : α → β` and a point `a : α`,
 `ContinuousAt f a` means `f` is continuous at `a`, and global continuity is
-`Continuous f`. There is also a version of continuity `pcontinuous` for
+`Continuous f`. There is also a version of continuity `PContinuous` for
 partially defined functions.
 
 ## Notation
@@ -851,7 +851,7 @@ scoped[Topology] notation "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
 
 end
 
-theorem nhds_def' (a : α) : 𝓝 a = ⨅ (s : Set α) (_hs : IsOpen s) (_ha : a ∈ s), 𝓟 s := by
+theorem nhds_def' (a : α) : 𝓝 a = ⨅ (s : Set α) (_ : IsOpen s) (_ : a ∈ s), 𝓟 s := by
   simp only [nhds_def, mem_setOf_eq, @and_comm (a ∈ _), iInf_and]
 #align nhds_def' nhds_def'
 
@@ -1930,13 +1930,13 @@ def strans {x : F} (γ γ' : Path x x) (t₀ : I) : Path x x
 The precise definition is not important, only its type.
 The correct continuity principle for this operation is something like this:
 ```
-{f : X → F} {γ γ' : ∀ x, path (f x) (f x)} {t₀ s : X → I}
+{f : X → F} {γ γ' : ∀ x, Path (f x) (f x)} {t₀ s : X → I}
   (hγ : Continuous ↿γ) (hγ' : Continuous ↿γ')
   (ht : Continuous t₀) (hs : Continuous s) :
   Continuous (λ x, strans (γ x) (γ' x) (t x) (s x))
 ```
 Note that *all* arguments of `strans` are indexed over `X`, even the basepoint `x`, and the last
-argument `s` that arises since `path x x` has a coercion to `I → F`. The paths `γ` and `γ'` (which
+argument `s` that arises since `Path x x` has a coercion to `I → F`. The paths `γ` and `γ'` (which
 are unary functions from `I`) become binary functions in the continuity lemma.
 
 ### Summary

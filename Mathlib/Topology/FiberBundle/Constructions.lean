@@ -136,7 +136,7 @@ instance FiberBundle.Prod.topologicalSpace : TopologicalSpace (TotalSpace (E₁ 
 #align fiber_bundle.prod.topological_space FiberBundle.Prod.topologicalSpace
 
 /-- The diagonal map from the total space of the fiberwise product of two fiber bundles
-`E₁`, `E₂` into `TotalSpace E₁ × TotalSpace E₂` is `inducing`. -/
+`E₁`, `E₂` into `TotalSpace E₁ × TotalSpace E₂` is `Inducing`. -/
 theorem FiberBundle.Prod.inducing_diag :
     Inducing (fun p ↦ (⟨p.1, p.2.1⟩, ⟨p.1, p.2.2⟩) :
       TotalSpace (E₁ ×ᵇ E₂) → TotalSpace E₁ × TotalSpace E₂) :=

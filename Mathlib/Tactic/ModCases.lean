@@ -76,7 +76,7 @@ partial def proveOnModCases (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (p : Q(Sort u
   when `n` is a positive numeral and `e` is an expression of type `ℤ`.
 * If `h` is omitted as in `mod_cases e % n`, it will be default-named `H`.
 -/
-syntax "mod_cases " (atomic(binderIdent ":"))? term:71 " % " num : tactic
+syntax "mod_cases " (atomic(binderIdent " : "))? term:71 " % " num : tactic
 
 elab_rules : tactic
   | `(tactic| mod_cases $[$h :]? $e % $n) => do

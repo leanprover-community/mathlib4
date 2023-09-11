@@ -69,7 +69,7 @@ def inclusion : Core C ⥤ C where
   map f := f.hom
 #align category_theory.core.inclusion CategoryTheory.Core.inclusion
 
--- porting note: This worked wihtout proof before.
+-- porting note: This worked without proof before.
 instance : Faithful (inclusion C) where
   map_injective := by
     intro _ _

@@ -24,7 +24,7 @@ In a 𝕜-vector space, we define the following objects and properties.
 ## Notations
 
 We provide the following notation:
-* `[x -[𝕜] y] = segment 𝕜 x y` in locale `convex`
+* `[x -[𝕜] y] = segment 𝕜 x y` in locale `Convex`
 
 ## TODO
 
@@ -414,7 +414,7 @@ end LinearOrderedField
 /-!
 #### Segments in an ordered space
 
-Relates `segment`, `openSegment` and `set.Icc`, `set.Ico`, `set.Ioc`, `set.Ioo`
+Relates `segment`, `openSegment` and `Set.Icc`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`
 -/
 
 

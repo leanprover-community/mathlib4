@@ -12,7 +12,7 @@ import Mathlib.Mathport.Rename
 
 namespace Function
 
-variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₁}
+variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 @[reducible] def comp_right (f : β → β → β) (g : α → β) : β → α → β :=
 λ b a => f b (g a)
@@ -30,6 +30,8 @@ from `β` to `α`. -/
 produce a function `α → β → ζ` that applies `f` and `g` on each argument and then applies
 `op` to the results.
 -/
+-- Porting note: the ζ variable was originally constrained to `Sort u₁`, but this seems to
+-- have been an oversight.
 @[reducible] def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ)
   : α → β → ζ :=
 λ x y => op (f x y) (g x y)

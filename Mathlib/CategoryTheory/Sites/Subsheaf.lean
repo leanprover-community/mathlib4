@@ -11,7 +11,7 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Adjunction.Evaluation
 import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.Tactic.Elementwise
+import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 
@@ -21,17 +21,17 @@ We define the sub(pre)sheaf of a type valued presheaf.
 
 ## Main results
 
-- `category_theory.grothendieck_topology.subpresheaf` :
+- `CategoryTheory.GrothendieckTopology.Subpresheaf` :
   A subpresheaf of a presheaf of types.
-- `category_theory.grothendieck_topology.subpresheaf.sheafify` :
+- `CategoryTheory.GrothendieckTopology.Subpresheaf.sheafify` :
   The sheafification of a subpresheaf as a subpresheaf. Note that this is a sheaf only when the
   whole sheaf is.
-- `category_theory.grothendieck_topology.subpresheaf.sheafify_is_sheaf` :
+- `CategoryTheory.GrothendieckTopology.Subpresheaf.sheafify_isSheaf` :
   The sheafification is a sheaf
-- `category_theory.grothendieck_topology.subpresheaf.sheafify_lift` :
+- `CategoryTheory.GrothendieckTopology.Subpresheaf.sheafifyLift` :
   The descent of a map into a sheaf to the sheafification.
-- `category_theory.grothendieck_topology.image_sheaf` : The image sheaf of a morphism.
-- `category_theory.grothendieck_topology.image_factorization` : The image sheaf as a
+- `CategoryTheory.GrothendieckTopology.imageSheaf` : The image sheaf of a morphism.
+- `CategoryTheory.GrothendieckTopology.imageFactorization` : The image sheaf as a
   `limits.image_factorization`.
 -/
 

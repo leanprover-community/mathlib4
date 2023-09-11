@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Elementwise
+import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!

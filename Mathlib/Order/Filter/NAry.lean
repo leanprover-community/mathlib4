@@ -65,18 +65,18 @@ theorem image2_mem_map₂ (hs : s ∈ f) (ht : t ∈ g) : image2 m s t ∈ map�
 #align filter.image2_mem_map₂ Filter.image2_mem_map₂
 
 theorem map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) :
-    Filter.map (fun p : α × β => m p.1 p.2) (f ×ᶠ g) = map₂ m f g := by
+    Filter.map (fun p : α × β => m p.1 p.2) (f ×ˢ g) = map₂ m f g := by
   ext s
   simp [mem_prod_iff, prod_subset_iff]
 #align filter.map_prod_eq_map₂ Filter.map_prod_eq_map₂
 
 theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β) :
-    Filter.map m (f ×ᶠ g) = map₂ (fun a b => m (a, b)) f g :=
+    Filter.map m (f ×ˢ g) = map₂ (fun a b => m (a, b)) f g :=
   map_prod_eq_map₂ (curry m) f g
 #align filter.map_prod_eq_map₂' Filter.map_prod_eq_map₂'
 
 @[simp]
-theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g = f ×ᶠ g := by
+theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g = f ×ˢ g := by
   simp only [← map_prod_eq_map₂, map_id']
 #align filter.map₂_mk_eq_prod Filter.map₂_mk_eq_prod
 
@@ -278,13 +278,13 @@ theorem map₂_map_right (m : α → γ → δ) (n : β → γ) :
 
 @[simp]
 theorem map₂_curry (m : α × β → γ) (f : Filter α) (g : Filter β) :
-    map₂ (curry m) f g = (f ×ᶠ g).map m :=
+    map₂ (curry m) f g = (f ×ˢ g).map m :=
   (map_prod_eq_map₂' _  _ _).symm
 #align filter.map₂_curry Filter.map₂_curry
 
 @[simp]
 theorem map_uncurry_prod (m : α → β → γ) (f : Filter α) (g : Filter β) :
-    (f ×ᶠ g).map (uncurry m) = map₂ m f g :=
+    (f ×ˢ g).map (uncurry m) = map₂ m f g :=
   (map₂_curry (uncurry m) f g).symm
 #align filter.map_uncurry_prod Filter.map_uncurry_prod
 
@@ -295,7 +295,7 @@ A collection of lemmas to transfer associativity, commutativity, distributivity,
 to the associativity, commutativity, distributivity, ... of `Filter.map₂` of those operations.
 
 The proof pattern is `map₂_lemma operation_lemma`. For example, `map₂_comm mul_comm` proves that
-`map₂ (*) f g = map₂ (*) g f` in a `comm_semigroup`.
+`map₂ (*) f g = map₂ (*) g f` in a `CommSemigroup`.
 -/
 
 

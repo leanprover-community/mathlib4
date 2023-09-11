@@ -1048,7 +1048,8 @@ def prod (s : Subring R) (t : Subring S) : Subring (R × S) :=
 #align subring.prod Subring.prod
 
 @[norm_cast]
-theorem coe_prod (s : Subring R) (t : Subring S) : (s.prod t : Set (R × S)) = s ×ˢ t :=
+theorem coe_prod (s : Subring R) (t : Subring S) :
+    (s.prod t : Set (R × S)) = (s : Set R) ×ˢ (t : Set S) :=
   rfl
 #align subring.coe_prod Subring.coe_prod
 

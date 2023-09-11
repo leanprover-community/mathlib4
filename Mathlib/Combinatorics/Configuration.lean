@@ -28,10 +28,10 @@ This file introduces abstract configurations of points and lines, and proves som
 * `Configuration.pointCount`: The number of lines through a given line.
 
 ## Main statements
-* `Configuration.HasLines.card_le`: `has_lines` implies `|P| ≤ |L|`.
-* `Configuration.HasPoints.card_le`: `has_points` implies `|L| ≤ |P|`.
-* `Configuration.HasLines.hasPoints`: `has_lines` and `|P| = |L|` implies `has_points`.
-* `Configuration.HasPoints.hasLines`: `has_points` and `|P| = |L|` implies `has_lines`.
+* `Configuration.HasLines.card_le`: `HasLines` implies `|P| ≤ |L|`.
+* `Configuration.HasPoints.card_le`: `HasPoints` implies `|L| ≤ |P|`.
+* `Configuration.HasLines.hasPoints`: `HasLines` and `|P| = |L|` implies `HasPoints`.
+* `Configuration.HasPoints.hasLines`: `HasPoints` and `|P| = |L|` implies `HasLines`.
 Together, these four statements say that any two of the following properties imply the third:
 (a) `HasLines`, (b) `HasPoints`, (c) `|P| = |L|`.
 

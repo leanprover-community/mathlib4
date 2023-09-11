@@ -207,7 +207,7 @@ variable (x : R)
 
 variable (B : Type _) [CommRing B] [Algebra R B] [IsLocalization.Away x B]
 
-/-- `self_zpow x (m : ℤ)` is `x ^ m` as an element of the localization away from `x`. -/
+/-- `selfZpow x (m : ℤ)` is `x ^ m` as an element of the localization away from `x`. -/
 noncomputable def selfZpow (m : ℤ) : B :=
   if _ : 0 ≤ m then algebraMap _ _ x ^ m.natAbs else mk' _ (1 : R) (Submonoid.pow x m.natAbs)
 #align self_zpow selfZpow

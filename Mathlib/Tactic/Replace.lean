@@ -39,7 +39,7 @@ h : β
 
 This can be used to simulate the `specialize` and `apply at` tactics of Coq.
 -/
-syntax "replace " haveDecl : tactic
+syntax "replace" haveDecl : tactic
 
 elab_rules : tactic
   | `(tactic| replace $[$n?:ident]? $[: $t?:term]? := $v:term) =>
@@ -86,7 +86,7 @@ h : β
 ⊢ goal
 ```
 -/
-syntax (name := replace') "replace " Parser.Term.haveIdLhs' : tactic
+syntax (name := replace') "replace" Parser.Term.haveIdLhs' : tactic
 
 elab_rules : tactic
 | `(tactic| replace $[$n:ident $bs*]? $[: $t:term]?) => withMainContext do

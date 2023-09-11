@@ -83,6 +83,19 @@ def getPackageDir (path : FilePath) : IO FilePath :=
     | none => throw $ IO.userError s!"Unknown package directory for {pkg}"
     | some path => return path
 
+/-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
+partial def runCurlStreaming (args : Array String) (init : α)
+    (processLine : α → String → IO α) : IO α := do
+  let child ← IO.Process.spawn { cmd := ← getCurl, args, stdout := .piped, stderr := .piped }
+  loop child.stdout init
+where
+  loop (h : IO.FS.Handle) (a : α) : IO α := do
+    let line ← h.getLine
+    if line.isEmpty then
+      return a
+    else
+      loop h (← processLine a line)
+
 /-- Runs a terminal command and retrieves its output -/
 def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO String := do
   let out ← IO.Process.output { cmd := cmd, args := args }
@@ -163,7 +176,7 @@ def mkBuildPaths (path : FilePath) : IO $ Array (FilePath × Bool) := do
 /-- Check that all required build files exist. -/
 def allExist (paths : Array (FilePath × Bool)) : IO Bool := do
   for (path, required) in paths do
-    if required && !(← path.pathExists) then return false
+    if required then if !(← path.pathExists) then return false
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
@@ -176,7 +189,7 @@ def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
     let zipPath := CACHEDIR / zip
     let buildPaths ← mkBuildPaths path
     if ← allExist buildPaths then
-      if (overwrite || !(← zipPath.pathExists)) then
+      if overwrite || !(← zipPath.pathExists) then
         discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", zipPath.toString] ++
           ((← buildPaths.filterM (·.1.pathExists)) |>.map (·.1.toString))
       acc := acc.push zip
@@ -208,10 +221,9 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
         mkDir $ packageDir / LIBDIR / path
         mkDir $ packageDir / IRDIR / path
       if isMathlibRoot || !isPathFromMathlib path then
-        discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
+        runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
       else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}",
-          "-C", mathlibDepPath.toString]
+        runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}", "-C", mathlibDepPath.toString]
   else IO.println "No cache files to decompress"
 
 /-- Retrieves the azure token from the environment -/
@@ -226,6 +238,6 @@ instance : Ord FilePath where
 /-- Removes all cache files except for what's in the `keep` set -/
 def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
   for path in ← getFilesWithExtension CACHEDIR "gz" do
-    if ! keep.contains path then IO.FS.removeFile path
+    if !keep.contains path then IO.FS.removeFile path
 
 end Cache.IO

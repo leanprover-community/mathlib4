@@ -394,10 +394,8 @@ theorem starConvex_iff_div : StarConvex 𝕜 x s ↔ ∀ ⦃y⦄, y ∈ s →
     ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → 0 < a + b → (a / (a + b)) • x + (b / (a + b)) • y ∈ s :=
   ⟨fun h y hy a b ha hb hab => by
     apply h hy
-    · have ha' := mul_le_mul_of_nonneg_left ha (inv_pos.2 hab).le
-      rwa [MulZeroClass.mul_zero, ← div_eq_inv_mul] at ha'
-    · have hb' := mul_le_mul_of_nonneg_left hb (inv_pos.2 hab).le
-      rwa [MulZeroClass.mul_zero, ← div_eq_inv_mul] at hb'
+    · positivity
+    · positivity
     · rw [← add_div]
       exact div_self hab.ne',
   fun h y hy a b ha hb hab => by
@@ -409,7 +407,7 @@ theorem starConvex_iff_div : StarConvex 𝕜 x s ↔ ∀ ⦃y⦄, y ∈ s →
 theorem StarConvex.mem_smul (hs : StarConvex 𝕜 0 s) (hx : x ∈ s) {t : 𝕜} (ht : 1 ≤ t) :
     x ∈ t • s := by
   rw [mem_smul_set_iff_inv_smul_mem₀ (zero_lt_one.trans_le ht).ne']
-  exact hs.smul_mem hx (inv_nonneg.2 <| zero_le_one.trans ht) (inv_le_one ht)
+  exact hs.smul_mem hx (by positivity) (inv_le_one ht)
 #align star_convex.mem_smul StarConvex.mem_smul
 
 end AddCommGroup

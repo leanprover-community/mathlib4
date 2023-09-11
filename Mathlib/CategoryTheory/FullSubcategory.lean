@@ -34,7 +34,7 @@ form of `D`. This is used to set up several algebraic categories like
 
   def CommMon : Type (u+1) := InducedCategory Mon (Bundled.map @CommMonoid.toMonoid)
   -- not `InducedCategory (Bundled Monoid) (Bundled.map @CommMonoid.toMonoid)`,
-  -- even though `Mon = Bundled Monoid`!
+  -- even though `MonCat = Bundled Monoid`!
 -/
 
 

@@ -720,7 +720,7 @@ theorem generate_inter {s : Set (Set α)} (hs : IsPiSystem s) {t₁ t₂ : Set �
   generates is equal to the σ-algebra it generates.
   This result is known as the π-λ theorem.
   A collection of sets closed under binary intersection is called a π-system (often requiring
-  additionnally that is is non-empty, but we drop this condition in the formalization).
+  additionally that it is non-empty, but we drop this condition in the formalization).
 -/
 theorem generateFrom_eq {s : Set (Set α)} (hs : IsPiSystem s) :
     generateFrom s = (generate s).toMeasurableSpace fun t₁ t₂ => generate_inter hs :=

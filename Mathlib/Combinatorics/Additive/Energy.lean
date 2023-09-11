@@ -20,8 +20,8 @@ additive combinatorics.
 ## TODO
 
 It's possibly interesting to have
-`(s ×ˢ s) ×ᶠ t ×ᶠ t).filter (λ x : (α × α) × α × α, x.1.1 * x.2.1 = x.1.2 * x.2.2)` (whose `card` is
-`multiplicativeEnergy s t`) as a standalone definition.
+`(s ×ˢ s) ×ˢ t ×ˢ t).filter (λ x : (α × α) × α × α, x.1.1 * x.2.1 = x.1.2 * x.2.2)` (whose `card`
+is `multiplicativeEnergy s t`) as a standalone definition.
 -/
 
 
@@ -38,14 +38,13 @@ namespace Finset
 section Mul
 
 variable [Mul α] {s s₁ s₂ t t₁ t₂ : Finset α}
--- porting note: replaced `xˢ` by `xᶠ`
 /-- The multiplicative energy of two finsets `s` and `t` in a group is the number of quadruples
 `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`. -/
 @[to_additive additiveEnergy
       "The additive energy of two finsets `s` and `t` in a group is the
       number of quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`."]
 def multiplicativeEnergy (s t : Finset α) : ℕ :=
-  (((s ×ᶠ s) ×ᶠ t ×ᶠ t).filter fun x : (α × α) × α × α => x.1.1 * x.2.1 = x.1.2 * x.2.2).card
+  (((s ×ˢ s) ×ˢ t ×ˢ t).filter fun x : (α × α) × α × α => x.1.1 * x.2.1 = x.1.2 * x.2.2).card
 #align finset.multiplicative_energy Finset.multiplicativeEnergy
 #align finset.additive_energy Finset.additiveEnergy
 
@@ -144,13 +143,12 @@ section CommGroup
 
 variable [CommGroup α] [Fintype α] (s t : Finset α)
 
--- porting note: replaced `xˢ` by `xᶠ`
 @[to_additive (attr := simp) additiveEnergy_univ_left]
 theorem multiplicativeEnergy_univ_left :
     multiplicativeEnergy univ t = Fintype.card α * t.card ^ 2 := by
   simp only [multiplicativeEnergy, univ_product_univ, Fintype.card, sq, ← card_product]
   let f : α × α × α → (α × α) × α × α := fun x => ((x.1 * x.2.2, x.1 * x.2.1), x.2)
-  have : (↑((univ : Finset α) ×ᶠ t ×ᶠ t) : Set (α × α × α)).InjOn f := by
+  have : (↑((univ : Finset α) ×ˢ t ×ˢ t) : Set (α × α × α)).InjOn f := by
     rintro ⟨a₁, b₁, c₁⟩ _ ⟨a₂, b₂, c₂⟩ h₂ h
     simp_rw [Prod.ext_iff] at h
     obtain ⟨h, rfl, rfl⟩ := h

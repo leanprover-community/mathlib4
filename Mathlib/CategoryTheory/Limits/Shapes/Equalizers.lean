@@ -122,7 +122,7 @@ theorem walkingParallelPairHom_id (X : WalkingParallelPair) : WalkingParallelPai
   rfl
 #align category_theory.limits.walking_parallel_pair_hom_id CategoryTheory.Limits.walkingParallelPairHom_id
 
--- Porting note: simpNF asked me to do this becasue the LHS of the non-primed version reduced
+-- Porting note: simpNF asked me to do this because the LHS of the non-primed version reduced
 @[simp]
 theorem WalkingParallelPairHom.id.sizeOf_spec' (X : WalkingParallelPair) :
     (WalkingParallelPairHom._sizeOf_inst X X).sizeOf (𝟙 X) = 1 + sizeOf X := by cases X <;> rfl

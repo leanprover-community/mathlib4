@@ -109,7 +109,7 @@ def evalSubFactor (f : R[X]) (x y : R) : { z : R // f.eval x - f.eval y = z * (x
   delta eval;  rw [eval₂_eq_sum, eval₂_eq_sum];
   simp only [sum, ← Finset.sum_sub_distrib, Finset.sum_mul]
   dsimp
-  congr with (i r)
+  congr with i
   rw [mul_assoc, ← (powSubPowFactor x y _).prop, mul_sub]
 #align polynomial.eval_sub_factor Polynomial.evalSubFactor
 

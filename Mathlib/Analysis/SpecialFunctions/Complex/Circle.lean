@@ -14,7 +14,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Log
 /-!
 # Maps on the unit circle
 
-In this file we prove some basic lemmas about `exp_map_circle` and the restriction of `Complex.arg`
+In this file we prove some basic lemmas about `expMapCircle` and the restriction of `Complex.arg`
 to the unit circle. These two maps define a local equivalence between `circle` and `ℝ`, see
 `circle.argLocalEquiv` and `circle.argEquiv`, that sends the whole circle to `(-π, π]`.
 -/
@@ -48,8 +48,8 @@ theorem expMapCircle_arg (z : circle) : expMapCircle (arg z) = z :=
 
 namespace circle
 
-/-- `complex.arg ∘ (↑)` and `exp_map_circle` define a local equivalence between `circle` and `ℝ`
-with `source = set.univ` and `target = set.Ioc (-π) π`. -/
+/-- `Complex.arg ∘ (↑)` and `expMapCircle` define a local equivalence between `circle` and `ℝ`
+with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
 @[simps (config := { fullyApplied := false })]
 noncomputable def argLocalEquiv : LocalEquiv circle ℝ where
   toFun := arg ∘ (↑)
@@ -62,7 +62,7 @@ noncomputable def argLocalEquiv : LocalEquiv circle ℝ where
   right_inv' _ hx := arg_expMapCircle hx.1 hx.2
 #align circle.arg_local_equiv circle.argLocalEquiv
 
-/-- `complex.arg` and `exp_map_circle` define an equivalence between `circle` and `(-π, π]`. -/
+/-- `Complex.arg` and `expMapCircle` define an equivalence between `circle` and `(-π, π]`. -/
 @[simps (config := { fullyApplied := false })]
 noncomputable def argEquiv : circle ≃ Ioc (-π) π where
   toFun z := ⟨arg z, neg_pi_lt_arg _, arg_le_pi _⟩

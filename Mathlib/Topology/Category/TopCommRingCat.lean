@@ -51,7 +51,7 @@ instance : Category TopCommRingCat.{u} where
   comp f g :=
     ⟨g.val.comp f.val, by
       -- TODO automate
-      cases f;
+      cases f
       cases g
       dsimp; apply Continuous.comp <;> assumption⟩
 

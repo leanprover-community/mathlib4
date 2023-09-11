@@ -363,11 +363,11 @@ theorem support_single_ne_zero (a : α) (hb : b ≠ 0) : (single a b).support = 
 #align finsupp.support_single_ne_zero Finsupp.support_single_ne_zero
 
 theorem support_single_subset : (single a b).support ⊆ {a} := by
-  classical show ite _ _ _ ⊆ _; split_ifs <;> [exact empty_subset _, exact Subset.refl _]
+  classical show ite _ _ _ ⊆ _; split_ifs <;> [exact empty_subset _; exact Subset.refl _]
 #align finsupp.support_single_subset Finsupp.support_single_subset
 
 theorem single_apply_mem (x) : single a b x ∈ ({0, b} : Set M) := by
-  rcases em (a = x) with (rfl | hx) <;> [simp, simp [single_eq_of_ne hx]]
+  rcases em (a = x) with (rfl | hx) <;> [simp; simp [single_eq_of_ne hx]]
 #align finsupp.single_apply_mem Finsupp.single_apply_mem
 
 theorem range_single_subset : Set.range (single a b) ⊆ {0, b} :=

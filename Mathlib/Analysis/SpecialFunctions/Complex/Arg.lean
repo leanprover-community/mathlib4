@@ -14,7 +14,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 /-!
 # The argument of a complex number.
 
-We define `arg : ℂ → ℝ`, returing a real number in the range (-π, π],
+We define `arg : ℂ → ℝ`, returning a real number in the range (-π, π],
 such that for `x ≠ 0`, `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
 while `arg 0` defaults to `0`
 -/
@@ -104,13 +104,13 @@ theorem arg_mul_cos_add_sin_mul_I {r : ℝ} (hr : 0 < r) {θ : ℝ} (hθ : θ �
         rw [← neg_pos, ← Real.cos_add_pi]
         refine' Real.cos_pos_of_mem_Ioo ⟨_, _⟩ <;> linarith
       have hsin : Real.sin θ < 0 := Real.sin_neg_of_neg_of_neg_pi_lt (by linarith) hθ
-      rw [if_neg, if_neg, ← Real.sin_add_pi, Real.arcsin_sin, add_sub_cancel] <;> [linarith,
-        linarith, exact hsin.not_le, exact hcos.not_le]
+      rw [if_neg, if_neg, ← Real.sin_add_pi, Real.arcsin_sin, add_sub_cancel] <;> [linarith;
+        linarith; exact hsin.not_le; exact hcos.not_le]
     · replace hθ := hθ.2
       have hcos : Real.cos θ < 0 := Real.cos_neg_of_pi_div_two_lt_of_lt h₁ (by linarith)
       have hsin : 0 ≤ Real.sin θ := Real.sin_nonneg_of_mem_Icc ⟨by linarith, hθ⟩
-      rw [if_neg, if_pos, ← Real.sin_sub_pi, Real.arcsin_sin, sub_add_cancel] <;> [linarith,
-        linarith, exact hsin, exact hcos.not_le]
+      rw [if_neg, if_pos, ← Real.sin_sub_pi, Real.arcsin_sin, sub_add_cancel] <;> [linarith;
+        linarith; exact hsin; exact hcos.not_le]
 set_option linter.uppercaseLean3 false in
 #align complex.arg_mul_cos_add_sin_mul_I Complex.arg_mul_cos_add_sin_mul_I
 

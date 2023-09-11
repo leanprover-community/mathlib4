@@ -22,28 +22,30 @@ presheaves.
 -/
 
 
-open CategoryTheory
-
-open TopCat
-
-open TopologicalSpace
-
-open Opposite
-
-open CategoryTheory.Category CategoryTheory.Functor
+open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor TopCat TopologicalSpace
 
 variable (C : Type _) [Category C]
 
---attribute [local tidy] tactic.op_induction' tactic.auto_cases_opens
+-- Porting note: we used to have:
+-- local attribute [tidy] tactic.auto_cases_opens
+-- We would replace this by:
+-- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
+-- although it doesn't appear to help in this file, in any case.
+
+-- Porting note: we used to have:
+-- local attribute [tidy] tactic.op_induction'
+-- A possible replacement would be:
+-- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
+-- but it doesn't seem necessary here.
 
 namespace AlgebraicGeometry
 
 -- porting note: `PresheafSpace.{w} C` is the type of topological spaces in `Type w` equipped
--- with a presheaf with values in `C`; then there is a total three universe parameters
+-- with a presheaf with values in `C`; then there is a total of three universe parameters
 -- in `PresheafSpace.{w, v, u} C`, where `C : Type u` and `Category.{v} C`.
 -- In mathlib3, some definitions in this file unnecessarily assumed `w=v`. This restriction
 -- has been removed.
---
+
 /-- A `PresheafedSpace C` is a topological space equipped with a presheaf of `C`s. -/
 structure PresheafedSpace where
   carrier : TopCat
@@ -60,7 +62,13 @@ instance coeCarrier : CoeOut (PresheafedSpace C) TopCat where coe X := X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.coe_carrier AlgebraicGeometry.PresheafedSpace.coeCarrier
 
--- porting note: the following lemma is removed because it is a syntatic tauto
+attribute [coe] PresheafedSpace.carrier
+
+-- Porting note: we add this instance, as Lean does not reliably use the `CoeOut` instance above
+-- in downstream files.
+instance : CoeSort (PresheafedSpace C) (Type _) where coe := fun X => X.carrier
+
+-- porting note: the following lemma is removed because it is a syntactic tauto
 /-@[simp]
 theorem as_coe (X : PresheafedSpace.{w, v, u} C) : X.carrier = (X : TopCat.{w}) :=
   rfl
@@ -68,7 +76,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.as_coe AlgebraicGeometry.PresheafedSpace.as_coe-/
 
 -- porting note: removed @[simp] as the `simpVarHead` linter complains
---@[simp]
+-- @[simp]
 theorem mk_coe (carrier) (presheaf) :
     (({ carrier
         presheaf } : PresheafedSpace C) : TopCat) = carrier :=
@@ -82,9 +90,7 @@ instance (X : PresheafedSpace C) : TopologicalSpace X :=
 /-- The constant presheaf on `X` with value `Z`. -/
 def const (X : TopCat) (Z : C) : PresheafedSpace C where
   carrier := X
-  presheaf :=
-    { obj := fun _ => Z
-      map := fun _ => 𝟙 Z }
+  presheaf := (Functor.const _).obj Z
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.const AlgebraicGeometry.PresheafedSpace.const
 
@@ -160,7 +166,7 @@ section
 attribute [local simp] id comp
 
 -- porting note: in mathlib3, `tidy` could (almost) prove the category axioms, but proofs
--- were included because `tidy` was slow. Here, `aesop_cat` succeeds reasonably fast
+-- were included because `tidy` was slow. Here, `aesop_cat` succeeds reasonably quickly
 -- for `comp_id` and `assoc`
 /-- The category of PresheafedSpaces. Morphisms are pairs, a continuous map and a presheaf map
     from the presheaf on the target to the pushforward of the presheaf on the source. -/
@@ -199,7 +205,7 @@ set_option linter.uppercaseLean3 false in
 
 -- porting note: `eqToHom` is no longer needed in the statements of `id_c` and `id_c_app`
 theorem id_c (X : PresheafedSpace C) :
-    (𝟙 X : X ⟶ X).c = 𝟙 _ :=
+    (𝟙 X : X ⟶ X).c = 𝟙 X.presheaf :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.id_c AlgebraicGeometry.PresheafedSpace.id_c
@@ -244,7 +250,6 @@ set_option linter.uppercaseLean3 false in
 theorem congr_app {X Y : PresheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
     α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h ; rfl)) := by
   subst h
-  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.congr_app AlgebraicGeometry.PresheafedSpace.congr_app
@@ -280,33 +285,32 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
       c := Presheaf.toPushforwardOfIso H α.hom }
   hom_inv_id := by
     ext
-    · apply NatTrans.ext
-      ext U
-      rw [NatTrans.comp_app]
-      simp only [id_base, comp_obj, op_obj, comp_base, Presheaf.pushforwardObj_obj,
-        Opens.map_comp_obj, comp_c_app, unop_op, Presheaf.toPushforwardOfIso_app, assoc,
-        Iso.hom_inv_id_app, comp_id, whiskerRight_app, eqToHom_app, id_c_app, map_id,
-        ← Functor.map_comp, eqToHom_trans, eqToHom_refl]
-      dsimp
-      rw [Iso.hom_inv_id]
+    apply NatTrans.ext
+    ext U
+    rw [NatTrans.comp_app]
+    simp only [id_base, comp_obj, op_obj, comp_base, Presheaf.pushforwardObj_obj,
+      Opens.map_comp_obj, comp_c_app, unop_op, Presheaf.toPushforwardOfIso_app, assoc,
+      Iso.hom_inv_id_app, comp_id, whiskerRight_app, eqToHom_app, id_c_app, map_id,
+      ← Functor.map_comp, eqToHom_trans, eqToHom_refl]
+    simp only [comp_base, Iso.hom_inv_id, FunctorToTypes.map_id_apply, id_base]
   inv_hom_id := by
     ext
-    . apply NatTrans.ext
-      ext U
-      dsimp
-      rw [NatTrans.comp_app]
-      simp only [Presheaf.pushforwardObj_obj, op_obj, Opens.map_comp_obj, comp_obj,
-        comp_c_app, unop_op, Presheaf.toPushforwardOfIso_app, whiskerRight_app, eqToHom_app,
-        assoc, id_c_app, map_id]
-      rw [← α.hom.naturality, Presheaf.pushforwardObj_map, eqToHom_map, eqToHom_map,
-        eqToHom_map, eqToHom_trans_assoc, eqToHom_refl, id_comp]
-      apply Iso.inv_hom_id_app
-      dsimp
-      rw [H.inv_hom_id]
+    apply NatTrans.ext
+    ext U
+    dsimp
+    rw [NatTrans.comp_app]
+    simp only [Presheaf.pushforwardObj_obj, op_obj, Opens.map_comp_obj, comp_obj,
+      comp_c_app, unop_op, Presheaf.toPushforwardOfIso_app, whiskerRight_app, eqToHom_app,
+      assoc, id_c_app, map_id]
+    rw [← α.hom.naturality, Presheaf.pushforwardObj_map, eqToHom_map, eqToHom_map,
+      eqToHom_map, eqToHom_trans_assoc, eqToHom_refl, id_comp]
+    apply Iso.inv_hom_id_app
+    dsimp
+    rw [H.inv_hom_id]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.iso_of_components AlgebraicGeometry.PresheafedSpace.isoOfComponents
 
-/-- Isomorphic PresheafedSpaces have natural isomorphic presheaves. -/
+/-- Isomorphic PresheafedSpaces have naturally isomorphic presheaves. -/
 @[simps]
 def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
   hom := H.hom.c
@@ -431,7 +435,7 @@ theorem ofRestrict_top_c (X : PresheafedSpace C) :
           erw [Iso.inv_hom_id]
           rw [Presheaf.Pushforward.id_eq]) := by
   /- another approach would be to prove the left hand side
-       is a natural isoomorphism, but I encountered a universe
+       is a natural isomorphism, but I encountered a universe
        issue when `apply NatIso.isIso_of_isIso_app`. -/
   apply NatTrans.ext
   ext1 U
@@ -441,8 +445,6 @@ theorem ofRestrict_top_c (X : PresheafedSpace C) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.of_restrict_top_c AlgebraicGeometry.PresheafedSpace.ofRestrict_top_c
 
-/- or `rw [opens.inclusion_top_functor, ←comp_obj, ←opens.map_comp_eq],
-         erw iso.inv_hom_id, cases U, refl` after `dsimp` -/
 /-- The map to the restriction of a presheafed space along the canonical inclusion from the top
 subspace.
 -/
@@ -524,23 +526,15 @@ def mapPresheaf (F : C ⥤ D) : PresheafedSpace C ⥤ PresheafedSpace D where
       c := whiskerRight f.c F }
   -- porting note: these proofs were automatic in mathlib3
   map_id X := by
+    -- Porting note: I don't understand why neither `ext` nor `aesop_cat` can apply `NatTrans.ext'`.
     ext
-    . apply NatTrans.ext
-      ext U
-      dsimp
-      erw [id_c, id_c, whiskerRight_id', id_comp, whiskerRight_app,
-        Functor.map_id, NatTrans.id_app]
-      rfl
-    . rfl
+    apply NatTrans.ext'
+    aesop_cat
   map_comp f g := by
+    -- Porting note: I don't understand why neither `ext` nor `aesop_cat` can apply `NatTrans.ext'`.
     ext
-    . apply NatTrans.ext
-      ext U
-      dsimp
-      erw [comp_c, whiskerRight_id', comp_id, whiskerRight_app,
-        NatTrans.comp_app, F.map_comp]
-      rfl
-    . rfl
+    apply NatTrans.ext'
+    aesop_cat
 #align category_theory.functor.map_presheaf CategoryTheory.Functor.mapPresheaf
 
 @[simp]
@@ -580,16 +574,10 @@ def onPresheaf {F G : C ⥤ D} (α : F ⟶ G) : G.mapPresheaf ⟶ F.mapPresheaf 
       c := whiskerLeft X.presheaf α ≫ eqToHom (Presheaf.Pushforward.id_eq _).symm }
   -- porting note: this proof was automatic in mathlib3
   naturality X Y f := by
+    -- Porting note: I don't understand why neither `ext` nor `aesop_cat` can apply `NatTrans.ext'`.
     ext
-    . apply NatTrans.ext
-      ext U
-      dsimp
-      erw [comp_c]
-      dsimp
-      rw [whiskerRight_id', comp_id, comp_id, comp_id, whiskerLeft_app, naturality,
-        NatTrans.comp_app, whiskerLeft_app, Presheaf.pushforward_map_app', whiskerRight_app]
-      rfl
-    . rfl
+    apply NatTrans.ext
+    aesop_cat
 #align category_theory.nat_trans.on_presheaf CategoryTheory.NatTrans.onPresheaf
 
 -- TODO Assemble the last two constructions into a functor

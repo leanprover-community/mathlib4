@@ -193,7 +193,7 @@ def unaryEncodeNat : Nat → List Bool
   | n + 1 => true :: unaryEncodeNat n
 #align computability.unary_encode_nat Computability.unaryEncodeNat
 
-/-- A unary decoding function from `List bool` to ℕ. -/
+/-- A unary decoding function from `List Bool` to ℕ. -/
 def unaryDecodeNat : List Bool → Nat :=
   List.length
 #align computability.unary_decode_nat Computability.unaryDecodeNat

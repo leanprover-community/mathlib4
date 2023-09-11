@@ -408,7 +408,7 @@ def limitIsoFlipCompLim [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) : limit F ≅
   NatIso.ofComponents (limitObjIsoLimitCompEvaluation F) <| by aesop_cat
 #align category_theory.limits.limit_iso_flip_comp_lim CategoryTheory.Limits.limitIsoFlipCompLim
 
-/-- A variant of `limitIsoFlipCompLim` where the arguemnts of `F` are flipped. -/
+/-- A variant of `limitIsoFlipCompLim` where the arguments of `F` are flipped. -/
 @[simps!]
 def limitFlipIsoCompLim [HasLimitsOfShape J C] (F : K ⥤ J ⥤ C) : limit F.flip ≅ F ⋙ lim :=
   let f := fun k =>
@@ -432,7 +432,7 @@ def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colim
   NatIso.ofComponents (colimitObjIsoColimitCompEvaluation F) <| by aesop_cat
 #align category_theory.limits.colimit_iso_flip_comp_colim CategoryTheory.Limits.colimitIsoFlipCompColim
 
-/-- A variant of `colimit_iso_flip_comp_colim` where the arguemnts of `F` are flipped. -/
+/-- A variant of `colimit_iso_flip_comp_colim` where the arguments of `F` are flipped. -/
 @[simps!]
 def colimitFlipIsoCompColim [HasColimitsOfShape J C] (F : K ⥤ J ⥤ C) : colimit F.flip ≅ F ⋙ colim :=
   let f := fun k =>

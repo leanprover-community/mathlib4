@@ -35,7 +35,7 @@ This file defines affine subspaces (over modules) and the affine span of a set o
 
 ## Implementation notes
 
-`outParam` is used in the definiton of `AddTorsor V P` to make `V` an implicit argument (deduced
+`outParam` is used in the definition of `AddTorsor V P` to make `V` an implicit argument (deduced
 from `P`) in most cases. As for modules, `k` is an explicit argument rather than implied by `P` or
 `V`.
 

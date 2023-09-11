@@ -32,6 +32,7 @@ namespace Mathlib.Tactic.Rewrites
 open Lean Meta Std.Tactic.TryThis
 
 initialize registerTraceClass `Tactic.rewrites
+initialize registerTraceClass `Tactic.rewrites.lemmas
 
 /-- Prepare the discrimination tree entries for a lemma. -/
 def processLemma (name : Name) (constInfo : ConstantInfo) :
@@ -102,7 +103,7 @@ initialize cachedData : CachedData (Name × Bool × Nat) ← unsafe do
     return ⟨none, ← buildDiscrTree⟩
 
 /--
-Retrieve the current current of lemmas.
+Retrieve the current cache of lemmas.
 -/
 def rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) := cachedData.cache
 
@@ -114,18 +115,18 @@ structure RewriteResult where
   result : Meta.RewriteResult
   /-- Can the new goal in `result` be closed by `with_reducible rfl`? -/
   -- This is an `Option` so that it can be computed lazily.
-  refl? : Option Bool
+  rfl? : Option Bool
 
-/-- Update a `RewriteResult` by filling in the `refl?` field if it is currently `none`,
+/-- Update a `RewriteResult` by filling in the `rfl?` field if it is currently `none`,
 to reflect whether the remaining goal can be closed by `with_reducible rfl`. -/
-def RewriteResult.computeRefl (r : RewriteResult) : MetaM RewriteResult := do
-  if let some _ := r.refl? then
+def RewriteResult.computeRfl (r : RewriteResult) : MetaM RewriteResult := do
+  if let some _ := r.rfl? then
     return r
   try
-    (← mkFreshExprMVar r.result.eNew).mvarId!.refl
-    pure { r with refl? := some true }
+    (← mkFreshExprMVar r.result.eNew).mvarId!.rfl
+    pure { r with rfl? := some true }
   catch _ =>
-    pure { r with refl? := some false }
+    pure { r with rfl? := some false }
 
 /--
 Find lemmas which can rewrite the goal.
@@ -138,21 +139,22 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name 
   let type ← instantiateMVars (← goal.getType)
 
   -- Get all lemmas which could match some subexpression
+  -- DiscrTree.getSubexpressionMatches
   let candidates := (← lemmas.1.getSubexpressionMatches type)
     ++ (← lemmas.2.getSubexpressionMatches type)
 
-  -- TODO the sort used below should be optimized.
-  -- Remember also that the discrimination tree returns most specific results last,
-  -- so simply reversing might be sufficient.
-
   -- Sort them by our preferring weighting
   -- (length of discriminant key, doubled for the forward implication)
+
   let candidates := candidates.insertionSort fun r s => r.2.2 > s.2.2
+
+  trace[Tactic.rewrites.lemmas] m!"Candidate rewrite lemmas:\n{candidates}"
+
   -- Lift to a monadic list, so the caller can decide how much of the computation to run.
   let candidates := ListM.ofList candidates.toList
   pure <| candidates.filterMapM fun ⟨lem, symm, weight⟩ => do
     trace[Tactic.rewrites] "considering {if symm then "←" else ""}{lem}"
-    let some result ← try? <| goal.rewrite type (← mkConstWithFreshMVarLevels lem) symm
+    let some result ← try? do goal.rewrite type (← mkConstWithFreshMVarLevels lem) symm
       | return none
     return if result.mvarIds.isEmpty then
       some ⟨lem, symm, weight, result, none⟩
@@ -162,19 +164,23 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name 
 
 /-- Find lemmas which can rewrite the goal. -/
 def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (goal : MVarId) (max : Nat := 10) (leavePercentHeartbeats : Nat := 10) :
-    MetaM (List RewriteResult) :=
-rewritesCore lemmas goal
-  -- Don't use too many heartbeats.
-  |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
-  -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
-  |>.mapM RewriteResult.computeRefl
-  |>.takeUpToFirst (fun r => r.refl? = some true)
-  -- Bound the number of results.
-  |>.takeAsList max
-  -- TODO consider sorting the successful results,
-  -- e.g. if we use solveByElim to fill arguments,
-  -- prefer results using local hypotheses.
+    (goal : MVarId) (max : Nat := 20) (leavePercentHeartbeats : Nat := 10) :
+    MetaM (List RewriteResult) := do
+  let results ← rewritesCore lemmas goal
+    -- Don't use too many heartbeats.
+    |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
+    -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
+    |>.mapM RewriteResult.computeRfl
+    |>.takeUpToFirst (fun r => r.rfl? = some true)
+    -- Bound the number of results.
+    |>.takeAsList max
+  return match results.filter (fun r => r.rfl? = some true) with
+  | [] =>
+    -- TODO consider sorting the results,
+    -- e.g. if we use solveByElim to fill arguments,
+    -- prefer results using local hypotheses.
+    results
+  | results => results
 
 open Lean.Parser.Tactic
 
@@ -198,7 +204,7 @@ elab_rules : tactic |
     if results.isEmpty then
       throwError "rewrites could not find any lemmas which can rewrite the goal"
     for r in results do
-      let newGoal := if r.refl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
+      let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
       addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm newGoal
     if lucky.isSome then
       match results[0]? with

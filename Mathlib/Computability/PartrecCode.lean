@@ -17,7 +17,7 @@ This file defines `Nat.Partrec.Code`, an inductive datatype describing code for 
 recursive functions on ℕ. It defines an encoding for these codes, and proves that the constructors
 are primitive recursive with respect to the encoding.
 
-It also defines the evalution of these codes as partial functions using `PFun`, and proves that a
+It also defines the evaluation of these codes as partial functions using `PFun`, and proves that a
 function is partially recursive (as defined by `Nat.Partrec`) if and only if it is the evaluation
 of some code.
 
@@ -88,59 +88,7 @@ inductive Code : Type
 #align nat.partrec.code Nat.Partrec.Code
 
 -- Porting note: `Nat.Partrec.Code.recOn` is noncomputable in Lean4, so we make it computable.
-
-/-- A computable version of `Nat.Partrec.Code.rec`.
-Workaround until Lean has native support for this. -/
-@[elab_as_elim] private abbrev Code.recC.{u} {motive : Code → Sort u}
-    (zero : motive .zero) (succ : motive .succ)
-    (left : motive .left) (right : motive .right)
-    (pair : (a a_1 : Code) → motive a → motive a_1 → motive (.pair a a_1))
-    (comp : (a a_1 : Code) → motive a → motive a_1 → motive (.comp a a_1))
-    (prec : (a a_1 : Code) → motive a → motive a_1 → motive (.prec a a_1))
-    (rfind' : (a : Code) → motive a → motive (.rfind' a)) :
-    (t : Code) → motive t
-  | .zero => zero
-  | .succ => succ
-  | .left => left
-  | .right => right
-  | .pair a a_1 => pair a a_1
-    (Code.recC zero succ left right pair comp prec rfind' a)
-    (Code.recC zero succ left right pair comp prec rfind' a_1)
-  | .comp a a_1 => comp a a_1
-    (Code.recC zero succ left right pair comp prec rfind' a)
-    (Code.recC zero succ left right pair comp prec rfind' a_1)
-  | .prec a a_1 => prec a a_1
-    (Code.recC zero succ left right pair comp prec rfind' a)
-    (Code.recC zero succ left right pair comp prec rfind' a_1)
-  | .rfind' a => rfind' a
-    (Code.recC zero succ left right pair comp prec rfind' a)
-
-@[csimp] private theorem Code.rec_eq_recC : @Code.rec = @Code.recC := by
-  funext motive zero succ left right pair comp prec rfind' t
-  induction t with
-  | zero => rfl
-  | succ => rfl
-  | left => rfl
-  | right => rfl
-  | pair a a_1 ia ia_1 => rw [Code.recC, ← ia, ← ia_1]
-  | comp a a_1 ia ia_1 => rw [Code.recC, ← ia, ← ia_1]
-  | prec a a_1 ia ia_1 => rw [Code.recC, ← ia, ← ia_1]
-  | rfind' a ia => rw [Code.recC, ← ia]
-
-/-- A computable version of `Nat.Partrec.Code.recOn`.
-Workaround until Lean has native support for this. -/
-@[elab_as_elim] private abbrev Code.recOnC.{u} {motive : Code → Sort u} (t : Code)
-    (zero : motive .zero) (succ : motive .succ)
-    (left : motive .left) (right : motive .right)
-    (pair : (a a_1 : Code) → motive a → motive a_1 → motive (.pair a a_1))
-    (comp : (a a_1 : Code) → motive a → motive a_1 → motive (.comp a a_1))
-    (prec : (a a_1 : Code) → motive a → motive a_1 → motive (.prec a a_1))
-    (rfind' : (a : Code) → motive a → motive (.rfind' a)) : motive t :=
-  Code.recC (motive := motive) zero succ left right pair comp prec rfind' t
-
-@[csimp] private theorem Code.recOn_eq_recOnC : @Code.recOn = @Code.recOnC := by
-  funext motive t zero succ left right pair comp prec rfind'
-  rw [Code.recOn, Code.rec_eq_recC, Code.recOnC]
+compile_inductive% Code
 
 end Nat.Partrec
 

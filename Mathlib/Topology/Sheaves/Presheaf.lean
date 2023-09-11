@@ -66,7 +66,7 @@ attribute [sheaf_restrict] bot_le le_top le_refl inf_le_left inf_le_right
   le_sup_left le_sup_right
 
 /-- `restrict_tac` solves relations among subsets (copied from `aesop cat`) -/
-macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause*: tactic =>
+macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop $c* (options := { introsTransparency? := some .default, terminal := true })
   (rule_sets [$(Lean.mkIdent `Restrict):ident]))
@@ -228,7 +228,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem id_hom_app (U) : (id ℱ).hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) := by
   -- was `tidy`
-  induction' U using Opposite.rec' with U
+  induction' U with U
   apply id_hom_app'
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app TopCat.Presheaf.Pushforward.id_hom_app

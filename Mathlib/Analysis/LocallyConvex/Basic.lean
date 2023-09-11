@@ -303,7 +303,7 @@ theorem Balanced.mem_smul_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a
   · rw [norm_zero, norm_eq_zero] at h
     rw [h]
   have ha : a ≠ 0 := norm_ne_zero_iff.1 (ne_of_eq_of_ne h <| norm_ne_zero_iff.2 hb)
-  constructor <;> intro h' <;> [rw [← inv_mul_cancel_right₀ ha b],
+  constructor <;> intro h' <;> [rw [← inv_mul_cancel_right₀ ha b];
       rw [← inv_mul_cancel_right₀ hb a]] <;>
     · rw [← smul_eq_mul, smul_assoc]
       refine' hs.smul_mem _ h'

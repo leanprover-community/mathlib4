@@ -12,6 +12,7 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.GCongr
 
 /-!
 # Edge density
@@ -46,7 +47,7 @@ variable [LinearOrderedField 𝕜] (r : α → β → Prop) [∀ a, DecidablePre
 
 /-- Finset of edges of a relation between two finsets of vertices. -/
 def interedges (s : Finset α) (t : Finset β) : Finset (α × β) :=
-  (s ×ᶠ t).filter fun e ↦ r e.1 e.2
+  (s ×ˢ t).filter fun e ↦ r e.1 e.2
 #align rel.interedges Rel.interedges
 
 /-- Edge density of a relation between two finsets of vertices. -/
@@ -120,7 +121,7 @@ theorem interedges_biUnion_right (s : Finset α) (t : Finset ι) (f : ι → Fin
 
 theorem interedges_biUnion (s : Finset ι) (t : Finset κ) (f : ι → Finset α) (g : κ → Finset β) :
     interedges r (s.biUnion f) (t.biUnion g) =
-      (s ×ᶠ t).biUnion fun ab ↦ interedges r (f ab.1) (g ab.2) := by
+      (s ×ˢ t).biUnion fun ab ↦ interedges r (f ab.1) (g ab.2) := by
   simp_rw [product_biUnion, interedges_biUnion_left, interedges_biUnion_right]
 #align rel.interedges_bUnion Rel.interedges_biUnion
 
@@ -176,7 +177,7 @@ theorem card_interedges_finpartition_right [DecidableEq β] (s : Finset α) (P :
 
 theorem card_interedges_finpartition [DecidableEq α] [DecidableEq β] (P : Finpartition s)
     (Q : Finpartition t) :
-    (interedges r s t).card = ∑ ab in P.parts ×ᶠ Q.parts, (interedges r ab.1 ab.2).card := by
+    (interedges r s t).card = ∑ ab in P.parts ×ˢ Q.parts, (interedges r ab.1 ab.2).card := by
   rw [card_interedges_finpartition_left _ P, sum_product]
   congr; ext
   rw [card_interedges_finpartition_right]
@@ -220,7 +221,8 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
     |(edgeDensity r s₂ t₂ : 𝕜) - edgeDensity r s₁ t₁| ≤ 2 * δ - δ ^ 2 := by
   have hδ' : 0 ≤ 2 * δ - δ ^ 2 := by
     rw [sub_nonneg, sq]
-    exact mul_le_mul_of_nonneg_right (hδ₁.le.trans (by norm_num)) hδ₀
+    gcongr
+    exact hδ₁.le.trans (by norm_num)
   rw [← sub_pos] at hδ₁
   obtain rfl | hs₂' := s₂.eq_empty_or_nonempty
   · rw [Finset.card_empty, Nat.cast_zero] at hs₂
@@ -236,10 +238,11 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   push_cast
   have h₁ := hs₂'.mono hs
   have h₂ := ht₂'.mono ht
-  refine' sub_le_sub_left (mul_le_mul ((le_div_iff _).2 hs₂) ((le_div_iff _).2 ht₂) hδ₁.le _) _
-  · exact_mod_cast h₁.card_pos
-  · exact_mod_cast h₂.card_pos
-  · apply div_nonneg <;> exact_mod_cast Nat.zero_le _
+  gcongr
+  · refine' (le_div_iff _).2 hs₂
+    exact_mod_cast h₁.card_pos
+  · refine' (le_div_iff _).2 ht₂
+    exact_mod_cast h₂.card_pos
 #align rel.abs_edge_density_sub_edge_density_le_two_mul_sub_sq Rel.abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq
 
 /-- If `s₂ ⊆ s₁`, `t₂ ⊆ t₁` and they take up all but a `δ`-proportion, then the difference in edge
@@ -309,7 +312,7 @@ def edgeDensity : Finset α → Finset α → ℚ :=
 #align simple_graph.edge_density SimpleGraph.edgeDensity
 
 theorem interedges_def (s t : Finset α) :
-    G.interedges s t = (s ×ᶠ t).filter fun e ↦ G.Adj e.1 e.2 :=
+    G.interedges s t = (s ×ˢ t).filter fun e ↦ G.Adj e.1 e.2 :=
   rfl
 #align simple_graph.interedges_def SimpleGraph.interedges_def
 
@@ -367,14 +370,14 @@ theorem interedges_biUnion_right (s : Finset α) (t : Finset ι) (f : ι → Fin
 
 theorem interedges_biUnion (s : Finset ι) (t : Finset κ) (f : ι → Finset α) (g : κ → Finset α) :
     G.interedges (s.biUnion f) (t.biUnion g) =
-      (s ×ᶠ t).biUnion fun ab ↦ G.interedges (f ab.1) (g ab.2) :=
+      (s ×ˢ t).biUnion fun ab ↦ G.interedges (f ab.1) (g ab.2) :=
   Rel.interedges_biUnion _ _ _ _ _
 #align simple_graph.interedges_bUnion SimpleGraph.interedges_biUnion
 
 theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
     (G.interedges s t).card + (Gᶜ.interedges s t).card = s.card * t.card := by
   rw [← card_product, interedges_def, interedges_def]
-  have : ((s ×ᶠ t).filter fun e ↦ Gᶜ.Adj e.1 e.2) = (s ×ᶠ t).filter fun e ↦ ¬G.Adj e.1 e.2 := by
+  have : ((s ×ˢ t).filter fun e ↦ Gᶜ.Adj e.1 e.2) = (s ×ˢ t).filter fun e ↦ ¬G.Adj e.1 e.2 := by
     refine' filter_congr fun x hx ↦ _
     rw [mem_product] at hx
     rw [compl_adj, and_iff_right (h.forall_ne_finset hx.1 hx.2)]

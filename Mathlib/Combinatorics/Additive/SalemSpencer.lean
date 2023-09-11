@@ -393,7 +393,7 @@ theorem mulRothNumber_union_le (s t : Finset α) :
 
 @[to_additive]
 theorem le_mulRothNumber_product (s : Finset α) (t : Finset β) :
-    mulRothNumber s * mulRothNumber t ≤ mulRothNumber (s ×ᶠ t) := by
+    mulRothNumber s * mulRothNumber t ≤ mulRothNumber (s ×ˢ t) := by
   obtain ⟨u, hus, hucard, hu⟩ := mulRothNumber_spec s
   obtain ⟨v, hvt, hvcard, hv⟩ := mulRothNumber_spec t
   rw [← hucard, ← hvcard, ← card_product]

@@ -802,7 +802,7 @@ def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
   for (passName, pass) in congrPasses! do
     try
       if let some mvarIds ← pass config mvarId then
-        trace[congr!] "pass succeded: {passName}"
+        trace[congr!] "pass succeeded: {passName}"
         return mvarIds
     catch e =>
       throwTacticEx `congr! mvarId
@@ -933,8 +933,8 @@ This is somewhat like `congr`.
 
 See `Congr!.Config` for all options.
 -/
-syntax (name := congr!) "congr!" (Parser.Tactic.config)? (num)?
-  ("with" (ppSpace colGt rintroPat)*)? : tactic
+syntax (name := congr!) "congr!" (Parser.Tactic.config)? (ppSpace num)?
+  (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 elab_rules : tactic
 | `(tactic| congr! $[$cfg:config]? $[$n]? $[with $ps?*]?) => do

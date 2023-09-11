@@ -94,7 +94,7 @@ theorem mem_of_mem_permsOfList :
         if hxy : x = y then mem_cons_of_mem _ <| by rwa [hxy]
         else mem_cons_of_mem a <| mem_of_mem_permsOfList hg₁ _ <| by
               rw [eq_inv_mul_iff_mul_eq.2 hg₂, mul_apply, swap_inv, swap_apply_def]
-              split_ifs <;> [exact Ne.symm hxy, exact Ne.symm hxa, exact hx]
+              split_ifs <;> [exact Ne.symm hxy; exact Ne.symm hxa; exact hx]
 #align mem_of_mem_perms_of_list mem_of_mem_permsOfList
 
 theorem mem_permsOfList_iff {l : List α} {f : Perm α} :

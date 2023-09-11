@@ -11,14 +11,14 @@ Authors: Yury Kudryashov, Mario Carneiro, Sean Leather
 import Mathlib.Data.Finset.Card
 
 /-!
-# Finite sets in `option α`
+# Finite sets in `Option α`
 
 In this file we define
 
 * `Option.toFinset`: construct an empty or singleton `Finset α` from an `Option α`;
 * `Finset.insertNone`: given `s : Finset α`, lift it to a finset on `Option α` using `Option.some`
   and then insert `Option.none`;
-* `Finset.eraseNone`: given `s : Finset (option α)`, returns `t : Finset α` such that
+* `Finset.eraseNone`: given `s : Finset (Option α)`, returns `t : Finset α` such that
   `x ∈ t ↔ some x ∈ s`.
 
 Then we prove some basic lemmas about these definitions.

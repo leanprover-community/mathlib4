@@ -127,7 +127,7 @@ theorem ofNat_nat (n) : ofNat ℕ n = n :=
   rfl
 #align denumerable.of_nat_nat Denumerable.ofNat_nat
 
-/-- If `α` is denumerable, then so is `option α`. -/
+/-- If `α` is denumerable, then so is `Option α`. -/
 instance option : Denumerable (Option α) :=
   ⟨fun n => by
     cases n

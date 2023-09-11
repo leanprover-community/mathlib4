@@ -893,7 +893,7 @@ theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b 
   ring
 #align localization.add_mk_self Localization.add_mk_self
 
-local macro "localization_tac": tactic =>
+local macro "localization_tac" : tactic =>
   `(tactic|
    { intros
      simp only [add_mk, Localization.mk_mul, ← Localization.mk_zero 1]

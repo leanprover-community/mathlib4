@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Elementwise
+import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Subobjects

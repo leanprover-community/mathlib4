@@ -562,8 +562,8 @@ instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂
 /-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly.
 -/
--- instance : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
---   ⟨fun f => f.toFun⟩
+instance : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
+  ⟨FunLike.coe⟩
 
 theorem coe_injective : @Function.Injective (E ≃ₛₗᵢ[σ₁₂] E₂) (E → E₂) (↑) :=
   FunLike.coe_injective

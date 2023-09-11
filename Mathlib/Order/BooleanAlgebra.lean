@@ -45,7 +45,7 @@ The `sup_inf_sdiff` and `inf_inf_sdiff` axioms for the relative complement opera
 [Stone's paper introducing generalized Boolean algebras][Stone1935] does not define a relative
 complement operator `a \ b` for all `a`, `b`. Instead, the postulates there amount to an assumption
 that for all `a, b : α` where `a ≤ b`, the equations `x ⊔ a = b` and `x ⊓ a = ⊥` have a solution
-`x`. `disjoint.sdiff_unique` proves that this `x` is in fact `b \ a`.
+`x`. `Disjoint.sdiff_unique` proves that this `x` is in fact `b \ a`.
 
 ## References
 

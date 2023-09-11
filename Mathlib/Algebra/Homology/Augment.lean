@@ -192,7 +192,7 @@ theorem augmentTruncate_inv_f_succ (C : ChainComplex V ℕ) (i : ℕ) :
 /-- A chain map from a chain complex to a single object chain complex in degree zero
 can be reinterpreted as a chain complex.
 
-Ths is the inverse construction of `truncateTo`.
+This is the inverse construction of `truncateTo`.
 -/
 def toSingle₀AsComplex [HasZeroObject V] (C : ChainComplex V ℕ) (X : V)
     (f : C ⟶ (single₀ V).obj X) : ChainComplex V ℕ :=
@@ -386,7 +386,7 @@ theorem augmentTruncate_inv_f_succ (C : CochainComplex V ℕ) (i : ℕ) :
 /-- A chain map from a single object cochain complex in degree zero to a cochain complex
 can be reinterpreted as a cochain complex.
 
-Ths is the inverse construction of `toTruncate`.
+This is the inverse construction of `toTruncate`.
 -/
 def fromSingle₀AsComplex [HasZeroObject V] (C : CochainComplex V ℕ) (X : V)
     (f : (single₀ V).obj X ⟶ C) : CochainComplex V ℕ :=

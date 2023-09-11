@@ -144,7 +144,7 @@ theorem isConj_iff₀ [GroupWithZero α] {a b : α} : IsConj a b ↔ ∃ c : α,
 
 namespace IsConj
 
-/- This small quotient API is largely copied from the API of `associates`;
+/- This small quotient API is largely copied from the API of `Associates`;
 where possible, try to keep them in sync -/
 /-- The setoid of the relation `IsConj` iff there is a unit `u` such that `u * x = y * u` -/
 protected def setoid (α : Type _) [Monoid α] : Setoid α where
@@ -235,7 +235,7 @@ Since `Multiset` and `Con.quotient` are both quotient types, unification will ch
 that the relations `List.perm` and `c.toSetoid.r` unify. However, `c.toSetoid` depends on
 a `Mul M` instance, so this unification triggers a search for `Mul (List α)`;
 this will traverse all subclasses of `Mul` before failing.
-On the other hand, the search for an instance of `DecidableEq (Con.quotient c)` for `c : con M`
+On the other hand, the search for an instance of `DecidableEq (Con.quotient c)` for `c : Con M`
 can quickly reject the candidate instance `Multiset.decidableEq` because the type of
 `List.perm : List ?m_1 → List ?m_1 → Prop` does not unify with `M → M → Prop`.
 Therefore, we should assign `Con.quotient.decidableEq` a lower priority because it fails slowly.
@@ -332,5 +332,4 @@ theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk
 
 end ConjClasses
 
--- porting notes: not implemented
--- assert_not_exists multiset
+assert_not_exists Multiset

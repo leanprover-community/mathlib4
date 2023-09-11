@@ -22,7 +22,7 @@ closed) using the following naming conventions:
 - `c`: closed
 
 Each interval has the name `I` + letter for left side + letter for right side. For instance,
-`Ioc a b` denotes the inverval `(a, b]`.
+`Ioc a b` denotes the interval `(a, b]`.
 
 This file contains these definitions, and basic facts on inclusion, intersection, difference of
 intervals (where the precise statements may depend on the properties of the order, in particular
@@ -1157,10 +1157,10 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
       simp [le_antisymm_iff]
       cases' h with h h <;>
       simp [Ico_subset_Ico_iff h] at e <;>
-      [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩, rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
+      [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
       -- Porting note: restore `tauto`
       have hab := (Ico_subset_Ico_iff <| h₁.trans_lt <| h.trans_le h₂).1 e' <;>
-      [ exact ⟨⟨hab.left, h₁⟩, ⟨h₂, hab.right⟩⟩, exact ⟨⟨h₁, hab.left⟩, ⟨hab.right, h₂⟩⟩ ],
+      [ exact ⟨⟨hab.left, h₁⟩, ⟨h₂, hab.right⟩⟩; exact ⟨⟨h₁, hab.left⟩, ⟨hab.right, h₂⟩⟩ ],
     fun ⟨h₁, h₂⟩ => by rw [h₁, h₂]⟩
 #align set.Ico_eq_Ico_iff Set.Ico_eq_Ico_iff
 
@@ -1857,7 +1857,7 @@ theorem Ioc_union_Ioc_symm : Ioc a b ∪ Ioc b a = Ioc (min a b) (max a b) := by
 theorem Ioc_union_Ioc_union_Ioc_cycle :
     Ioc a b ∪ Ioc b c ∪ Ioc c a = Ioc (min a (min b c)) (max a (max b c)) := by
   rw [Ioc_union_Ioc, Ioc_union_Ioc] <;>
-  -- Porting note: mathlib3 proof finished from here as folllows:
+  -- Porting note: mathlib3 proof finished from here as follows:
   -- (It can probably be restored after https://github.com/leanprover-community/mathlib4/pull/856)
   -- ac_rfl
   -- all_goals

@@ -44,7 +44,7 @@ vectors.
 
 * `Fintype.linearIndependent_iff`: if `ι` is a finite type, then any function `f : ι → R` has
   finite support, so we can reformulate the statement using `∑ i : ι, f i • v i` instead of a sum
-  over an auxiliary `s : finset ι`;
+  over an auxiliary `s : Finset ι`;
 * `linearIndependent_empty_type`: a family indexed by an empty type is linearly independent;
 * `linearIndependent_unique_iff`: if `ι` is a singleton, then `LinearIndependent K v` is
   equivalent to `v default ≠ 0`;
@@ -876,7 +876,7 @@ theorem exists_maximal_independent' (s : ι → M) :
   let indep : Set ι → Prop := fun I => LinearIndependent R (s ∘ (↑) : I → M)
   let X := { I : Set ι // indep I }
   let r : X → X → Prop := fun I J => I.1 ⊆ J.1
-  have key : ∀ c : Set X, IsChain r c → indep (⋃ (I : X) (_H : I ∈ c), I) := by
+  have key : ∀ c : Set X, IsChain r c → indep (⋃ (I : X) (_ : I ∈ c), I) := by
     intro c hc
     dsimp
     rw [linearIndependent_comp_subtype]
@@ -982,7 +982,7 @@ theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
     (hs : LinearIndependent R (fun x => x : s → M))
     (ht : LinearIndependent R (fun x => x : t → M')) :
     LinearIndependent R (fun x => x : ↥(inl R M M' '' s ∪ inr R M M' '' t) → M × M') := by
-  refine' (hs.image_subtype _).union (ht.image_subtype _) _ <;> [simp, simp, skip]
+  refine' (hs.image_subtype _).union (ht.image_subtype _) _ <;> [simp; simp; skip]
   simp only [span_image]
   simp [disjoint_iff, prod_inf_prod]
 #align linear_independent.inl_union_inr LinearIndependent.inl_union_inr

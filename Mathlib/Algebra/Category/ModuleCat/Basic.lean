@@ -45,10 +45,10 @@ in the category of `R`-modules, we have to take care not to inadvertently end up
 Similarly, given `f : M ≃ₗ[R] N`, use `toModuleIso`, `toModuleIso'Left`, `toModuleIso'Right`
 or `toModuleIso'`, respectively.
 
-The arrow notations are localized, so you may have to `open_locale Module` to use them. Note that
-the notation for `asHomLeft` clashes with the notation used to promote functions between types to
-morphisms in the category `Type`, so to avoid confusion, it is probably a good idea to avoid having
-the locales `Module` and `CategoryTheory.Type` open at the same time.
+The arrow notations are localized, so you may have to `open ModuleCat` (or `open scoped ModuleCat`)
+to use them. Note that the notation for `asHomLeft` clashes with the notation used to promote
+functions between types to morphisms in the category `Type`, so to avoid confusion, it is probably a
+good idea to avoid having the locales `Module` and `CategoryTheory.Type` open at the same time.
 
 If you get an error when trying to apply a theorem and the `convert` tactic produces goals of the
 form `M = of R M`, then you probably used an incorrect variant of `asHom` or `toModuleIso`.
@@ -113,6 +113,12 @@ instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
     rw [h])⟩
 set_option linter.uppercaseLean3 false in
 #align Module.Module_concrete_category ModuleCat.moduleConcreteCategory
+
+instance {M : ModuleCat.{v} R} : AddCommGroup ((forget (ModuleCat R)).obj M) :=
+  (inferInstance : AddCommGroup M.carrier)
+
+instance {M : ModuleCat.{v} R} : Module R ((forget (ModuleCat R)).obj M) :=
+  (inferInstance : Module R M.carrier)
 
 -- porting note: added to ease automation
 @[ext]
@@ -234,6 +240,9 @@ theorem comp_def (f : M ⟶ N) (g : N ⟶ U) : f ≫ g = g.comp f :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Module.comp_def ModuleCat.comp_def
+
+-- porting note: added
+@[simp] lemma forget_map (f : M ⟶ N) : (forget (ModuleCat R)).map f = (f : M → N) := rfl
 
 end ModuleCat
 

@@ -434,7 +434,7 @@ theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
     f = (p.prodEquivOfIsCompl (ker f) h.isCompl).toLinearMap ∘ₗ
         prodMap id 0 ∘ₗ (p.prodEquivOfIsCompl (ker f) h.isCompl).symm.toLinearMap := by
   rw [← LinearMap.comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
-  ext x y
+  ext x
   · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inl, coprod_apply, coeSubtype,
       _root_.map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
   · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, _root_.map_zero,

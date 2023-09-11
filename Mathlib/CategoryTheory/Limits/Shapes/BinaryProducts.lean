@@ -81,7 +81,7 @@ theorem WalkingPair.swap_symm_apply_ff : WalkingPair.swap.symm right = left :=
   rfl
 #align category_theory.limits.walking_pair.swap_symm_apply_ff CategoryTheory.Limits.WalkingPair.swap_symm_apply_ff
 
-/-- An equivalence from `WalkingPair` to `bool`, sometimes useful when reindexing limits.
+/-- An equivalence from `WalkingPair` to `Bool`, sometimes useful when reindexing limits.
 -/
 def WalkingPair.equivBool : WalkingPair ≃ Bool
     where
@@ -672,7 +672,7 @@ instance coprod.epi_desc_of_epi_right {W X Y : C} [HasBinaryCoproduct X Y] (f : 
 #align category_theory.limits.coprod.epi_desc_of_epi_right CategoryTheory.Limits.coprod.epi_desc_of_epi_right
 
 /-- If the product of `X` and `Y` exists, then every pair of morphisms `f : W ⟶ X` and `g : W ⟶ Y`
-    induces a morphism `l : W ⟶ X ⨯ Y` satisfying `l ≫ prod.fst = f` and `l ≫ prod.snd = g`. -/
+    induces a morphism `l : W ⟶ X ⨯ Y` satisfying `l ≫ Prod.fst = f` and `l ≫ Prod.snd = g`. -/
 def prod.lift' {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     { l : W ⟶ X ⨯ Y // l ≫ prod.fst = f ∧ l ≫ prod.snd = g } :=
   ⟨prod.lift f g, prod.lift_fst _ _, prod.lift_snd _ _⟩
@@ -823,7 +823,7 @@ end ProdLemmas
 section CoprodLemmas
 
 -- @[reassoc (attr := simp)]
-@[simp] -- Porting note: removing reassoc tag since result is not hygenic (two h's)
+@[simp] -- Porting note: removing reassoc tag since result is not hygienic (two h's)
 theorem coprod.desc_comp {V W X Y : C} [HasBinaryCoproduct X Y] (f : V ⟶ W) (g : X ⟶ V)
     (h : Y ⟶ V) : coprod.desc g h ≫ f = coprod.desc (g ≫ f) (h ≫ f) := by
   apply coprod.hom_ext; simp; simp
@@ -1105,7 +1105,7 @@ end
 
 section
 
--- Porting note: added category instance as it did not propogate
+-- Porting note: added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The braiding isomorphism which swaps a binary coproduct. -/
@@ -1191,7 +1191,7 @@ end
 
 section ProdFunctor
 
--- Porting note: added category instance as it did not propogate
+-- Porting note: added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryProducts C]
 
 /-- The binary product functor. -/
@@ -1214,7 +1214,7 @@ end ProdFunctor
 
 section CoprodFunctor
 
--- Porting note: added category instance as it did not propogate
+-- Porting note: added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The binary coproduct functor. -/

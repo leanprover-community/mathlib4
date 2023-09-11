@@ -83,7 +83,7 @@ instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedSta
   ⟨@norm_star _ _ _ _⟩
 #align ring_hom_isometric.star_ring_end RingHomIsometric.starRingEnd
 
-/-- A C*-ring is a normed star ring that satifies the stronger condition `‖x⋆ * x‖ = ‖x‖^2`
+/-- A C*-ring is a normed star ring that satisfies the stronger condition `‖x⋆ * x‖ = ‖x‖^2`
 for every `x`. -/
 class CstarRing (E : Type _) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_star_mul_self : ∀ {x : E}, ‖x⋆ * x‖ = ‖x‖ * ‖x‖

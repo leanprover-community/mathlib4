@@ -29,9 +29,7 @@ variable {R : Type _} [CommRing R] (M : Submonoid R) {S : Type _} [CommRing S]
 
 variable [Algebra R S] {P : Type _} [CommRing P]
 
-open Function
-
-open BigOperators
+open Function BigOperators
 
 namespace IsLocalization
 
@@ -45,7 +43,7 @@ variable [Algebra S T] [IsScalarTower R S T]
 
 -- This should only be defined when `S` is the localization `M⁻¹R`, hence the nolint.
 /-- Localizing wrt `M ⊆ R` and then wrt `N ⊆ S = M⁻¹R` is equal to the localization of `R` wrt this
-module. See `localization_localization_is_localization`.
+module. See `localization_localization_isLocalization`.
 -/
 @[nolint unusedArguments]
 def localizationLocalizationSubmodule : Submonoid R :=
@@ -103,7 +101,6 @@ theorem localization_localization_eq_iff_exists [IsLocalization N T] (x y : R) :
   · rintro ⟨z, eq₁⟩
     rcases IsLocalization.surj M (z : S) with ⟨⟨z', s⟩, eq₂⟩
     dsimp only at eq₂
-    let _a := (x * z' : R)
     suffices : (algebraMap R S) (x * z' : R) = (algebraMap R S) (y * z')
     · obtain ⟨c, eq₃ : ↑c * (x * z') = ↑c * (y * z')⟩ := (IsLocalization.eq_iff_exists M S).mp this
       refine ⟨⟨c * z', ?_⟩, ?_⟩
@@ -225,7 +222,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
       obtain ⟨⟨y₂, s₂⟩, e₂⟩ := IsLocalization.surj M x₂
       refine' Iff.trans _ (Set.exists_image_iff (algebraMap R S) N fun c => c * x₁ = c * x₂).symm
       dsimp only at e₁ e₂⊢
-      suffices :  algebraMap R T (y₁ * s₂) = algebraMap R T (y₂ * s₁) ↔
+      suffices : algebraMap R T (y₁ * s₂) = algebraMap R T (y₂ * s₁) ↔
         ∃ a : N, algebraMap R S (a * (y₁ * s₂)) = algebraMap R S (a * (y₂ * s₁))
       · have h₁ := @IsUnit.mul_left_inj T _ _ (algebraMap S T x₁) (algebraMap S T x₂)
           (IsLocalization.map_units T ⟨(s₁ : R), h s₁.prop⟩)

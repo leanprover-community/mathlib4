@@ -484,7 +484,7 @@ variable (M)
 
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
-concatentation, and thus provides a useful induction principle. -/
+concatenation, and thus provides a useful induction principle. -/
 --@[nolint has_nonempty_instance] Porting note: commented out
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i

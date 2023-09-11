@@ -64,6 +64,9 @@ theorem even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
 theorem odd_iff_not_even : Odd n ↔ ¬Even n := by rw [not_even_iff, odd_iff]
 #align nat.odd_iff_not_even Nat.odd_iff_not_even
 
+theorem _root_.Odd.not_two_dvd_nat (h : Odd n) : ¬(2 ∣ n) := by
+  rwa [← even_iff_two_dvd, ← odd_iff_not_even]
+
 theorem isCompl_even_odd : IsCompl { n : ℕ | Even n } { n | Odd n } := by
   simp only [← Set.compl_setOf, isCompl_compl, odd_iff_not_even]
 #align nat.is_compl_even_odd Nat.isCompl_even_odd

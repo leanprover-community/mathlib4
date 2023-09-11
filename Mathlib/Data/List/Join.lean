@@ -71,7 +71,7 @@ theorem join_join (l : List (List (List α))) : l.join.join = (l.map join).join 
 
 @[simp]
 theorem length_join (L : List (List α)) : length (join L) = sum (map length L) := by
-  induction L <;> [rfl, simp only [*, join, map, sum_cons, length_append]]
+  induction L <;> [rfl; simp only [*, join, map, sum_cons, length_append]]
 #align list.length_join List.length_join
 
 @[simp]
@@ -133,7 +133,7 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
 #align list.drop_take_succ_eq_cons_nth_le List.drop_take_succ_eq_cons_nthLe
 
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
-original sublist of index `i` if `A` is the sum of the lenghts of sublists of index `< i`, and
+original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`. -/
 theorem drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
     (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum =
@@ -144,7 +144,7 @@ theorem drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
 
 set_option linter.deprecated false in
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
-original sublist of index `i` if `A` is the sum of the lenghts of sublists of index `< i`, and
+original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`. -/
 @[deprecated drop_take_succ_join_eq_get]
 theorem drop_take_succ_join_eq_nthLe (L : List (List α)) {i : ℕ} (hi : i < L.length) :

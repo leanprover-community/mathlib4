@@ -23,7 +23,7 @@ Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
  * `divisors n` is the `Finset` of natural numbers that divide `n`.
  * `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
  * `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
- * `perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
+ * `Perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
 
 ## Implementation details
  * `divisors 0`, `properDivisors 0`, and `divisorsAntidiagonal 0` are defined to be `∅`.
@@ -54,7 +54,7 @@ def properDivisors : Finset ℕ :=
 /-- `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
   As a special case, `divisorsAntidiagonal 0 = ∅`. -/
 def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
-  Finset.filter (fun x => x.fst * x.snd = n) (Ico 1 (n + 1) ×ᶠ Ico 1 (n + 1))
+  Finset.filter (fun x => x.fst * x.snd = n) (Ico 1 (n + 1) ×ˢ Ico 1 (n + 1))
 #align nat.divisors_antidiagonal Nat.divisorsAntidiagonal
 
 variable {n}

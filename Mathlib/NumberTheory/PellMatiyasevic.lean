@@ -525,7 +525,7 @@ theorem xy_succ_succ (n) :
   have := pellZd_succ_succ a1 n; unfold pellZd at this
   erw [Zsqrtd.smul_val (2 * a : ℕ)] at this
   injection this with h₁ h₂
-  constructor <;> apply Int.ofNat.inj <;> [simpa using h₁, simpa using h₂]
+  constructor <;> apply Int.ofNat.inj <;> [simpa using h₁; simpa using h₂]
 #align pell.xy_succ_succ Pell.xy_succ_succ
 
 theorem xn_succ_succ (n) : xn a1 (n + 2) + xn a1 n = 2 * a * xn a1 (n + 1) :=

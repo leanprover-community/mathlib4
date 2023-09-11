@@ -508,7 +508,7 @@ open ZeroObject
 `X` and `Y` are isomorphic to the zero object.
 -/
 def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y ≅ 0) := by
-  -- This is lame, because `prod` can't cope with `Prop`, so we can't use `Equiv.prodCongr`.
+  -- This is lame, because `Prod` can't cope with `Prop`, so we can't use `Equiv.prodCongr`.
   refine' (isIsoZeroEquiv X Y).trans _
   symm
   fconstructor

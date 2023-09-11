@@ -93,7 +93,7 @@ variable {X}
 
 namespace IsLprojection
 
---porting note: The liturature always uses uppercase 'L' for L-projections
+--porting note: The literature always uses uppercase 'L' for L-projections
 theorem Lcomplement {P : M} (h : IsLprojection X P) : IsLprojection X (1 - P) :=
   ⟨h.proj.one_sub, fun x => by
     rw [add_comm, sub_sub_cancel]

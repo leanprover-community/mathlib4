@@ -122,9 +122,8 @@ def ofEq {f g : Filter α} (e : f = g) (F : f.Realizer) : g.Realizer :=
   ⟨F.σ, F.F, F.eq.trans e⟩
 #align filter.realizer.of_eq Filter.Realizer.ofEq
 
--- Porting note: Added `noncomputable`
 /-- A filter realizes itself. -/
-noncomputable def ofFilter (f : Filter α) : f.Realizer :=
+def ofFilter (f : Filter α) : f.Realizer :=
   ⟨f.sets,
     { f := Subtype.val
       pt := ⟨univ, univ_mem⟩

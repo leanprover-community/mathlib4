@@ -156,7 +156,7 @@ theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
   simp [termg, zero_zsmul]
 
 /--
-Intepret the sum of two expressions in `abel`'s normal form.
+Interpret the sum of two expressions in `abel`'s normal form.
 -/
 partial def evalAdd : NormalExpr → NormalExpr → M (NormalExpr × Expr)
   | zero _, e₂ => do
@@ -488,9 +488,9 @@ def abelNFLocalDecl (cfg : AbelNF.Config) (fvarId : FVarId) :
   | some (_, newGoal) => replaceMainGoal [newGoal]
 
 /-- Unsupported legacy syntax from mathlib3, which allowed passing additional terms to `abel`. -/
-syntax (name := abel_term) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
+syntax (name := abel_term) "abel" (&" raw" <|> &" term")? (location)? : tactic
 /-- Unsupported legacy syntax from mathlib3, which allowed passing additional terms to `abel!`. -/
-syntax (name := abel!_term) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
+syntax (name := abel!_term) "abel!" (&" raw" <|> &" term")? (location)? : tactic
 
 /--
 Simplification tactic for expressions in the language of abelian groups,
@@ -502,14 +502,14 @@ which rewrites all group expressions into a normal form.
 * `abel_nf` works as both a tactic and a conv tactic.
   In tactic mode, `abel_nf at h` can be used to rewrite in a hypothesis.
 -/
-elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? : tactic => do
+elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic => do
   let mut cfg ← elabAbelNFConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   withLocation loc (abelNFLocalDecl cfg) (abelNFTarget cfg)
     fun _ ↦ throwError "abel_nf failed"
 
-@[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? loc:(ppSpace location)? : tactic =>
+@[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? loc:(location)? : tactic =>
   `(tactic| abel_nf ! $(cfg)? $(loc)?)
 
 @[inherit_doc abelNF] syntax (name := abelNFConv) "abel_nf" "!"? (config)? : conv

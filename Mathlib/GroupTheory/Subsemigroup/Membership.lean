@@ -42,7 +42,7 @@ open Set
 
 namespace Subsemigroup
 
--- TODO: this section can be generalized to `[mul_mem_class B M] [complete_lattice B]`
+-- TODO: this section can be generalized to `[MulMemClass B M] [CompleteLattice B]`
 -- such that `complete_lattice.le` coincides with `set_like.le`
 @[to_additive]
 theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) {x : M} :

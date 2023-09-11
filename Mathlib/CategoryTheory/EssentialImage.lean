@@ -56,7 +56,7 @@ def essImage.getIso {Y : D} (h : Y ∈ F.essImage) : F.obj (essImage.witness h) 
   Classical.choice h.choose_spec
 #align category_theory.functor.ess_image.get_iso CategoryTheory.Functor.essImage.getIso
 
-/-- Being in the essential image is a "hygenic" property: it is preserved under isomorphism. -/
+/-- Being in the essential image is a "hygienic" property: it is preserved under isomorphism. -/
 theorem essImage.ofIso {Y Y' : D} (h : Y ≅ Y') (hY : Y ∈ essImage F) : Y' ∈ essImage F :=
   hY.imp fun _ => Nonempty.map (· ≪≫ h)
 #align category_theory.functor.ess_image.of_iso CategoryTheory.Functor.essImage.ofIso

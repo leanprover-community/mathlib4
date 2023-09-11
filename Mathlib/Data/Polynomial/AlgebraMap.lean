@@ -81,7 +81,7 @@ theorem C_eq_algebraMap (r : R) : C r = algebraMap R R[X] r :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.C_eq_algebra_map Polynomial.C_eq_algebraMap
 
--- porting note: removed `variable` because of redunant binder update annotation
+-- porting note: removed `variable` because of redundant binder update annotation
 
 /-- Extensionality lemma for algebra maps out of `A'[X]` over a smaller base ring than `A'`
 -/
@@ -432,7 +432,7 @@ theorem aevalTower_comp_toAlgHom : (aevalTower g y).comp (IsScalarTower.toAlgHom
 
 @[simp]
 theorem aevalTower_id : aevalTower (AlgHom.id S S) = aeval := by
-  ext s p
+  ext s
   simp only [eval_X, aevalTower_X, coe_aeval_eq_eval]
 #align polynomial.aeval_tower_id Polynomial.aevalTower_id
 

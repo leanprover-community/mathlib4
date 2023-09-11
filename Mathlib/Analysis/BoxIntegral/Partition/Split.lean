@@ -206,7 +206,7 @@ theorem split_of_not_mem_Ioo (h : x ∉ Ioo (I.lower i) (I.upper i)) : split I i
   rcases mem_top.1 hJ with rfl; clear hJ
   rw [mem_boxes, mem_split_iff]
   rw [mem_Ioo, not_and_or, not_lt, not_lt] at h
-  cases h <;> [right, left]
+  cases h <;> [right; left]
   · rwa [eq_comm, Box.splitUpper_eq_self]
   · rwa [eq_comm, Box.splitLower_eq_self]
 #align box_integral.prepartition.split_of_not_mem_Ioo BoxIntegral.Prepartition.split_of_not_mem_Ioo
@@ -230,7 +230,7 @@ theorem restrict_split (h : I ≤ J) (i : ι) (x : ℝ) : (split J i x).restrict
   refine' ((isPartitionSplit J i x).restrict h).eq_of_boxes_subset _
   simp only [Finset.subset_iff, mem_boxes, mem_restrict', exists_prop, mem_split_iff']
   have : ∀ s, (I ∩ s : Set (ι → ℝ)) ⊆ J := fun s => (inter_subset_left _ _).trans h
-  rintro J₁ ⟨J₂, H₂ | H₂, H₁⟩ <;> [left, right] <;>
+  rintro J₁ ⟨J₂, H₂ | H₂, H₁⟩ <;> [left; right] <;>
     simp [H₁, H₂, inter_left_comm (I : Set (ι → ℝ)), this]
 #align box_integral.prepartition.restrict_split BoxIntegral.Prepartition.restrict_split
 

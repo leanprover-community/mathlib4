@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sebastien Gouezel, Heather Macbeth, Patrick Massot, Floris van Doorn
 
 ! This file was ported from Lean 3 source module topology.vector_bundle.basic
-! leanprover-community/mathlib commit d2d964c64f8ddcccd6704a731c41f95d13e72f5c
+! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -61,6 +61,7 @@ Vector bundle
 noncomputable section
 
 open Bundle Set Classical
+open scoped Topology
 
 variable (R : Type _) {B : Type _} (F : Type _) (E : B → Type _)
 
@@ -841,7 +842,7 @@ end
 section
 
 variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
-  [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B]
+  [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B] [∀ x, TopologicalSpace (E x)]
 
 open TopologicalSpace
 
@@ -867,6 +868,7 @@ structure VectorPrebundle where
   exists_coordChange : ∀ᵉ (e ∈ pretrivializationAtlas) (e' ∈ pretrivializationAtlas),
     ∃ f : B → F →L[R] F, ContinuousOn f (e.baseSet ∩ e'.baseSet) ∧
       ∀ᵉ (b ∈ e.baseSet ∩ e'.baseSet) (v : F), f b v = (e' (totalSpaceMk b (e.symm b v))).2
+  totalSpaceMk_inducing : ∀ b : B, Inducing (pretrivializationAt b ∘ totalSpaceMk b)
 #align vector_prebundle VectorPrebundle
 
 namespace VectorPrebundle
@@ -953,26 +955,15 @@ theorem totalSpaceMk_preimage_source (b : B) :
   a.toFiberPrebundle.totalSpaceMk_preimage_source b
 #align vector_prebundle.total_space_mk_preimage_source VectorPrebundle.totalSpaceMk_preimage_source
 
-/-- Topology on the fibers `E b` induced by the map `E b → Bundle.TotalSpace E`. -/
-def fiberTopology (b : B) : TopologicalSpace (E b) :=
-  a.toFiberPrebundle.fiberTopology b
-#align vector_prebundle.fiber_topology VectorPrebundle.fiberTopology
-
-@[continuity]
-theorem inducing_totalSpaceMk (b : B) :
-    @Inducing _ _ (a.fiberTopology b) a.totalSpaceTopology (totalSpaceMk b) :=
-  a.toFiberPrebundle.inducing_totalSpaceMk b
-#align vector_prebundle.inducing_total_space_mk VectorPrebundle.inducing_totalSpaceMk
-
 @[continuity]
 theorem continuous_totalSpaceMk (b : B) :
-    @Continuous _ _ (a.fiberTopology b) a.totalSpaceTopology (totalSpaceMk b) :=
+    Continuous[_, a.totalSpaceTopology] (totalSpaceMk b) :=
   a.toFiberPrebundle.continuous_totalSpaceMk b
 #align vector_prebundle.continuous_total_space_mk VectorPrebundle.continuous_totalSpaceMk
 
 /-- Make a `FiberBundle` from a `VectorPrebundle`; auxiliary construction for
 `VectorPrebundle.to_vectorBundle`. -/
-def toFiberBundle : @FiberBundle B F _ _ _ a.totalSpaceTopology a.fiberTopology :=
+def toFiberBundle : @FiberBundle B F _ _ _ a.totalSpaceTopology _ :=
   a.toFiberPrebundle.toFiberBundle
 #align vector_prebundle.to_fiber_bundle VectorPrebundle.toFiberBundle
 
@@ -983,8 +974,8 @@ establishes that for the topology constructed on the sigma-type using
 `VectorPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
 theorem to_vectorBundle :
-    @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology a.fiberTopology a.toFiberBundle :=
-  letI := a.totalSpaceTopology; letI := a.fiberTopology; letI := a.toFiberBundle
+    @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle :=
+  letI := a.totalSpaceTopology; letI := a.toFiberBundle
   { trivialization_linear' := by
       rintro _ ⟨e, he, rfl⟩
       apply linear_trivializationOfMemPretrivializationAtlas
@@ -1016,7 +1007,7 @@ variable [NormedSpace 𝕜₁ F] [∀ x, Module 𝕜₁ (E x)] [TopologicalSpace
 variable {F' : Type _} [NormedAddCommGroup F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type _}
   [∀ x, AddCommMonoid (E' x)] [∀ x, Module 𝕜₂ (E' x)] [TopologicalSpace (TotalSpace E')]
 
-variable [∀ x, TopologicalSpace (E x)] [FiberBundle F E] [VectorBundle 𝕜₁ F E]
+variable [FiberBundle F E] [VectorBundle 𝕜₁ F E]
 
 variable [∀ x, TopologicalSpace (E' x)] [FiberBundle F' E'] [VectorBundle 𝕜₂ F' E']
 

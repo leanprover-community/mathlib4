@@ -407,7 +407,7 @@ theorem biproduct.bicone_ι (f : J → C) [HasBiproduct f] (b : J) :
 #align category_theory.limits.biproduct.bicone_ι CategoryTheory.Limits.biproduct.bicone_ι
 
 /-- Note that as this lemma has a `if` in the statement, we include a `DecidableEq` argument.
-This means you may not be able to `simp` using this lemma unless you `open_locale Classical`. -/
+This means you may not be able to `simp` using this lemma unless you `open Classical`. -/
 @[reassoc]
 theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J) :
     biproduct.ι f j ≫ biproduct.π f j' = if h : j = j' then eqToHom (congr_arg f h) else 0 := by

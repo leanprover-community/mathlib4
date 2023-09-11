@@ -124,6 +124,10 @@ theorem sqrt_div (x y : ℝ≥0) : sqrt (x / y) = sqrt x / sqrt y :=
 theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 #align nnreal.continuous_sqrt NNReal.continuous_sqrt
 
+@[simp] theorem sqrt_pos : 0 < sqrt x ↔ 0 < x := by simp [pos_iff_ne_zero]
+
+alias sqrt_pos ↔ _ sqrt_pos_of_pos
+
 end NNReal
 
 namespace Real
@@ -350,29 +354,41 @@ theorem sqrt_pos : 0 < sqrt x ↔ 0 < x :=
 alias sqrt_pos ↔ _ sqrt_pos_of_pos
 #align real.sqrt_pos_of_pos Real.sqrt_pos_of_pos
 
-/-
-section
+end Real
 
-Porting note: todo: restore positivity plugin
-open Tactic Tactic.Positivity
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+/-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
+positive. -/
+@[positivity NNReal.sqrt _]
+def evalNNRealSqrt : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app _ (a : Q(NNReal))) ← whnfR e | throwError "not NNReal.sqrt"
+  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
+  let ra ← core zα' pα' a
+  assertInstancesCommute
+  match ra with
+  | .positive pa => pure (.positive (q(NNReal.sqrt_pos_of_pos $pa) : Expr))
+  | _ => failure -- this case is dealt with by generic nonnegativity of nnreals
 
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
-@[positivity]
-unsafe def _root_.tactic.positivity_sqrt : expr → tactic strictness
-  | q(Real.sqrt $(a)) => do
-    (-- if can prove `0 < a`, report positivity
-        do
-          let positive pa ← core a
-          positive <$> mk_app `` sqrt_pos_of_pos [pa]) <|>
-        nonnegative <$> mk_app `` sqrt_nonneg [a]
-  |-- else report nonnegativity
-    _ =>
-    failed
-#align tactic.positivity_sqrt tactic.positivity_sqrt
+@[positivity Real.sqrt _]
+def evalSqrt : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app _ (a : Q(Real))) ← whnfR e | throwError "not Real.sqrt"
+  let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
+  let ra ← core zα' pα' a
+  assertInstancesCommute
+  match ra with
+  | .positive pa => pure (.positive (q(Real.sqrt_pos_of_pos $pa) : Expr))
+  | _ => pure (.nonnegative (q(Real.sqrt_nonneg $a) : Expr))
 
-end
--/
+end Mathlib.Meta.Positivity
+
+namespace Real
 
 @[simp]
 theorem sqrt_mul (hx : 0 ≤ x) (y : ℝ) : sqrt (x * y) = sqrt x * sqrt y := by

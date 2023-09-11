@@ -11,7 +11,7 @@ Authors: Eric Wieser
 import Mathlib.Logic.Basic
 
 /-!
-# Extra facts about `pprod`
+# Extra facts about `PProd`
 -/
 
 

@@ -699,7 +699,7 @@ open Tactic
 `a` and `b` are numerals.
 
 ```
-example : nat.digits 10 123 = [3,2,1] := by norm_num
+example : Nat.digits 10 123 = [3,2,1] := by norm_num
 ```
 -/
 @[norm_num]

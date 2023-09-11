@@ -25,7 +25,7 @@ defines the limit value of an eventually-constant sequence.
 * `natLt`/`natGt`: Make an order embedding `Nat ↪ α` from
    an increasing/decreasing function `Nat → α`.
 * `monotonicSequenceLimit`: The limit of an eventually-constant monotone sequence `Nat →o α`.
-* `monotonicSequenceLimitIndex`: The index of the first occurence of `monotonicSequenceLimit`
+* `monotonicSequenceLimitIndex`: The index of the first occurrence of `monotonicSequenceLimit`
   in the sequence.
 -/
 

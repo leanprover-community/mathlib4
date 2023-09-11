@@ -77,7 +77,7 @@ structure VitaliFamily {m : MeasurableSpace α} (μ : Measure α) where
     (∀ x ∈ s, f x ⊆ setsAt x) → (∀ x ∈ s, ∀ ε > (0 : ℝ), ∃ a ∈ f x, a ⊆ closedBall x ε) →
     ∃ t : Set (α × Set α),
       (∀ p : α × Set α, p ∈ t → p.1 ∈ s) ∧ (t.PairwiseDisjoint fun p => p.2) ∧
-      (∀ p : α × Set α, p ∈ t → p.2 ∈ f p.1) ∧ μ (s \ ⋃ (p : α × Set α) (_hp : p ∈ t), p.2) = 0
+      (∀ p : α × Set α, p ∈ t → p.2 ∈ f p.1) ∧ μ (s \ ⋃ (p : α × Set α) (_ : p ∈ t), p.2) = 0
 #align vitali_family VitaliFamily
 
 namespace VitaliFamily
@@ -113,7 +113,7 @@ theorem exists_disjoint_covering_ae :
       (∀ p : α × Set α, p ∈ t → p.1 ∈ s) ∧
       (t.PairwiseDisjoint fun p => p.2) ∧
       (∀ p : α × Set α, p ∈ t → p.2 ∈ v.setsAt p.1 ∩ f p.1) ∧
-      μ (s \ ⋃ (p : α × Set α) (_hp : p ∈ t), p.2) = 0 :=
+      μ (s \ ⋃ (p : α × Set α) (_ : p ∈ t), p.2) = 0 :=
   v.covering s (fun x => v.setsAt x ∩ f x) (fun _ _ => inter_subset_left _ _) h
 #align vitali_family.fine_subfamily_on.exists_disjoint_covering_ae VitaliFamily.FineSubfamilyOn.exists_disjoint_covering_ae
 

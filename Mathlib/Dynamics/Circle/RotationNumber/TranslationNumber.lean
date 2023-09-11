@@ -876,8 +876,7 @@ theorem map_lt_add_floor_translationNumber_add_one (x : ℝ) : f x < x + ⌊τ f
 theorem map_lt_add_translationNumber_add_one (x : ℝ) : f x < x + τ f + 1 :=
   calc
     f x < x + ⌊τ f⌋ + 1 := f.map_lt_add_floor_translationNumber_add_one x
-    _ ≤ x + τ f + 1 := add_le_add_right (add_le_add_left (floor_le _) _) _
-    -- porting note: this ^ used to be `by mono; apply floor_le`
+    _ ≤ x + τ f + 1 := by gcongr; apply floor_le
 #align circle_deg1_lift.map_lt_add_translation_number_add_one CircleDeg1Lift.map_lt_add_translationNumber_add_one
 
 theorem lt_map_of_int_lt_translationNumber {n : ℤ} (h : ↑n < τ f) (x : ℝ) : x + n < f x :=
@@ -956,7 +955,7 @@ theorem continuous_pow (hf : Continuous f) (n : ℕ) : Continuous (f ^ n : Circl
 
 theorem translationNumber_eq_rat_iff (hf : Continuous f) {m : ℤ} {n : ℕ} (hn : 0 < n) :
     τ f = m / n ↔ ∃ x, (f ^ n) x = x + m := by
-  rw [eq_div_iff, mul_comm, ← translationNumber_pow] <;> [skip, exact ne_of_gt (Nat.cast_pos.2 hn)]
+  rw [eq_div_iff, mul_comm, ← translationNumber_pow] <;> [skip; exact ne_of_gt (Nat.cast_pos.2 hn)]
   exact (f ^ n).translationNumber_eq_int_iff (f.continuous_pow hf n)
 #align circle_deg1_lift.translation_number_eq_rat_iff CircleDeg1Lift.translationNumber_eq_rat_iff
 

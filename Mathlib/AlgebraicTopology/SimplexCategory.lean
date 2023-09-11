@@ -29,7 +29,7 @@ We provide the following functions to work with these objects:
 1. `SimplexCategory.mk` creates an object of `SimplexCategory` out of a natural number.
   Use the notation `[n]` in the `Simplicial` locale.
 2. `SimplexCategory.len` gives the "length" of an object of `SimplexCategory`, as a natural.
-3. `SimplexCategory.Hom.mk` makes a morphism out of a monotone map between `fin`'s.
+3. `SimplexCategory.Hom.mk` makes a morphism out of a monotone map between `Fin`'s.
 4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
   term of `SimplexCategory.Hom`.
 
@@ -54,7 +54,7 @@ section
 
 
 -- porting note: the definition of `SimplexCategory` is made irreducible below
-/-- Interpet a natural number as an object of the simplex category. -/
+/-- Interpret a natural number as an object of the simplex category. -/
 def mk (n : ℕ) : SimplexCategory :=
   n
 #align simplex_category.mk SimplexCategory.mk
@@ -174,7 +174,7 @@ theorem const_comp (x y : SimplexCategory) (i : Fin (x.len + 1)) (f : x ⟶ y) :
 #align simplex_category.const_comp SimplexCategory.const_comp
 
 /-- Make a morphism `[n] ⟶ [m]` from a monotone map between fin's.
-This is useful for constructing morphisms beetween `[n]` directly
+This is useful for constructing morphisms between `[n]` directly
 without identifying `n` with `[n].len`.
 -/
 @[simp]

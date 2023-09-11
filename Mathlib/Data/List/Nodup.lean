@@ -344,7 +344,7 @@ theorem nodup_bind {l₁ : List α} {f : α → List β} :
 #align list.nodup_bind List.nodup_bind
 
 protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l₂.Nodup) :
-    (l₁.product l₂).Nodup :=
+    (l₁ ×ˢ l₂).Nodup :=
   nodup_bind.2
     ⟨fun a _ => d₂.map <| LeftInverse.injective fun b => (rfl : (a, b).2 = b),
       d₁.imp fun {a₁ a₂} n x h₁ h₂ => by

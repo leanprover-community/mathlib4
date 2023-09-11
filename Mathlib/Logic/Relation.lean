@@ -586,7 +586,7 @@ pairs of terms are related if there is a third term they are both
 related to.  For example, if `r` is a relation representing rewrites
 in a term rewriting system, then *confluence* is the property that if
 `a` rewrites to both `b` and `c`, then `join r` relates `b` and `c`
-(see `relation.church_rosser`).
+(see `Relation.church_rosser`).
 -/
 def Join (r : α → α → Prop) : α → α → Prop := fun a b ↦ ∃ c, r a c ∧ r b c
 #align relation.join Relation.Join

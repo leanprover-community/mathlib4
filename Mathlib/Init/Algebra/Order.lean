@@ -44,6 +44,8 @@ class Preorder (α : Type u) extends LE α, LT α where
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   lt_iff_le_not_le : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 #align preorder Preorder
+#align preorder.to_has_le Preorder.toLE
+#align preorder.to_has_lt Preorder.toLT
 
 variable [Preorder α]
 

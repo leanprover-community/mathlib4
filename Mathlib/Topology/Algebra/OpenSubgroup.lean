@@ -198,7 +198,8 @@ def prod (U : OpenSubgroup G) (V : OpenSubgroup H) : OpenSubgroup (G × H) :=
 #align open_add_subgroup.sum OpenAddSubgroup.sum
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_prod (U : OpenSubgroup G) (V : OpenSubgroup H) : (U.prod V : Set (G × H)) = U ×ˢ V :=
+theorem coe_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
+    (U.prod V : Set (G × H)) = (U : Set G) ×ˢ (V : Set H) :=
   rfl
 #align open_subgroup.coe_prod OpenSubgroup.coe_prod
 #align open_add_subgroup.coe_sum OpenAddSubgroup.coe_sum

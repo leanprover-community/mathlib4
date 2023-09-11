@@ -379,7 +379,7 @@ def nlinarithExtras : GlobalPreprocessor where
 
 end nlinarith
 
--- TODO the `removeNe` preprocesor
+-- TODO the `removeNe` preprocessor
 section removeNe
 -- /--
 -- `remove_ne_aux` case splits on any proof `h : a ≠ b` in the input,

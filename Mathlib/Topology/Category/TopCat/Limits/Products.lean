@@ -32,7 +32,7 @@ namespace TopCat
 
 variable {J : Type v} [SmallCategory J]
 
-/-- The projection from the product as a bundled continous map. -/
+/-- The projection from the product as a bundled continuous map. -/
 abbrev piπ {ι : Type v} (α : ι → TopCatMax.{v, u}) (i : ι) : TopCat.of (∀ i, α i) ⟶ α i :=
   ⟨fun f => f i, continuous_apply i⟩
 #align Top.pi_π TopCat.piπ
@@ -87,7 +87,7 @@ theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCatMax.{v, u}) (i : ι)
 #align Top.pi_iso_pi_hom_apply TopCat.piIsoPi_hom_apply
 
 -- Porting note: Lean doesn't automatically reduce TopCat.of X|>.α to X now
-/-- The inclusion to the coproduct as a bundled continous map. -/
+/-- The inclusion to the coproduct as a bundled continuous map. -/
 abbrev sigmaι {ι : Type v} (α : ι → TopCatMax.{v,u}) (i : ι) : α i ⟶ TopCat.of (Σi, α i) := by
   refine ContinuousMap.mk ?_ ?_
   · dsimp

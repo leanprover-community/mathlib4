@@ -190,7 +190,7 @@ theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
 
 /-- The natural linear equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
 protected def lid (M : Type v) (ι : Type _ := PUnit) [AddCommMonoid M] [Module R M] [Unique ι] :
-    (⨁ _i : ι, M) ≃ₗ[R] M :=
+    (⨁ _ : ι, M) ≃ₗ[R] M :=
   { DirectSum.id M ι, toModule R ι M fun _ ↦ LinearMap.id with }
 #align direct_sum.lid DirectSum.lid
 

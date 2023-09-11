@@ -134,7 +134,7 @@ variable (J)
 theorem over_forget_locallyCoverDense (X : C) : LocallyCoverDense J (Over.forget X) := by
   intro Y T
   convert T.property
-  ext (Z f)
+  ext Z
   intro f
   constructor
   · rintro ⟨_, _, g', hg, rfl⟩

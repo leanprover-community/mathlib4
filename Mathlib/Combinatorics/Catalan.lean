@@ -159,7 +159,7 @@ open Tree
   left child in `a` and right child in `b` -/
 @[reducible]
 def pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
-  (a ×ᶠ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
+  (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
 #align tree.pairwise_node Tree.pairwiseNode
 
 /-- A Finset of all trees with `n` nodes. See `mem_treesOfNodesEq` -/

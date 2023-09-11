@@ -42,7 +42,7 @@ of finsets of morphisms.
 
 Furthermore, we give special support for two diagram categories: The `bowtie` and the `tulip`.
 This is because these shapes show up in the proofs that forgetful functors of algebraic categories
-(e.g. `Mon`, `CommRing`, ...) preserve filtered colimits.
+(e.g. `MonCat`, `CommRingCat`, ...) preserve filtered colimits.
 
 All of the above API, except for the `bowtie` and the `tulip`, is also provided for cofiltered
 categories.

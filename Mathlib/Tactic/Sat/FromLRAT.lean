@@ -598,7 +598,8 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
 * You can use the `include_str` macro in place of the two strings
   to load CNF / LRAT files from disk.
 -/
-elab "lrat_proof" n:(ident <|> "example") cnf:term:max lrat:term:max : command => do
+elab "lrat_proof " n:(ident <|> "example")
+    ppSpace cnf:term:max ppSpace lrat:term:max : command => do
   let name := (← getCurrNamespace) ++ if n.1.isIdent then n.1.getId else `_example
   Command.liftTermElabM do
     let cnf ← unsafe evalTerm String (mkConst ``String) cnf
@@ -652,7 +653,7 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
 * You can use the `include_str` macro in place of the two strings
   to load CNF / LRAT files from disk.
 -/
-elab "from_lrat" cnf:term:max lrat:term:max : term => do
+elab "from_lrat " cnf:term:max ppSpace lrat:term:max : term => do
   let cnf ← unsafe evalTerm String (mkConst ``String) cnf
   let lrat ← unsafe evalTerm String (mkConst ``String) lrat
   let name ← mkAuxName `lrat

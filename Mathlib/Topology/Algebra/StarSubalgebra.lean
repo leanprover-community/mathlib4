@@ -17,7 +17,7 @@ import Mathlib.Topology.Algebra.Star
 
 A topological star algebra over a topological semiring `R` is a topological semiring with a
 compatible continuous scalar multiplication by elements of `R` and a continuous star operation.
-We reuse typeclass `has_continuous_smul` for topological algebras.
+We reuse typeclass `ContinuousSMul` for topological algebras.
 
 ## Results
 

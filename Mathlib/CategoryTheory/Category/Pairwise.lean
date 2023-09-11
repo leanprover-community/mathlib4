@@ -24,7 +24,7 @@ We use this later in describing (one formulation of) the sheaf condition.
 
 Given any function `U : ι → α`, where `α` is some complete lattice (e.g. `(opens X)ᵒᵖ`),
 we produce a functor `Pairwise ι ⥤ α` in the obvious way,
-and show that `supr U` provides a colimit cocone over this functor.
+and show that `iSup U` provides a colimit cocone over this functor.
 -/
 
 
@@ -135,7 +135,7 @@ def diagramMap : ∀ {o₁ o₂ : Pairwise ι} (_ : o₁ ⟶ o₂), diagramObj U
 
 -- Porting note: the fields map_id and map_comp were filled by hand, as generating them by `aesop`
 -- causes a PANIC.
-/-- Given a function `U : ι → α` for `[SemilatticeInf α]`, we obtain a functor `pairwise ι ⥤ α`,
+/-- Given a function `U : ι → α` for `[SemilatticeInf α]`, we obtain a functor `Pairwise ι ⥤ α`,
 sending `single i` to `U i` and `pair i j` to `U i ⊓ U j`,
 and the morphisms to the obvious inequalities.
 -/

@@ -14,7 +14,7 @@ import Mathlib.Data.Finset.Lattice
 # Relations holding pairwise on finite sets
 
 In this file we prove a few results about the interaction of `Set.PairwiseDisjoint` and `Finset`,
-as well as the interaction of `List.Pairwise disjoint` and the condition of
+as well as the interaction of `List.Pairwise Disjoint` and the condition of
 `Disjoint` on `List.toFinset`, in `Set` form.
 -/
 

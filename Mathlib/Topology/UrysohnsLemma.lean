@@ -272,7 +272,7 @@ theorem continuous_lim (c : CU X) : Continuous c.lim := by
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hxl)]
       refine' (dist_midpoint_midpoint_le _ _ _ _).trans _
       rw [dist_self, add_zero, div_eq_inv_mul]
-      exact mul_le_mul h1234.le hyd dist_nonneg (h0.trans h1234).le
+      gcongr
     · replace hxl : x ∈ c.left.right.Cᶜ
       exact compl_subset_compl.2 c.left.right.subset hxl
       filter_upwards [IsOpen.mem_nhds (isOpen_compl_iff.2 c.left.right.closed_C) hxl,
@@ -287,11 +287,9 @@ theorem continuous_lim (c : CU X) : Continuous c.lim := by
       refine' (div_le_div_of_le_of_nonneg (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)
         zero_le_two).trans _
       rw [dist_self, zero_add]
-      refine' (div_le_div_of_le_of_nonneg (add_le_add (div_le_div_of_le_of_nonneg hydl zero_le_two)
-        hydr) zero_le_two).trans_eq _
-      generalize (3 / 4 : ℝ) ^ n = r
-      field_simp [two_ne_zero' ℝ]
-      ring
+      set r := (3 / 4 : ℝ) ^ n
+      calc _ ≤ (r / 2 + r) / 2 := by gcongr
+        _ = _ := by field_simp; ring
 #align urysohns.CU.continuous_lim Urysohns.CU.continuous_lim
 
 end CU

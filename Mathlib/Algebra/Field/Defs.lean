@@ -184,7 +184,7 @@ section IsField
 
 This is mainly useful because such a predicate does not contain data,
 and can therefore be easily transported along ring isomorphisms.
-Additionaly, this is useful when trying to prove that
+Additionally, this is useful when trying to prove that
 a particular ring structure extends to a (semi)field. -/
 structure IsField (R : Type u) [Semiring R] : Prop where
   /-- For a semiring to be a field, it must have two distinct elements. -/
