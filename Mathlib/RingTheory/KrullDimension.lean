@@ -416,8 +416,25 @@ Equiv.toOrderIso (PrimeSpectrum.IicToLocalizationAtPrimeEquiv 𝔭)
 The height of `𝔭` is equal to the Krull dimension of `localization.at_prime 𝔭.as_ideal`.
 -/
 theorem primeIdealHeight_eq_ringKrullDim_of_Localization :
-  height (PrimeSpectrum R) 𝔭 = ringKrullDim (Localization.AtPrime 𝔭.asIdeal) := by
-exact krullDim.eq_of_OrderIso (PrimeSpectrum.IicToLocalizationAtPrime_OrderIso 𝔭)
+  height (PrimeSpectrum R) 𝔭 = ringKrullDim (Localization.AtPrime 𝔭.asIdeal) :=
+let e := (IsLocalization.orderIsoOfPrime (𝔭.asIdeal.primeCompl)
+    (Localization.AtPrime 𝔭.asIdeal))
+krullDim.eq_of_OrderIso
+{ toFun := λ I ↦ let J := e.symm ⟨I.1.1, I.1.2, by
+      rw [Set.disjoint_iff_inter_eq_empty, Set.eq_empty_iff_forall_not_mem]
+      rintro r ⟨h1, h2⟩
+      exact h1 $ I.2 h2⟩
+    ⟨J.1, J.2⟩
+  invFun := λ J ↦ let I := e ⟨J.1, J.2⟩
+    ⟨⟨I.1, I.2.1⟩, λ r (hr : r ∈ I.1) ↦ not_not.mp $ Set.disjoint_right.mp I.2.2 hr⟩
+  left_inv := λ I ↦ by simp only [Subtype.coe_eta, OrderIso.apply_symm_apply]
+  right_inv := λ J ↦ by simp only [Subtype.coe_eta, OrderIso.symm_apply_apply]
+  map_rel_iff' := λ {I₁ I₂} ↦ by
+    convert e.symm.map_rel_iff (a := ⟨I₁.1.1, I₁.1.2, ?_⟩) (b := ⟨I₂.1.1, I₂.1.2, ?_⟩) using 1 <;>
+    rw [Set.disjoint_iff_inter_eq_empty, Set.eq_empty_iff_forall_not_mem] <;>
+    rintro r ⟨h1, h2⟩
+    · exact h1 $ I₁.2 h2
+    · exact h1 $ I₂.2 h2 }
 
 end aboutHeightAndLocalization
 
