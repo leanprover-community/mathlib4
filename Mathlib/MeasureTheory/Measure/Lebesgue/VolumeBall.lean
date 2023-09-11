@@ -326,7 +326,7 @@ theorem lintegral_I_sub_sq (n : ℕ) (c : ℝ) :
     · rw [I, dif_neg h]
     simp [h₁, h₂, h₃, -compl_insert, -mul_eq_zero, -zero_eq_mul]
 
-variable [Fintype ι]
+variable {ι : Type*} [Fintype ι]
 
 def A (R : ℝ) (s : Finset ι) (x : ι → ℝ) : ℝ≥0∞ :=
   B s.card * I s.card (R ^ 2 - ∑ j in sᶜ, x j ^ 2)
@@ -357,8 +357,10 @@ theorem sphere_aux_le_sphere_aux_insert {R : ℝ} (s : Finset ι) {i : ι} (hi :
           · refine measurable_coe_nnreal_ennreal.comp <| measurable_I.comp ?_
             exact measurable_const.sub <| measurable_id.pow_const _
 
+variable (ι)
+
 theorem sphere_aux_emptyset_eq_sphere_aux_univ (R : ℝ) :
-    (∫⋯∫_∅ᶜ, A R ∅) = ∫⋯∫_(univ : Finset ι)ᶜ, A R univ := by
+    (∫⋯∫_∅ᶜ, A R (∅ : Finset ι)) = ∫⋯∫_(univ : Finset ι)ᶜ, A R univ := by
   refine Finset.constant_of_eq_insert (fun s : Finset ι ↦ ∫⋯∫_sᶜ, A R s) ?_ ∅ univ
   apply sphere_aux_le_sphere_aux_insert
 
@@ -375,4 +377,4 @@ theorem volume_ball (R : ℝ≥0) :
     _ = ∫⁻ x : ι → ℝ, I 0 (R ^ 2 - ∑ i : ι, x i ^ 2) := by simp [apply_ite, Set.indicator_apply]
     _ = B (Fintype.card ι) * R ^ Fintype.card ι := by
           simpa [A, marginal_univ, marginal_empty, Finset.card_univ, -I_zero] using
-            congr_fun (sphere_aux_emptyset_eq_sphere_aux_univ R) (0 : ι → ℝ)
+            sphere_aux_emptyset_eq_sphere_aux_univ ι R

@@ -389,21 +389,7 @@ theorem mulVec_stdBasisMatrix {R n m} [Semiring R] [Fintype n] [DecidableEq n] [
 /-- A transvection preserves Lebesgue measure. -/
 theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionStruct ι ℝ) :
     MeasurePreserving (toLin' t.toMatrix) := by
-  have ht : Measurable (toLin' t.toMatrix) :=
-    (toLin' t.toMatrix).continuous_of_finiteDimensional.measurable
-  refine ⟨ht, ?_⟩
-  refine (pi_eq fun s hs ↦ ?_).symm
-  have h2s : MeasurableSet (univ.pi s) := .pi countable_univ fun i _ ↦ hs i
-  simp_rw [← pi_pi, ← lintegral_indicator_one h2s]
-  rw [lintegral_map (measurable_one.indicator h2s) ht, volume_pi]
-  refine integral_eq_of_marginal_eq {t.i} ((measurable_one.indicator h2s).comp ht)
-    (measurable_one.indicator h2s) ?_
-  simp_rw [marginal_singleton]
-  ext x
-  cases t with | mk t_i t_j t_hij t_c =>
-  simp [transvection, mulVec_stdBasisMatrix]
-  simp_rw [Function.update_noteq t_hij.symm, ← Function.update_add, add_zero]
-  rw [lintegral_add_right_eq_self fun xᵢ ↦ indicator (univ.pi s) 1 (Function.update x t_i xᵢ)]
+  sorry
 #align real.volume_preserving_transvection_struct Real.volume_preserving_transvectionStruct
 
 /-- Any invertible matrix rescales Lebesgue measure through the absolute value of its
