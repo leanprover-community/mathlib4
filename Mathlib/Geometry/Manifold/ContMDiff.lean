@@ -1642,7 +1642,7 @@ end Projections
 theorem contMDiffWithinAt_prod_iff (f : M → M' × N') {s : Set M} {x : M} :
     ContMDiffWithinAt I (I'.prod J') n f s x ↔
       ContMDiffWithinAt I I' n (Prod.fst ∘ f) s x ∧ ContMDiffWithinAt I J' n (Prod.snd ∘ f) s x :=
-  by refine' ⟨fun h => ⟨h.fst, h.snd⟩, fun h => _⟩; simpa only [Prod.mk.eta] using h.1.prod_mk h.2
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod_mk h.2⟩
 #align cont_mdiff_within_at_prod_iff contMDiffWithinAt_prod_iff
 
 theorem contMDiffAt_prod_iff (f : M → M' × N') {x : M} :
