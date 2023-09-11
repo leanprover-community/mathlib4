@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
+import Mathlib.FieldTheory.Subfield
 import Mathlib.Tactic.SetLike.Macro
 
 set_option autoImplicit true
@@ -11,9 +12,14 @@ in the library. They are only included here in order to determine whether this i
 good approach and to make testing easier.
 -/
 
-lemma ofNat_mem [Ring R] (S : Subring R) (n : ℕ) [n.AtLeastTwo] :
-    no_index (OfNat.ofNat (α := R) n) ∈ S := by
-  rw [←Nat.cast_eq_ofNat]; exact natCast_mem S n
+lemma ofNat_mem [AddMonoidWithOne R] [SetLike S R] [AddSubmonoidWithOneClass S R]
+    (s : S) (n : ℕ) [n.AtLeastTwo] :
+    no_index (OfNat.ofNat n) ∈ s := by
+  rw [←Nat.cast_eq_ofNat]; exact natCast_mem s n
+
+lemma ofScientific_mem [Field F] [SetLike S F] [SubfieldClass S F] (s : S) (b : Bool) (n m : ℕ) :
+    (OfScientific.ofScientific n b m : F) ∈ s :=
+  SubfieldClass.coe_rat_mem ..
 
 attribute [set_like]
   zero_mem
@@ -24,6 +30,8 @@ attribute [set_like]
   mul_mem
   zpow_mem
   pow_mem
+  div_mem
+  inv_mem
   star_mem
   algebraMap_mem
   nsmul_mem
@@ -31,6 +39,9 @@ attribute [set_like]
   natCast_mem
   coe_int_mem
   ofNat_mem
+  ofScientific_mem
+  SubfieldClass.coe_rat_mem
+  SubfieldClass.rat_smul_mem
 
 -- we want `nsmul_mem` and `zsmul_mem` to trigger before this
 attribute [aesop safe 2 apply (rule_sets [SetLike])] SMulMemClass.smul_mem
@@ -88,8 +99,11 @@ lemma NonUnitalStarAlgebra.mem_adjoin_of_mem (R : Type*) {A : Type*} [CommSemiri
     [NonUnitalSemiring A] [StarRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     [StarModule R A] (s : Set A) {x : A} (hx : x ∈ s) : x ∈ NonUnitalStarAlgebra.adjoin R s :=
   NonUnitalStarAlgebra.subset_adjoin R s hx
+theorem Subfield.mem_closure_of_mem {K : Type*} [Field K] {s : Set K} {x : K} (hx : x ∈ s) :
+    x ∈ Subfield.closure s :=
+  Subfield.subset_closure hx
 
-attribute [aesop 10% apply (rule_sets [SetLike])]
+attribute [aesop safe apply 3 (rule_sets [SetLike])]
   Subsemigroup.mem_closure_of_mem
   Submonoid.mem_closure_of_mem
   Subgroup.mem_closure_of_mem
@@ -128,4 +142,28 @@ example [Monoid M] (x y z w : M) (n : ℕ) : (x * y) ^ n * w ∈ Submonoid.closu
   set_like
 
 example [Group M] (x : M) (n : ℤ) : x ^ n ∈ Subgroup.closure {x} := by
+  set_like
+
+example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx : x ∈ S₁)
+    (hy : y ∈ S₁) (hz : z ∈ S₂) :
+    x * y * z ∈ S₂ := by
+  set_like
+
+example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx : x ∈ S₁)
+    (hy : y ∈ S₁) (hz : z ∈ S₂) :
+    x * y * z ∈ S₁ ⊔ S₂ := by
+  set_like
+
+
+example [Monoid M] (x y z : M) (S : Submonoid M) (hxy : x * y ∈ S)  (hz : z ∈ S) :
+    z * (x * y) ∈ S := by
+  set_like
+
+example [Field F] (S : Subfield F) (q : ℚ) : (q : F) ∈ S := by
+  set_like
+
+example [Field F] (S : Subfield F) : (1.2 : F) ∈ S := by
+  set_like
+
+example [Field F] (S : Subfield F) (x : F) (hx : x ∈ S) : ((12e-100 : F) • x⁻¹) ∈ S := by
   set_like
