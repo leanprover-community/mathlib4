@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Util.AssertExists
 
 #align_import algebra.group_with_zero.power from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
@@ -183,3 +184,6 @@ theorem div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
 #align div_sq_cancel div_sq_cancel
 
 end
+
+-- Guard against import creep regression.
+assert_not_exists Int.bitwise_or
