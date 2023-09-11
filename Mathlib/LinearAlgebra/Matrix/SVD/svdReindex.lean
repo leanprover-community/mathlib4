@@ -55,8 +55,8 @@ noncomputable def eigenColumnEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
     (Fin N) ≃ (Fin A.rank) ⊕ (Fin (N - A.rank)) := by
   let en := Equiv.sumCompl (fun i =>  (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0)
   let eₙᵣ : {i // ¬(isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} ≃ Fin (N - A.rank) :=
-    Fintype.equivFinOfCardEq
-      (by rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_conj_transpose_mul_self])
+    Fintype.equivFinOfCardEq (by rw [Fintype.card_subtype_compl, Fintype.card_fin,
+      rank_eq_card_pos_eigs_conj_transpose_mul_self])
   exact Equiv.trans en.symm  (Equiv.sumCongr (finRankEquivEigsConjTransposeMulSelf A).symm eₙᵣ)
 
 /-- For matrix of size m × n and rank A.rank : we have an bijeciton between the elements
@@ -69,8 +69,8 @@ noncomputable def eigenRowEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
   let eᵣ' : {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin A.rank :=
     Fintype.equivFinOfCardEq (by rw [rank_eq_card_pos_eigs_self_mul_conj_transpose])
   let eₘᵣ : {i // ¬(isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin (M - A.rank) :=
-    Fintype.equivFinOfCardEq
-      (by rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_self_mul_conj_transpose])
+    Fintype.equivFinOfCardEq (by rw [Fintype.card_subtype_compl, Fintype.card_fin,
+      rank_eq_card_pos_eigs_self_mul_conj_transpose])
   exact Equiv.trans em.symm  (Equiv.sumCongr eᵣ' eₘᵣ)
 
 /-- When the eigenvalues of the matrix Aᴴ⬝A are partitioned using
@@ -101,15 +101,5 @@ lemma eigen_eigenRowEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (M - A.ra
     apply Fintype.equivFinOfCardEq
     rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_self_mul_conj_transpose]
   exact Iff.mp Function.nmem_support ((eₘᵣ.symm i).prop)
-
-lemma enz_inj (A: Matrix (Fin M) (Fin N) 𝕂) (i j: Fin (N - A.rank)) :
-    ¬ (i = j) → (eigenColumnEquiv A).symm (Sum.inr i) ≠ (eigenColumnEquiv A).symm (Sum.inr j) := by
-  intros h
-  simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inr.injEq, h]
-
-lemma emz_inj (A: Matrix (Fin M) (Fin N) 𝕂) (i j: Fin (M - A.rank)) :
-    ¬ (i = j) → (eigenRowEquiv A).symm (Sum.inr i) ≠ (eigenRowEquiv A).symm (Sum.inr j) := by
-  intros h
-  simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inr.injEq, h]
 
 end Matrix
