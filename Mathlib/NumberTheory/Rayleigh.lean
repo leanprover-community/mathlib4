@@ -3,6 +3,7 @@ Copyright (c) 2023 Jason Yuen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jason Yuen
 -/
+import Mathlib.Data.Real.ConjugateExponents
 import Mathlib.Data.Real.Irrational
 
 /-!
@@ -16,6 +17,9 @@ This file proves Rayleigh's theorem on Beatty sequences.
   `B_r := {⌊r⌋, ⌊2r⌋, ⌊3r⌋, ...}`.
 * `rayleigh`: Rayleigh's theorem on Beatty sequences. Let `r` be an irrational real number greater
   than 1. Then every positive integer is in exactly one of `B_r` or `B_(r / (r - 1))`.
+* `rayleigh'`: Rayleigh's theorem on Beatty sequences. Let `r` and `s` be irrational real numbers
+  greater than 1, and satisfy `1/p + 1/q = 1`. Then every positive integer is in exactly one of
+  `B_r` or `B_s`.
 
 ## References
 
@@ -35,13 +39,13 @@ namespace Beatty
 variable {r} (hr₁ : r > 1) (hr₂ : Irrational r) {j k : ℤ} (hj : j > 0)
 
 theorem irrational_s :
-    r / (r - 1) > 1 ∧ Irrational (r / (r - 1)) := by
+    r.conjugateExponent > 1 ∧ Irrational r.conjugateExponent := by
   constructor
   · apply (lt_div_iff (sub_pos.2 hr₁)).2
     rw [one_mul]
     exact sub_one_lt r
   · convert ((hr₂.sub_int 1).int_div one_ne_zero).int_add 1 using 1
-    rw [Int.cast_one, add_div', one_mul, sub_add_cancel]
+    rw [Int.cast_one, add_div', one_mul, sub_add_cancel, Real.conjugateExponent]
     exact ne_of_gt (sub_pos.2 hr₁)
 
 theorem irrational_aux (hj : j ≠ 0) : (j : ℝ) ≠ k * r := by
@@ -62,14 +66,14 @@ theorem no_collision_aux (h : j = ⌊k * r⌋) : j / r < k ∧ k < (j + 1) / r :
 
 /-- Let `1 < r ∈ ℝ ∖ ℚ` and `s = r / (r - 1)`. Suppose there are integers `j > 0`, `k`, `m` such
 that `j = ⌊k * r⌋ = ⌊m * s⌋` (i.e. a collision). Then this leads to a contradiction. -/
-theorem no_collision : ¬∃ (j k m : ℤ), j > 0 ∧ j = ⌊k * r⌋ ∧ j = ⌊m * (r / (r - 1))⌋ := by
+theorem no_collision : ¬∃ (j k m : ℤ), j > 0 ∧ j = ⌊k * r⌋ ∧ j = ⌊m * r.conjugateExponent⌋ := by
   intro ⟨j, k, m, hj, h₁, h₂⟩
   have ⟨hs₁, hs₂⟩ := irrational_s hr₁ hr₂
   have ⟨h₁₁, h₁₂⟩ := no_collision_aux hr₁ hr₂ hj h₁
   have ⟨h₂₁, h₂₂⟩ := no_collision_aux hs₁ hs₂ hj h₂
-  have f (y : ℝ) : y / r + y / (r / (r - 1)) = y := by
+  have f (y : ℝ) : y / r + y / r.conjugateExponent = y := by
     have : r ≠ 0 := ne_of_gt (lt_trans zero_lt_one hr₁)
-    field_simp [mul_sub_left_distrib]
+    field_simp [Real.conjugateExponent, mul_sub_left_distrib]
   have h₃ : j < k + m := by
     have := add_lt_add_of_lt_of_lt h₁₁ h₂₁
     rwa [f, ← Int.cast_add, Int.cast_lt] at this
@@ -83,11 +87,11 @@ theorem no_collision : ¬∃ (j k m : ℤ), j > 0 ∧ j = ⌊k * r⌋ ∧ j = �
 `B_s` both jump over `j` (i.e. an anti-collision). Then this leads to a contradiction. -/
 theorem no_anticollision :
     ¬∃ (j k m : ℤ), j > 0 ∧ k * r < j ∧ j + 1 ≤ (k + 1) * r ∧
-      m * (r / (r - 1)) < j ∧ j + 1 ≤ (m + 1) * (r / (r - 1)) := by
+      m * r.conjugateExponent < j ∧ j + 1 ≤ (m + 1) * r.conjugateExponent := by
   have ⟨hs₁, hs₂⟩ := irrational_s hr₁ hr₂
-  have f (y : ℝ) : y / r + y / (r / (r - 1)) = y := by
+  have f (y : ℝ) : y / r + y / r.conjugateExponent = y := by
     have : r ≠ 0 := ne_of_gt (lt_trans zero_lt_one hr₁)
-    field_simp [mul_sub_left_distrib]
+    field_simp [Real.conjugateExponent, mul_sub_left_distrib]
   intro ⟨j, k, m, hj, h₁₁, h₁₂, h₂₁, h₂₂⟩
   have hj₁ : j + 1 ≠ 0 := by
     intro h
@@ -147,18 +151,26 @@ end Beatty
 Then every positive integer is in exactly one of `B_r` or `B_(r / (r - 1))`. -/
 theorem rayleigh {r : ℝ} (hr₁ : r > 1) (hr₂ : Irrational r) :
     ∀ {j : ℤ}, j > 0 →
-      (j ∈ beattySequence r ∧ j ∉ beattySequence (r / (r - 1))) ∨
-      (j ∉ beattySequence r ∧ j ∈ beattySequence (r / (r - 1))) := by
+      (j ∈ beattySequence r ∧ j ∉ beattySequence r.conjugateExponent) ∨
+      (j ∉ beattySequence r ∧ j ∈ beattySequence r.conjugateExponent) := by
   intro j hj
   by_cases h₁ : j ∈ beattySequence r
-  · by_cases h₂ : j ∈ beattySequence (r / (r - 1))
+  · by_cases h₂ : j ∈ beattySequence r.conjugateExponent
     · have ⟨k, _, h₃⟩ := h₁
       have ⟨m, _, h₄⟩ := h₂
       exact (Beatty.no_collision hr₁ hr₂ ⟨j, k, m, hj, h₃, h₄⟩).elim
     · exact Or.inl ⟨h₁, h₂⟩
-  · by_cases h₂ : j ∈ beattySequence (r / (r - 1))
+  · by_cases h₂ : j ∈ beattySequence r.conjugateExponent
     · exact Or.inr ⟨h₁, h₂⟩
     · have ⟨hs₁, hs₂⟩ := Beatty.irrational_s hr₁ hr₂
       have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hr₁ hr₂ hj).resolve_left h₁
       have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss hs₁ hs₂ hj).resolve_left h₂
       exact (Beatty.no_anticollision hr₁ hr₂ ⟨j, k, m, hj, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
+
+/-- Rayleigh's theorem on Beatty sequences. Let `r` and `s` be irrational real numbers greater than
+1, and satisfy `1/p + 1/q = 1`. Then every positive integer is in exactly one of `B_r` or `B_s`. -/
+theorem rayleigh' {r s : ℝ} (hr₁ : Real.IsConjugateExponent r s) (hr₂ : Irrational r) :
+    ∀ {j : ℤ}, j > 0 →
+      (j ∈ beattySequence r ∧ j ∉ beattySequence s) ∨
+      (j ∉ beattySequence r ∧ j ∈ beattySequence s) := by
+  convert @rayleigh _ hr₁.one_lt hr₂ <;> exact hr₁.conj_eq
