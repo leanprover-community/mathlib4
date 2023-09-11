@@ -8,6 +8,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Tactic.RSuffices
+import Mathlib.Tactic.WLOG
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Connected
 import Mathlib.Topology.NhdsSet
@@ -254,15 +256,14 @@ instance : T0Space (SeparationQuotient α) :=
 
 theorem minimal_nonempty_closed_subsingleton [T0Space α] {s : Set α} (hs : IsClosed s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsClosed t → t = s) : s.Subsingleton := by
+  clear β -- Porting note: added
   refine' fun x hx y hy => of_not_not fun hxy => _
   rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
-  -- porting note: used `wlog`:
-  -- wlog h : x ∈ U ∧ y ∉ U := hU using x y, y x; cases' h with hxU hyU
-  rcases hU with (⟨hxU, hyU⟩ | ⟨hyU, hxU⟩)
-  · have : s \ U = s := hmin (s \ U) (diff_subset _ _) ⟨y, hy, hyU⟩ (hs.sdiff hUo)
-    exact (this.symm.subset hx).2 hxU
-  · have : s \ U = s := hmin (s \ U) (diff_subset _ _) ⟨x, hx, hxU⟩ (hs.sdiff hUo)
-    exact (this.symm.subset hy).2 hyU
+  wlog h : x ∈ U ∧ y ∉ U
+  · refine this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
+  cases' h with hxU hyU
+  have : s \ U = s := hmin (s \ U) (diff_subset _ _) ⟨y, hy, hyU⟩ (hs.sdiff hUo)
+  exact (this.symm.subset hx).2 hxU
 #align minimal_nonempty_closed_subsingleton minimal_nonempty_closed_subsingleton
 
 theorem minimal_nonempty_closed_eq_singleton [T0Space α] {s : Set α} (hs : IsClosed s)
@@ -283,14 +284,14 @@ theorem IsClosed.exists_closed_singleton {α : Type _} [TopologicalSpace α] [T0
 
 theorem minimal_nonempty_open_subsingleton [T0Space α] {s : Set α} (hs : IsOpen s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsOpen t → t = s) : s.Subsingleton := by
-  refine fun x hx y hy => of_not_not fun hxy => ?_
-  rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, (⟨hxU, hyU⟩ | ⟨hyU, hxU⟩)⟩
-  -- porting note: used `wlog`
-  -- wlog h : x ∈ U ∧ y ∉ U := hU using x y, y x; cases' h with hxU hyU
-  · have : s ∩ U = s := hmin (s ∩ U) (inter_subset_left _ _) ⟨x, hx, hxU⟩ (hs.inter hUo)
-    exact hyU (this.symm.subset hy).2
-  · have : s ∩ U = s := hmin (s ∩ U) (inter_subset_left _ _) ⟨y, hy, hyU⟩ (hs.inter hUo)
-    exact hxU (this.symm.subset hx).2
+  clear β -- Porting note: added
+  refine' fun x hx y hy => of_not_not fun hxy => _
+  rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
+  wlog h : x ∈ U ∧ y ∉ U
+  · exact this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
+  cases' h with hxU hyU
+  have : s ∩ U = s := hmin (s ∩ U) (inter_subset_left _ _) ⟨x, hx, hxU⟩ (hs.inter hUo)
+  exact hyU (this.symm.subset hy).2
 #align minimal_nonempty_open_subsingleton minimal_nonempty_open_subsingleton
 
 theorem minimal_nonempty_open_eq_singleton [T0Space α] {s : Set α} (hs : IsOpen s)
@@ -306,9 +307,10 @@ theorem exists_open_singleton_of_open_finite [T0Space α] {s : Set α} (hfin : s
   rcases em (∃ t, t ⊂ s ∧ t.Nonempty ∧ IsOpen (t : Set α)) with (⟨t, hts, htne, hto⟩ | ht)
   · rcases ihs t hts htne hto with ⟨x, hxt, hxo⟩
     exact ⟨x, hts.1 hxt, hxo⟩
-  · suffices : ∃ x, s.toSet = {x} -- porting note: todo: use `rsuffices`
-    · rcases this with ⟨x, hx⟩
-      exact ⟨x, hx.symm ▸ rfl, hx ▸ ho⟩
+  · -- Porting note: was `rcases minimal_nonempty_open_eq_singleton ho hne _ with ⟨x, hx⟩`
+    --               https://github.com/leanprover/std4/issues/116
+    rsuffices ⟨x, hx⟩ : ∃ x, s.toSet = {x}
+    · exact ⟨x, hx.symm ▸ rfl, hx ▸ ho⟩
     refine minimal_nonempty_open_eq_singleton ho hne ?_
     refine' fun t hts htne hto => of_not_not fun hts' => ht _
     lift t to Finset α using s.finite_toSet.subset hts
@@ -350,7 +352,7 @@ instance {ι : Type _} {π : ι → Type _} [∀ i, TopologicalSpace (π i)] [�
 theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set α, x ∈ s ∧ y ∈ s ∧ T0Space s) :
     T0Space α := by
   refine' ⟨fun x y hxy => _⟩
-  rcases h x y hxy with ⟨s, hxs, hys, hs⟩; skip
+  rcases h x y hxy with ⟨s, hxs, hys, hs⟩
   lift x to s using hxs; lift y to s using hys
   rw [← subtype_inseparable_iff] at hxy
   exact congr_arg Subtype.val hxy.eq
@@ -404,7 +406,7 @@ theorem isOpen_setOf_eventually_nhdsWithin [T1Space α] {p : α → Prop} :
   refine' isOpen_iff_mem_nhds.mpr fun a ha => _
   filter_upwards [eventually_nhds_nhdsWithin.mpr ha] with b hb
   rcases eq_or_ne a b with rfl | h
-  ·  exact hb
+  · exact hb
   · rw [h.symm.nhdsWithin_compl_singleton] at hb
     exact hb.filter_mono nhdsWithin_le_nhds
 #align is_open_set_of_eventually_nhds_within isOpen_setOf_eventually_nhdsWithin

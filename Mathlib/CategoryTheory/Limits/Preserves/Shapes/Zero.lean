@@ -91,9 +91,9 @@ instance (priority := 100) preservesZeroMorphisms_of_isRightAdjoint (G : C ⥤ D
       G.map (0 : X ⟶ Y) = adj.unit.app (G.obj X) ≫ G.map (adj.counit.app X) ≫ G.map 0 := ?_
       _ = adj.unit.app (G.obj X) ≫ G.map ((leftAdjoint G).map (0 : _ ⟶ G.obj X)) ≫ G.map 0 := ?_
       _ = 0 := ?_
-    · rw [Adjunction.right_triangle_components_assoc]; simp only [id_obj,Category.id_comp]
+    · rw [Adjunction.right_triangle_components_assoc]
     · simp only [← G.map_comp, comp_zero]
-    · simp only [Adjunction.unit_naturality_assoc, zero_comp]
+    · simp only [id_obj, comp_obj, Adjunction.unit_naturality_assoc, zero_comp]
 #align category_theory.functor.preserves_zero_morphisms_of_is_right_adjoint CategoryTheory.Functor.preservesZeroMorphisms_of_isRightAdjoint
 
 instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F] :

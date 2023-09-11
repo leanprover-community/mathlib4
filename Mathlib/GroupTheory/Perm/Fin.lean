@@ -173,11 +173,11 @@ theorem cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
     cycleRange i j = if j = i then 0 else j + 1 := by
   cases n
   · exact Subsingleton.elim (α := Fin 1) _ _  --Porting note; was `simp`
-  have : j = (Fin.castLE (Nat.succ_le_of_lt i.is_lt)).toEmbedding
+  have : j = (Fin.castLE (Nat.succ_le_of_lt i.is_lt))
     ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ :=
     by simp
   ext
-  rw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
+  erw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
     Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
     viaFintypeEmbedding_apply_image, coe_castLE, coe_finRotate]
   simp only [Fin.ext_iff, val_last, val_mk, val_zero, Fin.eta, castLE_mk]

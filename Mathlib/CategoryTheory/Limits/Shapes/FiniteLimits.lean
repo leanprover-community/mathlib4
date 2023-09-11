@@ -91,7 +91,7 @@ This is often called 'finitely cocomplete'.
 -/
 class HasFiniteColimits : Prop where
   /-- `C` has all colimits over any type `J` whose objects and morphisms lie in the same universe
-  and which has `FinType` objects and morphisms-/
+  and which has `Fintype` objects and morphisms-/
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasColimitsOfShape J 𝒥 C _
 #align category_theory.limits.has_finite_colimits CategoryTheory.Limits.HasFiniteColimits
 
@@ -213,12 +213,12 @@ instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
 
 end WidePushoutShape
 
-instance finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J)
-    where fintypeHom := WidePullbackShape.fintypeHom
+instance finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J) where
+  fintypeHom := WidePullbackShape.fintypeHom
 #align category_theory.limits.fin_category_wide_pullback CategoryTheory.Limits.finCategoryWidePullback
 
-instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J)
-    where fintypeHom := WidePushoutShape.fintypeHom
+instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) where
+  fintypeHom := WidePushoutShape.fintypeHom
 #align category_theory.limits.fin_category_wide_pushout CategoryTheory.Limits.finCategoryWidePushout
 
 -- We can't just made this an `abbreviation`

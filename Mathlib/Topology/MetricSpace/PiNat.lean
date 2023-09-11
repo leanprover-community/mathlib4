@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module topology.metric_space.pi_nat
-! leanprover-community/mathlib commit e1a7bdeb4fd826b7e71d130d34988f0a2d26a177
+! leanprover-community/mathlib commit 49b7f94aab3a3bdca1f9f34c5d818afb253b3993
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -192,6 +192,69 @@ theorem update_mem_cylinder (x : ∀ n, E n) (n : ℕ) (y : E n) : update x n y 
   mem_cylinder_iff.2 fun i hi => by simp [hi.ne]
 #align pi_nat.update_mem_cylinder PiNat.update_mem_cylinder
 
+section Res
+
+variable {α : Type _}
+
+open List
+
+/-- In the case where `E` has constant value `α`,
+the cylinder `cylinder x n` can be identified with the element of `List α`
+consisting of the first `n` entries of `x`. See `cylinder_eq_res`.
+We call this list `res x n`, the restriction of `x` to `n`.-/
+def res (x : ℕ → α) : ℕ → List α
+  | 0 => nil
+  | Nat.succ n => x n :: res x n
+#align pi_nat.res PiNat.res
+
+@[simp]
+theorem res_zero (x : ℕ → α) : res x 0 = @nil α :=
+  rfl
+#align pi_nat.res_zero PiNat.res_zero
+
+@[simp]
+theorem res_succ (x : ℕ → α) (n : ℕ) : res x n.succ = x n :: res x n :=
+  rfl
+#align pi_nat.res_succ PiNat.res_succ
+
+@[simp]
+theorem res_length (x : ℕ → α) (n : ℕ) : (res x n).length = n := by induction n <;> simp [*]
+#align pi_nat.res_length PiNat.res_length
+
+/-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`.-/
+theorem res_eq_res {x y : ℕ → α} {n : ℕ} :
+    res x n = res y n ↔ ∀ ⦃m⦄, m < n → x m = y m := by
+  constructor <;> intro h <;> induction' n with n ih; · simp
+  · intro m hm
+    rw [Nat.lt_succ_iff_lt_or_eq] at hm
+    simp only [res_succ, cons.injEq] at h
+    cases' hm with hm hm
+    · exact ih h.2 hm
+    rw [hm]
+    exact h.1
+  · simp
+  simp only [res_succ, cons.injEq]
+  refine' ⟨h (Nat.lt_succ_self _), ih fun m hm => _⟩
+  exact h (hm.trans (Nat.lt_succ_self _))
+#align pi_nat.res_eq_res PiNat.res_eq_res
+
+theorem res_injective : Injective (@res α) := by
+  intro x y h
+  ext n
+  apply res_eq_res.mp _ (Nat.lt_succ_self _)
+  rw [h]
+#align pi_nat.res_injective PiNat.res_injective
+
+/-- `cylinder x n` is equal to the set of sequences `y` with the same restriction to `n` as `x`.-/
+theorem cylinder_eq_res (x : ℕ → α) (n : ℕ) :
+    cylinder x n = { y | res y n = res x n } := by
+  ext y
+  dsimp [cylinder]
+  rw [res_eq_res]
+#align pi_nat.cylinder_eq_res PiNat.cylinder_eq_res
+
+end Res
+
 /-!
 ### A distance function on `Π n, E n`
 
@@ -297,12 +360,16 @@ theorem lipschitz_with_one_iff_forall_dist_image_le_of_mem_cylinder {α : Type _
 variable (E)
 variable [∀ n, TopologicalSpace (E n)] [∀ n, DiscreteTopology (E n)]
 
+theorem isOpen_cylinder (x : ∀ n, E n) (n : ℕ) : IsOpen (cylinder x n) := by
+  rw [PiNat.cylinder_eq_pi]
+  exact isOpen_set_pi (Finset.range n).finite_toSet fun a _ => isOpen_discrete _
+#align pi_nat.is_open_cylinder PiNat.isOpen_cylinder
+
 theorem isTopologicalBasis_cylinders :
     IsTopologicalBasis { s : Set (∀ n, E n) | ∃ (x : ∀ n, E n)(n : ℕ), s = cylinder x n } := by
   apply isTopologicalBasis_of_open_of_nhds
   · rintro u ⟨x, n, rfl⟩
-    rw [cylinder_eq_pi]
-    exact isOpen_set_pi (Finset.range n).finite_toSet fun a _ => isOpen_discrete _
+    apply isOpen_cylinder
   · intro x u hx u_open
     obtain ⟨v, ⟨U, F, -, rfl⟩, xU, Uu⟩ :
         ∃ v ∈ { S : Set (∀ i : ℕ, E i) | ∃ (U : ∀ i : ℕ, Set (E i)) (F : Finset ℕ),

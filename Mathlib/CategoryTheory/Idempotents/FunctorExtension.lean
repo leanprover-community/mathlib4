@@ -278,13 +278,12 @@ lemma isEquivalence_whiskeringLeft_obj_toKaroubi_aux :
 
 noncomputable instance : IsEquivalence ((whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)) :=
   IsEquivalence.cancelCompRight _
-    ((whiskeringRight C _ _).obj (toKaroubi D) ⋙ (whiskeringRight C _ _).obj (toKaroubi D).inv)
-    (IsEquivalence.ofEquivalence
-      (@Equivalence.congrRight _ _ _ _ C _
-        ((toKaroubi D).asEquivalence.trans (toKaroubi D).asEquivalence.symm)))
-    (by
-      rw [isEquivalence_whiskeringLeft_obj_toKaroubi_aux]
-      infer_instance)
+  ((whiskeringRight C _ _).obj (toKaroubi D) ⋙ (whiskeringRight C _ _).obj (toKaroubi D).inv)
+  (IsEquivalence.ofEquivalence <| (toKaroubi D).asEquivalence.congrRight.trans
+    (toKaroubi D).asEquivalence.symm.congrRight)
+  (by
+    rw [isEquivalence_whiskeringLeft_obj_toKaroubi_aux]
+    infer_instance)
 
 variable {C D}
 

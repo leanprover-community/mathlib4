@@ -180,7 +180,7 @@ def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
 /-- Gets the set of all cached files -/
 def getLocalCacheSet : IO $ Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "gz"
-  return .ofList (paths.data.map (·.withoutParent CACHEDIR |>.toString))
+  return .fromList (paths.data.map (·.withoutParent CACHEDIR |>.toString)) _
 
 def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with

@@ -244,6 +244,15 @@ def Simps.apply (h : r ↪r s) : α → β :=
 
 initialize_simps_projections RelEmbedding (toFun → apply)
 
+@[simp]
+theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β)  = f :=
+  rfl
+#align rel_embedding.coe_fn_to_embedding RelEmbedding.coe_toEmbedding
+
+@[simp]
+theorem coe_toRelHom : ((f : r ↪r s).toRelHom : α → β) = f :=
+  rfl
+
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
 #align rel_embedding.injective RelEmbedding.injective
@@ -257,8 +266,10 @@ theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_embedding.map_rel_iff RelEmbedding.map_rel_iff
 
-#noalign coe_fn_mk
-#noalign coe_fn_to_embedding
+@[simp]
+theorem coe_mk : ⇑(⟨f, h⟩ : r ↪r s) = f :=
+  rfl
+#align rel_embedding.coe_fn_mk RelEmbedding.coe_mk
 
 /-- The map `coe_fn : (r ↪r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun f : r ↪r s => (f : α → β) :=
@@ -586,12 +597,13 @@ def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod
 #align rel_embedding.prod_lex_mk_right RelEmbedding.prodLexMkRight
 #align rel_embedding.prod_lex_mk_right_apply RelEmbedding.prodLexMkRight_apply
 
+set_option synthInstance.etaExperiment true
 /-- `Prod.map` as a relation embedding. -/
 @[simps]
 def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u where
   toFun := Prod.map f g
   inj' := f.injective.Prod_map g.injective
-  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff]
+  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff, f.inj]
 #align rel_embedding.prod_lex_map RelEmbedding.prodLexMap
 #align rel_embedding.prod_lex_map_apply RelEmbedding.prodLexMap_apply
 
@@ -819,7 +831,8 @@ lexicographic orders on the product.
 -/
 def prodLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso α₁ β₁ r₁ s₁) (e₂ : @RelIso α₂ β₂ r₂ s₂) :
     Prod.Lex r₁ r₂ ≃r Prod.Lex s₁ s₂ :=
-  ⟨Equiv.prodCongr e₁.toEquiv e₂.toEquiv, by simp [Prod.lex_def, e₁.map_rel_iff, e₂.map_rel_iff]⟩
+  ⟨Equiv.prodCongr e₁.toEquiv e₂.toEquiv, by simp [Prod.lex_def, e₁.map_rel_iff, e₂.map_rel_iff,
+    e₁.injective.eq_iff]⟩
 #align rel_iso.prod_lex_congr RelIso.prodLexCongr
 
 /-- Two relations on empty types are isomorphic. -/

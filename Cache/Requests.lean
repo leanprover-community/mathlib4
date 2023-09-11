@@ -81,9 +81,11 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
   else IO.println "No files to download"
 
 /-- Downloads missing files, and unpacks files. -/
-def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
+def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) (decompress : Bool) :
+    IO Unit := do
   downloadFiles hashMap forceDownload parallel
-  IO.unpackCache hashMap
+  if decompress then
+    IO.unpackCache hashMap
 
 end Get
 

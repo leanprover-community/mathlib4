@@ -84,11 +84,10 @@ def conesEquivSieveCompatibleFamily :
     (S.arrows.diagram.op ⋙ P).cones.obj E ≃
       { x : FamilyOfElements (P ⋙ coyoneda.obj E) (S : Presieve X) // x.SieveCompatible } where
   toFun π :=
-    ⟨fun Y f h => π.app (op ⟨Over.mk f, h⟩), fun _ => by
-      intros
+    ⟨fun Y f h => π.app (op ⟨Over.mk f, h⟩), fun X Y f g hf => by
       apply (id_comp _).symm.trans
       dsimp
-      convert π.naturality (Quiver.Hom.op (Over.homMk _ _)) <;> rfl⟩
+      exact π.naturality (Quiver.Hom.op (Over.homMk _ (by rfl)))⟩
   invFun x :=
     { app := fun f => x.1 f.unop.1.hom f.unop.2
       naturality := fun f f' g => by
@@ -96,7 +95,7 @@ def conesEquivSieveCompatibleFamily :
         dsimp
         rw [id_comp]
         convert rfl
-        rw [Over.w g.unop] }
+        rw [Over.w] }
   left_inv π := rfl
   right_inv x := rfl
 #align category_theory.presheaf.cones_equiv_sieve_compatible_family CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily

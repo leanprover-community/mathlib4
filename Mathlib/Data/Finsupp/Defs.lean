@@ -1140,7 +1140,7 @@ then they are equal.
 We formulate this using equality of `AddMonoidHom`s so that `ext` tactic can apply a type-specific
 extensionality lemma after this one.  E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
 verify `f (single a 1) = g (single a 1)`. -/
-@[ext]
+@[ext high]
 theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
   addHom_ext fun x => FunLike.congr_fun (H x)

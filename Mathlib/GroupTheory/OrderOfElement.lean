@@ -36,9 +36,7 @@ order of an element
 -/
 
 
-open Function Nat
-
-open Pointwise
+open Function Nat Pointwise
 
 universe u v
 
@@ -61,7 +59,7 @@ theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt ((· * ·) x) n 1
 
 /-- `IsOfFinOrder` is a predicate on an element `x` of a monoid to be of finite order, i.e. there
 exists `n ≥ 1` such that `x ^ n = 1`.-/
-@[to_additive "`isOfFinAddOrder` is a predicate on an element `a` of an
+@[to_additive "`IsOfFinAddOrder` is a predicate on an element `a` of an
 additive monoid to be of finite order, i.e. there exists `n ≥ 1` such that `n • a = 0`."]
 def IsOfFinOrder (x : G) : Prop :=
   (1 : G) ∈ periodicPts ((· * ·) x)
@@ -134,8 +132,8 @@ end IsOfFinOrder
 /-- `orderOf x` is the order of the element `x`, i.e. the `n ≥ 1`, s.t. `x ^ n = 1` if it exists.
 Otherwise, i.e. if `x` is of infinite order, then `orderOf x` is `0` by convention.-/
 @[to_additive
-  "`add_order_of a` is the order of the element `a`, i.e. the `n ≥ 1`, s.t. `n • a = 0` if it
-  exists. Otherwise, i.e. if `a` is of infinite order, then `add_order_of a` is `0` by convention."]
+  "`addOrderOf a` is the order of the element `a`, i.e. the `n ≥ 1`, s.t. `n • a = 0` if it
+  exists. Otherwise, i.e. if `a` is of infinite order, then `addOrderOf a` is `0` by convention."]
 noncomputable def orderOf (x : G) : ℕ :=
   minimalPeriod (x * .) 1
 #align order_of orderOf
@@ -430,7 +428,7 @@ theorem isOfFinOrder_mul (hx : IsOfFinOrder x) (hy : IsOfFinOrder y) : IsOfFinOr
   with `y`, then `x * y` has the same order as `y`. -/
 @[to_additive addOrderOf_add_eq_right_of_forall_prime_mul_dvd
   "If each prime factor of
-  `add_order_of x` has higher multiplicity in `add_order_of y`, and `x` commutes with `y`,
+  `addOrderOf x` has higher multiplicity in `addOrderOf y`, and `x` commutes with `y`,
   then `x + y` has the same order as `y`."]
 theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (hy : IsOfFinOrder y)
     (hdvd : ∀ p : ℕ, p.Prime → p ∣ orderOf x → p * orderOf x ∣ orderOf y) :
@@ -705,7 +703,7 @@ theorem exists_pow_eq_one [Finite G] (x : G) : IsOfFinOrder x := by
 
 /-- This is the same as `orderOf_pos'` but with one fewer explicit assumption since this is
   automatic in case of a finite cancellative monoid.-/
-@[to_additive "This is the same as `add_order_of_pos' but with one fewer explicit
+@[to_additive "This is the same as `addOrderOf_pos' but with one fewer explicit
 assumption since this is automatic in case of a finite cancellative additive monoid."]
 theorem orderOf_pos [Finite G] (x : G) : 0 < orderOf x :=
   orderOf_pos' (exists_pow_eq_one x)
@@ -716,8 +714,8 @@ open Nat
 
 /-- This is the same as `orderOf_pow'` and `orderOf_pow''` but with one assumption less which is
 automatic in the case of a finite cancellative monoid.-/
-@[to_additive "This is the same as `add_order_of_nsmul'` and
-`add_order_of_nsmul` but with one assumption less which is automatic in the case of a
+@[to_additive "This is the same as `addOrderOf_nsmul'` and
+`addOrderOf_nsmul` but with one assumption less which is automatic in the case of a
 finite cancellative additive monoid."]
 theorem orderOf_pow [Finite G] (x : G) : orderOf (x ^ n) = orderOf x / gcd (orderOf x) n :=
   orderOf_pow'' _ _ (exists_pow_eq_one _)
@@ -739,8 +737,8 @@ noncomputable instance decidablePowers : DecidablePred (· ∈ Submonoid.powers 
 
 /-- The equivalence between `Fin (orderOf x)` and `Submonoid.powers x`, sending `i` to `x ^ i`."-/
 @[to_additive finEquivMultiples
-  "The equivalence between `fin (add_order_of a)` and
-  `add_submonoid.multiples a`, sending `i` to `i • a`."]
+  "The equivalence between `Fin (addOrderOf a)` and
+  `AddSubmonoid.multiples a`, sending `i` to `i • a`."]
 noncomputable def finEquivPowers [Finite G] (x : G) :
     Fin (orderOf x) ≃ (Submonoid.powers x : Set G) :=
   Equiv.ofBijective (fun n => ⟨x ^ (n:ℕ), ⟨n, rfl⟩⟩)
@@ -847,8 +845,8 @@ noncomputable instance decidableZpowers : DecidablePred (· ∈ Subgroup.zpowers
 #align decidable_zmultiples decidableZmultiples
 
 /-- The equivalence between `Fin (orderOf x)` and `Subgroup.zpowers x`, sending `i` to `x ^ i`. -/
-@[to_additive finEquivZmultiples "The equivalence between `fin (add_order_of a)` and
-`subgroup.zmultiples a`, sending `i` to `i • a`."]
+@[to_additive finEquivZmultiples "The equivalence between `Fin (addOrderOf a)` and
+`Subgroup.zmultiples a`, sending `i` to `i • a`."]
 noncomputable def finEquivZpowers [Finite G] (x : G) :
     Fin (orderOf x) ≃ (Subgroup.zpowers x : Set G) :=
   (finEquivPowers x).trans (Equiv.Set.ofEq (powers_eq_zpowers x))
@@ -873,7 +871,7 @@ theorem finEquivZpowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : �
 /-- The equivalence between `Subgroup.zpowers` of two elements `x, y` of the same order, mapping
   `x ^ i` to `y ^ i`. -/
 @[to_additive zmultiplesEquivZmultiples
-  "The equivalence between `subgroup.zmultiples` of two elements `a, b` of the same additive order,
+  "The equivalence between `Subgroup.zmultiples` of two elements `a, b` of the same additive order,
   mapping `i • a` to `i • b`."]
 noncomputable def zpowersEquivZpowers [Finite G] (h : orderOf x = orderOf y) :
     (Subgroup.zpowers x : Set G) ≃ (Subgroup.zpowers y : Set G) :=

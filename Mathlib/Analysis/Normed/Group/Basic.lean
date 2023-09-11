@@ -303,15 +303,14 @@ creates bad definitional equalities (e.g., it does not take into account a possi
 and the pseudometric space structure from the seminorm properties. Note that in most cases this
 instance creates bad definitional equalities (e.g., it does not take into account a possibly
 existing `UniformSpace` instance on `E`)."]
-def GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : SeminormedGroup E
-    where
+def GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : SeminormedGroup E where
   dist x y := f (x / y)
   norm := f
   dist_eq x y := rfl
   dist_self x := by simp only [div_self', map_one_eq_zero]
   dist_triangle := le_map_div_add_map_div f
   dist_comm := map_div_rev f
-  edist_dist := fun x y => (ENNReal.ofReal_eq_coe_nnreal (map_nonneg f (x / y))).symm
+  edist_dist x y := by exact ENNReal.coe_nnreal_eq _
   -- porting note: how did `mathlib3` solve this automatically?
 #align group_seminorm.to_seminormed_group GroupSeminorm.toSeminormedGroup
 #align add_group_seminorm.to_seminormed_add_group AddGroupSeminorm.toSeminormedAddGroup

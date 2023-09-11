@@ -591,6 +591,14 @@ theorem _root_.IsClosed.not_mem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempt
   simp [h.mem_iff_infDist_zero hs, infDist_nonneg.gt_iff_ne]
 #align is_closed.not_mem_iff_inf_dist_pos IsClosed.not_mem_iff_infDist_pos
 
+-- porting note: new lemma
+theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
+    ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by
+  rcases s.eq_empty_or_nonempty with (rfl | hs)
+  · simp only [infDist_empty, continuousAt_const]
+  · refine (continuous_infDist_pt s).continuousAt.inv₀ ?_
+    rwa [Ne.def, ← mem_closure_iff_infDist_zero hs]
+
 /-- The infimum distance is invariant under isometries -/
 theorem infDist_image (hΦ : Isometry Φ) : infDist (Φ x) (Φ '' t) = infDist x t := by
   simp [infDist, infEdist_image hΦ]

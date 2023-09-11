@@ -121,8 +121,8 @@ theorem rank_tensorProduct :
 
 /-- If `M` and `N` lie in the same universe, the rank of `M ⊗[R] N` is
   `(Module.rank R M) * (Module.rank R N)`. -/
-theorem rank_tensor_product' (N : Type v) [AddCommGroup N] [Module R N] [Module.Free R N] :
+theorem rank_tensorProduct' (N : Type v) [AddCommGroup N] [Module R N] [Module.Free R N] :
     Module.rank R (M ⊗[R] N) = Module.rank R M * Module.rank R N := by simp
-#align rank_tensor_product' rank_tensor_product'
+#align rank_tensor_product' rank_tensorProduct'
 
 end CommRing

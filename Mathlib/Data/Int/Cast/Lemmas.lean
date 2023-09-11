@@ -228,7 +228,7 @@ variable {A : Type _}
 
 /-- Two additive monoid homomorphisms `f`, `g` from `ℤ` to an additive monoid are equal
 if `f 1 = g 1`. -/
-@[ext]
+@[ext high]
 theorem ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
   have : f.comp (Int.ofNatHom : ℕ →+ ℤ) = g.comp (Int.ofNatHom : ℕ →+ ℤ) := ext_nat' _ _ h1
   have this' : ∀ n : ℕ, f n = g n := FunLike.ext_iff.1 this

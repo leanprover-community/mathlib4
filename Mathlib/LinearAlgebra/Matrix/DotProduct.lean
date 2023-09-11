@@ -37,7 +37,7 @@ variable {R : Type v} {n : Type w}
 
 namespace Matrix
 
-section semiring
+section Semiring
 
 variable [Semiring R] [Fintype n]
 
@@ -72,9 +72,9 @@ theorem dotProduct_eq_zero_iff {v : n → R} : (∀ w, dotProduct v w = 0) ↔ v
   ⟨fun h => dotProduct_eq_zero v h, fun h w => h.symm ▸ zero_dotProduct w⟩
 #align matrix.dot_product_eq_zero_iff Matrix.dotProduct_eq_zero_iff
 
-end semiring
+end Semiring
 
-section self
+section Self
 
 variable [Fintype n]
 
@@ -100,6 +100,6 @@ theorem dotProduct_self_star_eq_zero [PartialOrder R] [NonUnitalRing R] [StarOrd
     by simp [Function.funext_iff, mul_eq_zero]
 #align matrix.dot_product_self_star_eq_zero Matrix.dotProduct_self_star_eq_zero
 
-end self
+end Self
 
 end Matrix

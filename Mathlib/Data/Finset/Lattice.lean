@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.lattice
-! leanprover-community/mathlib commit 1c857a1f6798cb054be942199463c2cf904cb937
+! leanprover-community/mathlib commit a968611b6a772cf7bdf61146e6d62fc882c92372
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -112,6 +112,9 @@ theorem sup_const_le : (s.sup fun _ => a) ≤ a :=
 theorem le_sup {b : β} (hb : b ∈ s) : f b ≤ s.sup f :=
   Finset.sup_le_iff.1 le_rfl _ hb
 #align finset.le_sup Finset.le_sup
+
+theorem le_sup_of_le {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup f := h.trans <| le_sup hb
+#align finset.le_sup_of_le Finset.le_sup_of_le
 
 @[simp]
 theorem sup_bunionᵢ [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
@@ -387,6 +390,9 @@ theorem le_inf_const_le : a ≤ s.inf fun _ => a :=
 theorem inf_le {b : β} (hb : b ∈ s) : s.inf f ≤ f b :=
   Finset.le_inf_iff.1 le_rfl _ hb
 #align finset.inf_le Finset.inf_le
+
+theorem inf_le_of_le {b : β} (hb : b ∈ s) (h : f b ≤ a) : s.inf f ≤ a := (inf_le hb).trans h
+#align finset.inf_le_of_le Finset.inf_le_of_le
 
 theorem inf_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.inf f ≤ s.inf g :=
   Finset.le_inf fun b hb => le_trans (inf_le hb) (h b hb)
@@ -702,6 +708,10 @@ theorem le_sup' {b : β} (h : b ∈ s) : f b ≤ s.sup' ⟨b, h⟩ f := by
   exact le_sup (f := fun c => WithBot.some (f c)) h
 #align finset.le_sup' Finset.le_sup'
 
+theorem le_sup'_of_le {a : α} {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup' ⟨b, hb⟩ f :=
+  h.trans <| le_sup' _ hb
+#align finset.le_sup'_of_le Finset.le_sup'_of_le
+
 @[simp]
 theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
   apply le_antisymm
@@ -822,6 +832,9 @@ theorem le_inf' {a : α} (hs : ∀ b ∈ s, a ≤ f b) : a ≤ s.inf' H f :=
 theorem inf'_le {b : β} (h : b ∈ s) : s.inf' ⟨b, h⟩ f ≤ f b :=
   le_sup' (α := αᵒᵈ) f h
 #align finset.inf'_le Finset.inf'_le
+
+theorem inf'_le_of_le (hb : b ∈ s) (h : f b ≤ a) : s.inf' ⟨b, hb⟩ f ≤ a := (inf'_le _ hb).trans h
+#align finset.inf'_le_of_le Finset.inf'_le_of_le
 
 @[simp]
 theorem inf'_const (a : α) : (s.inf' H fun _ => a) = a :=

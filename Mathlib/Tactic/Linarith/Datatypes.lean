@@ -284,8 +284,8 @@ tracing the result if `trace.linarith` is on.
 def GlobalBranchingPreprocessor.process (pp : GlobalBranchingPreprocessor)
   (g : MVarId) (l : List Expr) : MetaM (List Branch) := do
   let branches ← pp.transform g l
-  if (branches.length > 1) then
-    trace[linarith] m!"Preprocessing: {pp.name} has branched, with branches:"
+  if branches.length > 1 then
+    trace[linarith] "Preprocessing: {pp.name} has branched, with branches:"
   for ⟨goal, hyps⟩ in branches do
     goal.withContext do
       linarithTraceProofs m!"Preprocessing: {pp.name}" hyps
@@ -330,9 +330,9 @@ structure LinarithConfig : Type where
   /-- Transparency mode for identifying atomic expressions in comparisons. -/
   transparency : TransparencyMode := .reducible
   /-- Split conjunctions in hypotheses. -/
-  split_hypotheses : Bool := true
+  splitHypotheses : Bool := true
   /-- Split `≠` in hypotheses, by branching in cases `<` and `>`. -/
-  split_ne : Bool := false
+  splitNe : Bool := false
   /-- Override the list of preprocessors. -/
   preprocessors : Option (List GlobalBranchingPreprocessor) := none
   /-- Specify an oracle for identifying candidate contradictions.

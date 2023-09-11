@@ -19,7 +19,7 @@ import Mathlib.SetTheory.Cardinal.Basic
 * `Nat.card α` is the cardinality of `α` as a natural number.
   If `α` is infinite, `Nat.card α = 0`.
 * `PartENat.card α` is the cardinality of `α` as an extended natural number
-  (Part ℕ` implementation). If `α` is infinite, `PartENat.card α = ⊤`.
+  (using `Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
 
@@ -104,14 +104,14 @@ theorem card_prod (α β : Type _) : Nat.card (α × β) = Nat.card α * Nat.car
 #align nat.card_prod Nat.card_prod
 
 @[simp]
-theorem card_uLift (α : Type _) : Nat.card (ULift α) = Nat.card α :=
+theorem card_ulift (α : Type _) : Nat.card (ULift α) = Nat.card α :=
   card_congr Equiv.ulift
-#align nat.card_ulift Nat.card_uLift
+#align nat.card_ulift Nat.card_ulift
 
 @[simp]
-theorem card_pLift (α : Type _) : Nat.card (PLift α) = Nat.card α :=
+theorem card_plift (α : Type _) : Nat.card (PLift α) = Nat.card α :=
   card_congr Equiv.plift
-#align nat.card_plift Nat.card_pLift
+#align nat.card_plift Nat.card_plift
 
 theorem card_pi {β : α → Type _} [Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
   simp_rw [Nat.card, mk_pi, prod_eq_of_fintype, toNat_lift, toNat_finset_prod]
@@ -123,11 +123,11 @@ theorem card_fun [Finite α] : Nat.card (α → β) = Nat.card β ^ Nat.card α 
 #align nat.card_fun Nat.card_fun
 
 @[simp]
-theorem card_zMod (n : ℕ) : Nat.card (ZMod n) = n := by
+theorem card_zmod (n : ℕ) : Nat.card (ZMod n) = n := by
   cases n
   · exact @Nat.card_eq_zero_of_infinite _ Int.infinite
   · rw [Nat.card_eq_fintype_card, ZMod.card]
-#align nat.card_zmod Nat.card_zMod
+#align nat.card_zmod Nat.card_zmod
 
 end Nat
 

@@ -53,6 +53,11 @@ example (x y : β) (h : y < x) : ¬(x ≤ y) := by
   guard_target = y < x
   exact h
 
+example (a b : β) (h : a ≤ b) : ¬ a > b := by
+  push_neg
+  guard_target = a ≤ b
+  exact h
+
 example (x y : α) (h : x = y) : ¬ (x ≠ y) := by
   push_neg
   guard_target = x = y
