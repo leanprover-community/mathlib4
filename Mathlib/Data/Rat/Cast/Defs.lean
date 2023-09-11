@@ -257,3 +257,6 @@ instance isScalarTower_right : IsScalarTower ℚ K K :=
 end Rat
 
 end SMul
+
+-- Guard against import creep regression.
+assert_not_exists add_div
