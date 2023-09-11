@@ -21,7 +21,7 @@ notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) =>
 #guard_msgs in #check ∀ᶠ x in Filter.atTop, x < 3
 
 -- Testing lambda expressions:
-notation3 "∀ᶠ' " f ", " p=> Filter.eventually (fun x => (p : _ → _) x) f
+notation3 "∀ᶠ' " f ", " p => Filter.eventually (fun x => (p : _ → _) x) f
 /-- info: ∀ᶠ' Filter.atTop, fun x ↦ x < 3 : Prop -/
 #guard_msgs in #check ∀ᶠ' Filter.atTop, fun x => x < 3
 

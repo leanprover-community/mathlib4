@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kyle Miller
 -/
 import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.Expr
+import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Util.Syntax
 import Std.Data.Option.Basic
 
@@ -159,17 +160,17 @@ def matchVar (c : Name) : Matcher := fun s => do
   else
     s.captureSubexpr c
 
-/-- Matcher for `Expr.const`. -/
-def matchConst (c : Name) : Matcher := fun s => do
-  guard <| (← getExpr).isConstOf c
+/-- Matcher for an expression satisfying a given predicate. -/
+def matchExpr (p : Expr → Bool) : Matcher := fun s => do
+  guard <| p (← getExpr)
   return s
 
-/-- Matcher for `Expr.fvar`. This is only used for `local notation3`.
-It checks that the user name agrees, which isn't completely accurate, but probably sufficient. -/
-def matchFVar (userName : Name) : Matcher := fun s => do
+/-- Matcher for `Expr.fvar`.
+It checks that the user name agrees and that the type of the expression is matched by `matchTy`. -/
+def matchFVar (userName : Name) (matchTy : Matcher) : Matcher := fun s => do
   let .fvar fvarId ← getExpr | failure
   guard <| userName == (← fvarId.getUserName)
-  return s
+  withType (matchTy s)
 
 /-- Matcher that checks that the type of the expression is matched by `matchTy`. -/
 def matchTypeOf (matchTy : Matcher) : Matcher := fun s => do
@@ -189,22 +190,22 @@ def matchApp (matchFun matchArg : Matcher) : Matcher := fun s => do
 
 /-- Matches pi types. The name `n` should be unique, and `matchBody` should use `n`
 as the `userName` of its fvar. -/
-def matchForall (n : Name) (matchDom matchBody : Matcher) : Matcher := fun s => do
+def matchForall (matchDom : Matcher) (matchBody : Expr → Matcher) : Matcher := fun s => do
   guard <| (← getExpr).isForall
   let s ← withBindingDomain <| matchDom s
-  let s ← withBindingBody n <| matchBody s
+  let s ← withBindingBodyUnusedName' fun _ arg => matchBody arg s
   return s
 
-/-- Matches lambdas. The name `n` should be unique, and `matchBody` should use `n`
-as the `userName` of its fvar. -/
-def matchLambda (n : Name) (matchDom matchBody : Matcher) : Matcher := fun s => do
+/-- Matches lambdas. The `matchBody` takes the fvar introduced when visiting the body. -/
+def matchLambda (matchDom : Matcher) (matchBody : Expr → Matcher) : Matcher := fun s => do
   guard <| (← getExpr).isLambda
   let s ← withBindingDomain <| matchDom s
-  let s ← withBindingBody n <| matchBody s
+  let s ← withBindingBodyUnusedName' fun _ arg => matchBody arg s
   return s
 
 /-- Adds all the names in `boundNames` to the local context
-with types that are fresh metavariables. -/
+with types that are fresh metavariables.
+This is used for example when initializing `p` in `(scoped p => ...)` when elaborating `...`. -/
 def setupLCtx (lctx : LocalContext) (boundNames : HashSet Name) :
     MetaM (LocalContext × HashMap FVarId Name) := do
   let mut lctx := lctx
@@ -216,42 +217,54 @@ def setupLCtx (lctx : LocalContext) (boundNames : HashSet Name) :
   return (lctx, boundFVars)
 
 /-- Given an expression, generate a matcher for it.
-The `boundFVars` hash map records which state variables certain fvars correspond to. -/
-partial def exprToMatcher (boundFVars : HashMap FVarId Name) (e : Expr) :
+The `boundFVars` hash map records which state variables certain fvars correspond to.
+The `localFVars` hash map records which local variable the matcher should use for an exact
+expression match. -/
+partial def exprToMatcher (boundFVars : HashMap FVarId Name) (localFVars : HashMap FVarId Term)
+      (e : Expr) :
     OptionT TermElabM (List Name × Term) := do
   match e with
   | .mvar .. => return ([], ← `(pure))
-  | .const n _ => return ([`app ++ n], ← ``(matchConst $(quote n)))
+  | .const n _ => return ([`app ++ n], ← ``(matchExpr (Expr.isConstOf · $(quote n))))
+  | .sort .. => return ([`sort], ← ``(matchExpr Expr.isSort))
   | .fvar fvarId =>
     if let some n := boundFVars.find? fvarId then
+      -- This fvar is a pattern variable.
       return ([], ← ``(matchVar $(quote n)))
+    else if let some s := localFVars.find? fvarId then
+      -- This fvar is bound by a lambda or forall expression in the pattern itself
+      return ([], ← ``(matchExpr (· == $s)))
     else
       let n ← fvarId.getUserName
       if n.hasMacroScopes then
-        -- Match by the type instead; this is likely an instance (should we check?)
-        let (_, m) ← exprToMatcher boundFVars (← instantiateMVars (← inferType e))
+        -- Match by just the type; this is likely an unnamed instance for example
+        let (_, m) ← exprToMatcher boundFVars localFVars (← instantiateMVars (← inferType e))
         return ([`fvar], ← ``(matchTypeOf $m))
       else
-        return ([`fvar], ← ``(matchFVar $(quote n)))
+        -- This is an fvar from a `variable`. Match by name and type.
+        let (_, m) ← exprToMatcher boundFVars localFVars (← instantiateMVars (← inferType e))
+        return ([`fvar], ← ``(matchFVar $(quote n) $m))
   | .app f arg =>
-    let (keys, matchF) ← exprToMatcher boundFVars f
-    let (_, matchArg) ← exprToMatcher boundFVars arg
+    let (keys, matchF) ← exprToMatcher boundFVars localFVars f
+    let (_, matchArg) ← exprToMatcher boundFVars localFVars arg
     return (if keys.isEmpty then [`app] else keys, ← ``(matchApp $matchF $matchArg))
   | .lit (.natVal n) => return ([`lit], ← ``(natLitMatcher $(quote n)))
-  | .forallE _ t b bi =>
-    let (_, matchDom) ← exprToMatcher boundFVars t
-    let n ← mkFreshId
-    withLocalDecl n bi t fun arg => do
+  | .forallE n t b bi =>
+    let (_, matchDom) ← exprToMatcher boundFVars localFVars t
+    withLocalDecl n bi t fun arg => withFreshMacroScope do
+      let n' ← `(n)
       let body := b.instantiate1 arg
-      let (_, matchBody) ← exprToMatcher boundFVars body
-      return ([`forallE], ← ``(matchForall $(quote n) $matchDom $matchBody))
-  | .lam _ t b bi =>
-    let (_, matchDom) ← exprToMatcher boundFVars t
-    let n ← mkFreshId
-    withLocalDecl n bi t fun arg => do
+      let localFVars' := localFVars.insert arg.fvarId! n'
+      let (_, matchBody) ← exprToMatcher boundFVars localFVars' body
+      return ([`forallE], ← ``(matchForall $matchDom (fun $n' => $matchBody)))
+  | .lam n t b bi =>
+    let (_, matchDom) ← exprToMatcher boundFVars localFVars t
+    withLocalDecl n bi t fun arg => withFreshMacroScope do
+      let n' ← `(n)
       let body := b.instantiate1 arg
-      let (_, matchBody) ← exprToMatcher boundFVars body
-      return ([`lam], ← ``(matchLambda $(quote n) $matchDom $matchBody))
+      let localFVars' := localFVars.insert arg.fvarId! n'
+      let (_, matchBody) ← exprToMatcher boundFVars localFVars' body
+      return ([`lam], ← ``(matchLambda $matchDom (fun $n' => $matchBody)))
   | _ =>
     trace[notation3] "can't generate matcher for {e}"
     failure
@@ -268,7 +281,7 @@ partial def mkExprMatcher (stx : Term) (boundNames : HashSet Name) :
   withLCtx lctx (← getLocalInstances) do
     let patt ← Term.elabPattern stx none
     trace[notation3] "Generating matcher for pattern {patt}"
-    exprToMatcher boundFVars patt
+    exprToMatcher boundFVars {} patt
 
 /-- Matcher for processing `scoped` syntax. Assumes the expression to be matched
 against is in the `lit` variable.
