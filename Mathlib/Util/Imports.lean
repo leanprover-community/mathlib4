@@ -8,12 +8,13 @@ import Mathlib.Lean.Expr.Basic
 /-!
 # Tools for analyzing imports.
 
-Provides the command `#redundant_imports` which
-lists any transitively redundant imports in the current module.
+Provides the commands
 
-## Future work
-By inspecting the declarations and syntax in the current file,
-we can suggest a minimal set of imports.
+* `#redundant_imports` which lists any transitively redundant imports in the current module.
+* `#minimize_imports` which attempts to construct a minimal set of imports for the declarations
+  in the current file.
+  (Must be run at the end of the file. Tactics and macros may result in incorrect output.)
+* `#find_home decl` suggests files higher up the import hierarchy to which `decl` could be moved.
 -/
 
 open Lean
