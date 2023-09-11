@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Rat.Cast.Defs
 import Mathlib.Data.Int.CharZero
-import Mathlib.Algebra.GroupWithZero.Power
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
