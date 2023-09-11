@@ -39,27 +39,27 @@ lemma rank_eq_card_pos_eigs_self_mul_conj_transpose (A: Matrix (Fin M) (Fin N) �
 Fin (A.rank) and the set non-zero eigenvalues of the matrix Aᴴ⬝A -/
 noncomputable def finRankEquivEigsConjTransposeMulSelf (A : Matrix (Fin M) (Fin N) 𝕂) :
     Fin (A.rank) ≃ {i // (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} :=
-  Fintype.equivFinOfCardEq (rank_eq_card_pos_eigs_conj_transpose_mul_self A)
+  (Fintype.equivFinOfCardEq (rank_eq_card_pos_eigs_conj_transpose_mul_self A).symm).symm
 
-/-- For matrix A of size m × n and rank A.rank : we have an equivalence relation between elements of
+/-- For matrix A of size m × n and rank A.rank : we have an bijection between elements of
 Fin (A.rank) and the set non-zero eigenvalues of the matrix A⬝Aᴴ -/
-noncomputable def fin_rank_equiv_eigs_mul_conjTranspose (A: Matrix (Fin M) (Fin N) 𝕂) :
-    {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin (A.rank) :=
-  (Fintype.equivFinOfCardEq (rank_eq_card_pos_eigs_self_mul_conj_transpose A).symm)
+noncomputable def finRankEquivEigsMulConjTranspose (A: Matrix (Fin M) (Fin N) 𝕂) :
+    Fin (A.rank) ≃ {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} :=
+  (Fintype.equivFinOfCardEq (rank_eq_card_pos_eigs_self_mul_conj_transpose A).symm).symm
 
-/-- For matrix of size m × n and rank A.rank : we have an equivalence between the elements
+/-- For matrix of size m × n and rank A.rank : we have an bijection the elements
 of Fin n and the eigenvalues of the matrix Aᴴ⬝A, partitioned into
 - non-zero eigenvalues: (exactly A.rank) of them, see `fin_rank_equiv_eigs_conjTranspose_mul_self`
 - zero eigenvalues: (exactly n - A.rank) of them -/
 noncomputable def eigenColumnEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
     (Fin N) ≃ (Fin A.rank) ⊕ (Fin (N - A.rank)) := by
-  let em := Equiv.sumCompl (fun i =>  (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0)
+  let en := Equiv.sumCompl (fun i =>  (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0)
   let eₙᵣ : {i // ¬(isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} ≃ Fin (N - A.rank) :=
     Fintype.equivFinOfCardEq
-      by rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_conj_transpose_mul_self]
-  exact Equiv.trans em.symm  (Equiv.sumCongr (fin_rank_equiv_eigs_conjTranspose_mul_self A) eₙᵣ)
+      (by rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_conj_transpose_mul_self])
+  exact Equiv.trans en.symm  (Equiv.sumCongr (finRankEquivEigsConjTransposeMulSelf A).symm eₙᵣ)
 
-/-- For matrix of size m × n nad rank A.rank : we have an equivalence relation between the elements
+/-- For matrix of size m × n and rank A.rank : we have an bijeciton between the elements
 of Fin (height) and the eigevalues of the matrix A⬝Aᴴ partitioned into
 - non-zero eigenvaules: (exactly A.rank) of them see `fin_rank_equiv_eigs_mul_conjTranspose`
 - zero eigenvaules: (exactly height - A.rank) of them -/
@@ -67,21 +67,19 @@ noncomputable def eigenRowEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
     (Fin M) ≃ (Fin A.rank) ⊕ (Fin (M - A.rank)) := by
   let em := Equiv.sumCompl (fun i =>  (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0)
   let eᵣ' : {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin A.rank :=
+    Fintype.equivFinOfCardEq (by rw [rank_eq_card_pos_eigs_self_mul_conj_transpose])
+  let eₘᵣ : {i // ¬(isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin (M - A.rank) :=
     Fintype.equivFinOfCardEq
-      by rw [rank_eq_card_pos_eigs_self_mul_conj_transpose]
-  let eₘᵣ : {i // ¬(isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃
-      Fin (M - A.rank) :=
-    Fintype.equivFinOfCardEq
-      by rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_self_mul_conj_transpose]
+      (by rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_self_mul_conj_transpose])
   exact Equiv.trans em.symm  (Equiv.sumCongr eᵣ' eₘᵣ)
 
 /-- When the eigenvalues of the matrix Aᴴ⬝A are partitioned using
 `equiv_fin_width_eigs_conjTranspose_mul_self` i.e. into non-zero and zero eigenvalues, any element
 from the second partition is obivuosly zero! -/
-lemma eigen_eigenColumnEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (N - A.rank)):
+lemma eigen_eigenColumnEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (N - A.rank)) :
   (isHermitian_transpose_mul_self A).eigenvalues
-    ((equiv_fin_width_eigs_conjTranspose_mul_self A).symm (Sum.inr i)) = 0 := by
-  unfold equiv_fin_width_eigs_conjTranspose_mul_self Equiv.sumCongr
+    ((eigenColumnEquiv A).symm (Sum.inr i)) = 0 := by
+  unfold eigenColumnEquiv Equiv.sumCongr
   simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk, Sum.elim_inr,
     Equiv.sumCompl_apply_inr]
   let eₙᵣ : {i // ¬(isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} ≃ Fin (N - A.rank) := by
@@ -94,8 +92,8 @@ lemma eigen_eigenColumnEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (N - A
 the second partition is obivuosly zero! -/
 lemma eigen_eigenRowEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (M - A.rank)) :
     (isHermitian_mul_conjTranspose_self A).eigenvalues
-      ((equiv_fin_height_eigs_mul_conjTranspose A).symm (Sum.inr i)) = 0 := by
-  unfold equiv_fin_height_eigs_mul_conjTranspose Equiv.sumCongr
+      ((eigenRowEquiv A).symm (Sum.inr i)) = 0 := by
+  unfold eigenRowEquiv Equiv.sumCongr
   simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk, Sum.elim_inr,
     Equiv.sumCompl_apply_inr]
   let eₘᵣ : {i // ¬(isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃
@@ -105,14 +103,12 @@ lemma eigen_eigenRowEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (M - A.ra
   exact Iff.mp Function.nmem_support ((eₘᵣ.symm i).prop)
 
 lemma enz_inj (A: Matrix (Fin M) (Fin N) 𝕂) (i j: Fin (N - A.rank)) :
-    ¬ (i = j) → (equiv_fin_width_eigs_conjTranspose_mul_self A).symm (Sum.inr i) ≠
-      (equiv_fin_width_eigs_conjTranspose_mul_self A).symm (Sum.inr j) := by
+    ¬ (i = j) → (eigenColumnEquiv A).symm (Sum.inr i) ≠ (eigenColumnEquiv A).symm (Sum.inr j) := by
   intros h
   simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inr.injEq, h]
 
 lemma emz_inj (A: Matrix (Fin M) (Fin N) 𝕂) (i j: Fin (M - A.rank)) :
-    ¬ (i = j) → (equiv_fin_height_eigs_mul_conjTranspose A).symm (Sum.inr i) ≠
-      (equiv_fin_height_eigs_mul_conjTranspose A).symm (Sum.inr j) := by
+    ¬ (i = j) → (eigenRowEquiv A).symm (Sum.inr i) ≠ (eigenRowEquiv A).symm (Sum.inr j) := by
   intros h
   simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inr.injEq, h]
 
