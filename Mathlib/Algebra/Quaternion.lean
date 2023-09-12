@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.Finrank
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.RingTheory.TensorProduct
 
 #align_import algebra.quaternion from "leanprover-community/mathlib"@"cf7a7252c1989efe5800e0b3cdfeb4228ac6b40e"
 
@@ -101,6 +102,10 @@ theorem mk.eta {R : Type*} {c₁ c₂} (a : ℍ[R,c₁,c₂]) : mk a.1 a.2 a.3 a
 #align quaternion_algebra.mk.eta QuaternionAlgebra.mk.eta
 
 variable {S T R : Type*} [CommRing R] {c₁ c₂ : R} (r x y z : R) (a b c : ℍ[R,c₁,c₂])
+
+instance : Nonempty ℍ[R, c₁, c₂] := ⟨⟨c₁,c₁,c₁,c₁⟩⟩
+instance [Subsingleton R] : Subsingleton ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).injective.subsingleton
+instance [Nontrivial R] : Nontrivial ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).symm.injective.nontrivial
 
 /-- The imaginary part of a quaternion. -/
 def im (x : ℍ[R,c₁,c₂]) : ℍ[R,c₁,c₂] :=
@@ -492,6 +497,15 @@ theorem algebraMap_eq (r : R) : algebraMap R ℍ[R,c₁,c₂] r = ⟨r, 0, 0, 0�
   rfl
 #align quaternion_algebra.algebra_map_eq QuaternionAlgebra.algebraMap_eq
 
+theorem algebraMap_injective : (algebraMap R ℍ[R,c₁,c₂] : _ → _).Injective :=
+  fun _ _ ↦ by simp [algebraMap_eq]
+
+instance [NoZeroDivisors R] : NoZeroSMulDivisors R ℍ[R,c₁,c₂] := ⟨by
+  rintro t ⟨a, b, c, d⟩ h
+  rw [or_iff_not_imp_left]
+  intro ht
+  simpa [QuaternionAlgebra.ext_iff, ht] using h⟩
+
 section
 
 variable (c₁ c₂)
@@ -571,6 +585,18 @@ theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂] = 
 theorem finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R ℍ[R,c₁,c₂] = 4 := by
   rw [FiniteDimensional.finrank, rank_eq_four, Cardinal.toNat_ofNat]
 #align quaternion_algebra.finrank_eq_four QuaternionAlgebra.finrank_eq_four
+
+def swapEquiv : ℍ[R,c₁,c₂] ≃ₐ[R] ℍ[R, c₂, c₁] where
+  toFun t := ⟨t.1, t.3, t.2, -t.4⟩
+  invFun t := ⟨t.1, t.3, t.2, -t.4⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_mul' _ _ := by ext <;>
+                     simp only [mul_re, mul_imJ, mul_imI, add_left_inj, mul_imK, neg_mul,
+                                neg_add_rev, neg_sub, mk_mul_mk, mul_neg, neg_neg, sub_neg_eq_add]
+                         <;> ring
+  map_add' _ _ := by ext <;> simp [add_comm]
+  commutes' _ := by simp [algebraMap_eq]
 
 end
 
