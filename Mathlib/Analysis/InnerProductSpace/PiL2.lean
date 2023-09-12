@@ -623,12 +623,9 @@ noncomputable def EuclideanSpace.basisFun :
 theorem EuclideanSpace.basisFun_repr (x : EuclideanSpace 𝕜 ι) (i : ι) :
     (EuclideanSpace.basisFun ι 𝕜).repr x i = x i := rfl
 
-theorem EuclideanSpace.basisFun_equivFun :
-    (EuclideanSpace.basisFun ι 𝕜).toBasis.equivFun = (EuclideanSpace.equiv ι 𝕜).toLinearEquiv := rfl
-
 theorem EuclideanSpace.basisFun_toBasis :
-    (EuclideanSpace.basisFun ι 𝕜).toBasis.map (EuclideanSpace.equiv ι 𝕜).toLinearEquiv
-      = Pi.basisFun 𝕜 ι := rfl
+    (EuclideanSpace.basisFun ι 𝕜).toBasis =
+        (Pi.basisFun 𝕜 ι).map (EuclideanSpace.equiv ι 𝕜).toLinearEquiv.symm := rfl
 
 end EuclideanSpace
 

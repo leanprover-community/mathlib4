@@ -74,16 +74,21 @@ theorem OrthonormalBasis.addHaar_eq_volume {ι F : Type*} [Fintype ι] [NormedAd
     [InnerProductSpace ℝ F] [FiniteDimensional ℝ F] [MeasurableSpace F] [BorelSpace F]
     (b : OrthonormalBasis ι ℝ F) :
     b.toBasis.addHaar = volume := by
-  dsimp only [volume]
-  rw [eq_comm, Basis.addHaar_eq]
+  rw [Basis.addHaar_eq_iff]
   exact b.volume_parallelepiped
+
+section EuclideanSpace
+
+open EuclideanSpace
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
 theorem EuclideanSpace.volume_preserving_measurableEquiv (ι : Type*) [Fintype ι] :
     MeasurePreserving (EuclideanSpace.measurableEquiv ι) := by
   classical
-  convert ((EuclideanSpace.measurableEquiv ι).measurable.measurePreserving _)
-  rw [coe_measurableEquiv, ← (EuclideanSpace.basisFun _ _).addHaar_eq_volume,
-    ← addHaarMeasure_eq_volume_pi, Basis.addHaar_map, ← Basis.parallelepiped_basisFun,
-    Basis.addHaar_def, addHaarMeasure_eq, EuclideanSpace.basisFun_toBasis]
-  exact  addHaarMeasure_self
+  convert ((EuclideanSpace.measurableEquiv ι).symm.measurable.measurePreserving _).symm
+  rw [eq_comm, ← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
+    coe_continuousLinearEquiv_symm, Basis.map_addHaar, Basis.addHaar_eq_iff,
+    ContinuousLinearEquiv.symm_toLinearEquiv, ← EuclideanSpace.basisFun_toBasis ι ℝ]
+  exact OrthonormalBasis.volume_parallelepiped (EuclideanSpace.basisFun _ _)
+
+end EuclideanSpace
