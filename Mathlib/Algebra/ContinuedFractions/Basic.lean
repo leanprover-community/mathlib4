@@ -428,7 +428,7 @@ abbrev denominator (f : FGCF K) : K :=
 
 /-- Returns the value of `f` using a recurrence relation.
 This is not defined if the denominator is `0` because the convergence of gcfs is given by discarding
-convergents whose denominator is `0`.. -/
+convergents whose denominator is `0`. -/
 def eval? [DecidableEq K] (f : FGCF K) : Option K :=
   if f.denominator = 0 then
     none
