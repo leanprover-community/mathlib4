@@ -108,6 +108,8 @@ def freeGroupEquivSemidirectProduct {α : Type*} [DecidableEq α] (a : α) :
 
 axiom FreeGroup.vars {α : Type*} : FreeGroup α → Finset α
 
+axiom FreeGroup.conjVars {α : Type*} : FreeGroup α → Finset α
+
 end Equivs
 
 namespace OneRelator
@@ -173,7 +175,10 @@ noncomputable def equivHNNExtension :
     (OneRelator.lift
       (fun a => sorry)
       sorry)
-    _
+    (HNNExtension.lift
+      _
+      _
+      _)
     _
     _
 
