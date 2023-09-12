@@ -7,6 +7,9 @@ import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Logic.Unique
+import Mathlib.Tactic.Substs
+import Mathlib.Tactic.ProjectionNotation
+import Mathlib.Tactic.Conv
 
 #align_import logic.equiv.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 

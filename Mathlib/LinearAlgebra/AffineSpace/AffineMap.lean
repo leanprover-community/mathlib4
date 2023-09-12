@@ -43,8 +43,6 @@ topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
 
-set_option autoImplicit true
-
 open Affine
 
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
@@ -179,7 +177,7 @@ theorem coe_const (p : P2) : ⇑(const k P1 p) = Function.const P1 p :=
 
 -- Porting note: new theorem
 @[simp]
-theorem const_apply (p : P2) : (const k P1 p) q = p := rfl
+theorem const_apply (p : P2) (q : P1) : (const k P1 p) q = p := rfl
 
 @[simp]
 theorem const_linear (p : P2) : (const k P1 p).linear = 0 :=

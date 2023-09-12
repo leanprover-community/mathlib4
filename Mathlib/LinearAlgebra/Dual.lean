@@ -89,17 +89,14 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 Erdős-Kaplansky theorem about the dimension of a dual vector space in case of infinite dimension.
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 namespace Module
 
 -- Porting note: max u v universe issues so name and specific below
-universe u uA v v' v'' w u₁ u₂
+universe uR uA uM uM' uM''
 
-variable (R : Type u) (A : Type uA) (M : Type v)
+variable (R : Type uR) (A : Type uA) (M : Type uM)
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
@@ -135,7 +132,7 @@ theorem eval_apply (v : M) (a : Dual R M) : eval R M v a = a v :=
   rfl
 #align module.dual.eval_apply Module.Dual.eval_apply
 
-variable {R M} {M' : Type v'}
+variable {R M} {M' : Type uM'}
 variable [AddCommMonoid M'] [Module R M']
 
 /-- The transposition of linear maps, as a linear map from `M →ₗ[R] M'` to
@@ -149,7 +146,7 @@ theorem transpose_apply (u : M →ₗ[R] M') (l : Dual R M') : transpose (R := R
   rfl
 #align module.dual.transpose_apply Module.Dual.transpose_apply
 
-variable {M'' : Type v''} [AddCommMonoid M''] [Module R M'']
+variable {M'' : Type uM''} [AddCommMonoid M''] [Module R M'']
 
 -- Porting note: with reducible def need to specify some parameters to transpose explicitly
 theorem transpose_comp (u : M' →ₗ[R] M'') (v : M →ₗ[R] M') :
@@ -161,7 +158,7 @@ end Dual
 
 section Prod
 
-variable (M' : Type v') [AddCommMonoid M'] [Module R M']
+variable (M' : Type uM') [AddCommMonoid M'] [Module R M']
 
 /-- Taking duals distributes over products. -/
 @[simps!]
@@ -182,6 +179,8 @@ end Module
 section DualMap
 
 open Module
+
+universe u v v'
 
 variable {R : Type u} [CommSemiring R] {M₁ : Type v} {M₂ : Type v'}
 
@@ -277,7 +276,8 @@ open Module Module.Dual Submodule LinearMap Cardinal Function
 
 open BigOperators
 
-variable {R : Type u} {M : Type v} {K : Type u₁} {V : Type u₂} {ι : Type w}
+universe uR uM uK uV uι
+variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
 
@@ -501,11 +501,11 @@ theorem total_coord [CommRing R] [AddCommGroup M] [Module R M] [Finite ι] (b : 
 
 -- Porting note: universes very dodgy in Cardinals...
 theorem dual_rank_eq [CommRing K] [AddCommGroup V] [Module K V] [Finite ι] (b : Basis ι K V) :
-    Cardinal.lift.{u₁,u₂} (Module.rank K V) = Module.rank K (Dual K V) := by
+    Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) := by
   classical
     cases nonempty_fintype ι
     have := LinearEquiv.lift_rank_eq b.toDualEquiv
-    rw [Cardinal.lift_umax.{u₂,u₁}] at this
+    rw [Cardinal.lift_umax.{uV,uK}] at this
     rw [this, ← Cardinal.lift_umax]
     apply Cardinal.lift_id
 #align basis.dual_rank_eq Basis.dual_rank_eq
@@ -514,7 +514,8 @@ end Basis
 
 namespace Module
 
-variable {K : Type u₁} {V : Type u₂}
+universe uK uV
+variable {K : Type uK} {V : Type uV}
 
 variable [CommRing K] [AddCommGroup V] [Module K V] [Module.Free K V]
 
@@ -565,7 +566,7 @@ theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v 
 end
 
 theorem dual_rank_eq [Module.Finite K V] :
-    Cardinal.lift.{u₁,u₂} (Module.rank K V) = Module.rank K (Dual K V) :=
+    Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) :=
   (Module.Free.chooseBasis K V).dual_rank_eq
 #align module.dual_rank_eq Module.dual_rank_eq
 
@@ -1197,7 +1198,8 @@ open Module
 
 namespace LinearMap
 
-variable {R : Type u} [CommSemiring R] {M₁ : Type v} {M₂ : Type v'}
+universe uR uM₁ uM₂
+variable {R : Type uR} [CommSemiring R] {M₁ : Type uM₁} {M₂ : Type uM₂}
 
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
@@ -1376,8 +1378,9 @@ end CommRing
 
 section VectorSpace
 
--- Porting note: adding `u` to avoid timeouts in `dualPairing_eq`
-variable {K : Type u} [Field K] {V₁ : Type v'} {V₂ : Type v''}
+-- Porting note: adding `uK` to avoid timeouts in `dualPairing_eq`
+universe uK uV₁ uV₂
+variable {K : Type uK} [Field K] {V₁ : Type uV₁} {V₂ : Type uV₂}
 
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
@@ -1423,15 +1426,12 @@ open Submodule
 -- Porting note: remove this at some point; this spends a lot of time
 -- checking that AddCommGroup structures on V₁ ⧸ W.dualAnnihilator are defEq
 -- was much worse with implicit universe variables
-set_option maxHeartbeats 400000 in
 theorem dualPairing_eq (W : Subspace K V₁) :
     W.dualPairing = W.quotAnnihilatorEquiv.toLinearMap := by
   ext
   rfl
 #align subspace.dual_pairing_eq Subspace.dualPairing_eq
 
--- Porting note: remove this
-set_option maxHeartbeats 400000 in
 theorem dualPairing_nondegenerate (W : Subspace K V₁) : W.dualPairing.Nondegenerate := by
   constructor
   · rw [LinearMap.separatingLeft_iff_ker_eq_bot, dualPairing_eq]
@@ -1614,7 +1614,7 @@ variable [Module R M] [Module A M] [Module R N] [IsScalarTower R A M]
 
 /-- Heterobasic version of `TensorProduct.dualDistrib` -/
 def dualDistrib : Dual A M ⊗[R] Dual R N →ₗ[A] Dual A (M ⊗[R] N) :=
-  compRight (Algebra.TensorProduct.rid R A A) ∘ₗ homTensorHomMap R A A M N A R
+  compRight (Algebra.TensorProduct.rid R A A).toLinearMap ∘ₗ homTensorHomMap R A A M N A R
 
 variable {R M N}
 

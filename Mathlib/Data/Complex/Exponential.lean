@@ -907,7 +907,6 @@ theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2)
 #align complex.cos_sub_cos Complex.cos_sub_cos
 
 theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) := by
-  have h2 : (2 : ℂ) ≠ 0 := by norm_num
   calc
     cos x + cos y = cos ((x + y) / 2 + (x - y) / 2) + cos ((x + y) / 2 - (x - y) / 2) := ?_
     _ =
@@ -916,7 +915,7 @@ theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) 
       ?_
     _ = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) := ?_
 
-  · congr <;> field_simp [h2]
+  · congr <;> field_simp
   · rw [cos_add, cos_sub]
   ring
 #align complex.cos_add_cos Complex.cos_add_cos
@@ -1046,9 +1045,8 @@ theorem sin_sq : sin x ^ 2 = 1 - cos x ^ 2 := by rw [← sin_sq_add_cos_sq x, ad
 #align complex.sin_sq Complex.sin_sq
 
 theorem inv_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) : (1 + tan x ^ 2)⁻¹ = cos x ^ 2 := by
-  have : cos x ^ 2 ≠ 0 := pow_ne_zero 2 hx
   rw [tan_eq_sin_div_cos, div_pow]
-  field_simp [this]
+  field_simp
 #align complex.inv_one_add_tan_sq Complex.inv_one_add_tan_sq
 
 theorem tan_sq_div_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) :
@@ -1598,7 +1596,7 @@ theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (h
       · rw [← Nat.cast_pow, ← Nat.cast_mul, Nat.cast_le, add_comm]
         exact Nat.factorial_mul_pow_le_factorial
     _ = (n.factorial : α)⁻¹ * ∑ m in range (j - n), (n.succ : α)⁻¹ ^ m := by
-      simp [mul_inv, mul_sum.symm, sum_mul.symm, -Nat.factorial_succ, mul_comm, inv_pow]
+      simp [mul_inv, mul_sum.symm, sum_mul.symm, mul_comm, inv_pow]
     _ = ((n.succ : α) - n.succ * (n.succ : α)⁻¹ ^ (j - n)) / (n.factorial * n) := by
       have h₁ : (n.succ : α) ≠ 1 :=
         @Nat.cast_one α _ ▸ mt Nat.cast_inj.1 (mt Nat.succ.inj (pos_iff_ne_zero.1 hn))
@@ -1942,14 +1940,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- Porting note: was `norm_num [Finset.sum] <;> nlinarith`
       -- This proof should be restored after the norm_num plugin for big operators is ported.
       -- (It may also need the positivity extensions in #3907.)
-      rw [Finset.sum, range_val]
-      nth_rw 1 [← two_add_one_eq_three]
-      rw [← Nat.succ_eq_add_one, Multiset.range_succ, Multiset.map_cons, Multiset.sum_cons]
-      nth_rw 3 [← one_add_one_eq_two]
-      rw [← Nat.succ_eq_add_one, Multiset.range_succ, Multiset.map_cons, Multiset.sum_cons]
-      nth_rw 3 [← zero_add 1]
-      rw [← Nat.succ_eq_add_one, Multiset.range_succ, Multiset.map_cons, Multiset.sum_cons]
-      rw [Multiset.range_zero, Multiset.map_zero, Multiset.sum_zero]
+      repeat erw [Finset.sum_range_succ]
       norm_num
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff] <;> nlinarith
@@ -2001,7 +1992,7 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
   · abel
   · rw [← Real.exp_nat_mul]
     congr 1
-    field_simp [(Nat.cast_ne_zero (R := ℝ)).mpr hn]
+    field_simp
     ring_nf
   · rwa [add_comm, ← sub_eq_add_neg, sub_nonneg, div_le_one]
     positivity

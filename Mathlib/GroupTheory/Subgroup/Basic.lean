@@ -279,8 +279,8 @@ instance (priority := 75) toLinearOrderedCommGroup {G : Type*} [LinearOrderedCom
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
   "The natural group hom from an additive subgroup of `AddGroup` `G` to `G`."]
-protected def subtype : H →* G :=
-  ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
+protected def subtype : H →* G where
+  toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ => rfl
 #align subgroup_class.subtype SubgroupClass.subtype
 #align add_subgroup_class.subtype AddSubgroupClass.subtype
 
@@ -783,8 +783,8 @@ instance toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G] (H : Su
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive "The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`."]
-protected def subtype : H →* G :=
-  ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
+protected def subtype : H →* G where
+  toFun := ((↑) : H → G); map_one' := rfl; map_mul' _ _ := rfl
 #align subgroup.subtype Subgroup.subtype
 #align add_subgroup.subtype AddSubgroup.subtype
 
@@ -2076,6 +2076,22 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 #align subgroup.center_to_submonoid Subgroup.center_toSubmonoid
 #align add_subgroup.center_to_add_submonoid AddSubgroup.center_toAddSubmonoid
 
+/-- For a group with zero, the center of the units is the same as the units of the center. -/
+@[simps! apply_val_coe symm_apply_coe_val]
+def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
+    Subgroup.center (G₀ˣ) ≃* (Submonoid.center G₀)ˣ where
+  toFun := MonoidHom.toHomUnits <|
+    { toFun := fun u ↦ ⟨(u : G₀ˣ), fun r ↦ by
+        rcases eq_or_ne r 0 with (rfl | hr)
+        · rw [mul_zero, zero_mul]
+        exact congrArg Units.val <| u.2 <| Units.mk0 r hr⟩
+      map_one' := rfl
+      map_mul' := fun _ _ ↦ rfl }
+  invFun u := unitsCenterToCenterUnits G₀ u
+  left_inv _ := by ext; rfl
+  right_inv _ := by ext; rfl
+  map_mul' := map_mul _
+
 variable {G}
 
 @[to_additive]
@@ -2747,6 +2763,11 @@ theorem ofInjective_apply {f : G →* N} (hf : Function.Injective f) {x : G} :
   rfl
 #align monoid_hom.of_injective_apply MonoidHom.ofInjective_apply
 #align add_monoid_hom.of_injective_apply AddMonoidHom.ofInjective_apply
+
+@[to_additive (attr := simp)]
+theorem apply_ofInjective_symm {f : G →* N} (hf : Function.Injective f) (x : f.range) :
+    f ((ofInjective hf).symm x) = x :=
+  Subtype.ext_iff.1 <| (ofInjective hf).apply_symm_apply x
 
 section Ker
 

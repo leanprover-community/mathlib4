@@ -3,7 +3,6 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.BigOperators
@@ -42,9 +41,6 @@ These definitions are for sums over a `Finset`; versions for a
 * https://en.wikipedia.org/wiki/Affine_space
 
 -/
-
-set_option autoImplicit true
-
 
 
 noncomputable section
@@ -988,7 +984,7 @@ end Finset
 
 section AffineSpace'
 
-variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- A `weightedVSub` with sum of weights 0 is in the `vectorSpan` of
 an indexed family. -/

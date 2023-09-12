@@ -7,6 +7,7 @@ Yuyang Zhao
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Order.MinMax
+import Mathlib.Tactic.Contrapose
 
 #align_import algebra.order.monoid.lemmas from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
@@ -1674,8 +1675,7 @@ set_option linter.deprecated false
 variable [Add α] [Preorder α]
 
 @[deprecated]
-theorem bit0_mono [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (swap (· + ·))
-(· ≤ ·)] :
+theorem bit0_mono [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
     Monotone (bit0 : α → α) := fun _ _ h => add_le_add h h
 #align bit0_mono bit0_mono
 
