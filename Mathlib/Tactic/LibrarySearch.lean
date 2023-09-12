@@ -154,7 +154,7 @@ def librarySearchCore (goal : MVarId)
     let lemmas := (← librarySearchLemmas.getMatch ty).toList
     trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
     return (MLList.ofList lemmas).filterMapM fun (lem, mod) =>
-      try? <| librarySearchLemma lem mod required solveByElimDepth goal
+      observing? <| librarySearchLemma lem mod required solveByElimDepth goal
 
 /--
 Run `librarySearchCore` on both the goal and `symm` applied to the goal.
@@ -163,7 +163,7 @@ def librarySearchSymm (goal : MVarId)
     (required : List Expr) (solveByElimDepth := 6) :
     MLList MetaM (MetavarContext × List MVarId) :=
   .append (librarySearchCore goal required solveByElimDepth) <| fun _ => .squash fun _ => do
-    if let some symm ← try? goal.symm then
+    if let some symm ← observing? goal.symm then
       return librarySearchCore symm required solveByElimDepth
     else
       return .nil
