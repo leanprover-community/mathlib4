@@ -568,7 +568,7 @@ def essImage : Subcategory D :=
       have ⟨h, hh⟩ := F.map_surjective (e₃.hom ≫ T.mor₃ ≫ e₁.inv⟦1⟧' ≫
         (F.commShiftIso (1 : ℤ)).inv.app X₁)
       obtain ⟨X₂, f, g, H⟩ := distinguished_cocone_triangle₂ h
-      refine' ⟨X₂, ⟨Triangle.π₂.mapIso
+      exact ⟨X₂, ⟨Triangle.π₂.mapIso
         (isoTriangleOfIso₁₃ _ _ (F.map_distinguished _ H) hT e₁ e₃ (by
           dsimp
           simp only [hh, assoc, Iso.inv_hom_id_app, Functor.comp_obj,

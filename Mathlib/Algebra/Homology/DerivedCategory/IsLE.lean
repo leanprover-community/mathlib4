@@ -110,6 +110,26 @@ instance [HasZeroObject C] (n : ℤ) : IsStrictlyLE (0 : CochainComplex C ℤ) n
     change (eval _ _ i).map (𝟙 (0 : CochainComplex C ℤ)) = 0
     simp only [id_zero, eval_map, zero_f]⟩
 
+section
+
+variable {D : Type*} [Category D] [Preadditive D] (F : C ⥤ D) [F.Additive]
+
+instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsStrictlyLE n] :
+  IsStrictlyLE ((F.mapHomologicalComplex _).obj K) n := ⟨fun i hi => by
+    have := (K.isZero_of_isStrictlyLE n i hi)
+    simp only [IsZero.iff_id_eq_zero] at this ⊢
+    change 𝟙 (F.obj (K.X i)) = 0
+    rw [← F.map_id, this, F.map_zero]⟩
+
+instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsStrictlyGE n] :
+  IsStrictlyGE ((F.mapHomologicalComplex _).obj K) n := ⟨fun i hi => by
+    have := (K.isZero_of_isStrictlyGE n i hi)
+    simp only [IsZero.iff_id_eq_zero] at this ⊢
+    change 𝟙 (F.obj (K.X i)) = 0
+    rw [← F.map_id, this, F.map_zero]⟩
+
+end
+
 end CochainComplex
 
 end preadditive
