@@ -87,27 +87,6 @@ noncomputable def ofBaseChange (Q : QuadraticForm R V) :
   show z • ofBaseChangeAux A Q 1 = _
   rw [map_one, ←Algebra.algebraMap_eq_smul_one]
 
-theorem _root_.CliffordAlgebra.preserves_iff_bilin {R A M} [CommRing R] [Ring A] [Algebra R A]
-    [AddCommGroup M] [Module R M] (Q : QuadraticForm R M)
-    (h2 : IsUnit (2 : R))
-    (f : M →ₗ[R] A) :
-    (∀ x, f x * f x = algebraMap _ _ (Q x)) ↔
-      ((LinearMap.mul R A).compl₂ f) ∘ₗ f + ((LinearMap.mul R A).flip.compl₂ f) ∘ₗ f =
-        Q.polarBilin.toLin.compr₂ (Algebra.linearMap R A) := by
-  simp_rw [FunLike.ext_iff]
-  dsimp only [LinearMap.compr₂_apply, LinearMap.compl₂_apply, LinearMap.comp_apply,
-    Algebra.linearMap_apply, LinearMap.mul_apply', BilinForm.toLin_apply, LinearMap.add_apply,
-    LinearMap.flip_apply]
-  have h2a := h2.map (algebraMap R A)
-  refine ⟨fun h x y => ?_, fun h x => ?_⟩
-  · rw [QuadraticForm.polarBilin_apply, QuadraticForm.polar, sub_sub, map_sub, map_add,
-      ←h x, ←h y, ←h (x + y), eq_sub_iff_add_eq, map_add,
-      add_mul, mul_add, mul_add, add_comm (f x * f x) (f x * f y),
-      add_add_add_comm]
-  · apply h2a.mul_left_cancel
-    simp_rw [←Algebra.smul_def, two_smul]
-    rw [h x x, QuadraticForm.polarBilin_apply, QuadraticForm.polar_self, two_mul, map_add]
-
 set_option maxHeartbeats 400000 in
 /-- Convert from the clifford algebra over a base-changed module to the base-changed clifford
 algebra. -/
@@ -117,17 +96,19 @@ noncomputable def toBaseChange (Q : QuadraticForm R V) :
     let φ := TensorProduct.AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) (ι Q)
     refine ⟨φ, ?_⟩
     letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
-    rw [CliffordAlgebra.preserves_iff_bilin _ (isUnit_of_invertible _)]
+    letI : Invertible (2 : A ⊗[R] CliffordAlgebra Q) :=
+       (Invertible.map (algebraMap R _) 2).copy 2 (map_ofNat _ _).symm
+    rw [CliffordAlgebra.forall_mul_self_eq_iff (isUnit_of_invertible _)]
     letI : IsScalarTower R A (A ⊗[R] V →ₗ[A] A ⊗[R] CliffordAlgebra Q) :=
       LinearMap.instIsScalarTowerLinearMapInstSMulLinearMapInstSMulLinearMap
     refine TensorProduct.AlgebraTensorModule.curry_injective ?_
     ext v w
     change (1 * 1) ⊗ₜ[R] (ι Q v * ι Q w) + (1 * 1) ⊗ₜ[R] (ι Q w * ι Q v) =
-      QuadraticForm.polar (Q.baseChange A) (1 ⊗ₜ[R] v) (1 ⊗ₜ[R] w) ⊗ₜ[R] 1
-    rw [← TensorProduct.tmul_add, CliffordAlgebra.ι_mul_ι_add_swap]
-      -- QuadraticForm.baseChange_polar_apply, one_mul, one_mul,
-      -- Algebra.TensorProduct.algebraMap_tmul_one]
-    sorry
+      QuadraticForm.polarBilin (Q.baseChange A) (1 ⊗ₜ[R] v) (1 ⊗ₜ[R] w) ⊗ₜ[R] 1
+    rw [← TensorProduct.tmul_add, CliffordAlgebra.ι_mul_ι_add_swap,
+      QuadraticForm.polarBilin_baseChange, BilinForm.baseChange_tmul, one_mul,
+      TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one]
+    rfl
 
 @[simp] theorem toBaseChange_ι (Q : QuadraticForm R V) (z : A) (v : V) :
     toBaseChange A Q (ι (Q.baseChange A) (z ⊗ₜ v)) = z ⊗ₜ ι Q v :=
@@ -180,8 +161,11 @@ theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.bas
   have := FunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
   refine (congr_arg unop this).trans ?_; clear this
   refine (LinearMap.congr_fun (TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm _).trans ?_
-  erw [reverse, AlgHom.toLinearMap_toOpposite,
-    TensorProduct.AlgebraTensorModule.map_apply]
+  erw [reverse, AlgHom.toLinearMap_toOpposite]
+  dsimp
+  simp
+  rfl
+  -- rw [TensorProduct.AlgebraTensorModule.map_tmul]
 
 attribute [ext] TensorProduct.ext
 

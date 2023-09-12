@@ -229,6 +229,25 @@ theorem induction {C : CliffordAlgebra Q → Prop}
   exact Subtype.prop (lift Q of a)
 #align clifford_algebra.induction CliffordAlgebra.induction
 
+/-- An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible. -/
+theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (2 : A))
+    (f : M →ₗ[R] A) :
+    (∀ x, f x * f x = algebraMap _ _ (Q x)) ↔
+      ((LinearMap.mul R A).compl₂ f) ∘ₗ f + ((LinearMap.mul R A).flip.compl₂ f) ∘ₗ f =
+        Q.polarBilin.toLin.compr₂ (Algebra.linearMap R A) := by
+  simp_rw [FunLike.ext_iff]
+  dsimp only [LinearMap.compr₂_apply, LinearMap.compl₂_apply, LinearMap.comp_apply,
+    Algebra.linearMap_apply, LinearMap.mul_apply', BilinForm.toLin_apply, LinearMap.add_apply,
+    LinearMap.flip_apply]
+  refine ⟨fun h x y => ?_, fun h x => ?_⟩
+  · rw [QuadraticForm.polarBilin_apply, QuadraticForm.polar, sub_sub, map_sub, map_add,
+      ←h x, ←h y, ←h (x + y), eq_sub_iff_add_eq, map_add,
+      add_mul, mul_add, mul_add, add_comm (f x * f x) (f x * f y),
+      add_add_add_comm]
+  · apply h2.mul_left_cancel
+    simp_rw [two_mul]
+    rw [h x x, QuadraticForm.polarBilin_apply, QuadraticForm.polar_self, two_mul, map_add]
+
 /-- The symmetric product of vectors is a scalar -/
 theorem ι_mul_ι_add_swap (a b : M) :
     ι Q a * ι Q b + ι Q b * ι Q a = algebraMap R _ (QuadraticForm.polar Q a b) :=

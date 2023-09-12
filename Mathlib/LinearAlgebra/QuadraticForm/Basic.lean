@@ -792,6 +792,11 @@ theorem associated_apply (x y : M) : associatedHom S Q x y = ⅟ 2 * (Q (x + y) 
   rfl
 #align quadratic_form.associated_apply QuadraticForm.associated_apply
 
+theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
+  ext
+  dsimp
+  rw [←smul_mul_assoc, two_nsmul, invOf_two_add_invOf_two, one_mul, polar]
+
 theorem associated_isSymm : (associatedHom S Q).IsSymm := fun x y => by
   simp only [associated_apply, add_comm, add_left_comm, sub_eq_add_neg, add_assoc]
 #align quadratic_form.associated_is_symm QuadraticForm.associated_isSymm
