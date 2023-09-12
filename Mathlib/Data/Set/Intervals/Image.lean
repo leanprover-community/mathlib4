@@ -100,13 +100,13 @@ lemma StrictAnti.mapsTo_Ioo (h : StrictAnti f) : MapsTo f (Ioo a b) (Ioo (f b) (
 
 lemma MonotoneOn.image_Ici_subset (h : MonotoneOn f (Ici a)) : f '' Ici a ⊆ Ici (f a) :=
 h.mapsTo_Ici.image_subset
-#align monotone_on.image_Icc_subset MonotoneOn.image_Icc_subset
 
 lemma MonotoneOn.image_Iic_subset (h : MonotoneOn f (Iic b)) : f '' Iic b ⊆ Iic (f b) :=
 h.mapsTo_Iic.image_subset
 
 lemma MonotoneOn.image_Icc_subset (h : MonotoneOn f (Icc a b)) : f '' Icc a b ⊆ Icc (f a) (f b) :=
 h.mapsTo_Icc.image_subset
+#align monotone_on.image_Icc_subset MonotoneOn.image_Icc_subset
 
 lemma AntitoneOn.image_Ici_subset (h : AntitoneOn f (Ici a)) : f '' Ici a ⊆ Iic (f a) :=
 h.mapsTo_Ici.image_subset
