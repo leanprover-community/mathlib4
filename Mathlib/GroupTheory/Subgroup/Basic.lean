@@ -142,7 +142,7 @@ variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] 
 /-- A subgroup is closed under division. -/
 @[to_additive (attr := set_like) "An additive subgroup is closed under subtraction."]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
-  rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
+  rw [div_eq_mul_inv]; set_like
 #align div_mem div_mem
 #align sub_mem sub_mem
 
@@ -180,7 +180,7 @@ theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
 theorem mul_mem_cancel_right {x y : G} (h : x ∈ H) : y * x ∈ H ↔ y ∈ H :=
   -- Porting note: whut? why do we need this?
   haveI : SubmonoidClass S G := SubgroupClass.toSubmonoidClass
-  ⟨fun hba => by simpa using mul_mem hba (inv_mem h), fun hb => mul_mem hb h⟩
+  ⟨fun hba => by simpa using mul_mem hba (inv_mem h), by set_like⟩
 #align mul_mem_cancel_right mul_mem_cancel_right
 #align add_mem_cancel_right add_mem_cancel_right
 
@@ -962,7 +962,7 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 instance : Inf (Subgroup G) :=
   ⟨fun H₁ H₂ =>
     { H₁.toSubmonoid ⊓ H₂.toSubmonoid with
-      inv_mem' := fun ⟨hx, hx'⟩ => ⟨H₁.inv_mem hx, H₂.inv_mem hx'⟩ }⟩
+      inv_mem' := by set_like }⟩
 
 @[to_additive (attr := simp)]
 theorem coe_inf (p p' : Subgroup G) : ((p ⊓ p' : Subgroup G) : Set G) = (p : Set G) ∩ p' :=
@@ -1357,7 +1357,7 @@ variable {N : Type*} [Group N] {P : Type*} [Group P]
 def comap {N : Type*} [Group N] (f : G →* N) (H : Subgroup N) : Subgroup G :=
   { H.toSubmonoid.comap f with
     carrier := f ⁻¹' H
-    inv_mem' := fun {a} ha => show f a⁻¹ ∈ H by rw [f.map_inv]; exact H.inv_mem ha }
+    inv_mem' := by set_like }
 #align subgroup.comap Subgroup.comap
 #align add_subgroup.comap AddSubgroup.comap
 
@@ -1809,8 +1809,8 @@ variable {η : Type*} {f : η → Type*}
 def _root_.Submonoid.pi [∀ i, MulOneClass (f i)] (I : Set η) (s : ∀ i, Submonoid (f i)) :
     Submonoid (∀ i, f i) where
   carrier := I.pi fun i => (s i).carrier
-  one_mem' i _ := (s i).one_mem
-  mul_mem' hp hq i hI := (s i).mul_mem (hp i hI) (hq i hI)
+  one_mem' := by set_like
+  mul_mem' := by set_like
 #align submonoid.pi Submonoid.pi
 #align add_submonoid.pi AddSubmonoid.pi
 
@@ -2504,11 +2504,8 @@ instance normalClosure_normal : (normalClosure s).Normal :=
 /-- The normal closure of `s` is the smallest normal subgroup containing `s`. -/
 theorem normalClosure_le_normal {N : Subgroup G} [N.Normal] (h : s ⊆ N) : normalClosure s ≤ N := by
   intro a w
-  refine' closure_induction w (fun x hx => _) _ (fun x y ihx ihy => _) fun x ihx => _
-  · exact conjugatesOfSet_subset h hx
-  · exact one_mem _
-  · exact mul_mem ihx ihy
-  · exact inv_mem ihx
+  refine' closure_induction w (fun x hx => conjugatesOfSet_subset h hx) _ _ _
+    <;> set_like
 #align subgroup.normal_closure_le_normal Subgroup.normalClosure_le_normal
 
 theorem normalClosure_subset_iff {N : Subgroup G} [N.Normal] : s ⊆ N ↔ normalClosure s ≤ N :=
