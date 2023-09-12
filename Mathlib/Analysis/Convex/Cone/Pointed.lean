@@ -133,7 +133,6 @@ theorem map_map (g : F →ₗ[𝕜] G) (f : E →ₗ[𝕜] F) (S : PointedCone �
 theorem map_id (S : PointedCone 𝕜 E) : S.map LinearMap.id = S :=
   SetLike.coe_injective <| Set.image_id _
 
-
 /-- The preimage of a convex cone under a `𝕜`-linear map is a convex cone. -/
 def comap (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 F) : PointedCone 𝕜 E :=
   let f' := LinearMap.restrictScalars { c : 𝕜 // 0 ≤ c } f
