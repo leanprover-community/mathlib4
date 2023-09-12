@@ -122,8 +122,8 @@ jobs:
       - name: install xxd
         if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y xxd
+          apt-get update
+          apt-get install -y xxd
 
       - name: install elan
         run: |
