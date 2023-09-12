@@ -62,6 +62,8 @@ class StarMemClass (S R : Type*) [Star R] [SetLike S R] : Prop where
 
 export StarMemClass (star_mem)
 
+attribute [set_like] star_mem
+
 namespace StarMemClass
 
 variable {S : Type w} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)

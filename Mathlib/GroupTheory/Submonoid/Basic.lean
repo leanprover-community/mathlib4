@@ -85,6 +85,8 @@ export ZeroMemClass (zero_mem)
 
 attribute [to_additive] OneMemClass
 
+attribute [set_like] one_mem zero_mem
+
 section
 
 /-- A submonoid of a monoid `M` is a subset containing 1 and closed under multiplication. -/
@@ -129,7 +131,7 @@ class AddSubmonoidClass (S : Type*) (M : Type*) [AddZeroClass M] [SetLike S M] e
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive]
+@[to_additive (attr := set_like)]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
@@ -397,6 +399,10 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Submonoid M, s ⊆ S �
 theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 #align submonoid.subset_closure Submonoid.subset_closure
 #align add_submonoid.subset_closure AddSubmonoid.subset_closure
+
+@[to_additive (attr := set_like)]
+lemma mem_closure_of_mem {x : M} (hx : x ∈ s) : x ∈ closure s :=
+  subset_closure hx
 
 @[to_additive]
 theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>

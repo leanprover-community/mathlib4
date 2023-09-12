@@ -88,6 +88,7 @@ instance (priority := 100) toSubgroupClass : SubgroupClass S K :=
 
 variable {S}
 
+@[set_like]
 theorem coe_rat_mem (s : S) (x : ℚ) : (x : K) ∈ s := by
   simpa only [Rat.cast_def] using div_mem (coe_int_mem s x.num) (coe_nat_mem s x.den)
 #align subfield_class.coe_rat_mem SubfieldClass.coe_rat_mem
@@ -101,9 +102,15 @@ theorem coe_rat_cast (s : S) (x : ℚ) : ((x : s) : K) = x :=
 #align subfield_class.coe_rat_cast SubfieldClass.coe_rat_cast
 
 -- Porting note: Mistranslated: used to be (a • x : K) ∈ s
+@[set_like]
 theorem rat_smul_mem (s : S) (a : ℚ) (x : s) : a • (x : K) ∈ s := by
   simpa only [Rat.smul_def] using mul_mem (coe_rat_mem s a) x.prop
 #align subfield_class.rat_smul_mem SubfieldClass.rat_smul_mem
+
+@[set_like]
+lemma ofScientific_mem (s : S) {b : Bool} {n m : ℕ} :
+    (OfScientific.ofScientific n b m : K) ∈ s :=
+  SubfieldClass.coe_rat_mem ..
 
 instance (s : S) : SMul ℚ s :=
   ⟨fun a x => ⟨a • (x : K), rat_smul_mem s a x⟩⟩
@@ -698,6 +705,10 @@ theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSub
 theorem subset_closure {s : Set K} : s ⊆ closure s :=
   Set.Subset.trans Subring.subset_closure (subring_closure_le s)
 #align subfield.subset_closure Subfield.subset_closure
+
+@[set_like 20]
+theorem mem_closure_of_mem {s : Set K} {x : K} (hx : x ∈ s) : x ∈ Subfield.closure s :=
+  subset_closure hx
 
 theorem not_mem_of_not_mem_closure {s : Set K} {P : K} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)

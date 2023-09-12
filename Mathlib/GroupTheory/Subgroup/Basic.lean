@@ -124,6 +124,8 @@ class AddSubgroupClass (S G : Type*) [SubNegMonoid G] [SetLike S G] extends AddS
 
 attribute [to_additive] InvMemClass SubgroupClass
 
+attribute [set_like] inv_mem neg_mem
+
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
     {x : G} : x⁻¹ ∈ H ↔ x ∈ H :=
@@ -138,13 +140,13 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
-@[to_additive "An additive subgroup is closed under subtraction."]
+@[to_additive "An additive subgroup is closed under subtraction." (attr := set_like)]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
   rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
 #align div_mem div_mem
 #align sub_mem sub_mem
 
-@[to_additive]
+@[to_additive (attr := set_like)]
 theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
     rw [zpow_ofNat]
@@ -1104,6 +1106,10 @@ theorem mem_closure {x : G} : x ∈ closure k ↔ ∀ K : Subgroup G, k ⊆ K �
 theorem subset_closure : k ⊆ closure k := fun _ hx => mem_closure.2 fun _ hK => hK hx
 #align subgroup.subset_closure Subgroup.subset_closure
 #align add_subgroup.subset_closure AddSubgroup.subset_closure
+
+@[to_additive (attr := set_like)]
+lemma mem_closure_of_mem {x : G} (hx : x ∈ k) : x ∈ closure k :=
+  subset_closure hx
 
 @[to_additive]
 theorem not_mem_of_not_mem_closure {P : G} (hP : P ∉ closure k) : P ∉ k := fun h =>

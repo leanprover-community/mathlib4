@@ -86,6 +86,7 @@ instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
+@[set_like]
 theorem coe_int_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
 #align coe_int_mem coe_int_mem
 
@@ -899,6 +900,10 @@ theorem mem_closure {x : R} {s : Set R} : x ∈ closure s ↔ ∀ S : Subring R,
 @[simp]
 theorem subset_closure {s : Set R} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 #align subring.subset_closure Subring.subset_closure
+
+@[set_like 20]
+lemma mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s :=
+  subset_closure hx
 
 theorem not_mem_of_not_mem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)

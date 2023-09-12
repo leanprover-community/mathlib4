@@ -76,6 +76,8 @@ export AddMemClass (add_mem)
 
 attribute [to_additive] MulMemClass
 
+attribute [set_like] mul_mem add_mem
+
 /-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
 structure Subsemigroup (M : Type*) [Mul M] where
   /-- The carrier of a subsemigroup. -/
@@ -310,6 +312,10 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Subsemigroup M, s ⊆ 
 theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 #align subsemigroup.subset_closure Subsemigroup.subset_closure
 #align add_subsemigroup.subset_closure AddSubsemigroup.subset_closure
+
+@[to_additive (attr := simp)]
+lemma mem_closure_of_mem {x : M} (hx : x ∈ s) : x ∈ closure s :=
+  subset_closure hx
 
 @[to_additive]
 theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
