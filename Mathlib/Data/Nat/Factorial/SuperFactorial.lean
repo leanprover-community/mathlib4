@@ -5,6 +5,7 @@ Authors: Moritz Firsching
 -/
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Algebra.BigOperators.Intervals
+
 /-!
 # Superfactorial
 

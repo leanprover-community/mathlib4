@@ -194,7 +194,6 @@ theorem prod_range_add_one_eq_factorial : ∀ n : ℕ, (∏ x in range n, (x + 1
   | n + 1 => by simp [Finset.range_succ, prod_range_add_one_eq_factorial n]
 #align finset.prod_range_add_one_eq_factorial Finset.prod_range_add_one_eq_factorial
 
-
 section GaussSum
 
 /-- Gauss' summation formula -/
