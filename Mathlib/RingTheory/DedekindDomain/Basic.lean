@@ -103,8 +103,16 @@ This is the default implementation, but there are equivalent definitions,
 TODO: Prove that these are actually equivalent definitions.
 -/
 class IsDedekindDomain
-  extends IsDomain A, IsNoetherian A A, DimensionLEOne A, IsIntegrallyClosed A : Prop
+  extends IsDomain A, IsNoetherian A A, DimensionLEOne A, IsIntegrallyClosed A (FractionRing A) :
+  Prop
 #align is_dedekind_domain IsDedekindDomain
+
+/--
+A Dedekind domain is integrally closed, for any choice for field of fractions.
+-/
+theorem IsDedekindDomain.isIntegrallyClosed (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K]
+    [IsDedekindDomain A] : IsIntegrallyClosed A K :=
+  (IsLocalization.algEquiv A⁰ _ K).isIntegrallyClosed_iff.mp IsDedekindDomain.toIsIntegrallyClosed
 
 /-- An integral domain is a Dedekind domain iff and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
@@ -114,8 +122,8 @@ theorem isDedekindDomain_iff (K : Type*) [Field K] [Algebra A K] [IsFractionRing
       IsDomain A ∧ IsNoetherianRing A ∧ DimensionLEOne A ∧
         ∀ {x : K}, IsIntegral A x → ∃ y, algebraMap A K y = x :=
   ⟨fun _ => ⟨inferInstance, inferInstance, inferInstance,
-             fun {_} => (isIntegrallyClosed_iff K).mp inferInstance⟩,
-   fun ⟨hid, hr, hd, hi⟩ => { hid, hr, hd, (isIntegrallyClosed_iff K).mpr @hi with }⟩
+             fun {_} => (isIntegrallyClosed_fractionRing_iff (FractionRing A) K).mp inferInstance⟩,
+   fun ⟨hid, hr, hd, hi⟩ => { hid, hr, hd, (isIntegrallyClosed_fractionRing_iff _ K).mpr @hi with }⟩
 #align is_dedekind_domain_iff isDedekindDomain_iff
 
 -- See library note [lower instance priority]

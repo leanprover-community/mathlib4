@@ -74,7 +74,7 @@ variable [IsDomain R] [IsFractionRing R K]
 
 /-- If `K = Frac(R)` and `g : K[X]` divides a monic polynomial with coefficients in `R`, then
     `g * (C g.leadingCoeff⁻¹)` has coefficients in `R` -/
-theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]} (hf : f.Monic)
+theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R K] {f : R[X]} (hf : f.Monic)
     {g : K[X]} (hg : g ∣ f.map (algebraMap R K)) :
     ∃ g' : R[X], g'.map (algebraMap R K) * (C <| leadingCoeff g) = g := by
   have g_ne_0 : g ≠ 0 := ne_zero_of_dvd_ne_zero (Monic.ne_zero <| hf.map (algebraMap R K)) hg
@@ -150,7 +150,7 @@ open IsIntegrallyClosed
 
 /-- **Gauss's Lemma** for integrally closed domains states that a monic polynomial is irreducible
   iff it is irreducible in the fraction field. -/
-theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R] {p : R[X]}
+theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R K] {p : R[X]}
     (h : p.Monic) : Irreducible p ↔ Irreducible (p.map <| algebraMap R K) := by
   /- The ← direction follows from `IsPrimitive.irreducible_of_irreducible_map_of_injective`.
        For the → direction, it is enought to show that if `(p.map $ algebraMap R K) = a * b` and
@@ -188,13 +188,13 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
 /-- Integrally closed domains are precisely the domains for in which Gauss's lemma holds
     for monic polynomials -/
 theorem isIntegrallyClosed_iff' :
-    IsIntegrallyClosed R ↔
+    IsIntegrallyClosed R K ↔
       ∀ p : R[X], p.Monic → (Irreducible p ↔ Irreducible (p.map <| algebraMap R K)) := by
   constructor
   · intro hR p hp; exact Monic.irreducible_iff_irreducible_map_fraction_map hp
   · intro H
     refine'
-      (isIntegrallyClosed_iff K).mpr fun {x} hx =>
+      (IsIntegrallyClosed_iff _ K).mpr fun {x} hx =>
         RingHom.mem_range.mp <| minpoly.mem_range_of_degree_eq_one R x _
     rw [← Monic.degree_map (minpoly.monic hx) (algebraMap R K)]
     apply
@@ -202,7 +202,7 @@ theorem isIntegrallyClosed_iff' :
     rw [IsRoot, eval_map, ← aeval_def, minpoly.aeval R x]
 #align polynomial.is_integrally_closed_iff' Polynomial.isIntegrallyClosed_iff'
 
-theorem Monic.dvd_of_fraction_map_dvd_fraction_map [IsIntegrallyClosed R] {p q : R[X]}
+theorem Monic.dvd_of_fraction_map_dvd_fraction_map [IsIntegrallyClosed R K] {p q : R[X]}
     (hp : p.Monic) (hq : q.Monic)
     (h : q.map (algebraMap R K) ∣ p.map (algebraMap R K)) : q ∣ p := by
   obtain ⟨r, hr⟩ := h
@@ -213,7 +213,7 @@ theorem Monic.dvd_of_fraction_map_dvd_fraction_map [IsIntegrallyClosed R] {p q :
   · exact Monic.of_mul_monic_left (hq.map (algebraMap R K)) (by simpa [← hr] using hp.map _)
 #align polynomial.monic.dvd_of_fraction_map_dvd_fraction_map Polynomial.Monic.dvd_of_fraction_map_dvd_fraction_map
 
-theorem Monic.dvd_iff_fraction_map_dvd_fraction_map [IsIntegrallyClosed R] {p q : R[X]}
+theorem Monic.dvd_iff_fraction_map_dvd_fraction_map [IsIntegrallyClosed R K] {p q : R[X]}
     (hp : p.Monic) (hq : q.Monic) : q.map (algebraMap R K) ∣ p.map (algebraMap R K) ↔ q ∣ p :=
   ⟨fun h => hp.dvd_of_fraction_map_dvd_fraction_map hq h, fun ⟨a, b⟩ =>
     ⟨a.map (algebraMap R K), b.symm ▸ Polynomial.map_mul (algebraMap R K)⟩⟩

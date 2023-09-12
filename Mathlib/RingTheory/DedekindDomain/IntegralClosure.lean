@@ -93,7 +93,7 @@ variable [FiniteDimensional K L]
 variable {A K L}
 
 theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι]
-    [DecidableEq ι] (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
+    [DecidableEq ι] (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A K] :
     LinearMap.range ((Algebra.linearMap C L).restrictScalars A) ≤
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
   let db := (traceForm K L).dualBasis (traceForm_nondegenerate K L) b
@@ -119,7 +119,7 @@ theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*}
 #align is_integral_closure.range_le_span_dual_basis IsIntegralClosure.range_le_span_dualBasis
 
 theorem integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
+    (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A K] :
     Subalgebra.toSubmodule (integralClosure A L) ≤
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
   refine' le_trans _ (IsIntegralClosure.range_le_span_dualBasis (integralClosure A L) b hb_int)
@@ -187,7 +187,7 @@ variable [IsSeparable K L]
 /- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is
 integrally closed and Noetherian, the integral closure `C` of `A` in `L` is
 Noetherian over `A`. -/
-theorem IsIntegralClosure.isNoetherian [IsIntegrallyClosed A] [IsNoetherianRing A] :
+theorem IsIntegralClosure.isNoetherian [IsIntegrallyClosed A K] [IsNoetherianRing A] :
     IsNoetherian A C := by
   haveI := Classical.decEq L
   obtain ⟨s, b, hb_int⟩ := FiniteDimensional.exists_is_basis_integral A K L
@@ -204,7 +204,7 @@ theorem IsIntegralClosure.isNoetherian [IsIntegrallyClosed A] [IsNoetherianRing 
 /- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is
 integrally closed and Noetherian, the integral closure `C` of `A` in `L` is
 Noetherian. -/
-theorem IsIntegralClosure.isNoetherianRing [IsIntegrallyClosed A] [IsNoetherianRing A] :
+theorem IsIntegralClosure.isNoetherianRing [IsIntegrallyClosed A K] [IsNoetherianRing A] :
     IsNoetherianRing C :=
   isNoetherianRing_iff.mpr <| isNoetherian_of_tower A (IsIntegralClosure.isNoetherian A K L C)
 #align is_integral_closure.is_noetherian_ring IsIntegralClosure.isNoetherianRing
@@ -237,7 +237,7 @@ variable {A K}
 /- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is
 integrally closed and Noetherian, the integral closure of `A` in `L` is
 Noetherian. -/
-theorem integralClosure.isNoetherianRing [IsIntegrallyClosed A] [IsNoetherianRing A] :
+theorem integralClosure.isNoetherianRing [IsIntegrallyClosed A K] [IsNoetherianRing A] :
     IsNoetherianRing (integralClosure A L) :=
   IsIntegralClosure.isNoetherianRing A K L (integralClosure A L)
 #align integral_closure.is_noetherian_ring integralClosure.isNoetherianRing
@@ -253,9 +253,10 @@ and `C := integralClosure A L`.
 -/
 theorem IsIntegralClosure.isDedekindDomain [IsDedekindDomain A] : IsDedekindDomain C :=
   have : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension A K L C
+  have : IsIntegrallyClosed A K := IsDedekindDomain.isIntegrallyClosed A K
   { IsIntegralClosure.isNoetherianRing A K L C,
     Ring.DimensionLEOne.isIntegralClosure A L C,
-    (isIntegrallyClosed_iff L).mpr fun {x} hx =>
+    (isIntegrallyClosed_fractionRing_iff _ L).mpr fun {x} hx =>
       ⟨IsIntegralClosure.mk' C x (isIntegral_trans (IsIntegralClosure.isIntegral_algebra A L) _ hx),
         IsIntegralClosure.algebraMap_mk' _ _ _⟩ with : IsDedekindDomain C }
 #align is_integral_closure.is_dedekind_domain IsIntegralClosure.isDedekindDomain

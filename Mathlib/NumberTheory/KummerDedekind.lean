@@ -214,7 +214,7 @@ namespace KummerDedekind
 
 open scoped BigOperators Polynomial Classical
 
-variable [IsDomain R] [IsIntegrallyClosed R]
+variable [IsDomain R] [IsIntegrallyClosed R (FractionRing R)]
 
 variable [IsDomain S] [IsDedekindDomain S]
 

@@ -105,8 +105,8 @@ instance [NumberField K] : IsFractionRing (𝓞 K) K :=
 instance : IsIntegralClosure (𝓞 K) ℤ K :=
   integralClosure.isIntegralClosure _ _
 
-instance [NumberField K] : IsIntegrallyClosed (𝓞 K) :=
-  integralClosure.isIntegrallyClosedOfFiniteExtension ℚ
+instance [NumberField K] : IsIntegrallyClosed (𝓞 K) K :=
+  integralClosure.isIntegrallyClosed
 
 theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (x : K) :=
   x.2

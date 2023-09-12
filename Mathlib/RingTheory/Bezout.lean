@@ -97,7 +97,8 @@ attribute [local instance] toGCDDomain
 
 -- Note that the proof depends on the `local attribute [instance]` above, and is thus necessary to
 -- be stated.
-instance (priority := 100) [IsDomain R] [IsBezout R] : IsIntegrallyClosed R := by
+instance (priority := 100) {K : Type*} [Field K] [Algebra R K]
+    [IsDomain R] [IsBezout R] [IsFractionRing R K] : IsIntegrallyClosed R K := by
   classical exact GCDMonoid.toIsIntegrallyClosed
 
 theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)

@@ -81,7 +81,7 @@ theorem minpoly_dvd_expand {p : ℕ} (hdiv : ¬p ∣ n) :
     minpoly ℤ μ ∣ expand ℤ p (minpoly ℤ (μ ^ p)) := by
   rcases n.eq_zero_or_pos with (rfl | hpos)
   · simp_all
-  letI : IsIntegrallyClosed ℤ := GCDMonoid.toIsIntegrallyClosed
+  letI : IsIntegrallyClosed ℤ ℚ := GCDMonoid.toIsIntegrallyClosed
   refine' minpoly.isIntegrallyClosed_dvd (h.isIntegral hpos) _
   · rw [aeval_def, coe_expand, ← comp, eval₂_eq_eval_map, map_comp, Polynomial.map_pow, map_X,
       eval_comp, eval_pow, eval_X, ← eval₂_eq_eval_map, ← aeval_def]

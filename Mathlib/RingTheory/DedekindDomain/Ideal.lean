@@ -293,12 +293,12 @@ theorem isNoetherianRing : IsNoetherianRing A := by
   exact I.fg_of_isUnit (IsFractionRing.injective A (FractionRing A)) (h.isUnit hI)
 #align is_dedekind_domain_inv.is_noetherian_ring IsDedekindDomainInv.isNoetherianRing
 
-theorem integrallyClosed : IsIntegrallyClosed A := by
+theorem integrallyClosed : IsIntegrallyClosed A K := by
   -- It suffices to show that for integral `x`,
   -- `A[x]` (which is a fractional ideal) is in fact equal to `A`.
   refine ⟨fun {x hx} => ?_⟩
-  rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot, ←
-    coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
+  rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot,
+    ← coe_spanSingleton A⁰ (1 : K), spanSingleton_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (h.isUnit _)]
   · exact mem_adjoinIntegral_self A⁰ x hx
   · exact fun h => one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)
@@ -492,6 +492,7 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
   · rw [hJ0, inv_zero']; exact zero_le _
   intro x hx
   -- In particular, we'll show all `x ∈ J⁻¹` are integral.
+  have := IsDedekindDomain.isIntegrallyClosed A K
   suffices x ∈ integralClosure A K by
     rwa [IsIntegrallyClosed.integralClosure_eq_bot, Algebra.mem_bot, Set.mem_range,
       ← mem_one_iff] at this

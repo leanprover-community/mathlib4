@@ -30,11 +30,13 @@ theorem IsLocalization.surj_of_gcd_domain (M : Submonoid R) [IsLocalization M A]
   rw [Subtype.coe_mk, hy', ← mul_comm y', mul_assoc]; conv_lhs => rw [hx']
 #align is_localization.surj_of_gcd_domain IsLocalization.surj_of_gcd_domain
 
-instance (priority := 100) GCDMonoid.toIsIntegrallyClosed : IsIntegrallyClosed R :=
+variable [IsFractionRing R A]
+
+instance (priority := 100) GCDMonoid.toIsIntegrallyClosed : IsIntegrallyClosed R A :=
   ⟨fun {X} ⟨p, hp₁, hp₂⟩ => by
     obtain ⟨x, y, hg, he⟩ := IsLocalization.surj_of_gcd_domain (nonZeroDivisors R) X
     have :=
-      Polynomial.dvd_pow_natDegree_of_eval₂_eq_zero (IsFractionRing.injective R <| FractionRing R)
+      Polynomial.dvd_pow_natDegree_of_eval₂_eq_zero (IsFractionRing.injective R <| A)
         hp₁ y x _ hp₂ (by rw [mul_comm, he])
     have : IsUnit y := by
       rw [isUnit_iff_dvd_one, ← one_pow]

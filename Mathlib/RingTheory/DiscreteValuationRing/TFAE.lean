@@ -154,7 +154,8 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     (h : ¬IsField R) :
     List.TFAE
       [DiscreteValuationRing R, ValuationRing R, IsDedekindDomain R,
-        IsIntegrallyClosed R ∧ ∃! P : Ideal R, P ≠ ⊥ ∧ P.IsPrime, (maximalIdeal R).IsPrincipal,
+        IsIntegrallyClosed R (FractionRing R) ∧ ∃! P : Ideal R, P ≠ ⊥ ∧ P.IsPrime,
+        (maximalIdeal R).IsPrincipal,
         FiniteDimensional.finrank (ResidueField R) (CotangentSpace R) = 1,
         ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
   have ne_bot := Ring.ne_bot_of_isMaximal_of_not_isField (maximalIdeal.isMaximal R) h

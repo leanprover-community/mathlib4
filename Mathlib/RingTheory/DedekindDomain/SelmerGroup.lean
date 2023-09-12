@@ -215,6 +215,7 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
     have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := by exact congr_arg Units.inv hx
     rw [Units.val_pow_eq_pow_val] at hv
     rw [← inv_pow, Units.inv_mk, Units.val_pow_eq_pow_val] at hi
+    have := IsDedekindDomain.isIntegrallyClosed R K
     rcases IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow (R := R) (x := v) hn.out
         (hv.symm ▸ isIntegral_algebraMap) with
       ⟨v', rfl⟩

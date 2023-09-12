@@ -42,7 +42,7 @@ section
 variable (K L : Type*) [Field K] [Algebra R K] [IsFractionRing R K] [Field L] [Algebra R L]
   [Algebra S L] [Algebra K L] [IsScalarTower R K L] [IsScalarTower R S L]
 
-variable [IsIntegrallyClosed R]
+variable [IsIntegrallyClosed R K]
 
 /-- For integrally closed domains, the minimal polynomial over the ring is the same as the minimal
 polynomial over the fraction field. See `minpoly.isIntegrallyClosed_eq_field_fractions'` if
@@ -71,7 +71,7 @@ end
 
 variable [IsDomain S] [NoZeroSMulDivisors R S]
 
-variable [IsIntegrallyClosed R]
+variable [IsIntegrallyClosed R (FractionRing R)]
 
 /-- For integrally closed rings, the minimal polynomial divides any polynomial that has the
   integral element as root. See also `minpoly.dvd` which relaxes the assumptions on `S`

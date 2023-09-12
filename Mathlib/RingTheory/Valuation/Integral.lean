@@ -63,7 +63,7 @@ variable [Algebra O K] [IsFractionRing O K]
 
 variable (hv : Integers v O)
 
-theorem integrallyClosed : IsIntegrallyClosed O :=
+theorem integrallyClosed : IsIntegrallyClosed O K :=
   (IsIntegrallyClosed.integralClosure_eq_bot_iff K).mp (Valuation.Integers.integralClosure hv)
 #align valuation.integers.integrally_closed Valuation.Integers.integrallyClosed
 

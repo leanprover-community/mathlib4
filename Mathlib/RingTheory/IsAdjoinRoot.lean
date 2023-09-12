@@ -730,7 +730,7 @@ end IsAdjoinRoot
 
 namespace IsAdjoinRootMonic
 
-theorem minpoly_eq [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [IsIntegrallyClosed R]
+theorem minpoly_eq [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [IsIntegrallyClosed R (FractionRing R)]
     (h : IsAdjoinRootMonic S f) (hirr : Irreducible f) : minpoly R h.root = f :=
   let ⟨q, hq⟩ := minpoly.isIntegrallyClosed_dvd h.isIntegral_root h.aeval_root
   symm <|
@@ -749,7 +749,7 @@ section Algebra
 open AdjoinRoot IsAdjoinRoot minpoly PowerBasis IsAdjoinRootMonic Algebra
 
 theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S]
-    [IsIntegrallyClosed R] {x : S} (hx' : IsIntegral R x) :
+    [IsIntegrallyClosed R (FractionRing R)] {x : S} (hx' : IsIntegral R x) :
     minpoly R x = minpoly R (Algebra.adjoin.powerBasis' hx').gen := by
   haveI := isDomain_of_prime (prime_of_isIntegrallyClosed hx')
   haveI :=

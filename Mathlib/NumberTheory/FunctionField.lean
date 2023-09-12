@@ -132,8 +132,8 @@ variable [FunctionField Fq F]
 instance : IsFractionRing (ringOfIntegers Fq F) F :=
   integralClosure.isFractionRing_of_finite_extension (RatFunc Fq) F
 
-instance : IsIntegrallyClosed (ringOfIntegers Fq F) :=
-  integralClosure.isIntegrallyClosedOfFiniteExtension (RatFunc Fq)
+instance : IsIntegrallyClosed (ringOfIntegers Fq F) F :=
+  integralClosure.isIntegrallyClosed
 
 instance [IsSeparable (RatFunc Fq) F] : IsNoetherian Fq[X] (ringOfIntegers Fq F) :=
   IsIntegralClosure.isNoetherian _ (RatFunc Fq) F _
