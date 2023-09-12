@@ -396,7 +396,7 @@ theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS =
 #align submonoid.subset_closure Submonoid.subset_closure
 #align add_submonoid.subset_closure AddSubmonoid.subset_closure
 
-@[to_additive (attr := set_like)]
+@[to_additive (attr := set_like 20)]
 lemma mem_closure_of_mem {x : M} (hx : x ∈ s) : x ∈ closure s :=
   subset_closure hx
 
