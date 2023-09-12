@@ -63,6 +63,8 @@ class VAddMemClass (S : Type*) (R : outParam <| Type*) (M : Type*) [VAdd R M] [S
 
 attribute [to_additive] SMulMemClass
 
+attribute [set_like 10] SMulMemClass.smul_mem VAddMemClass.vadd_mem
+
 namespace SetLike
 
 variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
