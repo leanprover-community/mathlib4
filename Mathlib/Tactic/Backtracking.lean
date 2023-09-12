@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Lean.Meta.Basic
 import Lean.Meta.Tactic.Util
+import Std.Data.List.Basic
 import Mathlib.Lean.Meta
 
 /-!
