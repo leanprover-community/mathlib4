@@ -296,10 +296,4 @@ theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.eq
 theorem coe_measurableEquiv_symm :
     ⇑(EuclideanSpace.measurableEquiv ι).symm = (WithLp.equiv 2 _).symm := rfl
 
-theorem coe_continuousLinearEquiv :
-    ⇑(EuclideanSpace.measurableEquiv ι) = (EuclideanSpace.equiv ι ℝ) := rfl
-
-theorem coe_continuousLinearEquiv_symm :
-    ⇑(EuclideanSpace.measurableEquiv ι).symm = (EuclideanSpace.equiv ι ℝ).symm := rfl
-
 end EuclideanSpace

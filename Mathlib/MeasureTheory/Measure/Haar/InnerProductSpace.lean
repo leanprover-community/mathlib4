@@ -86,9 +86,10 @@ theorem EuclideanSpace.volume_preserving_measurableEquiv (ι : Type*) [Fintype �
     MeasurePreserving (EuclideanSpace.measurableEquiv ι) := by
   classical
   convert ((EuclideanSpace.measurableEquiv ι).symm.measurable.measurePreserving _).symm
-  rw [eq_comm, ← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
-    coe_continuousLinearEquiv_symm, Basis.map_addHaar, Basis.addHaar_eq_iff,
-    ContinuousLinearEquiv.symm_toLinearEquiv, ← EuclideanSpace.basisFun_toBasis ι ℝ]
+  rw [eq_comm, ← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def]
+  rw [coe_measurableEquiv_symm, ← PiLp.continuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
+  rw [Basis.addHaar_eq_iff, ContinuousLinearEquiv.symm_toLinearEquiv,
+    ← EuclideanSpace.basisFun_toBasis ι ℝ]
   exact OrthonormalBasis.volume_parallelepiped (EuclideanSpace.basisFun _ _)
 
 end EuclideanSpace
