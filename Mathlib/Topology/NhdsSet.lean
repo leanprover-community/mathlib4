@@ -29,7 +29,8 @@ Furthermore, we have the following results:
 
 open Set Filter Topology
 
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {s t s₁ s₂ t₁ t₂ : Set α} {x : α}
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : Filter α}
+  {s t s₁ s₂ t₁ t₂ : Set α} {x : α}
 
 /-- The filter of neighborhoods of a set in a topological space. -/
 def nhdsSet (s : Set α) : Filter α :=
