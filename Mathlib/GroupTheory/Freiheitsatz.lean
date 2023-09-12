@@ -34,7 +34,7 @@ def of (x : α) : OneRelator r := QuotientGroup.mk (FreeGroup.of x)
 @[simp]
 theorem lift_of (f : α → G) (hf : FreeGroup.lift f r = 1) (x : α) :
     lift f hf (of x) = f x := by
-  rw [lift, of, QuotientGroup.lift_mk', FreeGroup.lift.of]
+  rw [lift, of, QuotientGroup.lift_mk', FreeGroup.lift_of]
 
 @[ext high]
 theorem hom_ext {f g : OneRelator r →* G} (h : ∀ x, f (of x) = g (of x)) : f = g := by
@@ -99,7 +99,7 @@ def freeGroupEquivSemidirectProduct {α : Type*} [DecidableEq α] (a : α) :
       (FreeGroup.ext_hom _ _ <| by
         rintro ⟨⟨b, hb⟩, z⟩
         simp only [ne_eq, zpow_neg, MonoidHom.coe_comp, Function.comp_apply, lift_inl,
-          lift.of, _root_.map_mul, map_zpow, dite_true, hb, dite_false, _root_.map_inv,
+          lift_of, _root_.map_mul, map_zpow, dite_true, hb, dite_false, _root_.map_inv,
           MonoidHom.id_comp]
         rw [← _root_.map_zpow, ← _root_.map_inv, ← inl_aut, ← Int.ofAdd_mul, one_mul,
           ofAdd_toAdd]
@@ -112,16 +112,71 @@ end Equivs
 
 namespace OneRelator
 
-variable {α : Type*}
-#print Finset.sup
-def HNNExtensionWord (r : FreeGroup α) (t : α) :
+section HNNExtension
 
-def HNNExtensionType {α : Type*} (r : FreeGroup α) (t : α) : Type* :=
-  { p : α × Multiplicative ℤ //
-      ∃ z₁ z₂, (p.1, z₁) ∈ r.vars ∧ (p.1, z₂ ∈ r.vars) ∧
-      z₁ ≤ p.2 ∧ p.2 ≤ z₂   }
+variable {α : Type*} [DecidableEq α] (r : FreeGroup α) (t : α)
 
-def equivHNNExtension {α : Type*} (r : FreeGroup α) (t : α) :
+def newRelator (r : FreeGroup α) (t : α) :
+    FreeGroup ({ b // b ≠ t } × Multiplicative ℤ) :=
+  (freeGroupEquivSemidirectProduct t r).left
 
+def HNNSet (r : FreeGroup α) (t : α) : Set ({ b : α // b ≠ t } × Multiplicative ℤ) :=
+  { p : { b : α // b ≠ t } × Multiplicative ℤ |
+      ∃ z₁ z₂, (p.1, z₁) ∈ (newRelator r t).vars ∧
+               (p.1, z₂) ∈ (newRelator r t).vars ∧
+        z₁ ≤ p.2 ∧ ↑p.2 ≤ z₂ }
+
+def SubgroupASet (r : FreeGroup α) (t : α) : Set ({ b : α // b ≠ t } × Multiplicative ℤ) :=
+  { p : { b : α // b ≠ t } × Multiplicative ℤ |
+        ∃ z₁ z₂, (p.1, z₁) ∈ (newRelator r t).vars ∧
+                 (p.1, z₂) ∈ (newRelator r t).vars ∧
+          z₁ ≤ p.2 ∧ ↑p.2 < z₂ }
+
+def SubgroupBSet (r : FreeGroup α) (t : α) : Set ({ b : α // b ≠ t } × Multiplicative ℤ) :=
+  { p : { b : α // b ≠ t } × Multiplicative ℤ |
+        ∃ z₁ z₂, (p.1, z₁) ∈ (newRelator r t).vars ∧
+                 (p.1, z₂) ∈ (newRelator r t).vars ∧
+          z₁ < p.2 ∧ ↑p.2 ≤ z₂ }
+
+theorem subgroupASet_subset_HNNSet :
+    SubgroupASet r t ⊆ HNNSet r t :=
+  fun _ ⟨z₁, z₂, hz₁, hz₂, hz₁p, hz₂p⟩ =>
+    ⟨z₁, z₂, hz₁, hz₂, hz₁p, le_of_lt hz₂p⟩
+
+theorem subgroupBSet_subset_HNNSet :
+    SubgroupBSet r t ⊆ HNNSet r t :=
+  fun _ ⟨z₁, z₂, hz₁, hz₂, hz₁p, hz₂p⟩ =>
+    ⟨z₁, z₂, hz₁, hz₂, le_of_lt hz₁p, hz₂p⟩
+
+instance : Coe (SubgroupASet r t) (HNNSet r t) :=
+  ⟨Set.inclusion (subgroupASet_subset_HNNSet r t)⟩
+
+instance : Coe (SubgroupBSet r t) (HNNSet r t) :=
+  ⟨Set.inclusion (subgroupBSet_subset_HNNSet r t)⟩
+
+def subgroupA : Subgroup (FreeGroup (HNNSet r t)) :=
+  MonoidHom.range (FreeGroup.map ((↑) : SubgroupASet r t → HNNSet r t))
+
+def subgroupB : Subgroup (FreeGroup (HNNSet r t)) :=
+  MonoidHom.range (FreeGroup.map ((↑) : SubgroupASet r t → HNNSet r t))
+
+noncomputable def subgroupEquiv : subgroupA r t ≃* subgroupB r t :=
+  MulEquiv.trans
+    (MonoidHom.ofInjective (FreeGroup.map_injective
+      (Set.inclusion_injective _))).symm
+    ((MonoidHom.ofInjective (FreeGroup.map_injective
+      (Set.inclusion_injective _))))
+
+noncomputable def equivHNNExtension :
+    OneRelator r ≃* HNNExtension _ (subgroupA r t) (subgroupB r t) (subgroupEquiv r t) :=
+  MonoidHom.toMulEquiv
+    (OneRelator.lift
+      (fun a => sorry)
+      sorry)
+    _
+    _
+    _
+
+end HNNExtension
 
 end OneRelator
