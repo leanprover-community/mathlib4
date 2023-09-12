@@ -101,7 +101,7 @@ If `m : M` and `h : r n₁ n₂`, then `CovariantClass.elim m h : r (μ m n₁) 
 
 *Note:*  if using this class for an operation like addition or multiplication, please,
 use it in the form `CovariantClass M M HMul.hMul LE.le` and likewise with `HAdd.hAdd, LT.lt...`.
-In particular, the `H`eterogenous is important!
+In particular, the `H`eterogeneity is important!
 This avoids eta-expansion of the deprecated spelling `(· * ·)`.
 
 This is only relevant until [Issue #2267](https://github.com/leanprover/lean4/pull/2267) gets
