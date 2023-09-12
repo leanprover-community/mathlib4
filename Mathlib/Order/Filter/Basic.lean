@@ -379,6 +379,10 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
     exact mem_of_superset ((sInter_mem tfin).2 fun V hV => GenerateSets.basic <| hts hV) h
 #align filter.mem_generate_iff Filter.mem_generate_iff
 
+@[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
+le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem $ mem_singleton _) ht) $
+  le_generate_iff.2 $ singleton_subset_iff.2 Subset.rfl
+
 /-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
 `s : Set (Set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
 protected def mkOfClosure (s : Set (Set α)) (hs : (generate s).sets = s) : Filter α where

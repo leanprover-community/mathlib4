@@ -23,49 +23,6 @@ Finite product of Alexandrov-discrete spaces is Alexandrov-discrete.
 Alexandroff, discrete, finitely generated, fg space
 -/
 
-namespace Set
-variable {ι : Sort*} {α β : Type*}
-
-lemma iUnion_prod_subset (f : ι → Set α) (g : ι → Set β) :
-  ⋃ i, f i ×ˢ g i ⊆ (⋃ i, f i) ×ˢ ⋃ i, g i :=
-iUnion_subset λ _ ↦ prod_mono (subset_iUnion _ _) (subset_iUnion _ _)
-
-end Set
-
-namespace TopologicalSpace
-variable {α : Type*} [TopologicalSpace α] {B : Set (Set α)} {s t : Set α}
-open Set
-
-lemma IsTopologicalBasis.subset_of_forall_subset (hB : IsTopologicalBasis B) (hs : IsOpen s)
-  (h : ∀ U ∈ B, U ⊆ s → U ⊆ t) : s ⊆ t := by rw [hB.open_eq_sUnion' hs]; simpa [sUnion_subset_iff]
-
-lemma IsTopologicalBasis.eq_of_forall_subset_iff (hB : IsTopologicalBasis B) (hs : IsOpen s)
-  (ht : IsOpen t) (h : ∀ U ∈ B, U ⊆ s ↔ U ⊆ t) : s = t := by
-  rw [hB.open_eq_sUnion' hs, hB.open_eq_sUnion' ht]
-  exact congr_arg _ (Set.ext λ U ↦ and_congr_right $ h _)
-
-end TopologicalSpace
-
-namespace Filter
-variable {α : Type*}
-open Set
-open scoped Topology
-
-@[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
-le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem $ mem_singleton _) ht) $
-  le_generate_iff.2 $ singleton_subset_iff.2 Subset.rfl
-
-end Filter
-
-section
-variable {α : Type*} [TopologicalSpace α] {f : Filter α} {s : Set α}
-open Filter Set
-open scoped Topology
-
-@[simp] lemma nhdsSet_le : 𝓝ˢ s ≤ f ↔ ∀ a ∈ s, 𝓝 a ≤ f := by simp [nhdsSet]
-
-end
-
 open Filter Set TopologicalSpace
 open scoped Topology
 

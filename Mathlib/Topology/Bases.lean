@@ -63,7 +63,7 @@ namespace TopologicalSpace
 
 universe u
 
-variable {α : Type u} [t : TopologicalSpace α]
+variable {α : Type u} [t : TopologicalSpace α] {B : Set (Set α)} {s t : Set α}
 
 /-- A topological basis is one that satisfies the necessary conditions so that
   it suffices to take unions of the basis sets to get a topology (without taking
@@ -207,6 +207,14 @@ theorem IsTopologicalBasis.open_eq_iUnion {B : Set (Set α)} (hB : IsTopological
     rw [← sUnion_eq_iUnion]
     apply hB.open_eq_sUnion' ou, fun s => And.left s.2⟩
 #align topological_space.is_topological_basis.open_eq_Union TopologicalSpace.IsTopologicalBasis.open_eq_iUnion
+
+lemma IsTopologicalBasis.subset_of_forall_subset (hB : IsTopologicalBasis B) (hs : IsOpen s)
+  (h : ∀ U ∈ B, U ⊆ s → U ⊆ t) : s ⊆ t := by rw [hB.open_eq_sUnion' hs]; simpa [sUnion_subset_iff]
+
+lemma IsTopologicalBasis.eq_of_forall_subset_iff (hB : IsTopologicalBasis B) (hs : IsOpen s)
+  (ht : IsOpen t) (h : ∀ U ∈ B, U ⊆ s ↔ U ⊆ t) : s = t := by
+  rw [hB.open_eq_sUnion' hs, hB.open_eq_sUnion' ht]
+  exact congr_arg _ (Set.ext λ U ↦ and_congr_right $ h _)
 
 /-- A point `a` is in the closure of `s` iff all basis sets containing `a` intersect `s`. -/
 theorem IsTopologicalBasis.mem_closure_iff {b : Set (Set α)} (hb : IsTopologicalBasis b) {s : Set α}
