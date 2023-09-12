@@ -50,7 +50,7 @@ distinguish the quotient types more easily.
 free group, Newman's diamond lemma, Church-Rosser theorem
 -/
 
-open Relation
+open Relation Function
 
 universe u v w
 
@@ -842,6 +842,16 @@ theorem map_eq_lift : map f x = lift (of ∘ f) x :=
   Eq.symm <| map_unique _ fun x => by simp
 #align free_group.map_eq_lift FreeGroup.map_eq_lift
 #align free_add_group.map_eq_lift FreeAddGroup.map_eq_lift
+
+@[to_additive]
+theorem map_injective (hf : f.Injective) : Injective (map f) :=
+  injective_iff_hasLeftInverse.2
+    ⟨FreeGroup.lift (fun b => Option.elim (partialInv f b) 1 of),
+      fun g => by
+        show ((lift _).comp _) g = MonoidHom.id _ g
+        apply FunLike.congr_fun
+        ext
+        simp [partialInv_left hf]⟩
 
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
