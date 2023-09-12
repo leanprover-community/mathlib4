@@ -150,7 +150,9 @@ jobs:
       - name: get cache
         run: |
           lake exe cache clean
+          rm ~/.cache/mathlib/088aeeb2871b7987.ltar
           lake exe cache get
+          xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar || true
 
       - name: build mathlib
         id: build
@@ -170,6 +172,7 @@ jobs:
       - name: upload cache
         if: always()
         run: |
+          xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
           lake exe cache commit! || true
           xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
           lake exe cache put! || true
