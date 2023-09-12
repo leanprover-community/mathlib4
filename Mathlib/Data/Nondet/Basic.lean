@@ -144,7 +144,7 @@ partial def filterMapM (f : α → m (Option β)) (L : Nondet m α) : Nondet m �
 
 /-- Filter and map a nondeterministic value. -/
 def filterMap (f : α → Option β) (L : Nondet m α) : Nondet m β :=
-  L.filterMapM fun a => pure <| (f a)
+  L.filterMapM fun a => pure (f a)
 
 /-- Filter a nondeterministic value using a monadic predicate. -/
 partial def filterM (p : α → m (ULift Bool)) (L : Nondet m α) : Nondet m α :=
