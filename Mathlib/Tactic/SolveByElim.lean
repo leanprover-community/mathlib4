@@ -6,7 +6,8 @@ Authors: Scott Morrison, David Renshaw
 import Mathlib.Tactic.Backtracking
 import Mathlib.Tactic.Relation.Symm
 import Lean.Meta.Tactic.Apply
-import Mathlib.Data.Sum.Basic
+import Mathlib.Tactic.LabelAttr
+import Std.Data.Sum.Basic
 
 /-!
 # `solve_by_elim`, `apply_rules`, and `apply_assumption`.
