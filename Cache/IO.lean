@@ -269,17 +269,13 @@ def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
     let buildPaths ← mkBuildPaths path
     if ← allExist buildPaths then
       if path == ⟨"Mathlib/Mathport/Rename.lean"⟩ then
-        println! "Mathlib.Mathport.Rename hash before: {←
+        println! "Mathlib.Mathport.Rename hash: {←
           try some <$> IO.FS.readFile (LIBDIR / path.withExtension "trace")
           catch _ => pure none}"
       if overwrite || !(← zipPath.pathExists) then
         tasks := tasks.push <| ← IO.asTask do
-          _ ← runCmd (← getLeanTar) $ #[zipPath.toString] ++
+          runCmd (← getLeanTar) $ #[zipPath.toString] ++
             ((← buildPaths.filterM (·.1.pathExists)) |>.map (·.1.toString))
-          if path == ⟨"Mathlib/Mathport/Rename.lean"⟩ then
-            println! "Mathlib.Mathport.Rename hash after: {←
-              try some <$> IO.FS.readFile (LIBDIR / path.withExtension "trace")
-              catch _ => pure none}"
       acc := acc.push zip
   for task in tasks do
     _ ← IO.ofExcept task.get
@@ -313,7 +309,7 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
       if isMathlibRoot || !isPathFromMathlib path then
         if path == ⟨"Mathlib/Mathport/Rename.lean"⟩ then
-          println! "Mathlib.Mathport.Rename hash: {←
+          println! "Mathlib.Mathport.Rename hash before: {←
             try some <$> IO.FS.readFile (LIBDIR / path.withExtension "trace")
             catch _ => pure none}"
         pure <| config.push <| .str pathStr
@@ -323,6 +319,9 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
     let exitCode ← child.wait
     if exitCode != 0 then throw $ IO.userError s!"leantar failed with error code {exitCode}"
     IO.println s!"unpacked in {(← IO.monoMsNow) - now} ms"
+    println! "Mathlib.Mathport.Rename hash after: {←
+      try some <$> IO.FS.readFile (LIBDIR / "Mathlib/Mathport/Rename.trace")
+      catch _ => pure none}"
   else IO.println "No cache files to decompress"
 
 /-- Retrieves the azure token from the environment -/
