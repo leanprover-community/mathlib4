@@ -75,7 +75,6 @@ partial def bind (L : Nondet m α) (f : α → Nondet m β) : Nondet m β := .sq
   | none => pure .nil
   | some (⟨x, s⟩, xs) => do
     let r := (Nondet.mk xs).bind f
-    -- TODO Construct a test that needs this `restoreState`.
     restoreState s
     match ← (f x).toMLList.uncons with
     | none => return r
@@ -172,7 +171,6 @@ Find the first alternative in a nondeterministic value, as a monadic value.
 -/
 def head [Alternative m] (L : Nondet m α) : m α := do
   let (x, s) ← L.toMLList.head
-  -- TODO Construct a test that needs this `restoreState`.
   restoreState s
   return x
 
