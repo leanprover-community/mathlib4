@@ -7,6 +7,7 @@ Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Tactic.SetLike.Macro
 
 #align_import group_theory.subsemigroup.basic from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
 
