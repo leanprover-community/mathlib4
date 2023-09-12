@@ -75,7 +75,7 @@ instance. -/
 instance OrderedCancelCommMonoid.to_contravariantClass_right (M : Type*)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (swap (· * ·)) (· < ·) :=
-  contravariant_swap_of_contravariant M _ _
+  contravariant_swap_mul_of_contravariant_mul M _
 #align ordered_cancel_comm_monoid.to_contravariant_class_right OrderedCancelCommMonoid.to_contravariantClass_right
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_right OrderedCancelAddCommMonoid.to_contravariantClass_right
 
