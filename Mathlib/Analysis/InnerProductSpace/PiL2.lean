@@ -616,6 +616,7 @@ variable (𝕜 ι)
 noncomputable def basisFun :
     OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι) := ⟨LinearIsometryEquiv.refl _ _⟩
 
+@[simp]
 theorem basisFun_repr (x : EuclideanSpace 𝕜 ι) (i : ι) :
     (basisFun ι 𝕜).repr x i = x i := rfl
 
@@ -623,11 +624,12 @@ theorem basisFun_toBasis :
     (basisFun ι 𝕜).toBasis =
       (Pi.basisFun 𝕜 ι).map (EuclideanSpace.equiv ι 𝕜).toLinearEquiv.symm := rfl
 
-instance _root_.OrthonormalBasis.instInhabited :
-    Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) := ⟨basisFun ι 𝕜⟩
+end EuclideanSpace
+
+instance OrthonormalBasis.instInhabited :
+    Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) := ⟨EuclideanSpace.basisFun ι 𝕜⟩
 #align orthonormal_basis.inhabited OrthonormalBasis.instInhabited
 
-end EuclideanSpace
 
 section Complex
 
