@@ -120,7 +120,7 @@ Lift a list of values to a nondeterministic value.
 (The backtrackable state in each will be identical:
 whatever the state was when we first read from the result.)
 -/
-def ofList [Alternative m] (L : List α) : Nondet m α := ofListM (L.map pure)
+def ofList (L : List α) : Nondet m α := ofListM (L.map pure)
 
 /-- Apply a function which returns values in the monad to every alternative of a `Nondet m α`. -/
 partial def mapM (f : α → m β) (L : Nondet m α) : Nondet m β :=
@@ -160,6 +160,14 @@ def filter (p : α → Bool) (L : Nondet m α) : Nondet m α :=
   L.filterM fun a => pure <| .up (p a)
 
 /--
+All iterations of a non-deterministic function on an initial value.
+
+(That is, depth first search.)
+-/
+partial def iterate (f : α → Nondet m α) (a : α) : Nondet m α :=
+  singleton a <|> (f a).bind (iterate f)
+
+/--
 Find the first alternative in a nondeterministic value, as a monadic value.
 -/
 def head [Alternative m] (L : Nondet m α) : m α := do
@@ -191,3 +199,10 @@ Convert a non-deterministic value into a list in the monad, by discarding the ba
 def toList' (L : Nondet m α) : m (List α) := L.toMLList.map (·.1) |>.force
 
 end Nondet
+
+/-- The `Id` monad is trivially backtrackable, with state `Unit`. -/
+-- This is useful so we can use `Nondet Id α` instead of `List α`
+-- as the basic non-determinism monad.
+instance : MonadBacktrack Unit Id where
+  saveState := pure ()
+  restoreState _ := pure ()
