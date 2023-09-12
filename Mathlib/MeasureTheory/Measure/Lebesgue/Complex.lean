@@ -32,6 +32,14 @@ def measurableEquivPi : ℂ ≃ᵐ (Fin 2 → ℝ) :=
   basisOneI.equivFun.toContinuousLinearEquiv.toHomeomorph.toMeasurableEquiv
 #align complex.measurable_equiv_pi Complex.measurableEquivPi
 
+@[simp]
+theorem measurableEquivPi_apply (a : ℂ) :
+    measurableEquivPi a = Fin.cons a.re (Fin.cons a.im finZeroElim) := rfl
+
+@[simp]
+theorem measurableEquivPi_symm_apply (p : (Fin 2) → ℝ) :
+    measurableEquivPi.symm p = (p 0) + (p 1) * I := by rfl
+
 /-- Measurable equivalence between `ℂ` and `ℝ × ℝ`. -/
 def measurableEquivRealProd : ℂ ≃ᵐ ℝ × ℝ :=
   equivRealProdClm.toHomeomorph.toMeasurableEquiv
@@ -39,6 +47,10 @@ def measurableEquivRealProd : ℂ ≃ᵐ ℝ × ℝ :=
 
 @[simp]
 theorem measurableEquivRealProd_apply (a : ℂ) : measurableEquivRealProd a = (a.re, a.im) := rfl
+
+@[simp]
+theorem measurableEquivRealProd_symm_apply (p : ℝ × ℝ) :
+    measurableEquivRealProd.symm p = {re := p.1, im := p.2} := rfl
 
 theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi := by
   convert (measurableEquivPi.symm.measurable.measurePreserving volume).symm
@@ -59,37 +71,17 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 @[simp]
 theorem volume_ball (a : ℂ) (r : ℝ) :
     volume (Metric.ball a r) = NNReal.pi * (ENNReal.ofReal r) ^ 2 := by
-  obtain hr | hr := lt_or_le r 0
-  · rw [Metric.ball_eq_empty.mpr (le_of_lt hr), measure_empty, ← ENNReal.zero_eq_ofReal.mpr
-      (le_of_lt hr), zero_pow zero_lt_two, mul_zero]
-  · suffices volume (Metric.ball (0: ℂ) 1) = NNReal.pi by
-      rw [Measure.addHaar_ball _ _ hr, finrank_real_complex, ENNReal.ofReal_pow hr, this, mul_comm]
-    let D := {p : ℝ × ℝ | p.1 ^ 2 + p.2 ^ 2 < 1}
-    have mes_D : MeasurableSet D :=
-      measurableSet_lt (Measurable.add (by measurability) (by measurability)) (by measurability)
-    have D_eq : D = regionBetween (fun x => - Real.sqrt (1 - x ^ 2))
-        (fun x => Real.sqrt (1 - x ^ 2)) (Set.Ioc (-1) 1) := by
-      ext p
-      simp_rw [regionBetween, Set.mem_Ioc, Set.mem_Ioo, ← Real.sq_lt, lt_tsub_iff_left,
-        Set.mem_setOf_eq, Nat.cast_one]
-      refine iff_and_self.mpr (fun h => And.imp_right le_of_lt ?_)
-      rw [← abs_lt, ← sq_lt_one_iff_abs_lt_one]
-      exact lt_of_add_lt_of_nonneg_left h (sq_nonneg _)
-    calc
-      _ = (volume (measurableEquivRealProd ⁻¹' D)) := by
-            simp_rw [Metric.ball, dist_zero_right, norm_eq_abs, Set.preimage_setOf_eq,
-              measurableEquivRealProd_apply, ← normSq_add_mul_I, re_add_im, normSq_eq_abs,
-              pow_lt_one_iff_of_nonneg (map_nonneg _ _) two_ne_zero]
-      _ = (volume D) := volume_preserving_equiv_real_prod.measure_preimage mes_D
-      _ = ENNReal.ofReal ((2 : ℝ) * ∫ (a : ℝ) in Set.Ioc (-1) 1, Real.sqrt (1 - a ^ 2)) := by
-            rw [D_eq, Measure.volume_eq_prod, volume_regionBetween_eq_integral
-              (Continuous.integrableOn_Ioc (by continuity)) (Continuous.integrableOn_Ioc
-              (by continuity)) measurableSet_Ioc (fun _ _ => neg_le_self (Real.sqrt_nonneg _))]
-            simp_rw [Pi.sub_apply, sub_neg_eq_add, ← two_mul, integral_mul_left]
-      _ = NNReal.pi := by
-            rw [← intervalIntegral.integral_of_le (by norm_num : (-1 : ℝ) ≤ 1), Nat.cast_one,
-              integral_sqrt_one_sub_sq, two_mul, add_halves, ← NNReal.coe_real_pi,
-              ENNReal.ofReal_coe_nnreal]
+  rw [Measure.addHaar_ball_center, ← EuclideanSpace.volume_ball 0,
+    ← (volume_preserving_equiv_pi.symm).measure_preimage measurableSet_ball,
+    ← ((EuclideanSpace.volume_preserving_measurableEquiv (Fin 2)).symm).measure_preimage
+    measurableSet_ball]
+  congr
+  ext
+  simp_rw [← MeasurableEquiv.coe_toEquiv_symm, Set.mem_preimage]
+  simp only [MeasurableEquiv.coe_toEquiv_symm, measurableEquivPi_symm_apply, mem_ball_zero_iff,
+    norm_eq_abs, abs_def, normSq_add_mul_I, EuclideanSpace.measurableEquiv_toEquiv,
+    EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply,
+    Real.norm_eq_abs, _root_.sq_abs, Fin.sum_univ_two]
 
 @[simp]
 theorem volume_closedBall (a : ℂ) (r : ℝ) :
