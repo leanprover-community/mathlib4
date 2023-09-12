@@ -334,10 +334,6 @@ variable {ι 𝕜 E}
 
 namespace OrthonormalBasis
 
-instance instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
-  ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 (EuclideanSpace 𝕜 ι))⟩
-#align orthonormal_basis.inhabited OrthonormalBasis.instInhabited
-
 theorem repr_injective :
     Injective (repr : OrthonormalBasis ι 𝕜 E → E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) := fun f g h => by
   cases f
@@ -612,20 +608,24 @@ protected theorem repr_reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι')
 
 end OrthonormalBasis
 
-section EuclideanSpace
+namespace EuclideanSpace
 
-variable (𝕜 ι) [IsROrC 𝕜] [Fintype ι] [DecidableEq ι]
+variable (𝕜 ι)
 
 /-- The basis `Pi.basisFun` bundled as an orthormal basis of `EuclideanSpace 𝕜 ι`. -/
-noncomputable def EuclideanSpace.basisFun :
+noncomputable def basisFun :
     OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι) := ⟨LinearIsometryEquiv.refl _ _⟩
 
-theorem EuclideanSpace.basisFun_repr (x : EuclideanSpace 𝕜 ι) (i : ι) :
-    (EuclideanSpace.basisFun ι 𝕜).repr x i = x i := rfl
+theorem basisFun_repr (x : EuclideanSpace 𝕜 ι) (i : ι) :
+    (basisFun ι 𝕜).repr x i = x i := rfl
 
-theorem EuclideanSpace.basisFun_toBasis :
-    (EuclideanSpace.basisFun ι 𝕜).toBasis =
-        (Pi.basisFun 𝕜 ι).map (EuclideanSpace.equiv ι 𝕜).toLinearEquiv.symm := rfl
+theorem basisFun_toBasis :
+    (basisFun ι 𝕜).toBasis =
+      (Pi.basisFun 𝕜 ι).map (EuclideanSpace.equiv ι 𝕜).toLinearEquiv.symm := rfl
+
+instance _root_.OrthonormalBasis.instInhabited :
+    Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) := ⟨basisFun ι 𝕜⟩
+#align orthonormal_basis.inhabited OrthonormalBasis.instInhabited
 
 end EuclideanSpace
 
