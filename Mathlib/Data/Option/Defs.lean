@@ -139,3 +139,8 @@ instance liftOrGet_isRightId (f : α → α → α) : IsRightId (Option α) (lif
 #align option.lift_or_get_idem Option.liftOrGet_isIdempotent
 #align option.lift_or_get_is_left_id Option.liftOrGet_isLeftId
 #align option.lift_or_get_is_right_id Option.liftOrGet_isRightId
+
+/-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
+def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
+  | .some a => some a
+  | _ => none

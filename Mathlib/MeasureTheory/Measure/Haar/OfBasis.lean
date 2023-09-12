@@ -226,6 +226,23 @@ instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure 
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 #align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
 
+instance [SecondCountableTopology E] (b : Basis ι ℝ E) :
+    SigmaFinite b.addHaar := by
+  rw [Basis.addHaar_def]; exact sigmaFinite_addHaarMeasure
+
+/-- Let `μ` be a σ-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
+defined by `b` iff the parallelepiped defined by `b` has measure `1` for `μ`. -/
+theorem Basis.addHaar_eq_iff [SecondCountableTopology E] (b : Basis ι ℝ E) (μ : Measure E)
+    [SigmaFinite μ] [IsAddLeftInvariant μ] :
+    b.addHaar = μ ↔ μ b.parallelepiped = 1 := by
+  rw [Basis.addHaar_def]
+  exact addHaarMeasure_eq_iff b.parallelepiped μ
+
+@[simp]
+theorem Basis.addHaar_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
+    (b.reindex e).addHaar = b.addHaar := by
+  rw [Basis.addHaar, b.parallelepiped_reindex e, ← Basis.addHaar]
+
 theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self
 #align basis.add_haar_self Basis.addHaar_self
@@ -265,15 +282,15 @@ instance : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
 
 instance : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
 
-/-- `PiLp.equiv` as a `MeasurableEquiv`. -/
+/-- `WithLp.equiv` as a `MeasurableEquiv`. -/
 @[simps toEquiv]
 protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
-  toEquiv := PiLp.equiv _ _
+  toEquiv := WithLp.equiv _ _
   measurable_toFun := measurable_id
   measurable_invFun := measurable_id
 #align euclidean_space.measurable_equiv EuclideanSpace.measurableEquiv
 
-theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = PiLp.equiv 2 _ := rfl
+theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
 #align euclidean_space.coe_measurable_equiv EuclideanSpace.coe_measurableEquiv
 
 end EuclideanSpace
