@@ -772,7 +772,7 @@ theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
       A.unitGroupToResidueFieldUnits := rfl
 #align valuation_subring.units_mod_principal_units_equiv_residue_field_units_comp_quotient_group_mk ValuationSubring.unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk
 
-@[simp]
+-- @[simp] -- Porting note: not in simpNF
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk_apply
     (x : A.unitGroup) :
     A.unitsModPrincipalUnitsEquivResidueFieldUnits.toMonoidHom (QuotientGroup.mk x) =

@@ -799,7 +799,6 @@ protected theorem eq'' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b �
   Quotient.eq
 #align quotient.eq' Quotient.eq''
 
-@[simp]
 protected theorem eq''' {a b : α} : Quotient.mk s₁ a = Quotient.mk s₁ b ↔ @Setoid.r _ s₁ a b :=
   Quotient.eq
 
