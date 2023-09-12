@@ -1960,6 +1960,12 @@ theorem biprod.symmetry (P Q : C) : (biprod.braiding P Q).hom ≫ (biprod.braidi
   by simp
 #align category_theory.limits.biprod.symmetry CategoryTheory.Limits.biprod.symmetry
 
+/-- The associator isomorphism which associates a binary biproduct. -/
+@[simps]
+def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R)  where
+  hom := biprod.lift (biprod.fst ≫ biprod.fst) (biprod.lift (biprod.fst ≫ biprod.snd) biprod.snd)
+  inv := biprod.lift (biprod.lift biprod.fst (biprod.snd ≫ biprod.fst)) (biprod.snd ≫ biprod.snd)
+
 end
 
 end Limits
