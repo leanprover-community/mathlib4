@@ -134,9 +134,7 @@ attribute [to_additive] Submonoid SubmonoidClass
 @[to_additive (attr := set_like)]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
-  | 0 => by
-    rw [pow_zero]
-    exact OneMemClass.one_mem S
+  | 0 => by set_like
   | n + 1 => by
     rw [pow_succ]
     exact mul_mem hx (pow_mem hx n)
@@ -286,8 +284,8 @@ theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
 instance : Inf (Submonoid M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
-      one_mem' := ⟨S₁.one_mem, S₂.one_mem⟩
-      mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
+      one_mem' := by set_like
+      mul_mem' := by set_like }⟩
 
 @[to_additive (attr := simp)]
 theorem coe_inf (p p' : Submonoid M) : ((p ⊓ p' : Submonoid M) : Set M) = (p : Set M) ∩ p' :=
@@ -305,10 +303,8 @@ theorem mem_inf {p p' : Submonoid M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x 
 instance : InfSet (Submonoid M) :=
   ⟨fun s =>
     { carrier := ⋂ t ∈ s, ↑t
-      one_mem' := Set.mem_biInter fun i _ => i.one_mem
-      mul_mem' := fun hx hy =>
-        Set.mem_biInter fun i h =>
-          i.mul_mem (by apply Set.mem_iInter₂.1 hx i h) (by apply Set.mem_iInter₂.1 hy i h) }⟩
+      one_mem' := by set_like
+      mul_mem' := by set_like }⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_sInf (S : Set (Submonoid M)) : ((sInf S : Submonoid M) : Set M) = ⋂ s ∈ S, ↑s :=
