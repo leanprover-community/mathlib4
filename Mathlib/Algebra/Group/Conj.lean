@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Chris Hughes, Michael Howes
 -/
-import Mathlib.Algebra.Group.Semiconj
+import Mathlib.Algebra.Group.Semiconj.Defs
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.Algebra.Hom.Group.Defs
