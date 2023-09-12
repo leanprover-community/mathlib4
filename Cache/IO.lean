@@ -268,9 +268,10 @@ def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
     let zipPath := CACHEDIR / zip
     let buildPaths ← mkBuildPaths path
     if ← allExist buildPaths then
-      if path == ⟨"Mathlib/Mathport/Rename.lean"⟩ then
-        println! "Mathlib.Mathport.Rename hash: {←
-          try some <$> IO.FS.readFile (LIBDIR / path.withExtension "trace")
+      if path == ⟨"ProofWidgets/Data/Json.lean"⟩ then
+        println! "ProofWidgets.Data.Json hash: {←
+          try some <$> IO.FS.readFile
+                (LAKEPACKAGESDIR / "proofwidgets" / LIBDIR / path.withExtension "trace")
           catch _ => pure none}, uploaded {zip}"
       if overwrite || !(← zipPath.pathExists) then
         tasks := tasks.push <| ← IO.asTask do
@@ -308,9 +309,10 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
     let config : Array Lean.Json ← hashMap.foldM (init := #[]) fun config path hash => do
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
       if isMathlibRoot || !isPathFromMathlib path then
-        if path == ⟨"Mathlib/Mathport/Rename.lean"⟩ then
-          println! "Mathlib.Mathport.Rename hash before: {←
-            try some <$> IO.FS.readFile (LIBDIR / path.withExtension "trace")
+        if path == ⟨"ProofWidgets/Data/Json.lean"⟩ then
+          println! "ProofWidgets.Data.Json hash before: {←
+            try some <$> IO.FS.readFile
+                  (LAKEPACKAGESDIR / "proofwidgets" / LIBDIR / path.withExtension "trace")
             catch _ => pure none}, downloading {hash.asLTar}"
         pure <| config.push <| .str pathStr
       else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
@@ -319,8 +321,9 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
     let exitCode ← child.wait
     if exitCode != 0 then throw $ IO.userError s!"leantar failed with error code {exitCode}"
     IO.println s!"unpacked in {(← IO.monoMsNow) - now} ms"
-    println! "Mathlib.Mathport.Rename hash after: {←
-      try some <$> IO.FS.readFile (LIBDIR / "Mathlib/Mathport/Rename.trace")
+    println! "ProofWidgets.Data.Json hash after: {←
+      try some <$> IO.FS.readFile
+            (LAKEPACKAGESDIR / "proofwidgets" / LIBDIR / "ProofWidgets/Data/Json.trace")
       catch _ => pure none}"
   else IO.println "No cache files to decompress"
 
