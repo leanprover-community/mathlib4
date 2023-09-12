@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-
+import Mathlib.Algebra.BigOperators.Intervals
 /-!
 # Superfactorial
 
@@ -45,6 +45,24 @@ theorem superFactorial_one : sf 1 = 1 :=
 @[simp]
 theorem superFactorial_two : sf 2 = 2 :=
   rfl
+
+open BigOperators Finset
+
+@[simp]
+theorem prod_Ico_factorial_eq_superFactorial : ∀ n : ℕ, (∏ x in Ico 1 (n + 1), x !) = sf n
+  | 0 => rfl
+  | n + 1 => by
+    rw [prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n, Nat.factorial_succ,
+      prod_Ico_factorial_eq_superFactorial n, superFactorial, factorial, Nat.succ_eq_add_one,
+      mul_comm]
+
+-- `(x + 1)!` is simplified to `succ x * x!`
+@[simp, nolint simpNF]
+theorem prod_range_add_one_eq_superFactorial : ∀ n : ℕ, (∏ x in range n, (x + 1) !) = sf n
+  | 0 => rfl
+  | n + 1 => by
+    rw [Finset.prod_range_succ, prod_range_add_one_eq_superFactorial n, superFactorial, mul_comm,
+        factorial]
 
 end SuperFactorial
 
