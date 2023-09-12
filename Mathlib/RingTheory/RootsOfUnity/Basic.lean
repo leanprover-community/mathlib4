@@ -286,10 +286,12 @@ end rootsOfUnity
 
 /-- An element `ζ` is a primitive `k`-th root of unity if `ζ ^ k = 1`,
 and if `l` satisfies `ζ ^ l = 1` then `k ∣ l`. -/
+@[mk_iff IsPrimitiveRoot.iff_def]
 structure IsPrimitiveRoot (ζ : M) (k : ℕ) : Prop where
   pow_eq_one : ζ ^ (k : ℕ) = 1
   dvd_of_pow_eq_one : ∀ l : ℕ, ζ ^ l = 1 → k ∣ l
 #align is_primitive_root IsPrimitiveRoot
+#align is_primitive_root.iff_def IsPrimitiveRoot.iff_def
 
 /-- Turn a primitive root μ into a member of the `rootsOfUnity` subgroup. -/
 @[simps!]
@@ -332,10 +334,6 @@ end primitiveRoots
 namespace IsPrimitiveRoot
 
 variable {k l : ℕ}
-
-theorem iff_def (ζ : M) (k : ℕ) : IsPrimitiveRoot ζ k ↔ ζ ^ k = 1 ∧ ∀ l : ℕ, ζ ^ l = 1 → k ∣ l :=
-  ⟨fun ⟨h1, h2⟩ => ⟨h1, h2⟩, fun ⟨h1, h2⟩ => ⟨h1, h2⟩⟩
-#align is_primitive_root.iff_def IsPrimitiveRoot.iff_def
 
 theorem mk_of_lt (ζ : M) (hk : 0 < k) (h1 : ζ ^ k = 1) (h : ∀ l : ℕ, 0 < l → l < k → ζ ^ l ≠ 1) :
     IsPrimitiveRoot ζ k := by
