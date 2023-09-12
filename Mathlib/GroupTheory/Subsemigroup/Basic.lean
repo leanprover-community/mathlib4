@@ -314,7 +314,7 @@ theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS =
 #align subsemigroup.subset_closure Subsemigroup.subset_closure
 #align add_subsemigroup.subset_closure AddSubsemigroup.subset_closure
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := set_like 20)]
 lemma mem_closure_of_mem {x : M} (hx : x ∈ s) : x ∈ closure s :=
   subset_closure hx
 

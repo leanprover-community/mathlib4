@@ -1107,7 +1107,7 @@ theorem subset_closure : k ⊆ closure k := fun _ hx => mem_closure.2 fun _ hK =
 #align subgroup.subset_closure Subgroup.subset_closure
 #align add_subgroup.subset_closure AddSubgroup.subset_closure
 
-@[to_additive (attr := set_like)]
+@[to_additive (attr := set_like 20)]
 lemma mem_closure_of_mem {x : G} (hx : x ∈ k) : x ∈ closure k :=
   subset_closure hx
 
