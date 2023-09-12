@@ -462,7 +462,7 @@ lemma measure_prod_compl_eq_zero {s : Set α} {t : Set β}
   apply le_antisymm ((measure_union_le _ _).trans _) (zero_le _)
   simp [s_ae_univ, t_ae_univ]
 
-lemma NullMeasurableSet.prod {s : Set α} {t : Set β}
+lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}
     (s_mble : NullMeasurableSet s μ) (t_mble : NullMeasurableSet t ν) :
     NullMeasurableSet (s ×ˢ t) (μ.prod ν) := by
   obtain ⟨s₀, ⟨mble_s₀, s_aeeq_s₀⟩⟩ := s_mble
