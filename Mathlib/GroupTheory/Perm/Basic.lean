@@ -683,7 +683,7 @@ lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := 
 @[to_additive existing (attr := simp) zpow_addLeft]
 lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
   (map_zpow ({ toFun := Equiv.mulLeft, map_one' := mulLeft_one, map_mul' := mulLeft_mul } :
-    α →* Perm α) _ _).symm
+              α →* Perm α) _ _).symm
 #align equiv.zpow_mul_left Equiv.zpow_mulLeft
 
 @[to_additive existing (attr := simp) zpow_addRight]
