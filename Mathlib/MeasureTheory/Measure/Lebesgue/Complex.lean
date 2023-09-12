@@ -57,7 +57,7 @@ theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi := by
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar,
     measurableEquivPi, Homeomorph.toMeasurableEquiv_symm_coe,
     ContinuousLinearEquiv.symm_toHomeomorph, ContinuousLinearEquiv.coe_toHomeomorph,
-    Basis.addHaar_map]
+    Basis.map_addHaar]
   exact Basis.addHaar_eq.mpr Complex.orthonormalBasisOneI.volume_parallelepiped
 #align complex.volume_preserving_equiv_pi Complex.volume_preserving_equiv_pi
 
@@ -87,4 +87,5 @@ theorem volume_ball (a : ℂ) (r : ℝ) :
 theorem volume_closedBall (a : ℂ) (r : ℝ) :
      volume (Metric.closedBall a r) = NNReal.pi * (ENNReal.ofReal r) ^ 2 := by
   rw [MeasureTheory.Measure.addHaar_closedBall_eq_addHaar_ball, Complex.volume_ball]
+
 end Complex

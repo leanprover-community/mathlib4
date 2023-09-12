@@ -76,34 +76,34 @@ theorem OrthonormalBasis.addHaar_eq_volume {ι F : Type*} [Fintype ι] [NormedAd
     [InnerProductSpace ℝ F] [FiniteDimensional ℝ F] [MeasurableSpace F] [BorelSpace F]
     (b : OrthonormalBasis ι ℝ F) :
     b.toBasis.addHaar = volume := by
-  dsimp only [volume]
-  rw [eq_comm, Basis.addHaar_eq]
+  rw [Basis.addHaar_eq_iff]
   exact b.volume_parallelepiped
 
-section EuclideanSpace
+namespace EuclideanSpace
 
-open BigOperators EuclideanSpace ENNReal
+open BigOperators ENNReal
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
-theorem EuclideanSpace.volume_preserving_measurableEquiv (ι : Type*) [Fintype ι] :
+theorem volume_preserving_measurableEquiv (ι : Type*) [Fintype ι] :
     MeasurePreserving (EuclideanSpace.measurableEquiv ι) := by
   classical
-  convert ((EuclideanSpace.measurableEquiv ι).measurable.measurePreserving _)
-  rw [coe_continuousLinearEquiv, ← (basisFun _ _).addHaar_eq_volume, ← addHaarMeasure_eq_volume_pi,
-    Basis.addHaar_map, ← Basis.parallelepiped_basisFun, Basis.addHaar_def, addHaarMeasure_eq,
-    basisFun_toBasis, addHaarMeasure_self]
+  convert ((EuclideanSpace.measurableEquiv ι).symm.measurable.measurePreserving _).symm
+  rw [eq_comm, ← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
+    coe_continuousLinearEquiv_symm, Basis.map_addHaar, Basis.addHaar_eq_iff,
+    ContinuousLinearEquiv.symm_toLinearEquiv, ← EuclideanSpace.basisFun_toBasis ι ℝ]
+  exact OrthonormalBasis.volume_parallelepiped (EuclideanSpace.basisFun _ _)
 
 -- See: https://github.com/leanprover/lean4/issues/2220
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
-theorem EuclideanSpace.unit_ball_equiv (ι : Type*) [Fintype ι] :
+theorem unit_ball_equiv (ι : Type*) [Fintype ι] :
     (equiv ι ℝ) '' Metric.ball (0 : EuclideanSpace ℝ ι) 1 = {x : ι → ℝ | ∑ i, x i ^ 2 < 1} := by
   ext; simp_rw [PiLp.continuousLinearEquiv_apply, mem_image_equiv, mem_ball_zero_iff, norm_eq,
     WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, Real.sqrt_lt' (by norm_num : (0 : ℝ) < 1),
     one_pow, mem_setOf_eq]
 
 @[simp]
-theorem EuclideanSpace.volume_ball (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
+theorem volume_ball (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
     volume (Metric.ball x r) = NNReal.pi * (ENNReal.ofReal r) ^ 2:= by
   obtain hr | hr := lt_or_le r 0
   · rw [Metric.ball_eq_empty.mpr (le_of_lt hr), measure_empty, ← zero_eq_ofReal.mpr
