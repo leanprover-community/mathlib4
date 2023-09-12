@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Opposites
 
 #align_import algebra.ring.basic from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"

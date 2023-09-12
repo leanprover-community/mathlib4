@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
 import Mathlib.Order.ULift
+import Mathlib.Tactic.PushNeg
 
 #align_import order.bounded_order from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -623,10 +624,9 @@ section SemilatticeInf
 
 variable [SemilatticeInf α]
 
--- Porting note: was `hP.dual_left`
 theorem exists_le_and_iff_exists {P : α → Prop} {x₀ : α} (hP : Antitone P) :
     (∃ x, x ≤ x₀ ∧ P x) ↔ ∃ x, P x :=
-  exists_ge_and_iff_exists <| Antitone.dual_left hP
+  exists_ge_and_iff_exists <| hP.dual_left
 #align exists_le_and_iff_exists exists_le_and_iff_exists
 
 end SemilatticeInf

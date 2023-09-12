@@ -75,7 +75,7 @@ def CliffordAlgebra :=
 namespace CliffordAlgebra
 
 -- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
-instance instInhabited : Inhabited (CliffordAlgebra Q) := RingQuot.instInhabitedRingQuot _
+instance instInhabited : Inhabited (CliffordAlgebra Q) := RingQuot.instInhabited _
 #align clifford_algebra.inhabited CliffordAlgebra.instInhabited
 instance instRing : Ring (CliffordAlgebra Q) := RingQuot.instRing _
 #align clifford_algebra.ring CliffordAlgebra.instRing
@@ -84,7 +84,7 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] :
     Algebra R (CliffordAlgebra Q) :=
-  RingQuot.instAlgebraRingQuot _
+  RingQuot.instAlgebra _
 
 -- verify there are no diamonds
 example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
@@ -98,13 +98,13 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing 
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
     SMulCommClass R S (CliffordAlgebra Q) :=
-  RingQuot.instSMulCommClassRingQuot _
+  RingQuot.instSMulCommClass _
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
     [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] (Q : QuadraticForm A M) :
     IsScalarTower R S (CliffordAlgebra Q) :=
-  RingQuot.instIsScalarTowerRingQuot _
+  RingQuot.instIsScalarTower _
 
 /-- The canonical linear map `M →ₗ[R] CliffordAlgebra Q`.
 -/
