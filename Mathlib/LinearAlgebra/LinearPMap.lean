@@ -747,7 +747,7 @@ theorem domRestrict_domain (f : E →ₗ.[R] F) {S : Submodule R E} :
 
 theorem domRestrict_apply {f : E →ₗ.[R] F} {S : Submodule R E} ⦃x : ↥(S ⊓ f.domain)⦄ ⦃y : f.domain⦄
     (h : (x : E) = y) : f.domRestrict S x = f y := by
-  have : Submodule.ofLe (by simp) x = y := by
+  have : Submodule.ofLe (p := S ⊓ f.domain) (p' := f.domain) (by simp) x = y := by
     ext
     simp [h]
   rw [← this]

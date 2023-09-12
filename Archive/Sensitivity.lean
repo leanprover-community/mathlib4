@@ -390,7 +390,7 @@ local notation "Card " X:70 => Finset.card (Set.toFinset X)
 equipped with their subspace structures. The notations come from the general
 theory of lattices, with inf and sup (also known as meet and join). -/
 
-
+set_option synthInstance.maxHeartbeats 30000 in
 /-- If a subset `H` of `Q (m+1)` has cardinal at least `2^m + 1` then the
 subspace of `V (m+1)` spanned by the corresponding basis vectors non-trivially
 intersects the range of `g m`. -/
