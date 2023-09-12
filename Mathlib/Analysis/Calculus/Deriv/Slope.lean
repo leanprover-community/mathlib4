@@ -31,7 +31,7 @@ universe u v w
 
 noncomputable section
 
-open Topology Filter
+open Topology Filter TopologicalSpace
 open Filter Set
 
 section NormedField
@@ -101,6 +101,65 @@ theorem HasDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasDerivAt f
     Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[<] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
 
+lemma Submodule.closure_subset_topologicalClosure_span (s : Set F) :
+    closure s ⊆ (span 𝕜 s).topologicalClosure := by
+  rw [Submodule.topologicalClosure_coe]
+  exact closure_mono subset_span
+
+/-- Given a set `t` such that `s ∩ t` is dense in `s`, then the range of `derivWithin f s` is
+contained in the closure of the subset spanned by the image of `t`. -/
+theorem range_derivWithin_subset_closure_span_image
+    (f : 𝕜 → F) {s t : Set 𝕜} (h : s ⊆ closure (s ∩ t)) :
+    range (derivWithin f s) ⊆ closure (Submodule.span 𝕜 (f '' t)) := by
+  rintro - ⟨x, rfl⟩
+  rcases eq_or_neBot (𝓝[s \ {x}] x) with H|H
+  · simp [derivWithin, fderivWithin, H]
+    exact subset_closure (zero_mem _)
+  by_cases H' : DifferentiableWithinAt 𝕜 f s x; swap
+  · rw [derivWithin_zero_of_not_differentiableWithinAt H']
+    exact subset_closure (zero_mem _)
+  have I : (𝓝[(s ∩ t) \ {x}] x).NeBot := by
+    rw [← mem_closure_iff_nhdsWithin_neBot] at H ⊢
+    have A : closure (s \ {x}) ⊆ closure (closure (s ∩ t) \ {x}) :=
+      closure_mono (diff_subset_diff_left h)
+    have B : closure (s ∩ t) \ {x} ⊆ closure ((s ∩ t) \ {x}) := by
+      convert closure_diff; exact closure_singleton.symm
+    simpa using A.trans (closure_mono B) H
+  have : Tendsto (slope f x) (𝓝[(s ∩ t) \ {x}] x) (𝓝 (derivWithin f s x)) := by
+    apply Tendsto.mono_left (hasDerivWithinAt_iff_tendsto_slope.1 H'.hasDerivWithinAt)
+    rw [inter_comm, inter_diff_assoc]
+    exact nhdsWithin_mono _ (inter_subset_right _ _)
+  rw [← closure_closure, ← Submodule.topologicalClosure_coe]
+  apply mem_closure_of_tendsto this
+  filter_upwards [self_mem_nhdsWithin] with y hy
+  simp only [slope, vsub_eq_sub, SetLike.mem_coe]
+  refine Submodule.smul_mem _ _ (Submodule.sub_mem _ ?_ ?_)
+  · apply Submodule.le_topologicalClosure
+    apply Submodule.subset_span
+    exact mem_image_of_mem _ hy.1.2
+  · apply Submodule.closure_subset_topologicalClosure_span
+    suffices A : f x ∈ closure (f '' (s ∩ t)) from
+      closure_mono (image_subset _ (inter_subset_right _ _)) A
+    apply ContinuousWithinAt.mem_closure_image
+    apply H'.continuousWithinAt.mono (inter_subset_left _ _)
+    rw [mem_closure_iff_nhdsWithin_neBot]
+    exact I.mono (nhdsWithin_mono _ (diff_subset _ _))
+
+#check IsSeparable.separableSpace
+
+theorem isSeparable_range_derivWithin [SeparableSpace 𝕜] (f : 𝕜 → F) (s : Set 𝕜) :
+    IsSeparable (range (derivWithin f s)) := by
+  have : IsSeparable s := by exact isSeparable_of_separableSpace s
+
+
+
+
+
+
+
+
+#exit
+
 theorem range_derivWithin_subset_closure_range' (f : 𝕜 → F) (s : 𝕜 → Set 𝕜) :
     range (fun x ↦ derivWithin f (s x) x) ⊆ closure (Submodule.span 𝕜 (range f)) := by
   rintro - ⟨x, rfl⟩
@@ -126,6 +185,8 @@ theorem range_deriv_subset_closure_range (f : 𝕜 → F) :
     range (deriv f) ⊆ closure (Submodule.span 𝕜 (range f)) := by
   simp_rw [← derivWithin_univ]
   exact range_derivWithin_subset_closure_range f _
+
+#exit
 
 end NormedField
 

@@ -425,7 +425,7 @@ theorem _root_.Set.PairwiseDisjoint.countable_of_nonempty_interior [SeparableSpa
 set `c`. Beware that this definition does not require that `c` is contained in `s` (to express the
 latter, use `TopologicalSpace.SeparableSpace s` or
 `TopologicalSpace.IsSeparable (univ : Set s))`. In metric spaces, the two definitions are
-equivalent, see `TopologicalSpace.IsSeparable.SeparableSpace`. -/
+equivalent, see `TopologicalSpace.IsSeparable.separableSpace`. -/
 def IsSeparable (s : Set α) :=
   ∃ c : Set α, c.Countable ∧ s ⊆ closure c
 #align topological_space.is_separable TopologicalSpace.IsSeparable

@@ -177,6 +177,11 @@ theorem Submodule.le_topologicalClosure (s : Submodule R M) : s ≤ s.topologica
   subset_closure
 #align submodule.le_topological_closure Submodule.le_topologicalClosure
 
+theorem Submodule.closure_subset_topologicalClosure_span (s : Set M) :
+    closure s ⊆ (span R s).topologicalClosure := by
+  rw [Submodule.topologicalClosure_coe]
+  exact closure_mono subset_span
+
 theorem Submodule.isClosed_topologicalClosure (s : Submodule R M) :
     IsClosed (s.topologicalClosure : Set M) := isClosed_closure
 #align submodule.is_closed_topological_closure Submodule.isClosed_topologicalClosure
