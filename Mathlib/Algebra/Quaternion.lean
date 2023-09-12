@@ -8,7 +8,6 @@ import Mathlib.LinearAlgebra.Finrank
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.SetTheory.Cardinal.Ordinal
-import Mathlib.RingTheory.TensorProduct
 
 #align_import algebra.quaternion from "leanprover-community/mathlib"@"cf7a7252c1989efe5800e0b3cdfeb4228ac6b40e"
 
