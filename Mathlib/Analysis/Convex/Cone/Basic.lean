@@ -260,7 +260,7 @@ def map (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 E) : ConvexCone 𝕜 F where
 #align convex_cone.map ConvexCone.map
 
 @[simp, norm_cast]
-lemma coe_map (S : ConvexCone 𝕜 E) (f : E →ₗ[𝕜] F) : (S.map f : Set F) = f '' S :=
+theorem coe_map (S : ConvexCone 𝕜 E) (f : E →ₗ[𝕜] F) : (S.map f : Set F) = f '' S :=
   rfl
 
 @[simp]
