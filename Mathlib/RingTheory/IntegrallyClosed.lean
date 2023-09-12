@@ -25,6 +25,33 @@ integral over `R`. A special case of integrally closed rings are the Dedekind do
   states `R` is integrally closed in `A` iff it is integrally closed in `A'`.
 * `isIntegrallyClosed_fractionRing_iff K`, where `K` is a fraction field of `R`, states `R`
   is integrally closed iff it is the integral closure of `R` in `K`
+
+## TODO: Related notions
+
+The following definitions are closely related, especially in their applications in Mathlib.
+
+A *normal domain* is a domain that is integrally closed in its field of fractions.
+[Stacks: normal domain](https://stacks.math.columbia.edu/tag/0309)
+Normal domains are the major usecase of `IsIntegrallyClosed` at the time of writing, and we have
+quite a few results that can be moved wholesale to a new `NormalDomain` definition.
+
+A normal ring means that localizations at all prime ideals are normal domains.
+[Stacks: normal ring](https://stacks.math.columbia.edu/tag/00GV)
+This implies integral closedness in its `FractionRing`,
+[Stacks: Lemma 10.37.12](https://stacks.math.columbia.edu/tag/034M)
+but is equivalent to it only under some conditions (reduced + finitely many minimal primes),
+[Stacks: Lemma 10.37.16](https://stacks.math.columbia.edu/tag/034M)
+in which case it's also equivalent to being a finite product of normal domains.
+
+We'd need to add these conditions if we want exactly the products of Dedekind domains.
+
+In fact noetherianity is sufficient to guarantee finitely many minimal primes, so `IsDedekindRing`
+could be defined as `IsReduced`, `IsNoetherian`, `Ring.DimensionLEOne`, and either
+`IsIntegrallyClosed` or `NormalDomain`. If we use `NormalDomain` then `IsReduced` is automatic,
+but we could also consider a version of `NormalDomain` that only requires the localizations are
+`IsIntegrallyClosed` in their `FractionRings` but may not be domains,
+and that may not equivalent to the ring itself being `IsIntegallyClosed` in its `FractionRing`
+(even for noetherian rings?).
 -/
 
 
