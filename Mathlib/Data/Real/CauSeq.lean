@@ -139,8 +139,9 @@ section Ring
 
 variable [Ring β] {abv : β → α}
 
-instance : CoeFun (CauSeq β abv) fun _ => ℕ → β :=
-  ⟨Subtype.val⟩
+instance : FunLike (CauSeq β abv) ℕ fun _ => β where
+  coe := Subtype.val
+  coe_injective' := Subtype.val_injective
 
 -- Porting note: Remove coeFn theorem
 /-@[simp]
@@ -699,22 +700,23 @@ protected theorem mul_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f * g
 #align cau_seq.mul_pos CauSeq.mul_pos
 
 theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
-  cases' Classical.em (LimZero f) with h h <;> simp [*]
+  suffices ¬ LimZero f → Pos f ∨ Pos (-f) by tauto
+  intro h
   rcases abv_pos_of_not_limZero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
-  refine' (le_total 0 (f i)).imp _ _ <;>
-    refine' fun h => ⟨K, K0, i, fun j ij => _⟩ <;>
-    have := (hi _ ij).1 <;>
-    cases' hi _ le_rfl with h₁ h₂
-  · rwa [abs_of_nonneg] at this
-    rw [abs_of_nonneg h] at h₁
-    exact
-      (le_add_iff_nonneg_right _).1
-        (le_trans h₁ <| neg_le_sub_iff_le_add'.1 <| le_of_lt (abs_lt.1 <| h₂ _ ij).1)
-  · rwa [abs_of_nonpos] at this
-    rw [abs_of_nonpos h] at h₁
-    rw [← sub_le_sub_iff_right, zero_sub]
-    exact le_trans (le_of_lt (abs_lt.1 <| h₂ _ ij).2) h₁
+  cases le_abs.1 (hi i .refl).1
+  case inl h =>
+    refine .inl ⟨K, K0, i, fun j hj => ?_⟩
+    suffices 0 ≤ f j from le_of_le_of_eq (hi j hj).1 (abs_of_nonneg this)
+    have : - K < f j - f i := (abs_lt.1 ((hi i .refl).2 j hj)).1
+    have := add_le_add (le_of_lt this) h
+    rwa [neg_add_self, sub_add_cancel] at this
+  case inr h =>
+    refine .inr ⟨K, K0, i, fun j hj => ?_⟩
+    suffices f j ≤ 0 from le_of_le_of_eq (hi j hj).1 (abs_of_nonpos this)
+    have : f j - f i < K := (abs_lt.1 ((hi i .refl).2 j hj)).2
+    have := add_le_add (le_of_lt this) (le_neg.2 h)
+    rwa [add_neg_self, sub_add_cancel] at this
 #align cau_seq.trichotomy CauSeq.trichotomy
 
 instance : LT (CauSeq α abs) :=
