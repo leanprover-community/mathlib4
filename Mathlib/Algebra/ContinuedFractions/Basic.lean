@@ -441,33 +441,45 @@ def eval? [DecidableEq K] (f : FGCF K) : Option K :=
 = 9 + 1 / (2 + 3 / (4 + 5 / 6))
 = 713 / 76
 ```
-If `0` is appreared in the denominator, the fraction is dealed as infinity. For example:
-```lean
-  evalF? CF[9; (1, 2), (3, 4), (5, 0)]
-= 9 + 1 / (2 + 3 / (4 + 5 / 0))
-= 9 + 1 / (2 + 3 / (4 + ∞))
-= 9 + 1 / (2 + 0)
-= 19 / 2
-```
+A `0` in denominators is handled specially to match the value to `eval?`, and the value can be
+undefined by this. Refer to `evalF?.loop` for more detail.
 -/
 def evalF? [DecidableEq K] (f : FGCF K) : Option K :=
-  (loop f.l).map (f.h + ·)
+  (loop f.l).join.map (f.h + ·)
 where
   /-- Returns the value of `f` by directly evaluating the fraction.
-  If `0` is appreared in the denominator, the fraction is dealed as infinity.
-  For example, `evalF?.loop [(1, 2), (3, 4), (5, 6)] = 9 + 1 / (2 + 3 / (4 + 5 / 6)) = 29 / 76` and
-  `evalF?.loop [(1, 2), (3, 4), (5, 0)] = 1 / 2`.
+  If `0` is appreared in the denominator and its numerator isn't `0`, the fraction is dealed as
+  infinity (`some none`), if its numerator is also `0`, the fraction is dealed as undefined (`none`)
+  and stop latter calculations. For example:
+  ```lean
+    evalF?.loop [(1, 2), (3, 4), (5, 6)]
+  = 1 / (2 + 3 / (4 + 5 / 6))
+  = 29 / 76
+    evalF?.loop [(1, 2), (3, 4), (5, 0)]
+  = 1 / (2 + 3 / (4 + 5 / 0))
+  = 1 / (2 + 3 / ∞)
+  = 1 / 2
+    evalF?.loop [(1, 2), (0, 4), (-4, 1)]
+  = 1 / (2 + 0 / (4 + -4 / 1))
+  = 1 / (2 + 0 / 0)
+  = undefined
+  ```
   -/
-  loop [DecidableEq K] : List (K × K) → Option K
-    | []     => some 0
+  @[simp]
+  loop [DecidableEq K] : List (K × K) → Option (Option K)
+    | []     => some (some 0)
     | p :: l =>
-      match loop l with
-      | some k =>
-        if p.2 + k = 0 then
-          none
-        else
-          some (p.1 / (p.2 + k))
-      | none   => some 0
+      (loop l).bind
+        fun
+        | some k =>
+          if p.2 + k = 0 then
+            if p.1 = 0 then
+              none
+            else
+              some none
+          else
+            some (some (p.1 / (p.2 + k)))
+        | none   => some (some 0)
 #align generalized_continued_fraction.convergents' FGCF.evalF?ₓ
 #align generalized_continued_fraction.convergents'_aux FGCF.evalF?.loopₓ
 
@@ -489,10 +501,9 @@ def convergents [DecidableEq K] (g : GCF K) : ℕ →. K :=
   fun n => ↑(g.take n).eval?
 #align generalized_continued_fraction.convergents GCF.convergentsₓ
 
-open Classical in
 /-- The value of potentially infinite gcfs is given by the limit of the value of its head finite
 gcfs. -/
-def HasValue [TopologicalSpace K] (g : GCF K) (v : K) : Prop :=
+def HasValue [DecidableEq K] [TopologicalSpace K] (g : GCF K) (v : K) : Prop :=
   PTendsto g.convergents atTop (nhds v)
 
 end GCF
