@@ -268,6 +268,8 @@ def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
     let zipPath := CACHEDIR / zip
     let buildPaths ← mkBuildPaths path
     if ← allExist buildPaths then
+      if path == ⟨"Mathlib/Mathport/Rename.lean"⟩ then
+        println! "Mathlib.Mathport.Rename hash: {← IO.FS.readFile buildPaths[0]!.1}"
       if overwrite || !(← zipPath.pathExists) then
         tasks := tasks.push <| ← IO.asTask do
           runCmd (← getLeanTar) $ #[zipPath.toString] ++
@@ -301,12 +303,15 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
     let args := (if force then #["-f"] else #[]) ++ #["-x", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
-    let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
+    let config : Array Lean.Json ← hashMap.foldM (init := #[]) fun config path hash => do
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
       if isMathlibRoot || !isPathFromMathlib path then
-        config.push <| .str pathStr
+        if path == ⟨"Mathlib/Mathport/Rename.lean"⟩ then
+          println! "Mathlib.Mathport.Rename hash: {
+            ← IO.FS.readFile (LIBDIR / path.withExtension "trace")}"
+        pure <| config.push <| .str pathStr
       else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath.toString)]
+        pure <| config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath.toString)]
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw $ IO.userError s!"leantar failed with error code {exitCode}"
