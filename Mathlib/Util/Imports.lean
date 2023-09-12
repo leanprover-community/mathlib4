@@ -157,8 +157,9 @@ elab "#minimize_imports" : command => do
 Find locations as high as possible in the import hierarchy
 where the named declaration could live.
 -/
-def Lean.Name.findHome (n : Name) : CoreM NameSet := do
-  let required ← n.requiredModules
+def Lean.Name.findHome (n : Name) (env : Option Environment) : CoreM NameSet := do
+  let current? := match env with | some env => env.header.mainModule | _ => default
+  let required := (← n.requiredModules).toArray.erase current?
   let imports := (← getEnv).importGraph.transitiveClosure
   let mut candidates : NameSet := {}
   for (n, i) in imports do
@@ -174,11 +175,13 @@ open Elab in
 /--
 Find locations as high as possible in the import hierarchy
 where the named declaration could live.
+Using `#find_home!` will forcefully remove the current file.
 -/
-elab "#find_home" n:ident : command => do
+elab "#find_home" bang:"!"? n:ident : command => do
   let stx ← getRef
   let mut homes := #[]
   let n ← resolveGlobalConstNoOverloadWithInfo n
-  for i in (← Elab.Command.liftCoreM do n.findHome) do
+  let env := if bang.isSome then some (← getEnv) else none
+  for i in (← Elab.Command.liftCoreM do n.findHome env) do
     homes := homes.push i
   logInfoAt stx[0] m!"{homes}"
