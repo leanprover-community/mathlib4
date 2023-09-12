@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.Measure.NullMeasurable
-import Mathlib.MeasureTheory.MeasurableSpace
+import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 #align_import measure_theory.measure.measure_space from "leanprover-community/mathlib"@"343e80208d29d2d15f8050b929aa50fe4ce71b55"
@@ -3804,7 +3804,7 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
 /-- A measure which is finite on compact sets in a locally compact space is locally finite.
 Not registered as an instance to avoid a loop with the other direction. -/
 theorem isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
-    [LocallyCompactSpace α] [IsFiniteMeasureOnCompacts μ] : IsLocallyFiniteMeasure μ :=
+    [WeaklyLocallyCompactSpace α] [IsFiniteMeasureOnCompacts μ] : IsLocallyFiniteMeasure μ :=
   ⟨fun x ↦
     let ⟨K, K_compact, K_mem⟩ := exists_compact_mem_nhds x
     ⟨K, K_mem, K_compact.measure_lt_top⟩⟩

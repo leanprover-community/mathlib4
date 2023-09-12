@@ -117,8 +117,7 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
   · rw [sUnion_image, iUnion₂_eq_univ_iff]
     exact fun x => ⟨∅, ⟨finite_empty, empty_subset _⟩, sInter_empty.substr <| mem_univ x⟩
   · rintro _ ⟨t, ⟨hft, htb⟩, rfl⟩
-    apply isOpen_sInter
-    exacts [hft, fun s hs => GenerateOpen.basic _ <| htb hs]
+    exact hft.isOpen_sInter fun s hs ↦ GenerateOpen.basic _ $ htb hs
   · rw [← sInter_singleton t]
     exact ⟨{t}, ⟨finite_singleton t, singleton_subset_iff.2 ht⟩, rfl⟩
 #align topological_space.is_topological_basis_of_subbasis TopologicalSpace.isTopologicalBasis_of_subbasis

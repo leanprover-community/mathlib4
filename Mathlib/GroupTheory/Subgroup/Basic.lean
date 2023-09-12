@@ -279,8 +279,8 @@ instance (priority := 75) toLinearOrderedCommGroup {G : Type*} [LinearOrderedCom
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
   "The natural group hom from an additive subgroup of `AddGroup` `G` to `G`."]
-protected def subtype : H →* G :=
-  ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
+protected def subtype : H →* G where
+  toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ => rfl
 #align subgroup_class.subtype SubgroupClass.subtype
 #align add_subgroup_class.subtype AddSubgroupClass.subtype
 
@@ -783,8 +783,8 @@ instance toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G] (H : Su
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive "The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`."]
-protected def subtype : H →* G :=
-  ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
+protected def subtype : H →* G where
+  toFun := ((↑) : H → G); map_one' := rfl; map_mul' _ _ := rfl
 #align subgroup.subtype Subgroup.subtype
 #align add_subgroup.subtype AddSubgroup.subtype
 
@@ -2763,6 +2763,11 @@ theorem ofInjective_apply {f : G →* N} (hf : Function.Injective f) {x : G} :
   rfl
 #align monoid_hom.of_injective_apply MonoidHom.ofInjective_apply
 #align add_monoid_hom.of_injective_apply AddMonoidHom.ofInjective_apply
+
+@[to_additive (attr := simp)]
+theorem apply_ofInjective_symm {f : G →* N} (hf : Function.Injective f) (x : f.range) :
+    f ((ofInjective hf).symm x) = x :=
+  Subtype.ext_iff.1 <| (ofInjective hf).apply_symm_apply x
 
 section Ker
 
