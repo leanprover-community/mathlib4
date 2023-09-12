@@ -391,7 +391,7 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
 set_option maxHeartbeats 900000 in
 -- Porting note: extra heartbeats are needed to infer the instance
 -- Module S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }
-set_option synthInstance.maxHeartbeats 100000 in
+set_option synthInstance.maxHeartbeats 200000 in
 -- This has type
 -- `Derivation R S (Ω[S⁄R]) ≃ₗ[R] Derivation R S (KaehlerDifferential.ideal R S).cotangentIdeal`
 -- But lean times-out if this is given explicitly.
