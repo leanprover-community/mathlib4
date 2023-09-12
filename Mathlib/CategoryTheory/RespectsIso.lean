@@ -26,4 +26,9 @@ lemma isoClosure_eq_self (S : Set C) [S.RespectsIso] : S.isoClosure = S := by
     exact S.mem_of_iso e.symm hY
   · exact S.subset_isoClosure
 
+instance (S : Set C) : S.isoClosure.RespectsIso where
+  condition := by
+    rintro X Y e ⟨Z, hZ, ⟨f⟩⟩
+    exact ⟨Z, hZ, ⟨e.symm.trans f⟩⟩
+
 end Set
