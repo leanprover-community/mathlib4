@@ -223,6 +223,14 @@ instance : OrderHomClass (α →o β) α β where
   coe_injective' f g h := by cases f; cases g; congr
   map_rel f _ _ h := f.monotone' h
 
+/-- Helper instance for when there's too many metavariables to apply the coercion via `FunLike`
+directly. -/
+instance : CoeFun (α →o β) fun _ => α → β :=
+  ⟨FunLike.coe⟩
+
+@[simp] theorem coe_mk (f : α → β) (hf : Monotone f) : ⇑(mk f hf) = f := rfl
+#align order_hom.coe_fun_mk OrderHom.coe_mk
+
 protected theorem monotone (f : α →o β) : Monotone f :=
   f.monotone'
 #align order_hom.monotone OrderHom.monotone
@@ -239,11 +247,8 @@ def Simps.coe (f : α →o β) : α → β := f
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
-@[simp] lemma toFun_eq_coe (f : α →o β) : f.toFun = f := rfl
+@[simp] theorem toFun_eq_coe (f : α →o β) : f.toFun = f := rfl
 #align order_hom.to_fun_eq_coe OrderHom.toFun_eq_coe
-
-@[simp] theorem coe_fun_mk {f : α → β} (hf : Monotone f) : (mk f hf : α → β) = f := rfl
-#align order_hom.coe_fun_mk OrderHom.coe_fun_mk
 
 -- See library note [partially-applied ext lemmas]
 @[ext]
@@ -257,11 +262,10 @@ theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
     ⇑(f : α →o β) = f :=
   rfl
 
--- porting note: todo: drop name once we don't need `#align`
 /-- One can lift an unbundled monotone function to a bundled one. -/
-instance instCanLiftMono : CanLift (α → β) (α →o β) (↑) Monotone where
+protected instance canLift : CanLift (α → β) (α →o β) (↑) Monotone where
   prf f h := ⟨⟨f, h⟩, rfl⟩
-#align order_hom.monotone.can_lift OrderHom.instCanLiftMono
+#align order_hom.monotone.can_lift OrderHom.canLift
 
 /-- Copy of an `OrderHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
