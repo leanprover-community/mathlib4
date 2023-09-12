@@ -56,8 +56,22 @@ theorem Limits.HasZeroObject.transport (e : C ≌ D) [Limits.HasZeroObject C] :
 def Limits.HasZeroMorphisms.transport (e : C ≌ D) [Limits.HasZeroMorphisms C] :
     Limits.HasZeroMorphisms D where
   Zero X Y := ⟨e.counitInv.app _ ≫ e.functor.map 0 ≫ e.counit.app _⟩
-  zero_comp X {Y Z} f := sorry
-  comp_zero {X Y} Z f := sorry
+  zero_comp X {Y Z} f := show (_ ≫ _ ≫ _) ≫ _ = _ ≫ _ ≫ _ by
+    sorry
+  comp_zero {X Y} Z f := show _ ≫ (_ ≫ _ ≫ _) = _ ≫ _ ≫ _ by
+    sorry
+
+/-- Transport `Limits.HasBinaryBiproduct` along an equivalence. -/
+theorem Limits.HasBinaryBiproduct.transport
+    (e : C ≌ D) [Limits.HasZeroMorphisms C] {X Y : D}
+    [Limits.HasBinaryBiproduct (e.inverse.obj X) (e.inverse.obj Y)]
+    [Limits.HasZeroMorphisms D] :
+    Limits.HasBinaryBiproduct X Y where
+  exists_binary_biproduct :=
+    (Limits.HasBinaryBiproduct.exists_binary_biproduct
+      (P := e.inverse.obj X) (Q := e.inverse.obj Y)).map fun d =>
+      { bicone := sorry
+        isBilimit := sorry }
 
 end
 
@@ -80,8 +94,8 @@ instance : Limits.HasZeroObject (Skeleton C) :=
 noncomputable instance : Limits.HasZeroMorphisms (Skeleton C) :=
   Limits.HasZeroMorphisms.transport (skeletonEquivalence C).symm
 
-instance (X Y : Skeleton C) : Limits.HasBinaryBiproduct X Y  where
-  exists_binary_biproduct := sorry
+instance (X Y : Skeleton C) : Limits.HasBinaryBiproduct X Y :=
+  Limits.HasBinaryBiproduct.transport (skeletonEquivalence C).symm
 
 noncomputable instance : Limits.HasBinaryBiproducts (Skeleton C) where
   has_binary_biproduct := inferInstance
