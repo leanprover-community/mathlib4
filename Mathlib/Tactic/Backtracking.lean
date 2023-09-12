@@ -5,9 +5,7 @@ Authors: Scott Morrison
 -/
 import Lean.Meta.Basic
 import Lean.Meta.Tactic.Util
-import Mathlib.Control.Basic
 import Mathlib.Lean.Meta
-import Mathlib.Data.Sum.Basic
 
 /-!
 # `backtrack`
