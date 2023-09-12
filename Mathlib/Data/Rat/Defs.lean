@@ -83,6 +83,8 @@ lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
     exact zero_mk _ _ _
   · exact congr_arg num
 
+lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
+
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
   rw [←zero_divInt b, divInt_eq_iff b0 b0, zero_mul, mul_eq_zero, or_iff_left b0]
