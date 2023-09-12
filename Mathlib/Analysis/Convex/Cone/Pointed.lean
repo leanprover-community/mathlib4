@@ -36,7 +36,7 @@ namespace PointedCone
 
 set_option quotPrecheck false in
 /-- The set of non-negative elements. -/
-notation "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
+scoped notation "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
 
 section Definitions
 
