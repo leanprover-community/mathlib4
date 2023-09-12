@@ -176,6 +176,9 @@ Find locations as high as possible in the import hierarchy
 where the named declaration could live.
 -/
 elab "#find_home" n:ident : command => do
+  let stx ← getRef
+  let mut homes := #[]
   let n ← resolveGlobalConstNoOverloadWithInfo n
   for i in (← Elab.Command.liftCoreM do n.findHome) do
-    logInfo i
+    homes := homes.push i
+  logInfoAt stx[0] m!"{homes}"

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Thomas Browning
 -/
 import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 
