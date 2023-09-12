@@ -158,10 +158,8 @@ jobs:
       - name: upload cache
         if: always()
         run: |
-          # run this in CI if it gets an incorrect lake hash for existing cache files somehow
-          # lake exe cache pack! || true
-          lake exe cache commit || true
-          lake exe cache put || true
+          lake exe cache commit! || true
+          lake exe cache put! || true
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
