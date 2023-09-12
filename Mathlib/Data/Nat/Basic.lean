@@ -327,6 +327,21 @@ theorem le_of_pred_lt {m n : ℕ} : pred m < n → m ≤ n :=
   | _ + 1 => id
 #align nat.le_of_pred_lt Nat.le_of_pred_lt
 
+lemma self_add_sub_one (n : ℕ) : n + (n - 1) = 2 * n - 1 := by
+  cases n
+  · rfl
+  · rw [two_mul]
+    convert (add_succ_sub_one (Nat.succ _) _).symm
+
+lemma sub_one_add_self (n : ℕ) : (n - 1) + n = 2 * n - 1 :=
+  add_comm _ n ▸ self_add_sub_one n
+
+lemma self_add_pred (n : ℕ) : n + pred n = 2 * n - 1 :=
+  self_add_sub_one n
+
+lemma pred_add_self (n : ℕ) : pred n + n = 2 * n - 1 :=
+  sub_one_add_self n
+
 /-- This ensures that `simp` succeeds on `pred (n + 1) = n`. -/
 @[simp]
 theorem pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [add_comm, add_one, Nat.pred_succ]
