@@ -396,7 +396,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
   have h2s : MeasurableSet (univ.pi s) := .pi countable_univ fun i _ ↦ hs i
   simp_rw [← pi_pi, ← lintegral_indicator_one h2s]
   rw [lintegral_map (measurable_one.indicator h2s) ht, volume_pi]
-  refine integral_eq_of_marginal_eq {t.i} ((measurable_one.indicator h2s).comp ht)
+  refine lintegral_eq_of_marginal_eq {t.i} ((measurable_one.indicator h2s).comp ht)
     (measurable_one.indicator h2s) ?_
   simp_rw [marginal_singleton]
   ext x

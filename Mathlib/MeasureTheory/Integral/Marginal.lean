@@ -741,7 +741,7 @@ theorem marginal_le_of_subset {f g : (∀ i, π i) → ℝ≥0∞} (hst : s ⊆ 
     marginal_union' μ g hg disjoint_sdiff]
   exact marginal_mono hfg
 
-theorem integral_eq_of_marginal_eq [Fintype δ] (s : Finset δ) {f g : (∀ i, π i) → ℝ≥0∞}
+theorem lintegral_eq_of_marginal_eq [Fintype δ] (s : Finset δ) {f g : (∀ i, π i) → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫_s, f ∂μ = ∫⋯∫_s, g ∂μ) :
     ∫⁻ x, f x ∂Measure.pi μ = ∫⁻ x, g x ∂Measure.pi μ := by
   rcases isEmpty_or_nonempty (∀ i, π i) with h|⟨⟨x⟩⟩
