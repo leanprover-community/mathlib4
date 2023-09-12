@@ -120,7 +120,10 @@ jobs:
         uses: dcarbone/install-jq-action@v1.0.1
 
       - name: install xxd
-        run: sudo apt-get install -y xxd
+        if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xxd
 
       - name: install elan
         run: |
