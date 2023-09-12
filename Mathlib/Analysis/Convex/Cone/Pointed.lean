@@ -11,11 +11,10 @@ import Mathlib.Algebra.Module.Submodule.Basic
 /-!
 # Pointed cones
 
-A *pointed cone* is defined to be a convex cone which contains `0`. This is a bundled version of
-`ConvexCone.Pointed`. Pointed cones have a nicer algebraic structure than convex cones. They form
-a submodule of the ambient space when the scalars are restricted to being positive. This allows us
-to use the `Module` API to work with convex cones.
-
+A *pointed cone* is defined to be a submodule of a module where the scalars are restricted to be
+nonnegative. This is equivalent to saying that as a set a pointed cone is convex cone which
+contains `0`. This is a bundled version of `ConvexCone.Pointed`. We choose the submodule definition
+as it allows us to use the `Module` API to work with convex cones.
 
 ## TODO
 
@@ -26,8 +25,7 @@ to use the `Module` API to work with convex cones.
 
 variable {𝕜 E F G : Type*}
 
-/-- A pointed cone is a `Submodule` of the ambient space with scalars restricted to being
-non-negative. -/
+/-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
 abbrev PointedCone (𝕜 : Type*) (E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=
   have : Module { c : 𝕜 // 0 ≤ c } E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
   Submodule { c : 𝕜 // 0 ≤ c } E
@@ -44,7 +42,7 @@ variable [OrderedSemiring 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E]
 
 /-- We consider the ambient space `E` as a module over just the non-negative scalars. -/
-local instance : Module 𝕜≥0 E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
+instance : Module 𝕜≥0 E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
 
 instance : Coe (PointedCone 𝕜 E) (ConvexCone 𝕜 E) where
   coe := fun S => {
@@ -97,6 +95,18 @@ variable [OrderedSemiring 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E]
 variable [AddCommMonoid F] [Module 𝕜 F]
 variable [AddCommMonoid G] [Module 𝕜 G]
+
+/--!
+
+## Maps between pointed cones
+
+There is already a definition of maps between submodules, `Submodule.map`. In our case, these maps
+are induced from linear maps between the ambient modules that are linear over nonnegative scalars.
+Such maps are unlikely to be of any use in practice. So, we construct some API to define maps
+between pointed cones induced from linear maps between the ambient modules that are linear over
+*all* scalars.
+
+-/
 
 instance : Module 𝕜≥0 E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
 instance : IsScalarTower 𝕜≥0 𝕜 E := SMul.comp.isScalarTower ↑Nonneg.coeRingHom
