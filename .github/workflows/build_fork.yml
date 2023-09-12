@@ -162,8 +162,8 @@ jobs:
       - name: upload cache
         if: always()
         run: |
-          lake exe cache commit || true
-          lake exe cache put || true
+          lake exe cache commit! || true
+          lake exe cache put! || true
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
