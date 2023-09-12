@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Category.Basic
 
 import ProofWidgets.Component.PenroseDiagram
 import ProofWidgets.Presentation.Expr
-import ProofWidgets.Component.Panel.SelectionPanel
+import ProofWidgets.Component.SelectionPanel
 
 /-! This module defines tactic/meta infrastructure for displaying commutative diagrams in the
 infoview. -/
@@ -58,13 +58,13 @@ open scoped Jsx in
 display as labels in the diagram. -/
 def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM Html := do
   let embeds ← embeds.mapM fun (s, h) =>
-      return (s, <InteractiveCode fmt={← Widget.ppExprTagged h} />)
-  return (
+      return (s, Html.ofTHtml <InteractiveCode fmt={← Widget.ppExprTagged h} />)
+  return Html.ofTHtml
     <PenroseDiagram
       embeds={embeds}
       dsl={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.dsl"}
       sty={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.sty"}
-      sub={sub} />)
+      sub={sub} />
 
 /-! ## Commutative triangles -/
 
