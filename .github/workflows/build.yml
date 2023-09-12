@@ -164,6 +164,7 @@ jobs:
       - name: upload cache
         if: always()
         run: |
+          lake exe cache pack! || true
           lake exe cache commit || true
           lake exe cache put || true
         env:
