@@ -1960,6 +1960,26 @@ theorem biprod.symmetry (P Q : C) : (biprod.braiding P Q).hom ≫ (biprod.braidi
   by simp
 #align category_theory.limits.biprod.symmetry CategoryTheory.Limits.biprod.symmetry
 
+/-- The associator isomorphism which associates a binary biproduct. -/
+@[simps]
+def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R)  where
+  hom := biprod.lift (biprod.fst ≫ biprod.fst) (biprod.lift (biprod.fst ≫ biprod.snd) biprod.snd)
+  inv := biprod.lift (biprod.lift biprod.fst (biprod.snd ≫ biprod.fst)) (biprod.snd ≫ biprod.snd)
+
+/-- The associator isomorphism can be passed through a map by swapping the order. -/
+@[reassoc]
+theorem biprod.associator_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (g : W ⟶ Z) :
+    biprod.map (biprod.map f g) h ≫ (biprod.associator _ _ _).hom
+      = (biprod.associator _ _ _).hom ≫ biprod.map f (biprod.map g h) := by
+  aesop_cat
+
+/-- The associator isomorphism can be passed through a map by swapping the order. -/
+@[reassoc]
+theorem biprod.associator_inv_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (g : W ⟶ Z) :
+    biprod.map f (biprod.map g h) ≫ (biprod.associator _ _ _).inv
+      = (biprod.associator _ _ _).inv ≫ biprod.map (biprod.map f g) h := by
+  aesop_cat
+
 end
 
 end Limits
