@@ -210,12 +210,14 @@ import Mathlib.Algebra.Hom.Equiv.TypeTags
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
 import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
 import Mathlib.Algebra.Hom.Freiman
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Basic
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Hom.GroupInstances
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.NonUnitalAlg
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Ring.Basic
+import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
