@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Analysis.Calculus.Deriv.Support
+import Mathlib.Data.Finset.Interval
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Integral.Marginal
 import Mathlib.MeasureTheory.Integral.MeanInequalities
@@ -25,25 +26,6 @@ variable {ι ι' ι'' : Type _}
 section Finset
 
 open Finset
-
--- move to Data.Finset.Basic
-theorem Finset.monotone_iff {α β : Type _} [Preorder β] (f : Finset α → β) :
-    Monotone f ↔ ∀ s : Finset α, ∀ {i} (hi : i ∉ s), f s ≤ f (insert i s) := by
-  refine ⟨fun h s i _hi ↦ ?_, fun h ↦ ?_⟩
-  · exact h (Finset.subset_insert i s)
-  · intro s
-    suffices : ∀ t, s ∩ t = ∅ → f s ≤ f (s ∪ t)
-    · intro v huv
-      calc f s ≤ f (s ∪ (v \ s)) := this _ (Finset.inter_sdiff_self s v)
-        _ = f v := by rw [union_sdiff_of_subset huv]
-    intro t hst
-    induction' t using Finset.induction with i t hit ih
-    · simp
-    · have his : i ∉ s := by aesop
-      have hst' : s ∩ t = ∅ := by aesop
-      calc f s ≤ f (s ∪ t) := ih hst'
-        _ ≤ f (insert i (s ∪ t)) := h _ (by aesop)
-        _ = f (s ∪ (insert i t)) := by rw [Finset.union_insert]
 
 namespace Real
 
