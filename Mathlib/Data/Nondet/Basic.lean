@@ -49,7 +49,7 @@ structure Nondet (m : Type → Type) [MonadBacktrack σ m] (α : Type) : Type wh
   Convert a non-deterministic value into a lazy list, keeping the backtrackable state.
   Be careful that monadic operations on the `MLList` will not respect this state!
   -/
-  toMLList : MLList m (σ × α)
+  toMLList : MLList m (α × σ)
 
 namespace Nondet
 
@@ -73,9 +73,9 @@ ensuring the function is run with the relevant backtrackable state at each value
 partial def bind (L : Nondet m α) (f : α → Nondet m β) : Nondet m β := .squash fun _ => do
   match ← L.toMLList.uncons with
   | none => pure .nil
-  | some (⟨s, x⟩, xs) => do
+  | some (⟨x, s⟩, xs) => do
     let r := (Nondet.mk xs).bind f
-    restoreState s
+    restoreState s -- FIXME I don't actually have a test yet that breaks when removing this!
     match ← (f x).toMLList.uncons with
     | none => return r
     | some (y, ys) => return .mk <| .cons y (ys.append (fun _ => r.toMLList))
@@ -84,7 +84,7 @@ partial def bind (L : Nondet m α) (f : α → Nondet m β) : Nondet m β := .sq
 def singletonM (x : m α) : Nondet m α :=
   .mk <| .singletonM do
     let a ← x
-    return (← saveState, a)
+    return (a, ← saveState)
 
 /-- Convert a value to the singleton nondeterministic value. -/
 def singleton (x : α) : Nondet m α := singletonM (pure x)
@@ -112,7 +112,7 @@ def ofListM (L : List (m α)) : Nondet m α :=
     return .mk <| MLList.ofMLList <| L.map fun x => do
       restoreState s
       let a ← x
-      pure (← saveState, a)
+      pure (a, ← saveState)
 
 /--
 Lift a list of values to a nondeterministic value.
@@ -161,7 +161,7 @@ def filter (p : α → Bool) (L : Nondet m α) : Nondet m α :=
 /--
 Find the first alternative in a nondeterministic value, as a monadic value.
 -/
-def head [Alternative m] (L : Nondet m α) : m α := (·.2) <$> MLList.head L.toMLList
+def head [Alternative m] (L : Nondet m α) : m α := (·.1) <$> MLList.head L.toMLList
 
 /--
 Find the value of a monadic function on the first alternative in a nondeterministic value
@@ -173,6 +173,16 @@ def firstM [Alternative m] (L : Nondet m α) (f : α → m (Option β)) : m β :
 /--
 Convert a non-deterministic value into a lazy list, by discarding the backtrackable state.
 -/
-def toMLList' (L : Nondet m α) : MLList m α := L.toMLList.map (fun (_, a) => a)
+def toMLList' (L : Nondet m α) : MLList m α := L.toMLList.map (·.1)
+
+/--
+Convert a non-deterministic value into a list in the monad, retaining the backtrackable state.
+-/
+def toList (L : Nondet m α) : m (List (α × σ)) := L.toMLList.force
+
+/--
+Convert a non-deterministic value into a list in the monad, by discarding the backtrackable state.
+-/
+def toList' (L : Nondet m α) : m (List α) := L.toMLList.map (·.1) |>.force
 
 end Nondet
