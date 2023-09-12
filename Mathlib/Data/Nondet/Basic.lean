@@ -161,7 +161,10 @@ def filter (p : α → Bool) (L : Nondet m α) : Nondet m α :=
 /--
 Find the first alternative in a nondeterministic value, as a monadic value.
 -/
-def head [Alternative m] (L : Nondet m α) : m α := (·.2) <$> MLList.head L.toMLList
+def head [Alternative m] (L : Nondet m α) : m α := do
+  let (s, x) ← L.toMLList.head
+  restoreState s
+  return x
 
 /--
 Find the value of a monadic function on the first alternative in a nondeterministic value
