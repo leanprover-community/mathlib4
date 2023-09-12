@@ -107,7 +107,7 @@ jobs:
   build:
     if: github.repository == 'leanprover-community/mathlib4'
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: pr
     steps:
       - name: cleanup
         run: |
@@ -118,12 +118,6 @@ jobs:
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@v1.0.1
-
-      - name: install xxd
-        if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xxd
 
       - name: install elan
         run: |
@@ -150,9 +144,7 @@ jobs:
       - name: get cache
         run: |
           lake exe cache clean
-          rm ~/.cache/mathlib/088aeeb2871b7987.ltar || true
           lake exe cache get
-          xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar || true
 
       - name: build mathlib
         id: build
@@ -172,20 +164,16 @@ jobs:
       - name: upload cache
         if: always()
         run: |
-          xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
-          lake exe cache pack! || true
-          xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
-          lake exe cache commit! || true
-          xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
-          lake exe cache put! || true
+          # run this in CI if it gets an incorrect lake hash for existing cache files somehow
+          # lake exe cache pack! || true
+          lake exe cache commit || true
+          lake exe cache put || true
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: check the cache
         run: |
-          xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
           lake exe cache get
-          xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
           # We pipe the output of `lake build` to a file,
           # and if we find " Building " in that file we kill `lake build`, and error.
           lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building " && kill $! ))
