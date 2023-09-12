@@ -57,12 +57,6 @@ lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
 section cast
 
 @[simp, norm_cast]
-theorem cast_mul [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fun m =>
-  Int.inductionOn' m 0 (by simp) (fun k _ ih n => by simp [add_mul, ih]) fun k _ ih n => by
-    simp [sub_mul, ih]
-#align int.cast_mul Int.cast_mulₓ -- dubious translation, type involves HasLiftT
-
-@[simp, norm_cast]
 theorem cast_ite [AddGroupWithOne α] (P : Prop) [Decidable P] (m n : ℤ) :
     ((ite P m n : ℤ) : α) = ite P (m : α) (n : α) :=
   apply_ite _ _ _ _
