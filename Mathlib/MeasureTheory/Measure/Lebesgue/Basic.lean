@@ -577,33 +577,6 @@ theorem volume_regionBetween_eq_lintegral [SigmaFinite μ] (hf : AEMeasurable f 
           (regionBetween_subset (AEMeasurable.mk f hf) (AEMeasurable.mk g hg) s)).symm
 #align volume_region_between_eq_lintegral volume_regionBetween_eq_lintegral
 
--- Place where?
-lemma measure_prod_compl_eq_zero {α β : Type*}
-    [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {ν : Measure β} [SigmaFinite ν]
-    {s : Set α} (s_ae_univ : μ sᶜ = 0) {t : Set β} (t_ae_univ : ν tᶜ = 0) :
-    μ.prod ν (s ×ˢ t)ᶜ = 0 := by
-  rw [Set.compl_prod_eq_union]
-  apply le_antisymm ((measure_union_le _ _).trans _) (zero_le _)
-  simp [s_ae_univ, t_ae_univ]
-
--- Place where?
-lemma MeasureTheory.NullMeasurableSet.prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    {μ : Measure α} {ν : Measure β} [SigmaFinite ν] {s : Set α} {t : Set β}
-    (s_mble : NullMeasurableSet s μ) (t_mble : NullMeasurableSet t ν) :
-    NullMeasurableSet (s ×ˢ t) (μ.prod ν) := by
-  obtain ⟨s₀, ⟨mble_s₀, s_aeeq_s₀⟩⟩ := s_mble
-  obtain ⟨t₀, ⟨mble_t₀, t_aeeq_t₀⟩⟩ := t_mble
-  refine ⟨s₀ ×ˢ t₀, ⟨mble_s₀.prod mble_t₀, ?_⟩⟩
-  rw [Measure.ae, Filter.eventuallyEq_iff_exists_mem] at *
-  simp only [Filter.mem_mk, mem_setOf_eq] at *
-  rcases s_aeeq_s₀ with ⟨u, ⟨u_mem, s_eq_s₀⟩⟩
-  rcases t_aeeq_t₀ with ⟨v, ⟨v_mem, t_eq_t₀⟩⟩
-  refine ⟨u ×ˢ v, ⟨measure_prod_compl_eq_zero u_mem v_mem, ?_⟩⟩
-  intro p hp
-  change (p ∈ s ×ˢ t) = (p ∈ s₀ ×ˢ t₀)
-  simp [show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀ hp.1),
-        show p.snd ∈ t ↔ p.snd ∈ t₀ from Iff.of_eq (t_eq_t₀ hp.2)]
-
 lemma nullMeasurableSet_fst_mem {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     {μ : Measure α} {ν : Measure β} [SigmaFinite ν] {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × β | p.fst ∈ s} (μ.prod ν) := by
