@@ -552,6 +552,35 @@ instance : CompleteLattice (Subcategory C) where
   le_top _ _ _ := Set.mem_univ _
   bot_le := fun A X (hX : IsZero X) => A.zero' _ hX-/
 
+section
+
+variable {D : Type*} [Category D] [HasZeroObject D] [Preadditive D]
+    [HasShift D ℤ] [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+    (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [Full F]
+
+-- note: does not require `[Faithful F]` !
+
+def essImage : Subcategory D :=
+  Subcategory.mk' F.essImage ⟨0, ⟨F.mapZeroObject⟩⟩
+    (fun X n ⟨Y, ⟨e⟩⟩ => ⟨(shiftFunctor C n).obj Y,
+      ⟨(F.commShiftIso n).app Y ≪≫ (shiftFunctor D n).mapIso e⟩⟩)
+    (fun T hT ⟨X₁, ⟨e₁⟩⟩ ⟨X₃, ⟨e₃⟩⟩ => by
+      have ⟨h, hh⟩ := F.map_surjective (e₃.hom ≫ T.mor₃ ≫ e₁.inv⟦1⟧' ≫
+        (F.commShiftIso (1 : ℤ)).inv.app X₁)
+      obtain ⟨X₂, f, g, H⟩ := distinguished_cocone_triangle₂ h
+      refine' ⟨X₂, ⟨Triangle.π₂.mapIso
+        (isoTriangleOfIso₁₃ _ _ (F.map_distinguished _ H) hT e₁ e₃ (by
+          dsimp
+          simp only [hh, assoc, Iso.inv_hom_id_app, Functor.comp_obj,
+            comp_id, Iso.cancel_iso_hom_left, ← Functor.map_comp,
+            Iso.inv_hom_id, Functor.map_id]))⟩⟩)
+
+instance : (essImage F).set.RespectsIso := by
+  dsimp only [essImage]
+  infer_instance
+
+end
+
 end Subcategory
 
 end Triangulated

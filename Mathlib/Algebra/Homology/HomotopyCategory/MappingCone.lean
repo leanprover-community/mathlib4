@@ -41,6 +41,11 @@ noncomputable def mappingCone : CochainComplex C ℤ where
 
 namespace MappingCone
 
+@[simp]
+lemma isZero_mappingCone_X_iff (i : ℤ) :
+    IsZero ((mappingCone φ).X i) ↔ IsZero (F.X (i+1)) ∧ IsZero (G.X i) :=
+  CategoryTheory.Limits.biprod.is_zero_iff _ _
+
 noncomputable def inl : Cochain F (mappingCone φ) (-1) :=
   Cochain.mk (fun p q hpq => (Cochain.ofHom (𝟙 F)).v p (q+1) (by linarith) ≫ biprod.inl)
 

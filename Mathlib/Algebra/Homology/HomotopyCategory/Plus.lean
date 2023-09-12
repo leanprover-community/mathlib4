@@ -2,14 +2,14 @@ import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 
-open CategoryTheory Category Limits Triangulated ZeroObject
+open CategoryTheory Category Limits Triangulated ZeroObject Pretriangulated
 
 namespace HomotopyCategory
 
-variable {C : Type _} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
+variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
 
-/-def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) where
-  set K := ∃ (n : ℤ), CochainComplex.IsStrictlyLE K.1 n
+def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) where
+  set K := ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.1 n
   zero' := by
     refine' ⟨⟨0⟩, _, ⟨0, _⟩⟩
     · change IsZero ((quotient _ _).obj 0)
@@ -17,12 +17,43 @@ variable {C : Type _} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryB
     · dsimp
       infer_instance
   shift := by
-    rintro X n ⟨k, _⟩
+    rintro ⟨X : CochainComplex C ℤ⟩ n ⟨k, _ : X.IsStrictlyGE k⟩
     refine' ⟨k - n, _⟩
-    dsimp
-    -- Quotient.functor_obj_shift
-    -- CochainComplex.isStrictlyLE_shift
-    sorry
-  ext₂' := sorry-/
+    erw [Quotient.functor_obj_shift]
+    exact X.isStrictlyGE_shift k n (k - n) (by linarith)
+  ext₂' T hT := by
+    rintro ⟨n₁, _⟩ ⟨n₃, _⟩
+    obtain ⟨f : T.obj₃.as ⟶ T.obj₁.as⟦(1 : ℤ)⟧, hf⟩ := (quotient _ _ ).map_surjective
+      (T.mor₃ ≫ ((quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).inv.app T.obj₁.as)
+    let T₁ := T.rotate.rotate
+    have hT₁ : T₁ ∈ distTriang _ := rot_of_dist_triangle _ (rot_of_dist_triangle _ hT)
+    let T₂ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).mapTriangle.obj
+      (CochainComplex.MappingCone.triangle f)
+    have hT₂ : T₂ ∈ distTriang _ := by exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
+    have e := isoTriangleOfIso₁₂ T₁ T₂ hT₁ hT₂ (Iso.refl _)
+      (((quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).symm.app T.obj₁.as)
+      (by dsimp; rw [id_comp, hf])
+    refine' ⟨(quotient C (ComplexShape.up ℤ)).obj ((shiftFunctor (CochainComplex C ℤ) (-1)).obj
+      (CochainComplex.mappingCone f)), _, ⟨_⟩⟩
+    · let n₀ : ℤ := min n₁ n₃ - 1
+      have := min_le_left n₁ n₃
+      have := min_le_right n₁ n₃
+      have : (CochainComplex.mappingCone f).IsStrictlyGE n₀ := ⟨fun i hi => by
+        simp only [CochainComplex.MappingCone.isZero_mappingCone_X_iff]
+        constructor
+        · exact CochainComplex.isZero_of_isStrictlyGE T.obj₃.as n₃ (i + 1)
+            (by dsimp at hi; linarith)
+        · exact CochainComplex.isZero_of_isStrictlyGE T.obj₁.as n₁ (i + 1)
+            (by dsimp at hi; linarith)⟩
+      exact ⟨_,
+        (CochainComplex.mappingCone f).isStrictlyGE_shift n₀ (-1) (n₀ + 1) (by linarith)⟩
+    · exact (shiftEquiv _ (1 : ℤ)).unitIso.app T.obj₂ ≪≫
+        (shiftFunctor _ (-1)).mapIso (Triangle.π₃.mapIso e) ≪≫
+        ((quotient _ _).commShiftIso (-1)).symm.app (CochainComplex.mappingCone f)
+
+abbrev Plus := (subcategoryPlus C).category
+
+--instance : Pretriangulated (Plus C) := inferInstance
+--instance : IsTriangulated (Plus C) := inferInstance
 
 end HomotopyCategory
