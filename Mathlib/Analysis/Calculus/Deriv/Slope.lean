@@ -101,13 +101,8 @@ theorem HasDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasDerivAt f
     Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[<] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
 
-lemma Submodule.closure_subset_topologicalClosure_span (s : Set F) :
-    closure s ⊆ (span 𝕜 s).topologicalClosure := by
-  rw [Submodule.topologicalClosure_coe]
-  exact closure_mono subset_span
-
 /-- Given a set `t` such that `s ∩ t` is dense in `s`, then the range of `derivWithin f s` is
-contained in the closure of the subset spanned by the image of `t`. -/
+contained in the closure of the submodule spanned by the image of `t`. -/
 theorem range_derivWithin_subset_closure_span_image
     (f : 𝕜 → F) {s t : Set 𝕜} (h : s ⊆ closure (s ∩ t)) :
     range (derivWithin f s) ⊆ closure (Submodule.span 𝕜 (f '' t)) := by
@@ -145,48 +140,27 @@ theorem range_derivWithin_subset_closure_span_image
     rw [mem_closure_iff_nhdsWithin_neBot]
     exact I.mono (nhdsWithin_mono _ (diff_subset _ _))
 
-#check IsSeparable.separableSpace
+/-- Given a dense set `t`, then the range of `deriv f` is contained in the closure of the submodule
+spanned by the image of `t`. -/
+theorem range_deriv_subset_closure_span_image
+    (f : 𝕜 → F) {t : Set 𝕜} (h : Dense t) :
+    range (deriv f) ⊆ closure (Submodule.span 𝕜 (f '' t)) := by
+  rw [← derivWithin_univ]
+  apply range_derivWithin_subset_closure_span_image
+  simp [dense_iff_closure_eq.1 h]
 
 theorem isSeparable_range_derivWithin [SeparableSpace 𝕜] (f : 𝕜 → F) (s : Set 𝕜) :
     IsSeparable (range (derivWithin f s)) := by
-  have : IsSeparable s := by exact isSeparable_of_separableSpace s
+  obtain ⟨t, ts, t_count, ht⟩ : ∃ t, t ⊆ s ∧ Set.Countable t ∧ s ⊆ closure t :=
+    (isSeparable_of_separableSpace s).exists_countable_dense_subset
+  have : s ⊆ closure (s ∩ t) := by rwa [inter_eq_self_of_subset_right ts]
+  apply IsSeparable.mono _ (range_derivWithin_subset_closure_span_image f this)
+  exact (Countable.image t_count f).isSeparable.span.closure
 
-
-
-
-
-
-
-
-#exit
-
-theorem range_derivWithin_subset_closure_range' (f : 𝕜 → F) (s : 𝕜 → Set 𝕜) :
-    range (fun x ↦ derivWithin f (s x) x) ⊆ closure (Submodule.span 𝕜 (range f)) := by
-  rintro - ⟨x, rfl⟩
-  rcases eq_or_neBot (𝓝[s x \ {x}] x) with H|H
-  · simp [derivWithin, fderivWithin, H]
-    exact subset_closure (zero_mem _)
-  by_cases H' : DifferentiableWithinAt 𝕜 f (s x) x
-  · apply mem_closure_of_tendsto (hasDerivWithinAt_iff_tendsto_slope.1 H'.hasDerivWithinAt)
-    apply eventually_of_forall (fun y ↦ ?_)
-    simp only [slope, vsub_eq_sub, SetLike.mem_coe]
-    refine Submodule.smul_mem _ _ (Submodule.sub_mem _ ?_ ?_)
-    · exact Submodule.subset_span (mem_range_self y)
-    · exact Submodule.subset_span (mem_range_self x)
-  · dsimp
-    rw [derivWithin_zero_of_not_differentiableWithinAt H']
-    exact subset_closure (zero_mem _)
-
-theorem range_derivWithin_subset_closure_range (f : 𝕜 → F) (s : Set 𝕜) :
-    range (derivWithin f s) ⊆ closure (Submodule.span 𝕜 (range f)) :=
-  range_derivWithin_subset_closure_range' f _
-
-theorem range_deriv_subset_closure_range (f : 𝕜 → F) :
-    range (deriv f) ⊆ closure (Submodule.span 𝕜 (range f)) := by
-  simp_rw [← derivWithin_univ]
-  exact range_derivWithin_subset_closure_range f _
-
-#exit
+theorem isSeparable_range_deriv [SeparableSpace 𝕜] (f : 𝕜 → F) :
+    IsSeparable (range (deriv f)) := by
+  rw [← derivWithin_univ]
+  exact isSeparable_range_derivWithin _ _
 
 end NormedField
 
