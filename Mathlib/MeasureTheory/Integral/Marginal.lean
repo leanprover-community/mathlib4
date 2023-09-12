@@ -115,12 +115,12 @@ namespace Equiv
 open Set
 
 -- simps doesn't work from another module :-(
-lemma piCongrLeft_apply {P : β → Sort v} {e : α ≃ β}
+lemma piCongrLeft_apply' {P : β → Sort v} {e : α ≃ β}
     (f : (a : α) → P (e a)) (b : β) :
     piCongrLeft P e f b = cast (congr_arg P (e.apply_symm_apply b)) (f (e.symm b)) :=
   Eq.rec_eq_cast _ _
 
-lemma piCongrLeft_symm_apply {P : β → Sort v} {e : α ≃ β}
+lemma piCongrLeft_symm_apply' {P : β → Sort v} {e : α ≃ β}
     (g : (b : β) → P b) (a : α) :
     (piCongrLeft P e).symm g a = g (e a) := rfl
 
@@ -134,7 +134,7 @@ variable {α : ι → Type _}
 
 theorem piCongrLeft_symm_preimage_pi (f : ι' ≃ ι) (s : Set ι) (t : ∀ i, Set (α i)) :
     ((f.piCongrLeft α).symm ⁻¹' (f ⁻¹' s).pi fun i' => t <| f i') = s.pi t := by
-  ext; simp_rw [mem_preimage, Set.mem_pi, piCongrLeft_symm_apply]
+  ext; simp_rw [mem_preimage, Set.mem_pi, piCongrLeft_symm_apply']
   convert f.forall_congr_left; rfl
 
 theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
@@ -183,13 +183,13 @@ theorem sum_rec_congr (P : ι ⊕ ι' → Sort _) (f : ∀ i, P (inl i)) (g : �
 theorem piCongrLeft_sum_inl (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (i : ι) :
     piCongrLeft π e (piSum (fun x => π (e x)) (f, g)) (e (inl i)) = f i := by
-  simp_rw [piCongrLeft_apply, piSum_apply, sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)),
+  simp_rw [piCongrLeft_apply', piSum_apply, sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)),
     cast_cast, cast_eq]
 
 theorem piCongrLeft_sum_inr (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (j : ι') :
     piCongrLeft π e (piSum (fun x => π (e x)) (f, g)) (e (inr j)) = g j := by
-  simp_rw [piCongrLeft_apply, piSum_apply, sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)),
+  simp_rw [piCongrLeft_apply', piSum_apply, sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)),
     cast_cast, cast_eq]
 
 end Equiv
@@ -414,7 +414,7 @@ variable {α}
 theorem measurable_piCongrLeft (f : ι' ≃ ι) : Measurable (piCongrLeft α f) := by
   rw [measurable_pi_iff]
   intro i
-  simp_rw [piCongrLeft_apply]
+  simp_rw [piCongrLeft_apply']
   apply Measurable.eq_mp α (f.apply_symm_apply i)
   exact measurable_pi_apply (f.symm i)
 
