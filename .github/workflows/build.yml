@@ -150,7 +150,7 @@ jobs:
       - name: get cache
         run: |
           lake exe cache clean
-          rm ~/.cache/mathlib/088aeeb2871b7987.ltar
+          rm ~/.cache/mathlib/088aeeb2871b7987.ltar || true
           lake exe cache get
           xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar || true
 
