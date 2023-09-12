@@ -1890,7 +1890,10 @@ lemma coe_toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : ⇑e.toHomeomorph = e :
   rfl
 #align continuous_linear_equiv.coe_to_homeomorph ContinuousLinearEquiv.coe_toHomeomorph
 
-lemma image_closure (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e '' closure s = closure (e '' s) :=
+theorem isOpenMap (e : M₁ ≃SL[σ₁₂] M₂) : IsOpenMap e :=
+  (ContinuousLinearEquiv.toHomeomorph e).isOpenMap
+
+theorem image_closure (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e '' closure s = closure (e '' s) :=
   e.toHomeomorph.image_closure s
 #align continuous_linear_equiv.image_closure ContinuousLinearEquiv.image_closure
 

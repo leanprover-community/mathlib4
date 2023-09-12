@@ -14,6 +14,7 @@ import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.Algebra.Algebra.Subalgebra.Unitization
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.AlgebraicCard
@@ -210,12 +211,14 @@ import Mathlib.Algebra.Hom.Equiv.TypeTags
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
 import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
 import Mathlib.Algebra.Hom.Freiman
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Basic
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Hom.GroupInstances
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.NonUnitalAlg
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Ring.Basic
+import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
@@ -1622,6 +1625,7 @@ import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Nat.Cast.Prod
+import Mathlib.Data.Nat.Cast.Synonym
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Choose.Bounds

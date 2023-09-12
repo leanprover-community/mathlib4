@@ -79,6 +79,30 @@ lemma Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     · exact zero_le_one
 #align basis.parallelepiped_basis_fun Basis.parallelepiped_basisFun
 
+/-- A parallelepiped can be expressed on the standard basis. -/
+theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+    [NormedSpace ℝ E] (b : Basis ι ℝ E) :
+    b.parallelepiped = (PositiveCompacts.piIcc01 ι).map b.equivFun.symm
+      b.equivFunL.symm.continuous b.equivFunL.symm.isOpenMap := by
+  classical
+  rw [← Basis.parallelepiped_basisFun, ← Basis.parallelepiped_map]
+  congr
+  ext; simp only [map_apply, Pi.basisFun_apply, equivFun_symm_apply, LinearMap.stdBasis_apply',
+    Finset.sum_univ_ite]
+
+open MeasureTheory MeasureTheory.Measure
+
+theorem Basis.map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedAddCommGroup F]
+    [NormedSpace ℝ E] [NormedSpace ℝ F] [MeasurableSpace E] [MeasurableSpace F] [BorelSpace E]
+    [BorelSpace F] [SecondCountableTopology F] [SigmaCompactSpace F]
+    (b : Basis ι ℝ E) (f : E ≃L[ℝ] F) :
+    map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
+  have : IsAddHaarMeasure (map f b.addHaar) :=
+    AddEquiv.isAddHaarMeasure_map b.addHaar f.toAddEquiv f.continuous f.symm.continuous
+  rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable
+    (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map]
+  erw [← image_parallelepiped, f.toEquiv.preimage_image, addHaar_self]
+
 namespace MeasureTheory
 
 open Measure TopologicalSpace.PositiveCompacts FiniteDimensional
