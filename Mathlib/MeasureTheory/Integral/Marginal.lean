@@ -120,10 +120,6 @@ lemma piCongrLeft_apply' {P : β → Sort v} {e : α ≃ β}
     piCongrLeft P e f b = cast (congr_arg P (e.apply_symm_apply b)) (f (e.symm b)) :=
   Eq.rec_eq_cast _ _
 
-lemma piCongrLeft_symm_apply' {P : β → Sort v} {e : α ≃ β}
-    (g : (b : β) → P b) (a : α) :
-    (piCongrLeft P e).symm g a = g (e a) := rfl
-
 lemma subtypeEquivRight_apply {p q : α → Prop} (e : ∀ x, p x ↔ q x)
     (z : { x // p x }) : subtypeEquivRight e z = ⟨z, (e z.1).mp z.2⟩ := rfl
 
@@ -134,7 +130,7 @@ variable {α : ι → Type _}
 
 theorem piCongrLeft_symm_preimage_pi (f : ι' ≃ ι) (s : Set ι) (t : ∀ i, Set (α i)) :
     ((f.piCongrLeft α).symm ⁻¹' (f ⁻¹' s).pi fun i' => t <| f i') = s.pi t := by
-  ext; simp_rw [mem_preimage, Set.mem_pi, piCongrLeft_symm_apply']
+  ext; simp_rw [mem_preimage, Set.mem_pi, piCongrLeft_symm_apply]
   convert f.forall_congr_left; rfl
 
 theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
