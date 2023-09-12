@@ -117,3 +117,18 @@ variable (x y : α)
 /-- info: 1 + 2 : ℕ -/
 #guard_msgs in #check 1 + 2
 end
+
+def idStr : String → String := id
+
+/--
+error: application type mismatch
+  idStr Nat.zero
+argument
+  Nat.zero
+has type
+  ℕ : Type
+but is expected to have type
+  String : Type
+-/
+#guard_msgs in
+notation3 "error" => idStr Nat.zero
