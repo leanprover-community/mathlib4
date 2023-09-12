@@ -119,6 +119,9 @@ jobs:
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@v1.0.1
 
+      - name: install xxd
+        run: sudo apt-get install -y xxd
+
       - name: install elan
         run: |
           set -o pipefail
@@ -165,16 +168,16 @@ jobs:
         if: always()
         run: |
           lake exe cache commit! || true
-          hexdump -C -n 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
+          xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
           lake exe cache put! || true
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: check the cache
         run: |
-          hexdump -C -n 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
+          xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
           lake exe cache get
-          hexdump -C -n 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
+          xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
           # We pipe the output of `lake build` to a file,
           # and if we find " Building " in that file we kill `lake build`, and error.
           lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building " && kill $! ))
