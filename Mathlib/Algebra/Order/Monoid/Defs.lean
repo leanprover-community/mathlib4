@@ -54,7 +54,7 @@ pick up a `CovariantClass M M (function.swap (*)) (≤)` instance without it (se
 @[to_additive]
 instance OrderedCommMonoid.to_covariantClass_right (M : Type*) [OrderedCommMonoid M] :
     CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
-  covariant_swap_of_covariant M _ _
+  covariant_swap_mul_of_covariant_mul M _
 #align ordered_comm_monoid.to_covariant_class_right OrderedCommMonoid.to_covariantClass_right
 #align ordered_add_comm_monoid.to_covariant_class_right OrderedAddCommMonoid.to_covariantClass_right
 
