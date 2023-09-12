@@ -637,9 +637,6 @@ theorem red_invRev_iff : Red (invRev L₁) (invRev L₂) ↔ Red L₁ L₂ :=
 
 @[to_additive]
 instance : Group (FreeGroup α) where
-  mul := (· * ·)
-  one := 1
-  inv := Inv.inv
   mul_assoc := by rintro ⟨L₁⟩ ⟨L₂⟩ ⟨L₃⟩; simp
   one_mul := by rintro ⟨L⟩; rfl
   mul_one := by rintro ⟨L⟩; simp [one_eq_mk]
@@ -722,23 +719,23 @@ def lift : (α → β) ≃ (FreeGroup α →* β) where
 variable {f}
 
 @[to_additive (attr := simp)]
-theorem lift.mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f x.1)⁻¹) :=
+theorem lift_mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f x.1)⁻¹) :=
   rfl
-#align free_group.lift.mk FreeGroup.lift.mk
-#align free_add_group.lift.mk FreeAddGroup.lift.mk
+#align free_group.lift.mk FreeGroup.lift_mk
+#align free_add_group.lift.mk FreeAddGroup.lift_mk
 
 @[to_additive (attr := simp)]
-theorem lift.of {x} : lift f (of x) = f x :=
+theorem lift_of {x} : lift f (of x) = f x :=
   one_mul _
-#align free_group.lift.of FreeGroup.lift.of
-#align free_add_group.lift.of FreeAddGroup.lift.of
+#align free_group.lift.of FreeGroup.lift_of
+#align free_add_group.lift.of FreeAddGroup.lift_of
 
 @[to_additive]
-theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
+theorem lift_unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
   g x = FreeGroup.lift f x :=
   FunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
-#align free_group.lift.unique FreeGroup.lift.unique
-#align free_add_group.lift.unique FreeAddGroup.lift.unique
+#align free_group.lift.unique FreeGroup.lift_unique
+#align free_add_group.lift.unique FreeAddGroup.lift_unique
 
 /-- Two homomorphisms out of a free group are equal if they are equal on generators.
 
@@ -752,29 +749,29 @@ theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f 
 #align free_add_group.ext_hom FreeAddGroup.ext_hom
 
 @[to_additive]
-theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
+theorem lift_of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
   FunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
-#align free_group.lift.of_eq FreeGroup.lift.of_eq
-#align free_add_group.lift.of_eq FreeAddGroup.lift.of_eq
+#align free_group.lift.of_eq FreeGroup.lift_of_eq
+#align free_add_group.lift.of_eq FreeAddGroup.lift_of_eq
 
 @[to_additive]
-theorem lift.range_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
+theorem lift_range_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
   rintro _ ⟨⟨L⟩, rfl⟩;
     exact
       List.recOn L s.one_mem fun ⟨x, b⟩ tl ih =>
         Bool.recOn b (by simp at ih ⊢; exact s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
           (by simp at ih ⊢; exact s.mul_mem (H ⟨x, rfl⟩) ih)
-#align free_group.lift.range_le FreeGroup.lift.range_le
-#align free_add_group.lift.range_le FreeAddGroup.lift.range_le
+#align free_group.lift.range_le FreeGroup.lift_range_le
+#align free_add_group.lift.range_le FreeAddGroup.lift_range_le
 
 @[to_additive]
-theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) := by
-  apply le_antisymm (lift.range_le Subgroup.subset_closure)
+theorem lift_range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) := by
+  apply le_antisymm (lift_range_le Subgroup.subset_closure)
   rw [Subgroup.closure_le]
   rintro _ ⟨a, rfl⟩
-  exact ⟨FreeGroup.of a, by simp only [lift.of]⟩
-#align free_group.lift.range_eq_closure FreeGroup.lift.range_eq_closure
-#align free_add_group.lift.range_eq_closure FreeAddGroup.lift.range_eq_closure
+  exact ⟨FreeGroup.of a, by simp only [lift_of]⟩
+#align free_group.lift.range_eq_closure FreeGroup.lift_range_eq_closure
+#align free_add_group.lift.range_eq_closure FreeAddGroup.lift_range_eq_closure
 
 end lift
 
@@ -796,37 +793,37 @@ def map : FreeGroup α →* FreeGroup β :=
 variable {f}
 
 @[to_additive (attr := simp)]
-theorem map.mk : map f (mk L) = mk (L.map fun x => (f x.1, x.2)) :=
+theorem map_mk : map f (mk L) = mk (L.map fun x => (f x.1, x.2)) :=
   rfl
-#align free_group.map.mk FreeGroup.map.mk
-#align free_add_group.map.mk FreeAddGroup.map.mk
+#align free_group.map.mk FreeGroup.map_mk
+#align free_add_group.map.mk FreeAddGroup.map_mk
 
 @[to_additive (attr := simp)]
-theorem map.id (x : FreeGroup α) : map id x = x := by rcases x with ⟨L⟩; simp [List.map_id']
-#align free_group.map.id FreeGroup.map.id
-#align free_add_group.map.id FreeAddGroup.map.id
+theorem map_id (x : FreeGroup α) : map id x = x := by rcases x with ⟨L⟩; simp [List.map_id']
+#align free_group.map.id FreeGroup.map_id
+#align free_add_group.map.id FreeAddGroup.map_id
 
 @[to_additive (attr := simp)]
-theorem map.id' (x : FreeGroup α) : map (fun z => z) x = x :=
-  map.id x
-#align free_group.map.id' FreeGroup.map.id'
-#align free_add_group.map.id' FreeAddGroup.map.id'
+theorem map_id' (x : FreeGroup α) : map (fun z => z) x = x :=
+  map_id x
+#align free_group.map.id' FreeGroup.map_id'
+#align free_add_group.map.id' FreeAddGroup.map_id'
 
 @[to_additive]
-theorem map.comp {γ : Type w} (f : α → β) (g : β → γ) (x) :
+theorem map_map {γ : Type w} (f : α → β) (g : β → γ) (x) :
   map g (map f x) = map (g ∘ f) x := by
   rcases x with ⟨L⟩; simp [(· ∘ ·)]
-#align free_group.map.comp FreeGroup.map.comp
-#align free_add_group.map.comp FreeAddGroup.map.comp
+#align free_group.map.comp FreeGroup.map_map
+#align free_add_group.map.comp FreeAddGroup.map_map
 
 @[to_additive (attr := simp)]
-theorem map.of {x} : map f (of x) = of (f x) :=
+theorem map_of {x} : map f (of x) = of (f x) :=
   rfl
-#align free_group.map.of FreeGroup.map.of
-#align free_add_group.map.of FreeAddGroup.map.of
+#align free_group.map.of FreeGroup.map_of
+#align free_add_group.map.of FreeAddGroup.map_of
 
 @[to_additive]
-theorem map.unique (g : FreeGroup α →* FreeGroup β)
+theorem map_unique (g : FreeGroup α →* FreeGroup β)
   (hg : ∀ x, g (FreeGroup.of x) = FreeGroup.of (f x)) :
   ∀ {x}, g x = map f x := by
   rintro ⟨L⟩
@@ -837,12 +834,12 @@ theorem map.unique (g : FreeGroup α →* FreeGroup β)
         simp [g.map_mul, g.map_inv, hg, ih])
       (show g (FreeGroup.of x * FreeGroup.mk t) =
           FreeGroup.map f (FreeGroup.of x * FreeGroup.mk t) by simp [g.map_mul, hg, ih])
-#align free_group.map.unique FreeGroup.map.unique
-#align free_add_group.map.unique FreeAddGroup.map.unique
+#align free_group.map.unique FreeGroup.map_unique
+#align free_add_group.map.unique FreeAddGroup.map_unique
 
 @[to_additive]
 theorem map_eq_lift : map f x = lift (of ∘ f) x :=
-  Eq.symm <| map.unique _ fun x => by simp
+  Eq.symm <| map_unique _ fun x => by simp
 #align free_group.map_eq_lift FreeGroup.map_eq_lift
 #align free_add_group.map_eq_lift FreeAddGroup.map_eq_lift
 
@@ -856,8 +853,8 @@ as `Equiv.of_freeGroupEquiv`
 def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β where
   toFun := map e
   invFun := map e.symm
-  left_inv x := by simp [Function.comp, map.comp]
-  right_inv x := by simp [Function.comp, map.comp]
+  left_inv x := by simp [Function.comp, map_map]
+  right_inv x := by simp [Function.comp, map_map]
   map_mul' := MonoidHom.map_mul _
 #align free_group.free_group_congr FreeGroup.freeGroupCongr
 #align free_add_group.free_add_group_congr FreeAddGroup.freeAddGroupCongr
@@ -866,7 +863,7 @@ def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β wher
 
 @[to_additive (attr := simp)]
 theorem freeGroupCongr_refl : freeGroupCongr (Equiv.refl α) = MulEquiv.refl _ :=
-  MulEquiv.ext map.id
+  MulEquiv.ext map_id
 #align free_group.free_group_congr_refl FreeGroup.freeGroupCongr_refl
 #align free_add_group.free_add_group_congr_refl FreeAddGroup.freeAddGroupCongr_refl
 
@@ -879,7 +876,7 @@ theorem freeGroupCongr_symm {α β} (e : α ≃ β) : (freeGroupCongr e).symm = 
 @[to_additive]
 theorem freeGroupCongr_trans {α β γ} (e : α ≃ β) (f : β ≃ γ) :
     (freeGroupCongr e).trans (freeGroupCongr f) = freeGroupCongr (e.trans f) :=
-  MulEquiv.ext <| map.comp _ _
+  MulEquiv.ext <| map_map _ _
 #align free_group.free_group_congr_trans FreeGroup.freeGroupCongr_trans
 #align free_add_group.free_add_group_congr_trans FreeAddGroup.freeAddGroupCongr_trans
 
@@ -907,14 +904,14 @@ theorem prod_mk : prod (mk L) = List.prod (L.map fun x => cond x.2 x.1 x.1⁻¹)
 #align free_add_group.sum_mk FreeAddGroup.sum_mk
 
 @[to_additive (attr := simp)]
-theorem prod.of {x : α} : prod (of x) = x :=
-  lift.of
-#align free_group.prod.of FreeGroup.prod.of
-#align free_add_group.sum.of FreeAddGroup.sum.of
+theorem prod_of {x : α} : prod (of x) = x :=
+  lift_of
+#align free_group.prod.of FreeGroup.prod_of
+#align free_add_group.sum.of FreeAddGroup.sum_of
 
 @[to_additive]
 theorem prod.unique (g : FreeGroup α →* α) (hg : ∀ x, g (FreeGroup.of x) = x) {x} : g x = prod x :=
-  lift.unique g hg
+  lift_unique g hg
 #align free_group.prod.unique FreeGroup.prod.unique
 #align free_add_group.sum.unique FreeAddGroup.sum.unique
 
@@ -922,7 +919,7 @@ end Prod
 
 @[to_additive]
 theorem lift_eq_prod_map {β : Type v} [Group β] {f : α → β} {x} : lift f x = prod (map f x) := by
-  rw [← lift.unique (prod.comp (map f))]
+  rw [← lift_unique (prod.comp (map f))]
   · rfl
   · simp
 #align free_group.lift_eq_prod_map FreeGroup.lift_eq_prod_map
@@ -946,9 +943,9 @@ theorem sum_mk : sum (mk L) = List.sum (L.map fun x => cond x.2 x.1 (-x.1)) :=
 #align free_group.sum_mk FreeGroup.sum_mk
 
 @[simp]
-theorem sum.of {x : α} : sum (of x) = x :=
-  prod.of
-#align free_group.sum.of FreeGroup.sum.of
+theorem sum_of {x : α} : sum (of x) = x :=
+  prod_of
+#align free_group.sum.of FreeGroup.sum_of
 
 -- note: there are no bundled homs with different notation in the domain and codomain, so we copy
 -- these manually
@@ -991,7 +988,7 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
   invFun x := of () ^ x
   left_inv := by
     rintro ⟨L⟩
-    simp only [quot_mk_eq_mk, map.mk, sum_mk, List.map_map]
+    simp only [quot_mk_eq_mk, map_mk, sum_mk, List.map_map]
     exact List.recOn L
      (by rfl)
      (fun ⟨⟨⟩, b⟩ tl ih => by
@@ -999,10 +996,10 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
   right_inv x :=
     Int.induction_on x (by simp)
       (fun i ih => by
-        simp only [zpow_coe_nat, map_pow, map.of] at ih
+        simp only [zpow_coe_nat, map_pow, map_of] at ih
         simp [zpow_add, ih])
       (fun i ih => by
-        simp only [zpow_neg, zpow_coe_nat, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
+        simp only [zpow_neg, zpow_coe_nat, map_inv, map_pow, map_of, sum.map_inv, neg_inj] at ih
         simp [zpow_add, ih, sub_eq_add_neg])
 #align free_group.free_group_unit_equiv_int FreeGroup.freeGroupUnitEquivInt
 
@@ -1028,7 +1025,7 @@ protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C
 -- porting note: simp can prove this: by simp only [@map_pure]
 @[to_additive]
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeGroup α) = pure (f x) :=
-  map.of
+  map_of
 #align free_group.map_pure FreeGroup.map_pure
 #align free_add_group.map_pure FreeAddGroup.map_pure
 
@@ -1053,7 +1050,7 @@ theorem map_inv (f : α → β) (x : FreeGroup α) : f <$> x⁻¹ = (f <$> x)⁻
 -- porting note: simp can prove this: by simp only [@pure_bind]
 @[to_additive]
 theorem pure_bind (f : α → FreeGroup β) (x) : pure x >>= f = f x :=
-  lift.of
+  lift_of
 #align free_group.pure_bind FreeGroup.pure_bind
 #align free_add_group.pure_bind FreeAddGroup.pure_bind
 
