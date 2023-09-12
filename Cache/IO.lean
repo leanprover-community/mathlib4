@@ -269,7 +269,9 @@ def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
     let buildPaths ← mkBuildPaths path
     if ← allExist buildPaths then
       if path == ⟨"Mathlib/Mathport/Rename.lean"⟩ then
-        println! "Mathlib.Mathport.Rename hash: {← IO.FS.readFile buildPaths[0]!.1}"
+        println! "Mathlib.Mathport.Rename hash: {←
+          try some <$> IO.FS.readFile (LIBDIR / path.withExtension "trace")
+          catch _ => pure none}"
       if overwrite || !(← zipPath.pathExists) then
         tasks := tasks.push <| ← IO.asTask do
           runCmd (← getLeanTar) $ #[zipPath.toString] ++
@@ -307,8 +309,9 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
       if isMathlibRoot || !isPathFromMathlib path then
         if path == ⟨"Mathlib/Mathport/Rename.lean"⟩ then
-          println! "Mathlib.Mathport.Rename hash: {
-            ← IO.FS.readFile (LIBDIR / path.withExtension "trace")}"
+          println! "Mathlib.Mathport.Rename hash: {←
+            try some <$> IO.FS.readFile (LIBDIR / path.withExtension "trace")
+            catch _ => pure none}"
         pure <| config.push <| .str pathStr
       else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
         pure <| config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath.toString)]
