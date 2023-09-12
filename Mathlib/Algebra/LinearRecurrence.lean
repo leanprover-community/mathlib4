@@ -145,8 +145,7 @@ def toInit : E.solSpace ≃ₗ[α] Fin E.order → α where
     ext
     simp
   map_smul' a u := by
-    ext
-    simp
+    congr
   invFun u := ⟨E.mkSol u, E.is_sol_mkSol u⟩
   left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.2; intro k; rfl
   right_inv u := Function.funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
