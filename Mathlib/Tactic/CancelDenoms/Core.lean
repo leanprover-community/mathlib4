@@ -101,7 +101,7 @@ theorem cancel_factors_ne {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * 
   classical
   rw [eq_iff_iff, not_iff_not, cancel_factors_eq ha hb had hbd hgcd]
 
-/-! ### Computing cancelation factors -/
+/-! ### Computing cancellation factors -/
 
 /--
 `findCancelFactor e` produces a natural number `n`, such that multiplying `e` by `n` will
@@ -122,7 +122,7 @@ partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
     (pd, .node pd t1 t2)
   | (``HDiv.hDiv, #[_, _, _, _, e1, e2]) =>
     -- If e2 is a rational, then it's a natural number due to the simp lemmas in `deriveThms`.
-    match isNatLit e2 with
+    match e2.nat? with
     | some q =>
       let (v1, t1) := findCancelFactor e1
       let n := v1 * q
