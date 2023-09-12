@@ -278,7 +278,11 @@ set_option linter.uppercaseLean3 false in
 
 theorem Fintype.exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
     (∃! a : α, p a) ↔ (Finset.univ.filter p).card = 1 := by
-  sorry
+  rw [Finset.card_eq_one]
+  refine' exists_congr fun x => _
+  simp only [forall_true_left, Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff,
+      true_and, and_comm]
+  simp
 
 variable {K}
 
