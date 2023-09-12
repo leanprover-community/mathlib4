@@ -618,6 +618,37 @@ instance : (essImage F).set.RespectsIso := by
 
 end
 
+section
+
+variable {D : Type*} [Category D] (F : D ⥤ C) (hF : ∀ (X : D), F.obj X ∈ S.set)
+
+def lift : D ⥤ S.category := FullSubcategory.lift S.set F hF
+
+lemma lift_comp_inclusion_eq : S.lift F hF ⋙ S.ι = F :=
+  FullSubcategory.lift_comp_inclusion_eq _ _ _
+
+def liftCompInclusion : S.lift F hF ⋙ S.ι ≅ F := Iso.refl _
+
+-- should be generalized
+instance [Preadditive D] [F.Additive] : (S.lift F hF).Additive where
+  map_add {X Y f g} := by
+    apply S.ι.map_injective
+    apply F.map_add
+
+noncomputable instance [HasShift D ℤ] [F.CommShift ℤ] : (S.lift F hF).CommShift ℤ :=
+  Functor.CommShift.ofComp (S.liftCompInclusion F hF) ℤ
+
+noncomputable instance [HasShift D ℤ] [F.CommShift ℤ] :
+  NatTrans.CommShift (S.liftCompInclusion F hF).hom ℤ :=
+    Functor.CommShift.ofComp_compatibility _ _
+
+variable [S.set.RespectsIso]
+
+--variable [HasZeroObject D] [Preadditive D] [HasShift D ℤ]
+-- lift commutes with the shift if `F` does, is triangulated if `F` is
+
+end
+
 end Subcategory
 
 end Triangulated
