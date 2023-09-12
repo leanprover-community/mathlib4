@@ -3,7 +3,7 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
@@ -115,7 +115,7 @@ def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
   { toFun := liftAux f
     map_mul' := fun x y ↦ rfl }
   invFun F := F ∘ of
-  left_inv f := by rfl
+  left_inv f := rfl
   right_inv F := by ext; rfl
 #align free_magma.lift FreeMagma.lift
 
