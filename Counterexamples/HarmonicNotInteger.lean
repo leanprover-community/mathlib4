@@ -25,15 +25,16 @@ open BigOperators
 
 namespace padicValRat
 
-  lemma min_eq_padicValRat {p : ℕ} [hp : Fact (Nat.Prime p)] {q r : ℚ} {hqr : q + r ≠ 0} (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q ≠ padicValRat p r) : padicValRat p (q + r) = min (padicValRat p q) (padicValRat p r) := by {
+  lemma min_eq_padicValRat {p : ℕ} [hp : Fact (Nat.Prime p)] {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
+  (hval : padicValRat p q ≠ padicValRat p r) :
+  padicValRat p (q + r) = min (padicValRat p q) (padicValRat p r) := by {
     have Hmin := padicValRat.min_le_padicValRat_add (p := p) (hp := hp) hqr
     wlog h : padicValRat p q < padicValRat p r generalizing q r with H
     {
       push_neg at h
       rw [add_comm, min_comm]
-      refine' (H hr hq _ _ _)
+      refine' (H _ hr hq hval.symm _ _)
       rwa [add_comm]
-      exact hval.symm
       rwa [min_comm,add_comm]
       exact Ne.lt_of_le (Ne.symm hval) h
     }
@@ -42,19 +43,15 @@ namespace padicValRat
       suffices Hreq : padicValRat p q ≥ padicValRat p (q + r) by linarith
       have Haux : padicValRat p q ≥ min (padicValRat p (q + r)) (padicValRat p r) := by {
       calc padicValRat p q = padicValRat p ((q + r) - r) := by congr; simp
-      _ ≥ min (padicValRat p (q + r)) (padicValRat p (-r)):= by {
-        have hqr' : q + r + - r = q + r - r := by simp
-        have := padicValRat.min_le_padicValRat_add (p := p) (hp := hp) (q := q+r) (r := -r) (by simpa)
-        rwa [ge_iff_le,←hqr']
+      _ ≥ min (padicValRat p (q + r)) (padicValRat p (-r)) := ge_iff_le.mp <| le_trans (padicValRat.min_le_padicValRat_add (q := q+r) (r := -r) (by simpa)) (by rw [add_neg_cancel_right, add_sub_cancel])
+      _ = min (padicValRat p (q + r)) (padicValRat p r) := by rw [padicValRat.neg]
       }
-      _ = min (padicValRat p (q + r)) (padicValRat p r) := by simp only [padicValRat.neg]
-      }
-      rw [min_def] at Haux; split_ifs at Haux with Hspl; try assumption
+      rw [min_def] at Haux;
+      split_ifs at Haux with Hspl; try assumption
       linarith
   }}
 
 end padicValRat
-
 
 
 def harmonic : ℕ  → ℚ
