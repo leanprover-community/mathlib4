@@ -173,6 +173,8 @@ jobs:
         if: always()
         run: |
           xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
+          lake exe cache pack! || true
+          xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
           lake exe cache commit! || true
           xxd -l 32 ~/.cache/mathlib/088aeeb2871b7987.ltar
           lake exe cache put! || true
