@@ -143,14 +143,13 @@ instance : FunLike (CauSeq β abv) ℕ fun _ => β where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 
--- Porting note: Remove coeFn theorem
-/-@[simp]
-theorem mk_to_fun (f) (hf : IsCauSeq abv f) : @coeFn (CauSeq β abv) _ _ ⟨f, hf⟩ = f :=
-  rfl -/
-#noalign cau_seq.mk_to_fun
+@[simp]
+theorem mk_to_fun (f) (hf : IsCauSeq abv f) : @FunLike.coe (CauSeq β abv) _ _ _ ⟨f, hf⟩ = f :=
+  rfl
+#align cau_seq.mk_to_fun CauSeq.mk_to_fun
 
 theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g :=
-  Subtype.eq (funext h)
+  FunLike.ext _ _ h
 #align cau_seq.ext CauSeq.ext
 
 theorem isCauSeq (f : CauSeq β abv) : IsCauSeq abv f :=
