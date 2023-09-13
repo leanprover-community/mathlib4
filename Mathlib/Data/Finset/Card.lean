@@ -541,9 +541,7 @@ theorem card_le_one_iff : s.card ≤ 1 ↔ ∀ {a b}, a ∈ s → b ∈ s → a 
 
 theorem card_le_one_iff_subsingleton : s.card ≤ 1 ↔ Subsingleton s := by
   rw [card_le_one_iff, subsingleton_iff]
-  refine ⟨fun h ↦ fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ Subtype.ext <| h ha hb, fun h a b ha hb ↦ ?_⟩
-  have := h ⟨a, ha⟩ ⟨b, hb⟩
-  rwa [Subtype.mk.injEq] at this
+  aesop
 
 theorem card_le_one_iff_subset_singleton [Nonempty α] : s.card ≤ 1 ↔ ∃ x : α, s ⊆ {x} := by
   refine' ⟨fun H => _, _⟩
