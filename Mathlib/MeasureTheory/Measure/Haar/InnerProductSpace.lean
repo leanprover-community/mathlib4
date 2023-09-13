@@ -80,6 +80,7 @@ theorem OrthonormalBasis.addHaar_eq_volume {ι F : Type*} [Fintype ι] [NormedAd
   exact b.volume_parallelepiped
 
 section PiLp
+
 variable (ι : Type*) [Fintype ι]
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
@@ -124,7 +125,7 @@ theorem volume_ball (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
       (le_of_lt hr), zero_pow zero_lt_two, mul_zero]
   · suffices volume (Metric.ball (0 : EuclideanSpace ℝ (Fin 2)) 1) = NNReal.pi by
       rw [Measure.addHaar_ball _ _ hr, finrank_euclideanSpace_fin, ofReal_pow hr, this, mul_comm]
-    calc 
+    calc
       _ = volume ({x : (Fin 2) → ℝ | ∑ i, x i ^ 2 < 1}) := by
         rw [← unit_ball_equiv, PiLp.continuousLinearEquiv_apply, ← coe_measurableEquiv,
           MeasurableEquiv.image_eq_preimage,
