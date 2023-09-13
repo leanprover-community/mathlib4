@@ -11,7 +11,7 @@ import Mathlib.Tactic.TFAE
 /-!
 # Statement of Fermat's Last Theorem
 
-This file states the Fermat Last Theorem. We provide a statement over a general semiring with
+This file states Fermat's Last Theorem. We provide a statement over a general semiring with
 specific exponent, along with the usual statement over the naturals.
 -/
 
