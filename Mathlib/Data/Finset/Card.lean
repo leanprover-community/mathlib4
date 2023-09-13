@@ -539,9 +539,8 @@ theorem card_le_one_iff : s.card ≤ 1 ↔ ∀ {a b}, a ∈ s → b ∈ s → a 
   tauto
 #align finset.card_le_one_iff Finset.card_le_one_iff
 
-theorem card_le_one_iff_subsingleton_coe : s.card ≤ 1 ↔ Subsingleton (s : Type _) := by
-  rw [card_le_one_iff, subsingleton_iff]
-  aesop
+theorem card_le_one_iff_subsingleton_coe : s.card ≤ 1 ↔ Subsingleton (s : Type _) :=
+  card_le_one.trans (s : Set α).subsingleton_coe.symm
 
 theorem card_le_one_iff_subset_singleton [Nonempty α] : s.card ≤ 1 ↔ ∃ x : α, s ⊆ {x} := by
   refine' ⟨fun H => _, _⟩
