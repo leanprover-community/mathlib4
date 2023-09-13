@@ -119,7 +119,7 @@ theorem unit_ball_equiv (ι : Type*) [Fintype ι] :
 
 @[simp]
 theorem volume_ball (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
-    volume (Metric.ball x r) = NNReal.pi * (ENNReal.ofReal r) ^ 2:= by
+    volume (Metric.ball x r) = NNReal.pi * (ENNReal.ofReal r) ^ 2 := by
   obtain hr | hr := lt_or_le r 0
   · rw [Metric.ball_eq_empty.mpr (le_of_lt hr), measure_empty, ← zero_eq_ofReal.mpr
       (le_of_lt hr), zero_pow zero_lt_two, mul_zero]
