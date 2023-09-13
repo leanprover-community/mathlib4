@@ -35,13 +35,11 @@ theorem integral_eq_tsum
   _ = ∑' (a : ↑(support p)), (p a.val).toReal • f a.val := by
     congr with x; congr
     apply Pmf.toMeasure_apply_singleton p x.val (MeasurableSet.singleton x.val)
-  _ = _ := by
-    apply tsum_subtype_eq_of_support_subset (s := p.support)
-      (f := fun a => ENNReal.toReal (p ↑a) • f ↑a)
-    trans; refine Function.support_smul_subset_left _ _
-    intro x
-    simp [ENNReal.toReal_eq_zero_iff]
-    tauto
+  _ = ∑' a, (p a).toReal • f a :=
+    tsum_subtype_eq_of_support_subset $ by
+      calc (fun a ↦ ENNReal.toReal (p a) • f a).support ⊆ (fun a ↦ ENNReal.toReal (p a)).support :=
+        Function.support_smul_subset_left _ _
+      _ ⊆ support p := (fun x h1 h2 => h1 (by simp [h2]))
 
 theorem integral_eq_sum [Fintype α] (p : Pmf α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
