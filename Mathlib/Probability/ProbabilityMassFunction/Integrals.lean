@@ -25,7 +25,7 @@ section General
 variable {α : Type _} [MeasurableSpace α] [MeasurableSingletonClass α]
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
-theorem integral_eq_tsum' (p : Pmf α) (f : α → E) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) :
+theorem integral_eq_tsum (p : Pmf α) (f : α → E) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) :
     ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
   _ = ∑' (a : ↑(support p)), (p.toMeasure {a.val}).toReal • f a := by
@@ -42,15 +42,7 @@ theorem integral_eq_tsum' (p : Pmf α) (f : α → E) (hf : Integrable (fun a �
     simp [ENNReal.toReal_eq_zero_iff]
     tauto
 
-theorem integral_eq_tsum [Countable α]
-  (p : Pmf α) (f : α → ℝ) (hf : Integrable (fun a ↦ f a) p.toMeasure) :
-    ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := by
-  rw [integral_countable' hf]
-  congr 1 with x
-  rw [Pmf.toMeasure_apply_singleton _ _ (MeasurableSet.singleton x)]
-
-theorem integral_eq_sum [Fintype α]
-  (p : Pmf α) (f : α → ℝ) :
+theorem integral_eq_sum [Fintype α] (p : Pmf α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
   rw [integral_fintype _ (integrable_of_fintype _ f)]
   congr 1 with x

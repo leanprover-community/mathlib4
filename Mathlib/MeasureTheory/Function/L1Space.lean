@@ -508,7 +508,8 @@ theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α 
 
 @[simp]
 theorem integrable_of_fintype [Fintype α] [MeasurableSpace α] [MeasurableSingletonClass α]
-  (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ) : Integrable (fun a ↦ f a) μ :=
+    [MeasurableSpace β] [SecondCountableTopology β] [OpensMeasurableSpace β]
+    (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
   ⟨Measurable.aestronglyMeasurable (measurable_of_finite _), hasFiniteIntegral_of_fintype⟩
 
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
