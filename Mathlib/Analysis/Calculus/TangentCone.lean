@@ -2,15 +2,12 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.calculus.tangent_cone
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
+
+#align_import analysis.calculus.tangent_cone from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Tangent cone
@@ -36,7 +33,7 @@ properties of the tangent cone we prove here.
 -/
 
 
-variable (𝕜 : Type _) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 
 open Filter Set
 
@@ -44,7 +41,7 @@ open Topology
 
 section TangentCone
 
-variable {E : Type _} [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+variable {E : Type*} [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- The set of all tangent directions to the set `s` at the point `x`. -/
 def tangentConeAt (s : Set E) (x : E) : Set E :=
@@ -75,11 +72,11 @@ def UniqueDiffOn (s : Set E) : Prop :=
 
 end TangentCone
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 variable {𝕜} {x y : E} {s t : Set E}
 
@@ -88,18 +85,17 @@ section TangentCone
 -- This section is devoted to the properties of the tangent cone.
 open NormedField
 
-theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ := by
-  refine' univ_subset_iff.1 fun y _ => _
-  rcases exists_one_lt_norm 𝕜 with ⟨w, hw⟩
-  refine' ⟨fun n => w ^ n, fun n => (w ^ n)⁻¹ • y, univ_mem' fun n => mem_univ _, _, _⟩
-  · simp only [norm_pow]
-    exact tendsto_pow_atTop_atTop_of_one_lt hw
-  · convert @tendsto_const_nhds E ℕ _ _ atTop with n
-    have : w ^ n * (w ^ n)⁻¹ = 1 := by
-      apply mul_inv_cancel
-      apply pow_ne_zero
-      simpa [norm_eq_zero] using (ne_of_lt (lt_trans zero_lt_one hw)).symm
-    rw [smul_smul, this, one_smul]
+theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
+    (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
+  refine ⟨fun n ↦ (r ^ n)⁻¹, fun n ↦ r ^ n • y, hs, ?_, ?_⟩
+  · simp only [norm_inv, norm_pow, ← inv_pow]
+    exact tendsto_pow_atTop_atTop_of_one_lt <| one_lt_inv (norm_pos_iff.2 hr₀) hr
+  · simp only [inv_smul_smul₀ (pow_ne_zero _ hr₀), tendsto_const_nhds]
+
+theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
+  let ⟨_r, hr₀, hr⟩ := exists_norm_lt_one 𝕜
+  eq_univ_of_forall fun _ ↦ mem_tangentConeAt_of_pow_smul (norm_pos_iff.1 hr₀) hr <|
+    eventually_of_forall fun _ ↦ mem_univ _
 #align tangent_cone_univ tangentCone_univ
 
 theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
@@ -109,13 +105,13 @@ theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeA
 
 /-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
 the sequence `d` tends to 0 at infinity. -/
-theorem tangentConeAt.lim_zero {α : Type _} (l : Filter α) {c : α → 𝕜} {d : α → E}
+theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E}
     (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
     Tendsto d l (𝓝 0) := by
   have A : Tendsto (fun n => ‖c n‖⁻¹) l (𝓝 0) := tendsto_inv_atTop_zero.comp hc
   have B : Tendsto (fun n => ‖c n • d n‖) l (𝓝 ‖y‖) := (continuous_norm.tendsto _).comp hd
   have C : Tendsto (fun n => ‖c n‖⁻¹ * ‖c n • d n‖) l (𝓝 (0 * ‖y‖)) := A.mul B
-  rw [MulZeroClass.zero_mul] at C
+  rw [zero_mul] at C
   have : ∀ᶠ n in l, ‖c n‖⁻¹ * ‖c n • d n‖ = ‖d n‖ := by
     refine (eventually_ne_of_tendsto_norm_atTop hc 0).mono fun n hn => ?_
     rw [norm_smul, ← mul_assoc, inv_mul_cancel, one_mul]
@@ -186,7 +182,7 @@ theorem subset_tangentCone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s)
 #align subset_tangent_cone_prod_right subset_tangentCone_prod_right
 
 /-- The tangent cone of a product contains the tangent cone of each factor. -/
-theorem mapsTo_tangentCone_pi {ι : Type _} [DecidableEq ι] {E : ι → Type _}
+theorem mapsTo_tangentCone_pi {ι : Type*} [DecidableEq ι] {E : ι → Type*}
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {s : ∀ i, Set (E i)} {x : ∀ i, E i}
     {i : ι} (hi : ∀ (j) (_ : j ≠ i), x j ∈ closure (s j)) :
     MapsTo (LinearMap.single i : E i →ₗ[𝕜] ∀ j, E j) (tangentConeAt 𝕜 (s i) (x i))
@@ -213,34 +209,13 @@ theorem mapsTo_tangentCone_pi {ι : Type _} [DecidableEq ι] {E : ι → Type _}
 segment belongs to the tangent cone at its endpoints. -/
 theorem mem_tangentCone_of_openSegment_subset {s : Set G} {x y : G} (h : openSegment ℝ x y ⊆ s) :
     y - x ∈ tangentConeAt ℝ s x := by
-  let c := fun n : ℕ => (2 : ℝ) ^ (n + 1)
-  let d := fun n : ℕ => (c n)⁻¹ • (y - x)
-  refine' ⟨c, d, Filter.univ_mem' fun n => h _, _, _⟩
-  show x + d n ∈ openSegment ℝ x y
-  · rw [openSegment_eq_image]
-    refine' ⟨(c n)⁻¹, ⟨_, _⟩, _⟩
-    · rw [inv_pos]
-      apply pow_pos
-      norm_num
-    · apply inv_lt_one
-      apply one_lt_pow _ (Nat.succ_ne_zero _)
-      norm_num
-    · simp only [sub_smul, smul_sub, one_smul]
-      abel
-  show Filter.Tendsto (fun n : ℕ => ‖c n‖) Filter.atTop Filter.atTop
-  · have : (fun n : ℕ => ‖c n‖) = c := by
-      ext n
-      exact abs_of_nonneg (pow_nonneg (by norm_num) _)
-    rw [this]
-    exact (tendsto_pow_atTop_atTop_of_one_lt (by norm_num)).comp (tendsto_add_atTop_nat 1)
-  show Filter.Tendsto (fun n : ℕ => c n • d n) Filter.atTop (𝓝 (y - x))
-  · have : (fun n : ℕ => c n • d n) = fun _ => y - x := by
-      ext n
-      simp only [smul_smul]
-      rw [mul_inv_cancel, one_smul]
-      exact pow_ne_zero _ (by norm_num)
-    rw [this]
-    apply tendsto_const_nhds
+  refine mem_tangentConeAt_of_pow_smul one_half_pos.ne' (by norm_num) ?_
+  refine (eventually_ne_atTop 0).mono fun n hn ↦ (h ?_)
+  rw [openSegment_eq_image]
+  refine ⟨(1 / 2) ^ n, ⟨?_, ?_⟩, ?_⟩
+  · exact pow_pos one_half_pos _
+  · exact pow_lt_one one_half_pos.le one_half_lt_one hn
+  · simp only [sub_smul, one_smul, smul_sub]; abel
 #align mem_tangent_cone_of_open_segment_subset mem_tangentCone_of_openSegment_subset
 
 /-- If a subset of a real vector space contains a segment, then the direction of this
@@ -278,10 +253,13 @@ theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
   fun _ hx => hx.elim
 #align unique_diff_on_empty uniqueDiffOn_empty
 
+theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = y) :
+    UniqueDiffWithinAt 𝕜 s y := hy ▸ h
+
 theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
     UniqueDiffWithinAt 𝕜 t x := by
   simp only [uniqueDiffWithinAt_iff] at *
-  rw [mem_closure_iff_nhdsWithin_neBot] at h⊢
+  rw [mem_closure_iff_nhdsWithin_neBot] at h ⊢
   exact ⟨h.1.mono <| Submodule.span_mono <| tangentCone_mono_nhds st, h.2.mono st⟩
 #align unique_diff_within_at.mono_nhds UniqueDiffWithinAt.mono_nhds
 
@@ -335,7 +313,7 @@ theorem IsOpen.uniqueDiffOn (hs : IsOpen s) : UniqueDiffOn 𝕜 s :=
 differentiability at `(x, y)`. -/
 theorem UniqueDiffWithinAt.prod {t : Set F} {y : F} (hs : UniqueDiffWithinAt 𝕜 s x)
     (ht : UniqueDiffWithinAt 𝕜 t y) : UniqueDiffWithinAt 𝕜 (s ×ˢ t) (x, y) := by
-  rw [uniqueDiffWithinAt_iff] at hs ht⊢
+  rw [uniqueDiffWithinAt_iff] at hs ht ⊢
   rw [closure_prod_eq]
   refine' ⟨_, hs.2, ht.2⟩
   have : _ ≤ Submodule.span 𝕜 (tangentConeAt 𝕜 (s ×ˢ t) (x, y)) := Submodule.span_mono
@@ -344,11 +322,11 @@ theorem UniqueDiffWithinAt.prod {t : Set F} {y : F} (hs : UniqueDiffWithinAt �
   exact (hs.1.prod ht.1).mono this
 #align unique_diff_within_at.prod UniqueDiffWithinAt.prod
 
-theorem UniqueDiffWithinAt.univ_pi (ι : Type _) [Finite ι] (E : ι → Type _)
+theorem UniqueDiffWithinAt.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i)
     (h : ∀ i, UniqueDiffWithinAt 𝕜 (s i) (x i)) : UniqueDiffWithinAt 𝕜 (Set.pi univ s) x := by
   classical
-  simp only [uniqueDiffWithinAt_iff, closure_pi_set] at h⊢
+  simp only [uniqueDiffWithinAt_iff, closure_pi_set] at h ⊢
   refine' ⟨(dense_pi univ fun i _ => (h i).1).mono _, fun i _ => (h i).2⟩
   norm_cast
   simp only [← Submodule.iSup_map_single, iSup_le_iff, LinearMap.map_span, Submodule.span_le,
@@ -356,7 +334,7 @@ theorem UniqueDiffWithinAt.univ_pi (ι : Type _) [Finite ι] (E : ι → Type _)
   exact fun i => (mapsTo_tangentCone_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
 #align unique_diff_within_at.univ_pi UniqueDiffWithinAt.univ_pi
 
-theorem UniqueDiffWithinAt.pi (ι : Type _) [Finite ι] (E : ι → Type _)
+theorem UniqueDiffWithinAt.pi (ι : Type*) [Finite ι] (E : ι → Type*)
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i)
     (I : Set ι) (h : ∀ i ∈ I, UniqueDiffWithinAt 𝕜 (s i) (x i)) :
     UniqueDiffWithinAt 𝕜 (Set.pi I s) x := by
@@ -374,7 +352,7 @@ theorem UniqueDiffOn.prod {t : Set F} (hs : UniqueDiffOn 𝕜 s) (ht : UniqueDif
 
 /-- The finite product of a family of sets of unique differentiability is a set of unique
 differentiability. -/
-theorem UniqueDiffOn.pi (ι : Type _) [Finite ι] (E : ι → Type _) [∀ i, NormedAddCommGroup (E i)]
+theorem UniqueDiffOn.pi (ι : Type*) [Finite ι] (E : ι → Type*) [∀ i, NormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (I : Set ι)
     (h : ∀ i ∈ I, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi I s) :=
   fun x hx => UniqueDiffWithinAt.pi _ _ _ _ _ fun i hi => h i hi (x i) (hx i hi)
@@ -382,7 +360,7 @@ theorem UniqueDiffOn.pi (ι : Type _) [Finite ι] (E : ι → Type _) [∀ i, No
 
 /-- The finite product of a family of sets of unique differentiability is a set of unique
 differentiability. -/
-theorem UniqueDiffOn.univ_pi (ι : Type _) [Finite ι] (E : ι → Type _)
+theorem UniqueDiffOn.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i))
     (h : ∀ i, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi univ s) :=
   UniqueDiffOn.pi _ _ _ _ fun i _ => h i

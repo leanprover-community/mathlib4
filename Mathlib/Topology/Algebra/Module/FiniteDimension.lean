@@ -2,22 +2,19 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.algebra.module.finite_dimension
-! leanprover-community/mathlib commit 9425b6f8220e53b059f5a4904786c3c4b50fc057
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Determinant
 
+#align_import topology.algebra.module.finite_dimension from "leanprover-community/mathlib"@"9425b6f8220e53b059f5a4904786c3c4b50fc057"
+
 /-!
 # Finite dimensional topological vector spaces over complete fields
 
 Let `𝕜` be a complete nontrivially normed field, and `E` a topological vector space (TVS) over
-`𝕜` (i.e we have `[AddCommGroupCat E] [ModuleCat 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]`
+`𝕜` (i.e we have `[AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]`
 and `[ContinuousSMul 𝕜 E]`).
 
 If `E` is finite dimensional and Hausdorff, then all linear maps from `E` to any other TVS are
@@ -51,13 +48,11 @@ universe u v w x
 
 noncomputable section
 
-open Set FiniteDimensional TopologicalSpace Filter
-
-open BigOperators
+open Set FiniteDimensional TopologicalSpace Filter BigOperators
 
 section Field
 
-variable {𝕜 E F : Type _} [Field 𝕜] [TopologicalSpace 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 E F : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F]
   [ContinuousSMul 𝕜 F]
 
@@ -96,7 +91,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAd
       mem_compl_singleton_iff.mpr <| Ne.symm <| norm_ne_zero_iff.mp hξ₀.ne.symm
     -- Thus, its balanced core `𝓑` is too. Let's show that the closed ball of radius `ε` contains
     -- `𝓑`, which will imply that the closed ball is indeed a `𝓣`-neighborhood of 0.
-    have : balancedCore 𝕜 ({ξ₀}ᶜ) ∈ @nhds 𝕜 t 0 := balancedCore_mem_nhds_zero this
+    have : balancedCore 𝕜 {ξ₀}ᶜ ∈ @nhds 𝕜 t 0 := balancedCore_mem_nhds_zero this
     refine' mem_of_superset this fun ξ hξ => _
     -- Let `ξ ∈ 𝓑`. We want to show `‖ξ‖ < ε`. If `ξ = 0`, this is trivial.
     by_cases hξ0 : ξ = 0
@@ -106,7 +101,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAd
       -- Now suppose `ξ ≠ 0`. By contradiction, let's assume `ε < ‖ξ‖`, and show that
       -- `ξ₀ ∈ 𝓑 ⊆ {ξ₀}ᶜ`, which is a contradiction.
       by_contra' h
-      suffices (ξ₀ * ξ⁻¹) • ξ ∈ balancedCore 𝕜 ({ξ₀}ᶜ) by
+      suffices (ξ₀ * ξ⁻¹) • ξ ∈ balancedCore 𝕜 {ξ₀}ᶜ by
         rw [smul_eq_mul 𝕜, mul_assoc, inv_mul_cancel hξ0, mul_one] at this
         exact not_mem_compl_iff.mpr (mem_singleton ξ₀) ((balancedCore_subset _) this)
       -- For that, we use that `𝓑` is balanced : since `‖ξ₀‖ < ε < ‖ξ‖`, we have `‖ξ₀ / ξ‖ ≤ 1`,
@@ -114,7 +109,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAd
       refine' (balancedCore_balanced _).smul_mem _ hξ
       rw [norm_mul, norm_inv, mul_inv_le_iff (norm_pos_iff.mpr hξ0), mul_one]
       exact (hξ₀ε.trans h).le
-  · -- Finally, to show `𝓣₀ ≤ 𝓣`, we simply argue that `id = (λ x, x • 1)` is continuous from
+  · -- Finally, to show `𝓣₀ ≤ 𝓣`, we simply argue that `id = (fun x ↦ x • 1)` is continuous from
     -- `(𝕜, 𝓣₀)` to `(𝕜, 𝓣)` because `(•) : (𝕜, 𝓣₀) × (𝕜, 𝓣) → (𝕜, 𝓣)` is continuous.
     calc
       @nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0 =
@@ -150,7 +145,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
       exact Submodule.ker_liftQ_eq_bot _ _ _ (le_refl _)
     have hs : Function.Surjective ((LinearMap.ker l).liftQ l (le_refl _)) := by
       rw [← LinearMap.range_eq_top, Submodule.range_liftQ]
-      exact eq_top_of_finrank_eq ((finrank_self 𝕜).symm ▸ this)
+      exact Submodule.eq_top_of_finrank_eq ((finrank_self 𝕜).symm ▸ this)
     let φ : (E ⧸ LinearMap.ker l) ≃ₗ[𝕜] 𝕜 :=
       LinearEquiv.ofBijective ((LinearMap.ker l).liftQ l (le_refl _)) ⟨hi, hs⟩
     have hlφ : (l : E → 𝕜) = φ ∘ (LinearMap.ker l).mkQ := by ext; rfl
@@ -191,7 +186,7 @@ theorem LinearMap.continuous_of_nonzero_on_open (l : E →ₗ[𝕜] 𝕜) (s : S
     (hs₂ : s.Nonempty) (hs₃ : ∀ x ∈ s, l x ≠ 0) : Continuous l := by
   refine' l.continuous_of_isClosed_ker (l.isClosed_or_dense_ker.resolve_right fun hl => _)
   rcases hs₂ with ⟨x, hx⟩
-  have : x ∈ interior ((LinearMap.ker l : Set E)ᶜ) := by
+  have : x ∈ interior (LinearMap.ker l : Set E)ᶜ := by
     rw [mem_interior_iff_mem_nhds]
     exact mem_of_superset (hs₁.mem_nhds hx) hs₃
   rwa [hl.interior_compl] at this
@@ -273,10 +268,10 @@ instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [Fini
 
 /-- In finite dimensions over a non-discrete complete normed field, the canonical identification
 (in terms of a basis) with `𝕜^n` (endowed with the product topology) is continuous.
-This is the key fact wich makes all linear maps from a T2 finite dimensional TVS over such a field
+This is the key fact which makes all linear maps from a T2 finite dimensional TVS over such a field
 continuous (see `LinearMap.continuous_of_finiteDimensional`), which in turn implies that all
 norms are equivalent in finite dimensions. -/
-theorem continuous_equivFun_basis [T2Space E] {ι : Type _} [Fintype ι] (ξ : Basis ι 𝕜 E) :
+theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Fintype ι] (ξ : Basis ι 𝕜 E) :
     Continuous ξ.equivFun :=
   haveI : FiniteDimensional 𝕜 E := of_fintype_basis ξ
   ξ.equivFun.toLinearMap.continuous_of_finiteDimensional
@@ -297,9 +292,9 @@ def toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F' whe
 #align linear_map.to_continuous_linear_map LinearMap.toContinuousLinearMap
 
 @[simp]
-theorem coe_to_continuous_linear_map' (f : E →ₗ[𝕜] F') : ⇑(LinearMap.toContinuousLinearMap f) = f :=
+theorem coe_toContinuousLinearMap' (f : E →ₗ[𝕜] F') : ⇑(LinearMap.toContinuousLinearMap f) = f :=
   rfl
-#align linear_map.coe_to_continuous_linear_map' LinearMap.coe_to_continuous_linear_map'
+#align linear_map.coe_to_continuous_linear_map' LinearMap.coe_toContinuousLinearMap'
 
 @[simp]
 theorem coe_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
@@ -373,9 +368,9 @@ theorem coe_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : (e.toContinuousLine
 #align linear_equiv.coe_to_continuous_linear_equiv LinearEquiv.coe_toContinuousLinearEquiv
 
 @[simp]
-theorem coe_to_continuous_linear_equiv' (e : E ≃ₗ[𝕜] F) : (e.toContinuousLinearEquiv : E → F) = e :=
+theorem coe_toContinuousLinearEquiv' (e : E ≃ₗ[𝕜] F) : (e.toContinuousLinearEquiv : E → F) = e :=
   rfl
-#align linear_equiv.coe_to_continuous_linear_equiv' LinearEquiv.coe_to_continuous_linear_equiv'
+#align linear_equiv.coe_to_continuous_linear_equiv' LinearEquiv.coe_toContinuousLinearEquiv'
 
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
@@ -439,7 +434,7 @@ namespace Basis
 
 set_option linter.uppercaseLean3 false
 
-variable {ι : Type _} [Fintype ι] [T2Space E]
+variable {ι : Type*} [Fintype ι] [T2Space E]
 
 /-- Construct a continuous linear map given the value at a finite basis. -/
 def constrL (v : Basis ι 𝕜 E) (f : ι → F) : E →L[𝕜] F :=
@@ -511,3 +506,70 @@ theorem _root_.Matrix.toLin_finTwoProd_toContinuousLinearMap (a b c d : 𝕜) :
 end ContinuousLinearMap
 
 end NormedField
+
+section UniformAddGroup
+
+variable (𝕜 E : Type _) [NontriviallyNormedField 𝕜]
+  [CompleteSpace 𝕜] [AddCommGroup E] [UniformSpace E] [T2Space E] [UniformAddGroup E]
+  [Module 𝕜 E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
+
+theorem FiniteDimensional.complete : CompleteSpace E := by
+  set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
+  have : UniformEmbedding e.toLinearEquiv.toEquiv.symm := e.symm.uniformEmbedding
+  exact (completeSpace_congr this).1 (by infer_instance)
+#align finite_dimensional.complete FiniteDimensional.complete
+
+variable {𝕜 E}
+
+/-- A finite-dimensional subspace is complete. -/
+theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
+    IsComplete (s : Set E) :=
+  haveI : UniformAddGroup s := s.toAddSubgroup.uniformAddGroup
+  completeSpace_coe_iff_isComplete.1 (FiniteDimensional.complete 𝕜 s)
+#align submodule.complete_of_finite_dimensional Submodule.complete_of_finiteDimensional
+
+end UniformAddGroup
+
+variable {𝕜 E F : Type _} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+   [AddCommGroup E] [TopologicalSpace E] [T2Space E] [TopologicalAddGroup E] [Module 𝕜 E]
+   [ContinuousSMul 𝕜 E]
+   [AddCommGroup F] [TopologicalSpace F] [T2Space F] [TopologicalAddGroup F] [Module 𝕜 F]
+   [ContinuousSMul 𝕜 F]
+
+/-- A finite-dimensional subspace is closed. -/
+theorem Submodule.closed_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
+    IsClosed (s : Set E) :=
+  letI := TopologicalAddGroup.toUniformSpace E
+  haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
+  haveI := separated_iff_t2.2 ‹T2Space E›
+  s.complete_of_finiteDimensional.isClosed
+#align submodule.closed_of_finite_dimensional Submodule.closed_of_finiteDimensional
+
+/-- An injective linear map with finite-dimensional domain is a closed embedding. -/
+theorem LinearMap.closedEmbedding_of_injective [FiniteDimensional 𝕜 E] {f : E →ₗ[𝕜] F}
+    (hf : LinearMap.ker f = ⊥) : ClosedEmbedding f :=
+  let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
+  { embedding_subtype_val.comp g.toContinuousLinearEquiv.toHomeomorph.embedding with
+    closed_range := by
+      haveI := f.finiteDimensional_range
+      simpa [LinearMap.range_coe f] using f.range.closed_of_finiteDimensional }
+#align linear_equiv.closed_embedding_of_injective LinearMap.closedEmbedding_of_injective
+
+theorem closedEmbedding_smul_left {c : E} (hc : c ≠ 0) : ClosedEmbedding fun x : 𝕜 => x • c :=
+  LinearMap.closedEmbedding_of_injective (LinearMap.ker_toSpanSingleton 𝕜 E hc)
+#align closed_embedding_smul_left closedEmbedding_smul_left
+
+-- `smul` is a closed map in the first argument.
+theorem isClosedMap_smul_left (c : E) : IsClosedMap fun x : 𝕜 => x • c := by
+  by_cases hc : c = 0
+  · simp_rw [hc, smul_zero]
+    exact isClosedMap_const
+  · exact (closedEmbedding_smul_left hc).isClosedMap
+#align is_closed_map_smul_left isClosedMap_smul_left
+
+theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensional 𝕜 F]
+    (f : E →L[𝕜] F) (hf : LinearMap.range f = ⊤) :
+    ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
+  let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf
+  ⟨LinearMap.toContinuousLinearMap g, ContinuousLinearMap.coe_inj.1 hg⟩
+#align continuous_linear_map.exists_right_inverse_of_surjective ContinuousLinearMap.exists_right_inverse_of_surjective

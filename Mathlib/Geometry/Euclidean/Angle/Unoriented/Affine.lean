@@ -2,14 +2,11 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
-
-! This file was ported from Lean 3 source module geometry.euclidean.angle.unoriented.affine
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+
+#align_import geometry.euclidean.angle.unoriented.affine from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Angles between points
@@ -32,7 +29,7 @@ namespace EuclideanGeometry
 
 open InnerProductGeometry
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The undirected angle at `p2` between the line segments to `p1` and
@@ -56,7 +53,7 @@ theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.
 #align euclidean_geometry.continuous_at_angle EuclideanGeometry.continuousAt_angle
 
 @[simp]
-theorem _root_.AffineIsometry.angle_map {V₂ P₂ : Type _} [NormedAddCommGroup V₂]
+theorem _root_.AffineIsometry.angle_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂]
     [InnerProductSpace ℝ V₂] [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
     (f : P →ᵃⁱ[ℝ] P₂) (p₁ p₂ p₃ : P) : ∠ (f p₁) (f p₂) (f p₃) = ∠ p₁ p₂ p₃ := by
   simp_rw [angle, ← AffineIsometry.map_vsub, LinearIsometry.angle_map]
@@ -73,7 +70,7 @@ theorem _root_.AffineSubspace.angle_coe {s : AffineSubspace ℝ P} (p₁ p₂ p�
 /-- Angles are translation invariant -/
 @[simp]
 theorem angle_const_vadd (v : V) (p₁ p₂ p₃ : P) : ∠ (v +ᵥ p₁) (v +ᵥ p₂) (v +ᵥ p₃) = ∠ p₁ p₂ p₃ :=
-  (AffineIsometryEquiv.constVadd ℝ P v).toAffineIsometry.angle_map _ _ _
+  (AffineIsometryEquiv.constVAdd ℝ P v).toAffineIsometry.angle_map _ _ _
 #align euclidean_geometry.angle_const_vadd EuclideanGeometry.angle_const_vadd
 
 /-- Angles are translation invariant -/
@@ -85,7 +82,7 @@ theorem angle_vadd_const (v₁ v₂ v₃ : V) (p : P) : ∠ (v₁ +ᵥ p) (v₂ 
 /-- Angles are translation invariant -/
 @[simp]
 theorem angle_const_vsub (p p₁ p₂ p₃ : P) : ∠ (p -ᵥ p₁) (p -ᵥ p₂) (p -ᵥ p₃) = ∠ p₁ p₂ p₃ :=
-  (AffineIsometryEquiv.constVsub ℝ p).toAffineIsometry.angle_map _ _ _
+  (AffineIsometryEquiv.constVSub ℝ p).toAffineIsometry.angle_map _ _ _
 #align euclidean_geometry.angle_const_vsub EuclideanGeometry.angle_const_vsub
 
 /-- Angles are translation invariant -/

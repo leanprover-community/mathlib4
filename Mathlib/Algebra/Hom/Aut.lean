@@ -2,13 +2,10 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.hom.aut
-! leanprover-community/mathlib commit d4f69d96f3532729da8ebb763f4bc26fcf640f06
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Perm.Basic
+
+#align_import algebra.hom.aut from "leanprover-community/mathlib"@"d4f69d96f3532729da8ebb763f4bc26fcf640f06"
 
 /-!
 # Multiplicative and additive group automorphisms
@@ -31,11 +28,11 @@ MulAut, AddAut
 -/
 
 
-variable {A : Type _} {M : Type _} {G : Type _}
+variable {A : Type*} {M : Type*} {G : Type*}
 
 /-- The group of multiplicative automorphisms. -/
 @[to_additive (attr := reducible) "The group of additive automorphisms."]
-def MulAut (M : Type _) [Mul M] :=
+def MulAut (M : Type*) [Mul M] :=
   M ≃* M
 #align mul_aut MulAut
 #align add_aut AddAut

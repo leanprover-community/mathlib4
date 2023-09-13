@@ -1,6 +1,8 @@
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
+set_option autoImplicit true
+
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real
@@ -122,6 +124,11 @@ example (a : Nat) : 1 * f a * 1 = f (a + 0) := by
   have ha : a + 0 = a := by ring
   rw [ha] -- goal has mdata
   ring1
+
+-- check that mdata is consumed by ring_nf
+example (a b : ℤ) : a+b=0 ↔ b+a=0 := by
+  have : 3 = 3 := rfl
+  ring_nf -- reduced to `True` with mdata
 
 -- Powers in the exponent get evaluated correctly
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring

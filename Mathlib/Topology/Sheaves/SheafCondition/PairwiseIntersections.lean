@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.sheaves.sheaf_condition.pairwise_intersections
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 import Mathlib.CategoryTheory.Limits.Final
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Category.Pairwise
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 import Mathlib.Algebra.Category.Ring.Constructions
+
+#align_import topology.sheaves.sheaf_condition.pairwise_intersections from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
 /-!
 # Equivalent formulations of the sheaf condition
@@ -131,8 +128,7 @@ of all opens contained in some `U i`.
 instance : Functor.Final (pairwiseToOpensLeCover U) :=
   ⟨fun V =>
     isConnected_of_zigzag fun A B => by
-      rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩ <;>
-        dsimp at *
+      rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩
       · refine'
           ⟨[{   left := ⟨⟨⟩⟩
                 right := pair i i'
@@ -356,24 +352,19 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
     rw [Opens.coe_iSup, Set.mem_iUnion]
     constructor
     · rintro (h | h)
-      exacts[⟨⟨WalkingPair.left⟩, h⟩, ⟨⟨WalkingPair.right⟩, h⟩]
+      exacts [⟨⟨WalkingPair.left⟩, h⟩, ⟨⟨WalkingPair.right⟩, h⟩]
     · rintro ⟨⟨_ | _⟩, h⟩
-      exacts[Or.inl h, Or.inr h]
+      exacts [Or.inl h, Or.inr h]
   refine'
     (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 ι).some.lift
         ⟨s.pt,
           { app := _
             naturality := _ }⟩ ≫
       F.1.map (eqToHom hι).op
-  · apply Opposite.rec'
-    rintro ((_ | _) | (_ | _))
-    exacts[s.fst, s.snd, s.fst ≫ F.1.map (homOfLE inf_le_left).op,
+  · rintro ((_ | _) | (_ | _))
+    exacts [s.fst, s.snd, s.fst ≫ F.1.map (homOfLE inf_le_left).op,
       s.snd ≫ F.1.map (homOfLE inf_le_left).op]
-  rintro i j f
-  induction i using Opposite.rec' with
-  | h i => ?_
-  induction j using Opposite.rec' with
-  | h j => ?_
+  rintro ⟨i⟩ ⟨j⟩ f
   let g : j ⟶ i := f.unop
   have : f = g.op := rfl
   clear_value g
@@ -383,7 +374,7 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
   rcases g with ⟨⟩ <;>
   dsimp [Pairwise.diagram] <;>
   simp only [Category.id_comp, s.condition, CategoryTheory.Functor.map_id, Category.comp_id]
-  . rw [← cancel_mono (F.1.map (eqToHom <| inf_comm : U ⊓ V ⟶ _).op), Category.assoc,
+  · rw [← cancel_mono (F.1.map (eqToHom <| inf_comm : U ⊓ V ⟶ _).op), Category.assoc,
       Category.assoc, ←F.1.map_comp, ←F.1.map_comp]
     exact s.condition.symm
 set_option linter.uppercaseLean3 false in
@@ -417,9 +408,9 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
     rw [Opens.coe_iSup, Set.mem_iUnion]
     constructor
     · rintro (h | h)
-      exacts[⟨⟨WalkingPair.left⟩, h⟩, ⟨⟨WalkingPair.right⟩, h⟩]
+      exacts [⟨⟨WalkingPair.left⟩, h⟩, ⟨⟨WalkingPair.right⟩, h⟩]
     · rintro ⟨⟨_ | _⟩, h⟩
-      exacts[Or.inl h, Or.inr h]
+      exacts [Or.inl h, Or.inr h]
   apply PullbackCone.isLimitAux'
   intro s
   use interUnionPullbackConeLift F U V s
@@ -429,7 +420,6 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
   · intro m h₁ h₂
     rw [← cancel_mono (F.1.map (eqToHom hι.symm).op)]
     apply (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 ι).some.hom_ext
-    apply Opposite.rec'
     rintro ((_ | _) | (_ | _)) <;>
     rw [Category.assoc, Category.assoc]
     · erw [← F.1.map_comp]

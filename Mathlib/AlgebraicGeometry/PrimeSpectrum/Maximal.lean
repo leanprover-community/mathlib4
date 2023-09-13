@@ -2,14 +2,11 @@
 Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
-
-! This file was ported from Lean 3 source module algebraic_geometry.prime_spectrum.maximal
-! leanprover-community/mathlib commit 052f6013363326d50cb99c6939814a4b8eb7b301
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.RingTheory.Localization.AsSubring
+
+#align_import algebraic_geometry.prime_spectrum.maximal from "leanprover-community/mathlib"@"052f6013363326d50cb99c6939814a4b8eb7b301"
 
 /-!
 # Maximal spectrum of a commutative ring
@@ -131,8 +128,8 @@ variable [IsDomain R] (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-- An integral domain is equal to the intersection of its localizations at all its prime ideals
 viewed as subalgebras of its field of fractions. -/
-theorem iInf_localization_eq_bot : (⨅ v : PrimeSpectrum R,
-    Localization.subalgebra.ofField K _ <| v.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥ := by
+theorem iInf_localization_eq_bot : ⨅ v : PrimeSpectrum R,
+    Localization.subalgebra.ofField K _ (v.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥ := by
   ext x
   rw [Algebra.mem_iInf]
   constructor

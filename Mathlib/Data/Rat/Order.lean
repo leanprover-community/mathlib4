@@ -2,15 +2,12 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.rat.order
-! leanprover-community/mathlib commit a59dad53320b73ef180174aae867addd707ef00e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Int.Cast.Lemmas
+
+#align_import data.rat.order from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
 
 /-!
 # Order for Rational Numbers
@@ -250,7 +247,7 @@ protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b :=
 #align rat.add_le_add_left Rat.add_le_add_left
 
 protected theorem mul_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
-  rw [← nonneg_iff_zero_le] at ha hb⊢; exact Rat.nonneg_mul ha hb
+  rw [← nonneg_iff_zero_le] at ha hb ⊢; exact Rat.nonneg_mul ha hb
 #align rat.mul_nonneg Rat.mul_nonneg
 
 instance : LinearOrderedField ℚ :=

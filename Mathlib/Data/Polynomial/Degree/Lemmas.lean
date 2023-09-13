@@ -2,13 +2,10 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.degree.lemmas
-! leanprover-community/mathlib commit 728baa2f54e6062c5879a3e397ac6bac323e506f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Eval
+
+#align_import data.polynomial.degree.lemmas from "leanprover-community/mathlib"@"728baa2f54e6062c5879a3e397ac6bac323e506f"
 
 /-!
 # Theory of degrees of polynomials
@@ -72,8 +69,7 @@ theorem degree_pos_of_root {p : R[X]} (hp : p ≠ 0) (h : IsRoot p a) : 0 < degr
 #align polynomial.degree_pos_of_root Polynomial.degree_pos_of_root
 
 theorem natDegree_le_iff_coeff_eq_zero : p.natDegree ≤ n ↔ ∀ N : ℕ, n < N → p.coeff N = 0 := by
-  simp_rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero, Nat.cast_withBot,
-    WithBot.coe_lt_coe]
+  simp_rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero, Nat.cast_lt]
 #align polynomial.nat_degree_le_iff_coeff_eq_zero Polynomial.natDegree_le_iff_coeff_eq_zero
 
 theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n) :
@@ -176,13 +172,21 @@ theorem coeff_mul_of_natDegree_le (pm : p.natDegree ≤ m) (qn : q.natDegree ≤
 #align polynomial.coeff_mul_of_nat_degree_le Polynomial.coeff_mul_of_natDegree_le
 
 theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
-    (p ^ m).coeff (n * m) = p.coeff n ^ m := by
+    (p ^ m).coeff (m * n) = p.coeff n ^ m := by
   induction' m with m hm
   · simp
-  · rw [pow_succ', pow_succ', ← hm, Nat.mul_succ, coeff_mul_of_natDegree_le _ pn]
-    refine' natDegree_pow_le.trans (le_trans _ (mul_comm _ _).le)
+  · rw [pow_succ', pow_succ', ← hm, Nat.succ_mul, coeff_mul_of_natDegree_le _ pn]
+    refine' natDegree_pow_le.trans (le_trans _ (le_refl _))
     exact mul_le_mul_of_nonneg_left pn m.zero_le
 #align polynomial.coeff_pow_of_nat_degree_le Polynomial.coeff_pow_of_natDegree_le
+
+theorem coeff_pow_eq_ite_of_natDegree_le_of_le {o : ℕ}
+    (pn : natDegree p ≤ n) (mno : m * n ≤ o) :
+    coeff (p ^ m) o = if o = m * n then (coeff p n) ^ m else 0 := by
+  rcases eq_or_ne o (m * n) with rfl | h
+  · simpa only [ite_true] using coeff_pow_of_natDegree_le pn
+  · simpa only [h, ite_false] using coeff_eq_zero_of_natDegree_lt $
+      lt_of_le_of_lt (natDegree_pow_le_of_le m pn) (lt_of_le_of_ne mno h.symm)
 
 theorem coeff_add_eq_left_of_lt (qn : q.natDegree < n) : (p + q).coeff n = p.coeff n :=
   (coeff_add _ _ _).trans <|
@@ -227,8 +231,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     have hs : s.Nonempty := ⟨x, hx⟩
     refine' natDegree_eq_of_degree_eq_some _
     rw [degree_sum_eq_of_disjoint]
-    · dsimp
-      rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs,
+    · rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs,
         Nat.cast_withBot, Finset.coe_sup' hs, ←
         Finset.sup'_eq_sup hs]
       refine' le_antisymm _ _
@@ -247,7 +250,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
           simpa [← Nat.cast_withBot, hb', degree_eq_bot] using hx'
         exact ⟨b, hb, (degree_eq_natDegree hb').ge⟩
     · exact h.imp fun x y hxy hxy' => hxy (natDegree_eq_of_degree_eq hxy')
-  · push_neg  at H
+  · push_neg at H
     rw [Finset.sum_eq_zero H, natDegree_zero, eq_comm, show 0 = ⊥ from rfl, Finset.sup_eq_bot_iff]
     intro x hx
     simp [H x hx]
@@ -283,7 +286,7 @@ theorem degree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z 
 theorem coe_lt_degree {p : R[X]} {n : ℕ} : (n : WithBot ℕ) < degree p ↔ n < natDegree p := by
   by_cases h : p = 0
   · simp [h]
-  simp [degree_eq_natDegree h, Nat.cast_withBot, WithBot.coe_lt_coe]
+  simp [degree_eq_natDegree h, Nat.cast_lt]
 #align polynomial.coe_lt_degree Polynomial.coe_lt_degree
 
 end Degree
@@ -355,7 +358,7 @@ theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
 
 @[simp]
 theorem natDegree_iterate_comp (k : ℕ) :
-    ((p.comp^[k]) q).natDegree = p.natDegree ^ k * q.natDegree := by
+    (p.comp^[k] q).natDegree = p.natDegree ^ k * q.natDegree := by
   induction' k with k IH
   · simp
   · rw [Function.iterate_succ_apply', natDegree_comp, IH, pow_succ, mul_assoc]

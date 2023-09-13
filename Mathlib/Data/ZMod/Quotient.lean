@@ -2,17 +2,14 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.zmod.quotient
-! leanprover-community/mathlib commit da420a8c6dd5bdfb85c4ced85c34388f633bc6ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.Algebra.Hom.Equiv.TypeTags
+
+#align_import data.zmod.quotient from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
 /-!
 # `ZMod n` and quotient groups / rings
@@ -41,7 +38,7 @@ open QuotientAddGroup
 
 open ZMod
 
-variable (n : ℕ) {A R : Type _} [AddGroup A] [Ring R]
+variable (n : ℕ) {A R : Type*} [AddGroup A] [Ring R]
 
 namespace Int
 
@@ -74,7 +71,7 @@ namespace AddAction
 
 open AddSubgroup AddMonoidHom AddEquiv Function
 
-variable {α β : Type _} [AddGroup α] (a : α) [AddAction α β] (b : β)
+variable {α β : Type*} [AddGroup α] (a : α) [AddAction α β] (b : β)
 
 /-- The quotient `(ℤ ∙ a) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod ((+ᵥ) a) b`. -/
 noncomputable def zmultiplesQuotientStabilizerEquiv :
@@ -107,7 +104,7 @@ namespace MulAction
 
 open AddAction Subgroup AddSubgroup Function
 
-variable {α β : Type _} [Group α] (a : α) [MulAction α β] (b : β)
+variable {α β : Type*} [Group α] (a : α) [MulAction α β] (b : β)
 
 /-- The quotient `(a ^ ℤ) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod ((•) a) b`. -/
 noncomputable def zpowersQuotientStabilizerEquiv :
@@ -127,7 +124,7 @@ noncomputable def orbitZpowersEquiv : orbit (zpowers a) b ≃ ZMod (minimalPerio
 #align mul_action.orbit_zpowers_equiv MulAction.orbitZpowersEquiv
 
 /-- The orbit `(ℤ • a) +ᵥ b` is a cycle of order `minimalPeriod ((+ᵥ) a) b`. -/
-noncomputable def _root_.AddAction.orbitZmultiplesEquiv {α β : Type _} [AddGroup α] (a : α)
+noncomputable def _root_.AddAction.orbitZmultiplesEquiv {α β : Type*} [AddGroup α] (a : α)
     [AddAction α β] (b : β) :
     AddAction.orbit (zmultiples a) b ≃ ZMod (minimalPeriod ((· +ᵥ ·) a) b) :=
   (AddAction.orbitEquivQuotientStabilizer (zmultiples a) b).trans
@@ -151,7 +148,7 @@ theorem orbitZpowersEquiv_symm_apply' (k : ℤ) :
   exact Subtype.ext (zpow_smul_mod_minimalPeriod _ _ k)
 #align mul_action.orbit_zpowers_equiv_symm_apply' MulAction.orbitZpowersEquiv_symm_apply'
 
-theorem _root_.AddAction.orbitZmultiplesEquiv_symm_apply' {α β : Type _} [AddGroup α] (a : α)
+theorem _root_.AddAction.orbitZmultiplesEquiv_symm_apply' {α β : Type*} [AddGroup α] (a : α)
     [AddAction α β] (b : β) (k : ℤ) :
     (AddAction.orbitZmultiplesEquiv a b).symm k =
       k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddAction.mem_orbit_self b⟩ := by
@@ -188,7 +185,7 @@ section Group
 
 open Subgroup
 
-variable {α : Type _} [Group α] (a : α)
+variable {α : Type*} [Group α] (a : α)
 
 /-- See also `orderOf_eq_card_zpowers`. -/
 @[to_additive add_order_eq_card_zmultiples' "See also `add_order_eq_card_zmultiples`."]

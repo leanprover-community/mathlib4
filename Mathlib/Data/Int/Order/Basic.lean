@@ -2,17 +2,14 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.int.order.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.CharZero
+
+#align_import data.int.order.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Order instances on the integers
@@ -64,11 +61,11 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 @[simp, norm_cast] lemma coe_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
 #align int.coe_nat_abs Int.coe_natAbs
 
-lemma _root_.Nat.cast_natAbs {α : Type _} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| :=
-by rw [←coe_natAbs, Int.cast_ofNat]
+lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| :=
+  by rw [←coe_natAbs, Int.cast_ofNat]
 #align nat.cast_nat_abs Nat.cast_natAbs
 
-theorem natAbs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_natAbs] ; rfl
+theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
 #align int.nat_abs_abs Int.natAbs_abs
 
 theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
@@ -139,7 +136,7 @@ theorem one_le_abs {z : ℤ} (h₀ : z ≠ 0) : 1 ≤ |z| :=
 
 /-- Inductively define a function on `ℤ` by defining it at `b`, for the `succ` of a number greater
 than `b`, and the `pred` of a number less than `b`. -/
-@[elab_as_elim] protected def inductionOn' {C : ℤ → Sort _}
+@[elab_as_elim] protected def inductionOn' {C : ℤ → Sort*}
     (z : ℤ) (b : ℤ) (H0 : C b) (Hs : ∀ k, b ≤ k → C k → C (k + 1))
     (Hp : ∀ k ≤ b, C k → C (k - 1)) : C z := by
   rw [← sub_add_cancel (G := ℤ) z b, add_comm]

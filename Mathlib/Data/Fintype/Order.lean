@@ -2,14 +2,12 @@
 Copyright (c) 2021 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.fintype.order
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Finset.Order
+import Mathlib.Order.Atoms.Finite
+
+#align_import data.fintype.order from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # Order structures on finite types
@@ -33,8 +31,8 @@ and set membership is undecidable in general.
 On a `Fintype`, we can promote:
 * a `Lattice` to a `CompleteLattice`.
 * a `DistribLattice` to a `CompleteDistribLattice`.
-* a `LinearOrder`  to a `CompleteLinearOrder`.
-* a `BooleanAlgebra` to a `CompleteBooleanAlgebra`.
+* a `LinearOrder` to a `CompleteLinearOrder`.
+* a `BooleanAlgebra` to a `CompleteAtomicBooleanAlgebra`.
 
 Those are marked as `def` to avoid typeclass loops.
 
@@ -51,7 +49,7 @@ open Finset
 
 namespace Fintype
 
-variable {ι α : Type _} [Fintype ι] [Fintype α]
+variable {ι α : Type*} [Fintype ι] [Fintype α]
 
 section Nonempty
 
@@ -148,6 +146,13 @@ noncomputable def toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBoolean
       rfl }
 #align fintype.to_complete_boolean_algebra Fintype.toCompleteBooleanAlgebra
 
+-- See note [reducible non-instances]
+/-- A finite boolean algebra is complete and atomic. -/
+@[reducible]
+noncomputable def toCompleteAtomicBooleanAlgebra [BooleanAlgebra α] :
+    CompleteAtomicBooleanAlgebra α :=
+  (toCompleteBooleanAlgebra α).toCompleteAtomicBooleanAlgebra
+
 end BoundedOrder
 
 section Nonempty
@@ -187,27 +192,41 @@ noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool :=
 noncomputable instance Bool.completeBooleanAlgebra : CompleteBooleanAlgebra Bool :=
   Fintype.toCompleteBooleanAlgebra _
 
+noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Bool :=
+  Fintype.toCompleteAtomicBooleanAlgebra _
+
 /-! ### Directed Orders -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
-theorem Directed.fintype_le {r : α → α → Prop} [IsTrans α r] {β γ : Type _} [Nonempty γ] {f : γ → α}
+theorem Directed.fintype_le {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
     [Fintype β] (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
     obtain ⟨z, hz⟩ := D.finset_le (Finset.image g Finset.univ)
     exact ⟨z, fun i => hz (g i) (Finset.mem_image_of_mem g (Finset.mem_univ i))⟩
 #align directed.fintype_le Directed.fintype_le
 
-theorem Fintype.exists_le [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type _} [Fintype β]
+theorem Fintype.exists_le [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type*} [Fintype β]
     (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
   directed_id.fintype_le _
 #align fintype.exists_le Fintype.exists_le
 
-theorem Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type _}
+theorem Fintype.exists_ge [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type*} [Fintype β]
+    (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
+  directed_id.fintype_le (r := (· ≥ ·)) _
+
+theorem Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type*}
     [Fintype β] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Fintype.exists_le f
   refine' ⟨M, fun a ha => _⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 #align fintype.bdd_above_range Fintype.bddAbove_range
+
+theorem Fintype.bddBelow_range [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type*}
+    [Fintype β] (f : β → α) : BddBelow (Set.range f) := by
+  obtain ⟨M, hM⟩ := Fintype.exists_ge f
+  refine' ⟨M, fun a ha => _⟩
+  obtain ⟨b, rfl⟩ := ha
+  exact hM b

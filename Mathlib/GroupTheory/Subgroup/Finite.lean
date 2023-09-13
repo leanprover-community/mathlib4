@@ -2,15 +2,12 @@
 Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module group_theory.subgroup.finite
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import group_theory.subgroup.finite from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 # Subgroups
@@ -23,9 +20,9 @@ subgroup, subgroups
 
 open BigOperators
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
-variable {A : Type _} [AddGroup A]
+variable {A : Type*} [AddGroup A]
 
 namespace Subgroup
 
@@ -75,14 +72,14 @@ theorem multiset_noncommProd_mem (K : Subgroup G) (g : Multiset G) (comm) :
     subgroup. -/
 @[to_additive "Sum of elements in an `AddSubgroup` of an `AddCommGroup` indexed by a `Finset`
  is in the `AddSubgroup`."]
-protected theorem prod_mem {G : Type _} [CommGroup G] (K : Subgroup G) {ι : Type _} {t : Finset ι}
+protected theorem prod_mem {G : Type*} [CommGroup G] (K : Subgroup G) {ι : Type*} {t : Finset ι}
     {f : ι → G} (h : ∀ c ∈ t, f c ∈ K) : (∏ c in t, f c) ∈ K :=
   prod_mem h
 #align subgroup.prod_mem Subgroup.prod_mem
 #align add_subgroup.sum_mem AddSubgroup.sum_mem
 
 @[to_additive]
-theorem noncommProd_mem (K : Subgroup G) {ι : Type _} {t : Finset ι} {f : ι → G} (comm) :
+theorem noncommProd_mem (K : Subgroup G) {ι : Type*} {t : Finset ι} {f : ι → G} (comm) :
     (∀ c ∈ t, f c ∈ K) → t.noncommProd f comm ∈ K :=
   K.toSubmonoid.noncommProd_mem t f comm
 #align subgroup.noncomm_prod_mem Subgroup.noncommProd_mem
@@ -129,6 +126,11 @@ theorem card_bot {_ : Fintype (⊥ : Subgroup G)} : Fintype.card (⊥ : Subgroup
 #align add_subgroup.card_bot AddSubgroup.card_bot
 
 @[to_additive]
+theorem card_top [Fintype G] : Fintype.card (⊤ : Subgroup G) = Fintype.card G := by
+  rw [Fintype.card_eq]
+  exact Nonempty.intro Subgroup.topEquiv.toEquiv
+
+@[to_additive]
 theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.card G) :
     H = ⊤ := by
   letI : Fintype (H : Set G) := ‹Fintype H›
@@ -137,6 +139,10 @@ theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.
   congr
 #align subgroup.eq_top_of_card_eq Subgroup.eq_top_of_card_eq
 #align add_subgroup.eq_top_of_card_eq AddSubgroup.eq_top_of_card_eq
+
+@[to_additive (attr := simp)]
+theorem card_eq_iff_eq_top [Fintype H] [Fintype G] : Fintype.card H = Fintype.card G ↔ H = ⊤ :=
+  Iff.intro (eq_top_of_card_eq H) (fun h ↦ by simpa only [h] using card_top)
 
 @[to_additive]
 theorem eq_top_of_le_card [Fintype H] [Fintype G] (h : Fintype.card G ≤ Fintype.card H) : H = ⊤ :=
@@ -173,6 +179,10 @@ theorem one_lt_card_iff_ne_bot [Fintype H] : 1 < Fintype.card H ↔ H ≠ ⊥ :=
 #align subgroup.one_lt_card_iff_ne_bot Subgroup.one_lt_card_iff_ne_bot
 #align add_subgroup.pos_card_iff_ne_bot AddSubgroup.one_lt_card_iff_ne_bot
 
+@[to_additive]
+theorem card_le_card_group [Fintype G] [Fintype H] : Fintype.card H ≤ Fintype.card G :=
+  Fintype.card_le_of_injective _ Subtype.coe_injective
+
 end Subgroup
 
 namespace Subgroup
@@ -181,7 +191,7 @@ section Pi
 
 open Set
 
-variable {η : Type _} {f : η → Type _} [∀ i, Group (f i)]
+variable {η : Type*} {f : η → Type*} [∀ i, Group (f i)]
 
 @[to_additive]
 theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgroup (∀ i, f i)}
@@ -268,7 +278,7 @@ end Subgroup
 
 namespace MonoidHom
 
-variable {N : Type _} [Group N]
+variable {N : Type*} [Group N]
 
 open Subgroup
 
@@ -288,7 +298,7 @@ presence of `Fintype N`. -/
 
 Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the presence
 of `Fintype N`."]
-instance fintypeMrange {M N : Type _} [Monoid M] [Monoid N] [Fintype M] [DecidableEq N]
+instance fintypeMrange {M N : Type*} [Monoid M] [Monoid N] [Fintype M] [DecidableEq N]
     (f : M →* N) : Fintype (mrange f) :=
   Set.fintypeRange f
 #align monoid_hom.fintype_mrange MonoidHom.fintypeMrange

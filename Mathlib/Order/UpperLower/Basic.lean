@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
-
-! This file was ported from Lean 3 source module order.upper_lower.basic
-! leanprover-community/mathlib commit e9ce88cd0d54891c714c604076084f763dd480ed
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Data.Set.Intervals.OrderIso
+
+#align_import order.upper_lower.basic from "leanprover-community/mathlib"@"c0c52abb75074ed8b73a948341f50521fbf43b4c"
 
 /-!
 # Up-sets and down-sets
@@ -29,14 +26,12 @@ This file defines upper and lower sets in an order.
 * `lowerClosure`: The least lower set containing a set.
 * `UpperSet.Ici`: Principal upper set. `Set.Ici` as an upper set.
 * `UpperSet.Ioi`: Strict principal upper set. `Set.Ioi` as an upper set.
-* `LowerSet.Iic`: Principal lower set. `Set.Iic` as an lower set.
-* `LowerSet.Iio`: Strict principal lower set. `Set.Iio` as an lower set.
+* `LowerSet.Iic`: Principal lower set. `Set.Iic` as a lower set.
+* `LowerSet.Iio`: Strict principal lower set. `Set.Iio` as a lower set.
 
 ## Notation
 
-* `×ˢ` is notation for `Set.prod`, defined elsewhere;
-* `×ᵘˢ` is notation for `UpperSet.prod`;
-* `×ˡˢ` is notation for `LowerSet.prod`.
+* `×ˢ` is notation for `UpperSet.prod` / `LowerSet.prod`.
 
 ## Notes
 
@@ -51,7 +46,7 @@ Lattice structure on antichains. Order equivalence between upper/lower sets and 
 
 open OrderDual Set
 
-variable {α β γ : Type _} {ι : Sort _} {κ : ι → Sort _}
+variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 /-! ### Unbundled upper/lower sets -/
 
@@ -84,21 +79,21 @@ theorem isUpperSet_univ : IsUpperSet (univ : Set α) := fun _ _ _ => id
 theorem isLowerSet_univ : IsLowerSet (univ : Set α) := fun _ _ _ => id
 #align is_lower_set_univ isLowerSet_univ
 
-theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet (sᶜ) := fun _a _b h hb ha => hb <| hs h ha
+theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet sᶜ := fun _a _b h hb ha => hb <| hs h ha
 #align is_upper_set.compl IsUpperSet.compl
 
-theorem IsLowerSet.compl (hs : IsLowerSet s) : IsUpperSet (sᶜ) := fun _a _b h hb ha => hb <| hs h ha
+theorem IsLowerSet.compl (hs : IsLowerSet s) : IsUpperSet sᶜ := fun _a _b h hb ha => hb <| hs h ha
 #align is_lower_set.compl IsLowerSet.compl
 
 @[simp]
-theorem isUpperSet_compl : IsUpperSet (sᶜ) ↔ IsLowerSet s :=
+theorem isUpperSet_compl : IsUpperSet sᶜ ↔ IsLowerSet s :=
   ⟨fun h => by
     convert h.compl
     rw [compl_compl], IsLowerSet.compl⟩
 #align is_upper_set_compl isUpperSet_compl
 
 @[simp]
-theorem isLowerSet_compl : IsLowerSet (sᶜ) ↔ IsUpperSet s :=
+theorem isLowerSet_compl : IsLowerSet sᶜ ↔ IsUpperSet s :=
   ⟨fun h => by
     convert h.compl
     rw [compl_compl], IsUpperSet.compl⟩
@@ -192,17 +187,17 @@ theorem isUpperSet_preimage_toDual_iff {s : Set αᵒᵈ} : IsUpperSet (toDual �
   Iff.rfl
 #align is_upper_set_preimage_to_dual_iff isUpperSet_preimage_toDual_iff
 
-alias isLowerSet_preimage_ofDual_iff ↔ _ IsUpperSet.ofDual
-#align is_upper_set.of_dual IsUpperSet.ofDual
-
-alias isUpperSet_preimage_ofDual_iff ↔ _ IsLowerSet.ofDual
-#align is_lower_set.of_dual IsLowerSet.ofDual
-
-alias isLowerSet_preimage_toDual_iff ↔ _ IsUpperSet.toDual
+alias ⟨_, IsUpperSet.toDual⟩ := isLowerSet_preimage_ofDual_iff
 #align is_upper_set.to_dual IsUpperSet.toDual
 
-alias isUpperSet_preimage_toDual_iff ↔ _ IsLowerSet.toDual
+alias ⟨_, IsLowerSet.toDual⟩ := isUpperSet_preimage_ofDual_iff
 #align is_lower_set.to_dual IsLowerSet.toDual
+
+alias ⟨_, IsUpperSet.ofDual⟩ := isLowerSet_preimage_toDual_iff
+#align is_upper_set.of_dual IsUpperSet.ofDual
+
+alias ⟨_, IsLowerSet.ofDual⟩ := isUpperSet_preimage_toDual_iff
+#align is_lower_set.of_dual IsLowerSet.ofDual
 
 end LE
 
@@ -230,10 +225,10 @@ theorem isLowerSet_iff_Iic_subset : IsLowerSet s ↔ ∀ ⦃a⦄, a ∈ s → Ii
   simp [IsLowerSet, subset_def, @forall_swap (_ ∈ s)]
 #align is_lower_set_iff_Iic_subset isLowerSet_iff_Iic_subset
 
-alias isUpperSet_iff_Ici_subset ↔ IsUpperSet.Ici_subset _
+alias ⟨IsUpperSet.Ici_subset, _⟩ := isUpperSet_iff_Ici_subset
 #align is_upper_set.Ici_subset IsUpperSet.Ici_subset
 
-alias isLowerSet_iff_Iic_subset ↔ IsLowerSet.Iic_subset _
+alias ⟨IsLowerSet.Iic_subset, _⟩ := isLowerSet_iff_Iic_subset
 #align is_lower_set.Iic_subset IsLowerSet.Iic_subset
 
 theorem IsUpperSet.ordConnected (h : IsUpperSet s) : s.OrdConnected :=
@@ -382,13 +377,31 @@ theorem isLowerSet_iff_Iio_subset : IsLowerSet s ↔ ∀ ⦃a⦄, a ∈ s → Ii
   simp [isLowerSet_iff_forall_lt, subset_def, @forall_swap (_ ∈ s)]
 #align is_lower_set_iff_Iio_subset isLowerSet_iff_Iio_subset
 
-alias isUpperSet_iff_Ioi_subset ↔ IsUpperSet.Ioi_subset _
+alias ⟨IsUpperSet.Ioi_subset, _⟩ := isUpperSet_iff_Ioi_subset
 #align is_upper_set.Ioi_subset IsUpperSet.Ioi_subset
 
-alias isLowerSet_iff_Iio_subset ↔ IsLowerSet.Iio_subset _
+alias ⟨IsLowerSet.Iio_subset, _⟩ := isLowerSet_iff_Iio_subset
 #align is_lower_set.Iio_subset IsLowerSet.Iio_subset
 
 end PartialOrder
+
+section LinearOrder
+variable [LinearOrder α] {s t : Set α}
+
+theorem IsUpperSet.total (hs : IsUpperSet s) (ht : IsUpperSet t) : s ⊆ t ∨ t ⊆ s := by
+  by_contra' h
+  simp_rw [Set.not_subset] at h
+  obtain ⟨⟨a, has, hat⟩, b, hbt, hbs⟩ := h
+  obtain hab | hba := le_total a b
+  · exact hbs (hs hab has)
+  · exact hat (ht hba hbt)
+#align is_upper_set.total IsUpperSet.total
+
+theorem IsLowerSet.total (hs : IsLowerSet s) (ht : IsLowerSet t) : s ⊆ t ∨ t ⊆ s :=
+  hs.toDual.total ht.toDual
+#align is_lower_set.total IsLowerSet.total
+
+end LinearOrder
 
 /-! ### Bundled upper/lower sets -/
 
@@ -398,7 +411,7 @@ section LE
 variable [LE α]
 
 /-- The type of upper sets of an order. -/
-structure UpperSet (α : Type _) [LE α] where
+structure UpperSet (α : Type*) [LE α] where
   /-- The carrier of an `UpperSet`. -/
   carrier : Set α
   /-- The carrier of an `UpperSet` is an upper set. -/
@@ -406,7 +419,7 @@ structure UpperSet (α : Type _) [LE α] where
 #align upper_set UpperSet
 
 /-- The type of lower sets of an order. -/
-structure LowerSet (α : Type _) [LE α] where
+structure LowerSet (α : Type*) [LE α] where
   /-- The carrier of a `LowerSet`. -/
   carrier : Set α
   /-- The carrier of a `LowerSet` is a lower set. -/
@@ -501,8 +514,8 @@ instance : SupSet (UpperSet α) :=
 instance : InfSet (UpperSet α) :=
   ⟨fun S => ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ => s.upper⟩⟩
 
-instance : CompleteDistribLattice (UpperSet α) :=
-  (toDual.injective.comp SetLike.coe_injective).completeDistribLattice _ (fun _ _ => rfl)
+instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
+  (toDual.injective.comp SetLike.coe_injective).completelyDistribLattice _ (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
 instance : Inhabited (UpperSet α) :=
@@ -650,8 +663,8 @@ instance : SupSet (LowerSet α) :=
 instance : InfSet (LowerSet α) :=
   ⟨fun S => ⟨⋂ s ∈ S, ↑s, isLowerSet_iInter₂ fun s _ => s.lower⟩⟩
 
-instance : CompleteDistribLattice (LowerSet α) :=
-  SetLike.coe_injective.completeDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
+  SetLike.coe_injective.completelyDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ => rfl) rfl rfl
 
 instance : Inhabited (LowerSet α) :=
@@ -796,7 +809,7 @@ namespace UpperSet
 variable {s t : UpperSet α} {a : α}
 
 @[simp]
-theorem coe_compl (s : UpperSet α) : (s.compl : Set α) = ↑sᶜ :=
+theorem coe_compl (s : UpperSet α) : (s.compl : Set α) = (↑s)ᶜ :=
   rfl
 #align upper_set.coe_compl UpperSet.coe_compl
 
@@ -872,7 +885,7 @@ namespace LowerSet
 variable {s t : LowerSet α} {a : α}
 
 @[simp]
-theorem coe_compl (s : LowerSet α) : (s.compl : Set α) = ↑sᶜ :=
+theorem coe_compl (s : LowerSet α) : (s.compl : Set α) = (↑s)ᶜ :=
   rfl
 #align lower_set.coe_compl LowerSet.coe_compl
 
@@ -947,6 +960,31 @@ def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α
 #align upper_set_iso_lower_set upperSetIsoLowerSet
 
 end LE
+
+section LinearOrder
+variable [LinearOrder α]
+
+instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := ⟨fun s t => t.upper.total s.upper⟩
+#align upper_set.is_total_le UpperSet.isTotal_le
+
+instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
+#align lower_set.is_total_le LowerSet.isTotal_le
+
+noncomputable instance : CompleteLinearOrder (UpperSet α) :=
+  { UpperSet.completelyDistribLattice with
+    le_total := IsTotal.total
+    decidableLE := Classical.decRel _
+    decidableEq := Classical.decRel _
+    decidableLT := Classical.decRel _ }
+
+noncomputable instance : CompleteLinearOrder (LowerSet α) :=
+  { LowerSet.completelyDistribLattice with
+    le_total := IsTotal.total
+    decidableLE := Classical.decRel _
+    decidableEq := Classical.decRel _
+    decidableLT := Classical.decRel _ }
+
+end LinearOrder
 
 /-! #### Map -/
 
@@ -1341,13 +1379,13 @@ theorem lowerClosure_image (f : α ≃o β) :
 #align lower_closure_image lowerClosure_image
 
 @[simp]
-theorem UpperSet.iInf_Ici (s : Set α) : (⨅ a ∈ s, UpperSet.Ici a) = upperClosure s := by
+theorem UpperSet.iInf_Ici (s : Set α) : ⨅ a ∈ s, UpperSet.Ici a = upperClosure s := by
   ext
   simp
 #align upper_set.infi_Ici UpperSet.iInf_Ici
 
 @[simp]
-theorem LowerSet.iSup_Iic (s : Set α) : (⨆ a ∈ s, LowerSet.Iic a) = lowerClosure s := by
+theorem LowerSet.iSup_Iic (s : Set α) : ⨆ a ∈ s, LowerSet.Iic a = lowerClosure s := by
   ext
   simp
 #align lower_set.supr_Iic LowerSet.iSup_Iic
@@ -1494,11 +1532,11 @@ theorem bddBelow_upperClosure : BddBelow (upperClosure s : Set α) ↔ BddBelow 
   simp_rw [BddBelow, lowerBounds_upperClosure]
 #align bdd_below_upper_closure bddBelow_upperClosure
 
-alias bddAbove_lowerClosure ↔ BddAbove.of_lowerClosure BddAbove.lowerClosure
+alias ⟨BddAbove.of_lowerClosure, BddAbove.lowerClosure⟩ := bddAbove_lowerClosure
 #align bdd_above.of_lower_closure BddAbove.of_lowerClosure
 #align bdd_above.lower_closure BddAbove.lowerClosure
 
-alias bddBelow_upperClosure ↔ BddBelow.of_upperClosure BddBelow.upperClosure
+alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelow_upperClosure
 #align bdd_below.of_upper_closure BddBelow.of_upperClosure
 #align bdd_below.upper_closure BddBelow.upperClosure
 
@@ -1537,105 +1575,105 @@ def prod : UpperSet (α × β) :=
   ⟨s ×ˢ t, s.2.prod t.2⟩
 #align upper_set.prod UpperSet.prod
 
-@[inherit_doc]
-infixr:82 " ×ᵘˢ " => prod
+instance instSProd : SProd (UpperSet α) (UpperSet β) (UpperSet (α × β)) where
+  sprod := UpperSet.prod
 
 @[simp, norm_cast]
-theorem coe_prod : (↑(s ×ᵘˢ t) : Set (α × β)) = (s : Set α) ×ˢ t :=
+theorem coe_prod : ((s ×ˢ t : UpperSet (α × β)) : Set (α × β)) = (s : Set α) ×ˢ t :=
   rfl
 #align upper_set.coe_prod UpperSet.coe_prod
 
 @[simp]
-theorem mem_prod {s : UpperSet α} {t : UpperSet β} : x ∈ s ×ᵘˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
+theorem mem_prod {s : UpperSet α} {t : UpperSet β} : x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
   Iff.rfl
 #align upper_set.mem_prod UpperSet.mem_prod
 
-theorem Ici_prod (x : α × β) : Ici x = Ici x.1 ×ᵘˢ Ici x.2 :=
+theorem Ici_prod (x : α × β) : Ici x = Ici x.1 ×ˢ Ici x.2 :=
   rfl
 #align upper_set.Ici_prod UpperSet.Ici_prod
 
 @[simp]
-theorem Ici_prod_Ici (a : α) (b : β) : Ici a ×ᵘˢ Ici b = Ici (a, b) :=
+theorem Ici_prod_Ici (a : α) (b : β) : Ici a ×ˢ Ici b = Ici (a, b) :=
   rfl
 #align upper_set.Ici_prod_Ici UpperSet.Ici_prod_Ici
 
 @[simp]
-theorem prod_top : s ×ᵘˢ (⊤ : UpperSet β) = ⊤ :=
+theorem prod_top : s ×ˢ (⊤ : UpperSet β) = ⊤ :=
   ext prod_empty
 #align upper_set.prod_top UpperSet.prod_top
 
 @[simp]
-theorem top_prod : (⊤ : UpperSet α) ×ᵘˢ t = ⊤ :=
+theorem top_prod : (⊤ : UpperSet α) ×ˢ t = ⊤ :=
   ext empty_prod
 #align upper_set.top_prod UpperSet.top_prod
 
 @[simp]
-theorem bot_prod_bot : (⊥ : UpperSet α) ×ᵘˢ (⊥ : UpperSet β) = ⊥ :=
+theorem bot_prod_bot : (⊥ : UpperSet α) ×ˢ (⊥ : UpperSet β) = ⊥ :=
   ext univ_prod_univ
 #align upper_set.bot_prod_bot UpperSet.bot_prod_bot
 
 @[simp]
-theorem sup_prod : (s₁ ⊔ s₂) ×ᵘˢ t = s₁ ×ᵘˢ t ⊔ s₂ ×ᵘˢ t :=
+theorem sup_prod : (s₁ ⊔ s₂) ×ˢ t = s₁ ×ˢ t ⊔ s₂ ×ˢ t :=
   ext inter_prod
 #align upper_set.sup_prod UpperSet.sup_prod
 
 @[simp]
-theorem prod_sup : s ×ᵘˢ (t₁ ⊔ t₂) = s ×ᵘˢ t₁ ⊔ s ×ᵘˢ t₂ :=
+theorem prod_sup : s ×ˢ (t₁ ⊔ t₂) = s ×ˢ t₁ ⊔ s ×ˢ t₂ :=
   ext prod_inter
 #align upper_set.prod_sup UpperSet.prod_sup
 
 @[simp]
-theorem inf_prod : (s₁ ⊓ s₂) ×ᵘˢ t = s₁ ×ᵘˢ t ⊓ s₂ ×ᵘˢ t :=
+theorem inf_prod : (s₁ ⊓ s₂) ×ˢ t = s₁ ×ˢ t ⊓ s₂ ×ˢ t :=
   ext union_prod
 #align upper_set.inf_prod UpperSet.inf_prod
 
 @[simp]
-theorem prod_inf : s ×ᵘˢ (t₁ ⊓ t₂) = s ×ᵘˢ t₁ ⊓ s ×ᵘˢ t₂ :=
+theorem prod_inf : s ×ˢ (t₁ ⊓ t₂) = s ×ˢ t₁ ⊓ s ×ˢ t₂ :=
   ext prod_union
 #align upper_set.prod_inf UpperSet.prod_inf
 
-theorem prod_sup_prod : s₁ ×ᵘˢ t₁ ⊔ s₂ ×ᵘˢ t₂ = (s₁ ⊔ s₂) ×ᵘˢ (t₁ ⊔ t₂) :=
+theorem prod_sup_prod : s₁ ×ˢ t₁ ⊔ s₂ ×ˢ t₂ = (s₁ ⊔ s₂) ×ˢ (t₁ ⊔ t₂) :=
   ext prod_inter_prod
 #align upper_set.prod_sup_prod UpperSet.prod_sup_prod
 
 variable {s s₁ s₂ t t₁ t₂}
 
 @[mono]
-theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ᵘˢ t₁ ≤ s₂ ×ᵘˢ t₂ :=
+theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ˢ t₁ ≤ s₂ ×ˢ t₂ :=
   Set.prod_mono
 #align upper_set.prod_mono UpperSet.prod_mono
 
-theorem prod_mono_left : s₁ ≤ s₂ → s₁ ×ᵘˢ t ≤ s₂ ×ᵘˢ t :=
+theorem prod_mono_left : s₁ ≤ s₂ → s₁ ×ˢ t ≤ s₂ ×ˢ t :=
   Set.prod_mono_left
 #align upper_set.prod_mono_left UpperSet.prod_mono_left
 
-theorem prod_mono_right : t₁ ≤ t₂ → s ×ᵘˢ t₁ ≤ s ×ᵘˢ t₂ :=
+theorem prod_mono_right : t₁ ≤ t₂ → s ×ˢ t₁ ≤ s ×ˢ t₂ :=
   Set.prod_mono_right
 #align upper_set.prod_mono_right UpperSet.prod_mono_right
 
 @[simp]
-theorem prod_self_le_prod_self : s₁ ×ᵘˢ s₁ ≤ s₂ ×ᵘˢ s₂ ↔ s₁ ≤ s₂ :=
+theorem prod_self_le_prod_self : s₁ ×ˢ s₁ ≤ s₂ ×ˢ s₂ ↔ s₁ ≤ s₂ :=
   prod_self_subset_prod_self
 #align upper_set.prod_self_le_prod_self UpperSet.prod_self_le_prod_self
 
 @[simp]
-theorem prod_self_lt_prod_self : s₁ ×ᵘˢ s₁ < s₂ ×ᵘˢ s₂ ↔ s₁ < s₂ :=
+theorem prod_self_lt_prod_self : s₁ ×ˢ s₁ < s₂ ×ˢ s₂ ↔ s₁ < s₂ :=
   prod_self_ssubset_prod_self
 #align upper_set.prod_self_lt_prod_self UpperSet.prod_self_lt_prod_self
 
-theorem prod_le_prod_iff : s₁ ×ᵘˢ t₁ ≤ s₂ ×ᵘˢ t₂ ↔ s₁ ≤ s₂ ∧ t₁ ≤ t₂ ∨ s₂ = ⊤ ∨ t₂ = ⊤ :=
+theorem prod_le_prod_iff : s₁ ×ˢ t₁ ≤ s₂ ×ˢ t₂ ↔ s₁ ≤ s₂ ∧ t₁ ≤ t₂ ∨ s₂ = ⊤ ∨ t₂ = ⊤ :=
   prod_subset_prod_iff.trans <| by simp
 #align upper_set.prod_le_prod_iff UpperSet.prod_le_prod_iff
 
 @[simp]
-theorem prod_eq_top : s ×ᵘˢ t = ⊤ ↔ s = ⊤ ∨ t = ⊤ := by
+theorem prod_eq_top : s ×ˢ t = ⊤ ↔ s = ⊤ ∨ t = ⊤ := by
   simp_rw [SetLike.ext'_iff]
   exact prod_eq_empty_iff
 #align upper_set.prod_eq_top UpperSet.prod_eq_top
 
 @[simp]
 theorem codisjoint_prod :
-    Codisjoint (s₁ ×ᵘˢ t₁) (s₂ ×ᵘˢ t₂) ↔ Codisjoint s₁ s₂ ∨ Codisjoint t₁ t₂ := by
+    Codisjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) ↔ Codisjoint s₁ s₂ ∨ Codisjoint t₁ t₂ := by
   simp_rw [codisjoint_iff, prod_sup_prod, prod_eq_top]
 #align upper_set.codisjoint_prod UpperSet.codisjoint_prod
 
@@ -1649,98 +1687,99 @@ variable (s s₁ s₂ : LowerSet α) (t t₁ t₂ : LowerSet β) {x : α × β}
 def prod : LowerSet (α × β) := ⟨s ×ˢ t, s.2.prod t.2⟩
 #align lower_set.prod LowerSet.prod
 
-@[inherit_doc]
-infixr:82 " ×ˡˢ " => LowerSet.prod
+instance instSProd : SProd (LowerSet α) (LowerSet β) (LowerSet (α × β)) where
+  sprod := LowerSet.prod
 
-@[simp, norm_cast] theorem coe_prod : (↑(s ×ˡˢ t) : Set (α × β)) = s ×ˢ t := rfl
+@[simp, norm_cast]
+theorem coe_prod : ((s ×ˢ t : LowerSet (α × β)) : Set (α × β)) = (s : Set α) ×ˢ t := rfl
 #align lower_set.coe_prod LowerSet.coe_prod
 
 @[simp]
-theorem mem_prod {s : LowerSet α} {t : LowerSet β} : x ∈ s ×ˡˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
+theorem mem_prod {s : LowerSet α} {t : LowerSet β} : x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
   Iff.rfl
 #align lower_set.mem_prod LowerSet.mem_prod
 
-theorem Iic_prod (x : α × β) : Iic x = Iic x.1 ×ˡˢ Iic x.2 :=
+theorem Iic_prod (x : α × β) : Iic x = Iic x.1 ×ˢ Iic x.2 :=
   rfl
 #align lower_set.Iic_prod LowerSet.Iic_prod
 
 @[simp]
-theorem Ici_prod_Ici (a : α) (b : β) : Iic a ×ˡˢ Iic b = Iic (a, b) :=
+theorem Ici_prod_Ici (a : α) (b : β) : Iic a ×ˢ Iic b = Iic (a, b) :=
   rfl
 #align lower_set.Ici_prod_Ici LowerSet.Ici_prod_Ici
 
 @[simp]
-theorem prod_bot : s ×ˡˢ (⊥ : LowerSet β) = ⊥ :=
+theorem prod_bot : s ×ˢ (⊥ : LowerSet β) = ⊥ :=
   ext prod_empty
 #align lower_set.prod_bot LowerSet.prod_bot
 
 @[simp]
-theorem bot_prod : (⊥ : LowerSet α) ×ˡˢ t = ⊥ :=
+theorem bot_prod : (⊥ : LowerSet α) ×ˢ t = ⊥ :=
   ext empty_prod
 #align lower_set.bot_prod LowerSet.bot_prod
 
 @[simp]
-theorem top_prod_top : (⊤ : LowerSet α) ×ˡˢ (⊤ : LowerSet β) = ⊤ :=
+theorem top_prod_top : (⊤ : LowerSet α) ×ˢ (⊤ : LowerSet β) = ⊤ :=
   ext univ_prod_univ
 #align lower_set.top_prod_top LowerSet.top_prod_top
 
 @[simp]
-theorem inf_prod : (s₁ ⊓ s₂) ×ˡˢ t = s₁ ×ˡˢ t ⊓ s₂ ×ˡˢ t :=
+theorem inf_prod : (s₁ ⊓ s₂) ×ˢ t = s₁ ×ˢ t ⊓ s₂ ×ˢ t :=
   ext inter_prod
 #align lower_set.inf_prod LowerSet.inf_prod
 
 @[simp]
-theorem prod_inf : s ×ˡˢ (t₁ ⊓ t₂) = s ×ˡˢ t₁ ⊓ s ×ˡˢ t₂ :=
+theorem prod_inf : s ×ˢ (t₁ ⊓ t₂) = s ×ˢ t₁ ⊓ s ×ˢ t₂ :=
   ext prod_inter
 #align lower_set.prod_inf LowerSet.prod_inf
 
 @[simp]
-theorem sup_prod : (s₁ ⊔ s₂) ×ˡˢ t = s₁ ×ˡˢ t ⊔ s₂ ×ˡˢ t :=
+theorem sup_prod : (s₁ ⊔ s₂) ×ˢ t = s₁ ×ˢ t ⊔ s₂ ×ˢ t :=
   ext union_prod
 #align lower_set.sup_prod LowerSet.sup_prod
 
 @[simp]
-theorem prod_sup : s ×ˡˢ (t₁ ⊔ t₂) = s ×ˡˢ t₁ ⊔ s ×ˡˢ t₂ :=
+theorem prod_sup : s ×ˢ (t₁ ⊔ t₂) = s ×ˢ t₁ ⊔ s ×ˢ t₂ :=
   ext prod_union
 #align lower_set.prod_sup LowerSet.prod_sup
 
-theorem prod_inf_prod : s₁ ×ˡˢ t₁ ⊓ s₂ ×ˡˢ t₂ = (s₁ ⊓ s₂) ×ˡˢ (t₁ ⊓ t₂) :=
+theorem prod_inf_prod : s₁ ×ˢ t₁ ⊓ s₂ ×ˢ t₂ = (s₁ ⊓ s₂) ×ˢ (t₁ ⊓ t₂) :=
   ext prod_inter_prod
 #align lower_set.prod_inf_prod LowerSet.prod_inf_prod
 
 variable {s s₁ s₂ t t₁ t₂}
 
-theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ˡˢ t₁ ≤ s₂ ×ˡˢ t₂ := Set.prod_mono
+theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ˢ t₁ ≤ s₂ ×ˢ t₂ := Set.prod_mono
 #align lower_set.prod_mono LowerSet.prod_mono
 
-theorem prod_mono_left : s₁ ≤ s₂ → s₁ ×ˡˢ t ≤ s₂ ×ˡˢ t := Set.prod_mono_left
+theorem prod_mono_left : s₁ ≤ s₂ → s₁ ×ˢ t ≤ s₂ ×ˢ t := Set.prod_mono_left
 #align lower_set.prod_mono_left LowerSet.prod_mono_left
 
-theorem prod_mono_right : t₁ ≤ t₂ → s ×ˡˢ t₁ ≤ s ×ˡˢ t₂ := Set.prod_mono_right
+theorem prod_mono_right : t₁ ≤ t₂ → s ×ˢ t₁ ≤ s ×ˢ t₂ := Set.prod_mono_right
 #align lower_set.prod_mono_right LowerSet.prod_mono_right
 
 @[simp]
-theorem prod_self_le_prod_self : s₁ ×ˡˢ s₁ ≤ s₂ ×ˡˢ s₂ ↔ s₁ ≤ s₂ :=
+theorem prod_self_le_prod_self : s₁ ×ˢ s₁ ≤ s₂ ×ˢ s₂ ↔ s₁ ≤ s₂ :=
   prod_self_subset_prod_self
 #align lower_set.prod_self_le_prod_self LowerSet.prod_self_le_prod_self
 
 @[simp]
-theorem prod_self_lt_prod_self : s₁ ×ˡˢ s₁ < s₂ ×ˡˢ s₂ ↔ s₁ < s₂ :=
+theorem prod_self_lt_prod_self : s₁ ×ˢ s₁ < s₂ ×ˢ s₂ ↔ s₁ < s₂ :=
   prod_self_ssubset_prod_self
 #align lower_set.prod_self_lt_prod_self LowerSet.prod_self_lt_prod_self
 
-theorem prod_le_prod_iff : s₁ ×ˡˢ t₁ ≤ s₂ ×ˡˢ t₂ ↔ s₁ ≤ s₂ ∧ t₁ ≤ t₂ ∨ s₁ = ⊥ ∨ t₁ = ⊥ :=
+theorem prod_le_prod_iff : s₁ ×ˢ t₁ ≤ s₂ ×ˢ t₂ ↔ s₁ ≤ s₂ ∧ t₁ ≤ t₂ ∨ s₁ = ⊥ ∨ t₁ = ⊥ :=
   prod_subset_prod_iff.trans <| by simp
 #align lower_set.prod_le_prod_iff LowerSet.prod_le_prod_iff
 
 @[simp]
-theorem prod_eq_bot : s ×ˡˢ t = ⊥ ↔ s = ⊥ ∨ t = ⊥ := by
+theorem prod_eq_bot : s ×ˢ t = ⊥ ↔ s = ⊥ ∨ t = ⊥ := by
   simp_rw [SetLike.ext'_iff]
   exact prod_eq_empty_iff
 #align lower_set.prod_eq_bot LowerSet.prod_eq_bot
 
 @[simp]
-theorem disjoint_prod : Disjoint (s₁ ×ˡˢ t₁) (s₂ ×ˡˢ t₂) ↔ Disjoint s₁ s₂ ∨ Disjoint t₁ t₂ := by
+theorem disjoint_prod : Disjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) ↔ Disjoint s₁ s₂ ∨ Disjoint t₁ t₂ := by
   simp_rw [disjoint_iff, prod_inf_prod, prod_eq_bot]
 #align lower_set.disjoint_prod LowerSet.disjoint_prod
 
@@ -1748,14 +1787,14 @@ end LowerSet
 
 @[simp]
 theorem upperClosure_prod (s : Set α) (t : Set β) :
-    upperClosure (s ×ˢ t) = upperClosure s ×ᵘˢ upperClosure t := by
+    upperClosure (s ×ˢ t) = upperClosure s ×ˢ upperClosure t := by
   ext
   simp [Prod.le_def, @and_and_and_comm _ (_ ∈ t)]
 #align upper_closure_prod upperClosure_prod
 
 @[simp]
 theorem lowerClosure_prod (s : Set α) (t : Set β) :
-    lowerClosure (s ×ˢ t) = lowerClosure s ×ˡˢ lowerClosure t := by
+    lowerClosure (s ×ˢ t) = lowerClosure s ×ˢ lowerClosure t := by
   ext
   simp [Prod.le_def, @and_and_and_comm _ (_ ∈ t)]
 #align lower_closure_prod lowerClosure_prod

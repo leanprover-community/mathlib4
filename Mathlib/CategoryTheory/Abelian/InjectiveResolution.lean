@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.abelian.injective_resolution
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
 import Mathlib.Algebra.Homology.HomotopyCategory
+
+#align_import category_theory.abelian.injective_resolution from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Main result
@@ -99,13 +96,11 @@ def desc {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResol
 #align category_theory.InjectiveResolution.desc CategoryTheory.InjectiveResolution.desc
 
 /-- The resolution maps intertwine the descent of a morphism and that morphism. -/
-@[reassoc (attr := simp)] -- Porting note: Originally `@[simp, reassoc.1]`
+@[reassoc (attr := simp)]
 theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
     (J : InjectiveResolution Z) : J.ι ≫ desc f I J = (CochainComplex.single₀ C).map f ≫ I.ι := by
-  ext n
-  rcases n with (_ | _ | n) <;>
-    · dsimp [desc, descFOne, descFZero]
-      simp
+  ext
+  simp [desc, descFOne, descFZero]
 #align category_theory.InjectiveResolution.desc_commutes CategoryTheory.InjectiveResolution.desc_commutes
 
 -- Now that we've checked this property of the descent, we can seal away the actual definition.

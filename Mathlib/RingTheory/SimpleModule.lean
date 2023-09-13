@@ -2,14 +2,11 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.simple_module
-! leanprover-community/mathlib commit cce7f68a7eaadadf74c82bbac20721cdc03a1cc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Order.JordanHolder
+
+#align_import ring_theory.simple_module from "leanprover-community/mathlib"@"cce7f68a7eaadadf74c82bbac20721cdc03a1cc1"
 
 /-!
 # Simple Modules
@@ -32,7 +29,7 @@ import Mathlib.Order.JordanHolder
 -/
 
 
-variable (R : Type _) [Ring R] (M : Type _) [AddCommGroup M] [Module R M]
+variable (R : Type*) [Ring R] (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- A module is simple when it has only two submodules, `⊥` and `⊤`. -/
 abbrev IsSimpleModule :=
@@ -50,19 +47,12 @@ theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
   ⟨⟨0, by
       have h : (⊥ : Submodule R M) ≠ ⊤ := bot_ne_top
       contrapose! h
-      -- Porting note: push_neg at h not giving fun y => 0 = y
-      have h : ∀ (y : M), 0 = y := by
-        intro y
-        have em := Classical.em (0 = y)
-        match em with
-        | .inl h' => exact h'
-        | .inr h' => apply False.elim <| h ⟨y,h'⟩
       ext x
       simp [Submodule.mem_bot, Submodule.mem_top, h x]⟩⟩
 #align is_simple_module.nontrivial IsSimpleModule.nontrivial
 
 variable {R} {M} -- Porting note: had break line or all hell breaks loose
-variable {m : Submodule R M} {N : Type _} [AddCommGroup N] [Module R N]
+variable {m : Submodule R M} {N : Type*} [AddCommGroup N] [Module R N]
 
 theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M :=
   (Submodule.orderIsoMapComap l).isSimpleOrder
@@ -190,7 +180,6 @@ noncomputable instance _root_.Module.End.divisionRing
         haveI := IsSimpleModule.nontrivial R M
         have h := exists_pair_ne M
         contrapose! h
-        push_neg at h -- Porting note: needed to hit this again here. regression?
         intro x y
         simp_rw [ext_iff, one_apply, zero_apply] at h
         rw [← h x, h y]⟩

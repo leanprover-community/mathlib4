@@ -2,15 +2,11 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed_space.pointwise
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import analysis.normed_space.pointwise from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
 /-!
 # Properties of pointwise scalar multiplication of sets in normed spaces.
@@ -25,7 +21,7 @@ open Metric Set
 
 open Pointwise Topology
 
-variable {𝕜 E : Type _}
+variable {𝕜 E : Type*}
 
 section SMulZeroClass
 
@@ -65,7 +61,7 @@ theorem infEdist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
   simp_rw [EMetric.infEdist]
   have : Function.Surjective ((c • ·) : E → E) :=
     Function.RightInverse.surjective (smul_inv_smul₀ hc)
-  trans ⨅ (y) (_H : y ∈ s), ‖c‖₊ • edist x y
+  trans ⨅ (y) (_ : y ∈ s), ‖c‖₊ • edist x y
   · refine' (this.iInf_congr _ fun y => _).symm
     simp_rw [smul_mem_smul_set_iff₀ hc, edist_smul₀]
   · have : (‖c‖₊ : ENNReal) ≠ 0 := by simp [hc]
@@ -112,14 +108,11 @@ theorem smul_closedBall' {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) :
   simp only [← ball_union_sphere, Set.smul_set_union, _root_.smul_ball hc, smul_sphere' hc]
 #align smul_closed_ball' smul_closedBall'
 
-theorem Metric.Bounded.smul {s : Set E} (hs : Bounded s) (c : 𝕜) : Bounded (c • s) := by
-  obtain ⟨R, hR⟩ : ∃ R : ℝ, ∀ x ∈ s, ‖x‖ ≤ R := hs.exists_norm_le
-  refine' bounded_iff_forall_norm_le.2 ⟨‖c‖ * R, fun z hz => _⟩
-  obtain ⟨y, ys, rfl⟩ : ∃ y : E, y ∈ s ∧ c • y = z := mem_smul_set.1 hz
-  calc
-    ‖c • y‖ = ‖c‖ * ‖y‖ := norm_smul _ _
-    _ ≤ ‖c‖ * R := mul_le_mul_of_nonneg_left (hR y ys) (norm_nonneg _)
-#align metric.bounded.smul Metric.Bounded.smul
+/-- Image of a bounded set in a normed space under scalar multiplication by a constant is
+bounded. See also `Metric.Bounded.smul` for a similar lemma about an isometric action. -/
+theorem Metric.Bounded.smul₀ {s : Set E} (hs : Bounded s) (c : 𝕜) : Bounded (c • s) :=
+  (lipschitzWith_smul c).bounded_image hs
+#align metric.bounded.smul Metric.Bounded.smul₀
 
 /-- If `s` is a bounded set, then for small enough `r`, the set `{x} + r • s` is contained in any
 fixed neighborhood of `x`. -/
@@ -138,7 +131,7 @@ theorem eventually_singleton_add_smul_subset {x : E} {s : Set E} (hs : Bounded s
       _ ≤ ε / R * R :=
         (mul_le_mul (mem_closedBall_zero_iff.1 hr) (mem_closedBall_zero_iff.1 (hR zs))
           (norm_nonneg _) (div_pos εpos Rpos).le)
-      _ = ε := by field_simp [Rpos.ne']
+      _ = ε := by field_simp
   have : y = x + r • z := by simp only [hz, add_neg_cancel_left]
   apply hε
   simpa only [this, dist_eq_norm, add_sub_cancel', mem_closedBall] using I
@@ -432,13 +425,13 @@ theorem smul_sphere [Nontrivial E] (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
   · exact smul_sphere' hc x r
 #align smul_sphere smul_sphere
 
-/-- Any ball `Metric.ball x r`, `0 < r` is the image of the unit ball under `λ y, x + r • y`. -/
+/-- Any ball `Metric.ball x r`, `0 < r` is the image of the unit ball under `fun y ↦ x + r • y`. -/
 theorem affinity_unitBall {r : ℝ} (hr : 0 < r) (x : E) : x +ᵥ r • ball (0 : E) 1 = ball x r := by
   rw [smul_unitBall_of_pos hr, vadd_ball_zero]
 #align affinity_unit_ball affinity_unitBall
 
 /-- Any closed ball `Metric.closedBall x r`, `0 ≤ r` is the image of the unit closed ball under
-`λ y, x + r • y`. -/
+`fun y ↦ x + r • y`. -/
 theorem affinity_unitClosedBall {r : ℝ} (hr : 0 ≤ r) (x : E) :
     x +ᵥ r • closedBall (0 : E) 1 = closedBall x r := by
   rw [smul_closedUnitBall, Real.norm_of_nonneg hr, vadd_closedBall_zero]

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
-
-! This file was ported from Lean 3 source module ring_theory.graded_algebra.basic
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.DirectSum.Internal
 import Mathlib.Algebra.DirectSum.Ring
+
+#align_import ring_theory.graded_algebra.basic from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Internally-graded rings and algebras
@@ -46,7 +43,7 @@ graded algebra, graded ring, graded semiring, decomposition
 
 open DirectSum BigOperators
 
-variable {ι R A σ : Type _}
+variable {ι R A σ : Type*}
 
 section GradedRing
 
@@ -62,7 +59,7 @@ respects multiplication, i.e. the product of an element of degree `i` and an ele
 is an element of degree `i + j`.
 
 Note that the fact that `A` is internally-graded, `GradedAlgebra 𝒜`, implies an externally-graded
-algebra structure `DirectSum.GAlgebra R (λ i, ↥(𝒜 i))`, which in turn makes available an
+algebra structure `DirectSum.GAlgebra R (fun i ↦ ↥(𝒜 i))`, which in turn makes available an
 `Algebra R (⨁ i, 𝒜 i)` instance.
 -/
 class GradedRing (𝒜 : ι → σ) extends SetLike.GradedMonoid 𝒜, DirectSum.Decomposition 𝒜
@@ -106,8 +103,8 @@ end DirectSum
 
 /-- The projection maps of a graded ring -/
 def GradedRing.proj (i : ι) : A →+ A :=
-  (AddSubmonoidClass.Subtype (𝒜 i)).comp <|
-    (Dfinsupp.evalAddMonoidHom i).comp <|
+  (AddSubmonoidClass.subtype (𝒜 i)).comp <|
+    (DFinsupp.evalAddMonoidHom i).comp <|
       RingHom.toAddMonoidHom <| RingEquiv.toRingHom <| DirectSum.decomposeRingEquiv 𝒜
 #align graded_ring.proj GradedRing.proj
 
@@ -124,7 +121,7 @@ theorem GradedRing.proj_recompose (a : ⨁ i, 𝒜 i) (i : ι) :
 
 theorem GradedRing.mem_support_iff [∀ (i) (x : 𝒜 i), Decidable (x ≠ 0)] (r : A) (i : ι) :
     i ∈ (decompose 𝒜 r).support ↔ GradedRing.proj 𝒜 i r ≠ 0 :=
-  Dfinsupp.mem_support_iff.trans ZeroMemClass.coe_eq_zero.not.symm
+  DFinsupp.mem_support_iff.trans ZeroMemClass.coe_eq_zero.not.symm
 #align graded_ring.mem_support_iff GradedRing.mem_support_iff
 
 end GradedRing
@@ -194,7 +191,7 @@ def GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[R] 
   left_inv := AlgHom.congr_fun right_inv
   right_inv := by
     suffices decompose.comp (DirectSum.coeAlgHom 𝒜) = AlgHom.id _ _ from AlgHom.congr_fun this
-    -- Porting note: was ext (i x) : 2
+    -- Porting note: was ext i x : 2
     refine DirectSum.algHom_ext' _ _ fun i => ?_
     ext x
     exact (decompose.congr_arg <| DirectSum.coeAlgHom_of _ _ _).trans (left_inv i x)
@@ -221,7 +218,7 @@ open DirectSum
 
 /-- The projection maps of graded algebra-/
 def GradedAlgebra.proj (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] (i : ι) : A →ₗ[R] A :=
-  (𝒜 i).subtype.comp <| (Dfinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
+  (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
 #align graded_algebra.proj GradedAlgebra.proj
 
 @[simp]
@@ -237,7 +234,7 @@ theorem GradedAlgebra.proj_recompose (a : ⨁ i, 𝒜 i) (i : ι) :
 
 theorem GradedAlgebra.mem_support_iff [DecidableEq A] (r : A) (i : ι) :
     i ∈ (decompose 𝒜 r).support ↔ GradedAlgebra.proj 𝒜 i r ≠ 0 :=
-  Dfinsupp.mem_support_iff.trans Submodule.coe_eq_zero.not.symm
+  DFinsupp.mem_support_iff.trans Submodule.coe_eq_zero.not.symm
 #align graded_algebra.mem_support_iff GradedAlgebra.mem_support_iff
 
 end GradedAlgebra
@@ -271,10 +268,10 @@ def GradedRing.projZeroRingHom : A →+* A where
     rfl
   map_mul' := by
     refine' DirectSum.Decomposition.inductionOn 𝒜 (fun x => _) _ _
-    · simp only [MulZeroClass.zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+    · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rintro i ⟨c, hc⟩
       refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _
-      · simp only [MulZeroClass.mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+      · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
       · rintro j ⟨c', hc'⟩
         · simp only [Subtype.coe_mk]
           by_cases h : i + j = 0
@@ -284,8 +281,8 @@ def GradedRing.projZeroRingHom : A →+* A where
               decompose_of_mem_same 𝒜 (show c' ∈ 𝒜 0 from (add_eq_zero_iff.mp h).2 ▸ hc')]
           · rw [decompose_of_mem_ne 𝒜 (SetLike.GradedMul.mul_mem hc hc') h]
             cases' show i ≠ 0 ∨ j ≠ 0 by rwa [add_eq_zero_iff, not_and_or] at h with h' h'
-            · simp only [decompose_of_mem_ne 𝒜 hc h', MulZeroClass.zero_mul]
-            · simp only [decompose_of_mem_ne 𝒜 hc' h', MulZeroClass.mul_zero]
+            · simp only [decompose_of_mem_ne 𝒜 hc h', zero_mul]
+            · simp only [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
       · intro _ _ hd he
         simp only at hd he -- Porting note: added
         simp only [mul_add, decompose_add, add_apply, AddMemClass.coe_add, hd, he]

@@ -2,33 +2,26 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.abelian.projective
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 
+#align_import category_theory.abelian.projective from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
+
 /-!
 # Abelian categories with enough projectives have projective resolutions
 
-When `C` is abelian `projective.d f` and `f` are exact.
+When `C` is abelian `Projective.d f` and `f` are exact.
 Hence, starting from an epimorphism `P ⟶ X`, where `P` is projective,
-we can apply `projective.d` repeatedly to obtain a projective resolution of `X`.
+we can apply `Projective.d` repeatedly to obtain a projective resolution of `X`.
 -/
 
 
 noncomputable section
 
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open Opposite
+open CategoryTheory CategoryTheory.Limits Opposite
 
 universe v u v' u'
 
@@ -38,8 +31,7 @@ open CategoryTheory.Projective
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
-/-- When `C` is abelian, `projective.d f` and `f` are exact.
--/
+/-- When `C` is abelian, `Projective.d f` and `f` are exact. -/
 theorem exact_d_f [EnoughProjectives C] {X Y : C} (f : X ⟶ Y) : Exact (d f) f :=
   (Abelian.exact_iff _ _).2 <|
     ⟨by simp, zero_of_epi_comp (π _) <| by rw [← Category.assoc, cokernel.condition]⟩
@@ -67,11 +59,11 @@ namespace ProjectiveResolution
 
 /-!
 Our goal is to define `ProjectiveResolution.of Z : ProjectiveResolution Z`.
-The `0`-th object in this resolution will just be `projective.over Z`,
+The `0`-th object in this resolution will just be `Projective.over Z`,
 i.e. an arbitrarily chosen projective object with a map to `Z`.
-After that, we build the `n+1`-st object as `projective.syzygies`
+After that, we build the `n+1`-st object as `Projective.syzygies`
 applied to the previously constructed morphism,
-and the map to the `n`-th object as `projective.d`.
+and the map to the `n`-th object as `Projective.d`.
 -/
 
 

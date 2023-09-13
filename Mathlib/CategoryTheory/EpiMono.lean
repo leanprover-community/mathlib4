@@ -2,14 +2,11 @@
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.epi_mono
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.Groupoid
+
+#align_import category_theory.epi_mono from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-!
 # Facts about epimorphisms and monomorphisms.
@@ -211,8 +208,8 @@ noncomputable def Groupoid.ofTruncSplitMono
     (all_split_mono : ∀ {X Y : C} (f : X ⟶ Y), Trunc (IsSplitMono f)) : Groupoid.{v₁} C := by
   apply Groupoid.ofIsIso
   intro X Y f
-  have ⟨a,_⟩:= Trunc.exists_rep <| all_split_mono f
-  have ⟨b,_⟩:= Trunc.exists_rep <| all_split_mono <| retraction f
+  have ⟨a,_⟩ := Trunc.exists_rep <| all_split_mono f
+  have ⟨b,_⟩ := Trunc.exists_rep <| all_split_mono <| retraction f
   apply IsIso.of_mono_retraction
 #align category_theory.groupoid.of_trunc_split_mono CategoryTheory.Groupoid.ofTruncSplitMono
 
@@ -221,14 +218,14 @@ section
 variable (C)
 
 /-- A split mono category is a category in which every monomorphism is split. -/
-class SplitMonoCategory where
+class SplitMonoCategory : Prop where
   /-- All monos are split -/
   isSplitMono_of_mono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], IsSplitMono f
 #align category_theory.split_mono_category CategoryTheory.SplitMonoCategory
 #align category_theory.split_mono_category.is_split_mono_of_mono CategoryTheory.SplitMonoCategory.isSplitMono_of_mono
 
 /-- A split epi category is a category in which every epimorphism is split. -/
-class SplitEpiCategory where
+class SplitEpiCategory : Prop where
   /-- All epis are split -/
   isSplitEpi_of_epi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], IsSplitEpi f
 #align category_theory.split_epi_category CategoryTheory.SplitEpiCategory

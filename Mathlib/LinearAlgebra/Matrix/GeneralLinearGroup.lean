@@ -2,20 +2,17 @@
 Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.general_linear_group
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
+#align_import linear_algebra.matrix.general_linear_group from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
+
 /-!
 # The General Linear group $GL(n, R)$
 
-This file defines the elements of the General Linear group `general_linear_group n R`,
+This file defines the elements of the General Linear group `Matrix.GeneralLinearGroup n R`,
 consisting of all invertible `n` by `n` `R`-matrices.
 
 ## Main definitions
@@ -59,7 +56,7 @@ section CoeFnInstance
 -- Porting note: this instance was not the simp-normal form in mathlib3 but it is fine in mathlib4
 -- because coercions get unfolded.
 /-- This instance is here for convenience, but is not the simp-normal form. -/
-instance : CoeFun (GL n R) fun _ => n → n → R where
+instance instCoeFun : CoeFun (GL n R) fun _ => n → n → R where
   coe A := (A : Matrix n n R)
 
 end CoeFnInstance
@@ -70,13 +67,14 @@ def det : GL n R →* Rˣ where
   toFun A :=
     { val := (↑A : Matrix n n R).det
       inv := (↑A⁻¹ : Matrix n n R).det
-      val_inv := by rw [← det_mul, ← mul_eq_mul, A.mul_inv, det_one]
-      inv_val := by rw [← det_mul, ← mul_eq_mul, A.inv_mul, det_one] }
+      val_inv := by rw [← det_mul, A.mul_inv, det_one]
+      inv_val := by rw [← det_mul, A.inv_mul, det_one] }
   map_one' := Units.ext det_one
   map_mul' A B := Units.ext <| det_mul _ _
 #align matrix.general_linear_group.det Matrix.GeneralLinearGroup.det
+#align matrix.general_linear_group.coe_det_apply Matrix.GeneralLinearGroup.val_det_apply
 
-/-- The `GL n R` and `general_linear_group R n` groups are multiplicatively equivalent-/
+/-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent-/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
 #align matrix.general_linear_group.to_lin Matrix.GeneralLinearGroup.toLin
@@ -92,7 +90,7 @@ noncomputable def mk'' (A : Matrix n n R) (h : IsUnit (Matrix.det A)) : GL n R :
 #align matrix.general_linear_group.mk'' Matrix.GeneralLinearGroup.mk''
 
 /-- Given a matrix with non-zero determinant over a field, we get an element of `GL n K`-/
-def mkOfDetNeZero {K : Type _} [Field K] (A : Matrix n n K) (h : Matrix.det A ≠ 0) : GL n K :=
+def mkOfDetNeZero {K : Type*} [Field K] (A : Matrix n n K) (h : Matrix.det A ≠ 0) : GL n K :=
   mk' A (invertibleOfNonzero h)
 #align matrix.general_linear_group.mk_of_det_ne_zero Matrix.GeneralLinearGroup.mkOfDetNeZero
 
@@ -110,7 +108,7 @@ section CoeLemmas
 variable (A B : GL n R)
 
 @[simp]
-theorem coe_mul : ↑(A * B) = (↑A : Matrix n n R) ⬝ (↑B : Matrix n n R) :=
+theorem coe_mul : ↑(A * B) = (↑A : Matrix n n R) * (↑B : Matrix n n R) :=
   rfl
 #align matrix.general_linear_group.coe_mul Matrix.GeneralLinearGroup.coe_mul
 
@@ -215,7 +213,7 @@ each element. -/
 instance : Neg (GLPos n R) :=
   ⟨fun g =>
     ⟨-g, by
-      rw [mem_glpos, GeneralLinearGroup.det_apply_val, Units.val_neg, det_neg,
+      rw [mem_glpos, GeneralLinearGroup.val_det_apply, Units.val_neg, det_neg,
         (Fact.out (p := Even <| Fintype.card n)).neg_one_pow, one_mul]
       exact g.prop⟩⟩
 
@@ -247,7 +245,7 @@ namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [LinearOrderedCommRing R]
 
-/-- `special_linear_group n R` embeds into `GL_pos n R` -/
+/-- `Matrix.SpecialLinearGroup n R` embeds into `GL_pos n R` -/
 def toGLPos : SpecialLinearGroup n R →* GLPos n R where
   toFun A := ⟨(A : GL n R), show 0 < (↑A : Matrix n n R).det from A.prop.symm ▸ zero_lt_one⟩
   map_one' := Subtype.ext <| Units.ext <| rfl
@@ -270,8 +268,8 @@ theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.to_GL_pos_injective Matrix.SpecialLinearGroup.toGLPos_injective
 
-/-- Coercing a `special_linear_group` via `GL_pos` and `GL` is the same as coercing striaght to a
-matrix. -/
+/-- Coercing a `Matrix.SpecialLinearGroup` via `GL_pos` and `GL` is the same as coercing straight to
+a matrix. -/
 @[simp]
 theorem coe_GLPos_coe_GL_coe_matrix (g : SpecialLinearGroup n R) :
     (↑(↑(↑g : GLPos n R) : GL n R) : Matrix n n R) = ↑g :=

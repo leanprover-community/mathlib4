@@ -2,15 +2,12 @@
 Copyright (c) 2019 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.basic
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Data.Bracket
 import Mathlib.LinearAlgebra.Basic
+
+#align_import algebra.lie.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Lie algebras
@@ -57,51 +54,47 @@ open Function
 
 /-- A Lie ring is an additive group with compatible product, known as the bracket, satisfying the
 Jacobi identity. -/
-/- @[protect_proj] -- Porting note: not (yet) implemented. -/
 class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
   /-- A Lie ring bracket is additive in its first component. -/
-  add_lie : ∀ x y z : L, ⁅x + y, z⁆ = ⁅x, z⁆ + ⁅y, z⁆
+  protected add_lie : ∀ x y z : L, ⁅x + y, z⁆ = ⁅x, z⁆ + ⁅y, z⁆
   /-- A Lie ring bracket is additive in its second component. -/
-  lie_add : ∀ x y z : L, ⁅x, y + z⁆ = ⁅x, y⁆ + ⁅x, z⁆
+  protected lie_add : ∀ x y z : L, ⁅x, y + z⁆ = ⁅x, y⁆ + ⁅x, z⁆
   /-- A Lie ring bracket vanishes on the diagonal in L × L. -/
-  lie_self : ∀ x : L, ⁅x, x⁆ = 0
+  protected lie_self : ∀ x : L, ⁅x, x⁆ = 0
   /-- A Lie ring bracket satisfies a Leibniz / Jacobi identity. -/
-  leibniz_lie : ∀ x y z : L, ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆
+  protected leibniz_lie : ∀ x y z : L, ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆
 #align lie_ring LieRing
 
 /-- A Lie algebra is a module with compatible product, known as the bracket, satisfying the Jacobi
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
-/- @[protect_proj] -- Porting note: not (yet) implemented. -/
 class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
   /-- A Lie algebra bracket is compatible with scalar multiplication in its second argument.
 
   The compatibility in the first argument is not a class property, but follows since every
   Lie algebra has a natural Lie module action on itself, see `LieModule`. -/
-  lie_smul : ∀ (t : R) (x y : L), ⁅x, t • y⁆ = t • ⁅x, y⁆
+  protected lie_smul : ∀ (t : R) (x y : L), ⁅x, t • y⁆ = t • ⁅x, y⁆
 #align lie_algebra LieAlgebra
 
 /-- A Lie ring module is an additive group, together with an additive action of a
 Lie ring on this group, such that the Lie bracket acts as the commutator of endomorphisms.
 (For representations of Lie *algebras* see `LieModule`.) -/
-/- @[protect_proj] -- Porting note: not (yet) implemented. -/
 class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] extends Bracket L M where
   /-- A Lie ring module bracket is additive in its first component. -/
-  add_lie : ∀ (x y : L) (m : M), ⁅x + y, m⁆ = ⁅x, m⁆ + ⁅y, m⁆
+  protected add_lie : ∀ (x y : L) (m : M), ⁅x + y, m⁆ = ⁅x, m⁆ + ⁅y, m⁆
   /-- A Lie ring module bracket is additive in its second component. -/
-  lie_add : ∀ (x : L) (m n : M), ⁅x, m + n⁆ = ⁅x, m⁆ + ⁅x, n⁆
+  protected lie_add : ∀ (x : L) (m n : M), ⁅x, m + n⁆ = ⁅x, m⁆ + ⁅x, n⁆
   /-- A Lie ring module bracket satisfies a Leibniz / Jacobi identity. -/
-  leibniz_lie : ∀ (x y : L) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
+  protected leibniz_lie : ∀ (x y : L) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
 #align lie_ring_module LieRingModule
 
 /-- A Lie module is a module over a commutative ring, together with a linear action of a Lie
 algebra on this module, such that the Lie bracket acts as the commutator of endomorphisms. -/
-/- @[protect_proj] -- Porting note: not (yet) implemented. -/
 class LieModule (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
-  [AddCommGroup M] [Module R M] [LieRingModule L M] where
+  [AddCommGroup M] [Module R M] [LieRingModule L M] : Prop where
   /-- A Lie module bracket is compatible with scalar multiplication in its first argument. -/
-  smul_lie : ∀ (t : R) (x : L) (m : M), ⁅t • x, m⁆ = t • ⁅x, m⁆
+  protected smul_lie : ∀ (t : R) (x : L) (m : M), ⁅t • x, m⁆ = t • ⁅x, m⁆
   /-- A Lie module bracket is compatible with scalar multiplication in its second argument. -/
-  lie_smul : ∀ (t : R) (x : L) (m : M), ⁅x, t • m⁆ = t • ⁅x, m⁆
+  protected lie_smul : ∀ (t : R) (x : L) (m : M), ⁅x, t • m⁆ = t • ⁅x, m⁆
 #align lie_module LieModule
 
 section BasicProperties
@@ -194,22 +187,30 @@ theorem lie_sub : ⁅x, m - n⁆ = ⁅x, m⁆ - ⁅x, n⁆ := by simp [sub_eq_ad
 
 @[simp]
 theorem nsmul_lie (n : ℕ) : ⁅n • x, m⁆ = n • ⁅x, m⁆ :=
-  AddMonoidHom.map_nsmul ⟨⟨fun x : L => ⁅x, m⁆, zero_lie m⟩, fun _ _ => add_lie _ _ _⟩ _ _
+  AddMonoidHom.map_nsmul
+    { toFun := fun x : L => ⁅x, m⁆, map_zero' := zero_lie m, map_add' := fun _ _ => add_lie _ _ _ }
+    _ _
 #align nsmul_lie nsmul_lie
 
 @[simp]
 theorem lie_nsmul (n : ℕ) : ⁅x, n • m⁆ = n • ⁅x, m⁆ :=
-  AddMonoidHom.map_nsmul ⟨⟨fun m : M => ⁅x, m⁆, lie_zero x⟩, fun _ _ => lie_add _ _ _⟩ _ _
+  AddMonoidHom.map_nsmul
+    { toFun := fun m : M => ⁅x, m⁆, map_zero' := lie_zero x, map_add' := fun _ _ => lie_add _ _ _}
+    _ _
 #align lie_nsmul lie_nsmul
 
 @[simp]
 theorem zsmul_lie (a : ℤ) : ⁅a • x, m⁆ = a • ⁅x, m⁆ :=
-  AddMonoidHom.map_zsmul ⟨⟨fun x : L => ⁅x, m⁆, zero_lie m⟩, fun _ _ => add_lie _ _ _⟩ _ _
+  AddMonoidHom.map_zsmul
+    { toFun := fun x : L => ⁅x, m⁆, map_zero' := zero_lie m, map_add' := fun _ _ => add_lie _ _ _ }
+    _ _
 #align zsmul_lie zsmul_lie
 
 @[simp]
 theorem lie_zsmul (a : ℤ) : ⁅x, a • m⁆ = a • ⁅x, m⁆ :=
-  AddMonoidHom.map_zsmul ⟨⟨fun m : M => ⁅x, m⁆, lie_zero x⟩, fun _ _ => lie_add _ _ _⟩ _ _
+  AddMonoidHom.map_zsmul
+    { toFun := fun m : M => ⁅x, m⁆, map_zero' := lie_zero x, map_add' := fun _ _ => lie_add _ _ _ }
+    _ _
 #align lie_zsmul lie_zsmul
 
 @[simp]
@@ -263,7 +264,7 @@ instance : LieModule R L (M →ₗ[R] N)
 end BasicProperties
 
 /-- A morphism of Lie algebras is a linear map respecting the bracket operations. -/
-structure LieHom (R L L': Type _) [CommRing R] [LieRing L] [LieAlgebra R L]
+structure LieHom (R L L': Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ[R] L' where
   /-- A morphism of Lie algebras is compatible with brackets. -/
   map_lie' : ∀ {x y : L}, toFun ⁅x, y⁆ = ⁅toFun x, toFun y⁆
@@ -292,7 +293,7 @@ instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) :=
 instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ (fun _ => L₂) :=
   { coe := fun f => f.toFun,
     coe_injective' := fun x y h =>
-      by cases x; cases y; simp at h; simp [h]  }
+      by cases x; cases y; simp at h; simp [h] }
 
 initialize_simps_projections LieHom (toFun → apply)
 
@@ -474,9 +475,7 @@ variable (f : L₁ →ₗ⁅R⁆ L₂)
 /-- A Lie ring module may be pulled back along a morphism of Lie algebras.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def LieRingModule.compLieHom : LieRingModule L₁ M
-    where
+def LieRingModule.compLieHom : LieRingModule L₁ M where
   bracket x m := ⁅f x, m⁆
   lie_add x := lie_add (f x)
   add_lie x y m := by simp only [LieHom.map_add, add_lie]
@@ -489,11 +488,8 @@ theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
   rfl
 #align lie_ring_module.comp_lie_hom_apply LieRingModule.compLieHom_apply
 
-/-- A Lie module may be pulled back along a morphism of Lie algebras.
-
-See note [reducible non-instances]. -/
-@[reducible]
-def LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
+/-- A Lie module may be pulled back along a morphism of Lie algebras. -/
+theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
     @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
   { LieRingModule.compLieHom M f with
     smul_lie := fun t x m => by
@@ -723,12 +719,12 @@ instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
 instance : FunLike (M →ₗ⁅R, L⁆ N) M (fun _ => N) :=
   { coe := fun f => f.toFun,
     coe_injective' := fun x y h =>
-      by cases x; cases y; simp at h; simp [h]  }
+      by cases x; cases y; simp at h; simp [h] }
 
 @[simp, norm_cast]
-theorem coe_to_linearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
+theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
   rfl
-#align lie_module_hom.coe_to_linear_map LieModuleHom.coe_to_linearMap
+#align lie_module_hom.coe_to_linear_map LieModuleHom.coe_toLinearMap
 
 @[simp]
 theorem map_smul (f : M →ₗ⁅R,L⁆ N) (c : R) (x : M) : f (c • x) = c • f x :=
@@ -847,7 +843,7 @@ theorem comp_apply (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) (m : M) :
 #align lie_module_hom.comp_apply LieModuleHom.comp_apply
 
 @[norm_cast, simp]
-theorem coe_comp (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) : ⇑(f.comp g)  = f ∘ g :=
+theorem coe_comp (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) : ⇑(f.comp g) = f ∘ g :=
   rfl
 #align lie_module_hom.coe_comp LieModuleHom.coe_comp
 
@@ -947,14 +943,16 @@ theorem smul_apply (t : R) (f : M →ₗ⁅R,L⁆ N) (m : M) : (t • f) m = t �
 #align lie_module_hom.smul_apply LieModuleHom.smul_apply
 
 instance : Module R (M →ₗ⁅R,L⁆ N) :=
-  Function.Injective.module R ⟨⟨fun f => f.toLinearMap.toFun, rfl⟩, coe_add⟩ coe_injective coe_smul
+  Function.Injective.module R
+    { toFun := fun f => f.toLinearMap.toFun, map_zero' := rfl, map_add' := coe_add }
+    coe_injective coe_smul
 
 end LieModuleHom
 
 /-- An equivalence of Lie algebra modules is a linear equivalence which is also a morphism of
 Lie algebra modules. -/
 structure LieModuleEquiv extends M →ₗ⁅R,L⁆ N where
-/-- The inverse function of an equivalence of Lie modules -/
+  /-- The inverse function of an equivalence of Lie modules -/
   invFun : N → M
   /-- The inverse function of an equivalence of Lie modules is a left inverse of the underlying
   function. -/
@@ -1062,7 +1060,7 @@ theorem refl_apply (m : M) : (refl : M ≃ₗ⁅R,L⁆ M) m = m :=
   rfl
 #align lie_module_equiv.refl_apply LieModuleEquiv.refl_apply
 
-/-- Lie module equivalences are syemmtric. -/
+/-- Lie module equivalences are symmetric. -/
 @[symm]
 def symm (e : M ≃ₗ⁅R,L⁆ N) : N ≃ₗ⁅R,L⁆ M :=
   { LieModuleHom.inverse e.toLieModuleHom e.invFun e.left_inv e.right_inv,

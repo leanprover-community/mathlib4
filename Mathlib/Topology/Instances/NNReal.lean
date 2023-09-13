@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module topology.instances.nnreal
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Instances.Real
+
+#align_import topology.instances.nnreal from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Topology on `ℝ≥0`
@@ -74,9 +71,12 @@ instance : SecondCountableTopology ℝ≥0 :=
 instance : OrderTopology ℝ≥0 :=
   orderTopology_of_ordConnected (t := Ici 0)
 
+instance : CompleteSpace ℝ≥0 :=
+  isClosed_Ici.completeSpace_coe
+
 section coe
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Filter Finset
 
@@ -95,7 +95,7 @@ def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
 #align continuous_map.coe_nnreal_real ContinuousMap.coeNNRealReal
 #align continuous_map.coe_nnreal_real_apply ContinuousMap.coeNNRealReal_apply
 
-instance ContinuousMap.canLift {X : Type _} [TopologicalSpace X] :
+instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
     CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
   prf f hf := ⟨⟨fun x => ⟨f x, hf x⟩, f.2.subtype_mk _⟩, FunLike.ext' rfl⟩
 #align nnreal.continuous_map.can_lift NNReal.ContinuousMap.canLift
@@ -133,7 +133,7 @@ theorem _root_.tendsto_real_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop :
   exact tendsto_atTop_mono Real.le_coe_toNNReal tendsto_id
 #align tendsto_real_to_nnreal_at_top tendsto_real_toNNReal_atTop
 
-theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_h : a ≠ 0), 𝓟 (Iio a) :=
+theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]; rfl
 #align nnreal.nhds_zero NNReal.nhds_zero
 
@@ -191,15 +191,15 @@ theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
   NNReal.eq <| Eq.symm <| coe_tsum (f := fun x => ⟨f x, hf₁ x⟩)
 #align nnreal.coe_tsum_of_nonneg NNReal.coe_tsum_of_nonneg
 
-nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) : (∑' x, a * f x) = a * ∑' x, f x :=
+nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) : ∑' x, a * f x = a * ∑' x, f x :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_left]
 #align nnreal.tsum_mul_left NNReal.tsum_mul_left
 
-nonrec theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) : (∑' x, f x * a) = (∑' x, f x) * a :=
+nonrec theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) : ∑' x, f x * a = (∑' x, f x) * a :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_right]
 #align nnreal.tsum_mul_right NNReal.tsum_mul_right
 
-theorem summable_comp_injective {β : Type _} {f : α → ℝ≥0} (hf : Summable f) {i : β → α}
+theorem summable_comp_injective {β : Type*} {f : α → ℝ≥0} (hf : Summable f) {i : β → α}
     (hi : Function.Injective i) : Summable (f ∘ i) := by
   rw [← summable_coe] at hf ⊢
   exact hf.comp_injective hi
@@ -221,12 +221,12 @@ nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} 
 #align nnreal.has_sum_nat_add_iff NNReal.hasSum_nat_add_iff
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
-    (∑' i, f i) = (∑ i in range k, f i) + ∑' i, f (i + k) :=
+    ∑' i, f i = (∑ i in range k, f i) + ∑' i, f (i + k) :=
   (sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 hf).symm
 #align nnreal.sum_add_tsum_nat_add NNReal.sum_add_tsum_nat_add
 
 theorem iInf_real_pos_eq_iInf_nnreal_pos [CompleteLattice α] {f : ℝ → α} :
-    (⨅ (n : ℝ) (_h : 0 < n), f n) = ⨅ (n : ℝ≥0) (_h : 0 < n), f n :=
+    ⨅ (n : ℝ) (_ : 0 < n), f n = ⨅ (n : ℝ≥0) (_ : 0 < n), f n :=
   le_antisymm (iInf_mono' fun r => ⟨r, le_rfl⟩) (iInf₂_mono' fun r hr => ⟨⟨r, hr.le⟩, hr, le_rfl⟩)
 #align nnreal.infi_real_pos_eq_infi_nnreal_pos NNReal.iInf_real_pos_eq_iInf_nnreal_pos
 
@@ -245,7 +245,7 @@ theorem tendsto_atTop_zero_of_summable {f : ℕ → ℝ≥0} (hf : Summable f) :
 
 /-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
 space. This does not need a summability assumption, as otherwise all sums are zero. -/
-nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type _} (f : α → ℝ≥0) :
+nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
     Tendsto (fun s : Finset α => ∑' b : { x // x ∉ s }, f b) atTop (𝓝 0) := by
   simp_rw [← tendsto_coe, coe_tsum, NNReal.coe_zero]
   exact tendsto_tsum_compl_atTop_zero fun a : α => (f a : ℝ)

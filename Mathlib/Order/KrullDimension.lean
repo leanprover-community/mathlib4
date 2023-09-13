@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Fangmin Li
+Authors: Jujian Zhang, Fangming Li
 -/
 
 import Mathlib.Order.RelSeries
@@ -26,7 +26,7 @@ to product of varieties so that `-∞` being the Krull dimension of empty variet
 sum of `-∞` and the Krull dimension of any other varieties.
 -/
 
-variable (α : Type _) [Preorder α]
+variable (α : Type*) [Preorder α]
 
 /--
 Krull dimension of a preorder `α` is the supremum of the rightmost index of all relation

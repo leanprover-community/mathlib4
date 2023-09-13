@@ -2,13 +2,10 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.multiset.pi
-! leanprover-community/mathlib commit b2c89893177f66a48daf993b7ba5ef7cddeff8c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Nodup
+
+#align_import data.multiset.pi from "leanprover-community/mathlib"@"b2c89893177f66a48daf993b7ba5ef7cddeff8c9"
 
 /-!
 # The cartesian product of multisets
@@ -19,20 +16,20 @@ namespace Multiset
 
 section Pi
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Function
 
-/-- Given `δ : α → Type _`, `Pi.empty δ` is the trivial dependent function out of the empty
+/-- Given `δ : α → Type*`, `Pi.empty δ` is the trivial dependent function out of the empty
 multiset. -/
-def Pi.empty (δ : α → Sort _) : ∀ a ∈ (0 : Multiset α), δ a :=
+def Pi.empty (δ : α → Sort*) : ∀ a ∈ (0 : Multiset α), δ a :=
   fun.
 #align multiset.pi.empty Multiset.Pi.empty
 
 universe u v
 variable [DecidableEq α] {β : α → Type u} {δ : α → Sort v}
 
-/-- Given `δ : α → Type _`, a multiset `m` and a term `a`, as well as a term `b : δ a` and a
+/-- Given `δ : α → Type*`, a multiset `m` and a term `a`, as well as a term `b : δ a` and a
 function `f` such that `f a' : δ a'` for all `a'` in `m`, `Pi.cons m a b f` is a function `g` such
 that `g a'' : δ a''` for all `a''` in `a ::ₘ m`. -/
 def Pi.cons (m : Multiset α) (a : α) (b : δ a) (f : ∀ a ∈ m, δ a) : ∀ a' ∈ a ::ₘ m, δ a' :=
@@ -64,7 +61,7 @@ theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : 
 @[simp, nolint simpNF] --Porting note: false positive, this lemma can prove itself
 theorem pi.cons_eta {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
     (Pi.cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f := by
-  ext (a' h')
+  ext a' h'
   by_cases h : a' = a
   · subst h
     rw [Pi.cons_same]

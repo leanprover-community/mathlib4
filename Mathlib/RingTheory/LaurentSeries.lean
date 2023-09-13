@@ -2,14 +2,11 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.laurent_series
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.HahnSeries
 import Mathlib.RingTheory.Localization.FractionRing
+
+#align_import ring_theory.laurent_series from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!
 # Laurent Series
@@ -25,16 +22,14 @@ import Mathlib.RingTheory.Localization.FractionRing
 -/
 
 
-open HahnSeries
-
-open BigOperators Classical Polynomial
+open HahnSeries BigOperators Classical Polynomial
 
 noncomputable section
 
 universe u
 
 /-- A `LaurentSeries` is implemented as a `HahnSeries` with value group `ℤ`. -/
-abbrev LaurentSeries (R : Type _) [Zero R] :=
+abbrev LaurentSeries (R : Type*) [Zero R] :=
   HahnSeries ℤ R
 #align laurent_series LaurentSeries
 
@@ -49,11 +44,11 @@ variable [Semiring R]
 instance : Coe (PowerSeries R) (LaurentSeries R) :=
   ⟨HahnSeries.ofPowerSeries ℤ R⟩
 
-/-- Porting note: now a syntactic tautology and not needed elsewhere
+/- Porting note: now a syntactic tautology and not needed elsewhere
 theorem coe_powerSeries (x : PowerSeries R) :
     (x : LaurentSeries R) = HahnSeries.ofPowerSeries ℤ R x :=
-  rfl
-#align laurent_series.coe_power_series LaurentSeries.coe_powerSeries -/
+  rfl -/
+#noalign laurent_series.coe_power_series
 
 @[simp]
 theorem coeff_coe_powerSeries (x : PowerSeries R) (n : ℕ) :
@@ -130,7 +125,7 @@ theorem coe_algebraMap [CommSemiring R] :
 #align laurent_series.coe_algebra_map LaurentSeries.coe_algebraMap
 
 /-- The localization map from power series to Laurent series. -/
-@[simps!]
+@[simps (config := { rhsMd := .all, simpRhs := true })]
 instance of_powerSeries_localization [CommRing R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) (LaurentSeries R) where
   map_units' := by
@@ -184,7 +179,7 @@ namespace PowerSeries
 
 open LaurentSeries
 
-variable {R' : Type _} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
+variable {R' : Type*} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
 
 @[norm_cast] -- Porting note: simp can prove this
 theorem coe_zero : ((0 : PowerSeries R) : LaurentSeries R) = 0 :=
@@ -220,8 +215,8 @@ theorem coeff_coe (i : ℤ) :
     ((f : PowerSeries R) : LaurentSeries R).coeff i =
       if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
   cases i
-  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries,
-      if_neg (Int.coe_nat_nonneg _).not_lt, Int.natAbs_ofNat]
+  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.coe_nat_nonneg _).not_lt,
+      Int.natAbs_ofNat]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
       Ne.def, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
@@ -241,22 +236,15 @@ set_option linter.uppercaseLean3 false in
 #align power_series.coe_X PowerSeries.coe_X
 
 @[simp, norm_cast]
-theorem coe_smul {S : Type _} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
+theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
     ((r • x : PowerSeries S) : LaurentSeries S) = r • (ofPowerSeries ℤ S x) := by
   ext
   simp [coeff_coe, coeff_smul, smul_ite]
 #align power_series.coe_smul PowerSeries.coe_smul
 
-/-- Porting note: RingHom.map_bit0 and RingHom.map_bit1 no longer exist
-@[simp, norm_cast]
-theorem coe_bit0 : ((bit0 f : PowerSeries R) : LaurentSeries R) = bit0 f :=
-  (ofPowerSeries ℤ R).map_bit0 _
-#align power_series.coe_bit0 PowerSeries.coe_bit0
-
-@[simp, norm_cast]
-theorem coe_bit1 : ((bit1 f : PowerSeries R) : LaurentSeries R) = bit1 f :=
-  (ofPowerSeries ℤ R).map_bit1 _
-#align power_series.coe_bit1 PowerSeries.coe_bit1 -/
+-- Porting note: RingHom.map_bit0 and RingHom.map_bit1 no longer exist
+#noalign power_series.coe_bit0
+#noalign power_series.coe_bit1
 
 @[simp, norm_cast]
 theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=

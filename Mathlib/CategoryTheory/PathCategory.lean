@@ -2,15 +2,12 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.path_category
-! leanprover-community/mathlib commit c6dd521ebdce53bb372c527569dd7c25de53a08b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.Combinatorics.Quiver.Path
+
+#align_import category_theory.path_category from "leanprover-community/mathlib"@"c6dd521ebdce53bb372c527569dd7c25de53a08b"
 
 /-!
 # The category paths on a quiver.
@@ -65,7 +62,7 @@ def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
   map {X} {Y} f :=
     @Quiver.Path.rec V _ X (fun Y _ => φ.obj X ⟶ φ.obj Y) (𝟙 <| φ.obj X)
       (fun _ f ihp => ihp ≫ φ.map f) Y f
-  map_id X := by rfl
+  map_id X := rfl
   map_comp f g := by
     induction' g with _ _ g' p ih _ _ _
     · rw [Category.comp_id]

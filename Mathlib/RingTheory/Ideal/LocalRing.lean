@@ -2,17 +2,14 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
-
-! This file was ported from Lean 3 source module ring_theory.ideal.local_ring
-! leanprover-community/mathlib commit ec1c7d810034d4202b0dd239112d1792be9f6fdc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.JacobsonIdeal
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Tactic.TFAE
+
+#align_import ring_theory.ideal.local_ring from "leanprover-community/mathlib"@"ec1c7d810034d4202b0dd239112d1792be9f6fdc"
 
 /-!
 
@@ -214,7 +211,7 @@ section
 
 variable [Semiring R] [Semiring S] [Semiring T]
 
-instance isLocalRingHom_id (R : Type _) [Semiring R] : IsLocalRingHom (RingHom.id R)
+instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R)
     where map_nonunit _ := id
 #align is_local_ring_hom_id isLocalRingHom_id
 
@@ -259,7 +256,7 @@ theorem isLocalRingHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalRingHom (
 #align is_local_ring_hom_of_comp isLocalRingHom_of_comp
 
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
-theorem RingHom.domain_localRing {R S : Type _} [CommSemiring R] [CommSemiring S] [H : LocalRing S]
+theorem RingHom.domain_localRing {R S : Type*} [CommSemiring R] [CommSemiring S] [H : LocalRing S]
     (f : R →+* S) [IsLocalRingHom f] : LocalRing R := by
   haveI : Nontrivial R := pullback_nonzero f f.map_zero f.map_one
   apply LocalRing.of_nonunits_add
@@ -300,22 +297,22 @@ theorem local_hom_TFAE (f : R →+* S) :
         (maximalIdeal R).map f ≤ maximalIdeal S, maximalIdeal R ≤ (maximalIdeal S).comap f,
         (maximalIdeal S).comap f = maximalIdeal R] := by
   tfae_have 1 → 2
-  . rintro _ _ ⟨a, ha, rfl⟩
+  · rintro _ _ ⟨a, ha, rfl⟩
     exact map_nonunit f a ha
   tfae_have 2 → 4
-  . exact Set.image_subset_iff.1
+  · exact Set.image_subset_iff.1
   tfae_have 3 ↔ 4
-  . exact Ideal.map_le_iff_le_comap
+  · exact Ideal.map_le_iff_le_comap
   tfae_have 4 → 1
-  . intro h
+  · intro h
     constructor
     exact fun x => not_imp_not.1 (@h x)
   tfae_have 1 → 5
-  . intro
+  · intro
     ext
     exact not_iff_not.2 (isUnit_map_iff f _)
   tfae_have 5 → 4
-  . exact fun h => le_of_eq h.symm
+  · exact fun h => le_of_eq h.symm
   tfae_finish
 #align local_ring.local_hom_tfae LocalRing.local_hom_TFAE
 
@@ -386,19 +383,19 @@ variable {R}
 namespace ResidueField
 
 /-- A local ring homomorphism into a field can be descended onto the residue field. -/
-def lift {R S : Type _} [CommRing R] [LocalRing R] [Field S] (f : R →+* S) [IsLocalRingHom f] :
+def lift {R S : Type*} [CommRing R] [LocalRing R] [Field S] (f : R →+* S) [IsLocalRingHom f] :
     LocalRing.ResidueField R →+* S :=
   Ideal.Quotient.lift _ f fun a ha =>
     by_contradiction fun h => ha (isUnit_of_map_unit f a (isUnit_iff_ne_zero.mpr h))
 #align local_ring.residue_field.lift LocalRing.ResidueField.lift
 
-theorem lift_comp_residue {R S : Type _} [CommRing R] [LocalRing R] [Field S] (f : R →+* S)
+theorem lift_comp_residue {R S : Type*} [CommRing R] [LocalRing R] [Field S] (f : R →+* S)
     [IsLocalRingHom f] : (lift f).comp (residue R) = f :=
   RingHom.ext fun _ => rfl
 #align local_ring.residue_field.lift_comp_residue LocalRing.ResidueField.lift_comp_residue
 
 @[simp]
-theorem lift_residue_apply {R S : Type _} [CommRing R] [LocalRing R] [Field S] (f : R →+* S)
+theorem lift_residue_apply {R S : Type*} [CommRing R] [LocalRing R] [Field S] (f : R →+* S)
     [IsLocalRingHom f] (x) : lift f (residue R x) = f x :=
   rfl
 #align local_ring.residue_field.lift_residue_apply LocalRing.ResidueField.lift_residue_apply
@@ -410,7 +407,7 @@ def map (f : R →+* S) [IsLocalRingHom f] : ResidueField R →+* ResidueField S
     exact map_nonunit f a ha
 #align local_ring.residue_field.map LocalRing.ResidueField.map
 
-/-- Applying `residue_field.map` to the identity ring homomorphism gives the identity
+/-- Applying `LocalRing.ResidueField.map` to the identity ring homomorphism gives the identity
 ring homomorphism. -/
 @[simp]
 theorem map_id :
@@ -418,7 +415,8 @@ theorem map_id :
   Ideal.Quotient.ringHom_ext <| RingHom.ext fun _ => rfl
 #align local_ring.residue_field.map_id LocalRing.ResidueField.map_id
 
-/-- The composite of two `residue_field.map`s is the `residue_field.map` of the composite. -/
+/-- The composite of two `LocalRing.ResidueField.map`s is the `LocalRing.ResidueField.map` of the
+composite. -/
 theorem map_comp (f : T →+* R) (g : R →+* S) [IsLocalRingHom f] [IsLocalRingHom g] :
     LocalRing.ResidueField.map (g.comp f) =
       (LocalRing.ResidueField.map g).comp (LocalRing.ResidueField.map f) :=
@@ -483,9 +481,9 @@ def mapAut : RingAut R →* RingAut (LocalRing.ResidueField R) where
 
 section MulSemiringAction
 
-variable (G : Type _) [Group G] [MulSemiringAction G R]
+variable (G : Type*) [Group G] [MulSemiringAction G R]
 
-/-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `residue_field R`. -/
+/-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `LocalRing.ResidueField R`. -/
 instance : MulSemiringAction G (LocalRing.ResidueField R) :=
   MulSemiringAction.compHom _ <| mapAut.comp (MulSemiringAction.toRingAut G R)
 
@@ -529,14 +527,14 @@ instance (priority := 100) : LocalRing K :=
 
 end Field
 
-theorem LocalRing.maximalIdeal_eq_bot {R : Type _} [Field R] : LocalRing.maximalIdeal R = ⊥ :=
+theorem LocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : LocalRing.maximalIdeal R = ⊥ :=
   LocalRing.isField_iff_maximalIdeal_eq.mp (Field.toIsField R)
 #align local_ring.maximal_ideal_eq_bot LocalRing.maximalIdeal_eq_bot
 
 namespace RingEquiv
 
 @[reducible]
-protected theorem localRing {A B : Type _} [CommSemiring A] [LocalRing A] [CommSemiring B]
+protected theorem localRing {A B : Type*} [CommSemiring A] [LocalRing A] [CommSemiring B]
     (e : A ≃+* B) : LocalRing B :=
   haveI := e.symm.toEquiv.nontrivial
   LocalRing.of_surjective (e : A →+* B) e.surjective

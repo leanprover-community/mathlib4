@@ -2,17 +2,14 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module number_theory.padics.hensel
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Polynomial.Identities
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.MetricSpace.CauSeqFilter
+
+#align_import number_theory.padics.hensel from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Hensel's lemma on ℤ_p
@@ -47,7 +44,7 @@ theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] (F : Polynomial ℤ_[p]) 
   let ⟨z, hz⟩ := F.evalSubFactor x y
   calc
     ‖F.eval x - F.eval y‖ = ‖z‖ * ‖x - y‖ := by simp [hz]
-    _ ≤ 1 * ‖x - y‖ := (mul_le_mul_of_nonneg_right (PadicInt.norm_le_one _) (norm_nonneg _))
+    _ ≤ 1 * ‖x - y‖ := by gcongr; apply PadicInt.norm_le_one
     _ = ‖x - y‖ := by simp
 
 #align padic_polynomial_dist padic_polynomial_dist
@@ -84,7 +81,7 @@ variable {p : ℕ} [Fact p.Prime] {ncs : CauSeq ℤ_[p] norm} {F : Polynomial �
   (hnorm : Tendsto (fun i => ‖F.eval (ncs i)‖) atTop (𝓝 0))
 
 private theorem tendsto_zero_of_norm_tendsto_zero : Tendsto (fun i => F.eval (ncs i)) atTop (𝓝 0) :=
-  tendsto_iff_norm_tendsto_zero.2 (by simpa using hnorm)
+  tendsto_iff_norm_sub_tendsto_zero.2 (by simpa using hnorm)
 
 theorem limit_zero_of_norm_tendsto_zero : F.eval ncs.lim = 0 :=
   tendsto_nhds_unique (comp_tendsto_lim _) (tendsto_zero_of_norm_tendsto_zero hnorm)
@@ -155,8 +152,9 @@ private theorem calc_norm_le_one {n : ℕ} {z : ℤ_[p]} (hz : ih n z) :
         ‖(↑(F.eval z) : ℚ_[p])‖ / ‖(↑(F.derivative.eval z) : ℚ_[p])‖ :=
       norm_div _ _
     _ = ‖F.eval z‖ / ‖F.derivative.eval a‖ := by simp [hz.1]
-    _ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n / ‖F.derivative.eval a‖ :=
-      ((div_le_div_right (deriv_norm_pos hnorm)).2 hz.2)
+    _ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n / ‖F.derivative.eval a‖ := by
+      gcongr
+      apply hz.2
     _ = ‖F.derivative.eval a‖ * T ^ 2 ^ n := (div_sq_cancel _ _)
     _ ≤ 1 := mul_le_one (PadicInt.norm_le_one _) (T_pow_nonneg _) (le_of_lt (T_pow' hnorm _))
 
@@ -168,8 +166,9 @@ private theorem calc_deriv_dist {z z' z1 : ℤ_[p]} (hz' : z' = z - z1)
     ‖F.derivative.eval z' - F.derivative.eval z‖ ≤ ‖z' - z‖ := padic_polynomial_dist _ _ _
     _ = ‖z1‖ := by simp only [sub_eq_add_neg, add_assoc, hz', add_add_neg_cancel'_right, norm_neg]
     _ = ‖F.eval z‖ / ‖F.derivative.eval a‖ := hz1
-    _ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n / ‖F.derivative.eval a‖ :=
-      ((div_le_div_right (deriv_norm_pos hnorm)).2 hz.2)
+    _ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n / ‖F.derivative.eval a‖ := by
+      gcongr
+      apply hz.2
     _ = ‖F.derivative.eval a‖ * T ^ 2 ^ n := (div_sq_cancel _ _)
     _ < ‖F.derivative.eval a‖ := (mul_lt_iff_lt_one_right (deriv_norm_pos hnorm)).2
       (T_pow' hnorm _)
@@ -200,15 +199,14 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
 
 private def calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q} (heq : F.eval z' = q * z1 ^ 2)
     (h1 : ‖(↑(F.eval z) : ℚ_[p]) / ↑(F.derivative.eval z)‖ ≤ 1) (hzeq : z1 = ⟨_, h1⟩) :
-    ‖F.eval z'‖ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ (n + 1) :=
+    ‖F.eval z'‖ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ (n + 1) := by
   calc
     ‖F.eval z'‖ = ‖q‖ * ‖z1‖ ^ 2 := by simp [heq]
-    _ ≤ 1 * ‖z1‖ ^ 2 :=
-      (mul_le_mul_of_nonneg_right (PadicInt.norm_le_one _) (pow_nonneg (norm_nonneg _) _))
+    _ ≤ 1 * ‖z1‖ ^ 2 := by gcongr; apply PadicInt.norm_le_one
     _ = ‖F.eval z‖ ^ 2 / ‖F.derivative.eval a‖ ^ 2 := by simp [hzeq, hz.1, div_pow]
-    _ ≤ (‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n) ^ 2 / ‖F.derivative.eval a‖ ^ 2 :=
-      ((div_le_div_right (deriv_sq_norm_pos hnorm)).2
-      (pow_le_pow_of_le_left (norm_nonneg _) hz.2 _))
+    _ ≤ (‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n) ^ 2 / ‖F.derivative.eval a‖ ^ 2 := by
+      gcongr
+      exact hz.2
     _ = (‖F.derivative.eval a‖ ^ 2) ^ 2 * (T ^ 2 ^ n) ^ 2 / ‖F.derivative.eval a‖ ^ 2 := by
       simp only [mul_pow]
     _ = ‖F.derivative.eval a‖ ^ 2 * (T ^ 2 ^ n) ^ 2 := (div_sq_cancel _ _)
@@ -233,7 +231,7 @@ private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n
       rwa [norm_neg, hz.1] at this
     let ⟨q, heq⟩ := calc_eval_z' hnorm rfl hz h1 rfl
     have hnle : ‖F.eval z'‖ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ (n + 1) :=
-      calc_eval_z'_norm hnorm hz heq h1 rfl
+      calc_eval_z'_norm hz heq h1 rfl
     ⟨hfeq, hnle⟩⟩
 
 -- Porting note: unsupported option eqn_compiler.zeta
@@ -346,7 +344,7 @@ private theorem newton_seq_dist_to_a :
         newton_seq_dist_to_a (k + 1) (succ_pos _)
 
 private theorem bound' : Tendsto (fun n : ℕ => ‖F.derivative.eval a‖ * T ^ 2 ^ n) atTop (𝓝 0) := by
-  rw [← MulZeroClass.mul_zero ‖F.derivative.eval a‖]
+  rw [← mul_zero ‖F.derivative.eval a‖]
   exact
     tendsto_const_nhds.mul
       (Tendsto.comp (tendsto_pow_atTop_nhds_0_of_lt_1 (norm_nonneg _) (T_lt_one hnorm))
@@ -363,7 +361,7 @@ private theorem bound :
 
 private theorem bound'_sq :
     Tendsto (fun n : ℕ => ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n) atTop (𝓝 0) := by
-  rw [← MulZeroClass.mul_zero ‖F.derivative.eval a‖, sq]
+  rw [← mul_zero ‖F.derivative.eval a‖, sq]
   simp only [mul_assoc]
   apply Tendsto.mul
   · apply tendsto_const_nhds
@@ -478,7 +476,7 @@ private theorem a_soln_is_unique (ha : F.eval a = 0) (z' : ℤ_[p]) (hz' : F.eva
       lt_irrefl ‖F.derivative.eval a‖
         (calc
           ‖F.derivative.eval a‖ = ‖q‖ * ‖h‖ := by simp [this]
-          _ ≤ 1 * ‖h‖ := (mul_le_mul_of_nonneg_right (PadicInt.norm_le_one _) (norm_nonneg _))
+          _ ≤ 1 * ‖h‖ := by gcongr; apply PadicInt.norm_le_one
           _ < ‖F.derivative.eval a‖ := by simpa
           )
   eq_of_sub_eq_zero (by rw [← this])

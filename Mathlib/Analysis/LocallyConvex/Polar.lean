@@ -2,15 +2,12 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Kalle Kytölä
-
-! This file was ported from Lean 3 source module analysis.locally_convex.polar
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakDual
+
+#align_import analysis.locally_convex.polar from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Polar set
@@ -40,7 +37,7 @@ polar
 -/
 
 
-variable {𝕜 E F : Type _}
+variable {𝕜 E F : Type*}
 
 open Topology
 
@@ -151,7 +148,7 @@ theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
     ‖B x y‖ = ‖c‖ * ‖B (c⁻¹ • x) y‖ := by
       rw [B.map_smul, LinearMap.smul_apply, Algebra.id.smul_eq_mul, norm_mul, norm_inv,
         mul_inv_cancel_left₀ hc.ne']
-    _ ≤ ε * 1 := (mul_le_mul hcε.le (hy _ trivial) (norm_nonneg _) hε.le)
+    _ ≤ ε * 1 := by gcongr; exact hy _ trivial
     _ = ε := mul_one _
 #align linear_map.polar_univ LinearMap.polar_univ
 

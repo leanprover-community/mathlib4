@@ -2,14 +2,11 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.normed.mul_action
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Analysis.Normed.Field.Basic
+
+#align_import analysis.normed.mul_action from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
 /-!
 # Lemmas for `BoundedSMul` over normed additive groups
@@ -22,7 +19,7 @@ deduce `const_mul` and `mul_const` results as an immediate corollary.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section SeminormedAddGroup
 
@@ -95,7 +92,7 @@ theorem norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖ := by
   · refine' le_antisymm (norm_smul_le r x) _
     calc
       ‖r‖ * ‖x‖ = ‖r‖ * ‖r⁻¹ • r • x‖ := by rw [inv_smul_smul₀ h]
-      _ ≤ ‖r‖ * (‖r⁻¹‖ * ‖r • x‖) := (mul_le_mul_of_nonneg_left (norm_smul_le _ _) (norm_nonneg _))
+      _ ≤ ‖r‖ * (‖r⁻¹‖ * ‖r • x‖) := by gcongr; apply norm_smul_le
       _ = ‖r • x‖ := by rw [norm_inv, ← mul_assoc, mul_inv_cancel (mt norm_eq_zero.1 h), one_mul]
 #align norm_smul norm_smul
 

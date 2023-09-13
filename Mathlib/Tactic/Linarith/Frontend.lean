@@ -2,7 +2,6 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Mathlib.Control.Basic
 import Mathlib.Data.HashMap
@@ -58,8 +57,8 @@ calls, and should be used sparingly. The default preprocessor set does not inclu
 ## Fourier-Motzkin elimination
 
 The oracle implemented to search for certificates uses Fourier-Motzkin variable elimination.
-This technique transorms a set of inequalities in `n` variables to an equisatisfiable set in `n - 1`
-variables. Once all variables have been eliminated, we conclude that the original set was
+This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
+`n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
 unsatisfiable iff the comparison `0 < 0` is in the resulting set.
 
 While performing this elimination, we track the history of each derived comparison. This allows us
@@ -117,6 +116,8 @@ The components of `linarith` are spread between a number of files for the sake o
 
 linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear programming
 -/
+
+set_option autoImplicit true
 
 open Lean Elab Tactic Meta
 open Std
@@ -232,8 +233,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
   let preprocessors :=
     (if cfg.splitHypotheses then [Linarith.splitConjunctions.globalize.branching] else []) ++
     cfg.preprocessors.getD defaultPreprocessors
-  -- TODO restore when the `removeNe` preprocessor is implemented
-  -- let preprocessors := if cfg.splitNe then Linarith.removeNe::preprocessors else preprocessors
+  let preprocessors := if cfg.splitNe then Linarith.removeNe::preprocessors else preprocessors
   let branches ← preprocess preprocessors g hyps
   for (g, es) in branches do
     let r ← singleProcess g es
@@ -321,7 +321,7 @@ goals over arbitrary types that instantiate `LinearOrderedCommRing`.
 
 An example:
 ```lean
-example (x y z : ℚ) (h1 : 2*x  < 3*y) (h2 : -4*x + 2*z < 0)
+example (x y z : ℚ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0)
         (h3 : 12*y - 4* z < 0)  : False :=
 by linarith
 ```

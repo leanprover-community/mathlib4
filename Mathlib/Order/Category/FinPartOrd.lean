@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.FinPartOrd
-! leanprover-community/mathlib commit 937b1c59c58710ef8ed91f8727ef402d49d621a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.Order.Category.PartOrdCat
+
+#align_import order.category.FinPartOrd from "leanprover-community/mathlib"@"937b1c59c58710ef8ed91f8727ef402d49d621a2"
 
 /-!
 # The category of finite partial orders
@@ -39,7 +36,7 @@ structure FinPartOrd where
 
 namespace FinPartOrd
 
-instance : CoeSort FinPartOrd (Type _) :=
+instance : CoeSort FinPartOrd (Type*) :=
   ⟨fun X => X.toPartOrdCat⟩
 
 instance (X : FinPartOrd) : PartialOrder X :=
@@ -51,12 +48,12 @@ attribute [instance] FinPartOrd.isFintype
 #noalign FinPartOrd.coe_to_PartOrd
 
 /-- Construct a bundled `FinPartOrd` from `PartialOrder` + `Fintype`. -/
-def of (α : Type _) [PartialOrder α] [Fintype α] : FinPartOrd :=
+def of (α : Type*) [PartialOrder α] [Fintype α] : FinPartOrd :=
   ⟨⟨α, inferInstance⟩⟩
 #align FinPartOrd.of FinPartOrd.of
 
 @[simp]
-theorem coe_of (α : Type _) [PartialOrder α] [Fintype α] : ↥(of α) = α := rfl
+theorem coe_of (α : Type*) [PartialOrder α] [Fintype α] : ↥(of α) = α := rfl
 #align FinPartOrd.coe_of FinPartOrd.coe_of
 
 instance : Inhabited FinPartOrd :=
@@ -105,8 +102,8 @@ def dual : FinPartOrd ⥤ FinPartOrd where
 @[simps! functor inverse]
 def dualEquiv : FinPartOrd ≌ FinPartOrd :=
   CategoryTheory.Equivalence.mk dual dual
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun _ => rfl)
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun _ => rfl)
+    (NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X)
+    (NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X)
 #align FinPartOrd.dual_equiv FinPartOrd.dualEquiv
 
 end FinPartOrd

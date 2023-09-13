@@ -2,23 +2,21 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.order.ring.with_top
-! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
 import Std.Data.Option.Lemmas
+import Mathlib.Tactic.Tauto
+
+#align_import algebra.order.ring.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
 /-! # Structures involving `*` and `0` on `WithTop` and `WithBot`
 The main results of this section are `WithTop.canonicallyOrderedCommSemiring` and
 `WithBot.orderedCommSemiring`.
 -/
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace WithTop
 
@@ -30,7 +28,7 @@ section Mul
 
 variable [Zero α] [Mul α]
 
-instance : MulZeroClass (WithTop α) where
+instance instMulZeroClassWithTop : MulZeroClass (WithTop α) where
   zero := 0
   mul m n := if m = 0 ∨ n = 0 then 0 else Option.map₂ (· * ·) m n
   zero_mul _ := if_pos <| Or.inl rfl
@@ -119,7 +117,8 @@ theorem untop'_zero_mul (a b : WithTop α) : (a * b).untop' 0 = a.untop' 0 * b.u
 end MulZeroClass
 
 /-- `Nontrivial α` is needed here as otherwise we have `1 * ⊤ = ⊤` but also `0 * ⊤ = 0`. -/
-instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) :=
+instance instMulZeroOneClassWithTop [MulZeroOneClass α] [Nontrivial α] :
+    MulZeroOneClass (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
     mul := (· * ·)
     one := 1, zero := 0
@@ -134,7 +133,7 @@ instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) :=
 
 /-- A version of `WithTop.map` for `MonoidWithZeroHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [DecidableEq R]
+protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass R] [DecidableEq R]
     [Nontrivial R] [MulZeroOneClass S] [DecidableEq S] [Nontrivial S] (f : R →*₀ S)
     (hf : Function.Injective f) : WithTop R →*₀ WithTop S :=
   { f.toZeroHom.withTopMap, f.toMonoidHom.toOneHom.withTopMap with
@@ -151,10 +150,12 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClas
       induction' y using WithTop.recTopCoe with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
-      · simp only [map_coe, ← coe_mul, map_mul] } -- porting note: todo: `simp [← coe_mul]` fails
+      · -- porting note: todo: `simp [← coe_mul]` times out
+        simp only [map_coe, ← coe_mul, map_mul] }
 #align monoid_with_zero_hom.with_top_map MonoidWithZeroHom.withTopMap
 
-instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop α) :=
+instance instSemigroupWithZeroWithTop [SemigroupWithZero α] [NoZeroDivisors α] :
+    SemigroupWithZero (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
     mul := (· * ·)
     zero := 0
@@ -209,7 +210,7 @@ instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def _root_.RingHom.withTopMap {R S : Type _} [CanonicallyOrderedCommSemiring R]
+protected def _root_.RingHom.withTopMap {R S : Type*} [CanonicallyOrderedCommSemiring R]
     [DecidableEq R] [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}

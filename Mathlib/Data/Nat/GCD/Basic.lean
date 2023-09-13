@@ -2,15 +2,13 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
-
-! This file was ported from Lean 3 source module data.nat.gcd.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Nat.Order.Lemmas
+import Mathlib.Tactic.NthRewrite
+
+#align_import data.nat.gcd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Definitions and properties of `Nat.gcd`, `Nat.lcm`, and `Nat.coprime`
@@ -90,6 +88,30 @@ theorem gcd_self_add_left (m n : ℕ) : gcd (m + n) m = gcd n m := by rw [add_co
 theorem gcd_self_add_right (m n : ℕ) : gcd m (m + n) = gcd m n := by
   rw [add_comm, gcd_add_self_right]
 #align nat.gcd_self_add_right Nat.gcd_self_add_right
+
+-- Lemmas where one argument consists of a subtraction of the other
+@[simp]
+theorem gcd_sub_self_left {m n : ℕ} (h : m ≤ n) : gcd (n - m) m = gcd n m := by
+  calc
+    gcd (n - m) m = gcd (n - m + m) m  := by rw [← gcd_add_self_left (n - m) m]
+                _ = gcd n m := by rw [Nat.sub_add_cancel h]
+
+@[simp]
+theorem gcd_sub_self_right {m n : ℕ} (h : m ≤ n) : gcd m (n - m) = gcd m n := by
+  rw [gcd_comm, gcd_sub_self_left h, gcd_comm]
+
+@[simp]
+theorem gcd_self_sub_left {m n : ℕ} (h : m ≤ n) : gcd (n - m) n = gcd m n := by
+  have := Nat.sub_add_cancel h
+  rw [gcd_comm m n, ← this, gcd_add_self_left (n - m) m]
+  have : gcd (n - m) n = gcd (n - m) m := by
+    nth_rw 2 [← Nat.add_sub_cancel' h]
+    rw [gcd_add_self_right, gcd_comm]
+  convert this
+
+@[simp]
+theorem gcd_self_sub_right {m n : ℕ} (h : m ≤ n) : gcd n (n - m) = gcd n m := by
+  rw [gcd_comm, gcd_self_sub_left h, gcd_comm]
 
 /-! ### `lcm` -/
 
@@ -190,6 +212,22 @@ theorem coprime_mul_left_add_left (m n k : ℕ) : coprime (n * k + m) n ↔ copr
 #align nat.coprime_mul_left_add_left Nat.coprime_mul_left_add_left
 
 @[simp]
+theorem coprime_sub_self_left {m n : ℕ} (h : m ≤ n) : coprime (n - m) m ↔ coprime n m := by
+  rw [coprime, coprime, gcd_sub_self_left h]
+
+@[simp]
+theorem coprime_sub_self_right {m n : ℕ} (h : m ≤ n) : coprime m (n - m) ↔ coprime m n:= by
+  rw [coprime, coprime, gcd_sub_self_right h]
+
+@[simp]
+theorem coprime_self_sub_left {m n : ℕ} (h : m ≤ n) : coprime (n - m) n ↔ coprime m n := by
+  rw [coprime, coprime, gcd_self_sub_left h]
+
+@[simp]
+theorem coprime_self_sub_right {m n : ℕ} (h : m ≤ n) : coprime n (n - m) ↔ coprime n m := by
+  rw [coprime, coprime, gcd_self_sub_right h]
+
+@[simp]
 theorem coprime_pow_left_iff {n : ℕ} (hn : 0 < n) (a b : ℕ) :
     Nat.coprime (a ^ n) b ↔ Nat.coprime a b := by
   obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero hn.ne'
@@ -239,7 +277,7 @@ def prodDvdAndDvdOfDvdProd {m n k : ℕ} (H : k ∣ m * n) :
     obtain rfl : m = 0 := eq_zero_of_gcd_eq_zero_right h0
     exact ⟨⟨⟨0, dvd_refl 0⟩, ⟨n, dvd_refl n⟩⟩, (zero_mul n).symm⟩
   case succ tmp =>
-    have hpos : 0 < gcd k m := h0.symm ▸ Nat.zero_lt_succ _ ; clear h0 tmp
+    have hpos : 0 < gcd k m := h0.symm ▸ Nat.zero_lt_succ _; clear h0 tmp
     have hd : gcd k m * (k / gcd k m) = k := Nat.mul_div_cancel' (gcd_dvd_left k m)
     refine' ⟨⟨⟨gcd k m, gcd_dvd_right k m⟩, ⟨k / gcd k m, _⟩⟩, hd.symm⟩
     apply Nat.dvd_of_mul_dvd_mul_left hpos

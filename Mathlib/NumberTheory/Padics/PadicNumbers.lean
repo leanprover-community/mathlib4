@@ -2,14 +2,11 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module number_theory.padics.padic_numbers
-! leanprover-community/mathlib commit b9b2114f7711fec1c1e055d507f082f8ceb2c3b7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.Analysis.Normed.Field.Basic
+
+#align_import number_theory.padics.padic_numbers from "leanprover-community/mathlib"@"b9b2114f7711fec1c1e055d507f082f8ceb2c3b7"
 
 /-!
 # p-adic numbers
@@ -43,7 +40,7 @@ A small special-purpose simplification tactic, `padic_index_simp`, is used to ma
 indices in the proof that the norm extends.
 
 `padicNormE` is the rational-valued `p`-adic norm on `ℚ_[p]`.
-To instantiate `ℚ_[p]` as a normed field, we must cast this into a `ℝ`-valued norm.
+To instantiate `ℚ_[p]` as a normed field, we must cast this into an `ℝ`-valued norm.
 The `ℝ`-valued norm, using notation `‖ ‖` from normed spaces,
 is the canonical representation of this norm.
 
@@ -284,11 +281,11 @@ variable {p : ℕ} [hp : Fact p.Prime]
 theorem norm_mul (f g : PadicSeq p) : (f * g).norm = f.norm * g.norm :=
   if hf : f ≈ 0 then by
     have hg : f * g ≈ 0 := mul_equiv_zero' _ hf
-    simp only [hf, hg, norm, dif_pos, MulZeroClass.zero_mul]
+    simp only [hf, hg, norm, dif_pos, zero_mul]
   else
     if hg : g ≈ 0 then by
       have hf : f * g ≈ 0 := mul_equiv_zero _ hg
-      simp only [hf, hg, norm, dif_pos, MulZeroClass.mul_zero]
+      simp only [hf, hg, norm, dif_pos, mul_zero]
     else by
       unfold norm
       split_ifs with hfg
@@ -450,8 +447,8 @@ theorem add_eq_max_of_ne {f g : PadicSeq p} (hfgne : f.norm ≠ g.norm) :
       have h2 : g.norm = 0 := (norm_zero_iff _).2 hg
       rw [h1, h2, max_eq_left (norm_nonneg _)]
     else by
-      unfold norm at hfgne⊢; split_ifs  at hfgne⊢
-      -- Porting note: originally `padic_index_simp [hfg, hf, hg] at hfgne⊢`
+      unfold norm at hfgne ⊢; split_ifs at hfgne ⊢
+      -- Porting note: originally `padic_index_simp [hfg, hf, hg] at hfgne ⊢`
       rw [lift_index_left hf, lift_index_right hg] at hfgne
       rw [lift_index_left_left hfg, lift_index_left hf, lift_index_right hg]
       exact padicNorm.add_eq_max_of_ne hfgne
@@ -663,7 +660,8 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
     let ⟨N, hN⟩ := this
     ⟨q' N, by
       dsimp [padicNormE]
-      -- Porting note: `change` → `convert_to` and `PadicSeq p` type annotation
+      -- Porting note: `change` → `convert_to` (`change` times out!)
+      -- and add `PadicSeq p` type annotation
       convert_to PadicSeq.norm (q' - const _ (q' N) : PadicSeq p) < ε
       cases' Decidable.em (q' - const (padicNorm p) (q' N) ≈ 0) with heq hne'
       · simpa only [heq, PadicSeq.norm, dif_pos]
@@ -825,7 +823,7 @@ theorem nonarchimedean (q r : ℚ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := 
 #align padic_norm_e.nonarchimedean padicNormE.nonarchimedean
 
 theorem add_eq_max_of_ne {q r : ℚ_[p]} (h : ‖q‖ ≠ ‖r‖) : ‖q + r‖ = max ‖q‖ ‖r‖ := by
-  dsimp [norm] at h⊢
+  dsimp [norm] at h ⊢
   have : padicNormE q ≠ padicNormE r := by exact_mod_cast h
   exact_mod_cast add_eq_max_of_ne' this
 #align padic_norm_e.add_eq_max_of_ne padicNormE.add_eq_max_of_ne
@@ -898,7 +896,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
   | ⟨n, d, hn, hd⟩ => fun hq : ¬p ∣ d ↦
     if hnz : n = 0 then by
       have : (⟨n, d, hn, hd⟩ : ℚ) = 0 := Rat.zero_iff_num_zero.mpr hnz
-      rw [this]; norm_num
+      norm_num [this]
     else by
       have hnz' : (⟨n, d, hn, hd⟩ : ℚ) ≠ 0 := mt Rat.zero_iff_num_zero.1 hnz
       rw [padicNormE.eq_padicNorm]
@@ -968,26 +966,26 @@ variable {p : ℕ} [hp : Fact p.Prime]
 -- Porting note : remove `set_option eqn_compiler.zeta true`
 
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
-isComplete := fun f => by
-  have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
-    have h := isCauSeq f ε (by exact_mod_cast hε)
-    dsimp [norm] at h
+  isComplete := fun f => by
+    have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
+      have h := isCauSeq f ε (by exact_mod_cast hε)
+      dsimp [norm] at h
+      exact_mod_cast h
+    -- Porting note: Padic.complete' works with `f i - q`, but the goal needs `q - f i`,
+    -- using `rewrite [padicNormE.map_sub]` causes time out, so a separate lemma is created
+    cases' Padic.complete'' ⟨f, cau_seq_norm_e⟩ with q hq
+    exists q
+    intro ε hε
+    cases' exists_rat_btwn hε with ε' hε'
+    norm_cast at hε'
+    cases' hq ε' hε'.1 with N hN
+    exists N
+    intro i hi
+    have h := hN i hi
+    change norm (f i - q) < ε
+    refine lt_trans ?_ hε'.2
+    dsimp [norm]
     exact_mod_cast h
-  -- Porting note: Padic.complete' works with `f i - q`, but the goal needs `q - f i`,
-  -- using `rewrite [padicNormE.map_sub]` causes time out, so a separate lemma is created
-  cases' Padic.complete'' ⟨f, cau_seq_norm_e⟩ with q hq
-  exists q
-  intro ε hε
-  cases' exists_rat_btwn hε with ε' hε'
-  norm_cast  at hε'
-  cases' hq ε' hε'.1 with N hN
-  exists N
-  intro i hi
-  have h := hN i hi
-  change norm (f i - q) < ε
-  refine lt_trans ?_ hε'.2
-  dsimp [norm]
-  exact_mod_cast h
 #align padic.complete Padic.complete
 
 theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf : ∀ i, ‖f i‖ ≤ a) :
@@ -1121,9 +1119,9 @@ theorem AddValuation.map_mul (x y : ℚ_[p]) :
     addValuationDef (x * y : ℚ_[p]) = addValuationDef x + addValuationDef y := by
   simp only [addValuationDef]
   by_cases hx : x = 0
-  · rw [hx, if_pos (Eq.refl _), MulZeroClass.zero_mul, if_pos (Eq.refl _), WithTop.top_add]
+  · rw [hx, if_pos (Eq.refl _), zero_mul, if_pos (Eq.refl _), WithTop.top_add]
   · by_cases hy : y = 0
-    · rw [hy, if_pos (Eq.refl _), MulZeroClass.mul_zero, if_pos (Eq.refl _), WithTop.add_top]
+    · rw [hy, if_pos (Eq.refl _), mul_zero, if_pos (Eq.refl _), WithTop.add_top]
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithTop.coe_add, WithTop.coe_eq_coe,
         valuation_map_mul hx hy]
 #align padic.add_valuation.map_mul Padic.AddValuation.map_mul

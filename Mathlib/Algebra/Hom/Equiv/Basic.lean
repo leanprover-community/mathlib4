@@ -2,17 +2,13 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
-Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module algebra.hom.equiv.basic
-! leanprover-community/mathlib commit 67f362670ed961bcb80239dc40ca18bcd4289c77
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Basic
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Pi.Algebra
+
+#align_import algebra.hom.equiv.basic from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
 /-!
 # Multiplicative and additive equivs
@@ -34,12 +30,24 @@ Equiv, MulEquiv, AddEquiv
 -/
 
 
-variable {F α β A B M N P Q G H : Type _}
+variable {F α β A B M N P Q G H : Type*}
+
+/-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
+@[to_additive (attr := simps)
+  "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
+def OneHom.inverse [One M] [One N]
+    (f : OneHom M N) (g : N → M)
+    (h₁ : Function.LeftInverse g f) :
+  OneHom N M :=
+  { toFun := g,
+    map_one' := by rw [← f.map_one, h₁] }
 
 /-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
-@[to_additive "Makes an additive inverse from a bijection which preserves addition."]
-def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Function.LeftInverse g f)
-  (h₂ : Function.RightInverse g f) : N →ₙ* M where
+@[to_additive (attr := simps)
+  "Makes an additive inverse from a bijection which preserves addition."]
+def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
+    (h₁ : Function.LeftInverse g f)
+    (h₂ : Function.RightInverse g f) : N →ₙ* M where
   toFun := g
   map_mul' x y :=
     calc
@@ -50,22 +58,24 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Funct
 #align add_hom.inverse AddHom.inverse
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
-@[to_additive (attr := simps) "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
-def MonoidHom.inverse {A B : Type _} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
-  (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
-  { (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g, map_one' := by rw [← f.map_one, h₁] }
+@[to_additive (attr := simps)
+  "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
+def MonoidHom.inverse {A B : Type*} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
+  { (f : OneHom A B).inverse g h₁,
+    (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g }
 #align monoid_hom.inverse MonoidHom.inverse
 #align add_monoid_hom.inverse AddMonoidHom.inverse
 #align monoid_hom.inverse_apply MonoidHom.inverse_apply
 #align add_monoid_hom.inverse_apply AddMonoidHom.inverse_apply
 
 /-- `AddEquiv α β` is the type of an equiv `α ≃ β` which preserves addition. -/
-structure AddEquiv (A B : Type _) [Add A] [Add B] extends A ≃ B, AddHom A B
+structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
 #align add_equiv AddEquiv
 
 /-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
 You should extend this class when you extend `AddEquiv`. -/
-class AddEquivClass (F : Type _) (A B : outParam (Type _)) [Add A] [Add B]
+class AddEquivClass (F : Type*) (A B : outParam (Type*)) [Add A] [Add B]
     extends EquivLike F A B where
   /-- Preserves addition. -/
   map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
@@ -75,13 +85,13 @@ class AddEquivClass (F : Type _) (A B : outParam (Type _)) [Add A] [Add B]
 add_decl_doc AddEquiv.toEquiv
 #align add_equiv.to_equiv AddEquiv.toEquiv
 
-/-- The `AddHom` underlying a `AddEquiv`. -/
+/-- The `AddHom` underlying an `AddEquiv`. -/
 add_decl_doc AddEquiv.toAddHom
 #align add_equiv.to_add_hom AddEquiv.toAddHom
 
 /-- `MulEquiv α β` is the type of an equiv `α ≃ β` which preserves multiplication. -/
 @[to_additive]
-structure MulEquiv (M N : Type _) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
+structure MulEquiv (M N : Type*) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
 -- Porting note: remove when `to_additive` can do this
 -- https://github.com/leanprover-community/mathlib4/issues/660
 attribute [to_additive existing] MulEquiv.toMulHom
@@ -98,7 +108,7 @@ add_decl_doc MulEquiv.toMulHom
 /-- `MulEquivClass F A B` states that `F` is a type of multiplication-preserving morphisms.
 You should extend this class when you extend `MulEquiv`. -/
 @[to_additive]
-class MulEquivClass (F : Type _) (A B : outParam (Type _)) [Mul A] [Mul B] extends
+class MulEquivClass (F : Type*) (A B : outParam (Type*)) [Mul A] [Mul B] extends
   EquivLike F A B where
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
@@ -116,13 +126,14 @@ variable (F)
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) (F : Type _)
+instance (priority := 100) instMulHomClass (F : Type*)
     [Mul M] [Mul N] [h : MulEquivClass F M N] : MulHomClass F M N :=
   { h with coe := h.coe, coe_injective' := FunLike.coe_injective' }
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
+instance (priority := 100) instMonoidHomClass
+    [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
     MonoidHomClass F M N :=
   { MulEquivClass.instMulHomClass F with
     coe := fun _ => _,
@@ -132,18 +143,22 @@ instance (priority := 100) [MulOneClass M] [MulOneClass N] [MulEquivClass F M N]
         _ = e 1 * e (MulEquivClass.toEquivLike.inv e (1 : N) : M) :=
           congr_arg _ (MulEquivClass.toEquivLike.right_inv e 1).symm
         _ = e (MulEquivClass.toEquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
-        _ = 1 := MulEquivClass.toEquivLike.right_inv e 1
-         }
+        _ = 1 := MulEquivClass.toEquivLike.right_inv e 1 }
+
+-- See note [lower instance priority]
+instance (priority := 100) toZeroHomClass
+    [MulZeroClass α] [MulZeroClass β] [MulEquivClass F α β] :
+    ZeroHomClass F α β where
+  map_zero := fun e =>
+    calc
+      e 0 = e 0 * e (EquivLike.inv e 0) := by rw [← map_mul, zero_mul]
+        _ = 0 := by simp
 
 -- See note [lower instance priority]
 instance (priority := 100) toMonoidWithZeroHomClass
     [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
-  MonoidWithZeroHomClass F α β :=
-  { MulEquivClass.instMonoidHomClass _ with
-    map_zero := fun e =>
-      calc
-        e 0 = e 0 * e (EquivLike.inv e 0) := by rw [← map_mul, zero_mul]
-        _ = 0 := by simp }
+    MonoidWithZeroHomClass F α β :=
+  { MulEquivClass.instMonoidHomClass F, MulEquivClass.toZeroHomClass F with }
 #align mul_equiv_class.to_monoid_with_zero_hom_class MulEquivClass.toMonoidWithZeroHomClass
 
 variable {F}
@@ -168,7 +183,7 @@ end MulEquivClass
 "Turn an element of a type `F` satisfying `AddEquivClass F α β` into an actual
 `AddEquiv`. This is declared as the default coercion from `F` to `α ≃+ β`."]
 def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulEquivClass F α β] (f : F) : α ≃* β :=
-{ (f : α ≃ β), (f : α →ₙ* β) with }
+  { (f : α ≃ β), (f : α →ₙ* β) with }
 
 /-- Any type satisfying `MulEquivClass` can be cast into `MulEquiv` via
 `MulEquivClass.toMulEquiv`. -/
@@ -203,6 +218,11 @@ theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
   rfl
 #align mul_equiv.to_equiv_eq_coe MulEquiv.toEquiv_eq_coe
 #align add_equiv.to_equiv_eq_coe AddEquiv.toEquiv_eq_coe
+
+-- Porting note: added, to simplify `f.toMulHom` back to the coercion via `MulHomClass.toMulHom`.
+@[to_additive (attr := simp)]
+theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
+  rfl
 
 -- Porting note: `to_fun_eq_coe` no longer needed in Lean4
 #noalign mul_equiv.to_fun_eq_coe
@@ -253,7 +273,7 @@ protected theorem surjective (e : M ≃* N) : Function.Surjective e :=
 
 /-- The identity map is a multiplicative isomorphism. -/
 @[to_additive (attr := refl) "The identity map is an additive isomorphism."]
-def refl (M : Type _) [Mul M] : M ≃* M :=
+def refl (M : Type*) [Mul M] : M ≃* M :=
   { Equiv.refl _ with map_mul' := fun _ _ => rfl }
 #align mul_equiv.refl MulEquiv.refl
 #align add_equiv.refl AddEquiv.refl
@@ -263,7 +283,7 @@ instance : Inhabited (M ≃* M) := ⟨refl M⟩
 
 /-- The inverse of an isomorphism is an isomorphism. -/
 @[to_additive (attr := symm) "The inverse of an isomorphism is an isomorphism."]
-def symm {M N : Type _} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
+def symm {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
   ⟨h.toEquiv.symm, (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul⟩
 #align mul_equiv.symm MulEquiv.symm
 #align add_equiv.symm AddEquiv.symm
@@ -420,28 +440,28 @@ theorem eq_symm_apply (e : M ≃* N) {x y} : y = e.symm x ↔ e y = x :=
 #align add_equiv.eq_symm_apply AddEquiv.eq_symm_apply
 
 @[to_additive]
-theorem eq_comp_symm {α : Type _} (e : M ≃* N) (f : N → α) (g : M → α) :
+theorem eq_comp_symm {α : Type*} (e : M ≃* N) (f : N → α) (g : M → α) :
   f = g ∘ e.symm ↔ f ∘ e = g :=
   e.toEquiv.eq_comp_symm f g
 #align mul_equiv.eq_comp_symm MulEquiv.eq_comp_symm
 #align add_equiv.eq_comp_symm AddEquiv.eq_comp_symm
 
 @[to_additive]
-theorem comp_symm_eq {α : Type _} (e : M ≃* N) (f : N → α) (g : M → α) :
+theorem comp_symm_eq {α : Type*} (e : M ≃* N) (f : N → α) (g : M → α) :
   g ∘ e.symm = f ↔ g = f ∘ e :=
   e.toEquiv.comp_symm_eq f g
 #align mul_equiv.comp_symm_eq MulEquiv.comp_symm_eq
 #align add_equiv.comp_symm_eq AddEquiv.comp_symm_eq
 
 @[to_additive]
-theorem eq_symm_comp {α : Type _} (e : M ≃* N) (f : α → M) (g : α → N) :
+theorem eq_symm_comp {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
   f = e.symm ∘ g ↔ e ∘ f = g :=
   e.toEquiv.eq_symm_comp f g
 #align mul_equiv.eq_symm_comp MulEquiv.eq_symm_comp
 #align add_equiv.eq_symm_comp AddEquiv.eq_symm_comp
 
 @[to_additive]
-theorem symm_comp_eq {α : Type _} (e : M ≃* N) (f : α → M) (g : α → N) :
+theorem symm_comp_eq {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
   e.symm ∘ g = f ↔ g = e ∘ f :=
   e.toEquiv.symm_comp_eq f g
 #align mul_equiv.symm_comp_eq MulEquiv.symm_comp_eq
@@ -601,7 +621,7 @@ where the equivalence between the targets is multiplicative.
 -/
 @[to_additive (attr := simps apply) "An additive analogue of `Equiv.arrowCongr`,
   where the equivalence between the targets is additive."]
-def arrowCongr {M N P Q : Type _} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
+def arrowCongr {M N P Q : Type*} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
   (M → P) ≃* (N → Q) where
   toFun h n := g (h (f.symm n))
   invFun k m := g.symm (k (f m))
@@ -646,7 +666,7 @@ This is the `MulEquiv` version of `Equiv.piCongrRight`, and the dependent versio
 
   This is the `AddEquiv` version of `Equiv.piCongrRight`, and the dependent version of
   `AddEquiv.arrowCongr`."]
-def piCongrRight {η : Type _} {Ms Ns : η → Type _} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
+def piCongrRight {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
   (es : ∀ j, Ms j ≃* Ns j) : (∀ j, Ms j) ≃* ∀ j, Ns j :=
   { Equiv.piCongrRight fun j => (es j).toEquiv with
     toFun := fun x j => es j (x j),
@@ -658,19 +678,19 @@ def piCongrRight {η : Type _} {Ms Ns : η → Type _} [∀ j, Mul (Ms j)] [∀ 
 #align add_equiv.Pi_congr_right_apply AddEquiv.piCongrRight_apply
 
 @[to_additive (attr := simp)]
-theorem piCongrRight_refl {η : Type _} {Ms : η → Type _} [∀ j, Mul (Ms j)] :
+theorem piCongrRight_refl {η : Type*} {Ms : η → Type*} [∀ j, Mul (Ms j)] :
   (piCongrRight fun j => MulEquiv.refl (Ms j)) = MulEquiv.refl _ := rfl
 #align mul_equiv.Pi_congr_right_refl MulEquiv.piCongrRight_refl
 #align add_equiv.Pi_congr_right_refl AddEquiv.piCongrRight_refl
 
 @[to_additive (attr := simp)]
-theorem piCongrRight_symm {η : Type _} {Ms Ns : η → Type _} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
+theorem piCongrRight_symm {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
   (es : ∀ j, Ms j ≃* Ns j) : (piCongrRight es).symm = piCongrRight fun i => (es i).symm := rfl
 #align mul_equiv.Pi_congr_right_symm MulEquiv.piCongrRight_symm
 #align add_equiv.Pi_congr_right_symm AddEquiv.piCongrRight_symm
 
 @[to_additive (attr := simp)]
-theorem piCongrRight_trans {η : Type _} {Ms Ns Ps : η → Type _} [∀ j, Mul (Ms j)]
+theorem piCongrRight_trans {η : Type*} {Ms Ns Ps : η → Type*} [∀ j, Mul (Ms j)]
   [∀ j, Mul (Ns j)] [∀ j, Mul (Ps j)] (es : ∀ j, Ms j ≃* Ns j) (fs : ∀ j, Ns j ≃* Ps j) :
   (piCongrRight es).trans (piCongrRight fs) = piCongrRight fun i => (es i).trans (fs i) := rfl
 #align mul_equiv.Pi_congr_right_trans MulEquiv.piCongrRight_trans
@@ -681,7 +701,7 @@ index. -/
 @[to_additive (attr := simps!)
   "A family indexed by a nonempty subsingleton type is
   equivalent to the element at the single index."]
-def piSubsingleton {ι : Type _} (M : ι → Type _) [∀ j, Mul (M j)] [Subsingleton ι]
+def piSubsingleton {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Subsingleton ι]
   (i : ι) : (∀ j, M j) ≃* M i :=
   { Equiv.piSubsingleton M i with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
 #align mul_equiv.Pi_subsingleton MulEquiv.piSubsingleton
@@ -718,7 +738,7 @@ end MulEquiv
 -- here, but it generates simp lemmas which aren't in simp normal form
 -- (they have `toFun` in)
 /-- Given a pair of multiplicative homomorphisms `f`, `g` such that `g.comp f = id` and
-`f.comp g = id`, returns an multiplicative equivalence with `toFun = f` and `invFun = g`. This
+`f.comp g = id`, returns a multiplicative equivalence with `toFun = f` and `invFun = g`. This
 constructor is useful if the underlying type(s) have specialized `ext` lemmas for multiplicative
 homomorphisms. -/
 @[to_additive
@@ -755,7 +775,7 @@ theorem MulHom.toMulEquiv_symm_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N �
 #align add_hom.to_add_equiv_symm_apply AddHom.toAddEquiv_symm_apply
 
 /-- Given a pair of monoid homomorphisms `f`, `g` such that `g.comp f = id` and `f.comp g = id`,
-returns an multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
+returns a multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
 useful if the underlying type(s) have specialized `ext` lemmas for monoid homomorphisms. -/
 @[to_additive (attr := simps (config := { fullyApplied := false }))
   "Given a pair of additive monoid homomorphisms `f`, `g` such that `g.comp f = id`

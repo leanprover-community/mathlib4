@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.sheaves.presheaf_of_functions
-! leanprover-community/mathlib commit 6c31dd6563a3745bf8e0b80bdd077167583ebb8f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Category.TopCommRingCat
 import Mathlib.Topology.ContinuousFunction.Algebra
+
+#align_import topology.sheaves.presheaf_of_functions from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
 /-!
 # Presheaves of functions
@@ -50,7 +47,7 @@ def presheafToTypes (T : X → Type v) : X.Presheaf (Type v) where
   obj U := ∀ x : U.unop, T x
   map {U V} i g := fun x : V.unop => g (i.unop x)
   map_id U := by
-    ext g ⟨x, hx⟩
+    ext g
     rfl
   map_comp {U V W} i j := rfl
 set_option linter.uppercaseLean3 false in
@@ -83,7 +80,7 @@ def presheafToType (T : Type v) : X.Presheaf (Type v) where
   obj U := U.unop → T
   map {U V} i g := g ∘ i.unop
   map_id U := by
-    ext (g⟨x, hx⟩)
+    ext g
     rfl
   map_comp {U V W} i j := rfl
 set_option linter.uppercaseLean3 false in
