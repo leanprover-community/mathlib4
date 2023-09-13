@@ -61,13 +61,13 @@ module. -/
 noncomputable def ofBaseChange (Q : QuadraticForm R V) :
     A ⊗[R] CliffordAlgebra Q →ₐ[A] CliffordAlgebra (Q.baseChange A) :=
   Algebra.TensorProduct.algHomOfLinearMapTensorProduct
-    (TensorProduct.AlgebraTensorModule.lift $
+    (TensorProduct.AlgebraTensorModule.lift <|
       let f : A →ₗ[A] _ := (Algebra.lsmul A A (CliffordAlgebra (Q.baseChange A))).toLinearMap
-      LinearMap.flip $ LinearMap.flip (({
+      LinearMap.flip <| LinearMap.flip (({
         toFun := fun f : CliffordAlgebra (Q.baseChange A) →ₗ[A] CliffordAlgebra (Q.baseChange A) =>
           LinearMap.restrictScalars R f
-        map_add' := fun f g => LinearMap.ext $ fun x => rfl
-        map_smul' := fun (c : A) g => LinearMap.ext $ fun x => rfl
+        map_add' := fun f g => LinearMap.ext fun x => rfl
+        map_smul' := fun (c : A) g => LinearMap.ext fun x => rfl
       } : _ →ₗ[A] _) ∘ₗ f) ∘ₗ (ofBaseChangeAux A Q).toLinearMap)
     (fun z₁ z₂ b₁ b₂ =>
       show (z₁ * z₂) • ofBaseChangeAux A Q (b₁ * b₂)
@@ -136,22 +136,17 @@ open MulOpposite
 /-- Auxiliary theorem used to prove `toBaseChange_reverse` without needing induction. -/
 theorem toBaseChange_comp_reverseOp (Q : QuadraticForm R V) :
     (toBaseChange A Q).op.comp (reverseOp (Q := Q.baseChange A)) =
-      ((Algebra.TensorProduct.opAlgEquiv R A A (CliffordAlgebra Q)).toAlgHom.comp $
-        (Algebra.TensorProduct.map ((AlgHom.id A A).toOpposite Commute.all) (reverseOp (Q := Q))).comp
-          (toBaseChange A Q)) := by
+      ((Algebra.TensorProduct.opAlgEquiv R A A (CliffordAlgebra Q)).toAlgHom.comp <|
+        (Algebra.TensorProduct.map
+          ((AlgHom.id A A).toOpposite Commute.all) (reverseOp (Q := Q))).comp
+        (toBaseChange A Q)) := by
   ext v
-  save
-  dsimp only [TensorProduct.AlgebraTensorModule.curry_apply, AlgHom.comp_toLinearMap,
-    TensorProduct.curry_apply, LinearMap.coe_restrictScalars, LinearMap.coe_comp,
-    Function.comp_apply, AlgHom.toLinearMap_apply, AlgHom.op_apply_apply, AlgEquiv.toAlgHom_eq_coe,
-    AlgEquiv.toAlgHom_toLinearMap, AlgEquiv.toLinearMap_apply]
-  -- show
-  --   op (toBaseChange A Q (reverse (ι (Q.baseChange A) (1 ⊗ₜ[R] v)))) =
-  --   Algebra.TensorProduct.opAlgEquiv R A A (CliffordAlgebra Q)
-  --     (Algebra.TensorProduct.map ((algHom.id A A).toOpposite Commute.all) (reverseOp Q)
-  --        (toBaseChange A Q (ι (Q.baseChange A) (1 ⊗ₜ[R] v))))
-  rw [toBaseChange_ι, reverseOp_ι, unop_op, toBaseChange_ι, Algebra.TensorProduct.map_tmul,
-    Algebra.TensorProduct.opAlgEquiv_tmul, reverseOp_ι, unop_op]
+  show op (toBaseChange A Q (reverse (ι (Q.baseChange A) (1 ⊗ₜ[R] v)))) =
+    Algebra.TensorProduct.opAlgEquiv R A A (CliffordAlgebra Q)
+      (Algebra.TensorProduct.map ((AlgHom.id A A).toOpposite Commute.all) (reverseOp (Q := Q))
+        (toBaseChange A Q (ι (Q.baseChange A) (1 ⊗ₜ[R] v))))
+  rw [toBaseChange_ι, reverse_ι, toBaseChange_ι, Algebra.TensorProduct.map_tmul,
+    Algebra.TensorProduct.opAlgEquiv_tmul, reverseOp_ι]
   rfl
 
 /-- `reverse` acts only on the right of the tensor product. -/
@@ -165,7 +160,6 @@ theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.bas
   dsimp
   simp
   rfl
-  -- rw [TensorProduct.AlgebraTensorModule.map_tmul]
 
 attribute [ext] TensorProduct.ext
 
@@ -186,7 +180,8 @@ theorem toBaseChange_comp_ofBaseChange (Q : QuadraticForm R V) :
 theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
     (ofBaseChange A Q).comp (toBaseChange A Q) = AlgHom.id _ _ := by
   ext x
-  show ofBaseChange A Q (toBaseChange A Q (ι (Q.baseChange A) (1 ⊗ₜ[R] x))) = ι (Q.baseChange A) (1 ⊗ₜ[R] x)
+  show ofBaseChange A Q (toBaseChange A Q (ι (Q.baseChange A) (1 ⊗ₜ[R] x)))
+    = ι (Q.baseChange A) (1 ⊗ₜ[R] x)
   rw [toBaseChange_ι, ofBaseChange_tmul_ι]
 
 @[simp] theorem ofBaseChange_toBaseChange
@@ -195,7 +190,7 @@ theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
   AlgHom.congr_fun (ofBaseChange_comp_toBaseChange A Q : _) x
 
 /-- Base-changing the vector space of a clifford algebra is isomorphic as an A-algebra to
-base-changing the clifford algebra itself; $Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)$.
+base-changing the clifford algebra itself; <|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|.
 
 This is `CliffordAlgebra.toBaseChange` and `CliffordAlgebra.ofBaseChange` as an equivalence. -/
 @[simps!]
@@ -204,3 +199,5 @@ noncomputable def equivBaseChange (Q : QuadraticForm R V) :
   AlgEquiv.ofAlgHom (toBaseChange A Q) (ofBaseChange A Q)
     (toBaseChange_comp_ofBaseChange A Q)
     (ofBaseChange_comp_toBaseChange A Q)
+
+end CliffordAlgebra
