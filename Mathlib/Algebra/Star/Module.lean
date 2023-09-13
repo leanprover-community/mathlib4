@@ -86,7 +86,6 @@ variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCo
   [Module R A] [StarAddMonoid A] [StarModule R A]
 
 /-- The self-adjoint elements of a star module, as a submodule. -/
-@[reducible]
 def selfAdjoint.submodule : Submodule R A :=
   { selfAdjoint A with smul_mem' := fun _ _ => (IsSelfAdjoint.all _).smul }
 #align self_adjoint.submodule selfAdjoint.submodule
