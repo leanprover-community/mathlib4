@@ -109,7 +109,7 @@ We ensure that each monadic value is evaluated with the same backtrackable state
 def ofListM (L : List (m α)) : Nondet m α :=
   .squash fun _ => do
     let s ← saveState
-    return .mk <| MLList.ofMLList <| L.map fun x => do
+    return .mk <| MLList.ofListM <| L.map fun x => do
       restoreState s
       let a ← x
       pure (a, ← saveState)
