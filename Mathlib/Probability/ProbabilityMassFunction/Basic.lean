@@ -38,15 +38,15 @@ variable {α β γ : Type*}
 
 open Classical BigOperators NNReal ENNReal MeasureTheory
 
-/-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0∞` such
+/-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0` such
   that the values have (infinite) sum `1`. -/
 def Pmf.{u} (α : Type u) : Type u :=
-  { f : α → ℝ≥0∞ // HasSum f 1 }
+  { f : α → ℝ≥0 // HasSum f 1 }
 #align pmf Pmf
 
 namespace Pmf
 
-instance funLike : FunLike (Pmf α) α fun _ => ℝ≥0∞ where
+instance funLike : FunLike (Pmf α) α fun _ => ℝ≥0 where
   coe p a := p.1 a
   coe_injective' _ _ h := Subtype.eq h
 #align pmf.fun_like Pmf.funLike
@@ -69,16 +69,19 @@ theorem tsum_coe (p : Pmf α) : ∑' a, p a = 1 :=
   p.hasSum_coe_one.tsum_eq
 #align pmf.tsum_coe Pmf.tsum_coe
 
-theorem tsum_coe_ne_top (p : Pmf α) : ∑' a, p a ≠ ∞ :=
-  p.tsum_coe.symm ▸ ENNReal.one_ne_top
-#align pmf.tsum_coe_ne_top Pmf.tsum_coe_ne_top
+lemma summable (p : Pmf α) : Summable p := ⟨_, hasSum_coe_one p⟩
 
-theorem tsum_coe_indicator_ne_top (p : Pmf α) (s : Set α) : ∑' a, s.indicator p a ≠ ∞ :=
-  ne_of_lt (lt_of_le_of_lt
-    (tsum_le_tsum (fun _ => Set.indicator_apply_le fun _ => le_rfl) ENNReal.summable
-      ENNReal.summable)
-    (lt_of_le_of_ne le_top p.tsum_coe_ne_top))
-#align pmf.tsum_coe_indicator_ne_top Pmf.tsum_coe_indicator_ne_top
+lemma summable_indicator (p : Pmf α) (s : Set α) : Summable (fun x => s.indicator p x) := sorry
+
+theorem tsum_coe_indicator_le_on (p : Pmf α) (s : Set α) : ∑' a, s.indicator p a ≤ 1 := calc
+  ∑' a, s.indicator p a ≤ ∑' a, p a := tsum_le_tsum
+    (fun _ => Set.indicator_apply_le (fun _ => le_rfl)) (p.summable_indicator s) p.summable
+  _ = 1 := tsum_coe p
+
+  -- ne_of_lt (lt_of_le_of_lt
+  --   (tsum_le_tsum (fun _ => Set.indicator_apply_le fun _ => le_rfl) ENNReal.summable
+  --     ENNReal.summable)
+  --   (lt_of_le_of_ne le_top p.tsum_coe_ne_top))
 
 @[simp]
 theorem coe_ne_zero (p : Pmf α) : ⇑p ≠ 0 := fun hp =>
@@ -101,7 +104,7 @@ theorem support_nonempty (p : Pmf α) : p.support.Nonempty :=
 
 @[simp]
 theorem support_countable (p : Pmf α) : p.support.Countable :=
-  Summable.countable_support_ennreal (tsum_coe_ne_top p)
+  Summable.countable_support_nnreal p p.summable
 
 theorem apply_eq_zero_iff (p : Pmf α) (a : α) : p a = 0 ↔ a ∉ p.support := by
   rw [mem_support_iff, Classical.not_not]
@@ -133,18 +136,9 @@ theorem apply_eq_one_iff (p : Pmf α) (a : α) : p a = 1 ↔ p.support = {a} := 
     _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero, le_rfl]
 #align pmf.apply_eq_one_iff Pmf.apply_eq_one_iff
 
-theorem coe_le_one (p : Pmf α) (a : α) : p a ≤ 1 := by
+theorem apply_le_one (p : Pmf α) (a : α) : p a ≤ 1 := by
   refine' hasSum_le (fun b => _) (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
   split_ifs with h <;> simp only [h, zero_le', le_rfl]
-#align pmf.coe_le_one Pmf.coe_le_one
-
-theorem apply_ne_top (p : Pmf α) (a : α) : p a ≠ ∞ :=
-  ne_of_lt (lt_of_le_of_lt (p.coe_le_one a) ENNReal.one_lt_top)
-#align pmf.apply_ne_top Pmf.apply_ne_top
-
-theorem apply_lt_top (p : Pmf α) (a : α) : p a < ∞ :=
-  lt_of_le_of_ne le_top (p.apply_ne_top a)
-#align pmf.apply_lt_top Pmf.apply_lt_top
 
 section OuterMeasure
 
@@ -153,13 +147,14 @@ open MeasureTheory MeasureTheory.OuterMeasure
 /-- Construct an `OuterMeasure` from a `Pmf`, by assigning measure to each set `s : Set α` equal
   to the sum of `p x` for each `x ∈ α`. -/
 def toOuterMeasure (p : Pmf α) : OuterMeasure α :=
-  OuterMeasure.sum fun x : α => p x • dirac x
+  OuterMeasure.sum fun x : α => (p x : ℝ≥0∞) • dirac x
 #align pmf.to_outer_measure Pmf.toOuterMeasure
 
 variable (p : Pmf α) (s t : Set α)
 
-theorem toOuterMeasure_apply : p.toOuterMeasure s = ∑' x, s.indicator p x :=
-  tsum_congr fun x => smul_dirac_apply (p x) x s
+theorem toOuterMeasure_apply : p.toOuterMeasure s = ∑' x, s.indicator p x := by
+  simp_rw [ENNReal.coe_tsum (p.summable_indicator _), ENNReal.coe_indicator]
+  apply tsum_congr fun x => smul_dirac_apply (p x) x s
 #align pmf.to_outer_measure_apply Pmf.toOuterMeasure_apply
 
 @[simp]
@@ -171,21 +166,21 @@ theorem toOuterMeasure_caratheodory : p.toOuterMeasure.caratheodory = ⊤ := by
 #align pmf.to_outer_measure_caratheodory Pmf.toOuterMeasure_caratheodory
 
 @[simp]
-theorem toOuterMeasure_apply_finset (s : Finset α) : p.toOuterMeasure s = ∑ x in s, p x := by
-  refine' (toOuterMeasure_apply p s).trans ((tsum_eq_sum (s := s) _).trans _)
-  · exact fun x hx => Set.indicator_of_not_mem (Finset.mem_coe.not.2 hx) _
-  · exact Finset.sum_congr rfl fun x hx => Set.indicator_of_mem (Finset.mem_coe.2 hx) _
+theorem toOuterMeasure_apply_finite (hs : s.Finite) :
+    p.toOuterMeasure s = ∑ x in hs.toFinset, p x := by
+  simp [toOuterMeasure_apply p s, sum_eq_tsum_indicator]
+
+@[simp]
+theorem toOuterMeasure_apply_finset (s : Finset α) : p.toOuterMeasure s = ∑ x in s, p x := by simp
 #align pmf.to_outer_measure_apply_finset Pmf.toOuterMeasure_apply_finset
 
-theorem toOuterMeasure_apply_singleton (a : α) : p.toOuterMeasure {a} = p a := by
-  refine' (p.toOuterMeasure_apply {a}).trans ((tsum_eq_single a fun b hb => _).trans _)
-  · exact ite_eq_right_iff.2 fun hb' => False.elim <| hb hb'
-  · exact ite_eq_left_iff.2 fun ha' => False.elim <| ha' rfl
+theorem toOuterMeasure_apply_singleton (a : α) : p.toOuterMeasure {a} = p a := by simp
 #align pmf.to_outer_measure_apply_singleton Pmf.toOuterMeasure_apply_singleton
 
 theorem toOuterMeasure_injective : (toOuterMeasure : Pmf α → OuterMeasure α).Injective :=
-  fun p q h => Pmf.ext fun x => (p.toOuterMeasure_apply_singleton x).symm.trans
-    ((congr_fun (congr_arg _ h) _).trans <| q.toOuterMeasure_apply_singleton x)
+  fun p q h => Pmf.ext fun x => by
+    have : p.toOuterMeasure ({x} : Set α) = q.toOuterMeasure {x} := by rw [h]
+    simpa
 #align pmf.to_outer_measure_injective Pmf.toOuterMeasure_injective
 
 @[simp]
@@ -194,11 +189,14 @@ theorem toOuterMeasure_inj {p q : Pmf α} : p.toOuterMeasure = q.toOuterMeasure 
 #align pmf.to_outer_measure_inj Pmf.toOuterMeasure_inj
 
 theorem toOuterMeasure_apply_eq_zero_iff : p.toOuterMeasure s = 0 ↔ Disjoint p.support s := by
-  rw [toOuterMeasure_apply, ENNReal.tsum_eq_zero]
-  exact Function.funext_iff.symm.trans Set.indicator_eq_zero'
+  rw [toOuterMeasure_apply, ENNReal.coe_tsum (p.summable_indicator s), ENNReal.tsum_eq_zero]
+  simp_rw [ Pmf.support, Function.support_disjoint_iff (f := p) (s := s)]
+  apply forall_congr'
+  simp
 #align pmf.to_outer_measure_apply_eq_zero_iff Pmf.toOuterMeasure_apply_eq_zero_iff
 
 theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support ⊆ s := by
+  simp_rw [ Pmf.support, Function.support_disjoint_iff (f := p) (s := s)]
   refine' (p.toOuterMeasure_apply s).symm ▸ ⟨fun h a hap => _, fun h => _⟩
   · refine' by_contra fun hs => ne_of_lt _ (h.trans p.tsum_coe.symm)
     have hs' : s.indicator p a = 0 := Set.indicator_apply_eq_zero.2 fun hs' => False.elim <| hs hs'
