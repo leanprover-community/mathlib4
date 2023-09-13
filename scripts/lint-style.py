@@ -48,6 +48,7 @@ ERR_DOT = 12 # isolated or low focusing dot
 ERR_SEM = 13 # the substring " ;"
 ERR_WIN = 14 # Windows line endings "\r\n"
 ERR_TWS = 15 # Trailing whitespace
+ERR_CLN = 16 # Line starts with a colon
 
 exceptions = []
 
@@ -250,12 +251,14 @@ def isolated_by_dot_semicolon_check(lines, path):
                 errors += [(ERR_IBY, line_nr, path)]
         if line.lstrip().startswith(". "):
             errors += [(ERR_DOT, line_nr, path)]
-            line = line.replace(". ", "· ", count=1)
+            line = line.replace(". ", "· ", 1)
         if line.strip() in (".", "·"):
             errors += [(ERR_DOT, line_nr, path)]
         if " ;" in line:
             errors += [(ERR_SEM, line_nr, path)]
             line = line.replace(" ;", ";")
+        if line.lstrip().startswith(":"):
+            errors += [(ERR_CLN, line_nr, path)]
         newlines.append((line_nr, line))
     return errors, newlines
 
@@ -301,6 +304,8 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
         if errno == ERR_TWS:
             output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
+        if errno == ERR_CLN:
+            output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
 
 def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:

@@ -64,12 +64,12 @@ class VAddMemClass (S : Type*) (R : outParam <| Type*) (M : Type*) [VAdd R M] [S
 attribute [to_additive] SMulMemClass
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
-lemma AddSubmonoidClass.nsmulMemClass {S M : Type _} [AddMonoid M] [SetLike S M]
+lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] : SMulMemClass S ℕ M where
   smul_mem n _x hx := nsmul_mem hx n
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
-lemma AddSubgroupClass.zsmulMemClass {S M : Type _} [SubNegMonoid M] [SetLike S M]
+lemma AddSubgroupClass.zsmulMemClass {S M : Type*} [SubNegMonoid M] [SetLike S M]
     [AddSubgroupClass S M] : SMulMemClass S ℤ M where
   smul_mem n _x hx := zsmul_mem hx n
 
@@ -242,8 +242,8 @@ instance (priority := 75) toMulAction : MulAction R S' :=
 #align sub_mul_action.smul_mem_class.to_mul_action SubMulAction.SMulMemClass.toMulAction
 
 /-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
-protected def subtype : S' →[R] M :=
-  ⟨Subtype.val, fun _ _ => rfl⟩
+protected def subtype : S' →[R] M where
+  toFun := Subtype.val; map_smul' _ _ := rfl
 #align sub_mul_action.smul_mem_class.subtype SubMulAction.SMulMemClass.subtype
 
 @[simp]
