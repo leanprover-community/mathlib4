@@ -86,6 +86,7 @@ variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCo
   [Module R A] [StarAddMonoid A] [StarModule R A]
 
 /-- The self-adjoint elements of a star module, as a submodule. -/
+@[reducible]
 def selfAdjoint.submodule : Submodule R A :=
   { selfAdjoint A with smul_mem' := fun _ _ => (IsSelfAdjoint.all _).smul }
 #align self_adjoint.submodule selfAdjoint.submodule
@@ -94,6 +95,12 @@ def selfAdjoint.submodule : Submodule R A :=
 def skewAdjoint.submodule : Submodule R A :=
   { skewAdjoint A with smul_mem' := skewAdjoint.smul_mem }
 #align skew_adjoint.submodule skewAdjoint.submodule
+
+@[simp]
+theorem selfAdjoint.subtype_apply (x : selfAdjoint A) :
+    (selfAdjoint.submodule R A).subtype x = (x : A) := Submodule.subtype_apply _ _
+
+#check selfAdjoint.subtype_apply
 
 variable {A} [Invertible (2 : R)]
 
@@ -179,14 +186,8 @@ def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A
   refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
     (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
     ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
-  ext <;> simp only [LinearMap.coe_comp, LinearMap.coe_inl,
-      LinearMap.coe_inr, Function.comp_apply, LinearMap.coprod_apply, map_zero, add_zero,
-      LinearMap.prod_apply, Pi.prod, skewAdjointPart_apply_coe, LinearMap.id_comp,
-        ZeroMemClass.coe_zero]
-  · erw [Submodule.subtype_apply]; simp
-  · erw [Submodule.subtype_apply]; simp
-  · erw [Submodule.subtype_apply]; simp
-  · erw [Submodule.subtype_apply]; simp
+  -- Note: with #6965 `Submodule.coeSubtype` doesn't fire in `dsimp` or `simp`
+  ext x <;> dsimp <;> erw [Submodule.coeSubtype, Submodule.coeSubtype] <;> simp
 #align star_module.decompose_prod_adjoint StarModule.decomposeProdAdjoint
 
 @[simp]
