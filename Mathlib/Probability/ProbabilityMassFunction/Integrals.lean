@@ -25,14 +25,13 @@ section General
 variable {α : Type _} [MeasurableSpace α] [MeasurableSingletonClass α]
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
-theorem integral_eq_tsum
-  (p : Pmf α) (f : α → E) (hf : Integrable (fun a ↦ f a) p.toMeasure) :
+theorem integral_eq_tsum (p : Pmf α) (f : α → E) (hf : Integrable f p.toMeasure) :
     ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
-  _ = ∑' (a : ↑(support p)), (p.toMeasure {a.val}).toReal • f a := by
+  _ = ∑' (a : support p), (p.toMeasure {a.val}).toReal • f a := by
     apply integral_countable f p.support_countable
     rwa [restrict_toMeasure_support p]
-  _ = ∑' (a : ↑(support p)), (p a).toReal • f a := by
+  _ = ∑' (a : support p), (p a).toReal • f a := by
     congr with x; congr
     apply Pmf.toMeasure_apply_singleton p x (MeasurableSet.singleton _)
   _ = ∑' a, (p a).toReal • f a :=
