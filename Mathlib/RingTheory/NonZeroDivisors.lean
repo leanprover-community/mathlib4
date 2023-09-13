@@ -10,16 +10,20 @@ import Mathlib.Util.Superscript
 #align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
-# Non-zero divisors
+# Non-zero divisors and smul-divisors
 
-In this file we define the submonoid `nonZeroDivisors` of a `MonoidWithZero`.
+In this file we define the submonoid `nonZeroDivisors` and `nonZeroSMulDivisors` of a
+`MonoidWithZero`.
 
 ## Notations
 
-This file declares the notation `R⁰` for the submonoid of non-zero-divisors of `R`,
-in the locale `nonZeroDivisors`.
+This file declares the notations:
+- `R⁰` for the submonoid of non-zero-divisors of `R`, in the locale `nonZeroDivisors`.
+- `R⁰[M]` for the submonoid of non-zero smul-divisors of `R` with respect to `M`, in the locale
+  `nonZeroSMulDivisors`
 
-Use the statement `open nonZeroDivisors` to access this notation in your own code.
+Use the statement `open nonZeroDivisors nonZeroSMulDivisors` to access this notation in your own
+code.
 
 -/
 
@@ -38,7 +42,7 @@ scoped[nonZeroDivisors] notation:9000 R "⁰" => nonZeroDivisors R
 
 /-- Let `R` be a monoid with zero and `M` an additive monoid with an `R`-action, then the collection
 of non-zero smul-divisors forms a submonoid. These elements are also called `M`-regular.-/
-def nonZeroSMulDivisors (R : Type*) [MonoidWithZero R] (M : Type _) [AddMonoid M] [MulAction R M] :
+def nonZeroSMulDivisors (R : Type*) [MonoidWithZero R] (M : Type _) [Zero M] [MulAction R M] :
     Submonoid R where
   carrier := { r | ∀ m : M, r • m = 0 → m = 0}
   one_mem' m h := (one_smul R m) ▸ h
