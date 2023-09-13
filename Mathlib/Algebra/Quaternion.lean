@@ -585,6 +585,7 @@ theorem finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R �
   rw [FiniteDimensional.finrank, rank_eq_four, Cardinal.toNat_ofNat]
 #align quaternion_algebra.finrank_eq_four QuaternionAlgebra.finrank_eq_four
 
+/-- There is a natural equivalence when swapping the coefficients of a quaternion algebra. -/
 def swapEquiv : ℍ[R,c₁,c₂] ≃ₐ[R] ℍ[R, c₂, c₁] where
   toFun t := ⟨t.1, t.3, t.2, -t.4⟩
   invFun t := ⟨t.1, t.3, t.2, -t.4⟩
