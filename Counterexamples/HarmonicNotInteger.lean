@@ -7,6 +7,7 @@ Authors: Koundinya Vajjha
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.NumberTheory.Padics.PadicIntegers
+import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.Data.Int.Log
 /-!
 
@@ -46,13 +47,29 @@ namespace padicValRat
       _ ≥ min (padicValRat p (q + r)) (padicValRat p (-r)) := ge_iff_le.mp <| le_trans (padicValRat.min_le_padicValRat_add (q := q+r) (r := -r) (by simpa)) (by rw [add_neg_cancel_right, add_sub_cancel])
       _ = min (padicValRat p (q + r)) (padicValRat p r) := by rw [padicValRat.neg]
       }
-      rw [min_def] at Haux;
+      rw [min_def] at Haux
       split_ifs at Haux with Hspl; try assumption
       linarith
   }}
 
 end padicValRat
 
+namespace padicValNat
+
+  -- TODO: prove for when strict inequality holds.
+  lemma le_nat_log {p : ℕ} [hp : Fact (Nat.Prime p)] (n : ℕ):
+    padicValNat p n ≤ Nat.log p n  := by {
+      by_cases (n = 0); simp [h]
+      apply Nat.le_log_of_pow_le (Nat.Prime.one_lt hp.elim)
+      by_contra Hnot
+      have H₁ := Nat.eq_zero_of_dvd_of_lt (@pow_padicValNat_dvd p n)
+      push_neg at Hnot
+      apply h
+      apply H₁
+      exact Hnot
+    }
+
+end padicValNat
 
 def harmonic : ℕ  → ℚ
 | 0 => 0
@@ -116,8 +133,47 @@ theorem not_int_of_not_padic_int (a : ℚ) :
   }
 }
 
+lemma padicValRat_2_pow (r : ℕ)  : padicValRat 2 (1 / 2^r) = -r := by {
+  rw [one_div,padicValRat.inv,neg_inj,padicValRat.pow (by simp)]
+  suffices : padicValRat 2 2 = 1
+  simp only [this, mul_one]
+  rw [←padicValRat.self (p := 2)]; simp only [Nat.cast_ofNat]
+  norm_num
+}
 
-theorem harmonic_not_int : ∀ n, n ≥ 2 -> ¬ (harmonic n).isInt := by {
+#eval padicValRat 2 (1/4 + 1/7)
+
+lemma padicValRat_2_sum {r n : ℕ} (hr₁ : 2^r < n)(hr₂ : n < 2^(r+1)) : padicValRat 2 (1 / 2^r + 1 / n) = -r := by {
+  rw [padicValRat.min_eq_padicValRat]
+  {
+    rw [min_eq_left]
+    apply padicValRat_2_pow
+    rw [padicValRat_2_pow, one_div,padicValRat.inv,padicValRat.of_nat, neg_le_neg_iff, Nat.cast_le]
+    suffices Hr : r = Nat.log 2 n
+    rw [Hr]
+    apply padicValNat.le_nat_log
+    symm
+    rw [Nat.log_eq_iff]
+    exact ⟨le_of_lt hr₁,hr₂⟩
+    right
+    constructor; trivial
+    rw [← Nat.pos_iff_ne_zero]
+    eapply lt_of_lt_of_le _ (le_of_lt hr₁)
+    apply pow_pos; trivial
+  }
+  sorry
+  sorry
+  sorry
+  rw [padicValRat_2_pow, one_div, padicValRat.inv,padicValRat.of_nat]
+  intro Hnot
+  simp only [padicValRat.of_nat, neg_inj, Nat.cast_inj] at Hnot
+  rw [Hnot] at hr₁
+  have Hdvd := pow_padicValNat_dvd (p := 2) (n := n)
+  sorry
+
+}
+
+theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
   intro n Hn
   apply not_int_of_not_padic_int
   unfold padicNorm
@@ -132,10 +188,10 @@ theorem harmonic_not_int : ∀ n, n ≥ 2 -> ¬ (harmonic n).isInt := by {
     apply one_lt_zpow; try simp
     apply lt_neg.mp
     rw [neg_zero]
-    suffices Hlog : padicValRat 2 (harmonic n) = -Nat.log 2 n
+    suffices Hlog : padicValRat 2 (harmonic n) = -Int.log 2 (n : ℚ)
     rw [Hlog]
-    simpa only [Left.neg_neg_iff, Nat.cast_pos, Nat.log_pos_iff, and_true]
-    norm_cast
+    simp only [Int.log_natCast, Left.neg_neg_iff, Nat.cast_pos, Nat.log_pos_iff, and_true, Hn]
+    simp only [Int.log_natCast]
     sorry
 
   }
