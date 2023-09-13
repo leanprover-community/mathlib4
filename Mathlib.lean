@@ -113,8 +113,9 @@ import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Algebra.ContinuedFractions.Computation.TerminatesIffRat
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
-import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
-import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
+import Mathlib.Algebra.ContinuedFractions.ContinuantRecurrence
+import Mathlib.Algebra.ContinuedFractions.EvalEquiv
+import Mathlib.Algebra.ContinuedFractions.Real
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Algebra.ContinuedFractions.Translations
 import Mathlib.Algebra.CovariantAndContravariant

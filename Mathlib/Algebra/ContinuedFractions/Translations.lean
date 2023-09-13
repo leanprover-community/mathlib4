@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
 
 #align_import algebra.continued_fractions.translations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -18,8 +17,6 @@ Some simple translation lemmas between the different definitions of functions de
 -/
 
 
-namespace GCF
-
 section General
 
 /-!
@@ -29,6 +26,7 @@ Here we give some basic translations that hold by definition between the various
 us to access the numerators and denominators of a continued fraction.
 -/
 
+namespace GCF
 
 variable {α : Type*} {g : GCF α} {n : ℕ}
 
@@ -56,11 +54,11 @@ theorem terminatedAt_iff_partDenom_none : g.TerminatedAt n ↔ g.partDenoms.get?
 
 theorem partNum_eq_s_fst {gp : α × α} (s_nth_eq : g.s.get? n = some gp) :
     g.partNums.get? n = some gp.1 := by simp [partNums, s_nth_eq]
-#align generalized_continued_fraction.part_num_eq_s_a GCF.partNum_eq_s_fstₓ
+#align generalized_continued_fraction.part_num_eq_s_a GCF.partNum_eq_s_fst
 
 theorem partDenom_eq_s_snd {gp : α × α} (s_nth_eq : g.s.get? n = some gp) :
     g.partDenoms.get? n = some gp.2 := by simp [partDenoms, s_nth_eq]
-#align generalized_continued_fraction.part_denom_eq_s_b GCF.partDenom_eq_s_sndₓ
+#align generalized_continued_fraction.part_denom_eq_s_b GCF.partDenom_eq_s_snd
 
 theorem exists_s_fst_of_partNum {a : α} (nth_partNum_eq : g.partNums.get? n = some a) :
     ∃ gp, g.s.get? n = some gp ∧ gp.1 = a := by
@@ -73,6 +71,8 @@ theorem exists_s_snd_of_partDenom {b : α}
   simpa [partDenoms, Stream'.Seq.map_get?] using nth_partDenom_eq
 #align generalized_continued_fraction.exists_s_b_of_part_denom GCF.exists_s_snd_of_partDenom
 
+end GCF
+
 end General
 
 section WithDivisionRing
@@ -84,109 +84,80 @@ Here we  give some basic translations that hold by definition for the computatio
 continued fraction.
 -/
 
+namespace FGCF
 
-variable {K : Type*} {g : GCF K} {n : ℕ} [DivisionRing K]
+variable {K : Type*} (f : FGCF K) (h : K) (l : List (K × K)) (p : K × K) [DivisionRing K]
 
-/-
-theorem nth_cont_eq_succ_nth_contAux : g.continuants n = g.continuantsAux (n + 1) :=
+#noalign generalized_continued_fraction.nth_cont_eq_succ_nth_cont_aux
+
+theorem num_eq_cont_fst : f.numerator = f.continuant.1 :=
   rfl
-#align generalized_continued_fraction.nth_cont_eq_succ_nth_cont_aux GCF.nth_cont_eq_succ_nth_contAux
+#align generalized_continued_fraction.num_eq_conts_a FGCF.num_eq_cont_fstₓ
 
-theorem num_eq_conts_a : g.numerators n = (g.continuants n).a :=
+theorem denom_eq_cont_snd : f.denominator = f.continuant.2 :=
   rfl
-#align generalized_continued_fraction.num_eq_conts_a GCF.num_eq_conts_a
+#align generalized_continued_fraction.denom_eq_conts_b FGCF.denom_eq_cont_sndₓ
 
-theorem denom_eq_conts_b : g.denominators n = (g.continuants n).b :=
-  rfl
-#align generalized_continued_fraction.denom_eq_conts_b GCF.denom_eq_conts_b
+#noalign generalized_continued_fraction.convergent_eq_num_div_denom
 
-theorem convergent_eq_num_div_denom : g.convergents n = g.numerators n / g.denominators n :=
-  rfl
-#align generalized_continued_fraction.convergent_eq_num_div_denom GCF.convergent_eq_num_div_denom
+#noalign generalized_continued_fraction.convergent_eq_conts_a_div_conts_b
 
-theorem convergent_eq_conts_a_div_conts_b :
-    g.convergents n = (g.continuants n).a / (g.continuants n).b :=
-  rfl
-#align generalized_continued_fraction.convergent_eq_conts_a_div_conts_b GCF.convergent_eq_conts_a_div_conts_b
+#noalign generalized_continued_fraction.exists_conts_a_of_num
 
-theorem exists_conts_a_of_num {A : K} (nth_num_eq : g.numerators n = A) :
-    ∃ conts, g.continuants n = conts ∧ conts.a = A := by simpa
-#align generalized_continued_fraction.exists_conts_a_of_num GCF.exists_conts_a_of_num
+#noalign generalized_continued_fraction.exists_conts_b_of_denom
 
-theorem exists_conts_b_of_denom {B : K} (nth_denom_eq : g.denominators n = B) :
-    ∃ conts, g.continuants n = conts ∧ conts.b = B := by simpa
-#align generalized_continued_fraction.exists_conts_b_of_denom GCF.exists_conts_b_of_denom
+#noalign generalized_continued_fraction.zeroth_continuant_aux_eq_one_zero
+
+#noalign generalized_continued_fraction.first_continuant_aux_eq_h_one
 
 @[simp]
-theorem zeroth_continuantAux_eq_one_zero : g.continuantsAux 0 = ⟨1, 0⟩ :=
+theorem continuant_mk_nil : continuant ⟨h, []⟩ = (h, 1) :=
   rfl
-#align generalized_continued_fraction.zeroth_continuant_aux_eq_one_zero GCF.zeroth_continuantAux_eq_one_zero
+#align generalized_continued_fraction.zeroth_continuant_eq_h_one FGCF.continuant_mk_nilₓ
 
 @[simp]
-theorem first_continuantAux_eq_h_one : g.continuantsAux 1 = ⟨g.h, 1⟩ :=
+theorem numerator_mk_nil : numerator ⟨h, []⟩ = h :=
   rfl
-#align generalized_continued_fraction.first_continuant_aux_eq_h_one GCF.first_continuantAux_eq_h_one
+#align generalized_continued_fraction.zeroth_numerator_eq_h FGCF.numerator_mk_nilₓ
 
 @[simp]
-theorem zeroth_continuant_eq_h_one : g.continuants 0 = ⟨g.h, 1⟩ :=
+theorem denominator_mk_nil : denominator ⟨h, []⟩ = 1 :=
   rfl
-#align generalized_continued_fraction.zeroth_continuant_eq_h_one GCF.zeroth_continuant_eq_h_one
+#align generalized_continued_fraction.zeroth_denominator_eq_one FGCF.denominator_mk_nilₓ
 
 @[simp]
-theorem zeroth_numerator_eq_h : g.numerators 0 = g.h :=
-  rfl
-#align generalized_continued_fraction.zeroth_numerator_eq_h GCF.zeroth_numerator_eq_h
+theorem eval?_mk_nil [DecidableEq K] : eval? ⟨h, []⟩ = some h := by
+  simp [eval?]
+#align generalized_continued_fraction.zeroth_convergent_eq_h FGCF.eval?_mk_nilₓ
+
+#noalign generalized_continued_fraction.second_continuant_aux_eq
 
 @[simp]
-theorem zeroth_denominator_eq_one : g.denominators 0 = 1 :=
-  rfl
-#align generalized_continued_fraction.zeroth_denominator_eq_one GCF.zeroth_denominator_eq_one
+theorem continuant_mk_singleton : continuant ⟨h, [p]⟩ = (p.2 * h + p.1, p.2) := by
+  simp [continuant]
+#align generalized_continued_fraction.first_continuant_eq FGCF.continuant_mk_singletonₓ
 
 @[simp]
-theorem zeroth_convergent_eq_h : g.convergents 0 = g.h := by
-  simp [convergent_eq_num_div_denom, num_eq_conts_a, denom_eq_conts_b, div_one]
-#align generalized_continued_fraction.zeroth_convergent_eq_h GCF.zeroth_convergent_eq_h
-
-theorem second_continuantAux_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
-    g.continuantsAux 2 = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
-  simp [zeroth_s_eq, continuantsAux]
-#align generalized_continued_fraction.second_continuant_aux_eq GCF.second_continuantAux_eq
-
-theorem first_continuant_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
-    g.continuants 1 = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
-  simp [nth_cont_eq_succ_nth_contAux]
-  -- porting note: simp used to work here, but now it can't figure out that 1 + 1 = 2
-  convert second_continuantAux_eq zeroth_s_eq
-#align generalized_continued_fraction.first_continuant_eq GCF.first_continuant_eq
-
-theorem first_numerator_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
-    g.numerators 1 = gp.b * g.h + gp.a := by simp [num_eq_conts_a, first_continuant_eq zeroth_s_eq]
-#align generalized_continued_fraction.first_numerator_eq GCF.first_numerator_eq
-
-theorem first_denominator_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
-    g.denominators 1 = gp.b := by simp [denom_eq_conts_b, first_continuant_eq zeroth_s_eq]
-#align generalized_continued_fraction.first_denominator_eq GCF.first_denominator_eq
+theorem numerator_mk_singleton : numerator ⟨h, [p]⟩ = p.2 * h + p.1 := by
+  rw [numerator, continuant_mk_singleton]
+#align generalized_continued_fraction.first_numerator_eq FGCF.numerator_mk_singletonₓ
 
 @[simp]
-theorem zeroth_convergent'Aux_eq_zero {s : Stream'.Seq <| Pair K} :
-    convergents'Aux s 0 = (0 : K) :=
-  rfl
-#align generalized_continued_fraction.zeroth_convergent'_aux_eq_zero GCF.zeroth_convergent'Aux_eq_zero
+theorem denominator_mk_singleton : denominator ⟨h, [p]⟩ = p.2 := by
+  rw [denominator, continuant_mk_singleton]
+#align generalized_continued_fraction.first_denominator_eq FGCF.denominator_mk_singletonₓ
+
+#noalign generalized_continued_fraction.zeroth_convergent'_aux_eq_zero
 
 @[simp]
-theorem zeroth_convergent'_eq_h : g.convergents' 0 = g.h := by simp [convergents']
-#align generalized_continued_fraction.zeroth_convergent'_eq_h GCF.zeroth_convergent'_eq_h
+theorem evalF?_mk_nil [DecidableEq K] : evalF? ⟨h, []⟩ = some h := by
+  simp [evalF?]
+#align generalized_continued_fraction.zeroth_convergent'_eq_h FGCF.evalF?_mk_nilₓ
 
-theorem convergents'Aux_succ_none {s : Stream'.Seq (Pair K)} (h : s.head = none) (n : ℕ) :
-    convergents'Aux s (n + 1) = 0 := by simp [convergents'Aux, h, convergents'Aux.match_1]
-#align generalized_continued_fraction.convergents'_aux_succ_none GCF.convergents'Aux_succ_none
+#noalign generalized_continued_fraction.convergents'_aux_succ_none
 
-theorem convergents'Aux_succ_some {s : Stream'.Seq (Pair K)} {p : Pair K} (h : s.head = some p)
-    (n : ℕ) : convergents'Aux s (n + 1) = p.a / (p.b + convergents'Aux s.tail n) := by
-  simp [convergents'Aux, h, convergents'Aux.match_1]
-#align generalized_continued_fraction.convergents'_aux_succ_some GCF.convergents'Aux_succ_some
--/
+#noalign generalized_continued_fraction.convergents'_aux_succ_some
+
+end FGCF
 
 end WithDivisionRing
-
-end GCF

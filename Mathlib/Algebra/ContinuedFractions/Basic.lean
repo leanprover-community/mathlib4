@@ -81,15 +81,10 @@ variable {α : Type*}
 
 namespace GCF
 
-/-- Constructs a generalized continued fraction without fractional part. -/
-@[simps]
-def ofInteger (a : α) : GCF α where
-  h := a
-  s := nil
-#align generalized_continued_fraction.of_integer GCF.ofInteger
+#noalign generalized_continued_fraction.of_integer
 
 instance [Inhabited α] : Inhabited (GCF α) where
-  default := ofInteger default
+  default := ⟨default, nil⟩
 
 /-- Returns the sequence of partial numerators `aᵢ` of `g`. -/
 def partNums (g : GCF α) : Stream'.Seq α :=
@@ -135,14 +130,8 @@ structure FGCF (α : Type*) where
 
 namespace FGCF
 
-/-- Constructs a finite generalized continued fraction without fractional part. -/
-@[simps]
-def ofInteger (a : α) : FGCF α where
-  h := a
-  l := []
-
 instance [Inhabited α] : Inhabited (FGCF α) where
-  default := ofInteger default
+  default := ⟨default, []⟩
 
 /-- Lift a fgcf to a gcf by casting a list to a sequence. -/
 @[coe, simps]
@@ -173,10 +162,6 @@ theorem _root_.GCF.exists_eq_FGCF_iff {g : GCF α} : (∃ f : FGCF α, ↑f = g)
 
 instance : CanLift (GCF α) (FGCF α) (↑) GCF.Terminates where
   prf _ h := GCF.exists_eq_FGCF_iff.mpr h
-
-@[simp, norm_cast]
-theorem toGCF_ofInteger (a : α) : (↑(FGCF.ofInteger a) : GCF α) = GCF.ofInteger a := by
-  ext1 <;> simp
 
 /-- Take the head term and the first `n` pairs of a partial numerator and denominator. -/
 @[simps]
@@ -236,15 +221,10 @@ namespace SCF
 
 variable [One α]
 
-/-- Constructs a simple continued fraction without fractional part. -/
-@[simps]
-def ofInteger (a : α) : SCF α where
-  h  := a
-  sb := nil
-#align simple_continued_fraction.of_integer SCF.ofInteger
+#noalign simple_continued_fraction.of_integer
 
 instance [Inhabited α] : Inhabited (SCF α) where
-  default := ofInteger default
+  default := ⟨default, nil⟩
 
 /-- Lift a scf to a gcf by adding `1`s as partial numerators. -/
 @[coe, simps]
@@ -281,10 +261,6 @@ theorem _root_.GCF.exists_eq_SCF_iff {g : GCF α} : (∃ s : SCF α, ↑s = g) �
 instance : CanLift (GCF α) (SCF α) (↑) IsSCF where
   prf _ h := GCF.exists_eq_SCF_iff.mpr h
 
-@[simp, norm_cast]
-theorem toGCF_ofInteger (a : α) : (↑(SCF.ofInteger a) : GCF α) = GCF.ofInteger a := by
-  ext1 <;> simp
-
 #noalign simple_continued_fraction.coe_to_generalized_continued_fraction
 
 end SCF
@@ -313,15 +289,10 @@ structure CF (α : Type*) where
 
 namespace CF
 
-/-- Constructs a continued fraction without fractional part. -/
-@[simps]
-def ofInteger (a : ℤ) : CF α where
-  h  := a
-  sb := nil
-#align continued_fraction.of_integer CF.ofInteger
+#noalign continued_fraction.of_integer
 
 instance : Inhabited (CF α) where
-  default := ofInteger 0
+  default := ⟨0, nil⟩
 
 /-- Lift a scf to a gcf by casting. -/
 @[coe, simps]
@@ -359,11 +330,6 @@ theorem _root_.SCF.exists_eq_CF_iff [AddGroupWithOne α] [CharZero α] {s : SCF 
 
 instance [AddGroupWithOne α] [CharZero α] : CanLift (SCF α) (CF α) (↑) IsCF where
   prf _ h := SCF.exists_eq_CF_iff.mpr h
-
-@[simp, norm_cast]
-theorem toSCF_ofInteger [NatCast α] [IntCast α] (a : ℤ) :
-    (↑(CF.ofInteger a : CF α) : SCF α) = SCF.ofInteger ↑a := by
-  ext1 <;> simp
 
 #noalign continued_fraction.coe_to_simple_continued_fraction
 #noalign continued_fraction.has_coe_to_generalized_continued_fraction
