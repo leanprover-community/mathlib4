@@ -10,6 +10,12 @@ import Mathlib.Util.Time
 
 set_option autoImplicit true
 
+namespace Array
+
+@[simp] theorem zip_data {A : Array α} {B : Array β} : (A.zip B).data = A.data.zip B.data := sorry
+
+end Array
+
 open Nat
 
 instance (L : List (Option α)) : Decidable (none ∈ L) := sorry
@@ -17,8 +23,9 @@ instance (L : List (Option α)) : Decidable (none ∈ L) := sorry
 def Nat.arrayGCD (x : Array Nat) : Nat := x.foldr gcd 0
 def Int.arrayGCD (x : Array Int) : Nat := x.foldr (fun a b => gcd a.natAbs b) 0
 
-#time
-example : Int.arrayGCD #[45, -15, 85] = 5 := rfl
+#time example : Nat.gcd (17*19*101^2*1024) (17*19*101*4*39) = 130492 := rfl
+#time example : Int.arrayGCD #[45, -15, 85] = 5 := rfl
+#time example : Int.arrayGCD #[17*19*101*101*1024, -17*19*101*4*39, 17*19*39] = 323 := rfl
 
 def Int.bmod (x : Int) (m : Nat) : Int :=
   let r := x % m
@@ -59,9 +66,44 @@ def evalRat (lc : LinearCombo) (values : Array Rat) : Rat := Id.run do
     r := r + c * x
   return r
 
-theorem evalRat_cast (lc : LinearCombo) (values : Array Int) :
-    lc.evalRat (values.map fun x : Int => (x : Rat)) = lc.eval values :=
+variable {lc : LinearCombo}
+
+theorem eval_eq : lc.eval values =
+    (lc.coefficients.zip values).foldl (fun r ⟨c, x⟩ => r + c * x) lc.constantTerm :=  by
   sorry
+
+theorem evalRat_eq : lc.evalRat values =
+    (lc.coefficients.zip values).foldl (fun r ⟨c, x⟩ => r + c * x) (lc.constantTerm : Rat) :=  by
+  sorry
+
+example : List.zip (a :: as) (b :: bs) = (a, b) :: List.zip as bs := by
+  simp -- Fine, `List.zip_cons_cons` is missing
+
+example : List.foldl f x (List.zip (a :: as) (b :: bs)) = f (List.foldl f x (List.zip as bs)) (a, b) := by
+  simp -- `simp?` says `simp only [List.foldl]`, but this isn't even marked with `@[simp]`.
+  -- Goal has become
+  -- List.foldl f (f x (a, b)) (List.zipWith Prod.mk as bs) = f (List.foldl f x (List.zip as bs)) (a, b)
+  -- Note that `List.zip` has been unfolded to `List.zipWith Prod.mk`!
+  sorry
+
+theorem evalRat_cast (lc : LinearCombo) (values : Array Int) :
+    lc.evalRat (values.map fun x : Int => (x : Rat)) = lc.eval values := by
+  rw [eval_eq, evalRat_eq]
+  simp [Array.foldl_eq_foldl_data]
+  rcases lc with ⟨const, ⟨coeffs⟩⟩
+  rcases values with ⟨values⟩
+  dsimp
+  induction coeffs generalizing const values with
+  | nil => simp
+  | cons c coeffs cih =>
+    rcases values with _ | ⟨v, values⟩
+    · simp
+    · specialize cih (const + c * v) _ values
+      sorry
+      dsimp?
+
+
+
 
 def satZero (lc : LinearCombo) : Prop :=
   ∃ values, lc.eval values = 0
