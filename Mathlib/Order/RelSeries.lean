@@ -34,15 +34,6 @@ namespace RelSeries
 instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
 { coe := RelSeries.toFun }
 
-instance : Preorder (RelSeries r) :=
-  Preorder.lift fun x => x.length
-
-lemma le_def (x y : RelSeries r) : x ≤ y ↔ x.length ≤ y.length :=
-  Iff.rfl
-
-lemma lt_def (x y : RelSeries r) : x < y ↔ x.length < y.length :=
-  Iff.rfl
-
 /--
 For any type `α`, each term of `α` gives a relation series with the right most index to be 0.
 -/
@@ -69,24 +60,24 @@ lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
   rcases y with ⟨ny, fy⟩
   dsimp at length_eq toFun_eq
   subst length_eq
-  rw [Fin.cast_refl, OrderIso.coe_refl, Function.comp.right_id] at toFun_eq
+  rw [Fin.cast_refl, Function.comp.right_id] at toFun_eq
   subst toFun_eq
   rfl
 
 lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i < j) :
     r (x i) (x j) := by
   induction i using Fin.inductionOn generalizing j with
-  | h0 => induction j using Fin.inductionOn with
-    | h0 => cases lt_irrefl _ h
-    | hs j ihj =>
+  | zero => induction j using Fin.inductionOn with
+    | zero => cases lt_irrefl _ h
+    | succ j ihj =>
       by_cases H : 0 < Fin.castSucc j
       . exact IsTrans.trans _ _ _ (ihj H) (x.step _)
       . simp only [not_lt, Fin.le_zero_iff] at H
         rw [← H]
         exact x.step _
-  | hs i _ => induction j using Fin.inductionOn with
-    | h0 => cases not_lt_of_lt (Fin.succ_pos i) h
-    | hs j ihj =>
+  | succ i _ => induction j using Fin.inductionOn with
+    | zero => cases not_lt_of_lt (Fin.succ_pos i) h
+    | succ j ihj =>
       obtain (H|H) : i.succ = Fin.castSucc j ∨ i.succ < Fin.castSucc j
       . change (i + 1 : ℕ) < (j + 1 : ℕ) at h
         rw [Nat.lt_succ_iff, le_iff_lt_or_eq] at h
@@ -145,7 +136,11 @@ corresponds to each other.-/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} where
   toFun := fun x => ⟨_, x.toList_ne_empty, x.toList_chain'⟩
   invFun := fun x => fromListChain' _ x.2.1 x.2.2
-  left_inv := fun x => ext (by dsimp; rw [List.length_ofFn, Nat.pred_succ]) <| by ext f; simp
+  left_inv := fun x => ext (by dsimp; rw [List.length_ofFn, Nat.pred_succ]) <| by
+    ext f
+    simp only [List.empty_eq, ne_eq, Set.coe_setOf, Set.mem_setOf_eq, fromListChain'_toFun,
+      Function.comp_apply, List.get_ofFn, fromListChain'_length]
+    rfl
   right_inv := by
     intro x
     refine Subtype.ext (List.ext_get ?_ <| fun n hn1 hn2 => ?_)
@@ -160,6 +155,49 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} w
 
 end RelSeries
 
+namespace Rel
+
+/-- a relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
+  maximum length. -/
+class FiniteDimensional where
+  /-- the longest relation series-/
+  longestRelSeries : RelSeries r
+  /-- the longest relation series is longer than any other series -/
+  is_longest : ∀ (y : RelSeries r), y.length ≤ longestRelSeries.length
+
+/-- the longest relational series when a relation is finite dimensional -/
+def longestRelSeries [r.FiniteDimensional] : RelSeries r := FiniteDimensional.longestRelSeries
+
+lemma longestRelSeries_is_longest [r.FiniteDimensional] (x : RelSeries r) :
+  x.length ≤ r.longestRelSeries.length := FiniteDimensional.is_longest _
+
+/-- a relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
+  length. -/
+class InfiniteDimensional where
+  /-- there should a relation series with length at least `n` for all natural number `n` -/
+  longRelSeries : ℕ → RelSeries r
+  /-- there should a relation series with length at least `n` for all natural number `n` -/
+  longRelSeries_length : ∀ (n : ℕ), n ≤ (longRelSeries n).length
+
+/-- a relation series with length at least `n` if the relation is infinite dimensional -/
+def relSeriesOfInfiniteDimensional [InfiniteDimensional r] (n : ℕ) : RelSeries r :=
+  (InfiniteDimensional.longRelSeries n)
+
+lemma le_relSeriesOfInfiniteDimensional_length [InfiniteDimensional r] (n : ℕ) :
+  n ≤ (r.relSeriesOfInfiniteDimensional n).length := InfiniteDimensional.longRelSeries_length n
+
+/-- if a relation on `α` is infinite dimensional, then `α` is inhabited -/
+def inhabited_of_infiniteDimensional [r.InfiniteDimensional] : Inhabited α :=
+  ⟨(r.relSeriesOfInfiniteDimensional 0) 0⟩
+
+end Rel
+
+class FiniteDimensionalType (γ : Type _) [Preorder γ] extends
+  Rel.FiniteDimensional ((. < .) : γ → γ → Prop)
+
+class InfiniteDimensionalType (γ : Type _) [Preorder γ] extends
+  Rel.InfiniteDimensional ((. < .) : γ → γ → Prop)
+
 section LTSeries
 
 variable (α) [Preorder α]
@@ -171,16 +209,40 @@ abbrev LTSeries := RelSeries ((. < .) : Rel α α)
 
 namespace LTSeries
 
+/-- the longest  `<`-series when a type is finite dimensional -/
+def longest [FiniteDimensionalType α] : LTSeries α :=
+  (inferInstance : FiniteDimensionalType α).longestRelSeries
+
+/-- a `<`-series with length at least `n` if the relation is infinite dimensional -/
+def lengthAtLeast [InfiniteDimensionalType α] (n : ℕ) : LTSeries α :=
+  ((inferInstance : InfiniteDimensionalType α).longRelSeries n)
+
+lemma le_lengthAtLeast_length [InfiniteDimensionalType α] (n : ℕ) :
+  n ≤ (LTSeries.lengthAtLeast α n).length :=
+((inferInstance : InfiniteDimensionalType α).longRelSeries_length n)
+
+/-- if `α` is infinite dimensional, then `α` is inhabited -/
+def inhabited_of_infiniteDimensionalType [InfiniteDimensionalType α] : Inhabited α :=
+  ⟨(LTSeries.lengthAtLeast α 0) 0⟩
+
 variable {α}
 
-lemma top_len_unique [OrderTop (LTSeries α)] (p : LTSeries α) (hp : IsTop p) :
-    p.length = (⊤ : LTSeries α).length :=
-  le_antisymm (@le_top (LTSeries α) _ _ _) (hp ⊤)
+lemma longest_is_longest [FiniteDimensionalType α] (x : LTSeries α) :
+  x.length ≤ (LTSeries.longest α).length :=
+(inferInstance : FiniteDimensionalType α).is_longest x
 
-lemma top_len_unique' (H1 H2 : OrderTop (LTSeries α)) : H1.top.length = H2.top.length :=
-  le_antisymm (H2.le_top H1.top) (H1.le_top H2.top)
+lemma longest_len_unique [FiniteDimensionalType α] (p : LTSeries α)
+  (is_longest : ∀ (q : LTSeries α), q.length ≤ p.length) :
+  p.length = (longest α).length :=
+le_antisymm (longest_is_longest _) (is_longest _)
 
-lemma StrictMono (x : LTSeries α) : StrictMono x :=
+lemma longest_len_unique' (H1 H2 : FiniteDimensionalType α) :
+  (@longest α _ H1).length = (@longest α _ H2).length :=
+le_antisymm
+  (@longest_is_longest α _ H2 (@longest α _ H1))
+  (@longest_is_longest α _ H1 (@longest α _ H2))
+
+lemma strictMono (x : LTSeries α) : StrictMono x :=
   fun _ _ h => x.rel_of_lt h
 
 section PartialOrder
