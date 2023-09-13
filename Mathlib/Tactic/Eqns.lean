@@ -36,7 +36,10 @@ initialize eqnsAttribute : NameMapExtension (Array Name) ←
     name  := `eqns
     descr := "Overrides the equation lemmas for a declaration to the provided list"
     add   := fun
-    | _, `(attr| eqns $[$names]*) =>
+    | declName, `(attr| eqns $[$names]*) => do
+      if let some _ := Meta.eqnsExt.getState (← getEnv) |>.map.find? declName then
+        throwError "There already exist stored eqns for '{declName}' registering new equations{
+            "\n"}will not have the desired effect."
       names.mapM resolveGlobalConstNoOverloadWithInfo
     | _, _ => Lean.Elab.throwUnsupportedSyntax }
 

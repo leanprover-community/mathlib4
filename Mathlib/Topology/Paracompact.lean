@@ -34,7 +34,7 @@ We also prove the following facts.
 * Every paracompact Hausdorff space is normal. This statement is not an instance to avoid loops in
   the instance graph.
 
-* Every `EMetricSpace` is a paracompact space, see instance `EMetricSpace.ParacompactSpace` in
+* Every `EMetricSpace` is a paracompact space, see instance `EMetric.instParacompactSpace` in
   `Topology/EMetricSpace/Paracompact`.
 
 ## TODO
@@ -287,17 +287,18 @@ instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [WeaklyLoc
   exact ⟨β, t, fun x ↦ (hto x).1.2, htc, htf, fun b ↦ ⟨i <| c b, (hto b).2⟩⟩
 #align paracompact_of_locally_compact_sigma_compact paracompact_of_locallyCompact_sigmaCompact
 
-/- Dieudonné's theorem: a paracompact Hausdorff space is normal. Formalization is based on the proof
+/- **Dieudonné's theorem**: a paracompact Hausdorff space is normal.
+Formalization is based on the proof
 at [ncatlab](https://ncatlab.org/nlab/show/paracompact+Hausdorff+spaces+are+normal). -/
-theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace X := by
+instance (priority := 100) T4Space.of_paracompactSpace_t2Space [T2Space X] [ParacompactSpace X] :
+    T4Space X := by
   -- First we show how to go from points to a set on one side.
-  have : ∀ s t : Set X, IsClosed s → IsClosed t →
+  have : ∀ s t : Set X, IsClosed s →
       (∀ x ∈ s, ∃ u v, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ t ⊆ v ∧ Disjoint u v) →
-      ∃ u v, IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := by
+      ∃ u v, IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := fun s t hs H ↦ by
     /- For each `x ∈ s` we choose open disjoint `u x ∋ x` and `v x ⊇ t`. The sets `u x` form an
         open covering of `s`. We choose a locally finite refinement `u' : s → Set X`, then
         `⋃ i, u' i` and `(closure (⋃ i, u' i))ᶜ` are disjoint open neighborhoods of `s` and `t`. -/
-    intro s t hs _ H
     choose u v hu hv hxu htv huv using SetCoe.forall'.1 H
     rcases precise_refinement_set hs u hu fun x hx ↦ mem_iUnion.2 ⟨⟨x, hx⟩, hxu _⟩ with
       ⟨u', hu'o, hcov', hu'fin, hsub⟩
@@ -308,10 +309,10 @@ theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace 
       absurd (htv i hxt) (closure_minimal _ (isClosed_compl_iff.2 <| hv _) hxu)
     exact fun y hyu hyv ↦ (huv i).le_bot ⟨hsub _ hyu, hyv⟩
   -- Now we apply the lemma twice: first to `s` and `t`, then to `t` and each point of `s`.
-  refine' ⟨fun s t hs ht hst ↦ this s t hs ht fun x hx ↦ _⟩
-  rcases this t {x} ht isClosed_singleton fun y hy ↦ (by
+  refine { normal := fun s t hs ht hst ↦ this s t hs fun x hx ↦ ?_ }
+  rcases this t {x} ht fun y hy ↦ (by
     simp_rw [singleton_subset_iff]
     exact t2_separation (hst.symm.ne_of_mem hy hx))
     with ⟨v, u, hv, hu, htv, hxu, huv⟩
   exact ⟨u, v, hu, hv, singleton_subset_iff.1 hxu, htv, huv.symm⟩
-#align normal_of_paracompact_t2 normal_of_paracompact_t2
+#align normal_of_paracompact_t2 T4Space.of_paracompactSpace_t2Space
