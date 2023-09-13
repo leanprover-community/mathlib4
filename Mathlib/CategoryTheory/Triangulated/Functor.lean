@@ -34,6 +34,27 @@ attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   shiftFunctorAdd'_eq_shiftFunctorAdd
   commShiftIso_comp_hom_app
 
+instance [Faithful F] : Faithful F.mapTriangle where
+  map_injective {X Y} f g h := by
+    ext <;> apply F.map_injective
+    · exact congr_arg TriangleMorphism.hom₁ h
+    · exact congr_arg TriangleMorphism.hom₂ h
+    · exact congr_arg TriangleMorphism.hom₃ h
+
+instance [Full F] [Faithful F] : Full F.mapTriangle where
+  preimage {X Y} f :=
+    { hom₁ := F.preimage f.hom₁
+      hom₂ := F.preimage f.hom₂
+      hom₃ := F.preimage f.hom₃
+      comm₁ := F.map_injective
+        (by simpa only [mapTriangle_obj, map_comp, image_preimage] using f.comm₁)
+      comm₂ := F.map_injective
+        (by simpa only [mapTriangle_obj, map_comp, image_preimage] using f.comm₂)
+      comm₃ := F.map_injective (by
+        rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app Y.obj₁)]
+        simpa only [mapTriangle_obj, map_comp, assoc, commShiftIso_hom_naturality,
+          image_preimage, Triangle.mk_mor₃] using f.comm₃) }
+
 @[simps!]
 noncomputable def mapTriangleCommShiftIso [F.Additive] (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
@@ -79,9 +100,10 @@ def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriang
   NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
       (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
-variable [HasZeroObject C] [HasZeroObject D]
+variable [HasZeroObject C] [HasZeroObject D] [HasZeroObject E]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
-  [Pretriangulated C] [Pretriangulated D]
+  [∀ (n : ℤ), (shiftFunctor E n).Additive]
+  [Pretriangulated C] [Pretriangulated D] [Pretriangulated E]
 
 class IsTriangulated : Prop where
   map_distinguished : ∀ (T : Triangle C), (T ∈ distTriang C) → F.mapTriangle.obj T ∈ distTriang D
@@ -138,6 +160,61 @@ noncomputable instance : PreservesLimitsOfShape (Discrete WalkingPair) F := by
 instance : F.Additive := F.additive_of_preserves_binary_products
 
 end IsTriangulated
+
+lemma map_distinguished_iff [F.IsTriangulated] [Full F] [Faithful F] (T : Triangle C) :
+    (F.mapTriangle.obj T ∈ distTriang D) ↔ T ∈ distTriang C := by
+  constructor
+  · intro hT
+    obtain ⟨Z, g, h, mem⟩ := distinguished_cocone_triangle T.mor₁
+    refine' isomorphic_distinguished _ mem _ (F.mapTriangle.preimageIso _)
+    exact isoTriangleOfIso₁₂ _ _ hT (F.map_distinguished _ mem) (Iso.refl _) (Iso.refl _)
+      (by simp)
+  · exact F.map_distinguished T
+
+def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ] [F₂.CommShift ℤ]
+    [NatTrans.CommShift e.hom ℤ] : F₁.mapTriangle ≅ F₂.mapTriangle :=
+  NatIso.ofComponents (fun T =>
+    Triangle.isoMk _ _ (e.app _) (e.app _) (e.app _) (by simp) (by simp) (by
+      dsimp
+      simp only [assoc, NatTrans.CommShift.comm_app e.hom (1 : ℤ) T.obj₁,
+        NatTrans.naturality_assoc])) (by aesop_cat)
+
+lemma isTriangulated_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ] [F₂.CommShift ℤ]
+    [NatTrans.CommShift e.hom ℤ] [F₁.IsTriangulated] : F₂.IsTriangulated where
+  map_distinguished T hT :=
+    isomorphic_distinguished _ (F₁.map_distinguished T hT) _ ((mapTriangleIso e).app T).symm
+
+lemma isTriangulated_iff_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ] [F₂.CommShift ℤ]
+    [NatTrans.CommShift e.hom ℤ] : F₁.IsTriangulated ↔ F₂.IsTriangulated := by
+  constructor
+  · intro
+    exact isTriangulated_of_iso e
+  · intro
+    have : NatTrans.CommShift e.symm.hom ℤ := by
+      dsimp
+      infer_instance
+    exact isTriangulated_of_iso e.symm
+
+instance (F : C ⥤ D) (G : D ⥤ E) [F.CommShift ℤ] [G.CommShift ℤ] [F.IsTriangulated]
+    [G.IsTriangulated] : (F ⋙ G).IsTriangulated where
+  map_distinguished T hT :=
+    isomorphic_distinguished _ (G.map_distinguished _ (F.map_distinguished T hT)) _
+      ((mapTriangleCompIso F G).app T)
+
+lemma isTriangulated_iff_comp_right {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
+    [F.CommShift ℤ] [G.CommShift ℤ] [H.CommShift ℤ] [NatTrans.CommShift e.hom ℤ]
+    [G.IsTriangulated] [Full G] [Faithful G] :
+    F.IsTriangulated ↔ H.IsTriangulated := by
+  rw [← isTriangulated_iff_of_iso e]
+  constructor
+  · intro
+    infer_instance
+  · intro
+    constructor
+    intro T hT
+    rw [← G.map_distinguished_iff]
+    exact isomorphic_distinguished _ ((F ⋙ G).map_distinguished T hT) _
+      ((mapTriangleCompIso F G).symm.app T)
 
 end Functor
 

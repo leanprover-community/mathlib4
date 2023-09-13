@@ -4,9 +4,10 @@ import Mathlib.CategoryTheory.Triangulated.Subcategory
 
 open CategoryTheory Category Limits Triangulated ZeroObject Pretriangulated
 
-namespace HomotopyCategory
-
 variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
+  {D : Type _} [Category D] [Preadditive D] [HasZeroObject D] [HasBinaryBiproducts D]
+
+namespace HomotopyCategory
 
 def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) where
   set K := ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.1 n
@@ -52,8 +53,34 @@ def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) whe
         ((quotient _ _).commShiftIso (-1)).symm.app (CochainComplex.mappingCone f)
 
 abbrev Plus := (subcategoryPlus C).category
+abbrev ιPlus : Plus C ⥤ HomotopyCategory C (ComplexShape.up ℤ) := (subcategoryPlus C).ι
 
---instance : Pretriangulated (Plus C) := inferInstance
+--noncomputable instance : Pretriangulated (Plus C) := inferInstance
 --instance : IsTriangulated (Plus C) := inferInstance
 
+variable {C}
+
 end HomotopyCategory
+
+namespace CategoryTheory
+
+namespace Functor
+
+variable (F : C ⥤ D) [F.Additive]
+
+def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus D :=
+  (HomotopyCategory.subcategoryPlus D).lift
+    (HomotopyCategory.ιPlus C ⋙ F.mapHomotopyCategory (ComplexShape.up ℤ)) (by
+      rintro ⟨X, ⟨n, _⟩⟩
+      refine' ⟨n, _⟩
+      dsimp [HomotopyCategory.ιPlus, Subcategory.ι, HomotopyCategory.quotient]
+      infer_instance)
+
+--noncomputable instance : (F.mapHomotopyCategoryPlus).CommShift ℤ := by
+--  have : (F.mapHomotopyCategory (ComplexShape.up ℤ)).CommShift ℤ := sorry
+--  dsimp only [mapHomotopyCategoryPlus]
+--  infer_instance
+
+end Functor
+
+end CategoryTheory

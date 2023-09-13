@@ -358,6 +358,14 @@ lemma ext₃ [S.set.RespectsIso] (T : Triangle C) (hT : T ∈ distTriang C) (h�
     (h₂ : T.obj₂ ∈ S.set) : T.obj₃ ∈ S.set :=
   S.ext₂ _ (rot_of_dist_triangle _ hT) h₂ (S.shift _ _ h₁)
 
+lemma ext₁' (T : Triangle C) (hT : T ∈ distTriang C) (h₂ : T.obj₂ ∈ S.set)
+    (h₃ : T.obj₃ ∈ S.set) : T.obj₁ ∈ S.set.isoClosure :=
+  S.ext₂' _ (inv_rot_of_dist_triangle _ hT) (S.shift _ _ h₃) h₂
+
+lemma ext₃' (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : T.obj₁ ∈ S.set)
+    (h₂ : T.obj₂ ∈ S.set) : T.obj₃ ∈ S.set.isoClosure :=
+  S.ext₂' _ (rot_of_dist_triangle _ hT) h₂ (S.shift _ _ h₁)
+
 noncomputable example [IsTriangulated C] : Pretriangulated (S.W.Localization) := inferInstance
 
 def category := FullSubcategory S.set
@@ -399,7 +407,7 @@ instance : HasZeroObject S.category where
     change 𝟙 (S.zeroObject) = 0
     apply S.isZero_zeroObject.eq_of_tgt
 
-instance [S.set.RespectsIso] : Pretriangulated S.category where
+instance : Pretriangulated S.category where
   distinguishedTriangles := fun T => S.ι.mapTriangle.obj T ∈ distTriang C
   isomorphic_distinguished := fun T₁ hT₁ T₂ e =>
     isomorphic_distinguished _ hT₁ _ (S.ι.mapTriangle.mapIso e)
@@ -409,10 +417,12 @@ instance [S.set.RespectsIso] : Pretriangulated S.category where
       (by aesop_cat) (by aesop_cat) (by aesop_cat)
   distinguished_cocone_triangle {X Y} f := by
     obtain ⟨Z', g', h', mem⟩ := distinguished_cocone_triangle (S.ι.map f)
-    let Z : S.category := ⟨Z', S.ext₃ _ mem X.2 Y.2⟩
-    refine' ⟨Z, S.ι.preimage g', S.ι.preimage (h' ≫ (S.ι.commShiftIso (1 : ℤ)).inv.app X),
+    obtain ⟨Z'', hZ'', ⟨e⟩⟩ := S.ext₃' _ mem X.2 Y.2
+    let Z : S.category := ⟨Z'', hZ''⟩
+    refine' ⟨Z, S.ι.preimage (g' ≫ e.hom),
+      S.ι.preimage (e.inv ≫ h' ≫ (S.ι.commShiftIso (1 : ℤ)).inv.app X),
       isomorphic_distinguished _ mem _ _⟩
-    exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
       (by aesop_cat) (by aesop_cat) (by aesop_cat)
   rotate_distinguished_triangle T :=
     (rotate_distinguished_triangle (S.ι.mapTriangle.obj T)).trans
@@ -432,7 +442,7 @@ instance [S.set.RespectsIso] : Pretriangulated S.category where
 
 --instance [IsTriangulated C] : IsTriangulated S.category := sorry
 
-instance [S.set.RespectsIso] : S.ι.IsTriangulated := ⟨fun _ hT => hT⟩
+instance : S.ι.IsTriangulated := ⟨fun _ hT => hT⟩
 
 /-inductive setSpan (S : Set C) : C → Prop
   | subset (X : C) (hX : X ∈ S) : setSpan S X
@@ -642,10 +652,11 @@ noncomputable instance [HasShift D ℤ] [F.CommShift ℤ] :
   NatTrans.CommShift (S.liftCompInclusion F hF).hom ℤ :=
     Functor.CommShift.ofComp_compatibility _ _
 
-variable [S.set.RespectsIso]
-
---variable [HasZeroObject D] [Preadditive D] [HasShift D ℤ]
--- lift commutes with the shift if `F` does, is triangulated if `F` is
+instance [HasShift D ℤ] [Preadditive D] [F.CommShift ℤ] [HasZeroObject D]
+    [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D] [F.IsTriangulated]:
+    (S.lift F hF).IsTriangulated := by
+  rw [Functor.isTriangulated_iff_comp_right (S.liftCompInclusion F hF)]
+  infer_instance
 
 end
 
@@ -661,7 +672,7 @@ open Category Limits
 
 variable {C : Type _} [Category C] [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C] [IsTriangulated C]
-  (S : Triangulated.Subcategory C) [S.set.RespectsIso]
+  (S : Triangulated.Subcategory C)
 
 noncomputable example : Pretriangulated S.W.Localization := inferInstance
 noncomputable example : IsTriangulated S.W.Localization := inferInstance
