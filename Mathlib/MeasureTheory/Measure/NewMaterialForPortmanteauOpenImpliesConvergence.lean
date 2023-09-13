@@ -20,14 +20,14 @@ open scoped ENNReal NNReal BoundedContinuousFunction Topology
 -- NOTE: Missing from Mathlib?
 -- What would be a good generality?
 -- (Mixes order-boundedness and metric-boundedness, so typeclasses don't readily exist.)
-lemma Filter.isBounded_le_map_of_bounded_range (F : Filter ι) {f : ι → ℝ}
+lemma Filter.isBounded_le_map_of_bounded_range {ι : Type*} (F : Filter ι) {f : ι → ℝ}
     (h : Metric.Bounded (Set.range f)) :
     (F.map f).IsBounded (· ≤ ·) := by
   rw [Real.bounded_iff_bddBelow_bddAbove] at h
   obtain ⟨c, hc⟩ := h.2
   refine isBoundedUnder_of ⟨c, by simpa [mem_upperBounds] using hc⟩
 
-lemma Filter.isBounded_ge_map_of_bounded_range (F : Filter ι) {f : ι → ℝ}
+lemma Filter.isBounded_ge_map_of_bounded_range {ι : Type*} (F : Filter ι) {f : ι → ℝ}
     (h : Metric.Bounded (Set.range f)) :
     (F.map f).IsBounded (· ≥ ·) := by
   rw [Real.bounded_iff_bddBelow_bddAbove] at h
@@ -67,13 +67,6 @@ end boundedness_by_norm_bounds
 section layercake_for_integral
 
 variable {α : Type*}
-
-#check lintegral_indicator₀
-#check lintegral_indicator_const₀
-
-#check AEMeasurable.nullMeasurable
-#check nullMeasurableSet_lt
-#check NullMeasurable
 
 lemma Integrable.measure_pos_le_norm_lt_top [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
@@ -119,12 +112,10 @@ lemma Integrable.measure_pos_lt_lt_top [MeasurableSpace α] {μ : Measure α} [S
 -- layercake should be similarly generalized. The proofs are basically similar, but the statements
 -- themselves become a bit unpleasant due to integrability requirements for something slightly
 -- complicated.
--- TODO: Should remove `Measurable` assumption and just embrace the `AEStronglyMeasurable`
--- which comes from `Integrable`. This is not pleasant in the proof, but pays off for the user...
 theorem integral_eq_integral_meas_lt [MeasurableSpace α] (μ : Measure α) [SigmaFinite μ]
-    {f : α → ℝ} (f_nn : 0 ≤ f) (f_mble : Measurable f) (f_intble : Integrable f μ) :
+    {f : α → ℝ} (f_nn : 0 ≤ᵐ[μ] f) (f_intble : Integrable f μ) :
     (∫ ω, f ω ∂μ) = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t < f a}) := by
-  have key := lintegral_eq_lintegral_meas_lt μ f_nn f_mble -- should use `Integrable`
+  have key := lintegral_eq_lintegral_meas_lt μ f_nn f_intble.aemeasurable
   have lhs_finite : ∫⁻ (ω : α), ENNReal.ofReal (f ω) ∂μ < ∞ := Integrable.lintegral_lt_top f_intble
   have rhs_finite : ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a} < ∞ := by simp only [← key, lhs_finite]
   have rhs_integrand_decr : Antitone (fun t ↦ (μ {a : α | t < f a})) :=
@@ -132,11 +123,7 @@ theorem integral_eq_integral_meas_lt [MeasurableSpace α] (μ : Measure α) [Sig
   have rhs_integrand_finite : ∀ (t : ℝ), t > 0 → μ {a | t < f a} < ∞ := by
     exact fun t ht ↦ Integrable.measure_pos_lt_lt_top f_intble ht
   convert (ENNReal.toReal_eq_toReal lhs_finite.ne rhs_finite.ne).mpr key
-  · refine integral_eq_lintegral_of_nonneg_ae ?_ ?_
-    · -- TODO: Maybe should relax the assumption to ae nonnegativity.
-      exact eventually_of_forall f_nn
-    · --exact f_mble.aestronglyMeasurable
-      exact f_intble.aestronglyMeasurable
+  · exact integral_eq_lintegral_of_nonneg_ae f_nn f_intble.aestronglyMeasurable
   · have aux := @integral_eq_lintegral_of_nonneg_ae _ _ ((volume : Measure ℝ).restrict (Set.Ioi 0))
       (fun t ↦ ENNReal.toReal (μ {a : α | t < f a})) ?_ ?_
     · rw [aux]
@@ -150,6 +137,7 @@ theorem integral_eq_integral_meas_lt [MeasurableSpace α] (μ : Measure α) [Sig
       apply Antitone.measurable
       exact rhs_integrand_decr
 
+/-
 theorem integral_eq_integral_meas_lt' [MeasurableSpace α] (μ : Measure α) [SigmaFinite μ]
     {f : α → ℝ} (f_nn : 0 ≤ f) (f_mble : Measurable f) (f_intble : Integrable f μ) :
     (∫ ω, f ω ∂μ) = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t < f a}) := by
@@ -178,6 +166,7 @@ theorem integral_eq_integral_meas_lt' [MeasurableSpace α] (μ : Measure α) [Si
       refine Measurable.ennreal_toReal ?_
       apply Antitone.measurable
       exact rhs_integrand_decr
+ -/
 
 end layercake_for_integral
 
@@ -206,13 +195,15 @@ lemma MeasureTheory.lintegral_mono'' {α : Type} {m : MeasurableSpace α} {μ : 
 attribute [gcongr] lintegral_mono'' -- @[gcongr] attribute only applies to lemmas proving x₁ ~₁ x₁' → ... xₙ ~ₙ xₙ' → f x₁ ... xₙ ∼ f x₁' ... xₙ', got ∀ {α : Type u_1} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α} ⦃f g : α → ℝ≥0∞⦄, f ≤ g → ∫⁻ (a : α), f a ∂μ ≤ ∫⁻ (a : α), g a ∂μ
  -/
 
+--#check lintegral_liminf_le
+
 -- NOTE: I think I will work with real-valued integrals, after all...
 lemma fatou_argument_lintegral
     {μ : Measure Ω} [SigmaFinite μ] {μs : ℕ → Measure Ω} [∀ i, SigmaFinite (μs i)]
     {f : Ω → ℝ} (f_cont : Continuous f) (f_nn : 0 ≤ f)
     (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
-      ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (f x) ∂ (μs i)) := by
-  simp_rw [lintegral_eq_lintegral_meas_lt _ f_nn f_cont.measurable]
+    ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (f x) ∂ (μs i)) := by
+  simp_rw [lintegral_eq_lintegral_meas_lt _ (eventually_of_forall f_nn) f_cont.aemeasurable]
   calc  ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a}
       ≤ ∫⁻ (t : ℝ) in Set.Ioi 0, atTop.liminf (fun i ↦ (μs i) {a | t < f a})
             := (lintegral_mono (fun t ↦ h_opens _ (continuous_def.mp f_cont _ isOpen_Ioi))).trans ?_
