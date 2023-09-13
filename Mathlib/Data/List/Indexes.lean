@@ -167,8 +167,7 @@ theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
   induction' l with hd tl hl generalizing f
   · rfl
   · rw [List.oldMapIdx, List.oldMapIdxCore, List.oldMapIdxCore_eq, hl]
-    simp [enum_eq_zip_range, map_uncurry_zip_eq_zipWith]
-    sorry
+    simp [map, enum_eq_zip_range, map_uncurry_zip_eq_zipWith]
 #align list.map_with_index_eq_enum_map List.mapIdx_eq_enum_map
 
 @[simp]
