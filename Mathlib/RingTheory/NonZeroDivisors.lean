@@ -5,6 +5,7 @@ Authors: Kenny Lau, Devon Tuma
 -/
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.Util.Superscript
 
 #align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -23,8 +24,6 @@ Use the statement `open nonZeroDivisors` to access this notation in your own cod
 -/
 
 
-section nonZeroDivisors
-
 /-- The submonoid of non-zero-divisors of a `MonoidWithZero` `R`. -/
 def nonZeroDivisors (R : Type*) [MonoidWithZero R] : Submonoid R where
   carrier := { x | ∀ z, z * x = 0 → z = 0 }
@@ -36,6 +35,19 @@ def nonZeroDivisors (R : Type*) [MonoidWithZero R] : Submonoid R where
 
 /-- The notation for the submonoid of non-zerodivisors. -/
 scoped[nonZeroDivisors] notation:9000 R "⁰" => nonZeroDivisors R
+
+/-- Let `R` be a monoid with zero and `M` an additive monoid with an `R`-action, then the collection
+of non-zero smul-divisors forms a submonoid. These elements are also called `M`-regular.-/
+def nonZeroSMulDivisors (R : Type*) [MonoidWithZero R] (M : Type _) [AddMonoid M] [MulAction R M] :
+    Submonoid R where
+  carrier := { r | ∀ m : M, r • m = 0 → m = 0}
+  one_mem' m h := (one_smul R m) ▸ h
+  mul_mem' {r₁ r₂} h₁ h₂ m H := h₂ _ $ h₁ _ $ mul_smul r₁ r₂ m ▸ H
+
+/-- The notation for the submonoid of non-zero smul-divisors. -/
+scoped[nonZeroSMulDivisors] notation:9000 R "⁰[" M "]" => nonZeroSMulDivisors R M
+
+section nonZeroDivisors
 
 open nonZeroDivisors
 
@@ -178,3 +190,13 @@ theorem prod_zero_iff_exists_zero [NoZeroDivisors M₁] [Nontrivial M₁] {s : M
 #align prod_zero_iff_exists_zero prod_zero_iff_exists_zero
 
 end nonZeroDivisors
+
+section nonZeroSMulDivisors
+
+open nonZeroSMulDivisors nonZeroDivisors
+
+variable {R : Type _} (M : Type _) [MonoidWithZero R] [AddMonoid M] [MulAction R M]
+
+lemma mem_nonZeroSMulDivisors_iff (x : R) : x ∈ R⁰[M] ↔ ∀ (m : M), x • m = 0 → m = 0 := Iff.rfl
+
+end nonZeroSMulDivisors
