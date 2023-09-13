@@ -570,10 +570,7 @@ theorem one_lt_card_iff : 1 < s.card ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ 
 #align finset.one_lt_card_iff Finset.one_lt_card_iff
 
 theorem one_lt_card_iff_nontrivial : 1 < s.card ↔ Nontrivial s := by
-  classical
-    rw [← not_iff_not]
-    push_neg
-    rw [not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton]
+  rw [← not_iff_not, not_lt, not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton]
 
 theorem two_lt_card_iff : 2 < s.card ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
   classical
