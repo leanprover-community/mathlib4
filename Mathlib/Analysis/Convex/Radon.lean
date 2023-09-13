@@ -30,7 +30,7 @@ universe u
 
 variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
-lemma radon_partition_aux {ι : Type*} {z : ι → E} (w : ι → 𝕜) (I J : Finset ι) (h_disj : Disjoint I J)
+lemma radon_partition_aux {ι : Type*} {z : ι → E} (w : ι → 𝕜) (I J : Finset ι)
     (h_wsum_zero : ∑ i in I, w i + ∑ j in J, w j = 0) (h_wsum_I_pos : ∑ i in I, w i ≠ 0)
     (h_vsum : ∑ i in I, w i • z i + ∑ j in J, w j • z j = 0) :
     (centerMass I w z = centerMass J w z) := by
@@ -69,10 +69,8 @@ theorem radon_partition {ι : Type*} {f : ι → E} (h : ¬AffineIndependent �
     let p'' : E := centerMass J w f
     calc
       p' = p'' := Finset.centerMass_mul _ _ _ neg_one_lt_zero.ne
-      p'' = p := by 
+      p'' = p := by
         apply radon_partition_aux
-        · rw [Finset.disjoint_left]
-          simp [mem_filter]; intros; assumption
         · exact h_sum_I_J
         · simp only [ne_eq]; linarith
         · simpa only [← h_vsum, not_lt] using sum_filter_add_sum_filter_not s1 (fun i ↦ w i < 0) _

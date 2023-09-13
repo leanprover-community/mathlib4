@@ -77,7 +77,7 @@ theorem Finset.centerMass_eq_of_sum_1 (hw : ∑ i in t, w i = 1) :
 theorem Finset.centerMass_mul (hc : c ≠ 0) :
     (t.centerMass (fun i => c * w i) z) = t.centerMass w z := by
   rw [Finset.centerMass, Finset.centerMass, ←Finset.mul_sum, mul_inv, mul_smul,
-    @Finset.sum_congr _ _ _ _ _ ((fun i => c • w i • z i)) _ rfl, ←Finset.smul_sum, smul_comm, 
+    @Finset.sum_congr _ _ _ _ _ ((fun i => c • w i • z i)) _ rfl, ←Finset.smul_sum, smul_comm,
     inv_smul_smul₀ hc]
   exact fun i _ => mul_smul c (w i) (z i)
 
