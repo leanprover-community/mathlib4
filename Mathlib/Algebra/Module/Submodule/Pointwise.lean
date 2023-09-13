@@ -298,33 +298,33 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseSetSMulSubmodule
 variable (s : Set R) (N : Submodule R M)
 
 lemma mem_set_smul_submodule_def (x : M) :
-  x ∈ s • N ↔
+    x ∈ s • N ↔
   x ∈ sInf { p : Submodule R M | ∀ ⦃r : R⦄ {n : M}, r ∈ s → n ∈ N → r • n ∈ p } := Iff.rfl
 
 lemma set_smul_submodule_le (p : Submodule R M)
-  (closed_under_smul : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p) :
-  s • N ≤ p :=
-sInf_le closed_under_smul
+    (closed_under_smul : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p) :
+    s • N ≤ p :=
+  sInf_le closed_under_smul
 
 lemma set_smul_submodule_eq_of_le (p : Submodule R M)
-  (closed_under_smul : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p)
-  (le : p ≤ s • N) :
-  s • N = p :=
-le_antisymm (set_smul_submodule_le s N p closed_under_smul) le
+    (closed_under_smul : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p)
+    (le : p ≤ s • N) :
+    s • N = p :=
+  le_antisymm (set_smul_submodule_le s N p closed_under_smul) le
 
 lemma set_smul_submodule_inductionOn {prop : M → Prop} (x : M)
-  (hx : x ∈ s • N)
-  (smul₀ : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → prop (r • n))
-  (smul₁ : ∀ (r : R) ⦃m : M⦄, prop m → prop (r • m))
-  (add : ∀ ⦃m₁ m₂ : M⦄, prop m₁ → prop m₂ → prop (m₁ + m₂))
-  (zero : prop 0) :
-  prop x :=
-set_smul_submodule_le s N {
-  carrier := {m : M | prop m}
-  add_mem' := λ {x y} ↦ @add x y
-  zero_mem' := zero
-  smul_mem' := smul₁
-} smul₀ hx
+    (hx : x ∈ s • N)
+    (smul₀ : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → prop (r • n))
+    (smul₁ : ∀ (r : R) ⦃m : M⦄, prop m → prop (r • m))
+    (add : ∀ ⦃m₁ m₂ : M⦄, prop m₁ → prop m₂ → prop (m₁ + m₂))
+    (zero : prop 0) :
+    prop x :=
+  set_smul_submodule_le s N {
+    carrier := {m : M | prop m}
+    add_mem' := λ {x y} ↦ @add x y
+    zero_mem' := zero
+    smul_mem' := smul₁
+  } smul₀ hx
 
 lemma set_smul_submodule_eq [SMulCommClass R R N] :
     s • N =
