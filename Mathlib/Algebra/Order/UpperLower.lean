@@ -42,12 +42,12 @@ section OrderedCommGroup
 variable {α : Type*} [OrderedCommGroup α] {s t : Set α} {a : α}
 
 @[to_additive]
-theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := hs.image $ OrderIso.mulLeft _
+theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := hs.image <| OrderIso.mulLeft _
 #align is_upper_set.smul IsUpperSet.smul
 #align is_upper_set.vadd IsUpperSet.vadd
 
 @[to_additive]
-theorem IsLowerSet.smul (hs : IsLowerSet s) : IsLowerSet (a • s) := hs.image $ OrderIso.mulLeft _
+theorem IsLowerSet.smul (hs : IsLowerSet s) : IsLowerSet (a • s) := hs.image <| OrderIso.mulLeft _
 #align is_lower_set.smul IsLowerSet.smul
 #align is_lower_set.vadd IsLowerSet.vadd
 
