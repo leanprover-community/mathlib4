@@ -72,11 +72,13 @@ where
     failure
 
 /--
-Create a congruence lemma to prove that `Eq/HEq (f a₁ ... aₙ) (f' a₁' ... aₙ')`.
-Each argument produces an `Eq/HEq aᵢ aᵢ'` hypothesis, but we also supply these hypotheses
+`mkRichHCongr fType funInfo fixedFun fixedParams forceHEq`
+create a congruence lemma to prove that `Eq/HEq (f a₁ ... aₙ) (f' a₁' ... aₙ')`.
+The functions have type `fType` and the number of arguments is governed by the `funInfo` data.
+Each argument produces an `Eq/HEq aᵢ aᵢ'` hypothesis, but we also provide these hypotheses
 the additional facts that the preceding equalities have been proved (unlike in `mkHCongrWithArity`).
 The first two arguments of the resulting theorem are for `f` and `f'`, followed by a proof
-of `f = f'`.
+of `f = f'`, unless `fixedFun` is `true` (see below).
 
 When including hypotheses about previous hypotheses, we make use of dependency information
 and only include relevant equalities.

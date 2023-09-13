@@ -6,6 +6,7 @@ import Mathlib.Data.List.Defs
 
 set_option autoImplicit true
 
+-- Useful for debugging the generated congruence theorems
 --set_option trace.Meta.CongrTheorems true
 
 theorem ex1 (a b c : Nat) (h : a = b) : a + c = b + c := by
