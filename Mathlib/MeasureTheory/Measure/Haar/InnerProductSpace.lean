@@ -77,11 +77,11 @@ theorem OrthonormalBasis.addHaar_eq_volume {ι F : Type*} [Fintype ι] [NormedAd
   rw [Basis.addHaar_eq_iff]
   exact b.volume_parallelepiped
 
-namespace EuclideanSpace
+section PiLp
 variable (ι : Type*) [Fintype ι]
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
-theorem volume_preserving_measurableEquiv :
+theorem EuclideanSpace.volume_preserving_measurableEquiv :
     MeasurePreserving (EuclideanSpace.measurableEquiv ι) := by
   suffices volume = map (EuclideanSpace.measurableEquiv ι).symm volume by
     convert ((EuclideanSpace.measurableEquiv ι).symm.measurable.measurePreserving _).symm
@@ -90,4 +90,14 @@ theorem volume_preserving_measurableEquiv :
     eq_comm, Basis.addHaar_eq_iff, ContinuousLinearEquiv.symm_toLinearEquiv]
   exact (EuclideanSpace.basisFun _ _).volume_parallelepiped
 
-end EuclideanSpace
+/-- A copy of `EuclideanSpace.volume_preserving_measurableEquiv` for the canonical spelling of the
+equivalence. -/
+theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)) :=
+  EuclideanSpace.volume_preserving_measurableEquiv ι
+
+/-- The reverse direction of `PiLp.volume_preserving_measurableEquiv`, since
+`MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
+theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)).symm :=
+  (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
+
+end PiLp
