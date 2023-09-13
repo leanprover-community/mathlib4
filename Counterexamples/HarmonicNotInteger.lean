@@ -69,6 +69,9 @@ namespace padicValNat
       exact Hnot
     }
 
+  lemma le_nat_log_gen {p n₁ n₂ : ℕ} [Fact (Nat.Prime p)] (hn : n₁ ≤ n₂):
+    padicValNat p n₁ ≤ Nat.log p n₂ := le_trans (le_nat_log n₁) (Nat.log_mono_right hn)
+
 end padicValNat
 
 def harmonic : ℕ  → ℚ
@@ -141,36 +144,10 @@ lemma padicValRat_2_pow (r : ℕ)  : padicValRat 2 (1 / 2^r) = -r := by {
   norm_num
 }
 
-#eval padicValRat 2 (1/4 + 1/7)
-
-lemma padicValRat_2_sum {r n : ℕ} (hr₁ : 2^r < n)(hr₂ : n < 2^(r+1)) : padicValRat 2 (1 / 2^r + 1 / n) = -r := by {
-  rw [padicValRat.min_eq_padicValRat]
-  {
-    rw [min_eq_left]
-    apply padicValRat_2_pow
-    rw [padicValRat_2_pow, one_div,padicValRat.inv,padicValRat.of_nat, neg_le_neg_iff, Nat.cast_le]
-    suffices Hr : r = Nat.log 2 n
-    rw [Hr]
-    apply padicValNat.le_nat_log
-    symm
-    rw [Nat.log_eq_iff]
-    exact ⟨le_of_lt hr₁,hr₂⟩
-    right
-    constructor; trivial
-    rw [← Nat.pos_iff_ne_zero]
-    eapply lt_of_lt_of_le _ (le_of_lt hr₁)
-    apply pow_pos; trivial
-  }
-  sorry
-  sorry
-  sorry
-  rw [padicValRat_2_pow, one_div, padicValRat.inv,padicValRat.of_nat]
-  intro Hnot
-  simp only [padicValRat.of_nat, neg_inj, Nat.cast_inj] at Hnot
-  rw [Hnot] at hr₁
-  have Hdvd := pow_padicValNat_dvd (p := 2) (n := n)
-  sorry
-
+lemma padicValRat_ge_neg_Nat_log {p n : ℕ}[hp : Fact (Nat.Prime p)]: ∀ q, q ≤ n → -Nat.log p n ≤ padicValRat p (1 / q) := by {
+  intros q Hq
+  rw [one_div,padicValRat.inv,padicValRat.of_nat, neg_le_neg_iff, Nat.cast_le]
+  apply padicValNat.le_nat_log_gen Hq
 }
 
 theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
@@ -197,3 +174,35 @@ theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
   }
 
 }
+
+
+-- lemma padicValRat_2_sum {r n : ℕ} (hr₁ : 2^r < n)(hr₂ : n < 2^(r+1)) : padicValRat 2 (1 / 2^r + 1 / n) = -r := by {
+
+  -- have Hr : r = Nat.log 2 n := by {
+  --   symm
+  --   rw [Nat.log_eq_iff]
+  --   exact ⟨le_of_lt hr₁,hr₂⟩
+  --   right
+  --   constructor; trivial
+  --   rw [← Nat.pos_iff_ne_zero]
+  --   eapply lt_of_lt_of_le _ (le_of_lt hr₁)
+  --   apply pow_pos; trivial
+  -- }
+  -- rw [padicValRat.min_eq_padicValRat]
+  -- {
+  --   rw [min_eq_left]
+  --   apply padicValRat_2_pow
+  --   rw [padicValRat_2_pow, one_div,padicValRat.inv,padicValRat.of_nat, neg_le_neg_iff, Nat.cast_le, Hr]
+  --   apply padicValNat.le_nat_log
+  -- }
+  -- sorry
+  -- sorry
+  -- sorry
+
+  -- rw [padicValRat_2_pow, one_div, padicValRat.inv,padicValRat.of_nat]
+  -- intro Hnot
+  -- simp only [padicValRat.of_nat, neg_inj, Nat.cast_inj] at Hnot
+  -- rw [Hnot] at hr₁
+  -- have Hdvd := pow_padicValNat_dvd (p := 2) (n := n)
+  -- sorry
+-- }
