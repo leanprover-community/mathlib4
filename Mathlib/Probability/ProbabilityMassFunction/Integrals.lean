@@ -25,7 +25,8 @@ section General
 variable {α : Type _} [MeasurableSpace α] [MeasurableSingletonClass α]
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
-theorem integral_eq_tsum (p : Pmf α) (f : α → E) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) :
+theorem integral_eq_tsum
+  (p : Pmf α) (f : α → E) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) :
     ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
   _ = ∑' (a : ↑(support p)), (p.toMeasure {a.val}).toReal • f a := by
