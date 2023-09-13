@@ -43,9 +43,6 @@ As this had no pay-off (everything about limits is non-constructive in mathlib),
 we made everything classical.
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 universe w w' v u
@@ -379,7 +376,7 @@ end Limits
 
 namespace Limits
 
-variable {J : Type w}
+variable {J : Type w} {K : Type*}
 
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 
@@ -632,7 +629,7 @@ lemma biproduct.whiskerEquiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ 
     · rintro rfl
       simp at h
 
-instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
+instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     HasBiproduct fun p : Σ i, f i => g p.1 p.2 where
   exists_biproduct := Nonempty.intro
@@ -658,7 +655,7 @@ instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
 
 /-- An iterated biproduct is a biproduct over a sigma type. -/
 @[simps]
-def biproductBiproductIso (f : ι → Type*) (g : (i : ι) → (f i) → C)
+def biproductBiproductIso {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     (⨁ fun i => ⨁ g i) ≅ (⨁ fun p : Σ i, f i => g p.1 p.2) where
   hom := biproduct.lift fun ⟨i, x⟩ => biproduct.π _ i ≫ biproduct.π _ x
@@ -1968,14 +1965,14 @@ def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R)  where
 
 /-- The associator isomorphism can be passed through a map by swapping the order. -/
 @[reassoc]
-theorem biprod.associator_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (g : W ⟶ Z) :
+theorem biprod.associator_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (h : W ⟶ Z) :
     biprod.map (biprod.map f g) h ≫ (biprod.associator _ _ _).hom
       = (biprod.associator _ _ _).hom ≫ biprod.map f (biprod.map g h) := by
   aesop_cat
 
 /-- The associator isomorphism can be passed through a map by swapping the order. -/
 @[reassoc]
-theorem biprod.associator_inv_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (g : W ⟶ Z) :
+theorem biprod.associator_inv_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (h : W ⟶ Z) :
     biprod.map f (biprod.map g h) ≫ (biprod.associator _ _ _).inv
       = (biprod.associator _ _ _).inv ≫ biprod.map (biprod.map f g) h := by
   aesop_cat
