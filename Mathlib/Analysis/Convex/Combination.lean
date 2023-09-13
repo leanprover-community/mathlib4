@@ -74,6 +74,13 @@ theorem Finset.centerMass_eq_of_sum_1 (hw : ∑ i in t, w i = 1) :
   simp only [Finset.centerMass, hw, inv_one, one_smul]
 #align finset.center_mass_eq_of_sum_1 Finset.centerMass_eq_of_sum_1
 
+theorem Finset.centerMass_mul (hc : c ≠ 0) :
+    (t.centerMass (fun i => c * w i) z) = t.centerMass w z := by
+  rw [Finset.centerMass, Finset.centerMass, ←Finset.mul_sum, mul_inv, mul_smul,
+    @Finset.sum_congr _ _ _ _ _ ((fun i => c • w i • z i)) _ rfl, ←Finset.smul_sum, smul_comm, 
+    inv_smul_smul₀ hc]
+  exact fun i _ => mul_smul c (w i) (z i)
+
 theorem Finset.centerMass_smul : (t.centerMass w fun i => c • z i) = c • t.centerMass w z := by
   simp only [Finset.centerMass, Finset.smul_sum, (mul_smul _ _ _).symm, mul_comm c, mul_assoc]
 #align finset.center_mass_smul Finset.centerMass_smul
