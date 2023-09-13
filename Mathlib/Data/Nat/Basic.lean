@@ -336,10 +336,10 @@ lemma self_add_sub_one (n : ℕ) : n + (n - 1) = 2 * n - 1 := by
 lemma sub_one_add_self (n : ℕ) : (n - 1) + n = 2 * n - 1 :=
   add_comm _ n ▸ self_add_sub_one n
 
-lemma self_add_pred (n : ℕ) : n + pred n = 2 * n - 1 :=
+lemma self_add_pred (n : ℕ) : n + pred n = (2 * n).pred :=
   self_add_sub_one n
 
-lemma pred_add_self (n : ℕ) : pred n + n = 2 * n - 1 :=
+lemma pred_add_self (n : ℕ) : pred n + n = (2 * n).pred :=
   sub_one_add_self n
 
 /-- This ensures that `simp` succeeds on `pred (n + 1) = n`. -/
