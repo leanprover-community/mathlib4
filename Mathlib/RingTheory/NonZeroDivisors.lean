@@ -198,8 +198,15 @@ section nonZeroSMulDivisors
 
 open nonZeroSMulDivisors nonZeroDivisors
 
-variable {R : Type*} (M : Type*) [MonoidWithZero R] [AddMonoid M] [MulAction R M]
+variable (R M : Type*) [MonoidWithZero R] [Zero M] [MulAction R M]
 
 lemma mem_nonZeroSMulDivisors_iff (x : R) : x ∈ R⁰[M] ↔ ∀ (m : M), x • m = 0 → m = 0 := Iff.rfl
+
+lemma nonZeroSMulDivisors_over_self_eq_nonZeroDivisors_of_mul_comm
+    (comm : ∀ (r s : R), r * s = s * r) :
+    R⁰[R] = R⁰ := by
+  ext r : 1
+  rw [mem_nonZeroSMulDivisors_iff R R, mem_nonZeroDivisors_iff]
+  simp only [smul_eq_mul, comm]
 
 end nonZeroSMulDivisors
