@@ -192,9 +192,11 @@ def inhabited_of_infiniteDimensional [r.InfiniteDimensional] : Inhabited α :=
 
 end Rel
 
+/-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 class FiniteDimensionalType (γ : Type _) [Preorder γ] extends
   Rel.FiniteDimensional ((. < .) : γ → γ → Prop)
 
+/-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
 class InfiniteDimensionalType (γ : Type _) [Preorder γ] extends
   Rel.InfiniteDimensional ((. < .) : γ → γ → Prop)
 
