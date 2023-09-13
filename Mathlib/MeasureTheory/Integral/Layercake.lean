@@ -279,8 +279,7 @@ theorem meas_eq_pos_of_meas_le_ne_meas_lt
   by_contra con
   rw [not_lt, nonpos_iff_eq_zero] at con
   apply ht
-  -- Without the "redundant" `by exact` in the following, one gets a strange goal.
-  apply le_antisymm ?_ (by exact (measure_mono (fun a ha ↦ le_of_lt ha)))
+  refine le_antisymm ?_ (measure_mono (fun a ha ↦ le_of_lt ha))
   have uni : {a : α | t ≤ g a} = {a : α | t < g a} ∪ {a : α | t = g a} := by
     ext a
     simpa only [mem_setOf, mem_union] using le_iff_lt_or_eq
