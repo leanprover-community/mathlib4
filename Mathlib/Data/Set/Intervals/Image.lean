@@ -64,6 +64,7 @@ variable [Preorder α] [Preorder β]
 theorem Monotone.image_Icc_subset (h : Monotone f) :
     f '' Icc a b ⊆ Icc (f a) (f b) :=
   h.mapsTo_Icc.image_subset
+#align monotone.image_Icc_subset Monotone.image_Icc_subset
 
 theorem StrictMono.image_Ioo_subset (h : StrictMono f) :
     f '' Ioo a b ⊆ Ioo (f a) (f b) :=
