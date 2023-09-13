@@ -153,6 +153,9 @@ theorem IsLocalization.for_id (hW : W ⊆ MorphismProperty.isomorphisms C) : (�
     (Localization.strictUniversalPropertyFixedTargetId W _ hW)
 #align category_theory.functor.is_localization.for_id CategoryTheory.Functor.IsLocalization.for_id
 
+instance : (𝟭 C).IsLocalization (MorphismProperty.isomorphisms C) :=
+  IsLocalization.for_id _ (by rfl)
+
 end Functor
 
 namespace Localization

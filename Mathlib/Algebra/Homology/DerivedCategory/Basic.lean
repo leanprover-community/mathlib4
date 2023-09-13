@@ -39,6 +39,10 @@ lemma mem_subcategoryAcyclic_iff_exactAt (K : CochainComplex C ℤ) :
 
 def qis : MorphismProperty (HomotopyCategory C (ComplexShape.up ℤ)) := (subcategoryAcyclic C).W
 
+instance : (qis C).IsMultiplicative := by
+  dsimp [qis]
+  infer_instance
+
 lemma mem_qis_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
     qis _ f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor _ _ n).map f) := by
   dsimp only [qis, subcategoryAcyclic]

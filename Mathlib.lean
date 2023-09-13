@@ -219,6 +219,7 @@ import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.ComplexExtend
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructure
 import Mathlib.Algebra.Homology.DerivedCategory.Ext
 import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 import Mathlib.Algebra.Homology.DerivedCategory.Linear
@@ -240,6 +241,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
+import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence

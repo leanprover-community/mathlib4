@@ -2,7 +2,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 
 open CategoryTheory Category Limits Preadditive
 
-variable {C : Type _} [Category C]
+variable {C D : Type _} [Category C] [Category D]
 
 @[simp]
 lemma CategoryTheory.Limits.biprod.is_zero_iff
@@ -26,7 +26,7 @@ namespace CochainComplex
 
 section Preadditive
 
-variable [Preadditive C] {F G : CochainComplex C ℤ}
+variable [Preadditive C] [Preadditive D] {F G : CochainComplex C ℤ}
   [∀ p, HasBinaryBiproduct (F.X (p+1)) (G.X p)] (φ : F ⟶ G)
 
 open HomComplex
@@ -594,6 +594,65 @@ lemma lift_desc_f {K L : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochai
 
 noncomputable def homotopySelfCompInr : Homotopy (φ ≫ inr φ) 0 :=
   liftHomotopy _ _ _ (Cochain.ofHom (𝟙 F)) 0 (by simp) (by simp)
+
+section
+
+variable (H : C ⥤ D) [H.Additive]
+  [∀ p, HasBinaryBiproduct (((H.mapHomologicalComplex _).obj F).X (p+1)) (((H.mapHomologicalComplex _).obj G).X p)]
+
+@[simps]
+noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
+  ((H.mapHomologicalComplex (ComplexShape.up ℤ)).obj (mappingCone φ)).X n ≅
+    (mappingCone ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).X n where
+  hom := H.map ((fst φ).1.v n m (by linarith)) ≫
+      (inl ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v m n (by linarith) +
+      H.map ((snd φ).v n n (add_zero n)) ≫
+        (inr ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).f n
+  inv := (fst ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).1.v n m (by linarith) ≫ H.map ((inl φ).v m n (by linarith)) +
+      (snd ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v n n (add_zero n) ≫ H.map ((inr φ).f n)
+  hom_inv_id := by
+    simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
+      zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc, inr_f_snd_v_assoc, zero_add, ← Functor.map_comp, ← Functor.map_add]
+    rw [← H.map_id]
+    congr 1
+    rw [from_ext_iff _ _ _ _ hnm]
+    simp
+  inv_hom_id := by
+    simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc, ← H.map_comp_assoc, inl_v_fst_v,
+      CategoryTheory.Functor.map_id, id_comp, inr_f_fst_v, inl_v_snd_v, inr_f_snd_v]
+    rw [H.map_zero, H.map_zero, zero_comp, zero_comp, comp_zero, comp_zero, add_zero, zero_add,
+      from_ext_iff _ _ _ _ hnm]
+    simp
+
+noncomputable def mapHomologicalComplexXIso (n : ℤ) := mapHomologicalComplexXIso' φ H n (n+1) rfl
+
+lemma mapHomologicalComplexXIso_eq (n m : ℤ) (hnm : n + 1 = m) :
+    mapHomologicalComplexXIso φ H n = mapHomologicalComplexXIso' φ H n m hnm := by
+  subst hnm
+  rfl
+
+noncomputable def mapHomologicalComplexIso :
+  (H.mapHomologicalComplex _).obj (mappingCone φ) ≅
+    mappingCone ((H.mapHomologicalComplex _).map φ) :=
+  HomologicalComplex.Hom.isoOfComponents (mapHomologicalComplexXIso φ H) (by
+    rintro n _ rfl
+    rw [to_ext_iff _ _ _ (n+2) (by linarith), assoc, assoc, d_fst_v _ _ _ _ rfl,
+      assoc, assoc, d_snd_v _ _ _ rfl]
+    simp only [mapHomologicalComplexXIso_eq φ H n (n+1) rfl,
+      mapHomologicalComplexXIso_eq φ H (n+1) (n+2) (by linarith),
+      mapHomologicalComplexXIso'_hom, mapHomologicalComplexXIso'_hom]
+    constructor
+    · dsimp
+      simp only [Functor.mapHomologicalComplex_obj_X, Functor.mapHomologicalComplex_obj_d,
+        comp_neg, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc, zero_comp, comp_zero, add_zero,
+        comp_add, inl_v_fst_v, comp_id, inr_f_fst_v, ← H.map_comp,
+        d_fst_v φ n (n+1) (n+2) rfl (by linarith), Functor.map_neg]
+    · dsimp
+      simp only [comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
+        Functor.mapHomologicalComplex_obj_X, zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc, inr_f_snd_v_assoc,
+        zero_add, inl_v_snd_v, inr_f_snd_v, comp_id, ← H.map_comp, d_snd_v φ n (n+1) rfl, Functor.map_add])
+
+end
 
 end MappingCone
 

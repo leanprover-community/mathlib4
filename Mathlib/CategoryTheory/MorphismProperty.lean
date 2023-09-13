@@ -985,6 +985,11 @@ lemma of_op (W : MorphismProperty C) [W.op.ContainsIdentities] :
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [W.unop.ContainsIdentities] :
     W.ContainsIdentities := (inferInstance : W.unop.op.ContainsIdentities)
 
+instance (W : MorphismProperty D) (F : C ⥤ D) [W.ContainsIdentities] :
+    (W.inverseImage F).ContainsIdentities := ⟨fun X => by
+  dsimp [inverseImage]
+  simpa only [F.map_id] using W.id_mem (F.obj X)⟩
+
 end ContainsIdentities
 
 /-- A morphism property is multiplicative if it contains identities and is stable by
@@ -1011,6 +1016,19 @@ lemma of_op (W : MorphismProperty C) [IsMultiplicative W.op] : IsMultiplicative 
 
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W.unop] : IsMultiplicative W :=
   (inferInstance : IsMultiplicative W.unop.op)
+
+instance (W : MorphismProperty D) (F : C ⥤ D) [W.IsMultiplicative] :
+    (W.inverseImage F).IsMultiplicative where
+  stableUnderComposition := fun X Y Z f g hf hg => by
+    dsimp [inverseImage] at hf hg ⊢
+    rw [F.map_comp]
+    exact W.comp_mem _ _ hf hg
+
+instance : (isomorphisms C).ContainsIdentities where
+  id_mem' _ := isomorphisms.infer_property _
+
+instance : (isomorphisms C).IsMultiplicative where
+  stableUnderComposition := StableUnderComposition.isomorphisms C
 
 end IsMultiplicative
 

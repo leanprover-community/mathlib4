@@ -6,6 +6,7 @@ open CategoryTheory Category Limits Triangulated ZeroObject Pretriangulated
 
 variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
   {D : Type _} [Category D] [Preadditive D] [HasZeroObject D] [HasBinaryBiproducts D]
+  (A : Type _) [Category A] [Abelian A]
 
 namespace HomotopyCategory
 
@@ -53,12 +54,20 @@ def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) whe
         ((quotient _ _).commShiftIso (-1)).symm.app (CochainComplex.mappingCone f)
 
 abbrev Plus := (subcategoryPlus C).category
-abbrev ιPlus : Plus C ⥤ HomotopyCategory C (ComplexShape.up ℤ) := (subcategoryPlus C).ι
 
---noncomputable instance : Pretriangulated (Plus C) := inferInstance
 --instance : IsTriangulated (Plus C) := inferInstance
 
-variable {C}
+namespace Plus
+
+abbrev ι : Plus C ⥤ HomotopyCategory C (ComplexShape.up ℤ) := (subcategoryPlus C).ι
+
+def qis : MorphismProperty (Plus A) := (HomotopyCategory.qis A).inverseImage (ι A)
+
+instance : (qis A).IsMultiplicative := by
+  dsimp only [qis]
+  infer_instance
+
+end Plus
 
 end HomotopyCategory
 
@@ -70,22 +79,19 @@ variable (F : C ⥤ D) [F.Additive]
 
 def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus D :=
   (HomotopyCategory.subcategoryPlus D).lift
-    (HomotopyCategory.ιPlus C ⋙ F.mapHomotopyCategory (ComplexShape.up ℤ)) (by
+    (HomotopyCategory.Plus.ι C ⋙ F.mapHomotopyCategory (ComplexShape.up ℤ)) (by
       rintro ⟨X, ⟨n, _⟩⟩
       refine' ⟨n, _⟩
-      dsimp [HomotopyCategory.ιPlus, Subcategory.ι, HomotopyCategory.quotient]
+      dsimp [HomotopyCategory.Plus.ι, Subcategory.ι, HomotopyCategory.quotient]
       infer_instance)
 
 noncomputable instance : (F.mapHomotopyCategoryPlus).CommShift ℤ := by
   dsimp only [mapHomotopyCategoryPlus]
   infer_instance
 
--- this needs a compatibility between the mappingCone and F.mapHomologicalComplex, etc.
---
---instance : (F.mapHomotopyCategoryPlus).IsTriangulated := by
---  have : (F.mapHomotopyCategory (ComplexShape.up ℤ)).IsTriangulated := sorry
---  dsimp only [mapHomotopyCategoryPlus]
---  infer_instance
+instance : (F.mapHomotopyCategoryPlus).IsTriangulated := by
+  dsimp only [mapHomotopyCategoryPlus]
+  infer_instance
 
 end Functor
 

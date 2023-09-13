@@ -21,7 +21,7 @@ lemma Arrow.hom_cases {f g : Arrow C₁} (φ : f ⟶ g) :
 
 namespace LocalizerMorphism
 
-variable (Φ : LocalizerMorphism W₁ W₂) [Φ.IsRightDerivabilityStructure]
+variable (Φ : LocalizerMorphism W₁ W₂)
 
 namespace IsRightDerivabilityStructure
 

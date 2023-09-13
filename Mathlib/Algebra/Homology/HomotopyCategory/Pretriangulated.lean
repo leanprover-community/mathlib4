@@ -8,7 +8,9 @@ import Mathlib.Algebra.EuclideanDomain.Instances
 open CategoryTheory Category Limits CochainComplex.HomComplex Pretriangulated ZeroObject
   Preadditive
 
-variable {C : Type _} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
+variable {C D : Type _} [Category C] [Category D]
+  [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
+  [Preadditive D] [HasZeroObject D] [HasBinaryBiproducts D]
 variable {K L : CochainComplex C ℤ} (φ : K ⟶ L)
 
 namespace CochainComplex
@@ -304,6 +306,49 @@ noncomputable def shiftTriangleIso (n : ℤ) :
 
 end shift
 
+section
+
+variable (G : C ⥤ D) [G.Additive]
+
+lemma map_inr :
+    (G.mapHomologicalComplex (ComplexShape.up ℤ)).map (inr φ) ≫
+      (mapHomologicalComplexIso φ G).hom =
+    inr ((Functor.mapHomologicalComplex G (ComplexShape.up ℤ)).map φ) := by
+  ext n
+  dsimp [mapHomologicalComplexIso]
+  rw [mapHomologicalComplexXIso_eq φ G n (n+1) rfl, MappingCone.to_ext_iff _ _ _ _ rfl]
+  simp only [Functor.mapHomologicalComplex_obj_X, mapHomologicalComplexXIso'_hom, comp_add, add_comp, assoc,
+    inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero, add_zero, inl_v_snd_v, inr_f_snd_v, zero_add, ← G.map_comp,
+    G.map_zero, G.map_id]
+
+lemma map_δ :
+  (G.mapHomologicalComplex (ComplexShape.up ℤ)).map (triangleδ φ) ≫
+    NatTrans.app (Functor.commShiftIso (Functor.mapHomologicalComplex G (ComplexShape.up ℤ)) 1).hom K =
+    (mapHomologicalComplexIso φ G).hom ≫
+      triangleδ ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ) := by
+  ext n
+  dsimp [mapHomologicalComplexIso]
+  rw [mapHomologicalComplexXIso_eq φ G n (n+1) rfl, mapHomologicalComplexXIso'_hom]
+  simp only [Functor.mapHomologicalComplex_obj_X, add_comp, assoc, inl_v_triangleδ_f, shiftFunctor_obj_X,
+    shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_neg, comp_id, inr_f_triangleδ_f, comp_zero,
+    add_zero]
+  dsimp [triangleδ]
+  rw [Cochain.rightShift_v _ 1 0 (by linarith) n n (by linarith) (n+1) (by linarith)]
+  simp
+  apply comp_id
+
+noncomputable def mapTriangleIso :
+    (G.mapHomologicalComplex (ComplexShape.up ℤ)).mapTriangle.obj (triangle φ) ≅
+      triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ) := by
+  refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mapHomologicalComplexIso φ G)
+    (by aesop_cat) _ _
+  · dsimp
+    rw [map_inr, id_comp]
+  · dsimp
+    simp only [CategoryTheory.Functor.map_id, comp_id, map_δ]
+
+end
+
 end MappingCone
 
 end CochainComplex
@@ -432,5 +477,17 @@ lemma mappingCone_triangle_distinguished {X Y : CochainComplex C ℤ} (f : X ⟶
   (HomotopyCategory.quotient C (ComplexShape.up ℤ)).mapTriangle.obj
       (CochainComplex.MappingCone.triangle f) ∈ distTriang (HomotopyCategory _ _) :=
   ⟨_, _, f, ⟨Iso.refl _⟩⟩
+
+instance (G : C ⥤ D) [G.Additive] :
+    (G.mapHomotopyCategory (ComplexShape.up ℤ)).IsTriangulated where
+  map_distinguished := by
+    rintro T ⟨K, L, f, ⟨e⟩⟩
+    refine' ⟨_, _, (G.mapHomologicalComplex (ComplexShape.up ℤ)).map f, ⟨_⟩⟩
+    exact (G.mapHomotopyCategory (ComplexShape.up ℤ)).mapTriangle.mapIso e ≪≫
+      (Functor.mapTriangleCompIso _ _).symm.app _ ≪≫
+      (Functor.mapTriangleIso (G.mapHomotopyCategoryFactors (ComplexShape.up ℤ))).app _ ≪≫
+      (Functor.mapTriangleCompIso _ _).app _ ≪≫
+      (quotient D (ComplexShape.up ℤ)).mapTriangle.mapIso
+        (CochainComplex.MappingCone.mapTriangleIso f G)
 
 end HomotopyCategory
