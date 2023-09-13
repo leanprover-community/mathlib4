@@ -41,7 +41,7 @@ def nonZeroSMulDivisors (R : Type*) [MonoidWithZero R] (M : Type _) [AddMonoid M
     Submonoid R where
   carrier := { r | ∀ m : M, r • m = 0 → m = 0}
   one_mem' m h := (one_smul R m) ▸ h
-  mul_mem' {r₁ r₂} h₁ h₂ m H := h₂ _ $ h₁ _ $ mul_smul r₁ r₂ m ▸ H
+  mul_mem' {r₁ r₂} h₁ h₂ m H := h₂ _ <| h₁ _ <| mul_smul r₁ r₂ m ▸ H
 
 /-- The notation for the submonoid of non-zero smul-divisors. -/
 scoped[nonZeroSMulDivisors] notation:9000 R "⁰[" M "]" => nonZeroSMulDivisors R M
@@ -194,7 +194,7 @@ section nonZeroSMulDivisors
 
 open nonZeroSMulDivisors nonZeroDivisors
 
-variable {R : Type _} (M : Type _) [MonoidWithZero R] [AddMonoid M] [MulAction R M]
+variable {R : Type*} (M : Type*) [MonoidWithZero R] [AddMonoid M] [MulAction R M]
 
 lemma mem_nonZeroSMulDivisors_iff (x : R) : x ∈ R⁰[M] ↔ ∀ (m : M), x • m = 0 → m = 0 := Iff.rfl
 
