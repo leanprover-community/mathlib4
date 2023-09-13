@@ -841,6 +841,18 @@ theorem Icc_diff_Ioo_same (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by
 #align set.Icc_diff_Ioo_same Set.Icc_diff_Ioo_same
 
 @[simp]
+theorem Icc_diff_Ioo_same' (h : a ≤ b) : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := by
+  refine diff_union_of_subset ?h
+  intro x hx
+  cases hx with
+  | inl h2 => rw [h2]; exact left_mem_Icc.mpr h
+  | inr h2 => rw [h2]; exact right_mem_Icc.mpr h
+
+@[simp]
+theorem Icc_diff_Ioo_same'' (h : a ≤ b) : Ioo a b ∪ {a, b} = Icc a b := by
+  rw [← Icc_diff_Ioo_same' h, Icc_diff_both]
+
+@[simp]
 theorem Ici_diff_Ioi_same : Ici a \ Ioi a = {a} := by
   rw [← Ici_diff_left, diff_diff_cancel_left (singleton_subset_iff.2 left_mem_Ici)]
 #align set.Ici_diff_Ioi_same Set.Ici_diff_Ioi_same
