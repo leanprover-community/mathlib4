@@ -357,7 +357,7 @@ end Pi
 
 theorem Sum.elim_intCast_intCast {α β γ : Type*} [IntCast γ] (n : ℤ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
-  @Sum.elim_lam_const_lam_const α β γ n
+  Sum.elim_lam_const_lam_const (γ := γ) n
 #align sum.elim_int_cast_int_cast Sum.elim_intCast_intCast
 
 /-! ### Order dual -/
