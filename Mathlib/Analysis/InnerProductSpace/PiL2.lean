@@ -631,7 +631,6 @@ instance OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (E
   ⟨EuclideanSpace.basisFun ι 𝕜⟩
 #align orthonormal_basis.inhabited OrthonormalBasis.instInhabited
 
-
 section Complex
 
 /-- `![1, I]` is an orthonormal basis for `ℂ` considered as a real inner product space. -/
