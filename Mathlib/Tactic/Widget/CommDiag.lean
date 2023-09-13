@@ -16,8 +16,8 @@ infoview. -/
 open Lean in
 /-- If the expression is a function application of `fName` with 7 arguments, return those arguments.
 Otherwise return `none`. -/
-@[inline] def _root_.Lean.Expr.app7? (e : Expr) (fName : Name)
-    : Option (Expr × Expr × Expr × Expr × Expr × Expr × Expr) :=
+@[inline] def _root_.Lean.Expr.app7? (e : Expr) (fName : Name) :
+    Option (Expr × Expr × Expr × Expr × Expr × Expr × Expr) :=
   if e.isAppOfArity fName 7 then
     some (
       e.appFn!.appFn!.appFn!.appFn!.appFn!.appFn!.appArg!,
