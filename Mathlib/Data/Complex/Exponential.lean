@@ -1458,10 +1458,9 @@ theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i in range
   calc
     ∑ i in range n, x ^ i / i ! ≤ lim (⟨_, isCauSeq_re (exp' x)⟩ : CauSeq ℝ Abs.abs) := by
       refine' le_lim (CauSeq.le_of_exists ⟨n, fun j hj => _⟩)
-      simp only [exp', const_apply, re_sum]
+      simp only [exp', mk_to_fun, const_apply, re_sum]
       norm_cast
-      rw [← Nat.add_sub_of_le hj, Finset.sum_range_add]
-      refine' le_add_of_nonneg_right (sum_nonneg fun i _ => _)
+      refine sum_le_sum_of_subset_of_nonneg (range_mono hj) fun _ _ _ ↦ ?_
       positivity
     _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
 #align real.sum_le_exp_of_nonneg Real.sum_le_exp_of_nonneg
