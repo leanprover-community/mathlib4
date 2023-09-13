@@ -329,7 +329,8 @@ set_smul_submodule_le s N {
 lemma set_smul_submodule_eq [SMulCommClass R R N] :
     s • N =
     Submodule.map
-      (N.subtype.comp (Finsupp.lsum R λ (r : R) ↦ ⟨⟨(r • .), smul_add r⟩, λ (r' : R) (m : N) ↦ by dsimp; rw [smul_comm]⟩))
+      (N.subtype.comp (Finsupp.lsum R λ (r : R) ↦ ⟨⟨(r • .), smul_add r⟩,
+        λ (r' : R) (m : N) ↦ by dsimp; rw [smul_comm]⟩))
       (Finsupp.supported N R s) := by
   classical
   apply set_smul_submodule_eq_of_le
