@@ -76,8 +76,14 @@ def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus 
       dsimp [HomotopyCategory.ιPlus, Subcategory.ι, HomotopyCategory.quotient]
       infer_instance)
 
---noncomputable instance : (F.mapHomotopyCategoryPlus).CommShift ℤ := by
---  have : (F.mapHomotopyCategory (ComplexShape.up ℤ)).CommShift ℤ := sorry
+noncomputable instance : (F.mapHomotopyCategoryPlus).CommShift ℤ := by
+  dsimp only [mapHomotopyCategoryPlus]
+  infer_instance
+
+-- this needs a compatibility between the mappingCone and F.mapHomologicalComplex, etc.
+--
+--instance : (F.mapHomotopyCategoryPlus).IsTriangulated := by
+--  have : (F.mapHomotopyCategory (ComplexShape.up ℤ)).IsTriangulated := sorry
 --  dsimp only [mapHomotopyCategoryPlus]
 --  infer_instance
 

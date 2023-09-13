@@ -422,4 +422,17 @@ instance {R : Type _} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
     simp only [Functor.comp_obj, Functor.comp_map, Functor.map_smul,
       Linear.smul_comp, Linear.comp_smul]
 
+section
+
+variable {C}
+variable {D : Type*} [Category D] [Preadditive D] (F : C ⥤ D) [F.Additive]
+
+noncomputable instance : (F.mapHomotopyCategory (ComplexShape.up ℤ)).CommShift ℤ :=
+  Quotient.liftCommShift _ _ _ _
+
+instance : NatTrans.CommShift (F.mapHomotopyCategoryFactors (ComplexShape.up ℤ)).hom ℤ :=
+  Quotient.liftCommShift_compatibility _ _ _ _
+
+end
+
 end HomotopyCategory
