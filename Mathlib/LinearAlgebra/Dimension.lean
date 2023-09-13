@@ -1015,8 +1015,7 @@ theorem rank_prod' : Module.rank K (V × V₁) = Module.rank K V + Module.rank K
 
 @[simp]
 theorem rank_ulift : Module.rank K (ULift.{w} V) = Cardinal.lift.{w} (Module.rank K V) :=
-  Cardinal.lift_injective.{v} <| Eq.symm <|
-    (lift_lift _).trans (LinearEquiv.lift_rank_eq (ULift.moduleEquiv).symm)
+  Cardinal.lift_injective.{v} <| Eq.symm <| (lift_lift _).trans ULift.moduleEquiv.symm.lift_rank_eq
 
 section Fintype
 
