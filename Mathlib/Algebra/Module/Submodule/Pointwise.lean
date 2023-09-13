@@ -291,7 +291,7 @@ let `S ⊆ R` be a set and `N ≤ M` be a submodule, then `S • N` is the small
 all `r • n` where `r ∈ S` and `n ∈ N`.
 -/
 protected def pointwiseSetSMulSubmodule : SMul (Set R) (Submodule R M) where
-  hSMul s N := sInf { p | ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p }
+  smul s N := sInf { p | ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p }
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetSMulSubmodule
 
