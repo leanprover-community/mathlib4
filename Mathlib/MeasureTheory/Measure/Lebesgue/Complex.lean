@@ -75,13 +75,11 @@ theorem volume_ball (a : ℂ) (r : ℝ) :
     ← (volume_preserving_equiv_pi.symm).measure_preimage measurableSet_ball,
     ← ((EuclideanSpace.volume_preserving_measurableEquiv (Fin 2)).symm).measure_preimage
     measurableSet_ball]
-  congr
-  ext
-  simp_rw [← MeasurableEquiv.coe_toEquiv_symm, Set.mem_preimage]
-  simp only [MeasurableEquiv.coe_toEquiv_symm, measurableEquivPi_symm_apply, mem_ball_zero_iff,
-    norm_eq_abs, abs_def, normSq_add_mul_I, EuclideanSpace.measurableEquiv_toEquiv,
-    EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply,
-    Real.norm_eq_abs, _root_.sq_abs, Fin.sum_univ_two]
+  refine congrArg _ (Set.ext fun _ => ?_)
+  simp_rw [← MeasurableEquiv.coe_toEquiv_symm, Set.mem_preimage, MeasurableEquiv.coe_toEquiv_symm,
+    measurableEquivPi_symm_apply, mem_ball_zero_iff, norm_eq_abs, abs_def, normSq_add_mul_I,
+    EuclideanSpace.coe_measurableEquiv_symm, EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply,
+    Fin.sum_univ_two, Real.norm_eq_abs, _root_.sq_abs]
 
 @[simp]
 theorem volume_closedBall (a : ℂ) (r : ℝ) :

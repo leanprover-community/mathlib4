@@ -79,19 +79,33 @@ theorem OrthonormalBasis.addHaar_eq_volume {ι F : Type*} [Fintype ι] [NormedAd
   rw [Basis.addHaar_eq_iff]
   exact b.volume_parallelepiped
 
+section PiLp
+variable (ι : Type*) [Fintype ι]
+
+/-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
+theorem EuclideanSpace.volume_preserving_measurableEquiv :
+    MeasurePreserving (EuclideanSpace.measurableEquiv ι) := by
+  suffices volume = map (EuclideanSpace.measurableEquiv ι).symm volume by
+    convert ((EuclideanSpace.measurableEquiv ι).symm.measurable.measurePreserving _).symm
+  rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
+    coe_measurableEquiv_symm, ← PiLp.continuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
+  exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
+
+/-- A copy of `EuclideanSpace.volume_preserving_measurableEquiv` for the canonical spelling of the
+equivalence. -/
+theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)) :=
+  EuclideanSpace.volume_preserving_measurableEquiv ι
+
+/-- The reverse direction of `PiLp.volume_preserving_measurableEquiv`, since
+`MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
+theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)).symm :=
+  (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
+
+end PiLp
+
 namespace EuclideanSpace
 
 open BigOperators ENNReal
-
-/-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
-theorem volume_preserving_measurableEquiv (ι : Type*) [Fintype ι] :
-    MeasurePreserving (EuclideanSpace.measurableEquiv ι) := by
-  classical
-  convert ((EuclideanSpace.measurableEquiv ι).symm.measurable.measurePreserving _).symm
-  rw [eq_comm, ← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def]
-  rw [coe_measurableEquiv_symm, ← PiLp.continuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
-  rw [Basis.addHaar_eq_iff, ContinuousLinearEquiv.symm_toLinearEquiv]
-  exact OrthonormalBasis.volume_parallelepiped (EuclideanSpace.basisFun _ _)
 
 -- See: https://github.com/leanprover/lean4/issues/2220
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
@@ -110,13 +124,14 @@ theorem volume_ball (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
       (le_of_lt hr), zero_pow zero_lt_two, mul_zero]
   · suffices volume (Metric.ball (0 : EuclideanSpace ℝ (Fin 2)) 1) = NNReal.pi by
       rw [Measure.addHaar_ball _ _ hr, finrank_euclideanSpace_fin, ofReal_pow hr, this, mul_comm]
-    calc volume (Metric.ball (0 : EuclideanSpace ℝ (Fin 2)) 1)
+    calc 
       _ = volume ({x : (Fin 2) → ℝ | ∑ i, x i ^ 2 < 1}) := by
-        rw [← unit_ball_equiv, ← coe_continuousLinearEquiv, MeasurableEquiv.image_eq_preimage,
+        rw [← unit_ball_equiv, PiLp.continuousLinearEquiv_apply, ← coe_measurableEquiv,
+          MeasurableEquiv.image_eq_preimage,
           ← ((volume_preserving_measurableEquiv (Fin 2)).symm).measure_preimage measurableSet_ball]
       _ = volume ({p : ℝ × ℝ | p.1 ^ 2 + p.2 ^ 2 < 1}) := by
         rw [← ((volume_preserving_finTwoArrow ℝ).symm).measure_preimage
-          (by rw [← unit_ball_equiv, ← coe_continuousLinearEquiv]
+          (by rw [← unit_ball_equiv, PiLp.continuousLinearEquiv_apply, ← coe_measurableEquiv]
               exact (MeasurableEquiv.measurableSet_image _).mpr measurableSet_ball)]
         simp only [MeasurableEquiv.finTwoArrow_symm_apply, Fin.sum_univ_two, preimage_setOf_eq,
           Fin.cons_zero, Fin.cons_one]
