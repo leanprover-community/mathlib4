@@ -26,26 +26,26 @@ variable {α : Type _} [MeasurableSpace α] [MeasurableSingletonClass α]
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 theorem integral_eq_tsum
-  (p : Pmf α) (f : α → E) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) :
+  (p : Pmf α) (f : α → E) (hf : Integrable (fun a ↦ f a) p.toMeasure) :
     ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
   _ = ∑' (a : ↑(support p)), (p.toMeasure {a.val}).toReal • f a := by
     apply integral_countable f p.support_countable
     rwa [restrict_toMeasure_support p]
-  _ = ∑' (a : ↑(support p)), (p a.val).toReal • f a.val := by
+  _ = ∑' (a : ↑(support p)), (p a).toReal • f a := by
     congr with x; congr
-    apply Pmf.toMeasure_apply_singleton p x.val (MeasurableSet.singleton x.val)
+    apply Pmf.toMeasure_apply_singleton p x (MeasurableSet.singleton _)
   _ = ∑' a, (p a).toReal • f a :=
-    tsum_subtype_eq_of_support_subset $ by
-      calc (fun a ↦ ENNReal.toReal (p a) • f a).support ⊆ (fun a ↦ ENNReal.toReal (p a)).support :=
+    tsum_subtype_eq_of_support_subset $ by calc
+      (fun a ↦ (p a).toReal • f a).support ⊆ (fun a ↦ (p a).toReal).support :=
         Function.support_smul_subset_left _ _
-      _ ⊆ support p := (fun x h1 h2 => h1 (by simp [h2]))
+      _ ⊆ support p := fun x h1 h2 => h1 (by simp [h2])
 
 theorem integral_eq_sum [Fintype α] (p : Pmf α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
   rw [integral_fintype _ (integrable_of_fintype _ f)]
-  congr 1 with x
-  rw [Pmf.toMeasure_apply_singleton _ _ (MeasurableSet.singleton x)]
+  congr with x; congr
+  exact Pmf.toMeasure_apply_singleton p x (MeasurableSet.singleton _)
 
 end General
 
