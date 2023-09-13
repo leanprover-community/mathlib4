@@ -539,7 +539,7 @@ theorem card_le_one_iff : s.card ≤ 1 ↔ ∀ {a b}, a ∈ s → b ∈ s → a 
   tauto
 #align finset.card_le_one_iff Finset.card_le_one_iff
 
-theorem card_le_one_iff_subsingleton : s.card ≤ 1 ↔ Subsingleton s := by
+theorem card_le_one_iff_subsingleton_coe : s.card ≤ 1 ↔ Subsingleton (s : Type _) := by
   rw [card_le_one_iff, subsingleton_iff]
   aesop
 
@@ -569,8 +569,8 @@ theorem one_lt_card_iff : 1 < s.card ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ 
   simp only [exists_prop, exists_and_left]
 #align finset.one_lt_card_iff Finset.one_lt_card_iff
 
-theorem one_lt_card_iff_nontrivial : 1 < s.card ↔ Nontrivial s := by
-  rw [← not_iff_not, not_lt, not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton]
+theorem one_lt_card_iff_nontrivial_coe : 1 < s.card ↔ Nontrivial (s : Type _) := by
+  rw [← not_iff_not, not_lt, not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe]
 
 theorem two_lt_card_iff : 2 < s.card ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
   classical

@@ -576,7 +576,7 @@ theorem card_le_one_iff_subsingleton : card α ≤ 1 ↔ Subsingleton α :=
 #align fintype.card_le_one_iff_subsingleton Fintype.card_le_one_iff_subsingleton
 
 theorem one_lt_card_iff_nontrivial : 1 < card α ↔ Nontrivial α := by
-  rw [← Finset.card_univ, Finset.one_lt_card_iff_nontrivial, nontrivial_iff, nontrivial_iff]
+  rw [← Finset.card_univ, Finset.one_lt_card_iff_nontrivial_coe, nontrivial_iff, nontrivial_iff]
   aesop
 #align fintype.one_lt_card_iff_nontrivial Fintype.one_lt_card_iff_nontrivial
 
