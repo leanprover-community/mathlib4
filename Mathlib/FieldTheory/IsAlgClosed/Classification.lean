@@ -40,8 +40,8 @@ variable (R L : Type u) [CommRing R] [CommRing L] [IsDomain L] [Algebra R L]
 variable [NoZeroSMulDivisors R L] (halg : Algebra.IsAlgebraic R L)
 
 theorem cardinal_mk_le_sigma_polynomial :
-    #L ≤ #(Σ p : R[X], { x : L // x ∈ (p.map (algebraMap R L)).roots }) :=
-  @mk_le_of_injective L (Σ p : R[X], {x : L | x ∈ (p.map (algebraMap R L)).roots})
+    #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
+  @mk_le_of_injective L (Σ p : R[X], {x : L | x ∈ p.aroots L})
     (fun x : L =>
       let p := Classical.indefiniteDescription _ (halg x)
       ⟨p.1, x, by
@@ -64,9 +64,9 @@ theorem cardinal_mk_le_sigma_polynomial :
 of the base ring or `ℵ₀` -/
 theorem cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
   calc
-    #L ≤ #(Σ p : R[X], { x : L // x ∈ (p.map (algebraMap R L)).roots }) :=
+    #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
       cardinal_mk_le_sigma_polynomial R L halg
-    _ = Cardinal.sum fun p : R[X] => #{x : L | x ∈ (p.map (algebraMap R L)).roots} := by
+    _ = Cardinal.sum fun p : R[X] => #{x : L | x ∈ p.aroots L} := by
       rw [← mk_sigma]; rfl
     _ ≤ Cardinal.sum.{u, u} fun _ : R[X] => ℵ₀ :=
       (sum_le_sum _ _ fun p => (Multiset.finite_toSet _).lt_aleph0.le)
