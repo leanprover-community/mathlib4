@@ -1877,9 +1877,6 @@ theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as 
 
 /-! ### take, drop -/
 
-@[simp]
-theorem take_zero (l : List α) : take 0 l = [] :=
-  rfl
 #align list.take_zero List.take_zero
 
 #align list.take_nil List.take_nil
@@ -2043,7 +2040,7 @@ theorem dropLast_take {n : ℕ} {l : List α} (h : n < l.length) :
 #align list.init_take List.dropLast_take
 
 theorem dropLast_cons_of_ne_nil {α : Type*} {x : α}
-    {l : List α} (h : l ≠ []) : (x :: l).dropLast = x :: l.dropLast := by simp [h]
+    {l : List α} (h : l ≠ []) : (x :: l).dropLast = x :: l.dropLast := by simp [h, dropLast]
 #align list.init_cons_of_ne_nil List.dropLast_cons_of_ne_nil
 
 @[simp]
@@ -2352,26 +2349,9 @@ theorem foldr_ext (f g : α → β → β) (b : β) {l : List α} (H : ∀ a ∈
   simp only [foldr, ih H.2, H.1]
 #align list.foldr_ext List.foldr_ext
 
-@[simp]
-theorem foldl_nil (f : α → β → α) (a : α) : foldl f a [] = a :=
-  rfl
 #align list.foldl_nil List.foldl_nil
-
-@[simp]
-theorem foldl_cons (f : α → β → α) (a : α) (b : β) (l : List β) :
-    foldl f a (b :: l) = foldl f (f a b) l :=
-  rfl
 #align list.foldl_cons List.foldl_cons
-
-@[simp]
-theorem foldr_nil (f : α → β → β) (b : β) : foldr f b [] = b :=
-  rfl
 #align list.foldr_nil List.foldr_nil
-
-@[simp]
-theorem foldr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
-    foldr f b (a :: l) = f a (foldr f b l) :=
-  rfl
 #align list.foldr_cons List.foldr_cons
 
 #align list.foldl_append List.foldl_append
@@ -2757,18 +2737,9 @@ section FoldlMFoldrM
 
 variable {m : Type v → Type w} [Monad m]
 
-@[simp]
-theorem foldlM_nil (f : β → α → m β) {b} : List.foldlM f b [] = pure b :=
-  rfl
 #align list.mfoldl_nil List.foldlM_nil
-
 -- Porting note: now in std
 #align list.mfoldr_nil List.foldrM_nil
-
-@[simp]
-theorem foldlM_cons {f : β → α → m β} {b a l} :
-    List.foldlM f b (a :: l) = f b a >>= fun b' => List.foldlM f b' l :=
-  rfl
 #align list.mfoldl_cons List.foldlM_cons
 
 /- Porting note: now in std; now assumes an instance of `LawfulMonad m`, so we make everything
