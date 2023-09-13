@@ -95,12 +95,6 @@ def skewAdjoint.submodule : Submodule R A :=
   { skewAdjoint A with smul_mem' := skewAdjoint.smul_mem }
 #align skew_adjoint.submodule skewAdjoint.submodule
 
-@[simp]
-theorem selfAdjoint.subtype_apply (x : selfAdjoint A) :
-    (selfAdjoint.submodule R A).subtype x = (x : A) := Submodule.subtype_apply _ _
-
-#check selfAdjoint.subtype_apply
-
 variable {A} [Invertible (2 : R)]
 
 /-- The self-adjoint part of an element of a star module, as a linear map. -/
