@@ -71,8 +71,8 @@ lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h :
     | zero => cases lt_irrefl _ h
     | succ j ihj =>
       by_cases H : 0 < Fin.castSucc j
-      . exact IsTrans.trans _ _ _ (ihj H) (x.step _)
-      . simp only [not_lt, Fin.le_zero_iff] at H
+      · exact IsTrans.trans _ _ _ (ihj H) (x.step _)
+      · simp only [not_lt, Fin.le_zero_iff] at H
         rw [← H]
         exact x.step _
   | succ i _ => induction j using Fin.inductionOn with
