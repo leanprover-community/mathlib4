@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Meta.Basic
+import Mathlib.Data.Nondet.Basic
 import Lean.Meta.Tactic.Util
 import Std.Data.List.Basic
 import Mathlib.Lean.Meta
@@ -12,11 +13,7 @@ import Mathlib.Lean.Meta
 # `backtrack`
 
 A meta-tactic for running backtracking search, given a non-deterministic tactic
-`alternatives : MVarId → MetaM (List (MetaM (List MVarId)))`.
-
-Here the outermost list gives us alternative solutions to the input goal.
-The innermost list is then the new subgoals generated in that solution.
-The additional `MetaM` allows for deferring computation.
+`alternatives : MVarId → Nondet MetaM (List MVarId)`.
 
 `backtrack alternatives goals` will recursively try to solve all goals in `goals`,
 and the subgoals generated, backtracking as necessary.
@@ -26,9 +23,6 @@ A customisable `suspend` hook in `BacktrackConfig` allows suspend a goal (or sub
 so that it will be returned instead of processed further.
 Other hooks `proc` and `discharge` (described in `BacktrackConfig`) allow running other
 tactics before `alternatives`, or if all search branches from a given goal fail.
-
-See also `nondeterministic`, an alternative implementation of the same idea,
-but with simpler flow control, and no trace messages.
 
 Currently only `solveByElim` is implemented in terms of `backtrack`.
 -/
@@ -56,9 +50,9 @@ Given any tactic that takes a goal, and returns a sequence of alternative outcom
 (each outcome consisting of a list of new subgoals),
 we can perform backtracking search by repeatedly applying the tactic.
 -/
-def firstContinuation (results : MVarId → MetaM (List (MetaM (List MVarId))))
+def firstContinuation (results : MVarId → Nondet MetaM (List MVarId))
     (cont : List MVarId → MetaM α) (g : MVarId) : MetaM α := do
-  (← results g).firstM fun r => do cont (← r)
+  (results g).firstM fun r => observing? do cont r
 
 end Lean.MVarId
 
@@ -101,16 +95,16 @@ def ppMVarIds (gs : List MVarId) : MetaM (List Format) := do
 
 /--
 Attempts to solve the `goals`, by recursively calling `alternatives g` on each subgoal that appears.
-`alternatives` returns a list of list of goals (wrapped in `MetaM`).
-The outermost list corresponds to alternative outcomes,
-while the innermost list is the subgoals generated in that outcome.
+`alternatives` returns a nondeterministic list of goals
+(this is essentially a lazy list of `List MVarId`,
+with the extra state required to backtrack in `MetaM`).
 
 `backtrack` performs a backtracking search, attempting to close all subgoals.
 
 Further flow control options are available via the `Config` argument.
 -/
 partial def backtrack (cfg : BacktrackConfig := {}) (trace : Name := .anonymous)
-    (alternatives : MVarId → MetaM (List (MetaM (List MVarId))))
+    (alternatives : MVarId → Nondet MetaM (List MVarId))
     (goals : List MVarId) : MetaM (List MVarId) := do
   processIndependentGoals goals goals
 where
@@ -205,8 +199,5 @@ where
         -- Finally, having solved this batch of independent goals,
         -- recurse (potentially now finding new independent goals).
         return newSubgoals ++ (← processIndependentGoals goals' ogs)
-  -- termination_by run n curr acc => (n, curr)
-
-
 
 end Mathlib.Tactic
