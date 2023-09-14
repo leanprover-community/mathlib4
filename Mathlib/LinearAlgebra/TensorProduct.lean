@@ -504,7 +504,7 @@ theorem lift.tmul (x y) : lift f (x ⊗ₜ y) = f x y :=
 #align tensor_product.lift.tmul TensorProduct.lift.tmul
 
 @[simp]
-theorem lift.tmul' (x y) : (lift f).1 (x ⊗ₜ y) = f x y :=
+theorem lift.tmul' (x y) : (lift f).toFun (x ⊗ₜ y) = f x y :=
   rfl
 #align tensor_product.lift.tmul' TensorProduct.lift.tmul'
 
