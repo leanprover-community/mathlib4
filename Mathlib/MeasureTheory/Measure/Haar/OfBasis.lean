@@ -294,4 +294,7 @@ protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
 theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
 #align euclidean_space.coe_measurable_equiv EuclideanSpace.coe_measurableEquiv
 
+theorem coe_measurableEquiv_symm :
+    ⇑(EuclideanSpace.measurableEquiv ι).symm = (WithLp.equiv 2 _).symm := rfl
+
 end EuclideanSpace

@@ -1442,7 +1442,7 @@ theorem copy_ok (q s a b c d) :
       ⟨some q, none, K'.elim (List.reverseAux b a) [] c (List.reverseAux b d)⟩ := by
   induction' b with x b IH generalizing a d s
   · refine' TransGen.single _
-    simp
+    simp [List.reverseAux]
   refine' TransGen.head rfl _
   simp
   exact IH _ _ _
@@ -1502,7 +1502,7 @@ theorem head_stack_ok {q s L₁ L₂ L₃} :
         (TransGen.head rfl (TransGen.head rfl _))
     simp
     convert unrev_ok using 2
-    simp
+    simp [List.reverseAux]
   · refine'
       TransGen.trans
         (move_ok (by decide)
@@ -1570,7 +1570,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
     refine' TransGen.head rfl _
     simp
     convert unrev_ok using 2
-    simp
+    simp [List.reverseAux]
   simp [trNum, Num.succ']
   suffices ∀ l₁, ∃ l₁' l₂' s',
     List.reverseAux l₁ (trPosNum a) = List.reverseAux l₁' l₂' ∧
