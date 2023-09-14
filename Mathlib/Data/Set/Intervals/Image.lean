@@ -19,7 +19,7 @@ section Preorder
 variable [Preorder α] [Preorder β] {a b : α}
 
 lemma MonotoneOn.mapsTo_Ici (h : MonotoneOn f (Ici a)) : MapsTo f (Ici a) (Ici (f a)) :=
-  fun _c hc => by aesop
+  fun _ _ => by aesop
 
 lemma MonotoneOn.mapsTo_Iic (h : MonotoneOn f (Iic b)) : MapsTo f (Iic b) (Iic (f b)) :=
 λ _c hc ↦ by aesop

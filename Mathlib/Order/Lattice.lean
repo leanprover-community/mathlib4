@@ -1135,6 +1135,7 @@ theorem map_inf [SemilatticeInf β] {f : α → β} (hf : Monotone f) (x y : α)
 end Monotone
 
 namespace MonotoneOn
+variable {f : α → β} {s : Set α} {x y : α}
 
 /-- Pointwise supremum of two monotone functions is a monotone function. -/
 protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : Set α}
@@ -1159,6 +1160,19 @@ protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set 
     (hg : MonotoneOn g s) : MonotoneOn (fun x => min (f x) (g x)) s :=
   hf.inf hg
 #align monotone_on.min MonotoneOn.min
+
+variable [LinearOrder α]
+
+theorem map_sup [SemilatticeSup β] (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
+    f (x ⊔ y) = f x ⊔ f y := by
+  cases le_total x y <;> have := hf ?_ ?_ ‹_› <;>
+    first
+    | assumption
+    | simp only [*, sup_of_le_left, sup_of_le_right]
+
+theorem map_inf [SemilatticeInf β] (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
+    f (x ⊓ y) = f x ⊓ f y :=
+  hf.dual.map_sup hx hy
 
 end MonotoneOn
 
@@ -1215,6 +1229,7 @@ theorem map_inf [SemilatticeSup β] {f : α → β} (hf : Antitone f) (x y : α)
 end Antitone
 
 namespace AntitoneOn
+variable {f : α → β} {s : Set α} {x y : α}
 
 /-- Pointwise supremum of two antitone functions is an antitone function. -/
 protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : Set α}
@@ -1239,6 +1254,21 @@ protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set 
     (hg : AntitoneOn g s) : AntitoneOn (fun x => min (f x) (g x)) s :=
   hf.inf hg
 #align antitone_on.min AntitoneOn.min
+
+variable [LinearOrder α]
+
+theorem map_sup [SemilatticeInf β] (hf : AntitoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
+    f (x ⊔ y) = f x ⊓ f y := by
+  cases le_total x y <;> have := hf ?_ ?_ ‹_› <;>
+    first
+    | assumption
+    | simp only [*, sup_of_le_left, sup_of_le_right, inf_of_le_left, inf_of_le_right]
+#align antitone_on.map_sup AntitoneOn.map_sup
+
+theorem map_inf [SemilatticeSup β] (hf : AntitoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
+    f (x ⊓ y) = f x ⊔ f y :=
+  hf.dual.map_sup hx hy
+#align antitone_on.map_inf AntitoneOn.map_inf
 
 end AntitoneOn
 
