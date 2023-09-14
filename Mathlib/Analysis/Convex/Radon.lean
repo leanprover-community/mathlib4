@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
 import Mathlib.Analysis.Convex.Combination
-import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -18,7 +17,7 @@ hulls intersect.
 convex hull, radon, affine independence
 -/
 
-open Set Finset
+open Finset Set
 open BigOperators
 
 variable {ι 𝕜 E : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {f : ι → E}
