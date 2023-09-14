@@ -19,7 +19,7 @@ We define and prove some basic relations about
 which is also known as the rising factorial and about
 `descPochhammer R n : R[X] := X * (X - 1) * ... * (X - n + 1)`
 which is also known as the falling factorial. Versions of this definition
-that is focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactorial` and
+that are focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactorial` and
 `Nat.descFactorial`.
 
 ## Implementation
