@@ -208,8 +208,9 @@ section
 variable {A_}
 variable (a : A_)
 
+/-- the `ℤ`-linear map of scalar multiplication (. • a)-/
 @[simps] def smulBya : ℤ →ₗ[ℤ] A_ := {
-  toFun := λ z ↦ z • a
+  toFun := (. • a)
   map_smul' := by intros; simp [mul_smul]
   map_add' := by intros; simp [add_smul]
 }
@@ -223,6 +224,9 @@ lemma smulBya_ker : LinearMap.ker (smulBya a) = Ideal.span {(addOrderOf a : ℤ)
   ext1 x
   rw [Ideal.mem_span_singleton, LinearMap.mem_ker, addOrderOf_dvd_iff_zsmul_eq_zero, smulBya_apply]
 
+/--
+ℤ ⧸ ⟨ord(a)⟩ ≃ aℤ
+-/
 @[simps!] noncomputable def ZModSpanAddOrderOfEquiv :
     (ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)}) ≃ₗ[ℤ] ℤ ∙ a :=
   letI e1 : (ℤ ⧸ (LinearMap.ker <| smulBya a)) ≃ₗ[ℤ] (ℤ ∙ a) :=
@@ -235,13 +239,9 @@ lemma smulBya_ker : LinearMap.ker (smulBya a) = Ideal.span {(addOrderOf a : ℤ)
 
 end
 
-namespace infinite_order
-
-variable {A_}
-variable (a : A_) (finite_order : IsOfFinAddOrder a)
-
-@[simps] noncomputable def divByAddOrderOf : ℤ →ₗ[ℤ] AddCircle (1 : ℚ) where
-  toFun := λ m ↦ Quotient.mk _ <| (m : ℚ) * (addOrderOf a : ℚ)⁻¹
+/-- given `n : ℕ`, the map `m ↦ n / m`. -/
+@[simps] noncomputable def divBy (n : ℕ) : ℤ →ₗ[ℤ] AddCircle (1 : ℚ) where
+  toFun := λ m ↦ Quotient.mk _ <| (m : ℚ) * (n : ℚ)⁻¹
   map_add' := λ x y ↦ by
     dsimp
     change _ = Quotient.mk _ (_ + _)
@@ -259,10 +259,62 @@ variable (a : A_) (finite_order : IsOfFinAddOrder a)
     rw [zsmul_eq_mul, ← mul_assoc, Int.cast_mul, neg_add_eq_sub, sub_self]
     exact (AddSubgroup.zmultiples (1 : ℚ)).zero_mem
 
-variable {a}
+namespace infinite_order
 
-lemma divByAddOrderOf_addOrderOf : divByAddOrderOf a (addOrderOf a) = 0 := by
-  simp only [divByAddOrderOf_apply, Int.cast_ofNat, ne_eq, Nat.cast_eq_zero]
+variable {A_}
+variable {a : A_} (infinite_order : ¬IsOfFinAddOrder a)
+
+/-- the map sending `n • a` to `n/2` when `a` has infinite order-/
+@[simps!] noncomputable def toRatCircle : (ℤ ∙ a) →ₗ[ℤ] AddCircle (1 : ℚ) :=
+  let e : (ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)}) →ₗ[ℤ] AddCircle (1 : ℚ) :=
+    Submodule.liftQSpanSingleton _ (divBy 2) <| by
+      rw [← addOrderOf_eq_zero_iff] at infinite_order
+      simp only [infinite_order, CharP.cast_eq_zero, map_zero]
+  e ∘ₗ (ZModSpanAddOrderOfEquiv a).symm.toLinearMap
+
+lemma toRatCircle_apply_self_eq_aux :
+    toRatCircle infinite_order ⟨smulBya a 1,
+      by rw [smulBya_apply, one_smul]; exact Submodule.mem_span_singleton_self a⟩ =
+    Quotient.mk _ (2 : ℚ)⁻¹ := by
+  rw [toRatCircle_apply]
+  erw [LinearMap.quotKerEquivRange_symm_apply_image (smulBya a), LinearEquiv.coe_toEquiv]
+  rw [← Submodule.Quotient.equiv_refl, Submodule.Quotient.equiv_symm,
+    Submodule.Quotient.equiv_apply]
+  convert Submodule.liftQSpanSingleton_apply _ _ _ _ using 1
+  · convert (smulBya_ker a).symm using 1
+    exact Submodule.map_id _
+
+lemma toRatCircle_apply_self_eq :
+    toRatCircle infinite_order ⟨a, Submodule.mem_span_singleton_self a⟩ =
+    Quotient.mk _ (2 : ℚ)⁻¹ := by
+  rw [← toRatCircle_apply_self_eq_aux infinite_order]
+  simp
+
+lemma toRatCircle_apply_self_ne_zero :
+    toRatCircle infinite_order ⟨a, Submodule.mem_span_singleton_self a⟩ ≠ 0 := by
+  rw [toRatCircle_apply_self_eq infinite_order]
+  change _ ≠ Quotient.mk _ (0 : ℚ)
+  intro r
+  erw [QuotientAddGroup.mk'_eq_mk'] at r
+  obtain ⟨_, ⟨z, rfl⟩, H⟩ := r
+  simp only [zsmul_eq_mul, mul_one] at H
+  rw [add_comm, add_eq_zero_iff_eq_neg] at H
+  have ineq0 : |(z : ℚ)| < 1
+  · rw [H, abs_neg, abs_inv, inv_lt_one_iff]; right; norm_num
+  norm_cast at ineq0
+  rw [Int.abs_lt_one_iff] at ineq0
+  subst ineq0
+  norm_num at H
+
+end infinite_order
+
+namespace finite_order
+
+variable {A_}
+variable {a : A_} (finite_order : IsOfFinAddOrder a)
+
+lemma divBy_addOrderOf_addOrderOf : divBy (addOrderOf a) (addOrderOf a) = 0 := by
+  simp only [divBy_apply, Int.cast_ofNat, ne_eq, Nat.cast_eq_zero]
   apply Quotient.sound'
   rw [QuotientAddGroup.leftRel_eq]
   simp only [ne_eq, Nat.cast_eq_zero, add_zero, neg_mem_iff]
@@ -272,29 +324,108 @@ lemma divByAddOrderOf_addOrderOf : divByAddOrderOf a (addOrderOf a) = 0 := by
     norm_num
     linarith
 
+/-- the map sending `n • a` to `n / ord(a)` when `a` has finite order. -/
 @[simps!] noncomputable def toRatCircle : (ℤ ∙ a) →ₗ[ℤ] AddCircle (1 : ℚ) :=
   let e : (ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)}) →ₗ[ℤ] AddCircle (1 : ℚ) :=
-    Submodule.liftQSpanSingleton _ (divByAddOrderOf a) <| divByAddOrderOf_addOrderOf finite_order
+    Submodule.liftQSpanSingleton _ (divBy <| addOrderOf a) <|
+      divBy_addOrderOf_addOrderOf finite_order
   e ∘ₗ (ZModSpanAddOrderOfEquiv a).symm.toLinearMap
 
 lemma toRatCircle_apply_self_eq_aux :
     toRatCircle finite_order ⟨smulBya a 1,
       by rw [smulBya_apply, one_smul]; exact Submodule.mem_span_singleton_self a⟩ =
-    Quotient.mk _ 1 := by
-  rw [toRatCircle_apply] --, LinearEquiv.coe_toEquiv, LinearMap.quotKerEquivRange_symm_apply_image (smulBya a)]
-  have eq0 := LinearMap.quotKerEquivRange_symm_apply_image (smulBya a)
-  -- simp_rw [smulBya_apply, one_smul] at eq0
-  -- simp only [RingHom.id_apply, Int.cast_id, LinearMap.coe_mk, AddHom.coe_mk, one_smul] at eq0
-  erw [eq0, LinearEquiv.coe_toEquiv]
+    Quotient.mk _ (addOrderOf a : ℚ)⁻¹ := by
+  rw [toRatCircle_apply]
+  erw [LinearMap.quotKerEquivRange_symm_apply_image (smulBya a), LinearEquiv.coe_toEquiv]
   rw [← Submodule.Quotient.equiv_refl, Submodule.Quotient.equiv_symm,
     Submodule.Quotient.equiv_apply]
-  -- simp only [smulBya_apply, Eq.ndrec, id_eq, eq_mpr_eq_cast, cast_eq, LinearEquiv.refl_symm,
-  --   LinearEquiv.refl_toLinearMap]
+  convert Submodule.liftQSpanSingleton_apply _ _ _ _ using 1
+  simp only [smulBya_apply, Eq.ndrec, id_eq, eq_mpr_eq_cast, cast_eq, LinearEquiv.refl_symm,
+    LinearEquiv.refl_toLinearMap, LinearMap.id_coe, divBy_apply, Int.cast_one, one_mul]
+  · convert (smulBya_ker a).symm using 1
+    exact Submodule.map_id _
 
+lemma toRatCircle_apply_self_eq :
+    toRatCircle finite_order ⟨a, Submodule.mem_span_singleton_self a⟩ =
+    Quotient.mk _ (addOrderOf a : ℚ)⁻¹ := by
+  rw [← toRatCircle_apply_self_eq_aux finite_order]
+  simp
 
+lemma toRatCircle_apply_self_ne_zero (ne_zero : a ≠ 0) :
+    toRatCircle finite_order ⟨a, Submodule.mem_span_singleton_self a⟩ ≠ 0 := by
+  rw [toRatCircle_apply_self_eq finite_order]
+  change _ ≠ Quotient.mk _ (0 : ℚ)
+  intro r
+  erw [QuotientAddGroup.mk'_eq_mk'] at r
+  obtain ⟨_, ⟨z, rfl⟩, H⟩ := r
+  simp only [zsmul_eq_mul, mul_one] at H
+  -- This proof is a bit stupid:
+  -- we want to show that `ord(a)⁻¹ + z = 0` if contradiction
+  -- this should be easy because `ord(a) ∈ ℤ` is invertible in `ℚ`,
+  -- so `ord(a) = 1`, so `a = 0`, contradiction,
+  -- but I don't know how to say this.
+  replace H : addOrderOf a = 1
+  · rw [← addOrderOf_pos_iff] at finite_order
+    have eq0 : (addOrderOf a : ℚ) = -(z : ℚ)⁻¹
+    · rw [add_eq_zero_iff_eq_neg, inv_eq_iff_eq_inv] at H
+      rw [H, inv_neg]
+    have eq1 : |(addOrderOf a : ℚ)| = |(z : ℚ)|⁻¹
+    · rw [eq0, abs_neg, abs_inv]
+    have ineq0 : 1 ≤ |(addOrderOf a : ℚ)|
+    · norm_num
+      linarith
+    rw [eq1, le_inv, inv_one] at ineq0
+    norm_cast at ineq0
+    rw [Int.abs_le_one_iff] at ineq0
+    pick_goal 2
+    · norm_num
+    pick_goal 2
+    · simp only [abs_pos, ne_eq, Int.cast_eq_zero]
+      rintro rfl
+      simp only [Int.cast_zero, add_zero, inv_eq_zero, Nat.cast_eq_zero] at H
+      linarith only [finite_order, H]
+    obtain (rfl|rfl|rfl) := ineq0
+    · simp only [Int.cast_zero, inv_zero, neg_zero, Nat.cast_eq_zero] at eq0
+      linarith only [eq0, finite_order]
+    · simp only [Nat.abs_cast, Int.cast_one, abs_one, inv_one, Nat.cast_eq_one,
+        AddMonoid.addOrderOf_eq_one_iff] at eq1
+      exact (ne_zero eq1).elim
+    · rw [Int.cast_neg, Int.cast_one, ← sub_eq_add_neg, sub_eq_zero] at H
+      simp only [inv_eq_one, Nat.cast_eq_one, AddMonoid.addOrderOf_eq_one_iff] at H
+      exact (ne_zero H).elim
 
-end infinite_order
+  rw [AddMonoid.addOrderOf_eq_one_iff] at H
+  exact ne_zero H
+
+end finite_order
+
+lemma toNext_inj : Function.Injective $ toNext A_ := by
+  apply toNext_inj_of_exists
+  intro a ne_zero
+  by_cases order : IsOfFinAddOrder a
+  · let F := finite_order.toRatCircle order
+    refine ⟨⟨⟨ULift.up, by intros; rfl⟩, by intros; rfl⟩ ∘ₗ F, ?_⟩
+    change _ ≠ ULift.up 0
+    intro r
+    rw [LinearMap.comp_apply] at r
+    exact finite_order.toRatCircle_apply_self_ne_zero order ne_zero <| ULift.up_injective r
+  · let F := infinite_order.toRatCircle order
+    refine ⟨⟨⟨ULift.up, by intros; rfl⟩, by intros; rfl⟩ ∘ₗ F, ?_⟩
+    change _ ≠ ULift.up 0
+    intro r
+    rw [LinearMap.comp_apply] at r
+    exact infinite_order.toRatCircle_apply_self_ne_zero order <| ULift.up_injective r
+
+/-- An injective presentation of `A`: A -> ∏_{A ⟶ ℚ/ℤ}, ℚ/ℤ-/
+@[simps] def presentation : CategoryTheory.InjectivePresentation A_ where
+  J := next A_
+  injective := inferInstance
+  f := toNext A_
+  mono := (AddCommGroupCat.mono_iff_injective _).mpr $ toNext_inj _
 
 end enough_injectives_aux_proofs
+
+instance : CategoryTheory.EnoughInjectives (AddCommGroupCat.{u}) where
+  presentation A_ := ⟨enough_injectives_aux_proofs.presentation A_⟩
 
 end AddCommGroupCat
