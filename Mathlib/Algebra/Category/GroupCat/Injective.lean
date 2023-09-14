@@ -21,7 +21,7 @@ import Mathlib.LinearAlgebra.Isomorphisms
 # Injective objects in the category of abelian groups
 
 In this file we prove that divisible groups are injective object in category of (additive) abelian
-groups.
+groups and that the category of abelian groups has enough injective objects.
 
 -/
 

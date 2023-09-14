@@ -6,8 +6,6 @@ Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Group.Units
-import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Group.Opposite
 import Mathlib.GroupTheory.Subsemigroup.Basic
 
 #align_import group_theory.submonoid.basic from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
@@ -95,24 +93,6 @@ structure Submonoid (M : Type*) [MulOneClass M] extends Subsemigroup M where
   one_mem' : (1 : M) ∈ carrier
 #align submonoid Submonoid
 
-/-- pull a submonoid back to an opposite submonoid along `unop`-/
-@[simps]
-def Submonoid.op {M : Type*} [MulOneClass M] (x : Submonoid M) : Submonoid (MulOpposite M) where
-  carrier := MulOpposite.unop ⁻¹' x.1
-  mul_mem' {a b} ha hb := by
-    simp only [Set.mem_preimage, MulOpposite.unop_mul, SetLike.mem_coe] at ha hb ⊢
-    exact mul_mem hb ha
-  one_mem' := Submonoid.one_mem' _
-
-/-- pull an opposite submonoid back to a submonoid along `op`-/
-@[simps]
-def Submonoid.unop {M : Type*} [MulOneClass M] (x : Submonoid (MulOpposite M)) : Submonoid M where
-  carrier := MulOpposite.op ⁻¹' x.1
-  mul_mem' {a b} ha hb := by
-    simp only [Set.mem_preimage, MulOpposite.unop_mul, SetLike.mem_coe] at ha hb ⊢
-    exact mul_mem hb ha
-  one_mem' := Submonoid.one_mem' _
-
 end
 
 /-- A submonoid of a monoid `M` can be considered as a subsemigroup of that monoid. -/
@@ -133,24 +113,6 @@ structure AddSubmonoid (M : Type*) [AddZeroClass M] extends AddSubsemigroup M wh
   /-- An additive submonoid contains `0`. -/
   zero_mem' : (0 : M) ∈ carrier
 #align add_submonoid AddSubmonoid
-
-/-- pull an add-submonoid back to an opposite add-submonoid along `unop`-/
-def AddSubmonoid.unop {M : Type*} [AddZeroClass M] (x : AddSubmonoid M) :
-    AddSubmonoid (AddOpposite M) where
-  carrier := AddOpposite.unop ⁻¹' x.1
-  add_mem' {a b} ha hb := by
-    simp only [Set.mem_preimage, AddOpposite.unop_add, SetLike.mem_coe] at ha hb ⊢
-    exact add_mem hb ha
-  zero_mem' := AddSubmonoid.zero_mem' _
-
-/-- pull an opposite add-submonoid back to an add-submonoid along `op`-/
-def AddSubmonoid.op {M : Type*} [AddZeroClass M] (x : AddSubmonoid (AddOpposite M)) :
-    AddSubmonoid M where
-  carrier := AddOpposite.op ⁻¹' x.1
-  add_mem' {a b} ha hb := by
-    simp only [Set.mem_preimage, AddOpposite.unop_add, SetLike.mem_coe] at ha hb ⊢
-    exact add_mem hb ha
-  zero_mem' := AddSubmonoid.zero_mem' _
 
 end
 
