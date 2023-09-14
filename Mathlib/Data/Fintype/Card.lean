@@ -576,10 +576,7 @@ theorem card_le_one_iff_subsingleton : card α ≤ 1 ↔ Subsingleton α :=
 #align fintype.card_le_one_iff_subsingleton Fintype.card_le_one_iff_subsingleton
 
 theorem one_lt_card_iff_nontrivial : 1 < card α ↔ Nontrivial α := by
-  classical
-    rw [← not_iff_not]
-    push_neg
-    rw [not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton]
+  rw [← not_iff_not, not_lt, not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton]
 #align fintype.one_lt_card_iff_nontrivial Fintype.one_lt_card_iff_nontrivial
 
 theorem exists_ne_of_one_lt_card (h : 1 < card α) (a : α) : ∃ b : α, b ≠ a :=
@@ -880,12 +877,12 @@ theorem Fintype.card_compl_eq_card_compl [Finite α] (p q : α → Prop) [Fintyp
 
 theorem Fintype.card_quotient_le [Fintype α] (s : Setoid α)
     [DecidableRel ((· ≈ ·) : α → α → Prop)] : Fintype.card (Quotient s) ≤ Fintype.card α :=
-  Fintype.card_le_of_surjective _ (surjective_quotient_mk _)
+  Fintype.card_le_of_surjective _ (surjective_quotient_mk' _)
 #align fintype.card_quotient_le Fintype.card_quotient_le
 
 theorem Fintype.card_quotient_lt [Fintype α] {s : Setoid α} [DecidableRel ((· ≈ ·) : α → α → Prop)]
     {x y : α} (h1 : x ≠ y) (h2 : x ≈ y) : Fintype.card (Quotient s) < Fintype.card α :=
-  Fintype.card_lt_of_surjective_not_injective _ (surjective_quotient_mk _) fun w =>
+  Fintype.card_lt_of_surjective_not_injective _ (surjective_quotient_mk' _) fun w =>
     h1 (w <| Quotient.eq.mpr h2)
 #align fintype.card_quotient_lt Fintype.card_quotient_lt
 

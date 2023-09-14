@@ -1104,6 +1104,13 @@ theorem exists_compact_superset [WeaklyLocallyCompactSpace α] {K : Set α} (hK 
   exact iUnion₂_subset fun x hx ↦ interior_mono <| subset_iUnion₂ (s := fun x _ ↦ s x) x hx
 #align exists_compact_superset exists_compact_superset
 
+/-- In a weakly locally compact space,
+the filters `𝓝 x` and `cocompact α` are disjoint for all `α`. -/
+theorem disjoint_nhds_cocompact [WeaklyLocallyCompactSpace α] (x : α) :
+    Disjoint (𝓝 x) (cocompact α) :=
+  let ⟨_, hc, hx⟩ := exists_compact_mem_nhds x
+  disjoint_of_disjoint_of_mem disjoint_compl_right hx hc.compl_mem_cocompact
+
 /-- There are various definitions of "locally compact space" in the literature,
 which agree for Hausdorff spaces but not in general.
 This one is the precise condition on X needed
@@ -1127,11 +1134,6 @@ theorem local_compact_nhds [LocallyCompactSpace α] {x : α} {n : Set α} (h : n
     ∃ s ∈ 𝓝 x, s ⊆ n ∧ IsCompact s :=
   LocallyCompactSpace.local_compact_nhds _ _ h
 #align local_compact_nhds local_compact_nhds
-
-/-- In a locally compact space, the filters `𝓝 x` and `cocompact α` are disjoint for all `α`. -/
-theorem disjoint_nhds_cocompact [LocallyCompactSpace α] (x : α) : Disjoint (𝓝 x) (cocompact α) :=
-  let ⟨_, hx, _, hc⟩ := local_compact_nhds (univ_mem (f := 𝓝 x));
-  disjoint_of_disjoint_of_mem disjoint_compl_right hx hc.compl_mem_cocompact
 
 theorem locallyCompactSpace_of_hasBasis {ι : α → Type*} {p : ∀ x, ι x → Prop}
     {s : ∀ x, ι x → Set α} (h : ∀ x, (𝓝 x).HasBasis (p x) (s x))
@@ -1302,7 +1304,7 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace α] {S : Se
 
 /-- A σ-compact space is a space that is the union of a countable collection of compact subspaces.
   Note that a locally compact separable T₂ space need not be σ-compact.
-  The sequence can be extracted using `topological_space.compact_covering`. -/
+  The sequence can be extracted using `compactCovering`. -/
 class SigmaCompactSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- In a σ-compact space, there exists (by definition) a countable collection of compact subspaces
   that cover the entire space. -/
