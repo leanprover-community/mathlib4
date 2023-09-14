@@ -1734,15 +1734,15 @@ private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a
 
 /-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
 @[positivity ⌊ _ ⌋]
-def evalFloor : PositivityExt where eval {_u _α} _zα _pα e := do
-  -- match on `@Int.floor α' _ _ a`
-  let (.app (.app (.app (.app (.const ``Int.floor [u']) (α' : Q(Type $u'))) _) _) a) ← whnfR e
-    | throwError "failed to match on Int.floor application"
-  let zα' : Q(Zero $α') ← synthInstanceQ q(Zero $α')
-  let pα' : Q(PartialOrder $α') ← synthInstanceQ q(PartialOrder $α')
-  match ← core zα' pα' a with
-  | .positive pa => pure (.nonnegative (← mkAppM ``int_floor_nonneg_of_pos #[pa]))
-  | .nonnegative pa => pure (.nonnegative (← mkAppM ``int_floor_nonneg #[pa]))
+def evalIntFloor : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℤ)) := do
+  let ~q(@Int.floor $α' $i $j $a) := e | throwError "failed to match on Int.floor application"
+  match ← core q(inferInstance) q(inferInstance) a with
+  | .positive pa =>
+      letI ret : Q(0 ≤ $e) := q(int_floor_nonneg_of_pos (α := $α') $pa)
+      pure (.nonnegative ret)
+  | .nonnegative pa =>
+      letI ret : Q(0 ≤ $e) := q(int_floor_nonneg (α := $α') $pa)
+      pure (.nonnegative ret)
   | _ => pure .none
 
 private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : α} :
