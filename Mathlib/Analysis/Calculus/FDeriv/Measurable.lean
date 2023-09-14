@@ -794,7 +794,6 @@ theorem stronglyMeasurable_derivWithin_Ici :
     StronglyMeasurable (fun x ↦ derivWithin f (Ici x) x) := by
   borelize F
   apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_derivWithin_Ici f, ?_⟩
-  have : SeparableSpace ℝ := by infer_instance
   obtain ⟨t, t_count, ht⟩ : ∃ t : Set ℝ, t.Countable ∧ Dense t := exists_countable_dense ℝ
   suffices H : range (fun x ↦ derivWithin f (Ici x) x) ⊆ closure (Submodule.span ℝ (f '' t)) from
     IsSeparable.mono (t_count.image f).isSeparable.span.closure H
