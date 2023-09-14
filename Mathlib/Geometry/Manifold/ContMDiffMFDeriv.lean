@@ -355,8 +355,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     ```
         Tl        T(r ∘ f ∘ l^{-1})         Tr^{-1}
     TM -----> TH -------------------> TH' ---------> TM'
-    ```
-    where `Tr^{-1}` and `Tl` are the tangent maps of `r^{-1}` and `l`. Writing `Tl` and `Tr^{-1}` as
+    ``` where
+  `Tr^{-1}` and `Tl` are the tangent maps of `r^{-1}` and `l`. Writing `Tl` and `Tr^{-1}` as
     composition of charts (called `Dl` and `il` for `l` and `Dr` and `ir` in the proof below), it
     follows that they are smooth. The composition of all these maps is `Tf`, and is therefore smooth
     as a composition of smooth maps.

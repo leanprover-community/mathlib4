@@ -2002,8 +2002,8 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : PowerSerie
     rw [Finset.Nat.mem_antidiagonal]
 #align power_series.eq_zero_or_eq_zero_of_mul_eq_zero PowerSeries.eq_zero_or_eq_zero_of_mul_eq_zero
 
-instance [NoZeroDivisors R] : NoZeroDivisors (PowerSeries R)
-    where eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero _ _
+instance [NoZeroDivisors R] : NoZeroDivisors (PowerSeries R) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero _ _
 
 instance [IsDomain R] : IsDomain (PowerSeries R) :=
   NoZeroDivisors.to_isDomain _

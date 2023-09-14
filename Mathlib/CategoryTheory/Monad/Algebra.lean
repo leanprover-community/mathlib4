@@ -213,8 +213,8 @@ theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f
 #align category_theory.monad.algebra_iso_of_iso CategoryTheory.Monad.algebra_iso_of_iso
 
 instance forget_reflects_iso : ReflectsIsomorphisms T.forget
-    -- Porting note: Is this the right approach to introduce instances?
-    where reflects {_ _} f := fun [IsIso f.f] => algebra_iso_of_iso T f
+    -- Porting note: Is this the right approach to introduce instances? where
+  reflects {_ _} f := fun [IsIso f.f] => algebra_iso_of_iso T f
 #align category_theory.monad.forget_reflects_iso CategoryTheory.Monad.forget_reflects_iso
 
 instance forget_faithful : Faithful T.forget where
@@ -493,8 +493,8 @@ theorem coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsI
 #align category_theory.comonad.coalgebra_iso_of_iso CategoryTheory.Comonad.coalgebra_iso_of_iso
 
 instance forget_reflects_iso : ReflectsIsomorphisms G.forget
-    -- Porting note: Is this the right approach to introduce instances?
-    where reflects {_ _} f := fun [IsIso f.f] => coalgebra_iso_of_iso G f
+    -- Porting note: Is this the right approach to introduce instances? where
+  reflects {_ _} f := fun [IsIso f.f] => coalgebra_iso_of_iso G f
 #align category_theory.comonad.forget_reflects_iso CategoryTheory.Comonad.forget_reflects_iso
 
 instance forget_faithful : Faithful (forget G) where
