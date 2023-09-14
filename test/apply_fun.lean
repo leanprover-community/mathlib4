@@ -124,6 +124,25 @@ example (a b : List α) (P : a = b) : True := by
   apply_fun List.length at P
   trivial
 
+example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 := by
+  apply_fun (· + 1 : ℕ → ℕ) at h -- TODO shouldn't need type ascription here
+  · exact h
+  · exact Monotone.add_const monotone_id 1
+
+example (a b : ℕ) (h : a < b) : a + 1 < b + 1 := by
+  apply_fun (· + 1 : ℕ → ℕ) at h
+  · exact h
+  · exact StrictMono.add_const strictMono_id 1
+
+example (a b : ℕ) (h : a < b) : a + 1 < b + 1 := by
+  apply_fun (· + 1 : ℕ → ℕ) at h using StrictMono.add_const strictMono_id 1
+  · exact h
+
+example (a b : ℕ) (h : a ≠ b) : a + 1 ≠ b + 1 := by
+  apply_fun (· + 1 : ℕ → ℕ) at h
+  · exact h
+  · exact add_left_injective 1
+
 -- TODO
 -- -- monotonicity will be proved by `mono` in the next example
 -- example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 :=

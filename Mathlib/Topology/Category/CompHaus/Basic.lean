@@ -340,8 +340,6 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       rw [Set.disjoint_singleton_right]
       rintro ⟨y', hy'⟩
       exact hy y' hy'
-    --haveI : NormalSpace Y.toTop := normalOfCompactT2
-    haveI : NormalSpace ((forget CompHaus).obj Y) := normalOfCompactT2
     obtain ⟨φ, hφ0, hφ1, hφ01⟩ := exists_continuous_zero_one_of_closed hC hD hCD
     haveI : CompactSpace (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.compactSpace
     haveI : T2Space (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.t2Space

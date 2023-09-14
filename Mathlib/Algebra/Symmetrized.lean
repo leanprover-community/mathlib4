@@ -198,11 +198,11 @@ theorem unsym_neg [Neg α] (a : αˢʸᵐ) : unsym (-a) = -unsym a :=
 #align sym_alg.unsym_neg SymAlg.unsym_neg
 
 theorem mul_def [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : αˢʸᵐ) :
-    a * b = sym (⅟ 2 * (unsym a * unsym b + unsym b * unsym a)) := by rfl
+    a * b = sym (⅟ 2 * (unsym a * unsym b + unsym b * unsym a)) := rfl
 #align sym_alg.mul_def SymAlg.mul_def
 
 theorem unsym_mul [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : αˢʸᵐ) :
-    unsym (a * b) = ⅟ 2 * (unsym a * unsym b + unsym b * unsym a) := by rfl
+    unsym (a * b) = ⅟ 2 * (unsym a * unsym b + unsym b * unsym a) := rfl
 #align sym_alg.unsym_mul SymAlg.unsym_mul
 
 theorem sym_mul_sym [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : α) :

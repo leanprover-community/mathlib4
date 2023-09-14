@@ -4,6 +4,7 @@ import Std.Tactic.GuardExpr
 set_option pp.unicode.fun true
 
 set_option autoImplicit true
+
 /-- warning: declaration uses 'sorry' -/
 #guard_msgs in
 example : n + 2 = m := by
