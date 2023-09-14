@@ -1264,7 +1264,7 @@ theorem InjOn.invFunOn_image [Nonempty α] (h : InjOn f s₂) (ht : s₁ ⊆ s�
   h.leftInvOn_invFunOn.image_image' ht
 #align set.inj_on.inv_fun_on_image Set.InjOn.invFunOn_image
 
-theorem _root_.Function.LeftInvOn_invFunOn_of_subset_image_image [Nonempty α]
+theorem _root_.Function.leftInvOn_invFunOn_of_subset_image_image [Nonempty α]
     (h : s ⊆ (invFunOn f s) '' (f '' s)) : LeftInvOn (invFunOn f s) f s :=
   fun x hx ↦ by
     obtain ⟨-, ⟨x, hx', rfl⟩, rfl⟩ := h hx
@@ -1273,7 +1273,7 @@ theorem _root_.Function.LeftInvOn_invFunOn_of_subset_image_image [Nonempty α]
 theorem injOn_iff_invFunOn_image_image_eq_self [Nonempty α] :
     InjOn f s ↔ (invFunOn f s) '' (f '' s) = s :=
   ⟨fun h ↦ h.invFunOn_image Subset.rfl, fun h ↦
-    (Function.LeftInvOn_invFunOn_of_subset_image_image h.symm.subset).injOn⟩
+    (Function.leftInvOn_invFunOn_of_subset_image_image h.symm.subset).injOn⟩
 
 theorem _root_.Function.invFunOn_injOn_image [Nonempty α] (f : α → β) (s : Set α) :
     Set.InjOn (invFunOn f s) (f '' s) := by
@@ -1737,8 +1737,7 @@ theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [L
 theorem antitoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [LinearOrder β]
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : AntitoneOn φ t)
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : AntitoneOn ψ s :=
-  MonotoneOn.dual_right (monotoneOn_of_rightInvOn_of_mapsTo (AntitoneOn.dual_left hφ) φψs ψts)
--- Porting note: dot notation for `*.dual_*` didn't work
+  (monotoneOn_of_rightInvOn_of_mapsTo hφ.dual_left φψs ψts).dual_right
 #align function.antitone_on_of_right_inv_on_of_maps_to Function.antitoneOn_of_rightInvOn_of_mapsTo
 
 end Function

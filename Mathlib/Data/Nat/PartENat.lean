@@ -637,11 +637,11 @@ example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
 -- Porting note : new
 @[simp]
-lemma ofENat_none : ofENat Option.none = ⊤ := by rfl
+lemma ofENat_none : ofENat Option.none = ⊤ := rfl
 
 -- Porting note : new
 @[simp]
-lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := by rfl
+lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := rfl
 
 -- Porting note : new
 @[simp, norm_cast]

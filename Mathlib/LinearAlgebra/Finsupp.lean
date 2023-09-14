@@ -1025,7 +1025,7 @@ theorem finsuppProdLEquiv_apply {α β R M : Type*} [Semiring R] [AddCommMonoid 
 theorem finsuppProdLEquiv_symm_apply {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     (f : α →₀ β →₀ M) (xy) : (finsuppProdLEquiv R).symm f xy = f xy.1 xy.2 := by
   conv_rhs =>
-    rw [← (finsuppProdLEquiv R).apply_symm_apply f, finsuppProdLEquiv_apply, Prod.mk.eta]
+    rw [← (finsuppProdLEquiv R).apply_symm_apply f, finsuppProdLEquiv_apply]
 #align finsupp.finsupp_prod_lequiv_symm_apply Finsupp.finsuppProdLEquiv_symm_apply
 
 end Prod
