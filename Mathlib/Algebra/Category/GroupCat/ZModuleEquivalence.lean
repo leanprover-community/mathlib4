@@ -31,12 +31,13 @@ instance forget₂AddCommGroupFull : Full (forget₂ (ModuleCat ℤ) AddCommGrou
     -- `AddMonoidHom.toIntLinearMap` doesn't work here because `A` and `B` are not
     -- definitionally equal to the canonical `AddCommGroup.intModule` module
     -- instances it expects.
-    f := @LinearMap.mk _ _ _ _ _ _ _ _ _ A.isModule B.isModule
-        { toFun := f,
-          map_add' := AddMonoidHom.map_add (show A.carrier →+ B.carrier from f) }
-        (fun n x => by
+    f :=
+      letI := A.isModule; letI := B.isModule
+      { toFun := f
+        map_add' := AddMonoidHom.map_add (show A.carrier →+ B.carrier from f)
+        map_smul' := fun n x => by
           convert AddMonoidHom.map_zsmul (show A.carrier →+ B.carrier from f) x n <;>
-            ext <;> apply int_smul_eq_zsmul)
+            ext <;> apply int_smul_eq_zsmul }
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_AddCommGroup_full ModuleCat.forget₂AddCommGroupFull
 
