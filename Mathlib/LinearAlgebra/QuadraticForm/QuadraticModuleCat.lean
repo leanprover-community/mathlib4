@@ -101,7 +101,7 @@ theorem forget₂_map (X Y : QuadraticModuleCat R) (f : X ⟶ Y) :
   rfl
 
 
-/-- Build an isomorphism in the category `QuadraticModuleCat Q` from a
+/-- Build an isomorphism in the category `QuadraticModuleCat R` from a
 `QuadraticForm.IsometryEquiv`. -/
 @[simps]
 def ofIso {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
