@@ -1734,8 +1734,9 @@ private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a
 
 /-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
 @[positivity ⌊ _ ⌋]
-def evalFloor : PositivityExt where eval {_u _α} _zα _pα e := do
-  let (.app (.app (.app (.app _ (α' : Q(Type))) _) _) a) ← whnfR e
+def evalFloor : PositivityExt where eval {u _α} _zα _pα e := do
+  -- match on `@Int.floor α' _ _ a`
+  let (.app (.app (.app (.app (.const ``Int.floor _) (α' : Q(Type $u))) _) _) a) ← whnfR e
     | throwError "failed to match on Int.floor application"
   let zα' : Q(Zero $α') ← synthInstanceQ q(Zero $α')
   let pα' : Q(Zero $α') ← synthInstanceQ q(PartialOrder $α')
@@ -1750,8 +1751,9 @@ private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : 
 
 /-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
 @[positivity ⌈ _ ⌉₊]
-def evalNatCeil : PositivityExt where eval {_u _α} _zα _pα e := do
-  let (.app (.app (.app (.app _ (α' : Q(Type))) _) _) a) ← whnfR e
+def evalNatCeil : PositivityExt where eval {u _α} _zα _pα e := do
+  -- match on `@Nat.ceil α' _ _ a`
+  let (.app (.app (.app (.app (.const ``Nat.ceil _) (α' : Q(Type $u))) _) _) a) ← whnfR e
     | throwError "failed to match on Nat.ceil application"
   let zα' : Q(Zero $α') ← synthInstanceQ q(Zero $α')
   let pα' : Q(Zero $α') ← synthInstanceQ q(PartialOrder $α')
@@ -1764,8 +1766,9 @@ private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
 @[positivity ⌈ _ ⌉]
-def evalIntCeil : PositivityExt where eval {_u _α} _zα _pα e := do
-  let (.app (.app (.app (.app _ (α' : Q(Type))) _) _) a) ← whnfR e
+def evalIntCeil : PositivityExt where eval {u _α} _zα _pα e := do
+  -- match on `@Int.ceil α' _ _ a`
+  let (.app (.app (.app (.app (.const ``Int.ceil _) (α' : Q(Type $u))) _) _) a) ← whnfR e
     | throwError "failed to match on Int.ceil application"
   let zα' : Q(Zero $α') ← synthInstanceQ q(Zero $α')
   let pα' : Q(Zero $α') ← synthInstanceQ q(PartialOrder $α')
