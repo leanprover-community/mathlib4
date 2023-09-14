@@ -444,7 +444,9 @@ theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
   rw [sub_eq_add_neg, ← Matrix.neg_mul, det_one_add_mul_comm, Matrix.mul_neg, ← sub_eq_add_neg]
 #align matrix.det_one_sub_mul_comm Matrix.det_one_sub_mul_comm
 
-/-- A special case of the **Matrix determinant lemma** for when `A = I`. -/
+/-- A special case of the **Matrix determinant lemma** for when `A = I`.
+
+TODO: show this more generally.-/
 theorem det_one_add_col_mul_row (u v : m → α) : det (1 + col u * row v) = 1 + v ⬝ᵥ u := by
   rw [det_one_add_mul_comm, det_unique, Pi.add_apply, Pi.add_apply, Matrix.one_apply_eq,
     Matrix.row_mul_col_apply]
