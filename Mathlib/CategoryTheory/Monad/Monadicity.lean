@@ -434,8 +434,8 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
     ⟨_, comparisonAdjunction⟩
   constructor
   let _ : ∀ X : (Adjunction.ofRightAdjoint G).toMonad.Algebra,
-      IsIso ((Adjunction.ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).unit.app X)
-    := by
+      IsIso ((Adjunction.ofRightAdjoint
+                (comparison (Adjunction.ofRightAdjoint G))).unit.app X) := by
     intro X
     apply
       @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget (Adjunction.ofRightAdjoint G).toMonad) ?_ _

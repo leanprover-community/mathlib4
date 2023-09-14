@@ -108,7 +108,7 @@ a positive power equal to one. -/
 def rootsOfUnity.mkOfPowEq (ζ : M) {n : ℕ+} (h : ζ ^ (n : ℕ) = 1) : rootsOfUnity n M :=
   ⟨Units.ofPowEqOne ζ n h n.ne_zero, Units.pow_ofPowEqOne _ _⟩
 #align roots_of_unity.mk_of_pow_eq rootsOfUnity.mkOfPowEq
-#align roots_of_unity.mk_of_pow_eq_coe_coe rootsOfUnity.mkOfPowEq_coe_val
+#align roots_of_unity.mk_of_pow_eq_coe_coe rootsOfUnity.val_mkOfPowEq_coe
 
 @[simp]
 theorem rootsOfUnity.coe_mkOfPowEq {ζ : M} {n : ℕ+} (h : ζ ^ (n : ℕ) = 1) :
@@ -286,18 +286,20 @@ end rootsOfUnity
 
 /-- An element `ζ` is a primitive `k`-th root of unity if `ζ ^ k = 1`,
 and if `l` satisfies `ζ ^ l = 1` then `k ∣ l`. -/
+@[mk_iff IsPrimitiveRoot.iff_def]
 structure IsPrimitiveRoot (ζ : M) (k : ℕ) : Prop where
   pow_eq_one : ζ ^ (k : ℕ) = 1
   dvd_of_pow_eq_one : ∀ l : ℕ, ζ ^ l = 1 → k ∣ l
 #align is_primitive_root IsPrimitiveRoot
+#align is_primitive_root.iff_def IsPrimitiveRoot.iff_def
 
 /-- Turn a primitive root μ into a member of the `rootsOfUnity` subgroup. -/
 @[simps!]
 def IsPrimitiveRoot.toRootsOfUnity {μ : M} {n : ℕ+} (h : IsPrimitiveRoot μ n) : rootsOfUnity n M :=
   rootsOfUnity.mkOfPowEq μ h.pow_eq_one
 #align is_primitive_root.to_roots_of_unity IsPrimitiveRoot.toRootsOfUnity
-#align is_primitive_root.coe_to_roots_of_unity_coe IsPrimitiveRoot.toRootsOfUnity_coe_val
-#align is_primitive_root.coe_inv_to_roots_of_unity_coe IsPrimitiveRoot.toRootsOfUnity_coe_inv
+#align is_primitive_root.coe_to_roots_of_unity_coe IsPrimitiveRoot.val_toRootsOfUnity_coe
+#align is_primitive_root.coe_inv_to_roots_of_unity_coe IsPrimitiveRoot.val_inv_toRootsOfUnity_coe
 
 section primitiveRoots
 
@@ -332,10 +334,6 @@ end primitiveRoots
 namespace IsPrimitiveRoot
 
 variable {k l : ℕ}
-
-theorem iff_def (ζ : M) (k : ℕ) : IsPrimitiveRoot ζ k ↔ ζ ^ k = 1 ∧ ∀ l : ℕ, ζ ^ l = 1 → k ∣ l :=
-  ⟨fun ⟨h1, h2⟩ => ⟨h1, h2⟩, fun ⟨h1, h2⟩ => ⟨h1, h2⟩⟩
-#align is_primitive_root.iff_def IsPrimitiveRoot.iff_def
 
 theorem mk_of_lt (ζ : M) (hk : 0 < k) (h1 : ζ ^ k = 1) (h : ∀ l : ℕ, 0 < l → l < k → ζ ^ l ≠ 1) :
     IsPrimitiveRoot ζ k := by
@@ -943,7 +941,7 @@ variable [CommRing S] [IsDomain S] {μ : S} {n : ℕ+} (hμ : IsPrimitiveRoot μ
 noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
   let μ' := hμ.toRootsOfUnity
   have ho : orderOf μ' = n := by
-    rw [hμ.eq_orderOf, ← hμ.toRootsOfUnity_coe_val, orderOf_units, orderOf_subgroup]
+    rw [hμ.eq_orderOf, ← hμ.val_toRootsOfUnity_coe, orderOf_units, orderOf_subgroup]
   MonoidHom.toHomUnits
     { toFun := fun σ => (map_rootsOfUnity_eq_pow_self σ.toAlgHom μ').choose
       map_one' := by

@@ -249,7 +249,7 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
   exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
 #align nat.exists_prime_lt_and_le_two_mul Nat.exists_prime_lt_and_le_two_mul
 
-alias Nat.exists_prime_lt_and_le_two_mul ← bertrand
+alias bertrand := Nat.exists_prime_lt_and_le_two_mul
 #align nat.bertrand Nat.bertrand
 
 end Nat
