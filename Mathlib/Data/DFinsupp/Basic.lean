@@ -1710,6 +1710,13 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
 #align dfinsupp.prod DFinsupp.prod
 #align dfinsupp.sum DFinsupp.sum
 
+@[to_additive (attr := simp)]
+theorem _root_.map_dfinsupp_prod
+    {R S H : Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
+    [CommMonoid R] [CommMonoid S] [MonoidHomClass H R S] (h : H) (f : Π₀ i, β i)
+    (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
+  map_prod _ _ _
+
 @[to_additive]
 theorem prod_mapRange_index {β₁ : ι → Type v₁} {β₂ : ι → Type v₂} [∀ i, Zero (β₁ i)]
     [∀ i, Zero (β₂ i)] [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
@@ -2248,12 +2255,8 @@ variable {R S : Type*}
 
 variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
-@[to_additive (attr := simp)]
-theorem map_dfinsupp_prod [CommMonoid R] [CommMonoid S] (h : R →* S) (f : Π₀ i, β i)
-    (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
-  h.map_prod _ _
-#align monoid_hom.map_dfinsupp_prod MonoidHom.map_dfinsupp_prod
-#align add_monoid_hom.map_dfinsupp_sum AddMonoidHom.map_dfinsupp_sum
+#noalign monoid_hom.map_dfinsupp_prod
+#noalign add_monoid_hom.map_dfinsupp_sum
 
 @[to_additive]
 theorem coe_dfinsupp_prod [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
@@ -2271,40 +2274,10 @@ theorem dfinsupp_prod_apply [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : �
 
 end MonoidHom
 
-namespace RingHom
-
-variable {R S : Type*}
-
-variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
-
-@[simp]
-theorem map_dfinsupp_prod [CommSemiring R] [CommSemiring S] (h : R →+* S) (f : Π₀ i, β i)
-    (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
-  h.map_prod _ _
-#align ring_hom.map_dfinsupp_prod RingHom.map_dfinsupp_prod
-
-@[simp]
-theorem map_dfinsupp_sum [NonAssocSemiring R] [NonAssocSemiring S] (h : R →+* S) (f : Π₀ i, β i)
-    (g : ∀ i, β i → R) : h (f.sum g) = f.sum fun a b => h (g a b) :=
-  h.map_sum _ _
-#align ring_hom.map_dfinsupp_sum RingHom.map_dfinsupp_sum
-
-end RingHom
-
-namespace MulEquiv
-
-variable {R S : Type*}
-
-variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
-
-@[to_additive (attr := simp)]
-theorem map_dfinsupp_prod [CommMonoid R] [CommMonoid S] (h : R ≃* S) (f : Π₀ i, β i)
-    (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
-  h.map_prod _ _
-#align mul_equiv.map_dfinsupp_prod MulEquiv.map_dfinsupp_prod
-#align add_equiv.map_dfinsupp_sum AddEquiv.map_dfinsupp_sum
-
-end MulEquiv
+#noalign ring_hom.map_dfinsupp_prod
+#noalign ring_hom.map_dfinsupp_sum
+#noalign mul_equiv.map_dfinsupp_prod
+#noalign add_equiv.map_dfinsupp_sum
 
 /-! The above lemmas, repeated for `DFinsupp.sumAddHom`. -/
 
