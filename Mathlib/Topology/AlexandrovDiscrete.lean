@@ -12,7 +12,21 @@ import Mathlib.Topology.SubsetProperties
 
 This file defines Alexandrov-discrete spaces, aka finitely generated spaces.
 
-A space is Alexandrov-discrete if the (arbitrary) intersection of open sets is open.
+A space is Alexandrov-discrete if the (arbitrary) intersection of open sets is open. As such,
+the intersection of all neighborhoods of a set is a neighborhood itself. Hence every set has a
+minimal neighborhood, which we call the *exterior* of the set.
+
+## Main declarations
+
+* `AlexandrovDiscrete`: Prop-valued typeclass for a topological space to be Alexandrov-discrete
+* `exterior`: Intersection of all neighborhoods of a set. When the space is Alexandrov-discrete,
+  this is the minimal neighborhood of the set.
+
+## Notes
+
+The "minimal neighborhood of a set" construction is not named in the literature. We chose the name
+"exterior" with analogy to the interior. `interior` and `exterior` have the same properties up to
+
 
 ## TODO
 
@@ -101,7 +115,10 @@ end AlexandrovDiscrete
 variable {s t : Set α} {a x y : α}
 
 /-- The *exterior* of a set is the intersection of all its neighborhoods. In an Alexandrov-discrete
-space, this is the smallest neighborhood of the set. -/
+space, this is the smallest neighborhood of the set.
+
+Note that this construction is unnamed in the literature. We choose the name in analogy to
+`interior`. -/
 def exterior (s : Set α) : Set α := (𝓝ˢ s).ker
 
 lemma exterior_singleton_eq_ker_nhds (a : α) : exterior {a} = (𝓝 a).ker := by simp [exterior]
