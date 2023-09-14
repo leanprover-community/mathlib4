@@ -450,7 +450,7 @@ theorem det_one_add_col_mul_row (u v : m → α) : det (1 + col u * row v) = 1 +
     Matrix.row_mul_col_apply]
 #align matrix.det_one_add_col_mul_row Matrix.det_one_add_col_mul_row
 
-/-- The **Matrix determinant lemma** -/
+/-- A generalization of the **Matrix determinant lemma** -/
 theorem matrix_determinant_lemma {A : Matrix m m α} (U : Matrix m n α)
     (V : Matrix n m α) (hA : IsUnit A.det) :
     (A + U * V).det = A.det*(1 + V * (A⁻¹) * U).det := by
