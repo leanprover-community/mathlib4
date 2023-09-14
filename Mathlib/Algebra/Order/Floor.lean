@@ -1766,15 +1766,15 @@ private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
 @[positivity ⌈ _ ⌉]
-def evalIntCeil : PositivityExt where eval {_u _α} _zα _pα e := do
-  -- match on `@Int.ceil α' _ _ a`
-  let (.app (.app (.app (.app (.const ``Int.ceil [u']) (α' : Q(Type $u'))) _) _) a) ← whnfR e
-    | throwError "failed to match on Int.ceil application"
-  let zα' : Q(Zero $α') ← synthInstanceQ q(Zero $α')
-  let pα' : Q(PartialOrder $α') ← synthInstanceQ q(PartialOrder $α')
-  match ← core zα' pα' a with
-  | .positive pa => pure (.positive (← mkAppM ``int_ceil_pos #[pa]))
-  | .nonnegative pa => pure (.nonnegative (← mkAppM ``Int.ceil_nonneg #[pa]))
+def evalIntCeil : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℤ)) := do
+  let ~q(@Int.ceil $α' $i $j $a) := e | throwError "failed to match on Int.ceil application"
+  match ← core q(inferInstance) q(inferInstance) a with
+  | .positive pa =>
+      letI ret : Q(0 < $e) := q(int_ceil_pos (α := $α') $pa)
+      pure (.positive ret)
+  | .nonnegative pa =>
+      letI ret : Q(0 ≤ $e) := q(Int.ceil_nonneg (α := $α') $pa)
+      pure (.nonnegative ret)
   | _ => pure .none
 
 end Mathlib.Meta.Positivity
