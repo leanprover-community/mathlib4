@@ -30,8 +30,8 @@ local notation "bxor" => _root_.xor
 namespace Nat
 set_option linter.deprecated false
 
-/-- `boddDiv2 n` returns a 2-tuple of type `(Bool,Nat)` where
-  the `Bool` value indicates whether `n` is odd or not
+/-- `boddDiv2 n` returns a 2-tuple of type `(Bool,Nat)`
+    where the `Bool` value indicates whether `n` is odd or not
     and the `Nat` value returns `⌊n/2⌋` -/
 def boddDiv2 : ℕ → Bool × ℕ
   | 0 => (false, 0)

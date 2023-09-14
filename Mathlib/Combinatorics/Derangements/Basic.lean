@@ -134,8 +134,8 @@ theorem RemoveNone.fiber_none : RemoveNone.fiber (@none α) = ∅ := by
   exact F_derangement none F_none
 #align derangements.equiv.remove_none.fiber_none derangements.Equiv.RemoveNone.fiber_none
 
-/-- For any `a : α`, the fiber over `some a` is the set of permutations where
-  `a` is the only possible fixed point. -/
+/-- For any `a : α`, the fiber over `some a` is the set of permutations
+    where `a` is the only possible fixed point. -/
 theorem RemoveNone.fiber_some (a : α) :
     RemoveNone.fiber (some a) = { f : Perm α | fixedPoints f ⊆ {a} } := by
   ext f

@@ -65,8 +65,8 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
     rwa [frontier, measure_diff interior_subset_closure isOpen_interior.measurableSet hb,
       tsub_eq_zero_iff_le]
   /- Due to `Convex.closure_subset_image_homothety_interior_of_one_lt`, for any `r > 1` we have
-    `closure s ⊆ homothety x r '' interior s`, hence `μ (closure s) ≤ r ^ d * μ (interior s)`, where
-  `d = finrank ℝ E`. -/
+    `closure s ⊆ homothety x r '' interior s`, hence `μ (closure s) ≤ r ^ d * μ (interior s)`,
+    where `d = finrank ℝ E`. -/
   set d : ℕ := FiniteDimensional.finrank ℝ E
   have : ∀ r : ℝ≥0, 1 < r → μ (closure s) ≤ ↑(r ^ d) * μ (interior s) := by
     intro r hr
