@@ -5,6 +5,9 @@ import Std.Tactic.Simpa
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Util.Time
+import Mathlib.Tactic.Convert
+-- import Mathlib.Tactic.NormCast
+-- import Mathlib.Data.Rat.Basic
 
 -- We follow "The Omega Test: a fast and practical integer programming algorithm for dependence analysis."
 
@@ -77,6 +80,8 @@ def eval (lc : LinearCombo) (values : Array Int) : Int :=
 def evalRat (lc : LinearCombo) (values : Array Rat) : Rat :=
   (lc.coefficients.zip values).foldl (fun r ⟨c, x⟩ => r + c * x) (lc.constantTerm : Rat)
 
+#print Int.cast_mul
+
 theorem evalRat_cast (lc : LinearCombo) (values : Array Int) :
     lc.evalRat (values.map fun x : Int => (x : Rat)) = lc.eval values := by
   rw [eval, evalRat]
@@ -91,9 +96,13 @@ theorem evalRat_cast (lc : LinearCombo) (values : Array Int) :
     · simp
     · specialize cih (const + c * v) _ values
       sorry
-      dsimp?
-      sorry
+      dsimp only [List.map_cons, List.zip_cons_cons, List.foldl_cons]
+      convert cih
+      -- Oh dear, this relies on `Int.cast_mul` and `Int.cast_mul`, which require lots of hierarchy.
+      -- push_cast
+      rfl
 
+#print Rat.instIntCastRat
 
 def satZero (lc : LinearCombo) : Prop :=
   ∃ values, lc.eval values = 0
