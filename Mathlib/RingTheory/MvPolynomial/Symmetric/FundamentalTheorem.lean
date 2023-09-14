@@ -224,8 +224,8 @@ lemma coeff_maxDegree_add_maxDegree :
     · rw [coeff_eq_zero_of_maxDegree_lt htp, zero_mul]
     obtain htq | htq := lt_or_le q.maxDegree (toLex tq)
     · rw [coeff_eq_zero_of_maxDegree_lt htq, mul_zero]
-    have := eq_and_eq_of_le_of_le_of_add_le htp htq (Eq.ge <| Finsupp.mem_antidiagonal.1 ht)
-    exact (hne <| Prod.ext this.1.symm this.2.symm).elim
+    have := (add_eq_add_iff_eq_and_eq htp htq).mp <| Finsupp.mem_antidiagonal.1 ht
+    exact (hne <| Prod.ext this.1 this.2).elim
 
 lemma Monic.maxDegree_mul' (hq : q.Monic) (hp : p ≠ 0) :
     maxDegree (p * q) = maxDegree p + maxDegree q := by
