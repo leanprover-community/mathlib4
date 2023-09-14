@@ -74,7 +74,7 @@ by { simp, ring }
 
 The relationship between the derivative of a function and its definition from a standard
 undergraduate course as the limit of the slope `(f y - f x) / (y - x)` as `y` tends to `𝓝[≠] x`
-is developped in the file `Slope.lean`.
+is developed in the file `Slope.lean`.
 
 ## Implementation notes
 
