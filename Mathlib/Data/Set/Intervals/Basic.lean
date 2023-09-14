@@ -872,13 +872,9 @@ theorem Ioo_union_right (hab : a < b) : Ioo a b ∪ {b} = Ioc a b := by
 #align set.Ioo_union_right Set.Ioo_union_right
 
 theorem Ioo_union_both (h : a ≤ b) : Ioo a b ∪ {a, b} = Icc a b := by
-  have : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := by
-    refine diff_union_of_subset ?_
-    intro x hx
-    cases hx with
-    | inl h2 => rw [h2]; exact left_mem_Icc.mpr h
-    | inr h2 => rw [h2]; exact right_mem_Icc.mpr h
-  rw [← this, Icc_diff_both]
+  obtain rfl | hab := h.eq_or_lt
+  · rw [pair_eq_singleton, Ioo_self, Icc_self, empty_union]
+  · rw [←Ico_union_right h, ←Ioo_union_left hab, union_assoc, singleton_union]
 
 theorem Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
   rw [← Icc_diff_left, diff_union_self,
