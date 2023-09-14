@@ -137,6 +137,7 @@ jobs:
 
       - name: get cache
         run: |
+          elan toolchain list
           lake exe cache clean
           # We've been seeing many failures at this step recently because of network errors.
           # As a band-aid, we try twice.
