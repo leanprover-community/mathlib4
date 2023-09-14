@@ -116,36 +116,30 @@ namespace OneRelator
 
 open Multiplicative
 
-structure HNNIsoData {α : Type*} [DecidableEq α] (r : FreeGroup α) : Type _ :=
+structure HNNEmbData {α : Type*} [DecidableEq α] (r : FreeGroup α) : Type _ :=
   (t : α)
   (x : α)
   (x_ne_t : x ≠ t)
   (t_mem_conjVars : t ∈ FreeGroup.conjVars r)
   (x_mem_conjVars : x ∈ FreeGroup.conjVars r)
 
-namespace HNNIsoData
+namespace HNNEmbData
 
-variable {α : Type*} [DecidableEq α] {r : FreeGroup α} (d : HNNIsoData r)
+variable {α : Type*} [DecidableEq α] {r : FreeGroup α} (d : HNNEmbData r)
 
-def newRelatorAux : FreeGroup ({ b // b ≠ d.t } × Multiplicative ℤ) :=
+def newRelator : FreeGroup ({ b // b ≠ d.t } × Multiplicative ℤ) :=
   (freeGroupEquivSemidirectProduct d.t r).left
---Maybe just embed to avoid crap.
-def hnnset : Set ({ b : α // b ≠ d.t } × Multiplicative ℤ) :=
-  { p : { b : α // b ≠ d.t } × Multiplicative ℤ | p.1 = d.x →
-      ∃ z₁ z₂, (p.1, z₁) ∈ (newRelatorAux d).vars ∧
-               (p.1, z₂) ∈ (newRelatorAux d).vars ∧
-        z₁ ≤ p.2 ∧ ↑p.2 ≤ z₂ }
 
 def subgroupASet : Set ({ b : α // b ≠ d.t } × Multiplicative ℤ) :=
   { p : { b : α // b ≠ d.t } × Multiplicative ℤ | p.1 = d.x →
-        ∃ z₁ z₂, (p.1, z₁) ∈ (newRelatorAux d).vars ∧
-                 (p.1, z₂) ∈ (newRelatorAux d).vars ∧
+        ∃ z₁ z₂, (p.1, z₁) ∈ (newRelator d).vars ∧
+                 (p.1, z₂) ∈ (newRelator d).vars ∧
           z₁ ≤ p.2 ∧ ↑p.2 < z₂ }
 
 def subgroupBSet : Set ({ b : α // b ≠ d.t } × Multiplicative ℤ) :=
   { p : { b : α // b ≠ d.t } × Multiplicative ℤ | p.1 = d.x →
-        ∃ z₁ z₂, (p.1, z₁) ∈ (newRelatorAux d).vars ∧
-                 (p.1, z₂) ∈ (newRelatorAux d).vars ∧
+        ∃ z₁ z₂, (p.1, z₁) ∈ (newRelator d).vars ∧
+                 (p.1, z₂) ∈ (newRelator d).vars ∧
           z₁ < p.2 ∧ ↑p.2 ≤ z₂ }
 
 def subgroupASetEquivSubgroupBSet :
@@ -177,29 +171,13 @@ def subgroupASetEquivSubgroupBSet :
       · simp [hpd]
       · simp [hpd], }
 
-theorem subgroupASet_subset_HNNSet : d.subgroupASet ⊆ d.hnnset :=
-  fun _ hz hpd =>
-  let ⟨z₁, z₂, hz₁, hz₂, hz₁p, hz₂p⟩ := hz hpd
-  ⟨z₁, z₂, hz₁, hz₂, hz₁p, le_of_lt hz₂p⟩
+def subgroupA : Subgroup (OneRelator d.newRelator) :=
+  MonoidHom.range (FreeGroup.lift (fun p : d.subgroupASet => of p.1))
 
-theorem subgroupBSet_subset_HNNSet : d.subgroupBSet ⊆ d.hnnset :=
-  fun _ hz hpd =>
-  let ⟨z₁, z₂, hz₁, hz₂, hz₁p, hz₂p⟩ := hz hpd
-  ⟨z₁, z₂, hz₁, hz₂, le_of_lt hz₁p, hz₂p⟩
+def subgroupB : Subgroup (OneRelator d.newRelator) :=
+  MonoidHom.range (FreeGroup.lift (fun p : d.subgroupASet => of p.1))
 
-instance : Coe d.subgroupASet d.hnnset :=
-  ⟨Set.inclusion (subgroupASet_subset_HNNSet d)⟩
-
-instance : Coe d.subgroupBSet d.hnnset :=
-  ⟨Set.inclusion (subgroupBSet_subset_HNNSet d)⟩
-#print MvPolynomial.restriv
-def subgroupA : Subgroup (OneRealt) :=
-  MonoidHom.range (FreeGroup.map ((↑) : SubgroupASet r t → HNNSet r t))
-
-def subgroupB : Subgroup (FreeGroup (HNNSet r t)) :=
-  MonoidHom.range (FreeGroup.map ((↑) : SubgroupBSet r t → HNNSet r t))
-
-noncomputable def subgroupEquiv : subgroupA r t ≃* subgroupB r t :=
+noncomputable def subgroupEquiv : d.subgroupA ≃* d.subgroupB :=
   MulEquiv.trans
     (MonoidHom.ofInjective (FreeGroup.map_injective
       (Set.inclusion_injective _))).symm <|
