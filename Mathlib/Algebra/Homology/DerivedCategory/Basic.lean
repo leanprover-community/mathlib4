@@ -103,6 +103,10 @@ instance : Qh.IsLocalization (HomotopyCategory.qis C) := by
   dsimp only [Qh, DerivedCategory]
   infer_instance
 
+instance : Qh.IsLocalization (HomotopyCategory.subcategoryAcyclic C).W := by
+  change Qh.IsLocalization (HomotopyCategory.qis C)
+  infer_instance
+
 instance : (HomotopyCategory.qis C).HasLeftCalculusOfFractions := by
   dsimp only [HomotopyCategory.qis]
   infer_instance

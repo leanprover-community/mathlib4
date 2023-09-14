@@ -8,7 +8,7 @@ open CategoryTheory Category Preadditive Limits
 namespace CochainComplex
 
 variable {C : Type*} [Category C] [Abelian C]
-  (K L : CochainComplex C ℤ)
+  (K L : CochainComplex C ℤ) [HasDerivedCategory C]
 
 class IsKInjective : Prop where
   nonempty_homotopy_zero (K : CochainComplex C ℤ) (hK : ∀ (n : ℤ), K.ExactAt n) (f : K ⟶ L) :
@@ -64,6 +64,13 @@ lemma isKInjective_shift_iff (n : ℤ) :
     exact isKInjective_of_iso (show K⟦n⟧⟦-n⟧ ≅ K from (shiftEquiv _ n).unitIso.symm.app K)
   · intro
     infer_instance
+
+lemma Qh_map_bijective_of_isKInjective
+    (K : HomotopyCategory C (ComplexShape.up ℤ)) (L : CochainComplex C ℤ) [L.IsKInjective] :
+    Function.Bijective (DerivedCategory.Qh.map : (K ⟶ (HomotopyCategory.quotient _ _).obj L) → _ ) := by
+  apply (HomotopyCategory.subcategoryAcyclic C).map_bijective_of_rightOrthogonal
+  rw [← isKInjective_iff_mem_rightOrthogonal]
+  infer_instance
 
 variable (L)
 

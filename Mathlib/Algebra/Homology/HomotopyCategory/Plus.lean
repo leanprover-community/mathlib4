@@ -75,6 +75,7 @@ namespace CategoryTheory
 
 namespace Functor
 
+variable {C}
 variable (F : C ⥤ D) [F.Additive]
 
 def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus D :=

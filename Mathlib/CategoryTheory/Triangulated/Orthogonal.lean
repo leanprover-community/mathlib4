@@ -2,7 +2,7 @@ import Mathlib.CategoryTheory.Triangulated.Subcategory
 
 namespace CategoryTheory
 
-open Limits
+open Limits Pretriangulated Preadditive
 
 variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -28,6 +28,45 @@ def rightOrthogonal : Subcategory C := Subcategory.mk'
 instance : S.rightOrthogonal.set.RespectsIso := by
   dsimp only [rightOrthogonal]
   infer_instance
+
+section
+
+lemma rightOrthogonal_precomp_W_bijective (Z : C) (hZ : Z ∈ S.rightOrthogonal.set)
+    {X Y : C} (w : X ⟶ Y) (hw : S.W w) :
+    Function.Bijective (fun (f : Y ⟶ Z) => w ≫ f) := by
+  constructor
+  · intros y₁ y₂ hy
+    let y := y₁ - y₂
+    suffices y = 0 by
+      rw [← sub_eq_zero]
+      exact this
+    dsimp at hy
+    obtain ⟨U, f, g, H, mem⟩ := hw
+    obtain ⟨u, hu⟩ := Triangle.yoneda_exact₂ _ H y (by dsimp; rw [comp_sub, hy, sub_self])
+    rw [hu, hZ u mem, comp_zero]
+  · intro z
+    rw [W_eq_W'] at hw
+    obtain ⟨U, f, g, H, mem⟩ := hw
+    obtain ⟨u, hu⟩ := Triangle.yoneda_exact₂ _ H z (hZ _ mem)
+    exact ⟨u, hu.symm⟩
+
+variable [IsTriangulated C] {D : Type*} [Category D] (L : C ⥤ D) [L.IsLocalization S.W]
+
+lemma map_bijective_of_rightOrthogonal (X Y : C) (hY : Y ∈ S.rightOrthogonal.set) :
+    Function.Bijective (L.map : (X ⟶ Y) → _) := by
+  constructor
+  · intros f₁ f₂ hf
+    rw [MorphismProperty.HasRightCalculusOfFractions.map_eq_iff L S.W] at hf
+    obtain ⟨Z, s, hs, eq⟩ := hf
+    exact (S.rightOrthogonal_precomp_W_bijective _ hY s hs).1 eq
+  · intro g
+    obtain ⟨Z, f, s, hs, eq⟩ := MorphismProperty.HasRightCalculusOfFractions.fac L S.W g
+    obtain ⟨h, H⟩ := (S.rightOrthogonal_precomp_W_bijective _ hY s hs).2 f
+    dsimp at H
+    refine' ⟨h, _⟩
+    simp only [eq, ← H, Functor.map_comp, Localization.isoOfHom_inv_hom_id_assoc]
+
+end
 
 end Subcategory
 

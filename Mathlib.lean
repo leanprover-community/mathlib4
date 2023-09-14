@@ -223,6 +223,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructure
 import Mathlib.Algebra.Homology.DerivedCategory.Ext
 import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 import Mathlib.Algebra.Homology.DerivedCategory.Linear
+import Mathlib.Algebra.Homology.DerivedCategory.Plus
 import Mathlib.Algebra.Homology.DerivedCategory.SpectralObject
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.DerivedCategory.TruncGE

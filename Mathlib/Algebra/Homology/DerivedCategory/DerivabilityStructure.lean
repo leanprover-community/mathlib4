@@ -1,5 +1,4 @@
-import Mathlib.Algebra.Homology.HomotopyCategory.Plus
-import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+import Mathlib.Algebra.Homology.DerivedCategory.Plus
 import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 import Mathlib.CategoryTheory.Limits.FullSubcategory
@@ -54,17 +53,50 @@ def localizerMorphism : LocalizerMorphism
     rw [HomotopyCategory.mem_qis_iff]
     infer_instance
 
-/-instance : (localizerMorphism C).IsRightDerivabilityStructure := by
-  let F : (HomotopyCategory.Plus C) ⥤ DerivedCategory.Plus C := sorry
-  have : F.IsLocalization (HomotopyCategory.Plus.qis C) := sorry
-  let G : HomotopyCategory.Plus (Injectives C) ⥤ DerivedCategory.Plus C :=
-    (ι C).mapHomotopyCategoryPlus ⋙ F
-  have : Full G := sorry
-  have : Faithful G := sorry
+noncomputable instance : CatCommSq (localizerMorphism C).functor
+    (𝟭 (HomotopyCategory.Plus (Injectives C)))
+    DerivedCategory.Plus.Qh ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh) :=
+  ⟨Iso.refl _⟩
+
+variable {C}
+
+instance (K : HomotopyCategory.Plus (Injectives C)) (n : ℤ) :
+    Injective (((ι C).mapHomotopyCategoryPlus.obj K).obj.as.X n) :=
+  (K.1.as.X n).2
+
+lemma Qh_map_bijective_ι_mapHomotopyCategoryPlus
+    (K : HomotopyCategory.Plus C) (L : HomotopyCategory.Plus (Injectives C)) :
+    Function.Bijective (DerivedCategory.Plus.Qh.map : (K ⟶ ((ι C).mapHomotopyCategoryPlus).obj L) → _):= by
+  apply DerivedCategory.Plus.Qh_map_bijective_of_isKInjective
+  obtain ⟨n, hn⟩ := L.2
+  have : CochainComplex.IsStrictlyGE
+      (((ι C).mapHomotopyCategoryPlus.obj L)).obj.as n := by
+    change CochainComplex.IsStrictlyGE (((ι C).mapHomologicalComplex (ComplexShape.up ℤ)).obj L.obj.as) n
+    infer_instance
+  apply CochainComplex.isKInjective_of_injective _ n
+
+variable (C)
+
+/-instance : Full (ι C).mapHomotopyCategoryPlus := sorry
+instance : Faithful (ι C).mapHomotopyCategoryPlus := sorry
+
+noncomputable instance : Full (((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)) :=
+  Functor.fullOfSurjective _ (fun K L f => by
+    obtain ⟨g, rfl⟩ := (Qh_map_bijective_ι_mapHomotopyCategoryPlus (((ι C).mapHomotopyCategoryPlus).obj K) L).2 f
+    obtain ⟨h, rfl⟩ := ((ι C).mapHomotopyCategoryPlus).map_surjective g
+    exact ⟨h, rfl⟩)
+
+noncomputable instance : Faithful (((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)) where
+  map_injective {K L} f₁ f₂ hf := by
+    apply ((ι C).mapHomotopyCategoryPlus).map_injective
+    exact ((Qh_map_bijective_ι_mapHomotopyCategoryPlus
+      (((ι C).mapHomotopyCategoryPlus).obj K) L).1 hf)
+
+instance [EnoughInjectives C] : (localizerMorphism C).IsRightDerivabilityStructure := by
+  have : DerivedCategory.Plus.Qh.IsLocalization (HomotopyCategory.Plus.qis C) := sorry
   have : ∀ (X : HomotopyCategory.Plus C), IsConnected (LocalizerMorphism.RightResolution (localizerMorphism C) X) := sorry
   have : (localizerMorphism C).arrow.HasRightResolutions := sorry
-  have : CatCommSq (localizerMorphism C).functor (𝟭 (HomotopyCategory.Plus (Injectives C))) F G := ⟨Iso.refl _⟩
-  exact LocalizerMorphism.IsRightDerivabilityStructure.mk' (localizerMorphism C) (𝟭 _) F G-/
+  exact LocalizerMorphism.IsRightDerivabilityStructure.mk' (localizerMorphism C) (𝟭 _) DerivedCategory.Plus.Qh ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)-/
 
 end Injectives
 
