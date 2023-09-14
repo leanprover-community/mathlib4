@@ -1773,11 +1773,13 @@ end
 
 end FilterMul
 
-instance {G} [TopologicalSpace G] [Group G] [TopologicalGroup G] : TopologicalAddGroup (Additive G) where
+instance {G} [TopologicalSpace G] [Group G] [TopologicalGroup G] :
+    TopologicalAddGroup (Additive G) where
   continuous_neg := @continuous_inv G _ _ _
 
 instance {G} [TopologicalSpace G] [AddGroup G] [TopologicalAddGroup G] :
-    TopologicalGroup (Multiplicative G) where continuous_inv := @continuous_neg G _ _ _
+    TopologicalGroup (Multiplicative G) where
+  continuous_inv := @continuous_neg G _ _ _
 
 section Quotient
 

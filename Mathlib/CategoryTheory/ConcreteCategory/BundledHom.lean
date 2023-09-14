@@ -154,7 +154,8 @@ instance bundledHomOfParentProjection (F : ∀ {α}, d α → c α) [ParentProje
   map hom @F
 #align category_theory.bundled_hom.bundled_hom_of_parent_projection CategoryTheory.BundledHom.bundledHomOfParentProjection
 
-instance forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] : HasForget₂ (Bundled d) (Bundled c) where
+instance forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] :
+    HasForget₂ (Bundled d) (Bundled c) where
   forget₂ :=
     { obj := fun X => ⟨X, F X.2⟩
       map := @fun X Y f => f }

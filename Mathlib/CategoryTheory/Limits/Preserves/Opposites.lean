@@ -38,7 +38,8 @@ variable {J : Type w} [Category.{w'} J]
 
 /-- If `F : C ⥤ D` preserves colimits of `K.left_op : Jᵒᵖ ⥤ C`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves
     limits of `K : J ⥤ Cᵒᵖ`. -/
-def preservesLimitOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [PreservesColimit K.leftOp F] : PreservesLimit K F.op where
+def preservesLimitOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [PreservesColimit K.leftOp F] :
+    PreservesLimit K F.op where
   preserves {_} hc :=
     isLimitConeRightOpOfCocone _ (isColimitOfPreserves F (isColimitCoconeLeftOpOfCone _ hc))
 #align category_theory.limits.preserves_limit_op CategoryTheory.Limits.preservesLimitOp
@@ -203,7 +204,8 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
 
 /-- If `F : C ⥤ D` preserves finite colimits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite
     limits. -/
-def preservesFiniteLimitsOp (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteLimits F.op where
+def preservesFiniteLimitsOp (F : C ⥤ D) [PreservesFiniteColimits F] :
+    PreservesFiniteLimits F.op where
   preservesFiniteLimits J (_ : SmallCategory J) _ := preservesLimitsOfShapeOp J F
 #align category_theory.limits.preserves_finite_limits_op CategoryTheory.Limits.preservesFiniteLimitsOp
 
@@ -230,7 +232,8 @@ def preservesFiniteLimitsUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesFiniteColimits
 
 /-- If `F : C ⥤ D` preserves finite limits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite
     colimits. -/
-def preservesFiniteColimitsOp (F : C ⥤ D) [PreservesFiniteLimits F] : PreservesFiniteColimits F.op where
+def preservesFiniteColimitsOp (F : C ⥤ D) [PreservesFiniteLimits F] :
+    PreservesFiniteColimits F.op where
   preservesFiniteColimits J (_ : SmallCategory J) _ := preservesColimitsOfShapeOp J F
 #align category_theory.limits.preserves_finite_colimits_op CategoryTheory.Limits.preservesFiniteColimitsOp
 

@@ -1163,7 +1163,8 @@ theorem smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (
 #align con.smul Con.smul
 #align add_con.vadd AddCon.vadd
 
-instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] (c : AddCon M) : SMul ℕ c.Quotient where
+instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] (c : AddCon M) :
+    SMul ℕ c.Quotient where
   smul n := (Quotient.map' ((· • ·) n)) fun _ _ => c.nsmul n
 #align add_con.quotient.has_nsmul AddCon.Quotient.nsmul
 
