@@ -183,7 +183,7 @@ variable [Group G] (n) (A : Rep k G)
 
 open InhomogeneousCochains
 
-set_option maxHeartbeats 2400000 in
+set_option maxHeartbeats 800000 in
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 which calculates the group cohomology of `A`. -/
@@ -210,7 +210,7 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
     exact map_zero _
 #align group_cohomology.inhomogeneous_cochains GroupCohomology.inhomogeneousCochains
 
-set_option maxHeartbeats 2000000 in
+set_option maxHeartbeats 4000000 in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A := by
@@ -220,7 +220,13 @@ def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolu
   rintro i j (h : i + 1 = j)
   subst h
   simp only [CochainComplex.of_d, d_eq, Category.assoc, Iso.symm_hom, Iso.hom_inv_id,
+    Category.comp_id, aux_equiv]
+  erw [LinearEquiv.refl_trans]
+  erw [LinearEquiv.refl_trans]
+  simp only [Iso.symm_hom, Iso.hom_inv_id,
     Category.comp_id]
+  done
+
 #align group_cohomology.inhomogeneous_cochains_iso GroupCohomology.inhomogeneousCochainsIso
 
 end GroupCohomology
@@ -232,6 +238,21 @@ of inhomogeneous cochains. -/
 def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
 #align group_cohomology groupCohomology
+
+-- variable [Group G] (A : Rep k G) (n : ℕ)
+
+-- count_heartbeats in
+-- example : HomologicalComplex.homology
+--                     (HomologicalComplex.unop
+--                       ((CategoryTheory.Functor.mapHomologicalComplex
+--                             ((CategoryTheory.linearYoneda k (Rep k G)).obj A).rightOp (ComplexShape.down ℕ)).obj
+--                         (GroupCohomology.resolution k G)))
+--                     n = (homologyFunctor (ModuleCat k) (ComplexShape.up ℕ) n).obj
+--                     (GroupCohomology.linearYonedaObjResolution A) := by
+--   unfold GroupCohomology.linearYonedaObjResolution
+--   -- quick with this; super-slow without
+--   --rw [homologyFunctor_obj]
+--   rfl
 
 set_option maxHeartbeats 3200000 in
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
