@@ -150,7 +150,7 @@ theorem setParent {arr : Array (UFNode α)} {n} {m : UFModel n} (hm : m.Models a
   (m.setParent i j H).Models (arr.set ⟨i.1, hi⟩ x) :=
   ⟨hm.1.set
       (fun k (h : (k:ℕ) ≠ i) ↦ by simp [UFModel.setParent, h.symm])
-      (fun h ↦ by simp [UFModel.setParent, hp]),
+      (fun _ ↦ by simp [UFModel.setParent, hp]),
     hm.2.set (fun _ _ ↦ rfl) (fun _ ↦ hrk.trans $ hm.2.get_eq ..)⟩
 
 end UFModel.Models
@@ -277,7 +277,7 @@ def link (self : UnionFind α) (x y : Fin self.size)
       (by simpa [← hm.parent_eq'] using yroot), ?_⟩
     let parent (i : Fin n) := (if x.1 = i then y else m.parent i).1
     have : UFModel.Agrees arr₁ (·.parent) parent :=
-      hm.1.set (fun i h ↦ by simp; rw [if_neg h.symm]) (fun h ↦ by simp)
+      hm.1.set (fun i h ↦ by simp; rw [if_neg h.symm]) (fun _ ↦ by simp)
     have H1 : UFModel.Agrees arr₂ (·.parent) parent := by
       simp; split
       · exact this.set (fun i h ↦ by simp [h.symm]) (fun h ↦ by simp [ne, hm.parent_eq'])
