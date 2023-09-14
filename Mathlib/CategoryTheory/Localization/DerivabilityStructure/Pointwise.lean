@@ -131,7 +131,8 @@ lemma isIso_α_iff_of_isRightDerivabilityStructure
     ((Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂).app (L₁.obj X)),
     rightDerivedFunctorComparison_fac_app, isIso_comp_right_iff]-/
 
---TODO: when a functor can be trivially derived, it has a *pointwise* right derived functor
+-- TODO: when a functor can be trivially derived, it has a *pointwise* right derived functor
+-- This is now done in `CategoryTheory.Functor.Derived.Pointwise`
 
 end LocalizerMorphism
 

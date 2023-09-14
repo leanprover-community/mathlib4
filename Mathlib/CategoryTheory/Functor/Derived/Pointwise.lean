@@ -1,5 +1,6 @@
 import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.RespectsIso
 
 namespace CategoryTheory
@@ -58,7 +59,89 @@ noncomputable def isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor
 
 end
 
-/-section
+section
+
+variable {X : C} (S : Set (StructuredArrow (W.Q.obj X) W.Q))
+  (hS₀ : StructuredArrow.mk (𝟙 (W.Q.obj X)) ∈ S)
+  (hS₁ : ∀ ⦃Y₁ Y₂ : C⦄ (f : Y₁ ⟶ Y₂) (φ : W.Q.obj X ⟶ W.Q.obj Y₁),
+    StructuredArrow.mk φ ∈ S → StructuredArrow.mk (φ ≫ W.Q.map f) ∈ S)
+  (hS₂ : ∀ ⦃Y₁ Y₂ : C⦄ (w : Y₁ ⟶ Y₂) (hw : W w) (φ : W.Q.obj X ⟶ W.Q.obj Y₂),
+    StructuredArrow.mk φ ∈ S → StructuredArrow.mk (φ ≫ Localization.Construction.winv w hw) ∈ S)
+
+open Localization Construction
+
+lemma Localization.induction_structuredArrow' : S = ⊤ := by
+  let X₀ : Paths (LocQuiver W) := ⟨X⟩
+  suffices ∀ ⦃Y₀ : Paths (LocQuiver W)⦄ (f : X₀ ⟶ Y₀),
+    S (StructuredArrow.mk ((Quotient.functor (Localization.Construction.relations W)).map f)) by
+      ext g
+      simp only [Set.top_eq_univ, Set.mem_univ, iff_true]
+      obtain ⟨⟨⟨⟩⟩, X₀, g⟩ := g
+      dsimp at g
+      obtain ⟨f, rfl⟩ := (Quotient.functor (Localization.Construction.relations W)).map_surjective g
+      exact this f
+  intro Y₀ f
+  induction' f with Z₀ T₀ p q hp
+  · apply hS₀
+  · obtain f | ⟨w, hw⟩ := q
+    · exact hS₁ f _ hp
+    · exact hS₂ w hw _ hp
+
+end
+
+section
+
+variable {X : C} (S : Set (StructuredArrow (L.obj X) L))
+  [L.IsLocalization W]
+  (hS₀ : StructuredArrow.mk (𝟙 (L.obj X)) ∈ S)
+  (hS₁ : ∀ ⦃Y₁ Y₂ : C⦄ (f : Y₁ ⟶ Y₂) (φ : L.obj X ⟶ L.obj Y₁),
+    StructuredArrow.mk φ ∈ S → StructuredArrow.mk (φ ≫ L.map f) ∈ S)
+  (hS₂ : ∀ ⦃Y₁ Y₂ : C⦄ (w : Y₁ ⟶ Y₂) (hw : W w) (φ : L.obj X ⟶ L.obj Y₂),
+    StructuredArrow.mk φ ∈ S → StructuredArrow.mk (φ ≫ (Localization.isoOfHom L W w hw).inv) ∈ S)
+
+lemma Localization.induction_structuredArrow [L.IsLocalization W] : S = ⊤ := by
+  have := hS₀
+  have := hS₁
+  have := hS₂
+  let E := Localization.uniq W.Q L W
+  let e := Localization.compUniqFunctor W.Q L W
+  let S' : Set (StructuredArrow (W.Q.obj X) W.Q) := fun φ =>
+    S (StructuredArrow.mk (e.inv.app X ≫ E.functor.map φ.hom ≫ e.hom.app φ.right))
+  suffices S' = ⊤ by
+    ext φ
+    simp only [Set.top_eq_univ, Set.mem_univ, iff_true]
+    have hφ : S' (StructuredArrow.mk (E.functor.preimage (e.hom.app X ≫ φ.hom ≫ e.inv.app φ.right))) := by
+      rw [this]
+      tauto
+    simpa using hφ
+  apply induction_structuredArrow'
+  · change S _
+    simp
+    exact hS₀
+  · intro Y₁ Y₂ f φ hφ
+    change S _
+    simp only [StructuredArrow.mk_right, comp_obj, StructuredArrow.mk_hom_eq_self, map_comp, assoc]
+    have := hS₁ f (e.inv.app X ≫ E.functor.map φ ≫ e.hom.app Y₁) hφ
+    rw [assoc, assoc, ← NatTrans.naturality] at this
+    exact this
+  · intro Y₁ Y₂ w hw φ hφ
+    change S _
+    simp only [StructuredArrow.mk_right, comp_obj, StructuredArrow.mk_hom_eq_self, map_comp, assoc]
+    have eq : NatTrans.app e.hom Y₂ ≫ (Localization.isoOfHom L W w hw).inv =
+        E.functor.map (Localization.Construction.winv w hw) ≫ NatTrans.app e.hom Y₁ := by
+      rw [← cancel_mono (Localization.isoOfHom L W w hw).hom, assoc, Iso.inv_hom_id, comp_id,
+        assoc, Localization.isoOfHom_hom, ← NatTrans.naturality]
+      dsimp
+      rw [← Functor.map_comp_assoc]
+      erw [(Localization.Construction.wIso w hw).inv_hom_id]
+      rw [Functor.map_id, id_comp]
+    have := hS₂ w hw (e.inv.app X ≫ E.functor.map φ ≫ e.hom.app Y₂) hφ
+    rw [assoc, assoc, eq] at this
+    exact this
+
+end
+
+section
 
 variable {Y : C} (S : Set (CostructuredArrow L (L.obj Y)))
   [L.IsLocalization W]
@@ -66,13 +149,51 @@ variable {Y : C} (S : Set (CostructuredArrow L (L.obj Y)))
   (hS₁ : ∀ ⦃X₁ X₂ : C⦄ (f : X₁ ⟶ X₂) (φ : L.obj X₂ ⟶ L.obj Y),
     CostructuredArrow.mk φ ∈ S → CostructuredArrow.mk (L.map f ≫ φ) ∈ S)
   (hS₂ : ∀ ⦃X₁ X₂ : C⦄ (w : X₁ ⟶ X₂) (hw : W w) (φ : L.obj X₁ ⟶ L.obj Y),
-    CostructuredArrow.mk φ ∈ S → CostructuredArrow.mk ((Localization.isoOfHom L W w hw).inv  ≫ φ) ∈ S)
+    CostructuredArrow.mk φ ∈ S → CostructuredArrow.mk ((Localization.isoOfHom L W w hw).inv ≫ φ) ∈ S)
+
+@[ext]
+lemma _root_.CategoryTheory.CostructuredArrow.obj_ext {C D : Type*} [Category C] [Category D] {S : C ⥤ D}
+  {T : D} (f₁ f₂ : CostructuredArrow S T) (h₁ : f₁.left = f₂.left)
+    (h₂ : f₁.hom = eqToHom (by rw [h₁]) ≫ f₂.hom )
+    : f₁ = f₂ := by
+  obtain ⟨X₁, ⟨⟨⟩⟩, φ₁⟩ := f₁
+  obtain ⟨X₂, ⟨⟨⟩⟩, φ₂⟩ := f₂
+  dsimp at h₁
+  subst h₁
+  dsimp at h₂
+  rw [id_comp] at h₂
+  subst h₂
+  rfl
 
 lemma Localization.induction_costructuredArrow [L.IsLocalization W] : S = ⊤ := by
-  have := hS₀
-  have := hS₁
   have := hS₂
-  sorry
+  let S' : Set (StructuredArrow (L.op.obj (Opposite.op Y)) L.op) :=
+    fun φ => S (CostructuredArrow.mk φ.hom.unop)
+  have eq := Localization.induction_structuredArrow L.op W.op S' hS₀
+    (by intros; apply hS₁; assumption) (by
+      intro Y₁ Y₂ w hw φ hφ
+      have eq :
+        (CostructuredArrow.mk
+          (StructuredArrow.mk (φ ≫ (Localization.isoOfHom L.op (MorphismProperty.op W) w hw).inv)).hom.unop) =
+          CostructuredArrow.mk ((Localization.isoOfHom L W w.unop hw).inv ≫ φ.unop) := by
+        ext
+        · rfl
+        · dsimp
+          simp only [id_comp]
+          congr 1
+          rw [← cancel_mono (Localization.isoOfHom L W w.unop hw).hom]
+          simp only [Opposite.unop_op, Localization.isoOfHom_hom, Localization.isoOfHom_inv_hom_id]
+          apply Quiver.Hom.op_inj
+          exact Localization.isoOfHom_hom_inv_id L.op W.op w hw
+      change S _
+      simpa only [← eq] using hS₂ w.unop hw φ.unop hφ)
+  ext φ
+  simp only [Set.top_eq_univ, Set.mem_univ, iff_true]
+  have : S' (StructuredArrow.mk
+    (by exact φ.hom.op : L.op.obj (Opposite.op Y) ⟶ L.op.obj (Opposite.op φ.left))) := by
+    rw [eq]
+    tauto
+  exact this
 
 end
 
@@ -80,7 +201,7 @@ section
 
 variable {F L}
 
-def isPointwiseLeftKanExtensionAtOfInverts {G : D ⥤ H} (e : F ≅ L ⋙ G)
+def isPointwiseLeftKanExtensionAtOfIso {G : D ⥤ H} (e : F ≅ L ⋙ G)
     [L.IsLocalization W] (Y : C) :
     (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtensionAt (L.obj Y) where
   desc s := e.inv.app Y ≫ s.ι.app (CostructuredArrow.mk (𝟙 (L.obj Y)))
@@ -127,7 +248,19 @@ def isPointwiseLeftKanExtensionAtOfInverts {G : D ⥤ H} (e : F ≅ L ⋙ G)
     dsimp at eq
     simp only [← eq, map_id, comp_id, Iso.inv_hom_id_app_assoc]
 
-end-/
+noncomputable def isPointwiseLeftKanExtensionOfIso {G : D ⥤ H} (e : F ≅ L ⋙ G)
+    [L.IsLocalization W] :
+    (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtension := fun Y => by
+  have := Localization.essSurj L W
+  exact (LeftExtension.mk _ e.hom).isPointwiseLeftKanExtensionAtEquivOfIso' (L.objObjPreimageIso Y)
+    (isPointwiseLeftKanExtensionAtOfIso W e _)
+
+noncomputable def LeftExtension.isPointwiseLeftKanExtensionOfIsIso (E : LeftExtension L F) [IsIso E.hom]
+    [L.IsLocalization W] :
+    E.IsPointwiseLeftKanExtension :=
+  Functor.isPointwiseLeftKanExtensionOfIso W (asIso E.hom)
+
+end
 
 end Functor
 
