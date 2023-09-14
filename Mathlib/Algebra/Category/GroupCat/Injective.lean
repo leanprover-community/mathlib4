@@ -162,6 +162,13 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
             congr
 #align AddCommGroup.injective_of_divisible AddCommGroupCat.injective_of_divisible
 
+instance injective_ratCircle : CategoryTheory.Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
+  have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
+  @injective_of_divisible _ _
+  { div := λ a n ↦ ULift.up (DivisibleBy.div a.down n)
+    div_zero := λ a ↦ by simp only [DivisibleBy.div_zero]; rfl
+    div_cancel := λ {n} a ha ↦ by ext1; exact DivisibleBy.div_cancel a.down ha }
+
 namespace enough_injectives_aux_proofs
 
 variable (A_ : AddCommGroupCat.{u})
@@ -169,13 +176,6 @@ variable (A_ : AddCommGroupCat.{u})
 /-- the next term of `A`'s injective resolution is `∏_{A → ℚ/ℤ}, ℚ/ℤ`.-/
 def next : AddCommGroupCat.{u} := of <|
   (A_ ⟶ of <| ULift <| AddCircle (1 : ℚ)) → AddCircle (1 : ℚ)
-
-instance : CategoryTheory.Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
-  have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
-  @injective_of_divisible _ _
-  { div := λ a n ↦ ULift.up (DivisibleBy.div a.down n)
-    div_zero := λ a ↦ by simp only [DivisibleBy.div_zero]; rfl
-    div_cancel := λ {n} a ha ↦ by ext1; exact DivisibleBy.div_cancel a.down ha }
 
 instance : CategoryTheory.Injective <| next A_ :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
