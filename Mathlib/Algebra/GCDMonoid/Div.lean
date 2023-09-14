@@ -34,7 +34,7 @@ namespace Nat
 
 /-- Given a nonempty Finset `s` and a function `f` from `s` to `ℕ`, if `d = s.gcd`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/
-theorem gcd_div_eq_one {β : Type _} {f : β → ℕ} (s : Finset β) {x : β} (hx : x ∈ s)
+theorem gcd_div_eq_one {β : Type*} {f : β → ℕ} (s : Finset β) {x : β} (hx : x ∈ s)
     (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg
@@ -53,7 +53,7 @@ namespace Int
 
 /-- Given a nonempty Finset `s` and a function `f` from `s` to `ℤ`, if `d = s.gcd`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/
-theorem gcd_div_eq_one {β : Type _} {f : β → ℤ} (s : Finset β) {x : β} (hx : x ∈ s)
+theorem gcd_div_eq_one {β : Type*} {f : β → ℤ} (s : Finset β) {x : β} (hx : x ∈ s)
     (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg
@@ -74,11 +74,11 @@ open Polynomial Classical
 
 noncomputable section
 
-variable {K : Type _} [Field K]
+variable {K : Type*} [Field K]
 
 /-- Given a nonempty Finset `s` and a function `f` from `s` to `K[X]`, if `d = s.gcd f`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/
-theorem gcd_div_eq_one {β : Type _} {f : β → Polynomial K} (s : Finset β) {x : β} (hx : x ∈ s)
+theorem gcd_div_eq_one {β : Type*} {f : β → Polynomial K} (s : Finset β) {x : β} (hx : x ∈ s)
     (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg

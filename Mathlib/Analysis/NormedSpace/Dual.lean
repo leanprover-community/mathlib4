@@ -46,11 +46,11 @@ namespace NormedSpace
 
 section General
 
-variable (𝕜 : Type _) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 
-variable (E : Type _) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable (F : Type _) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The topological dual of a seminormed space `E`. -/
 def Dual :=
@@ -180,14 +180,14 @@ open Metric Set NormedSpace
 /-- Given a subset `s` in a normed space `E` (over a field `𝕜`), the polar
 `polar 𝕜 s` is the subset of `Dual 𝕜 E` consisting of those functionals which
 evaluate to something of norm at most one at all points `z ∈ s`. -/
-def polar (𝕜 : Type _) [NontriviallyNormedField 𝕜] {E : Type _} [SeminormedAddCommGroup E]
+def polar (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
     [NormedSpace 𝕜 E] : Set E → Set (Dual 𝕜 E) :=
   (dualPairing 𝕜 E).flip.polar
 #align normed_space.polar NormedSpace.polar
 
-variable (𝕜 : Type _) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem mem_polar_iff {x' : Dual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s ↔ ∀ z ∈ s, ‖x' z‖ ≤ 1 :=
   Iff.rfl
@@ -262,7 +262,7 @@ theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
 
 /-- The `polar` of closed ball in a normed space `E` is the closed ball of the dual with
 inverse radius. -/
-theorem polar_closedBall {𝕜 E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+theorem polar_closedBall {𝕜 E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) : polar 𝕜 (closedBall (0 : E) r) = closedBall (0 : Dual 𝕜 E) r⁻¹ := by
   refine' Subset.antisymm _ (closedBall_inv_subset_polar_closedBall 𝕜)
   intro x' h

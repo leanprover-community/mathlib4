@@ -50,8 +50,6 @@ provided.
 * `TopCat.GlueData.ι_openEmbedding`: Each of the `ι i`s are open embeddings.
 
 -/
-set_option autoImplicit false
-
 
 noncomputable section
 
@@ -170,7 +168,6 @@ theorem eqvGen_of_π_eq
         𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap)
       x y := by
   delta GlueData.π Multicoequalizer.sigmaπ at h
-  simp_rw [comp_app] at h
   -- Porting note: inlined `inferInstance` instead of leaving as a side goal.
   replace h := (TopCat.mono_iff_injective (Multicoequalizer.isoCoequalizer 𝖣.diagram).inv).mp
     inferInstance h

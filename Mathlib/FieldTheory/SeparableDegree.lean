@@ -44,7 +44,7 @@ open Classical Polynomial
 
 section CommSemiring
 
-variable {F : Type _} [CommSemiring F] (q : ℕ)
+variable {F : Type*} [CommSemiring F] (q : ℕ)
 
 /-- A separable contraction of a polynomial `f` is a separable polynomial `g` such that
 `g(x^(q^m)) = f(x)` for some `m : ℕ`.-/
@@ -98,7 +98,7 @@ end CommSemiring
 
 section Field
 
-variable {F : Type _} [Field F]
+variable {F : Type*} [Field F]
 
 variable (q : ℕ) {f : F[X]} (hf : HasSeparableContraction q f)
 
@@ -123,7 +123,7 @@ theorem contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X])
   rw [pow_add, expand_mul, expand_inj (pow_pos (NeZero.pos q) m)] at h_expand
   subst h_expand
   rcases isUnit_or_eq_zero_of_separable_expand q s (NeZero.pos q) hg with (h | rfl)
-  · rw [natDegree_expand, natDegree_eq_zero_of_isUnit h, MulZeroClass.zero_mul]
+  · rw [natDegree_expand, natDegree_eq_zero_of_isUnit h, zero_mul]
   · rw [natDegree_expand, pow_zero, mul_one]
 #align polynomial.contraction_degree_eq_or_insep Polynomial.contraction_degree_eq_or_insep
 
@@ -136,12 +136,10 @@ theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
     rw [hf.eq_degree, hm]
   · rcases hg with ⟨hg, m, hm⟩
     let g' := Classical.choose hf
-    cases' (Classical.choose_spec hf).2 with m' hm'
+    obtain ⟨hg', m', hm'⟩ := Classical.choose_spec hf
     haveI : Fact q.Prime := ⟨by assumption⟩
-    apply contraction_degree_eq_or_insep q g g' m m'
+    refine contraction_degree_eq_or_insep q g g' m m' ?_ hg hg'
     rw [hm, hm']
-    exact hg
-    exact (Classical.choose_spec hf).1
 #align polynomial.is_separable_contraction.degree_eq Polynomial.IsSeparableContraction.degree_eq
 
 end Field

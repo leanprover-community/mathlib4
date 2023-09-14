@@ -409,7 +409,7 @@ set_option linter.uppercaseLean3 false in
 #align Action.add_hom Action.add_hom
 
 @[simp]
-theorem sum_hom {X Y : Action V G} {ι : Type _} (f : ι → (X ⟶ Y)) (s : Finset ι) :
+theorem sum_hom {X Y : Action V G} {ι : Type*} (f : ι → (X ⟶ Y)) (s : Finset ι) :
     (s.sum f).hom = s.sum fun i => (f i).hom :=
   (forget V G).map_sum f s
 set_option linter.uppercaseLean3 false in
@@ -419,7 +419,7 @@ end Preadditive
 
 section Linear
 
-variable [Preadditive V] {R : Type _} [Semiring R] [Linear R V]
+variable [Preadditive V] {R : Type*} [Semiring R] [Linear R V]
 
 instance : Linear R (Action V G) where
   homModule X Y :=
@@ -608,7 +608,7 @@ attribute [local simp] MonoidalPreadditive.tensor_add MonoidalPreadditive.add_te
 
 instance : MonoidalPreadditive (Action V G) where
 
-variable {R : Type _} [Semiring R] [Linear R V] [MonoidalLinear R V]
+variable {R : Type*} [Semiring R] [Linear R V] [MonoidalLinear R V]
 
 instance : MonoidalLinear R (Action V G) where
 
@@ -817,7 +817,7 @@ instance res_additive [Preadditive V] : (res V f).Additive where
 set_option linter.uppercaseLean3 false in
 #align Action.res_additive Action.res_additive
 
-variable {R : Type _} [Semiring R]
+variable {R : Type*} [Semiring R]
 
 instance res_linear [Preadditive V] [Linear R V] : (res V f).Linear R where
 set_option linter.uppercaseLean3 false in
@@ -964,7 +964,7 @@ instance mapAction_preadditive [F.Additive] : (F.mapAction G).Additive where
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Action_preadditive CategoryTheory.Functor.mapAction_preadditive
 
-variable {R : Type _} [Semiring R] [CategoryTheory.Linear R V] [CategoryTheory.Linear R W]
+variable {R : Type*} [Semiring R] [CategoryTheory.Linear R V] [CategoryTheory.Linear R W]
 
 instance mapAction_linear [F.Additive] [F.Linear R] : (F.mapAction G).Linear R where
 set_option linter.uppercaseLean3 false in

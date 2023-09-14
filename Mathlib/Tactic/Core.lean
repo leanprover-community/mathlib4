@@ -13,6 +13,8 @@ Generally useful tactics.
 
 -/
 
+set_option autoImplicit true
+
 open Lean.Elab.Tactic
 
 namespace Lean

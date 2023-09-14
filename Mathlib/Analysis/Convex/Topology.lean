@@ -26,13 +26,13 @@ assert_not_exists Norm
 
 open Metric Set Pointwise Convex
 
-variable {ι 𝕜 E : Type _}
+variable {ι 𝕜 E : Type*}
 
 theorem Real.convex_iff_isPreconnected {s : Set ℝ} : Convex ℝ s ↔ IsPreconnected s :=
   convex_iff_ordConnected.trans isPreconnected_iff_ordConnected.symm
 #align real.convex_iff_is_preconnected Real.convex_iff_isPreconnected
 
-alias Real.convex_iff_isPreconnected ↔ _ IsPreconnected.convex
+alias ⟨_, IsPreconnected.convex⟩ := Real.convex_iff_isPreconnected
 #align is_preconnected.convex IsPreconnected.convex
 
 /-! ### Standard simplex -/
@@ -335,16 +335,20 @@ theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Conve
   subset_closure.trans <| hs.closure_subset_interior_image_homothety_of_one_lt hx t ht
 #align convex.subset_interior_image_homothety_of_one_lt Convex.subset_interior_image_homothety_of_one_lt
 
+theorem JoinedIn_of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
+    {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
+  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by continuity
+  apply JoinedIn.ofLine A.continuousOn (by simp) (by simp)
+  convert h
+  rw [segment_eq_image ℝ x y]
+
 /-- A nonempty convex set is path connected. -/
 protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne : s.Nonempty) :
     IsPathConnected s := by
   refine' isPathConnected_iff.mpr ⟨hne, _⟩
   intro x x_in y y_in
-  have H := hconv.segment_subset x_in y_in
-  rw [segment_eq_image_lineMap] at H
-  exact
-    JoinedIn.ofLine AffineMap.lineMap_continuous.continuousOn (lineMap_apply_zero _ _)
-      (lineMap_apply_one _ _) H
+  exact JoinedIn_of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
 #align convex.is_path_connected Convex.isPathConnected
 
 /-- A nonempty convex set is connected. -/
