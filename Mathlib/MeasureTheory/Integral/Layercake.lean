@@ -48,6 +48,10 @@ are also included.
    Other common special cases of the layer cake formulas, stating that for a nonnegative function f
    and p > 0, we have ∫ f(ω)^p ∂μ(ω) = p * ∫ μ {ω | f(ω) ≥ t} * t^(p-1) dt and
    ∫ f(ω)^p ∂μ(ω) = p * ∫ μ {ω | f(ω) > t} * t^(p-1) dt, respectively.
+ * `integral_eq_integral_meas_lt`:
+   A Bochner integral version of the most common special case of the layer cake formulas, stating
+   that for an integrable and a.e.-nonnegative function f we have
+   ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt .
 
 ## Tags
 
@@ -438,11 +442,6 @@ lemma Integrable.measure_const_lt_lt_top
   apply lt_of_le_of_lt (measure_mono ?_) (Integrable.measure_const_le_lt_top f_intble t_pos)
   exact fun x hx ↦ (Set.mem_setOf_eq ▸ hx).le
 
--- NOTE: This is a version of the basic "Layercake formula" for real-valued nonnegative integrands
--- and Bochner integral ∫ instead of ∫⁻. I don't know if the other (more general) versions of
--- layercake should be similarly generalized. The proofs are basically similar, but the statements
--- themselves become a bit unpleasant due to integrability requirements for something slightly
--- complicated.
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For an integrable a.e.-nonnegative real-valued function `f` on a sigma-finite measure space,
