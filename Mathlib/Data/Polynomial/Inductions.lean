@@ -91,6 +91,7 @@ theorem divX_X_pow : divX (X ^ n : R[X]) = if (n = 0) then 0 else X ^ (n - 1) :=
   · ext n
     simp [coeff_X_pow]
 
+/-- `divX` as an additive homomorphism. -/
 noncomputable
 def divX_hom : R[X] →+ R[X] :=
 { toFun := divX
