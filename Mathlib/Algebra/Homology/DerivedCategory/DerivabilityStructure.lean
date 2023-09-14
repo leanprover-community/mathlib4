@@ -77,9 +77,6 @@ lemma Qh_map_bijective_ι_mapHomotopyCategoryPlus
 
 variable (C)
 
-/-instance : Full (ι C).mapHomotopyCategoryPlus := sorry
-instance : Faithful (ι C).mapHomotopyCategoryPlus := sorry
-
 noncomputable instance : Full (((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)) :=
   Functor.fullOfSurjective _ (fun K L f => by
     obtain ⟨g, rfl⟩ := (Qh_map_bijective_ι_mapHomotopyCategoryPlus (((ι C).mapHomotopyCategoryPlus).obj K) L).2 f
@@ -92,7 +89,7 @@ noncomputable instance : Faithful (((ι C).mapHomotopyCategoryPlus ⋙ DerivedCa
     exact ((Qh_map_bijective_ι_mapHomotopyCategoryPlus
       (((ι C).mapHomotopyCategoryPlus).obj K) L).1 hf)
 
-instance [EnoughInjectives C] : (localizerMorphism C).IsRightDerivabilityStructure := by
+/-instance [EnoughInjectives C] : (localizerMorphism C).IsRightDerivabilityStructure := by
   have : DerivedCategory.Plus.Qh.IsLocalization (HomotopyCategory.Plus.qis C) := sorry
   have : ∀ (X : HomotopyCategory.Plus C), IsConnected (LocalizerMorphism.RightResolution (localizerMorphism C) X) := sorry
   have : (localizerMorphism C).arrow.HasRightResolutions := sorry

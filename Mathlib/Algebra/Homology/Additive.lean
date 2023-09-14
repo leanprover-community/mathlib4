@@ -194,6 +194,25 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : V ⥤ W) [F.Additive]
     exact HomologicalComplex.Hom.isIso_of_components f⟩
 #align category_theory.functor.map_homological_complex_reflects_iso CategoryTheory.Functor.mapHomologicalComplex_reflects_iso
 
+
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [Faithful F] :
+    Faithful (F.mapHomologicalComplex c) where
+  map_injective {K L} f₁ f₂ h := by
+    ext n
+    apply F.map_injective
+    exact (HomologicalComplex.eval W c n).congr_map h
+
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [Faithful F] [Full F] :
+    Full (F.mapHomologicalComplex c) where
+  preimage {X Y} f :=
+    { f := fun n => F.preimage (f.f n)
+      comm' := by
+        intro i j _
+        apply F.map_injective
+        dsimp
+        simp only [Functor.map_comp, Functor.image_preimage]
+        exact f.comm i j }
+
 /-- A natural transformation between functors induces a natural transformation
 between those functors applied to homological complexes.
 -/

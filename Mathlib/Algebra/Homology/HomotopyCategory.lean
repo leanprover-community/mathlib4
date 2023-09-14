@@ -264,4 +264,42 @@ theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W
       NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by aesop_cat
 #align category_theory.nat_trans.map_homotopy_category_comp CategoryTheory.NatTrans.mapHomotopyCategory_comp
 
+instance (F : V ⥤ W) [F.Additive] [Full F] [Faithful F] : Full (F.mapHomotopyCategory c) :=
+  Functor.fullOfSurjective _ (by
+    rintro ⟨K⟩ ⟨L⟩ --⟨f⟩
+    rintro ⟨f⟩
+    obtain ⟨g : K ⟶ L, rfl⟩ := (F.mapHomologicalComplex c).map_surjective f
+    exact ⟨(HomotopyCategory.quotient V c).map g, rfl⟩)
+
+section
+
+variable {c}
+variable (F : V ⥤ W) [F.Additive] [Full F] [Faithful F]
+
+def Functor.preimageHomotopy {K L : HomologicalComplex V c} (f₁ f₂ : K ⟶ L)
+    (H : Homotopy ((F.mapHomologicalComplex c).map f₁) ((F.mapHomologicalComplex c).map f₂)) :
+    Homotopy f₁ f₂ :=
+      { hom := fun i j => F.preimage (H.hom i j)
+        zero := fun i j hij => F.map_injective (by
+          dsimp
+          simp only [image_preimage, Functor.map_zero]
+          rw [H.zero i j hij])
+        comm := fun i => F.map_injective (by
+          refine' (H.comm i).trans _
+          rw [F.map_add, F.map_add]
+          congr 2
+          · dsimp [fromNext]
+            simp
+          · dsimp [toPrev]
+            simp) }
+
+instance : Faithful (F.mapHomotopyCategory c) where
+  map_injective := by
+    rintro ⟨K⟩ ⟨L⟩ f₁ f₂ h
+    obtain ⟨f₁, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f₁
+    obtain ⟨f₂, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f₂
+    exact HomotopyCategory.eq_of_homotopy _ _ (F.preimageHomotopy _ _ (HomotopyCategory.homotopyOfEq _ _ h))
+
+end
+
 end CategoryTheory

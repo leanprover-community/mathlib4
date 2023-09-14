@@ -94,6 +94,13 @@ instance : (F.mapHomotopyCategoryPlus).IsTriangulated := by
   dsimp only [mapHomotopyCategoryPlus]
   infer_instance
 
+noncomputable instance [Full F] [Faithful F] : Full F.mapHomotopyCategoryPlus where
+  preimage f := (F.mapHomotopyCategory _).preimage f
+  witness f := (F.mapHomotopyCategory _).image_preimage f
+
+noncomputable instance [Full F] [Faithful F] : Faithful F.mapHomotopyCategoryPlus where
+  map_injective h := (F.mapHomotopyCategory _).map_injective h
+
 end Functor
 
 end CategoryTheory
