@@ -223,7 +223,7 @@ variable [Semiring R]
 
 section SupDegree
 
-variable [AddZeroClass A] [Add B] (D : A → B) (E : B → A) (hED : E.LeftInverse D)
+variable [AddZeroClass A] [Add B] (D : A → B)
 
 section SemilatticeSup
 
@@ -237,10 +237,26 @@ Often, the Type `B` is `WithBot A`,
 If, further, `A` has a linear order, then this notion coincides with the usual one,
 using the maximum of the exponents. -/
 @[reducible] def supDegree (f : AddMonoidAlgebra R A) : B := f.support.sup D
-@[reducible] def leadingCoeff (f : AddMonoidAlgebra R A) : R := f (E <| f.supDegree D)
-@[reducible] def Monic (f : AddMonoidAlgebra R A) : Prop := f.leadingCoeff D E = 1
+@[reducible] noncomputable def leadingCoeff (f : AddMonoidAlgebra R A) : R :=
+  if h : ∃! a, a ∈ f.support ∧ D a = f.supDegree D then f (Classical.choose h) else 0
+@[reducible] def Monic (f : AddMonoidAlgebra R A) : Prop := f.leadingCoeff D = 1
 
-variable {D E}
+variable {D}
+
+lemma leadingCoeff_eq {f : AddMonoidAlgebra R A} {a : A} (had : D a = f.supDegree D)
+    (hau : ∀ a', a' ∈ f.support ∧ D a' = f.supDegree D → a' = a) :
+    f.leadingCoeff D = f a := by
+  by_cases has : a ∈ f.support
+  · suffices : _
+    · rw [leadingCoeff, dif_pos this, this.unique (Classical.choose_spec this).1 ⟨has, had⟩]
+    exact ⟨a, ⟨has, had⟩, hau⟩
+  · rw [Finsupp.not_mem_support_iff.mp has, leadingCoeff, dite_eq_right_iff]
+    intro hu; rw [← Finsupp.not_mem_support_iff]; contrapose! has
+    rwa [← hau _ ⟨has, (Classical.choose_spec hu).1.2⟩]
+
+lemma leadingCoeff_eq_of_injective {f : AddMonoidAlgebra R A} {a : A} (had : D a = f.supDegree D)
+    (hD : D.Injective) : f.leadingCoeff D = f a := by
+
 
 theorem supDegree_add_le {f g : AddMonoidAlgebra R A} :
     (f + g).supDegree D ≤ (f.supDegree D) ⊔ (g.supDegree D) :=
@@ -266,9 +282,14 @@ theorem supDegree_single (a : A) (r : R) :
     (single a r).supDegree D = if r = 0 then ⊥ else D a := by
   split_ifs with hr <;> simp [supDegree_single_ne_zero, hr]
 
-theorem leadingCoeff_single (a : A) (h : E (D a) = a) (r : R) :
-    (single a r).leadingCoeff D E = r := by
-  rw [leadingCoeff, supDegree_single]; split_ifs with hr <;> simp [hr, h]
+theorem leadingCoeff_single (a : A) (r : R) : (single a r).leadingCoeff D = r := by
+  obtain rfl | hr := eq_or_ne r 0
+  · refine dite_eq_right_iff.mpr (fun _ => ?_)
+    simp_rw [single_zero, Finsupp.zero_apply]
+  rw [leadingCoeff_eq (a := a), single_apply, if_pos rfl]
+  · rw [supDegree_single, if_neg hr]
+  · rintro a' ⟨has', -⟩
+    rwa [Finsupp.support_single_ne_zero a hr, Finset.mem_singleton] at has'
 
 section
 
@@ -297,26 +318,28 @@ variable {p q : AddMonoidAlgebra R A}
 
 theorem supDegree_zero : (0 : AddMonoidAlgebra R A).supDegree D = ⊥ := by simp [supDegree]
 
-theorem leadingCoeff_zero : (0 : AddMonoidAlgebra R A).leadingCoeff D E = 0 := rfl
+theorem leadingCoeff_zero : (0 : AddMonoidAlgebra R A).leadingCoeff D = 0 := by
+  rw [leadingCoeff, dite_eq_right_iff]; intro; rfl
 
 theorem ne_zero_of_supDegree_ne_bot : p.supDegree D ≠ ⊥ → p ≠ 0 := mt (fun h => h ▸ supDegree_zero)
 
 theorem ne_zero_of_not_supDegree_le {b : B} (h : ¬ p.supDegree D ≤ b) : p ≠ 0 :=
 ne_zero_of_supDegree_ne_bot (fun he => h <| he ▸ bot_le)
 
-lemma Monic.ne_zero [Nontrivial R] (hp : p.Monic D E) : p ≠ 0 := fun h => by
+lemma Monic.ne_zero [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := fun h => by
   simp_rw [Monic, h, leadingCoeff_zero, zero_ne_one] at hp
 
-theorem monic_one (h : E (D 0) = 0) : (1 : AddMonoidAlgebra R A).Monic D E := by
-  rwa [Monic, one_def, leadingCoeff_single]
+theorem monic_one : (1 : AddMonoidAlgebra R A).Monic D := by
+  rw [Monic, one_def, leadingCoeff_single]
 
 theorem supDegree_eq_of_isMaxOn {a : A} (hmem : a ∈ p.support)
     (hmax : IsMaxOn D p.support a) : p.supDegree D = D a :=
 (Finset.sup_le hmax).antisymm (Finset.le_sup hmem)
 
-theorem supDegree_eq_of_max {b : B} (hb : b ∈ Set.range D) (hmem : E b ∈ p.support)
+
+/-theorem supDegree_eq_of_max {b : B} (hb : b ∈ Set.range D) (hmem : E b ∈ p.support)
     (hmax : ∀ a ∈ p.support, D a ≤ b) : p.supDegree D = b := by
-  obtain ⟨a, rfl⟩ := hb; exact supDegree_eq_of_isMaxOn (hED a ▸ hmem) hmax
+  obtain ⟨a, rfl⟩ := hb; exact supDegree_eq_of_isMaxOn (hED a ▸ hmem) hmax -/
 
 lemma apply_eq_zero_of_not_le_supDegree {a : A} (hlt : ¬ D a ≤ p.supDegree D) : p a = 0 := by
   contrapose! hlt; exact Finset.le_sup (Finsupp.mem_support_iff.2 hlt)
@@ -353,16 +376,6 @@ lemma exists_supDegree_mem_support (hp : p ≠ 0) : ∃ a ∈ p.support, p.supDe
 lemma supDegree_mem_range (hp : p ≠ 0) : p.supDegree D ∈ Set.range D := by
   obtain ⟨a, -, he⟩ := exists_supDegree_mem_support D hp; exact ⟨a, he.symm⟩
 
-variable {D E} (hED : E.LeftInverse D)
-
-lemma supDegree_mem_support (hp : p ≠ 0) : E (p.supDegree D) ∈ p.support := by
-  obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D hp; rw [he, hED]; exact ha
-
-lemma leadingCoeff_eq_zero : p.leadingCoeff D E = 0 ↔ p = 0 := by
-  refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero⟩
-  rw [leadingCoeff, ← Ne, ← Finsupp.mem_support_iff]
-  exact supDegree_mem_support hED h
-
 open Finsupp in
 lemma supDegree_add_eq (h : q.supDegree D < p.supDegree D) :
     (p + q).supDegree D = p.supDegree D := by
@@ -373,10 +386,21 @@ lemma supDegree_add_eq (h : q.supDegree D < p.supDegree D) :
   exact mem_support_iff.mp ha
 
 lemma leadingCoeff_add_eq (h : q.supDegree D < p.supDegree D) :
-    (p + q).leadingCoeff D E = p.leadingCoeff D E := by
+    (p + q).leadingCoeff D = p.leadingCoeff D := by
   obtain ⟨a, he⟩ := supDegree_mem_range D (ne_zero_of_not_supDegree_le h.not_le)
   rw [leadingCoeff, supDegree_add_eq h, Finsupp.add_apply, ← leadingCoeff, ← he, hED,
       apply_eq_zero_of_not_le_supDegree (he.symm ▸ h).not_le, add_zero]
+
+variable {D} (hD : D.Injective)
+
+/- lemma supDegree_mem_support (hp : p ≠ 0) : D.invFun (p.supDegree D) ∈ p.support := by
+  obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D hp
+  rw [he, Function.leftInverse_invFun hD]; exact ha -/
+
+lemma leadingCoeff_eq_zero : p.leadingCoeff D = 0 ↔ p = 0 := by
+  refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero⟩
+  rw [leadingCoeff, ← Ne, ← Finsupp.mem_support_iff]
+  exact supDegree_mem_support hED h
 
 lemma supDegree_sub_lt_of_leadingCoeff_eq {R} [CommRing R] {p q : AddMonoidAlgebra R A}
     (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff D E = q.leadingCoeff D E) :
@@ -404,7 +428,7 @@ lemma supDegree_sum_eq : (∑ j in s, f j).supDegree D = (f i).supDegree D := by
   · rw [Finset.nonempty_iff_ne_empty]; exact hs
   · rw [Finset.mem_erase] at hj; exact hmax j hj.2 hj.1
 
-lemma leadingCoeff_sum_eq : (∑ j in s, f j).leadingCoeff D E = (f i).leadingCoeff D E := by
+lemma leadingCoeff_sum_eq : (∑ j in s, f j).leadingCoeff D = (f i).leadingCoeff D := by
   rw [← s.add_sum_erase _ hi]
   by_cases hs : s.erase i = ∅
   · rw [hs, Finset.sum_empty, add_zero]
