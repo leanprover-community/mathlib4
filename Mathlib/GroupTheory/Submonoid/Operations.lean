@@ -645,8 +645,8 @@ instance (priority := 75) toLinearOrderedCancelCommMonoid {M} [LinearOrderedCanc
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
-def subtype : S' →* M :=
-  ⟨(⟨Subtype.val, rfl⟩ : OneHom S' M), by simp⟩
+def subtype : S' →* M where
+  toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 #align submonoid_class.subtype SubmonoidClass.subtype
 #align add_submonoid_class.subtype AddSubmonoidClass.subtype
 
@@ -778,8 +778,8 @@ instance toLinearOrderedCancelCommMonoid {M} [LinearOrderedCancelCommMonoid M] (
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
-def subtype : S →* M :=
-  ⟨(⟨Subtype.val, rfl⟩ : OneHom S M), by simp⟩
+def subtype : S →* M where
+  toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 #align submonoid.subtype Submonoid.subtype
 #align add_submonoid.subtype AddSubmonoid.subtype
 
