@@ -95,10 +95,10 @@ def Equiv.Perm (α : Sort*) :=
 namespace Equiv
 
 instance : EquivLike (α ≃ β) α β where
-  coe := toFun
-  inv := invFun
-  left_inv := left_inv
-  right_inv := right_inv
+  coe := Equiv.toFun
+  inv := Equiv.invFun
+  left_inv := Equiv.left_inv
+  right_inv := Equiv.right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
 /-- Helper instance when inference gets stuck on following the normal chain
