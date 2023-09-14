@@ -69,7 +69,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.5"
+  "0.1.6"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -258,7 +258,8 @@ def allExist (paths : Array (FilePath × Bool)) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
+def packCache (hashMap : HashMap) (overwrite : Bool) (comment : Option String := none) :
+    IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := #[]
@@ -271,6 +272,7 @@ def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
       if overwrite || !(← zipPath.pathExists) then
         tasks := tasks.push <| ← IO.asTask do
           runCmd (← getLeanTar) $ #[zipPath.toString] ++
+            (if let some c := comment then #["-c", s!"git=mathlib4@{c}"] else #[]) ++
             ((← buildPaths.filterM (·.1.pathExists)) |>.map (·.1.toString))
       acc := acc.push zip
   for task in tasks do
