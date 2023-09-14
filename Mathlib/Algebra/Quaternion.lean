@@ -586,15 +586,17 @@ theorem finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R �
 #align quaternion_algebra.finrank_eq_four QuaternionAlgebra.finrank_eq_four
 
 /-- There is a natural equivalence when swapping the coefficients of a quaternion algebra. -/
+@[simps]
 def swapEquiv : ℍ[R,c₁,c₂] ≃ₐ[R] ℍ[R, c₂, c₁] where
   toFun t := ⟨t.1, t.3, t.2, -t.4⟩
   invFun t := ⟨t.1, t.3, t.2, -t.4⟩
   left_inv _ := by simp
   right_inv _ := by simp
-  map_mul' _ _ := by ext <;>
-                     simp only [mul_re, mul_imJ, mul_imI, add_left_inj, mul_imK, neg_mul,
-                                neg_add_rev, neg_sub, mk_mul_mk, mul_neg, neg_neg, sub_neg_eq_add]
-                         <;> ring
+  map_mul' _ _ := by
+    ext
+      <;> simp only [mul_re, mul_imJ, mul_imI, add_left_inj, mul_imK, neg_mul, neg_add_rev,
+                     neg_sub, mk_mul_mk, mul_neg, neg_neg, sub_neg_eq_add]
+      <;> ring
   map_add' _ _ := by ext <;> simp [add_comm]
   commutes' _ := by simp [algebraMap_eq]
 
