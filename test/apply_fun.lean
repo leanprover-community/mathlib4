@@ -5,18 +5,17 @@ import Mathlib.Init.Function
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Matrix.Basic
 
+private axiom test_sorry : ∀ {α}, α
 
 set_option autoImplicit true
 open Function
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (f : ℕ → ℕ) (h : f x = f y) : x = y := by
   apply_fun f
   · guard_target = f x = f y
     assumption
   · guard_target = Injective f
-    sorry
+    exact test_sorry
 
 example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : ∀ n, Injective (f n)) : x = y := by
   apply_fun f ?foo
@@ -26,11 +25,9 @@ example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : ∀ n, Injective (
   · apply hinj
 
 -- Uses `refine`-style rules for placeholders:
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (f : ℕ → ℕ → ℕ) : x = y := by
   fail_if_success apply_fun f _
-  sorry
+  exact test_sorry
 
 example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : Injective (f 1)) : x = y := by
   apply_fun f _ using hinj
@@ -254,12 +251,10 @@ example (x : ℕ) : x = x := by
   rfl
 
 -- Check that locals are elaborated properly in apply_fun
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example : 1 = 1 := by
   let f := fun (x : Nat) => x + 1
   -- clearly false but for demo purposes only
   have g : ∀ f, Function.Injective f
-  · sorry
+  · exact test_sorry
   apply_fun f using (g f)
   rfl

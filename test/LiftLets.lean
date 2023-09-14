@@ -1,6 +1,7 @@
 import Mathlib.Tactic.LiftLets
 import Std.Tactic.GuardExpr
 
+private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 
 example : (let x := 1; x) = 1 := by
@@ -99,12 +100,10 @@ example : let x := 1; ∀ n, let y := 1; x + n = y + n := by
   intros x n
   rfl
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (m : Nat) (h : ∃ n, n + 1 = m) (x : Fin m) (y : Fin _) :
     cast (let h' := h.choose_spec.symm; congrArg Fin h') x = y := by
   lift_lets (config := {proofs := true})
   intro h'
   clear_value h'
   guard_hyp h' : m = Exists.choose h + 1
-  sorry
+  exact test_sorry

@@ -2,6 +2,7 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.Congrm
 
+private axiom test_sorry : ∀ {α}, α
 namespace Tests.Congrm
 
 set_option autoImplicit true
@@ -10,22 +11,20 @@ section docs
 
 /-! These are the examples from the tactic documentation -/
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example {a b c d : ℕ} :
     Nat.pred a.succ * (d + (c + a.pred)) = Nat.pred b.succ * (b + (c + d.pred)) := by
   congrm Nat.pred (Nat.succ ?h1) * (?h2 + ?h3)
   case h1 =>
     guard_target = a = b
-    sorry
+    exact test_sorry
   case h2 =>
     guard_target = d = b
-    sorry
+    exact test_sorry
   case h3 =>
     guard_target = c + a.pred = c + d.pred
-    sorry
+    exact test_sorry
 
-example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun _x => ∀ z, b + a = z) := by
+example {a b : ℕ} (h : a = b) : (fun _y : ℕ => ∀ z, a + a = z) = (fun _x => ∀ z, b + a = z) := by
   congrm fun x => ∀ w, ?_ + a = w
   guard_hyp x : ℕ
   guard_hyp w : ℕ

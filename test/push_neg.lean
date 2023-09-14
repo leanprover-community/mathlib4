@@ -7,6 +7,7 @@ Author: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 import Mathlib.Tactic.PushNeg
 import Mathlib.Init.Order.Defs
 
+private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 variable {α β : Type} [LinearOrder β] {p q : Prop} {p' q' : α → Prop}
 
@@ -98,12 +99,10 @@ example (h : p → ¬ q) : ¬ (p ∧ q) := by
   guard_target = p → ¬q
   exact h
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, x = z := by
   push_neg
   guard_target = ∃ x, x < a ∧ ∀ (y : β), y < a → ∃ z, x ≠ z
-  sorry
+  exact test_sorry
 
 example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m ≤ k)) (h₂ : m ≤ n) : m ≤ n := by
   push_neg at h
@@ -115,19 +114,15 @@ example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m < k)) (h₂ : m ≤ 
   guard_hyp h : ∀ k, ¬(m < k)
   exact h₂
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(s.lt a b → r.lt a b) := by
   push_neg
   guard_target = s.lt a b ∧ r.le b a
-  sorry
+  exact test_sorry
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(r.lt a b → s.lt a b) := by
   push_neg
   guard_target = r.lt a b ∧ ¬ s.lt a b
-  sorry
+  exact test_sorry
 
 section use_distrib
 set_option push_neg.use_distrib true

@@ -2,6 +2,7 @@ import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Init.Logic
 import Std.Tactic.GuardExpr
 
+private axiom test_sorry : ∀ {α}, α
 namespace Tests
 
 example : id (1 = 1) := by
@@ -16,15 +17,13 @@ example : (fun x => 1 + x) 1 = 2 := by
   guard_target =ₛ 1 + 1 = 2
   rfl
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example : (fun x => 1 + x) 2 = (fun y => 2 + y) 3 := by
   conv =>
     lhs
     beta_reduce
     guard_target =ₛ 1 + 2
   guard_target =ₛ 1 + 2 = (fun y => 2 + y) 3
-  sorry
+  exact test_sorry
 
 example : 1 + 2 * 3 = 7 := by
   reduce
@@ -76,15 +75,11 @@ example : 1 + 2 = 2 + 1 := by
   guard_target =ₛ Nat.add (nat_lit 1) (nat_lit 2) = Nat.add (nat_lit 2) (nat_lit 1)
   rfl
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (m n : Nat) : (m == n) = true := by
   unfold_projs
   guard_target =ₛ Nat.beq m n = true
-  sorry
+  exact test_sorry
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (f : Nat → Nat) : (fun a => f a) = (fun a => f (f a)) := by
   eta_expand
   guard_target =ₛ (fun a => f a) = (fun a => f (f a))
@@ -92,7 +87,7 @@ example (f : Nat → Nat) : (fun a => f a) = (fun a => f (f a)) := by
   guard_target =ₛ f = fun a => f (f a)
   eta_expand
   guard_target =ₛ (fun a => f a) = (fun a => f (f a))
-  sorry
+  exact test_sorry
 
 example : (fun (a b : Nat) => a + b) = (· + ·) := by
   eta_reduce
@@ -108,31 +103,25 @@ example : (fun (a : Nat) => 1 + a) = (1 + ·) := by
   guard_target =ₛ (fun a ↦ 1 + a) = fun a ↦ 1 + a
   rfl
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (f : Nat → Nat → Nat) : (fun x => f 1 x) 2 = 3 := by
   eta_expand
   guard_target =ₛ f 1 2 = 3
-  sorry
+  exact test_sorry
 
 example : (fun (a : Nat) => 1 + a) 2 = (1 + ·) 2 := by
   eta_expand
   guard_target =ₛ 1 + 2 = 1 + 2
   rfl
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (p : Nat × Nat) : (p.1, p.2) = (p.2, p.1) := by
   eta_struct
   guard_target =ₛ p = (p.2, p.1)
-  sorry
+  exact test_sorry
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (p : Nat × Nat) : ((p.1, p.2).1, (p.1, p.2).2) = ((p.1, p.2).2, (p.1, p.2).1) := by
   eta_struct
   guard_target =ₛ p = (p.2, p.1)
-  sorry
+  exact test_sorry
 
 example (n : Fin 5) : n = ⟨n.1, n.2⟩ := by
   eta_struct
