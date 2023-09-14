@@ -25,6 +25,6 @@ This is `CliffordAlgebra.map` through the lens of category theory. -/
 @[simps]
 def QuadraticModuleCat.cliffordAlgebra : QuadraticModuleCat.{u} R ⥤ AlgebraCat.{u} R where
   obj M := { carrier := CliffordAlgebra M.form }
-  map {_M _N} f := CliffordAlgebra.map f
+  map {_M _N} f := CliffordAlgebra.map f.toIsometry
   map_id _M := CliffordAlgebra.map_id _
-  map_comp {_M _N _P} f g := (CliffordAlgebra.map_comp_map g f).symm
+  map_comp {_M _N _P} f g := (CliffordAlgebra.map_comp_map g.toIsometry f.toIsometry).symm
