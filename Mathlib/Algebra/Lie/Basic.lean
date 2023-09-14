@@ -721,6 +721,9 @@ instance : FunLike (M →ₗ⁅R, L⁆ N) M (fun _ => N) :=
     coe_injective' := fun x y h =>
       by cases x; cases y; simp at h; simp [h] }
 
+@[simp]
+theorem toFun_eq_coe (f : M →ₗ⁅R,L⁆ N) : f.toFun = f := rfl
+
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
   rfl
