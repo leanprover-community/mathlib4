@@ -2473,6 +2473,7 @@ import Mathlib.MeasureTheory.Lattice
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.MeasurableSpace.Card
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
+import Mathlib.MeasureTheory.MeasurableSpace.Invariants
 import Mathlib.MeasureTheory.Measure.AEDisjoint
 import Mathlib.MeasureTheory.Measure.AEMeasurable
 import Mathlib.MeasureTheory.Measure.Complex
