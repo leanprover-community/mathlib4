@@ -244,7 +244,7 @@ lemma IsLUB_range_ωSup (c : Chain α) : IsLUB (Set.range c) (ωSup c) := by
       forall_apply_eq_imp_iff', Set.mem_setOf_eq]
     exact fun ⦃a⦄ a_1 ↦ ωSup_le c a a_1
 
-lemma IsLUB_ωSup {c : Chain α} {a : α} (h: IsLUB (Set.range c) a) : a = ωSup c := by
+lemma ωSup_eq_of_IsLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a = ωSup c := by
   rw [le_antisymm_iff]
   simp only [IsLUB, IsLeast, upperBounds, lowerBounds, Set.mem_range, forall_exists_index,
     forall_apply_eq_imp_iff', Set.mem_setOf_eq] at h
