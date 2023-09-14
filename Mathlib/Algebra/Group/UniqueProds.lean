@@ -135,14 +135,36 @@ theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G
 #align unique_mul.mul_hom_preimage UniqueMul.mulHom_preimage
 #align unique_add.add_hom_preimage UniqueAdd.addHom_preimage
 
-open Finset MulOpposite in
+section Opposites
+open Finset MulOpposite
+
 @[to_additive]
-theorem of_mulOpposite (h : @UniqueMul Gᵐᵒᵖ (MulOpposite.mul G)
-      (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
+theorem of_mulOpposite
+    (h : UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
     UniqueMul A B a0 b0 := by
   intros a b aA bB ab
-  have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by erw [← op_mul, ab, op_mul])
+  have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by simpa using congr_arg op ab)
   simpa [and_comm] using this
+
+@[to_additive]
+theorem to_mulOpposite (h : UniqueMul A B a0 b0) :
+    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) := by
+  refine of_mulOpposite (G := MulOpposite G) <| fun a b ha hb hab ↦ ?_
+  simp only [mem_map, Function.Embedding.coeFn_mk, exists_exists_and_eq_and] at ha hb
+  rcases ha with ⟨a, ha, rfl⟩
+  rcases hb with ⟨b, hb, rfl⟩
+  rw [op_inj, op_inj, op_inj, op_inj]
+  apply h ha hb ?_
+  apply_fun op ∘ op using op_injective.comp op_injective
+  exact hab
+
+@[to_additive]
+theorem iff_mulOpposite :
+    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) ↔
+      UniqueMul A B a0 b0 :=
+⟨of_mulOpposite, to_mulOpposite⟩
+
+end Opposites
 
 /-- `Unique_Mul` is preserved under multiplicative maps that are injective.
 
@@ -179,37 +201,6 @@ theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
       simp only [Finset.mem_map, MulHom.coe_mk, Finset.mem_image]
 #align unique_mul.mul_hom_map_iff UniqueMul.mulHom_map_iff
 #align unique_add.add_hom_map_iff UniqueAdd.addHom_map_iff
-
-section Opposites
-open Finset MulOpposite
-
-@[to_additive]
-theorem of_mulOpposite
-    (h : UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
-    UniqueMul A B a0 b0 := by
-  intros a b aA bB ab
-  have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by simpa using congr_arg op ab)
-  simpa [and_comm] using this
-
-@[to_additive]
-theorem to_mulOpposite (h : UniqueMul A B a0 b0) :
-    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) := by
-  refine of_mulOpposite (G := MulOpposite G) <| fun a b ha hb hab ↦ ?_
-  simp only [mem_map, Function.Embedding.coeFn_mk, exists_exists_and_eq_and] at ha hb
-  rcases ha with ⟨a, ha, rfl⟩
-  rcases hb with ⟨b, hb, rfl⟩
-  rw [op_inj, op_inj, op_inj, op_inj]
-  apply h ha hb ?_
-  apply_fun op ∘ op using op_injective.comp op_injective
-  exact hab
-
-@[to_additive]
-theorem iff_mulOpposite :
-    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) ↔
-      UniqueMul A B a0 b0 :=
-⟨of_mulOpposite, to_mulOpposite⟩
-
-end Opposites
 
 end UniqueMul
 
