@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Tactic.Abel
+import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Eval
 import Mathlib.Data.Polynomial.Monic
 import Mathlib.Data.Polynomial.RingDivision
@@ -18,7 +19,7 @@ We define and prove some basic relations about
 which is also known as the rising factorial and about
 `descPochhammer R n : R[X] := X * (X - 1) * ... * (X - n + 1)`
 which is also known as the falling factorial. Versions of this definition
-that is focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactorial` and
+that are focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactorial` and
 `Nat.descFactorial`.
 
 ## Implementation
@@ -64,6 +65,15 @@ theorem ascPochhammer_succ_left (n : ℕ) :
     ascPochhammer S (n + 1) = X * (ascPochhammer S n).comp (X + 1) :=
   by rw [ascPochhammer]
 #align pochhammer_succ_left ascPochhammer_succ_left
+
+theorem monic_pochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
+    Monic <| ascPochhammer S n := by
+  induction' n with n hn
+  · simp
+  · have : leadingCoeff (X + 1 : S[X]) = 1 := leadingCoeff_X_add_C 1
+    rw [ascPochhammer_succ_left, Monic.def, leadingCoeff_mul,
+      leadingCoeff_comp (ne_zero_of_eq_one <| natDegree_X_add_C 1 : natDegree (X + 1) ≠ 0), hn,
+      monic_X, one_mul, one_mul, this, one_pow]
 
 section
 
@@ -126,7 +136,8 @@ theorem ascPochhammer_succ_comp_X_add_one (n : ℕ) :
       ascPochhammer ℕ (n + 1) + (n + 1) * (ascPochhammer ℕ n).comp (X + 1)
     by simpa [map_comp] using congr_arg (Polynomial.map (Nat.castRingHom S)) this
   nth_rw 2 [ascPochhammer_succ_left]
-  rw [← add_mul, ascPochhammer_succ_right ℕ n, mul_comp, mul_comm, add_comp, X_comp, nat_cast_comp]
+  rw [← add_mul, ascPochhammer_succ_right ℕ n, mul_comp, mul_comm, add_comp, X_comp, nat_cast_comp,
+    add_comm, ← add_assoc]
   ring
 set_option linter.uppercaseLean3 false in
 #align pochhammer_succ_comp_X_add_one ascPochhammer_succ_comp_X_add_one

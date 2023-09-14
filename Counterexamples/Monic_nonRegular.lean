@@ -27,7 +27,7 @@ open Polynomial
 
 namespace Counterexample.NonRegular
 
-/-- `N₃` is going to be a `Commsemiring` where addition and multiplication are truncated at `3`. -/
+/-- `N₃` is going to be a `CommSemiring` where addition and multiplication are truncated at `3`. -/
 inductive N₃
   | zero
   | one

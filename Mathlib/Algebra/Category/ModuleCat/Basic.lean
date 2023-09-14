@@ -79,13 +79,12 @@ structure ModuleCat where
 
 attribute [instance] ModuleCat.isAddCommGroup ModuleCat.isModule
 
-namespace ModuleCat
-
--- Porting note: typemax hack to fix universe complaints
 /-- An alias for `ModuleCat.{max u₁ u₂}`, to deal around unification issues.
 Since the universe the ring lives in can be inferred, we put that last. -/
 @[nolint checkUnivs]
 abbrev ModuleCatMax.{v₁, v₂, u₁} (R : Type u₁) [Ring R] := ModuleCat.{max v₁ v₂, u₁} R
+
+namespace ModuleCat
 
 instance : CoeSort (ModuleCat.{v} R) (Type v) :=
   ⟨ModuleCat.carrier⟩
@@ -375,6 +374,100 @@ theorem Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
     Iso.conj i f = LinearEquiv.conj i.toLinearEquiv f :=
   rfl
 #align Module.iso.conj_eq_conj ModuleCat.Iso.conj_eq_conj
+
+end
+
+variable (M N : ModuleCat.{v} R)
+
+/-- The scalar multiplication on an object of `ModuleCat R` considered as
+a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/
+def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGroupCat).obj M) where
+  toFun r :=
+    { toFun := fun (m : M) => r • m
+      map_zero' := by dsimp; rw [smul_zero]
+      map_add' := fun x y => by dsimp; rw [smul_add] }
+  map_one' := AddMonoidHom.ext (fun x => by dsimp; rw [one_smul])
+  map_zero' := AddMonoidHom.ext (fun x => by dsimp; rw [zero_smul])
+  map_mul' r s := AddMonoidHom.ext (fun (x : M) => (smul_smul r s x).symm)
+  map_add' r s := AddMonoidHom.ext (fun (x : M) => add_smul r s x)
+
+lemma smul_naturality {M N : ModuleCat.{v} R} (f : M ⟶ N) (r : R) :
+    (forget₂ (ModuleCat R) AddCommGroupCat).map f ≫ N.smul r =
+      M.smul r ≫ (forget₂ (ModuleCat R) AddCommGroupCat).map f := by
+  ext x
+  exact (f.map_smul r x).symm
+
+variable (R)
+
+/-- The scalar multiplication on `ModuleCat R` considered as a morphism of rings
+to the endomorphisms of the forgetful functor to `AddCommGroupCat)`. -/
+@[simps]
+def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGroupCat) where
+  toFun r :=
+    { app := fun M => M.smul r
+      naturality := fun _ _ _ => smul_naturality _ r }
+  map_one' := NatTrans.ext _ _ (by aesop_cat)
+  map_zero' := NatTrans.ext _ _ (by aesop_cat)
+  map_mul' _ _ := NatTrans.ext _ _ (by aesop_cat)
+  map_add' _ _ := NatTrans.ext _ _ (by aesop_cat)
+
+variable {R}
+
+/-- Given `A : AddCommGroupCat` and a ring morphism `R →+* End A`, this is a type synonym
+for `A`, on which we shall define a structure of `R`-module. -/
+@[nolint unusedArguments]
+def mkOfSMul' {A : AddCommGroupCat} (_ : R →+* End A) := A
+
+section
+
+variable {A : AddCommGroupCat} (φ : R →+* End A)
+
+instance : AddCommGroup (mkOfSMul' φ) := by
+  dsimp only [mkOfSMul']
+  infer_instance
+
+instance : SMul R (mkOfSMul' φ) := ⟨fun r (x : A) => (show A ⟶ A from φ r) x⟩
+
+@[simp]
+lemma mkOfSMul'_smul (r : R) (x : mkOfSMul' φ) :
+    r • x = (show A ⟶ A from φ r) x := rfl
+
+instance : Module R (mkOfSMul' φ) where
+  smul_zero _ := map_zero _
+  smul_add _ _ _ := map_add _ _ _
+  one_smul := by simp
+  mul_smul := by simp
+  add_smul _ _ _ := by simp; rfl
+  zero_smul := by simp
+
+/-- Given `A : AddCommGroupCat` and a ring morphism `R →+* End A`, this is an object in
+`ModuleCat R`, whose underlying abelian group is `A` and whose scalar multiplication is
+given by `R`. -/
+abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
+
+@[simp]
+lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
+
+end
+
+section
+
+variable {M N}
+  (φ : (forget₂ (ModuleCat R) AddCommGroupCat).obj M ⟶
+      (forget₂ (ModuleCat R) AddCommGroupCat).obj N)
+  (hφ : ∀ (r : R), φ ≫ N.smul r = M.smul r ≫ φ)
+
+/-- Constructor for morphisms in `ModuleCat R` which takes as inputs
+a morphism between the underlying objects in `AddCommGroupCat` and the compatibility
+with the scalar multiplication. -/
+@[simps]
+def homMk : M ⟶ N where
+  toFun := φ
+  map_add' _ _ := map_add _ _ _
+  map_smul' r x := (congr_hom (hφ r) x).symm
+
+lemma forget₂_map_homMk :
+    (forget₂ (ModuleCat R) AddCommGroupCat).map (homMk φ hφ) = φ := rfl
 
 end
 

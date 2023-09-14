@@ -287,16 +287,6 @@ theorem lt_of_pow_lt_pow' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
 #align lt_of_pow_lt_pow' lt_of_pow_lt_pow'
 #align lt_of_nsmul_lt_nsmul lt_of_nsmul_lt_nsmul
 
-@[to_additive]
-theorem min_lt_max_of_mul_lt_mul {a b c d : M} (h : a * b < c * d) : min a b < max c d :=
-  lt_of_pow_lt_pow' 2 <| by
-    simp_rw [pow_two]
-    exact
-      (mul_le_mul' inf_le_left inf_le_right).trans_lt
-        (h.trans_le <| mul_le_mul' le_sup_left le_sup_right)
-#align min_lt_max_of_mul_lt_mul min_lt_max_of_mul_lt_mul
-#align min_lt_max_of_add_lt_add min_lt_max_of_add_lt_add
-
 @[to_additive min_lt_of_add_lt_two_nsmul]
 theorem min_lt_of_mul_lt_sq {a b c : M} (h : a * b < c ^ 2) : min a b < c := by
   simpa using min_lt_max_of_mul_lt_mul (h.trans_eq <| pow_two _)
@@ -338,7 +328,7 @@ end CovariantLTSwap
 @[to_additive Left.nsmul_neg_iff]
 theorem Left.pow_lt_one_iff' [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
     x ^ n < 1 ↔ x < 1 :=
-  haveI := Mul.to_covariantClass_left M
+  haveI := covariantClass_le_of_lt M M (· * ·)
   pow_lt_one_iff hn.ne'
 #align left.nsmul_neg_iff Left.nsmul_neg_iff
 
@@ -351,9 +341,8 @@ theorem Right.pow_lt_one_iff [CovariantClass M M (swap (· * ·)) (· < ·)] {n 
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
   ⟨fun H =>
     not_le.mp fun k =>
-      H.not_le <|
-        haveI := Mul.to_covariantClass_right M
-        Right.one_le_pow_of_le k,
+      haveI := covariantClass_le_of_lt M M (swap (· * ·))
+      H.not_le <| Right.one_le_pow_of_le k,
     Right.pow_lt_one_of_lt hn⟩
 #align right.pow_lt_one_iff Right.pow_lt_one_iff
 #align right.nsmul_neg_iff Right.nsmul_neg_iff
@@ -506,6 +495,11 @@ theorem pow_lt_pow_iff (h : 1 < a) : a ^ n < a ^ m ↔ n < m :=
 theorem pow_le_pow_iff (h : 1 < a) : a ^ n ≤ a ^ m ↔ n ≤ m :=
   (pow_strictMono_right h).le_iff_le
 #align pow_le_pow_iff pow_le_pow_iff
+
+theorem self_lt_pow (h : 1 < a) (h2 : 1 < m) : a < a ^ m := by
+  calc
+    a = a ^ 1 := (pow_one _).symm
+    _ < a ^ m := pow_lt_pow h h2
 
 theorem strictAnti_pow (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti fun n : ℕ => a ^ n :=
   strictAnti_nat_of_succ_lt fun n => by
