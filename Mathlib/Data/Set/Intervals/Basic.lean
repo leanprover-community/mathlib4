@@ -840,16 +840,6 @@ theorem Icc_diff_Ioo_same (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by
   simp [insert_subset_iff, h]
 #align set.Icc_diff_Ioo_same Set.Icc_diff_Ioo_same
 
-theorem Icc_diff_Ioo_same' (h : a ≤ b) : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := by
-  refine diff_union_of_subset ?h
-  intro x hx
-  cases hx with
-  | inl h2 => rw [h2]; exact left_mem_Icc.mpr h
-  | inr h2 => rw [h2]; exact right_mem_Icc.mpr h
-
-theorem Icc_diff_Ioo_same'' (h : a ≤ b) : Ioo a b ∪ {a, b} = Icc a b := by
-  rw [← Icc_diff_Ioo_same' h, Icc_diff_both]
-
 @[simp]
 theorem Ici_diff_Ioi_same : Ici a \ Ioi a = {a} := by
   rw [← Ici_diff_left, diff_diff_cancel_left (singleton_subset_iff.2 left_mem_Ici)]
@@ -880,6 +870,15 @@ theorem Ioo_union_left (hab : a < b) : Ioo a b ∪ {a} = Ico a b := by
 theorem Ioo_union_right (hab : a < b) : Ioo a b ∪ {b} = Ioc a b := by
   simpa only [dual_Ioo, dual_Ico] using Ioo_union_left hab.dual
 #align set.Ioo_union_right Set.Ioo_union_right
+
+theorem Ioo_union_both (h : a ≤ b) : Ioo a b ∪ {a, b} = Icc a b := by
+  have : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := by
+    refine diff_union_of_subset ?_
+    intro x hx
+    cases hx with
+    | inl h2 => rw [h2]; exact left_mem_Icc.mpr h
+    | inr h2 => rw [h2]; exact right_mem_Icc.mpr h
+  rw [← this, Icc_diff_both]
 
 theorem Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
   rw [← Icc_diff_left, diff_union_self,
