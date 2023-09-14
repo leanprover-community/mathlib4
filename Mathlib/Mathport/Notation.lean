@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
 import Mathlib.Lean.Expr
+import Mathlib.Util.FlexibleBinders
 import Mathlib.Util.Syntax
 import Std.Data.Option.Basic
 
@@ -11,12 +12,9 @@ import Std.Data.Option.Basic
 # The notation3 macro, simulating Lean 3's notation.
 -/
 
--- To fix upstream:
--- * bracketedExplicitBinders doesn't support optional types
-
 namespace Mathlib.Notation3
 open Lean Parser Meta Elab Command PrettyPrinter.Delaborator SubExpr
-open Std.ExtendedBinder
+open Mathlib.FlexibleBinders
 
 initialize registerTraceClass `notation3
 
@@ -31,28 +29,19 @@ For example, the familiar exists is given by:
 which expands to the same expression as
 `∃ x y : Nat, x < y`
 -/
-syntax "expand_binders% " "(" ident " => " term ")" extBinders ", " term : term
+syntax "expand_binders% " "(" ident " => " term ")" flexibleBinders ", " term : term
 
 macro_rules
-  | `(expand_binders% ($x => $term) $y:extBinder, $res) =>
-    `(expand_binders% ($x => $term) ($y:extBinder), $res)
-  | `(expand_binders% ($_ => $_), $res) => pure res
-macro_rules
-  | `(expand_binders% ($x => $term) ($y:ident $[: $ty]?) $binders*, $res) => do
-    let ty := ty.getD (← `(_))
-    term.replaceM fun x' ↦ do
-      unless x == x' do return none
-      `(fun $y:ident : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
-  | `(expand_binders% ($x => $term) (_%$ph $[: $ty]?) $binders*, $res) => do
-    let ty := ty.getD (← `(_))
-    term.replaceM fun x' ↦ do
-      unless x == x' do return none
-      `(fun _%$ph : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
-  | `(expand_binders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
-    term.replaceM fun x' ↦ do
-      unless x == x' do return none
-      `(fun $y:ident ↦ expand_binders% ($x => $term) (h : satisfies_binder_pred% $y $pred)
-        $[$binders]*, $res)
+  | `(expand_binders% ($x => $term) $bs:flexibleBinders, $body) => show MacroM Term from do
+    let apply (b ty body : Term) : MacroM Term :=
+      term.replaceM fun x' ↦ do
+        unless x == x' do return none
+        `(fun ($b : $ty) ↦ $body)
+    let res ← expandFlexibleBinders `type bs
+    res.foldrM (init := body) fun
+      | .std dom bind, body => apply bind dom body
+      | .prop dom, body => do apply (← `(_)) dom body
+      | .match discr patt, body => `(match $discr:term with | $patt => $body)
 
 macro (name := expandFoldl) "expand_foldl% "
   "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
@@ -67,7 +56,7 @@ macro (name := expandFoldr) "expand_foldr% "
 
 /-- Keywording indicating whether to use a left- or right-fold. -/
 syntax foldKind := &"foldl" <|> &"foldr"
-/-- `notation3` argument matching `extBinders`. -/
+/-- `notation3` argument matching `flexibleBinders`. -/
 syntax bindersItem := atomic("(" "..." ")")
 /-- `notation3` argument simulating a Lean 3 fold notation. -/
 syntax foldAction := "(" ident ppSpace strLit "*" (precedence)? " => " foldKind
@@ -98,7 +87,7 @@ structure MatchState where
   scoping constructs. -/
   vars : HashMap Name (SubExpr × LocalContext × LocalInstances)
   /-- The binders accumulated while matching a `scoped` expression. -/
-  scopeState : Option (Array (TSyntax ``extBinderParenthesized))
+  scopeState : Option (Array Term)
   /-- The arrays of delaborated `Term`s accumulated while matching
   `foldl` and `foldr` expressions. For `foldl`, the arrays are stored in reverse order. -/
   foldState : HashMap Name (Array Term)
@@ -141,7 +130,7 @@ def MatchState.getFoldArray (s : MatchState) (name : Name) : Array Term :=
 
 /-- Get the accumulated array of delaborated terms for a given foldr/foldl.
 Returns `#[]` if nothing has been pushed yet. -/
-def MatchState.getBinders (s : MatchState) : Array (TSyntax ``extBinderParenthesized) :=
+def MatchState.getBinders (s : MatchState) : Array Term :=
   s.scopeState.getD #[]
 
 /-- Push a delaborated term onto a foldr/foldl array. -/
@@ -268,7 +257,7 @@ Runs `smatcher`, extracts the resulting `scopeId` variable, processes this value
 (which must be a lambda) to produce a binder, and loops. -/
 partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := go #[] where
   /-- Variant of `matchScoped` after some number of `binders` have already been captured. -/
-  go (binders : Array (TSyntax ``extBinderParenthesized)) : Matcher := fun s => do
+  go (binders : Array Term) : Matcher := fun s => do
     -- `lit` is bound to the SubExpr that the `scoped` syntax produced
     s.withVar lit do
     try
@@ -286,11 +275,11 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := g
             if prop && !isDep then
               -- this underscore is used to support binder predicates, since it indicates
               -- the variable is unused and this binder is safe to merge into another
-              `(extBinderParenthesized|(_ : $dom))
+              `((_ : $dom))
             else if prop || ppTypes then
-              `(extBinderParenthesized|($x:ident : $dom))
+              `(($x:ident : $dom))
             else
-              `(extBinderParenthesized|($x:ident))
+              `(($x:ident))
           -- Now use the body of the lambda for `lit` for the next iteration
           let s ← s.captureSubexpr lit
           -- TODO merge binders as an inverse to `satisfies_binder_pred%`
@@ -449,12 +438,13 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       if hasBindersItem then
         throwErrorAt item "Cannot have more than one `(...)` item."
       hasBindersItem := true
-      -- HACK: Lean 3 traditionally puts a space after the main binder atom, resulting in
-      -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
-      -- but extBinders already has a space before it so we strip the trailing space of "∑ "
-      if let `(stx| $lit:str) := syntaxArgs.back then
-        syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight):str))
-      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders:extBinders))
+      -- -- HACK: Lean 3 traditionally puts a space after the main binder atom, resulting in
+      -- -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
+      -- -- but extBinders already has a space before it so we strip the trailing space of "∑ "
+      -- if let `(stx| $lit:str) := syntaxArgs.back then
+      --   syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight):str))
+      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs
+                                (← `(macroArg| binders:flexibleBinders))
     | `(notation3Item| ($id:ident $sep:str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
         `(macroArg| $id:ident:sepBy(term $(prec?)?, $sep:str))
@@ -485,7 +475,7 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| ←
-        `(expand_binders% ($scopedId => $scopedTerm') $$binders:extBinders,
+        `(expand_binders% ($scopedId => $scopedTerm') $$binders,
           $(⟨lit.1.mkAntiquotNode `term⟩):term)
     | `(notation3Item| $lit:ident $(prec?)?) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
@@ -540,7 +530,7 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
         | .foldr => result ←
           `(let $id := MatchState.getFoldArray s $(quote name); $result)
       if hasBindersItem then
-        result ← `(`(extBinders| $$(MatchState.getBinders s)*) >>= fun binders => $result)
+        result ← `(encodeBinders (MatchState.getBinders s) >>= fun binders => $result)
       elabCommand <| ← `(command|
         def $(Lean.mkIdent delabName) : Delab := whenPPOption getPPNotation <|
           getExpr >>= fun e => $matcher MatchState.empty >>= fun s => $result)

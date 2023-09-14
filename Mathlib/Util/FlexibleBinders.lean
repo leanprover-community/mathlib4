@@ -39,7 +39,7 @@ These are some examples of things that are meant to be supported by flexible bin
 The syntax itself is very flexible and is (ab)using the fact that function application
 can be used to represent a list of binders. This follows how core uses such an encoding
 for explicit binders in `fun` notation. -/
-syntax flexibleBinders := term (" : " term)?
+syntax flexibleBinders := (term)? (" : " term)?
 
 /-- If `stx` is of the form `a1 ... an` then returns `#[a1, ..., an]`,
 otherwise returns `#[stx]`.
@@ -52,10 +52,11 @@ def splitTerm (stx : Term) : Array Term :=
 
 /-- If the `flexibleBinders` has a trailing type ascription (for example `x y z : α`)
 then turn it into an actual type ascription (for example `(x y z : α)`). -/
-def elimAscription (b : TSyntax ``flexibleBinders) : MacroM Term :=
+def elimAscription (b : TSyntax ``flexibleBinders) : MacroM (Option Term) :=
   match b with
   | `(flexibleBinders| $t :%$c $ty) => withRef b `(($t :%$c $ty))
   | `(flexibleBinders| $t:term) => return t
+  | `(flexibleBinders| $[: $_]?) => return none
   | _ => Macro.throwUnsupported
 
 /-- `binder%(DomainType, t)` is a term that represents a collection of simpler binders that
@@ -112,7 +113,10 @@ Uses the `binder%(...)` mechanism to process and expand binders.
   If it is a function application then it is interpreted as being a sequence of binders.
 
 Only unresolved `binder%(...)` expressions are macro expanded -- macros are not expanded in general.
-This decision can be revisited if there is an application for doing full macro expansion. -/
+This decision can be revisited if there is an application for doing full macro expansion.
+
+If `bi` is a function application it is interpreted as a sequence of binders.
+If `bi` is a null node it is interpreted as a sequence of binders. -/
 partial def expandBinder (domainType : Name := `type) (bi : Term) : MacroM (Array Binder) := do
   process #[] bi
 where
@@ -136,15 +140,19 @@ where
       let acc ← process acc f
       args.foldlM (init := acc) process
     | _ =>
-      -- This is some term we haven't begun to process,
-      -- so wrap it in `binder%(...)` to initialize.
-      process acc (← `(binder%($(mkIdent domainType), $bi)))
+      if bi.raw.isOfKind nullKind then
+        bi.raw.getArgs.foldlM (init := acc) (process · ⟨·⟩)
+      else
+        -- This is some term we haven't begun to process,
+        -- so wrap it in `binder%(...)` to initialize.
+        process acc (← `(binder%($(mkIdent domainType), $bi)))
 
 /-- Frontend to `expandBinder` that handles the trailing ascription in `flexibleBinders`. -/
 def expandFlexibleBinders (domainType : Name := `Type) (b : TSyntax ``flexibleBinders) :
     MacroM (Array Binder) := do
-  let b' ← elimAscription b
-  expandBinder domainType b'
+  match ← elimAscription b with
+  | some b' => expandBinder domainType b'
+  | none => return #[]
 
 /-- Command to test flexible binders.
 For example, `#test_flexible_binders => x y z : Nat`. -/
@@ -157,15 +165,20 @@ elab "#test_flexible_binders " dom?:(ident)? " => " e:flexibleBinders : command 
     | .prop p => logInfo m!"prop domain = {p}"
     | .match discr patt => logInfo m!"match {discr} with | {patt} => ..."
 
-/-- Encodes the given list of binders as a function application.
+/-- Uses a null node to encode a list of binders.
 This is suitable as a return value in `binder%(...)` expansions to return multiple binders. -/
-def returnBinders (bis : Array Term) : MacroM Term := do
-  if bis.size == 0 then
-    Macro.throwError "Cannot expand into zero binders"
-  else if bis.size == 1 then
-    return bis[0]!
+def combineBinders (bis : Array Term) : Term :=
+  ⟨mkNullNode bis⟩
+
+/-- Convert a list of binders back into a `flexibleBinders`. -/
+def encodeBinders {m : Type → Type} [Monad m] [MonadQuotation m]
+    (bis : Array Term) : m (TSyntax ``flexibleBinders) :=
+  if bis.isEmpty then
+    `(flexibleBinders| )
   else
-    `($(bis[0]!) $(bis.extract 1 bis.size)*)
+    let f := bis[0]!
+    let xs := bis.extract 1 bis.size
+    `(flexibleBinders| $(Syntax.mkApp f xs):term)
 
 /-- Given `(e : ty)` returns `(e, ty)`. Otherwise returns `(t, _)` -/
 def destructAscription (t : Term) : MacroM (Term × Term) :=
@@ -184,13 +197,13 @@ macro_rules
     let es := splitTerm e
     let notPatt ← es.allM fun id => do return List.isEmpty (← Macro.resolveGlobalName id.raw.getId)
     unless notPatt do Macro.throwUnsupported
-    returnBinders <| ← es.mapM fun e' => withRef e'.raw `(binder%($domType, $e'))
+    return combineBinders <| ← es.mapM fun e' => withRef e'.raw `(binder%($domType, $e'))
 
 /-- Sets up expanding `(x y z : α)` to `(x : α) (y : α) (z : α)`. -/
 macro_rules
   | `(binder%($domType, ($x $xs* : $ty))) => do
     let xs := #[x] ++ xs
-    returnBinders <| ← xs.mapM fun b => withRef b.raw `(binder%($domType, ($b : $ty)))
+    return combineBinders <| ← xs.mapM fun b => withRef b.raw `(binder%($domType, ($b : $ty)))
 
 /-- Default case for the type domain: the expression is a hole, ident, or more generally a pattern.
 If it is a pattern, then `expandBinder` will later register the need for a `match` expression. -/
@@ -219,11 +232,11 @@ macro "declare_flexible_binder " b:ident " => " t:term : command => do
       match $b:term with
       | `($$x $$xs*) =>
         let xs := #[x] ++ xs
-        returnBinders <| ← xs.mapM fun $b => withRef ($b).raw `(binder%($$domType, $t))
+        return combineBinders <| ← xs.mapM fun $b => withRef ($b).raw `(binder%($$domType, $t))
       | `(($$x $$xs* : $$ty)) =>
         -- For expanding things such as `(x y : Nat) ∈ s` to `((x : Nat) ∈ s) ((y : Nat) ∈ s)`
         let xs := #[x] ++ xs
-        returnBinders <| ← xs.mapM fun x => withRef ($b).raw do
+        return combineBinders <| ← xs.mapM fun x => withRef ($b).raw do
           let $b ← `(($$x : $$ty))
           `(binder%($$domType, $t))
       | _ => do
