@@ -1109,10 +1109,36 @@ instance : IsTrans PGame (· ≡ ·) := ⟨fun _ _ _ ↦ Identical.trans⟩
 instance : IsEquiv PGame (· ≡ ·) := { }
 
 set_option linter.unusedVariables false in
+/-- A left move of `x` is identical to some left move of `y`. -/
+lemma Identical.moveLeft : ∀ {x y} (r : x ≡ y) (i : x.LeftMoves),
+    ∃ j, x.moveLeft i ≡ y.moveLeft j
+  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hl.1 i
+
+set_option linter.unusedVariables false in
+/-- A left move of `y` is identical to some left move of `x`. -/
+lemma Identical.moveLeft_symm : ∀ {x y} (r : x ≡ y) (i : y.LeftMoves),
+    ∃ j, x.moveLeft j ≡ y.moveLeft i
+  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hl.2 i
+
+set_option linter.unusedVariables false in
+/-- A right move of `x` is identical to some right move of `y`. -/
+lemma Identical.moveRight : ∀ {x y} (r : x ≡ y) (i : x.RightMoves),
+    ∃ j, x.moveRight i ≡ y.moveRight j
+  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hr.1 i
+
+set_option linter.unusedVariables false in
+/-- A right move of `y` is identical to some right move of `x`. -/
+lemma Identical.moveRight_symm : ∀ {x y} (r : x ≡ y) (i : y.RightMoves),
+    ∃ j, x.moveRight j ≡ y.moveRight i
+  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hr.2 i
+
+set_option linter.unusedVariables false in
 lemma Identical.le : ∀ {x y}, x ≡ y → x ≤ y
   | mk xl xr xL xR, mk yl yr yL yR, ⟨hL, hR⟩ => le_of_forall_lf
     (fun i ↦ let ⟨_, hj⟩ := hL.1 i; lf_of_le_moveLeft hj.le)
     (fun i ↦ let ⟨_, hj⟩ := hR.2 i; lf_of_moveRight_le hj.le)
+
+lemma Identical.ge {x y} (h : x ≡ y) : y ≤ x := h.symm.le
 
 lemma Identical.trans_eq {x y z} (h₁ : x ≡ y) (h₂ : y = z) : x ≡ z := h₁.trans (of_eq h₂)
 
