@@ -206,15 +206,14 @@ $$
                                                    {b_3 + \dots}}}}
 $$
 For convenience, one often writes `CF[h; b₀, b₁, b₂,...]`.
-In contrast to generalized continued fraction, We store only partial denominators in a sequence
-`sb`.
+In contrast to generalized continued fraction, We store only partial denominators in a sequence `s`.
  -/
 @[ext]
 structure SCF (α : Type*) where
   /-- Head term -/
   protected h : α
   /-- Sequence of partial denominators. -/
-  protected sb : Stream'.Seq α
+  protected s : Stream'.Seq α
 #align simple_continued_fraction SCF
 
 namespace SCF
@@ -230,7 +229,7 @@ instance [Inhabited α] : Inhabited (SCF α) where
 @[coe, simps]
 def toGCF (s : SCF α) : GCF α where
   h := s.h
-  s := s.sb.map ((1, ·))
+  s := s.s.map ((1, ·))
 
 instance : Coe (SCF α) (GCF α) where
   coe := toGCF
@@ -272,19 +271,19 @@ A simple continued fraction is a *(regular) continued fraction* ((r)cf) if the h
 and all partial denominators `bᵢ` are positive naturals.
 -/
 def SCF.IsCF [NatCast α] [IntCast α] (s : SCF α) : Prop :=
-  (∃ n : ℤ, ↑n = s.h) ∧ (∀ bₙ ∈ s.sb, ∃ p : ℕ+, ↑p = bₙ)
+  (∃ n : ℤ, ↑n = s.h) ∧ (∀ bₙ ∈ s.s, ∃ p : ℕ+, ↑p = bₙ)
 #align simple_continued_fraction.is_continued_fraction SCF.IsCF
 
 /-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose head term
 is integer and all partial denominators are positive naturals.
-We represent this by an integer `h` and a sequence of positive naturals `sb`.
+We represent this by an integer `h` and a sequence of positive naturals `s`.
 -/
 @[ext]
 structure CF (α : Type*) where
   /-- Head term -/
   protected h : ℤ
   /-- Sequence of partial denominators. -/
-  protected sb : Stream'.Seq ℕ+
+  protected s : Stream'.Seq ℕ+
 #align continued_fraction CF
 
 namespace CF
@@ -298,13 +297,13 @@ instance : Inhabited (CF α) where
 @[coe, simps]
 def toSCF [NatCast α] [IntCast α] (c : CF α) : SCF α where
   h  := ↑c.h
-  sb := c.sb.map (↑)
+  s := c.s.map (↑)
 
 instance [NatCast α] [IntCast α] : Coe (CF α) (SCF α) where
   coe := toSCF
 
 theorem toSCF_injective [AddGroupWithOne α] [CharZero α] : Injective ((↑) : CF α → SCF α) := by
-  rintro ⟨h₁, sb₁⟩ ⟨h₂, sb₂⟩ h
+  rintro ⟨h₁, s₁⟩ ⟨h₂, s₂⟩ h
   have hi : Injective (Stream'.Seq.map (((↑)) : ℕ+ → α)) :=
     Stream'.Seq.map_injective (Nat.cast_injective.comp Subtype.val_injective)
   simpa [Int.cast_inj, hi.eq_iff, toSCF] using h
@@ -321,10 +320,10 @@ theorem _root_.SCF.exists_eq_CF_iff [AddGroupWithOne α] [CharZero α] {s : SCF 
     (∃ c : CF α, ↑c = s) ↔ s.IsCF where
   mp  := by rintro ⟨c, rfl⟩; exact c.toSCF_isCF
   mpr := by
-    rcases s with ⟨h, sb⟩; rintro ⟨⟨sh, rfl⟩, hs⟩
-    use ⟨sh, sb.map (invFun (↑))⟩
+    rcases s with ⟨h, s⟩; rintro ⟨⟨sh, rfl⟩, hs⟩
+    use ⟨sh, s.map (invFun (↑))⟩
     simp [comp, toSCF]
-    convert Stream'.Seq.map_id sb using 1
+    convert Stream'.Seq.map_id s using 1
     symm; apply Stream'.Seq.map_congr; intro a ha
     simp [invFun_eq (hs a ha)]
 
