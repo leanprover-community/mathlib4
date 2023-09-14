@@ -136,7 +136,6 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
   simpa using Quot.sound (CompClosure.intro (𝟙 a) f₁ f₂ (𝟙 b) h)
 #align category_theory.quotient.sound CategoryTheory.Quotient.sound
 
-@[simp]
 lemma compClosure_iff_self [h : Congruence r] {X Y : C} (f g : X ⟶ Y) :
     CompClosure r f g ↔ r f g := by
   constructor
@@ -145,8 +144,11 @@ lemma compClosure_iff_self [h : Congruence r] {X Y : C} (f g : X ⟶ Y) :
     exact Congruence.compLeft _ (Congruence.compRight _ (by assumption))
   · exact CompClosure.of _ _ _
 
+@[simp]
 theorem compClosure_eq_self [h : Congruence r] :
-    CompClosure r = r := by aesop_cat
+    CompClosure r = r := by
+  ext
+  simp only [compClosure_iff_sel]
 
 theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
     (functor r).map f = (functor r).map f' ↔ r f f' := by
