@@ -73,9 +73,11 @@ variable (s : Set α)
 theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 1 else 0 := by
   refine' (toOuterMeasure_apply (pure a) s).trans _
   split_ifs with ha
-  · refine' (tsum_congr fun b => _).trans (tsum_ite_eq a 1)
+  · rw [@coe_eq_one]
+    refine' (tsum_congr fun b => _).trans (tsum_ite_eq a 1)
     exact ite_eq_left_iff.2 fun hb => symm (ite_eq_right_iff.2 fun h => (hb <| h.symm ▸ ha).elim)
-  · refine' (tsum_congr fun b => _).trans tsum_zero
+  · rw [@coe_eq_zero]
+    refine' (tsum_congr fun b => _).trans tsum_zero
     exact ite_eq_right_iff.2 fun hb => ite_eq_right_iff.2 fun h => (ha <| h ▸ hb).elim
 #align pmf.to_outer_measure_pure_apply Pmf.toOuterMeasure_pure_apply
 
@@ -106,9 +108,19 @@ section Bind
 
 /-- The monadic bind operation for `Pmf`. -/
 def bind (p : Pmf α) (f : α → Pmf β) : Pmf β :=
-  ⟨fun b => ∑' a, p a * f a b,
-    ENNReal.summable.hasSum_iff.2
-      (ENNReal.tsum_comm.trans <| by simp only [ENNReal.tsum_mul_left, tsum_coe, mul_one])⟩
+  ⟨fun b => ∑' a, p a * f a b, by
+    rw [Summable.hasSum_iff]
+    · rw [tsum_comm']
+      · simp_rw [NNReal.tsum_mul_left, tsum_coe, mul_one, tsum_coe]
+      · sorry
+      . intro x; apply Summable.mul_left; apply (f x).summable
+      . intro x
+        refine summable_of_le (fun y => mul_le_of_le_one_right' ((f y).apply_le_one _)) p.summable
+    · sorry
+
+    -- ENNReal.summable.hasSum_iff.2
+    --  (ENNReal.tsum_comm.trans <| by simp only [ENNReal.tsum_mul_left, tsum_coe, mul_one])
+  ⟩
 #align pmf.bind Pmf.bind
 
 variable (p : Pmf α) (f : α → Pmf β) (g : β → Pmf γ)
