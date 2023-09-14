@@ -1079,7 +1079,7 @@ theorem identical_iff' : ∀ {x y : PGame}, Identical x y ↔
     Relator.BiTotal (x.moveLeft · ≡ y.moveLeft ·) ∧ Relator.BiTotal (x.moveRight · ≡ y.moveRight ·)
   | mk _ _ _ _, mk _ _ _ _ => Iff.rfl
 
-@[refl] protected theorem Identical.refl (x) : x ≡ x :=
+@[refl, simp] protected theorem Identical.refl (x) : x ≡ x :=
   PGame.recOn x fun _ _ _ _ IHL IHR ↦ ⟨Relator.BiTotal.refl IHL, Relator.BiTotal.refl IHR⟩
 
 protected theorem Identical.rfl {x} : x ≡ x := Identical.refl x
