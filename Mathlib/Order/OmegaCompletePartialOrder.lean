@@ -292,12 +292,12 @@ lemma IsLUB_of_ScottContinuous {c : Chain α} {f : α → β} (hf : ScottContinu
   apply hf
   exact Set.range_nonempty ↑c
   exact IsChain.directedOn (isChain_range c)
-  exact ωSup_IsLUB
+  exact IsLUB_range_ωSup c
 
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f := by
   constructor
   · intro c
-    rw [← (IsLUB_ωSup (IsLUB_of_ScottContinuous hf))]
+    rw [← (ωSup_eq_of_IsLUB (IsLUB_of_ScottContinuous hf))]
     simp only [OrderHom.coe_mk]
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
