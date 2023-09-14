@@ -55,7 +55,7 @@ from the `R.obj X`-module `P.presheaf.obj X` to the `R.obj Y`-module `P.presheaf
  -/
 def map (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     P.obj X →ₛₗ[R.map f] P.obj Y :=
-  { toAddHom := (P.presheaf.map f).toAddHom,
+  { P.presheaf.map f with
     map_smul' := P.map_smul f, }
 
 @[simp]
@@ -114,7 +114,7 @@ variable {P Q T : PresheafOfModules R}
 The `(X : Cᵒᵖ)`-component of morphism between presheaves of modules
 over a presheaf of rings `R`, as an `R.obj X`-linear map. -/
 def app (f : Hom P Q) (X : Cᵒᵖ) : P.obj X →ₗ[R.obj X] Q.obj X :=
-  { toAddHom := (f.hom.app X).toAddHom
+  { f.hom.app X with
     map_smul' := f.map_smul X }
 
 @[simp]
