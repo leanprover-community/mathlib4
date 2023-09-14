@@ -159,41 +159,36 @@ namespace Rel
 
 /-- a relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
   maximum length. -/
-class FiniteDimensional where
-  /-- the longest relation series-/
-  longestRelSeries : RelSeries r
-  /-- the longest relation series is longer than any other series -/
-  is_longest : ∀ (y : RelSeries r), y.length ≤ longestRelSeries.length
+class FiniteDimensional : Prop where
+  exists_longest_relSeries : ∃ (x : RelSeries r), ∀ (y : RelSeries r), y.length ≤ x.length
 
 /-- a relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
   length. -/
-class InfiniteDimensional where
-  /-- there should a relation series with length at least `n` for all natural number `n` -/
-  longRelSeries : ℕ → RelSeries r
-  /-- there should a relation series with length `n` for all natural number `n` -/
-  longRelSeries_length : ∀ (n : ℕ), (longRelSeries n).length = n
+class InfiniteDimensional : Prop where
+  exists_relSeries_with_length : ∀ (n : ℕ), ∃ (x : RelSeries r), x.length = n
 
 end Rel
 
 namespace RelSeries
 
 /-- the longest relational series when a relation is finite dimensional -/
-def longestOf [r.FiniteDimensional] : RelSeries r :=
-  (inferInstance : r.FiniteDimensional).longestRelSeries
+protected noncomputable def longestOf [r.FiniteDimensional] : RelSeries r :=
+  (inferInstance : r.FiniteDimensional).exists_longest_relSeries.choose
 
-lemma longest_is_longest [r.FiniteDimensional] (x : RelSeries r) :
-  x.length ≤ (RelSeries.longestOf r).length := (inferInstance : r.FiniteDimensional).is_longest _
+lemma longestOf_is_longest [r.FiniteDimensional] (x : RelSeries r) :
+    x.length ≤ (RelSeries.longestOf r).length :=
+  (inferInstance : r.FiniteDimensional).exists_longest_relSeries.choose_spec _
 
 /-- a relation series with length at least `n` if the relation is infinite dimensional -/
-protected def withLength [r.InfiniteDimensional] (n : ℕ) : RelSeries r :=
-  (inferInstance : r.InfiniteDimensional).longRelSeries n
+protected noncomputable def withLength [r.InfiniteDimensional] (n : ℕ) : RelSeries r :=
+  ((inferInstance : r.InfiniteDimensional).exists_relSeries_with_length n).choose
 
 @[simp] lemma withLength_length_eq [r.InfiniteDimensional] (n : ℕ) :
     (RelSeries.withLength r n).length = n :=
-  (inferInstance : r.InfiniteDimensional).longRelSeries_length n
+  ((inferInstance : r.InfiniteDimensional).exists_relSeries_with_length n).choose_spec
 
 /-- if a relation on `α` is infinite dimensional, then `α` is inhabited -/
-def inhabited_of_infiniteDimensional [r.InfiniteDimensional] : Inhabited α :=
+noncomputable def inhabited_of_infiniteDimensional [r.InfiniteDimensional] : Inhabited α :=
   ⟨(RelSeries.withLength r 0) 0⟩
 
 end RelSeries
@@ -218,35 +213,32 @@ abbrev LTSeries := RelSeries ((. < .) : Rel α α)
 namespace LTSeries
 
 /-- the longest  `<`-series when a type is finite dimensional -/
-protected def longestOf [FiniteDimensionalType α] : LTSeries α :=
-  (inferInstance : FiniteDimensionalType α).longestRelSeries
+protected noncomputable def longestOf [FiniteDimensionalType α] : LTSeries α :=
+  RelSeries.longestOf _
 
 /-- a `<`-series with length at least `n` if the relation is infinite dimensional -/
-protected def withLength [InfiniteDimensionalType α] (n : ℕ) : LTSeries α :=
-  ((inferInstance : InfiniteDimensionalType α).longRelSeries n)
+protected noncomputable def withLength [InfiniteDimensionalType α] (n : ℕ) : LTSeries α :=
+  RelSeries.withLength _ n
 
 lemma withLength_length_eq [InfiniteDimensionalType α] (n : ℕ) :
-  (LTSeries.withLength α n).length = n :=
-((inferInstance : InfiniteDimensionalType α).longRelSeries_length n)
+    (LTSeries.withLength α n).length = n :=
+  RelSeries.withLength_length_eq _ _
 
 /-- if `α` is infinite dimensional, then `α` is inhabited -/
-def inhabited_of_infiniteDimensionalType [InfiniteDimensionalType α] : Inhabited α :=
+noncomputable def inhabited_of_infiniteDimensionalType [InfiniteDimensionalType α] : Inhabited α :=
   ⟨(LTSeries.withLength α 0) 0⟩
 
 variable {α}
 
-lemma longest_is_longest [FiniteDimensionalType α] (x : LTSeries α) :
-  x.length ≤ (LTSeries.longestOf α).length :=
-(inferInstance : FiniteDimensionalType α).is_longest x
+lemma longestOf_is_longest [FiniteDimensionalType α] (x : LTSeries α) :
+    x.length ≤ (LTSeries.longestOf α).length :=
+  RelSeries.longestOf_is_longest _ _
 
-lemma longest_len_unique [FiniteDimensionalType α] (p : LTSeries α)
-  (is_longest : ∀ (q : LTSeries α), q.length ≤ p.length) :
-  p.length = (LTSeries.longestOf α).length :=
-le_antisymm (longest_is_longest _) (is_longest _)
+lemma longestOf_len_unique [FiniteDimensionalType α] (p : LTSeries α)
+    (is_longest : ∀ (q : LTSeries α), q.length ≤ p.length) :
+    p.length = (LTSeries.longestOf α).length :=
+  le_antisymm (longestOf_is_longest _) (is_longest _)
 
-lemma longest_len_unique' (H1 H2 : FiniteDimensionalType α) :
-  (@LTSeries.longestOf α _ H1).length = (@LTSeries.longestOf α _ H2).length :=
-le_antisymm (@longest_is_longest α _ H2 _) (@longest_is_longest α _ H1 _)
 
 lemma strictMono (x : LTSeries α) : StrictMono x :=
   fun _ _ h => x.rel_of_lt h
