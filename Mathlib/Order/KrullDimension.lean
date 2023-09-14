@@ -148,7 +148,7 @@ lemma le_of_strictComono_and_surj
     krullDim β ≤ krullDim α :=
 iSup_le $ λ p ↦ le_sSup ⟨p.comap _ hf hf', rfl⟩
 
-lemma eq_of_OrderIso (f : α ≃o β) : krullDim α = krullDim β := krullDimOfRel.eq_of_relIso
+lemma eq_of_orderIso (f : α ≃o β) : krullDim α = krullDim β := krullDimOfRel.eq_of_relIso
   ⟨f, fun {_ _} => f.lt_iff_lt⟩
 
 lemma eq_iSup_height : krullDim α = ⨆ (a : α), height α a := by
@@ -158,14 +158,14 @@ lemma eq_iSup_height : krullDim α = ⨆ (a : α), height α a := by
         λ j ↦ i.step j⟩, rfl⟩) $ iSup_le $ λ a ↦ le_of_strictMono Subtype.val $
           λ _ _ h ↦ h }
 
-lemma le_OrderDual : krullDim α ≤ krullDim αᵒᵈ :=
+lemma le_orderDual : krullDim α ≤ krullDim αᵒᵈ :=
   iSup_le $ λ i ↦ le_sSup $ ⟨i.rev, rfl⟩
 
-lemma OrderDual_le : krullDim αᵒᵈ ≤ krullDim α :=
-  le_OrderDual.trans $ le_of_strictMono
+lemma orderDual_le : krullDim αᵒᵈ ≤ krullDim α :=
+  le_orderDual.trans $ le_of_strictMono
     (OrderDual.ofDual ∘ OrderDual.ofDual) $ λ _ _ h ↦ h
 
-lemma eq_OrderDual : krullDim α = krullDim αᵒᵈ :=
-  le_antisymm le_OrderDual $ OrderDual_le
+lemma eq_orderDual : krullDim α = krullDim αᵒᵈ :=
+  le_antisymm le_orderDual $ orderDual_le
 
 end krullDim

@@ -35,7 +35,7 @@ namespace ringKrullDim
 
 lemma eq_topologicalKrullDim (R : Type _) [CommRing R] :
   ringKrullDim R = topologicalKrullDim (PrimeSpectrum R) :=
-Eq.symm $ krullDim.eq_OrderDual.trans $ krullDim.eq_of_OrderIso $ OrderIso.symm {
+Eq.symm $ krullDim.eq_orderDual.trans $ krullDim.eq_of_orderIso $ OrderIso.symm {
   toFun := OrderDual.toDual ∘ λ p ↦ ⟨PrimeSpectrum.zeroLocus p.asIdeal,
     PrimeSpectrum.isClosed_zeroLocus p.asIdeal, (PrimeSpectrum.isIrreducible_zeroLocus_iff _).mpr
       $ by simpa only [p.IsPrime.radical] using p.IsPrime⟩
@@ -192,7 +192,7 @@ theorem primeIdealHeight_eq_ringKrullDim_of_Localization :
   height (PrimeSpectrum R) 𝔭 = ringKrullDim (Localization.AtPrime 𝔭.asIdeal) :=
 let e := (IsLocalization.orderIsoOfPrime (𝔭.asIdeal.primeCompl)
     (Localization.AtPrime 𝔭.asIdeal))
-krullDim.eq_of_OrderIso
+krullDim.eq_of_orderIso
 { toFun := λ I ↦ let J := e.symm ⟨I.1.1, I.1.2, by
       rw [Set.disjoint_iff_inter_eq_empty, Set.eq_empty_iff_forall_not_mem]
       rintro r ⟨h1, h2⟩
@@ -210,6 +210,5 @@ krullDim.eq_of_OrderIso
     · exact h1 $ I₂.2 h2 }
 
 end aboutHeightAndLocalization
-
 
 end ringKrullDim
