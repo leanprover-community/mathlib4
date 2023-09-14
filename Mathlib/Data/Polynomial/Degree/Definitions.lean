@@ -1096,7 +1096,7 @@ theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {g : R[X]}
   obtain h | hdg' := lt_or_le dg dg'
   · rw [coeff_eq_zero_of_natDegree_lt (hdg.trans_lt h), mul_zero]
   obtain ⟨rfl, rfl⟩ :=
-    eq_and_eq_of_le_of_le_of_add_le hdf' hdg' (Finset.Nat.mem_antidiagonal.1 hmem).ge
+    (add_eq_add_iff_eq_and_eq hdf' hdg').mp (Finset.Nat.mem_antidiagonal.1 hmem)
   exact (hne rfl).elim
 
 theorem zero_le_degree_iff : 0 ≤ degree p ↔ p ≠ 0 := by
