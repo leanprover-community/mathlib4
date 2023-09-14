@@ -1749,7 +1749,7 @@ private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : 
   Nat.ceil_pos.2
 
 /-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
- @[positivity ⌈ _ ⌉₊]
+@[positivity ⌈ _ ⌉₊]
 def evalNatCeil : PositivityExt where eval {_u _α} _zα _pα e := do
   let (.app (.app (.app (.app _ (α' : Q(Type))) _) _) a) ← whnfR e
     | throwError "failed to match on Nat.ceil application"
@@ -1763,7 +1763,7 @@ private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 
   Int.ceil_pos.2
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
- @[positivity ⌈ _ ⌉]
+@[positivity ⌈ _ ⌉]
 def evalIntCeil : PositivityExt where eval {_u _α} _zα _pα e := do
   let (.app (.app (.app (.app _ (α' : Q(Type))) _) _) a) ← whnfR e
     | throwError "failed to match on Int.ceil application"
