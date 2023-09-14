@@ -103,8 +103,8 @@ theorem mk.eta {R : Type*} {c₁ c₂} (a : ℍ[R,c₁,c₂]) : mk a.1 a.2 a.3 a
 variable {S T R : Type*} [CommRing R] {c₁ c₂ : R} (r x y z : R) (a b c : ℍ[R,c₁,c₂])
 
 instance : Nonempty ℍ[R, c₁, c₂] := ⟨⟨c₁,c₁,c₁,c₁⟩⟩
-instance [Subsingleton R] : Subsingleton ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).injective.subsingleton
-instance [Nontrivial R] : Nontrivial ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).symm.injective.nontrivial
+instance [Subsingleton R] : Subsingleton ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).subsingleton
+instance [Nontrivial R] : Nontrivial ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).surjective.nontrivial
 
 /-- The imaginary part of a quaternion. -/
 def im (x : ℍ[R,c₁,c₂]) : ℍ[R,c₁,c₂] :=
