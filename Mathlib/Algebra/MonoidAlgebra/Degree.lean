@@ -113,7 +113,7 @@ theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤
 theorem le_inf_support_mul {degt : A → T} (degtm : ∀ {a b}, degt a + degt b ≤ degt (a + b))
     (f g : AddMonoidAlgebra R A) :
     f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt := by
-    refine' OrderDual.ofDual_le_ofDual.mpr <| sup_support_mul_le (_) f g
+    refine' OrderDual.ofDual_le_ofDual.mpr <| sup_support_mul_le _ f g
     intros a b
     exact OrderDual.ofDual_le_ofDual.mp degtm
 #align add_monoid_algebra.le_inf_support_mul AddMonoidAlgebra.le_inf_support_mul
@@ -190,7 +190,7 @@ theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
     (m.map fun f : AddMonoidAlgebra R A => f.support.inf degt).sum ≤ m.prod.support.inf degt := by
   refine' OrderDual.ofDual_le_ofDual.mpr <|
     sup_support_multiset_prod_le (OrderDual.ofDual_le_ofDual.mp _)
-      (fun a b => OrderDual.ofDual_le_ofDual.mp (_)) m
+      (fun a b => OrderDual.ofDual_le_ofDual.mp _) m
   exact degt0
   exact degtm _ _
 #align add_monoid_algebra.le_inf_support_multiset_prod AddMonoidAlgebra.le_inf_support_multiset_prod
