@@ -645,8 +645,8 @@ instance (priority := 75) toLinearOrderedCancelCommMonoid {M} [LinearOrderedCanc
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
-def subtype : S' →* M :=
-  ⟨(⟨Subtype.val, rfl⟩ : OneHom S' M), by simp⟩
+def subtype : S' →* M where
+  toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 #align submonoid_class.subtype SubmonoidClass.subtype
 #align add_submonoid_class.subtype AddSubmonoidClass.subtype
 
@@ -778,8 +778,8 @@ instance toLinearOrderedCancelCommMonoid {M} [LinearOrderedCancelCommMonoid M] (
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
-def subtype : S →* M :=
-  ⟨(⟨Subtype.val, rfl⟩ : OneHom S M), by simp⟩
+def subtype : S →* M where
+  toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 #align submonoid.subtype Submonoid.subtype
 #align add_submonoid.subtype AddSubmonoid.subtype
 
@@ -953,7 +953,7 @@ theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Submonoid M) :
 
 @[to_additive (attr := simp)]
 theorem map_equiv_top (f : M ≃* N) : (⊤ : Submonoid M).map f.toMonoidHom = ⊤ :=
-  SetLike.coe_injective <| Set.image_univ.trans (Function.Surjective.range_eq f.surjective)
+  SetLike.coe_injective <| Set.image_univ.trans f.surjective.range_eq
 #align submonoid.map_equiv_top Submonoid.map_equiv_top
 #align add_submonoid.map_equiv_top AddSubmonoid.map_equiv_top
 
@@ -1243,6 +1243,12 @@ theorem mker_inr : mker (inr M N) = ⊥ := by
   simp [mem_mker]
 #align monoid_hom.mker_inr MonoidHom.mker_inr
 #align add_monoid_hom.mker_inr AddMonoidHom.mker_inr
+
+@[to_additive (attr := simp)]
+lemma mker_fst : mker (fst M N) = .prod ⊥ ⊤ := SetLike.ext fun _ => (and_true_iff _).symm
+
+@[to_additive (attr := simp)]
+lemma mker_snd : mker (snd M N) = .prod ⊤ ⊥ := SetLike.ext fun _ => (true_and_iff _).symm
 
 /-- The `MonoidHom` from the preimage of a submonoid to itself. -/
 @[to_additive (attr := simps)

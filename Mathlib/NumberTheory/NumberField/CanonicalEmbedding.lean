@@ -4,20 +4,24 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.RingTheory.Discriminant
 
 #align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
 
 /-!
 # Canonical embedding of a number field
 
-The canonical embedding of a number field `K` of signature `(r₁, r₂)` is the ring homomorphism
-`K →+* ℝ^r₁ × ℂ^r₂` that sends `x ∈ K` to `(φ_₁(x),...,φ_r₁(x)) × (ψ_₁(x),..., ψ_r₂(x))` where
-`φ_₁,...,φ_r₁` are its real embeddings and `ψ_₁,..., ψ_r₂` are its complex embeddings (up to
-complex conjugation).
+The canonical embedding of a number field `K` of degree `n` is the ring homomorphism
+`K →+* ℂ^n` that sends `x ∈ K` to `(φ_₁(x),...,φ_n(x))` where the `φ_i`'s are the complex
+embeddings of `K`. Note that we do not choose an ordering of the embeddings, but instead map `K`
+into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex embeddings.
 
 ## Main definitions and results
 
-* `NumberField.canonicalEmbedding.integerLattice.inter_ball_finite`: the intersection of the
+* `canonicalEmbedding`: the ring homorphism `K →+* ((K →+* ℂ) → ℂ)` defined by sending `x : K` to
+the vector `(φ x)` indexed by `φ : K →+* ℂ`.
+
+* `canonicalEmbedding.integerLattice.inter_ball_finite`: the intersection of the
 image of the ring of integers by the canonical embedding and any ball centered at `0` of finite
 radius is finite.
 
@@ -26,159 +30,118 @@ radius is finite.
 number field, infinite places
 -/
 
-
-noncomputable section
-
-open Function FiniteDimensional Finset Fintype NumberField NumberField.InfinitePlace Metric Module
-
-open scoped Classical NumberField
-
 variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
 
--- The ambient space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`.
-set_option quotPrecheck false in -- Porting note: Added.
-scoped[CanonicalEmbedding]
-  notation "E" =>
-    ({ w : InfinitePlace K // IsReal w } → ℝ) × ({ w : InfinitePlace K // IsComplex w } → ℂ)
+open NumberField
 
-open CanonicalEmbedding
-
-theorem space_rank [NumberField K] : finrank ℝ E = finrank ℚ K := by
-  haveI : Module.Free ℝ ℂ := inferInstance
-  rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const,
-    Finset.card_univ, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
-    ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ, Fintype.card_subtype_compl,
-    Nat.add_sub_of_le (Fintype.card_subtype_le _)]
-#align number_field.canonical_embedding.space_rank NumberField.canonicalEmbedding.space_rank
-
-theorem nontrivial_space [NumberField K] : Nontrivial E := by
-  have : Nonempty <| InfinitePlace K := inferInstance
-  rcases this with ⟨w⟩
-  obtain hw | hw := w.isReal_or_isComplex
-  · haveI : Nonempty { w : InfinitePlace K // IsReal w } := ⟨⟨w, hw⟩⟩
-    exact nontrivial_prod_left
-  · haveI : Nonempty { w : InfinitePlace K // IsComplex w } := ⟨⟨w, hw⟩⟩
-    exact nontrivial_prod_right
-#align number_field.canonical_embedding.non_trivial_space NumberField.canonicalEmbedding.nontrivial_space
-
-/-- The canonical embedding of a number field `K` of signature `(r₁, r₂)` into `ℝ^r₁ × ℂ^r₂`. -/
-def _root_.NumberField.canonicalEmbedding : K →+* E :=
-  RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
-    (Pi.ringHom fun w => w.val.embedding)
-#align number_field.canonical_embedding NumberField.canonicalEmbedding
+/-- The canonical embedding of a number field `K` of degree `n` into `ℂ^n`. -/
+def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ => φ
 
 theorem _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
-    Injective (NumberField.canonicalEmbedding K) :=
-  @RingHom.injective _ _ _ _ (nontrivial_space K) _
-#align number_field.canonical_embedding_injective NumberField.canonicalEmbedding_injective
-
-open NumberField
+    Function.Injective (NumberField.canonicalEmbedding K) := RingHom.injective _
 
 variable {K}
 
 @[simp]
-theorem apply_at_real_infinitePlace (w : { w : InfinitePlace K // IsReal w }) (x : K) :
-    (NumberField.canonicalEmbedding K x).1 w = embedding_of_isReal w.prop x := by
-  simp only [canonicalEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
-#align number_field.canonical_embedding.apply_at_real_infinite_place NumberField.canonicalEmbedding.apply_at_real_infinitePlace
+theorem apply_at (φ : K →+* ℂ) (x : K) : (NumberField.canonicalEmbedding K x) φ = φ x := rfl
 
-@[simp]
-theorem apply_at_complex_infinitePlace (w : { w : InfinitePlace K // IsComplex w }) (x : K) :
-    (NumberField.canonicalEmbedding K x).2 w = embedding w.val x := by
-  simp only [canonicalEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
-#align number_field.canonical_embedding.apply_at_complex_infinite_place NumberField.canonicalEmbedding.apply_at_complex_infinitePlace
+open scoped ComplexConjugate
+
+/-- The image of `canonicalEmbedding` lives in the `ℝ`-submodule of the `x ∈ ((K →+* ℂ) → ℂ)` such
+that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`. -/
+theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
+    (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
+    conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
+  refine Submodule.span_induction hx ?_ ?_ (fun _ _ hx hy => ?_) (fun a _ hx => ?_)
+  · rintro _ ⟨x, rfl⟩
+    rw [apply_at, apply_at, ComplexEmbedding.conjugate_coe_eq]
+  · rw [Pi.zero_apply, Pi.zero_apply, map_zero]
+  · rw [Pi.add_apply, Pi.add_apply, map_add, hx, hy]
+  · rw [Pi.smul_apply, Complex.real_smul, map_mul, Complex.conj_ofReal]
+    exact congrArg ((a : ℂ) * ·) hx
 
 theorem nnnorm_eq [NumberField K] (x : K) :
-    ‖canonicalEmbedding K x‖₊ =
-      Finset.univ.sup fun w : InfinitePlace K => ⟨w x, map_nonneg w x⟩ := by
-  rw [Prod.nnnorm_def', Pi.nnnorm_def, Pi.nnnorm_def]
-  rw [(_ : Finset.univ =
-        {w : InfinitePlace K | IsReal w}.toFinset ∪ {w : InfinitePlace K | IsComplex w}.toFinset)]
-  · rw [Finset.sup_union, sup_eq_max]
-    refine' congr_arg₂ _ _ _
-    · convert
-        (Finset.univ.sup_map (Function.Embedding.subtype fun w : InfinitePlace K => IsReal w)
-          fun w => (⟨w x, map_nonneg w x⟩ : NNReal)).symm using 2
-      ext w
-      dsimp
-      rw [apply_at_real_infinitePlace, ← Complex.abs_ofReal, embedding_of_isReal_apply,
-        ← Complex.norm_eq_abs, norm_embedding_eq]
-    · convert
-        (Finset.univ.sup_map (Function.Embedding.subtype fun w : InfinitePlace K => IsComplex w)
-          fun w => (⟨w x, map_nonneg w x⟩ : NNReal)).symm using 2
-      ext w
-      dsimp
-      rw [apply_at_complex_infinitePlace, ← Complex.norm_eq_abs, norm_embedding_eq]
-  · ext w
-    simp_rw [Finset.mem_univ, Finset.mem_union, Set.mem_toFinset, Set.mem_setOf_eq,
-      w.isReal_or_isComplex]
-#align number_field.canonical_embedding.nnnorm_eq NumberField.canonicalEmbedding.nnnorm_eq
+    ‖canonicalEmbedding K x‖₊ = Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
+  simp_rw [Pi.nnnorm_def, apply_at]
 
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
-    ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ w : InfinitePlace K, w x ≤ r := by
+    ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
   obtain hr | hr := lt_or_le r 0
-  · have : Nonempty <| InfinitePlace K := inferInstance
-    rcases this with ⟨w⟩
-    exact iff_of_false
-      (hr.trans_le <| norm_nonneg _).not_le fun h => hr.not_le <| (map_nonneg w _).trans <| h _
+  · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
+    refine iff_of_false ?_ ?_
+    exact (hr.trans_le (norm_nonneg _)).not_le
+    exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr
     simp_rw [← coe_nnnorm, nnnorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
-      forall_true_left, ← NNReal.coe_le_coe, NNReal.toReal]
-#align number_field.canonical_embedding.norm_le_iff NumberField.canonicalEmbedding.norm_le_iff
+      forall_true_left]
 
 variable (K)
 
-/-- The image of `𝓞 K` as a subring of `ℝ^r₁ × ℂ^r₂`. -/
-def integerLattice : Subring E :=
+/-- The image of `𝓞 K` as a subring of `ℂ^n`. -/
+def integerLattice : Subring ((K →+* ℂ) → ℂ) :=
   (RingHom.range (algebraMap (𝓞 K) K)).map (canonicalEmbedding K)
-#align number_field.canonical_embedding.integer_lattice NumberField.canonicalEmbedding.integerLattice
-
--- Porting note: See https://github.com/leanprover-community/mathlib4/issues/5028
-set_option maxHeartbeats 400000 in
-set_option synthInstance.maxHeartbeats 50000 in
-/-- The linear equiv between `𝓞 K` and the integer lattice. -/
-def equivIntegerLattice [NumberField K] : 𝓞 K ≃ₗ[ℤ] integerLattice K :=
-  LinearEquiv.ofBijective
-    { toFun := fun x => (by
-          refine ⟨canonicalEmbedding K (algebraMap (𝓞 K) K x), ⟨algebraMap (𝓞 K) K x, ⟨?_, rfl⟩⟩⟩
-          simp only [Subsemiring.coe_carrier_toSubmonoid, Subring.coe_toSubsemiring,
-            RingHom.coe_range, Set.mem_range, exists_apply_eq_apply] )
-      map_add' := fun x y => (by
-          apply Subtype.eq
-          simp [map_add] )
-      map_smul' := fun c x => (by
-          simp only [RingHom.id_apply, zsmul_eq_mul, RingHom.map_mul, map_intCast]
-          rfl ) }
-   (by
-    refine ⟨fun _ _ h => ?_, fun ⟨_, ⟨_, ⟨⟨a, rfl⟩, rfl⟩⟩⟩ => ⟨a, rfl⟩⟩
-    dsimp only at h
-    rw [LinearMap.coe_mk, Subtype.mk_eq_mk] at h
-    exact IsFractionRing.injective (𝓞 K) K (canonicalEmbedding_injective K h))
-#align number_field.canonical_embedding.equiv_integer_lattice NumberField.canonicalEmbedding.equivIntegerLattice
 
 theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
-    ((integerLattice K : Set E) ∩ closedBall 0 r).Finite := by
+    ((integerLattice K : Set ((K →+* ℂ) → ℂ)) ∩ Metric.closedBall 0 r).Finite := by
   obtain hr | _ := lt_or_le r 0
-  · simp [closedBall_eq_empty.2 hr]
-  have heq : ∀ x, canonicalEmbedding K x ∈ closedBall (0 : E) r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
-    simp_rw [← place_apply, mem_closedBall_zero_iff, norm_le_iff, le_iff_le, place_apply,
-      implies_true]
-  convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
-  ext; constructor
-  · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx2⟩
-    exact ⟨x, ⟨SetLike.coe_mem x, (heq x).mp hx2⟩, rfl⟩
-  · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
-    exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (heq x).mpr hx2⟩
-#align number_field.canonical_embedding.integer_lattice.inter_ball_finite NumberField.canonicalEmbedding.integerLattice.inter_ball_finite
+  · simp [Metric.closedBall_eq_empty.2 hr]
+  · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
+        ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
+      intro x; rw [← norm_le_iff, mem_closedBall_zero_iff]
+    convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
+    ext; constructor
+    · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
+      exact ⟨↑x, ⟨SetLike.coe_mem x, fun φ => (heq x).mp hx φ⟩, rfl⟩
+    · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
+      exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (heq x).mpr hx2⟩
 
-instance [NumberField K] : Countable (integerLattice K) := by
-  have : (⋃ n : ℕ, (integerLattice K : Set E) ∩ closedBall 0 n).Countable :=
-    Set.countable_iUnion fun n => (integerLattice.inter_ball_finite K n).countable
-  refine' (this.mono _).to_subtype
-  rintro _ ⟨x, hx, rfl⟩
-  rw [Set.mem_iUnion]
-  exact ⟨⌈‖canonicalEmbedding K x‖⌉₊, ⟨x, hx, rfl⟩, mem_closedBall_zero_iff.2 (Nat.le_ceil _)⟩
+open Module Fintype FiniteDimensional
+
+/-- A `ℂ`-basis of `ℂ^n` that is also a `ℤ`-basis of the `integerLattice`. -/
+noncomputable def latticeBasis [NumberField K] :
+    Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℂ ((K →+* ℂ) → ℂ) := by
+  classical
+  -- Let `B` be the canonical basis of `(K →+* ℂ) → ℂ`. We prove that the determinant of
+  -- the image by `canonicalEmbedding` of the integral basis of `K` is nonzero. This
+  -- will imply the result.
+    let B := Pi.basisFun ℂ (K →+* ℂ)
+    let e : (K →+* ℂ) ≃ Free.ChooseBasisIndex ℤ (𝓞 K) :=
+      equivOfCardEq ((Embeddings.card K ℂ).trans (finrank_eq_card_basis (integralBasis K)))
+    let M := B.toMatrix (fun i => canonicalEmbedding K (integralBasis K (e i)))
+    suffices M.det ≠ 0 by
+      rw [← isUnit_iff_ne_zero, ← Basis.det_apply, ← is_basis_iff_det] at this
+      refine basisOfLinearIndependentOfCardEqFinrank
+        ((linearIndependent_equiv e.symm).mpr this.1) ?_
+      rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_fintype_fun_eq_card,
+        Embeddings.card]
+  -- In order to prove that the determinant is nonzero, we show that it is equal to the
+  -- square of the discriminant of the integral basis and thus it is not zero
+    let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
+      RingHom.equivRatAlgHom
+    rw [show M = N.transpose by { ext:2; rfl }]
+    rw [Matrix.det_transpose, ← @pow_ne_zero_iff ℂ _ _ _ 2 (by norm_num)]
+    convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
+      (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
+    rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
+    exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
+      (fun i => integralBasis K (e i)) RingHom.equivRatAlgHom).symm
+
+@[simp]
+theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
+    latticeBasis K i = (canonicalEmbedding K) (integralBasis K i) := by
+  simp only [latticeBasis, integralBasis_apply, coe_basisOfLinearIndependentOfCardEqFinrank,
+    Function.comp_apply, Equiv.apply_symm_apply]
+
+theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
+    x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ canonicalEmbedding K '' (𝓞 K) := by
+  rw [show Set.range (latticeBasis K) =
+      (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+  rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
+  rw [show (Submodule.span ℤ (Set.range (integralBasis K)) : Set K) = 𝓞 K by
+    ext; exact mem_span_integralBasis K]
+  rfl
 
 end NumberField.canonicalEmbedding

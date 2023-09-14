@@ -168,10 +168,10 @@ theorem boundedSpace_val_set_iff {s : Set α} : BoundedSpace s ↔ IsBounded s :
   boundedSpace_subtype_iff
 #align bounded_space_coe_set_iff boundedSpace_val_set_iff
 
-alias boundedSpace_subtype_iff ↔ _ Bornology.IsBounded.boundedSpace_subtype
+alias ⟨_, Bornology.IsBounded.boundedSpace_subtype⟩ := boundedSpace_subtype_iff
 #align bornology.is_bounded.bounded_space_subtype Bornology.IsBounded.boundedSpace_subtype
 
-alias boundedSpace_val_set_iff ↔ _ Bornology.IsBounded.boundedSpace_val
+alias ⟨_, Bornology.IsBounded.boundedSpace_val⟩ := boundedSpace_val_set_iff
 #align bornology.is_bounded.bounded_space_coe Bornology.IsBounded.boundedSpace_val
 
 instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=

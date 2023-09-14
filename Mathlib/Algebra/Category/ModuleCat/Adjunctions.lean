@@ -124,7 +124,7 @@ theorem left_unitality (X : Type u) :
   change q x' = Finsupp.mapDomain (λ_ X).hom (finsuppTensorFinsupp' R (𝟙_ (Type u)) X
     (Finsupp.single PUnit.unit 1 ⊗ₜ[R] Finsupp.single x 1)) x'
   simp_rw [finsuppTensorFinsupp'_single_tmul_single,
-    ModuleCat.MonoidalCategory.leftUnitor_hom_apply, Finsupp.smul_single', mul_one,
+    ModuleCat.MonoidalCategory.leftUnitor_hom_apply, mul_one,
     Finsupp.mapDomain_single, CategoryTheory.leftUnitor_hom_apply, one_smul]
 #align Module.free.left_unitality ModuleCat.Free.left_unitality
 
@@ -145,7 +145,7 @@ theorem right_unitality (X : Type u) :
   change q x' = Finsupp.mapDomain (ρ_ X).hom (finsuppTensorFinsupp' R X (𝟙_ (Type u))
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single PUnit.unit 1)) x'
   simp_rw [finsuppTensorFinsupp'_single_tmul_single,
-    ModuleCat.MonoidalCategory.rightUnitor_hom_apply, Finsupp.smul_single', mul_one,
+    ModuleCat.MonoidalCategory.rightUnitor_hom_apply, mul_one,
     Finsupp.mapDomain_single, CategoryTheory.rightUnitor_hom_apply, one_smul]
 #align Module.free.right_unitality ModuleCat.Free.right_unitality
 
@@ -270,7 +270,7 @@ instance categoryFree : Category (Free R C) where
     -- This imitates the proof of associativity for `MonoidAlgebra`.
     simp only [sum_sum_index, sum_single_index, single_zero, single_add, eq_self_iff_true,
       forall_true_iff, forall₃_true_iff, add_mul, mul_add, Category.assoc, mul_assoc,
-      MulZeroClass.zero_mul, MulZeroClass.mul_zero, sum_zero, sum_add]
+      zero_mul, mul_zero, sum_zero, sum_add]
 #align category_theory.category_Free CategoryTheory.categoryFree
 
 namespace Free

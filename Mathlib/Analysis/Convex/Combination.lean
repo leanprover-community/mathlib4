@@ -206,7 +206,7 @@ theorem Convex.finsum_mem {ι : Sort*} {w : ι → R} {z : ι → E} {s : Set E}
     exact zero_ne_one h₁
   have hsub : support ((fun i => w i • z i) ∘ PLift.down) ⊆ hfin_w.toFinset :=
     (support_smul_subset_left _ _).trans hfin_w.coe_toFinset.ge
-  rw [finsum_eq_sum_pLift_of_support_subset hsub]
+  rw [finsum_eq_sum_plift_of_support_subset hsub]
   refine' hs.sum_mem (fun _ _ => h₀ _) _ fun i hi => hz _ _
   · rwa [finsum, dif_pos hfin_w] at h₁
   · rwa [hfin_w.mem_toFinset] at hi

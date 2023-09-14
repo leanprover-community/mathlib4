@@ -782,8 +782,7 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl
   have hnil : ∀ n, f n ≠ List.nil := fun n con =>
     hf1.2 n n.succ n.lt_succ_self (con.symm ▸ List.SublistForall₂.nil)
   have : ∀ n, (f n).headI ∈ s
-  · simp only [Set.range_subset_iff, Function.comp_apply]
-    exact fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
+  · exact fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
   obtain ⟨g, hg⟩ := h.exists_monotone_subseq (fun n => (f n).headI) this
   have hf' :=
     hf2 (g 0) (fun n => if n < g 0 then f n else List.tail (f (g (n - g 0))))
@@ -845,8 +844,8 @@ theorem Pi.isPwo {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
 section ProdLex
 variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {g : γ → β} {s : Set γ}
 
-/-- Stronger version of `prod.lex_wf`. Instead of requiring `rβ on g` to be well-founded, we only
-require it to be well-founded on fibers of `f`.-/
+/-- Stronger version of `WellFounded.prod_lex`. Instead of requiring `rβ on g` to be well-founded,
+we only require it to be well-founded on fibers of `f`.-/
 theorem WellFounded.prod_lex_of_wellFoundedOn_fiber (hα : WellFounded (rα on f))
     (hβ : ∀ a, (f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
     WellFounded (Prod.Lex rα rβ on fun c => (f c, g c)) := by
@@ -874,7 +873,7 @@ section SigmaLex
 
 variable {rι : ι → ι → Prop} {rπ : ∀ i, π i → π i → Prop} {f : γ → ι} {g : ∀ i, γ → π i} {s : Set γ}
 
-/-- Stronger version of `psigma.lex_wf`. Instead of requiring `rπ on g` to be well-founded, we only
+/-- Stronger version of `PSigma.lex_wf`. Instead of requiring `rπ on g` to be well-founded, we only
 require it to be well-founded on fibers of `f`.-/
 theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on f))
     (hπ : ∀ i, (f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :

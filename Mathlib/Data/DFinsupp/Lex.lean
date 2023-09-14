@@ -164,7 +164,7 @@ instance Lex.covariantClass_lt_left :
 
 instance Lex.covariantClass_le_left :
     CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (· + ·) (· ≤ ·) :=
-  Add.to_covariantClass_left _
+  covariantClass_le_of_lt _ _ _
 #align dfinsupp.lex.covariant_class_le_left DFinsupp.Lex.covariantClass_le_left
 
 end Left
@@ -181,11 +181,41 @@ instance Lex.covariantClass_lt_right :
 
 instance Lex.covariantClass_le_right :
     CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap (· + ·)) (· ≤ ·) :=
-  Add.to_covariantClass_right _
+  covariantClass_le_of_lt _ _ _
 #align dfinsupp.lex.covariant_class_le_right DFinsupp.Lex.covariantClass_le_right
 
 end Right
 
 end Covariants
+
+section OrderedAddMonoid
+
+variable [LinearOrder ι]
+
+instance Lex.orderBot [∀ i, CanonicallyOrderedAddMonoid (α i)] : OrderBot (Lex (Π₀ i, α i)) where
+  bot := 0
+  bot_le _ := DFinsupp.toLex_monotone bot_le
+
+instance Lex.orderedAddCancelCommMonoid [∀ i, OrderedCancelAddCommMonoid (α i)] :
+    OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
+  add_le_add_left _ _ h _ := add_le_add_left (α := Lex (∀ i, α i)) h _
+  le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (∀ i, α i))
+
+instance Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
+    OrderedAddCommGroup (Lex (Π₀ i, α i)) where
+  add_le_add_left _ _ := add_le_add_left
+
+instance Lex.linearOrderedCancelAddCommMonoid
+    [∀ i, LinearOrderedCancelAddCommMonoid (α i)] :
+    LinearOrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
+  __ := (inferInstance : LinearOrder (Lex (Π₀ i, α i)))
+  __ := (inferInstance : OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)))
+
+instance Lex.linearOrderedAddCommGroup [∀ i, LinearOrderedAddCommGroup (α i)] :
+    LinearOrderedAddCommGroup (Lex (Π₀ i, α i)) where
+  __ := (inferInstance : LinearOrder (Lex (Π₀ i, α i)))
+  add_le_add_left _ _ := add_le_add_left
+
+end OrderedAddMonoid
 
 end DFinsupp
