@@ -17,6 +17,17 @@ import Mathlib.LinearAlgebra.Isomorphisms
 In this file we prove that divisible groups are injective object in category of (additive) abelian
 groups and that the category of abelian groups has enough injective objects.
 
+## Main results
+
+- `AddCommGroupCat.injective_of_divisible` : a divisible group is also an injective object.
+- `AddCommGroupCat.enoughInjectives` : the category of abelian groups has enough injectives.
+
+## Implementation notes
+
+The details of the proof that the category of abelian groups has enough injectives is hidden
+inside the namespace `AddCommGroup.enough_injectives_aux_proofs`. These are not marked `private`,
+but are not supposed to be used directly.
+
 -/
 
 
@@ -417,7 +428,7 @@ lemma toNext_inj : Function.Injective $ toNext A_ := by
 
 end enough_injectives_aux_proofs
 
-instance : CategoryTheory.EnoughInjectives (AddCommGroupCat.{u}) where
+instance enoughInjectives : CategoryTheory.EnoughInjectives (AddCommGroupCat.{u}) where
   presentation A_ := ⟨enough_injectives_aux_proofs.presentation A_⟩
 
 end AddCommGroupCat
