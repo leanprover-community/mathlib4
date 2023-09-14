@@ -73,6 +73,17 @@ abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Modu
     Hom.toIsometry (𝟙 M) = QuadraticForm.Isometry.id _ :=
   rfl
 
+/-- Build an isomorphism in the category `QuadraticModuleCat Q` from a
+`QuadraticForm.IsometryEquiv`. -/
+@[simps]
+def ofIso {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+    {Q₁ : QuadraticForm R X} {Q₂ : QuadraticForm R X} (e : Q₁.IsometryEquiv Q₂) :
+    QuadraticModuleCat.of Q₁ ≅ QuadraticModuleCat.of Q₂ where
+  hom := ⟨e.toIsometry⟩
+  inv := ⟨e.symm.toIsometry⟩
+  hom_inv_id := Hom.ext _ _ <| FunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext _ _ <| FunLike.ext _ _ e.right_inv
+
 instance concreteCategory : ConcreteCategory.{v} (QuadraticModuleCat.{v} R) where
   forget :=
     { obj := fun M => M
