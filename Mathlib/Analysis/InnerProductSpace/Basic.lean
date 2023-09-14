@@ -2317,8 +2317,8 @@ namespace UniformSpace.Completion
 open UniformSpace Function
 
 instance toInner {𝕜' E' : Type*} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
-    Inner 𝕜' (Completion E')
-    where inner := curry <| (denseInducing_coe.prod denseInducing_coe).extend (uncurry inner)
+    Inner 𝕜' (Completion E') where
+  inner := curry <| (denseInducing_coe.prod denseInducing_coe).extend (uncurry inner)
 
 @[simp]
 theorem inner_coe (a b : E) : inner (a : Completion E) (b : Completion E) = (inner a b : 𝕜) :=
