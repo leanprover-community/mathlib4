@@ -141,8 +141,6 @@ universe uR uS uA uB uC uD uE uF
 variable {R : Type uR} {S : Type uS}
 variable {A : Type uA} {B : Type uB} {C : Type uC} {D : Type uD} {E : Type uE} {F : Type uF}
 
-section Semiring
-
 /-!
 ### The `R`-algebra structure on `A ⊗[R] B`
 -/
