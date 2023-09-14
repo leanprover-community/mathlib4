@@ -44,12 +44,6 @@ jobs:
       - name: Look for ignored files
         uses: credfeto/action-no-ignored-files@v1.1.0
 
-      - name: Install bibtool
-        if: ${{ 'bors' == 'ubuntu-latest' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y bibtool
-
       - name: install Python
         if: ${{ 'bors' == 'ubuntu-latest' }}
         uses: actions/setup-python@v4
@@ -59,6 +53,12 @@ jobs:
       - name: lint
         run: |
           ./scripts/lint-style.sh
+
+      - name: Install bibtool
+        if: ${{ 'bors' == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bibtool
 
       - name: lint references.bib
         run: |
@@ -214,7 +214,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.LEAN_PR_TESTING }}
           GITHUB_CONTEXT: ${{ toJson(github) }}
-          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
+          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
           BUILD_OUTCOME: ${{ steps.build.outcome }}
