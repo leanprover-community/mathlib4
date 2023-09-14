@@ -36,7 +36,7 @@ instance (priority := 100) GCDMonoid.toIsIntegrallyClosed : IsIntegrallyClosed R
   ⟨fun {X} ⟨p, hp₁, hp₂⟩ => by
     obtain ⟨x, y, hg, he⟩ := IsLocalization.surj_of_gcd_domain (nonZeroDivisors R) X
     have :=
-      Polynomial.dvd_pow_natDegree_of_eval₂_eq_zero (IsFractionRing.injective R <| A)
+      Polynomial.dvd_pow_natDegree_of_eval₂_eq_zero (IsFractionRing.injective R A)
         hp₁ y x _ hp₂ (by rw [mul_comm, he])
     have : IsUnit y := by
       rw [isUnit_iff_dvd_one, ← one_pow]

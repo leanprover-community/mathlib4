@@ -31,18 +31,18 @@ integral over `R`. A special case of integrally closed rings are the Dedekind do
 The following definitions are closely related, especially in their applications in Mathlib.
 
 A *normal domain* is a domain that is integrally closed in its field of fractions.
-[Stacks: normal domain](https://stacks.math.columbia.edu/tag/0309)
-Normal domains are the major usecase of `IsIntegrallyClosed` at the time of writing, and we have
+[Stacks: normal domain](https://stacks.math.columbia.edu/tag/037B#0309)
+Normal domains are the major use case of `IsIntegrallyClosed` at the time of writing, and we have
 quite a few results that can be moved wholesale to a new `NormalDomain` definition.
 In fact, before PR #6126 `IsIntegrallyClosed` was exactly defined to be a normal domain.
 (So you might want to copy some of its API when you define normal domains.)
 
 A normal ring means that localizations at all prime ideals are normal domains.
-[Stacks: normal ring](https://stacks.math.columbia.edu/tag/00GV)
+[Stacks: normal ring](https://stacks.math.columbia.edu/tag/037B#00GV)
 This implies integral closedness in its `FractionRing`,
-[Stacks: Lemma 10.37.12](https://stacks.math.columbia.edu/tag/034M)
+[Stacks: Tag 034M](https://stacks.math.columbia.edu/tag/037B#034M)
 but is equivalent to it only under some conditions (reduced + finitely many minimal primes),
-[Stacks: Lemma 10.37.16](https://stacks.math.columbia.edu/tag/034M)
+[Stacks: Tag 030C](https://stacks.math.columbia.edu/tag/037B#030C)
 in which case it's also equivalent to being a finite product of normal domains.
 
 We'd need to add these conditions if we want exactly the products of Dedekind domains.
@@ -96,7 +96,7 @@ theorem isIntegrallyClosed_iff_isIntegralClosure (h : Function.Injective (algebr
 
 variable {A' : Type*} [CommRing A'] [Algebra R A']
 
-theorem AlgebraMap.isIntegrallyClosed (f : A →ₐ[R] A') (hf : Function.Injective ↑f)
+theorem AlgebraMap.isIntegrallyClosed (f : A →ₐ[R] A') (hf : Function.Injective f)
     (h : IsIntegrallyClosed R A') :
     IsIntegrallyClosed R A :=
   ⟨fun hx => let ⟨y, hy⟩ := h.algebraMap_eq_of_integral (map_isIntegral f hx)
