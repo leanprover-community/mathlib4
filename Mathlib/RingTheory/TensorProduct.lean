@@ -309,6 +309,7 @@ section Semiring
 variable [CommSemiring R]
 variable [Semiring A] [Algebra R A]
 variable [Semiring B] [Algebra R B]
+variable [Semiring C] [Algebra R C]
 
 -- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
 -- appears to help performance.
@@ -481,7 +482,6 @@ instance instRing : Ring (A ⊗[R] B) where
   toSemiring := instSemiring
   __ := TensorProduct.addCommGroup
   __ := instNonAssocRing
-
 
 -- verify there are no diamonds
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl
