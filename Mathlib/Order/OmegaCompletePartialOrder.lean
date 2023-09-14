@@ -112,8 +112,6 @@ lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_rang
 
 instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
 
-lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
-
 lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
 
 /-- `map` function for `Chain` -/
