@@ -692,4 +692,120 @@ set_option linter.uppercaseLean3 false in
 
 end StrongLawLp
 
+
+section glouk
+
+variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  [MeasurableSpace E] [BorelSpace E]
+
+open Set TopologicalSpace
+
+local infixr:25 " →ₛ " => SimpleFunc
+
+
+/-- **Strong law of large numbers**, almost sure version: if `X n` is a sequence of independent
+identically distributed integrable real-valued random variables, then `∑ i in range n, X i / n`
+converges almost surely to `𝔼[X 0]`. We give here the strong version, due to Etemadi, that only
+requires pairwise independence. -/
+theorem strong_law_ae_f_measurablezarbi [MeasurableSpace E] [BorelSpace E]
+    (X : ℕ → Ω → E) {Z : Ω → E} (hint : Integrable Z) (h' : ∀ i, StronglyMeasurable (X i))
+    (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) Z)
+    (φ : E →ₛ E) :
+    ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, φ (X i ω))) atTop (𝓝 𝔼[φ ∘ Z]) := by
+  apply SimpleFunc.induction
+
+
+
+
+
+
+/-- **Strong law of large numbers**, almost sure version: if `X n` is a sequence of independent
+identically distributed integrable real-valued random variables, then `∑ i in range n, X i / n`
+converges almost surely to `𝔼[X 0]`. We give here the strong version, due to Etemadi, that only
+requires pairwise independence. -/
+theorem strong_law_ae_f_measurable [MeasurableSpace E] [BorelSpace E]
+    (X : ℕ → Ω → E) {Z : Ω → E} (hint : Integrable Z) (h' : ∀ i, StronglyMeasurable (X i))
+    (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) Z) :
+    ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, X i ω)) atTop (𝓝 𝔼[Z]) := by
+  let s : Set E := (⋃ (n : ℕ), Set.range (X n)) ∪ {0}
+  have h₀ : 0 ∈ s := sorry
+  have : Nonempty s := ⟨0, h₀⟩
+  have : SeparableSpace s := ((isSeparable_iUnion (fun i ↦ (h' i).isSeparable_range)).union
+    (finite_singleton _).isSeparable).separableSpace
+  let Y : ℕ → ℕ → Ω → E := fun k i ↦ SimpleFunc.approxOn (X i) (h' i).measurable s 0 h₀ k
+  let φ := SimpleFunc.nearestPt (fun k => Nat.casesOn k 0 ((↑) ∘ denseSeq s) : ℕ → E)
+  have Y_eq_comp : ∀ k i, Y k i = (φ k) ∘ (X i) := fun k i ↦ rfl
+  have : ∀ k i, IdentDistrib (Y k i) (Y k 0) := by
+    intro k i
+    have : IdentDistrib (X i) (X 0) := (hident i).trans (hident 0).symm
+    rw [Y_eq_comp, Y_eq_comp]
+    apply IdentDistrib.comp this (φ k).measurable
+  have : ∀ k, Pairwise (fun i j ↦ IndepFun (Y k i) (Y k j)) := by
+    intro k i j hij
+    rw [Y_eq_comp, Y_eq_comp]
+    have Z := hindep hij
+    apply IndepFun.comp (hindep hij) (φ k).measurable (φ k).measurable
+
+
+
+#exit
+
+#where
+
+lemma _root_.MeasureTheory.AEMeasurable.identDistrib_mk
+    {Ω : Type*} {_ : MeasurableSpace Ω} {μ : Measure Ω}
+    {f : Ω → E} (hf : AEMeasurable f μ) : IdentDistrib f (hf.mk f) μ μ :=
+  IdentDistrib.of_ae_eq hf hf.ae_eq_mk
+
+lemma _root_.MeasureTheory.AEStronglyMeasurable.identDistrib_mk
+    {Ω : Type*} {_ : MeasurableSpace Ω} {μ : Measure Ω}
+    {f : Ω → E} (hf : AEStronglyMeasurable f μ) : IdentDistrib f (hf.mk f) μ μ :=
+  IdentDistrib.of_ae_eq hf.aemeasurable hf.ae_eq_mk
+
+theorem strong_law_ae_f
+    (X : ℕ → Ω → E) {Z : Ω → E} (hint : Integrable Z)
+    (hindep : Pairwise (fun i j ↦ IndepFun (X i) (X j))) (hident : ∀ i, IdentDistrib (X i) Z) :
+    ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, X i ω)) atTop (𝓝 𝔼[Z]) := by
+  have A : ∀ i, Integrable (X i) := fun i ↦ (hident i).integrable_iff.2 hint
+  let Y : ℕ → Ω → E := fun i ↦ (A i).1.mk (X i)
+  have B : ∀ᵐ ω, ∀ n, X n ω = Y n ω :=
+    ae_all_iff.2 (fun i ↦ AEStronglyMeasurable.ae_eq_mk (A i).1)
+  have C : ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, Y i ω)) atTop (𝓝 𝔼[Z]) :=
+    strong_law_ae_f_measurable Y hint (fun i ↦ (A i).1.stronglyMeasurable_mk)
+      (fun i j hij ↦ IndepFun.ae_eq (hindep hij) (A i).1.ae_eq_mk (A j).1.ae_eq_mk)
+      (fun i ↦ (A i).1.identDistrib_mk.symm.trans (hident i))
+  filter_upwards [B, C] with ω h₁ h₂
+  apply Tendsto.congr (fun n ↦ ?_) h₂
+  congr
+  ext i
+  exact (h₁ i).symm
+
+
+
+
+
+
+
+#exit
+
+  let pos : ℝ → ℝ := fun x => max x 0
+  let neg : ℝ → ℝ := fun x => max (-x) 0
+  have posm : Measurable pos := measurable_id'.max measurable_const
+  have negm : Measurable neg := measurable_id'.neg.max measurable_const
+  have A: ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i in range n, (pos ∘ X i) ω) / n) atTop (𝓝 𝔼[pos ∘ X 0]) :=
+    strong_law_aux7 _ hint.pos_part (fun i j hij => (hindep hij).comp posm posm)
+      (fun i => (hident i).comp posm) fun i ω => le_max_right _ _
+  have B: ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i in range n, (neg ∘ X i) ω) / n) atTop (𝓝 𝔼[neg ∘ X 0]) :=
+    strong_law_aux7 _ hint.neg_part (fun i j hij => (hindep hij).comp negm negm)
+      (fun i => (hident i).comp negm) fun i ω => le_max_right _ _
+  filter_upwards [A, B] with ω hωpos hωneg
+  convert hωpos.sub hωneg using 1
+  · simp only [← sub_div, ← sum_sub_distrib, max_zero_sub_max_neg_zero_eq_self, Function.comp_apply]
+  · simp only [← integral_sub hint.pos_part hint.neg_part, max_zero_sub_max_neg_zero_eq_self,
+      Function.comp_apply]
+#align probability_theory.strong_law_ae ProbabilityTheory.strong_law_ae
+
+
+
 end ProbabilityTheory
