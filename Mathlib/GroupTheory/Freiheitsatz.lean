@@ -122,6 +122,7 @@ structure HNNEmbData {α : Type*} [DecidableEq α] (r : FreeGroup α) : Type _ :
   (x_ne_t : x ≠ t)
   (t_mem_conjVars : t ∈ FreeGroup.conjVars r)
   (x_mem_conjVars : x ∈ FreeGroup.conjVars r)
+  (proj : FreeGroup.proj x r = 1 → FreeGroup.proj t r = 1)
 
 namespace HNNEmbData
 
