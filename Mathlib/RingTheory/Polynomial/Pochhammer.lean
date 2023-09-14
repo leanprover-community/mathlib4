@@ -264,6 +264,15 @@ theorem descPochhammer_succ_left (n : ℕ) :
     descPochhammer R (n + 1) = X * (descPochhammer R n).comp (X - 1) :=
   by rw [descPochhammer]
 
+theorem monic_descPochhammer (n : ℕ) [Nontrivial R] [NoZeroDivisors R] :
+    Monic <| descPochhammer R n := by
+  induction' n with n hn
+  · simp
+  · have h : leadingCoeff (X - 1 : R[X]) = 1 := leadingCoeff_X_sub_C 1
+    have : natDegree (X - (1 : R[X])) ≠ 0 := ne_zero_of_eq_one <| natDegree_X_sub_C (1 : R)
+    rw [descPochhammer_succ_left, Monic.def, leadingCoeff_mul, leadingCoeff_comp this, hn, monic_X,
+        one_mul, one_mul, h, one_pow]
+
 section
 
 variable {R} {T : Type v} [Ring T]
