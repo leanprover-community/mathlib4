@@ -80,6 +80,7 @@ theorem divX_one : divX (1 : R[X]) = 0 := by
   ext
   simpa only [coeff_divX, coeff_zero] using coeff_one (_ + 1)
 
+@[simp]
 theorem divX_C_mul : divX (C a * p) = C a * divX p := by
   ext
   simp
