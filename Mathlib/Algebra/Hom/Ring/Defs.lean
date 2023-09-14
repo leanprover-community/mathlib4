@@ -436,7 +436,7 @@ initialize_simps_projections RingHom (toFun → apply)
 -- Porting note: because `f.toFun` really means `f.toMonoidHom.toOneHom.toFun` and
 -- `toMonoidHom_eq_coe` wants to simplify `f.toMonoidHom` to `(↑f : M →* N)`, this can't
 -- be a simp lemma anymore
--- @[simp]
+@[simp]
 theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
   rfl
 #align ring_hom.to_fun_eq_coe RingHom.toFun_eq_coe

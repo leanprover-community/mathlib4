@@ -606,7 +606,7 @@ theorem MonoidHom.toMulHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
 #align monoid_hom.to_mul_hom_coe MonoidHom.toMulHom_coe
 #align add_monoid_hom.to_add_hom_coe AddMonoidHom.toAddHom_coe
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem MonoidHom.toFun_eq_coe [MulOneClass M] [MulOneClass N] (f : M →* N) : f.toFun = f := rfl
 #align monoid_hom.to_fun_eq_coe MonoidHom.toFun_eq_coe
 #align add_monoid_hom.to_fun_eq_coe AddMonoidHom.toFun_eq_coe
