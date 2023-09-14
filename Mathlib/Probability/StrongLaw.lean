@@ -719,15 +719,18 @@ theorem strong_law_ae_f_measurablezarbi [MeasurableSpace E] [BorelSpace E]
   · intro c s hs
     simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero, piecewise_eq_indicator, Function.comp_apply]
-    let Y : ℕ → Ω → ℝ := fun n ω ↦ s.indicator (Function.const E (1 : ℝ)) (X n ω)
+    let F : E → ℝ := indicator s 1
+    let Y : ℕ → Ω → ℝ := fun n ↦ F ∘ (X n)
     have : ∀ᵐ (ω : Ω), Tendsto (fun (n : ℕ) ↦ (n : ℝ)⁻¹ • ∑ i in Finset.range n, Y i ω)
         atTop (𝓝 𝔼[Y 0]) := by
       simp only [Pi.const_one, smul_eq_mul, ← div_eq_inv_mul]
       apply strong_law_ae
-
-      --have : Integrable (X 0) := sorry
-      --apply (integrable_indicator_iff hs).2
-
+      · sorry
+      · intro i j hij
+        apply IndepFun.comp (hindep hij) <;>
+        apply (measurable_indicator_const_iff 1).2 hs
+      · intro i
+        sorry
     sorry
   · sorry
 
