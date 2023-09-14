@@ -1739,7 +1739,7 @@ def evalFloor : PositivityExt where eval {u _α} _zα _pα e := do
   let (.app (.app (.app (.app (.const ``Int.floor _) (α' : Q(Type $u))) _) _) a) ← whnfR e
     | throwError "failed to match on Int.floor application"
   let zα' : Q(Zero $α') ← synthInstanceQ q(Zero $α')
-  let pα' : Q(Zero $α') ← synthInstanceQ q(PartialOrder $α')
+  let pα' : Q(PartialOrder $α') ← synthInstanceQ q(PartialOrder $α')
   match ← core zα' pα' a with
   | .positive pa => pure (.nonnegative (← mkAppM ``int_floor_nonneg_of_pos #[pa]))
   | .nonnegative pa => pure (.nonnegative (← mkAppM ``int_floor_nonneg #[pa]))
@@ -1756,7 +1756,7 @@ def evalNatCeil : PositivityExt where eval {u _α} _zα _pα e := do
   let (.app (.app (.app (.app (.const ``Nat.ceil _) (α' : Q(Type $u))) _) _) a) ← whnfR e
     | throwError "failed to match on Nat.ceil application"
   let zα' : Q(Zero $α') ← synthInstanceQ q(Zero $α')
-  let pα' : Q(Zero $α') ← synthInstanceQ q(PartialOrder $α')
+  let pα' : Q(PartialOrder $α') ← synthInstanceQ q(PartialOrder $α')
   match ← core zα' pα' a with
   | .positive pa => pure (.positive (← mkAppM ``nat_ceil_pos #[pa]))
   | _ => pure .none
@@ -1771,7 +1771,7 @@ def evalIntCeil : PositivityExt where eval {u _α} _zα _pα e := do
   let (.app (.app (.app (.app (.const ``Int.ceil _) (α' : Q(Type $u))) _) _) a) ← whnfR e
     | throwError "failed to match on Int.ceil application"
   let zα' : Q(Zero $α') ← synthInstanceQ q(Zero $α')
-  let pα' : Q(Zero $α') ← synthInstanceQ q(PartialOrder $α')
+  let pα' : Q(PartialOrder $α') ← synthInstanceQ q(PartialOrder $α')
   match ← core zα' pα' a with
   | .positive pa => pure (.positive (← mkAppM ``int_ceil_pos #[pa]))
   | .nonnegative pa => pure (.nonnegative (← mkAppM ``Int.ceil_nonneg #[pa]))
