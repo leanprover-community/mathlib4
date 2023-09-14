@@ -159,7 +159,7 @@ theorem Finset.centerMass_of_sum_add_sum_eq_zero {s : Finset ι}
     (h_wsum_zero : ∑ i in t, w i + ∑ i in s, w i = 0)
     (h_vsum : ∑ i in t, w i • z i + ∑ i in s, w i • z i = 0) :
     t.centerMass w z = s.centerMass w z := by
-  rw [Finset.centerMass, Finset.centerMass, eq_neg_of_add_eq_zero_right h_wsum_zero, 
+  rw [Finset.centerMass, Finset.centerMass, eq_neg_of_add_eq_zero_right h_wsum_zero,
     add_eq_zero_iff_eq_neg.mp h_vsum, ← neg_inv, smul_neg, neg_smul]
 
 /-- The center of mass of a finite subset of a convex set belongs to the set
