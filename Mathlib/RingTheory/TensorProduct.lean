@@ -873,13 +873,13 @@ noncomputable def basisAux : A ⊗[R] M ≃ₗ[R] ι →₀ A :=
 
 variable {A}
 
-theorem basisAux_tmul (r : A) (m : M) :
-    basisAux A b (r ⊗ₜ m) = r • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) := by
+theorem basisAux_tmul (a : A) (m : M) :
+    basisAux A b (a ⊗ₜ m) = a • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) := by
   ext
   simp [basisAux, ← Algebra.commutes, Algebra.smul_def]
 #align algebra.tensor_product.basis_aux_tmul Algebra.TensorProduct.basisAux_tmul
 
-theorem basisAux_map_smul (r : A) (x : A ⊗[R] M) : basisAux A b (r • x) = r • basisAux A b x :=
+theorem basisAux_map_smul (a : A) (x : A ⊗[R] M) : basisAux A b (a • x) = a • basisAux A b x :=
   TensorProduct.induction_on x (by simp)
     (fun x y => by simp only [TensorProduct.smul_tmul', basisAux_tmul, smul_assoc])
     fun x y hx hy => by simp [hx, hy]
@@ -895,21 +895,21 @@ noncomputable def basis : Basis ι A (A ⊗[R] M) where
 variable {A}
 
 @[simp]
-theorem basis_repr_tmul (r : A) (m : M) :
-    (basis A b).repr (r ⊗ₜ m) = r • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) :=
-  basisAux_tmul b r m -- porting note: Lean 3 had _ _ _
+theorem basis_repr_tmul (a : A) (m : M) :
+    (basis A b).repr (a ⊗ₜ m) = a • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) :=
+  basisAux_tmul b a m -- porting note: Lean 3 had _ _ _
 #align algebra.tensor_product.basis_repr_tmul Algebra.TensorProduct.basis_repr_tmul
 
-theorem basis_repr_symm_apply (r : A) (i : ι) :
-    (basis A b).repr.symm (Finsupp.single i r) = r ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
+theorem basis_repr_symm_apply (a : A) (i : ι) :
+    (basis A b).repr.symm (Finsupp.single i a) = a ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
   rw [basis, LinearEquiv.coe_symm_mk] -- porting note: `coe_symm_mk` isn't firing in `simp`
   simp [Equiv.uniqueProd_symm_apply, basisAux]
 
 -- Porting note: simpNF linter failed on `basis_repr_symm_apply`
 @[simp]
-theorem basis_repr_symm_apply' (r : A) (i : ι) :
-    r • Algebra.TensorProduct.basis A b i = r ⊗ₜ b i := by
-  simpa using basis_repr_symm_apply b r i
+theorem basis_repr_symm_apply' (a : A) (i : ι) :
+    a • Algebra.TensorProduct.basis A b i = a ⊗ₜ b i := by
+  simpa using basis_repr_symm_apply b a i
 
 end Basis
 
