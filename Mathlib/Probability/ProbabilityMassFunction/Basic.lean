@@ -196,17 +196,21 @@ theorem toOuterMeasure_apply_eq_zero_iff : p.toOuterMeasure s = 0 ↔ Disjoint p
 #align pmf.to_outer_measure_apply_eq_zero_iff Pmf.toOuterMeasure_apply_eq_zero_iff
 
 theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support ⊆ s := by
-  simp_rw [ Pmf.support, Function.support_disjoint_iff (f := p) (s := s)]
   refine' (p.toOuterMeasure_apply s).symm ▸ ⟨fun h a hap => _, fun h => _⟩
-  · refine' by_contra fun hs => ne_of_lt _ (h.trans p.tsum_coe.symm)
-    have hs' : s.indicator p a = 0 := Set.indicator_apply_eq_zero.2 fun hs' => False.elim <| hs hs'
-    have hsa : s.indicator p a < p a := hs'.symm ▸ (p.apply_pos_iff a).2 hap
-    exact ENNReal.tsum_lt_tsum (p.tsum_coe_indicator_ne_top s)
-      (fun x => Set.indicator_apply_le fun _ => le_rfl) hsa
-  · suffices : ∀ (x) (_ : x ∉ s), p x = 0
-    exact _root_.trans (tsum_congr
-      fun a => (Set.indicator_apply s p a).trans (ite_eq_left_iff.2 <| symm ∘ this a)) p.tsum_coe
-    exact fun a ha => (p.apply_eq_zero_iff a).2 <| Set.not_mem_subset h ha
+  · refine' by_contra fun hs => ne_of_lt _ h
+    suffices ∑' (x : α), Set.indicator s (↑p) x < ∑' (x : α), p x by simpa
+    apply NNReal.tsum_lt_tsum
+    · exact (fun x => Set.indicator_apply_le fun _ => le_rfl)
+    · calc s.indicator p a = 0 := Set.indicator_apply_eq_zero.2 fun hs' => False.elim <| hs hs'
+           _ < p a := (p.apply_pos_iff a).2 hap
+    · exact summable p
+  · suffices ∑' (x : α), Set.indicator s (↑p) x = ∑' (x : α), p x by simpa
+    apply tsum_congr
+    · intro x
+      have h : ∀ (_ : x ∉ s), p x = 0 := fun hx =>
+        (p.apply_eq_zero_iff x).2 <| Set.not_mem_subset h hx
+      simp [Set.indicator_apply]
+      tauto
 #align pmf.to_outer_measure_apply_eq_one_iff Pmf.toOuterMeasure_apply_eq_one_iff
 
 @[simp]
@@ -228,8 +232,10 @@ theorem toOuterMeasure_apply_eq_of_inter_support_eq {s t : Set α}
 #align pmf.to_outer_measure_apply_eq_of_inter_support_eq Pmf.toOuterMeasure_apply_eq_of_inter_support_eq
 
 @[simp]
-theorem toOuterMeasure_apply_fintype [Fintype α] : p.toOuterMeasure s = ∑ x, s.indicator p x :=
-  (p.toOuterMeasure_apply s).trans (tsum_eq_sum fun x h => absurd (Finset.mem_univ x) h)
+theorem toOuterMeasure_apply_fintype [Fintype α] : p.toOuterMeasure s = ∑ x, s.indicator p x := by
+  rw [p.toOuterMeasure_apply]
+  congr 1
+  apply tsum_eq_sum fun x h => absurd (Finset.mem_univ x) h
 #align pmf.to_outer_measure_apply_fintype Pmf.toOuterMeasure_apply_fintype
 
 end OuterMeasure
