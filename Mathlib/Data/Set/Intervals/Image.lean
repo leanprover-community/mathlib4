@@ -26,7 +26,7 @@ lemma MonotoneOn.mapsTo_Iic (h : MonotoneOn f (Iic b)) : MapsTo f (Iic b) (Iic (
 
 lemma MonotoneOn.mapsTo_Icc (h : MonotoneOn f (Icc a b)) : MapsTo f (Icc a b) (Icc (f a) (f b)) :=
   fun _c hc ↦
-  ⟨h (left_mem_Icc.2 $ hc.1.trans hc.2) hc hc.1, h hc (right_mem_Icc.2 $ hc.1.trans hc.2) hc.2⟩
+    ⟨h (left_mem_Icc.2 $ hc.1.trans hc.2) hc hc.1, h hc (right_mem_Icc.2 $ hc.1.trans hc.2) hc.2⟩
 
 lemma AntitoneOn.mapsTo_Ici (h : AntitoneOn f (Ici a)) : MapsTo f (Ici a) (Iic (f a)) :=
   fun _ _ ↦ by aesop
@@ -36,7 +36,7 @@ lemma AntitoneOn.mapsTo_Iic (h : AntitoneOn f (Iic b)) : MapsTo f (Iic b) (Ici (
 
 lemma AntitoneOn.mapsTo_Icc (h : AntitoneOn f (Icc a b)) : MapsTo f (Icc a b) (Icc (f b) (f a)) :=
   fun _c hc ↦
-  ⟨h hc (right_mem_Icc.2 $ hc.1.trans hc.2) hc.2, h (left_mem_Icc.2 $ hc.1.trans hc.2) hc hc.1⟩
+    ⟨h hc (right_mem_Icc.2 $ hc.1.trans hc.2) hc.2, h (left_mem_Icc.2 $ hc.1.trans hc.2) hc hc.1⟩
 
 lemma StrictMonoOn.mapsTo_Ioi (h : StrictMonoOn f (Ici a)) : MapsTo f (Ioi a) (Ioi (f a)) :=
   fun _c hc ↦ h le_rfl hc.le hc
@@ -47,8 +47,8 @@ lemma StrictMonoOn.mapsTo_Iio (h : StrictMonoOn f (Iic b)) : MapsTo f (Iio b) (I
 lemma StrictMonoOn.mapsTo_Ioo (h : StrictMonoOn f (Icc a b)) :
     MapsTo f (Ioo a b) (Ioo (f a) (f b)) :=
   fun _c hc ↦
-  ⟨h (left_mem_Icc.2 (hc.1.trans hc.2).le) (Ioo_subset_Icc_self hc) hc.1,
-   h (Ioo_subset_Icc_self hc) (right_mem_Icc.2 (hc.1.trans hc.2).le) hc.2⟩
+    ⟨h (left_mem_Icc.2 (hc.1.trans hc.2).le) (Ioo_subset_Icc_self hc) hc.1,
+     h (Ioo_subset_Icc_self hc) (right_mem_Icc.2 (hc.1.trans hc.2).le) hc.2⟩
 
 lemma StrictAntiOn.mapsTo_Ioi (h : StrictAntiOn f (Ici a)) : MapsTo f (Ioi a) (Iio (f a)) :=
   fun _c hc ↦ h le_rfl hc.le hc
@@ -59,8 +59,8 @@ lemma StrictAntiOn.mapsTo_Iio (h : StrictAntiOn f (Iic b)) : MapsTo f (Iio b) (I
 lemma StrictAntiOn.mapsTo_Ioo (h : StrictAntiOn f (Icc a b)) :
     MapsTo f (Ioo a b) (Ioo (f b) (f a)) :=
   fun _c hc ↦
-  ⟨h (Ioo_subset_Icc_self hc) (right_mem_Icc.2 (hc.1.trans hc.2).le) hc.2,
-   h (left_mem_Icc.2 (hc.1.trans hc.2).le) (Ioo_subset_Icc_self hc) hc.1⟩
+    ⟨h (Ioo_subset_Icc_self hc) (right_mem_Icc.2 (hc.1.trans hc.2).le) hc.2,
+     h (left_mem_Icc.2 (hc.1.trans hc.2).le) (Ioo_subset_Icc_self hc) hc.1⟩
 
 lemma Monotone.mapsTo_Ici (h : Monotone f) : MapsTo f (Ici a) (Ici (f a)) :=
   (h.monotoneOn _).mapsTo_Ici
