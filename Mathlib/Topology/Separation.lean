@@ -410,6 +410,12 @@ theorem Ne.nhdsWithin_diff_singleton [T1Space α] {x y : α} (h : x ≠ y) (s : 
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 #align ne.nhds_within_diff_singleton Ne.nhdsWithin_diff_singleton
 
+lemma nhdsWithin_compl_singleton_le [T1Space α] (x y : α) : 𝓝[{x}ᶜ] x ≤ 𝓝[{y}ᶜ] x := by
+  rcases eq_or_ne x y with rfl|hy
+  · exact Eq.le rfl
+  · rw [Ne.nhdsWithin_compl_singleton hy]
+    exact nhdsWithin_le_nhds
+
 theorem isOpen_setOf_eventually_nhdsWithin [T1Space α] {p : α → Prop} :
     IsOpen { x | ∀ᶠ y in 𝓝[≠] x, p y } := by
   refine' isOpen_iff_mem_nhds.mpr fun a ha => _
