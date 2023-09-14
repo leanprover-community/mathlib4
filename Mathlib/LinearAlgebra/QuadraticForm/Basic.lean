@@ -732,11 +732,6 @@ variable [Ring R] [AddCommGroup M] [Module R M]
 
 variable {B : BilinForm R M}
 
-theorem polar_to_quadratic_form (x y : M) : polar (fun x => B x x) x y = B x y + B y x := by
-  simp only [add_assoc, add_sub_cancel', add_right, polar, add_left_inj, add_neg_cancel_left,
-    add_left, sub_eq_add_neg _ (B y y), add_comm (B y x) _]
-#align bilin_form.polar_to_quadratic_form BilinForm.polar_to_quadratic_form
-
 @[simp]
 theorem toQuadraticForm_neg (B : BilinForm R M) : (-B).toQuadraticForm = -B.toQuadraticForm :=
   rfl
@@ -747,6 +742,19 @@ theorem toQuadraticForm_sub (B₁ B₂ : BilinForm R M) :
     (B₁ - B₂).toQuadraticForm = B₁.toQuadraticForm - B₂.toQuadraticForm :=
   rfl
 #align bilin_form.to_quadratic_form_sub BilinForm.toQuadraticForm_sub
+
+theorem polar_toQuadraticForm (x y : M) : polar (toQuadraticForm B) x y = B x y + B y x := by
+  simp only [toQuadraticForm_apply, add_assoc, add_sub_cancel', add_right, polar, add_left_inj,
+    add_neg_cancel_left, add_left, sub_eq_add_neg _ (B y y), add_comm (B y x) _]
+#align bilin_form.polar_to_quadratic_form BilinForm.polar_toQuadraticForm
+
+theorem polarBilin_toQuadraticForm : polarBilin (toQuadraticForm B) = B + flip' B :=
+  BilinForm.ext polar_toQuadraticForm
+
+theorem _root_.LinearMap.compQuadraticForm_polarBilin {S : Type*} [CommRing S] [Algebra S R]
+    [Module S M] [IsScalarTower S R M] (f : R →ₗ[S] S) (Q : QuadraticForm R M) :
+    (f.compQuadraticForm Q).polarBilin = f.compBilinForm Q.polarBilin := by
+  ext; simp [polar]
 
 end Ring
 
@@ -810,7 +818,7 @@ theorem associated_comp {N : Type v} [AddCommGroup N] [Module R N] (f : N →ₗ
 
 theorem associated_toQuadraticForm (B : BilinForm R M) (x y : M) :
     associatedHom S B.toQuadraticForm x y = ⅟ 2 * (B x y + B y x) := by
-  simp only [associated_apply, ← polar_to_quadratic_form, polar, toQuadraticForm_apply]
+  simp only [associated_apply, ← polar_toQuadraticForm, polar]
 #align quadratic_form.associated_to_quadratic_form QuadraticForm.associated_toQuadraticForm
 
 theorem associated_left_inverse (h : B₁.IsSymm) : associatedHom S B₁.toQuadraticForm = B₁ :=

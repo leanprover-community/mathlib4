@@ -248,7 +248,7 @@ To show a function squares to the quadratic form, it suffices to show that
 theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (2 : A))
     (f : M →ₗ[R] A) :
     (∀ x, f x * f x = algebraMap _ _ (Q x)) ↔
-      ((LinearMap.mul R A).compl₂ f) ∘ₗ f + ((LinearMap.mul R A).flip.compl₂ f) ∘ₗ f =
+      (LinearMap.mul R A).compl₂ f ∘ₗ f + (LinearMap.mul R A).flip.compl₂ f ∘ₗ f =
         Q.polarBilin.toLin.compr₂ (Algebra.linearMap R A) := by
   simp_rw [FunLike.ext_iff]
   refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x => ?_⟩
