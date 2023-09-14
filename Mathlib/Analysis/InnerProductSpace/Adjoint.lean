@@ -65,10 +65,12 @@ namespace ContinuousLinearMap
 
 variable [CompleteSpace E] [CompleteSpace G]
 
+-- Note: made noncomputable to stop excess compilation
+-- leanprover-community/mathlib4#7103
 /-- The adjoint, as a continuous conjugate-linear map. This is only meant as an auxiliary
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
-def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
+noncomputable def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
   (ContinuousLinearMap.compSL _ _ _ _ _ ((toDual 𝕜 E).symm : NormedSpace.Dual 𝕜 E →L⋆[𝕜] E)).comp
     (toSesqForm : (E →L[𝕜] F) →L[𝕜] F →L⋆[𝕜] NormedSpace.Dual 𝕜 E)
 #align continuous_linear_map.adjoint_aux ContinuousLinearMap.adjointAux
