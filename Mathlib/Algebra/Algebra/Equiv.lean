@@ -602,6 +602,10 @@ theorem toAlgHom_toLinearMap : (e : A₁ →ₐ[R] A₂).toLinearMap = e.toLinea
   rfl
 #align alg_equiv.to_alg_hom_to_linear_map AlgEquiv.toAlgHom_toLinearMap
 
+theorem toLinearMap_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
+    (ofAlgHom f g h₁ h₂).toLinearMap = f.toLinearMap :=
+  LinearMap.ext fun _ => rfl
+
 @[simp]
 theorem toLinearEquiv_toLinearMap : e.toLinearEquiv.toLinearMap = e.toLinearMap :=
   rfl
@@ -756,12 +760,12 @@ instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
   ⟨AlgEquiv.ext⟩
 #align alg_equiv.apply_has_faithful_smul AlgEquiv.apply_faithfulSMul
 
-instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁
-    where smul_comm r e a := (e.map_smul r a).symm
+instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁ where
+  smul_comm r e a := (e.map_smul r a).symm
 #align alg_equiv.apply_smul_comm_class AlgEquiv.apply_smulCommClass
 
-instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁
-    where smul_comm e r a := e.map_smul r a
+instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁ where
+  smul_comm e r a := e.map_smul r a
 #align alg_equiv.apply_smul_comm_class' AlgEquiv.apply_smulCommClass'
 
 @[simp]
