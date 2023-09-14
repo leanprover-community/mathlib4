@@ -145,6 +145,28 @@ variable {A : Type uA} {B : Type uB} {C : Type uC} {D : Type uD} {E : Type uE} {
 ### The `R`-algebra structure on `A ⊗[R] B`
 -/
 
+section AddCommMonoidWithOne
+
+variable [CommSemiring R]
+variable [AddCommMonoidWithOne A] [Module R A]
+variable [AddCommMonoidWithOne B] [Module R B]
+
+instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
+
+theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
+  rfl
+#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
+
+instance instAddCommMonoidWithOne : AddCommMonoidWithOne (A ⊗[R] B) where
+  natCast n := n ⊗ₜ 1
+  natCast_zero := by simp
+  natCast_succ n := by simp [add_tmul, one_def]
+  add_comm := add_comm
+
+theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
+
+end AddCommMonoidWithOne
+
 section NonUnitalNonAssocSemiring
 
 variable [CommSemiring R]
@@ -249,22 +271,6 @@ variable [CommSemiring R]
 variable [NonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
-instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
-
-theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
-  rfl
-#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
-
-instance instAddCommMonoidWithOne : AddCommMonoidWithOne (A ⊗[R] B) where
-  natCast n := n ⊗ₜ 1
-  natCast_zero := by simp
-  natCast_succ n := by simp [add_tmul, one_def]
-  add_comm := add_comm
-
-theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
-
-instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
-
 protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.one_mul Algebra.TensorProduct.one_mul
@@ -272,7 +278,6 @@ protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
 protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
-
 
 instance instNonAssocSemiring : NonAssocSemiring (A ⊗[R] B) where
   one_mul := Algebra.TensorProduct.one_mul
@@ -283,10 +288,9 @@ instance instNonAssocSemiring : NonAssocSemiring (A ⊗[R] B) where
 end NonAssocSemiring
 
 section NonUnitalSemiring
-
-variable [CommSemiring R] [NonUnitalSemiring A] [NonUnitalSemiring B]
-variable [Module R A] [Module R B]
-variable [SMulCommClass R A A] [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
+variable [CommSemiring R]
+variable [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+variable [NonUnitalSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
   -- restate as an equality of morphisms so that we can use `ext`
@@ -303,7 +307,6 @@ instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
 end NonUnitalSemiring
 
 section Semiring
-
 variable [CommSemiring R]
 variable [Semiring A] [Algebra R A]
 variable [Semiring B] [Algebra R B]
@@ -432,8 +435,23 @@ end ext
 
 end Semiring
 
-section NonUnitalNonAssocRing
+section AddCommGroupWithOne
+variable [CommSemiring R]
+variable [AddCommGroupWithOne A] [Module R A]
+variable [AddCommGroupWithOne B] [Module R B]
 
+instance instAddCommGroupWithOne : AddCommGroupWithOne (A ⊗[R] B) where
+  toAddCommGroup := TensorProduct.addCommGroup
+  __ := instAddCommMonoidWithOne
+  intCast z := z ⊗ₜ (1 : B)
+  intCast_ofNat n := by simp [natCast_def]
+  intCast_negSucc n := by simp [natCast_def, add_tmul, neg_tmul, one_def]
+
+theorem intCast_def (z : ℤ) : (z : A ⊗[R] B) = (z : A) ⊗ₜ (1 : B) := rfl
+
+end AddCommGroupWithOne
+
+section NonUnitalNonAssocRing
 variable [CommRing R]
 variable [NonUnitalNonAssocRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonUnitalNonAssocRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
@@ -445,7 +463,6 @@ instance instNonUnitalNonAssocRing : NonUnitalNonAssocRing (A ⊗[R] B) where
 end NonUnitalNonAssocRing
 
 section NonAssocRing
-
 variable [CommRing R]
 variable [NonAssocRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonAssocRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
@@ -453,19 +470,14 @@ variable [NonAssocRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B 
 instance instNonAssocRing : NonAssocRing (A ⊗[R] B) where
   toAddCommGroup := TensorProduct.addCommGroup
   __ := instNonAssocSemiring
-  intCast z := z ⊗ₜ (1 : B)
-  intCast_ofNat n := by simp [natCast_def]
-  intCast_negSucc n := by simp [natCast_def, add_tmul, neg_tmul, one_def]
-
-theorem intCast_def (z : ℤ) : (z : A ⊗[R] B) = (z : A) ⊗ₜ (1 : B) := rfl
+  __ := instAddCommGroupWithOne
 
 end NonAssocRing
 
 section NonUnitalRing
-
-variable [CommRing R] [NonUnitalRing A] [NonUnitalRing B]
-variable [Module R A] [Module R B]
-variable [SMulCommClass R A A] [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
+variable [CommRing R]
+variable [NonUnitalRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+variable [NonUnitalRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 instance instNonUnitalRing : NonUnitalRing (A ⊗[R] B) where
   toAddCommGroup := TensorProduct.addCommGroup
@@ -474,7 +486,9 @@ instance instNonUnitalRing : NonUnitalRing (A ⊗[R] B) where
 end NonUnitalRing
 
 section Ring
-variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+variable [CommRing R]
+variable [Ring A] [Algebra R A]
+variable [Ring B] [Algebra R B]
 
 instance instRing : Ring (A ⊗[R] B) where
   toSemiring := instSemiring
