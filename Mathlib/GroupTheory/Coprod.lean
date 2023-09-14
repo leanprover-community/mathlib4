@@ -178,8 +178,8 @@ section Group
 
 variable (G H : Type*) [Group G] [Group H]
 
-instance : Inv (G ∗ H)
-    where inv :=
+instance : Inv (G ∗ H) where
+  inv :=
     MulOpposite.unop ∘
       lift ((inl : G →* _).op.comp (MulEquiv.inv' G).toMonoidHom)
            ((inr : H →* _).op.comp (MulEquiv.inv' H).toMonoidHom)
