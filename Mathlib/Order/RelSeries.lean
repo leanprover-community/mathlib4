@@ -160,11 +160,15 @@ namespace Rel
 /-- a relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
   maximum length. -/
 class FiniteDimensional : Prop where
+  /-- a relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
+    maximum length. -/
   exists_longest_relSeries : ∃ (x : RelSeries r), ∀ (y : RelSeries r), y.length ≤ x.length
 
 /-- a relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
   length. -/
 class InfiniteDimensional : Prop where
+  /-- a relation `r` is said to be infinite dimensional iff there exists relation series of
+    arbitrary length. -/
   exists_relSeries_with_length : ∀ (n : ℕ), ∃ (x : RelSeries r), x.length = n
 
 end Rel
@@ -194,11 +198,11 @@ noncomputable def inhabited_of_infiniteDimensional [r.InfiniteDimensional] : Inh
 end RelSeries
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
-abbrev FiniteDimensionalType (γ : Type _) [Preorder γ] :=
+abbrev FiniteDimensionalOrder (γ : Type _) [Preorder γ] :=
   Rel.FiniteDimensional ((. < .) : γ → γ → Prop)
 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
-abbrev InfiniteDimensionalType (γ : Type _) [Preorder γ] :=
+abbrev InfiniteDimensionalOrder (γ : Type _) [Preorder γ] :=
   Rel.InfiniteDimensional ((. < .) : γ → γ → Prop)
 
 section LTSeries
@@ -213,28 +217,28 @@ abbrev LTSeries := RelSeries ((. < .) : Rel α α)
 namespace LTSeries
 
 /-- the longest  `<`-series when a type is finite dimensional -/
-protected noncomputable def longestOf [FiniteDimensionalType α] : LTSeries α :=
+protected noncomputable def longestOf [FiniteDimensionalOrder α] : LTSeries α :=
   RelSeries.longestOf _
 
 /-- a `<`-series with length at least `n` if the relation is infinite dimensional -/
-protected noncomputable def withLength [InfiniteDimensionalType α] (n : ℕ) : LTSeries α :=
+protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) : LTSeries α :=
   RelSeries.withLength _ n
 
-lemma withLength_length_eq [InfiniteDimensionalType α] (n : ℕ) :
+lemma withLength_length_eq [InfiniteDimensionalOrder α] (n : ℕ) :
     (LTSeries.withLength α n).length = n :=
   RelSeries.withLength_length_eq _ _
 
 /-- if `α` is infinite dimensional, then `α` is inhabited -/
-noncomputable def inhabited_of_infiniteDimensionalType [InfiniteDimensionalType α] : Inhabited α :=
+noncomputable def inhabited_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Inhabited α :=
   ⟨(LTSeries.withLength α 0) 0⟩
 
 variable {α}
 
-lemma longestOf_is_longest [FiniteDimensionalType α] (x : LTSeries α) :
+lemma longestOf_is_longest [FiniteDimensionalOrder α] (x : LTSeries α) :
     x.length ≤ (LTSeries.longestOf α).length :=
   RelSeries.longestOf_is_longest _ _
 
-lemma longestOf_len_unique [FiniteDimensionalType α] (p : LTSeries α)
+lemma longestOf_len_unique [FiniteDimensionalOrder α] (p : LTSeries α)
     (is_longest : ∀ (q : LTSeries α), q.length ≤ p.length) :
     p.length = (LTSeries.longestOf α).length :=
   le_antisymm (longestOf_is_longest _) (is_longest _)
