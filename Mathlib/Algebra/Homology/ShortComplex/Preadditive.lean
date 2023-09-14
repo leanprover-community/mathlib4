@@ -75,7 +75,7 @@ namespace LeftHomologyMapData
 variable (γ : LeftHomologyMapData φ h₁ h₂) (γ' : LeftHomologyMapData φ' h₁ h₂)
 
 /-- Given a left homology map data for morphism `φ`, this is induced left homology
-map data for `φ`. -/
+map data for `-φ`. -/
 @[simps]
 def neg : LeftHomologyMapData (-φ) h₁ h₂ where
   φK := -γ.φK
