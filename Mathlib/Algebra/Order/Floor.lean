@@ -1751,13 +1751,9 @@ private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : 
 
 /-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
 @[positivity ⌈ _ ⌉₊]
-def evalNatCeil : PositivityExt where eval {_u _α} _zα _pα e := do
-  -- match on `@Nat.ceil α' _ _ a`
-  let (.app (.app (.app (.app (.const ``Nat.ceil [u']) (α' : Q(Type $u'))) _) _) a) ← whnfR e
-    | throwError "failed to match on Nat.ceil application"
-  let zα' : Q(Zero $α') ← synthInstanceQ q(Zero $α')
-  let pα' : Q(PartialOrder $α') ← synthInstanceQ q(PartialOrder $α')
-  match ← core zα' pα' a with
+def evalNatCeil : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℕ)) := do
+  let ~q(@Nat.ceil $α' $i $j $a) := e | throwError "failed to match on Nat.ceil application"
+  match ← core q(inferInstance) q(inferInstance) a with
   | .positive pa => pure (.positive (← mkAppM ``nat_ceil_pos #[pa]))
   | _ => pure .none
 
