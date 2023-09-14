@@ -178,6 +178,20 @@ theorem of_mulOpposite
   have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by simpa using congr_arg op ab)
   simpa [and_comm] using this
 
+open Finset MulOpposite in
+@[to_additive]
+theorem iff_mulOpposite :
+    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) ↔
+      UniqueMul A B a0 b0 := by
+  refine ⟨of_mulOpposite, fun h ↦ of_mulOpposite (G := MulOpposite G) <| fun a b ha hb hab ↦ ?_⟩
+  simp only [mem_map, Function.Embedding.coeFn_mk, exists_exists_and_eq_and] at ha hb
+  rcases ha with ⟨a, ha, rfl⟩
+  rcases hb with ⟨b, hb, rfl⟩
+  rw [op_inj, op_inj, op_inj, op_inj]
+  apply h ha hb ?_
+  apply_fun op ∘ op using op_injective.comp op_injective
+  exact hab
+
 end UniqueMul
 
 /-- Let `G` be a Type with addition.  `UniqueSums G` asserts that any two non-empty
@@ -246,5 +260,23 @@ theorem of_mulOpposite (G : Type*) [Mul G] (h : UniqueProds Gᵐᵒᵖ) :
     let f : G ↪ Gᵐᵒᵖ := ⟨op, op_injective⟩
     let ⟨y, yB, x, xA, hxy⟩ := h.uniqueMul_of_nonempty (hB.map (f := f)) (hA.map (f := f))
     ⟨unop x, (mem_map' _).mp xA, unop y, (mem_map' _).mp yB, hxy.of_mulOpposite⟩⟩
+
+open MulOpposite in
+@[to_additive]
+theorem iff_mulOpposite (G : Type*) [Mul G] :
+    UniqueProds Gᵐᵒᵖ ↔ UniqueProds G := by
+  refine ⟨of_mulOpposite G, fun h ↦ of_mulOpposite (Gᵐᵒᵖ) ⟨fun {A B} hA hB ↦ ?_⟩⟩
+  classical
+  let f : Gᵐᵒᵖᵐᵒᵖ ↪ G := ⟨_, unop_injective.comp unop_injective⟩
+  obtain ⟨a0, ha0, b0, hb0, d⟩ :=
+    h.uniqueMul_of_nonempty (Finset.Nonempty.map (f := f) hA) (Finset.Nonempty.map (f := f) hB)
+  simp only [Finset.mem_map, Function.Embedding.coeFn_mk, Function.comp_apply] at ha0 hb0
+  rcases ha0 with ⟨a0, ha0, rfl⟩
+  rcases hb0 with ⟨b0, hb0, rfl⟩
+  refine ⟨a0, ha0, b0, hb0, ?_⟩
+  apply (UniqueMul.mulHom_map_iff (H := G) (⟨_, unop_injective.comp unop_injective⟩) ?_).mp
+  · simp only [Function.Embedding.coeFn_mk, Function.comp_apply]
+    convert d
+  · simp only [Function.Embedding.coeFn_mk, Function.comp_apply, unop_mul, implies_true]
 
 end UniqueProds
