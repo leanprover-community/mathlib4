@@ -78,7 +78,7 @@ theorem divX_zero : divX (0 : R[X]) = 0 := leadingCoeff_eq_zero.mp rfl
 @[simp]
 theorem divX_one : divX (1 : R[X]) = 0 := by
   ext
-  simpa only [coeff_divX, coeff_zero] using coeff_one (_ + 1)
+  simpa only [coeff_divX, coeff_zero] using coeff_one
 
 @[simp]
 theorem divX_C_mul : divX (C a * p) = C a * divX p := by
