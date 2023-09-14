@@ -785,13 +785,24 @@ TODO: Formalize the existence of a Dirichlet domain as in Kapovich's paper.
 
 section HasFundamentalDomain
 
+/-- "We say a quotient of `α` by `G` `HasFundamentalDomain` if there is a measurable set
+  `s` for which `IsFundamentalDomain G s` holds." -/
+class HasAddFundamentalDomain (G : Type _) (α : Type _) [Zero G] [VAdd G α] [MeasureSpace α] :
+    Prop :=
+  (has_add_fundamental_domain_characterization : ∃ (s : Set α), IsAddFundamentalDomain G s)
+
 /-- We say a quotient of `α` by `G` `HasFundamentalDomain` if there is a measurable set `s` for
   which `IsFundamentalDomain G s` holds. -/
 class HasFundamentalDomain (G : Type _) (α : Type _) [One G] [SMul G α] [MeasureSpace α] : Prop :=
 (has_fundamental_domain_characterization : ∃ (s : Set α), IsFundamentalDomain G s)
 
+attribute [to_additive existing HasFundamentalDomain] HasAddFundamentalDomain
+
+-- TO DO : 9/14: To additivize all this crap
+
 /-- The `covolume` of a quotient of `α` by `G`, assuming `HasFundamentalDomain`, the volume of any
   choice of a fundamental domain. -/
+--@[to_additive]
 def covolume (G α : Type _) [One G] [SMul G α] [MeasureSpace α]
     [funDom : HasFundamentalDomain G α] : ℝ≥0∞ :=
   volume funDom.has_fundamental_domain_characterization.choose
@@ -940,6 +951,34 @@ instance [i : SigmaFinite (volume : Measure α)] [i' : HasFundamentalDomain G α
     apply measurableSet_preimage (measurable_const_smul g⁻¹) (by apply (hA_meas n))
   · rw [← image_iUnion,  hA']
     refine image_univ_of_surjective (by convert surjective_quotient_mk α)
+
+/-- A measure `μ` on `α ⧸ G` satisfying `QuotientVolumeEqVolumePreimage` and having finite covolume
+is a finite measure. -/
+theorem QuotientVolumeEqVolumePreimage.Finite_quotient
+    (μ : Measure (Quotient α_mod_G)) [QuotientVolumeEqVolumePreimage μ]
+    [hasFun : HasFundamentalDomain G α]
+    (h : covolume G α ≠ ⊤) :
+    IsFiniteMeasure μ := by
+  obtain ⟨𝓕, h𝓕⟩ := hasFun.has_fundamental_domain_characterization
+  rw [QuotientVolumeEqVolumePreimage.eq_quotientMeasure h𝓕 μ,
+    h𝓕.nullMeasurableSet.quotientMeasure_eq_map_restrict]
+  have : Fact (volume 𝓕 < ⊤) := by
+    apply Fact.mk
+    convert Ne.lt_top h
+    rw [h𝓕.covolume_eq_volume]
+  exact inferInstance
+
+/-- A finite measure `μ` on `α ⧸ G` satisfying `QuotientVolumeEqVolumePreimage` has finite covolume.
+-/
+theorem QuotientVolumeEqVolumePreimage.finite_covolume
+    (μ : Measure (Quotient α_mod_G)) [QuotientVolumeEqVolumePreimage μ] [IsFiniteMeasure μ]
+    [hasFun : HasFundamentalDomain G α] :
+    covolume G α ≠ ⊤ := by
+  obtain ⟨𝓕, h𝓕⟩ := hasFun.has_fundamental_domain_characterization
+  have H : μ univ ≠ ⊤ := measure_ne_top μ univ
+  rw [QuotientVolumeEqVolumePreimage.eq_quotientMeasure h𝓕 μ,
+    h𝓕.nullMeasurableSet.quotientMeasure_apply _ MeasurableSet.univ] at H
+  simpa [h𝓕.covolume_eq_volume] using H
 
 end QuotientVolumeEqVolume
 
