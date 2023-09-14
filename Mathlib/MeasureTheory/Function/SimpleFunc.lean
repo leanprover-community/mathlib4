@@ -94,7 +94,7 @@ def ofIsEmpty [IsEmpty α] : α →ₛ β where
   finite_range' := by simp [range_eq_empty]
 #align measure_theory.simple_func.of_is_empty MeasureTheory.SimpleFunc.ofIsEmpty
 
-/-- Simple function defined on an finite type. -/
+/-- Simple function defined on a finite type. -/
 def ofFintype [Fintype α] [MeasurableSingletonClass α] (f : α → β) : α →ₛ β where
   toFun := f
   measurableSet_fiber' x := Finite.measurableSet (toFinite (f ⁻¹' {x}))
