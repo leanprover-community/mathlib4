@@ -144,11 +144,13 @@ lemma Exact.unop {S : ShortComplex Cᵒᵖ} (h : S.Exact) : S.unop.Exact := by
 
 variable (S)
 
-lemma exact_iff_op : S.Exact ↔ S.op.Exact :=
-  ⟨Exact.op, Exact.unop⟩
+@[simp]
+lemma exact_op_iff : S.op.Exact ↔ S.Exact:=
+  ⟨Exact.unop, Exact.op⟩
 
-lemma exact_iff_unop (S : ShortComplex Cᵒᵖ) : S.Exact ↔ S.unop.Exact :=
-  S.unop.exact_iff_op.symm
+@[simp]
+lemma exact_unop_iff (S : ShortComplex Cᵒᵖ) : S.unop.Exact ↔ S.Exact :=
+  S.unop.exact_op_iff.symm
 
 end
 
