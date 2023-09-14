@@ -185,8 +185,8 @@ section Ring
 
 variable [Ring R] [StarRing R]
 
-instance : Neg (unitary R)
-    where neg U :=
+instance : Neg (unitary R) where
+  neg U :=
     ⟨-U, by simp [mem_iff, star_neg, neg_mul_neg]⟩
 
 @[norm_cast]
