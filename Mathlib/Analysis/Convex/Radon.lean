@@ -30,17 +30,6 @@ universe u
 
 variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
-lemma radon_partition_aux {ι : Type*} {z : ι → E} (w : ι → 𝕜) (I J : Finset ι)
-    (h_wsum_zero : ∑ i in I, w i + ∑ j in J, w j = 0) (h_wsum_I_pos : ∑ i in I, w i ≠ 0)
-    (h_vsum : ∑ i in I, w i • z i + ∑ j in J, w j • z j = 0) :
-    (centerMass I w z = centerMass J w z) := by
-  ---have h_wsum_J_pos : ∑ i in I, w i > 0
-  simp only [centerMass]
-  rw [inv_smul_eq_iff₀, smul_comm]; symm; rw [inv_smul_eq_iff₀]
-  all_goals simp only [eq_neg_of_add_eq_zero_right h_wsum_zero,
-    Iff.mp add_eq_zero_iff_eq_neg h_vsum, neg_smul_neg, neg_ne_zero]
-  all_goals assumption
-
 /-- Any family `f` of affine dependent vectors contains a set `I` with the property that
 convex hulls of `I` and `Iᶜ` intersect. -/
 theorem radon_partition {ι : Type*} {f : ι → E} (h : ¬AffineIndependent 𝕜 f) :
@@ -70,20 +59,20 @@ theorem radon_partition {ι : Type*} {f : ι → E} (h : ¬AffineIndependent �
     calc
       p' = p'' := Finset.centerMass_mul _ _ _ neg_one_lt_zero.ne
       p'' = p := by
-        apply radon_partition_aux
+        apply Finset.centerMass_of_sum_add_sum_eq_zero
         · exact h_sum_I_J
-        · simp only [ne_eq]; linarith
         · simpa only [← h_vsum, not_lt] using sum_filter_add_sum_filter_not s1 (fun i ↦ w i < 0) _
 
   use p
   apply Set.mem_inter
-  · exact Convex.centerMass_mem (convex_convexHull _ _) (fun _ hi ↦ (mem_filter.mp hi).2) h_I_pos
+  · exact (convex_convexHull _ _).centerMass_mem (fun _ hi ↦ (mem_filter.mp hi).2) h_I_pos
       (fun _ hi ↦ subset_convexHull _ _ (Set.mem_image_of_mem _ hi))
   · rw [←h3]
     apply Convex.centerMass_mem (convex_convexHull _ _)
     · simp only [neg_mul, one_mul, Left.nonneg_neg_iff]
       exact fun _ hi ↦ (mem_filter.mp hi).2.le
-    · simp only [neg_mul, one_mul, sum_neg_distrib, Left.neg_pos_iff]; linarith
+    · simp only [neg_mul, one_mul, sum_neg_distrib, Left.neg_pos_iff]
+      linarith only [h_I_pos, h_sum_I_J]
     · intro i hi1
       apply subset_convexHull _ _ (Set.mem_image_of_mem _ _)
       intro hi2
