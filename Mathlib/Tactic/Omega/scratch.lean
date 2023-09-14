@@ -9,10 +9,17 @@ import Mathlib.Util.Time
 -- We follow "The Omega Test: a fast and practical integer programming algorithm for dependence analysis."
 
 set_option autoImplicit true
+set_option relaxedAutoImplicit true
 
 namespace Array
 
-@[simp] theorem zip_data {A : Array α} {B : Array β} : (A.zip B).data = A.data.zip B.data := sorry
+@[simp] theorem zipWith_data {A : Array α} {B : Array β} {f : α → β → γ} :
+    (Array.zipWith A B f).data = List.zipWith f A.data B.data := by
+  sorry
+
+@[simp] theorem zip_data {A : Array α} {B : Array β} :
+    (A.zip B).data = A.data.zip B.data := by
+  simp [zip, List.zip]
 
 end Array
 
@@ -54,41 +61,25 @@ structure Problem where
 
 namespace LinearCombo
 
-def eval (lc : LinearCombo) (values : Array Int) : Int := Id.run do
-  let mut r := lc.constantTerm
-  for c in lc.coefficients, x in values do
-    r := r + c * x
-  return r
+def eval (lc : LinearCombo) (values : Array Int) : Int :=
+  (lc.coefficients.zip values).foldl (fun r ⟨c, x⟩ => r + c * x) lc.constantTerm
+-- Perhaps we'd like to define this via:
+-- ```
+-- Id.run do
+--   let mut r := lc.constantTerm
+--   for c in lc.coefficients, x in values do
+--     r := r + c * x
+--   return r
+-- ```
+-- But at present this is far too hard to reason about.
+-- See discussion at https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/proofs.20about.20for.20loops/near/390634764
 
-def evalRat (lc : LinearCombo) (values : Array Rat) : Rat := Id.run do
-  let mut r : Rat := lc.constantTerm
-  for c in lc.coefficients, x in values do
-    r := r + c * x
-  return r
-
-variable {lc : LinearCombo}
-
-theorem eval_eq : lc.eval values =
-    (lc.coefficients.zip values).foldl (fun r ⟨c, x⟩ => r + c * x) lc.constantTerm :=  by
-  sorry
-
-theorem evalRat_eq : lc.evalRat values =
-    (lc.coefficients.zip values).foldl (fun r ⟨c, x⟩ => r + c * x) (lc.constantTerm : Rat) :=  by
-  sorry
-
-example : List.zip (a :: as) (b :: bs) = (a, b) :: List.zip as bs := by
-  simp -- Fine, `List.zip_cons_cons` is missing
-
-example : List.foldl f x (List.zip (a :: as) (b :: bs)) = f (List.foldl f x (List.zip as bs)) (a, b) := by
-  simp -- `simp?` says `simp only [List.foldl]`, but this isn't even marked with `@[simp]`.
-  -- Goal has become
-  -- List.foldl f (f x (a, b)) (List.zipWith Prod.mk as bs) = f (List.foldl f x (List.zip as bs)) (a, b)
-  -- Note that `List.zip` has been unfolded to `List.zipWith Prod.mk`!
-  sorry
+def evalRat (lc : LinearCombo) (values : Array Rat) : Rat :=
+  (lc.coefficients.zip values).foldl (fun r ⟨c, x⟩ => r + c * x) (lc.constantTerm : Rat)
 
 theorem evalRat_cast (lc : LinearCombo) (values : Array Int) :
     lc.evalRat (values.map fun x : Int => (x : Rat)) = lc.eval values := by
-  rw [eval_eq, evalRat_eq]
+  rw [eval, evalRat]
   simp [Array.foldl_eq_foldl_data]
   rcases lc with ⟨const, ⟨coeffs⟩⟩
   rcases values with ⟨values⟩
@@ -101,8 +92,7 @@ theorem evalRat_cast (lc : LinearCombo) (values : Array Int) :
     · specialize cih (const + c * v) _ values
       sorry
       dsimp?
-
-
+      sorry
 
 
 def satZero (lc : LinearCombo) : Prop :=
