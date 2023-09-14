@@ -1753,8 +1753,12 @@ private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : 
 @[positivity ⌈ _ ⌉₊]
 def evalNatCeil : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℕ)) := do
   let ~q(@Nat.ceil $α' $i $j $a) := e | throwError "failed to match on Nat.ceil application"
+  let _i : Q(LinearOrderedSemiring $α') ← synthInstanceQ (u := u_1) _
+  assertInstancesCommute
   match ← core q(inferInstance) q(inferInstance) a with
-  | .positive pa => pure (.positive (← mkAppM ``nat_ceil_pos #[pa]))
+  | .positive pa =>
+    letI ret : Q(0 < $e) := q(nat_ceil_pos (α := $α') $pa)
+    pure (.positive ret)
   | _ => pure .none
 
 private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
