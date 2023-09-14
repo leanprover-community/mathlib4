@@ -62,6 +62,10 @@ namespace UniqueMul
 
 variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 
+@[to_additive (attr := nontriviality, simp)]
+theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by simp [UniqueMul]
+
+@[to_additive]
 theorem mt {G} [Mul G] {A B : Finset G} {a0 b0 : G} (h : UniqueMul A B a0 b0) :
     ∀ ⦃a b⦄, a ∈ A → b ∈ B → a ≠ a0 ∨ b ≠ b0 → a * b ≠ a0 * b0 := fun _ _ ha hb k ↦ by
   contrapose! k
@@ -165,6 +169,37 @@ theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
 #align unique_mul.mul_hom_map_iff UniqueMul.mulHom_map_iff
 #align unique_add.add_hom_map_iff UniqueAdd.addHom_map_iff
 
+section Opposites
+open Finset MulOpposite
+
+@[to_additive]
+theorem of_mulOpposite
+    (h : UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
+    UniqueMul A B a0 b0 := by
+  intros a b aA bB ab
+  have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by simpa using congr_arg op ab)
+  simpa [and_comm] using this
+
+@[to_additive]
+theorem to_mulOpposite (h : UniqueMul A B a0 b0) :
+    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) := by
+  refine of_mulOpposite (G := MulOpposite G) <| fun a b ha hb hab ↦ ?_
+  simp only [mem_map, Function.Embedding.coeFn_mk, exists_exists_and_eq_and] at ha hb
+  rcases ha with ⟨a, ha, rfl⟩
+  rcases hb with ⟨b, hb, rfl⟩
+  rw [op_inj, op_inj, op_inj, op_inj]
+  apply h ha hb ?_
+  apply_fun op ∘ op using op_injective.comp op_injective
+  exact hab
+
+@[to_additive]
+theorem iff_mulOpposite :
+    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) ↔
+      UniqueMul A B a0 b0 :=
+⟨of_mulOpposite, to_mulOpposite⟩
+
+end Opposites
+
 end UniqueMul
 
 /-- Let `G` be a Type with addition.  `UniqueSums G` asserts that any two non-empty
@@ -212,8 +247,43 @@ is 'very monotone', then `A` also has `UniqueSums`."]
 instance (priority := 100) Covariants.to_uniqueProds {A} [Mul A] [LinearOrder A]
     [CovariantClass A A (· * ·) (· ≤ ·)] [CovariantClass A A (Function.swap (· * ·)) (· < ·)]
     [ContravariantClass A A (· * ·) (· ≤ ·)] : UniqueProds A where
-      uniqueMul_of_nonempty {A} {B} hA hB :=
-        ⟨_, A.max'_mem ‹_›, _, B.max'_mem ‹_›, fun a b ha hb ↦
-          (mul_eq_mul_iff_eq_and_eq (Finset.le_max' _ _ ‹_›) (Finset.le_max' _ _ ‹_›)).mp⟩
+  uniqueMul_of_nonempty {A B} hA hB :=
+    ⟨_, A.max'_mem ‹_›, _, B.max'_mem ‹_›, fun a b ha hb ↦
+      (mul_eq_mul_iff_eq_and_eq (Finset.le_max' _ _ ‹_›) (Finset.le_max' _ _ ‹_›)).mp⟩
 #align covariants.to_unique_prods Covariants.to_uniqueProds
 #align covariants.to_unique_sums Covariants.to_uniqueSums
+
+namespace UniqueProds
+
+@[to_additive (attr := nontriviality, simp)]
+theorem of_subsingleton {G : Type*} [Mul G] [Subsingleton G] : UniqueProds G where
+  uniqueMul_of_nonempty {A B} | ⟨a, hA⟩, ⟨b, hB⟩ => ⟨a, hA, b, hB, by simp⟩
+
+open Finset MulOpposite in
+@[to_additive]
+theorem of_mulOpposite (G : Type*) [Mul G] (h : UniqueProds Gᵐᵒᵖ) :
+    UniqueProds G :=
+  ⟨fun hA hB =>
+    let f : G ↪ Gᵐᵒᵖ := ⟨op, op_injective⟩
+    let ⟨y, yB, x, xA, hxy⟩ := h.uniqueMul_of_nonempty (hB.map (f := f)) (hA.map (f := f))
+    ⟨unop x, (mem_map' _).mp xA, unop y, (mem_map' _).mp yB, hxy.of_mulOpposite⟩⟩
+
+open MulOpposite in
+@[to_additive (attr := simp)]
+theorem iff_mulOpposite (G : Type*) [Mul G] :
+    UniqueProds Gᵐᵒᵖ ↔ UniqueProds G := by
+  refine ⟨of_mulOpposite G, fun h ↦ of_mulOpposite (Gᵐᵒᵖ) ⟨fun {A B} hA hB ↦ ?_⟩⟩
+  classical
+  let f : Gᵐᵒᵖᵐᵒᵖ ↪ G := ⟨_, unop_injective.comp unop_injective⟩
+  obtain ⟨a0, ha0, b0, hb0, d⟩ :=
+    h.uniqueMul_of_nonempty (Finset.Nonempty.map (f := f) hA) (Finset.Nonempty.map (f := f) hB)
+  simp only [Finset.mem_map, Function.Embedding.coeFn_mk, Function.comp_apply] at ha0 hb0
+  rcases ha0 with ⟨a0, ha0, rfl⟩
+  rcases hb0 with ⟨b0, hb0, rfl⟩
+  refine ⟨a0, ha0, b0, hb0, ?_⟩
+  apply (UniqueMul.mulHom_map_iff (H := G) (⟨_, unop_injective.comp unop_injective⟩) ?_).mp
+  · simp only [Function.Embedding.coeFn_mk, Function.comp_apply]
+    convert d
+  · simp only [Function.Embedding.coeFn_mk, Function.comp_apply, unop_mul, implies_true]
+
+end UniqueProds
