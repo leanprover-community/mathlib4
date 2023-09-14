@@ -169,7 +169,9 @@ theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
 #align unique_mul.mul_hom_map_iff UniqueMul.mulHom_map_iff
 #align unique_add.add_hom_map_iff UniqueAdd.addHom_map_iff
 
-open Finset MulOpposite in
+section Opposites
+open Finset MulOpposite
+
 @[to_additive]
 theorem of_mulOpposite
     (h : UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
@@ -178,12 +180,10 @@ theorem of_mulOpposite
   have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by simpa using congr_arg op ab)
   simpa [and_comm] using this
 
-open Finset MulOpposite in
 @[to_additive]
-theorem iff_mulOpposite :
-    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) ↔
-      UniqueMul A B a0 b0 := by
-  refine ⟨of_mulOpposite, fun h ↦ of_mulOpposite (G := MulOpposite G) <| fun a b ha hb hab ↦ ?_⟩
+theorem to_mulOpposite (h : UniqueMul A B a0 b0) :
+    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) := by
+  refine of_mulOpposite (G := MulOpposite G) <| fun a b ha hb hab ↦ ?_
   simp only [mem_map, Function.Embedding.coeFn_mk, exists_exists_and_eq_and] at ha hb
   rcases ha with ⟨a, ha, rfl⟩
   rcases hb with ⟨b, hb, rfl⟩
@@ -191,6 +191,14 @@ theorem iff_mulOpposite :
   apply h ha hb ?_
   apply_fun op ∘ op using op_injective.comp op_injective
   exact hab
+
+@[to_additive]
+theorem iff_mulOpposite :
+    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) ↔
+      UniqueMul A B a0 b0 :=
+⟨of_mulOpposite, to_mulOpposite⟩
+
+end Opposites
 
 end UniqueMul
 
@@ -248,9 +256,8 @@ instance (priority := 100) Covariants.to_uniqueProds {A} [Mul A] [LinearOrder A]
 namespace UniqueProds
 
 @[to_additive (attr := nontriviality, simp)]
-theorem of_subsingleton {G : Type*} [Mul G] [Subsingleton G] :
-    UniqueProds G :=
-  ⟨fun {A B} ⟨a, hA⟩ ⟨b, hB⟩ ↦ ⟨a, hA, b, hB, by simp⟩⟩
+theorem of_subsingleton {G : Type*} [Mul G] [Subsingleton G] : UniqueProds G where
+  uniqueMul_of_nonempty {A B} | ⟨a, hA⟩, ⟨b, hB⟩ => ⟨a, hA, b, hB, by simp⟩
 
 open Finset MulOpposite in
 @[to_additive]
@@ -262,7 +269,7 @@ theorem of_mulOpposite (G : Type*) [Mul G] (h : UniqueProds Gᵐᵒᵖ) :
     ⟨unop x, (mem_map' _).mp xA, unop y, (mem_map' _).mp yB, hxy.of_mulOpposite⟩⟩
 
 open MulOpposite in
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem iff_mulOpposite (G : Type*) [Mul G] :
     UniqueProds Gᵐᵒᵖ ↔ UniqueProds G := by
   refine ⟨of_mulOpposite G, fun h ↦ of_mulOpposite (Gᵐᵒᵖ) ⟨fun {A B} hA hB ↦ ?_⟩⟩
