@@ -36,7 +36,7 @@ section Pure
 /-- The pure `Pmf` is the `Pmf` where all the mass lies in one point.
   The value of `pure a` is `1` at `a` and `0` elsewhere. -/
 def pure (a : α) : Pmf α :=
-  ⟨fun a' => if a' = a then 1 else 0, hasSum_ite_eq _ _⟩
+  ⟨fun a' => if a' = a then 1 else 0, by simp_rw [apply_ite, coe_zero, coe_one, tsum_ite_eq] ⟩
 #align pmf.pure Pmf.pure
 
 variable (a a' : α)
@@ -44,6 +44,9 @@ variable (a a' : α)
 @[simp]
 theorem pure_apply : pure a a' = if a' = a then 1 else 0 := rfl
 #align pmf.pure_apply Pmf.pure_apply
+
+lemma coe_pure_apply: (pure a a' : ℝ≥0∞) = if a' = a then 1 else 0 :=
+  by rw [pure_apply]; split_ifs <;> simp
 
 @[simp]
 theorem support_pure : (pure a).support = {a} :=
@@ -106,32 +109,33 @@ end Pure
 
 section Bind
 
+protected lemma bind_apply_ne_top (p : Pmf α) (f : α → Pmf β) (x : β) :
+    (∑' (a : α), (p a : ℝ≥0∞) * ↑(f a x)) ≠ ⊤ := lt_top_iff_ne_top.1 $ by
+  calc _ ≤ ∑' (a : α), (p a : ℝ≥0∞) := ENNReal.tsum_le_tsum (fun y =>
+    mul_le_of_le_one_right' (coe_le_one_iff.2 ((f y).apply_le_one _)))
+  _ = 1 := p.tsum_coe_ennreal
+  _ < ⊤ := one_lt_top
+
 /-- The monadic bind operation for `Pmf`. -/
 def bind (p : Pmf α) (f : α → Pmf β) : Pmf β :=
-  ⟨fun b => ∑' a, p a * f a b, by
-    rw [Summable.hasSum_iff]
-    · rw [tsum_comm']
-      · simp_rw [NNReal.tsum_mul_left, tsum_coe, mul_one, tsum_coe]
-      · sorry
-      . intro x; apply Summable.mul_left; apply (f x).summable
-      . intro x
-        refine summable_of_le (fun y => mul_le_of_le_one_right' ((f y).apply_le_one _)) p.summable
-    · sorry
-
-    -- ENNReal.summable.hasSum_iff.2
-    --  (ENNReal.tsum_comm.trans <| by simp only [ENNReal.tsum_mul_left, tsum_coe, mul_one])
-  ⟩
+  ⟨fun b => (∑' a, (p a : ℝ≥0∞) * f a b).toNNReal, by
+    conv => left; right; ext x; apply coe_toNNReal (Pmf.bind_apply_ne_top p f x)
+    rw [ENNReal.tsum_comm]
+    simp_rw [ENNReal.tsum_mul_left, tsum_coe_ennreal, mul_one, tsum_coe_ennreal]⟩
 #align pmf.bind Pmf.bind
 
 variable (p : Pmf α) (f : α → Pmf β) (g : β → Pmf γ)
 
 @[simp]
-theorem bind_apply (b : β) : p.bind f b = ∑' a, p a * f a b := rfl
+theorem bind_apply (b : β) : p.bind f b = (∑' a, (p a : ℝ≥0∞) * f a b).toNNReal := rfl
 #align pmf.bind_apply Pmf.bind_apply
 
+lemma coe_bind_apply (b : β) : (p.bind f b : ℝ≥0∞) = ∑' a, (p a : ℝ≥0∞) * f a b := by
+  simp only [bind_apply, coe_toNNReal (Pmf.bind_apply_ne_top _ _ _)]
+
 @[simp]
-theorem support_bind : (p.bind f).support = ⋃ a ∈ p.support, (f a).support :=
-  Set.ext fun b => by simp [mem_support_iff, ENNReal.tsum_eq_zero, not_or]
+theorem support_bind : (p.bind f).support = ⋃ a ∈ p.support, (f a).support := Set.ext fun b => by
+    simp [mem_support_iff, toNNReal_eq_zero_iff, not_or, Pmf.bind_apply_ne_top p f b]
 #align pmf.support_bind Pmf.support_bind
 
 theorem mem_support_bind_iff (b : β) :
@@ -140,37 +144,41 @@ theorem mem_support_bind_iff (b : β) :
 #align pmf.mem_support_bind_iff Pmf.mem_support_bind_iff
 
 @[simp]
-theorem pure_bind (a : α) (f : α → Pmf β) : (pure a).bind f = f a := by
-  have : ∀ b a', ite (a' = a) (f a' b) 0 = ite (a' = a) (f a b) 0 := fun b a' => by
-    split_ifs with h <;> simp; subst h; simp
-  ext b
-  simp [this]
+theorem pure_bind (a : α) (f : α → Pmf β) : (pure a).bind f = f a := Pmf.ext fun b => by
+  apply ENNReal.coe_injective
+  simp only [coe_bind_apply, coe_pure_apply]
+  trans ∑' (x : α), (if x = a then f a b else 0)
+  · congr with x; split_ifs with h <;> simp [h]
+  . apply tsum_ite_eq
 #align pmf.pure_bind Pmf.pure_bind
 
 @[simp]
-theorem bind_pure : p.bind pure = p :=
-  Pmf.ext fun x => (bind_apply _ _ _).trans (_root_.trans
-    (tsum_eq_single x fun y hy => by rw [pure_apply_of_ne _ _ hy.symm, mul_zero]) <|
-    by rw [pure_apply_self, mul_one])
+theorem bind_pure : p.bind pure = p := Pmf.ext fun x => by
+  rw [bind_apply, tsum_eq_single x]
+  · rw [pure_apply_self, coe_one, mul_one, toNNReal_coe]
+  · intro y hy
+    rw [pure_apply_of_ne _ _ hy.symm, coe_zero, mul_zero]
 #align pmf.bind_pure Pmf.bind_pure
 
 @[simp]
-theorem bind_const (p : Pmf α) (q : Pmf β) : (p.bind fun _ => q) = q :=
-  Pmf.ext fun x => by rw [bind_apply, ENNReal.tsum_mul_right, tsum_coe, one_mul]
+theorem bind_const (p : Pmf α) (q : Pmf β) : (p.bind fun _ => q) = q := Pmf.ext fun x => by
+  rw [bind_apply, ENNReal.tsum_mul_right, tsum_coe_ennreal, one_mul, toNNReal_coe]
 #align pmf.bind_const Pmf.bind_const
 
 @[simp]
 theorem bind_bind : (p.bind f).bind g = p.bind fun a => (f a).bind g :=
   Pmf.ext fun b => by
-    simpa only [ENNReal.coe_eq_coe.symm, bind_apply, ENNReal.tsum_mul_left.symm,
-      ENNReal.tsum_mul_right.symm, mul_assoc, mul_left_comm, mul_comm] using ENNReal.tsum_comm
+    simp only [bind_apply, coe_toNNReal (Pmf.bind_apply_ne_top _ _ _)]
+    simp_rw [ENNReal.tsum_mul_right.symm, ENNReal.tsum_mul_left.symm, mul_assoc]
+    rw [ENNReal.tsum_comm]
 #align pmf.bind_bind Pmf.bind_bind
 
 theorem bind_comm (p : Pmf α) (q : Pmf β) (f : α → β → Pmf γ) :
     (p.bind fun a => q.bind (f a)) = q.bind fun b => p.bind fun a => f a b :=
   Pmf.ext fun b => by
-    simpa only [ENNReal.coe_eq_coe.symm, bind_apply, ENNReal.tsum_mul_left.symm,
-      ENNReal.tsum_mul_right.symm, mul_assoc, mul_left_comm, mul_comm] using ENNReal.tsum_comm
+    simp only [bind_apply, coe_toNNReal (Pmf.bind_apply_ne_top _ _ _)]
+    simp_rw [ENNReal.tsum_mul_left.symm, mul_left_comm]
+    rw [ENNReal.tsum_comm]
 #align pmf.bind_comm Pmf.bind_comm
 
 section Measure
@@ -182,7 +190,9 @@ theorem toOuterMeasure_bind_apply :
     (p.bind f).toOuterMeasure s = ∑' a, p a * (f a).toOuterMeasure s :=
   calc
     (p.bind f).toOuterMeasure s = ∑' b, if b ∈ s then ∑' a, p a * f a b else 0 := by
-      simp [toOuterMeasure_apply, Set.indicator_apply]
+      simp only [toOuterMeasure_apply, Set.indicator_apply, coe_bind_apply]
+
+
     _ = ∑' (b) (a), p a * if b ∈ s then f a b else 0 := (tsum_congr fun b => by split_ifs <;> simp)
     _ = ∑' (a) (b), p a * if b ∈ s then f a b else 0 :=
       (tsum_comm' ENNReal.summable (fun _ => ENNReal.summable) fun _ => ENNReal.summable)

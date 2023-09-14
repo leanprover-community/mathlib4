@@ -41,7 +41,7 @@ open Classical BigOperators NNReal ENNReal MeasureTheory
 /-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0` such
   that the values have (infinite) sum `1`. -/
 def Pmf.{u} (α : Type u) : Type u :=
-  { f : α → ℝ≥0 // HasSum f 1 }
+  { f : α → ℝ≥0 // ∑' (x : α), (f x : ℝ≥0∞) = 1 }
 #align pmf Pmf
 
 namespace Pmf
@@ -60,16 +60,27 @@ theorem ext_iff {p q : Pmf α} : p = q ↔ ∀ x, p x = q x :=
   FunLike.ext_iff
 #align pmf.ext_iff Pmf.ext_iff
 
-theorem hasSum_coe_one (p : Pmf α) : HasSum p 1 :=
-  p.2
+theorem hasSum_coe_ennreal_one (p : Pmf α) : HasSum (fun x => (p x : ℝ≥0∞)) 1 :=
+  ENNReal.summable.hasSum_iff.2 p.2
+
+@[simp]
+theorem tsum_coe_ennreal (p : Pmf α) : ∑' (x : α), (p x : ℝ≥0∞) = 1 := p.2
+
+theorem tsum_coe_ennreal_ne_top (p : Pmf α) : ∑' (x : α), (p x : ℝ≥0∞) ≠ ⊤ := by simp
+
+lemma summable (p : Pmf α) : Summable p := by
+  have := ENNReal.summable_toNNReal_of_tsum_ne_top p.tsum_coe_ennreal_ne_top
+  apply this
+
+theorem hasSum_coe_one (p : Pmf α) : HasSum p 1 := by
+  have := ENNReal.hassum_toNNReal_of_hassum_of_ne_top 1 one_ne_top p.tsum_coe_ennreal
+  simpa
 #align pmf.has_sum_coe_one Pmf.hasSum_coe_one
 
 @[simp]
-theorem tsum_coe (p : Pmf α) : ∑' a, p a = 1 :=
-  p.hasSum_coe_one.tsum_eq
+theorem tsum_coe (p : Pmf α) : ∑' a, p a = 1 := p.hasSum_coe_one.tsum_eq
 #align pmf.tsum_coe Pmf.tsum_coe
 
-lemma summable (p : Pmf α) : Summable p := ⟨_, hasSum_coe_one p⟩
 
 lemma summable_indicator (p : Pmf α) (s : Set α) : Summable (fun x => s.indicator p x) :=
   NNReal.summable_of_le (fun _ => Set.indicator_apply_le (fun _ => le_refl _)) p.summable
@@ -149,8 +160,8 @@ def toOuterMeasure (p : Pmf α) : OuterMeasure α :=
 
 variable (p : Pmf α) (s t : Set α)
 
-theorem toOuterMeasure_apply : p.toOuterMeasure s = ∑' x, s.indicator p x := by
-  simp_rw [ENNReal.coe_tsum (p.summable_indicator _), ENNReal.coe_indicator]
+theorem toOuterMeasure_apply :
+    p.toOuterMeasure s = ∑' x, s.indicator (fun x => (p x : ℝ≥0∞)) x := by
   apply tsum_congr fun x => smul_dirac_apply (p x) x s
 #align pmf.to_outer_measure_apply Pmf.toOuterMeasure_apply
 
@@ -165,7 +176,8 @@ theorem toOuterMeasure_caratheodory : p.toOuterMeasure.caratheodory = ⊤ := by
 @[simp]
 theorem toOuterMeasure_apply_finite (hs : s.Finite) :
     p.toOuterMeasure s = ∑ x in hs.toFinset, p x := by
-  simp [toOuterMeasure_apply p s, sum_eq_tsum_indicator]
+  simp [toOuterMeasure_apply p s, sum_eq_tsum_indicator,
+    ENNReal.coe_tsum (p.summable_indicator _), ENNReal.coe_indicator]
 
 @[simp]
 theorem toOuterMeasure_apply_finset (s : Finset α) : p.toOuterMeasure s = ∑ x in s, p x := by simp
@@ -186,7 +198,7 @@ theorem toOuterMeasure_inj {p q : Pmf α} : p.toOuterMeasure = q.toOuterMeasure 
 #align pmf.to_outer_measure_inj Pmf.toOuterMeasure_inj
 
 theorem toOuterMeasure_apply_eq_zero_iff : p.toOuterMeasure s = 0 ↔ Disjoint p.support s := by
-  rw [toOuterMeasure_apply, ENNReal.coe_tsum (p.summable_indicator s), ENNReal.tsum_eq_zero]
+  rw [toOuterMeasure_apply, ENNReal.tsum_eq_zero]
   simp_rw [ Pmf.support, Function.support_disjoint_iff (f := p) (s := s)]
   apply forall_congr'
   simp
@@ -195,12 +207,14 @@ theorem toOuterMeasure_apply_eq_zero_iff : p.toOuterMeasure s = 0 ↔ Disjoint p
 theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support ⊆ s := by
   refine' (p.toOuterMeasure_apply s).symm ▸ ⟨fun h a hap => _, fun h => _⟩
   · refine' by_contra fun hs => ne_of_lt _ h
-    suffices ∑' (x : α), Set.indicator s (↑p) x < ∑' (x : α), p x by simpa
-    apply NNReal.tsum_lt_tsum
+    suffices ∑' (x : α), Set.indicator s (fun x => (p x : ℝ≥0∞)) x < ∑' (x : α), (p x : ℝ≥0∞)
+      by simpa
+    apply ENNReal.tsum_lt_tsum
+    · sorry
     · exact (fun x => Set.indicator_apply_le fun _ => le_rfl)
-    · calc s.indicator p a = 0 := Set.indicator_apply_eq_zero.2 fun hs' => False.elim <| hs hs'
-           _ < p a := (p.apply_pos_iff a).2 hap
-    · exact summable p
+    · calc s.indicator (fun x => (p x : ℝ≥0∞)) a = 0 :=
+          Set.indicator_apply_eq_zero.2 fun hs' => False.elim <| hs hs'
+        _ < p a := sorry -- (p.apply_pos_iff a).2 hap
   · suffices ∑' (x : α), Set.indicator s (↑p) x = ∑' (x : α), p x by simpa
     apply tsum_congr
     · intro x
@@ -352,13 +366,7 @@ is the measure of the singleton set under the original measure. -/
 def toPmf [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
     [h : IsProbabilityMeasure μ] : Pmf α :=
   ⟨fun x => (μ ({x} : Set α)).toNNReal, by
-    rw [Summable.hasSum_iff]
-    · rw [← ENNReal.tsum_toNNReal_eq, ENNReal.toNNReal_eq_one_iff,
-        tsum_singleton_univ, measure_univ]
-      · exact fun a ↦ measure_ne_top μ {a}
-    · apply ENNReal.summable_toNNReal_of_tsum_ne_top
-      rw [tsum_singleton_univ, measure_univ ]
-      simp only⟩
+    simp_rw [fun x=>coe_toNNReal (measure_ne_top μ {x}), tsum_singleton_univ, measure_univ]⟩
 #align measure_theory.measure.to_pmf MeasureTheory.Measure.toPmf
 
 variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)

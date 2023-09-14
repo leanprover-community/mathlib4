@@ -1257,6 +1257,17 @@ theorem tsum_toNNReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
     NNReal.tsum_eq_toNNReal_tsum.symm
 #align ennreal.tsum_to_nnreal_eq ENNReal.tsum_toNNReal_eq
 
+theorem hassum_toNNReal_of_hassum_of_ne_top {α : Type*} {f : α → ℝ≥0∞} (r : ℝ≥0∞) (hr : r ≠ ∞)
+    (hf : ∑' (i : α), f i = r) :
+    HasSum (ENNReal.toNNReal ∘ f) (ENNReal.toNNReal r) := by
+  refine (Summable.hasSum_iff ?_).2 ?_
+  · apply summable_toNNReal_of_tsum_ne_top; rwa [hf]
+  · simp_rw [comp_apply]
+    rw [ ← ENNReal.tsum_toNNReal_eq, hf]
+    intro x
+    apply ENNReal.ne_top_of_tsum_ne_top
+    rwa [hf]
+
 theorem tsum_toReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
     (∑' a, f a).toReal = ∑' a, (f a).toReal := by
   simp only [ENNReal.toReal, tsum_toNNReal_eq hf, NNReal.coe_tsum]
