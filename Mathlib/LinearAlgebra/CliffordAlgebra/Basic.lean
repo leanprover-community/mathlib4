@@ -276,12 +276,12 @@ See `CliffordAlgebra.equivOfIsometry` for the case when `f` is a `QuadraticForm.
 def map (f : Q₁ →qᵢ Q₂) :
     CliffordAlgebra Q₁ →ₐ[R] CliffordAlgebra Q₂ :=
   CliffordAlgebra.lift Q₁
-    ⟨ι Q₂ ∘ₗ f, fun m => (ι_sq_scalar _ _).trans <| RingHom.congr_arg _ <| f.map_app m⟩
+    ⟨ι Q₂ ∘ₗ f.toLinearMap, fun m => (ι_sq_scalar _ _).trans <| RingHom.congr_arg _ <| f.map_app m⟩
 #align clifford_algebra.map CliffordAlgebra.map
 
 @[simp]
 theorem map_comp_ι (f : Q₁ →qᵢ Q₂) :
-    (map f).toLinearMap ∘ₗ ι Q₁ = ι Q₂ ∘ₗ f :=
+    (map f).toLinearMap ∘ₗ ι Q₁ = ι Q₂ ∘ₗ f.toLinearMap :=
   ι_comp_lift _ _
 #align clifford_algebra.map_comp_ι CliffordAlgebra.map_comp_ι
 

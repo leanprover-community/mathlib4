@@ -334,10 +334,6 @@ variable {ι 𝕜 E}
 
 namespace OrthonormalBasis
 
-instance instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
-  ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 (EuclideanSpace 𝕜 ι))⟩
-#align orthonormal_basis.inhabited OrthonormalBasis.instInhabited
-
 theorem repr_injective :
     Injective (repr : OrthonormalBasis ι 𝕜 E → E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) := fun f g h => by
   cases f
@@ -612,6 +608,31 @@ protected theorem repr_reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι')
 
 end OrthonormalBasis
 
+namespace EuclideanSpace
+
+variable (𝕜 ι)
+
+/-- The basis `Pi.basisFun`, bundled as an orthornormal basis of `EuclideanSpace 𝕜 ι`. -/
+noncomputable def basisFun : OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι) :=
+  ⟨LinearIsometryEquiv.refl _ _⟩
+
+@[simp]
+theorem basisFun_apply [DecidableEq ι] (i : ι) : basisFun ι 𝕜 i = EuclideanSpace.single i 1 :=
+  PiLp.basisFun_apply _ _ _ _
+
+@[simp]
+theorem basisFun_repr (x : EuclideanSpace 𝕜 ι) (i : ι) : (basisFun ι 𝕜).repr x i = x i := rfl
+
+theorem basisFun_toBasis : (basisFun ι 𝕜).toBasis = PiLp.basisFun _ 𝕜 ι := rfl
+
+end EuclideanSpace
+
+instance OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
+  ⟨EuclideanSpace.basisFun ι 𝕜⟩
+#align orthonormal_basis.inhabited OrthonormalBasis.instInhabited
+
+section Complex
+
 /-- `![1, I]` is an orthonormal basis for `ℂ` considered as a real inner product space. -/
 def Complex.orthonormalBasisOneI : OrthonormalBasis (Fin 2) ℝ ℂ :=
   Complex.basisOneI.toOrthonormalBasis
@@ -670,6 +691,8 @@ theorem Complex.isometryOfOrthonormal_apply (v : OrthonormalBasis (Fin 2) ℝ F)
   rw [Complex.isometryOfOrthonormal, LinearIsometryEquiv.trans_apply]
   simp [← v.sum_repr_symm]
 #align complex.isometry_of_orthonormal_apply Complex.isometryOfOrthonormal_apply
+
+end Complex
 
 open FiniteDimensional
 
