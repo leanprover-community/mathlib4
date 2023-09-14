@@ -229,7 +229,7 @@ theorem not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := fun h =>
 
 /-- There is a general version `le_bot_iff`, but this lemma does not require a `PartialOrder`. -/
 @[simp]
-theorem le_bot_iff : ∀ {a : WithBot α}, a ≤ ⊥ ↔ a = ⊥
+protected theorem le_bot_iff : ∀ {a : WithBot α}, a ≤ ⊥ ↔ a = ⊥
   | (a : α) => by simp [not_coe_le_bot _]
   | ⊥ => by simp
 
@@ -400,16 +400,16 @@ theorem le_coe_unbot' [Preorder α] : ∀ (a : WithBot α) (b : α), a ≤ a.unb
   | ⊥, _ => bot_le
 #align with_bot.le_coe_unbot' WithBot.le_coe_unbot'
 
-theorem unbot'_le_iff [LE α] {a : WithBot α} {b c : α} (h : a ≠ ⊥ ∨ b ≤ c) :
+theorem unbot'_le_iff [LE α] {a : WithBot α} {b c : α} (h : a = ⊥ → b ≤ c) :
     a.unbot' b ≤ c ↔ a ≤ c := by
   cases a
-  · simpa using h.elim (absurd rfl) id
+  · simpa using h rfl
   · simp [some_eq_coe]
 
-theorem unbot'_lt_iff [LT α] {a : WithBot α} {b c : α} (h : a ≠ ⊥ ∨ b < c) :
+theorem unbot'_lt_iff [LT α] {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
     a.unbot' b < c ↔ a < c := by
   cases a
-  · simpa [bot_lt_coe] using h.elim (absurd rfl) id
+  · simpa [bot_lt_coe] using h rfl
   · simp [some_eq_coe]
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) :=
@@ -863,7 +863,7 @@ theorem not_top_le_coe (a : α) : ¬(⊤ : WithTop α) ≤ ↑a :=
 
 /-- There is a general version `top_le_iff`, but this lemma does not require a `PartialOrder`. -/
 @[simp]
-theorem top_le_iff : ∀ {a : WithTop α}, ⊤ ≤ a ↔ a = ⊤
+protected theorem top_le_iff : ∀ {a : WithTop α}, ⊤ ≤ a ↔ a = ⊤
   | (a : α) => by simp [not_top_le_coe _]
   | ⊤ => by simp
 
@@ -1187,16 +1187,16 @@ theorem coe_untop'_le [Preorder α] : ∀ (a : WithTop α) (b : α), a.untop' b 
   | (a : α), _ => le_rfl
   | ⊤, _ => le_top
 
-theorem le_untop'_iff [LE α] {a : WithTop α} {b c : α} (h : a ≠ ⊤ ∨ c ≤ b) :
+theorem le_untop'_iff [LE α] {a : WithTop α} {b c : α} (h : a = ⊤ → c ≤ b) :
     c ≤ a.untop' b ↔ c ≤ a := by
   cases a
-  · simpa using h.elim (absurd rfl) id
+  · simpa using h rfl
   · simp [some_eq_coe]
 
-theorem lt_untop'_iff [LT α] {a : WithTop α} {b c : α} (h : a ≠ ⊤ ∨ c < b) :
+theorem lt_untop'_iff [LT α] {a : WithTop α} {b c : α} (h : a = ⊤ → c < b) :
     c < a.untop' b ↔ c < a := by
   cases a
-  · simpa [none_eq_top, coe_lt_top] using h.elim (absurd rfl) id
+  · simpa [none_eq_top, coe_lt_top] using h rfl
   · simp [some_eq_coe]
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
