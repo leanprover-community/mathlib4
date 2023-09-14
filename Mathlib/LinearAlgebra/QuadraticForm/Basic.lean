@@ -843,8 +843,9 @@ abbrev associated' : QuadraticForm R M →ₗ[ℤ] BilinForm R M :=
 #align quadratic_form.associated' QuadraticForm.associated'
 
 /-- Symmetric bilinear forms can be lifted to quadratic forms -/
-instance canLift : CanLift (BilinForm R M) (QuadraticForm R M) (associatedHom ℕ) BilinForm.IsSymm
-    where prf B hB := ⟨B.toQuadraticForm, associated_left_inverse _ hB⟩
+instance canLift :
+    CanLift (BilinForm R M) (QuadraticForm R M) (associatedHom ℕ) BilinForm.IsSymm where
+  prf B hB := ⟨B.toQuadraticForm, associated_left_inverse _ hB⟩
 #align quadratic_form.can_lift QuadraticForm.canLift
 
 /-- There exists a non-null vector with respect to any quadratic form `Q` whose associated
