@@ -150,7 +150,7 @@ lemma Fin.succ_mem_piFinset_iff' {n : ℕ} {α : Fin (n + 1) → Type*} (p : ∀
     · exact h2
 
 @[simp]
-lemma Fin.snoc_mem_piFinset_cons_iff {α} {n : ℕ} (p : Fin n → α) (x : α)
+lemma Fin.snoc_mem_piFinset_snoc_iff {α} {n : ℕ} (p : Fin n → α) (x : α)
   (Sᵢ : Fin n → Finset α) (Sₙ : Finset α) :
     Fin.snoc p x ∈ Fintype.piFinset (Fin.snoc (α := fun _ => Finset α) Sᵢ Sₙ)
       ↔
