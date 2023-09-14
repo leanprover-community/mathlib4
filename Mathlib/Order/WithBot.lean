@@ -589,7 +589,7 @@ open Function
 theorem coe_injective : Injective (fun (a : α) => (a : WithTop α)) :=
   Option.some_injective _
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_inj : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 
