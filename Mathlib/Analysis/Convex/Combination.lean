@@ -32,8 +32,9 @@ open BigOperators Classical Pointwise
 
 universe u u'
 
-variable {R E F ι ι' α : Type*} [LinearOrderedField R] [AddCommGroup E] [AddCommGroup F]
-  [LinearOrderedAddCommGroup α] [Module R E] [Module R F] [Module R α] [OrderedSMul R α] {s : Set E}
+variable {R R' E F ι ι' α : Type*} [LinearOrderedField R] [LinearOrderedField R'] [AddCommGroup E]
+  [AddCommGroup F] [LinearOrderedAddCommGroup α] [Module R E] [Module R F] [Module R α]
+  [OrderedSMul R α] {s : Set E}
 
 /-- Center of mass of a finite collection of points with prescribed weights.
 Note that we require neither `0 ≤ w i` nor `∑ w = 1`. -/
@@ -69,17 +70,18 @@ theorem Finset.centerMass_singleton (hw : w i ≠ 0) : ({i} : Finset ι).centerM
   rw [centerMass, sum_singleton, sum_singleton, ← mul_smul, inv_mul_cancel hw, one_smul]
 #align finset.center_mass_singleton Finset.centerMass_singleton
 
+@[simp] lemma Finset.centerMass_neg_left : t.centerMass (-w) z = t.centerMass w z := by
+  simp [centerMass, inv_neg]
+
+lemma Finset.centerMass_smul_left {c : R'} [Module R' R] [Module R' E] [SMulCommClass R' R R]
+  [IsScalarTower R' R R] [SMulCommClass R R' E] [IsScalarTower R' R E] (hc : c ≠ 0) :
+    t.centerMass (c • w) z = t.centerMass w z := by
+  simp [centerMass, -smul_assoc, smul_assoc c, ←smul_sum, smul_inv₀, smul_smul_smul_comm, hc]
+
 theorem Finset.centerMass_eq_of_sum_1 (hw : ∑ i in t, w i = 1) :
     t.centerMass w z = ∑ i in t, w i • z i := by
   simp only [Finset.centerMass, hw, inv_one, one_smul]
 #align finset.center_mass_eq_of_sum_1 Finset.centerMass_eq_of_sum_1
-
-theorem Finset.centerMass_mul (hc : c ≠ 0) :
-    (t.centerMass (fun i => c * w i) z) = t.centerMass w z := by
-  rw [Finset.centerMass, Finset.centerMass, ←Finset.mul_sum, mul_inv, mul_smul,
-    @Finset.sum_congr _ _ _ _ _ ((fun i => c • w i • z i)) _ rfl, ←Finset.smul_sum, smul_comm,
-    inv_smul_smul₀ hc]
-  exact fun i _ => mul_smul c (w i) (z i)
 
 theorem Finset.centerMass_smul : (t.centerMass w fun i => c • z i) = c • t.centerMass w z := by
   simp only [Finset.centerMass, Finset.smul_sum, (mul_smul _ _ _).symm, mul_comm c, mul_assoc]
@@ -155,12 +157,10 @@ end Finset
 
 variable {z}
 
-theorem Finset.centerMass_of_sum_add_sum_eq_zero {s : Finset ι}
-    (h_wsum_zero : ∑ i in t, w i + ∑ i in s, w i = 0)
-    (h_vsum : ∑ i in t, w i • z i + ∑ i in s, w i • z i = 0) :
-    t.centerMass w z = s.centerMass w z := by
-  rw [Finset.centerMass, Finset.centerMass, eq_neg_of_add_eq_zero_right h_wsum_zero,
-    add_eq_zero_iff_eq_neg.mp h_vsum, ← neg_inv, smul_neg, neg_smul]
+lemma Finset.centerMass_of_sum_add_sum_eq_zero {s t : Finset ι}
+    (hw : ∑ i in s, w i + ∑ i in t, w i = 0) (hz : ∑ i in s, w i • z i + ∑ i in t, w i • z i = 0) :
+    s.centerMass w z = t.centerMass w z := by
+  simp [centerMass, eq_neg_of_add_eq_zero_right hw, eq_neg_of_add_eq_zero_left hz, ←neg_inv]
 
 /-- The center of mass of a finite subset of a convex set belongs to the set
 provided that all weights are non-negative, and the total weight is positive. -/
@@ -237,12 +237,24 @@ theorem Finset.centerMass_mem_convexHull (t : Finset ι) {w : ι → R} (hw₀ :
   (convex_convexHull R s).centerMass_mem hw₀ hws fun i hi => subset_convexHull R s <| hz i hi
 #align finset.center_mass_mem_convex_hull Finset.centerMass_mem_convexHull
 
+/-- A version of `Finset.centerMass_mem_convexHull` for when the weights are nonpositive. -/
+lemma Finset.centerMass_mem_convexHull_of_nonpos (t : Finset ι) (hw₀ : ∀ i ∈ t, w i ≤ 0)
+    (hws : ∑ i in t, w i < 0) (hz : ∀ i ∈ t, z i ∈ s) : t.centerMass w z ∈ convexHull R s := by
+  rw [←centerMass_neg_left]
+  exact Finset.centerMass_mem_convexHull _ (λ _i hi ↦ neg_nonneg.2 $ hw₀ _ hi) (by simpa) hz
+
 /-- A refinement of `Finset.centerMass_mem_convexHull` when the indexed family is a `Finset` of
 the space. -/
 theorem Finset.centerMass_id_mem_convexHull (t : Finset E) {w : E → R} (hw₀ : ∀ i ∈ t, 0 ≤ w i)
     (hws : 0 < ∑ i in t, w i) : t.centerMass w id ∈ convexHull R (t : Set E) :=
   t.centerMass_mem_convexHull hw₀ hws fun _ => mem_coe.2
 #align finset.center_mass_id_mem_convex_hull Finset.centerMass_id_mem_convexHull
+
+/-- A version of `Finset.centerMass_mem_convexHull` for when the weights are nonpositive. -/
+lemma Finset.centerMass_id_mem_convexHull_of_nonpos (t : Finset E) {w : E → R}
+  (hw₀ : ∀ i ∈ t, w i ≤ 0) (hws : ∑ i in t, w i < 0) :
+    t.centerMass w id ∈ convexHull R (t : Set E) :=
+  t.centerMass_mem_convexHull_of_nonpos hw₀ hws fun _ ↦ mem_coe.2
 
 theorem affineCombination_eq_centerMass {ι : Type*} {t : Finset ι} {p : ι → E} {w : ι → R}
     (hw₂ : ∑ i in t, w i = 1) : t.affineCombination R p w = centerMass t w p := by
