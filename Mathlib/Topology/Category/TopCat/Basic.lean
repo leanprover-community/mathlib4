@@ -48,7 +48,7 @@ instance concreteCategory : ConcreteCategory TopCat := by
   dsimp [TopCat]
   infer_instance
 
-instance : CoeSort TopCat (Type _) :=
+instance : CoeSort TopCat (Type*) :=
   Bundled.coeSort
 
 instance topologicalSpaceUnbundled (x : TopCat) : TopologicalSpace x :=

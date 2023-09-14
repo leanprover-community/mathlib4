@@ -48,7 +48,7 @@ open Set Function Filter Asymptotics Metric Complex
 open scoped Topology Filter Real
 
 local notation "expR" => Real.exp
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace PhragmenLindelof
 
@@ -57,7 +57,7 @@ namespace PhragmenLindelof
 -/
 
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 /-- An auxiliary lemma that combines two double exponential estimates into a similar estimate
 on the difference of the functions. -/

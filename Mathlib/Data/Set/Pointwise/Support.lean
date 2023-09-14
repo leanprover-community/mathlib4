@@ -21,7 +21,7 @@ open Function Set
 
 section Group
 
-variable {α β γ : Type _} [Group α] [MulAction α β]
+variable {α β γ : Type*} [Group α] [MulAction α β]
 
 theorem mulSupport_comp_inv_smul [One γ] (c : α) (f : β → γ) :
     (mulSupport fun x ↦ f (c⁻¹ • x)) = c • mulSupport f := by
@@ -43,7 +43,7 @@ end Group
 
 section GroupWithZero
 
-variable {α β γ : Type _} [GroupWithZero α] [MulAction α β]
+variable {α β γ : Type*} [GroupWithZero α] [MulAction α β]
 
 theorem mulSupport_comp_inv_smul₀ [One γ] {c : α} (hc : c ≠ 0) (f : β → γ) :
     (mulSupport fun x ↦ f (c⁻¹ • x)) = c • mulSupport f := by

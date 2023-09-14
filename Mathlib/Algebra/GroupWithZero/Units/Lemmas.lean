@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Hom.Units
+import Mathlib.Algebra.Hom.Group.Basic
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 
@@ -16,7 +17,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 -/
 
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type _}
+variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 
 variable [MonoidWithZero M₀]
 
@@ -199,6 +200,9 @@ theorem div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
   rw [div_mul_eq_mul_div, one_mul, div_mul_right _ h]
 #align div_helper div_helper
 
+theorem div_div_div_cancel_left' (a b : G₀) (hc : c ≠ 0) : c / a / (c / b) = b / a := by
+  rw [div_div_div_eq, mul_comm, mul_div_mul_right _ _ hc]
+
 end CommGroupWithZero
 
 section MonoidWithZero
@@ -247,7 +251,7 @@ end GroupWithZero
 
 /-- We define the inverse as a `MonoidWithZeroHom` by extending the inverse map by zero
 on non-units. -/
-noncomputable def MonoidWithZero.inverse {M : Type _} [CommMonoidWithZero M] :
+noncomputable def MonoidWithZero.inverse {M : Type*} [CommMonoidWithZero M] :
     M →*₀ M where
   toFun := Ring.inverse
   map_zero' := Ring.inverse_zero _
@@ -256,19 +260,19 @@ noncomputable def MonoidWithZero.inverse {M : Type _} [CommMonoidWithZero M] :
 #align monoid_with_zero.inverse MonoidWithZero.inverse
 
 @[simp]
-theorem MonoidWithZero.coe_inverse {M : Type _} [CommMonoidWithZero M] :
+theorem MonoidWithZero.coe_inverse {M : Type*} [CommMonoidWithZero M] :
     (MonoidWithZero.inverse : M → M) = Ring.inverse :=
   rfl
 #align monoid_with_zero.coe_inverse MonoidWithZero.coe_inverse
 
 @[simp]
-theorem MonoidWithZero.inverse_apply {M : Type _} [CommMonoidWithZero M] (a : M) :
+theorem MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) :
     MonoidWithZero.inverse a = Ring.inverse a :=
   rfl
 #align monoid_with_zero.inverse_apply MonoidWithZero.inverse_apply
 
 /-- Inversion on a commutative group with zero, considered as a monoid with zero homomorphism. -/
-def invMonoidWithZeroHom {G₀ : Type _} [CommGroupWithZero G₀] : G₀ →*₀ G₀ :=
+def invMonoidWithZeroHom {G₀ : Type*} [CommGroupWithZero G₀] : G₀ →*₀ G₀ :=
   { invMonoidHom with map_zero' := inv_zero }
 #align inv_monoid_with_zero_hom invMonoidWithZeroHom
 
@@ -279,8 +283,16 @@ variable [GroupWithZero G₀]
 variable {a b : G₀}
 
 @[simp]
-theorem smul_mk0 {α : Type _} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a :=
+theorem smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a :=
   rfl
 #align units.smul_mk0 Units.smul_mk0
 
 end Units
+
+/-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
+`n : ℤ`, to `(f x)^n`. -/
+@[simp]
+theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀']
+    [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
+  map_zpow' f (map_inv₀ f) x n
+#align map_zpow₀ map_zpow₀

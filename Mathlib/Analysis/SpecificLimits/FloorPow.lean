@@ -19,9 +19,7 @@ We state several auxiliary results pertaining to sequences of the form `⌊c^n�
   to `1/j^2`, up to a multiplicative constant.
 -/
 
--- porting note: elaboration of some occurrences of `^` were incorrect.
--- see: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234085
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Filter Finset
 
@@ -171,7 +169,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       have L : Tendsto (fun ε => d + ε * (1 + l)) (𝓝[>] 0) (𝓝 (d + 0 * (1 + l))) := by
         apply Tendsto.mono_left _ nhdsWithin_le_nhds
         exact tendsto_const_nhds.add (tendsto_id.mul tendsto_const_nhds)
-      simp only [MulZeroClass.zero_mul, add_zero] at L
+      simp only [zero_mul, add_zero] at L
       exact (((tendsto_order.1 L).2 l hd).and self_mem_nhdsWithin).exists
     filter_upwards [B ε εpos, Ioi_mem_atTop 0]with n hn npos
     simp_rw [div_eq_inv_mul]
@@ -190,7 +188,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         exact
           tendsto_const_nhds.add
             (tendsto_id.mul ((tendsto_const_nhds.add tendsto_id).add tendsto_const_nhds))
-      simp only [MulZeroClass.zero_mul, add_zero] at L
+      simp only [zero_mul, add_zero] at L
       exact (((tendsto_order.1 L).2 d hd).and self_mem_nhdsWithin).exists
     filter_upwards [A ε εpos, Ioi_mem_atTop 0]with n hn npos
     simp_rw [div_eq_inv_mul]

@@ -56,6 +56,8 @@ the other inside the proof. A few of the theorems, such as `ncard_union_le` do n
 finiteness arguments; they are true by coincidence due to junk values.
 -/
 
+set_option autoImplicit true
+
 namespace Set
 
 variable {s t : Set α}
@@ -66,7 +68,7 @@ noncomputable def encard (s : Set α) := PartENat.withTopEquiv (PartENat.card s)
 @[simp] theorem encard_univ_coe (s : Set α) : encard (univ : Set s) = encard s := by
   rw [encard, encard, PartENat.card_congr (Equiv.Set.univ ↑s)]
 
-theorem encard_univ (α : Type _) :
+theorem encard_univ (α : Type*) :
     encard (univ : Set α) = PartENat.withTopEquiv (PartENat.card α) := by
   rw [encard, PartENat.card_congr (Equiv.Set.univ α)]
 
@@ -152,7 +154,7 @@ section Lattice
 theorem encard_le_of_subset (h : s ⊆ t) : s.encard ≤ t.encard := by
   rw [←union_diff_cancel h, encard_union_eq disjoint_sdiff_right]; exact le_self_add
 
-theorem encard_mono {α : Type _} : Monotone (encard : Set α → ℕ∞) :=
+theorem encard_mono {α : Type*} : Monotone (encard : Set α → ℕ∞) :=
   fun _ _ ↦ encard_le_of_subset
 
 theorem encard_diff_add_encard_of_subset (h : s ⊆ t) : (t \ s).encard + s.encard = t.encard := by
@@ -521,7 +523,7 @@ theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ n
   rw [ncard_eq_toFinset_card _, Finset.finite_toSet_toFinset]
 #align set.ncard_coe_finset Set.ncard_coe_Finset
 
-theorem ncard_univ (α : Type _) : (univ : Set α).ncard = Nat.card α := by
+theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := by
   cases' finite_or_infinite α with h h
   · have hft := Fintype.ofFinite α
     rw [ncard_eq_toFinset_card, Finite.toFinset_univ, Finset.card_univ, Nat.card_eq_fintype_card]
@@ -529,7 +531,7 @@ theorem ncard_univ (α : Type _) : (univ : Set α).ncard = Nat.card α := by
   exact infinite_univ
 #align set.ncard_univ Set.ncard_univ
 
-@[simp] theorem ncard_empty (α : Type _) : (∅ : Set α).ncard = 0 := by
+@[simp] theorem ncard_empty (α : Type*) : (∅ : Set α).ncard = 0 := by
   rw [ncard_eq_zero]
 #align set.ncard_empty Set.ncard_empty
 
@@ -792,7 +794,6 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     apply hinj _ _ hx hy hxy
   have hft := ht.fintype
   have hft' := Fintype.ofInjective f' finj
-  simp_rw [ncard_eq_toFinset_card] at hst
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
   convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa)
   · simp
@@ -816,7 +817,6 @@ theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     exact ⟨_, ha, rfl⟩
   haveI := hs.fintype
   haveI := Fintype.ofSurjective _ hsurj
-  simp_rw [ncard_eq_toFinset_card] at hst
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
   exact
     @Finset.inj_on_of_surj_on_of_card_le _ _ _ t.toFinset f''

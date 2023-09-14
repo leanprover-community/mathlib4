@@ -11,7 +11,7 @@ import Mathlib.Algebra.Order.Monoid.TypeTags
 /-! # Ordered group structures on `Multiplicative α` and `Additive α`. -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 instance Multiplicative.orderedCommGroup [OrderedAddCommGroup α] :
     OrderedCommGroup (Multiplicative α) :=

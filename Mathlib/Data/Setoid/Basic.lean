@@ -34,7 +34,7 @@ reason about them using the existing `Setoid` and its infrastructure.
 setoid, equivalence, iseqv, relation, equivalence relation
 -/
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 /-- A version of `Setoid.r` that takes the equivalence relation as an explicit argument. -/
 def Setoid.Rel (r : Setoid α) : α → α → Prop :=
@@ -459,9 +459,9 @@ end Setoid
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
   simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply,
     forall_const]
-  refine' (surjective_quotient_mk _).forall.trans (forall_congr' fun a => _)
-  refine' (surjective_quotient_mk _).forall.trans (forall_congr' fun b => _)
-  simp_rw [←Quotient.mk''_eq_mk, Prop.top_eq_true, true_implies, Quotient.eq'']
+  refine' (surjective_quotient_mk' _).forall.trans (forall_congr' fun a => _)
+  refine' (surjective_quotient_mk' _).forall.trans (forall_congr' fun b => _)
+  simp_rw [Prop.top_eq_true, true_implies, Quotient.eq']
   rfl
 #align quotient.subsingleton_iff Quotient.subsingleton_iff
 

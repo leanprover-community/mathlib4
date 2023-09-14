@@ -16,7 +16,7 @@ In this file we prove `simp` lemmas that allow to simplify propositions like `Mo
 
 open Set Fin Matrix Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem liftFun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} {a : α} :
     ((· < ·) ⇒ r) (vecCons a f) (vecCons a f) ↔ r a (f 0) ∧ ((· < ·) ⇒ r) f f := by

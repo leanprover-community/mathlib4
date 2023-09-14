@@ -20,7 +20,7 @@ We provide `Subgroup.centralizer`, `AddSubgroup.centralizer` in other files.
 -/
 
 
-variable {M : Type _} {S T : Set M}
+variable {M : Type*} {S T : Set M}
 
 namespace Submonoid
 
