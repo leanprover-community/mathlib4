@@ -142,13 +142,6 @@ theorem LinearEquiv.finsuppUnique_symm_apply {α : Type*} [Unique α] (m : M) :
 
 end Finsupp
 
-/-- decomposing `x : ι → R` as a sum along the canonical basis -/
-theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [Semiring R]
-    (x : ι → R) : x = ∑ i, (x i) • fun j => if i = j then (1 : R) else 0 := by
-  ext
-  simp
-#align pi_eq_sum_univ pi_eq_sum_univ
-
 /-! ### Properties of linear maps -/
 
 
