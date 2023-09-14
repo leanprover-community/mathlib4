@@ -1098,6 +1098,9 @@ theorem algebraMap_def : ⇑(algebraMap R ℍ[R]) = coe :=
   rfl
 #align quaternion.algebra_map_def Quaternion.algebraMap_def
 
+theorem algebraMap_injective : (algebraMap R ℍ[R] : _ → _).Injective :=
+  QuaternionAlgebra.algebraMap_injective
+
 theorem smul_coe : x • (y : ℍ[R]) = ↑(x * y) :=
   QuaternionAlgebra.smul_coe x y
 #align quaternion.smul_coe Quaternion.smul_coe
