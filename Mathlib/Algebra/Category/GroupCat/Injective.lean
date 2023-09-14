@@ -161,11 +161,10 @@ def next : AddCommGroupCat.{u} := of <|
 
 instance : CategoryTheory.Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
-  @injective_of_divisible _ _ {
-    div := λ a n ↦ ULift.up (DivisibleBy.div a.down n)
+  @injective_of_divisible _ _
+  { div := λ a n ↦ ULift.up (DivisibleBy.div a.down n)
     div_zero := λ a ↦ by simp only [DivisibleBy.div_zero]; rfl
-    div_cancel := λ {n} a ha ↦ by ext1; exact DivisibleBy.div_cancel a.down ha
-  }
+    div_cancel := λ {n} a ha ↦ by ext1; exact DivisibleBy.div_cancel a.down ha }
 
 instance : CategoryTheory.Injective <| next A_ :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
@@ -203,11 +202,10 @@ variable {A_}
 variable (a : A_)
 
 /-- the `ℤ`-linear map of scalar multiplication (. • a)-/
-@[simps] def smulBya : ℤ →ₗ[ℤ] A_ := {
+@[simps] def smulBya : ℤ →ₗ[ℤ] A_ where
   toFun := (. • a)
   map_smul' := by intros; simp [mul_smul]
   map_add' := by intros; simp [add_smul]
-}
 
 lemma smulBya_range : LinearMap.range (smulBya a) = ℤ ∙ a := by
   ext1 x
