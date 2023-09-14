@@ -24,9 +24,9 @@ coefficients.
 ## Multiplicity calculations
 
 * `Nat.Prime.multiplicity_factorial`: Legendre's Theorem. The multiplicity of `p` in `n!` is
-  `n/p + ... + n/p^b` for any `b` such that `n/p^(b + 1) = 0`. See `padicValNat_factorial` for this
-  result stated in the language of `p`-adic valuations and
-  `sub_one_mul_padicValNat_factorial_eq_sub_sum_digits` for a related result.
+  `n / p + ... + n / p ^ b` for any `b` such that `n / p ^ (b + 1) = 0`. See `padicValNat_factorial`
+  for this result stated in the language of `p`-adic valuations and
+  `sub_one_mul_padicValNat_factorial` for a related result.
 * `Nat.Prime.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than
   that of `n!`.
 * `Nat.Prime.multiplicity_choose`: Kummer's Theorem. The multiplicity of `p` in `n.choose k` is the
@@ -123,6 +123,8 @@ theorem multiplicity_factorial {p : ℕ} (hp : p.Prime) :
         congr_arg _ <| Finset.sum_congr rfl fun _ _ => (succ_div _ _).symm
 #align nat.prime.multiplicity_factorial Nat.Prime.multiplicity_factorial
 
+/-- For a prime number `p`, taking `(p - 1)` times the multiplicity of `p` in `n!` equals `n` minus
+the sum of base `p` digits of `n`. -/
  theorem sub_one_mul_multiplicity_factorial {p : ℕ} (hp : p.Prime) :
      (p - 1) * (multiplicity p n !).get (finite_nat_iff.mpr ⟨hp.ne_one, factorial_pos n⟩) =
      n - (p.digits n).sum := by
