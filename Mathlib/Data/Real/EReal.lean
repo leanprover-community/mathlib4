@@ -359,7 +359,8 @@ theorem coe_add (x y : ℝ) : (↑(x + y) : EReal) = x + y :=
 
 @[norm_cast]
 theorem coe_nsmul (n : ℕ) (x : ℝ) : (↑(n • x) : EReal) = n • (x : EReal) :=
-  map_nsmul (⟨⟨Real.toEReal, coe_zero⟩, coe_add⟩ : ℝ →+ EReal) _ _
+  map_nsmul
+    ({ toFun := Real.toEReal, map_zero' := coe_zero, map_add' := coe_add } : ℝ →+ EReal) _ _
 #align ereal.coe_nsmul EReal.coe_nsmul
 
 #noalign ereal.coe_bit0
@@ -586,7 +587,9 @@ theorem coe_ennreal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) =
 
 @[norm_cast]
 theorem coe_ennreal_nsmul (n : ℕ) (x : ℝ≥0∞) : (↑(n • x) : EReal) = n • (x : EReal) :=
-  map_nsmul (⟨⟨(↑), coe_ennreal_zero⟩, coe_ennreal_add⟩ : ℝ≥0∞ →+ EReal) _ _
+  map_nsmul
+    ({ toFun := (↑), map_zero' := coe_ennreal_zero, map_add' := coe_ennreal_add } : ℝ≥0∞ →+ EReal)
+    _ _
 #align ereal.coe_ennreal_nsmul EReal.coe_ennreal_nsmul
 
 #noalign ereal.coe_ennreal_bit0
@@ -765,7 +768,8 @@ theorem neg_bot : -(⊥ : EReal) = ⊤ :=
 
 @[norm_cast]
 theorem coe_zsmul (n : ℤ) (x : ℝ) : (↑(n • x) : EReal) = n • (x : EReal) :=
-  map_zsmul' (⟨⟨(↑), coe_zero⟩, coe_add⟩ : ℝ →+ EReal) coe_neg _ _
+  map_zsmul'
+    ({ toFun := Real.toEReal, map_zero' := coe_zero, map_add' := coe_add } : ℝ →+ EReal) coe_neg _ _
 #align ereal.coe_zsmul EReal.coe_zsmul
 
 instance : InvolutiveNeg EReal where
@@ -1205,12 +1209,13 @@ instance : MulPosReflectLT EReal :=
 
 @[simp, norm_cast]
 theorem coe_pow (x : ℝ) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
-  map_pow (⟨⟨(↑), coe_one⟩, coe_mul⟩ : ℝ →* EReal) _ _
+  map_pow ({ toFun := (↑), map_one' := coe_one, map_mul' := coe_mul } : ℝ →* EReal) _ _
 #align ereal.coe_pow EReal.coe_pow
 
 @[simp, norm_cast]
 theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
-  map_pow (⟨⟨(↑), coe_ennreal_one⟩, coe_ennreal_mul⟩ : ℝ≥0∞ →* EReal) _ _
+  map_pow
+    ({ toFun := (↑), map_one' := coe_ennreal_one, map_mul' := coe_ennreal_mul } : ℝ≥0∞ →* EReal) _ _
 #align ereal.coe_ennreal_pow EReal.coe_ennreal_pow
 
 end EReal
