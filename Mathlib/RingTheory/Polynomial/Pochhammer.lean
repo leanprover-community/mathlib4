@@ -178,6 +178,17 @@ theorem ascPochhammer_nat_eq_descFactorial (a b : ℕ) :
   · rw [Nat.succ_add, ← Nat.add_succ, Nat.add_descFactorial_eq_ascFactorial,
       ascPochhammer_nat_eq_ascFactorial]
 #align pochhammer_nat_eq_desc_factorial ascPochhammer_nat_eq_descFactorial
+@[simp]
+theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
+    (ascPochhammer S n).natDegree = n := by
+  induction' n with n hn
+  · simp
+  · have : natDegree (X + (n : S[X])) = 1 := natDegree_X_add_C (n : S)
+    rw [ascPochhammer_succ_right,
+        natDegree_mul _ (ne_zero_of_natDegree_gt <| this.symm ▸ Nat.zero_lt_one), hn, this]
+    cases n
+    · simp
+    · refine' ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.succ_pos _
 
 end Semiring
 
