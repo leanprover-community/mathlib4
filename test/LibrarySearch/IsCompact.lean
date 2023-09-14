@@ -2,6 +2,8 @@ import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Tactic.LibrarySearch
 
+set_option pp.unicode.fun true
+
 -- TODO: uses sorry, but is hidden behind the `apply?`
 /--
 info: Try this: refine IsCompact.exists_forall_le _hK ?ne_s ?hf
