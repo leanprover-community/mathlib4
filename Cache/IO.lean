@@ -242,9 +242,9 @@ def mkDir (path : FilePath) : IO Unit := do
 Given a path to a Lean file, concatenates the paths to its build files.
 Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
 -/
-def mkBuildPaths (path : FilePath) : IO $ Array (FilePath × Bool) := do
+def mkBuildPaths (path : FilePath) : IO $ List (FilePath × Bool) := do
   let packageDir ← getPackageDir path
-  return #[
+  return [
     (packageDir / LIBDIR / path.withExtension "trace", true),
     (packageDir / LIBDIR / path.withExtension "olean", true),
     (packageDir / LIBDIR / path.withExtension "ilean", true),
@@ -252,7 +252,7 @@ def mkBuildPaths (path : FilePath) : IO $ Array (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "extra", false)]
 
 /-- Check that all required build files exist. -/
-def allExist (paths : Array (FilePath × Bool)) : IO Bool := do
+def allExist (paths : List (FilePath × Bool)) : IO Bool := do
   for (path, required) in paths do
     if required then if !(← path.pathExists) then return false
   pure true
@@ -271,9 +271,10 @@ def packCache (hashMap : HashMap) (overwrite : Bool) (comment : Option String :=
     if ← allExist buildPaths then
       if overwrite || !(← zipPath.pathExists) then
         tasks := tasks.push <| ← IO.asTask do
-          runCmd (← getLeanTar) $ #[zipPath.toString] ++
-            (if let some c := comment then #["-c", s!"git=mathlib4@{c}"] else #[]) ++
-            ((← buildPaths.filterM (·.1.pathExists)) |>.map (·.1.toString))
+          let trace :: args := (← buildPaths.filterM (·.1.pathExists)) |>.map (·.1.toString)
+            | unreachable!
+          runCmd (← getLeanTar) $ #[zipPath.toString, trace] ++
+            (if let some c := comment then #["-c", s!"git=mathlib4@{c}"] else #[]) ++ args
       acc := acc.push zip
   for task in tasks do
     _ ← IO.ofExcept task.get
