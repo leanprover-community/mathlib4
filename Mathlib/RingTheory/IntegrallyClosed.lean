@@ -111,8 +111,8 @@ end Algebra
 
 section FractionRing
 
-variable (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
-variable (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']
+variable (K : Type*) [CommRing K] [Algebra R K] [IsFractionRing R K]
+variable (K' : Type*) [CommRing K'] [Algebra R K'] [IsFractionRing R K']
 
 /-- `R` is integrally closed iff all integral elements of its fraction field `K`
 are also elements of `R`. -/
@@ -180,7 +180,7 @@ section Injective
 -- TODO: this section can be generalized from `IsFractionRing` to any `Algebra` that is injective,
 -- but there is no way to hook that assumption up to the typeclass system.
 
-variable {K : Type*} [Field K] [Algebra R K] [ifr : IsFractionRing R K]
+variable {K : Type*} [CommRing K] [Algebra R K] [ifr : IsFractionRing R K]
 
 variable [iic : IsIntegrallyClosed R K]
 
