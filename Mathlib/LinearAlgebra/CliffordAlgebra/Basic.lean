@@ -230,35 +230,36 @@ theorem induction {C : CliffordAlgebra Q → Prop}
   exact Subtype.prop (lift Q of a)
 #align clifford_algebra.induction CliffordAlgebra.induction
 
-/-- An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible. -/
+theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebra R A]
+    (f : M →ₗ[R] A) (hf : ∀ x, f x * f x = algebraMap _ _ (Q x)) (a b : M) :
+    f a * f b + f b * f a = algebraMap R _ (QuadraticForm.polar Q a b) :=
+  calc
+    f a * f b + f b * f a = f (a + b) * f (a + b) - f a * f a - f b * f b := by
+      rw [f.map_add, mul_add, add_mul, add_mul]; abel
+    _ = algebraMap R _ (Q (a + b)) - algebraMap R _ (Q a) - algebraMap R _ (Q b) := by
+      rw [hf, hf, hf]
+    _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← RingHom.map_sub, ← RingHom.map_sub]
+    _ = algebraMap R _ (QuadraticForm.polar Q a b) := rfl
+
+/-- An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible.
+
+To show a function squares to the quadratic form, it suffices to show that
+`f x * f y + f y * f x = algebraMap _ _ (polar Q x y)` -/
 theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (2 : A))
     (f : M →ₗ[R] A) :
     (∀ x, f x * f x = algebraMap _ _ (Q x)) ↔
       ((LinearMap.mul R A).compl₂ f) ∘ₗ f + ((LinearMap.mul R A).flip.compl₂ f) ∘ₗ f =
         Q.polarBilin.toLin.compr₂ (Algebra.linearMap R A) := by
   simp_rw [FunLike.ext_iff]
-  dsimp only [LinearMap.compr₂_apply, LinearMap.compl₂_apply, LinearMap.comp_apply,
-    Algebra.linearMap_apply, LinearMap.mul_apply', BilinForm.toLin_apply, LinearMap.add_apply,
-    LinearMap.flip_apply]
-  refine ⟨fun h x y => ?_, fun h x => ?_⟩
-  · rw [QuadraticForm.polarBilin_apply, QuadraticForm.polar, sub_sub, map_sub, map_add,
-      ←h x, ←h y, ←h (x + y), eq_sub_iff_add_eq, map_add,
-      add_mul, mul_add, mul_add, add_comm (f x * f x) (f x * f y),
-      add_add_add_comm]
-  · apply h2.mul_left_cancel
-    simp_rw [two_mul]
-    rw [h x x, QuadraticForm.polarBilin_apply, QuadraticForm.polar_self, two_mul, map_add]
+  refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x => ?_⟩
+  change ∀ x y : M, f x * f y + f y * f x = algebraMap R A (QuadraticForm.polar Q x y) at h
+  apply h2.mul_left_cancel
+  rw [two_mul, two_mul, h x x, QuadraticForm.polar_self, two_mul, map_add]
 
 /-- The symmetric product of vectors is a scalar -/
 theorem ι_mul_ι_add_swap (a b : M) :
     ι Q a * ι Q b + ι Q b * ι Q a = algebraMap R _ (QuadraticForm.polar Q a b) :=
-  calc
-    ι Q a * ι Q b + ι Q b * ι Q a = ι Q (a + b) * ι Q (a + b) - ι Q a * ι Q a - ι Q b * ι Q b := by
-      rw [(ι Q).map_add, mul_add, add_mul, add_mul]; abel
-    _ = algebraMap R _ (Q (a + b)) - algebraMap R _ (Q a) - algebraMap R _ (Q b) := by
-      rw [ι_sq_scalar, ι_sq_scalar, ι_sq_scalar]
-    _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← RingHom.map_sub, ← RingHom.map_sub]
-    _ = algebraMap R _ (QuadraticForm.polar Q a b) := rfl
+  mul_add_swap_eq_polar_of_forall_mul_self_eq _ (ι_sq_scalar _) _ _
 #align clifford_algebra.ι_mul_ι_add_swap CliffordAlgebra.ι_mul_ι_add_swap
 
 theorem ι_mul_comm (a b : M) :
