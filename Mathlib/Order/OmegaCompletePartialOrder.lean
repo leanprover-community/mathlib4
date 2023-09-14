@@ -294,7 +294,7 @@ lemma IsLUB_of_ScottContinuous {c : Chain α} {f : α → β} (hf : ScottContinu
   exact IsChain.directedOn (isChain_range c)
   exact ωSup_IsLUB
 
-lemma Continuous'_of_ScottContinuous {f : α → β} (hf : ScottContinuous f) : Continuous' f := by
+lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f := by
   constructor
   · intro c
     rw [← (IsLUB_ωSup (IsLUB_of_ScottContinuous hf))]
