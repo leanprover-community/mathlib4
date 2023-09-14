@@ -71,7 +71,11 @@ theorem tsum_coe (p : Pmf α) : ∑' a, p a = 1 :=
 
 lemma summable (p : Pmf α) : Summable p := ⟨_, hasSum_coe_one p⟩
 
-lemma summable_indicator (p : Pmf α) (s : Set α) : Summable (fun x => s.indicator p x) := sorry
+lemma summable_indicator (p : Pmf α) (s : Set α) : Summable (fun x => s.indicator p x) :=
+  NNReal.summable_of_le (fun _ => Set.indicator_apply_le (fun _ => le_refl _)) p.summable
+
+lemma summable_ite (p : Pmf α) (x : α) : Summable (fun y => ite (y = x) 0 (p y)) :=
+  NNReal.summable_of_le (fun x => by {split_ifs <;> simp}) p.summable
 
 theorem tsum_coe_indicator_le_on (p : Pmf α) (s : Set α) : ∑' a, s.indicator p a ≤ 1 := calc
   ∑' a, s.indicator p a ≤ ∑' a, p a := tsum_le_tsum
@@ -119,22 +123,15 @@ theorem apply_eq_one_iff (p : Pmf α) (a : α) : p a = 1 ↔ p.support = {a} := 
     fun a' ha' => ha'.symm ▸ (p.mem_support_iff a).2 fun ha => zero_ne_one <| ha.symm.trans h,
     fun h => _root_.trans (symm <| tsum_eq_single a
       fun a' ha' => (p.apply_eq_zero_iff a').2 (h.symm ▸ ha')) p.tsum_coe⟩
-  suffices : 1 < ∑' a, p a
-  exact ne_of_lt this p.tsum_coe.symm
-  have : 0 < ∑' b, ite (b = a) 0 (p b) := lt_of_le_of_ne' zero_le'
-    ((tsum_ne_zero_iff ENNReal.summable).2
-      ⟨a', ite_ne_left_iff.2 ⟨ha, Ne.symm <| (p.mem_support_iff a').2 ha'⟩⟩)
+  suffices 1 < ∑' a, p a by exact ne_of_lt this p.tsum_coe.symm
   calc
-    1 = 1 + 0 := (add_zero 1).symm
-    _ < p a + ∑' b, ite (b = a) 0 (p b) :=
-      (ENNReal.add_lt_add_of_le_of_lt ENNReal.one_ne_top (le_of_eq h.symm) this)
-    _ = ite (a = a) (p a) 0 + ∑' b, ite (b = a) 0 (p b) := by rw [eq_self_iff_true, if_true]
-    _ = (∑' b, ite (b = a) (p b) 0) + ∑' b, ite (b = a) 0 (p b) := by
-      congr
-      exact symm (tsum_eq_single a fun b hb => if_neg hb)
-    _ = ∑' b, (ite (b = a) (p b) 0 + ite (b = a) 0 (p b)) := ENNReal.tsum_add.symm
-    _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero, le_rfl]
+    1 = p a := h.symm
+    _ < p a + p a' := lt_add_of_pos_right _ $ Iff.mpr (apply_pos_iff p a') ha'
+    _ = p a + ite (a' = a) 0 (p a') := by simp at ha; simp [ha]
+    _ ≤ p a + ∑' b, ite (b = a) 0 (p b) := add_le_add_left (le_tsum' (summable_ite p a) a') _
+    _ = ∑' b, p b := (NNReal.tsum_eq_add_tsum_ite (summable p) a).symm
 #align pmf.apply_eq_one_iff Pmf.apply_eq_one_iff
+
 
 theorem apply_le_one (p : Pmf α) (a : α) : p a ≤ 1 := by
   refine' hasSum_le (fun b => _) (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
@@ -310,7 +307,8 @@ variable [MeasurableSingletonClass α]
 
 theorem toMeasure_injective : (toMeasure : Pmf α → Measure α).Injective := by
   intro p q h
-  ext x
+  ext1 x
+  apply ENNReal.coe_injective
   rw [← p.toMeasure_apply_singleton x <| measurableSet_singleton x,
     ← q.toMeasure_apply_singleton x <| measurableSet_singleton x, h]
 #align pmf.to_measure_injective Pmf.toMeasure_injective
@@ -353,26 +351,28 @@ we can convert any probability measure into a `Pmf`, where the mass of a point
 is the measure of the singleton set under the original measure. -/
 def toPmf [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
     [h : IsProbabilityMeasure μ] : Pmf α :=
-  ⟨fun x => μ ({x} : Set α),
-    ENNReal.summable.hasSum_iff.2
-      (_root_.trans
-        (symm <|
-          (tsum_indicator_apply_singleton μ Set.univ MeasurableSet.univ).symm.trans
-            (tsum_congr fun x => congr_fun (Set.indicator_univ _) x))
-        h.measure_univ)⟩
+  ⟨fun x => (μ ({x} : Set α)).toNNReal, by
+    rw [Summable.hasSum_iff]
+    · rw [← ENNReal.tsum_toNNReal_eq, ENNReal.toNNReal_eq_one_iff,
+        tsum_singleton_univ, measure_univ]
+      · exact fun a ↦ measure_ne_top μ {a}
+    · apply ENNReal.summable_toNNReal_of_tsum_ne_top
+      rw [tsum_singleton_univ, measure_univ ]
+      simp only⟩
 #align measure_theory.measure.to_pmf MeasureTheory.Measure.toPmf
 
 variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
   [IsProbabilityMeasure μ]
 
-theorem toPmf_apply (x : α) : μ.toPmf x = μ {x} := rfl
+theorem toPmf_apply (x : α) : μ.toPmf x = (μ {x}).toNNReal := rfl
 #align measure_theory.measure.to_pmf_apply MeasureTheory.Measure.toPmf_apply
 
 @[simp]
 theorem toPmf_toMeasure : μ.toPmf.toMeasure = μ :=
   Measure.ext fun s hs => by
-    rw [μ.toPmf.toMeasure_apply s hs, ← μ.tsum_indicator_apply_singleton s hs]
-    rfl
+    rw [μ.toPmf.toMeasure_apply s hs, ← μ.tsum_indicator_apply_singleton s hs, ENNReal.coe_tsum]
+    · simp [toPmf_apply, measure_ne_top]
+    · exact summable_indicator _ _
 #align measure_theory.measure.to_pmf_to_measure MeasureTheory.Measure.toPmf_toMeasure
 
 end Measure
@@ -397,7 +397,9 @@ variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : 
 @[simp]
 theorem toMeasure_toPmf : p.toMeasure.toPmf = p :=
   Pmf.ext fun x => by
-    rw [← p.toMeasure_apply_singleton x (measurableSet_singleton x), p.toMeasure.toPmf_apply]
+    rw [p.toMeasure.toPmf_apply, p.toMeasure_apply_singleton x (measurableSet_singleton x),
+       toNNReal_coe]
+
 #align pmf.to_measure_to_pmf Pmf.toMeasure_toPmf
 
 theorem toMeasure_eq_iff_eq_toPmf (μ : Measure α) [IsProbabilityMeasure μ] :

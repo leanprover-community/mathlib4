@@ -100,6 +100,13 @@ theorem tsum_indicator_apply_singleton [Countable α] [MeasurableSingletonClass 
     _ = μ s := by rw [μ.sum_smul_dirac]
 #align measure_theory.measure.tsum_indicator_apply_singleton MeasureTheory.Measure.tsum_indicator_apply_singleton
 
+/-- Given that `α` is a countable, measurable space with all singleton sets measurable,
+write the measure of the universal set as the total. A specialization of
+`tsum_indicator_apply_singleton`. -/
+theorem tsum_singleton_univ [Countable α] [MeasurableSingletonClass α] (μ : Measure α) :
+    (∑' x : α, μ {x}) = μ univ := by
+  convert tsum_indicator_apply_singleton μ univ MeasurableSet.univ; simp
+
 end Measure
 
 open Measure

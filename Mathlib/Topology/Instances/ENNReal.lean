@@ -1088,6 +1088,16 @@ theorem summable_toReal {f : α → ℝ≥0∞} (hsum : ∑' x, f x ≠ ∞) : S
   (hasSum_toReal hsum).summable
 #align ennreal.summable_to_real ENNReal.summable_toReal
 
+theorem hasSum_toNNReal {f : α → ℝ≥0∞} (hsum : ∑' x, f x ≠ ∞) :
+    HasSum (fun x => (f x).toNNReal) (∑' x, (f x).toNNReal) := by
+  lift f to α → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hsum
+  simp only [coe_toReal, ← NNReal.coe_tsum, NNReal.hasSum_coe]
+  exact (tsum_coe_ne_top_iff_summable.1 hsum).hasSum
+
+theorem summable_toNNReal {f : α → ℝ≥0∞} (hsum : ∑' x, f x ≠ ∞) :
+    Summable fun x => (f x).toNNReal :=
+  (hasSum_toNNReal hsum).summable
+
 end ENNReal
 
 namespace NNReal
