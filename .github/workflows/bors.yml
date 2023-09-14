@@ -106,8 +106,10 @@ jobs:
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
-          # Delete any elan toolchains older than two weeks.
-          find $HOME/.elan/toolchains/ -maxdepth 1 -type d -ctime +14 -exec rm -rf {} || true
+          # Delete all but the 10 most recent toolchains.
+          # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
+          # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
+          cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +11 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"' || true
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
@@ -119,11 +121,6 @@ jobs:
           curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
-
-      - name: install stable toolchain
-        run: |
-          set -o pipefail
-          elan toolchain install stable
 
       - uses: actions/checkout@v3
 
@@ -142,7 +139,6 @@ jobs:
 
       - name: get cache
         run: |
-          elan toolchain list
           lake exe cache clean
           # We've been seeing many failures at this step recently because of network errors.
           # As a band-aid, we try twice.
