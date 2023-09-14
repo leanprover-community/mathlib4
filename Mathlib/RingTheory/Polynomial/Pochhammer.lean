@@ -66,7 +66,7 @@ theorem ascPochhammer_succ_left (n : ℕ) :
   by rw [ascPochhammer]
 #align pochhammer_succ_left ascPochhammer_succ_left
 
-theorem monic_pochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
+theorem monic_ascPochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
     Monic <| ascPochhammer S n := by
   induction' n with n hn
   · simp
@@ -180,7 +180,7 @@ theorem ascPochhammer_nat_eq_descFactorial (a b : ℕ) :
 #align pochhammer_nat_eq_desc_factorial ascPochhammer_nat_eq_descFactorial
 
 @[simp]
-theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
+theorem ascPochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
     (ascPochhammer S n).natDegree = n := by
   induction' n with n hn
   · simp
@@ -372,7 +372,7 @@ theorem descPochhammer_int_eq_ascFactorial (n : ℕ) :
     · left
       exact (Int.ofNat_sub <| not_lt.mp h).symm
 
-theorem Pochhammer_int_eq_descFactorial (a b : ℕ) :
+theorem descPochhammer_int_eq_descFactorial (a b : ℕ) :
     (descPochhammer ℤ b).eval (a + b : ℤ) = a.ascFactorial b := by
   rw [← Nat.cast_add, descPochhammer_int_eq_ascFactorial (a + b) b,
       Nat.add_descFactorial_eq_ascFactorial]
