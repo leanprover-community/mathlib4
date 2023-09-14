@@ -1003,9 +1003,6 @@ theorem measurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 
     Measurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
   simpa only [fderiv_deriv] using measurable_fderiv_apply_const_with_param 𝕜 hf 1
 
-open TopologicalSpace
-open scoped BigOperators
-
 theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
     [OpensMeasurableSpace 𝕜] [h : SecondCountableTopologyEither α F]
     {f : α → 𝕜 → F} (hf : Continuous f.uncurry) :
