@@ -19,7 +19,7 @@ namespace CategoryTheory
 
 open Category Limits Preadditive
 
-variable {C : Type _} [Category C] [Preadditive C]
+variable {C : Type*} [Category C] [Preadditive C]
 
 namespace ShortComplex
 
