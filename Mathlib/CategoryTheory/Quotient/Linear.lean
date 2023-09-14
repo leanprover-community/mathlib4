@@ -12,7 +12,7 @@ variable {R : Type _} [Ring R] {C : Type _} [Category C] [Preadditive C] [Linear
 def Linear.smul (X Y : Quotient r) : SMul R (X ⟶ Y) where
   smul a := Quot.lift (fun g => Quot.mk _ (a • g)) (fun f₁ f₂ h₁₂ => by
     dsimp
-    simp only [compClosure_iff_self] at h₁₂
+    simp only [compClosure_eq_self] at h₁₂
     erw [functor_map_eq_iff]
     exact hr _ _ _ h₁₂)
 

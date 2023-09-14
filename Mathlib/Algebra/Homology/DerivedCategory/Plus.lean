@@ -35,6 +35,14 @@ lemma Qh_map_bijective_of_isKInjective (K L : HomotopyCategory.Plus C)
     (_ : CochainComplex.IsKInjective L.1.as) : Function.Bijective (Qh.map : (K ⟶ L) → _) :=
   CochainComplex.Qh_map_bijective_of_isKInjective K.1 L.1.as
 
+variable (C)
+
+lemma Qh_inverts : (HomotopyCategory.Plus.qis C).IsInvertedBy Plus.Qh := by
+  intro X Y f hf
+  have : IsIso (ι.map (Qh.map f)) :=
+    Localization.inverts DerivedCategory.Qh (HomotopyCategory.qis C) _ hf
+  exact isIso_of_reflects_iso (Qh.map f) ι
+
 end Plus
 
 

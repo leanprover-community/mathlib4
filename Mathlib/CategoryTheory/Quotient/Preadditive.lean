@@ -13,11 +13,11 @@ namespace Preadditive
 def add {X Y : Quotient r} (f g : X ⟶ Y) : X ⟶ Y :=
   Quot.liftOn₂ f g (fun a b => Quot.mk _ (a + b))
     (fun f g₁ g₂ h₁₂ => by
-      simp only [compClosure_iff_self] at h₁₂
+      simp only [compClosure_eq_self] at h₁₂
       erw [functor_map_eq_iff]
       exact hr _ _ _ _ (Congruence.isEquiv.refl f) h₁₂)
     (fun f₁ f₂ g h₁₂ => by
-      simp only [compClosure_iff_self] at h₁₂
+      simp only [compClosure_eq_self] at h₁₂
       erw [functor_map_eq_iff]
       exact hr _ _ _ _ h₁₂ (Congruence.isEquiv.refl g))
 
@@ -25,7 +25,7 @@ def neg {X Y : Quotient r} (f : X ⟶ Y) : X ⟶ Y :=
   Quot.liftOn f (fun a => Quot.mk _ (-a))
     (fun f g => by
       intro hfg
-      simp only [compClosure_iff_self] at hfg
+      simp only [compClosure_eq_self] at hfg
       erw [functor_map_eq_iff]
       apply Congruence.isEquiv.symm
       convert hr f g _ _ hfg (Congruence.isEquiv.refl (-f-g)) using 1 <;> abel)
