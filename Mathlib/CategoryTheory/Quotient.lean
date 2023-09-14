@@ -148,7 +148,7 @@ lemma compClosure_iff_self [h : Congruence r] {X Y : C} (f g : X ⟶ Y) :
 theorem compClosure_eq_self [h : Congruence r] :
     CompClosure r = r := by
   ext
-  simp only [compClosure_iff_sel]
+  simp only [compClosure_iff_self]
 
 theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
     (functor r).map f = (functor r).map f' ↔ r f f' := by
