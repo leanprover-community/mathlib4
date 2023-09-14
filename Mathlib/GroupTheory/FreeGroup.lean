@@ -892,6 +892,28 @@ theorem freeGroupCongr_trans {α β γ} (e : α ≃ β) (f : β ≃ γ) :
 
 end Map
 
+section proj
+
+variable [DecidableEq α]
+
+/-- Given an a, `proj a` is the function that adds the exponents of `a` in an element of
+the free group, and returns the answer as an element of `Multiplicative ℤ`. -/
+def proj (a : α) : FreeGroup α →* Multiplicative ℤ :=
+  lift fun b => if a = b then Multiplicative.ofAdd 1 else 1
+
+@[simp]
+theorem proj_of_same (a : α) : proj a (of a) = Multiplicative.ofAdd 1 := by
+  simp [proj]
+
+@[simp]
+theorem proj_of_ne {a b : α} (hab : a ≠ b) : proj a (of b) = 1 := by
+  simp [proj, hab]
+
+theorem proj_of {a b : α} : proj a (of b) = if a = b then Multiplicative.ofAdd 1 else 1 := by
+  simp [proj]
+
+end proj
+
 section Prod
 
 variable [Group α] (x y : FreeGroup α)
