@@ -1062,7 +1062,7 @@ def Identical : ∀ (_ _ : PGame), Prop
     Relator.BiTotal (fun i j ↦ Identical (xL i) (yL j)) ∧
       Relator.BiTotal (fun i j ↦ Identical (xR i) (yR j))
 
-scoped infix:50 " ≡ " => PGame.Identical
+@[inherit_doc] scoped infix:50 " ≡ " => PGame.Identical
 
 /-- `x ∈ₗ y` if `x` is identical to some left move of `y`. -/
 def memₗ (x y : PGame.{u}) : Prop := ∃ b, x ≡ (y.moveLeft b)
@@ -1070,10 +1070,10 @@ def memₗ (x y : PGame.{u}) : Prop := ∃ b, x ≡ (y.moveLeft b)
 /-- `x ∈ᵣ y` if `x` is identical to some right move of `y`. -/
 def memᵣ (x y : PGame.{u}) : Prop := ∃ b, x ≡ (y.moveRight b)
 
-scoped infix:50 " ∈ₗ " => PGame.memₗ
-scoped infix:50 " ∈ᵣ " => PGame.memᵣ
-binder_predicate x " ∈ₗ " y:term => `($x ∈ₗ $y)
-binder_predicate x " ∈ᵣ " y:term => `($x ∈ᵣ $y)
+@[inherit_doc] scoped infix:50 " ∈ₗ " => PGame.memₗ
+@[inherit_doc] scoped infix:50 " ∈ᵣ " => PGame.memᵣ
+@[inherit_doc PGame.memₗ] binder_predicate x " ∈ₗ " y:term => `($x ∈ₗ $y)
+@[inherit_doc PGame.memᵣ] binder_predicate x " ∈ᵣ " y:term => `($x ∈ᵣ $y)
 
 theorem identical_iff' : ∀ {x y : PGame}, Identical x y ↔
     Relator.BiTotal (x.moveLeft · ≡ y.moveLeft ·) ∧ Relator.BiTotal (x.moveRight · ≡ y.moveRight ·)
