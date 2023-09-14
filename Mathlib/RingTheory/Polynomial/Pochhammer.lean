@@ -372,7 +372,7 @@ theorem descPochhammer_int_eq_ascFactorial (n : ℕ) :
     · left
       exact (Int.ofNat_sub <| not_lt.mp h).symm
 
-theorem descPochhammer_int_eq_descFactorial (a b : ℕ) :
+theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
     (descPochhammer ℤ b).eval (a + b : ℤ) = a.ascFactorial b := by
   rw [← Nat.cast_add, descPochhammer_int_eq_ascFactorial (a + b) b,
       Nat.add_descFactorial_eq_ascFactorial]
