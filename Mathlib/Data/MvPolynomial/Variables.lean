@@ -135,7 +135,7 @@ theorem degrees_one : degrees (1 : MvPolynomial σ R) = 0 :=
 
 theorem degrees_add [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).degrees ≤ p.degrees ⊔ q.degrees := by
-  simp_rw [degrees_def]; exact p.supDegree_add_le q
+  simp_rw [degrees_def]; exact supDegree_add_le
 
 #align mv_polynomial.degrees_add MvPolynomial.degrees_add
 
@@ -145,7 +145,7 @@ theorem degrees_sum {ι : Type*} [DecidableEq σ] (s : Finset ι) (f : ι → Mv
 #align mv_polynomial.degrees_sum MvPolynomial.degrees_sum
 
 theorem degrees_mul (p q : MvPolynomial σ R) : (p * q).degrees ≤ p.degrees + q.degrees := by
-  convert p.supDegree_mul_le (D := toMultiset.toAddHom) q
+  convert supDegree_mul_le (D := toMultiset.toAddHom)
   rfl; all_goals infer_instance
 #align mv_polynomial.degrees_mul MvPolynomial.degrees_mul
 
@@ -548,8 +548,9 @@ theorem le_totalDegree {p : MvPolynomial σ R} {s : σ →₀ ℕ} (h : s ∈ p.
 
 theorem totalDegree_le_degrees_card (p : MvPolynomial σ R) :
     p.totalDegree ≤ Multiset.card p.degrees := by
-  classical rw [totalDegree_eq]
-  exact Finset.sup_le fun s hs => Multiset.card_le_of_le <| Finset.le_sup hs
+  classical
+    rw [totalDegree_eq]
+    exact Finset.sup_le fun s hs => Multiset.card_le_of_le <| Finset.le_sup hs
 #align mv_polynomial.total_degree_le_degrees_card MvPolynomial.totalDegree_le_degrees_card
 
 @[simp]
