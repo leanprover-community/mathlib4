@@ -1,5 +1,6 @@
 import Mathlib.MeasureTheory.Measure.Portmanteau
 import Mathlib.MeasureTheory.Integral.Layercake
+import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.Tactic
 
 /-!
@@ -33,34 +34,6 @@ lemma Filter.isBounded_ge_map_of_bounded_range {ι : Type*} (F : Filter ι) {f :
   rw [Real.bounded_iff_bddBelow_bddAbove] at h
   obtain ⟨c, hc⟩ := h.1
   apply isBoundedUnder_of ⟨c, by simpa [mem_lowerBounds] using hc⟩
-
-
-
-section boundedness_by_norm_bounds
-
-variable {ι : Type*} {E : Type*}
-
-#check Metric.Bounded
-#check Metric.bounded_closedBall
-#check Metric.bounded_ball
-
--- NOTE: Should this be in Mathlib?
-lemma Metric.bounded_range_of_forall_norm_le [NormedAddGroup E]
-    (f : ι → E) (c : ℝ) (h : ∀ i, ‖f i‖ ≤ c) :
-    Metric.Bounded (Set.range f) := by
-  apply Metric.Bounded.mono _ (@Metric.bounded_closedBall _ _ 0 c)
-  intro x ⟨i, hi⟩
-  simpa only [← hi, Metric.closedBall, dist_zero_right, Set.mem_setOf_eq, ge_iff_le] using h i
-
--- NOTE: Should this be in Mathlib?
-lemma Metric.forall_norm_le_of_bounded_range [NormedAddGroup E]
-    (f : ι → E) (h : Metric.Bounded (Set.range f)) :
-    ∃ c, ∀ i, ‖f i‖ ≤ c := by
-  sorry
-
--- I think there were some versions of this in Mathlib already...
-
-end boundedness_by_norm_bounds
 
 
 
@@ -220,52 +193,13 @@ lemma fatou_argument_integral_nonneg
       ∫ x, (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)) := by
   sorry
 
--- NOTE: Maybe there should be a file for lemmas about integrals of `BoundedContinuousFunction`s?
-lemma BoundedContinuousFunction.integrable (μ : Measure Ω) [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ) :
-    Integrable f μ := by
-  refine ⟨f.continuous.measurable.aestronglyMeasurable, ?_⟩
-  simp [HasFiniteIntegral]
-  calc  ∫⁻ x, ‖f x‖₊ ∂μ
-    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ                       := ?_
-    _ = ‖f‖₊ * (μ Set.univ)                 := by rw [lintegral_const]
-    _ < ∞                                   := ENNReal.mul_lt_top
-                                                ENNReal.coe_ne_top (measure_ne_top μ Set.univ)
-  · apply lintegral_mono
-    exact fun x ↦ ENNReal.coe_le_coe.mpr (nnnorm_coe_le_nnnorm f x)
-
--- NOTE: Maybe there should be a file for lemmas about integrals of `BoundedContinuousFunction`s?
-lemma BoundedContinuousFunction.norm_integral_le_mul_norm_of_isFiniteMeasure
-    (μ : Measure Ω) [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ) :
-    ‖∫ x, (f x) ∂μ‖ ≤ ENNReal.toReal (μ Set.univ) * ‖f‖ := by
-  calc  ‖∫ x, (f x) ∂μ‖
-    _ ≤ ∫ x, ‖f x‖ ∂μ                       := by exact norm_integral_le_integral_norm _
-    _ ≤ ∫ _, ‖f‖ ∂μ                         := ?_
-    _ = ENNReal.toReal (μ Set.univ) • ‖f‖   := by rw [integral_const]
-  · apply integral_mono _ (integrable_const ‖f‖) (fun x ↦ f.norm_coe_le_norm x)
-    exact (integrable_norm_iff f.continuous.measurable.aestronglyMeasurable).mpr (f.integrable μ)
-
--- NOTE: Maybe there should be a file for lemmas about integrals of `BoundedContinuousFunction`s?
-lemma BoundedContinuousFunction.norm_integral_le_norm_of_isProbabilityMeasure
-    (μ : Measure Ω) [IsProbabilityMeasure μ] (f : Ω →ᵇ ℝ) :
-    ‖∫ x, (f x) ∂μ‖ ≤ ‖f‖ := by
-  convert f.norm_integral_le_mul_norm_of_isFiniteMeasure μ
-  simp only [measure_univ, ENNReal.one_toReal, one_mul]
-
--- NOTE: Maybe there should be a file for lemmas about integrals of `BoundedContinuousFunction`s?
--- TODO: Should this be generalized to functions with values in Banach spaces?
-lemma bounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure
-    (μs : ι → Measure Ω) [∀ i, IsProbabilityMeasure (μs i)] (f : Ω →ᵇ ℝ) :
-    Metric.Bounded (Set.range (fun i ↦ ∫ x, (f x) ∂ (μs i))) := by
-  apply Metric.bounded_range_of_forall_norm_le _ ‖f‖
-  exact fun i ↦ f.norm_integral_le_norm_of_isProbabilityMeasure (μs i)
-
 lemma main_thing'
     {μ : Measure Ω} [IsProbabilityMeasure μ]
     {μs : ℕ → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
     {f : Ω → ℝ} (f_cont : Continuous f) (f_nn : 0 ≤ f)
     (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
       ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (f x) ∂ (μs i)) := by
-  simp_rw [lintegral_eq_lintegral_meas_lt _ f_nn f_cont.measurable]
+  simp_rw [lintegral_eq_lintegral_meas_lt _ (eventually_of_forall f_nn) f_cont.aemeasurable]
   have obs : ∀ t, IsOpen {a : Ω | t < f a} := fun t ↦ (continuous_def.mp f_cont) _ isOpen_Ioi
   apply (lintegral_mono (fun t ↦ h_opens _ (obs t))).trans
   refine lintegral_liminf_le ?_
@@ -282,50 +216,6 @@ lemma main_thing
       ∫ x, (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)) := by
   sorry
 
--- NOTE: Maybe there should be a file for lemmas about integrals of `BoundedContinuousFunction`s?
-lemma BoundedContinuousFunction.neg_norm_le [TopologicalSpace X] (f : X →ᵇ ℝ) (x : X) :
-    -‖f‖ ≤ f x := by
-  exact (abs_le.mp (norm_coe_le_norm f x)).1
-
--- NOTE: Maybe there should be a file for lemmas about integrals of `BoundedContinuousFunction`s?
-lemma BoundedContinuousFunction.le_norm [TopologicalSpace X] (f : X →ᵇ ℝ) (x : X):
-    f x ≤ ‖f‖ := by
-  exact (abs_le.mp (norm_coe_le_norm f x)).2
-
--- NOTE: Where should such things be placed? In the `Portmanteau`-file only?
-lemma BoundedContinuousFunction.add_norm_nonneg [TopologicalSpace X] (f : X →ᵇ ℝ) :
-    0 ≤ f + BoundedContinuousFunction.const _ ‖f‖ := by
-  intro x
-  dsimp
-  linarith [(abs_le.mp (norm_coe_le_norm f x)).1]
-
--- NOTE: Where should such things be placed? In the `Portmanteau`-file only?
-lemma BoundedContinuousFunction.norm_sub_nonneg [TopologicalSpace X] (f : X →ᵇ ℝ) :
-    0 ≤ BoundedContinuousFunction.const _ ‖f‖ - f := by
-  intro x
-  dsimp
-  linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
-
--- NOTE: Maybe there should be a file for lemmas about integrals of `BoundedContinuousFunction`s?
-lemma BoundedContinuousFunction.integral_add_const {μ : Measure Ω} [IsFiniteMeasure μ]
-    (f : Ω →ᵇ ℝ) (c : ℝ) :
-    ∫ x, (f + BoundedContinuousFunction.const Ω c) x ∂μ =
-      ∫ x, f x ∂μ + ENNReal.toReal (μ (Set.univ)) • c := by
-  simp only [coe_add, const_toFun, Pi.add_apply, smul_eq_mul]
-  simp_rw [integral_add (FiniteMeasure.integrable_of_boundedContinuous_to_real _ f)
-                        (integrable_const c)]
-  simp only [integral_const, smul_eq_mul]
-
--- NOTE: Maybe there should be a file for lemmas about integrals of `BoundedContinuousFunction`s?
-lemma BoundedContinuousFunction.integral_const_sub {μ : Measure Ω} [IsFiniteMeasure μ]
-    (f : Ω →ᵇ ℝ) (c : ℝ) :
-    ∫ x, (BoundedContinuousFunction.const Ω c - f) x ∂μ =
-      ENNReal.toReal (μ (Set.univ)) • c - ∫ x, f x ∂μ := by
-  simp only [coe_sub, const_toFun, Pi.sub_apply, smul_eq_mul]
-  simp_rw [integral_sub (integrable_const c)
-           (FiniteMeasure.integrable_of_boundedContinuous_to_real _ f)]
-  simp only [integral_const, smul_eq_mul]
-
 lemma reduction_to_liminf {ι : Type} {L : Filter ι} [NeBot L]
     {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ι → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
     (h : ∀ f : Ω →ᵇ ℝ, 0 ≤ f → ∫ x, (f x) ∂μ ≤ L.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)))
@@ -340,6 +230,7 @@ lemma reduction_to_liminf {ι : Type} {L : Filter ι} [NeBot L]
     apply bounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure
   apply @tendsto_of_le_liminf_of_limsup_le ℝ ι _ _ _ L (fun i ↦ ∫ x, (f x) ∂ (μs i)) (∫ x, (f x) ∂μ)
   · have key := h _ (f.add_norm_nonneg)
+    --have := @BoundedContinuousFunction.integral_add_const
     simp_rw [f.integral_add_const ‖f‖] at key
     simp only [measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul] at key
     -- TODO: Should the case of ⊥ filter be treated separately and not included as an assumption?
