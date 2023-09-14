@@ -169,7 +169,7 @@ def subgroupASetEquivSubgroupBSet :
     right_inv := fun p => by
       by_cases hpd : p.1.1 = d.x
       · simp [hpd]
-      · simp [hpd], }
+      · simp [hpd] }
 
 def subgroupA : Subgroup (OneRelator d.newRelator) :=
   MonoidHom.range (FreeGroup.lift (fun p : d.subgroupASet => of p.1))
@@ -177,17 +177,16 @@ def subgroupA : Subgroup (OneRelator d.newRelator) :=
 def subgroupB : Subgroup (OneRelator d.newRelator) :=
   MonoidHom.range (FreeGroup.lift (fun p : d.subgroupASet => of p.1))
 
-noncomputable def subgroupEquiv : d.subgroupA ≃* d.subgroupB :=
+noncomputable def subgroupEquiv : d.subgroupA ≃* d.subgroupB := by
+  dsimp [subgroupA, subgroupB]
+  exact MulEquiv.trans
+    (MonoidHom.ofInjective sorry).symm <|
   MulEquiv.trans
-    (MonoidHom.ofInjective (FreeGroup.map_injective
-      (Set.inclusion_injective _))).symm <|
-  MulEquiv.trans
-      (FreeGroup.freeGroupCongr _)
-    ((MonoidHom.ofInjective (FreeGroup.map_injective
-      (Set.inclusion_injective _))))
+      (FreeGroup.freeGroupCongr d.subgroupASetEquivSubgroupBSet)
+    ((MonoidHom.ofInjective sorry))
 
-noncomputable def equivHNNExtension :
-    OneRelator r ≃* HNNExtension _ (subgroupA r t) (subgroupB r t) (subgroupEquiv r t) :=
+noncomputable def toHNNExtension :
+    OneRelator r →* HNNExtension _ d.subgroupA d.subgroupB d.subgroupEquiv :=
   MonoidHom.toMulEquiv
     (OneRelator.lift
       (fun a => sorry)
