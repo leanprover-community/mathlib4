@@ -209,7 +209,7 @@ section LTSeries
 
 variable (α) [Preorder α]
 /--
-If `α` is a preordered set, a series ordered by less than is a relation series of the less than
+If `α` is a preorder, a series ordered by less than is a relation series of the less than
 relation.
 -/
 abbrev LTSeries := RelSeries ((. < .) : Rel α α)
@@ -224,13 +224,13 @@ protected noncomputable def longestOf [FiniteDimensionalOrder α] : LTSeries α 
 protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) : LTSeries α :=
   RelSeries.withLength _ n
 
-lemma withLength_length_eq [InfiniteDimensionalOrder α] (n : ℕ) :
+@[simp] lemma length_withLength [InfiniteDimensionalOrder α] (n : ℕ) :
     (LTSeries.withLength α n).length = n :=
   RelSeries.withLength_length_eq _ _
 
 /-- if `α` is infinite dimensional, then `α` is inhabited -/
 noncomputable def inhabited_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Inhabited α :=
-  ⟨(LTSeries.withLength α 0) 0⟩
+  ⟨LTSeries.withLength α 0 0⟩
 
 variable {α}
 
