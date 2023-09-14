@@ -123,7 +123,7 @@ theorem multiplicity_factorial {p : ℕ} (hp : p.Prime) :
         congr_arg _ <| Finset.sum_congr rfl fun _ _ => (succ_div _ _).symm
 #align nat.prime.multiplicity_factorial Nat.Prime.multiplicity_factorial
 
- theorem sub_one_mul_multiplicity_factorial_eq_sub_sum_digits {p : ℕ} (hp : p.Prime) :
+ theorem sub_one_mul_multiplicity_factorial {p : ℕ} (hp : p.Prime) :
      (p - 1) * (multiplicity p n !).get (finite_nat_iff.mpr ⟨hp.ne_one, factorial_pos n⟩) =
      n - (p.digits n).sum := by
   simp only [multiplicity_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
