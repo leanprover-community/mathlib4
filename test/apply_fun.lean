@@ -9,12 +9,12 @@ import Mathlib.Data.Matrix.Basic
 set_option autoImplicit true
 open Function
 
-example (f : ℕ → ℕ) (h : f x = f y) : x = y := by
+example (f : ℕ → ℕ) (h : f x = f y) (hg : g = f) (hf : Injective g) : x = y := by
   apply_fun f
   · guard_target = f x = f y
     assumption
   · guard_target = Injective f
-    sorry
+    subst hg; assumption
 
 example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : ∀ n, Injective (f n)) : x = y := by
   apply_fun f ?foo
@@ -24,9 +24,9 @@ example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : ∀ n, Injective (
   · apply hinj
 
 -- Uses `refine`-style rules for placeholders:
-example (f : ℕ → ℕ → ℕ) : x = y := by
+example (h : x = y) (f : ℕ → ℕ → ℕ) : x = y := by
   fail_if_success apply_fun f _
-  sorry
+  assumption
 
 example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : Injective (f 1)) : x = y := by
   apply_fun f _ using hinj
@@ -250,10 +250,10 @@ example (x : ℕ) : x = x := by
   rfl
 
 -- Check that locals are elaborated properly in apply_fun
-example : 1 = 1 := by
+example (h : ∀ {α β}, ∀ f : α → β, Function.Injective f): 1 = 1 := by
   let f := fun (x : Nat) => x + 1
   -- clearly false but for demo purposes only
   have g : ∀ f, Function.Injective f
-  · sorry
+  · apply h
   apply_fun f using (g f)
   rfl
