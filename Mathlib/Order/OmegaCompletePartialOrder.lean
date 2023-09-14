@@ -235,7 +235,7 @@ theorem ωSup_le_iff (c : Chain α) (x : α) : ωSup c ≤ x ↔ ∀ i, c i ≤ 
   exact ωSup_le _ _ ‹_›
 #align omega_complete_partial_order.ωSup_le_iff OmegaCompletePartialOrder.ωSup_le_iff
 
-lemma ωSup_IsLUB {c : Chain α} : IsLUB (Set.range c) (ωSup c) := by
+lemma IsLUB_range_ωSup (c : Chain α) : IsLUB (Set.range c) (ωSup c) := by
   constructor
   · simp only [upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff',
       Set.mem_setOf_eq]
