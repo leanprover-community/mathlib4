@@ -52,6 +52,7 @@ theorem divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_X_mul_X_add Polynomial.divX_mul_X_add
 
+@[simp]
 theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
   ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
 
@@ -79,6 +80,7 @@ theorem divX_one : divX (1 : R[X]) = 0 := by
   ext
   simpa only [coeff_divX, coeff_zero] using coeff_one (_ + 1)
 
+@[simp]
 theorem divX_C_mul : divX (C a * p) = C a * divX p := by
   ext
   simp
