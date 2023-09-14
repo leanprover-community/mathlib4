@@ -779,18 +779,12 @@ where `S` is a commutative subring of `R`.
 Over a commutative ring, use `QuadraticForm.associated`, which gives an `R`-linear map.  Over a
 general ring with no nontrivial distinguished commutative subring, use `QuadraticForm.associated'`,
 which gives an additive homomorphism (or more precisely a `ℤ`-linear map.) -/
-def associatedHom : QuadraticForm R M →ₗ[S] BilinForm R M where
-  toFun Q :=
-    (⟨⅟ 2, fun x => (Commute.ofNat_right x 2).invOf_right⟩ : Submonoid.center R) • Q.polarBilin
-  map_add' Q Q' := by
-    ext
-    simp only [BilinForm.add_apply, BilinForm.smul_apply, coeFn_mk, polarBilin_apply, polar_add,
-      coeFn_add, smul_add]
-  map_smul' s Q := by
-    ext
-    -- porting note: added type annotations
-    simp only [RingHom.id_apply, polar_smul, smul_comm s (_ : Submonoid.center R) (_ : R),
-      polarBilin_apply, coeFn_mk, coeFn_smul, BilinForm.smul_apply]
+def associatedHom : QuadraticForm R M →ₗ[S] BilinForm R M :=
+  DistribMulAction.toLinearMap _ _
+    (⟨⅟2, fun x => (Commute.ofNat_right x 2).invOf_right⟩ : Submonoid.center R) ∘ₗ
+  { toFun := polarBilin
+    map_add' := fun _x _y => BilinForm.ext <| polar_add _ _
+    map_smul' :=  fun _c _x => BilinForm.ext <| polar_smul _ _ }
 #align quadratic_form.associated_hom QuadraticForm.associatedHom
 
 variable (Q : QuadraticForm R M)
