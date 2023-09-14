@@ -20,42 +20,19 @@ with the polynomials in n variables, `MvPolynomial.equiv_symmetricSubalgebra`.
 We follow the alternative proof on the Wikipedia page
 https://en.wikipedia.org/wiki/Elementary_symmetric_polynomial#Alternative_proof
 
+Endow the (monic) monomials in the multivariate polynomial ring `MvPolynomial (Fin n) R` with
+the lexicographic order on `Fin n →₀ ℕ`, which is a (linear) well order.
+
+
+
+later we transfer the result from `Fin n` to `σ`.
+
+
 TODO:
 details
 declaration docstrings
-move ordered monoid instances on `Lex (σ →₀ β)`
 move maxDegree API
 -/
-
-section OrderedAddMonoidLex
-
-variable (σ : Type*) [LinearOrder σ]
-
-instance (β) [CanonicallyOrderedAddMonoid β] : OrderBot (Lex (σ →₀ β)) where
-  bot := 0
-  bot_le _ := Finsupp.toLex_monotone bot_le
-
-noncomputable instance (β) [LinearOrderedCancelAddCommMonoid β] :
-    LinearOrderedCancelAddCommMonoid (Lex (σ →₀ β)) :=
-  { (inferInstance : LinearOrder (Lex (σ →₀ β))) with
-    add_le_add_left := fun a b h c => by
-      obtain rfl | ⟨i, h⟩ := h.eq_or_lt
-      · rfl
-      exact le_of_lt ⟨i, fun j hj => congr_arg (ofLex c j + ·) (h.1 j hj), add_lt_add_left h.2 _⟩
-    le_of_add_le_add_left := fun a b c h => by
-      obtain h | ⟨i, h⟩ := h.eq_or_lt
-      · exact (add_left_cancel h).le
-      exact le_of_lt ⟨i, fun j hj => (add_left_cancel <| h.1 j hj), lt_of_add_lt_add_left h.2⟩ }
-
-/- TODO:
-#check OrderedAddCommMonoid
-#check OrderedAddCommGroup
-#check LinearOrderedAddCommMonoid
-#check LinearOrderedAddCommGroup
-#check OrderedCancelAddCommMonoid
-#check LinearOrderedCancelAddCommMonoid -/
-
-end OrderedAddMonoidLex
 
 namespace MvPolynomial
 
@@ -77,9 +54,11 @@ lemma maxDegree_C (r : R) : maxDegree (C (σ := σ) r) = 0 := by
   split_ifs
   · rw [sup_empty]; rfl
   · rw [sup_singleton]; rfl
+-- bot
 
 lemma leadingCoeff_C (r : R) : leadingCoeff (C (σ := σ) r) = r := by
   rw [leadingCoeff, maxDegree_C, coeff_C]; apply if_pos rfl
+-- bot or zero ..
 
 lemma maxDegree_zero : maxDegree (0 : MvPolynomial σ R) = 0 := by rw [← C_0, maxDegree_C]
 
@@ -159,6 +138,7 @@ lemma maxDegree_add_le : (p + q).maxDegree ≤ max p.maxDegree q.maxDegree := by
   refine' maxDegree_le_of_coeff fun s h => _
   rw [max_lt_iff] at h
   rw [coeff_add, coeff_eq_zero_of_maxDegree_lt h.1, coeff_eq_zero_of_maxDegree_lt h.2, add_zero]
+-- use general supDegree lemma .. import ...
 
 lemma maxDegree_sum_le {α} {s : Finset α} (f : α → MvPolynomial σ R) {t}
     (h : ∀ i ∈ s, (f i).maxDegree ≤ t) : (∑ i in s, f i).maxDegree ≤ t := by
@@ -244,8 +224,8 @@ lemma coeff_maxDegree_add_maxDegree :
     · rw [coeff_eq_zero_of_maxDegree_lt htp, zero_mul]
     obtain htq | htq := lt_or_le q.maxDegree (toLex tq)
     · rw [coeff_eq_zero_of_maxDegree_lt htq, mul_zero]
-    have := eq_and_eq_of_le_of_le_of_add_le htp htq (Eq.ge <| Finsupp.mem_antidiagonal.1 ht)
-    exact (hne <| Prod.ext this.1.symm this.2.symm).elim
+    have := (add_eq_add_iff_eq_and_eq htp htq).mp <| Finsupp.mem_antidiagonal.1 ht
+    exact (hne <| Prod.ext this.1 this.2).elim
 
 lemma Monic.maxDegree_mul' (hq : q.Monic) (hp : p ≠ 0) :
     maxDegree (p * q) = maxDegree p + maxDegree q := by
@@ -291,12 +271,14 @@ section accumulate
   toFun t j := ∑ i in univ.filter (fun i : Fin n => (j : ℕ) ≤ i), t i
   map_zero' := funext <| fun j => sum_eq_zero <| fun h _ => rfl
   map_add' t₁ t₂ := funext <| fun j => by dsimp only; exact sum_add_distrib
+-- use Finset.Ici .. in Fin .. rather than filter ..
 
 def inv_accumulate (n m : ℕ) (s : Fin m → ℕ) (i : Fin n) : ℕ :=
   (if hi : i < m then s ⟨i, hi⟩ else 0) - (if hi : i + 1 < m then s ⟨i + 1, hi⟩ else 0)
+-- use get?
 
 lemma accumulate_rec {i n m : ℕ} (hin : i < n) (him : i + 1 < m) (t : Fin n → ℕ) :
-    accumulate n m t ⟨i, i.lt_succ_self.trans him⟩ = t ⟨i, hin⟩ + accumulate n m t ⟨i+1, him⟩ := by
+    accumulate n m t ⟨i, Nat.lt_of_succ_lt him⟩ = t ⟨i, hin⟩ + accumulate n m t ⟨i + 1, him⟩ := by
   simp_rw [accumulate_apply]
   convert (add_sum_erase _ _ _).symm
   · ext; rw [mem_erase]
@@ -391,11 +373,11 @@ lemma maxDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
     Monic (esymm (Fin m) R (i + 1)) := by
   have := maxDegree_leadingCoeff_sum_eq (univ.powersetLen (i + 1))
     (a := Iic (⟨i, him⟩ : Fin m)) ?_ (fun s => monomial (∑ j in s, Finsupp.single j 1) (1 : R)) ?_
-  · rwa [← esymm_eq_sum_monomial, sum_finsupp_single, maxDegree_monomial _ one_ne_zero,
-         leadingCoeff_monomial] at this
+  · rwa [← esymm_eq_sum_monomial, ← Finsupp.indicator_eq_sum_single,
+         maxDegree_monomial _ one_ne_zero, leadingCoeff_monomial] at this
   · exact mem_powersetLen.2 ⟨subset_univ _, Fin.card_Iic _⟩
   intro t ht hne
-  simp_rw [maxDegree_monomial _ one_ne_zero, sum_finsupp_single]
+  simp_rw [maxDegree_monomial _ one_ne_zero, ← Finsupp.indicator_eq_sum_single]
   rw [Ne, eq_comm, ← subset_iff_eq_of_card_le, not_subset] at hne
   · simp_rw [← mem_sdiff] at hne
     refine' ⟨min' _ hne, let hkm := mem_sdiff.1 (min'_mem _ hne); ⟨fun k hk => _, _⟩⟩
