@@ -28,14 +28,14 @@ namespace PGame
 
 /-- The definition for an impartial game, defined using Conway induction. -/
 def ImpartialAux : PGame → Prop
-  | G => (G ≈ -G) ∧ (∀ i, ImpartialAux (G.moveLeft i)) ∧ ∀ j, ImpartialAux (G.moveRight j)
+  | G => (G ≡ -G) ∧ (∀ i, ImpartialAux (G.moveLeft i)) ∧ ∀ j, ImpartialAux (G.moveRight j)
 termination_by _ G => G -- Porting note: Added `termination_by`
 decreasing_by pgame_wf_tac
 #align pgame.impartial_aux SetTheory.PGame.ImpartialAux
 
 theorem impartialAux_def {G : PGame} :
     G.ImpartialAux ↔
-      (G ≈ -G) ∧ (∀ i, ImpartialAux (G.moveLeft i)) ∧ ∀ j, ImpartialAux (G.moveRight j) := by
+      (G ≡ -G) ∧ (∀ i, ImpartialAux (G.moveLeft i)) ∧ ∀ j, ImpartialAux (G.moveRight j) := by
   rw [ImpartialAux]
 #align pgame.impartial_aux_def SetTheory.PGame.impartialAux_def
 
@@ -49,27 +49,27 @@ theorem impartial_iff_aux {G : PGame} : G.Impartial ↔ G.ImpartialAux :=
 #align pgame.impartial_iff_aux SetTheory.PGame.impartial_iff_aux
 
 theorem impartial_def {G : PGame} :
-    G.Impartial ↔ (G ≈ -G) ∧ (∀ i, Impartial (G.moveLeft i)) ∧ ∀ j, Impartial (G.moveRight j) := by
+    G.Impartial ↔ (G ≡ -G) ∧ (∀ i, Impartial (G.moveLeft i)) ∧ ∀ j, Impartial (G.moveRight j) := by
   simpa only [impartial_iff_aux] using impartialAux_def
 #align pgame.impartial_def SetTheory.PGame.impartial_def
 
 namespace Impartial
 
-instance impartial_zero : Impartial 0 := by rw [impartial_def]; dsimp; simp
+instance impartial_zero : Impartial 0 := by
+  rw [impartial_def]; simp
 #align pgame.impartial.impartial_zero SetTheory.PGame.Impartial.impartial_zero
 
 instance impartial_star : Impartial star := by
   rw [impartial_def]; simpa using Impartial.impartial_zero
 #align pgame.impartial.impartial_star SetTheory.PGame.Impartial.impartial_star
 
-theorem neg_equiv_self (G : PGame) [h : G.Impartial] : G ≈ -G :=
+theorem neg_identical_self (G : PGame) [h : G.Impartial] : G ≡ -G :=
   (impartial_def.1 h).1
-#align pgame.impartial.neg_equiv_self SetTheory.PGame.Impartial.neg_equiv_self
 
 -- Porting note: Changed `-⟦G⟧` to `-(⟦G⟧ : Quotient setoid)`
 @[simp]
 theorem mk'_neg_equiv_self (G : PGame) [G.Impartial] : -(⟦G⟧ : Quotient setoid) = ⟦G⟧ :=
-  Quot.sound (Equiv.symm (neg_equiv_self G))
+  Quot.sound (neg_identical_self G).symm.equiv
 #align pgame.impartial.mk_neg_equiv_self SetTheory.PGame.Impartial.mk'_neg_equiv_self
 
 instance moveLeft_impartial {G : PGame} [h : G.Impartial] (i : G.LeftMoves) :
@@ -82,12 +82,12 @@ instance moveRight_impartial {G : PGame} [h : G.Impartial] (j : G.RightMoves) :
   (impartial_def.1 h).2.2 j
 #align pgame.impartial.move_right_impartial SetTheory.PGame.Impartial.moveRight_impartial
 
-theorem impartial_congr : ∀ {G H : PGame} (_ : G ≡r H) [G.Impartial], H.Impartial
-  | G, H => fun e => by
-    intro h
+theorem impartial_congr : ∀ {G H : PGame} (_ : G ≡ H) [G.Impartial], H.Impartial
+  | G, H => fun e h => by
     exact impartial_def.2
-      ⟨Equiv.trans e.symm.equiv (Equiv.trans (neg_equiv_self G) (neg_equiv_neg_iff.2 e.equiv)),
-        fun i => impartial_congr (e.moveLeftSymm i), fun j => impartial_congr (e.moveRightSymm j)⟩
+      ⟨e.symm.trans ((neg_identical_self G).trans e.neg),
+        fun i => (e.moveLeft_symm i).elim fun _ ↦ (impartial_congr ·),
+        fun j => (e.moveRight_symm j).elim fun _ ↦ (impartial_congr ·)⟩
 termination_by _ G H => (G, H)
 decreasing_by pgame_wf_tac
 #align pgame.impartial.impartial_congr SetTheory.PGame.Impartial.impartial_congr
@@ -95,8 +95,8 @@ decreasing_by pgame_wf_tac
 instance impartial_add : ∀ (G H : PGame) [G.Impartial] [H.Impartial], (G + H).Impartial
   | G, H, _, _ => by
     rw [impartial_def]
-    refine' ⟨Equiv.trans (add_congr (neg_equiv_self G) (neg_equiv_self _))
-        (Equiv.symm (negAddRelabelling _ _).equiv), fun k => _, fun k => _⟩
+    refine' ⟨((neg_identical_self G).add (neg_identical_self _)).trans <| of_eq (neg_add _ _).symm,
+      fun k => _, fun k => _⟩
     · apply leftMoves_add_cases k
       all_goals
         intro i; simp only [add_moveLeft_inl, add_moveLeft_inr]
@@ -114,7 +114,7 @@ instance impartial_neg : ∀ (G : PGame) [G.Impartial], (-G).Impartial
     rw [impartial_def]
     refine' ⟨_, fun i => _, fun i => _⟩
     · rw [neg_neg]
-      exact Equiv.symm (neg_equiv_self G)
+      exact (neg_identical_self G).symm
     · rw [moveLeft_neg']
       apply impartial_neg
     · rw [moveRight_neg']
@@ -127,13 +127,13 @@ variable (G : PGame) [Impartial G]
 
 theorem nonpos : ¬0 < G := fun h => by
   have h' := neg_lt_neg_iff.2 h
-  rw [neg_zero, lt_congr_left (Equiv.symm (neg_equiv_self G))] at h'
+  rw [neg_zero, lt_congr_left (neg_identical_self G).symm.equiv] at h'
   exact (h.trans h').false
 #align pgame.impartial.nonpos SetTheory.PGame.Impartial.nonpos
 
 theorem nonneg : ¬G < 0 := fun h => by
   have h' := neg_lt_neg_iff.2 h
-  rw [neg_zero, lt_congr_right (Equiv.symm (neg_equiv_self G))] at h'
+  rw [neg_zero, lt_congr_right (neg_identical_self G).symm.equiv] at h'
   exact (h.trans h').false
 #align pgame.impartial.nonneg SetTheory.PGame.Impartial.nonneg
 
@@ -157,7 +157,7 @@ theorem not_fuzzy_zero_iff : ¬G ‖ 0 ↔ (G ≈ 0) :=
 #align pgame.impartial.not_fuzzy_zero_iff SetTheory.PGame.Impartial.not_fuzzy_zero_iff
 
 theorem add_self : G + G ≈ 0 :=
-  Equiv.trans (add_congr_left (neg_equiv_self G)) (add_left_neg_equiv G)
+  Equiv.trans (add_congr_left (neg_identical_self G).equiv) (add_left_neg_equiv G)
 #align pgame.impartial.add_self SetTheory.PGame.Impartial.add_self
 
 -- Porting note: Changed `⟦G⟧` to `(⟦G⟧ : Quotient setoid)`
@@ -181,11 +181,11 @@ theorem equiv_iff_add_equiv_zero' (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := b
 #align pgame.impartial.equiv_iff_add_equiv_zero' SetTheory.PGame.Impartial.equiv_iff_add_equiv_zero'
 
 theorem le_zero_iff {G : PGame} [G.Impartial] : G ≤ 0 ↔ 0 ≤ G := by
-  rw [← zero_le_neg_iff, le_congr_right (neg_equiv_self G)]
+  rw [← zero_le_neg_iff, le_congr_right (neg_identical_self G).equiv]
 #align pgame.impartial.le_zero_iff SetTheory.PGame.Impartial.le_zero_iff
 
 theorem lf_zero_iff {G : PGame} [G.Impartial] : G ⧏ 0 ↔ 0 ⧏ G := by
-  rw [← zero_lf_neg_iff, lf_congr_right (neg_equiv_self G)]
+  rw [← zero_lf_neg_iff, lf_congr_right (neg_identical_self G).equiv]
 #align pgame.impartial.lf_zero_iff SetTheory.PGame.Impartial.lf_zero_iff
 
 theorem equiv_zero_iff_le : (G ≈ 0) ↔ G ≤ 0 :=

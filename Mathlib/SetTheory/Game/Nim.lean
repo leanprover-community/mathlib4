@@ -144,12 +144,11 @@ instance isEmpty_nim_zero_rightMoves : IsEmpty (nim 0).RightMoves := by
 #align pgame.is_empty_nim_zero_right_moves SetTheory.PGame.isEmpty_nim_zero_rightMoves
 
 /-- `nim 0` has exactly the same moves as `0`. -/
-def nimZeroRelabelling : nim 0 ≡r 0 :=
-  Relabelling.isEmpty _
-#align pgame.nim_zero_relabelling SetTheory.PGame.nimZeroRelabelling
+def nim_zero : nim 0 ≡ 0 :=
+  identical_zero _
 
 theorem nim_zero_equiv : nim 0 ≈ 0 :=
-  Equiv.isEmpty _
+  equiv_zero _
 #align pgame.nim_zero_equiv SetTheory.PGame.nim_zero_equiv
 
 noncomputable instance uniqueNimOneLeftMoves : Unique (nim 1).LeftMoves :=
@@ -189,15 +188,17 @@ theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
 #align pgame.nim_one_move_right SetTheory.PGame.nim_one_moveRight
 
 /-- `nim 1` has exactly the same moves as `star`. -/
-def nimOneRelabelling : nim 1 ≡r star := by
-  rw [nim_def]
-  refine' ⟨_, _, fun i => _, fun j => _⟩
-  any_goals dsimp; apply Equiv.equivOfUnique
-  all_goals simp; exact nimZeroRelabelling
-#align pgame.nim_one_relabelling SetTheory.PGame.nimOneRelabelling
+lemma nim_one : nim.{u} 1 ≡ star.{u} := by
+  refine Identical.ext (fun z ↦ ?_) (fun z ↦ ?_)
+  · unfold memₗ
+    simp_rw [nim_one_moveLeft, Unique.exists_iff, star_moveLeft]
+    exact Identical.congr_right nim_zero
+  · unfold memᵣ
+    simp_rw [nim_one_moveRight, Unique.exists_iff, star_moveRight]
+    exact Identical.congr_right nim_zero
 
 theorem nim_one_equiv : nim 1 ≈ star :=
-  nimOneRelabelling.equiv
+  nim_one.equiv
 #align pgame.nim_one_equiv SetTheory.PGame.nim_one_equiv
 
 @[simp]
@@ -219,7 +220,7 @@ theorem neg_nim (o : Ordinal) : -nim o = nim o := by
 instance nim_impartial (o : Ordinal) : Impartial (nim o) := by
   induction' o using Ordinal.induction with o IH
   rw [impartial_def, neg_nim]
-  refine' ⟨equiv_rfl, fun i => _, fun i => _⟩ <;> simpa using IH _ (typein_lt_self _)
+  refine' ⟨refl _, fun i => _, fun i => _⟩ <;> simpa using IH _ (typein_lt_self _)
 #align pgame.nim_impartial SetTheory.PGame.nim_impartial
 
 theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := by
