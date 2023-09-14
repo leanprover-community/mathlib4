@@ -16,12 +16,10 @@ as a Noetherian integrally closed commutative ring (domain) of Krull dimension a
 
 ## Main definitions
 
- - `IsDedekindRing` defines a Dedekind domain as a commutative ring that is
+ - `IsDedekindRing` defines a Dedekind ring as a commutative ring that is
    Noetherian, integrally closed in its field of fractions and has Krull dimension at most one.
    `isDedekindRing_iff` shows that this does not depend on the choice of field of fractions.
- - `IsDedekindDomain` defines a Dedekind domain as an integral domain that is
-   Noetherian, integrally closed in its field of fractions and has Krull dimension at most one.
-   `isDedekindDomain_iff` shows that this does not depend on the choice of field of fractions.
+ - `IsDedekindDomain` defines a Dedekind domain as a Dedekind ring that is a domain.
 
 ## Implementation notes
 
@@ -107,7 +105,7 @@ The integral closure condition is independent of the choice of field of fraction
 use `isDedekindRing_iff` to prove `IsDedekindRing` for a given `fraction_map`.
 -/
 class IsDedekindRing
-  extends IsNoetherian A A, DimensionLEOne A, IsIntegrallyClosed A : Prop
+  extends IsNoetherianRing A, DimensionLEOne A, IsIntegrallyClosed A : Prop
 
 /-- An integral domain is a Dedekind domain iff and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
