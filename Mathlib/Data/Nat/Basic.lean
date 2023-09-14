@@ -7,6 +7,8 @@ import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Use
 
 #align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
@@ -324,6 +326,21 @@ theorem le_of_pred_lt {m n : ℕ} : pred m < n → m ≤ n :=
   | 0 => le_of_lt
   | _ + 1 => id
 #align nat.le_of_pred_lt Nat.le_of_pred_lt
+
+theorem self_add_sub_one (n : ℕ) : n + (n - 1) = 2 * n - 1 := by
+  cases n
+  · rfl
+  · rw [two_mul]
+    convert (add_succ_sub_one (Nat.succ _) _).symm
+
+theorem sub_one_add_self (n : ℕ) : (n - 1) + n = 2 * n - 1 :=
+  add_comm _ n ▸ self_add_sub_one n
+
+theorem self_add_pred (n : ℕ) : n + pred n = (2 * n).pred :=
+  self_add_sub_one n
+
+theorem pred_add_self (n : ℕ) : pred n + n = (2 * n).pred :=
+  sub_one_add_self n
 
 /-- This ensures that `simp` succeeds on `pred (n + 1) = n`. -/
 @[simp]

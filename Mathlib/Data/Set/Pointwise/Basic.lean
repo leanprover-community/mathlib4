@@ -9,6 +9,7 @@ import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Tactic.Common
 
 #align_import data.set.pointwise.basic from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"
 
@@ -139,8 +140,8 @@ theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
 
 /-- The singleton operation as a `OneHom`. -/
 @[to_additive "The singleton operation as a `ZeroHom`."]
-noncomputable def singletonOneHom : OneHom α (Set α) :=
-  ⟨singleton, singleton_one⟩
+noncomputable def singletonOneHom : OneHom α (Set α) where
+  toFun := singleton; map_one' := singleton_one
 #align set.singleton_one_hom Set.singletonOneHom
 #align set.singleton_zero_hom Set.singletonZeroHom
 
@@ -545,8 +546,9 @@ theorem mul_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
 
 /-- The singleton operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `AddHom`."]
-noncomputable def singletonMulHom : α →ₙ* Set α :=
-  ⟨singleton, fun _ _ => singleton_mul_singleton.symm⟩
+noncomputable def singletonMulHom : α →ₙ* Set α where
+  toFun := singleton
+  map_mul' _ _ := singleton_mul_singleton.symm
 #align set.singleton_mul_hom Set.singletonMulHom
 #align set.singleton_add_hom Set.singletonAddHom
 
