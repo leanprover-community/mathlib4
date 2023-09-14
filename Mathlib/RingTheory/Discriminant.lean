@@ -331,7 +331,7 @@ separable extension of `K`. Let `B : PowerBasis K L` be such that `IsIntegral R 
 Then for all, `z : L` that are integral over `R`, we have
 `(discr K B.basis) • z ∈ adjoin R ({B.gen} : set L)`. -/
 theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R K]
-    [IsFractionRing R K] {B : PowerBasis K L} (hint : IsIntegral R B.gen) {z : L}
+    {B : PowerBasis K L} (hint : IsIntegral R B.gen) {z : L}
     (hz : IsIntegral R z) : discr K B.basis • z ∈ adjoin R ({B.gen} : Set L) := by
   have hinv : IsUnit (traceMatrix K B.basis).det := by
     simpa [← discr_def] using discr_isUnit_of_basis _ B.basis
