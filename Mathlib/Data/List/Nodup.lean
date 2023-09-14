@@ -435,8 +435,8 @@ theorem Nodup.pairwise_of_set_pairwise {l : List α} {r : α → α → Prop} (h
 #align list.nodup.pairwise_of_set_pairwise List.Nodup.pairwise_of_set_pairwise
 
 @[simp]
-theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup)
-    : { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
+theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) :
+    { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
   induction' l with a l ih
   · simp
   rw [List.nodup_cons] at hl
