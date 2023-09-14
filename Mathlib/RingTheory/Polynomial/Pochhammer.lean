@@ -178,6 +178,7 @@ theorem ascPochhammer_nat_eq_descFactorial (a b : ℕ) :
   · rw [Nat.succ_add, ← Nat.add_succ, Nat.add_descFactorial_eq_ascFactorial,
       ascPochhammer_nat_eq_ascFactorial]
 #align pochhammer_nat_eq_desc_factorial ascPochhammer_nat_eq_descFactorial
+
 @[simp]
 theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
     (ascPochhammer S n).natDegree = n := by
