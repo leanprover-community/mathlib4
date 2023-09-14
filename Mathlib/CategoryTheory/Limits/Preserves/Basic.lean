@@ -762,8 +762,8 @@ If `C` has colimits of shape `J` and `G` preserves them, then if `G` reflects is
 reflects colimits of shape `J`.
 -/
 def reflectsColimitsOfShapeOfReflectsIsomorphisms {G : C ⥤ D} [ReflectsIsomorphisms G]
-    [HasColimitsOfShape J C] [PreservesColimitsOfShape J G] : ReflectsColimitsOfShape J G
-    where reflectsColimit {F} := reflectsColimitOfReflectsIsomorphisms F G
+    [HasColimitsOfShape J C] [PreservesColimitsOfShape J G] : ReflectsColimitsOfShape J G where
+  reflectsColimit {F} := reflectsColimitOfReflectsIsomorphisms F G
 #align category_theory.limits.reflects_colimits_of_shape_of_reflects_isomorphisms CategoryTheory.Limits.reflectsColimitsOfShapeOfReflectsIsomorphisms
 
 /--
@@ -772,8 +772,8 @@ colimits.
 -/
 def reflectsColimitsOfReflectsIsomorphisms {G : C ⥤ D} [ReflectsIsomorphisms G]
     [HasColimitsOfSize.{w', w} C] [PreservesColimitsOfSize.{w', w} G] :
-    ReflectsColimitsOfSize.{w', w} G
-    where reflectsColimitsOfShape := reflectsColimitsOfShapeOfReflectsIsomorphisms
+    ReflectsColimitsOfSize.{w', w} G where
+  reflectsColimitsOfShape := reflectsColimitsOfShapeOfReflectsIsomorphisms
 #align category_theory.limits.reflects_colimits_of_reflects_isomorphisms CategoryTheory.Limits.reflectsColimitsOfReflectsIsomorphisms
 
 end
@@ -781,8 +781,8 @@ end
 variable (F : C ⥤ D)
 
 /-- A fully faithful functor reflects limits. -/
-def fullyFaithfulReflectsLimits [Full F] [Faithful F] : ReflectsLimitsOfSize.{w, w'} F
-    where reflectsLimitsOfShape {J} 𝒥₁ :=
+def fullyFaithfulReflectsLimits [Full F] [Faithful F] : ReflectsLimitsOfSize.{w, w'} F where
+  reflectsLimitsOfShape {J} 𝒥₁ :=
     { reflectsLimit := fun {K} =>
         { reflects := fun {c} t =>
             (IsLimit.mkConeMorphism fun s =>
@@ -794,8 +794,8 @@ def fullyFaithfulReflectsLimits [Full F] [Faithful F] : ReflectsLimitsOfSize.{w,
 #align category_theory.limits.fully_faithful_reflects_limits CategoryTheory.Limits.fullyFaithfulReflectsLimits
 
 /-- A fully faithful functor reflects colimits. -/
-def fullyFaithfulReflectsColimits [Full F] [Faithful F] : ReflectsColimitsOfSize.{w, w'} F
-    where reflectsColimitsOfShape {J} 𝒥₁ :=
+def fullyFaithfulReflectsColimits [Full F] [Faithful F] : ReflectsColimitsOfSize.{w, w'} F where
+  reflectsColimitsOfShape {J} 𝒥₁ :=
     { reflectsColimit := fun {K} =>
         { reflects := fun {c} t =>
             (IsColimit.mkCoconeMorphism fun s =>
