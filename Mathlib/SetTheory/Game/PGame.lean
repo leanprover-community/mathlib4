@@ -1090,7 +1090,7 @@ protected theorem Identical.rfl {x} : x ≡ x := Identical.refl x
 theorem identical_comm {x y} : x ≡ y ↔ y ≡ x :=
 ⟨Identical.symm, Identical.symm⟩
 
-@[symm] protected theorem Identical.trans : ∀ {x y z}, x ≡ y → y ≡ z → x ≡ z
+@[trans] protected theorem Identical.trans : ∀ {x y z}, x ≡ y → y ≡ z → x ≡ z
   | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _, ⟨hL₁, hR₁⟩, ⟨hL₂, hR₂⟩ =>
     ⟨hL₁.trans (fun _ _ _ h₁ h₂ ↦ h₁.trans h₂) hL₂, hR₁.trans (fun _ _ _ h₁ h₂ ↦ h₁.trans h₂) hR₂⟩
 
