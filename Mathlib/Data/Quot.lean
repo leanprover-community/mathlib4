@@ -834,6 +834,7 @@ instance (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
 
 end Quotient
 
+@[simp]
 lemma Equivalence.quot_mk_eq_iff {α : Type _} {r : α → α → Prop} (h : Equivalence r) (x y : α) :
     Quot.mk r x = Quot.mk r y ↔ r x y := by
   constructor
