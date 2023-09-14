@@ -14,23 +14,35 @@ A group `G` has *unique products* if for any two non-empty finite subsets `A, B 
 element `g ∈ A * B` that can be written uniquely as a product of an element of `A` and an element
 of `B`.  We call the formalization this property `UniqueProds`.  Since the condition requires no
 property of the group operation, we define it for a Type simply satisfying `Mul`.  We also
-introduce the analogous "additive" companion, `UniqueSums` and link the two so that `to_additive`
+introduce the analogous "additive" companion, `UniqueSums`, and link the two so that `to_additive`
 converts `UniqueProds` into `UniqueSums`.
 
+A common way of *proving* that a group satisfies the `UniqueProds/Sums` property is by assuming
+the existence of some kind of ordering on the group that is well-behaved with respect to the
+group operation and showing that minima/maxima are the "unique products/sums".
+However, the order is just a convenience and is not part of the `UniqueProds/Sums` setup.
+
 Here you can see several examples of Types that have `UniqueSums/Prods`
-(`infer_instance` uses `Covariants.to_uniqueProds` and `Covariants.to_uniqueSums`).
+(`inferInstance` uses `Covariant.to_uniqueProds_left` and `Covariant.to_uniqueSums_left`).
 ```lean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Algebra.Group.UniqueProds
 
-example : UniqueSums ℕ   := by infer_instance
-example : UniqueSums ℕ+  := by infer_instance
-example : UniqueSums ℤ   := by infer_instance
-example : UniqueSums ℚ   := by infer_instance
-example : UniqueSums ℝ   := by infer_instance
-example : UniqueProds ℕ+ := by infer_instance
+example : UniqueSums ℕ   := inferInstance
+example : UniqueSums ℕ+  := inferInstance
+example : UniqueSums ℤ   := inferInstance
+example : UniqueSums ℚ   := inferInstance
+example : UniqueSums ℝ   := inferInstance
+example : UniqueProds ℕ+ := inferInstance
 ```
+
+## Use in `(Add)MonoidAlgebra`s
+
+`UniqueProds/Sums` allow to decouple certain arguments about `(Add)MonoidAlgebra`s into an argument
+about the grading type and then a generic statement of the form "look at the coefficient of the
+'unique product/sum'".
+The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
 
 
@@ -50,6 +62,10 @@ namespace UniqueMul
 
 variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 
+@[to_additive (attr := nontriviality, simp)]
+theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by simp [UniqueMul]
+
+@[to_additive]
 theorem mt {G} [Mul G] {A B : Finset G} {a0 b0 : G} (h : UniqueMul A B a0 b0) :
     ∀ ⦃a b⦄, a ∈ A → b ∈ B → a ≠ a0 ∨ b ≠ b0 → a * b ≠ a0 * b0 := fun _ _ ha hb k ↦ by
   contrapose! k
@@ -112,8 +128,7 @@ theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G
     UniqueMul (A.preimage f (Set.injOn_of_injective hf _))
       (B.preimage f (Set.injOn_of_injective hf _)) a0 b0 := by
   intro a b ha hb ab
-  rw [← hf.eq_iff, ← hf.eq_iff]
-  rw [← hf.eq_iff, map_mul, map_mul] at ab
+  simp only [← hf.eq_iff, map_mul] at ab ⊢
   exact u (Finset.mem_preimage.mp ha) (Finset.mem_preimage.mp hb) ab
 #align unique_mul.mul_hom_preimage UniqueMul.mulHom_preimage
 #align unique_add.add_hom_preimage UniqueAdd.addHom_preimage
@@ -127,17 +142,14 @@ See `UniqueMul.mulHom_map_iff` for a version with swapped bundling. -/
 See `UniqueAdd.addHom_map_iff` for a version with swapped bundling."]
 theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Injective f) :
     UniqueMul (A.image f) (B.image f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
-  refine' ⟨fun h ↦ _, fun h ↦ _⟩
-  · intro a b ha hb ab
-    rw [← hf.eq_iff, ← hf.eq_iff]
-    rw [← hf.eq_iff, map_mul, map_mul] at ab
-    exact h (Finset.mem_image.mpr ⟨_, ha, rfl⟩) (Finset.mem_image.mpr ⟨_, hb, rfl⟩) ab
-  · intro a b aA bB ab
-    obtain ⟨a, ha, rfl⟩ : ∃ a' ∈ A, f a' = a := Finset.mem_image.mp aA
-    obtain ⟨b, hb, rfl⟩ : ∃ b' ∈ B, f b' = b := Finset.mem_image.mp bB
-    rw [hf.eq_iff, hf.eq_iff]
-    rw [← map_mul, ← map_mul, hf.eq_iff] at ab
-    exact h ha hb ab
+  simp_rw [UniqueMul, Finset.mem_image]
+  refine' ⟨fun h a b ha hb ab ↦ _, fun h ↦ _⟩
+  · rw [← hf.eq_iff, map_mul, map_mul] at ab
+    have := h ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩ ab
+    exact ⟨hf this.1, hf this.2⟩
+  · rintro _ _ ⟨a, aA, rfl⟩ ⟨b, bB, rfl⟩ ab
+    simp only [← map_mul, hf.eq_iff] at ab ⊢
+    exact h aA bB ab
 #align unique_mul.mul_hom_image_iff UniqueMul.mulHom_image_iff
 #align unique_add.add_hom_image_iff UniqueAdd.addHom_image_iff
 
@@ -156,6 +168,37 @@ theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
       simp only [Finset.mem_map, MulHom.coe_mk, Finset.mem_image]
 #align unique_mul.mul_hom_map_iff UniqueMul.mulHom_map_iff
 #align unique_add.add_hom_map_iff UniqueAdd.addHom_map_iff
+
+section Opposites
+open Finset MulOpposite
+
+@[to_additive]
+theorem of_mulOpposite
+    (h : UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
+    UniqueMul A B a0 b0 := by
+  intros a b aA bB ab
+  have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by simpa using congr_arg op ab)
+  simpa [and_comm] using this
+
+@[to_additive]
+theorem to_mulOpposite (h : UniqueMul A B a0 b0) :
+    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) := by
+  refine of_mulOpposite (G := MulOpposite G) <| fun a b ha hb hab ↦ ?_
+  simp only [mem_map, Function.Embedding.coeFn_mk, exists_exists_and_eq_and] at ha hb
+  rcases ha with ⟨a, ha, rfl⟩
+  rcases hb with ⟨b, hb, rfl⟩
+  rw [op_inj, op_inj, op_inj, op_inj]
+  apply h ha hb ?_
+  apply_fun op ∘ op using op_injective.comp op_injective
+  exact hab
+
+@[to_additive]
+theorem iff_mulOpposite :
+    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) ↔
+      UniqueMul A B a0 b0 :=
+⟨of_mulOpposite, to_mulOpposite⟩
+
+end Opposites
 
 end UniqueMul
 
@@ -179,41 +222,68 @@ class UniqueProds (G) [Mul G] : Prop where
     ∀ {A B : Finset G} (_ : A.Nonempty) (_ : B.Nonempty), ∃ a0 ∈ A, ∃ b0 ∈ B, UniqueMul A B a0 b0
 #align unique_prods UniqueProds
 
-attribute [to_additive UniqueSums] UniqueProds
+attribute [to_additive] UniqueProds
 
 namespace Multiplicative
 
 instance {M} [Add M] [UniqueSums M] : UniqueProds (Multiplicative M) where
-  uniqueMul_of_nonempty {A} {B} hA hB := by
-    let A' : Finset M := A
-    have hA' : A'.Nonempty := hA
-    obtain ⟨a0, hA0, b0, hB0, J⟩ := UniqueSums.uniqueAdd_of_nonempty hA' hB
-    exact ⟨ofAdd a0, hA0, ofAdd b0, hB0, fun a b aA bB H ↦ J aA bB H⟩
+  uniqueMul_of_nonempty := UniqueSums.uniqueAdd_of_nonempty (G := M)
 
 end Multiplicative
 
 namespace Additive
 
 instance {M} [Mul M] [UniqueProds M] : UniqueSums (Additive M) where
-  uniqueAdd_of_nonempty {A} {B} hA hB := by
-    let A' : Finset M := A
-    have hA' : A'.Nonempty := hA
-    obtain ⟨a0, hA0, b0, hB0, J⟩ := UniqueProds.uniqueMul_of_nonempty hA' hB
-    exact ⟨ofMul a0, hA0, ofMul b0, hB0, fun a b aA bB H ↦ J aA bB H⟩
+  uniqueAdd_of_nonempty := UniqueProds.uniqueMul_of_nonempty (G := M)
 
 end Additive
 
 -- see Note [lower instance priority]
 /-- This instance asserts that if `A` has a multiplication, a linear order, and multiplication
 is 'very monotone', then `A` also has `UniqueProds`. -/
-@[to_additive Covariants.to_uniqueSums
+@[to_additive
       "This instance asserts that if `A` has an addition, a linear order, and addition
 is 'very monotone', then `A` also has `UniqueSums`."]
 instance (priority := 100) Covariants.to_uniqueProds {A} [Mul A] [LinearOrder A]
     [CovariantClass A A (· * ·) (· ≤ ·)] [CovariantClass A A (Function.swap (· * ·)) (· < ·)]
     [ContravariantClass A A (· * ·) (· ≤ ·)] : UniqueProds A where
-      uniqueMul_of_nonempty {A} {B} hA hB :=
-        ⟨_, A.min'_mem ‹_›, _, B.min'_mem ‹_›, fun a b ha hb ab ↦
-        eq_and_eq_of_le_of_le_of_mul_le (Finset.min'_le _ _ ‹_›) (Finset.min'_le _ _ ‹_›) ab.le⟩
+  uniqueMul_of_nonempty {A B} hA hB :=
+    ⟨_, A.max'_mem ‹_›, _, B.max'_mem ‹_›, fun a b ha hb ↦
+      (mul_eq_mul_iff_eq_and_eq (Finset.le_max' _ _ ‹_›) (Finset.le_max' _ _ ‹_›)).mp⟩
 #align covariants.to_unique_prods Covariants.to_uniqueProds
 #align covariants.to_unique_sums Covariants.to_uniqueSums
+
+namespace UniqueProds
+
+@[to_additive (attr := nontriviality, simp)]
+theorem of_subsingleton {G : Type*} [Mul G] [Subsingleton G] : UniqueProds G where
+  uniqueMul_of_nonempty {A B} | ⟨a, hA⟩, ⟨b, hB⟩ => ⟨a, hA, b, hB, by simp⟩
+
+open Finset MulOpposite in
+@[to_additive]
+theorem of_mulOpposite (G : Type*) [Mul G] (h : UniqueProds Gᵐᵒᵖ) :
+    UniqueProds G :=
+  ⟨fun hA hB =>
+    let f : G ↪ Gᵐᵒᵖ := ⟨op, op_injective⟩
+    let ⟨y, yB, x, xA, hxy⟩ := h.uniqueMul_of_nonempty (hB.map (f := f)) (hA.map (f := f))
+    ⟨unop x, (mem_map' _).mp xA, unop y, (mem_map' _).mp yB, hxy.of_mulOpposite⟩⟩
+
+open MulOpposite in
+@[to_additive (attr := simp)]
+theorem iff_mulOpposite (G : Type*) [Mul G] :
+    UniqueProds Gᵐᵒᵖ ↔ UniqueProds G := by
+  refine ⟨of_mulOpposite G, fun h ↦ of_mulOpposite (Gᵐᵒᵖ) ⟨fun {A B} hA hB ↦ ?_⟩⟩
+  classical
+  let f : Gᵐᵒᵖᵐᵒᵖ ↪ G := ⟨_, unop_injective.comp unop_injective⟩
+  obtain ⟨a0, ha0, b0, hb0, d⟩ :=
+    h.uniqueMul_of_nonempty (Finset.Nonempty.map (f := f) hA) (Finset.Nonempty.map (f := f) hB)
+  simp only [Finset.mem_map, Function.Embedding.coeFn_mk, Function.comp_apply] at ha0 hb0
+  rcases ha0 with ⟨a0, ha0, rfl⟩
+  rcases hb0 with ⟨b0, hb0, rfl⟩
+  refine ⟨a0, ha0, b0, hb0, ?_⟩
+  apply (UniqueMul.mulHom_map_iff (H := G) (⟨_, unop_injective.comp unop_injective⟩) ?_).mp
+  · simp only [Function.Embedding.coeFn_mk, Function.comp_apply]
+    convert d
+  · simp only [Function.Embedding.coeFn_mk, Function.comp_apply, unop_mul, implies_true]
+
+end UniqueProds

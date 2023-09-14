@@ -286,6 +286,23 @@ theorem openSegment_translate_image (a b c : E) :
   openSegment_translate_preimage 𝕜 a b c ▸ image_preimage_eq _ <| add_left_surjective a
 #align open_segment_translate_image openSegment_translate_image
 
+lemma segment_inter_eq_endpoint_of_linearIndependent_sub
+    {c x y : E} (h : LinearIndependent 𝕜 ![x - c, y - c]) :
+    [c -[𝕜] x] ∩ [c -[𝕜] y] = {c} := by
+  apply Subset.antisymm; swap
+  · simp [singleton_subset_iff, left_mem_segment]
+  intro z ⟨hzt, hzs⟩
+  rw [segment_eq_image, mem_image] at hzt hzs
+  rcases hzt with ⟨p, ⟨p0, p1⟩, rfl⟩
+  rcases hzs with ⟨q, ⟨q0, q1⟩, H⟩
+  have Hx : x = (x - c) + c := by abel
+  have Hy : y = (y - c) + c := by abel
+  rw [Hx, Hy, smul_add, smul_add] at H
+  have : c + q • (y - c) = c + p • (x - c) := by
+    convert H using 1 <;> simp [sub_smul]
+  obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this ).symm
+  simp
+
 end OrderedRing
 
 theorem sameRay_of_mem_segment [StrictOrderedCommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y z : E}
@@ -295,6 +312,20 @@ theorem sameRay_of_mem_segment [StrictOrderedCommRing 𝕜] [AddCommGroup E] [Mo
   simpa only [add_sub_cancel', ← sub_sub, sub_smul, one_smul] using
     (SameRay.sameRay_nonneg_smul_left (z - y) hθ₀).nonneg_smul_right (sub_nonneg.2 hθ₁)
 #align same_ray_of_mem_segment sameRay_of_mem_segment
+
+lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne [OrderedCommRing 𝕜] [NoZeroDivisors 𝕜]
+    [AddCommGroup E] [Module 𝕜 E]
+    {x y : E} (h : LinearIndependent 𝕜 ![x, y]) {s t : 𝕜} (hs : s ≠ t) (c : E) :
+    [c + x -[𝕜] c + t • y] ∩ [c + x -[𝕜] c + s • y] = {c + x} := by
+  apply segment_inter_eq_endpoint_of_linearIndependent_sub
+  simp only [add_sub_add_left_eq_sub]
+  suffices H : LinearIndependent 𝕜 ![(-1 : 𝕜) • x + t • y, (-1 : 𝕜) • x + s • y] by
+    convert H using 1; simp only [neg_smul, one_smul]; abel_nf
+  apply h.linear_combination_pair_of_det_ne_zero
+  contrapose! hs
+  apply Eq.symm
+  simpa [neg_mul, one_mul, mul_neg, mul_one, sub_neg_eq_add, add_comm _ t,
+    ← sub_eq_add_neg, sub_eq_zero] using hs
 
 section LinearOrderedRing
 
