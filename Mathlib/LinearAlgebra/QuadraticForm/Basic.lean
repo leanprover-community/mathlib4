@@ -780,11 +780,10 @@ Over a commutative ring, use `QuadraticForm.associated`, which gives an `R`-line
 general ring with no nontrivial distinguished commutative subring, use `QuadraticForm.associated'`,
 which gives an additive homomorphism (or more precisely a `ℤ`-linear map.) -/
 def associatedHom : QuadraticForm R M →ₗ[S] BilinForm R M :=
-  DistribMulAction.toLinearMap _ _
-    (⟨⅟2, fun x => (Commute.ofNat_right x 2).invOf_right⟩ : Submonoid.center R) ∘ₗ
-  { toFun := polarBilin
-    map_add' := fun _x _y => BilinForm.ext <| polar_add _ _
-    map_smul' :=  fun _c _x => BilinForm.ext <| polar_smul _ _ }
+  (⟨⅟2, fun x => (Commute.ofNat_right x 2).invOf_right⟩ : Submonoid.center R) •
+    { toFun := polarBilin
+      map_add' := fun _x _y => BilinForm.ext <| polar_add _ _
+      map_smul' :=  fun _c _x => BilinForm.ext <| polar_smul _ _ }
 #align quadratic_form.associated_hom QuadraticForm.associatedHom
 
 variable (Q : QuadraticForm R M)
