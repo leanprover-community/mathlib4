@@ -36,7 +36,12 @@ instance (V : QuadraticModuleCat.{v} R) : Module R V :=
 /-- The quadratic form associated with the module. -/
 def form (V : QuadraticModuleCat.{v} R) : QuadraticForm R V := V.form'
 
+/-- See Note [custom simps projection] -/
+def Simps.form (V : QuadraticModuleCat.{v} R) : QuadraticForm R V := V.form
+
+initialize_simps_projections QuadraticModuleCat (form' → form)
 /-- The object in the category of quadratic R-modules associated to a quadratic R-module. -/
+@[simps form]
 def of {X : Type v} [AddCommGroup X] [Module R X] (Q : QuadraticForm R X) :
     QuadraticModuleCat R where
   form' := Q
@@ -73,17 +78,6 @@ abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Modu
     Hom.toIsometry (𝟙 M) = QuadraticForm.Isometry.id _ :=
   rfl
 
-/-- Build an isomorphism in the category `QuadraticModuleCat Q` from a
-`QuadraticForm.IsometryEquiv`. -/
-@[simps]
-def ofIso {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
-    {Q₁ : QuadraticForm R X} {Q₂ : QuadraticForm R X} (e : Q₁.IsometryEquiv Q₂) :
-    QuadraticModuleCat.of Q₁ ≅ QuadraticModuleCat.of Q₂ where
-  hom := ⟨e.toIsometry⟩
-  inv := ⟨e.symm.toIsometry⟩
-  hom_inv_id := Hom.ext _ _ <| FunLike.ext _ _ e.left_inv
-  inv_hom_id := Hom.ext _ _ <| FunLike.ext _ _ e.right_inv
-
 instance concreteCategory : ConcreteCategory.{v} (QuadraticModuleCat.{v} R) where
   forget :=
     { obj := fun M => M
@@ -105,5 +99,34 @@ theorem forget₂_obj (X : QuadraticModuleCat R) :
 theorem forget₂_map (X Y : QuadraticModuleCat R) (f : X ⟶ Y) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map f = f.toIsometry.toLinearMap :=
   rfl
+
+
+/-- Build an isomorphism in the category `QuadraticModuleCat Q` from a
+`QuadraticForm.IsometryEquiv`. -/
+@[simps]
+def ofIso {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+    {Q₁ : QuadraticForm R X} {Q₂ : QuadraticForm R X} (e : Q₁.IsometryEquiv Q₂) :
+    QuadraticModuleCat.of Q₁ ≅ QuadraticModuleCat.of Q₂ where
+  hom := ⟨e.toIsometry⟩
+  inv := ⟨e.symm.toIsometry⟩
+  hom_inv_id := Hom.ext _ _ <| FunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext _ _ <| FunLike.ext _ _ e.right_inv
+
+/-- Build a `QuadraticForm.IsometryEquiv` from an isomorphism in the category
+`QuadraticModuleCat R`. -/
+@[simps]
+def _root_.CategoryTheory.Iso.toIsometryEquiv {X Y : QuadraticModuleCat.{v} R}
+    (i : X ≅ Y) : X.form.IsometryEquiv Y.form where
+  toFun := i.hom.toIsometry
+  invFun := i.inv.toIsometry
+  left_inv x := by
+    change (i.hom ≫ i.inv).toIsometry x = x
+    simp
+  right_inv x := by
+    change (i.inv ≫ i.hom).toIsometry x = x
+    simp
+  map_add' := map_add _
+  map_smul' := map_smul _
+  map_app' := QuadraticForm.Isometry.map_app _
 
 end QuadraticModuleCat
