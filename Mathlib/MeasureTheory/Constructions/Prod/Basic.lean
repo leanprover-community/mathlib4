@@ -294,8 +294,8 @@ protected irreducible_def prod (μ : Measure α) (ν : Measure β) : Measure (α
   bind μ fun x : α => map (Prod.mk x) ν
 #align measure_theory.measure.prod MeasureTheory.Measure.prod
 
-instance prod.measureSpace {α β} [MeasureSpace α] [MeasureSpace β] : MeasureSpace (α × β)
-    where volume := volume.prod volume
+instance prod.measureSpace {α β} [MeasureSpace α] [MeasureSpace β] : MeasureSpace (α × β) where
+  volume := volume.prod volume
 #align measure_theory.measure.prod.measure_space MeasureTheory.Measure.prod.measureSpace
 
 variable [SigmaFinite ν]

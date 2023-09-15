@@ -866,11 +866,11 @@ def inverse (f : M →ₗ⁅R,L⁆ N) (g : N → M) (h₁ : Function.LeftInverse
          }
 #align lie_module_hom.inverse LieModuleHom.inverse
 
-instance : Add (M →ₗ⁅R,L⁆ N)
-    where add f g := { (f : M →ₗ[R] N) + (g : M →ₗ[R] N) with map_lie' := by simp }
+instance : Add (M →ₗ⁅R,L⁆ N) where
+  add f g := { (f : M →ₗ[R] N) + (g : M →ₗ[R] N) with map_lie' := by simp }
 
-instance : Sub (M →ₗ⁅R,L⁆ N)
-    where sub f g := { (f : M →ₗ[R] N) - (g : M →ₗ[R] N) with map_lie' := by simp }
+instance : Sub (M →ₗ⁅R,L⁆ N) where
+  sub f g := { (f : M →ₗ[R] N) - (g : M →ₗ[R] N) with map_lie' := by simp }
 
 instance : Neg (M →ₗ⁅R,L⁆ N) where neg f := { -(f : M →ₗ[R] N) with map_lie' := by simp }
 
@@ -901,8 +901,8 @@ theorem neg_apply (f : M →ₗ⁅R,L⁆ N) (m : M) : (-f) m = -f m :=
   rfl
 #align lie_module_hom.neg_apply LieModuleHom.neg_apply
 
-instance hasNsmul : SMul ℕ (M →ₗ⁅R,L⁆ N)
-    where smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
+instance hasNsmul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
+  smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
 #align lie_module_hom.has_nsmul LieModuleHom.hasNsmul
 
 @[norm_cast, simp]
@@ -914,8 +914,8 @@ theorem nsmul_apply (n : ℕ) (f : M →ₗ⁅R,L⁆ N) (m : M) : (n • f) m = 
   rfl
 #align lie_module_hom.nsmul_apply LieModuleHom.nsmul_apply
 
-instance hasZsmul : SMul ℤ (M →ₗ⁅R,L⁆ N)
-    where smul z f := { z • (f : M →ₗ[R] N) with map_lie' := by simp }
+instance hasZsmul : SMul ℤ (M →ₗ⁅R,L⁆ N) where
+  smul z f := { z • (f : M →ₗ[R] N) with map_lie' := by simp }
 #align lie_module_hom.has_zsmul LieModuleHom.hasZsmul
 
 @[norm_cast, simp]
