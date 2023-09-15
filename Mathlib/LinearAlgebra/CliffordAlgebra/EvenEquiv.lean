@@ -19,7 +19,7 @@ This file provides some notable isomorphisms regarding the even subalgebra, `Cli
 
 * `CliffordAlgebra.equivEven`: Every Clifford algebra is isomorphic as an algebra to the even
   subalgebra of a Clifford algebra with one more dimension.
-  * `clifford_algebra.even_equiv.Q'`: The quadratic form used by this "one-up" algebra.
+  * `CliffordAlgebra.EquivEven.Q'`: The quadratic form used by this "one-up" algebra.
   * `CliffordAlgebra.toEven`: The simp-normal form of the forward direction of this isomorphism.
   * `CliffordAlgebra.ofEven`: The simp-normal form of the reverse direction of this isomorphism.
 
@@ -126,7 +126,7 @@ open EquivEven
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
   refine' CliffordAlgebra.lift Q ⟨_, fun m => _⟩
   · refine' LinearMap.codRestrict _ _ fun m => Submodule.mem_iSup_of_mem ⟨2, rfl⟩ _
-    exact (LinearMap.mulLeft R <| e0 Q).comp (v Q)
+    · exact (LinearMap.mulLeft R <| e0 Q).comp (v Q)
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
   · ext1
@@ -141,7 +141,7 @@ theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q 
   rw [toEven, CliffordAlgebra.lift_ι_apply]
   -- porting note: was `rw`
   erw [LinearMap.codRestrict_apply]
-  rfl
+  rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.mulLeft_apply]
 #align clifford_algebra.to_even_ι CliffordAlgebra.toEven_ι
 
 /-- The embedding from the even subalgebra with an extra dimension into the original algebra. -/
@@ -238,6 +238,9 @@ def equivEven : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra.even (Q' Q) :=
   AlgEquiv.ofAlgHom (toEven Q) (ofEven Q) (toEven_comp_ofEven Q) (ofEven_comp_toEven Q)
 #align clifford_algebra.equiv_even CliffordAlgebra.equivEven
 
+-- Note: times out on linting CI
+attribute [nolint simpNF] equivEven_symm_apply
+
 /-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
 subalgebra is just the reverse of the representation. -/
 theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
@@ -256,7 +259,6 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
 
-set_option maxHeartbeats 300000 in
 /-- One direction of `CliffordAlgebra.evenEquivEvenNeg` -/
 def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
@@ -297,5 +299,8 @@ def evenEquivEvenNeg : CliffordAlgebra.even Q ≃ₐ[R] CliffordAlgebra.even (-Q
   AlgEquiv.ofAlgHom (evenToNeg Q _ rfl) (evenToNeg (-Q) _ (neg_neg _).symm)
     (evenToNeg_comp_evenToNeg _ _ _ _) (evenToNeg_comp_evenToNeg _ _ _ _)
 #align clifford_algebra.even_equiv_even_neg CliffordAlgebra.evenEquivEvenNeg
+
+-- Note: times out on linting CI
+attribute [nolint simpNF] evenEquivEvenNeg_apply evenEquivEvenNeg_symm_apply
 
 end CliffordAlgebra
