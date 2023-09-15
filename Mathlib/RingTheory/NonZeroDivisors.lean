@@ -203,10 +203,12 @@ variable (R M : Type*) [MonoidWithZero R] [Zero M] [MulAction R M]
 
 lemma mem_nonZeroSMulDivisors_iff (x : R) : x ∈ R⁰[M] ↔ ∀ (m : M), x • m = 0 → m = 0 := Iff.rfl
 
-@[simp] lemma Submonoid.unop_mulOpposite_nonZeroSmulDivisors_over_itself_eq_nonZeroDivisors :
+@[simp, nolint simpNF]
+lemma Submonoid.unop_mulOpposite_nonZeroSmulDivisors_over_itself_eq_nonZeroDivisors :
     Submonoid.unop ((MulOpposite R)⁰[R]) = R⁰ := rfl
 
-@[simp] lemma Submonoid.mulOpposite_nonZeroSmulDivisors_over_itself_eq_op_nonZeroDivisors :
+@[simp, nolint simpNF]
+lemma Submonoid.mulOpposite_nonZeroSmulDivisors_over_itself_eq_op_nonZeroDivisors :
     (MulOpposite R)⁰[R] = R⁰.op := rfl
 
 end nonZeroSMulDivisors
