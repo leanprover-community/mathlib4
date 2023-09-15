@@ -283,7 +283,7 @@ noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
     (by dsimp ; simp only [id_comp, comp_id, S.op_δ])
 
 lemma exact_L₂' : S.L₂'.Exact := by
-  rw [exact_iff_op, exact_iff_of_iso S.L₂'OpIso]
+  rw [← exact_op_iff, exact_iff_of_iso S.L₂'OpIso]
   exact S.op.exact_L₁'
 
 variable (S₁ S₂ S₃ : SnakeInput C)
