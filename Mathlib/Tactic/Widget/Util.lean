@@ -26,7 +26,7 @@ def findGoalForLocation (goals : Array Widget.InteractiveGoal) (loc : SubExpr.Go
   goals.find? (·.mvarId == loc.mvarId)
 
 structure SelectionPanelProps extends PanelWidgetProps where
-  /-- The range in the source document where the `gcongr` command will be inserted. -/
+  /-- The range in the source document where the command will be inserted. -/
   replaceRange : Lsp.Range
   deriving RpcEncodable
 
