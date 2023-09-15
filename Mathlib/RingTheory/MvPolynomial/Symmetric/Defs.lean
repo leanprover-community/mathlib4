@@ -100,6 +100,7 @@ def symmetricSubalgebra [CommSemiring R] : Subalgebra R (MvPolynomial σ R) wher
 
 variable {σ R}
 
+/-- `MvPolynomial.rename` induces an isomorphism between the symmetric subalgebras. -/
 def rename_symmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
     symmetricSubalgebra σ R ≃ₐ[R] symmetricSubalgebra τ R :=
   AlgEquiv.ofAlgHom
