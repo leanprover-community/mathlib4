@@ -30,7 +30,6 @@ later we transfer the result from `Fin n` to `σ`.
 TODO:
 details
 declaration docstrings
-move maxDegree API
 -/
 
 variable {σ τ R : Type*} {n m : ℕ}
@@ -41,12 +40,13 @@ namespace Fin
 
 section accumulate
 
-/-- The `j`th entry of `accumulate m t` is the sum of `t i` over all `i ≥ j`. -/
+/-- The `j`th entry of `accumulate n m t` is the sum of `t i` over all `i ≥ j`. -/
 @[simps] def accumulate (n m : ℕ) : (Fin n → ℕ) →+ (Fin m → ℕ) where
   toFun t j := ∑ i in univ.filter (fun i : Fin n => (j : ℕ) ≤ i), t i
   map_zero' := funext <| fun j => sum_eq_zero <| fun h _ => rfl
   map_add' t₁ t₂ := funext <| fun j => by dsimp only; exact sum_add_distrib
 
+/-- The `i`th entry of `inv_accumulate n m s` is `s i - s (i+1)`, where `s j = 0` if `j ≥ m`. -/
 def inv_accumulate (n m : ℕ) (s : Fin m → ℕ) (i : Fin n) : ℕ :=
   (if hi : i < m then s ⟨i, hi⟩ else 0) - (if hi : i + 1 < m then s ⟨i + 1, hi⟩ else 0)
 
@@ -106,6 +106,8 @@ section CommSemiring
 
 variable (σ R n) [CommSemiring R]
 
+/-- The `R`-algebra homomorphism from $R[x_1,\dots,x_n]$ to the symmetric subalgebra of
+  $R[\{x_i \mid i ∈ σ\}]$ sending $x_i$ to the $i$-th elementary symmetric polynomial. -/
 noncomputable def esymmAlgHom [Fintype σ] :
     MvPolynomial (Fin n) R →ₐ[R] symmetricSubalgebra σ R :=
   aeval (fun i => ⟨esymm σ R (i + 1), esymm_isSymmetric σ R _⟩)
@@ -122,6 +124,7 @@ lemma rename_esymmAlgHom [Fintype σ] [Fintype τ] (e : σ ≃ τ) :
   simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X]
   exact rename_esymm σ R _ e
 
+/-- The image of a monomial under `esymmAlgHom`. -/
 noncomputable def esymmAlgHom_monomial (σ) [Fintype σ] (t : Fin n →₀ ℕ) (r : R) :
     MvPolynomial σ R := (esymmAlgHom σ R n <| monomial t r).val
 
@@ -297,14 +300,11 @@ lemma surjective_esymmAlgHom (hn : Fintype.card σ ≤ n) :
   rw [← rename_esymmAlgHom (Fintype.equivFin σ).symm, AlgHom.coe_comp]
   exact (AlgEquiv.surjective _).comp (surjective_esymmAlgHom_fin R hn)
 
+/-- If the cardinality of `σ` is `n`, then `esymmAlgHom σ R n` is an isomorphism. -/
 noncomputable def equiv_symmetricSubalgebra (hn : Fintype.card σ = n) :
     MvPolynomial (Fin n) R ≃ₐ[R] symmetricSubalgebra σ R :=
   AlgEquiv.ofBijective (esymmAlgHom σ R n)
     ⟨injective_esymmAlgHom R hn.ge, surjective_esymmAlgHom R hn.le⟩
-
-example (hn : Fintype.card σ = n) {p} :
-    equiv_symmetricSubalgebra R hn p =
-      aeval (fun i => ⟨esymm σ R (i + 1), esymm_isSymmetric _ _ _⟩) p := rfl
 
 end CommRing
 
