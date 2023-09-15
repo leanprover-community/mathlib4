@@ -125,7 +125,7 @@ theorem multiplicity_factorial {p : ℕ} (hp : p.Prime) :
 
 /-- For a prime number `p`, taking `(p - 1)` times the multiplicity of `p` in `n!` equals `n` minus
 the sum of base `p` digits of `n`. -/
- theorem sub_one_mul_multiplicity_factorial {p : ℕ} (hp : p.Prime) :
+ theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
      (p - 1) * (multiplicity p n !).get (finite_nat_iff.mpr ⟨hp.ne_one, factorial_pos n⟩) =
      n - (p.digits n).sum := by
   simp only [multiplicity_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
