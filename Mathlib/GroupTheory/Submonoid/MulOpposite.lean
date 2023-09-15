@@ -29,7 +29,7 @@ def op {M : Type*} [MulOneClass M] (x : Submonoid M) : Submonoid (MulOpposite M)
 @[to_additive (attr := simps) "pull an opposite additive submonoid back to a submonoid along `op`"]
 def unop {M : Type*} [MulOneClass M] (x : Submonoid (MulOpposite M)) : Submonoid M where
   carrier := MulOpposite.op ⁻¹' x.1
-  mul_mem' {a b} ha hb := by simpa using mul_mem hb ha
+  mul_mem' {a b} ha hb := x.mul_mem hb ha
   one_mem' := Submonoid.one_mem' _
 
 /-- A submonoid `H` of `G` determines a submonoid `H.opposite` of the opposite group `Gᵐᵒᵖ`. -/
