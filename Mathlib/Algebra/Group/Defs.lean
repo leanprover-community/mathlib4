@@ -910,9 +910,12 @@ explanations on this.
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   protected sub := SubNegMonoid.sub'
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
+  /-- Multiplication by an integer.
+  Set this to `zsmulRec` unless `Module` diamonds are possible. -/
   protected zsmul : ℤ → G → G
   protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
-  protected zsmul_succ' (n : ℕ) (a : G) : zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a := by
+  protected zsmul_succ' (n : ℕ) (a : G) :
+      zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a := by
     intros; rfl
   protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by
     intros; rfl
