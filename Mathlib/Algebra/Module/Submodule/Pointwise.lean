@@ -317,6 +317,16 @@ lemma set_smul_submodule_eq_of_le (p : Submodule R M)
     s • N = p :=
   le_antisymm (set_smul_submodule_le s N p closed_under_smul) le
 
+lemma set_smul_submodule_mono_right {p q : Submodule R M} (le : p ≤ q) :
+    s • p ≤ s • q :=
+  set_smul_submodule_le _ _ _ fun _ _ hr hm => mem_set_smul_submodule_of_mem_mem (mem1 := hr)
+    (mem2 := le hm)
+
+lemma set_smul_submodule_mono_left {s t : Set R} (le : s ≤ t) :
+    s • N ≤ t • N :=
+  set_smul_submodule_le _ _ _ fun _ _ hr hm => mem_set_smul_submodule_of_mem_mem (mem1 := le hr)
+    (mem2 := hm)
+
 lemma set_smul_submodule_inductionOn {prop : M → Prop} (x : M)
     (hx : x ∈ s • N)
     (smul₀ : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → prop (r • n))
@@ -433,6 +443,30 @@ lemma set_smul_submodule_eq_iSup [SMulCommClass R R M] :
     rw [iSup_subtype', ← sSup_range, sSup_le_iff]
     rintro _ ⟨⟨x, hx⟩, rfl⟩ _ ⟨y, hy, rfl⟩
     exact mem_set_smul_submodule_of_mem_mem (mem1 := hx) (mem2 := hy)
+
+protected def pointwiseSetDistribMulActionSubmodule [SMulCommClass R R M] :
+    DistribMulAction (Set R) (Submodule R M) where
+  smul_zero s := show s • ⊥ = ⊥ from eq_bot_iff.mpr fun x hx => show x = 0 by
+    apply set_smul_submodule_inductionOn s ⊥ x hx _ _ _ _
+    · rintro r _ _ (rfl : _ = 0)
+      rw [smul_zero]
+    · rintro r m rfl
+      rw [smul_zero]
+    · rintro _ _ rfl rfl
+      rw [zero_add]
+    · rfl
+  smul_add s x y := le_antisymm
+    (set_smul_submodule_le _ _ _ <| by
+      rintro r m hr hm
+      rw [add_eq_sup, Submodule.mem_sup] at hm
+      obtain ⟨a, ha, b, hb, rfl⟩ := hm
+      rw [smul_add, add_eq_sup, Submodule.mem_sup]
+      exact ⟨r • a, mem_set_smul_submodule_of_mem_mem (mem1 := hr) (mem2 := ha),
+        r • b, mem_set_smul_submodule_of_mem_mem (mem1 := hr) (mem2 := hb), rfl⟩)
+    (sup_le_iff.mpr ⟨set_smul_submodule_mono_right _ le_sup_left,
+      set_smul_submodule_mono_right _ le_sup_right⟩)
+
+scoped[Pointwise] attribute [instance] Submodule.pointwiseSetDistribMulActionSubmodule
 
 end
 
