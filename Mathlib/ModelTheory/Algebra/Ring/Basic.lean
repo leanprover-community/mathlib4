@@ -141,7 +141,7 @@ theorem card_ring : card Language.ring = 5 := by
 
 open Language ring Structure
 
-/-- A Type `R` is a `CompatibleRing` if it is structure for the language of rings and this structure
+/-- A Type `R` is a `CompatibleRing` if it is a structure for the language of rings and this structure
 is the same as the structure already given on `R` by the classes `Add`, `Mul` etc.
 
 It is recommended to use this type class as a hypothesis to any theorem whose statement
