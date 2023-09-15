@@ -613,7 +613,7 @@ lemma δ_eq_zero {n : ℤ} (z : Cocycle F G n) (m : ℤ) : δ n m (z : Cochain F
   by_cases h : n + 1 = m
   · rw [← mem_iff n m h]
     exact z.2
-  . exact δ_shape n m h _
+  · exact δ_shape n m h _
 
 /-- The `0`-cocycle associated to a morphism in `CochainComplex C ℤ`. -/
 @[simps!]
