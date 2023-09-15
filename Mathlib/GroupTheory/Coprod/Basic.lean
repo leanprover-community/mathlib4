@@ -446,7 +446,7 @@ theorem comp_lift {P' : Type*} [Monoid P'] (f : P →* P') (g₁ : M →* P) (g�
 
 /-- `Coprod.lift` as an equivalence. -/
 @[to_additive "`AddMonoid.Coprod.lift` as an equivalence."]
-def lift_equiv : (M →* P) × (N →* P) ≃ (M ∗ N →* P) where
+def liftEquiv : (M →* P) × (N →* P) ≃ (M ∗ N →* P) where
   toFun fg := lift fg.1 fg.2
   invFun f := (f.comp inl, f.comp inr)
   left_inv _ := rfl
