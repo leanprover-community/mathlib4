@@ -371,15 +371,21 @@ section Preadditive
 
 variable [Preadditive V]
 
+instance {X Y : Action V G} : Add (X ⟶ Y) where
+  add f g := ⟨f.hom + g.hom, by simp [f.comm, g.comm]⟩
+
+instance {X Y : Action V G} : Neg (X ⟶ Y) where
+  neg f := ⟨-f.hom, by simp [f.comm]⟩
+
 instance : Preadditive (Action V G) where
   homGroup X Y :=
-    { add := fun f g => ⟨f.hom + g.hom, by simp [f.comm, g.comm]⟩
-      neg := fun f => ⟨-f.hom, by simp [f.comm]⟩
-      zero_add := by intros; ext; exact zero_add _
+    { zero_add := by intros; ext; exact zero_add _
       add_zero := by intros; ext; exact add_zero _
       add_assoc := by intros; ext; exact add_assoc _ _ _
       add_left_neg := by intros; ext; exact add_left_neg _
-      add_comm := by intros; ext; exact add_comm _ _ }
+      add_comm := by intros; ext; exact add_comm _ _
+      nsmul := nsmulRec
+      zsmul := zsmulRec }
   add_comp := by intros; ext; exact Preadditive.add_comp _ _ _ _ _ _
   comp_add := by intros; ext; exact Preadditive.comp_add _ _ _ _ _ _
 

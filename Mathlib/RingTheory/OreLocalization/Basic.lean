@@ -854,7 +854,8 @@ protected theorem add_left_neg (x : R[S⁻¹]) : -x + x = 0 := by
 instance ring : Ring R[S⁻¹] :=
   { OreLocalization.instSemiringOreLocalization,
     OreLocalization.instNegOreLocalization with
-    add_left_neg := OreLocalization.add_left_neg }
+    add_left_neg := OreLocalization.add_left_neg
+    zsmul := zsmulRec }
 
 open nonZeroDivisors
 
