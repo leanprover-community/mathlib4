@@ -25,10 +25,11 @@ set_option autoImplicit false
 variable {α : Type*} [TopologicalSpace α]
 
 /-- A set is nowhere dense iff its closure has empty interior. -/
-def IsNowhereDense (s : Set α) := IsEmpty (interior (closure s))
+def IsNowhereDense (s : Set α) := interior (closure s) = ∅
 
 /-- A closed set is nowhere dense iff its interior is empty. -/
-lemma closed_nowhere_dense_iff {s : Set α} (hs : IsClosed s) : IsNowhereDense s ↔ IsEmpty (interior s) := by
+lemma closed_nowhere_dense_iff {s : Set α} (hs : IsClosed s) :
+    IsNowhereDense s ↔ interior s = ∅ := by
   rw [IsNowhereDense, IsClosed.closure_eq hs]
 
 /-- If a set `s` is nowhere dense, so is its closure.-/
@@ -51,12 +52,12 @@ lemma closed_nowhere_dense_iff_complement {s : Set α} :
     · exact Iff.mpr isOpen_compl_iff hclosed
     · rw [← interior_eq_empty_iff_dense_compl]
       rw [closed_nowhere_dense_iff hclosed] at hNowhereDense
-      exact Iff.mp isEmpty_coe_sort hNowhereDense
+      exact hNowhereDense
   · rintro ⟨hopen, hdense⟩
     constructor
     · exact { isOpen_compl := hopen }
     · have : IsClosed s := by exact { isOpen_compl := hopen }
-      rw [closed_nowhere_dense_iff this, isEmpty_coe_sort, interior_eq_empty_iff_dense_compl]
+      rw [closed_nowhere_dense_iff this, interior_eq_empty_iff_dense_compl]
       exact hdense
 
 /-- A set is **meagre** iff it is contained in the countable union of nowhere dense sets. -/
@@ -161,7 +162,6 @@ lemma meagre_inter {s t : Set α} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
   meagre_mono hs (inter_subset_left s t)
 
 /-- A countable union of meagre sets is meagre. -/
-lemma meagre_iUnion {s : ℕ → Set α} (hs : ∀ n : ℕ, IsMeagre (s n)) :
-    IsMeagre (⋃ (n : ℕ), (s n)) := by
+lemma meagre_iUnion {s : ℕ → Set α} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, (s n)) := by
   simp only [meagre_iff_complement_comeagre, compl_iUnion] at *
   exact Iff.mpr countable_iInter_mem hs
