@@ -3,7 +3,7 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Measurable
+import Mathlib.Analysis.Calculus.LineDeriv.Measurable
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Analysis.BoundedVariation
