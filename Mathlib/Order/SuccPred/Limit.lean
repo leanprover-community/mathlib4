@@ -2,14 +2,11 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module order.succ_pred.limit
-! leanprover-community/mathlib commit 1e05171a5e8cf18d98d9cf7b207540acb044acae
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.BoundedOrder
+
+#align_import order.succ_pred.limit from "leanprover-community/mathlib"@"1e05171a5e8cf18d98d9cf7b207540acb044acae"
 
 /-!
 # Successor and predecessor limits
@@ -25,7 +22,7 @@ predicate `Order.IsSuccLimit`.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Order
 
@@ -60,9 +57,9 @@ section Preorder
 
 variable [Preorder α] {a : α}
 
-protected theorem IsMin.isSuccLimit : IsMin a → IsSuccLimit a := fun h _ hab =>
+protected theorem _root_.IsMin.isSuccLimit : IsMin a → IsSuccLimit a := fun h _ hab =>
   not_isMin_of_lt hab.lt h
-#align is_min.is_succ_limit Order.IsMin.isSuccLimit
+#align is_min.is_succ_limit IsMin.isSuccLimit
 
 theorem isSuccLimit_bot [OrderBot α] : IsSuccLimit (⊥ : α) :=
   IsMin.isSuccLimit isMin_bot
@@ -120,10 +117,10 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort _}
+variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort*}
 
 theorem isSuccLimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccLimit a := fun b hba =>
-  h b (Order.Covby.succ_eq hba)
+  h b (Covby.succ_eq hba)
 #align order.is_succ_limit_of_succ_ne Order.isSuccLimit_of_succ_ne
 
 theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ succ b = a := by
@@ -217,7 +214,7 @@ protected theorem IsSuccLimit.isMin (h : IsSuccLimit a) : IsMin a := fun b hb =>
   revert h
   refine' Succ.rec (fun _ => le_rfl) (fun c _ H hc => _) hb
   have := hc.isMax.succ_eq
-  rw [this] at hc⊢
+  rw [this] at hc ⊢
   exact H hc
 #align order.is_succ_limit.is_min Order.IsSuccLimit.isMin
 
@@ -265,10 +262,10 @@ theorem isPredLimit_toDual_iff : IsPredLimit (toDual a) ↔ IsSuccLimit a := by
   simp [IsSuccLimit, IsPredLimit]
 #align order.is_pred_limit_to_dual_iff Order.isPredLimit_toDual_iff
 
-alias isSuccLimit_toDual_iff ↔ _ isPredLimit.dual
+alias ⟨_, isPredLimit.dual⟩ := isSuccLimit_toDual_iff
 #align order.is_pred_limit.dual Order.isPredLimit.dual
 
-alias isPredLimit_toDual_iff ↔ _ isSuccLimit.dual
+alias ⟨_, isSuccLimit.dual⟩ := isPredLimit_toDual_iff
 #align order.is_succ_limit.dual Order.isSuccLimit.dual
 
 end LT
@@ -277,9 +274,9 @@ section Preorder
 
 variable [Preorder α] {a : α}
 
-protected theorem IsMax.isPredLimit : IsMax a → IsPredLimit a := fun h _ hab =>
+protected theorem _root_.IsMax.isPredLimit : IsMax a → IsPredLimit a := fun h _ hab =>
   not_isMax_of_lt hab.lt h
-#align is_max.is_pred_limit Order.IsMax.isPredLimit
+#align is_max.is_pred_limit IsMax.isPredLimit
 
 theorem isPredLimit_top [OrderTop α] : IsPredLimit (⊤ : α) :=
    IsMax.isPredLimit isMax_top
@@ -334,7 +331,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [PredOrder α] {a b : α} {C : α → Sort _}
+variable [PartialOrder α] [PredOrder α] {a b : α} {C : α → Sort*}
 
 theorem isPredLimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredLimit a := fun b hba =>
   h b (Covby.pred_eq hba)

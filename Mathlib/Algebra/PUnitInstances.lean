@@ -2,11 +2,6 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.punit_instances
-! leanprover-community/mathlib commit 6cb77a8eaff0ddd100e87b1591c6d3ad319514ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.GCDMonoid.Basic
@@ -14,12 +9,16 @@ import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Order.CompleteBooleanAlgebra
 
+#align_import algebra.punit_instances from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
+
 /-!
 # Instances on PUnit
 
 This file collects facts about algebraic structures on the one-element type, e.g. that it is a
 commutative ring.
 -/
+
+set_option autoImplicit true
 
 namespace PUnit
 
@@ -37,13 +36,20 @@ instance commGroup: CommGroup PUnit where
   mul_left_inv := by intros; rfl
   mul_comm := by intros; rfl
 
+-- shortcut instances
+@[to_additive] instance : One PUnit where one := ()
+@[to_additive] instance : Mul PUnit where mul _ _ := ()
+@[to_additive] instance : Div PUnit where div _ _ := ()
+@[to_additive] instance : Inv PUnit where inv _ := ()
+
 @[to_additive (attr := simp)]
 theorem one_eq : (1 : PUnit) = unit :=
   rfl
 #align punit.one_eq PUnit.one_eq
 #align punit.zero_eq PUnit.zero_eq
 
-@[to_additive (attr := simp)]
+-- note simp can prove this when the Boolean ring structure is introduced
+@[to_additive]
 theorem mul_eq : x * y = unit :=
   rfl
 #align punit.mul_eq PUnit.mul_eq
@@ -63,13 +69,6 @@ theorem inv_eq : x⁻¹ = unit :=
 #align punit.inv_eq PUnit.inv_eq
 #align punit.neg_eq PUnit.neg_eq
 
-@[to_additive] -- This doesn't work well as an instance
-lemma subsingletonOneHom {F M : Type _} [One M] [OneHomClass F PUnit M] : Subsingleton F where
-  allEq := fun f g => FunLike.ext _ _ <| Unique.forall_iff.2 <| (map_one f).trans (map_one g).symm
-
-@[to_additive] instance [One M] : Subsingleton (OneHom PUnit M) := subsingletonOneHom
-@[to_additive] instance [MulOneClass M] : Subsingleton (PUnit →* M) := subsingletonOneHom
-
 instance commRing: CommRing PUnit where
   __ := PUnit.commGroup
   __ := PUnit.addCommGroup
@@ -81,9 +80,6 @@ instance commRing: CommRing PUnit where
 
 instance cancelCommMonoidWithZero: CancelCommMonoidWithZero PUnit := by
   refine' { PUnit.commRing with .. }; intros; exact Subsingleton.elim _ _
-
-instance [MonoidWithZero M₀] : Subsingleton (PUnit →*₀ M₀) := subsingletonOneHom
-instance [NonAssocSemiring R] : Subsingleton (PUnit →+* R) := subsingletonOneHom
 
 instance normalizedGCDMonoid: NormalizedGCDMonoid PUnit where
   gcd _ _ := unit
@@ -112,7 +108,7 @@ theorem lcm_eq : lcm x y = unit :=
 #align punit.lcm_eq PUnit.lcm_eq
 
 @[simp]
-theorem norm_unit_eq {x: PUnit} : normUnit x = 1 :=
+theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
@@ -138,7 +134,7 @@ instance smul : SMul R PUnit :=
   ⟨fun _ _ => unit⟩
 
 @[to_additive (attr := simp)]
-theorem smul_eq {R : Type _} (y : PUnit) (r : R) : r • y = unit :=
+theorem smul_eq {R : Type*} (y : PUnit) (r : R) : r • y = unit :=
   rfl
 #align punit.smul_eq PUnit.smul_eq
 #align punit.vadd_eq PUnit.vadd_eq

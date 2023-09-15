@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Scott Morrison
-
-! This file was ported from Lean 3 source module data.list.fin_range
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Perm
+
+#align_import data.list.fin_range from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Lists of elements of `Fin n`
@@ -26,7 +23,7 @@ variable {α : Type u}
 
 @[simp]
 theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
-  simp_rw [finRange, map_pmap, Fin.val_mk, pmap_eq_map]
+  simp_rw [finRange, map_pmap, pmap_eq_map]
   exact List.map_id _
 #align list.map_coe_fin_range List.map_coe_finRange
 
@@ -41,9 +38,8 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
 
 theorem ofFn_eq_pmap {α n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
-  (rw [pmap_eq_map_attach];
-    exact ext_get (by simp) fun i hi1 hi2 => by
-        simp [get_ofFn f ⟨i, hi1⟩])
+  rw [pmap_eq_map_attach]
+  exact ext_get (by simp) fun i hi1 hi2 => by simp [get_ofFn f ⟨i, hi1⟩]
 #align list.of_fn_eq_pmap List.ofFn_eq_pmap
 
 theorem ofFn_id (n) : ofFn id = finRange n :=
@@ -78,7 +74,7 @@ open List
 theorem Equiv.Perm.map_finRange_perm {n : ℕ} (σ : Equiv.Perm (Fin n)) :
     map σ (finRange n) ~ finRange n := by
   rw [perm_ext ((nodup_finRange n).map σ.injective) <| nodup_finRange n]
-  simpa [mem_map', mem_finRange, true_and_iff, iff_true_iff] using σ.surjective
+  simpa [mem_map, mem_finRange, true_and_iff, iff_true_iff] using σ.surjective
 #align equiv.perm.map_fin_range_perm Equiv.Perm.map_finRange_perm
 
 /-- The list obtained from a permutation of a tuple `f` is permutation equivalent to

@@ -1,0 +1,260 @@
+/-
+Copyright (c) 2021 Adam Topaz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Adam Topaz
+-/
+import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+
+#align_import category_theory.sites.left_exact from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
+
+/-!
+# Left exactness of sheafification
+In this file we show that sheafification commutes with finite limits.
+-/
+
+
+open CategoryTheory Limits Opposite
+
+universe w v u
+
+-- porting note: was `C : Type max v u` which made most instances non automatically applicable
+-- it seems to me it is better to declare `C : Type u`: it works better, and it is more general
+variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
+
+variable {D : Type w} [Category.{max v u} D]
+
+variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
+
+noncomputable section
+
+namespace CategoryTheory.GrothendieckTopology
+
+/-- An auxiliary definition to be used in the proof of the fact that
+`J.diagramFunctor D X` preserves limits. -/
+@[simps]
+def coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation {X : C} {K : Type max v u}
+    [SmallCategory K] {F : K ⥤ Cᵒᵖ ⥤ D} {W : J.Cover X} (i : W.Arrow)
+    (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.Cover X)ᵒᵖ D).obj (op W))) :
+    Cone (F ⋙ (evaluation _ _).obj (op i.Y)) where
+  pt := E.pt
+  π :=
+    { app := fun k => E.π.app k ≫ Multiequalizer.ι (W.index (F.obj k)) i
+      naturality := by
+        intro a b f
+        dsimp
+        rw [Category.id_comp, Category.assoc, ← E.w f]
+        dsimp [diagramNatTrans]
+        simp only [Multiequalizer.lift_ι, Category.assoc] }
+#align category_theory.grothendieck_topology.cone_comp_evaluation_of_cone_comp_diagram_functor_comp_evaluation CategoryTheory.GrothendieckTopology.coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation
+
+/-- An auxiliary definition to be used in the proof of the fact that
+`J.diagramFunctor D X` preserves limits. -/
+abbrev liftToDiagramLimitObj {X : C} {K : Type max v u} [SmallCategory K] [HasLimitsOfShape K D]
+    {W : (J.Cover X)ᵒᵖ} (F : K ⥤ Cᵒᵖ ⥤ D)
+    (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.Cover X)ᵒᵖ D).obj W)) :
+    E.pt ⟶ (J.diagram (limit F) X).obj W :=
+  Multiequalizer.lift ((unop W).index (limit F)) E.pt
+    (fun i => (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op i.Y)) (limit.isLimit F)).lift
+        (coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation.{w, v, u} i E))
+    (by
+      intro i
+      change (_ ≫ _) ≫ _ = (_ ≫ _) ≫ _
+      dsimp [evaluateCombinedCones]
+      erw [Category.comp_id, Category.comp_id, Category.assoc, Category.assoc, ←
+        (limit.lift F _).naturality, ← (limit.lift F _).naturality, ← Category.assoc, ←
+        Category.assoc]
+      congr 1
+      refine' limit.hom_ext (fun j => _)
+      erw [Category.assoc, Category.assoc, limit.lift_π, limit.lift_π, limit.lift_π_assoc,
+        limit.lift_π_assoc, Category.assoc, Category.assoc, Multiequalizer.condition]
+      rfl)
+#align category_theory.grothendieck_topology.lift_to_diagram_limit_obj CategoryTheory.GrothendieckTopology.liftToDiagramLimitObj
+
+instance preservesLimit_diagramFunctor
+    (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] (F : K ⥤ Cᵒᵖ ⥤ D) :
+    PreservesLimit F (J.diagramFunctor D X) :=
+  preservesLimitOfEvaluation _ _ fun W =>
+    preservesLimitOfPreservesLimitCone (limit.isLimit _)
+      { lift := fun E => liftToDiagramLimitObj.{w, v, u} F E
+        fac := by
+          intro E k
+          dsimp [diagramNatTrans]
+          refine' Multiequalizer.hom_ext _ _ _ (fun a => _)
+          simp only [Multiequalizer.lift_ι, Multiequalizer.lift_ι_assoc, Category.assoc]
+          change (_ ≫ _) ≫ _ = _
+          dsimp [evaluateCombinedCones]
+          erw [Category.comp_id, Category.assoc, ← NatTrans.comp_app, limit.lift_π, limit.lift_π]
+          rfl
+        uniq := by
+          intro E m hm
+          refine' Multiequalizer.hom_ext _ _ _ (fun a => limit_obj_ext (fun j => _))
+          delta liftToDiagramLimitObj
+          erw [Multiequalizer.lift_ι, Category.assoc]
+          change _ = (_ ≫ _) ≫ _
+          dsimp [evaluateCombinedCones]
+          erw [Category.comp_id, Category.assoc, ← NatTrans.comp_app, limit.lift_π, limit.lift_π]
+          dsimp
+          rw [← hm]
+          dsimp [diagramNatTrans]
+          simp }
+
+instance preservesLimitsOfShape_diagramFunctor
+    (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] :
+    PreservesLimitsOfShape K (J.diagramFunctor D X) :=
+  ⟨by apply preservesLimit_diagramFunctor.{w, v, u}⟩
+
+instance preservesLimits_diagramFunctor (X : C) [HasLimits D] :
+    PreservesLimits (J.diagramFunctor D X) := by
+  constructor
+  intro _ _
+  apply preservesLimitsOfShape_diagramFunctor.{w, v, u}
+
+variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
+
+variable [ConcreteCategory.{max v u} D]
+
+variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
+
+/-- An auxiliary definition to be used in the proof that `J.plusFunctor D` commutes
+with finite limits. -/
+def liftToPlusObjLimitObj {K : Type max v u} [SmallCategory K] [FinCategory K]
+    [HasLimitsOfShape K D] [PreservesLimitsOfShape K (forget D)]
+    [ReflectsLimitsOfShape K (forget D)] (F : K ⥤ Cᵒᵖ ⥤ D) (X : C)
+    (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) :
+    S.pt ⟶ (J.plusObj (limit F)).obj (op X) :=
+  let e := colimitLimitIso (F ⋙ J.diagramFunctor D X)
+  let t : J.diagram (limit F) X ≅ limit (F ⋙ J.diagramFunctor D X) :=
+    (isLimitOfPreserves (J.diagramFunctor D X) (limit.isLimit F)).conePointUniqueUpToIso
+      (limit.isLimit _)
+  let p : (J.plusObj (limit F)).obj (op X) ≅ colimit (limit (F ⋙ J.diagramFunctor D X)) :=
+    HasColimit.isoOfNatIso t
+  let s :
+    colimit (F ⋙ J.diagramFunctor D X).flip ≅ F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X) :=
+    NatIso.ofComponents (fun k => colimitObjIsoColimitCompEvaluation _ k)
+      (by
+        intro i j f
+        rw [← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq]
+        refine' colimit.hom_ext (fun w => _)
+        dsimp [plusMap]
+        erw [colimit.ι_map_assoc,
+          colimitObjIsoColimitCompEvaluation_ι_inv (F ⋙ J.diagramFunctor D X).flip w j,
+          colimitObjIsoColimitCompEvaluation_ι_inv_assoc (F ⋙ J.diagramFunctor D X).flip w i]
+        rw [← (colimit.ι (F ⋙ J.diagramFunctor D X).flip w).naturality]
+        rfl)
+  limit.lift _ S ≫ (HasLimit.isoOfNatIso s.symm).hom ≫ e.inv ≫ p.inv
+#align category_theory.grothendieck_topology.lift_to_plus_obj_limit_obj CategoryTheory.GrothendieckTopology.liftToPlusObjLimitObj
+
+-- This lemma should not be used directly. Instead, one should use the fact that
+-- `J.plusFunctor D` preserves finite limits, along with the fact that
+-- evaluation preserves limits.
+theorem liftToPlusObjLimitObj_fac {K : Type max v u} [SmallCategory K] [FinCategory K]
+    [HasLimitsOfShape K D] [PreservesLimitsOfShape K (forget D)]
+    [ReflectsLimitsOfShape K (forget D)] (F : K ⥤ Cᵒᵖ ⥤ D) (X : C)
+    (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) (k) :
+    liftToPlusObjLimitObj.{w, v, u} F X S ≫ (J.plusMap (limit.π F k)).app (op X) = S.π.app k := by
+  dsimp only [liftToPlusObjLimitObj]
+  rw [← (limit.isLimit (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))).fac S k,
+    Category.assoc]
+  congr 1
+  dsimp
+  rw [Category.assoc, Category.assoc, ← Iso.eq_inv_comp, Iso.inv_comp_eq, Iso.inv_comp_eq]
+  refine' colimit.hom_ext (fun j => _)
+  dsimp [plusMap]
+  simp only [HasColimit.isoOfNatIso_ι_hom_assoc, ι_colimMap]
+  dsimp [IsLimit.conePointUniqueUpToIso, HasLimit.isoOfNatIso, IsLimit.map]
+  rw [limit.lift_π]
+  dsimp
+  rw [ι_colimitLimitIso_limit_π_assoc]
+  simp_rw [← Category.assoc, ← NatTrans.comp_app]
+  rw [limit.lift_π, Category.assoc]
+  congr 1
+  rw [← Iso.comp_inv_eq]
+  erw [colimit.ι_desc]
+  rfl
+#align category_theory.grothendieck_topology.lift_to_plus_obj_limit_obj_fac CategoryTheory.GrothendieckTopology.liftToPlusObjLimitObj_fac
+
+instance preservesLimitsOfShape_plusFunctor
+    (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
+    [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
+    PreservesLimitsOfShape K (J.plusFunctor D) := by
+  constructor; intro F; apply preservesLimitOfEvaluation; intro X
+  apply preservesLimitOfPreservesLimitCone (limit.isLimit F)
+  refine' ⟨fun S => liftToPlusObjLimitObj.{w, v, u} F X.unop S, _, _⟩
+  · intro S k
+    apply liftToPlusObjLimitObj_fac
+  · intro S m hm
+    dsimp [liftToPlusObjLimitObj]
+    simp_rw [← Category.assoc, Iso.eq_comp_inv, ← Iso.comp_inv_eq]
+    refine' limit.hom_ext (fun k => _)
+    simp only [limit.lift_π, Category.assoc, ← hm]
+    congr 1
+    refine' colimit.hom_ext (fun k => _)
+    dsimp [plusMap, plusObj]
+    erw [colimit.ι_map, colimit.ι_desc_assoc, limit.lift_π]
+    conv_lhs => dsimp
+    simp only [Category.assoc]
+    rw [ι_colimitLimitIso_limit_π_assoc]
+    simp only [NatIso.ofComponents_inv_app, colimitObjIsoColimitCompEvaluation_ι_app_hom,
+      Iso.symm_inv]
+    conv_lhs =>
+      dsimp [IsLimit.conePointUniqueUpToIso]
+    rw [← Category.assoc, ← NatTrans.comp_app, limit.lift_π]
+    rfl
+
+instance preserveFiniteLimits_plusFunctor
+    [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
+    PreservesFiniteLimits (J.plusFunctor D) := by
+  apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
+  intro K _ _
+  have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShapeOfReflectsIsomorphisms
+  apply preservesLimitsOfShape_plusFunctor.{w, v, u}
+
+instance preservesLimitsOfShape_sheafification
+    (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
+    [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
+    PreservesLimitsOfShape K (J.sheafification D) :=
+  Limits.compPreservesLimitsOfShape _ _
+
+instance preservesFiniteLimits_sheafification
+    [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
+    PreservesFiniteLimits (J.sheafification D) :=
+  Limits.compPreservesFiniteLimits _ _
+
+end CategoryTheory.GrothendieckTopology
+
+namespace CategoryTheory
+
+variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
+
+variable [ConcreteCategory.{max v u} D]
+
+variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
+
+variable [PreservesLimits (forget D)]
+
+variable [ReflectsIsomorphisms (forget D)]
+
+variable (K : Type max v u)
+
+variable [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
+
+instance preservesLimitsOfShape_presheafToSheaf :
+    PreservesLimitsOfShape K (presheafToSheaf J D) := by
+  constructor; intro F; constructor; intro S hS
+  apply isLimitOfReflects (sheafToPresheaf J D)
+  have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShapeOfReflectsIsomorphisms
+  -- porting note: the mathlib proof was by `apply is_limit_of_preserves (J.sheafification D) hS`
+  have : PreservesLimitsOfShape K (presheafToSheaf J D ⋙ sheafToPresheaf J D) :=
+    preservesLimitsOfShapeOfNatIso (J.sheafificationIsoPresheafToSheafCompSheafToPreasheaf D)
+  exact isLimitOfPreserves (presheafToSheaf J D ⋙ sheafToPresheaf J D) hS
+
+instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
+    PreservesFiniteLimits (presheafToSheaf J D) := by
+  apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
+  intros
+  infer_instance
+
+end CategoryTheory

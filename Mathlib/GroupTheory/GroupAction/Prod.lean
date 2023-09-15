@@ -2,13 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
-! This file was ported from Lean 3 source module group_theory.group_action.prod
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.GroupTheory.GroupAction.Defs
+
+#align_import group_theory.group_action.prod from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 
 /-!
 # Prod instances for additive and multiplicative actions
@@ -31,8 +29,10 @@ https://leanprover.zulipchat.com/#narrow/near/316087838
 This was not done as part of the port in order to stay as close as possible to the mathlib3 code.
 -/
 
+set_option autoImplicit true
 
-variable {M N P E α β : Type _}
+
+variable {M N P E α β : Type*}
 
 namespace Prod
 
@@ -74,27 +74,27 @@ theorem smul_swap : (a • x).swap = a • x.swap :=
 #align prod.smul_swap Prod.smul_swap
 #align prod.vadd_swap Prod.vadd_swap
 
-theorem smul_zero_mk {α : Type _} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
+theorem smul_zero_mk {α : Type*} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
     a • ((0 : α), c) = (0, a • c) := by rw [Prod.smul_mk, smul_zero]
 #align prod.smul_zero_mk Prod.smul_zero_mk
 
-theorem smul_mk_zero {β : Type _} [Monoid M] [AddMonoid β] [DistribMulAction M β] (a : M) (b : α) :
+theorem smul_mk_zero {β : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] (a : M) (b : α) :
     a • (b, (0 : β)) = (a • b, 0) := by rw [Prod.smul_mk, smul_zero]
 #align prod.smul_mk_zero Prod.smul_mk_zero
 
 variable [Pow α E] [Pow β E]
 
-@[to_additive smul]
+@[to_additive existing smul]
 instance pow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
 #align prod.has_pow Prod.pow
 #align prod.has_smul Prod.smul
 
-@[to_additive (attr := simp) (reorder := 6) smul_fst]
+@[to_additive existing (attr := simp) (reorder := 6 7) smul_fst]
 theorem pow_fst (p : α × β) (c : E) : (p ^ c).fst = p.fst ^ c :=
   rfl
 #align prod.pow_fst Prod.pow_fst
 
-@[to_additive (attr := simp) (reorder := 6) smul_snd]
+@[to_additive existing (attr := simp) (reorder := 6 7) smul_snd]
 theorem pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c :=
   rfl
 #align prod.pow_snd Prod.pow_snd
@@ -102,17 +102,17 @@ theorem pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c :=
 /- Note that the `c` arguments to this lemmas cannot be in the more natural right-most positions due
 to limitations in `to_additive` and `to_additive_reorder`, which will silently fail to reorder more
 than two adjacent arguments -/
-@[to_additive (attr := simp) (reorder := 6) smul_mk]
+@[to_additive existing (attr := simp) (reorder := 6 7) smul_mk]
 theorem pow_mk (c : E) (a : α) (b : β) : Prod.mk a b ^ c = Prod.mk (a ^ c) (b ^ c) :=
   rfl
 #align prod.pow_mk Prod.pow_mk
 
-@[to_additive (reorder := 6) smul_def]
+@[to_additive existing (reorder := 6 7) smul_def]
 theorem pow_def (p : α × β) (c : E) : p ^ c = (p.1 ^ c, p.2 ^ c) :=
   rfl
 #align prod.pow_def Prod.pow_def
 
-@[to_additive (attr := simp) (reorder := 6) smul_swap]
+@[to_additive existing (attr := simp) (reorder := 6 7) smul_swap]
 theorem pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c :=
   rfl
 #align prod.pow_swap Prod.pow_swap
@@ -127,10 +127,12 @@ instance smulCommClass [SMulCommClass M N α] [SMulCommClass M N β] :
     SMulCommClass M N (α × β) where
   smul_comm _ _ _ := mk.inj_iff.mpr ⟨smul_comm _ _ _, smul_comm _ _ _⟩
 
-@[to_additive isCentralVAdd]
+@[to_additive]
 instance isCentralScalar [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralScalar M α] [IsCentralScalar M β] :
     IsCentralScalar M (α × β) :=
   ⟨fun _ _ => Prod.ext (op_smul_eq_smul _ _) (op_smul_eq_smul _ _)⟩
+#align prod.is_central_scalar Prod.isCentralScalar
+#align prod.is_central_vadd Prod.isCentralVAdd
 
 @[to_additive]
 instance faithfulSMulLeft [FaithfulSMul M α] [Nonempty β] : FaithfulSMul M (α × β) :=
@@ -163,22 +165,22 @@ instance isScalarTowerBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [IsScalarTower 
 #align prod.is_scalar_tower_both Prod.isScalarTowerBoth
 
 @[to_additive]
-instance mulAction {_ : Monoid M} [MulAction M α] [MulAction M β] : MulAction M (α × β) where
+instance mulAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M (α × β) where
   mul_smul _ _ _ := mk.inj_iff.mpr ⟨mul_smul _ _ _, mul_smul _ _ _⟩
   one_smul := fun ⟨_, _⟩ => mk.inj_iff.mpr ⟨one_smul _ _, one_smul _ _⟩
 
-instance smulZeroClass {R M N : Type _} [Zero M] [Zero N] [SMulZeroClass R M] [SMulZeroClass R N] :
+instance smulZeroClass {R M N : Type*} [Zero M] [Zero N] [SMulZeroClass R M] [SMulZeroClass R N] :
     SMulZeroClass R (M × N) where smul_zero _ := mk.inj_iff.mpr ⟨smul_zero _, smul_zero _⟩
 
-instance distribSMul {R M N : Type _} [AddZeroClass M] [AddZeroClass N] [DistribSMul R M]
+instance distribSMul {R M N : Type*} [AddZeroClass M] [AddZeroClass N] [DistribSMul R M]
     [DistribSMul R N] : DistribSMul R (M × N) where
   smul_add _ _ _ := mk.inj_iff.mpr ⟨smul_add _ _ _, smul_add _ _ _⟩
 
-instance distribMulAction {R M N : Type _} {_ : Monoid R} [AddMonoid M] [AddMonoid N]
+instance distribMulAction [Monoid R] [AddMonoid M] [AddMonoid N]
     [DistribMulAction R M] [DistribMulAction R N] : DistribMulAction R (M × N) :=
   { Prod.mulAction, Prod.distribSMul with }
 
-instance mulDistribMulAction {R M N : Type _} {_ : Monoid R} [Monoid M] [Monoid N]
+instance mulDistribMulAction [Monoid R] [Monoid M] [Monoid N]
     [MulDistribMulAction R M] [MulDistribMulAction R N] : MulDistribMulAction R (M × N) where
   smul_mul _ _ _ := mk.inj_iff.mpr ⟨smul_mul' _ _ _, smul_mul' _ _ _⟩
   smul_one _ := mk.inj_iff.mpr ⟨smul_one _, smul_one _⟩

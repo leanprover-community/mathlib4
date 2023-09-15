@@ -2,13 +2,10 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.fintype.fin
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Interval
+
+#align_import data.fintype.fin from "leanprover-community/mathlib"@"759575657f189ccb424b990164c8b1fa9f55cdfe"
 
 /-!
 # The structure of `Fintype (Fin n)`
@@ -23,7 +20,12 @@ open Fintype
 
 namespace Fin
 
-variable {α β : Type _} {n : ℕ}
+variable {α β : Type*} {n : ℕ}
+
+theorem map_valEmbedding_univ : (Finset.univ : Finset (Fin n)).map Fin.valEmbedding = Iio n := by
+  ext
+  simp [orderIsoSubtype.symm.surjective.exists, OrderIso.symm]
+#align fin.map_subtype_embedding_univ Fin.map_valEmbedding_univ
 
 @[simp]
 theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).toEmbedding := by
@@ -34,10 +36,17 @@ theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).
     · rintro ⟨⟨⟩⟩
     · intro j _
       use j
-      simp only [val_succEmbedding, and_self]
+      simp only [val_succEmbedding, and_self, RelEmbedding.coe_toEmbedding]
   · rintro ⟨i, _, rfl⟩
     exact succ_pos _
 #align fin.Ioi_zero_eq_map Fin.Ioi_zero_eq_map
+
+@[simp]
+theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb.toEmbedding := by
+  apply Finset.map_injective Fin.valEmbedding
+  rw [Finset.map_map, Fin.map_valEmbedding_Iio, Fin.val_last]
+  exact map_valEmbedding_univ.symm
+#align fin.Iio_last_eq_map Fin.Iio_last_eq_map
 
 @[simp]
 theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmbedding _).toEmbedding := by
@@ -52,6 +61,14 @@ theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmbedding _).to
   · rintro ⟨i, hi, rfl⟩
     simpa
 #align fin.Ioi_succ Fin.Ioi_succ
+
+@[simp]
+theorem Iio_castSucc (i : Fin n) :
+    Iio (castSucc i) = (Iio i).map Fin.castSuccEmb.toEmbedding := by
+  apply Finset.map_injective Fin.valEmbedding
+  rw [Finset.map_map, Fin.map_valEmbedding_Iio]
+  exact (Fin.map_valEmbedding_Iio i).symm
+#align fin.Iio_cast_succ Fin.Iio_castSucc
 
 theorem card_filter_univ_succ' (p : Fin (n + 1) → Prop) [DecidablePred p] :
     (univ.filter p).card = ite (p 0) 1 0 + (univ.filter (p ∘ Fin.succ)).card := by
@@ -70,7 +87,7 @@ theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : V
   induction' v using Vector.inductionOn with n x xs hxs
   · simp
   · simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Function.comp,
-      Vector.get_cons_succ, hxs, List.count_cons', add_comm (ite (a = x) 1 0)]
+      Vector.get_cons_succ, hxs, List.count_cons, add_comm (ite (a = x) 1 0)]
 #align fin.card_filter_univ_eq_vector_nth_eq_count Fin.card_filter_univ_eq_vector_get_eq_count
 
 end Fin

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.group_action.sub_mul_action.pointwise
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+
+#align_import group_theory.group_action.sub_mul_action.pointwise from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
 /-!
 # Pointwise monoid structures on SubMulAction
@@ -16,14 +13,14 @@ import Mathlib.GroupTheory.GroupAction.SubMulAction
 This file provides `SubMulAction.Monoid` and weaker typeclasses, which show that `SubMulAction`s
 inherit the same pointwise multiplications as sets.
 
-To match `Submodule.Semiring`, we do not put these in the `Pointwise` locale.
+To match `Submodule.idemSemiring`, we do not put these in the `Pointwise` locale.
 
 -/
 
 
 open Pointwise
 
-variable {R M : Type _}
+variable {R M : Type*}
 
 namespace SubMulAction
 
@@ -31,8 +28,8 @@ section One
 
 variable [Monoid R] [MulAction R M] [One M]
 
-instance : One (SubMulAction R M)
-    where one :=
+instance : One (SubMulAction R M) where
+  one :=
     { carrier := Set.range fun r : R => r • (1 : M)
       smul_mem' := fun r _ ⟨r', hr'⟩ => hr' ▸ ⟨r * r', mul_smul _ _ _⟩ }
 
@@ -55,8 +52,8 @@ section Mul
 
 variable [Monoid R] [MulAction R M] [Mul M] [IsScalarTower R M M]
 
-instance : Mul (SubMulAction R M)
-    where mul p q :=
+instance : Mul (SubMulAction R M) where
+  mul p q :=
     { carrier := Set.image2 (· * ·) p q
       smul_mem' := fun r _ ⟨m₁, m₂, hm₁, hm₂, h⟩ =>
         h ▸ smul_mul_assoc r m₁ m₂ ▸ Set.mul_mem_mul (p.smul_mem _ hm₁) hm₂ }

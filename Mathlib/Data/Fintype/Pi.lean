@@ -2,27 +2,24 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.pi
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Pi
+
+#align_import data.fintype.pi from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Fintype instances for pi types
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Finset
 
 namespace Fintype
 
-variable [DecidableEq α] [Fintype α] {δ : α → Type _}
+variable [DecidableEq α] [Fintype α] {δ : α → Type*}
 
 /-- Given for all `a : α` a finset `t a` of `δ a`, then one can define the
 finset `Fintype.piFinset t` of all functions taking values in `t a` for all `a`. This is the
@@ -34,8 +31,7 @@ def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
 #align fintype.pi_finset Fintype.piFinset
 
 @[simp]
-theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFinset t ↔ ∀ a, f a ∈ t a :=
-  by
+theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFinset t ↔ ∀ a, f a ∈ t a := by
   constructor
   · simp only [piFinset, mem_map, and_imp, forall_prop_of_true, exists_prop, mem_univ, exists_imp,
       mem_pi]
@@ -85,26 +81,30 @@ end Fintype
 /-! ### pi -/
 
 /-- A dependent product of fintypes, indexed by a fintype, is a fintype. -/
-instance Pi.fintype {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
+instance Pi.fintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] : Fintype (∀ a, β a) :=
   ⟨Fintype.piFinset fun _ => univ, by simp⟩
 #align pi.fintype Pi.fintype
 
 @[simp]
-theorem Fintype.piFinset_univ {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
+theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] :
     (Fintype.piFinset fun a : α => (Finset.univ : Finset (β a))) =
       (Finset.univ : Finset (∀ a, β a)) :=
   rfl
 #align fintype.pi_finset_univ Fintype.piFinset_univ
 
-instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β]
-    [DecidableEq α] [DecidableEq β] : Fintype (α ↪ β) :=
-  Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
+-- porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
+-- it makes things a lot harder to work with here. in some ways that was because in Lean3
+-- we could make this instance irreducible when needed and in the worst case use `congr/convert`,
+-- but those don't work with subsingletons in lean4 as-is so we cannot do this here.
+noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β] :
+  Fintype (α ↪ β) :=
+  by classical. exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 #align function.embedding.fintype Function.Embedding.fintype
 
 @[simp]
-theorem Finset.univ_pi_univ {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
+theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] :
     (Finset.univ.pi fun a : α => (Finset.univ : Finset (β a))) = Finset.univ := by
   ext; simp

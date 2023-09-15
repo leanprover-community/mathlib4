@@ -3,15 +3,12 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton,
 Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.uniform_space.equiv
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.Pi
+
+#align_import topology.uniform_space.equiv from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Uniform isomorphisms
@@ -31,12 +28,12 @@ open Set Filter
 
 universe u v
 
-variable {α : Type u} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type u} {β : Type*} {γ : Type*} {δ : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Uniform isomorphism between `α` and `β` -/
 --@[nolint has_nonempty_instance] -- Porting note: missing linter?
-structure UniformEquiv (α : Type _) (β : Type _) [UniformSpace α] [UniformSpace β] extends
+structure UniformEquiv (α : Type*) (β : Type*) [UniformSpace α] [UniformSpace β] extends
   α ≃ β where
   /-- Uniform continuity of the function -/
   uniformContinuous_toFun : UniformContinuous toFun
@@ -86,8 +83,7 @@ def Simps.symm_apply (h : α ≃ᵤ β) : β → α :=
   h.symm
 #align uniform_equiv.simps.symm_apply UniformEquiv.Simps.symm_apply
 
-initialize_simps_projections UniformEquiv (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
-  -toEquiv)
+initialize_simps_projections UniformEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp]
 theorem coe_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv = h :=
@@ -106,7 +102,7 @@ theorem ext {h h' : α ≃ᵤ β} (H : ∀ x, h x = h' x) : h = h' :=
 
 /-- Identity map as a uniform isomorphism. -/
 @[simps! (config := { fullyApplied := false }) apply]
-protected def refl (α : Type _) [UniformSpace α] : α ≃ᵤ α
+protected def refl (α : Type*) [UniformSpace α] : α ≃ᵤ α
     where
   uniformContinuous_toFun := uniformContinuous_id
   uniformContinuous_invFun := uniformContinuous_id
@@ -201,7 +197,7 @@ def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f
   { toFun := f
     invFun := g
     left_inv := by convert f.left_inv
-    right_inv := by convert f.right_inv
+    right_inv := by convert f.right_inv using 1
     uniformContinuous_toFun := f.uniformContinuous
     uniformContinuous_invFun := by convert f.symm.uniformContinuous }
 #align uniform_equiv.change_inv UniformEquiv.changeInv
@@ -347,7 +343,42 @@ theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=
   rfl
 #align uniform_equiv.coe_punit_prod UniformEquiv.coe_punitProd
 
-/-- Uniform equivalence between `ulift α` and `α`. -/
+/-- `Equiv.piCongrLeft` as a uniform isomorphism: this is the natural isomorphism
+`Π i, β (e i) ≃ᵤ Π j, β j` obtained from a bijection `ι ≃ ι'`. -/
+@[simps! apply toEquiv]
+def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, UniformSpace (β j)]
+    (e : ι ≃ ι') : (∀ i, β (e i)) ≃ᵤ ∀ j, β j where
+  uniformContinuous_toFun := uniformContinuous_pi.mpr <| e.forall_congr_left.mp <| fun i ↦ by
+    simpa only [Equiv.toFun_as_coe_apply, Equiv.piCongrLeft_apply_apply] using
+      Pi.uniformContinuous_proj _ i
+  uniformContinuous_invFun := Pi.uniformContinuous_precomp' _ e
+  toEquiv := Equiv.piCongrLeft _ e
+
+/-- `Equiv.piCongrRight` as a uniform isomorphism: this is the natural isomorphism
+`Π i, β₁ i ≃ᵤ Π j, β₂ i` obtained from uniform isomorphisms `β₁ i ≃ᵤ β₂ i` for each `i`. -/
+@[simps! apply toEquiv]
+def piCongrRight {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, UniformSpace (β₁ i)]
+    [∀ i, UniformSpace (β₂ i)] (F : ∀ i, β₁ i ≃ᵤ β₂ i) : (∀ i, β₁ i) ≃ᵤ ∀ i, β₂ i where
+  uniformContinuous_toFun := Pi.uniformContinuous_postcomp' _ fun i ↦ (F i).uniformContinuous
+  uniformContinuous_invFun := Pi.uniformContinuous_postcomp' _ fun i ↦ (F i).symm.uniformContinuous
+  toEquiv := Equiv.piCongrRight fun i => (F i).toEquiv
+
+@[simp]
+theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, UniformSpace (β₁ i)]
+    [∀ i, UniformSpace (β₂ i)] (F : ∀ i, β₁ i ≃ᵤ β₂ i) :
+    (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
+  rfl
+
+/-- `Equiv.piCongr` as a uniform isomorphism: this is the natural isomorphism
+`Π i₁, β₁ i ≃ᵤ Π i₂, β₂ i₂` obtained from a bijection `ι₁ ≃ ι₂` and isomorphisms
+`β₁ i₁ ≃ᵤ β₂ (e i₁)` for each `i₁ : ι₁`. -/
+@[simps! apply toEquiv]
+def piCongr {ι₁ ι₂ : Type*} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*}
+    [∀ i₁, UniformSpace (β₁ i₁)] [∀ i₂, UniformSpace (β₂ i₂)]
+    (e : ι₁ ≃ ι₂) (F : ∀ i₁, β₁ i₁ ≃ᵤ β₂ (e i₁)) : (∀ i₁, β₁ i₁) ≃ᵤ ∀ i₂, β₂ i₂ :=
+  (UniformEquiv.piCongrRight F).trans (UniformEquiv.piCongrLeft e)
+
+/-- Uniform equivalence between `ULift α` and `α`. -/
 def ulift : ULift.{v, u} α ≃ᵤ α :=
   { Equiv.ulift with
     uniformContinuous_toFun := uniformContinuous_comap
@@ -359,16 +390,16 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
 
 end
 
-/-- If `ι` has a unique element, then `ι → α` is homeomorphic to `α`. -/
+/-- If `ι` has a unique element, then `ι → α` is uniformly isomorphic to `α`. -/
 @[simps! (config := { fullyApplied := false })]
-def funUnique (ι α : Type _) [Unique ι] [UniformSpace α] : (ι → α) ≃ᵤ α
+def funUnique (ι α : Type*) [Unique ι] [UniformSpace α] : (ι → α) ≃ᵤ α
     where
   toEquiv := Equiv.funUnique ι α
   uniformContinuous_toFun := Pi.uniformContinuous_proj _ _
   uniformContinuous_invFun := uniformContinuous_pi.mpr fun _ => uniformContinuous_id
 #align uniform_equiv.fun_unique UniformEquiv.funUnique
 
-/-- Uniform isomorphism between dependent functions `Π i : fin 2, α i` and `α 0 × α 1`. -/
+/-- Uniform isomorphism between dependent functions `Π i : Fin 2, α i` and `α 0 × α 1`. -/
 @[simps! (config := { fullyApplied := false })]
 def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i) ≃ᵤ α 0 × α 1
     where
@@ -378,10 +409,10 @@ def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i
     uniformContinuous_pi.mpr <| Fin.forall_fin_two.2 ⟨uniformContinuous_fst, uniformContinuous_snd⟩
 #align uniform_equiv.pi_fin_two UniformEquiv.piFinTwo
 
-/-- Uniform isomorphism between `α² = fin 2 → α` and `α × α`. -/
+/-- Uniform isomorphism between `α² = Fin 2 → α` and `α × α`. -/
 -- Porting note: made `α` explicit
 @[simps! (config := { fullyApplied := false })]
-def finTwoArrow (α : Type _) [UniformSpace α]: (Fin 2 → α) ≃ᵤ α × α :=
+def finTwoArrow (α : Type*) [UniformSpace α] : (Fin 2 → α) ≃ᵤ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
 #align uniform_equiv.fin_two_arrow UniformEquiv.finTwoArrow
 

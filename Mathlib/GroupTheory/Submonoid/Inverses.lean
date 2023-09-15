@@ -2,13 +2,10 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module group_theory.submonoid.inverses
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Submonoid.Pointwise
+
+#align_import group_theory.submonoid.inverses from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 
@@ -30,7 +27,7 @@ See the comments of #10679 for a possible implementation.
 -/
 
 
-variable {M : Type _}
+variable {M : Type*}
 
 namespace Submonoid
 
@@ -86,8 +83,7 @@ theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ : _) : M) ∈
 theorem leftInv_leftInv_eq (hS : S ≤ IsUnit.submonoid M) : S.leftInv.leftInv = S := by
   refine' le_antisymm S.leftInv_leftInv_le _
   intro x hx
-  have : x = ((hS hx).unit⁻¹⁻¹ : Mˣ) :=
-    by
+  have : x = ((hS hx).unit⁻¹⁻¹ : Mˣ) := by
     rw [inv_inv (hS hx).unit]
     rfl
   rw [this]
@@ -129,23 +125,22 @@ theorem fromLeftInv_mul (x : S.leftInv) : (S.fromLeftInv x : M) * x = 1 := by
 #align add_submonoid.from_left_neg_add AddSubmonoid.fromLeftNeg_add
 
 @[to_additive]
-theorem leftInv_le_is_unit : S.leftInv ≤ IsUnit.submonoid M := fun x ⟨y, hx⟩ ↦
+theorem leftInv_le_isUnit : S.leftInv ≤ IsUnit.submonoid M := fun x ⟨y, hx⟩ ↦
   ⟨⟨x, y, hx, mul_comm x y ▸ hx⟩, rfl⟩
-#align submonoid.left_inv_le_is_unit Submonoid.leftInv_le_is_unit
-#align add_submonoid.left_neg_le_is_add_unit AddSubmonoid.leftNeg_le_is_addUnit
+#align submonoid.left_inv_le_is_unit Submonoid.leftInv_le_isUnit
+#align add_submonoid.left_neg_le_is_add_unit AddSubmonoid.leftNeg_le_isAddUnit
 
 @[to_additive]
 theorem fromLeftInv_eq_iff (a : S.leftInv) (b : M) : (S.fromLeftInv a : M) = b ↔ (a : M) * b = 1 :=
-  by rw [← IsUnit.mul_right_inj (leftInv_le_is_unit _ a.prop), S.mul_fromLeftInv, eq_comm]
+  by rw [← IsUnit.mul_right_inj (leftInv_le_isUnit _ a.prop), S.mul_fromLeftInv, eq_comm]
 #align submonoid.from_left_inv_eq_iff Submonoid.fromLeftInv_eq_iff
 #align add_submonoid.from_left_neg_eq_iff AddSubmonoid.fromLeftNeg_eq_iff
 
 /-- The `MonoidHom` from `S.leftInv` to `S` sending an element to its right inverse in `S`. -/
 @[to_additive (attr := simps)
-    "The `add_monoid_hom` from `S.leftNeg` to `S` sending an element to its
+    "The `AddMonoidHom` from `S.leftNeg` to `S` sending an element to its
     right additive inverse in `S`."]
-noncomputable def fromCommLeftInv : S.leftInv →* S
-    where
+noncomputable def fromCommLeftInv : S.leftInv →* S where
   toFun := S.fromLeftInv
   map_one' := S.fromLeftInv_one
   map_mul' x y :=
@@ -171,7 +166,7 @@ noncomputable def leftInvEquiv : S.leftInv ≃* S :=
     left_inv := fun x ↦
       Subtype.eq <| by
         dsimp only; generalize_proofs h; rw [← h.choose.mul_left_inj]
-        conv => rhs ; rw [h.choose_spec]
+        conv => rhs; rw [h.choose_spec]
         exact h.choose.inv_val.trans (S.mul_fromLeftInv x).symm
     right_inv := fun x ↦ by
       dsimp only [fromCommLeftInv]
@@ -198,7 +193,6 @@ theorem leftInvEquiv_symm_fromLeftInv (x : S.leftInv) :
 @[to_additive]
 theorem leftInvEquiv_mul (x : S.leftInv) : (S.leftInvEquiv hS x : M) * x = 1 := by
   simpa only [leftInvEquiv_apply, fromCommLeftInv] using fromLeftInv_mul S x
-
 #align submonoid.left_inv_equiv_mul Submonoid.leftInvEquiv_mul
 #align add_submonoid.left_neg_equiv_add AddSubmonoid.leftNegEquiv_add
 

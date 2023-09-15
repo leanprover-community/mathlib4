@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.set_family.intersecting
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Order.UpperLower.Basic
+
+#align_import combinatorics.set_family.intersecting from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
 /-!
 # Intersecting families
@@ -32,7 +29,7 @@ This file defines intersecting families and proves their basic properties.
 
 open Finset
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Set
 
@@ -45,7 +42,7 @@ def Intersecting (s : Set α) : Prop :=
   ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ¬Disjoint a b
 #align set.intersecting Set.Intersecting
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem Intersecting.mono (h : t ⊆ s) (hs : s.Intersecting) : t.Intersecting := fun _a ha _b hb =>
   hs (h ha) (h hb)
 #align set.intersecting.mono Set.Intersecting.mono
@@ -64,8 +61,8 @@ theorem intersecting_empty : (∅ : Set α).Intersecting := fun _ => False.elim
 theorem intersecting_singleton : ({a} : Set α).Intersecting ↔ a ≠ ⊥ := by simp [Intersecting]
 #align set.intersecting_singleton Set.intersecting_singleton
 
-theorem Intersecting.insert (hs : s.Intersecting) (ha : a ≠ ⊥) (h : ∀ b ∈ s, ¬Disjoint a b) :
-    (insert a s).Intersecting := by
+protected theorem Intersecting.insert (hs : s.Intersecting) (ha : a ≠ ⊥)
+    (h : ∀ b ∈ s, ¬Disjoint a b) : (insert a s).Intersecting := by
   rintro b (rfl | hb) c (rfl | hc)
   · rwa [disjoint_self]
   · exact h _ hc
@@ -204,9 +201,9 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   revert hs
   refine' s.strongDownwardInductionOn _ this
   rintro s ih _hcard hs
-  by_cases ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
+  by_cases h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
   · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩
-  push_neg  at h
+  push_neg at h
   obtain ⟨t, ht, hst⟩ := h
   refine' (ih _ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans
   rw [Nat.le_div_iff_mul_le' two_pos, mul_comm]

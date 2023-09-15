@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
-
-! This file was ported from Lean 3 source module category_theory.bicategory.strict
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Bicategory.Basic
+
+#align_import category_theory.bicategory.strict from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Strict bicategories
@@ -83,16 +80,14 @@ theorem whiskerLeft_eqToHom {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g = 
     f ◁ eqToHom η = eqToHom (congr_arg₂ (· ≫ ·) rfl η) := by
   cases η
   simp only [whiskerLeft_id, eqToHom_refl]
-#align category_theory.bicategory.whisker_left_eq_to_hom
-    CategoryTheory.Bicategory.whiskerLeft_eqToHom
+#align category_theory.bicategory.whisker_left_eq_to_hom CategoryTheory.Bicategory.whiskerLeft_eqToHom
 
 @[simp]
 theorem eqToHom_whiskerRight {a b c : B} {f g : a ⟶ b} (η : f = g) (h : b ⟶ c) :
     eqToHom η ▷ h = eqToHom (congr_arg₂ (· ≫ ·) η rfl) := by
   cases η
   simp only [id_whiskerRight, eqToHom_refl]
-#align category_theory.bicategory.eq_to_hom_whisker_right
-    CategoryTheory.Bicategory.eqToHom_whiskerRight
+#align category_theory.bicategory.eq_to_hom_whisker_right CategoryTheory.Bicategory.eqToHom_whiskerRight
 
 end Bicategory
 

@@ -2,17 +2,14 @@
 Copyright (c) 2021 Alex Kontorovich, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
-
-! This file was ported from Lean 3 source module topology.algebra.const_mul_action
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Homeomorph
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Support
+
+#align_import topology.algebra.const_mul_action from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
 /-!
 # Monoid actions continuous in the second variable
@@ -42,10 +39,10 @@ Hausdorff, discrete group, properly discontinuous, quotient space
 
 -/
 
+set_option autoImplicit true
+
 
 open Topology Pointwise Filter Set TopologicalSpace
-
-attribute [local instance] MulAction.orbitRel
 
 /-- Class `ContinuousConstSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is continuous in the second argument. We use the same class for all kinds of multiplicative
@@ -53,7 +50,7 @@ actions, including (semi)modules and algebras.
 
 Note that both `ContinuousConstSMul α α` and `ContinuousConstSMul αᵐᵒᵖ α` are
 weaker versions of `ContinuousMul α`. -/
-class ContinuousConstSMul (Γ : Type _) (T : Type _) [TopologicalSpace T] [SMul Γ T] : Prop where
+class ContinuousConstSMul (Γ : Type*) (T : Type*) [TopologicalSpace T] [SMul Γ T] : Prop where
   /-- The scalar multiplication `(•) : Γ → T → T` is continuous in the second argument. -/
   continuous_const_smul : ∀ γ : Γ, Continuous fun x : T => γ • x
 #align has_continuous_const_smul ContinuousConstSMul
@@ -64,7 +61,7 @@ including (semi)modules and algebras.
 
 Note that both `ContinuousConstVAdd α α` and `ContinuousConstVAdd αᵐᵒᵖ α` are
 weaker versions of `ContinuousVAdd α`. -/
-class ContinuousConstVAdd (Γ : Type _) (T : Type _) [TopologicalSpace T] [VAdd Γ T] : Prop where
+class ContinuousConstVAdd (Γ : Type*) (T : Type*) [TopologicalSpace T] [VAdd Γ T] : Prop where
   /-- The additive action `(+ᵥ) : Γ → T → T` is continuous in the second argument. -/
   continuous_const_vadd : ∀ γ : Γ, Continuous fun x : T => γ +ᵥ x
 #align has_continuous_const_vadd ContinuousConstVAdd
@@ -74,7 +71,7 @@ attribute [to_additive] ContinuousConstSMul
 export ContinuousConstSMul (continuous_const_smul)
 export ContinuousConstVAdd (continuous_const_vadd)
 
-variable {M α β : Type _}
+variable {M α β : Type*}
 
 section SMul
 
@@ -109,7 +106,7 @@ theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
 #align continuous_on.const_smul ContinuousOn.const_smul
 #align continuous_on.const_vadd ContinuousOn.const_vadd
 
-@[to_additive, continuity]
+@[to_additive (attr := continuity)]
 theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => c • g x :=
   (continuous_const_smul _).comp hg
 #align continuous.const_smul Continuous.const_smul
@@ -140,11 +137,12 @@ instance OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α :=
 #align order_dual.has_continuous_const_vadd' OrderDual.continuousConstVAdd'
 
 @[to_additive]
-instance [SMul M β] [ContinuousConstSMul M β] : ContinuousConstSMul M (α × β) :=
+instance Prod.continuousConstSMul [SMul M β] [ContinuousConstSMul M β] :
+    ContinuousConstSMul M (α × β) :=
   ⟨fun _ => (continuous_fst.const_smul _).prod_mk (continuous_snd.const_smul _)⟩
 
 @[to_additive]
-instance {ι : Type _} {γ : ι → Type _} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
+instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
     [∀ i, ContinuousConstSMul M (γ i)] : ContinuousConstSMul M (∀ i, γ i) :=
   ⟨fun _ => continuous_pi fun i => (continuous_apply i).const_smul _⟩
 
@@ -164,14 +162,14 @@ variable [TopologicalSpace α]
 variable [Monoid M] [MulAction M α] [ContinuousConstSMul M α]
 
 @[to_additive]
-instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α
-    where continuous_const_smul m := (continuous_const_smul (m : M) : _)
+instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α where
+  continuous_const_smul m := (continuous_const_smul (m : M) : _)
 #align units.has_continuous_const_smul Units.continuousConstSMul
 #align add_units.has_continuous_const_vadd AddUnits.continuousConstVAdd
 
 @[to_additive]
 theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=
-  ((Set.mapsTo_image _ _).closure <| continuous_id.const_smul c).image_subset
+  ((Set.mapsTo_image _ _).closure <| continuous_const_smul c).image_subset
 #align smul_closure_subset smul_closure_subset
 #align vadd_closure_subset vadd_closure_subset
 
@@ -182,11 +180,19 @@ theorem smul_closure_orbit_subset (c : M) (x : α) :
 #align smul_closure_orbit_subset smul_closure_orbit_subset
 #align vadd_closure_orbit_subset vadd_closure_orbit_subset
 
+theorem isClosed_setOf_map_smul [Monoid N] (α β) [MulAction M α] [MulAction N β]
+    [TopologicalSpace β] [T2Space β] [ContinuousConstSMul N β] (σ : M → N) :
+    IsClosed { f : α → β | ∀ c x, f (c • x) = σ c • f x } := by
+  simp only [Set.setOf_forall]
+  exact isClosed_iInter fun c => isClosed_iInter fun x =>
+    isClosed_eq (continuous_apply _) ((continuous_apply _).const_smul _)
+#align is_closed_set_of_map_smul isClosed_setOf_map_smulₓ
+
 end Monoid
 
 section Group
 
-variable {G : Type _} [TopologicalSpace α] [Group G] [MulAction G α] [ContinuousConstSMul G α]
+variable {G : Type*} [TopologicalSpace α] [Group G] [MulAction G α] [ContinuousConstSMul G α]
 
 @[to_additive]
 theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} (c : G) :
@@ -284,7 +290,7 @@ end Group
 
 section GroupWithZero
 
-variable {G₀ : Type _} [TopologicalSpace α] [GroupWithZero G₀] [MulAction G₀ α]
+variable {G₀ : Type*} [TopologicalSpace α] [GroupWithZero G₀] [MulAction G₀ α]
   [ContinuousConstSMul G₀ α]
 
 theorem tendsto_const_smul_iff₀ {f : β → α} {l : Filter β} {a : α} {c : G₀} (hc : c ≠ 0) :
@@ -315,9 +321,15 @@ theorem continuous_const_smul_iff₀ (hc : c ≠ 0) : (Continuous fun x => c •
 
 /-- Scalar multiplication by a non-zero element of a group with zero acting on `α` is a
 homeomorphism from `α` onto itself. -/
+@[simps! (config := .asFn) apply]
 protected def Homeomorph.smulOfNeZero (c : G₀) (hc : c ≠ 0) : α ≃ₜ α :=
   Homeomorph.smul (Units.mk0 c hc)
 #align homeomorph.smul_of_ne_zero Homeomorph.smulOfNeZero
+
+@[simp]
+theorem Homeomorph.smulOfNeZero_symm_apply {c : G₀} (hc : c ≠ 0) :
+    ⇑(Homeomorph.smulOfNeZero c hc).symm = (c⁻¹ • · : α → α) :=
+  rfl
 
 theorem isOpenMap_smul₀ {c : G₀} (hc : c ≠ 0) : IsOpenMap fun x : α => c • x :=
   (Homeomorph.smulOfNeZero c hc).isOpenMap
@@ -358,7 +370,7 @@ theorem IsClosed.smul_of_ne_zero {c : G₀} {s : Set α} (hs : IsClosed s) (hc :
 
 The lemma that `smul` is a closed map in the first argument (for a normed space over a complete
 normed field) is `isClosedMap_smul_left` in `Analysis.NormedSpace.FiniteDimension`. -/
-theorem isClosedMap_smul₀ {𝕜 M : Type _} [DivisionRing 𝕜] [AddCommMonoid M] [TopologicalSpace M]
+theorem isClosedMap_smul₀ {𝕜 M : Type*} [DivisionRing 𝕜] [AddCommMonoid M] [TopologicalSpace M]
     [T1Space M] [Module 𝕜 M] [ContinuousConstSMul 𝕜 M] (c : 𝕜) :
     IsClosedMap fun x : M => c • x := by
   rcases eq_or_ne c 0 with (rfl | hne)
@@ -367,23 +379,23 @@ theorem isClosedMap_smul₀ {𝕜 M : Type _} [DivisionRing 𝕜] [AddCommMonoid
   · exact (Homeomorph.smulOfNeZero c hne).isClosedMap
 #align is_closed_map_smul₀ isClosedMap_smul₀
 
-theorem IsClosed.smul₀ {𝕜 M : Type _} [DivisionRing 𝕜] [AddCommMonoid M] [TopologicalSpace M]
+theorem IsClosed.smul₀ {𝕜 M : Type*} [DivisionRing 𝕜] [AddCommMonoid M] [TopologicalSpace M]
     [T1Space M] [Module 𝕜 M] [ContinuousConstSMul 𝕜 M] (c : 𝕜) {s : Set M} (hs : IsClosed s) :
     IsClosed (c • s) :=
   isClosedMap_smul₀ c s hs
 #align is_closed.smul₀ IsClosed.smul₀
 
-theorem HasCompactMulSupport.comp_smul {β : Type _} [One β] {f : α → β} (h : HasCompactMulSupport f)
+theorem HasCompactMulSupport.comp_smul {β : Type*} [One β] {f : α → β} (h : HasCompactMulSupport f)
     {c : G₀} (hc : c ≠ 0) : HasCompactMulSupport fun x => f (c • x) :=
   h.comp_homeomorph (Homeomorph.smulOfNeZero c hc)
 #align has_compact_mul_support.comp_smul HasCompactMulSupport.comp_smul
 
-theorem HasCompactSupport.comp_smul {β : Type _} [Zero β] {f : α → β} (h : HasCompactSupport f)
+theorem HasCompactSupport.comp_smul {β : Type*} [Zero β] {f : α → β} (h : HasCompactSupport f)
     {c : G₀} (hc : c ≠ 0) : HasCompactSupport fun x => f (c • x) :=
   h.comp_homeomorph (Homeomorph.smulOfNeZero c hc)
 #align has_compact_support.comp_smul HasCompactSupport.comp_smul
 
-attribute [to_additive HasCompactSupport.comp_smul] HasCompactMulSupport.comp_smul
+attribute [to_additive existing HasCompactSupport.comp_smul] HasCompactMulSupport.comp_smul
 
 end GroupWithZero
 
@@ -440,18 +452,18 @@ end IsUnit
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
 -/
-class ProperlyDiscontinuousSMul (Γ : Type _) (T : Type _) [TopologicalSpace T] [SMul Γ T] :
+class ProperlyDiscontinuousSMul (Γ : Type*) (T : Type*) [TopologicalSpace T] [SMul Γ T] :
     Prop where
   /-- Given two compact sets `K` and `L`, `γ • K ∩ L` is nonempty for finitely many `γ`. -/
   finite_disjoint_inter_image :
-    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ • ·)  '' K ∩ L ≠ ∅ }
+    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ • ·) '' K ∩ L ≠ ∅ }
 #align properly_discontinuous_smul ProperlyDiscontinuousSMul
 
 /-- Class `ProperlyDiscontinuousVAdd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
 -/
-class ProperlyDiscontinuousVAdd (Γ : Type _) (T : Type _) [TopologicalSpace T] [VAdd Γ T] :
+class ProperlyDiscontinuousVAdd (Γ : Type*) (T : Type*) [TopologicalSpace T] [VAdd Γ T] :
   Prop where
   /-- Given two compact sets `K` and `L`, `γ +ᵥ K ∩ L` is nonempty for finitely many `γ`. -/
   finite_disjoint_inter_image :
@@ -460,7 +472,7 @@ class ProperlyDiscontinuousVAdd (Γ : Type _) (T : Type _) [TopologicalSpace T] 
 
 attribute [to_additive] ProperlyDiscontinuousSMul
 
-variable {Γ : Type _} [Group Γ] {T : Type _} [TopologicalSpace T] [MulAction Γ T]
+variable {Γ : Type*} [Group Γ] {T : Type*} [TopologicalSpace T] [MulAction Γ T]
 
 /-- A finite group action is always properly discontinuous. -/
 @[to_additive "A finite group action is always properly discontinuous."]
@@ -477,9 +489,10 @@ export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
 @[to_additive "The quotient map by a group action is open, i.e. the quotient by a group
 action is an open quotient. "]
 theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
+    letI := MulAction.orbitRel Γ T
     IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := fun U hU => by
   rw [isOpen_coinduced, MulAction.quotient_preimage_image_eq_union_mul U]
-  exact isOpen_unionᵢ fun γ => isOpenMap_smul γ U hU
+  exact isOpen_iUnion fun γ => isOpenMap_smul γ U hU
 #align is_open_map_quotient_mk_mul isOpenMap_quotient_mk'_mul
 #align is_open_map_quotient_mk_add isOpenMap_quotient_mk'_add
 
@@ -489,6 +502,7 @@ space is t2."]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Space T]
     [LocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
     T2Space (Quotient (MulAction.orbitRel Γ T)) := by
+  letI := MulAction.orbitRel Γ T
   set Q := Quotient (MulAction.orbitRel Γ T)
   rw [t2Space_iff_nhds]
   let f : T → Q := Quotient.mk'
@@ -506,14 +520,14 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   let V₀₀ := ⋂ γ ∈ bad_Γ_set, v γ
   let V₀ := V₀₀ ∩ L₀
   have U_nhds : f '' U₀ ∈ 𝓝 (f x₀) := by
-    refine f_op.image_mem_nhds (inter_mem ((binterᵢ_mem bad_Γ_finite).mpr fun γ _ => ?_) K₀_in)
+    refine f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => ?_) K₀_in)
     exact (continuous_const_smul _).continuousAt (hu γ)
   have V_nhds : f '' V₀ ∈ 𝓝 (f y₀) :=
-    f_op.image_mem_nhds (inter_mem ((binterᵢ_mem bad_Γ_finite).mpr fun γ _ => hv γ) L₀_in)
+    f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => hv γ) L₀_in)
   refine' ⟨f '' U₀, U_nhds, f '' V₀, V_nhds, MulAction.disjoint_image_image_iff.2 _⟩
   rintro x ⟨x_in_U₀₀, x_in_K₀⟩ γ
   by_cases H : γ ∈ bad_Γ_set
-  · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_interᵢ₂.mp x_in_U₀₀ γ H, mem_interᵢ₂.mp h.1 γ H⟩
+  · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
     simp only [image_smul, Classical.not_not, mem_setOf_eq, Ne.def] at H
     exact eq_empty_iff_forall_not_mem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
@@ -533,7 +547,7 @@ section nhds
 
 section MulAction
 
-variable {G₀ : Type _} [GroupWithZero G₀] [MulAction G₀ α] [TopologicalSpace α]
+variable {G₀ : Type*} [GroupWithZero G₀] [MulAction G₀ α] [TopologicalSpace α]
   [ContinuousConstSMul G₀ α]
 
 -- porting note: generalize to a group action + `IsUnit`
@@ -556,7 +570,7 @@ end MulAction
 
 section DistribMulAction
 
-variable {G₀ : Type _} [GroupWithZero G₀] [AddMonoid α] [DistribMulAction G₀ α] [TopologicalSpace α]
+variable {G₀ : Type*} [GroupWithZero G₀] [AddMonoid α] [DistribMulAction G₀ α] [TopologicalSpace α]
   [ContinuousConstSMul G₀ α]
 
 theorem set_smul_mem_nhds_zero_iff {s : Set α} {c : G₀} (hc : c ≠ 0) :

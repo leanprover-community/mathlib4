@@ -2,16 +2,14 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
-Ported by: Moritz Doll
-
-! This file was ported from Lean 3 source module algebra.ring.basic
-! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Opposites
+
+#align_import algebra.ring.basic from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
 /-!
 # Semirings and rings
@@ -24,21 +22,25 @@ the present file is about their interaction.
 For the definitions of semirings and rings see `Algebra.Ring.Defs`.
 -/
 
+set_option autoImplicit true
+
 open Function
 
 namespace AddHom
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
-def mulLeft [Distrib R] (r : R) : AddHom R R :=
-  ⟨(· * ·) r, mul_add r⟩
+def mulLeft [Distrib R] (r : R) : AddHom R R where
+  toFun := (· * ·) r
+  map_add' := mul_add r
 #align add_hom.mul_left AddHom.mulLeft
 #align add_hom.mul_left_apply AddHom.mulLeft_apply
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
-def mulRight [Distrib R] (r : R) : AddHom R R :=
-  ⟨fun a => a * r, fun _ _ => add_mul _ _ r⟩
+def mulRight [Distrib R] (r : R) : AddHom R R where
+  toFun a := a * r
+  map_add' _ _ := add_mul _ _ r
 #align add_hom.mul_right AddHom.mulRight
 #align add_hom.mul_right_apply AddHom.mulRight_apply
 
@@ -46,7 +48,7 @@ end AddHom
 
 section AddHomClass
 
-variable {F : Type _} [NonAssocSemiring α] [NonAssocSemiring β] [AddHomClass F α β]
+variable {F : Type*} [NonAssocSemiring α] [NonAssocSemiring β] [AddHomClass F α β]
 
 set_option linter.deprecated false in
 /-- Additive homomorphisms preserve `bit0`. -/
@@ -60,37 +62,35 @@ end AddHomClass
 namespace AddMonoidHom
 
 /-- Left multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
-def mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
-    R →+ R where
-  toFun := (· * ·) r
+def mulLeft [NonUnitalNonAssocSemiring R] (r : R) : R →+ R where
+  toFun := (r * ·)
   map_zero' := mul_zero r
   map_add' := mul_add r
 #align add_monoid_hom.mul_left AddMonoidHom.mulLeft
 
 @[simp]
-theorem coe_mul_left [NonUnitalNonAssocSemiring R] (r : R) :
-    (mulLeft r) = (r * ·) :=
+theorem coe_mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
+    (mulLeft r : R → R) = HMul.hMul r :=
   rfl
-#align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mul_left
+#align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mulLeft
 
 /-- Right multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
-def mulRight [NonUnitalNonAssocSemiring R] (r : R) :
-    R →+ R where
+def mulRight [NonUnitalNonAssocSemiring R] (r : R) : R →+ R where
   toFun a := a * r
   map_zero' := zero_mul r
   map_add' _ _ := add_mul _ _ r
 #align add_monoid_hom.mul_right AddMonoidHom.mulRight
 
 @[simp]
-theorem coe_mul_right [NonUnitalNonAssocSemiring R] (r : R) :
+theorem coe_mulRight [NonUnitalNonAssocSemiring R] (r : R) :
     (mulRight r) = (· * r) :=
   rfl
-#align add_monoid_hom.coe_mul_right AddMonoidHom.coe_mul_right
+#align add_monoid_hom.coe_mul_right AddMonoidHom.coe_mulRight
 
-theorem mul_right_apply [NonUnitalNonAssocSemiring R] (a r : R) :
+theorem mulRight_apply [NonUnitalNonAssocSemiring R] (a r : R) :
     mulRight r a = a * r :=
   rfl
-#align add_monoid_hom.mul_right_apply AddMonoidHom.mul_right_apply
+#align add_monoid_hom.mul_right_apply AddMonoidHom.mulRight_apply
 
 end AddMonoidHom
 
@@ -102,8 +102,8 @@ variable [Mul α] [HasDistribNeg α]
 
 open MulOpposite
 
-instance : HasDistribNeg αᵐᵒᵖ :=
-  { MulOpposite.instInvolutiveNegMulOpposite _ with
+instance hasDistribNeg : HasDistribNeg αᵐᵒᵖ :=
+  { MulOpposite.involutiveNeg _ with
     neg_mul := fun _ _ => unop_injective <| mul_neg _ _,
     mul_neg := fun _ _ => unop_injective <| neg_mul _ _ }
 

@@ -7,12 +7,20 @@ import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 import Std.Data.Option.Basic
+import Std.Data.List.Count
 
 /-! ## Additional utilities in `Lean.MVarId` -/
+
+set_option autoImplicit true
 
 open Lean Meta
 
 namespace Lean.MVarId
+
+/-- Solve a goal by synthesizing an instance. -/
+-- FIXME: probably can just be `g.inferInstance` once lean4#2054 is fixed
+def synthInstance (g : MVarId) : MetaM Unit := do
+  g.assign (← Lean.Meta.synthInstance (← g.getType))
 
 /--
 Replace hypothesis `hyp` in goal `g` with `proof : typeNew`.
@@ -23,7 +31,7 @@ it attempts to avoid reordering hypotheses, and the original is cleared if possi
 def replace (g : MVarId) (hyp : FVarId) (proof : Expr) (typeNew : Option Expr := none) :
     MetaM AssertAfterResult :=
   g.withContext do
-    let typeNew ← Option.getDM (pure typeNew) (inferType proof)
+    let typeNew ← typeNew.getDM (inferType proof)
     let ldecl ← hyp.getDecl
     -- `typeNew` may contain variables that occur after `hyp`.
     -- Thus, we use the auxiliary function `findMaxFVar` to ensure `typeNew` is well-formed
@@ -45,7 +53,16 @@ where
 /-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
 def note (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
     MetaM (FVarId × MVarId) := do
-  (← g.assert h (← Option.getDM (pure t) (inferType v)) v).intro1P
+  (← g.assert h (← t.getDM (inferType v)) v).intro1P
+
+/-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
+def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
+    MetaM (FVarId × MVarId) := do
+  (← g.define h (← t.getDM (inferType v)) v).intro1P
+
+/-- Short-hand for applying a constant to the goal. -/
+def applyConst (mvar : MVarId) (c : Name) (cfg : ApplyConfig := {}) : MetaM (List MVarId) := do
+  mvar.apply (← mkConstWithFreshMVarLevels c) cfg
 
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
@@ -73,16 +90,118 @@ partial def intros! (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
   catch _ =>
     pure (acc, g)
 
+/-- Check if a goal is of a subsingleton type. -/
+def subsingleton? (g : MVarId) : MetaM Bool := do
+  try
+    _ ← Lean.Meta.synthInstance (← mkAppM `Subsingleton #[← g.getType])
+    return true
+  catch _ =>
+    return false
+
+/--
+Check if a goal is "independent" of a list of other goals.
+We say a goal is independent of other goals if assigning a value to it
+can not change the solvability of the other goals.
+
+This function only calculates a conservative approximation of this condition.
+-/
+def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
+  let t ← instantiateMVars (← g.getType)
+  if t.hasExprMVar then
+    -- If the goal's type contains other meta-variables,
+    -- we conservatively say that `g` is not independent.
+    return false
+  if t.isProp then
+    -- If the goal is propositional,
+    -- proof-irrelevance should ensure it is independent of any other goals.
+    return true
+  if ← g.subsingleton? then
+    -- If the goal is a subsingleton, it should be independent of any other goals.
+    return true
+  -- Finally, we check if the goal `g` appears in the type of any of the goals `L`.
+  L.allM fun g' => do
+    let mvars ← Meta.getMVars (← g'.getType)
+    pure <| !(mvars.contains g)
+
+/--
+Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
+If successful, returns the new goal, and otherwise returns the original `MVarId`.
+
+This may be regarded as being a special case of `Lean.MVarId.liftReflToEq`, specifically for `Iff`.
+-/
+def iffOfEq (mvarId : MVarId) : MetaM MVarId := do
+  let res ← observing? do
+    let [mvarId] ← mvarId.apply (mkConst ``iff_of_eq []) | failure
+    return mvarId
+  return res.getD mvarId
+
+/--
+Try to convert an `Eq` into an `Iff` by applying `propext`.
+If successful, then returns then new goal, otherwise returns the original `MVarId`.
+-/
+def propext (mvarId : MVarId) : MetaM MVarId := do
+  let res ← observing? do
+    -- Avoid applying `propext` if the target is not an equality of `Prop`s.
+    -- We don't want a unification specializing `Sort*` to `Prop`.
+    let tgt ← withReducible mvarId.getType'
+    let some (ty, _, _) := tgt.eq? | failure
+    guard ty.isProp
+    let [mvarId] ← mvarId.apply (mkConst ``propext []) | failure
+    return mvarId
+  return res.getD mvarId
+
+/--
+Try to close the goal with using `proof_irrel_heq`. Returns whether or not it succeeds.
+
+We need to be somewhat careful not to assign metavariables while doing this, otherwise we might
+specialize `Sort _` to `Prop`.
+-/
+def proofIrrelHeq (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `proofIrrelHeq
+      let tgt ← withReducible mvarId.getType'
+      let some (_, lhs, _, rhs) := tgt.heq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
+      let pf ← mkAppM ``proof_irrel_heq #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
+
+/--
+Try to close the goal using `Subsingleton.elim`. Returns whether or not it succeeds.
+
+We are careful to apply `Subsingleton.elim` in a way that does not assign any metavariables.
+This is to prevent the `Subsingleton Prop` instance from being used as justification to specialize
+`Sort _` to `Prop`.
+-/
+def subsingletonElim (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `subsingletonElim
+      let tgt ← withReducible mvarId.getType'
+      let some (_, lhs, rhs) := tgt.eq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
+      let pf ← mkAppM ``Subsingleton.elim #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
+
 end Lean.MVarId
 
 namespace Lean.Meta
 
 /-- Return local hypotheses which are not "implementation detail", as `Expr`s. -/
-def getLocalHyps : MetaM (Array Expr) := do
+def getLocalHyps [Monad m] [MonadLCtx m] : m (Array Expr) := do
   let mut hs := #[]
   for d in ← getLCtx do
     if !d.isImplementationDetail then hs := hs.push d.toExpr
   return hs
+
+/-- Count how many local hypotheses appear in an expression. -/
+def countLocalHypsUsed [Monad m] [MonadLCtx m] [MonadMCtx m] (e : Expr) : m Nat := do
+  let e' ← instantiateMVars e
+  return (← getLocalHyps).toList.countP fun h => h.occurs e'
 
 /--
 Given a monadic function `F` that takes a type and a term of that type and produces a new term,
@@ -100,6 +219,12 @@ and then builds the lambda telescope term for the new term.
 -/
 def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
   mapForallTelescope' (fun _ e => F e) forallTerm
+
+
+/-- Get the type the given metavariable after instantiating metavariables and cleaning up
+annotations. -/
+def _root_.Lean.MVarId.getType'' (mvarId : MVarId) : MetaM Expr :=
+  return (← instantiateMVars (← mvarId.getType)).cleanupAnnotations
 
 end Lean.Meta
 

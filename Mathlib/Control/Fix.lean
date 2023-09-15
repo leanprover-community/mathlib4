@@ -2,15 +2,13 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.fix
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Part
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Stream.Defs
+import Mathlib.Tactic.Common
+
+#align_import control.fix from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Fixed point
@@ -30,11 +28,11 @@ universe u v
 
 open Classical
 
-variable {α : Type _} {β : α → Type _}
+variable {α : Type*} {β : α → Type*}
 
-/-- `Fix α` provides a `fix` operator to define recursive computatiation
+/-- `Fix α` provides a `fix` operator to define recursive computation
 via the fixed point of function of type `α → α`. -/
-class Fix (α : Type _) where
+class Fix (α : Type*) where
   /-- `fix f` represents the computation of a fixed point for `f`.-/
   fix : (α → α) → α
 #align has_fix Fix
@@ -68,8 +66,7 @@ it satisfies the equations:
   1. `fix f = f (fix f)`          (is a fixed point)
   2. `∀ X, f X ≤ X → fix f ≤ X`   (least fixed point)
 -/
--- porting note: added noncomputable, because WellFounded.fix is noncomputable (for now?)
-protected noncomputable def fix (x : α) : Part (β x) :=
+protected def fix (x : α) : Part (β x) :=
   (Part.assert (∃ i, (Fix.approx f i x).Dom)) fun h =>
     WellFounded.fix.{1} (Nat.Upto.wf h) (fixAux f) Nat.Upto.zero x
 #align part.fix Part.fix
@@ -84,9 +81,9 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
   revert hk
   dsimp [Part.fix]; rw [assert_pos h']; revert this
   generalize Upto.zero = z; intro _this hk
-  suffices : ∀ x',
+  suffices ∀ x',
     WellFounded.fix (Part.fix.proof_1 f x h') (fixAux f) z x' = Fix.approx f (succ k) x'
-  exact this _
+    from this _
   induction k generalizing z with
   | zero =>
     intro x'
@@ -122,9 +119,9 @@ end Part
 
 namespace Part
 
--- porting note: added noncomputable, because WellFounded.fix is noncomputable (for now?)
-noncomputable instance : Fix (Part α) :=
+instance hasFix : Fix (Part α) :=
   ⟨fun f => Part.fix (fun x u => f (x u)) ()⟩
+#align part.has_fix Part.hasFix
 
 end Part
 
@@ -132,8 +129,7 @@ open Sigma
 
 namespace Pi
 
--- porting note: added noncomputable, because WellFounded.fix is noncomputable (for now?)
-noncomputable instance Part.hasFix {β} : Fix (α → Part β) :=
+instance Part.hasFix {β} : Fix (α → Part β) :=
   ⟨Part.fix⟩
 #align pi.part.has_fix Pi.Part.hasFix
 

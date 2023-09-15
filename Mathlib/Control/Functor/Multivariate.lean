@@ -2,14 +2,11 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
-
-! This file was ported from Lean 3 source module control.functor.multivariate
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.TypeVec
+
+#align_import control.functor.multivariate from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
 /-!
 
@@ -29,7 +26,7 @@ open MvFunctor
 
 /-- Multivariate functors, i.e. functor between the category of type vectors
 and the category of Type -/
-class MvFunctor {n : ℕ} (F : TypeVec n → Type _) where
+class MvFunctor {n : ℕ} (F : TypeVec n → Type*) where
   /-- Multivariate map, if `f : α ⟹ β` and `x : F α` then `f <$$> x : F β`. -/
   map : ∀ {α β : TypeVec n}, α ⟹ β → F α → F β
 #align mvfunctor MvFunctor
@@ -70,7 +67,7 @@ end MvFunctor
 
 
 /-- laws for `MvFunctor` -/
-class LawfulMvFunctor {n : ℕ} (F : TypeVec n → Type _) [MvFunctor F] : Prop where
+class LawfulMvFunctor {n : ℕ} (F : TypeVec n → Type*) [MvFunctor F] : Prop where
   /-- `map` preserved identities, i.e., maps identity on `α` to identity on `F α` -/
   id_map : ∀ {α : TypeVec n} (x : F α), TypeVec.id <$$> x = x
   /-- `map` preserves compositions -/
@@ -127,8 +124,7 @@ theorem exists_iff_exists_of_mono {P : F α → Prop} {q : F β → Prop}
                                   (f : α ⟹ β) (g : β ⟹ α)
                                   (h₀ : f ⊚ g = TypeVec.id)
                                   (h₁ : ∀ u : F α, P u ↔ q (f <$$> u)) :
-      (∃ u : F α, P u) ↔ ∃ u : F β, q u :=
-by
+      (∃ u : F α, P u) ↔ ∃ u : F β, q u := by
   constructor <;> rintro ⟨u, h₂⟩
   · refine ⟨f <$$> u, ?_⟩
     apply (h₁ u).mp h₂
@@ -164,7 +160,7 @@ open TypeVec
 
 section LiftPLastPredIff
 
-variable {F : TypeVec.{u} (n + 1) → Type _} [MvFunctor F] [LawfulMvFunctor F] {α : TypeVec.{u} n}
+variable {F : TypeVec.{u} (n + 1) → Type*} [MvFunctor F] [LawfulMvFunctor F] {α : TypeVec.{u} n}
 
 open MvFunctor
 
@@ -189,18 +185,17 @@ private def g :
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
-    LiftP' (PredLast' _ P) x ↔ LiftP (PredLast _ P) x :=
-  by
+    LiftP' (PredLast' _ P) x ↔ LiftP (PredLast _ P) x := by
   dsimp only [LiftP, LiftP']
   apply exists_iff_exists_of_mono F (f _ n α) (g _ n α)
-  · ext (i⟨x, _⟩)
+  · ext i ⟨x, _⟩
     cases i <;> rfl
   · intros
     rw [MvFunctor.map_map]
     dsimp [(· ⊚ ·)]
     suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val)
       by rw[this];
-    ext (i⟨x, _⟩)
+    ext i ⟨x, _⟩
     cases i <;> rfl
 #align mvfunctor.liftp_last_pred_iff MvFunctor.LiftP_PredLast_iff
 
@@ -227,22 +222,21 @@ private def g' :
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
-    LiftR' (RelLast' _ rr) x y ↔ LiftR (RelLast (i := _) _ rr) x y :=
-  by
+    LiftR' (RelLast' _ rr) x y ↔ LiftR (RelLast (i := _) _ rr) x y := by
   dsimp only [LiftR, LiftR']
   apply exists_iff_exists_of_mono F (f' rr _ _) (g' rr _ _)
-  · ext (i⟨x, _⟩) : 2
+  · ext i ⟨x, _⟩ : 2
     cases i <;> rfl
   · intros
     simp [MvFunctor.map_map, (· ⊚ ·)]
     -- porting note: proof was
     -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
-    -- congr <;> ext (i⟨x, _⟩) <;> cases i <;> rfl
+    -- congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
     suffices  (fun i t => t.val.fst) = ((fun i x => (MvFunctor.f' rr n α i x).val.fst))
             ∧ (fun i t => t.val.snd) = ((fun i x => (MvFunctor.f' rr n α i x).val.snd))
     by  rcases this with ⟨left, right⟩
         rw[left, right];
-    constructor <;> ext (i⟨x, _⟩) <;> cases i <;> rfl
+    constructor <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
 #align mvfunctor.liftr_last_rel_iff MvFunctor.LiftR_RelLast_iff
 
 end LiftPLastPredIff

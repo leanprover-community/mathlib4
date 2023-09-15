@@ -2,16 +2,13 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.order.nonneg.field
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Order.Archimedean
-import Mathlib.Algebra.Order.Nonneg.Ring
-import Mathlib.Algebra.Order.Field.InjSurj
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Canonical.Defs
+import Mathlib.Algebra.Order.Field.InjSurj
+import Mathlib.Algebra.Order.Nonneg.Ring
+
+#align_import algebra.order.nonneg.field from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
 /-!
 # Semifield structure on the type of nonnegative elements
@@ -29,7 +26,7 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 
 open Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Nonneg
 
@@ -51,9 +48,9 @@ theorem inv_mk (hx : 0 ≤ x) : (⟨x, hx⟩ : { x : α // 0 ≤ x })⁻¹ = ⟨
   rfl
 #align nonneg.inv_mk Nonneg.inv_mk
 
-instance hasDiv : Div { x : α // 0 ≤ x } :=
+instance div : Div { x : α // 0 ≤ x } :=
   ⟨fun x y => ⟨x / y, div_nonneg x.2 y.2⟩⟩
-#align nonneg.has_div Nonneg.hasDiv
+#align nonneg.has_div Nonneg.div
 
 @[simp, norm_cast]
 protected theorem coe_div (a b : { x : α // 0 ≤ x }) : ((a / b : { x : α // 0 ≤ x }) : α) = a / b :=
@@ -66,9 +63,9 @@ theorem mk_div_mk (hx : 0 ≤ x) (hy : 0 ≤ y) :
   rfl
 #align nonneg.mk_div_mk Nonneg.mk_div_mk
 
-instance hasZpow : Pow { x : α // 0 ≤ x } ℤ :=
+instance zpow : Pow { x : α // 0 ≤ x } ℤ :=
   ⟨fun a n => ⟨(a : α) ^ n, zpow_nonneg a.2 _⟩⟩
-#align nonneg.has_zpow Nonneg.hasZpow
+#align nonneg.has_zpow Nonneg.zpow
 
 @[simp, norm_cast]
 protected theorem coe_zpow (a : { x : α // 0 ≤ x }) (n : ℤ) :
@@ -99,35 +96,5 @@ instance linearOrderedCommGroupWithZero [LinearOrderedField α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
   inferInstance
 #align nonneg.linear_ordered_comm_group_with_zero Nonneg.linearOrderedCommGroupWithZero
-
-/-! ### Floor -/
-
-
-instance archimedean [OrderedAddCommMonoid α] [Archimedean α] : Archimedean { x : α // 0 ≤ x } :=
-  ⟨fun x y hy =>
-    let ⟨n, hr⟩ := Archimedean.arch (x : α) (hy : (0 : α) < y)
-    ⟨n, show (x : α) ≤ (n • y : { x : α // 0 ≤ x }) by simp [*, -nsmul_eq_mul, nsmul_coe]⟩⟩
-#align nonneg.archimedean Nonneg.archimedean
-
-instance floorSemiring [OrderedSemiring α] [FloorSemiring α] :
-    FloorSemiring { r : α // 0 ≤ r } where
-  floor a := ⌊(a : α)⌋₊
-  ceil a := ⌈(a : α)⌉₊
-  floor_of_neg ha := FloorSemiring.floor_of_neg ha
-  gc_floor ha := FloorSemiring.gc_floor (Subtype.coe_le_coe.2 ha)
-  gc_ceil a n := FloorSemiring.gc_ceil (a : α) n
-#align nonneg.floor_semiring Nonneg.floorSemiring
-
-@[norm_cast]
-theorem nat_floor_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 ≤ r }) :
-    ⌊(a : α)⌋₊ = ⌊a⌋₊ :=
-  rfl
-#align nonneg.nat_floor_coe Nonneg.nat_floor_coe
-
-@[norm_cast]
-theorem nat_ceil_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 ≤ r }) :
-    ⌈(a : α)⌉₊ = ⌈a⌉₊ :=
-  rfl
-#align nonneg.nat_ceil_coe Nonneg.nat_ceil_coe
 
 end Nonneg
