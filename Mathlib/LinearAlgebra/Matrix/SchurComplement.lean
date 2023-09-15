@@ -455,7 +455,7 @@ theorem det_one_add_col_mul_row (u v : m → α) : det (1 + col u * row v) = 1 +
 /-- A generalization of the **Matrix determinant lemma** -/
 theorem det_add_mul {A : Matrix m m α} (U : Matrix m n α)
     (V : Matrix n m α) (hA : IsUnit A.det) :
-    (A + U * V).det = A.det*(1 + V * (A⁻¹) * U).det := by
+    (A + U * V).det = A.det * (1 + V * A⁻¹ * U).det := by
   nth_rewrite 1 [← Matrix.mul_one A]
   rwa [← Matrix.mul_nonsing_inv_cancel_left A (U * V), ←Matrix.mul_add, det_mul,
     ←Matrix.mul_assoc, det_one_add_mul_comm, ←Matrix.mul_assoc]
