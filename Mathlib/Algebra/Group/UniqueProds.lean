@@ -200,15 +200,8 @@ theorem of_mulOpposite
 
 @[to_additive]
 theorem to_mulOpposite (h : UniqueMul A B a0 b0) :
-    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) := by
-  refine of_mulOpposite (G := MulOpposite G) <| fun a b ha hb hab ↦ ?_
-  simp only [mem_map, Function.Embedding.coeFn_mk, exists_exists_and_eq_and] at ha hb
-  rcases ha with ⟨a, ha, rfl⟩
-  rcases hb with ⟨b, hb, rfl⟩
-  rw [op_inj, op_inj, op_inj, op_inj]
-  apply h ha hb ?_
-  apply_fun op ∘ op using op_injective.comp op_injective
-  exact hab
+    UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) :=
+  of_mulOpposite (by simp_rw [map_map]; exact (mulHom_map_iff _ fun _ _ => by rfl).mpr h)
 
 @[to_additive]
 theorem iff_mulOpposite :
