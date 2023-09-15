@@ -74,16 +74,13 @@ Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `
 series of `s`
 -/
 @[simps!]
-def OfLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) : RelSeries s where
+def ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) : RelSeries s where
   length := x.length
   toFun := x
   step _ := h _ _ <| x.step _
 
-lemma ofLE_length (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
-    (x.OfLE h).length = x.length := rfl
-
 lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
-    (x.OfLE h : _ → _) = x := rfl
+    (x.ofLE h : _ → _) = x := rfl
 
 /-- Every relation series gives a list -/
 abbrev toList (x : RelSeries r) : List α := List.ofFn x
