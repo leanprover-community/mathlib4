@@ -222,7 +222,7 @@ theorem nthLe_finRange {n : ℕ} {i : ℕ} (h) :
   get_finRange h
 #align list.nth_le_fin_range List.nthLe_finRange
 
-theorem indexOf_finRange (i : Fin k) : (finRange k).indexOf i = i := by
+@[simp] theorem indexOf_finRange (i : Fin k) : (finRange k).indexOf i = i := by
   have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
   have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
   have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
