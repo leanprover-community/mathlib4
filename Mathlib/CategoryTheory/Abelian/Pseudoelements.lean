@@ -460,7 +460,7 @@ variable [Limits.HasPullbacks C]
     that `f p = g q`, then there is some `s : pullback f g` such that `fst s = p` and `snd s = q`.
 
     Remark: Borceux claims that `s` is unique, but this is false. See
-    `Counterexamples/Pseudoelement` for details. -/
+    `Counterexamples/Pseudoelement.lean` for details. -/
 theorem pseudo_pullback {P Q R : C} {f : P ⟶ R} {g : Q ⟶ R} {p : P} {q : Q} :
     f p = g q →
       ∃ s, (pullback.fst : pullback f g ⟶ P) s = p ∧ (pullback.snd : pullback f g ⟶ Q) s = q :=

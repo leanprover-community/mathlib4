@@ -19,7 +19,7 @@ This file provides some notable isomorphisms regarding the even subalgebra, `Cli
 
 * `CliffordAlgebra.equivEven`: Every Clifford algebra is isomorphic as an algebra to the even
   subalgebra of a Clifford algebra with one more dimension.
-  * `clifford_algebra.even_equiv.Q'`: The quadratic form used by this "one-up" algebra.
+  * `CliffordAlgebra.EquivEven.Q'`: The quadratic form used by this "one-up" algebra.
   * `CliffordAlgebra.toEven`: The simp-normal form of the forward direction of this isomorphism.
   * `CliffordAlgebra.ofEven`: The simp-normal form of the reverse direction of this isomorphism.
 
@@ -126,7 +126,7 @@ open EquivEven
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
   refine' CliffordAlgebra.lift Q ⟨_, fun m => _⟩
   · refine' LinearMap.codRestrict _ _ fun m => Submodule.mem_iSup_of_mem ⟨2, rfl⟩ _
-    exact (LinearMap.mulLeft R <| e0 Q).comp (v Q)
+    · exact (LinearMap.mulLeft R <| e0 Q).comp (v Q)
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
   · ext1
@@ -141,7 +141,7 @@ theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q 
   rw [toEven, CliffordAlgebra.lift_ι_apply]
   -- porting note: was `rw`
   erw [LinearMap.codRestrict_apply]
-  rfl
+  rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.mulLeft_apply]
 #align clifford_algebra.to_even_ι CliffordAlgebra.toEven_ι
 
 /-- The embedding from the even subalgebra with an extra dimension into the original algebra. -/
@@ -256,7 +256,6 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
 
-set_option maxHeartbeats 400000 in
 /-- One direction of `CliffordAlgebra.evenEquivEvenNeg` -/
 def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
