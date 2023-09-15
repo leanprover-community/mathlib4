@@ -329,7 +329,8 @@ lemma toRatCircle_apply_self_eq_aux :
       rw [LinearMap.toSpanSingleton_apply, one_smul]; exact Submodule.mem_span_singleton_self a⟩ =
     Quotient.mk _ (addOrderOf a : ℚ)⁻¹ := by
   rw [toRatCircle_apply]
-  erw [LinearMap.quotKerEquivRange_symm_apply_image (smulBya a), LinearEquiv.coe_toEquiv]
+  erw [LinearMap.quotKerEquivRange_symm_apply_image (LinearMap.toSpanSingleton ℤ A_ a 1 a),
+    LinearEquiv.coe_toEquiv]
   rw [← Submodule.Quotient.equiv_refl, Submodule.Quotient.equiv_symm,
     Submodule.Quotient.equiv_apply]
   convert Submodule.liftQSpanSingleton_apply _ _ _ _ using 1
