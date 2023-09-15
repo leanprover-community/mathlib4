@@ -202,7 +202,7 @@ theorem isLittleO_of_lt_radius (h : ↑r < p.radius) :
   refine' ⟨_, rt, C, Or.inr zero_lt_one, fun n => _⟩
   calc
     |‖p n‖ * (r : ℝ) ^ n| = ‖p n‖ * (t : ℝ) ^ n * (r / t : ℝ) ^ n := by
-      field_simp [mul_right_comm, abs_mul, this.ne']
+      field_simp [mul_right_comm, abs_mul]
     _ ≤ C * (r / t : ℝ) ^ n := by gcongr; apply hC
 #align formal_multilinear_series.is_o_of_lt_radius FormalMultilinearSeries.isLittleO_of_lt_radius
 
@@ -602,7 +602,7 @@ theorem HasFPowerSeriesOnBall.coeff_zero (hf : HasFPowerSeriesOnBall f pf x r) (
     pf 0 v = f x := by
   have v_eq : v = fun i => 0 := Subsingleton.elim _ _
   have zero_mem : (0 : E) ∈ EMetric.ball (0 : E) r := by simp [hf.r_pos]
-  have : ∀ (i) (_ : i ≠ 0), (pf i fun j => 0) = 0 := by
+  have : ∀ i, i ≠ 0 → (pf i fun j => 0) = 0 := by
     intro i hi
     have : 0 < i := pos_iff_ne_zero.2 hi
     exact ContinuousMultilinearMap.map_coord_zero _ (⟨0, this⟩ : Fin i) rfl
@@ -670,7 +670,7 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
   calc
     ‖(p n) fun _ : Fin n => y‖
     _ ≤ ‖p n‖ * ∏ _i : Fin n, ‖y‖ := ContinuousMultilinearMap.le_op_norm _ _
-    _ = ‖p n‖ * (r' : ℝ) ^ n * (‖y‖ / r') ^ n := by field_simp [hr'0.ne', mul_right_comm]
+    _ = ‖p n‖ * (r' : ℝ) ^ n * (‖y‖ / r') ^ n := by field_simp [mul_right_comm]
     _ ≤ C * a ^ n * (‖y‖ / r') ^ n := by gcongr ?_ * _; apply hp
     _ ≤ C * (a * (‖y‖ / r')) ^ n := by rw [mul_pow, mul_assoc]
 #align has_fpower_series_on_ball.uniform_geometric_approx' HasFPowerSeriesOnBall.uniform_geometric_approx'
@@ -758,7 +758,7 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
         _ = B n := by
           -- porting note: in the original, `B` was in the `field_simp`, but now Lean does not
           -- accept it. The current proof works in Lean 4, but does not in Lean 3.
-          field_simp [pow_succ, hr'0.ne']
+          field_simp [pow_succ]
           simp only [mul_assoc, mul_comm, mul_left_comm]
     have hBL : HasSum B (L y) := by
       apply HasSum.mul_left

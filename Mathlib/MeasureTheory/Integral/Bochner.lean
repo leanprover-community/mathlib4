@@ -1793,12 +1793,12 @@ theorem integral_countable' [Countable α] [MeasurableSingletonClass α] {μ : M
 theorem integral_singleton' {μ : Measure α} {f : α → E} (hf : StronglyMeasurable f) (a : α) :
     ∫ a in {a}, f a ∂μ = (μ {a}).toReal • f a := by
   simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac' f a hf, smul_eq_mul,
-     mul_comm]
+    mul_comm]
 
 theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : α → E) (a : α) :
     ∫ a in {a}, f a ∂μ = (μ {a}).toReal • f a := by
   simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac, smul_eq_mul,
-     mul_comm]
+    mul_comm]
 
 theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set α} (hs : s.Countable)
     (hf : Integrable f (μ.restrict s)) :

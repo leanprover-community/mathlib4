@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
+import Mathlib.Tactic.Lift
 
 #align_import order.with_bot from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -55,7 +57,7 @@ instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
 
 open Function
 
-theorem coe_injective : Injective (fun (a : α) => (a : WithBot α)) :=
+theorem coe_injective : Injective ((↑) : α → WithBot α) :=
   Option.some_injective _
 #align with_bot.coe_injective WithBot.coe_injective
 
@@ -586,7 +588,7 @@ instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
 
 open Function
 
-theorem coe_injective : Injective (fun (a : α) => (a : WithTop α)) :=
+theorem coe_injective : Injective ((↑) : α → WithTop α) :=
   Option.some_injective _
 
 @[norm_cast]

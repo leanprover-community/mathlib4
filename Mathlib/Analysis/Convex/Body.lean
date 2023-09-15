@@ -132,8 +132,8 @@ end ContinuousAdd
 
 variable [ContinuousSMul ℝ V]
 
-instance : SMul ℝ (ConvexBody V)
-    where smul c K := ⟨c • (K : Set V), K.convex.smul _, K.isCompact.smul _, K.nonempty.smul_set⟩
+instance : SMul ℝ (ConvexBody V) where
+  smul c K := ⟨c • (K : Set V), K.convex.smul _, K.isCompact.smul _, K.nonempty.smul_set⟩
 
 @[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=

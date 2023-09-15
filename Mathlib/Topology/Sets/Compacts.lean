@@ -422,8 +422,10 @@ instance [CompactSpace α] [Nonempty α] : Inhabited (PositiveCompacts α) :=
   ⟨⊤⟩
 
 /-- In a nonempty locally compact space, there exists a compact set with nonempty interior. -/
-instance nonempty' [LocallyCompactSpace α] [Nonempty α] : Nonempty (PositiveCompacts α) :=
-  nonempty_of_exists <| exists_positiveCompacts_subset isOpen_univ univ_nonempty
+instance nonempty' [WeaklyLocallyCompactSpace α] [Nonempty α] : Nonempty (PositiveCompacts α) := by
+  inhabit α
+  rcases exists_compact_mem_nhds (default : α) with ⟨K, hKc, hK⟩
+  exact ⟨⟨K, hKc⟩, _, mem_interior_iff_mem_nhds.2 hK⟩
 #align topological_space.positive_compacts.nonempty' TopologicalSpace.PositiveCompacts.nonempty'
 
 /-- The product of two `TopologicalSpace.PositiveCompacts`, as a `TopologicalSpace.PositiveCompacts`
