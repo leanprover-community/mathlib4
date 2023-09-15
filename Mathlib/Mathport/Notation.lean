@@ -25,23 +25,35 @@ set_option autoImplicit true
 /--
 Expands binders into nested combinators.
 For example, the familiar exists is given by:
-`expand_binders% (p => Exists p) x y : Nat, x < y`
+`expand_binders% type (p => Exists p, p r => p ∧ r) (x y : Nat) (z < x), z < y`
 which expands to the same expression as
-`∃ x y : Nat, x < y`
+`∃ (x y : Nat) (z < y), x < y`
+namely
+`Exists fun (x : Nat) ↦ Exists fun (y : Nat) ↦ Exists fun z ↦ z < x ∧ z < y`
 -/
-syntax "expand_binders% " "(" ident " => " term ")" flexibleBinders ", " term : term
+syntax "expand_binders% " ident " (" ident " => " term ", " ident ppSpace ident " => " term ")"
+  flexibleBinders ", " term : term
 
 macro_rules
-  | `(expand_binders% ($x => $term) $bs:flexibleBinders, $body) => show MacroM Term from do
-    let apply (b ty body : Term) : MacroM Term :=
+  | `(expand_binders% $domType ($x => $term, $y $r => $term') $bs:flexibleBinders, $body) => do
+    let applyStd (b ty body : Term) : MacroM Term :=
       term.replaceM fun x' ↦ do
         unless x == x' do return none
         `(fun ($b : $ty) ↦ $body)
-    let res ← expandFlexibleBinders `type bs
-    res.foldrM (init := body) fun
-      | .std dom bind, body => apply bind dom body
-      | .prop dom, body => do apply (← `(_)) dom body
-      | .match discr patt, body => `(match $discr:term with | $patt => $body)
+    let applyProp (ty body : Term) : MacroM Term :=
+      term'.replaceM fun x' ↦ do
+        if y == x' then
+          return ty
+        else if r == x' then
+          return body
+        else
+          return none
+    let res ← expandFlexibleBinders domType.getId bs
+    show MacroM Term from do
+      res.foldrM (init := body) fun
+        | .std dom bind, body => applyStd bind dom body
+        | .prop dom, body => do applyProp dom body
+        | .match discr patt, body => `(match $discr:term with | $patt => $body)
 
 macro (name := expandFoldl) "expand_foldl% "
   "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
@@ -63,7 +75,9 @@ syntax foldAction := "(" ident ppSpace strLit "*" (precedence)? " => " foldKind
   " (" ident ppSpace ident " => " term ") " term ")"
 /-- `notation3` argument binding a name. -/
 syntax identOptScoped :=
-  ident (notFollowedBy(":" "(" "scoped") precedence)? (":" "(" "scoped " ident " => " term ")")?
+  ident (notFollowedBy(":" "(" "scoped") precedence)?
+  (":" "(" "scoped " ("(" ident ") ")? ident " => " term
+      (", " ident ppSpace ident " => " term)? ")")?
 /-- `notation3` argument. -/
 -- Note: there is deliberately no ppSpace between items
 -- so that the space in the literals themselves stands out
@@ -296,7 +310,11 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := g
 /- Create a `Term` that represents a matcher for `scoped` notation.
 Fails in the `OptionT` sense if a matcher couldn't be constructed.
 Also returns a delaborator key like in `mkExprMatcher`.
-Reminder: `$lit:ident : (scoped $scopedId:ident => $scopedTerm:Term)` -/
+Reminder:
+```
+$lit:ident : (scoped (domType)? $scopedId:ident => $scopedTerm:Term,
+                $propDom:ident $propBody:ident => $propScopedTerm:Term)
+``` -/
 partial def mkScopedMatcher (lit scopeId : Name) (scopedTerm : Term) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   -- Build the matcher for `scopedTerm` with `scopeId` as an additional variable
@@ -466,16 +484,26 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
           matchers := matchers.push <|
             mkFoldrMatcher id.getId x.getId y.getId scopedTerm init (getBoundNames boundValues)
         | _ => throwUnsupportedSyntax
-    | `(notation3Item| $lit:ident $(prec?)? : (scoped $scopedId:ident => $scopedTerm)) =>
+    | `(notation3Item| $lit:ident $(prec?)? :
+          (scoped $[($domType?:ident)]? $scopedId:ident => $scopedTerm
+            $[, $propDom? $propBody? => $propTerm?]?)) =>
       hasScoped := true
+      let domType ← domType?.getDM `(type)
+      let propDom ← propDom?.getDM `(propDom)
+      let propBody ← propBody?.getDM `(propBody)
+      let propTerm ← propTerm?.getDM <| scopedTerm.replaceM fun s =>
+        if s == scopedId then `(fun (_ : $propDom) => $propBody) else return none
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
         `(macroArg| $lit:ident:term $(prec?)?)
       matchers := matchers.push <|
         mkScopedMatcher lit.getId scopedId.getId scopedTerm (getBoundNames boundValues)
       let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
+      let propTerm' ← propTerm.replaceM fun s => pure (boundValues.find? s.getId)
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| ←
-        `(expand_binders% ($scopedId => $scopedTerm') $$binders,
+        `(expand_binders% $domType
+            ($scopedId => $scopedTerm', $propDom $propBody => $propTerm')
+            $$binders,
           $(⟨lit.1.mkAntiquotNode `term⟩):term)
     | `(notation3Item| $lit:ident $(prec?)?) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←

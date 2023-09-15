@@ -83,3 +83,15 @@ def myId (x : α) := x
 notation3 "BAD " c "; " (x", "* => foldl (a b => b) c) " DAB" => myId x
 /-- info: myId 3 : ℕ -/
 #guard_msgs in #check BAD 1; 2, 3 DAB
+
+inductive ExistsF {α : Sort u} (p : α → Prop) : Prop where
+  | intro (w : α) (h : p w) : ExistsF p
+
+notation3 "∃F " (...) ", " r:(scoped p => Exists p, p r => p ∧ r) => r
+
+/-- info: ∃F (x : ℕ), x = x : Prop -/
+#guard_msgs in #check ∃F (x : Nat), x = x
+/-- info: ∃F (x : ℕ) (y : ℕ), y < x ∧ x = y : Prop -/
+#guard_msgs in #check ∃F (x : Nat) (y < x), x = y
+/-- info: ∃F (x : ℕ), x < 10 ∧ ∃F (y : ℕ), y < 10 ∧ x + y = 1 : Prop -/
+#guard_msgs in #check ∃F x y < 10, x + y = 1
