@@ -569,7 +569,7 @@ theorem id_comp : id.comp f = f :=
 #align linear_map.id_comp LinearMap.id_comp
 
 theorem comp_assoc
-    {R₄ : Type*} {M₄ : Type*} [Semiring R₄] [AddCommMonoid M₄] [Module R M] [Module R₄ M₄]
+    {R₄ : Type*} {M₄ : Type*} [Semiring R₄] [AddCommMonoid M₄] [Module R₄ M₄]
     {σ₃₄ : R₃ →+* R₄} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
     [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
     (f : M₁ →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃) (h : M₃ →ₛₗ[σ₃₄] M₄) :
