@@ -376,6 +376,81 @@ def invOne : 1⁻¹ ≡r 1 := by
 #align pgame.inv_one SetTheory.PGame.invOne
 
 
+inductive MyRelabelling : PGame.{u} → PGame.{u} → Type (u + 1)
+  |
+  mk : ∀ {x y : PGame}
+  (toFunL : x.LeftMoves → y.LeftMoves)
+  (invFunL : y.LeftMoves → x.LeftMoves)
+  (toFunR : x.RightMoves → y.RightMoves)
+  (invFunR : y.RightMoves → x.RightMoves)
+  (leftInvL : ∀ i, MyRelabelling (x.moveLeft i) (y.moveLeft (toFunL i)))
+  (rightInvL : ∀ j, MyRelabelling (x.moveLeft (invFunL j)) (y.moveLeft j))
+  (leftInvR : ∀ i, MyRelabelling (x.moveRight i) (y.moveRight (toFunR i)))
+  (rightInvR : ∀ j, MyRelabelling (x.moveRight (invFunR j)) (y.moveRight j)), MyRelabelling x y
+
+def Relabelling.toMyRelabelling {x y : PGame} : Relabelling x y → MyRelabelling x y
+| mk L R hL hR =>
+  MyRelabelling.mk
+    (toFunL := L)
+    (invFunL := L.symm)
+    (toFunR := R)
+    (invFunR := R.symm)
+    (leftInvL := fun i => (hL i).toMyRelabelling)
+    (rightInvL := fun j => by simpa using ((hL (L.symm j))).toMyRelabelling)
+    (leftInvR := fun i => (hR i).toMyRelabelling)
+    (rightInvR := fun j => by simpa using ((hR (R.symm j))).toMyRelabelling)
+
+def MyRelabelling.identical {x y : PGame} : MyRelabelling x y → Identical x y := by
+  intro ⟨toFunL, invFunL, toFunR, invFunR, leftInvL, rightInvL, leftInvR, rightInvR⟩
+  rw [identical_iff]
+  refine ⟨⟨fun i => ⟨toFunL i, ?_⟩, fun j => ⟨invFunL j, ?_⟩⟩, ⟨fun i => ⟨toFunR i, ?_⟩, fun j => ⟨invFunR j, ?_⟩⟩⟩
+  · apply MyRelabelling.identical
+    exact leftInvL i
+  · apply Identical.symm
+    apply MyRelabelling.identical
+    exact rightInvL j
+  · apply MyRelabelling.identical
+    exact leftInvR i
+  · apply Identical.symm
+    apply MyRelabelling.identical
+    exact rightInvR j
+
+noncomputable def Identical.toMyRelabelling {x y : PGame} : x ≡ y → MyRelabelling x y := by
+  rw [identical_iff]
+  dsimp [memₗ, memᵣ]
+  intro ⟨⟨xl, yl⟩, ⟨xr, yr⟩⟩
+  choose toFunL leftInvL using xl
+  choose invFunL rightInvL using yl
+  choose toFunR leftInvR using xr
+  choose invFunR rightInvR using yr
+  refine ⟨toFunL, invFunL, toFunR, invFunR, fun i => ?_, fun j => ?_, fun i => ?_, fun j => ?_⟩
+  <;> apply Identical.toMyRelabelling
+  · exact leftInvL i
+  · symm
+    exact rightInvL j
+  · exact leftInvR i
+  · symm
+    exact rightInvR j
+termination_by Identical.toMyRelabelling x y => (x, y)
+
+theorem nonempty_MyRelabelling_iff_identical {x y : PGame} : Nonempty (MyRelabelling x y) ↔ x ≡ y :=
+  ⟨fun h => (Classical.choice h).identical, fun h => ⟨h.toMyRelabelling⟩⟩
+
+
+
+inductive MyRelabelling2 : PGame.{u} → PGame.{u} → Type (u + 1)
+  |
+  mk : ∀ {x y : PGame}
+  (toFunL : x.LeftMoves → y.LeftMoves)
+  (invFunL : y.LeftMoves → x.LeftMoves)
+  (toFunR : x.RightMoves → y.RightMoves)
+  (invFunR : y.RightMoves → x.RightMoves)
+  (leftInvL : ∀ i, MyRelabelling2 (x.moveLeft (invFunL (toFunL i))) (x.moveLeft i))
+  (rightInvL : ∀ j, MyRelabelling2 (y.moveLeft (toFunL (invFunL j))) (y.moveLeft j))
+  (leftInvR : ∀ i, MyRelabelling2 (x.moveRight (invFunR (toFunR i))) (x.moveRight i))
+  (rightInvR : ∀ j, MyRelabelling2 (y.moveRight (toFunR (invFunR j))) (y.moveRight j)), MyRelabelling2 x y
+
+
 end PGame
 
 end SetTheory
