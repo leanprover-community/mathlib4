@@ -155,7 +155,7 @@ example (a b : ℕ) :
 
 ## Other tactics inside conversion mode
 
-Besides rewriting using `rw`, one can use `simp`, `dsimp`, `change`, `ring`, `norm_num`,
+Besides rewriting using `rw`, one can use `simp`, `dsimp`, `change`, `equals`, `ring`, `norm_num`,
 `push_neg`, `unfold`, among others.
 
 See the [`conv` guide](https://leanprover-community.github.io/mathlib4_docs/docs/Conv/Guide.html)

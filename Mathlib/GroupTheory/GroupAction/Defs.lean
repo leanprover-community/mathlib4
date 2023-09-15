@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.TypeTags
-import Mathlib.Algebra.Group.Commute
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
 
@@ -1127,6 +1127,14 @@ instance Function.End.applyMulAction :
 theorem Function.End.smul_def (f : Function.End α) (a : α) : f • a = f a :=
   rfl
 #align function.End.smul_def Function.End.smul_def
+
+--TODO - This statement should be somethting like `toFun (f * g) = toFun f ∘ toFun g`
+theorem Function.End.mul_def (f g : Function.End α) : (f * g) = f ∘ g :=
+  rfl
+
+--TODO - This statement should be somethting like `toFun 1 = id`
+theorem Function.End.one_def : (1 : Function.End α) = id :=
+  rfl
 
 /-- `Function.End.applyMulAction` is faithful. -/
 instance Function.End.apply_FaithfulSMul : FaithfulSMul (Function.End α) α :=

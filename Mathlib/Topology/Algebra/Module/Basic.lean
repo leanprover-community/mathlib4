@@ -12,6 +12,7 @@ import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.Finsupp
 
 #align_import topology.algebra.module.basic from "leanprover-community/mathlib"@"6285167a053ad0990fc88e56c48ccd9fae6550eb"
 
@@ -110,6 +111,21 @@ theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) := by
 
 end LatticeOps
 
+/-- The span of a separable subset with respect to a separable scalar ring is again separable. -/
+lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semiring R] [Module R M]
+    [TopologicalSpace M] [TopologicalSpace R] [SeparableSpace R]
+    [ContinuousAdd M] [ContinuousSMul R M] {s : Set M} (hs : IsSeparable s) :
+    IsSeparable (Submodule.span R s : Set M) := by
+  rw [span_eq_iUnion_nat]
+  apply isSeparable_iUnion (fun n ↦ ?_)
+  apply IsSeparable.image
+  · have : IsSeparable {f : Fin n → R × M | ∀ (i : Fin n), f i ∈ Set.univ ×ˢ s} := by
+      apply isSeparable_pi (fun i ↦ (isSeparable_of_separableSpace Set.univ).prod hs)
+    convert this
+    simp
+  · apply continuous_finset_sum _ (fun i _ ↦ ?_)
+    exact (continuous_fst.comp (continuous_apply i)).smul (continuous_snd.comp (continuous_apply i))
+
 namespace Submodule
 
 variable {α β : Type*} [TopologicalSpace β]
@@ -160,6 +176,11 @@ theorem Submodule.topologicalClosure_coe (s : Submodule R M) :
 theorem Submodule.le_topologicalClosure (s : Submodule R M) : s ≤ s.topologicalClosure :=
   subset_closure
 #align submodule.le_topological_closure Submodule.le_topologicalClosure
+
+theorem Submodule.closure_subset_topologicalClosure_span (s : Set M) :
+    closure s ⊆ (span R s).topologicalClosure := by
+  rw [Submodule.topologicalClosure_coe]
+  exact closure_mono subset_span
 
 theorem Submodule.isClosed_topologicalClosure (s : Submodule R M) :
     IsClosed (s.topologicalClosure : Set M) := isClosed_closure
@@ -1890,6 +1911,9 @@ theorem coe_toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : ⇑e.toHomeomorph = e
   rfl
 #align continuous_linear_equiv.coe_to_homeomorph ContinuousLinearEquiv.coe_toHomeomorph
 
+theorem isOpenMap (e : M₁ ≃SL[σ₁₂] M₂) : IsOpenMap e :=
+  (ContinuousLinearEquiv.toHomeomorph e).isOpenMap
+
 theorem image_closure (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e '' closure s = closure (e '' s) :=
   e.toHomeomorph.image_closure s
 #align continuous_linear_equiv.image_closure ContinuousLinearEquiv.image_closure
@@ -2257,11 +2281,11 @@ variable {M₁} {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R�
   [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄] {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
   [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
 
-/-- The continuous linear equivalence between `ULift M₁` and `M₁`. -/
+/-- The continuous linear equivalence between `ULift M₁` and `M₁`.
+
+This is a continuous version of `ULift.moduleEquiv`. -/
 def ulift : ULift M₁ ≃L[R₁] M₁ :=
-  { Equiv.ulift with
-    map_add' := fun _x _y => rfl
-    map_smul' := fun _c _x => rfl
+  { ULift.moduleEquiv with
     continuous_toFun := continuous_uLift_down
     continuous_invFun := continuous_uLift_up }
 #align continuous_linear_equiv.ulift ContinuousLinearEquiv.ulift

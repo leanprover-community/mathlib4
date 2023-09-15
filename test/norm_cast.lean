@@ -5,7 +5,6 @@ Tests for norm_cast
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Option.Defs
-import Mathlib.Data.Rat.Cast
 -- import data.complex.basic -- ℕ, ℤ, ℚ, ℝ, ℂ
 -- import data.real.ennreal
 

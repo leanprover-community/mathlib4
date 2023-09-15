@@ -243,8 +243,8 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.colimit_is_colimit MonCat.Colimits.colimitIsColimit
 
-instance hasColimits_monCat : HasColimits MonCat
-    where has_colimits_of_shape _ _ :=
+instance hasColimits_monCat : HasColimits MonCat where
+  has_colimits_of_shape _ _ :=
     { has_colimit := fun F =>
         HasColimit.mk
           { cocone := colimitCocone F

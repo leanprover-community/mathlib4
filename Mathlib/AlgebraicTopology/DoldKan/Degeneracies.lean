@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 import Mathlib.Tactic.FinCases
 
-#align_import algebraic_topology.dold_kan.degeneracies from "leanprover-community/mathlib"@"ec1c7d810034d4202b0dd239112d1792be9f6fdc"
+#align_import algebraic_topology.dold_kan.degeneracies from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 

@@ -105,7 +105,7 @@ We assume `CovariantClass` with *strict* inequality `<` also when proving the on
 *weak* inequality `≤`.  This is actually necessary: addition on `Lex (α →₀ N)` may fail to be
 monotone, when it is "just" monotone on `N`.
 
-See `counterexamples.zero_divisors_in_add_monoid_algebras` for a counterexample. -/
+See `Counterexamples/ZeroDivisorsInAddMonoidAlgebras.lean` for a counterexample. -/
 
 
 section Left
@@ -119,7 +119,7 @@ instance Lex.covariantClass_lt_left :
 
 instance Lex.covariantClass_le_left :
     CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (· + ·) (· ≤ ·) :=
-  Add.to_covariantClass_left _
+  covariantClass_le_of_lt _ _ _
 #align finsupp.lex.covariant_class_le_left Finsupp.Lex.covariantClass_le_left
 
 end Left
@@ -136,7 +136,7 @@ instance Lex.covariantClass_lt_right :
 
 instance Lex.covariantClass_le_right :
     CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap (· + ·)) (· ≤ ·) :=
-  Add.to_covariantClass_right _
+  covariantClass_le_of_lt _ _ _
 #align finsupp.lex.covariant_class_le_right Finsupp.Lex.covariantClass_le_right
 
 end Right

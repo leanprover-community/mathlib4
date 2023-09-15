@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Algebra.GroupWithZero.Bitwise
 
 #align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -916,14 +917,14 @@ example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul 
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
-  have : (↑(↑2 : ℝ) : ℂ) = (2 : ℂ) := by rfl
+  have : (↑(↑2 : ℝ) : ℂ) = (2 : ℂ) := rfl
   simp only [add_conj, ofReal_mul, ofReal_one, ofReal_bit0, this,
     mul_div_cancel_left (z.re : ℂ) two_ne_zero]
 #align complex.re_eq_add_conj Complex.re_eq_add_conj
 
 /-- A complex number `z` minus its conjugate `conj z` is `2i` times its imaginary part. -/
 theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
-  have : (↑2 : ℝ ) * I = 2 * I := by rfl
+  have : (↑2 : ℝ ) * I = 2 * I := rfl
   simp only [sub_conj, ofReal_mul, ofReal_one, ofReal_bit0, mul_right_comm, this,
     mul_div_cancel_left _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 #align complex.im_eq_sub_conj Complex.im_eq_sub_conj
@@ -1024,7 +1025,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem abs_two : Complex.abs 2 = 2 :=
   calc
-    Complex.abs 2 = Complex.abs (2 : ℝ) := by rfl
+    Complex.abs 2 = Complex.abs (2 : ℝ) := rfl
     _ = (2 : ℝ) := Complex.abs_of_nonneg (by norm_num)
 #align complex.abs_two Complex.abs_two
 
