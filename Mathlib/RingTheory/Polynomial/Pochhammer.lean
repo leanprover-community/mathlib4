@@ -336,11 +336,6 @@ theorem descPochhammer_succ_comp_X_sub_one (n : ℕ) :
   rw [← sub_mul, descPochhammer_succ_right ℤ n, mul_comp, mul_comm, sub_comp, X_comp, nat_cast_comp]
   ring
 
--- TODO: find a better place for this lemma?
-theorem Polynomial.mul_X_sub_int_cast_comp {p q : R[X]} {n : ℕ} :
-    (p * (X - (n : R[X]))).comp q = p.comp q * (q - n) := by
-  rw [mul_sub, sub_comp, mul_X_comp, ← Nat.cast_comm, nat_cast_mul_comp, Nat.cast_comm, mul_sub]
-
 theorem descPochhammer_mul (n m : ℕ) :
     descPochhammer R n * (descPochhammer R m).comp (X - (n : R[X])) = descPochhammer R (n + m) := by
   induction' m with m ih

@@ -1301,6 +1301,10 @@ theorem eval₂_at_int_cast {S : Type*} [Ring S] (f : R →+* S) (n : ℤ) :
   convert eval₂_at_apply (p := p) f n
   simp
 
+theorem mul_X_sub_int_cast_comp {n : ℕ} :
+    (p * (X - (n : R[X]))).comp q = p.comp q * (q - n) := by
+  rw [mul_sub, sub_comp, mul_X_comp, ← Nat.cast_comm, nat_cast_mul_comp, Nat.cast_comm, mul_sub]
+
 end Ring
 
 end Polynomial
