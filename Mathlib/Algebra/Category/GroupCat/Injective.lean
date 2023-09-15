@@ -176,11 +176,11 @@ def next : AddCommGroupCat.{u} := of <|
 
 instance : CategoryTheory.Injective <| next A_ :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
-  @injective_of_divisible _ _ <| @Pi.divisibleBy _ _ _ _ _ _ <| λ f ↦ inferInstance
+  @injective_of_divisible _ _ <| @Pi.divisibleBy _ _ _ _ _ _ <| fun f => inferInstance
 
 /-- the next term of `A`'s injective resolution is `∏_{A → ℚ/ℤ}, ℚ/ℤ`.-/
 @[simps] def toNext : A_ ⟶ next A_ where
-  toFun := λ a i ↦ (i a).down
+  toFun := fun a i => (i a).down
   map_zero' := by simp only [map_zero, ULift.zero_down]; rfl
   map_add' := by intros; simp only [map_add]; rfl
 
@@ -189,7 +189,7 @@ lemma toNext_inj_of_exists
       ∃ (f : ModuleCat.of ℤ (ℤ ∙ a) ⟶ ModuleCat.of ℤ (ULift <| AddCircle (1 : ℚ))),
         f ⟨a, Submodule.subset_span rfl⟩ ≠ 0) :
     Function.Injective $ toNext A_ :=
-  (injective_iff_map_eq_zero _).2 λ a h0 ↦ not_not.1 λ ha ↦ by
+  (injective_iff_map_eq_zero _).2 fun a h0 => not_not.1 fun ha => by
     obtain ⟨f, hf⟩ := h a ha
     let g : ModuleCat.of ℤ (ℤ ∙ a) ⟶ ModuleCat.of ℤ A_ := Submodule.subtype _
     have hg : Mono g
@@ -233,8 +233,8 @@ end aux_defs
 
 /-- given `n : ℕ`, the map `m ↦ n / m`. -/
 @[simps] noncomputable def divBy (n : ℕ) : ℤ →ₗ[ℤ] AddCircle (1 : ℚ) where
-  toFun := λ m ↦ Quotient.mk _ <| (m : ℚ) * (n : ℚ)⁻¹
-  map_add' := λ x y ↦ by
+  toFun m := Quotient.mk _ <| (m : ℚ) * (n : ℚ)⁻¹
+  map_add' x y := by
     dsimp
     change _ = Quotient.mk _ (_ + _)
     apply Quotient.sound'
@@ -242,7 +242,7 @@ end aux_defs
     dsimp only
     rw [neg_add_eq_sub, ← sub_mul]
     simpa only [Int.cast_add, sub_self, zero_mul] using (AddSubgroup.zmultiples 1).zero_mem
-  map_smul' := λ x y ↦  by
+  map_smul' x y := by
     dsimp
     change _ = Quotient.mk _ (_ • _)
     apply Quotient.sound'
