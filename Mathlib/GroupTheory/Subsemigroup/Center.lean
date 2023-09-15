@@ -59,7 +59,6 @@ theorem one_mem_center [MulOneClass M] : (1 : M) ∈ Set.center M := by simp [me
 theorem zero_mem_center [MulZeroClass M] : (0 : M) ∈ Set.center M := by simp [mem_center_iff]
 #align set.zero_mem_center Set.zero_mem_center
 
-
 @[simp]
 theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.center M :=
   (Nat.commute_cast · _)
