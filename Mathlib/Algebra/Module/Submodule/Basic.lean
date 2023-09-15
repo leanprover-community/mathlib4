@@ -343,7 +343,9 @@ theorem coe_mem (x : p) : (x : M) ∈ p :=
 
 variable (p)
 
-#noalign submodule.add_comm_monoid
+instance addCommMonoid : AddCommMonoid p :=
+  { p.toAddSubmonoid.toAddCommMonoid with }
+#align submodule.add_comm_monoid Submodule.addCommMonoid
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
   { (show MulAction S p from p.toSubMulAction.mulAction') with
@@ -584,7 +586,9 @@ theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
 #align submodule.sub_mem_iff_right Submodule.sub_mem_iff_right
 
-#noalign submodule.add_comm_group
+instance addCommGroup : AddCommGroup p :=
+  { p.toAddSubgroup.toAddCommGroup with }
+#align submodule.add_comm_group Submodule.addCommGroup
 
 end AddCommGroup
 

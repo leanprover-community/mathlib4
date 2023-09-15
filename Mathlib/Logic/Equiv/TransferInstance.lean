@@ -205,7 +205,7 @@ protected def semigroupWithZero [SemigroupWithZero β] : SemigroupWithZero α :=
 #align equiv.semigroup_with_zero Equiv.semigroupWithZero
 
 /-- Transfer `CommSemigroup` across an `Equiv` -/
-@[reducible, to_additive "Transfer `add_comm_semigroup` across an `Equiv`"]
+@[reducible, to_additive "Transfer `AddCommSemigroup` across an `Equiv`"]
 protected def commSemigroup [CommSemigroup β] : CommSemigroup α := by
   let mul := e.mul
   apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _

@@ -349,7 +349,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     refine' Set.ext fun x => and_congr_right fun hx => true_iff_iff.2 _
     by_cases p_eq : p = 0
     · simp [p_eq]
-    simp [-ENNReal.coe_mul] at hx
+    simp only [coe_map, mem_preimage, Function.comp_apply, mem_singleton_iff] at hx
     subst hx
     have : r * s x ≠ 0 := by rwa [Ne, ← ENNReal.coe_eq_zero]
     have : s x ≠ 0 := by
@@ -358,8 +358,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
       rw [h, mul_zero]
     have : (rs.map c) x < ⨆ n : ℕ, f n x := by
       refine' lt_of_lt_of_le (ENNReal.coe_lt_coe.2 _) (hsf x)
-      suffices : r * s x < 1 * s x
-      simpa
+      suffices r * s x < 1 * s x by simpa
       exact mul_lt_mul_of_pos_right ha (pos_iff_ne_zero.2 this)
     rcases lt_iSup_iff.1 this with ⟨i, hi⟩
     exact mem_iUnion.2 ⟨i, le_of_lt hi⟩
@@ -522,7 +521,7 @@ theorem lintegral_add_aux {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Me
       · congr
         funext n
         rw [← SimpleFunc.add_lintegral, ← SimpleFunc.lintegral_eq_lintegral]
-        rfl
+        simp only [Pi.add_apply, SimpleFunc.coe_add]
       · measurability
       · intro i j h a
         exact add_le_add (monotone_eapprox _ h _) (monotone_eapprox _ h _)
@@ -1429,7 +1428,8 @@ theorem _root_.NNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α]
     ENNReal.count_const_le_le_of_tsum_le (measurable_coe_nnreal_ennreal.comp a_mble) _
       (by exact_mod_cast ε_ne_zero) (@ENNReal.coe_ne_top ε)
   convert ENNReal.coe_le_coe.mpr tsum_le_c
-  erw [ENNReal.tsum_coe_eq a_summable.hasSum]
+  simp_rw [Function.comp_apply]
+  rw [ENNReal.tsum_coe_eq a_summable.hasSum]
 #align nnreal.count_const_le_le_of_tsum_le NNReal.count_const_le_le_of_tsum_le
 
 end DiracAndCount
@@ -1717,7 +1717,7 @@ theorem ae_withDensity_iff {p : α → Prop} {f : α → ℝ≥0∞} (hf : Measu
 theorem ae_withDensity_iff_ae_restrict {p : α → Prop} {f : α → ℝ≥0∞} (hf : Measurable f) :
     (∀ᵐ x ∂μ.withDensity f, p x) ↔ ∀ᵐ x ∂μ.restrict { x | f x ≠ 0 }, p x := by
   rw [ae_withDensity_iff hf, ae_restrict_iff']
-  · rfl
+  · simp only [mem_setOf]
   · exact hf (measurableSet_singleton 0).compl
 #align measure_theory.ae_with_density_iff_ae_restrict MeasureTheory.ae_withDensity_iff_ae_restrict
 
@@ -2081,7 +2081,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       exact le_rfl
     · apply hL.trans ((ENNReal.add_lt_add hg₁ hg₂).trans_le _)
       rw [← lintegral_add_left g₁.measurable.coe_nnreal_ennreal]
-      exact le_rfl
+      simp only [coe_add, Pi.add_apply, ENNReal.coe_add, le_rfl]
 #align measure_theory.simple_func.exists_lt_lintegral_simple_func_of_lt_lintegral MeasureTheory.SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral
 
 theorem exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α} {μ : Measure α}

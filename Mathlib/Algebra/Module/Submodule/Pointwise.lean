@@ -49,8 +49,8 @@ Recall that When `R` is the semiring corresponding to the nonnegative elements o
 `Submodule R' M` is the type of cones of `M`. This instance reflects such cones about `0`.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseNeg : Neg (Submodule R M)
-    where neg p :=
+protected def pointwiseNeg : Neg (Submodule R M) where
+  neg p :=
     { -p.toAddSubmonoid with
       smul_mem' := fun r m hm => Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
 #align submodule.has_pointwise_neg Submodule.pointwiseNeg
