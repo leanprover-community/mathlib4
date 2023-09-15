@@ -151,10 +151,10 @@ instance  (X : HomotopyCategory.Plus C) :
     exact Relation.ReflTransGen.single
       (Or.inl ⟨LocalizerMorphism.RightResolution.Hom.mk φ hφ' hφ⟩))
 
-/-instance [EnoughInjectives C] : (localizerMorphism C).IsRightDerivabilityStructure := by
+instance : (localizerMorphism C).IsRightDerivabilityStructure := by
   have : DerivedCategory.Plus.Qh.IsLocalization (HomotopyCategory.Plus.qis C) := sorry
   exact LocalizerMorphism.IsRightDerivabilityStructure.mk' (localizerMorphism C) (𝟭 _)
-    DerivedCategory.Plus.Qh ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)-/
+    DerivedCategory.Plus.Qh ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)
 
 end Injectives
 
