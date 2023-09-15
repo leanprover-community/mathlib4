@@ -106,7 +106,15 @@ variable {L F}
 
 def IsPointwiseLeftKanExtensionAt (Y : D) := IsColimit (E.coconeAt Y)
 
+lemma IsPointwiseLeftKanExtensionAt.hasPointwiseLeftKanExtensionAt {E : LeftExtension L F} {Y : D}
+    (h : E.IsPointwiseLeftKanExtensionAt Y) : F.HasPointwiseLeftKanExtensionAt L Y := ⟨_, h⟩
+
 abbrev IsPointwiseLeftKanExtension := ∀ (Y : D), E.IsPointwiseLeftKanExtensionAt Y
+
+lemma IsPointwiseLeftKanExtension.hasPointwiseLeftKanExtension {E : LeftExtension L F}
+    (h : E.IsPointwiseLeftKanExtension) : F.HasPointwiseLeftKanExtension L := by
+  intro Y
+  exact (h Y).hasPointwiseLeftKanExtensionAt
 
 variable {E E'}
 

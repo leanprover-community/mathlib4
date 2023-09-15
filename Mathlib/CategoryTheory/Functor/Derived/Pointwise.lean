@@ -48,6 +48,8 @@ lemma hasRightDerivedFunctor_of_pointwise :
     have pif := F.hasPointwiseLeftKanExtension W.Q W
     infer_instance
 
+attribute [instance] hasRightDerivedFunctor_of_pointwise
+
 variable {F L}
 
 noncomputable def isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor
@@ -259,6 +261,14 @@ noncomputable def LeftExtension.isPointwiseLeftKanExtensionOfIsIso (E : LeftExte
     [L.IsLocalization W] :
     E.IsPointwiseLeftKanExtension :=
   Functor.isPointwiseLeftKanExtensionOfIso W (asIso E.hom)
+
+lemma hasPointwiseRightDerivedFunctor_of_inverts
+    (F : C ⥤ H) {W : MorphismProperty C} (hF : W.IsInvertedBy F) :
+    F.HasPointwiseRightDerivedFunctor W := by
+  intro X
+  rw [hasPointwiseRightDerivedFunctorAt_iff F W.Q W]
+  exact (isPointwiseLeftKanExtensionOfIso W
+    (Localization.fac F hF W.Q).symm).hasPointwiseLeftKanExtension  _
 
 end
 
