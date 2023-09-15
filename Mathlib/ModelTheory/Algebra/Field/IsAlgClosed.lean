@@ -207,7 +207,7 @@ theorem ACF_categorical {p : ℕ} (κ : Cardinal.{0}) (hκ : ℵ₀ < κ) :
   have := isAlgClosed_of_model_ACF p N
   have := charP_of_model_fieldOfChar p N
   constructor
-  refine languageEquivEquivRingEquiv ?_
+  refine languageEquivEquivRingEquiv.symm ?_
   apply Classical.choice
   refine IsAlgClosed.ringEquivOfCardinalEqOfCharEq p ?_ ?_
   · rw [hM]; exact hκ
