@@ -101,20 +101,19 @@ lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ [] := fun m =>
 def fromListChain' (x : List α) (x_ne_empty : x ≠ []) (hx : x.Chain' r) : RelSeries r where
   length := x.length.pred
   toFun := x.get ∘ Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_empty)
-  step := fun i => List.chain'_iff_get.mp hx i i.2
+  step i := List.chain'_iff_get.mp hx i i.2
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other.-/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
-  toFun := fun x => ⟨_, x.toList_ne_empty, x.toList_chain'⟩
-  invFun := fun x => fromListChain' _ x.2.1 x.2.2
-  left_inv := fun x => ext (by dsimp; rw [List.length_ofFn, Nat.pred_succ]) <| by
+  toFun x := ⟨_, x.toList_ne_empty, x.toList_chain'⟩
+  invFun x := fromListChain' _ x.2.1 x.2.2
+  left_inv x := ext (by dsimp; rw [List.length_ofFn, Nat.pred_succ]) <| by
     ext f
     simp only [List.empty_eq, ne_eq, Set.coe_setOf, Set.mem_setOf_eq, fromListChain'_toFun,
       Function.comp_apply, List.get_ofFn, fromListChain'_length]
     rfl
-  right_inv := by
-    intro x
+  right_inv x := by
     refine Subtype.ext (List.ext_get ?_ <| fun n hn1 hn2 => ?_)
     · dsimp
       rw [List.length_ofFn, fromListChain'_length, ←Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos]
@@ -129,17 +128,17 @@ end RelSeries
 
 namespace Rel
 
-/-- a relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
+/-- A relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
   maximum length. -/
 class FiniteDimensional : Prop where
-  /-- a relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
+  /-- A relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
     maximum length. -/
   exists_longest_relSeries : ∃ (x : RelSeries r), ∀ (y : RelSeries r), y.length ≤ x.length
 
-/-- a relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
+/-- A relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
   length. -/
 class InfiniteDimensional : Prop where
-  /-- a relation `r` is said to be infinite dimensional iff there exists relation series of
+  /-- A relation `r` is said to be infinite dimensional iff there exists relation series of
     arbitrary length. -/
   exists_relSeries_with_length : ∀ (n : ℕ), ∃ (x : RelSeries r), x.length = n
 
@@ -147,25 +146,25 @@ end Rel
 
 namespace RelSeries
 
-/-- the longest relational series when a relation is finite dimensional -/
+/-- The longest relational series when a relation is finite dimensional -/
 protected noncomputable def longestOf [r.FiniteDimensional] : RelSeries r :=
-  (inferInstance : r.FiniteDimensional).exists_longest_relSeries.choose
+  Rel.FiniteDimensional.exists_longest_relSeries.choose
 
 lemma length_le_length_longestOf [r.FiniteDimensional] (x : RelSeries r) :
     x.length ≤ (RelSeries.longestOf r).length :=
-  (inferInstance : r.FiniteDimensional).exists_longest_relSeries.choose_spec _
+  Rel.FiniteDimensional.exists_longest_relSeries.choose_spec _
 
-/-- a relation series with length at least `n` if the relation is infinite dimensional -/
+/-- A relation series with length `n` if the relation is infinite dimensional -/
 protected noncomputable def withLength [r.InfiniteDimensional] (n : ℕ) : RelSeries r :=
-  ((inferInstance : r.InfiniteDimensional).exists_relSeries_with_length n).choose
+  (Rel.InfiniteDimensional.exists_relSeries_with_length n).choose
 
 @[simp] lemma length_withLength [r.InfiniteDimensional] (n : ℕ) :
     (RelSeries.withLength r n).length = n :=
-  ((inferInstance : r.InfiniteDimensional).exists_relSeries_with_length n).choose_spec
+  (Rel.InfiniteDimensional.exists_relSeries_with_length n).choose_spec
 
-/-- if a relation on `α` is infinite dimensional, then `α` is inhabited -/
-noncomputable def inhabited_of_infiniteDimensional [r.InfiniteDimensional] : Inhabited α :=
-  ⟨(RelSeries.withLength r 0) 0⟩
+/-- If a relation on `α` is infinite dimensional, then `α` is nonempty. -/
+lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
+  ⟨RelSeries.withLength r 0 0⟩
 
 end RelSeries
 
@@ -181,18 +180,17 @@ section LTSeries
 
 variable (α) [Preorder α]
 /--
-If `α` is a preorder, a series ordered by less than is a relation series of the less than
-relation.
+If `α` is a preorder, a LTSeries is a relation series of the less than relation.
 -/
 abbrev LTSeries := RelSeries ((. < .) : Rel α α)
 
 namespace LTSeries
 
-/-- the longest  `<`-series when a type is finite dimensional -/
+/-- The longest `<`-series when a type is finite dimensional -/
 protected noncomputable def longestOf [FiniteDimensionalOrder α] : LTSeries α :=
   RelSeries.longestOf _
 
-/-- a `<`-series with length at least `n` if the relation is infinite dimensional -/
+/-- A `<`-series with length `n` if the relation is infinite dimensional -/
 protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) : LTSeries α :=
   RelSeries.withLength _ n
 
@@ -200,8 +198,8 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
     (LTSeries.withLength α n).length = n :=
   RelSeries.length_withLength _ _
 
-/-- if `α` is infinite dimensional, then `α` is inhabited -/
-noncomputable def inhabited_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Inhabited α :=
+/-- if `α` is infinite dimensional, then `α` is nonempty. -/
+lemma nonempty_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
 
 variable {α}
