@@ -45,7 +45,9 @@ instance : BundledHom.ParentProjection
   (fun {α : Type*} (h : Group α) => h.toDivInvMonoid.toMonoid) := ⟨⟩
 
 deriving instance LargeCategory for GroupCat
-attribute [to_additive] instGroupCatLargeCategory
+attribute [to_additive, reducible] instGroupCatLargeCategory
+
+#print BundledHom.category
 
 @[to_additive]
 instance concreteCategory : ConcreteCategory GroupCat := by
@@ -70,7 +72,7 @@ instance FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
 
 -- porting note: added
 @[to_additive (attr := simp)]
-lemma coe_id {X : GroupCat} : (𝟙 X : X → X) = id := rfl
+lemma coe_id {X : GroupCat} : (FunLike.coe (𝟙 X) : X → X) = id := rfl
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -82,9 +84,12 @@ lemma comp_def {X Y Z : GroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : f ≫ g = g.comp
 -- porting note: added
 @[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupCat).map f = (f : X → Y) := rfl
 
+attribute [-ext] ConcreteCategory.hom_ext
+
 @[to_additive (attr := ext)]
-lemma ext {X Y : GroupCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
-  MonoidHom.ext w
+lemma ext {X Y : GroupCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g := by
+  show_term ext
+  apply w
 
 /-- Construct a bundled `Group` from the underlying type and typeclass. -/
 @[to_additive]

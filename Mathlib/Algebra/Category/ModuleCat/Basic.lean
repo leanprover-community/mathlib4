@@ -91,6 +91,7 @@ instance : CoeSort (ModuleCat.{v} R) (Type v) :=
 
 attribute [coe] ModuleCat.carrier
 
+@[reducible]
 instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   Hom M N := M →ₗ[R] N
   id _ := LinearMap.id -- porting note: was `1`
@@ -105,6 +106,7 @@ instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
 instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
   LinearMap.semilinearMapClass
 
+@[reducible]
 instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
   forget :=
     { obj := fun R => R
@@ -113,6 +115,8 @@ instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
     dsimp at h
     rw [h])⟩
 #align Module.Module_concrete_category ModuleCat.moduleConcreteCategory
+
+-- @[simp] lemma obj_forget (M : ModuleCat.{v} R) : (forget (ModuleCat R)).obj M = M := rfl
 
 -- Porting note:
 -- One might hope these two instances would not be needed,
@@ -123,10 +127,15 @@ instance {M : ModuleCat.{v} R} : AddCommGroup ((forget (ModuleCat R)).obj M) :=
 instance {M : ModuleCat.{v} R} : Module R ((forget (ModuleCat R)).obj M) :=
   (inferInstance : Module R M)
 
+
+attribute [-ext] ConcreteCategory.hom_ext
+#print CategoryStruct
 -- porting note: added to ease automation
 @[ext]
 lemma ext {M N : ModuleCat.{v} R} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
-  FunLike.ext _ _ h
+  by
+    whnf at f₁ f₂ ⊢
+    ext
 
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGroupCat where
   forget₂ :=

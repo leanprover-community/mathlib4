@@ -63,6 +63,7 @@ set_option synthInstance.checkSynthOrder false in
 This instance generates the type-class problem `BundledHom ?m`.
 Currently that is not a problem, as there are almost no instances of `BundledHom`.
 -/
+@[reducible]
 instance category : Category (Bundled c) := by
   refine' { Hom := fun X Y => @hom X Y X.str Y.str
             id := fun X => @BundledHom.id c hom 𝒞 X X.str
@@ -86,17 +87,16 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c)
 
 variable {hom}
 
-attribute [local instance] ConcreteCategory.funLike
-
 /-- A version of `HasForget₂.mk'` for categories defined using `@BundledHom`. -/
 def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u}
     [BundledHom hom_d] (obj : ∀ ⦃α⦄, c α → d α)
-    (map : ∀ {X Y : Bundled c}, (X ⟶ Y) → (Bundled.map @obj X ⟶ (Bundled.map @obj Y)))
-    (h_map : ∀ {X Y : Bundled c} (f : X ⟶ Y), ⇑map f = ⇑f) :
+    (map : ∀ {X Y : Bundled c}, (X ⟶ Y) → (Bundled.map @obj X ⟶ Bundled.map @obj Y))
+    (h_map : ∀ {X Y : Bundled c} (f : X ⟶ Y), (forget _).map (map f) = (forget _).map f) :
     HasForget₂ (Bundled c) (Bundled d) :=
   HasForget₂.mk' (Bundled.map @obj) (fun _ => rfl) map (by
     intros X Y f
-    rw [heq_eq_eq, forget_map_eq_coe, forget_map_eq_coe, h_map f])
+    dsimp
+    rw [heq_eq_eq, h_map f])
 #align category_theory.bundled_hom.mk_has_forget₂ CategoryTheory.BundledHom.mkHasForget₂
 
 variable {d : Type u → Type u}

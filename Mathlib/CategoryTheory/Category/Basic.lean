@@ -100,6 +100,8 @@ class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v +
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 #align category_theory.category_struct CategoryTheory.CategoryStruct
 
+attribute [reducible] CategoryStruct.toQuiver
+
 initialize_simps_projections CategoryStruct (-toQuiver_Hom)
 
 /-- Notation for the identity morphism in a category. -/
@@ -164,6 +166,8 @@ class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1
 #align category_theory.category.assoc CategoryTheory.Category.assoc
 #align category_theory.category.comp_id CategoryTheory.Category.comp_id
 #align category_theory.category.id_comp CategoryTheory.Category.id_comp
+
+attribute [reducible] Category.toCategoryStruct
 
 -- Porting note: `restate_axiom` should not be necessary in lean4
 -- Hopefully we can just remove the backticks from field names,
