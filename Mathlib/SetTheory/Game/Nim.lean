@@ -144,7 +144,7 @@ instance isEmpty_nim_zero_rightMoves : IsEmpty (nim 0).RightMoves := by
 #align pgame.is_empty_nim_zero_right_moves SetTheory.PGame.isEmpty_nim_zero_rightMoves
 
 /-- `nim 0` has exactly the same moves as `0`. -/
-def nim_zero : nim 0 ≡ 0 :=
+lemma nim_zero : nim 0 ≡ 0 :=
   identical_zero _
 
 theorem nim_zero_equiv : nim 0 ≈ 0 :=
