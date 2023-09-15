@@ -12,6 +12,7 @@ namespace Test
 def Filter (α : Type) : Type := (α → Prop) → Prop
 def Filter.atTop [Preorder α] : Filter α := fun _ => True
 def Filter.eventually (p : α → Prop) (f : Filter α) := f p
+def Filter.top (α : Type) : Filter α := fun s => ∀ x, s x
 
 notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) => r
 
@@ -19,6 +20,29 @@ notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) =>
 #guard_msgs in #check ∀ᶠ (x : Nat) (y) in Filter.atTop, x < y
 /-- info: ∀ᶠ (x : ℕ) in Filter.atTop, x < 3 : Prop -/
 #guard_msgs in #check ∀ᶠ x in Filter.atTop, x < 3
+
+section
+open Mathlib.FlexibleBinders Lean
+
+macro_rules
+  | `(binderDefault%(finset, $e)) => `(binderResolved%(Filter.top, $e))
+
+/-- For the `filter` domain, `(x : ty)` is a binder over `Filter.top` for `ty`. -/
+macro_rules
+  | `(binder%(filter, ($e :%$c $ty))) => do
+    if e matches `($_ $_*) then Macro.throwUnsupported
+    if e matches `(($_ : $_)) then Macro.throwErrorAt c "Unexpected type ascription"
+    `(binderResolved%((Filter.top : Filter $ty), $e))
+
+macro_rules
+  | `(binder%(filter, $e ∈ $f)) => do
+    let (e, ty) ← destructAscription e
+    if e matches `($_ $_*) then Macro.throwUnsupported
+    `(binderResolved%(($f : Filter $ty), $e))
+
+end
+
+--notation3 "∀ᶠ' " (...) ", " r:(scoped (filter) p => Filter.eventually p f) => r
 
 def foobar (p : α → Prop) (f : Prop) := ∀ x, p x = f
 
