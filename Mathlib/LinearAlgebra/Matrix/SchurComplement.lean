@@ -444,13 +444,17 @@ theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
   rw [sub_eq_add_neg, ← Matrix.neg_mul, det_one_add_mul_comm, Matrix.mul_neg, ← sub_eq_add_neg]
 #align matrix.det_one_sub_mul_comm Matrix.det_one_sub_mul_comm
 
-/-- A special case of the **Matrix determinant lemma** for when `A = I`.
-
-TODO: show this more generally. -/
+/-- A special case of the **Matrix determinant lemma** for when `A = I`. -/
 theorem det_one_add_col_mul_row (u v : m → α) : det (1 + col u * row v) = 1 + v ⬝ᵥ u := by
   rw [det_one_add_mul_comm, det_unique, Pi.add_apply, Pi.add_apply, Matrix.one_apply_eq,
     Matrix.row_mul_col_apply]
 #align matrix.det_one_add_col_mul_row Matrix.det_one_add_col_mul_row
+
+/-- The **Matrix determinant lemma** -/
+theorem the_mdl (u v : m → α) {A : Matrix m m α} (hA : IsUnit A.det):
+    (A + col u * row v).det = A.det * (1 + row v * A⁻¹ * col u).det := by
+    nth_rewrite 1 [← Matrix.mul_one A]
+    rwa [← Matrix.mul_nonsing_inv_cancel_left A (col u * row v), ←Matrix.mul_add,det_mul, ←Matrix.mul_assoc, det_one_add_mul_comm, ←Matrix.mul_assoc]
 
 /-- A generalization of the **Matrix determinant lemma** -/
 theorem det_add_mul {A : Matrix m m α} (U : Matrix m n α)
