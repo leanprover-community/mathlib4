@@ -145,8 +145,8 @@ instance : RingEquivClass (R ≃+* S) R S where
     cases f
     congr
     apply Equiv.coe_fn_injective h₁
-  map_add := map_add'
-  map_mul := map_mul'
+  map_add f := f.map_add'
+  map_mul f := f.map_mul'
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
