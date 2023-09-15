@@ -157,6 +157,12 @@ theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
   rw [← length_eq_zero, length_finRange]
 #align list.fin_range_eq_nil List.finRange_eq_nil
 
+theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) :=
+  (List.pairwise_lt_range n).pmap (by simp) (by simp)
+
+theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) :=
+  (List.pairwise_le_range n).pmap (by simp) (by simp)
+
 @[to_additive]
 theorem prod_range_succ {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
     ((range n.succ).map f).prod = ((range n).map f).prod * f n := by
