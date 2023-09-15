@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.MvPolynomial.Rename
 
 #align_import data.mv_polynomial.variables from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
@@ -796,6 +797,25 @@ theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j
 #align mv_polynomial.mem_vars_rename MvPolynomial.mem_vars_rename
 
 end EvalVars
+
+section Lex
+
+variable [LinearOrder σ]
+
+lemma leadingCoeff_eq : p.leadingCoeff toLex = p.coeff (ofLex <| p.supDegree toLex) := by
+  rw [leadingCoeff]
+  apply congr_arg p.coeff
+  apply toLex.injective
+  rw [Function.rightInverse_invFun toLex.surjective, toLex_ofLex]
+
+lemma supDegree_toLex_C (r : R) : supDegree toLex (C (σ := σ) r) = 0 := by
+  classical
+    exact (supDegree_single _ r).trans (ite_eq_iff'.mpr ⟨fun _ => rfl, fun _ => rfl⟩)
+
+lemma leadingCoeff_toLex_C (r : R) : leadingCoeff toLex (C (σ := σ) r) = r :=
+  leadingCoeff_single toLex.injective _ r
+
+end Lex
 
 end CommSemiring
 
