@@ -405,7 +405,7 @@ theorem unbot'_le_iff [LE α] {a : WithBot α} {b c : α} (h : a = ⊥ → b ≤
   cases a
   · simpa using h rfl
   · simp [some_eq_coe]
-#align with_bot.unbot'_bot_le_iff WithBot.unbot'_le_iffₓ
+#align with_bot.unbot'_bot_le_iff WithBot.unbot'_le_iff
 
 theorem unbot'_lt_iff [LT α] {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
     a.unbot' b < c ↔ a < c := by
