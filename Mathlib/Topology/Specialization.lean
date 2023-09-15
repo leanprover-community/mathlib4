@@ -74,7 +74,7 @@ open Set Specialization WithUpperSetTopology
 def orderIsoSpecializationWithUpperSetTopology (α : Type*) [Preorder α] :
   α ≃o Specialization (WithUpperSetTopology α) where
   toEquiv := toUpperSet.trans toEquiv
-  map_rel_iff' {a b} := by simp
+  map_rel_iff' := by simp
 
 /-- An Alexandrov-discrete space is isomorphic to the upper set topology of its specialisation
 order. -/
