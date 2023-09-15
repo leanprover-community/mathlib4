@@ -2024,6 +2024,7 @@ import Mathlib.GroupTheory.CommutingProbability
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coprod.Basic
+import Mathlib.GroupTheory.Coprod.Word
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Divisible
