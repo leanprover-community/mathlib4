@@ -452,13 +452,15 @@ instance : CompleteLattice (LieSubmodule R L M) :=
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
+instance : Add (LieSubmodule R L M) where add := Sup.sup
+instance : Zero (LieSubmodule R L M) where zero := ⊥
+
 instance : AddCommMonoid (LieSubmodule R L M) where
-  add := (· ⊔ ·)
   add_assoc _ _ _ := sup_assoc
-  zero := ⊥
   zero_add _ := bot_sup_eq
   add_zero _ := sup_bot_eq
   add_comm _ _ := sup_comm
+  nsmul := nsmulRec
 
 @[simp]
 theorem add_eq_sup : N + N' = N ⊔ N' :=
