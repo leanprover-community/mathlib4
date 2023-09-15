@@ -119,6 +119,10 @@ theorem support_nonempty (p : Pmf α) : p.support.Nonempty :=
   Function.support_nonempty_iff.2 p.coe_coe_ne_zero
 #align pmf.support_nonempty Pmf.support_nonempty
 
+@[simp]
+theorem support_countable (p : Pmf α) : p.support.Countable :=
+  Summable.countable_support_ennreal p.tsum_coe_ne_top
+
 theorem apply_eq_zero_iff (p : Pmf α) (a : α) : (p a : ℝ≥0∞) = 0 ↔ a ∉ p.support := by
   rw [mem_support_iff, Classical.not_not]
 #align pmf.apply_eq_zero_iff Pmf.apply_eq_zero_iff
@@ -304,6 +308,13 @@ theorem toMeasure_apply_inter_support (hs : MeasurableSet s) (hp : MeasurableSet
   simp [p.toMeasure_apply_eq_toOuterMeasure_apply s hs,
     p.toMeasure_apply_eq_toOuterMeasure_apply _ (hs.inter hp)]
 #align pmf.to_measure_apply_inter_support Pmf.toMeasure_apply_inter_support
+
+@[simp]
+theorem restrict_toMeasure_support [MeasurableSpace α] [MeasurableSingletonClass α]  (p : Pmf α) :
+    Measure.restrict (toMeasure p) (support p) = toMeasure p := by
+  ext s hs
+  apply (MeasureTheory.Measure.restrict_apply hs).trans
+  apply toMeasure_apply_inter_support p s hs p.support_countable.measurableSet
 
 theorem toMeasure_mono {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (h : s ∩ p.support ⊆ t) : p.toMeasure s ≤ p.toMeasure t := by

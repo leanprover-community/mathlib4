@@ -309,24 +309,29 @@ end Filter
 section bernoulli
 
 /-- A `Pmf` which assigns probability `p` to `true` and `1 - p` to `false`. -/
-def bernoulli (p : ℝ≥0∞) (h : p ≤ 1) : Pmf Bool :=
+def bernoulli (p : ℝ≥0) (h : p ≤ 1) : Pmf Bool :=
   ofFintype (fun b => cond b p (1 - p)) (by simp [h])
 #align pmf.bernoulli Pmf.bernoulli
 
-variable {p : ℝ≥0∞} (h : p ≤ 1) (b : Bool)
+variable {p : ℝ≥0} (h : p ≤ 1) (b : Bool)
 
 @[simp]
-theorem bernoulli_apply : (bernoulli p h b : ℝ≥0∞) = cond b p (1 - p) :=
-  coe_toNNReal ((bernoulli p h).val_apply_ne_top _)
+theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := by
+  apply ENNReal.coe_injective
+  simp only [bernoulli, ofFintype_apply]
+  cases b <;> rfl
+
 #align pmf.bernoulli_apply Pmf.bernoulli_apply
 
 @[simp]
 theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p ≠ 1) } := by
   refine' Set.ext fun b => _
   induction b
-  · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne.def, tsub_eq_zero_iff_le, not_le]
+  · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne.def, coe_sub, coe_one,
+      tsub_eq_zero_iff_le, not_le, coe_lt_one_iff, Set.mem_setOf_eq, cond_false]
     exact ⟨ne_of_lt, lt_of_le_of_ne h⟩
-  · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_setOf_eq]
+  · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_setOf_eq, ne_eq,
+      coe_eq_zero]
 #align pmf.support_bernoulli Pmf.support_bernoulli
 
 theorem mem_support_bernoulli_iff : b ∈ (bernoulli p h).support ↔ cond b (p ≠ 0) (p ≠ 1) := by simp
