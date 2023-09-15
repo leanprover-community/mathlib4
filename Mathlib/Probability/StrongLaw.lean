@@ -780,12 +780,15 @@ theorem strong_law_ae_f_measurable
       simp_rw [I]
       apply (hident i).comp (G_meas k) -/
   filter_upwards [A, B] with ω hω h'ω
+  clear hω h'ω
   rw [tendsto_iff_norm_sub_tendsto_zero, tendsto_order]
   refine ⟨fun c hc ↦ eventually_of_forall (fun n ↦ hc.trans_le (norm_nonneg _)), ?_⟩
   intro ε (εpos : 0 < ε)
   have δ : ℝ := sorry
   have δpos : 0 < δ := sorry
   have : ∃ k, ∫ ω, ‖(X 0 - Y k 0) ω‖ < δ := by
+    have A := tendsto_integral_approxOn_of_measurable_of_range_subset h'.measurable hint _ Subset.rfl
+    simp [SimpleFunc.integral_eq_integral] at A
     have Z := SimpleFunc.tendsto_approxOn_range_L1_nnnorm h'.measurable hint
     have T := (tendsto_order.1 Z).2
 
