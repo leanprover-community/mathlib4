@@ -9,17 +9,31 @@ import Mathlib.Data.Real.Irrational
 /-!
 # Rayleigh's theorem on Beatty sequences
 
-This file proves Rayleigh's theorem on Beatty sequences.
+This file proves Rayleigh's theorem on Beatty sequences. We start by proving `rayleigh_int`, which
+is a generalization of Rayleigh's theorem, and eventually prove `rayleigh_irr_pos`, which is
+Rayleigh's theorem.
+
+## Main definitions
+
+* `beattySequence`: In the Beatty sequence for real number `r`, the `k`th term is `⌊k * r⌋`.
+* `beattySequence'`: In this variant of the Beatty sequence for `r`, the `k`th term is
+  `⌈k * r⌉ - 1`.
+* `beattySet`: Define the Beatty set for `r ∈ ℝ` to be `B_r := {⌊k * r⌋ | k ∈ ℤ}`.
+* `beattySet'`: Define another Beatty set for `r ∈ ℝ` to be `B'_r := {⌈k * r⌉ - 1 | k ∈ ℤ}`.
+* `beattySetPos`: Define the positive Beatty set for `r ∈ ℝ` to be `B⁺_r := {⌊r⌋, ⌊2r⌋, ⌊3r⌋, ...}`.
+* `beattySetPos'`: Define another positive Beatty set for `r ∈ ℝ` to be
+  `B⁺'_r := {⌈r⌉-1, ⌈2r⌉-1, ⌈3r⌉-1, ...}`.
 
 ## Main statements
 
-* `beattySequence`: In the Beatty sequence for real number `r`, the `k`th term is `⌊k * r⌋`.
-* `beattySet`: The Beatty set for real number `r` is defined to be `B_r := {⌊r⌋, ⌊2r⌋, ⌊3r⌋, ...}`.
-* `rayleigh`: Rayleigh's theorem on Beatty sequences. Let `r` be an irrational real number greater
-  than 1. Then every positive integer is in exactly one of `B_r` or `B_(r / (r - 1))`.
-* `rayleigh'`: Rayleigh's theorem on Beatty sequences. Let `r` and `s` be irrational real numbers
-  greater than 1, and satisfy `1/p + 1/q = 1`. Then every positive integer is in exactly one of
-  `B_r` or `B_s`.
+* `rayleigh_int`: Let `r` be a real number greater than 1.
+  Then every integer is in exactly one of `B_r` or `B'_(r / (r - 1))`.
+* `rayleigh_pos`: Let `r` be a real number greater than 1.
+  Then every positive integer is in exactly one of `B⁺_r` or `B⁺'_(r / (r - 1))`.
+* `rayleigh_irr_pos`: Let `r` be an irrational real number greater than 1.
+  Then every positive integer is in exactly one of `B⁺_r` or `B⁺_(r / (r - 1))`.
+* `rayleigh_int'`, `rayleigh_pos'`, `rayleigh_irr_pos'`: The corresponding theorem that uses
+  `Real.IsConjugateExponent r s` as a hypothesis.
 
 ## References
 
@@ -27,152 +41,206 @@ This file proves Rayleigh's theorem on Beatty sequences.
 
 ## Tags
 
-beatty, sequence, rayleigh, irrational, floor
+beatty, sequence, rayleigh, irrational, floor, positive
 -/
 
 /-- In the Beatty sequence for real number `r`, the `k`th term is `⌊k * r⌋`. -/
 noncomputable def beattySequence (r : ℝ) : ℤ → ℤ :=
   fun k ↦ ⌊k * r⌋
 
-/-- The Beatty set for real number `r` is defined to be `B_r := {⌊r⌋, ⌊2r⌋, ⌊3r⌋, ...}`. -/
+/-- In this variant of the Beatty sequence for `r`, the `k`th term is `⌈k * r⌉ - 1`. -/
+noncomputable def beattySequence' (r : ℝ) : ℤ → ℤ :=
+  fun k ↦ ⌈k * r⌉ - 1
+
+/-- Define the Beatty set for `r ∈ ℝ` to be `B_r := {⌊k * r⌋ | k ∈ ℤ}`. -/
 def beattySet (r : ℝ) : Set ℤ :=
+  { beattySequence r k | k }
+
+/-- Define another Beatty set for `r ∈ ℝ` to be `B'_r := {⌈k * r⌉ - 1 | k ∈ ℤ}`. -/
+def beattySet' (r : ℝ) : Set ℤ :=
+  { beattySequence' r k | k }
+
+/-- Define the positive Beatty set for `r ∈ ℝ` to be `B⁺_r := {⌊r⌋, ⌊2r⌋, ⌊3r⌋, ...}`. -/
+def beattySetPos (r : ℝ) : Set ℤ :=
   { beattySequence r k | k > 0 }
+
+/-- Define another positive Beatty set for `r ∈ ℝ` to be `B⁺'_r := {⌈r⌉-1, ⌈2r⌉-1, ⌈3r⌉-1, ...}`. -/
+def beattySetPos' (r : ℝ) : Set ℤ :=
+  { beattySequence' r k | k > 0 }
 
 namespace Beatty
 
-variable {r} (hr₁ : r > 1) (hr₂ : Irrational r) {j k : ℤ} (hj : j > 0)
+variable {r : ℝ} (hr : r > 1) {j k : ℤ}
 
-theorem irrational_s : r.conjugateExponent > 1 ∧ Irrational r.conjugateExponent := by
-  constructor
-  · apply (lt_div_iff (sub_pos.2 hr₁)).2
-    rw [one_mul]
-    exact sub_one_lt r
-  · convert ((hr₂.sub_int 1).int_div one_ne_zero).int_add 1 using 1
-    rw [Int.cast_one, add_div', one_mul, sub_add_cancel, Real.conjugateExponent]
-    exact ne_of_gt (sub_pos.2 hr₁)
+theorem s_gt_1 : r.conjugateExponent > 1 := by
+  apply (lt_div_iff (sub_pos.2 hr)).2
+  rw [one_mul]
+  exact sub_one_lt r
 
-theorem irrational_aux (hj : j ≠ 0) : (j : ℝ) ≠ k * r := by
-  intro h
-  have hk : k ≠ 0 := by
-    rintro rfl
-    rw [Int.cast_zero, zero_mul, Int.cast_eq_zero] at h
-    exact hj h
-  have := hr₂.int_mul hk
-  rw [← h] at this
-  exact (j.not_irrational this).elim
-
-theorem no_collision_aux (h : j = ⌊k * r⌋) : j / r < k ∧ k < (j + 1) / r := by
-  have hr₁ := lt_trans zero_lt_one hr₁
-  have ⟨h₁, h₂⟩ := Int.floor_eq_iff.1 h.symm
-  have h₁ := lt_of_le_of_ne h₁ (irrational_aux hr₂ hj.ne.symm)
-  exact ⟨(div_lt_iff hr₁).2 h₁, (lt_div_iff hr₁).2 h₂⟩
-
-/-- Let `1 < r ∈ ℝ ∖ ℚ` and `s = r / (r - 1)`. Suppose there are integers `j > 0`, `k`, `m` such
-that `j = ⌊k * r⌋ = ⌊m * s⌋` (i.e. a collision). Then this leads to a contradiction. -/
-theorem no_collision : ¬∃ (j k m : ℤ), j > 0 ∧ j = ⌊k * r⌋ ∧ j = ⌊m * r.conjugateExponent⌋ := by
-  intro ⟨j, k, m, hj, h₁, h₂⟩
-  have ⟨hs₁, hs₂⟩ := irrational_s hr₁ hr₂
-  have ⟨h₁₁, h₁₂⟩ := no_collision_aux hr₁ hr₂ hj h₁
-  have ⟨h₂₁, h₂₂⟩ := no_collision_aux hs₁ hs₂ hj h₂
+/-- Let `1 < r ∈ ℝ` and `s = r / (r - 1)`. Suppose there is an integer `j` such that `j ∈ B_r` and
+`j ∈ B'_s` (i.e. a collision). Then this leads to a contradiction. -/
+theorem no_collision : ¬∃ j, j ∈ beattySet r ∧ j ∈ beattySet' r.conjugateExponent := by
+  intro ⟨j, ⟨k, h₁⟩, ⟨m, h₂⟩⟩
+  have hs := s_gt_1 hr
+  have ⟨h₁₁, h₁₂⟩ : j / r ≤ k ∧ k < (j + 1) / r := by
+    have hr := lt_trans zero_lt_one hr
+    rw [beattySequence, Int.floor_eq_iff] at h₁
+    exact ⟨(div_le_iff hr).2 h₁.1, (lt_div_iff hr).2 h₁.2⟩
+  have ⟨h₂₁, h₂₂⟩ : j / r.conjugateExponent < m ∧ m ≤ (j + 1) / r.conjugateExponent := by
+    have hs := lt_trans zero_lt_one hs
+    rw [beattySequence', sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one,
+      add_sub_cancel] at h₂
+    exact ⟨(div_lt_iff hs).2 h₂.1, (le_div_iff hs).2 h₂.2⟩
   have f (y : ℝ) : y / r + y / r.conjugateExponent = y := by
-    have : r ≠ 0 := ne_of_gt (lt_trans zero_lt_one hr₁)
+    have : r ≠ 0 := ne_of_gt (lt_trans zero_lt_one hr)
     field_simp [Real.conjugateExponent, mul_sub_left_distrib]
   have h₃ : j < k + m := by
-    have := add_lt_add_of_lt_of_lt h₁₁ h₂₁
+    have := add_lt_add_of_le_of_lt h₁₁ h₂₁
     rwa [f, ← Int.cast_add, Int.cast_lt] at this
   have h₄ : k + m ≤ j := by
-    have := add_lt_add_of_lt_of_lt h₁₂ h₂₂
+    have := add_lt_add_of_lt_of_le h₁₂ h₂₂
     rwa [f, ← Int.cast_add, ← Int.cast_one, ← Int.cast_add, Int.cast_lt, Int.lt_add_one_iff] at this
   have := lt_of_le_of_lt' h₄ h₃
   exact (lt_self_iff_false j).1 this
 
-/-- Let `1 < r ∈ ℝ ∖ ℚ` and `s = r / (r - 1)`. Suppose there is an integer `j > 0` where `B_r` and
-`B_s` both jump over `j` (i.e. an anti-collision). Then this leads to a contradiction. -/
+/-- Let `1 < r ∈ ℝ` and `s = r / (r - 1)`. Suppose there is an integer `j` where `B_r` and `B'_s`
+both jump over `j` (i.e. an anti-collision). Then this leads to a contradiction. -/
 theorem no_anticollision :
-    ¬∃ (j k m : ℤ), j > 0 ∧ k * r < j ∧ j + 1 ≤ (k + 1) * r ∧
-      m * r.conjugateExponent < j ∧ j + 1 ≤ (m + 1) * r.conjugateExponent := by
-  have ⟨hs₁, hs₂⟩ := irrational_s hr₁ hr₂
+    ¬∃ (j k m : ℤ), k * r < j ∧ j + 1 ≤ (k + 1) * r ∧
+      m * r.conjugateExponent ≤ j ∧ j + 1 < (m + 1) * r.conjugateExponent := by
+  have hr₀ : r > 0 := lt_trans zero_lt_one hr
+  have hs₀ : r.conjugateExponent > 0 := lt_trans zero_lt_one (s_gt_1 hr)
   have f (y : ℝ) : y / r + y / r.conjugateExponent = y := by
-    have : r ≠ 0 := ne_of_gt (lt_trans zero_lt_one hr₁)
+    have : r ≠ 0 := ne_of_gt hr₀
     field_simp [Real.conjugateExponent, mul_sub_left_distrib]
-  intro ⟨j, k, m, hj, h₁₁, h₁₂, h₂₁, h₂₂⟩
-  have hj₁ : j + 1 ≠ 0 := by
-    intro h
-    have := lt_add_one j
-    rw [h] at this
-    exact (lt_self_iff_false 0).1 (lt_trans hj this)
-  have h₁₂ := lt_of_le_of_ne h₁₂ <| by
-    convert irrational_aux (k := k + 1) hr₂ hj₁ <;> norm_num
-  have h₂₂ := lt_of_le_of_ne h₂₂ <| by
-    convert irrational_aux (k := m + 1) hs₂ hj₁ <;> norm_num
-  have h₁₁ := (lt_div_iff (lt_trans zero_lt_one hr₁)).2 h₁₁
-  have h₁₂ := (div_lt_iff (lt_trans zero_lt_one hr₁)).2 h₁₂
-  have h₂₁ := (lt_div_iff (lt_trans zero_lt_one hs₁)).2 h₂₁
-  have h₂₂ := (div_lt_iff (lt_trans zero_lt_one hs₁)).2 h₂₂
+  intro ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩
+  have h₁₁ := (lt_div_iff hr₀).2 h₁₁
+  have h₁₂ := (div_le_iff hr₀).2 h₁₂
+  have h₂₁ := (le_div_iff hs₀).2 h₂₁
+  have h₂₂ := (div_lt_iff hs₀).2 h₂₂
   have h₃ : k + m < j := by
-    have := add_lt_add_of_lt_of_lt h₁₁ h₂₁
+    have := add_lt_add_of_lt_of_le h₁₁ h₂₁
     rwa [f, ← Int.cast_add, Int.cast_lt] at this
   have h₄ : j ≤ k + m := by
-    have := add_lt_add_of_lt_of_lt h₁₂ h₂₂
+    have := add_lt_add_of_le_of_lt h₁₂ h₂₂
     rw [f, ← Int.cast_one] at this
     simp_rw [← Int.cast_add, Int.cast_lt] at this
     rwa [← add_assoc, add_lt_add_iff_right, add_right_comm, Int.lt_add_one_iff] at this
   have := lt_of_le_of_lt h₄ h₃
   exact (lt_self_iff_false j).1 this
 
-/-- Let `1 < r ∈ ℝ ∖ ℚ` and `0 < j ∈ ℤ`. Then either `j ∈ B_r` or `B_r` jumps over `j`.
+/-- Let `1 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B_r` or `B_r` jumps over `j`.
 
 This is unfortunately not in the proof sketch. -/
 theorem hit_or_miss : j ∈ beattySet r ∨ (∃ k : ℤ, k * r < j ∧ j + 1 ≤ (k + 1) * r) := by
-  have hr₀ : r > 0 := lt_trans zero_lt_one hr₁
+  have hr₀ : r > 0 := lt_trans zero_lt_one hr
+  -- for both cases, the candidate is `k = ⌈(j + 1) / r⌉ - 1`
+  cases lt_or_ge ((⌈(j + 1) / r⌉ - 1) * r) j
+  · refine Or.inr ⟨⌈(j + 1) / r⌉ - 1, by simpa, ?_⟩
+    rw [Int.cast_sub, Int.cast_one, sub_add_cancel, ← div_le_iff hr₀]
+    apply Int.le_ceil
+  · refine Or.inl ⟨⌈(j + 1) / r⌉ - 1, ?_⟩
+    rw [beattySequence, Int.floor_eq_iff]
+    constructor
+    · simpa
+    rw [Int.cast_sub, Int.cast_one, ← lt_div_iff hr₀, sub_lt_iff_lt_add]
+    apply Int.ceil_lt_add_one
+
+/-- Let `1 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B'_r` or `B'_r` jumps over `j`.
+
+This is unfortunately not in the proof sketch. -/
+theorem hit_or_miss' : j ∈ beattySet' r ∨ (∃ k : ℤ, k * r ≤ j ∧ j + 1 < (k + 1) * r) := by
+  have hr₀ : r > 0 := lt_trans zero_lt_one hr
   -- for both cases, the candidate is `k = ⌊(j + 1) / r⌋`
-  have h₁ := Int.sub_floor_div_mul_nonneg (j + 1 : ℝ) hr₀
-  rw [le_sub_iff_add_le, zero_add] at h₁
-  have h₁ := lt_of_le_of_ne h₁ <| by
-    have hj₁ : j + 1 ≠ 0 := by
-      intro h
-      have := lt_add_one j
-      rw [h] at this
-      exact (lt_self_iff_false 0).1 (lt_trans hj this)
-    symm; convert irrational_aux hr₂ hj₁; norm_num
-  cases' lt_or_ge ((⌊(j + 1) / r⌋) * r) j with h₂ h₂
-  · refine Or.inr ⟨⌊(j + 1) / r⌋, h₂, ?_⟩
-    have := Int.sub_floor_div_mul_lt (j + 1 : ℝ) hr₀
-    rw [sub_lt_iff_lt_add, ← one_add_mul (α := ℝ), add_comm (a := 1)] at this
-    exact this.le
-  · refine Or.inl ⟨⌊(j + 1) / r⌋, ?_, ?_⟩
-    · have hj' : (j : ℝ) > 0 := by norm_num; exact hj
-      have := lt_of_le_of_lt' h₂ hj'
-      have := (pos_iff_pos_of_mul_pos this).2 hr₀
-      norm_num at this
-      exact this
-    · rw [beattySequence, Int.floor_eq_iff]; exact ⟨h₂, h₁⟩
+  cases le_or_gt (⌊(j + 1) / r⌋ * r) j
+  · refine Or.inr ⟨⌊(j + 1) / r⌋, ‹_›, ?_⟩
+    rw [← div_lt_iff hr₀]
+    apply Int.lt_floor_add_one
+  · refine Or.inl ⟨⌊(j + 1) / r⌋, ?_⟩
+    rw [beattySequence', sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one]
+    constructor
+    · rwa [add_sub_cancel]
+    exact sub_nonneg.1 (Int.sub_floor_div_mul_nonneg (j + 1 : ℝ) hr₀)
 
 end Beatty
 
-/-- Rayleigh's theorem on Beatty sequences. Let `r` be an irrational real number greater than 1.
-Then every positive integer is in exactly one of `B_r` or `B_(r / (r - 1))`. -/
-theorem rayleigh {r : ℝ} (hr₁ : r > 1) (hr₂ : Irrational r) :
-    ∀ {j : ℤ}, j > 0 →
-      (j ∈ beattySet r ∧ j ∉ beattySet r.conjugateExponent) ∨
-      (j ∉ beattySet r ∧ j ∈ beattySet r.conjugateExponent) := by
-  intro j hj
+/-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
+than 1. Then every integer is in exactly one of `B_r` or `B'_(r / (r - 1))`. -/
+theorem rayleigh_int {r : ℝ} (hr : r > 1) :
+    ∀ {j : ℤ},
+      (j ∈ beattySet r ∧ j ∉ beattySet' r.conjugateExponent) ∨
+      (j ∉ beattySet r ∧ j ∈ beattySet' r.conjugateExponent) := by
+  intro j
   by_cases h₁ : j ∈ beattySet r
-  · by_cases h₂ : j ∈ beattySet r.conjugateExponent
-    · have ⟨k, _, h₃⟩ := h₁
-      have ⟨m, _, h₄⟩ := h₂
-      exact (Beatty.no_collision hr₁ hr₂ ⟨j, k, m, hj, h₃.symm, h₄.symm⟩).elim
+  · by_cases h₂ : j ∈ beattySet' r.conjugateExponent
+    · have ⟨k, h₃⟩ := h₁
+      have ⟨m, h₄⟩ := h₂
+      exact (Beatty.no_collision hr ⟨j, ⟨k, h₃⟩, ⟨m, h₄⟩⟩).elim
     · exact Or.inl ⟨h₁, h₂⟩
-  · by_cases h₂ : j ∈ beattySet r.conjugateExponent
+  · by_cases h₂ : j ∈ beattySet' r.conjugateExponent
     · exact Or.inr ⟨h₁, h₂⟩
-    · have ⟨hs₁, hs₂⟩ := Beatty.irrational_s hr₁ hr₂
-      have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hr₁ hr₂ hj).resolve_left h₁
-      have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss hs₁ hs₂ hj).resolve_left h₂
-      exact (Beatty.no_anticollision hr₁ hr₂ ⟨j, k, m, hj, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
+    · have hs := Beatty.s_gt_1 hr
+      have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hr).resolve_left h₁
+      have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hs).resolve_left h₂
+      exact (Beatty.no_anticollision hr ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
 
-/-- Rayleigh's theorem on Beatty sequences. Let `r` and `s` be irrational real numbers greater than
-1, and satisfy `1/p + 1/q = 1`. Then every positive integer is in exactly one of `B_r` or `B_s`. -/
-theorem rayleigh' {r s : ℝ} (hr₁ : Real.IsConjugateExponent r s) (hr₂ : Irrational r) :
+/-- A version of `rayleigh_int` that uses `Real.IsConjugateExponent r s` as a hypothesis. -/
+theorem rayleigh_int' {r s : ℝ} (hr : Real.IsConjugateExponent r s) :
+    ∀ {j : ℤ}, (j ∈ beattySet r ∧ j ∉ beattySet' s) ∨ (j ∉ beattySet r ∧ j ∈ beattySet' s) := by
+  convert @rayleigh_int _ hr.one_lt <;> exact hr.conj_eq
+
+/-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
+than 1. Then every positive integer is in exactly one of `B⁺_r` or `B⁺'_(r / (r - 1))`. -/
+theorem rayleigh_pos {r : ℝ} (hr : r > 1) :
     ∀ {j : ℤ}, j > 0 →
-      (j ∈ beattySet r ∧ j ∉ beattySet s) ∨ (j ∉ beattySet r ∧ j ∈ beattySet s) := by
-  convert @rayleigh _ hr₁.one_lt hr₂ <;> exact hr₁.conj_eq
+      (j ∈ beattySetPos r ∧ j ∉ beattySetPos' r.conjugateExponent) ∨
+      (j ∉ beattySetPos r ∧ j ∈ beattySetPos' r.conjugateExponent) := by
+  intro j hj
+  have hb₁ : ∀ s ≥ 0, j ∈ beattySetPos s ↔ j ∈ beattySet s := by
+    intro _ hs
+    refine ⟨fun ⟨k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨k, hk⟩ ↦ ⟨k, ?_, hk⟩⟩
+    rw [← hk, beattySequence, gt_iff_lt, Int.floor_pos] at hj
+    have := pos_of_mul_pos_left (lt_of_lt_of_le zero_lt_one hj) hs
+    rwa [Int.cast_pos] at this
+  have hb₂ : ∀ s ≥ 0, j ∈ beattySetPos' s ↔ j ∈ beattySet' s := by
+    intro _ hs
+    refine ⟨fun ⟨k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨k, hk⟩ ↦ ⟨k, ?_, hk⟩⟩
+    rw [← hk, beattySequence', gt_iff_lt, lt_sub_iff_add_lt, zero_add] at hj
+    have hj := Int.ceil_pos.1 (lt_trans zero_lt_one hj)
+    have := pos_of_mul_pos_left hj hs
+    rwa [Int.cast_pos] at this
+  rw [hb₁ _ (lt_trans zero_lt_one hr).le, hb₂ _ (lt_trans zero_lt_one (Beatty.s_gt_1 hr)).le]
+  exact rayleigh_int hr
+
+/-- A version of `rayleigh_pos` that uses `Real.IsConjugateExponent r s` as a hypothesis. -/
+theorem rayleigh_pos' {r s : ℝ} (hr : Real.IsConjugateExponent r s) :
+    ∀ {j : ℤ}, j > 0 →
+      (j ∈ beattySetPos r ∧ j ∉ beattySetPos' s) ∨ (j ∉ beattySetPos r ∧ j ∈ beattySetPos' s) := by
+  convert @rayleigh_pos _ hr.one_lt <;> exact hr.conj_eq
+
+/-- Rayleigh's theorem on Beatty sequences. Let `r` be an irrational real number greater than 1.
+Then every positive integer is in exactly one of `B⁺_r` or `B⁺_(r / (r - 1))`. -/
+theorem rayleigh_irr_pos {r : ℝ} (hr₁ : r > 1) (hr₂ : Irrational r) :
+    ∀ {j : ℤ}, j > 0 →
+      (j ∈ beattySetPos r ∧ j ∉ beattySetPos r.conjugateExponent) ∨
+      (j ∉ beattySetPos r ∧ j ∈ beattySetPos r.conjugateExponent) := by
+  intro j hj
+  have hb : ∀ s, Irrational s → (j ∈ beattySetPos s ↔ j ∈ beattySetPos' s) := by
+    intro s hs_irr
+    dsimp only [beattySetPos, beattySequence, beattySetPos', beattySequence']
+    congr! 5; rename_i k; rw [and_congr_right_iff]; intro hk; congr!
+    symm; rw [sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one, add_sub_cancel]
+    refine ⟨lt_of_le_of_ne (Int.floor_le _) fun h ↦ ?_, (Int.lt_floor_add_one _).le⟩
+    exact Irrational.ne_int (hs_irr.int_mul hk.ne') ⌊k * s⌋ h.symm
+  have hs_irr : Irrational r.conjugateExponent := by
+    convert ((hr₂.sub_int 1).int_div one_ne_zero).int_add 1 using 1
+    rw [Int.cast_one, add_div', one_mul, sub_add_cancel, Real.conjugateExponent]
+    exact ne_of_gt (sub_pos.2 hr₁)
+  rw [hb _ hs_irr]
+  exact rayleigh_pos hr₁ hj
+
+/-- A version of `rayleigh_irr_pos` that uses `Real.IsConjugateExponent r s` as a hypothesis. -/
+theorem rayleigh_irr_pos' {r s : ℝ} (hr₁ : Real.IsConjugateExponent r s) (hr₂ : Irrational r) :
+    ∀ {j : ℤ}, j > 0 →
+      (j ∈ beattySetPos r ∧ j ∉ beattySetPos s) ∨ (j ∉ beattySetPos r ∧ j ∈ beattySetPos s) := by
+  convert @rayleigh_irr_pos _ hr₁.one_lt hr₂ <;> exact hr₁.conj_eq
