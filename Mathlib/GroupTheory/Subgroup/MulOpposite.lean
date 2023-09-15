@@ -68,11 +68,11 @@ def equivOp (H : Subgroup G) : H ≃ op H :=
 
 @[to_additive]
 instance (H : Subgroup G) [Encodable H] : Encodable (opEquiv H) :=
-  Encodable.ofEquiv H H.oppositeEquiv.symm
+  Encodable.ofEquiv H H.equivOp.symm
 
 @[to_additive]
 instance (H : Subgroup G) [Countable H] : Countable (opEquiv H) :=
-  Countable.of_equiv H H.oppositeEquiv
+  Countable.of_equiv H H.equivOp
 
 @[to_additive]
 theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : opEquiv H) :
