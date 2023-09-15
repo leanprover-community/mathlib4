@@ -94,11 +94,13 @@ lemma isClopen_iUnion (hf : ∀ i, IsClopen (f i)) : IsClopen (⋃ i, f i) :=
 ⟨isOpen_iUnion λ i ↦ (hf i).1, isClosed_iUnion λ i ↦ (hf i).2⟩
 
 lemma isClopen_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClopen (f i j)) :
-    IsClopen (⋃ i, ⋃ j, f i j) := isClopen_iUnion λ _ ↦ isClopen_iUnion $ hf _
+  IsClopen (⋃ i, ⋃ j, f i j) :=
+isClopen_iUnion λ _ ↦ isClopen_iUnion $ hf _
 
 lemma interior_iInter (f : ι → Set α) : interior (⋂ i, f i) = ⋂ i, interior (f i) :=
 (interior_maximal (iInter_mono λ _ ↦ interior_subset) $ isOpen_iInter λ _ ↦
   isOpen_interior).antisymm' $ subset_iInter λ _ ↦ interior_mono $ iInter_subset _ _
+
 lemma interior_sInter (S : Set (Set α)) : interior (⋂₀ S) = ⋂ s ∈ S, interior s := by
   simp_rw [sInter_eq_biInter, interior_iInter]
 
@@ -155,6 +157,12 @@ variable [AlexandrovDiscrete α] [AlexandrovDiscrete β]
   rw [exterior_def]; exact isOpen_sInter $ λ _ ↦ And.left
 
 lemma exterior_mem_nhdsSet : exterior s ∈ 𝓝ˢ s := isOpen_exterior.mem_nhdsSet.2 subset_exterior
+
+@[simp] lemma exterior_eq_iff_isOpen : exterior s = s ↔ IsOpen s :=
+  ⟨λ h ↦ h ▸ isOpen_exterior, IsOpen.exterior_eq⟩
+
+@[simp] lemma exterior_subset_iff_isOpen : exterior s ⊆ s ↔ IsOpen s := by
+  simp only [exterior_eq_iff_isOpen.symm, Subset.antisymm_iff, subset_exterior, and_true]
 
 lemma exterior_subset_iff : exterior s ⊆ t ↔ ∃ U, IsOpen U ∧ s ⊆ U ∧ U ⊆ t :=
   ⟨λ h ↦ ⟨exterior s, isOpen_exterior, subset_exterior, h⟩,

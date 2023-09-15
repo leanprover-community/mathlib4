@@ -481,3 +481,5 @@ def map (f : α →o β) : C(WithLowerSetTopology α, WithLowerSetTopology β) w
 
 @[simp] lemma isOpen_ofLowerSet_preimage {s : Set α} : IsOpen (ofLowerSet ⁻¹' s) ↔ IsLowerSet s :=
   isLowerSet_toLowerSet_preimage.symm
+
+end WithLowerSetTopology

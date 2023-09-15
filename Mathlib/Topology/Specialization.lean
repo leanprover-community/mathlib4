@@ -15,6 +15,7 @@ import Mathlib.Topology.Order.UpperLowerSetTopology
 This file defines a type synonym for a topological space considered with its specialisation order.
 -/
 
+open CategoryTheory
 
 /-- Type synonym for a topological space considered with its specialisation order. -/
 def Specialization (α : Type*) := α
@@ -79,7 +80,7 @@ def orderIsoSpecializationWithUpperSetTopology (α : Type*) [Preorder α] :
 order. -/
 def homeoWithUpperSetTopologyorderIso (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] :
   α ≃ₜ WithUpperSetTopology (Specialization α) :=
-(toEquiv.trans toUpperSet).toHomeomorph λ s ↦ by simp [preimage_comp]
+(toEquiv.trans toUpperSet).toHomeomorph λ s ↦ by simp [Set.preimage_comp]
 
 /-- Sends a topological space to its specialisation order. -/
 @[simps]
