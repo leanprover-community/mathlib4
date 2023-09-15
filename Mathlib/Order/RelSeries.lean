@@ -88,10 +88,7 @@ abbrev toList (x : RelSeries r) : List α := List.ofFn x
 lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   rw [List.chain'_iff_get]
   intros i h
-  have h' : i < x.length := by simpa [List.length_ofFn] using h
-  convert x.step ⟨i, h'⟩ <;>
-  · rw [List.get_ofFn]
-    congr 1
+  convert x.step ⟨i, by simpa using h⟩ <;> apply List.get_ofFn
 
 lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
@@ -108,19 +105,10 @@ corresponds to each other.-/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
   toFun x := ⟨_, x.toList_ne_empty, x.toList_chain'⟩
   invFun x := fromListChain' _ x.2.1 x.2.2
-  left_inv x := ext (by dsimp; rw [List.length_ofFn, Nat.pred_succ]) <| by
-    ext f
-    simp only [List.empty_eq, ne_eq, Set.coe_setOf, Set.mem_setOf_eq, fromListChain'_toFun,
-      Function.comp_apply, List.get_ofFn, fromListChain'_length]
-    rfl
+  left_inv x := ext (by simp) <| by ext; apply List.get_ofFn
   right_inv x := by
-    refine Subtype.ext (List.ext_get ?_ <| fun n hn1 hn2 => ?_)
-    · dsimp
-      rw [List.length_ofFn, fromListChain'_length, ←Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos]
-      rw [List.length_pos]
-      exact x.2.1
-    · rw [List.get_ofFn, fromListChain'_toFun, Function.comp_apply]
-      congr
+    refine Subtype.ext (List.ext_get ?_ <| fun n hn1 _ => List.get_ofFn _ _)
+    simp [Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1]
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 
