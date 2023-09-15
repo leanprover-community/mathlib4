@@ -226,7 +226,7 @@ theorem ae_lineDeriv_sum_eq
   the derivative to `g` by integration by parts, and use the linearity of the derivative of `g` to
   conclude that the initial integrals coincide. -/
   apply ae_eq_of_integral_contDiff_smul_eq (hf.locallyIntegrable_lineDeriv _)
-    (locallyIntegrable_finset_sum _ (fun i hi ↦  (hf.locallyIntegrable_lineDeriv (v i)).smul (a i)))
+    (locallyIntegrable_finset_sum _ (fun i hi ↦ (hf.locallyIntegrable_lineDeriv (v i)).smul (a i)))
     (fun g g_smooth g_comp ↦ ?_)
   simp_rw [Finset.smul_sum]
   have A : ∀ i ∈ s, Integrable (fun x ↦ g x • (a i • fun x ↦ lineDeriv ℝ f x (v i)) x) μ :=
@@ -331,7 +331,7 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
 
 /-- A real-valued function on a finite-dimensional space which is Lipschitz is
 differentiable almost everywere. Superseded by
-`LipschitzOnWith.ae_differentiableWithinAt` which works for functions taking value in any
+`LipschitzWith.ae_differentiableAt` which works for functions taking value in any
 finite-dimensional space. -/
 theorem ae_differentiableAt_of_real (hf : LipschitzWith C f) :
     ∀ᵐ x ∂μ, DifferentiableAt ℝ f x := by
@@ -365,18 +365,18 @@ finite-dimensional space. -/
 theorem ae_differentiableWithinAt_of_mem_pi
     {ι : Type*} [Fintype ι] {f : E → ι → ℝ} {s : Set E}
     (hf : LipschitzOnWith C f s) : ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ f s x := by
-  have A : ∀ i : ι, LipschitzWith 1 fun x : ι → ℝ => x i := fun i => LipschitzWith.eval i
-  have : ∀ i : ι, ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ (fun x : E => f x i) s x := fun i ↦ by
+  have A : ∀ i : ι, LipschitzWith 1 (fun x : ι → ℝ ↦ x i) := fun i => LipschitzWith.eval i
+  have : ∀ i : ι, ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ (fun x : E ↦ f x i) s x := fun i ↦ by
     apply ae_differentiableWithinAt_of_mem_of_real
     exact LipschitzWith.comp_lipschitzOnWith (A i) hf
   filter_upwards [ae_all_iff.2 this] with x hx xs
-  exact differentiableWithinAt_pi.2 fun i => hx i xs
+  exact differentiableWithinAt_pi.2 (fun i ↦ hx i xs)
 
 /-- *Rademacher's theorem*: a function between finite-dimensional real vector spaces which is
 Lipschitz on a set is differentiable almost everywere in this set. -/
 theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f s) :
     ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ f s x := by
-  let A := (Basis.ofVectorSpace ℝ F).equivFun.toContinuousLinearEquiv
+  have A := (Basis.ofVectorSpace ℝ F).equivFun.toContinuousLinearEquiv
   suffices H : ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ (A ∘ f) s x by
     filter_upwards [H] with x hx xs
     have : f = (A.symm ∘ A) ∘ f := by
