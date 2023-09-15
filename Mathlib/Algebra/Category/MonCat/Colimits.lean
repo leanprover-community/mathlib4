@@ -196,19 +196,18 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
   · exact descFunLift F s
   · intro x y r
-    induction' r with _ _ _ _ h _ _ _ _ _ h₁ h₂ _ _ f x _ _ _ _ _ _ _ _ h _ _ _ _ h <;> try simp
-    -- symm
-    · exact h.symm
-    -- trans
-    · exact h₁.trans h₂
-    -- map
-    · exact s.w_apply f x
-    -- mul_1
-    · rw [h]
-    -- mul_2
-    · rw [h]
-    -- mul_assoc
-    · rw [mul_assoc]
+    induction r with
+    | refl x => rfl
+    | symm x y _ h => exact h.symm
+    | trans x y z _ _ h₁ h₂ => exact h₁.trans h₂
+    | map j j' f x => exact s.w_apply f x
+    | mul j x y => exact map_mul _ _ _
+    | one j => exact map_one _
+    | mul_1 x x' y _ h => exact congr_arg (· * _) h
+    | mul_2 x y y' _ h => exact congr_arg (_ * ·) h
+    | mul_assoc x y z => exact mul_assoc _ _ _
+    | one_mul x => exact one_mul _
+    | mul_one x => exact mul_one _
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.desc_fun MonCat.Colimits.descFun
 
