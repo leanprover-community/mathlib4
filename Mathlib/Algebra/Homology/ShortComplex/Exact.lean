@@ -59,7 +59,7 @@ lemma exact_iff_isZero_leftHomology [S.HasHomology] :
     S.Exact ↔ IsZero S.leftHomology :=
   LeftHomologyData.exact_iff _
 
-lemma exact_iff_isZero_right_homology [S.HasHomology] :
+lemma exact_iff_isZero_rightHomology [S.HasHomology] :
     S.Exact ↔ IsZero S.rightHomology :=
   RightHomologyData.exact_iff _
 
@@ -149,11 +149,11 @@ lemma Exact.unop {S : ShortComplex Cᵒᵖ} (h : S.Exact) : S.unop.Exact := by
 
 variable (S)
 
-lemma exact_iff_op : S.Exact ↔ S.op.Exact :=
-  ⟨Exact.op, Exact.unop⟩
+lemma exact_op_iff : S.op.Exact ↔ S.Exact :=
+  ⟨Exact.unop, Exact.op⟩
 
-lemma exact_iff_unop (S : ShortComplex Cᵒᵖ) : S.Exact ↔ S.unop.Exact :=
-  S.unop.exact_iff_op.symm
+lemma exact_unop_iff (S : ShortComplex Cᵒᵖ) : S.unop.Exact ↔ S.Exact :=
+  S.unop.exact_op_iff.symm
 
 variable {S}
 
@@ -765,7 +765,7 @@ lemma quasiIso_iff_of_zeros' {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     rw [hf₂, op_zero]
   · dsimp
     rw [hg₁, op_zero]
-  rw [exact_iff_unop]
+  rw [← exact_unop_iff]
   have : Mono φ.τ₂.op ↔ Epi φ.τ₂ :=
     ⟨fun _ => unop_epi_of_mono φ.τ₂.op, fun _ => op_mono_of_epi _⟩
   tauto
