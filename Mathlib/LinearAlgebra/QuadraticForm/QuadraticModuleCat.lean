@@ -19,7 +19,7 @@ variable (R : Type u) [CommRing R]
 /-- The category of quadratic modules; modules with an associated quadratic form-/
 structure QuadraticModuleCat extends ModuleCat.{v} R where
   /-- The quadratic form associated with the module. -/
-  form' : QuadraticForm R carrier
+  form : QuadraticForm R carrier
 
 variable {R}
 
@@ -36,18 +36,11 @@ instance (V : QuadraticModuleCat.{v} R) : AddCommGroup V :=
 instance (V : QuadraticModuleCat.{v} R) : Module R V :=
   V.isModule
 
-@[inherit_doc form']
-def form (V : QuadraticModuleCat.{v} R) : QuadraticForm R V := V.form'
-
-/-- See Note [custom simps projection] -/
-def Simps.form (V : QuadraticModuleCat.{v} R) : QuadraticForm R V := V.form
-
-initialize_simps_projections QuadraticModuleCat (form' → form)
 /-- The object in the category of quadratic R-modules associated to a quadratic R-module. -/
 @[simps form]
 def of {X : Type v} [AddCommGroup X] [Module R X] (Q : QuadraticForm R X) :
     QuadraticModuleCat R where
-  form' := Q
+  form := Q
 
 /-- A type alias for `QuadraticForm.LinearIsometry` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
@@ -67,6 +60,12 @@ instance category : Category (QuadraticModuleCat.{v} R) where
   id_comp g := Hom.ext _ _ <| Isometry.id_comp g.toIsometry
   comp_id f := Hom.ext _ _ <| Isometry.comp_id f.toIsometry
   assoc f g h := Hom.ext _ _ <| Isometry.comp_assoc h.toIsometry g.toIsometry f.toIsometry
+
+-- TODO: if `Quiver.Hom` and the instance above were `reducible`, this wouldn't be needed.
+@[ext]
+lemma hom_ext {M N : QuadraticModuleCat.{v} R} (f g : M ⟶ N) (h : f.toIsometry = g.toIsometry) :
+    f = g :=
+  Hom.ext _ _ h
 
 /-- Typecheck a `QuadraticForm.Isometry` as a morphism in `Module R`. -/
 abbrev ofHom {X : Type v} [AddCommGroup X] [Module R X]
