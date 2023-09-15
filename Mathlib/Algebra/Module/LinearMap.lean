@@ -569,17 +569,11 @@ theorem id_comp : id.comp f = f :=
 #align linear_map.id_comp LinearMap.id_comp
 
 theorem comp_assoc
-    {R : Type*} {R₂ : Type*} {R₃ : Type*} {R₄ : Type*}
-    {M : Type*} {M₂ : Type*} {M₃ : Type*} {M₄ : Type*}
-    [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-    [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-    [Module R M] [Module R₂ M₂] [Module R₃ M₃] [Module R₄ M₄]
-    {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₃₄ : R₃ →+* R₄}
-    {σ₁₃ : R →+* R₃} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R →+* R₄}
-    [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
-    [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
-    (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃) (h : M₃ →ₛₗ[σ₃₄] M₄) :
-    ((h.comp g : M₂ →ₛₗ[σ₂₄] M₄).comp f : M →ₛₗ[σ₁₄] M₄) = h.comp (g.comp f : M →ₛₗ[σ₁₃] M₃) :=
+    {R₄ : Type*} {M₄ : Type*} [Semiring R₄] [AddCommMonoid M₄] [Module R M] [Module R₄ M₄]
+    {σ₃₄ : R₃ →+* R₄} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
+    [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
+    (f : M₁ →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃) (h : M₃ →ₛₗ[σ₃₄] M₄) :
+    ((h.comp g : M₂ →ₛₗ[σ₂₄] M₄).comp f : M₁ →ₛₗ[σ₁₄] M₄) = h.comp (g.comp f : M₁ →ₛₗ[σ₁₃] M₃) :=
   rfl
 #align linear_map.comp_assoc LinearMap.comp_assoc
 
