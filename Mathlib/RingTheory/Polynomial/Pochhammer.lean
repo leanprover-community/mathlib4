@@ -264,6 +264,15 @@ theorem descPochhammer_succ_left (n : ℕ) :
     descPochhammer R (n + 1) = X * (descPochhammer R n).comp (X - 1) :=
   by rw [descPochhammer]
 
+theorem monic_descPochhammer (n : ℕ) [Nontrivial R] [NoZeroDivisors R] :
+    Monic <| descPochhammer R n := by
+  induction' n with n hn
+  · simp
+  · have h : leadingCoeff (X - 1 : R[X]) = 1 := leadingCoeff_X_sub_C 1
+    have : natDegree (X - (1 : R[X])) ≠ 0 := ne_zero_of_eq_one <| natDegree_X_sub_C (1 : R)
+    rw [descPochhammer_succ_left, Monic.def, leadingCoeff_mul, leadingCoeff_comp this, hn, monic_X,
+        one_mul, one_mul, h, one_pow]
+
 section
 
 variable {R} {T : Type v} [Ring T]
@@ -307,6 +316,18 @@ theorem descPochhammer_succ_right (n : ℕ) :
           X_comp, nat_cast_comp]
     nth_rw 1 [Nat.succ_eq_add_one]
     rw [Nat.succ_eq_one_add, Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub]
+
+@[simp]
+theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R]:
+    (descPochhammer R n).natDegree = n := by
+  induction' n with n hn
+  · simp
+  · have : natDegree (X - (n : R[X])) = 1 := natDegree_X_sub_C (n : R)
+    rw [descPochhammer_succ_right,
+        natDegree_mul _ (ne_zero_of_natDegree_gt <| this.symm ▸ Nat.zero_lt_one), hn, this]
+    cases n
+    · simp
+    · refine' ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.succ_pos _
 
 theorem descPochhammer_succ_eval {S : Type*} [Ring S] (n : ℕ) (k : S) :
     (descPochhammer S (n + 1)).eval k = (descPochhammer S n).eval k * (k - n) := by

@@ -419,8 +419,8 @@ instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
   ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 _)⟩
 
 /-- `b i` is the `i`th basis vector. -/
-instance instCoeFun : CoeFun (HilbertBasis ι 𝕜 E) fun _ => ι → E
-    where coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
+instance instCoeFun : CoeFun (HilbertBasis ι 𝕜 E) fun _ => ι → E where
+  coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
 
 @[simp]
 protected theorem repr_symm_single (b : HilbertBasis ι 𝕜 E) (i : ι) :

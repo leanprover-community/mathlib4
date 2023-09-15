@@ -11,10 +11,11 @@ import Mathlib.GroupTheory.Complement
 
 ## HNN Extensions of Groups
 
-This file defines the HNN extensions of a group `G`, `HNNExtension G A B φ`. Given a group `G`,
+This file defines the HNN extension of a group `G`, `HNNExtension G A B φ`. Given a group `G`,
 subgroups `A` and `B` and an isomorphism `φ` of `A` and `B`, we adjoin a letter `t` to `G`, such
 that for any `a ∈ A`, the conjugate of `of a` by `t` is `of (φ a)`, where `of` is the canonical map
-from `G` into the `HNNExtension`.
+from `G` into the `HNNExtension`. This construction is named after Graham Higman, Bernhard Neumann
+and Hanna Neumann.
 
 ## Main definitions
 

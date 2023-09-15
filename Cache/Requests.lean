@@ -168,11 +168,7 @@ section Commit
 def isGitStatusClean : IO Bool :=
   return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
 
-def getGitCommitHash : IO String := do
-  let ret := (← IO.runCmd "git" #["log", "-1"]).replace "\n" " "
-  match ret.splitOn " " with
-  | "commit" :: hash :: _ => return hash
-  | _ => throw $ IO.userError "Invalid format for the return of `git log -1`"
+def getGitCommitHash : IO String := return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimRight
 
 /--
 Sends a commit file to the server, containing the hashes of the respective committed files.
