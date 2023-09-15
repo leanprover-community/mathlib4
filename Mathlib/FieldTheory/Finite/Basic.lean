@@ -180,7 +180,7 @@ theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣
 #align finite_field.forall_pow_eq_one_iff FiniteField.forall_pow_eq_one_iff
 
 theorem cast_subgroup_of_units_card_ne_zero {F : Type} [Field F]
-  (G : Subgroup Fˣ) [Fintype G] : (Fintype.card G : F) ≠ 0 := by
+    (G : Subgroup Fˣ) [Fintype G] : (Fintype.card G : F) ≠ 0 := by
   let n := Fintype.card G
   intro nzero
   have ⟨p, char_p⟩ := CharP.exists F
