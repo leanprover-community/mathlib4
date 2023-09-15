@@ -56,7 +56,7 @@ abbrev grade (m : M) : Submodule R (AddMonoidAlgebra R M) :=
   gradeBy R id m
 #align add_monoid_algebra.grade AddMonoidAlgebra.grade
 
-theorem gradeBy_id : gradeBy R (id : M → M) = grade R := by rfl
+theorem gradeBy_id : gradeBy R (id : M → M) = grade R := rfl
 #align add_monoid_algebra.grade_by_id AddMonoidAlgebra.gradeBy_id
 
 theorem mem_gradeBy_iff (f : M → ι) (i : ι) (a : AddMonoidAlgebra R M) :
@@ -120,7 +120,6 @@ instance grade.gradedMonoid [AddMonoid M] [CommSemiring R] :
 
 variable [AddMonoid M] [DecidableEq ι] [AddMonoid ι] [CommSemiring R] (f : M →+ ι)
 
-set_option maxHeartbeats 260000 in
 /-- Auxiliary definition; the canonical grade decomposition, used to provide
 `DirectSum.decompose`. -/
 def decomposeAux : AddMonoidAlgebra R M →ₐ[R] ⨁ i : ι, gradeBy R f i :=

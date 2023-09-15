@@ -379,6 +379,10 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
     exact mem_of_superset ((sInter_mem tfin).2 fun V hV => GenerateSets.basic <| hts hV) h
 #align filter.mem_generate_iff Filter.mem_generate_iff
 
+@[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
+le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem $ mem_singleton _) ht) $
+  le_generate_iff.2 $ singleton_subset_iff.2 Subset.rfl
+
 /-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
 `s : Set (Set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
 protected def mkOfClosure (s : Set (Set α)) (hs : (generate s).sets = s) : Filter α where
@@ -735,8 +739,8 @@ theorem inf_eq_bot_iff {f g : Filter α} : f ⊓ g = ⊥ ↔ ∃ U ∈ f, ∃ V 
 theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type*} [Finite ι] {l : ι → Filter α}
     (hd : Pairwise (Disjoint on l)) :
     ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ Pairwise (Disjoint on s) := by
-  have : ∀ i j, i ≠ j → ∃ (s : {s // s ∈ l i}) (t : {t // t ∈ l j}), Disjoint s.1 t.1
-  · simpa only [Pairwise, Function.onFun, Filter.disjoint_iff, exists_prop, Subtype.exists] using hd
+  have : ∀ i j, i ≠ j → ∃ (s : {s // s ∈ l i}) (t : {t // t ∈ l j}), Disjoint s.1 t.1 := by
+    simpa only [Pairwise, Function.onFun, Filter.disjoint_iff, exists_prop, Subtype.exists] using hd
   choose! s t hst using this
   refine' ⟨fun i => ⋂ j, s i j ∩ t j i, fun i => _, fun i j hij => _⟩
   exacts [iInter_mem.2 fun j => inter_mem (@s i j).2 (@t j i).2,
@@ -2893,10 +2897,12 @@ variable {ι : Sort*} {α β : Type*} {f g : Filter α} {s : Set α} {a : α}
 open Function Set
 
 /-- The *kernel* of a filter is the intersection of all its sets. -/
-def ker (f : Filter α) : Set α := ⋂ s ∈ f, s
+def ker (f : Filter α) : Set α := ⋂₀ f.sets
 
-@[simp] lemma mem_ker : a ∈ f.ker ↔ ∀ s ∈ f, a ∈ s := mem_iInter₂
-@[simp] lemma subset_ker : s ⊆ f.ker ↔ ∀ t ∈ f, s ⊆ t := subset_iInter₂_iff
+lemma ker_def (f : Filter α) : f.ker = ⋂ s ∈ f, s := sInter_eq_biInter
+
+@[simp] lemma mem_ker : a ∈ f.ker ↔ ∀ s ∈ f, a ∈ s := mem_sInter
+@[simp] lemma subset_ker : s ⊆ f.ker ↔ ∀ t ∈ f, s ⊆ t := subset_sInter_iff
 
 /-- `Filter.principal` forms a Galois coinsertion with `Filter.ker`. -/
 def gi_principal_ker : GaloisCoinsertion (𝓟 : Set α → Filter α) ker :=
@@ -2906,7 +2912,7 @@ GaloisConnection.toGaloisCoinsertion (λ s f ↦ by simp [principal_le_iff]) $ b
 lemma ker_mono : Monotone (ker : Filter α → Set α) := gi_principal_ker.gc.monotone_u
 lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_ker.u_surjective
 
-@[simp] lemma ker_bot : ker (⊥ : Filter α) = ∅ := iInter₂_eq_empty_iff.2 λ _ ↦ ⟨∅, trivial, id⟩
+@[simp] lemma ker_bot : ker (⊥ : Filter α) = ∅ := sInter_eq_empty_iff.2 λ _ ↦ ⟨∅, trivial, id⟩
 @[simp] lemma ker_top : ker (⊤ : Filter α) = univ := gi_principal_ker.gc.u_top
 @[simp] lemma ker_eq_univ : ker f = univ ↔ f = ⊤ := gi_principal_ker.gc.u_eq_top.trans $ by simp
 @[simp] lemma ker_inf (f g : Filter α) : ker (f ⊓ g) = ker f ∩ ker g := gi_principal_ker.gc.u_inf

@@ -441,18 +441,18 @@ def map (f : α →o β) : C(WithUpperSetTopology α, WithUpperSetTopology β) w
 @[simp] lemma map_comp (g : β →o γ) (f : α →o β): map (g.comp f) = (map g).comp (map f) := rfl
 
 @[simp] lemma toUpperSet_specializes_toUpperSet {a b : α} :
-  toUpperSet a ⤳ toUpperSet b ↔ b ≤ a := by
+    toUpperSet a ⤳ toUpperSet b ↔ b ≤ a := by
   simp_rw [specializes_iff_closure_subset, UpperSetTopology.closure_singleton, Iic_subset_Iic,
     toUpperSet_le_iff]
 
 @[simp] lemma ofUpperSet_le_ofUpperSet {a b : WithUpperSetTopology α} :
-  ofUpperSet a ≤ ofUpperSet b ↔ b ⤳ a := toUpperSet_specializes_toUpperSet.symm
+    ofUpperSet a ≤ ofUpperSet b ↔ b ⤳ a := toUpperSet_specializes_toUpperSet.symm
 
-@[simp] lemma IsUpperSet_toUpperSet_preimage {s : Set (WithUpperSetTopology α)} :
-  IsUpperSet (toUpperSet ⁻¹' s) ↔ IsOpen s := Iff.rfl
+@[simp] lemma isUpperSet_toUpperSet_preimage {s : Set (WithUpperSetTopology α)} :
+    IsUpperSet (toUpperSet ⁻¹' s) ↔ IsOpen s := Iff.rfl
 
 @[simp] lemma isOpen_ofUpperSet_preimage {s : Set α} : IsOpen (ofUpperSet ⁻¹' s) ↔ IsUpperSet s :=
-IsUpperSet_toUpperSet_preimage.symm
+  isUpperSet_toUpperSet_preimage.symm
 
 end WithUpperSetTopology
 
@@ -474,12 +474,10 @@ def map (f : α →o β) : C(WithLowerSetTopology α, WithLowerSetTopology β) w
     toLowerSet_le_iff]
 
 @[simp] lemma ofLowerSet_le_ofLowerSet {a b : WithLowerSetTopology α} :
-  ofLowerSet a ≤ ofLowerSet b ↔ a ⤳ b := toLowerSet_specializes_toLowerSet.symm
+    ofLowerSet a ≤ ofLowerSet b ↔ a ⤳ b := toLowerSet_specializes_toLowerSet.symm
 
-@[simp] lemma IsLowerSet_toLowerSet_preimage {s : Set (WithLowerSetTopology α)} :
-  IsLowerSet (toLowerSet ⁻¹' s) ↔ IsOpen s := Iff.rfl
+@[simp] lemma isLowerSet_toLowerSet_preimage {s : Set (WithLowerSetTopology α)} :
+    IsLowerSet (toLowerSet ⁻¹' s) ↔ IsOpen s := Iff.rfl
 
 @[simp] lemma isOpen_ofLowerSet_preimage {s : Set α} : IsOpen (ofLowerSet ⁻¹' s) ↔ IsLowerSet s :=
-IsLowerSet_toLowerSet_preimage.symm
-
-end WithLowerSetTopology
+  isLowerSet_toLowerSet_preimage.symm
