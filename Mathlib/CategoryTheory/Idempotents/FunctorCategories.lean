@@ -32,7 +32,7 @@ namespace CategoryTheory
 
 namespace Idempotents
 
-variable {J C : Type _} [Category J] [Category C] (P Q : Karoubi (J ⥤ C)) (f : P ⟶ Q) (X : J)
+variable {J C : Type*} [Category J] [Category C] (P Q : Karoubi (J ⥤ C)) (f : P ⟶ Q) (X : J)
 
 @[reassoc (attr := simp)]
 theorem app_idem : P.p.app X ≫ P.p.app X = P.p.app X :=
@@ -106,8 +106,8 @@ def obj (P : Karoubi (J ⥤ C)) : J ⥤ Karoubi C where
 
 /-- Tautological action on maps of the functor `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`. -/
 @[simps]
-def map {P Q : Karoubi (J ⥤ C)} (f : P ⟶ Q) : obj P ⟶ obj Q
-    where app j := ⟨f.f.app j, congr_app f.comm j⟩
+def map {P Q : Karoubi (J ⥤ C)} (f : P ⟶ Q) : obj P ⟶ obj Q where
+  app j := ⟨f.f.app j, congr_app f.comm j⟩
 #align category_theory.idempotents.karoubi_functor_category_embedding.map CategoryTheory.Idempotents.KaroubiFunctorCategoryEmbedding.map
 
 end KaroubiFunctorCategoryEmbedding

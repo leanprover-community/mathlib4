@@ -28,15 +28,13 @@ open Finset NumberField Algebra FiniteDimensional
 
 namespace RingOfIntegers
 
-variable {L : Type _} (K : Type _) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
+variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
 /-- `Algebra.norm` as a morphism betwen the rings of integers. -/
 @[simps!]
 noncomputable def norm [IsSeparable K L] : 𝓞 L →* 𝓞 K :=
   ((Algebra.norm K).restrict (𝓞 L)).codRestrict (𝓞 K) fun x => isIntegral_norm K x.2
 #align ring_of_integers.norm RingOfIntegers.norm
-
-attribute [local instance] NumberField.ringOfIntegersAlgebra
 
 theorem coe_algebraMap_norm [IsSeparable K L] (x : 𝓞 L) :
     (algebraMap (𝓞 K) (𝓞 L) (norm K x) : L) = algebraMap K L (Algebra.norm K (x : L)) :=
@@ -82,7 +80,7 @@ theorem dvd_norm [IsGalois K L] (x : 𝓞 L) : x ∣ algebraMap (𝓞 K) (𝓞 L
   simp [← Finset.mul_prod_erase _ _ (mem_univ AlgEquiv.refl)]
 #align ring_of_integers.dvd_norm RingOfIntegers.dvd_norm
 
-variable (F : Type _) [Field F] [Algebra K F] [IsSeparable K F] [FiniteDimensional K F]
+variable (F : Type*) [Field F] [Algebra K F] [IsSeparable K F] [FiniteDimensional K F]
 
 theorem norm_norm [IsSeparable K L] [Algebra F L] [IsSeparable F L] [FiniteDimensional F L]
     [IsScalarTower K F L] (x : 𝓞 L) : norm K (norm F x) = norm K x := by

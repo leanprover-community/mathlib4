@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Adam Topaz
+Authors: Scott Morrison, Adam Topaz, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Free
+import Mathlib.RingTheory.Adjoin.Basic
 
 #align_import algebra.free_algebra from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -50,9 +51,9 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 -/
 
 
-variable (R : Type _) [CommSemiring R]
+variable (R : Type*) [CommSemiring R]
 
-variable (X : Type _)
+variable (X : Type*)
 
 namespace FreeAlgebra
 
@@ -109,7 +110,7 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
 from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
 -/
 -- Porting note: recOn was replaced to preserve computability, see lean4#2049
-def liftFun {A : Type _} [Semiring A] [Algebra R A] (f : X → A) :
+def liftFun {A : Type*} [Semiring A] [Algebra R A] (f : X → A) :
     Pre R X → A
   | .of t => f t
   | .add a b => liftFun f a + liftFun f b
@@ -138,8 +139,8 @@ inductive Rel : Pre R X → Pre R X → Prop-- force `of_scalar` to be a central
   | right_distrib {a b c : Pre R X} :
       Rel ((a + b) * c) (a * c + b * c)-- other relations needed for semiring
 
-  | MulZeroClass.zero_mul {a : Pre R X} : Rel (0 * a) 0
-  | MulZeroClass.mul_zero {a : Pre R X} : Rel (a * 0) 0-- compatibility
+  | zero_mul {a : Pre R X} : Rel (0 * a) 0
+  | mul_zero {a : Pre R X} : Rel (a * 0) 0-- compatibility
 
   | add_compat_left {a b c : Pre R X} : Rel a b → Rel (a + c) (b + c)
   | add_compat_right {a b c : Pre R X} : Rel a b → Rel (c + a) (c + b)
@@ -197,10 +198,10 @@ instance instMonoidWithZero : MonoidWithZero (FreeAlgebra R X) where
     exact Quot.sound Rel.mul_one
   zero_mul := by
     rintro ⟨⟩
-    exact Quot.sound Rel.MulZeroClass.zero_mul
+    exact Quot.sound Rel.zero_mul
   mul_zero := by
     rintro ⟨⟩
-    exact Quot.sound Rel.MulZeroClass.mul_zero
+    exact Quot.sound Rel.mul_zero
 
 instance instDistrib : Distrib (FreeAlgebra R X) where
   left_distrib := by
@@ -229,7 +230,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
     rintro ⟨⟩
     change Quot.mk _ (_ * _) = _
     rw [map_zero]
-    exact Quot.sound Rel.MulZeroClass.zero_mul
+    exact Quot.sound Rel.zero_mul
   nsmul_succ n := by
     rintro ⟨a⟩
     dsimp only [HSMul.hSMul, instSMul, Quot.map]
@@ -280,7 +281,7 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     SMulCommClass R S (FreeAlgebra A X) where
   smul_comm r s x := smul_comm (algebraMap R A r) (algebraMap S A s) x
 
-instance {S : Type _} [CommRing S] : Ring (FreeAlgebra S X) :=
+instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
 -- verify there is no diamond
@@ -298,7 +299,7 @@ irreducible_def ι : X → FreeAlgebra R X := fun m ↦ Quot.mk _ m
 theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι_def]
 #align free_algebra.quot_mk_eq_ι FreeAlgebra.quot_mk_eq_ι
 
-variable {A : Type _} [Semiring A] [Algebra R A]
+variable {A : Type*} [Semiring A] [Algebra R A]
 
 /-- Internal definition used to define `lift` -/
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
@@ -572,5 +573,28 @@ theorem induction {C : FreeAlgebra R X → Prop}
   simp [AlgHom.ext_iff] at of_id
   exact of_id a
 #align free_algebra.induction FreeAlgebra.induction
+
+@[simp]
+theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by
+  set S := Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X))
+  refine top_unique fun x hx => ?_; clear hx
+  induction x using FreeAlgebra.induction with
+  | h_grade0 => exact S.algebraMap_mem _
+  | h_add x y hx hy => exact S.add_mem hx hy
+  | h_mul x y hx hy => exact S.mul_mem hx hy
+  | h_grade1 x => exact Algebra.subset_adjoin (Set.mem_range_self _)
+
+variable {A : Type*} [Semiring A] [Algebra R A]
+
+/-- Noncommutative version of `Algebra.adjoin_range_eq_range_aeval`. -/
+theorem _root_.Algebra.adjoin_range_eq_range_freeAlgebra_lift (f : X → A) :
+    Algebra.adjoin R (Set.range f) = (FreeAlgebra.lift R f).range := by
+  simp only [← Algebra.map_top, ←adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
+    (· ∘ ·), lift_ι_apply]
+
+/-- Noncommutative version of `Algebra.adjoin_range_eq_range`. -/
+theorem _root_.Algebra.adjoin_eq_range_freeAlgebra_lift (s : Set A) :
+    Algebra.adjoin R s = (FreeAlgebra.lift R ((↑) : s → A)).range := by
+  rw [← Algebra.adjoin_range_eq_range_freeAlgebra_lift, Subtype.range_coe]
 
 end FreeAlgebra

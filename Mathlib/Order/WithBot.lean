@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
+import Mathlib.Tactic.Lift
 
 #align_import order.with_bot from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -19,10 +21,10 @@ Adding a `bot` or a `top` to an order.
 
  -/
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 /-- Attach `⊥` to a type. -/
-def WithBot (α : Type _) :=
+def WithBot (α : Type*) :=
   Option α
 #align with_bot WithBot
 
@@ -92,19 +94,19 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
 @[elab_as_elim]
-def recBotCoe {C : WithBot α → Sort _} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
+def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
   | none => bot
   | Option.some a => coe a
 #align with_bot.rec_bot_coe WithBot.recBotCoe
 
 @[simp]
-theorem recBotCoe_bot {C : WithBot α → Sort _} (d : C ⊥) (f : ∀ a : α, C a) :
+theorem recBotCoe_bot {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) :
     @recBotCoe _ C d f ⊥ = d :=
   rfl
 #align with_bot.rec_bot_coe_bot WithBot.recBotCoe_bot
 
 @[simp]
-theorem recBotCoe_coe {C : WithBot α → Sort _} (d : C ⊥) (f : ∀ a : α, C a) (x : α) :
+theorem recBotCoe_coe {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) (x : α) :
     @recBotCoe _ C d f ↑x = f x :=
   rfl
 #align with_bot.rec_bot_coe_coe WithBot.recBotCoe_coe
@@ -217,7 +219,7 @@ instance orderTop [OrderTop α] : OrderTop (WithBot α) where
   top := some ⊤
   le_top o a ha := by cases ha; exact ⟨_, rfl, le_top⟩
 
-instance [OrderTop α] : BoundedOrder (WithBot α) :=
+instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) :=
   { WithBot.orderBot, WithBot.orderTop with }
 
 theorem not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := fun h =>
@@ -356,7 +358,7 @@ theorem monotone_map_iff [Preorder α] [Preorder β] {f : α → β} :
   monotone_iff.trans <| by simp [Monotone]
 #align with_bot.monotone_map_iff WithBot.monotone_map_iff
 
-alias monotone_map_iff ↔ _ _root_.Monotone.withBot_map
+alias ⟨_, _root_.Monotone.withBot_map⟩ := monotone_map_iff
 #align monotone.with_bot_map Monotone.withBot_map
 
 theorem strictMono_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
@@ -377,7 +379,7 @@ theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
   strictMono_iff.trans <| by simp [StrictMono, bot_lt_coe]
 #align with_bot.strict_mono_map_iff WithBot.strictMono_map_iff
 
-alias strictMono_map_iff ↔ _ _root_.StrictMono.withBot_map
+alias ⟨_, _root_.StrictMono.withBot_map⟩ := strictMono_map_iff
 #align strict_mono.with_bot_map StrictMono.withBot_map
 
 theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
@@ -554,7 +556,7 @@ end WithBot
 
 --TODO(Mario): Construct using order dual on `WithBot`
 /-- Attach `⊤` to a type. -/
-def WithTop (α : Type _) :=
+def WithTop (α : Type*) :=
   Option α
 #align with_top WithTop
 
@@ -612,19 +614,19 @@ theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
 
 /-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
-def recTopCoe {C : WithTop α → Sort _} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
+def recTopCoe {C : WithTop α → Sort*} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
   | none => top
   | Option.some a => coe a
 #align with_top.rec_top_coe WithTop.recTopCoe
 
 @[simp]
-theorem recTopCoe_top {C : WithTop α → Sort _} (d : C ⊤) (f : ∀ a : α, C a) :
+theorem recTopCoe_top {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) :
     @recTopCoe _ C d f ⊤ = d :=
   rfl
 #align with_top.rec_top_coe_top WithTop.recTopCoe_top
 
 @[simp]
-theorem recTopCoe_coe {C : WithTop α → Sort _} (d : C ⊤) (f : ∀ a : α, C a) (x : α) :
+theorem recTopCoe_coe {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) (x : α) :
     @recTopCoe _ C d f ↑x = f x :=
   rfl
 #align with_top.rec_top_coe_coe WithTop.recTopCoe_coe
@@ -1137,7 +1139,7 @@ theorem monotone_map_iff [Preorder α] [Preorder β] {f : α → β} :
   monotone_iff.trans <| by simp [Monotone]
 #align with_top.monotone_map_iff WithTop.monotone_map_iff
 
-alias monotone_map_iff ↔ _ _root_.Monotone.withTop_map
+alias ⟨_, _root_.Monotone.withTop_map⟩ := monotone_map_iff
 #align monotone.with_top_map Monotone.withTop_map
 
 theorem strictMono_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
@@ -1158,7 +1160,7 @@ theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
   strictMono_iff.trans <| by simp [StrictMono, coe_lt_top]
 #align with_top.strict_mono_map_iff WithTop.strictMono_map_iff
 
-alias strictMono_map_iff ↔ _ _root_.StrictMono.withTop_map
+alias ⟨_, _root_.StrictMono.withTop_map⟩ := strictMono_map_iff
 #align strict_mono.with_top_map StrictMono.withTop_map
 
 theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (a b : WithTop α)

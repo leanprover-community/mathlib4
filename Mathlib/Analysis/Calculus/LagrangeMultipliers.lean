@@ -33,7 +33,7 @@ open Filter Set
 
 open scoped Topology Filter BigOperators
 
-variable {E F : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {f : E → F} {φ : E → ℝ} {x₀ : E}
   {f' : E →L[ℝ] F} {φ' : E →L[ℝ] ℝ}
 
@@ -104,7 +104,7 @@ there exist `Λ : ι → ℝ` and `Λ₀ : ℝ`, `(Λ, Λ₀) ≠ 0`, such that 
 
 See also `IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt` for a version that
 states `¬LinearIndependent ℝ _` instead of existence of `Λ` and `Λ₀`. -/
-theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type _} [Fintype ι]
+theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type*} [Fintype ι]
     {f : ι → E → ℝ} {f' : ι → E →L[ℝ] ℝ} (hextr : IsLocalExtrOn φ {x | ∀ i, f i x = f i x₀} x₀)
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
     ∃ (Λ : ι → ℝ) (Λ₀ : ℝ), (Λ, Λ₀) ≠ 0 ∧ (∑ i, Λ i • f' i) + Λ₀ • φ' = 0 := by
@@ -128,7 +128,7 @@ Then the derivatives `f' i : E → L[ℝ] ℝ` and `φ' : E →L[ℝ] ℝ` are l
 See also `IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt` for a version that
 that states existence of Lagrange multipliers `Λ` and `Λ₀` instead of using
 `¬LinearIndependent ℝ _` -/
-theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type _} [Finite ι] {f : ι → E → ℝ}
+theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite ι] {f : ι → E → ℝ}
     {f' : ι → E →L[ℝ] ℝ} (hextr : IsLocalExtrOn φ {x | ∀ i, f i x = f i x₀} x₀)
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
     ¬LinearIndependent ℝ (Option.elim' φ' f' : Option ι → E →L[ℝ] ℝ) := by

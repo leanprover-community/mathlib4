@@ -6,13 +6,15 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
 import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 
-#align_import algebraic_topology.dold_kan.gamma_comp_n from "leanprover-community/mathlib"@"5f68029a863bdf76029fa0f7a519e6163c14152e"
+#align_import algebraic_topology.dold_kan.gamma_comp_n from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-! The counit isomorphism of the Dold-Kan equivalence
 
 The purpose of this file is to construct natural isomorphisms
 `N₁Γ₀ : Γ₀ ⋙ N₁ ≅ toKaroubi (ChainComplex C ℕ)`
 and `N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ))`.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 
@@ -26,7 +28,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C] [HasFiniteCoproducts C]
+variable {C : Type*} [Category C] [Preadditive C] [HasFiniteCoproducts C]
 
 /-- The isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for all `K : ChainComplex C ℕ`. -/
 @[simps!]

@@ -154,7 +154,7 @@ theorem fp_family_unbounded (H : ∀ i, IsNormal (f i)) :
 This is defined for all functions such that `Ordinal.derivFamily_zero`,
 `Ordinal.derivFamily_succ`, and `Ordinal.derivFamily_limit` are satisfied. -/
 def derivFamily (f : ι → Ordinal → Ordinal) (o : Ordinal) : Ordinal :=
-  limitRecOn.{max u v} o (nfpFamily.{u, v} f 0) (fun _ IH => nfpFamily.{u, v} f (succ IH))
+  limitRecOn o (nfpFamily.{u, v} f 0) (fun _ IH => nfpFamily.{u, v} f (succ IH))
     fun a _ => bsup.{max u v, u} a
 #align ordinal.deriv_family Ordinal.derivFamily
 

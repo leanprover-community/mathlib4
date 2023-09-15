@@ -4,6 +4,8 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
 
+set_option autoImplicit true
+
 -- To see the (sorted) list of lemmas that `rw?` will try rewriting by, use:
 -- set_option trace.Tactic.rewrites.lemmas true
 
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Group.Basic
 -- while testing you will probably want to delete
 -- `build/lib/MathlibExtras/Rewrites.extra`
 -- so that the cache is rebuilt.
+
+set_option autoImplicit true
 
 /--
 info: Try this: rw [@List.map_append]
@@ -66,6 +70,11 @@ example [Group G] (g h : G) : g * g⁻¹ * h = h := by
   rw [mul_inv_self]
   rw [one_mul]
 
+/--
+info: Try this: rw [← @Nat.prime_iff]
+-- "no goals"
+-/
+#guard_msgs in
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
   rw?!
 
@@ -94,6 +103,18 @@ example : foo x = 1 ↔ ∃ k : ℤ, x = k := by
 
 lemma six_eq_seven : 6 = 7 := sorry
 
+-- This test also verifies that we are removing duplicate results;
+-- it previously also reported `Nat.cast_ofNat`
+/--
+info: Try this: rw [six_eq_seven]
+-- ∀ (x : ℕ), x ≤ 7
+---
+info: Try this: rw [← @Nat.cast_eq_ofNat]
+-- ∀ (x : ℕ), x ≤ ↑6
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
 example : ∀ (x : ℕ), x ≤ 6 := by
   rw?!
   guard_target = ∀ (x : ℕ), x ≤ 7
@@ -103,3 +124,46 @@ example : ∀ (x : ℕ) (w : x ≤ 6), x ≤ 8 := by
   rw?!
   guard_target = ∀ (x : ℕ) (w : x ≤ 7), x ≤ 8
   admit
+
+-- check we can look inside let expressions
+/--
+info: Try this: rw [@AddCommMonoidWithOne.add_comm]
+-- "no goals"
+-/
+#guard_msgs in
+example (n : ℕ) : let y := 3; n + y = 3 + n := by
+  rw?!
+
+axiom α : Type
+axiom f : α → α
+axiom z : α
+axiom f_eq (n) : f n = z
+
+-- Check that the same lemma isn't used multiple times.
+-- This used to report two redundant copies of `f_eq`.
+-- It be lovely if `rw?` could produce two *different* rewrites by `f_eq` here!
+/--
+info: Try this: rw [f_eq]
+-- z = f m
+-/
+#guard_msgs in
+lemma test : f n = f m := by
+  rw?
+  rw [f_eq, f_eq]
+
+-- Check that we can rewrite by local hypotheses.
+/--
+info: Try this: rw [h]
+-- "no goals"
+-/
+#guard_msgs in
+example (h : 1 = 2) : 2 = 1 := by
+  rw?!
+
+def zero : Nat := 0
+
+-- This used to (incorrectly!) succeed because `rw?` would try `rfl`,
+-- rather than `withReducible` `rfl`.
+example : zero = 0 := by
+  rw?!
+  sorry
