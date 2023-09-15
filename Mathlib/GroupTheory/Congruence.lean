@@ -1360,7 +1360,6 @@ instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [
 instance mulDistribMulAction {α M : Type*} [Monoid α] [Monoid M] [MulDistribMulAction α M]
     [IsScalarTower α M M] (c : Con M) : MulDistribMulAction α c.Quotient :=
   { c.mulAction with
-    smul := (· • ·)
     smul_one := fun _ => congr_arg Quotient.mk'' <| smul_one _
     smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul' _ _ _ }
 #align con.mul_distrib_mul_action Con.mulDistribMulAction
