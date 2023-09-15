@@ -61,9 +61,6 @@ open Set (indicator)
 
 open scoped Topology BigOperators MeasureTheory ProbabilityTheory ENNReal NNReal
 
-open Set TopologicalSpace
-
-
 namespace ProbabilityTheory
 
 /-! ### Prerequisites on truncations -/
@@ -766,10 +763,10 @@ theorem strong_law_ae_f_measurable
   let Y : ℕ → ℕ → Ω → E := fun k i ↦ (φ k) ∘ (X i)
   have A : ∀ᵐ ω, ∀ k,
       Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, Y k i ω)) atTop (𝓝 𝔼[Y k 0]) :=
-    ae_all_iff.2 (fun k ↦ strong_law_ae_simpleFunc_comp X h'.measurable hindep hident (φ k))
+    sorry  -- ae_all_iff.2 (fun k ↦ strong_law_ae_simpleFunc_comp X h'.measurable hindep hident (φ k))
   have B : ∀ᵐ ω, ∀ k, Tendsto (fun n : ℕ ↦ (∑ i in range n, ‖(X i - Y k i) ω‖) / n)
         atTop (𝓝 𝔼[(fun ω ↦ ‖(X 0 - Y k 0) ω‖)]) := by
-    apply ae_all_iff.2 (fun k ↦ ?_)
+    sorry /-apply ae_all_iff.2 (fun k ↦ ?_)
     let G : ℕ → E → ℝ := fun k x ↦ ‖x - φ k x‖
     have G_meas : ∀ k, Measurable (G k) :=
       fun k ↦ (measurable_id.sub_stronglyMeasurable (φ k).stronglyMeasurable).norm
@@ -781,8 +778,16 @@ theorem strong_law_ae_f_measurable
       exact (hindep hij).comp (G_meas k) (G_meas k)
     · intro i
       simp_rw [I]
-      apply (hident i).comp (G_meas k)
+      apply (hident i).comp (G_meas k) -/
   filter_upwards [A, B] with ω hω h'ω
+  rw [tendsto_iff_norm_sub_tendsto_zero, tendsto_order]
+  refine ⟨fun c hc ↦ eventually_of_forall (fun n ↦ hc.trans_le (norm_nonneg _)), ?_⟩
+  intro ε (εpos : 0 < ε)
+  have δ : ℝ := sorry
+  have δpos : 0 < δ := sorry
+  have : ∃ k, ∫ ω, ‖(X 0 - Y k 0) ω‖ < δ := by
+    have Z := SimpleFunc.tendsto_approxOn_range_L1_nnnorm h'.measurable hint
+    have T := (tendsto_order.1 Z).2
 
 
 
