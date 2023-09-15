@@ -224,7 +224,8 @@ instance instAddMonoid : AddMonoid (ArithmeticFunction R) :=
     ArithmeticFunction.add with
     add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
     zero_add := fun _ => ext fun _ => zero_add _
-    add_zero := fun _ => ext fun _ => add_zero _ }
+    add_zero := fun _ => ext fun _ => add_zero _
+    nsmul := nsmulRec }
 #align nat.arithmetic_function.add_monoid Nat.ArithmeticFunction.instAddMonoid
 
 end AddMonoid
@@ -240,10 +241,13 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
 instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
   { ArithmeticFunction.instAddMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _ }
 
+instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
+  neg f := ⟨fun n => -f n, by simp⟩
+
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) :=
   { ArithmeticFunction.instAddMonoid with
-    neg := fun f => ⟨fun n => -f n, by simp⟩
-    add_left_neg := fun _ => ext fun _ => add_left_neg _ }
+    add_left_neg := fun _ => ext fun _ => add_left_neg _
+    zsmul := zsmulRec }
 
 instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) :=
   { show AddGroup (ArithmeticFunction R) by infer_instance with
@@ -415,7 +419,8 @@ instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) :=
 instance [CommRing R] : CommRing (ArithmeticFunction R) :=
   { ArithmeticFunction.instSemiring with
     add_left_neg := add_left_neg
-    mul_comm := mul_comm }
+    mul_comm := mul_comm
+    zsmul := (· • ·) }
 
 instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where

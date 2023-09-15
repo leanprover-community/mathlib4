@@ -526,14 +526,15 @@ instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
-instance addCommMonoid : AddCommMonoid (LieSubalgebra R L)
-    where
-  add := (· ⊔ ·)
+instance : Add (LieSubalgebra R L) where add := Sup.sup
+instance : Zero (LieSubalgebra R L) where zero := ⊥
+
+instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
   add_assoc _ _ _ := sup_assoc
-  zero := ⊥
   zero_add _ := bot_sup_eq
   add_zero _ := sup_bot_eq
   add_comm _ _ := sup_comm
+  nsmul := nsmulRec
 
 instance : CanonicallyOrderedAddMonoid (LieSubalgebra R L) :=
   { LieSubalgebra.addCommMonoid,

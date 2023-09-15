@@ -948,6 +948,8 @@ noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
   add_left_neg := add_left_neg
   add_comm := add_comm
   add_assoc := add_assoc
+  nsmul := nsmulRec
+  zsmul := zsmulRec
 
 end Point
 

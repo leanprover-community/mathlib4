@@ -364,6 +364,7 @@ instance : AddMonoid (HahnSeries Γ R) where
   add_zero x := by
     ext
     apply add_zero
+  nsmul := nsmulRec -- TODO: fix the diamond
 
 @[simp]
 theorem add_coeff' {x y : HahnSeries Γ R} : (x + y).coeff = x.coeff + y.coeff :=
@@ -435,16 +436,20 @@ section AddGroup
 
 variable [AddGroup R]
 
+instance : Neg (HahnSeries Γ R) where
+  neg x :=
+    { coeff := fun a => -x.coeff a
+      isPwo_support' := by
+        rw [Function.support_neg]
+        exact x.isPwo_support }
+
 instance : AddGroup (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
-    neg := fun x =>
-      { coeff := fun a => -x.coeff a
-        isPwo_support' := by
-          rw [Function.support_neg]
-          exact x.isPwo_support }
     add_left_neg := fun x => by
       ext
-      apply add_left_neg }
+      apply add_left_neg
+    zsmul := zsmulRec -- TODO: fix the diamond
+    }
 
 @[simp]
 theorem neg_coeff' {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
@@ -1490,6 +1495,7 @@ instance : AddCommMonoid (SummableFamily Γ R α) where
   add_assoc r s t := by
     ext
     apply add_assoc
+  nsmul := nsmulRec
 
 /-- The infinite sum of a `SummableFamily` of Hahn series. -/
 def hsum (s : SummableFamily Γ R α) : HahnSeries Γ R where
@@ -1529,19 +1535,22 @@ section AddCommGroup
 
 variable [PartialOrder Γ] [AddCommGroup R] {α : Type*} {s t : SummableFamily Γ R α} {a : α}
 
+instance : Neg (SummableFamily Γ R α) where
+  neg s :=
+    { toFun := fun a => -s a
+      isPwo_iUnion_support' := by
+        simp_rw [support_neg]
+        exact s.isPwo_iUnion_support'
+      finite_co_support' := fun g => by
+        simp only [neg_coeff', Pi.neg_apply, Ne.def, neg_eq_zero]
+        exact s.finite_co_support g }
+
 instance : AddCommGroup (SummableFamily Γ R α) :=
   { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
-    neg := fun s =>
-      { toFun := fun a => -s a
-        isPwo_iUnion_support' := by
-          simp_rw [support_neg]
-          exact s.isPwo_iUnion_support'
-        finite_co_support' := fun g => by
-          simp only [neg_coeff', Pi.neg_apply, Ne.def, neg_eq_zero]
-          exact s.finite_co_support g }
     add_left_neg := fun a => by
       ext
-      apply add_left_neg }
+      apply add_left_neg
+    zsmul := zsmulRec }
 
 @[simp]
 theorem coe_neg : ⇑(-s) = -s :=
