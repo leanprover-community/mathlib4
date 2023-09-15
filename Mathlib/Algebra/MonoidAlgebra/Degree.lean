@@ -354,7 +354,7 @@ lemma apply_add_of_supDegree_eq (hD : D.Injective) {ap aq : A}
   · intro h; rw [if_pos rfl, Finsupp.not_mem_support_iff.1 h, mul_zero]
   · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => if_neg <| fun he => ?_)
     apply_fun D at he; simp_rw [hadd] at he
-    have := Add.to_covariantClass_left B
+    have := covariantClass_le_of_lt B B (· + ·)
     exact (add_lt_add_of_lt_of_le (((Finset.le_sup ha).trans_eq hp).lt_of_ne <| hD.ne_iff.2 hne)
       <| (Finset.le_sup ha').trans_eq hq).ne he
   · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
@@ -477,7 +477,8 @@ lemma Monic.supDegree_mul_of_ne_zero (hq : q.Monic D) (hp : p ≠ 0) :
     exact add_mem (supDegree_mem_range D hp) (supDegree_mem_range D hq.ne_zero)
   · simp_rw [Finsupp.mem_support_iff, apply_supDegree_add_supDegree hD hadd, hq, mul_one,
              Ne, leadingCoeff_eq_zero hD, hp]
-  · have := Add.to_covariantClass_left B; have := Add.to_covariantClass_right B
+  · have := covariantClass_le_of_lt B B (· + ·)
+    have := covariantClass_le_of_lt B B (Function.swap (· + ·))
     exact fun a ha => (Finset.le_sup ha).trans (supDegree_mul_le (D := ⟨D, hadd⟩))
 
 lemma Monic.supDegree_mul (hbot : (⊥ : B) + ⊥ = ⊥) (hp : p.Monic D) (hq : q.Monic D) :
