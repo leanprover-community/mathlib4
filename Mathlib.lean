@@ -219,7 +219,7 @@ import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.ComplexExtend
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
-import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructure
+import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
 import Mathlib.Algebra.Homology.DerivedCategory.Ext
 import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 import Mathlib.Algebra.Homology.DerivedCategory.Linear

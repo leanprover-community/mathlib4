@@ -572,6 +572,11 @@ lemma map_isInvertedBy_iff {E : Type _} [Category E]
     exact (RespectsIso.arrow_mk_iso_iff (RespectsIso.isomorphisms E)
       (G.mapArrow.mapIso iso)).1 (h _ hf')
 
+lemma isomorphisms_isInvertedBy (F : C ⥤ D) : (isomorphisms C).IsInvertedBy F := by
+  intro X Y f hf
+  simp only [isomorphisms.iff] at hf
+  infer_instance
+
 lemma subset_inverseImage_iff_map_subset (P : MorphismProperty C) (Q : MorphismProperty D)
   (hQ : Q.RespectsIso)
     (F : C ⥤ D) : P ⊆ Q.inverseImage F ↔ P.map F ⊆ Q := by
