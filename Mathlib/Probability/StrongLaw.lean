@@ -61,6 +61,9 @@ open Set (indicator)
 
 open scoped Topology BigOperators MeasureTheory ProbabilityTheory ENNReal NNReal
 
+open Set TopologicalSpace
+
+
 namespace ProbabilityTheory
 
 /-! ### Prerequisites on truncations -/
@@ -750,17 +753,38 @@ theorem strong_law_ae_simpleFunc_comp [MeasurableSpace E] [BorelSpace E]
 identically distributed integrable real-valued random variables, then `∑ i in range n, X i / n`
 converges almost surely to `𝔼[X 0]`. We give here the strong version, due to Etemadi, that only
 requires pairwise independence. -/
-theorem strong_law_ae_f_measurable [MeasurableSpace E] [BorelSpace E]
-    (X : ℕ → Ω → E) (h' : StronglyMeasurable (X 0))
+theorem strong_law_ae_f_measurable
+    (X : ℕ → Ω → E) (hint : Integrable (X 0)) (h' : StronglyMeasurable (X 0))
     (hindep : Pairwise (fun i j ↦ IndepFun (X i) (X j))) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, X i ω)) atTop (𝓝 𝔼[X 0]) := by
   let s : Set E := Set.range (X 0) ∪ {0}
   have zero_s : 0 ∈ s := by simp
   have : SeparableSpace s := h'.separableSpace_range_union_singleton
   have : Nonempty s := ⟨0, zero_s⟩
-  let φ : ℕ → (SimpleFunc E E) :=
+  let φ : ℕ → SimpleFunc E E :=
     SimpleFunc.nearestPt (fun k => Nat.casesOn k 0 ((↑) ∘ denseSeq s) : ℕ → E)
   let Y : ℕ → ℕ → Ω → E := fun k i ↦ (φ k) ∘ (X i)
+  have A : ∀ᵐ ω, ∀ k,
+      Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, Y k i ω)) atTop (𝓝 𝔼[Y k 0]) :=
+    ae_all_iff.2 (fun k ↦ strong_law_ae_simpleFunc_comp X h'.measurable hindep hident (φ k))
+  have B : ∀ᵐ ω, ∀ k, Tendsto (fun n : ℕ ↦ (∑ i in range n, ‖(X i - Y k i) ω‖) / n)
+        atTop (𝓝 𝔼[(fun ω ↦ ‖(X 0 - Y k 0) ω‖)]) := by
+    apply ae_all_iff.2 (fun k ↦ ?_)
+    let G : ℕ → E → ℝ := fun k x ↦ ‖x - φ k x‖
+    have G_meas : ∀ k, Measurable (G k) :=
+      fun k ↦ (measurable_id.sub_stronglyMeasurable (φ k).stronglyMeasurable).norm
+    have I : ∀ k i, (fun ω ↦ ‖(X i - Y k i) ω‖) = (G k) ∘ (X i) := fun k i ↦ rfl
+    apply strong_law_ae_real (fun i ω ↦ ‖(X i - Y k i) ω‖)
+    · exact (hint.sub ((φ k).comp (X 0) h'.measurable).integrable_of_isFiniteMeasure).norm
+    · simp_rw [I]
+      intro i j hij
+      exact (hindep hij).comp (G_meas k) (G_meas k)
+    · intro i
+      simp_rw [I]
+      apply (hident i).comp (G_meas k)
+  filter_upwards [A, B] with ω hω h'ω
+
+
 
 
 
