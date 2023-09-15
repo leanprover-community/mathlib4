@@ -92,7 +92,7 @@ structure LinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R �
     AddHom M M₂ where
   /-- A linear map preserves scalar multiplication.
   We prefer the spelling `_root_.map_smul` instead. -/
-  map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
+  protected map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
 #align linear_map LinearMap
 
 /-- The `AddHom` underlying a `LinearMap`. -/
@@ -659,7 +659,7 @@ def toLinearMap (fₗ : M →+[R] M₂) : M →ₗ[R] M₂ :=
   { fₗ with }
 #align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
 
-instance : Coe (M →+[R] M₂) (M →ₗ[R] M₂) :=
+instance : CoeTC (M →+[R] M₂) (M →ₗ[R] M₂) :=
   ⟨toLinearMap⟩
 
 -- Porting note: because coercions get unfolded, there is no need for this rewrite
@@ -1159,12 +1159,12 @@ instance apply_faithfulSMul : FaithfulSMul (Module.End R M) M :=
   ⟨LinearMap.ext⟩
 #align linear_map.apply_has_faithful_smul LinearMap.apply_faithfulSMul
 
-instance apply_smulCommClass : SMulCommClass R (Module.End R M) M
-    where smul_comm r e m := (e.map_smul r m).symm
+instance apply_smulCommClass : SMulCommClass R (Module.End R M) M where
+  smul_comm r e m := (e.map_smul r m).symm
 #align linear_map.apply_smul_comm_class LinearMap.apply_smulCommClass
 
-instance apply_smulCommClass' : SMulCommClass (Module.End R M) R M
-    where smul_comm := LinearMap.map_smul
+instance apply_smulCommClass' : SMulCommClass (Module.End R M) R M where
+  smul_comm := LinearMap.map_smul
 #align linear_map.apply_smul_comm_class' LinearMap.apply_smulCommClass'
 
 instance apply_isScalarTower {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] :

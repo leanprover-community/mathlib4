@@ -69,8 +69,8 @@ instance center.commMonoid : CommMonoid (center M) :=
     mul_comm := fun a _ => Subtype.ext <| a.prop.comm _ }
 
 /-- The center of a monoid acts commutatively on that monoid. -/
-instance center.smulCommClass_left : SMulCommClass (center M) M M
-    where smul_comm m x y := (Commute.left_comm (m.prop.comm x) y)
+instance center.smulCommClass_left : SMulCommClass (center M) M M where
+  smul_comm m x y := Commute.left_comm (m.prop.comm x) y
 #align submonoid.center.smul_comm_class_left Submonoid.center.smulCommClass_left
 
 /-- The center of a monoid acts commutatively on that monoid. -/
