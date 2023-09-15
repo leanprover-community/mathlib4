@@ -773,8 +773,8 @@ general ring with no nontrivial distinguished commutative subring, use `Quadrati
 which gives an additive homomorphism (or more precisely a `ℤ`-linear map.) -/
 def associatedHom : QuadraticForm R M →ₗ[S] BilinForm R M where
   toFun Q :=
-    (⟨⅟ 2, (Submonoid.mem_center_iff.mpr fun x => (Commute.ofNat_right x 2).invOf_right)⟩
-      : Submonoid.center R) • Q.polarBilin
+    (⟨⅟ 2, (Submonoid.mem_center_iff.mpr fun x => (Commute.ofNat_right x 2).invOf_right)⟩ :
+      Submonoid.center R) • Q.polarBilin
   map_add' Q Q' := by
     ext
     simp only [BilinForm.add_apply, BilinForm.smul_apply, coeFn_mk, polarBilin_apply, polar_add,
