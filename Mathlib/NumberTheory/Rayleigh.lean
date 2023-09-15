@@ -13,8 +13,8 @@ This file proves Rayleigh's theorem on Beatty sequences.
 
 ## Main statements
 
-* `beattySequence`: The Beatty sequence for real number `r` is defined to be
-  `B_r := {⌊r⌋, ⌊2r⌋, ⌊3r⌋, ...}`.
+* `beattySequence`: In the Beatty sequence for real number `r`, the `k`th term is `⌊k * r⌋`.
+* `beattySet`: The Beatty set for real number `r` is defined to be `B_r := {⌊r⌋, ⌊2r⌋, ⌊3r⌋, ...}`.
 * `rayleigh`: Rayleigh's theorem on Beatty sequences. Let `r` be an irrational real number greater
   than 1. Then every positive integer is in exactly one of `B_r` or `B_(r / (r - 1))`.
 * `rayleigh'`: Rayleigh's theorem on Beatty sequences. Let `r` and `s` be irrational real numbers
@@ -30,16 +30,19 @@ This file proves Rayleigh's theorem on Beatty sequences.
 beatty, sequence, rayleigh, irrational, floor
 -/
 
-/-- The Beatty sequence for real number `r` is defined to be `B_r := {⌊r⌋, ⌊2r⌋, ⌊3r⌋, ...}`. -/
-def beattySequence (r : ℝ) : Set ℤ :=
-  { j | ∃ k : ℤ, k > 0 ∧ j = ⌊k * r⌋ }
+/-- In the Beatty sequence for real number `r`, the `k`th term is `⌊k * r⌋`. -/
+noncomputable def beattySequence (r : ℝ) : ℤ → ℤ :=
+  fun k ↦ ⌊k * r⌋
+
+/-- The Beatty set for real number `r` is defined to be `B_r := {⌊r⌋, ⌊2r⌋, ⌊3r⌋, ...}`. -/
+def beattySet (r : ℝ) : Set ℤ :=
+  { beattySequence r k | k > 0 }
 
 namespace Beatty
 
 variable {r} (hr₁ : r > 1) (hr₂ : Irrational r) {j k : ℤ} (hj : j > 0)
 
-theorem irrational_s :
-    r.conjugateExponent > 1 ∧ Irrational r.conjugateExponent := by
+theorem irrational_s : r.conjugateExponent > 1 ∧ Irrational r.conjugateExponent := by
   constructor
   · apply (lt_div_iff (sub_pos.2 hr₁)).2
     rw [one_mul]
@@ -120,7 +123,7 @@ theorem no_anticollision :
 /-- Let `1 < r ∈ ℝ ∖ ℚ` and `0 < j ∈ ℤ`. Then either `j ∈ B_r` or `B_r` jumps over `j`.
 
 This is unfortunately not in the proof sketch. -/
-theorem hit_or_miss : j ∈ beattySequence r ∨ (∃ k : ℤ, k * r < j ∧ j + 1 ≤ (k + 1) * r) := by
+theorem hit_or_miss : j ∈ beattySet r ∨ (∃ k : ℤ, k * r < j ∧ j + 1 ≤ (k + 1) * r) := by
   have hr₀ : r > 0 := lt_trans zero_lt_one hr₁
   -- for both cases, the candidate is `k = ⌊(j + 1) / r⌋`
   have h₁ := Int.sub_floor_div_mul_nonneg (j + 1 : ℝ) hr₀
@@ -143,7 +146,7 @@ theorem hit_or_miss : j ∈ beattySequence r ∨ (∃ k : ℤ, k * r < j ∧ j +
       have := (pos_iff_pos_of_mul_pos this).2 hr₀
       norm_num at this
       exact this
-    · symm; rw [Int.floor_eq_iff]; exact ⟨h₂, h₁⟩
+    · rw [beattySequence, Int.floor_eq_iff]; exact ⟨h₂, h₁⟩
 
 end Beatty
 
@@ -151,16 +154,16 @@ end Beatty
 Then every positive integer is in exactly one of `B_r` or `B_(r / (r - 1))`. -/
 theorem rayleigh {r : ℝ} (hr₁ : r > 1) (hr₂ : Irrational r) :
     ∀ {j : ℤ}, j > 0 →
-      (j ∈ beattySequence r ∧ j ∉ beattySequence r.conjugateExponent) ∨
-      (j ∉ beattySequence r ∧ j ∈ beattySequence r.conjugateExponent) := by
+      (j ∈ beattySet r ∧ j ∉ beattySet r.conjugateExponent) ∨
+      (j ∉ beattySet r ∧ j ∈ beattySet r.conjugateExponent) := by
   intro j hj
-  by_cases h₁ : j ∈ beattySequence r
-  · by_cases h₂ : j ∈ beattySequence r.conjugateExponent
+  by_cases h₁ : j ∈ beattySet r
+  · by_cases h₂ : j ∈ beattySet r.conjugateExponent
     · have ⟨k, _, h₃⟩ := h₁
       have ⟨m, _, h₄⟩ := h₂
-      exact (Beatty.no_collision hr₁ hr₂ ⟨j, k, m, hj, h₃, h₄⟩).elim
+      exact (Beatty.no_collision hr₁ hr₂ ⟨j, k, m, hj, h₃.symm, h₄.symm⟩).elim
     · exact Or.inl ⟨h₁, h₂⟩
-  · by_cases h₂ : j ∈ beattySequence r.conjugateExponent
+  · by_cases h₂ : j ∈ beattySet r.conjugateExponent
     · exact Or.inr ⟨h₁, h₂⟩
     · have ⟨hs₁, hs₂⟩ := Beatty.irrational_s hr₁ hr₂
       have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hr₁ hr₂ hj).resolve_left h₁
@@ -171,6 +174,5 @@ theorem rayleigh {r : ℝ} (hr₁ : r > 1) (hr₂ : Irrational r) :
 1, and satisfy `1/p + 1/q = 1`. Then every positive integer is in exactly one of `B_r` or `B_s`. -/
 theorem rayleigh' {r s : ℝ} (hr₁ : Real.IsConjugateExponent r s) (hr₂ : Irrational r) :
     ∀ {j : ℤ}, j > 0 →
-      (j ∈ beattySequence r ∧ j ∉ beattySequence s) ∨
-      (j ∉ beattySequence r ∧ j ∈ beattySequence s) := by
+      (j ∈ beattySet r ∧ j ∉ beattySet s) ∨ (j ∉ beattySet r ∧ j ∈ beattySet s) := by
   convert @rayleigh _ hr₁.one_lt hr₂ <;> exact hr₁.conj_eq
