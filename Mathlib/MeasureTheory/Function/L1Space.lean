@@ -184,6 +184,15 @@ theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : �
   (hasFiniteIntegral_const C).mono' hC
 #align measure_theory.has_finite_integral_of_bounded MeasureTheory.hasFiniteIntegral_of_bounded
 
+theorem hasFiniteIntegral_of_fintype [Fintype α] [IsFiniteMeasure μ] {f : α → β} :
+    HasFiniteIntegral f μ :=
+  hasFiniteIntegral_of_bounded (C := (Finset.sup .univ (fun a => ‖f a‖₊) : NNReal)) <| by
+    apply ae_of_all μ
+    intro x
+    rw [← coe_nnnorm (f x)]
+    apply NNReal.toReal_le_toReal
+    apply Finset.le_sup (Finset.mem_univ x)
+
 theorem HasFiniteIntegral.mono_measure {f : α → β} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
     HasFiniteIntegral f μ :=
   lt_of_le_of_lt (lintegral_mono' hμ le_rfl) h
@@ -343,7 +352,7 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
   have h : ∀ᵐ a ∂μ, Tendsto (fun n => ENNReal.ofReal ‖F n a - f a‖) atTop (𝓝 0) := by
     rw [← ENNReal.ofReal_zero]
     refine' h_lim.mono fun a h => (continuous_ofReal.tendsto _).comp _
-    rwa [← tendsto_iff_norm_tendsto_zero]
+    rwa [← tendsto_iff_norm_sub_tendsto_zero]
   /- Therefore, by the dominated convergence theorem for nonnegative integration, have
     ` ∫ ‖f a - F n a‖ --> 0 ` -/
   suffices h : Tendsto (fun n => ∫⁻ a, ENNReal.ofReal ‖F n a - f a‖ ∂μ) atTop (𝓝 (∫⁻ _ : α, 0 ∂μ))
@@ -497,6 +506,12 @@ theorem integrable_const_iff {c : β} : Integrable (fun _ : α => c) μ ↔ c = 
 theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α => c) μ :=
   integrable_const_iff.2 <| Or.inr <| measure_lt_top _ _
 #align measure_theory.integrable_const MeasureTheory.integrable_const
+
+@[simp]
+theorem integrable_of_fintype [Fintype α] [MeasurableSpace α] [MeasurableSingletonClass α]
+    (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
+  ⟨ StronglyMeasurable.aestronglyMeasurable (stronglyMeasurable_of_fintype f),
+    hasFiniteIntegral_of_fintype ⟩
 
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
