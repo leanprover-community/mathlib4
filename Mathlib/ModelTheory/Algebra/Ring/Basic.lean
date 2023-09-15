@@ -141,8 +141,8 @@ theorem card_ring : card Language.ring = 5 := by
 
 open Language ring Structure
 
-/-- A Type `R` is a `CompatibleRing` if it is structure for the language of rings and this structure
-is the same as the structure already given on `R` by the classes `Add`, `Mul` etc.
+/-- A Type `R` is a `CompatibleRing` if it is a structure for the language of rings and this
+structure is the same as the structure already given on `R` by the classes `Add`, `Mul` etc.
 
 It is recommended to use this type class as a hypothesis to any theorem whose statement
 requires a type to have be both a `Ring` (or `Field` etc.) and a
@@ -236,13 +236,8 @@ def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
 def languageEquivEquivRingEquiv {R S : Type*}
     [NonAssocRing R] [NonAssocRing S]
     [CompatibleRing R] [CompatibleRing S] :
-    (R ≃+* S) ≃ (Language.ring.Equiv R S) :=
+    (Language.ring.Equiv R S) ≃ (R ≃+* S) :=
   { toFun := fun f =>
-    { f with
-      map_fun' := fun {n} f => by
-        cases f <;> simp
-      map_rel' := fun {n} f => by cases f },
-    invFun := fun f =>
     { f with
       map_add' := by
         intro x y
@@ -250,6 +245,11 @@ def languageEquivEquivRingEquiv {R S : Type*}
       map_mul' := by
         intro x y
         simpa using f.map_fun mulFunc ![x, y] }
+    invFun := fun f =>
+    { f with
+      map_fun' := fun {n} f => by
+        cases f <;> simp
+      map_rel' := fun {n} f => by cases f },
     left_inv := fun f => by ext; rfl
     right_inv := fun f => by ext; rfl }
 
