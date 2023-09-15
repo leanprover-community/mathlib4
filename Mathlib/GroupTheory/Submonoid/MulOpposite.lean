@@ -22,7 +22,7 @@ namespace Submonoid
 `unop`"]
 def op {M : Type*} [MulOneClass M] (x : Submonoid M) : Submonoid (MulOpposite M) where
   carrier := MulOpposite.unop ⁻¹' x.1
-  mul_mem' {a b} ha hb := by simpa using mul_mem hb ha
+  mul_mem' {_ _} ha hb := x.mul_mem hb ha
   one_mem' := Submonoid.one_mem' _
 
 /-- pull an opposite submonoid back to a submonoid along `op`-/
