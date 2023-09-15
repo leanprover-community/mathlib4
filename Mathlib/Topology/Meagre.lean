@@ -62,10 +62,29 @@ lemma closed_nowhere_dense_iff_complement {s : Set α} :
 /-- A set is **meagre** iff it is contained in the countable union of nowhere dense sets. -/
 def IsMeagre (s : Set α) := ∃ S : Set (Set α), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S
 
--- TODO: prove and move to the right place!
-lemma sUnion_subset_closure {s : Set (Set α)} : ⋃₀ s ⊆ ⋃₀ (closure '' s) := by sorry
+-- TODO: move to the right place!
+lemma sUnion_subset_mono1 {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, t ⊆ f t) :
+    ⋃₀ s ⊆ ⋃₀ (f '' s) := by
+  rintro x ⟨t, htx, hxt⟩
+  use f t
+  exact ⟨mem_image_of_mem f htx, hf t hxt⟩
 
--- /-- A set is meagre iff its complement is residual (or comeagre). -/
+lemma sUnion_subset_mono2 {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, t ⊇ f t) :
+    ⋃₀ s ⊇ ⋃₀ (f '' s) := by
+  -- let t ∈ f '' s be arbitrary; then t = f u for some u : Set α
+  rintro x ⟨t, ⟨u, hus, hut⟩, hxt⟩
+  have : u ⊇ t := by rw [← hut]; exact hf u
+  rw [mem_sUnion]
+  use u
+  exact ⟨hus, this hxt⟩
+
+lemma sUnion_subset_closure {s : Set (Set α)} : ⋃₀ s ⊆ ⋃₀ (closure '' s) :=
+  sUnion_subset_mono1 (by apply subset_closure)
+
+lemma sUnion_supset_interior {s : Set (Set α)} : ⋃₀ (interior '' s) ⊆ ⋃₀ s:=
+  sUnion_subset_mono2 (by apply interior_subset)
+
+/-- A set is meagre iff its complement is residual (or comeagre). -/
 lemma meagre_iff_complement_comeagre {s : Set α} : IsMeagre s ↔ sᶜ ∈ residual α := by
   constructor
   · rintro ⟨s', ⟨hnowhereDense, hcountable, hss'⟩⟩
