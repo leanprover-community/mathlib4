@@ -164,10 +164,7 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
 
 instance injective_ratCircle : CategoryTheory.Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
-  @injective_of_divisible _ _
-  { div := λ a n ↦ ULift.up (DivisibleBy.div a.down n)
-    div_zero := λ a ↦ by simp only [DivisibleBy.div_zero]; rfl
-    div_cancel := λ {n} a ha ↦ by ext1; exact DivisibleBy.div_cancel a.down ha }
+  @injective_of_divisible _ _ _
 
 namespace enough_injectives_aux_proofs
 
@@ -206,8 +203,7 @@ lemma toNext_inj_of_exists
     refine hf <| ULift.down_injective <| congr_fun h0
       (@Injective.factorThru (ModuleCat ℤ) _ _ _ _ i2 f g hg).toAddMonoidHom
 
-
-section
+section aux_defs
 
 variable {A_}
 variable (a : A_)
@@ -240,7 +236,7 @@ lemma smulBya_ker : LinearMap.ker (smulBya a) = Ideal.span {(addOrderOf a : ℤ)
       exact Submodule.map_id _
   e2.trans e1
 
-end
+end aux_defs
 
 /-- given `n : ℕ`, the map `m ↦ n / m`. -/
 @[simps] noncomputable def divBy (n : ℕ) : ℤ →ₗ[ℤ] AddCircle (1 : ℚ) where
