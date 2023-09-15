@@ -1089,7 +1089,7 @@ lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono (φ : S₁ ⟶ S₂)
   have ⟨z, hz⟩ := KernelFork.IsLimit.lift' S₁.homologyIsKernel _ h
   dsimp at hz
   refine' ⟨⟨z, _, _⟩⟩
-  . rw [← cancel_mono S₁.homologyι, id_comp, assoc, hz, homologyι_naturality_assoc,
+  · rw [← cancel_mono S₁.homologyι, id_comp, assoc, hz, homologyι_naturality_assoc,
       IsIso.hom_inv_id, comp_id]
   . rw [← cancel_mono S₂.homologyι, assoc, homologyι_naturality, reassoc_of% hz,
       IsIso.inv_hom_id, comp_id, id_comp]
