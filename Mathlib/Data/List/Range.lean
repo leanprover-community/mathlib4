@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kenny Lau, Scott Morrison
 -/
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Zip
+import Mathlib.Data.List.Nodup
 
 #align_import data.list.range from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 
@@ -220,5 +221,11 @@ theorem nthLe_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).nthLe i h = ⟨i, length_finRange n ▸ h⟩ :=
   get_finRange h
 #align list.nth_le_fin_range List.nthLe_finRange
+
+theorem indexOf_finRange (i : Fin k) : (finRange k).indexOf i = i := by
+  have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
+  have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
+  have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
+  simpa using (Nodup.get_inj_iff (nodup_finRange k)).mp (Eq.trans h₁ h₂.symm)
 
 end List
