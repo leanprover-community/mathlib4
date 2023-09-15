@@ -179,7 +179,7 @@ namespace RelSeries
 protected noncomputable def longestOf [r.FiniteDimensional] : RelSeries r :=
   (inferInstance : r.FiniteDimensional).exists_longest_relSeries.choose
 
-lemma longestOf_is_longest [r.FiniteDimensional] (x : RelSeries r) :
+lemma length_le_length_longestOf [r.FiniteDimensional] (x : RelSeries r) :
     x.length ≤ (RelSeries.longestOf r).length :=
   (inferInstance : r.FiniteDimensional).exists_longest_relSeries.choose_spec _
 
@@ -187,7 +187,7 @@ lemma longestOf_is_longest [r.FiniteDimensional] (x : RelSeries r) :
 protected noncomputable def withLength [r.InfiniteDimensional] (n : ℕ) : RelSeries r :=
   ((inferInstance : r.InfiniteDimensional).exists_relSeries_with_length n).choose
 
-@[simp] lemma withLength_length_eq [r.InfiniteDimensional] (n : ℕ) :
+@[simp] lemma length_withLength [r.InfiniteDimensional] (n : ℕ) :
     (RelSeries.withLength r n).length = n :=
   ((inferInstance : r.InfiniteDimensional).exists_relSeries_with_length n).choose_spec
 
