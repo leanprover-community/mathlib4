@@ -1077,7 +1077,7 @@ lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi (φ : S₁ ⟶ S₂)
   refine' ⟨⟨z, _, _⟩⟩
   · rw [← cancel_epi S₁.homologyπ, homologyπ_naturality_assoc, hz,
       IsIso.hom_inv_id_assoc, comp_id]
-  . rw [← cancel_epi S₂.homologyπ, reassoc_of% hz, homologyπ_naturality,
+  · rw [← cancel_epi S₂.homologyπ, reassoc_of% hz, homologyπ_naturality,
       IsIso.inv_hom_id_assoc, comp_id]
 
 lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono (φ : S₁ ⟶ S₂)
