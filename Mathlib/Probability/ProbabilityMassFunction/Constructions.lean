@@ -120,7 +120,8 @@ theorem monad_seq_eq_seq {α β : Type _} (q : Pmf (α → β)) (p : Pmf α) : q
 #align pmf.monad_seq_eq_seq Pmf.monad_seq_eq_seq
 
 @[simp]
-theorem seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then (q f : ℝ≥0∞) * p a else 0 := by
+theorem seq_apply :
+    (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then (q f : ℝ≥0∞) * p a else 0 := by
   simp only [seq, mul_boole, bind_apply, pure_apply]
   refine' tsum_congr fun f => ENNReal.tsum_mul_left.symm.trans (tsum_congr fun a => _)
   simpa only [mul_zero] using mul_ite (b = f a) (q f : ℝ≥0∞) (p a) 0
