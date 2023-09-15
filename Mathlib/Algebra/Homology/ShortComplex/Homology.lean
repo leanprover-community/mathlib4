@@ -1091,7 +1091,7 @@ lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono (φ : S₁ ⟶ S₂)
   refine' ⟨⟨z, _, _⟩⟩
   · rw [← cancel_mono S₁.homologyι, id_comp, assoc, hz, homologyι_naturality_assoc,
       IsIso.hom_inv_id, comp_id]
-  . rw [← cancel_mono S₂.homologyι, assoc, homologyι_naturality, reassoc_of% hz,
+  · rw [← cancel_mono S₂.homologyι, assoc, homologyι_naturality, reassoc_of% hz,
       IsIso.inv_hom_id, comp_id, id_comp]
 
 lemma isZero_homology_of_isZero_X₂ (hS : IsZero S.X₂) [S.HasHomology] :
