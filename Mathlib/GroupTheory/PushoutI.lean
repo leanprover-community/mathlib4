@@ -97,21 +97,22 @@ theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
     {i : ι} (g : G i) : (lift f k hf) (of i g : PushoutI φ) = f i g := by
   delta PushoutI lift of
-  simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe, lift_inl, CoprodI.lift_of]
+  simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe,
+    lift_apply_inl, CoprodI.lift_of]
 
 @[simp]
 theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
     (g : H) : (lift f k hf) (base g : PushoutI φ) = k g := by
   delta PushoutI lift base
-  simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe, lift_inr]
+  simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe, lift_apply_inr]
 
 @[ext 1199]
 theorem hom_ext {f g : PushoutI φ →* K}
     (h : ∀ i, f.comp (of i : G i →* _) = g.comp (of i : G i →* _))
     (hbase : f.comp base = g.comp base) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
-    Coprod.ext_hom _ _
+    Coprod.hom_ext
       (CoprodI.ext_hom _ _ h)
       hbase
 
@@ -143,15 +144,15 @@ theorem induction_on {motive : PushoutI φ → Prop}
   induction x using Con.induction_on with
   | H x =>
     induction x using Coprod.induction_on with
-    | h_inl g =>
+    | inl g =>
       induction g using CoprodI.induction_on with
       | h_of i g => exact of i g
       | h_mul x y ihx ihy =>
         rw [map_mul]
         exact mul _ _ ihx ihy
       | h_one => simpa using base 1
-    | h_inr h => exact base h
-    | h_mul x y ihx ihy => exact mul _ _ ihx ihy
+    | inr h => exact base h
+    | mul x y ihx ihy => exact mul _ _ ihx ihy
 
 end Monoid
 
