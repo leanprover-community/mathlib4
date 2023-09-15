@@ -9,8 +9,6 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 #align_import algebra.category.Mon.colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
-#print Monoid
-
 /-!
 # The category of monoids has all colimits.
 
