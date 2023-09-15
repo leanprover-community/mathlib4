@@ -138,7 +138,9 @@ jobs:
       - name: get cache
         run: |
           lake exe cache clean
-          lake exe cache get
+          # We've been seeing many failures at this step recently because of network errors.
+          # As a band-aid, we try twice.
+          lake exe cache get || lake exe cache get
 
       - name: build mathlib
         id: build
@@ -207,7 +209,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.LEAN_PR_TESTING }}
           GITHUB_CONTEXT: ${{ toJson(github) }}
-          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
+          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
           BUILD_OUTCOME: ${{ steps.build.outcome }}
