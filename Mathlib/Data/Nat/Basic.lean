@@ -327,6 +327,21 @@ theorem le_of_pred_lt {m n : ℕ} : pred m < n → m ≤ n :=
   | _ + 1 => id
 #align nat.le_of_pred_lt Nat.le_of_pred_lt
 
+theorem self_add_sub_one (n : ℕ) : n + (n - 1) = 2 * n - 1 := by
+  cases n
+  · rfl
+  · rw [two_mul]
+    convert (add_succ_sub_one (Nat.succ _) _).symm
+
+theorem sub_one_add_self (n : ℕ) : (n - 1) + n = 2 * n - 1 :=
+  add_comm _ n ▸ self_add_sub_one n
+
+theorem self_add_pred (n : ℕ) : n + pred n = (2 * n).pred :=
+  self_add_sub_one n
+
+theorem pred_add_self (n : ℕ) : pred n + n = (2 * n).pred :=
+  sub_one_add_self n
+
 /-- This ensures that `simp` succeeds on `pred (n + 1) = n`. -/
 @[simp]
 theorem pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [add_comm, add_one, Nat.pred_succ]
@@ -360,6 +375,20 @@ theorem mul_left_eq_self_iff {a b : ℕ} (hb : 0 < b) : a * b = b ↔ a = 1 := b
 theorem lt_succ_iff_lt_or_eq {n i : ℕ} : n < i.succ ↔ n < i ∨ n = i :=
   lt_succ_iff.trans Decidable.le_iff_lt_or_eq
 #align nat.lt_succ_iff_lt_or_eq Nat.lt_succ_iff_lt_or_eq
+
+set_option push_neg.use_distrib true in
+/-- The product of two natural numbers is greater than 1 if and only if
+  at least one of them is greater than 1 and both are positive. -/
+lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
+  constructor <;> intro h
+  · by_contra h'; push_neg at h'; simp_rw [Nat.le_zero] at h'
+    obtain rfl | rfl | h' := h'
+    · simp at h
+    · simp at h
+    · exact (Nat.mul_le_mul h'.1 h'.2).not_lt h
+  · obtain hm | hn := h.2.2
+    · exact Nat.mul_lt_mul hm h.2.1 Nat.zero_lt_one
+    · exact Nat.mul_lt_mul' h.1 hn h.1
 
 /-!
 ### Recursion and induction principles

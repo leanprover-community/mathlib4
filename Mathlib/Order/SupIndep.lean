@@ -336,7 +336,6 @@ theorem SetIndependent.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : 
 
   Example: an indexed family of submodules of a module is independent in this sense if
   and only the natural map from the direct sum of the submodules to the module is injective. -/
--- Porting note: needed to use `_H`
 def Independent {ι : Sort*} {α : Type*} [CompleteLattice α] (t : ι → α) : Prop :=
   ∀ i : ι, Disjoint (t i) (⨆ (j) (_ : j ≠ i), t j)
 #align complete_lattice.independent CompleteLattice.Independent
