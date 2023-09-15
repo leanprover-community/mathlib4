@@ -110,8 +110,14 @@ theorem single_zero (a : G) : (single a 0 : MonoidAlgebra k G) = 0 := Finsupp.si
 theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   Finsupp.single_add a b₁ b₂
 
+abbrev singleAddHom [Semiring k] (a : G) : k →+ MonoidAlgebra k G := Finsupp.singleAddHom a
+
+@[simp] theorem singleAddHom_apply [Semiring k] (a : G) (b : k) :
+  singleAddHom a b = single a b := rfl
+
 @[simp]
-theorem sum_single_index [AddCommMonoid N] {a : G} {b : k} {h : G → k → N} (h_zero : h a 0 = 0) :
+theorem sum_single_index {N : Type*} [AddCommMonoid N] {a : G} {b : k} {h : G → k → N}
+  (h_zero : h a 0 = 0) :
   (single a b).sum h = h a b := Finsupp.sum_single_index h_zero
 
 @[simp]
@@ -416,6 +422,47 @@ def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G (Monoi
 
 end DerivedInstances
 
+/-! #### Copies of `ext` lemmas and bundled `single`s from `Finsupp`
+
+As `MonoidAlgebra` is a type synonym, `ext` will not unfold it to find `ext` lemmas.
+We need bundled version of `Finsupp.single` with the right types to state these lemmas. -/
+
+section ExtLemmas
+
+/-- A copy of `Finsupp.ext` for `MonoidAlgebra`. -/
+@[ext]
+theorem ext [Semiring k] ⦃f g : MonoidAlgebra k G⦄ (H : ∀ (x : G), f x = g x) :
+    f = g :=
+  Finsupp.ext H
+
+/-- A copy of `Finsupp.addHom_ext'` for `MonoidAlgebra`. -/
+@[ext high]
+theorem addHom_ext' {N : Type*} [Semiring k] [AddZeroClass N]
+    ⦃f g : MonoidAlgebra k G →+ N⦄
+    (H : ∀ (x : G), AddMonoidHom.comp f (singleAddHom x) = AddMonoidHom.comp g (singleAddHom x)) :
+    f = g :=
+  Finsupp.addHom_ext' H
+
+/-- A copy of `Finsupp.distribMulActionHom_ext'` for `MonoidAlgebra`. -/
+@[ext]
+theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [Semiring k] [AddMonoid N]
+    [DistribMulAction R N] [DistribMulAction R k]
+    {f g : MonoidAlgebra k G →+[R] N}
+    (h : ∀ a : G,
+      f.comp (DistribMulActionHom.single (M := k) a) = g.comp (DistribMulActionHom.single a)) :
+    f = g :=
+  Finsupp.distribMulActionHom_ext' h
+
+/-- A copy of `Finsupp.lhom_ext'` for `MonoidAlgebra`. -/
+@[ext high]
+theorem lhom_ext' {N : Type*} [Semiring R] [Semiring k] [AddCommMonoid N] [Module R N] [Module R k]
+    ⦃f g : MonoidAlgebra k G →ₗ[R] N⦄
+    (H : ∀ (x : G), LinearMap.comp f (lsingle x) = LinearMap.comp g (lsingle x)) :
+    f = g :=
+  Finsupp.lhom_ext' H
+
+end ExtLemmas
+
 section MiscTheorems
 
 variable [Semiring k]
@@ -604,11 +651,10 @@ theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
 theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
     (φ : MonoidAlgebra k G) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
   suffices :
-    (liftNC (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
-      (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g)
-  exact FunLike.congr_fun this φ
-  -- Porting note: `ext` couldn't a find appropriate theorem.
-  refine addHom_ext' fun a => AddMonoidHom.ext fun b => ?_
+      (liftNC (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
+        (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g)
+  · exact FunLike.congr_fun this φ
+  ext a b
   -- Porting note: `reducible` cannot be `local` so the proof gets more complex.
   unfold MonoidAlgebra
   simp
@@ -627,8 +673,7 @@ variable (k) [Semiring k] [DistribSMul R k] [Mul G]
 instance isScalarTower_self [IsScalarTower R k k] :
     IsScalarTower R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
   ⟨fun t a b => by
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-    refine Finsupp.ext fun m => ?_
+    ext m
     -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
     classical
       simp only [smul_eq_mul, mul_apply]
@@ -644,8 +689,7 @@ also commute with the algebra multiplication. -/
 instance smulCommClass_self [SMulCommClass R k k] :
     SMulCommClass R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
   ⟨fun t a b => by
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-    refine Finsupp.ext fun m => ?_
+    ext
     -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
     classical
       simp only [smul_eq_mul, mul_apply]
@@ -716,8 +760,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
       sum_single_index, Function.comp_apply, one_smul, zero_smul, MulHom.coe_comp,
       NonUnitalAlgHom.coe_to_mulHom]
   right_inv F := by
-    -- Porting note: `ext` → `refine nonUnitalAlgHom_ext' k (MulHom.ext fun m => ?_)`
-    refine nonUnitalAlgHom_ext' k (MulHom.ext fun m => ?_)
+    ext m
     simp only [NonUnitalAlgHom.coe_mk, ofMagma_apply, NonUnitalAlgHom.toMulHom_eq_coe,
       sum_single_index, Function.comp_apply, one_smul, zero_smul, MulHom.coe_comp,
       NonUnitalAlgHom.coe_to_mulHom]
@@ -736,15 +779,14 @@ section Algebra
 
 theorem single_one_comm [CommSemiring k] [MulOneClass G] (r : k) (f : MonoidAlgebra k G) :
     single (1 : G) r * f = f * single (1 : G) r := by
-  -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-  refine Finsupp.ext fun _ => ?_
+  ext x
   rw [single_one_mul_apply, mul_single_one_apply, mul_comm]
 #align monoid_algebra.single_one_comm MonoidAlgebra.single_one_comm
 
 /-- `Finsupp.single 1` as a `RingHom` -/
 @[simps]
 def singleOneRingHom [Semiring k] [MulOneClass G] : k →+* MonoidAlgebra k G :=
-  { Finsupp.singleAddHom 1 with
+  { singleAddHom 1 with
     map_one' := rfl
     map_mul' := fun x y => by
       -- Porting note: Was `rw`.
@@ -795,9 +837,8 @@ In particular this provides the instance `Algebra k (MonoidAlgebra k G)`.
 instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
     Algebra k (MonoidAlgebra A G) :=
   { singleOneRingHom.comp (algebraMap k A) with
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
     smul_def' := fun r a => by
-      refine Finsupp.ext fun _ => ?_
+      ext
       -- Porting note: Newly required.
       rw [Finsupp.coe_smul]
       simp [single_one_mul_apply, Algebra.smul_def, Pi.smul_apply]
@@ -811,8 +852,7 @@ def singleOneAlgHom {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Mon
     A →ₐ[k] MonoidAlgebra A G :=
   { singleOneRingHom with
     commutes' := fun r => by
-      -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-      refine Finsupp.ext fun _ => ?_
+      ext
       simp
       rfl }
 #align monoid_algebra.single_one_alg_hom MonoidAlgebra.singleOneAlgHom
@@ -1125,14 +1165,10 @@ protected noncomputable def opRingEquiv [Monoid G] :
         ← AddEquiv.coe_toAddMonoidHom]
       refine Iff.mpr (AddMonoidHom.map_mul_iff (R := (MonoidAlgebra k G)ᵐᵒᵖ)
         (S := MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ) _) ?_
-      -- Porting note: Was `ext`.
-      refine AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₁ => AddMonoidHom.ext fun r₁ =>
-        AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₂ => AddMonoidHom.ext fun r₂ => ?_
+      ext i₁ r₁ i₂ r₂ : 6
       -- Porting note: `reducible` cannot be `local` so proof gets long.
-      simp
-      rw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
-        AddEquiv.trans_apply, AddEquiv.trans_apply, MulOpposite.opAddEquiv_apply,
-        MulOpposite.opAddEquiv_symm_apply, MulOpposite.unop_mul (α := MonoidAlgebra k G)]
+      simp [(AddEquiv.trans_apply), (unop_mul)]
+      rw [single_mul_single]
       simp }
 #align monoid_algebra.op_ring_equiv MonoidAlgebra.opRingEquiv
 #align monoid_algebra.op_ring_equiv_apply MonoidAlgebra.opRingEquiv_apply
@@ -1313,11 +1349,11 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (AddMonoidAlgebra
     -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
     nsmul_zero := by
       intros
-      refine Finsupp.ext fun _ => ?_
+      ext
       simp [-nsmul_eq_mul, add_smul]
     nsmul_succ := by
       intros
-      refine Finsupp.ext fun _ => ?_
+      ext
       -- Porting note: The definition of `nsmul_succ` is different, so next line is required.
       simp only [fun n => Nat.add_comm n 1]
       simp [-nsmul_eq_mul, add_smul] }
@@ -1540,6 +1576,58 @@ because we've never discussed actions of additive groups. -/
 
 
 end DerivedInstances
+
+/-! #### Copies of `ext` lemmas and bundled `single`s from `Finsupp`
+
+As `AddMonoidAlgebra` is a type synonym, `ext` will not unfold it to find `ext` lemmas.
+We need bundled version of `Finsupp.single` with the right types to state these lemmas. -/
+
+section ExtLemmas
+
+/-- A copy of `Finsupp.ext` for `AddMonoidAlgebra`. -/
+@[ext]
+theorem ext [Semiring k] ⦃f g : AddMonoidAlgebra k G⦄ (H : ∀ (x : G), f x = g x) :
+    f = g :=
+  Finsupp.ext H
+
+abbrev singleAddHom [Semiring k] (a : G) : k →+ AddMonoidAlgebra k G := Finsupp.singleAddHom a
+
+@[simp] theorem singleAddHom_apply [Semiring k] (a : G) (b : k) :
+  singleAddHom a b = single a b := rfl
+
+/-- A copy of `Finsupp.addHom_ext'` for `AddMonoidAlgebra`. -/
+@[ext high]
+theorem addHom_ext' {N : Type*} [Semiring k] [AddZeroClass N]
+    ⦃f g : AddMonoidAlgebra k G →+ N⦄
+    (H : ∀ (x : G), AddMonoidHom.comp f (singleAddHom x) = AddMonoidHom.comp g (singleAddHom x)) :
+    f = g :=
+  Finsupp.addHom_ext' H
+
+/-- A copy of `Finsupp.distribMulActionHom_ext'` for `AddMonoidAlgebra`. -/
+@[ext]
+theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [Semiring k] [AddMonoid N]
+    [DistribMulAction R N] [DistribMulAction R k]
+    {f g : AddMonoidAlgebra k G →+[R] N}
+    (h : ∀ a : G,
+      f.comp (DistribMulActionHom.single (M := k) a) = g.comp (DistribMulActionHom.single a)) :
+    f = g :=
+  Finsupp.distribMulActionHom_ext' h
+
+abbrev lsingle [Semiring R] [Semiring k] [Module R k] (a : G) :
+  k →ₗ[R] AddMonoidAlgebra k G := Finsupp.lsingle a
+
+@[simp] theorem lsingle_apply [Semiring R] [Semiring k] [Module R k] (a : G) (b : k) :
+  lsingle (R := R) a b = single a b := rfl
+
+/-- A copy of `Finsupp.lhom_ext'` for `AddMonoidAlgebra`. -/
+@[ext high]
+theorem lhom_ext' {N : Type*} [Semiring R] [Semiring k] [AddCommMonoid N] [Module R N] [Module R k]
+    ⦃f g : AddMonoidAlgebra k G →ₗ[R] N⦄
+    (H : ∀ (x : G), LinearMap.comp f (lsingle x) = LinearMap.comp g (lsingle x)) :
+    f = g :=
+  Finsupp.lhom_ext' H
+
+end ExtLemmas
 
 section MiscTheorems
 
