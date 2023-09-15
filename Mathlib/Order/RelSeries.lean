@@ -22,12 +22,12 @@ Let `r` be a relation on `α`, a relation series of `r` of length `n` is a serie
 `a_0, a_1, ..., a_n` such that `r a_i a_{i+1}` for all `i < n`
 -/
 structure RelSeries where
-/-- The number of inequalities in the series -/
-length : ℕ
-/-- The underlying function of a relation series -/
-toFun : Fin (length + 1) → α
-/-- Adjacent elements are related -/
-step : ∀ (i : Fin length), r (toFun (Fin.castSucc i)) (toFun i.succ)
+  /-- The number of inequalities in the series -/
+  length : ℕ
+  /-- The underlying function of a relation series -/
+  toFun : Fin (length + 1) → α
+  /-- Adjacent elements are related -/
+  step : ∀ (i : Fin length), r (toFun (Fin.castSucc i)) (toFun i.succ)
 
 namespace RelSeries
 
@@ -39,11 +39,11 @@ For any type `α`, each term of `α` gives a relation series with the right most
 -/
 @[simps!] def singleton (a : α) : RelSeries r where
   length := 0
-  toFun := fun _ => a
-  step := fun i => Fin.elim0 i
+  toFun _ := a
+  step := Fin.elim0
 
 instance [IsEmpty α] : IsEmpty (RelSeries r) where
-  false := fun x ↦ IsEmpty.false (x 0)
+  false x := IsEmpty.false (x 0)
 
 instance [Inhabited α] : Inhabited (RelSeries r) where
   default := singleton r default
@@ -57,42 +57,17 @@ variable {r}
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
     (toFun_eq : x.toFun = y.toFun ∘ Fin.cast (by rw [length_eq])) : x = y := by
   rcases x with ⟨nx, fx⟩
-  rcases y with ⟨ny, fy⟩
-  dsimp at length_eq toFun_eq
-  subst length_eq
-  rw [Fin.cast_refl, Function.comp.right_id] at toFun_eq
-  subst toFun_eq
+  dsimp only at length_eq toFun_eq
+  subst length_eq toFun_eq
   rfl
 
 lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i < j) :
-    r (x i) (x j) := by
-  induction i using Fin.inductionOn generalizing j with
-  | zero => induction j using Fin.inductionOn with
-    | zero => cases lt_irrefl _ h
-    | succ j ihj =>
-      by_cases H : 0 < Fin.castSucc j
-      · exact IsTrans.trans _ _ _ (ihj H) (x.step _)
-      · simp only [not_lt, Fin.le_zero_iff] at H
-        rw [← H]
-        exact x.step _
-  | succ i _ => induction j using Fin.inductionOn with
-    | zero => cases not_lt_of_lt (Fin.succ_pos i) h
-    | succ j ihj =>
-      obtain (H|H) : i.succ = Fin.castSucc j ∨ i.succ < Fin.castSucc j
-      · change (i + 1 : ℕ) < (j + 1 : ℕ) at h
-        rw [Nat.lt_succ_iff, le_iff_lt_or_eq] at h
-        rcases h with (h|h)
-        · exact Or.inr h
-        · left
-          ext
-          exact h
-      · rw [H]
-        exact x.step _
-      · exact IsTrans.trans _ _ _ (ihj H) (x.step _)
+    r (x i) (x j) :=
+  (Fin.liftFun_iff_succ r).mpr x.step h
 
 lemma rel_or_eq_of_le [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
     r (x i) (x j) ∨ x i = x j :=
-  (le_iff_lt_or_eq.mp h).by_cases (Or.intro_left _ $ x.rel_of_lt .) (Or.intro_right _ $ . ▸ rfl)
+  h.lt_or_eq.imp (x.rel_of_lt ·) (by rw [·])
 
 /--
 Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `r` induces a relation
@@ -102,13 +77,13 @@ series of `s`
 def OfLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) : RelSeries s where
   length := x.length
   toFun := x
-  step := fun _ => h _ _ <| x.step _
+  step _ := h _ _ <| x.step _
 
 lemma ofLE_length (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
     (x.OfLE h).length = x.length := rfl
 
 lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
-  (x.OfLE h : _ → _) = x := rfl
+    (x.OfLE h : _ → _) = x := rfl
 
 /-- Every relation series gives a list -/
 abbrev toList (x : RelSeries r) : List α := List.ofFn x
