@@ -216,7 +216,17 @@ lemma main_thing
       ∫ x, (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)) := by
   sorry
 
-lemma reduction_to_liminf {ι : Type} {L : Filter ι} [NeBot L]
+-- Hmm... Fatou's lemma probably requires some countability properties of the filter here.
+-- But it should be more general than just `atTop` in `ℕ`, right?
+lemma main_thing'' {ι : Type*} (L : Filter ι)
+    {μ : Measure Ω} [IsProbabilityMeasure μ]
+    {μs : ι → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
+    {f : Ω → ℝ} (f_cont : Continuous f) (f_nn : 0 ≤ f)
+    (h_opens : ∀ G, IsOpen G → μ G ≤ L.liminf (fun i ↦ μs i G)) :
+      ∫ x, (f x) ∂μ ≤ L.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)) := by
+  sorry
+
+lemma reduction_to_liminf {ι : Type*} {L : Filter ι} [NeBot L]
     {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ι → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
     (h : ∀ f : Ω →ᵇ ℝ, 0 ≤ f → ∫ x, (f x) ∂μ ≤ L.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)))
     (f : Ω →ᵇ ℝ) :
@@ -261,13 +271,26 @@ lemma ProbabilityMeasure.tendsto_iff_forall_nonneg_integral_tendsto {γ : Type _
                add_sub_cancel]
   have key := h g (f.add_norm_nonneg)
   simp [g_def] at key
-  simp_rw [integral_add (FiniteMeasure.integrable_of_boundedContinuous_to_real _ f)
-                        (integrable_const ‖f‖)] at key
+  simp_rw [integral_add (f.integrable _) (integrable_const ‖f‖)] at key
   simp only [integral_const, measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul] at key
   simp_rw [fx_eq]
   convert tendsto_add.comp (Tendsto.prod_mk_nhds key (@tendsto_const_nhds _ _ _ (-‖f‖) F)) <;> simp
 
 theorem le_liminf_open_implies_convergence
+  {ι : Type*} {L : Filter ι} [NeBot L] {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
+  (h_opens : ∀ G, IsOpen G → μ G ≤ L.liminf (fun i ↦ μs i G)) :
+    L.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
+  refine ProbabilityMeasure.tendsto_iff_forall_nonneg_integral_tendsto.mpr ?_
+  intro g g_nn
+  apply reduction_to_liminf
+  --have := @reduction_to_liminf Ω _ _ _ ι
+  intro f f_nn
+  have f_nn' : 0 ≤ (f : Ω → ℝ) := fun x ↦ by simpa using f_nn x
+  apply main_thing f.continuous f_nn'
+  -- Annoying coercions to reduce to `h_opens`...
+  sorry
+
+theorem le_liminf_open_implies_convergence'
   {μ : ProbabilityMeasure Ω} {μs : ℕ → ProbabilityMeasure Ω}
   (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
     atTop.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
