@@ -72,6 +72,16 @@ namespace padicValNat
   lemma le_nat_log_gen {p n₁ n₂ : ℕ} [Fact (Nat.Prime p)] (hn : n₁ ≤ n₂):
     padicValNat p n₁ ≤ Nat.log p n₂ := le_trans (le_nat_log n₁) (Nat.log_mono_right hn)
 
+  lemma nat_log_eq_padicvalnat_iff {p : ℕ} [hp : Fact (Nat.Prime p)] (n : ℕ)(hn : 0 < n): Nat.log p n = padicValNat p n ↔ n < p^(padicValNat p n + 1) := by {
+    rw [Nat.log_eq_iff]
+    have Hdiv: p^padicValNat p n ≤ n := Nat.le_of_dvd hn pow_padicValNat_dvd
+    simp only [and_iff_right_iff_imp, Hdiv]
+    intros; trivial
+    right
+    refine' ⟨(Nat.Prime.one_lt' p).out,_⟩
+    linarith
+  }
+
 end padicValNat
 
 def harmonic : ℕ  → ℚ
@@ -150,6 +160,13 @@ lemma padicValRat_ge_neg_Nat_log {p n : ℕ}[hp : Fact (Nat.Prime p)]: ∀ q, q 
   apply padicValNat.le_nat_log_gen Hq
 }
 
+lemma padicValRat_ge_neg_Nat_log' {n : ℕ}: ∀ q, q ≤ n → q ≠ Nat.log 2 n → padicValRat 2 (1 / q) ≠ -Nat.log 2 n := by {
+  intros q Hq₁ Hq₂
+  rw [one_div,padicValRat.inv,padicValRat.of_nat]
+  simp only [ne_eq, neg_inj, Nat.cast_inj]
+
+}
+
 theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
   intro n Hn
   apply not_int_of_not_padic_int
@@ -169,6 +186,7 @@ theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
     rw [Hlog]
     simp only [Int.log_natCast, Left.neg_neg_iff, Nat.cast_pos, Nat.log_pos_iff, and_true, Hn]
     simp only [Int.log_natCast]
+
     sorry
 
   }
