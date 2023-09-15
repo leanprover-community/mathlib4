@@ -205,10 +205,10 @@ lemma mem_nonZeroSMulDivisors_iff (x : R) : x ∈ R⁰[M] ↔ ∀ (m : M), x •
 
 @[simp, nolint simpNF]
 lemma Submonoid.unop_mulOpposite_nonZeroSmulDivisors_over_itself_eq_nonZeroDivisors :
-    Submonoid.unop (Rᵐᵒᵖ ⁰[R]) = R⁰ := rfl
+    (Rᵐᵒᵖ ⁰[R]).unop = R⁰ := rfl
 
 @[simp, nolint simpNF]
 lemma Submonoid.mulOpposite_nonZeroSmulDivisors_over_itself_eq_op_nonZeroDivisors :
-    (MulOpposite R)⁰[R] = R⁰.op := rfl
+    Rᵐᵒᵖ ⁰[R] = R⁰.op := rfl
 
 end nonZeroSMulDivisors
