@@ -47,5 +47,3 @@ def oppositeEquiv (H : Submonoid M) : H ≃ opposite H :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 
 end Submonoid
-
-#lint
