@@ -424,6 +424,16 @@ protected def pointwiseSetMulActionSubmodule [SMulCommClass R R M] :
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulActionSubmodule
 
+lemma set_smul_submodule_eq_iSup [SMulCommClass R R M] :
+    s • N = ⨆ (r ∈ s), r • N :=
+  set_smul_submodule_eq_of_le _ _ _
+    (fun r m hr hm => (show r • N ≤ _ by
+      rw [iSup_subtype', ← sSup_range]
+      exact le_sSup ⟨⟨r, hr⟩, rfl⟩) ⟨_, hm, rfl⟩) <| by
+    rw [iSup_subtype', ← sSup_range, sSup_le_iff]
+    rintro _ ⟨⟨x, hx⟩, rfl⟩ _ ⟨y, hy, rfl⟩
+    exact mem_set_smul_submodule_of_mem_mem (mem1 := hx) (mem2 := hy)
+
 end
 
 end Submodule
