@@ -240,14 +240,14 @@ using the maximum of the exponents.
 If `A := σ →₀ ℕ` then `R[A] = MvPolynomial σ R`, and if we equip `σ` with a linear order then
 the induced linear order on `Lex A` equips `MvPolynomial` ring with a
 [monomial order](https://en.wikipedia.org/wiki/Monomial_order) (i.e. a linear order on `A`, the
-type of (monic) monomials in `R[A]` that respects addition). We make use of this monomial order
+type of (monic) monomials in `R[A]`, that respects addition). We make use of this monomial order
 by taking `D := toLex`, and different monomial orders could be accessed via different type
 synonyms once they are added. -/
 @[reducible] def supDegree (f : AddMonoidAlgebra R A) : B := f.support.sup D
 
 /-- If `D` is an injection into a linear order `B`, the leading coefficient of `f : R[A]` is the
   nonzero coefficient of highest degree according to `D`, or 0 if `f = 0`. In general, it is defined
-  to be the coefficient at an inverse image of `supDegree f`. -/
+  to be the coefficient at an inverse image of `supDegree f` (if such exists). -/
 noncomputable def leadingCoeff (f : AddMonoidAlgebra R A) : R := f (D.invFun <| f.supDegree D)
 
 /-- An element `f : R[A]` is monic if its leading coefficient is one. -/
