@@ -1,4 +1,19 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+
 import Mathlib.Algebra.Homology.ShortComplex.Homology
+
+/-!
+# Quasi-isomorphisms of short complexes
+
+This file introduces the typeclass `QuasiIso φ` for a morphism `φ : S₁ ⟶ S₂`
+of short complexes (which have homology): the condition is that the induced
+morphism `homologyMap φ` in homology is an isomorphism.
+
+-/
 
 namespace CategoryTheory
 
@@ -14,10 +29,6 @@ class QuasiIso (φ : S₁ ⟶ S₂) : Prop where
   isIso' : IsIso (homologyMap φ)
 
 instance QuasiIso.isIso (φ : S₁ ⟶ S₂) [QuasiIso φ] : IsIso (homologyMap φ) := QuasiIso.isIso'
-
-@[simps! hom]
-noncomputable def QuasiIso.iso (φ : S₁ ⟶ S₂) [QuasiIso φ] : S₁.homology ≅ S₂.homology :=
-  asIso (homologyMap φ)
 
 lemma quasiIso_iff (φ : S₁ ⟶ S₂) :
     QuasiIso φ ↔ IsIso (homologyMap φ) := by

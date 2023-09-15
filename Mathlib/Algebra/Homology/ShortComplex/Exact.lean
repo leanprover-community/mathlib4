@@ -390,7 +390,7 @@ lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
 lemma QuasiIso.exact_iff {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     [S₁.HasHomology] [S₂.HasHomology] [QuasiIso φ] : S₁.Exact ↔ S₂.Exact := by
   simp only [exact_iff_isZero_homology]
-  exact Iso.isZero_iff (QuasiIso.iso φ)
+  exact Iso.isZero_iff (asIso (homologyMap φ))
 
 lemma HomotopyEquiv.exact_iff {S₁ S₂ : ShortComplex C} (e : HomotopyEquiv S₁ S₂)
     [S₁.HasHomology] [S₂.HasHomology] : S₁.Exact ↔ S₂.Exact :=
