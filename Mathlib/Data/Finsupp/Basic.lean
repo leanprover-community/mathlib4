@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Set.Countable
 
@@ -1254,7 +1255,7 @@ def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M)
   right_inv f := by
     simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, sum_zero_index, sum_add_index,
       sum_single_index, single_zero, single_add, eq_self_iff_true, forall_true_iff,
-      forall₃_true_iff, Prod.mk.eta, (single_sum _ _ _).symm, sum_single]
+      forall₃_true_iff, (single_sum _ _ _).symm, sum_single]
 #align finsupp.finsupp_prod_equiv Finsupp.finsuppProdEquiv
 
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) :
@@ -1869,8 +1870,8 @@ end Sigma
 /-- Stringify a `Finsupp` as a sequence of `Finsupp.single` terms.
 
 Note this is `meta` as it has to choose some order for the terms. -/
-unsafe instance (ι α : Type*) [Zero α] [Repr ι] [Repr α] : Repr (ι →₀ α)
-    where repr f :=
+unsafe instance (ι α : Type*) [Zero α] [Repr ι] [Repr α] : Repr (ι →₀ α) where
+  repr f :=
     if f.support.card = 0 then "0"
     else
       " + ".intercalate <|
