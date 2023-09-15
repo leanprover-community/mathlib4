@@ -240,6 +240,7 @@ import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Basic
+import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.Algebra.Homology.ShortComplex.FunctorEquivalence
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.Homology
@@ -598,6 +599,7 @@ import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.Calculus.LHopital
 import Mathlib.Analysis.Calculus.LagrangeMultipliers
 import Mathlib.Analysis.Calculus.LineDeriv.Basic
+import Mathlib.Analysis.Calculus.LineDeriv.Measurable
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
@@ -659,6 +661,7 @@ import Mathlib.Analysis.Convex.Measure
 import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Convex.PartitionOfUnity
 import Mathlib.Analysis.Convex.Quasiconvex
+import Mathlib.Analysis.Convex.Radon
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Analysis.Convex.Side
 import Mathlib.Analysis.Convex.SimplicialComplex.Basic
@@ -1197,6 +1200,7 @@ import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Sites.Plus
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Pushforward
+import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.Sheafification
