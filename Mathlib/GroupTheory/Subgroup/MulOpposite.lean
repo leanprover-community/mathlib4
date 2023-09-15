@@ -21,52 +21,61 @@ variable {G : Type*} [Group G]
 
 namespace Subgroup
 
+/-- pull a subgroup back to an opposite subgroup along `unop`-/
+@[to_additive (attr := simps)
+"pull an additive subgroup back to an opposite additive subgroup along `unop`"]
+def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
+  carrier := MulOpposite.unop ⁻¹' (H : Set G)
+  one_mem' := H.one_mem
+  mul_mem' := fun ha hb => H.mul_mem hb ha
+  inv_mem' := H.inv_mem
+
+/-- pull an opposite subgroup back to a subgroup along `op`-/
+@[to_additive (attr := simps)
+"pull an opposite additive subgroup back to an additive subgroup along `op`"]
+def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
+  carrier := MulOpposite.op ⁻¹' (H : Set Gᵐᵒᵖ)
+  one_mem' := H.one_mem
+  mul_mem' := fun ha hb => H.mul_mem hb ha
+  inv_mem' := H.inv_mem
+
 /-- A subgroup `H` of `G` determines a subgroup `H.opposite` of the opposite group `Gᵐᵒᵖ`. -/
 @[to_additive "An additive subgroup `H` of `G` determines an additive subgroup `H.opposite` of the
  opposite additive group `Gᵃᵒᵖ`."]
-def opposite : Subgroup G ≃ Subgroup Gᵐᵒᵖ
-    where
-  toFun H :=
-    { carrier := MulOpposite.unop ⁻¹' (H : Set G)
-      one_mem' := H.one_mem
-      mul_mem' := fun ha hb => H.mul_mem hb ha
-      inv_mem' := H.inv_mem }
-  invFun H :=
-    { carrier := MulOpposite.op ⁻¹' (H : Set Gᵐᵒᵖ)
-      one_mem' := H.one_mem
-      mul_mem' := fun ha hb => H.mul_mem hb ha
-      inv_mem' := H.inv_mem }
+def opEquiv : Subgroup G ≃ Subgroup Gᵐᵒᵖ where
+  toFun := op
+  invFun := unop
   left_inv _ := SetLike.coe_injective rfl
   right_inv _ := SetLike.coe_injective rfl
-#align subgroup.opposite Subgroup.opposite
-#align add_subgroup.opposite AddSubgroup.opposite
+#noalign subgroup.opposite
+#noalign add_subgroup.opposite
 
 @[to_additive (attr := simp, nolint simpNF)] lemma opposite_toSubmonoid (H : Subgroup G) :
-    (opposite H).toSubmonoid = Submonoid.opposite H.toSubmonoid :=
+    (opEquiv H).toSubmonoid = Submonoid.opEquiv H.toSubmonoid :=
   rfl
 
 @[to_additive (attr := simp, nolint simpNF)] lemma opposite_symm_toSubmonoid (H : Subgroup Gᵐᵒᵖ) :
-    (opposite.symm H).toSubmonoid = Submonoid.opposite.symm H.toSubmonoid :=
+    (opEquiv.symm H).toSubmonoid = Submonoid.opEquiv.symm H.toSubmonoid :=
   rfl
 
 /-- Bijection between a subgroup `H` and its opposite. -/
 @[to_additive (attr := simps!) "Bijection between an additive subgroup `H` and its opposite."]
-def oppositeEquiv (H : Subgroup G) : H ≃ opposite H :=
+def equivOp (H : Subgroup G) : H ≃ op H :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
-#align subgroup.opposite_equiv Subgroup.oppositeEquiv
-#align add_subgroup.opposite_equiv AddSubgroup.oppositeEquiv
-#align subgroup.opposite_equiv_symm_apply_coe Subgroup.oppositeEquiv_symm_apply_coe
+#noalign subgroup.opposite_equiv
+#noalign add_subgroup.opposite_equiv
+#noalign subgroup.opposite_equiv_symm_apply_coe
 
 @[to_additive]
-instance (H : Subgroup G) [Encodable H] : Encodable (opposite H) :=
+instance (H : Subgroup G) [Encodable H] : Encodable (opEquiv H) :=
   Encodable.ofEquiv H H.oppositeEquiv.symm
 
 @[to_additive]
-instance (H : Subgroup G) [Countable H] : Countable (opposite H) :=
+instance (H : Subgroup G) [Countable H] : Countable (opEquiv H) :=
   Countable.of_equiv H H.oppositeEquiv
 
 @[to_additive]
-theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : opposite H) :
+theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : opEquiv H) :
     h • (g * x) = g * h • x :=
   mul_assoc _ _ _
 #align subgroup.smul_opposite_mul Subgroup.smul_opposite_mul

@@ -29,13 +29,13 @@ def op {M : Type*} [MulOneClass M] (x : Submonoid M) : Submonoid (MulOpposite M)
 @[to_additive (attr := simps) "pull an opposite additive submonoid back to a submonoid along `op`"]
 def unop {M : Type*} [MulOneClass M] (x : Submonoid (MulOpposite M)) : Submonoid M where
   carrier := MulOpposite.op ⁻¹' x.1
-  mul_mem' {a b} ha hb := x.mul_mem hb ha
+  mul_mem' {_ _} ha hb := x.mul_mem hb ha
   one_mem' := Submonoid.one_mem' _
 
 /-- A submonoid `H` of `G` determines a submonoid `H.opposite` of the opposite group `Gᵐᵒᵖ`. -/
 @[to_additive (attr := simps) "A additive submonoid `H` of `G` determines an additive submonoid
 `H.opposite` of the opposite group `Gᵐᵒᵖ`."]
-def opposite : Submonoid M ≃ Submonoid Mᵐᵒᵖ where
+def opEquiv : Submonoid M ≃ Submonoid Mᵐᵒᵖ where
   toFun := op
   invFun := unop
   left_inv _ := SetLike.coe_injective rfl
@@ -43,7 +43,7 @@ def opposite : Submonoid M ≃ Submonoid Mᵐᵒᵖ where
 
 /-- Bijection between a submonoid `H` and its opposite. -/
 @[to_additive (attr := simps!) "Bijection between an additive submonoid `H` and its opposite."]
-def oppositeEquiv (H : Submonoid M) : H ≃ opposite H :=
+def equivOp (H : Submonoid M) : H ≃ op H :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 
 end Submonoid
