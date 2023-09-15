@@ -160,12 +160,6 @@ theorem derivative_X_add_C (c : R) : derivative (X + C c) = 1 := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.derivative_X_add_C Polynomial.derivative_X_add_C
 
-@[simp]
-theorem iterate_derivative_add {f g : R[X]} {k : ℕ} :
-    derivative^[k] (f + g) = derivative^[k] f + derivative^[k] g :=
-  derivative.toAddMonoidHom.iterate_map_add _ _ _
-#align polynomial.iterate_derivative_add Polynomial.iterate_derivative_add
-
 --Porting note: removed `simp`: `simp` can prove it.
 theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
     derivative (∑ b in s, f b) = ∑ b in s, derivative (f b) :=
@@ -173,13 +167,13 @@ theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
 #align polynomial.derivative_sum Polynomial.derivative_sum
 
 --Porting note: removed `simp`: `simp` can prove it.
-theorem derivative_smul {S : Type _} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S)
+theorem derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S)
     (p : R[X]) : derivative (s • p) = s • derivative p :=
   derivative.map_smul_of_tower s p
 #align polynomial.derivative_smul Polynomial.derivative_smul
 
 @[simp]
-theorem iterate_derivative_smul {S : Type _} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
+theorem iterate_derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
     (s : S) (p : R[X]) (k : ℕ) : derivative^[k] (s • p) = s • derivative^[k] p := by
   induction' k with k ih generalizing p
   · simp
@@ -376,7 +370,6 @@ theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < nat
   · rw [derivative_apply]
     apply le_trans (degree_sum_le _ _) (Finset.sup_le _)
     intro n hn
-    simp only [Nat.cast_withBot]
     apply le_trans (degree_C_mul_X_pow_le _ _) (WithBot.coe_le_coe.2 (tsub_le_tsub_right _ _))
     apply le_natDegree_of_mem_supp _ hn
   · refine' le_sup _

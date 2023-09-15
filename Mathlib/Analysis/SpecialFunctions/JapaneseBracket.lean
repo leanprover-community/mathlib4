@@ -26,12 +26,12 @@ than the dimension.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 open scoped BigOperators NNReal Filter Topology ENNReal
 
 open Asymptotics Filter Set Real MeasureTheory FiniteDimensional
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 theorem sqrt_one_add_norm_sq_le (x : E) : Real.sqrt ((1 : ℝ) + ‖x‖ ^ 2) ≤ 1 + ‖x‖ := by
   rw [sqrt_le_left (by positivity)]
@@ -105,7 +105,7 @@ theorem finite_integral_one_add_norm [MeasureSpace E] [BorelSpace E]
     -- porting note: was `by measurability`
     (measurable_norm.const_add _).pow_const _
   have h_pos : ∀ x : E, 0 ≤ (1 + ‖x‖) ^ (-r) := fun x ↦ by positivity
-  rw [lintegral_eq_lintegral_meas_le volume h_pos h_meas]
+  rw [lintegral_eq_lintegral_meas_le volume (eventually_of_forall h_pos) h_meas.aemeasurable]
   have h_int : ∀ t, 0 < t → volume {a : E | t ≤ (1 + ‖a‖) ^ (-r)} =
       volume (Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1)) := fun t ht ↦ by
     congr 1

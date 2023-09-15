@@ -162,7 +162,7 @@ def openCoverOfIsIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : OpenCover Y wh
 /-- We construct an open cover from another, by providing the needed fields and showing that the
 provided fields are isomorphic with the original open cover. -/
 @[simps J obj map]
-def OpenCover.copy {X : Scheme} (𝒰 : OpenCover X) (J : Type _) (obj : J → Scheme)
+def OpenCover.copy {X : Scheme} (𝒰 : OpenCover X) (J : Type*) (obj : J → Scheme)
     (map : ∀ i, obj i ⟶ X) (e₁ : J ≃ 𝒰.J) (e₂ : ∀ i, obj i ≅ 𝒰.obj (e₁ i))
     (e₂ : ∀ i, map i = (e₂ i).hom ≫ 𝒰.map (e₁ i)) : OpenCover X :=
   { J, obj, map
@@ -893,7 +893,7 @@ def Scheme.OpenCover.inter {X : Scheme.{u}} (𝒰₁ : Scheme.OpenCover.{v₁} X
 
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
 @[simps! J obj map]
-def Scheme.openCoverOfSuprEqTop {s : Type _} (X : Scheme) (U : s → Opens X)
+def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme) (U : s → Opens X)
     (hU : ⨆ i, U i = ⊤) : X.OpenCover where
   J := s
   obj i := X.restrict (U i).openEmbedding
@@ -1073,7 +1073,7 @@ def morphismRestrictEq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y} (e : U = V) 
 
 -- Porting note : this does not compile under 200000 heart beats. The proof is more or less
 -- preserved with some morphisms named so that instances about them can be made manually.
-set_option maxHeartbeats 350000 in
+set_option maxHeartbeats 300000 in
 /-- Restricting a morphism twice is isomorphic to one restriction. -/
 def morphismRestrictRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
     Arrow.mk (f ∣_ U ∣_ V) ≅ Arrow.mk (f ∣_ U.openEmbedding.isOpenMap.functor.obj V) := by
@@ -1144,7 +1144,7 @@ def morphismRestrictStalkMap {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (x) :
       CategoryTheory.Iso.trans_hom]
     erw [PresheafedSpace.restrictStalkIso_hom_eq_germ_assoc]
     erw [PresheafedSpace.stalkMap_germ_assoc _ V ⟨_, hxV⟩]
-    rw [TopCat.Presheaf.germ_stalk_specializes'_assoc]
+    rw [TopCat.Presheaf.germ_stalkSpecializes'_assoc]
     -- Porting note : explicit variables and proofs were not necessary
     erw [PresheafedSpace.stalkMap_germ _ (U.openEmbedding.isOpenMap.functor.obj V)
       ⟨x.1, ⟨⟨f.1.base x.1, x.2⟩, _, rfl⟩⟩]
@@ -1158,8 +1158,8 @@ def morphismRestrictStalkMap {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (x) :
 
 instance {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) [IsOpenImmersion f] :
     IsOpenImmersion (f ∣_ U) := by
-      delta morphismRestrict
-      refine PresheafedSpace.IsOpenImmersion.comp _ _
+  delta morphismRestrict
+  refine PresheafedSpace.IsOpenImmersion.comp _ _
 
 end MorphismRestrict
 

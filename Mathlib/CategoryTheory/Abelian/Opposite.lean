@@ -20,7 +20,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-variable (C : Type _) [Category C] [Abelian C]
+variable (C : Type*) [Category C] [Abelian C]
 
 -- porting note: these local instances do not seem to be necessary
 --attribute [local instance]

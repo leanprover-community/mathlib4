@@ -27,7 +27,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits HomologicalComplex
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 variable {V : Type u} [Category.{v} V] [Preadditive V]
 
@@ -144,7 +144,7 @@ end HomologicalComplex
 
 namespace CategoryTheory
 
-variable {W : Type _} [Category W] [Preadditive W]
+variable {W : Type*} [Category W] [Preadditive W]
 
 /-- An additive functor induces a functor between homological complexes.
 This is sometimes called the "prolongation".
@@ -199,8 +199,8 @@ between those functors applied to homological complexes.
 -/
 @[simps]
 def NatTrans.mapHomologicalComplex {F G : V ⥤ W} [F.Additive] [G.Additive] (α : F ⟶ G)
-    (c : ComplexShape ι) : F.mapHomologicalComplex c ⟶ G.mapHomologicalComplex c
-    where app C := { f := fun i => α.app _ }
+    (c : ComplexShape ι) : F.mapHomologicalComplex c ⟶ G.mapHomologicalComplex c where
+  app C := { f := fun i => α.app _ }
 #align category_theory.nat_trans.map_homological_complex CategoryTheory.NatTrans.mapHomologicalComplex
 
 @[simp]
@@ -255,9 +255,9 @@ end CategoryTheory
 
 namespace ChainComplex
 
-variable {W : Type _} [Category W] [Preadditive W]
+variable {W : Type*} [Category W] [Preadditive W]
 
-variable {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 theorem map_chain_complex_of (F : V ⥤ W) [F.Additive] (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n)
     (sq : ∀ n, d (n + 1) ≫ d n = 0) :
@@ -272,7 +272,7 @@ theorem map_chain_complex_of (F : V ⥤ W) [F.Additive] (X : α → V) (d : ∀ 
 
 end ChainComplex
 
-variable [HasZeroObject V] {W : Type _} [Category W] [Preadditive W] [HasZeroObject W]
+variable [HasZeroObject V] {W : Type*} [Category W] [Preadditive W] [HasZeroObject W]
 
 namespace HomologicalComplex
 

@@ -44,8 +44,8 @@ structure LinearPMap (R : Type u) [Ring R] (E : Type v) [AddCommGroup E] [Module
 
 notation:25 E " →ₗ.[" R:25 "] " F:0 => LinearPMap R E F
 
-variable {R : Type _} [Ring R] {E : Type _} [AddCommGroup E] [Module R E] {F : Type _}
-  [AddCommGroup F] [Module R F] {G : Type _} [AddCommGroup G] [Module R G]
+variable {R : Type*} [Ring R] {E : Type*} [AddCommGroup E] [Module R E] {F : Type*}
+  [AddCommGroup F] [Module R F] {G : Type*} [AddCommGroup G] [Module R G]
 
 namespace LinearPMap
 
@@ -171,13 +171,13 @@ theorem mkSpanSingleton'_apply_self (x : E) (y : F) (H : ∀ c : R, c • x = 0 
 /-- The unique `LinearPMap` on `span R {x}` that sends a non-zero vector `x` to `y`.
 This version works for modules over division rings. -/
 @[reducible]
-noncomputable def mkSpanSingleton {K E F : Type _} [DivisionRing K] [AddCommGroup E] [Module K E]
+noncomputable def mkSpanSingleton {K E F : Type*} [DivisionRing K] [AddCommGroup E] [Module K E]
     [AddCommGroup F] [Module K F] (x : E) (y : F) (hx : x ≠ 0) : E →ₗ.[K] F :=
   mkSpanSingleton' x y fun c hc =>
     (smul_eq_zero.1 hc).elim (fun hc => by rw [hc, zero_smul]) fun hx' => absurd hx' hx
 #align linear_pmap.mk_span_singleton LinearPMap.mkSpanSingleton
 
-theorem mkSpanSingleton_apply (K : Type _) {E F : Type _} [DivisionRing K] [AddCommGroup E]
+theorem mkSpanSingleton_apply (K : Type*) {E F : Type*} [DivisionRing K] [AddCommGroup E]
     [Module K E] [AddCommGroup F] [Module K F] {x : E} (hx : x ≠ 0) (y : F) :
     mkSpanSingleton x y hx ⟨x, (Submodule.mem_span_singleton_self x : x ∈ Submodule.span K {x})⟩ =
       y :=
@@ -382,7 +382,7 @@ theorem sup_h_of_disjoint (f g : E →ₗ.[R] F) (h : Disjoint f.domain g.domain
 /-! ### Algebraic operations -/
 
 
-section zero
+section Zero
 
 instance instZero : Zero (E →ₗ.[R] F) := ⟨⊤, 0⟩
 
@@ -392,19 +392,19 @@ theorem zero_domain : (0 : E →ₗ.[R] F).domain = ⊤ := rfl
 @[simp]
 theorem zero_apply (x : (⊤ : Submodule R E)) : (0 : E →ₗ.[R] F) x = 0 := rfl
 
-end zero
+end Zero
 
-section Smul
+section SMul
 
-variable {M N : Type _} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F]
+variable {M N : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F]
 
 variable [Monoid N] [DistribMulAction N F] [SMulCommClass R N F]
 
-instance smul : SMul M (E →ₗ.[R] F) :=
+instance instSMul : SMul M (E →ₗ.[R] F) :=
   ⟨fun a f =>
     { domain := f.domain
       toFun := a • f.toFun }⟩
-#align linear_pmap.has_smul LinearPMap.smul
+#align linear_pmap.has_smul LinearPMap.instSMul
 
 @[simp]
 theorem smul_domain (a : M) (f : E →ₗ.[R] F) : (a • f).domain = f.domain :=
@@ -420,25 +420,25 @@ theorem coe_smul (a : M) (f : E →ₗ.[R] F) : ⇑(a • f) = a • ⇑f :=
   rfl
 #align linear_pmap.coe_smul LinearPMap.coe_smul
 
-instance smulCommClass [SMulCommClass M N F] : SMulCommClass M N (E →ₗ.[R] F) :=
+instance instSMulCommClass [SMulCommClass M N F] : SMulCommClass M N (E →ₗ.[R] F) :=
   ⟨fun a b f => ext' <| smul_comm a b f.toFun⟩
-#align linear_pmap.smul_comm_class LinearPMap.smulCommClass
+#align linear_pmap.smul_comm_class LinearPMap.instSMulCommClass
 
-instance isScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N (E →ₗ.[R] F) :=
+instance instIsScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N (E →ₗ.[R] F) :=
   ⟨fun a b f => ext' <| smul_assoc a b f.toFun⟩
-#align linear_pmap.is_scalar_tower LinearPMap.isScalarTower
+#align linear_pmap.is_scalar_tower LinearPMap.instIsScalarTower
 
-instance mulAction : MulAction M (E →ₗ.[R] F) where
+instance instMulAction : MulAction M (E →ₗ.[R] F) where
   smul := (· • ·)
   one_smul := fun ⟨_s, f⟩ => ext' <| one_smul M f
   mul_smul a b f := ext' <| mul_smul a b f.toFun
-#align linear_pmap.mul_action LinearPMap.mulAction
+#align linear_pmap.mul_action LinearPMap.instMulAction
 
-end Smul
+end SMul
 
-instance neg : Neg (E →ₗ.[R] F) :=
+instance instNeg : Neg (E →ₗ.[R] F) :=
   ⟨fun f => ⟨f.domain, -f.toFun⟩⟩
-#align linear_pmap.has_neg LinearPMap.neg
+#align linear_pmap.has_neg LinearPMap.instNeg
 
 @[simp]
 theorem neg_domain (f : E →ₗ.[R] F) : (-f).domain = f.domain := rfl
@@ -458,7 +458,7 @@ instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
 
 section Add
 
-instance add : Add (E →ₗ.[R] F) :=
+instance instAdd : Add (E →ₗ.[R] F) :=
   ⟨fun f g =>
     { domain := f.domain ⊓ g.domain
       toFun := f.toFun.comp (ofLe (inf_le_left : f.domain ⊓ g.domain ≤ _))
@@ -475,12 +475,6 @@ instance instAddSemigroup : AddSemigroup (E →ₗ.[R] F) :=
     · simp only [add_domain, inf_assoc]
     · simp only [add_apply, hxy, add_assoc]⟩
 
-instance instAddCommSemigroup : AddCommSemigroup (E →ₗ.[R] F) :=
-  ⟨fun f g => by
-    ext x y hxy
-    · simp only [add_domain, inf_comm]
-    · simp only [add_apply, hxy, add_comm]⟩
-
 instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
   ⟨fun f => by
     ext x y hxy
@@ -491,15 +485,27 @@ instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
     · simp [add_domain]
     · simp only [add_apply, hxy, zero_apply, add_zero]⟩
 
+instance instAddMonoid : AddMonoid (E →ₗ.[R] F) where
+  zero_add f := by
+    simp
+  add_zero := by
+    simp
+
+instance instAddCommMonoid : AddCommMonoid (E →ₗ.[R] F) :=
+  ⟨fun f g => by
+    ext x y hxy
+    · simp only [add_domain, inf_comm]
+    · simp only [add_apply, hxy, add_comm]⟩
+
 end Add
 
-section Vadd
+section VAdd
 
-instance vadd : VAdd (E →ₗ[R] F) (E →ₗ.[R] F) :=
+instance instVAdd : VAdd (E →ₗ[R] F) (E →ₗ.[R] F) :=
   ⟨fun f g =>
     { domain := g.domain
       toFun := f.comp g.domain.subtype + g.toFun }⟩
-#align linear_pmap.has_vadd LinearPMap.vadd
+#align linear_pmap.has_vadd LinearPMap.instVAdd
 
 @[simp]
 theorem vadd_domain (f : E →ₗ[R] F) (g : E →ₗ.[R] F) : (f +ᵥ g).domain = g.domain :=
@@ -516,18 +522,60 @@ theorem coe_vadd (f : E →ₗ[R] F) (g : E →ₗ.[R] F) : ⇑(f +ᵥ g) = ⇑(
   rfl
 #align linear_pmap.coe_vadd LinearPMap.coe_vadd
 
-instance addAction : AddAction (E →ₗ[R] F) (E →ₗ.[R] F)
+instance instAddAction : AddAction (E →ₗ[R] F) (E →ₗ.[R] F)
     where
   vadd := (· +ᵥ ·)
   zero_vadd := fun ⟨_s, _f⟩ => ext' <| zero_add _
   add_vadd := fun _f₁ _f₂ ⟨_s, _g⟩ => ext' <| LinearMap.ext fun _x => add_assoc _ _ _
-#align linear_pmap.add_action LinearPMap.addAction
+#align linear_pmap.add_action LinearPMap.instAddAction
 
-end Vadd
+end VAdd
+
+section Sub
+
+instance instSub : Sub (E →ₗ.[R] F) :=
+  ⟨fun f g =>
+    { domain := f.domain ⊓ g.domain
+      toFun := f.toFun.comp (ofLe (inf_le_left : f.domain ⊓ g.domain ≤ _))
+        - g.toFun.comp (ofLe (inf_le_right : f.domain ⊓ g.domain ≤ _)) }⟩
+
+theorem sub_domain (f g : E →ₗ.[R] F) : (f - g).domain = f.domain ⊓ g.domain := rfl
+
+theorem sub_apply (f g : E →ₗ.[R] F) (x : (f.domain ⊓ g.domain : Submodule R E)) :
+    (f - g) x = f ⟨x, x.prop.1⟩ - g ⟨x, x.prop.2⟩ := rfl
+
+instance instSubtractionCommMonoid : SubtractionCommMonoid (E →ₗ.[R] F) where
+  add_comm := add_comm
+  sub_eq_add_neg f g := by
+    ext x y h
+    · rfl
+    simp [sub_apply, add_apply, neg_apply, ← sub_eq_add_neg, h]
+  neg_neg := neg_neg
+  neg_add_rev f g := by
+    ext x y h
+    · simp [add_domain, sub_domain, neg_domain, And.comm]
+    simp [sub_apply, add_apply, neg_apply, ← sub_eq_add_neg, h]
+  neg_eq_of_add f g h' := by
+    ext x y h
+    · have : (0 : E →ₗ.[R] F).domain = ⊤ := zero_domain
+      simp only [← h', add_domain, ge_iff_le, inf_eq_top_iff] at this
+      rw [neg_domain, this.1, this.2]
+    simp only [inf_coe, neg_domain, Eq.ndrec, Int.ofNat_eq_coe, neg_apply]
+    rw [ext_iff] at h'
+    rcases h' with ⟨hdom, h'⟩
+    rw [zero_domain] at hdom
+    simp only [inf_coe, neg_domain, Eq.ndrec, Int.ofNat_eq_coe, zero_domain, top_coe, zero_apply,
+      Subtype.forall, mem_top, forall_true_left, forall_eq'] at h'
+    specialize h' x.1 (by simp [hdom])
+    simp only [inf_coe, neg_domain, Eq.ndrec, Int.ofNat_eq_coe, add_apply, Subtype.coe_eta,
+      ← neg_eq_iff_add_eq_zero] at h'
+    rw [h', h]
+
+end Sub
 
 section
 
-variable {K : Type _} [DivisionRing K] [Module K E] [Module K F]
+variable {K : Type*} [DivisionRing K] [Module K E] [Module K F]
 
 /-- Extend a `LinearPMap` to `f.domain ⊔ K ∙ x`. -/
 noncomputable def supSpanSingleton (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x ∉ f.domain) :
@@ -749,7 +797,7 @@ theorem graph_map_fst_eq_domain (f : E →ₗ.[R] F) :
 theorem graph_map_snd_eq_range (f : E →ₗ.[R] F) :
     f.graph.map (LinearMap.snd R E F) = LinearMap.range f.toFun := by ext; simp
 
-variable {M : Type _} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F] (y : M)
+variable {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F] (y : M)
 
 /-- The graph of `z • f` as a pushforward. -/
 theorem smul_graph (f : E →ₗ.[R] F) (z : M) :

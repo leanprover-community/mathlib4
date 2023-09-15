@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Module.Basic
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -180,13 +180,13 @@ theorem comp_zsmul (n : ℤ) : f ≫ (n • g) = n • f ≫ g :=
 #align category_theory.preadditive.comp_zsmul CategoryTheory.Preadditive.comp_zsmul
 
 @[reassoc]
-theorem comp_sum {P Q R : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : J → (Q ⟶ R)) :
+theorem comp_sum {P Q R : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (Q ⟶ R)) :
     (f ≫ ∑ j in s, g j) = ∑ j in s, f ≫ g j :=
   map_sum (leftComp R f) _ _
 #align category_theory.preadditive.comp_sum CategoryTheory.Preadditive.comp_sum
 
 @[reassoc]
-theorem sum_comp {P Q R : C} {J : Type _} (s : Finset J) (f : J → (P ⟶ Q)) (g : Q ⟶ R) :
+theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : Q ⟶ R) :
     (∑ j in s, f j) ≫ g = ∑ j in s, f j ≫ g :=
   map_sum (rightComp P g) _ _
 #align category_theory.preadditive.sum_comp CategoryTheory.Preadditive.sum_comp

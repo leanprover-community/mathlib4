@@ -42,7 +42,7 @@ structure FinBoolAlgCat where
 
 namespace FinBoolAlgCat
 
-instance : CoeSort FinBoolAlgCat (Type _) :=
+instance : CoeSort FinBoolAlgCat (Type*) :=
   ⟨fun X => X.toBoolAlgCat⟩
 
 instance (X : FinBoolAlgCat) : BooleanAlgebra X :=
@@ -58,12 +58,12 @@ attribute [instance] FinBoolAlgCat.isFintype
 #noalign FinBoolAlg.coe_to_BoolAlg
 
 /-- Construct a bundled `FinBoolAlgCat` from `BooleanAlgebra` + `Fintype`. -/
-def of (α : Type _) [BooleanAlgebra α] [Fintype α] : FinBoolAlgCat :=
+def of (α : Type*) [BooleanAlgebra α] [Fintype α] : FinBoolAlgCat :=
   ⟨{α := α}⟩
 #align FinBoolAlg.of FinBoolAlgCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [BooleanAlgebra α] [Fintype α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [BooleanAlgebra α] [Fintype α] : ↥(of α) = α :=
   rfl
 #align FinBoolAlg.coe_of FinBoolAlgCat.coe_of
 
@@ -105,8 +105,8 @@ instance forgetToBoolAlgFaithful : Faithful (forget₂ FinBoolAlgCat BoolAlgCat)
 #align FinBoolAlg.forget_to_BoolAlg_faithful FinBoolAlgCat.forgetToBoolAlgFaithful
 
 @[simps]
-instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlgCat FinPartOrd
-    where forget₂ :=
+instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlgCat FinPartOrd where
+  forget₂ :=
     { obj := fun X => FinPartOrd.of X
       map := fun {X Y} f => show OrderHom X Y from ↑(show BoundedLatticeHom X Y from f) }
 #align FinBoolAlg.has_forget_to_FinPartOrd FinBoolAlgCat.hasForgetToFinPartOrd

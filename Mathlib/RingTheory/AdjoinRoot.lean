@@ -22,8 +22,8 @@ This file defines the commutative ring `AdjoinRoot f`, the ring R[X]/(f) obtaine
 commutative ring `R` and a polynomial `f : R[X]`. If furthermore `R` is a field and `f` is
 irreducible, the field structure on `AdjoinRoot f` is constructed.
 
-We suggest stating results on `is_adjoin_root` instead of `AdjoinRoot` to achieve higher
-generality, since `is_adjoin_root` works for all different constructions of `R[α]`
+We suggest stating results on `IsAdjoinRoot` instead of `AdjoinRoot` to achieve higher
+generality, since `IsAdjoinRoot` works for all different constructions of `R[α]`
 including `AdjoinRoot f = R[X]/(f)` itself.
 
 ## Main definitions and results
@@ -42,7 +42,7 @@ The main definitions are in the `AdjoinRoot` namespace.
 * `lift_hom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S`, the algebra
   homomorphism from R[X]/(f) to S extending `algebraMap R S` and sending `X` to `x`
 
-* `equiv : (AdjoinRoot f →ₐ[F] E) ≃ {x // x ∈ (f.map (algebraMap F E)).roots}` a
+* `equiv : (AdjoinRoot f →ₐ[F] E) ≃ {x // x ∈ f.aroots E}` a
   bijection between algebra homomorphisms from `AdjoinRoot` and roots of `f` in `S`
 
 -/
@@ -105,7 +105,7 @@ def of : R →+* AdjoinRoot f :=
   (mk f).comp C
 #align adjoin_root.of AdjoinRoot.of
 
-instance [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
+instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
   Submodule.Quotient.instSMul' _
 
 instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
@@ -121,12 +121,12 @@ theorem smul_of [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R) :
     a • of f x = of f (a • x) := by rw [of, RingHom.comp_apply, RingHom.comp_apply, smul_mk, smul_C]
 #align adjoin_root.smul_of AdjoinRoot.smul_of
 
-instance (R₁ R₂ : Type _) [SMul R₁ R₂] [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
+instance (R₁ R₂ : Type*) [SMul R₁ R₂] [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
     [IsScalarTower R₂ R R] [IsScalarTower R₁ R₂ R] (f : R[X]) :
     IsScalarTower R₁ R₂ (AdjoinRoot f) :=
   Submodule.Quotient.isScalarTower _ _
 
-instance (R₁ R₂ : Type _) [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
+instance (R₁ R₂ : Type*) [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
     [IsScalarTower R₂ R R] [SMulCommClass R₁ R₂ R] (f : R[X]) :
     SMulCommClass R₁ R₂ (AdjoinRoot f) :=
   Submodule.Quotient.smulCommClass _ _
@@ -273,7 +273,7 @@ def lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : AdjoinRoot f →+* S 
   apply Ideal.Quotient.lift _ (eval₂RingHom i x)
   intro g H
   rcases mem_span_singleton.1 H with ⟨y, hy⟩
-  rw [hy, RingHom.map_mul, coe_eval₂RingHom, h, MulZeroClass.zero_mul]
+  rw [hy, RingHom.map_mul, coe_eval₂RingHom, h, zero_mul]
 #align adjoin_root.lift AdjoinRoot.lift
 
 variable {i : R →+* S} {a : S} (h : f.eval₂ i a = 0)
@@ -352,7 +352,7 @@ theorem root_isInv (r : R) : of _ r * root (C r * X - 1) = 1 := by
     simp only [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
 #align adjoin_root.root_is_inv AdjoinRoot.root_isInv
 
-theorem algHom_subsingleton {S : Type _} [CommRing S] [Algebra R S] {r : R} :
+theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
     Subsingleton (AdjoinRoot (C r * X - 1) →ₐ[R] S) :=
   ⟨fun f g =>
     algHom_ext
@@ -544,7 +544,7 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
   refine' (minpoly.unique K _ f'_monic _ _).symm
-  · rw [AlgHom.map_mul, aeval_eq, mk_self, MulZeroClass.zero_mul]
+  · rw [AlgHom.map_mul, aeval_eq, mk_self, zero_mul]
   intro q q_monic q_aeval
   have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval).comp (mk q) = mk f := by
     ext
@@ -552,8 +552,7 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
       rfl
     · simp only [RingHom.comp_apply, mk_X, lift_root]
   rw [degree_eq_natDegree f'_monic.ne_zero, degree_eq_natDegree q_monic.ne_zero,
-    Nat.cast_withBot, Nat.cast_withBot, -- porting note: added
-    WithBot.coe_le_coe, natDegree_mul hf, natDegree_C, add_zero]
+    Nat.cast_le, natDegree_mul hf, natDegree_C, add_zero]
   apply natDegree_le_of_dvd
   · have : mk f q = 0 := by rw [← commutes, RingHom.comp_apply, mk_self, RingHom.map_zero]
     exact mk_eq_zero.1 this
@@ -613,7 +612,7 @@ open Algebra Polynomial
 
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
 If `R` is a GCD domain and `x` is integral, this is an isomorphism,
-see `adjoin_root.minpoly.equiv_adjoin`. -/
+see `minpoly.equivAdjoin`. -/
 @[simps!]
 def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S) :=
   liftHom _ ⟨x, self_mem_adjoin_singleton R x⟩
@@ -662,9 +661,7 @@ guaranteed to be identical to `g`. -/
 @[simps (config := { fullyApplied := false })]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S :=
-  {
-    AdjoinRoot.liftHom g pb.gen
-      h₂ with
+  { AdjoinRoot.liftHom g pb.gen h₂ with
     toFun := AdjoinRoot.liftHom g pb.gen h₂
     invFun := pb.lift (root g) h₁
     -- porting note: another term-mode proof converted to tactic-mode.
@@ -693,19 +690,18 @@ end Equiv'
 
 section Field
 
-variable (K) (L F : Type _) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
+variable (K) (L F : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
 
 variable (pb : PowerBasis F K)
 
 /-- If `L` is a field extension of `F` and `f` is a polynomial over `F` then the set
 of maps from `F[x]/(f)` into `L` is in bijection with the set of roots of `f` in `L`. -/
 def equiv (f : F[X]) (hf : f ≠ 0) :
-    (AdjoinRoot f →ₐ[F] L) ≃ { x // x ∈ (f.map (algebraMap F L)).roots } :=
+    (AdjoinRoot f →ₐ[F] L) ≃ { x // x ∈ f.aroots L } :=
   (powerBasis hf).liftEquiv'.trans
     ((Equiv.refl _).subtypeEquiv fun x => by
-      rw [powerBasis_gen, minpoly_root hf, Polynomial.map_mul, roots_mul, Polynomial.map_C,
-        roots_C, add_zero, Equiv.refl_apply]
-      rw [← Polynomial.map_mul]; exact map_monic_ne_zero (monic_mul_leadingCoeff_inv hf))
+      rw [powerBasis_gen, minpoly_root hf, aroots_mul, aroots_C, add_zero, Equiv.refl_apply]
+      exact (monic_mul_leadingCoeff_inv hf).ne_zero)
 #align adjoin_root.equiv AdjoinRoot.equiv
 
 end Field

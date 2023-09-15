@@ -36,12 +36,12 @@ open Pointwise
 
 open NNReal
 
-variable {V : Type _}
+variable {V : Type*}
 
 /-- Let `V` be a real topological vector space. A subset of `V` is a convex body if and only if
 it is convex, compact, and nonempty.
 -/
-structure ConvexBody (V : Type _) [TopologicalSpace V] [AddCommMonoid V] [SMul ℝ V] where
+structure ConvexBody (V : Type*) [TopologicalSpace V] [AddCommMonoid V] [SMul ℝ V] where
   carrier : Set V
   convex' : Convex ℝ carrier
   isCompact' : IsCompact carrier
@@ -132,8 +132,8 @@ end ContinuousAdd
 
 variable [ContinuousSMul ℝ V]
 
-instance : SMul ℝ (ConvexBody V)
-    where smul c K := ⟨c • (K : Set V), K.convex.smul _, K.isCompact.smul _, K.nonempty.smul_set⟩
+instance : SMul ℝ (ConvexBody V) where
+  smul c K := ⟨c • (K : Set V), K.convex.smul _, K.isCompact.smul _, K.nonempty.smul_set⟩
 
 @[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=

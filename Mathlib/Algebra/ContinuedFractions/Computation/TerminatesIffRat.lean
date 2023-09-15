@@ -36,7 +36,7 @@ namespace GeneralizedContinuedFraction
 /- ./././Mathport/Syntax/Translate/Command.lean:230:11: unsupported: unusual advanced open style -/
 open GeneralizedContinuedFraction (of)
 
-variable {K : Type _} [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} [LinearOrderedField K] [FloorRing K]
 
 /-
 We will have to constantly coerce along our structures in the following proofs using their provided
@@ -148,8 +148,8 @@ some technical translation lemmas. More precisely, in this section, we show that
 number `q : ℚ` and value `v : K` with `v = ↑q`, the continued fraction of `q` and `v` coincide.
 In particular, we show that
 ```lean
-    (↑(GeneralizedContinuedFraction.of q : GeneralizedContinuedFraction ℚ)
-      : GeneralizedContinuedFraction K)
+    (↑(GeneralizedContinuedFraction.of q : GeneralizedContinuedFraction ℚ) :
+      GeneralizedContinuedFraction K)
   = GeneralizedContinuedFraction.of v`
 ```
 in `generalized_continued_fraction.coe_of_rat`.

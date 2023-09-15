@@ -6,6 +6,7 @@ Authors: Simon Hudon
 import Mathlib.Data.Part
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Stream.Defs
+import Mathlib.Tactic.Common
 
 #align_import control.fix from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -27,11 +28,11 @@ universe u v
 
 open Classical
 
-variable {α : Type _} {β : α → Type _}
+variable {α : Type*} {β : α → Type*}
 
 /-- `Fix α` provides a `fix` operator to define recursive computation
 via the fixed point of function of type `α → α`. -/
-class Fix (α : Type _) where
+class Fix (α : Type*) where
   /-- `fix f` represents the computation of a fixed point for `f`.-/
   fix : (α → α) → α
 #align has_fix Fix
@@ -80,9 +81,9 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
   revert hk
   dsimp [Part.fix]; rw [assert_pos h']; revert this
   generalize Upto.zero = z; intro _this hk
-  suffices : ∀ x',
+  suffices ∀ x',
     WellFounded.fix (Part.fix.proof_1 f x h') (fixAux f) z x' = Fix.approx f (succ k) x'
-  exact this _
+    from this _
   induction k generalizing z with
   | zero =>
     intro x'

@@ -22,7 +22,7 @@ open scoped BigOperators
 
 section AddCommMonoid
 
-variable {α M : Type _} [AddCommMonoid M]
+variable {α M : Type*} [AddCommMonoid M]
 
 /-- The sum of values of `g` on the first `n` points of the orbit of `x` under `f`. -/
 def birkhoffSum (f : α → α) (g : α → M) (n : ℕ) (x : α) : M := ∑ k in range n, g (f^[k] x)
@@ -57,7 +57,7 @@ theorem Function.IsFixedPt.birkhoffSum_eq {f : α → α} {x : α} (h : IsFixedP
     (n : ℕ) : birkhoffSum f g n x = n • g x := by
   simp [birkhoffSum, (h.iterate _).eq]
 
-theorem map_birkhoffSum {F N : Type _} [AddCommMonoid N] [AddMonoidHomClass F M N]
+theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [AddMonoidHomClass F M N]
     (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffSum f g n x) = birkhoffSum f (g' ∘ g) n x :=
   map_sum g' _ _
@@ -66,7 +66,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable {α G : Type _} [AddCommGroup G]
+variable {α G : Type*} [AddCommGroup G]
 
 /-- Birkhoff sum is "almost invariant" under `f`:
 the difference between `birkhoffSum f g n (f x)` and `birkhoffSum f g n x`

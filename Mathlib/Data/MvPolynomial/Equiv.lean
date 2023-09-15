@@ -22,9 +22,9 @@ based on equivalences between the underlying types.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type _` (indexing the variables)
++ `σ : Type*` (indexing the variables)
 
-+ `R : Type _` `[CommSemiring R]` (the coefficients)
++ `R : Type*` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
 This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
@@ -52,7 +52,7 @@ variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
 
 namespace MvPolynomial
 
-variable {σ : Type _} {a a' a₁ a₂ : R} {e : ℕ} {s : σ →₀ ℕ}
+variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {s : σ →₀ ℕ}
 
 section Equiv
 
@@ -120,7 +120,7 @@ theorem mapEquiv_trans [CommSemiring S₁] [CommSemiring S₂] [CommSemiring S�
       map_map]
 #align mv_polynomial.map_equiv_trans MvPolynomial.mapEquiv_trans
 
-variable {A₁ A₂ A₃ : Type _} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
+variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
 
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 
@@ -268,8 +268,8 @@ def sumAlgEquiv : MvPolynomial (Sum S₁ S₂) R ≃ₐ[R] MvPolynomial S₁ (Mv
   { sumRingEquiv R S₁ S₂ with
     commutes' := by
       intro r
-      have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := by rfl
-      have B : algebraMap R (MvPolynomial (Sum S₁ S₂) R) r = C r := by rfl
+      have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := rfl
+      have B : algebraMap R (MvPolynomial (Sum S₁ S₂) R) r = C r := rfl
       simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe_apply,
         Equiv.coe_fn_mk, B, sumToIter_C, A] }
 #align mv_polynomial.sum_alg_equiv MvPolynomial.sumAlgEquiv
