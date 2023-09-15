@@ -51,8 +51,8 @@ instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P 
 #align normed_add_torsor.to_has_isometric_vadd NormedAddTorsor.to_isometricVAdd
 
 /-- A `SeminormedAddCommGroup` is a `NormedAddTorsor` over itself. -/
-instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddTorsor V V
-    where dist_eq_norm' := dist_eq_norm
+instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddTorsor V V where
+  dist_eq_norm' := dist_eq_norm
 #align seminormed_add_comm_group.to_normed_add_torsor SeminormedAddCommGroup.toNormedAddTorsor
 
 -- Because of the AddTorsor.nonempty instance.
