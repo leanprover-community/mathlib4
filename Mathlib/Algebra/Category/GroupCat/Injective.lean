@@ -176,7 +176,7 @@ def next : AddCommGroupCat.{u} := of <|
 
 instance : CategoryTheory.Injective <| next A_ :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
-  @injective_of_divisible _ _ <| @Pi.divisibleBy _ _ _ _ _ _ <| fun f => inferInstance
+  injective_of_divisible _
 
 /-- the next term of `A`'s injective resolution is `∏_{A → ℚ/ℤ}, ℚ/ℤ`.-/
 @[simps] def toNext : A_ ⟶ next A_ where
@@ -329,7 +329,7 @@ lemma toRatCircle_apply_self_eq_aux :
       rw [LinearMap.toSpanSingleton_apply, one_smul]; exact Submodule.mem_span_singleton_self a⟩ =
     Quotient.mk _ (addOrderOf a : ℚ)⁻¹ := by
   rw [toRatCircle_apply]
-  erw [LinearMap.quotKerEquivRange_symm_apply_image (LinearMap.toSpanSingleton ℤ A_ a 1 a),
+  erw [LinearMap.quotKerEquivRange_symm_apply_image (LinearMap.toSpanSingleton ℤ A_ a),
     LinearEquiv.coe_toEquiv]
   rw [← Submodule.Quotient.equiv_refl, Submodule.Quotient.equiv_symm,
     Submodule.Quotient.equiv_apply]
