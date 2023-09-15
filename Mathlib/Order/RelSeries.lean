@@ -226,7 +226,7 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
 
 @[simp] lemma length_withLength [InfiniteDimensionalOrder α] (n : ℕ) :
     (LTSeries.withLength α n).length = n :=
-  RelSeries.withLength_length_eq _ _
+  RelSeries.length_withLength _ _
 
 /-- if `α` is infinite dimensional, then `α` is inhabited -/
 noncomputable def inhabited_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Inhabited α :=
@@ -236,7 +236,7 @@ variable {α}
 
 lemma longestOf_is_longest [FiniteDimensionalOrder α] (x : LTSeries α) :
     x.length ≤ (LTSeries.longestOf α).length :=
-  RelSeries.longestOf_is_longest _ _
+  RelSeries.length_le_length_longestOf _ _
 
 lemma longestOf_len_unique [FiniteDimensionalOrder α] (p : LTSeries α)
     (is_longest : ∀ (q : LTSeries α), q.length ≤ p.length) :
