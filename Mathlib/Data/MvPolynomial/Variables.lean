@@ -303,7 +303,7 @@ theorem vars_add_of_disjoint [DecidableEq σ] (h : Disjoint p.vars q.vars) :
 
 section Mul
 
-theorem vars_mul [i : DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars ⊆ φ.vars ∪ ψ.vars := by
+theorem vars_mul [DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars ⊆ φ.vars ∪ ψ.vars := by
   simp_rw [vars]
   convert Multiset.toFinset_subset.mpr <| Multiset.Le.subset (degrees_mul φ ψ)
   convert (Multiset.toFinset_add φ.degrees ψ.degrees).symm
