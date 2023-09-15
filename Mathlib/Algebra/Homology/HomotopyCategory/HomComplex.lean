@@ -611,7 +611,7 @@ def mk (z : Cochain F G n) (m : ℤ) (hnm : n + 1 = m) (h : δ n m z = 0) : Cocy
 @[simp]
 lemma δ_eq_zero {n : ℤ} (z : Cocycle F G n) (m : ℤ) : δ n m (z : Cochain F G n) = 0 := by
   by_cases h : n + 1 = m
-  . rw [← mem_iff n m h]
+  · rw [← mem_iff n m h]
     exact z.2
   . exact δ_shape n m h _
 
