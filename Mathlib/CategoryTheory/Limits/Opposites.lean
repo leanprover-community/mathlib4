@@ -279,8 +279,8 @@ theorem hasLimits_of_hasColimits_op [HasColimits Cᵒᵖ] : HasLimits C :=
 #align category_theory.limits.has_limits_of_has_colimits_op CategoryTheory.Limits.hasLimits_of_hasColimits_op
 
 instance has_cofiltered_limits_op_of_has_filtered_colimits [HasFilteredColimitsOfSize.{v₂, u₂} C] :
-    HasCofilteredLimitsOfSize.{v₂, u₂} Cᵒᵖ
-    where HasLimitsOfShape _ _ _ := hasLimitsOfShape_op_of_hasColimitsOfShape
+    HasCofilteredLimitsOfSize.{v₂, u₂} Cᵒᵖ where
+  HasLimitsOfShape _ _ _ := hasLimitsOfShape_op_of_hasColimitsOfShape
 #align category_theory.limits.has_cofiltered_limits_op_of_has_filtered_colimits CategoryTheory.Limits.has_cofiltered_limits_op_of_has_filtered_colimits
 
 theorem has_cofiltered_limits_of_has_filtered_colimits_op [HasFilteredColimitsOfSize.{v₂, u₂} Cᵒᵖ] :
@@ -383,16 +383,16 @@ theorem hasCoproducts_of_opposite [HasProducts.{v₂} Cᵒᵖ] : HasCoproducts.{
   hasCoproductsOfShape_of_opposite X
 #align category_theory.limits.has_coproducts_of_opposite CategoryTheory.Limits.hasCoproducts_of_opposite
 
-instance hasFiniteCoproducts_opposite [HasFiniteProducts C] : HasFiniteCoproducts Cᵒᵖ
-    where out _ := Limits.hasCoproductsOfShape_opposite _
+instance hasFiniteCoproducts_opposite [HasFiniteProducts C] : HasFiniteCoproducts Cᵒᵖ where
+  out _ := Limits.hasCoproductsOfShape_opposite _
 #align category_theory.limits.has_finite_coproducts_opposite CategoryTheory.Limits.hasFiniteCoproducts_opposite
 
 theorem hasFiniteCoproducts_of_opposite [HasFiniteProducts Cᵒᵖ] : HasFiniteCoproducts C :=
   { out := fun _ => hasCoproductsOfShape_of_opposite _ }
 #align category_theory.limits.has_finite_coproducts_of_opposite CategoryTheory.Limits.hasFiniteCoproducts_of_opposite
 
-instance hasFiniteProducts_opposite [HasFiniteCoproducts C] : HasFiniteProducts Cᵒᵖ
-    where out _ := inferInstance
+instance hasFiniteProducts_opposite [HasFiniteCoproducts C] : HasFiniteProducts Cᵒᵖ where
+  out _ := inferInstance
 #align category_theory.limits.has_finite_products_opposite CategoryTheory.Limits.hasFiniteProducts_opposite
 
 theorem hasFiniteProducts_of_opposite [HasFiniteCoproducts Cᵒᵖ] : HasFiniteProducts C :=

@@ -163,14 +163,6 @@ instance (priority := 10) CancelMonoidWithZero.to_noZeroDivisors : NoZeroDivisor
     ab0.trans (mul_zero _).symm⟩
 #align cancel_monoid_with_zero.to_no_zero_divisors CancelMonoidWithZero.to_noZeroDivisors
 
-theorem mul_left_inj' (hc : c ≠ 0) : a * c = b * c ↔ a = b :=
-  (mul_left_injective₀ hc).eq_iff
-#align mul_left_inj' mul_left_inj'
-
-theorem mul_right_inj' (ha : a ≠ 0) : a * b = a * c ↔ b = c :=
-  (mul_right_injective₀ ha).eq_iff
-#align mul_right_inj' mul_right_inj'
-
 @[simp]
 theorem mul_eq_mul_right_iff : a * c = b * c ↔ a = b ∨ c = 0 := by
   by_cases hc : c = 0 <;> [simp [hc]; simp [mul_left_inj', hc]]

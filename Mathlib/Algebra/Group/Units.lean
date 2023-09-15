@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemake
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
+import Mathlib.Tactic.Lift
 
 #align_import algebra.group.units from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -197,7 +198,6 @@ instance : MulOneClass αˣ where
 @[to_additive "Additive units of an additive monoid form an additive group."]
 instance : Group αˣ :=
   { (inferInstance : MulOneClass αˣ) with
-    one := 1,
     mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
     inv := Inv.inv, mul_left_inv := fun u => ext u.inv_val }
 

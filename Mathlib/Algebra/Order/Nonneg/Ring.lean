@@ -3,7 +3,7 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Algebra.GroupPower.Order
@@ -199,8 +199,8 @@ theorem mk_eq_one [OrderedSemiring α] {x : α} (hx : 0 ≤ x) :
   Subtype.ext_iff
 #align nonneg.mk_eq_one Nonneg.mk_eq_one
 
-instance mul [OrderedSemiring α] : Mul { x : α // 0 ≤ x }
-    where mul x y := ⟨x * y, mul_nonneg x.2 y.2⟩
+instance mul [OrderedSemiring α] : Mul { x : α // 0 ≤ x } where
+  mul x y := ⟨x * y, mul_nonneg x.2 y.2⟩
 #align nonneg.has_mul Nonneg.mul
 
 @[simp, norm_cast]
@@ -233,8 +233,8 @@ theorem mk_nat_cast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : {
   rfl
 #align nonneg.mk_nat_cast Nonneg.mk_nat_cast
 
-instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ
-    where pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
+instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ where
+  pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
 #align nonneg.has_pow Nonneg.pow
 
 @[simp, norm_cast]
