@@ -108,9 +108,9 @@ variable (c c' : Chain α)
 variable (f : α →o β)
 variable (g : β →o γ)
 
-lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
-
 instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
+
+lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
 
 lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
 
