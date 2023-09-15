@@ -31,16 +31,17 @@ separable closure, separably closed
 
 ## TODO
 
-- If `K` is a separably closed field (or algebraically closed field) containing `k`, then all
-  elements of `K` which are separable over `k` form a separable closure of `k`.
+- Maximal separable subextension of `K/k`, consisting of all elements of `K` which are separable
+  over `k`.
 
-- Using the above result, construct a separable closure as a subfield of an algebraic closure.
+- If `K` is a separably closed field containing `k`, then the maximal separable subextension
+  of `K/k` is a separable closure of `k`.
+
+- In particular, separable closure exists.
 
 - If `k` is a perfect field, then its separable closure coincides with its algebraic closure.
 
 - An algebraic extension of a separably closed field is purely inseparable.
-
-- Maximal separable subextension ...
 
 -/
 
@@ -59,6 +60,10 @@ see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 -/
 class IsSepClosed : Prop where
   splits_of_separable : ∀ p : k[X], p.Separable → (p.Splits <| RingHom.id k)
+
+/-- An algebraically closed field is also separably closed. -/
+instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
+  ⟨fun p _ => IsAlgClosed.splits p⟩
 
 variable {k} {K}
 
@@ -171,6 +176,10 @@ variable (k) (K)
 class IsSepClosure [Algebra k K] : Prop where
   sep_closed : IsSepClosed K
   separable : IsSeparable k K
+
+/-- A separably closed field is its separable closure. -/
+instance IsSepClosure.self_of_isSepClosed [IsSepClosed k] : IsSepClosure k k :=
+  ⟨by assumption, isSeparable_self k⟩
 
 variable {k} {K}
 
