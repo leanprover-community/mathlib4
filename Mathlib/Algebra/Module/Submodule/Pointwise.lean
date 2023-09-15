@@ -284,7 +284,7 @@ end
 
 section
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [AddCommMonoid M] [Module R M]
 
 /--
 let `S ⊆ R` be a set and `N ≤ M` be a submodule, then `S • N` is the smallest submodule containing
@@ -300,6 +300,11 @@ variable (s : Set R) (N : Submodule R M)
 lemma mem_set_smul_submodule_def (x : M) :
     x ∈ s • N ↔
   x ∈ sInf { p : Submodule R M | ∀ ⦃r : R⦄ {n : M}, r ∈ s → n ∈ N → r • n ∈ p } := Iff.rfl
+
+lemma mem_set_smul_submodule_of_mem_mem {r : R} {m : M} (mem1 : r ∈ s) (mem2 : m ∈ N) :
+    r • m ∈ s • N := by
+  rw [mem_set_smul_submodule_def, mem_sInf]
+  exact fun _ h => h mem1 mem2
 
 lemma set_smul_submodule_le (p : Submodule R M)
     (closed_under_smul : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p) :
@@ -326,7 +331,7 @@ lemma set_smul_submodule_inductionOn {prop : M → Prop} (x : M)
     smul_mem' := smul₁
   } smul₀ hx
 
-lemma set_smul_submodule_eq [SMulCommClass R R N] :
+lemma set_smul_submodule_eq_submodule_map [SMulCommClass R R N] :
     s • N =
     Submodule.map
       (N.subtype.comp (Finsupp.lsum R λ (r : R) ↦ ⟨⟨(r • .), smul_add r⟩,
@@ -359,7 +364,7 @@ lemma mem_set_smul_submodule (x : M) [SMulCommClass R R N] :
     x ∈ s • N ↔ ∃ (c : R →₀ N), (c.support : Set R) ⊆ s ∧ x = c.sum λ r m ↦ r • m := by
   fconstructor
   · intros h
-    rw [set_smul_submodule_eq] at h
+    rw [set_smul_submodule_eq_submodule_map] at h
     obtain ⟨c, hc, rfl⟩ := h
     exact ⟨c, hc, rfl⟩
 
@@ -390,6 +395,34 @@ lemma mem_singleton_set_smul_submodule [SMulCommClass R R M] (r : R) (x : M) :
   rw [coe_pointwise_smul]
   fconstructor <;>
   · rintro ⟨m, hm, rfl⟩; exact ⟨m, hm, rfl⟩
+
+protected def pointwiseSetMulActionSubmodule [SMulCommClass R R M] :
+    MulAction (Set R) (Submodule R M) where
+  one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
+    (mem_singleton_set_smul_submodule _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],
+      fun h => ⟨m, h, (one_smul _ _).symm⟩⟩
+  mul_smul s t x := le_antisymm
+    (set_smul_submodule_le _ _ _ <| by
+      rintro _ n ⟨a, b, ha, hb, rfl⟩ hn
+      rw [mul_smul]
+      apply mem_set_smul_submodule_of_mem_mem (mem1 := ha)
+      exact mem_set_smul_submodule_of_mem_mem (mem1 := hb) (mem2 := hn))
+    (set_smul_submodule_le _ _ _ <| by
+      rintro r m hr hm
+      have : SMulCommClass R R x := ⟨fun r s m => Subtype.ext <| show r • s • m.1 = s • r • m.1
+        from smul_comm _ _ _⟩
+      rw [mem_set_smul_submodule] at hm
+      obtain ⟨c, hc1, rfl⟩ := hm
+      delta Finsupp.sum
+      simp only [AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid, SetLike.val_smul]
+      rw [Finset.smul_sum]
+      refine Submodule.sum_mem _ ?_
+      intro r' hr'
+      rw [← mul_smul]
+      apply mem_set_smul_submodule_of_mem_mem (mem2 := (c _).2)
+      exact ⟨r, r', hr, hc1 hr', rfl⟩)
+
+scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulActionSubmodule
 
 end
 
