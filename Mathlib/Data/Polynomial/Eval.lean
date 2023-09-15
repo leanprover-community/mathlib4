@@ -622,6 +622,12 @@ theorem nat_cast_mul_comp {n : ℕ} : ((n : R[X]) * p).comp r = n * p.comp r := 
   rw [← C_eq_nat_cast, C_mul_comp, C_eq_nat_cast]
 #align polynomial.nat_cast_mul_comp Polynomial.nat_cast_mul_comp
 
+theorem mul_X_add_nat_cast_comp {n : ℕ} :
+    (p * (X + (n : R[X]))).comp q = p.comp q * (q + n) := by
+  rw [mul_add, add_comp, mul_X_comp, ← Nat.cast_comm, nat_cast_mul_comp, Nat.cast_comm, mul_add]
+set_option linter.uppercaseLean3 false in
+#align polynomial.mul_X_add_nat_cast_comp Polynomial.mul_X_add_nat_cast_comp
+
 @[simp]
 theorem mul_comp {R : Type*} [CommSemiring R] (p q r : R[X]) :
     (p * q).comp r = p.comp r * q.comp r :=
