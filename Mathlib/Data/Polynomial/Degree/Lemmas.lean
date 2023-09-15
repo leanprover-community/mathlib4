@@ -289,6 +289,27 @@ theorem coe_lt_degree {p : R[X]} {n : ℕ} : (n : WithBot ℕ) < degree p ↔ n 
   simp [degree_eq_natDegree h, Nat.cast_lt]
 #align polynomial.coe_lt_degree Polynomial.coe_lt_degree
 
+@[simp]
+theorem Polynomial.degree_map_eq_iff {R : Type u} {S : Type v}
+  [Semiring R] [Semiring S] {f : R →+* S} (p : Polynomial R) :
+    Polynomial.degree (Polynomial.map f p) = Polynomial.degree p
+      ↔
+    f (p.leadingCoeff) ≠ 0 := by
+  -- Try applying degree_map_eq_of_injective
+  sorry
+
+@[simp]
+theorem Polynomial.natDegree_map_eq_iff {R : Type u} {S : Type v}
+  [Semiring R] [Semiring S] {f : R →+* S} (p : Polynomial R) :
+    Polynomial.natDegree (Polynomial.map f p) = Polynomial.natDegree p
+      ↔
+    f (p.leadingCoeff) ≠ 0 := by
+  constructor
+  · sorry
+  · intro h
+    apply natDegree_map_of_leadingCoeff_ne_zero
+    exact h
+
 end Degree
 
 end Semiring
