@@ -69,7 +69,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.6"
+  "0.1.7"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
