@@ -94,7 +94,7 @@ operation, then the magma structure is a commutative monoid. -/
 def commMonoid [h : MulOneClass X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommMonoid X :=
   { h with
-      mul := (· * ·), one := 1, mul_comm := (mul_comm h₁ MulOneClass.isUnital distrib).comm,
+      mul_comm := (mul_comm h₁ MulOneClass.isUnital distrib).comm,
       mul_assoc := (mul_assoc h₁ MulOneClass.isUnital distrib).assoc }
 #align eckmann_hilton.comm_monoid EckmannHilton.commMonoid
 #align eckmann_hilton.add_comm_monoid EckmannHilton.addCommMonoid
