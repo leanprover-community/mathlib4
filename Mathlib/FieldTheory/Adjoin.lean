@@ -312,8 +312,8 @@ theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F
   exact adjoin.algebraMap_mem F S f
 #align intermediate_field.adjoin.range_algebra_map_subset IntermediateField.adjoin.range_algebraMap_subset
 
-instance adjoin.fieldCoe : CoeTC F (adjoin F S)
-    where coe x := ⟨algebraMap F E x, adjoin.algebraMap_mem F S x⟩
+instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
+  coe x := ⟨algebraMap F E x, adjoin.algebraMap_mem F S x⟩
 #align intermediate_field.adjoin.field_coe IntermediateField.adjoin.fieldCoe
 
 theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure (Or.inr hx)
@@ -896,7 +896,7 @@ end PowerBasis
 /-- Algebra homomorphism `F⟮α⟯ →ₐ[F] K` are in bijection with the set of roots
 of `minpoly α` in `K`. -/
 noncomputable def algHomAdjoinIntegralEquiv (h : IsIntegral F α) :
-    (F⟮α⟯ →ₐ[F] K) ≃ { x // x ∈ ((minpoly F α).map (algebraMap F K)).roots } :=
+    (F⟮α⟯ →ₐ[F] K) ≃ { x // x ∈ (minpoly F α).aroots K } :=
   (adjoin.powerBasis h).liftEquiv'.trans
     ((Equiv.refl _).subtypeEquiv fun x => by
       rw [adjoin.powerBasis_gen, minpoly_gen h, Equiv.refl_apply])
@@ -1090,7 +1090,6 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
       exact congr_arg z.2 (Subtype.ext hst)⟩
 #align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
 
-set_option maxHeartbeats 350000 in
 -- Porting note: instance `alg` added by hand. The proof is very slow.
 /-- Extend a lift `x : Lifts F E K` to an element `s : E` whose conjugates are all in `K` -/
 noncomputable def Lifts.liftOfSplits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
@@ -1100,15 +1099,16 @@ noncomputable def Lifts.liftOfSplits (x : Lifts F E K) {s : E} (h1 : IsIntegral 
     splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero h1))
      ((splits_map_iff _ _).mpr (by convert h2; exact RingHom.ext fun y => x.2.commutes y))
       (minpoly.dvd_map_of_isScalarTower _ _ _)
-  let alg : Algebra {y // y ∈ x.fst} {y // y ∈ restrictScalars F {z // z ∈ x.fst}⟮s⟯} :=
+  letI : Algebra {y // y ∈ x.fst} {y // y ∈ restrictScalars F {z // z ∈ x.fst}⟮s⟯} :=
     {z // z ∈ x.fst}⟮s⟯.toSubalgebra.algebra
+  letI := x.2.toRingHom.toAlgebra
   ⟨x.1⟮s⟯.restrictScalars F,
     (@algHomEquivSigma F x.1 (x.1⟮s⟯.restrictScalars F) K _ _ _ _ _ _ _
           (IntermediateField.algebra x.1⟮s⟯) (IsScalarTower.of_algebraMap_eq fun _ => rfl)).invFun
       ⟨x.2,
-        (@algHomAdjoinIntegralEquiv x.1 _ E _ _ s K _ x.2.toRingHom.toAlgebra h3).invFun
+        (@algHomAdjoinIntegralEquiv x.1 _ E _ _ s K _ _ h3).invFun
           ⟨rootOfSplits x.2.toRingHom key (ne_of_gt (minpoly.degree_pos h3)), by
-            rw [mem_roots (map_ne_zero (minpoly.ne_zero h3)), IsRoot, ← eval₂_eq_eval_map]
+            rw [mem_aroots, and_iff_right (minpoly.ne_zero h3)]
             exact map_rootOfSplits x.2.toRingHom key (ne_of_gt (minpoly.degree_pos h3))⟩⟩⟩
 #align intermediate_field.lifts.lift_of_splits IntermediateField.Lifts.liftOfSplits
 
@@ -1129,8 +1129,8 @@ theorem Lifts.le_lifts_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
               (minpoly.dvd_map_of_isScalarTower _ _ _)
         have I2 := (ne_of_gt (minpoly.degree_pos I1))
         have I3 : rootOfSplits (AlgHom.toRingHom x.2) key (ne_of_gt (minpoly.degree_pos I1)) ∈
-            (Polynomial.map (algebraMap x.1 K) (minpoly x.1 s)).roots := by
-          rw [mem_roots (map_ne_zero (minpoly.ne_zero I1)), IsRoot, ← eval₂_eq_eval_map]
+            (minpoly x.1 s).aroots K := by
+          rw [mem_aroots, and_iff_right (minpoly.ne_zero I1)]
           exact map_rootOfSplits x.2.toRingHom key (ne_of_gt (minpoly.degree_pos I1))
         let φ : x.1⟮s⟯ →ₐ[x.1] K := ((algHomAdjoinIntegralEquiv x.1 I1).invFun
           ⟨rootOfSplits (AlgHom.toRingHom x.2) key I2, I3⟩)
@@ -1204,7 +1204,6 @@ theorem sup_toSubalgebra [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K
       (Field.toIsField K)
 #align intermediate_field.sup_to_subalgebra IntermediateField.sup_toSubalgebra
 
-set_option synthInstance.maxHeartbeats 30000 in
 instance finiteDimensional_sup [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : IntermediateField K L) := by
   let g := Algebra.TensorProduct.productMap E1.val E2.val
