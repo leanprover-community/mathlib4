@@ -26,26 +26,10 @@ open Limits
 
 /-- Transport `Limits.IsZero` along an equivalence. -/
 theorem Limits.IsZero.transport (e : C ≌ D) {x : C} (hx : IsZero x) : IsZero (e.functor.obj x) where
-  unique_to X := hx.unique_to (e.inverse.obj X) |>.map fun u => {
-    default := e.functor.map u.default ≫ e.counit.app _
-    uniq := fun Y => by
-      dsimp only
-      have h := u.uniq (e.unit.app _ ≫ e.inverse.map Y)
-      rw [←h]
-      simp_rw [Functor.map_comp, Equivalence.fun_inv_map, Functor.id_obj, Category.assoc,
-        Equivalence.counit_app_functor, ←Functor.map_comp_assoc, Iso.inv_hom_id_app,
-        Functor.id_obj, Functor.comp_obj, Category.comp_id, Iso.hom_inv_id_app, Functor.id_obj,
-        Functor.map_id, Category.id_comp]
-  }
-  unique_from X := hx.unique_from (e.inverse.obj X) |>.map fun u => {
-    default := e.counitInv.app _ ≫ e.functor.map u.default
-    uniq := fun Y => by
-      dsimp only
-      have h := u.uniq (e.inverse.map Y ≫ e.unitInv.app _)
-      rw [←h]
-      simp_rw [Functor.map_comp, Equivalence.fun_inv_map, Functor.id_obj, Category.assoc,
-        Equivalence.counitInv_functor_comp, Category.comp_id, Iso.inv_hom_id_app_assoc]
-  }
+  unique_to X := hx.unique_to (e.inverse.obj X) |>.map <|
+    fun u => @Equiv.unique _ _ u (e.toAdjunction.homEquiv _ _)
+  unique_from X := hx.unique_from (e.inverse.obj X) |>.map <|
+    fun u => @Equiv.unique _ _ u (e.symm.toAdjunction.homEquiv _ _).symm
 
 /-- Transport `Limits.HasZeroObject` along an equivalence. -/
 theorem Limits.HasZeroObject.transport (e : C ≌ D) [Limits.HasZeroObject C] :
@@ -57,8 +41,12 @@ def Limits.HasZeroMorphisms.transport (e : C ≌ D) [Limits.HasZeroMorphisms C] 
     Limits.HasZeroMorphisms D where
   Zero X Y := ⟨e.counitInv.app _ ≫ e.functor.map 0 ≫ e.counit.app _⟩
   zero_comp X {Y Z} f := show (_ ≫ _ ≫ _) ≫ _ = _ ≫ _ ≫ _ by
+    simp_rw [Category.assoc]
+    congr 1
     sorry
   comp_zero {X Y} Z f := show _ ≫ (_ ≫ _ ≫ _) = _ ≫ _ ≫ _ by
+    simp_rw [←Category.assoc]
+    congr 1
     sorry
 
 /-- Transport `Limits.HasBinaryBiproduct` along an equivalence. -/
