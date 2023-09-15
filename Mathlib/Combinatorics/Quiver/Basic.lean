@@ -49,6 +49,9 @@ class Quiver (V : Type u) where
 #align quiver Quiver
 #align quiver.hom Quiver.Hom
 
+-- making this reducible means that `ext` can see the underlying implementation
+attribute [reducible] Quiver.Hom
+
 /--
 Notation for the type of edges/arrows/morphisms between a given source and target
 in a quiver or category.
