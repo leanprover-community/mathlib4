@@ -112,6 +112,33 @@ instance Bicone.category : Category (Bicone F) where
   comp f g := { Hom := f.Hom ≫ g.Hom }
   id B := { Hom := 𝟙 B.pt }
 
+-- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
+-- the Hom field of a category, we need to write the `ext` lemma in terms of the categorical
+-- morphism, rather than the underlying structure.
+@[ext]
+theorem BiconeMorphism.ext {c c' : Bicone F} (f g : c ⟶ c') (w : f.Hom = g.Hom) : f = g := by
+  cases f
+  cases g
+  congr
+
+namespace Bicones
+
+/-- To give an isomorphism between cocones, it suffices to give an
+  isomorphism between their vertices which commutes with the cocone
+  maps. -/
+-- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
+@[aesop apply safe (rule_sets [CategoryTheory]), simps]
+def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
+    (wι : ∀ j, c.ι j ≫ φ.hom = c'.ι j := by aesop_cat)
+    (wπ : ∀ j, φ.hom ≫ c'.π j = c.π j := by aesop_cat) : c ≅ c' where
+  hom := { Hom := φ.hom }
+  inv :=
+    { Hom := φ.inv
+      wι := fun j => φ.comp_inv_eq.mpr (wι j).symm
+      wπ := fun j => φ.inv_comp_eq.mpr (wπ j).symm  }
+
+end Bicones
+
 namespace Bicone
 
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
@@ -119,6 +146,8 @@ attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
 -- Porting note: would it be okay to use this more generally?
 attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
 
+
+variable (F) in
 /-- A functor `G : C ⥤ D` sends bicones over `F` to bicones over `G.obj ∘ F` functorially. -/
 @[simps]
 def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
