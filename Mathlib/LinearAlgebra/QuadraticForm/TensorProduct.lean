@@ -94,10 +94,8 @@ theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂)  :
 theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂)  :
     polarBilin (Q.baseChange A) = (polarBilin Q).baseChange A := by
   rw [QuadraticForm.baseChange, BilinForm.baseChange, polarBilin_tmul, BilinForm.tmul,
-    ←LinearMap.map_smul, smul_tmul', ←two_nsmul_associated R]
-  erw [associated_sq]
-  rw [smul_comm (_ : A) (_ : ℕ), ← smul_assoc, two_smul _ (_ : A), invOf_two_add_invOf_two,
-    one_smul]
+    ←LinearMap.map_smul, smul_tmul', ←two_nsmul_associated R, coe_associatedHom, associated_sq,
+    smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two, one_smul]
 
 end CommRing
 

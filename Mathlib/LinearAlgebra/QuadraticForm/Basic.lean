@@ -798,7 +798,7 @@ theorem associated_apply (x y : M) : associatedHom S Q x y = ⅟ 2 * (Q (x + y) 
   rfl
 #align quadratic_form.associated_apply QuadraticForm.associated_apply
 
-theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
+@[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
   dsimp
   rw [←smul_mul_assoc, two_nsmul, invOf_two_add_invOf_two, one_mul, polar]
@@ -870,7 +870,7 @@ end AssociatedHom
 
 section Associated
 
-variable [CommRing R₁] [AddCommGroup M] [Module R₁ M]
+variable [CommSemiring S] [CommRing R₁] [AddCommGroup M] [Algebra S R₁] [Module R₁ M]
 
 variable [Invertible (2 : R₁)]
 
@@ -881,6 +881,11 @@ associated symmetric bilinear form. -/
 abbrev associated : QuadraticForm R₁ M →ₗ[R₁] BilinForm R₁ M :=
   associatedHom R₁
 #align quadratic_form.associated QuadraticForm.associated
+
+variable (S) in
+theorem coe_associatedHom :
+    ⇑(associatedHom S : QuadraticForm R₁ M →ₗ[S] BilinForm R₁ M) = associated :=
+  rfl
 
 @[simp]
 theorem associated_linMulLin (f g : M →ₗ[R₁] R₁) :
