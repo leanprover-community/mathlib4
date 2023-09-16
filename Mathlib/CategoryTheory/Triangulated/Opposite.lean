@@ -319,7 +319,23 @@ instance : Pretriangulated (PretriangulatedOpposite C) where
 
 end PretriangulatedOpposite
 
-end Pretriangulated
+namespace Opposite
+-- `open Pretriangulated.Opposite` to get these instances
 
+variable (C : Type*) [Category C] [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
+
+noncomputable scoped instance : HasShift Cᵒᵖ ℤ :=
+  (inferInstance : HasShift (PretriangulatedOpposite C) ℤ)
+
+noncomputable scoped instance (n : ℤ) : (shiftFunctor Cᵒᵖ n).Additive :=
+  (inferInstance : (shiftFunctor (PretriangulatedOpposite C) n).Additive)
+
+scoped instance : Pretriangulated Cᵒᵖ :=
+  (inferInstance : Pretriangulated (PretriangulatedOpposite C))
+
+end Opposite
+
+end Pretriangulated
 
 end CategoryTheory

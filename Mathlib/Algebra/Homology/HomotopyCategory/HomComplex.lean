@@ -1012,6 +1012,16 @@ def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
   right_inv γ := by simp
   map_add' γ γ' := by simp
 
+/-@[simps]
+def leftShiftAddEquiv (n a n' : ℤ) (hn' : n + a = n') :
+    Cochain K L n ≃+ Cochain (K⟦a⟧) L n' where
+  toFun γ := γ.leftShift a n' hn'
+  invFun γ :=
+    sorry
+  left_inv γ := sorry
+  right_inv γ := sorry
+  map_add' γ γ' := sorry-/
+
 variable {K L}
 
 @[simp]

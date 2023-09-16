@@ -1,8 +1,8 @@
-import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
+import Mathlib.CategoryTheory.Triangulated.Opposite
 import Mathlib.Algebra.Category.GroupCat.Abelian
 
-open CategoryTheory Category Limits Preadditive
+open CategoryTheory Category Limits Preadditive Pretriangulated.Opposite
 
 universe v u
 
@@ -224,7 +224,7 @@ variable (K) {L₁ L₂ : CochainComplex C ℤ} (φ : L₁ ⟶ L₂)
 
 set_option maxHeartbeats 400000 in
 @[simps]
-noncomputable def mappingConeIsoX (i : ℤ) :
+noncomputable def rightMappingConeIsoX (i : ℤ) :
     (HomComplex K (mappingCone φ)).X i ≅ (mappingCone ((functor K).map φ)).X i where
   hom := AddMonoidHom.mk' (fun (α : Cochain K (mappingCone φ) i) =>
     (MappingCone.inl ((functor K).map φ)).v (i+1) i (by linarith) (Cochain.comp α (MappingCone.fst φ).1 rfl) +
@@ -285,9 +285,9 @@ noncomputable def mappingConeIsoX (i : ℤ) :
       Cochain.comp_assoc_of_third_is_zero_cochain, MappingCone.inl_snd, MappingCone.inr_snd, zero_add]
 
 @[simps!]
-noncomputable def mappingConeIso :
+noncomputable def rightMappingConeIso :
     HomComplex K (mappingCone φ) ≅ mappingCone ((HomComplex.functor K).map φ) :=
-  HomologicalComplex.Hom.isoOfComponents (mappingConeIsoX K φ) (by
+  HomologicalComplex.Hom.isoOfComponents (rightMappingConeIsoX K φ) (by
     rintro n _ rfl
     ext (α : Cochain K (mappingCone φ) n)
     obtain ⟨α₁, α₂, rfl⟩ := MappingCone.cochain_to_break _ α (n+1) rfl
@@ -313,12 +313,12 @@ noncomputable def mappingConeTriangleIso :
     (functor K).mapTriangle.obj (MappingCone.triangle φ) ≅
       MappingCone.triangle ((HomComplex.functor K).map φ) := by
   refine' Pretriangulated.Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-    (mappingConeIso K φ) (by aesop_cat) _ _
+    (rightMappingConeIso K φ) (by aesop_cat) _ _
   · dsimp
     rw [id_comp]
     ext i (α : Cochain K L₂ i)
     dsimp
-    erw [mappingConeIso_hom_f_apply]
+    erw [rightMappingConeIso_hom_f_apply]
     simp only [Cochain.comp_assoc_of_second_is_zero_cochain, MappingCone.inr_fst, Cochain.comp_zero,
       MappingCone.inr_snd, Cochain.comp_id, add_left_eq_self]
     rw [map_zero]
@@ -329,7 +329,7 @@ noncomputable def mappingConeTriangleIso :
     apply Cochain.ext
     intro p q (hpq : p + (i + 1) = q)
     dsimp [MappingCone.triangleδ]
-    erw [mappingConeIso_hom_f_apply]
+    erw [rightMappingConeIso_hom_f_apply]
     simp only [Cocycle.cochain_ofHom_homOf_eq_coe, Cocycle.rightShift_coe, Cocycle.coe_neg, Cochain.rightShift_neg,
       Cochain.comp_neg, Cochain.add_comp, Cochain.comp_assoc_of_third_is_zero_cochain,
       Cochain.comp_assoc_of_second_is_zero_cochain, neg_add_rev, Cochain.neg_v,
@@ -363,6 +363,13 @@ noncomputable def mappingConeTriangleIso :
     rfl
 
 end
+
+variable (K L) (m : ℤ) (hm : n + m = 0)
+
+/-def leftShiftIso : HomComplex (K⟦m⟧) L ≅ (HomComplex K L)⟦n⟧ :=
+  HomologicalComplex.Hom.isoOfComponents (fun i => by
+    -- Cochain.leftShiftAddEquiv K L
+    sorry) sorry-/
 
 end HomComplex
 
