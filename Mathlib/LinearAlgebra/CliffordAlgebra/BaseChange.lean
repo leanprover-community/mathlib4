@@ -19,9 +19,9 @@ In this file we show the isomorphism
   with forward direction `CliffordAlgebra.toBasechange A Q` and reverse direction
   `CliffordAlgebra.ofBasechange A Q`.
 
-This covers a more general case of §2.2 of the complexification of clifford algebras (as described
-in https://empg.maths.ed.ac.uk/Activities/Spin/Lecture2.pdf), where ℂ and ℝ are replaced by an
-`R`-algebra `A`.
+This covers a more general case of the complexification of clifford algebras (as described in §2.2
+of https://empg.maths.ed.ac.uk/Activities/Spin/Lecture2.pdf), where ℂ and ℝ are replaced by an
+`R`-algebra `A` (where `2 : R` is invertible).
 
 We show the additional results:
 
@@ -37,7 +37,6 @@ variable [Algebra R A] [Module R V] [Module A V] [IsScalarTower R A V]
 variable [Invertible (2 : R)]
 
 open scoped TensorProduct
-
 
 namespace CliffordAlgebra
 
