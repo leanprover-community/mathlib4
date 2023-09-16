@@ -219,14 +219,15 @@ theorem IdentDistrib.truncation {β : Type*} [MeasurableSpace β] {ν : Measure 
 
 end Truncation
 
-section StrongLawAe
+section StrongLawAeReal
 
 variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
 
 section MomentEstimates
 
 theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 ≤ X) {K : ℕ} {N : ℕ}
-    (hKN : K ≤ N): ∑ j in range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N} ≤ ENNReal.ofReal (𝔼[X] + 1) := by
+    (hKN : K ≤ N) :
+    ∑ j in range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N} ≤ ENNReal.ofReal (𝔼[X] + 1) := by
   let ρ : Measure ℝ := Measure.map X ℙ
   haveI : IsProbabilityMeasure ρ := isProbabilityMeasure_map hint.aemeasurable
   have A : ∑ j in range K, ∫ _ in j..N, (1 : ℝ) ∂ρ ≤ 𝔼[X] + 1 :=
@@ -662,7 +663,7 @@ theorem strong_law_ae_real (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
       Function.comp_apply]
 #align probability_theory.strong_law_ae ProbabilityTheory.strong_law_ae_real
 
-end StrongLawAe
+end StrongLawAeReal
 
 section StrongLawLp
 
@@ -694,7 +695,7 @@ set_option linter.uppercaseLean3 false in
 end StrongLawLp
 
 
-section glouk
+section StrongLawVectorSpace
 
 variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
@@ -745,12 +746,11 @@ theorem strong_law_ae_simpleFunc_comp [MeasurableSpace E] [BorelSpace E]
       · exact (φ.comp (X 0) h').integrable_of_isFiniteMeasure
       · exact (ψ.comp (X 0) h').integrable_of_isFiniteMeasure
 
-
 /-- **Strong law of large numbers**, almost sure version: if `X n` is a sequence of independent
-identically distributed integrable real-valued random variables, then `∑ i in range n, X i / n`
-converges almost surely to `𝔼[X 0]`. We give here the strong version, due to Etemadi, that only
-requires pairwise independence. -/
-theorem strong_law_ae_f_measurable
+identically distributed integrable random variables taking values in a Banach space,
+then `n⁻¹ • ∑ i in range n, X i` converges almost surely to `𝔼[X 0]`. We give here the strong
+version, due to Etemadi, that only requires pairwise independence. -/
+theorem strong_law_ae_of_measurable
     (X : ℕ → Ω → E) (hint : Integrable (X 0)) (h' : StronglyMeasurable (X 0))
     (hindep : Pairwise (fun i j ↦ IndepFun (X i) (X j))) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, X i ω)) atTop (𝓝 𝔼[X 0]) := by
@@ -763,10 +763,10 @@ theorem strong_law_ae_f_measurable
   let Y : ℕ → ℕ → Ω → E := fun k i ↦ (φ k) ∘ (X i)
   have A : ∀ᵐ ω, ∀ k,
       Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, Y k i ω)) atTop (𝓝 𝔼[Y k 0]) :=
-    sorry  -- ae_all_iff.2 (fun k ↦ strong_law_ae_simpleFunc_comp X h'.measurable hindep hident (φ k))
+    ae_all_iff.2 (fun k ↦ strong_law_ae_simpleFunc_comp X h'.measurable hindep hident (φ k))
   have B : ∀ᵐ ω, ∀ k, Tendsto (fun n : ℕ ↦ (∑ i in range n, ‖(X i - Y k i) ω‖) / n)
         atTop (𝓝 𝔼[(fun ω ↦ ‖(X 0 - Y k 0) ω‖)]) := by
-    sorry /-apply ae_all_iff.2 (fun k ↦ ?_)
+    apply ae_all_iff.2 (fun k ↦ ?_)
     let G : ℕ → E → ℝ := fun k x ↦ ‖x - φ k x‖
     have G_meas : ∀ k, Measurable (G k) :=
       fun k ↦ (measurable_id.sub_stronglyMeasurable (φ k).stronglyMeasurable).norm
@@ -778,38 +778,48 @@ theorem strong_law_ae_f_measurable
       exact (hindep hij).comp (G_meas k) (G_meas k)
     · intro i
       simp_rw [I]
-      apply (hident i).comp (G_meas k) -/
+      apply (hident i).comp (G_meas k)
   filter_upwards [A, B] with ω hω h'ω
   rw [tendsto_iff_norm_sub_tendsto_zero, tendsto_order]
   refine ⟨fun c hc ↦ eventually_of_forall (fun n ↦ hc.trans_le (norm_nonneg _)), ?_⟩
   intro ε (εpos : 0 < ε)
-  have δ : ℝ := sorry
-  have δpos : 0 < δ := sorry
+  obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ δ + δ + δ < ε := ⟨ε/4, by positivity, by linarith⟩
   obtain ⟨k, hk⟩ : ∃ k, ∫ ω, ‖(X 0 - Y k 0) ω‖ < δ := by
-    sorry /-simp_rw [Pi.sub_apply, norm_sub_rev (X 0 _)]
+    simp_rw [Pi.sub_apply, norm_sub_rev (X 0 _)]
     exact ((tendsto_order.1 (tendsto_integral_norm_approxOn_sub h'.measurable hint)).2 δ
-      δpos).exists -/
-  have A : ∀ᶠ n in atTop, (∑ i in range n, ‖(X i - Y k i) ω‖) / n < δ :=
-    sorry -- (tendsto_order.1 (h'ω k)).2 δ hk
-  have B : ∀ᶠ (n : ℕ) in atTop, ‖(n : ℝ) ⁻¹ • (∑ i in range n, Y k i ω) - 𝔼[Y k 0]‖ < δ := by
+      δpos).exists
+  have : ‖𝔼[Y k 0] - 𝔼[X 0]‖ < δ := by
+    rw [norm_sub_rev, ← integral_sub hint]
+    · exact (norm_integral_le_integral_norm _).trans_lt hk
+    · exact ((φ k).comp (X 0) h'.measurable).integrable_of_isFiniteMeasure
+  have I : ∀ᶠ n in atTop, (∑ i in range n, ‖(X i - Y k i) ω‖) / n < δ :=
+    (tendsto_order.1 (h'ω k)).2 δ hk
+  have J : ∀ᶠ (n : ℕ) in atTop, ‖(n : ℝ) ⁻¹ • (∑ i in range n, Y k i ω) - 𝔼[Y k 0]‖ < δ := by
     specialize hω k
     rw [tendsto_iff_norm_sub_tendsto_zero] at hω
     exact (tendsto_order.1 hω).2 δ δpos
   clear hω h'ω
-  filter_upwards [A, B] with n hn h'n
-  calc ‖(n : ℝ)⁻¹ • ∑ i in Finset.range n, X i ω - ∫ (a : Ω), X 0 a‖ < ε := sorry
-
-
-
-
-
-
-
-
-
-#exit
-
-#where
+  filter_upwards [I, J] with n hn h'n
+  calc
+  ‖(n : ℝ)⁻¹ • ∑ i in Finset.range n, X i ω - 𝔼[X 0]‖
+    = ‖(n : ℝ)⁻¹ • ∑ i in Finset.range n, (X i ω - Y k i ω) +
+        ((n : ℝ)⁻¹ • ∑ i in Finset.range n, Y k i ω - 𝔼[Y k 0]) + (𝔼[Y k 0] - 𝔼[X 0])‖ := by
+      congr
+      simp only [Function.comp_apply, sum_sub_distrib, smul_sub]
+      abel
+  _ ≤ ‖(n : ℝ)⁻¹ • ∑ i in Finset.range n, (X i ω - Y k i ω)‖ +
+        ‖(n : ℝ)⁻¹ • ∑ i in Finset.range n, Y k i ω - 𝔼[Y k 0]‖ + ‖𝔼[Y k 0] - 𝔼[X 0]‖ :=
+      norm_add₃_le _ _ _
+  _ ≤ (∑ i in Finset.range n, ‖X i ω - Y k i ω‖) / n + δ + δ := by
+      gcongr
+      simp only [Function.comp_apply, norm_smul, norm_inv, IsROrC.norm_natCast,
+        div_eq_inv_mul, inv_pos, Nat.cast_pos, inv_lt_zero]
+      gcongr
+      exact norm_sum_le _ _
+  _ ≤ δ + δ + δ := by
+      gcongr
+      exact hn.le
+  _ < ε := hδ
 
 lemma _root_.MeasureTheory.AEMeasurable.identDistrib_mk
     {Ω : Type*} {_ : MeasurableSpace Ω} {μ : Measure Ω}
@@ -821,25 +831,28 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.identDistrib_mk
     {f : Ω → E} (hf : AEStronglyMeasurable f μ) : IdentDistrib f (hf.mk f) μ μ :=
   IdentDistrib.of_ae_eq hf.aemeasurable hf.ae_eq_mk
 
-theorem strong_law_ae_f
-    (X : ℕ → Ω → E) {Z : Ω → E} (hint : Integrable Z)
-    (hindep : Pairwise (fun i j ↦ IndepFun (X i) (X j))) (hident : ∀ i, IdentDistrib (X i) Z) :
-    ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, X i ω)) atTop (𝓝 𝔼[Z]) := by
+theorem strong_law_ae
+    (X : ℕ → Ω → E) (hint : Integrable (X 0))
+    (hindep : Pairwise (fun i j ↦ IndepFun (X i) (X j))) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
+    ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, X i ω)) atTop (𝓝 𝔼[X 0]) := by
   have A : ∀ i, Integrable (X i) := fun i ↦ (hident i).integrable_iff.2 hint
   let Y : ℕ → Ω → E := fun i ↦ (A i).1.mk (X i)
   have B : ∀ᵐ ω, ∀ n, X n ω = Y n ω :=
     ae_all_iff.2 (fun i ↦ AEStronglyMeasurable.ae_eq_mk (A i).1)
-  have C : ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, Y i ω)) atTop (𝓝 𝔼[Z]) :=
-    strong_law_ae_f_measurable Y hint (fun i ↦ (A i).1.stronglyMeasurable_mk)
+  have Yint: Integrable (Y 0) := Integrable.congr hint (AEStronglyMeasurable.ae_eq_mk (A 0).1)
+  have C : ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, Y i ω)) atTop (𝓝 𝔼[Y 0]) := by
+    apply strong_law_ae_of_measurable Y Yint ((A 0).1.stronglyMeasurable_mk)
       (fun i j hij ↦ IndepFun.ae_eq (hindep hij) (A i).1.ae_eq_mk (A j).1.ae_eq_mk)
-      (fun i ↦ (A i).1.identDistrib_mk.symm.trans (hident i))
+      (fun i ↦ ((A i).1.identDistrib_mk.symm.trans (hident i)).trans (A 0).1.identDistrib_mk)
   filter_upwards [B, C] with ω h₁ h₂
+  have : 𝔼[X 0] = 𝔼[Y 0] := integral_congr_ae (AEStronglyMeasurable.ae_eq_mk (A 0).1)
+  rw [this]
   apply Tendsto.congr (fun n ↦ ?_) h₂
   congr
   ext i
   exact (h₁ i).symm
 
-#exit
+end StrongLawVectorSpace
 
 
 end ProbabilityTheory
