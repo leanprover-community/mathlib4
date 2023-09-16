@@ -92,7 +92,6 @@ theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
   Iff.rfl
 #align lie_submodule.mem_carrier LieSubmodule.mem_carrier
 
-@[simp]
 theorem mem_mk_iff (S : Set M) (h₁ h₂ h₃ h₄) {x : M} :
     x ∈ (⟨⟨⟨⟨S, h₁⟩, h₂⟩, h₃⟩, h₄⟩ : LieSubmodule R L M) ↔ x ∈ S :=
   Iff.rfl
