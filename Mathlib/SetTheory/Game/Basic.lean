@@ -382,7 +382,7 @@ theorem rightMoves_mul_cases {x y : PGame} (k) {P : (x * y).RightMoves → Prop}
   · apply hr
 #align pgame.right_moves_mul_cases SetTheory.PGame.rightMoves_mul_cases
 
-lemma LeftMovesMul.exists {x y : PGame.{u}} {p : (x * y).LeftMoves → Prop} :
+lemma LeftMovesMul.exists {x y : PGame} {p : (x * y).LeftMoves → Prop} :
     (∃ i, p i) ↔
       (∃ i j, p (toLeftMovesMul (.inl (i, j)))) ∨ (∃ i j, p (toLeftMovesMul (.inr (i, j)))) := by
   cases' x with xl xr xL xR
@@ -393,7 +393,7 @@ lemma LeftMovesMul.exists {x y : PGame.{u}} {p : (x * y).LeftMoves → Prop} :
   · rintro (⟨i, j, h⟩ | ⟨i, j, h⟩)
     exacts [⟨_, h⟩, ⟨_, h⟩]
 
-lemma right_moves_mul.exists {x y : PGame.{u}} {p : (x * y).RightMoves → Prop} :
+lemma right_moves_mul.exists {x y : PGame} {p : (x * y).RightMoves → Prop} :
     (∃ i, p i) ↔
       (∃ i j, p (toRightMovesMul (.inl (i, j)))) ∨ (∃ i j, p (toRightMovesMul (.inr (i, j)))) := by
   cases' x with xl xr xL xR
@@ -417,31 +417,18 @@ lemma memᵣ_mul_iff : ∀ {x y₁ y₂ : PGame},
   | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _ => right_moves_mul.exists
 
 /-- `x * y` and `y * x` have the same moves. -/
-protected lemma mul_comm (x y : PGame.{u}) : x * y ≡ y * x :=
+protected lemma mul_comm (x y : PGame) : x * y ≡ y * x :=
   match x, y with
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    let x := mk xl xr xL xR
-    let y := mk yl yr yL yR
-    refine Identical.ext (fun _ ↦ ?_) (fun _ ↦ ?_)
-    · simp_rw [memₗ_mul_iff]; dsimp
-      rw [@exists_comm xl, @exists_comm xr]
-      simp_rw [((((PGame.mul_comm (xL _) y).add (PGame.mul_comm x (yL _))).trans
-          ((_ * xL _).add_comm _)).sub (PGame.mul_comm (xL _) (yL _))).congr_right,
-        ((((PGame.mul_comm (xR _) y).add (PGame.mul_comm x (yR _))).trans
-          ((_ * xR _).add_comm _)).sub (PGame.mul_comm (xR _) (yR _))).congr_right]
-        -- Porting note: explicitly wrote out arguments, see `PGame.quot_mul_assoc`
-    · simp_rw [memᵣ_mul_iff]; dsimp
-      rw [@exists_comm xl, @exists_comm xr, or_comm]
-      simp_rw [((((PGame.mul_comm (xL _) y).add (PGame.mul_comm x (yR _))).trans
-          ((_ * xL _).add_comm _)).sub (PGame.mul_comm (xL _) (yR _))).congr_right,
-        ((((PGame.mul_comm (xR _) y).add (PGame.mul_comm x (yL _))).trans
-          ((_ * xR _).add_comm _)).sub (PGame.mul_comm (xR _) (yL _))).congr_right]
-        -- Porting note: explicitly wrote out arguments, see `PGame.quot_mul_assoc`
+    refine Identical.of_equiv ((Equiv.prodComm _ _).sumCongr (Equiv.prodComm _ _))
+      ((Equiv.sumComm _ _).trans ((Equiv.prodComm _ _).sumCongr (Equiv.prodComm _ _))) ?_ ?_ <;>
+    · rintro (⟨_, _⟩ | ⟨_, _⟩) <;>
+      exact ((((PGame.mul_comm _ (mk _ _ _ _)).add (PGame.mul_comm (mk _ _ _ _) _)).trans
+        (PGame.add_comm _ _)).sub (PGame.mul_comm _ _))
   termination_by _ => (x, y)
-  decreasing_by pgame_wf_tac
 
 /-- `x * y` and `y * x` have the same moves. -/
-def mulCommRelabelling (x y : PGame.{u}) : x * y ≡r y * x :=
+def mulCommRelabelling (x y : PGame) : x * y ≡r y * x :=
   match x, y with
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
     refine' ⟨Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _),
@@ -570,7 +557,6 @@ lemma mul_neg (x y : PGame.{u}) : x * -y = -(x * y) :=
         congr
         exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
   termination_by _ => (x, y)
-  decreasing_by pgame_wf_tac
 
 /-- `-x * y` and `-(x * y)` have the same moves. -/
 lemma neg_mul (x y : PGame.{u}) : -x * y ≡ -(x * y) :=
@@ -739,20 +725,16 @@ def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
 #align pgame.mul_one_relabelling SetTheory.PGame.mulOneRelabelling
 
 /-- `1 * x` has the same moves as `x`. -/
-lemma one_mul : ∀ (x : PGame.{u}), 1 * x ≡ x
+protected lemma one_mul : ∀ (x : PGame), 1 * x ≡ x
   | ⟨xl, xr, xL, xR⟩ => by
-    refine Identical.ext (fun _ ↦ ?_) (fun _ ↦ ?_)
-    · simp_rw [memₗ_mul_iff]; dsimp; simp_rw [IsEmpty.exists_iff, or_false, exists_const]
-      simp_rw [(((((PGame.zero_mul _).add (one_mul _)).trans (PGame.zero_add _)).sub
-        (xL _).zero_mul).trans (PGame.sub_zero _)).congr_right]
-      rfl
-    · simp_rw [memᵣ_mul_iff]; dsimp; simp_rw [IsEmpty.exists_iff, or_false, exists_const]
-      simp_rw [(((((PGame.zero_mul _).add (one_mul _)).trans (PGame.zero_add _)).sub
-        (xR _).zero_mul).trans (PGame.sub_zero _)).congr_right]
-      rfl
+    refine Identical.of_equiv ((Equiv.sumEmpty _ _).trans (Equiv.punitProd _))
+      ((Equiv.sumEmpty _ _).trans (Equiv.punitProd _)) ?_ ?_ <;>
+    · rintro (⟨⟨⟩, _⟩ | ⟨⟨⟩, _⟩)
+      exact ((((PGame.zero_mul (mk _ _ _ _)).add (PGame.one_mul _)).trans (PGame.zero_add _)).sub
+        (PGame.zero_mul _)).trans (PGame.sub_zero _)
 
 /-- `x * 1` has the same moves as `x`. -/
-lemma mul_one (x : PGame.{u}) : x * 1 ≡ x := (x.mul_comm _).trans x.one_mul
+lemma mul_one (x : PGame) : x * 1 ≡ x := (x.mul_comm _).trans x.one_mul
 
 @[simp]
 theorem quot_mul_one (x : PGame) : (⟦x * 1⟧ : Game) = ⟦x⟧ :=

@@ -167,12 +167,12 @@ theorem moveRight_mk {xl xr xL xR} : (⟨xl, xr, xL, xR⟩ : PGame).moveRight = 
   rfl
 #align pgame.move_right_mk SetTheory.PGame.moveRight_mk
 
-lemma ext' {x y : PGame.{u}} (hl : x.LeftMoves = y.LeftMoves) (hr : x.RightMoves = y.RightMoves)
+lemma ext' {x y : PGame} (hl : x.LeftMoves = y.LeftMoves) (hr : x.RightMoves = y.RightMoves)
     (hL : HEq x.moveLeft y.moveLeft) (hR : HEq x.moveRight y.moveRight) :
     x = y := by
   cases x; cases y; cases hl; cases hr; cases hL; cases hR; rfl
 
-lemma ext {x y : PGame.{u}} (hl : x.LeftMoves = y.LeftMoves) (hr : x.RightMoves = y.RightMoves)
+lemma ext {x y : PGame} (hl : x.LeftMoves = y.LeftMoves) (hr : x.RightMoves = y.RightMoves)
     (hL : ∀ i j, HEq i j → x.moveLeft i = y.moveLeft j)
     (hR : ∀ i j, HEq i j → x.moveRight i = y.moveRight j) :
     x = y :=
@@ -1104,7 +1104,7 @@ theorem identical_of_is_empty (x y : PGame)
   identical_iff'.2 <| by simp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
 
 /-- `Identical` as a `Setoid`. -/
-def identical_setoid : Setoid PGame :=
+def identicalSetoid : Setoid PGame :=
   ⟨Identical, Identical.refl, Identical.symm, Identical.trans⟩
 
 instance : IsRefl PGame (· ≡ ·) := ⟨Identical.refl⟩
@@ -1149,8 +1149,8 @@ lemma Identical.trans_eq {x y z} (h₁ : x ≡ y) (h₂ : y = z) : x ≡ z := h�
 lemma Identical.equiv {x y} (h : x ≡ y) : x ≈ y := ⟨h.le, h.symm.le⟩
 
 theorem identical_iff : ∀ {x y : PGame}, x ≡ y ↔
-    ((∀ i, (x.moveLeft i) ∈ₗ y) ∧ (∀ j, (y.moveLeft j) ∈ₗ x)) ∧
-      ((∀ i, (x.moveRight i) ∈ᵣ y) ∧ (∀ j, (y.moveRight j) ∈ᵣ x))
+    ((∀ i, x.moveLeft i ∈ₗ y) ∧ (∀ j, y.moveLeft j ∈ₗ x)) ∧
+      ((∀ i, x.moveRight i ∈ᵣ y) ∧ (∀ j, y.moveRight j ∈ᵣ x))
   | mk xl xr xL xR, mk yl yr yL yR => by
     convert identical_iff' <;>
     dsimp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal] <;>
@@ -1182,7 +1182,7 @@ theorem memᵣ.congr_left : ∀ {x y : PGame.{u}},
   | x, y, h, mk l r L R => ⟨fun ⟨i, hi⟩ ↦ ⟨i, h.symm.trans hi⟩, fun ⟨i, hi⟩ ↦ ⟨i, h.trans hi⟩⟩
 
 set_option linter.unusedVariables false in
-lemma Identical.ext : ∀ {x y} (_hl : ∀ z, z ∈ₗ x ↔ z ∈ₗ y) (_hr : ∀ z, z ∈ᵣ x ↔ z ∈ᵣ y), x ≡ y
+lemma Identical.ext : ∀ {x y} (hl : ∀ z, z ∈ₗ x ↔ z ∈ₗ y) (hr : ∀ z, z ∈ᵣ x ↔ z ∈ᵣ y), x ≡ y
   | mk xl xr xL xR, mk yl yr yL yR, hl, hr => identical_iff.mpr
     ⟨⟨fun i ↦ (hl _).mp ⟨i, refl _⟩, fun j ↦ (hl _).mpr ⟨j, refl _⟩⟩,
       ⟨fun i ↦ (hr _).mp ⟨i, refl _⟩, fun j ↦ (hr _).mpr ⟨j, refl _⟩⟩⟩
@@ -1195,6 +1195,13 @@ lemma Identical.congr_right {x y z} (h : x ≡ y) : z ≡ x ↔ z ≡ y :=
 
 lemma Identical.congr_left {x y z} (h : x ≡ y) : x ≡ z ↔ y ≡ z :=
   ⟨fun hz ↦ h.symm.trans hz, fun hz ↦ h.trans hz⟩
+
+lemma Identical.of_equiv {x y : PGame.{u}}
+    (L : x.LeftMoves ≃ y.LeftMoves) (R : x.RightMoves ≃ y.RightMoves)
+    (hL : ∀ i, x.moveLeft i ≡ y.moveLeft (L i)) (hR : ∀ i, x.moveRight i ≡ y.moveRight (R i)) :
+    x ≡ y :=
+  identical_iff.mpr ⟨⟨fun i ↦ ⟨L i, hL i⟩, fun i ↦ ⟨L.symm i, by simpa using (hL (L.symm i)).symm⟩⟩,
+    ⟨fun i ↦ ⟨R i, hR i⟩, fun i ↦ ⟨R.symm i, by simpa using (hR (R.symm i)).symm⟩⟩⟩
 
 /-! ### Relabellings -/
 
@@ -1870,51 +1877,28 @@ lemma memᵣ_add_iff : ∀ {x y₁ y₂ : PGame},
 protected lemma add_comm (x y : PGame) : x + y ≡ y + x :=
   match x, y with
   | mk xl xr xL xR, mk yl yr yL yR => by
-    let x := mk xl xr xL xR
-    let y := mk yl yr yL yR
-    refine Identical.ext (fun _ ↦ ?_) (fun _ ↦ ?_)
-    · simp_rw [memₗ_add_iff]
-      dsimp; rw [or_comm]
-      simp_rw [(PGame.add_comm (xL _) y).congr_right, (PGame.add_comm x (yL _)).congr_right]
-        -- Porting note: explicitly wrote out arguments, see `PGame.quot_mul_assoc`
-    · simp_rw [memᵣ_add_iff]
-      dsimp; rw [or_comm]
-      simp_rw [(PGame.add_comm (xR _) y).congr_right, (PGame.add_comm x (yR _)).congr_right]
-        -- Porting note: explicitly wrote out arguments, see `PGame.quot_mul_assoc`
+    refine Identical.of_equiv (Equiv.sumComm _ _) (Equiv.sumComm _ _) ?_ ?_ <;>
+    · rintro (_ | _) <;>
+      · dsimp; exact PGame.add_comm _ _
   termination_by _ => (x, y)
-  decreasing_by pgame_wf_tac
 
 /-- `(x + y) + z` has exactly the same moves as `x + (y + z)`. -/
 protected lemma add_assoc (x y z : PGame) : x + y + z ≡ x + (y + z) :=
   match x, y, z with
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => by
-    let x := mk xl xr xL xR
-    let y := mk yl yr yL yR
-    let z := mk zl zr zL zR
-    refine Identical.ext (fun _ ↦ ?_) (fun _ ↦ ?_)
-    · simp_rw [memₗ_add_iff, LeftMovesAdd.exists, or_assoc, add_moveLeft_inl, add_moveLeft_inr]
-      dsimp
-      simp_rw [(PGame.add_assoc (xL _) y z).congr_right,
-        (PGame.add_assoc x (yL _) z).congr_right,
-        (PGame.add_assoc x y (zL _)).congr_right]
-        -- Porting note: explicitly wrote out arguments, see `PGame.quot_mul_assoc`
-    · simp_rw [memᵣ_add_iff, RightMovesAdd.exists, or_assoc, add_moveRight_inl, add_moveRight_inr]
-      dsimp
-      simp_rw [(PGame.add_assoc (xR _) y z).congr_right,
-        (PGame.add_assoc x (yR _) z).congr_right,
-        (PGame.add_assoc x y (zR _)).congr_right]
-        -- Porting note: explicitly wrote out arguments, see `PGame.quot_mul_assoc`
+    refine Identical.of_equiv (Equiv.sumAssoc _ _ _) (Equiv.sumAssoc _ _ _) ?_ ?_ <;>
+    · rintro ((_ | _) | _)
+      · exact PGame.add_assoc _ _ _
+      · exact PGame.add_assoc (mk _ _ _ _) _ _
+      · exact PGame.add_assoc (mk _ _ _ _) (mk _ _ _ _) _
   termination_by _ => (x, y, z)
-  decreasing_by pgame_wf_tac
 
 /-- `x + 0` has exactly the same moves as `x`. -/
 protected lemma add_zero : ∀ (x : PGame), x + 0 ≡ x
   | mk xl xr xL xR => by
-    refine Identical.ext (fun _ ↦ ?_) (fun _ ↦ ?_)
-    · simp_rw [memₗ_add_iff, IsEmpty.exists_iff, or_false, (PGame.add_zero _).congr_right]
-      rfl
-    · simp_rw [memᵣ_add_iff, IsEmpty.exists_iff, or_false, (PGame.add_zero _).congr_right]
-      rfl
+    refine Identical.of_equiv (Equiv.sumEmpty _ _) (Equiv.sumEmpty _ _) ?_ ?_ <;>
+    · rintro (_ | ⟨⟨⟩⟩)
+      exact PGame.add_zero _
 
 /-- `0 + x` has exactly the same moves as `x`. -/
 protected lemma zero_add (x : PGame) : 0 + x ≡ x :=
@@ -1924,15 +1908,11 @@ protected lemma zero_add (x : PGame) : 0 + x ≡ x :=
 lemma neg_add (x y : PGame) : -(x + y) = -x + -y :=
   match x, y with
   | mk xl xr xL xR, mk yl yr yL yR => by
-    refine ext rfl rfl ?_ ?_
+    refine ext rfl rfl ?_ ?_ <;>
     · rintro (i | i) _ ⟨rfl⟩
       · exact neg_add _ _
-      · simpa [toLeftMovesNeg, Equiv.refl] using PGame.neg_add _ _
-    · rintro (i | i) _ ⟨rfl⟩
-      · exact neg_add _ _
-      · simpa [toRightMovesNeg, Equiv.refl] using PGame.neg_add _ _
+      · simpa [Equiv.refl] using PGame.neg_add _ _
   termination_by _ => (x, y)
-  decreasing_by pgame_wf_tac
 
 /-- `-(x + y)` has exactly the same moves as `-y + -x`. -/
 protected lemma neg_add_rev (x y : PGame) : -(x + y) ≡ -y + -x :=
@@ -1979,7 +1959,6 @@ lemma Identical.add_right {x₁ x₂ y} : x₁ ≡ x₂ → x₁ + y ≡ x₂ + 
       exact or_congr_left ⟨fun ⟨i, hi⟩ ↦ (hR₁ i).imp (fun j hj ↦ hi.trans hj.add_right),
         fun ⟨i, hi⟩ ↦ (hR₂ i).imp (fun j hj ↦ hi.trans hj.add_right.symm)⟩
   termination_by _ => (x₁, x₂, y)
-  decreasing_by pgame_wf_tac
 
 lemma Identical.add_left {x y₁ y₂} (hy : y₁ ≡ y₂) : x + y₁ ≡ x + y₂ :=
   (x.add_comm y₁).trans (hy.add_right.trans (y₂.add_comm x))
