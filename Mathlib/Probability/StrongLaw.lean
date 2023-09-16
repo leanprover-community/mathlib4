@@ -780,17 +780,27 @@ theorem strong_law_ae_f_measurable
       simp_rw [I]
       apply (hident i).comp (G_meas k) -/
   filter_upwards [A, B] with ω hω h'ω
-  clear hω h'ω
   rw [tendsto_iff_norm_sub_tendsto_zero, tendsto_order]
   refine ⟨fun c hc ↦ eventually_of_forall (fun n ↦ hc.trans_le (norm_nonneg _)), ?_⟩
   intro ε (εpos : 0 < ε)
   have δ : ℝ := sorry
   have δpos : 0 < δ := sorry
-  have : ∃ k, ∫ ω, ‖(X 0 - Y k 0) ω‖ < δ := by
-    have A := tendsto_integral_approxOn_of_measurable_of_range_subset h'.measurable hint _ Subset.rfl
-    simp [SimpleFunc.integral_eq_integral] at A
-    have Z := SimpleFunc.tendsto_approxOn_range_L1_nnnorm h'.measurable hint
-    have T := (tendsto_order.1 Z).2
+  obtain ⟨k, hk⟩ : ∃ k, ∫ ω, ‖(X 0 - Y k 0) ω‖ < δ := by
+    sorry /-simp_rw [Pi.sub_apply, norm_sub_rev (X 0 _)]
+    exact ((tendsto_order.1 (tendsto_integral_norm_approxOn_sub h'.measurable hint)).2 δ
+      δpos).exists -/
+  have A : ∀ᶠ n in atTop, (∑ i in range n, ‖(X i - Y k i) ω‖) / n < δ :=
+    sorry -- (tendsto_order.1 (h'ω k)).2 δ hk
+  have B : ∀ᶠ (n : ℕ) in atTop, ‖(n : ℝ) ⁻¹ • (∑ i in range n, Y k i ω) - 𝔼[Y k 0]‖ < δ := by
+    specialize hω k
+    rw [tendsto_iff_norm_sub_tendsto_zero] at hω
+    exact (tendsto_order.1 hω).2 δ δpos
+  clear hω h'ω
+  filter_upwards [A, B] with n hn h'n
+  calc ‖(n : ℝ)⁻¹ • ∑ i in Finset.range n, X i ω - ∫ (a : Ω), X 0 a‖ < ε := sorry
+
+
+
 
 
 
