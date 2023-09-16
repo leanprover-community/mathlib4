@@ -38,7 +38,7 @@ theorem measurableEquivPi_apply (a : ℂ) :
 
 @[simp]
 theorem measurableEquivPi_symm_apply (p : (Fin 2) → ℝ) :
-    measurableEquivPi.symm p = (p 0) + (p 1) * I := by rfl
+    measurableEquivPi.symm p = (p 0) + (p 1) * I := rfl
 
 /-- Measurable equivalence between `ℂ` and `ℝ × ℝ`. -/
 def measurableEquivRealProd : ℂ ≃ᵐ ℝ × ℝ :=

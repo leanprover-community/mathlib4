@@ -12,6 +12,7 @@ import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.Finsupp
 
 #align_import topology.algebra.module.basic from "leanprover-community/mathlib"@"6285167a053ad0990fc88e56c48ccd9fae6550eb"
 
@@ -110,6 +111,21 @@ theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) := by
 
 end LatticeOps
 
+/-- The span of a separable subset with respect to a separable scalar ring is again separable. -/
+lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semiring R] [Module R M]
+    [TopologicalSpace M] [TopologicalSpace R] [SeparableSpace R]
+    [ContinuousAdd M] [ContinuousSMul R M] {s : Set M} (hs : IsSeparable s) :
+    IsSeparable (Submodule.span R s : Set M) := by
+  rw [span_eq_iUnion_nat]
+  apply isSeparable_iUnion (fun n ↦ ?_)
+  apply IsSeparable.image
+  · have : IsSeparable {f : Fin n → R × M | ∀ (i : Fin n), f i ∈ Set.univ ×ˢ s} := by
+      apply isSeparable_pi (fun i ↦ (isSeparable_of_separableSpace Set.univ).prod hs)
+    convert this
+    simp
+  · apply continuous_finset_sum _ (fun i _ ↦ ?_)
+    exact (continuous_fst.comp (continuous_apply i)).smul (continuous_snd.comp (continuous_apply i))
+
 namespace Submodule
 
 variable {α β : Type*} [TopologicalSpace β]
@@ -147,7 +163,6 @@ variable [ContinuousAdd M]
 a submodule. -/
 def Submodule.topologicalClosure (s : Submodule R M) : Submodule R M :=
   { s.toAddSubmonoid.topologicalClosure with
-    carrier := closure (s : Set M)
     smul_mem' := s.mapsTo_smul_closure }
 #align submodule.topological_closure Submodule.topologicalClosure
 
@@ -160,6 +175,11 @@ theorem Submodule.topologicalClosure_coe (s : Submodule R M) :
 theorem Submodule.le_topologicalClosure (s : Submodule R M) : s ≤ s.topologicalClosure :=
   subset_closure
 #align submodule.le_topological_closure Submodule.le_topologicalClosure
+
+theorem Submodule.closure_subset_topologicalClosure_span (s : Set M) :
+    closure s ⊆ (span R s).topologicalClosure := by
+  rw [Submodule.topologicalClosure_coe]
+  exact closure_mono subset_span
 
 theorem Submodule.isClosed_topologicalClosure (s : Submodule R M) :
     IsClosed (s.topologicalClosure : Set M) := isClosed_closure
@@ -350,7 +370,6 @@ def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (Set.range ((↑) : (M₁ →ₛₗ[σ] M₂) → M₁ → M₂))) : M₁ →ₛₗ[σ] M₂ :=
   { @addMonoidHomOfMemClosureRangeCoe M₁ M₂ _ _ _ _ _ (M₁ →ₛₗ[σ] M₂)
       (SemilinearMapClass.addMonoidHomClass _) f hf with
-    toFun := f
     map_smul' := (isClosed_setOf_map_smul M₁ M₂ σ).closure_subset_iff.2
       (Set.range_subset_iff.2 LinearMap.map_smulₛₗ) hf }
 #align linear_map_of_mem_closure_range_coe linearMapOfMemClosureRangeCoe
@@ -866,8 +885,6 @@ theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
 instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) :=
   { ContinuousLinearMap.monoidWithZero,
     ContinuousLinearMap.addCommMonoid with
-    mul := (· * ·)
-    one := 1
     left_distrib := fun f g h => ext fun x => map_add f (g x) (h x)
     right_distrib := fun _ _ _ => ext fun _ => LinearMap.add_apply _ _ _ }
 #align continuous_linear_map.semiring ContinuousLinearMap.semiring
@@ -1418,8 +1435,6 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := by
   refine'
     { ContinuousLinearMap.addCommMonoid with
-      zero := 0
-      add := (· + ·)
       neg := (-·)
       sub := (· - ·)
       sub_eq_add_neg := _
@@ -1480,9 +1495,7 @@ theorem sub_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddG
 
 instance ring [TopologicalAddGroup M] : Ring (M →L[R] M) :=
   { ContinuousLinearMap.semiring,
-    ContinuousLinearMap.addCommGroup with
-    mul := (· * ·)
-    one := 1 }
+    ContinuousLinearMap.addCommGroup with }
 #align continuous_linear_map.ring ContinuousLinearMap.ring
 
 theorem smulRight_one_pow [TopologicalSpace R] [TopologicalRing R] (c : R) (n : ℕ) :
@@ -2215,7 +2228,6 @@ inverse of each other. -/
 def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁) (h₁ : Function.LeftInverse f₂ f₁)
     (h₂ : Function.RightInverse f₂ f₁) : M₁ ≃SL[σ₁₂] M₂ :=
   { f₁ with
-    toFun := f₁
     continuous_toFun := f₁.continuous
     invFun := f₂
     continuous_invFun := f₂.continuous
