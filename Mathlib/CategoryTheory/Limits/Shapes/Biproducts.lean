@@ -58,8 +58,9 @@ namespace CategoryTheory
 namespace Limits
 
 variable {J : Type w}
-
-variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
+universe uC' uC uD' uD
+variable {C : Type uC} [Category.{uC'} C] [HasZeroMorphisms C]
+variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
 
 /-- A `c : Bicone F` is:
 * an object `c.pt` and
@@ -117,6 +118,22 @@ attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 -- Porting note: would it be okay to use this more generally?
 attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
+
+/-- A functor `G : C ⥤ D` sends bicones over `F` to bicones over `G.obj ∘ F` functorially. -/
+@[simps]
+def functoriality {G : C ⥤ D} [Functor.PreservesZeroMorphisms G] :
+    Bicone F ⥤ Bicone (G.obj ∘ F) where
+  obj A :=
+    { pt := G.obj A.pt
+      π := fun j => G.map (A.π j)
+      ι := fun j => G.map (A.ι j)
+      ι_π := fun i j => (Functor.map_comp _ _ _).symm.trans <| by
+        rw [ι_π]
+        aesop_cat }
+  map f :=
+    { Hom := G.map f.Hom
+      wπ := fun j => by simp [-BiconeMorphism.wπ, ← f.wπ j]
+      wι := fun j => by simp [-BiconeMorphism.wι, ← f.wι j] }
 
 /-- Extract the cone from a bicone. -/
 def toCone : Bicone F ⥤ Cone (Discrete.functor F) where
