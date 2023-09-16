@@ -19,6 +19,8 @@ is addressed, then there *should* be a name collision in this file.
 In that eventuality, you may remove both this module and `Mathlib.Util.PPBeta`.
 -/
 
+/-- The `pp.beta` option enables a pretty printer that beta reduces all
+expressions. -/
 register_option pp.beta : Bool := {
   defValue := false
   group    := "pp"
