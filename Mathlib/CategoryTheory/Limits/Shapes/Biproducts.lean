@@ -121,7 +121,7 @@ attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
 
 /-- A functor `G : C ⥤ D` sends bicones over `F` to bicones over `G.obj ∘ F` functorially. -/
 @[simps]
-def functoriality {G : C ⥤ D} [Functor.PreservesZeroMorphisms G] :
+def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
     Bicone F ⥤ Bicone (G.obj ∘ F) where
   obj A :=
     { pt := G.obj A.pt
