@@ -61,17 +61,12 @@ theorem ae_lineDifferentiableAt_of_prod
     ∀ᵐ p ∂(μ.prod volume), LineDifferentiableAt ℝ f p (0, 1) := by
   apply (ae_prod_mem_iff_ae_ae_mem (measurableSet_lineDifferentiableAt hf.continuous)).2
   apply eventually_of_forall (fun x ↦ ?_)
-  have : ∀ᵐ (y : ℝ), DifferentiableAt ℝ (fun z ↦ f (x, z)) y := by
-    apply LipschitzWith.ae_differentiableAt_real (C := C)
-    intro z z'
-    convert hf (x, z) (x, z')
-    simp [Prod.edist_eq]
+  have : ∀ᵐ (y : ℝ), DifferentiableAt ℝ (fun z ↦ f (x, z)) y :=
+    (hf.comp (LipschitzWith.prod_mk_left x)).ae_differentiableAt_real
   filter_upwards [this] with y hy
   have h'y : DifferentiableAt ℝ (fun z ↦ f (x, z)) (y + 0) := by simpa using hy
-  have : DifferentiableAt ℝ (fun t ↦ y + t) 0 :=
-    (differentiable_id.const_add _).differentiableAt
-  simpa only [LineDifferentiableAt, Prod.smul_mk, smul_zero, smul_eq_mul, mul_one, Prod.mk_add_mk,
-    add_zero] using h'y.comp 0 this
+  have : DifferentiableAt ℝ (fun t ↦ y + t) 0 := differentiableAt_id.const_add _
+  simpa [LineDifferentiableAt] using h'y.comp 0 this
 
 theorem ae_lineDifferentiableAt (hf : LipschitzWith C f) (v : E) :
     ∀ᵐ p ∂μ, LineDifferentiableAt ℝ f p v := by
