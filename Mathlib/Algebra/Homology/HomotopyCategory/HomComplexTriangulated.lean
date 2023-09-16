@@ -1,4 +1,6 @@
-import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
+import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
+import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
+import Mathlib.Algebra.Category.GroupCat.Abelian
 
 open CategoryTheory Category Limits Preadditive
 
@@ -7,6 +9,16 @@ universe v u
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 namespace CochainComplex
+
+lemma MappingCone.X_break {K L : CochainComplex AddCommGroupCat ℤ}
+    {φ : K ⟶ L} {n : ℤ} (α : (mappingCone φ).X n) (m : ℤ) (hm : n + 1 = m) :
+    ∃ (α₁ : K.X m) (α₂ : L.X n), α = (MappingCone.inl φ).v m n (by linarith) α₁ +
+        (MappingCone.inr φ).f n α₂ :=
+  ⟨(MappingCone.fst φ).1.v n m hm α,
+    (MappingCone.snd φ).v n n (add_zero n) α, by
+      erw [← comp_apply, ← comp_apply, ← AddMonoidHom.add_apply,
+      ← MappingCone.id_X,
+      id_apply]⟩
 
 namespace HomComplex
 
@@ -204,6 +216,100 @@ instance {K₁ K₂ : (CochainComplex C ℤ)ᵒᵖ} (φ : K₁ ⟶ K₂) :
     dsimp
     simp only [Cochain.rightUnshift_v _ (i + n) rfl p q hpq (p + i) rfl,
       Cochain.zero_cochain_comp_v, Cochain.ofHom_v, assoc]
+
+section
+
+variable (K) {L₁ L₂ : CochainComplex C ℤ} (φ : L₁ ⟶ L₂)
+  [∀ (p : ℤ), HasBinaryBiproduct (L₁.X (p + 1)) (L₂.X p)]
+
+set_option maxHeartbeats 400000 in
+@[simps]
+noncomputable def mappingConeIsoX (i : ℤ) :
+    (HomComplex K (mappingCone φ)).X i ≅ (mappingCone ((functor K).map φ)).X i where
+  hom := AddMonoidHom.mk' (fun (α : Cochain K (mappingCone φ) i) =>
+    (MappingCone.inl ((functor K).map φ)).v (i+1) i (by linarith) (Cochain.comp α (MappingCone.fst φ).1 rfl) +
+      (MappingCone.inr ((functor K).map φ)).f i (Cochain.comp α (MappingCone.snd φ) (add_zero i))) (by
+      intros
+      dsimp
+      rw [Cochain.add_comp, Cochain.add_comp,
+        map_add, map_add]
+      abel)
+  inv := AddMonoidHom.mk'
+    (fun α => Cochain.comp ((MappingCone.fst ((functor K).map φ)).1.v i (i+1) rfl α)
+        (MappingCone.inl φ) (by linarith) +
+      ((MappingCone.snd ((functor K).map φ)).v i i (add_zero i) α).comp
+        (Cochain.ofHom (MappingCone.inr φ)) (add_zero i)) (by
+          intros
+          dsimp
+          rw [map_add, map_add, Cochain.add_comp, Cochain.add_comp]
+          abel)
+  hom_inv_id := by
+    ext (α : Cochain K (mappingCone φ) i)
+    rw [MappingCone.cochain_to_ext_iff _ _ _ (i+1) rfl]
+    constructor
+    · dsimp
+      simp only [map_add]
+      erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply]
+      simp only [HomComplex_X, MappingCone.inl_v_fst_v, id_apply, MappingCone.inr_f_fst_v,
+        MappingCone.inl_v_snd_v, MappingCone.inr_f_snd_v]
+      dsimp
+      rw [AddMonoidHom.zero_apply, AddMonoidHom.zero_apply, add_zero, zero_add,
+        Cochain.add_comp]
+      simp only [Cochain.comp_assoc_of_second_degree_eq_neg_third_degree,
+        Cochain.comp_assoc_of_second_is_zero_cochain, Cochain.comp_zero, add_zero,
+        MappingCone.inl_fst, Cochain.comp_id, Cochain.comp_assoc_of_first_is_zero_cochain,
+        MappingCone.inr_fst]
+    · dsimp
+      simp only [map_add]
+      erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply]
+      simp only [HomComplex_X, MappingCone.inl_v_fst_v, id_apply, MappingCone.inr_f_fst_v,
+        MappingCone.inl_v_snd_v, MappingCone.inr_f_snd_v]
+      rw [AddMonoidHom.zero_apply, AddMonoidHom.zero_apply, add_zero, zero_add,
+        Cochain.add_comp]
+      simp only [Cochain.comp_assoc_of_second_degree_eq_neg_third_degree, Cochain.comp_assoc_of_second_is_zero_cochain,
+        Cochain.comp_assoc_of_third_is_zero_cochain, MappingCone.inl_snd, Cochain.comp_zero,
+        Cochain.comp_assoc_of_first_is_zero_cochain, MappingCone.inr_snd, Cochain.comp_id, zero_add]
+  inv_hom_id := by
+    ext α
+    obtain ⟨α₁, α₂, rfl⟩ := MappingCone.X_break α _ rfl
+    dsimp
+    rw [map_add, map_add]
+    erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply]
+    simp only [HomComplex_X, MappingCone.inl_v_fst_v, id_apply, MappingCone.inr_f_fst_v,
+      MappingCone.inl_v_snd_v, MappingCone.inr_f_snd_v]
+    rw [AddMonoidHom.zero_apply, AddMonoidHom.zero_apply]
+    simp only [add_zero, zero_add]
+    rw [Cochain.add_comp, Cochain.add_comp]
+    simp only [Cochain.comp_assoc_of_second_degree_eq_neg_third_degree, MappingCone.inl_fst, Cochain.comp_id,
+      Cochain.comp_assoc_of_second_is_zero_cochain, MappingCone.inr_fst, Cochain.comp_zero, add_zero,
+      Cochain.comp_assoc_of_third_is_zero_cochain, MappingCone.inl_snd, MappingCone.inr_snd, zero_add]
+
+@[simps!]
+noncomputable def mappingConeIso :
+    HomComplex K (mappingCone φ) ≅ mappingCone ((HomComplex.functor K).map φ) :=
+  HomologicalComplex.Hom.isoOfComponents (mappingConeIsoX K φ) (by
+    rintro n _ rfl
+    ext (α : Cochain K (mappingCone φ) n)
+    obtain ⟨α₁, α₂, rfl⟩ := MappingCone.cochain_to_break _ α (n+1) rfl
+    dsimp
+    rw [map_add]
+    erw [← comp_apply, ← comp_apply]
+    simp only [HomComplex_X, ComplexShape.up_Rel, not_true, Cochain.add_comp,
+      Cochain.comp_assoc_of_second_degree_eq_neg_third_degree, MappingCone.inl_fst, Cochain.comp_id,
+      Cochain.comp_assoc_of_second_is_zero_cochain, MappingCone.inr_fst, Cochain.comp_zero, add_zero, comp_apply,
+      HomologicalComplex.Hom.comm, Cochain.comp_assoc_of_third_is_zero_cochain, MappingCone.inl_snd,
+      MappingCone.inr_snd, zero_add, δ_add,
+      δ_comp α₁ (MappingCone.inl φ) (show _ = n by linarith) (n + 1 + 1) 0 (n + 1) rfl rfl (neg_add_self 1),
+      MappingCone.δ_inl, Cochain.ofHom_comp, Int.negOnePow_neg, Int.negOnePow_one, neg_smul, one_smul, δ_comp_ofHom,
+      Cochain.comp_assoc_of_first_is_zero_cochain, Cochain.neg_comp, map_neg, neg_zero]
+    rw [HomComplex_d_apply, AddMonoidHom.map_add]
+    erw [← comp_apply]
+    rw [MappingCone.inl_v_d _ _ _ (n + 1 + 1) (by linarith) (by linarith)]
+    dsimp
+    erw [AddMonoidHom.sub_apply, comp_apply, comp_apply]
+    abel)
+
+end
 
 end HomComplex
 

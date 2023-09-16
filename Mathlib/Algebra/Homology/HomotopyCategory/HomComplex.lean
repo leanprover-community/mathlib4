@@ -310,6 +310,14 @@ lemma comp_assoc_of_second_degree_eq_neg_third_degree {n₁ n₂ n₁₂ : ℤ}
   comp_assoc _ _ _ _ _ (by linarith)
 
 @[simp]
+lemma comp_assoc_of_third_degree_eq_neg_second_degree {n₁ n₂ n₁₂ : ℤ}
+    (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (z₃ : Cochain K L (-n₂)) (h₁₂ : n₁ + n₂ = n₁₂) :
+    (z₁.comp z₂ h₁₂).comp z₃
+      (show n₁₂ + (-n₂) = n₁ by rw [← h₁₂, add_neg_cancel_right]) =
+      z₁.comp (z₂.comp z₃ (add_neg_self n₂)) (add_zero n₁) :=
+  comp_assoc _ _ _ _ _ (by linarith)
+
+@[simp]
 protected lemma zero_comp {n₁ n₂ n₁₂ : ℤ} (z₂ : Cochain G K n₂)
     (h : n₁ + n₂ = n₁₂) : (0 : Cochain F G n₁).comp z₂ h = 0 := by
   ext p q hpq

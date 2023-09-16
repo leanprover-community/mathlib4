@@ -263,7 +263,7 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
       shiftFunctor_map_f', comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
       zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc, inr_f_snd_v_assoc, zero_add,
       comp_zsmul, zsmul_comp, smul_smul, Int.negOnePow_mul_self, one_smul, smul_zero]
-    exact (id φ (p+n) (p+1+n) (by linarith)).symm
+    exact (id_X φ (p+n) (p+1+n) (by linarith)).symm
   inv_hom_id := by
     ext p
     dsimp
@@ -272,7 +272,7 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
       Cocycle.coe_zsmul, Cocycle.shift_coe, zsmul_comp, comp_add, add_comp, assoc,
       inl_v_fst_v_assoc, inr_f_fst_v_assoc, zero_comp, comp_zero, add_zero, smul_smul,
       Int.negOnePow_mul_self, one_smul, inl_v_snd_v_assoc, smul_zero, inr_f_snd_v_assoc, zero_add]
-    exact (id (φ⟦n⟧') p (p+1) (by linarith)).symm
+    exact (id_X (φ⟦n⟧') p (p+1) (by linarith)).symm
 
 set_option maxHeartbeats 400000 in
 noncomputable def shiftTriangleIso (n : ℤ) :

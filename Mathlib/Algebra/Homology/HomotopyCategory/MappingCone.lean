@@ -146,12 +146,27 @@ lemma inr_snd_assoc {K : CochainComplex C ℤ} {d e : ℤ} (γ : Cochain G K d) 
   obtain rfl : d = e := by linarith
   aesop_cat
 
-lemma id (p q : ℤ) (hpq : p + 1 = q) :
+lemma id_X (p q : ℤ) (hpq : p + 1 = q) :
   𝟙 ((mappingCone φ).X p) = (fst φ : Cochain (mappingCone φ) F 1).v p q hpq ≫
     (inl φ).v q p (by rw [← hpq, Int.add_neg_one, add_tsub_cancel_right]) +
       (snd φ).v p p (add_zero p) ≫ (inr φ).f p := by
   subst hpq
   simp [inl, inr, fst, snd, mappingCone]
+
+lemma id : (fst φ).1.comp (inl φ) (add_neg_self 1) + (snd φ).comp (Cochain.ofHom (inr φ)) (add_zero 0) =
+    Cochain.ofHom (𝟙 _) := by
+  ext n
+  simp only [Cochain.ofHom_v, HomologicalComplex.id_f, Cochain.add_v, Cochain.comp_zero_cochain_v,
+    Cochain.comp_v _ _ (add_neg_self 1) n (n+1) n (by linarith) (by linarith),
+    id_X φ n (n+1) rfl]
+
+lemma cochain_to_break {K : CochainComplex C ℤ} {n : ℤ} (α : Cochain K (mappingCone φ) n)
+    (m : ℤ) (hm : n + 1 = m) :
+    ∃ (a : Cochain K F m) (b : Cochain K G n), α = a.comp (inl φ) (by linarith) +
+      b.comp (Cochain.ofHom (inr φ)) (add_zero n) := by
+  refine' ⟨α.comp (fst φ).1 hm, α.comp (snd φ) (add_zero n), _⟩
+  simp only [Cochain.comp_assoc_of_second_degree_eq_neg_third_degree,
+    Cochain.comp_assoc_of_second_is_zero_cochain, ← Cochain.comp_add, id, Cochain.comp_id]
 
 lemma to_ext_iff {A : C} {n₁ : ℤ} (f g : A ⟶ (mappingCone φ).X n₁) (n₂ : ℤ) (h : n₁ + 1 = n₂) :
     f = g ↔ f ≫ (fst φ : Cochain (mappingCone φ) F 1).v n₁ n₂ h =
@@ -161,7 +176,7 @@ lemma to_ext_iff {A : C} {n₁ : ℤ} (f g : A ⟶ (mappingCone φ).X n₁) (n�
   . rintro rfl
     tauto
   . rintro ⟨h₁, h₂⟩
-    rw [← cancel_mono (𝟙 _), id φ n₁ n₂ h]
+    rw [← cancel_mono (𝟙 _), id_X φ n₁ n₂ h]
     simp only [comp_add, reassoc_of% h₁, reassoc_of% h₂]
 
 lemma from_ext_iff {A : C} {n₁ : ℤ} (f g : (mappingCone φ).X n₁ ⟶ A)
@@ -173,7 +188,7 @@ lemma from_ext_iff {A : C} {n₁ : ℤ} (f g : (mappingCone φ).X n₁ ⟶ A)
   . rintro rfl
     tauto
   . rintro ⟨h₁, h₂⟩
-    rw [← cancel_epi (𝟙 _), id φ n₁ n₂ h]
+    rw [← cancel_epi (𝟙 _), id_X φ n₁ n₂ h]
     simp only [add_comp, assoc, h₁, h₂]
 
 lemma to_break {A : C} {n₁ : ℤ} (f : A ⟶ (mappingCone φ).X n₁) (n₂ : ℤ) (h : n₁ + 1 = n₂) :
@@ -326,8 +341,8 @@ noncomputable def XIso (n i : ℤ) (hi : n + 1 = i) [HasBinaryBiproduct (F.X i) 
   hom := (fst φ : Cochain (mappingCone φ) F 1).v n i hi ≫ biprod.inl +
     (snd φ).v n n (add_zero n) ≫ biprod.inr
   inv := biprod.fst ≫ (inl φ).v i n (by linarith) + biprod.snd ≫ (inr φ).f n
-  hom_inv_id := by simp [← id]
-  inv_hom_id := by simp [← id]
+  hom_inv_id := by simp [← id_X]
+  inv_hom_id := by simp [← id_X]
 
 lemma X_is_zero_iff (n : ℤ) :
     IsZero ((mappingCone φ).X n) ↔ IsZero (F.X (n+1)) ∧ IsZero (G.X n) := by
@@ -588,7 +603,7 @@ lemma lift_desc_f {K L : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochai
     (lift φ α β eq).f n ≫ (desc φ α' β' eq').f n =
     (α : Cochain K F 1).v n n' hnn' ≫ α'.v n' n (by rw [← hnn', add_neg_cancel_right]) +
       β.v n n (add_zero n) ≫ β'.f n := by
-  rw [← id_comp ((desc φ α' β' eq').f n), id φ _ _ hnn']
+  rw [← id_comp ((desc φ α' β' eq').f n), id_X φ _ _ hnn']
   simp only [add_comp, assoc, inl_v_desc_f, inr_f_desc_f, comp_add,
     lift_f_fst_v_assoc, lift_f_snd_v_assoc]
 
