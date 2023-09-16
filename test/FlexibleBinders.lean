@@ -1,20 +1,36 @@
 import Mathlib.Util.FlexibleBinders
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Basic
+--import Mathlib.Data.Finset.NatAntidiagonal
+--import Mathlib.Algebra.BigOperators.Basic
+--import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Set.Basic
+
+structure Finset (α : Type _) where
+  s : α → Prop
+
+class Fintype (α : Type _) where
+  univ : Finset α
+
+def Finset.univ {α : Type _} [Fintype α] : Finset α := Fintype.univ
+
+def Set.toFinset {α : Type _} (s : Set α) [Fintype s] : Finset α := .mk s
+
+def Finset.sum {α : Type _} (s : Finset α) (f : α → Nat) : Nat := 0
+
+def Finset.Nat.antidiagonal (n : Nat) : Finset (Nat × Nat) := sorry
 
 namespace Tests
 open Lean Meta Mathlib.FlexibleBinders
 
-/-- The default handler for the `finset` is to use `Finset.univ` and hope for the best! -/
-macro_rules
-  | `(binderDefault%(finset, $e)) => `(binderResolved%(Finset.univ, $e))
+-- /-- The default handler for the `finset` is to use `Finset.univ` and hope for the best! -/
+-- macro_rules
+--   | `(binderDefault%(finset, $e)) => `(binderResolved%(Finset.univ, $e))
 
-/-- For the `finset` domain, `(x : ty)` is a binder over `Finset.univ` for `ty`. -/
-macro_rules
-  | `(binder%(finset, ($e :%$c $ty))) => do
-    if e matches `($_ $_*) then Macro.throwUnsupported
-    if e matches `(($_ : $_)) then Macro.throwErrorAt c "Unexpected type ascription"
-    `(binderResolved%((Finset.univ : Finset $ty), $e))
+-- /-- For the `finset` domain, `(x : ty)` is a binder over `Finset.univ` for `ty`. -/
+-- macro_rules
+--   | `(binder%(finset, ($e :%$c $ty))) => do
+--     if e matches `($_ $_*) then Macro.throwUnsupported
+--     if e matches `(($_ : $_)) then Macro.throwErrorAt c "Unexpected type ascription"
+--     `(binderResolved%((Finset.univ : Finset $ty), $e))
 
 /-- `finset% t` elaborates `t` as a `Finset`.
 If `t` is a `Set`, then inserts `Set.toFinset`.
@@ -45,7 +61,7 @@ macro_rules
   | `(binder%(finset, $e ∈ $s)) => do
     let (e, ty) ← destructAscription e
     if e matches `($_ $_*) then Macro.throwUnsupported
-    `(binderResolved%((finset% $s : Finset $ty), $e))
+    `(binderResolved%(finset% $s, $e, $ty))
 
 /-- For the `finset` domain, `a + b = n` for sums over the antidiagonal. -/
 macro_rules
@@ -82,14 +98,15 @@ macro_rules
 macro "∃' " bs:flexibleBinders ", " t:term : term => do
   let res ← expandFlexibleBinders `type bs
   res.foldrM (init := t) fun
-    | .std dom bind, body => `(Exists fun ($bind : $dom) => $body)
+    | .std dom bind _, body => `(Exists fun ($bind : $dom) => $body)
     | .prop dom, body => `($dom ∧ $body)
     | .match discr patt, body => `(match $discr:term with | $patt => $body)
 
 macro "∑ " bs:flexibleBinders ", " t:term : term => do
   let res ← expandFlexibleBinders `finset bs
   res.foldrM (init := t) fun
-  | .std dom bind, body => `(Finset.sum $dom fun $bind => $body)
+  | .std dom bind none, body => `(Finset.sum (Finset.univ : Finset $dom) fun $bind => $body)
+  | .std dom bind (some bindTy), body => `(Finset.sum $dom fun ($bind : $bindTy) => $body)
   | .prop dom, body => `(if $dom then $body else 0)
   | .match discr patt, body => `(match $discr:term with | $patt => $body)
 
@@ -102,7 +119,9 @@ variable (s : Set (Nat × Nat))
 end
 
 section
+instance (n : Nat) : Fintype (Fin n) := sorry
 variable (s : Finset Nat) (s' : Set Nat) [Fintype s'] (f : Fin 37 → Nat)
+
 #check ∑ x y ∈ s, x * y
 #check ∑ x y ∈ s', x * y
 #check ∑ x + y = 10, x * y

@@ -73,15 +73,23 @@ scoped syntax (name := binderQuery) "binder%(" ident ", " term ")" : term
 macros for `binder%(...)` match. -/
 scoped syntax (name := binderDQuery) "binderDefault%(" ident ", " term ")" : term
 
-/-- `binderResolved%(dom, b)` is a possible expansion of `binder%(...)`,
-where `b` is the binder and `dom` is a domain that is appropriate for the `DomainType`.
-If `DomainType` is `type`, then this result corresponds to a `(b : dom)` binder.
+/-- `binderResolved%(dom, b, bTy?)` is a possible expansion of `binder%(...)`,
+where `b` is the binder and
+1. if `bTy` is absent, then `dom` is a type or
+2. if `bTy` is present, then `dom` is a term that is appropriate for the `DomainType`
+   (for example a `Finset` for the `finset` domain)
+   and `bTy` is the actual type of the binder `b`.
+
+If `DomainType` is `type`, then `bTy` should always be absent.
+This result corresponds to a `(b : dom)` binder.
+
 The `b` can be any expression, and if it is not a hole or identifier it is
 realized as a pattern match.
 
 In the variant `binderResolved%(dom)`, then `dom` is a `Prop` and the notation using flexible
 binders is free to turn it into some non-dependent construction. -/
-scoped syntax (name := binderResolution) "binderResolved%(" term (", " term)? ")" : term
+scoped syntax (name := binderResolution)
+  "binderResolved%(" term (", " term (", " term)?)? ")" : term
 
 /-- `binderMatch%(discr, patt)` is a possible expansion of `binder%(...)`,
 and rather than representing a binder it is a directive that a `match` expression must
@@ -93,11 +101,13 @@ scoped syntax "binderMatch%(" term ", " term ")" : term
 inductive Binder where
   /-- This is a standard binder.
   - `domain` is a term to use as the domain for the binder.
-    The type of `domain` depends on the "domain type" used when expanding the flexible binders.
-    For example, for `type` it is the type of `binder`, but for `finset` it is a `Finset` that
-    the `binder` ranges over.
+    If `binderType` is absent then it is a type.
+    If `binderType` is present, then the type of `domain` depends on the "domain type" used
+    when expanding the flexible binders.
+    For example, for `finset` it is a `Finset` that the `binder` ranges over.
+    The `binderType` should always be absent for the `type` domain type.
   - The `binder` should be an identifier or a hole. -/
-  | std (domain : Term) (binder : Term)
+  | std (domain : Term) (binder : Term) (binderType : Option Term)
   /-- An anonymous binder with a `Prop` domain. This lets notation use some non-dependent
   construction, for example using `And` in an `Exists`. -/
   | prop (p : Term)
@@ -126,13 +136,13 @@ where
       match ← expandMacro? bi with
       | some bi' => process acc ⟨bi'⟩
       | none => Macro.throwErrorAt bi "Invalid binder"
-    | `(binderResolved%($domain, $binder)) =>
+    | `(binderResolved%($domain, $binder $[, $binderType?]?)) =>
       match binder with
-      | `(_) | `($_:ident) => return acc |>.push (Binder.std domain binder)
+      | `(_) | `($_:ident) => return acc |>.push (Binder.std domain binder binderType?)
       | _ => withFreshMacroScope <| withRef binder do
         -- It's a pattern, so create a new variable and set up a `match`.
         let x ← `(x)
-        return acc |>.push (Binder.std domain x) |>.push (Binder.match x binder)
+        return acc |>.push (Binder.std domain x binderType?) |>.push (Binder.match x binder)
     | `(binderResolved%($domain)) =>
       return acc |>.push (Binder.prop domain)
     | `(binderMatch%($discr, $patt)) => return acc.push <| Binder.match discr patt
@@ -161,8 +171,11 @@ elab "#test_flexible_binders " dom?:(ident)? " => " e:flexibleBinders : command 
   let res ← Elab.liftMacroM <| expandFlexibleBinders dom.getId e
   for r in res do
     match r with
-    | .std domain binder => logInfo m!"domain = {domain}, binder = {binder}"
-    | .prop p => logInfo m!"prop domain = {p}"
+    | .std domain binder none =>
+      logInfo m!"binder {← `(($binder : $domain))}"
+    | .std domain binder (some binderType) =>
+      logInfo m!"binder {← `(($binder : $binderType))} over {domain}"
+    | .prop p => logInfo m!"prop binder {← `((_ : $p))}"
     | .match discr patt => logInfo m!"match {discr} with | {patt} => ..."
 
 /-- Uses a null node to encode a list of binders.
@@ -205,14 +218,14 @@ macro_rules
     let xs := #[x] ++ xs
     return combineBinders <| ← xs.mapM fun b => withRef b.raw `(binder%($domType, ($b : $ty)))
 
-/-- Default case for the type domain: the expression is a hole, ident, or more generally a pattern.
+/-- Default case: the expression is a hole, ident, or more generally a pattern.
 If it is a pattern, then `expandBinder` will later register the need for a `match` expression. -/
 macro_rules
-  | `(binderDefault%(type, $e)) => `(binderResolved%(_, $e))
+  | `(binderDefault%($_, $e)) => `(binderResolved%(_, $e))
 
-/-- For the `type` domain, `(x : ty)` is a binder over `ty` itself. -/
+/-- For all domains, `(x : ty)` is a binder over the type `ty` itself. -/
 macro_rules
-  | `(binder%(type, ($e :%$c $ty))) => do
+  | `(binder%($_, ($e :%$c $ty))) => do
     if e matches `($_ $_*) then Macro.throwUnsupported
     if e matches `(($_ : $_)) then Macro.throwErrorAt c "Unexpected type ascription"
     `(binderResolved%($ty, $e))
