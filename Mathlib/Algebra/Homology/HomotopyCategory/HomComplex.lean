@@ -215,6 +215,20 @@ lemma v_comp_XIsoOfEq_inv
   subst hq'
   simp only [HomologicalComplex.XIsoOfEq, eqToIso_refl, Iso.refl_inv, comp_id]
 
+@[reassoc]
+lemma XIsoOfEq_hom_comp_v
+    (γ : Cochain F G n) (p p' q : ℤ) (hpq' : p' + n = q) (hp' : p = p') :
+    (HomologicalComplex.XIsoOfEq F hp').hom ≫ γ.v p' q hpq' = γ.v p q (by rw [hp', hpq']) := by
+  subst hp'
+  simp only [HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp]
+
+@[reassoc]
+lemma XIsoOfEq_inv_comp_v
+    (γ : Cochain F G n) (p p' q : ℤ) (hpq' : p' + n = q) (hp' : p' = p) :
+    (HomologicalComplex.XIsoOfEq F hp').inv ≫ γ.v p' q hpq' = γ.v p q (by rw [← hp', hpq']) := by
+  subst hp'
+  simp only [HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, id_comp]
+
 /-- The composition of cochains. -/
 @[pp_dot]
 def comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂) :
@@ -530,7 +544,7 @@ lemma δ_ofHom {p : ℤ} (φ : F ⟶ G) : δ 0 p (Cochain.ofHom φ) = 0 := by
     linarith
 
 @[simp]
-lemma δ_ofHomomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
+lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
     δ (-1) 0 (Cochain.ofHomotopy h) = Cochain.ofHom φ₁ - Cochain.ofHom φ₂ := by
   ext p
   have eq := h.comm p
@@ -557,7 +571,7 @@ variable (F G)
 
 open HomComplex
 
-@[simps!]
+@[simps! X d_apply]
 def HomComplex : CochainComplex AddCommGroupCat ℤ where
   X i := AddCommGroupCat.of (Cochain F G i)
   d i j := AddCommGroupCat.ofHom (δ_hom F G i j)
@@ -690,7 +704,7 @@ variable {F G}
 def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
     Homotopy φ₁ φ₂ ≃
       { z : Cochain F G (-1) // Cochain.ofHom φ₁ = δ (-1) 0 z + Cochain.ofHom φ₂ } where
-  toFun ho := ⟨Cochain.ofHomotopy ho, by simp only [δ_ofHomomotopy, sub_add_cancel]⟩
+  toFun ho := ⟨Cochain.ofHomotopy ho, by simp only [δ_ofHomotopy, sub_add_cancel]⟩
   invFun z :=
     { hom := fun i j => dite (i+ (-1) = j) (z.1.v i j) (fun _ => 0)
       zero := fun i j (hij : ¬ j+1 = i) => by
@@ -874,18 +888,6 @@ lemma rightShift_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : �
     γ.rightUnshift_v n hn' p (p + n) rfl q hpq,
     shiftFunctorObjXIso, assoc, Iso.hom_inv_id, comp_id]
 
-variable (K L)
-
-@[simps]
-def rightShiftEquiv (n a n' : ℤ) (hn' : n' + a = n) :
-    Cochain K L n ≃ Cochain K (L⟦a⟧) n' where
-  toFun γ := γ.rightShift a n' hn'
-  invFun γ := γ.rightUnshift n hn'
-  left_inv γ := by simp
-  right_inv γ := by simp
-
-variable {K L}
-
 def leftShift (a n' : ℤ) (hn' : n + a = n') : Cochain (K⟦a⟧) L n' :=
   Cochain.mk (fun p q hpq => (a * n' + (a*(a-1)/2)).negOnePow •
     (K.shiftFunctorObjXIso a p (p+a) rfl).hom ≫ γ.v (p+a) q (by linarith))
@@ -991,6 +993,19 @@ lemma leftShift_add (a n' : ℤ) (hn' : n + a = n') :
   simp only [leftShift_v _ a n' hn' p q hpq (p+a) (by linarith), add_v,
     comp_add, zsmul_add]
 
+variable (K L)
+
+@[simps]
+def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
+    Cochain K L n ≃+ Cochain K (L⟦a⟧) n' where
+  toFun γ := γ.rightShift a n' hn'
+  invFun γ := γ.rightUnshift n hn'
+  left_inv γ := by simp
+  right_inv γ := by simp
+  map_add' γ γ' := by simp
+
+variable {K L}
+
 @[simp]
 lemma shift_add (a : ℤ) :
     (γ₁ + γ₂).shift a = γ₁.shift a + γ₂.shift a := by aesop_cat
@@ -1021,6 +1036,29 @@ lemma leftShift_zsmul (a n' : ℤ) (hn' : n + a = n') (x : ℤ):
 lemma shift_zsmul (a : ℤ) (x : ℤ):
     (x • γ).shift a = x • γ.shift a := by aesop_cat
 
+lemma rightShift_comp {m : ℤ} (γ' : Cochain L M m) {nm : ℤ} (hnm : n + m = nm) (a nm' : ℤ) (hnm' : nm' + a = nm)
+    (n' : ℤ) (hn' : n' + a = n) :
+    (γ.comp γ' hnm).rightShift a nm' hnm' =
+      (γ.rightShift a n' hn').comp (γ'.shift a) (by linarith) := by
+  ext p q hpq
+  rw [rightShift_v (γ.comp γ' hnm) a nm' hnm' p q (by linarith) (q + a) (by linarith),
+    comp_v γ γ' hnm p (p + n) (q + a) rfl (by linarith), assoc,
+    comp_v _ _ (show n' + m = nm' by linarith) p (p + n') q (by linarith) (by linarith),
+    γ.rightShift_v a n' hn' p (p + n') rfl (p + n) rfl,
+    γ'.shift_v a (p + n') q (by linarith)]
+  simp only [shiftFunctor_obj_X, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl,
+    Iso.refl_inv, comp_id, assoc, XIsoOfEq_inv_comp_v]
+
+lemma rightUnshift_comp {m : ℤ} {a : ℤ} (γ' : Cochain L (M⟦a⟧) m) {nm : ℤ} (hnm : n + m = nm)
+    (nm' : ℤ) (hnm' : nm + a = nm') (m' : ℤ) (hm' : m + a = m') :
+    (γ.comp γ' hnm).rightUnshift nm' hnm' =
+      γ.comp (γ'.rightUnshift m' hm') (by linarith) := by
+  ext p q hpq
+  rw [(γ.comp γ' hnm).rightUnshift_v nm' hnm' p q hpq (p + n + m) (by linarith),
+    γ.comp_v γ' hnm p (p + n) (p + n + m) rfl rfl,
+    comp_v _ _ (show n + m' = nm' by linarith) p (p + n) q (by linarith) (by linarith),
+    γ'.rightUnshift_v m' hm' (p + n) q (by linarith) (p + n + m) rfl, assoc]
+
 lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a = m) :
     δ n' m' (γ.rightShift a n' hn') = a.negOnePow • (δ n m γ).rightShift a m' hm' := by
   by_cases hnm : n + 1 = m
@@ -1044,7 +1082,7 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
 
 lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) (m m' : ℤ) (hm' : m' + a = m) :
     δ n m (γ.rightUnshift n hn) = a.negOnePow • (δ n' m' γ).rightUnshift m hm' := by
-  obtain ⟨γ', rfl⟩ := (rightShiftEquiv K L n a n' hn).surjective γ
+  obtain ⟨γ', rfl⟩ := (rightShiftAddEquiv K L n a n' hn).surjective γ
   dsimp
   simp only [γ'.δ_rightShift a n' m' hn m hm', rightUnshift_rightShift, rightUnshift_zsmul,
     smul_smul, Int.negOnePow_mul_self, one_smul]

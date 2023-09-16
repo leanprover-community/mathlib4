@@ -635,14 +635,6 @@ noncomputable def ofIsIsoLeftRightHomologyComparison'
 
 end HomologyData
 
-variable (S)
-
---noncomputable def homologyData' [S.HasHomology] : S.HomologyData :=
---  HomologyData.ofIsIsoLeftRightHomologyComparison'
---    S.leftHomologyData S.rightHomologyData
-
-variable {S}
-
 lemma leftRightHomologyComparison'_eq_leftHomologpMap'_comp_iso_hom_comp_rightHomologyMap'
     (h : S.HomologyData) (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData) :
     leftRightHomologyComparison' h₁ h₂ =
@@ -672,7 +664,7 @@ lemma leftRightHomologyComparison_fac [S.HasHomology] :
 
 variable {S}
 
-lemma HomologyData.right_homologyIso_eq_left_homologyIso_trans
+lemma HomologyData.right_homologyIso_eq_left_homologyIso_trans_iso
     (h : S.HomologyData) [S.HasHomology] :
     h.right.homologyIso = h.left.homologyIso ≪≫ h.iso := by
   suffices h.iso = h.left.homologyIso.symm ≪≫ h.right.homologyIso by
