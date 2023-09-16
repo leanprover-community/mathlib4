@@ -39,7 +39,7 @@ The actual assumptions on `R` are weaker.
 * The instance showing that `Semiring R, NoZeroDivisors R, Mul A, UniqueProds A` imply
   `NoZeroDivisors (MonoidAlgebra R A)`.
 * The instance showing that `Semiring R, NoZeroDivisors R, Add A, UniqueSums A` imply
-  `NoZeroDivisors (R[A])`.
+  `NoZeroDivisors R[A]`.
 
 TODO: move the rest of the docs to UniqueProds?
  `NoZeroDivisors.of_left_ordered` shows that if `R` is a semiring with no non-zero
@@ -100,7 +100,7 @@ theorem mul_apply_add_eq_mul_of_uniqueAdd [Add A] {f g : R[A]} {a0 b0 : A}
     (f * g) (a0 + b0) = f a0 * g b0 :=
 MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul (A := Multiplicative A) h
 
-instance [NoZeroDivisors R] [Add A] [UniqueSums A] : NoZeroDivisors (R[A]) :=
+instance [NoZeroDivisors R] [Add A] [UniqueSums A] : NoZeroDivisors R[A] :=
 MonoidAlgebra.instNoZeroDivisorsOfUniqueProds (A := Multiplicative A)
 
 end AddMonoidAlgebra

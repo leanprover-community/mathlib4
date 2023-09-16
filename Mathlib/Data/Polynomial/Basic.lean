@@ -367,7 +367,7 @@ def toFinsuppIso : R[X] ≃+* R[ℕ] where
 #align polynomial.to_finsupp_iso_apply Polynomial.toFinsuppIso_apply
 #align polynomial.to_finsupp_iso_symm_apply Polynomial.toFinsuppIso_symm_apply
 
-instance [DecidableEq R] : DecidableEq (R[X]) :=
+instance [DecidableEq R] : DecidableEq R[X] :=
   @Equiv.decidableEq R[X] _ (toFinsuppIso R).toEquiv (Finsupp.decidableEq)
 
 end AddMonoidAlgebra
@@ -1202,7 +1202,7 @@ section NonzeroSemiring
 variable [Semiring R] [Nontrivial R]
 
 instance nontrivial : Nontrivial R[X] := by
-  have h : Nontrivial (R[ℕ]) := by infer_instance
+  have h : Nontrivial R[ℕ] := by infer_instance
   rcases h.exists_pair_ne with ⟨x, y, hxy⟩
   refine' ⟨⟨⟨x⟩, ⟨y⟩, _⟩⟩
   simp [hxy]

@@ -2040,7 +2040,7 @@ end
 
 theorem mapDomain_algebraMap (A : Type*) {H F : Type*} [CommSemiring k] [Semiring A] [Algebra k A]
     [AddMonoid G] [AddMonoid H] [AddMonoidHomClass F G H] (f : F) (r : k) :
-    mapDomain f (algebraMap k (A[G]) r) = algebraMap k (A[H]) r :=
+    mapDomain f (algebraMap k A[G] r) = algebraMap k A[H] r :=
   by simp only [Function.comp_apply, mapDomain_single, AddMonoidAlgebra.coe_algebraMap, map_zero]
 #align add_monoid_algebra.map_domain_algebra_map AddMonoidAlgebra.mapDomain_algebraMap
 

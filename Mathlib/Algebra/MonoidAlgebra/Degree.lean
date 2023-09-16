@@ -128,7 +128,7 @@ variable [AddMonoid A] [AddMonoid B] [CovariantClass B B (· + ·) (· ≤ ·)]
 
 theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) :
-    ∀ l : List (R[A]),
+    ∀ l : List R[A],
       l.prod.support.sup degb ≤ (l.map fun f : R[A] => f.support.sup degb).sum
   | [] => by
     rw [List.map_nil, Finset.sup_le_iff, List.prod_nil, List.sum_nil]
@@ -140,7 +140,7 @@ theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
 #align add_monoid_algebra.sup_support_list_prod_le AddMonoidAlgebra.sup_support_list_prod_le
 
 theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
-    (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List (R[A])) :
+    (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List R[A]) :
     (l.map fun f : R[A] => f.support.inf degt).sum ≤ l.prod.support.inf degt := by
   refine' OrderDual.ofDual_le_ofDual.mpr _
   refine' sup_support_list_prod_le _ _ l
@@ -177,7 +177,7 @@ variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [CovariantClass B 
   {degb : A → B} {degt : A → T}
 
 theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
-    (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (m : Multiset (R[A])) :
+    (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (m : Multiset R[A]) :
     m.prod.support.sup degb ≤ (m.map fun f : R[A] => f.support.sup degb).sum := by
   induction m using Quot.inductionOn
   rw [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_sum, Multiset.coe_prod]
@@ -185,7 +185,7 @@ theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
 #align add_monoid_algebra.sup_support_multiset_prod_le AddMonoidAlgebra.sup_support_multiset_prod_le
 
 theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
-    (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (m : Multiset (R[A])) :
+    (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (m : Multiset R[A]) :
     (m.map fun f : R[A] => f.support.inf degt).sum ≤ m.prod.support.inf degt := by
   refine' OrderDual.ofDual_le_ofDual.mpr <|
     sup_support_multiset_prod_le (OrderDual.ofDual_le_ofDual.mp _)

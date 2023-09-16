@@ -44,7 +44,7 @@ section
 variable (R) [CommSemiring R]
 
 /-- The submodule corresponding to each grade given by the degree function `f`. -/
-abbrev gradeBy (f : M → ι) (i : ι) : Submodule R (R[M]) where
+abbrev gradeBy (f : M → ι) (i : ι) : Submodule R R[M] where
   carrier := { a | ∀ m, m ∈ a.support → f m = i }
   zero_mem' m h := by cases h
   add_mem' {a b} ha hb m h := Or.recOn (Finset.mem_union.mp (Finsupp.support_add h)) (ha m) (hb m)
@@ -52,7 +52,7 @@ abbrev gradeBy (f : M → ι) (i : ι) : Submodule R (R[M]) where
 #align add_monoid_algebra.grade_by AddMonoidAlgebra.gradeBy
 
 /-- The submodule corresponding to each grade. -/
-abbrev grade (m : M) : Submodule R (R[M]) :=
+abbrev grade (m : M) : Submodule R R[M] :=
   gradeBy R id m
 #align add_monoid_algebra.grade AddMonoidAlgebra.grade
 
@@ -70,7 +70,7 @@ theorem mem_grade_iff (m : M) (a : R[M]) : a ∈ grade R m ↔ a.support ⊆ {m}
 
 theorem mem_grade_iff' (m : M) (a : R[M]) :
     a ∈ grade R m ↔ a ∈ (LinearMap.range (Finsupp.lsingle m : R →ₗ[R] M →₀ R) :
-      Submodule R (R[M])) := by
+      Submodule R R[M]) := by
   rw [mem_grade_iff, Finsupp.support_subset_singleton']
   apply exists_congr
   intro r
@@ -97,7 +97,7 @@ end
 open DirectSum
 
 instance gradeBy.gradedMonoid [AddMonoid M] [AddMonoid ι] [CommSemiring R] (f : M →+ ι) :
-    SetLike.GradedMonoid (gradeBy R f : ι → Submodule R (R[M])) where
+    SetLike.GradedMonoid (gradeBy R f : ι → Submodule R R[M]) where
   one_mem m h := by
     rw [one_def] at h
     by_cases H : (1 : R) = (0 : R)
@@ -114,7 +114,7 @@ instance gradeBy.gradedMonoid [AddMonoid M] [AddMonoid ι] [CommSemiring R] (f :
 #align add_monoid_algebra.grade_by.graded_monoid AddMonoidAlgebra.gradeBy.gradedMonoid
 
 instance grade.gradedMonoid [AddMonoid M] [CommSemiring R] :
-    SetLike.GradedMonoid (grade R : M → Submodule R (R[M])) := by
+    SetLike.GradedMonoid (grade R : M → Submodule R R[M]) := by
   apply gradeBy.gradedMonoid (AddMonoidHom.id _)
 #align add_monoid_algebra.grade.graded_monoid AddMonoidAlgebra.grade.gradedMonoid
 

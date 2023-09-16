@@ -91,7 +91,7 @@ theorem divOf_add (x : k[G]) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ
 
 /-- A bundled version of `AddMonoidAlgebra.divOf`. -/
 @[simps]
-noncomputable def divOfHom : Multiplicative G →* AddMonoid.End (k[G]) where
+noncomputable def divOfHom : Multiplicative G →* AddMonoid.End k[G] where
   toFun g :=
     { toFun := fun x => divOf x (Multiplicative.toAdd g)
       map_zero' := zero_divOf _
