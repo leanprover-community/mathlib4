@@ -41,8 +41,8 @@ def Arrow :=
 instance : Category (Arrow T) := commaCategory
 
 -- Satisfying the inhabited linter
-instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T)
-    where default := show Comma (𝟭 T) (𝟭 T) from default
+instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T) where
+  default := show Comma (𝟭 T) (𝟭 T) from default
 #align category_theory.arrow.inhabited CategoryTheory.Arrow.inhabited
 
 end

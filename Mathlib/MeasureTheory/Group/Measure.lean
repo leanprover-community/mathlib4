@@ -834,6 +834,18 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGrou
 #align mul_equiv.is_haar_measure_map MulEquiv.isHaarMeasure_map
 #align add_equiv.is_add_haar_measure_map AddEquiv.isAddHaarMeasure_map
 
+/-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
+theorem _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
+    {E F R S : Type*} [Semiring R] [Semiring S]
+    [AddCommGroup E] [Module R E] [AddCommGroup F] [Module S F]
+    [TopologicalSpace E] [TopologicalAddGroup E] [TopologicalSpace F] [T2Space F]
+    [TopologicalAddGroup F]
+    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    [MeasurableSpace E] [BorelSpace E] [MeasurableSpace F] [BorelSpace F]
+    (L : E ≃SL[σ] F) (μ : Measure E) [IsAddHaarMeasure μ] :
+    IsAddHaarMeasure (μ.map L) :=
+  AddEquiv.isAddHaarMeasure_map _ (L : E ≃+ F) L.continuous L.symm.continuous
+
 /-- A Haar measure on a σ-compact space is σ-finite.
 
 See Note [lower instance priority] -/

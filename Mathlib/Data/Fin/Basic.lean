@@ -549,8 +549,6 @@ instance (n) : AddCommSemigroup (Fin n) where
   add_comm := by simp [eq_iff_veq, add_def, add_comm]
 
 instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
-  add := (· + ·)
-  zero := 0
   zero_add := Fin.zero_add
   add_zero := Fin.add_zero
   __ := Fin.addCommSemigroup n
