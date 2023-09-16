@@ -137,7 +137,8 @@ theorem hasBiproduct_of_total {f : J → C} (b : Bicone f)
 
 /-- In a preadditive category, any finite bicone which is a limit cone is in fact a bilimit
     bicone. -/
-def isBilimitOfIsLimit {f : J → C} (t : Bicone f) (ht : IsLimit t.toCone) : t.IsBilimit :=
+def isBilimitOfIsLimit {f : J → C} (t : Bicone f) (ht : IsLimit (Bicone.toCone.obj t)) :
+    t.IsBilimit :=
   isBilimitOfTotal _ <|
     ht.hom_ext fun j => by
       cases j
@@ -167,7 +168,8 @@ theorem HasBiproduct.of_hasProduct {J : Type} [Finite J] (f : J → C) [HasProdu
 
 /-- In a preadditive category, any finite bicone which is a colimit cocone is in fact a bilimit
     bicone. -/
-def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone) : t.IsBilimit :=
+def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit (Bicone.toCocone.obj t)) :
+    t.IsBilimit :=
   isBilimitOfTotal _ <|
     ht.hom_ext fun j => by
       cases j
@@ -921,7 +923,8 @@ def preservesBiproductOfPreservesProduct {f : J → C} [PreservesLimit (Discrete
   preserves {b} hb :=
     isBilimitOfIsLimit _ <|
       IsLimit.ofIsoLimit
-          ((IsLimit.postcomposeHomEquiv (Discrete.compNatIsoDiscrete _ _) (F.mapCone b.toCone)).symm
+          ((IsLimit.postcomposeHomEquiv (Discrete.compNatIsoDiscrete _ _)
+              (F.mapCone  (Bicone.toCone.obj b))).symm
             (isLimitOfPreserves F hb.isLimit)) <|
         Cones.ext (Iso.refl _) (by rintro ⟨⟩; simp)
 #align category_theory.limits.preserves_biproduct_of_preserves_product CategoryTheory.Limits.preservesBiproductOfPreservesProduct
@@ -995,7 +998,7 @@ def preservesBiproductOfPreservesCoproduct {f : J → C} [PreservesColimit (Disc
     isBilimitOfIsColimit _ <|
       IsColimit.ofIsoColimit
           ((IsColimit.precomposeInvEquiv (Discrete.compNatIsoDiscrete _ _)
-                (F.mapCocone b.toCocone)).symm
+                (F.mapCocone (Bicone.toCocone.obj b))).symm
             (isColimitOfPreserves F hb.isColimit)) <|
         Cocones.ext (Iso.refl _) (by rintro ⟨⟩; simp)
 #align category_theory.limits.preserves_biproduct_of_preserves_coproduct CategoryTheory.Limits.preservesBiproductOfPreservesCoproduct
