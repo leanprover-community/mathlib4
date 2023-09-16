@@ -376,14 +376,9 @@ lemma Measurable.rhsAux (p : ℝ) (hf : Measurable f) : Measurable (rhsAux μ p 
   refine ((hf.marginal μ).pow_const _).mul ?_
   exact Finset.measurable_prod _ fun i _ ↦ ((hf.marginal μ).pow_const _)
 
-/--
-The main inductive step
-
-Note: this also holds without assuming `Nontrivial ι`, by tracing through the junk values
-(note that `s = ∅` in that case).
--/
-theorem marginal_singleton_rhsAux_le [Nontrivial ι] {p : ℝ} (hp1 : 0 ≤ p) (f : (∀ i, π i) → ℝ≥0∞)
-    (hf : Measurable f) (s : Finset ι) (hp2 : p ≤ (sᶜ.card - 1 : ℝ)⁻¹) (i : ι) (hi : i ∉ s) :
+/-- The main inductive step -/
+theorem marginal_singleton_rhsAux_le {p : ℝ} (hp1 : 0 ≤ p) (f : (∀ i, π i) → ℝ≥0∞)
+    (hf : Measurable f) (s : Finset ι) (hp2 : (sᶜ.card - 1 : ℝ) * p ≤ 1) (i : ι) (hi : i ∉ s) :
     ∫⋯∫_sᶜ, rhsAux μ p f s ∂μ ≤ ∫⋯∫_(insert i s)ᶜ, rhsAux μ p f (insert i s) ∂μ := by
   have hi' : i ∉ (insert i s)ᶜ := not_mem_compl.mpr <| mem_insert_self i s
   calc ∫⋯∫_sᶜ, rhsAux μ p f s ∂μ
@@ -392,18 +387,6 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] {p : ℝ} (hp1 : 0 ≤ p) (
         marginal_insert' _ (hf.rhsAux μ p) hi'
     _ ≤ ∫⋯∫_(insert i s)ᶜ, rhsAux μ p f (insert i s) ∂μ := marginal_mono (fun x ↦ ?_)
   -- it suffices to compare the `i`-integral of `rhsAux s` with `rhsAux (insert i s)`
-  -- have hι : 2 ≤ (#ι : ℝ) := by exact_mod_cast Fintype.one_lt_card
-  -- have : 1 ≤ (#ι:ℝ) - 1 := by linarith
-  -- let p : ℝ := 1 / ((#ι:ℝ) - 1)
-  -- have hp : s.card * p + (insert i s)ᶜ.card * p = 1
-  -- · have H₁ : ((insert i s).card : ℝ) = s.card + 1
-  --   · exact_mod_cast Finset.card_insert_of_not_mem hi
-  --   have H₂ : ((insert i s).card : ℝ) + (insert i s)ᶜ.card = #ι
-  --   · exact_mod_cast (insert i s).card_add_card_compl
-  --   have H₃ : p * (#ι - 1) = 1
-  --   · have : (#ι:ℝ) - 1 ≠ 0 := by positivity
-  --     field_simp
-  --   linear_combination -p * H₁ + p * H₂ + H₃
   have hf' : ∀ {s' : Finset ι}, Measurable fun t ↦ (∫⋯∫_s', f ∂μ) (update x i t) :=
     fun {_} ↦ hf.marginal μ |>.comp <| measurable_update _
   have hk₀ : sᶜ.card = (insert i s)ᶜ.card + 1
@@ -413,15 +396,10 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] {p : ℝ} (hp1 : 0 ≤ p) (
     zify at H₁ H₂ H₃ ⊢
     linear_combination H₁ - H₂ + H₃
   let k : ℝ := (insert i s)ᶜ.card
-  have hk : sᶜ.card = k + 1
-  · dsimp only
-    exact_mod_cast hk₀
+  have hk : sᶜ.card = k + 1 := by exact_mod_cast hk₀
   have hk' : 0 ≤ 1 - k * p
-  · have : 0 ≤ k := Nat.cast_nonneg _
-    obtain hk_zero | hk_pos := eq_or_lt_of_le this
-    · simp [← hk_zero]
-    rw [hk, add_sub_cancel, inv_eq_one_div, le_div_iff hk_pos] at hp2
-    linarith
+  · rw [hk] at hp2
+    linarith only [hp2]
   let X := update x i
   let F : Finset ι → (∀ j, π j) → ℝ≥0∞ := fun s' ↦ ∫⋯∫_s', f ∂μ
   calc ∫⁻ t, F s (X t) ^ (1 - (sᶜ.card - 1 : ℝ) * p)
@@ -475,19 +453,18 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] {p : ℝ} (hp1 : 0 ≤ p) (
           * ∏ j in (insert i s)ᶜ, F (insert j (insert i s)) x ^ p := by
               -- identify the result with the RHS integrand
               clear_value F
-              simp_rw [Insert.comm] --, Finset.card_insert_of_not_mem hi]
+              simp_rw [Insert.comm]
               push_cast
               ring_nf
 
-theorem marginal_rhsAux_monotone [Nontrivial ι]{p : ℝ} (hp1 : 0 ≤ p) (hp2 : p ≤ (#ι - 1 : ℝ)⁻¹)
+theorem marginal_rhsAux_monotone {p : ℝ} (hp1 : 0 ≤ p) (hp2 : (#ι - 1 : ℝ) * p ≤ 1)
     (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) :
     Monotone (fun s ↦ ∫⋯∫_sᶜ, rhsAux μ p f s ∂μ) := by
   rw [Finset.monotone_iff']
   intro s i hi
-  refine marginal_singleton_rhsAux_le μ hp1 f hf s (hp2.trans ?_) i hi
+  refine marginal_singleton_rhsAux_le μ hp1 f hf s (le_trans ?_ hp2) i hi
   gcongr
-  · sorry -- this actually doesn't quite work, would need to adjust statement
-  · exact card_le_univ sᶜ
+  exact card_le_univ sᶜ
 
 theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] (hf : Measurable f) :
     ∫⁻ x, ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂Measure.pi μ ≤
@@ -496,8 +473,10 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] (hf : Measurable f) :
   · simp_rw [lintegral_of_isEmpty]; refine' zero_le _
   inhabit ∀ i, π i
   have H : (∅ : Finset ι) ≤ Finset.univ := Finset.empty_subset _
-  have hp1 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := sorry
-  have hp2 : ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ (#ι - 1 : ℝ)⁻¹ := by rw [one_div]
+  have : (1:ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
+  have : (0:ℝ) < #ι - 1 := by linarith
+  have hp1 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
+  have hp2 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp
   simpa [marginal_univ, rhsAux_empty, rhsAux_univ, -one_div] using
     marginal_rhsAux_monotone μ hp1 hp2 f hf H default
 -- theorem integral_prod_integral_pow_le {f : (∀ i, π i) → ℝ} (hf : Measurable f)
