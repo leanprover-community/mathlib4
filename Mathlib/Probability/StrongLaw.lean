@@ -665,36 +665,6 @@ theorem strong_law_ae_real (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
 
 end StrongLawAeReal
 
-section StrongLawLp
-
-variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
-
-/-- **Strong law of large numbers**, Lᵖ version: if `X n` is a sequence of independent
-identically distributed real-valued random variables in Lᵖ, then `∑ i in range n, X i / n`
-converges in Lᵖ to `𝔼[X 0]`. -/
-theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ → Ω → ℝ) (hℒp : Memℒp (X 0) p)
-    (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
-    Tendsto (fun n => snorm (fun ω => (∑ i in range n, X i ω) / n - 𝔼[X 0]) p ℙ) atTop (𝓝 0) := by
-  have hmeas : ∀ i, AEStronglyMeasurable (X i) ℙ := fun i =>
-    (hident i).aestronglyMeasurable_iff.2 hℒp.1
-  have hint : Integrable (X 0) ℙ := hℒp.integrable hp
-  have havg : ∀ n, AEStronglyMeasurable (fun ω => (∑ i in range n, X i ω) / n) ℙ := by
-    intro n
-    simp_rw [div_eq_mul_inv]
-    exact AEStronglyMeasurable.mul_const (aestronglyMeasurable_sum _ fun i _ => hmeas i) _
-  refine' tendsto_Lp_of_tendstoInMeasure _ hp hp' havg (memℒp_const _) _
-    (tendstoInMeasure_of_tendsto_ae havg (strong_law_ae_real _ hint hindep hident))
-  rw [(_ : (fun n ω => (∑ i in range n, X i ω) / ↑n) = fun n => (∑ i in range n, X i) / ↑n)]
-  · exact (uniformIntegrable_average hp <|
-      Memℒp.uniformIntegrable_of_identDistrib hp hp' hℒp hident).2.1
-  · ext n ω
-    simp only [Pi.coe_nat, Pi.div_apply, sum_apply]
-set_option linter.uppercaseLean3 false in
-#align probability_theory.strong_law_Lp ProbabilityTheory.strong_law_Lp
-
-end StrongLawLp
-
-
 section StrongLawVectorSpace
 
 variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
@@ -853,6 +823,38 @@ theorem strong_law_ae
   exact (h₁ i).symm
 
 end StrongLawVectorSpace
+
+section StrongLawLp
+
+variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  [MeasurableSpace E] [BorelSpace E]
+
+/-- **Strong law of large numbers**, Lᵖ version: if `X n` is a sequence of independent
+identically distributed real-valued random variables in Lᵖ, then `∑ i in range n, X i / n`
+converges in Lᵖ to `𝔼[X 0]`. -/
+theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ → Ω → E) (hℒp : Memℒp (X 0) p)
+    (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
+    Tendsto (fun (n : ℕ) => snorm (fun ω => (n : ℝ) ⁻¹ • (∑ i in range n, X i ω) - 𝔼[X 0]) p ℙ)
+      atTop (𝓝 0) := by
+  have hmeas : ∀ i, AEStronglyMeasurable (X i) ℙ := fun i =>
+    (hident i).aestronglyMeasurable_iff.2 hℒp.1
+  have hint : Integrable (X 0) ℙ := hℒp.integrable hp
+  have havg : ∀ (n : ℕ), AEStronglyMeasurable (fun ω => (n : ℝ) ⁻¹ • (∑ i in range n, X i ω)) ℙ := by
+    intro n
+    exact AEStronglyMeasurable.const_smul (aestronglyMeasurable_sum _ fun i _ => hmeas i) _
+  refine' tendsto_Lp_of_tendstoInMeasure _ hp hp' havg (memℒp_const _) _
+    (tendstoInMeasure_of_tendsto_ae havg (strong_law_ae _ hint hindep hident))
+  rw [(_ : (fun (n : ℕ) ω => (n : ℝ)⁻¹ • (∑ i in range n, X i ω)) = fun (n : ℕ) => (n : ℝ)⁻¹ • (∑ i in range n, X i))]
+  · exact (uniformIntegrable_average hp <|
+      Memℒp.uniformIntegrable_of_identDistrib hp hp' hℒp hident).2.1
+  · ext n ω
+    simp only [Pi.coe_nat, Pi.div_apply, sum_apply]
+set_option linter.uppercaseLean3 false in
+#align probability_theory.strong_law_Lp ProbabilityTheory.strong_law_Lp
+
+end StrongLawLp
+
 
 
 end ProbabilityTheory

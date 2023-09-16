@@ -919,7 +919,6 @@ theorem uniformIntegrable_iff [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
 /-- The averaging of a uniformly integrable sequence is also uniformly integrable. -/
 theorem uniformIntegrable_average
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [MeasurableSpace E] [BorelSpace E]
     (hp : 1 ≤ p) {f : ℕ → α → E} (hf : UniformIntegrable f p μ) :
     UniformIntegrable (fun (n : ℕ) => (n : ℝ)⁻¹ • (∑ i in Finset.range n, f i)) p μ := by
   obtain ⟨hf₁, hf₂, hf₃⟩ := hf
@@ -970,5 +969,3 @@ theorem uniformIntegrable_average_real (hp : 1 ≤ p) {f : ℕ → α → ℝ} (
 end UniformIntegrable
 
 end MeasureTheory
-
-#lint
