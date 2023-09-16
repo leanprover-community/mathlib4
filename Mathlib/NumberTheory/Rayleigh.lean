@@ -72,10 +72,11 @@ namespace Beatty
 
 variable {r : ℝ} (hr : r > 1) {j k : ℤ}
 
-/-- Let `1 < r ∈ ℝ` and `s = r / (r - 1)`. Suppose there is an integer `j` such that `j ∈ B_r` and
-`j ∈ B'_s` (i.e. a collision). Then this leads to a contradiction. -/
-theorem no_collision : ¬∃ j, j ∈ beattySet r ∧ j ∈ beattySet' r.conjugateExponent := by
-  intro ⟨j, ⟨k, h₁⟩, ⟨m, h₂⟩⟩
+/-- Let `1 < r ∈ ℝ` and `s = r / (r - 1)`. Then `B_r` and `B'_s` are disjoint (i.e. no collision
+exists). -/
+theorem no_collision : Disjoint (beattySet r) (beattySet' r.conjugateExponent) := by
+  rw [Set.disjoint_left]
+  intro j ⟨k, h₁⟩ ⟨m, h₂⟩
   have hs := Real.one_lt_conjugateExponent hr
   have ⟨h₁₁, h₁₂⟩ : j / r ≤ k ∧ k < (j + 1) / r := by
     have hr := lt_trans zero_lt_one hr
@@ -165,9 +166,7 @@ theorem rayleigh_compl {r : ℝ} (hr : r > 1) : (beattySet r)ᶜ = beattySet' r.
   ext j
   by_cases h₁ : j ∈ beattySet r
   · by_cases h₂ : j ∈ beattySet' r.conjugateExponent
-    · have ⟨k, h₃⟩ := h₁
-      have ⟨m, h₄⟩ := h₂
-      exact (Beatty.no_collision hr ⟨j, ⟨k, h₃⟩, ⟨m, h₄⟩⟩).elim
+    · exact (Set.not_disjoint_iff.2 ⟨j, h₁, h₂⟩ (Beatty.no_collision hr)).elim
     · simp [Set.compl, h₁, h₂]
   · by_cases h₂ : j ∈ beattySet' r.conjugateExponent
     · simp [Set.compl, h₁, h₂]
