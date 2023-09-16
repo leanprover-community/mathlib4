@@ -312,6 +312,128 @@ end
 
 end AddCommMonoid
 
+section Module
+
+variable [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+  [Module R M] [Module R M₂] [Module R M₃] [Module S M₂] [Module S M₃] [SMulCommClass R S M₂]
+  [SMulCommClass R S M₃] (f : M →ₗ[R] M₂)
+
+
+variable (S)
+
+/-- Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.
+
+ See `LinearMap.applyₗ` for a version where `S = R`. -/
+@[simps]
+def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
+  toFun v :=
+    { toFun := fun f => f v
+      map_add' := fun f g => f.add_apply g v
+      map_smul' := fun x f => f.smul_apply x v }
+  map_zero' := LinearMap.ext fun f => f.map_zero
+  map_add' _ _ := LinearMap.ext fun f => f.map_add _ _
+#align linear_map.applyₗ' LinearMap.applyₗ'
+
+section
+
+variable (R M)
+
+/-- The equivalence between R-linear maps from `R` to `M`, and points of `M` itself.
+This says that the forgetful functor from `R`-modules to types is representable, by `R`.
+
+This as an `S`-linear equivalence, under the assumption that `S` acts on `M` commuting with `R`.
+When `R` is commutative, we can take this to be the usual action with `S = R`.
+Otherwise, `S = ℕ` shows that the equivalence is additive.
+See note [bundled maps over different rings].
+-/
+@[simps]
+def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃ₗ[S] M :=
+  { applyₗ' S (1 : R) with
+    toFun := fun f => f 1
+    invFun := smulRight (1 : R →ₗ[R] R)
+    left_inv := fun f => by
+      ext
+      simp only [coe_smulRight, one_apply, smul_eq_mul, ← map_smul f, mul_one]
+    right_inv := fun x => by simp }
+#align linear_map.ring_lmap_equiv_self LinearMap.ringLmapEquivSelf
+
+end
+
+end Module
+
+section CommSemiring
+
+variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+
+variable [Module R M] [Module R M₂] [Module R M₃]
+
+variable (f g : M →ₗ[R] M₂)
+
+/-- Composition by `f : M₂ → M₃` is a linear map from the space of linear maps `M → M₂`
+to the space of linear maps `M₂ → M₃`. -/
+def compRight (f : M₂ →ₗ[R] M₃) : (M →ₗ[R] M₂) →ₗ[R] M →ₗ[R] M₃ where
+  toFun := f.comp
+  map_add' _ _ := LinearMap.ext fun _ => map_add f _ _
+  map_smul' _ _ := LinearMap.ext fun _ => map_smul f _ _
+#align linear_map.comp_right LinearMap.compRight
+
+@[simp]
+theorem compRight_apply (f : M₂ →ₗ[R] M₃) (g : M →ₗ[R] M₂) : compRight f g = f.comp g :=
+  rfl
+#align linear_map.comp_right_apply LinearMap.compRight_apply
+
+/-- Applying a linear map at `v : M`, seen as a linear map from `M →ₗ[R] M₂` to `M₂`.
+See also `LinearMap.applyₗ'` for a version that works with two different semirings.
+
+This is the `LinearMap` version of `toAddMonoidHom.eval`. -/
+@[simps]
+def applyₗ : M →ₗ[R] (M →ₗ[R] M₂) →ₗ[R] M₂ :=
+  { applyₗ' R with
+    toFun := fun v => { applyₗ' R v with toFun := fun f => f v }
+    map_smul' := fun _ _ => LinearMap.ext fun f => map_smul f _ _ }
+#align linear_map.applyₗ LinearMap.applyₗ
+
+/-- Alternative version of `domRestrict` as a linear map. -/
+def domRestrict' (p : Submodule R M) : (M →ₗ[R] M₂) →ₗ[R] p →ₗ[R] M₂ where
+  toFun φ := φ.domRestrict p
+  map_add' := by simp [LinearMap.ext_iff]
+  map_smul' := by simp [LinearMap.ext_iff]
+#align linear_map.dom_restrict' LinearMap.domRestrict'
+
+@[simp]
+theorem domRestrict'_apply (f : M →ₗ[R] M₂) (p : Submodule R M) (x : p) :
+    domRestrict' p f x = f x :=
+  rfl
+#align linear_map.dom_restrict'_apply LinearMap.domRestrict'_apply
+
+/--
+The family of linear maps `M₂ → M` parameterised by `f ∈ M₂ → R`, `x ∈ M`, is linear in `f`, `x`.
+-/
+def smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M where
+  toFun f :=
+    { toFun := LinearMap.smulRight f
+      map_add' := fun m m' => by
+        ext
+        apply smul_add
+      map_smul' := fun c m => by
+        ext
+        apply smul_comm }
+  map_add' f f' := by
+    ext
+    apply add_smul
+  map_smul' c f := by
+    ext
+    apply mul_smul
+#align linear_map.smul_rightₗ LinearMap.smulRightₗ
+
+@[simp]
+theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) (c : M₂) :
+    (smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M) f x c = f c • x :=
+  rfl
+#align linear_map.smul_rightₗ_apply LinearMap.smulRightₗ_apply
+
+end CommSemiring
+
 end LinearMap
 
 end
