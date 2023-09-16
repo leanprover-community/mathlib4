@@ -220,7 +220,7 @@ instance {K₁ K₂ : (CochainComplex C ℤ)ᵒᵖ} (φ : K₁ ⟶ K₂) :
 section
 
 variable (K) {L₁ L₂ : CochainComplex C ℤ} (φ : L₁ ⟶ L₂)
-  [∀ (p : ℤ), HasBinaryBiproduct (L₁.X (p + 1)) (L₂.X p)]
+  [HasBinaryBiproducts C]
 
 set_option maxHeartbeats 400000 in
 @[simps]
@@ -309,6 +309,59 @@ noncomputable def mappingConeIso :
     erw [AddMonoidHom.sub_apply, comp_apply, comp_apply]
     abel)
 
+noncomputable def mappingConeTriangleIso :
+    (functor K).mapTriangle.obj (MappingCone.triangle φ) ≅
+      MappingCone.triangle ((HomComplex.functor K).map φ) := by
+  refine' Pretriangulated.Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+    (mappingConeIso K φ) (by aesop_cat) _ _
+  · dsimp
+    rw [id_comp]
+    ext i (α : Cochain K L₂ i)
+    dsimp
+    erw [mappingConeIso_hom_f_apply]
+    simp only [Cochain.comp_assoc_of_second_is_zero_cochain, MappingCone.inr_fst, Cochain.comp_zero,
+      MappingCone.inr_snd, Cochain.comp_id, add_left_eq_self]
+    rw [map_zero]
+  · dsimp
+    rw [CategoryTheory.Functor.map_id, comp_id]
+    ext i (α : Cochain K (mappingCone φ) i)
+    obtain ⟨α₁, α₂, rfl⟩ := MappingCone.cochain_to_break _ α _ rfl
+    apply Cochain.ext
+    intro p q (hpq : p + (i + 1) = q)
+    dsimp [MappingCone.triangleδ]
+    erw [mappingConeIso_hom_f_apply]
+    simp only [Cocycle.cochain_ofHom_homOf_eq_coe, Cocycle.rightShift_coe, Cocycle.coe_neg, Cochain.rightShift_neg,
+      Cochain.comp_neg, Cochain.add_comp, Cochain.comp_assoc_of_third_is_zero_cochain,
+      Cochain.comp_assoc_of_second_is_zero_cochain, neg_add_rev, Cochain.neg_v,
+      Cochain.comp_assoc_of_second_degree_eq_neg_third_degree, MappingCone.inl_fst, Cochain.comp_id,
+      MappingCone.inr_fst, Cochain.comp_zero, add_zero, MappingCone.inl_snd, MappingCone.inr_snd, zero_add, map_add]
+    rw [map_add, map_neg, map_neg]
+    erw [← comp_apply, ← comp_apply]
+    erw [rightShiftIso_hom_f_apply _ (i+1) rfl,
+      rightShiftIso_hom_f_apply _ (i+1) rfl]
+    rw [Cochain.add_v, Cochain.neg_v]
+    dsimp
+    erw [Cochain.rightUnshift_v _ _ _ _ _ _ (p + i) rfl]
+    simp only [Cochain.comp_zero_cochain_v, Cochain.ofHom_v, shiftFunctor_obj_X, shiftFunctorObjXIso, assoc, comp_neg]
+    erw [Cochain.rightShift_v _ _ _ _ _ _ _ q (by linarith)]
+    dsimp
+    simp only [assoc, Iso.inv_hom_id, comp_id, MappingCone.inr_f_fst_v, comp_zero, neg_zero, zero_add]
+    rw [Cochain.neg_v]
+    erw [Cochain.rightUnshift_v _ _ _ _ _ _ (p + i) rfl]
+    dsimp
+    rw [Cochain.comp_v _ _ (show i + 1 + (-1) = i by linarith) p q
+      (p + i) (by linarith) (by linarith),
+      Cochain.comp_v _ _ (add_zero (-1)) q (p + i) (p + i)
+        (by linarith) (by linarith),
+      Cochain.rightShift_v _ _ _ _ _ _ _ q (by linarith),
+      Cochain.rightShift_v _ _ _ _ _ _ _ (i + 1) rfl]
+    simp only [shiftFunctor_obj_X, shiftFunctorObjXIso, MappingCone.inl_v_fst_v_assoc, assoc, Iso.inv_hom_id, comp_id,
+      HomComplex_X, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, MappingCone.inl_v_fst_v, MappingCone.inr_f_fst_v,
+      neg_zero]
+    rw [AddMonoidHom.zero_apply]
+    simp only [add_zero]
+    rfl
+
 end
 
 end HomComplex
@@ -327,6 +380,31 @@ def functor' (K : CochainComplex C ℤ) :
       intro L₁ L₂ f₁ f₂ ⟨h⟩
       apply HomotopyCategory.eq_of_homotopy
       exact CochainComplex.HomComplex.homotopyFunctorMap K h)
+
+def functor'Factors (K : CochainComplex C ℤ) :
+  HomotopyCategory.quotient C _ ⋙ functor' K ≅
+    CochainComplex.HomComplex.functor K ⋙ HomotopyCategory.quotient AddCommGroupCat _ :=
+  Quotient.lift.isLift _ _ _
+
+noncomputable instance (K : CochainComplex C ℤ) :
+    (functor' K).CommShift ℤ :=
+  Quotient.liftCommShift _ _ _ _
+
+instance (K : CochainComplex C ℤ) : NatTrans.CommShift (functor'Factors K).hom ℤ :=
+  Quotient.liftCommShift_compatibility _ _ _ _
+
+instance [HasZeroObject C] [HasBinaryBiproducts C] (K : CochainComplex C ℤ) :
+    (functor' K).IsTriangulated where
+  map_distinguished T hT := by
+    obtain ⟨L₁, L₂, φ, ⟨e⟩⟩ := hT
+    refine' isomorphic_distinguished _
+      (mappingCone_triangle_distinguished ((CochainComplex.HomComplex.functor K).map φ)) _ _
+    exact (functor' K).mapTriangle.mapIso e ≪≫
+      (Functor.mapTriangleCompIso _ _).symm.app _ ≪≫
+      (Functor.mapTriangleIso (functor'Factors K)).app _ ≪≫
+      (Functor.mapTriangleCompIso _ _).app _ ≪≫
+      (HomotopyCategory.quotient AddCommGroupCat (ComplexShape.up ℤ)).mapTriangle.mapIso
+        (CochainComplex.HomComplex.mappingConeTriangleIso K φ)
 
 variable (C)
 
@@ -364,8 +442,8 @@ end HomComplex
 end HomotopyCategory
 
 -- TODO:
--- * compatibility with the mappingCone
--- * the induced functor on the homotopy cateory is triangulated
+-- * compatibility with the mappingCone (done)
+-- * the induced functor on the homotopy cateory is triangulated (done)
 -- * do the same for the left shift
 -- * state a compatibility (up to sign) of both left/right `CommShift`
 -- * the right derived functor (on D^+ when we have enough injectives) computes the Ext
