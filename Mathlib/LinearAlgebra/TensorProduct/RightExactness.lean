@@ -386,8 +386,8 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
   rw [← Submodule.carrier_inj]
   apply le_antisymm
   · intro x
-    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, Submodule.mem_toAddSubmonoid,
-      Submodule.restrictScalars_mem, LinearMap.mem_range]
+    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+      Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem, LinearMap.mem_range]
     intro hx
     rw [Ideal.map, ← submodule_span_eq] at hx
     refine' Submodule.span_induction hx _ _ _ _
@@ -463,8 +463,8 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
   rw [← Submodule.carrier_inj]
   apply le_antisymm
   · intro x
-    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, Submodule.mem_toAddSubmonoid,
-      Submodule.restrictScalars_mem, LinearMap.mem_range]
+    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+      Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem, LinearMap.mem_range]
     intro hx
     rw [Ideal.map, ← submodule_span_eq] at hx
     refine' Submodule.span_induction hx _ _ _ _
@@ -512,8 +512,8 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         simp only [LinearMap.lTensor_tmul, Submodule.coeSubtype]
         suffices : a ⊗ₜ[R] (b : B) = (a ⊗ₜ[R] (1 : B)) * ((1 : A) ⊗ₜ[R] (b : B))
         rw [this]
-        simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, Submodule.mem_toAddSubmonoid,
-          Submodule.restrictScalars_mem]
+        simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+          Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
         apply Ideal.mul_mem_left
         apply Ideal.mem_map_of_mem
         exact Submodule.coe_mem b
@@ -625,12 +625,16 @@ lemma comm_comp_lTensor_eq_rTensor_comp_comm {g : N →ₗ[R] P} :
       rTensor Q g ∘ₗ (TensorProduct.comm R Q N) := by
   exact TensorProduct.ext rfl
 
-lemma comm_range_rTensor_eq_range_lTensor : Submodule.map (TensorProduct.comm R N Q) (range (rTensor Q f)) = range (lTensor Q f) := by
+lemma comm_range_rTensor_eq_range_lTensor :
+    Submodule.map (TensorProduct.comm R N Q) (range (rTensor Q f)) =
+      range (lTensor Q f) := by
   change Submodule.map (TensorProduct.comm R N Q).toLinearMap _ = _
   rw [← LinearMap.range_comp, comm_comp_rTensor_eq_lTensor_comp_comm,
     LinearMap.range_comp, LinearEquiv.range, Submodule.map_top]
 
-lemma comm_range_lTensor_eq_range_rTensor : Submodule.map (TensorProduct.comm R Q N) (range (lTensor Q f)) = range (rTensor Q f) := by
+lemma comm_range_lTensor_eq_range_rTensor :
+    Submodule.map (TensorProduct.comm R Q N) (range (lTensor Q f)) =
+      range (rTensor Q f) := by
   change Submodule.map (TensorProduct.comm R Q N).toLinearMap _ = _
   rw [← LinearMap.range_comp, comm_comp_lTensor_eq_rTensor_comp_comm,
     LinearMap.range_comp, LinearEquiv.range, Submodule.map_top]
@@ -657,8 +661,8 @@ lemma rTensor.equiv'_apply_tmul (n : N) (q : Q) :
     rTensor.equiv' Q hfg hg (Submodule.Quotient.mk (n ⊗ₜ[R] q)) =
       g n ⊗ₜ[R] q := by
   unfold rTensor.equiv'
-  simp only [LinearEquiv.trans_apply, Submodule.Quotient.equiv_apply, Submodule.mapQ_apply, LinearEquiv.coe_coe,
-    comm_tmul]
+  simp only [LinearEquiv.trans_apply, Submodule.Quotient.equiv_apply,
+    Submodule.mapQ_apply, LinearEquiv.coe_coe, comm_tmul]
   rfl
 
 lemma rTensor.inverse_comp_rTensor'
