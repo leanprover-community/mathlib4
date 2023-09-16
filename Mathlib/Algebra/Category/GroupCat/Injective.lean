@@ -51,7 +51,7 @@ theorem injective_of_injective_as_module [Injective (⟨A⟩ : ModuleCat ℤ)] :
     let F : (⟨X⟩ : ModuleCat ℤ) ⟶ ⟨Y⟩ :=
       { f with map_smul' := by intros; apply map_zsmul (id f : X →+ Y) }
     have : Mono F := (ModuleCat.mono_iff_injective _).mpr <| (mono_iff_injective _).mp m
-    refine ⟨(Injective.factorThru G F).toAddMonoidHom, ?_⟩
+    use (Injective.factorThru G F).toAddMonoidHom
     ext x
     exact FunLike.congr_fun (Injective.comp_factorThru G F) x
 #align AddCommGroup.injective_of_injective_as_module AddCommGroupCat.injective_of_injective_as_module
@@ -65,9 +65,8 @@ theorem injective_as_module_of_injective_as_Ab [Injective (⟨A,inferInstance⟩
     let F : (⟨X,inferInstance⟩ : AddCommGroupCat) ⟶ ⟨Y,inferInstance⟩ :=
       @LinearMap.toAddMonoidHom _ _ _ _ _ _ _ _ (_) (_) _ f
     have : Mono F := (mono_iff_injective _).mpr <| (ModuleCat.mono_iff_injective f).mp m
-    refine ⟨ @LinearMap.mk _ _ _ _ _ _ _ _ _ (_) _ (Injective.factorThru G F).toAddHom ?_ , ?_⟩
-    · intro r x
-      apply (congr_arg _ <| int_smul_eq_zsmul Y.isModule r x).trans
+    refine ⟨@LinearMap.mk _ _ _ _ _ _ _ _ _ (_) _ (Injective.factorThru G F).toAddHom ?_ , ?_⟩
+    · refine fun r x ↦ (congr_arg _ <| int_smul_eq_zsmul Y.isModule r x).trans ?_
       apply map_zsmul (id <| Injective.factorThru G F : Y →+ A)
     · ext x
       exact congrFun (congrArg (·.toFun) <| Injective.comp_factorThru G F) x
@@ -77,15 +76,15 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
     CategoryTheory.Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
   @injective_of_injective_as_module A _ <|
     @Module.injective_object_of_injective_module ℤ _ A _ _ <|
-      Module.Baer.injective fun I g => by
+      Module.Baer.injective fun I g ↦ by
         rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩
         obtain rfl | h0 := eq_or_ne m 0
-        · refine ⟨0, fun n hn => ?_⟩
+        · refine ⟨0, fun n hn ↦ ?_⟩
           rw [Submodule.span_zero_singleton] at hn
           subst hn
           exact (map_zero g).symm
         let gₘ := g ⟨m, Submodule.subset_span (Set.mem_singleton _)⟩
-        refine ⟨LinearMap.toSpanSingleton ℤ A (DivisibleBy.div gₘ m), fun n hn => ?_⟩
+        refine ⟨LinearMap.toSpanSingleton ℤ A (DivisibleBy.div gₘ m), fun n hn ↦ ?_⟩
         rcases Submodule.mem_span_singleton.mp hn with ⟨n, rfl⟩
         rw [map_zsmul, LinearMap.toSpanSingleton_apply, DivisibleBy.div_cancel gₘ h0, ← map_zsmul g]
         rfl
@@ -93,13 +92,13 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
 
 instance injective_ratCircle : CategoryTheory.Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
-  @injective_of_divisible _ _ _
+  injective_of_divisible _
 
 namespace enough_injectives_aux_proofs
 
 variable (A_ : AddCommGroupCat.{u})
 
-/-- The next term of `A`'s injective resolution is `∏_{A → ℚ/ℤ}, ℚ/ℤ`.-/
+/-- The next term of `A`'s injective resolution is `∏_{A →₊ ℚ/ℤ}, ℚ/ℤ`. -/
 def next : AddCommGroupCat.{u} := of <|
   (A_ ⟶ of <| ULift.{u} <| AddCircle (1 : ℚ)) → ULift.{u} (AddCircle (1 : ℚ))
 
@@ -107,11 +106,11 @@ instance : CategoryTheory.Injective <| next A_ :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
   injective_of_divisible _
 
-/-- The map into the next term of `A`'s injective resolution is coordinate-wise evaluation.-/
+/-- The map into the next term of `A`'s injective resolution is coordinate-wise evaluation. -/
 @[simps] def toNext : A_ ⟶ next A_ where
-  toFun := fun a i => i a
+  toFun a i := i a
   map_zero' := by simp only [map_zero]; rfl
-  map_add' := by intros; simp only [map_add]; rfl
+  map_add' _ _ := by simp only [map_add]; rfl
 
 variable {A_} (a : A_)
 
@@ -121,9 +120,7 @@ lemma _root_.LinearMap.toSpanSingleton_ker :
   rw [Ideal.mem_span_singleton, addOrderOf_dvd_iff_zsmul_eq_zero]
   rfl
 
-/--
-ℤ ⧸ ⟨ord(a)⟩ ≃ aℤ
--/
+/-- `ℤ ⧸ ⟨ord(a)⟩ ≃ aℤ` -/
 @[simps!] noncomputable def equivZModSpanAddOrderOf :
     (ℤ ∙ a) ≃ₗ[ℤ] ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} :=
   (LinearEquiv.ofEq _ _ <| LinearMap.span_singleton_eq_range ℤ A_ a).trans <|
@@ -136,7 +133,7 @@ lemma equivZModSpanAddOrderOf_apply_self :
 
 /-- Given `n : ℕ`, the map `m ↦ m / n`. -/
 abbrev divBy (n : ℕ) : ℤ →ₗ[ℤ] AddCircle (1 : ℚ) :=
-  LinearMap.toSpanSingleton ℤ _ (Quotient.mk _ <| (n : ℚ)⁻¹)
+  LinearMap.toSpanSingleton ℤ _ (Quotient.mk _ (n : ℚ)⁻¹)
 
 lemma divBy_self (n : ℕ) : divBy n n = 0 := by
   obtain rfl | h0 := eq_or_ne n 0
@@ -156,7 +153,7 @@ variable {a}
       · apply divBy_self
   e ∘ₗ equivZModSpanAddOrderOf a
 
-lemma toRatCircle_apply_self_ne_zero {a : A_} (ne_zero : a ≠ 0) :
+lemma toRatCircle_apply_self_ne_zero (ne_zero : a ≠ 0) :
     toRatCircle ⟨a, Submodule.mem_span_singleton_self a⟩ ≠ 0 := by
   rw [toRatCircle, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
     equivZModSpanAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
@@ -175,7 +172,7 @@ lemma toRatCircle_apply_self_ne_zero {a : A_} (ne_zero : a ≠ 0) :
 variable (A_)
 
 lemma toNext_inj : Function.Injective <| toNext A_ :=
-  (injective_iff_map_eq_zero _).2 fun a => Function.mtr fun ne_zero h0 =>
+  (injective_iff_map_eq_zero _).2 fun a ↦ Function.mtr fun ne_zero h0 ↦
     toRatCircle_apply_self_ne_zero ne_zero <| ULift.up_injective <| by
       let f : of (ℤ ∙ a) ⟶ of (ULift.{u} <| AddCircle (1 : ℚ)) :=
         AddMonoidHom.comp ⟨⟨ULift.up, rfl⟩, by intros; rfl⟩ toRatCircle.toAddMonoidHom
@@ -183,7 +180,7 @@ lemma toNext_inj : Function.Injective <| toNext A_ :=
       have hg : Mono g := (mono_iff_injective _).mpr Subtype.val_injective
       exact (FunLike.congr_fun (Injective.comp_factorThru f g) _).symm.trans (congr_fun h0 _)
 
-/-- An injective presentation of `A`: A -> ∏_{A ⟶ ℚ/ℤ}, ℚ/ℤ-/
+/-- An injective presentation of `A`: `A → ∏_{A ⟶₊ ℚ/ℤ}, ℚ/ℤ`. -/
 @[simps] def presentation : CategoryTheory.InjectivePresentation A_ where
   J := next A_
   injective := inferInstance
