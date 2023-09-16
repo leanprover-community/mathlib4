@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Category.Basic
 
 import ProofWidgets.Component.PenroseDiagram
 import ProofWidgets.Presentation.Expr
-import ProofWidgets.Component.SelectionPanel
+import ProofWidgets.Component.Panel.SelectionPanel
 
 /-! This module defines tactic/meta infrastructure for displaying commutative diagrams in the
 infoview. -/
@@ -16,8 +16,8 @@ infoview. -/
 open Lean in
 /-- If the expression is a function application of `fName` with 7 arguments, return those arguments.
 Otherwise return `none`. -/
-@[inline] def _root_.Lean.Expr.app7? (e : Expr) (fName : Name)
-    : Option (Expr × Expr × Expr × Expr × Expr × Expr × Expr) :=
+@[inline] def _root_.Lean.Expr.app7? (e : Expr) (fName : Name) :
+    Option (Expr × Expr × Expr × Expr × Expr × Expr × Expr) :=
   if e.isAppOfArity fName 7 then
     some (
       e.appFn!.appFn!.appFn!.appFn!.appFn!.appFn!.appArg!,
@@ -58,13 +58,13 @@ open scoped Jsx in
 display as labels in the diagram. -/
 def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM Html := do
   let embeds ← embeds.mapM fun (s, h) =>
-      return (s, Html.ofTHtml <InteractiveCode fmt={← Widget.ppExprTagged h} />)
-  return Html.ofTHtml
+      return (s, <InteractiveCode fmt={← Widget.ppExprTagged h} />)
+  return (
     <PenroseDiagram
       embeds={embeds}
       dsl={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.dsl"}
       sty={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.sty"}
-      sub={sub} />
+      sub={sub} />)
 
 /-! ## Commutative triangles -/
 
