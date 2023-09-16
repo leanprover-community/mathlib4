@@ -20,7 +20,7 @@ structure Word (M N : Type _) [Monoid M] [Monoid N] where
   chain'_ne_on : toList.Chain' (Sum.isLeft · ≠ Sum.isLeft ·)
 
 @[inherit_doc]
-local infix:70 " ∗ʷ " => FreeProd.Word
+local infix:70 " ∗ʷ " => Monoid.Coprod.Word
 
 namespace Word
 
@@ -31,7 +31,7 @@ attribute [simp] inl_one_nmem inr_one_nmem
 instance : One (M ∗ʷ N) := ⟨⟨[], not_mem_nil _, not_mem_nil _, chain'_nil⟩⟩
 
 lemma chain'_ne_map (w : M ∗ʷ N) : (w.1.map Sum.isLeft).Chain' (· ≠ ·) :=
-(List.chain'_map _).2 w.4
+  (List.chain'_map _).2 w.4
 
 @[simp] lemma toList_one : (1 : M ∗ʷ N).toList = [] := rfl
 @[simp] lemma mk_nil (h₁ h₂ h₃) : (mk [] h₁ h₂ h₃ : M ∗ʷ N) = 1 := rfl
@@ -41,7 +41,7 @@ lemma chain'_ne_map (w : M ∗ʷ N) : (w.1.map Sum.isLeft).Chain' (· ≠ ·) :=
   rfl
 
 @[simps] def tail (w : M ∗ʷ N) : M ∗ʷ N :=
-⟨w.toList.tail, mt mem_of_mem_tail w.2, mt mem_of_mem_tail w.3, w.4.tail⟩
+  ⟨w.toList.tail, mt mem_of_mem_tail w.2, mt mem_of_mem_tail w.3, w.4.tail⟩
 
 @[simp] lemma tail_one : (1 : M ∗ʷ N).tail = 1 := rfl
 
@@ -50,16 +50,16 @@ variable [DecidableEq M] [DecidableEq N]
 instance : DecidableEq (M ∗ʷ N) := fun _ _ => decidable_of_iff' _ (Word.ext_iff _ _)
 
 def cons' (x : M ⊕ N) (w : M ∗ʷ N) (h : (x :: w.toList).Chain' (Sum.isLeft · ≠ Sum.isLeft ·)) :
-  M ∗ʷ N :=
-if hx : x ≠ .inl 1 ∧ x ≠ .inr 1
-then ⟨x :: w.toList, mem_cons.not.2 <| not_or.2 ⟨hx.1.symm, w.2⟩,
-  mem_cons.not.2 <| not_or.2 ⟨hx.2.symm, w.3⟩, h⟩
-else w
+    M ∗ʷ N :=
+  if hx : x ≠ .inl 1 ∧ x ≠ .inr 1
+  then ⟨x :: w.toList, mem_cons.not.2 <| not_or.2 ⟨hx.1.symm, w.2⟩,
+    mem_cons.not.2 <| not_or.2 ⟨hx.2.symm, w.3⟩, h⟩
+  else w
 
 lemma mk_cons {x : M ⊕ N} {l : List (M ⊕ N)} (h₁ h₂ h₃) :
   mk (x :: l) h₁ h₂ h₃ =
     cons' x ⟨l, mt (mem_cons_of_mem _) h₁, mt (mem_cons_of_mem _) h₂, h₃.tail⟩ h₃ :=
-Eq.symm $ dif_pos ⟨Ne.symm (not_or.1 <| mem_cons.not.1 h₁).1,
+Eq.symm <| dif_pos ⟨Ne.symm (not_or.1 <| mem_cons.not.1 h₁).1,
   Ne.symm (not_or.1 <| mem_cons.not.1 h₂).1⟩
 
 @[simp] lemma cons'_inl_one {w : M ∗ʷ N} (hw) : cons' (.inl 1) w hw = w := dif_neg $ by simp
@@ -75,19 +75,18 @@ def of (x : M ⊕ N) : M ∗ʷ N := cons' x 1 (chain'_singleton _)
 def cons : M ⊕ N → M ∗ʷ N → M ∗ʷ N
 | x, ⟨[], _, _, _⟩ => of x
 | (.inl x), w@⟨.inl y :: l, hl, hr, h⟩ => cons' (.inl (x * y)) w.tail $ h.imp_head $ fun _ => id
-| (.inl x), w@⟨.inr y :: l, hl, hr, h⟩ => cons' (.inl x) w (h.cons $ by simp)
-| (.inr x), w@⟨.inl y :: l, hl, hr, h⟩ => cons' (.inr x) w (h.cons $ by simp)
-| (.inr x), w@⟨.inr y :: l, hl, hr, h⟩ => cons' (.inr (x * y)) w.tail $ h.imp_head $ fun _ => id
+| (.inl x), w@⟨.inr y :: l, hl, hr, h'⟩ => cons' (.inl x) w <| by subst w; apply h'.cons; simp
+| (.inr x), w@⟨.inl y :: l, hl, hr, h⟩ => cons' (.inr x) w <| by subst w; apply h.cons; simp
+| (.inr x), w@⟨.inr y :: l, hl, hr, h⟩ => cons' (.inr (x * y)) w.tail <| by
+  subst w; apply h.imp_head; exact id
 
 @[simp] lemma cons_one (x : M ⊕ N) : cons x 1 = of x := by cases x; refl
 
-@[simp] lemma cons_inl_one (w : M ∗ʷ N) : cons (.inl 1) w = w :=
-begin
-  rcases w with ⟨(_|⟨(x|x), l⟩), hl, hr, hc⟩,
-  { simp },
-  { simp_rw [cons, one_mul, tail, mk_cons], refl },
-  { simp_rw [cons, cons'_inl_one, eq_self_iff_true, true_and] }
-end
+@[simp] lemma cons_inl_one (w : M ∗ʷ N) : cons (.inl 1) w = w := by
+  rcases w with ⟨(_|⟨(x|x), l⟩), hl, hr, hc⟩
+  · simp
+  · simp_rw [cons, one_mul, tail, mk_cons]; rfl
+  · simp_rw [cons, cons'_inl_one, eq_self_iff_true, true_and]
 
 @[simp] lemma cons_inr_one (w : M ∗ʷ N) : cons (.inr 1) w = w :=
 begin
