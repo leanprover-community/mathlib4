@@ -72,16 +72,11 @@ namespace Beatty
 
 variable {r : ℝ} (hr : r > 1) {j k : ℤ}
 
-theorem s_gt_1 : r.conjugateExponent > 1 := by
-  apply (lt_div_iff (sub_pos.2 hr)).2
-  rw [one_mul]
-  exact sub_one_lt r
-
 /-- Let `1 < r ∈ ℝ` and `s = r / (r - 1)`. Suppose there is an integer `j` such that `j ∈ B_r` and
 `j ∈ B'_s` (i.e. a collision). Then this leads to a contradiction. -/
 theorem no_collision : ¬∃ j, j ∈ beattySet r ∧ j ∈ beattySet' r.conjugateExponent := by
   intro ⟨j, ⟨k, h₁⟩, ⟨m, h₂⟩⟩
-  have hs := s_gt_1 hr
+  have hs := Real.one_lt_conjugateExponent hr
   have ⟨h₁₁, h₁₂⟩ : j / r ≤ k ∧ k < (j + 1) / r := by
     have hr := lt_trans zero_lt_one hr
     rw [beattySequence, Int.floor_eq_iff] at h₁
@@ -109,7 +104,7 @@ theorem no_anticollision :
     ¬∃ (j k m : ℤ), k * r < j ∧ j + 1 ≤ (k + 1) * r ∧
       m * r.conjugateExponent ≤ j ∧ j + 1 < (m + 1) * r.conjugateExponent := by
   have hr₀ : r > 0 := lt_trans zero_lt_one hr
-  have hs₀ : r.conjugateExponent > 0 := lt_trans zero_lt_one (s_gt_1 hr)
+  have hs₀ : r.conjugateExponent > 0 := lt_trans zero_lt_one (Real.one_lt_conjugateExponent hr)
   have f (y : ℝ) : y / r + y / r.conjugateExponent = y := by
     have : r ≠ 0 := ne_of_gt hr₀
     field_simp [Real.conjugateExponent, mul_sub_left_distrib]
@@ -179,7 +174,7 @@ theorem rayleigh_int {r : ℝ} (hr : r > 1) :
     · exact Or.inl ⟨h₁, h₂⟩
   · by_cases h₂ : j ∈ beattySet' r.conjugateExponent
     · exact Or.inr ⟨h₁, h₂⟩
-    · have hs := Beatty.s_gt_1 hr
+    · have hs := Real.one_lt_conjugateExponent hr
       have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hr).resolve_left h₁
       have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hs).resolve_left h₂
       exact (Beatty.no_anticollision hr ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
@@ -209,7 +204,8 @@ theorem rayleigh_pos {r : ℝ} (hr : r > 1) :
     have hj := Int.ceil_pos.1 (lt_trans zero_lt_one hj)
     have := pos_of_mul_pos_left hj hs
     rwa [Int.cast_pos] at this
-  rw [hb₁ _ (lt_trans zero_lt_one hr).le, hb₂ _ (lt_trans zero_lt_one (Beatty.s_gt_1 hr)).le]
+  rw [hb₁ _ (lt_trans zero_lt_one hr).le,
+    hb₂ _ (lt_trans zero_lt_one (Real.one_lt_conjugateExponent hr)).le]
   exact rayleigh_int hr
 
 /-- A version of `rayleigh_pos` that uses `Real.IsConjugateExponent r s` as a hypothesis. -/

@@ -130,4 +130,7 @@ theorem isConjugateExponent_one_div {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (hab :
    by simp_rw [one_div_one_div]; exact hab⟩
 #align real.is_conjugate_exponent_one_div Real.isConjugateExponent_one_div
 
+theorem one_lt_conjugateExponent {p : ℝ} (h : 1 < p) : 1 < conjugateExponent p :=
+  (isConjugateExponent_conjugateExponent h).symm.one_lt
+
 end Real
