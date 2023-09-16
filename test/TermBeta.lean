@@ -1,6 +1,9 @@
 import Mathlib.Util.TermBeta
 import Std.Tactic.GuardMsgs
 
+-- On command line, tests format functions with => rather than ↦ without this.
+set_option pp.unicode.fun true
+
 /-- info: (fun x ↦ x) true : Bool -/
 #guard_msgs in #check (fun x => x) true
 
