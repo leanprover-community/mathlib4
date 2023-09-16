@@ -21,8 +21,15 @@ def weakLeanArgs : Array String :=
   else
     #[]
 
+def moreLinkArgs := #[
+  "-L./lake-packages/LeanInfer/build/lib", 
+  "-lonnxruntime", 
+  "-lstdc++"
+]
+
 package mathlib where
   moreServerArgs := moreServerArgs
+  moreLinkArgs := moreLinkArgs
 
 @[default_target]
 lean_lib Mathlib where
@@ -45,6 +52,7 @@ require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 require Cli from git "https://github.com/mhuisi/lean4-cli.git" @ "nightly"
 require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0.15"
+require LeanInfer from git "https://github.com/lean-dojo/LeanInfer.git" @ "v0.0.6"
 
 lean_lib Cache where
   moreLeanArgs := moreLeanArgs
