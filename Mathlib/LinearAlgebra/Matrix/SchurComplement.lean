@@ -451,7 +451,7 @@ theorem det_one_add_col_mul_row (u v : m → α) : det (1 + col u * row v) = 1 +
 #align matrix.det_one_add_col_mul_row Matrix.det_one_add_col_mul_row
 
 /-- The **Matrix determinant lemma** -/
-theorem the_mdl (u v : m → α) {A : Matrix m m α} (hA : IsUnit A.det):
+theorem det_add_col_mul_row {A : Matrix m m α} (hA : IsUnit A.det) (u v : m → α) :
     (A + col u * row v).det = A.det * (1 + row v * A⁻¹ * col u).det := by
   nth_rewrite 1 [← Matrix.mul_one A]
   rwa [← Matrix.mul_nonsing_inv_cancel_left A (col u * row v),
