@@ -1179,7 +1179,9 @@ def AddMonoidAlgebra :=
   G →₀ k
 #align add_monoid_algebra AddMonoidAlgebra
 
+@[inherit_doc]
 scoped[AddMonoidAlgebra] notation:9000 R:max "[" A "]" => AddMonoidAlgebra R A
+
 namespace AddMonoidAlgebra
 
 -- Porting note: The compiler couldn't derive this.
