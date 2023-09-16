@@ -658,6 +658,13 @@ theorem marginal_insert [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf 
   rw [Finset.insert_eq, marginal_union μ f hf (Finset.disjoint_singleton_left.mpr hi),
     marginal_singleton]
 
+/-- Peel off a single integral from a `marginal` integral at the beginning (compare with
+`marginal_erase'`, which peels off an integral at the end). -/
+theorem marginal_erase [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
+    (hi : i ∈ s) (x : ∀ i, π i) :
+    (∫⋯∫_s, f ∂μ) x = ∫⁻ xᵢ, (∫⋯∫_(erase s i), f ∂μ) (Function.update x i xᵢ) ∂μ i := by
+  simpa [insert_erase hi] using marginal_insert _ hf (not_mem_erase i s) x
+
 -- move next to `measurable_update` in `MeasureTheory.MeasurableSpace`
 -- unused
 theorem measurable_update' {δ : Type _} [DecidableEq δ] {π : δ → Type _}
@@ -688,6 +695,13 @@ theorem marginal_insert' [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf
     ∫⋯∫_insert i s, f ∂μ = ∫⋯∫_s, (fun x ↦ ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ∂μ := by
   rw [Finset.insert_eq, Finset.union_comm,
     marginal_union (s := s) μ f hf (Finset.disjoint_singleton_right.mpr hi), marginal_singleton]
+
+/-- Peel off a single integral from a `marginal` integral at the end (compare with
+`marginal_erase`, which peels off an integral at the beginning). -/
+theorem marginal_erase' [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
+    (hi : i ∈ s) :
+    ∫⋯∫_s, f ∂μ = ∫⋯∫_(erase s i), (fun x ↦ ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ∂μ := by
+  simpa [insert_erase hi] using marginal_insert' _ hf (not_mem_erase i s)
 
 open Filter
 
