@@ -325,48 +325,49 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
 variable [NumberField K]
 
 /-- The fudge factor that appears in the formula for the volume of `convex_body_lt`. -/
-noncomputable def constant_factor : ℝ≥0∞ :=
+noncomputable abbrev constant_factor_lt : ℝ≥0∞ :=
   (2 : ℝ≥0∞) ^ card {w : InfinitePlace K // IsReal w} *
     volume (ball (0 : ℂ) 1) ^ card {w : InfinitePlace K // IsComplex w}
 
-theorem constant_factor_pos : 0 < (constant_factor K) := by
+theorem constant_factor_lt_pos : 0 < (constant_factor_lt K) := by
   refine mul_pos (NeZero.ne _) ?_
   exact ENNReal.pow_ne_zero (ne_of_gt (measure_ball_pos _ _ (by norm_num))) _
 
-theorem constant_factor_lt_top : (constant_factor K) < ⊤ := by
+theorem constant_factor_lt_lt_top : (constant_factor_lt K) < ⊤ := by
   refine mul_lt_top ?_ ?_
   · exact ne_of_lt (pow_lt_top (lt_top_iff_ne_top.mpr two_ne_top) _)
   · exact ne_of_lt (pow_lt_top measure_ball_lt_top _)
 
-set_option maxHeartbeats 400000 in
 /-- The volume of `(convex_body_lt K f)` where `convex_body_lt K f` is the set of points `x`
 such that `‖x w‖ < f w` for all infinite places `w`. -/
-theorem convex_body_volume :
-    volume (convex_body_lt K f) = (constant_factor K) * ∏ w, (f w) ^ (mult w) := by
-  rw [volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi]
-  conv_lhs =>
-    congr; congr; next => skip
-    ext
-    rw [Real.volume_ball, ofReal_mul (by norm_num), ofReal_coe_nnreal, mul_comm]
-  conv_lhs =>
-    congr; next => skip
-    congr; next => skip
-    ext i
-    rw [addHaar_ball _ _ (by exact (f i).prop), Complex.finrank_real_complex, ← NNReal.coe_pow,
-      ofReal_coe_nnreal, mul_comm]
-  rw [Finset.prod_mul_distrib, Finset.prod_mul_distrib, Finset.prod_const, Finset.prod_const,
-    Finset.card_univ, Finset.card_univ, mul_assoc, mul_comm, ← mul_assoc, mul_assoc, ofReal_ofNat,
-    ← constant_factor]
-  simp_rw [mult, pow_ite, pow_one]
-  rw [Finset.prod_ite]
-  simp_rw [coe_mul, coe_finset_prod]
-  simp_rw [show (fun w : InfinitePlace K ↦ ¬IsReal w) = (fun w ↦ IsComplex w)
-    by funext; rw [not_isReal_iff_isComplex]]
-  congr 1; rw [mul_comm]; congr 1
-  all_goals
-  · rw [← Finset.prod_subtype_eq_prod_filter]
-    congr; ext
-    exact ⟨fun _ =>  Finset.mem_subtype.mpr (Finset.mem_univ _), fun _ => Finset.mem_univ _⟩
+theorem convex_body_lt_volume :
+    volume (convex_body_lt K f) = (constant_factor_lt K) * ∏ w, (f w) ^ (mult w) := by
+  calc
+    _ = (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (2 * (f x.val))) *
+          ∏ x : {w // InfinitePlace.IsComplex w}, volume (ball (0 : ℂ) 1) *
+            ENNReal.ofReal (f x.val) ^ 2 := by
+      simp_rw [volume_eq_prod, prod_prod, volume_pi, pi_pi, Real.volume_ball]
+      conv_lhs =>
+        congr; next => skip
+        congr; next => skip
+        ext i; rw [addHaar_ball _ _ (by exact (f i).prop), Complex.finrank_real_complex, mul_comm,
+          ENNReal.ofReal_pow (by exact (f i).prop)]
+    _ = (↑2 ^ card {w : InfinitePlace K // InfinitePlace.IsReal w} *
+          (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))) *
+          (volume (ball (0 : ℂ) 1) ^ card {w : InfinitePlace K // IsComplex w} *
+          (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2)) := by
+      simp_rw [ofReal_mul (by norm_num : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
+        Finset.card_univ, ofReal_ofNat]
+    _ = (constant_factor_lt K) * ((∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val)) *
+        (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2)) := by ring
+    _ = (constant_factor_lt K) * ∏ w, (f w) ^ (mult w) := by
+      simp_rw [mult, pow_ite, pow_one, Finset.prod_ite, ofReal_coe_nnreal, not_isReal_iff_isComplex,
+        coe_mul, coe_finset_prod, ENNReal.coe_pow]
+      congr 2
+      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞))).symm
+        exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
+      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞) ^ 2)).symm
+        exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
 
 variable {f}
 

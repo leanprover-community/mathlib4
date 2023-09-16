@@ -216,8 +216,8 @@ theorem inverse_continuousAt (x : Rˣ) : ContinuousAt inverse (x : R) := by
     (inverse_add_norm_diff_first_order x).trans_isLittleO (isLittleO_id_const one_ne_zero).norm_left
   have h_lim : Tendsto (fun y : R => y - x) (𝓝 x) (𝓝 0) := by
     refine' tendsto_zero_iff_norm_tendsto_zero.mpr _
-    exact tendsto_iff_norm_tendsto_zero.mp tendsto_id
-  rw [ContinuousAt, tendsto_iff_norm_tendsto_zero, inverse_unit]
+    exact tendsto_iff_norm_sub_tendsto_zero.mp tendsto_id
+  rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero, inverse_unit]
   simpa [(· ∘ ·)] using h_is_o.norm_left.tendsto_div_nhds_zero.comp h_lim
 #align normed_ring.inverse_continuous_at NormedRing.inverse_continuousAt
 
