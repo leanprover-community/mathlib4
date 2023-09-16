@@ -101,10 +101,13 @@ variable (C)
 
 namespace TriangleOpEquivalence
 
+-- note that there are no signs in the definition of `functor`, but it is still
+-- consistent with Verdier p. 96
+
 @[simps]
 noncomputable def functor : (Triangle C)ᵒᵖ ⥤ Triangle (PretriangulatedOpposite C) where
   obj T := Triangle.mk (homMk T.unop.mor₂) (homMk T.unop.mor₁)
-      (-((opFunctorShiftCancelIso C 1).app (Opposite.op T.unop.obj₁)).inv ≫
+      (((opFunctorShiftCancelIso C 1).app (Opposite.op T.unop.obj₁)).inv ≫
         (shiftFunctor (PretriangulatedOpposite C) (1 : ℤ)).map ((homMk T.unop.mor₃)))
   map {T₁ T₂} φ :=
     { hom₁ := homMk φ.unop.hom₃
@@ -114,19 +117,19 @@ noncomputable def functor : (Triangle C)ᵒᵖ ⥤ Triangle (PretriangulatedOppo
       comm₂ := Opposite.unop_injective (φ.unop.comm₁.symm)
       comm₃ := (by
         dsimp [homMk]
-        simp only [neg_comp, Category.assoc, comp_neg]
+        simp only [Category.assoc]
         rw [← Functor.map_comp]
         erw [← @op_comp _ _ _ _ _ φ.unop.hom₃ T₁.unop.mor₃]
         erw [(opFunctorShiftCancelIso C 1).inv.naturality_assoc φ.unop.hom₁.op]
         dsimp
         rw [← Functor.map_comp]
-        congr 3
+        congr 2
         exact Opposite.unop_injective (φ.unop.comm₃.symm)) }
 
 @[simps]
 noncomputable def inverse : Triangle (PretriangulatedOpposite C) ⥤ (Triangle C)ᵒᵖ where
   obj T := Opposite.op
-    (Triangle.mk T.mor₂.unop T.mor₁.unop (-((opInverseShiftCancelIso C 1).hom.app T.obj₁).unop ≫ T.mor₃.unop⟦(1 : ℤ)⟧'))
+    (Triangle.mk T.mor₂.unop T.mor₁.unop (((opInverseShiftCancelIso C 1).hom.app T.obj₁).unop ≫ T.mor₃.unop⟦(1 : ℤ)⟧'))
   map {T₁ T₂} φ := Quiver.Hom.op
     { hom₁ := φ.hom₃.unop
       hom₂ := φ.hom₂.unop
@@ -135,7 +138,7 @@ noncomputable def inverse : Triangle (PretriangulatedOpposite C) ⥤ (Triangle C
       comm₂ := Opposite.op_injective φ.comm₁.symm
       comm₃ := by
         dsimp
-        simp only [neg_comp, assoc, comp_neg, neg_inj, ← Functor.map_comp, ← unop_comp]
+        simp only [assoc, ← Functor.map_comp, ← unop_comp]
         rw [← φ.comm₃, unop_comp, Functor.map_comp, ← assoc, ← assoc]
         congr 1
         apply Opposite.op_injective
@@ -149,9 +152,6 @@ noncomputable def unitIso : 𝟭 _ ≅ functor C ⋙ inverse C :=
     · aesop_cat
     · dsimp
       simp only [Functor.map_id, Category.comp_id, Category.id_comp]
-      erw [Functor.map_neg]
-      rw [comp_neg, neg_neg]
-      dsimp [opEquiv]
       erw [Functor.map_comp]
       erw [← (NatIso.unop (opInverseShiftCancelIso C 1)).hom.naturality_assoc T.unop.mor₃]
       change T.unop.mor₃ ≫ _ ≫ _ = _
@@ -176,8 +176,8 @@ noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
     · aesop_cat
     · dsimp [homMk]
       simp only [Functor.map_id, comp_id, id_comp]
-      change - (_ ≫ (shiftFunctor (PretriangulatedOpposite C) (1 : ℤ)).map (- ((T.mor₃.unop⟦(1 : ℤ)⟧').op ≫ _))) = _
-      rw [Functor.map_neg, comp_neg, neg_neg, Functor.map_comp]
+      change (_ ≫ (shiftFunctor (PretriangulatedOpposite C) (1 : ℤ)).map (((T.mor₃.unop⟦(1 : ℤ)⟧').op ≫ _))) = _
+      rw [Functor.map_comp]
       erw [← (opFunctorShiftCancelIso C 1).inv.naturality_assoc T.mor₃]
       erw [opFunctorShiftCancelIso_inv_app_comp_opInverseShiftCancelIso_hom_app, comp_id]
       rfl) (by aesop_cat)
@@ -244,11 +244,12 @@ noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnop
     Triangle.rotate ((triangleOpEquivalence C).inverse.obj (Triangle.rotate T)).unop ≅
       ((triangleOpEquivalence C).inverse.obj T).unop := by
   refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-      ((opInverseShiftCancelIso C 1).symm.app T.obj₁).unop _ _ _
+      (mulIso (-1) ((opInverseShiftCancelIso C 1).symm.app T.obj₁).unop) _ _ _
   · dsimp
     simp
   · dsimp
-    rw [neg_comp, id_comp]
+    rw [neg_smul, one_smul, comp_neg]
+    rw [id_comp]
     erw [Functor.map_neg]
     dsimp
     rw [comp_neg, neg_comp, neg_neg]
@@ -258,8 +259,9 @@ noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnop
     dsimp
     rw [Iso.inv_hom_id_app_assoc]
   · dsimp
-    simp only [Functor.map_id, comp_id, comp_neg, neg_inj, ← assoc, ← unop_comp,
-      Iso.hom_inv_id_app, Functor.comp_obj, Functor.op_obj, unop_id, Opposite.unop_op, id_comp]
+    simp only [Functor.map_id, comp_id, neg_smul, one_smul, neg_comp, neg_inj,
+       ← assoc, ← unop_comp, Iso.hom_inv_id_app, Functor.comp_obj, unop_id,
+       Opposite.unop_op, Functor.op_obj, id_comp]
 
 lemma rotate_distinguished_triangle (T : Triangle (PretriangulatedOpposite C)) :
     T ∈ distinguishedTriangles C ↔ T.rotate ∈ distinguishedTriangles C := by
@@ -272,18 +274,17 @@ lemma distinguished_cocone_triangle {X Y : PretriangulatedOpposite C} (f : X ⟶
       Triangle.mk f g h ∈ distinguishedTriangles C := by
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle₁ f.unop
   simp only [mem_distinguishedOp_iff]
-  refine' ⟨_, g.op, -(opFunctorShiftCancelIso C 1).inv.app (Opposite.op Z) ≫
+  refine' ⟨_, g.op, (opFunctorShiftCancelIso C 1).inv.app (Opposite.op Z) ≫
     (shiftFunctor (PretriangulatedOpposite C) (1 : ℤ)).map h.op, _⟩
   dsimp
   convert H using 2
-  rw [unop_neg, Functor.map_neg, comp_neg, neg_neg, unop_comp, Functor.map_comp]
+  rw [unop_comp, Functor.map_comp]
   apply Quiver.Hom.op_inj
   simp only [op_comp]
   rw [← cancel_mono ((opInverseShiftCancelIso C 1).inv.app X) ]
   simp only [Opposite.op_unop, Quiver.Hom.op_unop, assoc]
   dsimp
-  erw [Iso.hom_inv_id_app, comp_id]
-  erw [(opInverseShiftCancelIso C 1).inv.naturality h.op]
+  erw [Iso.hom_inv_id_app, comp_id, (opInverseShiftCancelIso C 1).inv.naturality h.op]
   rw [opFunctorShiftCancelIso_inv_app_op_unop_shift_op]
   rfl
 
