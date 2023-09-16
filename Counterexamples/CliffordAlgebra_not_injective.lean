@@ -36,8 +36,7 @@ theorem Ideal.comap_span_le {R : Type*} {S : Type*} [Semiring R] [Semiring S] (f
     Ideal.comap f (Ideal.span s) ≤ Ideal.span (g '' s) := by
   rintro x (hx : f x ∈ Ideal.span s)
   have := Ideal.apply_coe_mem_map g _ ⟨_, hx⟩
-  rw [Ideal.map_span, Subtype.coe_mk, h x] at this
-  exact this
+  rwa [Ideal.map_span, Subtype.coe_mk, h x] at this
 
 /-- `CharP.quotient'` as an `Iff`. -/
 theorem CharP.quotient_iff' (R : Type*) [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
@@ -266,8 +265,8 @@ theorem gen_mul_gen (i) : gen i * gen i = 1 := by
 /-- By virtue of the quotient, terms of this form are zero -/
 theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
   dsimp only [gen]
-  simp only [← (LinearMap.map_smul), ← (LinearMap.map_sub), ← Submodule.Quotient.mk_smul, ←
-    Submodule.Quotient.mk_sub]
+  simp_rw [← (LinearMap.map_smul), ← (LinearMap.map_sub), ← Submodule.Quotient.mk_smul _ (_ : K),
+    ← Submodule.Quotient.mk_sub]
   convert LinearMap.map_zero _ using 2
   rw [Submodule.Quotient.mk_eq_zero]
   norm_num [sub_zero, Ideal.span, Pi.single_apply]
@@ -305,7 +304,8 @@ theorem CliffordAlgebra.not_forall_algebraMap_injective.{v} :
   fun h => algebraMap_not_injective fun x y hxy => by
     let uU := ULift.moduleEquiv (R := K) (M := L)
     let uQ := Q.comp uU.toLinearMap
+    let f : Q →qᵢ uQ := { uU.symm with map_app' := fun _ => rfl }
     refine h K (ULift L) (Q.comp uU.toLinearMap) ?_
-    let uC := CliffordAlgebra.map Q uQ uU.symm.toLinearMap fun _ => rfl
+    let uC := CliffordAlgebra.map f
     have := uC.congr_arg hxy
     rwa [AlgHom.commutes, AlgHom.commutes] at this
