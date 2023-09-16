@@ -23,7 +23,7 @@ and the actions
 
 which matches the action of `Set.mulActionSet`.
 
-These are all available in the `pointwise` locale.
+These are all available in the `Pointwise` locale.
 
 Additionally, it provides various degrees of monoid structure:
 * `AddSubmonoid.one`
@@ -609,7 +609,6 @@ variable [NonUnitalNonAssocRing R]
 This is available as an instance in the `Pointwise` locale. -/
 protected def hasDistribNeg : HasDistribNeg (AddSubmonoid R) :=
   { AddSubmonoid.involutiveNeg with
-    neg := Neg.neg
     neg_mul := fun x y => by
       refine'
           le_antisymm (mul_le.2 fun m hm n hn => _)
@@ -671,9 +670,7 @@ variable [Semiring R]
 
 /-- Monoid structure on additive submonoids of a semiring. -/
 protected def monoid : Monoid (AddSubmonoid R) :=
-  { AddSubmonoid.semigroup, AddSubmonoid.mulOneClass with
-    one := 1
-    mul := (· * ·) }
+  { AddSubmonoid.semigroup, AddSubmonoid.mulOneClass with }
 scoped[Pointwise] attribute [instance] AddSubmonoid.monoid
 
 theorem closure_pow (s : Set R) : ∀ n : ℕ, closure s ^ n = closure (s ^ n)

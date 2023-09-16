@@ -105,7 +105,7 @@ We assume `CovariantClass` with *strict* inequality `<` also when proving the on
 *weak* inequality `≤`.  This is actually necessary: addition on `Lex (α →₀ N)` may fail to be
 monotone, when it is "just" monotone on `N`.
 
-See `counterexamples.zero_divisors_in_add_monoid_algebras` for a counterexample. -/
+See `Counterexamples/ZeroDivisorsInAddMonoidAlgebras.lean` for a counterexample. -/
 
 
 section Left
@@ -119,7 +119,7 @@ instance Lex.covariantClass_lt_left :
 
 instance Lex.covariantClass_le_left :
     CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (· + ·) (· ≤ ·) :=
-  Add.to_covariantClass_left _
+  covariantClass_le_of_lt _ _ _
 #align finsupp.lex.covariant_class_le_left Finsupp.Lex.covariantClass_le_left
 
 end Left
@@ -136,11 +136,40 @@ instance Lex.covariantClass_lt_right :
 
 instance Lex.covariantClass_le_right :
     CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap (· + ·)) (· ≤ ·) :=
-  Add.to_covariantClass_right _
+  covariantClass_le_of_lt _ _ _
 #align finsupp.lex.covariant_class_le_right Finsupp.Lex.covariantClass_le_right
 
 end Right
 
 end Covariants
+
+section OrderedAddMonoid
+
+variable [LinearOrder α]
+
+instance Lex.orderBot [CanonicallyOrderedAddMonoid N] : OrderBot (Lex (α →₀ N)) where
+  bot := 0
+  bot_le _ := Finsupp.toLex_monotone bot_le
+
+noncomputable instance Lex.orderedAddCancelCommMonoid [OrderedCancelAddCommMonoid N] :
+    OrderedCancelAddCommMonoid (Lex (α →₀ N)) where
+  add_le_add_left _ _ h _ := add_le_add_left (α := Lex (α → N)) h _
+  le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (α → N))
+
+noncomputable instance Lex.orderedAddCommGroup [OrderedAddCommGroup N] :
+    OrderedAddCommGroup (Lex (α →₀ N)) where
+  add_le_add_left _ _ := add_le_add_left
+
+noncomputable instance Lex.linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid N] :
+    LinearOrderedCancelAddCommMonoid (Lex (α →₀ N)) where
+  __ := (inferInstance : LinearOrder (Lex (α →₀ N)))
+  __ := (inferInstance: OrderedCancelAddCommMonoid (Lex (α →₀ N)))
+
+noncomputable instance Lex.linearOrderedAddCommGroup [LinearOrderedAddCommGroup N] :
+    LinearOrderedAddCommGroup (Lex (α →₀ N)) where
+  __ := (inferInstance : LinearOrder (Lex (α →₀ N)))
+  add_le_add_left _ _ := add_le_add_left
+
+end OrderedAddMonoid
 
 end Finsupp
