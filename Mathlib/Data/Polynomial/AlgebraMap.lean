@@ -510,7 +510,7 @@ end Ring
 theorem aeval_endomorphism {M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
     (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by
   rw [aeval_def, eval₂_eq_sum]
-  exact (LinearMap.applyₗ v).map_sum
+  exact map_sum (LinearMap.applyₗ v) _ _
 #align polynomial.aeval_endomorphism Polynomial.aeval_endomorphism
 
 end Polynomial
