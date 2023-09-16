@@ -311,6 +311,7 @@ import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.Algebra.Module.Submodule.Map
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.Torsion
