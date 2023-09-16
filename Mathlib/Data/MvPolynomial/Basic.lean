@@ -731,7 +731,7 @@ theorem coeff_X_mul (m) (s : σ) (p : MvPolynomial σ R) :
 #align mv_polynomial.coeff_X_mul MvPolynomial.coeff_X_mul
 
 /-- MvPolynomials over an empty type of variables are always constant -/
-lemma MvPolynomial.eq_C_of_empty {F σ} [CommSemiring F] [IsEmpty σ] (p : MvPolynomial σ F) :
+lemma eq_C_of_empty {F σ} [CommSemiring F] [IsEmpty σ] (p : MvPolynomial σ F) :
     p = C (p.coeff 0) := by
   ext m
   rw [Subsingleton.eq_zero m]
