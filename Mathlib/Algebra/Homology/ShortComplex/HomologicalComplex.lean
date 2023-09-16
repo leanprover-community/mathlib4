@@ -603,7 +603,7 @@ lemma single₀HomologyIso_eq' (X : C) :
     single₀Homology₀Iso X = (homologyDataSingle₀Obj X).right.homologyIso := by
   ext
   simp [single₀Homology₀Iso,
-    (homologyDataSingle₀Obj X).right_homologyIso_eq_left_homologyIso_trans]
+    (homologyDataSingle₀Obj X).right_homologyIso_eq_left_homologyIso_trans_iso]
 
 noncomputable def single₀Cycles₀Iso (X : C) : ((single₀ C).obj X).cycles 0 ≅ X :=
   (homologyDataSingle₀Obj X).left.cyclesIso
