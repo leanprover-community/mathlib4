@@ -28,7 +28,7 @@ dirichlet character, multiplicative character
 
 /-- The type of Dirichlet characters of level `n`. -/
 @[reducible]
-def DirichletCharacter (R : Type) [Monoid R] (n : ℕ) := (ZMod n)ˣ →* Rˣ
+def DirichletCharacter (R : Type) [CommMonoidWithZero R] (n : ℕ) := MulChar (ZMod n) R
 
 -- TODO: move to NumberTheory.LegendreSymbol.MulCharacter?!
 namespace MulChar
@@ -40,25 +40,17 @@ open MulChar
 variable {R : Type} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R n)
 
 namespace DirichletCharacter
-lemma ofUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) :
-  ofUnitHom χ a = χ ha.unit := by
-  conv_lhs => rw [← ha.unit_spec]
-  simp only [ofUnitHom_eq, MulChar.equivToUnitHom_symm_coe]
+lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) :
+  χ a = χ.toUnitHom ha.unit := by simp
 
-lemma ofUnitHom_eq_zero {a : ZMod n} (ha : ¬ IsUnit a) :
-  ofUnitHom χ a = 0 := by
-  have := map_nonunit' (ofUnitHom χ) _ ha
-  simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe] at this
-  rw [← coe_toMonoidHom, this]
-
-lemma ofUnitHom_eq_iff (ψ : DirichletCharacter R n) :
+lemma toUnitHom_eq_iff (ψ : DirichletCharacter R n) :
   χ = ψ ↔ ofUnitHom χ = ofUnitHom ψ := by simp only [ofUnitHom_eq, EmbeddingLike.apply_eq_iff_eq]
 
-lemma ofUnitHom_eval_sub (x : ZMod n) :
-  ofUnitHom χ (n - x) = ofUnitHom χ (-x) := by simp
+lemma eval_sub (x : ZMod n) :
+  χ (n - x) = χ (-x) := by simp
 
 lemma isPeriodic {m : ℕ} (hm : n ∣ m) (a : ℤ) :
-  ofUnitHom χ (a + m) = ofUnitHom χ a := by
+  χ (a + m) = χ a := by
   rw [← ZMod.nat_cast_zmod_eq_zero_iff_dvd] at hm
   simp only [hm, add_zero]
 
