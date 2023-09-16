@@ -115,12 +115,7 @@ theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 
 /-- `𝔽₂[α, β, γ] / (α², β², γ²)` -/
 def K : Type _ := _ ⧸ kIdeal
 
-instance : CommRing K := by dsimp only [K]; infer_instance
-instance : CommSemiring K := by dsimp only [K]; infer_instance
-instance : Ring K := by dsimp only [K]; infer_instance
-instance : Semiring K := by dsimp only [K]; infer_instance
-instance : AddCommGroup K := by dsimp only [K]; infer_instance
-instance : AddCommMonoid K := by dsimp only [K]; infer_instance
+instance : CommRing K := Ideal.Quotient.commRing _
 
 theorem comap_C_span_le_bot : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) ≤ ⊥ := by
   refine (Ideal.comap_span_le _ _ (constantCoeff_C _) _).trans ?_
@@ -271,7 +266,6 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
   rw [Submodule.Quotient.mk_eq_zero]
   norm_num [sub_zero, Ideal.span, Pi.single_apply]
 
-set_option maxHeartbeats 400000 in
 /-- The core of the proof - scaling `1` by `α * β * γ` gives zero -/
 theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by
   suffices α • 1 - β • (y' * x') - γ • (z' * x') = 0 by
