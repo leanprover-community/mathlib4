@@ -104,7 +104,7 @@ variable {X} {n : ℕ} {Z Z' : C} (f : MorphComponents X n Z) (g : X' ⟶ X) (h 
 def φ {Z : C} (f : MorphComponents X n Z) : X _[n + 1] ⟶ Z :=
   PInfty.f (n + 1) ≫ f.a + ∑ i : Fin (n + 1), (P i).f (n + 1) ≫ X.δ i.rev.succ ≫
     f.b (Fin.rev i)
-#align algebraic_topology.dold_kan.morph_components.φ AlgebraicTopology.DoldKan.MorphComponents.φₓ
+#align algebraic_topology.dold_kan.morph_components.φ AlgebraicTopology.DoldKan.MorphComponents.φ
 
 variable (X n)
 

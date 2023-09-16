@@ -364,15 +364,15 @@ def revPerm : Equiv.Perm (Fin n) :=
 
 theorem rev_injective : Injective (@rev n) :=
   rev_involutive.injective
-#align fin.rev_injective Fin.rev_injectiveₓ
+#align fin.rev_injective Fin.rev_injective
 
 theorem rev_surjective : Surjective (@rev n) :=
   rev_involutive.surjective
-#align fin.rev_surjective Fin.rev_surjectiveₓ
+#align fin.rev_surjective Fin.rev_surjective
 
 theorem rev_bijective : Bijective (@rev n) :=
   rev_involutive.bijective
-#align fin.rev_bijective Fin.rev_bijectiveₓ
+#align fin.rev_bijective Fin.rev_bijective
 
 #align fin.rev_inj Fin.rev_injₓ
 
@@ -400,7 +400,7 @@ def revOrderIso {n} : (Fin n)ᵒᵈ ≃o Fin n :=
 @[simp]
 theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual (rev i) :=
   rfl
-#align fin.rev_order_iso_symm_apply Fin.revOrderIso_symm_applyₓ
+#align fin.rev_order_iso_symm_apply Fin.revOrderIso_symm_apply
 
 #align fin.last Fin.last
 #align fin.coe_last Fin.val_last
@@ -808,7 +808,7 @@ see also `Equiv.finCongr`. -/
 def castIso (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨cast eq, cast eq.symm, leftInverse_cast eq, rightInverse_cast eq⟩
   map_rel_iff' := cast_le_cast eq
-#align fin.cast Fin.castIsoₓ
+#align fin.cast Fin.castIso
 
 @[simp]
 theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by simp
@@ -820,7 +820,7 @@ theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by simp
 theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : cast h (0 : Fin n) =
     by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} :=
   ext rfl
-#align fin.cast_zero Fin.cast_zeroₓ
+#align fin.cast_zero Fin.cast_zero
 
 #align fin.cast_last Fin.cast_lastₓ
 
@@ -849,7 +849,7 @@ theorem cast_eq_cast (h : n = m) : (cast h : Fin n → Fin m) = _root_.cast (h �
   subst h
   ext
   rfl
-#align fin.cast_eq_cast Fin.cast_eq_castₓ
+#align fin.cast_eq_cast Fin.cast_eq_cast
 
 theorem strictMono_castAdd (m) : StrictMono (castAdd m : Fin n → Fin (n + m)) :=
   strictMono_castLE (Nat.le_add_right n m)
@@ -876,7 +876,7 @@ def castAddEmb (m) : Fin n ↪o Fin (n + m) :=
 
 #align fin.cast_cast_add_right Fin.cast_castAdd_rightₓ
 
-#align fin.cast_add_cast_add Fin.castAdd_castAddₓ
+#align fin.cast_add_cast_add Fin.castAdd_castAdd
 
 #align fin.cast_succ_eq Fin.cast_succ_eqₓ
 
@@ -1287,7 +1287,7 @@ theorem sub_one_lt_iff {n : ℕ} {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
 
 theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
   ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_rev, Nat.succ_sub_succ_eq_sub]
-#align fin.last_sub Fin.last_subₓ
+#align fin.last_sub Fin.last_sub
 
 end AddGroup
 

@@ -109,7 +109,7 @@ def cast {i j} (h : i = j) : (⨂[R]^i) M ≃ₗ[R] (⨂[R]^j) M :=
 theorem cast_tprod {i j} (h : i = j) (a : Fin i → M) :
     cast R M h (tprod R a) = tprod R (a ∘ Fin.cast h.symm) :=
   reindex_tprod _ _
-#align tensor_power.cast_tprod TensorPower.cast_tprodₓ
+#align tensor_power.cast_tprod TensorPower.cast_tprod
 
 @[simp]
 theorem cast_refl {i} (h : i = i) : cast R M h = LinearEquiv.refl _ _ :=
@@ -148,7 +148,7 @@ theorem cast_eq_cast {i j} (h : i = j) :
   subst h
   rw [cast_refl]
   rfl
-#align tensor_power.cast_eq_cast TensorPower.cast_eq_castₓ
+#align tensor_power.cast_eq_cast TensorPower.cast_eq_cast
 
 variable (R)
 

@@ -312,13 +312,13 @@ theorem append_right_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hv 
     refine' congr_arg u (Fin.ext _)
     simp
   · exact (Fin.cast hv r).elim0'
-#align fin.append_right_nil Fin.append_right_nilₓ
+#align fin.append_right_nil Fin.append_right_nil
 
 @[simp]
 theorem append_elim0' {α : Type*} (u : Fin m → α) :
     append u Fin.elim0' = u ∘ Fin.cast (add_zero _) :=
   append_right_nil _ _ rfl
-#align fin.append_elim0' Fin.append_elim0'ₓ
+#align fin.append_elim0' Fin.append_elim0'
 
 theorem append_left_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hu : m = 0) :
     append u v = v ∘ Fin.cast (by rw [hu, zero_add]) := by
@@ -327,13 +327,13 @@ theorem append_left_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hu :
   · rw [append_right, Function.comp_apply]
     refine' congr_arg v (Fin.ext _)
     simp [hu]
-#align fin.append_left_nil Fin.append_left_nilₓ
+#align fin.append_left_nil Fin.append_left_nil
 
 @[simp]
 theorem elim0'_append {α : Type*} (v : Fin n → α) :
     append Fin.elim0' v = v ∘ Fin.cast (zero_add _) :=
   append_left_nil _ _ rfl
-#align fin.elim0'_append Fin.elim0'_appendₓ
+#align fin.elim0'_append Fin.elim0'_append
 
 theorem append_assoc {p : ℕ} {α : Type*} (a : Fin m → α) (b : Fin n → α) (c : Fin p → α) :
     append (append a b) c = append a (append b c) ∘ Fin.cast (add_assoc _ _ _) := by
@@ -348,7 +348,7 @@ theorem append_assoc {p : ℕ} {α : Type*} (a : Fin m → α) (b : Fin n → α
       simp [castAdd_natAdd]
   · rw [append_right]
     simp [← natAdd_natAdd]
-#align fin.append_assoc Fin.append_assocₓ
+#align fin.append_assoc Fin.append_assoc
 
 /-- Appending a one-tuple to the left is the same as `Fin.cons`. -/
 theorem append_left_eq_cons {α : Type*} {n : ℕ} (x₀ : Fin 1 → α) (x : Fin n → α) :
@@ -361,7 +361,7 @@ theorem append_left_eq_cons {α : Type*} {n : ℕ} (x₀ : Fin 1 → α) (x : Fi
   · intro i
     rw [Fin.append_right, Function.comp_apply, Fin.cast_natAdd, eq_comm, Fin.addNat_one]
     exact Fin.cons_succ _ _ _
-#align fin.append_left_eq_cons Fin.append_left_eq_consₓ
+#align fin.append_left_eq_cons Fin.append_left_eq_cons
 
 end Append
 
@@ -383,7 +383,7 @@ theorem repeat_apply {α : Type*} (a : Fin n → α) (i : Fin (m * n)) :
 theorem repeat_zero {α : Type*} (a : Fin n → α) :
     Fin.repeat 0 a = Fin.elim0' ∘ cast (zero_mul _) :=
   funext fun x => (cast (zero_mul _) x).elim0'
-#align fin.repeat_zero Fin.repeat_zeroₓ
+#align fin.repeat_zero Fin.repeat_zero
 
 @[simp]
 theorem repeat_one {α : Type*} (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (one_mul _) := by
@@ -392,7 +392,7 @@ theorem repeat_one {α : Type*} (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
   intro i
   simp [modNat, Nat.mod_eq_of_lt i.is_lt]
-#align fin.repeat_one Fin.repeat_oneₓ
+#align fin.repeat_one Fin.repeat_one
 
 theorem repeat_succ {α : Type*} (a : Fin n → α) (m : ℕ) :
     Fin.repeat m.succ a =
@@ -403,7 +403,7 @@ theorem repeat_succ {α : Type*} (a : Fin n → α) (m : ℕ) :
   refine' Fin.addCases (fun l => _) fun r => _
   · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
   · simp [modNat]
-#align fin.repeat_succ Fin.repeat_succₓ
+#align fin.repeat_succ Fin.repeat_succ
 
 @[simp]
 theorem repeat_add {α : Type*} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m₂) a =
@@ -414,7 +414,7 @@ theorem repeat_add {α : Type*} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repea
   refine' Fin.addCases (fun l => _) fun r => _
   · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
   · simp [modNat, Nat.add_mod]
-#align fin.repeat_add Fin.repeat_addₓ
+#align fin.repeat_add Fin.repeat_add
 
 end Repeat
 
@@ -998,13 +998,13 @@ theorem sigma_eq_of_eq_comp_cast {α : Type*} :
     dsimp only at hi
     subst hi
     simpa using h
-#align fin.sigma_eq_of_eq_comp_cast Fin.sigma_eq_of_eq_comp_castₓ
+#align fin.sigma_eq_of_eq_comp_cast Fin.sigma_eq_of_eq_comp_cast
 
 /-- `Fin.sigma_eq_of_eq_comp_cast` as an `iff`. -/
 theorem sigma_eq_iff_eq_comp_cast {α : Type*} {a b : Σii, Fin ii → α} :
     a = b ↔ ∃ h : a.fst = b.fst, a.snd = b.snd ∘ Fin.cast h :=
   ⟨fun h ↦ h ▸ ⟨rfl, funext <| Fin.rec fun _ _ ↦ rfl⟩, fun ⟨_, h'⟩ ↦
     sigma_eq_of_eq_comp_cast _ h'⟩
-#align fin.sigma_eq_iff_eq_comp_cast Fin.sigma_eq_iff_eq_comp_castₓ
+#align fin.sigma_eq_iff_eq_comp_cast Fin.sigma_eq_iff_eq_comp_cast
 
 end Fin

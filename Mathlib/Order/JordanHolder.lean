@@ -210,7 +210,7 @@ theorem ext_fun {s₁ s₂ : CompositionSeries X} (hl : s₁.length = s₂.lengt
   dsimp at hl h
   subst hl
   simpa [Function.funext_iff] using h
-#align composition_series.ext_fun CompositionSeries.ext_funₓ
+#align composition_series.ext_fun CompositionSeries.ext_fun
 
 @[simp]
 theorem length_toList (s : CompositionSeries X) : s.toList.length = s.length + 1 := by
