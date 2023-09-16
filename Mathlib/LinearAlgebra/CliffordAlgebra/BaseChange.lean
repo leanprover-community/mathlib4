@@ -23,7 +23,7 @@ This covers a more general case of §2.2 of the complexification of clifford alg
 in https://empg.maths.ed.ac.uk/Activities/Spin/Lecture2.pdf), where ℂ and ℝ are replaced by an
 `R`-algebra `A`.
 
-We show:
+We show the additional results:
 
 * `CliffordAlgebra.toBasechange_ι`: the effect of base-changing pure vectors.
 * `CliffordAlgebra.ofBasechange_tmul_ι`: the effect of un-base-changing a tensor of a pure vectors.
@@ -44,7 +44,7 @@ namespace CliffordAlgebra
 variable (A)
 
 /-- Auxiliary construction: note this is really just a heterobasic `CliffordAlgebra.map`. -/
-noncomputable def ofBaseChangeAux (Q : QuadraticForm R V) :
+def ofBaseChangeAux (Q : QuadraticForm R V) :
     CliffordAlgebra Q →ₐ[R] CliffordAlgebra (Q.baseChange A) :=
   CliffordAlgebra.lift Q <| by
     refine ⟨(ι (Q.baseChange A)).restrictScalars R ∘ₗ TensorProduct.mk R A V 1, fun v => ?_⟩
@@ -58,7 +58,7 @@ noncomputable def ofBaseChangeAux (Q : QuadraticForm R V) :
 
 /-- Convert from the base-changed clifford algebra to the clifford algebra over a base-changed
 module. -/
-noncomputable def ofBaseChange (Q : QuadraticForm R V) :
+def ofBaseChange (Q : QuadraticForm R V) :
     A ⊗[R] CliffordAlgebra Q →ₐ[A] CliffordAlgebra (Q.baseChange A) :=
   Algebra.TensorProduct.algHomOfLinearMapTensorProduct
     (TensorProduct.AlgebraTensorModule.lift <|
@@ -87,28 +87,27 @@ noncomputable def ofBaseChange (Q : QuadraticForm R V) :
   show z • ofBaseChangeAux A Q 1 = _
   rw [map_one, ←Algebra.algebraMap_eq_smul_one]
 
-set_option maxHeartbeats 400000 in
 /-- Convert from the clifford algebra over a base-changed module to the base-changed clifford
 algebra. -/
-noncomputable def toBaseChange (Q : QuadraticForm R V) :
+def toBaseChange (Q : QuadraticForm R V) :
     CliffordAlgebra (Q.baseChange A) →ₐ[A] A ⊗[R] CliffordAlgebra Q :=
   CliffordAlgebra.lift _ <| by
-    let φ := TensorProduct.AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) (ι Q)
-    refine ⟨φ, ?_⟩
+    refine ⟨TensorProduct.AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) (ι Q), ?_⟩
     letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
     letI : Invertible (2 : A ⊗[R] CliffordAlgebra Q) :=
-       (Invertible.map (algebraMap R _) 2).copy 2 (map_ofNat _ _).symm
-    rw [CliffordAlgebra.forall_mul_self_eq_iff (isUnit_of_invertible _)]
-    letI : IsScalarTower R A (A ⊗[R] V →ₗ[A] A ⊗[R] CliffordAlgebra Q) :=
-      LinearMap.instIsScalarTowerLinearMapInstSMulLinearMapInstSMulLinearMap
-    refine TensorProduct.AlgebraTensorModule.curry_injective ?_
-    ext v w
-    change (1 * 1) ⊗ₜ[R] (ι Q v * ι Q w) + (1 * 1) ⊗ₜ[R] (ι Q w * ι Q v) =
-      QuadraticForm.polarBilin (Q.baseChange A) (1 ⊗ₜ[R] v) (1 ⊗ₜ[R] w) ⊗ₜ[R] 1
+      (Invertible.map (algebraMap R _) 2).copy 2 (map_ofNat _ _).symm
+    suffices hpure_tensor : ∀ v w, (1 * 1) ⊗ₜ[R] (ι Q v * ι Q w) + (1 * 1) ⊗ₜ[R] (ι Q w * ι Q v) =
+        QuadraticForm.polarBilin (Q.baseChange A) (1 ⊗ₜ[R] v) (1 ⊗ₜ[R] w) ⊗ₜ[R] 1 by
+      -- the crux is that by converting to a statement about linear maps instead of quadratic forms,
+      -- we then have access to all the partially-applied `ext` lemmas.
+      rw [CliffordAlgebra.forall_mul_self_eq_iff (isUnit_of_invertible _)]
+      refine TensorProduct.AlgebraTensorModule.curry_injective ?_
+      ext v w
+      exact hpure_tensor v w
+    intros v w
     rw [← TensorProduct.tmul_add, CliffordAlgebra.ι_mul_ι_add_swap,
       QuadraticForm.polarBilin_baseChange, BilinForm.baseChange_tmul, one_mul,
-      TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one]
-    rfl
+      TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one, QuadraticForm.polarBilin_apply]
 
 @[simp] theorem toBaseChange_ι (Q : QuadraticForm R V) (z : A) (v : V) :
     toBaseChange A Q (ι (Q.baseChange A) (z ⊗ₜ v)) = z ⊗ₜ ι Q v :=
@@ -194,7 +193,7 @@ base-changing the clifford algebra itself; <|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R C�
 
 This is `CliffordAlgebra.toBaseChange` and `CliffordAlgebra.ofBaseChange` as an equivalence. -/
 @[simps!]
-noncomputable def equivBaseChange (Q : QuadraticForm R V) :
+def equivBaseChange (Q : QuadraticForm R V) :
     CliffordAlgebra (Q.baseChange A) ≃ₐ[A] A ⊗[R] CliffordAlgebra Q :=
   AlgEquiv.ofAlgHom (toBaseChange A Q) (ofBaseChange A Q)
     (toBaseChange_comp_ofBaseChange A Q)
