@@ -318,7 +318,7 @@ theorem leadingCoeff_zero : (0 : AddMonoidAlgebra R A).leadingCoeff D = 0 := rfl
 theorem ne_zero_of_supDegree_ne_bot : p.supDegree D ≠ ⊥ → p ≠ 0 := mt (fun h => h ▸ supDegree_zero)
 
 theorem ne_zero_of_not_supDegree_le {b : B} (h : ¬ p.supDegree D ≤ b) : p ≠ 0 :=
-ne_zero_of_supDegree_ne_bot (fun he => h <| he ▸ bot_le)
+  ne_zero_of_supDegree_ne_bot (fun he => h <| he ▸ bot_le)
 
 lemma Monic.ne_zero [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := fun h => by
   simp_rw [Monic, h, leadingCoeff_zero, zero_ne_one] at hp
@@ -328,7 +328,7 @@ theorem monic_one (hD : D.Injective) : (1 : AddMonoidAlgebra R A).Monic D := by
 
 theorem supDegree_eq_of_isMaxOn {a : A} (hmem : a ∈ p.support)
     (hmax : IsMaxOn D p.support a) : p.supDegree D = D a :=
-(Finset.sup_le hmax).antisymm (Finset.le_sup hmem)
+  (Finset.sup_le hmax).antisymm (Finset.le_sup hmem)
 
 theorem supDegree_eq_of_max {b : B} (hb : b ∈ Set.range D) (hmem : D.invFun b ∈ p.support)
     (hmax : ∀ a ∈ p.support, D a ≤ b) : p.supDegree D = b := by
@@ -425,8 +425,7 @@ lemma supDegree_leadingCoeff_sum_eq :
   rw [← s.add_sum_erase _ hi]
   by_cases hs : s.erase i = ∅
   · rw [hs, Finset.sum_empty, add_zero]; exact ⟨rfl, rfl⟩
-  suffices : _
-  exact ⟨supDegree_add_eq this, leadingCoeff_add_eq this⟩
+  suffices _ from ⟨supDegree_add_eq this, leadingCoeff_add_eq this⟩
   refine supDegree_sum_lt ?_ (fun j hj => ?_)
   · rw [Finset.nonempty_iff_ne_empty]; exact hs
   · rw [Finset.mem_erase] at hj; exact hmax j hj.2 hj.1
