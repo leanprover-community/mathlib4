@@ -191,7 +191,7 @@ lemma padicValRat_ge_neg_Nat_log {p n : ℕ}[hp : Fact (Nat.Prime p)]: ∀ q, q 
   apply padicValNat.le_nat_log_gen Hq
 }
 
-lemma nat_log_not_dvd {n : ℕ} : ∀ i, 0 < i ∧ i ≠ 2^(Nat.log 2 n) ∧ i < n → ¬ 2^(Nat.log 2 n) ∣ i := by {
+lemma nat_log_not_dvd {n : ℕ} : ∀ i, 0 < i ∧ i ≠ 2^(Nat.log 2 n) ∧ i ≤ n → ¬ 2^(Nat.log 2 n) ∣ i := by {
   rintro i ⟨Hi₁,Hi₂,Hi₃⟩
   simp only [Nat.instDvdNat]
   push_neg
@@ -228,11 +228,14 @@ lemma nat_log_not_dvd {n : ℕ} : ∀ i, 0 < i ∧ i ≠ 2^(Nat.log 2 n) ∧ i <
   }
 
 
-lemma padicValRat_ge_neg_Nat_log' {n : ℕ}: ∀ q, q ≤ n → q ≠ Nat.log 2 n → padicValRat 2 (1 / q) ≠ -Nat.log 2 n := by {
-  intros q Hq₁ Hq₂
+lemma padicValRat_ge_neg_Nat_log' {n : ℕ}: ∀ q, 0 < q ∧ q ≤ n → q ≠ 2^Nat.log 2 n → padicValRat 2 (1 / q) ≠ -Nat.log 2 n := by {
+  rintro q ⟨Hq₁,Hq₂⟩ Hq₃
   rw [one_div,padicValRat.inv,padicValRat.of_nat]
   simp only [ne_eq, neg_inj, Nat.cast_inj]
-  sorry
+  intro Hnot
+  have := pow_padicValNat_dvd (p := 2) (n := q)
+  rw [Hnot] at this
+  exact nat_log_not_dvd (n := n) q ⟨Hq₁,Hq₃,Hq₂⟩ this
 }
 
 theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
