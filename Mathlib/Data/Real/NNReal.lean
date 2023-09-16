@@ -484,13 +484,22 @@ theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' 
 #align nnreal.bdd_below_coe NNReal.bddBelow_coe
 
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
-  Nonneg.conditionallyCompleteLinearOrderBot Real.sSup_empty.le
+  Nonneg.conditionallyCompleteLinearOrderBot 0
 
 @[norm_cast]
-theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥0 → ℝ) '' s) :=
-  Eq.symm <|
-    @subset_sSup_of_within ℝ (Set.Ici 0) _ ⟨(0 : ℝ≥0)⟩ s <|
-      Real.sSup_nonneg _ fun _y ⟨x, _, hy⟩ => hy ▸ x.2
+theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥0 → ℝ) '' s) := by
+  rcases Set.eq_empty_or_nonempty s with rfl|hs
+  · simp
+  by_cases H : BddAbove s
+  · have A : sSup (Subtype.val '' s) ∈ Set.Ici 0 := by
+      apply Real.sSup_nonneg
+      rintro - ⟨y, -, rfl⟩
+      exact y.2
+    exact (@subset_sSup_of_within ℝ (Set.Ici (0 : ℝ)) _ _ (_) s hs H A).symm
+  · simp only [csSup_of_not_bddAbove H, csSup_empty, bot_eq_zero', NNReal.coe_zero]
+    apply (Real.sSup_of_not_bddAbove ?_).symm
+    contrapose! H
+    exact bddAbove_coe.1 H
 #align nnreal.coe_Sup NNReal.coe_sSup
 
 @[simp, norm_cast] -- porting note: add `simp`
@@ -499,10 +508,15 @@ theorem coe_iSup {ι : Sort*} (s : ι → ℝ≥0) : (↑(⨆ i, s i) : ℝ) = �
 #align nnreal.coe_supr NNReal.coe_iSup
 
 @[norm_cast]
-theorem coe_sInf (s : Set ℝ≥0) : (↑(sInf s) : ℝ) = sInf (((↑) : ℝ≥0 → ℝ) '' s) :=
-  Eq.symm <|
-    @subset_sInf_of_within ℝ (Set.Ici 0) _ ⟨(0 : ℝ≥0)⟩ s <|
-      Real.sInf_nonneg _ fun _y ⟨x, _, hy⟩ => hy ▸ x.2
+theorem coe_sInf (s : Set ℝ≥0) : (↑(sInf s) : ℝ) = sInf (((↑) : ℝ≥0 → ℝ) '' s) := by
+  rcases Set.eq_empty_or_nonempty s with rfl|hs
+  · simp only [Set.image_empty, Real.sInf_empty, NNReal.coe_eq_zero]
+    exact @subset_sInf_emptyset ℝ (Set.Ici (0 : ℝ)) _ _ (_)
+  have A : sInf (Subtype.val '' s) ∈ Set.Ici 0 := by
+    apply Real.sInf_nonneg
+    rintro - ⟨y, -, rfl⟩
+    exact y.2
+  exact (@subset_sInf_of_within ℝ (Set.Ici (0 : ℝ)) _ _ (_) s hs (OrderBot.bddBelow s) A).symm
 #align nnreal.coe_Inf NNReal.coe_sInf
 
 @[simp]

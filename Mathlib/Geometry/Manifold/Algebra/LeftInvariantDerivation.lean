@@ -139,7 +139,6 @@ instance : Add (LeftInvariantDerivation I G) where
     ⟨X + Y, fun g => by
       simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
 
-set_option maxHeartbeats 400000 in
 instance : Neg (LeftInvariantDerivation I G) where
   neg X := ⟨-X, fun g => by
     -- porting note: was simp [left_invariant']
@@ -147,7 +146,7 @@ instance : Neg (LeftInvariantDerivation I G) where
     rw [map_neg (Derivation.evalAt (𝕜 := 𝕜) (1 : G)), map_neg (𝒅ₕ (smoothLeftMul_one I g)),
       left_invariant', map_neg (Derivation.evalAt (𝕜 := 𝕜) g)]⟩
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 300000 in
 instance : Sub (LeftInvariantDerivation I G) where
   sub X Y := ⟨X - Y, fun g => by
     -- porting note: was simp [left_invariant']
@@ -262,7 +261,6 @@ theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
 set_option linter.uppercaseLean3 false in
 #align left_invariant_derivation.comp_L LeftInvariantDerivation.comp_L
 
-set_option maxHeartbeats 400000 in
 instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) where
   bracket X Y :=
     ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by

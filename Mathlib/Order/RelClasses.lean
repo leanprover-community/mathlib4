@@ -3,6 +3,7 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 -/
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relation
 import Mathlib.Order.Basic
@@ -270,7 +271,7 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
 /-! ### Well-order -/
 
 
-/-- A well-founded relation. Not to be confused with `isWellOrder`. -/
+/-- A well-founded relation. Not to be confused with `IsWellOrder`. -/
 @[mk_iff] class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
   /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r
