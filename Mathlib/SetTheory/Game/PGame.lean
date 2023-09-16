@@ -1092,7 +1092,7 @@ protected theorem Identical.rfl {x} : x ≡ x := Identical.refl x
   | mk _ _ _ _, mk _ _ _ _, ⟨hL, hR⟩ => ⟨hL.symm fun _ _ h ↦ h.symm, hR.symm fun _ _ h ↦ h.symm⟩
 
 theorem identical_comm {x y} : x ≡ y ↔ y ≡ x :=
-⟨Identical.symm, Identical.symm⟩
+  ⟨Identical.symm, Identical.symm⟩
 
 @[trans] protected theorem Identical.trans : ∀ {x y z}, x ≡ y → y ≡ z → x ≡ z
   | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _, ⟨hL₁, hR₁⟩, ⟨hL₂, hR₂⟩ =>
@@ -1186,6 +1186,9 @@ lemma Identical.ext : ∀ {x y} (_hl : ∀ z, z ∈ₗ x ↔ z ∈ₗ y) (_hr : 
   | mk xl xr xL xR, mk yl yr yL yR, hl, hr => identical_iff.mpr
     ⟨⟨fun i ↦ (hl _).mp ⟨i, refl _⟩, fun j ↦ (hl _).mpr ⟨j, refl _⟩⟩,
       ⟨fun i ↦ (hr _).mp ⟨i, refl _⟩, fun j ↦ (hr _).mpr ⟨j, refl _⟩⟩⟩
+
+lemma Identical.ext_iff {x y} : x ≡ y ↔ (∀ z, z ∈ₗ x ↔ z ∈ₗ y) ∧ (∀ z, z ∈ᵣ x ↔ z ∈ᵣ y) :=
+  ⟨fun h ↦ ⟨@memₗ.congr_right _ _ h, @memᵣ.congr_right _ _ h⟩, fun h ↦ h.elim Identical.ext⟩
 
 lemma Identical.congr_right {x y z} (h : x ≡ y) : z ≡ x ↔ z ≡ y :=
   ⟨fun hz ↦ hz.trans h, fun hz ↦ hz.trans h.symm⟩
@@ -1474,6 +1477,30 @@ instance : Add PGame.{u} :=
     · exact fun i => IHxr i y
     · exact IHyr⟩
 
+@[nolint simpNF, simp] -- Porting note: simpNF linter complains, but this is a useful dsimp lemma
+lemma leftMoves_mk_add {xl xr yl yr} {xL xR yL yR} :
+    (mk xl xr xL xR + mk yl yr yL yR).LeftMoves =
+      ((mk xl xr xL xR).LeftMoves ⊕ (mk yl yr yL yR).LeftMoves) :=
+  rfl
+
+@[nolint simpNF, simp] -- Porting note: simpNF linter complains, but this is a useful dsimp lemma
+lemma rightMoves_mk_add {xl xr yl yr} {xL xR yL yR} :
+    (mk xl xr xL xR + mk yl yr yL yR).RightMoves =
+      ((mk xl xr xL xR).RightMoves ⊕ (mk yl yr yL yR).RightMoves) :=
+  rfl
+
+@[simp]
+theorem mk_add_moveLeft {xl xr yl yr} {xL xR yL yR} {i} :
+    (mk xl xr xL xR + mk yl yr yL yR).moveLeft i =
+      i.elim (xL · + mk yl yr yL yR) (mk xl xr xL xR + yL ·) :=
+  rfl
+
+@[simp]
+theorem mk_add_moveRight {xl xr yl yr} {xL xR yL yR} {i} :
+    (mk xl xr xL xR + mk yl yr yL yR).moveRight i =
+      i.elim (xR · + mk yl yr yL yR) (mk xl xr xL xR + yR ·) :=
+  rfl
+
 /-- The pre-game `((0+1)+⋯)+1`. -/
 instance : NatCast PGame :=
   ⟨Nat.unaryCast⟩
@@ -1483,7 +1510,7 @@ protected theorem nat_succ (n : ℕ) : ((n + 1 : ℕ) : PGame) = n + 1 :=
   rfl
 #align pgame.nat_succ SetTheory.PGame.nat_succ
 
-instance isEmpty_leftMoves_add (x y : PGame.{u}) [IsEmpty x.LeftMoves] [IsEmpty y.LeftMoves] :
+instance isEmpty_leftMoves_add (x y : PGame) [IsEmpty x.LeftMoves] [IsEmpty y.LeftMoves] :
     IsEmpty (x + y).LeftMoves := by
   cases x
   cases y
@@ -1491,7 +1518,7 @@ instance isEmpty_leftMoves_add (x y : PGame.{u}) [IsEmpty x.LeftMoves] [IsEmpty 
   assumption'
 #align pgame.is_empty_left_moves_add SetTheory.PGame.isEmpty_leftMoves_add
 
-instance isEmpty_rightMoves_add (x y : PGame.{u}) [IsEmpty x.RightMoves] [IsEmpty y.RightMoves] :
+instance isEmpty_rightMoves_add (x y : PGame) [IsEmpty x.RightMoves] [IsEmpty y.RightMoves] :
     IsEmpty (x + y).RightMoves := by
   cases x
   cases y
@@ -1499,11 +1526,12 @@ instance isEmpty_rightMoves_add (x y : PGame.{u}) [IsEmpty x.RightMoves] [IsEmpt
   assumption'
 #align pgame.is_empty_right_moves_add SetTheory.PGame.isEmpty_rightMoves_add
 
-theorem leftMoves_add : ∀ x y : PGame.{u}, (x + y).LeftMoves = Sum x.LeftMoves y.LeftMoves
+theorem leftMoves_add : ∀ x y : PGame, (x + y).LeftMoves = (x.LeftMoves ⊕ y.LeftMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 #align pgame.left_moves_add SetTheory.PGame.leftMoves_add
 
-theorem rightMoves_add : ∀ x y : PGame.{u}, (x + y).RightMoves = Sum x.RightMoves y.RightMoves
+@[simp]
+theorem rightMoves_add : ∀ x y : PGame, (x + y).RightMoves = (x.RightMoves ⊕ y.RightMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 #align pgame.right_moves_add SetTheory.PGame.rightMoves_add
 
@@ -1511,7 +1539,7 @@ theorem rightMoves_add : ∀ x y : PGame.{u}, (x + y).RightMoves = Sum x.RightMo
 
 Even though these types are the same (not definitionally so), this is the preferred way to convert
 between them. -/
-def toLeftMovesAdd {x y : PGame} : Sum x.LeftMoves y.LeftMoves ≃ (x + y).LeftMoves :=
+def toLeftMovesAdd {x y : PGame} : (x.LeftMoves ⊕ y.LeftMoves) ≃ (x + y).LeftMoves :=
   Equiv.cast (leftMoves_add x y).symm
 #align pgame.to_left_moves_add SetTheory.PGame.toLeftMovesAdd
 
@@ -1519,7 +1547,7 @@ def toLeftMovesAdd {x y : PGame} : Sum x.LeftMoves y.LeftMoves ≃ (x + y).LeftM
 
 Even though these types are the same (not definitionally so), this is the preferred way to convert
 between them. -/
-def toRightMovesAdd {x y : PGame} : Sum x.RightMoves y.RightMoves ≃ (x + y).RightMoves :=
+def toRightMovesAdd {x y : PGame} : (x.RightMoves ⊕ y.RightMoves) ≃ (x + y).RightMoves :=
   Equiv.cast (rightMoves_add x y).symm
 #align pgame.to_right_moves_add SetTheory.PGame.toRightMovesAdd
 
@@ -1609,7 +1637,7 @@ instance isEmpty_nat_rightMoves : ∀ n : ℕ, IsEmpty (RightMoves n)
     infer_instance
 #align pgame.is_empty_nat_right_moves SetTheory.PGame.isEmpty_nat_rightMoves
 
-lemma LeftMovesAdd.exists {x y : PGame.{u}} {p : (x + y).LeftMoves → Prop} :
+lemma LeftMovesAdd.exists {x y : PGame} {p : (x + y).LeftMoves → Prop} :
     (∃ i, p i) ↔ (∃ i, p (toLeftMovesAdd (.inl i))) ∨ (∃ i, p (toLeftMovesAdd (.inr i))) := by
   cases' x with xl xr xL xR
   cases' y with yl yr yL yR
@@ -1619,7 +1647,7 @@ lemma LeftMovesAdd.exists {x y : PGame.{u}} {p : (x + y).LeftMoves → Prop} :
   · rintro (⟨i, hi⟩ | ⟨i, hi⟩)
     exacts [⟨_, hi⟩, ⟨_, hi⟩]
 
-lemma RightMovesAdd.exists {x y : PGame.{u}} {p : (x + y).RightMoves → Prop} :
+lemma RightMovesAdd.exists {x y : PGame} {p : (x + y).RightMoves → Prop} :
     (∃ i, p i) ↔ (∃ i, p (toRightMovesAdd (.inl i))) ∨ (∃ i, p (toRightMovesAdd (.inr i))) := by
   cases' x with xl xr xL xR
   cases' y with yl yr yL yR
@@ -1638,7 +1666,7 @@ lemma memᵣ_add_iff : ∀ {x y₁ y₂ : PGame},
   | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _ => RightMovesAdd.exists
 
 /-- `x + y` has exactly the same moves as `y + x`. -/
-protected lemma add_comm (x y : PGame.{u}) : x + y ≡ y + x :=
+protected lemma add_comm (x y : PGame) : x + y ≡ y + x :=
   match x, y with
   | mk xl xr xL xR, mk yl yr yL yR => by
     let x := mk xl xr xL xR
@@ -1656,7 +1684,7 @@ protected lemma add_comm (x y : PGame.{u}) : x + y ≡ y + x :=
   decreasing_by pgame_wf_tac
 
 /-- `(x + y) + z` has exactly the same moves as `x + (y + z)`. -/
-protected lemma add_assoc (x y z : PGame.{u}) : x + y + z ≡ x + (y + z) :=
+protected lemma add_assoc (x y z : PGame) : x + y + z ≡ x + (y + z) :=
   match x, y, z with
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => by
     let x := mk xl xr xL xR
@@ -1702,7 +1730,7 @@ theorem zero_add_equiv (x : PGame.{u}) : 0 + x ≈ x :=
 #align pgame.zero_add_equiv SetTheory.PGame.zero_add_equiv
 
 /-- `-(x + y)` has exactly the same moves as `-x + -y`. -/
-lemma neg_add (x y : PGame.{u}) : -(x + y) = -x + -y :=
+lemma neg_add (x y : PGame) : -(x + y) = -x + -y :=
   match x, y with
   | mk xl xr xL xR, mk yl yr yL yR => by
     refine ext rfl rfl ?_ ?_
@@ -1716,10 +1744,10 @@ lemma neg_add (x y : PGame.{u}) : -(x + y) = -x + -y :=
   decreasing_by pgame_wf_tac
 
 /-- `-(x + y)` has exactly the same moves as `-y + -x`. -/
-protected lemma neg_add_rev (x y : PGame.{u}) : -(x + y) ≡ -y + -x :=
+protected lemma neg_add_rev (x y : PGame) : -(x + y) ≡ -y + -x :=
   Identical.trans (of_eq (x.neg_add y)) (PGame.add_comm _ _)
 
-lemma identical_zero_iff : ∀ (x : PGame.{u}),
+lemma identical_zero_iff : ∀ (x : PGame),
     x ≡ 0 ↔ IsEmpty x.LeftMoves ∧ IsEmpty x.RightMoves
   | mk xl xr xL xR => by
     constructor
@@ -1738,10 +1766,14 @@ theorem equiv_zero (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x 
   (identical_zero x).equiv
 #align pgame.equiv.is_empty SetTheory.PGame.equiv_zero
 
-lemma add_eq_zero_iff : ∀ (x y : PGame.{u}), x + y ≡ 0 ↔ x ≡ 0 ∧ y ≡ 0
+lemma add_eq_zero_iff' : ∀ (x y : PGame), x + y ≡ 0 ↔ x ≡ 0 ∧ y ≡ 0
   | mk xl xr xL xR, mk yl yr yL yR => by
     simp_rw [identical_zero_iff, leftMoves_add, rightMoves_add, isEmpty_sum]
     tauto
+
+lemma add_eq_zero_iff (x y : PGame.{u}) :
+    x + y ≡ (0 : PGame.{u}) ↔ x ≡ (0 : PGame.{u}) ∧ y ≡ (0 : PGame.{u}) :=
+  add_eq_zero_iff' _ _
 
 lemma Identical.add_right {x₁ x₂ y} : x₁ ≡ x₂ → x₁ + y ≡ x₂ + y :=
   match x₁, x₂, y with
@@ -1796,7 +1828,7 @@ protected lemma sub_zero (x : PGame) : x - 0 ≡ x :=
   _root_.trans (of_eq x.sub_zero_eq_add_zero) x.add_zero
 
 /-- Use the same name convention as global lemmas. -/
-protected lemma neg_sub' (x y : PGame.{u}) : -(x - y) = -x - -y := PGame.neg_add _ _
+protected lemma neg_sub' (x y : PGame) : -(x - y) = -x - -y := PGame.neg_add _ _
 
 /-- If `w` has the same moves as `x` and `y` has the same moves as `z`,
 then `w - y` has the same moves as `x - z`. -/
