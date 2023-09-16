@@ -428,7 +428,7 @@ theorem support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} 
 The `totalDegree` of a multivariable polynomial `p` is at least `i` more than the `totalDegree` of
 the `i`th coefficient of `finSuccEquiv` applied to `p`, if this is nonzero.
 -/
-lemma MvPolynomial.totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (i : ℕ)
+lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (i : ℕ)
     (hi : (finSuccEquiv R n f).coeff i ≠ 0) :
     totalDegree ((finSuccEquiv R n f).coeff i) + i ≤ totalDegree f := by
   have hf'_sup : ((finSuccEquiv R n f).coeff i).support.Nonempty := by
