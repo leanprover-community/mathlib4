@@ -244,13 +244,13 @@ variable [Group G] (A : Rep k G) (n : ℕ)
 
 count_heartbeats in
 example : HomologicalComplex.homology
-                    (HomologicalComplex.unop
-                      ((CategoryTheory.Functor.mapHomologicalComplex
-                            ((CategoryTheory.linearYoneda k (Rep k G)).obj A).rightOp (ComplexShape.down ℕ)).obj
-                        (GroupCohomology.resolution k G)))
-                    n = (homologyFunctor (ModuleCat k) (ComplexShape.up ℕ) n).obj
-                    (GroupCohomology.linearYonedaObjResolution A) := by
-  unfold GroupCohomology.linearYonedaObjResolution
+  (HomologicalComplex.unop
+    ((CategoryTheory.Functor.mapHomologicalComplex
+          ((CategoryTheory.linearYoneda k (Rep k G)).obj A).rightOp (ComplexShape.down ℕ)).obj
+      (GroupCohomology.resolution k G)))
+  n = (homologyFunctor (ModuleCat k) (ComplexShape.up ℕ) n).obj
+  (GroupCohomology.linearYonedaObjResolution A) := by
+unfold GroupCohomology.linearYonedaObjResolution
   -- quick with this; super-slow without
   --rw [homologyFunctor_obj]
   rfl
