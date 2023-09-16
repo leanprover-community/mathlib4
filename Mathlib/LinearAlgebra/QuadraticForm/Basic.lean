@@ -553,7 +553,7 @@ theorem comp_apply (Q : QuadraticForm R N) (f : M →ₗ[R] N) (x : M) : (Q.comp
 
 /-- Compose a quadratic form with a linear function on the left. -/
 @[simps (config := { simpRhs := true })]
-def _root_.LinearMap.compQuadraticForm {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
+def _root_.LinearMap.compQuadraticForm [CommSemiring S] [Algebra S R] [Module S M]
     [IsScalarTower S R M] (f : R →ₗ[S] S) (Q : QuadraticForm R M) : QuadraticForm S M where
   toFun x := f (Q x)
   toFun_smul b x := by simp only [Q.map_smul_of_tower b x, f.map_smul, smul_eq_mul]
@@ -751,10 +751,15 @@ theorem polar_toQuadraticForm (x y : M) : polar (toQuadraticForm B) x y = B x y 
 theorem polarBilin_toQuadraticForm : polarBilin (toQuadraticForm B) = B + flip' B :=
   BilinForm.ext polar_toQuadraticForm
 
-theorem _root_.LinearMap.compQuadraticForm_polarBilin {S : Type*} [CommRing S] [Algebra S R]
-    [Module S M] [IsScalarTower S R M] (f : R →ₗ[S] S) (Q : QuadraticForm R M) :
-    (f.compQuadraticForm Q).polarBilin = f.compBilinForm Q.polarBilin := by
-  ext; simp [polar]
+variable [CommRing S] [Algebra S R] [Module S M] [IsScalarTower S R M]
+
+theorem _root_.LinearMap.compQuadraticForm_polar (f : R →ₗ[S] S) (Q : QuadraticForm R M) (x y : M) :
+    polar (f.compQuadraticForm Q) x y = f (polar Q x y) := by
+  simp [polar]
+
+theorem _root_.LinearMap.compQuadraticForm_polarBilin (f : R →ₗ[S] S) (Q : QuadraticForm R M) :
+    (f.compQuadraticForm Q).polarBilin = f.compBilinForm Q.polarBilin :=
+  ext <| LinearMap.compQuadraticForm_polar _ _
 
 end Ring
 
@@ -780,7 +785,7 @@ Over a commutative ring, use `QuadraticForm.associated`, which gives an `R`-line
 general ring with no nontrivial distinguished commutative subring, use `QuadraticForm.associated'`,
 which gives an additive homomorphism (or more precisely a `ℤ`-linear map.) -/
 def associatedHom : QuadraticForm R M →ₗ[S] BilinForm R M :=
-  (⟨⅟2, fun x => (Commute.ofNat_right x 2).invOf_right⟩ : Submonoid.center R) •
+  (⟨⅟2, Set.invOf_mem_center (Set.ofNat_mem_center _ _)⟩ : Submonoid.center R) •
     { toFun := polarBilin
       map_add' := fun _x _y => BilinForm.ext <| polar_add _ _
       map_smul' :=  fun _c _x => BilinForm.ext <| polar_smul _ _ }
@@ -793,7 +798,7 @@ theorem associated_apply (x y : M) : associatedHom S Q x y = ⅟ 2 * (Q (x + y) 
   rfl
 #align quadratic_form.associated_apply QuadraticForm.associated_apply
 
-theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
+@[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
   dsimp
   rw [←smul_mul_assoc, two_nsmul, invOf_two_add_invOf_two, one_mul, polar]
@@ -865,7 +870,7 @@ end AssociatedHom
 
 section Associated
 
-variable [CommRing R₁] [AddCommGroup M] [Module R₁ M]
+variable [CommSemiring S] [CommRing R₁] [AddCommGroup M] [Algebra S R₁] [Module R₁ M]
 
 variable [Invertible (2 : R₁)]
 
@@ -876,6 +881,11 @@ associated symmetric bilinear form. -/
 abbrev associated : QuadraticForm R₁ M →ₗ[R₁] BilinForm R₁ M :=
   associatedHom R₁
 #align quadratic_form.associated QuadraticForm.associated
+
+variable (S) in
+theorem coe_associatedHom :
+    ⇑(associatedHom S : QuadraticForm R₁ M →ₗ[S] BilinForm R₁ M) = associated :=
+  rfl
 
 @[simp]
 theorem associated_linMulLin (f g : M →ₗ[R₁] R₁) :
