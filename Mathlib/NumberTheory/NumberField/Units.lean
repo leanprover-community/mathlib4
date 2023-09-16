@@ -136,8 +136,8 @@ def torsionOrder [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype.
 
 /-- If `k` does not divide `torsionOrder` then there are no nontrivial roots of unity of
   order dividing `k`. -/
-theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.coprime k (torsionOrder K)) :
-    ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
+theorem rootsOfUnity_eq_one [NumberField K]  {k : ℕ+} (hc : Nat.coprime k (torsionOrder K))
+    {ζ : (𝓞 K)ˣ} : ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
   rw [mem_rootsOfUnity]
   refine ⟨fun h => ?_, fun h => by rw [h, one_pow]⟩
   refine orderOf_eq_one_iff.mp (Nat.eq_one_of_dvd_coprimes hc ?_ ?_)
@@ -310,7 +310,7 @@ open NumberField.mixedEmbedding NNReal
 -- See: https://github.com/leanprover/lean4/issues/2220
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
 
-variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowski_bound K < (constant_factor K) * B)
+variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowski_bound K < (constant_factor_lt K) * B)
 
 /-- This result shows that there always exists a next term in the sequence. -/
 theorem seq.next {x : 𝓞 K} (hx : x ≠ 0) :
@@ -320,18 +320,18 @@ theorem seq.next {x : 𝓞 K} (hx : x ≠ 0) :
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
     obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
-      (by rw [convex_body_volume]; convert hB; exact congrArg ((↑): NNReal → ENNReal) h_gprod)
+      (by rw [convex_body_lt_volume]; convert hB; exact congrArg ((↑): NNReal → ENNReal) h_gprod)
     refine ⟨y, h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_coe_nat]
       calc
-        _ = ∏ w : InfinitePlace K, w y ^ mult w       := (prod_eq_abs_norm (y : K)).symm
-        _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := ?_
-        _ ≤ (B : ℝ)                                   := ?_
-      · refine Finset.prod_le_prod ?_ ?_
-        exact fun _ _ => pow_nonneg (by positivity) _
-        exact fun w _ => pow_le_pow_of_le_left (by positivity) (le_of_lt (h_yle w)) (mult w)
-      · simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
-        exact le_of_eq (congrArg toReal h_gprod)
+        _ = ∏ w : InfinitePlace K, w y ^ mult w := (prod_eq_abs_norm (y : K)).symm
+        _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := by
+          refine Finset.prod_le_prod ?_ ?_
+          · exact fun _ _ => pow_nonneg (by positivity) _
+          . exact fun w _ => pow_le_pow_of_le_left (by positivity) (le_of_lt (h_yle w)) (mult w)
+        _ ≤ (B : ℝ) := by
+          simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
+          exact le_of_eq (congrArg toReal h_gprod)
     · refine div_lt_self ?_ (by norm_num)
       simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, hx]
   intro _ _
@@ -392,10 +392,10 @@ image by the `log_embedding` of these units  is `ℝ`-linearly independent, see
 `unit_lattice_span_eq_top`. -/
 theorem exists_unit (w₁ : InfinitePlace K ) :
     ∃ u : (𝓞 K)ˣ, (∀ w : InfinitePlace K, w ≠ w₁ → Real.log (w u) < 0) := by
-  obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowski_bound K < (constant_factor K) * B := by
+  obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowski_bound K < (constant_factor_lt K) * B := by
     simp_rw [mul_comm]
     refine ENNReal.exists_nat_mul_gt ?_ ?_
-    exact ne_of_gt (constant_factor_pos K)
+    exact ne_of_gt (constant_factor_lt_pos K)
     exact ne_of_lt (minkowski_bound_lt_top K)
   rsuffices ⟨n, m, hnm, h⟩ : ∃ n m, n < m ∧
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
@@ -403,13 +403,13 @@ theorem exists_unit (w₁ : InfinitePlace K ) :
     refine ⟨hu.choose, fun w hw => Real.log_neg ?_ ?_⟩
     · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, ne_zero]
     · calc
-        _ = w ((seq K w₁ hB m : K) * (seq K w₁ hB n : K)⁻¹) := ?_
-        _ = w (seq K w₁ hB m) * w (seq K w₁ hB n)⁻¹         := _root_.map_mul _ _ _
-        _ < 1                                               := ?_
-      · rw [← congrArg ((↑) : (𝓞 K) → K) hu.choose_spec, mul_comm, Submonoid.coe_mul, ← mul_assoc,
-          inv_mul_cancel (seq.ne_zero K w₁ hB n), one_mul]
-      · rw [map_inv₀, mul_inv_lt_iff (pos_iff.mpr (seq.ne_zero K w₁ hB n)), mul_one]
-        exact seq.antitone K w₁ hB hnm w hw
+        _ = w ((seq K w₁ hB m : K) * (seq K w₁ hB n : K)⁻¹) := by
+          rw [← congrArg ((↑) : (𝓞 K) → K) hu.choose_spec, mul_comm, Submonoid.coe_mul, ← mul_assoc,
+            inv_mul_cancel (seq.ne_zero K w₁ hB n), one_mul]
+        _ = w (seq K w₁ hB m) * w (seq K w₁ hB n)⁻¹ := _root_.map_mul _ _ _
+        _ < 1 := by
+          rw [map_inv₀, mul_inv_lt_iff (pos_iff.mpr (seq.ne_zero K w₁ hB n)), mul_one]
+          exact seq.antitone K w₁ hB hnm w hw
   refine Set.Finite.exists_lt_map_eq_of_forall_mem
     (t := { I : Ideal (𝓞 K) | 1 ≤ Ideal.absNorm I ∧ Ideal.absNorm I ≤ B })
     (fun n => ?_) ?_
@@ -528,12 +528,11 @@ theorem fun_eq_repr {x ζ : (𝓞 K)ˣ} {f : Fin (rank K) → ℤ} (hζ : ζ ∈
     rw [← (basis_mod_torsion K).repr_sum_self f, ← this]
   calc
     Additive.ofMul ↑x = ∑ i, (f i) • Additive.ofMul ↑(fund_system K i) := by
-                        rw [h, QuotientGroup.mk_mul, (QuotientGroup.eq_one_iff _).mpr hζ, one_mul,
-                            QuotientGroup.mk_prod, ofMul_prod]; rfl
-                    _ = ∑ i, (f i) • (basis_mod_torsion K i)             := by
-                        simp_rw [fund_system, QuotientGroup.out_eq', ofMul_toMul]
+                      rw [h, QuotientGroup.mk_mul, (QuotientGroup.eq_one_iff _).mpr hζ, one_mul,
+                        QuotientGroup.mk_prod, ofMul_prod]; rfl
+                    _ = ∑ i, (f i) • (basis_mod_torsion K i) := by
+                      simp_rw [fund_system, QuotientGroup.out_eq', ofMul_toMul]
 
-set_option maxHeartbeats 300000 in
 /-- Any unit `x` of `𝓞 K` can be written uniquely as a root of unity times the product of powers
 of the units of the fundamental system. -/
 theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K) (e : Fin (rank K) → ℤ),
