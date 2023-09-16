@@ -30,8 +30,8 @@ in the same way, and then define the convolution product on these.
 
 When the domain is additive, this is used to define polynomials:
 ```
-Polynomial α := AddMonoidAlgebra ℕ α
-MvPolynomial σ α := AddMonoidAlgebra (σ →₀ ℕ) α
+Polynomial R := AddMonoidAlgebra R ℕ
+MvPolynomial σ α := AddMonoidAlgebra R (σ →₀ ℕ)
 ```
 
 When the domain is multiplicative, e.g. a group, this will be used to define the group ring.
@@ -169,9 +169,6 @@ theorem mul_def {f g : MonoidAlgebra k G} :
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k G) :=
   { Finsupp.addCommMonoid with
-    zero := 0
-    mul := (· * ·)
-    add := (· + ·)
     -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
     left_distrib := fun f g h => by
       haveI := Classical.decEq G
@@ -211,9 +208,6 @@ variable [Semiring k] [Semigroup G] [Semiring R]
 
 instance nonUnitalSemiring : NonUnitalSemiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalNonAssocSemiring with
-    zero := 0
-    mul := (· * ·)
-    add := (· + ·)
     mul_assoc := fun f g h => by
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [mul_def]
@@ -254,10 +248,6 @@ variable [Semiring k] [MulOneClass G]
 
 instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalNonAssocSemiring with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
     natCast := fun n => single 1 n
     natCast_zero := by simp
     natCast_succ := fun _ => by simp; rfl
@@ -284,11 +274,7 @@ variable [Semiring k] [Monoid G]
 
 instance semiring : Semiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalSemiring,
-    MonoidAlgebra.nonAssocSemiring with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·) }
+    MonoidAlgebra.nonAssocSemiring with }
 #align monoid_algebra.semiring MonoidAlgebra.semiring
 
 variable [Semiring R]
@@ -297,7 +283,6 @@ variable [Semiring R]
 def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
     MonoidAlgebra k G →+* R :=
   { liftNC (f : k →+ R) g with
-    toFun := liftNC (f : k →+ R) g
     map_one' := liftNC_one _ _
     map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
 #align monoid_algebra.lift_nc_ring_hom MonoidAlgebra.liftNCRingHom
@@ -855,7 +840,6 @@ variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Al
 def liftNCAlgHom (f : A →ₐ[k] B) (g : G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     MonoidAlgebra A G →ₐ[k] B :=
   { liftNCRingHom (f : A →+* B) g h_comm with
-    toFun := liftNCRingHom (f : A →+* B) g h_comm
     commutes' := by simp [liftNCRingHom] }
 #align monoid_algebra.lift_nc_alg_hom MonoidAlgebra.liftNCAlgHom
 
@@ -1131,7 +1115,7 @@ protected noncomputable def opRingEquiv [Monoid G] :
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp
       rw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
-        AddEquiv.trans_apply, AddEquiv.trans_apply, MulOpposite.opAddEquiv_apply,
+        AddEquiv.trans_apply, AddEquiv.trans_apply,
         MulOpposite.opAddEquiv_symm_apply, MulOpposite.unop_mul (α := MonoidAlgebra k G)]
       simp }
 #align monoid_algebra.op_ring_equiv MonoidAlgebra.opRingEquiv
@@ -1289,9 +1273,6 @@ theorem mul_def {f g : AddMonoidAlgebra k G} :
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (AddMonoidAlgebra k G) :=
   { Finsupp.addCommMonoid with
-    zero := 0
-    mul := (· * ·)
-    add := (· + ·)
     -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
     left_distrib := fun f g h => by
       haveI := Classical.decEq G
@@ -1362,9 +1343,6 @@ variable [Semiring k] [AddSemigroup G]
 
 instance nonUnitalSemiring : NonUnitalSemiring (AddMonoidAlgebra k G) :=
   { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
-    zero := 0
-    mul := (· * ·)
-    add := (· + ·)
     mul_assoc := fun f g h => by
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [mul_def]
@@ -1384,10 +1362,6 @@ variable [Semiring k] [AddZeroClass G]
 
 instance nonAssocSemiring : NonAssocSemiring (AddMonoidAlgebra k G) :=
   { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
     natCast := fun n => single 0 n
     natCast_zero := by simp
     natCast_succ := fun _ => by simp; rfl
@@ -1418,11 +1392,7 @@ variable [Semiring k] [AddMonoid G]
 
 instance semiring : Semiring (AddMonoidAlgebra k G) :=
   { AddMonoidAlgebra.nonUnitalSemiring,
-    AddMonoidAlgebra.nonAssocSemiring with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·) }
+    AddMonoidAlgebra.nonAssocSemiring with }
 #align add_monoid_algebra.semiring AddMonoidAlgebra.semiring
 
 variable [Semiring R]
@@ -1431,7 +1401,6 @@ variable [Semiring R]
 def liftNCRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
     AddMonoidAlgebra k G →+* R :=
   { liftNC (f : k →+ R) g with
-    toFun := liftNC (f : k →+ R) g
     map_one' := liftNC_one _ _
     map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
 #align add_monoid_algebra.lift_nc_ring_hom AddMonoidAlgebra.liftNCRingHom
@@ -1888,8 +1857,7 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       dsimp
       rw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
-        MulOpposite.opAddEquiv_apply, MulOpposite.opAddEquiv_symm_apply,
-        MulOpposite.unop_mul (α := AddMonoidAlgebra k G)]
+        MulOpposite.opAddEquiv_symm_apply, MulOpposite.unop_mul (α := AddMonoidAlgebra k G)]
       dsimp
       simp only [mapRange_single, single_mul_single, ← op_mul, add_comm] }
 #align add_monoid_algebra.op_ring_equiv AddMonoidAlgebra.opRingEquiv
@@ -1956,10 +1924,7 @@ variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Al
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     AddMonoidAlgebra A G →ₐ[k] B :=
-  {
-    liftNCRingHom (f : A →+* B) g
-      h_comm with
-    toFun := liftNCRingHom (f : A →+* B) g h_comm
+  { liftNCRingHom (f : A →+* B) g h_comm with
     commutes' := by simp [liftNCRingHom] }
 #align add_monoid_algebra.lift_nc_alg_hom AddMonoidAlgebra.liftNCAlgHom
 

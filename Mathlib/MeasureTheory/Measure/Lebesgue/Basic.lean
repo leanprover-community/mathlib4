@@ -577,6 +577,65 @@ theorem volume_regionBetween_eq_lintegral [SigmaFinite μ] (hf : AEMeasurable f 
           (regionBetween_subset (AEMeasurable.mk f hf) (AEMeasurable.mk g hg) s)).symm
 #align volume_region_between_eq_lintegral volume_regionBetween_eq_lintegral
 
+/-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable. -/
+lemma nullMeasurableSet_regionBetween (μ : Measure α)
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by
+  refine NullMeasurableSet.inter
+          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
+  · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
+  · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
+
+/-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
+a version for the region together with the graph of the upper function. -/
+lemma nullMeasurableSet_region_between_oc (μ : Measure α)
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst)} (μ.prod volume) := by
+  refine NullMeasurableSet.inter
+          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
+  · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
+  · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
+    rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
+          ext p
+          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+    exact (nullMeasurableSet_lt (AEMeasurable.fst g_mble) measurable_snd.aemeasurable).compl
+
+/-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
+a version for the region together with the graph of the lower function. -/
+lemma nullMeasurableSet_region_between_co (μ : Measure α)
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst)} (μ.prod volume) := by
+  refine NullMeasurableSet.inter
+          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
+  · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
+    rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
+          ext p
+          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+    exact (nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst f_mble)).compl
+  · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
+
+/-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
+a version for the region together with the graphs of both functions. -/
+lemma nullMeasurableSet_region_between_cc (μ : Measure α)
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst)} (μ.prod volume) := by
+  refine NullMeasurableSet.inter
+          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
+  · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
+    rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
+          ext p
+          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+    exact (nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst f_mble)).compl
+  · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
+    rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
+          ext p
+          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+    exact (nullMeasurableSet_lt (AEMeasurable.fst g_mble) measurable_snd.aemeasurable).compl
+
 end regionBetween
 
 /-- Consider a real set `s`. If a property is true almost everywhere in `s ∩ (a, b)` for

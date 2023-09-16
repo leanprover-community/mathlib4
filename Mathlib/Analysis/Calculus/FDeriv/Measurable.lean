@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
@@ -82,8 +83,7 @@ set_option linter.uppercaseLean3 false -- A B D
 
 noncomputable section
 
-open Set Metric Asymptotics Filter ContinuousLinearMap MeasureTheory
-open TopologicalSpace (SecondCountableTopology)
+open Set Metric Asymptotics Filter ContinuousLinearMap MeasureTheory TopologicalSpace
 open scoped Topology
 
 namespace ContinuousLinearMap
@@ -436,9 +436,12 @@ theorem measurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [Mea
 #align measurable_deriv measurable_deriv
 
 theorem stronglyMeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
-    [SecondCountableTopology F] (f : 𝕜 → F) : StronglyMeasurable (deriv f) := by
+    [h : SecondCountableTopologyEither 𝕜 F] (f : 𝕜 → F) : StronglyMeasurable (deriv f) := by
   borelize F
-  exact (measurable_deriv f).stronglyMeasurable
+  rcases h.out with h𝕜|hF
+  · exact stronglyMeasurable_iff_measurable_separable.2
+      ⟨measurable_deriv f, isSeparable_range_deriv _⟩
+  · exact (measurable_deriv f).stronglyMeasurable
 #align strongly_measurable_deriv stronglyMeasurable_deriv
 
 theorem aemeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
@@ -447,7 +450,8 @@ theorem aemeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [M
 #align ae_measurable_deriv aemeasurable_deriv
 
 theorem aestronglyMeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
-    [SecondCountableTopology F] (f : 𝕜 → F) (μ : Measure 𝕜) : AEStronglyMeasurable (deriv f) μ :=
+    [SecondCountableTopologyEither 𝕜 F] (f : 𝕜 → F) (μ : Measure 𝕜) :
+    AEStronglyMeasurable (deriv f) μ :=
   (stronglyMeasurable_deriv f).aestronglyMeasurable
 #align ae_strongly_measurable_deriv aestronglyMeasurable_deriv
 
@@ -786,10 +790,25 @@ theorem measurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] :
       ((measurableSet_of_differentiableWithinAt_Ici _).compl.inter (MeasurableSet.const _))
 #align measurable_deriv_within_Ici measurable_derivWithin_Ici
 
-theorem stronglyMeasurable_derivWithin_Ici [SecondCountableTopology F] :
-    StronglyMeasurable fun x => derivWithin f (Ici x) x := by
+theorem stronglyMeasurable_derivWithin_Ici :
+    StronglyMeasurable (fun x ↦ derivWithin f (Ici x) x) := by
   borelize F
-  exact (measurable_derivWithin_Ici f).stronglyMeasurable
+  apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_derivWithin_Ici f, ?_⟩
+  obtain ⟨t, t_count, ht⟩ : ∃ t : Set ℝ, t.Countable ∧ Dense t := exists_countable_dense ℝ
+  suffices H : range (fun x ↦ derivWithin f (Ici x) x) ⊆ closure (Submodule.span ℝ (f '' t)) from
+    IsSeparable.mono (t_count.image f).isSeparable.span.closure H
+  rintro - ⟨x, rfl⟩
+  suffices H' : range (fun y ↦ derivWithin f (Ici x) y) ⊆ closure (Submodule.span ℝ (f '' t)) from
+    H' (mem_range_self _)
+  apply range_derivWithin_subset_closure_span_image
+  calc Ici x
+    = closure (Ioi x ∩ closure t) := by simp [dense_iff_closure_eq.1 ht]
+  _ ⊆ closure (closure (Ioi x ∩ t)) := by
+      apply closure_mono
+      simpa [inter_comm] using (isOpen_Ioi (a := x)).closure_inter (s := t)
+  _ ⊆ closure (Ici x ∩ t) := by
+      rw [closure_closure]
+      exact closure_mono (inter_subset_inter_left _ Ioi_subset_Ici_self)
 #align strongly_measurable_deriv_within_Ici stronglyMeasurable_derivWithin_Ici
 
 theorem aemeasurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] (μ : Measure ℝ) :
@@ -797,7 +816,7 @@ theorem aemeasurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] (μ : Me
   (measurable_derivWithin_Ici f).aemeasurable
 #align ae_measurable_deriv_within_Ici aemeasurable_derivWithin_Ici
 
-theorem aestronglyMeasurable_derivWithin_Ici [SecondCountableTopology F] (μ : Measure ℝ) :
+theorem aestronglyMeasurable_derivWithin_Ici (μ : Measure ℝ) :
     AEStronglyMeasurable (fun x => derivWithin f (Ici x) x) μ :=
   (stronglyMeasurable_derivWithin_Ici f).aestronglyMeasurable
 #align ae_strongly_measurable_deriv_within_Ici aestronglyMeasurable_derivWithin_Ici
@@ -815,10 +834,9 @@ theorem measurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] :
   simpa [derivWithin_Ioi_eq_Ici] using measurable_derivWithin_Ici f
 #align measurable_deriv_within_Ioi measurable_derivWithin_Ioi
 
-theorem stronglyMeasurable_derivWithin_Ioi [SecondCountableTopology F] :
-    StronglyMeasurable fun x => derivWithin f (Ioi x) x := by
-  borelize F
-  exact (measurable_derivWithin_Ioi f).stronglyMeasurable
+theorem stronglyMeasurable_derivWithin_Ioi :
+    StronglyMeasurable (fun x ↦ derivWithin f (Ioi x) x) := by
+  simpa [derivWithin_Ioi_eq_Ici] using stronglyMeasurable_derivWithin_Ici f
 #align strongly_measurable_deriv_within_Ioi stronglyMeasurable_derivWithin_Ioi
 
 theorem aemeasurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] (μ : Measure ℝ) :
@@ -826,7 +844,7 @@ theorem aemeasurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] (μ : Me
   (measurable_derivWithin_Ioi f).aemeasurable
 #align ae_measurable_deriv_within_Ioi aemeasurable_derivWithin_Ioi
 
-theorem aestronglyMeasurable_derivWithin_Ioi [SecondCountableTopology F] (μ : Measure ℝ) :
+theorem aestronglyMeasurable_derivWithin_Ioi (μ : Measure ℝ) :
     AEStronglyMeasurable (fun x => derivWithin f (Ioi x) x) μ :=
   (stronglyMeasurable_derivWithin_Ioi f).aestronglyMeasurable
 #align ae_strongly_measurable_deriv_within_Ioi aestronglyMeasurable_derivWithin_Ioi
@@ -986,11 +1004,27 @@ theorem measurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 
   simpa only [fderiv_deriv] using measurable_fderiv_apply_const_with_param 𝕜 hf 1
 
 theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
-    [OpensMeasurableSpace 𝕜] [SecondCountableTopology F]
+    [OpensMeasurableSpace 𝕜] [h : SecondCountableTopologyEither α F]
     {f : α → 𝕜 → F} (hf : Continuous f.uncurry) :
     StronglyMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
   borelize F
-  exact (measurable_deriv_with_param hf).stronglyMeasurable
+  rcases h.out with hα|hF
+  · have : ProperSpace 𝕜 := properSpace_of_locallyCompactSpace 𝕜
+    apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_deriv_with_param hf, ?_⟩
+    have : range (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2)
+        ⊆ closure (Submodule.span 𝕜 (range f.uncurry)) := by
+      rintro - ⟨p, rfl⟩
+      have A : deriv (f p.1) p.2 ∈ closure (Submodule.span 𝕜 (range (f p.1))) := by
+        rw [← image_univ]
+        apply range_deriv_subset_closure_span_image _ dense_univ (mem_range_self _)
+      have B : range (f p.1) ⊆ range (f.uncurry) := by
+        rintro - ⟨x, rfl⟩
+        exact mem_range_self (p.1, x)
+      exact closure_mono (Submodule.span_mono B) A
+    apply (IsSeparable.span _).closure.mono this
+    rw [← image_univ]
+    exact (isSeparable_of_separableSpace univ).image hf
+  · exact (measurable_deriv_with_param hf).stronglyMeasurable
 
 theorem aemeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
     [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
@@ -999,7 +1033,7 @@ theorem aemeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpac
   (measurable_deriv_with_param hf).aemeasurable
 
 theorem aestronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
-    [OpensMeasurableSpace 𝕜] [SecondCountableTopology F]
+    [OpensMeasurableSpace 𝕜] [SecondCountableTopologyEither α F]
     {f : α → 𝕜 → F} (hf : Continuous f.uncurry) (μ : Measure (α × 𝕜)) :
     AEStronglyMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) μ :=
   (stronglyMeasurable_deriv_with_param hf).aestronglyMeasurable
