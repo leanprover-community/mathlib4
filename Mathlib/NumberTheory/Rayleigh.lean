@@ -9,7 +9,7 @@ import Mathlib.Data.Real.Irrational
 /-!
 # Rayleigh's theorem on Beatty sequences
 
-This file proves Rayleigh's theorem on Beatty sequences. We start by proving `rayleigh_int`, which
+This file proves Rayleigh's theorem on Beatty sequences. We start by proving `rayleigh_compl`, which
 is a generalization of Rayleigh's theorem, and eventually prove `rayleigh_irr_pos`, which is
 Rayleigh's theorem.
 
@@ -26,13 +26,13 @@ Rayleigh's theorem.
 
 ## Main statements
 
-* `rayleigh_int`: Let `r` be a real number greater than 1.
-  Then every integer is in exactly one of `B_r` or `B'_(r / (r - 1))`.
+* `rayleigh_compl`: Let `r` be a real number greater than 1.
+  Then the complement of `B_r` is `B'_(r / (r - 1))`.
 * `rayleigh_pos`: Let `r` be a real number greater than 1.
   Then every positive integer is in exactly one of `B⁺_r` or `B⁺'_(r / (r - 1))`.
 * `rayleigh_irr_pos`: Let `r` be an irrational real number greater than 1.
   Then every positive integer is in exactly one of `B⁺_r` or `B⁺_(r / (r - 1))`.
-* `rayleigh_int'`, `rayleigh_pos'`, `rayleigh_irr_pos'`: The corresponding theorem that uses
+* `rayleigh_compl'`, `rayleigh_pos'`, `rayleigh_irr_pos'`: The corresponding theorem that uses
   `Real.IsConjugateExponent r s` as a hypothesis.
 
 ## References
@@ -160,29 +160,27 @@ theorem hit_or_miss' : j ∈ beattySet' r ∨ (∃ k : ℤ, k * r ≤ j ∧ j + 
 end Beatty
 
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
-than 1. Then every integer is in exactly one of `B_r` or `B'_(r / (r - 1))`. -/
-theorem rayleigh_int {r : ℝ} (hr : r > 1) :
-    ∀ {j : ℤ},
-      (j ∈ beattySet r ∧ j ∉ beattySet' r.conjugateExponent) ∨
-      (j ∉ beattySet r ∧ j ∈ beattySet' r.conjugateExponent) := by
-  intro j
+than 1. Then the complement of `B_r` is `B'_(r / (r - 1))`. -/
+theorem rayleigh_compl {r : ℝ} (hr : r > 1) : (beattySet r)ᶜ = beattySet' r.conjugateExponent := by
+  ext j
   by_cases h₁ : j ∈ beattySet r
   · by_cases h₂ : j ∈ beattySet' r.conjugateExponent
     · have ⟨k, h₃⟩ := h₁
       have ⟨m, h₄⟩ := h₂
       exact (Beatty.no_collision hr ⟨j, ⟨k, h₃⟩, ⟨m, h₄⟩⟩).elim
-    · exact Or.inl ⟨h₁, h₂⟩
+    · simp [Set.compl, h₁, h₂]
   · by_cases h₂ : j ∈ beattySet' r.conjugateExponent
-    · exact Or.inr ⟨h₁, h₂⟩
+    · simp [Set.compl, h₁, h₂]
     · have hs := Real.one_lt_conjugateExponent hr
       have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hr).resolve_left h₁
       have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hs).resolve_left h₂
       exact (Beatty.no_anticollision hr ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
 
-/-- A version of `rayleigh_int` that uses `Real.IsConjugateExponent r s` as a hypothesis. -/
-theorem rayleigh_int' {r s : ℝ} (hr : Real.IsConjugateExponent r s) :
-    ∀ {j : ℤ}, (j ∈ beattySet r ∧ j ∉ beattySet' s) ∨ (j ∉ beattySet r ∧ j ∈ beattySet' s) := by
-  convert @rayleigh_int _ hr.one_lt <;> exact hr.conj_eq
+/-- A version of `rayleigh_compl` that uses `Real.IsConjugateExponent r s` as a hypothesis. -/
+theorem rayleigh_compl' {r s : ℝ} (hr : Real.IsConjugateExponent r s) :
+    (beattySet r)ᶜ = beattySet' s := by
+  convert @rayleigh_compl _ hr.one_lt
+  exact hr.conj_eq
 
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
 than 1. Then every positive integer is in exactly one of `B⁺_r` or `B⁺'_(r / (r - 1))`. -/
@@ -205,8 +203,9 @@ theorem rayleigh_pos {r : ℝ} (hr : r > 1) :
     have := pos_of_mul_pos_left hj hs
     rwa [Int.cast_pos] at this
   rw [hb₁ _ (lt_trans zero_lt_one hr).le,
-    hb₂ _ (lt_trans zero_lt_one (Real.one_lt_conjugateExponent hr)).le]
-  exact rayleigh_int hr
+    hb₂ _ (lt_trans zero_lt_one (Real.one_lt_conjugateExponent hr)).le, ← rayleigh_compl hr,
+    Set.not_mem_compl_iff, Set.mem_compl_iff, and_self, and_self]
+  exact or_not
 
 /-- A version of `rayleigh_pos` that uses `Real.IsConjugateExponent r s` as a hypothesis. -/
 theorem rayleigh_pos' {r s : ℝ} (hr : Real.IsConjugateExponent r s) :
