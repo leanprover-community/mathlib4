@@ -239,20 +239,22 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
 #align group_cohomology groupCohomology
 
--- variable [Group G] (A : Rep k G) (n : ℕ)
+/-
+variable [Group G] (A : Rep k G) (n : ℕ)
 
--- count_heartbeats in
--- example : HomologicalComplex.homology
---                     (HomologicalComplex.unop
---                       ((CategoryTheory.Functor.mapHomologicalComplex
---                             ((CategoryTheory.linearYoneda k (Rep k G)).obj A).rightOp (ComplexShape.down ℕ)).obj
---                         (GroupCohomology.resolution k G)))
---                     n = (homologyFunctor (ModuleCat k) (ComplexShape.up ℕ) n).obj
---                     (GroupCohomology.linearYonedaObjResolution A) := by
---   unfold GroupCohomology.linearYonedaObjResolution
---   -- quick with this; super-slow without
---   --rw [homologyFunctor_obj]
---   rfl
+count_heartbeats in
+example : HomologicalComplex.homology
+                    (HomologicalComplex.unop
+                      ((CategoryTheory.Functor.mapHomologicalComplex
+                            ((CategoryTheory.linearYoneda k (Rep k G)).obj A).rightOp (ComplexShape.down ℕ)).obj
+                        (GroupCohomology.resolution k G)))
+                    n = (homologyFunctor (ModuleCat k) (ComplexShape.up ℕ) n).obj
+                    (GroupCohomology.linearYonedaObjResolution A) := by
+  unfold GroupCohomology.linearYonedaObjResolution
+  -- quick with this; super-slow without
+  --rw [homologyFunctor_obj]
+  rfl
+-/
 
 set_option maxHeartbeats 3200000 in
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
