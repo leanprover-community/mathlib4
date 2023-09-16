@@ -345,32 +345,13 @@ def rhsAux (p : ℝ) (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) (x : ∀
   (∫⋯∫_s, f ∂μ) x ^ (1 - (sᶜ.card - 1 : ℝ) * p) *
     ∏ i in sᶜ, (∫⋯∫_insert i s, f ∂μ) x ^ p
 
-lemma rhsAux_empty' (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
+lemma rhsAux_empty (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
     rhsAux μ p f ∅ x = f x ^ (1 - (#ι - 1 : ℝ) * p) * ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ p := by
   simp [rhsAux, marginal_singleton, card_univ]
 
-lemma rhsAux_empty [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
-    rhsAux μ ((1 : ℝ) / (#ι - 1 : ℝ)) f ∅ x
-    = ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := by
-  rw [rhsAux_empty']
-  convert one_mul _
-  convert ENNReal.rpow_zero
-  have : (1:ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
-  have : (0:ℝ) < #ι - 1 := by linarith
-  field_simp
-
-lemma rhsAux_univ' (p : ℝ) (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
+lemma rhsAux_univ (p : ℝ) (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
    rhsAux μ p f univ x = (∫⁻ x, f x ∂(Measure.pi μ)) ^ (1 + p) := by
   simp [rhsAux, marginal_univ, Finset.card_univ]
-
-lemma rhsAux_univ [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
-   rhsAux μ ((1 : ℝ) / (#ι - 1 : ℝ)) f univ x
-   = (∫⁻ x, f x ∂(Measure.pi μ)) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
-  rw [rhsAux_univ']
-  congr
-  have : (1:ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
-  have : (0:ℝ) < #ι - 1 := by linarith
-  field_simp
 
 lemma Measurable.rhsAux (p : ℝ) (hf : Measurable f) : Measurable (rhsAux μ p f s) := by
   refine ((hf.marginal μ).pow_const _).mul ?_
@@ -466,19 +447,25 @@ theorem marginal_rhsAux_monotone {p : ℝ} (hp1 : 0 ≤ p) (hp2 : (#ι - 1 : ℝ
   gcongr
   exact card_le_univ sᶜ
 
-theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] (hf : Measurable f) :
-    ∫⁻ x, ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂Measure.pi μ ≤
-      (∫⁻ x, f x ∂Measure.pi μ) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+theorem lintegral_prod_lintegral_pow_le_aux {p : ℝ} (hp1 : 0 ≤ p)
+    (hp2 : (#ι - 1 : ℝ) * p ≤ 1) (f) (hf : Measurable f) :
+    ∫⁻ x, f x ^ (1 - (#ι - 1 : ℝ) * p) * ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ p ∂Measure.pi μ ≤
+      (∫⁻ x, f x ∂Measure.pi μ) ^ (1 + p) := by
   cases isEmpty_or_nonempty (∀ i, π i)
   · simp_rw [lintegral_of_isEmpty]; refine' zero_le _
   inhabit ∀ i, π i
   have H : (∅ : Finset ι) ≤ Finset.univ := Finset.empty_subset _
+  simpa [marginal_univ, rhsAux_empty, rhsAux_univ] using marginal_rhsAux_monotone μ hp1 hp2 f hf H default
+
+theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] (hf : Measurable f) :
+    ∫⁻ x, ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂Measure.pi μ ≤
+      (∫⁻ x, f x ∂Measure.pi μ) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
   have : (1:ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
   have : (0:ℝ) < #ι - 1 := by linarith
   have hp1 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
   have hp2 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp
-  simpa [marginal_univ, rhsAux_empty, rhsAux_univ, -one_div] using
-    marginal_rhsAux_monotone μ hp1 hp2 f hf H default
+  convert lintegral_prod_lintegral_pow_le_aux μ hp1 hp2 f hf using 2 <;> field_simp
+
 -- theorem integral_prod_integral_pow_le {f : (∀ i, π i) → ℝ} (hf : Measurable f)
 --     (h2f : ∀ x, 0 ≤ f x) :
 --     ∫ x,
