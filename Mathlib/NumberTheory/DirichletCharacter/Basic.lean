@@ -44,7 +44,7 @@ lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) :
   χ a = χ.toUnitHom ha.unit := by simp
 
 lemma toUnitHom_eq_iff (ψ : DirichletCharacter R n) :
-  χ = ψ ↔ ofUnitHom χ = ofUnitHom ψ := by simp only [ofUnitHom_eq, EmbeddingLike.apply_eq_iff_eq]
+  χ = ψ ↔ toUnitHom χ = toUnitHom ψ := by simp
 
 lemma eval_sub (x : ZMod n) :
   χ (n - x) = χ (-x) := by simp
