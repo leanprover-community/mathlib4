@@ -450,34 +450,106 @@ lemma iso_inv_app (K : (CochainComplex C ℤ)ᵒᵖ) :
 
 attribute [irreducible] iso
 
+lemma two_mul_injective (a b : ℤ) (h : 2 * a = 2 * b) : a = b := by
+  rw [← @EuclideanDomain.mul_div_cancel _ _ a 2 (by simp), mul_comm a 2, h]
+  simp only [Int.mul_ediv_cancel_left]
+
+lemma mul_pred_div_two_eq_even (n : ℤ) : ((2 * n) * (2 * n - 1))/2 = n * (2 * n - 1) :=
+  (EuclideanDomain.eq_div_of_mul_eq_left (by simp) (by ring)).symm
+
+lemma mul_pred_div_two_eq_odd (n : ℤ) : ((2 * n + 1) * (2 * n + 1 - 1))/2 = n * (2 * n + 1) :=
+  (EuclideanDomain.eq_div_of_mul_eq_left (by simp) (by ring)).symm
+
+lemma two_mul_mul_pred_div_two (a : ℤ) :
+    2 * ((a * (a - 1))/2) = a * (a - 1) := by
+  by_cases Even a
+  · obtain ⟨n, hn⟩ := h
+    obtain rfl : a = 2 * n := by linarith
+    rw [mul_pred_div_two_eq_even]
+    ring
+  · rw [← Int.odd_iff_not_even] at h
+    obtain ⟨n, rfl⟩ := h
+    rw [mul_pred_div_two_eq_odd]
+    ring
+
+lemma signs_compatibility (a b i : ℤ) :
+    (-(a + b) * i + -(a + b) * (-(a + b) - 1) / 2).negOnePow =
+      (-a * (i + b) + -a * (-a - 1) / 2).negOnePow * (-b * i + -b * (-b - 1) / 2).negOnePow := by
+  have h : (-(a + b) * (-(a + b) - 1)) / 2 = (-a * (-a -1))/2 + (-b * (-b -1))/2 + a * b := by
+    apply two_mul_injective
+    rw [two_mul_mul_pred_div_two, mul_add 2, mul_add 2, two_mul_mul_pred_div_two,
+      two_mul_mul_pred_div_two]
+    ring
+  rw [← Int.negOnePow_add, Int.negOnePow_eq_iff, h]
+  exact ⟨a * b, by ring⟩
+
 end BifunctorFlipObjCommShift
 
-/-noncomputable instance : ((bifunctor C).flip.obj L).CommShift ℤ where
+/-set_option maxHeartbeats 600000 in
+noncomputable instance : ((bifunctor C).flip.obj L).CommShift ℤ where
   iso n := BifunctorFlipObjCommShift.iso n L
   zero := by
-    ext K i (α : Cochain (K⟦0⟧).unop L i)
+    sorry
+    --ext K i (α : Cochain (K⟦0⟧).unop L i)
+    --dsimp
+    --rw [BifunctorFlipObjCommShift.iso_hom_app 0 0 (zero_add 0) L K]
+    --dsimp
+    --erw [leftShiftIso_hom_f_apply 0 0 (zero_add 0) _ i (add_zero i).symm]
+    --apply Cochain.ext
+    --intro p q hpq
+    --dsimp
+    --rw [XIsoOfEq_inv_apply_v, Cochain.leftUnshift_v _ i _ p q (by linarith) p (by linarith),
+    --  zero_mul, zero_mul, zero_add, EuclideanDomain.zero_div, Int.negOnePow_zero, one_smul]
+    --erw [bifunctor_map_app_f_apply]
+    --rw [Cochain.zero_cochain_comp_v, Cochain.ofHom_v]
+    --simp only [shiftFunctor_obj_X, shiftFunctorObjXIso, Functor.CommShift.isoZero_hom_app, Functor.flip_obj_obj,
+    --  bifunctor_obj, functor_obj, Functor.flip_obj_map, HomologicalComplex.comp_f, HomComplex_X,
+    --  AddCommGroupCat.coe_comp, Function.comp_apply, bifunctor_map_app_f_apply,
+    --  shiftFunctorZero_inv_app_f]
+    --erw [XIsoOfEq_hom_apply_v]
+    --rw [Cochain.zero_cochain_comp_v, Cochain.ofHom_v, Pretriangulated.shiftFunctorZero_op_hom_app,
+    --  unop_comp, HomologicalComplex.comp_f, assoc]
+    --simp only [Functor.op_obj, Opposite.unop_op, Functor.id_obj, Quiver.Hom.unop_op]
+    --rw [shiftFunctorZero_inv_app_f]
+    --rfl
+  add a b := by
+    ext K i (α : Cochain (K⟦a + b⟧).unop L i)
     dsimp
-    rw [BifunctorFlipObjCommShift.iso_hom_app 0 0 (zero_add 0) L K]
+    simp only [Functor.CommShift.isoAdd_hom_app, Functor.flip_obj_obj, bifunctor_obj, functor_obj, Functor.comp_obj,
+      Functor.flip_obj_map, HomologicalComplex.comp_f, HomComplex_X, shiftFunctor_map_f', AddCommGroupCat.coe_comp,
+      Function.comp_apply, bifunctor_map_app_f_apply, Functor.op_obj, Opposite.unop_op,
+      BifunctorFlipObjCommShift.iso_hom_app  _ _ (add_neg_self a),
+      BifunctorFlipObjCommShift.iso_hom_app  _ _ (add_neg_self b),
+      BifunctorFlipObjCommShift.iso_hom_app  _ _ (add_neg_self (a + b))]
+    erw [bifunctor_map_app_f_apply, bifunctor_map_app_f_apply]
     dsimp
-    erw [leftShiftIso_hom_f_apply 0 0 (zero_add 0) _ i (add_zero i).symm]
     apply Cochain.ext
     intro p q hpq
+    dsimp at hpq ⊢
+    erw [leftShiftIso_hom_f_apply _ _ (add_neg_self (a + b)) _ (i + a + b) (by linarith),
+      XIsoOfEq_inv_apply_v,
+      leftShiftIso_hom_f_apply _ _ (add_neg_self b) _ (i + b) (by linarith),
+      comp_apply, leftShiftIso_hom_f_apply _ _ (add_neg_self a) _ (i + a + b) (by linarith)]
     dsimp
-    rw [XIsoOfEq_inv_apply_v, Cochain.leftUnshift_v _ i _ p q (by linarith) p (by linarith),
-      zero_mul, zero_mul, zero_add, EuclideanDomain.zero_div, Int.negOnePow_zero, one_smul]
+    rw [Cochain.leftUnshift_v _ (i + a + b) (by linarith) p q (by linarith) (p + a + b) (by linarith),
+      Cochain.zero_cochain_comp_v, Cochain.ofHom_v, shiftFunctorAdd_inv_app_f]
+    dsimp
+    save
+    erw [XIsoOfEq_hom_apply_v, XIsoOfEq_inv_apply_v]
+    rw [Cochain.leftUnshift_v _ (i + a + b) (by linarith) p q (by linarith) (p + a) (by linarith)]
     erw [bifunctor_map_app_f_apply]
-    rw [Cochain.zero_cochain_comp_v, Cochain.ofHom_v]
-    simp only [shiftFunctor_obj_X, shiftFunctorObjXIso, Functor.CommShift.isoZero_hom_app, Functor.flip_obj_obj,
-      bifunctor_obj, functor_obj, Functor.flip_obj_map, HomologicalComplex.comp_f, HomComplex_X,
-      AddCommGroupCat.coe_comp, Function.comp_apply, bifunctor_map_app_f_apply,
-      shiftFunctorZero_inv_app_f]
-    erw [XIsoOfEq_hom_apply_v]
-    rw [Cochain.zero_cochain_comp_v, Cochain.ofHom_v, Pretriangulated.shiftFunctorZero_op_hom_app,
-      unop_comp, HomologicalComplex.comp_f, assoc]
-    simp only [Functor.op_obj, Opposite.unop_op, Functor.id_obj, Quiver.Hom.unop_op]
-    rw [shiftFunctorZero_inv_app_f]
-    rfl
-  add := sorry -/
+    rw [Cochain.zero_cochain_comp_v, Cochain.ofHom_v,
+      Cochain.leftUnshift_v _ (i + b) (by linarith) (p + a) q (by linarith) (p + a + b) (by linarith),
+      comp_zsmul, comp_zsmul, smul_smul, Cochain.zero_cochain_comp_v,
+      Cochain.zero_cochain_comp_v, Cochain.ofHom_v, Cochain.ofHom_v,
+      BifunctorFlipObjCommShift.signs_compatibility]
+    congr 1
+    rw [← shiftFunctorAdd'_eq_shiftFunctorAdd,
+      Pretriangulated.shiftFunctorAdd'_op_hom_app K a b (a + b) rfl _ _ _
+        (add_neg_self a) (add_neg_self b) (add_neg_self (a + b))]
+    dsimp
+    simp only [assoc]
+    sorry-/
 
 end
 

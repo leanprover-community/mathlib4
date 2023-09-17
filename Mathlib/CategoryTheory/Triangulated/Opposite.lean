@@ -346,12 +346,14 @@ section
 
 open Pretriangulated.Opposite
 
-variable (C : Type*) [Category C] [HasShift C ℤ]
+variable [HasShift C ℤ]
 
 noncomputable def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
     shiftFunctor Cᵒᵖ n ≅ (shiftFunctor C m).op := by
   obtain rfl : m = -n := by linarith
   exact Iso.refl _
+
+variable {C}
 
 lemma shiftFunctorZero_op_hom_app (X : Cᵒᵖ) :
     (shiftFunctorZero Cᵒᵖ ℤ).hom.app X = (shiftFunctorOpIso C 0 0 (zero_add 0)).hom.app X ≫
@@ -362,8 +364,6 @@ lemma shiftFunctorZero_op_hom_app (X : Cᵒᵖ) :
   rfl
 
 attribute [reassoc] op_comp
-
-variable {C}
 
 lemma shiftFunctorZero_op_inv_app (X : Cᵒᵖ) :
     (shiftFunctorZero Cᵒᵖ ℤ).inv.app X =
@@ -397,7 +397,7 @@ lemma shiftFunctorAdd'_op_inv_app (X : Cᵒᵖ) (a₁ a₂ a₃ : ℤ) (h : a₁
       ((shiftFunctorAdd' C b₁ b₂ b₃ (by linarith)).hom.app X.unop).op ≫
       (shiftFunctorOpIso C _ _ h₃).inv.app X := by
   rw [← cancel_epi ((shiftFunctorAdd' Cᵒᵖ a₁ a₂ a₃ h).hom.app X), Iso.hom_inv_id_app,
-    shiftFunctorAdd'_op_hom_app C X a₁ a₂ a₃ h b₁ b₂ b₃ h₁ h₂ h₃,
+    shiftFunctorAdd'_op_hom_app X a₁ a₂ a₃ h b₁ b₂ b₃ h₁ h₂ h₃,
     assoc, assoc, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app]
   erw [Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc]
   rw [← op_comp_assoc, Iso.hom_inv_id_app, op_id, id_comp, Iso.hom_inv_id_app]
