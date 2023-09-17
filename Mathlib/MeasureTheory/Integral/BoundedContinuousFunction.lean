@@ -104,7 +104,11 @@ lemma foo (μ : Measure X) {f g : X → ℝ≥0∞} (hfg : f ≤ g) :
   gcongr -- gcongr did not make progress
   sorry
 
-attribute [gcongr] lintegral_mono -- @[gcongr] attribute only applies to lemmas proving x₁ ~₁ x₁' → ... xₙ ~ₙ xₙ' → f x₁ ... xₙ ∼ f x₁' ... xₙ', got ∀ {α : Type u_1} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α} ⦃f g : α → ℝ≥0∞⦄, f ≤ g → ∫⁻ (a : α), f a ∂μ ≤ ∫⁻ (a : α), g a ∂μ
+attribute [gcongr] lintegral_mono
+    -- @[gcongr] attribute only applies to lemmas proving
+    -- x₁ ~₁ x₁' → ... xₙ ~ₙ xₙ' → f x₁ ... xₙ ∼ f x₁' ... xₙ',
+    -- got ∀ {α : Type u_1} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
+    -- ⦃f g : α → ℝ≥0∞⦄, f ≤ g → ∫⁻ (a : α), f a ∂μ ≤ ∫⁻ (a : α), g a ∂μ
 
 -- This would solve it!
 
