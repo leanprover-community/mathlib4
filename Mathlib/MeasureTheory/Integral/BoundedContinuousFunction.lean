@@ -95,7 +95,7 @@ lemma BoundedContinuousFunction.lintegral_nnnorm_le [IsFiniteMeasure μ] (f : X 
   · apply lintegral_mono -- NOTE: Would be great to have `gcongr` working for these.
     exact fun x ↦ ENNReal.coe_le_coe.mpr (nnnorm_coe_le_nnnorm f x)
 
-lemma BoundedContinuousFunction.integrable (μ : Measure X) [IsFiniteMeasure μ] (f : X →ᵇ E) :
+lemma BoundedContinuousFunction.integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable f μ := by
   refine ⟨f.continuous.measurable.aestronglyMeasurable, (hasFiniteIntegral_def _ _).mp ?_⟩
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
@@ -104,8 +104,7 @@ lemma BoundedContinuousFunction.integrable (μ : Measure X) [IsFiniteMeasure μ]
 
 variable [NormedSpace ℝ E]
 
-lemma BoundedContinuousFunction.norm_integral_le_mul_norm'
-    [IsFiniteMeasure μ] (f : X →ᵇ E) :
+lemma BoundedContinuousFunction.norm_integral_le_mul_norm' [IsFiniteMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, (f x) ∂μ‖ ≤ ENNReal.toReal (μ Set.univ) * ‖f‖ := by
   calc  ‖∫ x, (f x) ∂μ‖
     _ ≤ ∫ x, ‖f x‖ ∂μ                       := by exact norm_integral_le_integral_norm _
@@ -114,8 +113,7 @@ lemma BoundedContinuousFunction.norm_integral_le_mul_norm'
   · apply integral_mono _ (integrable_const ‖f‖) (fun x ↦ f.norm_coe_le_norm x) -- NOTE: `gcongr`?
     exact (integrable_norm_iff f.continuous.measurable.aestronglyMeasurable).mpr (f.integrable μ)
 
-lemma BoundedContinuousFunction.norm_integral_le_mul_norm
-    [IsFiniteMeasure μ] (f : X →ᵇ E) :
+lemma BoundedContinuousFunction.norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, (f x) ∂μ‖ ≤ ENNReal.toReal (μ Set.univ) * ‖f‖ := by
   calc  ‖∫ x, (f x) ∂μ‖
     _ ≤ ∫ x, ‖f x‖ ∂μ                       := by exact norm_integral_le_integral_norm _
@@ -124,8 +122,7 @@ lemma BoundedContinuousFunction.norm_integral_le_mul_norm
   · apply integral_mono _ (integrable_const ‖f‖) (fun x ↦ f.norm_coe_le_norm x) -- NOTE: `gcongr`?
     exact (integrable_norm_iff f.continuous.measurable.aestronglyMeasurable).mpr (f.integrable μ)
 
-lemma BoundedContinuousFunction.norm_integral_le_norm
-    [IsProbabilityMeasure μ] (f : X →ᵇ E) :
+lemma BoundedContinuousFunction.norm_integral_le_norm [IsProbabilityMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, (f x) ∂μ‖ ≤ ‖f‖ := by
   convert f.norm_integral_le_mul_norm μ
   simp only [measure_univ, ENNReal.one_toReal, one_mul]
