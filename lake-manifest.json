@@ -34,10 +34,10 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/JamesGallicchio/std4",
+   {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "5806bb31b4431f651a36e26404e4f5a617c065ec",
+    "rev": "32c1912a12dd38be9651ee70275e636ed4c34fc7",
     "opts": {},
     "name": "std",
-    "inputRev?": "chore/move-Data/List/Pairwise.lean",
+    "inputRev?": "main",
     "inherited": false}}]}
