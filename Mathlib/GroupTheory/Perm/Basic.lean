@@ -573,7 +573,7 @@ theorem swap_eq_one_iff {i j : α} : swap i j = (1 : Perm α) ↔ i = j :=
 theorem swap_mul_eq_iff {i j : α} {σ : Perm α} : swap i j * σ = σ ↔ i = j :=
   ⟨fun h => by
     -- Porting note: added `_root_.`
-    have swap_id : swap i j = 1 := mul_right_cancel (_root_.trans h (one_mul σ).symm)
+    have swap_id : swap i j = 1 := mul_right_cancel (trans h (one_mul σ).symm)
     rw [← swap_apply_right i j, swap_id]
     rfl,
    fun h => by erw [h, swap_self, one_mul]⟩
@@ -582,7 +582,7 @@ theorem swap_mul_eq_iff {i j : α} {σ : Perm α} : swap i j * σ = σ ↔ i = j
 theorem mul_swap_eq_iff {i j : α} {σ : Perm α} : σ * swap i j = σ ↔ i = j :=
   ⟨fun h => by
     -- Porting note: added `_root_.`
-    have swap_id : swap i j = 1 := mul_left_cancel (_root_.trans h (one_mul σ).symm)
+    have swap_id : swap i j = 1 := mul_left_cancel (trans h (one_mul σ).symm)
     rw [← swap_apply_right i j, swap_id]
     rfl,
    fun h => by erw [h, swap_self, mul_one]⟩

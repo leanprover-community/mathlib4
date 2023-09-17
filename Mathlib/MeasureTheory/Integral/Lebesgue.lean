@@ -1986,7 +1986,7 @@ theorem lintegral_le_of_forall_fin_meas_le_of_measurable {μ : Measure α} (hm :
     by_cases hx_mem : x ∈ iUnion S
     · simp only [hx_mem, if_true]
       obtain ⟨n, hxn⟩ := mem_iUnion.mp hx_mem
-      refine' le_antisymm (_root_.trans _ (le_iSup _ n)) (iSup_le fun i => _)
+      refine' le_antisymm (trans _ (le_iSup _ n)) (iSup_le fun i => _)
       · simp only [hxn, le_refl, if_true]
       · by_cases hxi : x ∈ S i <;> simp [hxi]
     · simp only [hx_mem, if_false]

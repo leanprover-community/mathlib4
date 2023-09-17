@@ -264,12 +264,12 @@ instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Le
   ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
-theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
+nonrec theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
     ∀ {x y z : α × β}, Prod.Lex r s x y → Prod.Lex r s y z → Prod.Lex r s x z
-  | (_, _), (_, _), (_, _), left  _ _ hxy₁, left  _ _ hyz₁ => left  _ _ (_root_.trans hxy₁ hyz₁)
+  | (_, _), (_, _), (_, _), left  _ _ hxy₁, left  _ _ hyz₁ => left  _ _ (trans hxy₁ hyz₁)
   | (_, _), (_, _), (_, _), left  _ _ hxy₁, right _ _      => left  _ _ hxy₁
   | (_, _), (_, _), (_, _), right _ _,      left  _ _ hyz₁ => left  _ _ hyz₁
-  | (_, _), (_, _), (_, _), right _ hxy₂,   right _ hyz₂   => right _ (_root_.trans hxy₂ hyz₂)
+  | (_, _), (_, _), (_, _), right _ hxy₂,   right _ hyz₂   => right _ (trans hxy₂ hyz₂)
 #align prod.lex.trans Prod.Lex.trans
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
@@ -280,7 +280,7 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] 
     IsAntisymm (α × β) (Prod.Lex r s) :=
   ⟨fun x₁ x₂ h₁₂ h₂₁ ↦
     match x₁, x₂, h₁₂, h₂₁ with
-    | (a, _), (_, _), .left  _ _ hr₁, .left  _ _ hr₂ => (irrefl a (_root_.trans hr₁ hr₂)).elim
+    | (a, _), (_, _), .left  _ _ hr₁, .left  _ _ hr₂ => (irrefl a (trans hr₁ hr₂)).elim
     | (_, _), (_, _), .left  _ _ hr₁, .right _ _     => (irrefl _ hr₁).elim
     | (_, _), (_, _), .right _ _,     .left  _ _ hr₂ => (irrefl _ hr₂).elim
     | (_, _), (_, _), .right _ hs₁,   .right _ hs₂   => antisymm hs₁ hs₂ ▸ rfl⟩

@@ -204,6 +204,8 @@ class IsAntisymm (α : Type u) (r : α → α → Prop) : Prop where
 
 /-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
 class IsTrans (α : Type u) (r : α → α → Prop) : Prop where
+  /-- Note that unlike the other nearby typeclasses, this is not exposed as a global lemma as
+  the more general `Trans.trans` can be used. -/
   trans : ∀ a b c, r a b → r b c → r a c
 #align is_trans IsTrans
 
@@ -305,9 +307,9 @@ theorem refl [IsRefl α r] (a : α) : a ≺ a :=
   IsRefl.refl a
 #align refl refl
 
-theorem trans [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
-  IsTrans.trans _ _ _
-#align trans trans
+/-! We do not expose `IsTrans.trans` here as it would conflict with the more general `Trans.trans`
+-/
+#align trans Trans.transₓ
 
 theorem symm [IsSymm α r] {a b : α} : a ≺ b → b ≺ a :=
   IsSymm.symm _ _
@@ -332,7 +334,7 @@ theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
 
 instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrrefl α r] :
     IsAsymm α r :=
-  ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
+  ⟨fun a _b h₁ h₂ => absurd (trans h₁ h₂) (irrefl a)⟩
 #align is_asymm_of_is_trans_of_is_irrefl isAsymm_of_isTrans_of_isIrrefl
 
 section ExplicitRelationVariants
@@ -351,7 +353,7 @@ theorem refl_of [IsRefl α r] (a : α) : a ≺ a :=
 
 @[elab_without_expected_type]
 theorem trans_of [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
-  _root_.trans
+  IsTrans.trans _ _ _
 #align trans_of trans_of
 
 @[elab_without_expected_type]

@@ -179,7 +179,7 @@ theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) 
   refine' ⟨(N.is_model.mono (Set.subset_union_left _ _)).bundled.reduct _, _⟩
   haveI : N ⊨ distinctConstantsTheory _ _ := N.is_model.mono (Set.subset_union_right _ _)
   rw [ModelType.reduct_Carrier, coe_of]
-  refine' _root_.trans (lift_le.2 (le_of_eq (Cardinal.mk_out κ).symm)) _
+  refine' trans (lift_le.2 (le_of_eq (Cardinal.mk_out κ).symm)) _
   rw [← mk_univ]
   refine'
     (card_le_of_model_distinctConstantsTheory L Set.univ N).trans (lift_le.{max u v w}.1 _)
@@ -220,7 +220,7 @@ theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [
   refine'
     ⟨(equivShrink S).bundledInduced L,
       ⟨S.subtype.comp (Equiv.bundledInducedEquiv L _).symm.toElementaryEmbedding⟩,
-      lift_inj.1 (_root_.trans _ hS)⟩
+      lift_inj.1 (trans _ hS)⟩
   simp only [Equiv.bundledInduced_α, lift_mk_shrink']
 #align first_order.language.exists_elementary_embedding_card_eq_of_le FirstOrder.Language.exists_elementaryEmbedding_card_eq_of_le
 

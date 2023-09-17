@@ -183,7 +183,7 @@ theorem eval₂_mul_noncomm (hf : ∀ k, Commute (f <| q.coeff k) x) :
 
 @[simp]
 theorem eval₂_mul_X : eval₂ f x (p * X) = eval₂ f x p * x := by
-  refine' _root_.trans (eval₂_mul_noncomm _ _ fun k => _) (by rw [eval₂_X])
+  refine' trans (eval₂_mul_noncomm _ _ fun k => _) (by rw [eval₂_X])
   rcases em (k = 1) with (rfl | hk)
   · simp
   · simp [coeff_X_of_ne_one hk]
@@ -236,8 +236,8 @@ variable [Semiring S] (f : R →+* S) (x : S)
 
 theorem eval₂_eq_sum_range :
     p.eval₂ f x = ∑ i in Finset.range (p.natDegree + 1), f (p.coeff i) * x ^ i :=
-  _root_.trans (congr_arg _ p.as_sum_range)
-    (_root_.trans (eval₂_finset_sum f _ _ x) (congr_arg _ (by simp)))
+  trans (congr_arg _ p.as_sum_range)
+    (trans (eval₂_finset_sum f _ _ x) (congr_arg _ (by simp)))
 #align polynomial.eval₂_eq_sum_range Polynomial.eval₂_eq_sum_range
 
 theorem eval₂_eq_sum_range' (f : R →+* S) {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : S) :
@@ -876,7 +876,7 @@ theorem degree_map_eq_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCo
     degree (p.map f) = degree p :=
   le_antisymm (degree_map_le f _) <| by
     have hp0 : p ≠ 0 :=
-      leadingCoeff_ne_zero.mp fun hp0 => hf (_root_.trans (congr_arg _ hp0) f.map_zero)
+      leadingCoeff_ne_zero.mp fun hp0 => hf (trans (congr_arg _ hp0) f.map_zero)
     rw [degree_eq_natDegree hp0]
     refine' le_degree_of_ne_zero _
     rw [coeff_map]

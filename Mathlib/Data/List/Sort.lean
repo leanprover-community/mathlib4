@@ -265,7 +265,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
     · -- Porting note: was
       -- `simpa [orderedInsert, h', h] using fun b' bm => trans h' (rel_of_sorted_cons h _ bm)`
       rw [List.orderedInsert, if_pos h', sorted_cons]
-      exact ⟨forall_mem_cons.2 ⟨h', fun c hc => _root_.trans h' (rel_of_sorted_cons h _ hc)⟩, h⟩
+      exact ⟨forall_mem_cons.2 ⟨h', fun c hc => trans h' (rel_of_sorted_cons h _ hc)⟩, h⟩
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
       intro b' bm
@@ -419,7 +419,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
       · subst b'
         assumption
       · exact rel_of_sorted_cons h₁ _ bl
-      · exact _root_.trans h (rel_of_sorted_cons h₂ _ bl')
+      · exact trans h (rel_of_sorted_cons h₂ _ bl')
     · suffices ∀ (b' : α) (_ : b' ∈ List.merge r (a :: l) l'), r b b' by
         simpa [List.merge, h, h₁.merge h₂.of_cons]
       intro b' bm
@@ -428,7 +428,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
       rcases this with (be | bl | bl')
       · subst b'
         assumption
-      · exact _root_.trans ba (rel_of_sorted_cons h₁ _ bl)
+      · exact trans ba (rel_of_sorted_cons h₁ _ bl)
       · exact rel_of_sorted_cons h₂ _ bl'
   termination_by Sorted.merge l₁ l₂ _ _ => length l₁ + length l₂
 #align list.sorted.merge List.Sorted.merge

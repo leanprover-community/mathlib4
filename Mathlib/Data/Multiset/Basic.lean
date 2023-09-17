@@ -963,7 +963,7 @@ theorem nsmul_singleton (a : α) (n) : n • ({a} : Multiset α) = replicate n a
 #align multiset.nsmul_singleton Multiset.nsmul_singleton
 
 theorem replicate_le_replicate (a : α) {k n : ℕ} : replicate k a ≤ replicate n a ↔ k ≤ n :=
-  _root_.trans (by rw [← replicate_le_coe, coe_replicate]) (List.replicate_sublist_replicate a)
+  trans (by rw [← replicate_le_coe, coe_replicate]) (List.replicate_sublist_replicate a)
 #align multiset.replicate_le_replicate Multiset.replicate_le_replicate
 
 theorem le_replicate_iff {m : Multiset α} {a : α} {n : ℕ} :
@@ -2833,7 +2833,7 @@ theorem Rel.trans (r : α → α → Prop) [IsTrans α r] {s t u : Multiset α} 
   · rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
   · obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
     obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp r2
-    exact Multiset.Rel.cons (_root_.trans ha1 hb1) (ih ha2 hb2)
+    exact Multiset.Rel.cons (trans ha1 hb1) (ih ha2 hb2)
 #align multiset.rel.trans Multiset.Rel.trans
 
 theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t : Multiset α} (x : α)
@@ -2843,7 +2843,7 @@ theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t
   · obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countP_cons, countP_cons, ih hb2]
     simp only [decide_eq_true_eq, add_right_inj]
-    refine' (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
+    refine' (if_congr ⟨fun h => trans h hb1, fun h => trans h (symm hb1)⟩ rfl rfl)
 #align multiset.rel.countp_eq Multiset.Rel.countP_eq
 
 end Rel

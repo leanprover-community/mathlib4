@@ -1240,7 +1240,7 @@ noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq
         · exact absurd ‹a = 0› h
         · exact absurd ‹b = 0› h_1
       apply mul_left_cancel₀ h0
-      refine' _root_.trans _ (Classical.choose_spec (exists_gcd a b))
+      refine' trans _ (Classical.choose_spec (exists_gcd a b))
       conv_lhs =>
         congr
         rw [← normalize_lcm a b]

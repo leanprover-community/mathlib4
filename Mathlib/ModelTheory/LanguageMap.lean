@@ -498,7 +498,7 @@ def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
   left_inv := by rw [lhomWithConstants, LHom.sumElim_comp_inl]
   right_inv := by
     simp only [LHom.comp_sumElim, lhomWithConstants, LHom.comp_id]
-    exact _root_.trans (congr rfl (Subsingleton.elim _ _)) LHom.sumElim_inl_inr
+    exact trans (congr rfl (Subsingleton.elim _ _)) LHom.sumElim_inl_inr
 #align first_order.lanugage.Lequiv.add_empty_constants FirstOrder.Language.LEquiv.addEmptyConstants
 
 variable {α} {β : Type*}

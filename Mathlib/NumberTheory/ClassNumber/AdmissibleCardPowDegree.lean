@@ -234,7 +234,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
   by_cases exists_nonempty_j : ∃ j, (∃ i, t' i = j) ∧
       ∀ i, t' i = j → (cardPowDegree (A 0 % b - A i.succ % b) : ℝ) < cardPowDegree b • ε
   · obtain ⟨j, ⟨i, hi⟩, hj⟩ := exists_nonempty_j
-    refine' ⟨j, fun i' => ⟨hj i', fun hi' => _root_.trans ((ht' _ _).mpr _) hi⟩⟩
+    refine' ⟨j, fun i' => ⟨hj i', fun hi' => trans ((ht' _ _).mpr _) hi⟩⟩
     apply anti_archim' _ hi'
     rw [AbsoluteValue.map_sub]
     exact hj _ hi

@@ -108,7 +108,7 @@ variable {R' : Type*} [CommRing R']
 theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'}
     (hx : eval₂ g x p = 0) : eval₂ (g.comp (algebraMap R S)) x (integerNormalization M p) = 0 :=
   let ⟨b, hb⟩ := integerNormalization_map_to_map M p
-  _root_.trans (eval₂_map (algebraMap R S) g x).symm
+  trans (eval₂_map (algebraMap R S) g x).symm
     (by rw [hb, ← IsScalarTower.algebraMap_smul S (b : R) p, eval₂_smul, hx, mul_zero])
 #align is_localization.integer_normalization_eval₂_eq_zero IsLocalization.integerNormalization_eval₂_eq_zero
 
@@ -154,7 +154,7 @@ theorem isAlgebraic_iff [Algebra A C] [Algebra K C] [IsScalarTower A K C] {x : C
   constructor <;> rintro ⟨p, hp, px⟩
   · refine' ⟨p.map (algebraMap A K), fun h => hp (Polynomial.ext fun i => _), _⟩
     · have : algebraMap A K (p.coeff i) = 0 :=
-        _root_.trans (Polynomial.coeff_map _ _).symm (by simp [h])
+        trans (Polynomial.coeff_map _ _).symm (by simp [h])
       exact to_map_eq_zero_iff.mp this
     · exact (Polynomial.aeval_map_algebraMap K _ _).trans px
   · exact
@@ -193,17 +193,17 @@ theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommR
     [IsLocalization M Rₘ] [Algebra S Sₘ] [IsLocalization (M.map f : Submonoid S) Sₘ] :
     (map Sₘ f M.le_comap_map : Rₘ →+* _).IsIntegralElem (algebraMap S Sₘ x) := by
   by_cases triv : (1 : Rₘ) = 0
-  · exact ⟨0, ⟨_root_.trans leadingCoeff_zero triv.symm, eval₂_zero _ _⟩⟩
+  · exact ⟨0, ⟨trans leadingCoeff_zero triv.symm, eval₂_zero _ _⟩⟩
   haveI : Nontrivial Rₘ := nontrivial_of_ne 1 0 triv
   obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.mp (map_units Rₘ ⟨p.leadingCoeff, hM⟩)
   refine' ⟨p.map (algebraMap R Rₘ) * C b, ⟨_, _⟩⟩
   · refine' monic_mul_C_of_leadingCoeff_mul_eq_one _
     rwa [leadingCoeff_map_of_leadingCoeff_ne_zero (algebraMap R Rₘ)]
     refine' fun hfp => zero_ne_one
-      (_root_.trans (zero_mul b).symm (hfp ▸ hb) : (0 : Rₘ) = 1)
+      (trans (zero_mul b).symm (hfp ▸ hb) : (0 : Rₘ) = 1)
   · refine' eval₂_mul_eq_zero_of_left _ _ _ _
     erw [eval₂_map, IsLocalization.map_comp, ← hom_eval₂ _ f (algebraMap S Sₘ) x]
-    exact _root_.trans (congr_arg (algebraMap S Sₘ) hf) (RingHom.map_zero _)
+    exact trans (congr_arg (algebraMap S Sₘ) hf) (RingHom.map_zero _)
 #align ring_hom.is_integral_elem_localization_at_leading_coeff RingHom.isIntegralElem_localization_at_leadingCoeff
 
 /-- Given a particular witness to an element being algebraic over an algebra `R → S`,

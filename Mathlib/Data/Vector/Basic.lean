@@ -63,7 +63,7 @@ theorem cons_val (a : α) : ∀ v : Vector α n, (a ::ᵥ v).val = a :: v.val
 theorem eq_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
     v = a ::ᵥ v' ↔ v.head = a ∧ v.tail = v' :=
   ⟨fun h => h.symm ▸ ⟨head_cons a v', tail_cons a v'⟩, fun h =>
-    _root_.trans (cons_head_tail v).symm (by rw [h.1, h.2])⟩
+    trans (cons_head_tail v).symm (by rw [h.1, h.2])⟩
 #align vector.eq_cons_iff Vector.eq_cons_iff
 
 theorem ne_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :

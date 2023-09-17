@@ -384,7 +384,7 @@ theorem finrank_direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fi
   have h := Submodule.finrank_add_inf_finrank_orthogonal
     (vectorSpan_mono ℝ (Set.image_subset_range s.points ↑(univ.erase i)))
   have hc : card (univ.erase i) = n + 1 := by rw [card_erase_of_mem (mem_univ _)]; simp
-  refine' add_left_cancel (_root_.trans h _)
+  refine' add_left_cancel (trans h _)
   rw [s.Independent.finrank_vectorSpan (Fintype.card_fin _), ← Finset.coe_image,
     s.Independent.finrank_vectorSpan_image_finset hc]
 #align affine.simplex.finrank_direction_altitude Affine.Simplex.finrank_direction_altitude

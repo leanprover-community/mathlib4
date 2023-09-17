@@ -803,7 +803,7 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl
     rw [if_neg hn, add_comm (g 0) n', add_tsub_cancel_right] at hmn
     split_ifs at hmn with hm
     · apply hf1.2 m (g n') (lt_of_lt_of_le hm (g.monotone n'.zero_le))
-      exact _root_.trans hmn (List.tail_sublistForall₂_self _)
+      exact trans hmn (List.tail_sublistForall₂_self _)
     · rw [← tsub_lt_iff_left (le_of_not_lt hm)] at mn
       apply hf1.2 _ _ (g.lt_iff_lt.2 mn)
       rw [← List.cons_head!_tail (hnil (g (m - g 0))), ← List.cons_head!_tail (hnil (g n'))]

@@ -98,7 +98,7 @@ theorem atBot_le_nhds_bot {α : Type*} [TopologicalSpace α] [LinearOrder α] [O
   intro s
   rw [h.mem_iff, h_nhds.mem_iff]
   rintro ⟨a, ha_bot_lt, h_Iio_a_subset_s⟩
-  refine' ⟨⊥, trivial, _root_.trans _ h_Iio_a_subset_s⟩
+  refine' ⟨⊥, trivial, trans _ h_Iio_a_subset_s⟩
   simpa only [Iic_bot, singleton_subset_iff, mem_Iio]
 #align at_bot_le_nhds_bot atBot_le_nhds_bot
 

@@ -1135,7 +1135,7 @@ theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij
       rcases hij.eq_or_lt with (rfl | hlt)
-      exacts [H j, _root_.trans (ihj hlt) (H j)]
+      exacts [H j, trans (ihj hlt) (H j)]
 #align fin.lift_fun_iff_succ Fin.liftFun_iff_succ
 
 /-- A function `f` on `Fin (n + 1)` is strictly monotone if and only if `f i < f (i + 1)`
@@ -1177,7 +1177,7 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
   { Fin.addCommMonoid n, Fin.neg n with
     add_left_neg := fun ⟨a, ha⟩ =>
       Fin.ext <|
-        _root_.trans (Nat.mod_add_mod _ _ _) <| by
+        trans (Nat.mod_add_mod _ _ _) <| by
           rw [Fin.val_zero', tsub_add_cancel_of_le, Nat.mod_self]
           exact le_of_lt ha
     sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ =>

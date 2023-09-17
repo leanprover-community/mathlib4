@@ -127,8 +127,8 @@ theorem height_le_numNodes : ∀ x : Tree α, x.height ≤ x.numNodes
   | nil => le_rfl
   | node _ a b =>
     Nat.succ_le_succ
-      (max_le (_root_.trans a.height_le_numNodes <| a.numNodes.le_add_right _)
-        (_root_.trans b.height_le_numNodes <| b.numNodes.le_add_left _))
+      (max_le (trans a.height_le_numNodes <| a.numNodes.le_add_right _)
+        (trans b.height_le_numNodes <| b.numNodes.le_add_left _))
 #align tree.height_le_num_nodes Tree.height_le_numNodes
 
 /-- The left child of the tree, or `nil` if the tree is `nil` -/

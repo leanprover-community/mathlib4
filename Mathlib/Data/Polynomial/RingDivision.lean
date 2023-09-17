@@ -1262,7 +1262,7 @@ variable {A B : Type*} [CommRing A] [CommRing B]
 theorem le_rootMultiplicity_map {p : A[X]} {f : A →+* B} (hmap : map f p ≠ 0) (a : A) :
     rootMultiplicity a p ≤ rootMultiplicity (f a) (p.map f) := by
   rw [le_rootMultiplicity_iff hmap]
-  refine' _root_.trans _ ((mapRingHom f).map_dvd (pow_rootMultiplicity_dvd p a))
+  refine' trans _ ((mapRingHom f).map_dvd (pow_rootMultiplicity_dvd p a))
   rw [map_pow, map_sub, coe_mapRingHom, map_X, map_C]
 #align polynomial.le_root_multiplicity_map Polynomial.le_rootMultiplicity_map
 

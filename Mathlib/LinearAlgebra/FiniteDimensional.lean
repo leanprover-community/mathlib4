@@ -1185,7 +1185,7 @@ theorem span_eq_top_of_linearIndependent_of_card_eq_finrank {ι : Type*} [hι : 
   · by_contra ne_top
     have lt_top : span K (Set.range b) < ⊤ := lt_of_le_of_ne le_top ne_top
     exact ne_of_lt (Submodule.finrank_lt lt_top)
-      (_root_.trans (finrank_span_eq_card lin_ind) card_eq)
+      (trans (finrank_span_eq_card lin_ind) card_eq)
   · exfalso
     apply ne_of_lt (Fintype.card_pos_iff.mpr hι)
     symm
@@ -1215,7 +1215,7 @@ theorem coe_basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty ι] [
 noncomputable def finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (hs : s.Nonempty)
     (lin_ind : LinearIndependent K ((↑) : s → V)) (card_eq : s.card = finrank K V) : Basis s K V :=
   @basisOfLinearIndependentOfCardEqFinrank _ _ _ _ _ _
-    ⟨(⟨hs.choose, hs.choose_spec⟩ : s)⟩ _ _ lin_ind (_root_.trans (Fintype.card_coe _) card_eq)
+    ⟨(⟨hs.choose, hs.choose_spec⟩ : s)⟩ _ _ lin_ind (trans (Fintype.card_coe _) card_eq)
 #align finset_basis_of_linear_independent_of_card_eq_finrank finsetBasisOfLinearIndependentOfCardEqFinrank
 
 @[simp]
@@ -1232,7 +1232,7 @@ theorem coe_finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (hs : s
 noncomputable def setBasisOfLinearIndependentOfCardEqFinrank {s : Set V} [Nonempty s] [Fintype s]
     (lin_ind : LinearIndependent K ((↑) : s → V)) (card_eq : s.toFinset.card = finrank K V) :
     Basis s K V :=
-  basisOfLinearIndependentOfCardEqFinrank lin_ind (_root_.trans s.toFinset_card.symm card_eq)
+  basisOfLinearIndependentOfCardEqFinrank lin_ind (trans s.toFinset_card.symm card_eq)
 #align set_basis_of_linear_independent_of_card_eq_finrank setBasisOfLinearIndependentOfCardEqFinrank
 
 @[simp]

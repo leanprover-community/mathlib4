@@ -202,7 +202,7 @@ theorem equivOfEq_rfl (S : IntermediateField F E) : equivOfEq (rfl : S = S) = Al
 
 @[simp]
 theorem equivOfEq_trans {S T U : IntermediateField F E} (hST : S = T) (hTU : T = U) :
-    (equivOfEq hST).trans (equivOfEq hTU) = equivOfEq (_root_.trans hST hTU) :=
+    (equivOfEq hST).trans (equivOfEq hTU) = equivOfEq (trans hST hTU) :=
   rfl
 #align intermediate_field.equiv_of_eq_trans IntermediateField.equivOfEq_trans
 
@@ -361,7 +361,7 @@ theorem adjoin_le_subfield {K : Subfield E} (HF : Set.range (algebraMap F E) ⊆
 theorem adjoin_subset_adjoin_iff {F' : Type*} [Field F'] [Algebra F' E] {S S' : Set E} :
     (adjoin F S : Set E) ⊆ adjoin F' S' ↔
       Set.range (algebraMap F E) ⊆ adjoin F' S' ∧ S ⊆ adjoin F' S' :=
-  ⟨fun h => ⟨_root_.trans (adjoin.range_algebraMap_subset _ _) h, _root_.trans
+  ⟨fun h => ⟨trans (adjoin.range_algebraMap_subset _ _) h, trans
     (subset_adjoin _ _) h⟩, fun ⟨hF, hS⟩ =>
       (Subfield.closure_le (t := (adjoin F' S').toSubfield)).mpr (Set.union_subset hF hS)⟩
 #align intermediate_field.adjoin_subset_adjoin_iff IntermediateField.adjoin_subset_adjoin_iff

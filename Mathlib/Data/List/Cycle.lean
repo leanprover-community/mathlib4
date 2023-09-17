@@ -1019,7 +1019,7 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
     · exact hs.1 c (Or.inr rfl)
     · exact hs.1 c (Or.inl hc)
     · exact hs.2.2 b hb
-    · exact _root_.trans (hs.2.2 b hb) (hs.1 c (Or.inl hc)), Cycle.chain_of_pairwise⟩
+    · exact trans (hs.2.2 b hb) (hs.1 c (Or.inl hc)), Cycle.chain_of_pairwise⟩
 #align cycle.chain_iff_pairwise Cycle.chain_iff_pairwise
 
 theorem Chain.eq_nil_of_irrefl [IsTrans α r] [IsIrrefl α r] (h : Chain r s) : s = Cycle.nil := by

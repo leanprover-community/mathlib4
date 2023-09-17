@@ -177,7 +177,7 @@ theorem chainHeight_add_le_chainHeight_add (s : Set α) (t : Set β) (n m : ℕ)
     rw [this]
     obtain ⟨l, hs, hl⟩ := h (k + m)
     obtain ⟨l', ht, hl'⟩ := H l hs
-    exact ⟨l', ht, (add_le_add_iff_right m).1 <| _root_.trans (hl.symm.trans_le le_self_add) hl'⟩
+    exact ⟨l', ht, (add_le_add_iff_right m).1 <| trans (hl.symm.trans_le le_self_add) hl'⟩
   · obtain ⟨k, hk⟩ := WithTop.ne_top_iff_exists.1 h
     obtain ⟨l, hs, hl⟩ := le_chainHeight_iff.1 hk.le
     rw [← hk, ← hl]

@@ -121,7 +121,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
         rintro x ⟨rfl | _⟩ y ⟨rfl | _⟩ _
         · apply (irrefl _ ‹j < j›).elim
         · exfalso
-          apply not_le_of_lt (_root_.trans ‹i < j› ‹j < y›) (le_max_of_eq ‹y ∈ t› ‹t.max = i›)
+          apply not_le_of_lt (trans ‹i < j› ‹j < y›) (le_max_of_eq ‹y ∈ t› ‹t.max = i›)
         · first
           | apply lt_of_le_of_lt _ ‹f i < f j›
           | apply lt_of_lt_of_le ‹f j < f i› _

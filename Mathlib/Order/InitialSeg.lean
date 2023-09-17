@@ -269,7 +269,7 @@ theorem lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
 #align principal_seg.lt_top PrincipalSeg.lt_top
 
 theorem init [IsTrans β s] (f : r ≺i s) {a : α} {b : β} (h : s b (f a)) : ∃ a', f a' = b :=
-  f.down.1 <| _root_.trans h <| f.lt_top _
+  f.down.1 <| trans h <| f.lt_top _
 #align principal_seg.init PrincipalSeg.init
 
 /-- A principal segment is in particular an initial segment. -/
@@ -522,7 +522,7 @@ noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : ∀ a, { b // ¬
     let S := { b | ∀ a h, s (IH a h).1 b }
     have : f a ∈ S := fun a' h =>
       ((trichotomous _ _).resolve_left fun h' =>
-            (IH a' h).2 <| _root_.trans (f.map_rel_iff.2 h) h').resolve_left
+            (IH a' h).2 <| trans (f.map_rel_iff.2 h) h').resolve_left
         fun h' => (IH a' h).2 <| h' ▸ f.map_rel_iff.2 h
     exact ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, this⟩ this⟩
 set_option linter.uppercaseLean3 false in

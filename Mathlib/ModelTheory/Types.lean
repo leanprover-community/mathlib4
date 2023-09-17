@@ -219,7 +219,7 @@ theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
   refine'
     (@Formula.realize_equivSentence_symm_con _
       ((M.subtheoryModel p.subset).reduct (L.lhomWithConstants α)) _ _ M.struc _ φ).trans
-      (_root_.trans (_root_.trans _ (p.isMaximal.isComplete.realize_sentence_iff φ M))
+      (trans (trans _ (p.isMaximal.isComplete.realize_sentence_iff φ M))
         (p.isMaximal.mem_iff_models φ).symm)
   rfl
 #align first_order.language.Theory.exists_Model_is_realized_in FirstOrder.Language.Theory.exists_modelType_is_realized_in

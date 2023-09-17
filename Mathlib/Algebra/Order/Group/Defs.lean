@@ -143,7 +143,7 @@ theorem le_inv_mul_iff_le : 1 ≤ b⁻¹ * a ↔ b ≤ a := by
 @[to_additive]
 theorem inv_mul_le_one_iff : a⁻¹ * b ≤ 1 ↔ b ≤ a :=
   -- Porting note: why is the `_root_` needed?
-  _root_.trans inv_mul_le_iff_le_mul <| by rw [mul_one]
+  trans inv_mul_le_iff_le_mul <| by rw [mul_one]
 #align inv_mul_le_one_iff inv_mul_le_one_iff
 #align neg_add_nonpos_iff neg_add_nonpos_iff
 
@@ -200,7 +200,7 @@ theorem lt_inv_mul_iff_lt : 1 < b⁻¹ * a ↔ b < a := by
 
 @[to_additive]
 theorem inv_mul_lt_one_iff : a⁻¹ * b < 1 ↔ b < a :=
-  _root_.trans inv_mul_lt_iff_lt_mul <| by rw [mul_one]
+  trans inv_mul_lt_iff_lt_mul <| by rw [mul_one]
 #align inv_mul_lt_one_iff inv_mul_lt_one_iff
 #align neg_add_neg_iff neg_add_neg_iff
 
@@ -265,7 +265,7 @@ theorem le_mul_inv_iff_le : 1 ≤ a * b⁻¹ ↔ b ≤ a := by
 
 @[to_additive]
 theorem mul_inv_le_one_iff : b * a⁻¹ ≤ 1 ↔ b ≤ a :=
-  _root_.trans mul_inv_le_iff_le_mul <| by rw [one_mul]
+  trans mul_inv_le_iff_le_mul <| by rw [one_mul]
 #align mul_inv_le_one_iff mul_inv_le_one_iff
 #align add_neg_nonpos_iff add_neg_nonpos_iff
 
@@ -328,7 +328,7 @@ theorem lt_mul_inv_iff_lt : 1 < a * b⁻¹ ↔ b < a := by
 
 @[to_additive]
 theorem mul_inv_lt_one_iff : b * a⁻¹ < 1 ↔ b < a :=
-  _root_.trans mul_inv_lt_iff_lt_mul <| by rw [one_mul]
+  trans mul_inv_lt_iff_lt_mul <| by rw [one_mul]
 #align mul_inv_lt_one_iff mul_inv_lt_one_iff
 #align add_neg_neg_iff add_neg_neg_iff
 

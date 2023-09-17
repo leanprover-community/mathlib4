@@ -385,7 +385,7 @@ theorem as_sum_support (p : R[X]) : p = ∑ i in p.support, monomial i (p.coeff 
 #align polynomial.as_sum_support Polynomial.as_sum_support
 
 theorem as_sum_support_C_mul_X_pow (p : R[X]) : p = ∑ i in p.support, C (p.coeff i) * X ^ i :=
-  _root_.trans p.as_sum_support <| by simp only [C_mul_X_pow_eq_monomial]
+  trans p.as_sum_support <| by simp only [C_mul_X_pow_eq_monomial]
 #align polynomial.as_sum_support_C_mul_X_pow Polynomial.as_sum_support_C_mul_X_pow
 
 /-- We can reexpress a sum over `p.support` as a sum over `range n`,

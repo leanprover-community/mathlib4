@@ -1576,7 +1576,7 @@ theorem _root_.Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type
       rcases h j i with ⟨k, hk, hk'⟩
       use k
       rw [coe_insert, Set.insert_subset_iff]
-      exact ⟨hk hbj, _root_.trans hti hk'⟩
+      exact ⟨hk hbj, trans hti hk'⟩
 #align directed.exists_mem_subset_of_finset_subset_bUnion Directed.exists_mem_subset_of_finset_subset_biUnion
 
 theorem _root_.DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f : ι → Set α}
@@ -2974,7 +2974,7 @@ theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) :
 -/
 theorem filter_eq' [DecidableEq β] (s : Finset β) (b : β) :
     (s.filter fun a => a = b) = ite (b ∈ s) {b} ∅ :=
-  _root_.trans (filter_congr fun _ _ => by simp_rw [@eq_comm _ b]) (filter_eq s b)
+  trans (filter_congr fun _ _ => by simp_rw [@eq_comm _ b]) (filter_eq s b)
 #align finset.filter_eq' Finset.filter_eq'
 
 theorem filter_ne [DecidableEq β] (s : Finset β) (b : β) :
@@ -2985,7 +2985,7 @@ theorem filter_ne [DecidableEq β] (s : Finset β) (b : β) :
 #align finset.filter_ne Finset.filter_ne
 
 theorem filter_ne' [DecidableEq β] (s : Finset β) (b : β) : (s.filter fun a => a ≠ b) = s.erase b :=
-  _root_.trans (filter_congr fun _ _ => by simp_rw [@ne_comm _ b]) (filter_ne s b)
+  trans (filter_congr fun _ _ => by simp_rw [@ne_comm _ b]) (filter_ne s b)
 #align finset.filter_ne' Finset.filter_ne'
 
 theorem filter_inter_filter_neg_eq (s t : Finset α) :

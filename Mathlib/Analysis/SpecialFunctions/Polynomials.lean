@@ -91,7 +91,7 @@ theorem abs_tendsto_atTop (hdeg : 0 < P.degree) :
 theorem abs_isBoundedUnder_iff :
     (IsBoundedUnder (· ≤ ·) atTop fun x => |eval x P|) ↔ P.degree ≤ 0 := by
   refine' ⟨fun h => _, fun h => ⟨|P.coeff 0|, eventually_map.mpr (eventually_of_forall
-    (forall_imp (fun _ => le_of_eq) fun x => congr_arg abs <| _root_.trans (congr_arg (eval x)
+    (forall_imp (fun _ => le_of_eq) fun x => congr_arg abs <| trans (congr_arg (eval x)
     (eq_C_of_degree_le_zero h)) eval_C))⟩⟩
   contrapose! h
   exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atTop P h)
@@ -108,7 +108,7 @@ theorem tendsto_nhds_iff {c : 𝕜} :
   · have := P.isEquivalent_atTop_lead.tendsto_nhds h
     by_cases hP : P.leadingCoeff = 0
     · simp only [hP, zero_mul, tendsto_const_nhds_iff] at this
-      refine' ⟨_root_.trans hP this, by simp [leadingCoeff_eq_zero.1 hP]⟩
+      refine' ⟨trans hP this, by simp [leadingCoeff_eq_zero.1 hP]⟩
     · rw [tendsto_const_mul_pow_nhds_iff hP, natDegree_eq_zero_iff_degree_le_zero] at this
       exact this.symm
   · refine' P.isEquivalent_atTop_lead.symm.tendsto_nhds _

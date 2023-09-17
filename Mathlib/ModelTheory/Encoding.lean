@@ -118,7 +118,7 @@ theorem listEncode_injective :
 #align first_order.language.term.list_encode_injective FirstOrder.Language.Term.listEncode_injective
 
 theorem card_le : #(L.Term α) ≤ max ℵ₀ #(Sum α (Σi, L.Functions i)) :=
-  lift_le.1 (_root_.trans Term.encoding.card_le_card_list (lift_le.2 (mk_list_le_max _)))
+  lift_le.1 (trans Term.encoding.card_le_card_list (lift_le.2 (mk_list_le_max _)))
 #align first_order.language.term.card_le FirstOrder.Language.Term.card_le
 
 theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi, L.Functions i)) := by
@@ -133,7 +133,7 @@ theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi,
         add_assoc, lift_lift, lift_lift, mk_fin, lift_natCast]
       exact add_le_add_right (nat_lt_aleph0 _).le _
     · rw [← one_le_iff_ne_zero]
-      refine' _root_.trans _ (le_ciSup (bddAbove_range _) 1)
+      refine' trans _ (le_ciSup (bddAbove_range _) 1)
       rw [one_le_iff_ne_zero, mk_ne_zero_iff]
       exact ⟨var (Sum.inr 0)⟩
   · rw [max_le_iff, ← infinite_iff]
@@ -224,9 +224,9 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
     ⟨sigmaImp (listDecode l).1 (listDecode (listDecode l).2).1,
       (listDecode (listDecode l).2).2,
       le_max_of_le_right
-        (_root_.trans (listDecode _).2.2
+        (trans (listDecode _).2.2
           (max_le (le_add_right le_self_add)
-            (_root_.trans (listDecode _).2.2 (max_le (le_add_right le_self_add) le_add_self))))⟩
+            (trans (listDecode _).2.2 (max_le (le_add_right le_self_add) le_add_self))))⟩
   | Sum.inr (Sum.inr 1)::l =>
     ⟨sigmaAll (listDecode l).1, (listDecode l).2,
       (listDecode l).2.2.trans (max_le_max le_rfl le_add_self)⟩

@@ -415,13 +415,13 @@ theorem quotientMap_surjective {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : 
 theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type*} [CommRing R'] [CommRing S'] {f : R →+* S}
     {f' : R' →+* S'} {g : R →+* R'} {g' : S →+* S'} (hfg : f'.comp g = g'.comp f) (I : Ideal S') :
     -- Porting note: was losing track of I
-    let leq := le_of_eq (_root_.trans (comap_comap (I := I) f g') (hfg ▸ comap_comap (I := I) g f'))
+    let leq := le_of_eq (trans (comap_comap (I := I) f g') (hfg ▸ comap_comap (I := I) g f'))
     (quotientMap I g' le_rfl).comp (quotientMap (I.comap g') f le_rfl) =
     (quotientMap I f' le_rfl).comp (quotientMap (I.comap f') g leq) := by
   refine RingHom.ext fun a => ?_
   obtain ⟨r, rfl⟩ := Quotient.mk_surjective a
   simp only [RingHom.comp_apply, quotientMap_mk]
-  exact congr_arg (Ideal.Quotient.mk I) (_root_.trans (g'.comp_apply f r).symm
+  exact congr_arg (Ideal.Quotient.mk I) (trans (g'.comp_apply f r).symm
     (hfg ▸ f'.comp_apply g r))
 #align ideal.comp_quotient_map_eq_of_comp_eq Ideal.comp_quotientMap_eq_of_comp_eq
 

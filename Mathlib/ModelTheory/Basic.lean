@@ -946,14 +946,14 @@ variable [Language.empty.Structure M] [Language.empty.Structure N]
 @[simp]
 theorem empty.nonempty_embedding_iff :
     Nonempty (M ↪[Language.empty] N) ↔ Cardinal.lift.{w'} #M ≤ Cardinal.lift.{w} #N :=
-  _root_.trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map fun f => { toEmbedding := f }⟩
+  trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map fun f => { toEmbedding := f }⟩
     Cardinal.lift_mk_le'.symm
 #align first_order.language.empty.nonempty_embedding_iff FirstOrder.Language.empty.nonempty_embedding_iff
 
 @[simp]
 theorem empty.nonempty_equiv_iff :
     Nonempty (M ≃[Language.empty] N) ↔ Cardinal.lift.{w'} #M = Cardinal.lift.{w} #N :=
-  _root_.trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
+  trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
     Cardinal.lift_mk_eq'.symm
 #align first_order.language.empty.nonempty_equiv_iff FirstOrder.Language.empty.nonempty_equiv_iff
 

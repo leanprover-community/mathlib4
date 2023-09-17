@@ -154,7 +154,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
       -- solve all the inequalities `0 < m ^ ??`
       any_goals exact pow_pos (zero_lt_two.trans_le hm) _
       -- `2 ≤ m ^ n!` is a consequence of monotonicity of exponentiation at `2 ≤ m`.
-      exact _root_.trans (_root_.trans hm (pow_one _).symm.le)
+      exact trans (trans hm (pow_one _).symm.le)
         (pow_mono (one_le_two.trans hm) n.factorial_pos)
     _ = 1 / (m ^ n !) ^ n := congr_arg ((· / ·) 1) (pow_mul m n ! n)
 #align liouville_number.aux_calc LiouvilleNumber.aux_calc

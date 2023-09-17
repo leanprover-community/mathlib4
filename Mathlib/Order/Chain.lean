@@ -138,7 +138,7 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
   rcases directedOn_iff_directed.mpr (IsChain.directed hchain) a mem1 b mem2 with ⟨z, mem4, H1, H2⟩
   rcases directedOn_iff_directed.mpr (IsChain.directed hchain) z mem4 c mem3 with
     ⟨z', mem5, H3, H4⟩
-  exact ⟨z', mem5, _root_.trans H1 H3, _root_.trans H2 H3, H4⟩
+  exact ⟨z', mem5, trans H1 H3, trans H2 H3, H4⟩
 #align is_chain.exists3 IsChain.exists3
 
 end Total

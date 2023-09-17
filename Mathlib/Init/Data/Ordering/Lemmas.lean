@@ -59,7 +59,7 @@ theorem cmpUsing_eq_gt [IsStrictOrder α lt] (a b : α) :
   · intro hba
     constructor
     · intro hab
-      exact absurd (_root_.trans hab hba) (irrefl a)
+      exact absurd (trans hab hba) (irrefl a)
     · assumption
 #align cmp_using_eq_gt cmpUsing_eq_gt
 

@@ -357,7 +357,7 @@ theorem exists_maximal_algebraicIndependent (s t : Set A) (hst : s ⊆ t)
     ⟨u, ⟨huai, _, hut⟩, hsu, hx⟩
   use u, huai, hsu, hut
   intro x hxai huv hxt
-  exact hx _ ⟨hxai, _root_.trans hsu huv, hxt⟩ huv
+  exact hx _ ⟨hxai, trans hsu huv, hxt⟩ huv
 #align exists_maximal_algebraic_independent exists_maximal_algebraicIndependent
 
 section repr

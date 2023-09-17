@@ -1130,7 +1130,7 @@ theorem isField_of_isIntegral_of_isField {R S : Type*} [CommRing R] [Nontrivial 
   -- Let `a_inv` be the inverse of `algebraMap R S a`,
   -- then we need to show that `a_inv` is of the form `algebraMap R S b`.
   obtain ⟨a_inv, ha_inv⟩ := hS.mul_inv_cancel
-    fun h => ha (hRS (_root_.trans h (RingHom.map_zero _).symm))
+    fun h => ha (hRS (trans h (RingHom.map_zero _).symm))
   -- Let `p : R[X]` be monic with root `a_inv`,
   -- and `q` be `p` with coefficients reversed (so `q(a) = q'(a) * a + 1`).
   -- We claim that `q(a) = 0`, so `-q'(a)` is the inverse of `a`.

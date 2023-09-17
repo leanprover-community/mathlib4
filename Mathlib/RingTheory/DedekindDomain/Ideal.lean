@@ -1249,7 +1249,7 @@ theorem Ideal.le_of_pow_le_prime {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (h :
 
 theorem Ideal.pow_le_prime_iff {I P : Ideal R} [_hP : P.IsPrime] {n : ℕ} (hn : n ≠ 0) :
     I ^ n ≤ P ↔ I ≤ P :=
-  ⟨Ideal.le_of_pow_le_prime, fun h => _root_.trans (Ideal.pow_le_self hn) h⟩
+  ⟨Ideal.le_of_pow_le_prime, fun h => trans (Ideal.pow_le_self hn) h⟩
 #align ideal.pow_le_prime_iff Ideal.pow_le_prime_iff
 
 theorem Ideal.prod_le_prime {ι : Type*} {s : Finset ι} {f : ι → Ideal R} {P : Ideal R}
@@ -1358,7 +1358,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type*} {s
     (prod_eq : ∏ i in s, P i ^ e i = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
   IsDedekindDomain.quotientEquivPiOfProdEq I (fun i : s => P i) (fun i : s => e i)
     (fun i => prime i i.2) (fun i j h => coprime i i.2 j j.2 (Subtype.coe_injective.ne h))
-    (_root_.trans (Finset.prod_coe_sort s fun i => P i ^ e i) prod_eq)
+    (trans (Finset.prod_coe_sort s fun i => P i ^ e i) prod_eq)
 #align is_dedekind_domain.quotient_equiv_pi_of_finset_prod_eq IsDedekindDomain.quotientEquivPiOfFinsetProdEq
 
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R / P i ^ e i`,

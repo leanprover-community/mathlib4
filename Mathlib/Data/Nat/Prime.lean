@@ -464,7 +464,7 @@ theorem dvd_of_forall_prime_mul_dvd {a b : ℕ}
   obtain rfl | ha := eq_or_ne a 1
   · apply one_dvd
   obtain ⟨p, hp⟩ := exists_prime_and_dvd ha
-  exact _root_.trans (dvd_mul_left a p) (hdvd p hp.1 hp.2)
+  exact trans (dvd_mul_left a p) (hdvd p hp.1 hp.2)
 #align nat.dvd_of_forall_prime_mul_dvd Nat.dvd_of_forall_prime_mul_dvd
 
 /-- Euclid's theorem on the **infinitude of primes**.

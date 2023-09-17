@@ -388,7 +388,7 @@ theorem absNorm_span_insert (r : S) (s : Set S) :
     absNorm (span (insert r s)) ∣ gcd (absNorm (span s)) (Algebra.norm ℤ r).natAbs :=
   (dvd_gcd_iff _ _ _).mpr
     ⟨absNorm_dvd_absNorm_of_le (span_mono (Set.subset_insert _ _)),
-      _root_.trans
+      trans
         (absNorm_dvd_absNorm_of_le (span_mono (Set.singleton_subset_iff.mpr (Set.mem_insert _ _))))
         (by rw [absNorm_span_singleton])⟩
 #align ideal.abs_norm_span_insert Ideal.absNorm_span_insert

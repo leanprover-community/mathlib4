@@ -723,7 +723,7 @@ theorem associated_iff_normalizedFactors_eq_normalizedFactors {x y : α} (hx : x
     x ~ᵤ y ↔ normalizedFactors x = normalizedFactors y := by
   refine'
     ⟨fun h => _, fun h =>
-      (normalizedFactors_prod hx).symm.trans (_root_.trans (by rw [h]) (normalizedFactors_prod hy))⟩
+      (normalizedFactors_prod hx).symm.trans (trans (by rw [h]) (normalizedFactors_prod hy))⟩
   apply le_antisymm <;> rw [← dvd_iff_normalizedFactors_le_normalizedFactors]
   all_goals simp [*, h.dvd, h.symm.dvd]
 #align unique_factorization_monoid.associated_iff_normalized_factors_eq_normalized_factors UniqueFactorizationMonoid.associated_iff_normalizedFactors_eq_normalizedFactors

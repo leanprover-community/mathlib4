@@ -98,7 +98,7 @@ theorem ext_functor {G} [Groupoid.{v} G] [IsFreeGroupoid G] {X : Type v} [Group 
     (f g : G ⥤ CategoryTheory.SingleObj X) (h : ∀ (a b) (e : a ⟶ b), f.map (of e) = g.map (of e)) :
     f = g :=
   let ⟨_, _, u⟩ := @unique_lift G _ _ X _ fun (a b : Generators G) (e : a ⟶ b) => g.map (of e)
-  _root_.trans (u _ h) (u _ fun _ _ _ => rfl).symm
+  trans (u _ h) (u _ fun _ _ _ => rfl).symm
 #align is_free_groupoid.ext_functor IsFreeGroupoid.ext_functor
 
 /-- An action groupoid over a free group is free. More generally, one could show that the groupoid
@@ -182,7 +182,7 @@ theorem treeHom_eq {a : G} (p : Path (root T) a) : treeHom T a = homOfPath T p :
 @[simp]
 theorem treeHom_root : treeHom T (root' T) = 𝟙 _ :=
   -- this should just be `treeHom_eq T Path.nil`, but Lean treats `homOfPath` with suspicion.
-    _root_.trans
+    trans
     (treeHom_eq T Path.nil) rfl
 #align is_free_groupoid.spanning_tree.tree_hom_root IsFreeGroupoid.SpanningTree.treeHom_root
 

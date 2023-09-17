@@ -840,7 +840,7 @@ theorem prod_eq_mul {s : Finset α} {f : α → β} (a b : α) (hn : a ≠ b)
     exact fun c hc hcb => h₀ c hc ⟨ne_of_mem_of_not_mem hc h₁, hcb⟩
   · rw [ha h₁, hb h₂, mul_one]
     exact
-      _root_.trans
+      trans
         (prod_congr rfl fun c hc =>
           h₀ c hc ⟨ne_of_mem_of_not_mem hc h₁, ne_of_mem_of_not_mem hc h₂⟩)
         prod_const_one
@@ -975,7 +975,7 @@ theorem prod_apply_ite {s : Finset α} {p : α → Prop} {_hp : DecidablePred p}
     (h : γ → β) :
     (∏ x in s, h (if p x then f x else g x)) =
       (∏ x in s.filter p, h (f x)) * ∏ x in s.filter fun x => ¬p x, h (g x) :=
-  _root_.trans (prod_apply_dite _ _ _)
+  trans (prod_apply_dite _ _ _)
     (congr_arg₂ _ (@prod_attach _ _ _ _ (h ∘ f)) (@prod_attach _ _ _ _ (h ∘ g)))
 #align finset.prod_apply_ite Finset.prod_apply_ite
 #align finset.sum_apply_ite Finset.sum_apply_ite

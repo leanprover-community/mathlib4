@@ -101,7 +101,7 @@ theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A
   have d_ne_zero : algebraMap A K (den A x) ≠ 0 :=
     IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (den A x).2
   use ↑d⁻¹ * num A x
-  refine' _root_.trans _ (mk'_num_den A x)
+  refine' trans _ (mk'_num_den A x)
   rw [map_mul, map_units_inv, hd]
   apply mul_left_cancel₀ d_ne_zero
   rw [← mul_assoc, mul_inv_cancel d_ne_zero, one_mul, mk'_spec']

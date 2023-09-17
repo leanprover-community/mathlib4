@@ -150,7 +150,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
   · simp
   · simp_rw [List.countP_cons, List.count_cons, List.sum_map_add]
     congr 1
-    · refine' _root_.trans _ h
+    · refine' trans _ h
       by_cases ha : a ∈ as
       · simp [dedup_cons_of_mem ha]
       · simp only [dedup_cons_of_not_mem ha, List.filter]
@@ -158,9 +158,9 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
         | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
         | false => simp only
     · by_cases hp : p a
-      · refine' _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
+      · refine' trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
         simp [hp, count_dedup]
-      · refine' _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
+      · refine' trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
         obtain ⟨a', ha'⟩ := List.mem_map.1 hn
         split_ifs at ha' with ha
         · simp only [ha, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,

@@ -119,7 +119,7 @@ protected theorem Chain.pairwise [IsTrans α R] :
     hb.pairwise.cons
       (by
         simp only [mem_cons, forall_eq_or_imp, h, true_and_iff]
-        exact fun c hc => _root_.trans h (rel_of_pairwise_cons hb.pairwise hc))
+        exact fun c hc => trans h (rel_of_pairwise_cons hb.pairwise hc))
 #align list.chain.pairwise List.Chain.pairwise
 
 theorem chain_iff_pairwise [IsTrans α R] {a : α} {l : List α} : Chain R a l ↔ Pairwise R (a :: l) :=

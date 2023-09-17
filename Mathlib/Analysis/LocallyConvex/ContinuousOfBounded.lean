@@ -114,7 +114,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
       simp only [Ne.def, Nat.succ_ne_zero, not_false_iff, Nat.cast_add, Nat.cast_one, true_and_iff]
       -- `b (n + 1) ⊆ b n` follows from `Antitone`.
       have h : b (n + 1) ⊆ b n := bE.2 (by simp)
-      refine' _root_.trans _ h
+      refine' trans _ h
       rintro y ⟨x, hx, hy⟩
       -- Since `b (n + 1)` is balanced `(n+1)⁻¹ b (n + 1) ⊆ b (n + 1)`
       rw [← hy]

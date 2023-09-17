@@ -191,11 +191,11 @@ variable [IsTrans N r] (m n : M) {a b c d : N}
 
 --  Lemmas with 3 elements.
 theorem act_rel_of_rel_of_act_rel (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
-  _root_.trans (act_rel_act_of_rel m ab) rl
+  trans (act_rel_act_of_rel m ab) rl
 #align act_rel_of_rel_of_act_rel act_rel_of_rel_of_act_rel
 
 theorem rel_act_of_rel_of_rel_act (ab : r a b) (rr : r c (μ m a)) : r c (μ m b) :=
-  _root_.trans rr (act_rel_act_of_rel _ ab)
+  trans rr (act_rel_act_of_rel _ ab)
 #align rel_act_of_rel_of_rel_act rel_act_of_rel_of_rel_act
 
 end Trans
@@ -209,7 +209,7 @@ variable {M N μ r} {mu : N → N → N} [IsTrans N r] [i : CovariantClass N N m
   [i' : CovariantClass N N (swap mu) r] {a b c d : N}
 
 theorem act_rel_act_of_rel_of_rel (ab : r a b) (cd : r c d) : r (mu a c) (mu b d) :=
-  _root_.trans (@act_rel_act_of_rel _ _ (swap mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
+  trans (@act_rel_act_of_rel _ _ (swap mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
 #align act_rel_act_of_rel_of_rel act_rel_act_of_rel_of_rel
 
 end MEqN
@@ -229,12 +229,12 @@ variable [IsTrans N r] (m n : M) {a b c d : N}
 --  Lemmas with 3 elements.
 theorem act_rel_of_act_rel_of_rel_act_rel (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
     r (μ m a) c :=
-  _root_.trans ab (rel_of_act_rel_act m rl)
+  trans ab (rel_of_act_rel_act m rl)
 #align act_rel_of_act_rel_of_rel_act_rel act_rel_of_act_rel_of_rel_act_rel
 
 theorem rel_act_of_act_rel_act_of_rel_act (ab : r (μ m a) (μ m b)) (rr : r b (μ m c)) :
     r a (μ m c) :=
-  _root_.trans (rel_of_act_rel_act m ab) rr
+  trans (rel_of_act_rel_act m ab) rr
 #align rel_act_of_act_rel_act_of_rel_act rel_act_of_act_rel_act_of_rel_act
 
 end Trans

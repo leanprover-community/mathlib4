@@ -258,7 +258,7 @@ def ElementaryEmbedding.ofModelsElementaryDiagram (N : Type*) [L.Structure N] [L
     [(lhomWithConstants L M).IsExpansionOn N] [N ⊨ L.elementaryDiagram M] : M ↪ₑ[L] N :=
   ⟨((↑) : L[[M]].Constants → N) ∘ Sum.inr, fun n φ x => by
     refine'
-      _root_.trans _
+      trans _
         ((realize_iff_of_model_completeTheory M N
               (((L.lhomWithConstants M).onBoundedFormula φ).subst
                   (Constants.term ∘ Sum.inr ∘ x)).alls).trans
@@ -286,7 +286,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
     ∀ (n : ℕ) (φ : L.BoundedFormula Empty n) (xs : Fin n → M),
       φ.Realize (f ∘ default) (f ∘ xs) ↔ φ.Realize default xs
   · intro n φ x
-    refine' φ.realize_relabel_sum_inr.symm.trans (_root_.trans (h n _ _) φ.realize_relabel_sum_inr)
+    refine' φ.realize_relabel_sum_inr.symm.trans (trans (h n _ _) φ.realize_relabel_sum_inr)
   refine' fun n φ => φ.recOn _ _ _ _ _
   · exact fun {_} _ => Iff.rfl
   · intros
