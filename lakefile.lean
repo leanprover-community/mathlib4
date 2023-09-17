@@ -29,6 +29,8 @@ lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
 
+-- Due to a change in Lake at v4.1.0-rc1, we need to give this a different name
+-- than the `lean_exe runLinter` inherited from Std, or we always run that.
 lean_exe runMathlibLinter where
   root := `scripts.runLinter
   supportInterpreter := true
