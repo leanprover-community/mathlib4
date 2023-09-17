@@ -236,93 +236,63 @@ namespace CommutingProbability
 
 open Pointwise
 
-lemma mul_lemma {A B : Set G} (hA : A.Finite) (hB : B.Finite) : (A * B).Finite := by
-  exact hA.mul hB
-
 lemma _root_.Set.Finite.pow {A : Set G} (hA : A.Finite) (n : ℕ) : (A ^ n).Finite := by
   induction' n with n hn
-  . rw [pow_zero]
+  · rw [pow_zero]
     exact Set.finite_one
-  . rw [pow_succ]
+  · rw [pow_succ]
     exact hA.mul hn
 
-lemma _root_.Set.Finite.sdiff {A B : Set G} (hA : A.Finite) : (A \ B).Finite := by
-  exact Set.Finite.diff hA B
-
-lemma _root_.Set.Infinite.pow {A : Set G} (hA : A.Infinite) (n : ℕ) : (A ^ (n + 1)).Infinite := by
-  sorry
-
--- instance (A B : Set G) [Finite A] [Finite B] : Finite (A * B) := by
---   exact Finite.Set.finite_image2 (· * ·) A B
-
--- instance (A : Set G) [Finite A] (n : ℕ) : Finite (A ^ n) := by
---   induction' n with n hn
---   . rw [pow_zero]
---     infer_instance
---   . rw [pow_succ]
---     infer_instance
-
--- instance (A B : Set G) [hA : Infinite A] [hB : Nonempty B] : Infinite (A * B) := by
---   have key := Set.infinite_coe_iff.mp hA
---   rcases hB with ⟨b, hb⟩
---   refine' Set.infinite_coe_iff.mpr _
---   refine' Set.Infinite.image2_left key hb _
---   apply Set.injOn_of_injective
---   exact mul_left_injective b
-
--- instance (A B : Set G) [hA : Nonempty A] [hB : Infinite B] : Infinite (A * B) := by
---   have key := Set.infinite_coe_iff.mp hB
---   rcases hA with ⟨a, ha⟩
---   refine' Set.infinite_coe_iff.mpr _
---   refine' Set.Infinite.image2_right key ha _
---   apply Set.injOn_of_injective
---   exact mul_right_injective a
-
--- instance myinst (A : Set G) [Infinite A] (n : ℕ) : Infinite (A ^ (n + 1 : ℕ)) := by
---   induction' n with n hn
---   . rw [pow_one]
---     infer_instance
---   . rw [pow_succ]
---     infer_instance
-
--- lemma Set.ncard_eq_zero_of_infinite (A : Set G) [hA : Infinite A] : Set.ncard A = 0 :=
---   Set.Infinite.ncard (Set.infinite_coe_iff.mp hA)
+lemma _root_.Set.Infinite.pow_succ {A : Set G} (hA : A.Infinite) (n : ℕ) : (A ^ (n + 1)).Infinite := by
+  induction' n with n hn
+  · rwa [Nat.zero_add, pow_one]
+  · rw [pow_add, pow_one, Set.infinite_mul]
+    exact Or.inl ⟨hn, hA.nonempty⟩
 
 lemma Set.ncard_smul (A : Set G) (g : G) : Set.ncard (g • A) = Set.ncard A := by
   symm
   apply Set.ncard_congr
-  . exact fun a => Set.smul_mem_smul_set
-  . exact fun a b _ _ h => mul_right_injective g h
-  . exact fun b ⟨a, ha, hb⟩ => ⟨a, ha, hb⟩
+  · exact fun a => Set.smul_mem_smul_set
+  · exact fun a b _ _ h => mul_right_injective g h
+  · exact fun b ⟨a, ha, hb⟩ => ⟨a, ha, hb⟩
 
 -- growth lemma for powers of symmetric sets
 lemma mylem (A : Set G) (hA : A⁻¹ = A) (k : ℕ) (g : G)
     (h : g ∈ A ^ (k + 2) \ A ^ (k + 1)) : g • A ⊆ A ^ (k + 3) \ A ^ k := by
   rintro - ⟨a, ha, rfl⟩
   refine' ⟨_, fun hg => h.2 _⟩ <;> rw [pow_succ', Set.mem_mul]
-  . exact ⟨g, a, h.1, ha, rfl⟩
-  . exact ⟨g * a, a⁻¹, hg, Set.mem_inv.mp (hA.symm ▸ ha), mul_inv_cancel_right g a⟩
+  · exact ⟨g, a, h.1, ha, rfl⟩
+  · exact ⟨g * a, a⁻¹, hg, Set.mem_inv.mp (hA.symm ▸ ha), mul_inv_cancel_right g a⟩
 
 -- growth lemma for powers of symmetric sets
 lemma mylem2 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
     (h : Set.ncard (A ^ (k + 1) : Set G) < Set.ncard (A ^ (k + 2) : Set G)) :
-    Set.ncard (A ^ k : Set G) + Set.ncard (A : Set G) ≤ Set.ncard (A ^ (k + 3) : Set G) := by
-  by_cases h' : A.Finite
-  . obtain ⟨g, hg⟩ := Set.exists_mem_not_mem_of_ncard_lt_ncard h (h'.pow (k + 1))
-    have h1 : A ^ k ⊆ A ^ (k + 3) := Set.pow_subset_pow_of_one_mem hA1 le_self_add
-    have h2 := Set.ncard_le_of_subset (mylem A hA k g hg) ((h'.pow (k + 3)).diff (A ^ k))
-    rw [add_comm, ←Set.ncard_diff_add_ncard_of_subset h1 (h'.pow (k + 3)), add_le_add_iff_right]
-    rw [Set.ncard_smul] at h2
-    exact h2
-  . replace h' : A.Infinite := h'
-    rw [Set.Infinite.ncard (h'.pow (k + 1))] at h
+    Set.ncard (A : Set G) + Set.ncard (A ^ k : Set G) ≤ Set.ncard (A ^ (k + 3) : Set G) := by
+  rcases Set.finite_or_infinite A with (h' | h'); swap
+  · rw [(h'.pow_succ (k + 1)).ncard] at h
     contradiction
+  obtain ⟨g, hg⟩ := Set.exists_mem_not_mem_of_ncard_lt_ncard h (h'.pow (k + 1))
+  rw [← Set.ncard_smul A g, ← Set.ncard_diff_add_ncard_of_subset
+      (Set.pow_subset_pow_of_one_mem hA1 le_self_add) (h'.pow (k + 3)), add_le_add_iff_right]
+  exact Set.ncard_le_of_subset (mylem A hA k g hg) ((h'.pow (k + 3)).diff (A ^ k))
 
 -- growth lemma for powers of symmetric sets
-lemma mylem3 (A : Set G) (hA1 : 1 ∈ A) (hA2 : A⁻¹ = A) (k : ℕ) (g : G)
-    (h : Set.ncard (A ^ (3 * k + 2) : Set G) < Set.ncard (A ^ (3 * k + 3) : Set G)) :
-    (k + 2) * Set.ncard (A : Set G) ≤ Set.ncard (A ^ (3 * k + 4) : Set G) := by
+lemma mylem4 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
+    (h : Set.ncard (A ^ (3 * k - 1) : Set G) < Set.ncard (A ^ (3 * k) : Set G)) :
+    (k + 1) * Set.ncard (A : Set G) ≤ Set.ncard (A ^ (3 * k + 1) : Set G) := by
   induction' k with k ih
-  . rw [Nat.zero_eq, zero_add, mul_zero, zero_add, two_mul]
-    have := mylem2 A hA2 hA1 (k + 1)
-    sorry
+  · exact (lt_irrefl _ h).elim
+  rcases Set.finite_or_infinite A with (h' | h'); swap
+  · rw [Nat.mul_succ, (h'.pow_succ (3 * k + 2)).ncard] at h
+    contradiction
+  refine' le_trans _ (mylem2 A hA hA1 (3 * k + 1) h)
+  rw [add_comm, add_mul, one_mul, add_le_add_iff_left]
+  cases k
+  · rw [Nat.mul_zero, Nat.one_mul, zero_add, pow_one]
+  refine' ih (Set.ncard_lt_ncard _ (h'.pow _))
+  rw [Set.ssubset_iff_subset_ne, and_iff_right]; swap
+  · exact Set.pow_subset_pow_of_one_mem hA1 (Nat.sub_le _ _)
+  intro h''
+  rw [Nat.mul_succ, Nat.succ_sub_one] at h''
+  rw [Nat.mul_succ, Nat.mul_succ, Nat.succ_sub_one, pow_add A _ 3, h'', ← pow_add] at h
+  exact lt_irrefl _ h
