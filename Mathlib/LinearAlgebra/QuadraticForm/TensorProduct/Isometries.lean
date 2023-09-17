@@ -152,7 +152,7 @@ theorem comp_tensorLId_eq (Q₂ : QuadraticForm R M₂) :
 @[simp]
 theorem tmul_tensorLId_apply
     (Q₂ : QuadraticForm R M₂) (x : R ⊗[R] M₂) :
-    Q₂ (TensorProduct.lid R M₂ x) = Q₂.tmul (sq (R := R)) x :=
+    Q₂ (TensorProduct.lid R M₂ x) = (sq (R := R)).tmul Q₂ x :=
   FunLike.congr_fun (comp_tensorLId_eq Q₂) x
 
 /-- `TensorProduct.lid` preserves tensor products of quadratic forms. -/
