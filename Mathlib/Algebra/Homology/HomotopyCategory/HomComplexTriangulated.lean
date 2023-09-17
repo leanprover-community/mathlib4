@@ -409,7 +409,7 @@ namespace BifunctorFlipObjCommShift
 
 variable (L)
 
-def iso :
+noncomputable def iso :
     CategoryTheory.shiftFunctor (CochainComplex C ℤ)ᵒᵖ n ⋙ (Functor.flip (bifunctor C)).obj L ≅
       (Functor.flip (bifunctor C)).obj L ⋙
         CategoryTheory.shiftFunctor (CochainComplex AddCommGroupCat ℤ) n :=
@@ -452,10 +452,32 @@ attribute [irreducible] iso
 
 end BifunctorFlipObjCommShift
 
-/-instance : ((bifunctor C).flip.obj L).CommShift ℤ where
+/-noncomputable instance : ((bifunctor C).flip.obj L).CommShift ℤ where
   iso n := BifunctorFlipObjCommShift.iso n L
-  zero := sorry
-  add := sorry-/
+  zero := by
+    ext K i (α : Cochain (K⟦0⟧).unop L i)
+    dsimp
+    rw [BifunctorFlipObjCommShift.iso_hom_app 0 0 (zero_add 0) L K]
+    dsimp
+    erw [leftShiftIso_hom_f_apply 0 0 (zero_add 0) _ i (add_zero i).symm]
+    apply Cochain.ext
+    intro p q hpq
+    dsimp
+    rw [XIsoOfEq_inv_apply_v, Cochain.leftUnshift_v _ i _ p q (by linarith) p (by linarith),
+      zero_mul, zero_mul, zero_add, EuclideanDomain.zero_div, Int.negOnePow_zero, one_smul]
+    erw [bifunctor_map_app_f_apply]
+    rw [Cochain.zero_cochain_comp_v, Cochain.ofHom_v]
+    simp only [shiftFunctor_obj_X, shiftFunctorObjXIso, Functor.CommShift.isoZero_hom_app, Functor.flip_obj_obj,
+      bifunctor_obj, functor_obj, Functor.flip_obj_map, HomologicalComplex.comp_f, HomComplex_X,
+      AddCommGroupCat.coe_comp, Function.comp_apply, bifunctor_map_app_f_apply,
+      shiftFunctorZero_inv_app_f]
+    erw [XIsoOfEq_hom_apply_v]
+    rw [Cochain.zero_cochain_comp_v, Cochain.ofHom_v, Pretriangulated.shiftFunctorZero_op_hom_app,
+      unop_comp, HomologicalComplex.comp_f, assoc]
+    simp only [Functor.op_obj, Opposite.unop_op, Functor.id_obj, Quiver.Hom.unop_op]
+    rw [shiftFunctorZero_inv_app_f]
+    rfl
+  add := sorry -/
 
 end
 

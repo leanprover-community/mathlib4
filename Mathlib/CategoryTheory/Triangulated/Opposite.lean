@@ -353,6 +353,55 @@ noncomputable def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
   obtain rfl : m = -n := by linarith
   exact Iso.refl _
 
+lemma shiftFunctorZero_op_hom_app (X : Cᵒᵖ) :
+    (shiftFunctorZero Cᵒᵖ ℤ).hom.app X = (shiftFunctorOpIso C 0 0 (zero_add 0)).hom.app X ≫
+      ((shiftFunctorZero C ℤ).inv.app X.unop).op := by
+  erw [@pullbackShiftFunctorZero_hom_app (OppositeShift C ℤ) _ ℤ ℤ  _ _
+    (AddMonoidHom.mk' (fun n => -n) (fun a b => by dsimp; abel) : ℤ →+ ℤ) _ X,
+    oppositeShiftFunctorZero_hom_app]
+  rfl
+
+attribute [reassoc] op_comp
+
+variable {C}
+
+lemma shiftFunctorZero_op_inv_app (X : Cᵒᵖ) :
+    (shiftFunctorZero Cᵒᵖ ℤ).inv.app X =
+      ((shiftFunctorZero C ℤ).hom.app X.unop).op ≫
+      (shiftFunctorOpIso C 0 0 (zero_add 0)).inv.app X := by
+  rw [← cancel_epi ((shiftFunctorZero Cᵒᵖ ℤ).hom.app X), Iso.hom_inv_id_app,
+    shiftFunctorZero_op_hom_app, assoc, ← op_comp_assoc, Iso.hom_inv_id_app, op_id,
+    id_comp, Iso.hom_inv_id_app]
+
+lemma shiftFunctorAdd'_op_hom_app (X : Cᵒᵖ) (a₁ a₂ a₃ : ℤ) (h : a₁ + a₂ = a₃)
+    (b₁ b₂ b₃ : ℤ) (h₁ : a₁ + b₁ = 0) (h₂ : a₂ + b₂ = 0) (h₃ : a₃ + b₃ = 0) :
+    (shiftFunctorAdd' Cᵒᵖ a₁ a₂ a₃ h).hom.app X =
+      (shiftFunctorOpIso C _ _ h₃).hom.app X ≫
+        ((shiftFunctorAdd' C b₁ b₂ b₃ (by linarith)).inv.app X.unop).op ≫
+        (shiftFunctorOpIso C _ _ h₂).inv.app _ ≫
+        (shiftFunctor Cᵒᵖ a₂).map ((shiftFunctorOpIso C _ _ h₁).inv.app X) := by
+  erw [@pullbackShiftFunctorAdd'_hom_app (OppositeShift C ℤ) _ ℤ ℤ _ _
+    (AddMonoidHom.mk' (fun n => -n) (fun a b => by dsimp; abel) : ℤ →+ ℤ) _ X
+    a₁ a₂ a₃ h b₁ b₂ b₃ (by dsimp; linarith) (by dsimp; linarith) (by dsimp; linarith)]
+  erw [oppositeShiftFunctorAdd'_hom_app]
+  obtain rfl : b₁ = -a₁ := by linarith
+  obtain rfl : b₂ = -a₂ := by linarith
+  obtain rfl : b₃ = -a₃ := by linarith
+  rfl
+
+lemma shiftFunctorAdd'_op_inv_app (X : Cᵒᵖ) (a₁ a₂ a₃ : ℤ) (h : a₁ + a₂ = a₃)
+    (b₁ b₂ b₃ : ℤ) (h₁ : a₁ + b₁ = 0) (h₂ : a₂ + b₂ = 0) (h₃ : a₃ + b₃ = 0) :
+    (shiftFunctorAdd' Cᵒᵖ a₁ a₂ a₃ h).inv.app X =
+      (shiftFunctor Cᵒᵖ a₂).map ((shiftFunctorOpIso C _ _ h₁).hom.app X) ≫
+      (shiftFunctorOpIso C _ _ h₂).hom.app _ ≫
+      ((shiftFunctorAdd' C b₁ b₂ b₃ (by linarith)).hom.app X.unop).op ≫
+      (shiftFunctorOpIso C _ _ h₃).inv.app X := by
+  rw [← cancel_epi ((shiftFunctorAdd' Cᵒᵖ a₁ a₂ a₃ h).hom.app X), Iso.hom_inv_id_app,
+    shiftFunctorAdd'_op_hom_app C X a₁ a₂ a₃ h b₁ b₂ b₃ h₁ h₂ h₃,
+    assoc, assoc, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app]
+  erw [Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc]
+  rw [← op_comp_assoc, Iso.hom_inv_id_app, op_id, id_comp, Iso.hom_inv_id_app]
+
 end
 
 end Pretriangulated

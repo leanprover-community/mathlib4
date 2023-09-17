@@ -61,4 +61,42 @@ instance [Preadditive C] (n : A) [(shiftFunctor C n).Additive] :
   change (shiftFunctor C n).op.Additive
   infer_instance
 
+lemma oppositeShiftFunctorZero_inv_app (X : OppositeShift C A) :
+    (shiftFunctorZero (OppositeShift C A) A).inv.app X =
+      ((shiftFunctorZero C A).hom.app X.unop).op := rfl
+
+lemma oppositeShiftFunctorZero_hom_app (X : OppositeShift C A) :
+    (shiftFunctorZero (OppositeShift C A) A).hom.app X =
+      ((shiftFunctorZero C A).inv.app X.unop).op := by
+  rw [← cancel_mono ((shiftFunctorZero (OppositeShift C A) A).inv.app X),
+    Iso.hom_inv_id_app, oppositeShiftFunctorZero_inv_app, ← op_comp,
+    Iso.hom_inv_id_app, op_id]
+  rfl
+
+variable {A}
+
+lemma oppositeShiftFunctorAdd_inv_app (X : OppositeShift C A) (a b : A) :
+    (shiftFunctorAdd (OppositeShift C A) a b).inv.app X =
+      ((shiftFunctorAdd C a b).hom.app X.unop).op := rfl
+
+lemma oppositeShiftFunctorAdd_hom_app (X : OppositeShift C A) (a b : A) :
+    (shiftFunctorAdd (OppositeShift C A) a b).hom.app X =
+      ((shiftFunctorAdd C a b).inv.app X.unop).op := by
+  rw [← cancel_mono ((shiftFunctorAdd (OppositeShift C A) a b).inv.app X),
+    Iso.hom_inv_id_app, oppositeShiftFunctorAdd_inv_app, ← op_comp,
+    Iso.hom_inv_id_app, op_id]
+  rfl
+
+lemma oppositeShiftFunctorAdd'_inv_app (X : OppositeShift C A) (a b c : A) (h : a + b = c) :
+    (shiftFunctorAdd' (OppositeShift C A) a b c h).inv.app X =
+      ((shiftFunctorAdd' C a b c h).hom.app X.unop).op := by
+  subst h
+  simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_inv_app]
+
+lemma oppositeShiftFunctorAdd'_hom_app (X : OppositeShift C A) (a b c : A) (h : a + b = c) :
+    (shiftFunctorAdd' (OppositeShift C A) a b c h).hom.app X =
+      ((shiftFunctorAdd' C a b c h).inv.app X.unop).op := by
+  subst h
+  simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_hom_app]
+
 end CategoryTheory
