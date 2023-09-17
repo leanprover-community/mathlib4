@@ -49,7 +49,6 @@ open Lean.Elab.Term.Quotation in
 macro_rules
   | `(binder%(finset, $e ∈ $s)) => do
     let (e, ty) ← destructAscription e
-    if e matches `($_ $_*) then Macro.throwUnsupported
     `(binderResolved%(finset% $s, $e, $ty))
 
 /-- For the `finset` domain, `a + b = n` for sums over the antidiagonal. -/

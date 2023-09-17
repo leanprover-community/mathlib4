@@ -31,29 +31,42 @@ which expands to the same expression as
 namely
 `Exists fun (x : Nat) ↦ Exists fun (y : Nat) ↦ Exists fun z ↦ z < x ∧ z < y`
 -/
-syntax "expand_binders% " ident " (" ident " => " term ", " ident ppSpace ident " => " term ")"
+syntax "expand_binders% " ident " ("
+    -- Unrestricted binder (ex: `x => Sup x`)
+    ident " => " term ", "
+    -- Non-dependent prop binder (ex: `p x => p ∧ x`)
+    ident ppSpace ident " => " term
+    -- Binder with domain (ex: `s x => Finset.sum s x`)
+    (", " ident ppSpace ident " => " term)? ")"
   flexibleBinders ", " term : term
 
 macro_rules
-  | `(expand_binders% $domType ($x => $term, $y $r => $term') $bs:flexibleBinders, $body) => do
-    let applyStd (b ty body : Term) : MacroM Term :=
-      term.replaceM fun x' ↦ do
-        unless x == x' do return none
-        `(fun ($b : $ty) ↦ $body)
+  | `(expand_binders% $domType ($x => $term, $p $r => $termProp $[, $s? $x'? => $termDom?]?)
+        $bs:flexibleBinders, $body) => show MacroM Term from do
+    let applyStd (ty b : Term) (dom? : Option Term) (body : Term) : MacroM Term := do
+      match dom? with
+      | none =>
+        term.replaceM fun t ↦ do
+          if t == x then `(fun ($b : $ty) ↦ $body)
+          else return none
+      | some dom =>
+        let (some s, some x', some termDom) := (s?, x'?, termDom?)
+          | withRef ty <| withRef b <|
+              Macro.throwError "Notation is missing implementation for bounded quantifiers"
+        termDom.replaceM fun t ↦ do
+          if t == s then return dom
+          else if t == x' then `(fun ($b : $ty) ↦ $body)
+          else return none
     let applyProp (ty body : Term) : MacroM Term :=
-      term'.replaceM fun x' ↦ do
-        if y == x' then
-          return ty
-        else if r == x' then
-          return body
-        else
-          return none
+      termProp.replaceM fun t ↦ do
+        if t == p then return ty
+        else if t == r then return body
+        else return none
     let res ← expandFlexibleBinders domType.getId bs
-    show MacroM Term from do
-      res.foldrM (init := body) fun
-        | .std dom bind, body => applyStd bind dom body
-        | .prop dom, body => do applyProp dom body
-        | .match discr patt, body => `(match $discr:term with | $patt => $body)
+    res.foldrM (init := body) fun
+      | .std ty bind dom?, body => applyStd ty bind dom? body
+      | .prop p, body => do applyProp p body
+      | .match discr patt, body => `(match $discr:term with | $patt => $body)
 
 macro (name := expandFoldl) "expand_foldl% "
   "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
@@ -76,8 +89,15 @@ syntax foldAction := "(" ident ppSpace strLit "*" (precedence)? " => " foldKind
 /-- `notation3` argument binding a name. -/
 syntax identOptScoped :=
   ident (notFollowedBy(":" "(" "scoped") precedence)?
-  (":" "(" "scoped " ("(" ident ") ")? ident " => " term
-      (", " ident ppSpace ident " => " term)? ")")?
+  (":" "(" "scoped " ("(" ident ") ")?
+      -- Unrestricted binder (ex: `x => Sup x`)
+      -- Pretty printable using `(_ : _)`
+      ident " => " term
+      -- Non-dependent prop binder (ex: `p x => p ∧ x`)
+      (atomic(", " &"prop") " := " ident ppSpace ident " => " term)?
+      -- Binder with domain (ex: `s x => Finset.sum s x`)
+      -- Pretty printable using `(_ ∈ _)`
+      (atomic(", " &"bounded") " := " ident ppSpace ident " => " term)? ")")?
 /-- `notation3` argument. -/
 -- Note: there is deliberately no ppSpace between items
 -- so that the space in the literals themselves stands out
@@ -485,24 +505,30 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
             mkFoldrMatcher id.getId x.getId y.getId scopedTerm init (getBoundNames boundValues)
         | _ => throwUnsupportedSyntax
     | `(notation3Item| $lit:ident $(prec?)? :
-          (scoped $[($domType?:ident)]? $scopedId:ident => $scopedTerm
-            $[, $propDom? $propBody? => $propTerm?]?)) =>
+          (scoped $[($domType?:ident)]?
+            $scopedId:ident => $scopedTerm
+            $[, prop := $propTy? $propBody? => $propTerm?]?
+            $[, bounded := $dom? $domId? => $domTerm?]?)) =>
       hasScoped := true
       let domType ← domType?.getDM `(type)
-      let propDom ← propDom?.getDM `(propDom)
+      let propTy ← propTy?.getDM `(propTy)
       let propBody ← propBody?.getDM `(propBody)
       let propTerm ← propTerm?.getDM <| scopedTerm.replaceM fun s =>
-        if s == scopedId then `(fun (_ : $propDom) => $propBody) else return none
+        if s == scopedId then `(fun (_ : $propTy) => $propBody) else return none
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
         `(macroArg| $lit:ident:term $(prec?)?)
       matchers := matchers.push <|
         mkScopedMatcher lit.getId scopedId.getId scopedTerm (getBoundNames boundValues)
       let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
       let propTerm' ← propTerm.replaceM fun s => pure (boundValues.find? s.getId)
+      let domTerm'? ← domTerm?.mapM fun domTerm =>
+        domTerm.replaceM fun s => pure (boundValues.find? s.getId)
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| ←
         `(expand_binders% $domType
-            ($scopedId => $scopedTerm', $propDom $propBody => $propTerm')
+            ($scopedId => $scopedTerm',
+              $propTy $propBody => $propTerm'
+              $[, $dom? $domId? => $domTerm'?]?)
             $$binders,
           $(⟨lit.1.mkAntiquotNode `term⟩):term)
     | `(notation3Item| $lit:ident $(prec?)?) =>

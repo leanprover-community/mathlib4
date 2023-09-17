@@ -12,7 +12,7 @@ namespace Test
 def Filter (α : Type) : Type := (α → Prop) → Prop
 def Filter.atTop [Preorder α] : Filter α := fun _ => True
 def Filter.eventually (p : α → Prop) (f : Filter α) := f p
-def Filter.top (α : Type) : Filter α := fun s => ∀ x, s x
+def Filter.top {α : Type} : Filter α := fun s => ∀ x, s x
 
 notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) => r
 
@@ -25,24 +25,18 @@ section
 open Mathlib.FlexibleBinders Lean
 
 macro_rules
-  | `(binderDefault%(finset, $e)) => `(binderResolved%(Filter.top, $e))
-
-/-- For the `filter` domain, `(x : ty)` is a binder over `Filter.top` for `ty`. -/
-macro_rules
-  | `(binder%(filter, ($e :%$c $ty))) => do
-    if e matches `($_ $_*) then Macro.throwUnsupported
-    if e matches `(($_ : $_)) then Macro.throwErrorAt c "Unexpected type ascription"
-    `(binderResolved%((Filter.top : Filter $ty), $e))
-
-macro_rules
   | `(binder%(filter, $e ∈ $f)) => do
     let (e, ty) ← destructAscription e
-    if e matches `($_ $_*) then Macro.throwUnsupported
-    `(binderResolved%(($f : Filter $ty), $e))
+    `(binderResolved%($ty, $e, $f))
 
 end
 
---notation3 "∀ᶠ' " (...) ", " r:(scoped (filter) p => Filter.eventually p f) => r
+notation3 "∀ᶠ' " (...) ", "
+    r:(scoped (filter) p => Filter.eventually p Filter.top,
+       bounded := f p => Filter.eventually p f) => r
+
+#check ∀ᶠ' x : Nat, 1 < x
+#check fun (f : Filter Nat) => ∀ᶠ' x ∈ f, 1 < x
 
 def foobar (p : α → Prop) (f : Prop) := ∀ x, p x = f
 
@@ -111,7 +105,7 @@ notation3 "BAD " c "; " (x", "* => foldl (a b => b) c) " DAB" => myId x
 inductive ExistsF {α : Sort u} (p : α → Prop) : Prop where
   | intro (w : α) (h : p w) : ExistsF p
 
-notation3 "∃F " (...) ", " r:(scoped p => Exists p, p r => p ∧ r) => r
+notation3 "∃F " (...) ", " r:(scoped p => Exists p, prop := p r => p ∧ r) => r
 
 /-- info: ∃F (x : ℕ), x = x : Prop -/
 #guard_msgs in #check ∃F (x : Nat), x = x
@@ -119,3 +113,67 @@ notation3 "∃F " (...) ", " r:(scoped p => Exists p, p r => p ∧ r) => r
 #guard_msgs in #check ∃F (x : Nat) (y < x), x = y
 /-- info: ∃F (x : ℕ), x < 10 ∧ ∃F (y : ℕ), y < 10 ∧ x + y = 1 : Prop -/
 #guard_msgs in #check ∃F x y < 10, x + y = 1
+
+
+structure Finset (α : Type _) where
+  s : α → Prop
+
+class Fintype (α : Type _) where
+  univ : Finset α
+
+def Finset.univ {α : Type _} [Fintype α] : Finset α := Fintype.univ
+
+def Set (α : Type _) := α → Prop
+instance {α : Type _} : Membership α (Set α) := ⟨fun x s => s x⟩
+instance {α : Type _} : CoeSort (Set α) (Type _) := ⟨fun s => {x // x ∈ s}⟩
+def Set.toFinset {α : Type _} (s : Set α) [Fintype s] : Finset α := .mk s
+
+def Finset.sum {α : Type _} (s : Finset α) (f : α → Nat) : Nat := 0
+
+namespace FinsetFlex
+open Lean Meta Mathlib.FlexibleBinders
+
+/-- `finset% t` elaborates `t` as a `Finset`.
+If `t` is a `Set`, then inserts `Set.toFinset`.
+Does not make use of the expected type; useful for big operators over finsets.
+```
+#check finset% Finset.range 2 -- Finset Nat
+#check finset% (Set.univ : Set Bool) -- Finset Bool
+```
+-/
+elab (name := finsetStx) "finset% " t:term : term => do
+  let u ← mkFreshLevelMVar
+  let ty ← mkFreshExprMVar (mkSort (.succ u))
+  let x ← Elab.Term.elabTerm t (mkApp (.const ``Finset [u]) ty)
+  let xty ← whnfR (← inferType x)
+  if xty.isAppOfArity ``Set 1 then
+    Elab.Term.elabAppArgs (.const ``Set.toFinset [u]) #[] #[.expr x] none false false
+  else
+    return x
+
+open Lean.Elab.Term.Quotation in
+/-- `quot_precheck` for the `finset%` syntax. -/
+@[quot_precheck ExtendedBinder2.finsetStx] def precheckFinsetStx : Precheck
+  | `(finset% $t) => precheck t
+  | _ => Elab.throwUnsupportedSyntax
+
+/-- For the `finset` domain, `(x ∈ s)` is a binder over `s` as a `Finset`. -/
+macro_rules
+  | `(binder%(finset, $e ∈ $s)) => do
+    let (e, ty) ← destructAscription e
+    `(binderResolved%(finset% $s, $e, $ty))
+end FinsetFlex
+
+notation3 "∑ " (...) ", "
+    r:(scoped (filter) p => Finset.sum Finset.univ p,
+       bounded := s p => Finset.sum (finset% s) p) => r
+
+instance (n : Nat) : Fintype (Fin n) := sorry
+
+section
+variable (s : Finset Nat) (s' : Set Nat) [Fintype s']
+
+#check ∑ (x : Fin 37) (y ∈ s), x + y
+#check ∑ x ∈ s', x
+
+end
