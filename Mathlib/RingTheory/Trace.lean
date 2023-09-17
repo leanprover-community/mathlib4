@@ -489,7 +489,7 @@ theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
     rfl
     ext
     rw [mul_comm _ (b.equivFun z _), ← smul_eq_mul, of_apply, ← LinearMap.map_smul]
-  rw [← LinearMap.map_sum]
+  rw [← _root_.map_sum]
   congr
   conv_lhs =>
     congr
