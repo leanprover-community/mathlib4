@@ -99,14 +99,14 @@ theorem tmul_comp_tensorAssoc
   exact mul_assoc _ _ _
 
 /-- `TensorProduct.comm` preserves tensor products of quadratic forms. -/
-@[simps]
+@[simps!]
 def tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₁.tmul Q₂).IsometryEquiv (Q₂.tmul Q₁) where
   toLinearEquiv := TensorProduct.comm R M₁ M₂
   map_app' x := FunLike.congr_fun (tmul_comp_tensorComm Q₁ Q₂) x
 
 /-- `TensorProduct.assoc` preserves tensor products of quadratic forms. -/
-@[simps]
+@[simps!]
 def tensorAssoc (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃) :
     ((Q₁.tmul Q₂).tmul Q₃).IsometryEquiv (Q₁.tmul (Q₂.tmul Q₃)) where
   toLinearEquiv := TensorProduct.assoc R M₁ M₂ M₃
