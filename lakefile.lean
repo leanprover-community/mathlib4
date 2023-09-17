@@ -31,8 +31,9 @@ lean_lib Mathlib where
 
 -- Due to a change in Lake at v4.1.0-rc1, we need to give this a different name
 -- than the `lean_exe runLinter` inherited from Std, or we always run that.
+-- See https://github.com/leanprover/lean4/issues/2548
 lean_exe runMathlibLinter where
-  root := `scripts.runLinter
+  root := `scripts.runMathlibLinter
   supportInterpreter := true
 
 lean_exe checkYaml where
