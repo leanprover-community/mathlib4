@@ -86,7 +86,7 @@ variable (μ : Measure X)
 variable {E : Type*} [NormedAddCommGroup E] [TopologicalSpace.SecondCountableTopology E]
 variable [MeasurableSpace E] [BorelSpace E]
 
-lemma lintegral_nnnorm_le [IsFiniteMeasure μ] (f : X →ᵇ E) :
+lemma lintegral_nnnorm_le (f : X →ᵇ E) :
     ∫⁻ x, ‖f x‖₊ ∂μ ≤ ‖f‖₊ * (μ Set.univ) := by
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
     _ ≤ ∫⁻ _, ‖f‖₊ ∂μ         := ?_
@@ -132,14 +132,12 @@ section
 variable {X : Type*} [TopologicalSpace X]
 variable [MeasurableSpace X] [OpensMeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
 
-lemma BoundedContinuousFunction.integral_add_const (f : X →ᵇ ℝ) (c : ℝ) :
-    ∫ x, (f + BoundedContinuousFunction.const X c) x ∂μ =
-      ∫ x, f x ∂μ + ENNReal.toReal (μ (Set.univ)) • c := by
+lemma integral_add_const (f : X →ᵇ ℝ) (c : ℝ) :
+    ∫ x, (f + const X c) x ∂μ = ∫ x, f x ∂μ + ENNReal.toReal (μ (Set.univ)) • c := by
   simp [integral_add (f.integrable _) (integrable_const c)]
 
-lemma BoundedContinuousFunction.integral_const_sub (f : X →ᵇ ℝ) (c : ℝ) :
-    ∫ x, (BoundedContinuousFunction.const X c - f) x ∂μ =
-      ENNReal.toReal (μ (Set.univ)) • c - ∫ x, f x ∂μ := by
+lemma integral_const_sub (f : X →ᵇ ℝ) (c : ℝ) :
+    ∫ x, (const X c - f) x ∂μ = ENNReal.toReal (μ (Set.univ)) • c - ∫ x, f x ∂μ := by
   simp [integral_sub (integrable_const c) (f.integrable _)]
 
 end
