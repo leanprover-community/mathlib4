@@ -50,19 +50,23 @@ def ringEquivCongrLeft {R S G : Type _} [Semiring R] [Semiring S] [AddMonoid G] 
   .ofHomInv (ringHomCongrLeft f) (ringHomCongrLeft f.symm) (by ext <;> simp) (by ext <;> simp)
 
 @[simps]
-def algEquivCongrLeft {k R S G : Type _} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
-    [Algebra k S] [AddMonoid G] (f : R ≃ₐ[k] S) : AddMonoidAlgebra R G ≃ₐ[k] AddMonoidAlgebra S G :=
-  { ringEquivCongrLeft f.toRingEquiv with
+def algHomCongrLeft {k R S G : Type _} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
+    [Algebra k S] [AddMonoid G] (f : R →ₐ[k] S) : AddMonoidAlgebra R G →ₐ[k] AddMonoidAlgebra S G :=
+  { ringHomCongrLeft f.toRingHom with
     toFun := (Finsupp.mapRange f f.map_zero : AddMonoidAlgebra R G → AddMonoidAlgebra S G)
-    invFun :=
-      (Finsupp.mapRange f.symm f.symm.map_zero : AddMonoidAlgebra S G → AddMonoidAlgebra R G)
     commutes' := fun r => by
       -- Porting note: was `ext`
       refine Finsupp.ext fun a => ?_
       simp_rw [AddMonoidAlgebra.coe_algebraMap, Function.comp_apply, Finsupp.mapRange_single]
       congr 2
-      change f.toAlgHom ((algebraMap k R) r) = (algebraMap k S) r
       rw [AlgHom.map_algebraMap] }
+
+@[simps!]
+def algEquivCongrLeft {k R S G : Type _} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
+    [Algebra k S] [AddMonoid G] (f : R ≃ₐ[k] S) : AddMonoidAlgebra R G ≃ₐ[k] AddMonoidAlgebra S G :=
+  .ofAlgHom (algHomCongrLeft f) (algHomCongrLeft f.symm)
+    (AlgHom.ext fun x => Finsupp.ext fun a => by simp)
+    (AlgHom.ext fun x => Finsupp.ext fun a => by simp)
 #align add_monoid_algebra.alg_equiv_congr_left AddMonoidAlgebra.algEquivCongrLeft
 
 @[simps]
