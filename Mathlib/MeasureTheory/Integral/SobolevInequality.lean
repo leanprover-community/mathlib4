@@ -357,12 +357,15 @@ lemma T_empty (p : ℝ) (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
 set_option maxHeartbeats 500000 in
 /-- The main inductive step -/
 theorem marginal_singleton_T_le {p : ℝ} (hp1 : 0 ≤ p) (F : (∀ i, π i) → ℝ≥0∞) (hF : Measurable F)
-    (u : Finset ι) (i : ι) (hp2 : ((insert i u).card - 1 : ℝ) * p ≤ 1) (hi : i ∉ u) :
+    (u : Finset ι) (hp2 : (u.card : ℝ) * p ≤ 1) (i : ι) (hi : i ∉ u) :
     T μ p F (insert i u) ≤ T μ p (∫⋯∫_{i}, F ∂μ) u := by
   calc T μ p F (insert i u)
-      = ∫⋯∫_insert i u, F ^ (1 - ((insert i u).card - 1 : ℝ) * p) * ∏ j in (insert i u), (∫⋯∫_{j}, F ∂μ) ^ p ∂μ := by
-          simp_rw [T]
-    _ = ∫⋯∫_u, (fun x ↦ ∫⁻ (t : π i), (F (update x i t) ^ (1 - ((insert i u).card - 1 : ℝ) * p) * ∏ j in (insert i u), (∫⋯∫_{j}, F ∂μ) (update x i t) ^ p)  ∂ (μ i)) ∂μ := by
+      = ∫⋯∫_insert i u, F ^ (1 - (u.card : ℝ) * p) * ∏ j in (insert i u), (∫⋯∫_{j}, F ∂μ) ^ p ∂μ := by
+          simp_rw [T, card_insert_of_not_mem hi]
+          congr!
+          push_cast
+          ring
+    _ = ∫⋯∫_u, (fun x ↦ ∫⁻ (t : π i), (F (update x i t) ^ (1 - (u.card : ℝ) * p) * ∏ j in (insert i u), (∫⋯∫_{j}, F ∂μ) (update x i t) ^ p)  ∂ (μ i)) ∂μ := by
           rw [marginal_insert' _ _ hi]
           · congr! with x t
             simp only [Pi.mul_apply, Pi.pow_apply, prod_apply]
@@ -374,21 +377,15 @@ theorem marginal_singleton_T_le {p : ℝ} (hp1 : 0 ≤ p) (F : (∀ i, π i) →
   have hF₁ : ∀ {j : ι}, Measurable fun t ↦ (∫⋯∫_{j}, F ∂μ) (update x i t) :=
     fun {_} ↦ hF.marginal μ |>.comp <| measurable_update _
   have hF₀ : Measurable fun t ↦ F (update x i t) := hF.comp <| measurable_update _
-  have hk₀ : (insert i u).card = u.card + 1 := card_insert_of_not_mem hi
   let k : ℝ := u.card
-  have hk : (insert i u).card = k + 1 := by exact_mod_cast hk₀
-  have hk' : 0 ≤ 1 - k * p
-  · rw [hk] at hp2
-    linarith only [hp2]
-  -- sorry
+  have hk' : 0 ≤ 1 - k * p := by linarith only [hp2]
   let X := update x i
-  calc ∫⁻ t, F (X t) ^ (1 - ((insert i u).card - 1 : ℝ) * p)
+  calc ∫⁻ t, F (X t) ^ (1 - k * p)
           * ∏ j in (insert i u), (∫⋯∫_{j}, F ∂μ) (X t) ^ p ∂ (μ i)
       = ∫⁻ t, (∫⋯∫_{i}, F ∂μ) (X t) ^ p * (F (X t) ^ (1 - k * p)
           * ∏ j in u, ((∫⋯∫_{j}, F ∂μ) (X t) ^ p)) ∂(μ i) := by
               -- rewrite integrand so that `(∫⋯∫_insert i s, f ∂μ) ^ p` comes first
               clear_value X
-              rw [hk]
               congr! 2 with t
               simp_rw [prod_insert hi]
               ring_nf
@@ -403,8 +400,8 @@ theorem marginal_singleton_T_le {p : ℝ} (hp1 : 0 ≤ p) (F : (∀ i, π i) →
               rw [lintegral_const_mul]
               exact (hF₀.pow_const _).mul <| Finset.measurable_prod _ fun _ _ ↦ hF₁.pow_const _
     _ ≤ (∫⋯∫_{i}, F ∂μ) x ^ p *
-          ((∫⁻ t, F (X t) ∂μ i) ^ (1 - k * p) *
-            ∏ j in u, (∫⁻ t, (∫⋯∫_{j}, F ∂μ) (X t) ∂(μ i)) ^ p) := by
+          ((∫⁻ t, F (X t) ∂μ i) ^ (1 - k * p)
+          * ∏ j in u, (∫⁻ t, (∫⋯∫_{j}, F ∂μ) (X t) ∂μ i) ^ p) := by
               -- apply Hölder's inequality
               gcongr
               apply ENNReal.lintegral_mul_prod_norm_pow_le
@@ -416,8 +413,7 @@ theorem marginal_singleton_T_le {p : ℝ} (hp1 : 0 ≤ p) (F : (∀ i, π i) →
               · exact hk'
               · exact fun _ _ ↦ hp1
     _ = (∫⋯∫_{i}, F ∂μ) x ^ p *
-          ((∫⋯∫_{i}, F ∂μ) x ^ (1 - k * p) *
-            ∏ j in u, (∫⋯∫_{i, j}, F ∂μ) x ^ p) := by
+          ((∫⋯∫_{i}, F ∂μ) x ^ (1 - k * p) * ∏ j in u, (∫⋯∫_{i, j}, F ∂μ) x ^ p) := by
               -- absorb the newly-created integrals into `∫⋯∫`
               dsimp only
               congr! 2
@@ -427,8 +423,7 @@ theorem marginal_singleton_T_le {p : ℝ} (hp1 : 0 ≤ p) (F : (∀ i, π i) →
               · simp only [Finset.mem_singleton, Finset.mem_insert, Finset.mem_compl] at hj ⊢
                 exact fun h ↦ hi (h ▸ hj)
               rw [marginal_insert _ hF hi']
-    _ = (∫⋯∫_{i}, F ∂μ) x ^ (p + (1 - k * p)) *
-            ∏ j in u, (∫⋯∫_{i, j}, F ∂μ) x ^ p := by
+    _ = (∫⋯∫_{i}, F ∂μ) x ^ (p + (1 - k * p)) *  ∏ j in u, (∫⋯∫_{i, j}, F ∂μ) x ^ p := by
               -- combine two `(∫⋯∫_insert i s, f ∂μ) x` terms
               rw [ENNReal.rpow_add_of_nonneg]
               · ring
@@ -454,15 +449,18 @@ theorem marginal_T_monotone {p : ℝ} (hp1 : 0 ≤ p) (hp2 : (#ι - 1 : ℝ) * p
     Monotone (fun s ↦ T μ p (∫⋯∫_s, f ∂μ) sᶜ) := by
   rw [Finset.monotone_iff']
   intro s i hi
-  convert marginal_singleton_T_le μ hp1 (∫⋯∫_s, f ∂μ) (hf.marginal μ) (insert i s)ᶜ i ?_ ?_ using 2
+  convert marginal_singleton_T_le μ hp1 (∫⋯∫_s, f ∂μ) (hf.marginal μ) (insert i s)ᶜ ?_ i ?_ using 2
   · rw [insert_compl_insert hi]
   · rw [← marginal_union μ f hf]
     · rfl
     rwa [Finset.disjoint_singleton_left]
-  · rw [insert_compl_insert hi]
-    refine le_trans ?_ hp2
+  · refine le_trans ?_ hp2
     gcongr
-    exact card_le_univ sᶜ
+    suffices ((insert i s)ᶜ.card : ℝ) + 1 ≤ #ι by linarith
+    rw [← (insert i s).card_add_card_compl, add_comm]
+    norm_cast
+    gcongr
+    exact Iff.mpr card_pos (Finset.insert_nonempty i s)
   · rw [not_mem_compl]
     exact mem_insert_self i s
 
