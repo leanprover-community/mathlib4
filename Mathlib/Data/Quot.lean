@@ -301,12 +301,12 @@ theorem Quotient.eq [r : Setoid α] {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x
 
 lemma Quotient.forall {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
     (∀ a, p a) ↔ ∀ a : α, p ⟦a⟧ :=
-  ⟨fun h _ ↦ h _, fun h a ↦ a.induction_on h⟩
+  ⟨fun h _ ↦ h _, fun h a ↦ a.ind h⟩
 #align forall_quotient_iff Quotient.forall
 
 lemma Quotient.exists {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
     (∃ a, p a) ↔ ∃ a : α, p ⟦a⟧ :=
-  ⟨fun ⟨q, hq⟩ ↦ q.exists_rep.imp fun a (ha : ⟦a⟧ = q) ↦ ha ▸ hq, fun ⟨a, ha⟩ ↦ ⟨⟦a⟧, ha⟩⟩
+  ⟨fun ⟨q, hq⟩ ↦ q.ind (motive := (p · → _)) .intro hq, fun ⟨a, ha⟩ ↦ ⟨⟦a⟧, ha⟩⟩
 
 @[simp]
 theorem Quotient.lift_mk [s : Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
