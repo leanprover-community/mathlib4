@@ -35,8 +35,10 @@ notation3 "∀ᶠ' " (...) ", "
     r:(scoped (filter) p => Filter.eventually p Filter.top,
        bounded := f p => Filter.eventually p f) => r
 
-#check ∀ᶠ' x : Nat, 1 < x
-#check fun (f : Filter Nat) => ∀ᶠ' x ∈ f, 1 < x
+/-- info: ∀ᶠ' (x : ℕ), 1 < x : Prop -/
+#guard_msgs in #check ∀ᶠ' x : Nat, 1 < x
+/-- info: fun f ↦ ∀ᶠ' x ∈ f, 1 < x : Filter ℕ → Prop -/
+#guard_msgs in #check fun (f : Filter Nat) => ∀ᶠ' x ∈ f, 1 < x
 
 def foobar (p : α → Prop) (f : Prop) := ∀ x, p x = f
 
@@ -49,7 +51,7 @@ notation3 "∀ᶠᶠ " (...) " in " f ": "
 #guard_msgs in #check ∀ᶠᶠ x in Filter.atTop: x < 3, x = 1
 /-- info: ∀ᶠᶠ (x : ℕ) in Filter.atTop: x < 3, x = 1 : Prop -/
 #guard_msgs in #check foobar (fun x ↦ Eq x 1) (Filter.atTop.eventually fun x ↦ LT.lt x 3)
-/-- info: foobar (fun y ↦ y = 1) (∀ᶠ (x : ℕ) in Filter.atTop, x < 3) : Prop -/
+/-- info: foobar (fun y ↦ y = 1) (∀ᶠ' x ∈ Filter.atTop, x < 3) : Prop -/
 #guard_msgs in #check foobar (fun y ↦ Eq y 1) (Filter.atTop.eventually fun x ↦ LT.lt x 3)
 
 notation3 "∃' " (...) ", " r:(scoped p => Exists p) => r
@@ -176,8 +178,11 @@ instance {p : Prop} [Decidable p] : Fintype (PLift p) := sorry
 section
 variable (s : Finset Nat) (s' : Set Nat) [Fintype s']
 
-#check ∑ (x : Fin 37) (y ∈ s), x + y
-#check ∑ x ∈ s', x
-#check ∑ (x y : Fin 37) < 10, x + y
+/-- info: ∑ (x : Fin 37) (y ∈ s), ↑x + y : ℕ -/
+#guard_msgs in #check ∑ (x : Fin 37) (y ∈ s), x + y
+/-- info: ∑ (x : Fin 37) (y ∈ Set.toFinset s'), ↑x + y : ℕ -/
+#guard_msgs in #check ∑ x ∈ s', x
+/-- info: ∑ (x : Fin 37), if x < 10 then ∑ (y : Fin 37), if y < 10 then ↑x + ↑y else 0 else 0 : ℕ -/
+#guard_msgs in #check ∑ (x y : Fin 37) < 10, x + y
 
 end

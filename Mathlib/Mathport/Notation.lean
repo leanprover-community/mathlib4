@@ -351,12 +351,14 @@ against is in the `lit` variable.
 
 Runs `smatcher`, extracts the resulting `scopeId` variable, processes this value
 (which must be a lambda) to produce a binder, and loops. -/
-partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := go #[] where
+partial def matchScoped (lit scopeId : Name) (smatcher : Matcher)
+    (boundDom? boundId? : Option Name) (bmatcher? : Option Matcher) : Matcher := go #[] where
   /-- Variant of `matchScoped` after some number of `binders` have already been captured. -/
   go (binders : Array Term) : Matcher := fun s => do
     -- `lit` is bound to the SubExpr that the `scoped` syntax produced
     s.withVar lit do
     try
+      -- (1) Try using smatcher for quantification over the whole type
       -- Run `smatcher` at `lit`, clearing the `scopeId` variable so that it can get a fresh value
       let s ← smatcher {s with vars := s.vars.erase scopeId}
       s.withVar scopeId do
@@ -382,12 +384,28 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := g
           let binders := binders.push binder
           go binders s
     catch _ =>
-      guard <| !binders.isEmpty
-      if let some binders₂ := s.scopeState then
-        guard <| binders == binders₂ -- TODO: this might be a bit too strict, but it seems to work
-        return s
-      else
-        return {s with scopeState := binders}
+      try
+        -- (2) Try using bmatcher for bounded quantification
+        let (some boundDom, some boundId, some bmatcher) := (boundDom?, boundId?, bmatcher?)
+          | failure
+        let s ← bmatcher {s with vars := s.vars |>.erase boundDom |>.erase boundId}
+        let dom ← s.withVar boundDom delab
+        s.withVar boundId do
+          guard (← getExpr).isLambda
+          withBindingBodyUnusedName <| fun x => do
+            let x : Ident := ⟨x⟩
+            let binder ← `($x:ident ∈ $dom)
+            -- Now use the body of the lambda for `lit` for the next iteration
+            let s ← s.captureSubexpr lit
+            let binders := binders.push binder
+            go binders s
+      catch _ =>
+        guard <| !binders.isEmpty
+        if let some binders₂ := s.scopeState then
+          guard <| binders == binders₂ -- TODO: this might be a bit too strict, but it seems to work
+          return s
+        else
+          return {s with scopeState := binders}
 
 /- Create a `Term` that represents a matcher for `scoped` notation.
 Fails in the `OptionT` sense if a matcher couldn't be constructed.
@@ -397,11 +415,21 @@ Reminder:
 $lit:ident : (scoped (domType)? $scopedId:ident => $scopedTerm:Term,
                 $propDom:ident $propBody:ident => $propScopedTerm:Term)
 ``` -/
-partial def mkScopedMatcher (lit scopeId : Name) (scopedTerm : Term) (boundNames : HashSet Name) :
+partial def mkScopedMatcher (lit : Name)
+    (scopedFn : SyntaxFun₁) (boundedFn? : Option SyntaxFun₂) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   -- Build the matcher for `scopedTerm` with `scopeId` as an additional variable
-  let (keys, smatcher) ← mkExprMatcher scopedTerm (boundNames.insert scopeId)
-  return (keys, ← ``(matchScoped $(quote lit) $(quote scopeId) $smatcher))
+  let (keys, smatcher) ← mkExprMatcher scopedFn.body (boundNames.insert scopedFn.param.getId)
+  if let some boundedFn := boundedFn? then
+    let (keys', bmatcher) ← mkExprMatcher boundedFn.body
+                    (boundNames |>.insert boundedFn.param₁.getId |>.insert boundedFn.param₂.getId)
+    let keys := keys.union keys'
+    return (keys, ←
+      ``(matchScoped $(quote lit) $(quote scopedFn.param.getId) $smatcher
+          $(quote boundedFn.param₁.getId) $(quote boundedFn.param₂.getId) $bmatcher))
+  else
+    return (keys, ←
+      ``(matchScoped $(quote lit) $(quote scopedFn.param.getId) $smatcher none none none))
 
 /-- Matcher for expressions produced by `foldl`. -/
 partial def matchFoldl (lit x y : Name) (smatcher : Matcher) (sinit : Matcher) :
@@ -579,7 +607,7 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
         `(macroArg| $lit:ident:term $(prec?)?)
       matchers := matchers.push <|
-        mkScopedMatcher lit.getId scopedFn.param.getId scopedFn.body (getBoundNames boundValues)
+        mkScopedMatcher lit.getId scopedFn boundedFn? (getBoundNames boundValues)
       let scopedFn' ← scopedFn.updateBody fun s => pure (boundValues.find? s.getId)
       let propFn'? ← propFn?.mapM (·.updateBody fun s => pure (boundValues.find? s.getId))
       let boundedFn'? ← boundedFn?.mapM (·.updateBody fun s => pure (boundValues.find? s.getId))
