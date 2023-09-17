@@ -22,6 +22,17 @@ namespace Finset
 
 namespace Nat
 
+section Binders
+open Mathlib.FlexibleBinders
+
+/-- For the `finset` domain, `a + b = n` for sums over the antidiagonal.
+Example: `∑ i + j = 10, i * j`. -/
+macro_rules
+  | `(binder%(finset%, $a + $b = $n)) =>
+    `(binder%(finset%, ($a, $b) ∈ Finset.Nat.antidiagonal $n))
+
+end Binders
+
 theorem prod_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → M} :
     (∏ p in antidiagonal (n + 1), f p) = f (0, n + 1) * ∏ p in antidiagonal n, f (p.1 + 1, p.2) :=
   by rw [antidiagonal_succ, prod_cons, prod_map]; rfl

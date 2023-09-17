@@ -126,21 +126,21 @@ open Lean.Elab.Term.Quotation in
 
 /-- For the `finset` domain, `x ∈ s` is a binder over `s` as a `Finset`. -/
 macro_rules
-  | `(binder%(finset, $e ∈ $s)) => do
+  | `(binder%(finset%, $e ∈ $s)) => do
     let (e, ty) ← destructAscription e
     `(binderResolved%($ty, $e, finset% $s))
 
 /-- `∑ x, f x` is notation for `Finset.sum Finset.univ f`. It is the sum of `f x`,
 where `x` ranges over the finite domain of `f`. -/
 scoped notation3 (name := bigsum) "∑ "(...)", "
-    r:67:(scoped (finset)
+    r:67:(scoped finset%
             p => Finset.sum Finset.univ p,
             bounded := s p => Finset.sum s p) => r
 
 /-- `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
 where `x` ranges over the finite domain of `f`. -/
 scoped notation3 (name := bigprod) "∏ "(...)", "
-    r:67:(scoped (finset)
+    r:67:(scoped finset%
             p => Finset.prod Finset.univ p,
             bounded := s p => Finset.prod s p) => r
 

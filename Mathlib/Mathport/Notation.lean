@@ -34,7 +34,7 @@ which expands to the same expression as
 namely
 `Exists fun (x : Nat) ↦ Exists fun (y : Nat) ↦ Exists fun z ↦ z < x ∧ z < y`
 -/
-syntax "expand_binders% " ident " ("
+syntax "expand_binders% " flexibleBindersDom " ("
     -- Unrestricted binder (ex: `f => iSup f`)
     syntaxFun₁
     -- Non-dependent prop binder (ex: `p x => p ∧ x`)
@@ -49,7 +49,7 @@ macro_rules
     let expandUniv ← (expandSyntaxFun₁ univStx).getDM Macro.throwUnsupported
     let expandProp? ← propStx?.mapM fun s => (expandSyntaxFun₂ s).getDM Macro.throwUnsupported
     let expandDom? ← domStx?.mapM fun s => (expandSyntaxFun₂ s).getDM Macro.throwUnsupported
-    let res ← expandFlexibleBinders domType.getId bs
+    let res ← expandFlexibleBinders domType bs
     res.foldrM (init := body) fun
       | .std ty bind none, body => return expandUniv.eval (← `(fun ($bind : $ty) ↦ $body))
       | .std ty bind (some dom), body => do
@@ -87,7 +87,7 @@ syntax foldAction := "(" ident ppSpace strLit "*" (precedence)? " => " foldKind
 /-- `notation3` argument binding a name. -/
 syntax identOptScoped :=
   ident (notFollowedBy(":" "(" "scoped") precedence)?
-  (":" "(" "scoped " ("(" ident ") ")?
+  (":" "(" "scoped " (flexibleBindersDom ppSpace)?
       -- Unrestricted binder (ex: `x => Sup x`)
       -- Pretty printable using `(_ : _)`
       syntaxFun₁
@@ -551,12 +551,12 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
             mkFoldrMatcher id.getId x.getId y.getId scopedTerm init (getBoundNames boundValues)
         | _ => throwUnsupportedSyntax
     | `(notation3Item| $lit:ident $(prec?)? :
-          (scoped $[($domType?:ident)]?
+          (scoped $[$domType?:flexibleBindersDom]?
             $scopedStx
             $[, prop := $propStx?]?
             $[, bounded := $boundedStx?]?)) =>
       hasScoped := true
-      let domType ← domType?.getDM `(type)
+      let domType ← domType?.getDM `(flexibleBindersDom| type%)
       let scopedFn ← (expandSyntaxFun₁ scopedStx).getDM throwUnsupportedSyntax
       let propFn? ← propStx?.mapM fun s => (expandSyntaxFun₂ s).getDM throwUnsupportedSyntax
       let boundedFn? ← boundedStx?.mapM fun s => (expandSyntaxFun₂ s).getDM throwUnsupportedSyntax

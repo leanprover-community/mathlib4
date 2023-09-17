@@ -23,17 +23,19 @@ notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) =>
 #guard_msgs in #check ∀ᶠ x in Filter.atTop, x < 3
 
 section
-open Mathlib.FlexibleBinders Lean
+open Mathlib.FlexibleBinders
+
+syntax "filter%" : flexibleBindersDom
 
 macro_rules
-  | `(binder%(filter, $e ∈ $f)) => do
+  | `(binder%(filter%, $e ∈ $f)) => do
     let (e, ty) ← destructAscription e
     `(binderResolved%($ty, $e, $f))
 
 end
 
 notation3 "∀ᶠ' " (...) ", "
-    r:(scoped (filter) p => Filter.eventually p Filter.top,
+    r:(scoped filter% p => Filter.eventually p Filter.top,
        bounded := f p => Filter.eventually p f) => r
 
 /-- info: ∀ᶠ' (x : ℕ), 1 < x : Prop -/
@@ -212,13 +214,13 @@ open Lean.Elab.Term.Quotation in
 
 /-- For the `finset` domain, `(x ∈ s)` is a binder over `s` as a `Finset`. -/
 macro_rules
-  | `(binder%(finset, $e ∈ $s)) => do
+  | `(binder%(finset%, $e ∈ $s)) => do
     let (e, ty) ← destructAscription e
     `(binderResolved%($ty, $e, finset% $s))
 end FinsetFlex
 
 notation3 "∑ " (...) ", "
-    r:(scoped (finset) p => Finset.sum Finset.univ p,
+    r:(scoped finset% p => Finset.sum Finset.univ p,
        --prop := p b => Finset.sum Finset.univ (fun (_ : PLift p) => b),
        prop := p b => if p then b else 0,
        bounded := s p => Finset.sum (finset% s) p) => r

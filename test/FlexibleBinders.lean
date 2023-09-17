@@ -44,14 +44,14 @@ open Lean.Elab.Term.Quotation in
 
 /-- For the `finset` domain, `(x ∈ s)` is a binder over `s` as a `Finset`. -/
 macro_rules
-  | `(binder%(finset, $e ∈ $s)) => do
+  | `(binder%(finset%, $e ∈ $s)) => do
     let (e, ty) ← destructAscription e
     `(binderResolved%($ty, $e, finset% $s))
 
 /-- For the `finset` domain, `a + b = n` for sums over the antidiagonal. -/
 macro_rules
-  | `(binder%(finset, $a + $b = $n)) =>
-    `(binder%(finset, ($a, $b) ∈ Finset.Nat.antidiagonal $n))
+  | `(binder%(finset%, $a + $b = $n)) =>
+    `(binder%(finset%, ($a, $b) ∈ Finset.Nat.antidiagonal $n))
 
 
 /--
@@ -61,7 +61,7 @@ info: binder (y : _)
 ---
 info: binder (z : _)
 -/
-#guard_msgs in #test_flexible_binders type => x y z
+#guard_msgs in #test_flexible_binders type% => x y z
 /--
 info: binder (x : _)
 ---
@@ -69,7 +69,7 @@ info: binder (y : _)
 ---
 info: binder (z : _)
 -/
-#guard_msgs in #test_flexible_binders finset => x y z
+#guard_msgs in #test_flexible_binders finset% => x y z
 
 /--
 info: binder (x : α)
@@ -78,7 +78,7 @@ info: binder (y : α)
 ---
 info: binder (z : α)
 -/
-#guard_msgs in #test_flexible_binders type => x y z : α
+#guard_msgs in #test_flexible_binders type% => x y z : α
 /--
 info: binder (x : α)
 ---
@@ -86,7 +86,7 @@ info: binder (y : α)
 ---
 info: binder (z : α)
 -/
-#guard_msgs in #test_flexible_binders finset => x y z : α
+#guard_msgs in #test_flexible_binders finset% => x y z : α
 
 /--
 info: binder (x : _)
@@ -101,7 +101,7 @@ info: binder (z : _)
 ---
 info: prop binder (_ : z ∈ s)
 -/
-#guard_msgs in #test_flexible_binders type => x y z ∈ s
+#guard_msgs in #test_flexible_binders type% => x y z ∈ s
 /--
 info: binder (x : _) ∈ finset% s
 ---
@@ -109,7 +109,7 @@ info: binder (y : _) ∈ finset% s
 ---
 info: binder (z : _) ∈ finset% s
 -/
-#guard_msgs in #test_flexible_binders finset => x y z ∈ s
+#guard_msgs in #test_flexible_binders finset% => x y z ∈ s
 
 /--
 info: binder (x✝ : _)
@@ -118,13 +118,13 @@ info: prop binder (_ : x✝ ∈ s)
 ---
 info: match x✝ with | (x, y) => ...
 -/
-#guard_msgs in #test_flexible_binders type => (x, y) ∈ s
+#guard_msgs in #test_flexible_binders type% => (x, y) ∈ s
 /--
 info: binder (x✝ : _) ∈ finset% s
 ---
 info: match x✝ with | (x, y) => ...
 -/
-#guard_msgs in #test_flexible_binders finset => (x, y) ∈ s
+#guard_msgs in #test_flexible_binders finset% => (x, y) ∈ s
 
 /--
 info: binder (x : Nat)
@@ -135,13 +135,13 @@ info: binder (y : Nat)
 ---
 info: prop binder (_ : y ∈ s)
 -/
-#guard_msgs in #test_flexible_binders type => (x : Nat) (y : Nat) ∈ s
+#guard_msgs in #test_flexible_binders type% => (x : Nat) (y : Nat) ∈ s
 /--
 info: binder (x : Nat) ∈ finset% s
 ---
 info: binder (y : Nat) ∈ finset% s
 -/
-#guard_msgs in #test_flexible_binders finset => (x : Nat) (y : Nat) ∈ s
+#guard_msgs in #test_flexible_binders finset% => (x : Nat) (y : Nat) ∈ s
 /--
 info: binder (x : Nat)
 ---
@@ -151,29 +151,29 @@ info: binder (y : Nat)
 ---
 info: prop binder (_ : y ∈ s)
 -/
-#guard_msgs in #test_flexible_binders type => (x y : Nat) ∈ s
+#guard_msgs in #test_flexible_binders type% => (x y : Nat) ∈ s
 /--
 info: binder (x : Nat) ∈ finset% s
 ---
 info: binder (y : Nat) ∈ finset% s
 -/
-#guard_msgs in #test_flexible_binders finset => (x y : Nat) ∈ s
+#guard_msgs in #test_flexible_binders finset% => (x y : Nat) ∈ s
 
 /--
 info: binder (x✝ : _)
 ---
 info: match x✝ with | (rfl) => ...
 -/
-#guard_msgs in #test_flexible_binders type => (rfl)
+#guard_msgs in #test_flexible_binders type% => (rfl)
 /-- info: binder (x : _) -/
-#guard_msgs in #test_flexible_binders type => (x)
+#guard_msgs in #test_flexible_binders type% => (x)
 
 /--
 info: binder (x✝ : _) ∈ finset% Finset.Nat.antidiagonal✝ 5
 ---
 info: match x✝ with | (x, y) => ...
 -/
-#guard_msgs in #test_flexible_binders finset => x + y = 5
+#guard_msgs in #test_flexible_binders finset% => x + y = 5
 /--
 info: binder (x✝ : _) ∈ finset% Finset.Nat.antidiagonal✝ 5
 ---
@@ -181,16 +181,16 @@ info: match x✝ with | (x, y) => ...
 ---
 info: binder (z : _) ∈ finset% s x y
 -/
-#guard_msgs in #test_flexible_binders finset => (x + y = 5) (z ∈ s x y)
+#guard_msgs in #test_flexible_binders finset% => (x + y = 5) (z ∈ s x y)
 
 /-- error: Unexpected type ascription -/
-#guard_msgs in #test_flexible_binders type => (x : Nat) : Nat
+#guard_msgs in #test_flexible_binders type% => (x : Nat) : Nat
 /-- error: Unexpected type ascription -/
-#guard_msgs in #test_flexible_binders finset => (x : Nat) : Nat
+#guard_msgs in #test_flexible_binders finset% => (x : Nat) : Nat
 /-- error: Unexpected type ascription -/
-#guard_msgs in #test_flexible_binders finset => x ∈ s : Nat
+#guard_msgs in #test_flexible_binders finset% => x ∈ s : Nat
 /-- error: Unexpected type ascription -/
-#guard_msgs in #test_flexible_binders finset => (x ∈ s) : Nat
+#guard_msgs in #test_flexible_binders finset% => (x ∈ s) : Nat
 
 /--
 info: binder (p : _)
@@ -199,23 +199,23 @@ info: prop binder (_ : p ∈ s)
 ---
 info: binder (x : Fin p.1)
 -/
-#guard_msgs in #test_flexible_binders type => (p ∈ s) (x : Fin p.1)
+#guard_msgs in #test_flexible_binders type% => (p ∈ s) (x : Fin p.1)
 /--
 info: binder (p : _) ∈ finset% s
 ---
 info: binder (x : Fin p.1)
 -/
-#guard_msgs in #test_flexible_binders finset => (p ∈ s) (x : Fin p.1)
+#guard_msgs in #test_flexible_binders finset% => (p ∈ s) (x : Fin p.1)
 
 macro "∃' " bs:flexibleBinders ", " t:term : term => do
-  let res ← expandFlexibleBinders `type bs
+  let res ← expandFlexibleBinders (← `(flexibleBindersDom| type%)) bs
   res.foldrM (init := t) fun
     | .std ty bind _, body => `(Exists fun ($bind : $ty) => $body)
     | .prop p, body => `($p ∧ $body)
     | .match discr patt, body => `(match $discr:term with | $patt => $body)
 
 macro "∑ " bs:flexibleBinders ", " t:term : term => do
-  let res ← expandFlexibleBinders `finset bs
+  let res ← expandFlexibleBinders (← `(flexibleBindersDom| finset%)) bs
   res.foldrM (init := t) fun
   | .std ty bind none, body => `(Finset.sum Finset.univ fun ($bind : $ty) => $body)
   | .std ty bind (some dom), body => `(Finset.sum $dom fun ($bind : $ty) => $body)

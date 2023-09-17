@@ -79,6 +79,17 @@ def elimAscription (b : TSyntax ``flexibleBinders) : MacroM (Option Term) :=
   | `(flexibleBinders| $[: $_]?) => return none
   | _ => Macro.throwUnsupported
 
+/-- Category for "domain types" for flexible binders. -/
+declare_syntax_cat flexibleBindersDom
+
+/-- The `type%` domain type is for binders that only range over types.
+Bounded quantifiers do not occur. -/
+syntax "type%" : flexibleBindersDom
+
+/-- The `finset%` domain type is for having bounded quantifiers that
+range over `Finset`s. Binders can also range over types. -/
+syntax "finset%" : flexibleBindersDom
+
 /-- `binder%(DomainType, t)` is a term that represents a collection of simpler binders that
 are an interpretation of the flexible binder `t`.
 The `DomainType` is some name that is used to control how flexible binders are interpreted.
@@ -92,12 +103,12 @@ expressions. It can resolve into multiple of these expressions by using applicat
 or a null node (see `Mathlib.FlexibleBinders.combineBinders`).
 
 By default, `binder%(DomainType, t)` expands to `binderResolved%(_, t)`. -/
-scoped syntax (name := binderQuery) "binder%(" ident ", " term ")" : term
+scoped syntax (name := binderQuery) "binder%(" flexibleBindersDom ", " term ")" : term
 
 /-- `binderSplit%(DomainType, t)` is a preprocessing step for `binder%(...)`.
 This way `binder%(...)` itself doesn't worry about needing to split binders.
 Expands to `binder%(DomainType, t)` by default. -/
-scoped syntax (name := binderSplitQuery) "binderSplit%(" ident ", " term ")" : term
+scoped syntax (name := binderSplitQuery) "binderSplit%(" flexibleBindersDom ", " term ")" : term
 
 /-- `binderResolved%(ty, b, dom?)` is a possible expansion of `binder%(...)`,
 where `ty` is the type of the binder `b`
@@ -151,7 +162,7 @@ This decision can be revisited if there is an application for doing full macro e
 
 If `bi` is a function application it is interpreted as a sequence of binders.
 If `bi` is a null node it is interpreted as a sequence of binders. -/
-partial def expandBinder (domainType : Name := `type) (bi : Term) :
+partial def expandBinder (domainType : TSyntax `flexibleBindersDom) (bi : Term) :
     MacroM (Array Binder) := do
   process #[] bi
 where
@@ -184,14 +195,15 @@ where
       else
         -- This is some term we haven't begun to process,
         -- so wrap it in `binderSplit%(...)` to initialize.
-        process acc (← `(binderSplit%($(mkIdent domainType), $bi)))
+        process acc (← `(binderSplit%($domainType, $bi)))
 
 /-- Interprets a `flexibleBinders` term as an array of binders.
 
 This is a frontend to `expandBinder` that handles the trailing ascription
 in `Mathlib.FlexibleBinders.expandBinder`. See the documentation there for an explanation
 of `domainType`. -/
-def expandFlexibleBinders (domainType : Name := `Type) (b : TSyntax ``flexibleBinders) :
+def expandFlexibleBinders
+    (domainType : TSyntax `flexibleBindersDom) (b : TSyntax ``flexibleBinders) :
     MacroM (Array Binder) := do
   match ← elimAscription b with
   | some b' => expandBinder domainType b'
@@ -199,10 +211,10 @@ def expandFlexibleBinders (domainType : Name := `Type) (b : TSyntax ``flexibleBi
 
 /-- Command to test flexible binders.
 For example, `#test_flexible_binders => x y z : Nat`
-or `#test_flexible_binders finset => x y z ∈ Nat`. -/
-elab "#test_flexible_binders " dom?:(ident)? " => " e:flexibleBinders : command => do
-  let dom ← dom?.getDM `(type)
-  let res ← Elab.liftMacroM <| expandFlexibleBinders dom.getId e
+or `#test_flexible_binders finset% => x y z ∈ Nat`. -/
+elab "#test_flexible_binders " dom?:(flexibleBindersDom)? " => " e:flexibleBinders : command => do
+  let dom ← dom?.getDM `(flexibleBindersDom| type%)
+  let res ← Elab.liftMacroM <| expandFlexibleBinders dom e
   for r in res do
     match r with
     | .std ty binder none =>
