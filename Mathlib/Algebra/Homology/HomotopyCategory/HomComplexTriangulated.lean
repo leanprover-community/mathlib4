@@ -640,6 +640,30 @@ def bifunctor :
     apply HomotopyCategory.eq_of_homotopy
     exact CochainComplex.HomComplex.homotopyBifunctorMapApp h L.1))
 
+noncomputable instance (K : (HomotopyCategory C (ComplexShape.up ℤ))ᵒᵖ) :
+    ((bifunctor C).obj K).CommShift ℤ :=
+  (inferInstance : (functor' K.unop.1).CommShift ℤ)
+
+section
+
+noncomputable instance [HasZeroObject C] [HasBinaryBiproducts C]
+    (K : (HomotopyCategory C (ComplexShape.up ℤ))ᵒᵖ) :
+    ((bifunctor C).obj K).IsTriangulated :=
+  (inferInstance : (functor' K.unop.1).IsTriangulated)
+
+end
+
+/-
+-- better develop a lifting of functors from the opposite category
+-- of a quotient category, and do a general constructor for the
+-- induced `CommShift` similarly as `liftCommShift` in `Shift.Quotient`
+instance (L : HomotopyCategory C (ComplexShape.up ℤ)) :
+    ((bifunctor C).flip.obj L).CommShift ℤ := sorry
+
+instance [HasZeroObject C] [HasBinaryBiproducts C] (L : HomotopyCategory C (ComplexShape.up ℤ)) :
+    ((bifunctor C).flip.obj L).IsTriangulated := by
+  sorry-/
+
 end HomComplex
 
 end HomotopyCategory
