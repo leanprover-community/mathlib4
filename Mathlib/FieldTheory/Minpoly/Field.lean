@@ -126,19 +126,29 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
   · rwa [Polynomial.Monic, leadingCoeff_mul, leadingCoeff_C, mul_inv_cancel]
 #align minpoly.eq_of_irreducible minpoly.eq_of_irreducible
 
+/-- If `y` is the image of `x` under an injective algebra homomorphism, their minimal polynomials
+coincide.
+
+We take `h : y = f x` as an argument because `rw [h]` typically fails
+since `IsIntegral K y` depends on y.
+-/
+theorem eq_of_algHom_eq {K S T : Type _} [Field K] [Ring S] [Ring T] [Algebra K S] [Algebra K T]
+    (f : S →ₐ[K] T) (hf : Function.Injective f) {x : S} {y : T} (hx : IsIntegral K x)
+    (h : y = f x) : minpoly K x = minpoly K y :=
+  minpoly.unique _ _ (minpoly.monic hx)
+    (by rw [h, aeval_algHom_apply, minpoly.aeval, AlgHom.map_zero])
+    (fun q q_monic root_q =>
+      minpoly.min _ _ q_monic (by rwa [h, aeval_algHom_apply, map_eq_zero_iff _ hf] at root_q))
+
 /-- If `y` is the image of `x` in an extension, their minimal polynomials coincide.
 
-We take `h : y = algebraMap L T x` as an argument because `rw h` typically fails
-since `IsIntegral R y` depends on y.
+We take `h : y = algebraMap S T x` as an argument because `rw [h]` typically fails
+since `IsIntegral K y` depends on y.
 -/
 theorem eq_of_algebraMap_eq {K S T : Type*} [Field K] [CommRing S] [CommRing T] [Algebra K S]
     [Algebra K T] [Algebra S T] [IsScalarTower K S T] (hST : Function.Injective (algebraMap S T))
     {x : S} {y : T} (hx : IsIntegral K x) (h : y = algebraMap S T x) : minpoly K x = minpoly K y :=
-  minpoly.unique _ _ (minpoly.monic hx)
-    (by rw [h, aeval_algebraMap_apply, minpoly.aeval, RingHom.map_zero]) fun q q_monic root_q =>
-    minpoly.min _ _ q_monic
-      ((aeval_algebraMap_eq_zero_iff_of_injective hST).mp
-        (h ▸ root_q : Polynomial.aeval (algebraMap S T x) q = 0))
+  eq_of_algHom_eq (IsScalarTower.toAlgHom K S T) hST hx h
 #align minpoly.eq_of_algebra_map_eq minpoly.eq_of_algebraMap_eq
 
 theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
