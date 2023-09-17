@@ -144,7 +144,7 @@ variable [AddGroupWithOne R]
 
 /-- Cast an integer modulo `n` to another semiring.
 This function is a morphism if the characteristic of `R` divides `n`.
-See `ZMod.cast_hom` for a bundled version. -/
+See `ZMod.castHom` for a bundled version. -/
 @[coe] def cast : ∀ {n : ℕ}, ZMod n → R
   | 0 => Int.cast
   | _ + 1 => fun i => i.val
@@ -443,11 +443,11 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
         map_mul' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_castIso, Fin.coe_mul, Fin.coe_mul, Fin.coe_castIso, Fin.coe_castIso, ← h]
+          rw [Fin.coe_cast, Fin.coe_mul, Fin.coe_mul, Fin.coe_cast, Fin.coe_cast, ← h]
         map_add' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_castIso, Fin.val_add, Fin.val_add, Fin.coe_castIso, Fin.coe_castIso, ← h] }
+          rw [Fin.coe_cast, Fin.val_add, Fin.val_add, Fin.coe_cast, Fin.coe_cast, ← h] }
 #align zmod.ring_equiv_congr ZMod.ringEquivCongr
 
 end CharEq
@@ -532,7 +532,7 @@ theorem nat_coe_zmod_eq_iff (p : ℕ) (n : ℕ) (z : ZMod p) [NeZero p] :
     refine' ⟨n / p, _⟩
     rw [val_nat_cast, Nat.mod_add_div]
   · rintro ⟨k, rfl⟩
-    rw [Nat.cast_add, nat_cast_zmod_val, Nat.cast_mul, nat_cast_self, MulZeroClass.zero_mul,
+    rw [Nat.cast_add, nat_cast_zmod_val, Nat.cast_mul, nat_cast_self, zero_mul,
       add_zero]
 #align zmod.nat_coe_zmod_eq_iff ZMod.nat_coe_zmod_eq_iff
 
@@ -544,7 +544,7 @@ theorem int_coe_zmod_eq_iff (p : ℕ) (n : ℤ) (z : ZMod p) [NeZero p] :
     rw [val_int_cast, Int.emod_add_ediv]
   · rintro ⟨k, rfl⟩
     rw [Int.cast_add, Int.cast_mul, Int.cast_ofNat, Int.cast_ofNat, nat_cast_val,
-      ZMod.nat_cast_self, MulZeroClass.zero_mul, add_zero, cast_id]
+      ZMod.nat_cast_self, zero_mul, add_zero, cast_id]
 #align zmod.int_coe_zmod_eq_iff ZMod.int_coe_zmod_eq_iff
 
 @[push_cast, simp]
@@ -650,7 +650,7 @@ theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := 
       _ = a.natAbs.gcd 0 := by rw [Nat.gcd_zero_right]
   · calc
       a * a⁻¹ = a * a⁻¹ + n.succ * Nat.gcdB (val a) n.succ := by
-        rw [nat_cast_self, MulZeroClass.zero_mul, add_zero]
+        rw [nat_cast_self, zero_mul, add_zero]
       _ = ↑(↑a.val * Nat.gcdA (val a) n.succ + n.succ * Nat.gcdB (val a) n.succ) := by
         push_cast
         rw [nat_cast_zmod_val]
@@ -833,7 +833,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
   constructor
   · rintro ⟨m, he⟩
     cases' m with m
-    · erw [MulZeroClass.mul_zero, mul_eq_zero] at he
+    · erw [mul_zero, mul_eq_zero] at he
       rcases he with (⟨⟨⟩⟩ | he)
       exact Or.inl (a.val_eq_zero.1 he)
     cases m
@@ -844,7 +844,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
     apply Nat.mul_le_mul_left
     erw [Nat.succ_le_succ_iff, Nat.succ_le_succ_iff]; simp
   · rintro (rfl | h)
-    · rw [val_zero, MulZeroClass.mul_zero]
+    · rw [val_zero, mul_zero]
       apply dvd_zero
     · rw [h]
 #align zmod.neg_eq_self_iff ZMod.neg_eq_self_iff
@@ -1072,7 +1072,7 @@ theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (
   rw [sub_eq_iff_eq_add] at he
   subst he
   obtain rfl | hm := eq_or_ne m 0
-  · rw [MulZeroClass.mul_zero, zero_add]
+  · rw [mul_zero, zero_add]
   apply hl.trans
   rw [← add_le_add_iff_right x.natAbs]
   refine' le_trans (le_trans ((add_le_add_iff_left _).2 hl) _) (Int.natAbs_sub_le _ _)
@@ -1160,6 +1160,10 @@ theorem ringHom_eq_of_ker_eq [CommRing R] (f g : R →+* ZMod n)
   rw [Subtype.coe_mk] at this
   rw [← this, RingHom.ext_zmod (f.liftOfRightInverse _ _ ⟨g, _⟩) _, RingHom.id_comp]
 #align zmod.ring_hom_eq_of_ker_eq ZMod.ringHom_eq_of_ker_eq
+
+@[simp]
+lemma castHom_self {n : ℕ} : ZMod.castHom dvd_rfl (ZMod n) = RingHom.id (ZMod n) :=
+  RingHom.ext_zmod (ZMod.castHom dvd_rfl (ZMod n)) (RingHom.id (ZMod n))
 
 section lift
 

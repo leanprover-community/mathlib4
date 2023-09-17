@@ -122,7 +122,7 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
   apply eq_of_irreducible_of_monic
   · exact Associated.irreducible ⟨⟨C p.leadingCoeff⁻¹, C p.leadingCoeff,
       by rwa [← C_mul, inv_mul_cancel, C_1], by rwa [← C_mul, mul_inv_cancel, C_1]⟩, rfl⟩ hp1
-  · rw [aeval_mul, hp2, MulZeroClass.zero_mul]
+  · rw [aeval_mul, hp2, zero_mul]
   · rwa [Polynomial.Monic, leadingCoeff_mul, leadingCoeff_C, mul_inv_cancel]
 #align minpoly.eq_of_irreducible minpoly.eq_of_irreducible
 
@@ -176,7 +176,7 @@ variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F
 /-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
     (x : range (FiniteDimensional.finBasis F E : _ → E)) :
-    { l : K // l ∈ (((minpoly F x.1).map (algebraMap F K)).roots : Multiset K) } :=
+    { l : K // l ∈ (minpoly F x.1).aroots K } :=
   ⟨φ x, by
     rw [mem_roots_map (minpoly.ne_zero_of_finite F x.val),
       ← aeval_def, aeval_algHom_apply, minpoly.aeval, map_zero]⟩
@@ -195,7 +195,7 @@ theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
 noncomputable instance AlgHom.fintype : Fintype (E →ₐ[F] K) :=
   @Fintype.ofInjective _ _
     (Fintype.subtypeProd (finite_range (FiniteDimensional.finBasis F E)) fun e =>
-      ((minpoly F e).map (algebraMap F K)).roots)
+      (minpoly F e).aroots K)
     _ (aux_inj_roots_of_min_poly F E K)
 #align minpoly.alg_hom.fintype minpoly.AlgHom.fintype
 

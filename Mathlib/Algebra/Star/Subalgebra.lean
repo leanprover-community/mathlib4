@@ -58,6 +58,10 @@ instance subsemiringClass : SubsemiringClass (StarSubalgebra R A) A where
   one_mem {s} := s.one_mem'
   zero_mem {s} := s.zero_mem'
 
+instance smulMemClass : SMulMemClass (StarSubalgebra R A) R A where
+  smul_mem {s} r a (ha : a ∈ s.toSubalgebra) :=
+    (SMulMemClass.smul_mem r ha : r • a ∈ s.toSubalgebra)
+
 instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Algebra R A]
     [StarModule R A] : SubringClass (StarSubalgebra R A) A where
   neg_mem {s a} ha := show -a ∈ s.toSubalgebra from neg_mem ha
@@ -791,6 +795,20 @@ protected def codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : 
     A →⋆ₐ[R] S where
   toAlgHom := AlgHom.codRestrict f.toAlgHom S.toSubalgebra hf
   map_star' := fun x => Subtype.ext (map_star f x)
+
+@[simp]
+theorem coe_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
+    ↑(f.codRestrict S hf x) = f x :=
+  rfl
+
+@[simp]
+theorem subtype_comp_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B)
+    (hf : ∀ x : A, f x ∈ S) : S.subtype.comp (f.codRestrict S hf) = f :=
+  StarAlgHom.ext <| coe_codRestrict _ S hf
+
+theorem injective_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
+    Function.Injective (StarAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
+  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
 
 /-- Restriction of the codomain of a `StarAlgHom` to its range. -/
 def rangeRestrict (f : A →⋆ₐ[R] B) : A →⋆ₐ[R] f.range :=

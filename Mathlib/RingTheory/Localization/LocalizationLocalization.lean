@@ -71,8 +71,8 @@ theorem localization_localization_map_units [IsLocalization N T]
 #align is_localization.localization_localization_map_units IsLocalization.localization_localization_map_units
 
 theorem localization_localization_surj [IsLocalization N T] (x : T) :
-    ∃ y : R × localizationLocalizationSubmodule M N, x * algebraMap R T y.2 = algebraMap R T y.1
-    := by
+    ∃ y : R × localizationLocalizationSubmodule M N,
+        x * algebraMap R T y.2 = algebraMap R T y.1 := by
   rcases IsLocalization.surj N x with ⟨⟨y, s⟩, eq₁⟩
   -- x = y / s
   rcases IsLocalization.surj M y with ⟨⟨z, t⟩, eq₂⟩
@@ -287,7 +287,7 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T]
     rw [map_zero]
     apply hx
     rw [← (map_units S s).mul_left_inj, mul_assoc, e, ← map_mul, hz, map_zero,
-      MulZeroClass.zero_mul]
+      zero_mul]
 #align is_fraction_ring.is_fraction_ring_of_is_localization IsFractionRing.isFractionRing_of_isLocalization
 
 theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) [CommRing S]
