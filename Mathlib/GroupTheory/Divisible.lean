@@ -165,10 +165,10 @@ end Prod
 section ULift
 
 @[to_additive]
-instance ULift.rootableBy [RootableBy A α] : RootableBy (ULift A) α where
-  root := λ x a ↦ ULift.up <| RootableBy.root x.down a
-  root_zero := λ x ↦ ULift.ext _ _ <| RootableBy.root_zero x.down
-  root_cancel := λ _ h ↦ ULift.ext _ _ <| RootableBy.root_cancel _ h
+instance ULift.instRootableBy [RootableBy A α] : RootableBy (ULift A) α where
+  root x a := ULift.up <| RootableBy.root x.down a
+  root_zero x := ULift.ext _ _ <| RootableBy.root_zero x.down
+  root_cancel _ h := ULift.ext _ _ <| RootableBy.root_cancel _ h
 
 end ULift
 

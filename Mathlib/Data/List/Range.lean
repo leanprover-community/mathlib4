@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Scott Morrison
 -/
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Zip
 
 #align_import data.list.range from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
@@ -156,6 +157,12 @@ theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
   rw [← length_eq_zero, length_finRange]
 #align list.fin_range_eq_nil List.finRange_eq_nil
 
+theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) :=
+  (List.pairwise_lt_range n).pmap (by simp) (by simp)
+
+theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) :=
+  (List.pairwise_le_range n).pmap (by simp) (by simp)
+
 @[to_additive]
 theorem prod_range_succ {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
     ((range n.succ).map f).prod = ((range n).map f).prod * f n := by
@@ -220,5 +227,11 @@ theorem nthLe_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).nthLe i h = ⟨i, length_finRange n ▸ h⟩ :=
   get_finRange h
 #align list.nth_le_fin_range List.nthLe_finRange
+
+@[simp] theorem indexOf_finRange (i : Fin k) : (finRange k).indexOf i = i := by
+  have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
+  have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
+  have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
+  simpa using (Nodup.get_inj_iff (nodup_finRange k)).mp (Eq.trans h₁ h₂.symm)
 
 end List

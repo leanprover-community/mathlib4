@@ -176,11 +176,11 @@ def next : AddCommGroupCat.{u} := of <|
 
 instance : CategoryTheory.Injective <| next A_ :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
-  @injective_of_divisible _ _ <| @Pi.divisibleBy _ _ _ _ _ _ <| λ f ↦ inferInstance
+  injective_of_divisible _
 
 /-- the next term of `A`'s injective resolution is `∏_{A → ℚ/ℤ}, ℚ/ℤ`.-/
 @[simps] def toNext : A_ ⟶ next A_ where
-  toFun := λ a i ↦ (i a).down
+  toFun := fun a i => (i a).down
   map_zero' := by simp only [map_zero, ULift.zero_down]; rfl
   map_add' := by intros; simp only [map_add]; rfl
 
@@ -189,7 +189,7 @@ lemma toNext_inj_of_exists
       ∃ (f : ModuleCat.of ℤ (ℤ ∙ a) ⟶ ModuleCat.of ℤ (ULift <| AddCircle (1 : ℚ))),
         f ⟨a, Submodule.subset_span rfl⟩ ≠ 0) :
     Function.Injective $ toNext A_ :=
-  (injective_iff_map_eq_zero _).2 λ a h0 ↦ not_not.1 λ ha ↦ by
+  (injective_iff_map_eq_zero _).2 fun a h0 => not_not.1 fun ha => by
     obtain ⟨f, hf⟩ := h a ha
     let g : ModuleCat.of ℤ (ℤ ∙ a) ⟶ ModuleCat.of ℤ A_ := Submodule.subtype _
     have hg : Mono g
@@ -208,31 +208,24 @@ section aux_defs
 variable {A_}
 variable (a : A_)
 
-/-- the `ℤ`-linear map of scalar multiplication (. • a)-/
-@[simps] def smulBya : ℤ →ₗ[ℤ] A_ where
-  toFun := (. • a)
-  map_smul' := by intros; simp [mul_smul]
-  map_add' := by intros; simp [add_smul]
-
-lemma smulBya_range : LinearMap.range (smulBya a) = ℤ ∙ a := by
+lemma _root_.LinearMap.toSpanSingleton_ker :
+    LinearMap.ker (LinearMap.toSpanSingleton ℤ A_ a) = Ideal.span {(addOrderOf a : ℤ)} := by
   ext1 x
-  rw [Submodule.mem_span_singleton]
-  simp only [LinearMap.mem_range, smulBya_apply]
-
-lemma smulBya_ker : LinearMap.ker (smulBya a) = Ideal.span {(addOrderOf a : ℤ)} := by
-  ext1 x
-  rw [Ideal.mem_span_singleton, LinearMap.mem_ker, addOrderOf_dvd_iff_zsmul_eq_zero, smulBya_apply]
+  rw [Ideal.mem_span_singleton, LinearMap.mem_ker, addOrderOf_dvd_iff_zsmul_eq_zero,
+    LinearMap.toSpanSingleton_apply]
 
 /--
 ℤ ⧸ ⟨ord(a)⟩ ≃ aℤ
 -/
 @[simps!] noncomputable def ZModSpanAddOrderOfEquiv :
     (ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)}) ≃ₗ[ℤ] ℤ ∙ a :=
-  letI e1 : (ℤ ⧸ (LinearMap.ker <| smulBya a)) ≃ₗ[ℤ] (ℤ ∙ a) :=
-    (LinearMap.quotKerEquivRange <| smulBya a).trans (LinearEquiv.ofEq _ _ <| smulBya_range a)
-  letI e2 : (ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)}) ≃ₗ[ℤ] (ℤ ⧸ (LinearMap.ker <| smulBya a)) :=
+  letI e1 : (ℤ ⧸ (LinearMap.ker <| LinearMap.toSpanSingleton ℤ A_ a)) ≃ₗ[ℤ] (ℤ ∙ a) :=
+    (LinearMap.quotKerEquivRange <| LinearMap.toSpanSingleton ℤ A_ a).trans
+      (LinearEquiv.ofEq _ _ <| Eq.symm <| LinearMap.span_singleton_eq_range ℤ A_ a)
+  letI e2 : (ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)}) ≃ₗ[ℤ]
+      (ℤ ⧸ (LinearMap.ker <| LinearMap.toSpanSingleton ℤ A_ a)) :=
     Submodule.Quotient.equiv _ _ (LinearEquiv.refl (R := ℤ) (M := ℤ)) <| by
-      rw [smulBya_ker]
+      rw [LinearMap.toSpanSingleton_ker]
       exact Submodule.map_id _
   e2.trans e1
 
@@ -240,8 +233,8 @@ end aux_defs
 
 /-- given `n : ℕ`, the map `m ↦ n / m`. -/
 @[simps] noncomputable def divBy (n : ℕ) : ℤ →ₗ[ℤ] AddCircle (1 : ℚ) where
-  toFun := λ m ↦ Quotient.mk _ <| (m : ℚ) * (n : ℚ)⁻¹
-  map_add' := λ x y ↦ by
+  toFun m := Quotient.mk _ <| (m : ℚ) * (n : ℚ)⁻¹
+  map_add' x y := by
     dsimp
     change _ = Quotient.mk _ (_ + _)
     apply Quotient.sound'
@@ -249,7 +242,7 @@ end aux_defs
     dsimp only
     rw [neg_add_eq_sub, ← sub_mul]
     simpa only [Int.cast_add, sub_self, zero_mul] using (AddSubgroup.zmultiples 1).zero_mem
-  map_smul' := λ x y ↦  by
+  map_smul' x y := by
     dsimp
     change _ = Quotient.mk _ (_ • _)
     apply Quotient.sound'
@@ -272,15 +265,16 @@ variable {a : A_} (infinite_order : ¬IsOfFinAddOrder a)
   e ∘ₗ (ZModSpanAddOrderOfEquiv a).symm.toLinearMap
 
 lemma toRatCircle_apply_self_eq_aux :
-    toRatCircle infinite_order ⟨smulBya a 1,
-      by rw [smulBya_apply, one_smul]; exact Submodule.mem_span_singleton_self a⟩ =
+    toRatCircle infinite_order ⟨LinearMap.toSpanSingleton ℤ A_ a 1, by
+      rw [LinearMap.toSpanSingleton_apply, one_smul]; exact Submodule.mem_span_singleton_self a⟩ =
     Quotient.mk _ (2 : ℚ)⁻¹ := by
   rw [toRatCircle_apply]
-  erw [LinearMap.quotKerEquivRange_symm_apply_image (smulBya a), LinearEquiv.coe_toEquiv]
+  erw [LinearMap.quotKerEquivRange_symm_apply_image (LinearMap.toSpanSingleton ℤ A_ a),
+    LinearEquiv.coe_toEquiv]
   rw [← Submodule.Quotient.equiv_refl, Submodule.Quotient.equiv_symm,
     Submodule.Quotient.equiv_apply]
   convert Submodule.liftQSpanSingleton_apply _ _ _ _ using 1
-  · convert (smulBya_ker a).symm using 1
+  · convert (LinearMap.toSpanSingleton_ker a).symm using 1
     exact Submodule.map_id _
 
 lemma toRatCircle_apply_self_eq :
@@ -331,17 +325,19 @@ lemma divBy_addOrderOf_addOrderOf : divBy (addOrderOf a) (addOrderOf a) = 0 := b
   e ∘ₗ (ZModSpanAddOrderOfEquiv a).symm.toLinearMap
 
 lemma toRatCircle_apply_self_eq_aux :
-    toRatCircle finite_order ⟨smulBya a 1,
-      by rw [smulBya_apply, one_smul]; exact Submodule.mem_span_singleton_self a⟩ =
+    toRatCircle finite_order ⟨LinearMap.toSpanSingleton ℤ A_ a 1, by
+      rw [LinearMap.toSpanSingleton_apply, one_smul]; exact Submodule.mem_span_singleton_self a⟩ =
     Quotient.mk _ (addOrderOf a : ℚ)⁻¹ := by
   rw [toRatCircle_apply]
-  erw [LinearMap.quotKerEquivRange_symm_apply_image (smulBya a), LinearEquiv.coe_toEquiv]
+  erw [LinearMap.quotKerEquivRange_symm_apply_image (LinearMap.toSpanSingleton ℤ A_ a),
+    LinearEquiv.coe_toEquiv]
   rw [← Submodule.Quotient.equiv_refl, Submodule.Quotient.equiv_symm,
     Submodule.Quotient.equiv_apply]
   convert Submodule.liftQSpanSingleton_apply _ _ _ _ using 1
-  simp only [smulBya_apply, Eq.ndrec, id_eq, eq_mpr_eq_cast, cast_eq, LinearEquiv.refl_symm,
-    LinearEquiv.refl_toLinearMap, LinearMap.id_coe, divBy_apply, Int.cast_one, one_mul]
-  · convert (smulBya_ker a).symm using 1
+  simp only [LinearMap.toSpanSingleton_apply, Eq.ndrec, id_eq, eq_mpr_eq_cast, cast_eq,
+    LinearEquiv.refl_symm, LinearEquiv.refl_toLinearMap, LinearMap.id_coe, divBy_apply,
+    Int.cast_one, one_mul]
+  · convert (LinearMap.toSpanSingleton_ker a).symm using 1
     exact Submodule.map_id _
 
 lemma toRatCircle_apply_self_eq :
