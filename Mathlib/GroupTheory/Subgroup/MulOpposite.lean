@@ -39,6 +39,14 @@ def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
   mul_mem' := fun ha hb => H.mul_mem hb ha
   inv_mem' := H.inv_mem
 
+@[to_additive (attr := simp, nolint simpNF)] lemma op_toSubmonoid (H : Subgroup G) :
+    H.op.toSubmonoid = H.toSubmonoid.op :=
+  rfl
+
+@[to_additive (attr := simp, nolint simpNF)] lemma unop_toSubmonoid (H : Subgroup Gᵐᵒᵖ) :
+    H.unop.toSubmonoid = H.toSubmonoid.unop :=
+  rfl
+
 /-- A subgroup `H` of `G` determines a subgroup `H.opposite` of the opposite group `Gᵐᵒᵖ`. -/
 @[to_additive (attr := simps) "An additive subgroup `H` of `G` determines an additive subgroup `H.opposite` of the
  opposite additive group `Gᵃᵒᵖ`."]
@@ -49,14 +57,6 @@ def opEquiv : Subgroup G ≃ Subgroup Gᵐᵒᵖ where
   right_inv _ := SetLike.coe_injective rfl
 #align subgroup.opposite Subgroup.opEquiv
 #align add_subgroup.opposite AddSubgroup.opEquiv
-
-@[to_additive (attr := simp, nolint simpNF)] lemma op_toSubmonoid (H : Subgroup G) :
-    H.op.toSubmonoid = H.toSubmonoid.op :=
-  rfl
-
-@[to_additive (attr := simp, nolint simpNF)] lemma unop_toSubmonoid (H : Subgroup Gᵐᵒᵖ) :
-    H.unop.toSubmonoid = H.toSubmonoid.unop :=
-  rfl
 
 /-- Bijection between a subgroup `H` and its opposite. -/
 @[to_additive (attr := simps!) "Bijection between an additive subgroup `H` and its opposite."]
