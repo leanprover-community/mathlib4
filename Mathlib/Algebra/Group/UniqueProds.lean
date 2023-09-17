@@ -106,7 +106,7 @@ theorem set_subsingleton (h : UniqueMul A B a0 b0) :
 @[to_additive]
 theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
     UniqueMul A B a0 b0 ↔ ∃! ab, ab ∈ A ×ˢ B ∧ ab.1 * ab.2 = a0 * b0 :=
-  ⟨fun _ ↦ ⟨(a0, b0), ⟨Finset.mem_product.mpr ⟨aA, bB⟩, rfl⟩, by simpa⟩,
+  ⟨fun _ ↦ ⟨(a0, b0), ⟨Finset.mk_mem_product aA bB, rfl⟩, by simpa⟩,
     fun h ↦ h.elim
       (by
         rintro ⟨x1, x2⟩ _ J x y hx hy l
@@ -161,11 +161,11 @@ See `UniqueAdd.addHom_map_iff` for a version with swapped bundling."]
 theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Injective f) :
     UniqueMul (A.image f) (B.image f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
   simp_rw [UniqueMul, Finset.mem_image]
-  refine' ⟨fun h a b ha hb ab ↦ _, fun h ↦ _⟩
+  refine ⟨fun h a b ha hb ab ↦ ?_, fun h _ _ ↦ ?_⟩
   · rw [← hf.eq_iff, map_mul, map_mul] at ab
     have := h ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩ ab
     exact ⟨hf this.1, hf this.2⟩
-  · rintro _ _ ⟨a, aA, rfl⟩ ⟨b, bB, rfl⟩ ab
+  · rintro ⟨a, aA, rfl⟩ ⟨b, bB, rfl⟩ ab
     simp only [← map_mul, hf.eq_iff] at ab ⊢
     exact h aA bB ab
 #align unique_mul.mul_hom_image_iff UniqueMul.mulHom_image_iff
@@ -180,10 +180,7 @@ See `UniqueMul.mulHom_image_iff` for a version with swapped bundling. -/
 See `UniqueAdd.addHom_image_iff` for a version with swapped bundling."]
 theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
     UniqueMul (A.map f) (B.map f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
-  classical
-  convert @mulHom_image_iff G H _ _ A B a0 b0 _ ⟨f, mul⟩ f.2 using 2 <;>
-    · ext
-      simp only [Finset.mem_map, MulHom.coe_mk, Finset.mem_image]
+  classical simp_rw [← mulHom_image_iff ⟨f, mul⟩ f.2, Finset.map_eq_image]; rfl
 #align unique_mul.mul_hom_map_iff UniqueMul.mulHom_map_iff
 #align unique_add.add_hom_map_iff UniqueAdd.addHom_map_iff
 
@@ -193,10 +190,8 @@ open Finset MulOpposite
 @[to_additive]
 theorem of_mulOpposite
     (h : UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
-    UniqueMul A B a0 b0 := by
-  intros a b aA bB ab
-  have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by simpa using congr_arg op ab)
-  simpa [and_comm] using this
+    UniqueMul A B a0 b0 := fun a b aA bB ab ↦ by
+  simpa [and_comm] using h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (congr_arg op ab)
 
 @[to_additive]
 theorem to_mulOpposite (h : UniqueMul A B a0 b0) :
@@ -268,7 +263,7 @@ class TwoUniqueProds (G) [Mul G] : Prop where
 attribute [to_additive] TwoUniqueProds
 
 @[to_additive]
-lemma UniqueMul_of_TwoUniqueMul {G} [Mul G] {A B : Finset G} (h : 1 < A.card * B.card →
+lemma uniqueMul_of_twoUniqueMul {G} [Mul G] {A B : Finset G} (h : 1 < A.card * B.card →
     ∃ p1 ∈ A ×ˢ B, ∃ p2 ∈ A ×ˢ B, p1 ≠ p2 ∧ UniqueMul A B p1.1 p1.2 ∧ UniqueMul A B p2.1 p2.2)
     (hA : A.Nonempty) (hB : B.Nonempty) : ∃ a ∈ A, ∃ b ∈ B, UniqueMul A B a b := by
   by_cases hc : A.card ≤ 1 ∧ B.card ≤ 1
@@ -281,7 +276,7 @@ lemma UniqueMul_of_TwoUniqueMul {G} [Mul G] {A B : Finset G} (h : 1 < A.card * B
 
 @[to_additive] instance TwoUniqueProds.toUniqueProds (G) [Mul G] [TwoUniqueProds G] :
     UniqueProds G where
-  uniqueMul_of_nonempty := UniqueMul_of_TwoUniqueMul uniqueMul_of_one_lt_card
+  uniqueMul_of_nonempty := uniqueMul_of_twoUniqueMul uniqueMul_of_one_lt_card
 
 namespace Multiplicative
 
@@ -428,8 +423,8 @@ theorem mulHom_image_iff (f : G ≃* H) : TwoUniqueProds G ↔ TwoUniqueProds H 
     obtain ⟨p1, h1, p2, h2, hne, hi1, hi2⟩ := uniqueMul_of_one_lt_card (Nat.one_lt_mul_iff.mpr
       ⟨card_pos.2 (hA.image _), card_pos.2 (hB.image _), hc.imp And.left And.left⟩)
     simp_rw [mem_product, mem_image, ← filter_nonempty_iff] at h1 h2
-    replace h1 := UniqueMul_of_TwoUniqueMul ?_ h1.1 h1.2
-    replace h2 := UniqueMul_of_TwoUniqueMul ?_ h2.1 h2.2
+    replace h1 := uniqueMul_of_twoUniqueMul ?_ h1.1 h1.2
+    replace h2 := uniqueMul_of_twoUniqueMul ?_ h2.1 h2.2
     · obtain ⟨a1, ha1, b1, hb1, hu1⟩ := h1
       obtain ⟨a2, ha2, b2, hb2, hu2⟩ := h2
       rw [mem_filter] at ha1 hb1 ha2 hb2
@@ -492,14 +487,14 @@ instance (priority := 100) of_Covariant_right [IsRightCancelMul G]
       · exact ((he0 ▸ he ▸ mul_lt_mul_left' hl a).not_le <| le_max' _ _ <| mul_mem_mul ha hb0).elim
       · exact ⟨mul_right_cancel he, rfl⟩
       · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_le <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
-    refine ⟨(a0, b0), mem_product.2 ⟨ha0, hb0⟩, (a1, b1), mem_product.2 ⟨ha1, hb1⟩,
-      fun he ↦ ?_, this, fun a b ha hb he ↦ ?_⟩
+    refine ⟨_, mk_mem_product ha0 hb0, _, mk_mem_product ha1 hb1, fun he ↦ ?_, this, ?_⟩
     · rw [Prod.mk.inj_iff] at he; rw [he.1, he.2, he1] at he0
       obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_ne_of_one_lt_card hc (a0, b0)
       rw [mem_product] at h2
       refine (min'_lt_max' _ (mul_mem_mul ha0 hb0) (mul_mem_mul h2.1 h2.2) fun he ↦ hne ?_).ne he0
       exact Prod.ext_iff.mpr (this h2.1 h2.2 he.symm)
-    · obtain hl | rfl | hl := lt_trichotomy b b1
+    · intro a b ha hb he
+      obtain hl | rfl | hl := lt_trichotomy b b1
       · exact ((he1 ▸ mul_lt_mul_left' hl a1).not_le <| min'_le _ _ <| mul_mem_mul ha1 hb).elim
       · exact ⟨mul_right_cancel he, rfl⟩
       · exact ((he1 ▸ he ▸ mul_lt_mul_left' hl a).not_le <| min'_le _ _ <| mul_mem_mul ha hb1).elim
