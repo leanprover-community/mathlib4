@@ -27,7 +27,7 @@ namespace Subgroup
 def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
   carrier := MulOpposite.unop ⁻¹' (H : Set G)
   one_mem' := H.one_mem
-  mul_mem' := fun ha hb => H.mul_mem hb ha
+  mul_mem' ha hb := H.mul_mem hb ha
   inv_mem' := H.inv_mem
 
 /-- pull an opposite subgroup back to a subgroup along `op`-/
@@ -40,15 +40,15 @@ def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
   inv_mem' := H.inv_mem
 
 /-- A subgroup `H` of `G` determines a subgroup `H.opposite` of the opposite group `Gᵐᵒᵖ`. -/
-@[to_additive "An additive subgroup `H` of `G` determines an additive subgroup `H.opposite` of the
+@[to_additive (attr := simps) "An additive subgroup `H` of `G` determines an additive subgroup `H.opposite` of the
  opposite additive group `Gᵃᵒᵖ`."]
 def opEquiv : Subgroup G ≃ Subgroup Gᵐᵒᵖ where
   toFun := op
   invFun := unop
   left_inv _ := SetLike.coe_injective rfl
   right_inv _ := SetLike.coe_injective rfl
-#noalign subgroup.opposite
-#noalign add_subgroup.opposite
+#align subgroup.opposite Subgroup.opEquiv
+#align add_subgroup.opposite AddSubgroup.opEquiv
 
 @[to_additive (attr := simp, nolint simpNF)] lemma opposite_toSubmonoid (H : Subgroup G) :
     (opEquiv H).toSubmonoid = Submonoid.opEquiv H.toSubmonoid :=

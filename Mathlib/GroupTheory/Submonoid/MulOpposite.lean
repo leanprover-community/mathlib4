@@ -22,14 +22,14 @@ namespace Submonoid
 `unop`"]
 def op {M : Type*} [MulOneClass M] (x : Submonoid M) : Submonoid (MulOpposite M) where
   carrier := MulOpposite.unop ⁻¹' x.1
-  mul_mem' {_ _} ha hb := x.mul_mem hb ha
+  mul_mem' ha hb := x.mul_mem hb ha
   one_mem' := Submonoid.one_mem' _
 
 /-- pull an opposite submonoid back to a submonoid along `op`-/
 @[to_additive (attr := simps) "pull an opposite additive submonoid back to a submonoid along `op`"]
 def unop {M : Type*} [MulOneClass M] (x : Submonoid (MulOpposite M)) : Submonoid M where
   carrier := MulOpposite.op ⁻¹' x.1
-  mul_mem' {_ _} ha hb := x.mul_mem hb ha
+  mul_mem' ha hb := x.mul_mem hb ha
   one_mem' := Submonoid.one_mem' _
 
 /-- A submonoid `H` of `G` determines a submonoid `H.opposite` of the opposite group `Gᵐᵒᵖ`. -/
