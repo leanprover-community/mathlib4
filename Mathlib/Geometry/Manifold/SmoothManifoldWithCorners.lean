@@ -667,12 +667,11 @@ def analyticGroupoid : StructureGroupoid H :=
         have comp : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
         apply And.intro
         · simp only [comp, preimage_inter]
-          refine hg.left.comp' (hf.left.mono ?_) ?_
+          refine hg.left.comp (hf.left.mono ?_) ?_
           · simp only [subset_inter_iff, inter_subset_right]
             rw [inter_assoc]
             simp
           · intro x hx
-            rw [mem_preimage]
             apply And.intro
             · rw [mem_preimage, comp_apply, I.left_inv]
               exact hx.left.right
