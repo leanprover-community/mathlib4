@@ -41,6 +41,9 @@ variable {D : Type u₂} [Category.{v₂} D]
 @[simps]
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
+  whiskerLeft := fun X _ _ f ↦ e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
+  whiskerRight := fun f X ↦ e.functor.map (e.inverse.map f ▷ e.inverse.obj X)
+  tensorHom_def := by simp [tensorHom_def]
   tensorHom f g := e.functor.map (e.inverse.map f ⊗ e.inverse.map g)
   tensorUnit' := e.functor.obj (𝟙_ C)
   associator X Y Z :=

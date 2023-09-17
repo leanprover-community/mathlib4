@@ -9,6 +9,8 @@ import Lean
 # Additional declarations related to linters
 -/
 
+set_option autoImplicit true
+
 open Lean Elab
 
 namespace Lean.Linter

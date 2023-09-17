@@ -24,7 +24,7 @@ are measurable.
 
 open Function Metric Set
 
-variable {α ι : Type _}
+variable {α ι : Type*}
 
 section MetricSpace
 

@@ -154,7 +154,7 @@ instance instNonempty : Nonempty (CompleteType (∅ : L.Theory) α) :=
   nonempty_iff.2 (isSatisfiable_empty L)
 #align first_order.language.Theory.complete_type.nonempty FirstOrder.Language.Theory.CompleteType.instNonempty
 
-theorem iInter_setOf_subset {ι : Type _} (S : ι → L[[α]].Theory) :
+theorem iInter_setOf_subset {ι : Type*} (S : ι → L[[α]].Theory) :
     ⋂ i : ι, { p : T.CompleteType α | S i ⊆ p } =
       { p : T.CompleteType α | ⋃ i : ι, S i ⊆ p } := by
   ext

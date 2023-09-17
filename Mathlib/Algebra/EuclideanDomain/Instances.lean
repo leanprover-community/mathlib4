@@ -38,7 +38,7 @@ instance Int.euclideanDomain : EuclideanDomain ℤ :=
         exact Nat.mul_le_mul_of_nonneg_left b0 }
 
 -- see Note [lower instance priority]
-instance (priority := 100) Field.toEuclideanDomain {K : Type _} [Field K] : EuclideanDomain K :=
+instance (priority := 100) Field.toEuclideanDomain {K : Type*} [Field K] : EuclideanDomain K :=
 { toCommRing := Field.toCommRing
   quotient := (· / ·), remainder := fun a b => a - a * b / b, quotient_zero := div_zero,
   quotient_mul_add_remainder_eq := fun a b => by

@@ -12,6 +12,8 @@ import Lean
 Allows setting undeclared options.
 -/
 
+set_option autoImplicit true
+
 open Lean Elab
 
 private def setOption [Monad m] [MonadError m]

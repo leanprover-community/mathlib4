@@ -6,6 +6,7 @@ Authors: Simon Hudon
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
 import Mathlib.Data.LazyList
+import Mathlib.Lean.Thunk
 
 #align_import data.lazy_list.basic from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
@@ -20,33 +21,12 @@ TODO: move the `LazyList.lean` file from core to mathlib.
 
 universe u
 
-namespace Thunk
-
--- Porting note: `Thunk.pure` appears to do the same thing.
-#align thunk.mk Thunk.pure
-
--- Porting note: Added `Thunk.ext` to get `ext` tactic to work.
-@[ext]
-theorem ext {α : Type u} {a b : Thunk α} (eq : a.get = b.get) : a = b := by
-  have ⟨_⟩ := a
-  have ⟨_⟩ := b
-  congr
-  exact funext fun _ ↦ eq
-
-instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
-  intro a b
-  have : a = b ↔ a.get = b.get := ⟨by intro x; rw [x], by intro; ext; assumption⟩
-  rw [this]
-  infer_instance
-
-end Thunk
-
 namespace LazyList
 
 open Function
 
 /-- Isomorphism between strict and lazy lists. -/
-def listEquivLazyList (α : Type _) : List α ≃ LazyList α where
+def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
   toFun := LazyList.ofList
   invFun := LazyList.toList
   right_inv := by

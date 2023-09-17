@@ -5,7 +5,9 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
 import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.Calculus.LocalExtr
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 import Mathlib.Analysis.Convex.Slope
 import Mathlib.Analysis.Convex.Normed
 import Mathlib.Data.IsROrC.Basic
@@ -69,7 +71,7 @@ In this file we prove the following facts:
 -/
 
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type _} [NormedAddCommGroup F]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
 
 open Metric Set Asymptotics ContinuousLinearMap Filter
@@ -245,7 +247,7 @@ Let `f` and `B` be continuous functions on `[a, b]` such that
 * we have `f' x < B' x` whenever `‖f x‖ = B x`.
 
 Then `‖f x‖ ≤ B x` everywhere on `[a, b]`. -/
-theorem image_norm_le_of_liminf_right_slope_norm_lt_deriv_boundary {E : Type _}
+theorem image_norm_le_of_liminf_right_slope_norm_lt_deriv_boundary {E : Type*}
     [NormedAddCommGroup E] {f : ℝ → E} {f' : ℝ → ℝ} (hf : ContinuousOn f (Icc a b))
     -- `hf'` actually says `liminf (‖f z‖ - ‖f x‖) / (z - x) ≤ f' x`
     (hf' : ∀ x ∈ Ico a b, ∀ r, f' x < r → ∃ᶠ z in 𝓝[>] x, slope (norm ∘ f) x z < r)
@@ -359,7 +361,7 @@ theorem norm_image_sub_le_of_norm_deriv_le_segment' {f' : ℝ → E} {C : ℝ}
   refine'
     norm_image_sub_le_of_norm_deriv_right_le_segment (fun x hx => (hf x hx).continuousWithinAt)
       (fun x hx => _) bound
-  exact (hf x <| Ico_subset_Icc_self hx).nhdsWithin (Icc_mem_nhdsWithin_Ici hx)
+  exact (hf x <| Ico_subset_Icc_self hx).mono_of_mem (Icc_mem_nhdsWithin_Ici hx)
 #align norm_image_sub_le_of_norm_deriv_le_segment' norm_image_sub_le_of_norm_deriv_le_segment'
 
 /-- A function on `[a, b]` with the norm of the derivative within `[a, b]`
@@ -425,9 +427,9 @@ theorem eq_of_derivWithin_eq (fdiff : DifferentiableOn ℝ f (Icc a b))
     (hderiv : EqOn (derivWithin f (Icc a b)) (derivWithin g (Icc a b)) (Ico a b)) (hi : f a = g a) :
     ∀ y ∈ Icc a b, f y = g y := by
   have A : ∀ y ∈ Ico a b, HasDerivWithinAt f (derivWithin f (Icc a b) y) (Ici y) y := fun y hy =>
-    (fdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.nhdsWithin (Icc_mem_nhdsWithin_Ici hy)
+    (fdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.mono_of_mem (Icc_mem_nhdsWithin_Ici hy)
   have B : ∀ y ∈ Ico a b, HasDerivWithinAt g (derivWithin g (Icc a b) y) (Ici y) y := fun y hy =>
-    (gdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.nhdsWithin (Icc_mem_nhdsWithin_Ici hy)
+    (gdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.mono_of_mem (Icc_mem_nhdsWithin_Ici hy)
   exact
     eq_of_has_deriv_right_eq A (fun y hy => (hderiv hy).symm ▸ B y hy) fdiff.continuousOn
       gdiff.continuousOn hi
@@ -444,7 +446,7 @@ also assume `[NormedSpace ℝ E]` to have a notion of a `Convex` set. -/
 
 section
 
-variable {𝕜 G : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 G : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 namespace Convex
 
@@ -682,7 +684,7 @@ theorem lipschitzOnWith_of_nnnorm_deriv_le {C : ℝ≥0} (hf : ∀ x ∈ s, Diff
 then the function is `C`-Lipschitz. Version with `deriv` and `LipschitzWith`. -/
 theorem _root_.lipschitzWith_of_nnnorm_deriv_le {C : ℝ≥0} (hf : Differentiable 𝕜 f)
     (bound : ∀ x, ‖deriv f x‖₊ ≤ C) : LipschitzWith C f :=
-  lipschitz_on_univ.1 <|
+  lipschitzOn_univ.1 <|
     convex_univ.lipschitzOnWith_of_nnnorm_deriv_le (fun x _ => hf x) fun x _ => bound x
 #align lipschitz_with_of_nnnorm_deriv_le lipschitzWith_of_nnnorm_deriv_le
 
@@ -717,7 +719,7 @@ theorem exists_ratio_hasDerivAt_eq_ratio_slope :
     ((hff' x hx).const_mul (g b - g a)).sub ((hgg' x hx).const_mul (f b - f a))
   have hhc : ContinuousOn h (Icc a b) :=
     (continuousOn_const.mul hfc).sub (continuousOn_const.mul hgc)
-  rcases exists_hasDerivAt_eq_zero h h' hab hhc hI hhh' with ⟨c, cmem, hc⟩
+  rcases exists_hasDerivAt_eq_zero hab hhc hI hhh' with ⟨c, cmem, hc⟩
   exact ⟨c, cmem, sub_eq_zero.1 hc⟩
 #align exists_ratio_has_deriv_at_eq_ratio_slope exists_ratio_hasDerivAt_eq_ratio_slope
 
@@ -1319,7 +1321,7 @@ make sense and are enough. Many formulations of the mean value inequality could 
 balls over `ℝ` or `ℂ`. For now, we only include the ones that we need.
 -/
 
-variable {𝕜 : Type _} [IsROrC 𝕜] {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {H : Type _}
+variable {𝕜 : Type*} [IsROrC 𝕜] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {H : Type*}
   [NormedAddCommGroup H] [NormedSpace 𝕜 H] {f : G → H} {f' : G → G →L[𝕜] H} {x : G}
 
 /-- Over the reals or the complexes, a continuously differentiable function is strictly

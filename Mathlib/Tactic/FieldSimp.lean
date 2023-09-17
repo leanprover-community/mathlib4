@@ -8,6 +8,7 @@ import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
 import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
+import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
 import Qq
 
@@ -16,6 +17,8 @@ import Qq
 
 Tactic to clear denominators in algebraic expressions, based on `simp` with a specific simpset.
 -/
+
+set_option autoImplicit true
 
 namespace Mathlib.Tactic.FieldSimp
 
@@ -29,12 +32,14 @@ private def dischargerTraceMessage (prop: Expr) : Except ε (Option Expr) → Si
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
 
-/-- Discharge strategy for the field_simp tactic. -/
+/-- Discharge strategy for the `field_simp` tactic. -/
 partial def discharge (prop : Expr) : SimpM (Option Expr) :=
   withTraceNode `Tactic.field_simp (dischargerTraceMessage prop) do
+    -- Discharge strategy 1: Use assumptions
     if let some r ← Simp.dischargeUsingAssumption? prop then
       return some r
 
+    -- Discharge strategy 2: Normalize inequalities using NormNum
     let prop : Q(Prop) ← (do pure prop)
     let pf? ← match prop with
     | ~q(($e : $α) ≠ $b) =>
@@ -48,6 +53,13 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     | _ => pure none
     if let some pf := pf? then return some pf
 
+    -- Discharge strategy 3: Use positivity
+    let pf? ←
+      try some <$> Mathlib.Meta.Positivity.solve prop
+      catch _ => pure none
+    if let some pf := pf? then return some pf
+
+    -- Discharge strategy 4: Use the simplifier
     let ctx ← read
     let usedTheorems := (← get).usedTheorems
 
@@ -133,7 +145,7 @@ syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
 
 elab_rules : tactic
 | `(tactic| field_simp $[$cfg:config]? $[$dis:discharger]? $[only%$only?]?
-    $[$sa:simpArgs]? $[$loc:location]?) => do
+    $[$sa:simpArgs]? $[$loc:location]?) => withMainContext do
   let cfg ← elabSimpConfig (cfg.getD ⟨.missing⟩) .simp
   let loc := expandOptLocation (mkOptionalNode loc)
 
@@ -159,6 +171,16 @@ elab_rules : tactic
      congrTheorems := (← getSimpCongrTheorems)
      config := cfg
   }
-  let r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (eraseLocal := false) .simp
+  let mut r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (eraseLocal := false) .simp
+  if r.starArg then
+    r ← do
+      let ctx := r.ctx
+      let mut simpTheorems := ctx.simpTheorems
+      let hs ← getPropHyps
+      for h in hs do
+        unless simpTheorems.isErased (.fvar h) do
+          simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
+      let ctx := { ctx with simpTheorems }
+      pure { ctx }
 
   _ ← simpLocation r.ctx dis loc

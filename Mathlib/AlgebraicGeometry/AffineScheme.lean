@@ -220,7 +220,7 @@ def IsAffineOpen.fromSpec {X : Scheme} {U : Opens X} (hU : IsAffineOpen U) :
 
 instance IsAffineOpen.isOpenImmersion_fromSpec {X : Scheme} {U : Opens X}
     (hU : IsAffineOpen U) : IsOpenImmersion hU.fromSpec := by
-  delta IsAffineOpen.fromSpec; dsimp; simp only [Scheme.comp_val]
+  delta IsAffineOpen.fromSpec; dsimp
   -- Porting note : this was automatic
   repeat apply (config := { allowSynthFailures := true }) PresheafedSpace.IsOpenImmersion.comp
 #align algebraic_geometry.is_affine_open.is_open_immersion_from_Spec AlgebraicGeometry.IsAffineOpen.isOpenImmersion_fromSpec
@@ -695,7 +695,7 @@ theorem IsAffineOpen.isLocalization_stalk {X : Scheme} {U : Opens X} (hU : IsAff
   convert hU.isLocalization_stalk' y hx
 #align algebraic_geometry.is_affine_open.is_localization_stalk AlgebraicGeometry.IsAffineOpen.isLocalization_stalk
 
-/-- The basic open set of a section `f` on an an affine open as an `X.affineOpens`. -/
+/-- The basic open set of a section `f` on an affine open as an `X.affineOpens`. -/
 @[simps]
 def Scheme.affineBasicOpen (X : Scheme) {U : X.affineOpens} (f : X.presheaf.obj <| op U) :
     X.affineOpens :=

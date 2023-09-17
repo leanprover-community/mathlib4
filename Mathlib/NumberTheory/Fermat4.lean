@@ -74,7 +74,6 @@ theorem exists_minimal {a b c : ℤ} (h : Fermat42 a b c) : ∃ a0 b0 c0, Minima
     use Int.natAbs c
     rw [Set.mem_setOf_eq]
     use ⟨a, ⟨b, c⟩⟩
-    tauto
   let m : ℕ := Nat.find S_nonempty
   have m_mem : m ∈ S := Nat.find_spec S_nonempty
   rcases m_mem with ⟨s0, hs0, hs1⟩
@@ -83,7 +82,6 @@ theorem exists_minimal {a b c : ℤ} (h : Fermat42 a b c) : ∃ a0 b0 c0, Minima
   rw [← hs1]
   apply Nat.find_min'
   use ⟨a1, ⟨b1, c1⟩⟩
-  tauto
 #align fermat_42.exists_minimal Fermat42.exists_minimal
 
 /-- a minimal solution to `a ^ 4 + b ^ 4 = c ^ 2` must have `a` and `b` coprime. -/
@@ -144,7 +142,6 @@ theorem exists_pos_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
   obtain ⟨a0, b0, c0, hf, hc⟩ := exists_odd_minimal h
   rcases lt_trichotomy 0 c0 with (h1 | h1 | h1)
   · use a0, b0, c0
-    tauto
   · exfalso
     exact ne_zero hf.1 h1.symm
   · use a0, b0, -c0, neg_of_minimal hf, hc

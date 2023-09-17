@@ -51,7 +51,7 @@ Notation used here:
 
 ## Implementation notes
 
-A subfield is implemented as a subring which is is closed under `⁻¹`.
+A subfield is implemented as a subring which is closed under `⁻¹`.
 
 Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆` and `∩`), although
 `∈` is defined as membership of a subfield's underlying set.
@@ -68,13 +68,13 @@ universe u v w
 variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Field M]
 
 /-- `SubfieldClass S K` states `S` is a type of subsets `s ⊆ K` closed under field operations. -/
-class SubfieldClass (S K : Type _) [Field K] [SetLike S K] extends SubringClass S K,
+class SubfieldClass (S K : Type*) [Field K] [SetLike S K] extends SubringClass S K,
   InvMemClass S K : Prop
 #align subfield_class SubfieldClass
 
 namespace SubfieldClass
 
-variable (S : Type _) [SetLike S K] [h : SubfieldClass S K]
+variable (S : Type*) [SetLike S K] [h : SubfieldClass S K]
 
 -- See note [lower instance priority]
 /-- A subfield contains `1`, products and inverses.
@@ -303,13 +303,13 @@ protected theorem multiset_sum_mem (m : Multiset K) : (∀ a ∈ m, a ∈ s) →
 #align subfield.multiset_sum_mem Subfield.multiset_sum_mem
 
 /-- Product of elements of a subfield indexed by a `Finset` is in the subfield. -/
-protected theorem prod_mem {ι : Type _} {t : Finset ι} {f : ι → K} (h : ∀ c ∈ t, f c ∈ s) :
+protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ c ∈ t, f c ∈ s) :
     (∏ i in t, f i) ∈ s :=
   prod_mem h
 #align subfield.prod_mem Subfield.prod_mem
 
 /-- Sum of elements in a `Subfield` indexed by a `Finset` is in the `Subfield`. -/
-protected theorem sum_mem {ι : Type _} {t : Finset ι} {f : ι → K} (h : ∀ c ∈ t, f c ∈ s) :
+protected theorem sum_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ c ∈ t, f c ∈ s) :
     (∑ i in t, f i) ∈ s :=
   sum_mem h
 #align subfield.sum_mem Subfield.sum_mem
@@ -415,7 +415,7 @@ theorem coe_subtype : ⇑(s.subtype) = ((↑) : s → K)  :=
   rfl
 #align subfield.coe_subtype Subfield.coe_subtype
 
-theorem toSubring_subtype_eq_subtype (F : Type _) [Field F] (S : Subfield F) :
+theorem toSubring_subtype_eq_subtype (F : Type*) [Field F] (S : Subfield F) :
     S.toSubring.subtype = S.subtype :=
   rfl
 #align subfield.to_subring.subtype_eq_subtype Subfield.toSubring_subtype_eq_subtype
@@ -785,7 +785,7 @@ theorem map_sup (s t : Subfield K) (f : K →+* L) : (s ⊔ t).map f = s.map f �
   (gc_map_comap f).l_sup
 #align subfield.map_sup Subfield.map_sup
 
-theorem map_iSup {ι : Sort _} (f : K →+* L) (s : ι → Subfield K) :
+theorem map_iSup {ι : Sort*} (f : K →+* L) (s : ι → Subfield K) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align subfield.map_supr Subfield.map_iSup
@@ -794,7 +794,7 @@ theorem comap_inf (s t : Subfield L) (f : K →+* L) : (s ⊓ t).comap f = s.com
   (gc_map_comap f).u_inf
 #align subfield.comap_inf Subfield.comap_inf
 
-theorem comap_iInf {ι : Sort _} (f : K →+* L) (s : ι → Subfield L) :
+theorem comap_iInf {ι : Sort*} (f : K →+* L) (s : ι → Subfield L) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align subfield.comap_infi Subfield.comap_iInf

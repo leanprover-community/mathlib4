@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 import Mathlib.Data.Set.Basic
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Algebra.Group.Defs
 
 #align_import data.part from "leanprover-community/mathlib"@"80c43012d26f63026d362c3aba28f3c3bafb07e6"
 
@@ -57,7 +58,7 @@ structure Part.{u} (α : Type u) : Type u where
 
 namespace Part
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- Convert a `Part α` with a decidable domain to an option -/
 def toOption (o : Part α) [Decidable o.Dom] : Option α :=
@@ -309,7 +310,7 @@ theorem toOption_eq_none_iff {a : Part α} [Decidable a.Dom] : a.toOption = Opti
 
 /- Porting TODO: Removed `simp`. Maybe add `@[simp]` later if `@[simp]` is taken off definition of
 `Option.elim` -/
-theorem elim_toOption {α β : Type _} (a : Part α) [Decidable a.Dom] (b : β) (f : α → β) :
+theorem elim_toOption {α β : Type*} (a : Part α) [Decidable a.Dom] (b : β) (f : α → β) :
     a.toOption.elim b f = if h : a.Dom then f (a.get h) else b := by
   split_ifs with h
   · rw [h.toOption]
@@ -667,7 +668,12 @@ theorem bind_dom {f : Part α} {g : α → Part β} : (f.bind g).Dom ↔ ∃ h :
 
 section Instances
 
--- We define several instances for constants and operations on `Part α` inherited from `α`.
+/-!
+We define several instances for constants and operations on `Part α` inherited from `α`.
+
+This section could be moved to a separate file to avoid the import of `Mathlib.Algebra.Group.Defs`.
+-/
+
 @[to_additive]
 instance [One α] : One (Part α) where one := pure 1
 

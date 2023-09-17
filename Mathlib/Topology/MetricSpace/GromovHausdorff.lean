@@ -412,7 +412,7 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
     exact (hausdorffDist_image (kuratowskiEmbedding.isometry _)).symm
 #align Gromov_Hausdorff.GH_dist_eq_Hausdorff_dist GromovHausdorff.ghDist_eq_hausdorffDist
 
-set_option maxHeartbeats 300000
+set_option maxHeartbeats 300000 in
 /-- The Gromov-Hausdorff distance defines a genuine distance on the Gromov-Hausdorff space. -/
 instance : MetricSpace GHSpace where
   dist := dist
@@ -1002,8 +1002,7 @@ def auxGluing (n : ℕ) : AuxGluingStruct (X n) :=
       isom := (toGlueR_isometry _ _).comp (isometry_optimalGHInjr (X n) (X (n + 1))) }
 #align Gromov_Hausdorff.aux_gluing GromovHausdorff.auxGluing
 
--- porting note: see lean4#2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- The Gromov-Hausdorff space is complete. -/
 instance : CompleteSpace GHSpace := by

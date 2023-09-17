@@ -19,8 +19,6 @@ an additional compatibility relation with the tensorators:
 themselves form a category.
 -/
 
-set_option autoImplicit false
-
 open CategoryTheory
 
 universe v₁ v₂ v₃ u₁ u₂ u₃

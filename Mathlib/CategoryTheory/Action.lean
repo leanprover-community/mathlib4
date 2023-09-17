@@ -29,7 +29,7 @@ namespace CategoryTheory
 
 universe u
 
-variable (M : Type _) [Monoid M] (X : Type u) [MulAction M X]
+variable (M : Type*) [Monoid M] (X : Type u) [MulAction M X]
 
 /-- A multiplicative action M ↻ X viewed as a functor mapping the single object of M to X
   and an element `m : M` to the map `X → X` given by multiplication by `m`. -/
@@ -148,7 +148,7 @@ instance [IsPretransitive M X] [Nonempty X] : IsConnected (ActionCategory M X) :
 
 section Group
 
-variable {G : Type _} [Group G] [MulAction G X]
+variable {G : Type*} [Group G] [MulAction G X]
 
 noncomputable instance : Groupoid (ActionCategory G X) :=
   CategoryTheory.groupoidOfElements _
@@ -170,7 +170,7 @@ theorem homOfPair.val (t : X) (g : G) : (homOfPair t g).val = g :=
 #align category_theory.action_category.hom_of_pair.val CategoryTheory.ActionCategory.homOfPair.val
 
 /-- Any morphism in the action groupoid is given by some pair. -/
-protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort _}
+protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*}
     (hyp : ∀ t g, P (homOfPair t g)) ⦃a b⦄ (f : a ⟶ b) : P f := by
   refine' cast _ (hyp b.back f.val)
   rcases a with ⟨⟨⟩, a : X⟩
@@ -187,7 +187,7 @@ lemma cases' ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b') :
   revert a' b' f
   exact ActionCategory.cases (fun t g => ⟨g⁻¹ • t, t, g, rfl, rfl, rfl, by simp⟩)
 
-variable {H : Type _} [Group H]
+variable {H : Type*} [Group H]
 
 /-- Given `G` acting on `X`, a functor from the corresponding action groupoid to a group `H`
     can be curried to a group homomorphism `G →* (X → H) ⋊ G`. -/

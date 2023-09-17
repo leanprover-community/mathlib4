@@ -46,7 +46,7 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type _} [Category C] {D : Type _} [Category D] {E : Type _} [Category E]
+variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 
@@ -103,7 +103,7 @@ namespace CoverDense
 
 variable {K}
 
-variable {A : Type _} [Category A] {G : C ⥤ D} (H : CoverDense K G)
+variable {A : Type*} [Category A] {G : C ⥤ D} (H : CoverDense K G)
 
 -- this is not marked with `@[ext]` because `H` can not be inferred from the type
 theorem ext (H : CoverDense K G) (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}
@@ -542,5 +542,22 @@ noncomputable def sheafEquivOfCoverPreservingCoverLifting : Sheaf J A ≌ Sheaf 
       functor_unitIso_comp := fun ℱ => by convert α.left_triangle_components }
 set_option linter.uppercaseLean3 false in
 #align category_theory.cover_dense.Sheaf_equiv_of_cover_preserving_cover_lifting CategoryTheory.CoverDense.sheafEquivOfCoverPreservingCoverLifting
+
+variable
+  [ConcreteCategory.{max v u} A]
+  [Limits.PreservesLimits (forget A)]
+  [ReflectsIsomorphisms (forget A)]
+  [∀ (X : C), Limits.PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget A)]
+  [∀ (X : C), Limits.HasColimitsOfShape (J.Cover X)ᵒᵖ A]
+  [∀ (X : D), Limits.PreservesColimitsOfShape (K.Cover X)ᵒᵖ (forget A)]
+  [∀ (X : D), Limits.HasColimitsOfShape (K.Cover X)ᵒᵖ A]
+
+/-- The natural isomorphism exhibiting the compatibility of
+`sheafEquivOfCoverPreservingCoverLifting` with sheafification. -/
+noncomputable
+abbrev sheafEquivOfCoverPreservingCoverLiftingSheafificationCompatibility :
+  (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf _ _ ≅
+  presheafToSheaf _ _ ⋙ (sheafEquivOfCoverPreservingCoverLifting Hd Hp Hl).inverse :=
+Sites.pullbackSheafificationCompatibility _ _ Hl _
 
 end CategoryTheory.CoverDense
