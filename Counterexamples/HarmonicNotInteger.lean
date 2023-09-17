@@ -54,23 +54,15 @@ namespace padicValRat
       linarith
   }}
 
-  -- lemma sum_eq_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
-  -- (hval : padicValRat p q < padicValRat p r) :
-  -- padicValRat p (q + r) = padicValRat p q := by rw [min_eq_padicValRat hqr hq hr (ne_of_lt hval),min_eq_left (le_of_lt hval)]
+  lemma sum_eq_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
+  (hval : padicValRat p q < padicValRat p r) :
+  padicValRat p (q + r) = padicValRat p q := by rw [min_eq_padicValRat hqr hq hr (ne_of_lt hval),min_eq_left (le_of_lt hval)]
 
-  -- lemma of_sum_eq_min {p n j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} (hF : ∀ i, i ≤ n → padicValRat p (F j) < padicValRat p (F i))
-  --   (hn : ∀ i, F i > 0):
-  --   padicValRat p (∑ i in Finset.range (n+1), F i) = padicValRat p (F j) := by {
-  --     induction' n with d hd
-  --     simp at *
-
-  --   }
 
 end padicValRat
 
 namespace padicValNat
 
-  -- TODO: prove for when strict inequality holds.
   lemma le_nat_log {p : ℕ} [hp : Fact (Nat.Prime p)] (n : ℕ):
     padicValNat p n ≤ Nat.log p n  := by {
       by_cases (n = 0); simp [h]
@@ -86,7 +78,8 @@ namespace padicValNat
   lemma le_nat_log_gen {p n₁ n₂ : ℕ} [Fact (Nat.Prime p)] (hn : n₁ ≤ n₂):
     padicValNat p n₁ ≤ Nat.log p n₂ := le_trans (le_nat_log n₁) (Nat.log_mono_right hn)
 
-  lemma nat_log_eq_padicvalnat_iff {p : ℕ} [hp : Fact (Nat.Prime p)] (n : ℕ)(hn : 0 < n): Nat.log p n = padicValNat p n ↔ n < p^(padicValNat p n + 1) := by {
+  lemma nat_log_eq_padicvalnat_iff {p : ℕ} [hp : Fact (Nat.Prime p)] (n : ℕ)(hn : 0 < n):
+  Nat.log p n = padicValNat p n ↔ n < p^(padicValNat p n + 1) := by {
     rw [Nat.log_eq_iff]
     have Hdiv: p^padicValNat p n ≤ n := Nat.le_of_dvd hn pow_padicValNat_dvd
     simp only [and_iff_right_iff_imp, Hdiv]
@@ -96,20 +89,6 @@ namespace padicValNat
     linarith
   }
 
-  -- lemma nat_log_eq_padicvalnat_iff' {p : ℕ} [hp : Fact (Nat.Prime p)] (n : ℕ)(hn : 0 < n): Nat.log p n = padicValNat p n ↔ n < p^(Nat.log p n + 1) := by {
-  --   rw [Nat.log_eq_iff]
-  --   have Hdiv: p^padicValNat p n ≤ n := Nat.le_of_dvd hn pow_padicValNat_dvd
-  --   simp only [and_iff_right_iff_imp, Hdiv, true_and]
-  --   suffices : padicValNat p n  = Nat.log p n; rw [this]
-  --   apply Nat.le_antisymm (le_nat_log _) _
-  --   have Hp := (Nat.Prime.one_lt' p).out
-  --   rw [← pow_le_pow_iff Hp]
-
-  --   -- right
-  --   -- refine' ⟨(Nat.Prime.one_lt' p).out,_⟩
-  --   -- linarith
-  -- }
-
 end padicValNat
 
 def harmonic : ℕ  → ℚ
@@ -117,9 +96,6 @@ def harmonic : ℕ  → ℚ
 | (k+1) => 1 / (k+1) + harmonic k
 
 def harmonic' : ℕ → ℚ := fun n => ∑ i in Finset.range n, 1 / (i + 1)
-
-#eval let x := 19; (padicValRat 2 (harmonic x), padicValRat 2 (x))
-
 
 lemma harmonic_harmonic' n : harmonic n = harmonic' n := by {
   induction' n with k ih ; try simp
@@ -147,6 +123,17 @@ lemma harmonic_ne_zero : ∀ n, n ≠ 0 → harmonic n > 0 := by {
     apply div_pos; try norm_num
     norm_cast; simp only [add_pos_iff, or_true]
   }
+}
+
+lemma harmonic_singleton {n c : ℕ} (hc : c ∈ Finset.range n): harmonic n =1 / ((c + 1):ℚ) + ∑ x in Finset.range n \ {c}, 1 / ((x : ℚ) + 1) := by {
+  rw [add_comm,harmonic_harmonic']
+  unfold harmonic'
+  rwa [Finset.sum_eq_sum_diff_singleton_add (i := c)]
+}
+
+
+lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 1 ≤ n)(hc : c ∈ Finset.range n) : (∑ x in Finset.range n \ {c}, 1 / ((x + 1 : ℚ)) ≠ 0) := by {
+  sorry
 }
 
 theorem not_int_of_not_padic_int (a : ℚ) :
@@ -185,11 +172,6 @@ lemma padicValRat_2_pow (r : ℕ)  : padicValRat 2 (1 / 2^r) = -r := by {
   norm_num
 }
 
-lemma padicValRat_ge_neg_Nat_log {p n : ℕ}[hp : Fact (Nat.Prime p)]: ∀ q, q ≤ n → -Nat.log p n ≤ padicValRat p (1 / q) := by {
-  intros q Hq
-  rw [one_div,padicValRat.inv,padicValRat.of_nat, neg_le_neg_iff, Nat.cast_le]
-  apply padicValNat.le_nat_log_gen Hq
-}
 
 lemma nat_log_not_dvd {n : ℕ} : ∀ i, 0 < i ∧ i ≠ 2^(Nat.log 2 n) ∧ i ≤ n → ¬ 2^(Nat.log 2 n) ∣ i := by {
   rintro i ⟨Hi₁,Hi₂,Hi₃⟩
@@ -228,7 +210,8 @@ lemma nat_log_not_dvd {n : ℕ} : ∀ i, 0 < i ∧ i ≠ 2^(Nat.log 2 n) ∧ i �
   }
 
 
-lemma padicValRat_ge_neg_Nat_log' {n : ℕ}: ∀ q, 0 < q ∧ q ≤ n → q ≠ 2^Nat.log 2 n → padicValRat 2 (1 / q) ≠ -Nat.log 2 n := by {
+lemma padicValRat_ge_neg_Nat_log_ne {n : ℕ}:
+∀ q, 0 < q ∧ q ≤ n → q ≠ 2^Nat.log 2 n → padicValRat 2 (1 / q) ≠ -Nat.log 2 n := by {
   rintro q ⟨Hq₁,Hq₂⟩ Hq₃
   rw [one_div,padicValRat.inv,padicValRat.of_nat]
   simp only [ne_eq, neg_inj, Nat.cast_inj]
@@ -237,6 +220,46 @@ lemma padicValRat_ge_neg_Nat_log' {n : ℕ}: ∀ q, 0 < q ∧ q ≤ n → q ≠ 
   rw [Hnot] at this
   exact nat_log_not_dvd (n := n) q ⟨Hq₁,Hq₃,Hq₂⟩ this
 }
+
+lemma padicValRat_ge_neg_Nat_log_ge {p n : ℕ}[hp : Fact (Nat.Prime p)]:
+  ∀ q, q ≤ n → -Nat.log p n ≤ padicValRat p (1 / q) := by {
+  intros q Hq
+  rw [one_div,padicValRat.inv,padicValRat.of_nat, neg_le_neg_iff, Nat.cast_le]
+  apply padicValNat.le_nat_log_gen Hq
+}
+
+lemma padicValRat_ge_neg_Nat_log_lt {n : ℕ}:
+∀ q, 0 < q ∧ q ≤ n → q ≠ 2^Nat.log 2 n → -Nat.log 2 n < padicValRat 2 (1 / q) := by {
+  rintro q ⟨Hq₁,Hq₂⟩ Hq₃
+  have H₁ := padicValRat_ge_neg_Nat_log_ne q ⟨Hq₁,Hq₂⟩ Hq₃
+  have H₂ := padicValRat_ge_neg_Nat_log_ge (p := 2) q Hq₂
+  exact lt_of_le_of_ne H₂ H₁.symm
+}
+
+lemma pow2_log_in_finset {n : ℕ} (hn : 2 ≤ n) : 2^(Nat.log 2 n) - 1 ∈ Finset.range n := by {
+    simp only [ge_iff_le, Finset.mem_range]
+    have H := Nat.pow_log_le_add_one 2 n
+    rw [le_iff_lt_or_eq] at H
+    rcases H with H₁ | H₂
+    {
+      simp only [ge_iff_le, gt_iff_lt]
+      refine' Nat.sub_lt_right_of_lt_add _ H₁
+      calc 1 ≤ 2 := by norm_num
+      _ = 2^1 := by norm_num
+      _ <= 2 ^ Nat.log 2 n := by {
+        refine' Nat.pow_le_pow_of_le_right (by norm_num) _
+        rw [←Nat.pow_le_iff_le_log (by norm_num) _]
+        simpa
+        linarith
+      }
+    }
+    have Habs : n + 1 ≤ n := by {
+      rw [← H₂]
+      apply Nat.pow_log_le_self; linarith
+    }
+    linarith
+}
+
 
 theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
   intro n Hn
@@ -257,41 +280,18 @@ theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
     rw [Hlog]
     simp only [Int.log_natCast, Left.neg_neg_iff, Nat.cast_pos, Nat.log_pos_iff, and_true, Hn]
     simp only [Int.log_natCast]
-
-    sorry
-
+    rw [harmonic_singleton (pow2_log_in_finset Hn)]
+    simp only [ge_iff_le, Finset.mem_range, not_lt, Finset.singleton_subset_iff, gt_iff_lt, pow_pos,
+      Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel]
+    rw [padicValRat.sum_eq_of_lt (p := 2) _ (one_div_ne_zero <| pow_ne_zero _ two_ne_zero) (harmonic_singleton_ne_zero (le_trans (one_le_two) Hn) (pow2_log_in_finset Hn)) _]; apply padicValRat_2_pow
+    {
+      rw [harmonic_singleton (pow2_log_in_finset Hn)] at h
+      simpa only [ge_iff_le, gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel, Finset.mem_range, not_lt, Finset.singleton_subset_iff] using h
+    }
+    {
+      rw [padicValRat_2_pow]
+      -- refine' lt_of_le_of_lt _ _
+      sorry
+    }
   }
-
 }
-
-
--- lemma padicValRat_2_sum {r n : ℕ} (hr₁ : 2^r < n)(hr₂ : n < 2^(r+1)) : padicValRat 2 (1 / 2^r + 1 / n) = -r := by {
-
-  -- have Hr : r = Nat.log 2 n := by {
-  --   symm
-  --   rw [Nat.log_eq_iff]
-  --   exact ⟨le_of_lt hr₁,hr₂⟩
-  --   right
-  --   constructor; trivial
-  --   rw [← Nat.pos_iff_ne_zero]
-  --   eapply lt_of_lt_of_le _ (le_of_lt hr₁)
-  --   apply pow_pos; trivial
-  -- }
-  -- rw [padicValRat.min_eq_padicValRat]
-  -- {
-  --   rw [min_eq_left]
-  --   apply padicValRat_2_pow
-  --   rw [padicValRat_2_pow, one_div,padicValRat.inv,padicValRat.of_nat, neg_le_neg_iff, Nat.cast_le, Hr]
-  --   apply padicValNat.le_nat_log
-  -- }
-  -- sorry
-  -- sorry
-  -- sorry
-
-  -- rw [padicValRat_2_pow, one_div, padicValRat.inv,padicValRat.of_nat]
-  -- intro Hnot
-  -- simp only [padicValRat.of_nat, neg_inj, Nat.cast_inj] at Hnot
-  -- rw [Hnot] at hr₁
-  -- have Hdvd := pow_padicValNat_dvd (p := 2) (n := n)
-  -- sorry
--- }
