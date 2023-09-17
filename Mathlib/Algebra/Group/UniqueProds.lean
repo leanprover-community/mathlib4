@@ -210,6 +210,7 @@ theorem iff_mulOpposite :
 ⟨of_mulOpposite, to_mulOpposite⟩
 
 end Opposites
+
 open Finset in
 @[to_additive]
 theorem of_image_filter [DecidableEq H]
