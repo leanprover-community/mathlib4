@@ -8,8 +8,15 @@ import Std.Data.Option.Basic
 
 /-! # Flexible binders
 
-This module provides a way for notations to use a flexible binder syntax that
-can have notation-specific meanings and that is user-extensible.
+This module provides a way for notations to use a flexible binder syntax
+that can have notation-specific meanings and that is user-extensible.
+
+The notation-specific meanings are implemented using a concept that's here called
+a "domain type", which is intended to refer to the type used in bounded quantifiers.
+For example, the domain type `finset` uses `Finset _` bounded quantifiers.
+The default domain type is `type`, which does not make use of bounded quantifiers -- all
+quantification is over the types themselves.
+Notations are free to define their own domain types for their own purposes.
 
 The extended binders `Std.ExtendedBinder.extBinders` have a similar aim,
 but flexible binders are more general and accept a wider range of syntax,
@@ -28,19 +35,19 @@ For example, `#test_flexible_binders => x y z ∈ s` or `#test_flexible_binders 
 namespace Mathlib.FlexibleBinders
 open Lean
 
--- syntax (name := inStx) term:50 " in " term:50 : term
-
 /-- Syntax for general binder lists that support binder-like forms such as `(x ∈ s)`.
 These are some examples of things that are meant to be supported by flexible binders:
 - `x y z : Nat`
 - `(x y : Nat) (z : Int)`
 - `x y ∈ s`
-- `x y in lst`
 - `(x : Nat) ∈ s`
 - `(x, y) ∈ s`
 - `((x, y) ∈ s) (z : Fin (x + y))`
 
 Use `Mathlib.FlexibleBinders.expandFlexibleBinders` to parse `flexibleBinders`.
+
+New binders are defined using the `declare_flexible_binder` command and/or
+by defining macros for `binder%(...)` and `binderSplit%(...)`.
 
 The syntax itself is very flexible and is (ab)using the fact that function application
 can be used to represent a list of binders. The `fun` notation in core Lean uses a similar
@@ -75,24 +82,27 @@ def elimAscription (b : TSyntax ``flexibleBinders) : MacroM (Option Term) :=
 /-- `binder%(DomainType, t)` is a term that represents a collection of simpler binders that
 are an interpretation of the flexible binder `t`.
 The `DomainType` is some name that is used to control how flexible binders are interpreted.
-Here are some options:
+Here are some examples:
 - `type` (the "default") only has unrestricted binders
 - `set` allows binders quantifying over `Set`s
 - `finset` allows binders quantifying over `Finset`s.
 
 A `binder%(...)` expression may resolve into `binderResolved%(...)` and `binderMatch%(...)`
 expressions. It can resolve into multiple of these expressions by using application syntax
-or a null node (see `Mathlib.FlexibleBinders.combineBinders`). -/
+or a null node (see `Mathlib.FlexibleBinders.combineBinders`).
+
+By default, `binder%(DomainType, t)` expands to `binderResolved%(_, t)`. -/
 scoped syntax (name := binderQuery) "binder%(" ident ", " term ")" : term
 
 /-- `binderSplit%(DomainType, t)` is a preprocessing step for `binder%(...)`.
-This way `binder%(...)` itself doesn't worry about needing to split binders. -/
+This way `binder%(...)` itself doesn't worry about needing to split binders.
+Expands to `binder%(DomainType, t)` by default. -/
 scoped syntax (name := binderSplitQuery) "binderSplit%(" ident ", " term ")" : term
 
 /-- `binderResolved%(ty, b, dom?)` is a possible expansion of `binder%(...)`,
 where `ty` is the type of the binder `b`
-and `dom?`, if present, is the domain that `b` ranges over,
-whose type is governed by the `DomainType` that was passed to `binder%(...)`
+and `dom?`, if present, is the domain that `b` ranges over.
+The type of the domain is governed by the `DomainType` that was passed to `binder%(...)`
 
 If `DomainType` is `type`, then `dom?` should always be absent.
 This result corresponds to a `(b : dom)` binder.
@@ -100,8 +110,8 @@ This result corresponds to a `(b : dom)` binder.
 The `b` can be any expression, and if it is not a hole or identifier it is
 realized as a pattern match.
 
-In the variant `binderResolved%(p)`, then `p` is a `Prop` and the notation using flexible
-binders is free to turn it into some non-dependent construction. -/
+In the variant `binderResolved%(p)`, then `p` is a `Prop` and the notation that
+is using flexible binders is free to represent it with some non-dependent construction. -/
 scoped syntax (name := binderResolution)
   "binderResolved%(" term (", " term (", " term)?)? ")" : term
 
@@ -117,10 +127,10 @@ inductive Binder where
   /-- This is a standard binder.
   - `ty` is the type of the binder
   - `binder` is an identifier or a hole
-  - `dom`, if present, then this is a term representing the domain that the binder ranges
+  - `dom?`, if present, is a term representing the domain that the binder ranges
     over. If absent, then `binder` ranges over all of `ty`.
     The type of `dom` is controlled by the `DomainType` during expansion. -/
-  | std (ty : Term) (binder : Term) (dom : Option Term)
+  | std (ty : Term) (binder : Term) (dom? : Option Term)
   /-- An anonymous binder with a `Prop` domain. This lets notation use some non-dependent
   construction, for example using `And` in an `Exists`. -/
   | prop (p : Term)
@@ -129,7 +139,7 @@ inductive Binder where
   | match (discr : Term) (patt : Term)
 
 /-- Takes a term and interprets it as a flexible binder expression.
-Uses the `binder%(...)` mechanism to process and expand binders.
+Uses the `binder%(...)`/`binderSplit%(...)` syntax to process and expand binders.
 - `domainType` is usually `type`, which turns off bounded quantification.
   In some applications (like for `Finset.sum`) we might use other values (like `finset`).
 - `bi` is the expression to expand.
@@ -195,10 +205,10 @@ elab "#test_flexible_binders " dom?:(ident)? " => " e:flexibleBinders : command 
   let res ← Elab.liftMacroM <| expandFlexibleBinders dom.getId e
   for r in res do
     match r with
-    | .std domain binder none =>
-      logInfo m!"binder {← `(($binder : $domain))}"
-    | .std domain binder (some binderType) =>
-      logInfo m!"binder {← `(($binder : $binderType))} over {domain}"
+    | .std ty binder none =>
+      logInfo m!"binder {← `(($binder : $ty))}"
+    | .std ty binder (some domain) =>
+      logInfo m!"binder {← `(($binder : $ty))} ∈ {domain}"
     | .prop p => logInfo m!"prop binder {← `((_ : $p))}"
     | .match discr patt => logInfo m!"match {discr} with | {patt} => ..."
 
@@ -217,7 +227,7 @@ def encodeBinders {m : Type → Type} [Monad m] [MonadQuotation m]
     let xs := bis.extract 1 bis.size
     `(flexibleBinders| $(Syntax.mkApp f xs):term)
 
-/-- Given `(e : ty)` returns `(e, ty)`. Otherwise returns `(t, _)` -/
+/-- Given `(e : ty)` returns `(e, ty)`. Otherwise returns `(t, _)`. -/
 def destructAscription (t : Term) : MacroM (Term × Term) :=
   match t with
   | `(($e : $ty)) => return (e, ty)
@@ -228,6 +238,7 @@ is a global identifier (we don't strip parentheses when this could possibly be a
 macro_rules
   | `(binderSplit%($domType, ($e))) => do
     let es := splitTerm e
+    -- Note: getId returns anonymous for non-identifiers
     let notPatt ← es.allM fun id => do return List.isEmpty (← Macro.resolveGlobalName id.raw.getId)
     unless notPatt do Macro.throwUnsupported
     return combineBinders <| ← es.mapM fun e' => withRef e'.raw `(binder%($domType, $e'))
@@ -240,6 +251,9 @@ macro_rules
 
 /-- For all domains, `(x : ty)` is a binder over the type `ty` itself. -/
 macro_rules
+  -- This first rule is to help catch errors such as `(x ∈ s) : α`.
+  -- It is in collaboration with a rule defined by `declare_flexible_binder`.
+  | `(binder%($domType, (($e) : $ty))) => `(binder%($domType, ($e : $ty)))
   | `(binder%($_, ($e : $ty))) => do
     if e matches `(($_ : $_)) then throwUnexpectedTypeAscription ty
     `(binderResolved%($ty, $e))
@@ -251,6 +265,7 @@ Example: `declare_flexible_binder x => $x ∈ $ty`.
 - Sets up default expanders with, for example, `(x ∈ s)` as `(x : _) (_ : x ∈ s)`.
   The `(x : _)` here is expanded as ` binder%(...)` so that the current domain type still
   has a chance to provide a custom expansion.
+- Sets up throwing an error for terms like `((x ∈ s) : α)`.
 - Handles constructs such as `(x : α) ∈ s` as well as
   expanding `(x y : α) ∈ s` as `((x : α) ∈ s) ((y : α) ∈ s)`. -/
 macro "declare_flexible_binder " b:ident " => " t:term : command => do
@@ -267,6 +282,9 @@ macro "declare_flexible_binder " b:ident " => " t:term : command => do
           let $b ← `(($$x : $$ty))
           `(binder%($$domType, $t))
       | _ => Macro.throwUnsupported
+    | `(binder%($$_, ($t : $$ty))) =>
+      -- This is to exclude syntax such as `(x ∈ s) : Nat` and `(x ≤ 37) : Nat`.
+      throwUnexpectedTypeAscription ty
     | `(binder%($$domType, $t)) => do
       let ($b, ty) ← destructAscription $b
       match $b:term with

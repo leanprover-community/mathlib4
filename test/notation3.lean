@@ -7,6 +7,7 @@ set_option autoImplicit true
 
 namespace Test
 
+-- Useful for debugging:
 -- set_option trace.notation3 true
 
 def Filter (α : Type) : Type := (α → Prop) → Prop
@@ -180,7 +181,7 @@ instance {α : Type _} : Membership α (Set α) := ⟨fun x s => s x⟩
 instance {α : Type _} : CoeSort (Set α) (Type _) := ⟨fun s => {x // x ∈ s}⟩
 def Set.toFinset {α : Type _} (s : Set α) [Fintype s] : Finset α := .mk s
 
-def Finset.sum {α : Type _} (s : Finset α) (f : α → Nat) : Nat := 0
+def Finset.sum {α : Type _} (_s : Finset α) (_f : α → Nat) : Nat := 0
 
 namespace FinsetFlex
 open Lean Meta Mathlib.FlexibleBinders
@@ -222,8 +223,8 @@ notation3 "∑ " (...) ", "
        prop := p b => if p then b else 0,
        bounded := s p => Finset.sum (finset% s) p) => r
 
-instance (n : Nat) : Fintype (Fin n) := sorry
-instance {p : Prop} [Decidable p] : Fintype (PLift p) := sorry
+instance (n : Nat) : Fintype (Fin n) := .mk (.mk fun _ => False)
+instance {p : Prop} [Decidable p] : Fintype (PLift p) := .mk (.mk fun _ => False)
 
 section
 variable (s : Finset Nat) (s' : Set Nat) [Fintype s']
