@@ -732,9 +732,9 @@ lemma strong_law_ae_of_measurable
     (hindep : Pairwise (fun i j ↦ IndepFun (X i) (X j))) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, X i ω)) atTop (𝓝 𝔼[X 0]) := by
   /- Choose a simple function `φ` such that  `φ (X 0)` approximates well enough `X 0` -- this is
-  possible as `X 0` is integrable and therefore ae strongly measurable. Then `φ (X n)` approximates
-  well `X n`. Then the strong law for `φ (X n)` implies the strong law for `X n`, up to a small
-  error controlled by `n⁻¹ ∑_{i=0}^{n-1} ‖X i - φ (X i)‖` . This one is also controlled thanks
+  possible as `X 0` is strongly measurable. Then `φ (X n)` approximates well `X n`.
+  Then the strong law for `φ (X n)` implies the strong law for `X n`, up to a small
+  error controlled by `n⁻¹ ∑_{i=0}^{n-1} ‖X i - φ (X i)‖`. This one is also controlled thanks
   to the one-dimensional law of large numbers: it converges ae to `𝔼[‖X 0 - φ (X 0)‖]`, which
   is arbitrarily small for well chosen `φ`. -/
   let s : Set E := Set.range (X 0) ∪ {0}
@@ -820,6 +820,8 @@ theorem strong_law_ae
     (X : ℕ → Ω → E) (hint : Integrable (X 0))
     (hindep : Pairwise (fun i j ↦ IndepFun (X i) (X j))) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, X i ω)) atTop (𝓝 𝔼[X 0]) := by
+  -- we reduce to the case of strongly measurable random variables, by using `Y i` which is strongly
+  -- measurable and ae equal to `X i`.
   have A : ∀ i, Integrable (X i) := fun i ↦ (hident i).integrable_iff.2 hint
   let Y : ℕ → Ω → E := fun i ↦ (A i).1.mk (X i)
   have B : ∀ᵐ ω, ∀ n, X n ω = Y n ω :=
