@@ -85,10 +85,6 @@ instance : Unique ({i} : Finset δ) :=
 @[simp]
 lemma default_singleton : ((default : ({i} : Finset δ)) : δ) = i := rfl
 
-lemma none_mem_insertNone {s : Finset α} : none ∈ insertNone s := by simp
-
-lemma insertNone_nonempty {s : Finset α} : insertNone s |>.Nonempty := ⟨none, none_mem_insertNone⟩
-
 end Finset
 
 end Finset
