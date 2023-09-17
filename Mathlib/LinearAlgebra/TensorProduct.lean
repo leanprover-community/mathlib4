@@ -681,9 +681,9 @@ theorem comm_symm_tmul (m : M) (n : N) : (TensorProduct.comm R M N).symm (n ⊗�
   rfl
 #align tensor_product.comm_symm_tmul TensorProduct.comm_symm_tmul
 
-lemma lift_comp_comm_eq  {f : M →ₗ[R] N →ₗ[R] P} :
-    (lift f) ∘ₗ (TensorProduct.comm R N M) = lift f.flip := by
-  exact ext rfl
+lemma lift_comp_comm_eq  (f : M →ₗ[R] N →ₗ[R] P) :
+    (lift f) ∘ₗ (TensorProduct.comm R N M) = lift f.flip :=
+  ext rfl
 end
 
 section
@@ -753,8 +753,8 @@ theorem map_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (m : M) (n : N) : map f
 
 lemma map_comp_comm_eq {f : M →ₗ[R] P} {g : N →ₗ[R] Q} :
     (map f g) ∘ₗ (TensorProduct.comm R N M) =
-      (TensorProduct.comm R Q P) ∘ₗ (map g f) := by
-  exact ext rfl
+      (TensorProduct.comm R Q P) ∘ₗ (map g f) :=
+  ext rfl
 
 theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
@@ -1028,13 +1028,13 @@ theorem rTensor_tmul (m : M) (n : N) : f.rTensor M (n ⊗ₜ m) = f n ⊗ₜ m :
 
 lemma comm_comp_rTensor_comp_comm_eq {g : N →ₗ[R] P} :
     (TensorProduct.comm R P Q) ∘ₗ (rTensor Q g) ∘ₗ (TensorProduct.comm R Q N) =
-      lTensor Q g := by
-  exact TensorProduct.ext rfl
+      lTensor Q g :=
+  TensorProduct.ext rfl
 
 lemma comm_comp_lTensor_comp_comm_eq {g : N →ₗ[R] P} :
     (TensorProduct.comm R Q P) ∘ₗ (lTensor Q g) ∘ₗ (TensorProduct.comm R N Q) =
-      rTensor Q g := by
-  exact TensorProduct.ext rfl
+      rTensor Q g :=
+  TensorProduct.ext rfl
 
 open TensorProduct
 
