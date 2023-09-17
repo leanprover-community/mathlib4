@@ -22,50 +22,112 @@ initialize registerTraceClass `notation3
 
 set_option autoImplicit true
 
+/-- A "function" of one argument. -/
+structure SyntaxFun₁ where
+  /-- The parameter. -/
+  param : Ident
+  /-- The function body. -/
+  body : Term
+
+/-- Replace all instances of `f.param` with `v`. -/
+def SyntaxFun₁.eval (f : SyntaxFun₁) (v : Term) : MacroM Term :=
+  f.body.replaceM fun t =>
+    if t == f.param then return v
+    else return none
+
+/-- Run a transformation on the body of the function. -/
+def SyntaxFun₁.updateBody {m : Type → Type} [Monad m]
+    (f : SyntaxFun₁) (r : Syntax → m (Option Syntax)) :
+    m SyntaxFun₁ := do
+  return {f with body := ← f.body.replaceM r}
+
+/-- A "function" of two arguments. -/
+structure SyntaxFun₂ where
+  /-- The first parameter. -/
+  param₁ : Ident
+  /-- The second parameter. -/
+  param₂ : Ident
+  /-- The function body. -/
+  body : Term
+
+/-- Replace all instances of `f.param₁` and `f.param₂` with `v₁` and `v₂`, respectively. -/
+def SyntaxFun₂.eval (f : SyntaxFun₂) (v₁ v₂ : Term) : MacroM Term :=
+  f.body.replaceM fun t =>
+    if t == f.param₁ then return v₁
+    else if t == f.param₂ then return v₂
+    else return none
+
+/-- Run a transformation on the body of the function. -/
+def SyntaxFun₂.updateBody {m : Type → Type} [Monad m]
+    (f : SyntaxFun₂) (r : Syntax → m (Option Syntax)) :
+    m SyntaxFun₂ := do
+  return {f with body := ← f.body.replaceM r}
+
+/-- Syntax for a `SyntaxFun₁`. -/
+syntax syntaxFun₁ := ident " => " term
+
+/-- Syntax for a `SyntaxFun₂`. -/
+syntax syntaxFun₂ := ident ppSpace ident " => " term
+
+/-- Recognize a `SyntaxFun₁`. -/
+def expandSyntaxFun₁ : TSyntax ``syntaxFun₁ → MacroM SyntaxFun₁
+  | `(syntaxFun₁| $p => $body) => return ⟨p, body⟩
+  | _ => Macro.throwUnsupported
+
+/-- Recognize a `SyntaxFun₂`. -/
+def expandSyntaxFun₂ : TSyntax ``syntaxFun₂ → MacroM SyntaxFun₂
+  | `(syntaxFun₂| $p₁ $p₂ => $body) => return ⟨p₁, p₂, body⟩
+  | _ => Macro.throwUnsupported
+
+/-- Convert a syntax function back to syntax. -/
+def SyntaxFun₁.toSyntax {m : Type → Type} [Monad m] [MonadQuotation m] (f : SyntaxFun₁) :
+    m (TSyntax ``syntaxFun₁) :=
+  `(syntaxFun₁| $f.param => $f.body)
+
+/-- Covert a syntax function back to syntax. -/
+def SyntaxFun₂.toSyntax {m : Type → Type} [Monad m] [MonadQuotation m] (f : SyntaxFun₂) :
+    m (TSyntax ``syntaxFun₂) :=
+  `(syntaxFun₂| $f.param₁ $f.param₂ => $f.body)
+
 /--
 Expands binders into nested combinators.
 For example, the familiar exists is given by:
-`expand_binders% type (p => Exists p, p r => p ∧ r) (x y : Nat) (z < x), z < y`
+`expand_binders% type (p => Exists p, prop := p r => p ∧ r) (x y : Nat) (z < x), z < y`
 which expands to the same expression as
 `∃ (x y : Nat) (z < y), x < y`
 namely
 `Exists fun (x : Nat) ↦ Exists fun (y : Nat) ↦ Exists fun z ↦ z < x ∧ z < y`
 -/
 syntax "expand_binders% " ident " ("
-    -- Unrestricted binder (ex: `x => Sup x`)
-    ident " => " term ", "
+    -- Unrestricted binder (ex: `f => iSup f`)
+    syntaxFun₁
     -- Non-dependent prop binder (ex: `p x => p ∧ x`)
-    ident ppSpace ident " => " term
-    -- Binder with domain (ex: `s x => Finset.sum s x`)
-    (", " ident ppSpace ident " => " term)? ")"
+    (atomic(", " &"prop") " := " syntaxFun₂)?
+    -- Binder with domain (ex: `s f => Finset.sum s f`)
+    (atomic(", " &"bounded") " := " syntaxFun₂)? ")"
   flexibleBinders ", " term : term
 
 macro_rules
-  | `(expand_binders% $domType ($x => $term, $p $r => $termProp $[, $s? $x'? => $termDom?]?)
+  | `(expand_binders% $domType ($univStx $[, prop := $propStx?]? $[, bounded := $domStx?]?)
         $bs:flexibleBinders, $body) => show MacroM Term from do
-    let applyStd (ty b : Term) (dom? : Option Term) (body : Term) : MacroM Term := do
-      match dom? with
-      | none =>
-        term.replaceM fun t ↦ do
-          if t == x then `(fun ($b : $ty) ↦ $body)
-          else return none
-      | some dom =>
-        let (some s, some x', some termDom) := (s?, x'?, termDom?)
-          | withRef ty <| withRef b <|
-              Macro.throwError "Notation is missing implementation for bounded quantifiers"
-        termDom.replaceM fun t ↦ do
-          if t == s then return dom
-          else if t == x' then `(fun ($b : $ty) ↦ $body)
-          else return none
-    let applyProp (ty body : Term) : MacroM Term :=
-      termProp.replaceM fun t ↦ do
-        if t == p then return ty
-        else if t == r then return body
-        else return none
+    let expandUniv ← expandSyntaxFun₁ univStx
+    let expandProp? ← propStx?.mapM expandSyntaxFun₂
+    let expandDom? ← domStx?.mapM expandSyntaxFun₂
     let res ← expandFlexibleBinders domType.getId bs
     res.foldrM (init := body) fun
-      | .std ty bind dom?, body => applyStd ty bind dom? body
-      | .prop p, body => do applyProp p body
+      | .std ty bind none, body => do expandUniv.eval (← `(fun ($bind : $ty) ↦ $body))
+      | .std ty bind (some dom), body => do
+        if let some expandDom := expandDom? then
+          expandDom.eval dom (← `(fun ($bind : $ty) ↦ $body))
+        else
+          withRef ty <| withRef dom <| withRef bind <|
+            Macro.throwError "Notation is missing implementation for bounded quantifiers"
+      | .prop p, body => do
+        if let some expandProp := expandProp? then
+          expandProp.eval p body
+        else
+          -- This will likely fail to elaborate if the quantifier wants a Type.
+          expandUniv.eval (← `(fun (_ : $p) ↦ $body))
       | .match discr patt, body => `(match $discr:term with | $patt => $body)
 
 macro (name := expandFoldl) "expand_foldl% "
@@ -92,12 +154,12 @@ syntax identOptScoped :=
   (":" "(" "scoped " ("(" ident ") ")?
       -- Unrestricted binder (ex: `x => Sup x`)
       -- Pretty printable using `(_ : _)`
-      ident " => " term
+      syntaxFun₁
       -- Non-dependent prop binder (ex: `p x => p ∧ x`)
-      (atomic(", " &"prop") " := " ident ppSpace ident " => " term)?
+      (atomic(", " &"prop") " := " syntaxFun₂)?
       -- Binder with domain (ex: `s x => Finset.sum s x`)
       -- Pretty printable using `(_ ∈ _)`
-      (atomic(", " &"bounded") " := " ident ppSpace ident " => " term)? ")")?
+      (atomic(", " &"bounded") " := " syntaxFun₂)? ")")?
 /-- `notation3` argument. -/
 -- Note: there is deliberately no ppSpace between items
 -- so that the space in the literals themselves stands out
@@ -506,29 +568,28 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
         | _ => throwUnsupportedSyntax
     | `(notation3Item| $lit:ident $(prec?)? :
           (scoped $[($domType?:ident)]?
-            $scopedId:ident => $scopedTerm
-            $[, prop := $propTy? $propBody? => $propTerm?]?
-            $[, bounded := $dom? $domId? => $domTerm?]?)) =>
+            $scopedStx
+            $[, prop := $propStx?]?
+            $[, bounded := $boundedStx?]?)) =>
       hasScoped := true
       let domType ← domType?.getDM `(type)
-      let propTy ← propTy?.getDM `(propTy)
-      let propBody ← propBody?.getDM `(propBody)
-      let propTerm ← propTerm?.getDM <| scopedTerm.replaceM fun s =>
-        if s == scopedId then `(fun (_ : $propTy) => $propBody) else return none
+      let scopedFn ← liftMacroM <| expandSyntaxFun₁ scopedStx
+      let propFn? ← liftMacroM <| propStx?.mapM expandSyntaxFun₂
+      let boundedFn? ← liftMacroM <| boundedStx?.mapM expandSyntaxFun₂
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
         `(macroArg| $lit:ident:term $(prec?)?)
       matchers := matchers.push <|
-        mkScopedMatcher lit.getId scopedId.getId scopedTerm (getBoundNames boundValues)
-      let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
-      let propTerm' ← propTerm.replaceM fun s => pure (boundValues.find? s.getId)
-      let domTerm'? ← domTerm?.mapM fun domTerm =>
-        domTerm.replaceM fun s => pure (boundValues.find? s.getId)
+        mkScopedMatcher lit.getId scopedFn.param.getId scopedFn.body (getBoundNames boundValues)
+      let scopedFn' ← scopedFn.updateBody fun s => pure (boundValues.find? s.getId)
+      let propFn'? ← propFn?.mapM (·.updateBody fun s => pure (boundValues.find? s.getId))
+      let boundedFn'? ← boundedFn?.mapM (·.updateBody fun s => pure (boundValues.find? s.getId))
+      let scopedStx' ← scopedFn'.toSyntax
+      let propStx'? ← propFn'?.mapM (·.toSyntax)
+      let boundedStx'? ← boundedFn'?.mapM (·.toSyntax)
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| ←
         `(expand_binders% $domType
-            ($scopedId => $scopedTerm',
-              $propTy $propBody => $propTerm'
-              $[, $dom? $domId? => $domTerm'?]?)
+            ($scopedStx' $[, prop := $propStx'?]? $[, bounded := $boundedStx'?]?)
             $$binders,
           $(⟨lit.1.mkAntiquotNode `term⟩):term)
     | `(notation3Item| $lit:ident $(prec?)?) =>
