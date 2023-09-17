@@ -98,7 +98,7 @@ namespace enough_injectives_aux_proofs
 
 variable (A_ : AddCommGroupCat.{u})
 
-/-- The next term of `A`'s injective resolution is `∏_{A →₊ ℚ/ℤ}, ℚ/ℤ`. -/
+/-- The next term of `A`'s injective resolution is `∏_{A →+ ℚ/ℤ}, ℚ/ℤ`. -/
 def next : AddCommGroupCat.{u} := of <|
   (A_ ⟶ of <| ULift.{u} <| AddCircle (1 : ℚ)) → ULift.{u} (AddCircle (1 : ℚ))
 
@@ -180,7 +180,7 @@ lemma toNext_inj : Function.Injective <| toNext A_ :=
       have hg : Mono g := (mono_iff_injective _).mpr Subtype.val_injective
       exact (FunLike.congr_fun (Injective.comp_factorThru f g) _).symm.trans (congr_fun h0 _)
 
-/-- An injective presentation of `A`: `A → ∏_{A →₊ ℚ/ℤ}, ℚ/ℤ`. -/
+/-- An injective presentation of `A`: `A → ∏_{A →+ ℚ/ℤ}, ℚ/ℤ`. -/
 @[simps] def presentation : CategoryTheory.InjectivePresentation A_ where
   J := next A_
   injective := inferInstance
