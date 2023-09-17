@@ -46,7 +46,8 @@ section
 
 variable [AddCommMonoid β]
 
-theorem Multiset.smul_sum [DistribSMul α β] {r : α} {s : Multiset β} : r • s.sum = (s.map ((· • ·) r)).sum :=
+theorem Multiset.smul_sum [DistribSMul α β] {r : α} {s : Multiset β} :
+    r • s.sum = (s.map ((· • ·) r)).sum :=
   (DistribSMul.toAddMonoidHom β r).map_multiset_sum s
 #align multiset.smul_sum Multiset.smul_sum
 
