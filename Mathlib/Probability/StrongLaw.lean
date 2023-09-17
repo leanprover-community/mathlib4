@@ -725,7 +725,7 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
       · exact (ψ.comp (X 0) h').integrable_of_isFiniteMeasure
 
 /-- Preliminary lemma for the strong law of large numbers for vector-valued random variables,
-assuming full measurability in addition to integrability. This is weakened to ae measurability in
+assuming measurability in addition to integrability. This is weakened to ae measurability in
 the full version `ProbabilityTheory.strong_law_ae`. -/
 lemma strong_law_ae_of_measurable
     (X : ℕ → Ω → E) (hint : Integrable (X 0)) (h' : StronglyMeasurable (X 0))

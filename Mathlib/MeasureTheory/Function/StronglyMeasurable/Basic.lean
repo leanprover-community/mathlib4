@@ -2132,6 +2132,3 @@ end MeasureTheory
 
 -- Guard against import creep
 assert_not_exists InnerProductSpace
-
-
-open Set TopologicalSpace
