@@ -216,8 +216,8 @@ instance instAdd : Add (FiniteMeasure Ω) where add μ ν := ⟨μ + ν, Measure
 variable {R : Type*} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
   [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
 
-instance instSMul : SMul R (FiniteMeasure Ω)
-    where smul (c : R) μ := ⟨c • (μ : Measure Ω), MeasureTheory.isFiniteMeasureSMulOfNNRealTower⟩
+instance instSMul : SMul R (FiniteMeasure Ω) where
+  smul (c : R) μ := ⟨c • (μ : Measure Ω), MeasureTheory.isFiniteMeasureSMulOfNNRealTower⟩
 
 -- porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
 @[norm_cast]
@@ -329,7 +329,7 @@ theorem _root_.BoundedContinuousFunction.NNReal.coe_ennreal_comp_measurable {Ω 
 
 theorem _root_.MeasureTheory.lintegral_lt_top_of_boundedContinuous_to_nnreal (μ : Measure Ω)
     [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ≥0) : (∫⁻ ω, f ω ∂μ) < ∞ := by
-  apply IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal
+  apply IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal
   use nndist f 0
   intro x
   have key := BoundedContinuousFunction.Nnreal.upper_bound f x
@@ -718,7 +718,7 @@ theorem tendsto_of_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : �
   apply key.mp
   have lip : LipschitzWith 1 ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.lipschitz
   set f₀ := BoundedContinuousFunction.comp _ lip f with _def_f₀
-  have f₀_eq : ⇑f₀ = ((↑) : ℝ≥0 → ℝ) ∘ ⇑f := by rfl
+  have f₀_eq : ⇑f₀ = ((↑) : ℝ≥0 → ℝ) ∘ ⇑f := rfl
   have f₀_nn : 0 ≤ ⇑f₀ := fun _ => by
     simp only [f₀_eq, Pi.zero_apply, Function.comp_apply, NNReal.zero_le_coe]
   have f₀_ae_nn : 0 ≤ᵐ[(μ : Measure Ω)] ⇑f₀ := eventually_of_forall f₀_nn

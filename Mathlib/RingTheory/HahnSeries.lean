@@ -347,8 +347,8 @@ section AddMonoid
 
 variable [AddMonoid R]
 
-instance : Add (HahnSeries Γ R)
-    where add x y :=
+instance : Add (HahnSeries Γ R) where
+  add x y :=
     { coeff := x.coeff + y.coeff
       isPwo_support' := (x.isPwo_support.union y.isPwo_support).mono (Function.support_add _ _) }
 
@@ -612,8 +612,8 @@ theorem order_one [MulZeroOneClass R] : order (1 : HahnSeries Γ R) = 0 := by
   · exact order_single one_ne_zero
 #align hahn_series.order_one HahnSeries.order_one
 
-instance [NonUnitalNonAssocSemiring R] : Mul (HahnSeries Γ R)
-    where mul x y :=
+instance [NonUnitalNonAssocSemiring R] : Mul (HahnSeries Γ R) where
+  mul x y :=
     { coeff := fun a =>
         ∑ ij in addAntidiagonal x.isPwo_support y.isPwo_support a, x.coeff ij.fst * y.coeff ij.snd
       isPwo_support' :=
@@ -808,9 +808,6 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
 instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
     inferInstanceAs (Distrib (HahnSeries Γ R)) with
-    zero := 0
-    add := (· + ·)
-    mul := (· * ·)
     zero_mul := fun _ => by
       ext
       simp [mul_coeff]
@@ -820,18 +817,11 @@ instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries �
 
 instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
-    zero := 0
-    add := (· + ·)
-    mul := (· * ·)
     mul_assoc := mul_assoc' }
 
 instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
   { AddMonoidWithOne.unary,
     inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
-    zero := 0
-    one := 1
-    add := (· + ·)
-    mul := (· * ·)
     one_mul := fun x => by
       ext
       exact single_zero_mul_coeff.trans (one_mul _)
@@ -841,11 +831,7 @@ instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
 
 instance [Semiring R] : Semiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)),
-    inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with
-    zero := 0
-    one := 1
-    add := (· + ·)
-    mul := (· * ·) }
+    inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with }
 
 instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with
@@ -1567,8 +1553,8 @@ section Semiring
 
 variable [OrderedCancelAddCommMonoid Γ] [Semiring R] {α : Type*}
 
-instance : SMul (HahnSeries Γ R) (SummableFamily Γ R α)
-    where smul x s :=
+instance : SMul (HahnSeries Γ R) (SummableFamily Γ R α) where
+  smul x s :=
     { toFun := fun a => x * s a
       isPwo_iUnion_support' := by
         apply (x.isPwo_support.add s.isPwo_iUnion_support).mono

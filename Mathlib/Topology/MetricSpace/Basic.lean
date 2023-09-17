@@ -1951,6 +1951,18 @@ theorem closedBall_zero' (x : α) : closedBall x 0 = closure {x} :=
     (closure_minimal (singleton_subset_iff.2 (dist_self x).le) isClosed_ball)
 #align metric.closed_ball_zero' Metric.closedBall_zero'
 
+lemma eventually_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
+    ∀ᶠ r in 𝓝 (0 : ℝ), IsCompact (closedBall x r) := by
+  rcases local_compact_nhds (x := x) (n := univ) univ_mem with ⟨s, hs, -, s_compact⟩
+  filter_upwards [eventually_closedBall_subset hs] with r hr
+  exact isCompact_of_isClosed_subset s_compact isClosed_ball hr
+
+lemma exists_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
+    ∃ r, 0 < r ∧ IsCompact (closedBall x r) := by
+  have : ∀ᶠ r in 𝓝[>] 0, IsCompact (closedBall x r) :=
+    eventually_nhdsWithin_of_eventually_nhds (eventually_isCompact_closedBall x)
+  simpa only [and_comm] using (this.and self_mem_nhdsWithin).exists
+
 theorem dense_iff {s : Set α} : Dense s ↔ ∀ x, ∀ r > 0, (ball x r ∩ s).Nonempty :=
   forall_congr' fun x => by
     simp only [mem_closure_iff, Set.Nonempty, exists_prop, mem_inter_iff, mem_ball', and_comm]
