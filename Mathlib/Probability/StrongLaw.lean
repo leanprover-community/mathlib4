@@ -846,8 +846,9 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
   refine' tendsto_Lp_of_tendstoInMeasure _ hp hp' havg (memℒp_const _) _
     (tendstoInMeasure_of_tendsto_ae havg (strong_law_ae _ hint hindep hident))
   rw [(_ : (fun (n : ℕ) ω => (n : ℝ)⁻¹ • (∑ i in range n, X i ω)) = fun (n : ℕ) => (n : ℝ)⁻¹ • (∑ i in range n, X i))]
-  · exact (uniformIntegrable_average hp <|
-      Memℒp.uniformIntegrable_of_identDistrib hp hp' hℒp hident).2.1
+  · apply UniformIntegrable.unifIntegrable
+    apply uniformIntegrable_average hp
+    exact Memℒp.uniformIntegrable_of_identDistrib hp hp' hℒp hident
   · ext n ω
     simp only [Pi.coe_nat, Pi.div_apply, sum_apply]
 set_option linter.uppercaseLean3 false in

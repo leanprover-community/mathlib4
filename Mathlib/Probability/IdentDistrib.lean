@@ -306,7 +306,7 @@ section UniformIntegrable
 open TopologicalSpace
 
 variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
-  [SecondCountableTopology E] {μ : Measure α} [IsFiniteMeasure μ]
+  {μ : Measure α} [IsFiniteMeasure μ]
 
 /-- This lemma is superseded by `Memℒp.uniformIntegrable_of_identDistrib` which only requires
 `AEStronglyMeasurable`. -/
@@ -318,17 +318,21 @@ theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → �
   swap; · exact ⟨0, fun i => False.elim (hι <| Nonempty.intro i)⟩
   obtain ⟨C, hC₁, hC₂⟩ := hℒp.snorm_indicator_norm_ge_pos_le μ (hfmeas _) hε
   refine' ⟨⟨C, hC₁.le⟩, fun i => le_trans (le_of_eq _) hC₂⟩
-  have : {x : α | (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖f i x‖₊}.indicator (f i) =
-      (fun x : E => if (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖x‖₊ then x else 0) ∘ f i := by
+  have : {x | (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
+    ext x
+    simp_rw [← norm_toNNReal]
+    exact Real.le_toNNReal_iff_coe_le (norm_nonneg _)
+  rw [this, ← snorm_norm, ← snorm_norm (Set.indicator _ _)]
+  simp_rw [norm_indicator_eq_indicator_norm, coe_nnnorm]
+  let F : E → ℝ := (fun x : E => if (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖x‖₊ then ‖x‖ else 0)
+  have F_meas : Measurable F := by
+    apply measurable_norm.indicator (measurableSet_le measurable_const measurable_nnnorm)
+  have : ∀ k, (fun x ↦ Set.indicator {x | C ≤ ‖f k x‖} (fun a ↦ ‖f k a‖) x) = F ∘ f k := by
+    intro k
     ext x
     simp only [Set.indicator, Set.mem_setOf_eq]; norm_cast
-  simp_rw [coe_nnnorm, this]
-  rw [← snorm_map_measure _ (hf i).aemeasurable_fst, (hf i).map_eq,
-    snorm_map_measure _ (hf j).aemeasurable_fst]
-  · rfl
-  all_goals
-    exact_mod_cast aestronglyMeasurable_id.indicator
-      (measurableSet_le measurable_const measurable_nnnorm)
+  rw [this, this, ← snorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
+    (hf i).map_eq, snorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]
 #align probability_theory.mem_ℒp.uniform_integrable_of_ident_distrib_aux ProbabilityTheory.Memℒp.uniformIntegrable_of_identDistrib_aux
 
 /-- A sequence of identically distributed Lᵖ functions is p-uniformly integrable. -/
