@@ -120,6 +120,15 @@ protected theorem of_ae_eq {g : α → γ} (hf : AEMeasurable f μ) (heq : f =�
     map_eq := Measure.map_congr heq }
 #align probability_theory.ident_distrib.of_ae_eq ProbabilityTheory.IdentDistrib.of_ae_eq
 
+lemma _root_.MeasureTheory.AEMeasurable.identDistrib_mk
+    (hf : AEMeasurable f μ) : IdentDistrib f (hf.mk f) μ μ :=
+  IdentDistrib.of_ae_eq hf hf.ae_eq_mk
+
+lemma _root_.MeasureTheory.AEStronglyMeasurable.identDistrib_mk
+    [TopologicalSpace γ] [PseudoMetrizableSpace γ] [BorelSpace γ]
+    (hf : AEStronglyMeasurable f μ) : IdentDistrib f (hf.mk f) μ μ :=
+  IdentDistrib.of_ae_eq hf.aemeasurable hf.ae_eq_mk
+
 theorem measure_mem_eq (h : IdentDistrib f g μ ν) {s : Set γ} (hs : MeasurableSet s) :
     μ (f ⁻¹' s) = ν (g ⁻¹' s) := by
   rw [← Measure.map_apply_of_aemeasurable h.aemeasurable_fst hs, ←
