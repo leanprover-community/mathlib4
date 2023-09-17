@@ -199,7 +199,7 @@ jobs:
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
 
       - name: Post comments for lean-pr-testing branch
         if: always()
