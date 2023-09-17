@@ -87,18 +87,18 @@ theorem tmul_tensorAssoc_apply
 def tensorAssoc (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃) :
     ((Q₁.tmul Q₂).tmul Q₃).IsometryEquiv (Q₁.tmul (Q₂.tmul Q₃)) where
   toLinearEquiv := TensorProduct.assoc R M₁ M₂ M₃
-  map_app' := tmul_comp_tensorAssoc Q₁ Q₂ Q₃
+  map_app' := tmul_tensorAssoc_apply Q₁ Q₂ Q₃
 
 @[simp] lemma tensorAssoc_apply
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃)
     (x : (M₁ ⊗[R] M₂) ⊗[R] M₃) :
-    tensorAssoc Q₁ Q₂ x = TensorProduct.assoc R M₁ M₂ M₃ x :=
+    tensorAssoc Q₁ Q₂ Q₃ x = TensorProduct.assoc R M₁ M₂ M₃ x :=
   rfl
 
 @[simp] lemma tensorAssoc_symm_apply
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃)
     (x : M₁ ⊗[R] (M₂ ⊗[R] M₃)) :
-    (tensorAssoc Q₁ Q₂ Q₃).symm x = (TensorProduct.assoc R M₁ M₂ M₃).symm x).symm x :=
+    (tensorAssoc Q₁ Q₂ Q₃).symm x = (TensorProduct.assoc R M₁ M₂ M₃).symm x :=
   rfl
 
 end tensorAssoc
