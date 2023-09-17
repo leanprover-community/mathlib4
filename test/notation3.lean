@@ -214,11 +214,11 @@ open Lean.Elab.Term.Quotation in
 macro_rules
   | `(binder%(finset, $e ∈ $s)) => do
     let (e, ty) ← destructAscription e
-    `(binderResolved%(finset% $s, $e, $ty))
+    `(binderResolved%($ty, $e, finset% $s))
 end FinsetFlex
 
 notation3 "∑ " (...) ", "
-    r:(scoped (filter) p => Finset.sum Finset.univ p,
+    r:(scoped (finset) p => Finset.sum Finset.univ p,
        --prop := p b => Finset.sum Finset.univ (fun (_ : PLift p) => b),
        prop := p b => if p then b else 0,
        bounded := s p => Finset.sum (finset% s) p) => r

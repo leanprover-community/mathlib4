@@ -98,38 +98,71 @@ In practice, this means that parentheses should be placed as follows:
 
 -- TODO: Use scoped[NS], when implemented?
 namespace BigOperators
-open Std.ExtendedBinder
+open Lean Meta Mathlib.FlexibleBinders
+
+/-- `finset% t` elaborates `t` as a `Finset`.
+If `t` is a `Set`, then inserts `Set.toFinset`.
+Does not make use of the expected type; useful for big operators over finsets.
+```
+#check finset% Finset.range 2 -- Finset Nat
+#check finset% (Set.univ : Set Bool) -- Finset Bool
+```
+-/
+elab (name := finsetStx) "finset% " t:term : term => do
+  let u ← mkFreshLevelMVar
+  let ty ← mkFreshExprMVar (mkSort (.succ u))
+  let x ← Elab.Term.elabTerm t (mkApp (.const ``Finset [u]) ty)
+  let xty ← whnfR (← inferType x)
+  if xty.isAppOfArity ``Set 1 then
+    Elab.Term.elabAppArgs (.const ``Set.toFinset [u]) #[] #[.expr x] none false false
+  else
+    return x
+
+open Lean.Elab.Term.Quotation in
+/-- `quot_precheck` for the `finset%` syntax. -/
+@[quot_precheck ExtendedBinder2.finsetStx] def precheckFinsetStx : Precheck
+  | `(finset% $t) => precheck t
+  | _ => Elab.throwUnsupportedSyntax
+
+/-- For the `finset` domain, `x ∈ s` is a binder over `s` as a `Finset`. -/
+macro_rules
+  | `(binder%(finset, $e ∈ $s)) => do
+    let (e, ty) ← destructAscription e
+    `(binderResolved%($ty, $e, finset% $s))
 
 /-- `∑ x, f x` is notation for `Finset.sum Finset.univ f`. It is the sum of `f x`,
 where `x` ranges over the finite domain of `f`. -/
-scoped syntax (name := bigsum) "∑ " extBinder ", " term:67 : term
-scoped macro_rules (kind := bigsum)
-  | `(∑ $x:ident, $p) => `(Finset.sum Finset.univ (fun $x:ident ↦ $p))
-  | `(∑ $x:ident : $t, $p) => `(Finset.sum Finset.univ (fun $x:ident : $t ↦ $p))
+scoped notation3 (name := bigsum) "∑ "(...)", "
+    r:67:(scoped (finset)
+            p => Finset.sum Finset.univ p,
+            bounded := s p => Finset.sum s p) => r
 
 /-- `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
 where `x` ranges over the finite domain of `f`. -/
-scoped syntax (name := bigprod) "∏ " extBinder ", " term:67 : term
-scoped macro_rules (kind := bigprod)
-  | `(∏ $x:ident, $p) => `(Finset.prod Finset.univ (fun $x:ident ↦ $p))
-  | `(∏ $x:ident : $t, $p) => `(Finset.prod Finset.univ (fun $x:ident : $t ↦ $p))
+scoped notation3 (name := bigprod) "∏ "(...)", "
+    r:67:(scoped (finset)
+            p => Finset.prod Finset.univ p,
+            bounded := s p => Finset.prod s p) => r
 
-/-- `∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
+/-- (Deprecated) `∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/
-scoped syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
-scoped macro_rules (kind := bigsumin)
-  | `(∑ $x:ident in $s, $r) => `(Finset.sum $s (fun $x ↦ $r))
-  | `(∑ $x:ident : $t in $s, $p) => `(Finset.sum $s (fun $x:ident : $t ↦ $p))
+scoped macro (name := bigsumin) "∑ " x:ident " in " s:term ", " r:term:67 : term =>
+  `(∑ $x ∈ $s, $r)
 
-/-- `∏ x in s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,
+/-- (Deprecated) `∑ x : ty in s, f x` is notation for `Finset.sum s f`. -/
+scoped macro (name := bigsumin') "∑ " x:ident ":" ty:term  " in " s:term ", " r:term:67 : term =>
+  `(∑ ($x : $ty) ∈ $s, $r)
+
+/-- (Deprecated) `∏ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/
-scoped syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
-scoped macro_rules (kind := bigprodin)
-  | `(∏ $x:ident in $s, $r) => `(Finset.prod $s (fun $x ↦ $r))
-  | `(∏ $x:ident : $t in $s, $p) => `(Finset.prod $s (fun $x:ident : $t ↦ $p))
+scoped macro (name := bigprodin) "∏ " x:ident " in " s:term ", " r:term:67 : term =>
+  `(∏ $x ∈ $s, $r)
 
-open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
-open Std.ExtendedBinder
+/-- (Deprecated) `∏ x : ty in s, f x` is notation for `Finset.sum s f`. -/
+scoped macro (name := bigprodin') "∏ " x:ident ":" ty:term  " in " s:term ", " r:term:67 : term =>
+  `(∏ ($x : $ty) ∈ $s, $r)
+
+open Parser.Term PrettyPrinter.Delaborator SubExpr
 
 /-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
@@ -140,16 +173,14 @@ to show the domain type when the product is over `Finset.univ`. -/
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
   if s.isAppOfArity ``Finset.univ 2 then
-    let binder ←
-      if ppDomain then
-        let ty ← withNaryArg 1 delab
-        `(extBinder| $(.mk i):ident : $ty)
-      else
-        `(extBinder| $(.mk i):ident)
-    `(∏ $binder, $body)
+    if ppDomain then
+      let ty ← withNaryArg 1 delab
+      `(∏ $(.mk i):ident : $ty, $body)
+    else
+      `(∏ $(.mk i):ident, $body)
   else
     let ss ← withNaryArg 3 <| delab
-    `(∏ $(.mk i):ident in $ss, $body)
+    `(∏ $(.mk i):ident ∈ $ss, $body)
 
 /-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
@@ -160,16 +191,14 @@ to show the domain type when the sum is over `Finset.univ`. -/
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
   if s.isAppOfArity ``Finset.univ 2 then
-    let binder ←
-      if ppDomain then
-        let ty ← withNaryArg 1 delab
-        `(extBinder| $(.mk i):ident : $ty)
-      else
-        `(extBinder| $(.mk i):ident)
-    `(∑ $binder, $body)
+    if ppDomain then
+      let ty ← withNaryArg 1 delab
+      `(∑ $(.mk i):ident : $ty, $body)
+    else
+      `(∑ $(.mk i):ident, $body)
   else
     let ss ← withNaryArg 3 <| delab
-    `(∑ $(.mk i):ident in $ss, $body)
+    `(∑ $(.mk i):ident ∈ $ss, $body)
 
 end BigOperators
 
