@@ -3,6 +3,7 @@ import Mathlib.CategoryTheory.Shift.Pullback
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.CategoryTheory.Triangulated.Functor
+import Mathlib.Tactic.Linarith
 
 namespace CategoryTheory
 
@@ -12,8 +13,9 @@ variable (C : Type*) [Category C]
 
 namespace Pretriangulated
 
-def PretriangulatedOpposite [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
-    [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C] :=
+variable [HasShift C ℤ]
+
+def PretriangulatedOpposite  :=
   PullbackShift (OppositeShift C ℤ)
     (AddMonoidHom.mk' (fun n => -n) (fun a b => by dsimp; abel) : ℤ →+ ℤ)
 
@@ -323,19 +325,35 @@ end PretriangulatedOpposite
 namespace Opposite
 -- `open Pretriangulated.Opposite` to get these instances
 
-variable (C : Type*) [Category C] [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
+variable (C : Type*) [Category C] [HasShift C ℤ]
 
 noncomputable scoped instance : HasShift Cᵒᵖ ℤ :=
   (inferInstance : HasShift (PretriangulatedOpposite C) ℤ)
 
+variable [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+
 noncomputable scoped instance (n : ℤ) : (shiftFunctor Cᵒᵖ n).Additive :=
   (inferInstance : (shiftFunctor (PretriangulatedOpposite C) n).Additive)
+
+variable [HasZeroObject C] [Pretriangulated C]
 
 scoped instance : Pretriangulated Cᵒᵖ :=
   (inferInstance : Pretriangulated (PretriangulatedOpposite C))
 
 end Opposite
+
+section
+
+open Pretriangulated.Opposite
+
+variable (C : Type*) [Category C] [HasShift C ℤ]
+
+noncomputable def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
+    shiftFunctor Cᵒᵖ n ≅ (shiftFunctor C m).op := by
+  obtain rfl : m = -n := by linarith
+  exact Iso.refl _
+
+end
 
 end Pretriangulated
 

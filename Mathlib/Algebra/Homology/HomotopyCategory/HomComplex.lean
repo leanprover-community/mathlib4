@@ -908,6 +908,34 @@ lemma leftShift_v (a n' : ℤ) (hn' : n + a = n') (p q : ℤ) (hpq : p + n' = q)
   dsimp only [leftShift]
   simp only [mk_v]
 
+def leftUnshift {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n') :
+    Cochain K L n :=
+  Cochain.mk (fun p q hpq => (a * n' + (a*(a-1)/2)).negOnePow •
+    (K.shiftFunctorObjXIso a (p-a) p (by linarith)).inv ≫ γ.v (p-a) q (by linarith))
+
+lemma leftUnshift_v {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n')
+    (p q : ℤ) (hpq : p + n = q) (p' : ℤ) (hp' : p' + n' = q) :
+    (γ.leftUnshift n hn).v p q hpq = (a * n' + (a*(a-1)/2)).negOnePow •
+      (K.shiftFunctorObjXIso a p' p (by linarith)).inv ≫ γ.v p' q (by linarith) := by
+  obtain rfl : p' = p - a := by linarith
+  rfl
+
+@[simp]
+lemma leftUnshift_leftShift (a n' : ℤ) (hn' : n + a = n') :
+    (γ.leftShift a n' hn').leftUnshift n hn' = γ := by
+  ext p q hpq
+  rw [(γ.leftShift a n' hn').leftUnshift_v n hn' p q hpq (q-n') (by linarith),
+    γ.leftShift_v a n' hn' (q-n') q (by linarith) p hpq,
+    comp_zsmul, Iso.inv_hom_id_assoc, smul_smul, Int.negOnePow_mul_self, one_smul]
+
+@[simp]
+lemma leftShift_leftUnshift {a n' : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn' : n + a = n') :
+    (γ.leftUnshift n hn').leftShift a n' hn' = γ := by
+  ext p q hpq
+  rw [(γ.leftUnshift n hn').leftShift_v a n' hn' p q hpq (q-n) (by linarith),
+    γ.leftUnshift_v n hn' (q-n) q (by linarith) p hpq, comp_zsmul, smul_smul,
+    Iso.hom_inv_id_assoc, Int.negOnePow_mul_self, one_smul]
+
 lemma leftShift_comp (a n' : ℤ) (hn' : n + a = n') {m t t' : ℤ} (γ' : Cochain L M m)
     (h : n + m = t) (ht' : t + a = t'):
     (γ •[h] γ').leftShift a t' ht' =  (a * m).negOnePow • (γ.leftShift a n' hn') •[by rw [← ht', ← h, ← hn', add_assoc, add_comm a, add_assoc]] γ' := by
@@ -1012,15 +1040,14 @@ def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
   right_inv γ := by simp
   map_add' γ γ' := by simp
 
-/-@[simps]
+@[simps]
 def leftShiftAddEquiv (n a n' : ℤ) (hn' : n + a = n') :
     Cochain K L n ≃+ Cochain (K⟦a⟧) L n' where
   toFun γ := γ.leftShift a n' hn'
-  invFun γ :=
-    sorry
-  left_inv γ := sorry
-  right_inv γ := sorry
-  map_add' γ γ' := sorry-/
+  invFun γ := γ.leftUnshift n hn'
+  left_inv γ := by simp
+  right_inv γ := by simp
+  map_add' γ γ' := by simp
 
 variable {K L}
 

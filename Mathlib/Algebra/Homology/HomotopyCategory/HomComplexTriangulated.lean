@@ -89,6 +89,8 @@ def homotopyBifunctorMapApp {K₁ K₂: CochainComplex C ℤ} {f₁ f₂ : K₁ 
       Int.negOnePow_mul_self, one_smul, Int.negOnePow_succ, neg_smul, add_neg_cancel_comm,
       Cochain.sub_v, Cochain.zero_cochain_comp_v, Cochain.ofHom_v, sub_add_cancel])
 
+section
+
 variable {K L : CochainComplex C ℤ} {n : ℤ}
 
 @[simp]
@@ -364,12 +366,98 @@ noncomputable def mappingConeTriangleIso :
 
 end
 
-variable (K L) (m : ℤ) (hm : n + m = 0)
+end
 
-/-def leftShiftIso : HomComplex (K⟦m⟧) L ≅ (HomComplex K L)⟦n⟧ :=
-  HomologicalComplex.Hom.isoOfComponents (fun i => by
-    -- Cochain.leftShiftAddEquiv K L
-    sorry) sorry-/
+section
+
+variable (n m : ℤ) (hm : n + m = 0) (K L : CochainComplex C ℤ)
+
+def leftShiftIso : HomComplex (K⟦m⟧) L ≅ (HomComplex K L)⟦n⟧ :=
+  Iso.symm
+    (HomologicalComplex.Hom.isoOfComponents (fun i =>
+      (shiftFunctorObjXIso (HomComplex K L) n i (i + n) rfl) ≪≫
+        (AddEquiv.toAddCommGroupCatIso
+          (Cochain.leftShiftAddEquiv K L (i+n) m i (by linarith)))) (by
+            rintro i _ rfl
+            dsimp
+            erw [id_comp, id_comp]
+            ext (α : Cochain K L (i + n))
+            dsimp
+            rw [Cochain.leftShiftAddEquiv_apply, Cochain.leftShiftAddEquiv_apply]
+            erw [Cochain.leftShift_zsmul]
+            rw [HomComplex_d_apply, α.δ_leftShift m i (i+1)
+              (by linarith) (i + 1 + n) (by linarith)]
+            obtain rfl : m = -n := by linarith
+            simp only [Int.negOnePow_neg]))
+
+variable {K L}
+
+lemma leftShiftIso_hom_f_apply {i : ℤ} (α : (HomComplex (K⟦m⟧) L).X i) (j : ℤ) (h : j = i + n) :
+  (leftShiftIso n m hm K L).hom.f i α =
+    (shiftFunctorObjXIso (HomComplex K L) n i j h).inv (α.leftUnshift j (by linarith)) := by
+  subst h
+  rfl
+
+lemma leftShiftIso_inv_f_apply {i : ℤ} (α : (HomComplex K L⟦n⟧).X i) (j : ℤ) (h : j = i + n) :
+    (leftShiftIso n m hm K L).inv.f i α =
+      Cochain.leftShift ((shiftFunctorObjXIso (HomComplex K L) n i j h).hom α)
+        m i (by linarith) := by
+  subst h
+  rfl
+
+namespace BifunctorFlipObjCommShift
+
+variable (L)
+
+def iso :
+    CategoryTheory.shiftFunctor (CochainComplex C ℤ)ᵒᵖ n ⋙ (Functor.flip (bifunctor C)).obj L ≅
+      (Functor.flip (bifunctor C)).obj L ⋙
+        CategoryTheory.shiftFunctor (CochainComplex AddCommGroupCat ℤ) n :=
+  isoWhiskerRight (Pretriangulated.shiftFunctorOpIso
+    (CochainComplex C ℤ) _ _ (add_neg_self n)) _ ≪≫ NatIso.ofComponents
+      (fun K => leftShiftIso _ _ (add_neg_self n) K.unop L) (by
+        intro K₁ K₂ φ
+        ext i (α : Cochain (K₁.unop⟦-n⟧) L i)
+        dsimp
+        rw [leftShiftIso_hom_f_apply _ _ (add_neg_self n) _ (i + n) rfl,
+          leftShiftIso_hom_f_apply _ _ (add_neg_self n) _ (i + n) rfl]
+        simp only [HomComplex_X, shiftFunctor_obj_X, shiftFunctorObjXIso,
+          HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, AddCommGroupCat.coe_id, id_eq]
+        erw [bifunctor_map_app_f_apply, bifunctor_map_app_f_apply]
+        dsimp
+        apply Cochain.ext
+        intro p q hpq
+        rw [Cochain.leftUnshift_v _ (i+n) (by linarith) p q hpq (p + n) (by linarith),
+          Cochain.zero_cochain_comp_v, Cochain.ofHom_v, Cochain.zero_cochain_comp_v,
+          Cochain.leftUnshift_v _ (i+n) (by linarith) p q hpq (p + n) (by linarith),
+          comp_zsmul, shiftFunctor_map_f'' φ.unop (-n) (p+n) p (by linarith)]
+        dsimp
+        simp only [assoc, Iso.inv_hom_id_assoc, Cochain.ofHom_v])
+
+lemma iso_hom_app (K : (CochainComplex C ℤ)ᵒᵖ) :
+    (iso n L).hom.app K =
+      ((bifunctor C).map ((Pretriangulated.shiftFunctorOpIso _ _ _ hm).hom.app K)).app L ≫
+        (leftShiftIso _ _ hm K.unop L).hom := by
+  obtain rfl : m = -n := by linarith
+  rfl
+
+lemma iso_inv_app (K : (CochainComplex C ℤ)ᵒᵖ) :
+    (iso n L).inv.app K =
+      (leftShiftIso _ _ hm K.unop L).inv ≫
+      ((bifunctor C).map ((Pretriangulated.shiftFunctorOpIso _ _ _ hm).inv.app K)).app L := by
+  obtain rfl : m = -n := by linarith
+  rfl
+
+attribute [irreducible] iso
+
+end BifunctorFlipObjCommShift
+
+/-instance : ((bifunctor C).flip.obj L).CommShift ℤ where
+  iso n := BifunctorFlipObjCommShift.iso n L
+  zero := sorry
+  add := sorry-/
+
+end
 
 end HomComplex
 

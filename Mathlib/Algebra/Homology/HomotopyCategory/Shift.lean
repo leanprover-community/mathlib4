@@ -111,6 +111,12 @@ variable {C}
 lemma shiftFunctor_map_f' {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n p : ℤ) :
     ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).map φ).f p = φ.f (p+n) := rfl
 
+lemma shiftFunctor_map_f'' {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n p q : ℤ) (hpq : q = p + n) :
+  ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).map φ).f p =
+    (shiftFunctorObjXIso K n p q hpq).hom ≫ φ.f q ≫ (shiftFunctorObjXIso L n p q hpq).inv := by
+  subst hpq
+  simp [shiftFunctor_map_f']
+
 @[simp]
 lemma shiftFunctor_obj_d' (K : CochainComplex C ℤ) (n i j : ℤ) :
     ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).obj K).d i j =
