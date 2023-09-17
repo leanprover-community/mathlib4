@@ -299,12 +299,12 @@ theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
 theorem Quotient.eq [r : Setoid α] {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=
   ⟨Quotient.exact, Quotient.sound⟩
 
-lemma Quotient.forall {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
+theorem Quotient.forall {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
     (∀ a, p a) ↔ ∀ a : α, p ⟦a⟧ :=
   ⟨fun h _ ↦ h _, fun h a ↦ a.ind h⟩
 #align forall_quotient_iff Quotient.forall
 
-lemma Quotient.exists {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
+theorem Quotient.exists {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
     (∃ a, p a) ↔ ∃ a : α, p ⟦a⟧ :=
   ⟨fun ⟨q, hq⟩ ↦ q.ind (motive := (p · → _)) .intro hq, fun ⟨a, ha⟩ ↦ ⟨⟦a⟧, ha⟩⟩
 
