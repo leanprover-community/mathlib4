@@ -155,37 +155,27 @@ theorem _root_.ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ 
               div_mul_cancel (h := h2pi₀)]
         _ = ∏ i in insert i₀ s, (∫⁻ a, f i a ∂μ) ^ p i := by simp [hi₀]
 
-/-- A version of Hölder with multiple arguments, one of which plays a distinguished role -/
+/-- A version of Hölder with multiple arguments, one of which plays a distinguished role. -/
 theorem _root_.ENNReal.lintegral_mul_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α} (s : Finset ι)
     {g : α →  ℝ≥0∞} {f : ι → α → ℝ≥0∞} (hg : AEMeasurable g μ) (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
     (q : ℝ) {p : ι → ℝ} (hpq : q + ∑ i in s, p i = 1) (hq :  0 ≤ q)
     (hp : ∀ i ∈ s, 0 ≤ p i) :
     ∫⁻ a, g a ^ q * ∏ i in s, f i a ^ p i ∂μ ≤
       (∫⁻ a, g a ∂μ) ^ q * ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
-  calc
-    ∫⁻ t, g t ^ q * ∏ j in s, (f j t) ^ p j ∂μ
-      = ∫⁻ t, ∏ j in insertNone s,
-            Option.elim j (g t) (fun j ↦ f j t) ^ Option.elim j q p ∂μ := by
-          congr! 1
-          ext t
-          rw [prod_insertNone]
-          dsimp
-    _ ≤ ∏ j in insertNone s,
-          (∫⁻ t, Option.elim j (g t) (fun j ↦ f j t) ∂μ) ^ Option.elim j q p := by
-          refine ENNReal.lintegral_prod_norm_pow_le _ insertNone_nonempty ?_ ?_ ?_
-          · rintro (_|i) hi
-            · exact hg
-            · refine hf i ?_
-              simpa using hi
-          · simp_rw [sum_insertNone, Option.elim]
-            exact hpq
-          · rintro (_|i) hi
-            · exact hq
-            · refine hp i ?_
-              simpa using hi
-    _ = (∫⁻ t, g t ∂μ) ^ q * ∏ j in s, (∫⁻ t, f j t ∂μ) ^ p j := by
-          -- this proof could be `simp [prod_insertNone]` but that's too slow
-          simp_rw [prod_insertNone]
-          dsimp
+  suffices
+    ∫⁻ t, ∏ j in insertNone s, Option.elim j (g t) (fun j ↦ f j t) ^ Option.elim j q p ∂μ
+    ≤ ∏ j in insertNone s, (∫⁻ t, Option.elim j (g t) (fun j ↦ f j t) ∂μ) ^ Option.elim j q p by
+    simpa using this
+  refine ENNReal.lintegral_prod_norm_pow_le _ insertNone_nonempty ?_ ?_ ?_
+  · rintro (_|i) hi
+    · exact hg
+    · refine hf i ?_
+      simpa using hi
+  · simp_rw [sum_insertNone, Option.elim]
+    exact hpq
+  · rintro (_|i) hi
+    · exact hq
+    · refine hp i ?_
+      simpa using hi
 
 end MeasureTheory
