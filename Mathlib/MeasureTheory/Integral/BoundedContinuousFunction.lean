@@ -3,15 +3,15 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.Layercake
-import Mathlib.Tactic
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Integral.Bochner
 
 /-!
 # Integration of bounded continuous functions
 
-In this file, we collect some results about integrals of bounded continuous functions. They are
+In this file, some results are collected about integrals of bounded continuous functions. They are
 mostly specializations of results in general integration theory, but they are used directly in this
-specialized form in some other files, especially in those related to the topology of weak
+specialized form in some other files, in particular in those related to the topology of weak
 convergence of probability measures and finite measures.
 -/
 
@@ -24,7 +24,7 @@ section moved_from_FiniteMeasure
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
 
 theorem _root_.BoundedContinuousFunction.NNReal.coe_ennreal_comp_measurable (f : X →ᵇ ℝ≥0) :
-    Measurable fun X => (f X : ℝ≥0∞) :=
+    Measurable fun x => (f x : ℝ≥0∞) :=
   measurable_coe_nnreal_ennreal.comp f.continuous.measurable
 #align bounded_continuous_function.nnreal.to_ennreal_comp_measurable BoundedContinuousFunction.NNReal.coe_ennreal_comp_measurable
 
@@ -33,7 +33,7 @@ namespace MeasureTheory
 variable (μ : Measure X) [IsFiniteMeasure μ]
 
 theorem lintegral_lt_top_of_boundedContinuous_to_nnreal (f : X →ᵇ ℝ≥0) :
-    (∫⁻ X, f X ∂μ) < ∞ := by
+    (∫⁻ x, f x ∂μ) < ∞ := by
   apply IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal
   use nndist f 0
   intro x
@@ -89,19 +89,6 @@ theorem _root_.BoundedContinuousFunction.NNReal.toReal_lintegral_eq_integral (f 
 end MeasureTheory
 
 end moved_from_FiniteMeasure
-
-
-
-section boundedness_by_norm_bounds
-
-lemma Metric.bounded_range_of_forall_norm_le {ι : Type*} {E : Type*} [NormedAddGroup E]
-    {f : ι → E} {c : ℝ} (h : ∀ i, ‖f i‖ ≤ c) :
-    Metric.Bounded (Set.range f) := by
-  apply Metric.Bounded.mono _ (@Metric.bounded_closedBall _ _ 0 c)
-  intro x ⟨i, hi⟩
-  simpa only [← hi, Metric.closedBall, dist_zero_right, Set.mem_setOf_eq, ge_iff_le] using h i
-
-end boundedness_by_norm_bounds
 
 
 
@@ -175,8 +162,10 @@ lemma BoundedContinuousFunction.norm_integral_le_norm_of_isProbabilityMeasure
 lemma bounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure
     {ι : Type*} (μs : ι → Measure X) [∀ i, IsProbabilityMeasure (μs i)] (f : X →ᵇ E) :
     Metric.Bounded (Set.range (fun i ↦ ∫ x, (f x) ∂ (μs i))) := by
-  apply Metric.bounded_range_of_forall_norm_le (c := ‖f‖)
-  exact fun i ↦ f.norm_integral_le_norm_of_isProbabilityMeasure (μs i)
+  apply bounded_iff_forall_norm_le.mpr ⟨‖f‖, fun v hv ↦ ?_⟩
+  obtain ⟨i, hi⟩ := hv
+  rw [← hi]
+  apply f.norm_integral_le_norm_of_isProbabilityMeasure (μs i)
 
 end
 
