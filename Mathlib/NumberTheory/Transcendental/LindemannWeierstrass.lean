@@ -790,7 +790,6 @@ instance instIsDomain2 : IsDomain (AddMonoidAlgebra ℚ (K s)) := IsDomain.mk
 instance instIsDomain3 : IsDomain (GalConjClasses ℚ (K s) →₀ ℚ) :=
 MulEquiv.isDomain (mapDomainFixed s ℚ) (toConjAlgEquiv s ℚ).symm
 
-set_option maxHeartbeats 400000 in
 set_option synthInstance.maxHeartbeats 40000 in
 theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (K s)) (x0 : x ≠ 0)
     (x_ker : x ∈ RingHom.ker (Eval s ℚ)) :
@@ -808,14 +807,11 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
     dsimp only; rw [prod_ne_zero_iff]; intro f _hf
     rwa [AddEquivClass.map_ne_zero_iff]
   have V_ker : V ∈ RingHom.ker (Eval s ℚ) := by
-    suffices
-      (fun f : Gal s ↦ (AddMonoidAlgebra.mapDomainAlgAut ℚ _ f.toAddEquiv) x) 1 *
-          ∏ f : Gal s in univ.erase 1, AddMonoidAlgebra.mapDomainAlgAut ℚ _ f.toAddEquiv x ∈
-        RingHom.ker (Eval s ℚ) by
-      convert this
-      exact (mul_prod_erase (univ : Finset (Gal s)) _ (mem_univ _)).symm
     dsimp only
-    erw [AddMonoidAlgebra.mapDomainAlgAut_apply_one]; exact Ideal.mul_mem_right _ _ x_ker
+    rw [← mul_prod_erase (univ : Finset (Gal s)) _ (mem_univ 1)]
+    erw [map_one]
+    rw [AlgEquiv.one_apply]
+    exact Ideal.mul_mem_right _ _ x_ker
   set V' := toConjAlgEquiv s ℚ ⟨V, hV⟩ with V'_def
   have V'0 : V' ≠ 0 := by
     dsimp only; rw [AddEquivClass.map_ne_zero_iff]
@@ -823,10 +819,11 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
   obtain ⟨i, hi⟩ := Finsupp.support_nonempty_iff.mpr V'0
   set V'' := V' * Finsupp.single (-i) (1 : ℚ) with V''_def
   have V''0 : V'' ≠ 0 := by
-    dsimp only; refine' mul_ne_zero V'0 fun h => _
-    have := FunLike.congr_fun h (-i)
-    rw [Finsupp.zero_apply, Finsupp.single_apply_eq_zero] at this
-    exact one_ne_zero (this rfl)
+    have : NoZeroDivisors (GalConjClasses ℚ (K s) →₀ ℚ) := IsDomain.to_noZeroDivisors _
+    rw [V''_def]
+    refine' mul_ne_zero V'0 fun h => _
+    rw [Finsupp.single_eq_zero] at h
+    exact one_ne_zero h
   have hV'' : V'' 0 ≠ 0 := by
     rw [V''_def, ← V'.sum_single, Finsupp.sum, ← add_sum_erase _ _ hi, add_mul, sum_mul,
       Finsupp.add_apply]

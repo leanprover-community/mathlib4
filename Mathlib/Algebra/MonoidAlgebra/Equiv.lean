@@ -133,11 +133,4 @@ def mapDomainAlgAut (k A : Type _) [CommSemiring k] [Semiring A] [Algebra k A] {
     rfl
 #align add_monoid_algebra.map_domain_alg_aut AddMonoidAlgebra.mapDomainAlgAut
 
-@[simp 1001] -- LHS simplifies
-lemma mapDomainAlgAut_apply_one {k A : Type _} [CommSemiring k] [Semiring A] [Algebra k A]
-    {G : Type _} [AddMonoid G] :
-    mapDomainAlgAut k A (G := G) 1 = AlgEquiv.refl := by
-  ext
-  exact Finsupp.equivMapDomain_refl _
-
 end AddMonoidAlgebra
