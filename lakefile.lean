@@ -29,7 +29,7 @@ lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
 
-lean_exe runLinter where
+lean_exe runMathlibLinter where
   root := `scripts.runLinter
   supportInterpreter := true
 
