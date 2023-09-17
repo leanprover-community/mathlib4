@@ -6,9 +6,8 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Set.Image
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
-import Mathlib.Order.Bounds.Basic
 
-#align_import order.directed from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
+#align_import order.directed from "leanprover-community/mathlib"@"ffde2d8a6e689149e44fd95fa862c23a57f8c780"
 
 /-!
 # Directed indexed families and sets
@@ -57,7 +56,7 @@ theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype
   simp [Directed, DirectedOn]; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
 #align directed_on_iff_directed directedOn_iff_directed
 
-alias directedOn_iff_directed ↔ DirectedOn.directed_val _
+alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 #align directed_on.directed_coe DirectedOn.directed_val
 
 theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
@@ -65,7 +64,7 @@ theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.ra
 #align directed_on_range directedOn_range
 
 -- porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
-alias directedOn_range ↔ Directed.directedOn_range _
+alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
 #align directed.directed_on_range Directed.directedOn_range
 
 -- porting note: `attribute [protected]` doesn't work
@@ -169,7 +168,7 @@ theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i 
 
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
-class IsDirected (α : Type _) (r : α → α → Prop) : Prop where
+class IsDirected (α : Type*) (r : α → α → Prop) : Prop where
   /-- For every pair of elements `a` and `b` there is a `c` such that `r a c` and `r b c` -/
   directed (a b : α) : ∃ c, r a c ∧ r b c
 #align is_directed IsDirected
@@ -228,7 +227,7 @@ instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirecte
 
 section Reflexive
 
-theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
+protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
     (ha : ∀ b ∈ s, ∃ c ∈ s, a ≼ c ∧ b ≼ c) : DirectedOn r (insert a s) := by
   rintro x (rfl | hx) y (rfl | hy)
   · exact ⟨y, Set.mem_insert _ _, h _, h _⟩
@@ -332,40 +331,3 @@ instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsD
 instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
   ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
 #align order_bot.to_is_directed_ge OrderBot.to_isDirected_ge
-
-section ScottContinuous
-
-variable [Preorder α] {a : α}
-
-/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
-sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
-Scott topology.
-
-The dual notion
-
-```lean
-∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
-```
-
-does not appear to play a significant role in the literature, so is omitted here.
--/
-def ScottContinuous [Preorder β] (f : α → β) : Prop :=
-  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
-#align scott_continuous ScottContinuous
-
-protected theorem ScottContinuous.monotone [Preorder β] {f : α → β} (h : ScottContinuous f) :
-    Monotone f := by
-  intro a b hab
-  have e1 : IsLUB (f '' {a, b}) (f b) := by
-    apply h
-    · exact Set.insert_nonempty _ _
-    · exact directedOn_pair le_refl hab
-    · rw [IsLUB, upperBounds_insert, upperBounds_singleton,
-        Set.inter_eq_self_of_subset_right (Set.Ici_subset_Ici.mpr hab)]
-      exact isLeast_Ici
-  apply e1.1
-  rw [Set.image_pair]
-  exact Set.mem_insert _ _
-#align scott_continuous.monotone ScottContinuous.monotone
-
-end ScottContinuous

@@ -35,7 +35,7 @@ All definitions are in the `CategoryTheory` namespace.
 - `Coverage.toGrothendieck C`: A function which associates a Grothendieck topology to any coverage.
 - `Coverage.gi`: The two functions above form a Galois insertion.
 - `Presieve.isSheaf_coverage`: Given `K : Coverage C` with associated
-  Grothendieck topology `J`, a `Type _`-valued presheaf on `C` is a sheaf for `K` if and only if
+  Grothendieck topology `J`, a `Type*`-valued presheaf on `C` is a sheaf for `K` if and only if
   it is a sheaf for `J`.
 
 # References
@@ -44,6 +44,8 @@ the following sources:
 - [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1.
 - [nLab, *Coverage*](https://ncatlab.org/nlab/show/coverage)
 -/
+
+set_option autoImplicit true
 
 namespace CategoryTheory
 
@@ -283,6 +285,25 @@ theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     intro X S hS
     apply saturate.of _ _ hS
 
+instance : SemilatticeSup (Coverage C) where
+  sup x y :=
+  { covering := fun B ↦ x.covering B ∪ y.covering B
+    pullback := by
+      rintro X Y f S (hx | hy)
+      · obtain ⟨T, hT⟩ := x.pullback f S hx
+        exact ⟨T, Or.inl hT.1, hT.2⟩
+      · obtain ⟨T, hT⟩ := y.pullback f S hy
+        exact ⟨T, Or.inr hT.1, hT.2⟩ }
+  toPartialOrder := inferInstance
+  le_sup_left _ _ _ := Set.subset_union_left _ _
+  le_sup_right _ _ _ := Set.subset_union_right _ _
+  sup_le _ _ _ hx hy X := Set.union_subset_iff.mpr ⟨hx X, hy X⟩
+
+@[simp]
+lemma sup_covering (x y : Coverage C) (B : C) :
+    (x ⊔ y).covering B = x.covering B ∪ y.covering B :=
+  rfl
+
 end Coverage
 
 open Coverage
@@ -291,7 +312,7 @@ namespace Presieve
 
 /--
 The main theorem of this file: Given a coverage `K` on `C`,
-a `Type _`-valued presheaf on `C` is a sheaf for `K` if and only if it is a sheaf for
+a `Type*`-valued presheaf on `C` is a sheaf for `K` if and only if it is a sheaf for
 the associated Grothendieck topology.
 -/
 theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :

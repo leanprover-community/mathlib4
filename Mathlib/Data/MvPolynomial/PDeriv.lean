@@ -25,9 +25,9 @@ It is based purely on the polynomial exponents and coefficients.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type _` (indexing the variables)
++ `σ : Type*` (indexing the variables)
 
-+ `R : Type _` `[CommRing R]` (the coefficients)
++ `R : Type*` `[CommRing R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
 This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
@@ -120,8 +120,8 @@ theorem pderiv_mul {i : σ} {f g : MvPolynomial σ R} :
 #align mv_polynomial.pderiv_mul MvPolynomial.pderiv_mul
 
 -- @[simp] -- Porting note: simp can prove this
-theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a * pderiv i f :=
-  (derivation_C_mul _ _ _).trans C_mul'.symm
+theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a * pderiv i f := by
+  rw [C_mul', Derivation.map_smul, C_mul']
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_C_mul MvPolynomial.pderiv_C_mul
 

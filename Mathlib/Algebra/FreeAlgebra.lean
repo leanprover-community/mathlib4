@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Adam Topaz
+Authors: Scott Morrison, Adam Topaz, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Free
+import Mathlib.RingTheory.Adjoin.Basic
 
 #align_import algebra.free_algebra from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -49,9 +51,9 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 -/
 
 
-variable (R : Type _) [CommSemiring R]
+variable (R : Type*) [CommSemiring R]
 
-variable (X : Type _)
+variable (X : Type*)
 
 namespace FreeAlgebra
 
@@ -108,7 +110,7 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
 from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
 -/
 -- Porting note: recOn was replaced to preserve computability, see lean4#2049
-def liftFun {A : Type _} [Semiring A] [Algebra R A] (f : X → A) :
+def liftFun {A : Type*} [Semiring A] [Algebra R A] (f : X → A) :
     Pre R X → A
   | .of t => f t
   | .add a b => liftFun f a + liftFun f b
@@ -137,8 +139,8 @@ inductive Rel : Pre R X → Pre R X → Prop-- force `of_scalar` to be a central
   | right_distrib {a b c : Pre R X} :
       Rel ((a + b) * c) (a * c + b * c)-- other relations needed for semiring
 
-  | MulZeroClass.zero_mul {a : Pre R X} : Rel (0 * a) 0
-  | MulZeroClass.mul_zero {a : Pre R X} : Rel (a * 0) 0-- compatibility
+  | zero_mul {a : Pre R X} : Rel (0 * a) 0
+  | mul_zero {a : Pre R X} : Rel (a * 0) 0-- compatibility
 
   | add_compat_left {a b c : Pre R X} : Rel a b → Rel (a + c) (b + c)
   | add_compat_right {a b c : Pre R X} : Rel a b → Rel (c + a) (c + b)
@@ -159,23 +161,31 @@ namespace FreeAlgebra
 attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
   Pre.hasZero Pre.hasOne Pre.hasSmul
 
-instance : Semiring (FreeAlgebra R X) where
-  add := Quot.map₂ (· + ·) (fun _ _ _ ↦ Rel.add_compat_right) fun _ _ _ ↦ Rel.add_compat_left
-  add_assoc := by
-    rintro ⟨⟩ ⟨⟩ ⟨⟩
-    exact Quot.sound Rel.add_assoc
-  zero := Quot.mk _ 0
-  zero_add := by
-    rintro ⟨⟩
-    exact Quot.sound Rel.zero_add
-  add_zero := by
-    rintro ⟨⟩
-    change Quot.mk _ _ = _
-    rw [Quot.sound Rel.add_comm, Quot.sound Rel.zero_add]
-  add_comm := by
-    rintro ⟨⟩ ⟨⟩
-    exact Quot.sound Rel.add_comm
-  mul := Quot.map₂ (· * ·) (fun _ _ _ ↦ Rel.mul_compat_right) fun _ _ _ ↦ Rel.mul_compat_left
+/-! Define the basic operations-/
+
+instance instSMul {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
+  smul r := Quot.map (HMul.hMul (algebraMap R A r : Pre A X)) fun _ _ ↦ Rel.mul_compat_right
+
+instance instZero : Zero (FreeAlgebra R X) where zero := Quot.mk _ 0
+
+instance instOne : One (FreeAlgebra R X) where one := Quot.mk _ 1
+
+instance instAdd : Add (FreeAlgebra R X) where
+  add := Quot.map₂ HAdd.hAdd (fun _ _ _ ↦ Rel.add_compat_right) fun _ _ _ ↦ Rel.add_compat_left
+
+instance instMul : Mul (FreeAlgebra R X) where
+  mul := Quot.map₂ HMul.hMul (fun _ _ _ ↦ Rel.mul_compat_right) fun _ _ _ ↦ Rel.mul_compat_left
+
+-- `Quot.mk` is an implementation detail of `FreeAlgebra`, so this lemma is private
+private theorem mk_mul (x y : Pre R X) :
+    Quot.mk (Rel R X) (x * y) = (HMul.hMul (self := instHMul (α := FreeAlgebra R X))
+    (Quot.mk (Rel R X) x) (Quot.mk (Rel R X) y)) :=
+  rfl
+
+/-! Build the semiring structure. We do this one piece at a time as this is convenient for proving
+the `nsmul` fields. -/
+
+instance instMonoidWithZero : MonoidWithZero (FreeAlgebra R X) where
   mul_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.mul_assoc
@@ -186,38 +196,97 @@ instance : Semiring (FreeAlgebra R X) where
   mul_one := by
     rintro ⟨⟩
     exact Quot.sound Rel.mul_one
+  zero_mul := by
+    rintro ⟨⟩
+    exact Quot.sound Rel.zero_mul
+  mul_zero := by
+    rintro ⟨⟩
+    exact Quot.sound Rel.mul_zero
+
+instance instDistrib : Distrib (FreeAlgebra R X) where
   left_distrib := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.left_distrib
   right_distrib := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.right_distrib
-  zero_mul := by
+
+instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
+  add_assoc := by
+    rintro ⟨⟩ ⟨⟩ ⟨⟩
+    exact Quot.sound Rel.add_assoc
+  zero_add := by
     rintro ⟨⟩
-    exact Quot.sound Rel.MulZeroClass.zero_mul
-  mul_zero := by
+    exact Quot.sound Rel.zero_add
+  add_zero := by
     rintro ⟨⟩
-    exact Quot.sound Rel.MulZeroClass.mul_zero
+    change Quot.mk _ _ = _
+    rw [Quot.sound Rel.add_comm, Quot.sound Rel.zero_add]
+  add_comm := by
+    rintro ⟨⟩ ⟨⟩
+    exact Quot.sound Rel.add_comm
+  nsmul := (· • ·)
+  nsmul_zero := by
+    rintro ⟨⟩
+    change Quot.mk _ (_ * _) = _
+    rw [map_zero]
+    exact Quot.sound Rel.zero_mul
+  nsmul_succ n := by
+    rintro ⟨a⟩
+    dsimp only [HSMul.hSMul, instSMul, Quot.map]
+    rw [map_add, map_one, add_comm, mk_mul, mk_mul, ←one_add_mul (_ : FreeAlgebra R X)]
+    congr 1
+    exact Quot.sound Rel.add_scalar
+
+instance : Semiring (FreeAlgebra R X) where
+  __ := instMonoidWithZero R X
+  __ := instAddCommMonoid R X
+  __ := instDistrib R X
+  natCast n := Quot.mk _ (n : R)
+  natCast_zero := by simp; rfl
+  natCast_succ n := by simp; exact Quot.sound Rel.add_scalar
 
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
 
-instance : SMul R (FreeAlgebra R X) where
-  smul r := Quot.map ((· * ·) ↑r) fun _ _ ↦ Rel.mul_compat_right
-
-instance : Algebra R (FreeAlgebra R X) where
-  toFun r := Quot.mk _ r
-  map_one' := rfl
-  map_mul' _ _ := Quot.sound Rel.mul_scalar
-  map_zero' := rfl
-  map_add' _ _ := Quot.sound Rel.add_scalar
+instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
+  toRingHom := ({
+      toFun := fun r => Quot.mk _ r
+      map_one' := rfl
+      map_mul' := fun _ _ => Quot.sound Rel.mul_scalar
+      map_zero' := rfl
+      map_add' := fun _ _ => Quot.sound Rel.add_scalar } : A →+* FreeAlgebra A X).comp
+      (algebraMap R A)
   commutes' _ := by
     rintro ⟨⟩
     exact Quot.sound Rel.central_scalar
   smul_def' _ _ := rfl
 
-instance {S : Type _} [CommRing S] : Ring (FreeAlgebra S X) :=
+-- verify there is no diamond
+variable (S : Type) [CommSemiring S] in
+example : (algebraNat : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
+
+instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
+    [SMul R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
+    IsScalarTower R S (FreeAlgebra A X) where
+  smul_assoc r s x := by
+    change algebraMap S A (r • s) • x = algebraMap R A _ • (algebraMap S A _ • x)
+    rw [←smul_assoc]
+    congr
+    simp only [Algebra.algebraMap_eq_smul_one, smul_eq_mul]
+    rw [smul_assoc, ←smul_one_mul]
+
+instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
+    [Algebra R A] [Algebra S A] [SMulCommClass R S A] :
+    SMulCommClass R S (FreeAlgebra A X) where
+  smul_comm r s x := smul_comm (algebraMap R A r) (algebraMap S A s) x
+
+instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
+
+-- verify there is no diamond
+variable (S : Type) [CommRing S] in
+example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 variable {X}
 
@@ -230,7 +299,7 @@ irreducible_def ι : X → FreeAlgebra R X := fun m ↦ Quot.mk _ m
 theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι_def]
 #align free_algebra.quot_mk_eq_ι FreeAlgebra.quot_mk_eq_ι
 
-variable {A : Type _} [Semiring A] [Algebra R A]
+variable {A : Type*} [Semiring A] [Algebra R A]
 
 /-- Internal definition used to define `lift` -/
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
@@ -504,5 +573,28 @@ theorem induction {C : FreeAlgebra R X → Prop}
   simp [AlgHom.ext_iff] at of_id
   exact of_id a
 #align free_algebra.induction FreeAlgebra.induction
+
+@[simp]
+theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by
+  set S := Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X))
+  refine top_unique fun x hx => ?_; clear hx
+  induction x using FreeAlgebra.induction with
+  | h_grade0 => exact S.algebraMap_mem _
+  | h_add x y hx hy => exact S.add_mem hx hy
+  | h_mul x y hx hy => exact S.mul_mem hx hy
+  | h_grade1 x => exact Algebra.subset_adjoin (Set.mem_range_self _)
+
+variable {A : Type*} [Semiring A] [Algebra R A]
+
+/-- Noncommutative version of `Algebra.adjoin_range_eq_range_aeval`. -/
+theorem _root_.Algebra.adjoin_range_eq_range_freeAlgebra_lift (f : X → A) :
+    Algebra.adjoin R (Set.range f) = (FreeAlgebra.lift R f).range := by
+  simp only [← Algebra.map_top, ←adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
+    (· ∘ ·), lift_ι_apply]
+
+/-- Noncommutative version of `Algebra.adjoin_range_eq_range`. -/
+theorem _root_.Algebra.adjoin_eq_range_freeAlgebra_lift (s : Set A) :
+    Algebra.adjoin R s = (FreeAlgebra.lift R ((↑) : s → A)).range := by
+  rw [← Algebra.adjoin_range_eq_range_freeAlgebra_lift, Subtype.range_coe]
 
 end FreeAlgebra

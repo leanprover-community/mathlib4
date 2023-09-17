@@ -2,7 +2,6 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison
-Ported by: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Category.Basic
 

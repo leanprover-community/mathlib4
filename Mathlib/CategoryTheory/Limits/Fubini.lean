@@ -91,8 +91,8 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
                   dsimp; simp only [Category.id_comp]
                   have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f)
                   dsimp at this
-                  simp only [Category.id_comp, CategoryTheory.Functor.map_id, NatTrans.id_app]
-                    at this
+                  simp? at this says
+                    simp only [Category.id_comp, Functor.map_id, NatTrans.id_app] at this
                   exact this } }
       naturality := fun j j' f =>
         (Q j').hom_ext

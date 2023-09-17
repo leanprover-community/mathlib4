@@ -2,7 +2,6 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Mathlib.Control.Basic
 import Mathlib.Data.HashMap
@@ -117,6 +116,8 @@ The components of `linarith` are spread between a number of files for the sake o
 
 linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear programming
 -/
+
+set_option autoImplicit true
 
 open Lean Elab Tactic Meta
 open Std

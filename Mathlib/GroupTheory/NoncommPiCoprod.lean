@@ -48,13 +48,13 @@ open BigOperators
 
 namespace Subgroup
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
 /-- `Finset.noncommProd` is “injective” in `f` if `f` maps into independent subgroups.  This
 generalizes (one direction of) `Subgroup.disjoint_iff_mul_eq_one`. -/
 @[to_additive "`Finset.noncommSum` is “injective” in `f` if `f` maps into independent subgroups.
 This generalizes (one direction of) `AddSubgroup.disjoint_iff_add_eq_zero`. "]
-theorem eq_one_of_noncommProd_eq_one_of_independent {ι : Type _} (s : Finset ι) (f : ι → G) (comm)
+theorem eq_one_of_noncommProd_eq_one_of_independent {ι : Type*} (s : Finset ι) (f : ι → G) (comm)
     (K : ι → Subgroup G) (hind : CompleteLattice.Independent K) (hmem : ∀ x ∈ s, f x ∈ K x)
     (heq1 : s.noncommProd f comm = 1) : ∀ i ∈ s, f i = 1 := by
   classical
@@ -85,13 +85,13 @@ end Subgroup
 
 section FamilyOfMonoids
 
-variable {M : Type _} [Monoid M]
+variable {M : Type*} [Monoid M]
 
 -- We have a family of monoids
 -- The fintype assumption is not always used, but declared here, to keep things in order
-variable {ι : Type _} [hdec : DecidableEq ι] [Fintype ι]
+variable {ι : Type*} [hdec : DecidableEq ι] [Fintype ι]
 
-variable {N : ι → Type _} [∀ i, Monoid (N i)]
+variable {N : ι → Type*} [∀ i, Monoid (N i)]
 
 -- And morphisms ϕ into G
 variable (ϕ : ∀ i : ι, N i →* M)
@@ -115,14 +115,11 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M
     simp
   map_mul' f g := by
     classical
-      simp only
-      have := @Finset.noncommProd_mul_distrib _ _ _ Finset.univ (fun i => ϕ i (f i))
-        (fun i => ϕ i (g i)) ?_ ?_ ?_
-      · convert this
-        exact map_mul _ _ _
-      · exact fun i _ j _ hij => hcomm hij _ _
-      · exact fun i _ j _ hij => hcomm hij _ _
-      · exact fun i _ j _ hij => hcomm hij _ _
+    simp only
+    convert @Finset.noncommProd_mul_distrib _ _ _ _ (fun i => ϕ i (f i)) (fun i => ϕ i (g i)) _ _ _
+    · exact map_mul _ _ _
+    · rintro i - j - h
+      exact hcomm h _ _
 #align monoid_hom.noncomm_pi_coprod MonoidHom.noncommPiCoprod
 #align add_monoid_hom.noncomm_pi_coprod AddMonoidHom.noncommPiCoprod
 
@@ -183,11 +180,11 @@ end FamilyOfMonoids
 
 section FamilyOfGroups
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
-variable {ι : Type _} [hdec : DecidableEq ι] [hfin : Fintype ι]
+variable {ι : Type*} [hdec : DecidableEq ι] [hfin : Fintype ι]
 
-variable {H : ι → Type _} [∀ i, Group (H i)]
+variable {H : ι → Type*} [∀ i, Group (H i)]
 
 variable (ϕ : ∀ i : ι, H i →* G)
 
@@ -279,9 +276,9 @@ end FamilyOfGroups
 namespace Subgroup
 
 -- We have a family of subgroups
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
-variable {ι : Type _} [hdec : DecidableEq ι] [hfin : Fintype ι] {H : ι → Subgroup G}
+variable {ι : Type*} [hdec : DecidableEq ι] [hfin : Fintype ι] {H : ι → Subgroup G}
 
 -- Elements of `Π (i : ι), H i` are called `f` and `g` here
 variable (f g : ∀ i : ι, H i)

@@ -82,8 +82,8 @@ is an equivalence.
 -/
 instance main_pair_G_split (A : (adj).toMonad.Algebra) :
     G.IsSplitPair ((F).map A.a)
-      ((adj).counit.app ((F).obj A.A))
-    where splittable := ⟨_, _, ⟨beckSplitCoequalizer A⟩⟩
+      ((adj).counit.app ((F).obj A.A)) where
+  splittable := ⟨_, _, ⟨beckSplitCoequalizer A⟩⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.monad.monadicity_internal.main_pair_G_split CategoryTheory.Monad.MonadicityInternal.main_pair_G_split
 
@@ -276,7 +276,7 @@ local notation3 "adj" => Adjunction.ofRightAdjoint G
 -- Porting note: added these to replace parametric instances lean4#2311
 -- When this is fixed the proofs below that struggle with instances should be reviewed.
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], HasCoequalizer f g]
-class HasCoequalizerOfIsSplitPair (G : D ⥤ C) where
+class HasCoequalizerOfIsSplitPair (G : D ⥤ C) : Prop where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], HasCoequalizer f g
 
 -- Porting note: cannot find synth order
@@ -434,8 +434,8 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
     ⟨_, comparisonAdjunction⟩
   constructor
   let _ : ∀ X : (Adjunction.ofRightAdjoint G).toMonad.Algebra,
-      IsIso ((Adjunction.ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).unit.app X)
-    := by
+      IsIso ((Adjunction.ofRightAdjoint
+                (comparison (Adjunction.ofRightAdjoint G))).unit.app X) := by
     intro X
     apply
       @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget (Adjunction.ofRightAdjoint G).toMonad) ?_ _

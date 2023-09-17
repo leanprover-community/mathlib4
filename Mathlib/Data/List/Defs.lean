@@ -21,6 +21,8 @@ This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
 
+set_option autoImplicit true
+
 -- Porting notes
 -- Many of the definitions in `Data.List.Defs` were already defined upstream in `Std4`
 -- These have been annotated with `#align`s
@@ -33,11 +35,12 @@ open Function Nat
 
 universe u v w x
 
-variable {α β γ δ ε ζ : Type _}
+variable {α β γ δ ε ζ : Type*}
 
 instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
+#align list.replicate List.replicate
 #align list.split_at List.splitAt
 #align list.split_on_p List.splitOnP
 #align list.split_on List.splitOn
@@ -89,14 +92,14 @@ def sum [Add α] [Zero α] : List α → α :=
 #align list.sum List.sum
 
 /-- The alternating sum of a list. -/
-def alternatingSum {G : Type _} [Zero G] [Add G] [Neg G] : List G → G
+def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
   | [] => 0
   | g :: [] => g
   | g :: h :: t => g + -h + alternatingSum t
 #align list.alternating_sum List.alternatingSum
 
 /-- The alternating product of a list. -/
-def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
+def alternatingProd {G : Type*} [One G] [Mul G] [Inv G] : List G → G
   | [] => 1
   | g :: [] => g
   | g :: h :: t => g * h⁻¹ * alternatingProd t
@@ -206,7 +209,7 @@ def mapIdxM' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
 end mapIdxM
 
 #align list.lookmap List.lookmap
-#align list.countp List.countp
+#align list.countp List.countP
 #align list.count List.count
 #align list.is_prefix List.isPrefix
 #align list.is_suffix List.isSuffix
@@ -446,8 +449,8 @@ def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
 /-- Map each element of a `List` to an action, evaluate these actions in order,
     and collect the results.
 -/
-protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β)
-    : List α → F (List β)
+protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
+    List α → F (List β)
   | [] => pure []
   | x :: xs => List.cons <$> f x <*> List.traverse f xs
 #align list.traverse List.traverse
@@ -586,6 +589,5 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix_aux List.mapWithPrefixSuffixAux
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
-
 
 end List

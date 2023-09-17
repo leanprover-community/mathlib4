@@ -50,7 +50,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
 
 namespace MeasureTheory
 
-variable {Ω ι : Type _} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
+variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
 
 variable {a b : ℝ} {f : ℕ → Ω → ℝ} {ω : Ω} {R : ℝ≥0}
 
@@ -175,9 +175,9 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
       refine' lintegral_mono fun ω => _
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
       by_cases hnonneg : 0 ≤ f n ω - a
-      · rw [LatticeOrderedCommGroup.pos_of_nonneg _ hnonneg, Real.norm_eq_abs,
+      · rw [LatticeOrderedGroup.pos_of_nonneg _ hnonneg, Real.norm_eq_abs,
           abs_of_nonneg hnonneg]
-      · rw [LatticeOrderedCommGroup.pos_of_nonpos _ (not_le.1 hnonneg).le]
+      · rw [LatticeOrderedGroup.pos_of_nonpos _ (not_le.1 hnonneg).le]
         exact norm_nonneg _
       · simp only [Ne.def, ENNReal.coe_ne_top, not_false_iff]
     · simp only [hab, Ne.def, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]

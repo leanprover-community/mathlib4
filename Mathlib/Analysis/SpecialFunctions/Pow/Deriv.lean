@@ -6,7 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
-import Mathlib.Analysis.Calculus.ExtendDeriv
+import Mathlib.Analysis.Calculus.FDeriv.Extend
 import Mathlib.Analysis.Calculus.Deriv.Prod
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
@@ -53,7 +53,7 @@ theorem hasStrictDerivAt_const_cpow {x y : ℂ} (h : x ≠ 0 ∨ y ≠ 0) :
     HasStrictDerivAt (fun y => x ^ y) (x ^ y * log x) y := by
   rcases em (x = 0) with (rfl | hx)
   · replace h := h.neg_resolve_left rfl
-    rw [log_zero, MulZeroClass.mul_zero]
+    rw [log_zero, mul_zero]
     refine' (hasStrictDerivAt_const _ 0).congr_of_eventuallyEq _
     exact (isOpen_ne.eventually_mem h).mono fun y hy => (zero_cpow hy).symm
   · simpa only [cpow_def_of_ne_zero hx, mul_one] using
@@ -73,7 +73,7 @@ section fderiv
 
 open Complex
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E] {f g : E → ℂ} {f' g' : E →L[ℂ] ℂ}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f g : E → ℂ} {f' g' : E →L[ℂ] ℂ}
   {x : E} {s : Set E} {c : ℂ}
 
 theorem HasStrictFDerivAt.cpow (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x)
@@ -161,7 +161,7 @@ theorem HasStrictDerivAt.const_cpow (hf : HasStrictDerivAt f f' x) (h : c ≠ 0 
 
 theorem Complex.hasStrictDerivAt_cpow_const (h : 0 < x.re ∨ x.im ≠ 0) :
     HasStrictDerivAt (fun z : ℂ => z ^ c) (c * x ^ (c - 1)) x := by
-  simpa only [MulZeroClass.mul_zero, add_zero, mul_one] using
+  simpa only [mul_zero, add_zero, mul_one] using
     (hasStrictDerivAt_id x).cpow (hasStrictDerivAt_const x c) h
 #align complex.has_strict_deriv_at_cpow_const Complex.hasStrictDerivAt_cpow_const
 
@@ -204,7 +204,6 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
   (Complex.hasStrictDerivAt_cpow_const h0).hasDerivAt.comp_hasDerivWithinAt x hf
 #align has_deriv_within_at.cpow_const HasDerivWithinAt.cpow_const
 
-set_option maxHeartbeats 1000000 in
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect. -/
 theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
@@ -270,7 +269,6 @@ theorem hasStrictFDerivAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.1) :
     div_eq_mul_inv, smul_smul, smul_smul, mul_assoc, add_comm]
 #align real.has_strict_fderiv_at_rpow_of_pos Real.hasStrictFDerivAt_rpow_of_pos
 
-set_option maxHeartbeats 1000000 in
 /-- `(x, y) ↦ x ^ y` is strictly differentiable at `p : ℝ × ℝ` such that `p.fst < 0`. -/
 theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
     HasStrictFDerivAt (fun x : ℝ × ℝ => x.1 ^ x.2)
@@ -325,6 +323,14 @@ theorem hasStrictDerivAt_const_rpow {a : ℝ} (ha : 0 < a) (x : ℝ) :
     HasStrictDerivAt (fun x => a ^ x) (a ^ x * log a) x := by
   simpa using (hasStrictDerivAt_const _ _).rpow (hasStrictDerivAt_id x) ha
 #align real.has_strict_deriv_at_const_rpow Real.hasStrictDerivAt_const_rpow
+
+lemma differentiableAt_rpow_const_of_ne (p : ℝ) {x : ℝ} (hx : x ≠ 0) :
+    DifferentiableAt ℝ (fun x => x ^ p) x :=
+  (hasStrictDerivAt_rpow_const_of_ne hx p).differentiableAt
+
+lemma differentiableOn_rpow_const (p : ℝ) :
+    DifferentiableOn ℝ (fun x => x ^ p) {0}ᶜ :=
+  fun _ hx => (Real.differentiableAt_rpow_const_of_ne p hx).differentiableWithinAt
 
 /-- This lemma says that `fun x => a ^ x` is strictly differentiable for `a < 0`. Note that these
 values of `a` are outside of the "official" domain of `a ^ x`, and we may redefine `a ^ x`
@@ -405,7 +411,7 @@ open Real
 
 section fderiv
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : E → ℝ} {f' g' : E →L[ℝ] ℝ}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : E → ℝ} {f' g' : E →L[ℝ] ℝ}
   {x : E} {s : Set E} {c p : ℝ} {n : ℕ∞}
 
 theorem HasFDerivWithinAt.rpow (hf : HasFDerivWithinAt f f' s x) (hg : HasFDerivWithinAt g g' s x)
@@ -597,6 +603,22 @@ theorem deriv_rpow_const (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0 ∨ 1 �
     deriv (fun x => f x ^ p) x = deriv f x * p * f x ^ (p - 1) :=
   (hf.hasDerivAt.rpow_const hx).deriv
 #align deriv_rpow_const deriv_rpow_const
+
+lemma isTheta_deriv_rpow_const_atTop {p : ℝ} (hp : p ≠ 0) :
+    deriv (fun (x:ℝ) => x ^ p) =Θ[atTop] fun x => x ^ (p-1) := by
+  calc deriv (fun (x:ℝ) => x ^ p) =ᶠ[atTop] fun x => p * x ^ (p - 1) := by
+              filter_upwards [eventually_ne_atTop 0] with x hx
+              rw [Real.deriv_rpow_const (Or.inl hx)]
+       _ =Θ[atTop] fun x => x ^ (p-1) :=
+              Asymptotics.IsTheta.const_mul_left hp Asymptotics.isTheta_rfl
+
+lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
+    deriv (fun (x:ℝ) => x ^ p) =O[atTop] fun x => x ^ (p-1) := by
+  rcases eq_or_ne p 0 with rfl | hp
+  case inl =>
+    simp [zero_sub, Real.rpow_neg_one, Real.rpow_zero, deriv_const', Asymptotics.isBigO_zero]
+  case inr =>
+    exact (isTheta_deriv_rpow_const_atTop hp).1
 
 end deriv
 

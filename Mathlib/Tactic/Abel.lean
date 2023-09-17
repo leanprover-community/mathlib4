@@ -14,6 +14,8 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
 
@@ -299,7 +301,7 @@ def evalSMul' (eval : Expr → M (NormalExpr × Expr))
   trace[abel] "Calling NormNum on {e₁}"
   let ⟨e₁', p₁, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
   let p₁ ← p₁.getDM (mkEqRefl e₁')
-  match Meta.NormNum.isIntLit e₁' with
+  match e₁'.int? with
   | some n => do
     let c ← read
     let (e₂', p₂) ← eval e₂

@@ -185,7 +185,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
   have : Tendsto (fun n => 2 * B n) atTop (𝓝 (2 * 0)) :=
     ENNReal.Tendsto.const_mul
       (ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 <| by simp [ENNReal.one_lt_two]) (Or.inr <| by simp)
-  rw [MulZeroClass.mul_zero] at this
+  rw [mul_zero] at this
   obtain ⟨N, hN⟩ : ∃ N, ∀ b ≥ N, ε > 2 * B b :=
     ((tendsto_order.1 this).2 ε εpos).exists_forall_of_atTop
   exact ⟨N, fun n hn => lt_of_le_of_lt (main n) (hN n hn)⟩
@@ -270,7 +270,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     exact ⟨s.nonempty, s.isCompact⟩
   rw [this]
   refine' isClosed_of_closure_subset fun s hs => ⟨_, _⟩
-  · -- take a set set t which is nonempty and at a finite distance of s
+  · -- take a set t which is nonempty and at a finite distance of s
     rcases mem_closure_iff.1 hs ⊤ ENNReal.coe_lt_top with ⟨t, ht, Dst⟩
     rw [edist_comm] at Dst
     -- since `t` is nonempty, so is `s`

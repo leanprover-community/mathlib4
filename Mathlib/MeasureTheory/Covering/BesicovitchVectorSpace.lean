@@ -44,7 +44,7 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
 
 universe u
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Metric Set FiniteDimensional MeasureTheory Filter Fin
 
@@ -54,7 +54,7 @@ noncomputable section
 
 namespace Besicovitch
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 namespace SatelliteConfig
 
@@ -128,7 +128,7 @@ end SatelliteConfig
 
 /-- The maximum cardinality of a `1`-separated set in the ball of radius `2`. This is also the
 optimal number of families in the Besicovitch covering theorem. -/
-def multiplicity (E : Type _) [NormedAddCommGroup E] :=
+def multiplicity (E : Type*) [NormedAddCommGroup E] :=
   sSup {N | ∃ s : Finset E, s.card = N ∧ (∀ c ∈ s, ‖c‖ ≤ 2) ∧ ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖}
 #align besicovitch.multiplicity Besicovitch.multiplicity
 
@@ -148,7 +148,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
   let μ : Measure E := Measure.addHaar
   let δ : ℝ := (1 : ℝ) / 2
   let ρ : ℝ := (5 : ℝ) / 2
-  have ρpos : 0 < ρ := by norm_num [ρ]
+  have ρpos : 0 < ρ := by norm_num
   set A := ⋃ c ∈ s, ball (c : E) δ with hA
   have D : Set.Pairwise (s : Set E) (Disjoint on fun c => ball (c : E) δ) := by
     rintro c hc d hd hcd
@@ -161,14 +161,14 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     apply ball_subset_ball'
     calc
       δ + dist x 0 ≤ δ + 2 := by rw [dist_zero_right]; exact add_le_add le_rfl (hs x hx)
-      _ = 5 / 2 := by norm_num [δ]
+      _ = 5 / 2 := by norm_num
   have I :
     (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) * μ (ball 0 1) ≤
       ENNReal.ofReal (ρ ^ finrank ℝ E) * μ (ball 0 1) :=
     calc
       (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) * μ (ball 0 1) = μ A := by
         rw [hA, measure_biUnion_finset D fun c _ => measurableSet_ball]
-        have I : 0 < δ := by norm_num [δ]
+        have I : 0 < δ := by norm_num
         simp only [div_pow, μ.addHaar_ball_of_pos _ I]
         simp only [one_div, one_pow, Finset.sum_const, nsmul_eq_mul, mul_assoc]
       _ ≤ μ (ball (0 : E) ρ) := (measure_mono A_subset)

@@ -523,8 +523,8 @@ def Cofork.IsColimit.mk (t : Cofork f g) (desc : ∀ s : Cofork f g, t.pt ⟶ s.
     only asks for a proof of facts that carry any mathematical content, and allows access to the
     same `s` for all parts. -/
 def Cofork.IsColimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Cofork f g)
-    (create : ∀ s : Cofork f g, { l : t.pt ⟶ s.pt // t.π ≫ l = s.π ∧ ∀ {m}, t.π ≫ m = s.π → m = l })
-    : IsColimit t :=
+    (create : ∀ s : Cofork f g, { l : t.pt ⟶ s.pt // t.π ≫ l = s.π
+                                    ∧ ∀ {m}, t.π ≫ m = s.π → m = l }) : IsColimit t :=
   Cofork.IsColimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w =>
     (create s).2.2 w
 #align category_theory.limits.cofork.is_colimit.mk' CategoryTheory.Limits.Cofork.IsColimit.mk'
@@ -808,8 +808,7 @@ noncomputable def equalizer.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) 
   ⟨equalizer.lift k h, equalizer.lift_ι _ _⟩
 #align category_theory.limits.equalizer.lift' CategoryTheory.Limits.equalizer.lift'
 
-/-- Two maps into an equalizer are equal if they are are equal when composed with the equalizer
-    map. -/
+/-- Two maps into an equalizer are equal if they are equal when composed with the equalizer map. -/
 @[ext]
 theorem equalizer.hom_ext {W : C} {k l : W ⟶ equalizer f g}
     (h : k ≫ equalizer.ι f g = l ≫ equalizer.ι f g) : k = l :=

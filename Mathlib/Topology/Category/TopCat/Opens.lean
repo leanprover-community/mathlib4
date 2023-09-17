@@ -70,7 +70,7 @@ noncomputable def infLERight (U V : Opens X) : U ⊓ V ⟶ V :=
 
 /-- The inclusion `U i ⟶ supr U` as a morphism in the category of open sets.
 -/
-noncomputable def leSupr {ι : Type _} (U : ι → Opens X) (i : ι) : U i ⟶ iSup U :=
+noncomputable def leSupr {ι : Type*} (U : ι → Opens X) (i : ι) : U i ⟶ iSup U :=
   (le_iSup U i).hom
 #align topological_space.opens.le_supr TopologicalSpace.Opens.leSupr
 
@@ -100,7 +100,7 @@ theorem infLELeft_apply_mk (U V : Opens X) (x) (m) :
 #align topological_space.opens.inf_le_left_apply_mk TopologicalSpace.Opens.infLELeft_apply_mk
 
 @[simp]
-theorem leSupr_apply_mk {ι : Type _} (U : ι → Opens X) (i : ι) (x) (m) :
+theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
     (leSupr U i) ⟨x, m⟩ = ⟨x, (le_iSup U i : _) m⟩ :=
   rfl
 #align topological_space.opens.le_supr_apply_mk TopologicalSpace.Opens.leSupr_apply_mk
@@ -215,7 +215,7 @@ theorem op_map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
   rfl
 #align topological_space.opens.op_map_comp_obj TopologicalSpace.Opens.op_map_comp_obj
 
-theorem map_iSup (f : X ⟶ Y) {ι : Type _} (U : ι → Opens Y) :
+theorem map_iSup (f : X ⟶ Y) {ι : Type*} (U : ι → Opens Y) :
     (map f).obj (iSup U) = iSup ((map f).obj ∘ U) := by
   ext1; rw [iSup_def, iSup_def, map_obj]
   dsimp; rw [Set.preimage_iUnion]; rfl

@@ -17,7 +17,7 @@ where `x` is an integral element over `R`.
 -/
 
 
-variable {K S : Type _} [Field K] [CommRing S] [Algebra K S]
+variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
 
 namespace Algebra
 
@@ -89,9 +89,9 @@ open Polynomial
 
 open Polynomial
 
-variable {R : Type _} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
+variable {R : Type*} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
 
-variable {A : Type _} [CommRing A] [Algebra R A] [Algebra S A]
+variable {A : Type*} [CommRing A] [Algebra R A] [Algebra S A]
 
 variable [IsScalarTower R S A] {B : PowerBasis S A} (hB : IsIntegral R B.gen)
 
@@ -115,7 +115,7 @@ theorem repr_gen_pow_isIntegral [IsDomain S]
     letI : Nontrivial R := Nontrivial.of_polynomial_ne hQ
     exact degree_modByMonic_lt _ (minpoly.monic hB)
   rw [this, aeval_eq_sum_range' hlt]
-  simp only [LinearEquiv.map_sum, LinearEquiv.map_smulₛₗ, RingHom.id_apply, Finset.sum_apply']
+  simp only [map_sum, LinearEquiv.map_smulₛₗ, RingHom.id_apply, Finset.sum_apply']
   refine' IsIntegral.sum _ fun j hj => _
   replace hj := Finset.mem_range.1 hj
   rw [← Fin.val_mk hj, ← B.basis_eq_pow, Algebra.smul_def, IsScalarTower.algebraMap_apply R S A, ←
@@ -137,8 +137,7 @@ theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) :
     ∀ i, IsIntegral R (B.basis.repr (x * y) i) := by
   intro i
-  rw [← B.basis.sum_repr x, ← B.basis.sum_repr y, Finset.sum_mul_sum, LinearEquiv.map_sum,
-    Finset.sum_apply']
+  rw [← B.basis.sum_repr x, ← B.basis.sum_repr y, Finset.sum_mul_sum, map_sum, Finset.sum_apply']
   refine' IsIntegral.sum _ fun I _ => _
   simp only [Algebra.smul_mul_assoc, Algebra.mul_smul_comm, LinearEquiv.map_smulₛₗ,
     RingHom.id_apply, Finsupp.coe_smul, Pi.smul_apply, id.smul_eq_mul]
@@ -147,7 +146,7 @@ theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.
   refine' repr_gen_pow_isIntegral hB hmin _ _
 #align power_basis.repr_mul_is_integral PowerBasis.repr_mul_isIntegral
 
-/-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be and element
+/-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be an element
 with integral coordinates in the base `B.basis`. Then `IsIntegral R ((B.basis.repr (x ^ n) i)` for
 all `i` and all `n` if `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case
 if `R` is a GCD domain and `S` is its fraction ring. -/
@@ -181,7 +180,7 @@ theorem toMatrix_isIntegral {B B' : PowerBasis K S} {P : R[X]} (h : aeval B.gen 
   intro i j
   rw [B.basis.toMatrix_apply, B'.coe_basis]
   refine' repr_pow_isIntegral hB (fun i => _) hmin _ _
-  rw [← h, aeval_eq_sum_range, LinearEquiv.map_sum, Finset.sum_apply']
+  rw [← h, aeval_eq_sum_range, map_sum, Finset.sum_apply']
   refine' IsIntegral.sum _ fun n _ => _
   rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R K S, ← Algebra.smul_def,
     LinearEquiv.map_smul, algebraMap_smul]

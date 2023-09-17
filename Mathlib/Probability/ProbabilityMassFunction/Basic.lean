@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
 import Mathlib.Topology.Instances.ENNReal
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Dirac
 
 #align_import probability.probability_mass_function.basic from "leanprover-community/mathlib"@"4ac69b290818724c159de091daa3acd31da0ee6d"
 
@@ -34,7 +34,7 @@ probability mass function, discrete probability measure
 
 noncomputable section
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Classical BigOperators NNReal ENNReal MeasureTheory
 
@@ -98,6 +98,10 @@ theorem mem_support_iff (p : Pmf α) (a : α) : a ∈ p.support ↔ p a ≠ 0 :=
 theorem support_nonempty (p : Pmf α) : p.support.Nonempty :=
   Function.support_nonempty_iff.2 p.coe_ne_zero
 #align pmf.support_nonempty Pmf.support_nonempty
+
+@[simp]
+theorem support_countable (p : Pmf α) : p.support.Countable :=
+  Summable.countable_support_ennreal (tsum_coe_ne_top p)
 
 theorem apply_eq_zero_iff (p : Pmf α) (a : α) : p a = 0 ↔ a ∉ p.support := by
   rw [mem_support_iff, Classical.not_not]
@@ -277,6 +281,13 @@ theorem toMeasure_apply_inter_support (hs : MeasurableSet s) (hp : MeasurableSet
   simp [p.toMeasure_apply_eq_toOuterMeasure_apply s hs,
     p.toMeasure_apply_eq_toOuterMeasure_apply _ (hs.inter hp)]
 #align pmf.to_measure_apply_inter_support Pmf.toMeasure_apply_inter_support
+
+@[simp]
+theorem restrict_toMeasure_support [MeasurableSpace α] [MeasurableSingletonClass α]  (p : Pmf α) :
+    Measure.restrict (toMeasure p) (support p) = toMeasure p := by
+  ext s hs
+  apply (MeasureTheory.Measure.restrict_apply hs).trans
+  apply toMeasure_apply_inter_support p s hs p.support_countable.measurableSet
 
 theorem toMeasure_mono {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (h : s ∩ p.support ⊆ t) : p.toMeasure s ≤ p.toMeasure t := by

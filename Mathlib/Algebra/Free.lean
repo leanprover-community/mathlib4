@@ -3,7 +3,7 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
@@ -115,7 +115,7 @@ def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
   { toFun := liftAux f
     map_mul' := fun x y ↦ rfl }
   invFun F := F ∘ of
-  left_inv f := by rfl
+  left_inv f := rfl
   right_inv F := by ext; rfl
 #align free_magma.lift FreeMagma.lift
 
@@ -195,7 +195,7 @@ theorem mul_seq {α β : Type u} {f g : FreeMagma (α → β)} {x : FreeMagma α
 #align free_magma.mul_seq FreeMagma.mul_seq
 
 @[to_additive]
-instance : LawfulMonad FreeMagma.{u} := LawfulMonad.mk'
+instance instLawfulMonad : LawfulMonad FreeMagma.{u} := LawfulMonad.mk'
   (pure_bind := fun f x ↦ rfl)
   (bind_assoc := fun x f g ↦ FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
     rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
@@ -266,16 +266,16 @@ theorem mul_map_seq (x y : FreeMagma α) :
 
 @[to_additive]
 instance : LawfulTraversable FreeMagma.{u} :=
-  { instLawfulMonadFreeMagmaInstMonadFreeMagma with
+  { instLawfulMonad with
     id_traverse := fun x ↦
       FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
     comp_traverse := fun f g x ↦
       FreeMagma.recOnPure x
-        (fun x ↦ by simp only [(. ∘ .), traverse_pure, traverse_pure', functor_norm])
+        (fun x ↦ by simp only [(· ∘ ·), traverse_pure, traverse_pure', functor_norm])
         (fun x y ih1 ih2 ↦ by
           rw [traverse_mul, ih1, ih2, traverse_mul];
-          simp [Functor.Comp.map_mk, Functor.map_map, (. ∘ .), Comp.seq_mk, seq_map_assoc,
+          simp [Functor.Comp.map_mk, Functor.map_map, (· ∘ ·), Comp.seq_mk, seq_map_assoc,
             map_seq, traverse_mul])
     naturality := fun η α β f x ↦
       FreeMagma.recOnPure x
@@ -373,7 +373,7 @@ instance : Semigroup (AssocQuotient α) where
 
 /-- Embedding from magma to its free semigroup. -/
 @[to_additive "Embedding from additive magma to its free additive semigroup."]
-def of : α →ₙ* AssocQuotient α := ⟨Quot.mk _, fun _x _y ↦ rfl⟩
+def of : α →ₙ* AssocQuotient α where toFun := Quot.mk _; map_mul' _x _y := rfl
 #align magma.assoc_quotient.of Magma.AssocQuotient.of
 
 @[to_additive]
@@ -619,7 +619,7 @@ theorem mul_seq {f g : FreeSemigroup (α → β)} {x : FreeSemigroup α} :
 #align free_semigroup.mul_seq FreeSemigroup.mul_seq
 
 @[to_additive]
-instance : LawfulMonad FreeSemigroup.{u} := LawfulMonad.mk'
+instance instLawfulMonad : LawfulMonad FreeSemigroup.{u} := LawfulMonad.mk'
   (pure_bind := fun _ _ ↦ rfl)
   (bind_assoc := fun x g f ↦
     recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
@@ -682,12 +682,12 @@ theorem mul_map_seq (x y : FreeSemigroup α) :
 
 @[to_additive]
 instance : LawfulTraversable FreeSemigroup.{u} :=
-  { instLawfulMonadFreeSemigroupInstMonadFreeSemigroup with
+  { instLawfulMonad with
     id_traverse := fun x ↦
       FreeSemigroup.recOnMul x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
     comp_traverse := fun f g x ↦
-      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, (. ∘ .)])
+      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, (· ∘ ·)])
         fun x y ih1 ih2 ↦ by (rw [traverse_mul, ih1, ih2,
           traverse_mul, Functor.Comp.map_mk]; simp only [Function.comp, functor_norm, traverse_mul])
     naturality := fun η α β f x ↦

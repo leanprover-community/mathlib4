@@ -552,7 +552,7 @@ example : MonoidalLinear k (Rep k G) := by infer_instance
 noncomputable section
 
 /-- Auxiliary lemma for `toModuleMonoidAlgebra`. -/
-theorem to_Module_monoidAlgebra_map_aux {k G : Type _} [CommRing k] [Monoid G] (V W : Type _)
+theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V W : Type*)
     [AddCommGroup V] [AddCommGroup W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
     (σ : G →* W →ₗ[k] W) (f : V →ₗ[k] W) (w : ∀ g : G, f.comp (ρ g) = (σ g).comp f)
     (r : MonoidAlgebra k G) (x : V) :
@@ -630,7 +630,8 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
         dsimp [counitIsoAddEquiv]
 /- Porting note: rest of broken proof was `simp`. -/
         rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply]
-        erw [Representation.ofModule_asAlgebraHom_apply_apply]
+        rw [AddEquiv.trans_apply]
+        erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]
         exact AddEquiv.symm_apply_apply _ _}
 set_option linter.uppercaseLean3 false in
 #align Rep.counit_iso Rep.counitIso

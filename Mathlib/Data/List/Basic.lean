@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Init.Core
 import Std.Data.List.Lemmas
+import Mathlib.Tactic.Common
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"9da1b3534b65d9661eb8f42443598a92bbb49211"
 
@@ -23,9 +24,9 @@ assert_not_exists Set.range
 
 namespace List
 
-universe u v w x
+universe u v w
 
-variable {ι : Type _} {α : Type u} {β : Type v} {γ : Type w} {δ : Type x} {l₁ l₂ : List α}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
 
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
@@ -92,13 +93,12 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 
 #align list.eq_or_ne_mem_of_mem List.eq_or_ne_mem_of_mem
 
--- porting note: from init.data.list.lemmas
-alias mem_cons ↔ eq_or_mem_of_mem_cons _
-#align list.eq_or_mem_of_mem_cons List.eq_or_mem_of_mem_cons
-
 #align list.not_mem_append List.not_mem_append
 
 #align list.ne_nil_of_mem List.ne_nil_of_mem
+
+lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
+  rw [mem_cons, mem_singleton]
 
 theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t := by
   induction' l with b l ih; {cases h}; rcases h with (_ | ⟨_, h⟩)
@@ -123,6 +123,10 @@ theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = 
 
 #align list.mem_map_of_mem List.mem_map_of_memₓ -- implicits order
 
+-- The simpNF linter says that the LHS can be simplified via `List.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
     f a ∈ map f l ↔ a ∈ l :=
   ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem _⟩
@@ -177,7 +181,7 @@ theorem map_bind (g : β → List γ) (f : α → β) :
 
 #align list.length_pos_iff_exists_mem List.length_pos_iff_exists_mem
 
-alias length_pos ↔ ne_nil_of_length_pos length_pos_of_ne_nil
+alias ⟨ne_nil_of_length_pos, length_pos_of_ne_nil⟩ := length_pos
 #align list.ne_nil_of_length_pos List.ne_nil_of_length_pos
 #align list.length_pos_of_ne_nil List.length_pos_of_ne_nil
 
@@ -221,17 +225,12 @@ theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c
   ⟨fun _ => let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
 #align list.length_eq_three List.length_eq_three
 
--- Porting note: Lean 3 core library had the name length_le_of_sublist
--- and data.list.basic the command `alias length_le_of_sublist ← sublist.length_le`,
--- but Std has the name Sublist.length_le instead.
-alias Sublist.length_le ← length_le_of_sublist
-#align list.length_le_of_sublist List.length_le_of_sublist
 #align list.sublist.length_le List.Sublist.length_le
 
 /-! ### set-theoretic notation of lists -/
 
 -- ADHOC Porting note: instance from Lean3 core
-instance : Singleton α (List α) := ⟨fun x => [x]⟩
+instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
 #align list.has_singleton List.instSingletonList
 
 -- ADHOC Porting note: instance from Lean3 core
@@ -333,7 +332,7 @@ fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 -- Porting note: in Std
 #align list.append_subset_iff List.append_subset
 
-alias subset_nil ↔ eq_nil_of_subset_nil _
+alias ⟨eq_nil_of_subset_nil, _⟩ := subset_nil
 #align list.eq_nil_of_subset_nil List.eq_nil_of_subset_nil
 
 #align list.eq_nil_iff_forall_not_mem List.eq_nil_iff_forall_not_mem
@@ -416,14 +415,18 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
 
 /-! ### replicate -/
 
-attribute [simp] replicate_succ
-#align list.replicate_succ List.replicate_succ
-
 @[simp] lemma replicate_zero (a : α) : replicate 0 a = [] := rfl
 #align list.replicate_zero List.replicate_zero
 
+attribute [simp] replicate_succ
+#align list.replicate_succ List.replicate_succ
+
 lemma replicate_one (a : α) : replicate 1 a = [a] := rfl
 #align list.replicate_one List.replicate_one
+
+#align list.length_replicate List.length_replicate
+#align list.mem_replicate List.mem_replicate
+#align list.eq_of_mem_replicate List.eq_of_mem_replicate
 
 theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
   | [] => by simp
@@ -500,11 +503,7 @@ theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bi
   rfl
 #align list.bind_eq_bind List.bind_eq_bind
 
--- TODO: duplicate of a lemma in core
-theorem bind_append (f : α → List β) (l₁ l₂ : List α) :
-    (l₁ ++ l₂).bind f = l₁.bind f ++ l₂.bind f :=
-  append_bind _ _ _
-#align list.bind_append List.bind_append
+#align list.bind_append List.append_bind
 
 /-! ### concat -/
 
@@ -625,16 +624,12 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
   simp only [reverseAux_eq, map_append, map_reverse]
 #align list.map_reverse_core List.map_reverseAux
 
--- Porting TODO: Fix statement of `mem_reverse` in Std to match Lean3,
--- then deprecate/remove this one
-theorem mem_reverse' {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l :=
-  List.mem_reverse _ _
-#align list.mem_reverse List.mem_reverse'
+#align list.mem_reverse List.mem_reverse
 
 @[simp] theorem reverse_replicate (n) (a : α) : reverse (replicate n a) = replicate n a :=
   eq_replicate.2
     ⟨by rw [length_reverse, length_replicate],
-     fun b h => eq_of_mem_replicate (mem_reverse'.1 h)⟩
+     fun b h => eq_of_mem_replicate (mem_reverse.1 h)⟩
 #align list.reverse_replicate List.reverse_replicate
 
 /-! ### empty -/
@@ -828,12 +823,12 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 #align list.head_eq_head' List.head!_eq_head?
 
-theorem surjective_head [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
-#align list.surjective_head List.surjective_head
+theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
+#align list.surjective_head List.surjective_head!
 
-theorem surjective_head' : Surjective (@head? α) :=
+theorem surjective_head? : Surjective (@head? α) :=
   Option.forall.2 ⟨⟨[], rfl⟩, fun x => ⟨[x], rfl⟩⟩
-#align list.surjective_head' List.surjective_head'
+#align list.surjective_head' List.surjective_head?
 
 theorem surjective_tail : Surjective (@tail α)
   | [] => ⟨[], rfl⟩
@@ -897,6 +892,9 @@ theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! �
   rwa [cons_head!_tail h] at h'
 #align list.head_mem_self List.head!_mem_self
 
+theorem head_mem {l : List α} : ∀ (h : l ≠ nil), l.head h ∈ l := by
+  cases l <;> simp
+
 @[simp]
 theorem head?_map (f : α → β) (l) : head? (map f l) = (head? l).map f := by cases l <;> rfl
 #align list.head'_map List.head?_map
@@ -957,7 +955,7 @@ theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
 for `l ++ [a]` if it holds for `l`, then it holds for all lists. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 @[elab_as_elim]
-def reverseRecOn {C : List α → Sort _} (l : List α) (H0 : C [])
+def reverseRecOn {C : List α → Sort*} (l : List α) (H0 : C [])
     (H1 : ∀ (l : List α) (a : α), C l → C (l ++ [a])) : C l := by
   rw [← reverse_reverse l]
   match h:(reverse l) with
@@ -976,7 +974,7 @@ termination_by _ _ l _ _ => l.length
 singleton list, and `a :: (l ++ [b])` from `l`, then it holds for all lists. This can be used to
 prove statements about palindromes. The principle is given for a `Sort`-valued predicate, i.e., it
 can also be used to construct data. -/
-def bidirectionalRec {C : List α → Sort _} (H0 : C []) (H1 : ∀ a : α, C [a])
+def bidirectionalRec {C : List α → Sort*} (H0 : C []) (H1 : ∀ a : α, C [a])
     (Hn : ∀ (a : α) (l : List α) (b : α), C l → C (a :: (l ++ [b]))) : ∀ l, C l
   | [] => H0
   | [a] => H1 a
@@ -991,7 +989,7 @@ termination_by _ l => l.length
 
 /-- Like `bidirectionalRec`, but with the list parameter placed first. -/
 @[elab_as_elim]
-def bidirectionalRecOn {C : List α → Sort _} (l : List α) (H0 : C []) (H1 : ∀ a : α, C [a])
+def bidirectionalRecOn {C : List α → Sort*} (l : List α) (H0 : C []) (H1 : ∀ a : α, C [a])
     (Hn : ∀ (a : α) (l : List α) (b : α), C l → C (a :: (l ++ [b]))) : C l :=
   bidirectionalRec H0 H1 Hn l
 #align list.bidirectional_rec_on List.bidirectionalRecOn
@@ -1047,7 +1045,7 @@ theorem eq_nil_of_sublist_nil {l : List α} (s : l <+ []) : l = [] :=
 #align list.eq_nil_of_sublist_nil List.eq_nil_of_sublist_nil
 
 -- Porting note: this lemma seems to have been renamed on the occasion of its move to Std4
-alias sublist_nil ← sublist_nil_iff_eq_nil
+alias sublist_nil_iff_eq_nil := sublist_nil
 #align list.sublist_nil_iff_eq_nil List.sublist_nil_iff_eq_nil
 
 #align list.replicate_sublist_replicate List.replicate_sublist_replicate
@@ -1107,7 +1105,7 @@ theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
 -/
 
 -- Porting note: these lemmas recover the Lean 3 definition of `findIdx`
-@[simp] theorem findIdx_nil {α : Type _} (p : α → Bool) :
+@[simp] theorem findIdx_nil {α : Type*} (p : α → Bool) :
   [].findIdx p = 0 := rfl
 
 theorem findIdx_cons (p : α → Bool) (b : α) (l : List α) :
@@ -1884,9 +1882,6 @@ theorem take_zero (l : List α) : take 0 l = [] :=
   rfl
 #align list.take_zero List.take_zero
 
-@[simp]
-theorem take_nil : ∀ n, take n [] = ([] : List α)
-  | 0 | _ + 1 => rfl
 #align list.take_nil List.take_nil
 
 theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: take n l :=
@@ -1928,7 +1923,7 @@ theorem take_replicate (a : α) : ∀ n m : ℕ, take n (replicate m a) = replic
   | succ n, succ m => by simp [min_succ_succ, take_replicate]
 #align list.take_replicate List.take_replicate
 
-theorem map_take {α β : Type _} (f : α → β) :
+theorem map_take {α β : Type*} (f : α → β) :
     ∀ (L : List α) (i : ℕ), (L.take i).map f = (L.map f).take i
   | [], i => by simp
   | _, 0 => by simp
@@ -2047,12 +2042,12 @@ theorem dropLast_take {n : ℕ} {l : List α} (h : n < l.length) :
   simp [dropLast_eq_take, min_eq_left_of_lt h, take_take, pred_le]
 #align list.init_take List.dropLast_take
 
-theorem dropLast_cons_of_ne_nil {α : Type _} {x : α}
+theorem dropLast_cons_of_ne_nil {α : Type*} {x : α}
     {l : List α} (h : l ≠ []) : (x :: l).dropLast = x :: l.dropLast := by simp [h]
 #align list.init_cons_of_ne_nil List.dropLast_cons_of_ne_nil
 
 @[simp]
-theorem dropLast_append_of_ne_nil {α : Type _} {l : List α} :
+theorem dropLast_append_of_ne_nil {α : Type*} {l : List α} :
     ∀ (l' : List α) (_ : l ≠ []), (l' ++ l).dropLast = l' ++ l.dropLast
   | [], _ => by simp only [nil_append]
   | a :: l', h => by
@@ -2229,7 +2224,7 @@ theorem drop_take : ∀ (m : ℕ) (n : ℕ) (l : List α), drop m (take (m + n) 
     simpa [take_cons, h] using drop_take m n l
 #align list.drop_take List.drop_take
 
-theorem map_drop {α β : Type _} (f : α → β) :
+theorem map_drop {α β : Type*} (f : α → β) :
     ∀ (L : List α) (i : ℕ), (L.drop i).map f = (L.map f).drop i
   | [], i => by simp
   | L, 0 => by simp
@@ -2481,7 +2476,7 @@ theorem foldr_hom₂ (l : List ι) (f : α → β → γ) (op₁ : ι → α →
   induction l <;> intros <;> [rfl; simp only [*, foldr]]
 #align list.foldr_hom₂ List.foldr_hom₂
 
-theorem injective_foldl_comp {α : Type _} {l : List (α → α)} {f : α → α}
+theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
     (hl : ∀ f ∈ l, Function.Injective f) (hf : Function.Injective f) :
     Function.Injective (@List.foldl (α → α) (α → α) Function.comp f l) := by
   induction' l with lh lt l_ih generalizing f
@@ -2506,7 +2501,7 @@ theorem injective_foldl_comp {α : Type _} {l : List (α → α)} {f : α → α
 for the seed element `b : β` and for all incremental `op : α → β → β`
 performed on the elements `(a : α) ∈ l`. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
-def foldrRecOn {C : β → Sort _} (l : List α) (op : α → β → β) (b : β) (hb : C b)
+def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
     (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op a b)) : C (foldr op b l) := by
   cases l with
   | nil => exact hb
@@ -2534,7 +2529,7 @@ def foldrRecOn {C : β → Sort _} (l : List α) (op : α → β → β) (b : β
 for the seed element `b : β` and for all incremental `op : β → α → β`
 performed on the elements `(a : α) ∈ l`. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
-def foldlRecOn {C : β → Sort _} (l : List α) (op : β → α → β) (b : β) (hb : C b)
+def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β) (hb : C b)
     (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op b a)) : C (foldl op b l) := by
   cases l with
   | nil => exact hb
@@ -2548,13 +2543,13 @@ def foldlRecOn {C : β → Sort _} (l : List α) (op : β → α → β) (b : β
 #align list.foldl_rec_on List.foldlRecOn
 
 @[simp]
-theorem foldrRecOn_nil {C : β → Sort _} (op : α → β → β) (b) (hb : C b) (hl) :
+theorem foldrRecOn_nil {C : β → Sort*} (op : α → β → β) (b) (hb : C b) (hl) :
     foldrRecOn [] op b hb hl = hb :=
   rfl
 #align list.foldr_rec_on_nil List.foldrRecOn_nil
 
 @[simp]
-theorem foldrRecOn_cons {C : β → Sort _} (x : α) (l : List α) (op : α → β → β) (b) (hb : C b)
+theorem foldrRecOn_cons {C : β → Sort*} (x : α) (l : List α) (op : α → β → β) (b) (hb : C b)
     (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ x :: l), C (op a b)) :
     foldrRecOn (x :: l) op b hb hl =
       hl _ (foldrRecOn l op b hb fun b hb a ha => hl b hb a (mem_cons_of_mem _ ha)) x
@@ -2563,7 +2558,7 @@ theorem foldrRecOn_cons {C : β → Sort _} (x : α) (l : List α) (op : α → 
 #align list.foldr_rec_on_cons List.foldrRecOn_cons
 
 @[simp]
-theorem foldlRecOn_nil {C : β → Sort _} (op : β → α → β) (b) (hb : C b) (hl) :
+theorem foldlRecOn_nil {C : β → Sort*} (op : β → α → β) (b) (hb : C b) (hl) :
     foldlRecOn [] op b hb hl = hb :=
   rfl
 #align list.foldl_rec_on_nil List.foldlRecOn_nil
@@ -2793,7 +2788,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
     List.foldlM f b l = foldl (fun mb a => mb >>= fun b => f b a) (pure b) l := by
   suffices h :
     ∀ mb : m β, (mb >>= fun b => List.foldlM f b l) = foldl (fun mb a => mb >>= fun b => f b a) mb l
-  · simp [← h (pure b)]
+    by simp [← h (pure b)]
   induction l with
   | nil => intro; simp
   | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ←l_ih, functor_norm]
@@ -3140,7 +3135,7 @@ theorem attach_eq_nil (l : List α) : l.attach = [] ↔ l = [] :=
   pmap_eq_nil
 #align list.attach_eq_nil List.attach_eq_nil
 
-theorem getLast_pmap {α β : Type _} (p : α → Prop) (f : ∀ a, p a → β) (l : List α)
+theorem getLast_pmap {α β : Type*} (p : α → Prop) (f : ∀ a, p a → β) (l : List α)
     (hl₁ : ∀ a ∈ l, p a) (hl₂ : l ≠ []) :
     (l.pmap f hl₁).getLast (mt List.pmap_eq_nil.1 hl₂) =
       f (l.getLast hl₂) (hl₁ _ (List.getLast_mem hl₂)) := by
@@ -3196,7 +3191,7 @@ theorem pmap_append {p : ι → Prop} (f : ∀ a : ι, p a → α) (l₁ l₂ : 
     rw [ih]
 #align list.pmap_append List.pmap_append
 
-theorem pmap_append' {α β : Type _} {p : α → Prop} (f : ∀ a : α, p a → β) (l₁ l₂ : List α)
+theorem pmap_append' {α β : Type*} {p : α → Prop} (f : ∀ a : α, p a → β) (l₁ l₂ : List α)
     (h₁ : ∀ a ∈ l₁, p a) (h₂ : ∀ a ∈ l₂, p a) :
     ((l₁ ++ l₂).pmap f fun a ha => (List.mem_append.1 ha).elim (h₁ a) (h₂ a)) =
       l₁.pmap f h₁ ++ l₂.pmap f h₂ :=
@@ -3324,18 +3319,6 @@ theorem length_lookmap (l : List α) : length (l.lookmap f) = length l := by
 end Lookmap
 
 /-! ### filter -/
--- Porting note: These lemmas are from Lean3 core
-
-#align list.filter_nil List.filter_nil
-
-#align list.filter_cons_of_pos List.filter_cons_of_pos
-
-#align list.filter_cons_of_neg List.filter_cons_of_neg
-
-#align list.filter_append List.filter_append
-
-#align list.filter_sublist List.filter_sublist
-
 /-! ### filterMap -/
 
 #align list.filter_map_nil List.filterMap_nil
