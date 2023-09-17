@@ -71,8 +71,8 @@ instance hasForgetToBddDistLatCat : HasForget₂ FinBddDistLatCat BddDistLatCat 
   InducedCategory.hasForget₂ FinBddDistLatCat.toBddDistLatCat
 #align FinBddDistLat.has_forget_to_BddDistLat FinBddDistLatCat.hasForgetToBddDistLatCat
 
-instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLatCat FinPartOrd
-    where forget₂ :=
+instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLatCat FinPartOrd where
+  forget₂ :=
     { obj := fun X => FinPartOrd.of X
       map := fun {X Y} f => (show BoundedLatticeHom X Y from f : X →o Y) }
 #align FinBddDistLat.has_forget_to_FinPartOrd FinBddDistLatCat.hasForgetToFinPartOrd

@@ -188,8 +188,8 @@ theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (
 /-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` commutes with
 another scalar action of `M` on `E` whenever the action of `ℂ` commutes with the action of `M`. -/
 instance (priority := 900) SMulCommClass.complexToReal {M E : Type*} [AddCommGroup E] [Module ℂ E]
-    [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E
-    where smul_comm r _ _ := (smul_comm (r : ℂ) _ _ : _)
+    [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E where
+  smul_comm r _ _ := (smul_comm (r : ℂ) _ _ : _)
 #align smul_comm_class.complex_to_real SMulCommClass.complexToReal
 
 instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
@@ -410,18 +410,18 @@ noncomputable def imaginaryPart : A →ₗ[ℝ] selfAdjoint A :=
   skewAdjoint.negISMul.comp (skewAdjointPart ℝ)
 #align imaginary_part imaginaryPart
 
+@[inherit_doc]
 scoped[ComplexStarModule] notation "ℜ" => realPart
+@[inherit_doc]
 scoped[ComplexStarModule] notation "ℑ" => imaginaryPart
 
 open ComplexStarModule
 
-@[simp]
 theorem realPart_apply_coe (a : A) : (ℜ a : A) = (2 : ℝ)⁻¹ • (a + star a) := by
   unfold realPart
   simp only [selfAdjointPart_apply_coe, invOf_eq_inv]
 #align real_part_apply_coe realPart_apply_coe
 
-@[simp]
 theorem imaginaryPart_apply_coe (a : A) : (ℑ a : A) = -I • (2 : ℝ)⁻¹ • (a - star a) := by
   unfold imaginaryPart
   simp only [LinearMap.coe_comp, Function.comp_apply, skewAdjoint.negISMul_apply_coe,
@@ -458,19 +458,100 @@ set_option linter.uppercaseLean3 false in
 #align imaginary_part_I_smul imaginaryPart_I_smul
 
 theorem realPart_smul (z : ℂ) (a : A) : ℜ (z • a) = z.re • ℜ a - z.im • ℑ a := by
-  -- Porting note: was `nth_rw 1 [← re_add_im z]`
-  conv_lhs =>
-    rw [← re_add_im z]
-  simp [-re_add_im, add_smul, ← smul_smul, sub_eq_add_neg]
+  have := by congrm(ℜ ($((re_add_im z).symm) • a))
+  simpa [-re_add_im, add_smul, ← smul_smul, sub_eq_add_neg]
 #align real_part_smul realPart_smul
 
 theorem imaginaryPart_smul (z : ℂ) (a : A) : ℑ (z • a) = z.re • ℑ a + z.im • ℜ a := by
-  -- Porting note: was `nth_rw 1 [← re_add_im z]`
-  conv_lhs =>
-    rw [← re_add_im z]
-  simp [-re_add_im, add_smul, ← smul_smul]
+  have := by congrm(ℑ ($((re_add_im z).symm) • a))
+  simpa [-re_add_im, add_smul, ← smul_smul]
 #align imaginary_part_smul imaginaryPart_smul
 
+lemma skewAdjointPart_eq_I_smul_imaginaryPart (x : A) :
+    (skewAdjointPart ℝ x : A) = I • (imaginaryPart x : A) := by
+  simp [imaginaryPart_apply_coe, smul_smul]
+
+lemma imaginaryPart_eq_neg_I_smul_skewAdjointPart (x : A) :
+    (imaginaryPart x : A) = -I • (skewAdjointPart ℝ x : A) :=
+  rfl
+
+lemma IsSelfAdjoint.coe_realPart {x : A} (hx : IsSelfAdjoint x) :
+    (ℜ x : A) = x :=
+  hx.coe_selfAdjointPart_apply ℝ
+
+lemma IsSelfAdjoint.imaginaryPart {x : A} (hx : IsSelfAdjoint x) :
+    ℑ x = 0 := by
+  rw [imaginaryPart, LinearMap.comp_apply, hx.skewAdjointPart_apply _, map_zero]
+
+lemma realPart_comp_subtype_selfAdjoint :
+    realPart.comp (selfAdjoint.submodule ℝ A).subtype = LinearMap.id :=
+  selfAdjointPart_comp_subtype_selfAdjoint ℝ
+
+lemma imaginaryPart_comp_subtype_selfAdjoint :
+    imaginaryPart.comp (selfAdjoint.submodule ℝ A).subtype = 0 := by
+  rw [imaginaryPart, LinearMap.comp_assoc, skewAdjointPart_comp_subtype_selfAdjoint,
+    LinearMap.comp_zero]
+
+@[simp]
+lemma imaginaryPart_realPart {x : A} : ℑ (ℜ x : A) = 0 :=
+  (ℜ x).property.imaginaryPart
+
+@[simp]
+lemma imaginaryPart_imaginaryPart {x : A} : ℑ (ℑ x : A) = 0 :=
+  (ℑ x).property.imaginaryPart
+
+@[simp]
+lemma realPart_idem {x : A} : ℜ (ℜ x : A) = ℜ x :=
+  Subtype.ext <| (ℜ x).property.coe_realPart
+
+@[simp]
+lemma realPart_imaginaryPart {x : A} : ℜ (ℑ x : A) = ℑ x :=
+  Subtype.ext <| (ℑ x).property.coe_realPart
+
+lemma realPart_surjective : Function.Surjective (realPart (A := A)) :=
+  fun x ↦ ⟨(x : A), Subtype.ext x.property.coe_realPart⟩
+
+lemma imaginaryPart_surjective : Function.Surjective (imaginaryPart (A := A)) :=
+  fun x ↦
+    ⟨I • (x : A), Subtype.ext <| by simp only [imaginaryPart_I_smul, x.property.coe_realPart]⟩
+
+open Submodule
+
+lemma span_selfAdjoint : span ℂ (selfAdjoint A : Set A) = ⊤ := by
+  refine eq_top_iff'.mpr fun x ↦ ?_
+  rw [←realPart_add_I_smul_imaginaryPart x]
+  exact add_mem (subset_span (ℜ x).property) <|
+    SMulMemClass.smul_mem _ <| subset_span (ℑ x).property
+
+/-- The natural `ℝ`-linear equivalence between `selfAdjoint ℂ` and `ℝ`. -/
+@[simps apply symm_apply]
+def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where
+  toFun := fun z ↦ (z : ℂ).re
+  invFun := fun x ↦ ⟨x, conj_ofReal x⟩
+  left_inv := fun z ↦ Subtype.ext <| conj_eq_iff_re.mp z.property.star_eq
+  right_inv := fun x ↦ rfl
+  map_add' := by simp
+  map_smul' := by simp
+
+lemma Complex.coe_selfAdjointEquiv (z : selfAdjoint ℂ) :
+    (selfAdjointEquiv z : ℂ) = z := by
+  simpa [selfAdjointEquiv_symm_apply]
+    using (congr_arg Subtype.val <| Complex.selfAdjointEquiv.left_inv z)
+
+@[simp]
+lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
+  rw [realPart_apply_coe, star_def, conj_ofReal, ←two_smul ℝ (r : ℂ)]
+  simp
+
+@[simp]
+lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
+  ext1; simp [imaginaryPart_apply_coe, conj_ofReal]
+
+lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
+  (ℜ z : ℂ) = _    := by congrm(ℜ $((re_add_im z).symm))
+  _          = z.re := by
+    rw [map_add, AddSubmonoid.coe_add, mul_comm, ←smul_eq_mul, realPart_I_smul]
+    simp [conj_ofReal, ←two_mul]
 end RealImaginaryPart
 
 section Rational
