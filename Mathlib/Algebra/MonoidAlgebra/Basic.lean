@@ -1200,10 +1200,10 @@ instance coeFun : CoeFun k[G] fun _ => G → k :=
 
 end AddMonoidAlgebra
 
-instance instIsCancelAdd [IsCancelAdd k] [AddZeroClass G] [IsCancelAdd G] :
+protected instance instIsCancelAdd [IsCancelAdd k] [AddZeroClass G] [IsCancelAdd G] :
     IsCancelAdd (AddMonoidAlgebra k G) := by
   delta AddMonoidAlgebra
-  exact Finsupp.IsCancelAdd (α := G) (β := k)
+  exact Finsupp.instIsCancelAdd (α := G) (β := k)
 end
 
 namespace AddMonoidAlgebra
