@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
 
 #align_import algebra.ring.defs from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
@@ -400,18 +401,14 @@ variable [Ring α] {a b c d e : α}
 
 -- A (unital, associative) ring is a not-necessarily-unital ring
 -- see Note [lower instance priority]
-instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α where
-  __ := ‹Ring α›
-  zero_mul := fun a => add_left_cancel (a := 0 * a) <| by rw [← add_mul, zero_add, add_zero]
-  mul_zero := fun a => add_left_cancel (a := a * 0) <| by rw [← mul_add, add_zero, add_zero]
+instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
+  { ‹Ring α› with }
 #align ring.to_non_unital_ring Ring.toNonUnitalRing
 
 -- A (unital, associative) ring is a not-necessarily-associative ring
 -- see Note [lower instance priority]
-instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α where
-  __ := ‹Ring α›
-  zero_mul := fun a => add_left_cancel (a := 0 * a) <| by rw [← add_mul, zero_add, add_zero]
-  mul_zero := fun a => add_left_cancel (a := a * 0) <| by rw [← mul_add, add_zero, add_zero]
+instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
+  { ‹Ring α› with }
 #align ring.to_non_assoc_ring Ring.toNonAssocRing
 
 /- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
