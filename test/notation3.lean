@@ -166,14 +166,18 @@ end FinsetFlex
 
 notation3 "∑ " (...) ", "
     r:(scoped (filter) p => Finset.sum Finset.univ p,
+       --prop := p b => Finset.sum Finset.univ (fun (_ : PLift p) => b),
+       prop := p b => if p then b else 0,
        bounded := s p => Finset.sum (finset% s) p) => r
 
 instance (n : Nat) : Fintype (Fin n) := sorry
+instance {p : Prop} [Decidable p] : Fintype (PLift p) := sorry
 
 section
 variable (s : Finset Nat) (s' : Set Nat) [Fintype s']
 
 #check ∑ (x : Fin 37) (y ∈ s), x + y
 #check ∑ x ∈ s', x
+#check ∑ (x y : Fin 37) < 10, x + y
 
 end
