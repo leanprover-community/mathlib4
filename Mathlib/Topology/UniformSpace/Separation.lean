@@ -268,7 +268,7 @@ instance separationSetoid.uniformSpace {α : Type u} [UniformSpace α] :
     have : y' ⤳ y := separationRel_iff_specializes.1 (Quotient.exact hy)
     exact @hUs (x, z) ⟨y', this.mem_open (UniformSpace.isOpen_ball _ hUo) hxyU, hyzU⟩
   isOpen_uniformity s := isOpen_coinduced.trans <| by
-    simp only [_root_.isOpen_uniformity, forall_quotient_iff, mem_map', mem_setOf_eq]
+    simp only [_root_.isOpen_uniformity, Quotient.forall, mem_map', mem_setOf_eq]
     refine forall₂_congr fun x _ => ⟨fun h => ?_, fun h => mem_of_superset h ?_⟩
     · rcases comp_mem_uniformity_sets h with ⟨t, ht, hts⟩
       refine mem_of_superset ht fun (y, z) hyz hyx => @hts (x, z) ⟨y, ?_, hyz⟩ rfl

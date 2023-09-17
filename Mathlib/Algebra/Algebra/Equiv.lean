@@ -32,7 +32,7 @@ universe u v w u₁ v₁
 structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
-  commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
+  protected commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 #align alg_equiv AlgEquiv
 
 attribute [nolint docBlame] AlgEquiv.toRingEquiv
@@ -108,9 +108,9 @@ instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
     obtain ⟨⟨f,_⟩,_⟩ := f
     obtain ⟨⟨g,_⟩,_⟩ := g
     congr
-  map_add := map_add'
-  map_mul := map_mul'
-  commutes := commutes'
+  map_add f := f.map_add'
+  map_mul f := f.map_mul'
+  commutes f := f.commutes'
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
