@@ -16,12 +16,14 @@ noncomputable section
 namespace AddMonoidAlgebra
 
 @[simps]
-def ringEquivCongrLeft {R S G : Type _} [Semiring R] [Semiring S] [AddMonoid G] (f : R ≃+* S) :
-    AddMonoidAlgebra R G ≃+* AddMonoidAlgebra S G :=
-  { Finsupp.mapRange.addEquiv f.toAddEquiv with
+def ringHomCongrLeft {R S G : Type _} [Semiring R] [Semiring S] [AddZeroClass G] (f : R →+* S) :
+    AddMonoidAlgebra R G →+* AddMonoidAlgebra S G :=
+  { Finsupp.mapRange.addMonoidHom f.toAddMonoidHom with
     toFun := (Finsupp.mapRange f f.map_zero : AddMonoidAlgebra R G → AddMonoidAlgebra S G)
-    invFun :=
-      (Finsupp.mapRange f.symm f.symm.map_zero : AddMonoidAlgebra S G → AddMonoidAlgebra R G)
+    map_one' := by
+      classical
+      refine Finsupp.ext fun a => ?_
+      simp [one_def]
     map_mul' := fun x y => by
       classical
       -- Porting note: was `ext`
@@ -40,6 +42,12 @@ def ringEquivCongrLeft {R S G : Type _} [Semiring R] [Semiring S] [AddMonoid G] 
       all_goals
         intro; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul];
         simp only [ite_self, Finsupp.sum_zero] }
+
+-- TODO: times out with `AddZeroClass G`
+@[simps!]
+def ringEquivCongrLeft {R S G : Type _} [Semiring R] [Semiring S] [AddMonoid G] (f : R ≃+* S) :
+    AddMonoidAlgebra R G ≃+* AddMonoidAlgebra S G :=
+  .ofHomInv (ringHomCongrLeft f) (ringHomCongrLeft f.symm) (by ext <;> simp) (by ext <;> simp)
 
 @[simps]
 def algEquivCongrLeft {k R S G : Type _} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
