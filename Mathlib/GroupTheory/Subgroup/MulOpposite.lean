@@ -48,8 +48,8 @@ def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
   rfl
 
 /-- A subgroup `H` of `G` determines a subgroup `H.opposite` of the opposite group `Gᵐᵒᵖ`. -/
-@[to_additive (attr := simps) "An additive subgroup `H` of `G` determines an additive subgroup `H.opposite` of the
- opposite additive group `Gᵃᵒᵖ`."]
+@[to_additive (attr := simps) "An additive subgroup `H` of `G` determines an additive subgroup
+`H.opposite` of the opposite additive group `Gᵃᵒᵖ`."]
 def opEquiv : Subgroup G ≃ Subgroup Gᵐᵒᵖ where
   toFun := op
   invFun := unop
