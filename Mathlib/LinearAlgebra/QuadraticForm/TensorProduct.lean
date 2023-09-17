@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 /-!
 # The quadratic form on a tensor product
@@ -17,9 +16,9 @@ import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 -/
 
-universe uR uA uM₁ uM₂ uM₃
+universe uR uA uM₁ uM₂
 
-variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂} {M₃ : Type uM₃}
+variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
 
 open TensorProduct
 
@@ -27,10 +26,10 @@ namespace QuadraticForm
 
 section CommRing
 variable [CommRing R] [CommRing A]
-variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [AddCommGroup M₁] [AddCommGroup M₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁]
 variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [IsScalarTower R A M₁]
-variable [Module R M₂] [Module R M₃] [Invertible (2 : R)]
+variable [Module R M₂] [Invertible (2 : R)]
 
 
 variable (R A) in
@@ -76,41 +75,6 @@ theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
     ←smul_tmul', map_nsmul, associated_tmul]
   rw [smul_comm (_ : A) (_ : ℕ), ← smul_assoc, two_smul _ (_ : A), invOf_two_add_invOf_two,
     one_smul]
-
-@[simp]
-theorem tmul_comp_tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
-    (Q₂.tmul Q₁).comp (TensorProduct.comm R M₁ M₂) = Q₁.tmul Q₂ := by
-  refine (QuadraticForm.associated_rightInverse R).injective ?_
-  apply BilinForm.toLin.injective
-  ext m₁ m₂ m₁' m₂'
-  dsimp [-associated_apply]
-  simp only [associated_tmul, QuadraticForm.associated_comp]
-  exact mul_comm _ _
-
-@[simp]
-theorem tmul_comp_tensorAssoc
-    (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃) :
-    (Q₁.tmul (Q₂.tmul Q₃)).comp (TensorProduct.assoc R M₁ M₂ M₃) = (Q₁.tmul Q₂).tmul Q₃ := by
-  refine (QuadraticForm.associated_rightInverse R).injective ?_
-  apply BilinForm.toLin.injective
-  ext m₁ m₂ m₁' m₂' m₁'' m₂''
-  dsimp [-associated_apply]
-  simp only [associated_tmul, QuadraticForm.associated_comp]
-  exact mul_assoc _ _ _
-
-/-- `TensorProduct.comm` preserves tensor products of quadratic forms. -/
-@[simps!]
-def tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
-    (Q₁.tmul Q₂).IsometryEquiv (Q₂.tmul Q₁) where
-  toLinearEquiv := TensorProduct.comm R M₁ M₂
-  map_app' x := FunLike.congr_fun (tmul_comp_tensorComm Q₁ Q₂) x
-
-/-- `TensorProduct.assoc` preserves tensor products of quadratic forms. -/
-@[simps!]
-def tensorAssoc (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃) :
-    ((Q₁.tmul Q₂).tmul Q₃).IsometryEquiv (Q₁.tmul (Q₂.tmul Q₃)) where
-  toLinearEquiv := TensorProduct.assoc R M₁ M₂ M₃
-  map_app' x := FunLike.congr_fun (tmul_comp_tensorAssoc Q₁ Q₂ Q₃) x
 
 variable (A) in
 /-- The base change of a quadratic form. -/
