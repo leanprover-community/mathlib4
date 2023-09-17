@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 /-!
 # Unique products and related notions
 
-A group `G` has *unique products* if for any two non-empty finite subsets `A, B ⊂ G`, there is an
+A group `G` has *unique products* if for any two non-empty finite subsets `A, B ⊆ G`, there is an
 element `g ∈ A * B` that can be written uniquely as a product of an element of `A` and an element
 of `B`.  We call the formalization this property `UniqueProds`.  Since the condition requires no
 property of the group operation, we define it for a Type simply satisfying `Mul`.  We also
@@ -71,7 +71,7 @@ theorem of_card_le_one (hA : A.Nonempty) (hB : B.Nonempty) (hA1 : A.card ≤ 1) 
     ∃ a ∈ A, ∃ b ∈ B, UniqueMul A B a b := by
   rw [Finset.card_le_one_iff] at hA1 hB1
   obtain ⟨a, ha⟩ := hA; obtain ⟨b, hb⟩ := hB
-  exact ⟨a, ha, b, hb, fun _ _ ha' hb' _ => ⟨hA1 ha' ha, hB1 hb' hb⟩⟩
+  exact ⟨a, ha, b, hb, fun _ _ ha' hb' _ ↦ ⟨hA1 ha' ha, hB1 hb' hb⟩⟩
 
 @[to_additive]
 theorem mt (h : UniqueMul A B a0 b0) :
@@ -118,9 +118,9 @@ theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
 open Finset in
 @[to_additive]
 theorem iff_card_le_one [DecidableEq G] (ha0 : a0 ∈ A) (hb0 : b0 ∈ B) :
-    UniqueMul A B a0 b0 ↔ ((A ×ˢ B).filter (fun p => p.1 * p.2 = a0 * b0)).card ≤ 1 := by
+    UniqueMul A B a0 b0 ↔ ((A ×ˢ B).filter (fun p ↦ p.1 * p.2 = a0 * b0)).card ≤ 1 := by
   simp_rw [card_le_one_iff, mem_filter, mem_product]
-  refine ⟨fun h p1 p2 ⟨⟨ha1, hb1⟩, he1⟩ ⟨⟨ha2, hb2⟩, he2⟩ => ?_, fun h a b ha hb he => ?_⟩
+  refine ⟨fun h p1 p2 ⟨⟨ha1, hb1⟩, he1⟩ ⟨⟨ha2, hb2⟩, he2⟩ ↦ ?_, fun h a b ha hb he ↦ ?_⟩
   · have h1 := h ha1 hb1 he1; have h2 := h ha2 hb2 he2
     ext; rw [h1.1, h2.1]; rw [h1.2, h2.2]
   · exact Prod.ext_iff.1 (@h (a, b) (a0, b0) ⟨⟨ha, hb⟩, he⟩ ⟨⟨ha0, hb0⟩, rfl⟩)
@@ -201,7 +201,7 @@ theorem of_mulOpposite
 @[to_additive]
 theorem to_mulOpposite (h : UniqueMul A B a0 b0) :
     UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) :=
-  of_mulOpposite (by simp_rw [map_map]; exact (mulHom_map_iff _ fun _ _ => by rfl).mpr h)
+  of_mulOpposite (by simp_rw [map_map]; exact (mulHom_map_iff _ fun _ _ ↦ by rfl).mpr h)
 
 @[to_additive]
 theorem iff_mulOpposite :
@@ -216,7 +216,7 @@ theorem of_image_filter [DecidableEq H]
     (f : G →ₙ* H) {A B : Finset G} {aG bG : G} {aH bH : H} (hae : f aG = aH) (hbe : f bG = bH)
     (huH : UniqueMul (A.image f) (B.image f) aH bH)
     (huG : UniqueMul (A.filter (f · = aH)) (B.filter (f · = bH)) aG bG) :
-    UniqueMul A B aG bG := fun a b ha hb he => by
+    UniqueMul A B aG bG := fun a b ha hb he ↦ by
   specialize huH (mem_image_of_mem _ ha) (mem_image_of_mem _ hb)
   rw [← map_mul, he, map_mul, hae, hbe] at huH
   refine huG ?_ ?_ he <;> rw [mem_filter]
@@ -310,15 +310,17 @@ variable (G : Type u) (H : Type v) [Mul G] [Mul H]
 
 private abbrev I : Bool → Type max u v := Bool.rec (ULift.{v} G) (ULift.{u} H)
 @[to_additive] private instance : ∀ b, Mul (I G H b) := Bool.rec ULift.mul ULift.mul
+@[to_additive] private instance : Mul (∀ b, I G H b) := inferInstance
 @[to_additive] private def Prod.upMulHom : G × H →ₙ* ∀ b, I G H b :=
-  ⟨fun x => Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y => by ext b; cases b <;> rfl⟩
-@[to_additive] private def downMulHom : ULift G →ₙ* G := ⟨fun x => ULift.down x, fun _ _ => rfl⟩
+  ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_|_) <;> rfl⟩
+@[to_additive] private def downMulHom : ULift G →ₙ* G := ⟨ULift.down, fun _ _ ↦ rfl⟩
 
 variable {G H}
 
 namespace UniqueProds
 
 open Finset
+
 @[to_additive]
 theorem mulHom_image_of_injective (f : H →ₙ* G) (hf : Function.Injective f) (uG : UniqueProds G) :
     UniqueProds H where
@@ -369,7 +371,7 @@ open UniqueMul in
     exact ⟨a0, ha0.1, b0, hb0.1, of_image_filter (Pi.evalMulHom G i) ha0.2 hb0.2 hi hu⟩
 
 open ULift in
-instance [UniqueProds G] [UniqueProds H] : UniqueProds (G × H) := by
+@[to_additive] instance [UniqueProds G] [UniqueProds H] : UniqueProds (G × H) := by
   have : ∀ b, UniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact mulHom_image_of_injective (downMulHom H) down_injective ‹_›
   · refine mulHom_image_of_injective (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
@@ -391,6 +393,7 @@ instance {ι G} [AddZeroClass G] [UniqueSums G] : UniqueSums (ι →₀ G) :=
 namespace TwoUniqueProds
 
 open Finset
+
 @[to_additive]
 theorem mulHom_image_of_injective (f : H →ₙ* G) (hf : Function.Injective f)
     (uG : TwoUniqueProds G) : TwoUniqueProds H where
@@ -411,7 +414,6 @@ theorem mulHom_image_of_injective (f : H →ₙ* G) (hf : Function.Injective f)
 theorem mulHom_image_iff (f : G ≃* H) : TwoUniqueProds G ↔ TwoUniqueProds H :=
 ⟨mulHom_image_of_injective f.symm f.symm.injective, mulHom_image_of_injective f f.injective⟩
 
-open Finset in
 @[to_additive] instance {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUniqueProds (G i)] :
     TwoUniqueProds (∀ i, G i) where
   uniqueMul_of_one_lt_card {A} := by
@@ -442,15 +444,15 @@ open Finset in
       exacts [ihB _ (hc.2 _), ihA _ ((A.filter_subset _).ssubset_of_ne hA)]
 
 open ULift in
-instance [TwoUniqueProds G] [TwoUniqueProds H] : TwoUniqueProds (G × H) := by
+@[to_additive] instance [TwoUniqueProds G] [TwoUniqueProds H] : TwoUniqueProds (G × H) := by
   have : ∀ b, TwoUniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact mulHom_image_of_injective (downMulHom H) down_injective ‹_›
-  · refine mulHom_image_of_injective (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
+  · refine mulHom_image_of_injective (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)
       (instTwoUniqueProdsForAllInstMul <| I G H) <;> apply up_injective
     exacts [congr_fun he false, congr_fun he true]
   · exact mulHom_image_of_injective (downMulHom G) down_injective ‹_›
 
-open Finset MulOpposite in
+open MulOpposite in
 @[to_additive]
 theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
   uniqueMul_of_one_lt_card hc := by
@@ -468,7 +470,6 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
 @[to_additive] instance [h : TwoUniqueProds G] : TwoUniqueProds Gᵐᵒᵖ :=
   of_mulOpposite <| (mulHom_image_iff <| MulEquiv.opOp G).mp h
 
-open Finset in
 -- see Note [lower instance priority]
 /-- This instance asserts that if `G` has a right-cancellative multiplication, a linear order, and
   multiplication is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueProds`. -/
@@ -491,14 +492,13 @@ instance (priority := 100) of_Covariant_right [IsRightCancelMul G]
       · exact ⟨mul_right_cancel he, rfl⟩
       · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_le <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
     refine ⟨(a0, b0), mem_product.2 ⟨ha0, hb0⟩, (a1, b1), mem_product.2 ⟨ha1, hb1⟩,
-      fun he => ?_, this, fun a b ha hb he => ?_⟩
-    · rw [UniqueMul.iff_card_le_one ha0 hb0, filter_eq_self.mpr (fun p hp => ?_)] at this
-      · exact hc.not_le this
-      rw [mem_product] at hp
-      apply ((le_max' _ _ <| mul_mem_mul hp.1 hp.2).trans_eq he0.symm).antisymm
-      rw [Prod.mk.inj_iff] at he; rw [he.1, he.2, he1]
-      exact min'_le _ _ (mul_mem_mul hp.1 hp.2)
-    · dsimp only at he ⊢; obtain hl | rfl | hl := lt_trichotomy b b1
+      fun he ↦ ?_, this, fun a b ha hb he ↦ ?_⟩
+    · rw [Prod.mk.inj_iff] at he; rw [he.1, he.2, he1] at he0
+      obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_ne_of_one_lt_card hc (a0, b0)
+      rw [mem_product] at h2
+      refine (min'_lt_max' _ (mul_mem_mul ha0 hb0) (mul_mem_mul h2.1 h2.2) fun he ↦ hne ?_).ne he0
+      exact Prod.ext_iff.mpr (this h2.1 h2.2 he.symm)
+    · obtain hl | rfl | hl := lt_trichotomy b b1
       · exact ((he1 ▸ mul_lt_mul_left' hl a1).not_le <| min'_le _ _ <| mul_mem_mul ha1 hb).elim
       · exact ⟨mul_right_cancel he, rfl⟩
       · exact ((he1 ▸ he ▸ mul_lt_mul_left' hl a).not_le <| min'_le _ _ <| mul_mem_mul ha hb1).elim
@@ -515,7 +515,7 @@ instance (priority := 100) of_Covariant_left [IsLeftCancelMul G]
     TwoUniqueProds G :=
   let _ := LinearOrder.lift' (unop : Gᵐᵒᵖ → G) unop_injective
   let _ : CovariantClass Gᵐᵒᵖ Gᵐᵒᵖ (· * ·) (· < ·) :=
-  { elim := fun _ _ _ bc => mul_lt_mul_right' (α := G) bc (unop _) }
+  { elim := fun _ _ _ bc ↦ mul_lt_mul_right' (α := G) bc (unop _) }
   of_mulOpposite of_Covariant_right
 
 end TwoUniqueProds
