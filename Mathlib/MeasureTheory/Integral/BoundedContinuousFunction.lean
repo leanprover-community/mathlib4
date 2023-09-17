@@ -23,7 +23,7 @@ section
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
 
 theorem _root_.BoundedContinuousFunction.NNReal.coe_ennreal_comp_measurable (f : X →ᵇ ℝ≥0) :
-    Measurable fun x => (f x : ℝ≥0∞) :=
+    Measurable fun x ↦ (f x : ℝ≥0∞) :=
   measurable_coe_nnreal_ennreal.comp f.continuous.measurable
 #align bounded_continuous_function.nnreal.to_ennreal_comp_measurable BoundedContinuousFunction.NNReal.coe_ennreal_comp_measurable
 
@@ -34,14 +34,9 @@ variable (μ : Measure X) [IsFiniteMeasure μ]
 theorem lintegral_lt_top_of_boundedContinuous_to_nnreal (f : X →ᵇ ℝ≥0) :
     (∫⁻ x, f x ∂μ) < ∞ := by
   apply IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal
-  use nndist f 0
-  intro x
+  refine ⟨nndist f 0, fun x ↦ ?_⟩
   have key := BoundedContinuousFunction.Nnreal.upper_bound f x
-  rw [ENNReal.coe_le_coe]
-  have eq : nndist f 0 = ⟨dist f 0, dist_nonneg⟩ := by
-    ext
-    simp only [Real.coe_toNNReal', max_eq_left_iff, NNReal.coe_mk, coe_nndist]
-  rwa [eq] at key
+  rwa [ENNReal.coe_le_coe]
 #align measure_theory.lintegral_lt_top_of_bounded_continuous_to_nnreal MeasureTheory.lintegral_lt_top_of_boundedContinuous_to_nnreal
 
 theorem FiniteMeasure.integrable_of_boundedContinuous_to_nnreal (f : X →ᵇ ℝ≥0) :
@@ -54,13 +49,10 @@ theorem FiniteMeasure.integrable_of_boundedContinuous_to_nnreal (f : X →ᵇ �
 theorem FiniteMeasure.integrable_of_boundedContinuous_to_real (f : X →ᵇ ℝ) :
     Integrable (⇑f) μ := by
   refine' ⟨f.continuous.measurable.aestronglyMeasurable, _⟩
-  have aux : ((↑) : ℝ≥0 → ℝ) ∘ ⇑f.nnnorm = fun x => ‖f x‖ := by
-    ext X
-    simp only [Function.comp_apply, BoundedContinuousFunction.nnnorm_coeFn_eq, coe_nnnorm]
   apply (hasFiniteIntegral_iff_norm f).mpr
   rw [← ofReal_integral_eq_lintegral_ofReal]
   · exact ENNReal.ofReal_lt_top
-  · exact aux ▸ integrable_of_boundedContinuous_to_nnreal μ f.nnnorm
+  · exact integrable_of_boundedContinuous_to_nnreal μ f.nnnorm
   · exact eventually_of_forall fun X => norm_nonneg (f X)
 #align measure_theory.finite_measure.integrable_of_bounded_continuous_to_real MeasureTheory.FiniteMeasure.integrable_of_boundedContinuous_to_real
 
@@ -81,8 +73,7 @@ theorem _root_.BoundedContinuousFunction.NNReal.toReal_lintegral_eq_integral (f 
   rw [integral_eq_lintegral_of_nonneg_ae _ (by simpa [Function.comp_apply] using
         (NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable)]
   · simp only [ENNReal.ofReal_coe_nnreal]
-  · apply eventually_of_forall
-    simp only [Pi.zero_apply, NNReal.zero_le_coe, imp_true_iff]
+  · exact eventually_of_forall (by simp only [Pi.zero_apply, NNReal.zero_le_coe, imp_true_iff])
 #align bounded_continuous_function.nnreal.to_real_lintegral_eq_integral BoundedContinuousFunction.NNReal.toReal_lintegral_eq_integral
 
 end MeasureTheory
@@ -92,45 +83,60 @@ end
 section
 
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
+variable (μ : Measure X)
 variable {E : Type*} [NormedAddCommGroup E] [TopologicalSpace.SecondCountableTopology E]
 variable [MeasurableSpace E] [BorelSpace E]
+
+lemma BoundedContinuousFunction.lintegral_nnnorm_le [IsFiniteMeasure μ] (f : X →ᵇ E) :
+    ∫⁻ x, ‖f x‖₊ ∂μ ≤ ‖f‖₊ * (μ Set.univ) := by
+  calc  ∫⁻ x, ‖f x‖₊ ∂μ
+    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ         := ?_
+    _ = ‖f‖₊ * (μ Set.univ)   := by rw [lintegral_const]
+  · apply lintegral_mono -- NOTE: Would be great to have `gcongr` working for these.
+    exact fun x ↦ ENNReal.coe_le_coe.mpr (nnnorm_coe_le_nnnorm f x)
 
 lemma BoundedContinuousFunction.integrable (μ : Measure X) [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable f μ := by
   refine ⟨f.continuous.measurable.aestronglyMeasurable, (hasFiniteIntegral_def _ _).mp ?_⟩
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
-    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ                       := ?_
-    _ = ‖f‖₊ * (μ Set.univ)                 := by rw [lintegral_const]
-    _ < ∞                                   := ENNReal.mul_lt_top
-                                                ENNReal.coe_ne_top (measure_ne_top μ Set.univ)
-  · apply lintegral_mono -- NOTE: Would be great to have `gcongr` working for these.
-    exact fun x ↦ ENNReal.coe_le_coe.mpr (nnnorm_coe_le_nnnorm f x)
+    _ ≤ ‖f‖₊ * (μ Set.univ)   := f.lintegral_nnnorm_le μ
+    _ < ∞                     := ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_ne_top μ Set.univ)
 
 variable [NormedSpace ℝ E]
 
-lemma BoundedContinuousFunction.norm_integral_le_mul_norm_of_isFiniteMeasure
-    (μ : Measure X) [IsFiniteMeasure μ] (f : X →ᵇ E) :
+lemma BoundedContinuousFunction.norm_integral_le_mul_norm'
+    [IsFiniteMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, (f x) ∂μ‖ ≤ ENNReal.toReal (μ Set.univ) * ‖f‖ := by
   calc  ‖∫ x, (f x) ∂μ‖
     _ ≤ ∫ x, ‖f x‖ ∂μ                       := by exact norm_integral_le_integral_norm _
     _ ≤ ∫ _, ‖f‖ ∂μ                         := ?_
     _ = ENNReal.toReal (μ Set.univ) • ‖f‖   := by rw [integral_const]
-  · apply integral_mono _ (integrable_const ‖f‖) (fun x ↦ f.norm_coe_le_norm x)
+  · apply integral_mono _ (integrable_const ‖f‖) (fun x ↦ f.norm_coe_le_norm x) -- NOTE: `gcongr`?
     exact (integrable_norm_iff f.continuous.measurable.aestronglyMeasurable).mpr (f.integrable μ)
 
-lemma BoundedContinuousFunction.norm_integral_le_norm_of_isProbabilityMeasure
-    (μ : Measure X) [IsProbabilityMeasure μ] (f : X →ᵇ E) :
+lemma BoundedContinuousFunction.norm_integral_le_mul_norm
+    [IsFiniteMeasure μ] (f : X →ᵇ E) :
+    ‖∫ x, (f x) ∂μ‖ ≤ ENNReal.toReal (μ Set.univ) * ‖f‖ := by
+  calc  ‖∫ x, (f x) ∂μ‖
+    _ ≤ ∫ x, ‖f x‖ ∂μ                       := by exact norm_integral_le_integral_norm _
+    _ ≤ ∫ _, ‖f‖ ∂μ                         := ?_
+    _ = ENNReal.toReal (μ Set.univ) • ‖f‖   := by rw [integral_const]
+  · apply integral_mono _ (integrable_const ‖f‖) (fun x ↦ f.norm_coe_le_norm x) -- NOTE: `gcongr`?
+    exact (integrable_norm_iff f.continuous.measurable.aestronglyMeasurable).mpr (f.integrable μ)
+
+lemma BoundedContinuousFunction.norm_integral_le_norm
+    [IsProbabilityMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, (f x) ∂μ‖ ≤ ‖f‖ := by
-  convert f.norm_integral_le_mul_norm_of_isFiniteMeasure μ
+  convert f.norm_integral_le_mul_norm μ
   simp only [measure_univ, ENNReal.one_toReal, one_mul]
 
-lemma bounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure
+lemma bounded_range_integral_boundedContinuousFunction
     {ι : Type*} (μs : ι → Measure X) [∀ i, IsProbabilityMeasure (μs i)] (f : X →ᵇ E) :
     Metric.Bounded (Set.range (fun i ↦ ∫ x, (f x) ∂ (μs i))) := by
   apply bounded_iff_forall_norm_le.mpr ⟨‖f‖, fun v hv ↦ ?_⟩
   obtain ⟨i, hi⟩ := hv
   rw [← hi]
-  apply f.norm_integral_le_norm_of_isProbabilityMeasure (μs i)
+  apply f.norm_integral_le_norm (μs i)
 
 end
 
