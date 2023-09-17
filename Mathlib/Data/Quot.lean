@@ -299,15 +299,19 @@ theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
 theorem Quotient.eq [r : Setoid α] {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=
   ⟨Quotient.exact, Quotient.sound⟩
 
-theorem forall_quotient_iff {α : Type*} [r : Setoid α] {p : Quotient r → Prop} :
-    (∀ a : Quotient r, p a) ↔ ∀ a : α, p ⟦a⟧ :=
+lemma Quotient.forall {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
+    (∀ a, p a) ↔ ∀ a : α, p ⟦a⟧ :=
   ⟨fun h _ ↦ h _, fun h a ↦ a.induction_on h⟩
-#align forall_quotient_iff forall_quotient_iff
+#align forall_quotient_iff Quotient.forall
+
+lemma Quotient.exists {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
+    (∃ a, p a) ↔ ∃ a : α, p ⟦a⟧ :=
+  ⟨fun ⟨q, hq⟩ ↦ q.exists_rep.imp fun a (ha : ⟦a⟧ = q) ↦ ha ▸ hq, fun ⟨a, ha⟩ ↦ ⟨⟦a⟧, ha⟩⟩
 
 @[simp]
 theorem Quotient.lift_mk [s : Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
     Quotient.lift f h (Quotient.mk s x) = f x :=
-rfl
+  rfl
 #align quotient.lift_mk Quotient.lift_mk
 
 @[simp]
