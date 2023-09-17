@@ -340,34 +340,48 @@ local prefix:max "#" => Fintype.card
 
 /--
   The function that is central in the inductive proof of the Sobolev inequality.
--/
-def rhsAux (p : ℝ) (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) (x : ∀ i, π i) : ℝ≥0∞ :=
-  (∫⋯∫_s, f ∂μ) x ^ (1 - (sᶜ.card - 1 : ℝ) * p) *
-    ∏ i in sᶜ, (∫⋯∫_insert i s, f ∂μ) x ^ p
 
-lemma rhsAux_empty (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
-    rhsAux μ p f ∅ x = f x ^ (1 - (#ι - 1 : ℝ) * p) * ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ p := by
-  simp [rhsAux, marginal_singleton, card_univ]
+An operation on a function `F (∀ i, π i) → ℝ≥0∞` which is implicitly assumed to vary only in the
+variables whose indices are in `sᶜ`. -/
+def T (p : ℝ) (F : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) : (∀ i, π i) → ℝ≥0∞ :=
+  ∫⋯∫_sᶜ, F ^ (1 - (sᶜ.card - 1 : ℝ) * p) * ∏ i in sᶜ, (∫⋯∫_{i}, F ∂μ) ^ p ∂μ
 
-lemma rhsAux_univ (p : ℝ) (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
-   rhsAux μ p f univ x = (∫⁻ x, f x ∂(Measure.pi μ)) ^ (1 + p) := by
-  simp [rhsAux, marginal_univ, Finset.card_univ]
+lemma T_empty (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
+    T μ p f ∅ x
+    = ∫⁻ (x : ∀ i, π i), (f x ^ (1 - (#ι - 1 : ℝ) * p) * ∏ i : ι, (∫⁻ t : π i, f (update x i t) ∂(μ i)) ^ p) ∂(Measure.pi μ) := by
+  simp [T, marginal_univ, marginal_singleton, card_univ]
 
-lemma Measurable.rhsAux (p : ℝ) (hf : Measurable f) : Measurable (rhsAux μ p f s) := by
-  refine ((hf.marginal μ).pow_const _).mul ?_
-  exact Finset.measurable_prod _ fun i _ ↦ ((hf.marginal μ).pow_const _)
+lemma T_univ (p : ℝ) (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
+    T μ p f univ x = f x ^ (1 + p) := by
+  simp [T, marginal_univ, Finset.card_univ]
 
+lemma Measurable.T (p : ℝ) (hf : Measurable f) : Measurable (T μ p f s) := sorry
+  -- refine ((hf.marginal μ).pow_const _).mul ?_
+  -- exact Finset.measurable_prod _ fun i _ ↦ ((hf.marginal μ).pow_const _)
+
+set_option maxHeartbeats 500000 in
 /-- The main inductive step -/
-theorem marginal_singleton_rhsAux_le {p : ℝ} (hp1 : 0 ≤ p) (f : (∀ i, π i) → ℝ≥0∞)
+theorem marginal_singleton_T_le {p : ℝ} (hp1 : 0 ≤ p) (f : (∀ i, π i) → ℝ≥0∞)
     (hf : Measurable f) (s : Finset ι) (hp2 : (sᶜ.card - 1 : ℝ) * p ≤ 1) (i : ι) (hi : i ∉ s) :
-    ∫⋯∫_sᶜ, rhsAux μ p f s ∂μ ≤ ∫⋯∫_(insert i s)ᶜ, rhsAux μ p f (insert i s) ∂μ := by
+    T μ p (∫⋯∫_s, f ∂μ) s ≤ T μ p (∫⋯∫_(insert i s), f ∂μ) (insert i s) := by
   have hi' : i ∉ (insert i s)ᶜ := not_mem_compl.mpr <| mem_insert_self i s
-  calc ∫⋯∫_sᶜ, rhsAux μ p f s ∂μ
-      = ∫⋯∫_insert i (insert i s)ᶜ, rhsAux μ p f s ∂μ := by simp_rw [← insert_compl_insert hi]
-    _ = ∫⋯∫_(insert i s)ᶜ, (fun x ↦ ∫⁻ xᵢ, rhsAux μ p f s (Function.update x i xᵢ) ∂μ i) ∂μ :=
-        marginal_insert' _ (hf.rhsAux μ p) hi'
-    _ ≤ ∫⋯∫_(insert i s)ᶜ, rhsAux μ p f (insert i s) ∂μ := marginal_mono (fun x ↦ ?_)
-  -- it suffices to compare the `i`-integral of `rhsAux s` with `rhsAux (insert i s)`
+  calc T μ p (∫⋯∫_s, f ∂μ) s
+      = ∫⋯∫_insert i (insert i s)ᶜ, (∫⋯∫_s, f ∂μ) ^ (1 - (sᶜ.card - 1 : ℝ) * p) * ∏ j in sᶜ, (∫⋯∫_(insert j s), f ∂μ) ^ p ∂μ := by
+          simp_rw [T, insert_compl_insert hi]
+          congr! 4 with j hj
+          rw [← marginal_union _ f hf]
+          · rfl
+          rw [Finset.disjoint_singleton_left]
+          rwa [Finset.mem_compl] at hj
+    _ = ∫⋯∫_(insert i s)ᶜ, (fun x ↦ ∫⁻ (t : π i), ((∫⋯∫_s, f ∂μ) (update x i t) ^ (1 - (sᶜ.card - 1 : ℝ) * p) * ∏ j in sᶜ, (∫⋯∫_(insert j s), f ∂μ) (update x i t) ^ p)  ∂ (μ i)) ∂μ := by
+          rw [marginal_insert' _ _ hi']
+          · congr! with x t
+            simp only [Pi.mul_apply, Pi.pow_apply, prod_apply]
+          · sorry -- measurability
+    _ ≤ T μ p (∫⋯∫_(insert i s), f ∂μ) (insert i s) := marginal_mono (fun x ↦ ?_)
+  -- it suffices to compare the `i`-integral of `T s` with `T (insert i s)`
+  -- dsimp only
+  simp only [Pi.mul_apply, Pi.pow_apply, prod_apply]
   have hf' : ∀ {s' : Finset ι}, Measurable fun t ↦ (∫⋯∫_s', f ∂μ) (update x i t) :=
     fun {_} ↦ hf.marginal μ |>.comp <| measurable_update _
   have hk₀ : sᶜ.card = (insert i s)ᶜ.card + 1
@@ -437,13 +451,21 @@ theorem marginal_singleton_rhsAux_le {p : ℝ} (hp1 : 0 ≤ p) (f : (∀ i, π i
               simp_rw [Insert.comm]
               push_cast
               ring_nf
+    _ ≤ F (insert i s) x ^ (1 - ((insert i s)ᶜ.card - 1 : ℝ) * p) *
+          ∏ j in (insert i s)ᶜ, (∫⋯∫_{j}, F (insert i s) ∂μ) x ^ p := by
+              congr! 3 with j hj
+              dsimp only
+              rw [← marginal_union μ f hf]
+              · rfl
+              rw [Finset.disjoint_singleton_left]
+              rwa [Finset.mem_compl] at hj
 
-theorem marginal_rhsAux_monotone {p : ℝ} (hp1 : 0 ≤ p) (hp2 : (#ι - 1 : ℝ) * p ≤ 1)
+theorem marginal_T_monotone {p : ℝ} (hp1 : 0 ≤ p) (hp2 : (#ι - 1 : ℝ) * p ≤ 1)
     (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) :
-    Monotone (fun s ↦ ∫⋯∫_sᶜ, rhsAux μ p f s ∂μ) := by
+    Monotone (fun s ↦ T μ p (∫⋯∫_s, f ∂μ) s) := by
   rw [Finset.monotone_iff']
   intro s i hi
-  refine marginal_singleton_rhsAux_le μ hp1 f hf s (le_trans ?_ hp2) i hi
+  refine marginal_singleton_T_le μ hp1 f hf s (le_trans ?_ hp2) i hi
   gcongr
   exact card_le_univ sᶜ
 
@@ -455,7 +477,7 @@ theorem lintegral_prod_lintegral_pow_le_aux {p : ℝ} (hp1 : 0 ≤ p)
   · simp_rw [lintegral_of_isEmpty]; refine' zero_le _
   inhabit ∀ i, π i
   have H : (∅ : Finset ι) ≤ Finset.univ := Finset.empty_subset _
-  simpa [marginal_univ, rhsAux_empty, rhsAux_univ] using marginal_rhsAux_monotone μ hp1 hp2 f hf H default
+  simpa [marginal_univ, T_empty, T_univ] using marginal_T_monotone μ hp1 hp2 f hf H default
 
 theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] (hf : Measurable f) :
     ∫⁻ x, ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂Measure.pi μ ≤
