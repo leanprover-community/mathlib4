@@ -418,15 +418,10 @@ def Quotient.proj {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)]
     Quotient (S i) :=
   q.map (· i) (fun _ _ h ↦ by exact h i)
 
-private unsafe def Quotient.unsafeChoice {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)] :
-    (∀ i, Quotient (S i)) → @Quotient (∀ i, α i) (by infer_instance) :=
-  unsafeCast
-
 /-- Given a function `f : ∀ i, Quotient (S i)`, returns the class of functions `∀ i, α i` sending
 each `i` to an element of the class `f i`.
 
 For the computable version for quotients indexed by a finite type, see `Quotient.finChoice`. -/
--- We cannot make it `@[implemented_by Quotient.unsafeChoice]`. See https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/quotients.20and.20products.20again/near/187614136
 noncomputable def Quotient.choice {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)]
     (f : ∀ i, Quotient (S i)) :
     @Quotient (∀ i, α i) (by infer_instance) :=
