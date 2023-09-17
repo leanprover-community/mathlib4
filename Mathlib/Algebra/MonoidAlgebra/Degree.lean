@@ -286,29 +286,6 @@ theorem leadingCoeff_single (hD : D.Injective) (a : A) (r : R) :
   · simp [hr]
   · rw [if_neg hr, Function.leftInverse_invFun hD, single_apply, if_pos rfl]
 
-section
-
-variable [CovariantClass B B (· + ·) (· ≤ ·)] [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)]
-  {D : AddHom A B}
-
-theorem supDegree_mul_le {f g : AddMonoidAlgebra R A} :
-    (f * g).supDegree D ≤ f.supDegree D + g.supDegree D :=
-  sup_support_mul_le (fun {_ _} => (map_add D _ _).le) f g
-
-theorem supDegree_prod_le {R A B} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
-    [SemilatticeSup B] [OrderBot B]
-    [CovariantClass B B (· + ·) (· ≤ ·)] [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)]
-    {D : A →+ B} {ι} {s : Finset ι} {f : ι → AddMonoidAlgebra R A} :
-    (∏ i in s, f i).supDegree D ≤ ∑ i in s, (f i).supDegree D := by
-  refine' s.induction _ _
-  · rw [Finset.prod_empty, Finset.sum_empty, one_def, supDegree_single]
-    split_ifs; exacts [bot_le, D.map_zero.le]
-  · intro i s his ih
-    rw [Finset.prod_insert his, Finset.sum_insert his]
-    exact (supDegree_mul_le (D := D.toAddHom)).trans (add_le_add_left ih _)
-
-end
-
 variable {p q : AddMonoidAlgebra R A}
 
 theorem supDegree_zero : (0 : AddMonoidAlgebra R A).supDegree D = ⊥ := by simp [supDegree]
@@ -340,8 +317,27 @@ theorem supDegree_eq_of_max {b : B} (hb : b ∈ Set.range D) (hmem : D.invFun b 
 lemma apply_eq_zero_of_not_le_supDegree {a : A} (hlt : ¬ D a ≤ p.supDegree D) : p a = 0 := by
   contrapose! hlt; exact Finset.le_sup (Finsupp.mem_support_iff.2 hlt)
 
-variable [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
 variable (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
+
+theorem supDegree_mul_le [CovariantClass B B (· + ·) (· ≤ ·)]
+    [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)] :
+    (p * q).supDegree D ≤ p.supDegree D + q.supDegree D :=
+  sup_support_mul_le (fun {_ _} => (hadd _ _).le) p q
+
+theorem supDegree_prod_le {R A B} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
+    [SemilatticeSup B] [OrderBot B]
+    [CovariantClass B B (· + ·) (· ≤ ·)] [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)]
+    {D : A → B} (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
+    {ι} {s : Finset ι} {f : ι → AddMonoidAlgebra R A} :
+    (∏ i in s, f i).supDegree D ≤ ∑ i in s, (f i).supDegree D := by
+  refine' s.induction _ _
+  · rw [Finset.prod_empty, Finset.sum_empty, one_def, supDegree_single]
+    split_ifs; exacts [bot_le, D.map_zero.le]
+  · intro i s his ih
+    rw [Finset.prod_insert his, Finset.sum_insert his]
+    exact (supDegree_mul_le hadd).trans (add_le_add_left ih _)
+
+variable [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
 
 lemma apply_add_of_supDegree_eq (hD : D.Injective) {ap aq : A}
     (hp : p.supDegree D = D ap) (hq : q.supDegree D = D aq) :
