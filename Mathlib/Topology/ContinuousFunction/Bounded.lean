@@ -819,10 +819,10 @@ theorem norm_coe_le_norm (x : α) : ‖f x‖ ≤ ‖f‖ :=
     _ ≤ ‖f‖ := dist_coe_le_dist _
 #align bounded_continuous_function.norm_coe_le_norm BoundedContinuousFunction.norm_coe_le_norm
 
-lemma BoundedContinuousFunction.neg_norm_le (f : α →ᵇ ℝ) (x : α) :
+lemma neg_norm_le_apply (f : α →ᵇ ℝ) (x : α) :
     -‖f‖ ≤ f x := (abs_le.mp (norm_coe_le_norm f x)).1
 
-lemma BoundedContinuousFunction.le_norm (f : α →ᵇ ℝ) (x : α) :
+lemma apply_le_norm (f : α →ᵇ ℝ) (x : α) :
     f x ≤ ‖f‖ := (abs_le.mp (norm_coe_le_norm f x)).2
 
 theorem dist_le_two_norm' {f : γ → β} {C : ℝ} (hC : ∀ x, ‖f x‖ ≤ C) (x y : γ) :
@@ -1633,14 +1633,14 @@ section
 
 variable {α : Type*} [TopologicalSpace α]
 
-lemma BoundedContinuousFunction.add_norm_nonneg (f : α →ᵇ ℝ) :
-    0 ≤ f + BoundedContinuousFunction.const _ ‖f‖ := by
+lemma add_norm_nonneg (f : α →ᵇ ℝ) :
+    0 ≤ f + const _ ‖f‖ := by
   intro x
   dsimp
   linarith [(abs_le.mp (norm_coe_le_norm f x)).1]
 
-lemma BoundedContinuousFunction.norm_sub_nonneg (f : α →ᵇ ℝ) :
-    0 ≤ BoundedContinuousFunction.const _ ‖f‖ - f := by
+lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
+    0 ≤ const _ ‖f‖ - f := by
   intro x
   dsimp
   linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
