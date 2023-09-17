@@ -275,7 +275,6 @@ end DistribMulAction
 -- to find.
 instance module' [Semiring R₁] [Module R₁ R] [SMulCommClass R₁ R R] : Module R₁ (⨂[R] i, s i) :=
   { PiTensorProduct.distribMulAction' with
-    smul := (· • ·)
     add_smul := fun r r' x ↦
       PiTensorProduct.induction_on' x
         (fun {r f} ↦ by simp_rw [smul_tprodCoeff', add_smul, add_tprodCoeff'])
@@ -309,9 +308,8 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
 variable {R}
 
 /-- pure tensor in tensor product over some index type -/
--- Porting note: use `FunLike.coe` as an explicit coercion to help `notation3` pretty print,
--- was just `tprod R f`.
-notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => FunLike.coe (tprod R) f) => r
+-- TODO(kmill) The generated delaborator never applies; figure out why this doesn't pretty print.
+notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
 --Porting note: new theorem
 theorem tprod_eq_tprodCoeff_one :

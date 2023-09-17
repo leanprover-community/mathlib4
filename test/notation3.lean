@@ -40,6 +40,11 @@ notation3 "∀ᶠ' " (...) ", "
 /-- info: fun f ↦ ∀ᶠ' x ∈ f, 1 < x : Filter ℕ → Prop -/
 #guard_msgs in #check fun (f : Filter Nat) => ∀ᶠ' x ∈ f, 1 < x
 
+-- Testing lambda expressions:
+notation3 "∀ᶠ' " f ", " p => Filter.eventually (fun x => (p : _ → _) x) f
+/-- info: ∀ᶠ' Filter.atTop, fun x ↦ x < 3 : Prop -/
+#guard_msgs in #check ∀ᶠ' Filter.atTop, fun x => x < 3
+
 def foobar (p : α → Prop) (f : Prop) := ∀ x, p x = f
 
 notation3 "∀ᶠᶠ " (...) " in " f ": "
@@ -66,13 +71,21 @@ notation3 "func! " (...) ", " r:(scoped p => func p) => r
 #guard_msgs in #check (func! (x : Nat → Nat), x) (· * 2)
 
 structure MyUnit where
-notation3 "~{" (x"; "* => foldl (a b => Prod.mk a b) MyUnit) "}~" => x
+notation3 "~{" (x"; "* => foldl (a b => (a, b)) MyUnit) "}~" => x
 /-- info: ~{1; true; ~{2}~}~ : ((Type × ℕ) × Bool) × Type × ℕ -/
 #guard_msgs in #check ~{1; true; ~{2}~}~
 /-- info: ~{}~ : Type -/
 #guard_msgs in #check ~{}~
 
-notation3 "%[" (x", "* => foldr (a b => List.cons a b) List.nil) "]" => x
+structure MyUnit' where
+instance : OfNat MyUnit' (nat_lit 0) := ⟨{}⟩
+notation3 "MyUnit'0" => (0 : MyUnit')
+/-- info: MyUnit'0 : MyUnit' -/
+#guard_msgs in #check (0 : MyUnit')
+/-- info: 0 : ℕ -/
+#guard_msgs in #check 0
+
+notation3 "%[" (x", "* => foldr (a b => a :: b) []) "]" => x
 /-- info: %[1, 2, 3] : List ℕ -/
 #guard_msgs in #check %[1, 2, 3]
 
@@ -93,9 +106,9 @@ notation3 "*'[" x "] " (...) ", " v:(scoped c => bar' x <| foo' x c) => v
 /-- info: bar' 1 : ℕ → ℕ -/
 #guard_msgs in #check bar' 1
 
--- Currently does not pretty print due to pi type
-notation3 (prettyPrint := false) "MyPi " (...) ", " r:(scoped p => (x : _) → p x) => r
-/-- info: ∀ (x : ℕ), (fun x ↦ ∀ (x_1 : ℕ), (fun y ↦ x < y) x_1) x : Prop -/
+-- Need to give type ascription to `p` so that `p x` elaborates when making matcher
+notation3 "MyPi " (...) ", " r:(scoped p => (x : _) → (p : _ → _) x) => r
+/-- info: MyPi (x : ℕ) (y : ℕ), x < y : Prop -/
 #guard_msgs in #check MyPi (x : Nat) (y : Nat), x < y
 
 -- The notation parses fine, but the delaborator never succeeds, which is expected
@@ -103,6 +116,45 @@ def myId (x : α) := x
 notation3 "BAD " c "; " (x", "* => foldl (a b => b) c) " DAB" => myId x
 /-- info: myId 3 : ℕ -/
 #guard_msgs in #check BAD 1; 2, 3 DAB
+
+
+end
+section
+variable (x : Nat)
+local notation3 "y" => x + 1
+/-- info: y : ℕ -/
+#guard_msgs in #check y
+/-- info: y : ℕ -/
+#guard_msgs in #check x + 1
+end
+
+section
+variable (α : Type u) [Add α]
+local notation3 x " +α " y => (x + y : α)
+variable (x y : α)
+/-- info: x +α y : α -/
+#guard_msgs in #check x +α y
+/-- info: x +α y : α -/
+#guard_msgs in #check x + y
+/-- info: 1 + 2 : ℕ -/
+#guard_msgs in #check 1 + 2
+end
+
+def idStr : String → String := id
+
+/--
+error: application type mismatch
+  idStr Nat.zero
+argument
+  Nat.zero
+has type
+  ℕ : Type
+but is expected to have type
+  String : Type
+-/
+#guard_msgs in
+notation3 "error" => idStr Nat.zero
+
 
 inductive ExistsF {α : Sort u} (p : α → Prop) : Prop where
   | intro (w : α) (h : p w) : ExistsF p
@@ -184,5 +236,3 @@ variable (s : Finset Nat) (s' : Set Nat) [Fintype s']
 #guard_msgs in #check ∑ x ∈ s', x
 /-- info: ∑ (x : Fin 37), if x < 10 then ∑ (y : Fin 37), if y < 10 then ↑x + ↑y else 0 else 0 : ℕ -/
 #guard_msgs in #check ∑ (x y : Fin 37) < 10, x + y
-
-end

@@ -80,9 +80,9 @@ When you extend this structure, make sure to also extend `ZeroHomClass`.
 -/
 structure ZeroHom (M : Type*) (N : Type*) [Zero M] [Zero N] where
   /-- The underlying function -/
-  toFun : M → N
+  protected toFun : M → N
   /-- The proposition that the function preserves 0 -/
-  map_zero' : toFun 0 = 0
+  protected map_zero' : toFun 0 = 0
 #align zero_hom ZeroHom
 #align zero_hom.map_zero' ZeroHom.map_zero'
 
@@ -111,9 +111,9 @@ When you extend this structure, make sure to extend `AddHomClass`.
 -/
 structure AddHom (M : Type*) (N : Type*) [Add M] [Add N] where
   /-- The underlying function -/
-  toFun : M → N
+  protected toFun : M → N
   /-- The proposition that the function preserves addition -/
-  map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y
+  protected map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y
 #align add_hom AddHom
 
 /-- `AddHomClass F M N` states that `F` is a type of addition-preserving homomorphisms.
@@ -175,9 +175,9 @@ When you extend this structure, make sure to also extend `OneHomClass`.
 @[to_additive]
 structure OneHom (M : Type*) (N : Type*) [One M] [One N] where
   /-- The underlying function -/
-  toFun : M → N
+  protected toFun : M → N
   /-- The proposition that the function preserves 1 -/
-  map_one' : toFun 1 = 1
+  protected map_one' : toFun 1 = 1
 #align one_hom OneHom
 
 /-- `OneHomClass F M N` states that `F` is a type of one-preserving homomorphisms.
@@ -267,9 +267,9 @@ When you extend this structure, make sure to extend `MulHomClass`.
 @[to_additive]
 structure MulHom (M : Type*) (N : Type*) [Mul M] [Mul N] where
   /-- The underlying function -/
-  toFun : M → N
+  protected toFun : M → N
   /-- The proposition that the function preserves multiplication -/
-  map_mul' : ∀ x y, toFun (x * y) = toFun x * toFun y
+  protected map_mul' : ∀ x y, toFun (x * y) = toFun x * toFun y
 #align mul_hom MulHom
 
 /-- `M →ₙ* N` denotes the type of multiplication-preserving maps from `M` to `N`. -/
