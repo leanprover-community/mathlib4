@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 /-!
 # The quadratic form on a tensor product
@@ -75,6 +76,25 @@ theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
     ←smul_tmul', map_nsmul, associated_tmul]
   rw [smul_comm (_ : A) (_ : ℕ), ← smul_assoc, two_smul _ (_ : A), invOf_two_add_invOf_two,
     one_smul]
+
+theorem tmul_comp_tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
+    (Q₂.tmul Q₁).comp (TensorProduct.comm R M₁ M₂) = (Q₁.tmul Q₂) := by
+  refine QuadraticForm.polarBilin_injective (isUnit_of_invertible _) ?_
+  apply BilinForm.toLin.injective
+  ext m₁ m₂ m₁' m₂'
+  dsimp [-polarBilin_apply]
+  simp only [polarBilin_tmul, QuadraticForm.polarBilin_comp]
+  dsimp [QuadraticForm.comp]
+  sorry
+
+def tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
+    (Q₁.tmul Q₂).IsometryEquiv (Q₂.tmul Q₁) where
+  toLinearEquiv := TensorProduct.comm R M₁ M₂
+  map_app' x := by
+    have := FunLike.congr_fun (tmul_comp_tensorComm Q₁ Q₂) x
+    sorry
+
+#exit
 
 variable (A) in
 /-- The base change of a quadratic form. -/
