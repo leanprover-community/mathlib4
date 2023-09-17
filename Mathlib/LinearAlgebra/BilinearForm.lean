@@ -528,6 +528,11 @@ theorem BilinForm.toLin_symm :
 #align bilin_form.to_lin_symm BilinForm.toLin_symm
 
 @[simp, norm_cast]
+theorem LinearMap.toBilin_apply (f : M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) (x y : M₂) :
+    toBilin f x y = f x y :=
+  rfl
+
+@[simp, norm_cast]
 theorem BilinForm.toLin_apply (x : M₂) : ⇑(BilinForm.toLin B₂ x) = B₂ x :=
   rfl
 #align bilin_form.to_lin_apply BilinForm.toLin_apply
