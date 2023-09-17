@@ -367,8 +367,9 @@ theorem marginal_singleton_T_le {p : ℝ} (hp1 : 0 ≤ p) (F : (∀ i, π i) →
           rw [marginal_insert' _ _ hi']
           · congr! with x t
             simp only [Pi.mul_apply, Pi.pow_apply, prod_apply]
-          · -- exact (hF.pow_const _).mul <| Finset.measurable_prod _ fun _ _ ↦ hF.marginal μ |>.pow_const _
-            sorry -- measurability, needs adjusting
+          · change Measurable (fun x ↦ _)
+            simp only [Pi.mul_apply, Pi.pow_apply, prod_apply]
+            exact (hF.pow_const _).mul <| Finset.measurable_prod _ fun _ _ ↦ hF.marginal μ |>.pow_const _
     _ ≤ T μ p (∫⋯∫_{i}, F ∂μ) (insert i s) := marginal_mono (fun x ↦ ?_)
   simp only [Pi.mul_apply, Pi.pow_apply, prod_apply]
   have hF₁ : ∀ {j : ι}, Measurable fun t ↦ (∫⋯∫_{j}, F ∂μ) (update x i t) :=
