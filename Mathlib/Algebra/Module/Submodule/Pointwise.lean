@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.RingTheory.Ideal.Basic
 
 #align_import algebra.module.submodule.pointwise from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
@@ -480,7 +481,22 @@ lemma sup_set_smul_submodule_eq_sup (s t : Set R) :
       (set_smul_submodule_mono_left _ le_sup_left)
       (set_smul_submodule_mono_left _ le_sup_right))
 
-
+lemma span_smul_submodule {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module R' M']
+    (s : Set R') (N : Submodule R' M') :
+    (Ideal.span s : Set R') • N = s • N :=
+  set_smul_submodule_eq_of_le _ _ _
+    (by rintro r n hr hn
+        induction' hr using Submodule.span_induction' with r h _ _ _ _ ihr ihs r r' hr hr'
+        · exact mem_set_smul_submodule_of_mem_mem _ _ h hn
+        · rw [zero_smul]; exact Submodule.zero_mem _
+        · rw [add_smul]; exact Submodule.add_mem _ ihr ihs
+        · rw [mem_span_set] at hr
+          obtain ⟨c, hc, rfl⟩ := hr
+          rw [Finsupp.sum, Finset.smul_sum, Finset.sum_smul]
+          refine Submodule.sum_mem _ fun i hi => ?_
+          rw [← mul_smul, smul_eq_mul, mul_comm, mul_smul]
+          exact mem_set_smul_submodule_of_mem_mem _ _ (hc hi) <| Submodule.smul_mem _ _ hn) <|
+    set_smul_submodule_mono_left _ Submodule.subset_span
 end
 
 end Submodule

@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Multiset.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.Module.Basic
 
 #align_import group_theory.group_action.big_operators from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -43,16 +44,24 @@ end
 
 section
 
-variable [AddCommMonoid β] [DistribSMul α β]
+variable [AddCommMonoid β]
 
-theorem Multiset.smul_sum {r : α} {s : Multiset β} : r • s.sum = (s.map ((· • ·) r)).sum :=
+theorem Multiset.smul_sum [DistribSMul α β] {r : α} {s : Multiset β} : r • s.sum = (s.map ((· • ·) r)).sum :=
   (DistribSMul.toAddMonoidHom β r).map_multiset_sum s
 #align multiset.smul_sum Multiset.smul_sum
 
-theorem Finset.smul_sum {r : α} {f : γ → β} {s : Finset γ} :
+theorem Finset.smul_sum [DistribSMul α β] {r : α} {f : γ → β} {s : Finset γ} :
     (r • ∑ x in s, f x) = ∑ x in s, r • f x :=
   (DistribSMul.toAddMonoidHom β r).map_sum f s
 #align finset.smul_sum Finset.smul_sum
+
+theorem Multiset.sum_smul [Semiring α] [Module α β] {r : β} {s : Multiset α} :
+    s.sum • r = (s.map (. • r)).sum :=
+  ((smulAddHom α β).flip <| r).map_multiset_sum s
+
+theorem Finset.sum_smul [Semiring α] [Module α β] {r : β} {f : γ → α} {s : Finset γ} :
+    (∑ x in s, f x) • r = ∑ x in s, f x • r :=
+  ((smulAddHom α β).flip <| r).map_sum f s
 
 end
 
