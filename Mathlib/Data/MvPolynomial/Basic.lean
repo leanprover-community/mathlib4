@@ -661,6 +661,11 @@ theorem coeff_C [DecidableEq σ] (m) (a) :
   Finsupp.single_apply
 #align mv_polynomial.coeff_C MvPolynomial.coeff_C
 
+lemma eq_C_of_isEmpty [IsEmpty σ] (p : MvPolynomial σ R) :
+    p = C (p.coeff 0) := by
+  obtain ⟨x, rfl⟩ := C_surjective σ p
+  simp
+
 theorem coeff_one [DecidableEq σ] (m) : coeff m (1 : MvPolynomial σ R) = if 0 = m then 1 else 0 :=
   coeff_C m 1
 #align mv_polynomial.coeff_one MvPolynomial.coeff_one
@@ -729,13 +734,6 @@ theorem coeff_X_mul (m) (s : σ) (p : MvPolynomial σ R) :
     coeff (Finsupp.single s 1 + m) (X s * p) = coeff m p :=
   (coeff_monomial_mul _ _ _ _).trans (one_mul _)
 #align mv_polynomial.coeff_X_mul MvPolynomial.coeff_X_mul
-
-/-- MvPolynomials in an empty type of variables are always constant -/
-lemma eq_C_of_empty [IsEmpty σ] (p : MvPolynomial σ R) :
-    p = C (p.coeff 0) := by
-  ext m
-  rw [Subsingleton.eq_zero m]
-  simp
 
 @[simp]
 theorem support_mul_X (s : σ) (p : MvPolynomial σ R) :
