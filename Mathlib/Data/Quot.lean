@@ -452,7 +452,7 @@ lemma Quotient.proj_choice {ι : Type*} {α : ι → Type*} [S : ∀ i, Setoid (
 /-- Lift a function on `∀ i, α i` to a function on `∀ i, Quotient (S i)`.
 
 For the computable version for quotients indexed by a finite type, see `Quotient.finLiftOn`. -/
-noncomputable def Quotient.liftOnPi {ι : Type*} {α : ι → Sort*} [s : ∀ i, Setoid (α i)]
+noncomputable def Quotient.liftOnPi {ι : Type*} {α : ι → Type*} [s : ∀ i, Setoid (α i)]
     {β : Sort*}
     (q : ∀ i, Quotient (s i))
     (f : (∀ i, α i) → β)
@@ -460,7 +460,7 @@ noncomputable def Quotient.liftOnPi {ι : Type*} {α : ι → Sort*} [s : ∀ i,
   (choice q).liftOn f h
 
 @[simp]
-lemma Quotient.liftOnPi_mk {ι : Type*} {α : ι → Sort*} [s : ∀ i, Setoid (α i)] {β : Sort*}
+lemma Quotient.liftOnPi_mk {ι : Type*} {α : ι → Type*} [s : ∀ i, Setoid (α i)] {β : Sort*}
     (a : ∀ i, α i) :
     liftOnPi (β := β) (⟦a ·⟧) = fun f _ ↦ f a := by
   simp [liftOnPi]
@@ -469,7 +469,7 @@ lemma Quotient.liftOnPi_mk {ι : Type*} {α : ι → Sort*} [s : ∀ i, Setoid (
 
 For the computable version for quotients indexed by a finite type, see `Quotient.finHRecOn`. -/
 @[elab_as_elim]
-noncomputable def Quotient.hrecOnPi {ι : Type*} {α : ι → Sort*} [s : ∀ i, Setoid (α i)]
+noncomputable def Quotient.hrecOnPi {ι : Type*} {α : ι → Type*} [s : ∀ i, Setoid (α i)]
     {C : (∀ i, Quotient (s i)) → Sort*}
     (q : ∀ i, Quotient (s i))
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
@@ -480,7 +480,7 @@ noncomputable def Quotient.hrecOnPi {ι : Type*} {α : ι → Sort*} [s : ∀ i,
 
 For the computable version for quotients indexed by a finite type, see `Quotient.finRecOn`. -/
 @[elab_as_elim]
-noncomputable def Quotient.recOnPi {ι : Type*} {α : ι → Sort*} [s : ∀ i, Setoid (α i)]
+noncomputable def Quotient.recOnPi {ι : Type*} {α : ι → Type*} [s : ∀ i, Setoid (α i)]
     {C : (∀ i, Quotient (s i)) → Sort*}
     (q : ∀ i, Quotient (s i))
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
@@ -489,7 +489,7 @@ noncomputable def Quotient.recOnPi {ι : Type*} {α : ι → Sort*} [s : ∀ i, 
   hrecOnPi q f (heq_of_eq_rec_left _ <| h · · ·)
 
 @[simp]
-lemma Quotient.hrecOnPi_mk {ι : Type*} {α : ι → Sort*} [s : ∀ i, Setoid (α i)]
+lemma Quotient.hrecOnPi_mk {ι : Type*} {α : ι → Type*} [s : ∀ i, Setoid (α i)]
     {C : (∀ i, Quotient (s i)) → Sort*}
     (a : ∀ i, α i) :
     hrecOnPi (C := C) (⟦a ·⟧) = fun f _ ↦ f a := by
@@ -499,7 +499,7 @@ lemma Quotient.hrecOnPi_mk {ι : Type*} {α : ι → Sort*} [s : ∀ i, Setoid (
   rfl
 
 @[simp]
-lemma Quotient.recOnPi_mk {ι : Type*} {α : ι → Sort*} [s : ∀ i, Setoid (α i)]
+lemma Quotient.recOnPi_mk {ι : Type*} {α : ι → Type*} [s : ∀ i, Setoid (α i)]
     {C : (∀ i, Quotient (s i)) → Sort*}
     (a : ∀ i, α i) :
     recOnPi (C := C) (⟦a ·⟧) = fun f _ ↦ f a := by
