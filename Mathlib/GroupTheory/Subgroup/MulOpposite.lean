@@ -50,12 +50,12 @@ def opEquiv : Subgroup G ≃ Subgroup Gᵐᵒᵖ where
 #align subgroup.opposite Subgroup.opEquiv
 #align add_subgroup.opposite AddSubgroup.opEquiv
 
-@[to_additive (attr := simp, nolint simpNF)] lemma opposite_toSubmonoid (H : Subgroup G) :
-    (opEquiv H).toSubmonoid = Submonoid.opEquiv H.toSubmonoid :=
+@[to_additive (attr := simp, nolint simpNF)] lemma op_toSubmonoid (H : Subgroup G) :
+    H.op.toSubmonoid = H.toSubmonoid.op :=
   rfl
 
-@[to_additive (attr := simp, nolint simpNF)] lemma opposite_symm_toSubmonoid (H : Subgroup Gᵐᵒᵖ) :
-    (opEquiv.symm H).toSubmonoid = Submonoid.opEquiv.symm H.toSubmonoid :=
+@[to_additive (attr := simp, nolint simpNF)] lemma unop_toSubmonoid (H : Subgroup Gᵐᵒᵖ) :
+    H.unop.toSubmonoid = H.toSubmonoid.unop :=
   rfl
 
 /-- Bijection between a subgroup `H` and its opposite. -/
