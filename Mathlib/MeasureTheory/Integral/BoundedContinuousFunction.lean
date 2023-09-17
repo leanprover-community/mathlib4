@@ -46,19 +46,6 @@ theorem NNReal.integrable (f : X →ᵇ ℝ≥0) :
   exact lintegral_lt_top _ f
 #align measure_theory.finite_measure.integrable_of_bounded_continuous_to_nnreal BoundedContinuousFunction.NNReal.integrable
 
-/-
-theorem integrable_of_boundedContinuous_to_real (f : X →ᵇ ℝ) :
-    Integrable (⇑f) μ := by
-  refine' ⟨f.continuous.measurable.aestronglyMeasurable, _⟩
-  apply (hasFiniteIntegral_iff_norm f).mpr
-  rw [← ofReal_integral_eq_lintegral_ofReal]
-  · exact ENNReal.ofReal_lt_top
-  · exact MeasureTheory.FiniteMeasure.integrable_of_boundedContinuous_to_nnreal μ f.nnnorm
-  · exact eventually_of_forall fun X => norm_nonneg (f X)
- -/
-
---#align measure_theory.finite_measure.integrable_of_bounded_continuous_to_real MeasureTheory.FiniteMeasure.integrable_of_boundedContinuous_to_real
-
 theorem integral_eq_integral_nnrealPart_sub (f : X →ᵇ ℝ) :
     ∫ x, f x ∂μ = (∫ x, (f.nnrealPart x : ℝ) ∂μ) - ∫ ω, ((-f).nnrealPart ω : ℝ) ∂μ := by
   simp only [f.self_eq_nnrealPart_sub_nnrealPart_neg, Pi.sub_apply, integral_sub, NNReal.integrable]
@@ -100,6 +87,8 @@ lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
     _ ≤ ‖f‖₊ * (μ Set.univ)   := f.lintegral_nnnorm_le μ
     _ < ∞                     := ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_ne_top μ Set.univ)
+#align measure_theory.finite_measure.integrable_of_bounded_continuous_to_real BoundedContinuousFunction.integrable
+-- The new statement is more general (codomain `E` rather than `ℝ`). Is the `align` still ok?
 
 variable [NormedSpace ℝ E]
 
