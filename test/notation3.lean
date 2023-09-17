@@ -117,8 +117,6 @@ notation3 "BAD " c "; " (x", "* => foldl (a b => b) c) " DAB" => myId x
 /-- info: myId 3 : ℕ -/
 #guard_msgs in #check BAD 1; 2, 3 DAB
 
-
-end
 section
 variable (x : Nat)
 local notation3 "y" => x + 1
@@ -232,7 +230,8 @@ variable (s : Finset Nat) (s' : Set Nat) [Fintype s']
 
 /-- info: ∑ (x : Fin 37) (y ∈ s), ↑x + y : ℕ -/
 #guard_msgs in #check ∑ (x : Fin 37) (y ∈ s), x + y
-/-- info: ∑ (x : Fin 37) (y ∈ Set.toFinset s'), ↑x + y : ℕ -/
+/-- info: ∑ x ∈ Set.toFinset s', x : ℕ -/
 #guard_msgs in #check ∑ x ∈ s', x
 /-- info: ∑ (x : Fin 37), if x < 10 then ∑ (y : Fin 37), if y < 10 then ↑x + ↑y else 0 else 0 : ℕ -/
 #guard_msgs in #check ∑ (x y : Fin 37) < 10, x + y
+end
