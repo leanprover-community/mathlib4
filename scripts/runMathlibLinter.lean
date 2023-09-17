@@ -23,7 +23,7 @@ unsafe def main (args : List String) : IO Unit := do
       | [] => some `Mathlib
       | [mod] => Syntax.decodeNameLit s!"`{mod}"
       | _ => none
-    | IO.eprintln "Usage: runLinter [--update] [Mathlib.Data.Nat]" *> IO.Process.exit 1
+    | IO.eprintln "Usage: runMathlibLinter [--update] [Mathlib.Data.Nat.Basic]" *> IO.Process.exit 1
   let nolintsFile := "scripts/nolints.json"
   let nolints ← readJsonFile NoLints nolintsFile
   CoreM.withImportModules #[module]
