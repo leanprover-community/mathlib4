@@ -470,6 +470,17 @@ protected def pointwiseSetDistribMulActionSubmodule [SMulCommClass R R M] :
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetDistribMulActionSubmodule
 
+lemma sup_set_smul_submodule_eq_sup (s t : Set R) :
+    (s ⊔ t) • N = s • N ⊔ t • N :=
+  set_smul_submodule_eq_of_le _ _ _
+    (by rintro r n (hr|hr) hn
+        · exact Submodule.mem_sup_left (mem_set_smul_submodule_of_mem_mem _ _ hr hn)
+        · exact Submodule.mem_sup_right (mem_set_smul_submodule_of_mem_mem _ _ hr hn))
+    (sup_le
+      (set_smul_submodule_mono_left _ le_sup_left)
+      (set_smul_submodule_mono_left _ le_sup_right))
+
+
 end
 
 end Submodule
