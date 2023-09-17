@@ -80,25 +80,23 @@ theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
 @[simp]
 theorem tmul_comp_tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₂.tmul Q₁).comp (TensorProduct.comm R M₁ M₂) = Q₁.tmul Q₂ := by
-  refine QuadraticForm.polarBilin_injective (isUnit_of_invertible _) ?_
+  refine (QuadraticForm.associated_rightInverse R).injective ?_
   apply BilinForm.toLin.injective
   ext m₁ m₂ m₁' m₂'
-  dsimp [-polarBilin_apply]
-  simp only [polarBilin_tmul, QuadraticForm.polarBilin_comp]
-  dsimp [QuadraticForm.comp]
-  rw [mul_comm (polar _ _ _)]
+  dsimp [-associated_apply]
+  simp only [associated_tmul, QuadraticForm.associated_comp]
+  exact mul_comm _ _
 
 @[simp]
 theorem tmul_comp_tensorAssoc
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃) :
     (Q₁.tmul (Q₂.tmul Q₃)).comp (TensorProduct.assoc R M₁ M₂ M₃) = (Q₁.tmul Q₂).tmul Q₃ := by
-  refine QuadraticForm.polarBilin_injective (isUnit_of_invertible _) ?_
+  refine (QuadraticForm.associated_rightInverse R).injective ?_
   apply BilinForm.toLin.injective
   ext m₁ m₂ m₁' m₂' m₁'' m₂''
-  dsimp [-polarBilin_apply]
-  simp only [polarBilin_tmul, QuadraticForm.polarBilin_comp]
-  dsimp [QuadraticForm.comp]
-  rw [mul_assoc (polar _ _ _)]
+  dsimp [-associated_apply]
+  simp only [associated_tmul, QuadraticForm.associated_comp]
+  exact mul_assoc _ _ _
 
 /-- `TensorProduct.comm` preserves tensor products of quadratic forms. -/
 @[simps]
