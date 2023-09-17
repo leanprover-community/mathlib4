@@ -18,8 +18,7 @@ convergence of probability measures and finite measures.
 open MeasureTheory Filter
 open scoped ENNReal NNReal BoundedContinuousFunction Topology
 
-section moved_from_FiniteMeasure
--- These were moved (now in fact only copied) from `Mathlib.MeasureTheory.Measure.FiniteMeasure`.
+section
 
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
 
@@ -88,48 +87,11 @@ theorem _root_.BoundedContinuousFunction.NNReal.toReal_lintegral_eq_integral (f 
 
 end MeasureTheory
 
-end moved_from_FiniteMeasure
-
-
+end
 
 section
 
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
-
-/-
--- TODO: Is it possible to add a @[gcongr] attribute to `lintegral_mono`?
-
-lemma foo (μ : Measure X) {f g : X → ℝ≥0∞} (hfg : f ≤ g) :
-    ∫⁻ X, f X ∂μ ≤ ∫⁻ X, g X ∂μ := by
-  gcongr -- gcongr did not make progress
-  sorry
-
-attribute [gcongr] lintegral_mono
-    -- @[gcongr] attribute only applies to lemmas proving
-    -- x₁ ~₁ x₁' → ... xₙ ~ₙ xₙ' → f x₁ ... xₙ ∼ f x₁' ... xₙ',
-    -- got ∀ {α : Type u_1} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
-    -- ⦃f g : α → ℝ≥0∞⦄, f ≤ g → ∫⁻ (a : α), f a ∂μ ≤ ∫⁻ (a : α), g a ∂μ
-
--- This would solve it!
-
-lemma MeasureTheory.lintegral_mono'' {α : Type} {m : MeasurableSpace α}
-    {μ : MeasureTheory.Measure α} {f g : α → ℝ≥0∞} (hfg : f ≤ g) :
-    lintegral μ f ≤ lintegral μ g :=
-  lintegral_mono hfg
-
-attribute [gcongr] MeasureTheory.lintegral_mono''
-
-#check lintegral_mono
-#check lintegral_mono''
- -/
-
-lemma MeasureTheory.lintegral_mono'' {α : Type*} {m : MeasurableSpace α}
-    {μ : MeasureTheory.Measure α} {f g : α → ℝ≥0∞} (hfg : f ≤ g) :
-    lintegral μ f ≤ lintegral μ g :=
-  lintegral_mono hfg
-
-attribute [gcongr] MeasureTheory.lintegral_mono''
-
 variable {E : Type*} [NormedAddCommGroup E] [TopologicalSpace.SecondCountableTopology E]
 variable [MeasurableSpace E] [BorelSpace E]
 
@@ -141,8 +103,7 @@ lemma BoundedContinuousFunction.integrable (μ : Measure X) [IsFiniteMeasure μ]
     _ = ‖f‖₊ * (μ Set.univ)                 := by rw [lintegral_const]
     _ < ∞                                   := ENNReal.mul_lt_top
                                                 ENNReal.coe_ne_top (measure_ne_top μ Set.univ)
-  · --gcongr -- or `apply lintegral_mono`
-    apply lintegral_mono
+  · apply lintegral_mono -- NOTE: Would be great to have `gcongr` working for these.
     exact fun x ↦ ENNReal.coe_le_coe.mpr (nnnorm_coe_le_nnnorm f x)
 
 variable [NormedSpace ℝ E]
@@ -176,25 +137,6 @@ end
 section
 
 variable {X : Type*} [TopologicalSpace X]
-
-lemma BoundedContinuousFunction.neg_norm_le (f : X →ᵇ ℝ) (x : X) :
-    -‖f‖ ≤ f x := (abs_le.mp (norm_coe_le_norm f x)).1
-
-lemma BoundedContinuousFunction.le_norm (f : X →ᵇ ℝ) (x : X):
-    f x ≤ ‖f‖ := (abs_le.mp (norm_coe_le_norm f x)).2
-
-lemma BoundedContinuousFunction.add_norm_nonneg (f : X →ᵇ ℝ) :
-    0 ≤ f + BoundedContinuousFunction.const _ ‖f‖ := by
-  intro x
-  dsimp
-  linarith [(abs_le.mp (norm_coe_le_norm f x)).1]
-
-lemma BoundedContinuousFunction.norm_sub_nonneg (f : X →ᵇ ℝ) :
-    0 ≤ BoundedContinuousFunction.const _ ‖f‖ - f := by
-  intro x
-  dsimp
-  linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
-
 variable [MeasurableSpace X] [OpensMeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
 
 lemma BoundedContinuousFunction.integral_add_const (f : X →ᵇ ℝ) (c : ℝ) :
