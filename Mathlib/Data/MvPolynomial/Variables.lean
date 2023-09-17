@@ -146,13 +146,13 @@ theorem degrees_sum {ι : Type*} [DecidableEq σ] (s : Finset ι) (f : ι → Mv
 #align mv_polynomial.degrees_sum MvPolynomial.degrees_sum
 
 theorem degrees_mul (p q : MvPolynomial σ R) : (p * q).degrees ≤ p.degrees + q.degrees := by
-  convert supDegree_mul_le (D := toMultiset.toAddHom)
+  convert supDegree_mul_le (map_add _)
   rfl; all_goals infer_instance
 #align mv_polynomial.degrees_mul MvPolynomial.degrees_mul
 
 theorem degrees_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (∏ i in s, f i).degrees ≤ ∑ i in s, (f i).degrees := by
-  classical exact supDegree_prod_le
+  classical exact supDegree_prod_le (map_zero _) (map_add _)
 #align mv_polynomial.degrees_prod MvPolynomial.degrees_prod
 
 theorem degrees_pow (p : MvPolynomial σ R) (n : ℕ) : (p ^ n).degrees ≤ n • p.degrees := by
@@ -607,7 +607,7 @@ theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f :
 theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) :
     (a ^ n).totalDegree ≤ n * a.totalDegree := by
   rw [Finset.pow_eq_prod_const, ← Nat.nsmul_eq_mul, Finset.nsmul_eq_sum_const]
-  refine supDegree_prod_le (D := ⟨⟨fun s : σ →₀ ℕ => s.sum fun _ e => e, rfl⟩, fun _ _ => ?_⟩)
+  refine supDegree_prod_le rfl (fun _ _ => ?_)
   dsimp only; exact Finsupp.sum_add_index' (fun _ => rfl) (fun _ _ _ => rfl)
 #align mv_polynomial.total_degree_pow MvPolynomial.totalDegree_pow
 

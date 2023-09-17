@@ -332,7 +332,7 @@ theorem supDegree_prod_le {R A B} [CommSemiring R] [AddCommMonoid A] [AddCommMon
     (∏ i in s, f i).supDegree D ≤ ∑ i in s, (f i).supDegree D := by
   refine' s.induction _ _
   · rw [Finset.prod_empty, Finset.sum_empty, one_def, supDegree_single]
-    split_ifs; exacts [bot_le, D.map_zero.le]
+    split_ifs; exacts [bot_le, hzero.le]
   · intro i s his ih
     rw [Finset.prod_insert his, Finset.sum_insert his]
     exact (supDegree_mul_le hadd).trans (add_le_add_left ih _)
@@ -474,7 +474,7 @@ lemma Monic.supDegree_mul_of_ne_zero (hq : q.Monic D) (hp : p ≠ 0) :
              Ne, leadingCoeff_eq_zero hD, hp]
   · have := covariantClass_le_of_lt B B (· + ·)
     have := covariantClass_le_of_lt B B (Function.swap (· + ·))
-    exact fun a ha => (Finset.le_sup ha).trans (supDegree_mul_le (D := ⟨D, hadd⟩))
+    exact fun a ha => (Finset.le_sup ha).trans (supDegree_mul_le hadd)
 
 lemma Monic.supDegree_mul (hbot : (⊥ : B) + ⊥ = ⊥) (hp : p.Monic D) (hq : q.Monic D) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
