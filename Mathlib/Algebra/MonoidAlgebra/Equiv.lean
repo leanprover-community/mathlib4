@@ -67,7 +67,6 @@ def algEquivCongrLeft {k R S G : Type _} [CommSemiring k] [Semiring R] [Algebra 
   .ofAlgHom (algHomCongrLeft f) (algHomCongrLeft f.symm)
     (AlgHom.ext fun x => Finsupp.ext fun a => by simp)
     (AlgHom.ext fun x => Finsupp.ext fun a => by simp)
-#align add_monoid_algebra.alg_equiv_congr_left AddMonoidAlgebra.algEquivCongrLeft
 
 @[simps]
 def algAutCongrLeft {k R G : Type _} [CommSemiring k] [Semiring R] [Algebra k R] [AddMonoid G] :
@@ -81,7 +80,6 @@ def algAutCongrLeft {k R G : Type _} [CommSemiring k] [Semiring R] [Algebra k R]
     ext
     refine Finsupp.ext fun a => ?_
     simp [Finsupp.mapRange_apply]
-#align add_monoid_algebra.alg_aut_congr_left AddMonoidAlgebra.algAutCongrLeft
 
 @[simp 1001] -- LHS simplifies
 lemma algAutCongrLeft_apply_one {k R G : Type _} [CommSemiring k] [Semiring R] [Algebra k R]
@@ -117,7 +115,6 @@ def mapDomainRingEquiv (k : Type _) [Semiring k] {G H : Type _} [AddMonoid G] [A
         refine Finsupp.ext fun a => ?_
         simp only [Finsupp.domCongr_apply, single_mul_single, Finsupp.equivMapDomain_single,
           AddEquiv.coe_toEquiv, map_add] }
-#align add_monoid_algebra.map_domain_ring_equiv AddMonoidAlgebra.mapDomainRingEquiv
 
 @[simps]
 def mapDomainAlgEquiv (k A : Type _) [CommSemiring k] [Semiring A] [Algebra k A] {G H : Type _}
@@ -128,7 +125,6 @@ def mapDomainAlgEquiv (k A : Type _) [CommSemiring k] [Semiring A] [Algebra k A]
     commutes' := fun r => by
       simp only [Function.comp_apply, Finsupp.equivMapDomain_single,
         AddMonoidAlgebra.coe_algebraMap, map_zero, AddEquiv.coe_toEquiv] }
-#align add_monoid_algebra.map_domain_alg_equiv AddMonoidAlgebra.mapDomainAlgEquiv
 
 @[simps]
 def mapDomainAlgAut (k A : Type _) [CommSemiring k] [Semiring A] [Algebra k A] {G : Type _}
@@ -143,13 +139,5 @@ def mapDomainAlgAut (k A : Type _) [CommSemiring k] [Semiring A] [Algebra k A] {
     ext
     refine Finsupp.ext fun a => ?_
     rfl
-#align add_monoid_algebra.map_domain_alg_aut AddMonoidAlgebra.mapDomainAlgAut
-
-@[simp 1001] -- LHS simplifies
-lemma mapDomainAlgAut_apply_one {k A : Type _} [CommSemiring k] [Semiring A] [Algebra k A]
-    {G : Type _} [AddMonoid G] :
-    mapDomainAlgAut k A (G := G) 1 = AlgEquiv.refl := by
-  ext
-  exact Finsupp.equivMapDomain_refl _
 
 end AddMonoidAlgebra
