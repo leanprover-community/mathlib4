@@ -200,7 +200,7 @@ variable [DecidableRel R]
 
 #align list.pw_filter_eq_self List.pwFilter_eq_self
 
-alias pwFilter_eq_self ↔ _ Pairwise.pwFilter
+alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
 #align list.pairwise.pw_filter List.Pairwise.pwFilter
 
 -- Porting note: commented out

@@ -3,7 +3,6 @@ Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
-import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
@@ -273,7 +272,7 @@ theorem gcdB_zero_left {s : R} : gcdB 0 s = 1 := by
 #align euclidean_domain.gcd_b_zero_left EuclideanDomain.gcdB_zero_left
 
 theorem xgcd_val (x y : R) : xgcd x y = (gcdA x y, gcdB x y) :=
-  Prod.mk.eta.symm
+  rfl
 #align euclidean_domain.xgcd_val EuclideanDomain.xgcd_val
 
 end GCD

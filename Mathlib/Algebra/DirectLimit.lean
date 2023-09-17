@@ -203,7 +203,7 @@ theorem toModule_totalize_of_le {x : DirectSum ι G} {i j : ι} (hij : i ≤ j)
       f i j hij (DirectSum.toModule R ι (G i) (fun k => totalize G f k i) x) := by
   rw [← @DFinsupp.sum_single ι G _ _ _ x]
   unfold DFinsupp.sum
-  simp only [LinearMap.map_sum]
+  simp only [map_sum]
   refine' Finset.sum_congr rfl fun k hk => _
   rw [DirectSum.single_eq_lof R k (x k), DirectSum.toModule_lof, DirectSum.toModule_lof,
     totalize_of_le (hx k hk), totalize_of_le (le_trans (hx k hk) hij), DirectedSystem.map_map]
@@ -733,7 +733,7 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
 #align field.direct_limit.inv_mul_cancel Field.DirectLimit.inv_mul_cancel
 
 -- porting note: this takes some time, had to increase heartbeats
-set_option maxHeartbeats 1000000 in
+set_option maxHeartbeats 500000 in
 /-- Noncomputable field structure on the direct limit of fields.
 See note [reducible non-instances]. -/
 @[reducible]

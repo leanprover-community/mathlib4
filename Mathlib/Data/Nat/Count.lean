@@ -111,10 +111,10 @@ theorem count_succ_eq_count_iff {n : ℕ} : count p (n + 1) = count p n ↔ ¬p 
   by_cases h : p n <;> simp [h, count_succ]
 #align nat.count_succ_eq_count_iff Nat.count_succ_eq_count_iff
 
-alias count_succ_eq_succ_count_iff ↔ _ count_succ_eq_succ_count
+alias ⟨_, count_succ_eq_succ_count⟩ := count_succ_eq_succ_count_iff
 #align nat.count_succ_eq_succ_count Nat.count_succ_eq_succ_count
 
-alias count_succ_eq_count_iff ↔ _ count_succ_eq_count
+alias ⟨_, count_succ_eq_count⟩ := count_succ_eq_count_iff
 #align nat.count_succ_eq_count Nat.count_succ_eq_count
 
 theorem count_le_cardinal (n : ℕ) : (count p n : Cardinal) ≤ Cardinal.mk { k | p k } := by

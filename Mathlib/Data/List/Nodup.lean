@@ -275,7 +275,7 @@ theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
     Nodup.of_map Subtype.val ((attach_map_val l).symm ▸ h)⟩
 #align list.nodup_attach List.nodup_attach
 
-alias nodup_attach ↔ Nodup.of_attach Nodup.attach
+alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 #align list.nodup.attach List.Nodup.attach
 #align list.nodup.of_attach List.Nodup.of_attach
 
@@ -437,8 +437,8 @@ theorem Nodup.pairwise_of_set_pairwise {l : List α} {r : α → α → Prop} (h
 #align list.nodup.pairwise_of_set_pairwise List.Nodup.pairwise_of_set_pairwise
 
 @[simp]
-theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup)
-    : { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
+theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) :
+    { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
   induction' l with a l ih
   · simp
   rw [List.nodup_cons] at hl

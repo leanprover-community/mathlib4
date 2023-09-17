@@ -709,7 +709,7 @@ def principalUnitGroupEquiv :
       rw [A.coe_mem_principalUnitGroup_iff]; simpa using SetLike.coe_mem x⟩
   left_inv x := by simp
   right_inv x := by simp
-  map_mul' x y := by rfl
+  map_mul' x y := rfl
 #align valuation_subring.principal_unit_group_equiv ValuationSubring.principalUnitGroupEquiv
 
 @[simp]

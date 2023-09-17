@@ -515,7 +515,7 @@ theorem subset_of_le : s ≤ t → s ⊆ t :=
   Quotient.inductionOn₂ s t fun _ _ => Subperm.subset
 #align multiset.subset_of_le Multiset.subset_of_le
 
-alias subset_of_le ← Le.subset
+alias Le.subset := subset_of_le
 #align multiset.le.subset Multiset.Le.subset
 
 theorem mem_of_le (h : s ≤ t) : a ∈ s → a ∈ t :=
@@ -923,7 +923,7 @@ theorem eq_replicate_card {a : α} {s : Multiset α} : s = replicate (card s) a 
   Quot.inductionOn s fun _l => coe_eq_coe.trans <| perm_replicate.trans eq_replicate_length
 #align multiset.eq_replicate_card Multiset.eq_replicate_card
 
-alias eq_replicate_card ↔ _ eq_replicate_of_mem
+alias ⟨_, eq_replicate_of_mem⟩ := eq_replicate_card
 #align multiset.eq_replicate_of_mem Multiset.eq_replicate_of_mem
 
 theorem eq_replicate {a : α} {n} {s : Multiset α} :
@@ -3039,15 +3039,15 @@ def chooseX : ∀ _hp : ∃! a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a } :=
     (by
       intros a b _
       funext hp
-      suffices all_equal : ∀ x y : { t // t ∈ b ∧ p t }, x = y
-      · apply all_equal
-      · rintro ⟨x, px⟩ ⟨y, py⟩
-        rcases hp with ⟨z, ⟨_z_mem_l, _pz⟩, z_unique⟩
-        congr
-        calc
-          x = z := z_unique x px
-          _ = y := (z_unique y py).symm
-          )
+      suffices all_equal : ∀ x y : { t // t ∈ b ∧ p t }, x = y by
+        apply all_equal
+      rintro ⟨x, px⟩ ⟨y, py⟩
+      rcases hp with ⟨z, ⟨_z_mem_l, _pz⟩, z_unique⟩
+      congr
+      calc
+        x = z := z_unique x px
+        _ = y := (z_unique y py).symm
+        )
 #align multiset.choose_x Multiset.chooseX
 
 /-- Given a proof `hp` that there exists a unique `a ∈ l` such that `p a`, `choose p l hp` returns
