@@ -21,17 +21,6 @@ def Finset.Nat.antidiagonal (n : Nat) : Finset (Nat × Nat) := sorry
 namespace Tests
 open Lean Meta Mathlib.FlexibleBinders
 
--- /-- The default handler for the `finset` is to use `Finset.univ` and hope for the best! -/
--- macro_rules
---   | `(binderDefault%(finset, $e)) => `(binderResolved%(Finset.univ, $e))
-
--- /-- For the `finset` domain, `(x : ty)` is a binder over `Finset.univ` for `ty`. -/
--- macro_rules
---   | `(binder%(finset, ($e :%$c $ty))) => do
---     if e matches `($_ $_*) then Macro.throwUnsupported
---     if e matches `(($_ : $_)) then Macro.throwErrorAt c "Unexpected type ascription"
---     `(binderResolved%((Finset.univ : Finset $ty), $e))
-
 /-- `finset% t` elaborates `t` as a `Finset`.
 If `t` is a `Set`, then inserts `Set.toFinset`.
 Does not make use of the expected type; useful for big operators over finsets.
@@ -89,11 +78,13 @@ macro_rules
 #test_flexible_binders finset => x + y = 5
 #test_flexible_binders finset => (x + y = 5) (z ∈ s x y)
 
-#test_flexible_binders type => (x : Nat) : Nat
-#test_flexible_binders finset => (x : Nat) : Nat
+/-- error: Unexpected type ascription -/
+#guard_msgs in #test_flexible_binders type => (x : Nat) : Nat
+/-- error: Unexpected type ascription -/
+#guard_msgs in #test_flexible_binders finset => (x : Nat) : Nat
 
 #test_flexible_binders type => (p ∈ s) (x : Fin p.1)
-
+#test_flexible_binders finset => (p ∈ s) (x : Fin p.1)
 
 macro "∃' " bs:flexibleBinders ", " t:term : term => do
   let res ← expandFlexibleBinders `type bs
@@ -127,6 +118,19 @@ variable (s : Finset Nat) (s' : Set Nat) [Fintype s'] (f : Fin 37 → Nat)
 #check ∑ x + y = 10, x * y
 #check ∑ (x : Fin 37) (x x x : Fin x), x.1
 #check ∑ (x y : Nat) ∈ s, x * y
+#check fun t => ∑ (x y : Nat) ∈ t, x * y
 #check ∑ x, f x
 #check ∑ x < 10, f x
+
+/--
+error: application type mismatch
+  Finset.sum t fun y ↦ x * y
+argument
+  fun y ↦ x * y
+has type
+  ℕ → ℕ : Type
+but is expected to have type
+  Fin 37 → ℕ : Type
+-/
+#guard_msgs (error) in #check fun (t : Finset (Fin 37)) => ∑ (x y : Nat) ∈ t, x * y
 end
