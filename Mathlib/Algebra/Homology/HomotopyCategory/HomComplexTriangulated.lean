@@ -10,6 +10,18 @@ variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 namespace CochainComplex
 
+lemma shiftFunctorOpIso_inv_app_f (K : (CochainComplex C ℤ)ᵒᵖ) (n m : ℤ) (h : n + m = 0) (i : ℤ) :
+  ((Pretriangulated.shiftFunctorOpIso (CochainComplex C ℤ) n m h).inv.app K).unop.f i =
+    (K.unop.XIsoOfEq (by dsimp; linarith)).hom := by
+  obtain rfl : m = -n := by linarith
+  rfl
+
+lemma shiftFunctorOpIso_hom_app_f (K : (CochainComplex C ℤ)ᵒᵖ) (n m : ℤ) (h : n + m = 0) (i : ℤ) :
+  ((Pretriangulated.shiftFunctorOpIso (CochainComplex C ℤ) n m h).hom.app K).unop.f i =
+    (K.unop.XIsoOfEq (by dsimp; linarith)).hom := by
+  obtain rfl : m = -n := by linarith
+  rfl
+
 lemma MappingCone.X_break {K L : CochainComplex AddCommGroupCat ℤ}
     {φ : K ⟶ L} {n : ℤ} (α : (mappingCone φ).X n) (m : ℤ) (hm : n + 1 = m) :
     ∃ (α₁ : K.X m) (α₂ : L.X n), α = (MappingCone.inl φ).v m n (by linarith) α₁ +
@@ -485,33 +497,32 @@ lemma signs_compatibility (a b i : ℤ) :
 
 end BifunctorFlipObjCommShift
 
-/-set_option maxHeartbeats 600000 in
+set_option maxHeartbeats 800000 in
 noncomputable instance : ((bifunctor C).flip.obj L).CommShift ℤ where
   iso n := BifunctorFlipObjCommShift.iso n L
   zero := by
-    sorry
-    --ext K i (α : Cochain (K⟦0⟧).unop L i)
-    --dsimp
-    --rw [BifunctorFlipObjCommShift.iso_hom_app 0 0 (zero_add 0) L K]
-    --dsimp
-    --erw [leftShiftIso_hom_f_apply 0 0 (zero_add 0) _ i (add_zero i).symm]
-    --apply Cochain.ext
-    --intro p q hpq
-    --dsimp
-    --rw [XIsoOfEq_inv_apply_v, Cochain.leftUnshift_v _ i _ p q (by linarith) p (by linarith),
-    --  zero_mul, zero_mul, zero_add, EuclideanDomain.zero_div, Int.negOnePow_zero, one_smul]
-    --erw [bifunctor_map_app_f_apply]
-    --rw [Cochain.zero_cochain_comp_v, Cochain.ofHom_v]
-    --simp only [shiftFunctor_obj_X, shiftFunctorObjXIso, Functor.CommShift.isoZero_hom_app, Functor.flip_obj_obj,
-    --  bifunctor_obj, functor_obj, Functor.flip_obj_map, HomologicalComplex.comp_f, HomComplex_X,
-    --  AddCommGroupCat.coe_comp, Function.comp_apply, bifunctor_map_app_f_apply,
-    --  shiftFunctorZero_inv_app_f]
-    --erw [XIsoOfEq_hom_apply_v]
-    --rw [Cochain.zero_cochain_comp_v, Cochain.ofHom_v, Pretriangulated.shiftFunctorZero_op_hom_app,
-    --  unop_comp, HomologicalComplex.comp_f, assoc]
-    --simp only [Functor.op_obj, Opposite.unop_op, Functor.id_obj, Quiver.Hom.unop_op]
-    --rw [shiftFunctorZero_inv_app_f]
-    --rfl
+    ext K i (α : Cochain (K⟦0⟧).unop L i)
+    dsimp
+    rw [BifunctorFlipObjCommShift.iso_hom_app 0 0 (zero_add 0) L K]
+    dsimp
+    erw [leftShiftIso_hom_f_apply 0 0 (zero_add 0) _ i (add_zero i).symm]
+    apply Cochain.ext
+    intro p q hpq
+    dsimp
+    rw [XIsoOfEq_inv_apply_v, Cochain.leftUnshift_v _ i _ p q (by linarith) p (by linarith),
+      zero_mul, zero_mul, zero_add, EuclideanDomain.zero_div, Int.negOnePow_zero, one_smul]
+    erw [bifunctor_map_app_f_apply]
+    rw [Cochain.zero_cochain_comp_v, Cochain.ofHom_v]
+    simp only [shiftFunctor_obj_X, shiftFunctorObjXIso, Functor.CommShift.isoZero_hom_app, Functor.flip_obj_obj,
+      bifunctor_obj, functor_obj, Functor.flip_obj_map, HomologicalComplex.comp_f, HomComplex_X,
+      AddCommGroupCat.coe_comp, Function.comp_apply, bifunctor_map_app_f_apply,
+      shiftFunctorZero_inv_app_f]
+    erw [XIsoOfEq_hom_apply_v]
+    rw [Cochain.zero_cochain_comp_v, Cochain.ofHom_v, Pretriangulated.shiftFunctorZero_op_hom_app,
+      unop_comp, HomologicalComplex.comp_f, assoc]
+    simp only [Functor.op_obj, Opposite.unop_op, Functor.id_obj, Quiver.Hom.unop_op]
+    rw [shiftFunctorZero_inv_app_f]
+    rfl
   add a b := by
     ext K i (α : Cochain (K⟦a + b⟧).unop L i)
     dsimp
@@ -534,7 +545,6 @@ noncomputable instance : ((bifunctor C).flip.obj L).CommShift ℤ where
     rw [Cochain.leftUnshift_v _ (i + a + b) (by linarith) p q (by linarith) (p + a + b) (by linarith),
       Cochain.zero_cochain_comp_v, Cochain.ofHom_v, shiftFunctorAdd_inv_app_f]
     dsimp
-    save
     erw [XIsoOfEq_hom_apply_v, XIsoOfEq_inv_apply_v]
     rw [Cochain.leftUnshift_v _ (i + a + b) (by linarith) p q (by linarith) (p + a) (by linarith)]
     erw [bifunctor_map_app_f_apply]
@@ -546,10 +556,14 @@ noncomputable instance : ((bifunctor C).flip.obj L).CommShift ℤ where
     congr 1
     rw [← shiftFunctorAdd'_eq_shiftFunctorAdd,
       Pretriangulated.shiftFunctorAdd'_op_hom_app K a b (a + b) rfl _ _ _
-        (add_neg_self a) (add_neg_self b) (add_neg_self (a + b))]
+        (add_neg_self a) (add_neg_self b) (add_neg_self (a + b)),
+      Pretriangulated.shiftFunctor_op_map _ _ (add_neg_self b)]
     dsimp
-    simp only [assoc]
-    sorry-/
+    simp only [assoc, shiftFunctorOpIso_hom_app_f,
+      shiftFunctorOpIso_inv_app_f, shiftFunctorAdd'_inv_app_f']
+    dsimp [HomologicalComplex.XIsoOfEq]
+    erw [id_comp, id_comp, id_comp, id_comp, id_comp, id_comp, id_comp]
+    erw [eqToHom_trans_assoc, eqToHom_trans_assoc]
 
 end
 

@@ -402,6 +402,12 @@ lemma shiftFunctorAdd'_op_inv_app (X : Cᵒᵖ) (a₁ a₂ a₃ : ℤ) (h : a₁
   erw [Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc]
   rw [← op_comp_assoc, Iso.hom_inv_id_app, op_id, id_comp, Iso.hom_inv_id_app]
 
+lemma shiftFunctor_op_map (n m : ℤ) (hnm : n + m = 0) {K L : Cᵒᵖ} (φ : K ⟶ L) :
+    (shiftFunctor Cᵒᵖ n).map φ =
+      (shiftFunctorOpIso C n m hnm).hom.app K ≫ ((shiftFunctor C m).map φ.unop).op ≫
+        (shiftFunctorOpIso C n m hnm).inv.app L :=
+  (NatIso.naturality_2 (shiftFunctorOpIso C n m hnm) φ).symm
+
 end
 
 end Pretriangulated
