@@ -62,9 +62,9 @@ def opEquiv : Subgroup G ≃ Subgroup Gᵐᵒᵖ where
 @[to_additive (attr := simps!) "Bijection between an additive subgroup `H` and its opposite."]
 def equivOp (H : Subgroup G) : H ≃ op H :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
-#noalign subgroup.opposite_equiv
-#noalign add_subgroup.opposite_equiv
-#noalign subgroup.opposite_equiv_symm_apply_coe
+#align subgroup.opposite_equiv Subgroup.equivOp
+#align add_subgroup.opposite_equiv AddSubgroup.equivOp
+#align subgroup.opposite_equiv_symm_apply_coe Subgroup.equivOp_symm_apply_coe
 
 @[to_additive]
 instance (H : Subgroup G) [Encodable H] : Encodable (opEquiv H) :=
