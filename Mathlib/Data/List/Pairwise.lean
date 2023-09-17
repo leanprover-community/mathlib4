@@ -206,7 +206,7 @@ alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
 -- Porting note: commented out
 -- attribute [protected] List.Pairwise.pwFilter
 
-#align list.pw_filter_idempotent List.pwFilter_idempotent
+#align list.pw_filter_idempotent List.pwFilter_idem
 
 #align list.forall_mem_pw_filter List.forall_mem_pwFilter
 
