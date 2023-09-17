@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2022 Apurva Nakade All rights reserved.
+Copyright (c) 2023 Apurva Nakade All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
 import Mathlib.Analysis.Convex.Cone.Dual
-import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.Algebra.Module.Submodule.Basic
 
 
@@ -41,9 +41,6 @@ section Definitions
 variable [OrderedSemiring 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E]
 
-/-- We consider the ambient space `E` as a module over just the non-negative scalars. -/
-instance : Module 𝕜≥0 E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
-
 instance : Coe (PointedCone 𝕜 E) (ConvexCone 𝕜 E) where
   coe := fun S => {
     carrier := S
@@ -78,7 +75,7 @@ def ofConvexCone (S : ConvexCone 𝕜 E) (hS : S.Pointed) : Submodule 𝕜≥0 E
     cases' eq_or_lt_of_le hc with hzero hpos
     · unfold ConvexCone.Pointed at hS
       convert hS
-      simpa [← hzero] using smul_eq_zero_of_left rfl x
+      simp [← hzero]
     · apply ConvexCone.smul_mem
       convert hpos
       exact hx
@@ -96,7 +93,7 @@ variable [AddCommMonoid E] [Module 𝕜 E]
 variable [AddCommMonoid F] [Module 𝕜 F]
 variable [AddCommMonoid G] [Module 𝕜 G]
 
-/--!
+/-!
 
 ## Maps between pointed cones
 
@@ -108,9 +105,6 @@ between pointed cones induced from linear maps between the ambient modules that 
 
 -/
 
-instance : Module 𝕜≥0 E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
-instance : IsScalarTower 𝕜≥0 𝕜 E := SMul.comp.isScalarTower ↑Nonneg.coeRingHom
-instance : IsScalarTower 𝕜≥0 𝕜 F := SMul.comp.isScalarTower ↑Nonneg.coeRingHom
 
 /-- The image of a pointed cone under a `𝕜`-linear map is a pointed cone. -/
 def map (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 E) : PointedCone 𝕜 F :=
@@ -161,9 +155,6 @@ section PositiveCone
 variable (𝕜 E)
 variable [OrderedSemiring 𝕜]
 variable [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
-
-/-- We consider the ambient space `E` as a module over just the non-negative scalars. -/
-local instance : Module 𝕜≥0 E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
 
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
 module. -/
