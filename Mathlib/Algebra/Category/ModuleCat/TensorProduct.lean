@@ -100,8 +100,8 @@ def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : (tensorFunctor R 
 /-- curry a bilinear map into a map from tensor product -/
 def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y)) :
     (X ⊗[R] X') →ₗ[S] Y :=
-  let L : (X ⊗[R] X') →+ Y := (addConGen _).lift (FreeAddMonoid.lift fun p => l p.2 p.1) <| AddCon.addConGen_le
-    fun p q H => show _ = _ from match p, q, H with
+  let L : (X ⊗[R] X') →+ Y := (addConGen _).lift (FreeAddMonoid.lift fun p => l p.2 p.1) <|
+    AddCon.addConGen_le fun p q H => show _ = _ from match p, q, H with
     | _, _, Eqv.of_zero_left x => by
       simp only [homFunctor_obj, FreeAddMonoid.lift_eval_of, map_zero]
     | _, _, Eqv.of_zero_right _ => by
