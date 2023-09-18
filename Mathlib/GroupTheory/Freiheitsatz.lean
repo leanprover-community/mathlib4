@@ -46,7 +46,7 @@ end OneRelator
 
 section Equivs
 
-open SemidirectProduct Multiplicative FreeGroup
+open SemidirectProduct Multiplicative FreeGroup Function
 
 def FreeGroup.mapPermHom (α : Type*) :
     Equiv.Perm α →* MulAut (FreeGroup α) :=
@@ -114,7 +114,7 @@ end Equivs
 
 namespace OneRelator
 
-open Multiplicative
+open Multiplicative Function
 
 structure HNNEmbData {α : Type*} [DecidableEq α] (r : FreeGroup α) : Type _ :=
   (t : α)
@@ -159,9 +159,11 @@ def subgroupBSet : Set ({ b : α // b ≠ d.t } × Multiplicative ℤ) :=
                  (p.1, z₂) ∈ (newRelator d).vars ∧
           z₁ < p.2 ∧ ↑p.2 ≤ z₂ }
 
-theorem subgroupASet_subset_conjVars : d.subgroupASet ⊆ d.newRelator.conjVars := sorry
+theorem conjVars_not_subset_subgroupASet : ¬ (d.newRelator.conjVars : Set _) ⊆ d.subgroupASet :=
+  sorry
 
-theorem subgroupBSet_subset_conjVars : d.subgroupBSet ⊆ d.newRelator.conjVars := sorry
+theorem conjVars_not_subset_subgroupBSet : ¬ (d.newRelator.conjVars : Set _) ⊆ d.subgroupBSet :=
+  sorry
 
 def subgroupASetEquivSubgroupBSet : d.subgroupASet ≃ d.subgroupBSet :=
   { toFun := fun p =>
@@ -197,15 +199,18 @@ def subgroupA : Subgroup (OneRelator d.newRelator) :=
 def subgroupB : Subgroup (OneRelator d.newRelator) :=
   MonoidHom.range (FreeGroup.lift (fun p : d.subgroupASet => of p.1))
 
-def FreiheitsatzProp (r : FreeGroup α) :
+def FreiheitsatzProp (r : FreeGroup α) : Prop :=
+  ∀ (s : Set α), (¬ (r.conjVars : Set _) ⊆ s) →
+    Injective (FreeGroup.lift (fun p : s => (of p.1 : OneRelator r)))
 
-noncomputable def subgroupEquiv : d.subgroupA ≃* d.subgroupB := by
+noncomputable def subgroupEquiv (h : FreiheitsatzProp d.newRelator) :
+    d.subgroupA ≃* d.subgroupB := by
   dsimp [subgroupA, subgroupB]
   exact MulEquiv.trans
-    (MonoidHom.ofInjective sorry).symm <|
+    (MonoidHom.ofInjective (h d.subgroupASet d.conjVars_not_subset_subgroupASet)).symm <|
   MulEquiv.trans
       (FreeGroup.freeGroupCongr d.subgroupASetEquivSubgroupBSet)
-    ((MonoidHom.ofInjective sorry))
+    ((MonoidHom.ofInjective (h d.subgroupBSet d.conjVars_not_subset_subgroupBSet)))
 
 noncomputable def toHNNExtension :
     OneRelator r →* HNNExtension _ d.subgroupA d.subgroupB d.subgroupEquiv :=
