@@ -109,8 +109,8 @@ theorem sqrt_mul (x y : ℝ≥0) : sqrt (x * y) = sqrt x * sqrt y := by
 #align nnreal.sqrt_mul NNReal.sqrt_mul
 
 /-- `NNReal.sqrt` as a `MonoidWithZeroHom`. -/
-noncomputable def sqrtHom : ℝ≥0 →*₀ ℝ≥0 :=
-  ⟨⟨sqrt, sqrt_zero⟩, sqrt_one, sqrt_mul⟩
+noncomputable def sqrtHom : ℝ≥0 →*₀ ℝ≥0 where
+  toFun := sqrt; map_zero' := sqrt_zero; map_one' := sqrt_one; map_mul' := sqrt_mul
 #align nnreal.sqrt_hom NNReal.sqrtHom
 
 theorem sqrt_inv (x : ℝ≥0) : sqrt x⁻¹ = (sqrt x)⁻¹ :=

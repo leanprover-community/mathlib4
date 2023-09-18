@@ -174,7 +174,7 @@ instance mulAction (P : Submodule R M) : MulAction R (M ⧸ P) :=
 
 instance smulZeroClass' [SMul S R] [SMulZeroClass S M] [IsScalarTower S R M] (P : Submodule R M) :
     SMulZeroClass S (M ⧸ P) :=
-  ZeroHom.smulZeroClass ⟨mk, mk_zero _⟩ <| Submodule.Quotient.mk_smul P
+  ZeroHom.smulZeroClass { toFun := mk, map_zero' := mk_zero _ } <| Submodule.Quotient.mk_smul P
 #align submodule.quotient.smul_zero_class' Submodule.Quotient.smulZeroClass'
 
 -- porting note: should this be marked as a `@[default_instance]`?

@@ -134,6 +134,9 @@ class FunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort*
   coe_injective' : Function.Injective coe
 #align fun_like FunLike
 
+/-- Hack to make all morphisms flat structures-/
+structure FunLikeFlatHack._ : Prop
+
 -- https://github.com/leanprover/lean4/issues/2096
 compile_def% FunLike.coe
 

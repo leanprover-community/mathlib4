@@ -53,7 +53,7 @@ variable (R : Type u) (A : Type v) (B : Type w) (C : Type w₁)
 /-- A morphism respecting addition, multiplication, and scalar multiplication. When these arise from
 algebra structures, this is the same as a not-necessarily-unital morphism of algebras. -/
 structure NonUnitalAlgHom [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-  [NonUnitalNonAssocSemiring B] [DistribMulAction R B] extends A →+[R] B, A →ₙ* B
+  [NonUnitalNonAssocSemiring B] [DistribMulAction R B] extends FunLikeFlatHack._, A →+[R] B, A →ₙ* B
 #align non_unital_alg_hom NonUnitalAlgHom
 
 @[inherit_doc NonUnitalAlgHom]
@@ -136,8 +136,7 @@ theorem toFun_eq_coe (f : A →ₙₐ[R] B) : f.toFun = ⇑f :=
 /-- See Note [custom simps projection] -/
 def Simps.apply (f : A →ₙₐ[R] B) : A → B := f
 
-initialize_simps_projections NonUnitalAlgHom
-  (toDistribMulActionHom_toMulActionHom_toFun → apply, -toDistribMulActionHom)
+initialize_simps_projections NonUnitalAlgHom (toFun → apply)
 
 @[simp]
 protected theorem coe_coe {F : Type*} [NonUnitalAlgHomClass F R A B] (f : F) :
@@ -174,12 +173,12 @@ theorem congr_fun {f g : A →ₙₐ[R] B} (h : f = g) (x : A) : f x = g x :=
 #align non_unital_alg_hom.congr_fun NonUnitalAlgHom.congr_fun
 
 @[simp]
-theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) = f :=
+theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟩, f, h₁, h₂, h₃, h₄⟩ : A →ₙₐ[R] B) = f :=
   rfl
 #align non_unital_alg_hom.coe_mk NonUnitalAlgHom.coe_mk
 
 @[simp]
-theorem mk_coe (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) = f := by
+theorem mk_coe (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟩, f, h₁, h₂, h₃, h₄⟩ : A →ₙₐ[R] B) = f := by
   rfl
 #align non_unital_alg_hom.mk_coe NonUnitalAlgHom.mk_coe
 
@@ -222,13 +221,13 @@ theorem to_mulHom_injective {f g : A →ₙₐ[R] B} (h : (f : A →ₙ* B) = (g
 
 @[norm_cast]
 theorem coe_distribMulActionHom_mk (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) :
-    ((⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) : A →+[R] B) = ⟨⟨f, h₁⟩, h₂, h₃⟩ := by
+    ((⟨⟨⟩, f, h₁, h₂, h₃, h₄⟩ : A →ₙₐ[R] B) : A →+[R] B) = ⟨⟨⟩, f, h₁, h₂, h₃⟩ := by
   rfl
 #align non_unital_alg_hom.coe_distrib_mul_action_hom_mk NonUnitalAlgHom.coe_distribMulActionHom_mk
 
 @[norm_cast]
 theorem coe_mulHom_mk (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) :
-    ((⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) : A →ₙ* B) = ⟨f, h₄⟩ := by
+    ((⟨⟨⟩, f, h₁, h₂, h₃, h₄⟩ : A →ₙₐ[R] B) : A →ₙ* B) = ⟨⟨⟩, f, h₄⟩ := by
   rfl
 #align non_unital_alg_hom.coe_mul_hom_mk NonUnitalAlgHom.coe_mulHom_mk
 

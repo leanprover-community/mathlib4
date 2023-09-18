@@ -301,7 +301,7 @@ variable (M N) [Mul M] [Mul N] [Mul P]
       "Given additive magmas `A`, `B`, the natural projection homomorphism
       from `A × B` to `A`"]
 def fst : M × N →ₙ* M :=
-  ⟨Prod.fst, fun _ _ => rfl⟩
+  ⟨⟨⟩, Prod.fst, fun _ _ => rfl⟩
 #align mul_hom.fst MulHom.fst
 #align add_hom.fst AddHom.fst
 
@@ -310,7 +310,7 @@ def fst : M × N →ₙ* M :=
       "Given additive magmas `A`, `B`, the natural projection homomorphism
       from `A × B` to `B`"]
 def snd : M × N →ₙ* N :=
-  ⟨Prod.snd, fun _ _ => rfl⟩
+  ⟨⟨⟩, Prod.snd, fun _ _ => rfl⟩
 #align mul_hom.snd MulHom.snd
 #align add_hom.snd AddHom.snd
 

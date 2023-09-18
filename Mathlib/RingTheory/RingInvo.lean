@@ -33,7 +33,7 @@ set_option autoImplicit true
 variable (R : Type*)
 
 /-- A ring involution -/
-structure RingInvo [Semiring R] extends R ≃+* Rᵐᵒᵖ where
+structure RingInvo [Semiring R] extends FunLikeFlatHack._, R ≃+* Rᵐᵒᵖ where
   /-- The requirement that the ring homomorphism is its own inverse -/
   involution' : ∀ x, (toFun (toFun x).unop).unop = x
 #align ring_invo RingInvo
@@ -70,10 +70,8 @@ instance [Semiring R] : RingInvoClass (RingInvo R) R where
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' e f h₁ h₂ := by
-    rcases e with ⟨⟨tE, _⟩, _⟩; rcases f with ⟨⟨tF, _⟩, _⟩
-    cases tE
-    cases tF
-    congr
+    cases e; cases f; congr
+    exact Equiv.coe_fn_injective h₁
   map_add f := f.map_add'
   map_mul f := f.map_mul'
   left_inv f := f.left_inv

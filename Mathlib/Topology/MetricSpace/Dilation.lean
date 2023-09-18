@@ -383,7 +383,8 @@ theorem ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
 
 /-- `Dilation.ratio` as a monoid homomorphism from `α →ᵈ α` to `ℝ≥0`. -/
 @[simps]
-def ratioHom : (α →ᵈ α) →* ℝ≥0 := ⟨⟨ratio, ratio_one⟩, ratio_mul⟩
+def ratioHom : (α →ᵈ α) →* ℝ≥0 where
+  toFun := ratio; map_one' := ratio_one; map_mul' := ratio_mul
 
 @[simp]
 theorem ratio_pow (f : α →ᵈ α) (n : ℕ) : ratio (f ^ n) = ratio f ^ n :=

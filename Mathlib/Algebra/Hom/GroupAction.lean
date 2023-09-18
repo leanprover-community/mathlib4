@@ -59,7 +59,7 @@ variable (T : Type*) [Semiring T] [MulSemiringAction M T]
 /-- Equivariant functions. -/
 -- Porting note: This linter does not exist yet
 -- @[nolint has_nonempty_instance]
-structure MulActionHom where
+structure MulActionHom extends FunLikeFlatHack._ where
   /-- The underlying function. -/
   protected toFun : X → Y
   /-- The proposition that the function preserves the action. -/
@@ -138,7 +138,7 @@ variable (M M')
 
 /-- The identity map as an equivariant map. -/
 protected def id : X →[M'] X :=
-  ⟨id, fun _ _ => rfl⟩
+  ⟨⟨⟩, id, fun _ _ => rfl⟩
 #align mul_action_hom.id MulActionHom.id
 
 @[simp]
@@ -150,7 +150,7 @@ variable {M M' Z}
 
 /-- Composition of two equivariant maps. -/
 def comp (g : Y →[M'] Z) (f : X →[M'] Y) : X →[M'] Z :=
-  ⟨g ∘ f, fun m x =>
+  ⟨⟨⟩, g ∘ f, fun m x =>
     calc
       g (f (m • x)) = g (m • f x) := by rw [f.map_smul]
       _ = m • g (f x) := g.map_smul _ _⟩
@@ -197,7 +197,7 @@ def SMulCommClass.toMulActionHom {M} (N α : Type*) [SMul M α] [SMul N α] [SMu
   map_smul' := smul_comm _
 
 /-- Equivariant additive monoid homomorphisms. -/
-structure DistribMulActionHom extends A →[M] B, A →+ B
+structure DistribMulActionHom extends FunLikeFlatHack._, A →[M] B, A →+ B
 #align distrib_mul_action_hom DistribMulActionHom
 
 /-- Reinterpret an equivariant additive monoid homomorphism as an additive monoid homomorphism. -/
@@ -331,7 +331,7 @@ protected theorem map_smul (f : A →+[M] B) (m : M) (x : A) : f (m • x) = m �
 variable (M)
 /-- The identity map as an equivariant additive monoid homomorphism. -/
 protected def id : A →+[M] A :=
-  ⟨.id _, rfl, fun _ _ => rfl⟩
+  ⟨⟨⟩, id, fun _ _ => rfl, rfl, fun _ _ => rfl⟩
 #align distrib_mul_action_hom.id DistribMulActionHom.id
 
 @[simp]
@@ -427,7 +427,7 @@ def SMulCommClass.toDistribMulActionHom {M} (N A : Type*) [Monoid N] [AddMonoid 
 /-- Equivariant ring homomorphisms. -/
 -- Porting note: This linter does not exist yet
 -- @[nolint has_nonempty_instance]
-structure MulSemiringActionHom extends R →+[M] S, R →+* S
+structure MulSemiringActionHom extends FunLikeFlatHack._, R →+[M] S, R →+* S
 #align mul_semiring_action_hom MulSemiringActionHom
 
 /-- Reinterpret an equivariant ring homomorphism as a ring homomorphism. -/
@@ -479,8 +479,7 @@ Coercion is already handled by all the HomClass constructions I believe -/
 instance : MulSemiringActionHomClass (R →+*[M] S) M R S where
   coe m := m.toFun
   coe_injective' f g h := by
-    rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
-    cases tF; cases tG; congr
+    cases f; cases g; congr
   map_smul m := m.map_smul'
   map_zero m := m.map_zero'
   map_add m := m.map_add'
@@ -556,8 +555,10 @@ protected theorem map_smul (f : R →+*[M] S) (m : M) (x : R) : f (m • x) = m 
 variable (M)
 
 /-- The identity map as an equivariant ring homomorphism. -/
-protected def id : R →+*[M] R :=
-  ⟨.id _, rfl, (fun _ _ => rfl)⟩
+protected def id : R →+*[M] R where
+  toFun := id
+  __ := DistribMulActionHom.id M
+  __ := RingHom.id R
 #align mul_semiring_action_hom.id MulSemiringActionHom.id
 
 @[simp]

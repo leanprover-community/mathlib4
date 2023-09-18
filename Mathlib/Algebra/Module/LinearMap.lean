@@ -89,7 +89,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 maps is available with the predicate `IsLinearMap`, but it should be avoided most of the time. -/
 structure LinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (M : Type*)
     (M₂ : Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
-    AddHom M M₂ where
+    FunLikeFlatHack._, AddHom M M₂ where
   /-- A linear map preserves scalar multiplication.
   We prefer the spelling `_root_.map_smul` instead. -/
   protected map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
@@ -198,8 +198,6 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
     cases f
     cases g
     congr
-    apply FunLike.coe_injective'
-    exact h
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
 #align linear_map.semilinear_map_class LinearMap.semilinearMapClass
@@ -219,7 +217,7 @@ def toDistribMulActionHom (f : M →ₗ[R] M₂) : DistribMulActionHom R M M₂ 
 @[simp]
 theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
 
--- porting note: no longer a `simp`
+@[simp]
 theorem toFun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) := rfl
 #align linear_map.to_fun_eq_coe LinearMap.toFun_eq_coe
 
@@ -248,16 +246,10 @@ theorem copy_eq (f : M →ₛₗ[σ] M₃) (f' : M → M₃) (h : f' = ⇑f) : f
 initialize_simps_projections LinearMap (toFun → apply)
 
 @[simp]
-theorem coe_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
-    ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : M → M₃) = f :=
+theorem coe_mk {σ : R →+* S} (f : M → M₃) (h h') :
+    ((LinearMap.mk ⟨⟩ f h h' : M →ₛₗ[σ] M₃) : M → M₃) = f :=
   rfl
 #align linear_map.coe_mk LinearMap.coe_mk
-
--- Porting note: This theorem is new.
-@[simp]
-theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
-    ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : AddHom M M₃) = f :=
-  rfl
 
 /-- Identity map as a `LinearMap` -/
 def id : M →ₗ[R] M :=
@@ -326,7 +318,7 @@ theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
 #align linear_map.ext_iff LinearMap.ext_iff
 
 @[simp]
-theorem mk_coe (f : M →ₛₗ[σ] M₃) (h) : (LinearMap.mk f h : M →ₛₗ[σ] M₃) = f :=
+theorem mk_coe (f : M →ₛₗ[σ] M₃) (h h') : (LinearMap.mk ⟨⟩ f h h' : M →ₛₗ[σ] M₃) = f :=
   ext fun _ ↦ rfl
 #align linear_map.mk_coe LinearMap.mk_coe
 

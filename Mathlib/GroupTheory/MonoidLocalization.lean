@@ -554,8 +554,9 @@ abbrev toMap (f : LocalizationMap S N) := f.toMonoidHom
 theorem ext {f g : LocalizationMap S N} (h : ∀ x, f.toMap x = g.toMap x) : f = g := by
   rcases f with ⟨⟨⟩⟩
   rcases g with ⟨⟨⟩⟩
-  simp only [mk.injEq, MonoidHom.mk.injEq]
-  exact OneHom.ext h
+  congr
+  ext
+  exact h _
 #align submonoid.localization_map.ext Submonoid.LocalizationMap.ext
 #align add_submonoid.localization_map.ext AddSubmonoid.LocalizationMap.ext
 
@@ -1457,7 +1458,8 @@ theorem mulEquivOfLocalizations_left_inv (k : N ≃* P) :
 -- @[simp] -- Porting note: simp can prove this
 @[to_additive]
 theorem mulEquivOfLocalizations_left_inv_apply {k : N ≃* P} (x) :
-    f.mulEquivOfLocalizations (f.ofMulEquivOfLocalizations k) x = k x := by simp
+    f.mulEquivOfLocalizations (f.ofMulEquivOfLocalizations k) x = k x := by
+  simp [lift]
 #align submonoid.localization_map.mul_equiv_of_localizations_left_inv_apply Submonoid.LocalizationMap.mulEquivOfLocalizations_left_inv_apply
 #align add_submonoid.localization_map.add_equiv_of_localizations_left_neg_apply AddSubmonoid.LocalizationMap.addEquivOfLocalizations_left_neg_apply
 

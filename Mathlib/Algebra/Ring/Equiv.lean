@@ -62,7 +62,8 @@ variable {F α β R S S' : Type*}
 
 /-- An equivalence between two (non-unital non-associative semi)rings that preserves the
 algebraic structure. -/
-structure RingEquiv (R S : Type*) [Mul R] [Mul S] [Add R] [Add S] extends R ≃ S, R ≃* S, R ≃+ S
+structure RingEquiv (R S : Type*) [Mul R] [Mul S] [Add R] [Add S]
+  extends FunLikeFlatHack._, R ≃ S, R ≃* S, R ≃+ S
 #align ring_equiv RingEquiv
 
 -- mathport name: «expr ≃+* »*
@@ -180,7 +181,7 @@ theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
 #align ring_equiv.ext RingEquiv.ext
 
 @[simp]
-theorem coe_mk (e h₃ h₄) : ⇑(⟨e, h₃, h₄⟩ : R ≃+* S) = e :=
+theorem coe_mk (e h₃ h₄) : ⇑(⟨⟨⟩, e, h₃, h₄⟩ : R ≃+* S) = e :=
   rfl
 #align ring_equiv.coe_mk RingEquiv.coe_mkₓ
 
@@ -188,7 +189,7 @@ theorem coe_mk (e h₃ h₄) : ⇑(⟨e, h₃, h₄⟩ : R ≃+* S) = e :=
 #noalign ring_equiv.to_equiv_mk
 
 @[simp]
-theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩ : R ≃+* S) = e :=
+theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨⟩, ⟨e, e', h₁, h₂⟩, h₃, h₄⟩ : R ≃+* S) = e :=
   ext fun _ => rfl
 #align ring_equiv.mk_coe RingEquiv.mk_coe
 
@@ -301,14 +302,14 @@ theorem symm_bijective : Function.Bijective (RingEquiv.symm : R ≃+* S → S �
 
 @[simp]
 theorem mk_coe' (e : R ≃+* S) (f h₁ h₂ h₃ h₄) :
-    (⟨⟨f, ⇑e, h₁, h₂⟩, h₃, h₄⟩ : S ≃+* R) = e.symm :=
+    (⟨⟨⟩, ⟨f, ⇑e, h₁, h₂⟩, h₃, h₄⟩ : S ≃+* R) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 #align ring_equiv.mk_coe' RingEquiv.mk_coe'
 
 @[simp]
 theorem symm_mk (f : R → S) (g h₁ h₂ h₃ h₄) :
-    (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm =
-      { (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm with
+    (mk ⟨⟩ ⟨f, g, h₁, h₂⟩ h₃ h₄).symm =
+      { (mk ⟨⟩ ⟨f, g, h₁, h₂⟩ h₃ h₄).symm with
         toFun := g
         invFun := f } :=
   rfl

@@ -30,7 +30,7 @@ universe u v w u₁ v₁
 
 /-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
 structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
+  [Algebra R A] [Algebra R B] extends FunLikeFlatHack._, A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
   protected commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 #align alg_equiv AlgEquiv
@@ -105,9 +105,11 @@ instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
-    obtain ⟨⟨f,_⟩,_⟩ := f
-    obtain ⟨⟨g,_⟩,_⟩ := g
+    obtain ⟨f,_⟩ := f
+    obtain ⟨g,_⟩ := g
     congr
+    apply FunLike.coe_injective
+    exact h₁
   map_add f := f.map_add'
   map_mul f := f.map_mul'
   commutes f := f.commutes'
@@ -119,16 +121,7 @@ instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
 -- `fun_like.has_coe_to_fun` directly. -/
 -- instance : CoeFun (A₁ ≃ₐ[R] A₂) fun _ => A₁ → A₂ :=
 --   ⟨AlgEquiv.toFun⟩
-
-instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
-  coe f := f.toFun
-  inv f := f.invFun
-  left_inv f := f.left_inv
-  right_inv f := f.right_inv
-  coe_injective' f g h₁ h₂ := by
-    obtain ⟨⟨f,_⟩,_⟩ := f
-    obtain ⟨⟨g,_⟩,_⟩ := g
-    congr
+instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ := inferInstance
 
 -- Porting note: the default simps projection was `e.toEquiv.toFun`, it should be `FunLike.coe`
 /-- See Note [custom simps projection] -/
@@ -175,13 +168,13 @@ instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
 
 @[simp]
 theorem coe_mk {toFun invFun left_inv right_inv map_mul map_add commutes} :
-    ⇑(⟨⟨toFun, invFun, left_inv, right_inv⟩, map_mul, map_add, commutes⟩ : A₁ ≃ₐ[R] A₂) = toFun :=
+    ⇑(⟨⟨⟩, ⟨toFun, invFun, left_inv, right_inv⟩, map_mul, map_add, commutes⟩ : A₁ ≃ₐ[R] A₂) = toFun :=
   rfl
 #align alg_equiv.coe_mk AlgEquiv.coe_mk
 
 @[simp]
 theorem mk_coe (e : A₁ ≃ₐ[R] A₂) (e' h₁ h₂ h₃ h₄ h₅) :
-    (⟨⟨e, e', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂) = e :=
+    (⟨⟨⟩, ⟨e, e', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂) = e :=
   ext fun _ => rfl
 #align alg_equiv.mk_coe AlgEquiv.mk_coe
 
@@ -363,14 +356,14 @@ theorem symm_bijective : Function.Bijective (symm : (A₁ ≃ₐ[R] A₂) → A�
 
 @[simp]
 theorem mk_coe' (e : A₁ ≃ₐ[R] A₂) (f h₁ h₂ h₃ h₄ h₅) :
-    (⟨⟨f, e, h₁, h₂⟩, h₃, h₄, h₅⟩ : A₂ ≃ₐ[R] A₁) = e.symm :=
+    (⟨⟨⟩, ⟨f, e, h₁, h₂⟩, h₃, h₄, h₅⟩ : A₂ ≃ₐ[R] A₁) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 #align alg_equiv.mk_coe' AlgEquiv.mk_coe'
 
 @[simp]
 theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅) :
-    (⟨⟨f, f', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂).symm =
-      {(⟨⟨f, f', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂).symm with
+    (⟨⟨⟩, ⟨f, f', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂).symm =
+      {(⟨⟨⟩, ⟨f, f', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂).symm with
         toFun := f'
         invFun := f } :=
   rfl

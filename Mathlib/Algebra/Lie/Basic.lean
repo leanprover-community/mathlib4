@@ -265,7 +265,7 @@ end BasicProperties
 
 /-- A morphism of Lie algebras is a linear map respecting the bracket operations. -/
 structure LieHom (R L L': Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
-  [LieRing L'] [LieAlgebra R L'] extends L →ₗ[R] L' where
+  [LieRing L'] [LieAlgebra R L'] extends FunLikeFlatHack._, L →ₗ[R] L' where
   /-- A morphism of Lie algebras is compatible with brackets. -/
   map_lie' : ∀ {x y : L}, toFun ⁅x, y⁆ = ⁅toFun x, toFun y⁆
 #align lie_hom LieHom
@@ -353,7 +353,7 @@ theorem id_apply (x : L₁) : (id : L₁ →ₗ⁅R⁆ L₁) x = x :=
 
 /-- The constant 0 map is a Lie algebra morphism. -/
 instance : Zero (L₁ →ₗ⁅R⁆ L₂) :=
-  ⟨{ (0 : L₁ →ₗ[R] L₂) with map_lie' := by simp }⟩
+  ⟨{ (0 : L₁ →ₗ[R] L₂) with toFun := 0, map_lie' := by simp }⟩
 
 @[norm_cast, simp]
 theorem coe_zero : ((0 : L₁ →ₗ⁅R⁆ L₂) : L₁ → L₂) = 0 :=
@@ -401,13 +401,13 @@ theorem congr_fun {f g : L₁ →ₗ⁅R⁆ L₂} (h : f = g) (x : L₁) : f x =
 #align lie_hom.congr_fun LieHom.congr_fun
 
 @[simp]
-theorem mk_coe (f : L₁ →ₗ⁅R⁆ L₂) (h₁ h₂ h₃) : (⟨⟨⟨f, h₁⟩, h₂⟩, h₃⟩ : L₁ →ₗ⁅R⁆ L₂) = f := by
+theorem mk_coe (f : L₁ →ₗ⁅R⁆ L₂) (h₁ h₂ h₃) : (⟨⟨⟩, f, h₁, h₂, h₃⟩ : L₁ →ₗ⁅R⁆ L₂) = f := by
   ext
   rfl
 #align lie_hom.mk_coe LieHom.mk_coe
 
 @[simp]
-theorem coe_mk (f : L₁ → L₂) (h₁ h₂ h₃) : ((⟨⟨⟨f, h₁⟩, h₂⟩, h₃⟩ : L₁ →ₗ⁅R⁆ L₂) : L₁ → L₂) = f :=
+theorem coe_mk (f : L₁ → L₂) (h₁ h₂ h₃) : ((⟨⟨⟩, f, h₁, h₂, h₃⟩ : L₁ →ₗ⁅R⁆ L₂) : L₁ → L₂) = f :=
   rfl
 #align lie_hom.coe_mk LieHom.coe_mk
 
@@ -698,7 +698,7 @@ variable [LieModule R L M] [LieModule R L N] [LieModule R L P]
 
 /-- A morphism of Lie algebra modules is a linear map which commutes with the action of the Lie
 algebra. -/
-structure LieModuleHom extends M →ₗ[R] N where
+structure LieModuleHom extends FunLikeFlatHack._, M →ₗ[R] N where
   /-- A module of Lie algebra modules is compatible with the action of the Lie algebra on the
   modules. -/
   map_lie' : ∀ {x : L} {m : M}, toFun ⁅x, m⁆ = ⁅x, toFun m⁆
@@ -720,6 +720,9 @@ instance : FunLike (M →ₗ⁅R, L⁆ N) M (fun _ => N) :=
   { coe := fun f => f.toFun,
     coe_injective' := fun x y h =>
       by cases x; cases y; simp at h; simp [h] }
+
+@[simp]
+theorem toFun_eq_coe (f : M →ₗ⁅R,L⁆ N) : f.toFun = f := rfl
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
@@ -776,7 +779,7 @@ theorem id_apply (x : M) : (id : M →ₗ⁅R,L⁆ M) x = x :=
 
 /-- The constant 0 map is a Lie module morphism. -/
 instance : Zero (M →ₗ⁅R,L⁆ N) :=
-  ⟨{ (0 : M →ₗ[R] N) with map_lie' := by simp }⟩
+  ⟨{ (0 : M →ₗ[R] N) with toFun := 0, map_lie' := by simp }⟩
 
 @[norm_cast, simp]
 theorem coe_zero : ⇑(0 : M →ₗ⁅R,L⁆ N) = 0 :=
@@ -815,17 +818,18 @@ theorem congr_fun {f g : M →ₗ⁅R,L⁆ N} (h : f = g) (x : M) : f x = g x :=
 #align lie_module_hom.congr_fun LieModuleHom.congr_fun
 
 @[simp]
-theorem mk_coe (f : M →ₗ⁅R,L⁆ N) (h) : (⟨f, h⟩ : M →ₗ⁅R,L⁆ N) = f := by
+theorem mk_coe (f : M →ₗ⁅R,L⁆ N) (h₁ h₂ h₃) : (⟨⟨⟩, f, h₁, h₂, h₃⟩ : M →ₗ⁅R,L⁆ N) = f := by
   rfl
 #align lie_module_hom.mk_coe LieModuleHom.mk_coe
 
 @[simp]
-theorem coe_mk (f : M →ₗ[R] N) (h) : ((⟨f, h⟩ : M →ₗ⁅R,L⁆ N) : M → N) = f := by
+theorem coe_mk (f : M → N) (h₁ h₂ h₃) : ((⟨⟨⟩, f, h₁, h₂, h₃⟩ : M →ₗ⁅R,L⁆ N) : M → N) = f := by
   rfl
 #align lie_module_hom.coe_mk LieModuleHom.coe_mk
 
 @[norm_cast]
-theorem coe_linear_mk (f : M →ₗ[R] N) (h) : ((⟨f, h⟩ : M →ₗ⁅R,L⁆ N) : M →ₗ[R] N) = f := by
+theorem coe_linear_mk (f : M →ₗ[R] N) (h₁ h₂ h₃) :
+    ((⟨⟨⟩, f, h₁, h₂, h₃⟩ : M →ₗ⁅R,L⁆ N) : M →ₗ[R] N) = f := by
   rfl
 #align lie_module_hom.coe_linear_mk LieModuleHom.coe_linear_mk
 

@@ -32,7 +32,7 @@ universe u v w u₁ v₁
 /-- Defining the homomorphism in the category R-Alg. -/
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] extends RingHom A B where
+  [Algebra R A] [Algebra R B] extends FunLikeFlatHack._, RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 #align alg_hom AlgHom
 
@@ -151,21 +151,10 @@ instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
 #align alg_hom.coe_add_monoid_hom AlgHom.coeOutAddMonoidHom
 
--- Porting note: Lean 3: `@[simp, norm_cast] coe_mk`
---               Lean 4: `@[simp] coe_mk` & `@[norm_cast] coe_mks`
-@[simp]
-theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A → B) = f :=
-  rfl
-
-@[norm_cast]
-theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
-  rfl
-#align alg_hom.coe_mk AlgHom.coe_mks
-
--- Porting note: This theorem is new.
 @[simp, norm_cast]
-theorem coe_ringHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
+theorem coe_mk {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟩, f, h₁, h₂, h₃, h₄, h₅⟩ : A →ₐ[R] B) = f :=
   rfl
+#align alg_hom.coe_mk AlgHom.coe_mk
 
 -- make the coercion the simp-normal form
 @[simp]
@@ -228,7 +217,7 @@ theorem ext_iff {φ₁ φ₂ : A →ₐ[R] B} : φ₁ = φ₂ ↔ ∀ x, φ₁ x
 #align alg_hom.ext_iff AlgHom.ext_iff
 
 @[simp]
-theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
+theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟩, f, h₁, h₂, h₃, h₄, h₅⟩ : A →ₐ[R] B) = f :=
   ext fun _ => rfl
 #align alg_hom.mk_coe AlgHom.mk_coe
 

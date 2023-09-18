@@ -70,7 +70,7 @@ def MonoidHom.inverse {A B : Type*} [Monoid A] [Monoid B] (f : A →* B) (g : B 
 #align add_monoid_hom.inverse_apply AddMonoidHom.inverse_apply
 
 /-- `AddEquiv α β` is the type of an equiv `α ≃ β` which preserves addition. -/
-structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
+structure AddEquiv (A B : Type*) [Add A] [Add B] extends FunLikeFlatHack._, A ≃ B, AddHom A B
 #align add_equiv AddEquiv
 
 /-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
@@ -91,7 +91,7 @@ add_decl_doc AddEquiv.toAddHom
 
 /-- `MulEquiv α β` is the type of an equiv `α ≃ β` which preserves multiplication. -/
 @[to_additive]
-structure MulEquiv (M N : Type*) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
+structure MulEquiv (M N : Type*) [Mul M] [Mul N] extends FunLikeFlatHack._, M ≃ N, M →ₙ* N
 -- Porting note: remove when `to_additive` can do this
 -- https://github.com/leanprover-community/mathlib4/issues/660
 attribute [to_additive existing] MulEquiv.toMulHom
@@ -249,7 +249,7 @@ protected theorem map_mul (f : M ≃* N) : ∀ x y, f (x * y) = f x * f y :=
 
 /-- Makes a multiplicative isomorphism from a bijection which preserves multiplication. -/
 @[to_additive "Makes an additive isomorphism from a bijection which preserves addition."]
-def mk' (f : M ≃ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃* N := ⟨f, h⟩
+def mk' (f : M ≃ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃* N := ⟨⟨⟩, f, h⟩
 #align mul_equiv.mk' MulEquiv.mk'
 #align add_equiv.mk' AddEquiv.mk'
 
@@ -284,7 +284,8 @@ instance : Inhabited (M ≃* M) := ⟨refl M⟩
 /-- The inverse of an isomorphism is an isomorphism. -/
 @[to_additive (attr := symm) "The inverse of an isomorphism is an isomorphism."]
 def symm {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
-  ⟨h.toEquiv.symm, (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul⟩
+  { h.toEquiv.symm with
+    map_mul' := (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul }
 #align mul_equiv.symm MulEquiv.symm
 #align add_equiv.symm AddEquiv.symm
 
@@ -319,9 +320,8 @@ theorem toEquiv_symm (f : M ≃* N) : (f.symm : N ≃ M) = (f : M ≃ N).symm :=
 #align mul_equiv.to_equiv_symm MulEquiv.toEquiv_symm
 #align add_equiv.to_equiv_symm AddEquiv.toEquiv_symm
 
--- porting note: doesn't align with Mathlib 3 because `MulEquiv.mk` has a new signature
 @[to_additive (attr := simp)]
-theorem coe_mk (f : M ≃ N) (hf : ∀ x y, f (x * y) = f x * f y) : (mk f hf : M → N) = f := rfl
+theorem coe_mk (f : M ≃ N) (hf : ∀ x y, f (x * y) = f x * f y) : (mk ⟨⟩ f hf : M → N) = f := rfl
 #align mul_equiv.coe_mk MulEquiv.coe_mkₓ
 #align add_equiv.coe_mk AddEquiv.coe_mkₓ
 
@@ -344,7 +344,7 @@ theorem symm_bijective : Function.Bijective (symm : M ≃* N → N ≃* M) :=
 -- because the signature of `MulEquiv.mk` has changed.
 @[to_additive (attr := simp)]
 theorem symm_mk (f : M ≃ N) (h) :
-  (MulEquiv.mk f h).symm = ⟨f.symm, (MulEquiv.mk f h).symm.map_mul'⟩ := rfl
+  (MulEquiv.mk ⟨⟩ f h).symm = ⟨⟨⟩, f.symm, (MulEquiv.mk ⟨⟩ f h).symm.map_mul'⟩ := rfl
 #align mul_equiv.symm_mk MulEquiv.symm_mkₓ
 #align add_equiv.symm_mk AddEquiv.symm_mkₓ
 
@@ -509,13 +509,13 @@ theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
 #align add_equiv.ext_iff AddEquiv.ext_iff
 
 @[to_additive (attr := simp)]
-theorem mk_coe (e : M ≃* N) (e' h₁ h₂ h₃) : (⟨⟨e, e', h₁, h₂⟩, h₃⟩ : M ≃* N) = e :=
+theorem mk_coe (e : M ≃* N) (e' h₁ h₂ h₃) : (⟨⟨⟩, ⟨e, e', h₁, h₂⟩, h₃⟩ : M ≃* N) = e :=
   ext fun _ => rfl
 #align mul_equiv.mk_coe MulEquiv.mk_coe
 #align add_equiv.mk_coe AddEquiv.mk_coe
 
 @[to_additive (attr := simp)]
-theorem mk_coe' (e : M ≃* N) (f h₁ h₂ h₃) : (MulEquiv.mk ⟨f, e, h₁, h₂⟩ h₃ : N ≃* M) = e.symm :=
+theorem mk_coe' (e : M ≃* N) (f h₁ h₂ h₃) : (MulEquiv.mk ⟨⟩ ⟨f, e, h₁, h₂⟩ h₃ : N ≃* M) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 #align mul_equiv.mk_coe' MulEquiv.mk_coe'
 #align add_equiv.mk_coe' AddEquiv.mk_coe'

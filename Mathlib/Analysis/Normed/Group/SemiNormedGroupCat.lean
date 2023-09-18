@@ -253,7 +253,8 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat₁.{u} :=
 #align SemiNormedGroup₁.has_zero_object SemiNormedGroupCat₁.hasZeroObject
 
 theorem iso_isometry {V W : SemiNormedGroupCat₁} (i : V ≅ W) : Isometry i.hom := by
-  change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
+  change Isometry
+    ({toFun := i.hom, map_zero' := map_zero _, map_add' := fun _ _ => map_add _ _ _} : V →+ W)
   refine' AddMonoidHomClass.isometry_of_norm _ _
   intro v
   apply le_antisymm (i.hom.2 v)

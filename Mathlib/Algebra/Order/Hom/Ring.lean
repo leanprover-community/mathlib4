@@ -175,8 +175,6 @@ instance : OrderRingHomClass (α →+*o β) α β
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
-    -- porting note: needed to add the following line
-    exact MonoidHom.monoidHomClass.coe_injective' h
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_add f := f.map_add'
@@ -371,9 +369,10 @@ instance : OrderRingIsoClass (α ≃+*o β) α β
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
-    obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
-    obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
+    cases f
+    cases g
     congr
+    exact FunLike.coe_injective h₁
   map_add f := f.map_add'
   map_mul f := f.map_mul'
   map_le_map_iff f _ _ := f.map_le_map_iff'
