@@ -56,12 +56,12 @@ instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
   Monoidal.induced
     (F := fullSubcategoryInclusion P)
     (tensorObj := fun X Y => ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩)
-    (μIsoSymm := fun X Y => 𝟙 _)
+    (μIsoSymm := fun X Y => eqToIso rfl)
     (whiskerLeft := fun X _ _ f ↦ X.1 ◁ f)
     (whiskerRight := @fun X₁ X₂ (f : X₁.1 ⟶ X₂.1) Y ↦ (f ▷ Y.1 :))
     (tensorHom := fun f g => f ⊗ g)
     (tensorUnit' := ⟨𝟙_ C, prop_id⟩)
-    (εIsoSymm := 𝟙 _)
+    (εIsoSymm := eqToIso rfl)
     (associator := fun X Y Z =>
       ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
         inv_hom_id (α_ X.1 Y.1 Z.1)⟩)
