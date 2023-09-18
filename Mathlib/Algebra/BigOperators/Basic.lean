@@ -162,44 +162,6 @@ scoped macro (name := bigprodin) "∏ " x:ident " in " s:term ", " r:term:67 : t
 scoped macro (name := bigprodin') "∏ " x:ident ":" ty:term  " in " s:term ", " r:term:67 : term =>
   `(∏ ($x : $ty) ∈ $s, $r)
 
-open Parser.Term PrettyPrinter.Delaborator SubExpr
-
-/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
-to show the domain type when the product is over `Finset.univ`. -/
-@[scoped delab app.Finset.prod] def delabFinsetProd : Delab := whenPPOption getPPNotation do
-  let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
-  guard <| f.isLambda
-  let ppDomain ← getPPOption getPPPiBinderTypes
-  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
-    return (i, ← delab)
-  if s.isAppOfArity ``Finset.univ 2 then
-    if ppDomain then
-      let ty ← withNaryArg 1 delab
-      `(∏ $(.mk i):ident : $ty, $body)
-    else
-      `(∏ $(.mk i):ident, $body)
-  else
-    let ss ← withNaryArg 3 <| delab
-    `(∏ $(.mk i):ident ∈ $ss, $body)
-
-/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
-to show the domain type when the sum is over `Finset.univ`. -/
-@[scoped delab app.Finset.sum] def delabFinsetSum : Delab := whenPPOption getPPNotation do
-  let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
-  guard <| f.isLambda
-  let ppDomain ← getPPOption getPPPiBinderTypes
-  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
-    return (i, ← delab)
-  if s.isAppOfArity ``Finset.univ 2 then
-    if ppDomain then
-      let ty ← withNaryArg 1 delab
-      `(∑ $(.mk i):ident : $ty, $body)
-    else
-      `(∑ $(.mk i):ident, $body)
-  else
-    let ss ← withNaryArg 3 <| delab
-    `(∑ $(.mk i):ident ∈ $ss, $body)
-
 end BigOperators
 
 open BigOperators
@@ -690,7 +652,7 @@ theorem prod_mul_distrib : ∏ x in s, f x * g x = (∏ x in s, f x) * ∏ x in 
 
 @[to_additive]
 theorem prod_product {s : Finset γ} {t : Finset α} {f : γ × α → β} :
-    ∏ x in s ×ˢ t, f x = ∏ x in s, ∏ y in t, f (x, y) :=
+    ∏ x ∈ s ×ˢ t, f x = ∏ (x ∈ s) (y ∈ t), f (x, y) :=
   prod_finset_product (s ×ˢ t) s (fun _a => t) fun _p => mem_product
 #align finset.prod_product Finset.prod_product
 #align finset.sum_product Finset.sum_product
