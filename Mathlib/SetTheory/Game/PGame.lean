@@ -1207,19 +1207,6 @@ lemma Identical.of_fn {x y : PGame}
     ⟨⟨fun i ↦ ⟨l i, hl i⟩, fun i ↦ ⟨il i, hil i⟩⟩,
       ⟨fun i ↦ ⟨r i, hr i⟩, fun i ↦ ⟨ir i, hir i⟩⟩⟩
 
-lemma identical_iff_fn {x y : PGame} :
-    x ≡ y ↔
-      (∃ l : _ → _, ∀ i, x.moveLeft i ≡ y.moveLeft (l i)) ∧
-      (∃ il : _ → _, ∀ i, x.moveLeft (il i) ≡ y.moveLeft i) ∧
-      (∃ r : _ → _, ∀ i, x.moveRight i ≡ y.moveRight (r i)) ∧
-      (∃ ir : _ → _, ∀ i, x.moveRight (ir i) ≡ y.moveRight i) := identical_iff.trans
-  ⟨fun ⟨⟨hl, hil⟩, ⟨hr, hir⟩⟩ ↦
-    ⟨Classical.axiomOfChoice hl, Classical.axiomOfChoice hil,
-      Classical.axiomOfChoice hr, Classical.axiomOfChoice hir⟩,
-  fun ⟨⟨l, hl⟩, ⟨il, hil⟩, ⟨r, hr⟩, ⟨ir, hir⟩⟩ ↦
-    ⟨⟨fun i ↦ ⟨l i, hl i⟩, fun i ↦ ⟨il i, hil i⟩⟩,
-      ⟨fun i ↦ ⟨r i, hr i⟩, fun i ↦ ⟨ir i, hir i⟩⟩⟩⟩
-
 lemma Identical.of_equiv {x y : PGame}
     (l : x.LeftMoves ≃ y.LeftMoves) (r : x.RightMoves ≃ y.RightMoves)
     (hl : ∀ i, x.moveLeft i ≡ y.moveLeft (l i)) (hr : ∀ i, x.moveRight i ≡ y.moveRight (r i)) :
@@ -1970,8 +1957,7 @@ lemma Identical.add_right {x₁ x₂ y} : x₁ ≡ x₂ → x₁ + y ≡ x₂ + 
   | mk x₁l x₁r x₁L x₁R, mk x₂l x₂r x₂L x₂R, mk yl yr yL yR => by
     rintro ⟨⟨hL₁, hL₂⟩, ⟨hR₁, hR₂⟩⟩
     have h : mk x₁l x₁r x₁L x₁R ≡ mk x₂l x₂r x₂L x₂R := ⟨⟨hL₁, hL₂⟩, ⟨hR₁, hR₂⟩⟩
-    refine' identical_iff.mpr ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;> rintro (_ | _) <;>
-      try exact ⟨.inr _, h.add_right⟩
+    refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;> rintro (_ | _) <;> try exact ⟨.inr _, h.add_right⟩
     · exact (hL₁ _).elim (⟨.inl ·, ·.add_right⟩)
     · exact (hL₂ _).elim (⟨.inl ·, ·.add_right⟩)
     · exact (hR₁ _).elim (⟨.inl ·, ·.add_right⟩)
