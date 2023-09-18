@@ -801,8 +801,7 @@ variable {K : Type*} [Field K] [Algebra F K]
 
 theorem minpoly_gen (α : E) :
     minpoly F (AdjoinSimple.gen F α) = minpoly F α := by
-  conv_rhs => rw [← AdjoinSimple.algebraMap_gen F α]
-  exact (minpoly.algebraMap_eq (algebraMap F⟮α⟯ E).injective _).symm
+  rw [← minpoly.algebraMap_eq (algebraMap F⟮α⟯ E).injective, AdjoinSimple.algebraMap_gen]
 #align intermediate_field.minpoly_gen IntermediateField.minpoly_genₓ
 
 theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α) = 0 := by
