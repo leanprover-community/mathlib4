@@ -9,7 +9,7 @@ import Mathlib.Data.ZMod.Algebra
 /-!
 # Dirichlet Characters
 
-Let `R` be a commutatvive monoid with zero. A Dirichlet character `χ` of level `n` over `R` is a
+Let `R` be a commutative monoid with zero. A Dirichlet character `χ` of level `n` over `R` is a
 multiplicative character from `ZMod n` to `Rˣ`. We then obtain some properties of `toUnitHom χ`.
 
 Main definitions:
