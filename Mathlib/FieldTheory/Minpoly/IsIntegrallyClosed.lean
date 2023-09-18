@@ -63,8 +63,7 @@ theorem isIntegrallyClosed_eq_field_fractions' [IsDomain S] [Algebra K S] [IsSca
     {s : S} (hs : IsIntegral R s) : minpoly K s = (minpoly R s).map (algebraMap R K) := by
   let L := FractionRing S
   rw [← isIntegrallyClosed_eq_field_fractions K L hs]
-  refine'
-    minpoly.eq_of_algebraMap_eq (IsFractionRing.injective S L) (isIntegral_of_isScalarTower hs) rfl
+  exact (minpoly.algebraMap_eq (IsFractionRing.injective S L) _).symm
 #align minpoly.is_integrally_closed_eq_field_fractions' minpoly.isIntegrallyClosed_eq_field_fractions'
 
 end
