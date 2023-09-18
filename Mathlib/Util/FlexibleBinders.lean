@@ -159,6 +159,8 @@ inductive Binder where
   In particular, `letI name := val; ...`. -/
   | letI (name : Ident) (val : Term)
 
+instance : Inhabited Binder := ⟨.prop <| Unhygienic.run `(True)⟩
+
 /-- Takes a term and interprets it as a flexible binder expression.
 Uses the `binder%(...)`/`binderSplit%(...)` syntax to process and expand binders.
 - `domainType` is usually `type`, which turns off bounded quantification.

@@ -241,3 +241,26 @@ variable (s : Finset Nat) (s' : Set Nat) [Fintype s']
 /-- info: MyPi x ∈ s', 0 < x : Prop -/
 #guard_msgs in #check MyPi x ∈ s', 0 < x
 end
+
+/-
+variable (s : Finset α) (u : α → Finset β) (f : α → β → ℕ)
+#check ∑ (x ∈ s) × (y ∈ u x), f x y
+/-
+∑ x ∈ Finset.sigma s fun x ↦ u x,
+  match x with
+  | { fst := x, snd := y } => f x y : ℕ
+-/
+#test_flexible_binders finset% => x y ∈ s when x = x
+
+variable (s : Finset Nat)
+#check ∑ x ∈ s when x < 10, 2 * x
+/-
+∑ x ∈ Finset.filter (fun x ↦ x < 10) s, 2 * x : ℕ
+-/
+#check ∑ x y ∈ s when x < y, 2 * x * y
+/-
+∑ (x ∈ s) (y ∈ Finset.filter (fun y ↦ x < y) s), 2 * x * y : ℕ
+-/
+
+#test_flexible_binders finset% => (x ∈ s) × (y ∈ u x)
+-/
