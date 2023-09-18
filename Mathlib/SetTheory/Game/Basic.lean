@@ -530,7 +530,7 @@ def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
 #align pgame.neg_mul_relabelling SetTheory.PGame.negMulRelabelling
 
 /-- `x * -y` and `-(x * y)` have the same moves. -/
-lemma mul_neg (x y : PGame.{u}) : x * -y = -(x * y) :=
+lemma mul_neg (x y : PGame) : x * -y = -(x * y) :=
   match x, y with
   | mk xl xr xL xR, mk yl yr yL yR => by
     refine ext rfl rfl ?_ ?_
@@ -559,7 +559,7 @@ lemma mul_neg (x y : PGame.{u}) : x * -y = -(x * y) :=
   termination_by _ => (x, y)
 
 /-- `-x * y` and `-(x * y)` have the same moves. -/
-lemma neg_mul (x y : PGame.{u}) : -x * y ≡ -(x * y) :=
+lemma neg_mul (x y : PGame) : -x * y ≡ -(x * y) :=
   ((PGame.mul_comm _ _).trans (of_eq (mul_neg _ _))).trans (PGame.mul_comm _ _).neg
 
 @[simp]
@@ -985,7 +985,7 @@ theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x
 #align pgame.zero_lf_inv' SetTheory.PGame.zero_lf_inv'
 
 /-- `inv' 0` has exactly the same moves as `1`. -/
-lemma inv'_zero' : inv' 0 ≡ (1 : PGame.{u}) := by
+lemma inv'_zero : inv' 0 ≡ (1 : PGame) := by
   refine ⟨?_, ?_⟩ <;> dsimp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
   · simp_rw [Unique.forall_iff, Unique.exists_iff, and_self, PGame.invVal_isEmpty]
     exact identical_zero _
@@ -1008,7 +1008,7 @@ theorem inv'_zero_equiv : inv' 0 ≈ 1 :=
 #align pgame.inv'_zero_equiv SetTheory.PGame.inv'_zero_equiv
 
 /-- `inv' 1` has exactly the same moves as `1`. -/
-lemma inv'_one' : inv'.{u} 1 ≡ 1 := by
+lemma inv'_one : inv'.{u} 1 ≡ 1 := by
   have : IsEmpty {_i : PUnit.{u+1} // (0 : PGame.{u}) < 0} := by
     rw [lt_self_iff_false]
     infer_instance
@@ -1059,9 +1059,9 @@ theorem inv_eq_of_lf_zero {x : PGame} (h : x ⧏ 0) : x⁻¹ = -inv' (-x) := by
 #align pgame.inv_eq_of_lf_zero SetTheory.PGame.inv_eq_of_lf_zero
 
 /-- `1⁻¹` has exactly the same moves as `1`. -/
-lemma inv_one' : 1⁻¹ ≡ 1 := by
+lemma inv_one : 1⁻¹ ≡ 1 := by
   rw [inv_eq_of_pos PGame.zero_lt_one]
-  exact inv'_one'
+  exact inv'_one
 
 /-- `1⁻¹` has exactly the same moves as `1`. -/
 def invOne : 1⁻¹ ≡r 1 := by

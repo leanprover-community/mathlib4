@@ -1158,27 +1158,27 @@ theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
     exact exists_congr <| fun _ ↦ identical_comm
 
 set_option linter.unusedVariables false in
-theorem memₗ.congr_right : ∀ {x y : PGame.{u}},
-    x ≡ y → (∀ {w : PGame.{u}}, w ∈ₗ x ↔ w ∈ₗ y)
+theorem memₗ.congr_right : ∀ {x y : PGame},
+    x ≡ y → (∀ {w : PGame}, w ∈ₗ x ↔ w ∈ₗ y)
   | mk xl xr xL xR, mk yl yr yL yR, ⟨⟨h₁, h₂⟩, _⟩, _w =>
     ⟨fun ⟨i, hi⟩ ↦ (h₁ i).imp (fun _ ↦ hi.trans),
       fun ⟨j, hj⟩ ↦ (h₂ j).imp (fun _ hi ↦ hj.trans hi.symm)⟩
 
 set_option linter.unusedVariables false in
-theorem memᵣ.congr_right : ∀ {x y : PGame.{u}},
-    x ≡ y → (∀ {w : PGame.{u}}, w ∈ᵣ x ↔ w ∈ᵣ y)
+theorem memᵣ.congr_right : ∀ {x y : PGame},
+    x ≡ y → (∀ {w : PGame}, w ∈ᵣ x ↔ w ∈ᵣ y)
   | mk xl xr xL xR, mk yl yt yL yR, ⟨_, ⟨h₁, h₂⟩⟩, _w =>
     ⟨fun ⟨i, hi⟩ ↦ (h₁ i).imp (fun _ ↦ hi.trans),
       fun ⟨j, hj⟩ ↦ (h₂ j).imp (fun _ hi ↦ hj.trans hi.symm)⟩
 
 set_option linter.unusedVariables false in
-theorem memₗ.congr_left : ∀ {x y : PGame.{u}},
-    x ≡ y → (∀ {w : PGame.{u}}, x ∈ₗ w ↔ y ∈ₗ w)
+theorem memₗ.congr_left : ∀ {x y : PGame},
+    x ≡ y → (∀ {w : PGame}, x ∈ₗ w ↔ y ∈ₗ w)
   | x, y, h, mk l r L R => ⟨fun ⟨i, hi⟩ ↦ ⟨i, h.symm.trans hi⟩, fun ⟨i, hi⟩ ↦ ⟨i, h.trans hi⟩⟩
 
 set_option linter.unusedVariables false in
-theorem memᵣ.congr_left : ∀ {x y : PGame.{u}},
-    x ≡ y → (∀ {w : PGame.{u}}, x ∈ᵣ w ↔ y ∈ᵣ w)
+theorem memᵣ.congr_left : ∀ {x y : PGame},
+    x ≡ y → (∀ {w : PGame}, x ∈ᵣ w ↔ y ∈ᵣ w)
   | x, y, h, mk l r L R => ⟨fun ⟨i, hi⟩ ↦ ⟨i, h.symm.trans hi⟩, fun ⟨i, hi⟩ ↦ ⟨i, h.trans hi⟩⟩
 
 set_option linter.unusedVariables false in
@@ -1549,7 +1549,7 @@ def Relabelling.negCongr : ∀ {x y : PGame}, x ≡r y → -x ≡r -y
     ⟨R, L, fun j => (hR j).negCongr, fun i => (hL i).negCongr⟩
 #align pgame.relabelling.neg_congr SetTheory.PGame.Relabelling.negCongr
 
-private theorem neg_le_lf_neg_iff : ∀ {x y : PGame.{u}}, (-y ≤ -x ↔ x ≤ y) ∧ (-y ⧏ -x ↔ x ⧏ y)
+private theorem neg_le_lf_neg_iff : ∀ {x y : PGame}, (-y ≤ -x ↔ x ≤ y) ∧ (-y ⧏ -x ↔ x ⧏ y)
   | mk xl xr xL xR, mk yl yr yL yR => by
     simp_rw [neg_def, mk_le_mk, mk_lf_mk, ← neg_def]
     constructor
