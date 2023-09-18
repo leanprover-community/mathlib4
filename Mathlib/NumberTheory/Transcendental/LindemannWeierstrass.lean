@@ -492,7 +492,7 @@ section
 variable (F : Type _) [Field F] [Algebra ℚ F]
 
 noncomputable def mapDomainFixed : Subalgebra F (AddMonoidAlgebra F (K s)) where
-  carrier x := ∀ f : Gal s, AddMonoidAlgebra.mapDomainAlgAut ℚ _ f.toAddEquiv x = x
+  carrier := {x | ∀ f : Gal s, AddMonoidAlgebra.mapDomainAlgAut ℚ _ f.toAddEquiv x = x}
   mul_mem' {a b} ha hb f := by rw [map_mul, ha, hb]
   add_mem' {a b} ha hb f := by rw [map_add, ha, hb]
   algebraMap_mem' r f := by
@@ -718,7 +718,7 @@ theorem single_prod_apply_zero_ne_zero_iff (x : GalConjClasses ℚ (K s)) {a : F
     toConjEquiv_apply_zero_eq]
   simp_rw [toConjEquiv_symm_single, MulMemClass.mk_mul_mk]
   haveI := Nat.noZeroSMulDivisors ℚ F
-  simp_rw [Finsupp.indicator_const_eq_sum_single, sum_mul, mul_sum,
+  simp_rw [Finsupp.indicator_eq_sum_single, sum_mul, mul_sum,
     AddMonoidAlgebra.single_mul_single]
   -- Porting note: next four lines were `simp_rw [Finsupp.coe_finset_sum, sum_apply]`
   rw [Finsupp.coe_finset_sum, sum_apply]

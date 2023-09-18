@@ -239,12 +239,8 @@ theorem exist_mem_orbit_add_eq_zero (x y : GalConjClasses F E) :
     simp_rw [mk_neg, out_eq, neg_add_self]
 #align gal_conj_classes.exist_mem_orbit_add_eq_zero GalConjClasses.exist_mem_orbit_add_eq_zero
 
-variable [IsSeparable F E]
-
 noncomputable nonrec def minpoly : GalConjClasses F E → F[X] :=
-  Quotient.lift (minpoly F) fun (a b : E) ⟨f, h⟩ =>
-    minpoly.eq_of_algHom_eq f.symm.toAlgHom f.symm.injective (IsSeparable.isIntegral F a)
-      (h ▸ (f.symm_apply_apply b).symm)
+  Quotient.lift (minpoly F) fun _ b ⟨f, h⟩ => h ▸ minpoly.minpoly_algEquiv f b
 #align gal_conj_classes.minpoly GalConjClasses.minpoly
 
 theorem minpoly_mk (x : E) : minpoly (mk F x) = _root_.minpoly F x :=
@@ -254,6 +250,10 @@ theorem minpoly_mk (x : E) : minpoly (mk F x) = _root_.minpoly F x :=
 theorem minpoly_out (c : GalConjClasses F E) : _root_.minpoly F c.out = minpoly c := by
   rw [← c.out_eq, minpoly_mk, c.out_eq]
 #align gal_conj_classes.minpoly_out GalConjClasses.minpoly_out
+
+variable [IsSeparable F E]
+-- most lemmas work with Algebra.IsIntegral / Algebra.IsAlgebraic
+-- but there isn't a lemma saying these are implied by `IsSeparable`
 
 theorem monic_minpoly (c : GalConjClasses F E) : (minpoly c).Monic := by
   rw [← c.out_eq, minpoly_mk]; exact minpoly.monic (IsSeparable.isIntegral F _)
@@ -339,7 +339,7 @@ def delabPolynomialRoots : Delab := do
     pure (A, B)
   `($B.[$A]-roots)
 
-theorem minpoly_injective [Normal F E] : Function.Injective (@minpoly F _ E _ _ _) := fun _ _ =>
+theorem minpoly_injective [Normal F E] : Function.Injective (@minpoly F _ E _ _) := fun _ _ =>
   minpoly_inj
 #align gal_conj_classes.minpoly.injective GalConjClasses.minpoly_injective
 

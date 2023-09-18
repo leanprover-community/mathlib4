@@ -613,10 +613,6 @@ lemma indicator_eq_sum_single [AddCommMonoid M] (s : Finset α) (f : α → M) :
     indicator s (fun x _ ↦ f x) = ∑ x in s, single x (f x) :=
   (indicator_eq_sum_attach_single _).trans <| sum_attach (f := fun x ↦ single x (f x))
 
-theorem indicator_const_eq_sum_single [AddCommMonoid M] (s : Finset α) (m : M) :
-    (indicator s fun _ _ => m) = ∑ x in s, single x m :=
-  indicator_eq_sum_single _ _
-
 @[to_additive (attr := simp)]
 lemma prod_indicator_index_eq_prod_attach [Zero M] [CommMonoid N]
     {s : Finset α} (f : ∀ a ∈ s, M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
@@ -632,11 +628,6 @@ lemma prod_indicator_index [Zero M] [CommMonoid N]
     {s : Finset α} (f : α → M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
     (indicator s (fun x _ ↦ f x)).prod h = ∏ x in s, h x (f x) :=
   (prod_indicator_index_eq_prod_attach _ h_zero).trans <| prod_attach (f := fun x ↦ h x (f x))
-
-@[to_additive (attr := simp)]
-theorem prod_indicator_const_index [Zero M] [CommMonoid N] {s : Finset α} (m : M) {h : α → M → N}
-    (h_zero : ∀ a ∈ s, h a 0 = 1) : (indicator s fun _ _ => m).prod h = ∏ x in s, h x m :=
-  prod_indicator_index _ h_zero
 
 lemma sum_cons [AddCommMonoid M] (n : ℕ) (σ : Fin n →₀ M) (i : M) :
     (sum (cons i σ) fun _ e ↦ e) = i + sum σ (fun _ e ↦ e) := by
