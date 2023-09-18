@@ -22,7 +22,36 @@ noncomputable section
 --     Function.Surjective fun n => (Encodable.decode (α := α) n).iget := fun x =>
 --   ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
 
-variable {ι ι' ι'' : Type _}
+-- move this, maybe next to `measurable_update` in `MeasureTheory.MeasurableSpace`
+section Measurable
+variable {δ : Type _} [DecidableEq δ] {π : δ → Type _} [∀ a : δ, MeasurableSpace (π a)]
+
+-- unused
+theorem measurable_update'  {a : δ} :
+    Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
+  rw [measurable_pi_iff]; intro j
+  dsimp [update]
+  split_ifs with h
+  · subst h
+    dsimp
+    exact measurable_snd
+  · exact measurable_pi_iff.1 measurable_fst _
+
+theorem measurable_update_left {a : δ} {x : π a} :
+    Measurable (update · a x) := by
+  rw [measurable_pi_iff]; intro j
+  dsimp [update]
+  split_ifs with h
+  · subst h
+    exact measurable_const
+  · exact measurable_pi_apply j
+
+theorem measurable_updateSet {s : Finset δ} {x : ∀ i, π i}  : Measurable (updateSet x s) := by
+  simp_rw [updateSet, measurable_pi_iff]
+  intro i
+  by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
+
+end Measurable
 
 namespace MeasureTheory
 
@@ -31,12 +60,6 @@ section Marginal
 variable {δ δ' : Type _} {π : δ → Type _} [∀ x, MeasurableSpace (π x)]
 variable {μ : ∀ i, Measure (π i)} [∀ i, SigmaFinite (μ i)]
 variable {s t : Finset δ} {f g : (∀ i, π i) → ℝ≥0∞} {x y : ∀ i, π i} {i : δ}
-
--- move this
-theorem measurable_updateSet : Measurable (updateSet x s) := by
-  simp_rw [updateSet, measurable_pi_iff]
-  intro i
-  by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
 
 /-- Integrate `f(x₁,…,xₙ)` over all variables `xᵢ` where `i ∈ s`. Return a function in the
   remaining variables (it will be constant in the `xᵢ` for `i ∈ s`).
@@ -70,7 +93,6 @@ theorem _root_.Measurable.marginal (hf : Measurable f) : Measurable (∫⋯∫_s
 
 /-- The marginal distribution is independent of the variables in `s`. -/
 -- todo: notation `∀ i ∉ s, ...`
-@[gcongr]
 theorem marginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
     (h : ∀ (i) (_ : i ∉ s), x i = y i) :
     (∫⋯∫_s, f ∂μ) x = (∫⋯∫_s, f ∂μ) y := by
@@ -79,7 +101,8 @@ theorem marginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
 theorem marginal_update_of_mem [DecidableEq δ] {i : δ} (hi : i ∈ s)
     (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) (y : π i) :
     (∫⋯∫_s, f ∂μ) (Function.update x i y) = (∫⋯∫_s, f ∂μ) x := by
-  gcongr with j hj
+  apply marginal_congr
+  intro j hj
   have : j ≠ i := by rintro rfl; exact hj hi
   apply update_noteq this
 
@@ -123,10 +146,6 @@ theorem marginal_singleton [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (
         simp_rw [marginal, ← Measure.map_piUnique_symm, lintegral_map_equiv]
     _ = ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by simp [update_eq_updateSet]
 
-theorem integral_update [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (i : δ) (x : ∀ i, π i) :
-    ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i = (∫⋯∫_{i}, f ∂μ) x := by
-  simp_rw [marginal_singleton f i]
-
 /-- Peel off a single integral from a `marginal` integral at the beginning (compare with
 `marginal_insert'`, which peels off an integral at the end). -/
 theorem marginal_insert [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
@@ -141,29 +160,6 @@ theorem marginal_erase [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf :
     (hi : i ∈ s) (x : ∀ i, π i) :
     (∫⋯∫_s, f ∂μ) x = ∫⁻ xᵢ, (∫⋯∫_(erase s i), f ∂μ) (Function.update x i xᵢ) ∂μ i := by
   simpa [insert_erase hi] using marginal_insert _ hf (not_mem_erase i s) x
-
--- move next to `measurable_update` in `MeasureTheory.MeasurableSpace`
--- unused
-theorem measurable_update' {δ : Type _} [DecidableEq δ] {π : δ → Type _}
-    [∀ a : δ, MeasurableSpace (π a)] {a : δ} :
-    Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
-  rw [measurable_pi_iff]; intro j
-  dsimp [update]
-  split_ifs with h
-  · subst h
-    dsimp
-    exact measurable_snd
-  · exact measurable_pi_iff.1 measurable_fst _
-
-theorem measurable_update_left {δ : Type _} [DecidableEq δ] {π : δ → Type _}
-    [∀ a : δ, MeasurableSpace (π a)] {a : δ} {x : π a} :
-    Measurable (update · a x) := by
-  rw [measurable_pi_iff]; intro j
-  dsimp [update]
-  split_ifs with h
-  · subst h
-    exact measurable_const
-  · exact measurable_pi_apply j
 
 /-- Peel off a single integral from a `marginal` integral at the end (compare with
 `marginal_insert`, which peels off an integral at the beginning). -/
@@ -186,7 +182,7 @@ open Filter
 theorem marginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : ∫⋯∫_s, f ∂μ ≤ ∫⋯∫_s, g ∂μ :=
   fun _ => lintegral_mono fun _ => hfg _
 
-theorem marginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} :
+@[simp] theorem marginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} :
     ∫⋯∫_univ, f ∂μ = fun _ => ∫⁻ x, f x ∂Measure.pi μ := by
   let e : { j // j ∈ Finset.univ } ≃ δ := Equiv.subtypeUnivEquiv mem_univ
   ext1 x
@@ -195,7 +191,7 @@ theorem marginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} :
   rfl
 
 theorem lintegral_eq_marginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} (x : ∀ i, π i) :
-    ∫⁻ x, f x ∂Measure.pi μ = (∫⋯∫_univ, f ∂μ) x := by rw [marginal_univ]
+    ∫⁻ x, f x ∂Measure.pi μ = (∫⋯∫_univ, f ∂μ) x := by simp
 
 theorem marginal_image [DecidableEq δ] {e : δ' → δ} (he : Injective e) (s : Finset δ')
     {f : (∀ i, π (e i)) → ℝ≥0∞} (hf : Measurable f) (x : ∀ i, π i) :
@@ -239,7 +235,7 @@ theorem lintegral_eq_of_marginal_eq [Fintype δ] (s : Finset δ) {f g : (∀ i, 
   · simp_rw [lintegral_of_isEmpty]
   simp_rw [lintegral_eq_marginal_univ x, marginal_eq_of_subset (Finset.subset_univ s) hf hg hfg]
 
-theorem integral_le_of_marginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i, π i) → ℝ≥0∞}
+theorem lintegral_le_of_marginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i, π i) → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫_s, f ∂μ ≤ ∫⋯∫_s, g ∂μ) :
     ∫⁻ x, f x ∂Measure.pi μ ≤ ∫⁻ x, g x ∂Measure.pi μ := by
   rcases isEmpty_or_nonempty (∀ i, π i) with h|⟨⟨x⟩⟩
@@ -353,6 +349,5 @@ theorem lintegral_volume_insertNth {s : Set (∀ i, α i)} (hs : MeasurableSet s
   lintegral_measure_insertNth (fun _ ↦ volume) hs i
 
 end MeasureSpace
-
 
 end MeasureTheory
