@@ -533,18 +533,32 @@ variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂)
 
 /-- Composition of two linear maps is a linear map -/
+@[pp_dot]
 def comp : M₁ →ₛₗ[σ₁₃] M₃ where
   toFun := f ∘ g
   map_add' := by simp only [map_add, forall_const, Function.comp_apply]
   map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ, RingHomCompTriple.comp_apply]
 #align linear_map.comp LinearMap.comp
 
-set_option quotPrecheck false in -- Porting note: error message suggested to do this
 /-- `∘ₗ` is notation for composition of two linear (not semilinear!) maps into a linear map.
 This is useful when Lean is struggling to infer the `RingHomCompTriple` instance. -/
 infixr:80 " ∘ₗ " =>
-  @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
-    RingHomCompTriple.ids
+  LinearMap.comp (σ₁₂ := RingHom.id _) (σ₂₃ := RingHom.id _) (σ₁₃ := RingHom.id _)
+
+open Qq Lean PrettyPrinter.Delaborator SubExpr in
+/-- Use the `∘ₗ` notation in the infoview when possible. -/
+@[delab app.LinearMap.comp]
+def delabCompLinear : Delab := do
+  let e  ← getExpr
+  -- it would be really nice to use `~q()` here
+  guard <| e.isAppOfArity ``LinearMap.comp 21
+  -- check the map is linear, not semilinear
+  let `(RingHom.id $_) ← withNaryArg 15 delab | failure
+  let `(RingHom.id $_) ← withNaryArg 16 delab | failure
+  let `(RingHom.id $_) ← withNaryArg 17 delab | failure
+  let f ← withNaryArg 19 delab
+  let g ← withNaryArg 20 delab
+  `($f ∘ₗ $g)
 
 theorem comp_apply (x : M₁) : f.comp g x = f (g x) :=
   rfl

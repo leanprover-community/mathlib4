@@ -267,7 +267,7 @@ theorem refl_apply [Module R M] (x : M) : refl R M x = x :=
 #align linear_equiv.refl_apply LinearEquiv.refl_apply
 
 /-- Linear equivalences are symmetric. -/
-@[symm]
+@[symm, pp_dot]
 def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
   { e.toLinearMap.inverse e.invFun e.left_inv e.right_inv,
     e.toEquiv.symm with
@@ -331,7 +331,7 @@ set_option linter.unusedVariables false in
 /-- Linear equivalences are transitive. -/
 -- Note: the `RingHomCompTriple σ₃₂ σ₂₁ σ₃₁` is unused, but is convenient to carry around
 -- implicitly for lemmas like `LinearEquiv.self_trans_symm`.
-@[trans, nolint unusedArguments]
+@[trans, nolint unusedArguments, pp_dot]
 def trans
     [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
     {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₃ : RingHomInvPair σ₂₃ σ₃₂}
@@ -347,6 +347,20 @@ infixl:80 " ≪≫ₗ " =>
     (RingHom.id _) (RingHom.id _) (RingHom.id _) RingHomCompTriple.ids RingHomCompTriple.ids
     RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids
     RingHomInvPair.ids
+
+open Qq Lean PrettyPrinter.Delaborator SubExpr in
+/-- Use the `≪≫ₗ` notation in the infoview when possible. -/
+@[delab app.LinearEquiv.trans]
+def delabCompLinear : Delab := do
+  let e ← getExpr
+  -- it would be really nice to use `~q()` here
+  guard <| e.isAppOfArity ``LinearEquiv.trans (15 + 6 + 8 + 2)
+  -- check the map is linear, not semilinear
+  for i in [0:6] do
+    let `(RingHom.id $_) ← withNaryArg (15+i) delab | failure
+  let f ← withNaryArg (15 + 6 + 8) delab
+  let g ← withNaryArg (15 + 6 + 8 + 1) delab
+  `($f ≪≫ₗ $g)
 
 variable {e₁₂} {e₂₃}
 
