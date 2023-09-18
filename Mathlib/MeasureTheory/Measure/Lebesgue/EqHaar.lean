@@ -874,97 +874,112 @@ theorem eventually_nonempty_inter_smul_of_density_one (s : Set E) (x : E)
 
 end Measure
 
-variable {E F : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
-  [NormedAddCommGroup F] [MeasurableSpace F] [BorelSpace F] {ν : Measure F}
-  [IsAddHaarMeasure μ] [IsAddHaarMeasure ν] [SigmaFinite ν]
+variable {𝕜 E F : Type*}
+  [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+  [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [MeasurableSpace F] [BorelSpace F] [NormedSpace 𝕜 F] {L : E →ₗ[𝕜] F}
+  {μ : Measure E} {ν : Measure F}
+  [IsAddHaarMeasure μ] [IsAddHaarMeasure ν]
 
-lemma map_fst_prod : Measure.map Prod.fst (μ.prod ν) = (ν univ) • μ := by
-  ext s hs
-  simp [Measure.map_apply measurable_fst hs, ← prod_univ, mul_comm]
+variable [LocallyCompactSpace E]
 
-lemma map_snd_prod (μ : Measure E) (ν : Measure F) :
-    Measure.map Prod.snd (μ.prod ν) = (μ univ) • ν := by
-  ext s hs
-  simp [Measure.map_apply measurable_snd hs, ← univ_prod]
+variable (L μ ν)
 
-variable [NormedSpace ℝ E] [NormedSpace ℝ F] [FiniteDimensional ℝ E] (L : E →ₗ[ℝ] F)
-
-theorem glou (h : Function.Surjective L) :
+/-- The image of an additive Haar measure under a surjective  linear map is proportional to a given
+additive Haar measure. The proportionality factor will be infinite if the linear map has a
+nontrivial kernel. -/
+theorem _root_.LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L) :
     ∃ (c : ℝ≥0∞), 0 < c ∧ c < ∞ ∧ μ.map L = (c * addHaar (univ : Set (LinearMap.ker L))) • ν := by
-  have : FiniteDimensional ℝ F := Module.Finite.of_surjective L h
-  let S : Submodule ℝ E := LinearMap.ker L
-  obtain ⟨T, hT⟩ : ∃ T : Submodule ℝ E, IsCompl S T := Submodule.exists_isCompl S
-  let M : (S × T) ≃ₗ[ℝ] E := Submodule.prodEquivOfIsCompl S T hT
+  have : ProperSpace E := properSpace_of_locallyCompactSpace 𝕜
+  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
+  have : ProperSpace F := by
+    rcases subsingleton_or_nontrivial E with hE|hE
+    · have : Subsingleton F := Function.Surjective.subsingleton h
+      infer_instance
+    · have : ProperSpace 𝕜 := properSpace_of_locallyCompact_module 𝕜 E
+      have : FiniteDimensional 𝕜 F := Module.Finite.of_surjective L h
+      exact FiniteDimensional.proper 𝕜 F
+  let S : Submodule 𝕜 E := LinearMap.ker L
+  obtain ⟨T, hT⟩ : ∃ T : Submodule 𝕜 E, IsCompl S T := Submodule.exists_isCompl S
+  let M : (S × T) ≃ₗ[𝕜] E := Submodule.prodEquivOfIsCompl S T hT
   have M_cont : Continuous M.symm := LinearMap.continuous_of_finiteDimensional _
-  let P : S × T →ₗ[ℝ] T := LinearMap.snd ℝ S T
+  let P : S × T →ₗ[𝕜] T := LinearMap.snd 𝕜 S T
   have P_cont : Continuous P := LinearMap.continuous_of_finiteDimensional _
-  have : Function.Injective (LinearMap.domRestrict L T) := by
-    rw [← LinearMap.ker_eq_bot, ← le_bot_iff]
-    intro x hx
-    have : (x : E) ∈ S ⊓ T := ⟨by simpa using hx, x.2⟩
-    rw [IsCompl.inf_eq_bot hT] at this
-    simpa using this
-  have : Function.Surjective (LinearMap.domRestrict L T) := by
-    intro y
-    rcases h y with ⟨x, rfl⟩
-    refine ⟨P (M.symm x), ?_⟩
-    obtain ⟨y, z, hyz⟩ : ∃ (y : S) (z : T), M.symm x = (y, z) := ⟨_, _, rfl⟩
-    have : x = M (y, z) := by rw [← hyz]; simp only [LinearEquiv.apply_symm_apply]
-    simp [this]
-
-
-
-
-
-#exit
-
-  let M : (S × T) ≃ₗ[ℝ] E := Submodule.prodEquivOfIsCompl S T hT
-  have M_cont : Continuous M.symm := LinearMap.continuous_of_finiteDimensional _
-  let P : S × T →ₗ[ℝ] T := LinearMap.snd ℝ S T
-  have P_cont : Continuous P := LinearMap.continuous_of_finiteDimensional _
-
-
-#exit
-
-  let L'' : T ≃ₗ[ℝ] F := LinearEquiv.ofBijective (LinearMap.domRestrict L T) sorry
-  have L''_cont : Continuous L'' := LinearMap.continuous_of_finiteDimensional _
-  have A : L = (L'' : T →ₗ[ℝ] F).comp (P.comp (M.symm : E →ₗ[ℝ] (S × T))) := by
-    sorry
-    /- ext x
+  have I : Function.Bijective (LinearMap.domRestrict L T) :=
+    ⟨LinearMap.injective_domRestrict_iff.2 (IsCompl.inf_eq_bot hT.symm),
+    (LinearMap.surjective_domRestrict_iff h).2 hT.symm.sup_eq_top⟩
+  let L' : T ≃ₗ[𝕜] F := LinearEquiv.ofBijective (LinearMap.domRestrict L T) I
+  have L'_cont : Continuous L' := LinearMap.continuous_of_finiteDimensional _
+  have A : L = (L' : T →ₗ[𝕜] F).comp (P.comp (M.symm : E →ₗ[𝕜] (S × T))) := by
+    ext x
     obtain ⟨y, z, hyz⟩ : ∃ (y : S) (z : T), M.symm x = (y, z) := ⟨_, _, rfl⟩
     have : x = M (y, z) := by
       rw [← hyz]; simp only [LinearEquiv.apply_symm_apply]
-    simp [this] -/
-  have I : μ.map L = ((μ.map M.symm).map P).map L'' := by
-    sorry
-    /-rw [Measure.map_map, Measure.map_map, A]
+    simp [this]
+  have I : μ.map L = ((μ.map M.symm).map P).map L' := by
+    rw [Measure.map_map, Measure.map_map, A]
     · rfl
-    · exact L''_cont.measurable.comp P_cont.measurable
+    · exact L'_cont.measurable.comp P_cont.measurable
     · exact M_cont.measurable
-    · exact L''_cont.measurable
-    · exact P_cont.measurable -/
+    · exact L'_cont.measurable
+    · exact P_cont.measurable
   let μS : Measure S := addHaar
   let μT : Measure T := addHaar
   obtain ⟨c₀, c₀_pos, c₀_fin, h₀⟩ :
       ∃ c₀ : ℝ≥0∞, c₀ ≠ 0 ∧ c₀ ≠ ∞ ∧ μ.map M.symm = c₀ • μS.prod μT := by
-    sorry /-have : IsAddHaarMeasure (μ.map M.symm) :=
+    have : IsAddHaarMeasure (μ.map M.symm) :=
       M.toContinuousLinearEquiv.symm.isAddHaarMeasure_map μ
-    exact isAddHaarMeasure_eq_smul_isAddHaarMeasure _ _ -/
+    exact isAddHaarMeasure_eq_smul_isAddHaarMeasure _ _
   have J : (μS.prod μT).map P = (μS univ) • μT := map_snd_prod _ _
-  obtain ⟨c₁, c₁_pos, c₁_fin, h₁⟩ : ∃ c₁ : ℝ≥0∞, c₁ ≠ 0 ∧ c₁ ≠ ∞ ∧ μT.map L'' = c₁ • ν := by
-    sorry /-have : IsAddHaarMeasure (μT.map L'') :=
-      L''.toContinuousLinearEquiv.isAddHaarMeasure_map μT
-    exact isAddHaarMeasure_eq_smul_isAddHaarMeasure _ _-/
+  obtain ⟨c₁, c₁_pos, c₁_fin, h₁⟩ : ∃ c₁ : ℝ≥0∞, c₁ ≠ 0 ∧ c₁ ≠ ∞ ∧ μT.map L' = c₁ • ν := by
+    have : IsAddHaarMeasure (μT.map L') :=
+      L'.toContinuousLinearEquiv.isAddHaarMeasure_map μT
+    exact isAddHaarMeasure_eq_smul_isAddHaarMeasure _ _
   refine ⟨c₀ * c₁, by simp [pos_iff_ne_zero, c₀_pos, c₁_pos], ENNReal.mul_lt_top c₀_fin c₁_fin, ?_⟩
   simp only [I, h₀, Measure.map_smul, J, smul_smul, h₁]
   rw [mul_assoc, mul_comm _ c₁, ← mul_assoc]
 
+/-- The image of an additive Haar measure under a surjective linear map is proportional to a given
+additive Haar measure, with a positive (but maybe infinite) factor. -/
+theorem _root_.LinearMap.exists_map_addHaar_eq_smul_addHaar (h : Function.Surjective L) :
+    ∃ (c : ℝ≥0∞), 0 < c ∧ μ.map L = c • ν := by
+  rcases L.exists_map_addHaar_eq_smul_addHaar' μ ν h with ⟨c, c_pos, -, hc⟩
+  exact ⟨_, by simp [c_pos, NeZero.ne addHaar], hc⟩
 
+/-- Given a surjective linear map `L`, it is equivalent to require a property almost everywhere
+in the source or the target spaces of `L`, with respect to additive Haar measures there. -/
+lemma ae_comp_linearMap_mem_iff (h : Function.Surjective L) {s : Set F} (hs : MeasurableSet s) :
+    (∀ᵐ x ∂μ, L x ∈ s) ↔ ∀ᵐ y ∂ν, y ∈ s := by
+  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
+  have : AEMeasurable L μ := L.continuous_of_finiteDimensional.aemeasurable
+  apply (ae_map_iff this hs).symm.trans
+  rcases L.exists_map_addHaar_eq_smul_addHaar μ ν h with ⟨c, c_pos, hc⟩
+  rw [hc]
+  exact ae_smul_measure_iff c_pos.ne'
 
+/-- Given a linear map `L : E → F`, a property holds almost everywhere in `F` if and only if,
+almost everywhere in `F`, it holds almost everywhere along the subspace spanned by the
+image of `L`. This is an instance of a disintegration argument for additive Haar measures.-/
+lemma ae_ae_add_linearMap_mem_iff [LocallyCompactSpace F] {s : Set F} (hs : MeasurableSet s) :
+    (∀ᵐ y ∂ν, ∀ᵐ x ∂μ, y + L x ∈ s) ↔ ∀ᵐ y ∂ν, y ∈ s := by
+  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
+  have : FiniteDimensional 𝕜 F := finiteDimensional_of_locallyCompactSpace 𝕜
+  have : ProperSpace E := properSpace_of_locallyCompactSpace 𝕜
+  have : ProperSpace F := properSpace_of_locallyCompactSpace 𝕜
+  let M : F × E →ₗ[𝕜] F := LinearMap.id.coprod L
+  have M_cont : Continuous M := M.continuous_of_finiteDimensional
+  have hM : Function.Surjective M := by simp [← LinearMap.range_eq_top, LinearMap.range_coprod]
+  have A : ∀ x, M x ∈ s ↔ x ∈ M ⁻¹' s := fun x ↦ Iff.rfl
+  simp_rw [← ae_comp_linearMap_mem_iff M (ν.prod μ) ν hM hs, A]
+  rw [Measure.ae_prod_mem_iff_ae_ae_mem]
+  simp only [mem_preimage, LinearMap.coprod_apply, LinearMap.id_coe, id_eq]
+  exact M_cont.measurable hs
 
-
-
-
-
+/-- To check that a property holds almost everywhere with respect to an additive Haar measure, it
+suffices to check it almost everywhere along all translates of a given vector subspace. This is an
+instance of a disintegration argument for additive Haar measures. -/
+lemma ae_mem_of_ae_add_linearMap_mem [LocallyCompactSpace F] {s : Set F} (hs : MeasurableSet s)
+    (h : ∀ y, ∀ᵐ x ∂μ, y + L x ∈ s) : ∀ᵐ y ∂ν, y ∈ s :=
+  (ae_ae_add_linearMap_mem_iff L μ ν hs).1 (eventually_of_forall h)
 
 end MeasureTheory
