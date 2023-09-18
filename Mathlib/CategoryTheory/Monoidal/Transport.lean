@@ -38,7 +38,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 /-- Induce a monoidal structure along an faithful functor of (plain) categories,
 -/
 @[simps]
-def induced (e : D ⥤ C) [Faithful e]
+abbrev induced (e : D ⥤ C) [Faithful e]
     (tensorObj : D → D → D)
     (μIsoSymm : ∀ X Y,
       e.obj (tensorObj X Y) ≅ e.obj X ⊗ e.obj Y)
