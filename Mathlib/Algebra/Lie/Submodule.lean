@@ -92,11 +92,15 @@ theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
   Iff.rfl
 #align lie_submodule.mem_carrier LieSubmodule.mem_carrier
 
-@[simp]
 theorem mem_mk_iff (S : Set M) (h₁ h₂ h₃ h₄) {x : M} :
     x ∈ (⟨⟨⟨⟨S, h₁⟩, h₂⟩, h₃⟩, h₄⟩ : LieSubmodule R L M) ↔ x ∈ S :=
   Iff.rfl
 #align lie_submodule.mem_mk_iff LieSubmodule.mem_mk_iff
+
+@[simp]
+theorem mem_mk_iff' (p : Submodule R M) (h) {x : M} :
+    x ∈ (⟨p, h⟩ : LieSubmodule R L M) ↔ x ∈ p :=
+  Iff.rfl
 
 @[simp]
 theorem mem_coeSubmodule {x : M} : x ∈ (N : Submodule R M) ↔ x ∈ N :=
@@ -420,12 +424,25 @@ theorem sInf_coe_toSubmodule (S : Set (LieSubmodule R L M)) :
 #align lie_submodule.Inf_coe_to_submodule LieSubmodule.sInf_coe_toSubmodule
 
 @[simp]
+theorem iInf_coe_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
+    (↑(⨅ i, p i) : Submodule R M) = ⨅ i, (p i : Submodule R M) := by
+  rw [iInf, sInf_coe_toSubmodule]; ext; simp
+
+@[simp]
 theorem sInf_coe (S : Set (LieSubmodule R L M)) : (↑(sInf S) : Set M) = ⋂ s ∈ S, (s : Set M) := by
   rw [← LieSubmodule.coe_toSubmodule, sInf_coe_toSubmodule, Submodule.sInf_coe]
   ext m
   simp only [mem_iInter, mem_setOf_eq, forall_apply_eq_imp_iff₂, exists_imp,
     and_imp, SetLike.mem_coe, mem_coeSubmodule]
 #align lie_submodule.Inf_coe LieSubmodule.sInf_coe
+
+@[simp]
+theorem iInf_coe {ι} (p : ι → LieSubmodule R L M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
+  rw [iInf, sInf_coe]; simp only [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
+
+@[simp]
+theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
+  rw [← SetLike.mem_coe, iInf_coe, Set.mem_iInter]; rfl
 
 theorem sInf_glb (S : Set (LieSubmodule R L M)) : IsGLB S (sInf S) := by
   have h : ∀ {N N' : LieSubmodule R L M}, (N : Set M) ≤ N' ↔ N ≤ N' := fun {_ _} ↦ Iff.rfl
