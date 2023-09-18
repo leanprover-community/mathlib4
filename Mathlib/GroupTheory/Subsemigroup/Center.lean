@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Tactic.LibrarySearch
 
 #align_import group_theory.subsemigroup.center from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
@@ -116,8 +117,20 @@ theorem zero_mem_center [MulZeroClass M] : (0 : M) ∈ Set.center M where
 #align set.zero_mem_center Set.zero_mem_center
 
 @[simp]
-theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.center M :=
-  (Nat.commute_cast · _)
+theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.center M where
+  comm _:= by rw [Nat.commute_cast]
+  left_assoc _ _ := by
+    induction n with
+    | zero => rw [Nat.zero_eq, Nat.cast_zero, zero_mul, zero_mul, zero_mul]
+    | succ n ihn => rw [Nat.cast_succ, add_mul, one_mul, ihn, add_mul, add_mul, one_mul]
+  mid_assoc _ _ := by
+    induction n with
+    | zero => rw [Nat.zero_eq, Nat.cast_zero, zero_mul, mul_zero, zero_mul]
+    | succ n ihn => rw [Nat.cast_succ, add_mul, mul_add, add_mul, ihn, mul_add, one_mul, mul_one]
+  right_assoc _ _ := by
+    induction n with
+    | zero => rw [Nat.zero_eq, Nat.cast_zero, mul_zero, mul_zero, mul_zero]
+    | succ n ihn => rw [Nat.cast_succ, mul_add, ihn, mul_add, mul_add, mul_one, mul_one]
 
 @[simp]
 theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
@@ -125,8 +138,28 @@ theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
   natCast_mem_center M n
 
 @[simp]
-theorem intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M :=
-  (Int.commute_cast · _)
+theorem intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M where
+  comm _ := by rw [Int.commute_cast]
+  left_assoc _ _ := match n with
+    | (n : ℕ) => by rw [Int.cast_ofNat, (natCast_mem_center _ n).left_assoc _ _]
+    | Int.negSucc n => by
+      rw [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, add_mul, add_mul, add_mul,
+        neg_mul, one_mul, neg_mul 1, one_mul, ← neg_mul, add_right_inj, neg_mul,
+        (natCast_mem_center _ n).left_assoc _ _, neg_mul, neg_mul]
+  mid_assoc _ _ := match n with
+    | (n : ℕ) => by rw [Int.cast_ofNat, (natCast_mem_center _ n).mid_assoc _ _]
+    | Int.negSucc n => by
+        simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev]
+        rw [add_mul, mul_add, add_mul, mul_add, neg_mul, one_mul]
+        rw [neg_mul, mul_neg, mul_one, mul_neg, neg_mul, neg_mul]
+        rw [(natCast_mem_center _ n).mid_assoc _ _]
+        simp only [mul_neg]
+  right_assoc a b := match n with
+    | (n : ℕ) => by rw [Int.cast_ofNat, (natCast_mem_center _ n).right_assoc _ _]
+    | Int.negSucc n => by
+        simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev]
+        rw [mul_add, mul_add, mul_add, mul_neg, mul_one, mul_neg, mul_neg, mul_one, mul_neg,
+          add_right_inj, (natCast_mem_center _ n).right_assoc _ _, mul_neg, mul_neg]
 
 variable {M}
 
@@ -207,13 +240,19 @@ theorem center_units_eq [GroupWithZero M] : Set.center Mˣ = ((↑) : Mˣ → M)
 
 @[simp]
 theorem units_inv_mem_center [Monoid M] {a : Mˣ} (ha : ↑a ∈ Set.center M) :
-    ↑a⁻¹ ∈ Set.center M :=
-  (Commute.units_inv_right <| ha ·)
+    ↑a⁻¹ ∈ Set.center M := by
+  rw [Semigroup.mem_center_iff] at *
+  intro m
+  rw [Commute.units_inv_right]
+  exact ha m
 
 @[simp]
 theorem invOf_mem_center [Monoid M] {a : M} [Invertible a] (ha : a ∈ Set.center M) :
-    ⅟a ∈ Set.center M :=
-  (Commute.invOf_right <| ha ·)
+    ⅟a ∈ Set.center M := by
+  rw [Semigroup.mem_center_iff] at *
+  intro m
+  rw [Commute.invOf_right]
+  exact ha m
 
 @[simp]
 theorem inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
