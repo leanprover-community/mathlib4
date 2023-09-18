@@ -163,7 +163,8 @@ abbrev transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
     (associator := fun X Y Z =>
       e.functor.mapIso
         (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫
-          α_ (e.inverse.obj X) (e.inverse.obj Y) (e.inverse.obj Z) ≪≫ (Iso.refl _ ⊗ e.unitIso.app _)))
+          α_ (e.inverse.obj X) (e.inverse.obj Y) (e.inverse.obj Z) ≪≫
+          (Iso.refl _ ⊗ e.unitIso.app _)))
     (leftUnitor := fun X =>
       e.functor.mapIso (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫ λ_ (e.inverse.obj X)) ≪≫
         e.counitIso.app _)
