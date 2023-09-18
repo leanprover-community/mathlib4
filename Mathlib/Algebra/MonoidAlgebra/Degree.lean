@@ -449,8 +449,6 @@ lemma sum_ne_zero_of_injOn_supDegree (hs : s ≠ ∅)
 
 variable (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
 
-private lemma mem_srange_iff {b : B} : b ∈ AddHom.srange ⟨D, hadd⟩ ↔ b ∈ Set.range D := Iff.rfl
-
 variable [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
 
 lemma apply_supDegree_add_supDegree :
@@ -468,7 +466,7 @@ lemma Monic.supDegree_mul_of_ne_zero (hq : q.Monic D) (hp : p ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
   cases subsingleton_or_nontrivial R; · exact (hp (Subsingleton.elim _ _)).elim
   apply supDegree_eq_of_max
-  · rw [← mem_srange_iff hadd]
+  · rw [← AddHom.mem_srange_mk hadd]
     exact add_mem (supDegree_mem_range D hp) (supDegree_mem_range D hq.ne_zero)
   · simp_rw [Finsupp.mem_support_iff, apply_supDegree_add_supDegree hD hadd, hq, mul_one,
              Ne, leadingCoeff_eq_zero hD, hp]
