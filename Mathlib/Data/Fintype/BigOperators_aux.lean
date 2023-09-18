@@ -30,8 +30,7 @@ variable [CommMonoid β]
 
 -- very similar to `equiv.prod_comp_finset` in #16948
 theorem Finset.prod_comp_equiv {s : Finset α} (f : γ → β) (g : α ≃ γ) :
-    ∏ a in s, f (g a) = ∏ b in s.image g, f b :=
-  by
+    ∏ a in s, f (g a) = ∏ b in s.image g, f b := by
   refine'
     prod_bij' (fun x _ => g x) (fun a ha => Finset.mem_image_of_mem _ ha) (fun _ _ => rfl)
       (fun a _ => g.symm a) _ (fun a _ => g.symm_apply_apply a) fun a _ => g.apply_symm_apply a
@@ -137,7 +136,7 @@ theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
 open Sum
 
 /-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
-  functions on `ι` and on `ι'`. This is a dependent version of `equiv.sum_arrow_equiv_prod_arrow`. -/
+functions on `ι` and on `ι'`. This is a dependent version of `equiv.sum_arrow_equiv_prod_arrow`. -/
 @[simps]
 def piSum (π : ι ⊕ ι' → Type _) : ((∀ i, π (inl i)) × ∀ i', π (inr i')) ≃ ∀ i, π i
     where

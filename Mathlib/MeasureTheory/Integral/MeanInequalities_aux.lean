@@ -99,8 +99,8 @@ theorem prod_insert_div [CommGroup β] [DecidableEq α] (ha : a ∉ s) {f : α �
 attribute [gcongr] ENNReal.rpow_le_rpow
 set_option maxHeartbeats 300000 in
 /-- A version of Hölder with multiple arguments -/
-theorem _root_.ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α} (s : Finset ι)
-    (hs : s.Nonempty)
+theorem _root_.ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
+    (s : Finset ι) (hs : s.Nonempty)
     {f : ι → α → ℝ≥0∞} (hf : ∀ i ∈ s, AEMeasurable (f i) μ) {p : ι → ℝ} (hp : ∑ i in s, p i = 1)
     (h2p : ∀ i ∈ s, 0 ≤ p i) :
       ∫⁻ a, ∏ i in s, f i a ^ p i ∂μ ≤
@@ -148,7 +148,7 @@ theorem _root_.ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ 
             · exact hpi₀
             · apply add_sub_cancel'_right
         _ ≤ (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * (∏ i in s, (∫⁻ a, f i a ∂μ) ^ q i) ^ (1 - p i₀) := by
-            gcongr -- the behavior of gcongr is heartbeat-dependent, which makes code really fragile...
+            gcongr -- behavior of gcongr is heartbeat-dependent, which makes code really fragile...
             exact ih hs (fun i hi ↦ hf i <| mem_insert_of_mem hi) hq h2q
         _ = (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
             simp [← ENNReal.prod_rpow_of_nonneg hpi₀, ← ENNReal.rpow_mul,
@@ -156,10 +156,10 @@ theorem _root_.ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ 
         _ = ∏ i in insert i₀ s, (∫⁻ a, f i a ∂μ) ^ p i := by simp [hi₀]
 
 /-- A version of Hölder with multiple arguments, one of which plays a distinguished role. -/
-theorem _root_.ENNReal.lintegral_mul_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α} (s : Finset ι)
-    {g : α →  ℝ≥0∞} {f : ι → α → ℝ≥0∞} (hg : AEMeasurable g μ) (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
-    (q : ℝ) {p : ι → ℝ} (hpq : q + ∑ i in s, p i = 1) (hq :  0 ≤ q)
-    (hp : ∀ i ∈ s, 0 ≤ p i) :
+theorem _root_.ENNReal.lintegral_mul_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
+    (s : Finset ι) {g : α →  ℝ≥0∞} {f : ι → α → ℝ≥0∞} (hg : AEMeasurable g μ)
+    (hf : ∀ i ∈ s, AEMeasurable (f i) μ) (q : ℝ) {p : ι → ℝ} (hpq : q + ∑ i in s, p i = 1)
+    (hq :  0 ≤ q) (hp : ∀ i ∈ s, 0 ≤ p i) :
     ∫⁻ a, g a ^ q * ∏ i in s, f i a ^ p i ∂μ ≤
       (∫⁻ a, g a ∂μ) ^ q * ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
   suffices
