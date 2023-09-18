@@ -1702,7 +1702,7 @@ protected theorem nat_succ (n : ℕ) : ((n + 1 : ℕ) : PGame) = n + 1 :=
   rfl
 #align pgame.nat_succ SetTheory.PGame.nat_succ
 
-instance isEmpty_leftMoves_add (x y : PGame) [IsEmpty x.LeftMoves] [IsEmpty y.LeftMoves] :
+instance isEmpty_leftMoves_add (x y : PGame.{u}) [IsEmpty x.LeftMoves] [IsEmpty y.LeftMoves] :
     IsEmpty (x + y).LeftMoves := by
   cases x
   cases y
@@ -1710,7 +1710,7 @@ instance isEmpty_leftMoves_add (x y : PGame) [IsEmpty x.LeftMoves] [IsEmpty y.Le
   assumption'
 #align pgame.is_empty_left_moves_add SetTheory.PGame.isEmpty_leftMoves_add
 
-instance isEmpty_rightMoves_add (x y : PGame) [IsEmpty x.RightMoves] [IsEmpty y.RightMoves] :
+instance isEmpty_rightMoves_add (x y : PGame.{u}) [IsEmpty x.RightMoves] [IsEmpty y.RightMoves] :
     IsEmpty (x + y).RightMoves := by
   cases x
   cases y
@@ -1719,7 +1719,7 @@ instance isEmpty_rightMoves_add (x y : PGame) [IsEmpty x.RightMoves] [IsEmpty y.
 #align pgame.is_empty_right_moves_add SetTheory.PGame.isEmpty_rightMoves_add
 
 /-- `x + 0` has exactly the same moves as `x`. -/
-def addZeroRelabelling : ∀ x : PGame, x + 0 ≡r x
+def addZeroRelabelling : ∀ x : PGame.{u}, x + 0 ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
     refine' ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, _, _⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
       apply addZeroRelabelling
@@ -1727,29 +1727,29 @@ termination_by _ x => x
 #align pgame.add_zero_relabelling SetTheory.PGame.addZeroRelabelling
 
 /-- `x + 0` is equivalent to `x`. -/
-theorem add_zero_equiv (x : PGame) : x + 0 ≈ x :=
+theorem add_zero_equiv (x : PGame.{u}) : x + 0 ≈ x :=
   (addZeroRelabelling x).equiv
 #align pgame.add_zero_equiv SetTheory.PGame.add_zero_equiv
 
 /-- `0 + x` has exactly the same moves as `x`. -/
-def zeroAddRelabelling : ∀ x : PGame, 0 + x ≡r x
+def zeroAddRelabelling : ∀ x : PGame.{u}, 0 + x ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
     refine' ⟨Equiv.emptySum PEmpty xl, Equiv.emptySum PEmpty xr, _, _⟩ <;> rintro (⟨⟨⟩⟩ | ⟨i⟩) <;>
       apply zeroAddRelabelling
 #align pgame.zero_add_relabelling SetTheory.PGame.zeroAddRelabelling
 
 /-- `0 + x` is equivalent to `x`. -/
-theorem zero_add_equiv (x : PGame) : 0 + x ≈ x :=
+theorem zero_add_equiv (x : PGame.{u}) : 0 + x ≈ x :=
   (zeroAddRelabelling x).equiv
 #align pgame.zero_add_equiv SetTheory.PGame.zero_add_equiv
 
 @[simp]
-theorem leftMoves_add : ∀ x y : PGame, (x + y).LeftMoves = (x.LeftMoves ⊕ y.LeftMoves)
+theorem leftMoves_add : ∀ x y : PGame.{u}, (x + y).LeftMoves = (x.LeftMoves ⊕ y.LeftMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 #align pgame.left_moves_add SetTheory.PGame.leftMoves_add
 
 @[simp]
-theorem rightMoves_add : ∀ x y : PGame, (x + y).RightMoves = (x.RightMoves ⊕ y.RightMoves)
+theorem rightMoves_add : ∀ x y : PGame.{u}, (x + y).RightMoves = (x.RightMoves ⊕ y.RightMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 #align pgame.right_moves_add SetTheory.PGame.rightMoves_add
 

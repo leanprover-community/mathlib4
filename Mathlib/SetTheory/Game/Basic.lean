@@ -428,7 +428,7 @@ protected lemma mul_comm (x y : PGame) : x * y ≡ y * x :=
   termination_by _ => (x, y)
 
 /-- `x * y` and `y * x` have the same moves. -/
-def mulCommRelabelling (x y : PGame) : x * y ≡r y * x :=
+def mulCommRelabelling (x y : PGame.{u}) : x * y ≡r y * x :=
   match x, y with
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
     refine' ⟨Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _),
