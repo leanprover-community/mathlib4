@@ -156,7 +156,7 @@ instance monoidalPredicate_module_finite :
 
 instance : MonoidalCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
-  show_term infer_instance
+  infer_instance
 
 open MonoidalCategory
 
