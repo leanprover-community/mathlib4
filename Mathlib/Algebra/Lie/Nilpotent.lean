@@ -198,6 +198,12 @@ theorem exists_lowerCentralSeries_eq_bot_of_isNilpotent [IsNilpotent R L M] :
     ∃ k, lowerCentralSeries R L M k = ⊥ :=
   IsNilpotent.nilpotent
 
+@[simp] lemma iInf_lowerCentralSeries_eq_bot_of_isNilpotent [IsNilpotent R L M] :
+    ⨅ k, lowerCentralSeries R L M k = ⊥ := by
+  obtain ⟨k, hk⟩ := exists_lowerCentralSeries_eq_bot_of_isNilpotent R L M
+  rw [eq_bot_iff, ← hk]
+  exact iInf_le _ _
+
 /-- See also `LieModule.isNilpotent_iff_exists_ucs_eq_top`. -/
 theorem isNilpotent_iff : IsNilpotent R L M ↔ ∃ k, lowerCentralSeries R L M k = ⊥ :=
   ⟨fun h => h.nilpotent, fun h => ⟨h⟩⟩
@@ -520,6 +526,10 @@ theorem LieModule.isNilpotent_of_top_iff :
     IsNilpotent R (⊤ : LieSubalgebra R L) M ↔ IsNilpotent R L M :=
   Equiv.lieModule_isNilpotent_iff LieSubalgebra.topEquiv (1 : M ≃ₗ[R] M) fun _ _ => rfl
 #align lie_module.is_nilpotent_of_top_iff LieModule.isNilpotent_of_top_iff
+
+@[simp] lemma LieModule.isNilpotent_of_top_iff' :
+    IsNilpotent R L (⊤ : LieSubmodule R L M) ↔ IsNilpotent R L M :=
+  Equiv.lieModule_isNilpotent_iff 1 (LinearEquiv.ofTop ⊤ rfl) fun _ _ ↦ rfl
 
 end Morphisms
 
