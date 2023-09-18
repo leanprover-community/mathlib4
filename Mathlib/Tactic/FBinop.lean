@@ -26,7 +26,7 @@ The main goal is to support generic set product notation and have it elaborate i
 -/
 
 namespace FBinopElab
-open Lean Elab Term Meta
+open Lean Elab Term Meta Qq
 
 initialize registerTraceClass `Elab.fbinop
 
@@ -82,7 +82,7 @@ allow `c a1 ... an` for `c` a constant. This is so we can abstract out the unive
 structure SRec where
   name : Name
   args : Array Expr
-  deriving Inhabited, ToExpr
+  deriving Inhabited, ToExprQ
 
 /-- Given a type expression, try to remove the last argument(s) and create an `SRec` for the
 underlying "functor". Only applies to function applications with a constant head, and,

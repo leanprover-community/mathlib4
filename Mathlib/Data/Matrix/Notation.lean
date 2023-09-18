@@ -54,18 +54,18 @@ open Qq
 
 /-- Matrices can be reflected whenever their entries can. We insert a `Matrix.of` to
 prevent immediate decay to a function. -/
-protected instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
-    [Lean.ToExpr α] [Lean.ToExpr m'] [Lean.ToExpr n'] [Lean.ToExpr (m' → n' → α)] :
-    Lean.ToExpr (Matrix m' n' α) :=
-  have eα : Q(Type $(toLevel.{u})) := toTypeExpr α
-  have em' : Q(Type $(toLevel.{uₘ})) := toTypeExpr m'
-  have en' : Q(Type $(toLevel.{uₙ})) := toTypeExpr n'
-  { toTypeExpr :=
-    q(Matrix $eα $em' $en')
-    toExpr := fun M =>
-      have eM : Q($em' → $en' → $eα) := toExpr (show m' → n' → α from M)
+protected instance instToExprQ
+    [ToExprQ α] [ToExprQ m'] [ToExprQ n'] [ToExprQ (m' → n' → α)] :
+    ToExprQ (Matrix m' n' α) :=
+  have em' := toTypeExprQ m'
+  have en' := toTypeExprQ n'
+  have eα := toTypeExprQ α
+  { level := _
+    toTypeExprQ := q(Matrix $em' $en' $eα)
+    toExprQ := fun M =>
+      have eM : Q($em' → $en' → $eα) := toExprQ (show m' → n' → α from M)
       q(Matrix.of $eM) }
-#align matrix.matrix.reflect Matrix.toExpr
+#align matrix.matrix.reflect Matrix.instToExprQₓ
 
 end toExpr
 
