@@ -6,6 +6,7 @@ Authors: Jujian Zhang
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Tensor-Hom adjunction
@@ -35,7 +36,8 @@ to category of `S`-modules.
 @[simps!]
 def tensorFunctor : ModuleCat.{v} R ⥤ ModuleCat.{v} S where
   obj Y := ModuleCat.of S <| X ⊗[R] Y
-  map {Y Y'} l := let L := TensorProduct.map LinearMap.id l
+  map {Y Y'} l := -- TensorProduct.AlgebraTensorModule.map LinearMap.id l
+  let L := TensorProduct.map LinearMap.id l
   { L with
     map_smul' := fun s x => x.induction_on
       (show L _ = s • L _ by rw [smul_zero, map_zero, smul_zero])
