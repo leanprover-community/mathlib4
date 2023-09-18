@@ -3,18 +3,15 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
-
-! This file was ported from Lean 3 source module group_theory.subsemigroup.basic
-! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
 
+#align_import group_theory.subsemigroup.basic from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
+
 /-!
-# Subsemigroups: definition and `complete_lattice` structure
+# Subsemigroups: definition and `CompleteLattice` structure
 
 This file defines bundled multiplicative and additive subsemigroups. We also define
 a `CompleteLattice` structure on `Subsemigroup`s,
@@ -53,7 +50,7 @@ subsemigroup, subsemigroups
 
 
 -- Only needed for notation
-variable {M : Type _} {N : Type _} {A : Type _}
+variable {M : Type*} {N : Type*} {A : Type*}
 
 section NonAssoc
 
@@ -62,7 +59,7 @@ variable [Mul M] {s : Set M}
 variable [Add A] {t : Set A}
 
 /-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/
-class MulMemClass (S : Type _) (M : Type _) [Mul M] [SetLike S M] : Prop where
+class MulMemClass (S : Type*) (M : Type*) [Mul M] [SetLike S M] : Prop where
   /-- A substructure satisfying `MulMemClass` is closed under multiplication. -/
   mul_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a * b ∈ s
 #align mul_mem_class MulMemClass
@@ -70,7 +67,7 @@ class MulMemClass (S : Type _) (M : Type _) [Mul M] [SetLike S M] : Prop where
 export MulMemClass (mul_mem)
 
 /-- `AddMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(+)` -/
-class AddMemClass (S : Type _) (M : Type _) [Add M] [SetLike S M] : Prop where
+class AddMemClass (S : Type*) (M : Type*) [Add M] [SetLike S M] : Prop where
   /-- A substructure satisfying `AddMemClass` is closed under addition. -/
   add_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a + b ∈ s
 #align add_mem_class AddMemClass
@@ -80,7 +77,7 @@ export AddMemClass (add_mem)
 attribute [to_additive] MulMemClass
 
 /-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
-structure Subsemigroup (M : Type _) [Mul M] where
+structure Subsemigroup (M : Type*) [Mul M] where
   /-- The carrier of a subsemigroup. -/
   carrier : Set M
   /-- The product of two elements of a subsemigroup belongs to the subsemigroup. -/
@@ -88,7 +85,7 @@ structure Subsemigroup (M : Type _) [Mul M] where
 #align subsemigroup Subsemigroup
 
 /-- An additive subsemigroup of an additive magma `M` is a subset closed under addition. -/
-structure AddSubsemigroup (M : Type _) [Add M] where
+structure AddSubsemigroup (M : Type*) [Add M] where
   /-- The carrier of an additive subsemigroup. -/
   carrier : Set M
   /-- The sum of two elements of an additive subsemigroup belongs to the subsemigroup. -/
@@ -236,38 +233,38 @@ instance : InfSet (Subsemigroup M) :=
   ⟨fun s =>
     { carrier := ⋂ t ∈ s, ↑t
       mul_mem' := fun hx hy =>
-        Set.mem_binterᵢ fun i h =>
-          i.mul_mem (by apply Set.mem_interᵢ₂.1 hx i h) (by apply Set.mem_interᵢ₂.1 hy i h) }⟩
+        Set.mem_biInter fun i h =>
+          i.mul_mem (by apply Set.mem_iInter₂.1 hx i h) (by apply Set.mem_iInter₂.1 hy i h) }⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_infₛ (S : Set (Subsemigroup M)) : ((infₛ S : Subsemigroup M) : Set M) = ⋂ s ∈ S, ↑s :=
+theorem coe_sInf (S : Set (Subsemigroup M)) : ((sInf S : Subsemigroup M) : Set M) = ⋂ s ∈ S, ↑s :=
   rfl
-#align subsemigroup.coe_Inf Subsemigroup.coe_infₛ
-#align add_subsemigroup.coe_Inf AddSubsemigroup.coe_infₛ
+#align subsemigroup.coe_Inf Subsemigroup.coe_sInf
+#align add_subsemigroup.coe_Inf AddSubsemigroup.coe_sInf
 
 @[to_additive]
-theorem mem_infₛ {S : Set (Subsemigroup M)} {x : M} : x ∈ infₛ S ↔ ∀ p ∈ S, x ∈ p :=
-  Set.mem_interᵢ₂
-#align subsemigroup.mem_Inf Subsemigroup.mem_infₛ
-#align add_subsemigroup.mem_Inf AddSubsemigroup.mem_infₛ
+theorem mem_sInf {S : Set (Subsemigroup M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
+  Set.mem_iInter₂
+#align subsemigroup.mem_Inf Subsemigroup.mem_sInf
+#align add_subsemigroup.mem_Inf AddSubsemigroup.mem_sInf
 
 @[to_additive]
-theorem mem_infᵢ {ι : Sort _} {S : ι → Subsemigroup M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
-  simp only [infᵢ, mem_infₛ, Set.forall_range_iff]
-#align subsemigroup.mem_infi Subsemigroup.mem_infᵢ
-#align add_subsemigroup.mem_infi AddSubsemigroup.mem_infᵢ
+theorem mem_iInf {ι : Sort*} {S : ι → Subsemigroup M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+  simp only [iInf, mem_sInf, Set.forall_range_iff]
+#align subsemigroup.mem_infi Subsemigroup.mem_iInf
+#align add_subsemigroup.mem_infi AddSubsemigroup.mem_iInf
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_infᵢ {ι : Sort _} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
-  simp only [infᵢ, coe_infₛ, Set.binterᵢ_range]
-#align subsemigroup.coe_infi Subsemigroup.coe_infᵢ
-#align add_subsemigroup.coe_infi AddSubsemigroup.coe_infᵢ
+theorem coe_iInf {ι : Sort*} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
+  simp only [iInf, coe_sInf, Set.biInter_range]
+#align subsemigroup.coe_infi Subsemigroup.coe_iInf
+#align add_subsemigroup.coe_infi AddSubsemigroup.coe_iInf
 
 /-- subsemigroups of a monoid form a complete lattice. -/
 @[to_additive "The `AddSubsemigroup`s of an `AddMonoid` form a complete lattice."]
 instance : CompleteLattice (Subsemigroup M) :=
   { completeLatticeOfInf (Subsemigroup M) fun _ =>
-      IsGLB.of_image SetLike.coe_subset_coe isGLB_binfᵢ with
+      IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥
@@ -275,7 +272,7 @@ instance : CompleteLattice (Subsemigroup M) :=
     top := ⊤
     le_top := fun _ x _ => mem_top x
     inf := (· ⊓ ·)
-    infₛ := InfSet.infₛ
+    sInf := InfSet.sInf
     le_inf := fun _ _ _ ha hb _ hx => ⟨ha hx, hb hx⟩
     inf_le_left := fun _ _ _ => And.left
     inf_le_right := fun _ _ _ => And.right }
@@ -298,13 +295,13 @@ instance [hn : Nonempty M] : Nontrivial (Subsemigroup M) :=
 /-- The `Subsemigroup` generated by a set. -/
 @[to_additive "The `AddSubsemigroup` generated by a set"]
 def closure (s : Set M) : Subsemigroup M :=
-  infₛ { S | s ⊆ S }
+  sInf { S | s ⊆ S }
 #align subsemigroup.closure Subsemigroup.closure
 #align add_subsemigroup.closure AddSubsemigroup.closure
 
 @[to_additive]
 theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Subsemigroup M, s ⊆ S → x ∈ S :=
-  mem_infₛ
+  mem_sInf
 #align subsemigroup.mem_closure Subsemigroup.mem_closure
 #align add_subsemigroup.mem_closure AddSubsemigroup.mem_closure
 
@@ -328,7 +325,7 @@ open Set
 @[to_additive (attr := simp)
   "An additive subsemigroup `S` includes `closure s` if and only if it includes `s`"]
 theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
-  ⟨Subset.trans subset_closure, fun h => infₛ_le h⟩
+  ⟨Subset.trans subset_closure, fun h => sInf_le h⟩
 #align subsemigroup.closure_le Subsemigroup.closure_le
 #align add_subsemigroup.closure_le AddSubsemigroup.closure_le
 
@@ -436,10 +433,10 @@ theorem closure_union (s t : Set M) : closure (s ∪ t) = closure s ⊔ closure 
 #align add_subsemigroup.closure_union AddSubsemigroup.closure_union
 
 @[to_additive]
-theorem closure_unionᵢ {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
-  (Subsemigroup.gi M).gc.l_supᵢ
-#align subsemigroup.closure_Union Subsemigroup.closure_unionᵢ
-#align add_subsemigroup.closure_Union AddSubsemigroup.closure_unionᵢ
+theorem closure_iUnion {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
+  (Subsemigroup.gi M).gc.l_iSup
+#align subsemigroup.closure_Union Subsemigroup.closure_iUnion
+#align add_subsemigroup.closure_Union AddSubsemigroup.closure_iUnion
 
 @[to_additive]
 theorem closure_singleton_le_iff_mem (m : M) (p : Subsemigroup M) : closure {m} ≤ p ↔ m ∈ p := by
@@ -448,19 +445,19 @@ theorem closure_singleton_le_iff_mem (m : M) (p : Subsemigroup M) : closure {m} 
 #align add_subsemigroup.closure_singleton_le_iff_mem AddSubsemigroup.closure_singleton_le_iff_mem
 
 @[to_additive]
-theorem mem_supᵢ {ι : Sort _} (p : ι → Subsemigroup M) {m : M} :
+theorem mem_iSup {ι : Sort*} (p : ι → Subsemigroup M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
-  rw [← closure_singleton_le_iff_mem, le_supᵢ_iff]
+  rw [← closure_singleton_le_iff_mem, le_iSup_iff]
   simp only [closure_singleton_le_iff_mem]
-#align subsemigroup.mem_supr Subsemigroup.mem_supᵢ
-#align add_subsemigroup.mem_supr AddSubsemigroup.mem_supᵢ
+#align subsemigroup.mem_supr Subsemigroup.mem_iSup
+#align add_subsemigroup.mem_supr AddSubsemigroup.mem_iSup
 
 @[to_additive]
-theorem supᵢ_eq_closure {ι : Sort _} (p : ι → Subsemigroup M) :
-    (⨆ i, p i) = Subsemigroup.closure (⋃ i, (p i : Set M)) := by
-  simp_rw [Subsemigroup.closure_unionᵢ, Subsemigroup.closure_eq]
-#align subsemigroup.supr_eq_closure Subsemigroup.supᵢ_eq_closure
-#align add_subsemigroup.supr_eq_closure AddSubsemigroup.supᵢ_eq_closure
+theorem iSup_eq_closure {ι : Sort*} (p : ι → Subsemigroup M) :
+    ⨆ i, p i = Subsemigroup.closure (⋃ i, (p i : Set M)) := by
+  simp_rw [Subsemigroup.closure_iUnion, Subsemigroup.closure_eq]
+#align subsemigroup.supr_eq_closure Subsemigroup.iSup_eq_closure
+#align add_subsemigroup.supr_eq_closure AddSubsemigroup.iSup_eq_closure
 
 end Subsemigroup
 

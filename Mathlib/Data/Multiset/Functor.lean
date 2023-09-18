@@ -2,15 +2,12 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Simon Hudon, Kenny Lau
-
-! This file was ported from Lean 3 source module data.multiset.functor
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Control.Traversable.Instances
+
+#align_import data.multiset.functor from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
 /-!
 # Functoriality of `Multiset`.
@@ -30,9 +27,9 @@ theorem fmap_def {α' β'} {s : Multiset α'} (f : α' → β') : f <$> s = s.ma
   rfl
 #align multiset.fmap_def Multiset.fmap_def
 
-instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> simp ; rfl
+instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> (try simp); rfl
 
-open IsLawfulTraversable CommApplicative
+open LawfulTraversable CommApplicative
 
 variable {F : Type u → Type u} [Applicative F] [CommApplicative F]
 
@@ -86,10 +83,10 @@ instance : LawfulMonad Multiset := LawfulMonad.mk'
 
 open Functor
 
-open Traversable IsLawfulTraversable
+open Traversable LawfulTraversable
 
 @[simp]
-theorem lift_coe {α β : Type _} (x : List α) (f : List α → β)
+theorem lift_coe {α β : Type*} (x : List α) (f : List α → β)
     (h : ∀ a b : List α, a ≈ b → f a = f b) : Quotient.lift f h (x : Multiset α) = f x :=
   Quotient.lift_mk _ _ _
 #align multiset.lift_coe Multiset.lift_coe
@@ -97,10 +94,10 @@ theorem lift_coe {α β : Type _} (x : List α) (f : List α → β)
 @[simp]
 theorem map_comp_coe {α β} (h : α → β) :
     Functor.map h ∘ Coe.coe = (Coe.coe ∘ Functor.map h : List α → Multiset β) := by
-  funext ; simp only [Function.comp_apply, Coe.coe, fmap_def, coe_map, List.map_eq_map]
+  funext; simp only [Function.comp_apply, Coe.coe, fmap_def, coe_map, List.map_eq_map]
 #align multiset.map_comp_coe Multiset.map_comp_coe
 
-theorem id_traverse {α : Type _} (x : Multiset α) : traverse (pure : α → Id α) x = x := by
+theorem id_traverse {α : Type*} (x : Multiset α) : traverse (pure : α → Id α) x = x := by
   refine' Quotient.inductionOn x _
   intro
   simp [traverse, Coe.coe]
@@ -117,7 +114,7 @@ theorem comp_traverse {G H : Type _ → Type _} [Applicative G] [Applicative H] 
   simp only [Function.comp, lift_coe]
 #align multiset.comp_traverse Multiset.comp_traverse
 
-theorem map_traverse {G : Type _ → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
+theorem map_traverse {G : Type* → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
     (g : α → G β) (h : β → γ) (x : Multiset α) :
     Functor.map (Functor.map h) (traverse g x) = traverse (Functor.map h ∘ g) x := by
   refine' Quotient.inductionOn x _
@@ -127,7 +124,7 @@ theorem map_traverse {G : Type _ → Type _} [Applicative G] [CommApplicative G]
   rfl
 #align multiset.map_traverse Multiset.map_traverse
 
-theorem traverse_map {G : Type _ → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
+theorem traverse_map {G : Type* → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
     (g : α → β) (h : β → G γ) (x : Multiset α) : traverse h (map g x) = traverse (h ∘ g) x := by
   refine' Quotient.inductionOn x _
   intro
@@ -141,7 +138,7 @@ theorem naturality {G H : Type _ → Type _} [Applicative G] [Applicative H] [Co
   refine' Quotient.inductionOn x _
   intro
   simp only [quot_mk_to_coe, traverse, lift_coe, Function.comp_apply,
-    ApplicativeTransformation.preserves_map, IsLawfulTraversable.naturality]
+    ApplicativeTransformation.preserves_map, LawfulTraversable.naturality]
 #align multiset.naturality Multiset.naturality
 
 end Multiset

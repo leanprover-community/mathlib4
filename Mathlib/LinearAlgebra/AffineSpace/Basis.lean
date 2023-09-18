@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.basis
-! leanprover-community/mathlib commit 2de9c37fa71dde2f1c6feff19876dd6a7b1519f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.Basis
+
+#align_import linear_algebra.affine_space.basis from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
 /-!
 # Affine bases and barycentric coordinates
@@ -58,7 +55,7 @@ structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type
   protected tot' : affineSpan k (range toFun) = ⊤
 #align affine_basis AffineBasis
 
-variable {ι ι' k V P : Type _} [AddCommGroup V] [AffineSpace V P]
+variable {ι ι' k V P : Type*} [AddCommGroup V] [AffineSpace V P]
 
 namespace AffineBasis
 
@@ -146,7 +143,6 @@ theorem basisOf_reindex (i : ι') :
   simp
 #align affine_basis.basis_of_reindex AffineBasis.basisOf_reindex
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The `i`th barycentric coordinate of a point. -/
 noncomputable def coord (i : ι) : P →ᵃ[k] k where
   toFun q := 1 - (b.basisOf i).sumCoords (q -ᵥ b i)
@@ -157,7 +153,6 @@ noncomputable def coord (i : ι) : P →ᵃ[k] k where
       sub_add_eq_sub_sub_swap, add_comm, sub_eq_add_neg]
 #align affine_basis.coord AffineBasis.coord
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCoords :=
   rfl
@@ -205,7 +200,7 @@ theorem coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s
 #align affine_basis.coord_apply_combination_of_not_mem AffineBasis.coord_apply_combination_of_not_mem
 
 @[simp]
-theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : (∑ i, b.coord i q) = 1 := by
+theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by
   have hq : q ∈ affineSpan k (range b) := by
     rw [b.tot]
     exact AffineSubspace.mem_top k V q
@@ -230,7 +225,7 @@ theorem affineCombination_coord_eq_self [Fintype ι] (q : P) :
 affine space is a module so we can talk about linear combinations. -/
 @[simp]
 theorem linear_combination_coord_eq_self [Fintype ι] (b : AffineBasis ι k V) (v : V) :
-    (∑ i, b.coord i v • b i) = v := by
+    ∑ i, b.coord i v • b i = v := by
   have hb := b.affineCombination_coord_eq_self v
   rwa [Finset.univ.affineCombination_eq_linear_combination _ _ (b.sum_coord_apply_eq_one v)] at hb
 #align affine_basis.linear_combination_coord_eq_self AffineBasis.linear_combination_coord_eq_self
@@ -264,13 +259,7 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
     have hi : i ∈ s := by simp
     have _ : j ∈ s := by simp
     let w : ι → k := fun j' => if j' = i then x else 1 - x
-    have hw : s.sum w = 1 := by
-      -- Porting note: previously this subgoal worked just by:
-      -- simp [hij, Finset.sum_ite, Finset.filter_insert, Finset.filter_eq']
-      -- I'm not sure why `simp` can not successfully use `Finset.filter_eq'`.
-      simp [Finset.sum_ite, Finset.filter_insert, hij]
-      erw [Finset.filter_eq']
-      simp [hij.symm]
+    have hw : s.sum w = 1 := by simp [Finset.sum_ite, Finset.filter_insert, hij]
     use s.affineCombination k b w
     simp [b.coord_apply_combination_of_mem hi hw]
 #align affine_basis.surjective_coord AffineBasis.surjective_coord
@@ -292,7 +281,7 @@ noncomputable def coords : P →ᵃ[k] ι → k where
     -- mathlib3 proof was:
     -- simp only [linear_eq_sumCoords, LinearMap.coe_mk, LinearMap.neg_apply, Pi.vadd_apply',
     --   AffineMap.map_vadd]
-    -- but now we need to `dsimp` before `AffinteMap.map_vadd` works.
+    -- but now we need to `dsimp` before `AffineMap.map_vadd` works.
     rw [LinearMap.coe_mk, Pi.vadd_apply']
     dsimp
     rw [AffineMap.map_vadd, linear_eq_sumCoords,
@@ -320,7 +309,7 @@ theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset �
 #align affine_basis.coord_apply_centroid AffineBasis.coord_apply_centroid
 
 theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
-    ∃ (s : _)(_ : s ⊆ t)(b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) := by
+    ∃ (s : _) (_ : s ⊆ t) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) := by
   obtain ⟨s, hst, h_tot, h_ind⟩ := exists_affineIndependent k V t
   refine' ⟨s, hst, ⟨(↑), h_ind, _⟩, rfl⟩
   rw [Subtype.range_coe, h_tot, ht]
@@ -328,7 +317,7 @@ theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
 
 variable (k V P)
 
-theorem exists_affineBasis : ∃ (s : Set P)(b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) :=
+theorem exists_affineBasis : ∃ (s : Set P) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) :=
   let ⟨s, _, hs⟩ := exists_affine_subbasis (AffineSubspace.span_univ k V P)
   ⟨s, hs⟩
 #align affine_basis.exists_affine_basis AffineBasis.exists_affineBasis

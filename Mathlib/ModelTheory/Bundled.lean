@@ -2,22 +2,19 @@
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.bundled
-! leanprover-community/mathlib commit b3951c65c6e797ff162ae8b69eab0063bcfb3d73
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.ModelTheory.ElementaryMaps
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+
+#align_import model_theory.bundled from "leanprover-community/mathlib"@"b3951c65c6e797ff162ae8b69eab0063bcfb3d73"
 
 /-!
 # Bundled First-Order Structures
 This file bundles types together with their first-order structure.
 
 ## Main Definitions
-* `FirstOrder.language.Theory.ModelType` is the type of nonempty models of a particular theory.
-* `FirstOrder.language.equivSetoid` is the isomorphism equivalence relation on bundled structures.
+* `FirstOrder.Language.Theory.ModelType` is the type of nonempty models of a particular theory.
+* `FirstOrder.Language.equivSetoid` is the isomorphism equivalence relation on bundled structures.
 
 ## TODO
 * Define category structures on bundled structures and models.
@@ -85,7 +82,9 @@ structure ModelType where
 #align first_order.language.Theory.Model.is_model FirstOrder.Language.Theory.ModelType.is_model
 #align first_order.language.Theory.Model.nonempty' FirstOrder.Language.Theory.ModelType.nonempty'
 
-attribute [instance] ModelType.struc ModelType.is_model ModelType.nonempty'
+-- Porting note: In Lean4, other instances precedes `FirstOrder.Language.Theory.ModelType.struc`,
+-- it's issues in `ModelTheory.Satisfiability`. So, we increase these priorities.
+attribute [instance 2000] ModelType.struc ModelType.is_model ModelType.nonempty'
 
 namespace ModelType
 
@@ -210,7 +209,7 @@ theorem coe_of {M : Type w} [L.Structure M] [Nonempty M] (h : M ⊨ T) : (h.bund
 end Theory
 
 /-- A structure that is elementarily equivalent to a model, bundled as a model. -/
-def ElementarilyEquivalent.toModel {M : T.ModelType} {N : Type _} [LN : L.Structure N]
+def ElementarilyEquivalent.toModel {M : T.ModelType} {N : Type*} [LN : L.Structure N]
     (h : M ≅[L] N) : T.ModelType where
   Carrier := N
   struc := LN

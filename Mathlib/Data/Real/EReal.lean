@@ -2,15 +2,12 @@
 Copyright (c) 2019 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
-
-! This file was ported from Lean 3 source module data.real.ereal
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Data.Sign
+
+#align_import data.real.ereal from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # The extended reals [-∞, ∞].
@@ -71,19 +68,22 @@ instance : CompleteLinearOrder EReal :=
 instance : LinearOrderedAddCommMonoid EReal :=
   inferInstanceAs (LinearOrderedAddCommMonoid (WithBot (WithTop ℝ)))
 
+instance : AddCommMonoidWithOne EReal :=
+  inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop ℝ)))
+
 instance : DenselyOrdered EReal :=
   inferInstanceAs (DenselyOrdered (WithBot (WithTop ℝ)))
 
-/-- The canonical inclusion froms reals to ereals. Registered as a coercion. -/
+/-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
 @[coe] def Real.toEReal : ℝ → EReal := some ∘ some
 #align real.to_ereal Real.toEReal
 
 namespace EReal
 
--- things unify with `WithBot.decidableLT` later if we we don't provide this explicitly.
-instance decidableLt : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
+-- things unify with `WithBot.decidableLT` later if we don't provide this explicitly.
+instance decidableLT : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
   WithBot.decidableLT
-#align ereal.decidable_lt EReal.decidableLt
+#align ereal.decidable_lt EReal.decidableLT
 
 -- TODO: Provide explicitly, otherwise it is inferred noncomputably from `CompleteLinearOrder`
 instance : Top EReal := ⟨some ⊤⟩
@@ -144,7 +144,7 @@ directly will unfold `EReal` to `Option` which is undesirable.
 
 When working in term mode, note that pattern matching can be used directly. -/
 @[elab_as_elim]
-protected def rec {C : EReal → Sort _} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
+protected def rec {C : EReal → Sort*} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
     ∀ a : EReal, C a
   | ⊥ => h_bot
   | (a : ℝ) => h_real a
@@ -172,7 +172,7 @@ theorem coe_mul (x y : ℝ) : (↑(x * y) : EReal) = x * y :=
   rfl
 #align ereal.coe_mul EReal.coe_mul
 
-/-- Induct on two ereals by performing case splits on the sign of one whenever the other is
+/-- Induct on two `EReal`s by performing case splits on the sign of one whenever the other is
 infinite. -/
 @[elab_as_elim]
 theorem induction₂ {P : EReal → EReal → Prop} (top_top : P ⊤ ⊤) (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x)
@@ -200,7 +200,7 @@ theorem induction₂ {P : EReal → EReal → Prop} (top_top : P ⊤ ⊤) (top_p
   | ⊤, ⊤ => top_top
 #align ereal.induction₂ EReal.induction₂
 
-/-- Induct on two ereals by performing case splits on the sign of one whenever the other is
+/-- Induct on two `EReal`s by performing case splits on the sign of one whenever the other is
 infinite. This version eliminates some cases by assuming that the relation is symmetric. -/
 @[elab_as_elim]
 theorem induction₂_symm {P : EReal → EReal → Prop} (symm : Symmetric P) (top_top : P ⊤ ⊤)
@@ -626,9 +626,9 @@ def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
   toFun x := EReal.toReal x
   invFun x := ⟨x, by simp⟩
   left_inv := fun ⟨x, hx⟩ => by
-      lift x to ℝ
-      · simpa [not_or, and_comm] using hx
-      · simp
+    lift x to ℝ
+    · simpa [not_or, and_comm] using hx
+    · simp
   right_inv x := by simp
 #align ereal.ne_top_bot_equiv_real EReal.neTopBotEquivReal
 
@@ -722,6 +722,15 @@ theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤
   rw [← EReal.top_add_top]
   exact EReal.add_lt_add hx.lt_top hy.lt_top
 #align ereal.add_lt_top EReal.add_lt_top
+
+/-- We do not have a notion of `LinearOrderedAddCommMonoidWithBot` but we can at least make
+the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
+instance : LinearOrderedAddCommMonoidWithTop ERealᵒᵈ where
+  le_top := by simp
+  top_add' := by
+    rw [OrderDual.forall]
+    intro x
+    rw [← OrderDual.toDual_bot, ← toDual_add, bot_add, OrderDual.toDual_bot]
 
 /-! ### Negation -/
 
@@ -1050,7 +1059,7 @@ a real `x` to `|x|`. -/
 protected def abs : EReal → ℝ≥0∞
   | ⊥ => ⊤
   | ⊤ => ⊤
-  | (x : ℝ) => ENNReal.ofReal (|x|)
+  | (x : ℝ) => ENNReal.ofReal |x|
 #align ereal.abs EReal.abs
 
 @[simp] theorem abs_top : (⊤ : EReal).abs = ⊤ := rfl
@@ -1059,7 +1068,7 @@ protected def abs : EReal → ℝ≥0∞
 @[simp] theorem abs_bot : (⊥ : EReal).abs = ⊤ := rfl
 #align ereal.abs_bot EReal.abs_bot
 
-theorem abs_def (x : ℝ) : (x : EReal).abs = ENNReal.ofReal (|x|) := rfl
+theorem abs_def (x : ℝ) : (x : EReal).abs = ENNReal.ofReal |x| := rfl
 #align ereal.abs_def EReal.abs_def
 
 theorem abs_coe_lt_top (x : ℝ) : (x : EReal).abs < ⊤ :=
@@ -1115,7 +1124,7 @@ theorem sign_bot : sign (⊥ : EReal) = -1 := rfl
 
 @[simp]
 theorem sign_coe (x : ℝ) : sign (x : EReal) = sign x := by
-  simp only [sign, OrderHom.coe_fun_mk, EReal.coe_pos, EReal.coe_neg']
+  simp only [sign, OrderHom.coe_mk, EReal.coe_pos, EReal.coe_neg']
 #align ereal.sign_coe EReal.sign_coe
 
 @[simp, norm_cast]
@@ -1206,6 +1215,7 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
 
 end EReal
 
+-- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
 /-
 namespace Tactic
 

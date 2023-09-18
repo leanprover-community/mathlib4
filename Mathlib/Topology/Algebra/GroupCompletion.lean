@@ -2,15 +2,12 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.algebra.group_completion
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.UniformSpace.Completion
+
+#align_import topology.algebra.group_completion from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Completion of topological groups:
@@ -36,7 +33,7 @@ the main constructions deal with continuous group morphisms.
 
 noncomputable section
 
-variable {M R α β : Type _}
+variable {M R α β : Type*}
 
 section Group
 
@@ -72,7 +69,6 @@ section Zero
 instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
     [UniformContinuousConstSMul M α] : MulActionWithZero M (Completion α) :=
   { (inferInstance : MulAction M $ Completion α) with
-    smul := (· • ·)
     smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, MulActionWithZero.smul_zero r]
     zero_smul :=
       ext' (continuous_const_smul _) continuous_const fun a ↦ by
@@ -172,7 +168,6 @@ instance uniformAddGroup : UniformAddGroup (Completion α) :=
 instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
     DistribMulAction M (Completion α) :=
   { (inferInstance : MulAction M $ Completion α) with
-    smul := (· • ·)
     smul_add := fun r x y ↦
       induction_on₂ x y
         (isClosed_eq ((continuous_fst.add continuous_snd).const_smul _)
@@ -216,14 +211,15 @@ instance : AddCommGroup (Completion α) :=
         change (x : Completion α) + ↑y = ↑y + ↑x
         rw [← coe_add, ← coe_add, add_comm] }
 
-instance [Semiring R] [Module R α] [UniformContinuousConstSMul R α] : Module R (Completion α) :=
+instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α] :
+    Module R (Completion α) :=
   { (inferInstance : DistribMulAction R $ Completion α),
     (inferInstance : MulActionWithZero R $ Completion α) with
-    smul := (· • ·)
     add_smul := fun a b ↦
       ext' (continuous_const_smul _) ((continuous_const_smul _).add (continuous_const_smul _))
         fun x ↦ by
           rw [← coe_smul, add_smul, coe_add, coe_smul, coe_smul] }
+#align uniform_space.completion.module UniformSpace.Completion.instModule
 
 end UniformAddCommGroup
 
@@ -289,7 +285,7 @@ theorem AddMonoidHom.completion_zero :
     simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
 #align add_monoid_hom.completion_zero AddMonoidHom.completion_zero
 
-theorem AddMonoidHom.completion_add {γ : Type _} [AddCommGroup γ] [UniformSpace γ]
+theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace γ]
     [UniformAddGroup γ] (f g : α →+ γ) (hf : Continuous f) (hg : Continuous g) :
     AddMonoidHom.completion (f + g) (hf.add hg) =
     AddMonoidHom.completion f hf + AddMonoidHom.completion g hg := by

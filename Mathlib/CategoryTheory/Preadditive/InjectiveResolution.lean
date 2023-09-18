@@ -2,20 +2,17 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.injective_resolution
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Homology.Single
 
+#align_import category_theory.preadditive.injective_resolution from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
+
 /-!
 # Injective resolutions
 
-A injective resolution `I : InjectiveResolution Z` of an object `Z : C` consists of
-a `ℕ`-indexed cochain complex `I.cocomplex` of injective objects,
+An injective resolution `I : InjectiveResolution Z` of an object `Z : C` consists of
+an `ℕ`-indexed cochain complex `I.cocomplex` of injective objects,
 along with a cochain map `I.ι` from cochain complex consisting just of `Z` in degree zero to `C`,
 so that the augmented cochain complex is exact.
 ```
@@ -30,9 +27,7 @@ I⁰ ---> I¹ ---> ... ----> Iⁿ ---> ...
 
 noncomputable section
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 universe v u
 
@@ -52,7 +47,7 @@ Except in situations where you want to provide a particular injective resolution
 you will not typically need to use this bundled object, and will instead use
 * `injectiveResolution Z`: the `ℕ`-indexed cochain complex
   (equipped with `injective` and `exact` instances)
-* `InjectiveResolution.ι Z`: the cochain map from  `(single C _ 0).obj Z` to
+* `InjectiveResolution.ι Z`: the cochain map from `(single C _ 0).obj Z` to
   `InjectiveResolution Z` (all the components are equipped with `Mono` instances,
   and when the category is `Abelian` we will show `ι` is a quasi-iso).
 -/
@@ -73,7 +68,7 @@ attribute [inherit_doc InjectiveResolution]
 
 attribute [instance] InjectiveResolution.injective InjectiveResolution.mono
 
-/-- An object admits a injective resolution. -/
+/-- An object admits an injective resolution. -/
 class HasInjectiveResolution (Z : C) : Prop where
   out : Nonempty (InjectiveResolution Z)
 #align category_theory.has_injective_resolution CategoryTheory.HasInjectiveResolution
@@ -85,7 +80,7 @@ section
 variable (C)
 
 /-- You will rarely use this typeclass directly: it is implied by the combination
-`[enough_injectives C]` and `[abelian C]`. -/
+`[EnoughInjectives C]` and `[Abelian C]`. -/
 class HasInjectiveResolutions : Prop where
   out : ∀ Z : C, HasInjectiveResolution Z
 #align category_theory.has_injective_resolutions CategoryTheory.HasInjectiveResolutions
@@ -99,7 +94,7 @@ namespace InjectiveResolution
 @[simp]
 theorem ι_f_succ {Z : C} (I : InjectiveResolution Z) (n : ℕ) : I.ι.f (n + 1) = 0 := by
   apply zero_of_source_iso_zero
-  dsimp; rfl
+  rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.ι_f_succ CategoryTheory.InjectiveResolution.ι_f_succ
 
@@ -145,4 +140,3 @@ set_option linter.uppercaseLean3 false in
 end InjectiveResolution
 
 end CategoryTheory
-

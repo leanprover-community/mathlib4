@@ -2,14 +2,11 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.algebra.module.simple
-! leanprover-community/mathlib commit f430769b562e0cedef59ee1ed968d67e0e0c86ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import topology.algebra.module.simple from "leanprover-community/mathlib"@"f430769b562e0cedef59ee1ed968d67e0e0c86ba"
 
 /-!
 # The kernel of a linear function is closed or dense
@@ -26,7 +23,6 @@ variable {R : Type u} {M : Type v} {N : Type w} [Ring R] [TopologicalSpace R] [T
   [AddCommGroup M] [AddCommGroup N] [Module R M] [ContinuousSMul R M] [Module R N] [ContinuousAdd M]
   [IsSimpleModule R N]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The kernel of a linear map taking values in a simple module over the base ring is closed or
 dense. Applies, e.g., to the case when `R = N` is a division ring. -/
 theorem LinearMap.isClosed_or_dense_ker (l : M →ₗ[R] N) :

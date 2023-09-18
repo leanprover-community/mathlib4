@@ -2,14 +2,11 @@
 Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
-
-! This file was ported from Lean 3 source module topology.stone_cech
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Topology.DenseEmbedding
+
+#align_import topology.stone_cech from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-! # Stone-Čech compactification
 
@@ -48,7 +45,7 @@ theorem ultrafilterBasis_is_basis : TopologicalSpace.IsTopologicalBasis (ultrafi
     rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ u ⟨ua, ub⟩
     refine' ⟨_, ⟨a ∩ b, rfl⟩, inter_mem ua ub, fun v hv => ⟨_, _⟩⟩ <;> apply mem_of_superset hv <;>
       simp [inter_subset_right a b],
-    eq_univ_of_univ_subset <| subset_unionₛ_of_mem <| ⟨univ, eq_univ_of_forall fun u => univ_mem⟩,
+    eq_univ_of_univ_subset <| subset_sUnion_of_mem <| ⟨univ, eq_univ_of_forall fun u => univ_mem⟩,
     rfl⟩
 #align ultrafilter_basis_is_basis ultrafilterBasis_is_basis
 
@@ -60,7 +57,7 @@ theorem ultrafilter_isOpen_basic (s : Set α) : IsOpen { u : Ultrafilter α | s 
 /-- The basic open sets for the topology on ultrafilters are also closed. -/
 theorem ultrafilter_isClosed_basic (s : Set α) : IsClosed { u : Ultrafilter α | s ∈ u } := by
   rw [← isOpen_compl_iff]
-  convert ultrafilter_isOpen_basic (sᶜ) using 1
+  convert ultrafilter_isOpen_basic sᶜ using 1
   ext u
   exact Ultrafilter.compl_mem_iff_not_mem.symm
 #align ultrafilter_is_closed_basic ultrafilter_isClosed_basic
@@ -71,7 +68,7 @@ theorem ultrafilter_converges_iff {u : Ultrafilter (Ultrafilter α)} {x : Ultraf
     ↑u ≤ 𝓝 x ↔ x = joinM u := by
   rw [eq_comm, ← Ultrafilter.coe_le_coe]
   change ↑u ≤ 𝓝 x ↔ ∀ s ∈ x, { v : Ultrafilter α | s ∈ v } ∈ u
-  simp only [TopologicalSpace.nhds_generateFrom, le_infᵢ_iff, ultrafilterBasis, le_principal_iff,
+  simp only [TopologicalSpace.nhds_generateFrom, le_iInf_iff, ultrafilterBasis, le_principal_iff,
     mem_setOf_eq]
   constructor
   · intro h a ha
@@ -99,18 +96,24 @@ instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   intro B hB
   rw [← Ultrafilter.coe_le_coe]
   intro s hs
-  rw [connectedComponent_eq_interᵢ_clopen, Set.mem_interᵢ] at hB
+  rw [connectedComponent_eq_iInter_clopen, Set.mem_iInter] at hB
   let Z := { F : Ultrafilter α | s ∈ F }
   have hZ : IsClopen Z := ⟨ultrafilter_isOpen_basic s, ultrafilter_isClosed_basic s⟩
   exact hB ⟨Z, hZ, hs⟩
 
+@[simp] theorem Ultrafilter.tendsto_pure_self (b : Ultrafilter α) : Tendsto pure b (𝓝 b) := by
+  rw [Tendsto, ← coe_map, ultrafilter_converges_iff]
+  ext s
+  change s ∈ b ↔ {t | s ∈ t} ∈ map pure b
+  simp_rw [mem_map, preimage_setOf_eq, mem_pure, setOf_mem_eq]
+
 theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) ≤ b := by
   rw [TopologicalSpace.nhds_generateFrom]
-  simp only [comap_infᵢ, comap_principal]
+  simp only [comap_iInf, comap_principal]
   intro s hs
   rw [← le_principal_iff]
-  refine' infᵢ_le_of_le { u | s ∈ u } _
-  refine' infᵢ_le_of_le ⟨hs, ⟨s, rfl⟩⟩ _
+  refine' iInf_le_of_le { u | s ∈ u } _
+  refine' iInf_le_of_le ⟨hs, ⟨s, rfl⟩⟩ _
   exact principal_mono.2 fun a => id
 #align ultrafilter_comap_pure_nhds ultrafilter_comap_pure_nhds
 
@@ -162,7 +165,7 @@ section Extension
   already know it must be unique because `α → Ultrafilter α` is a
   dense embedding and `γ` is Hausdorff. For existence, we will invoke
   `DenseInducing.continuous_extend`. -/
-variable {γ : Type _} [TopologicalSpace γ]
+variable {γ : Type*} [TopologicalSpace γ]
 
 /-- The extension of a function `α → γ` to a function `Ultrafilter α → γ`.
   When `γ` is a compact Hausdorff space it will be continuous. -/
@@ -188,7 +191,6 @@ theorem continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.
       isCompact_univ.ultrafilter_le_nhds (b.map f) (by rw [le_principal_iff]; exact univ_mem)
     ⟨c, le_trans (map_mono (ultrafilter_comap_pure_nhds _)) h'⟩
   letI : TopologicalSpace α := ⊥
-  haveI : NormalSpace γ := normalOfCompactT2
   exact denseInducing_pure.continuous_extend h
 #align continuous_ultrafilter_extend continuous_ultrafilter_extend
 

@@ -10,13 +10,14 @@ def help : String := "Mathlib4 caching CLI
 Usage: cache [COMMAND]
 
 Commands:
-  # No priviledge required
+  # No privilege required
   get  [ARGS]  Download linked files missing on the local cache and decompress
   get! [ARGS]  Download all linked files and decompress
   get- [ARGS]  Download linked files missing to the local cache, but do no compress
   pack         Compress non-compressed build files into the local cache
   pack!        Compress build files into the local cache (no skipping)
   unpack       Decompress linked already downloaded files
+  unpack!      Decompress linked already downloaded files (no skipping)
   clean        Delete non-linked files
   clean!       Delete everything on the local cache
 
@@ -43,36 +44,54 @@ Which will download the cache for:
 * Every Lean file inside 'Mathlib/Data/'
 * Everything that's needed for the above"
 
-open System (FilePath) in
+open Lean System in
 /-- Note that this normalizes the path strings, which is needed when running from a unix shell
 (which uses `/` in paths) on windows (which uses `\` in paths) as otherwise our filename keys won't
 match. -/
 def toPaths (args : List String) : List FilePath :=
-  args.map (FilePath.mk · |>.normalize)
+  args.map fun arg =>
+    if arg.endsWith ".lean" then
+      FilePath.mk arg |>.normalize
+    else
+      mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
 
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "commit", "commit!"]
 
-open Cache IO Hashing Requests in
+def leanTarArgs : List String :=
+  ["get", "get!", "pack", "pack!", "unpack"]
+
+open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
-  let hashMemo ← getHashMemo
+  -- We pass any following arguments to `getHashMemo`,
+  -- so we can use the cache on `Archive` or `Counterexamples`.
+  let extraRoots := match args with
+  | [] => #[]
+  | _ :: t => t.toArray.map FilePath.mk
+  let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
-  let goodCurl := !(curlArgs.contains (args.headD "") && !(← validateCurl))
+  let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
+  if leanTarArgs.contains (args.headD "") then validateLeanTar
   match args with
-  | ["get"] => getFiles hashMap false goodCurl true
-  | ["get!"] => getFiles hashMap true goodCurl true
-  | ["get-"] => getFiles hashMap false goodCurl false
-  | "get"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false goodCurl true
-  | "get!" :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) true goodCurl true
-  | "get-"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false goodCurl false
-  | ["pack"] => discard $ packCache hashMap false
-  | ["pack!"] => discard $ packCache hashMap true
-  | ["unpack"] => unpackCache hashMap
+  | ["get"] => getFiles hashMap false false goodCurl true
+  | ["get!"] => getFiles hashMap true true goodCurl true
+  | ["get-"] => getFiles hashMap false false goodCurl false
+  | "get"  :: args =>
+    getFiles (← hashMemo.filterByFilePaths (toPaths args)) false false goodCurl true
+  | "get!" :: args =>
+    getFiles (← hashMemo.filterByFilePaths (toPaths args)) true true goodCurl true
+  | "get-" :: args =>
+    getFiles (← hashMemo.filterByFilePaths (toPaths args)) false false goodCurl false
+  | ["pack"] => discard $ packCache hashMap false (← getGitCommitHash)
+  | ["pack!"] => discard $ packCache hashMap true (← getGitCommitHash)
+  | ["unpack"] => unpackCache hashMap false
+  | ["unpack!"] => unpackCache hashMap true
   | ["clean"] =>
-    cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asTarGz) .empty
+    cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
-  | ["put"] => putFiles (← packCache hashMap false) false (← getToken)
-  | ["put!"] => putFiles (← packCache hashMap false) true (← getToken)
+  -- We allow arguments for `put` and `put!` so they can be added to the `roots`.
+  | "put" :: _ => putFiles (← packCache hashMap false (← getGitCommitHash)) false (← getToken)
+  | "put!" :: _ => putFiles (← packCache hashMap false (← getGitCommitHash)) true (← getToken)
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap false (← getToken)

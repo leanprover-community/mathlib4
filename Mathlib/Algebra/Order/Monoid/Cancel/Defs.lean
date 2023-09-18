@@ -2,13 +2,10 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.monoid.cancel.defs
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
+
+#align_import algebra.order.monoid.cancel.defs from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Ordered cancellative monoids
@@ -58,29 +55,27 @@ instance (priority := 200) OrderedCancelCommMonoid.to_contravariantClass_le_left
 
 @[to_additive]
 theorem OrderedCancelCommMonoid.lt_of_mul_lt_mul_left : ∀ a b c : α, a * b < a * c → b < c :=
-  fun a b c h =>
-  lt_of_le_not_le (OrderedCancelCommMonoid.le_of_mul_le_mul_left a b c h.le) <|
-    mt (fun h => OrderedCancelCommMonoid.mul_le_mul_left _ _ h _) (not_le_of_gt h)
+  contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
 #align ordered_cancel_comm_monoid.lt_of_mul_lt_mul_left OrderedCancelCommMonoid.lt_of_mul_lt_mul_left
 #align ordered_cancel_add_comm_monoid.lt_of_add_lt_add_left OrderedCancelAddCommMonoid.lt_of_add_lt_add_left
 
 @[to_additive]
-instance OrderedCancelCommMonoid.to_contravariantClass_left (M : Type _)
+instance OrderedCancelCommMonoid.to_contravariantClass_left (M : Type*)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (· * ·) (· < ·) where
   elim _ _ _ := OrderedCancelCommMonoid.lt_of_mul_lt_mul_left _ _ _
 #align ordered_cancel_comm_monoid.to_contravariant_class_left OrderedCancelCommMonoid.to_contravariantClass_left
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_left OrderedCancelAddCommMonoid.to_contravariantClass_left
 
-/- This instance can be proven with `by apply_instance`.  However, by analogy with the
+/- This instance can be proven with `by infer_instance`.  However, by analogy with the
 instance `OrderedCancelCommMonoid.to_covariantClass_right` above, I imagine that without
 this instance, some Type would not have a `ContravariantClass M M (function.swap (*)) (<)`
 instance. -/
 @[to_additive]
-instance OrderedCancelCommMonoid.to_contravariantClass_right (M : Type _)
+instance OrderedCancelCommMonoid.to_contravariantClass_right (M : Type*)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (swap (· * ·)) (· < ·) :=
-  contravariant_swap_mul_lt_of_contravariant_mul_lt M
+  contravariant_swap_mul_of_contravariant_mul M _
 #align ordered_cancel_comm_monoid.to_contravariant_class_right OrderedCancelCommMonoid.to_contravariantClass_right
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_right OrderedCancelAddCommMonoid.to_contravariantClass_right
 

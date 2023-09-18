@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.graded_mul_action
-! leanprover-community/mathlib commit 861a26926586cd46ff80264d121cdb6fa0e35cc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GradedMonoid
+
+#align_import algebra.graded_mul_action from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
 
 /-!
 # Additively-graded multiplicative action structures
@@ -50,7 +47,7 @@ graded action
 -/
 
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 namespace GradedMonoid
 
@@ -59,7 +56,7 @@ namespace GradedMonoid
 
 section Defs
 
-variable (A : ι → Type _) (M : ι → Type _)
+variable (A : ι → Type*) (M : ι → Type*)
 
 /-- A graded version of `SMul`. Scalar multiplication combines grades additively, i.e.
 if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`-/
@@ -112,47 +109,47 @@ end GradedMonoid
 
 section Subobjects
 
-variable {R : Type _}
+variable {R : Type*}
 
 /-- A version of `GradedMonoid.GSmul` for internally graded objects. -/
-class SetLike.GradedSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
+class SetLike.GradedSmul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
   (A : ι → S) (B : ι → N) : Prop where
   /-- Multiplication is homogeneous -/
   smul_mem : ∀ ⦃i j : ι⦄ {ai bj}, ai ∈ A i → bj ∈ B j → ai • bj ∈ B (i + j)
 #align set_like.has_graded_smul SetLike.GradedSmul
 
-instance SetLike.toGSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
+instance SetLike.toGSmul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
     (A : ι → S) (B : ι → N) [SetLike.GradedSmul A B] :
-    GradedMonoid.GSmul (fun i ↦ A i) fun i ↦ B i
-    where smul a b := ⟨a.1 • b.1, SetLike.GradedSmul.smul_mem a.2 b.2⟩
+    GradedMonoid.GSmul (fun i ↦ A i) fun i ↦ B i where
+  smul a b := ⟨a.1 • b.1, SetLike.GradedSmul.smul_mem a.2 b.2⟩
 #align set_like.ghas_smul SetLike.toGSmul
 
 /-
 Porting note: simpNF linter returns
 "Left-hand side does not simplify, when using the simp lemma on itself."
 However, simp does indeed solve the following. Possibly related std#71,std#78
-example {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
+example {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
     (A : ι → S) (B : ι → N) [SetLike.GradedSmul A B] {i j : ι} (x : A i) (y : B j) :
     (@GradedMonoid.GSmul.smul ι (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = x.1 • y.1 := by simp
 -/
 @[simp,nolint simpNF]
-theorem SetLike.coe_GSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
+theorem SetLike.coe_GSmul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
     (A : ι → S) (B : ι → N) [SetLike.GradedSmul A B] {i j : ι} (x : A i) (y : B j) :
     (@GradedMonoid.GSmul.smul ι (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = x.1 • y.1 :=
   rfl
 #align set_like.coe_ghas_smul SetLike.coe_GSmul
 
 /-- Internally graded version of `Mul.toSMul`. -/
-instance SetLike.GradedMul.toGradedSmul [AddMonoid ι] [Monoid R] {S : Type _} [SetLike S R]
-    (A : ι → S) [SetLike.GradedMonoid A] : SetLike.GradedSmul A A
-    where smul_mem _ _ _ _ hi hj := SetLike.GradedMonoid.toGradedMul.mul_mem hi hj
+instance SetLike.GradedMul.toGradedSmul [AddMonoid ι] [Monoid R] {S : Type*} [SetLike S R]
+    (A : ι → S) [SetLike.GradedMonoid A] : SetLike.GradedSmul A A where
+  smul_mem _ _ _ _ hi hj := SetLike.GradedMonoid.toGradedMul.mul_mem hi hj
 #align set_like.has_graded_mul.to_has_graded_smul SetLike.GradedMul.toGradedSmul
 
 end Subobjects
 
 section HomogeneousElements
 
-variable {S R N M : Type _} [SetLike S R] [SetLike N M]
+variable {S R N M : Type*} [SetLike S R] [SetLike N M]
 
 theorem SetLike.Homogeneous.graded_smul [Add ι] [SMul R M] {A : ι → S} {B : ι → N}
     [SetLike.GradedSmul A B] {a : R} {b : M} :

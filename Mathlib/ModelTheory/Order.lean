@@ -2,13 +2,10 @@
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.order
-! leanprover-community/mathlib commit 1ed3a113dbc6f5b33eae3b96211d4e26ca3a5e9d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.ModelTheory.Semantics
+
+#align_import model_theory.order from "leanprover-community/mathlib"@"1ed3a113dbc6f5b33eae3b96211d4e26ca3a5e9d"
 
 /-!
 # Ordered First-Ordered Structures
@@ -28,7 +25,7 @@ particularly useful example in model theory.
 
 ## Main Results
 * `PartialOrder`s model the theory of partial orders, `LinearOrder`s model the theory of
-linear orders, and dense linear orders without endpoints model `Theory.DLO`.
+linear orders, and dense linear orders without endpoints model `Language.dlo`.
 
 -/
 
@@ -41,9 +38,7 @@ namespace Language
 
 set_option linter.uppercaseLean3 false
 
-open FirstOrder
-
-open Structure
+open FirstOrder Structure
 
 variable {L : Language.{u, v}} {α : Type w} {M : Type w'} {n : ℕ}
 
@@ -176,10 +171,10 @@ theorem orderedStructure_iff [IsOrdered L] [LE M] [L.Structure M] :
   Iff.rfl
 #align first_order.language.ordered_structure_iff FirstOrder.Language.orderedStructure_iff
 
-instance orderedStructure_lE [LE M] : OrderedStructure Language.order M := by
+instance orderedStructure_LE [LE M] : OrderedStructure Language.order M := by
   rw [orderedStructure_iff, orderLHom_order]
   exact LHom.id_isExpansionOn M
-#align first_order.language.ordered_structure_has_le FirstOrder.Language.orderedStructure_lE
+#align first_order.language.ordered_structure_has_le FirstOrder.Language.orderedStructure_LE
 
 instance model_preorder [Preorder M] : M ⊨ Language.order.preorderTheory := by
   simp only [preorderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,

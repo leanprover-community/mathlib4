@@ -2,13 +2,10 @@
 Copyright (c) 2022 Dagur Tómas Ásgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Tómas Ásgeirsson, Leonardo de Moura
-
-! This file was ported from Lean 3 source module data.set.bool_indicator
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
+
+#align_import data.set.bool_indicator from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
 /-!
 # Indicator function valued in bool
@@ -20,7 +17,7 @@ open Bool
 
 namespace Set
 
-variable {α : Type _} (s : Set α)
+variable {α : Type*} (s : Set α)
 
 /-- `boolIndicator` maps `x` to `true` if `x ∈ s`, else to `false` -/
 noncomputable def boolIndicator (x : α) :=

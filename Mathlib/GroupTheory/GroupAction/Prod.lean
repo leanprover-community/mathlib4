@@ -2,13 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
-! This file was ported from Lean 3 source module group_theory.group_action.prod
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.GroupTheory.GroupAction.Defs
+
+#align_import group_theory.group_action.prod from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 
 /-!
 # Prod instances for additive and multiplicative actions
@@ -31,8 +29,10 @@ https://leanprover.zulipchat.com/#narrow/near/316087838
 This was not done as part of the port in order to stay as close as possible to the mathlib3 code.
 -/
 
+set_option autoImplicit true
 
-variable {M N P E α β : Type _}
+
+variable {M N P E α β : Type*}
 
 namespace Prod
 
@@ -74,11 +74,11 @@ theorem smul_swap : (a • x).swap = a • x.swap :=
 #align prod.smul_swap Prod.smul_swap
 #align prod.vadd_swap Prod.vadd_swap
 
-theorem smul_zero_mk {α : Type _} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
+theorem smul_zero_mk {α : Type*} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
     a • ((0 : α), c) = (0, a • c) := by rw [Prod.smul_mk, smul_zero]
 #align prod.smul_zero_mk Prod.smul_zero_mk
 
-theorem smul_mk_zero {β : Type _} [Monoid M] [AddMonoid β] [DistribMulAction M β] (a : M) (b : α) :
+theorem smul_mk_zero {β : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] (a : M) (b : α) :
     a • (b, (0 : β)) = (a • b, 0) := by rw [Prod.smul_mk, smul_zero]
 #align prod.smul_mk_zero Prod.smul_mk_zero
 
@@ -169,10 +169,10 @@ instance mulAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M (�
   mul_smul _ _ _ := mk.inj_iff.mpr ⟨mul_smul _ _ _, mul_smul _ _ _⟩
   one_smul := fun ⟨_, _⟩ => mk.inj_iff.mpr ⟨one_smul _ _, one_smul _ _⟩
 
-instance smulZeroClass {R M N : Type _} [Zero M] [Zero N] [SMulZeroClass R M] [SMulZeroClass R N] :
+instance smulZeroClass {R M N : Type*} [Zero M] [Zero N] [SMulZeroClass R M] [SMulZeroClass R N] :
     SMulZeroClass R (M × N) where smul_zero _ := mk.inj_iff.mpr ⟨smul_zero _, smul_zero _⟩
 
-instance distribSMul {R M N : Type _} [AddZeroClass M] [AddZeroClass N] [DistribSMul R M]
+instance distribSMul {R M N : Type*} [AddZeroClass M] [AddZeroClass N] [DistribSMul R M]
     [DistribSMul R N] : DistribSMul R (M × N) where
   smul_add _ _ _ := mk.inj_iff.mpr ⟨smul_add _ _ _, smul_add _ _ _⟩
 

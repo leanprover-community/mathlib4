@@ -85,7 +85,7 @@ If no counter-examples are found, `slim_check` behaves like `admit`.
 `slim_check` can also be invoked using `#eval`:
 
 ```lean
-#eval SlimCheck.Testable.check (∀ (α : Type) (xs ys : list α), xs ++ ys = ys ++ xs)
+#eval SlimCheck.Testable.check (∀ (α : Type) (xs ys : List α), xs ++ ys = ys ++ xs)
 -- ===================
 -- Found problems!
 
@@ -164,7 +164,7 @@ Options:
 -/
 syntax (name := slimCheckSyntax) "slim_check" (config)? : tactic
 
-elab_rules : tactic | `(tactic| slim_check $[$cfg]?)  => do
+elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
   let cfg ← elabConfig (mkOptionalNode cfg)
   let (_, g) ← (← getMainGoal).revert ((← getLocalHyps).map (Expr.fvarId!))
   let tgt ← g.getType
@@ -231,7 +231,7 @@ set_option trace.Meta.synthInstance true
 -- | e := do
 --   failed
 
--- /-- format a `instance_tree` -/
+-- /-- format an `instance_tree` -/
 -- meta def instance_tree.to_format : instance_tree → tactic format
 -- | (instance_tree.node n p xs) := do
 --   xs ← format.join <$> (xs.mmap $ λ t, flip format.indent 2 <$> instance_tree.to_format t),

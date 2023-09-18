@@ -2,13 +2,10 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.measure.ae_measurable
-! leanprover-community/mathlib commit 3310acfa9787aa171db6d4cba3945f6f275fe9f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+
+#align_import measure_theory.measure.ae_measurable from "leanprover-community/mathlib"@"3310acfa9787aa171db6d4cba3945f6f275fe9f2"
 
 /-!
 # Almost everywhere measurable functions
@@ -19,11 +16,9 @@ We discuss several of its properties that are analogous to properties of measura
 -/
 
 
-open MeasureTheory MeasureTheory.Measure Filter Set Function
+open MeasureTheory MeasureTheory.Measure Filter Set Function Classical ENNReal
 
-open MeasureTheory Filter Classical ENNReal Interval
-
-variable {ι α β γ δ R : Type _} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
+variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ] {f g : α → β} {μ ν : Measure α}
 
 section
@@ -43,6 +38,11 @@ theorem aemeasurable_zero_measure : AEMeasurable f (0 : Measure α) := by
   nontriviality α; inhabit α
   exact ⟨fun _ => f default, measurable_const, rfl⟩
 #align ae_measurable_zero_measure aemeasurable_zero_measure
+
+theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤ m0) :
+    @AEMeasurable α α m m0 id μ :=
+  @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
+#align probability_theory.ae_measurable_id'' aemeasurable_id''
 
 namespace AEMeasurable
 
@@ -79,7 +79,7 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
     rw [measure_toMeasurable]
     exact (h i).ae_eq_mk
   have hsm : MeasurableSet (⋂ i, s i) :=
-    MeasurableSet.interᵢ fun i => measurableSet_toMeasurable _ _
+    MeasurableSet.iInter fun i => measurableSet_toMeasurable _ _
   have hs : ∀ i x, x ∉ s i → f x = (h i).mk f x := by
     intro i x hx
     contrapose! hx
@@ -89,16 +89,16 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
   · rw [restrict_piecewise]
     simp only [Set.restrict, const]
     exact measurable_const
-  · rw [restrict_piecewise_compl, compl_interᵢ]
+  · rw [restrict_piecewise_compl, compl_iInter]
     intro t ht
     refine'
-      ⟨⋃ i, (h i).mk f ⁻¹' t ∩ s iᶜ,
-        MeasurableSet.unionᵢ fun i =>
+      ⟨⋃ i, (h i).mk f ⁻¹' t ∩ (s i)ᶜ,
+        MeasurableSet.iUnion fun i =>
           (measurable_mk _ ht).inter (measurableSet_toMeasurable _ _).compl,
         _⟩
     ext ⟨x, hx⟩
-    simp only [mem_preimage, mem_unionᵢ, Subtype.coe_mk, Set.restrict, mem_inter_iff,
-      mem_compl_iff] at hx⊢
+    simp only [mem_preimage, mem_iUnion, Subtype.coe_mk, Set.restrict, mem_inter_iff,
+      mem_compl_iff] at hx ⊢
     constructor
     · rintro ⟨i, hxt, hxs⟩
       rwa [hs _ _ hxs]
@@ -108,7 +108,7 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
   · refine' measure_mono_null (fun x (hx : f x ≠ g x) => _) (hsμ i)
     contrapose! hx
     refine' (piecewise_eq_of_not_mem _ _ _ _).symm
-    exact fun h => hx (mem_interᵢ.1 h i)
+    exact fun h => hx (mem_iInter.1 h i)
 #align ae_measurable.sum_measure AEMeasurable.sum_measure
 
 @[simp]
@@ -131,22 +131,22 @@ theorem add_measure {f : α → β} (hμ : AEMeasurable f μ) (hν : AEMeasurabl
 #align ae_measurable.add_measure AEMeasurable.add_measure
 
 @[measurability]
-protected theorem unionᵢ [Countable ι] {s : ι → Set α}
+protected theorem iUnion [Countable ι] {s : ι → Set α}
     (h : ∀ i, AEMeasurable f (μ.restrict (s i))) : AEMeasurable f (μ.restrict (⋃ i, s i)) :=
-  (sum_measure h).mono_measure <| restrict_unionᵢ_le
-#align ae_measurable.Union AEMeasurable.unionᵢ
+  (sum_measure h).mono_measure <| restrict_iUnion_le
+#align ae_measurable.Union AEMeasurable.iUnion
 
 @[simp]
-theorem _root_.aemeasurable_unionᵢ_iff [Countable ι] {s : ι → Set α} :
+theorem _root_.aemeasurable_iUnion_iff [Countable ι] {s : ι → Set α} :
     AEMeasurable f (μ.restrict (⋃ i, s i)) ↔ ∀ i, AEMeasurable f (μ.restrict (s i)) :=
-  ⟨fun h _ => h.mono_measure <| restrict_mono (subset_unionᵢ _ _) le_rfl, AEMeasurable.unionᵢ⟩
-#align ae_measurable_Union_iff aemeasurable_unionᵢ_iff
+  ⟨fun h _ => h.mono_measure <| restrict_mono (subset_iUnion _ _) le_rfl, AEMeasurable.iUnion⟩
+#align ae_measurable_Union_iff aemeasurable_iUnion_iff
 
 @[simp]
 theorem _root_.aemeasurable_union_iff {s t : Set α} :
     AEMeasurable f (μ.restrict (s ∪ t)) ↔
       AEMeasurable f (μ.restrict s) ∧ AEMeasurable f (μ.restrict t) :=
-  by simp only [union_eq_unionᵢ, aemeasurable_unionᵢ_iff, Bool.forall_bool, cond, and_comm]
+  by simp only [union_eq_iUnion, aemeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
 #align ae_measurable_union_iff aemeasurable_union_iff
 
 @[measurability]
@@ -195,7 +195,7 @@ theorem prod_mk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : A
 
 theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀ᵐ x ∂μ, f x ∈ t)
     (h₀ : t.Nonempty) : ∃ g, Measurable g ∧ range g ⊆ t ∧ f =ᵐ[μ] g := by
-  let s : Set α := toMeasurable μ ({ x | f x = H.mk f x ∧ f x ∈ t }ᶜ)
+  let s : Set α := toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ
   let g : α → β := piecewise s (fun _ => h₀.some) (H.mk f)
   refine' ⟨g, _, _, _⟩
   · exact Measurable.piecewise (measurableSet_toMeasurable _ _) measurable_const H.measurable_mk
@@ -207,7 +207,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
       apply subset_toMeasurable
       simp (config := { contextual := true }) only [hx, mem_compl_iff, mem_setOf_eq, not_and,
         not_false_iff, imp_true_iff]
-  · have A : μ (toMeasurable μ ({ x | f x = H.mk f x ∧ f x ∈ t }ᶜ)) = 0 := by
+  · have A : μ (toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ) = 0 := by
       rw [measure_toMeasurable, ← compl_mem_ae_iff, compl_compl]
       exact H.ae_eq_mk.and ht
     filter_upwards [compl_mem_ae_iff.2 A]with x hx
@@ -320,10 +320,10 @@ theorem aemeasurable_Ioi_of_forall_Ioc {β} {mβ : MeasurableSpace β} [LinearOr
     AEMeasurable g (μ.restrict (Ioi x)) := by
   haveI : Nonempty α := ⟨x⟩
   obtain ⟨u, hu_tendsto⟩ := exists_seq_tendsto (atTop : Filter α)
-  have Ioi_eq_unionᵢ : Ioi x = ⋃ n : ℕ, Ioc x (u n) := by
-    rw [unionᵢ_Ioc_eq_Ioi_self_iff.mpr _]
+  have Ioi_eq_iUnion : Ioi x = ⋃ n : ℕ, Ioc x (u n) := by
+    rw [iUnion_Ioc_eq_Ioi_self_iff.mpr _]
     exact fun y _ => (hu_tendsto.eventually (eventually_ge_atTop y)).exists
-  rw [Ioi_eq_unionᵢ, aemeasurable_unionᵢ_iff]
+  rw [Ioi_eq_iUnion, aemeasurable_iUnion_iff]
   intro n
   cases' lt_or_le x (u n) with h h
   · exact g_meas (u n) h
@@ -342,16 +342,36 @@ theorem aemeasurable_indicator_iff {s} (hs : MeasurableSet s) :
     refine' ⟨indicator s (h.mk f), h.measurable_mk.indicator hs, _⟩
     have A : s.indicator f =ᵐ[μ.restrict s] s.indicator (AEMeasurable.mk f h) :=
       (indicator_ae_eq_restrict hs).trans (h.ae_eq_mk.trans <| (indicator_ae_eq_restrict hs).symm)
-    have B : s.indicator f =ᵐ[μ.restrict (sᶜ)] s.indicator (AEMeasurable.mk f h) :=
+    have B : s.indicator f =ᵐ[μ.restrict sᶜ] s.indicator (AEMeasurable.mk f h) :=
       (indicator_ae_eq_restrict_compl hs).trans (indicator_ae_eq_restrict_compl hs).symm
     exact ae_of_ae_restrict_of_ae_restrict_compl _ A B
 #align ae_measurable_indicator_iff aemeasurable_indicator_iff
+
+theorem aemeasurable_indicator_iff₀ {s} (hs : NullMeasurableSet s μ) :
+    AEMeasurable (indicator s f) μ ↔ AEMeasurable f (μ.restrict s) := by
+  rcases hs with ⟨t, ht, hst⟩
+  rw [← aemeasurable_congr (indicator_ae_eq_of_ae_eq_set hst.symm), aemeasurable_indicator_iff ht,
+      restrict_congr_set hst]
+
+/-- A characterization of the a.e.-measurability of the indicator function which takes a constant
+value `b` on a set `A` and `0` elsewhere. -/
+lemma aemeasurable_indicator_const_iff {s} [MeasurableSingletonClass β] (b : β) [NeZero b] :
+    AEMeasurable (s.indicator (fun _ ↦ b)) μ ↔ NullMeasurableSet s μ := by
+  constructor <;> intro h
+  · convert h.nullMeasurable (MeasurableSet.singleton (0 : β)).compl
+    rw [indicator_const_preimage_eq_union s {0}ᶜ b]
+    simp [NeZero.ne b]
+  · exact (aemeasurable_indicator_iff₀ h).mpr aemeasurable_const
 
 @[measurability]
 theorem AEMeasurable.indicator (hfm : AEMeasurable f μ) {s} (hs : MeasurableSet s) :
     AEMeasurable (s.indicator f) μ :=
   (aemeasurable_indicator_iff hs).mpr hfm.restrict
 #align ae_measurable.indicator AEMeasurable.indicator
+
+theorem AEMeasurable.indicator₀ (hfm : AEMeasurable f μ) {s} (hs : NullMeasurableSet s μ) :
+    AEMeasurable (s.indicator f) μ :=
+  (aemeasurable_indicator_iff₀ hs).mpr hfm.restrict
 
 theorem MeasureTheory.Measure.restrict_map_of_aemeasurable {f : α → δ} (hf : AEMeasurable f μ)
     {s : Set δ} (hs : MeasurableSet s) : (μ.map f).restrict s = (μ.restrict <| f ⁻¹' s).map f :=

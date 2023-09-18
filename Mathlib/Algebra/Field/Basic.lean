@@ -2,16 +2,13 @@
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.field.basic
-! leanprover-community/mathlib commit 05101c3df9d9cfe9430edc205860c79b6d660102
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Ring.Commute
+
+#align_import algebra.field.basic from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
 
 /-!
 # Lemmas about division (semi)rings and (semi)fields
@@ -23,7 +20,7 @@ open Function OrderDual Set
 
 universe u
 
-variable {α β K : Type _}
+variable {α β K : Type*}
 
 section DivisionSemiring
 
@@ -264,7 +261,7 @@ end RingHom
 
 section NoncomputableDefs
 
-variable {R : Type _} [Nontrivial R]
+variable {R : Type*} [Nontrivial R]
 
 /-- Constructs a `DivisionRing` structure on a `Ring` consisting only of units and 0. -/
 noncomputable def divisionRingOfIsUnitOrEqZero [hR : Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :

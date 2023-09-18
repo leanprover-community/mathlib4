@@ -2,13 +2,10 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.sums.associator
-! leanprover-community/mathlib commit 590f43db91071eb3134fef935ec9d7cd2a3bd4ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sums.Basic
+
+#align_import category_theory.sums.associator from "leanprover-community/mathlib"@"590f43db91071eb3134fef935ec9d7cd2a3bd4ce"
 
 /-!
 # Associator for binary disjoint union of categories.

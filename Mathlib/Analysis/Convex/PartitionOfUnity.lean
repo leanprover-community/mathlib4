@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.convex.partition_of_unity
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.PartitionOfUnity
 import Mathlib.Analysis.Convex.Combination
+
+#align_import analysis.convex.partition_of_unity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Partition of unity and convex sets
@@ -34,7 +31,7 @@ open Set Function
 
 open BigOperators Topology
 
-variable {ι X E : Type _} [TopologicalSpace X] [AddCommGroup E] [Module ℝ E]
+variable {ι X E : Type*} [TopologicalSpace X] [AddCommGroup E] [Module ℝ E]
 
 theorem PartitionOfUnity.finsum_smul_mem_convex {s : Set X} (f : PartitionOfUnity ι X s)
     {g : ι → X → E} {t : Set E} {x : X} (hx : x ∈ s) (hg : ∀ i, f i x ≠ 0 → g i x ∈ t)
@@ -56,7 +53,7 @@ theorem exists_continuous_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t 
     ∃ g : C(X, E), ∀ x, g x ∈ t x := by
   choose U hU g hgc hgt using H
   obtain ⟨f, hf⟩ := PartitionOfUnity.exists_isSubordinate isClosed_univ (fun x => interior (U x))
-    (fun x => isOpen_interior) fun x _ => mem_unionᵢ.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
+    (fun x => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
   refine' ⟨⟨fun x => ∑ᶠ i, f i x • g i x,
     hf.continuous_finsum_smul (fun i => isOpen_interior) fun i => (hgc i).mono interior_subset⟩,
     fun x => f.finsum_smul_mem_convex (mem_univ x) (fun i hi => hgt _ _ _) (ht _)⟩

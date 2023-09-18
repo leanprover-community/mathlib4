@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.localization.opposite
-! leanprover-community/mathlib commit 8efef279998820353694feb6ff5631ed0d309ecc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Localization.Predicate
+
+#align_import category_theory.localization.opposite from "leanprover-community/mathlib"@"8efef279998820353694feb6ff5631ed0d309ecc"
 
 /-!
 
@@ -26,13 +23,13 @@ open CategoryTheory CategoryTheory.Category
 
 namespace CategoryTheory
 
-variable {C D : Type _} [Category C] [Category D] {L : C ⥤ D} {W : MorphismProperty C}
+variable {C D : Type*} [Category C] [Category D] {L : C ⥤ D} {W : MorphismProperty C}
 
 namespace Localization
 
 /-- If `L : C ⥤ D` satisfies the universal property of the localisation
 for `W : MorphismProperty C`, then `L.op` also does. -/
-def StrictUniversalPropertyFixedTarget.op {E : Type _} [Category E]
+def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category E]
     (h : StrictUniversalPropertyFixedTarget L W Eᵒᵖ) :
     StrictUniversalPropertyFixedTarget L.op W.op E where
   inverts := h.inverts.op

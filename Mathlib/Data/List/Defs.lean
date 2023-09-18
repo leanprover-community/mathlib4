@@ -2,18 +2,17 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.defs
-! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
 import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Basic
+import Mathlib.Data.SProd
+import Mathlib.Util.CompileInductive
 import Std.Tactic.Lint.Basic
 import Std.Data.RBMap.Basic
+
+#align_import data.list.defs from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 
 /-!
 ## Definitions on lists
@@ -21,6 +20,8 @@ import Std.Data.RBMap.Basic
 This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
+
+set_option autoImplicit true
 
 -- Porting notes
 -- Many of the definitions in `Data.List.Defs` were already defined upstream in `Std4`
@@ -32,39 +33,14 @@ namespace List
 
 open Function Nat
 
-section recursor_workarounds
-/-- A computable version of `List.rec`. Workaround until Lean has native support for this. -/
-def recC.{u_1, u} {α : Type u} {motive : List α → Sort u_1} (nil : motive [])
-  (cons : (head : α) → (tail : List α) → motive tail → motive (head :: tail)) :
-    (l : List α) → motive l
-| [] => nil
-| (x :: xs) => cons x xs (List.recC nil cons xs)
-
-@[csimp]
-lemma rec_eq_recC : @List.rec = @List.recC := by
-  ext α motive nil cons l
-  induction l with
-  | nil => rfl
-  | cons x xs ih =>
-    rw [List.recC, ←ih]
-
-/-- A computable version of `List._sizeOf_inst`. -/
-def _sizeOf_instC.{u} (α : Type u) [SizeOf α] : SizeOf (List α) where
-  sizeOf t := List.rec 1 (fun head _ tail_ih => 1 + SizeOf.sizeOf head + tail_ih) t
-
-@[csimp]
-lemma _sizeOfinst_eq_sizeOfinstC : @List._sizeOf_inst = @List._sizeOf_instC := by
-  simp [List._sizeOf_1, List._sizeOf_instC, _sizeOf_inst]
-
-end recursor_workarounds
-
 universe u v w x
 
-variable {α β γ δ ε ζ : Type _}
+variable {α β γ δ ε ζ : Type*}
 
 instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
+#align list.replicate List.replicate
 #align list.split_at List.splitAt
 #align list.split_on_p List.splitOnP
 #align list.split_on List.splitOn
@@ -101,7 +77,7 @@ def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
 
 /-- Product of a list.
 
-     `prod [a, b, c] = ((1 * a) * b) * c` -/
+     `List.prod [a, b, c] = ((1 * a) * b) * c` -/
 def prod [Mul α] [One α] : List α → α :=
   foldl (· * ·) 1
 #align list.prod List.prod
@@ -110,20 +86,20 @@ def prod [Mul α] [One α] : List α → α :=
 -- dependencies.
 /-- Sum of a list.
 
-     `sum [a, b, c] = ((0 + a) + b) + c` -/
+     `List.sum [a, b, c] = ((0 + a) + b) + c` -/
 def sum [Add α] [Zero α] : List α → α :=
   foldl (· + ·) 0
 #align list.sum List.sum
 
 /-- The alternating sum of a list. -/
-def alternatingSum {G : Type _} [Zero G] [Add G] [Neg G] : List G → G
+def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
   | [] => 0
   | g :: [] => g
   | g :: h :: t => g + -h + alternatingSum t
 #align list.alternating_sum List.alternatingSum
 
 /-- The alternating product of a list. -/
-def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
+def alternatingProd {G : Type*} [One G] [Mul G] [Inv G] : List G → G
   | [] => 1
   | g :: [] => g
   | g :: h :: t => g * h⁻¹ * alternatingProd t
@@ -225,7 +201,7 @@ def mapIdxMAux' {α} (f : ℕ → α → m PUnit) : ℕ → List α → m PUnit
 #align list.mmap_with_index'_aux List.mapIdxMAux'
 
 /-- A variant of `mapIdxM` specialised to applicative actions which
-return `unit`. -/
+return `Unit`. -/
 def mapIdxM' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
   mapIdxMAux' f 0 as
 #align list.mmap_with_index' List.mapIdxM'
@@ -233,7 +209,7 @@ def mapIdxM' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
 end mapIdxM
 
 #align list.lookmap List.lookmap
-#align list.countp List.countp
+#align list.countp List.countP
 #align list.count List.count
 #align list.is_prefix List.isPrefix
 #align list.is_suffix List.isSuffix
@@ -245,7 +221,7 @@ end mapIdxM
 #align list.forall₂ List.Forall₂
 
 /-- `l.all₂ p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
-`list.all₂ p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
+`List.All₂ p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
 @[simp]
 def All₂ (p : α → Prop) : List α → Prop
   | [] => True
@@ -350,10 +326,13 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
 
 #align list.revzip List.revzip
 #align list.product List.product
+
 /-- Notation for calculating the product of a `List`
 -/
--- This notation binds more strongly than (pre)images, unions and intersections.
-infixr:82 " ×ˢ " => List.product
+
+instance instSProd : SProd (List α) (List β) (List (α × β)) where
+  sprod := List.product
+
 #align list.sigma List.sigma
 #align list.of_fn List.ofFn
 #align list.of_fn_nth_val List.ofFnNthVal
@@ -364,14 +343,9 @@ infixr:82 " ×ˢ " => List.product
 #align list.pw_filter List.pwFilter
 #align list.chain List.Chain
 #align list.chain' List.Chain'
+#align list.chain_cons List.chain_cons
 
 section Chain
-
-@[simp]
-theorem chain_cons {a b : α} {l : List α} : Chain R a (b :: l) ↔ R a b ∧ Chain R b l :=
-  ⟨fun p ↦ by cases p with | cons n p => exact ⟨n, p⟩,
-   fun ⟨n, p⟩ ↦ p.cons n⟩
-#align list.chain_cons List.chain_cons
 
 instance decidableChain [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
@@ -475,8 +449,8 @@ def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
 /-- Map each element of a `List` to an action, evaluate these actions in order,
     and collect the results.
 -/
-protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β)
-    : List α → F (List β)
+protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
+    List α → F (List β)
   | [] => pure []
   | x :: xs => List.cons <$> f x <*> List.traverse f xs
 #align list.traverse List.traverse
@@ -615,6 +589,5 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix_aux List.mapWithPrefixSuffixAux
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
-
 
 end List

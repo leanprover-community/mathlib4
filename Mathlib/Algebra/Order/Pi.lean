@@ -2,15 +2,12 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
-
-! This file was ported from Lean 3 source module algebra.order.pi
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Tactic.Positivity
+
+#align_import algebra.order.pi from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
 # Pi instances for ordered groups and monoids
@@ -18,7 +15,9 @@ import Mathlib.Tactic.Positivity
 This file defines instances for ordered group, monoid, and related structures on Pi types.
 -/
 
-variable {ι α β : Type _}
+set_option autoImplicit true
+
+variable {ι α β : Type*}
 
 variable {I : Type u}
 
@@ -34,7 +33,7 @@ namespace Pi
 @[to_additive
       "The product of a family of ordered additive commutative monoids is
 an ordered additive commutative monoid."]
-instance orderedCommMonoid {ι : Type _} {Z : ι → Type _} [∀ i, OrderedCommMonoid (Z i)] :
+instance orderedCommMonoid {ι : Type*} {Z : ι → Type*} [∀ i, OrderedCommMonoid (Z i)] :
     OrderedCommMonoid (∀ i, Z i) :=
   { Pi.partialOrder, Pi.commMonoid with
     mul_le_mul_left := fun _ _ w _ i => mul_le_mul_left' (w i) _ }
@@ -42,7 +41,7 @@ instance orderedCommMonoid {ι : Type _} {Z : ι → Type _} [∀ i, OrderedComm
 #align pi.ordered_add_comm_monoid Pi.orderedAddCommMonoid
 
 @[to_additive]
-instance existsMulOfLe {ι : Type _} {α : ι → Type _} [∀ i, LE (α i)] [∀ i, Mul (α i)]
+instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ i, Mul (α i)]
     [∀ i, ExistsMulOfLE (α i)] : ExistsMulOfLE (∀ i, α i) :=
   ⟨fun h =>
     ⟨fun i => (exists_mul_of_le <| h i).choose,
@@ -54,7 +53,7 @@ instance existsMulOfLe {ι : Type _} {α : ι → Type _} [∀ i, LE (α i)] [�
 @[to_additive
       "The product of a family of canonically ordered additive monoids is
 a canonically ordered additive monoid."]
-instance {ι : Type _} {Z : ι → Type _} [∀ i, CanonicallyOrderedMonoid (Z i)] :
+instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedMonoid (Z i)] :
     CanonicallyOrderedMonoid (∀ i, Z i) :=
   { Pi.orderBot, Pi.orderedCommMonoid, Pi.existsMulOfLe with
     le_self_mul := fun _ _ _ => le_self_mul }
@@ -63,10 +62,6 @@ instance {ι : Type _} {Z : ι → Type _} [∀ i, CanonicallyOrderedMonoid (Z i
 instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
     OrderedCancelCommMonoid (∀ i : I, f i) :=
   { Pi.partialOrder, Pi.commMonoid with
-    mul := (· * ·)
-    one := (1 : ∀ i, f i)
-    le := (· ≤ ·)
-    lt := (· < ·)
     npow := Monoid.npow,
     le_of_mul_le_mul_left := fun _ _ _ h i =>
       OrderedCancelCommMonoid.le_of_mul_le_mul_left _ _ _ (h i)
@@ -87,10 +82,6 @@ instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
 @[to_additive]
 instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (∀ i : I, f i) :=
   { Pi.commGroup, Pi.orderedCommMonoid with
-    mul := (· * ·)
-    one := (1 : ∀ i, f i)
-    le := (· ≤ ·)
-    lt := (· < ·)
     npow := Monoid.npow }
 #align pi.ordered_comm_group Pi.orderedCommGroup
 #align pi.ordered_add_comm_group Pi.orderedAddCommGroup
@@ -180,7 +171,7 @@ end Function
 --   const_pos.2
 -- #align tactic.function_const_pos tactic.function_const_pos
 
--- /-- Extension for the `positivity` tactic: `function.const` is positive/nonnegative/nonzero if
+-- /-- Extension for the `positivity` tactic: `Function.const` is positive/nonnegative/nonzero if
 -- its input is. -/
 -- @[positivity]
 -- unsafe def positivity_const : expr → tactic strictness
@@ -193,7 +184,7 @@ end Function
 --       | nonnegative p => nonnegative <$> to_expr ``(const_nonneg_of_nonneg $(ι) $(p))
 --       | nonzero p => nonzero <$> to_expr ``(function_const_ne_zero $(ι) $(p))
 --   | e =>
---     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `function.const ι a`"
+--     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `Function.const ι a`"
 -- #align tactic.positivity_const tactic.positivity_const
 
 -- end Tactic

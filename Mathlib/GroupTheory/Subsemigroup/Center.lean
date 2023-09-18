@@ -2,14 +2,14 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jireh Loreaux
-
-! This file was ported from Lean 3 source module group_theory.subsemigroup.center
-! leanprover-community/mathlib commit a437a2499163d85d670479f69f625f461cc5fef9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Invertible.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
+import Mathlib.Data.Int.Cast.Lemmas
+
+#align_import group_theory.subsemigroup.center from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
 /-!
 # Centers of magmas and semigroups
@@ -26,7 +26,7 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
 -/
 
 
-variable {M : Type _}
+variable {M : Type*}
 
 namespace Set
 
@@ -59,6 +59,19 @@ theorem one_mem_center [MulOneClass M] : (1 : M) ∈ Set.center M := by simp [me
 theorem zero_mem_center [MulZeroClass M] : (0 : M) ∈ Set.center M := by simp [mem_center_iff]
 #align set.zero_mem_center Set.zero_mem_center
 
+@[simp]
+theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.center M :=
+  (Nat.commute_cast · _)
+
+@[simp]
+theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
+    OfNat.ofNat n ∈ Set.center M :=
+  natCast_mem_center M n
+
+@[simp]
+theorem intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M :=
+  (Int.commute_cast · _)
+
 variable {M}
 
 @[to_additive (attr := simp) add_mem_addCenter]
@@ -80,9 +93,10 @@ theorem add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b �
 #align set.add_mem_center Set.add_mem_center
 
 @[simp]
-theorem neg_mem_center [Ring M] {a : M} (ha : a ∈ Set.center M) : -a ∈ Set.center M := fun c => by
+theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center M) :
+    -a ∈ Set.center M := fun c => by
   rw [← neg_mul_comm, ha (-c), neg_mul_comm]
-#align set.neg_mem_center Set.neg_mem_center
+#align set.neg_mem_center Set.neg_mem_centerₓ
 
 @[to_additive subset_addCenter_add_units]
 theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center Mˣ :=
@@ -103,13 +117,22 @@ theorem center_units_eq [GroupWithZero M] : Set.center Mˣ = ((↑) : Mˣ → M)
 #align set.center_units_eq Set.center_units_eq
 
 @[simp]
+theorem units_inv_mem_center [Monoid M] {a : Mˣ} (ha : ↑a ∈ Set.center M) :
+    ↑a⁻¹ ∈ Set.center M :=
+  (Commute.units_inv_right <| ha ·)
+
+@[simp]
+theorem invOf_mem_center [Monoid M] {a : M} [Invertible a] (ha : a ∈ Set.center M) :
+    ⅟a ∈ Set.center M :=
+  (Commute.invOf_right <| ha ·)
+
+@[simp]
 theorem inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
   obtain rfl | ha0 := eq_or_ne a 0
   · rw [inv_zero]
     exact zero_mem_center M
-  rcases IsUnit.mk0 _ ha0 with ⟨a, rfl⟩
-  rw [← Units.val_inv_eq_inv_val]
-  exact center_units_subset (inv_mem_center (subset_center_units ha))
+  · lift a to Mˣ using IsUnit.mk0 _ ha0
+    simpa only [Units.val_inv_eq_inv_val] using units_inv_mem_center ha
 #align set.inv_mem_center₀ Set.inv_mem_center₀
 
 @[to_additive (attr := simp) sub_mem_addCenter]
@@ -148,7 +171,7 @@ variable (M) [Semigroup M]
       "The center of a semigroup `M` is the set of elements that commute with everything in `M`"]
 def center : Subsemigroup M where
   carrier := Set.center M
-  mul_mem':= Set.mul_mem_center
+  mul_mem' := Set.mul_mem_center
 #align subsemigroup.center Subsemigroup.center
 #align add_subsemigroup.center AddSubsemigroup.center
 
@@ -194,5 +217,4 @@ end
 end Subsemigroup
 
 -- Guard against import creep
--- Porting note: Not implemented yet
--- assert_not_exists finset
+assert_not_exists Finset

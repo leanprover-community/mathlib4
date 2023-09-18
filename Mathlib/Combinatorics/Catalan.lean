@@ -2,11 +2,6 @@
 Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
-
-! This file was ported from Lean 3 source module combinatorics.catalan
-! leanprover-community/mathlib commit 26b40791e4a5772a4e53d0e28e4df092119dc7da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
@@ -15,6 +10,8 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Tree
 import Mathlib.Tactic.FieldSimp
+
+#align_import combinatorics.catalan from "leanprover-community/mathlib"@"26b40791e4a5772a4e53d0e28e4df092119dc7da"
 
 /-!
 # Catalan numbers
@@ -90,12 +87,10 @@ private def gosperCatalan (n j : ℕ) : ℚ :=
 private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
     gosperCatalan (n + 1) (i + 1) - gosperCatalan (n + 1) i =
       Nat.centralBinom i / (i + 1) * Nat.centralBinom (n - i) / (n - i + 1) := by
-  have l₁ : (n : ℚ) + 1 ≠ 0 := by norm_cast; exact n.succ_ne_zero
-  have l₂ : (n : ℚ) + 1 + 1 ≠ 0 := by norm_cast; exact (n + 1).succ_ne_zero
-  have l₃ : (i : ℚ) + 1 ≠ 0 := by norm_cast; exact i.succ_ne_zero
-  have l₄ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast; exact (n - i).succ_ne_zero
-  have h₁ := (mul_div_cancel_left (↑(Nat.centralBinom (i + 1))) l₃).symm
-  have h₂ := (mul_div_cancel_left (↑(Nat.centralBinom (n - i + 1))) l₄).symm
+  have l₁ : (i : ℚ) + 1 ≠ 0 := by norm_cast; exact i.succ_ne_zero
+  have l₂ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast; exact (n - i).succ_ne_zero
+  have h₁ := (mul_div_cancel_left (↑(Nat.centralBinom (i + 1))) l₁).symm
+  have h₂ := (mul_div_cancel_left (↑(Nat.centralBinom (n - i + 1))) l₂).symm
   have h₃ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom := by
     exact_mod_cast Nat.succ_mul_centralBinom_succ i
   have h₄ :
@@ -145,10 +140,12 @@ theorem succ_mul_catalan_eq_centralBinom (n : ℕ) : (n + 1) * catalan n = n.cen
   (Nat.eq_mul_of_div_eq_right n.succ_dvd_centralBinom (catalan_eq_centralBinom_div n).symm).symm
 #align succ_mul_catalan_eq_central_binom succ_mul_catalan_eq_centralBinom
 
-theorem catalan_two : catalan 2 = 2 := by unfold catalan; rfl
+theorem catalan_two : catalan 2 = 2 := by
+  norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 #align catalan_two catalan_two
 
-theorem catalan_three : catalan 3 = 5 := by unfold catalan; rfl
+theorem catalan_three : catalan 3 = 5 := by
+  norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 #align catalan_three catalan_three
 
 namespace Tree
@@ -159,14 +156,14 @@ open Tree
   left child in `a` and right child in `b` -/
 @[reducible]
 def pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
-  (a ×ᶠ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
+  (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
 #align tree.pairwise_node Tree.pairwiseNode
 
 /-- A Finset of all trees with `n` nodes. See `mem_treesOfNodesEq` -/
 def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   | 0 => {nil}
   | n + 1 =>
-    (Finset.Nat.antidiagonal n).attach.bunionᵢ fun ijh =>
+    (Finset.Nat.antidiagonal n).attach.biUnion fun ijh =>
       -- Porting note: `unusedHavesSuffices` linter is not happy with this. Commented out.
       -- have := Nat.lt_succ_of_le (fst_le ijh.2)
       -- have := Nat.lt_succ_of_le (snd_le ijh.2)
@@ -184,7 +181,7 @@ theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNu
 
 theorem treesOfNumNodesEq_succ (n : ℕ) :
     treesOfNumNodesEq (n + 1) =
-      (Nat.antidiagonal n).bunionᵢ fun ij =>
+      (Nat.antidiagonal n).biUnion fun ij =>
         pairwiseNode (treesOfNumNodesEq ij.1) (treesOfNumNodesEq ij.2) := by
   rw [treesOfNumNodesEq]
   ext
@@ -212,7 +209,7 @@ theorem coe_treesOfNumNodesEq (n : ℕ) :
 theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = catalan n := by
   induction' n using Nat.case_strong_induction_on with n ih
   · simp
-  rw [treesOfNumNodesEq_succ, card_bunionᵢ, catalan_succ']
+  rw [treesOfNumNodesEq_succ, card_biUnion, catalan_succ']
   · apply sum_congr rfl
     rintro ⟨i, j⟩ H
     rw [card_map, card_product, ih _ (fst_le H), ih _ (snd_le H)]

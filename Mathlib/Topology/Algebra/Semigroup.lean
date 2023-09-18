@@ -2,13 +2,10 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module topology.algebra.semigroup
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
+
+#align_import topology.algebra.semigroup from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Idempotents in topological semigroups
@@ -62,20 +59,19 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
     exact hm.2
   refine' zorn_superset _ fun c hcs hc => _
   refine'
-    ⟨⋂₀ c, ⟨isClosed_interₛ fun t ht => (hcs ht).1, _, fun m hm m' hm' => _⟩, fun s hs =>
-      Set.interₛ_subset_of_mem hs⟩
+    ⟨⋂₀ c, ⟨isClosed_sInter fun t ht => (hcs ht).1, _, fun m hm m' hm' => _⟩, fun s hs =>
+      Set.sInter_subset_of_mem hs⟩
   · obtain rfl | hcnemp := c.eq_empty_or_nonempty
-    · rw [Set.interₛ_empty]
+    · rw [Set.sInter_empty]
       apply Set.univ_nonempty
     convert
-      @IsCompact.nonempty_interᵢ_of_directed_nonempty_compact_closed _ _ _ hcnemp.coe_sort
+      @IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _ _ _ hcnemp.coe_sort
         ((↑) : c → Set M) ?_ ?_ ?_ ?_
-    · simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq]
-      exact Set.interₛ_eq_interᵢ
+    · exact Set.sInter_eq_iInter
     · refine' DirectedOn.directed_val (IsChain.directedOn hc.symm)
-    exacts[fun i => (hcs i.prop).2.1, fun i => (hcs i.prop).1.isCompact, fun i => (hcs i.prop).1]
-  · rw [Set.mem_interₛ]
-    exact fun t ht => (hcs ht).2.2 m (Set.mem_interₛ.mp hm t ht) m' (Set.mem_interₛ.mp hm' t ht)
+    exacts [fun i => (hcs i.prop).2.1, fun i => (hcs i.prop).1.isCompact, fun i => (hcs i.prop).1]
+  · rw [Set.mem_sInter]
+    exact fun t ht => (hcs ht).2.2 m (Set.mem_sInter.mp hm t ht) m' (Set.mem_sInter.mp hm' t ht)
 #align exists_idempotent_of_compact_t2_of_continuous_mul_left exists_idempotent_of_compact_t2_of_continuous_mul_left
 #align exists_idempotent_of_compact_t2_of_continuous_add_left exists_idempotent_of_compact_t2_of_continuous_add_left
 

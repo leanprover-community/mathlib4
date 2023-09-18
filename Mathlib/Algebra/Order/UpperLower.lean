@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.order.upper_lower
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.UpperLower.Basic
+
+#align_import algebra.order.upper_lower from "leanprover-community/mathlib"@"c0c52abb75074ed8b73a948341f50521fbf43b4c"
 /-!
 # Algebraic operations on upper/lower sets
 
@@ -24,7 +21,7 @@ open Pointwise
 
 section OrderedCommMonoid
 
-variable {α : Type _} [OrderedCommMonoid α] {s : Set α} {x : α}
+variable {α : Type*} [OrderedCommMonoid α] {s : Set α} {x : α}
 
 @[to_additive]
 theorem IsUpperSet.smul_subset (hs : IsUpperSet s) (hx : 1 ≤ x) : x • s ⊆ s :=
@@ -42,18 +39,15 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable {α : Type _} [OrderedCommGroup α] {s t : Set α} {a : α}
+variable {α : Type*} [OrderedCommGroup α] {s t : Set α} {a : α}
 
 @[to_additive]
-theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := by
-  rintro _ y hxy ⟨x, hx, rfl⟩
-  exact mem_smul_set_iff_inv_smul_mem.2 (hs (le_inv_mul_iff_mul_le.2 hxy) hx)
+theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := hs.image <| OrderIso.mulLeft _
 #align is_upper_set.smul IsUpperSet.smul
 #align is_upper_set.vadd IsUpperSet.vadd
 
 @[to_additive]
-theorem IsLowerSet.smul (hs : IsLowerSet s) : IsLowerSet (a • s) :=
-  hs.ofDual.smul
+theorem IsLowerSet.smul (hs : IsLowerSet s) : IsLowerSet (a • s) := hs.image <| OrderIso.mulLeft _
 #align is_lower_set.smul IsLowerSet.smul
 #align is_lower_set.vadd IsLowerSet.vadd
 
@@ -66,8 +60,8 @@ theorem Set.OrdConnected.smul (hs : s.OrdConnected) : (a • s).OrdConnected := 
 
 @[to_additive]
 theorem IsUpperSet.mul_left (ht : IsUpperSet t) : IsUpperSet (s * t) := by
-  rw [← smul_eq_mul, ← Set.unionᵢ_smul_set]
-  exact isUpperSet_unionᵢ₂ fun x _ ↦ ht.smul
+  rw [← smul_eq_mul, ← Set.iUnion_smul_set]
+  exact isUpperSet_iUnion₂ fun x _ ↦ ht.smul
 #align is_upper_set.mul_left IsUpperSet.mul_left
 #align is_upper_set.add_left IsUpperSet.add_left
 
@@ -79,14 +73,12 @@ theorem IsUpperSet.mul_right (hs : IsUpperSet s) : IsUpperSet (s * t) := by
 #align is_upper_set.add_right IsUpperSet.add_right
 
 @[to_additive]
-theorem IsLowerSet.mul_left (ht : IsLowerSet t) : IsLowerSet (s * t) :=
-  ht.ofDual.mul_left
+theorem IsLowerSet.mul_left (ht : IsLowerSet t) : IsLowerSet (s * t) := ht.toDual.mul_left
 #align is_lower_set.mul_left IsLowerSet.mul_left
 #align is_lower_set.add_left IsLowerSet.add_left
 
 @[to_additive]
-theorem IsLowerSet.mul_right (hs : IsLowerSet s) : IsLowerSet (s * t) :=
-  hs.ofDual.mul_right
+theorem IsLowerSet.mul_right (hs : IsLowerSet s) : IsLowerSet (s * t) := hs.toDual.mul_right
 #align is_lower_set.mul_right IsLowerSet.mul_right
 #align is_lower_set.add_right IsLowerSet.add_right
 
@@ -115,14 +107,12 @@ theorem IsUpperSet.div_right (hs : IsUpperSet s) : IsUpperSet (s / t) := by
 #align is_upper_set.sub_right IsUpperSet.sub_right
 
 @[to_additive]
-theorem IsLowerSet.div_left (ht : IsLowerSet t) : IsUpperSet (s / t) :=
-  ht.ofDual.div_left
+theorem IsLowerSet.div_left (ht : IsLowerSet t) : IsUpperSet (s / t) := ht.toDual.div_left
 #align is_lower_set.div_left IsLowerSet.div_left
 #align is_lower_set.sub_left IsLowerSet.sub_left
 
 @[to_additive]
-theorem IsLowerSet.div_right (hs : IsLowerSet s) : IsLowerSet (s / t) :=
-  hs.ofDual.div_right
+theorem IsLowerSet.div_right (hs : IsLowerSet s) : IsLowerSet (s / t) := hs.toDual.div_right
 #align is_lower_set.div_right IsLowerSet.div_right
 #align is_lower_set.sub_right IsLowerSet.sub_right
 
@@ -174,15 +164,14 @@ instance : MulAction α (UpperSet α) :=
 
 @[to_additive]
 instance commSemigroup : CommSemigroup (UpperSet α) :=
-  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (UpperSet α)) with
-    mul := (· * ·) }
+  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (UpperSet α)) with }
 
 @[to_additive]
 private theorem one_mul (s : UpperSet α) : 1 * s = s :=
   SetLike.coe_injective <|
     (subset_mul_right _ left_mem_Ici).antisymm' <| by
-      rw [← smul_eq_mul, ← Set.unionᵢ_smul_set]
-      exact Set.unionᵢ₂_subset fun _ ↦ s.upper.smul_subset
+      rw [← smul_eq_mul, ← Set.iUnion_smul_set]
+      exact Set.iUnion₂_subset fun _ ↦ s.upper.smul_subset
 
 @[to_additive]
 instance : CommMonoid (UpperSet α) :=
@@ -237,15 +226,14 @@ instance : MulAction α (LowerSet α) :=
 
 @[to_additive]
 instance commSemigroup : CommSemigroup (LowerSet α) :=
-  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (LowerSet α)) with
-    mul := (· * ·) }
+  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (LowerSet α)) with }
 
 @[to_additive]
 private theorem one_mul (s : LowerSet α) : 1 * s = s :=
   SetLike.coe_injective <|
     (subset_mul_right _ right_mem_Iic).antisymm' <| by
-      rw [← smul_eq_mul, ← Set.unionᵢ_smul_set]
-      exact Set.unionᵢ₂_subset fun _ ↦ s.lower.smul_subset
+      rw [← smul_eq_mul, ← Set.iUnion_smul_set]
+      exact Set.iUnion₂_subset fun _ ↦ s.lower.smul_subset
 
 @[to_additive]
 instance : CommMonoid (LowerSet α) :=
@@ -286,16 +274,16 @@ theorem lowerClosure_smul : lowerClosure (a • s) = a • lowerClosure s :=
 
 @[to_additive]
 theorem mul_upperClosure : s * upperClosure t = upperClosure (s * t) := by
-  simp_rw [← smul_eq_mul, ← Set.unionᵢ_smul_set, upperClosure_unionᵢ, upperClosure_smul,
-    UpperSet.coe_infᵢ₂]
+  simp_rw [← smul_eq_mul, ← Set.iUnion_smul_set, upperClosure_iUnion, upperClosure_smul,
+    UpperSet.coe_iInf₂]
   rfl
 #align mul_upper_closure mul_upperClosure
 #align add_upper_closure add_upperClosure
 
 @[to_additive]
 theorem mul_lowerClosure : s * lowerClosure t = lowerClosure (s * t) := by
-  simp_rw [← smul_eq_mul, ← Set.unionᵢ_smul_set, lowerClosure_unionᵢ, lowerClosure_smul,
-    LowerSet.coe_supᵢ₂]
+  simp_rw [← smul_eq_mul, ← Set.iUnion_smul_set, lowerClosure_iUnion, lowerClosure_smul,
+    LowerSet.coe_iSup₂]
   rfl
 #align mul_lower_closure mul_lowerClosure
 #align add_lower_closure add_lowerClosure

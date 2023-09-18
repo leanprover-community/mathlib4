@@ -2,18 +2,14 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-Ported by: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module algebra.order.hom.monoid
-! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Pi.Algebra
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Basic
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Order.Hom.Basic
+
+#align_import algebra.order.hom.monoid from "leanprover-community/mathlib"@"3342d1b2178381196f818146ff79bc0e7ccd9e2d"
 
 /-!
 # Ordered monoid and group homomorphisms
@@ -60,7 +56,7 @@ ordered monoid, ordered group, monoid with zero
 
 open Function
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 section AddMonoid
 
@@ -70,10 +66,10 @@ structure.
 `OrderAddMonoidHom` is also used for ordered group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+o β)`,
-you should parametrize over `(F : Type _) [OrderAddMonoidHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type*) [OrderAddMonoidHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderAddMonoidHomClass`. -/
-structure OrderAddMonoidHom (α β : Type _) [Preorder α] [Preorder β] [AddZeroClass α]
+structure OrderAddMonoidHom (α β : Type*) [Preorder α] [Preorder β] [AddZeroClass α]
   [AddZeroClass β] extends α →+ β where
   /-- An `OrderAddMonoidHom` is a monotone function. -/
   monotone' : Monotone toFun
@@ -87,7 +83,7 @@ section
 /-- `OrderAddMonoidHomClass F α β` states that `F` is a type of ordered monoid homomorphisms.
 
 You should also extend this typeclass when you extend `OrderAddMonoidHom`. -/
-class OrderAddMonoidHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
+class OrderAddMonoidHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
   [AddZeroClass α] [AddZeroClass β] extends AddMonoidHomClass F α β where
   /-- An `OrderAddMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
@@ -105,11 +101,11 @@ section Monoid
 `OrderMonoidHom` is also used for ordered group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →*o β)`,
-you should parametrize over `(F : Type _) [OrderMonoidHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type*) [OrderMonoidHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderMonoidHomClass`. -/
 @[to_additive]
-structure OrderMonoidHom (α β : Type _) [Preorder α] [Preorder β] [MulOneClass α]
+structure OrderMonoidHom (α β : Type*) [Preorder α] [Preorder β] [MulOneClass α]
   [MulOneClass β] extends α →* β where
   /-- An `OrderMonoidHom` is a monotone function. -/
   monotone' : Monotone toFun
@@ -124,7 +120,7 @@ section
 
 You should also extend this typeclass when you extend `OrderMonoidHom`. -/
 @[to_additive]
-class OrderMonoidHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
+class OrderMonoidHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
   [MulOneClass α] [MulOneClass β] extends MonoidHomClass F α β where
   /-- An `OrderMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
@@ -140,7 +136,7 @@ variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneCla
   "Turn an element of a type `F` satisfying `OrderAddMonoidHomClass F α β` into an actual
   `OrderAddMonoidHom`. This is declared as the default coercion from `F` to `α →+o β`."]
 def OrderMonoidHomClass.toOrderMonoidHom [OrderMonoidHomClass F α β] (f : F) : α →*o β :=
-{ (f : α →* β) with monotone' := monotone f }
+  { (f : α →* β) with monotone' := monotone f }
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -169,10 +165,10 @@ the `MonoidWithZero` structure.
 `OrderMonoidWithZeroHom` is also used for group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+ β)`,
-you should parametrize over `(F : Type _) [OrderMonoidWithZeroHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type*) [OrderMonoidWithZeroHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderMonoidWithZeroHomClass`. -/
-structure OrderMonoidWithZeroHom (α β : Type _) [Preorder α] [Preorder β] [MulZeroOneClass α]
+structure OrderMonoidWithZeroHom (α β : Type*) [Preorder α] [Preorder β] [MulZeroOneClass α]
   [MulZeroOneClass β] extends α →*₀ β where
   /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
   monotone' : Monotone toFun
@@ -187,7 +183,7 @@ section
 ordered monoid with zero homomorphisms.
 
 You should also extend this typeclass when you extend `OrderMonoidWithZeroHom`. -/
-class OrderMonoidWithZeroHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
+class OrderMonoidWithZeroHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
   [MulZeroOneClass α] [MulZeroOneClass β] extends MonoidWithZeroHomClass F α β where
   /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
   monotone (f : F) : Monotone f
@@ -457,14 +453,14 @@ theorem id_comp (f : α →*o β) : (OrderMonoidHom.id β).comp f = f :=
 #align order_monoid_hom.id_comp OrderMonoidHom.id_comp
 #align order_add_monoid_hom.id_comp OrderAddMonoidHom.id_comp
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem cancel_right {g₁ g₂ : β →*o γ} {f : α →*o β} (hf : Function.Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun _ => by congr⟩
 #align order_monoid_hom.cancel_right OrderMonoidHom.cancel_right
 #align order_add_monoid_hom.cancel_right OrderAddMonoidHom.cancel_right
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem cancel_left {g : β →*o γ} {f₁ f₂ : α →*o β} (hg : Function.Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -712,11 +708,13 @@ theorem comp_id (f : α →*₀o β) : f.comp (OrderMonoidWithZeroHom.id α) = f
 theorem id_comp (f : α →*₀o β) : (OrderMonoidWithZeroHom.id β).comp f = f := rfl
 #align order_monoid_with_zero_hom.id_comp OrderMonoidWithZeroHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : β →*₀o γ} {f : α →*₀o β} (hf : Function.Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun _ => by congr⟩
 #align order_monoid_with_zero_hom.cancel_right OrderMonoidWithZeroHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : β →*₀o γ} {f₁ f₂ : α →*₀o β} (hg : Function.Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩

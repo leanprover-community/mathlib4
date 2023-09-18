@@ -2,15 +2,12 @@
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.fun_like.fintype
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.FunLike.Basic
+
+#align_import data.fun_like.fintype from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Finiteness of `FunLike` types
@@ -34,7 +31,7 @@ They can't be instances themselves since they can cause loops.
 -- porting notes: `Type` is a reserved word, switched to `Type'`
 section Type'
 
-variable (F G : Type _) {α γ : Type _} {β : α → Type _} [FunLike F α β] [FunLike G α fun _ => γ]
+variable (F G : Type*) {α γ : Type*} {β : α → Type*} [FunLike F α β] [FunLike G α fun _ => γ]
 
 /-- All `FunLike`s are finite if their domain and codomain are.
 
@@ -60,7 +57,7 @@ end Type'
 -- porting notes: `Sort` is a reserved word, switched to `Sort'`
 section Sort'
 
-variable (F G : Sort _) {α γ : Sort _} {β : α → Sort _} [FunLike F α β] [FunLike G α fun _ => γ]
+variable (F G : Sort*) {α γ : Sort*} {β : α → Sort*} [FunLike F α β] [FunLike G α fun _ => γ]
 
 /-- All `FunLike`s are finite if their domain and codomain are.
 

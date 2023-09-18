@@ -2,15 +2,12 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.inv_submonoid
-! leanprover-community/mathlib commit 6e7ca692c98bbf8a64868f61a67fb9c33b10770d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Submonoid.Inverses
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Localization.Basic
+
+#align_import ring_theory.localization.inv_submonoid from "leanprover-community/mathlib"@"6e7ca692c98bbf8a64868f61a67fb9c33b10770d"
 
 /-!
 # Submonoid of inverses
@@ -30,9 +27,9 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type _} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
+variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
 
-variable [Algebra R S] {P : Type _} [CommRing P]
+variable [Algebra R S] {P : Type*} [CommRing P]
 
 open Function
 
@@ -111,7 +108,6 @@ theorem mem_invSubmonoid_iff_exists_mk' (x : S) :
 
 variable (S)
 
-set_option synthInstance.etaExperiment true in
 theorem span_invSubmonoid : Submodule.span R (invSubmonoid M S : Set S) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
@@ -119,7 +115,7 @@ theorem span_invSubmonoid : Submodule.span R (invSubmonoid M S : Set S) = ⊤ :=
   exact Submodule.smul_mem _ _ (Submodule.subset_span (toInvSubmonoid M S m).prop)
 #align is_localization.span_inv_submonoid IsLocalization.span_invSubmonoid
 
-theorem finiteType_of_monoid_fg [Monoid.Fg M] : Algebra.FiniteType R S := by
+theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
   have := Monoid.fg_of_surjective _ (toInvSubmonoid_surjective M S)
   rw [Monoid.fg_iff_submonoid_fg] at this
   rcases this with ⟨s, hs⟩

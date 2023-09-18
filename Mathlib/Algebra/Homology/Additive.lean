@@ -2,15 +2,12 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.additive
-! leanprover-community/mathlib commit 200eda15d8ff5669854ff6bcc10aaf37cb70498f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+#align_import algebra.homology.additive from "leanprover-community/mathlib"@"200eda15d8ff5669854ff6bcc10aaf37cb70498f"
 
 /-!
 # Homology is an additive functor
@@ -30,7 +27,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits HomologicalComplex
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 variable {V : Type u} [Category.{v} V] [Preadditive V]
 
@@ -134,7 +131,7 @@ instance boundaries_additive : (boundariesFunctor V c i).Additive where
 variable [HasEqualizers V] [HasCokernels V]
 
 instance homology_additive : (homologyFunctor V c i).Additive where
-  map_add {_ _ f g}:= by
+  map_add {_ _ f g} := by
     dsimp [homologyFunctor]
     ext
     simp only [homology.π_map, Preadditive.comp_add, ← Preadditive.add_comp]
@@ -147,7 +144,7 @@ end HomologicalComplex
 
 namespace CategoryTheory
 
-variable {W : Type _} [Category W] [Preadditive W]
+variable {W : Type*} [Category W] [Preadditive W]
 
 /-- An additive functor induces a functor between homological complexes.
 This is sometimes called the "prolongation".
@@ -176,8 +173,7 @@ isomorphic to the identity functor. -/
 @[simps!]
 def Functor.mapHomologicalComplexIdIso (c : ComplexShape ι) :
     (𝟭 V).mapHomologicalComplex c ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun K => Hom.isoOfComponents (fun i => Iso.refl _)
-    (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun K => Hom.isoOfComponents fun i => Iso.refl _
 #align category_theory.functor.map_homological_complex_id_iso CategoryTheory.Functor.mapHomologicalComplexIdIso
 
 variable {V}
@@ -203,8 +199,8 @@ between those functors applied to homological complexes.
 -/
 @[simps]
 def NatTrans.mapHomologicalComplex {F G : V ⥤ W} [F.Additive] [G.Additive] (α : F ⟶ G)
-    (c : ComplexShape ι) : F.mapHomologicalComplex c ⟶ G.mapHomologicalComplex c
-    where app C := { f := fun i => α.app _ }
+    (c : ComplexShape ι) : F.mapHomologicalComplex c ⟶ G.mapHomologicalComplex c where
+  app C := { f := fun i => α.app _ }
 #align category_theory.nat_trans.map_homological_complex CategoryTheory.NatTrans.mapHomologicalComplex
 
 @[simp]
@@ -259,9 +255,9 @@ end CategoryTheory
 
 namespace ChainComplex
 
-variable {W : Type _} [Category W] [Preadditive W]
+variable {W : Type*} [Category W] [Preadditive W]
 
-variable {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 theorem map_chain_complex_of (F : V ⥤ W) [F.Additive] (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n)
     (sq : ∀ n, d (n + 1) ≫ d n = 0) :
@@ -276,7 +272,7 @@ theorem map_chain_complex_of (F : V ⥤ W) [F.Additive] (X : α → V) (d : ∀ 
 
 end ChainComplex
 
-variable [HasZeroObject V] {W : Type _} [Category W] [Preadditive W] [HasZeroObject W]
+variable [HasZeroObject V] {W : Type*} [Category W] [Preadditive W] [HasZeroObject W]
 
 namespace HomologicalComplex
 
@@ -360,12 +356,12 @@ def single₀MapHomologicalComplex (F : V ⥤ W) [F.Additive] :
               | _ + 1 => F.mapZeroObject.inv }
         hom_inv_id := by
           ext (_|_)
-          . simp
-          . exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
+          · simp
+          · exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
         inv_hom_id := by
           ext (_|_)
-          . simp
-          . exact IsZero.eq_of_src (isZero_zero _) _ _ })
+          · simp
+          · exact IsZero.eq_of_src (isZero_zero _) _ _ })
     fun f => by ext (_|_) <;> simp
 #align chain_complex.single₀_map_homological_complex ChainComplex.single₀MapHomologicalComplex
 
@@ -416,12 +412,12 @@ def single₀MapHomologicalComplex (F : V ⥤ W) [F.Additive] :
               | _ + 1 => F.mapZeroObject.inv }
         hom_inv_id := by
           ext (_|_)
-          . simp
-          . exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
+          · simp
+          · exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
         inv_hom_id := by
           ext (_|_)
-          . simp
-          . exact IsZero.eq_of_src (isZero_zero _) _ _ })
+          · simp
+          · exact IsZero.eq_of_src (isZero_zero _) _ _ })
     fun f => by ext (_|_) <;> simp
 #align cochain_complex.single₀_map_homological_complex CochainComplex.single₀MapHomologicalComplex
 

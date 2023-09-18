@@ -2,11 +2,6 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module topology.algebra.polynomial
-! leanprover-community/mathlib commit 565eb991e264d0db702722b4bde52ee5173c9950
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Inductions
@@ -14,20 +9,22 @@ import Mathlib.Data.Polynomial.Splits
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.Analysis.Normed.Field.Basic
 
+#align_import topology.algebra.polynomial from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
+
 /-!
 # Polynomials and limits
 
 In this file we prove the following lemmas.
 
-* `Polynomial.continuous_eval₂: `Polynomial.eval₂` defines a continuous function.
-* `Polynomial.continuous_aeval: `Polynomial.aeval` defines a continuous function;
+* `Polynomial.continuous_eval₂`: `Polynomial.eval₂` defines a continuous function.
+* `Polynomial.continuous_aeval`: `Polynomial.aeval` defines a continuous function;
   we also prove convenience lemmas `Polynomial.continuousAt_aeval`,
   `Polynomial.continuousWithinAt_aeval`, `Polynomial.continuousOn_aeval`.
 * `Polynomial.continuous`:  `Polynomial.eval` defines a continuous functions;
   we also prove convenience lemmas `Polynomial.continuousAt`, `Polynomial.continuousWithinAt`,
-  `Polynomial.continuous_on`.
+  `Polynomial.continuousOn`.
 * `Polynomial.tendsto_norm_atTop`: `λ x, ‖Polynomial.eval (z x) p‖` tends to infinity provided that
-  `λ x, ‖z x‖` tends to infinity and `0 < degree p`;
+  `fun x ↦ ‖z x‖` tends to infinity and `0 < degree p`;
 * `Polynomial.tendsto_abv_eval₂_atTop`, `Polynomial.tendsto_abv_atTop`,
   `Polynomial.tendsto_abv_aeval_atTop`: a few versions of the previous statement for
   `IsAbsoluteValue abv` instead of norm.
@@ -46,7 +43,7 @@ open Polynomial
 
 section TopologicalSemiring
 
-variable {R S : Type _} [Semiring R] [TopologicalSpace R] [TopologicalSemiring R] (p : R[X])
+variable {R S : Type*} [Semiring R] [TopologicalSpace R] [TopologicalSemiring R] (p : R[X])
 
 @[continuity]
 protected theorem continuous_eval₂ [Semiring S] (p : S[X]) (f : S →+* R) :
@@ -76,7 +73,7 @@ end TopologicalSemiring
 
 section TopologicalAlgebra
 
-variable {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
   [TopologicalSemiring A] (p : R[X])
 
 @[continuity]
@@ -99,7 +96,7 @@ protected theorem continuousOn_aeval {s} : ContinuousOn (fun x : A => aeval x p)
 
 end TopologicalAlgebra
 
-theorem tendsto_abv_eval₂_atTop {R S k α : Type _} [Semiring R] [Ring S] [LinearOrderedField k]
+theorem tendsto_abv_eval₂_atTop {R S k α : Type*} [Semiring R] [Ring S] [LinearOrderedField k]
     (f : R →+* S) (abv : S → k) [IsAbsoluteValue abv] (p : R[X]) (hd : 0 < degree p)
     (hf : f p.leadingCoeff ≠ 0) {l : Filter α} {z : α → S} (hz : Tendsto (abv ∘ z) l atTop) :
     Tendsto (fun x => abv (p.eval₂ f (z x))) l atTop := by
@@ -117,21 +114,21 @@ theorem tendsto_abv_eval₂_atTop {R S k α : Type _} [Semiring R] [Ring S] [Lin
     simpa using ihp hf
 #align polynomial.tendsto_abv_eval₂_at_top Polynomial.tendsto_abv_eval₂_atTop
 
-theorem tendsto_abv_atTop {R k α : Type _} [Ring R] [LinearOrderedField k] (abv : R → k)
+theorem tendsto_abv_atTop {R k α : Type*} [Ring R] [LinearOrderedField k] (abv : R → k)
     [IsAbsoluteValue abv] (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α → R}
     (hz : Tendsto (abv ∘ z) l atTop) : Tendsto (fun x => abv (p.eval (z x))) l atTop := by
   apply tendsto_abv_eval₂_atTop _ _ _ h _ hz
   exact (mt leadingCoeff_eq_zero.1 (ne_zero_of_degree_gt h))
 #align polynomial.tendsto_abv_at_top Polynomial.tendsto_abv_atTop
 
-theorem tendsto_abv_aeval_atTop {R A k α : Type _} [CommSemiring R] [Ring A] [Algebra R A]
+theorem tendsto_abv_aeval_atTop {R A k α : Type*} [CommSemiring R] [Ring A] [Algebra R A]
     [LinearOrderedField k] (abv : A → k) [IsAbsoluteValue abv] (p : R[X]) (hd : 0 < degree p)
     (h₀ : algebraMap R A p.leadingCoeff ≠ 0) {l : Filter α} {z : α → A}
     (hz : Tendsto (abv ∘ z) l atTop) : Tendsto (fun x => abv (aeval (z x) p)) l atTop :=
   tendsto_abv_eval₂_atTop _ abv p hd h₀ hz
 #align polynomial.tendsto_abv_aeval_at_top Polynomial.tendsto_abv_aeval_atTop
 
-variable {α R : Type _} [NormedRing R] [IsAbsoluteValue (norm : R → ℝ)]
+variable {α R : Type*} [NormedRing R] [IsAbsoluteValue (norm : R → ℝ)]
 
 theorem tendsto_norm_atTop (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α → R}
     (hz : Tendsto (fun x => ‖z x‖) l atTop) : Tendsto (fun x => ‖p.eval (z x)‖) l atTop :=
@@ -140,16 +137,16 @@ theorem tendsto_norm_atTop (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α
 
 theorem exists_forall_norm_le [ProperSpace R] (p : R[X]) : ∃ x, ∀ y, ‖p.eval x‖ ≤ ‖p.eval y‖ :=
   if hp0 : 0 < degree p then
-    set_option synthInstance.etaExperiment true in -- workaround for lean4#2074
-      p.continuous.norm.exists_forall_le <| p.tendsto_norm_atTop hp0 tendsto_norm_cocompact_atTop
-  else ⟨p.coeff 0, by rw [eq_C_of_degree_le_zero (le_of_not_gt hp0)]; simp⟩
+    p.continuous.norm.exists_forall_le <| p.tendsto_norm_atTop hp0 tendsto_norm_cocompact_atTop
+  else
+    ⟨p.coeff 0, by rw [eq_C_of_degree_le_zero (le_of_not_gt hp0)]; simp⟩
 #align polynomial.exists_forall_norm_le Polynomial.exists_forall_norm_le
 
 section Roots
 
 open Polynomial NNReal
 
-variable {F K : Type _} [CommRing F] [NormedField K]
+variable {F K : Type*} [CommRing F] [NormedField K]
 
 open Multiset
 
@@ -168,8 +165,7 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
   obtain hB | hB := lt_or_le B 0
   · rw [eq_one_of_roots_le hB h1 h2 h3, Polynomial.map_one, natDegree_one, zero_tsub, pow_zero,
       one_mul, coeff_one]
-    split_ifs <;> norm_num [h]
-    simp [‹0 = i›]
+    split_ifs with h <;> simp [h]
   rw [← h1.natDegree_map f]
   obtain hi | hi := lt_or_le (map f p).natDegree i
   · rw [coeff_eq_zero_of_natDegree_lt hi, norm_zero]
@@ -192,21 +188,18 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
 #align polynomial.coeff_le_of_roots_le Polynomial.coeff_le_of_roots_le
 
 /-- The coefficients of the monic polynomials of bounded degree with bounded roots are
-uniformely bounded. -/
+uniformly bounded. -/
 theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1 : p.Monic)
     (h2 : Splits f p) (h3 : p.natDegree ≤ d) (h4 : ∀ z ∈ (map f p).roots, ‖z‖ ≤ B) (i : ℕ) :
     ‖(map f p).coeff i‖ ≤ max B 1 ^ d * d.choose (d / 2) := by
   obtain hB | hB := le_or_lt 0 B
   · apply (coeff_le_of_roots_le i h1 h2 h4).trans
     calc
-      _ ≤ max B 1 ^ (p.natDegree - i) * p.natDegree.choose i :=
-        mul_le_mul_of_nonneg_right (pow_le_pow_of_le_left hB (le_max_left _ _) _) (by simp)
-      _ ≤ max B 1 ^ d * p.natDegree.choose i :=
-        (mul_le_mul_of_nonneg_right ((pow_mono (le_max_right _ _)) (le_trans (Nat.sub_le _ _) h3))
-          (by simp))
-      _ ≤ max B 1 ^ d * d.choose (d / 2) :=
-        mul_le_mul_of_nonneg_left
-          (Nat.cast_le.mpr ((i.choose_mono h3).trans (i.choose_le_middle d))) (by simp)
+      _ ≤ max B 1 ^ (p.natDegree - i) * p.natDegree.choose i := by gcongr; apply le_max_left
+      _ ≤ max B 1 ^ d * p.natDegree.choose i := by
+        gcongr; apply le_max_right; exact le_trans (Nat.sub_le _ _) h3
+      _ ≤ max B 1 ^ d * d.choose (d / 2) := by
+        gcongr; exact (i.choose_mono h3).trans (i.choose_le_middle d)
   · rw [eq_one_of_roots_le hB h1 h2 h4, Polynomial.map_one, coeff_one]
     refine' _root_.trans _
       (one_le_mul_of_one_le_of_one_le (one_le_pow_of_one_le (le_max_right B 1) d) _)

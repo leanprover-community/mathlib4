@@ -2,16 +2,13 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Chris Hughes, Michael Howes
-
-! This file was ported from Lean 3 source module algebra.group.conj
-! leanprover-community/mathlib commit 0743cc5d9d86bcd1bba10f480e948a257d65056f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Group.Semiconj
+import Mathlib.Algebra.Group.Semiconj.Defs
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Hom.Aut
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
+
+#align_import algebra.group.conj from "leanprover-community/mathlib"@"0743cc5d9d86bcd1bba10f480e948a257d65056f"
 
 /-!
 # Conjugacy of group elements
@@ -52,7 +49,7 @@ theorem IsConj.trans {a b c : α} : IsConj a b → IsConj b c → IsConj a c
 #align is_conj.trans IsConj.trans
 
 @[simp]
-theorem isConj_iff_eq {α : Type _} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
+theorem isConj_iff_eq {α : Type*} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
   ⟨fun ⟨c, hc⟩ => by
     rw [SemiconjBy, mul_comm, ← Units.mul_inv_eq_iff_eq_mul, mul_assoc, c.mul_inv, mul_one] at hc
     exact hc, fun h => by rw [h]⟩
@@ -144,10 +141,10 @@ theorem isConj_iff₀ [GroupWithZero α] {a b : α} : IsConj a b ↔ ∃ c : α,
 
 namespace IsConj
 
-/- This small quotient API is largely copied from the API of `associates`;
+/- This small quotient API is largely copied from the API of `Associates`;
 where possible, try to keep them in sync -/
 /-- The setoid of the relation `IsConj` iff there is a unit `u` such that `u * x = y * u` -/
-protected def setoid (α : Type _) [Monoid α] : Setoid α where
+protected def setoid (α : Type*) [Monoid α] : Setoid α where
   r := IsConj
   iseqv := ⟨IsConj.refl, IsConj.symm, IsConj.trans⟩
 #align is_conj.setoid IsConj.setoid
@@ -157,7 +154,7 @@ end IsConj
 attribute [local instance] IsConj.setoid
 
 /-- The quotient type of conjugacy classes of a group. -/
-def ConjClasses (α : Type _) [Monoid α] : Type _ :=
+def ConjClasses (α : Type*) [Monoid α] : Type _ :=
   Quotient (IsConj.setoid α)
 #align conj_classes ConjClasses
 
@@ -168,7 +165,7 @@ section Monoid
 variable [Monoid α] [Monoid β]
 
 /-- The canonical quotient map from a monoid `α` into the `ConjClasses` of `α` -/
-protected def mk {α : Type _} [Monoid α] (a : α) : ConjClasses α := ⟦a⟧
+protected def mk {α : Type*} [Monoid α] (a : α) : ConjClasses α := ⟦a⟧
 #align conj_classes.mk ConjClasses.mk
 
 instance : Inhabited (ConjClasses α) := ⟨⟦1⟧⟩
@@ -235,7 +232,7 @@ Since `Multiset` and `Con.quotient` are both quotient types, unification will ch
 that the relations `List.perm` and `c.toSetoid.r` unify. However, `c.toSetoid` depends on
 a `Mul M` instance, so this unification triggers a search for `Mul (List α)`;
 this will traverse all subclasses of `Mul` before failing.
-On the other hand, the search for an instance of `DecidableEq (Con.quotient c)` for `c : con M`
+On the other hand, the search for an instance of `DecidableEq (Con.quotient c)` for `c : Con M`
 can quickly reject the candidate instance `Multiset.decidableEq` because the type of
 `List.perm : List ?m_1 → List ?m_1 → Prop` does not unify with `M → M → Prop`.
 Therefore, we should assign `Con.quotient.decidableEq` a lower priority because it fails slowly.
@@ -332,5 +329,4 @@ theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk
 
 end ConjClasses
 
--- porting notes: not implemented
--- assert_not_exists multiset
+assert_not_exists Multiset

@@ -2,16 +2,13 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.over
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.EpiMono
+
+#align_import category_theory.over from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
 /-!
 # Over and under categories
@@ -47,8 +44,8 @@ def Over (X : T) :=
 instance (X : T) : Category (Over X) := commaCategory
 
 -- Satisfying the inhabited linter
-instance Over.inhabited [Inhabited T] : Inhabited (Over (default : T))
-    where default :=
+instance Over.inhabited [Inhabited T] : Inhabited (Over (default : T)) where
+  default :=
     { left := default
       right := default
       hom := 𝟙 _ }
@@ -188,24 +185,28 @@ theorem map_map_left : ((map f).map g).left = g.left :=
 
 /-- Mapping by the identity morphism is just the identity functor. -/
 def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.over.map_id CategoryTheory.Over.mapId
 
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
 def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map f ⋙ map g :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.over.map_comp CategoryTheory.Over.mapComp
 
 end
 
 instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
   reflects {Y Z} f t := by
-    let g :Z ⟶  Y := Over.homMk (inv ((forget X).map f))
+    let g : Z ⟶ Y := Over.homMk (inv ((forget X).map f))
       ((asIso ((forget X).map f)).inv_comp_eq.2 (Over.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
     repeat (ext; simp)
 #align category_theory.over.forget_reflects_iso CategoryTheory.Over.forget_reflects_iso
+
+/-- The identity over `X` is terminal. -/
+def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
+  CostructuredArrow.mkIdTerminal
 
 instance forget_faithful : Faithful (forget X) where
 #align category_theory.over.forget_faithful CategoryTheory.Over.forget_faithful
@@ -241,7 +242,7 @@ instance mono_left_of_mono {f g : Over X} (k : f ⟶ g) [Mono k] : Mono k.left :
   refine' ⟨fun { Y : T } l m a => _⟩
   let l' : mk (m ≫ f.hom) ⟶ f := homMk l (by
         dsimp; rw [← Over.w k, ←Category.assoc, congrArg (· ≫ g.hom) a, Category.assoc])
-  suffices l' = (homMk m : mk (m ≫ f.hom) ⟶  f) by apply congrArg CommaMorphism.left this
+  suffices l' = (homMk m : mk (m ≫ f.hom) ⟶ f) by apply congrArg CommaMorphism.left this
   rw [← cancel_mono k]
   ext
   apply a
@@ -273,12 +274,8 @@ def iteratedSliceEquiv : Over f ≌ Over f.left
     where
   functor := iteratedSliceForward f
   inverse := iteratedSliceBackward f
-  unitIso :=
-    NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _)
-      (by aesop_cat)) (by aesop_cat)) fun g => by ext; dsimp; simp
-  counitIso :=
-    NatIso.ofComponents (fun g => Over.isoMk (Iso.refl _) (by aesop_cat)) fun g =>
-      by ext; dsimp; simp
+  unitIso := NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _)))
+  counitIso := NatIso.ofComponents (fun g => Over.isoMk (Iso.refl _))
 #align category_theory.over.iterated_slice_equiv CategoryTheory.Over.iteratedSliceEquiv
 
 theorem iteratedSliceForward_forget :
@@ -309,6 +306,32 @@ end
 
 end Over
 
+namespace CostructuredArrow
+
+variable {D : Type u₂} [Category.{v₂} D]
+
+/-- Reinterpreting an `F`-costructured arrow `F.obj d ⟶ X` as an arrow over `X` induces a functor
+    `CostructuredArrow F X ⥤ Over X`. -/
+@[simps!]
+def toOver (F : D ⥤ T) (X : T) : CostructuredArrow F X ⥤ Over X :=
+  CostructuredArrow.pre F (𝟭 T) X
+
+instance (F : D ⥤ T) (X : T) [Faithful F] : Faithful (toOver F X) :=
+  show Faithful (CostructuredArrow.pre _ _ _) from inferInstance
+
+instance (F : D ⥤ T) (X : T) [Full F] : Full (toOver F X) :=
+  show Full (CostructuredArrow.pre _ _ _) from inferInstance
+
+instance (F : D ⥤ T) (X : T) [EssSurj F] : EssSurj (toOver F X) :=
+  show EssSurj (CostructuredArrow.pre _ _ _) from inferInstance
+
+/-- An equivalence `F` induces an equivalence `CostructuredArrow F X ≌ Over X`. -/
+noncomputable def isEquivalenceToOver (F : D ⥤ T) (X : T) [IsEquivalence F] :
+    IsEquivalence (toOver F X) :=
+  CostructuredArrow.isEquivalencePre _ _ _
+
+end CostructuredArrow
+
 /-- The under category has as objects arrows with domain `X` and as morphisms commutative
     triangles. -/
 def Under (X : T) :=
@@ -318,8 +341,8 @@ def Under (X : T) :=
 instance (X : T) : Category (Under X) := commaCategory
 
 -- Satisfying the inhabited linter
-instance Under.inhabited [Inhabited T] : Inhabited (Under (default : T))
-    where default :=
+instance Under.inhabited [Inhabited T] : Inhabited (Under (default : T)) where
+  default :=
     { left := default
       right := default
       hom := 𝟙 _ }
@@ -373,7 +396,8 @@ attribute [-simp, nolint simpNF] homMk_left_down_down
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
-def isoMk {f g : Under X} (hr : f.right ≅ g.right) (hw : f.hom ≫ hr.hom = g.hom) : f ≅ g :=
+def isoMk {f g : Under X} (hr : f.right ≅ g.right)
+    (hw : f.hom ≫ hr.hom = g.hom := by aesop_cat) : f ≅ g :=
   StructuredArrow.isoMk hr hw
 #align category_theory.under.iso_mk CategoryTheory.Under.isoMk
 
@@ -443,24 +467,28 @@ theorem map_map_right : ((map f).map g).right = g.right :=
 
 /-- Mapping by the identity morphism is just the identity functor. -/
 def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.under.map_id CategoryTheory.Under.mapId
 
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
 def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ map f :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.under.map_comp CategoryTheory.Under.mapComp
 
 end
 
 instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
   reflects {Y Z} f t := by
-    let g : Z ⟶  Y := Under.homMk (inv ((Under.forget X).map f))
+    let g : Z ⟶ Y := Under.homMk (inv ((Under.forget X).map f))
       ((IsIso.comp_inv_eq _).2 (Under.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
     repeat (ext; simp)
 #align category_theory.under.forget_reflects_iso CategoryTheory.Under.forget_reflects_iso
+
+/-- The identity under `X` is initial. -/
+def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
+  StructuredArrow.mkIdInitial
 
 instance forget_faithful : Faithful (forget X) where
 #align category_theory.under.forget_faithful CategoryTheory.Under.forget_faithful
@@ -476,8 +504,8 @@ theorem mono_of_mono_right {f g : Under X} (k : f ⟶ g) [hk : Mono k.right] : M
 #align category_theory.under.mono_of_mono_right CategoryTheory.Under.mono_of_mono_right
 
 /--
-If `k.right` is a epimorphism, then `k` is a epimorphism. In other words, `Under.forget X` reflects
-epimorphisms.
+If `k.right` is an epimorphism, then `k` is an epimorphism. In other words, `Under.forget X`
+reflects epimorphisms.
 The converse of `CategoryTheory.Under.epi_right_of_epi`.
 
 This lemma is not an instance, to avoid loops in type class inference.
@@ -487,8 +515,8 @@ theorem epi_of_epi_right {f g : Under X} (k : f ⟶ g) [hk : Epi k.right] : Epi 
 #align category_theory.under.epi_of_epi_right CategoryTheory.Under.epi_of_epi_right
 
 /--
-If `k` is a epimorphism, then `k.right` is a epimorphism. In other words, `Under.forget X` preserves
-epimorphisms.
+If `k` is an epimorphism, then `k.right` is an epimorphism. In other words, `Under.forget X`
+preserves epimorphisms.
 The converse of `CategoryTheory.under.epi_of_epi_right`.
 -/
 instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right := by
@@ -496,7 +524,7 @@ instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
   -- Porting note: add type ascription here to `homMk m`
-  suffices l' = (homMk m  : g ⟶  mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
+  suffices l' = (homMk m  : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
   rw [← cancel_epi k]; ext; apply a
 #align category_theory.under.epi_right_of_epi CategoryTheory.Under.epi_right_of_epi
 
@@ -514,5 +542,75 @@ def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
 end
 
 end Under
+
+namespace StructuredArrow
+
+variable {D : Type u₂} [Category.{v₂} D]
+
+/-- Reinterpreting an `F`-structured arrow `X ⟶ F.obj d` as an arrow under `X` induces a functor
+    `StructuredArrow X F ⥤ Under X`. -/
+@[simps!]
+def toUnder (X : T) (F : D ⥤ T) : StructuredArrow X F ⥤ Under X :=
+  StructuredArrow.pre X F (𝟭 T)
+
+instance (X : T) (F : D ⥤ T) [Faithful F] : Faithful (toUnder X F) :=
+  show Faithful (StructuredArrow.pre _ _ _) from inferInstance
+
+instance (X : T) (F : D ⥤ T) [Full F] : Full (toUnder X F) :=
+  show Full (StructuredArrow.pre _ _ _) from inferInstance
+
+instance (X : T) (F : D ⥤ T) [EssSurj F] : EssSurj (toUnder X F) :=
+  show EssSurj (StructuredArrow.pre _ _ _) from inferInstance
+
+/-- An equivalence `F` induces an equivalence `StructuredArrow X F ≌ Under X`. -/
+noncomputable def isEquivalenceToUnder (X : T) (F : D ⥤ T) [IsEquivalence F] :
+    IsEquivalence (toUnder X F) :=
+  StructuredArrow.isEquivalencePre _ _ _
+
+end StructuredArrow
+
+namespace Functor
+
+variable {S : Type u₂} [Category.{v₂} S]
+
+/-- Given `X : T`, to upgrade a functor `F : S ⥤ T` to a functor `S ⥤ Over X`, it suffices to
+    provide maps `F.obj Y ⟶ X` for all `Y` making the obvious triangles involving all `F.map g`
+    commute. -/
+@[simps! obj_left map_left]
+def toOver (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
+    (h : ∀ {Y Z : S} (g : Y ⟶ Z), F.map g ≫ f Z = f Y) : S ⥤ Over X :=
+  F.toCostructuredArrow (𝟭 _) X f h
+
+/-- Upgrading a functor `S ⥤ T` to a functor `S ⥤ Over X` and composing with the forgetful functor
+    `Over X ⥤ T` recovers the original functor. -/
+def toOverCompForget (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
+    (h : ∀ {Y Z : S} (g : Y ⟶ Z), F.map g ≫ f Z = f Y) : F.toOver X f h ⋙ Over.forget _ ≅ F :=
+  Iso.refl _
+
+@[simp]
+lemma toOver_comp_forget (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
+    (h : ∀ {Y Z : S} (g : Y ⟶ Z), F.map g ≫ f Z = f Y) : F.toOver X f h ⋙ Over.forget _ = F :=
+  rfl
+
+/-- Given `X : T`, to upgrade a functor `F : S ⥤ T` to a functor `S ⥤ Under X`, it suffices to
+    provide maps `X ⟶ F.obj Y` for all `Y` making the obvious triangles involving all `F.map g`
+    commute.  -/
+@[simps! obj_right map_right]
+def toUnder (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
+    (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : S ⥤ Under X :=
+  F.toStructuredArrow X (𝟭 _) f h
+
+/-- Upgrading a functor `S ⥤ T` to a functor `S ⥤ Under X` and composing with the forgetful functor
+    `Under X ⥤ T` recovers the original functor. -/
+def toUnderCompForget (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
+    (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : F.toUnder X f h ⋙ Under.forget _ ≅ F :=
+  Iso.refl _
+
+@[simp]
+lemma toUnder_comp_forget (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
+    (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : F.toUnder X f h ⋙ Under.forget _ = F :=
+  rfl
+
+end Functor
 
 end CategoryTheory

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.abelian.subobject
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Subobject.Limits
 import Mathlib.CategoryTheory.Abelian.Basic
+
+#align_import category_theory.abelian.subobject from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Equivalence between subobjects and quotients in an abelian category
@@ -63,8 +60,8 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
 #align category_theory.abelian.subobject_iso_subobject_op CategoryTheory.Abelian.subobjectIsoSubobjectOp
 
 /-- A well-powered abelian category is also well-copowered. -/
-instance wellPowered_opposite [Abelian C] [WellPowered C] : WellPowered Cᵒᵖ
-    where subobject_small X :=
+instance wellPowered_opposite [Abelian C] [WellPowered C] : WellPowered Cᵒᵖ where
+  subobject_small X :=
     (small_congr (subobjectIsoSubobjectOp (unop X)).toEquiv).1 inferInstance
 #align category_theory.abelian.well_powered_opposite CategoryTheory.Abelian.wellPowered_opposite
 

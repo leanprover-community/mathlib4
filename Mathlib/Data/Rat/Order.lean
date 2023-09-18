@@ -2,15 +2,12 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.rat.order
-! leanprover-community/mathlib commit a59dad53320b73ef180174aae867addd707ef00e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Int.Cast.Lemmas
+
+#align_import data.rat.order from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
 
 /-!
 # Order for Rational Numbers
@@ -196,7 +193,7 @@ instance linearOrder : LinearOrder ℚ where
   le_trans := @Rat.le_trans
   le_antisymm := @Rat.le_antisymm
   le_total := Rat.le_total
-  decidable_le _ _ := by infer_instance
+  decidableLE _ _ := by infer_instance
   lt_iff_le_not_le _ _ := by
     rw [← Rat.not_le, and_iff_right_of_imp (Rat.le_total _ _).resolve_left]
 
@@ -250,7 +247,7 @@ protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b :=
 #align rat.add_le_add_left Rat.add_le_add_left
 
 protected theorem mul_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
-  rw [← nonneg_iff_zero_le] at ha hb⊢; exact Rat.nonneg_mul ha hb
+  rw [← nonneg_iff_zero_le] at ha hb ⊢; exact Rat.nonneg_mul ha hb
 #align rat.mul_nonneg Rat.mul_nonneg
 
 instance : LinearOrderedField ℚ :=
@@ -311,15 +308,13 @@ theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
 
 end Rat
 
--- Porting note: `assert_not_exists` not yet implemented.
-
 -- We make some assertions here about declarations that do not need to be in the import dependencies
 -- for this file, but have been in the past.
--- assert_not_exists fintype
+assert_not_exists Fintype
 
--- assert_not_exists set.Icc
+assert_not_exists Set.Icc
 
--- assert_not_exists galois_connection
+assert_not_exists GaloisConnection
 
 -- These are less significant, but should not be relaxed until at least after port to Lean 4.
--- assert_not_exists LinearOrderedCommGroupWithZero
+assert_not_exists LinearOrderedCommGroupWithZero

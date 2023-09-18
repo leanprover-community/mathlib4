@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.submonoid.center
-! leanprover-community/mathlib commit 6cb77a8eaff0ddd100e87b1591c6d3ad319514ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.GroupTheory.Subsemigroup.Center
+
+#align_import group_theory.submonoid.center from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
 /-!
 # Centers of monoids
@@ -28,7 +25,7 @@ namespace Submonoid
 
 section
 
-variable (M : Type _) [Monoid M]
+variable (M : Type*) [Monoid M]
 
 /-- The center of a monoid `M` is the set of elements that commute with everything in `M` -/
 @[to_additive
@@ -71,8 +68,8 @@ instance center.commMonoid : CommMonoid (center M) :=
     mul_comm := fun _ b => Subtype.ext <| b.prop _ }
 
 /-- The center of a monoid acts commutatively on that monoid. -/
-instance center.smulCommClass_left : SMulCommClass (center M) M M
-    where smul_comm m x y := (Commute.left_comm (m.prop x) y).symm
+instance center.smulCommClass_left : SMulCommClass (center M) M M where
+  smul_comm m x y := (Commute.left_comm (m.prop x) y).symm
 #align submonoid.center.smul_comm_class_left Submonoid.center.smulCommClass_left
 
 /-- The center of a monoid acts commutatively on that monoid. -/
@@ -89,7 +86,7 @@ end
 
 section
 
-variable (M : Type _) [CommMonoid M]
+variable (M : Type*) [CommMonoid M]
 
 @[simp]
 theorem center_eq_top : center M = ⊤ :=
@@ -100,6 +97,20 @@ end
 
 end Submonoid
 
--- Porting note: `assert_not_exists` is not ported yet
+variable (M)
+
+/-- For a monoid, the units of the center inject into the center of the units. This is not an
+equivalence in general; one case when it is is for groups with zero, which is covered in
+`centerUnitsEquivUnitsCenter`. -/
+@[to_additive (attr := simps! apply_coe_val)
+  "For an additive monoid, the units of the center inject into the center of the units."]
+def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.center (Mˣ) :=
+  (Units.map (Submonoid.center M).subtype).codRestrict _ <| fun u r ↦ Units.ext <| u.1.prop r
+
+@[to_additive]
+theorem unitsCenterToCenterUnits_injective [Monoid M] :
+    Function.Injective (unitsCenterToCenterUnits M) :=
+  fun _a _b h => Units.ext <| Subtype.ext <| congr_arg (Units.val ∘ Subtype.val) h
+
 -- Guard against import creep
---assert_not_exists finset
+assert_not_exists Finset

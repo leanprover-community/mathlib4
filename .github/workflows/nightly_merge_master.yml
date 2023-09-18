@@ -1,0 +1,30 @@
+# This job merges every commit to `master` into `nightly-testing`, resolving merge conflicts in favor of `nightly-testing`.
+
+name: Merge master to nightly
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  merge-to-nightly:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.NIGHTLY_TESTING }}
+
+      - name: Configure Git User
+        run: |
+          git config user.name "leanprover-community-mathlib4-bot"
+          git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
+
+      - name: Merge master to nightly favoring nightly changes
+        run: |
+          git checkout nightly-testing
+          git merge master --strategy-option ours --no-commit --allow-unrelated-histories
+          git commit -m "Merge master into nightly-testing"
+          git push origin nightly-testing

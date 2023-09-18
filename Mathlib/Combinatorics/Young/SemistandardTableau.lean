@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
-
-! This file was ported from Lean 3 source module combinatorics.young.semistandard_tableau
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Young.YoungDiagram
+
+#align_import combinatorics.young.semistandard_tableau from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
 /-!
 # Semistandard Young tableaux
@@ -128,15 +125,15 @@ theorem zeros {μ : YoungDiagram} (T : Ssyt μ) {i j : ℕ} (not_cell : (i, j) �
 theorem row_weak_of_le {μ : YoungDiagram} (T : Ssyt μ) {i j1 j2 : ℕ} (hj : j1 ≤ j2)
     (cell : (i, j2) ∈ μ) : T i j1 ≤ T i j2 := by
   cases' eq_or_lt_of_le hj with h h
-  . rw [h]
-  . exact T.row_weak h cell
+  · rw [h]
+  · exact T.row_weak h cell
 #align ssyt.row_weak_of_le Ssyt.row_weak_of_le
 
 theorem col_weak {μ : YoungDiagram} (T : Ssyt μ) {i1 i2 j : ℕ} (hi : i1 ≤ i2) (cell : (i2, j) ∈ μ) :
     T i1 j ≤ T i2 j := by
   cases' eq_or_lt_of_le hi with h h
-  . rw [h]
-  . exact le_of_lt (T.col_strict h cell)
+  · rw [h]
+  · exact le_of_lt (T.col_strict h cell)
 #align ssyt.col_weak Ssyt.col_weak
 
 /-- The "highest weight" SSYT of a given shape has all i's in row i, for each i. -/

@@ -2,14 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.list.sort
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Perm
+
+#align_import data.list.sort from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Sorting algorithms on lists
@@ -51,7 +48,7 @@ protected theorem Sorted.le_of_lt [Preorder α] {l : List α} (h : l.Sorted (· 
 
 protected theorem Sorted.lt_of_le [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≤ ·))
     (h₂ : l.Nodup) : l.Sorted (· < ·) :=
-  h₁.imp₂ (fun _ _ => lt_of_le_of_ne)  h₂
+  h₁.imp₂ (fun _ _ => lt_of_le_of_ne) h₂
 
 @[simp]
 theorem sorted_nil : Sorted r [] :=
@@ -146,7 +143,7 @@ variable {n : ℕ} {α : Type uu} [Preorder α] {f : Fin n → α}
 
 theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
   simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
-  exact Iff.symm (Fin.cast _).surjective.forall₂
+  exact Iff.symm (Fin.rightInverse_cast _).surjective.forall₂
 
 /-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is
 strictly monotone. -/
@@ -162,7 +159,7 @@ theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) :=
 #align list.monotone_iff_of_fn_sorted List.monotone_iff_ofFn_sorted
 
 /-- The list obtained from a monotone tuple is sorted. -/
-alias sorted_le_ofFn_iff ↔ _ _root_.Monotone.ofFn_sorted
+alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
 #align list.monotone.of_fn_sorted Monotone.ofFn_sorted
 
 end Monotone
@@ -237,7 +234,6 @@ theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
 theorem orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
     count a (L.orderedInsert r b) = count a L + if a = b then 1 else 0 := by
   rw [(L.perm_orderedInsert r b).count_eq, count_cons]
-  split_ifs <;> simp only [Nat.succ_eq_add_one, add_zero]
 #align list.ordered_insert_count List.orderedInsert_count
 
 theorem perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
@@ -255,7 +251,7 @@ theorem Sorted.insertionSort_eq : ∀ {l : List α} (_ : Sorted r l), insertionS
   | [a], _ => rfl
   | a :: b :: l, h => by
     rw [insertionSort, Sorted.insertionSort_eq, orderedInsert, if_pos]
-    exacts[rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
+    exacts [rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
 #align list.sorted.insertion_sort_eq List.Sorted.insertionSort_eq
 
 section TotalAndTransitive

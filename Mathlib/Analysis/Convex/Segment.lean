@@ -2,17 +2,14 @@
 Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.segment
-! leanprover-community/mathlib commit c5773405394e073885e2a144c9ca14637e8eb963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.SMul
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.LinearAlgebra.Ray
-import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.GCongr
+
+#align_import analysis.convex.segment from "leanprover-community/mathlib"@"c5773405394e073885e2a144c9ca14637e8eb963"
 
 /-!
 # Segments in vector spaces
@@ -24,7 +21,7 @@ In a 𝕜-vector space, we define the following objects and properties.
 ## Notations
 
 We provide the following notation:
-* `[x -[𝕜] y] = segment 𝕜 x y` in locale `convex`
+* `[x -[𝕜] y] = segment 𝕜 x y` in locale `Convex`
 
 ## TODO
 
@@ -35,7 +32,7 @@ define `clopenSegment`/`convex.Ico`/`convex.Ioc`?
 -/
 
 
-variable {𝕜 E F G ι : Type _} {π : ι → Type _}
+variable {𝕜 E F G ι : Type*} {π : ι → Type*}
 
 open Function Set
 
@@ -113,7 +110,6 @@ section MulActionWithZero
 variable (𝕜)
 variable [MulActionWithZero 𝕜 E]
 
-set_option synthInstance.etaExperiment true
 
 theorem left_mem_segment (x y : E) : x ∈ [x -[𝕜] y] :=
   ⟨1, 0, zero_le_one, le_refl 0, add_zero 1, by rw [zero_smul, one_smul, add_zero]⟩
@@ -140,7 +136,7 @@ theorem segment_same (x : E) : [x -[𝕜] x] = {x} :=
 
 theorem insert_endpoints_openSegment (x y : E) :
     insert x (insert y (openSegment 𝕜 x y)) = [x -[𝕜] y] := by
-  simp only [subset_antisymm_iff, insert_subset, left_mem_segment, right_mem_segment,
+  simp only [subset_antisymm_iff, insert_subset_iff, left_mem_segment, right_mem_segment,
     openSegment_subset_segment, true_and_iff]
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
   refine' hb.eq_or_gt.imp _ fun hb' => ha.eq_or_gt.imp _ fun ha' => _
@@ -161,7 +157,7 @@ theorem mem_openSegment_of_ne_left_right (hx : x ≠ z) (hy : y ≠ z) (hz : z �
 
 theorem openSegment_subset_iff_segment_subset (hx : x ∈ s) (hy : y ∈ s) :
     openSegment 𝕜 x y ⊆ s ↔ [x -[𝕜] y] ⊆ s := by
-  simp only [← insert_endpoints_openSegment, insert_subset, *, true_and_iff]
+  simp only [← insert_endpoints_openSegment, insert_subset_iff, *, true_and_iff]
 #align open_segment_subset_iff_segment_subset openSegment_subset_iff_segment_subset
 
 end Module
@@ -290,6 +286,23 @@ theorem openSegment_translate_image (a b c : E) :
   openSegment_translate_preimage 𝕜 a b c ▸ image_preimage_eq _ <| add_left_surjective a
 #align open_segment_translate_image openSegment_translate_image
 
+lemma segment_inter_eq_endpoint_of_linearIndependent_sub
+    {c x y : E} (h : LinearIndependent 𝕜 ![x - c, y - c]) :
+    [c -[𝕜] x] ∩ [c -[𝕜] y] = {c} := by
+  apply Subset.antisymm; swap
+  · simp [singleton_subset_iff, left_mem_segment]
+  intro z ⟨hzt, hzs⟩
+  rw [segment_eq_image, mem_image] at hzt hzs
+  rcases hzt with ⟨p, ⟨p0, p1⟩, rfl⟩
+  rcases hzs with ⟨q, ⟨q0, q1⟩, H⟩
+  have Hx : x = (x - c) + c := by abel
+  have Hy : y = (y - c) + c := by abel
+  rw [Hx, Hy, smul_add, smul_add] at H
+  have : c + q • (y - c) = c + p • (x - c) := by
+    convert H using 1 <;> simp [sub_smul]
+  obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this ).symm
+  simp
+
 end OrderedRing
 
 theorem sameRay_of_mem_segment [StrictOrderedCommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y z : E}
@@ -299,6 +312,20 @@ theorem sameRay_of_mem_segment [StrictOrderedCommRing 𝕜] [AddCommGroup E] [Mo
   simpa only [add_sub_cancel', ← sub_sub, sub_smul, one_smul] using
     (SameRay.sameRay_nonneg_smul_left (z - y) hθ₀).nonneg_smul_right (sub_nonneg.2 hθ₁)
 #align same_ray_of_mem_segment sameRay_of_mem_segment
+
+lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne [OrderedCommRing 𝕜] [NoZeroDivisors 𝕜]
+    [AddCommGroup E] [Module 𝕜 E]
+    {x y : E} (h : LinearIndependent 𝕜 ![x, y]) {s t : 𝕜} (hs : s ≠ t) (c : E) :
+    [c + x -[𝕜] c + t • y] ∩ [c + x -[𝕜] c + s • y] = {c + x} := by
+  apply segment_inter_eq_endpoint_of_linearIndependent_sub
+  simp only [add_sub_add_left_eq_sub]
+  suffices H : LinearIndependent 𝕜 ![(-1 : 𝕜) • x + t • y, (-1 : 𝕜) • x + s • y] by
+    convert H using 1; simp only [neg_smul, one_smul]; abel_nf
+  apply h.linear_combination_pair_of_det_ne_zero
+  contrapose! hs
+  apply Eq.symm
+  simpa [neg_mul, one_mul, mul_neg, mul_one, sub_neg_eq_add, add_comm _ t,
+    ← sub_eq_add_neg, sub_eq_zero] using hs
 
 section LinearOrderedRing
 
@@ -350,7 +377,7 @@ theorem mem_segment_iff_div :
     use a, b, ha, hb
     simp [*]
   · rintro ⟨a, b, ha, hb, hab, rfl⟩
-    refine' ⟨a / (a + b), b / (a + b), div_nonneg ha hab.le, div_nonneg hb hab.le, _, rfl⟩
+    refine' ⟨a / (a + b), b / (a + b), by positivity, by positivity, _, rfl⟩
     rw [← add_div, div_self hab.ne']
 #align mem_segment_iff_div mem_segment_iff_div
 
@@ -415,7 +442,7 @@ end LinearOrderedField
 /-!
 #### Segments in an ordered space
 
-Relates `segment`, `openSegment` and `set.Icc`, `set.Ico`, `set.Ioc`, `set.Ioo`
+Relates `segment`, `openSegment` and `Set.Icc`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`
 -/
 
 
@@ -432,9 +459,9 @@ theorem segment_subset_Icc (h : x ≤ y) : [x -[𝕜] y] ⊆ Icc x y := by
   constructor
   calc
     x = a • x + b • x := (Convex.combo_self hab _).symm
-    _ ≤ a • x + b • y := add_le_add_left (smul_le_smul_of_nonneg h hb) _
+    _ ≤ a • x + b • y := by gcongr
   calc
-    a • x + b • y ≤ a • y + b • y := add_le_add_right (smul_le_smul_of_nonneg h ha) _
+    a • x + b • y ≤ a • y + b • y := by gcongr
     _ = y := Convex.combo_self hab _
 #align segment_subset_Icc segment_subset_Icc
 
@@ -449,9 +476,9 @@ theorem openSegment_subset_Ioo (h : x < y) : openSegment 𝕜 x y ⊆ Ioo x y :=
   constructor
   calc
     x = a • x + b • x := (Convex.combo_self hab _).symm
-    _ < a • x + b • y := add_lt_add_left (smul_lt_smul_of_pos h hb) _
+    _ < a • x + b • y := by gcongr
   calc
-    a • x + b • y < a • y + b • y := add_lt_add_right (smul_lt_smul_of_pos h ha) _
+    a • x + b • y < a • y + b • y := by gcongr
     _ = y := Convex.combo_self hab _
 #align open_segment_subset_Ioo openSegment_subset_Ioo
 
@@ -496,8 +523,7 @@ theorem Icc_subset_segment : Icc x y ⊆ [x -[𝕜] y] := by
   rw [← sub_pos] at h
   refine' ⟨(y - z) / (y - x), (z - x) / (y - x), div_nonneg hyz h.le, div_nonneg hxz h.le, _, _⟩
   · rw [← add_div, sub_add_sub_cancel, div_self h.ne']
-  ·
-    rw [smul_eq_mul, smul_eq_mul, ← mul_div_right_comm, ← mul_div_right_comm, ← add_div,
+  · rw [smul_eq_mul, smul_eq_mul, ← mul_div_right_comm, ← mul_div_right_comm, ← add_div,
       div_eq_iff h.ne', add_comm, sub_mul, sub_mul, mul_comm x, sub_add_sub_cancel, mul_sub]
 #align Icc_subset_segment Icc_subset_segment
 
@@ -556,13 +582,13 @@ theorem Convex.mem_Ioc (h : x < y) :
   · obtain ⟨a, b, ha, hb, hab, rfl⟩ := (Convex.mem_Icc h.le).1 (Ioc_subset_Icc_self hz)
     obtain rfl | hb' := hb.eq_or_lt
     · rw [add_zero] at hab
-      rw [hab, one_mul, MulZeroClass.zero_mul, add_zero] at hz
+      rw [hab, one_mul, zero_mul, add_zero] at hz
       exact (hz.1.ne rfl).elim
     · exact ⟨a, b, ha, hb', hab, rfl⟩
   · rintro ⟨a, b, ha, hb, hab, rfl⟩
     obtain rfl | ha' := ha.eq_or_lt
     · rw [zero_add] at hab
-      rwa [hab, one_mul, MulZeroClass.zero_mul, zero_add, right_mem_Ioc]
+      rwa [hab, one_mul, zero_mul, zero_add, right_mem_Ioc]
     · exact Ioo_subset_Ioc_self ((Convex.mem_Ioo h).2 ⟨a, b, ha', hb, hab, rfl⟩)
 #align convex.mem_Ioc Convex.mem_Ioc
 
@@ -574,13 +600,13 @@ theorem Convex.mem_Ico (h : x < y) :
   · obtain ⟨a, b, ha, hb, hab, rfl⟩ := (Convex.mem_Icc h.le).1 (Ico_subset_Icc_self hz)
     obtain rfl | ha' := ha.eq_or_lt
     · rw [zero_add] at hab
-      rw [hab, one_mul, MulZeroClass.zero_mul, zero_add] at hz
+      rw [hab, one_mul, zero_mul, zero_add] at hz
       exact (hz.2.ne rfl).elim
     · exact ⟨a, b, ha', hb, hab, rfl⟩
   · rintro ⟨a, b, ha, hb, hab, rfl⟩
     obtain rfl | hb' := hb.eq_or_lt
     · rw [add_zero] at hab
-      rwa [hab, one_mul, MulZeroClass.zero_mul, add_zero, left_mem_Ico]
+      rwa [hab, one_mul, zero_mul, add_zero, left_mem_Ico]
     · exact Ioo_subset_Ico_self ((Convex.mem_Ioo h).2 ⟨a, b, ha, hb', hab, rfl⟩)
 #align convex.mem_Ico Convex.mem_Ico
 

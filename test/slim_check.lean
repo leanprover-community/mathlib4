@@ -1,7 +1,7 @@
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.Dfinsupp.Basic
+import Mathlib.Data.DFinsupp.Basic
 
 -- Porting note:
 -- These are the tests from mathlib3, updated to Lean 4 syntax.
@@ -93,8 +93,18 @@ issue: 1 < 0 does not hold
 --   trivial
 
 example : true := by
-  have : ∀ x ∈ [1,2,3], x < 4
+  have _this : ∀ x ∈ [1,2,3], x < 4
   slim_check (config := { randomSeed := some 257, quiet := true })
+    -- success
+  trivial
+
+-- Making sure that the context is used
+example : true := by
+  have _this : ∀ n : ℕ, n = n
+  · intro n
+    cases n
+    · slim_check (config := { randomSeed := some 257, quiet := true })
+    · rfl
     -- success
   trivial
 

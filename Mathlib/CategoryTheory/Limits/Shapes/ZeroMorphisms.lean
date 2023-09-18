@@ -2,17 +2,14 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.zero_morphisms
-! leanprover-community/mathlib commit f7707875544ef1f81b32cb68c79e0e24e45a0e76
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Pi.Algebra
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.IsomorphismClasses
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+
+#align_import category_theory.limits.shapes.zero_morphisms from "leanprover-community/mathlib"@"f7707875544ef1f81b32cb68c79e0e24e45a0e76"
 
 /-!
 # Zero morphisms and zero objects
@@ -78,12 +75,13 @@ theorem zero_comp [HasZeroMorphisms C] {X : C} {Y Z : C} {f : Y ⟶ Z} :
   HasZeroMorphisms.zero_comp X f
 #align category_theory.limits.zero_comp CategoryTheory.Limits.zero_comp
 
-instance hasZeroMorphismsPempty : HasZeroMorphisms (Discrete PEmpty) where Zero := by dee
-#align category_theory.limits.has_zero_morphisms_pempty CategoryTheory.Limits.hasZeroMorphismsPempty
+instance hasZeroMorphismsPEmpty : HasZeroMorphisms (Discrete PEmpty) where
+  Zero := by aesop_cat
+#align category_theory.limits.has_zero_morphisms_pempty CategoryTheory.Limits.hasZeroMorphismsPEmpty
 
-instance hasZeroMorphismsPunit : HasZeroMorphisms (Discrete PUnit) where
+instance hasZeroMorphismsPUnit : HasZeroMorphisms (Discrete PUnit) where
   Zero := fun X Y => by repeat (constructor)
-#align category_theory.limits.has_zero_morphisms_punit CategoryTheory.Limits.hasZeroMorphismsPunit
+#align category_theory.limits.has_zero_morphisms_punit CategoryTheory.Limits.hasZeroMorphismsPUnit
 
 namespace HasZeroMorphisms
 
@@ -126,13 +124,19 @@ open Opposite HasZeroMorphisms
 instance hasZeroMorphismsOpposite [HasZeroMorphisms C] : HasZeroMorphisms Cᵒᵖ where
   Zero X Y := ⟨(0 : unop Y ⟶ unop X).op⟩
   comp_zero f Z := congr_arg Quiver.Hom.op (HasZeroMorphisms.zero_comp (unop Z) f.unop)
-  zero_comp X {Y Z} (f : Y ⟶  Z) :=
+  zero_comp X {Y Z} (f : Y ⟶ Z) :=
     congrArg Quiver.Hom.op (HasZeroMorphisms.comp_zero f.unop (unop X))
 #align category_theory.limits.has_zero_morphisms_opposite CategoryTheory.Limits.hasZeroMorphismsOpposite
 
 section
 
 variable [HasZeroMorphisms C]
+
+@[simp] lemma op_zero (X Y : C) : (0 : X ⟶ Y).op = 0 := rfl
+#align category_theory.op_zero CategoryTheory.Limits.op_zero
+
+@[simp] lemma unop_zero (X Y : Cᵒᵖ) : (0 : X ⟶ Y).unop = 0 := rfl
+#align category_theory.unop_zero CategoryTheory.Limits.unop_zero
 
 theorem zero_of_comp_mono {X Y Z : C} {f : X ⟶ Y} (g : Y ⟶ Z) [Mono g] (h : f ≫ g = 0) : f = 0 := by
   rw [← zero_comp, cancel_mono] at h
@@ -188,7 +192,7 @@ theorem iff_id_eq_zero (X : C) : IsZero X ↔ 𝟙 X = 0 :=
     ⟨fun Y => ⟨⟨⟨0⟩, fun f => by
         rw [← id_comp f, ← id_comp (0: X ⟶ Y), h, zero_comp, zero_comp]; simp only⟩⟩,
     fun Y => ⟨⟨⟨0⟩, fun f => by
-        rw [← comp_id f, ← comp_id (0 : Y ⟶  X), h, comp_zero, comp_zero]; simp only ⟩⟩⟩⟩
+        rw [← comp_id f, ← comp_id (0 : Y ⟶ X), h, comp_zero, comp_zero]; simp only ⟩⟩⟩⟩
 #align category_theory.limits.is_zero.iff_id_eq_zero CategoryTheory.Limits.IsZero.iff_id_eq_zero
 
 theorem of_mono_zero (X Y : C) [Mono (0 : X ⟶ Y)] : IsZero X :=
@@ -282,12 +286,12 @@ open ZeroObject
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
   Zero X Y := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by
-    change ( (default : X ⟶  0)  ≫ default) ≫ f = (default : X ⟶  0) ≫ default
+    change ((default : X ⟶ 0) ≫ default) ≫ f = (default : X ⟶ 0) ≫ default
     rw [Category.assoc]
     congr
     simp only [eq_iff_true_of_subsingleton]
   comp_zero {X Y} f Z := by
-    change f ≫ (default : Y ⟶  0)  ≫ default = (default : X ⟶  0) ≫ default
+    change f ≫ (default : Y ⟶ 0) ≫ default = (default : X ⟶ 0) ≫ default
     rw [← Category.assoc]
     congr
     simp only [eq_iff_true_of_subsingleton]
@@ -333,7 +337,7 @@ end HasZeroMorphisms
 
 open ZeroObject
 
-instance {B : Type _} [Category B] : HasZeroObject (B ⥤ C) :=
+instance {B : Type*} [Category B] : HasZeroObject (B ⥤ C) :=
   (((CategoryTheory.Functor.const B).obj (0 : C)).isZero fun _ => isZero_zero _).hasZeroObject
 
 end HasZeroObject
@@ -367,7 +371,7 @@ variable [HasZeroObject C] [HasZeroMorphisms C]
 open ZeroObject
 
 @[simp]
-theorem id_zero : 𝟙 (0 : C) = (0 : (0 : C) ⟶  0) := by apply HasZeroObject.from_zero_ext
+theorem id_zero : 𝟙 (0 : C) = (0 : (0 : C) ⟶ 0) := by apply HasZeroObject.from_zero_ext
 #align category_theory.limits.id_zero CategoryTheory.Limits.id_zero
 
 -- This can't be a `simp` lemma because the left hand side would be a metavariable.
@@ -428,7 +432,7 @@ theorem idZeroEquivIsoZero_apply_inv (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIso
   rfl
 #align category_theory.limits.id_zero_equiv_iso_zero_apply_inv CategoryTheory.Limits.idZeroEquivIsoZero_apply_inv
 
-/-- If `0 : X ⟶ Y` is an monomorphism, then `X ≅ 0`. -/
+/-- If `0 : X ⟶ Y` is a monomorphism, then `X ≅ 0`. -/
 @[simps]
 def isoZeroOfMonoZero {X Y : C} (h : Mono (0 : X ⟶ Y)) : X ≅ 0 where
   hom := 0
@@ -508,7 +512,7 @@ open ZeroObject
 `X` and `Y` are isomorphic to the zero object.
 -/
 def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y ≅ 0) := by
-  -- This is lame, because `prod` can't cope with `Prop`, so we can't use `Equiv.prodCongr`.
+  -- This is lame, because `Prod` can't cope with `Prop`, so we can't use `Equiv.prodCongr`.
   refine' (isIsoZeroEquiv X Y).trans _
   symm
   fconstructor
@@ -580,7 +584,7 @@ open ZeroObject
 /-- The zero morphism has a `MonoFactorisation` through the zero object.
 -/
 @[simps]
-def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y)  where
+def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y) where
   I := 0
   m := 0
   e := 0
