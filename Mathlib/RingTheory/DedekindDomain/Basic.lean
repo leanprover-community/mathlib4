@@ -107,7 +107,7 @@ use `isDedekindRing_iff` to prove `IsDedekindRing` for a given `fraction_map`.
 class IsDedekindRing
   extends IsNoetherian A A, DimensionLEOne A, IsIntegrallyClosed A : Prop
 
-/-- An integral domain is a Dedekind domain iff and only if it is
+/-- An integral domain is a Dedekind domain if and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
 In particular, this definition does not depend on the choice of this fraction field. -/
 theorem isDedekindRing_iff (K : Type _) [CommRing K] [Algebra A K] [IsFractionRing A K] :
@@ -136,7 +136,7 @@ class IsDedekindDomain
   extends IsDomain A, IsDedekindRing A : Prop
 #align is_dedekind_domain IsDedekindDomain
 
-/-- A Dedekind domain is exactly a Dedekind ring with an extra `IsDomain` hypothesis.
+/-- Make a Dedekind domain from a Dedekind ring given that it is a domain.
 
 `IsDedekindRing` and `IsDedekindDomain` form a cycle in the typeclass hierarchy:
 `IsDedekindRing R + IsDomain R` imply `IsDedekindDomain R`, which implies `IsDedekindRing R`.
