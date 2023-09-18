@@ -278,7 +278,7 @@ def coneEquivFunctor :
     where
   obj c := coneEquivFunctorObj F U c
   map {c c'} f :=
-    { Hom := f.Hom
+    { hom := f.hom
       w := fun j => by
         cases j <;>
           · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
@@ -346,7 +346,7 @@ def coneEquivInverse :
     where
   obj c := coneEquivInverseObj F U c
   map {c c'} f :=
-    { Hom := f.Hom
+    { hom := f.hom
       w := by
         intro x
         induction x using Opposite.rec' with | h x => ?_
@@ -365,14 +365,14 @@ def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
     (𝟭 (Cone ((diagram U).op ⋙ F))).obj c ≅ (coneEquivFunctor F U ⋙ coneEquivInverse F U).obj c
     where
   hom :=
-    { Hom := 𝟙 _
+    { hom := 𝟙 _
       w := fun j => by
         induction j using Opposite.rec' with | h j => ?_;
         rcases j with ⟨⟩ <;>
         · dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
   inv :=
-    { Hom := 𝟙 _
+    { hom := 𝟙 _
       w := fun j => by
         induction j using Opposite.rec' with | h j => ?_;
         rcases j with ⟨⟩ <;>
@@ -397,7 +397,7 @@ def coneEquivCounitIso :
   NatIso.ofComponents
     (fun c =>
       { hom :=
-          { Hom := 𝟙 _
+          { hom := 𝟙 _
             w := by
               rintro ⟨_ | _⟩
               · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
@@ -411,7 +411,7 @@ def coneEquivCounitIso :
                 dsimp [coneEquivInverse]
                 simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
         inv :=
-          { Hom := 𝟙 _
+          { hom := 𝟙 _
             w := by
               rintro ⟨_ | _⟩
               · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
@@ -456,7 +456,7 @@ def isLimitMapConeOfIsLimitSheafConditionFork
     (P : IsLimit (SheafConditionEqualizerProducts.fork F U)) : IsLimit (F.mapCone (cocone U).op) :=
   IsLimit.ofIsoLimit ((IsLimit.ofConeEquiv (coneEquiv F U).symm).symm P)
     { hom :=
-        { Hom := 𝟙 _
+        { hom := 𝟙 _
           w := by
             intro x
             induction x with | h x => ?_
@@ -470,7 +470,7 @@ def isLimitMapConeOfIsLimitSheafConditionFork
               rw [← F.map_comp]
               rfl }
       inv :=
-        { Hom := 𝟙 _
+        { hom := 𝟙 _
           w := by
             intro x
             induction x with | h x => ?_
@@ -493,7 +493,7 @@ def isLimitSheafConditionForkOfIsLimitMapCone (Q : IsLimit (F.mapCone (cocone U)
     IsLimit (SheafConditionEqualizerProducts.fork F U) :=
   IsLimit.ofIsoLimit ((IsLimit.ofConeEquiv (coneEquiv F U)).symm Q)
     { hom :=
-        { Hom := 𝟙 _
+        { hom := 𝟙 _
           w := by
             rintro ⟨⟩
             · simp
@@ -508,7 +508,7 @@ def isLimitSheafConditionForkOfIsLimitMapCone (Q : IsLimit (F.mapCone (cocone U)
               rw [← F.map_comp]
               rfl }
       inv :=
-        { Hom := 𝟙 _
+        { hom := 𝟙 _
           w := by
             rintro ⟨⟩
             · simp
