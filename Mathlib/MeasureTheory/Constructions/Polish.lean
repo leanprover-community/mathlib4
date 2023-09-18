@@ -898,7 +898,7 @@ theorem isClopenable_iff_measurableSet
   obtain ⟨t', t't, t'_polish, _, s_open⟩ :
     ∃ t' : TopologicalSpace γ, t' ≤ tγ ∧ @PolishSpace γ t' ∧ IsClosed[t'] s ∧ IsOpen[t'] s := hs
   rw [← borel_eq_borel_of_le t'_polish _ t't]
-  . exact MeasurableSpace.measurableSet_generateFrom s_open
+  · exact MeasurableSpace.measurableSet_generateFrom s_open
   infer_instance
 
 /-- The set of points for which a measurable sequence of functions converges is measurable. -/
