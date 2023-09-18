@@ -1549,7 +1549,7 @@ def Relabelling.negCongr : ∀ {x y : PGame}, x ≡r y → -x ≡r -y
     ⟨R, L, fun j => (hR j).negCongr, fun i => (hL i).negCongr⟩
 #align pgame.relabelling.neg_congr SetTheory.PGame.Relabelling.negCongr
 
-private theorem neg_le_lf_neg_iff : ∀ {x y : PGame}, (-y ≤ -x ↔ x ≤ y) ∧ (-y ⧏ -x ↔ x ⧏ y)
+private theorem neg_le_lf_neg_iff : ∀ {x y : PGame.{u}}, (-y ≤ -x ↔ x ≤ y) ∧ (-y ⧏ -x ↔ x ⧏ y)
   | mk xl xr xL xR, mk yl yr yL yR => by
     simp_rw [neg_def, mk_le_mk, mk_lf_mk, ← neg_def]
     constructor
