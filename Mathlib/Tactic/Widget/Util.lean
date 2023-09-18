@@ -43,7 +43,6 @@ structure SelectInsertParams where
 
 open scoped Jsx in open SelectInsertParamsClass in
 def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
-  --{HandlerParams : Type} [SelectInsertHandlerParamsClass HandlerParams]
   (mkCmdStr : (pos : Array Lean.SubExpr.GoalsLocation) → (goalType : Expr) → Params → MetaM (String × String))
   (helpMsg : String) (title : String) (params : Params) : RequestM (RequestTask Html) :=
 RequestM.asTask do
