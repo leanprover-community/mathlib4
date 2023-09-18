@@ -66,3 +66,4 @@ end CharacterModuleFunctor
 lemma exists_character_apply_ne_zero_of_ne_zero {m : M} (ne_zero : m ≠ 0) :
     ∃ (c : CharacterModule M), c m ≠ 0 := by
   let M' : Submodule ℤ M := ℤ ∙ m
+  have := AddCommGroupCat.enough_injectives_aux_proofs.toRatCircle
