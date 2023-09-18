@@ -9,8 +9,8 @@ import Mathlib.Data.ZMod.Algebra
 /-!
 # Dirichlet Characters
 
-Let `R` be a monoid. A Dirichlet character `χ` of level `n` over `R` is a homomorphism from the unit
-group `(ZMod n)ˣ` to `Rˣ`. We then obtain some properties of `ofUnitHom χ`.
+Let `R` be a commutatvive monoid with zero. A Dirichlet character `χ` of level `n` over `R` is a
+multiplicative character from `ZMod n` to `Rˣ`. We then obtain some properties of `toUnitHom χ`.
 
 Main definitions:
 
@@ -29,12 +29,6 @@ dirichlet character, multiplicative character
 /-- The type of Dirichlet characters of level `n`. -/
 @[reducible]
 def DirichletCharacter (R : Type) [CommMonoidWithZero R] (n : ℕ) := MulChar (ZMod n) R
-
--- TODO: move to NumberTheory.LegendreSymbol.MulCharacter?!
-namespace MulChar
-lemma coe_toMonoidHom {R R' : Type} [CommMonoid R] [CommMonoidWithZero R'] (χ : MulChar R R')
-(x : R) : χ.toMonoidHom x = χ x := by solve_by_elim
-end MulChar
 
 open MulChar
 variable {R : Type} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R n)
