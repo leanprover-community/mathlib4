@@ -35,11 +35,11 @@ namely
 `Exists fun (x : Nat) ↦ Exists fun (y : Nat) ↦ Exists fun z ↦ z < x ∧ z < y`
 -/
 syntax "expand_binders% " flexibleBindersDom " ("
-    -- Unrestricted binder (ex: `f => iSup f`)
+    -- Unrestricted binder (ex: `f => iSup f`). Arity 1.
     syntaxFun₁
-    -- Non-dependent prop binder (ex: `p x => p ∧ x`)
+    -- Non-dependent prop binder (ex: `p x => p ∧ x`). Arity 2.
     (atomic(", " &"prop") " := " syntaxFun₂)?
-    -- Binder with domain (ex: `s f => Finset.sum s f`)
+    -- Binder with domain (ex: `s f => Finset.sum s f`). Arity 2.
     (atomic(", " &"bounded") " := " syntaxFun₂)? ")"
   flexibleBinders ", " term : term
 
@@ -47,23 +47,25 @@ macro_rules
   | `(expand_binders% $domType ($univStx $[, prop := $propStx?]? $[, bounded := $domStx?]?)
         $bs:flexibleBinders, $body) => show MacroM Term from do
     let expandUniv ← (expandSyntaxFun₁ univStx).getDM Macro.throwUnsupported
-    let expandProp? ← propStx?.mapM fun s => (expandSyntaxFun₂ s).getDM Macro.throwUnsupported
-    let expandDom? ← domStx?.mapM fun s => (expandSyntaxFun₂ s).getDM Macro.throwUnsupported
+    let expandProp? ← propStx?.mapM fun s =>
+                        (expandSyntaxFun₂ s).getDM Macro.throwUnsupported
+    let expandDom? ← domStx?.mapM fun s =>
+                        (expandSyntaxFun₂ s).getDM Macro.throwUnsupported
     let res ← expandFlexibleBinders domType bs
     res.foldrM (init := body) fun
-      | .std ty bind none, body => return expandUniv.eval (← `(fun ($bind : $ty) ↦ $body))
+      | .std ty bind none, body => return expandUniv.eval₁ (← `(fun ($bind : $ty) ↦ $body))
       | .std ty bind (some dom), body => do
         if let some expandDom := expandDom? then
-          return expandDom.eval dom (← `(fun ($bind : $ty) ↦ $body))
+          return expandDom.eval₂ dom (← `(fun ($bind : $ty) ↦ $body))
         else
           withRef ty <| withRef dom <| withRef bind <|
             Macro.throwError "Notation is missing implementation for bounded quantifiers"
       | .prop p, body => do
         if let some expandProp := expandProp? then
-          return expandProp.eval p body
+          return expandProp.eval₂ p body
         else
           -- This will likely fail to elaborate if the quantifier wants a Type.
-          return expandUniv.eval (← `(fun (_ : $p) ↦ $body))
+          return expandUniv.eval₁ (← `(fun (_ : $p) ↦ $body))
       | .match discr patt, body => `(match $discr:term with | $patt => $body)
 
 macro (name := expandFoldl) "expand_foldl% "
@@ -88,12 +90,12 @@ syntax foldAction := "(" ident ppSpace strLit "*" (precedence)? " => " foldKind
 syntax identOptScoped :=
   ident (notFollowedBy(":" "(" "scoped") precedence)?
   (":" "(" "scoped " (flexibleBindersDom ppSpace)?
-      -- Unrestricted binder (ex: `x => Sup x`)
+      -- Unrestricted binder (ex: `x => Sup x`). Arity 1.
       -- Pretty printable using `(_ : _)`
       syntaxFun₁
-      -- Non-dependent prop binder (ex: `p x => p ∧ x`)
+      -- Non-dependent prop binder (ex: `p x => p ∧ x`). Arity 2.
       (atomic(", " &"prop") " := " syntaxFun₂)?
-      -- Binder with domain (ex: `s x => Finset.sum s x`)
+      -- Binder with domain (ex: `s f => Finset.sum s f`). Arity 2.
       -- Pretty printable using `(_ ∈ _)`
       (atomic(", " &"bounded") " := " syntaxFun₂)? ")")?
 /-- `notation3` argument. -/
@@ -372,20 +374,20 @@ $lit:ident : (scoped (domType)? $scopedId:ident => $scopedTerm:Term,
                 $propDom:ident $propBody:ident => $propScopedTerm:Term)
 ``` -/
 partial def mkScopedMatcher (lit : Name)
-    (scopedFn : SyntaxFun₁) (boundedFn? : Option SyntaxFun₂) (boundNames : HashSet Name) :
+    (scopedFn : SyntaxFun 1) (boundedFn? : Option (SyntaxFun 2)) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   -- Build the matcher for `scopedTerm` with `scopeId` as an additional variable
-  let (keys, smatcher) ← mkExprMatcher scopedFn.body (boundNames.insert scopedFn.param.getId)
+  let (keys, smatcher) ← mkExprMatcher scopedFn.body (boundNames.insert scopedFn.params[0]!.getId)
   if let some boundedFn := boundedFn? then
     let (keys', bmatcher) ← mkExprMatcher boundedFn.body
-                    (boundNames |>.insert boundedFn.param₁.getId |>.insert boundedFn.param₂.getId)
+                    (boundNames |>.insertMany (boundedFn.params.map (·.getId)))
     let keys := keys.union keys'
     return (keys, ←
-      ``(matchScoped $(quote lit) $(quote scopedFn.param.getId) $smatcher
-          $(quote boundedFn.param₁.getId) $(quote boundedFn.param₂.getId) $bmatcher))
+      ``(matchScoped $(quote lit) $(quote scopedFn.params[0]!.getId) $smatcher
+          $(quote boundedFn.params[0]!.getId) $(quote boundedFn.params[1]!.getId) $bmatcher))
   else
     return (keys, ←
-      ``(matchScoped $(quote lit) $(quote scopedFn.param.getId) $smatcher none none none))
+      ``(matchScoped $(quote lit) $(quote scopedFn.params[0]!.getId) $smatcher none none none))
 
 /-- Matcher for expressions produced by `foldl`. -/
 partial def matchFoldl (lit x y : Name) (smatcher : Matcher) (sinit : Matcher) :
@@ -558,8 +560,10 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       hasScoped := true
       let domType ← domType?.getDM `(flexibleBindersDom| type%)
       let scopedFn ← (expandSyntaxFun₁ scopedStx).getDM throwUnsupportedSyntax
-      let propFn? ← propStx?.mapM fun s => (expandSyntaxFun₂ s).getDM throwUnsupportedSyntax
-      let boundedFn? ← boundedStx?.mapM fun s => (expandSyntaxFun₂ s).getDM throwUnsupportedSyntax
+      let propFn? ← propStx?.mapM fun s =>
+                      (expandSyntaxFun₂ s).getDM throwUnsupportedSyntax
+      let boundedFn? ← boundedStx?.mapM fun s =>
+                      (expandSyntaxFun₂ s).getDM throwUnsupportedSyntax
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
         `(macroArg| $lit:ident:term $(prec?)?)
       matchers := matchers.push <|

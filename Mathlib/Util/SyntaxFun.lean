@@ -11,79 +11,103 @@ In the `notation3` command there are syntaxes such as `scoped(a => iSup a)`.
 This file is to support `a => iSup a` and evaluations and transformations
 of such functions.
 
-Defines `syntaxFun₁` and `syntaxFun₂` syntaxes along with functions
-to expand them into `SyntaxFun₁` and `SyntaxFun₂` terms.
+Defines `syntaxFun` syntax along with functions
+to expand them into `SyntaxFun` terms.
 Provides `Lean.Quote` instances for these.
 -/
 
 namespace Mathlib.SyntaxFun
 open Lean
 
-/-- A "function" of one argument. -/
-structure SyntaxFun₁ where
-  /-- The parameter. -/
-  param : Ident
+/-- A "function" of some number of arguments.
+Works purely syntactically and is completely ignorant of shadowing. -/
+structure SyntaxFun (arity : Nat) where
+  /-- The parameters. -/
+  params : Array Ident
   /-- The function body. -/
   body : Term
+  /-- That there are the correct number of parameters. -/
+  params_size : params.size = arity := by rfl
 
-/-- Replace all instances of `f.param` with `v`. -/
-def SyntaxFun₁.eval (f : SyntaxFun₁) (v : Term) : Term :=
+/-- Replace all instances of `f.param` with the respective arguments. -/
+def SyntaxFun.eval {arity} (f : SyntaxFun arity) (args : Array Term)
+    (args_size : args.size = arity := by rfl) : Term :=
+  Id.run <| f.body.replaceM fun t => do
+    for h : i in [0:arity] do
+      have : i < f.params.size := by rw [f.params_size]; exact h.2
+      have : i < args.size := by rw [args_size]; exact h.2
+      if t == f.params[i] then return args[i]
+    return none
+
+/-- Replace all instances of the parameters with the respective values. -/
+def SyntaxFun.eval₁ (f : SyntaxFun 1) (v : Term) : Term :=
   Id.run <| f.body.replaceM fun t =>
-    if t == f.param then return v
+    if t == f.params[0]! then return v
+    else return none
+
+/-- Replace all instances of the parameters with the respective values. -/
+def SyntaxFun.eval₂ (f : SyntaxFun 2) (v₁ v₂ : Term) : Term :=
+  Id.run <| f.body.replaceM fun t =>
+    if t == f.params[0]! then return v₁
+    else if t == f.params[1]! then return v₂
+    else return none
+
+/-- Replace all instances of the parameters with the respective values. -/
+def SyntaxFun₃.eval₃ (f : SyntaxFun 3) (v₁ v₂ v₃ : Term) : Term :=
+  Id.run <| f.body.replaceM fun t =>
+    if t == f.params[0]! then return v₁
+    else if t == f.params[1]! then return v₂
+    else if t == f.params[2]! then return v₃
     else return none
 
 /-- Run a transformation on the body of the function,
 skipping the parameter. -/
-def SyntaxFun₁.updateBody {m : Type → Type} [Monad m]
-    (f : SyntaxFun₁) (r : Syntax → m (Option Syntax)) :
-    m SyntaxFun₁ := do
+def SyntaxFun.updateBody {m : Type → Type} [Monad m] {arity}
+    (f : SyntaxFun arity) (r : Syntax → m (Option Syntax)) :
+    m (SyntaxFun arity) := do
   return {f with body := ← f.body.replaceM fun t =>
-                  if t == f.param then return none
+                  if f.params.any (· == t) then return none
                   else r t}
 
-/-- A "function" of two arguments. -/
-structure SyntaxFun₂ where
-  /-- The first parameter. -/
-  param₁ : Ident
-  /-- The second parameter. -/
-  param₂ : Ident
-  /-- The function body. -/
-  body : Term
+/-- Syntax for a `SyntaxFun`. -/
+syntax syntaxFun := (ident ppSpace)+ "=> " term
 
-/-- Replace all instances of `f.param₁` and `f.param₂` with `v₁` and `v₂`, respectively. -/
-def SyntaxFun₂.eval (f : SyntaxFun₂) (v₁ v₂ : Term) : Term :=
-  Id.run <| f.body.replaceM fun t =>
-    if t == f.param₁ then return v₁
-    else if t == f.param₂ then return v₂
-    else return none
+/-- Syntax for specifically a `SyntaxFun 1`. -/
+syntax syntaxFun₁ := ident "=> " term
 
-/-- Run a transformation on the body of the function,
-skipping the parameters. -/
-def SyntaxFun₂.updateBody {m : Type → Type} [Monad m]
-    (f : SyntaxFun₂) (r : Syntax → m (Option Syntax)) :
-    m SyntaxFun₂ := do
-  return {f with body := ← f.body.replaceM fun t =>
-                  if t == f.param₁ || t == f.param₂ then return none
-                  else r t}
+/-- Syntax for specifically a `SyntaxFun 2`. -/
+syntax syntaxFun₂ := ident ppSpace ident "=> " term
 
-/-- Syntax for a `SyntaxFun₁`. -/
-syntax syntaxFun₁ := ident " => " term
-
-/-- Syntax for a `SyntaxFun₂`. -/
-syntax syntaxFun₂ := ident ppSpace ident " => " term
-
-/-- Recognize a `SyntaxFun₁`. -/
-def expandSyntaxFun₁ : TSyntax ``syntaxFun₁ → Option SyntaxFun₁
-  | `(syntaxFun₁| $p => $body) => some ⟨p, body⟩
+/-- Recognize a `SyntaxFun`. -/
+def expandSyntaxFun : TSyntax ``syntaxFun → Option ((arity : Nat) × SyntaxFun arity)
+  | `(syntaxFun| $ps* => $body) => some ⟨ps.size, .mk ps body⟩
   | _ => none
 
-/-- Recognize a `SyntaxFun₂`. -/
-def expandSyntaxFun₂ : TSyntax ``syntaxFun₂ → Option SyntaxFun₂
-  | `(syntaxFun₂| $p₁ $p₂ => $body) => some ⟨p₁, p₂, body⟩
+/-- Recognize a `SyntaxFun` with a given arity. -/
+def expandSyntaxFunWithArity (arity : Nat) (s : TSyntax ``syntaxFun) : Option (SyntaxFun arity) :=
+  match expandSyntaxFun s with
+  | some ⟨arity', params, body, pf⟩ =>
+    if h : arity' = arity then
+      some ⟨params, body, by rw [pf, h]⟩
+    else
+      none
   | _ => none
 
-instance : Quote SyntaxFun₁ ``syntaxFun₁ where
-  quote f := Unhygienic.run `(syntaxFun₁| $f.param => $f.body)
+/-- Recognize a `SyntaxFun 1`. -/
+def expandSyntaxFun₁ : TSyntax ``syntaxFun₁ → Option (SyntaxFun 1)
+  | `(syntaxFun₁| $p₁ => $body) => some <| .mk #[p₁] body
+  | _ => none
 
-instance : Quote SyntaxFun₂ ``syntaxFun₂ where
-  quote f := Unhygienic.run `(syntaxFun₂| $f.param₁ $f.param₂ => $f.body)
+/-- Recognize a `SyntaxFun`. -/
+def expandSyntaxFun₂ : TSyntax ``syntaxFun₂ → Option (SyntaxFun 2)
+  | `(syntaxFun₂| $p₁ $p₂ => $body) => some <| .mk #[p₁, p₂] body
+  | _ => none
+
+instance (arity : Nat) : Quote (SyntaxFun arity) ``syntaxFun where
+  quote f := Unhygienic.run `(syntaxFun| $f.params* => $f.body)
+
+instance : Quote (SyntaxFun 1) ``syntaxFun₁ where
+  quote f := Unhygienic.run `(syntaxFun₁| $(f.params[0]!) => $f.body)
+
+instance : Quote (SyntaxFun 2) ``syntaxFun₂ where
+  quote f := Unhygienic.run `(syntaxFun₂| $(f.params[0]!) $(f.params[1]!) => $f.body)
