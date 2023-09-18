@@ -41,7 +41,7 @@ open Lean Meta
 
 open Lean Server in
 
-structure CalcProps extends SelectInsertParams where
+structure CalcParams extends SelectInsertParams where
   /-- If this the first calc step? -/
   isFirst : Bool
   indent : Nat
@@ -63,7 +63,7 @@ def String.mkSpace : Nat → String
 
 
 /-- Return the button text and inserted text above and below.-/
-def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcProps) :
+def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcParams) :
     MetaM (String × String) := do
   let mut subexprPos : Array SubExpr.Pos := #[]
   for selectedLocation in pos do
@@ -123,7 +123,7 @@ def CalcPanel.rpc := mkSelectionPanelRPC suggestSteps
   "Calc 🔍"
 
 @[widget_module]
-def CalcPanel : Component CalcProps :=
+def CalcPanel : Component CalcParams :=
   mk_rpc_widget% CalcPanel.rpc
 
 namespace Lean.Elab.Term
