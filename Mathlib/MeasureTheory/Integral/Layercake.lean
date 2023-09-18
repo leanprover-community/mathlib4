@@ -387,23 +387,20 @@ section LayercakeIntegral
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
 
 /-- If `f` is integrable, then for any `c > 0` the set `{x | ‖f x‖ ≥ c}` has finite measure. -/
-lemma Integrable.measure_const_le_norm_lt_top
-    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
-    {f : α → E} (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
+lemma Integrable.measure_const_le_norm_lt_top {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E]
+    [BorelSpace E] {f : α → E} (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
     μ {a : α | c ≤ ‖f a‖} < ∞ := by
   have norm_f_aemble : AEMeasurable (fun a ↦ ENNReal.ofReal ‖f a‖) μ :=
     (ENNReal.measurable_ofReal.comp measurable_norm).comp_aemeasurable f_intble.1.aemeasurable
   have markov := mul_meas_ge_le_lintegral₀ (μ := μ) norm_f_aemble (ENNReal.ofReal c)
-  have obs : ∫⁻ (a : α), ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ (a : α), ‖f a‖₊ ∂μ := by
-    apply lintegral_congr
-    exact fun x ↦ ofReal_norm_eq_coe_nnnorm (f x)
+  have obs : ∫⁻ (a : α), ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ (a : α), ‖f a‖₊ ∂μ :=
+    lintegral_congr (fun x ↦ ofReal_norm_eq_coe_nnnorm (f x))
   simp_rw [ENNReal.ofReal_le_ofReal_iff (norm_nonneg _), obs] at markov
-  have almost := lt_of_le_of_lt markov f_intble.2
-  have c_inv_ne_top : (ENNReal.ofReal c)⁻¹ ≠ ∞ := by
-    exact ENNReal.inv_ne_top.mpr (ENNReal.ofReal_pos.mpr c_pos).ne.symm
+  have c_inv_ne_top : (ENNReal.ofReal c)⁻¹ ≠ ∞ :=
+    ENNReal.inv_ne_top.mpr (ENNReal.ofReal_pos.mpr c_pos).ne.symm
   simpa [← mul_assoc,
          ENNReal.inv_mul_cancel (ENNReal.ofReal_pos.mpr c_pos).ne.symm ENNReal.ofReal_ne_top]
-    using ENNReal.mul_lt_top c_inv_ne_top almost.ne
+    using ENNReal.mul_lt_top c_inv_ne_top (lt_of_le_of_lt markov f_intble.2).ne
 
 /-- If `f` is integrable, then for any `c > 0` the set `{x | ‖f x‖ > c}` has finite measure. -/
 lemma Integrable.measure_const_lt_norm_lt_top
@@ -413,10 +410,11 @@ lemma Integrable.measure_const_lt_norm_lt_top
   lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le))
     (Integrable.measure_const_le_norm_lt_top f_intble c_pos)
 
+variable {f : α → ℝ} (f_intble : Integrable f μ)
+
 /-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
 measure. -/
-lemma Integrable.measure_const_le_lt_top
-    {f : α → ℝ} (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
+lemma Integrable.measure_const_le_lt_top {c : ℝ} (c_pos : 0 < c) :
     μ {a : α | c ≤ f a} < ∞ := by
   refine lt_of_le_of_lt (measure_mono ?_) (Integrable.measure_const_le_norm_lt_top f_intble c_pos)
   intro x hx
@@ -425,8 +423,7 @@ lemma Integrable.measure_const_le_lt_top
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
 measure. -/
-lemma Integrable.measure_le_const_lt_top
-    {f : α → ℝ} (f_intble : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
+lemma Integrable.measure_le_const_lt_top {c : ℝ} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
   refine lt_of_le_of_lt (measure_mono ?_)
           (Integrable.measure_const_le_norm_lt_top f_intble (show 0 < -c by linarith))
@@ -436,11 +433,17 @@ lemma Integrable.measure_le_const_lt_top
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `t > 0` the set `{x | f x > t}` has finite
 measure. -/
-lemma Integrable.measure_const_lt_lt_top
-    {f : α → ℝ} (f_intble : Integrable f μ) {t : ℝ} (t_pos : 0 < t) :
-    μ {a : α | t < f a} < ∞ := by
-  apply lt_of_le_of_lt (measure_mono ?_) (Integrable.measure_const_le_lt_top f_intble t_pos)
-  exact fun x hx ↦ (Set.mem_setOf_eq ▸ hx).le
+lemma Integrable.measure_const_lt_lt_top {c : ℝ} (c_pos : 0 < c) :
+    μ {a : α | c < f a} < ∞ :=
+  lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
+    (Integrable.measure_const_le_lt_top f_intble c_pos)
+
+/-- If `f` is `ℝ`-valued and integrable, then for any `t < 0` the set `{x | f x < t}` has finite
+measure. -/
+lemma Integrable.measure_lt_const_lt_top {c : ℝ} (c_neg : c < 0) :
+    μ {a : α | f a < c} < ∞ :=
+  lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
+    (Integrable.measure_le_const_lt_top f_intble c_neg)
 
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
@@ -449,15 +452,13 @@ the Bochner integral of `f` can be written (roughly speaking) as:
 `∫ f ∂μ = ∫ t in 0..∞, μ {ω | f(ω) > t}`.
 
 See `lintegral_eq_lintegral_meas_lt` for a version with Lebesgue integral `∫⁻` instead. -/
-theorem integral_eq_integral_meas_lt {f : α → ℝ} (f_nn : 0 ≤ᵐ[μ] f) (f_intble : Integrable f μ) :
+theorem integral_eq_integral_meas_lt (f_nn : 0 ≤ᵐ[μ] f) :
     (∫ ω, f ω ∂μ) = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t < f a}) := by
   have key := lintegral_eq_lintegral_meas_lt μ f_nn f_intble.aemeasurable
   have lhs_finite : ∫⁻ (ω : α), ENNReal.ofReal (f ω) ∂μ < ∞ := Integrable.lintegral_lt_top f_intble
   have rhs_finite : ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a} < ∞ := by simp only [← key, lhs_finite]
-  have rhs_integrand_decr : Antitone (fun t ↦ (μ {a : α | t < f a})) :=
-    fun _ _ hst ↦ measure_mono (fun _ h ↦ lt_of_le_of_lt hst h)
-  have rhs_integrand_finite : ∀ (t : ℝ), t > 0 → μ {a | t < f a} < ∞ := by
-    exact fun t ht ↦ Integrable.measure_const_lt_lt_top f_intble ht
+  have rhs_integrand_finite : ∀ (t : ℝ), t > 0 → μ {a | t < f a} < ∞ :=
+    fun t ht ↦ Integrable.measure_const_lt_lt_top f_intble ht
   convert (ENNReal.toReal_eq_toReal lhs_finite.ne rhs_finite.ne).mpr key
   · exact integral_eq_lintegral_of_nonneg_ae f_nn f_intble.aestronglyMeasurable
   · have aux := @integral_eq_lintegral_of_nonneg_ae _ _ ((volume : Measure ℝ).restrict (Set.Ioi 0))
@@ -469,7 +470,6 @@ theorem integral_eq_integral_meas_lt {f : α → ℝ} (f_nn : 0 ≤ᵐ[μ] f) (f
     · exact eventually_of_forall (fun x ↦ by simp only [Pi.zero_apply, ENNReal.toReal_nonneg])
     · apply Measurable.aestronglyMeasurable
       refine Measurable.ennreal_toReal ?_
-      apply Antitone.measurable
-      exact rhs_integrand_decr
+      exact Antitone.measurable (fun _ _ hst ↦ measure_mono (fun _ h ↦ lt_of_le_of_lt hst h))
 
 end LayercakeIntegral
