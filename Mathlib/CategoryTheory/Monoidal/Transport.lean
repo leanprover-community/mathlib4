@@ -35,6 +35,51 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 variable {D : Type u₂} [Category.{v₂} D]
 
+@[simps]
+def induced (e : D ⥤ C) [Faithful e]
+    (tensorObj : D → D → D)
+    (tensorObjIso : ∀ X Y,
+      e.obj (tensorObj X Y) ≅ e.obj X ⊗ e.obj Y)
+    (whiskerLeft : ∀ (X : D) {Y₁ Y₂ : D} (f : Y₁ ⟶ Y₂), tensorObj X Y₁ ⟶ tensorObj X Y₂)
+    (whiskerLeft_eq : ∀ (X : D) {Y₁ Y₂ : D} (f : Y₁ ⟶ Y₂),
+      e.map (whiskerLeft X f)
+        = (tensorObjIso _ _).hom ≫ (e.obj X ◁ e.map f) ≫ (tensorObjIso _ _).inv)
+    (whiskerRight : ∀ {X₁ X₂ : D} (f : X₁ ⟶ X₂) (Y : D), tensorObj X₁ Y ⟶ tensorObj X₂ Y)
+    (whiskerRight_eq : ∀ {X₁ X₂ : D} (f : X₁ ⟶ X₂) (Y : D),
+      e.map (whiskerRight f Y)
+        = (tensorObjIso _ _).hom ≫ (e.map f ▷ e.obj Y) ≫ (tensorObjIso _ _).inv)
+    (tensorHom :
+      ∀ {X₁ Y₁ X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂), tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂)
+    (tensorHom_eq :
+      ∀ {X₁ Y₁ X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂),
+        e.map (tensorHom f g)
+          = (tensorObjIso _ _).hom ≫ (e.map f ⊗ e.map g) ≫ (tensorObjIso _ _).inv)
+    (tensorUnit' : D)
+    (tensorUnit'Iso : e.obj tensorUnit' ≅ 𝟙_ _)
+    (associator : ∀ X Y Z : D, tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z))
+    (associator_eq : ∀ X Y Z : D,
+      e.mapIso (associator X Y Z) =
+        (tensorObjIso _ _ ≪≫ _) ≪≫ α_ (e.obj X) (e.obj Y) (e.obj Z) ≪≫ _)
+    (leftUnitor : ∀ X : D, tensorObj tensorUnit' X ≅ X)
+    (leftUnitor_eq : ∀ X : D,
+      e.mapIso (leftUnitor X) =
+        (tensorObjIso _ _ ≪≫ _) ≪≫ λ_ (e.obj X))
+    (rightUnitor : ∀ X : D, tensorObj X tensorUnit' ≅ X)
+    (rightUnitor_eq : ∀ X : D,
+      e.mapIso (rightUnitor X) =
+        (tensorObjIso _ _ ≪≫ _) ≪≫ ρ_ (e.obj X)) :
+    MonoidalCategory.{v₂} D where
+  tensorObj := tensorObj
+  whiskerLeft := whiskerLeft
+  whiskerRight := whiskerRight
+  tensorHom := tensorHom
+  tensorUnit' := tensorUnit'
+  associator := associator
+  leftUnitor := leftUnitor
+  rightUnitor := rightUnitor
+
+
+#exit
 -- porting note: it was @[simps {attrs := [`_refl_lemma]}]
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
