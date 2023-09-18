@@ -26,10 +26,20 @@ section Binders
 open Mathlib.FlexibleBinders Lean Macro
 
 /-- For the `finset` domain, `a + b = n` for sums over the antidiagonal.
-Example: `∑ i + j = 10, i * j`. -/
+Example: `∑ i + j = 10, i * j`.
+
+To avoid generating a `match` expression, it generates a name based on the two
+variables and substitutes projections.
+The example expands as `∑ ij ∈ Nat.antidiagonal 10, ij.1 * ij.2`. -/
 macro_rules
   | `(binder%(finset%, $a:ident + $b:ident = $n)) => withFreshMacroScope do
-    `(binder%(finset%, p ∈ Finset.Nat.antidiagonal $n) binderLetI%($a, p.1) binderLetI%($b, p.2))
+    let .str .anonymous a' := a.getId.eraseMacroScopes
+      | Macro.throwErrorAt a s!"invalid binder name '{a.getId}', it must be atomic"
+    let .str .anonymous b' := b.getId.eraseMacroScopes
+      | Macro.throwErrorAt b s!"invalid binder name '{b.getId}', it must be atomic"
+    let p := mkIdent <| ← Macro.addMacroScope <| .mkStr1 (a' ++ b')
+    `(binder%(finset%, $p ∈ Finset.Nat.antidiagonal $n)
+      binderLetI%($a, $(p).1) binderLetI%($b, $(p).2))
 
 end Binders
 
