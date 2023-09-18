@@ -197,7 +197,7 @@ def subgroupA : Subgroup (OneRelator d.newRelator) :=
   MonoidHom.range (FreeGroup.lift (fun p : d.subgroupASet => of p.1))
 
 def subgroupB : Subgroup (OneRelator d.newRelator) :=
-  MonoidHom.range (FreeGroup.lift (fun p : d.subgroupASet => of p.1))
+  MonoidHom.range (FreeGroup.lift (fun p : d.subgroupBSet => of p.1))
 
 def FreiheitsatzProp (r : FreeGroup α) : Prop :=
   ∀ (s : Set α), (¬ (r.conjVars : Set _) ⊆ s) →
@@ -212,18 +212,12 @@ noncomputable def subgroupEquiv (h : FreiheitsatzProp d.newRelator) :
       (FreeGroup.freeGroupCongr d.subgroupASetEquivSubgroupBSet)
     ((MonoidHom.ofInjective (h d.subgroupBSet d.conjVars_not_subset_subgroupBSet)))
 
-noncomputable def toHNNExtension :
-    OneRelator r →* HNNExtension _ d.subgroupA d.subgroupB d.subgroupEquiv :=
-  MonoidHom.toMulEquiv
-    (OneRelator.lift
-      (fun a => sorry)
-      sorry)
-    (HNNExtension.lift
-      _
-      _
-      _)
+noncomputable def toHNNExtension (h : FreiheitsatzProp d.newRelator) :
+    OneRelator r →* HNNExtension _ d.subgroupA d.subgroupB (d.subgroupEquiv h) :=
+  OneRelator.lift
+    (fun a => _)
     _
-    _
+
 
 end HNNExtension
 
