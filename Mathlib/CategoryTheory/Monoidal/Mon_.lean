@@ -495,7 +495,7 @@ instance monMonoidal : MonoidalCategory (Mon_ C) := .ofTensorHom
         simp only [Category.assoc] })
   (tensor_id := by intros; ext; apply tensor_id)
   (tensor_comp := by intros; ext; apply tensor_comp)
-  (tensorUnit' := trivial C)
+  (tensorUnit := trivial C)
   (associator := fun M N P ↦ isoOfIso (α_ M.X N.X P.X) one_associator mul_associator)
   (associator_naturality := by intros; ext; dsimp; apply associator_naturality)
   (leftUnitor := fun M ↦ isoOfIso (λ_ M.X) one_leftUnitor mul_leftUnitor)

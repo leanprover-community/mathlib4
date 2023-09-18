@@ -47,7 +47,7 @@ section
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
 def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C :=
   .ofTensorHom
-    (tensorUnit' := ⊤_ C)
+    (tensorUnit := ⊤_ C)
     (tensorObj := fun X Y ↦ X ⨯ Y)
     (tensorHom := fun f g ↦ Limits.prod.map f g)
     (associator := prod.associator)
@@ -139,7 +139,7 @@ section
 /-- A category with an initial object and binary coproducts has a natural monoidal structure. -/
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=
   .ofTensorHom
-    (tensorUnit' := ⊥_ C)
+    (tensorUnit := ⊥_ C)
     (tensorObj := fun X Y ↦ X ⨿ Y)
     (tensorHom := fun f g ↦ Limits.coprod.map f g)
     (associator := coprod.associator)

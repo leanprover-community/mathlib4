@@ -156,7 +156,7 @@ variable {C D}
 /-- The unit morphism of a (strong) monoidal functor as an isomorphism.
 -/
 noncomputable def MonoidalFunctor.εIso (F : MonoidalFunctor.{v₁, v₂} C D) :
-    tensorUnit D ≅ F.obj (tensorUnit C) :=
+    𝟙_ D ≅ F.obj (𝟙_ C) :=
   asIso F.ε
 #align category_theory.monoidal_functor.ε_iso CategoryTheory.MonoidalFunctor.εIso
 

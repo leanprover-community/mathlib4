@@ -332,7 +332,7 @@ open MonoidalOfChosenFiniteProducts
 
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
 def monoidalOfChosenFiniteProducts : MonoidalCategory C := .ofTensorHom
-  (tensorUnit' := 𝒯.cone.pt)
+  (tensorUnit := 𝒯.cone.pt)
   (tensorObj := tensorObj ℬ)
   (tensorHom := tensorHom ℬ)
   (tensor_id := tensor_id ℬ)

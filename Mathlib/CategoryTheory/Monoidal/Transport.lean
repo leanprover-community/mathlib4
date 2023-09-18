@@ -45,7 +45,7 @@ def transport (e : C ≌ D) : MonoidalCategory.{v₂} D where
   whiskerRight := fun f X ↦ e.functor.map (e.inverse.map f ▷ e.inverse.obj X)
   tensorHom_def := by simp [tensorHom_def]
   tensorHom f g := e.functor.map (e.inverse.map f ⊗ e.inverse.map g)
-  tensorUnit' := e.functor.obj (𝟙_ C)
+  tensorUnit := e.functor.obj (𝟙_ C)
   associator X Y Z :=
     e.functor.mapIso
       (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫

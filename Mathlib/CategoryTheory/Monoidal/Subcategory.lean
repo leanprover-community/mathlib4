@@ -57,7 +57,7 @@ instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) where
   tensorHom_def f g := tensorHom_def (C := C) f g
   whiskerLeft := fun X _ _ f ↦ X.1 ◁ f
   whiskerRight := fun f Y ↦ (fun f ↦ f ▷ Y.1) f
-  tensorUnit' := ⟨𝟙_ C, prop_id⟩
+  tensorUnit := ⟨𝟙_ C, prop_id⟩
   associator X Y Z :=
     ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
       inv_hom_id (α_ X.1 Y.1 Z.1)⟩

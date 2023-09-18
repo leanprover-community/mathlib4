@@ -50,6 +50,18 @@ open TensorProduct
 
 attribute [local ext] TensorProduct.ext
 
+instance : MonoidalCategoryStruct (ModuleCat.{u} R) where
+  tensorObj M N := ModuleCat.of R (M ⊗[R] N)
+  whiskerLeft M {_N₁ _N₂} f := f.lTensor M
+  whiskerRight {_M₁ _M₂} f N := f.rTensor N
+  tensorHom f g := TensorProduct.map f g
+  tensorUnit := ModuleCat.of R R
+  associator M N K := (TensorProduct.assoc R M N K).toModuleIso
+  leftUnitor M :=
+    (LinearEquiv.toModuleIso (TensorProduct.lid R M) : of R (R ⊗ M) ≅ of R M).trans (ofSelfIso M)
+  rightUnitor M :=
+    (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
+
 /-- (implementation) tensor product of R-modules -/
 def tensorObj (M N : ModuleCat R) : ModuleCat R :=
   ModuleCat.of R (M ⊗[R] N)
@@ -203,7 +215,7 @@ instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCatego
   (tensorHom := @tensorHom _ _)
   (whiskerLeft := @whiskerLeft _ _)
   (whiskerRight := @whiskerRight _ _)
-  (tensorUnit' := ModuleCat.of R R)
+  (tensorUnit := ModuleCat.of R R)
   (associator := associator)
   (leftUnitor := leftUnitor)
   (rightUnitor := rightUnitor)
