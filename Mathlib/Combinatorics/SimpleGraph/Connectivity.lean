@@ -2074,11 +2074,11 @@ theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H
 
 /-- The quotient of `V` by the `SimpleGraph.Reachable` relation gives the connected
 components of a graph. -/
-def ConnectedComponent := Quot G.Reachable
+def ConnectedComponent := Quotient G.reachableSetoid
 #align simple_graph.connected_component SimpleGraph.ConnectedComponent
 
 /-- Gives the connected component containing a particular vertex. -/
-def connectedComponentMk (v : V) : G.ConnectedComponent := Quot.mk G.Reachable v
+def connectedComponentMk (v : V) : G.ConnectedComponent := Quotient.mk G.reachableSetoid v
 #align simple_graph.connected_component_mk SimpleGraph.connectedComponentMk
 
 variable {G G' G''}
@@ -2093,19 +2093,19 @@ instance inhabited [Inhabited V] : Inhabited G.ConnectedComponent :=
 @[elab_as_elim]
 protected theorem ind {β : G.ConnectedComponent → Prop}
     (h : ∀ v : V, β (G.connectedComponentMk v)) (c : G.ConnectedComponent) : β c :=
-  Quot.ind h c
+  Quotient.ind h c
 #align simple_graph.connected_component.ind SimpleGraph.ConnectedComponent.ind
 
 @[elab_as_elim]
 protected theorem ind₂ {β : G.ConnectedComponent → G.ConnectedComponent → Prop}
     (h : ∀ v w : V, β (G.connectedComponentMk v) (G.connectedComponentMk w))
     (c d : G.ConnectedComponent) : β c d :=
-  Quot.induction_on₂ c d h
+  Quotient.inductionOn₂ c d h
 #align simple_graph.connected_component.ind₂ SimpleGraph.ConnectedComponent.ind₂
 
 protected theorem sound {v w : V} :
-    G.Reachable v w → G.connectedComponentMk v = G.connectedComponentMk w :=
-  Quot.sound
+    G.reachableSetoid.r v w → G.connectedComponentMk v = G.connectedComponentMk w :=
+  Quotient.sound'
 #align simple_graph.connected_component.sound SimpleGraph.ConnectedComponent.sound
 
 protected theorem exact {v w : V} :
@@ -2124,11 +2124,11 @@ theorem connectedComponentMk_eq_of_adj {v w : V} (a : G.Adj v w) :
   ConnectedComponent.sound a.reachable
 #align simple_graph.connected_component.connected_component_mk_eq_of_adj SimpleGraph.ConnectedComponent.connectedComponentMk_eq_of_adj
 
-/-- The `ConnectedComponent` specialization of `Quot.lift`. Provides the stronger
+/-- The `ConnectedComponent` specialization of `Quotient.lift`. Provides the stronger
 assumption that the vertices are connected by a path. -/
 protected def lift {β : Sort*} (f : V → β)
     (h : ∀ (v w : V) (p : G.Walk v w), p.IsPath → f v = f w) : G.ConnectedComponent → β :=
-  Quot.lift f fun v w (h' : G.Reachable v w) => h'.elim_path fun hp => h v w hp hp.2
+  Quotient.lift f fun v w (h' : G.Reachable v w) => h'.elim_path fun hp => h v w hp hp.2
 #align simple_graph.connected_component.lift SimpleGraph.ConnectedComponent.lift
 
 @[simp]
