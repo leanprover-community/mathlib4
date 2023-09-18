@@ -5,6 +5,7 @@ Authors: Antoine Labelle
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Linear
+import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Closed.Monoidal
@@ -51,27 +52,21 @@ variable [MonoidalPredicate P]
 When `P` is a monoidal predicate, the full subcategory for `P` inherits the monoidal structure of
   `C`.
 -/
-instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) where
-  tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
-  tensorHom f g := f ⊗ g
-  tensorHom_def f g := tensorHom_def (C := C) f g
-  whiskerLeft := fun X _ _ f ↦ X.1 ◁ f
-  whiskerRight := fun f Y ↦ (fun f ↦ f ▷ Y.1) f
-  tensorUnit' := ⟨𝟙_ C, prop_id⟩
-  associator X Y Z :=
-    ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
-      inv_hom_id (α_ X.1 Y.1 Z.1)⟩
-  whiskerLeft_id X Y := whiskerLeft_id X.1 Y.1
-  id_whiskerRight X Y := id_whiskerRight X.1 Y.1
-  leftUnitor X := ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
-  rightUnitor X := ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩
-  tensor_id X Y := tensor_id X.1 Y.1
-  tensor_comp f₁ f₂ g₁ g₂ := @tensor_comp C _ _ _ _ _ _ _ _ f₁ f₂ g₁ g₂
-  associator_naturality f₁ f₂ f₃ := @associator_naturality C _ _ _ _ _ _ _ _ f₁ f₂ f₃
-  leftUnitor_naturality f := @leftUnitor_naturality C _ _ _ _ f
-  rightUnitor_naturality f := @rightUnitor_naturality C _ _ _ _ f
-  pentagon W X Y Z := pentagon W.1 X.1 Y.1 Z.1
-  triangle X Y := triangle X.1 Y.1
+instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
+  Monoidal.induced
+    (e := fullSubcategoryInclusion P)
+    (tensorObj := fun X Y => ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩)
+    (μIsoSymm := fun X Y => eqToIso rfl)
+    (whiskerLeft := fun X _ _ f ↦ X.1 ◁ f)
+    (whiskerRight := @fun X₁ X₂ (f : X₁.1 ⟶ X₂.1) Y ↦ (f ▷ Y.1 :))
+    (tensorHom := fun f g => f ⊗ g)
+    (tensorUnit' := ⟨𝟙_ C, prop_id⟩)
+    (εIsoSymm := eqToIso rfl)
+    (associator := fun X Y Z =>
+      ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
+        inv_hom_id (α_ X.1 Y.1 Z.1)⟩)
+    (leftUnitor := fun X => ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩)
+    (rightUnitor := fun X => ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩)
 #align category_theory.monoidal_category.full_monoidal_subcategory CategoryTheory.MonoidalCategory.fullMonoidalSubcategory
 
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
