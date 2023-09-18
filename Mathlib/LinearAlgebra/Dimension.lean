@@ -1013,6 +1013,10 @@ theorem rank_prod : Module.rank K (V × V') =
 theorem rank_prod' : Module.rank K (V × V₁) = Module.rank K V + Module.rank K V₁ := by simp
 #align rank_prod' rank_prod'
 
+@[simp]
+theorem rank_ulift : Module.rank K (ULift.{w} V) = Cardinal.lift.{w} (Module.rank K V) :=
+  Cardinal.lift_injective.{v} <| Eq.symm <| (lift_lift _).trans ULift.moduleEquiv.symm.lift_rank_eq
+
 section Fintype
 
 variable [∀ i, AddCommGroup (φ i)] [∀ i, Module K (φ i)] [∀ i, Module.Free K (φ i)]

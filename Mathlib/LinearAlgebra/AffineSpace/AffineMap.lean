@@ -249,18 +249,18 @@ end SMul
 
 instance : Zero (P1 →ᵃ[k] V2) where zero := ⟨0, 0, fun _ _ => (zero_vadd _ _).symm⟩
 
-instance : Add (P1 →ᵃ[k] V2)
-    where add f g := ⟨f + g, f.linear + g.linear,
+instance : Add (P1 →ᵃ[k] V2) where
+  add f g := ⟨f + g, f.linear + g.linear,
       -- porting note: `simp` needs lemmas to be expressions
       fun p v => by simp [add_add_add_comm, (map_vadd)]⟩
 
-instance : Sub (P1 →ᵃ[k] V2)
-    where sub f g := ⟨f - g, f.linear - g.linear,
+instance : Sub (P1 →ᵃ[k] V2) where
+  sub f g := ⟨f - g, f.linear - g.linear,
       -- porting note: `simp` needs lemmas to be expressions
       fun p v => by simp [sub_add_sub_comm, (map_vadd)]⟩
 
-instance : Neg (P1 →ᵃ[k] V2)
-    where neg f := ⟨-f, -f.linear, fun p v => by simp [add_comm, map_vadd f]⟩
+instance : Neg (P1 →ᵃ[k] V2) where
+  neg f := ⟨-f, -f.linear, fun p v => by simp [add_comm, map_vadd f]⟩
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : P1 →ᵃ[k] V2) = 0 :=
@@ -744,7 +744,6 @@ variable [Semiring R] [Module R V2] [SMulCommClass k R V2]
 /-- The space of affine maps taking values in an `R`-module is an `R`-module. -/
 instance : Module R (P1 →ᵃ[k] V2) :=
   { AffineMap.distribMulAction with
-    smul := (· • ·)
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _
     zero_smul := fun _ => ext fun _ => zero_smul _ _ }
 

@@ -97,12 +97,12 @@ class Initial (F : C ⥤ D) : Prop where
 
 attribute [instance] Initial.out
 
-instance final_op_of_initial (F : C ⥤ D) [Initial F] : Final F.op
-    where out d := isConnected_of_equivalent (costructuredArrowOpEquivalence F (unop d))
+instance final_op_of_initial (F : C ⥤ D) [Initial F] : Final F.op where
+  out d := isConnected_of_equivalent (costructuredArrowOpEquivalence F (unop d))
 #align category_theory.functor.final_op_of_initial CategoryTheory.Functor.final_op_of_initial
 
-instance initial_op_of_final (F : C ⥤ D) [Final F] : Initial F.op
-    where out d := isConnected_of_equivalent (structuredArrowOpEquivalence F (unop d))
+instance initial_op_of_final (F : C ⥤ D) [Final F] : Initial F.op where
+  out d := isConnected_of_equivalent (structuredArrowOpEquivalence F (unop d))
 #align category_theory.functor.initial_op_of_final CategoryTheory.Functor.initial_op_of_final
 
 theorem final_of_initial_op (F : C ⥤ D) [Initial F.op] : Final F :=

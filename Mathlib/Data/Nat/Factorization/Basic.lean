@@ -528,7 +528,7 @@ theorem not_dvd_ord_compl {n p : ℕ} (hp : Prime p) (hn : n ≠ 0) : ¬p ∣ or
   simp [hp.factorization]
 #align nat.not_dvd_ord_compl Nat.not_dvd_ord_compl
 
-theorem coprime_ord_compl {n p : ℕ} (hp : Prime p) (hn : n ≠ 0) : coprime p (ord_compl[p] n) :=
+theorem coprime_ord_compl {n p : ℕ} (hp : Prime p) (hn : n ≠ 0) : Coprime p (ord_compl[p] n) :=
   (or_iff_left (not_dvd_ord_compl hp hn)).mp <| coprime_or_dvd_of_prime hp _
 #align nat.coprime_ord_compl Nat.coprime_ord_compl
 
@@ -743,13 +743,13 @@ theorem Ico_filter_pow_dvd_eq {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : 
 
 
 /-- For coprime `a` and `b`, the power of `p` in `a * b` is the sum of the powers in `a` and `b` -/
-theorem factorization_mul_apply_of_coprime {p a b : ℕ} (hab : coprime a b) :
+theorem factorization_mul_apply_of_coprime {p a b : ℕ} (hab : Coprime a b) :
     (a * b).factorization p = a.factorization p + b.factorization p := by
   simp only [← factors_count_eq, perm_iff_count.mp (perm_factors_mul_of_coprime hab), count_append]
 #align nat.factorization_mul_apply_of_coprime Nat.factorization_mul_apply_of_coprime
 
 /-- For coprime `a` and `b`, the power of `p` in `a * b` is the sum of the powers in `a` and `b` -/
-theorem factorization_mul_of_coprime {a b : ℕ} (hab : coprime a b) :
+theorem factorization_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
     (a * b).factorization = a.factorization + b.factorization := by
   ext q
   rw [Finsupp.add_apply, factorization_mul_apply_of_coprime hab]
@@ -757,7 +757,7 @@ theorem factorization_mul_of_coprime {a b : ℕ} (hab : coprime a b) :
 
 /-- If `p` is a prime factor of `a` then the power of `p` in `a` is the same that in `a * b`,
 for any `b` coprime to `a`. -/
-theorem factorization_eq_of_coprime_left {p a b : ℕ} (hab : coprime a b) (hpa : p ∈ a.factors) :
+theorem factorization_eq_of_coprime_left {p a b : ℕ} (hab : Coprime a b) (hpa : p ∈ a.factors) :
     (a * b).factorization p = a.factorization p := by
   rw [factorization_mul_apply_of_coprime hab, ← factors_count_eq, ← factors_count_eq,
     count_eq_zero_of_not_mem (coprime_factors_disjoint hab hpa), add_zero]
@@ -765,21 +765,21 @@ theorem factorization_eq_of_coprime_left {p a b : ℕ} (hab : coprime a b) (hpa 
 
 /-- If `p` is a prime factor of `b` then the power of `p` in `b` is the same that in `a * b`,
 for any `a` coprime to `b`. -/
-theorem factorization_eq_of_coprime_right {p a b : ℕ} (hab : coprime a b) (hpb : p ∈ b.factors) :
+theorem factorization_eq_of_coprime_right {p a b : ℕ} (hab : Coprime a b) (hpb : p ∈ b.factors) :
     (a * b).factorization p = b.factorization p := by
   rw [mul_comm]
   exact factorization_eq_of_coprime_left (coprime_comm.mp hab) hpb
 #align nat.factorization_eq_of_coprime_right Nat.factorization_eq_of_coprime_right
 
 /-- The prime factorizations of coprime `a` and `b` are disjoint -/
-theorem factorization_disjoint_of_coprime {a b : ℕ} (hab : coprime a b) :
+theorem factorization_disjoint_of_coprime {a b : ℕ} (hab : Coprime a b) :
     Disjoint a.factorization.support b.factorization.support := by
   simpa only [support_factorization] using
     disjoint_toFinset_iff_disjoint.mpr (coprime_factors_disjoint hab)
 #align nat.factorization_disjoint_of_coprime Nat.factorization_disjoint_of_coprime
 
 /-- For coprime `a` and `b` the prime factorization `a * b` is the union of those of `a` and `b` -/
-theorem factorization_mul_support_of_coprime {a b : ℕ} (hab : coprime a b) :
+theorem factorization_mul_support_of_coprime {a b : ℕ} (hab : Coprime a b) :
     (a * b).factorization.support = a.factorization.support ∪ b.factorization.support := by
   rw [factorization_mul_of_coprime hab]
   exact support_add_eq (factorization_disjoint_of_coprime hab)
@@ -827,7 +827,7 @@ def recOnPrimePow {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1)
 `P b` to `P (a * b)` when `a, b` are positive coprime, we can define `P` for all natural numbers. -/
 @[elab_as_elim]
 def recOnPosPrimePosCoprime {P : ℕ → Sort*} (hp : ∀ p n : ℕ, Prime p → 0 < n → P (p ^ n))
-    (h0 : P 0) (h1 : P 1) (h : ∀ a b, 1 < a → 1 < b → coprime a b → P a → P b → P (a * b)) :
+    (h0 : P 0) (h1 : P 1) (h : ∀ a b, 1 < a → 1 < b → Coprime a b → P a → P b → P (a * b)) :
     ∀ a, P a :=
   recOnPrimePow h0 h1 <| by
     intro a p n hp' hpa hn hPa
@@ -844,7 +844,7 @@ def recOnPosPrimePosCoprime {P : ℕ → Sort*} (hp : ∀ p n : ℕ, Prime p →
 `P (a * b)` when `a, b` are positive coprime, we can define `P` for all natural numbers. -/
 @[elab_as_elim]
 def recOnPrimeCoprime {P : ℕ → Sort*} (h0 : P 0) (hp : ∀ p n : ℕ, Prime p → P (p ^ n))
-    (h : ∀ a b, 1 < a → 1 < b → coprime a b → P a → P b → P (a * b)) : ∀ a, P a :=
+    (h : ∀ a b, 1 < a → 1 < b → Coprime a b → P a → P b → P (a * b)) : ∀ a, P a :=
   recOnPosPrimePosCoprime (fun p n h _ => hp p n h) h0 (hp 2 0 prime_two) h
 #align nat.rec_on_prime_coprime Nat.recOnPrimeCoprime
 
@@ -865,7 +865,7 @@ noncomputable def recOnMul {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1) (hp : ∀ p
 /-- For any multiplicative function `f` with `f 1 = 1` and any `n ≠ 0`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
 theorem multiplicative_factorization {β : Type*} [CommMonoid β] (f : ℕ → β)
-    (h_mult : ∀ x y : ℕ, coprime x y → f (x * y) = f x * f y) (hf : f 1 = 1) :
+    (h_mult : ∀ x y : ℕ, Coprime x y → f (x * y) = f x * f y) (hf : f 1 = 1) :
     ∀ {n : ℕ}, n ≠ 0 → f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime
   · rintro p k hp - -
@@ -885,7 +885,7 @@ theorem multiplicative_factorization {β : Type*} [CommMonoid β] (f : ℕ → �
 /-- For any multiplicative function `f` with `f 1 = 1` and `f 0 = 1`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
 theorem multiplicative_factorization' {β : Type*} [CommMonoid β] (f : ℕ → β)
-    (h_mult : ∀ x y : ℕ, coprime x y → f (x * y) = f x * f y) (hf0 : f 0 = 1) (hf1 : f 1 = 1) :
+    (h_mult : ∀ x y : ℕ, Coprime x y → f (x * y) = f x * f y) (hf0 : f 0 = 1) (hf1 : f 1 = 1) :
     ∀ {n : ℕ}, f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime
   · rintro p k hp -

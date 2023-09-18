@@ -446,9 +446,9 @@ theorem splits_iff_card_roots {p : K[X]} :
 #align polynomial.splits_iff_card_roots Polynomial.splits_iff_card_roots
 
 theorem aeval_root_derivative_of_splits [Algebra K L] {P : K[X]} (hmo : P.Monic)
-    (hP : P.Splits (algebraMap K L)) {r : L} (hr : r ∈ (P.map (algebraMap K L)).roots) :
+    (hP : P.Splits (algebraMap K L)) {r : L} (hr : r ∈ P.aroots L) :
     aeval r (Polynomial.derivative P) =
-    (((P.map <| algebraMap K L).roots.erase r).map fun a => r - a).prod := by
+    (((P.aroots L).erase r).map fun a => r - a).prod := by
   replace hmo := hmo.map (algebraMap K L)
   replace hP := (splits_id_iff_splits (algebraMap K L)).2 hP
   rw [aeval_def, ← eval_map, ← derivative_map]
