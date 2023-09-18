@@ -195,7 +195,7 @@ def toCoconeFunctor : Bicone F ⥤ Cocone (Discrete.functor F) where
   obj B := { pt := B.pt, ι := { app := fun j => B.ι j.as } }
   map {X Y} F := { Hom := F.Hom, w := fun _ => F.wι _ }
 
-/-- A shorthand for `toConeFunctor.obj` -/
+/-- A shorthand for `toCoconeFunctor.obj` -/
 abbrev toCocone (B : Bicone F) : Cocone (Discrete.functor F) := toCoconeFunctor.obj B
 #align category_theory.limits.bicone.to_cocone CategoryTheory.Limits.Bicone.toCocone
 
