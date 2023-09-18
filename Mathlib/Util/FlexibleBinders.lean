@@ -267,7 +267,7 @@ macro_rules
     -- Note: getId returns anonymous for non-identifiers
     let notPatt ← es.allM fun id => do return List.isEmpty (← Macro.resolveGlobalName id.raw.getId)
     unless notPatt do Macro.throwUnsupported
-    return combineBinders <| ← es.mapM fun e' => withRef e'.raw `(binder%($domType, $e'))
+    return combineBinders <| ← es.mapM fun e' => withRef e'.raw `(binderSplit%($domType, $e'))
 
 /-- Sets up expanding `(x y z : α)` to `(x : α) (y : α) (z : α)`. -/
 macro_rules
