@@ -42,10 +42,9 @@ argument, and return `LipschitzWith (Real.toNNReal K) f`.
 
 set_option autoImplicit true
 
-
 universe u v w x
 
-open Filter Function Set Topology NNReal ENNReal
+open Filter Function Set Topology NNReal ENNReal Bornology
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
@@ -399,14 +398,12 @@ theorem comap_cobounded_le (hf : LipschitzWith K f) :
   (hf.toLocallyBoundedMap f).2
 #align lipschitz_with.comap_cobounded_le LipschitzWith.comap_cobounded_le
 
-theorem bounded_image (hf : LipschitzWith K f) {s : Set α} (hs : Metric.Bounded s) :
-    Metric.Bounded (f '' s) :=
-  Metric.bounded_iff_ediam_ne_top.2 <|
-    ne_top_of_le_ne_top (ENNReal.mul_ne_top ENNReal.coe_ne_top hs.ediam_ne_top)
-      (hf.ediam_image_le s)
-#align lipschitz_with.bounded_image LipschitzWith.bounded_image
+theorem isBounded_image (hf : LipschitzWith K f) {s : Set α} (hs : IsBounded s) :
+    IsBounded (f '' s) :=
+  hs.image (toLocallyBoundedMap f hf)
+#align lipschitz_with.bounded_image LipschitzWith.isBounded_image
 
-theorem diam_image_le (hf : LipschitzWith K f) (s : Set α) (hs : Metric.Bounded s) :
+theorem diam_image_le (hf : LipschitzWith K f) (s : Set α) (hs : IsBounded s) :
     Metric.diam (f '' s) ≤ K * Metric.diam s :=
   Metric.diam_le_of_forall_dist_le (mul_nonneg K.coe_nonneg Metric.diam_nonneg) <|
     ball_image_iff.2 fun _x hx =>
@@ -486,22 +483,10 @@ namespace Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {s : Set α} {t : Set β}
 
-theorem Bounded.left_of_prod (h : Bounded (s ×ˢ t)) (ht : t.Nonempty) : Bounded s := by
-  simpa only [fst_image_prod s ht] using (@LipschitzWith.prod_fst α β _ _).bounded_image h
-#align metric.bounded.left_of_prod Metric.Bounded.left_of_prod
-
-theorem Bounded.right_of_prod (h : Bounded (s ×ˢ t)) (hs : s.Nonempty) : Bounded t := by
-  simpa only [snd_image_prod hs t] using (@LipschitzWith.prod_snd α β _ _).bounded_image h
-#align metric.bounded.right_of_prod Metric.Bounded.right_of_prod
-
-theorem bounded_prod_of_nonempty (hs : s.Nonempty) (ht : t.Nonempty) :
-    Bounded (s ×ˢ t) ↔ Bounded s ∧ Bounded t :=
-  ⟨fun h => ⟨h.left_of_prod ht, h.right_of_prod hs⟩, fun h => h.1.prod h.2⟩
-#align metric.bounded_prod_of_nonempty Metric.bounded_prod_of_nonempty
-
-theorem bounded_prod : Bounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ Bounded s ∧ Bounded t := by
-  simp only [bounded_iff_isBounded, Bornology.isBounded_prod]
-#align metric.bounded_prod Metric.bounded_prod
+#align metric.bounded.left_of_prod Bornology.IsBounded.fst_of_prod
+#align metric.bounded.right_of_prod Bornology.IsBounded.snd_of_prod
+#align metric.bounded_prod_of_nonempty Bornology.isBounded_prod_of_nonempty
+#align metric.bounded_prod Bornology.isBounded_prod
 
 end Metric
 
