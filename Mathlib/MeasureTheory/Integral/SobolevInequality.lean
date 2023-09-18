@@ -430,23 +430,18 @@ theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E) :
     ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
     snorm u (finrank ℝ E / (finrank ℝ E - 1)) μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
   obtain ⟨m, hm⟩ : ∃ m, finrank ℝ E = m + 2 := Nat.exists_eq_add_of_le' hE
-  have hm' : finrank ℝ E - 1 = m + 1 := Nat.sub_eq_of_eq_add hm
   have H_real : (finrank ℝ E / (finrank ℝ E - 1)) = (m + 2 : ℝ) / (m + 1 : ℝ)
   · rw [hm]
     push_cast
     ring_nf
   have H_ennreal : (finrank ℝ E / (finrank ℝ E - 1)) = (↑((m + 2 : ℝ≥0) / (m + 1 : ℝ≥0)) : ℝ≥0∞)
-  · have H : (m + 2 : ℝ≥0∞) / (m + 1 : ℝ≥0∞) = ↑((m + 2 : ℝ≥0) / (m + 1 : ℝ≥0)) := by
-      rw [ENNReal.coe_div]
-      · rfl
-      · positivity
-    rw [← H]
-    rw [hm]
-    push_cast
-    congr
-    apply ENNReal.sub_eq_of_eq_add_rev
-    · norm_num
-    · ring
+  · rw [ENNReal.coe_div, hm]
+    · push_cast
+      congr
+      apply ENNReal.sub_eq_of_eq_add_rev
+      · norm_num
+      · ring
+    positivity
   rw [H_ennreal]
   have hn : 0 < (m + 2 : ℝ) / (m + 1 : ℝ) := by positivity
   obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv μ hE
