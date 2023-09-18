@@ -21,7 +21,8 @@ With this groupoid at hand and the general machinery of charted spaces, we thus 
 of `C^n` manifold with respect to any model with corners `I` on `(E, H)`. We also introduce a
 specific type class for `C^∞` manifolds as these are the most commonly used.
 
-Manifolds are not generally assumed to be Hausdorff or second countable.
+Some texts assume manifolds to be Hausdorff and secound countable. We (in mathlib) assume neither,
+but add these assumptions later as needed. (Quite a few results still do not require them.)
 
 ## Main definitions
 
