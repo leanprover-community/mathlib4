@@ -15,9 +15,9 @@ eigenvectors, singular values block diagonal matrix and right eigenvectors.
 
 Any matrix A (M × N) with rank r = A.rank and with elements in the field ℝ or ℂ can be decomposed
 into three matrices:
-  U: an M × M matrix containing the left eigenvectors of the matrix
-  S: an M × N matrix with an r × r block in the upper left corner with nonzero singular values
-  V: an N × N matrix containing the right eigenvectors of the matrix
+  * U: an M × M matrix containing the left eigenvectors of the matrix
+  * S: an M × N matrix with an r × r block in the upper left corner with nonzero singular values
+  * V: an N × N matrix containing the right eigenvectors of the matrix
 Note that
   S is a block matrix S = [S₁₁, S₁₂; S₂₁, S₂₂] with
   - S₁₁: a diagonal r × r matrix and
@@ -33,7 +33,7 @@ Note that
 Since in mathlib the eigenvalues of hermitian matrices are defined in an "arbitrary" undetermined
 order, we begin by partitioning the singular values into zero and non-zero values. We partition the
 corresponding eigenvectors from AᴴA and AAᴴ using similar rearrangements. These are included in
-`SVD.svdReindex`. The basic API for Column and Row partitioned matrices is from
+`Mathlib.LinearAlgebra.Matrix.SVD.Reindex`. The basic API for Column and Row partitioned matrices is from
 `ColumnRowPartitioned`.
 
 We then proceed to transfer some of the lemmas we need about eigenvector matrices (for example that
@@ -102,20 +102,20 @@ noncomputable def svdσ (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin A.rank) 
   (diagonal (fun (i : {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0}) =>
       Real.sqrt ((isHermitian_transpose_mul_self A).eigenvalues i)))
 
-/-- The left eigenvectors of a matrix A corresponding to its non-zero eigenvaules, obtained as the
+/-- The left eigenvectors of a matrix A corresponding to its non-zero eigenvalues, obtained as the
 image of the corresponding right eigenvectors. The transformation is given by the matrix itself and
 scaling by the singular values. -/
 noncomputable def svdU₁ (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin M) (Fin A.rank) 𝕂 :=
   A  *  A.svdV₁  *  (A.svdσ.map (algebraMap ℝ 𝕂))⁻¹
 
-/-- The left eigenvectors of a matrix A corresponding to its non-zero eigenvaules, obtained directly
+/-- The left eigenvectors of a matrix A corresponding to its non-zero eigenvalues, obtained directly
 from the eigendecomposition of the AAᴴ matrix. These do NOT share the same ordering as `svdU₁`. -/
 noncomputable def svdU₁' (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin M) (Fin (A.rank)) 𝕂 :=
   ((reindex (Equiv.refl (Fin M)) (eigenRowEquiv A))
     (isHermitian_mul_conjTranspose_self A).eigenvectorMatrix).toColumns₁
 
-/-- The left eigenvectors of a matrix A corresponding to its zero eigenvaules, obtained directly
-from the eigendecomposition of the AAᴴ matrix. The order of these eigenvectors is not relevatn as
+/-- The left eigenvectors of a matrix A corresponding to its zero eigenvalues, obtained directly
+from the eigendecomposition of the AAᴴ matrix. The order of these eigenvectors is not relevant as
 they are multiplied by zero anyway. Hence we do not have `svdU₂` -/
 noncomputable def svdU₂ (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin M) (Fin (M - A.rank)) 𝕂 :=
   ((reindex (Equiv.refl (Fin M)) (eigenRowEquiv A))
@@ -187,7 +187,7 @@ lemma V₂_conjTranspose_mul_V₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV₂�
 lemma V₁_conjTranspose_mul_V₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV₁ᴴ * A.svdV₂ = 0 :=
   (V_conjTranspose_mul_V A).2.2
 
-lemma V_inv (A : Matrix (Fin M) (Fin N) 𝕂) :
+lemma V_conjTranspose_mul_V (A : Matrix (Fin M) (Fin N) 𝕂) :
     (fromColumns A.svdV₁ A.svdV₂)ᴴ  *  (fromColumns A.svdV₁ A.svdV₂) = 1 := by
   rw [conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromRows_mul_fromColumns,
     V₁_conjTranspose_mul_V₂, V₁_conjTranspose_mul_V₁, V₂_conjTranspose_mul_V₂,
@@ -285,7 +285,8 @@ lemma V_columns (A : Matrix (Fin M) (Fin N) 𝕂) :
   simp only [Equiv.refl_symm, Equiv.coe_refl, submatrix_apply, id_eq,
     reindex_apply, of_apply, Sum.elim_inl, Sum.elim_inr]
 
-lemma reduced_spectral_theorem (A : Matrix (Fin M) (Fin N) 𝕂) :
+/-- **Reduced spectral theorem**, right eigenvector version. -/
+lemma V₁_mul_μ_mul_V₁_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
     Aᴴ  *  A = A.svdV₁  *  (A.svdμ.map (algebraMap ℝ 𝕂))  *  A.svdV₁ᴴ := by
   let hAHA := isHermitian_transpose_mul_self A
   -- "Ugly" (submatrix_mul_equiv) explicit rewrites: each one on its own line for
