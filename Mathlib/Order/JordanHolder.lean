@@ -204,7 +204,7 @@ def toList (s : CompositionSeries X) : List X :=
 /-- Two `CompositionSeries` are equal if they are the same length and
 have the same `i`th element for every `i` -/
 theorem ext_fun {s₁ s₂ : CompositionSeries X} (hl : s₁.length = s₂.length)
-    (h : ∀ i, s₁ i = s₂ (Fin.castIso (congr_arg Nat.succ hl) i)) : s₁ = s₂ := by
+    (h : ∀ i, s₁ i = s₂ (Fin.cast (congr_arg Nat.succ hl) i)) : s₁ = s₂ := by
   cases s₁; cases s₂
   -- Porting note: `dsimp at *` doesn't work. Why?
   dsimp at hl h
@@ -226,7 +226,7 @@ theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) 
   have h₁ : s₁.length = s₂.length :=
     Nat.succ_injective
       ((List.length_ofFn s₁).symm.trans <| (congr_arg List.length h).trans <| List.length_ofFn s₂)
-  have h₂ : ∀ i : Fin s₁.length.succ, s₁ i = s₂ (Fin.castIso (congr_arg Nat.succ h₁) i) :=
+  have h₂ : ∀ i : Fin s₁.length.succ, s₁ i = s₂ (Fin.cast (congr_arg Nat.succ h₁) i) :=
     -- Porting note: `List.nthLe_ofFn` has been deprecated but `List.get_ofFn` has a
     --               different type, so we do golf here.
     congr_fun <| List.ofFn_injective <| h.trans <| List.ofFn_congr (congr_arg Nat.succ h₁).symm _
@@ -238,7 +238,7 @@ theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) 
   -- Porting note: `[heq_iff_eq, eq_self_iff_true, true_and_iff]`
   --             → `[mk.injEq, heq_eq_eq, true_and]`
   simp only [mk.injEq, heq_eq_eq, true_and]
-  simp only [Fin.castIso_refl] at h₂
+  simp only [Fin.cast_refl] at h₂
   exact funext h₂
 #align composition_series.to_list_injective CompositionSeries.toList_injective
 

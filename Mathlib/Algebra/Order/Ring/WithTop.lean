@@ -3,10 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
 import Std.Data.Option.Lemmas
+import Mathlib.Tactic.Tauto
 
 #align_import algebra.order.ring.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -119,8 +120,6 @@ end MulZeroClass
 instance instMulZeroOneClassWithTop [MulZeroOneClass α] [Nontrivial α] :
     MulZeroOneClass (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
-    mul := (· * ·)
-    one := 1, zero := 0
     one_mul := fun a =>
       match a with
       | ⊤ => mul_top (mt coe_eq_coe.1 one_ne_zero)
@@ -156,8 +155,6 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
 instance instSemigroupWithZeroWithTop [SemigroupWithZero α] [NoZeroDivisors α] :
     SemigroupWithZero (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
-    mul := (· * ·)
-    zero := 0
     mul_assoc := fun a b c => by
       rcases eq_or_ne a 0 with (rfl | ha); · simp only [zero_mul]
       rcases eq_or_ne b 0 with (rfl | hb); · simp only [zero_mul, mul_zero]
@@ -178,8 +175,6 @@ instance monoidWithZero [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] 
 instance commMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
     CommMonoidWithZero (WithTop α) :=
   { WithTop.monoidWithZero with
-    mul := (· * ·)
-    zero := 0,
     mul_comm := fun _ _ => ite_congr (propext or_comm) (fun _ => rfl)
       (fun _ => Option.map₂_comm mul_comm) }
 

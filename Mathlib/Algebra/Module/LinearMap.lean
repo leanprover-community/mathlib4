@@ -92,7 +92,7 @@ structure LinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R �
     AddHom M M₂ where
   /-- A linear map preserves scalar multiplication.
   We prefer the spelling `_root_.map_smul` instead. -/
-  map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
+  protected map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
 #align linear_map LinearMap
 
 /-- The `AddHom` underlying a `LinearMap`. -/
@@ -158,7 +158,6 @@ variable {σ : R →+* S}
 instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
-    coe := fun f ↦ (f : M → M₃)
     map_zero := fun f ↦
       show f 0 = 0 by
         rw [← zero_smul R (0 : M), map_smulₛₗ]
@@ -167,7 +166,6 @@ instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
 instance (priority := 100) distribMulActionHomClass [LinearMapClass F R M M₂] :
     DistribMulActionHomClass F R M M₂ :=
   { SemilinearMapClass.addMonoidHomClass F with
-    coe := fun f ↦ (f : M → M₂)
     map_smul := fun f c x ↦ by rw [map_smulₛₗ, RingHom.id_apply] }
 
 variable {F} (f : F) [i : SemilinearMapClass F σ M M₃]
@@ -263,7 +261,7 @@ theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
 
 /-- Identity map as a `LinearMap` -/
 def id : M →ₗ[R] M :=
-  { DistribMulActionHom.id R with toFun := _root_.id }
+  { DistribMulActionHom.id R with }
 #align linear_map.id LinearMap.id
 
 theorem id_apply (x : M) : @id R M _ _ _ x = x :=
@@ -521,7 +519,6 @@ end
 @[simps]
 def _root_.RingHom.toSemilinearMap (f : R →+* S) : R →ₛₗ[f] S :=
   { f with
-    toFun := f
     map_smul' := f.map_mul }
 #align ring_hom.to_semilinear_map RingHom.toSemilinearMap
 #align ring_hom.to_semilinear_map_apply RingHom.toSemilinearMap_apply
@@ -659,7 +656,7 @@ def toLinearMap (fₗ : M →+[R] M₂) : M →ₗ[R] M₂ :=
   { fₗ with }
 #align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
 
-instance : Coe (M →+[R] M₂) (M →ₗ[R] M₂) :=
+instance : CoeTC (M →+[R] M₂) (M →ₗ[R] M₂) :=
   ⟨toLinearMap⟩
 
 -- Porting note: because coercions get unfolded, there is no need for this rewrite
@@ -1064,10 +1061,6 @@ instance _root_.Module.End.monoid : Monoid (Module.End R M) where
 
 instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
   { AddMonoidWithOne.unary, Module.End.monoid, LinearMap.addCommMonoid with
-    mul := (· * ·)
-    one := (1 : M →ₗ[R] M)
-    zero := (0 : M →ₗ[R] M)
-    add := (· + ·)
     mul_zero := comp_zero
     zero_mul := zero_comp
     left_distrib := fun _ _ _ ↦ comp_add _ _ _
@@ -1085,10 +1078,6 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
 
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
-    mul := (· * ·)
-    one := (1 : N₁ →ₗ[R] N₁)
-    zero := (0 : N₁ →ₗ[R] N₁)
-    add := (· + ·)
     intCast := fun z ↦ z • (1 : N₁ →ₗ[R] N₁)
     intCast_ofNat := ofNat_zsmul _
     intCast_negSucc := negSucc_zsmul _ }
@@ -1159,12 +1148,12 @@ instance apply_faithfulSMul : FaithfulSMul (Module.End R M) M :=
   ⟨LinearMap.ext⟩
 #align linear_map.apply_has_faithful_smul LinearMap.apply_faithfulSMul
 
-instance apply_smulCommClass : SMulCommClass R (Module.End R M) M
-    where smul_comm r e m := (e.map_smul r m).symm
+instance apply_smulCommClass : SMulCommClass R (Module.End R M) M where
+  smul_comm r e m := (e.map_smul r m).symm
 #align linear_map.apply_smul_comm_class LinearMap.apply_smulCommClass
 
-instance apply_smulCommClass' : SMulCommClass (Module.End R M) R M
-    where smul_comm := LinearMap.map_smul
+instance apply_smulCommClass' : SMulCommClass (Module.End R M) R M where
+  smul_comm := LinearMap.map_smul
 #align linear_map.apply_smul_comm_class' LinearMap.apply_smulCommClass'
 
 instance apply_isScalarTower {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] :
