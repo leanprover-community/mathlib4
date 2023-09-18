@@ -59,16 +59,20 @@ namespace LieModule
 
 open LieAlgebra TensorProduct TensorProduct.LieModule
 open scoped BigOperators TensorProduct
-local macro_rules
-  | `(𝕎 $M $χ $x) => `((toEndomorphism R L $M $x).maximalGeneralizedEigenspace $χ)
+
+section notation_weight_space_of
+
+/-- Until we define `LieModule.weightSpaceOf`, it is useful to have some notation as follows: -/
+local notation3 (prettyPrint := false) "𝕎("M"," χ"," x")" =>
+  (toEndomorphism R L M x).maximalGeneralizedEigenspace χ
 
 /-- See also `bourbaki1975b` Chapter VII §1.1, Proposition 2 (ii). -/
 protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w₂) (M₃ : Type w₃)
     [AddCommGroup M₁] [Module R M₁] [LieRingModule L M₁] [LieModule R L M₁] [AddCommGroup M₂]
     [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂] [AddCommGroup M₃] [Module R M₃]
     [LieRingModule L M₃] [LieModule R L M₃] (g : M₁ ⊗[R] M₂ →ₗ⁅R,L⁆ M₃) (χ₁ χ₂ : R) (x : L) :
-    LinearMap.range ((g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp
-      (mapIncl (𝕎 M₁ χ₁ x) (𝕎 M₂ χ₂ x))) ≤ 𝕎 M₃ (χ₁ + χ₂) x := by
+    LinearMap.range ((g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (mapIncl 𝕎(M₁, χ₁, x) 𝕎(M₂, χ₂, x))) ≤
+      𝕎(M₃, χ₁ + χ₂, x) := by
   -- Unpack the statement of the goal.
   intro m₃
   simp only [TensorProduct.mapIncl, LinearMap.mem_range, LinearMap.coe_comp,
@@ -135,8 +139,8 @@ protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w
   · rw [LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hj hf₂, LinearMap.map_zero]
 
 lemma lie_mem_maxGenEigenspace_toEndomorphism
-    {χ₁ χ₂ : R} {x y : L} {m : M} (hy : y ∈ 𝕎 L χ₁ x) (hm : m ∈ 𝕎 M χ₂ x) :
-    ⁅y, m⁆ ∈ 𝕎 M (χ₁ + χ₂) x := by
+    {χ₁ χ₂ : R} {x y : L} {m : M} (hy : y ∈ 𝕎(L, χ₁, x)) (hm : m ∈ 𝕎(M, χ₂, x)) :
+    ⁅y, m⁆ ∈ 𝕎(M, χ₁ + χ₂, x) := by
   apply LieModule.weight_vector_multiplication L M M (toModuleHom R L M) χ₁ χ₂
   simp only [LieModuleHom.coe_toLinearMap, Function.comp_apply, LinearMap.coe_comp,
     TensorProduct.mapIncl, LinearMap.mem_range]
@@ -150,7 +154,7 @@ variable (M)
 
 It is a Lie submodule because `L` is nilpotent. -/
 def weightSpaceOf [LieAlgebra.IsNilpotent R L] (χ : R) (x : L) : LieSubmodule R L M :=
-  { 𝕎 M χ x with
+  { 𝕎(M, χ, x) with
     lie_mem := by
       intro y m hm
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
@@ -161,6 +165,10 @@ def weightSpaceOf [LieAlgebra.IsNilpotent R L] (χ : R) (x : L) : LieSubmodule R
 theorem mem_weightSpaceOf [LieAlgebra.IsNilpotent R L] (χ : R) (x : L) (m : M) :
     m ∈ weightSpaceOf M χ x ↔ ∃ k : ℕ, ((toEndomorphism R L M x - χ • ↑1) ^ k) m = 0 := by
   simp [weightSpaceOf]
+
+end notation_weight_space_of
+
+variable (M)
 
 /-- If `M` is a representation of a nilpotent Lie algebra `L` and `χ : L → R` is a family of
 scalars, then `weightSpace M χ` is the intersection of the maximal generalized `χ x`-eigenspaces of
