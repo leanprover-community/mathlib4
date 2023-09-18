@@ -43,7 +43,7 @@ lemma eval_sub (x : ZMod n) :
   χ (n - x) = χ (-x) := by simp
 
 lemma isPeriodic {m : ℕ} (hm : n ∣ m) (a : ℤ) :
-  χ (a + m) = χ a := by
+    χ (a + m) = χ a := by
   rw [← ZMod.nat_cast_zmod_eq_zero_iff_dvd] at hm
   simp only [hm, add_zero]
 
