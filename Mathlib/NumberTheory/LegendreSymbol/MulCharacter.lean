@@ -239,7 +239,7 @@ theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.s
 
 @[simp]
 lemma coe_toMonoidHom [CommMonoid R] (χ : MulChar R R')
-    (x : R) : χ.toMonoidHom x = χ x := by rfl
+    (x : R) : χ.toMonoidHom x = χ x := rfl
 
 /-!
 ### Commutative group structure on multiplicative characters
