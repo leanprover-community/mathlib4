@@ -420,8 +420,6 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E) :
   rw [ENNReal.mul_rpow_of_nonneg _ _ hι.le, ← mul_assoc]
   exact this
 
-end
-
 set_option linter.unusedVariables false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported real-valued function on a normed space `E` of finite dimension `n ≥ 2`, equipped
@@ -431,22 +429,49 @@ of `u`. -/
 theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E) :
     ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
     snorm u (finrank ℝ E / (finrank ℝ E - 1)) μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
-  set n := finrank ℝ E
-  have hn : 0 < (n : ℝ) / (n - 1 : ℝ) := by
-    have : 2 ≤ (n:ℝ) := by norm_cast
-    have : 1 ≤ (n:ℝ) - 1 := by linarith
+  obtain ⟨m, hm⟩ : ∃ m, finrank ℝ E = m + 2 := Nat.exists_eq_add_of_le' hE --(Nat.one_le_of_lt (Nat.one_le_of_lt))
+  have hm' : finrank ℝ E - 1 = m + 1 := Nat.sub_eq_of_eq_add hm
+  have H : (m + 2 : ℝ≥0∞) / (m + 1 : ℝ≥0∞) = ↑((m + 2 : ℝ≥0) / (m + 1 : ℝ≥0)) := by
+    rw [ENNReal.coe_div]
+    · rfl
+    · positivity
+  have H_real : (finrank ℝ E / (finrank ℝ E - 1)) = (m + 2 : ℝ) / (m + 1 : ℝ)
+  · rw [hm]
+    push_cast
+    ring_nf
+  have H_ennreal : (finrank ℝ E / (finrank ℝ E - 1)) = (m + 2 : ℝ≥0∞) / (m + 1 : ℝ≥0∞)
+  · rw [hm]
+    push_cast
+    congr
+    apply ENNReal.sub_eq_of_eq_add_rev
+    · norm_num
+    · ring
+  rw [H_ennreal]
+  have hn : 0 < (m + 2 : ℝ) / (m + 1 : ℝ) := by positivity
+  have hn' : 0 < (m + 2 : ℝ≥0∞) / (m + 1 : ℝ≥0∞) := by
+    apply ENNReal.div_pos
+    norm_cast
     positivity
-  have hn' : 0 < (n : ℝ≥0∞) / (n - 1 : ℝ≥0∞) := sorry
-  have hn'' : (n : ℝ≥0∞) / (n - 1 : ℝ≥0∞) < ⊤ := sorry
-  have hn''' : ENNReal.toReal (↑n / (↑n - 1)) = ↑n / (↑n - 1) := sorry
+    norm_cast
+    exact ENNReal.nat_ne_top (m + 1)
+  have hn'' : (m + 2 : ℝ≥0∞) / (m + 1 : ℝ≥0∞) < ⊤ := by
+    convert @ENNReal.coe_lt_top ((m + 2 : ℝ≥0) / (m + 1 : ℝ≥0))
+  have hn''' : ENNReal.toReal ((m + 2) / (m + 1)) = (m + 2) / (m + 1) := by
+    convert ENNReal.coe_toReal ((m + 2 : ℝ≥0) / (m + 1 : ℝ≥0))
   obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv μ hE
-  use C ^ ((n - 1) / n)
+  use C ^ ((m + 1 : ℝ) / (m + 2 : ℝ))
   intro u hu h2u
   have := hC hu h2u
+  rw [H_real] at this
   rw [lintegral_rpow_nnnorm_eq_rpow_snorm' hn] at this
   rw [snorm_one_eq_lintegral_nnnorm, snorm_eq_snorm' hn'.ne' hn''.ne, hn''']
   rw [← ENNReal.rpow_le_rpow_iff hn]
   convert this
   rw [ENNReal.mul_rpow_of_nonneg _ _ hn.le]
   congr
-  sorry -- ↑(C ^ ((n - 1) / n)) ^ (↑n / (↑n - 1)) = ↑C
+  rw [ENNReal.coe_rpow_of_nonneg]
+  · congr
+    rw [← NNReal.rpow_mul]
+    convert NNReal.rpow_one _
+    field_simp
+  positivity
