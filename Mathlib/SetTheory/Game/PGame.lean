@@ -1955,13 +1955,12 @@ lemma add_eq_zero_iff (x y : PGame.{u}) :
 lemma Identical.add_right {x₁ x₂ y} : x₁ ≡ x₂ → x₁ + y ≡ x₂ + y :=
   match x₁, x₂, y with
   | mk x₁l x₁r x₁L x₁R, mk x₂l x₂r x₂L x₂R, mk yl yr yL yR => by
-    rintro ⟨⟨hL₁, hL₂⟩, ⟨hR₁, hR₂⟩⟩
-    have h : mk x₁l x₁r x₁L x₁R ≡ mk x₂l x₂r x₂L x₂R := ⟨⟨hL₁, hL₂⟩, ⟨hR₁, hR₂⟩⟩
+    intro h
     refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;> rintro (_ | _) <;> try exact ⟨.inr _, h.add_right⟩
-    · exact (hL₁ _).elim (⟨.inl ·, ·.add_right⟩)
-    · exact (hL₂ _).elim (⟨.inl ·, ·.add_right⟩)
-    · exact (hR₁ _).elim (⟨.inl ·, ·.add_right⟩)
-    · exact (hR₂ _).elim (⟨.inl ·, ·.add_right⟩)
+    · exact (h.1.1 _).elim (⟨.inl ·, ·.add_right⟩)
+    · exact (h.1.2 _).elim (⟨.inl ·, ·.add_right⟩)
+    · exact (h.2.1 _).elim (⟨.inl ·, ·.add_right⟩)
+    · exact (h.2.2 _).elim (⟨.inl ·, ·.add_right⟩)
   termination_by _ => (x₁, x₂, y)
 
 lemma Identical.add_left {x y₁ y₂} (hy : y₁ ≡ y₂) : x + y₁ ≡ x + y₂ :=
