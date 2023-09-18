@@ -14,7 +14,7 @@ import Mathlib.SetTheory.Game.Ordinal
 The basic theory of surreal numbers, built on top of the theory of combinatorial (pre-)games.
 
 A pregame is `Numeric` if all the Left options are strictly smaller than all the Right options, and
-all those options are themselves numeric. In terms of combinatorial games, the numeric games have
+all those options are themselves numeric. In terms of combinatorial games, the numeric games are
 "frozen"; you can only make your position worse by playing, and Left is some definite "number" of
 moves ahead (or behind) Right.
 
