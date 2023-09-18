@@ -212,6 +212,7 @@ protected theorem id : LipschitzWith 1 (@id α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
 #align lipschitz_with.id LipschitzWith.id
 
+/-- The inclusion of a subset is 1-Lipschitz. -/
 protected theorem subtype_val (s : Set α) : LipschitzWith 1 (Subtype.val : s → α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
 #align lipschitz_with.subtype_val LipschitzWith.subtype_val
@@ -254,6 +255,7 @@ protected theorem prod_snd : LipschitzWith 1 (@Prod.snd α β) :=
   LipschitzWith.of_edist_le fun _ _ => le_max_right _ _
 #align lipschitz_with.prod_snd LipschitzWith.prod_snd
 
+/-- The product of Lipschitz functions is Lipschitz. -/
 protected theorem prod {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
     (hg : LipschitzWith Kg g) : LipschitzWith (max Kf Kg) fun x => (f x, g x) := by
   intro x y
@@ -279,6 +281,7 @@ protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ 
       (le_trans (hβ _ _ _) <| ENNReal.mul_left_mono <| le_max_right _ _)
 #align lipschitz_with.uncurry LipschitzWith.uncurry
 
+/-- Iterates of a Lipschitz function are Lipschitz. -/
 protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, LipschitzWith (K ^ n) f^[n]
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
   | n + 1 => by rw [pow_succ']; exact (LipschitzWith.iterate hf n).comp hf
@@ -399,6 +402,7 @@ theorem comap_cobounded_le (hf : LipschitzWith K f) :
   (hf.toLocallyBoundedMap f).2
 #align lipschitz_with.comap_cobounded_le LipschitzWith.comap_cobounded_le
 
+/-- The image of a bounded set under a Lipschitz map is bounded. -/
 theorem bounded_image (hf : LipschitzWith K f) {s : Set α} (hs : Metric.Bounded s) :
     Metric.Bounded (f '' s) :=
   Metric.bounded_iff_ediam_ne_top.2 <|
