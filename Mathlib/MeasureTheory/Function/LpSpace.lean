@@ -271,7 +271,7 @@ protected theorem coe_nnnorm (f : Lp E p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
 
 @[simp, norm_cast]
 theorem nnnorm_coe_ennreal (f : Lp E p μ) : (‖f‖₊ : ℝ≥0∞) = snorm f p μ :=
-  ENNReal.coe_toNNReal <| ne_of_lt f.2
+  ENNReal.coe_toNNReal f.snorm_ne_top
 
 @[simp]
 theorem norm_toLp (f : α → E) (hf : Memℒp f p μ) : ‖hf.toLp f‖ = ENNReal.toReal (snorm f p μ) := by
