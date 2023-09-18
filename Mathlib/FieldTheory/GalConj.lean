@@ -240,7 +240,7 @@ theorem exist_mem_orbit_add_eq_zero (x y : GalConjClasses F E) :
 #align gal_conj_classes.exist_mem_orbit_add_eq_zero GalConjClasses.exist_mem_orbit_add_eq_zero
 
 noncomputable nonrec def minpoly : GalConjClasses F E → F[X] :=
-  Quotient.lift (minpoly F) fun _ b ⟨f, h⟩ => h ▸ minpoly.minpoly_algEquiv f b
+  Quotient.lift (minpoly F) fun _ b ⟨f, h⟩ => h ▸ minpoly.algEquiv_eq f b
 #align gal_conj_classes.minpoly GalConjClasses.minpoly
 
 theorem minpoly_mk (x : E) : minpoly (mk F x) = _root_.minpoly F x :=
