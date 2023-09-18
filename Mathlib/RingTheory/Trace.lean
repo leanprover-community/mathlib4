@@ -273,13 +273,10 @@ theorem trace_gen_eq_sum_roots (x : L) (hf : (minpoly K x).Splits (algebraMap K 
   have injKxL := (algebraMap K⟮x⟯ L).injective
   by_cases hx : IsIntegral K x; swap
   · simp [minpoly.eq_zero hx, trace_gen_eq_zero hx, aroots_def]
-  have hx' : IsIntegral K (AdjoinSimple.gen K x) := by
-    rwa [← isIntegral_algebraMap_iff injKxL, AdjoinSimple.algebraMap_gen]
   rw [← adjoin.powerBasis_gen hx, (adjoin.powerBasis hx).trace_gen_eq_sum_roots] <;>
-      rw [adjoin.powerBasis_gen hx, minpoly.eq_of_algebraMap_eq injKxL hx'] <;>
+    rw [adjoin.powerBasis_gen hx, ← minpoly.algebraMap_eq injKxL] <;>
     try simp only [AdjoinSimple.algebraMap_gen _ _]
-  · exact hf
-  · rfl
+  exact hf
 #align intermediate_field.adjoin_simple.trace_gen_eq_sum_roots IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots
 
 end IntermediateField.AdjoinSimple
