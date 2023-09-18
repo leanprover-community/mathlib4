@@ -165,10 +165,13 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
       wι := fun j => by simp [-BiconeMorphism.wι, ← f.wι j] }
 
 /-- Extract the cone from a bicone. -/
-def toCone : Bicone F ⥤ Cone (Discrete.functor F) where
+def toConeFunctor : Bicone F ⥤ Cone (Discrete.functor F) where
   obj B := { pt := B.pt, π := { app := fun j => B.π j.as } }
   map {X Y} F := { Hom := F.Hom, w := fun _ => F.wπ _ }
-#align category_theory.limits.bicone.to_cone CategoryTheory.Limits.Bicone.toConeₓ
+
+/-- A shorthand for `toConeFunctor.obj` -/
+abbrev toCone (B : Bicone F) : Cone (Discrete.functor F) := toConeFunctor.obj B
+#align category_theory.limits.bicone.to_cone CategoryTheory.Limits.Bicone.toCone
 
 -- TODO Consider changing this API to `toFan (B : Bicone F) : Fan F`.
 
@@ -188,10 +191,13 @@ theorem toCone_π_app_mk (B : Bicone F) (j : J) : (toCone.obj B).π.app ⟨j⟩ 
 theorem toCone_proj (B : Bicone F) (j : J) : Fan.proj (toCone.obj B) j = B.π j := rfl
 
 /-- Extract the cocone from a bicone. -/
-def toCocone : Bicone F ⥤ Cocone (Discrete.functor F) where
+def toCoconeFunctor : Bicone F ⥤ Cocone (Discrete.functor F) where
   obj B := { pt := B.pt, ι := { app := fun j => B.ι j.as } }
   map {X Y} F := { Hom := F.Hom, w := fun _ => F.wι _ }
-#align category_theory.limits.bicone.to_cocone CategoryTheory.Limits.Bicone.toCoconeₓ
+
+/-- A shorthand for `toConeFunctor.obj` -/
+abbrev toCocone (B : Bicone F) : Cocone (Discrete.functor F) := toCoconeFunctor.obj B
+#align category_theory.limits.bicone.to_cocone CategoryTheory.Limits.Bicone.toCocone
 
 @[simp]
 theorem toCocone_pt (B : Bicone F) : (toCocone.obj B).pt = B.pt := rfl
