@@ -15,7 +15,7 @@ import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 # Rademacher's theorem: a Lipschitz function is differentiable almost everywhere
 
 This file proves Rademacher's theorem: a Lipschitz function between finite-dimensional real vector
-spaces is differentiable almost everywhere with respect to Lebesgue measure. This is the content
+spaces is differentiable almost everywhere with respect to the Lebesgue measure. This is the content
 of `LipschitzWith.ae_differentiableAt`. Versions for functions which are Lipschitz on sets are also
 given (see `LipschitzOnWith.ae_differentiableWithinAt`).
 
