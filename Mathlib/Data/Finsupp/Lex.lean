@@ -81,8 +81,6 @@ instance Lex.partialOrder [PartialOrder N] : PartialOrder (Lex (α →₀ N)) :=
 instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
   lt := (· < ·)
   le := (· ≤ ·)
-  __ := @Lex.partialOrder α N _ _ _
-  -- Porting note: Added types to avoid typeclass inference problem.
   __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
 #align finsupp.lex.linear_order Finsupp.Lex.linearOrder
 
