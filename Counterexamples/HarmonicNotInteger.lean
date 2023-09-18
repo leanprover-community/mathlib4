@@ -58,6 +58,32 @@ namespace padicValRat
   (hval : padicValRat p q < padicValRat p r) :
   padicValRat p (q + r) = padicValRat p q := by rw [min_eq_padicValRat hqr hq hr (ne_of_lt hval),min_eq_left (le_of_lt hval)]
 
+-- ⊢ padicValRat 2 (1 / 2 ^ Nat.log 2 n) < padicValRat 2 (∑ x in Finset.range n \ {2 ^ Nat.log 2 n - 1}, 1 / (↑x + 1))
+
+  theorem sum_ge_of_ge {p : ℕ} [hp : Fact (Nat.Prime p)] {n j : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i ≤ n → padicValRat p (F j) ≤ padicValRat p (F i)) (hn0 : ∑ i in Finset.range n, F i ≠ 0) : padicValRat p (F j) ≤ padicValRat p (∑ i in Finset.range n, F i) := by
+  induction' n with d hd
+  · exact False.elim (hn0 rfl)
+  · rw [Finset.sum_range_succ] at hn0 ⊢
+    by_cases h : ∑ x : ℕ in Finset.range d, F x = 0
+    · rw [h, zero_add]
+      exact hF d (by linarith)
+    · refine' le_trans _ (padicValRat.min_le_padicValRat_add (p := p) hn0)
+      · exact le_min (hd (fun i hi => hF _ (by linarith)) h) (hF _ (by linarith))
+
+  theorem finset_sum_eq_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {n j : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i ≤ n → i ≠ j → padicValRat p (F j) < padicValRat p (F i)) (hn0 : ∑ i in Finset.range n, F i ≠ 0) : padicValRat p (F j) <  padicValRat p (∑ i in Finset.range n \ {j}, F i) := by
+  {
+    have hF' : (∀ i, i ≤ n → padicValRat p (F j) ≤ padicValRat p (F i)) := sorry
+    refine' lt_of_le_of_lt (sum_ge_of_ge hF' hn0) _
+    sorry
+  }
+  -- induction' n with d hd
+  -- · exact False.elim (hn0 rfl)
+  -- · rw [Finset.sum_range_succ] at hn0 ⊢
+    -- by_cases h : ∑ x : ℕ in Finset.range d, F x = 0
+    -- · rw [h, zero_add]
+    --   exact hF d (by linarith)
+    -- · refine' le_trans _ (padicValRat.min_le_padicValRat_add (p := p) hn0)
+    --   · exact le_min (hd (fun i hi => hF _ (by linarith)) h) (hF _ (by linarith))
 
 end padicValRat
 
@@ -228,11 +254,12 @@ lemma padicValRat_ge_neg_Nat_log_ge {p n : ℕ}[hp : Fact (Nat.Prime p)]:
   apply padicValNat.le_nat_log_gen Hq
 }
 
-lemma padicValRat_ge_neg_Nat_log_lt {n : ℕ}:
-∀ q, 0 < q ∧ q ≤ n → q ≠ 2^Nat.log 2 n → -Nat.log 2 n < padicValRat 2 (1 / q) := by {
+lemma padicValRat_ge_neg_Nat_log_lt (n : ℕ):
+∀ q, 0 < q ∧ q ≤ n → q ≠ 2^Nat.log 2 n → padicValRat 2 (1 / 2^Nat.log 2 n) < padicValRat 2 (1 / q) := by {
   rintro q ⟨Hq₁,Hq₂⟩ Hq₃
   have H₁ := padicValRat_ge_neg_Nat_log_ne q ⟨Hq₁,Hq₂⟩ Hq₃
   have H₂ := padicValRat_ge_neg_Nat_log_ge (p := 2) q Hq₂
+  rw [padicValRat_2_pow]
   exact lt_of_le_of_ne H₂ H₁.symm
 }
 
@@ -289,8 +316,8 @@ theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
       simpa only [ge_iff_le, gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel, Finset.mem_range, not_lt, Finset.singleton_subset_iff] using h
     }
     {
-      rw [padicValRat_2_pow]
-      -- refine' lt_of_le_of_lt _ _
+
+      -- refine ?_
       sorry
     }
   }
