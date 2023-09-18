@@ -487,6 +487,20 @@ theorem _root_.Measurable.sub_stronglyMeasurable
   rw [sub_eq_add_neg]
   exact hg.add_stronglyMeasurable hf.neg
 
+/-- In a normed vector space, the addition of a strongly measurable function and a measurable
+function is measurable. Note that this is not true without further second-countability assumptions
+for the addition of two measurable functions. -/
+theorem _root_.Measurable.stronglyMeasurable_add
+    {α E : Type*} [MeasurableSpace α] [AddGroup E] [TopologicalSpace E]
+    [MeasurableSpace E] [BorelSpace E] [ContinuousAdd E] [PseudoMetrizableSpace E]
+    {g f : α → E} (hg : Measurable g) (hf : StronglyMeasurable f) :
+    Measurable (f + g) := by
+  rcases hf with ⟨φ, hφ⟩
+  have : Tendsto (fun n x ↦ φ n x + g x) atTop (𝓝 (f + g)) :=
+    tendsto_pi_nhds.2 (fun x ↦ (hφ x).add tendsto_const_nhds)
+  apply measurable_of_tendsto_metrizable (fun n ↦ ?_) this
+  exact hg.simpleFunc_add _
+
 end Arithmetic
 
 section MulAction
