@@ -393,7 +393,7 @@ lemma LeftMovesMul.exists {x y : PGame} {p : (x * y).LeftMoves → Prop} :
   · rintro (⟨i, j, h⟩ | ⟨i, j, h⟩)
     exacts [⟨_, h⟩, ⟨_, h⟩]
 
-lemma right_moves_mul.exists {x y : PGame} {p : (x * y).RightMoves → Prop} :
+lemma RightMovesMul.exists {x y : PGame} {p : (x * y).RightMoves → Prop} :
     (∃ i, p i) ↔
       (∃ i j, p (toRightMovesMul (.inl (i, j)))) ∨ (∃ i j, p (toRightMovesMul (.inr (i, j)))) := by
   cases' x with xl xr xL xR
@@ -414,7 +414,7 @@ lemma memᵣ_mul_iff : ∀ {x y₁ y₂ : PGame},
     x ∈ᵣ y₁ * y₂ ↔
       (∃ i j, x ≡ y₁.moveLeft i * y₂ + y₁ * y₂.moveRight j - y₁.moveLeft i * y₂.moveRight j) ∨
       (∃ i j, x ≡ y₁.moveRight i * y₂ + y₁ * y₂.moveLeft j - y₁.moveRight i * y₂.moveLeft j)
-  | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _ => right_moves_mul.exists
+  | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _ => RightMovesMul.exists
 
 /-- `x * y` and `y * x` have the same moves. -/
 protected lemma mul_comm (x y : PGame) : x * y ≡ y * x :=
