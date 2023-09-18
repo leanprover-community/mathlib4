@@ -3508,6 +3508,7 @@ import Mathlib.Util.DischargerAsTactic
 import Mathlib.Util.DummyLabelAttr
 import Mathlib.Util.Export
 import Mathlib.Util.FlexibleBinders
+import Mathlib.Util.FlexibleBindersFinset
 import Mathlib.Util.Imports
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames

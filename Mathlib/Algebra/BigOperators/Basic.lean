@@ -13,6 +13,7 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Util.FlexibleBindersFinset
 
 #align_import algebra.big_operators.basic from "leanprover-community/mathlib"@"fa2309577c7009ea243cffdf990cd6c84f0ad497"
 
@@ -99,36 +100,6 @@ In practice, this means that parentheses should be placed as follows:
 -- TODO: Use scoped[NS], when implemented?
 namespace BigOperators
 open Lean Meta Mathlib.FlexibleBinders
-
-/-- `finset% t` elaborates `t` as a `Finset`.
-If `t` is a `Set`, then inserts `Set.toFinset`.
-Does not make use of the expected type; useful for big operators over finsets.
-```
-#check finset% Finset.range 2 -- Finset Nat
-#check finset% (Set.univ : Set Bool) -- Finset Bool
-```
--/
-elab (name := finsetStx) "finset% " t:term : term => do
-  let u ← mkFreshLevelMVar
-  let ty ← mkFreshExprMVar (mkSort (.succ u))
-  let x ← Elab.Term.elabTerm t (mkApp (.const ``Finset [u]) ty)
-  let xty ← whnfR (← inferType x)
-  if xty.isAppOfArity ``Set 1 then
-    Elab.Term.elabAppArgs (.const ``Set.toFinset [u]) #[] #[.expr x] none false false
-  else
-    return x
-
-open Lean.Elab.Term.Quotation in
-/-- `quot_precheck` for the `finset%` syntax. -/
-@[quot_precheck ExtendedBinder2.finsetStx] def precheckFinsetStx : Precheck
-  | `(finset% $t) => precheck t
-  | _ => Elab.throwUnsupportedSyntax
-
-/-- For the `finset` domain, `x ∈ s` is a binder over `s` as a `Finset`. -/
-macro_rules
-  | `(binder%(finset%, $e ∈ $s)) => do
-    let (e, ty) ← destructAscription e
-    `(binderResolved%($ty, $e, finset% $s))
 
 /-- `∑ x, f x` is notation for `Finset.sum Finset.univ f`. It is the sum of `f x`,
 where `x` ranges over the finite domain of `f`. -/
