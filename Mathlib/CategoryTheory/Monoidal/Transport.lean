@@ -40,8 +40,16 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-/-- Induce the lawfulness of the monoidal structure along an faithful functor of (plain) categories,
-where the operations are already defined on the destination type `D`. -/
+/--
+Induce the lawfulness of the monoidal structure along an faithful functor of (plain) categories,
+where the operations are already defined on the destination type `D`.
+
+The functor `F` must preserve all the data parts of the monoidal structure between the two
+categories.
+
+Note that `μIsoSymm` and `εIsoSymm` correspond to the reversed versions of
+`CategoryTheory.LaxMonoidalFunctor.μIso` and `CategoryTheory.LaxMonoidalFunctor.εIso`.
+-/
 abbrev induced (F : D ⥤ C) [Faithful F]
     (tensorObj : D → D → D)
     (μIsoSymm : ∀ X Y,
