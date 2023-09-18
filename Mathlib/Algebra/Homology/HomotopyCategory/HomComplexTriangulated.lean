@@ -567,6 +567,50 @@ noncomputable instance : ((bifunctor C).flip.obj L).CommShift ℤ where
 
 end
 
+section
+
+variable {K₁ K₂ : CochainComplex C ℤ} (φ : K₁ ⟶ K₂) (L : CochainComplex C ℤ)
+  [HasBinaryBiproducts C]
+
+/-
+@[simps]
+noncomputable def leftMappingConeIsoX' (i j : ℤ) (hij : j + 1 = i) :
+    (HomComplex (mappingCone φ) L).X i ≅
+      (mappingCone (((bifunctor C).map φ.op).app L)).X j where
+  hom := AddMonoidHom.mk' (fun (α : Cochain (mappingCone φ) L i) =>
+    (MappingCone.inl (((bifunctor C).map φ.op).app L)).v i j (by linarith)
+      ((Cochain.ofHom (MappingCone.inr φ)).comp α (zero_add i)) +
+      (MappingCone.inr (((bifunctor C).map φ.op).app L)).f j ((MappingCone.inl φ).comp α (by linarith))) (by sorry)
+  inv := sorry
+  hom_inv_id := sorry
+  inv_hom_id := sorry
+
+noncomputable def leftMappingConeIsoX (i : ℤ)  :
+    (HomComplex (mappingCone φ) L).X i ≅
+      (mappingCone (((bifunctor C).map φ.op).app L))⟦(-1 : ℤ)⟧.X i :=
+  leftMappingConeIsoX' φ L i (i-1) (by linarith) ≪≫
+    (CochainComplex.shiftFunctorObjXIso _ _ _ _ rfl).symm
+
+lemma leftMappingConeIso_hom (i j : ℤ) (hij : j + 1 = i) :
+    (leftMappingConeIsoX φ L i).hom = (leftMappingConeIsoX' φ L i j hij).hom ≫
+      (CochainComplex.shiftFunctorObjXIso _ _ _ _ (by dsimp; linarith)).inv := by
+  obtain rfl : j = i - 1 := by linarith
+  rfl
+
+lemma leftMappingConeIso_inv (i j : ℤ) (hij : j + 1 = i) :
+    (leftMappingConeIsoX φ L i).inv =
+      (CochainComplex.shiftFunctorObjXIso _ _ _ _ (by dsimp; linarith)).hom ≫
+        (leftMappingConeIsoX' φ L i j hij).inv := by
+  obtain rfl : j = i - 1 := by linarith
+  rfl
+
+@[simps!]
+noncomputable def leftMappingConeIso :
+    HomComplex (mappingCone φ) L ≅ (mappingCone (((bifunctor C).map φ.op).app L))⟦(-1 : ℤ)⟧ :=
+  HomologicalComplex.Hom.isoOfComponents (leftMappingConeIsoX φ L) sorry -/
+
+end
+
 end HomComplex
 
 end CochainComplex
