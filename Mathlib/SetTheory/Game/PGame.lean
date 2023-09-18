@@ -1079,7 +1079,7 @@ def memᵣ (x y : PGame.{u}) : Prop := ∃ b, x ≡ (y.moveRight b)
 @[inherit_doc PGame.memₗ] binder_predicate x " ∈ₗ " y:term => `($x ∈ₗ $y)
 @[inherit_doc PGame.memᵣ] binder_predicate x " ∈ᵣ " y:term => `($x ∈ᵣ $y)
 
-theorem identical_iff' : ∀ {x y : PGame}, Identical x y ↔
+theorem identical_iff : ∀ {x y : PGame}, Identical x y ↔
     Relator.BiTotal (x.moveLeft · ≡ y.moveLeft ·) ∧ Relator.BiTotal (x.moveRight · ≡ y.moveRight ·)
   | mk _ _ _ _, mk _ _ _ _ => Iff.rfl
 
@@ -1101,7 +1101,7 @@ theorem identical_comm {x y} : x ≡ y ↔ y ≡ x :=
 theorem identical_of_is_empty (x y : PGame)
     [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves]
     [IsEmpty y.LeftMoves] [IsEmpty y.RightMoves] : x ≡ y :=
-  identical_iff'.2 <| by simp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
+  identical_iff.2 <| by simp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
 
 /-- `Identical` as a `Setoid`. -/
 def identicalSetoid : Setoid PGame :=
@@ -1148,11 +1148,11 @@ lemma Identical.trans_eq {x y z} (h₁ : x ≡ y) (h₂ : y = z) : x ≡ z := h�
 
 lemma Identical.equiv {x y} (h : x ≡ y) : x ≈ y := ⟨h.le, h.symm.le⟩
 
-theorem identical_iff : ∀ {x y : PGame}, x ≡ y ↔
+theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
     ((∀ i, x.moveLeft i ∈ₗ y) ∧ (∀ j, y.moveLeft j ∈ₗ x)) ∧
       ((∀ i, x.moveRight i ∈ᵣ y) ∧ (∀ j, y.moveRight j ∈ᵣ x))
   | mk xl xr xL xR, mk yl yr yL yR => by
-    convert identical_iff' <;>
+    convert identical_iff <;>
     dsimp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal] <;>
     congr! <;>
     exact exists_congr <| fun _ ↦ identical_comm
@@ -1183,7 +1183,7 @@ theorem memᵣ.congr_left : ∀ {x y : PGame.{u}},
 
 set_option linter.unusedVariables false in
 lemma Identical.ext : ∀ {x y} (hl : ∀ z, z ∈ₗ x ↔ z ∈ₗ y) (hr : ∀ z, z ∈ᵣ x ↔ z ∈ᵣ y), x ≡ y
-  | mk xl xr xL xR, mk yl yr yL yR, hl, hr => identical_iff.mpr
+  | mk xl xr xL xR, mk yl yr yL yR, hl, hr => identical_iff'.mpr
     ⟨⟨fun i ↦ (hl _).mp ⟨i, refl _⟩, fun j ↦ (hl _).mpr ⟨j, refl _⟩⟩,
       ⟨fun i ↦ (hr _).mp ⟨i, refl _⟩, fun j ↦ (hr _).mpr ⟨j, refl _⟩⟩⟩
 
@@ -1196,12 +1196,35 @@ lemma Identical.congr_right {x y z} (h : x ≡ y) : z ≡ x ↔ z ≡ y :=
 lemma Identical.congr_left {x y z} (h : x ≡ y) : x ≡ z ↔ y ≡ z :=
   ⟨fun hz ↦ h.symm.trans hz, fun hz ↦ h.trans hz⟩
 
-lemma Identical.of_equiv {x y : PGame.{u}}
-    (L : x.LeftMoves ≃ y.LeftMoves) (R : x.RightMoves ≃ y.RightMoves)
-    (hL : ∀ i, x.moveLeft i ≡ y.moveLeft (L i)) (hR : ∀ i, x.moveRight i ≡ y.moveRight (R i)) :
+lemma Identical.of_fn {x y : PGame}
+    (l : x.LeftMoves → y.LeftMoves) (il : y.LeftMoves → x.LeftMoves)
+    (r : x.RightMoves → y.RightMoves) (ir : y.RightMoves → x.RightMoves)
+    (hl : ∀ i, x.moveLeft i ≡ y.moveLeft (l i))
+    (hil : ∀ i, x.moveLeft (il i) ≡ y.moveLeft i)
+    (hr : ∀ i, x.moveRight i ≡ y.moveRight (r i))
+    (hir : ∀ i, x.moveRight (ir i) ≡ y.moveRight i) : x ≡ y :=
+  identical_iff.mpr
+    ⟨⟨fun i ↦ ⟨l i, hl i⟩, fun i ↦ ⟨il i, hil i⟩⟩,
+      ⟨fun i ↦ ⟨r i, hr i⟩, fun i ↦ ⟨ir i, hir i⟩⟩⟩
+
+lemma identical_iff_fn {x y : PGame} :
+    x ≡ y ↔
+      (∃ l : _ → _, ∀ i, x.moveLeft i ≡ y.moveLeft (l i)) ∧
+      (∃ il : _ → _, ∀ i, x.moveLeft (il i) ≡ y.moveLeft i) ∧
+      (∃ r : _ → _, ∀ i, x.moveRight i ≡ y.moveRight (r i)) ∧
+      (∃ ir : _ → _, ∀ i, x.moveRight (ir i) ≡ y.moveRight i) := identical_iff.trans
+  ⟨fun ⟨⟨hl, hil⟩, ⟨hr, hir⟩⟩ ↦
+    ⟨Classical.axiomOfChoice hl, Classical.axiomOfChoice hil,
+      Classical.axiomOfChoice hr, Classical.axiomOfChoice hir⟩,
+  fun ⟨⟨l, hl⟩, ⟨il, hil⟩, ⟨r, hr⟩, ⟨ir, hir⟩⟩ ↦
+    ⟨⟨fun i ↦ ⟨l i, hl i⟩, fun i ↦ ⟨il i, hil i⟩⟩,
+      ⟨fun i ↦ ⟨r i, hr i⟩, fun i ↦ ⟨ir i, hir i⟩⟩⟩⟩
+
+lemma Identical.of_equiv {x y : PGame}
+    (l : x.LeftMoves ≃ y.LeftMoves) (r : x.RightMoves ≃ y.RightMoves)
+    (hl : ∀ i, x.moveLeft i ≡ y.moveLeft (l i)) (hr : ∀ i, x.moveRight i ≡ y.moveRight (r i)) :
     x ≡ y :=
-  identical_iff.mpr ⟨⟨fun i ↦ ⟨L i, hL i⟩, fun i ↦ ⟨L.symm i, by simpa using (hL (L.symm i)).symm⟩⟩,
-    ⟨fun i ↦ ⟨R i, hR i⟩, fun i ↦ ⟨R.symm i, by simpa using (hR (R.symm i)).symm⟩⟩⟩
+  .of_fn l l.symm r r.symm hl (by simpa using hl <| l.symm ·) hr (by simpa using hr <| r.symm ·)
 
 /-! ### Relabellings -/
 
@@ -1947,17 +1970,12 @@ lemma Identical.add_right {x₁ x₂ y} : x₁ ≡ x₂ → x₁ + y ≡ x₂ + 
   | mk x₁l x₁r x₁L x₁R, mk x₂l x₂r x₂L x₂R, mk yl yr yL yR => by
     rintro ⟨⟨hL₁, hL₂⟩, ⟨hR₁, hR₂⟩⟩
     have h : mk x₁l x₁r x₁L x₁R ≡ mk x₂l x₂r x₂L x₂R := ⟨⟨hL₁, hL₂⟩, ⟨hR₁, hR₂⟩⟩
-    refine Identical.ext (fun _ ↦ ?_) (fun _ ↦ ?_)
-    · simp_rw [memₗ_add_iff]; dsimp
-      simp_rw [(h.add_right (y := yL _)).congr_right]
-        -- Porting note: explicitly wrote out arguments, see `PGame.quot_mul_assoc`
-      exact or_congr_left ⟨fun ⟨i, hi⟩ ↦ (hL₁ i).imp (fun j hj ↦ hi.trans hj.add_right),
-        fun ⟨i, hi⟩ ↦ (hL₂ i).imp (fun j hj ↦ hi.trans hj.add_right.symm)⟩
-    · simp_rw [memᵣ_add_iff]; dsimp
-      simp_rw [(h.add_right (y := yR _)).congr_right]
-        -- Porting note: explicitly wrote out arguments, see `PGame.quot_mul_assoc`
-      exact or_congr_left ⟨fun ⟨i, hi⟩ ↦ (hR₁ i).imp (fun j hj ↦ hi.trans hj.add_right),
-        fun ⟨i, hi⟩ ↦ (hR₂ i).imp (fun j hj ↦ hi.trans hj.add_right.symm)⟩
+    refine' identical_iff.mpr ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;> rintro (_ | _) <;>
+      try exact ⟨.inr _, h.add_right⟩
+    · exact (hL₁ _).elim (⟨.inl ·, ·.add_right⟩)
+    · exact (hL₂ _).elim (⟨.inl ·, ·.add_right⟩)
+    · exact (hR₁ _).elim (⟨.inl ·, ·.add_right⟩)
+    · exact (hR₂ _).elim (⟨.inl ·, ·.add_right⟩)
   termination_by _ => (x₁, x₂, y)
 
 lemma Identical.add_left {x y₁ y₂} (hy : y₁ ≡ y₂) : x + y₁ ≡ x + y₂ :=
