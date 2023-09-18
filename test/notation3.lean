@@ -237,4 +237,7 @@ variable (s : Finset Nat) (s' : Set Nat) [Fintype s']
 #guard_msgs in #check ∑ x ∈ s', x
 /-- info: ∑ (x : Fin 37), if x < 10 then ∑ (y : Fin 37), if y < 10 then ↑x + ↑y else 0 else 0 : ℕ -/
 #guard_msgs in #check ∑ (x y : Fin 37) < 10, x + y
+
+/-- info: MyPi x ∈ s', 0 < x : Prop -/
+#guard_msgs in #check MyPi x ∈ s', 0 < x
 end

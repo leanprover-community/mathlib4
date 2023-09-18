@@ -338,9 +338,16 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher)
               `(($x:ident))
           -- Now use the body of the lambda for `lit` for the next iteration
           let s ← s.captureSubexpr lit
-          -- TODO merge binders as an inverse to `satisfies_binder_pred%`
-          let binders := binders.push binder
-          go binders s
+          -- Do a little bit of binder merging. If there is no matcher for bounded domains,
+          -- then check if we have `(x : α) (_ : x ∈ dom)` and replace it with `(x ∈ dom)`.
+          if bmatcher?.isNone then
+            if let some lastBinder := binders.back? then
+              if let `(($x:ident : $_)) := lastBinder then
+                if let `((_ : $cond)) := binder then
+                  match cond with
+                  | `($x':ident ∈ $_) => if x == x' then return ← go (binders.pop.push cond) s
+                  | _ => pure ()
+          go (binders.push binder) s
     catch _ =>
       try
         -- (2) Try using bmatcher for bounded quantification
