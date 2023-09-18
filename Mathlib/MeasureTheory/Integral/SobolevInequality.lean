@@ -129,7 +129,7 @@ theorem T_insert_le_T_marginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι) (hp :
           congr!
           push_cast
           ring
-    _ = ∫⋯∫_u, (fun x ↦ ∫⁻ (t : A i),
+    _ = ∫⋯∫_s, (fun x ↦ ∫⁻ (t : A i),
             (f (update x i t) ^ (1 - (s.card : ℝ) * p)
             * ∏ j in (insert i s), (∫⋯∫_{j}, f ∂μ) (update x i t) ^ p)  ∂ (μ i)) ∂μ := by
           rw [marginal_insert' _ _ hi]
