@@ -29,19 +29,22 @@ Then any nonzero polynomial `p : MvPolynomial σ R` has a largest nonzero monomi
 (`AddMonoidAlgebra.supDegree toLex p`) and the corresponding coefficient is
 `AddMonoidAlgebra.leadingCoeff toLex p`. If `p` is symmetric, any permutation of a nonzero monomial
 in `p` must also be a nonzero monomial in `p`, so the largest nonzero monomial must be antitone
-as a function `σ → ℕ` (`MvPolynomial.IsSymmetric.antitone_supDegree`). Therefore, we can use
-`Fin.inv_accumulate` to construct a monomial in `MvPolynomial (Fin n) R` whose image under
-`esymmAlgHom` has the same `supDegree` and `leadingCoeff` as `p`: see `Fin.surjective_accumulate`
-and `MvPolynomial.supDegree_esymmAlgHom_monomial`. If we subtract the image from `p`, we are left
-with a symmetric polynomial of lower `supDegree`, which we may assume to be in the image by
-induction, thanks to the well-orderedness of `Lex (σ →₀ ℕ)`; the surjectivity of `esymmAlgHom`
+as a function `σ → ℕ` (`MvPolynomial.IsSymmetric.antitone_supDegree`). We can then construct a
+monomial in `MvPolynomial (Fin n) R` whose image under `esymmAlgHom` has the same `supDegree` and
+`leadingCoeff` as `p`: `MvPolynomial.supDegree_esymmAlgHom_monomial` says that the `supDegree` of
+the image is given by `Fin.accumulate`, and `Fin.surjective_accumulate` says that
+`Fin.inv_accumulate` is inverse to `Fin.accumulate` for antitone monomials.
+If we subtract the image from `p`, we are left with a symmetric polynomial of
+lower `supDegree`, which we may assume to be in the image by induction,
+thanks to the well-orderedness of `Lex (σ →₀ ℕ)`; the surjectivity of `esymmAlgHom`
 follows. For injectivity, just notice that the images of different monic monomials in
 `MvPolynomial (Fin n) R` have different `supDegree` (`Fin.injective_accumulate`), so if there is
-at least one nonzero monomial, the images cannot all cancel out.
+at least one nonzero monomial, the images cannot all cancel out
+(`AddMonoidAlgebra.sum_ne_zero_of_injOn_supDegree`).
 
 We actually only define `Fin.accumulate` in the case `σ := Fin m` rather than an arbitrary Fintype
-with a linear order: we show that `esymmAlgHom` is in fact surjective whenever `m ≤ n` and
-injective whenever `n ≤ m`, and then transfer the results to any Fintype `σ`: see
+with a linear order; we show that `esymmAlgHom` is in fact surjective whenever `m ≤ n` and
+injective whenever `n ≤ m`, and then transfer the results to any Fintype `σ`. See
 `MvPolynomial.injective_esymmAlgHom` and `MvPolynomial.surjective_esymmAlgHom`.
 
 -/
