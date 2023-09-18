@@ -154,44 +154,48 @@ lemma U_columns' (A : Matrix (Fin M) (Fin N) 𝕂) :
   rw [svdU₂, svdU₁']
   simp only [reindex_apply, Equiv.refl_symm, Equiv.coe_refl, fromColumns_toColumns]
 
-lemma V_conjTranspose_mul_V (A : Matrix (Fin M) (Fin N) 𝕂) :
-    (A.svdV₁ᴴ  *  A.svdV₁ = 1 ∧ A.svdV₂ᴴ  *  A.svdV₂ = 1) ∧
-    (A.svdV₂ᴴ  *  A.svdV₁ = 0 ∧ A.svdV₁ᴴ  *  A.svdV₂ = 0) := by
-  simp_rw [svdV₁, toColumns₁, svdV₂, toColumns₂, reindex_apply, Equiv.refl_symm, Equiv.coe_refl,
+lemma V₁_conjTranspose_mul_V₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV₁ᴴ * A.svdV₁ = 1 := by
+  simp_rw [svdV₁, toColumns₁, reindex_apply, Equiv.refl_symm, Equiv.coe_refl, submatrix_apply,
+    id_eq, HMul.hMul, dotProduct, conjTranspose_apply, of_apply, ← conjTranspose_apply,
+    IsHermitian.conjTranspose_eigenvectorMatrix, ← mul_apply,
+    Matrix.mul_eq_one_comm.1 (IsHermitian.eigenvectorMatrix_mul_inv _), one_apply,
+    EmbeddingLike.apply_eq_iff_eq, Sum.inl.injEq]
+  rfl
+
+lemma V₂_conjTranspose_mul_V₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV₂ᴴ * A.svdV₂ = 1 := by
+  simp_rw [svdV₂, toColumns₂, reindex_apply, Equiv.refl_symm, Equiv.coe_refl,
     submatrix_apply, id_eq, HMul.hMul, dotProduct, conjTranspose_apply, of_apply,
     ← conjTranspose_apply, IsHermitian.conjTranspose_eigenvectorMatrix, ← mul_apply,
-    Matrix.mul_eq_one_comm.1 (IsHermitian.eigenvectorMatrix_mul_inv _)]
-  constructor
-  swap
-  simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, EmbeddingLike.apply_eq_iff_eq,
-   not_false_eq_true, one_apply_ne, zero_apply]
-  exact ⟨rfl, rfl⟩
-  constructor
-  all_goals (
-    funext i j
-    by_cases i = j
-    simp_rw [h, one_apply_eq, one_apply_ne h]
-    rw [one_apply_ne]
-    simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inr.injEq, Sum.inl.injEq, h]
-  )
+    Matrix.mul_eq_one_comm.1 (IsHermitian.eigenvectorMatrix_mul_inv _), one_apply,
+    EmbeddingLike.apply_eq_iff_eq, Sum.inr.injEq]
+  rfl
 
-lemma V₁_conjTranspose_mul_V₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV₁ᴴ * A.svdV₁ = 1 :=
-  (V_conjTranspose_mul_V A).1.1
+lemma V₂_conjTranspose_mul_V₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV₂ᴴ * A.svdV₁ = 0 := by
+  simp_rw [svdV₂, toColumns₂, svdV₁, toColumns₁, reindex_apply, Equiv.refl_symm, Equiv.coe_refl,
+    submatrix_apply, id_eq, HMul.hMul, dotProduct, conjTranspose_apply, of_apply,
+    ← conjTranspose_apply, IsHermitian.conjTranspose_eigenvectorMatrix, ← mul_apply,
+    Matrix.mul_eq_one_comm.1 (IsHermitian.eigenvectorMatrix_mul_inv _), one_apply,
+    EmbeddingLike.apply_eq_iff_eq]
+  rfl
 
-lemma V₂_conjTranspose_mul_V₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV₂ᴴ * A.svdV₂ = 1 :=
-  (V_conjTranspose_mul_V A).1.2
+lemma V₁_conjTranspose_mul_V₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV₁ᴴ * A.svdV₂ = 0 := by
+  simp_rw [svdV₂, toColumns₂, svdV₁, toColumns₁, reindex_apply, Equiv.refl_symm, Equiv.coe_refl,
+    submatrix_apply, id_eq, HMul.hMul, dotProduct, conjTranspose_apply, of_apply,
+    ← conjTranspose_apply, IsHermitian.conjTranspose_eigenvectorMatrix, ← mul_apply,
+    Matrix.mul_eq_one_comm.1 (IsHermitian.eigenvectorMatrix_mul_inv _), one_apply,
+    EmbeddingLike.apply_eq_iff_eq]
+  rfl
 
-lemma V₂_conjTranspose_mul_V₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV₂ᴴ * A.svdV₁ = 0 :=
-  (V_conjTranspose_mul_V A).2.1
-
-lemma V₁_conjTranspose_mul_V₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV₁ᴴ * A.svdV₂ = 0 :=
-  (V_conjTranspose_mul_V A).2.2
-
-lemma V_conjTranspose_mul_V (A : Matrix (Fin M) (Fin N) 𝕂) :
-    (fromColumns A.svdV₁ A.svdV₂)ᴴ  *  (fromColumns A.svdV₁ A.svdV₂) = 1 := by
-  rw [conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromRows_mul_fromColumns,
+lemma V_conjTranspose_mul_V (A : Matrix (Fin M) (Fin N) 𝕂) : (A.svdV)ᴴ  *  (A.svdV) = 1 := by
+  rw [svdV, conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromRows_mul_fromColumns,
     V₁_conjTranspose_mul_V₂, V₁_conjTranspose_mul_V₁, V₂_conjTranspose_mul_V₂,
     V₂_conjTranspose_mul_V₁, fromBlocks_one]
+
+lemma V_mul_conjTranspose_V (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV  *  A.svdVᴴ = 1 := by
+  rw [svdV, conjTranspose_fromColumns_eq_fromRows_conjTranspose,
+    fromColumns_mul_fromRows_eq_one_comm, ← conjTranspose_fromColumns_eq_fromRows_conjTranspose,
+    ← svdV, V_conjTranspose_mul_V]
+  exact eigenColumnEquiv A
 
 lemma S_zero_blocks (A : Matrix (Fin M) (Fin N) 𝕂) :
     A.svdS.toBlocks₁₂ = 0 ∧ A.svdS.toBlocks₂₁ = 0 ∧ A.svdS.toBlocks₂₂ = 0 := by
@@ -390,7 +394,7 @@ lemma svdσ_inv_mapK (A : Matrix (Fin M) (Fin N) 𝕂) :
 
 lemma U₁_conjTranspose_mul_U₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdU₁ᴴ  *  A.svdU₁ = 1 := by
   rw [svdU₁, conjTranspose_mul, conjTranspose_mul, Matrix.mul_assoc, Matrix.mul_assoc,
-    Matrix.mul_assoc, ← Matrix.mul_assoc Aᴴ, reduced_spectral_theorem, Matrix.mul_assoc,
+    Matrix.mul_assoc, ← Matrix.mul_assoc Aᴴ, V₁_mul_μ_mul_V₁_conjTranspose, Matrix.mul_assoc,
     ← Matrix.mul_assoc _ A.svdV₁, V₁_conjTranspose_mul_V₁, Matrix.one_mul,
     Matrix.mul_assoc A.svdV₁, ← Matrix.mul_assoc _ A.svdV₁, V₁_conjTranspose_mul_V₁,
     Matrix.one_mul, svdσ_inv_mapK, ← conjTranspose_map, ← Matrix.map_mul, ← Matrix.map_mul,
@@ -426,7 +430,7 @@ lemma mul_V₂_eq_zero (A : Matrix (Fin M) (Fin N) 𝕂) :
     A  *  A.svdV₂ = 0 := by
   suffices h : Aᴴ * A * A.svdV₂ = 0
   · exact (conjTranspose_mul_self_mul_eq_zero _ _).1 h
-  rw [reduced_spectral_theorem, Matrix.mul_assoc, V₁_conjTranspose_mul_V₂, Matrix.mul_zero]
+  rw [V₁_mul_μ_mul_V₁_conjTranspose, Matrix.mul_assoc, V₁_conjTranspose_mul_V₂, Matrix.mul_zero]
 
 lemma conjTranspose_mul_U₂_eq_zero (A : Matrix (Fin M) (Fin N) 𝕂) : Aᴴ  *  A.svdU₂ = 0 := by
   suffices h : A * Aᴴ * A.svdU₂ = 0
@@ -449,15 +453,12 @@ lemma U_inv (A : Matrix (Fin M) (Fin N) 𝕂) :
     U₂_conjTranspose_mul_U₁, fromBlocks_one]
 
 lemma V_conjTranspose_mul_inj (A : Matrix (Fin M) (Fin N) 𝕂) {m : Type} :
-    Function.Injective (fun x : Matrix m (Fin N) 𝕂 => x  *  (fromColumns A.svdV₁ A.svdV₂)) := by
+    Function.Injective (fun x : Matrix m (Fin N) 𝕂 => x  *  A.svdV) := by
   intro X Y h
-  replace h := congr_arg (fun x => x * (fromColumns A.svdV₁ A.svdV₂)ᴴ) h
+  replace h := congr_arg (fun x => x * A.svdVᴴ) h
   dsimp at h
-  have V_inv' := V_inv A
-  rw [conjTranspose_fromColumns_eq_fromRows_conjTranspose, ← fromColumns_mul_fromRows_eq_one_comm,
-    ← conjTranspose_fromColumns_eq_fromRows_conjTranspose] at V_inv'
-  rwa [Matrix.mul_assoc, Matrix.mul_assoc, V_inv', Matrix.mul_one, Matrix.mul_one] at h
-  apply eigenColumnEquiv
+  rwa [Matrix.mul_assoc, Matrix.mul_assoc, V_mul_conjTranspose_V A,
+    Matrix.mul_one, Matrix.mul_one] at h
 
 /-- # Main SVD Theorem
 Any matrix A (M × N) with rank r = A.rank and  with elements in ℝ or ℂ fields can be decompsed
@@ -471,10 +472,11 @@ Note that UUᴴ = UᴴU = 1 and VVᴴ=VᴴV = 1 as can be seen in lemmas `U_inv`
 
 theorem svd_theorem (A : Matrix (Fin M) (Fin N) 𝕂) :
     A = A.svdU  *  (fromBlocks (map A.svdσ (algebraMap ℝ 𝕂)) 0 0 0)  *  A.svdVᴴ := by
-  apply_fun (fun x => x * (fromColumns A.svdV₁ A.svdV₂))
-  simp_rw [svdU, svdV, Matrix.mul_assoc, V_inv, Matrix.mul_one, fromColumns_mul_fromBlocks,
-    mul_fromColumns, mul_V₂_eq_zero, Matrix.mul_zero, add_zero, fromColumns_ext_iff, and_true,
-    svdU₁, Matrix.nonsing_inv_mul_cancel_right _ _ (IsUnit_det_svdσ_mapK _)]
+  apply_fun (fun x => x * A.svdV)
+  simp_rw [svdU, Matrix.mul_assoc, V_conjTranspose_mul_V, Matrix.mul_one,
+    fromColumns_mul_fromBlocks, svdV, mul_fromColumns, Matrix.mul_zero, add_zero,
+    fromColumns_ext_iff, mul_V₂_eq_zero, and_true, svdU₁,
+    Matrix.nonsing_inv_mul_cancel_right _ _ (IsUnit_det_svdσ_mapK _)]
   exact (V_conjTranspose_mul_inj _)
 
 end Matrix
