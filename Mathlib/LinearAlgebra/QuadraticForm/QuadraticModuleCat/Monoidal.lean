@@ -52,6 +52,8 @@ def associator (X Y Z : QuadraticModuleCat.{u} R) :
   exact this
 #check MonoidalCategory.associator
 
+end instMonoidalCategory
+
 count_heartbeats in
 instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
@@ -59,18 +61,18 @@ instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
     (tensorObj := instMonoidalCategory.tensorObj)
     (μIsoSymm := fun X Y => eqToIso rfl)
     (whiskerLeft := fun X _ _ f => tensorHom (𝟙 _) f)
-    (whiskerLeft_eq := sorry)
+    -- (whiskerLeft_eq := sorry)
     (whiskerRight := @fun X₁ X₂ (f : X₁ ⟶ X₂) Y => tensorHom f (𝟙 _))
-    (whiskerRight_eq := sorry)
+    -- (whiskerRight_eq := sorry)
     (tensorHom := tensorHom)
-    (tensorHom_eq := sorry)
+    -- (tensorHom_eq := sorry)
     (tensorUnit' := tensorUnit)
     (εIsoSymm := eqToIso rfl)
     (associator := associator)
-    (associator_eq := sorry)
+    -- (associator_eq := sorry)
     (leftUnitor := fun X => ofIso (tensorLId X.form))
-    (leftUnitor_eq := sorry)
+    -- (leftUnitor_eq := sorry)
     (rightUnitor := fun X => ofIso (tensorRId X.form))
-    (rightUnitor_eq := sorry)
+    -- (rightUnitor_eq := sorry)
 
 end QuadraticModuleCat
