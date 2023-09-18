@@ -579,19 +579,57 @@ noncomputable def leftMappingConeIsoX (i j : ℤ) (hij : j + 1 = i) :
   hom := AddMonoidHom.mk' (fun (α : Cochain (mappingCone φ) L i) =>
     (MappingCone.inl (((bifunctor C).map φ.op).app L)).v i j (by linarith)
       ((Cochain.ofHom (MappingCone.inr φ)).comp α (zero_add i)) +
-      (MappingCone.inr (((bifunctor C).map φ.op).app L)).f j ((MappingCone.inl φ).comp α (by linarith))) (by sorry)
+      j.negOnePow • (MappingCone.inr (((bifunctor C).map φ.op).app L)).f j
+        ((MappingCone.inl φ).comp α (by linarith))) (fun α₁ α₂ => by
+          dsimp
+          rw [Cochain.comp_add, map_add, Cochain.comp_add, map_add, smul_add]
+          abel)
   inv := sorry
   hom_inv_id := sorry
   inv_hom_id := sorry
 
+set_option maxHeartbeats 400000 in
 noncomputable def leftMappingConeIso :
     (HomComplex (mappingCone φ) L)⟦(1 : ℤ)⟧ ≅ (mappingCone (((bifunctor C).map φ.op).app L)) :=
   HomologicalComplex.Hom.isoOfComponents
       (fun i => leftMappingConeIsoX φ L (i+1) i rfl) (by
+    -- needs some cleaning up...
     rintro n _ rfl
     ext (α : Cochain (mappingCone φ) L (n + 1))
     dsimp [leftMappingConeIsoX]
-    sorry)-/
+    simp
+    erw [← comp_apply, ← comp_apply]
+    rw [MappingCone.inl_v_d _ _ _ (n + 1 + 1) (by linarith) (by linarith),
+      MappingCone.inr_f_d]
+    erw [comp_apply]
+    obtain ⟨α₁, α₂, rfl⟩ := MappingCone.cochain_from_break _ α n rfl
+    simp
+    erw [AddMonoidHom.sub_apply]
+    erw [map_add]
+    rw [Cochain.comp_add]
+    rw [map_add]
+    erw [AddMonoidHom.neg_apply]
+    erw [HomComplex_d_apply]
+    erw [HomComplex_d_apply]
+    erw [δ_comp _ _ (add_comm 1 n) 2 (n+1) _ (by linarith) (by linarith) (by linarith)]
+    simp
+    rw [Cochain.comp_neg, Cochain.comp_add, Cochain.comp_neg]
+    erw [AddMonoidHom.neg_apply]
+    simp
+    erw [map_zero, zero_add]
+    rw [Cochain.comp_neg]
+    erw [HomComplex_d_apply]
+    rw [Cochain.comp_neg]
+    simp
+    rw [δ_comp _ _ (zero_add (n+1)) 1 (n + 1 + 1) _ (by linarith) (by linarith) (by linarith)]
+    simp
+    erw [comp_apply, comp_apply]
+    erw [HomComplex_d_apply]
+    rw [map_add, map_neg, smul_add, map_zsmul, smul_smul, smul_neg, Int.negOnePow_mul_self,
+      one_smul, Int.negOnePow_succ, neg_smul, neg_neg]
+    have : ∀ (a b c : (mappingCone (NatTrans.app ((bifunctor C).map φ.op) L)).X (n + 1)),
+      a - b + c = -b + (c + a) := by intros; abel
+    apply this)-/
 
 end
 
