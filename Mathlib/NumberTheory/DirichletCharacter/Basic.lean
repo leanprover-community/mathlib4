@@ -39,7 +39,7 @@ lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) :
 lemma toUnitHom_eq_iff (ψ : DirichletCharacter R n) :
   toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
 
-lemma eval_sub (x : ZMod n) :
+lemma eval_modulus_sub (x : ZMod n) :
   χ (n - x) = χ (-x) := by simp
 
 lemma isPeriodic {m : ℕ} (hm : n ∣ m) (a : ℤ) :
