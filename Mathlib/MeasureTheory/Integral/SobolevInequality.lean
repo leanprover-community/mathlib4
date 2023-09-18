@@ -290,16 +290,16 @@ integral of the Fréchet derivative of `u`.
 For a basis-free version, see `lintegral_pow_le_pow_lintegral_fderiv`. -/
 theorem lintegral_pow_le_pow_lintegral_fderiv_aux {u : (ι → ℝ) → ℝ} (hu : ContDiff ℝ 1 u)
     (h2u : HasCompactSupport u) :
-    ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ))
+    ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ ((#ι : ℝ) / (#ι - 1 : ℝ))
     ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
   have : (1:ℝ) ≤ ↑#ι - 1
   · have hι : (2:ℝ) ≤ #ι := by exact_mod_cast Fintype.one_lt_card
     linarith
-  calc ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ))
+  calc ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ ((#ι : ℝ) / (#ι - 1 : ℝ))
       = ∫⁻ x, ((‖u x‖₊ : ℝ≥0∞) ^ (1 / (#ι - 1 : ℝ))) ^ (#ι : ℝ) := by
         -- a little algebraic manipulation of the exponent
         congr! 2 with x
-        rw [← ENNReal.coe_rpow_of_nonneg _ (by positivity), ← ENNReal.rpow_mul]
+        rw [← ENNReal.rpow_mul]
         field_simp
     _ = ∫⁻ x, ∏ _i : ι, (‖u x‖₊ : ℝ≥0∞) ^ (1 / (#ι - 1 : ℝ)) := by
         -- express the left-hand integrand as a product of identical factors
@@ -338,6 +338,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 
 open FiniteDimensional
 
+section
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 set_option linter.unusedVariables false in
@@ -348,7 +349,7 @@ integral of the pointwise expression `|u x| ^ (n / (n - 1))` is bounded above by
 `n / (n - 1)`-th power of the Lebesgue integral of the Fréchet derivative of `u`. -/
 theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E) :
     ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
-    ∫⁻ x, ‖u x‖₊ ^ ((finrank ℝ E : ℝ) / (finrank ℝ E - 1 : ℝ)) ∂μ
+    ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ ((finrank ℝ E : ℝ) / (finrank ℝ E - 1 : ℝ)) ∂μ
     ≤ C * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂μ) ^ ((finrank ℝ E : ℝ) / (finrank ℝ E - 1 : ℝ)) := by
   -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
   -- matrices in `lintegral_pow_le_pow_lintegral_fderiv_aux`.
@@ -384,10 +385,10 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E) :
   have hv : ContDiff ℝ 1 v := hu.comp e.symm.contDiff
   have h2v : HasCompactSupport v := h2u.comp_homeomorph e.symm.toHomeomorph
   have :=
-  calc ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ∂(volume : Measure (ι → ℝ)).map e.symm
-      = ∫⁻ y, ‖v y‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+  calc ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ∂(volume : Measure (ι → ℝ)).map e.symm
+      = ∫⁻ y, (‖v y‖₊ : ℝ≥0∞) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
         refine lintegral_map ?_ e.symm.continuous.measurable
-        exact (hu.continuous.measurable.nnnorm.pow_const _).coe_nnreal_ennreal
+        exact hu.continuous.measurable.nnnorm.coe_nnreal_ennreal.pow_const _
     _ ≤ (∫⁻ y, ‖fderiv ℝ v y‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) :=
         lintegral_pow_le_pow_lintegral_fderiv_aux hv h2v
     _ = (∫⁻ y, ‖(fderiv ℝ u (e.symm y)).comp (fderiv ℝ e.symm y)‖₊) ^ ((#ι:ℝ) / (#ι - 1 : ℝ)) := by
@@ -418,3 +419,34 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E) :
   simp_rw [hιcard] at this hι
   rw [ENNReal.mul_rpow_of_nonneg _ _ hι.le, ← mul_assoc]
   exact this
+
+end
+
+set_option linter.unusedVariables false in
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+compactly-supported real-valued function on a normed space `E` of finite dimension `n ≥ 2`, equipped
+with Haar measure. There exists a constant `C` depending only on `E`, such that the `Lᵖ` norm of
+`u`, where `p := n / (n - 1)`, is bounded above by `C` times the `L¹` norm of the Fréchet derivative
+of `u`. -/
+theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E) :
+    ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    snorm u (finrank ℝ E / (finrank ℝ E - 1)) μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
+  set n := finrank ℝ E
+  have hn : 0 < (n : ℝ) / (n - 1 : ℝ) := by
+    have : 2 ≤ (n:ℝ) := by norm_cast
+    have : 1 ≤ (n:ℝ) - 1 := by linarith
+    positivity
+  have hn' : 0 < (n : ℝ≥0∞) / (n - 1 : ℝ≥0∞) := sorry
+  have hn'' : (n : ℝ≥0∞) / (n - 1 : ℝ≥0∞) < ⊤ := sorry
+  have hn''' : ENNReal.toReal (↑n / (↑n - 1)) = ↑n / (↑n - 1) := sorry
+  obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv μ hE
+  use C ^ ((n - 1) / n)
+  intro u hu h2u
+  have := hC hu h2u
+  rw [lintegral_rpow_nnnorm_eq_rpow_snorm' hn] at this
+  rw [snorm_one_eq_lintegral_nnnorm, snorm_eq_snorm' hn'.ne' hn''.ne, hn''']
+  rw [← ENNReal.rpow_le_rpow_iff hn]
+  convert this
+  rw [ENNReal.mul_rpow_of_nonneg _ _ hn.le]
+  congr
+  sorry -- ↑(C ^ ((n - 1) / n)) ^ (↑n / (↑n - 1)) = ↑C
