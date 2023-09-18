@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.GroupTheory.Coprod
+import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.Complement
 
 /-!
@@ -107,7 +107,7 @@ theorem lift_of (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G
 theorem hom_ext {f g : HNNExtension G A B φ →* M}
     (hg : f.comp of = g.comp of) (ht : f t = g t) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
-    Coprod.ext_hom _ _ hg (MonoidHom.ext_mint ht)
+    Coprod.hom_ext hg (MonoidHom.ext_mint ht)
 
 @[elab_as_elim]
 theorem induction_on {motive : HNNExtension G A B φ → Prop}
