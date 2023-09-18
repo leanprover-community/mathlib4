@@ -4,9 +4,9 @@ Released under Apahe 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.GroupTheory.PushoutI
 import Mathlib.GroupTheory.HNNExtension
 import Mathlib.GroupTheory.SemidirectProduct
+import Mathlib.GroupTheory.FreeGroup
 
 namespace OneRelator
 
@@ -128,8 +128,24 @@ namespace HNNEmbData
 
 variable {α : Type*} [DecidableEq α] {r : FreeGroup α} (d : HNNEmbData r)
 
+def xCount : Multiplicative ℤ :=
+  FreeGroup.proj d.x r
+
+def tCount : Multiplicative ℤ :=
+  FreeGroup.proj d.t r
+
+def psi : FreeGroup α →* FreeGroup α :=
+  if d.xCount = 1 then MonoidHom.id _
+  else FreeGroup.lift
+    (fun a =>
+      if a = d.t
+      then (FreeGroup.of d.t)^(toAdd d.xCount)
+      else if a = d.x
+      then FreeGroup.of d.x * (FreeGroup.of d.t)^(-toAdd d.tCount)
+      else FreeGroup.of a)
+
 def newRelator : FreeGroup ({ b // b ≠ d.t } × Multiplicative ℤ) :=
-  (freeGroupEquivSemidirectProduct d.t r).left
+  (freeGroupEquivSemidirectProduct d.t (d.psi r)).left
 
 def subgroupASet : Set ({ b : α // b ≠ d.t } × Multiplicative ℤ) :=
   { p : { b : α // b ≠ d.t } × Multiplicative ℤ | p.1 = d.x →
@@ -143,8 +159,11 @@ def subgroupBSet : Set ({ b : α // b ≠ d.t } × Multiplicative ℤ) :=
                  (p.1, z₂) ∈ (newRelator d).vars ∧
           z₁ < p.2 ∧ ↑p.2 ≤ z₂ }
 
-def subgroupASetEquivSubgroupBSet :
-    d.subgroupASet ≃ d.subgroupBSet :=
+theorem subgroupASet_subset_conjVars : d.subgroupASet ⊆ d.newRelator.conjVars := sorry
+
+theorem subgroupBSet_subset_conjVars : d.subgroupBSet ⊆ d.newRelator.conjVars := sorry
+
+def subgroupASetEquivSubgroupBSet : d.subgroupASet ≃ d.subgroupBSet :=
   { toFun := fun p =>
       if hpd : p.1.1 = d.x
       then ⟨(p.1.1, p.1.2 * ofAdd 1), by
@@ -177,6 +196,8 @@ def subgroupA : Subgroup (OneRelator d.newRelator) :=
 
 def subgroupB : Subgroup (OneRelator d.newRelator) :=
   MonoidHom.range (FreeGroup.lift (fun p : d.subgroupASet => of p.1))
+
+def FreiheitsatzProp (r : FreeGroup α) :
 
 noncomputable def subgroupEquiv : d.subgroupA ≃* d.subgroupB := by
   dsimp [subgroupA, subgroupB]
