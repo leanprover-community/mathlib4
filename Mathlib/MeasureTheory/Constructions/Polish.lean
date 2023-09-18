@@ -552,8 +552,8 @@ theorem borelSpace_codomain [SecondCountableTopology Y] {f : X → Y} (hf : Meas
   ⟨(hf.map_measurableSpace_eq hsurj).symm.trans <| hf.map_measurableSpace_eq_borel hsurj⟩
 #align measurable.borel_space_codomain Measurable.borelSpace_codomain
 
-/-- If `f : X → Y` is a Borel measurable map from a standard Borel space to a topological space with second countable topology, then the preimage of a set `s` is measurable if and only if the set is
-measurable in `Set.range f`. -/
+/-- If `f : X → Y` is a Borel measurable map from a standard Borel space to a topological space with second countable topology, then the preimage of a set `s` is measurable if and only if
+the set is measurable in `Set.range f`. -/
 theorem measurableSet_preimage_iff_preimage_val {f : X → Y} [SecondCountableTopology (range f)]
     (hf : Measurable f) {s : Set Y} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
