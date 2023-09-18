@@ -66,4 +66,26 @@ end CharacterModuleFunctor
 lemma exists_character_apply_ne_zero_of_ne_zero {m : M} (ne_zero : m ≠ 0) :
     ∃ (c : CharacterModule M), c m ≠ 0 := by
   let M' : Submodule ℤ M := ℤ ∙ m
-  have := AddCommGroupCat.enough_injectives_aux_proofs.toRatCircle
+  let L := AddCommGroupCat.ofHom
+    (⟨⟨ULift.up, by intros; rfl⟩, by intros; rfl⟩ ∘ₗ
+      AddCommGroupCat.enough_injectives_aux_proofs.toRatCircle
+        (A_ := AddCommGroupCat.of M) (a := m)).toAddMonoidHom
+  let ι : AddCommGroupCat.of M' ⟶ AddCommGroupCat.of M := (Submodule.subtype _).toAddMonoidHom
+  have : Mono ι
+  · rw [AddCommGroupCat.mono_iff_injective]
+    exact Subtype.val_injective
+  use ⟨⟨ULift.down, by intros; rfl⟩, by intros; rfl⟩ ∘ₗ (Injective.factorThru L ι).toIntLinearMap
+  rw [LinearMap.comp_apply, LinearMap.coe_mk, AddHom.coe_mk]
+  -- rintro (r : _ = ULift.down _)
+  -- rw [ULift.down_inj, AddMonoidHom.coe_toIntLinearMap] at r
+  have eq1 := FunLike.congr_fun (Injective.comp_factorThru L ι)
+    ⟨m, Submodule.mem_span_singleton_self _⟩
+  simp only at eq1
+  rw [comp_apply, AddCommGroupCat.ofHom_apply, LinearMap.toAddMonoidHom_coe,
+    LinearMap.toAddMonoidHom_coe, LinearMap.comp_apply, LinearMap.coe_mk, AddHom.coe_mk,
+    Submodule.subtype_apply, Subtype.coe_mk] at eq1
+  have eq2 := (ULift.ext_iff _ _).mp eq1
+  dsimp only at eq2
+  erw [eq2]
+  apply AddCommGroupCat.enough_injectives_aux_proofs.toRatCircle_apply_self_ne_zero
+  assumption
