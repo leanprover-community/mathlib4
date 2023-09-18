@@ -163,7 +163,7 @@ set_option linter.uppercaseLean3 false in
 --Porting note: removed `simp`: `simp` can prove it.
 theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
     derivative (∑ b in s, f b) = ∑ b in s, derivative (f b) :=
-  derivative.map_sum
+  map_sum ..
 #align polynomial.derivative_sum Polynomial.derivative_sum
 
 --Porting note: removed `simp`: `simp` can prove it.
