@@ -279,14 +279,17 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] {f} (hf : Measurable f) 
 
 /-! ## The Gagliardo-Nirenberg-Sobolev inequality -/
 
-variable [Nontrivial ι] {u : (ι → ℝ) → ℝ}
+variable [Nontrivial ι]
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported real-valued function on `ℝⁿ`, for `n ≥ 2`.  (More literally we encode `ℝⁿ` as
 `ι → ℝ` where `n := #ι` is finite and at least 2.)  Then the Lebesgue integral of the pointwise
 expression `|u x| ^ (n / (n - 1))` is bounded above by the `n / (n - 1)`-th power of the Lebesgue
-integral of the Fréchet derivative of `u`. -/
-theorem lintegral_pow_le (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u) :
+integral of the Fréchet derivative of `u`.
+
+For a basis-free version, see `lintegral_pow_le_pow_lintegral_fderiv`. -/
+theorem lintegral_pow_le_pow_lintegral_fderiv_aux {u : (ι → ℝ) → ℝ} (hu : ContDiff ℝ 1 u)
+    (h2u : HasCompactSupport u) :
     ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ))
     ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
   have : (1:ℝ) ≤ ↑#ι - 1
@@ -329,3 +332,89 @@ theorem lintegral_pow_le (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u) :
     _ ≤ ‖fderiv ℝ u (update x i y)‖₊ * ‖deriv (update x i) y‖₊ :=
         ContinuousLinearMap.le_op_nnnorm ..
     _ ≤ ‖fderiv ℝ u (update x i y)‖₊ := by simp [deriv_update, Pi.nnnorm_single]
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
+
+open FiniteDimensional
+
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
+
+set_option linter.unusedVariables false in
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+compactly-supported real-valued function on a normed space `E` of finite dimension `n ≥ 2`, equipped
+with Haar measure. There exists a constant `C` depending only on `E`, such that the Lebesgue
+integral of the pointwise expression `|u x| ^ (n / (n - 1))` is bounded above by `C` times the
+`n / (n - 1)`-th power of the Lebesgue integral of the Fréchet derivative of `u`. -/
+theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E) :
+    ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    ∫⁻ x, ‖u x‖₊ ^ ((finrank ℝ E : ℝ) / (finrank ℝ E - 1 : ℝ)) ∂μ
+    ≤ C * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂μ) ^ ((finrank ℝ E : ℝ) / (finrank ℝ E - 1 : ℝ)) := by
+  -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
+  -- matrices in `lintegral_pow_le_pow_lintegral_fderiv_aux`.
+  let ι := Fin (finrank ℝ E)
+  have hιcard : #ι = finrank ℝ E := Fintype.card_fin (finrank ℝ E)
+  have : Nontrivial ι := by rwa [Fin.nontrivial_iff_two_le]
+  have hι : 0 < (#ι : ℝ) / (#ι - 1 : ℝ) := by
+    have : 2 ≤ (#ι:ℝ) := by rw [hιcard]; norm_cast
+    have : 1 ≤ (#ι:ℝ) - 1 := by linarith
+    positivity
+  haveI : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
+  have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp
+  have e : E ≃L[ℝ] ι → ℝ := ContinuousLinearEquiv.ofFinrankEq this
+  haveI : IsAddHaarMeasure ((volume : Measure (ι → ℝ)).map e.symm) :=
+    (e.symm : (ι → ℝ) ≃+ E).isAddHaarMeasure_map _ e.symm.continuous e.symm.symm.continuous
+  obtain ⟨c, hc₀, hc, rfl⟩ :=
+    isAddHaarMeasure_eq_smul_isAddHaarMeasure μ ((volume : Measure (ι → ℝ)).map e.symm)
+  have : ∃ C : ℝ≥0, C * c ^ ((#ι:ℝ) / ((#ι - 1 : ℝ)))
+      = c * (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ ((#ι:ℝ) / (#ι - 1 : ℝ)))
+  · lift c to ℝ≥0 using hc
+    norm_cast at hc₀
+    use (c * (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ ((#ι:ℝ) / (#ι - 1 : ℝ))))
+      * (c ^ ((#ι:ℝ) / ((#ι - 1 : ℝ))))⁻¹
+    rw [← ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _ hι.le, ← ENNReal.coe_mul]
+    congr! 1
+    rw [← eq_mul_inv_iff_mul_eq₀]
+    apply LT.lt.ne'
+    apply NNReal.rpow_pos
+    positivity
+  refine this.imp fun C hC u hu h2u ↦ ?_
+  rw [lintegral_smul_measure, lintegral_smul_measure]
+  let v : (ι → ℝ) → ℝ := u ∘ e.symm
+  have hv : ContDiff ℝ 1 v := hu.comp e.symm.contDiff
+  have h2v : HasCompactSupport v := h2u.comp_homeomorph e.symm.toHomeomorph
+  have :=
+  calc ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ∂(volume : Measure (ι → ℝ)).map e.symm
+      = ∫⁻ y, ‖v y‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+        refine lintegral_map ?_ e.symm.continuous.measurable
+        exact (hu.continuous.measurable.nnnorm.pow_const _).coe_nnreal_ennreal
+    _ ≤ (∫⁻ y, ‖fderiv ℝ v y‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) :=
+        lintegral_pow_le_pow_lintegral_fderiv_aux hv h2v
+    _ = (∫⁻ y, ‖(fderiv ℝ u (e.symm y)).comp (fderiv ℝ e.symm y)‖₊) ^ ((#ι:ℝ) / (#ι - 1 : ℝ)) := by
+        congr! with y
+        apply fderiv.comp _ (hu.differentiable (le_refl _) _)
+        exact e.symm.differentiableAt
+    _ ≤ (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊
+        * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+        gcongr with y
+        norm_cast
+        rw [e.symm.fderiv]
+        apply ContinuousLinearMap.op_nnnorm_comp_le
+    _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊
+        * ∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+        rw [lintegral_mul_const, mul_comm]
+        refine (Continuous.nnnorm ?_).measurable.coe_nnreal_ennreal
+        exact (hu.continuous_fderiv (le_refl _)).comp e.symm.continuous
+    _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) : ℝ≥0)
+        * (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+        rw [ENNReal.mul_rpow_of_nonneg _ _ hι.le, ENNReal.coe_rpow_of_nonneg _ hι.le]
+    _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) : ℝ≥0)
+        * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂(volume : Measure (ι → ℝ)).map e.symm)
+        ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+        congr
+        rw [lintegral_map _ e.symm.continuous.measurable]
+        exact (hu.continuous_fderiv (le_refl _)).measurable.nnnorm.coe_nnreal_ennreal
+  rw [← ENNReal.mul_le_mul_left hc₀ hc, ← mul_assoc, ← hC] at this
+  simp_rw [hιcard] at this hι
+  rw [ENNReal.mul_rpow_of_nonneg _ _ hι.le, ← mul_assoc]
+  exact this
