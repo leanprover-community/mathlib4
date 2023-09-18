@@ -35,6 +35,8 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 variable {D : Type u₂} [Category.{v₂} D]
 
+/-- Induce a monoidal structure along an faithful functor of (plain) categories,
+-/
 @[simps]
 def induced (e : D ⥤ C) [Faithful e]
     (tensorObj : D → D → D)
@@ -43,48 +45,109 @@ def induced (e : D ⥤ C) [Faithful e]
     (whiskerLeft : ∀ (X : D) {Y₁ Y₂ : D} (f : Y₁ ⟶ Y₂), tensorObj X Y₁ ⟶ tensorObj X Y₂)
     (whiskerLeft_eq : ∀ (X : D) {Y₁ Y₂ : D} (f : Y₁ ⟶ Y₂),
       e.map (whiskerLeft X f)
-        = (tensorObjIso _ _).hom ≫ (e.obj X ◁ e.map f) ≫ (tensorObjIso _ _).inv)
+        = (tensorObjIso _ _).hom ≫ (e.obj X ◁ e.map f) ≫ (tensorObjIso _ _).inv
+      := by aesop_cat)
     (whiskerRight : ∀ {X₁ X₂ : D} (f : X₁ ⟶ X₂) (Y : D), tensorObj X₁ Y ⟶ tensorObj X₂ Y)
     (whiskerRight_eq : ∀ {X₁ X₂ : D} (f : X₁ ⟶ X₂) (Y : D),
       e.map (whiskerRight f Y)
-        = (tensorObjIso _ _).hom ≫ (e.map f ▷ e.obj Y) ≫ (tensorObjIso _ _).inv)
+        = (tensorObjIso _ _).hom ≫ (e.map f ▷ e.obj Y) ≫ (tensorObjIso _ _).inv
+      := by aesop_cat)
     (tensorHom :
       ∀ {X₁ Y₁ X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂), tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂)
     (tensorHom_eq :
       ∀ {X₁ Y₁ X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂),
         e.map (tensorHom f g)
-          = (tensorObjIso _ _).hom ≫ (e.map f ⊗ e.map g) ≫ (tensorObjIso _ _).inv)
+          = (tensorObjIso _ _).hom ≫ (e.map f ⊗ e.map g) ≫ (tensorObjIso _ _).inv
+      := by aesop_cat)
     (tensorUnit' : D)
     (tensorUnit'Iso : e.obj tensorUnit' ≅ 𝟙_ _)
     (associator : ∀ X Y Z : D, tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z))
     (associator_eq : ∀ X Y Z : D,
-      e.mapIso (associator X Y Z) =
-        (tensorObjIso _ _ ≪≫ _) ≪≫ α_ (e.obj X) (e.obj Y) (e.obj Z) ≪≫ _)
+      e.map (associator X Y Z).hom =
+        ((tensorObjIso _ _ ≪≫ (tensorObjIso _ _ ⊗ .refl _))
+          ≪≫ α_ (e.obj X) (e.obj Y) (e.obj Z)
+          ≪≫ ((.refl _ ⊗ (tensorObjIso _ _).symm) ≪≫ (tensorObjIso _ _).symm)).hom
+      := by aesop_cat)
     (leftUnitor : ∀ X : D, tensorObj tensorUnit' X ≅ X)
     (leftUnitor_eq : ∀ X : D,
-      e.mapIso (leftUnitor X) =
-        (tensorObjIso _ _ ≪≫ _) ≪≫ λ_ (e.obj X))
+      e.map (leftUnitor X).hom =
+        ((tensorObjIso _ _ ≪≫ (tensorUnit'Iso ⊗ .refl _)) ≪≫ λ_ (e.obj X)).hom
+      := by aesop_cat)
     (rightUnitor : ∀ X : D, tensorObj X tensorUnit' ≅ X)
     (rightUnitor_eq : ∀ X : D,
-      e.mapIso (rightUnitor X) =
-        (tensorObjIso _ _ ≪≫ _) ≪≫ ρ_ (e.obj X)) :
+      e.map (rightUnitor X).hom =
+        ((tensorObjIso _ _ ≪≫ (.refl _ ⊗ tensorUnit'Iso)) ≪≫ ρ_ (e.obj X)).hom
+      := by aesop_cat) :
     MonoidalCategory.{v₂} D where
-  tensorObj := tensorObj
-  whiskerLeft := whiskerLeft
-  whiskerRight := whiskerRight
-  tensorHom := tensorHom
-  tensorUnit' := tensorUnit'
-  associator := associator
-  leftUnitor := leftUnitor
-  rightUnitor := rightUnitor
+      tensorObj := tensorObj
+      whiskerLeft := whiskerLeft
+      whiskerRight := whiskerRight
+      tensorHom := tensorHom
+      tensorUnit' := tensorUnit'
+      associator := associator
+      leftUnitor := leftUnitor
+      rightUnitor := rightUnitor
+      tensorHom_def {X₁ Y₁ X₂ Y₂} f g := e.map_injective <| by
+        dsimp
+        rw [tensorHom_eq, Functor.map_comp, whiskerRight_eq, whiskerLeft_eq]
+        sorry
+      tensor_id X₁ X₂ := e.map_injective <| by
+        dsimp
+        sorry
+      tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := e.map_injective <| by
+        dsimp
+        sorry
+      whiskerLeft_id X Y := e.map_injective <| by simp [whiskerLeft_eq]
+      id_whiskerRight X Y := e.map_injective <| by simp [whiskerRight_eq]
+      associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := e.map_injective <| by
+        simp [associator_eq, tensorHom_eq]
+        aesop_cat
+      leftUnitor_naturality {X Y : D} f := e.map_injective <| by
+        simp [leftUnitor_eq, tensorHom_eq]
+        sorry
+      rightUnitor_naturality {X Y : D} f := e.map_injective <| by
+        simp [rightUnitor_eq, tensorHom_eq]
+        sorry
+      pentagon W X Y Z := e.map_injective <| by
+        have := MonoidalCategory.pentagon (e.obj W) (e.obj X) (e.obj Y) (e.obj Z)
+        simp [associator_eq, tensorHom_eq]
+        congr 2
+        simp only [←assoc]
+        congr 2
+        simp
+        aesop_cat
+      triangle X Y :=  e.map_injective <| by aesop_cat
 
+/-- Transport a monoidal structure along an equivalence of (plain) categories.
+-/
+@[simps!
+  tensorObj whiskerLeft whiskerRight tensorHom tensorUnit associator leftUnitor rightUnitor]
+def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
+  induced
+    (e := e.inverse)
+    (tensorObj := fun X Y => e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y))
+    (tensorObjIso := fun X Y => (e.unitIso.app _).symm)
+    (whiskerLeft := fun X _ _ f ↦ e.functor.map (e.inverse.obj X ◁ e.inverse.map f))
+    (whiskerRight := fun f X ↦ e.functor.map (e.inverse.map f ▷ e.inverse.obj X))
+    (tensorHom := fun f g => e.functor.map (e.inverse.map f ⊗ e.inverse.map g))
+    (tensorUnit' := e.functor.obj (𝟙_ C))
+    (tensorUnit'Iso := (e.unitIso.app _).symm)
+    (associator := fun X Y Z =>
+      e.functor.mapIso
+        (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫
+          α_ (e.inverse.obj X) (e.inverse.obj Y) (e.inverse.obj Z) ≪≫ (Iso.refl _ ⊗ e.unitIso.app _)))
+    (leftUnitor := fun X =>
+      e.functor.mapIso (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫ λ_ (e.inverse.obj X)) ≪≫
+        e.counitIso.app _)
+    (rightUnitor := fun X =>
+      e.functor.mapIso ((Iso.refl _ ⊗ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
+        e.counitIso.app _)
 
-#exit
 -- porting note: it was @[simps {attrs := [`_refl_lemma]}]
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
 @[simps]
-def transport (e : C ≌ D) : MonoidalCategory.{v₂} D where
+def transport' (e : C ≌ D) : MonoidalCategory.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
   whiskerLeft := fun X _ _ f ↦ e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
   whiskerRight := fun f X ↦ e.functor.map (e.inverse.map f ▷ e.inverse.obj X)
