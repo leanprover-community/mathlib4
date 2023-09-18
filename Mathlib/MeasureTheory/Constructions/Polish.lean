@@ -70,6 +70,7 @@ To endow a standard Borel space `α` with a compatible Polish topology, use
 `letI := upgradePolishSpace α`. One can then use `eq_borel_upgradeStandardBorel α` to
 rewrite the `MeasurableSpace α` instance to `borel α t`, where `t` is the new topology.-/
 class StandardBorelSpace [MeasurableSpace α] : Prop where
+  /-- There exists a compatible Polish topology. -/
   polish : ∃ _ : TopologicalSpace α, BorelSpace α ∧ PolishSpace α
 
 /-- A convenience class similar to `UpgradedPolishSpace`. No instance should be registered.
