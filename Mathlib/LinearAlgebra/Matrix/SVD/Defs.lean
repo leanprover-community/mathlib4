@@ -197,21 +197,23 @@ lemma V_mul_conjTranspose_V (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV  *  A.svd
     ← svdV, V_conjTranspose_mul_V]
   exact eigenColumnEquiv A
 
-lemma S_toBlocks₁₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS.toBlocks₁₁ = A.svdμ := by
-  unfold toBlocks₁₁ svdμ svdS
-  simp only [reindex_apply, submatrix_apply, ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inl.injEq,
-    submatrix_diagonal_equiv]
+@[simp]
+lemma toBlocks₁₁_diagonal {m n α : Type} [DecidableEq m] [DecidableEq n] [CommRing α]
+    (v : m ⊕ n → α) : toBlocks₁₁ (diagonal v) = diagonal ( fun i => v (Sum.inl i) ) := by
+  unfold toBlocks₁₁
   funext i j
-  by_cases h: i=j
-  · simp_rw [h]
-    unfold eigenColumnEquiv finRankEquivEigsConjTransposeMulSelf
-      Equiv.sumCongr Sum.map
-    simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk,
-      Sum.elim_inl, Equiv.sumCompl_apply_inl, of_apply,
-      diagonal_apply_eq, Function.comp_apply]
-  · rw [diagonal_apply_ne, of_apply, diagonal_apply_ne]
-    rw [ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inl.injEq]
-    assumption'
+  simp only [ne_eq, Sum.inl.injEq, of_apply, diagonal_apply]
+
+@[simp]
+lemma toBlocks₂₂_diagonal {m n α : Type} [DecidableEq m] [DecidableEq n] [CommRing α]
+    (v : m ⊕ n → α) : toBlocks₂₂ (diagonal v) = diagonal ( fun i => v (Sum.inr i) ) := by
+  unfold toBlocks₂₂
+  funext i j
+  simp only [ne_eq, Sum.inr.injEq, of_apply, diagonal_apply]
+
+lemma S_toBlocks₁₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS.toBlocks₁₁ = A.svdμ := by
+  unfold svdS svdμ eigenColumnEquiv Equiv.sumCongr
+  simp
 
 lemma S_toBlocks₁₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS.toBlocks₁₂ = 0 := by
   unfold svdS toBlocks₁₂
@@ -224,9 +226,12 @@ lemma S_toBlocks₂₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS.toBlocks₂₁
   rfl
 
 lemma S_toBlocks₂₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS.toBlocks₂₂ = 0 := by
-  unfold svdS toBlocks₂₂
+  unfold svdS
   simp [diagonal_apply]
-  rfl
+
+lemma S'_toBlocks₁₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS'.toBlocks₁₁ = A.svdμ' := by
+  unfold svdS' svdμ' eigenRowEquiv finRankEquivEigsMulConjTranspose
+  simp
 
 lemma S'_toBlocks₁₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS'.toBlocks₁₂ = 0 := by
   unfold svdS' toBlocks₁₂
@@ -239,25 +244,8 @@ lemma S'_toBlocks₂₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS'.toBlocks₂�
   rfl
 
 lemma S'_toBlocks₂₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS'.toBlocks₂₂ = 0 := by
-  unfold svdS' toBlocks₂₂
-  simp [diagonal_apply]
-  rfl
-
-lemma S'_toBlocks₁₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS'.toBlocks₁₁ = A.svdμ' := by
-  unfold toBlocks₁₁ svdμ' svdS'
-  simp only [reindex_apply, submatrix_apply, ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inl.injEq,
-    submatrix_diagonal_equiv]
-  funext i j
-  by_cases h: i=j
-  · simp_rw [h]
-    unfold eigenRowEquiv finRankEquivEigsMulConjTranspose
-      Equiv.sumCongr Sum.map
-    simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk,
-      Sum.elim_inl, Equiv.sumCompl_apply_inl, of_apply,
-      diagonal_apply_eq, Function.comp_apply]
-  · rw [diagonal_apply_ne, of_apply, diagonal_apply_ne]
-    rw [ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inl.injEq]
-    assumption'
+  unfold svdS'
+  simp
 
 lemma S_block (A : Matrix (Fin M) (Fin N) 𝕂) :
     (reindex
