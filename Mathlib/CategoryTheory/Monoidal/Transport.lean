@@ -206,7 +206,7 @@ def fromInduced (F : D ⥤ C) [Faithful F]
 -/
 @[simps
   tensorObj whiskerLeft whiskerRight tensorHom tensorUnit' associator leftUnitor rightUnitor]
-abbrev transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
+def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   induced
     (F := e.inverse)
     (tensorObj := fun X Y => e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y))
