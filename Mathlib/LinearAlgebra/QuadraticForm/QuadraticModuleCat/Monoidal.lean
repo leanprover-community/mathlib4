@@ -50,9 +50,10 @@ def associator (X Y Z : QuadraticModuleCat.{u} R) :
   dsimp
   have := tensorAssoc X.form Y.form Z.form
   exact this
-#check MonoidalCategory.associator
 
 end instMonoidalCategory
+
+open instMonoidalCategory
 
 count_heartbeats in
 instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
