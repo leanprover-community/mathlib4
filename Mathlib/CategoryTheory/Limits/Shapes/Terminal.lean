@@ -92,8 +92,8 @@ def isTerminalTop {α : Type*} [Preorder α] [OrderTop α] : IsTerminal (⊤ : �
 /-- Transport a term of type `IsTerminal` across an isomorphism. -/
 def IsTerminal.ofIso {Y Z : C} (hY : IsTerminal Y) (i : Y ≅ Z) : IsTerminal Z :=
   IsLimit.ofIsoLimit hY
-    { hom := { Hom := i.hom }
-      inv := { Hom := i.inv } }
+    { hom := { hom := i.hom }
+      inv := { hom := i.inv } }
 #align category_theory.limits.is_terminal.of_iso CategoryTheory.Limits.IsTerminal.ofIso
 
 /-- An object `X` is initial iff for every `Y` there is a unique morphism `X ⟶ Y`. -/
@@ -133,8 +133,8 @@ def isInitialBot {α : Type*} [Preorder α] [OrderBot α] : IsInitial (⊥ : α)
 /-- Transport a term of type `is_initial` across an isomorphism. -/
 def IsInitial.ofIso {X Y : C} (hX : IsInitial X) (i : X ≅ Y) : IsInitial Y :=
   IsColimit.ofIsoColimit hX
-    { hom := { Hom := i.hom }
-      inv := { Hom := i.inv } }
+    { hom := { hom := i.hom }
+      inv := { hom := i.inv } }
 #align category_theory.limits.is_initial.of_iso CategoryTheory.Limits.IsInitial.ofIso
 
 /-- Give the morphism to a terminal object from any other. -/
