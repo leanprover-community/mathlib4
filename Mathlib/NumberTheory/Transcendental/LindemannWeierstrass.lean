@@ -492,7 +492,7 @@ section
 variable (F : Type _) [Field F] [Algebra ℚ F]
 
 noncomputable def mapDomainFixed : Subalgebra F (AddMonoidAlgebra F (K s)) where
-  carrier := {x | ∀ f : Gal s, AddMonoidAlgebra.mapDomainAlgAut ℚ _ f.toAddEquiv x = x}
+  carrier := {x | ∀ f : Gal s, AddMonoidAlgebra.domCongrAut ℚ _ f.toAddEquiv x = x}
   mul_mem' {a b} ha hb f := by rw [map_mul, ha, hb]
   add_mem' {a b} ha hb f := by rw [map_add, ha, hb]
   algebraMap_mem' r f := by
@@ -796,13 +796,13 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
     ∃ (w : ℚ) (_w0 : w ≠ 0) (q : Finset (GalConjClasses ℚ (K s))) (_hq :
       (0 : GalConjClasses ℚ (K s)) ∉ q) (w' : GalConjClasses ℚ (K s) → ℚ),
       (w + ∑ c in q, w' c • ∑ x in c.orbit.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
-  let V := ∏ f : Gal s, AddMonoidAlgebra.mapDomainAlgAut ℚ _ f.toAddEquiv x
+  let V := ∏ f : Gal s, AddMonoidAlgebra.domCongrAut ℚ _ f.toAddEquiv x
   have hV : V ∈ mapDomainFixed s ℚ := by
     intro f; dsimp only
     rw [map_prod]; simp_rw [← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
     exact
       (Group.mulLeft_bijective f).prod_comp fun g =>
-        AddMonoidAlgebra.mapDomainAlgAut ℚ _ g.toAddEquiv x
+        AddMonoidAlgebra.domCongrAut ℚ _ g.toAddEquiv x
   have V0 : V ≠ 0 := by
     dsimp only; rw [prod_ne_zero_iff]; intro f _hf
     rwa [AddEquivClass.map_ne_zero_iff]

@@ -2100,6 +2100,20 @@ theorem domCongr_toAlgHom (e : G ≃+ H) : (domCongr k A e).toAlgHom = mapDomain
 
 @[simp] theorem domCongr_symm (e : G ≃+ H) : (domCongr k A e).symm = domCongr k A e.symm := rfl
 
+@[simps]
+def domCongrAut (k A : Type _) [CommSemiring k] [Semiring A] [Algebra k A] {G : Type _}
+    [AddMonoid G] : AddAut G →* AddMonoidAlgebra A G ≃ₐ[k] AddMonoidAlgebra A G
+    where
+  toFun := AddMonoidAlgebra.domCongr k A
+  map_one' := by
+    ext
+    refine Finsupp.ext fun a => ?_
+    rfl
+  map_mul' x y := by
+    ext
+    refine Finsupp.ext fun a => ?_
+    rfl
+
 end AddMonoidAlgebra
 
 variable [CommSemiring R]
