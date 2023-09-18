@@ -248,9 +248,7 @@ theorem units_inv_mem_center [Monoid M] {a : Mˣ} (ha : ↑a ∈ Set.center M) :
 theorem invOf_mem_center [Monoid M] {a : M} [Invertible a] (ha : a ∈ Set.center M) :
     ⅟a ∈ Set.center M := by
   rw [Semigroup.mem_center_iff] at *
-  intro m
-  rw [Commute.invOf_right]
-  exact ha m
+  exact (Commute.invOf_right <| ha ·)
 
 @[simp]
 theorem inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
