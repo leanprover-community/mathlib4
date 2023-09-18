@@ -42,6 +42,19 @@ theorem hom_ext {f g : OneRelator r →* G} (h : ∀ x, f (of x) = g (of x)) : f
   ext
   exact h _
 
+def ofFreeGroup : FreeGroup α →* OneRelator r :=
+  QuotientGroup.mk' _
+
+@[simp]
+theorem ofFreeGroup_of (x : α) :
+    (ofFreeGroup (FreeGroup.of x) : OneRelator r) = @of _ r x := rfl
+
+variable (r)
+@[simp]
+theorem ofFreeGroup_rel : (ofFreeGroup r : OneRelator r) = 1 :=
+  Eq.symm <| QuotientGroup.eq.2 (Subgroup.subset_normalClosure (s := {r})
+    (by simp))
+
 end OneRelator
 
 section Equivs
@@ -146,6 +159,16 @@ def psi : FreeGroup α →* FreeGroup α :=
 
 def newRelator : FreeGroup ({ b // b ≠ d.t } × Multiplicative ℤ) :=
   (freeGroupEquivSemidirectProduct d.t (d.psi r)).left
+
+def psiStar : OneRelator r →* OneRelator (d.psi r) :=
+  OneRelator.lift
+    (fun a => ofFreeGroup (d.psi (FreeGroup.of a)))
+    (by
+        convert ofFreeGroup_rel (d.psi r) using 1
+        rw [← MonoidHom.comp_apply]
+        apply FunLike.congr_fun
+        ext
+        simp)
 
 def subgroupASet : Set ({ b : α // b ≠ d.t } × Multiplicative ℤ) :=
   { p : { b : α // b ≠ d.t } × Multiplicative ℤ | p.1 = d.x →
