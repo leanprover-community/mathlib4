@@ -41,12 +41,11 @@ open Lean Meta
 
 open Lean Server in
 
-structure CalcProps extends PanelWidgetProps where
-  replaceRange : Lsp.Range
+structure CalcProps extends SelectInsertParams where
   /-- If this the first calc step? -/
   isFirst : Bool
-  deriving RpcEncodable
-
+  indent : Nat
+  deriving SelectInsertParamsClass, RpcEncodable
 
 open Lean Meta
 
@@ -58,9 +57,19 @@ def Lean.Expr.relStr : Expr → String
 | .const ``GT.gt _ => ">"
 | _ => "Unknow relation"
 
+def String.mkSpace : Nat → String
+| 0 => ""
+| n + 1 => " " ++ mkSpace n
+
+
 /-- Return the button text and inserted text above and below.-/
-def suggestSteps (subexprPos : Array SubExpr.Pos) (goalType : Expr) (isFirst : Bool) :
+def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcProps) :
     MetaM (String × String) := do
+  let mut subexprPos : Array SubExpr.Pos := #[]
+  for selectedLocation in pos do
+    if let .target pos := selectedLocation.loc then
+      subexprPos := subexprPos.push pos
+
   let goalType := goalType.consumeMData
   let some (rel, lhs, rhs) ← Lean.Elab.Term.getCalcRelation? goalType |
       throwError "invalid 'calc' step, relation expected{indentExpr goalType}"
@@ -82,22 +91,23 @@ def suggestSteps (subexprPos : Array SubExpr.Pos) (goalType : Expr) (isFirst : B
   let rhsStr := (toString <| ← Meta.ppExpr rhs).renameMetaVar
   let newRhsStr := (toString <| ← Meta.ppExpr newRhs).renameMetaVar
 
+  let spc := String.mkSpace params.indent
   let insertedCode := match selectedLeft.isEmpty, selectedRight.isEmpty with
   | false, false =>
-    if isFirst then
-      s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n_ {relStr} {newRhsStr} := by sorry\n_ {relStr} {rhsStr} := by sorry"
+    if params.isFirst then
+      s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
     else
-      s!"_ {relStr} {newLhsStr} := by sorry\n_ {relStr} {newRhsStr} := by sorry\n_ {relStr} {rhsStr} := by sorry"
+      s!"{spc}_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
   | true, false  =>
-  if isFirst then
-      s!"{lhsStr} {relStr} {newRhsStr} := by sorry\n_ {relStr} {rhsStr} := by sorry"
+  if params.isFirst then
+      s!"{lhsStr} {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
     else
-      s!"_ {relStr} {newRhsStr} := by sorry\n_ {relStr} {rhsStr} := by sorry"
+      s!"{spc}_ {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
   | false, true =>
-    if isFirst then
-      s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n_ {relStr} {rhsStr} := by sorry"
+    if params.isFirst then
+      s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
     else
-      s!"_ {relStr} {newLhsStr} := by sorry\n_ {relStr} {rhsStr} := by sorry"
+      s!"{spc}_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
   | true, true => "This should not happen"
 
   let stepInfo := match selectedLeft.isEmpty, selectedRight.isEmpty with
@@ -107,41 +117,14 @@ def suggestSteps (subexprPos : Array SubExpr.Pos) (goalType : Expr) (isFirst : B
   | true, true => "This should not happen"
   return (stepInfo, toString insertedCode)
 
-open scoped Jsx in
-open Lean Server in
 @[server_rpc_method]
-def calcCommand (props : CalcProps) : RequestM (RequestTask (Html)) :=
-  RequestM.asTask do
-    let doc ← RequestM.readDoc
-    let inner : Html ← (do
-      if props.selectedLocations.isEmpty then
-        return <span>Please select subterms.</span>
-      let some selectedLoc := props.selectedLocations[0]? | unreachable!
-
-      let some g := findGoalForLocation props.goals selectedLoc
-        | throw $ .invalidParams
-            s!"could not find goal for location {toJson selectedLoc}"
-      g.ctx.val.runMetaM {} do
-        let md ← g.mvarId.getDecl
-        let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
-        Meta.withLCtx lctx md.localInstances do
-          let mut goalSubExprs : Array SubExpr.Pos := #[]
-          for selectedLocation in props.selectedLocations do
-            if let .target pos := selectedLocation.loc then
-              goalSubExprs := goalSubExprs.push pos
-          let (stepInfo, newCode) ← suggestSteps goalSubExprs md.type props.isFirst
-          return .ofComponent
-            MakeEditLink
-            (.ofReplaceRange doc.meta props.replaceRange newCode)
-            #[ .text stepInfo ])
-    return <details «open»={true}>
-        <summary className="mv2 pointer">Calc 🔍</summary>
-        <div className="ml1">{inner}</div>
-      </details>
+def CalcPanel.rpc := mkSelectionPanelRPC suggestSteps
+  "Please select subterms."
+  "Calc 🔍"
 
 @[widget_module]
 def CalcPanel : Component CalcProps :=
-  mk_rpc_widget% calcCommand
+  mk_rpc_widget% CalcPanel.rpc
 
 namespace Lean.Elab.Term
 open Meta
@@ -165,9 +148,10 @@ def getCalcSteps' (steps : TSyntax ``calcSteps) : TermElabM (Array (TSyntax ``ca
 structure Foo where
   replaceRange : Lsp.Range
   isFirst : Bool
+  indent : Nat
   deriving ToJson, FromJson
 
-def myElabCalcSteps (steps : TSyntax ``calcSteps) : TermElabM Expr := do
+def myElabCalcSteps (indent : Nat) (steps : TSyntax ``calcSteps) : TermElabM Expr := do
   let mut result? := none
   let mut prevRhs? := none
   let mut isFirst := true
@@ -186,6 +170,7 @@ def myElabCalcSteps (steps : TSyntax ``calcSteps) : TermElabM Expr := do
     let props : Foo := {
       replaceRange := replaceRange
       isFirst := isFirst
+      indent := indent
     }
 
     ProofWidgets.savePanelWidgetInfo proofTerm `CalcPanel (pure <| toJson props)
@@ -216,8 +201,11 @@ elab_rules : tactic
   let (val, mvarIds) ← withCollectingNewGoalsFrom (tagSuffix := `calc) do
     let target ← getMainTarget
     let tag ← getMainTag
+    let some calcRange := (← getFileMap).rangeOfStx? calcstx | unreachable!
+    let indent := calcRange.start.character
+    dbg_trace indent
     runTermElab do
-    let mut val ← Term.myElabCalcSteps steps
+    let mut val ← Term.myElabCalcSteps indent steps
     let mut valType ← inferType val
     unless (← isDefEq valType target) do
       let rec throwFailed :=

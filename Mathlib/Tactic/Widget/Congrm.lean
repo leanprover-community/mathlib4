@@ -18,7 +18,8 @@ open Lean Meta Server ProofWidgets
 
 /-! # Gcongr widget -/
 
-def makeCongrmString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) : MetaM String := do
+def makeCongrmString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
+  (_ : SelectInsertParams) : MetaM (String × String) := do
   let subexprPos := pos.map (·.loc.target!)
   let goalType := goalType.consumeMData
   unless goalType.isAppOf `Eq || goalType.isAppOf `Iff do
@@ -30,7 +31,8 @@ def makeCongrmString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) 
 
   let side := if subexprPos[0]!.toArray[0]! = 0 then 1 else 2
   let sideExpr := goalTypeWithMetaVars.getAppArgs[side]!
-  return "congrm " ++ (toString (← Meta.ppExpr sideExpr)).renameMetaVar
+  let res := "congrm " ++ (toString (← Meta.ppExpr sideExpr)).renameMetaVar
+  return (res, res)
 
 @[server_rpc_method]
 def CongrmSelectionPanel.rpc := mkSelectionPanelRPC makeCongrmString
@@ -38,7 +40,7 @@ def CongrmSelectionPanel.rpc := mkSelectionPanelRPC makeCongrmString
   "Congrm 🔍"
 
 @[widget_module]
-def CongrmSelectionPanel : Component SelectionPanelProps :=
+def CongrmSelectionPanel : Component SelectInsertParams :=
   mk_rpc_widget% CongrmSelectionPanel.rpc
 
 open scoped Json in
