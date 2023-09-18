@@ -197,20 +197,21 @@ lemma V_mul_conjTranspose_V (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV  *  A.svd
     ← svdV, V_conjTranspose_mul_V]
   exact eigenColumnEquiv A
 
-lemma S_zero_blocks (A : Matrix (Fin M) (Fin N) 𝕂) :
-    A.svdS.toBlocks₁₂ = 0 ∧ A.svdS.toBlocks₂₁ = 0 ∧ A.svdS.toBlocks₂₂ = 0 := by
-  unfold toBlocks₁₂ toBlocks₂₁ toBlocks₂₂ svdS
-  simp only [reindex_apply, submatrix_apply, ne_eq, EmbeddingLike.apply_eq_iff_eq,
-    not_false_eq_true, diagonal_apply_ne]
-  simp_rw [← Matrix.ext_iff, of_apply, zero_apply, implies_true, true_and ]
-  intro i j
-  by_cases i = j
-  · unfold eigenColumnEquiv Equiv.sumCongr
-    simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk, Sum.elim_inr,
-      Equiv.sumCompl_apply_inr]
-    simp_rw [h, diagonal_apply_eq]
-    apply eigen_eigenColumnEquiv_inr
-  · simp only [diagonal_apply_ne, ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inr.injEq, h]
+lemma S_toBlocks₁₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS.toBlocks₁₂ = 0 := by
+  unfold svdS toBlocks₁₂
+  simp
+  rfl
+
+lemma S_toBlocks₂₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS.toBlocks₂₁ = 0 := by
+  unfold svdS toBlocks₂₁
+  simp
+  rfl
+
+lemma S_toBlocks₂₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdS.toBlocks₂₂ = 0 := by
+  unfold svdS toBlocks₂₂
+  simp only [reindex_apply, submatrix_apply, ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inr.injEq,
+    diagonal_apply, eigen_eigenColumnEquiv_inr, ite_self]
+  rfl
 
 lemma S'_zero_blocks (A : Matrix (Fin M) (Fin N) 𝕂) :
     A.svdS'.toBlocks₁₂ = 0 ∧ A.svdS'.toBlocks₂₁ = 0 ∧ A.svdS'.toBlocks₂₂ = 0 := by
@@ -267,8 +268,8 @@ lemma S_block (A : Matrix (Fin M) (Fin N) 𝕂) :
       (eigenColumnEquiv A))
         ( diagonal ( (isHermitian_transpose_mul_self A).eigenvalues)) =
           fromBlocks A.svdμ 0 0 0 := by
-  let hz := S_zero_blocks A
-  rw [← svdS, ← fromBlocks_toBlocks (A.svdS), ← S_σpos_block, hz.1, hz.2.1, hz.2.2]
+  rw [← svdS, ← fromBlocks_toBlocks (A.svdS), ← S_σpos_block,
+    S_toBlocks₁₂, S_toBlocks₂₁, S_toBlocks₂₂]
 
 lemma S'_block (A : Matrix (Fin M) (Fin N) 𝕂) :
     (reindex
