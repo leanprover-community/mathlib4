@@ -41,7 +41,7 @@ def tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
 @[simps! form]
 def tensorUnit : QuadraticModuleCat.{u} R := of (sq (R := R))
 
-count_heartbeats in
+set_option maxHeartbeats 3200000 in
 /-- Auxiliary definition used to fight a tmieout when building
 `QuadraticModuleCat.instMonoidalCategory`. -/
 def associator (X Y Z : QuadraticModuleCat.{u} R) :
@@ -52,8 +52,7 @@ def associator (X Y Z : QuadraticModuleCat.{u} R) :
   exact this
 #check MonoidalCategory.associator
 
-#exit
-
+count_heartbeats in
 instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (F := forget₂ (QuadraticModuleCat R) (ModuleCat R))
