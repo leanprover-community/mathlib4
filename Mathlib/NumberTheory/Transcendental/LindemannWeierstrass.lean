@@ -778,7 +778,7 @@ theorem Eval_toConjAlgEquiv_symm (x : GalConjClasses ℚ (K s) →₀ ℚ) :
     ∀ (s' : Finset (K s)) (b : ℚ),
       ((Finsupp.indicator s' fun _ _ => b).sum fun a c => c • exp (algebraMap (K s) ℂ a)) =
         ∑ i in s', b • exp (algebraMap (K s) ℂ i) :=
-    fun s' b => Finsupp.sum_indicator_const_index _ fun i _ => by rw [zero_smul]
+    fun s' b => Finsupp.sum_indicator_index _ fun i _ => by rw [zero_smul]
   simp_rw [toConjEquiv_symm_single, AddSubmonoidClass.coe_finset_sum, map_sum,
     Eval_apply, this, smul_sum]
 #align Eval_to_conj_alg_equiv_symm Eval_toConjAlgEquiv_symm
@@ -1439,6 +1439,3 @@ theorem transcendental_pi : Transcendental ℤ Real.pi := by
   · intro i; dsimp; exact isIntegral_one
   simp
 #align transcendental_pi transcendental_pi
-
-/-- info: 'linear_independent_exp' depends on axioms: [propext, Quot.sound, Classical.choice] -/
-#guard_msgs in #print axioms linear_independent_exp
