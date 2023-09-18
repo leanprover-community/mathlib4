@@ -78,9 +78,12 @@ instance Lex.partialOrder [PartialOrder N] : PartialOrder (Lex (α →₀ N)) :=
 #align finsupp.lex.partial_order Finsupp.Lex.partialOrder
 
 /-- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
-instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) :=
-  { @Lex.partialOrder α N _ _ _,  -- Porting note: Added types to avoid typeclass inference problem.
-    LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective with }
+instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
+  lt := (· < ·)
+  le := (· ≤ ·)
+  __ := @Lex.partialOrder α N _ _ _
+  -- Porting note: Added types to avoid typeclass inference problem.
+  __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
 #align finsupp.lex.linear_order Finsupp.Lex.linearOrder
 
 variable [PartialOrder N]
