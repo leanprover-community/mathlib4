@@ -20,7 +20,7 @@ open scoped ENNReal NNReal BoundedContinuousFunction Topology
 
 namespace BoundedContinuousFunction
 
-section
+section NNRealValued
 
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
 
@@ -35,7 +35,7 @@ theorem NNReal.lintegral_lt_top (f : X →ᵇ ℝ≥0) :
     (∫⁻ x, f x ∂μ) < ∞ := by
   apply IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal
   refine ⟨nndist f 0, fun x ↦ ?_⟩
-  have key := BoundedContinuousFunction.Nnreal.upper_bound f x
+  have key := BoundedContinuousFunction.NNReal.upper_bound f x
   rwa [ENNReal.coe_le_coe]
 #align measure_theory.lintegral_lt_top_of_bounded_continuous_to_nnreal BoundedContinuousFunction.NNReal.lintegral_lt_top
 
@@ -47,7 +47,7 @@ theorem NNReal.integrable (f : X →ᵇ ℝ≥0) :
 #align measure_theory.finite_measure.integrable_of_bounded_continuous_to_nnreal BoundedContinuousFunction.NNReal.integrable
 
 theorem integral_eq_integral_nnrealPart_sub (f : X →ᵇ ℝ) :
-    ∫ x, f x ∂μ = (∫ x, (f.nnrealPart x : ℝ) ∂μ) - ∫ ω, ((-f).nnrealPart ω : ℝ) ∂μ := by
+    ∫ x, f x ∂μ = (∫ x, (f.nnrealPart x : ℝ) ∂μ) - ∫ x, ((-f).nnrealPart x : ℝ) ∂μ := by
   simp only [f.self_eq_nnrealPart_sub_nnrealPart_neg, Pi.sub_apply, integral_sub, NNReal.integrable]
   rfl
 #align bounded_continuous_function.integral_eq_integral_nnreal_part_sub BoundedContinuousFunction.integral_eq_integral_nnrealPart_sub
@@ -64,9 +64,9 @@ theorem NNReal.toReal_lintegral_eq_integral (f : X →ᵇ ℝ≥0)
   · exact eventually_of_forall (by simp only [Pi.zero_apply, NNReal.zero_le_coe, imp_true_iff])
 #align bounded_continuous_function.nnreal.to_real_lintegral_eq_integral BoundedContinuousFunction.NNReal.toReal_lintegral_eq_integral
 
-end
+end NNRealValued
 
-section
+section BochnerIntegral
 
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
 variable (μ : Measure X)
@@ -114,9 +114,9 @@ lemma bounded_range_integral
   rw [← hi]
   apply f.norm_integral_le_norm (μs i)
 
-end
+end BochnerIntegral
 
-section
+section RealValued
 
 variable {X : Type*} [TopologicalSpace X]
 variable [MeasurableSpace X] [OpensMeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
@@ -129,6 +129,6 @@ lemma integral_const_sub (f : X →ᵇ ℝ) (c : ℝ) :
     ∫ x, (const X c - f) x ∂μ = ENNReal.toReal (μ (Set.univ)) • c - ∫ x, f x ∂μ := by
   simp [integral_sub (integrable_const c) (f.integrable _)]
 
-end
+end RealValued
 
 end BoundedContinuousFunction

@@ -1429,12 +1429,12 @@ show that the space of bounded continuous functions from `α` to `β` is natural
 module over the algebra of bounded continuous functions from `α` to `𝕜`. -/
 end NormedAlgebra
 
-theorem Nnreal.upper_bound {α : Type*} [TopologicalSpace α] (f : α →ᵇ ℝ≥0) (x : α) :
+theorem NNReal.upper_bound {α : Type*} [TopologicalSpace α] (f : α →ᵇ ℝ≥0) (x : α) :
     f x ≤ nndist f 0 := by
   have key : nndist (f x) ((0 : α →ᵇ ℝ≥0) x) ≤ nndist f 0 := @dist_coe_le_dist α ℝ≥0 _ _ f 0 x
   simp only [coe_zero, Pi.zero_apply] at key
   rwa [NNReal.nndist_zero_eq_val' (f x)] at key
-#align bounded_continuous_function.nnreal.upper_bound BoundedContinuousFunction.Nnreal.upper_bound
+#align bounded_continuous_function.nnreal.upper_bound BoundedContinuousFunction.NNReal.upper_bound
 
 /-!
 ### Star structures
