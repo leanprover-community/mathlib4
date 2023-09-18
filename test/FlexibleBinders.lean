@@ -1,6 +1,9 @@
 import Mathlib.Util.FlexibleBinders
 import Mathlib.Data.Set.Basic
 
+-- On command line, tests format functions with => rather than ↦ without this.
+set_option pp.unicode.fun true
+
 structure Finset (α : Type _) where
   s : α → Prop
 
