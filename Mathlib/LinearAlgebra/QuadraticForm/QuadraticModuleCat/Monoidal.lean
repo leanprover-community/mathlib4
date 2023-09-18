@@ -41,7 +41,7 @@ def tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
 @[simps! form]
 def tensorUnit : QuadraticModuleCat.{u} R := of (sq (R := R))
 
-count_hearbeats in
+count_heartbeats in
 /-- Auxiliary definition used to fight a tmieout when building
 `QuadraticModuleCat.instMonoidalCategory`. -/
 def associator (X Y Z : QuadraticModuleCat.{u} R) :
