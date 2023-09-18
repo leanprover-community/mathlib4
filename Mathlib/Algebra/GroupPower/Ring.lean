@@ -199,6 +199,9 @@ theorem neg_pow (a : R) (n : ℕ) : (-a) ^ n = (-1) ^ n * a ^ n :=
   neg_one_mul a ▸ (Commute.neg_one_left a).mul_pow n
 #align neg_pow neg_pow
 
+theorem neg_pow' (a : R) (n : ℕ) : (-a) ^ n = a ^ n * (-1) ^ n :=
+  mul_neg_one a ▸ (Commute.neg_one_right a).mul_pow n
+
 section
 set_option linter.deprecated false
 
