@@ -874,4 +874,97 @@ theorem eventually_nonempty_inter_smul_of_density_one (s : Set E) (x : E)
 
 end Measure
 
+variable {E F : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
+  [NormedAddCommGroup F] [MeasurableSpace F] [BorelSpace F] {ν : Measure F}
+  [IsAddHaarMeasure μ] [IsAddHaarMeasure ν] [SigmaFinite ν]
+
+lemma map_fst_prod : Measure.map Prod.fst (μ.prod ν) = (ν univ) • μ := by
+  ext s hs
+  simp [Measure.map_apply measurable_fst hs, ← prod_univ, mul_comm]
+
+lemma map_snd_prod (μ : Measure E) (ν : Measure F) :
+    Measure.map Prod.snd (μ.prod ν) = (μ univ) • ν := by
+  ext s hs
+  simp [Measure.map_apply measurable_snd hs, ← univ_prod]
+
+variable [NormedSpace ℝ E] [NormedSpace ℝ F] [FiniteDimensional ℝ E] (L : E →ₗ[ℝ] F)
+
+theorem glou (h : Function.Surjective L) :
+    ∃ (c : ℝ≥0∞), 0 < c ∧ c < ∞ ∧ μ.map L = (c * addHaar (univ : Set (LinearMap.ker L))) • ν := by
+  have : FiniteDimensional ℝ F := Module.Finite.of_surjective L h
+  let S : Submodule ℝ E := LinearMap.ker L
+  obtain ⟨T, hT⟩ : ∃ T : Submodule ℝ E, IsCompl S T := Submodule.exists_isCompl S
+  let M : (S × T) ≃ₗ[ℝ] E := Submodule.prodEquivOfIsCompl S T hT
+  have M_cont : Continuous M.symm := LinearMap.continuous_of_finiteDimensional _
+  let P : S × T →ₗ[ℝ] T := LinearMap.snd ℝ S T
+  have P_cont : Continuous P := LinearMap.continuous_of_finiteDimensional _
+  have : Function.Injective (LinearMap.domRestrict L T) := by
+    rw [← LinearMap.ker_eq_bot, ← le_bot_iff]
+    intro x hx
+    have : (x : E) ∈ S ⊓ T := ⟨by simpa using hx, x.2⟩
+    rw [IsCompl.inf_eq_bot hT] at this
+    simpa using this
+  have : Function.Surjective (LinearMap.domRestrict L T) := by
+    intro y
+    rcases h y with ⟨x, rfl⟩
+    refine ⟨P (M.symm x), ?_⟩
+    obtain ⟨y, z, hyz⟩ : ∃ (y : S) (z : T), M.symm x = (y, z) := ⟨_, _, rfl⟩
+    have : x = M (y, z) := by rw [← hyz]; simp only [LinearEquiv.apply_symm_apply]
+    simp [this]
+
+
+
+
+
+#exit
+
+  let M : (S × T) ≃ₗ[ℝ] E := Submodule.prodEquivOfIsCompl S T hT
+  have M_cont : Continuous M.symm := LinearMap.continuous_of_finiteDimensional _
+  let P : S × T →ₗ[ℝ] T := LinearMap.snd ℝ S T
+  have P_cont : Continuous P := LinearMap.continuous_of_finiteDimensional _
+
+
+#exit
+
+  let L'' : T ≃ₗ[ℝ] F := LinearEquiv.ofBijective (LinearMap.domRestrict L T) sorry
+  have L''_cont : Continuous L'' := LinearMap.continuous_of_finiteDimensional _
+  have A : L = (L'' : T →ₗ[ℝ] F).comp (P.comp (M.symm : E →ₗ[ℝ] (S × T))) := by
+    sorry
+    /- ext x
+    obtain ⟨y, z, hyz⟩ : ∃ (y : S) (z : T), M.symm x = (y, z) := ⟨_, _, rfl⟩
+    have : x = M (y, z) := by
+      rw [← hyz]; simp only [LinearEquiv.apply_symm_apply]
+    simp [this] -/
+  have I : μ.map L = ((μ.map M.symm).map P).map L'' := by
+    sorry
+    /-rw [Measure.map_map, Measure.map_map, A]
+    · rfl
+    · exact L''_cont.measurable.comp P_cont.measurable
+    · exact M_cont.measurable
+    · exact L''_cont.measurable
+    · exact P_cont.measurable -/
+  let μS : Measure S := addHaar
+  let μT : Measure T := addHaar
+  obtain ⟨c₀, c₀_pos, c₀_fin, h₀⟩ :
+      ∃ c₀ : ℝ≥0∞, c₀ ≠ 0 ∧ c₀ ≠ ∞ ∧ μ.map M.symm = c₀ • μS.prod μT := by
+    sorry /-have : IsAddHaarMeasure (μ.map M.symm) :=
+      M.toContinuousLinearEquiv.symm.isAddHaarMeasure_map μ
+    exact isAddHaarMeasure_eq_smul_isAddHaarMeasure _ _ -/
+  have J : (μS.prod μT).map P = (μS univ) • μT := map_snd_prod _ _
+  obtain ⟨c₁, c₁_pos, c₁_fin, h₁⟩ : ∃ c₁ : ℝ≥0∞, c₁ ≠ 0 ∧ c₁ ≠ ∞ ∧ μT.map L'' = c₁ • ν := by
+    sorry /-have : IsAddHaarMeasure (μT.map L'') :=
+      L''.toContinuousLinearEquiv.isAddHaarMeasure_map μT
+    exact isAddHaarMeasure_eq_smul_isAddHaarMeasure _ _-/
+  refine ⟨c₀ * c₁, by simp [pos_iff_ne_zero, c₀_pos, c₁_pos], ENNReal.mul_lt_top c₀_fin c₁_fin, ?_⟩
+  simp only [I, h₀, Measure.map_smul, J, smul_smul, h₁]
+  rw [mul_assoc, mul_comm _ c₁, ← mul_assoc]
+
+
+
+
+
+
+
+
+
 end MeasureTheory
