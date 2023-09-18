@@ -122,6 +122,13 @@ lemma shiftFunctor_obj_d' (K : CochainComplex C ℤ) (n i j : ℤ) :
     ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).obj K).d i j =
       n.negOnePow • K.d _ _ := rfl
 
+lemma shiftFunctor_obj_d'' (K : CochainComplex C ℤ) (n i j i' j' : ℤ) (hi' : i' = i + n) (hj' : j' = j + n) :
+    ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).obj K).d i j =
+      n.negOnePow • (shiftFunctorObjXIso K n i i' hi').hom ≫ K.d i' j' ≫
+          (shiftFunctorObjXIso K n j j' hj').inv := by
+  subst hi' hj'
+  simp
+
 lemma shiftFunctorAdd_inv_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
     ((shiftFunctorAdd (CochainComplex C ℤ) a b).inv.app K).f n =
       (K.XIsoOfEq (by dsimp; rw [add_comm a, add_assoc])).hom := rfl

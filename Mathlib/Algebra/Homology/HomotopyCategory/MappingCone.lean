@@ -179,6 +179,17 @@ lemma to_ext_iff {A : C} {n₁ : ℤ} (f g : A ⟶ (mappingCone φ).X n₁) (n�
     rw [← cancel_mono (𝟙 _), id_X φ n₁ n₂ h]
     simp only [comp_add, reassoc_of% h₁, reassoc_of% h₂]
 
+lemma cochain_from_break {K : CochainComplex C ℤ} {n : ℤ} (α : Cochain (mappingCone φ) K n)
+    (m : ℤ) (hm : m + 1 = n) :
+    ∃ (a : Cochain F K m) (b : Cochain G K n),
+      α = (MappingCone.fst φ).1.comp a (by linarith) +
+        (MappingCone.snd φ).comp b (zero_add n) := by
+  refine' ⟨(inl φ).comp α (by linarith),
+    (Cochain.ofHom (inr φ)).comp α (zero_add n), _⟩
+  nth_rewrite 1 [← α.id_comp]
+  rw [← id, Cochain.add_comp, Cochain.comp_assoc_of_first_is_zero_cochain,
+    add_left_inj, Cochain.comp_assoc _ _ _ _ _ (by linarith)]
+
 lemma from_ext_iff {A : C} {n₁ : ℤ} (f g : (mappingCone φ).X n₁ ⟶ A)
   (n₂ : ℤ) (h : n₁ + 1 = n₂) :
   f = g ↔ (inl φ).v n₂ n₁ (by rw [← h, add_neg_cancel_right]) ≫ f =
