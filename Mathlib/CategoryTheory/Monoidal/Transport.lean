@@ -11,8 +11,13 @@ import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 # Transport a monoidal structure along an equivalence.
 
 When `C` and `D` are equivalent as categories,
-we can transport a monoidal structure on `C` along the equivalence,
-obtaining a monoidal structure on `D`.
+we can transport a monoidal structure on `C` along the equivalence as
+`CategoryTheory.Monoidal.transport`, obtaining a monoidal structure on `D`.
+
+More generally, we can transport the lawfulness of a monoidal structure along a suitable faithful
+functor, as `CategoryTheory.Monoidal.induced`.
+The comparison is analogous to the difference between `Equiv.monoid` and
+`Function.Injective.Monoid`.
 
 We then upgrade the original functor and its inverse to monoidal functors
 with respect to the new monoidal structure on `D`.
@@ -148,7 +153,7 @@ abbrev induced (F : D ⥤ C) [Faithful F]
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
-@[simps!
+@[simps
   tensorObj whiskerLeft whiskerRight tensorHom tensorUnit' associator leftUnitor rightUnitor]
 abbrev transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   induced
