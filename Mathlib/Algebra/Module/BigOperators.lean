@@ -24,12 +24,20 @@ theorem List.sum_smul {l : List R} {x : M} : l.sum • x = (l.map fun r ↦ r �
   ((smulAddHom R M).flip x).map_list_sum l
 #align list.sum_smul List.sum_smul
 
+theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.sum • x = (l.map fun r ↦ r • x).sum :=
+  ((smulAddHom R M).flip x).map_multiset_sum l
+#align multiset.sum_smul Multiset.sum_smul
+
 theorem Multiset.sum_smul_sum {s : Multiset R} {t : Multiset M} :
     s.sum • t.sum = ((s ×ˢ t).map fun p : R × M ↦ p.fst • p.snd).sum := by
   induction' s using Multiset.induction with a s ih
   · simp
   · simp [add_smul, ih, ← Multiset.smul_sum]
 #align multiset.sum_smul_sum Multiset.sum_smul_sum
+
+theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
+    (∑ i in s, f i) • x = ∑ i in s, f i • x := ((smulAddHom R M).flip x).map_sum f s
+#align finset.sum_smul Finset.sum_smul
 
 theorem Finset.sum_smul_sum {f : α → R} {g : β → M} {s : Finset α} {t : Finset β} :
     ((∑ i in s, f i) • ∑ i in t, g i) = ∑ p in s ×ˢ t, f p.fst • g p.snd := by
