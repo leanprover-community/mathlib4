@@ -9,7 +9,6 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use
-import Mathlib.Util.CountHeartbeats
 
 #align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
@@ -934,7 +933,6 @@ theorem findGreatest_of_not (h : ¬P (b + 1)) :
 end FindGreatest
 
 /-! ### decidability of predicates -/
-
 
 -- To work around lean4#2552, we use `match` instead of `if/casesOn` with decidable instances.
 instance decidableBallLT :
