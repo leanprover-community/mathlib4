@@ -62,7 +62,7 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
     -- Now it can't find a proof by unification, so we have to do it ourselves.
     apply PowerBasis.lift_gen
     change aeval y (minpoly F (AdjoinSimple.gen F x)) = 0
-    exact minpoly_gen (hi x) ▸ aeval_eq_zero_of_mem_rootSet (Multiset.mem_toFinset.mpr hy)
+    exact minpoly_gen F x ▸ aeval_eq_zero_of_mem_rootSet (Multiset.mem_toFinset.mpr hy)
 
 #align normal_closure.restrict_scalars_eq_supr_adjoin normalClosure.restrictScalars_eq_iSup_adjoin
 
@@ -74,8 +74,7 @@ instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
   intro x
   -- Porting note: use the `(_)` trick to obtain an instance by unification.
   apply Normal.of_isSplittingField (p := minpoly F x) (hFEp := _)
-  exact adjoin_rootSet_isSplittingField ((minpoly.eq_of_algebraMap_eq ϕ.injective
-    ((isIntegral_algebraMap_iff ϕ.injective).mp (h.isIntegral (ϕ x))) rfl).symm ▸ h.splits _)
+  exact adjoin_rootSet_isSplittingField (minpoly.algebraMap_eq ϕ.injective (A := F) x ▸ h.splits _)
 #align normal_closure.normal normalClosure.normal
 
 instance is_finiteDimensional [FiniteDimensional F K] :
