@@ -879,11 +879,9 @@ Evaluates an atom, an expression where `ring` can find no additional structure.
 * `a = a ^ 1 * 1 + 0`
 -/
 def evalAtom (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
-  let r ← (← read).evalAtom e
-  have e' : Q($α) := r.expr
-  let i ← addAtom e'
+  let ⟨i, ⟨(e' : Q($α)), proof?, _⟩⟩ ← addAtomWithResult e
   let ve' := (ExBase.atom i (e := e')).toProd (ExProd.mkNat sℕ 1).2 |>.toSum
-  pure ⟨_, ve', match r.proof? with
+  pure ⟨_, ve', match proof? with
   | none => (q(atom_pf $e) : Expr)
   | some (p : Q($e = $e')) => (q(atom_pf' $p) : Expr)⟩
 
