@@ -42,20 +42,20 @@ abbrev induced (e : D ⥤ C) [Faithful e]
     (tensorObj : D → D → D)
     (μIsoSymm : ∀ X Y,
       e.obj (tensorObj X Y) ≅ e.obj X ⊗ e.obj Y)
-    (whiskerLeft : ∀ (X : D) {Y₁ Y₂ : D} (f : Y₁ ⟶ Y₂), tensorObj X Y₁ ⟶ tensorObj X Y₂)
+    (whiskerLeft : ∀ (X : D) {Y₁ Y₂ : D} (_f : Y₁ ⟶ Y₂), tensorObj X Y₁ ⟶ tensorObj X Y₂)
     (whiskerLeft_eq : ∀ (X : D) {Y₁ Y₂ : D} (f : Y₁ ⟶ Y₂),
       e.map (whiskerLeft X f)
         = (μIsoSymm _ _).hom ≫ (e.obj X ◁ e.map f) ≫ (μIsoSymm _ _).inv :=
       by aesop_cat)
-    (whiskerRight : ∀ {X₁ X₂ : D} (f : X₁ ⟶ X₂) (Y : D), tensorObj X₁ Y ⟶ tensorObj X₂ Y)
+    (whiskerRight : ∀ {X₁ X₂ : D} (_f : X₁ ⟶ X₂) (Y : D), tensorObj X₁ Y ⟶ tensorObj X₂ Y)
     (whiskerRight_eq : ∀ {X₁ X₂ : D} (f : X₁ ⟶ X₂) (Y : D),
       e.map (whiskerRight f Y)
         = (μIsoSymm _ _).hom ≫ (e.map f ▷ e.obj Y) ≫ (μIsoSymm _ _).inv :=
       by aesop_cat)
     (tensorHom :
-      ∀ {X₁ Y₁ X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂), tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂)
+      ∀ {X₁ Y₁ X₂ Y₂ : D} (_f : X₁ ⟶ Y₁) (_g : X₂ ⟶ Y₂), tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂)
     (tensorHom_eq :
-      ∀ {X₁ Y₁ X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂),
+      ∀ {X₁ Y₁ X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂),
         e.map (tensorHom f g)
           = (μIsoSymm _ _).hom ≫ (e.map f ⊗ e.map g) ≫ (μIsoSymm _ _).inv :=
       by aesop_cat)
@@ -90,33 +90,61 @@ abbrev induced (e : D ⥤ C) [Faithful e]
       tensorHom_def {X₁ Y₁ X₂ Y₂} f g := e.map_injective <| by
         dsimp
         rw [tensorHom_eq, Functor.map_comp, whiskerRight_eq, whiskerLeft_eq]
-        sorry
-      tensor_id X₁ X₂ := e.map_injective <| by
-        dsimp
-        sorry
-      tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := e.map_injective <| by
-        dsimp
-        sorry
+        simp only [tensorHom_def, assoc, Iso.inv_hom_id_assoc]
+      tensor_id X₁ X₂ := e.map_injective <| by aesop_cat
+      tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := e.map_injective <| by aesop_cat
       whiskerLeft_id X Y := e.map_injective <| by simp [whiskerLeft_eq]
       id_whiskerRight X Y := e.map_injective <| by simp [whiskerRight_eq]
       associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := e.map_injective <| by
+        have := associator_naturality (e.map f₁) (e.map f₂) (e.map f₃)
+        dsimp
         simp [associator_eq, tensorHom_eq]
-        sorry
+        simp_rw [←assoc, ←tensor_comp, assoc, Iso.inv_hom_id, ←assoc]
+        congr 1
+        conv_rhs => rw [←comp_id (e.map f₁), ←id_comp (e.map f₁)]
+        simp only [tensor_comp]
+        simp only [tensor_id, comp_id, assoc, tensor_inv_hom_id_assoc, id_comp]
+        slice_rhs 2 3 => rw [←this]
+        simp only [← assoc, Iso.inv_hom_id, comp_id]
+        congr 2
+        simp_rw [←tensor_comp, id_comp]
       leftUnitor_naturality {X Y : D} f := e.map_injective <| by
-        simp [leftUnitor_eq, tensorHom_eq]
-        sorry
+        have := leftUnitor_naturality (e.map f)
+        dsimp
+        simp only [Functor.map_comp, tensorHom_eq, Functor.map_id, leftUnitor_eq, Iso.trans_assoc,
+          Iso.trans_hom, tensorIso_hom, Iso.refl_hom, assoc, Iso.inv_hom_id_assoc,
+          id_tensor_comp_tensor_id_assoc, Iso.cancel_iso_hom_left]
+        rw [←this, ←assoc, ←tensor_comp, id_comp, comp_id]
       rightUnitor_naturality {X Y : D} f := e.map_injective <| by
-        simp [rightUnitor_eq, tensorHom_eq]
-        sorry
+        have := rightUnitor_naturality (e.map f)
+        dsimp
+        simp only [Functor.map_comp, tensorHom_eq, Functor.map_id, rightUnitor_eq, Iso.trans_assoc,
+          Iso.trans_hom, tensorIso_hom, Iso.refl_hom, assoc, Iso.inv_hom_id_assoc,
+          tensor_id_comp_id_tensor_assoc, Iso.cancel_iso_hom_left]
+        rw [←this, ←assoc, ←tensor_comp, id_comp, comp_id]
       pentagon W X Y Z := e.map_injective <| by
         have := MonoidalCategory.pentagon (e.obj W) (e.obj X) (e.obj Y) (e.obj Z)
-        simp [associator_eq, tensorHom_eq]
-        congr 2
+        dsimp
+        simp only [Functor.map_comp, tensorHom_eq, associator_eq, Iso.trans_assoc, Iso.trans_hom,
+          tensorIso_hom, Iso.refl_hom, Iso.symm_hom, Functor.map_id, comp_tensor_id,
+          associator_conjugation, tensor_id, assoc, id_tensor_comp, Iso.inv_hom_id_assoc,
+          tensor_inv_hom_id_assoc, id_comp, inv_hom_id_tensor_assoc, id_tensor_comp_tensor_id_assoc,
+          Iso.cancel_iso_hom_left]
+        congr 1
         simp only [←assoc]
         congr 2
-        simp
-        sorry
-      triangle X Y :=  e.map_injective <| by aesop_cat
+        simp only [assoc, ←tensor_comp, id_comp, Iso.inv_hom_id, tensor_id]
+        congr 1
+        conv_rhs => rw [←tensor_id_comp_id_tensor]
+        simp only [assoc]
+        congr 1
+        rw [Iso.inv_comp_eq]
+        conv_lhs => rw [←id_comp (𝟙 (e.obj W)), tensor_comp]
+        slice_lhs 0 2 => rw [this]
+        rw [assoc]
+        congr 1
+        rw [←associator_naturality, tensor_id]
+      triangle X Y := e.map_injective <| by aesop_cat
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
@@ -142,119 +170,6 @@ def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
     (rightUnitor := fun X =>
       e.functor.mapIso ((Iso.refl _ ⊗ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
         e.counitIso.app _)
-
--- porting note: it was @[simps {attrs := [`_refl_lemma]}]
-/-- Transport a monoidal structure along an equivalence of (plain) categories.
--/
--- TODO: delete this once the `sorry`s above are filled
-@[simps]
-def transport' (e : C ≌ D) : MonoidalCategory.{v₂} D where
-  tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
-  whiskerLeft := fun X _ _ f ↦ e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
-  whiskerRight := fun f X ↦ e.functor.map (e.inverse.map f ▷ e.inverse.obj X)
-  tensorHom_def := by simp [tensorHom_def]
-  tensorHom f g := e.functor.map (e.inverse.map f ⊗ e.inverse.map g)
-  tensorUnit' := e.functor.obj (𝟙_ C)
-  associator X Y Z :=
-    e.functor.mapIso
-      (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫
-        α_ (e.inverse.obj X) (e.inverse.obj Y) (e.inverse.obj Z) ≪≫ (Iso.refl _ ⊗ e.unitIso.app _))
-  leftUnitor X :=
-    e.functor.mapIso (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫ λ_ (e.inverse.obj X)) ≪≫
-      e.counitIso.app _
-  rightUnitor X :=
-    e.functor.mapIso ((Iso.refl _ ⊗ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
-      e.counitIso.app _
-  triangle X Y := by
-    dsimp
-    simp only [Iso.hom_inv_id_app_assoc, comp_tensor_id, Equivalence.unit_inverse_comp, assoc,
-      Equivalence.inv_fun_map, comp_id, Functor.map_comp, id_tensor_comp, e.inverse.map_id]
-    simp only [← e.functor.map_comp]
-    congr 2
-    slice_lhs 2 3 =>
-      rw [← id_tensor_comp]
-      simp
-    rw [Category.id_comp, ← associator_naturality_assoc, triangle]
-  pentagon W X Y Z := by
-    dsimp
-    simp only [Iso.hom_inv_id_app_assoc, comp_tensor_id, assoc, Equivalence.inv_fun_map,
-      Functor.map_comp, id_tensor_comp, e.inverse.map_id]
-    simp only [← e.functor.map_comp]
-    congr 2
-    slice_lhs 4 5 =>
-      rw [← comp_tensor_id, Iso.hom_inv_id_app]
-      dsimp
-      rw [tensor_id]
-    simp only [Category.id_comp, Category.assoc]
-    slice_lhs 5 6 =>
-      rw [← id_tensor_comp, Iso.hom_inv_id_app]
-      dsimp
-      rw [tensor_id]
-    simp only [Category.id_comp, Category.assoc]
-    slice_rhs 2 3 => rw [id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
-    slice_rhs 1 2 => rw [← tensor_id, ← associator_naturality]
-    slice_rhs 3 4 => rw [← tensor_id, associator_naturality]
-    slice_rhs 2 3 => rw [← pentagon]
-    simp only [Category.assoc]
-    congr 2
-    slice_lhs 1 2 => rw [associator_naturality]
-    simp only [Category.assoc]
-    congr 1
-    slice_lhs 1 2 =>
-      rw [← id_tensor_comp, ← comp_tensor_id, Iso.hom_inv_id_app]
-      dsimp
-      rw [tensor_id, tensor_id]
-    simp only [Category.id_comp, Category.assoc]
-  leftUnitor_naturality f := by
-    dsimp
-    simp only [Functor.map_comp, Functor.map_id, Category.assoc]
-    erw [← e.counitIso.hom.naturality]
-    simp only [Functor.comp_map, ← e.functor.map_comp_assoc]
-    congr 2
-    rw [id_tensor_comp_tensor_id_assoc, ← tensor_id_comp_id_tensor_assoc,
-      leftUnitor_naturality]
-  rightUnitor_naturality f := by
-    dsimp
-    simp only [Functor.map_comp, Functor.map_id, Category.assoc]
-    erw [← e.counitIso.hom.naturality]
-    simp only [Functor.comp_map, ← e.functor.map_comp_assoc]
-    congr 2
-    erw [tensor_id_comp_id_tensor_assoc, ← id_tensor_comp_tensor_id_assoc,
-      rightUnitor_naturality]
-  associator_naturality f₁ f₂ f₃ := by
-    dsimp
-    simp only [Equivalence.inv_fun_map, Functor.map_comp, Category.assoc]
-    simp only [← e.functor.map_comp]
-    congr 1
-    conv_lhs => rw [← tensor_id_comp_id_tensor]
-    slice_lhs 2 3 => rw [id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor, ← tensor_id]
-    simp only [Category.assoc]
-    slice_lhs 3 4 => rw [associator_naturality]
-    conv_lhs => simp only [comp_tensor_id]
-    slice_lhs 3 4 =>
-      rw [← comp_tensor_id, Iso.hom_inv_id_app]
-      dsimp
-      rw [tensor_id]
-    simp only [Category.id_comp, Category.assoc]
-    slice_lhs 2 3 => rw [associator_naturality]
-    simp only [Category.assoc]
-    congr 2
-    slice_lhs 1 1 => rw [← tensor_id_comp_id_tensor]
-    slice_lhs 2 3 => rw [← id_tensor_comp, tensor_id_comp_id_tensor]
-    slice_lhs 1 2 => rw [tensor_id_comp_id_tensor]
-    conv_rhs =>
-      congr
-      · skip
-      · rw [← id_tensor_comp_tensor_id, id_tensor_comp]
-    simp only [Category.assoc]
-    slice_rhs 1 2 =>
-      rw [← id_tensor_comp, Iso.hom_inv_id_app]
-      dsimp
-      rw [tensor_id]
-    simp only [Category.id_comp, Category.assoc]
-    conv_rhs => rw [id_tensor_comp]
-    slice_rhs 2 3 => rw [id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
-    slice_rhs 1 2 => rw [id_tensor_comp_tensor_id]
 #align category_theory.monoidal.transport CategoryTheory.Monoidal.transport
 
 /-- A type synonym for `D`, which will carry the transported monoidal structure. -/
