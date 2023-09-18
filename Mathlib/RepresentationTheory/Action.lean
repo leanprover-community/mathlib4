@@ -473,7 +473,7 @@ open MonoidalCategory
 
 variable [MonoidalCategory V]
 
-instance : MonoidalCategory (Action V G) :=
+instance instMonoidalCategory : MonoidalCategory (Action V G) :=
   Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
 @[simp]
@@ -633,12 +633,6 @@ theorem functorCategoryMonoidalEquivalence.μ_app (A B : Action V G) :
   -- porting note: Lean3 was able to see through some defeq, as the mathlib3 proof was
   --   show (𝟙 A.V ⊗ 𝟙 B.V) ≫ 𝟙 (A.V ⊗ B.V) ≫ (𝟙 A.V ⊗ 𝟙 B.V) = 𝟙 (A.V ⊗ B.V)
   --   simp only [monoidal_category.tensor_id, category.comp_id]
-  dsimp [Equivalence.unit]
-  erw [Category.id_comp]
-  rw [NatIso.isIso_inv_app, IsIso.inv_comp_eq]
-  erw [MonoidalCategory.tensor_id]
-  erw [(functorCategoryEquivalence V G).inverse.map_id,
-    (functorCategoryEquivalence V G).functor.map_id, Category.id_comp]
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.μ_app Action.functorCategoryMonoidalEquivalence.μ_app

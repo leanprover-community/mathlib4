@@ -204,6 +204,8 @@ def fromInduced (F : D ⥤ C) [Faithful F]
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
+@[simps
+  tensorObj whiskerLeft whiskerRight tensorHom tensorUnit' associator leftUnitor rightUnitor]
 abbrev transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   induced
     (F := e.inverse)
