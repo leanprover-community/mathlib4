@@ -692,12 +692,12 @@ instance apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M :=
   ⟨@fun _ _ => LinearEquiv.ext⟩
 #align linear_equiv.apply_has_faithful_smul LinearEquiv.apply_faithfulSMul
 
-instance apply_smulCommClass : SMulCommClass R (M ≃ₗ[R] M) M
-    where smul_comm r e m := (e.map_smul r m).symm
+instance apply_smulCommClass : SMulCommClass R (M ≃ₗ[R] M) M where
+  smul_comm r e m := (e.map_smul r m).symm
 #align linear_equiv.apply_smul_comm_class LinearEquiv.apply_smulCommClass
 
-instance apply_smulCommClass' : SMulCommClass (M ≃ₗ[R] M) R M
-    where smul_comm := LinearEquiv.map_smul
+instance apply_smulCommClass' : SMulCommClass (M ≃ₗ[R] M) R M where
+  smul_comm := LinearEquiv.map_smul
 #align linear_equiv.apply_smul_comm_class' LinearEquiv.apply_smulCommClass'
 
 end Automorphisms
