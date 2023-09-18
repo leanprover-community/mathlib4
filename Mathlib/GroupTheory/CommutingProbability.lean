@@ -266,8 +266,8 @@ lemma mylem (A : Set G) (hA : A⁻¹ = A) (k : ℕ) (g : G)
 
 -- growth lemma for powers of symmetric sets
 lemma mylem2 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
-    (h : Set.ncard (A ^ (k + 1) : Set G) < Set.ncard (A ^ (k + 2) : Set G)) :
-    Set.ncard (A : Set G) + Set.ncard (A ^ k : Set G) ≤ Set.ncard (A ^ (k + 3) : Set G) := by
+    (h : (A ^ (k + 1) : Set G).ncard < (A ^ (k + 2) : Set G).ncard) :
+    A.ncard + (A ^ k : Set G).ncard ≤ (A ^ (k + 3) : Set G).ncard := by
   rcases Set.finite_or_infinite A with (h' | h'); swap
   · rw [(h'.pow_succ (k + 1)).ncard] at h
     contradiction
@@ -278,8 +278,8 @@ lemma mylem2 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
 
 -- growth lemma for powers of symmetric sets
 lemma mylem4 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
-    (h : Set.ncard (A ^ (3 * k - 1) : Set G) < Set.ncard (A ^ (3 * k) : Set G)) :
-    (k + 1) * Set.ncard (A : Set G) ≤ Set.ncard (A ^ (3 * k + 1) : Set G) := by
+    (h : (A ^ (3 * k - 1) : Set G).ncard < (A ^ (3 * k) : Set G).ncard) :
+    (k + 1) * A.ncard ≤ (A ^ (3 * k + 1) : Set G).ncard := by
   induction' k with k ih
   · exact (lt_irrefl _ h).elim
   rcases Set.finite_or_infinite A with (h' | h'); swap
@@ -296,3 +296,53 @@ lemma mylem4 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
   rw [Nat.mul_succ, Nat.succ_sub_one] at h''
   rw [Nat.mul_succ, Nat.mul_succ, Nat.succ_sub_one, pow_add A _ 3, h'', ← pow_add] at h
   exact lt_irrefl _ h
+
+lemma ncard_le_card [Finite G] (A : Set G) : A.ncard ≤ Nat.card G :=
+  le_of_le_of_eq (Set.ncard_mono A.subset_univ) (Set.ncard_univ G)
+
+lemma ncard_pos_off_mem  {A : Set G} (hA : Set.Finite A) {g : G} (h : g ∈ A) : 0 < A.ncard := by
+  refine' (Set.ncard_pos hA).mpr ⟨g, h⟩
+
+lemma mylem9 (A : Set G) (k : ℕ) : A ^ k ⊆ Subgroup.closure A := by
+  induction' k with k hk
+  simp [Subgroup.one_mem]
+  rw [pow_succ]
+  rintro - ⟨a, b, ha, hb, -, rfl⟩
+  apply (Subgroup.closure A).mul_mem (Subgroup.subset_closure ha) (hk hb)
+
+lemma mylem8 [Finite G] (A : Set G) {k : ℕ} (hA1 : 1 ∈ A) (h : (A ^ k : Set G) = (A ^ (k + 1) : Set G)) :
+    Subgroup.closure A = (A ^ k : Set G) := by
+  apply le_antisymm
+  · have := Fintype.ofFinite G
+    let H := subgroupOfIdempotent (A ^ k : Set G) sorry sorry
+    suffices : Subgroup.closure A ≤ H
+    · exact SetLike.coe_mono this
+    rw [Subgroup.closure_le]
+    rw [← pow_one A]
+    change (A ^ 1 : Set G) ⊆ (A ^ k : Set G)
+    rw [h]
+    exact Set.pow_subset_pow_of_one_mem hA1 (Nat.le_add_left 1 k)
+  · exact mylem9 A k
+
+-- growth lemma for powers of symmetric sets
+lemma mylem5 [Finite G] (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
+    (h : Nat.card G ≤ k * A.ncard) :
+    Subgroup.closure A = (A ^ (3 * k) : Set G) := by
+  have hk : k ≠ 0 := by
+    rintro rfl
+    rw [zero_mul] at h
+    have : 0 < Nat.card G := Finite.card_pos
+    exact not_lt_of_le h this
+  replace h : (A ^ (3 * k + 1) : Set G).ncard < (k + 1) * A.ncard :=
+  calc
+    (A ^ (3 * k + 1) : Set G).ncard ≤ Nat.card G := ncard_le_card _
+    _ ≤ k * A.ncard := h
+    _ < (k + 1) * A.ncard := Nat.mul_lt_mul_of_pos_right k.lt_succ_self (ncard_pos_off_mem hA1)
+  have key := le_of_not_lt (mt (mylem4 A hA hA1 k) (not_le_of_lt h))
+  have key' := Set.eq_of_subset_of_ncard_le (Set.pow_subset_pow_of_one_mem hA1
+    (Nat.sub_le (3 * k) 1)) key
+  apply mylem8 A hA1
+  conv_rhs => rw [pow_succ, ← key', ← pow_succ]
+  cases k
+  contradiction
+  rfl
