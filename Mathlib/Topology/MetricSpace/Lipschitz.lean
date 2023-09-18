@@ -255,7 +255,7 @@ protected theorem prod_snd : LipschitzWith 1 (@Prod.snd α β) :=
   LipschitzWith.of_edist_le fun _ _ => le_max_right _ _
 #align lipschitz_with.prod_snd LipschitzWith.prod_snd
 
-/-- The product of Lipschitz functions is Lipschitz. -/
+/-- If `f` and `g` are Lipschitz functions, so is the "product type" `f × g`. -/
 protected theorem prod {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
     (hg : LipschitzWith Kg g) : LipschitzWith (max Kf Kg) fun x => (f x, g x) := by
   intro x y
