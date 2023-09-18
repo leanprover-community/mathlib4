@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Lean
 import Std.Data.Option.Basic
+import Std.Tactic.HaveI
 
 /-! # Flexible binders
 
@@ -133,6 +134,12 @@ be inserted to implement pattern matching.
 It should be realized as `match discr with | patt => ...`. -/
 scoped syntax "binderMatch%(" term ", " term ")" : term
 
+/-- `binderLetI%(name, val)` is a possible expansion of `binder%(...)`,
+and rather than representing a binder per se,
+this represents the directive that a `letI` expression must be inserted.
+It should be realized as `letI name := val; ...`. -/
+scoped syntax "binderLetI%(" ident ", " term ")" : term
+
 /-- A record of an individual binder after expansion of `flexibleBinders`. -/
 inductive Binder where
   /-- This is a standard binder.
@@ -148,6 +155,9 @@ inductive Binder where
   /-- Instruction to insert a `match` expression with the given discriminant and pattern.
   In particular, `match discr with | patt => ...`. -/
   | match (discr : Term) (patt : Term)
+  /-- Instruction to insert a `letI` expression.
+  In particular, `letI name := val; ...`. -/
+  | letI (name : Ident) (val : Term)
 
 /-- Takes a term and interprets it as a flexible binder expression.
 Uses the `binder%(...)`/`binderSplit%(...)` syntax to process and expand binders.
@@ -186,6 +196,7 @@ where
     | `(binderResolved%($p)) =>
       return acc |>.push (Binder.prop p)
     | `(binderMatch%($discr, $patt)) => return acc.push <| Binder.match discr patt
+    | `(binderLetI%($name, $val)) => return acc.push <| Binder.letI name val
     | `($f $args*) =>
       let acc ← process acc f
       args.foldlM (init := acc) process
@@ -223,6 +234,7 @@ elab "#test_flexible_binders " dom?:(flexibleBindersDom)? " => " e:flexibleBinde
       logInfo m!"binder {← `(($binder : $ty))} ∈ {domain}"
     | .prop p => logInfo m!"prop binder {← `((_ : $p))}"
     | .match discr patt => logInfo m!"match {discr} with | {patt} => ..."
+    | .letI name val => logInfo m!"letI {name} := {val}; ..."
 
 /-- Uses a null node to encode a list of binders.
 This is suitable as a return value in `binder%(...)` expansions to return multiple binders. -/

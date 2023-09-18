@@ -67,6 +67,7 @@ macro_rules
           -- This will likely fail to elaborate if the quantifier wants a Type.
           return expandUniv.eval₁ (← `(fun (_ : $p) ↦ $body))
       | .match discr patt, body => `(match $discr:term with | $patt => $body)
+      | .letI name val, body => `(letI $name := $val; $body)
 
 macro (name := expandFoldl) "expand_foldl% "
   "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>

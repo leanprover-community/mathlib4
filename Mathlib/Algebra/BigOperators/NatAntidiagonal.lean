@@ -23,13 +23,13 @@ namespace Finset
 namespace Nat
 
 section Binders
-open Mathlib.FlexibleBinders
+open Mathlib.FlexibleBinders Lean Macro
 
 /-- For the `finset` domain, `a + b = n` for sums over the antidiagonal.
 Example: `∑ i + j = 10, i * j`. -/
 macro_rules
-  | `(binder%(finset%, $a + $b = $n)) =>
-    `(binder%(finset%, ($a, $b) ∈ Finset.Nat.antidiagonal $n))
+  | `(binder%(finset%, $a:ident + $b:ident = $n)) => withFreshMacroScope do
+    `(binder%(finset%, p ∈ Finset.Nat.antidiagonal $n) binderLetI%($a, p.1) binderLetI%($b, p.2))
 
 end Binders
 
@@ -80,7 +80,7 @@ using `rw ←`. -/
 @[to_additive "This lemma matches more generally than
 `Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk` when using `rw ←`."]
 theorem prod_antidiagonal_eq_prod_range_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
-    ∏ ij in Finset.Nat.antidiagonal n, f ij.1 ij.2 = ∏ k in range n.succ, f k (n - k) :=
+    ∏ i + j = n, f i j = ∏ k in range n.succ, f k (n - k) :=
   prod_antidiagonal_eq_prod_range_succ_mk _ _
 #align finset.nat.prod_antidiagonal_eq_prod_range_succ Finset.Nat.prod_antidiagonal_eq_prod_range_succ
 #align finset.nat.sum_antidiagonal_eq_sum_range_succ Finset.Nat.sum_antidiagonal_eq_sum_range_succ
