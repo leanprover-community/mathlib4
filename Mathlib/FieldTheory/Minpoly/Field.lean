@@ -126,21 +126,6 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
   · rwa [Polynomial.Monic, leadingCoeff_mul, leadingCoeff_C, mul_inv_cancel]
 #align minpoly.eq_of_irreducible minpoly.eq_of_irreducible
 
-/-- If `y` is the image of `x` in an extension, their minimal polynomials coincide.
-
-We take `h : y = algebraMap L T x` as an argument because `rw h` typically fails
-since `IsIntegral R y` depends on y.
--/
-theorem eq_of_algebraMap_eq {K S T : Type*} [Field K] [CommRing S] [CommRing T] [Algebra K S]
-    [Algebra K T] [Algebra S T] [IsScalarTower K S T] (hST : Function.Injective (algebraMap S T))
-    {x : S} {y : T} (hx : IsIntegral K x) (h : y = algebraMap S T x) : minpoly K x = minpoly K y :=
-  minpoly.unique _ _ (minpoly.monic hx)
-    (by rw [h, aeval_algebraMap_apply, minpoly.aeval, RingHom.map_zero]) fun q q_monic root_q =>
-    minpoly.min _ _ q_monic
-      ((aeval_algebraMap_eq_zero_iff_of_injective hST).mp
-        (h ▸ root_q : Polynomial.aeval (algebraMap S T x) q = 0))
-#align minpoly.eq_of_algebra_map_eq minpoly.eq_of_algebraMap_eq
-
 theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
   refine' (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) _ fun q qmo hq => _).symm
@@ -176,7 +161,7 @@ variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F
 /-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
     (x : range (FiniteDimensional.finBasis F E : _ → E)) :
-    { l : K // l ∈ (((minpoly F x.1).map (algebraMap F K)).roots : Multiset K) } :=
+    { l : K // l ∈ (minpoly F x.1).aroots K } :=
   ⟨φ x, by
     rw [mem_roots_map (minpoly.ne_zero_of_finite F x.val),
       ← aeval_def, aeval_algHom_apply, minpoly.aeval, map_zero]⟩
@@ -195,7 +180,7 @@ theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
 noncomputable instance AlgHom.fintype : Fintype (E →ₐ[F] K) :=
   @Fintype.ofInjective _ _
     (Fintype.subtypeProd (finite_range (FiniteDimensional.finBasis F E)) fun e =>
-      ((minpoly F e).map (algebraMap F K)).roots)
+      (minpoly F e).aroots K)
     _ (aux_inj_roots_of_min_poly F E K)
 #align minpoly.alg_hom.fintype minpoly.AlgHom.fintype
 

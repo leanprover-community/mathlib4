@@ -37,14 +37,12 @@ variable {C : Type _} [Category C] (r : HomRel C)
 from left and right. -/
 class Congruence : Prop where
   /-- `r` is an equivalence on every hom-set. -/
-  isEquiv : ∀ {X Y}, IsEquiv _ (@r X Y)
+  equivalence : ∀ {X Y}, _root_.Equivalence (@r X Y)
   /-- Precomposition with an arrow respects `r`. -/
   compLeft : ∀ {X Y Z} (f : X ⟶ Y) {g g' : Y ⟶ Z}, r g g' → r (f ≫ g) (f ≫ g')
   /-- Postcomposition with an arrow respects `r`. -/
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
 #align category_theory.congruence CategoryTheory.Congruence
-
-attribute [instance] Congruence.isEquiv
 
 /-- A type synonym for `C`, thought of as the objects of the quotient category. -/
 @[ext]
@@ -112,16 +110,19 @@ instance category : Category (Quotient r) where
 #align category_theory.quotient.category CategoryTheory.Quotient.category
 
 /-- The functor from a category to its quotient. -/
-@[simps]
 def functor : C ⥤ Quotient r where
   obj a := { as := a }
   map := @fun _ _ f ↦ Quot.mk _ f
 #align category_theory.quotient.functor CategoryTheory.Quotient.functor
 
-noncomputable instance fullFunctor : Full (functor r) where preimage := @fun X Y f ↦ Quot.out f
+noncomputable instance fullFunctor : Full (functor r) where
+  preimage := @fun X Y f ↦ Quot.out f
+  witness f := by
+    dsimp [functor]
+    simp
 
-instance essSurj_functor: EssSurj (functor r)
-    where mem_essImage Y :=
+instance : EssSurj (functor r) where
+  mem_essImage Y :=
     ⟨Y.as, ⟨eqToIso (by
             ext
             rfl)⟩⟩
@@ -141,12 +142,10 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
 lemma compClosure_iff_self [h : Congruence r] {X Y : C} (f g : X ⟶ Y) :
     CompClosure r f g ↔ r f g := by
   constructor
-  . intro hfg
+  · intro hfg
     induction' hfg with m m' hm
-    apply Congruence.compLeft
-    apply Congruence.compRight
-    assumption
-  . exact CompClosure.of _ _ _
+    exact Congruence.compLeft _ (Congruence.compRight _ (by assumption))
+  · exact CompClosure.of _ _ _
 
 @[simp]
 theorem compClosure_eq_self [h : Congruence r] :
@@ -154,33 +153,17 @@ theorem compClosure_eq_self [h : Congruence r] :
   ext
   simp only [compClosure_iff_self]
 
--- to be moved to `Init.Algebra.Classes`
-lemma _root_.IsEquiv.quot_mk_eq_iff {α : Type _} {r : α → α → Prop} (h : IsEquiv α r)
-  (x y : α) : Quot.mk r x = Quot.mk r y ↔ r x y := by
-  constructor
-  . rw [Quot.eq]
-    intro hxy
-    induction' hxy with _ _ _ _ _ _ _ _ _ _ _ _ _ h₁₂ h₂₃
-    . assumption
-    . exact h.refl _
-    . exact h.symm _ _ (by assumption)
-    . exact h.trans _ _ _ h₁₂ h₂₃
-  . exact Quot.sound
-
 theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
     (functor r).map f = (functor r).map f' ↔ r f f' := by
   dsimp [functor]
-  conv_rhs => rw [← compClosure_eq_self r]
-  apply IsEquiv.quot_mk_eq_iff
-  rw [compClosure_eq_self r]
-  exact h.isEquiv
+  rw [Equivalence.quot_mk_eq_iff, compClosure_eq_self r]
+  simpa only [compClosure_eq_self r] using h.equivalence
 #align category_theory.quotient.functor_map_eq_iff CategoryTheory.Quotient.functor_map_eq_iff
 
 variable {D : Type _} [Category D] (F : C ⥤ D)
   (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 /-- The induced functor on the quotient category. -/
-@[simps]
 def lift : Quotient r ⥤ D where
   obj a := F.obj a.as
   map := @fun a b hf ↦
@@ -199,6 +182,7 @@ theorem lift_spec : functor r ⋙ lift r F H = F := by
   · rintro X
     rfl
   · rintro X Y f
+    dsimp [lift, functor]
     simp
 #align category_theory.quotient.lift_spec CategoryTheory.Quotient.lift_spec
 
@@ -233,7 +217,7 @@ theorem lift.isLift_inv (X : C) : (lift.isLift r F H).inv.app X = 𝟙 (F.obj X)
 theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
     (lift r F H).map ((functor r).map f) = F.map f := by
   rw [← NatIso.naturality_1 (lift.isLift r F H)]
-  dsimp
+  dsimp [lift, functor]
   simp
 #align category_theory.quotient.lift_map_functor_map CategoryTheory.Quotient.lift_map_functor_map
 

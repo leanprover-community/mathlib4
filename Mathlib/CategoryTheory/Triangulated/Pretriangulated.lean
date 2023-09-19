@@ -29,11 +29,7 @@ TODO: generalise this to n-angulated categories as in https://arxiv.org/abs/1006
 
 noncomputable section
 
-open CategoryTheory
-
-open CategoryTheory.Preadditive
-
-open CategoryTheory.Limits
+open CategoryTheory Preadditive Limits
 
 universe v v₀ v₁ v₂ u u₀ u₁ u₂
 
@@ -71,12 +67,6 @@ lemma isoBiprod_hom_snd : d.isoBiprod.hom ≫ d.bicone.snd = biprod.snd := by
 end BinaryBiproductData
 
 end Limits
-
-lemma isIso_of_yoneda_map_bijective {C : Type _} [Category C] {X Y : C} (f : X ⟶ Y)
-  (hf : ∀ (T : C), Function.Bijective (fun (x : T ⟶ X) => x ≫ f)):
-    IsIso f := by
-  obtain ⟨g, hg : g ≫ f = 𝟙 Y⟩ := (hf Y).2 (𝟙 Y)
-  exact ⟨g, (hf _).1 (by aesop_cat), hg⟩
 
 end CategoryTheory
 
@@ -435,8 +425,8 @@ lemma isZero₁_of_isIso₂ (h : IsIso T.mor₂) : IsZero T.obj₁ := (T.isZero�
 lemma isZero₂_of_isIso₃ (h : IsIso T.mor₃) : IsZero T.obj₂ := (T.isZero₂_iff_isIso₃ hT).2 h
 lemma isZero₃_of_isIso₁ (h : IsIso T.mor₁) : IsZero T.obj₃ := (T.isZero₃_iff_isIso₁ hT).2 h
 
-lemma shift_distinguished  (n : ℤ) :
-    (Triangle.shiftFunctor C n).obj T ∈ distTriang C := by
+lemma shift_distinguished (n : ℤ) :
+    (CategoryTheory.shiftFunctor (Triangle C) n).obj T ∈ distTriang C := by
   revert T hT
   let H : ℤ → Prop := fun n => ∀ (T : Triangle C) (_ : T ∈ distTriang C),
     (Triangle.shiftFunctor C n).obj T ∈ distTriang C
@@ -451,16 +441,16 @@ lemma shift_distinguished  (n : ℤ) :
     isomorphic_distinguished _ (inv_rot_of_dist_triangle _
       (inv_rot_of_dist_triangle _ (inv_rot_of_dist_triangle _ hT))) _
         ((invRotateInvRotateInvRotateIso C).symm.app T)
-  have H_add : ∀ {a b c : ℤ} (_ : H a) (_ : H b) (_ : a + b = c), H c :=
-    fun {a b c} ha hb hc T hT =>
-      isomorphic_distinguished _ (hb _ (ha _ hT)) _ ((Triangle.shiftFunctorAdd' C _ _ _ hc).app T)
+  have H_add : ∀ {a b c : ℤ}, H a → H b → a + b = c → H c := fun {a b c} ha hb hc T hT =>
+    isomorphic_distinguished _ (hb _ (ha _ hT)) _
+      ((Triangle.shiftFunctorAdd' C _ _ _ hc).app T)
   obtain (n|n) := n
-  . induction' n with n hn
-    . exact H_zero
-    . exact H_add hn H_one rfl
-  . induction' n with n hn
-    . exact H_neg_one
-    . exact H_add hn H_neg_one rfl
+  · induction' n with n hn
+    · exact H_zero
+    · exact H_add hn H_one rfl
+  · induction' n with n hn
+    · exact H_neg_one
+    · exact H_add hn H_neg_one rfl
 
 end Triangle
 
@@ -483,11 +473,11 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
   have : Mono φ.hom₂ := by
     rw [mono_iff_cancel_zero]
     intro A f hf
-    obtain ⟨g, rfl⟩ := Triangle.coyoneda_exact₂ _ hT f (by
-      rw [← cancel_mono φ.hom₃, assoc, φ.comm₂, reassoc_of% hf, zero_comp, zero_comp])
+    obtain ⟨g, rfl⟩ := Triangle.coyoneda_exact₂ _ hT f
+      (by rw [← cancel_mono φ.hom₃, assoc, φ.comm₂, reassoc_of% hf, zero_comp, zero_comp])
     rw [assoc] at hf
     obtain ⟨h, hh⟩ := Triangle.coyoneda_exact₂ T'.invRotate (inv_rot_of_dist_triangle _ hT')
-      (g ≫ φ.hom₁) (by dsimp ; rw [assoc, ← φ.comm₁, hf])
+      (g ≫ φ.hom₁) (by dsimp; rw [assoc, ← φ.comm₁, hf])
     obtain ⟨k, rfl⟩ : ∃ (k : A ⟶ T.invRotate.obj₁), k ≫ T.invRotate.mor₁ = g := by
       refine' ⟨h ≫ inv (φ.hom₃⟦(-1 : ℤ)⟧'), _⟩
       have eq := ((invRotate C).map φ).comm₁
@@ -495,16 +485,16 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
       rw [← cancel_mono φ.hom₁, assoc, assoc, eq, IsIso.inv_hom_id_assoc, hh]
     erw [assoc, comp_dist_triangle_mor_zero₁₂ _ (inv_rot_of_dist_triangle _ hT), comp_zero]
   refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
-  . intro f₁ f₂ h
+  · intro f₁ f₂ h
     simpa only [← cancel_mono φ.hom₂] using h
-  . intro y₂
+  · intro y₂
     obtain ⟨x₃, hx₃⟩ : ∃ (x₃ : A ⟶ T.obj₃), x₃ ≫ φ.hom₃ = y₂ ≫ T'.mor₂ :=
       ⟨y₂ ≫ T'.mor₂ ≫ inv φ.hom₃, by simp⟩
-    obtain ⟨x₂, hx₂⟩ := Triangle.coyoneda_exact₃ _ hT x₃ (by
-      rw [← cancel_mono (φ.hom₁⟦(1 : ℤ)⟧'), assoc, zero_comp, φ.comm₃, reassoc_of% hx₃,
+    obtain ⟨x₂, hx₂⟩ := Triangle.coyoneda_exact₃ _ hT x₃
+      (by rw [← cancel_mono (φ.hom₁⟦(1 : ℤ)⟧'), assoc, zero_comp, φ.comm₃, reassoc_of% hx₃,
         comp_dist_triangle_mor_zero₂₃ _ hT', comp_zero])
-    obtain ⟨y₁, hy₁⟩ := Triangle.coyoneda_exact₂ _ hT' (y₂ - x₂ ≫ φ.hom₂) (by
-      rw [sub_comp, assoc, ← φ.comm₂, ← reassoc_of% hx₂, hx₃, sub_self])
+    obtain ⟨y₁, hy₁⟩ := Triangle.coyoneda_exact₂ _ hT' (y₂ - x₂ ≫ φ.hom₂)
+      (by rw [sub_comp, assoc, ← φ.comm₂, ← reassoc_of% hx₂, hx₃, sub_self])
     obtain ⟨x₁, hx₁⟩ : ∃ (x₁ : A ⟶ T.obj₁), x₁ ≫ φ.hom₁ = y₁ := ⟨y₁ ≫ inv φ.hom₁, by simp⟩
     refine' ⟨x₂ + x₁ ≫ T.mor₁, _⟩
     dsimp
@@ -512,8 +502,8 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
 
 lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₂ : IsIso φ.hom₂) : IsIso φ.hom₃ :=
-    isIso₂_of_isIso₁₃ ((rotate C).map φ) (rot_of_dist_triangle _ hT)
-      (rot_of_dist_triangle _ hT') h₂ (by dsimp ; infer_instance)
+  isIso₂_of_isIso₁₃ ((rotate C).map φ) (rot_of_dist_triangle _ hT)
+    (rot_of_dist_triangle _ hT') h₂ (by dsimp; infer_instance)
 
 lemma isIso₁_of_isIso₂₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₂ : IsIso φ.hom₂) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₁ :=

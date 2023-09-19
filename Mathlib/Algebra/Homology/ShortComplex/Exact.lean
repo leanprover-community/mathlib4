@@ -1,24 +1,45 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Balanced
+import Mathlib.Algebra.Homology.ShortComplex.Homology
+
+/-!
+# Exact short complexes
+
+When `S : ShortComplex C`, this file defines a structure
+`S.Exact` which expresses the exactness of `S`, i.e. there
+exists a homology data `h : S.HomologyData` such that
+`h.left.H` is zero. When `[S.HasHomology]`, it is equivalent
+to the assertion `IsZero S.homology`.
+
+Almost by construction, this notion of exactness is self dual,
+see `Exact.op` and `Exact.unop`.
+
+-/
 
 namespace CategoryTheory
 
 open Category Limits ZeroObject Preadditive
 
-variable {C D : Type _} [Category C] [Category D]
+variable {C D : Type*} [Category C] [Category D]
 
 namespace ShortComplex
 
 section
 
 variable
-  [HasZeroMorphisms C] [HasZeroMorphisms D]
-  (S : ShortComplex C) {S₁ S₂ : ShortComplex C}
+  [HasZeroMorphisms C] [HasZeroMorphisms D] (S : ShortComplex C) {S₁ S₂ : ShortComplex C}
 
-structure Exact : Prop :=
+/-- The assertion that the short complex `S : ShortComplex C` is exact. -/
+structure Exact : Prop where
+  /-- the condition that there exists an homology data whose `left.H` field is zero -/
   condition : ∃ (h : S.HomologyData), IsZero h.left.H
 
 variable {S}
@@ -34,9 +55,9 @@ variable (S)
 lemma exact_iff_isZero_homology [S.HasHomology] :
     S.Exact ↔ IsZero S.homology := by
   constructor
-  . rintro ⟨⟨h', z⟩⟩
+  · rintro ⟨⟨h', z⟩⟩
     exact IsZero.of_iso z h'.left.homologyIso
-  . intro h
+  · intro h
     exact ⟨⟨_, h⟩⟩
 
 variable {S}
@@ -81,9 +102,9 @@ lemma exact_iff_homology_iso_zero [S.HasHomology] [HasZeroObject C] :
     S.Exact ↔ Nonempty (S.homology ≅ 0) := by
   rw [exact_iff_isZero_homology]
   constructor
-  . intro h
+  · intro h
     exact ⟨h.isoZero⟩
-  . rintro ⟨e⟩
+  · rintro ⟨e⟩
     exact IsZero.of_iso (isZero_zero C) e
 
 lemma exact_of_iso (e : S₁ ≅ S₂) (h : S₁.Exact) : S₂.Exact := by
@@ -100,9 +121,9 @@ lemma exact_of_isZero_X₂ (h : IsZero S.X₂) : S.Exact := by
 lemma exact_iff_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     S₁.Exact ↔ S₂.Exact := by
   constructor
-  . rintro ⟨h₁, z₁⟩
+  · rintro ⟨h₁, z₁⟩
     exact ⟨HomologyData.ofEpiOfIsIsoOfMono φ h₁, z₁⟩
-  . rintro ⟨h₂, z₂⟩
+  · rintro ⟨h₂, z₂⟩
     exact ⟨HomologyData.ofEpiOfIsIsoOfMono' φ h₂, z₂⟩
 
 variable {S}
@@ -149,9 +170,11 @@ lemma Exact.unop {S : ShortComplex Cᵒᵖ} (h : S.Exact) : S.unop.Exact := by
 
 variable (S)
 
-lemma exact_op_iff : S.op.Exact ↔ S.Exact :=
+@[simp]
+lemma exact_op_iff : S.op.Exact ↔ S.Exact:=
   ⟨Exact.unop, Exact.op⟩
 
+@[simp]
 lemma exact_unop_iff (S : ShortComplex Cᵒᵖ) : S.unop.Exact ↔ S.Exact :=
   S.unop.exact_op_iff.symm
 

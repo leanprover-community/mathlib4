@@ -138,8 +138,8 @@ noncomputable instance liftCommShift :
 instance liftCommShift_compatibility : NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where
   comm' a := by
     ext X
-    simp only [Functor.comp_obj, lift_obj, functor_obj_as, NatTrans.comp_app, whiskerRight_app,
-      lift.isLift_hom, Functor.map_id, comp_id, whiskerLeft_app, id_comp]
+    dsimp
+    erw [Functor.map_id, id_comp, comp_id]
     rw [Functor.commShiftIso_comp_hom_app]
     erw [LiftCommShift.iso_hom_app]
     rw [← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, id_comp]

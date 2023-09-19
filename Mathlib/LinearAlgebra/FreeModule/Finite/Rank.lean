@@ -45,6 +45,10 @@ theorem Submodule.finrank_map_subtype_eq (p : Submodule R M) (q : Submodule R p)
   (Submodule.equivSubtypeMap p q).symm.finrank_eq
 #align finite_dimensional.submodule.finrank_map_subtype_eq FiniteDimensional.Submodule.finrank_map_subtype_eq
 
+@[simp]
+theorem finrank_ulift : finrank R (ULift M) = finrank R M := by
+  simp_rw [finrank, rank_ulift, toNat_lift]
+
 end Ring
 
 section RingFinite

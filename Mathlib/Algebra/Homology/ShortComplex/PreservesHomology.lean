@@ -91,8 +91,7 @@ def IsPreservedBy.hg : PreservesLimit (parallelPair S.g 0) F :=
 
 /-- When a left homology data `h` is preserved by a functor `F`, this functor
 preserves the cokernel of `h.f' : S.X₁ ⟶ h.K`. -/
-def IsPreservedBy.hf' : PreservesColimit (parallelPair h.f' 0) F :=
-  @IsPreservedBy.f' _ _ _ _ _ _ _ h F _ _
+def IsPreservedBy.hf' : PreservesColimit (parallelPair h.f' 0) F := IsPreservedBy.f'
 
 /-- When a left homology data `h` of a short complex `S` is preserved by a functor `F`,
 this is the induced left homology data `h.map F` for the short complex `S.map F`. -/
@@ -103,10 +102,9 @@ noncomputable def map : (S.map F).LeftHomologyData := by
   have wi : F.map h.i ≫ F.map S.g = 0 := by rw [← F.map_comp, h.wi, F.map_zero]
   have hi := KernelFork.mapIsLimit _ h.hi F
   let f' : F.obj S.X₁ ⟶ F.obj h.K := hi.lift (KernelFork.ofι (S.map F).f (S.map F).zero)
-  have hf' : f' = F.map h.f' := by
-    apply Fork.IsLimit.hom_ext hi
+  have hf' : f' = F.map h.f' := Fork.IsLimit.hom_ext hi (by
     rw [Fork.IsLimit.lift_ι hi]
-    simp only [KernelFork.map_ι, Fork.ι_ofι, map_f, ← F.map_comp, f'_i]
+    simp only [KernelFork.map_ι, Fork.ι_ofι, map_f, ← F.map_comp, f'_i])
   have wπ : f' ≫ F.map h.π = 0 := by rw [hf', ← F.map_comp, f'_π, F.map_zero]
   have hπ : IsColimit (CokernelCofork.ofπ (F.map h.π) wπ) := by
     let e : parallelPair f' 0 ≅ parallelPair (F.map h.f') 0 :=

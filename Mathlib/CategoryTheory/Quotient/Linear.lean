@@ -31,7 +31,7 @@ def module (X Y : Quotient r) : Module R (X ⟶ Y) := by
         obtain ⟨X⟩ := X
         obtain ⟨Y⟩ := Y
         obtain ⟨f, rfl⟩ := (functor r).map_surjective f
-        rw [smul_eq, one_smul, functor_map]
+        rw [smul_eq, one_smul]
       smul_zero := fun a => by
         obtain ⟨X⟩ := X
         obtain ⟨Y⟩ := Y

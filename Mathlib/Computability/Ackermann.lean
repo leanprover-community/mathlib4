@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Computability.Primrec
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 
 #align_import computability.ackermann from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"

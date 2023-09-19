@@ -417,14 +417,14 @@ lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi (i j : ι) (hi : c.prev j = i)
     (h₁ : IsIso (cyclesMap φ j)) (h₂ : Epi (φ.f i)) :
     IsIso (homologyMap φ j) := by
   subst hi
-  exact ShortComplex.isIso_homologyMap_of_isIso_cyclesMap_of_epi _ h₁ h₂
+  exact ShortComplex.isIso_homologyMap_of_isIso_cyclesMap_of_epi h₁ h₂
 
 lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono (i j : ι) (hj : c.next i = j)
     [K.HasHomology i] [L.HasHomology i]
     (h₁ : IsIso (opcyclesMap φ i)) (h₂ : Mono (φ.f j)) :
     IsIso (homologyMap φ i) := by
   subst hj
-  exact ShortComplex.isIso_homologyMap_of_isIso_opcyclesMap_of_mono _ h₁ h₂
+  exact ShortComplex.isIso_homologyMap_of_isIso_opcyclesMap_of_mono h₁ h₂
 
 lemma isZero_homology_of_isZero (i : ι) (hi : IsZero (K.X i)) [K.HasHomology i]:
     IsZero (K.homology i) :=

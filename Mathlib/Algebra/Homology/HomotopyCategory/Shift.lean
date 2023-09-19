@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Linear
+import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.CategoryTheory.Shift.Quotient
 import Mathlib.Tactic.Linarith
@@ -11,18 +12,18 @@ import Mathlib.Tactic.Linarith
 /-!
 # The shift on cochain complexes and on the homotopy category
 
-In this file, we show `[HasShift (CochainComplex C ℤ) ℤ]` for any preadditive
-category `C`.
-
-TODO: show `[HasShift (HomotopyCategory C (ComplexShape.up ℤ)) ℤ]`.
+In this file, we show that for any preadditive category `C`, the categories
+`CochainComplex C ℤ` and `HomotopyCategory C (ComplexShape.up ℤ)` are
+equipped with a shift by `ℤ`.
 
 -/
 
-universe v' u' v u
+universe v v' u u'
 
 open CategoryTheory Category Limits
 
 variable (C : Type u) [Category.{v} C] [Preadditive C]
+  {D : Type u'} [Category.{v'} D] [Preadditive D]
 
 namespace CochainComplex
 
@@ -329,19 +330,14 @@ variable (F : C ⥤ D) [Preadditive D] [F.Additive]
 
 attribute [local simp] Functor.map_zsmul HomologicalComplex.XIsoOfEq
 
+/-- The commutation with the shift isomorphism for the functor on cochain complexes
+induced by an additive functor between preadditive categories. -/
+@[simps!]
 def mapCochainComplexShiftIso (n : ℤ) :
     shiftFunctor _ n ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ) ≅
       F.mapHomologicalComplex (ComplexShape.up ℤ) ⋙ shiftFunctor _ n :=
-  NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun i => Iso.refl _)
-    (by aesop_cat)) (fun _ => by ext ; dsimp ; rw [id_comp, comp_id])
-
-@[simp]
-lemma mapCochainComplexShiftIso_hom_app_f (K : CochainComplex C ℤ) (n i : ℤ) :
-    ((F.mapCochainComplexShiftIso n).hom.app K).f i = 𝟙 _ := rfl
-
-@[simp]
-lemma mapCochainComplexShiftIso_inv_app_f (K : CochainComplex C ℤ) (n i : ℤ) :
-    ((F.mapCochainComplexShiftIso n).inv.app K).f i = 𝟙 _ := rfl
+  NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
+    (by aesop_cat)) (fun _ => by ext; dsimp; rw [id_comp, comp_id])
 
 instance commShiftMapCochainComplex :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ where
@@ -362,17 +358,17 @@ instance commShiftMapCochainComplex :
       CochainComplex.shiftFunctorAdd_inv_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
       eqToHom_map, eqToHom_trans, eqToHom_refl]
 
-lemma mapHomologicalComplex_commShiftIso_eq (n : ℤ) :
-    (F.mapHomologicalComplex (ComplexShape.up ℤ)).commShiftIso n =
-      F.mapCochainComplexShiftIso n := rfl
+--lemma mapHomologicalComplex_commShiftIso_eq (n : ℤ) :
+--    (F.mapHomologicalComplex (ComplexShape.up ℤ)).commShiftIso n =
+--      F.mapCochainComplexShiftIso n := rfl
 
 @[simp]
-lemma mapHomologicalComplex_commShiftIso_hom_app_f (K : CochainComplex C ℤ) (n : ℤ) :
-    (((F.mapHomologicalComplex (ComplexShape.up ℤ)).commShiftIso n).hom.app K).f n = 𝟙 _ := rfl
+lemma mapHomologicalComplex_commShiftIso_hom_app_f (K : CochainComplex C ℤ) (n i : ℤ) :
+    (((F.mapHomologicalComplex (ComplexShape.up ℤ)).commShiftIso n).hom.app K).f i = 𝟙 _ := rfl
 
 @[simp]
-lemma mapHomologicalComplex_commShiftIso_inv_app_f (K : CochainComplex C ℤ) (n : ℤ) :
-    (((F.mapHomologicalComplex (ComplexShape.up ℤ)).commShiftIso n).inv.app K).f n = 𝟙 _ := rfl
+lemma mapHomologicalComplex_commShiftIso_inv_app_f (K : CochainComplex C ℤ) (n i : ℤ) :
+    (((F.mapHomologicalComplex (ComplexShape.up ℤ)).commShiftIso n).inv.app K).f i = 𝟙 _ := rfl
 
 end Functor
 
@@ -382,6 +378,8 @@ namespace Homotopy
 
 variable {C}
 
+/-- If `h : Homotopy φ₁ φ₂` and `n : ℤ`, this is the induced homotopy
+between `φ₁⟦n⟧'` and `φ₂⟦n⟧'`. -/
 def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ₁ φ₂) (n : ℤ) :
     Homotopy (φ₁⟦n⟧') (φ₂⟦n⟧') where
   hom i j := n.negOnePow • h.hom _ _
@@ -389,17 +387,16 @@ def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ�
     dsimp
     rw [h.zero, zsmul_zero]
     intro hij'
-    apply hij
-    dsimp at hij' ⊢
-    linarith
+    dsimp at hij hij'
+    exact hij (by linarith)
   comm := fun i => by
-    rw [dNext_eq _ (show (ComplexShape.up ℤ).Rel i (i+1) by simp)]
-    rw [prevD_eq _ (show (ComplexShape.up ℤ).Rel (i-1) i by simp)]
+    rw [dNext_eq _ (show (ComplexShape.up ℤ).Rel i (i + 1) by simp),
+      prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1) i by simp)]
     dsimp
     simpa only [Preadditive.zsmul_comp, Preadditive.comp_zsmul, smul_smul,
       Int.negOnePow_mul_self, one_smul,
-      dNext_eq _ (show (ComplexShape.up ℤ).Rel (i+n) (i+1+n) by dsimp ; linarith),
-      prevD_eq _ (show (ComplexShape.up ℤ).Rel (i-1+n) (i+n) by dsimp ; linarith)]
+      dNext_eq _ (show (ComplexShape.up ℤ).Rel (i + n) (i + 1 + n) by dsimp; linarith),
+      prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1 + n) (i + n) by dsimp; linarith)]
         using h.comm (i + n)
 
 end Homotopy

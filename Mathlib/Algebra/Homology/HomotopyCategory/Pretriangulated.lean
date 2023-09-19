@@ -335,7 +335,6 @@ lemma map_δ :
   dsimp [triangleδ]
   rw [Cochain.rightShift_v _ 1 0 (by linarith) n n (by linarith) (n+1) (by linarith)]
   simp
-  apply comp_id
 
 noncomputable def mapTriangleIso :
     (G.mapHomologicalComplex (ComplexShape.up ℤ)).mapTriangle.obj (triangle φ) ≅

@@ -27,10 +27,10 @@ uniformly continuous.
 ## Main definitions and lemmas
 
 * `LipschitzWith K f`: states that `f` is Lipschitz with constant `K : ℝ≥0`
-* `LipschitzOnWith K f`: states that `f` is Lipschitz with constant `K : ℝ≥0` on a set `s`
+* `LipschitzOnWith K f s`: states that `f` is Lipschitz with constant `K : ℝ≥0` on a set `s`
 * `LipschitzWith.uniformContinuous`: a Lipschitz function is uniformly continuous
-* `LipschitzOnWith.uniformContinuousOn`: a function which is Lipschitz on a set is uniformly
-  continuous on that set.
+* `LipschitzOnWith.uniformContinuousOn`: a function which is Lipschitz on a set `s` is uniformly
+  continuous on `s`.
 
 
 ## Implementation notes
@@ -42,15 +42,14 @@ argument, and return `LipschitzWith (Real.toNNReal K) f`.
 
 set_option autoImplicit true
 
-
 universe u v w x
 
-open Filter Function Set Topology NNReal ENNReal
+open Filter Function Set Topology NNReal ENNReal Bornology
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
 /-- A function `f` is Lipschitz continuous with constant `K ≥ 0` if for all `x, y`
-we have `dist (f x) (f y) ≤ K * dist x y` -/
+we have `dist (f x) (f y) ≤ K * dist x y`. -/
 def LipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :=
   ∀ x y, edist (f x) (f y) ≤ K * edist x y
 #align lipschitz_with LipschitzWith
@@ -66,17 +65,19 @@ alias ⟨LipschitzWith.dist_le_mul, LipschitzWith.of_dist_le_mul⟩ := lipschitz
 #align lipschitz_with.of_dist_le_mul LipschitzWith.of_dist_le_mul
 
 /-- A function `f` is Lipschitz continuous with constant `K ≥ 0` on `s` if for all `x, y` in `s`
-we have `dist (f x) (f y) ≤ K * dist x y` -/
+we have `dist (f x) (f y) ≤ K * dist x y`. -/
 def LipschitzOnWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β)
     (s : Set α) :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → edist (f x) (f y) ≤ K * edist x y
 #align lipschitz_on_with LipschitzOnWith
 
+/-- Every function is Lipschitz on the empty set (with any Lipschitz constant). -/
 @[simp]
 theorem lipschitzOnWith_empty [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :
     LipschitzOnWith K f ∅ := fun _ => False.elim
 #align lipschitz_on_with_empty lipschitzOnWith_empty
 
+/-- Being Lipschitz on a set is monotone w.r.t. that set. -/
 theorem LipschitzOnWith.mono [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {s t : Set α}
     {f : α → β} (hf : LipschitzOnWith K f t) (h : s ⊆ t) : LipschitzOnWith K f s :=
   fun _x x_in _y y_in => hf (h x_in) (h y_in)
@@ -94,6 +95,7 @@ alias ⟨LipschitzOnWith.dist_le_mul, LipschitzOnWith.of_dist_le_mul⟩ :=
 #align lipschitz_on_with.dist_le_mul LipschitzOnWith.dist_le_mul
 #align lipschitz_on_with.of_dist_le_mul LipschitzOnWith.of_dist_le_mul
 
+/-- `f` is Lipschitz iff it is Lipschitz on the entire space. -/
 @[simp]
 theorem lipschitzOn_univ [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {f : α → β} :
     LipschitzOnWith K f univ ↔ LipschitzWith K f := by simp [LipschitzOnWith, LipschitzWith]
@@ -185,17 +187,18 @@ theorem edist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥
     _ < d := ENNReal.mul_lt_of_lt_div' h
 #align lipschitz_with.edist_lt_of_edist_lt_div LipschitzWith.edist_lt_of_edist_lt_div
 
-/-- A Lipschitz function is uniformly continuous -/
+/-- A Lipschitz function is uniformly continuous. -/
 protected theorem uniformContinuous (hf : LipschitzWith K f) : UniformContinuous f :=
   EMetric.uniformContinuous_iff.2 fun ε εpos =>
     ⟨ε / K, ENNReal.div_pos_iff.2 ⟨ne_of_gt εpos, ENNReal.coe_ne_top⟩, hf.edist_lt_of_edist_lt_div⟩
 #align lipschitz_with.uniform_continuous LipschitzWith.uniformContinuous
 
-/-- A Lipschitz function is continuous -/
+/-- A Lipschitz function is continuous. -/
 protected theorem continuous (hf : LipschitzWith K f) : Continuous f :=
   hf.uniformContinuous.continuous
 #align lipschitz_with.continuous LipschitzWith.continuous
 
+/-- Constant functions are Lipschitz (with any constant). -/
 protected theorem const (b : β) : LipschitzWith 0 fun _ : α => b := fun x y => by
   simp only [edist_self, zero_le]
 #align lipschitz_with.const LipschitzWith.const
@@ -203,10 +206,12 @@ protected theorem const (b : β) : LipschitzWith 0 fun _ : α => b := fun x y =>
 protected theorem const' (b : β) {K : ℝ≥0} : LipschitzWith K fun _ : α => b := fun x y => by
   simp only [edist_self, zero_le]
 
+/-- The identity is 1-Lipschitz. -/
 protected theorem id : LipschitzWith 1 (@id α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
 #align lipschitz_with.id LipschitzWith.id
 
+/-- The inclusion of a subset is 1-Lipschitz. -/
 protected theorem subtype_val (s : Set α) : LipschitzWith 1 (Subtype.val : s → α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
 #align lipschitz_with.subtype_val LipschitzWith.subtype_val
@@ -222,10 +227,12 @@ protected theorem eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [
   LipschitzWith.of_edist_le fun f g => by convert edist_le_pi_edist f g i
 #align lipschitz_with.eval LipschitzWith.eval
 
+/-- The restriction of a `K`-Lipschitz function is `K`-Lipschitz. -/
 protected theorem restrict (hf : LipschitzWith K f) (s : Set α) : LipschitzWith K (s.restrict f) :=
   fun x y => hf x y
 #align lipschitz_with.restrict LipschitzWith.restrict
 
+/-- The composition of Lipschitz functions is Lipschitz. -/
 protected theorem comp {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} (hf : LipschitzWith Kf f)
     (hg : LipschitzWith Kg g) : LipschitzWith (Kf * Kg) (f ∘ g) := fun x y =>
   calc
@@ -247,6 +254,7 @@ protected theorem prod_snd : LipschitzWith 1 (@Prod.snd α β) :=
   LipschitzWith.of_edist_le fun _ _ => le_max_right _ _
 #align lipschitz_with.prod_snd LipschitzWith.prod_snd
 
+/-- If `f` and `g` are Lipschitz functions, so is the induced map `f × g` to the product type. -/
 protected theorem prod {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
     (hg : LipschitzWith Kg g) : LipschitzWith (max Kf Kg) fun x => (f x, g x) := by
   intro x y
@@ -272,6 +280,7 @@ protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ 
       (le_trans (hβ _ _ _) <| ENNReal.mul_left_mono <| le_max_right _ _)
 #align lipschitz_with.uncurry LipschitzWith.uncurry
 
+/-- Iterates of a Lipschitz function are Lipschitz. -/
 protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, LipschitzWith (K ^ n) f^[n]
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
   | n + 1 => by rw [pow_succ']; exact (LipschitzWith.iterate hf n).comp hf
@@ -392,14 +401,13 @@ theorem comap_cobounded_le (hf : LipschitzWith K f) :
   (hf.toLocallyBoundedMap f).2
 #align lipschitz_with.comap_cobounded_le LipschitzWith.comap_cobounded_le
 
-theorem bounded_image (hf : LipschitzWith K f) {s : Set α} (hs : Metric.Bounded s) :
-    Metric.Bounded (f '' s) :=
-  Metric.bounded_iff_ediam_ne_top.2 <|
-    ne_top_of_le_ne_top (ENNReal.mul_ne_top ENNReal.coe_ne_top hs.ediam_ne_top)
-      (hf.ediam_image_le s)
-#align lipschitz_with.bounded_image LipschitzWith.bounded_image
+/-- The image of a bounded set under a Lipschitz map is bounded. -/
+theorem isBounded_image (hf : LipschitzWith K f) {s : Set α} (hs : IsBounded s) :
+    IsBounded (f '' s) :=
+  hs.image (toLocallyBoundedMap f hf)
+#align lipschitz_with.bounded_image LipschitzWith.isBounded_image
 
-theorem diam_image_le (hf : LipschitzWith K f) (s : Set α) (hs : Metric.Bounded s) :
+theorem diam_image_le (hf : LipschitzWith K f) (s : Set α) (hs : IsBounded s) :
     Metric.diam (f '' s) ≤ K * Metric.diam s :=
   Metric.diam_le_of_forall_dist_le (mul_nonneg K.coe_nonneg Metric.diam_nonneg) <|
     ball_image_iff.2 fun _x hx =>
@@ -479,22 +487,10 @@ namespace Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {s : Set α} {t : Set β}
 
-theorem Bounded.left_of_prod (h : Bounded (s ×ˢ t)) (ht : t.Nonempty) : Bounded s := by
-  simpa only [fst_image_prod s ht] using (@LipschitzWith.prod_fst α β _ _).bounded_image h
-#align metric.bounded.left_of_prod Metric.Bounded.left_of_prod
-
-theorem Bounded.right_of_prod (h : Bounded (s ×ˢ t)) (hs : s.Nonempty) : Bounded t := by
-  simpa only [snd_image_prod hs t] using (@LipschitzWith.prod_snd α β _ _).bounded_image h
-#align metric.bounded.right_of_prod Metric.Bounded.right_of_prod
-
-theorem bounded_prod_of_nonempty (hs : s.Nonempty) (ht : t.Nonempty) :
-    Bounded (s ×ˢ t) ↔ Bounded s ∧ Bounded t :=
-  ⟨fun h => ⟨h.left_of_prod ht, h.right_of_prod hs⟩, fun h => h.1.prod h.2⟩
-#align metric.bounded_prod_of_nonempty Metric.bounded_prod_of_nonempty
-
-theorem bounded_prod : Bounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ Bounded s ∧ Bounded t := by
-  simp only [bounded_iff_isBounded, Bornology.isBounded_prod]
-#align metric.bounded_prod Metric.bounded_prod
+#align metric.bounded.left_of_prod Bornology.IsBounded.fst_of_prod
+#align metric.bounded.right_of_prod Bornology.IsBounded.snd_of_prod
+#align metric.bounded_prod_of_nonempty Bornology.isBounded_prod_of_nonempty
+#align metric.bounded_prod Bornology.isBounded_prod
 
 end Metric
 
