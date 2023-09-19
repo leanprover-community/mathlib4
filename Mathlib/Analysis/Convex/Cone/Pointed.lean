@@ -48,8 +48,6 @@ theorem coe_injective : Function.Injective ((↑) : PointedCone 𝕜 E → Conve
 theorem coe_pointed (S : PointedCone 𝕜 E) : (S : ConvexCone 𝕜 E).Pointed := by
   simp [ConvexCone.Pointed]
 
-instance instSetLike : SetLike (PointedCone 𝕜 E) E  := by infer_instance
-
 @[ext]
 theorem ext {S T : PointedCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
