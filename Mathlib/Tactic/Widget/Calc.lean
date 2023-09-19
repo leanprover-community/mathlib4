@@ -13,7 +13,7 @@ import Std.CodeAction
 import ProofWidgets.Compat
 
 import Mathlib.Data.String.Defs
-import Mathlib.Tactic.Widget.Util
+import Mathlib.Tactic.Widget.SelectPanelUtils
 
 /-! # Calc widget
 
