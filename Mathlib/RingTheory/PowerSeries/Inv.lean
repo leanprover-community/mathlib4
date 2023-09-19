@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2023 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Richard M. Hill
+Authors: Richard M. Hill
 -/
 import Mathlib.RingTheory.PowerSeries.Comp
 
-/-
+/-!
 In this file we prove, for a commutative ring `R`, that
 a power series `f : R⟦X⟧` is a unit if and only if its constant term
 is a unit.
@@ -14,6 +14,8 @@ is a unit.
 
 - `PowerSeries.isUnit_iff` : a power series is a unit iff its
                                 constant term is a unit.
+
+(To be moved to `PowerSeries.WellKnown`.)
 -/
 
 open PowerSeries BigOperators Polynomial

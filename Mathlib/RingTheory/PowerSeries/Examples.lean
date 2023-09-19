@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Richard M. Hill
+Authors: Richard M. Hill
 -/
 
 import Mathlib.RingTheory.PowerSeries.Derivative
@@ -10,17 +10,16 @@ import Mathlib.RingTheory.PowerSeries.WellKnown
 
 
 
--------------------------------------------------------
--- A few examples of proving power series identities --
--------------------------------------------------------
+/-!
+## Examples power series identities
 
-
-/-
 I take the base ring to be a field of characteristic zero.
 This is because
      (i) my power series have rational coefficients,
     (ii) there is currently no instance of `Inv (power_series R)`
          except in the case that `R` is a field.
+
+(To be moved to `PowerSeries.WellKnown`)
 -/
 
 
