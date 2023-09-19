@@ -15,6 +15,7 @@ a `gcongr` call with holes specified by selecting subexpressions in the goal.
 open Lean Meta Server ProofWidgets
 
 /-- Return the link text and inserted text above and below of the gcongr widget. -/
+@[nolint unusedArguments]
 def makeGCongrString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   (_ : SelectInsertParams) : MetaM (String × String) := do
 let subexprPos := getGoalLocations pos

@@ -20,6 +20,7 @@ open Lean Meta Server ProofWidgets
 /-! # Gcongr widget -/
 
 /-- Return the link text and inserted text above and below of the congrm widget. -/
+@[nolint unusedArguments]
 def makeCongrmString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   (_ : SelectInsertParams) : MetaM (String × String) := do
   let subexprPos := getGoalLocations pos

@@ -34,6 +34,7 @@ private def mkSelectInsertParamsInstance (declName : Name) : TermElabM Syntax.Co
     ⟨fun prop => prop.pos, fun prop => prop.goals,
      fun prop => prop.selectedLocations, fun prop => prop.replaceRange⟩)
 
+/-- Handler deriving a `SelectInsertParamsClass` instance. -/
 def mkSelectInsertParamsInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
   if (← declNames.allM isInductive) then
     for declName in declNames do

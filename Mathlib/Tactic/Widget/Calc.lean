@@ -159,7 +159,7 @@ def getCalcSteps' (steps : TSyntax ``calcSteps) : TermElabM (Array (TSyntax ``ca
     pure (#[step0] ++ rest)
   | _ => unreachable!
 
-/- Elaborator for calc steps. Compared to `elabCalcSteps` from core, this inserts a
+/-- Elaborator for calc steps. Compared to `elabCalcSteps` from core, this inserts a
 calc widget for each proof.  -/
 def elabCalcStepsWithWidgets (indent : Nat) (steps : TSyntax ``calcSteps) : TermElabM Expr := do
   let mut result? := none

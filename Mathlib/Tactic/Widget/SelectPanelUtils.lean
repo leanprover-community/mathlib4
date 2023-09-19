@@ -23,6 +23,8 @@ There are also some minor helper functions.
 open Lean Meta Server
 
 open Lean.SubExpr in
+/-- Given a `Array GoalsLocation` return the array of `SubExpr.Pos` for all locations
+in the targets of the relevant goals. -/
 def getGoalLocations (locations : Array GoalsLocation) : Array SubExpr.Pos := Id.run do
   let mut res := #[]
   for location in locations do
@@ -30,9 +32,11 @@ def getGoalLocations (locations : Array GoalsLocation) : Array SubExpr.Pos := Id
       res := res.push pos
   return res
 
-def insertMetaVar (e : Expr) (pos  : SubExpr.Pos) : MetaM Expr :=
+/-- Replace the sub-expression at the given position by a fresh meta-variable. -/
+def insertMetaVar (e : Expr) (pos : SubExpr.Pos) : MetaM Expr :=
 replaceSubexpr (fun _ ↦  do mkFreshExprMVar none .synthetic) pos e
 
+/-- Replace all meta-variable names by "?_". -/
 def String.renameMetaVar (s : String) : String :=
   match s.splitOn "?m." with
   | [] => ""
