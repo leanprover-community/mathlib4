@@ -17,9 +17,6 @@ a `gcongr` call with holes specified by selecting subexpressions in the goal.
 
 open Lean Meta Server ProofWidgets
 
-
-
-
 def makeGCongrString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   (_ : SelectInsertParams) : MetaM (String × String) := do
 let subexprPos := getGoalLocations pos
@@ -52,10 +49,3 @@ subexpressions in the goal.-/
 elab stx:"gcongr?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
   savePanelWidgetInfo stx ``GCongrSelectionPanel $ pure $ json% { replaceRange: $(replaceRange) }
-
-/-! # Example usage -/
-
-example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
-    x ^ 2 * a + c ≤ x ^ 2 * b + d := by
-  gcongr x ^ 2 * ?_ + ?_
-  all_goals { linarith }

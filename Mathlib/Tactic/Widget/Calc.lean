@@ -226,6 +226,3 @@ elab_rules : tactic
     return val
   (← getMainGoal).assign val
   replaceMainGoal mvarIds
-
-example (a b c d : Nat) : a = d := by
-  calc a = d := by sorry

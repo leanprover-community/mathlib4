@@ -53,10 +53,3 @@ subexpressions in the goal.-/
 elab stx:"congrm?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
   savePanelWidgetInfo stx ``CongrmSelectionPanel $ pure $ json% { replaceRange: $(replaceRange) }
-
-/-! # Example usage -/
-
-example {a b c d : ℕ} :
-    Nat.pred a.succ * (d + (c + a.pred)) = Nat.pred b.succ * (b + (c + d.pred)) := by
-  congrm?
-  all_goals { sorry }
