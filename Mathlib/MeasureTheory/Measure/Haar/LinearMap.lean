@@ -9,13 +9,16 @@ import Mathlib.Analysis.NormedSpace.FiniteDimension
 /-!
 # Pushing a Haar measure by a linear map
 
-We show that the push-forward of an additive Haar measure under a surjective linear map is
-proportional to the Haar measure on the target space,
+We show that the push-forward of an additive Haar measure in a vector space under a surjective
+linear map is proportional to the Haar measure on the target space,
 in `LinearMap.exists_map_addHaar_eq_smul_addHaar`.
 
 We deduce disintegration properties of the Haar measure: to check that a property is true ae,
 it suffices to check that it is true ae along all translates of a given vector subspace.
 See `MeasureTheory.ae_mem_of_ae_add_linearMap_mem`.
+
+TODO: this holds more generally in any locally compact group, see
+[Fremlin, *Measure Theory* (volume 4, 443Q)][fremlin_vol4]
 -/
 
 open MeasureTheory Measure Set
