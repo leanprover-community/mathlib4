@@ -266,7 +266,7 @@ elab_rules : tactic
       return [m.mvarId!]
   liftMetaTactic fun goal => do
     goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
-  evalTactic <|← `(tactic| dsimp only [Set.mem_setOf_eq])
+  evalTactic <|← `(tactic| dsimp (config := {zeta := false}) only [Set.mem_setOf_eq])
   if let some l := wth then
     evalTactic <|← `(tactic| intro $[$l]*)
   if let some e := usingArg then

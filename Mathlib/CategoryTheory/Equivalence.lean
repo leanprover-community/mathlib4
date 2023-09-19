@@ -101,23 +101,25 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace Equivalence
 
+attribute [pp_dot] functor inverse unitIso counitIso
+
 /-- The unit of an equivalence of categories. -/
-abbrev unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
+@[pp_dot] abbrev unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
   e.unitIso.hom
 #align category_theory.equivalence.unit CategoryTheory.Equivalence.unit
 
 /-- The counit of an equivalence of categories. -/
-abbrev counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
+@[pp_dot] abbrev counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
   e.counitIso.hom
 #align category_theory.equivalence.counit CategoryTheory.Equivalence.counit
 
 /-- The inverse of the unit of an equivalence of categories. -/
-abbrev unitInv (e : C ≌ D) : e.functor ⋙ e.inverse ⟶ 𝟭 C :=
+@[pp_dot] abbrev unitInv (e : C ≌ D) : e.functor ⋙ e.inverse ⟶ 𝟭 C :=
   e.unitIso.inv
 #align category_theory.equivalence.unit_inv CategoryTheory.Equivalence.unitInv
 
 /-- The inverse of the counit of an equivalence of categories. -/
-abbrev counitInv (e : C ≌ D) : 𝟭 D ⟶ e.inverse ⋙ e.functor :=
+@[pp_dot] abbrev counitInv (e : C ≌ D) : 𝟭 D ⟶ e.inverse ⋙ e.functor :=
   e.counitIso.inv
 #align category_theory.equivalence.counit_inv CategoryTheory.Equivalence.counitInv
 
@@ -283,7 +285,7 @@ instance : Inhabited (C ≌ C) :=
   ⟨refl⟩
 
 /-- Equivalence of categories is symmetric. -/
-@[symm, simps]
+@[symm, simps, pp_dot]
 def symm (e : C ≌ D) : D ≌ C :=
   ⟨e.inverse, e.functor, e.counitIso.symm, e.unitIso.symm, e.inverse_counitInv_comp⟩
 #align category_theory.equivalence.symm CategoryTheory.Equivalence.symm
@@ -291,7 +293,7 @@ def symm (e : C ≌ D) : D ≌ C :=
 variable {E : Type u₃} [Category.{v₃} E]
 
 /-- Equivalence of categories is transitive. -/
-@[trans, simps]
+@[trans, simps, pp_dot]
 def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E
     where
   functor := e.functor ⋙ f.functor
