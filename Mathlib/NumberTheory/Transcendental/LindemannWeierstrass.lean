@@ -191,7 +191,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
       Complex.abs_pow, real_smul, map_mul, abs_exp_ofReal_mul_I, abs_ofReal, mul_one, ←
       eval₂_eq_eval_map, ← aeval_def]
     have :
-      Metric.Bounded
+      Bornology.IsBounded
         ((fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) ''
           Set.Ioc 0 (abs s)) := by
       have h :
@@ -200,7 +200,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
           (fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) ''
               Set.Icc 0 (abs s) :=
         Set.image_subset _ Set.Ioc_subset_Icc_self
-      refine' (IsCompact.image isCompact_Icc _).bounded.mono h
+      refine' (IsCompact.image isCompact_Icc _).isBounded.subset h
       · refine' (continuous_id.abs.max continuous_const).mul _
         refine' Complex.continuous_abs.comp (p.continuous_aeval.comp _)
         exact continuous_ofReal.mul continuous_const
