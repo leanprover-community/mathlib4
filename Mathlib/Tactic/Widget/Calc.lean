@@ -98,18 +98,18 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
       s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n" ++
       s!"{spc}_ {relStr} {rhsStr} := by sorry"
     else
-      s!"{spc}_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n" ++
+      s!"_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n" ++
       s!"{spc}_ {relStr} {rhsStr} := by sorry"
   | true, false  =>
-  if params.isFirst then
+    if params.isFirst then
       s!"{lhsStr} {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
     else
-      s!"{spc}_ {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
+      s!"_ {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
   | false, true =>
     if params.isFirst then
       s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
     else
-      s!"{spc}_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
+      s!"_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
   | true, true => "This should not happen"
 
   let stepInfo := match selectedLeft.isEmpty, selectedRight.isEmpty with
