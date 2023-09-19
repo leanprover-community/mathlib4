@@ -401,6 +401,153 @@ instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
   instIsEmptyPEmpty
 #align pgame.is_empty_one_right_moves SetTheory.PGame.isEmpty_one_rightMoves
 
+/-! ### Identity -/
+
+/-- Two pre-games are identical if their left and right sets are identical.
+That is, `Identical x y` if every left move of `x` is identical to some left move of `y`,
+every right move of `x` is identical to some right move of `y`, and vice versa. -/
+def Identical : ∀ (_ _ : PGame), Prop
+  | mk _ _ xL xR, mk _ _ yL yR =>
+    Relator.BiTotal (fun i j ↦ Identical (xL i) (yL j)) ∧
+      Relator.BiTotal (fun i j ↦ Identical (xR i) (yR j))
+
+@[inherit_doc] scoped infix:50 " ≡ " => PGame.Identical
+
+/-- `x ∈ₗ y` if `x` is identical to some left move of `y`. -/
+def memₗ (x y : PGame.{u}) : Prop := ∃ b, x ≡ (y.moveLeft b)
+
+/-- `x ∈ᵣ y` if `x` is identical to some right move of `y`. -/
+def memᵣ (x y : PGame.{u}) : Prop := ∃ b, x ≡ (y.moveRight b)
+
+@[inherit_doc] scoped infix:50 " ∈ₗ " => PGame.memₗ
+@[inherit_doc] scoped infix:50 " ∈ᵣ " => PGame.memᵣ
+@[inherit_doc PGame.memₗ] binder_predicate x " ∈ₗ " y:term => `($x ∈ₗ $y)
+@[inherit_doc PGame.memᵣ] binder_predicate x " ∈ᵣ " y:term => `($x ∈ᵣ $y)
+
+theorem identical_iff : ∀ {x y : PGame}, Identical x y ↔
+    Relator.BiTotal (x.moveLeft · ≡ y.moveLeft ·) ∧ Relator.BiTotal (x.moveRight · ≡ y.moveRight ·)
+  | mk _ _ _ _, mk _ _ _ _ => Iff.rfl
+
+@[refl, simp] protected theorem Identical.refl (x) : x ≡ x :=
+  PGame.recOn x fun _ _ _ _ IHL IHR ↦ ⟨Relator.BiTotal.refl IHL, Relator.BiTotal.refl IHR⟩
+
+protected theorem Identical.rfl {x} : x ≡ x := Identical.refl x
+
+@[symm] protected theorem Identical.symm : ∀ {x y}, x ≡ y → y ≡ x
+  | mk _ _ _ _, mk _ _ _ _, ⟨hL, hR⟩ => ⟨hL.symm fun _ _ h ↦ h.symm, hR.symm fun _ _ h ↦ h.symm⟩
+
+theorem identical_comm {x y} : x ≡ y ↔ y ≡ x :=
+  ⟨Identical.symm, Identical.symm⟩
+
+@[trans] protected theorem Identical.trans : ∀ {x y z}, x ≡ y → y ≡ z → x ≡ z
+  | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _, ⟨hL₁, hR₁⟩, ⟨hL₂, hR₂⟩ =>
+    ⟨hL₁.trans (fun _ _ _ h₁ h₂ ↦ h₁.trans h₂) hL₂, hR₁.trans (fun _ _ _ h₁ h₂ ↦ h₁.trans h₂) hR₂⟩
+
+theorem identical_of_is_empty (x y : PGame)
+    [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves]
+    [IsEmpty y.LeftMoves] [IsEmpty y.RightMoves] : x ≡ y :=
+  identical_iff.2 <| by simp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
+
+/-- `Identical` as a `Setoid`. -/
+def identicalSetoid : Setoid PGame :=
+  ⟨Identical, Identical.refl, Identical.symm, Identical.trans⟩
+
+instance : IsRefl PGame (· ≡ ·) := ⟨Identical.refl⟩
+instance : IsSymm PGame (· ≡ ·) := ⟨fun _ _ ↦ Identical.symm⟩
+instance : IsTrans PGame (· ≡ ·) := ⟨fun _ _ _ ↦ Identical.trans⟩
+instance : IsEquiv PGame (· ≡ ·) := { }
+
+set_option linter.unusedVariables false in
+/-- A left move of `x` is identical to some left move of `y`. -/
+lemma Identical.moveLeft : ∀ {x y} (r : x ≡ y) (i : x.LeftMoves),
+    ∃ j, x.moveLeft i ≡ y.moveLeft j
+  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hl.1 i
+
+set_option linter.unusedVariables false in
+/-- A left move of `y` is identical to some left move of `x`. -/
+lemma Identical.moveLeft_symm : ∀ {x y} (r : x ≡ y) (i : y.LeftMoves),
+    ∃ j, x.moveLeft j ≡ y.moveLeft i
+  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hl.2 i
+
+set_option linter.unusedVariables false in
+/-- A right move of `x` is identical to some right move of `y`. -/
+lemma Identical.moveRight : ∀ {x y} (r : x ≡ y) (i : x.RightMoves),
+    ∃ j, x.moveRight i ≡ y.moveRight j
+  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hr.1 i
+
+set_option linter.unusedVariables false in
+/-- A right move of `y` is identical to some right move of `x`. -/
+lemma Identical.moveRight_symm : ∀ {x y} (r : x ≡ y) (i : y.RightMoves),
+    ∃ j, x.moveRight j ≡ y.moveRight i
+  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hr.2 i
+
+lemma Identical.trans_eq {x y z} (h₁ : x ≡ y) (h₂ : y = z) : x ≡ z := h₁.trans (of_eq h₂)
+
+theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
+    ((∀ i, x.moveLeft i ∈ₗ y) ∧ (∀ j, y.moveLeft j ∈ₗ x)) ∧
+      ((∀ i, x.moveRight i ∈ᵣ y) ∧ (∀ j, y.moveRight j ∈ᵣ x))
+  | mk xl xr xL xR, mk yl yr yL yR => by
+    convert identical_iff <;>
+    dsimp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal] <;>
+    congr! <;>
+    exact exists_congr <| fun _ ↦ identical_comm
+
+set_option linter.unusedVariables false in
+theorem memₗ.congr_right : ∀ {x y : PGame},
+    x ≡ y → (∀ {w : PGame}, w ∈ₗ x ↔ w ∈ₗ y)
+  | mk xl xr xL xR, mk yl yr yL yR, ⟨⟨h₁, h₂⟩, _⟩, _w =>
+    ⟨fun ⟨i, hi⟩ ↦ (h₁ i).imp (fun _ ↦ hi.trans),
+      fun ⟨j, hj⟩ ↦ (h₂ j).imp (fun _ hi ↦ hj.trans hi.symm)⟩
+
+set_option linter.unusedVariables false in
+theorem memᵣ.congr_right : ∀ {x y : PGame},
+    x ≡ y → (∀ {w : PGame}, w ∈ᵣ x ↔ w ∈ᵣ y)
+  | mk xl xr xL xR, mk yl yt yL yR, ⟨_, ⟨h₁, h₂⟩⟩, _w =>
+    ⟨fun ⟨i, hi⟩ ↦ (h₁ i).imp (fun _ ↦ hi.trans),
+      fun ⟨j, hj⟩ ↦ (h₂ j).imp (fun _ hi ↦ hj.trans hi.symm)⟩
+
+set_option linter.unusedVariables false in
+theorem memₗ.congr_left : ∀ {x y : PGame},
+    x ≡ y → (∀ {w : PGame}, x ∈ₗ w ↔ y ∈ₗ w)
+  | x, y, h, mk l r L R => ⟨fun ⟨i, hi⟩ ↦ ⟨i, h.symm.trans hi⟩, fun ⟨i, hi⟩ ↦ ⟨i, h.trans hi⟩⟩
+
+set_option linter.unusedVariables false in
+theorem memᵣ.congr_left : ∀ {x y : PGame},
+    x ≡ y → (∀ {w : PGame}, x ∈ᵣ w ↔ y ∈ᵣ w)
+  | x, y, h, mk l r L R => ⟨fun ⟨i, hi⟩ ↦ ⟨i, h.symm.trans hi⟩, fun ⟨i, hi⟩ ↦ ⟨i, h.trans hi⟩⟩
+
+set_option linter.unusedVariables false in
+lemma Identical.ext : ∀ {x y} (hl : ∀ z, z ∈ₗ x ↔ z ∈ₗ y) (hr : ∀ z, z ∈ᵣ x ↔ z ∈ᵣ y), x ≡ y
+  | mk xl xr xL xR, mk yl yr yL yR, hl, hr => identical_iff'.mpr
+    ⟨⟨fun i ↦ (hl _).mp ⟨i, refl _⟩, fun j ↦ (hl _).mpr ⟨j, refl _⟩⟩,
+      ⟨fun i ↦ (hr _).mp ⟨i, refl _⟩, fun j ↦ (hr _).mpr ⟨j, refl _⟩⟩⟩
+
+lemma Identical.ext_iff {x y} : x ≡ y ↔ (∀ z, z ∈ₗ x ↔ z ∈ₗ y) ∧ (∀ z, z ∈ᵣ x ↔ z ∈ᵣ y) :=
+  ⟨fun h ↦ ⟨@memₗ.congr_right _ _ h, @memᵣ.congr_right _ _ h⟩, fun h ↦ h.elim Identical.ext⟩
+
+lemma Identical.congr_right {x y z} (h : x ≡ y) : z ≡ x ↔ z ≡ y :=
+  ⟨fun hz ↦ hz.trans h, fun hz ↦ hz.trans h.symm⟩
+
+lemma Identical.congr_left {x y z} (h : x ≡ y) : x ≡ z ↔ y ≡ z :=
+  ⟨fun hz ↦ h.symm.trans hz, fun hz ↦ h.trans hz⟩
+
+lemma Identical.of_fn {x y : PGame}
+    (l : x.LeftMoves → y.LeftMoves) (il : y.LeftMoves → x.LeftMoves)
+    (r : x.RightMoves → y.RightMoves) (ir : y.RightMoves → x.RightMoves)
+    (hl : ∀ i, x.moveLeft i ≡ y.moveLeft (l i))
+    (hil : ∀ i, x.moveLeft (il i) ≡ y.moveLeft i)
+    (hr : ∀ i, x.moveRight i ≡ y.moveRight (r i))
+    (hir : ∀ i, x.moveRight (ir i) ≡ y.moveRight i) : x ≡ y :=
+  identical_iff.mpr
+    ⟨⟨fun i ↦ ⟨l i, hl i⟩, fun i ↦ ⟨il i, hil i⟩⟩,
+      ⟨fun i ↦ ⟨r i, hr i⟩, fun i ↦ ⟨ir i, hir i⟩⟩⟩
+
+lemma Identical.of_equiv {x y : PGame}
+    (l : x.LeftMoves ≃ y.LeftMoves) (r : x.RightMoves ≃ y.RightMoves)
+    (hl : ∀ i, x.moveLeft i ≡ y.moveLeft (l i)) (hr : ∀ i, x.moveRight i ≡ y.moveRight (r i)) :
+    x ≡ y :=
+  .of_fn l l.symm r r.symm hl (by simpa using hl <| l.symm ·) hr (by simpa using hr <| r.symm ·)
+
 /-! ### Pre-game order relations -/
 
 
@@ -433,7 +580,7 @@ theorem not_lf {x y : PGame} : ¬x ⧏ y ↔ y ≤ x :=
 #align pgame.not_lf SetTheory.PGame.not_lf
 
 theorem _root_.LE.le.not_gf {x y : PGame} : x ≤ y → ¬y ⧏ x :=
-  not_lf.2
+  absurd
 #align has_le.le.not_gf LE.le.not_gf
 
 theorem LF.not_ge {x y : PGame} : x ⧏ y → ¬y ≤ x :=
@@ -553,6 +700,14 @@ instance : Preorder PGame :=
           le_trans_aux (fun {i} => (IHyl i).2.2) fun {j} => (IHxr j).1,
           le_trans_aux (fun {i} => (IHzl i).1) fun {j} => (IHyr j).2.1⟩
     lt := fun x y => x ≤ y ∧ x ⧏ y }
+
+set_option linter.unusedVariables false in
+lemma Identical.le : ∀ {x y}, x ≡ y → x ≤ y
+  | mk xl xr xL xR, mk yl yr yL yR, ⟨hL, hR⟩ => le_of_forall_lf
+    (fun i ↦ let ⟨_, hj⟩ := hL.1 i; lf_of_le_moveLeft hj.le)
+    (fun i ↦ let ⟨_, hj⟩ := hR.2 i; lf_of_moveRight_le hj.le)
+
+lemma Identical.ge {x y} (h : x ≡ y) : y ≤ x := h.symm.le
 
 theorem lt_iff_le_and_lf {x y : PGame} : x < y ↔ x ≤ y ∧ x ⧏ y :=
   Iff.rfl
@@ -803,6 +958,8 @@ protected theorem equiv_comm {x y : PGame} : (x ≈ y) ↔ (y ≈ x) :=
 theorem equiv_of_eq {x y : PGame} (h : x = y) : x ≈ y := by subst h; rfl
 #align pgame.equiv_of_eq SetTheory.PGame.equiv_of_eq
 
+lemma Identical.equiv {x y} (h : x ≡ y) : x ≈ y := ⟨h.le, h.symm.le⟩
+
 @[trans]
 theorem le_of_le_of_equiv {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ≈ z) : x ≤ z :=
   h₁.trans h₂.1
@@ -931,13 +1088,51 @@ theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x
    fun h => (h x₂).2 <| equiv_rfl⟩
 #align pgame.equiv_congr_right SetTheory.PGame.equiv_congr_right
 
-theorem equiv_of_mk_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
-    (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, x.moveLeft i ≈ y.moveLeft (L i))
-    (hr : ∀ j, x.moveRight j ≈ y.moveRight (R j)) : x ≈ y := by
+theorem Equiv.ext {x y : PGame}
+    (hl : Relator.BiTotal (fun i j ↦ x.moveLeft i ≈ y.moveLeft j))
+    (hr : Relator.BiTotal (fun i j ↦ x.moveRight i ≈ y.moveRight j)) : x ≈ y := by
   constructor <;> rw [le_def]
-  · exact ⟨fun i => Or.inl ⟨_, (hl i).1⟩, fun j => Or.inr ⟨_, by simpa using (hr (R.symm j)).1⟩⟩
-  · exact ⟨fun i => Or.inl ⟨_, by simpa using (hl (L.symm i)).2⟩, fun j => Or.inr ⟨_, (hr j).2⟩⟩
-#align pgame.equiv_of_mk_equiv SetTheory.PGame.equiv_of_mk_equiv
+  · exact ⟨fun i ↦ .inl <| (hl.1 i).imp (fun _ ↦ (·.1)),
+      fun j ↦ .inr <| (hr.2 j).imp (fun _ ↦ (·.1))⟩
+  · exact ⟨fun i ↦ .inl <| (hl.2 i).imp (fun _ ↦ (·.2)),
+      fun j ↦ .inr <| (hr.1 j).imp (fun _ ↦ (·.2))⟩
+
+lemma Equiv.of_fn {x y : PGame}
+    (l : x.LeftMoves → y.LeftMoves) (il : y.LeftMoves → x.LeftMoves)
+    (r : x.RightMoves → y.RightMoves) (ir : y.RightMoves → x.RightMoves)
+    (hl : ∀ i, x.moveLeft i ≈ y.moveLeft (l i))
+    (hil : ∀ i, x.moveLeft (il i) ≈ y.moveLeft i)
+    (hr : ∀ i, x.moveRight i ≈ y.moveRight (r i))
+    (hir : ∀ i, x.moveRight (ir i) ≈ y.moveRight i) : x ≈ y :=
+  .ext ⟨fun i ↦ ⟨l i, hl i⟩, fun i ↦ ⟨il i, hil i⟩⟩ ⟨fun i ↦ ⟨r i, hr i⟩, fun i ↦ ⟨ir i, hir i⟩⟩
+
+lemma Equiv.of_equiv {x y : PGame}
+    (l : x.LeftMoves ≃ y.LeftMoves) (r : x.RightMoves ≃ y.RightMoves)
+    (hl : ∀ i, x.moveLeft i ≈ y.moveLeft (l i)) (hr : ∀ i, x.moveRight i ≈ y.moveRight (r i)) :
+    x ≈ y :=
+  .of_fn l l.symm r r.symm hl (by simpa using hl <| l.symm ·) hr (by simpa using hr <| r.symm ·)
+
+theorem Equiv.ext' {x y : PGame}
+    (hl : (∀ a ∈ₗ x, ∃ b ∈ₗ y, a ≈ b) ∧ (∀ b ∈ₗ y, ∃ a ∈ₗ x, a ≈ b))
+    (hr : (∀ a ∈ᵣ x, ∃ b ∈ᵣ y, a ≈ b) ∧ (∀ b ∈ᵣ y, ∃ a ∈ᵣ x, a ≈ b)) :
+    x ≈ y := by
+  refine' Equiv.ext (hl.imp (fun h i ↦ _) (fun h i ↦ _)) (hr.imp (fun h i ↦ _) (fun h i ↦ _)) <;>
+    obtain ⟨_, ⟨i, hi⟩, h⟩ := h _ ⟨i, refl _⟩
+  · exact ⟨i, Equiv.trans h hi.equiv⟩
+  · exact ⟨i, Equiv.trans hi.symm.equiv h⟩
+  · exact ⟨i, Equiv.trans h hi.equiv⟩
+  · exact ⟨i, Equiv.trans hi.symm.equiv h⟩
+
+theorem Equiv.ext'' {x y : PGame}
+    (hl : Relator.BiTotal fun (a : {a // a ∈ₗ x}) (b : {b // b ∈ₗ y}) ↦ a.1 ≈ b.1)
+    (hr : Relator.BiTotal fun (a : {a // a ∈ᵣ x}) (b : {b // b ∈ᵣ y}) ↦ a.1 ≈ b.1) :
+    x ≈ y := by
+  refine' Equiv.ext (hl.imp (fun h i ↦ _) (fun h i ↦ _)) (hr.imp (fun h i ↦ _) (fun h i ↦ _)) <;>
+    obtain ⟨⟨_, i, hi⟩, h⟩ := h ⟨_, ⟨i, refl _⟩⟩
+  · exact ⟨i, Equiv.trans h hi.equiv⟩
+  · exact ⟨i, Equiv.trans hi.symm.equiv h⟩
+  · exact ⟨i, Equiv.trans h hi.equiv⟩
+  · exact ⟨i, Equiv.trans hi.symm.equiv h⟩
 
 /-- The fuzzy, confused, or incomparable relation on pre-games.
 
@@ -1051,167 +1246,6 @@ theorem lt_or_equiv_or_gf (x y : PGame) : x < y ∨ (x ≈ y) ∨ y ⧏ x := by
   rw [lf_iff_lt_or_fuzzy, Fuzzy.swap_iff]
   exact lt_or_equiv_or_gt_or_fuzzy x y
 #align pgame.lt_or_equiv_or_gf SetTheory.PGame.lt_or_equiv_or_gf
-
-end PGame
-
-namespace PGame
-
-/-! ### Identity -/
-
-/-- Two pre-games are identical if their left and right sets are identical.
-That is, `Identical x y` if every left move of `x` is identical to some left move of `y`,
-every right move of `x` is identical to some right move of `y`, and vice versa. -/
-def Identical : ∀ (_ _ : PGame), Prop
-  | mk _ _ xL xR, mk _ _ yL yR =>
-    Relator.BiTotal (fun i j ↦ Identical (xL i) (yL j)) ∧
-      Relator.BiTotal (fun i j ↦ Identical (xR i) (yR j))
-
-@[inherit_doc] scoped infix:50 " ≡ " => PGame.Identical
-
-/-- `x ∈ₗ y` if `x` is identical to some left move of `y`. -/
-def memₗ (x y : PGame.{u}) : Prop := ∃ b, x ≡ (y.moveLeft b)
-
-/-- `x ∈ᵣ y` if `x` is identical to some right move of `y`. -/
-def memᵣ (x y : PGame.{u}) : Prop := ∃ b, x ≡ (y.moveRight b)
-
-@[inherit_doc] scoped infix:50 " ∈ₗ " => PGame.memₗ
-@[inherit_doc] scoped infix:50 " ∈ᵣ " => PGame.memᵣ
-@[inherit_doc PGame.memₗ] binder_predicate x " ∈ₗ " y:term => `($x ∈ₗ $y)
-@[inherit_doc PGame.memᵣ] binder_predicate x " ∈ᵣ " y:term => `($x ∈ᵣ $y)
-
-theorem identical_iff : ∀ {x y : PGame}, Identical x y ↔
-    Relator.BiTotal (x.moveLeft · ≡ y.moveLeft ·) ∧ Relator.BiTotal (x.moveRight · ≡ y.moveRight ·)
-  | mk _ _ _ _, mk _ _ _ _ => Iff.rfl
-
-@[refl, simp] protected theorem Identical.refl (x) : x ≡ x :=
-  PGame.recOn x fun _ _ _ _ IHL IHR ↦ ⟨Relator.BiTotal.refl IHL, Relator.BiTotal.refl IHR⟩
-
-protected theorem Identical.rfl {x} : x ≡ x := Identical.refl x
-
-@[symm] protected theorem Identical.symm : ∀ {x y}, x ≡ y → y ≡ x
-  | mk _ _ _ _, mk _ _ _ _, ⟨hL, hR⟩ => ⟨hL.symm fun _ _ h ↦ h.symm, hR.symm fun _ _ h ↦ h.symm⟩
-
-theorem identical_comm {x y} : x ≡ y ↔ y ≡ x :=
-  ⟨Identical.symm, Identical.symm⟩
-
-@[trans] protected theorem Identical.trans : ∀ {x y z}, x ≡ y → y ≡ z → x ≡ z
-  | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _, ⟨hL₁, hR₁⟩, ⟨hL₂, hR₂⟩ =>
-    ⟨hL₁.trans (fun _ _ _ h₁ h₂ ↦ h₁.trans h₂) hL₂, hR₁.trans (fun _ _ _ h₁ h₂ ↦ h₁.trans h₂) hR₂⟩
-
-theorem identical_of_is_empty (x y : PGame)
-    [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves]
-    [IsEmpty y.LeftMoves] [IsEmpty y.RightMoves] : x ≡ y :=
-  identical_iff.2 <| by simp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
-
-/-- `Identical` as a `Setoid`. -/
-def identicalSetoid : Setoid PGame :=
-  ⟨Identical, Identical.refl, Identical.symm, Identical.trans⟩
-
-instance : IsRefl PGame (· ≡ ·) := ⟨Identical.refl⟩
-instance : IsSymm PGame (· ≡ ·) := ⟨fun _ _ ↦ Identical.symm⟩
-instance : IsTrans PGame (· ≡ ·) := ⟨fun _ _ _ ↦ Identical.trans⟩
-instance : IsEquiv PGame (· ≡ ·) := { }
-
-set_option linter.unusedVariables false in
-/-- A left move of `x` is identical to some left move of `y`. -/
-lemma Identical.moveLeft : ∀ {x y} (r : x ≡ y) (i : x.LeftMoves),
-    ∃ j, x.moveLeft i ≡ y.moveLeft j
-  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hl.1 i
-
-set_option linter.unusedVariables false in
-/-- A left move of `y` is identical to some left move of `x`. -/
-lemma Identical.moveLeft_symm : ∀ {x y} (r : x ≡ y) (i : y.LeftMoves),
-    ∃ j, x.moveLeft j ≡ y.moveLeft i
-  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hl.2 i
-
-set_option linter.unusedVariables false in
-/-- A right move of `x` is identical to some right move of `y`. -/
-lemma Identical.moveRight : ∀ {x y} (r : x ≡ y) (i : x.RightMoves),
-    ∃ j, x.moveRight i ≡ y.moveRight j
-  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hr.1 i
-
-set_option linter.unusedVariables false in
-/-- A right move of `y` is identical to some right move of `x`. -/
-lemma Identical.moveRight_symm : ∀ {x y} (r : x ≡ y) (i : y.RightMoves),
-    ∃ j, x.moveRight j ≡ y.moveRight i
-  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hr.2 i
-
-set_option linter.unusedVariables false in
-lemma Identical.le : ∀ {x y}, x ≡ y → x ≤ y
-  | mk xl xr xL xR, mk yl yr yL yR, ⟨hL, hR⟩ => le_of_forall_lf
-    (fun i ↦ let ⟨_, hj⟩ := hL.1 i; lf_of_le_moveLeft hj.le)
-    (fun i ↦ let ⟨_, hj⟩ := hR.2 i; lf_of_moveRight_le hj.le)
-
-lemma Identical.ge {x y} (h : x ≡ y) : y ≤ x := h.symm.le
-
-lemma Identical.trans_eq {x y z} (h₁ : x ≡ y) (h₂ : y = z) : x ≡ z := h₁.trans (of_eq h₂)
-
-lemma Identical.equiv {x y} (h : x ≡ y) : x ≈ y := ⟨h.le, h.symm.le⟩
-
-theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
-    ((∀ i, x.moveLeft i ∈ₗ y) ∧ (∀ j, y.moveLeft j ∈ₗ x)) ∧
-      ((∀ i, x.moveRight i ∈ᵣ y) ∧ (∀ j, y.moveRight j ∈ᵣ x))
-  | mk xl xr xL xR, mk yl yr yL yR => by
-    convert identical_iff <;>
-    dsimp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal] <;>
-    congr! <;>
-    exact exists_congr <| fun _ ↦ identical_comm
-
-set_option linter.unusedVariables false in
-theorem memₗ.congr_right : ∀ {x y : PGame},
-    x ≡ y → (∀ {w : PGame}, w ∈ₗ x ↔ w ∈ₗ y)
-  | mk xl xr xL xR, mk yl yr yL yR, ⟨⟨h₁, h₂⟩, _⟩, _w =>
-    ⟨fun ⟨i, hi⟩ ↦ (h₁ i).imp (fun _ ↦ hi.trans),
-      fun ⟨j, hj⟩ ↦ (h₂ j).imp (fun _ hi ↦ hj.trans hi.symm)⟩
-
-set_option linter.unusedVariables false in
-theorem memᵣ.congr_right : ∀ {x y : PGame},
-    x ≡ y → (∀ {w : PGame}, w ∈ᵣ x ↔ w ∈ᵣ y)
-  | mk xl xr xL xR, mk yl yt yL yR, ⟨_, ⟨h₁, h₂⟩⟩, _w =>
-    ⟨fun ⟨i, hi⟩ ↦ (h₁ i).imp (fun _ ↦ hi.trans),
-      fun ⟨j, hj⟩ ↦ (h₂ j).imp (fun _ hi ↦ hj.trans hi.symm)⟩
-
-set_option linter.unusedVariables false in
-theorem memₗ.congr_left : ∀ {x y : PGame},
-    x ≡ y → (∀ {w : PGame}, x ∈ₗ w ↔ y ∈ₗ w)
-  | x, y, h, mk l r L R => ⟨fun ⟨i, hi⟩ ↦ ⟨i, h.symm.trans hi⟩, fun ⟨i, hi⟩ ↦ ⟨i, h.trans hi⟩⟩
-
-set_option linter.unusedVariables false in
-theorem memᵣ.congr_left : ∀ {x y : PGame},
-    x ≡ y → (∀ {w : PGame}, x ∈ᵣ w ↔ y ∈ᵣ w)
-  | x, y, h, mk l r L R => ⟨fun ⟨i, hi⟩ ↦ ⟨i, h.symm.trans hi⟩, fun ⟨i, hi⟩ ↦ ⟨i, h.trans hi⟩⟩
-
-set_option linter.unusedVariables false in
-lemma Identical.ext : ∀ {x y} (hl : ∀ z, z ∈ₗ x ↔ z ∈ₗ y) (hr : ∀ z, z ∈ᵣ x ↔ z ∈ᵣ y), x ≡ y
-  | mk xl xr xL xR, mk yl yr yL yR, hl, hr => identical_iff'.mpr
-    ⟨⟨fun i ↦ (hl _).mp ⟨i, refl _⟩, fun j ↦ (hl _).mpr ⟨j, refl _⟩⟩,
-      ⟨fun i ↦ (hr _).mp ⟨i, refl _⟩, fun j ↦ (hr _).mpr ⟨j, refl _⟩⟩⟩
-
-lemma Identical.ext_iff {x y} : x ≡ y ↔ (∀ z, z ∈ₗ x ↔ z ∈ₗ y) ∧ (∀ z, z ∈ᵣ x ↔ z ∈ᵣ y) :=
-  ⟨fun h ↦ ⟨@memₗ.congr_right _ _ h, @memᵣ.congr_right _ _ h⟩, fun h ↦ h.elim Identical.ext⟩
-
-lemma Identical.congr_right {x y z} (h : x ≡ y) : z ≡ x ↔ z ≡ y :=
-  ⟨fun hz ↦ hz.trans h, fun hz ↦ hz.trans h.symm⟩
-
-lemma Identical.congr_left {x y z} (h : x ≡ y) : x ≡ z ↔ y ≡ z :=
-  ⟨fun hz ↦ h.symm.trans hz, fun hz ↦ h.trans hz⟩
-
-lemma Identical.of_fn {x y : PGame}
-    (l : x.LeftMoves → y.LeftMoves) (il : y.LeftMoves → x.LeftMoves)
-    (r : x.RightMoves → y.RightMoves) (ir : y.RightMoves → x.RightMoves)
-    (hl : ∀ i, x.moveLeft i ≡ y.moveLeft (l i))
-    (hil : ∀ i, x.moveLeft (il i) ≡ y.moveLeft i)
-    (hr : ∀ i, x.moveRight i ≡ y.moveRight (r i))
-    (hir : ∀ i, x.moveRight (ir i) ≡ y.moveRight i) : x ≡ y :=
-  identical_iff.mpr
-    ⟨⟨fun i ↦ ⟨l i, hl i⟩, fun i ↦ ⟨il i, hil i⟩⟩,
-      ⟨fun i ↦ ⟨r i, hr i⟩, fun i ↦ ⟨ir i, hir i⟩⟩⟩
-
-lemma Identical.of_equiv {x y : PGame}
-    (l : x.LeftMoves ≃ y.LeftMoves) (r : x.RightMoves ≃ y.RightMoves)
-    (hl : ∀ i, x.moveLeft i ≡ y.moveLeft (l i)) (hr : ∀ i, x.moveRight i ≡ y.moveRight (r i)) :
-    x ≡ y :=
-  .of_fn l l.symm r r.symm hl (by simpa using hl <| l.symm ·) hr (by simpa using hr <| r.symm ·)
 
 /-! ### Relabellings -/
 
