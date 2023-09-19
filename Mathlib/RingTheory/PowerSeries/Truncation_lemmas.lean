@@ -59,14 +59,12 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
   rw [trunc_trunc_mul, trunc_mul_trunc]
 
 @[simp] theorem trunc_trunc_pow (f : R⟦X⟧) (n a : ℕ) :
-    trunc n ((trunc n f) ^ a : R[X]) = trunc n (f ^ a) := by
+    trunc n ((trunc n f : R⟦X⟧) ^ a) = trunc n (f ^ a) := by
   induction a with
   | zero =>
-    rw [pow_zero, pow_zero, Polynomial.coe_one]
+    rw [pow_zero, pow_zero]
   | succ a ih =>
-    rw [pow_succ, pow_succ, Polynomial.coe_mul, Polynomial.coe_pow,
-      trunc_trunc_mul, ←trunc_trunc_mul_trunc, ←Polynomial.coe_pow, ih,
-      trunc_trunc_mul_trunc]
+    rw [pow_succ, pow_succ, trunc_trunc_mul, ←trunc_trunc_mul_trunc, ih, trunc_trunc_mul_trunc]
 
 theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R⟦X⟧) = f := by
   have this : support f ⊆ Ico 0 n
