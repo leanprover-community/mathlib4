@@ -27,7 +27,6 @@ This file defines the factorial, along with the ascending and descending variant
 namespace Nat
 
 /-- `Nat.factorial n` is the factorial of `n`. -/
-@[simp]
 def factorial : ℕ → ℕ
   | 0 => 1
   | succ n => succ n * factorial n
@@ -229,7 +228,7 @@ section AscFactorial
 
 /-- `n.ascFactorial k = (n + k)! / n!` (as seen in `Nat.ascFactorial_eq_div`), but implemented
 recursively to allow for "quick" computation when using `norm_num`. This is closely related to
-`pochhammer`, but much less general. -/
+`ascPochhammer`, but much less general. -/
 def ascFactorial (n : ℕ) : ℕ → ℕ
   | 0 => 1
   | k + 1 => (n + k + 1) * ascFactorial n k
@@ -339,7 +338,7 @@ section DescFactorial
 
 /-- `n.descFactorial k = n! / (n - k)!` (as seen in `Nat.descFactorial_eq_div`), but
 implemented recursively to allow for "quick" computation when using `norm_num`. This is closely
-related to `pochhammer`, but much less general. -/
+related to `ascPochhammer`, but much less general. -/
 def descFactorial (n : ℕ) : ℕ → ℕ
   | 0 => 1
   | k + 1 => (n - k) * descFactorial n k
