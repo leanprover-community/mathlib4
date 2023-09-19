@@ -368,7 +368,8 @@ theorem D_log_comp_exp : D R (logOneAdd ∘ᶠ (exp - 1)) = 1 := by
   · rw [D_log_comp_exp, D_X]
   · rw [constantCoeff_comp const_exp_sub_one, constantCoeff_X, constantCoeff_logOneAdd]
 
-theorem logOneAdd_comp_mul_sub_one (f g : R⟦X⟧) (hf : constantCoeff R f = 0) (hg : constantCoeff R g = 0) :
+theorem logOneAdd_comp_mul_sub_one (f g : R⟦X⟧) (hf : constantCoeff R f = 0)
+    (hg : constantCoeff R g = 0) :
     (logOneAdd ∘ᶠ ((1 + f) * (1 + g) - 1)) = logOneAdd ∘ᶠ f + logOneAdd ∘ᶠ g := by
   have eq : constantCoeff R ((1 + f) * (1 + g) - 1) = 0 := by
     rw [map_sub, map_mul, map_add, map_add, hf, hg, map_one, add_zero, mul_one, sub_self]
