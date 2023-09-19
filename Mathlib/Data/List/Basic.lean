@@ -2762,9 +2762,6 @@ end FoldlMFoldrM
 
 /-! ### intersperse -/
 
-@[simp]
-theorem intersperse_nil {α : Type u} (a : α) : intersperse a [] = [] :=
-  rfl
 #align list.intersperse_nil List.intersperse_nil
 
 @[simp]
@@ -3162,18 +3159,13 @@ section find?
 
 variable {p : α → Bool} {l : List α} {a : α}
 
-@[simp]
-theorem find?_nil (p : α → Bool) : find? p [] = none :=
-  rfl
 #align list.find_nil List.find?_nil
 
--- Porting note: List.find? is given @[simp] in Std.Data.List.Init.Lemmas
 -- @[simp]
 -- Later porting note (at time of this lemma moving to Std): removing attribute `nolint simpNF`
 attribute [simp 1100] find?_cons_of_pos
 #align list.find_cons_of_pos List.find?_cons_of_pos
 
--- Porting note: List.find? is given @[simp] in Std.Data.List.Init.Lemmas
 -- @[simp]
 -- Later porting note (at time of this lemma moving to Std): removing attribute `nolint simpNF`
 attribute [simp 1100] find?_cons_of_neg
@@ -3785,15 +3777,8 @@ theorem enum_nil : enum ([] : List α) = [] :=
   rfl
 #align list.enum_nil List.enum_nil
 
-@[simp]
-theorem enumFrom_nil (n : ℕ) : enumFrom n ([] : List α) = [] :=
-  rfl
 #align list.enum_from_nil List.enumFrom_nil
 
-@[simp]
-theorem enumFrom_cons (x : α) (xs : List α) (n : ℕ) :
-    enumFrom n (x :: xs) = (n, x) :: enumFrom (n + 1) xs :=
-  rfl
 #align list.enum_from_cons List.enumFrom_cons
 
 @[simp]

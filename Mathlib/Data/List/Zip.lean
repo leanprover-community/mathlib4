@@ -176,13 +176,8 @@ theorem map_snd_zip :
     rw [map_snd_zip as bs h]
 #align list.map_snd_zip List.map_snd_zip
 
-@[simp]
-theorem unzip_nil : unzip (@nil (α × β)) = ([], []) := rfl
 #align list.unzip_nil List.unzip_nil
 
-@[simp]
-theorem unzip_cons (a : α) (b : β) (l : List (α × β)) :
-    unzip ((a, b) :: l) = (a :: (unzip l).1, b :: (unzip l).2) := rfl
 #align list.unzip_cons List.unzip_cons
 
 theorem unzip_eq_map : ∀ l : List (α × β), unzip l = (l.map Prod.fst, l.map Prod.snd)
