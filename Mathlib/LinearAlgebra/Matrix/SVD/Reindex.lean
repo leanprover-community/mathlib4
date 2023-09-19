@@ -75,7 +75,7 @@ noncomputable def eigenRowEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
 
 /-- When the eigenvalues of the matrix Aᴴ⬝A are partitioned using
 `equiv_fin_width_eigs_conjTranspose_mul_self` i.e. into non-zero and zero eigenvalues, any element
-from the second partition is obivuosly zero! -/
+from the second partition is obviously zero! -/
 @[simp]
 lemma eigen_eigenColumnEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (N - A.rank)) :
   (isHermitian_transpose_mul_self A).eigenvalues
@@ -90,7 +90,7 @@ lemma eigen_eigenColumnEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (N - A
 
 /-- When the eigenvalues of the matrix A⬝Aᴴ are partitioned using
 `equiv_fin_height_eigs_mul_conjTranspose` i.e. into non-zero and zero eigenvalues, any element from
-the second partition is obivuosly zero! -/
+the second partition is obviously zero! -/
 @[simp]
 lemma eigen_eigenRowEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (M - A.rank)) :
     (isHermitian_mul_conjTranspose_self A).eigenvalues
