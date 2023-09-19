@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Set.Sups
 
-#align_import data.finset.sups from "leanprover-community/mathlib"@"20715f4ac6819ef2453d9e5106ecd086a5dc2a5e"
+#align_import data.finset.sups from "leanprover-community/mathlib"@"8818fdefc78642a7e6afcd20be5c184f3c7d9699"
 
 /-!
 # Set family operations
@@ -32,6 +32,19 @@ We define the following notation in locale `FinsetFamily`:
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
 
+-- TODO: Is there a better spot for those two instances?
+namespace Finset
+variable {α : Type*} [Preorder α] [@DecidableRel α (· ≤ ·)] {s : Finset α}
+
+instance decidablePredMemUpperClosure : DecidablePred (· ∈ upperClosure (s : Set α)) :=
+  fun _ ↦ decidableExistsAndFinset
+#align finset.decidable_pred_mem_upper_closure Finset.decidablePredMemUpperClosure
+
+instance decidablePredMemLowerClosure : DecidablePred (· ∈ lowerClosure (s : Set α)) :=
+  fun _ ↦ decidableExistsAndFinset
+#align finset.decidable_pred_mem_lower_closure Finset.decidablePredMemLowerClosure
+
+end Finset
 
 open Function
 
@@ -213,6 +226,19 @@ theorem sups_sups_sups_comm : s ⊻ t ⊻ (u ⊻ v) = s ⊻ u ⊻ (t ⊻ v) :=
   image₂_image₂_image₂_comm sup_sup_sup_comm
 #align finset.sups_sups_sups_comm Finset.sups_sups_sups_comm
 
+variable [@DecidableRel α (· ≤ ·)]
+
+lemma filter_sups_le (s t : Finset α) (a : α) :
+    (s ⊻ t).filter (· ≤ a) = s.filter (· ≤ a) ⊻ t.filter (· ≤ a) := by
+  ext b
+  simp only [mem_filter, mem_sups]
+  constructor
+  · rintro ⟨⟨b, hb, c, hc, rfl⟩, ha⟩
+    rw [sup_le_iff] at ha
+    exact ⟨_, ⟨hb, ha.1⟩, _, ⟨hc, ha.2⟩, rfl⟩
+  · rintro ⟨b, hb, c, hc, _, rfl⟩
+    exact ⟨⟨_, hb.1, _, hc.1, rfl⟩, _root_.sup_le hb.2 hc.2⟩
+
 end Sups
 
 section Infs
@@ -386,6 +412,19 @@ theorem infs_right_comm : s ⊼ t ⊼ u = s ⊼ u ⊼ t :=
 theorem infs_infs_infs_comm : s ⊼ t ⊼ (u ⊼ v) = s ⊼ u ⊼ (t ⊼ v) :=
   image₂_image₂_image₂_comm inf_inf_inf_comm
 #align finset.infs_infs_infs_comm Finset.infs_infs_infs_comm
+
+variable [@DecidableRel α (· ≤ ·)]
+
+lemma filter_infs_ge (s t : Finset α) (a : α) :
+    (s ⊼ t).filter (a ≤ ·) = s.filter (a ≤ ·) ⊼ t.filter (a ≤ ·) := by
+  ext b
+  simp only [mem_filter, mem_infs]
+  constructor
+  · rintro ⟨⟨b, hb, c, hc, rfl⟩, ha⟩
+    rw [le_inf_iff] at ha
+    exact ⟨_, ⟨hb, ha.1⟩, _, ⟨hc, ha.2⟩, rfl⟩
+  · rintro ⟨b, hb, c, hc, _, rfl⟩
+    exact ⟨⟨_, hb.1, _, hc.1, rfl⟩, _root_.le_inf hb.2 hc.2⟩
 
 end Infs
 
