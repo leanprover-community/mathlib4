@@ -31,16 +31,7 @@ namespace PowerSeries
 
 variable {R} [Field R] [CharZero R]
 
-/--
-The formal power series `log(1 + X)`, i.e. `X - X^2/2 + X^3/3 - X^4/4 + ...`.
--/
-def logOneAdd : R⟦X⟧ := mk fun n ↦ -(-1) ^ n / n
-
-/--
-The formal power series of the polylogarithm.
-
-`polylog d = ∑ n^-d * X^n`
--/
+def logOneAdd       : R⟦X⟧ := mk fun n ↦ -(-1) ^ n / n
 def polylog (d : ℕ) : R⟦X⟧ := mk fun n ↦ (n : ℚ)⁻¹ ^ d
 
 local notation "exp" => exp _
@@ -118,11 +109,13 @@ by
 theorem constantCoeff_logOneAdd : constantCoeff R logOneAdd = 0 := by
   rw [← coeff_zero_eq_constantCoeff, logOneAdd, coeff_mk, cast_zero, div_zero]
 
-theorem hasComp_logOneAdd {f : R⟦X⟧} : f.hasComp logOneAdd := by
+theorem hasComp_logOneAdd {f : R⟦X⟧} : f.hasComp logOneAdd :=
+by
   apply hasComp_of_constantCoeff_eq_zero constantCoeff_logOneAdd
 
 @[simp]
-theorem D_logOneAdd : D R logOneAdd = (1 + X)⁻¹ := by
+theorem D_logOneAdd : D R logOneAdd = (1 + X)⁻¹ :=
+by
   rw [PowerSeries.eq_inv_iff_mul_eq_one]
   ext n
   rw [mul_add, mul_one, map_add, coeff_D, logOneAdd, coeff_mk, cast_add,
@@ -140,13 +133,17 @@ theorem D_logOneAdd : D R logOneAdd = (1 + X)⁻¹ := by
   · rw [map_add, map_one, constantCoeff_X, add_zero]
     exact one_ne_zero
 
-theorem const_exp_sub_one : constantCoeff R (exp - 1) = 0 := by
+theorem const_exp_sub_one : constantCoeff R (exp - 1) = 0 :=
+by
   rw [map_sub, constantCoeff_exp, constantCoeff_one, sub_self]
 
-theorem hasComp_exp_sub_one {f : R⟦X⟧} : f.hasComp (exp - 1) := by
+theorem hasComp_exp_sub_one {f : R⟦X⟧} : f.hasComp (exp - 1) :=
+by
   apply hasComp_of_constantCoeff_eq_zero const_exp_sub_one
 
-theorem D_log_comp_exp : D R (logOneAdd ∘ᶠ (exp - 1)) = 1 := by
+@[simp]
+theorem D_log_comp_exp : D R (logOneAdd ∘ᶠ (exp - 1)) = 1 :=
+by
   rw [D_comp' const_exp_sub_one, D_logOneAdd, map_sub, D_one, sub_zero, D_exp]
   have : (1 + X : R⟦X⟧) ∘ᶠ (exp - 1) = exp
   · rw [add_comp hasComp_exp_sub_one hasComp_exp_sub_one,
@@ -157,14 +154,17 @@ theorem D_log_comp_exp : D R (logOneAdd ∘ᶠ (exp - 1)) = 1 := by
     rw [map_add, map_one, constantCoeff_X, add_zero]
     exact one_ne_zero
 
-@[simp] theorem log_comp_exp : (logOneAdd ∘ᶠ (exp - 1) : R⟦X⟧) = X := by
+@[simp]
+theorem log_comp_exp : (logOneAdd ∘ᶠ (exp - 1) : R⟦X⟧) = X :=
+by
   apply D.ext
   · rw [D_log_comp_exp, D_X]
   · rw [constantCoeff_comp const_exp_sub_one, constantCoeff_X, constantCoeff_logOneAdd]
 
-theorem log_comp_mul (f g : R⟦X⟧) (hf : constantCoeff R f = 0)
-    (hg : constantCoeff R g = 0) :
-    (logOneAdd ∘ᶠ ((1 + f) * (1 + g) - 1)) = logOneAdd ∘ᶠ f + logOneAdd ∘ᶠ g := by
+@[simp]
+theorem log_comp_mul (f g : R⟦X⟧) (hf : constantCoeff R f = 0) (hg : constantCoeff R g = 0) :
+  (logOneAdd ∘ᶠ ((1 + f) * (1 + g) - 1)) = logOneAdd ∘ᶠ f + logOneAdd ∘ᶠ g :=
+by
   have eq : constantCoeff R ((1 + f) * (1 + g) - 1) = 0 := by
     rw [map_sub, map_mul, map_add, map_add, hf, hg, map_one, add_zero, mul_one, sub_self]
   have : constantCoeff R (1 + X) ≠ 0
@@ -186,12 +186,14 @@ theorem log_comp_mul (f g : R⟦X⟧) (hf : constantCoeff R f = 0)
   · rw [constantCoeff_comp eq, map_add, constantCoeff_comp hf, constantCoeff_comp hg,
       constantCoeff_logOneAdd, add_zero]
 
-@[simp] theorem exp_comp_log : exp ∘ᶠ logOneAdd = (1 + X : R⟦X⟧) := by
+@[simp]
+theorem exp_comp_log : exp ∘ᶠ logOneAdd = (1 + X : R⟦X⟧) :=
+by
   apply D.ext
   · rw [D_comp' constantCoeff_logOneAdd, map_add, D_one, zero_add, D_exp]
     apply D.ext
-    · rw [D_mul, D_comp' constantCoeff_logOneAdd, D_exp, D_X, D_one, D_logOneAdd, D_inv', map_add,
-        D_one, D_X, zero_add, mul_one, pow_two, mul_neg, ←mul_assoc, mul_comm, neg_add_self]
+    · rw [D_mul, D_comp' constantCoeff_logOneAdd, D_exp, D_X, D_one, D_logOneAdd,
+        D_inv', map_add, D_one, D_X, zero_add, mul_one, pow_two, mul_neg, ←mul_assoc, mul_comm, neg_add_self]
     · rw [D_X, map_one, D_logOneAdd, map_mul, constantCoeff_comp constantCoeff_logOneAdd,
         constantCoeff_inv, map_add, map_one, constantCoeff_X, add_zero, inv_one, mul_one,
         constantCoeff_exp]

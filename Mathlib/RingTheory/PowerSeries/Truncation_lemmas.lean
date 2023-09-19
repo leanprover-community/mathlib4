@@ -16,8 +16,14 @@ namespace PowerSeries
 open Nat hiding pow_succ pow_zero
 open Polynomial BigOperators Finset Finset.Nat
 
-variable {R : Type*} [CommSemiring R]
+/--
+`R⟦X⟧` is notation for `PowerSeries R`,
+the semiring of formal power series in one variable over a semiring `R`.
+-/
 scoped notation:9000 R "⟦X⟧" => PowerSeries R
+
+variable {R : Type*} [CommSemiring R]
+
 
 theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     trunc n ↑(trunc m f) = trunc n f := by
@@ -28,12 +34,10 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     rw [coeff_trunc, if_pos this]
   · rfl
 
-@[simp]
-theorem trunc_trunc {n} (f : R⟦X⟧) : trunc n ↑(trunc n f) = trunc n f :=
+@[simp] theorem trunc_trunc {n} (f : R⟦X⟧) : trunc n ↑(trunc n f) = trunc n f :=
   trunc_trunc_of_le f
 
-@[simp]
-theorem trunc_trunc_mul {n} (f g : R ⟦X⟧) :
+@[simp] theorem trunc_trunc_mul {n} (f g : R ⟦X⟧) :
     trunc n ( (trunc n f) * g : R⟦X⟧ ) = trunc n ( f * g ) := by
   ext m
   rw [coeff_trunc, coeff_trunc]
@@ -44,12 +48,11 @@ theorem trunc_trunc_mul {n} (f g : R ⟦X⟧) :
     rw [Polynomial.coeff_coe, coeff_trunc, if_pos ha]
   · rfl
 
-@[simp]
-theorem trunc_mul_trunc {n} (f g : R ⟦X⟧) : trunc n ( f * (trunc n g) : R⟦X⟧ ) = trunc n ( f * g )
+@[simp] theorem trunc_mul_trunc {n} (f g : R ⟦X⟧) :
+  trunc n ( f * (trunc n g) : R⟦X⟧ ) = trunc n ( f * g )
     := by
   rw [mul_comm, trunc_trunc_mul, mul_comm]
 
-@[simp]
 theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
     trunc n (trunc n f * trunc n g : R⟦X⟧) = trunc n (f * g) :=
 by
@@ -57,7 +60,7 @@ by
 
 @[simp]
 theorem trunc_trunc_pow (f : R⟦X⟧) (n a : ℕ) :
-    trunc n ((trunc n f) ^ a) = trunc n (f ^ a) := by
+    trunc n ((trunc n f) ^ a : R[X]) = trunc n (f ^ a) := by
   induction a with
   | zero =>
     rw [pow_zero, pow_zero, Polynomial.coe_one]
@@ -81,7 +84,6 @@ theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) :
   · intros
     apply monomial_zero_right
 
-@[simp]
 theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
     trunc n.succ f = trunc n f + Polynomial.monomial n (coeff R n f) := by
   rw [trunc, Ico_zero_eq_range, sum_range_succ, trunc, Ico_zero_eq_range]
@@ -147,7 +149,7 @@ theorem trunc_X {n} : trunc (n + 2) X = (Polynomial.X : R[X]) := by
     intro hd
     apply h₁
     rw [hd]
-    exact one_lt_succ_succ n
+    exact n.one_lt_succ_succ
 
 
 

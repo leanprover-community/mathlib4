@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Richard M. Hill.
+Authors: Richard M. Hill.
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Truncation_lemmas
@@ -109,7 +109,8 @@ theorem Polynomial.eval₂_C_X_eq_coe {R : Type*} [CommSemiring R] (f : R[X]) :
   rw [←coeToPowerSeries.ringHom_apply, eval₂_eq_sum_range, eval₂_eq_sum_range, map_sum]
   apply sum_congr rfl
   intros
-  rw [map_mul, map_pow, coeToPowerSeries.ringHom_apply, coeToPowerSeries.ringHom_apply, coe_C, coe_X]
+  rw [map_mul, map_pow, coeToPowerSeries.ringHom_apply,
+    coeToPowerSeries.ringHom_apply, coe_C, coe_X]
 
 
 
@@ -133,13 +134,21 @@ def hasComp (f g : R⟦X⟧) : Prop :=
   ∀ d, ∃ N, ∀ n, N ≤ n → (coeff R n f) * coeff R d (g^n) = 0
 
 
-/--Formal composition of power series.
+/--
+Formal composition of power series.
 If `f.hasComp g` then `f ∘ᶠ g` is defined in the usual way.
-If not then `f ∘ᶠ g` defaults to `0`.-/
+If not then `f ∘ᶠ g` defaults to `0`.
+-/
 noncomputable def comp (f g : R⟦X⟧) : R⟦X⟧ :=
   if h : f.hasComp g then mk (λ d ↦ coeff R d ((trunc (h d).choose f).eval₂ (C R) g )) else 0
 
-/- We define the notation `f ∘ᶠ g` for `f.comp g`.-/
+/--
+`f ∘ᶠ g` is notation for `f.comp g`, which is the
+composition of the formal power series `f` and `g`.
+
+If `f.hasComp g` then `f ∘ᶠ g` is defined in the usual way.
+If not then `f ∘ᶠ g` defaults to `0`.
+-/
 scoped infixr:90 " ∘ᶠ "  => PowerSeries.comp
 
 
@@ -274,7 +283,11 @@ lemma mul_hasComp {f₁ f₂ g : R⟦X⟧} (h₁ : f₁.hasComp g) (h₂ : f₂.
     apply le_add_self
     exact h
 
-
+/--
+If `g` is a formal power series over `R`, then `hasCompRing g` is the
+subring of `R⟦X⟧` consisting of the power series `f` satisfying `f.hasComp g`.
+These are the power series for which the composition  `f ∘ᶠ g` does not default to `0`.
+-/
 def hasCompRing (g : R⟦X⟧) : Subsemiring R⟦X⟧ where
   carrier   := λ f ↦ f.hasComp g
   mul_mem'  := mul_hasComp
@@ -322,7 +335,7 @@ theorem hasComp_iff' (hR : ∀ x : R, IsNilpotent x ∨ x ∈ nonZeroDivisors R)
     by_contra' h'
     have : constantCoeff R g ∈ nonZeroDivisors R
     · cases hR <| constantCoeff R g with
-      | inl => have := h'.2 ; contradiction
+      | inl => have := h'.2; contradiction
       | inr => assumption
     obtain ⟨N,hN⟩ := h 0
     have : f = trunc N f
@@ -491,7 +504,8 @@ private lemma trunc_comp_stable {f g : R⟦X⟧} (hfg : hasComp f g) (d : ℕ) :
       apply le_of_lt
       assumption
     | step hm ih =>
-      rw [coe_comp_eq_eval₂, trunc_succ, eval₂_add, map_add, eval₂_monomial, coeff_C_mul, hN, add_zero, ih, coe_comp_eq_eval₂]
+      rw [coe_comp_eq_eval₂, trunc_succ, eval₂_add, map_add, eval₂_monomial, coeff_C_mul, hN,
+        add_zero, ih, coe_comp_eq_eval₂]
       apply le_of_lt
       assumption
       assumption
