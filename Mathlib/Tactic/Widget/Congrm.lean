@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wojciech Nawrocki, Patrick Massot
+Authors: Patrick Massot
 -/
 import Mathlib.Tactic.Widget.Util
 import Mathlib.Tactic.Congrm
@@ -20,11 +20,9 @@ open Lean Meta Server ProofWidgets
 
 def makeCongrmString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   (_ : SelectInsertParams) : MetaM (String × String) := do
-  let subexprPos := pos.map (·.loc.target!)
-  let goalType := goalType.consumeMData
+  let subexprPos := getGoalLocations pos
   unless goalType.isAppOf `Eq || goalType.isAppOf `Iff do
     throwError "The goal must be an equality or iff."
-  unless 0 < subexprPos.size do panic! "You need to select something"
   let mut goalTypeWithMetaVars := goalType
   for pos in subexprPos do
     goalTypeWithMetaVars ← insertMetaVar goalTypeWithMetaVars pos

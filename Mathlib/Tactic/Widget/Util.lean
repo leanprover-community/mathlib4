@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Patrick Massot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Massot
+-/
 import Lean.Meta.ExprLens
 import Lean.Elab.PreDefinition.Structural.SmartUnfolding
 
@@ -11,9 +16,13 @@ import Mathlib.Tactic.Widget.SelectInsertParamsClass
 
 open Lean Meta Server
 
-def Lean.SubExpr.GoalLocation.target! : Lean.SubExpr.GoalLocation → SubExpr.Pos
-| .target pos => pos
-| _ => panic! "You must select part of the goal."
+open Lean.SubExpr in
+def getGoalLocations (locations : Array GoalsLocation) : Array SubExpr.Pos := Id.run do
+  let mut res := #[]
+  for location in locations do
+    if let .target pos := location.loc then
+      res := res.push pos
+  return res
 
 def insertMetaVar (e : Expr) (pos  : SubExpr.Pos) : MetaM Expr :=
 replaceSubexpr (fun _ ↦  do mkFreshExprMVar none .synthetic) pos e
@@ -25,10 +34,6 @@ def String.renameMetaVar (s : String) : String :=
   | head::tail => head ++ "?_" ++ "?_".intercalate (tail.map fun s ↦ s.dropWhile Char.isDigit)
 
 open ProofWidgets
-
-def findGoalForLocation (goals : Array Widget.InteractiveGoal) (loc : SubExpr.GoalsLocation) :
-    Option Widget.InteractiveGoal :=
-  goals.find? (·.mvarId == loc.mvarId)
 
 /-- Structures providing parameters for a Select and insert widget. -/
 structure SelectInsertParams where
@@ -95,7 +100,7 @@ else
       let md ← mainGoal.mvarId.getDecl
       let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
       Meta.withLCtx lctx md.localInstances do
-        let (linkText, newCode) ← mkCmdStr (selectedLocations params) md.type params
+        let (linkText, newCode) ← mkCmdStr (selectedLocations params) md.type.consumeMData params
         return .ofComponent
           MakeEditLink
           (.ofReplaceRange doc.meta (replaceRange params) newCode)

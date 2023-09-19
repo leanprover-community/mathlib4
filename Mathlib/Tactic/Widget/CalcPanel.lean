@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Patrick Massot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Massot
+-/
 import Lean.Elab.Calc
 import Lean.Elab.Tactic.ElabTerm
 import Lean.Meta.ExprLens
@@ -65,12 +70,7 @@ def String.mkSpace : Nat → String
 /-- Return the button text and inserted text above and below.-/
 def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcParams) :
     MetaM (String × String) := do
-  let mut subexprPos : Array SubExpr.Pos := #[]
-  for selectedLocation in pos do
-    if let .target pos := selectedLocation.loc then
-      subexprPos := subexprPos.push pos
-
-  let goalType := goalType.consumeMData
+  let subexprPos := getGoalLocations pos
   let some (rel, lhs, rhs) ← Lean.Elab.Term.getCalcRelation? goalType |
       throwError "invalid 'calc' step, relation expected{indentExpr goalType}"
   let relStr := rel.getAppFn.relStr
@@ -95,9 +95,11 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   let insertedCode := match selectedLeft.isEmpty, selectedRight.isEmpty with
   | false, false =>
     if params.isFirst then
-      s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
+      s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n" ++
+      s!"{spc}_ {relStr} {rhsStr} := by sorry"
     else
-      s!"{spc}_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
+      s!"{spc}_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n" ++
+      s!"{spc}_ {relStr} {rhsStr} := by sorry"
   | true, false  =>
   if params.isFirst then
       s!"{lhsStr} {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
@@ -178,7 +180,9 @@ def myElabCalcSteps (indent : Nat) (steps : TSyntax ``calcSteps) : TermElabM Exp
 
     if let some prevRhs := prevRhs? then
       unless (← isDefEqGuarded lhs prevRhs) do
-        throwErrorAt pred "invalid 'calc' step, left-hand-side is{indentD m!"{lhs} : {← inferType lhs}"}\nprevious right-hand-side is{indentD m!"{prevRhs} : {← inferType prevRhs}"}" -- "
+        let L := indentD m!"{lhs} : {← inferType lhs}"
+        let R := indentD m!"{prevRhs} : {← inferType prevRhs}"
+        throwErrorAt pred "invalid calc step, left-hand-side is{L}\nprevious right-hand-side is{R}"
     let proof ← withFreshMacroScope do elabTermEnsuringType proofTerm type
     result? := some <| ← do
       if let some (result, resultType) := result? then
@@ -209,7 +213,8 @@ elab_rules : tactic
     let mut valType ← inferType val
     unless (← isDefEq valType target) do
       let rec throwFailed :=
-        throwError "'calc' tactic failed, has type{indentExpr valType}\nbut it is expected to have type{indentExpr target}"
+        throwError "'calc' tactic failed, has type{indentExpr valType}\n
+          but it is expected to have type{indentExpr target}"
       let some (_, _, rhs) ← Term.getCalcRelation? valType | throwFailed
       let some (r, _, rhs') ← Term.getCalcRelation? target | throwFailed
       let lastStep := mkApp2 r rhs rhs'
