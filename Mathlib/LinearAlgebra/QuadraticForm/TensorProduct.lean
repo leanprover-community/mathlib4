@@ -36,8 +36,11 @@ variable (R A) in
 /-- The tensor product of two quadratic forms injects into quadratic forms on tensor products.
 
 Note this is heterobasic; the quadratic form on the left can take values in a larger ring than
-the one on the right. -/
-def tensorDistrib : QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
+the one on the right.
+
+This is an `irreducible_def`, since there are no nice defeqs here anyway. -/
+irreducible_def tensorDistrib :
+    QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   -- while `letI`s would produce a better term than `let`, they would make this already-slow
   -- definition even slower.
@@ -52,9 +55,10 @@ def tensorDistrib : QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] Q
 -- `R = A` of `Q₁ m₁ * Q₂ m₂`.
 @[simp]
 theorem tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) (m₁ : M₁) (m₂ : M₂) :
-    tensorDistrib R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₂ m₂ • Q₁ m₁ :=
+    tensorDistrib R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₂ m₂ • Q₁ m₁ := by
+  rw [tensorDistrib]
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
-  (BilinForm.tensorDistrib_tmul _ _ _ _ _ _).trans <| congr_arg₂ _
+  exact (BilinForm.tensorDistrib_tmul _ _ _ _ _ _).trans <| congr_arg₂ _
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 
 /-- The tensor product of two quadratic forms, a shorthand for dot notation. -/
