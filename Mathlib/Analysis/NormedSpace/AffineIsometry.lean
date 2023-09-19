@@ -887,6 +887,8 @@ noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E
     map_vadd' := fun p v => Subtype.ext <| φ.map_vadd p v }
 #align affine_subspace.equiv_map_of_injective AffineSubspace.equivMapOfInjective
 
+attribute [nolint simpNF] AffineSubspace.equivMapOfInjective_invFun_coe
+
 /-- Restricts an affine isometry to an affine isometry equivalence between a nonempty affine
 subspace `E` and its image.
 

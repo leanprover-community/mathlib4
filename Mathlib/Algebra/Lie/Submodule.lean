@@ -127,8 +127,7 @@ theorem coe_toSet_mk (S : Set M) (h₁ h₂ h₃ h₄) :
   rfl
 #align lie_submodule.coe_to_set_mk LieSubmodule.coe_toSet_mk
 
--- @[simp, nolint simpVarHead]
-@[simp]
+@[simp, nolint simpVarHead]
 theorem coe_toSubmodule_mk (p : Submodule R M) (h) :
     (({ p with lie_mem := h } : LieSubmodule R L M) : Submodule R M) = p := by cases p; rfl
 #align lie_submodule.coe_to_submodule_mk LieSubmodule.coe_toSubmodule_mk

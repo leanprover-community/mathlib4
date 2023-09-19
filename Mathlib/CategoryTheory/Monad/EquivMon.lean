@@ -99,7 +99,7 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
         erw [← NatTrans.comp_app, f.mul_hom]
         dsimp
         simp only [Category.assoc, NatTrans.naturality, ofMon_obj]
-        congr!}
+        congr! }
 #align category_theory.Monad.Mon_to_Monad CategoryTheory.Monad.monToMonad
 
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/

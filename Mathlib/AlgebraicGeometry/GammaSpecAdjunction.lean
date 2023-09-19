@@ -336,17 +336,6 @@ theorem right_triangle (R : CommRingCat) :
   · intro r; apply toOpen_res
 #align algebraic_geometry.Γ_Spec.right_triangle AlgebraicGeometry.ΓSpec.right_triangle
 
-Porting note : the two unification hint is to help compile `locallyRingedSpaceAdjunction`
-faster, from 900000 to normal maxHeartbeats
-/-- opposite of composition of two functors -/
-unif_hint uh_functor_op1 where ⊢
-  Functor.op (Spec.toLocallyRingedSpace.rightOp ⋙ Γ) ≟
-  Spec.toLocallyRingedSpace.{u} ⋙ Γ.rightOp in
-
-/-- opposite of identity functor -/
-unif_hint uh_functor_op2 where ⊢
-  Functor.op (𝟭 CommRingCat.{u}) ≟ 𝟭 CommRingCatᵒᵖ in
-
 set_option maxHeartbeats 400000 in
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
 --Porting Note: `simps` cause a time out, so `Unit` and `counit` will be added manually
