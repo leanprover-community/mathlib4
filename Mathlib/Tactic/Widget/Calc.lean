@@ -15,6 +15,12 @@ import ProofWidgets.Compat
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Widget.Util
 
+/-! # Calc widget
+
+This file redefines the `calc` tactic so that is displays a widget panel allowing to create
+new calc steps with holes specified by selected sub-expressions in the goal.
+-/
+
 section code_action
 open Std CodeAction
 open Lean Server RequestM

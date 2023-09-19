@@ -9,7 +9,10 @@ import Mathlib.Tactic.Widget.Util
 /-! # Conv widget
 
 This is a slightly improved version of one of the examples in the ProofWidget library.
- -/
+It defines a `conv?` tactic that displays a widget panel allowing to generate
+a `conv` call zooming to the subexpression selected in the goal.
+-/
+
 
 open Lean Meta Server ProofWidgets
 
@@ -115,6 +118,8 @@ def ConvSelectionPanel : Component SelectInsertParams :=
   mk_rpc_widget% ConvSelectionPanel.rpc
 
 open scoped Json in
+/-- Display a widget panel allowing to generate a `conv` call zooming to the subexpression selected
+in the goal.-/
 elab stx:"conv?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
   savePanelWidgetInfo stx ``ConvSelectionPanel $ pure $ json% { replaceRange: $(replaceRange) }

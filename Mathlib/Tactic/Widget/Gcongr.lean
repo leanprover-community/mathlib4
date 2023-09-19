@@ -9,10 +9,16 @@ import Mathlib.Data.Real.Basic
 
 import Mathlib.Tactic.Widget.Util
 
+/-! # Gcongr widget
+
+This file defines a `gcongr?` tactic that displays a widget panel allowing to generate
+a `gcongr` call with holes specified by selecting subexpressions in the goal.
+-/
+
 open Lean Meta Server ProofWidgets
 
 
-/-! # Gcongr widget -/
+
 
 def makeGCongrString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   (_ : SelectInsertParams) : MetaM (String × String) := do
@@ -41,6 +47,8 @@ def GCongrSelectionPanel : Component SelectInsertParams :=
   mk_rpc_widget% GCongrSelectionPanel.rpc
 
 open scoped Json in
+/-- Display a widget panel allowing to generate a `gcongr` call with holes specified by selecting
+subexpressions in the goal.-/
 elab stx:"gcongr?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
   savePanelWidgetInfo stx ``GCongrSelectionPanel $ pure $ json% { replaceRange: $(replaceRange) }

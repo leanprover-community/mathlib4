@@ -13,6 +13,13 @@ import ProofWidgets.Data.Html
 import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
 
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
+/-! # Selection panel utilities
+
+The mail declaration is `mkSelectionPanelRPC` which helps creating rpc methods for widgets
+generating tactic calls based on selected sub-expressions in the main goal.
+
+There are also some minor helper functions.
+-/
 
 open Lean Meta Server
 
