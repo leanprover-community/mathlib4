@@ -5,7 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Data.Polynomial.Eval
-import Mathlib.Data.Nat.Factorial.BigOperators
 
 #align_import data.polynomial.derivative from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
@@ -16,6 +15,7 @@ import Mathlib.Data.Nat.Factorial.BigOperators
  * `Polynomial.derivative`: The formal derivative of polynomials, expressed as a linear map.
 
 -/
+
 
 noncomputable section
 
