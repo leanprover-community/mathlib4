@@ -44,7 +44,7 @@ lemma toUnitHom_eq_iff (ψ : DirichletCharacter R n) :
 lemma eval_modulus_sub (x : ZMod n) :
   χ (n - x) = χ (-x) := by simp
 
-lemma periodic {m : ℕ} (hm : n ∣ m) (a : ℤ) : Function.Periodic χ m := by
+lemma periodic {m : ℕ} (hm : n ∣ m) : Function.Periodic χ m := by
   intro a
   rw [← ZMod.nat_cast_zmod_eq_zero_iff_dvd] at hm
   simp only [hm, add_zero]
