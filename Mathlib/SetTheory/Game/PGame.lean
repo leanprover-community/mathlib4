@@ -1111,6 +1111,7 @@ lemma Equiv.of_equiv {x y : PGame}
     (hl : ∀ i, x.moveLeft i ≈ y.moveLeft (l i)) (hr : ∀ i, x.moveRight i ≈ y.moveRight (r i)) :
     x ≈ y :=
   .of_fn l l.symm r r.symm hl (by simpa using hl <| l.symm ·) hr (by simpa using hr <| r.symm ·)
+#align pgame.equiv_of_mk_equiv SetTheory.PGame.Equiv.of_equiv
 
 theorem Equiv.ext' {x y : PGame}
     (hl : (∀ a ∈ₗ x, ∃ b ∈ₗ y, a ≈ b) ∧ (∀ b ∈ₗ y, ∃ a ∈ₗ x, a ≈ b))
