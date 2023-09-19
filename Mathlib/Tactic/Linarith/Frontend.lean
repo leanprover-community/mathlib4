@@ -354,7 +354,7 @@ optional arguments:
   hypotheses.
 * If `splitNe` is `true`, `linarith` will case split on disequality hypotheses.
   For a given `x ≠ y` hypothesis, `linarith` is run with both `x < y` and `x > y`,
-  and so this runs linarith exponentially many times with respect to th enumber of
+  and so this runs linarith exponentially many times with respect to the number of
   disequality hypotheses. (False by default.)
 * If `exfalso` is false, `linarith` will fail when the goal is neither an inequality nor `false`.
   (True by default.)
