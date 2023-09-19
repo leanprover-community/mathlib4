@@ -53,11 +53,6 @@ structure SelectInsertParams where
   replaceRange : Lsp.Range
   deriving SelectInsertParamsClass, RpcEncodable
 
-/- TODO: Find where this lemma hides. -/
-theorem Array.size_pos {α: Type _} {a : Array α} (h : ¬ a.isEmpty) : 0 < a.size := by
-  erw [decide_eq_true_eq] at h
-  exact Nat.pos_of_ne_zero h
-
 open scoped Jsx in open SelectInsertParamsClass Lean.SubExpr in
 /-- Helper function to create a widget allowing to select parts of the main goal
 and then display a link that will insert some tactic call.
@@ -83,10 +78,8 @@ def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
   (params : Params) → RequestM (RequestTask Html) :=
 fun params ↦ RequestM.asTask do
 let doc ← RequestM.readDoc
-if h : (goals params).isEmpty then
-    return <span>{.text "There is no goal to solve!"}</span> -- This shouldn't happen.
-else
-  let mainGoal := (goals params)[0]'(Array.size_pos h)
+if h : 0 < (goals params).size then
+  let mainGoal := (goals params)[0]
   let mainGoalName := mainGoal.mvarId.name
   let all := if onlyOne then "The selected sub-expression" else "All selected sub-expressions"
   let be_where := if onlyGoal then "in the main goal." else "in the main goal or its context."
@@ -115,3 +108,5 @@ else
       <summary className="mv2 pointer">{.text title}</summary>
       <div className="ml1">{inner}</div>
     </details>
+else
+  return <span>{.text "There is no goal to solve!"}</span> -- This shouldn't happen.
