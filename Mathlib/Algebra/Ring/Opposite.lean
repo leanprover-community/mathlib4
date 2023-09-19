@@ -26,6 +26,8 @@ instance distrib [Distrib α] : Distrib αᵐᵒᵖ :=
     right_distrib := fun x y z => unop_injective <| mul_add (unop z) (unop x) (unop y) }
 
 instance mulZeroClass [MulZeroClass α] : MulZeroClass αᵐᵒᵖ where
+  zero := 0
+  mul := (· * ·)
   zero_mul x := unop_injective <| mul_zero <| unop x
   mul_zero x := unop_injective <| zero_mul <| unop x
 

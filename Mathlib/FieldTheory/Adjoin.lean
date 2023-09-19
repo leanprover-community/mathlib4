@@ -245,9 +245,10 @@ instance isScalarTower_over_bot : IsScalarTower (⊥ : IntermediateField F E) F 
 #align intermediate_field.is_scalar_tower_over_bot IntermediateField.isScalarTower_over_bot
 
 /-- The top `IntermediateField` is isomorphic to the field.
-
 This is the intermediate field version of `Subalgebra.topEquiv`. -/
--- @[simps!] max recursion depth
+-- @[simps!] -- max recursion depth same as
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
+-- !4.234183.20.60simps.60.20maximum.20recursion.20depth
 def topEquiv : (⊤ : IntermediateField F E) ≃ₐ[F] E :=
   (Subalgebra.equivOfEq _ _ top_toSubalgebra).trans Subalgebra.topEquiv
 #align intermediate_field.top_equiv IntermediateField.topEquiv

@@ -236,8 +236,7 @@ theorem coe_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
 
 @[simp]
 theorem coe_linearMap_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L (M →ₗ[R] N)) :
-    (maxTrivLinearMapEquivLieModuleHom f : M →ₗ[R] N) = (f : M →ₗ[R] N) := by
-  ext; rfl
+    (maxTrivLinearMapEquivLieModuleHom f : M →ₗ[R] N) = (f : M →ₗ[R] N) := by ext; rfl
 #align lie_module.coe_linear_map_max_triv_linear_map_equiv_lie_module_hom LieModule.coe_linearMap_maxTrivLinearMapEquivLieModuleHom
 
 @[simp]
