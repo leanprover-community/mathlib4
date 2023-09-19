@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Richard M. Hill.
+Authors: Richard M. Hill.
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Derivation.Basic
@@ -163,20 +163,17 @@ variable {R} [CommSemiring R]
 theorem D_mul {f g} : D R (f * g) = f * D R g + g * D R f := by
   rw [Derivation.leibniz, smul_eq_mul, smul_eq_mul]
 
-@[simp]
+/-`simp` can prove this.-/
 theorem D_one : D R 1 = 0 := D_fun_one
 
-@[simp]
-theorem D_C (r : R) : D R (C R r) = 0 := D_fun_C r
+@[simp] theorem D_C (r : R) : D R (C R r) = 0 := D_fun_C r
 
-@[simp]
-theorem coeff_D (f : R⟦X⟧) (n : ℕ) : coeff R n (D R f) = coeff R (n + 1) f * (n + 1) :=
+@[simp] theorem coeff_D (f : R⟦X⟧) (n : ℕ) : coeff R n (D R f) = coeff R (n + 1) f * (n + 1) :=
   coeff_D_fun f n
 
 theorem D_coe (f : R[X]) : D R f = derivative f := D_fun_coe f
 
-@[simp]
-theorem D_X : D R (X : R⟦X⟧) = 1 := by
+@[simp] theorem D_X : D R (X : R⟦X⟧) = 1 := by
   ext
   rw [coeff_D, coeff_one, coeff_X, boole_mul]
   simp_rw [add_left_eq_self]
@@ -276,24 +273,20 @@ theorem D.ext {R} [CommRing R] [NoZeroSMulDivisors ℕ R] {f g} (hD : D R f = D 
     exact n.succ_ne_zero
 
 
-@[simp]
-theorem D_inv {R} [CommRing R] (f : R⟦X⟧ˣ) : D R f.inv = -f.inv ^ 2 * D R f := by
+@[simp] theorem D_inv {R} [CommRing R] (f : R⟦X⟧ˣ) :
+    D R ↑(f⁻¹) = -((f⁻¹ : R⟦X⟧ˣ) : R⟦X⟧) ^ 2 * D R f := by
   apply Derivation.leibniz_of_mul_eq_one
   simp only [Units.inv_eq_val_inv, Units.inv_mul]
 
 
-@[simp]
-theorem D_invOf {R} [CommRing R] (f : R⟦X⟧) [Invertible f] :
-  D R (⅟ f) = - (⅟ f) ^ 2 * D R f :=
-by
+@[simp] theorem D_invOf {R} [CommRing R] (f : R⟦X⟧) [Invertible f] :
+    D R (⅟ f) = - (⅟ f) ^ 2 * D R f := by
   rw [Derivation.leibniz_invOf, smul_eq_mul]
 
 /-
 The following theorem is stated only in the case that
 `R` is a field. This is because there is currently no
 instance of `Inv R⟦X⟧` for more general base rings `R`.
-
-In the more general case, use `D_inv` or `D_invOf` instead.
 -/
 @[simp]
 theorem D_inv' {R} [Field R] (f : R⟦X⟧) : D R f⁻¹ = -f⁻¹ ^ 2 * D R f := by
@@ -301,8 +294,8 @@ theorem D_inv' {R} [Field R] (f : R⟦X⟧) : D R f⁻¹ = -f⁻¹ ^ 2 * D R f :
   · suffices : f⁻¹ = 0
     . rw [this, pow_two, zero_mul, neg_zero, zero_mul, map_zero]
     · rwa [MvPowerSeries.inv_eq_zero]
-  · apply Derivation.leibniz_of_mul_eq_one
-    exact PowerSeries.inv_mul_cancel (h := h)
+  apply Derivation.leibniz_of_mul_eq_one
+  exact PowerSeries.inv_mul_cancel (h := h)
 
 
 
