@@ -276,13 +276,11 @@ theorem smul_quot [Algebra S R] {n : S} {a : R} :
   rfl
 #align ring_quot.smul_quot RingQuot.smul_quot
 
-instance instIsScalarTowerRingQuot [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
-    [IsScalarTower S T R] :
-    IsScalarTower S T (RingQuot r) :=
+instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
+    [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
 
-instance instSMulCommClassRingQuot [CommSemiring T] [Algebra S R] [Algebra T R]
-    [SMulCommClass S T R] :
+instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
 
@@ -396,10 +394,10 @@ instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) 
 instance {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
   { RingQuot.instCommSemiring r, RingQuot.instRing r with }
 
-instance instInhabitedRingQuot (r : R → R → Prop) : Inhabited (RingQuot r) :=
+instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩
 
-instance instAlgebraRingQuot [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
+instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
   smul := (· • ·)
   toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
   map_one' := by simp [← one_quot]
