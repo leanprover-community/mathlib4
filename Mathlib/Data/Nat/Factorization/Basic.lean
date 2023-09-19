@@ -798,26 +798,16 @@ def recOnPrimePow {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1)
     | 0 => fun _ => h0
     | 1 => fun _ => h1
     | k + 2 => fun hk => by
-      let p := (k + 2).minFac
-      have hp : Prime p := minFac_prime (succ_succ_ne_one k)
-      -- the awkward `let` stuff here is because `factorization` is noncomputable (Finsupp);
-      -- we get around this by using the computable `factors.count`, and rewriting when we want
-      -- to use the `factorization` API
-      let t := (k + 2).factors.count p
-      have ht : t = (k + 2).factorization p := factors_count_eq
-      have hpt : p ^ t ∣ k + 2 := by
-        rw [ht]
-        exact ord_proj_dvd _ _
-      have htp : 0 < t := by
-        rw [ht]
-        exact hp.factorization_pos_of_dvd (Nat.succ_ne_zero _) (minFac_dvd _)
-      convert h ((k + 2) / p ^ t) p t hp _ _ _ using 1
+      letI p := (k + 2).minFac
+      haveI hp : Prime p := minFac_prime (succ_succ_ne_one k)
+      letI t := (k + 2).factorization p
+      haveI hpt : p ^ t ∣ k + 2 := ord_proj_dvd _ _
+      haveI htp : 0 < t := hp.factorization_pos_of_dvd (k + 1).succ_ne_zero (k + 2).minFac_dvd
+      convert h ((k + 2) / p ^ t) p t hp _ htp (hk _ (Nat.div_lt_of_lt_mul _)) using 1
       · rw [Nat.mul_div_cancel' hpt]
-      · rw [Nat.dvd_div_iff hpt, ← pow_succ, ht]
+      · rw [Nat.dvd_div_iff hpt, ← pow_succ]
         exact pow_succ_factorization_not_dvd (k + 1).succ_ne_zero hp
-      · exact htp
-      · apply hk _ (Nat.div_lt_of_lt_mul _)
-        rw [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne]
+      · rw [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne]
         exact hp.one_lt
         -- Porting note: was
         -- simp [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne, hp.one_lt]
@@ -851,7 +841,7 @@ def recOnPrimeCoprime {P : ℕ → Sort*} (h0 : P 0) (hp : ∀ p n : ℕ, Prime 
 /-- Given `P 0`, `P 1`, `P p` for all primes, and a way to extend `P a` and `P b` to
 `P (a * b)`, we can define `P` for all natural numbers. -/
 @[elab_as_elim]
-noncomputable def recOnMul {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1) (hp : ∀ p, Prime p → P p)
+def recOnMul {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1) (hp : ∀ p, Prime p → P p)
     (h : ∀ a b, P a → P b → P (a * b)) : ∀ a, P a :=
   let hp : ∀ p n : ℕ, Prime p → P (p ^ n) := fun p n hp' =>
     n.recOn h1 (fun n hn => by rw [pow_succ]; apply h _ _ hn (hp p hp'))
