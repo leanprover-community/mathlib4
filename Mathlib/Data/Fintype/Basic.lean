@@ -1202,15 +1202,13 @@ to the universal finite set. -/
 @[simp]
 theorem _root_.Equiv.multiset_map_univ_eq_univ (e : α ≃ β) :
     map e univ.val = univ.val := by
+  classical
   ext a
-  rw [Function.bijective_iff_has_inverse] at hf
-  rcases hf with ⟨f_inv, hf_inv, hf_inv'⟩
-  have ha : a = f (f_inv a) := by
-    unfold Function.RightInverse Function.LeftInverse at hf_inv'
-    simp [hf_inv']
-  rw [count_univ, ha, count_map_eq_count']
-  simp only [mem_val, mem_univ, not_true, count_univ]
-  exact Function.LeftInverse.injective hf_inv
+  have ha : a = e (e.invFun a) := by
+    simp only [Equiv.invFun_as_coe, Equiv.apply_symm_apply]
+  rw [ha, count_map_eq_count']
+  simp only [Equiv.invFun_as_coe, mem_val, mem_univ, not_true, count_univ]
+  exact Equiv.injective e
 
 end Multiset
 
