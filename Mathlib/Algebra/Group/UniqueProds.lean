@@ -344,6 +344,97 @@ theorem of_mulOpposite (h : UniqueProds Gᵐᵒᵖ) : UniqueProds G where
 @[to_additive] instance [h : UniqueProds G] : UniqueProds Gᵐᵒᵖ :=
   of_mulOpposite <| (mulHom_image_iff <| MulEquiv.opOp G).mp h
 
+@[to_additive] private theorem toIsLeftCancelMul [UniqueProds G] : IsLeftCancelMul G where
+  mul_left_cancel a b1 b2 he := by
+    classical
+    have := mem_insert_self b1 {b2}
+    obtain ⟨a, ha, b, hb, hu⟩ := uniqueMul_of_nonempty ⟨a, mem_singleton_self a⟩ ⟨b1, this⟩
+    cases mem_singleton.mp ha
+    simp_rw [mem_insert, mem_singleton] at hb
+    obtain rfl | rfl := hb
+    · exact (hu ha (mem_insert_of_mem <| mem_singleton_self b2) he.symm).2.symm
+    · exact (hu ha this he).2
+
+open MulOpposite in
+@[to_additive] theorem toIsCancelMul [UniqueProds G] : IsCancelMul G where
+  mul_left_cancel := toIsLeftCancelMul.mul_left_cancel
+  mul_right_cancel _ _ _ h :=
+    op_injective <| toIsLeftCancelMul.mul_left_cancel _ _ _ <| unop_injective h
+
+/-! Two theorems in [Andrzej Strojnowski, *A note on u.p. groups*][Strojnowski1980] -/
+
+/-- `UniqueProds G` says that for any two nonempty `Finset`s `A` and `B` in `G`, `A × B`
+  contains a unique pair with the `UniqueMul` property. Strojnowski showed that if `G` is
+  a group, then we only need to check this when `A = B`.
+  Here we generalize the result to cancellative semigroups.
+  Non-cancellative counterexample: the AddMonoid {0,1} with 1+1=1. -/
+@[to_additive] theorem of_same {G} [Semigroup G] [IsCancelMul G]
+    (h : ∀ {A : Finset G}, A.Nonempty → ∃ a1 ∈ A, ∃ a2 ∈ A, UniqueMul A A a1 a2) :
+    UniqueProds G where
+  uniqueMul_of_nonempty {A B} hA hB := by
+    classical
+    obtain ⟨g1, h1, g2, h2, hu⟩ := h (hB.mul hA)
+    obtain ⟨b1, a1, hb1, ha1, rfl⟩ := mem_mul.mp h1
+    obtain ⟨b2, a2, hb2, ha2, rfl⟩ := mem_mul.mp h2
+    refine ⟨a1, ha1, b2, hb2, fun a b ha hb he => ?_⟩
+    specialize hu (mul_mem_mul hb1 ha) (mul_mem_mul hb ha2) _
+    · rw [mul_assoc b1, ← mul_assoc a, he, mul_assoc a1, ← mul_assoc b1]
+    exact ⟨mul_left_cancel hu.1, mul_right_cancel hu.2⟩
+
+/-- If a group has `UniqueProds`, then it actually has `TwoUniqueProds`.
+  For an example of a semigroup `G` embeddable into a group that has `UniqueProds`
+  but not `TwoUniqueProds`, see Example 10.13 in
+  [J. Okniński, *Semigroup Algebras*][Okninski1991]. -/
+@[to_additive] theorem toTwoUniqueProds_of_group {G}
+    [Group G] [UniqueProds G] : TwoUniqueProds G where
+  uniqueMul_of_one_lt_card {A B} hc := by
+    simp_rw [Nat.one_lt_mul_iff, card_pos] at hc
+    obtain ⟨a, ha, b, hb, hu⟩ := uniqueMul_of_nonempty hc.1 hc.2.1
+    let C := A.map ⟨_, mul_right_injective a⁻¹⟩ -- C = a⁻¹A
+    let D := B.map ⟨_, mul_left_injective b⁻¹⟩  -- D = Bb⁻¹
+    have hcard : 1 < C.card ∨ 1 < D.card; · simp_rw [card_map]; exact hc.2.2
+    have hC : 1 ∈ C := mem_map.mpr ⟨a, ha, inv_mul_self a⟩
+    have hD : 1 ∈ D := mem_map.mpr ⟨b, hb, mul_inv_self b⟩
+    suffices : ∃ c ∈ C, ∃ d ∈ D, (c ≠ 1 ∨ d ≠ 1) ∧ UniqueMul C D c d
+    · simp_rw [mem_product]
+      obtain ⟨c, hc, d, hd, hne, hu'⟩ := this
+      obtain ⟨a0, ha0, rfl⟩ := mem_map.mp hc
+      obtain ⟨b0, hb0, rfl⟩ := mem_map.mp hd
+      refine ⟨(_, _), ⟨ha0, hb0⟩, (a, b), ⟨ha, hb⟩, ?_, fun a' b' ha' hb' he => ?_, hu⟩
+      simp_rw [Function.Embedding.coeFn_mk, Ne, inv_mul_eq_one, mul_inv_eq_one] at hne
+      · rwa [Ne, Prod.mk.inj_iff, not_and_or, eq_comm]
+      specialize hu' (mem_map_of_mem _ ha') (mem_map_of_mem _ hb')
+      simp_rw [Function.Embedding.coeFn_mk, mul_left_cancel_iff, mul_right_cancel_iff] at hu'
+      rw [mul_assoc, ← mul_assoc a', he, mul_assoc, mul_assoc] at hu'
+      exact hu' rfl
+    classical
+    let _ := Finset.mul (α := G)              -- E = D⁻¹C, F = DC⁻¹
+    have := uniqueMul_of_nonempty (A := D.image (·⁻¹) * C) (B := D * C.image (·⁻¹)) ?_ ?_
+    · obtain ⟨e, he, f, hf, hu⟩ := this
+      clear_value C D
+      simp only [UniqueMul, mem_mul, mem_image] at he hf hu
+      obtain ⟨_, c1, ⟨d1, hd1, rfl⟩, hc1, rfl⟩ := he
+      obtain ⟨d2, _, hd2, ⟨c2, hc2, rfl⟩, rfl⟩ := hf
+      by_cases h12 : c1 ≠ 1 ∨ d2 ≠ 1
+      · refine ⟨c1, hc1, d2, hd2, h12, fun c3 d3 hc3 hd3 he => ?_⟩
+        specialize hu ⟨_, _, ⟨_, hd1, rfl⟩, hc3, rfl⟩ ⟨_, _, hd3, ⟨_, hc2, rfl⟩, rfl⟩
+        rw [mul_left_cancel_iff, mul_right_cancel_iff,
+            mul_assoc, ←mul_assoc c3, he, mul_assoc, mul_assoc] at hu; exact hu rfl
+      push_neg at h12; obtain ⟨rfl, rfl⟩ := h12
+      by_cases h21 : c2 ≠ 1 ∨ d1 ≠ 1
+      · refine ⟨c2, hc2, d1, hd1, h21, fun c4 d4 hc4 hd4 he => ?_⟩
+        specialize hu ⟨_, _, ⟨_, hd4, rfl⟩, hC, rfl⟩ ⟨_, _, hD, ⟨_, hc4, rfl⟩, rfl⟩
+        simpa only [mul_one, one_mul, ← mul_inv_rev, he, true_imp_iff, inv_inj, and_comm] using hu
+      push_neg at h21; obtain ⟨rfl, rfl⟩ := h21
+      rcases hcard with hC | hD
+      · obtain ⟨c, hc, hc1⟩ := exists_ne_of_one_lt_card hC 1
+        refine (hc1 ?_).elim
+        simpa using hu ⟨_, _, ⟨_, hD, rfl⟩, hc, rfl⟩ ⟨_, _, hD, ⟨_, hc, rfl⟩, rfl⟩
+      · obtain ⟨d, hd, hd1⟩ := exists_ne_of_one_lt_card hD 1
+        refine (hd1 ?_).elim
+        simpa using hu ⟨_, _, ⟨_, hd, rfl⟩, hC, rfl⟩ ⟨_, _, hd, ⟨_, hC, rfl⟩, rfl⟩
+    all_goals apply_rules [Nonempty.mul, Nonempty.image, Finset.Nonempty.map, hc.1, hc.2.1]
+
 open UniqueMul in
 @[to_additive] instance {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, UniqueProds (G i)] :
     UniqueProds (∀ i, G i) where
