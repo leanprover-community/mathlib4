@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Richard M. Hill.
+Author: Richard M. Hill
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 
@@ -49,17 +49,14 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
   · rfl
 
 @[simp] theorem trunc_mul_trunc {n} (f g : R ⟦X⟧) :
-  trunc n ( f * (trunc n g) : R⟦X⟧ ) = trunc n ( f * g )
-    := by
+  trunc n ( f * (trunc n g) : R⟦X⟧ ) = trunc n ( f * g ) := by
   rw [mul_comm, trunc_trunc_mul, mul_comm]
 
 theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
-    trunc n (trunc n f * trunc n g : R⟦X⟧) = trunc n (f * g) :=
-by
+    trunc n (trunc n f * trunc n g : R⟦X⟧) = trunc n (f * g) := by
   rw [trunc_trunc_mul, trunc_mul_trunc]
 
-@[simp]
-theorem trunc_trunc_pow (f : R⟦X⟧) (n a : ℕ) :
+@[simp] theorem trunc_trunc_pow (f : R⟦X⟧) (n a : ℕ) :
     trunc n ((trunc n f) ^ a : R[X]) = trunc n (f ^ a) := by
   induction a with
   | zero =>
@@ -69,8 +66,7 @@ theorem trunc_trunc_pow (f : R⟦X⟧) (n a : ℕ) :
       trunc_trunc_mul, ←trunc_trunc_mul_trunc, ←Polynomial.coe_pow, ih,
       trunc_trunc_mul_trunc]
 
-theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) :
-    trunc n (f : R⟦X⟧) = f := by
+theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R⟦X⟧) = f := by
   have this : support f ⊆ Ico 0 n
   · calc
       support f
@@ -120,8 +116,7 @@ theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n 
   · rfl
 
 
-@[simp]
-lemma trunc_zero' {f : R⟦X⟧} : trunc 0 f = 0 := rfl
+@[simp] lemma trunc_zero' {f : R⟦X⟧} : trunc 0 f = 0 := rfl
 
 theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] {s : S} {G : R →+* S} {n} {f : R⟦X⟧} :
     (trunc n f).eval₂ G s = ∑ i in range n, G (coeff R i f) * s ^ i := by
@@ -138,8 +133,7 @@ theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] {s : S} {G : R →+*
     rw [coeff_trunc, if_pos h]
 
 
-@[simp]
-theorem trunc_X {n} : trunc (n + 2) X = (Polynomial.X : R[X]) := by
+@[simp] theorem trunc_X {n} : trunc (n + 2) X = (Polynomial.X : R[X]) := by
   ext d
   rw [coeff_trunc, coeff_X]
   split_ifs with h₁ h₂

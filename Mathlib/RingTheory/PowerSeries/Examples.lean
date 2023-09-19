@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Richard M. Hill.
+Author: Richard M. Hill
 -/
 
 import Mathlib.RingTheory.PowerSeries.Derivative
@@ -45,8 +45,7 @@ def polylog (d : ℕ) : R⟦X⟧ := mk fun n ↦ (n : ℚ)⁻¹ ^ d
 
 local notation "exp" => exp _
 
-theorem geometricSeries_eq : geometricSeries (-1 : R) = (1 + X)⁻¹ :=
-by
+theorem geometricSeries_eq : geometricSeries (-1 : R) = (1 + X)⁻¹ := by
   rw [PowerSeries.eq_inv_iff_mul_eq_one, mul_add, mul_one]
   · ext n
     rw [map_add, geometricSeries]
@@ -60,13 +59,11 @@ by
     exact one_ne_zero
 
 
-theorem D_geometricSeries : D R (geometricSeries (-1)) = -(1 + X)⁻¹ ^ 2 :=
-by
+theorem D_geometricSeries : D R (geometricSeries (-1)) = -(1 + X)⁻¹ ^ 2 := by
   rw [geometricSeries_eq, PowerSeries.D_inv', map_add, D_one, D_X, zero_add, mul_one]
 
 @[simp]
-theorem D_exp : D R exp = exp :=
-by
+theorem D_exp : D R exp = exp := by
   ext n
   simp only [coeff_exp, coeff_D, factorial_succ, cast_mul, cast_add, cast_one, mul_comm, ←div_div,
     one_div, map_div₀, map_inv₀, map_natCast, map_add, map_one, smul_eq_mul, mul_div]
@@ -76,8 +73,7 @@ by
 
 @[simp]
 theorem exp_neg {f : R⟦X⟧} (hf : constantCoeff R f = 0) :
-  exp ∘ᶠ (-f) = (exp ∘ᶠ f)⁻¹ :=
-by
+    exp ∘ᶠ (-f) = (exp ∘ᶠ f)⁻¹ := by
   have : constantCoeff R (-f) = 0 := by rwa [map_neg, neg_eq_zero]
   rw [PowerSeries.eq_inv_iff_mul_eq_one]
   · apply D.ext
@@ -94,8 +90,7 @@ by
 
 @[simp]
 theorem exp_add (f g : R⟦X⟧) (hf : constantCoeff R f = 0) (hg : constantCoeff R g = 0) :
-  exp ∘ᶠ (f + g) = exp ∘ᶠ f * exp ∘ᶠ g :=
-by
+    exp ∘ᶠ (f + g) = exp ∘ᶠ f * exp ∘ᶠ g := by
   have eq : constantCoeff R (f + g) = 0 := by rw [map_add, hf, hg, zero_add]
   suffices : 1 = exp ∘ᶠ f * exp ∘ᶠ g * exp ∘ᶠ (-(f + g))
   · rwa [exp_neg, MvPowerSeries.eq_mul_inv_iff_mul_eq, one_mul] at this
@@ -162,8 +157,7 @@ theorem D_log_comp_exp : D R (logOneAdd ∘ᶠ (exp - 1)) = 1 := by
   · rw [D_log_comp_exp, D_X]
   · rw [constantCoeff_comp const_exp_sub_one, constantCoeff_X, constantCoeff_logOneAdd]
 
-theorem log_comp_mul (f g : R⟦X⟧) (hf : constantCoeff R f = 0)
-    (hg : constantCoeff R g = 0) :
+theorem log_comp_mul (f g : R⟦X⟧) (hf : constantCoeff R f = 0) (hg : constantCoeff R g = 0) :
     (logOneAdd ∘ᶠ ((1 + f) * (1 + g) - 1)) = logOneAdd ∘ᶠ f + logOneAdd ∘ᶠ g := by
   have eq : constantCoeff R ((1 + f) * (1 + g) - 1) = 0 := by
     rw [map_sub, map_mul, map_add, map_add, hf, hg, map_one, add_zero, mul_one, sub_self]
@@ -198,14 +192,11 @@ theorem log_comp_mul (f g : R⟦X⟧) (hf : constantCoeff R f = 0)
   · rw [constantCoeff_comp constantCoeff_logOneAdd, constantCoeff_exp, map_add, constantCoeff_one,
       constantCoeff_X, add_zero]
 
-theorem constantCoeff_polylog_succ (n : ℕ) :
-  constantCoeff R (polylog n.succ) = 0 :=
-by
+theorem constantCoeff_polylog_succ (n : ℕ) : constantCoeff R (polylog n.succ) = 0 := by
   rw [polylog, ←coeff_zero_eq_constantCoeff, coeff_mk, pow_succ,
     cast_zero, inv_zero, zero_mul, Rat.cast_zero]
 
-theorem D_polylog_one : D R (polylog 1) = (1 - X)⁻¹ :=
-by
+theorem D_polylog_one : D R (polylog 1) = (1 - X)⁻¹ := by
   rw [PowerSeries.eq_inv_iff_mul_eq_one, mul_sub, mul_one]
   · ext m
     cases m with
@@ -227,8 +218,7 @@ by
 
 
 
-theorem X_mul_X_polylog_succ (d : ℕ) : X * D R (polylog (d + 2)) = polylog (d + 1) :=
-by
+theorem X_mul_X_polylog_succ (d : ℕ) : X * D R (polylog (d + 2)) = polylog (d + 1) := by
   ext n
   cases n with
   | zero =>
