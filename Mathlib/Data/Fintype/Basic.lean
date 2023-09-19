@@ -1203,7 +1203,6 @@ to the universal finite set. -/
 theorem map_univ_val_equiv (e : α ≃ β) :
     map e univ.val = univ.val := by
   rw [←congr_arg Finset.val (Finset.map_univ_equiv e), Finset.map_val, Equiv.coe_toEmbedding]
-  done
 
 end Multiset
 
