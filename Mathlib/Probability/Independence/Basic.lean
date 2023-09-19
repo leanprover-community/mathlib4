@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Independence.Kernel
 
-#align_import probability.independence.basic from "leanprover-community/mathlib"@"2f8347015b12b0864dfaf366ec4909eb70c78740"
+#align_import probability.independence.basic from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
@@ -68,13 +68,13 @@ Part A, Chapter 4.
 
 set_option autoImplicit true
 
-open MeasureTheory MeasurableSpace
+open MeasureTheory MeasurableSpace Set
 
 open scoped BigOperators MeasureTheory ENNReal
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type*}
+variable {Ω ι β γ : Type*} {κ : ι → Type*}
 
 section Definitions
 
@@ -145,11 +145,21 @@ def IndepFun {β γ} [MeasurableSpace Ω] [MeasurableSpace β] [MeasurableSpace 
 end Definitions
 
 section Definition_lemmas
+variable {π : ι → Set (Set Ω)} {m : ι → MeasurableSpace Ω} {μ : Measure Ω} {S : Finset ι}
+  {s : ι → Set Ω}
 
 lemma iIndepSets_iff [MeasurableSpace Ω] (π : ι → Set (Set Ω)) (μ : Measure Ω) :
     iIndepSets π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
       μ (⋂ i ∈ s, f i) = ∏ i in s, μ (f i) := by
   simp only [iIndepSets, kernel.iIndepSets, ae_dirac_eq, Filter.eventually_pure, kernel.const_apply]
+
+lemma iIndepSets.meas_biInter [MeasurableSpace Ω] (h : iIndepSets π μ) (s : Finset ι)
+    {f : ι → Set Ω} (hf : ∀ i, i ∈ s → f i ∈ π i) : μ (⋂ i ∈ s, f i) = ∏ i in s, μ (f i) := by
+  (iIndepSets_iff _ _).1 h s hf
+
+lemma iIndepSets.meas_iInter [Fintype ι] (h : iIndepSets π μ) (hf : ∀ i, f i ∈ π i) :
+    μ (⋂ i, f i) = ∏ i, μ (f i) := by simp [←h.meas_biInter _ fun i _ ↦ hf _]
+#align probability_theory.Indep_sets.meas_Inter ProbabilityTheory.iIndepSets.meas_iInter
 
 lemma IndepSets_iff [MeasurableSpace Ω] (s1 s2 : Set (Set Ω)) (μ : Measure Ω) :
     IndepSets s1 s2 μ ↔ ∀ t1 t2 : Set Ω, t1 ∈ s1 → t2 ∈ s2 → (μ (t1 ∩ t2) = μ t1 * μ t2) := by
@@ -159,10 +169,19 @@ lemma iIndep_iff_iIndepSets (m : ι → MeasurableSpace Ω) [MeasurableSpace Ω]
     iIndep m μ ↔ iIndepSets (fun x ↦ {s | MeasurableSet[m x] s}) μ := by
   simp only [iIndep, iIndepSets, kernel.iIndep]
 
+lemma iIndep.iIndepSets' {m : ι → MeasurableSpace Ω} (hμ : iIndep m μ) :
+    iIndepSets (fun x ↦ {s | MeasurableSet[m x] s}) μ := (iIndep_iff_iIndepSets _ _).1 hμ
+
 lemma iIndep_iff (m : ι → MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω) :
     iIndep m μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → MeasurableSet[m i] (f i)),
       μ (⋂ i ∈ s, f i) = ∏ i in s, μ (f i) := by
   simp only [iIndep_iff_iIndepSets, iIndepSets_iff]; rfl
+
+lemma iIndep.meas_biInter (hμ : iIndep m μ) (hs : ∀ i, i ∈ S → MeasurableSet[m i] (s i)) :
+    μ (⋂ i ∈ S, s i) = ∏ i in S, μ (s i) := (iIndep_iff _ _).1 hμ _ hs
+
+lemma iIndep.meas_iInter [Fintype ι] (hμ : iIndep m μ) (hs : ∀ i, MeasurableSet[m i] (s i)) :
+    μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [←hμ.meas_biInter fun _ _ ↦ hs _]
 
 lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω ) :
     Indep m₁ m₂ μ ↔ IndepSets {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} μ := by
@@ -197,12 +216,23 @@ lemma iIndepFun_iff_iIndep [MeasurableSpace Ω] {β : ι → Type*}
     iIndepFun m f μ ↔ iIndep (fun x ↦ (m x).comap (f x)) μ := by
   simp only [iIndepFun, iIndep, kernel.iIndepFun]
 
+protected lemma iIndepFun.iIndep {m : ∀ i, MeasurableSpace (κ i)} (hf : iIndepFun m f μ) :
+    iIndep (fun x ↦ (m x).comap (f x)) μ := hf
+
 lemma iIndepFun_iff [MeasurableSpace Ω] {β : ι → Type*}
     (m : ∀ x : ι, MeasurableSpace (β x)) (f : ∀ x : ι, Ω → β x) (μ : Measure Ω) :
     iIndepFun m f μ ↔ ∀ (s : Finset ι) {f' : ι → Set Ω}
       (_H : ∀ i, i ∈ s → MeasurableSet[(m i).comap (f i)] (f' i)),
       μ (⋂ i ∈ s, f' i) = ∏ i in s, μ (f' i) := by
   simp only [iIndepFun_iff_iIndep, iIndep_iff]
+
+lemma iIndepFun.meas_biInter {m : ∀ i, MeasurableSpace (κ i)} (hf : iIndepFun m f μ)
+  (hs : ∀ i, i ∈ S → MeasurableSet[(m i).comap (f i)] (s i)) :
+    μ (⋂ i ∈ S, s i) = ∏ i in S, μ (s i) := hf.iIndep.meas_biInter hs
+
+lemma iIndepFun.meas_iInter [Fintype ι] {m : ∀ i, MeasurableSpace (κ i)} (hf : iIndepFun m f μ)
+  (hs : ∀ i, MeasurableSet[(m i).comap (f i)] (s i)) :
+    μ (⋂ i, s i) = ∏ i, μ (s i) := hf.iIndep.meas_iInter hs
 
 lemma IndepFun_iff_Indep [MeasurableSpace Ω] [mβ : MeasurableSpace β]
     [mγ : MeasurableSpace γ] (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) :
@@ -214,6 +244,10 @@ lemma IndepFun_iff {β γ} [MeasurableSpace Ω] [mβ : MeasurableSpace β] [mγ 
     IndepFun f g μ ↔ ∀ t1 t2, MeasurableSet[MeasurableSpace.comap f mβ] t1
       → MeasurableSet[MeasurableSpace.comap g mγ] t2 → μ (t1 ∩ t2) = μ t1 * μ t2 := by
   rw [IndepFun_iff_Indep, Indep_iff]
+
+lemma IndepFun.meas_inter [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ] {f : Ω → β} {g : Ω → γ}
+  (hfg : IndepFun f g μ) {s t : Set Ω} (hs : MeasurableSet[mβ.comap f] s)
+  (ht : MeasurableSet[mγ.comap g] t) : μ (s ∩ t) = μ s * μ t := (IndepFun_iff _ _ _).1 hfg _ _ hs ht
 
 end Definition_lemmas
 
@@ -520,6 +554,40 @@ theorem indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : Measur
     Indep m₁ m₂ μ ↔ ∀ s t, MeasurableSet[m₁] s → MeasurableSet[m₂] t → IndepSet s t μ :=
   kernel.indep_iff_forall_indepSet m₁ m₂ _ _
 #align probability_theory.indep_iff_forall_indep_set ProbabilityTheory.indep_iff_forall_indepSet
+
+theorem iIndep_comap_mem_iff :
+    iIndep (fun i => MeasurableSpace.comap (· ∈ f i) ⊤) μ ↔ iIndepSet f μ := by
+  simp_rw [← generate_from_singleton]; rfl
+#align probability_theory.Indep_comap_mem_iff ProbabilityTheory.iIndep_comap_mem_iff
+
+alias ⟨_, Indep_set.Indep_comap_mem⟩ := Indep_comap_mem_iff
+#align probability_theory.Indep_set.Indep_comap_mem ProbabilityTheory.iIndepSet.iIndep_comap_mem
+
+theorem iIndepSets_singleton_iff :
+    iIndepSets (fun i => {f i}) μ ↔ ∀ t, μ (⋂ i ∈ t, f i) = ∏ i in t, μ (f i) :=
+  forall_congr' fun t => ⟨fun h => h fun _ _ => mem_singleton _, fun h f hf => by
+      refine' Eq.trans _ (h.trans $ Finset.prod_congr rfl fun i hi ↦ congr_arg _ $ (hf i hi).symm)
+      rw [Inter₂_congr hf]⟩
+#align probability_theory.Indep_sets_singleton_iff ProbabilityTheory.iIndepSets_singleton_iff
+
+variable [IsProbabilityMeasure μ]
+
+theorem iIndepSet_iff_iIndepSets_singleton (hf : ∀ i, MeasurableSet (f i)) :
+    iIndepSet f μ ↔ iIndepSets (fun i => {f i}) μ :=
+  ⟨iIndep.iIndepSets fun _ => rfl,
+    IndepSets.indep _ (fun i => generateFrom_le <| by rintro t (rfl : t = _); exact hf _) _
+      (fun _ => IsPiSystem.singleton _) fun _ => rfl⟩
+#align probability_theory.Indep_set_iff_Indep_sets_singleton ProbabilityTheory.IndepSet_iff_iIndepSets_singleton
+
+theorem iIndepSet_iff_meas_biInter (hf : ∀ i, MeasurableSet (f i)) :
+    iIndepSet f μ ↔ ∀ s, μ (⋂ i ∈ s, f i) = ∏ i in s, μ (f i) :=
+  (iIndepSet_iff_iIndepSets_singleton hf).trans iIndepSets_singleton_iff
+#align probability_theory.Indep_set_iff_measure_Inter_eq_prod ProbabilityTheory.iIndepSet_iff_meas_biInter
+
+theorem iIndepSets.iIndepSet_of_mem (hfπ : ∀ i, f i ∈ π i) (hf : ∀ i, MeasurableSet (f i))
+    (hπ : iIndepSets π μ) : iIndepSet f μ :=
+  (iIndepSet_iff_measure_iInter_eq_prod hf).2 fun t => hπ _ fun i _ => hfπ _
+#align probability_theory.Indep_sets.Indep_set_of_mem ProbabilityTheory.iIndepSets.iIndepSet_of_mem
 
 end IndepSet
 
