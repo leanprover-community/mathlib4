@@ -126,8 +126,12 @@ variable {𝕂 : Type*} [NontriviallyNormedField 𝕂] [CompleteSpace 𝕂]
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has strict derivative
 `exp 𝕂 x` at any point `x` in the disk of convergence. -/
 theorem hasStrictDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝕂}
-    (hx : x ∈ EMetric.ball (0 : 𝕂) (expSeries 𝕂 𝕂).radius) : HasStrictDerivAt (exp 𝕂) (exp 𝕂 x) x :=
-  by simpa using (hasStrictFDerivAt_exp_of_mem_ball hx).hasStrictDerivAt
+    (hx : x ∈ EMetric.ball (0 : 𝕂) (expSeries 𝕂 𝕂).radius) :
+    HasStrictDerivAt (exp 𝕂) (exp 𝕂 x) x := by
+    have := (hasStrictFDerivAt_exp_of_mem_ball hx).hasStrictDerivAt
+    dsimp at this
+    rw [Pi.smul_apply] at this
+    simpa using this
 #align has_strict_deriv_at_exp_of_mem_ball hasStrictDerivAt_exp_of_mem_ball
 
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has derivative
