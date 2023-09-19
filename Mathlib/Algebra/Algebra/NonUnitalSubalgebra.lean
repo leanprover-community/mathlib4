@@ -233,15 +233,15 @@ instance instIsScalarTower' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTow
     IsScalarTower R' R S :=
   S.toSubmodule.isScalarTower
 
-instance [IsScalarTower R A A] : IsScalarTower R S S
-    where smul_assoc r x y := Subtype.ext <| smul_assoc r (x : A) (y : A)
+instance [IsScalarTower R A A] : IsScalarTower R S S where
+  smul_assoc r x y := Subtype.ext <| smul_assoc r (x : A) (y : A)
 
 instance instSMulCommClass' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
-    [SMulCommClass R' R A] : SMulCommClass R' R S
-    where smul_comm r' r s := Subtype.ext <| smul_comm r' r (s : A)
+    [SMulCommClass R' R A] : SMulCommClass R' R S where
+  smul_comm r' r s := Subtype.ext <| smul_comm r' r (s : A)
 
-instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S
-    where smul_comm r x y := Subtype.ext <| smul_comm r (x : A) (y : A)
+instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
+  smul_comm r x y := Subtype.ext <| smul_comm r (x : A) (y : A)
 
 end
 
@@ -320,7 +320,8 @@ theorem mem_map {S : NonUnitalSubalgebra R A} {f : F} {y : B} : y ∈ map f S �
   NonUnitalSubsemiring.mem_map
 
 theorem map_toSubmodule {S : NonUnitalSubalgebra R A} {f : F} :
-    (map f S).toSubmodule = Submodule.map (f : A →ₗ[R] B) S.toSubmodule :=
+    -- TODO: introduce a better coercion from `NonUnitalAlgHomClass` to `LinearMap`
+    (map f S).toSubmodule = Submodule.map ((↑f : A →+[R] B) : A →ₗ[R] B) S.toSubmodule :=
   SetLike.coe_injective rfl
 
 theorem map_toNonUnitalSubsemiring {S : NonUnitalSubalgebra R A} {f : F} :
@@ -451,7 +452,7 @@ theorem injective_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x 
     Function.Injective (NonUnitalAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
   ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
 
-/-- Restrict the codomain of an alg_hom `f` to `f.range`.
+/-- Restrict the codomain of an `NonUnitalAlgHom` `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
 @[reducible]

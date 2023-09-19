@@ -43,7 +43,7 @@ open scoped Classical BigOperators Topology Real
   and `f u - f 0` from the bounds on `f'` (note that `f 0 = 0`). -/
 theorem tendsto_sum_pi_div_four :
     Tendsto (fun k => ∑ i in Finset.range k, (-(1 : ℝ)) ^ i / (2 * i + 1)) atTop (𝓝 (π / 4)) := by
-  rw [tendsto_iff_norm_tendsto_zero, ← tendsto_zero_iff_norm_tendsto_zero]
+  rw [tendsto_iff_norm_sub_tendsto_zero, ← tendsto_zero_iff_norm_tendsto_zero]
   -- (1) We introduce a useful sequence `u` of values in [0,1], then prove that another sequence
   --     constructed from `u` tends to `0` at `+∞`
   let u := fun k : ℕ => (k : NNReal) ^ (-1 / (2 * (k : ℝ) + 1))
