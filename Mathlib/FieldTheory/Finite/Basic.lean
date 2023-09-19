@@ -272,7 +272,7 @@ theorem sum_subgroup_units {G : Subgroup Kˣ} [Fintype G] [Decidable (G = ⊥)] 
 --   exact Equiv.inv (sorryAx (Type ?u.888298) true)
 
 theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
-    [DecidableEq F] {G : Subgroup Fˣ} [Fintype G] {k : ℕ} (k_pos : 0 < k)
+    {G : Subgroup Fˣ} [Fintype G] {k : ℕ} (k_pos : 0 < k)
     (k_lt_card_G : k < Fintype.card G) : ∑ x : G, ((x : Fˣ) : F) ^ k = 0 := by
   rcases (exists_pow_ne_one_of_isCyclic k_pos k_lt_card_G) with ⟨a, ha⟩
   rw [Finset.sum_eq_multiset_sum]
