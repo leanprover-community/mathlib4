@@ -363,9 +363,10 @@ open MulOpposite in
 
 /-! Two theorems in [Andrzej Strojnowski, *A note on u.p. groups*][Strojnowski1980] -/
 
-/-- If unique pairs exist in a group whenever the two `Finset`s are the same,
-  then they also exist when they are different, i.e. the group has `UniqueProds`;
-  here we generalize it to arbitrary cancellative semigroups.
+/-- `UniqueProds G` says that for any two nonempty `Finset`s `A` and `B` in `G`, `A × B` 
+  contains a unique pair with the `UniqueMul` property. Strojnowski showed that if `G` is
+  a group, then we only need to check this when `A = B`. 
+  Here we generalize the result to cancellative semigroups.
   Non-cancellative counterexample: the AddMonoid {0,1} with 1+1=1. -/
 @[to_additive] theorem of_same {G} [Semigroup G] [IsCancelMul G]
     (h : ∀ {A : Finset G}, A.Nonempty → ∃ a1 ∈ A, ∃ a2 ∈ A, UniqueMul A A a1 a2) :
