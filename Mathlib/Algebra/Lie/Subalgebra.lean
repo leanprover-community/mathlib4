@@ -193,7 +193,8 @@ theorem mk_coe (S : Set L) (h₁ h₂ h₃ h₄) :
   rfl
 #align lie_subalgebra.mk_coe LieSubalgebra.mk_coe
 
-@[simp, nolint simpVarHead]
+@[simp]
+-- @[simp, nolint simpVarHead]
 theorem coe_to_submodule_mk (p : Submodule R L) (h) :
     (({ p with lie_mem' := h } : LieSubalgebra R L) : Submodule R L) = p := by
   cases p

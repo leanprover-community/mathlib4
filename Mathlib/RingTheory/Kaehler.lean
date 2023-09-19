@@ -664,7 +664,7 @@ noncomputable def KaehlerDifferential.mapBaseChange : B ⊗[A] Ω[A⁄R] →ₗ[
 #align kaehler_differential.map_base_change KaehlerDifferential.mapBaseChange
 
 -- Note: cannot find this one after changes in #6965, slightly over the limit
-set_option synthInstance.maxHeartbeats 21000 in
+-- set_option synthInstance.maxHeartbeats 21000 in
 @[simp]
 theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
     KaehlerDifferential.mapBaseChange R A B (x ⊗ₜ y) = x • KaehlerDifferential.map R R A B y := by
