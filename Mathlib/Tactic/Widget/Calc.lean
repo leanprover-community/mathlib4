@@ -162,41 +162,17 @@ def getCalcSteps' (steps : TSyntax ``calcSteps) : TermElabM (Array (TSyntax ``ca
 /-- Elaborator for calc steps. Compared to `elabCalcSteps` from core, this inserts a
 calc widget for each proof.  -/
 def elabCalcStepsWithWidgets (indent : Nat) (steps : TSyntax ``calcSteps) : TermElabM Expr := do
-  let mut result? := none
-  let mut prevRhs? := none
   let mut isFirst := true
   for step in ← getCalcSteps' steps do
-
-    let `(calcStep| $pred := $proofTerm) := step | unreachable!
-    let type ← elabType <| ← do
-      if let some prevRhs := prevRhs? then
-        annotateFirstHoleWithType pred (← inferType prevRhs)
-      else
-        pure pred
-    let some (_, lhs, rhs) ← getCalcRelation? type |
-      throwErrorAt pred "invalid 'calc' step, relation expected{indentExpr type}"
-
     let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
+    let `(calcStep| $(_) := $proofTerm) := step | unreachable!
     let json := open scoped ProofWidgets.Json in json% {"replaceRange": $(replaceRange),
                                                         "isFirst": $(isFirst),
                                                         "indent": $(indent)}
     ProofWidgets.savePanelWidgetInfo proofTerm `CalcPanel (pure json)
     isFirst := false
+  elabCalcSteps steps
 
-    if let some prevRhs := prevRhs? then
-      unless (← isDefEqGuarded lhs prevRhs) do
-        let L := indentD m!"{lhs} : {← inferType lhs}"
-        let R := indentD m!"{prevRhs} : {← inferType prevRhs}"
-        throwErrorAt pred "invalid calc step, left-hand-side is{L}\nprevious right-hand-side is{R}"
-    let proof ← withFreshMacroScope do elabTermEnsuringType proofTerm type
-    result? := some <| ← do
-      if let some (result, resultType) := result? then
-        synthesizeSyntheticMVarsUsingDefault
-        withRef pred do mkCalcTrans result resultType proof type
-      else
-        pure (proof, type)
-    prevRhs? := rhs
-  return result?.get!.1
 end Lean.Elab.Term
 
 
