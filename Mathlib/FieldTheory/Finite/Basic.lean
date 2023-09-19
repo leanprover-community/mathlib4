@@ -285,7 +285,9 @@ theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     rw [as_comp, ← Multiset.map_map]
     congr
     rw [eq_comm]
-    exact Multiset.map_univ_eq_univ_of_bijective (fun x ↦ x * a) (Group.mulRight_bijective a)
+    apply Equiv.multiset_map_univ_eq_univ
+    done
+
   have h_multiset_map_sum :
     (Multiset.map (fun x : G => ((x : Fˣ) : F) ^ k) Finset.univ.val).sum =
       (Multiset.map (fun x : G => ((x : Fˣ) : F) ^ k * (a.val : F) ^ k) Finset.univ.val).sum
