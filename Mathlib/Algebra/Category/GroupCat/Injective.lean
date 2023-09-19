@@ -44,21 +44,15 @@ set_option linter.uppercaseLean3 false
 
 namespace AddCommGroupCat
 
-theorem injective_of_injective_as_module [h : Injective (⟨A⟩ : ModuleCat ℤ)] :
+theorem injective_as_module_iff : Injective (⟨A⟩ : ModuleCat ℤ) ↔
     Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
-  let e := (forget₂ (ModuleCat ℤ) AddCommGroupCat).asEquivalence
-  e.toAdjunction.injective_of_map_injective _ (h.of_iso <| e.unitIso.app ⟨A⟩)
-#align AddCommGroup.injective_of_injective_as_module AddCommGroupCat.injective_of_injective_as_module
-
-theorem injective_as_module_of_injective [h : Injective (⟨A,inferInstance⟩ : AddCommGroupCat)] :
-    Injective (⟨A⟩ : ModuleCat ℤ) :=
-  let e := (forget₂ (ModuleCat ℤ) AddCommGroupCat).asEquivalence
-  e.symm.toAdjunction.injective_of_map_injective _ h
-#align AddCommGroup.injective_as_module_of_injective_as_Ab AddCommGroupCat.injective_as_module_of_injective
+  ((forget₂ (ModuleCat ℤ) AddCommGroupCat).asEquivalence.map_injective_iff ⟨A⟩).symm
+#noalign AddCommGroup.injective_of_injective_as_module
+#noalign AddCommGroup.injective_as_module_of_injective_as_Ab
 
 instance injective_of_divisible [DivisibleBy A ℤ] :
     Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
-  @injective_of_injective_as_module A _ <|
+  (injective_as_module_iff A).mp <|
     @Module.injective_object_of_injective_module ℤ _ A _ _ <|
       Module.Baer.injective fun I g ↦ by
         rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩
