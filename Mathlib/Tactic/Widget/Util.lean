@@ -1,6 +1,8 @@
 import Lean.Meta.ExprLens
 import Lean.Elab.PreDefinition.Structural.SmartUnfolding
 
+import Std.Data.Nat.Init.Lemmas
+
 import ProofWidgets.Component.MakeEditLink
 import ProofWidgets.Data.Html
 import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
@@ -40,23 +42,57 @@ structure SelectInsertParams where
   replaceRange : Lsp.Range
   deriving SelectInsertParamsClass, RpcEncodable
 
+/- TODO: Find where this lemma hides. -/
+theorem Array.size_pos {α: Type _} {a : Array α} (h : ¬ a.isEmpty) : 0 < a.size := by
+  erw [decide_eq_true_eq] at h
+  exact Nat.pos_of_ne_zero h
 
-open scoped Jsx in open SelectInsertParamsClass in
+open scoped Jsx in open SelectInsertParamsClass Lean.SubExpr in
+/-- Helper function to create a widget allowing to select parts of the main goal
+and then display a link that will insert some tactic call.
+
+The main argument is `mkCmdStr` which is a function creating the link text and the tactic call text.
+The `helpMsg` argument is displayed when nothing is selected and `title` is used as a panel title.
+The `onlyGoal` argument says whether the selected has to be in the goal. Otherwise it
+can be in the local context.
+The `onlyOne` argument says whether one should select only one sub-expression.
+In every cases, all selected subexpressions should be in the main goal or its local context.
+
+The last arguments `params` should not be provided so that the output
+has type `Params → RequestM (RequestTask Html)` and can be fed to the `mk_rpc_widget%`
+elaborator.
+
+Note that the `pos` and `goalType` arguments to `mkCmdStr` could be extracted for the `Params`
+argument but that extraction would happen in every example, hence it is factored out here.
+We also make sure `mkCmdStr` is executed in the right context.
+ -/
 def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
-  (mkCmdStr : (pos : Array Lean.SubExpr.GoalsLocation) → (goalType : Expr) → Params → MetaM (String × String))
-  (helpMsg : String) (title : String) (params : Params) : RequestM (RequestTask Html) :=
-RequestM.asTask do
-  let doc ← RequestM.readDoc
+  (mkCmdStr : (pos : Array GoalsLocation) → (goalType : Expr) → Params → MetaM (String × String))
+  (helpMsg : String) (title : String) (onlyGoal := true) (onlyOne := false) :
+  (params : Params) → RequestM (RequestTask Html) :=
+fun params ↦ RequestM.asTask do
+let doc ← RequestM.readDoc
+if h : (goals params).isEmpty then
+    return <span>{.text "There is no goal to solve!"}</span> -- This shouldn't happen.
+else
+  let mainGoal := (goals params)[0]'(Array.size_pos h)
+  let mainGoalName := mainGoal.mvarId.name
+  let all := if onlyOne then "The selected sub-expression" else "All selected sub-expressions"
+  let be_where := if onlyGoal then "in the main goal." else "in the main goal or its context."
+  let errorMsg := s!"{all} should be {be_where}"
   let inner : Html ← (do
+    if onlyOne && (selectedLocations params).size > 1 then
+      return <span>{.text "You should select only one sub-expression"}</span>
+    for selectedLocation in selectedLocations params do
+      if selectedLocation.mvarId.name != mainGoalName then
+        return <span>{.text errorMsg}</span>
+      else if onlyGoal then
+        if !(selectedLocation.loc matches (.target _)) then
+          return <span>{.text errorMsg}</span>
     if (selectedLocations params).isEmpty then
       return <span>{.text helpMsg}</span>
-    let some selectedLoc := (selectedLocations params)[0]? | unreachable!
-
-    let some g := findGoalForLocation (goals params) selectedLoc
-      | throw $ .invalidParams
-          s!"could not find goal for location {toJson selectedLoc}"
-    g.ctx.val.runMetaM {} do
-      let md ← g.mvarId.getDecl
+    mainGoal.ctx.val.runMetaM {} do
+      let md ← mainGoal.mvarId.getDecl
       let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
       Meta.withLCtx lctx md.localInstances do
         let (linkText, newCode) ← mkCmdStr (selectedLocations params) md.type params
