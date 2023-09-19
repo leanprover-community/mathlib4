@@ -148,7 +148,7 @@ noncomputable def svdS' (A : Matrix (Fin M) (Fin N) 𝕂) :
   (reindex (eigenRowEquiv A) (eigenRowEquiv A))
     (diagonal (isHermitian_mul_conjTranspose_self A).eigenvalues)
 
-lemma U_columns' (A : Matrix (Fin M) (Fin N) 𝕂) :
+lemma reindex_eigenRowEquiv_eigenvectorMatrix (A : Matrix (Fin M) (Fin N) 𝕂) :
   ((reindex (Equiv.refl (Fin M)) (eigenRowEquiv A))
     (isHermitian_mul_conjTranspose_self A).eigenvectorMatrix) = fromColumns A.svdU₁' A.svdU₂ := by
   rw [svdU₂, svdU₁']
@@ -251,7 +251,7 @@ lemma S'_block (A : Matrix (Fin M) (Fin N) 𝕂) :
   rw [←svdS', ←fromBlocks_toBlocks (A.svdS'), ←S'_toBlocks₁₁, S'_toBlocks₁₂, S'_toBlocks₂₁,
     S'_toBlocks₂₂]
 
-lemma V_columns (A : Matrix (Fin M) (Fin N) 𝕂) :
+lemma reindex_eigenColumnEquiv_eigenvectorMatrix (A : Matrix (Fin M) (Fin N) 𝕂) :
     (reindex (Equiv.refl (Fin N)) (eigenColumnEquiv A))
       (isHermitian_transpose_mul_self A).eigenvectorMatrix =
       fromColumns A.svdV₁ A.svdV₂ := by
@@ -277,7 +277,8 @@ lemma V₁_mul_μ_mul_V₁_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
     ← @IsROrC.algebraMap_eq_ofReal 𝕂]
   simp_rw [Function.comp]
   rw [← diagonal_map, submatrix_map, ← reindex_apply, ← Equiv.coe_refl, ← Equiv.refl_symm,
-    ← reindex_apply, ←conjTranspose_submatrix, ← reindex_apply, S_block, V_columns,
+    ← reindex_apply, ←conjTranspose_submatrix, ← reindex_apply, S_block,
+    reindex_eigenColumnEquiv_eigenvectorMatrix,
     conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromBlocks_map, fromBlocks_mul_fromRows,
     fromColumns_mul_fromRows]
   simp only [map_zero, Matrix.map_zero, Matrix.zero_mul, add_zero, Matrix.mul_zero]
@@ -298,7 +299,7 @@ lemma reduced_spectral_theorem' (A : Matrix (Fin M) (Fin N) 𝕂) :
   simp_rw [Function.comp]
   rw [← diagonal_map, submatrix_map,
     ← reindex_apply, ← Equiv.coe_refl, ← Equiv.refl_symm, ← reindex_apply,
-    ← conjTranspose_submatrix, ← reindex_apply, S'_block, U_columns',
+    ← conjTranspose_submatrix, ← reindex_apply, S'_block, reindex_eigenRowEquiv_eigenvectorMatrix,
     conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromBlocks_map,
     fromBlocks_mul_fromRows, fromColumns_mul_fromRows]
   simp only [map_zero, Matrix.map_zero, Matrix.zero_mul, add_zero, Matrix.mul_zero]
