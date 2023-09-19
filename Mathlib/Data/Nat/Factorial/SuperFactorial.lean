@@ -5,6 +5,7 @@ Authors: Moritz Firsching
 -/
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.LinearAlgebra.Vandermonde
 
 /-!
 # Superfactorial
@@ -57,13 +58,27 @@ theorem prod_Ico_factorial_eq_superFactorial : ∀ n : ℕ, (∏ x in Ico 1 (n +
       prod_Ico_factorial_eq_superFactorial n, superFactorial, factorial, Nat.succ_eq_add_one,
       mul_comm]
 
--- `(x + 1)!` is simplified to `succ x * x!`
-@[simp, nolint simpNF]
+@[simp]
 theorem prod_range_add_one_eq_superFactorial : ∀ n : ℕ, (∏ x in range n, (x + 1) !) = sf n
   | 0 => rfl
   | n + 1 => by
     rw [Finset.prod_range_succ, prod_range_add_one_eq_superFactorial n, superFactorial, mul_comm,
         factorial]
+
+variable {R : Type*} [CommRing R]
+
+theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
+  (Matrix.vandermonde (fun (i : Fin (n + 1)) ↦ (i : R))).det = Nat.superFactorial n := by
+  induction' n with n hn
+  · simp [Matrix.det_vandermonde]
+  · rw [Nat.superFactorial, Matrix.det_vandermonde, Fin.prod_univ_succAbove _ 0]
+    push_cast
+    congr
+    · simp only [Fin.val_zero, Nat.cast_zero, sub_zero]
+      norm_cast
+      simp [Fin.prod_univ_eq_prod_range (fun i ↦ (↑i + 1)) (n + 1)]
+    · rw [Matrix.det_vandermonde] at hn
+      simp [hn]
 
 end SuperFactorial
 

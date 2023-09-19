@@ -118,9 +118,9 @@ protected theorem Nodup.dedup {l : List α} (h : l.Nodup) : l.dedup = l :=
 #align list.nodup.dedup List.Nodup.dedup
 
 @[simp]
-theorem dedup_idempotent {l : List α} : dedup (dedup l) = dedup l :=
-  pwFilter_idempotent
-#align list.dedup_idempotent List.dedup_idempotent
+theorem dedup_idem {l : List α} : dedup (dedup l) = dedup l :=
+  pwFilter_idem
+#align list.dedup_idempotent List.dedup_idem
 
 theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
   induction' l₁ with a l₁ IH; · rfl

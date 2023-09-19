@@ -33,9 +33,9 @@ the polynomials. For instance,
 
 ## Implementation
 
-Polynomials are defined using `AddMonoidAlgebra R ℕ`, where `R` is a semiring.
+Polynomials are defined using `R[ℕ]`, where `R` is a semiring.
 The variable `X` commutes with every polynomial `p`: lemma `X_mul` proves the identity
-`X * p = p * X`.  The relationship to `AddMonoidAlgebra R ℕ` is through a structure
+`X * p = p * X`.  The relationship to `R[ℕ]` is through a structure
 to make polynomials irreducible from the point of view of the kernel. Most operations
 are irreducible since Lean can not compute anyway with `AddMonoidAlgebra`. There are two
 exceptions that we make semireducible:
@@ -43,9 +43,9 @@ exceptions that we make semireducible:
 * The scalar action, to permit typeclass search to unfold it to resolve potential instance
   diamonds.
 
-The raw implementation of the equivalence between `R[X]` and `AddMonoidAlgebra R ℕ` is
+The raw implementation of the equivalence between `R[X]` and `R[ℕ]` is
 done through `ofFinsupp` and `toFinsupp` (or, equivalently, `rcases p` when `p` is a polynomial
-gives an element `q` of `AddMonoidAlgebra R ℕ`, and conversely `⟨q⟩` gives back `p`). The
+gives an element `q` of `R[ℕ]`, and conversely `⟨q⟩` gives back `p`). The
 equivalence is also registered as a ring equiv in `Polynomial.toFinsuppIso`. These should
 in general not be used once the basic API for polynomials is constructed.
 -/
@@ -85,12 +85,12 @@ section Semiring
 variable [Semiring R] {p q : R[X]}
 
 theorem forall_iff_forall_finsupp (P : R[X] → Prop) :
-    (∀ p, P p) ↔ ∀ q : AddMonoidAlgebra R ℕ, P ⟨q⟩ :=
+    (∀ p, P p) ↔ ∀ q : R[ℕ], P ⟨q⟩ :=
   ⟨fun h q => h ⟨q⟩, fun h ⟨p⟩ => h p⟩
 #align polynomial.forall_iff_forall_finsupp Polynomial.forall_iff_forall_finsupp
 
 theorem exists_iff_exists_finsupp (P : R[X] → Prop) :
-    (∃ p, P p) ↔ ∃ q : AddMonoidAlgebra R ℕ, P ⟨q⟩ :=
+    (∃ p, P p) ↔ ∃ q : R[ℕ], P ⟨q⟩ :=
   ⟨fun ⟨⟨p⟩, hp⟩ => ⟨p, hp⟩, fun ⟨q, hq⟩ => ⟨⟨q⟩, hq⟩⟩
 #align polynomial.exists_iff_exists_finsupp Polynomial.exists_iff_exists_finsupp
 
@@ -100,7 +100,7 @@ theorem eta (f : R[X]) : Polynomial.ofFinsupp f.toFinsupp = f := by cases f; rfl
 
 /-! ### Conversions to and from `AddMonoidAlgebra`
 
-Since `R[X]` is not defeq to `AddMonoidAlgebra R ℕ`, but instead is a structure wrapping
+Since `R[X]` is not defeq to `R[ℕ]`, but instead is a structure wrapping
 it, we have to copy across all the arithmetic operators manually, along with the lemmas about how
 they unfold around `Polynomial.ofFinsupp` and `Polynomial.toFinsupp`.
 -/
@@ -353,10 +353,10 @@ instance unique [Subsingleton R] : Unique R[X] :=
 
 variable (R)
 
-/-- Ring isomorphism between `R[X]` and `AddMonoidAlgebra R ℕ`. This is just an
+/-- Ring isomorphism between `R[X]` and `R[ℕ]`. This is just an
 implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
 @[simps apply symm_apply]
-def toFinsuppIso : R[X] ≃+* AddMonoidAlgebra R ℕ where
+def toFinsuppIso : R[X] ≃+* R[ℕ] where
   toFun := toFinsupp
   invFun := ofFinsupp
   left_inv := fun ⟨_p⟩ => rfl
@@ -367,12 +367,12 @@ def toFinsuppIso : R[X] ≃+* AddMonoidAlgebra R ℕ where
 #align polynomial.to_finsupp_iso_apply Polynomial.toFinsuppIso_apply
 #align polynomial.to_finsupp_iso_symm_apply Polynomial.toFinsuppIso_symm_apply
 
-instance [DecidableEq R] : DecidableEq (R[X]) :=
+instance [DecidableEq R] : DecidableEq R[X] :=
   @Equiv.decidableEq R[X] _ (toFinsuppIso R).toEquiv (Finsupp.decidableEq)
 
 end AddMonoidAlgebra
 
-theorem ofFinsupp_sum {ι : Type*} (s : Finset ι) (f : ι → AddMonoidAlgebra R ℕ) :
+theorem ofFinsupp_sum {ι : Type*} (s : Finset ι) (f : ι → R[ℕ]) :
     (⟨∑ i in s, f i⟩ : R[X]) = ∑ i in s, ⟨f i⟩ :=
   map_sum (toFinsuppIso R).symm f s
 #align polynomial.of_finsupp_sum Polynomial.ofFinsupp_sum
@@ -1032,7 +1032,7 @@ theorem toFinsupp_erase (p : R[X]) (n : ℕ) : toFinsupp (p.erase n) = p.toFinsu
 #align polynomial.to_finsupp_erase Polynomial.toFinsupp_erase
 
 @[simp]
-theorem ofFinsupp_erase (p : AddMonoidAlgebra R ℕ) (n : ℕ) :
+theorem ofFinsupp_erase (p : R[ℕ]) (n : ℕ) :
     (⟨p.erase n⟩ : R[X]) = (⟨p⟩ : R[X]).erase n := by
   rcases p with ⟨⟩
   simp only [erase_def]
@@ -1202,7 +1202,7 @@ section NonzeroSemiring
 variable [Semiring R] [Nontrivial R]
 
 instance nontrivial : Nontrivial R[X] := by
-  have h : Nontrivial (AddMonoidAlgebra R ℕ) := by infer_instance
+  have h : Nontrivial R[ℕ] := by infer_instance
   rcases h.exists_pair_ne with ⟨x, y, hxy⟩
   refine' ⟨⟨⟨x⟩, ⟨y⟩, _⟩⟩
   simp [hxy]
