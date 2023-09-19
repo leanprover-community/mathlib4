@@ -31,11 +31,11 @@ radius is finite.
 * `mixedEmbedding`: the ring homomorphism from `K →+* ({ w // IsReal w } → ℝ) ×
 ({ w // IsComplex w } → ℂ)` that sends `x ∈ K` to `(φ_w x)_w` where `φ_w` is the embedding
 associated to the infinite place `w`. In particular, if `w` is real then `φ_w : K →+* ℝ` and, if
-`w` is complex, `φ_w` is an arbitrary choice between the two complex emebeddings defining the place
+`w` is complex, `φ_w` is an arbitrary choice between the two complex embeddings defining the place
 `w`.
 
 * `exists_ne_zero_mem_ringOfIntegers_lt`: let `f : InfinitePlace K → ℝ≥0`, if the product
-`∏ w, f w` is large enough, then there exists a nonzero algebraic integer `a` such that
+`∏ w, f w` is large enough, then there exists a nonzero algebraic integer `a` in `K` such that
 `w a < f w` for all infinite places `w`.
 
 ## Tags
@@ -163,7 +163,7 @@ namespace NumberField.mixedEmbedding
 
 open NumberField NumberField.InfinitePlace NumberField.ComplexEmbedding FiniteDimensional
 
-/-- The ambient space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`. -/
+/-- The space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`. -/
 local notation "E" K =>
   ({w : InfinitePlace K // IsReal w} → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℂ)
 
@@ -191,11 +191,11 @@ theorem _root_.NumberField.mixedEmbedding_injective [NumberField K] :
     Function.Injective (NumberField.mixedEmbedding K) := by
   exact RingHom.injective _
 
-section comm_map
+section commMap
 
 /-- The linear map that makes `canonicalEmbedding` and `mixedEmbedding` commute, see
-`comm_map_canonical_eq_mixed`. -/
-noncomputable def comm_map : ((K →+* ℂ) → ℂ) →ₗ[ℝ] (E K) :=
+`commMap_canonical_eq_mixed`. -/
+noncomputable def commMap : ((K →+* ℂ) → ℂ) →ₗ[ℝ] (E K) :=
 { toFun := fun x => ⟨fun w => (x w.val.embedding).re, fun w => x w.val.embedding⟩
   map_add' := by
     simp only [Pi.add_apply, Complex.add_re, Prod.mk_add_mk, Prod.mk.injEq]
@@ -205,25 +205,25 @@ noncomputable def comm_map : ((K →+* ℂ) → ℂ) →ₗ[ℝ] (E K) :=
       Complex.ofReal_im, zero_mul, sub_zero, RingHom.id_apply, Prod.smul_mk, Prod.mk.injEq]
     exact fun _ _ => ⟨rfl, rfl⟩ }
 
-theorem comm_map_apply_of_isReal (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsReal w) :
-  (comm_map K x).1 ⟨w, hw⟩ = (x w.embedding).re := rfl
+theorem commMap_apply_of_isReal (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsReal w) :
+  (commMap K x).1 ⟨w, hw⟩ = (x w.embedding).re := rfl
 
-theorem comm_map_apply_of_isComplex (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsComplex w) :
-  (comm_map K x).2 ⟨w, hw⟩ = x w.embedding := rfl
+theorem commMap_apply_of_isComplex (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsComplex w) :
+  (commMap K x).2 ⟨w, hw⟩ = x w.embedding := rfl
 
 @[simp]
-theorem comm_map_canonical_eq_mixed (x : K) :
-    comm_map K (canonicalEmbedding K x) = mixedEmbedding K x := by
-  simp only [canonicalEmbedding, comm_map, LinearMap.coe_mk, AddHom.coe_mk, Pi.ringHom_apply,
+theorem commMap_canonical_eq_mixed (x : K) :
+    commMap K (canonicalEmbedding K x) = mixedEmbedding K x := by
+  simp only [canonicalEmbedding, commMap, LinearMap.coe_mk, AddHom.coe_mk, Pi.ringHom_apply,
     mixedEmbedding, RingHom.prod_apply, Prod.mk.injEq]
   exact ⟨rfl, rfl⟩
 
 /-- This is a technical result to ensure that the image of the `ℂ`-basis of `ℂ^n` defined in
 `canonicalEmbedding.latticeBasis` is a `ℝ`-basis of `ℝ^r₁ × ℂ^r₂`,
 see `mixedEmbedding.latticeBasis`. -/
-theorem disjoint_span_comm_map_ker [NumberField K]:
+theorem disjoint_span_commMap_ker [NumberField K]:
     Disjoint (Submodule.span ℝ (Set.range (canonicalEmbedding.latticeBasis K)))
-      (LinearMap.ker (comm_map K)) := by
+      (LinearMap.ker (commMap K)) := by
   refine LinearMap.disjoint_ker.mpr (fun x h_mem h_zero => ?_)
   replace h_mem : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K)) := by
     refine (Submodule.span_mono ?_) h_mem
@@ -236,17 +236,17 @@ theorem disjoint_span_comm_map_ker [NumberField K]:
       rw [eq_comm, ← Complex.conj_eq_iff_re, canonicalEmbedding.conj_apply _ h_mem,
         ComplexEmbedding.isReal_iff.mp hφ], ← Complex.ofReal_zero]
     congr
-    rw [← embedding_mk_eq_of_isReal hφ, ← comm_map_apply_of_isReal K x ⟨φ, hφ, rfl⟩]
+    rw [← embedding_mk_eq_of_isReal hφ, ← commMap_apply_of_isReal K x ⟨φ, hφ, rfl⟩]
     exact congrFun (congrArg (fun x => x.1) h_zero) ⟨InfinitePlace.mk φ, _⟩
   · have := congrFun (congrArg (fun x => x.2) h_zero) ⟨InfinitePlace.mk φ, ⟨φ, hφ, rfl⟩⟩
     cases embedding_mk_eq φ with
-    | inl h => rwa [← h, ← comm_map_apply_of_isComplex K x ⟨φ, hφ, rfl⟩]
+    | inl h => rwa [← h, ← commMap_apply_of_isComplex K x ⟨φ, hφ, rfl⟩]
     | inr h =>
         apply RingHom.injective (starRingEnd ℂ)
         rwa [canonicalEmbedding.conj_apply _ h_mem, ← h, map_zero,
-          ← comm_map_apply_of_isComplex K x ⟨φ, hφ, rfl⟩]
+          ← commMap_apply_of_isComplex K x ⟨φ, hφ, rfl⟩]
 
-end comm_map
+end commMap
 
 section integerLattice
 
@@ -261,7 +261,7 @@ noncomputable def latticeBasis [NumberField K] :
     have := LinearIndependent.map (LinearIndependent.restrict_scalars
       (by { simpa only [Complex.real_smul, mul_one] using Complex.ofReal_injective })
       (canonicalEmbedding.latticeBasis K).linearIndependent)
-      (disjoint_span_comm_map_ker K)
+      (disjoint_span_commMap_ker K)
     -- and it's a basis since it has the right cardinality
     refine basisOfLinearIndependentOfCardEqFinrank this ?_
     rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_prod, finrank_pi,
@@ -274,7 +274,7 @@ noncomputable def latticeBasis [NumberField K] :
 theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
     latticeBasis K i = (mixedEmbedding K) (integralBasis K i) := by
   simp only [latticeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, Function.comp_apply,
-    canonicalEmbedding.latticeBasis_apply, integralBasis_apply, comm_map_canonical_eq_mixed]
+    canonicalEmbedding.latticeBasis_apply, integralBasis_apply, commMap_canonical_eq_mixed]
 
 theorem mem_span_latticeBasis [NumberField K] (x : (E K)) :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ mixedEmbedding K '' (𝓞 K) := by
@@ -395,7 +395,7 @@ open MeasureTheory MeasureTheory.Measure Classical NNReal ENNReal FiniteDimensio
 
 variable [NumberField K]
 
-/-- The bound that appears in Minkowski theorem, see
+/-- The bound that appears in Minkowski Convex Body theorem, see
 `MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`. -/
 noncomputable def minkowskiBound : ℝ≥0∞ :=
   volume (fundamentalDomain (latticeBasis K)) * 2 ^ (finrank ℝ (E K))
