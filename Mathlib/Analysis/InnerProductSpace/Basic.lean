@@ -522,7 +522,7 @@ theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
 /-- An inner product with a sum on the right. -/
 theorem inner_sum {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪x, ∑ i in s, f i⟫ = ∑ i in s, ⟪x, f i⟫ :=
-  (LinearMap.flip sesqFormOfInner x).map_sum
+  map_sum (LinearMap.flip sesqFormOfInner x) _ _
 #align inner_sum inner_sum
 
 /-- An inner product with a sum on the left, `Finsupp` version. -/
