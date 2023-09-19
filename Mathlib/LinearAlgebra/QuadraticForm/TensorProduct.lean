@@ -38,7 +38,8 @@ variable (R A) in
 Note this is heterobasic; the quadratic form on the left can take values in a larger ring than
 the one on the right. -/
 -- `noncomputable` is a performance workaround for mathlib4#7103
-noncomputable def tensorDistrib : QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
+noncomputable def tensorDistrib :
+    QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   -- while `letI`s would produce a better term than `let`, they would make this already-slow
   -- definition even slower.
