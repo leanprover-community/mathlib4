@@ -282,7 +282,7 @@ theorem isVonNBounded_closedBall (r : ℝ) :
 #align normed_space.is_vonN_bounded_closed_ball NormedSpace.isVonNBounded_closedBall
 
 theorem isVonNBounded_iff (s : Set E) : Bornology.IsVonNBounded 𝕜 s ↔ Bornology.IsBounded s := by
-  rw [← Metric.bounded_iff_isBounded, Metric.bounded_iff_subset_ball (0 : E)]
+  rw [Metric.isBounded_iff_subset_closedBall (0 : E)]
   constructor
   · intro h
     rcases h (Metric.ball_mem_nhds 0 zero_lt_one) with ⟨ρ, hρ, hρball⟩
@@ -296,7 +296,7 @@ theorem isVonNBounded_iff (s : Set E) : Bornology.IsVonNBounded 𝕜 s ↔ Borno
 
 theorem isVonNBounded_iff' (s : Set E) :
     Bornology.IsVonNBounded 𝕜 s ↔ ∃ r : ℝ, ∀ (x : E) (_ : x ∈ s), ‖x‖ ≤ r := by
-  rw [NormedSpace.isVonNBounded_iff, ← Metric.bounded_iff_isBounded, bounded_iff_forall_norm_le]
+  rw [NormedSpace.isVonNBounded_iff, isBounded_iff_forall_norm_le]
 #align normed_space.is_vonN_bounded_iff' NormedSpace.isVonNBounded_iff'
 
 theorem image_isVonNBounded_iff (f : E' → E) (s : Set E') :
