@@ -1187,7 +1187,7 @@ end Trunc
 
 namespace Multiset
 
-variable [Fintype α] [DecidableEq α] [Fintype β] [DecidableEq β]
+variable [Fintype α] [DecidableEq α] [Fintype β]
 
 @[simp]
 theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
