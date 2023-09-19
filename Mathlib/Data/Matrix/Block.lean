@@ -302,14 +302,14 @@ theorem fromBlocks_diagonal (d₁ : l → α) (d₂ : m → α) :
 
 @[simp]
 lemma toBlocks₁₁_diagonal (v : l ⊕ m → α) :
-    toBlocks₁₁ (diagonal v) = diagonal ( fun i => v (Sum.inl i) ) := by
+    toBlocks₁₁ (diagonal v) = diagonal (fun i => v (Sum.inl i)) := by
   unfold toBlocks₁₁
   funext i j
   simp only [ne_eq, Sum.inl.injEq, of_apply, diagonal_apply]
 
 @[simp]
 lemma toBlocks₂₂_diagonal (v : l ⊕ m → α) :
-    toBlocks₂₂ (diagonal v) = diagonal ( fun i => v (Sum.inr i) ) := by
+    toBlocks₂₂ (diagonal v) = diagonal (fun i => v (Sum.inr i)) := by
   unfold toBlocks₂₂
   funext i j
   simp only [ne_eq, Sum.inr.injEq, of_apply, diagonal_apply]
