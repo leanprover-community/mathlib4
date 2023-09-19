@@ -1202,13 +1202,7 @@ to the universal finite set. -/
 @[simp]
 theorem _root_.Equiv.multiset_map_univ_eq_univ (e : α ≃ β) :
     map e univ.val = univ.val := by
-  classical
-  ext a
-  have ha : a = e (e.invFun a) := by
-    simp only [Equiv.invFun_as_coe, Equiv.apply_symm_apply]
-  rw [ha, count_map_eq_count']
-  simp only [Equiv.invFun_as_coe, mem_val, mem_univ, not_true, count_univ]
-  exact Equiv.injective e
+  rw [←congr_arg Finset.val (Finset.map_univ_equiv e), Finset.map_val, Equiv.coe_toEmbedding]
 
 end Multiset
 
