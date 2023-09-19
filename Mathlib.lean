@@ -2954,7 +2954,6 @@ import Mathlib.RingTheory.PowerSeries.Comp
 import Mathlib.RingTheory.PowerSeries.Derivative
 import Mathlib.RingTheory.PowerSeries.Examples
 import Mathlib.RingTheory.PowerSeries.Inv
-import Mathlib.RingTheory.PowerSeries.Truncation_lemmas
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.PrincipalIdealDomain

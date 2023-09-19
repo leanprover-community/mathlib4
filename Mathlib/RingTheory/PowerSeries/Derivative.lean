@@ -5,7 +5,6 @@ Authors: Richard M. Hill
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Derivation.Basic
-import Mathlib.RingTheory.PowerSeries.Truncation_lemmas
 import Mathlib.RingTheory.PowerSeries.Comp
 
 /-!

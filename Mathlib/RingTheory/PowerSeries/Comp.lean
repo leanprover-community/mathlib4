@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard M. Hill
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.PowerSeries.Truncation_lemmas
+-- import Mathlib.RingTheory.PowerSeries.Truncation_lemmas
 
 /-!
 # Definitions
