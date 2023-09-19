@@ -19,22 +19,22 @@ into three matrices:
   * S: an M × N matrix with an r × r block in the upper left corner with nonzero singular values
   * V: an N × N matrix containing the right eigenvectors of the matrix
 Note that
-  S is a block matrix S = [S₁₁, S₁₂; S₂₁, S₂₂] with
-  - S₁₁: a diagonal r × r matrix and
-  - S₁₂: r × (N - r) zero matrix, S₂₁ : (M - r) × r zero matrix and
-  - S₂₂: (M - r) × (N - r) zero matrix
-  U is a block column matrix U = [U₁ U₂] with
-  - U₁ : a M × r containing left eigenvectors with nonzero singular values.
-  - U₂ : a M × (M - r) containing left eigenvectors with zero singular values.
-  V is a block column matrix V = [V₁ V₂] with
-  - V₁ : a N × r containing right eigenvectors with nonzero singular values.
-  - V₂ : a M × (M - r) containing right eigenvectors with zero singular values.
+  * S is a block matrix S = [S₁₁, S₁₂; S₂₁, S₂₂] with
+    - S₁₁: a diagonal r × r matrix and
+    - S₁₂: r × (N - r) zero matrix, S₂₁ : (M - r) × r zero matrix and
+    - S₂₂: (M - r) × (N - r) zero matrix
+  * U is a block column matrix U = [U₁ U₂] with
+    - U₁ : a M × r containing left eigenvectors with nonzero singular values.
+    - U₂ : a M × (M - r) containing left eigenvectors with zero singular values.
+  * V is a block column matrix V = [V₁ V₂] with
+    - V₁ : a N × r containing right eigenvectors with nonzero singular values.
+    - V₂ : a M × (M - r) containing right eigenvectors with zero singular values.
 
 Since in mathlib the eigenvalues of hermitian matrices are defined in an "arbitrary" undetermined
 order, we begin by partitioning the singular values into zero and non-zero values. We partition the
 corresponding eigenvectors from AᴴA and AAᴴ using similar rearrangements. These are included in
-`Mathlib.LinearAlgebra.Matrix.SVD.Reindex`. The basic API for Column and Row partitioned matrices is from
-`ColumnRowPartitioned`.
+`Mathlib.LinearAlgebra.Matrix.SVD.Reindex`. The basic API for Column and Row partitioned matrices is
+ from `ColumnRowPartitioned`.
 
 We then proceed to transfer some of the lemmas we need about eigenvector matrices (for example that
 they are unitary: i.e. inverse is conjugate transpose.). Note that since invertibility in mathlib is
@@ -449,9 +449,9 @@ lemma V_conjTranspose_mul_inj (A : Matrix (Fin M) (Fin N) 𝕂) {m : Type} :
 /-- # Main SVD Theorem
 Any matrix A (M × N) with rank r = A.rank and  with elements in ℝ or ℂ fields can be decompsed
 into three matrices:
-  U: an M × M matrix containing the left eigenvectors of the matrix
-  S: an M × N matrix with an r × r block in the upper left corner with nonzero singular values
-  V: an N × N matrix containing the right eigenvectors of the matrix
+  * U: an M × M matrix containing the left eigenvectors of the matrix
+  * S: an M × N matrix with an r × r block in the upper left corner with nonzero singular values
+  * V: an N × N matrix containing the right eigenvectors of the matrix
 
 Note that UUᴴ = UᴴU = 1 and VVᴴ=VᴴV = 1 as can be seen in lemmas `U_inv` and `V_inv` together with
 `fromColumns_mul_fromRows_eq_one_comm` and `conjTranspose_fromColumns_eq_fromRows_conjTranspose` -/
