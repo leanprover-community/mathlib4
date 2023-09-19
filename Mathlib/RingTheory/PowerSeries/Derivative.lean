@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Richard M. Hill.
+Authors: Richard M. Hill
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Derivation.Basic
@@ -293,7 +293,7 @@ theorem D_inv' {R} [Field R] (f : R⟦X⟧) : D R f⁻¹ = -f⁻¹ ^ 2 * D R f :
   by_cases constantCoeff R f = 0
   · suffices : f⁻¹ = 0
     . rw [this, pow_two, zero_mul, neg_zero, zero_mul, map_zero]
-    · rwa [MvPowerSeries.inv_eq_zero]
+    rwa [MvPowerSeries.inv_eq_zero]
   apply Derivation.leibniz_of_mul_eq_one
   exact PowerSeries.inv_mul_cancel (h := h)
 
