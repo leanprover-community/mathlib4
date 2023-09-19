@@ -81,6 +81,7 @@ private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := ma
     }
 
 open Lean Syntax in
+/-- Return the link text and inserted text above and below of the conv widget. -/
 def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   (_ : SelectInsertParams): MetaM (String × String) := do
   let some pos := locations[0]? | throwError "You must select something."
@@ -104,14 +105,14 @@ def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   if retList.isEmpty then enterval := ""
   return ("Generate conv", enterval)
 
-
+/-- Rpc function for the conv widget. -/
 @[server_rpc_method]
 def ConvSelectionPanel.rpc :=
 mkSelectionPanelRPC insertEnter
   "Use shift-click to select one sub-expression in the goal that you want to zoom on."
   "Conv 🔍" (onlyOne := true)
 
-
+/-- The conv widget. -/
 @[widget_module]
 def ConvSelectionPanel : Component SelectInsertParams :=
   mk_rpc_widget% ConvSelectionPanel.rpc

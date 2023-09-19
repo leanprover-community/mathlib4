@@ -19,6 +19,7 @@ open Lean Meta Server ProofWidgets
 
 /-! # Gcongr widget -/
 
+/-- Return the link text and inserted text above and below of the congrm widget. -/
 def makeCongrmString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   (_ : SelectInsertParams) : MetaM (String × String) := do
   let subexprPos := getGoalLocations pos
@@ -33,11 +34,13 @@ def makeCongrmString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   let res := "congrm " ++ (toString (← Meta.ppExpr sideExpr)).renameMetaVar
   return (res, res)
 
+/-- Rpc function for the congrm widget. -/
 @[server_rpc_method]
 def CongrmSelectionPanel.rpc := mkSelectionPanelRPC makeCongrmString
   "Use shift-click to select sub-expressions in the goal that should become holes in congrm."
   "Congrm 🔍"
 
+/-- The congrm widget. -/
 @[widget_module]
 def CongrmSelectionPanel : Component SelectInsertParams :=
   mk_rpc_widget% CongrmSelectionPanel.rpc

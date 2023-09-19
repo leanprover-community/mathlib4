@@ -14,6 +14,7 @@ a `gcongr` call with holes specified by selecting subexpressions in the goal.
 
 open Lean Meta Server ProofWidgets
 
+/-- Return the link text and inserted text above and below of the gcongr widget. -/
 def makeGCongrString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   (_ : SelectInsertParams) : MetaM (String × String) := do
 let subexprPos := getGoalLocations pos
@@ -31,11 +32,13 @@ let sideExpr := goalTypeWithMetaVars.getAppArgs[side]!
 let res := "gcongr " ++ (toString (← Meta.ppExpr sideExpr)).renameMetaVar
 return (res, res)
 
+/-- Rpc function for the gcongr widget. -/
 @[server_rpc_method]
 def GCongrSelectionPanel.rpc := mkSelectionPanelRPC makeGCongrString
   "Use shift-click to select sub-expressions in the goal that should become holes in gcongr."
   "GCongr 🔍"
 
+/-- The gcongr widget. -/
 @[widget_module]
 def GCongrSelectionPanel : Component SelectInsertParams :=
   mk_rpc_widget% GCongrSelectionPanel.rpc

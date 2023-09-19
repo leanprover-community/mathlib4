@@ -67,7 +67,7 @@ def Lean.Expr.relStr : Expr → String
 | .const ``GT.gt _ => ">"
 | _ => "Unknow relation"
 
-/-- Return the link text and inserted text above and below of the calc widget.-/
+/-- Return the link text and inserted text above and below of the calc widget. -/
 def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcParams) :
     MetaM (String × String) := do
   let subexprPos := getGoalLocations pos
