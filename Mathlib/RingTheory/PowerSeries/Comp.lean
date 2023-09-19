@@ -881,6 +881,32 @@ end CommutativeSemiring
 
 
 
+lemma neg_hasComp {R} [CommRing R] {f g: R⟦X⟧} (h : f.hasComp g) : (-f).hasComp g := by
+  intro d
+  obtain ⟨N,hN⟩ := (h d)
+  use N
+  conv =>
+    intro; intro; rw [map_neg, neg_mul, neg_eq_zero]
+  exact hN
+
+lemma sub_hasComp {R} [CommRing R] {f₁ f₂ g: R⟦X⟧} (h₁ : f₁.hasComp g) (h₂ : f₂.hasComp g) :
+    (f₁ - f₂).hasComp g := by
+  rw [sub_eq_add_neg]
+  apply add_hasComp h₁ <| neg_hasComp h₂
+
+lemma neg_comp {R} [CommRing R] {f g: R⟦X⟧} : (-f) ∘ᶠ g = - f ∘ᶠ g := by
+  by_cases f.hasComp g
+  · have := neg_hasComp h
+    rw [eq_neg_iff_add_eq_zero, ←add_comp this h, neg_add_self, zero_comp]
+  · rw [comp_eq_zero, comp_eq_zero h, neg_zero]
+    contrapose! h
+    rw [←neg_neg f]
+    exact neg_hasComp h
+
+lemma sub_comp {R} [CommRing R] {f₁ f₂ g: R⟦X⟧} (h₁ : f₁.hasComp g) (h₂ : f₂.hasComp g) :
+    (f₁ - f₂) ∘ᶠ g = f₁ ∘ᶠ g - f₂ ∘ᶠ g := by
+  rw [sub_eq_add_neg, sub_eq_add_neg, add_comp h₁ (neg_hasComp h₂), neg_comp]
+
 /-
 NOTE: `instance : Inv R⟦X⟧` is currently only defined when `R` is a field,
 so the following two results can only be stated in in the case that `R` is a field.

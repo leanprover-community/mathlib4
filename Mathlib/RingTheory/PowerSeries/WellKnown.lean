@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.PowerSeries.Comp
 import Mathlib.Data.Nat.Parity
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 
@@ -65,6 +66,31 @@ theorem map_invUnitsSub (f : R →+* S) (u : Rˣ) :
 #align power_series.map_inv_units_sub PowerSeries.map_invUnitsSub
 
 end Ring
+
+
+/--
+A power series `f` over a commutative ring `R` is a unit
+if and only if its constant coefficient is a unit.
+-/
+@[simp] theorem isUnit_iff {R} [CommRing R] {f} : (IsUnit f) ↔ IsUnit (constantCoeff R f) := by
+  constructor
+  · intro hf
+    obtain ⟨g,hg⟩ := hf
+    apply isUnit_of_mul_eq_one (b := constantCoeff R g.inv)
+    rw [←hg, ←map_mul, Units.inv_eq_val_inv, Units.mul_inv, map_one]
+  · intro hf
+    obtain ⟨a : Rˣ,ha⟩ := hf
+    have hf : f = (C R a - X) ∘ᶠ (C R a - f)
+    · rw [sub_comp C_hasComp X_hasComp, C_comp, X_comp, sub_sub_cancel]
+    have := invUnitsSub_mul_sub a
+    have : f * (invUnitsSub a) ∘ᶠ (C R a - f) = 1
+    · nth_rw 1 [hf]
+      rw [←mul_comp, mul_comm, invUnitsSub_mul_sub, one_comp] <;>
+      · apply hasComp_of_constantCoeff_eq_zero
+        rw [map_sub, constantCoeff_C, ha, sub_self]
+    apply isUnit_of_mul_eq_one (h := this)
+
+
 
 section Field
 
