@@ -703,6 +703,140 @@ lemma hasHomology_of_isIsoLeftRightHomologyComparison [S.HasLeftHomology]
   haveI : IsIso (leftRightHomologyComparison' S.leftHomologyData S.rightHomologyData) := h
   exact hasHomology_of_isIso_leftRightHomologyComparison' S.leftHomologyData S.rightHomologyData
 
+section
+
+variable [S₁.HasHomology] [S₂.HasHomology] (φ : S₁ ⟶ S₂)
+
+@[reassoc]
+lemma LeftHomologyData.leftHomologyIso_hom_naturality
+    (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    h₁.homologyIso.hom ≫ leftHomologyMap' φ h₁ h₂ =
+      homologyMap φ ≫ h₂.homologyIso.hom := by
+  dsimp [homologyIso, ShortComplex.leftHomologyIso, homologyMap, homologyMap', leftHomologyIso]
+  simp only [← leftHomologyMap'_comp, id_comp, comp_id]
+
+@[reassoc]
+lemma LeftHomologyData.leftHomologyIso_inv_naturality
+    (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    h₁.homologyIso.inv ≫ homologyMap φ =
+      leftHomologyMap' φ h₁ h₂ ≫ h₂.homologyIso.inv := by
+  dsimp [homologyIso, ShortComplex.leftHomologyIso, homologyMap, homologyMap', leftHomologyIso]
+  simp only [← leftHomologyMap'_comp, id_comp, comp_id]
+
+@[reassoc]
+lemma leftHomologyIso_hom_naturality :
+    S₁.leftHomologyIso.hom ≫ homologyMap φ =
+      leftHomologyMap φ ≫ S₂.leftHomologyIso.hom := by
+  simpa only [LeftHomologyData.homologyIso_leftHomologyData, Iso.symm_inv] using
+    LeftHomologyData.leftHomologyIso_inv_naturality φ S₁.leftHomologyData S₂.leftHomologyData
+
+@[reassoc]
+lemma leftHomologyIso_inv_naturality :
+    S₁.leftHomologyIso.inv ≫ leftHomologyMap φ =
+      homologyMap φ ≫ S₂.leftHomologyIso.inv := by
+  simpa only [LeftHomologyData.homologyIso_leftHomologyData, Iso.symm_inv] using
+    LeftHomologyData.leftHomologyIso_hom_naturality φ S₁.leftHomologyData S₂.leftHomologyData
+
+@[reassoc]
+lemma RightHomologyData.rightHomologyIso_hom_naturality
+    (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    h₁.homologyIso.hom ≫ rightHomologyMap' φ h₁ h₂ =
+      homologyMap φ ≫ h₂.homologyIso.hom := by
+  rw [← cancel_epi h₁.homologyIso.inv, Iso.inv_hom_id_assoc,
+    ← cancel_epi (leftRightHomologyComparison' S₁.leftHomologyData h₁),
+    ← leftRightHomologyComparison'_naturality φ S₁.leftHomologyData h₁ S₂.leftHomologyData h₂,
+    ← cancel_epi (S₁.leftHomologyData.homologyIso.hom),
+    LeftHomologyData.leftHomologyIso_hom_naturality_assoc,
+    leftRightHomologyComparison'_fac, leftRightHomologyComparison'_fac, assoc,
+    Iso.hom_inv_id_assoc, Iso.hom_inv_id_assoc, Iso.hom_inv_id_assoc]
+
+@[reassoc]
+lemma RightHomologyData.rightHomologyIso_inv_naturality
+    (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+      h₁.homologyIso.inv ≫ homologyMap φ =
+        rightHomologyMap' φ h₁ h₂ ≫ h₂.homologyIso.inv := by
+  simp only [← cancel_mono h₂.homologyIso.hom, assoc, Iso.inv_hom_id_assoc, comp_id,
+    ← RightHomologyData.rightHomologyIso_hom_naturality φ h₁ h₂, Iso.inv_hom_id]
+
+@[reassoc]
+lemma rightHomologyIso_hom_naturality :
+    S₁.rightHomologyIso.hom ≫ homologyMap φ =
+      rightHomologyMap φ ≫ S₂.rightHomologyIso.hom := by
+  simpa only [RightHomologyData.homologyIso_rightHomologyData, Iso.symm_inv] using
+    RightHomologyData.rightHomologyIso_inv_naturality φ S₁.rightHomologyData S₂.rightHomologyData
+
+@[reassoc]
+lemma rightHomologyIso_inv_naturality :
+    S₁.rightHomologyIso.inv ≫ rightHomologyMap φ =
+      homologyMap φ ≫ S₂.rightHomologyIso.inv := by
+  simpa only [RightHomologyData.homologyIso_rightHomologyData, Iso.symm_inv] using
+    RightHomologyData.rightHomologyIso_hom_naturality φ S₁.rightHomologyData S₂.rightHomologyData
+
+end
+
+variable (C)
+
+/-- We shall say that a category `C` is a category with homology when all short complexes
+have homology. -/
+class _root_.CategoryTheory.CategoryWithHomology : Prop where
+  hasHomology : ∀ (S : ShortComplex C), S.HasHomology
+
+attribute [instance] CategoryWithHomology.hasHomology
+
+instance [CategoryWithHomology C] : CategoryWithHomology Cᵒᵖ :=
+  ⟨fun S => HasHomology.mk' S.unop.homologyData.op⟩
+
+/-- The homology functor `ShortComplex C ⥤ C` for a category `C` with homology. -/
+@[simps]
+noncomputable def homologyFunctor [CategoryWithHomology C] :
+    ShortComplex C ⥤ C where
+  obj S := S.homology
+  map f := homologyMap f
+
+variable {C}
+
+instance isIso_homologyMap'_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂)
+    (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData) [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    IsIso (homologyMap' φ h₁ h₂) := by
+  dsimp only [homologyMap']
+  infer_instance
+
+lemma isIso_homologyMap_of_epi_of_isIso_of_mono' (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology]
+    (h₁ : Epi φ.τ₁) (h₂ : IsIso φ.τ₂) (h₃ : Mono φ.τ₃) :
+    IsIso (homologyMap φ) := by
+  dsimp only [homologyMap]
+  infer_instance
+
+instance isIso_homologyMap_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology]
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    IsIso (homologyMap φ) :=
+  isIso_homologyMap_of_epi_of_isIso_of_mono' φ inferInstance inferInstance inferInstance
+
+instance isIso_homologyFunctor_map_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [CategoryWithHomology C]
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    IsIso ((homologyFunctor C).map φ) :=
+  (inferInstance : IsIso (homologyMap φ))
+
+instance isIso_homologyMap_of_isIso (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology] [IsIso φ] :
+    IsIso (homologyMap φ) := by
+  dsimp only [homologyMap, homologyMap']
+  infer_instance
+
+section
+
+variable (S) {A : C}
+variable [HasHomology S]
+
+/-- The canonical morphism `S.cycles ⟶ S.homology` for a short complex `S` that has homology. -/
+noncomputable def homologyπ : S.cycles ⟶ S.homology :=
+  S.leftHomologyπ ≫ S.leftHomologyIso.hom
+
+/-- The canonical morphism `S.homology ⟶ S.opcycles` for a short complex `S` that has homology. -/
+noncomputable def homologyι : S.homology ⟶ S.opcycles :=
+  S.rightHomologyIso.inv ≫ S.rightHomologyι
+
+end
+
 end ShortComplex
 
 end CategoryTheory
