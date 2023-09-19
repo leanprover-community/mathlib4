@@ -82,8 +82,8 @@ is an equivalence.
 -/
 instance main_pair_G_split (A : (adj).toMonad.Algebra) :
     G.IsSplitPair ((F).map A.a)
-      ((adj).counit.app ((F).obj A.A))
-    where splittable := ⟨_, _, ⟨beckSplitCoequalizer A⟩⟩
+      ((adj).counit.app ((F).obj A.A)) where
+  splittable := ⟨_, _, ⟨beckSplitCoequalizer A⟩⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.monad.monadicity_internal.main_pair_G_split CategoryTheory.Monad.MonadicityInternal.main_pair_G_split
 
