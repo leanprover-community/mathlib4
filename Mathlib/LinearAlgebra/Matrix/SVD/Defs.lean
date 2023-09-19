@@ -420,11 +420,16 @@ lemma U₂_conjTranspose_mul_U₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdU₂�
   rw [← conjTranspose_conjTranspose (A.svdU₁), ← conjTranspose_mul, U₁_conjTranspose_mul_U₂,
     conjTranspose_zero]
 
-lemma U_inv (A : Matrix (Fin M) (Fin N) 𝕂) :
-  (fromColumns A.svdU₁ A.svdU₂)ᴴ * (fromColumns A.svdU₁ A.svdU₂) = 1 := by
-  rw [conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromRows_mul_fromColumns,
+lemma U_conjTranspose_mul_U (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdUᴴ * A.svdU = 1 := by
+  rw [svdU, conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromRows_mul_fromColumns,
     U₁_conjTranspose_mul_U₂, U₁_conjTranspose_mul_U₁, U₂_conjTranspose_mul_U₂,
     U₂_conjTranspose_mul_U₁, fromBlocks_one]
+
+lemma U_mul_U_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdU * A.svdUᴴ = 1 := by
+  rw [svdU, conjTranspose_fromColumns_eq_fromRows_conjTranspose,
+    fromColumns_mul_fromRows_eq_one_comm, ← conjTranspose_fromColumns_eq_fromRows_conjTranspose,
+    ←svdU, U_conjTranspose_mul_U ]
+  exact eigenRowEquiv A
 
 lemma V_conjTranspose_mul_inj (A : Matrix (Fin M) (Fin N) 𝕂) {m : Type} :
     Function.Injective (fun x : Matrix m (Fin N) 𝕂 => x * A.svdV) := by
