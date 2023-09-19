@@ -137,16 +137,6 @@ def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
       wι := fun j => φ.comp_inv_eq.mpr (wι j).symm
       wπ := fun j => φ.inv_comp_eq.mpr (wπ j).symm  }
 
-end Bicones
-
-namespace Bicone
-
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
-  CategoryTheory.Discrete.discreteCases
--- Porting note: would it be okay to use this more generally?
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
-
-
 variable (F) in
 /-- A functor `G : C ⥤ D` sends bicones over `F` to bicones over `G.obj ∘ F` functorially. -/
 @[simps]
@@ -157,12 +147,21 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
       π := fun j => G.map (A.π j)
       ι := fun j => G.map (A.ι j)
       ι_π := fun i j => (Functor.map_comp _ _ _).symm.trans <| by
-        rw [ι_π]
+        rw [A.ι_π]
         aesop_cat }
   map f :=
     { Hom := G.map f.Hom
       wπ := fun j => by simp [-BiconeMorphism.wπ, ← f.wπ j]
       wι := fun j => by simp [-BiconeMorphism.wι, ← f.wι j] }
+
+end Bicones
+
+namespace Bicone
+
+attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+  CategoryTheory.Discrete.discreteCases
+-- Porting note: would it be okay to use this more generally?
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
 
 /-- Extract the cone from a bicone. -/
 def toConeFunctor : Bicone F ⥤ Cone (Discrete.functor F) where
