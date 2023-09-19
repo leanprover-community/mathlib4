@@ -408,6 +408,13 @@ lemma shiftFunctor_op_map (n m : ℤ) (hnm : n + m = 0) {K L : Cᵒᵖ} (φ : K 
         (shiftFunctorOpIso C n m hnm).inv.app L :=
   (NatIso.naturality_2 (shiftFunctorOpIso C n m hnm) φ).symm
 
+variable (C)
+
+@[simps!]
+noncomputable def triangleOpEquivalence :
+    (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ :=
+  PretriangulatedOpposite.triangleOpEquivalence C
+
 end
 
 end Pretriangulated

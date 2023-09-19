@@ -572,7 +572,8 @@ section
 variable {K₁ K₂ : CochainComplex C ℤ} (φ : K₁ ⟶ K₂) (L : CochainComplex C ℤ)
   [HasBinaryBiproducts C]
 
-/-@[simps! hom_apply]
+set_option maxHeartbeats 1000000 in
+@[simps! hom_apply inv_apply]
 noncomputable def leftMappingConeIsoX (i j : ℤ) (hij : j + 1 = i) :
     (HomComplex (mappingCone φ) L).X i ≅
       (mappingCone (((bifunctor C).map φ.op).app L)).X j where
@@ -584,9 +585,38 @@ noncomputable def leftMappingConeIsoX (i j : ℤ) (hij : j + 1 = i) :
           dsimp
           rw [Cochain.comp_add, map_add, Cochain.comp_add, map_add, smul_add]
           abel)
-  inv := sorry
-  hom_inv_id := sorry
-  inv_hom_id := sorry
+  inv := AddMonoidHom.mk' (fun α =>
+    (MappingCone.snd φ).comp ((MappingCone.fst
+        (((bifunctor C).map φ.op).app L)).1.v j i hij α) (zero_add i) +
+      j.negOnePow • ((MappingCone.fst φ).1.comp ((MappingCone.snd
+        (((bifunctor C).map φ.op).app L)).v j j (add_zero j) α) (by linarith))) (fun α₁ α₂ => by
+          dsimp
+          rw [map_add, Cochain.comp_add, map_add, Cochain.comp_add, smul_add]
+          abel)
+  hom_inv_id := by
+    ext (α : Cochain (mappingCone φ) L i)
+    obtain ⟨α₁, α₂, rfl⟩ := MappingCone.cochain_from_break _ α j hij
+    dsimp
+    simp
+    erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply]
+    simp only [HomComplex_X, MappingCone.inl_v_fst_v, id_apply, MappingCone.inr_f_fst_v, MappingCone.inl_v_snd_v,
+      MappingCone.inr_f_snd_v]
+    rw [AddMonoidHom.zero_apply, AddMonoidHom.zero_apply, smul_zero, add_zero, zero_add,
+      Cochain.comp_zsmul, smul_smul, Int.negOnePow_mul_self, one_smul]
+    apply add_comm
+  inv_hom_id := by
+    ext α
+    obtain ⟨α₁, α₂, rfl⟩ := MappingCone.X_break α i hij
+    dsimp
+    rw [map_add, map_add]
+    erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply]
+    dsimp
+    simp only [MappingCone.inl_v_fst_v, HomComplex_X, id_apply,
+      MappingCone.inr_f_fst_v, MappingCone.inl_v_snd_v, MappingCone.inr_f_snd_v]
+    rw [AddMonoidHom.zero_apply, AddMonoidHom.zero_apply]
+    simp only [zero_add, add_zero]
+    rw [Cochain.comp_add, Cochain.comp_add]
+    simp [smul_smul]
 
 set_option maxHeartbeats 400000 in
 noncomputable def leftMappingConeIso :
@@ -629,7 +659,50 @@ noncomputable def leftMappingConeIso :
       one_smul, Int.negOnePow_succ, neg_smul, neg_neg]
     have : ∀ (a b c : (mappingCone (NatTrans.app ((bifunctor C).map φ.op) L)).X (n + 1)),
       a - b + c = -b + (c + a) := by intros; abel
-    apply this)-/
+    apply this)
+
+lemma leftMappingConeIso_hom_f_apply (i j : ℤ) (h : i + 1 = j)
+    (α : (HomComplex (mappingCone φ) L )⟦(1 : ℤ)⟧.X i) :
+      (leftMappingConeIso φ L).hom.f i α =
+        (leftMappingConeIsoX φ L j i h).hom
+          ((shiftFunctorObjXIso (HomComplex (mappingCone φ) L) 1 i j h.symm).hom α) := by
+  subst h
+  rfl
+
+/-set_option maxHeartbeats 400000 in
+def mappingConeTriangleIso' :
+    ((bifunctor C).flip.obj L).mapTriangle.obj
+      ((Pretriangulated.triangleOpEquivalence (CochainComplex C ℤ)).functor.obj
+          (Opposite.op (MappingCone.triangle φ))) ≅
+            (MappingCone.triangle (((bifunctor C).map φ.op).app L)).invRotate := by
+  refine' Pretriangulated.Triangle.isoMk _ _
+    ((shiftEquiv (CochainComplex AddCommGroupCat ℤ) (1 : ℤ)).unitIso.app _ ≪≫
+      (CategoryTheory.shiftFunctor (CochainComplex AddCommGroupCat ℤ) (-1 : ℤ)).mapIso
+        (leftMappingConeIso φ L)) (Iso.refl _) (Iso.refl _) _ _ _
+  · dsimp [Pretriangulated.PretriangulatedOpposite.homMk]
+    simp
+    ext i (α : Cochain (mappingCone φ) L i)
+    obtain ⟨α₁, α₂, rfl⟩ := MappingCone.cochain_from_break _ α (i+ (-1)) (by linarith)
+    rw [map_add]
+    erw [bifunctor_map_app_f_apply, bifunctor_map_app_f_apply, MappingCone.inr_fst_assoc,
+      zero_add, MappingCone.inr_snd_assoc]
+    rw [HomologicalComplex.neg_f_apply, AddMonoidHom.neg_apply]
+    simp only [functor_obj, HomComplex_X, Eq.ndrec, Int.rawCast, Int.cast_id, Nat.rawCast, Nat.cast_id, Int.ofNat_one,
+      Int.ofNat_eq_coe, Int.ofNat_zero, eq_mp_eq_cast, HomologicalComplex.comp_f, shiftFunctor_map_f',
+      AddCommGroupCat.coe_comp, Function.comp_apply]
+    apply Cochain.ext
+    intro p q hpq
+    rw [Cochain.neg_v]
+    erw [leftMappingConeIso_hom_f_apply _ _ _ i (by linarith)]
+    rw [leftMappingConeIsoX_hom_apply]
+    --dsimp [leftMappingConeIso]
+    sorry
+  · dsimp
+    simp
+    rfl
+  · dsimp [Pretriangulated.PretriangulatedOpposite.homMk]
+    simp
+    sorry-/
 
 end
 
