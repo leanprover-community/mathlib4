@@ -3,6 +3,7 @@ Copyright (c) 2023 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching
 -/
+import Mathlib.Algebra.Periodic
 import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 import Mathlib.Data.ZMod.Algebra
 
@@ -11,7 +12,7 @@ import Mathlib.Data.ZMod.Algebra
 
 Let `R` be a commutative monoid with zero. A Dirichlet character `χ` of level `n` over `R` is a
 multiplicative character from `ZMod n` to `R` sending non-units to 0. We then obtain some properties
-of `toUnitHom χ`, the restriction of `χ` to a group homomorphism `(ZMod n)ˣ →* Rˣ`.
+  of `toUnitHom χ`, the restriction of `χ` to a group homomorphism `(ZMod n)ˣ →* Rˣ`.
 
 Main definitions:
 
@@ -43,8 +44,8 @@ lemma toUnitHom_eq_iff (ψ : DirichletCharacter R n) :
 lemma eval_modulus_sub (x : ZMod n) :
   χ (n - x) = χ (-x) := by simp
 
-lemma isPeriodic {m : ℕ} (hm : n ∣ m) (a : ℤ) :
-    χ (a + m) = χ a := by
+lemma isPeriodic {m : ℕ} (hm : n ∣ m) (a : ℤ) : Function.Periodic χ m := by
+  intro a
   rw [← ZMod.nat_cast_zmod_eq_zero_iff_dvd] at hm
   simp only [hm, add_zero]
 
