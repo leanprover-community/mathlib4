@@ -651,10 +651,6 @@ theorem length_dropLast : ∀ l : List α, length l.dropLast = length l - 1
     simp
 #align list.length_init List.length_dropLast
 
--- Porting note: `rw [dropLast]` in Lean4 generates a goal `(b::l) ≠ []`
--- so we use this lemma instead
-theorem dropLast_cons_cons (a b : α) (l : List α) : dropLast (a::b::l) = a::dropLast (b::l) := rfl
-
 /-! ### getLast -/
 
 @[simp]
@@ -699,7 +695,7 @@ theorem dropLast_append_getLast : ∀ {l : List α} (h : l ≠ []), dropLast l +
   | [], h => absurd rfl h
   | [a], h => rfl
   | a :: b :: l, h => by
-    rw [dropLast_cons_cons, cons_append, getLast_cons (cons_ne_nil _ _)]
+    rw [dropLast_cons₂, cons_append, getLast_cons (cons_ne_nil _ _)]
     congr
     exact dropLast_append_getLast (cons_ne_nil b l)
 #align list.init_append_last List.dropLast_append_getLast
@@ -782,7 +778,7 @@ theorem dropLast_append_getLast? : ∀ {l : List α}, ∀ a ∈ l.getLast?, drop
   | [a], _, rfl => rfl
   | a :: b :: l, c, hc => by
     rw [getLast?_cons_cons] at hc
-    rw [dropLast_cons_cons, cons_append, dropLast_append_getLast? _ hc]
+    rw [dropLast_cons₂, cons_append, dropLast_append_getLast? _ hc]
 #align list.init_append_last' List.dropLast_append_getLast?
 
 theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.iget
