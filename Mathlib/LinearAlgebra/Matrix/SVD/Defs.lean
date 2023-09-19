@@ -122,12 +122,14 @@ noncomputable def svdU₂ (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin M) (Fi
     (isHermitian_mul_conjTranspose_self A).eigenvectorMatrix).toColumns₂
 
 /-- Concatenation of the left eigenvectors U₁ and U₂ into one eigenvector matrix. This is a unitary
-matrix. -/
+matrix. Note however we cannot use `Matrix.unitaryGroup` because the indices of the rows and columns
+do not match. -/
 noncomputable def svdU (A : Matrix (Fin M) (Fin N) 𝕂) :
     Matrix (Fin M) (Fin (A.rank) ⊕ Fin (M - A.rank)) 𝕂 := fromColumns A.svdU₁ A.svdU₂
 
 /-- Concatenation of the right eigenvectors V₁ and V₂ into one eigenvector matrix. This is a unitary
-matrix. -/
+matrix. Note however we cannot use `Matrix.unitaryGroup` because the indices of the rows and columns
+do not match.-/
 noncomputable def svdV (A : Matrix (Fin M) (Fin N) 𝕂) :
     Matrix (Fin N) (Fin (A.rank) ⊕ Fin (N - A.rank)) 𝕂 := fromColumns A.svdV₁ A.svdV₂
 
@@ -263,11 +265,11 @@ lemma reindex_eigenColumnEquiv_eigenvectorMatrix (A : Matrix (Fin M) (Fin N) �
 
 /-- **Reduced spectral theorem**, right eigenvector version. -/
 lemma V₁_mul_μ_mul_V₁_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
-    Aᴴ * A = A.svdV₁ * (A.svdμ.map (algebraMap ℝ 𝕂)) * A.svdV₁ᴴ := by
+    A.svdV₁ * (A.svdμ.map (algebraMap ℝ 𝕂)) * A.svdV₁ᴴ = Aᴴ * A := by
   let hAHA := isHermitian_transpose_mul_self A
   -- "Ugly" (submatrix_mul_equiv) explicit rewrites: each one on its own line for
   -- readability!!
-  rw [← submatrix_id_id (Aᴴ * A), IsHermitian.spectral_theorem' hAHA,
+  rw [eq_comm, ← submatrix_id_id (Aᴴ * A), IsHermitian.spectral_theorem' hAHA,
     ← IsHermitian.conjTranspose_eigenvectorMatrix, Matrix.mul_assoc,
     ← submatrix_mul_equiv
       hAHA.eigenvectorMatrix (diagonal (IsROrC.ofReal ∘ hAHA.eigenvalues)  *
@@ -285,10 +287,10 @@ lemma V₁_mul_μ_mul_V₁_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
   rw [Matrix.mul_assoc]
   apply map_zero
 
-lemma reduced_spectral_theorem' (A : Matrix (Fin M) (Fin N) 𝕂) :
-    A * Aᴴ = A.svdU₁' * (A.svdμ'.map (algebraMap ℝ 𝕂)) * A.svdU₁'ᴴ := by
+lemma U₁'_mul_μ'_mul_U₁'_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
+    A.svdU₁' * (A.svdμ'.map (algebraMap ℝ 𝕂)) * A.svdU₁'ᴴ = A * Aᴴ := by
   let hAAH := isHermitian_mul_conjTranspose_self A
-  rw [← submatrix_id_id (A * Aᴴ), IsHermitian.spectral_theorem' hAAH,
+  rw [eq_comm, ← submatrix_id_id (A * Aᴴ), IsHermitian.spectral_theorem' hAAH,
     ← IsHermitian.conjTranspose_eigenvectorMatrix, Matrix.mul_assoc,
     ← submatrix_mul_equiv hAAH.eigenvectorMatrix
       (diagonal (IsROrC.ofReal ∘ hAAH.eigenvalues) * (hAAH.eigenvectorMatrixᴴ)) _
@@ -367,7 +369,7 @@ lemma svdσ_inv_mapK (A : Matrix (Fin M) (Fin N) 𝕂) :
 
 lemma U₁_conjTranspose_mul_U₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdU₁ᴴ * A.svdU₁ = 1 := by
   rw [svdU₁, conjTranspose_mul, conjTranspose_mul, Matrix.mul_assoc, Matrix.mul_assoc,
-    Matrix.mul_assoc, ← Matrix.mul_assoc Aᴴ, V₁_mul_μ_mul_V₁_conjTranspose, Matrix.mul_assoc,
+    Matrix.mul_assoc, ← Matrix.mul_assoc Aᴴ, ←V₁_mul_μ_mul_V₁_conjTranspose, Matrix.mul_assoc,
     ← Matrix.mul_assoc _ A.svdV₁, V₁_conjTranspose_mul_V₁, Matrix.one_mul,
     Matrix.mul_assoc A.svdV₁, ← Matrix.mul_assoc _ A.svdV₁, V₁_conjTranspose_mul_V₁,
     Matrix.one_mul, svdσ_inv_mapK, ← conjTranspose_map, ← Matrix.map_mul, ← Matrix.map_mul,
@@ -402,12 +404,12 @@ lemma mul_V₂_eq_zero (A : Matrix (Fin M) (Fin N) 𝕂) :
     A * A.svdV₂ = 0 := by
   suffices h : Aᴴ * A * A.svdV₂ = 0
   · exact (conjTranspose_mul_self_mul_eq_zero _ _).1 h
-  rw [V₁_mul_μ_mul_V₁_conjTranspose, Matrix.mul_assoc, V₁_conjTranspose_mul_V₂, Matrix.mul_zero]
+  rw [←V₁_mul_μ_mul_V₁_conjTranspose, Matrix.mul_assoc, V₁_conjTranspose_mul_V₂, Matrix.mul_zero]
 
 lemma conjTranspose_mul_U₂_eq_zero (A : Matrix (Fin M) (Fin N) 𝕂) : Aᴴ * A.svdU₂ = 0 := by
   suffices h : A * Aᴴ * A.svdU₂ = 0
   · exact (self_mul_conjTranspose_mul_eq_zero _ _).1 h
-  rw [reduced_spectral_theorem', Matrix.mul_assoc, U₁'_conjTranspose_mul_U₂]
+  rw [←U₁'_mul_μ'_mul_U₁'_conjTranspose, Matrix.mul_assoc, U₁'_conjTranspose_mul_U₂]
   simp only [Matrix.mul_zero]
 
 lemma U₁_conjTranspose_mul_U₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdU₁ᴴ * A.svdU₂ = 0 := by
