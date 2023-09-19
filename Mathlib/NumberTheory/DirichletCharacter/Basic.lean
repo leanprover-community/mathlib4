@@ -12,7 +12,7 @@ import Mathlib.Data.ZMod.Algebra
 
 Let `R` be a commutative monoid with zero. A Dirichlet character `χ` of level `n` over `R` is a
 multiplicative character from `ZMod n` to `R` sending non-units to 0. We then obtain some properties
-  of `toUnitHom χ`, the restriction of `χ` to a group homomorphism `(ZMod n)ˣ →* Rˣ`.
+of `toUnitHom χ`, the restriction of `χ` to a group homomorphism `(ZMod n)ˣ →* Rˣ`.
 
 Main definitions:
 
