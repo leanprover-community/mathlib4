@@ -363,9 +363,9 @@ open MulOpposite in
 
 /-! Two theorems in [Andrzej Strojnowski, *A note on u.p. groups*][Strojnowski1980] -/
 
-/-- `UniqueProds G` says that for any two nonempty `Finset`s `A` and `B` in `G`, `A × B` 
+/-- `UniqueProds G` says that for any two nonempty `Finset`s `A` and `B` in `G`, `A × B`
   contains a unique pair with the `UniqueMul` property. Strojnowski showed that if `G` is
-  a group, then we only need to check this when `A = B`. 
+  a group, then we only need to check this when `A = B`.
   Here we generalize the result to cancellative semigroups.
   Non-cancellative counterexample: the AddMonoid {0,1} with 1+1=1. -/
 @[to_additive] theorem of_same {G} [Semigroup G] [IsCancelMul G]
