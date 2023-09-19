@@ -25,7 +25,10 @@ variable {C : Type _} [Category C] [HasZeroMorphisms C]
   {S₁ S₂ S₃ S₄ : ShortComplex C}
   [S₁.HasHomology] [S₂.HasHomology] [S₃.HasHomology] [S₄.HasHomology]
 
+/-- A morphism `φ : S₁ ⟶ S₂` of short complexes that have homology is a quasi-isomorphism if
+the induced map `homologyMap φ : S₁.homology ⟶ S₂.homology` is an isomorphism. -/
 class QuasiIso (φ : S₁ ⟶ S₂) : Prop where
+  /-- the homology map is an isomorphism -/
   isIso' : IsIso (homologyMap φ)
 
 instance QuasiIso.isIso (φ : S₁ ⟶ S₂) [QuasiIso φ] : IsIso (homologyMap φ) := QuasiIso.isIso'
@@ -140,11 +143,6 @@ lemma RightHomologyMapData.quasiIso_iff {φ : S₁ ⟶ S₂} {h₁ : S₁.RightH
   . intro h
     infer_instance
 
-lemma HomologyMapData.quasiIso_iff' {φ : S₁ ⟶ S₂} (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData)
-    (γ : HomologyMapData φ h₁ h₂) :
-    IsIso γ.left.φH ↔ IsIso γ.right.φH := by
-  rw [← γ.left.quasiIso_iff, ← γ.right.quasiIso_iff]
-
 lemma quasiIso_iff_isIso_leftHomologyMap' (φ : S₁ ⟶ S₂)
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
     QuasiIso φ ↔ IsIso (leftHomologyMap' φ h₁ h₂) := by
@@ -195,7 +193,7 @@ lemma quasiIso_iff_isIso_liftCycles (φ : S₁ ⟶ S₂)
     (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) [S₁.HasHomology] [S₂.HasHomology] :
     QuasiIso φ ↔ IsIso (S₂.liftCycles φ.τ₂ (by rw [φ.comm₂₃, hg₁, zero_comp])) := by
   let H : LeftHomologyMapData φ (LeftHomologyData.ofZeros S₁ hf₁ hg₁)
-    (LeftHomologyData.ofIsLimitKernelFork S₂ hf₂ _ S₂.cyclesIsKernel) :=
+      (LeftHomologyData.ofIsLimitKernelFork S₂ hf₂ _ S₂.cyclesIsKernel) :=
     { φK := S₂.liftCycles φ.τ₂ (by rw [φ.comm₂₃, hg₁, zero_comp])
       φH := S₂.liftCycles φ.τ₂ (by rw [φ.comm₂₃, hg₁, zero_comp]) }
   exact H.quasiIso_iff
@@ -204,8 +202,8 @@ lemma quasiIso_iff_isIso_descOpcycles (φ : S₁ ⟶ S₂)
     (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) [S₁.HasHomology] [S₂.HasHomology] :
     QuasiIso φ ↔ IsIso (S₁.descOpcycles φ.τ₂ (by rw [← φ.comm₁₂, hf₂, comp_zero])) := by
   let H : RightHomologyMapData φ
-    (RightHomologyData.ofIsColimitCokernelCofork S₁ hg₁ _ S₁.opcyclesIsCokernel)
-    (RightHomologyData.ofZeros S₂ hf₂ hg₂) :=
+      (RightHomologyData.ofIsColimitCokernelCofork S₁ hg₁ _ S₁.opcyclesIsCokernel)
+        (RightHomologyData.ofZeros S₂ hf₂ hg₂) :=
     { φQ := S₁.descOpcycles φ.τ₂ (by rw [← φ.comm₁₂, hf₂, comp_zero])
       φH := S₁.descOpcycles φ.τ₂ (by rw [← φ.comm₁₂, hf₂, comp_zero]) }
   exact H.quasiIso_iff
