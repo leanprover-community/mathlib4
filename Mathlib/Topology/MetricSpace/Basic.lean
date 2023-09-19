@@ -2545,9 +2545,9 @@ theorem exists_isOpen_isBounded_image_inter_of_isCompact_of_continuousOn [Topolo
 
 /-- If a function is continuous on a neighborhood of a compact set `k`, then it is bounded on
 some open neighborhood of `k`. -/
-theorem exists_isOpen_isBounded_image_of_isCompact_of_continuousOn [TopologicalSpace β] {k s : Set β}
-    {f : β → α} (hk : IsCompact k) (hs : IsOpen s) (hks : k ⊆ s) (hf : ContinuousOn f s) :
-    ∃ t, k ⊆ t ∧ IsOpen t ∧ IsBounded (f '' t) :=
+theorem exists_isOpen_isBounded_image_of_isCompact_of_continuousOn [TopologicalSpace β]
+    {k s : Set β} {f : β → α} (hk : IsCompact k) (hs : IsOpen s) (hks : k ⊆ s)
+    (hf : ContinuousOn f s) : ∃ t, k ⊆ t ∧ IsOpen t ∧ IsBounded (f '' t) :=
   exists_isOpen_isBounded_image_of_isCompact_of_forall_continuousAt hk fun _x hx =>
     hf.continuousAt (hs.mem_nhds (hks hx))
 #align metric.exists_is_open_bounded_image_of_is_compact_of_continuous_on Metric.exists_isOpen_isBounded_image_of_isCompact_of_continuousOn

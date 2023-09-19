@@ -210,8 +210,8 @@ theorem Periodic.compact_of_continuous' [TopologicalSpace α] {f : ℝ → α} {
 #align function.periodic.compact_of_continuous' Function.Periodic.compact_of_continuous'
 
 /-- A continuous, periodic function is bounded. -/
-theorem Periodic.isBounded_of_continuous [PseudoMetricSpace α] {f : ℝ → α} {c : ℝ} (hp : Periodic f c)
-    (hc : c ≠ 0) (hf : Continuous f) : IsBounded (range f) :=
+theorem Periodic.isBounded_of_continuous [PseudoMetricSpace α] {f : ℝ → α} {c : ℝ}
+    (hp : Periodic f c) (hc : c ≠ 0) (hf : Continuous f) : IsBounded (range f) :=
   (hp.compact_of_continuous hc hf).isBounded
 #align function.periodic.bounded_of_continuous Function.Periodic.isBounded_of_continuous
 
