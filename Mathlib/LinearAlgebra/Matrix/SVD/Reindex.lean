@@ -61,8 +61,8 @@ noncomputable def eigenColumnEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
 
 /-- For matrix of size m × n and rank A.rank : we have an bijeciton between the elements
 of Fin (height) and the eigevalues of the matrix A⬝Aᴴ partitioned into
-- non-zero eigenvaules: (exactly A.rank) of them see `fin_rank_equiv_eigs_mul_conjTranspose`
-- zero eigenvaules: (exactly height - A.rank) of them -/
+- non-zero eigenvalues: (exactly A.rank) of them see `fin_rank_equiv_eigs_mul_conjTranspose`
+- zero eigenvalues: (exactly height - A.rank) of them -/
 noncomputable def eigenRowEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
     (Fin M) ≃ (Fin A.rank) ⊕ (Fin (M - A.rank)) := by
   let em := Equiv.sumCompl (fun i =>  (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0)

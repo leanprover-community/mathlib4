@@ -63,12 +63,12 @@ open Matrix BigOperators
 
 namespace Matrix
 
-/-- The right eigenvectors of a matrix A corresponding to its non-zero eigenvaules -/
+/-- The right eigenvectors of a matrix A corresponding to its non-zero eigenvalues -/
 noncomputable def svdV₁ (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin N) (Fin (A.rank)) 𝕂 :=
   ((reindex (Equiv.refl (Fin N)) (eigenColumnEquiv A))
     (isHermitian_transpose_mul_self A).eigenvectorMatrix).toColumns₁
 
-/-- The right eigenvectors of a matrix A corresponding to the zero eigenvaules of the matrix AᴴA -/
+/-- The right eigenvectors of a matrix A corresponding to the zero eigenvalues of the matrix AᴴA -/
 noncomputable def svdV₂ (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin N) (Fin (N - A.rank)) 𝕂 :=
   ((reindex (Equiv.refl (Fin N)) (eigenColumnEquiv A))
     (isHermitian_transpose_mul_self A).eigenvectorMatrix).toColumns₂
