@@ -1,13 +1,15 @@
 /-
 Copyright (c) 2023 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Richard M. Hill
+Authors: Richard M. Hill
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 
 
-/-
+/-!
 Some extra lemma about truncations of power series.
+
+(To be moved to `PowerSeries.Basic`.)
 -/
 
 

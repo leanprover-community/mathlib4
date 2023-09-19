@@ -8,7 +8,6 @@ import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.RingTheory.PowerSeries.Truncation_lemmas
 import Mathlib.RingTheory.PowerSeries.Comp
 
-
 /-!
 # Definitions
 
@@ -288,11 +287,10 @@ The following theorem is stated only in the case that
 `R` is a field. This is because there is currently no
 instance of `Inv R⟦X⟧` for more general base rings `R`.
 -/
-@[simp]
-theorem D_inv' {R} [Field R] (f : R⟦X⟧) : D R f⁻¹ = -f⁻¹ ^ 2 * D R f := by
+@[simp] theorem D_inv' {R} [Field R] (f : R⟦X⟧) : D R f⁻¹ = -f⁻¹ ^ 2 * D R f := by
   by_cases constantCoeff R f = 0
   · suffices : f⁻¹ = 0
-    . rw [this, pow_two, zero_mul, neg_zero, zero_mul, map_zero]
+    rw [this, pow_two, zero_mul, neg_zero, zero_mul, map_zero]
     rwa [MvPowerSeries.inv_eq_zero]
   apply Derivation.leibniz_of_mul_eq_one
   exact PowerSeries.inv_mul_cancel (h := h)
