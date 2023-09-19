@@ -16,28 +16,31 @@ variable [HasImages D] [HasZeroMorphisms D] [HasKernels D] [HasZeroObject D]
 
 namespace CategoryTheory
 
-@[ext] structure SES :=
+@[ext] structure PreSES :=
 (l m r : C)
 (lm : l ⟶ m)
 (mr : m ⟶ r)
-(mono : Mono lm := by aesop_cat)
-(exact : Exact lm mr := by aesop_cat)
-(epi : Epi mr := by aesop_cat)
 
-attribute [instance] SES.mono SES.epi
+variable {C}
+structure PreSES.is_exact (s : PreSES C) : Prop :=
+(mono : Mono s.lm := by aesop_cat)
+(exact : Exact s.lm s.mr := by aesop_cat)
+(epi : Epi s.mr := by aesop_cat)
 
-@[ext] structure SES.morphism (s t : SES C) :=
+attribute [instance] PreSES.is_exact.mono PreSES.is_exact.epi
+
+@[ext] structure PreSES.morphism (s t : PreSES C) :=
 (l : s.l ⟶ t.l)
 (m : s.m ⟶ t.m)
 (r : s.r ⟶ t.r)
 (comm1 : s.lm ≫ m = l ≫ t.lm := by aesop_cat)
 (comm2 : s.mr ≫ r = m ≫ t.mr := by aesop_cat)
 
-attribute [reassoc] SES.morphism.comm1
-attribute [reassoc] SES.morphism.comm2
+attribute [reassoc] PreSES.morphism.comm1
+attribute [reassoc] PreSES.morphism.comm2
 
-instance SES.instCategory : Category.{v} (SES.{u, v} C) where
-  Hom := SES.morphism C
+instance PreSES.instCategory : Category.{v} (PreSES.{u, v} C) where
+  Hom := PreSES.morphism
   id s :=
   { l := 𝟙 _
     m := 𝟙 _
@@ -49,20 +52,26 @@ instance SES.instCategory : Category.{v} (SES.{u, v} C) where
     comm1 := by rw [m.comm1_assoc, Category.assoc, ← n.comm1]
     comm2 := by rw [m.comm2_assoc, Category.assoc, ← n.comm2] }
 
-namespace SES
+variable (C)
+def SES := FullSubcategory (PreSES.is_exact (C := C))
+
+instance : Category (SES C) :=
+  inferInstanceAs (Category <| FullSubcategory _)
+
+namespace PreSES
 
 @[simps]
-def lFunctor : SES C ⥤ C where
+def lFunctor : PreSES C ⥤ C where
   obj s := s.l
   map f := f.l
 
 @[simps]
-def mFunctor : SES C ⥤ C where
+def mFunctor : PreSES C ⥤ C where
   obj s := s.m
   map f := f.m
 
 @[simps]
-def rFunctor : SES C ⥤ C where
+def rFunctor : PreSES C ⥤ C where
   obj s := s.r
   map f := f.r
 
@@ -76,38 +85,38 @@ def mrNatTrans : NatTrans (mFunctor C) (rFunctor C) where
   app A := A.mr
   naturality _ _ f := f.comm2.symm
 
-instance : HasZeroMorphisms (SES C) where
+instance : HasZeroMorphisms (PreSES C) where
   Zero A B :=
   { zero :=
     { l := 0
       m := 0
       r := 0 } }
   comp_zero f s := by
-    refine SES.morphism.ext _ _ ?_ ?_ ?_ <;>
+    refine PreSES.morphism.ext _ _ ?_ ?_ ?_ <;>
     · change _ ≫ 0 = 0
       aesop_cat
   zero_comp := by
     intros
-    refine SES.morphism.ext _ _ ?_ ?_ ?_ <;>
+    refine PreSES.morphism.ext _ _ ?_ ?_ ?_ <;>
     · change 0 ≫ _ = 0
       aesop_cat
 
 variable {C}
 
-@[simp] lemma zero_l (s t : SES C) : (0 : s ⟶ t).l = 0 := rfl
-@[simp] lemma zero_m (s t : SES C) : (0 : s ⟶ t).m = 0 := rfl
-@[simp] lemma zero_r (s t : SES C) : (0 : s ⟶ t).r = 0 := rfl
+@[simp] lemma zero_l (s t : PreSES C) : (0 : s ⟶ t).l = 0 := rfl
+@[simp] lemma zero_m (s t : PreSES C) : (0 : s ⟶ t).m = 0 := rfl
+@[simp] lemma zero_r (s t : PreSES C) : (0 : s ⟶ t).r = 0 := rfl
 
-def asFunctor (s : SES C) : Fin 3 ⥤ C :=
+def asFunctor (s : PreSES C) : Fin 3 ⥤ C :=
   fin3FunctorMk ![s.l, s.m, s.r] s.lm s.mr
 
-def asFunctorMap {s t : SES C} (f : s ⟶ t) :
+def asFunctorMap {s t : PreSES C} (f : s ⟶ t) :
   ∀ i, s.asFunctor.obj i ⟶ t.asFunctor.obj i
 | ⟨0, _⟩ => f.l
 | ⟨1, _⟩ => f.m
 | ⟨2, _⟩ => f.r
 
-lemma asFunctorMap_natural {s t : SES C} (f : s ⟶ t) :
+lemma asFunctorMap_natural {s t : PreSES C} (f : s ⟶ t) :
   ∀ (i j : Fin 3) (hij : i ≤ j),
     asFunctorMap f i ≫ t.asFunctor.map hij.hom = s.asFunctor.map hij.hom ≫ asFunctorMap f j
 | ⟨0,_⟩, ⟨0,_⟩, _ => by aesop_cat
@@ -135,14 +144,65 @@ lemma asFunctorMap_natural {s t : SES C} (f : s ⟶ t) :
   · congr 1; exact f.comm2.symm
   · rw [← Functor.map_comp_assoc]; congr 1
 
+variable (C)
+
 @[simps]
-protected def functor : SES C ⥤ (Fin 3 ⥤ C) where
+protected def functor : PreSES C ⥤ (Fin 3 ⥤ C) where
   obj := asFunctor
   map f :=
   { app := asFunctorMap f
     naturality := fun _ _ hij => (asFunctorMap_natural f _ _ hij.le).symm }
   map_id _ := by ext i; fin_cases i <;> rfl
   map_comp _ _ := by ext i; fin_cases i <;> rfl
+
+
+@[simps] def map (s : PreSES C) (F : C ⥤ D) : PreSES D where
+  l := F.obj s.l
+  m := F.obj s.m
+  r := F.obj s.r
+  lm := F.map s.lm
+  mr := F.map s.mr
+
+end PreSES
+
+namespace SES
+
+@[simps!]
+def lFunctor : SES C ⥤ C :=
+  fullSubcategoryInclusion _ ⋙ PreSES.lFunctor C
+
+@[simps!]
+def mFunctor : SES C ⥤ C :=
+  fullSubcategoryInclusion _ ⋙ PreSES.mFunctor C
+
+@[simps!]
+def rFunctor : SES C ⥤ C :=
+  fullSubcategoryInclusion _ ⋙ PreSES.rFunctor C
+
+@[simps]
+def lmNatTrans : NatTrans (lFunctor C) (mFunctor C) where
+  app s := (PreSES.lmNatTrans C).app s.obj
+  naturality _ _ f := (PreSES.lmNatTrans C).naturality f
+
+@[simps]
+def mrNatTrans : NatTrans (mFunctor C) (rFunctor C) where
+  app s := (PreSES.mrNatTrans C).app s.obj
+  naturality _ _ f := (PreSES.mrNatTrans C).naturality f
+
+instance : HasZeroMorphisms (SES C) where
+  Zero X Y := ⟨(0 : X.obj ⟶ Y.obj)⟩
+  comp_zero _ Z := comp_zero (Z := Z.obj)
+  zero_comp X _ _ _ := zero_comp (X := X.obj)
+
+variable {C}
+
+@[simp] lemma zero_l (s t : SES C) : (0 : s ⟶ t).l = 0 := rfl
+@[simp] lemma zero_m (s t : SES C) : (0 : s ⟶ t).m = 0 := rfl
+@[simp] lemma zero_r (s t : SES C) : (0 : s ⟶ t).r = 0 := rfl
+
+@[simps!]
+protected def functor : SES C ⥤ (Fin 3 ⥤ C) :=
+    fullSubcategoryInclusion _ ⋙ PreSES.functor C
 
 end SES
 
