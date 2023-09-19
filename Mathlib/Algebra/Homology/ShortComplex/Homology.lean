@@ -1021,7 +1021,6 @@ noncomputable def homologyOpIso [S.HasHomology] :
     S.op.homology ≅ Opposite.op S.homology :=
   S.op.leftHomologyIso.symm ≪≫ S.leftHomologyOpIso ≪≫ S.rightHomologyIso.symm.op
 
-@[simp]
 lemma homologyMap'_op : (homologyMap' φ h₁ h₂).op =
     h₂.iso.inv.op ≫ homologyMap' (opMap φ) h₂.op h₁.op ≫ h₁.iso.hom.op :=
   Quiver.Hom.unop_inj (by
@@ -1031,7 +1030,6 @@ lemma homologyMap'_op : (homologyMap' φ h₁ h₂).op =
       HomologyMapData.op_left, RightHomologyMapData.op_φH, Quiver.Hom.unop_op, assoc,
       ← γ.comm_assoc, Iso.hom_inv_id, comp_id])
 
-@[simp]
 lemma homologyMap_op [HasHomology S₁] [HasHomology S₂] :
     (homologyMap φ).op =
       (S₂.homologyOpIso).inv ≫ homologyMap (opMap φ) ≫ (S₁.homologyOpIso).hom := by
@@ -1049,7 +1047,8 @@ variable (C)
 which relates the homology in `C` and in `Cᵒᵖ`. -/
 noncomputable def homologyFunctorOpNatIso [CategoryWithHomology C] :
     (homologyFunctor C).op ≅ opFunctor C ⋙ homologyFunctor Cᵒᵖ :=
-  NatIso.ofComponents (fun S => S.unop.homologyOpIso.symm) (by simp)
+  NatIso.ofComponents (fun S => S.unop.homologyOpIso.symm)
+    (by simp [homologyMap_op])
 
 variable {C} {A : C}
 
@@ -1066,7 +1065,7 @@ lemma homologyι_descOpcycles_π_eq_zero_of_boundary [S.HasHomology]
   dsimp only [homologyι]
   rw [assoc, S.rightHomologyι_descOpcycles_π_eq_zero_of_boundary k x hx, comp_zero]
 
-lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi (φ : S₁ ⟶ S₂)
+lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi {φ : S₁ ⟶ S₂}
     [S₁.HasHomology] [S₂.HasHomology] (h₁ : IsIso (cyclesMap φ)) (h₂ : Epi φ.τ₁) :
     IsIso (homologyMap φ) := by
   have h : S₂.toCycles ≫ inv (cyclesMap φ) ≫ S₁.homologyπ = 0 := by
@@ -1080,7 +1079,7 @@ lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi (φ : S₁ ⟶ S₂)
   · rw [← cancel_epi S₂.homologyπ, reassoc_of% hz, homologyπ_naturality,
       IsIso.inv_hom_id_assoc, comp_id]
 
-lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono (φ : S₁ ⟶ S₂)
+lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono {φ : S₁ ⟶ S₂}
     [S₁.HasHomology] [S₂.HasHomology] (h₁ : IsIso (opcyclesMap φ)) (h₂ : Mono φ.τ₃) :
     IsIso (homologyMap φ) := by
   have h : (S₂.homologyι ≫ inv (opcyclesMap φ)) ≫ S₁.fromOpcycles = 0 := by
