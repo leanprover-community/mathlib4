@@ -6,7 +6,11 @@ Authors: Kim Liesinger, Yaël Dillies
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Function
 
-/-! ### Lemmas about monotone functions on intervals, and intervals in subtypes.
+/-!
+# Monotone functions on intervals
+
+This file shows many variants of the fact that a monotone function `f` sends an interval with
+endpoints `a` and `b` to the interval with endpoints `f a` and `f b`.
 -/
 
 set_option autoImplicit true
