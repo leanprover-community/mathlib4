@@ -238,6 +238,7 @@ lemma filter_sups_le (s t : Finset α) (a : α) :
     exact ⟨_, ⟨hb, ha.1⟩, _, ⟨hc, ha.2⟩, rfl⟩
   · rintro ⟨b, hb, c, hc, _, rfl⟩
     exact ⟨⟨_, hb.1, _, hc.1, rfl⟩, _root_.sup_le hb.2 hc.2⟩
++#align finset.filter_sups_le Finset.filter_sups_le
 
 end Sups
 
@@ -425,6 +426,7 @@ lemma filter_infs_ge (s t : Finset α) (a : α) :
     exact ⟨_, ⟨hb, ha.1⟩, _, ⟨hc, ha.2⟩, rfl⟩
   · rintro ⟨b, hb, c, hc, _, rfl⟩
     exact ⟨⟨_, hb.1, _, hc.1, rfl⟩, _root_.le_inf hb.2 hc.2⟩
++#align finset.filter_infs_le Finset.filter_infs_le
 
 end Infs
 
