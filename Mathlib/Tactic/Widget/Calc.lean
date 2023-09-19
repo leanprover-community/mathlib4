@@ -212,7 +212,6 @@ elab_rules : tactic
     let tag ← getMainTag
     let some calcRange := (← getFileMap).rangeOfStx? calcstx | unreachable!
     let indent := calcRange.start.character
-    dbg_trace indent
     runTermElab do
     let mut val ← Term.elabCalcStepsWithWidgets indent steps
     let mut valType ← inferType val

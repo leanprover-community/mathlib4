@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot
 -/
 import Mathlib.Tactic.Widget.SelectPanelUtils
+import Mathlib.Data.String.Defs
 
 /-! # Conv widget
 
@@ -83,7 +84,7 @@ private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := ma
 open Lean Syntax in
 /-- Return the link text and inserted text above and below of the conv widget. -/
 def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
-  (_ : SelectInsertParams): MetaM (String × String) := do
+  (params : SelectInsertParams): MetaM (String × String) := do
   let some pos := locations[0]? | throwError "You must select something."
   let ⟨_, .target subexprPos⟩ := pos | throwError "You must select something in the goal."
   let mut list := (SubExpr.Pos.toArray subexprPos).toList
@@ -100,7 +101,9 @@ def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
 
   -- build `enter [...]` string
   retList := List.reverse retList
-  let mut enterval := "conv => enter " ++ toString retList
+  -- prepare `enter` indentation
+  let spc := String.replicate (SelectInsertParamsClass.replaceRange params).start.character ' '
+  let mut enterval := s!"conv =>\n{spc} enter {retList}"
   if enterval.contains '0' then enterval := "Error: Not a valid conv target"
   if retList.isEmpty then enterval := ""
   return ("Generate conv", enterval)
