@@ -15,6 +15,8 @@ import Mathlib.Tactic.Positivity
 This file defines instances for ordered group, monoid, and related structures on Pi types.
 -/
 
+set_option autoImplicit true
+
 variable {ι α β : Type*}
 
 variable {I : Type u}
@@ -60,10 +62,6 @@ instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedMonoid (Z i)]
 instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
     OrderedCancelCommMonoid (∀ i : I, f i) :=
   { Pi.partialOrder, Pi.commMonoid with
-    mul := (· * ·)
-    one := (1 : ∀ i, f i)
-    le := (· ≤ ·)
-    lt := (· < ·)
     npow := Monoid.npow,
     le_of_mul_le_mul_left := fun _ _ _ h i =>
       OrderedCancelCommMonoid.le_of_mul_le_mul_left _ _ _ (h i)
@@ -84,10 +82,6 @@ instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
 @[to_additive]
 instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (∀ i : I, f i) :=
   { Pi.commGroup, Pi.orderedCommMonoid with
-    mul := (· * ·)
-    one := (1 : ∀ i, f i)
-    le := (· ≤ ·)
-    lt := (· < ·)
     npow := Monoid.npow }
 #align pi.ordered_comm_group Pi.orderedCommGroup
 #align pi.ordered_add_comm_group Pi.orderedAddCommGroup

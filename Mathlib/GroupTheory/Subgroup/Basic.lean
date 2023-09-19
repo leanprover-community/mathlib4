@@ -172,8 +172,6 @@ theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
 #align exists_inv_mem_iff_exists_mem exists_inv_mem_iff_exists_mem
 #align exists_neg_mem_iff_exists_mem exists_neg_mem_iff_exists_mem
 
-
-
 @[to_additive]
 theorem mul_mem_cancel_right {x y : G} (h : x ∈ H) : y * x ∈ H ↔ y ∈ H :=
   -- Porting note: whut? why do we need this?
@@ -279,8 +277,8 @@ instance (priority := 75) toLinearOrderedCommGroup {G : Type*} [LinearOrderedCom
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
   "The natural group hom from an additive subgroup of `AddGroup` `G` to `G`."]
-protected def subtype : H →* G :=
-  ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
+protected def subtype : H →* G where
+  toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ => rfl
 #align subgroup_class.subtype SubgroupClass.subtype
 #align add_subgroup_class.subtype AddSubgroupClass.subtype
 
@@ -783,8 +781,8 @@ instance toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G] (H : Su
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive "The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`."]
-protected def subtype : H →* G :=
-  ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
+protected def subtype : H →* G where
+  toFun := ((↑) : H → G); map_one' := rfl; map_mul' _ _ := rfl
 #align subgroup.subtype Subgroup.subtype
 #align add_subgroup.subtype AddSubgroup.subtype
 
@@ -1467,7 +1465,10 @@ theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
 #align subgroup.mem_map_equiv Subgroup.mem_map_equiv
 #align add_subgroup.mem_map_equiv AddSubgroup.mem_map_equiv
 
-@[to_additive]
+-- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[to_additive (attr := simp 1100, nolint simpNF)]
 theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup G} {x : G} :
     f x ∈ K.map f ↔ x ∈ K :=
   hf.mem_set_image
@@ -2083,6 +2084,22 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 #align subgroup.center_to_submonoid Subgroup.center_toSubmonoid
 #align add_subgroup.center_to_add_submonoid AddSubgroup.center_toAddSubmonoid
 
+/-- For a group with zero, the center of the units is the same as the units of the center. -/
+@[simps! apply_val_coe symm_apply_coe_val]
+def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
+    Subgroup.center (G₀ˣ) ≃* (Submonoid.center G₀)ˣ where
+  toFun := MonoidHom.toHomUnits <|
+    { toFun := fun u ↦ ⟨(u : G₀ˣ), fun r ↦ by
+        rcases eq_or_ne r 0 with (rfl | hr)
+        · rw [mul_zero, zero_mul]
+        exact congrArg Units.val <| u.2 <| Units.mk0 r hr⟩
+      map_one' := rfl
+      map_mul' := fun _ _ ↦ rfl }
+  invFun u := unitsCenterToCenterUnits G₀ u
+  left_inv _ := by ext; rfl
+  right_inv _ := by ext; rfl
+  map_mul' := map_mul _
+
 variable {G}
 
 @[to_additive]
@@ -2504,7 +2521,6 @@ theorem normalClosure_mono {s t : Set G} (h : s ⊆ t) : normalClosure s ≤ nor
   normalClosure_le_normal (Set.Subset.trans h subset_normalClosure)
 #align subgroup.normal_closure_mono Subgroup.normalClosure_mono
 
--- Porting note: the elaborator trips up on using underscores for names in `⨅`
 theorem normalClosure_eq_iInf :
     normalClosure s = ⨅ (N : Subgroup G) (_ : Normal N) (_ : s ⊆ N), N :=
   le_antisymm (le_iInf fun N => le_iInf fun hN => le_iInf normalClosure_le_normal)
@@ -2755,6 +2771,11 @@ theorem ofInjective_apply {f : G →* N} (hf : Function.Injective f) {x : G} :
 #align monoid_hom.of_injective_apply MonoidHom.ofInjective_apply
 #align add_monoid_hom.of_injective_apply AddMonoidHom.ofInjective_apply
 
+@[to_additive (attr := simp)]
+theorem apply_ofInjective_symm {f : G →* N} (hf : Function.Injective f) (x : f.range) :
+    f ((ofInjective hf).symm x) = x :=
+  Subtype.ext_iff.1 <| (ofInjective hf).apply_symm_apply x
+
 section Ker
 
 variable {M : Type*} [MulOneClass M]
@@ -2893,6 +2914,12 @@ instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=
     rw [mem_ker, map_mul, map_mul, f.mem_ker.1 hx, mul_one, map_mul_eq_one f (mul_inv_self y)]⟩
 #align monoid_hom.normal_ker MonoidHom.normal_ker
 #align add_monoid_hom.normal_ker AddMonoidHom.normal_ker
+
+@[to_additive (attr := simp)]
+lemma ker_fst : ker (fst G G') = .prod ⊥ ⊤ := SetLike.ext fun _ => (and_true_iff _).symm
+
+@[to_additive (attr := simp)]
+lemma ker_snd : ker (snd G G') = .prod ⊤ ⊥ := SetLike.ext fun _ => (true_and_iff _).symm
 
 end Ker
 
@@ -3573,8 +3600,8 @@ instance prod_subgroupOf_prod_normal {H₁ K₁ : Subgroup G} {H₂ K₂ : Subgr
 
 @[to_additive]
 instance prod_normal (H : Subgroup G) (K : Subgroup N) [hH : H.Normal] [hK : K.Normal] :
-    (H.prod K).Normal
-    where conj_mem n hg g :=
+    (H.prod K).Normal where
+  conj_mem n hg g :=
     ⟨hH.conj_mem n.fst (Subgroup.mem_prod.mp hg).1 g.fst,
       hK.conj_mem n.snd (Subgroup.mem_prod.mp hg).2 g.snd⟩
 #align subgroup.prod_normal Subgroup.prod_normal
@@ -3628,8 +3655,7 @@ theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgr
 /-- Elements of disjoint, normal subgroups commute. -/
 @[to_additive "Elements of disjoint, normal subgroups commute."]
 theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Normal) (hH₂ : H₂.Normal)
-    -- Porting note: Goal was `Commute x y`. Removed ambiguity.
-    (hdis : Disjoint H₁ H₂) (x y : G) (hx : x ∈ H₁) (hy : y ∈ H₂) : _root_.Commute x y := by
+    (hdis : Disjoint H₁ H₂) (x y : G) (hx : x ∈ H₁) (hy : y ∈ H₂) : Commute x y := by
   suffices x * y * x⁻¹ * y⁻¹ = 1 by
     show x * y = y * x
     · rw [mul_assoc, mul_eq_one_iff_eq_inv] at this
@@ -3723,5 +3749,36 @@ theorem eq_of_right_mem_center {g h : M} (H : IsConj g h) (Hh : h ∈ Set.center
 #align is_conj.eq_of_right_mem_center IsConj.eq_of_right_mem_center
 
 end IsConj
+
+namespace ConjClasses
+
+/-- The conjugacy classes that are not trivial. -/
+def noncenter (G : Type _) [Monoid G] : Set (ConjClasses G) :=
+  {x | x.carrier.Nontrivial}
+
+@[simp] lemma mem_noncenter [Monoid G] (g : ConjClasses G) :
+  g ∈ noncenter G ↔ g.carrier.Nontrivial := Iff.rfl
+
+theorem mk_bijOn (G : Type _) [Group G] :
+    Set.BijOn ConjClasses.mk (↑(Subgroup.center G)) (noncenter G)ᶜ := by
+  refine ⟨fun g hg ↦ ?_, fun x hx y _ H ↦ ?_, ?_⟩
+  · simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff]
+    intro x hx y hy
+    simp only [mem_carrier_iff_mk_eq, mk_eq_mk_iff_isConj] at hx hy
+    rw [hx.eq_of_right_mem_center hg, hy.eq_of_right_mem_center hg]
+  · rw [mk_eq_mk_iff_isConj] at H
+    exact H.eq_of_left_mem_center hx
+  · rintro ⟨g⟩ hg
+    refine ⟨g, ?_, rfl⟩
+    simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff] at hg
+    intro h
+    rw [← mul_inv_eq_iff_eq_mul]
+    refine hg ?_ mem_carrier_mk
+    rw [mem_carrier_iff_mk_eq]
+    apply mk_eq_mk_iff_isConj.mpr
+    rw [isConj_comm, isConj_iff]
+    exact ⟨h, rfl⟩
+
+end ConjClasses
 
 assert_not_exists Multiset

@@ -555,7 +555,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
   · have : μ s = 0 := le_bot_iff.1 hμs
     refine' ⟨∅, by simp only [Finset.coe_empty, empty_subset], _, _⟩
     · simp only [this, Finset.not_mem_empty, diff_empty, iUnion_false, iUnion_empty,
-        nonpos_iff_eq_zero, MulZeroClass.mul_zero]
+        nonpos_iff_eq_zero, mul_zero]
     · simp only [Finset.coe_empty, pairwiseDisjoint_empty]
   cases isEmpty_or_nonempty α
   · simp only [eq_empty_of_isEmpty s, measure_empty] at hμs
@@ -708,8 +708,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
           N / (N + 1) * μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ t), closedBall p.1 p.2) := by
     intro t ht
     set B := ⋃ (p : α × ℝ) (_ : p ∈ t), closedBall p.1 p.2 with hB
-    have B_closed : IsClosed B :=
-      isClosed_biUnion (Finset.finite_toSet _) fun i _ => isClosed_ball
+    have B_closed : IsClosed B := isClosed_biUnion_finset fun i _ => isClosed_ball
     set s' := s \ B
     have : ∀ x ∈ s', ∃ r ∈ f x ∩ Ioo 0 1, Disjoint B (closedBall x r) := by
       intro x hx
@@ -810,7 +809,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
         exact ENNReal.add_lt_add_left (ENNReal.nat_ne_top N) zero_lt_one
       · simp only [true_or_iff, add_eq_zero_iff, Ne.def, not_false_iff, one_ne_zero, and_false_iff]
       · simp only [ENNReal.nat_ne_top, Ne.def, not_false_iff, or_true_iff]
-    rw [MulZeroClass.zero_mul] at C
+    rw [zero_mul] at C
     apply le_bot_iff.1
     exact le_of_tendsto_of_tendsto' tendsto_const_nhds C fun n => (A n).trans (B n)
   · refine' (pairwiseDisjoint_iUnion _).2 fun n => (Pu n).1

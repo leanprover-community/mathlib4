@@ -42,6 +42,8 @@ colimit, representable, presheaf, free cocompletion
 * https://ncatlab.org/nlab/show/Yoneda+extension
 -/
 
+set_option autoImplicit true
+
 
 namespace CategoryTheory
 
@@ -82,8 +84,7 @@ def restrictedYonedaYoneda : restrictedYoneda (yoneda : C ⥤ Cᵒᵖ ⥤ Type u
       funext fun x => by
         dsimp
         have : x.app X (CategoryStruct.id (Opposite.unop X)) =
-            (x.app X (𝟙 (Opposite.unop X)))
-              := by rfl
+            (x.app X (𝟙 (Opposite.unop X))) := rfl
         rw [this]
         rw [← FunctorToTypes.naturality _ _ x f (𝟙 _)]
         simp only [id_comp, Functor.op_obj, Opposite.unop_op, yoneda_obj_map, comp_id]

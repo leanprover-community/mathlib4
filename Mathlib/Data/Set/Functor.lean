@@ -15,6 +15,8 @@ import Mathlib.Control.Basic
 This file defines the functor structure of `Set`.
 -/
 
+set_option autoImplicit true
+
 universe u
 
 open Function

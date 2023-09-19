@@ -129,12 +129,12 @@ theorem subset_closedBall_norm [NormOneClass A] (a : A) : σ a ⊆ Metric.closed
   fun k hk => by simp [norm_le_norm_of_mem hk]
 #align spectrum.subset_closed_ball_norm spectrum.subset_closedBall_norm
 
-theorem is_bounded (a : A) : Metric.Bounded (σ a) :=
-  (Metric.bounded_iff_subset_ball 0).mpr ⟨‖a‖ * ‖(1 : A)‖, subset_closedBall_norm_mul a⟩
-#align spectrum.is_bounded spectrum.is_bounded
+theorem isBounded (a : A) : Bornology.IsBounded (σ a) :=
+  Metric.isBounded_closedBall.subset (subset_closedBall_norm_mul a)
+#align spectrum.is_bounded spectrum.isBounded
 
 protected theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (σ a) :=
-  Metric.isCompact_of_isClosed_bounded (spectrum.isClosed a) (is_bounded a)
+  Metric.isCompact_of_isClosed_isBounded (spectrum.isClosed a) (isBounded a)
 #align spectrum.is_compact spectrum.isCompact
 
 theorem spectralRadius_le_nnnorm [NormOneClass A] (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
@@ -184,7 +184,7 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ atTop.liminf fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
   refine' ENNReal.le_of_forall_lt_one_mul_le fun ε hε => _
   by_cases ε = 0
-  · simp only [h, MulZeroClass.zero_mul, zero_le']
+  · simp only [h, zero_mul, zero_le']
   have hε' : ε⁻¹ ≠ ∞ := fun h' =>
     h (by simpa only [inv_inv, inv_top] using congr_arg (fun x : ℝ≥0∞ => x⁻¹) h')
   simp only [ENNReal.mul_le_iff_le_inv h (hε.trans_le le_top).ne, mul_comm ε⁻¹,
@@ -284,7 +284,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
           le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) _)
             (le_max_left _ _)
         · by_cases ‖a‖₊ = 0
-          · simp only [h, MulZeroClass.zero_mul, zero_le', pow_succ]
+          · simp only [h, zero_mul, zero_le', pow_succ]
           · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
             simpa only [← mul_pow, mul_comm] using pow_le_one' hr.le n.succ
     r_pos := ENNReal.inv_pos.mpr coe_ne_top
@@ -400,7 +400,7 @@ protected theorem nonempty : (spectrum ℂ a).Nonempty := by
     By Liouville's theorem `fun z ↦ resolvent a z` is constant. -/
   have H₂ := norm_resolvent_le_forall (𝕜 := ℂ) a
   have H₃ : ∀ z : ℂ, resolvent a z = resolvent a (0 : ℂ) := by
-    refine' fun z => H₁.apply_eq_apply_of_bounded (bounded_iff_forall_norm_le.mpr _) z 0
+    refine' fun z => H₁.apply_eq_apply_of_bounded (isBounded_iff_forall_norm_le.mpr _) z 0
     rcases H₂ 1 zero_lt_one with ⟨R, _, hR⟩
     rcases (ProperSpace.isCompact_closedBall (0 : ℂ) R).exists_bound_of_continuousOn
         H₁.continuous.continuousOn with

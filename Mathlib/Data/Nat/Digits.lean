@@ -29,6 +29,8 @@ A basic `norm_digits` tactic is also provided for proving goals of the form
 `Nat.digits a b = l` where `a` and `b` are numerals.
 -/
 
+set_option autoImplicit true
+
 
 namespace Nat
 
@@ -423,6 +425,19 @@ theorem ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by
   rw [ofDigits_append, ofDigits_digits, ofDigits_digits]
 #align nat.of_digits_digits_append_digits Nat.ofDigits_digits_append_digits
+
+theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
+    digits b n ++ digits b m = digits b (n + b ^ (digits b n).length * m) := by
+  rcases eq_or_lt_of_le (Nat.succ_le_of_lt hb) with (rfl | hb)
+  · simp [List.replicate_add]
+  rw [← ofDigits_digits_append_digits]
+  refine' (digits_ofDigits b hb _ (fun l hl => _) (fun h_append => _)).symm
+  · rcases (List.mem_append.mp hl) with (h | h) <;> exact digits_lt_base hb h
+  · by_cases digits b m = []
+    · simp only [h, List.append_nil] at h_append ⊢
+      exact getLast_digit_ne_zero b <| digits_ne_nil_iff_ne_zero.mp h_append
+    · exact (List.getLast_append' _ _ h) ▸
+          (getLast_digit_ne_zero _ <| digits_ne_nil_iff_ne_zero.mp h)
 
 theorem digits_len_le_digits_len_succ (b n : ℕ) :
     (digits b n).length ≤ (digits b (n + 1)).length := by

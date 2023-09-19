@@ -782,11 +782,11 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     have L : Tendsto (fun n : ℕ => diam (closedBall (u (x n)) ((1 / 2) ^ n))) atTop (𝓝 0) := by
       have : Tendsto (fun n : ℕ => (2 : ℝ) * (1 / 2) ^ n) atTop (𝓝 (2 * 0)) :=
         (tendsto_pow_atTop_nhds_0_of_lt_1 I0.le I1).const_mul _
-      rw [MulZeroClass.mul_zero] at this
+      rw [mul_zero] at this
       exact
         squeeze_zero (fun n => diam_nonneg) (fun n => diam_closedBall (pow_nonneg I0.le _)) this
     refine nonempty_iInter_of_nonempty_biInter (fun n => isClosed_ball)
-      (fun n => bounded_closedBall) (fun N ↦ ?_) L
+      (fun n => isBounded_closedBall) (fun N ↦ ?_) L
     obtain ⟨y, hxy, ys⟩ : ∃ y, y ∈ ball x ((1 / 2) ^ N) ∩ s :=
       clusterPt_principal_iff.1 hx _ (ball_mem_nhds x (pow_pos I0 N))
     have E :

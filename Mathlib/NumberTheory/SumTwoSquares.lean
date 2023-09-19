@@ -82,7 +82,7 @@ theorem ZMod.isSquare_neg_one_of_dvd {m n : ℕ} (hd : m ∣ n) (hs : IsSquare (
 
 /-- If `-1` is a square modulo coprime natural numbers `m` and `n`, then `-1` is also
 a square modulo `m*n`. -/
-theorem ZMod.isSquare_neg_one_mul {m n : ℕ} (hc : m.coprime n) (hm : IsSquare (-1 : ZMod m))
+theorem ZMod.isSquare_neg_one_mul {m n : ℕ} (hc : m.Coprime n) (hm : IsSquare (-1 : ZMod m))
     (hn : IsSquare (-1 : ZMod n)) : IsSquare (-1 : ZMod (m * n)) := by
   have : IsSquare (-1 : ZMod m × ZMod n) := by
     rw [show (-1 : ZMod m × ZMod n) = ((-1 : ZMod m), (-1 : ZMod n)) from rfl]
@@ -111,7 +111,7 @@ theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
   · exact False.elim (hn.ne_zero rfl)
   · exact ⟨0, by simp only [Fin.zero_mul, neg_eq_zero, Fin.one_eq_zero_iff]⟩
   · haveI : Fact p.Prime := ⟨hpp⟩
-    have hcp : p.coprime n := by
+    have hcp : p.Coprime n := by
       by_contra hc
       exact hpp.not_unit (hn p <| mul_dvd_mul_left p <| hpp.dvd_iff_not_coprime.mpr hc)
     have hp₁ := ZMod.exists_sq_eq_neg_one_iff.mpr (H hpp (dvd_mul_right p n))
@@ -174,7 +174,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n 
 /-- If the natural number `n` is a sum of two squares of coprime natural numbers, then
 `-1` is a square modulo `n`. -/
 theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_coprime {n x y : ℕ} (h : n = x ^ 2 + y ^ 2)
-    (hc : x.coprime y) : IsSquare (-1 : ZMod n) := by
+    (hc : x.Coprime y) : IsSquare (-1 : ZMod n) := by
   zify at h
   exact ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime h hc.isCoprime
 #align zmod.is_square_neg_one_of_eq_sq_add_sq_of_coprime ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_coprime

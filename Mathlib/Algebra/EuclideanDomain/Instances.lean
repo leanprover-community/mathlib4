@@ -22,8 +22,6 @@ import Mathlib.Data.Int.Order.Basic
 
 instance Int.euclideanDomain : EuclideanDomain ℤ :=
   { inferInstanceAs (CommRing Int), inferInstanceAs (Nontrivial Int) with
-    add := (· + ·), mul := (· * ·), one := 1, zero := 0,
-    neg := Neg.neg,
     quotient := (· / ·), quotient_zero := Int.ediv_zero, remainder := (· % ·),
     quotient_mul_add_remainder_eq := Int.ediv_add_emod,
     r := fun a b => a.natAbs < b.natAbs,

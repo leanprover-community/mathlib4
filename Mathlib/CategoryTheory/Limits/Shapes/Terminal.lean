@@ -77,6 +77,13 @@ def IsTerminal.ofUnique (Y : C) [h : ∀ X : C, Unique (X ⟶ Y)] : IsTerminal Y
   fac := fun _ ⟨j⟩ => j.elim
 #align category_theory.limits.is_terminal.of_unique CategoryTheory.Limits.IsTerminal.ofUnique
 
+/-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
+    (as explicit arguments). -/
+def IsTerminal.ofUniqueHom {Y : C} (h : ∀ X : C, X ⟶ Y) (uniq : ∀ (X : C) (m : X ⟶ Y), m = h X) :
+    IsTerminal Y :=
+  have : ∀ X : C, Unique (X ⟶ Y) := fun X ↦ ⟨⟨h X⟩, uniq X⟩
+  IsTerminal.ofUnique Y
+
 /-- If `α` is a preorder with top, then `⊤` is a terminal object. -/
 def isTerminalTop {α : Type*} [Preorder α] [OrderTop α] : IsTerminal (⊤ : α) :=
   IsTerminal.ofUnique _
@@ -85,8 +92,8 @@ def isTerminalTop {α : Type*} [Preorder α] [OrderTop α] : IsTerminal (⊤ : �
 /-- Transport a term of type `IsTerminal` across an isomorphism. -/
 def IsTerminal.ofIso {Y Z : C} (hY : IsTerminal Y) (i : Y ≅ Z) : IsTerminal Z :=
   IsLimit.ofIsoLimit hY
-    { hom := { Hom := i.hom }
-      inv := { Hom := i.inv } }
+    { hom := { hom := i.hom }
+      inv := { hom := i.inv } }
 #align category_theory.limits.is_terminal.of_iso CategoryTheory.Limits.IsTerminal.ofIso
 
 /-- An object `X` is initial iff for every `Y` there is a unique morphism `X ⟶ Y`. -/
@@ -111,6 +118,13 @@ def IsInitial.ofUnique (X : C) [h : ∀ Y : C, Unique (X ⟶ Y)] : IsInitial X w
   fac := fun _ ⟨j⟩ => j.elim
 #align category_theory.limits.is_initial.of_unique CategoryTheory.Limits.IsInitial.ofUnique
 
+/-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
+    (as explicit arguments). -/
+def IsInitial.ofUniqueHom {X : C} (h : ∀ Y : C, X ⟶ Y) (uniq : ∀ (Y : C) (m : X ⟶ Y), m = h Y) :
+    IsInitial X :=
+  have : ∀ Y : C, Unique (X ⟶ Y) := fun Y ↦ ⟨⟨h Y⟩, uniq Y⟩
+  IsInitial.ofUnique X
+
 /-- If `α` is a preorder with bot, then `⊥` is an initial object. -/
 def isInitialBot {α : Type*} [Preorder α] [OrderBot α] : IsInitial (⊥ : α) :=
   IsInitial.ofUnique _
@@ -119,8 +133,8 @@ def isInitialBot {α : Type*} [Preorder α] [OrderBot α] : IsInitial (⊥ : α)
 /-- Transport a term of type `is_initial` across an isomorphism. -/
 def IsInitial.ofIso {X Y : C} (hX : IsInitial X) (i : X ≅ Y) : IsInitial Y :=
   IsColimit.ofIsoColimit hX
-    { hom := { Hom := i.hom }
-      inv := { Hom := i.inv } }
+    { hom := { hom := i.hom }
+      inv := { hom := i.inv } }
 #align category_theory.limits.is_initial.of_iso CategoryTheory.Limits.IsInitial.ofIso
 
 /-- Give the morphism to a terminal object from any other. -/
@@ -518,7 +532,6 @@ every morphism out of it is a monomorphism. -/
 theorem InitialMonoClass.of_isInitial {I : C} (hI : IsInitial I) (h : ∀ X, Mono (hI.to X)) :
     InitialMonoClass C where
   isInitial_mono_from {I'} X hI' := by
-    dsimp
     rw [hI'.hom_ext (hI'.to X) ((hI'.uniqueUpToIso hI).hom ≫ hI.to X)]
     apply mono_comp
 #align category_theory.limits.initial_mono_class.of_is_initial CategoryTheory.Limits.InitialMonoClass.of_isInitial

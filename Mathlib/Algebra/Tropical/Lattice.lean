@@ -72,4 +72,20 @@ instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice 
       csInf_le (untrop_monotone.map_bddBelow hs) (Set.mem_image_of_mem untrop hx) }
 
 instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (Tropical R) :=
-  { instConditionallyCompleteLatticeTropical, Tropical.instLinearOrderTropical with }
+  { instConditionallyCompleteLatticeTropical, Tropical.instLinearOrderTropical with
+    csSup_of_not_bddAbove := by
+      intro s hs
+      have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
+      simp [sSup, this]
+      apply csSup_of_not_bddAbove
+      contrapose! hs
+      change BddAbove (tropOrderIso.symm '' s) at hs
+      exact tropOrderIso.symm.bddAbove_image.1 hs
+    csInf_of_not_bddBelow := by
+      intro s hs
+      have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
+      simp [sInf, this]
+      apply csInf_of_not_bddBelow
+      contrapose! hs
+      change BddBelow (tropOrderIso.symm '' s) at hs
+      exact tropOrderIso.symm.bddBelow_image.1 hs }

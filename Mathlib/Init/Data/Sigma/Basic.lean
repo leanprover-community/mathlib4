@@ -9,6 +9,8 @@ import Mathlib.Init.Logic
 # Lemmas about `Sigma` from Lean 3 core.
 -/
 
+set_option autoImplicit true
+
 theorem ex_of_psig {p : α → Prop} : (Σ' x, p x) → ∃ x, p x
   | ⟨x, hx⟩ => ⟨x, hx⟩
 

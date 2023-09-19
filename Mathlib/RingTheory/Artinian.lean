@@ -322,8 +322,8 @@ theorem isArtinian_of_submodule_of_artinian (R M) [Ring R] [AddCommGroup M] [Mod
     (N : Submodule R M) (_ : IsArtinian R M) : IsArtinian R N := inferInstance
 #align is_artinian_of_submodule_of_artinian isArtinian_of_submodule_of_artinian
 
-theorem isArtinian_of_quotient_of_artinian (R) [Ring R] (M) [AddCommGroup M] [Module R M]
-    (N : Submodule R M) (_ : IsArtinian R M) : IsArtinian R (M ⧸ N) :=
+instance isArtinian_of_quotient_of_artinian (R) [Ring R] (M) [AddCommGroup M] [Module R M]
+    (N : Submodule R M) [IsArtinian R M] : IsArtinian R (M ⧸ N) :=
   isArtinian_of_surjective M (Submodule.mkQ N) (Submodule.Quotient.mk_surjective N)
 #align is_artinian_of_quotient_of_artinian isArtinian_of_quotient_of_artinian
 
@@ -333,6 +333,9 @@ theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Al
   rw [isArtinian_iff_wellFounded] at h ⊢
   refine' (Submodule.restrictScalarsEmbedding R S M).wellFounded h
 #align is_artinian_of_tower isArtinian_of_tower
+
+instance (R) [CommRing R] [IsArtinianRing R] (I : Ideal R) : IsArtinianRing (R ⧸ I) :=
+  isArtinian_of_tower R inferInstance
 
 theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) [IsArtinianRing R] (hN : N.FG) : IsArtinian R N := by
@@ -448,5 +451,11 @@ instance : IsArtinianRing (Localization S) :=
   localization_artinian S _
 
 end Localization
+
+instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
+  Ideal.Quotient.maximal_of_isField _ <|
+    (MulEquiv.ofBijective _ ⟨IsFractionRing.injective (R ⧸ p) (FractionRing (R ⧸ p)),
+      localization_surjective (nonZeroDivisors (R ⧸ p)) (FractionRing (R ⧸ p))⟩).isField _
+    <| Field.toIsField <| FractionRing (R ⧸ p)
 
 end IsArtinianRing

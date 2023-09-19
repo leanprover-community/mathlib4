@@ -12,6 +12,8 @@ import Std.Tactic.OpenPrivate
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
 
+set_option autoImplicit true
+
 open Lean Elab.Tactic
 
 def Lean.PHashSet.toList [BEq α] [Hashable α] (s : Lean.PHashSet α) : List α :=
@@ -53,6 +55,18 @@ def mkEqSymm (e : Expr) (r : Simp.Result) : MetaM Simp.Result :=
 
 def mkCast (r : Simp.Result) (e : Expr) : MetaM Expr := do
   mkAppM ``cast #[← r.getProof, e]
+
+/--
+Constructs a proof that the original expression is true
+given a simp result which simplifies the target to `True`.
+-/
+def Result.ofTrue (r : Simp.Result) : MetaM (Option Expr) :=
+  if r.expr.isConstOf ``True then
+    some <$> match r.proof? with
+    | some proof => mkOfEqTrue proof
+    | none => pure (mkConst ``True.intro)
+  else
+    pure none
 
 /-- Return all propositions in the local context. -/
 def getPropHyps : MetaM (Array FVarId) := do

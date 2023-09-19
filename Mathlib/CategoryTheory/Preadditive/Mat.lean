@@ -187,8 +187,8 @@ and so the internal indexing of a biproduct may have nothing to do with the exte
 even though the construction we give uses a sigma type.
 See however `isoBiproductEmbedding`.
 -/
-instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C)
-    where out n :=
+instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
+  out n :=
     { has_biproduct := fun f =>
         hasBiproduct_of_total
           { pt := ⟨Σ j, (f j).ι, fun p => (f p.1).X p.2⟩
@@ -313,8 +313,8 @@ set_option linter.uppercaseLean3 false in
 
 namespace Embedding
 
-instance : Faithful (embedding C)
-    where map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
+instance : Faithful (embedding C) where
+  map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
 
 instance : Full (embedding C) where preimage f := f PUnit.unit PUnit.unit
 
@@ -387,7 +387,6 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
       F.map (M.isoBiproductEmbedding.hom ≫ biproduct.π _ i) := by
   dsimp [additiveObjIsoBiproduct]
   rw [biproduct.lift_π, Category.assoc]
-  dsimp [Functor.mapBiproduct]
   erw [biproduct.lift_π, ← F.map_comp]
   simp
 
@@ -561,7 +560,7 @@ open Matrix
 instance (R : Type u) [Semiring R] : Category (Mat R) where
   Hom X Y := Matrix X Y R
   id X := (1 : Matrix X X R)
-  comp f g := f ⬝ g
+  comp {X Y Z} f g := (show Matrix X Y R from f) * (show Matrix Y Z R from g)
   assoc := by intros; simp [Matrix.mul_assoc]
 
 namespace Mat
@@ -647,8 +646,8 @@ instance : Faithful (equivalenceSingleObjInverse R) where
 instance : Full (equivalenceSingleObjInverse R) where
   preimage f i j := MulOpposite.op (f i j)
 
-instance : EssSurj (equivalenceSingleObjInverse R)
-    where mem_essImage X :=
+instance : EssSurj (equivalenceSingleObjInverse R) where
+  mem_essImage X :=
     ⟨{  ι := X
         X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
 

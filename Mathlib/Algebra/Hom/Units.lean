@@ -3,7 +3,7 @@ Copyright (c) 2018 Johan Commelin All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Group.Units
 
 #align_import algebra.hom.units from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
@@ -102,8 +102,8 @@ theorem map_id : map (MonoidHom.id M) = MonoidHom.id Mˣ := by ext; rfl
 
 /-- Coercion `Mˣ → M` as a monoid homomorphism. -/
 @[to_additive "Coercion `AddUnits M → M` as an AddMonoid homomorphism."]
-def coeHom : Mˣ →* M :=
-  ⟨⟨Units.val, val_one⟩, val_mul⟩
+def coeHom : Mˣ →* M where
+  toFun := Units.val; map_one' := val_one; map_mul' := val_mul
 #align units.coe_hom Units.coeHom
 #align add_units.coe_hom AddUnits.coeHom
 
@@ -272,7 +272,7 @@ variable [DivisionMonoid α] {a b c : α}
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. As
 opposed to `IsUnit.unit`, the inverse is computable and comes from the inversion on `α`. This is
 useful to transfer properties of inversion in `Units α` to `α`. See also `toUnits`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps val)
   "The element of the additive group of additive units, corresponding to an element of
   an additive monoid which is an additive unit. As opposed to `IsAddUnit.addUnit`, the negation is
   computable and comes from the negation on `α`. This is useful to transfer properties of negation
@@ -281,6 +281,13 @@ def unit' (h : IsUnit a) : αˣ :=
   ⟨a, a⁻¹, h.mul_inv_cancel, h.inv_mul_cancel⟩
 #align is_unit.unit' IsUnit.unit'
 #align is_add_unit.add_unit' IsAddUnit.addUnit'
+#align is_unit.coe_unit' IsUnit.val_unit'
+#align is_add_unit.coe_add_unit' IsAddUnit.val_addUnit'
+
+-- Porting note: TODO: `simps val_inv` fails
+@[to_additive] theorem val_inv_unit' (h : IsUnit a) : ↑(h.unit'⁻¹) = a⁻¹ := rfl
+#align is_unit.coe_inv_unit' IsUnit.val_inv_unit'
+#align is_add_unit.coe_neg_add_unit' IsAddUnit.val_neg_addUnit'
 
 @[to_additive (attr := simp)]
 protected theorem mul_inv_cancel_left (h : IsUnit a) : ∀ b, a * (a⁻¹ * b) = b :=

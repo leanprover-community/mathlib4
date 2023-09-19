@@ -36,6 +36,8 @@ The above types have corresponding classes:
 
 -/
 
+set_option autoImplicit true
+
 assert_not_exists Submonoid
 
 variable (M' : Type*)
@@ -59,9 +61,9 @@ variable (T : Type*) [Semiring T] [MulSemiringAction M T]
 -- @[nolint has_nonempty_instance]
 structure MulActionHom where
   /-- The underlying function. -/
-  toFun : X → Y
+  protected toFun : X → Y
   /-- The proposition that the function preserves the action. -/
-  map_smul' : ∀ (m : M') (x : X), toFun (m • x) = m • toFun x
+  protected map_smul' : ∀ (m : M') (x : X), toFun (m • x) = m • toFun x
 #align mul_action_hom MulActionHom
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction

@@ -7,6 +7,8 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.LinearCombination
 
 #align_import linear_algebra.linear_independent from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -111,7 +113,7 @@ theorem linearIndependent_iff' :
     ⟨fun hf s g hg i his =>
       have h :=
         hf (∑ i in s, Finsupp.single i (g i)) <| by
-          simpa only [LinearMap.map_sum, Finsupp.total_single] using hg
+          simpa only [map_sum, Finsupp.total_single] using hg
       calc
         g i = (Finsupp.lapply i : (ι →₀ R) →ₗ[R] R) (Finsupp.single i (g i)) := by
           { rw [Finsupp.lapply_apply, Finsupp.single_eq_same] }
@@ -120,10 +122,8 @@ theorem linearIndependent_iff' :
             Finset.sum_eq_single i
               (fun j _hjs hji => by rw [Finsupp.lapply_apply, Finsupp.single_eq_of_ne hji])
               fun hnis => hnis.elim his
-        _ = (∑ j in s, Finsupp.single j (g j)) i :=
-          (Finsupp.lapply i : (ι →₀ R) →ₗ[R] R).map_sum.symm
-        _ = 0 := FunLike.ext_iff.1 h i
-        ,
+        _ = (∑ j in s, Finsupp.single j (g j)) i := (map_sum ..).symm
+        _ = 0 := FunLike.ext_iff.1 h i,
       fun hf l hl =>
       Finsupp.ext fun i =>
         _root_.by_contradiction fun hni => hni <| hf _ _ hl _ <| Finsupp.mem_support_iff.2 hni⟩
@@ -187,6 +187,23 @@ theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependen
         · simp [h])
 #align linear_independent.ne_zero LinearIndependent.ne_zero
 
+lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, y])
+    {s t : R} (h' : s • x + t • y = 0) : s = 0 ∧ t = 0 := by
+  have := linearIndependent_iff'.1 h Finset.univ ![s, t]
+  simp only [Fin.sum_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, h',
+    Finset.mem_univ, forall_true_left] at this
+  exact ⟨this 0, this 1⟩
+
+lemma LinearIndependent.pair_iff {x y : M} :
+    LinearIndependent R ![x, y] ↔ ∀ (s t : R), s • x + t • y = 0 → s = 0 ∧ t = 0 := by
+  refine ⟨fun h s t hst ↦ h.eq_zero_of_pair hst, fun h ↦ ?_⟩
+  apply Fintype.linearIndependent_iff.2
+  intro g hg
+  simp only [Fin.sum_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons] at hg
+  intro i
+  fin_cases i
+  exacts [(h _ _ hg).1, (h _ _ hg).2]
+
 /-- A subfamily of a linearly independent family (i.e., a composition with an injective map) is a
 linearly independent family. -/
 theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf : Injective f) :
@@ -222,35 +239,13 @@ theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
 
 /-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
     spans a submodule disjoint from the kernel of `f` -/
-theorem Submodule.ker_range_disjoint {f : M →ₗ[R] M'} (hi : v.Injective)
+theorem Submodule.range_ker_disjoint {f : M →ₗ[R] M'}
     (hv : LinearIndependent R (f ∘ v)) :
-    Disjoint (LinearMap.ker f) (Submodule.span R (Set.range v)) := by
-  rw [Submodule.disjoint_def]
-  intro m hm hmr
-  simp only [LinearMap.mem_ker] at hm
-  rw [mem_span_set] at hmr
-  obtain ⟨c, ⟨hc, hsum⟩⟩ := hmr
-  rw [← hsum, map_finsupp_sum] at hm
-  simp_rw [f.map_smul] at hm
-  dsimp [Finsupp.sum] at hm
-  rw [linearIndependent_iff'] at hv
-  specialize hv (Finset.preimage c.support v (Set.injOn_of_injective hi _))
-  rw [← Finset.sum_preimage v c.support (Set.injOn_of_injective hi _) _ _] at hm
-  · rw [← hsum]
-    apply Finset.sum_eq_zero
-    intro x hx
-    obtain ⟨y, hy⟩ := hc hx
-    rw [← hy]
-    have : c (v y) = 0
-    · apply hv (c ∘ v) hm y
-      simp only [Finset.mem_preimage, Function.comp_apply]
-      dsimp at hy
-      rwa [hy]
-    rw [this]
-    simp only [zero_smul]
-  · intro x hx hnx
-    exfalso
-    exact hnx (hc hx)
+    Disjoint (span R (range v)) (LinearMap.ker f) := by
+  rw [LinearIndependent, Finsupp.total_comp, Finsupp.lmapDomain_total R _ f (fun _ ↦ rfl),
+    LinearMap.ker_comp] at hv
+  rw [disjoint_iff_inf_le, ← Set.image_univ, Finsupp.span_image_eq_map_total,
+    map_inf_eq_map_inf_comap, hv, inf_bot_eq, map_bot]
 
 /-- An injective linear map sends linearly independent families of vectors to linearly independent
 families of vectors. See also `LinearIndependent.map` for a more general statement. -/
@@ -265,7 +260,7 @@ theorem LinearIndependent.of_comp (f : M →ₗ[R] M') (hfv : LinearIndependent 
     LinearIndependent R v :=
   linearIndependent_iff'.2 fun s g hg i his =>
     have : (∑ i : ι in s, g i • f (v i)) = 0 := by
-      simp_rw [← f.map_smul, ← f.map_sum, hg, f.map_zero]
+      simp_rw [← map_smul, ← map_sum, hg, f.map_zero]
     linearIndependent_iff'.1 hfv s g this i his
 #align linear_independent.of_comp LinearIndependent.of_comp
 
@@ -297,7 +292,7 @@ theorem linearIndependent_subtype_range {ι} {f : ι → M} (hf : Injective f) :
   Iff.symm <| linearIndependent_equiv' (Equiv.ofInjective f hf) rfl
 #align linear_independent_subtype_range linearIndependent_subtype_range
 
-alias linearIndependent_subtype_range ↔ LinearIndependent.of_subtype_range _
+alias ⟨LinearIndependent.of_subtype_range, _⟩ := linearIndependent_subtype_range
 #align linear_independent.of_subtype_range LinearIndependent.of_subtype_range
 
 theorem linearIndependent_image {ι} {s : Set ι} {f : ι → M} (hf : Set.InjOn f s) :
@@ -509,7 +504,7 @@ theorem linearIndependent_iff_injective_total :
     (injective_iff_map_eq_zero (Finsupp.total ι M R v).toAddMonoidHom).symm
 #align linear_independent_iff_injective_total linearIndependent_iff_injective_total
 
-alias linearIndependent_iff_injective_total ↔ LinearIndependent.injective_total _
+alias ⟨LinearIndependent.injective_total, _⟩ := linearIndependent_iff_injective_total
 #align linear_independent.injective_total LinearIndependent.injective_total
 
 theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) : Injective v := by
@@ -577,6 +572,37 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
     erw [Pi.smul_apply, smul_assoc]
     rfl
 #align linear_independent.units_smul LinearIndependent.units_smul
+
+lemma LinearIndependent.eq_of_pair {x y : M} (h : LinearIndependent R ![x, y])
+    {s t s' t' : R} (h' : s • x + t • y = s' • x + t' • y) : s = s' ∧ t = t' := by
+  have : (s - s') • x + (t - t') • y = 0 := by
+    rw [← sub_eq_zero_of_eq h', ← sub_eq_zero]
+    simp only [sub_smul]
+    abel
+  simpa [sub_eq_zero] using h.eq_zero_of_pair this
+
+lemma LinearIndependent.eq_zero_of_pair' {x y : M} (h : LinearIndependent R ![x, y])
+    {s t : R} (h' : s • x = t • y) : s = 0 ∧ t = 0 := by
+  suffices H : s = 0 ∧ 0 = t from ⟨H.1, H.2.symm⟩
+  exact h.eq_of_pair (by simpa using h')
+
+/-- If two vectors `x` and `y` are linearly independent, so are their linear combinations
+`a x + b y` and `c x + d y` provided the determinant `a * d - b * c` is nonzero. -/
+lemma LinearIndependent.linear_combination_pair_of_det_ne_zero {R M : Type*} [CommRing R]
+    [NoZeroDivisors R] [AddCommGroup M] [Module R M]
+    {x y : M} (h : LinearIndependent R ![x, y])
+    {a b c d : R} (h' : a * d - b * c ≠ 0) :
+    LinearIndependent R ![a • x + b • y, c • x + d • y] := by
+  apply LinearIndependent.pair_iff.2 (fun s t hst ↦ ?_)
+  have H : (s * a + t * c) • x + (s * b + t * d) • y = 0 := by
+    convert hst using 1
+    simp only [_root_.add_smul, smul_add, smul_smul]
+    abel
+  have I1 : s * a + t * c = 0 := (h.eq_zero_of_pair H).1
+  have I2 : s * b + t * d = 0 := (h.eq_zero_of_pair H).2
+  have J1 : (a * d - b * c) * s = 0 := by linear_combination d * I1 - c * I2
+  have J2 : (a * d - b * c) * t = 0 := by linear_combination -b * I1 + a * I2
+  exact ⟨by simpa [h'] using mul_eq_zero.1 J1, by simpa [h'] using mul_eq_zero.1 J2⟩
 
 section Maximal
 
@@ -1153,7 +1179,7 @@ theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :
   exact one_ne_zero (Finsupp.single_eq_zero.1 this)
 #align linear_independent_unique_iff linearIndependent_unique_iff
 
-alias linearIndependent_unique_iff ↔ _ linearIndependent_unique
+alias ⟨_, linearIndependent_unique⟩ := linearIndependent_unique_iff
 #align linear_independent_unique linearIndependent_unique
 
 theorem linearIndependent_singleton {x : M} (hx : x ≠ 0) :
