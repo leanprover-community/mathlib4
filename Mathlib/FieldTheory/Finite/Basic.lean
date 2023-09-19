@@ -259,8 +259,7 @@ theorem sum_subgroup_units_zero_of_ne_bot {G : Subgroup Kˣ} [Fintype G] (hg : G
     exact h
 
 /-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
-theorem sum_subgroup_units
-    {G : Subgroup Kˣ} [Fintype G] [Decidable (G = ⊥)] :
+theorem sum_subgroup_units {G : Subgroup Kˣ} [Fintype G] [Decidable (G = ⊥)] :
     ∑ x : G, (x.val : K) = if G = ⊥ then 1 else 0 := by
   by_cases G_bot : G = ⊥
   · subst G_bot
