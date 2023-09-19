@@ -19,6 +19,7 @@ section code_action
 open Std CodeAction
 open Lean Server RequestM
 
+/-- Code action to create a `calc` tactic from the current goal. -/
 @[tactic_code_action calcTactic]
 def createCalc : TacticCodeAction := fun params _snap ctx _stack node => do
   let .node (.ofTacticInfo info) _ := node | return #[]
@@ -47,14 +48,17 @@ open Lean Meta
 
 open Lean Server in
 
+/-- Parameters for the calc widget. -/
 structure CalcParams extends SelectInsertParams where
   /-- If this the first calc step? -/
   isFirst : Bool
+  /-- indentation level of the calc block. -/
   indent : Nat
   deriving SelectInsertParamsClass, RpcEncodable
 
 open Lean Meta
 
+/-- A string representation for equality and inequalities.  -/
 def Lean.Expr.relStr : Expr → String
 | .const ``Eq _ => "="
 | .const ``LE.le _ => "≤"
@@ -63,7 +67,7 @@ def Lean.Expr.relStr : Expr → String
 | .const ``GT.gt _ => ">"
 | _ => "Unknow relation"
 
-/-- Return the button text and inserted text above and below.-/
+/-- Return the link text and inserted text above and below of the calc widget.-/
 def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcParams) :
     MetaM (String × String) := do
   let subexprPos := getGoalLocations pos
@@ -115,11 +119,13 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   | true, true => "This should not happen"
   return (stepInfo, toString insertedCode)
 
+/-- Rpc function for the calc widget. -/
 @[server_rpc_method]
 def CalcPanel.rpc := mkSelectionPanelRPC suggestSteps
   "Please select subterms."
   "Calc 🔍"
 
+/-- The calc widget. -/
 @[widget_module]
 def CalcPanel : Component CalcParams :=
   mk_rpc_widget% CalcPanel.rpc
@@ -127,6 +133,8 @@ def CalcPanel : Component CalcParams :=
 namespace Lean.Elab.Term
 open Meta
 
+/-- Extract the first step of a calc block. This is a tiny improvement over
+`getCalcFirstStep` from core. -/
 def getCalcFirstStep' (step0 : TSyntax ``calcFirstStep) : TermElabM (TSyntax ``calcStep) :=
   withRef step0 do
   match step0  with
@@ -136,6 +144,14 @@ def getCalcFirstStep' (step0 : TSyntax ``calcFirstStep) : TermElabM (TSyntax ``c
     `(calcStep| $term := $proof)
   | _ => throwUnsupportedSyntax
 
+/-- Extract calc steps. This is the same as `getCalcSteps` from core except it uses
+the improved `getCalcFirstStep'`.
+
+Beware this should be updated to track core once Mathlib gets
+https://github.com/leanprover/lean4/commit/3e755dc0e199b40367a8ec9a592a343108a71c5a
+(unless `getCalcFirstStep'` reaches core in between, in which both `getCalcFirstStep'` and
+`getCalcSteps'` will become erasable).
+-/
 def getCalcSteps' (steps : TSyntax ``calcSteps) : TermElabM (Array (TSyntax ``calcStep)) :=
   match steps with
   | `(calcSteps| $step0:calcFirstStep $rest*) => do
@@ -143,13 +159,9 @@ def getCalcSteps' (steps : TSyntax ``calcSteps) : TermElabM (Array (TSyntax ``ca
     pure (#[step0] ++ rest)
   | _ => unreachable!
 
-structure Foo where
-  replaceRange : Lsp.Range
-  isFirst : Bool
-  indent : Nat
-  deriving ToJson, FromJson
-
-def myElabCalcSteps (indent : Nat) (steps : TSyntax ``calcSteps) : TermElabM Expr := do
+/- Elaborator for calc steps. Compared to `elabCalcSteps` from core, this inserts a
+calc widget for each proof.  -/
+def elabCalcStepsWithWidgets (indent : Nat) (steps : TSyntax ``calcSteps) : TermElabM Expr := do
   let mut result? := none
   let mut prevRhs? := none
   let mut isFirst := true
@@ -165,13 +177,10 @@ def myElabCalcSteps (indent : Nat) (steps : TSyntax ``calcSteps) : TermElabM Exp
       throwErrorAt pred "invalid 'calc' step, relation expected{indentExpr type}"
 
     let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
-    let props : Foo := {
-      replaceRange := replaceRange
-      isFirst := isFirst
-      indent := indent
-    }
-
-    ProofWidgets.savePanelWidgetInfo proofTerm `CalcPanel (pure <| toJson props)
+    let json := open scoped ProofWidgets.Json in json% {"replaceRange": $(replaceRange),
+                                                        "isFirst": $(isFirst),
+                                                        "indent": $(indent)}
+    ProofWidgets.savePanelWidgetInfo proofTerm `CalcPanel (pure json)
     isFirst := false
 
     if let some prevRhs := prevRhs? then
@@ -194,7 +203,7 @@ end Lean.Elab.Term
 namespace Lean.Elab.Tactic
 open Meta
 
-/-- Elaborator for the `calc` tactic mode variant. -/
+/-- Elaborator for the `calc` tactic mode variant with widgets. -/
 elab_rules : tactic
 | `(tactic|calc%$calcstx $stx) => withMainContext do
   let steps : TSyntax ``calcSteps := ⟨stx⟩
@@ -205,7 +214,7 @@ elab_rules : tactic
     let indent := calcRange.start.character
     dbg_trace indent
     runTermElab do
-    let mut val ← Term.myElabCalcSteps indent steps
+    let mut val ← Term.elabCalcStepsWithWidgets indent steps
     let mut valType ← inferType val
     unless (← isDefEq valType target) do
       let rec throwFailed :=
