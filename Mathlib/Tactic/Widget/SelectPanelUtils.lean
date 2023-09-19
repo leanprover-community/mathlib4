@@ -4,15 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Lean.Meta.ExprLens
-import Lean.Elab.PreDefinition.Structural.SmartUnfolding
 
 import Std.Data.Nat.Init.Lemmas
 
 import ProofWidgets.Component.MakeEditLink
-import ProofWidgets.Data.Html
 import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
 
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
+
 /-! # Selection panel utilities
 
 The mail declaration is `mkSelectionPanelRPC` which helps creating rpc methods for widgets

@@ -3,14 +3,8 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Lean.Elab.Calc
-import Lean.Elab.Tactic.ElabTerm
-import Lean.Meta.ExprLens
 
-import Std.Lean.Position
 import Std.CodeAction
-
-import ProofWidgets.Compat
 
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Widget.SelectPanelUtils

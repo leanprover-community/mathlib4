@@ -5,9 +5,6 @@ Authors: Patrick Massot
 -/
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.GCongr
-import Mathlib.Data.Real.Basic
-
-import Mathlib.Tactic.Widget.SelectPanelUtils
 
 /-! # Gcongr widget
 

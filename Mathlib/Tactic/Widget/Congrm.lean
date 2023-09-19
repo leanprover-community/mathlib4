@@ -3,15 +3,10 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
+
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Congrm
-import Mathlib.Data.Real.Basic
 
-
-import Lean.Meta.ExprLens
-import Std.Lean.Position
-
-import Mathlib.Tactic.Widget.SelectPanelUtils
 
 /-! # Congrm widget
 
