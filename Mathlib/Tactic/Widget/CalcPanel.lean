@@ -12,6 +12,7 @@ import Std.CodeAction
 
 import ProofWidgets.Compat
 
+import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Widget.Util
 
 section code_action
@@ -62,11 +63,6 @@ def Lean.Expr.relStr : Expr → String
 | .const ``GT.gt _ => ">"
 | _ => "Unknow relation"
 
-def String.mkSpace : Nat → String
-| 0 => ""
-| n + 1 => " " ++ mkSpace n
-
-
 /-- Return the button text and inserted text above and below.-/
 def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcParams) :
     MetaM (String × String) := do
@@ -91,7 +87,7 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   let rhsStr := (toString <| ← Meta.ppExpr rhs).renameMetaVar
   let newRhsStr := (toString <| ← Meta.ppExpr newRhs).renameMetaVar
 
-  let spc := String.mkSpace params.indent
+  let spc := String.replicate params.indent ' '
   let insertedCode := match selectedLeft.isEmpty, selectedRight.isEmpty with
   | false, false =>
     if params.isFirst then
