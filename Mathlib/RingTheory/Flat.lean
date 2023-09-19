@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.Noetherian
+import Mathlib.CategoryTheory.ShortExactSequence
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Homology.Homology
 
 #align_import ring_theory.flat from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
 
@@ -51,14 +55,33 @@ universe u v
 namespace Module
 
 open Function (Injective)
+open CategoryTheory MonoidalCategory Limits
 
 open LinearMap (lsmul)
 
+variable (R : Type u) (M : Type u) [CommRing R] [AddCommGroup M] [Module R M]
+
 open TensorProduct
+
+def Flat.preserves_exactness : Prop :=
+∀ ⦃N1 N2 N3 : ModuleCat.{u} R⦄ (l12 : N1 ⟶ N2) (l23 : N2 ⟶ N3)
+  (_ : Exact l12 l23),
+  Exact ((tensorRight <| ModuleCat.of R M).map l12)
+    ((tensorRight <| ModuleCat.of R M).map l23)
+
+def Flat.injective : Prop :=
+∀ ⦃N N' : ModuleCat.{u} R⦄ (L : N ⟶ N'),
+  Injective L → Injective ((tensorRight (ModuleCat.of R M)).map L)
+
+def Flat.ideal : Prop :=
+  ∀ ⦃I : Ideal R⦄, Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
+
+def Flat.fg_ideal : Prop :=
+  ∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 
 /-- An `R`-module `M` is flat if for all finitely generated ideals `I` of `R`,
 the canonical map `I ⊗ M →ₗ M` is injective. -/
-class Flat (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] : Prop where
+class Flat  : Prop where
   out : ∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 #align module.flat Module.Flat
 
@@ -66,14 +89,12 @@ namespace Flat
 
 open TensorProduct LinearMap Submodule
 
-instance self (R : Type u) [CommRing R] : Flat R R :=
-  ⟨by
-    intro I _
-    rw [← Equiv.injective_comp (TensorProduct.rid R I).symm.toEquiv]
-    convert Subtype.coe_injective using 1
-    ext x
-    simp only [Function.comp_apply, LinearEquiv.coe_toEquiv, rid_symm_apply, comp_apply, mul_one,
-      lift.tmul, Submodule.subtype_apply, Algebra.id.smul_eq_mul, lsmul_apply]⟩
+instance self (R : Type u) [CommRing R] : Flat R R := ⟨by
+  intro I _
+  rw [← Equiv.injective_comp (TensorProduct.rid R I).symm.toEquiv]
+  convert Subtype.coe_injective using 1
+  ext x
+  simp⟩
 #align module.flat.self Module.Flat.self
 
 end Flat

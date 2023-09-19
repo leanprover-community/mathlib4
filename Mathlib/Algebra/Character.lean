@@ -76,8 +76,6 @@ lemma exists_character_apply_ne_zero_of_ne_zero {m : M} (ne_zero : m ≠ 0) :
     exact Subtype.val_injective
   use ⟨⟨ULift.down, by intros; rfl⟩, by intros; rfl⟩ ∘ₗ (Injective.factorThru L ι).toIntLinearMap
   rw [LinearMap.comp_apply, LinearMap.coe_mk, AddHom.coe_mk]
-  -- rintro (r : _ = ULift.down _)
-  -- rw [ULift.down_inj, AddMonoidHom.coe_toIntLinearMap] at r
   have eq1 := FunLike.congr_fun (Injective.comp_factorThru L ι)
     ⟨m, Submodule.mem_span_singleton_self _⟩
   simp only at eq1
