@@ -220,8 +220,8 @@ theorem quot_sub (a b : PGame) : ⟦a - b⟧ = (⟦a⟧ : Game) - ⟦b⟧ :=
 theorem quot_eq_of_mk'_quot_eq {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, (⟦x.moveLeft i⟧ : Game) = ⟦y.moveLeft (L i)⟧)
     (hr : ∀ j, (⟦x.moveRight j⟧ : Game) = ⟦y.moveRight (R j)⟧) : (⟦x⟧ : Game) = ⟦y⟧ := by
-  exact Quot.sound (equiv_of_mk_equiv L R (fun _ => Game.PGame.equiv_iff_game_eq.2 (hl _))
-                                          (fun _ => Game.PGame.equiv_iff_game_eq.2 (hr _)))
+  exact Quot.sound (.of_equiv L R (fun _ => Game.PGame.equiv_iff_game_eq.2 (hl _))
+                                  (fun _ => Game.PGame.equiv_iff_game_eq.2 (hr _)))
 #align pgame.quot_eq_of_mk_quot_eq SetTheory.PGame.quot_eq_of_mk'_quot_eq
 
 /-! Multiplicative operations can be defined at the level of pre-games,
