@@ -392,7 +392,6 @@ instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R 
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient :=
   { c.toCon.mulAction with
-    smul := (· • ·)
     smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
     smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add _ _ _ }
 
