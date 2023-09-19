@@ -26,7 +26,6 @@ variable {𝕜 E F G : Type*}
 
 /-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
 abbrev PointedCone (𝕜 : Type*) (E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=
-  have : Module { c : 𝕜 // 0 ≤ c } E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
   Submodule { c : 𝕜 // 0 ≤ c } E
 
 namespace PointedCone
