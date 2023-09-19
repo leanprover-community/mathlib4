@@ -107,11 +107,11 @@ lemma _root_.LinearMap.toSpanSingleton_ker :
 
 lemma equivZModSpanAddOrderOf_apply_self :
     equivZModSpanAddOrderOf a ⟨a, Submodule.mem_span_singleton_self a⟩ = Submodule.Quotient.mk 1 :=
-  (LinearEquiv.eq_symm_apply _).mp (by ext; exact (one_zsmul a).symm)
+  (LinearEquiv.eq_symm_apply _).mp (one_zsmul _).symm
 
 /-- Given `n : ℕ`, the map `m ↦ m / n`. -/
 abbrev divBy (n : ℕ) : ℤ →ₗ[ℤ] AddCircle (1 : ℚ) :=
-  LinearMap.toSpanSingleton ℤ _ (Quotient.mk _ (n : ℚ)⁻¹)
+  LinearMap.toSpanSingleton ℤ _ (QuotientAddGroup.mk (n : ℚ)⁻¹)
 
 lemma divBy_self (n : ℕ) : divBy n n = 0 := by
   obtain rfl | h0 := eq_or_ne n 0
@@ -131,18 +131,17 @@ variable {a}
       · apply divBy_self
   e ∘ₗ equivZModSpanAddOrderOf a
 
-lemma toRatCircle_apply_self_ne_zero (ne_zero : a ≠ 0) :
-    toRatCircle ⟨a, Submodule.mem_span_singleton_self a⟩ ≠ 0 := by
+lemma eq_zero_of_toRatCircle_apply_self
+    (h : toRatCircle ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
   rw [toRatCircle, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
     equivZModSpanAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
-    LinearMap.toSpanSingleton_one]
-  intro h
-  obtain ⟨n, hn⟩ := (AddCircle.coe_eq_zero_iff _).mp h
+    LinearMap.toSpanSingleton_one, AddCircle.coe_eq_zero_iff] at h
+  obtain ⟨n, hn⟩ := h
   apply_fun Rat.den at hn
   rw [zsmul_one, Rat.coe_int_den, Rat.inv_coe_nat_den_of_pos] at hn
   · split_ifs at hn
     · cases hn
-    · rw [eq_comm, AddMonoid.addOrderOf_eq_one_iff] at hn; exact ne_zero hn
+    · rwa [eq_comm, AddMonoid.addOrderOf_eq_one_iff] at hn
   · split_ifs with h
     · norm_num
     · exact Nat.pos_of_ne_zero h
@@ -150,13 +149,13 @@ lemma toRatCircle_apply_self_ne_zero (ne_zero : a ≠ 0) :
 variable (A_)
 
 lemma toNext_inj : Function.Injective <| toNext A_ :=
-  (injective_iff_map_eq_zero _).2 fun a ↦ Function.mtr fun ne_zero h0 ↦
-    toRatCircle_apply_self_ne_zero ne_zero <| ULift.up_injective <| by
+  (injective_iff_map_eq_zero _).mpr fun a h0 ↦
+    eq_zero_of_toRatCircle_apply_self <| ULift.up_injective <|
       let f : of (ℤ ∙ a) ⟶ of (ULift.{u} <| AddCircle (1 : ℚ)) :=
-        AddMonoidHom.comp ⟨⟨ULift.up, rfl⟩, by intros; rfl⟩ toRatCircle.toAddMonoidHom
+        AddMonoidHom.comp ⟨⟨ULift.up, rfl⟩, fun _ _ ↦ rfl⟩ toRatCircle.toAddMonoidHom
       let g : of (ℤ ∙ a) ⟶ A_ := AddSubgroupClass.subtype _
-      have hg : Mono g := (mono_iff_injective _).mpr Subtype.val_injective
-      exact (FunLike.congr_fun (Injective.comp_factorThru f g) _).symm.trans (congr_fun h0 _)
+      have : Mono g := (mono_iff_injective _).mpr Subtype.val_injective
+      (FunLike.congr_fun (Injective.comp_factorThru f g) _).symm.trans (congr_fun h0 _)
 
 /-- An injective presentation of `A`: `A → ∏_{A →+ ℚ/ℤ}, ℚ/ℤ`. -/
 @[simps] def presentation : InjectivePresentation A_ where
