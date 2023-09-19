@@ -248,6 +248,7 @@ import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 import Mathlib.Algebra.Homology.ShortComplex.Limits
 import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
