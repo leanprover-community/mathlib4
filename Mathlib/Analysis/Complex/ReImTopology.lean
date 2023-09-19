@@ -210,6 +210,6 @@ theorem IsClosed.reProdIm (hs : IsClosed s) (ht : IsClosed t) : IsClosed (s ×�
   (hs.preimage continuous_re).inter (ht.preimage continuous_im)
 #align is_closed.re_prod_im IsClosed.reProdIm
 
-theorem Metric.Bounded.reProdIm (hs : Bounded s) (ht : Bounded t) : Bounded (s ×ℂ t) :=
-  antilipschitz_equivRealProd.bounded_preimage (hs.prod ht)
-#align metric.bounded.re_prod_im Metric.Bounded.reProdIm
+theorem Bornology.IsBounded.reProdIm (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ×ℂ t) :=
+  antilipschitz_equivRealProd.isBounded_preimage (hs.prod ht)
+#align metric.bounded.re_prod_im Bornology.IsBounded.reProdIm

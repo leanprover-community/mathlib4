@@ -61,9 +61,9 @@ Vitali-Carathéodory theorem, in the file `Mathlib/MeasureTheory/Integral/Vitali
 
 open scoped ENNReal NNReal Topology BoundedContinuousFunction
 
-open MeasureTheory TopologicalSpace ContinuousMap Set
+open MeasureTheory TopologicalSpace ContinuousMap Set Bornology
 
-variable {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [NormalSpace α] [BorelSpace α]
+variable {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [T4Space α] [BorelSpace α]
 
 variable {E : Type*} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
 
@@ -240,9 +240,9 @@ theorem Memℒp.exists_boundedContinuous_snorm_sub_le [μ.WeaklyRegular] (hp : p
     (hf : Memℒp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α →ᵇ E, snorm (f - (g : α → E)) p μ ≤ ε ∧ Memℒp g p μ := by
   suffices H :
-    ∃ g : α → E, snorm (f - g) p μ ≤ ε ∧ Continuous g ∧ Memℒp g p μ ∧ Metric.Bounded (range g)
+    ∃ g : α → E, snorm (f - g) p μ ≤ ε ∧ Continuous g ∧ Memℒp g p μ ∧ IsBounded (range g)
   · rcases H with ⟨g, hg, g_cont, g_mem, g_bd⟩
-    exact ⟨⟨⟨g, g_cont⟩, Metric.bounded_range_iff.1 g_bd⟩, hg, g_mem⟩
+    exact ⟨⟨⟨g, g_cont⟩, Metric.isBounded_range_iff.1 g_bd⟩, hg, g_mem⟩
   -- It suffices to check that the set of functions we consider approximates characteristic
   -- functions, is stable under addition and made of ae strongly measurable functions.
   -- First check the latter easy facts.
@@ -251,9 +251,9 @@ theorem Memℒp.exists_boundedContinuous_snorm_sub_le [μ.WeaklyRegular] (hp : p
   -- stability under addition
   · rintro f g ⟨f_cont, f_mem, f_bd⟩ ⟨g_cont, g_mem, g_bd⟩
     refine' ⟨f_cont.add g_cont, f_mem.add g_mem, _⟩
-    let f' : α →ᵇ E := ⟨⟨f, f_cont⟩, Metric.bounded_range_iff.1 f_bd⟩
-    let g' : α →ᵇ E := ⟨⟨g, g_cont⟩, Metric.bounded_range_iff.1 g_bd⟩
-    exact (f' + g').bounded_range
+    let f' : α →ᵇ E := ⟨⟨f, f_cont⟩, Metric.isBounded_range_iff.1 f_bd⟩
+    let g' : α →ᵇ E := ⟨⟨g, g_cont⟩, Metric.isBounded_range_iff.1 g_bd⟩
+    exact (f' + g').isBounded_range
   -- ae strong measurability
   · exact fun f ⟨_, h, _⟩ => h.aestronglyMeasurable
   -- We are left with approximating characteristic functions.
@@ -283,7 +283,7 @@ theorem Memℒp.exists_boundedContinuous_snorm_sub_le [μ.WeaklyRegular] (hp : p
           I2 I1).le using 2
     simp only [sub_add_sub_cancel]
   refine' ⟨f, I3, f_cont, f_mem, _⟩
-  exact (BoundedContinuousFunction.ofNormedAddCommGroup f f_cont _ f_bound).bounded_range
+  exact (BoundedContinuousFunction.ofNormedAddCommGroup f f_cont _ f_bound).isBounded_range
 #align measure_theory.mem_ℒp.exists_bounded_continuous_snorm_sub_le MeasureTheory.Memℒp.exists_boundedContinuous_snorm_sub_le
 
 /-- Any function in `ℒp` can be approximated by bounded continuous functions when `0 < p < ∞`,

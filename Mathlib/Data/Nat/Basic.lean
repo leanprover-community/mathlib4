@@ -327,6 +327,21 @@ theorem le_of_pred_lt {m n : ℕ} : pred m < n → m ≤ n :=
   | _ + 1 => id
 #align nat.le_of_pred_lt Nat.le_of_pred_lt
 
+theorem self_add_sub_one (n : ℕ) : n + (n - 1) = 2 * n - 1 := by
+  cases n
+  · rfl
+  · rw [two_mul]
+    convert (add_succ_sub_one (Nat.succ _) _).symm
+
+theorem sub_one_add_self (n : ℕ) : (n - 1) + n = 2 * n - 1 :=
+  add_comm _ n ▸ self_add_sub_one n
+
+theorem self_add_pred (n : ℕ) : n + pred n = (2 * n).pred :=
+  self_add_sub_one n
+
+theorem pred_add_self (n : ℕ) : pred n + n = (2 * n).pred :=
+  sub_one_add_self n
+
 /-- This ensures that `simp` succeeds on `pred (n + 1) = n`. -/
 @[simp]
 theorem pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [add_comm, add_one, Nat.pred_succ]
@@ -360,6 +375,20 @@ theorem mul_left_eq_self_iff {a b : ℕ} (hb : 0 < b) : a * b = b ↔ a = 1 := b
 theorem lt_succ_iff_lt_or_eq {n i : ℕ} : n < i.succ ↔ n < i ∨ n = i :=
   lt_succ_iff.trans Decidable.le_iff_lt_or_eq
 #align nat.lt_succ_iff_lt_or_eq Nat.lt_succ_iff_lt_or_eq
+
+set_option push_neg.use_distrib true in
+/-- The product of two natural numbers is greater than 1 if and only if
+  at least one of them is greater than 1 and both are positive. -/
+lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
+  constructor <;> intro h
+  · by_contra h'; push_neg at h'; simp_rw [Nat.le_zero] at h'
+    obtain rfl | rfl | h' := h'
+    · simp at h
+    · simp at h
+    · exact (Nat.mul_le_mul h'.1 h'.2).not_lt h
+  · obtain hm | hn := h.2.2
+    · exact Nat.mul_lt_mul hm h.2.1 Nat.zero_lt_one
+    · exact Nat.mul_lt_mul' h.1 hn h.1
 
 /-!
 ### Recursion and induction principles
@@ -905,22 +934,23 @@ end FindGreatest
 
 /-! ### decidability of predicates -/
 
+-- To work around lean4#2552, we use `match` instead of `if/casesOn` with decidable instances.
 instance decidableBallLT :
-    ∀ (n : Nat) (P : ∀ k < n, Prop) [∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h)
-| 0, P, _ => isTrue fun n h => by cases h
-| (n+1), P, H => by
-  cases' decidableBallLT n fun k h => P k (lt_succ_of_lt h) with h h
-  · refine' isFalse (mt _ h)
-    intro hn k h
-    apply hn
-  by_cases p : P n (lt_succ_self n)
-  · exact
-      isTrue fun k h' =>
-        (le_of_lt_succ h').lt_or_eq_dec.elim (h _) fun e =>
-          match k, e, h' with
-          | _, rfl, _ => p
-  · exact isFalse (mt (fun hn => hn _ _) p)
+  ∀ (n : Nat) (P : ∀ k, k < n → Prop) [∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h)
+| 0, _, _ => isTrue fun _ => (by cases ·)
+| (n+1), P, H =>
+  match decidableBallLT n (P · <| lt_succ_of_lt ·) with
+  | isFalse h => isFalse (h fun _ _ => · _ _)
+  | isTrue h =>
+    match H n Nat.le.refl with
+    | isFalse p => isFalse (p <| · _ _)
+    | isTrue p => isTrue fun _ h' => (Nat.le_of_lt_succ h').lt_or_eq_dec.elim (h _) (· ▸ p)
 #align nat.decidable_ball_lt Nat.decidableBallLT
+
+-- To verify we don't have a regression on the speed, we put a difficult example.
+-- any regression should take a huge amount of heartbeats -- we are currently at 187621.
+-- For reference, the instance using `casesOn` took 44544 for 4; this one takes 1299 for 4.
+example : ∀ a, a < 25 → ∀ b, b < 25 → ∀ c, c < 25 → a ^ 2 + b ^ 2 + c ^ 2 ≠ 7 := by decide
 
 instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [DecidablePred P] :
     Decidable (∀ i, P i) :=

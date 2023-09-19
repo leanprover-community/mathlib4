@@ -42,7 +42,7 @@ instance : OrderTopology ℝ≥0∞ := ⟨rfl⟩
 -- short-circuit type class inference
 instance : T2Space ℝ≥0∞ := inferInstance
 instance : T5Space ℝ≥0∞ := inferInstance
-instance : NormalSpace ℝ≥0∞ := inferInstance
+instance : T4Space ℝ≥0∞ := inferInstance
 
 instance : SecondCountableTopology ℝ≥0∞ :=
   orderIsoUnitIntervalBirational.toHomeomorph.embedding.secondCountableTopology
@@ -1513,25 +1513,25 @@ namespace Real
 
 /-- For a bounded set `s : Set ℝ`, its `EMetric.diam` is equal to `sSup s - sInf s` reinterpreted as
 `ℝ≥0∞`. -/
-theorem ediam_eq {s : Set ℝ} (h : Bounded s) :
+theorem ediam_eq {s : Set ℝ} (h : Bornology.IsBounded s) :
     EMetric.diam s = ENNReal.ofReal (sSup s - sInf s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · simp
   refine' le_antisymm (Metric.ediam_le_of_forall_dist_le fun x hx y hy => _) _
-  · have := Real.subset_Icc_sInf_sSup_of_bounded h
+  · have := Real.subset_Icc_sInf_sSup_of_isBounded h
     exact Real.dist_le_of_mem_Icc (this hx) (this hy)
   · apply ENNReal.ofReal_le_of_le_toReal
     rw [← Metric.diam, ← Metric.diam_closure]
-    have h' := Real.bounded_iff_bddBelow_bddAbove.1 h
+    have h' := Real.isBounded_iff_bddBelow_bddAbove.1 h
     calc sSup s - sInf s ≤ dist (sSup s) (sInf s) := le_abs_self _
     _ ≤ Metric.diam (closure s) := dist_le_diam_of_mem h.closure (csSup_mem_closure hne h'.2)
         (csInf_mem_closure hne h'.1)
 #align real.ediam_eq Real.ediam_eq
 
 /-- For a bounded set `s : Set ℝ`, its `Metric.diam` is equal to `sSup s - sInf s`. -/
-theorem diam_eq {s : Set ℝ} (h : Bounded s) : Metric.diam s = sSup s - sInf s := by
+theorem diam_eq {s : Set ℝ} (h : Bornology.IsBounded s) : Metric.diam s = sSup s - sInf s := by
   rw [Metric.diam, Real.ediam_eq h, ENNReal.toReal_ofReal]
-  rw [Real.bounded_iff_bddBelow_bddAbove] at h
+  rw [Real.isBounded_iff_bddBelow_bddAbove] at h
   exact sub_nonneg.2 (Real.sInf_le_sSup s h.1 h.2)
 #align real.diam_eq Real.diam_eq
 
@@ -1539,13 +1539,13 @@ theorem diam_eq {s : Set ℝ} (h : Bounded s) : Metric.diam s = sSup s - sInf s 
 theorem ediam_Ioo (a b : ℝ) : EMetric.diam (Ioo a b) = ENNReal.ofReal (b - a) := by
   rcases le_or_lt b a with (h | h)
   · simp [h]
-  · rw [Real.ediam_eq (bounded_Ioo _ _), csSup_Ioo h, csInf_Ioo h]
+  · rw [Real.ediam_eq (isBounded_Ioo _ _), csSup_Ioo h, csInf_Ioo h]
 #align real.ediam_Ioo Real.ediam_Ioo
 
 @[simp]
 theorem ediam_Icc (a b : ℝ) : EMetric.diam (Icc a b) = ENNReal.ofReal (b - a) := by
   rcases le_or_lt a b with (h | h)
-  · rw [Real.ediam_eq (bounded_Icc _ _), csSup_Icc h, csInf_Icc h]
+  · rw [Real.ediam_eq (isBounded_Icc _ _), csSup_Icc h, csInf_Icc h]
   · simp [h, h.le]
 #align real.ediam_Icc Real.ediam_Icc
 
