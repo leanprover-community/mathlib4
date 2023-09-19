@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Firsching, Ashvni Narayanan
+Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
 -/
 import Mathlib.Data.ZMod.Basic
 
