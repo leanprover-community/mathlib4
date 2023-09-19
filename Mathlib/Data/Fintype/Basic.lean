@@ -1200,7 +1200,7 @@ theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
 /-- If `e` is an equivalence of finite types, then `Multiset.map e` sends the universal finite set
 to the universal finite set. -/
 @[simp]
-theorem _root_.Equiv.multiset_map_univ_eq_univ (e : α ≃ β) :
+theorem map_univ_val_equiv (e : α ≃ β) :
     map e univ.val = univ.val := by
   rw [←congr_arg Finset.val (Finset.map_univ_equiv e), Finset.map_val, Equiv.coe_toEmbedding]
   done
