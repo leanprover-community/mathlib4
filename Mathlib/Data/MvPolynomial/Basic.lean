@@ -661,6 +661,11 @@ theorem coeff_C [DecidableEq σ] (m) (a) :
   Finsupp.single_apply
 #align mv_polynomial.coeff_C MvPolynomial.coeff_C
 
+lemma eq_C_of_isEmpty [IsEmpty σ] (p : MvPolynomial σ R) :
+    p = C (p.coeff 0) := by
+  obtain ⟨x, rfl⟩ := C_surjective σ p
+  simp
+
 theorem coeff_one [DecidableEq σ] (m) : coeff m (1 : MvPolynomial σ R) = if 0 = m then 1 else 0 :=
   coeff_C m 1
 #align mv_polynomial.coeff_one MvPolynomial.coeff_one
