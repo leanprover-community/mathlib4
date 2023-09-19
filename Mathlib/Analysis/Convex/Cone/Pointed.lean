@@ -31,10 +31,6 @@ abbrev PointedCone (𝕜 : Type*) (E : Type*) [OrderedSemiring 𝕜] [AddCommMon
 
 namespace PointedCone
 
-set_option quotPrecheck false in
-/-- The set of non-negative elements. -/
-scoped notation "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
-
 section Definitions
 
 variable [OrderedSemiring 𝕜]
@@ -63,7 +59,8 @@ instance instZero (S : PointedCone 𝕜 E) : Zero S :=
   ⟨0, S.zero_mem⟩
 
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
-def _root_.ConvexCone.toSubmodule {S : ConvexCone 𝕜 E} (hS : S.Pointed) : Submodule 𝕜≥0 E where
+def _root_.ConvexCone.toSubmodule {S : ConvexCone 𝕜 E} (hS : S.Pointed) :
+    Submodule { c : 𝕜 // 0 ≤ c } E where
   carrier := S
   add_mem' := fun hx hy => S.add_mem hx hy
   zero_mem' := hS
@@ -110,7 +107,7 @@ between pointed cones induced from linear maps between the ambient modules that 
 
 /-- The image of a pointed cone under a `𝕜`-linear map is a pointed cone. -/
 def map (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 E) : PointedCone 𝕜 F :=
-  let f' := LinearMap.restrictScalars 𝕜≥0 f
+  let f' := LinearMap.restrictScalars { c : 𝕜 // 0 ≤ c } f
   Submodule.map f' S
 
 @[simp, norm_cast]
@@ -131,7 +128,7 @@ theorem map_id (S : PointedCone 𝕜 E) : S.map LinearMap.id = S :=
 
 /-- The preimage of a convex cone under a `𝕜`-linear map is a convex cone. -/
 def comap (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 F) : PointedCone 𝕜 E :=
-  let f' := LinearMap.restrictScalars 𝕜≥0 f
+  let f' := LinearMap.restrictScalars { c : 𝕜 // 0 ≤ c } f
   Submodule.comap f' S
 
 @[simp, norm_cast]
