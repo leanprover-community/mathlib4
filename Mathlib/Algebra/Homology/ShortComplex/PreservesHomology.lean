@@ -292,10 +292,10 @@ def PreservesRightHomologyOf.mk' (h : S.RightHomologyData) [h.IsPreservedBy F] :
   isPreservedBy h' :=
     { f := ShortComplex.RightHomologyData.IsPreservedBy.hf h F
       g' := by
+        have := ShortComplex.RightHomologyData.IsPreservedBy.hg' h F
         let e : parallelPair h.g' 0 ≅ parallelPair h'.g' 0 :=
           parallelPair.ext (ShortComplex.opcyclesMapIso' (Iso.refl S) h h') (Iso.refl _)
             (by simp) (by simp)
-        have := ShortComplex.RightHomologyData.IsPreservedBy.hg' h F
         exact preservesLimitOfIsoDiagram F e }
 
 end Functor
