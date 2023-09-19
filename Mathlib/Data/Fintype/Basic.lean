@@ -1194,10 +1194,11 @@ theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
   count_eq_one_of_mem Finset.univ.nodup (Finset.mem_univ _)
 #align multiset.count_univ Multiset.count_univ
 
-/-- If f is a bijection of finite sets, it maps universes into universes. -/
+/-- If `e` is an equivalence of finite types, then `Multiset.map e` sends the universal finite set
+to the universal finite set. -/
 @[simp]
-theorem map_univ_eq_univ_of_bijective (f : α → β) (hf : Function.Bijective f) :
-    map f (Finset.univ : Finset α).val = univ.val := by
+theorem _root_.Equiv.multiset_map_univ_eq_univ (e : α ≃ β) :
+    map e univ.val = univ.val := by
   ext a
   rw [Function.bijective_iff_has_inverse] at hf
   rcases hf with ⟨f_inv, hf_inv, hf_inv'⟩
