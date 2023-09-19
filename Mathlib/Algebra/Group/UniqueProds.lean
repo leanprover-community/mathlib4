@@ -361,8 +361,7 @@ open MulOpposite in
   mul_right_cancel _ _ _ h :=
     op_injective <| toIsLeftCancelMul.mul_left_cancel _ _ _ <| unop_injective h
 
-/-! Two theorems of Andrzej Strojnowski.
-    A note on u.p. groups, https://doi.org/10.1080/00927878008822456 -/
+/-! Two theorems in [Andrzej Strojnowski, *A note on u.p. groups*][Strojnowski1980] -/
 
 /-- If unique pairs exist in a group whenever the two `Finset`s are the same,
   then they also exist when they are different, i.e. the group has `UniqueProds`;
@@ -383,8 +382,8 @@ open MulOpposite in
 
 /-- If a group has `UniqueProds`, then it actually has `TwoUniqueProds`.
   For an example of a semigroup `G` embeddable into a group that has `UniqueProds`
-  but not `TwoUniqueProds`, see Example 10.13 in J. Okniński, Semigroup Algebras,
-  Monogr. Textb. Pure Appl. Math., vol. 138, Marcel Dekker, Inc., New York, 1991. -/
+  but not `TwoUniqueProds`, see Example 10.13 in
+  [J. Okniński, *Semigroup Algebras*][Okninski1991]. -/
 @[to_additive] theorem toTwoUniqueProds_of_group {G}
     [Group G] [UniqueProds G] : TwoUniqueProds G where
   uniqueMul_of_one_lt_card {A B} hc := by
