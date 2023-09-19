@@ -83,7 +83,6 @@ if and only if its constant coefficient is a unit.
     obtain ⟨a : Rˣ,ha⟩ := hf
     have hf : f = (C R a - X) ∘ᶠ (C R a - f)
     · rw [sub_comp C_hasComp X_hasComp, C_comp, X_comp, sub_sub_cancel]
-    have := invUnitsSub_mul_sub a
     have : f * (invUnitsSub a) ∘ᶠ (C R a - f) = 1
     · nth_rw 1 [hf]
       rw [←mul_comp, mul_comm, invUnitsSub_mul_sub, one_comp] <;>
