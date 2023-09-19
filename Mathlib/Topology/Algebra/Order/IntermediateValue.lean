@@ -651,7 +651,7 @@ theorem ContinuousOn.surjOn_of_tendsto' {f : α → δ} {s : Set α} [OrdConnect
 
 /-- Suppose `f : [a, b] → δ` is
 continuous and injective. Then `f` is strictly monotone (increasing)
-if `f(a) < f(b)`.-/
+if `f(a) ≤ f(b)`.-/
 theorem ContinuousOn.StrictMonoOn_of_InjOn_Icc {a b : α} {f : α → δ}
     (hab : a ≤ b) (hfab : f a ≤ f b)
     (hf_c : ContinuousOn f (Icc a b)) (hf_i : InjOn f (Icc a b)) :
@@ -686,7 +686,7 @@ theorem ContinuousOn.StrictMonoOn_of_InjOn_Icc {a b : α} {f : α → δ}
 
 /-- Suppose `f : [a, b] → δ` is
 continuous and injective. Then `f` is strictly antitone (decreasing)
-if `f(a) > f(b)`.-/
+if `f(b) ≤ f(a)`.-/
 theorem ContinuousOn.StrictAntiOn_of_InjOn_Icc {a b : α} {f : α → δ}
     (hab : a ≤ b) (hfab : f b ≤ f a)
     (hf_c : ContinuousOn f (Icc a b)) (hf_i : InjOn f (Icc a b)) :
