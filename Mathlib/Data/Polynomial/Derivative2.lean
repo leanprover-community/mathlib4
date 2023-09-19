@@ -121,8 +121,7 @@ theorem iterate_derivative_eq_factorial_mul (p : R[X]) (k : ℕ) :
   rw [smul_sum]; congr; funext i
   calc
     C (((derivative^[k]) p).coeff i) * X ^ i =
-        C ((i + k).descFactorial k • p.coeff (i + k)) * X ^ i :=
-      by rw [coeff_iterate_derivative_as_descFactorial]
+        C ((i + k).descFactorial k • p.coeff (i + k)) * X ^ i := by rw [coeff_iterate_derivative]
     _ = C ((k ! * (i + k).choose k) • p.coeff (i + k)) * X ^ i := by
       rw [Nat.descFactorial_eq_factorial_mul_choose]
     _ = (k ! * (i + k).choose k) • C (p.coeff (i + k)) * X ^ i := by rw [smul_C]
@@ -139,7 +138,7 @@ theorem iterate_derivative_small (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
     intro x; rw [← pow_add, add_tsub_cancel_of_le]; rw [Nat.lt_iff_add_one_le] at hk
     exact (le_tsub_of_add_le_left hk).trans (tsub_le_tsub_left (tsub_le_self : _ ≤ k) _)
   rw [aeval_def, eval₂_eq_eval_map, ← iterate_derivative_map]
-  simp_rw [hp, iterate_derivative_mul, iterate_derivative_X_sub_pow', ← smul_mul_assoc, smul_smul,
+  simp_rw [hp, iterate_derivative_mul, iterate_derivative_X_sub_pow, ← smul_mul_assoc, smul_smul,
     h, ← mul_smul_comm, mul_assoc, ← mul_sum, eval_mul, pow_one, eval_sub, eval_X, eval_C, sub_self,
     MulZeroClass.zero_mul]
 #align polynomial.iterate_derivative_small Polynomial.iterate_derivative_small
@@ -151,7 +150,7 @@ theorem iterate_derivative_of_eq (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
     ∀ x ≥ 1, x ≤ q → (X - C r) ^ (q - (q - x)) = (X - C r) ^ 1 * (X - C r) ^ (q - (q - x) - 1) := by
     intro x h h'; rw [← pow_add, add_tsub_cancel_of_le]; rwa [tsub_tsub_cancel_of_le h']
   rw [aeval_def, eval₂_eq_eval_map, ← iterate_derivative_map]
-  simp_rw [hp, iterate_derivative_mul, iterate_derivative_X_sub_pow', ← smul_mul_assoc, smul_smul]
+  simp_rw [hp, iterate_derivative_mul, iterate_derivative_X_sub_pow, ← smul_mul_assoc, smul_smul]
   rw [sum_range_succ', Nat.choose_zero_right, one_mul, tsub_zero, Nat.descFactorial_self, tsub_self,
     pow_zero, smul_mul_assoc, one_mul, Function.iterate_zero_apply, eval_add, eval_smul]
   convert zero_add _; rw [eval_finset_sum]; apply sum_eq_zero; intro x hx
