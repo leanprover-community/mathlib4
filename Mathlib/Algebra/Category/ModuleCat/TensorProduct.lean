@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.LinearAlgebra.Finsupp
 
 /-!
 # Tensor-Hom adjunction
@@ -100,6 +101,7 @@ def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : (tensorFunctor R 
     rw [← smul_tmul, smul_tmul']
 
 /-- curry a bilinear map into a map from tensor product -/
+@[simps]
 def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y)) :
     (X ⊗[R] X') →ₗ[S] Y :=
   let L : (X ⊗[R] X') →+ Y := (addConGen _).lift (FreeAddMonoid.lift fun p => l p.2 p.1) <|
@@ -137,6 +139,7 @@ lemma curry'_apply_tmul {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →
 
 variable (R S X)
 /-- The tensoring function is left adjoint to the hom functor. -/
+@[simps!]
 def tensorHomAdjunction : tensorFunctor R S X ⊣ homFunctor R S X :=
   Adjunction.mkOfHomEquiv
   { homEquiv := fun X' Y =>
@@ -179,3 +182,84 @@ example : Functor.PreservesEpimorphisms (tensorFunctor R S X) :=
 inferInstance
 
 end ModuleCat
+
+namespace TensorProduct
+
+variable (R' : Type u) [CommRing R']
+variable {M N : Type v} [AddCommGroup M] [AddCommGroup N]
+variable [Module R' M] [Module R' N]
+
+@[simps!]
+def toAddCommGroup {C : Type v} [AddCommGroup C]
+    (b : M →+ (N →+ C)) (hb : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n)) :
+    (M ⊗[R'] N) →+ C :=
+  (((ModuleCat.tensorHomAdjunction R' ℤ N).homEquiv
+    (ModuleCat.of R' M) (ModuleCat.of ℤ C)).symm
+      { toFun := fun m => (b m).toIntLinearMap
+        map_add' := fun _ _ => by dsimp; rw [b.map_add]; rfl
+        map_smul' := fun x y => LinearMap.ext fun z => by
+          simp only [ModuleCat.homFunctor_obj, RingHom.id_apply]
+          change b (x • y) z = (b y) (x • z)
+          rw [hb] }).toAddMonoidHom.comp (TensorProduct.comm R' M N).toLinearMap.toAddMonoidHom
+
+lemma toAddCommGroup_apply_tmul {C : Type v} [AddCommGroup C]
+    (b : M →+ (N →+ C)) (hb : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n))
+    (m : M) (n : N) :
+    toAddCommGroup R' b hb (m ⊗ₜ n) = b m n := by
+  simp only [tmul._eq_1, AddCon.coe_mk', toAddCommGroup_apply]
+  rw [LinearMap.toAddMonoidHom_coe]
+  erw [Adjunction.mkOfHomEquiv_homEquiv]
+  simp only [ModuleCat.homFunctor_obj, Equiv.coe_fn_symm_mk, ModuleCat.curry'_apply,
+    ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
+  erw [FreeAddMonoid.lift_eval_of]
+
+def toAddCommGroup' {C : Type v} [AddCommGroup C]
+  (b : M × N → C)
+  (hN0 : ∀ (n : N), b (0, n) = 0)
+  (hM0 : ∀ (m : M), b (m, 0) = 0)
+  (hMadd : ∀ (n : N) (m m' : M), b (m + m', n) = b (m, n) + b (m', n))
+  (hNadd : ∀ (m : M) (n n' : N), b (m, n + n') = b (m, n) + b (m, n'))
+  (hb : ∀ (r : R') (m : M) (n : N), b ((r • m), n) = b (m, (r • n))) :
+  (M ⊗[R'] N) →+ C :=
+toAddCommGroup R'
+  { toFun := fun m =>
+    { toFun := fun n => b (m, n)
+      map_zero' := hM0 _
+      map_add' := hNadd _ }
+    map_zero' := AddMonoidHom.ext fun _ => hN0 _
+    map_add' := fun _ _ => AddMonoidHom.ext fun _ => hMadd _ _ _ } hb
+
+lemma toAddCommGroup'_apply_tmul {C : Type v} [AddCommGroup C]
+    (b : M × N → C)
+    (hN0 : ∀ (n : N), b (0, n) = 0)
+    (hM0 : ∀ (m : M), b (m, 0) = 0)
+    (hMadd : ∀ (n : N) (m m' : M), b (m + m', n) = b (m, n) + b (m', n))
+    (hNadd : ∀ (m : M) (n n' : N), b (m, n + n') = b (m, n) + b (m, n'))
+    (hb : ∀ (r : R') (m : M) (n : N), b ((r • m), n) = b (m, (r • n)))
+    (m : M) (n : N) :
+    toAddCommGroup' R' b hN0 hM0 hMadd hNadd hb (m ⊗ₜ n) = b (m, n) :=
+  toAddCommGroup_apply_tmul R' _ _ m n
+
+open BigOperators in
+lemma exists_rep (z : M ⊗[R'] N) :
+    ∃ (ι : Type v) (ms : ι → M) (ns : ι → N) (s : Finset ι),
+    z = ∑ i in s, ms i ⊗ₜ ns i := by
+  classical
+  have EQ := span_tmul_eq_top R' M N
+  have mem1 : z ∈ ⊤ := Submodule.mem_top (R := R')
+  rw [←EQ, mem_span_set] at mem1
+  obtain ⟨c, hc1, rfl⟩ := mem1
+  choose m n hm using hc1
+  refine ⟨M ⊗[R'] N, fun i => if hi : i ∈ c.support then c i • m hi else 0,
+    fun i => if hi : i ∈ c.support then n hi else 0, c.support, ?_⟩
+  rw [Finsupp.sum]
+  refine Finset.sum_congr rfl (fun i hi => ?_)
+  dsimp only
+  split_ifs with h
+  · specialize hm h
+    rw [←smul_tmul']
+    congr 1
+    exact hm.symm
+  · exact False.elim (h hi)
+
+end TensorProduct

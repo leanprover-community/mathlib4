@@ -155,7 +155,7 @@ protected def functor : PreSES C ⥤ (Fin 3 ⥤ C) where
   map_id _ := by ext i; fin_cases i <;> rfl
   map_comp _ _ := by ext i; fin_cases i <;> rfl
 
-
+variable {C D}
 @[simps] def map (s : PreSES C) (F : C ⥤ D) : PreSES D where
   l := F.obj s.l
   m := F.obj s.m
@@ -164,6 +164,14 @@ protected def functor : PreSES C ⥤ (Fin 3 ⥤ C) where
   mr := F.map s.mr
 
 end PreSES
+
+namespace Functor
+
+variable {C D}
+class PreservesSESs (F : C ⥤ D) : Prop :=
+(preserves : ∀ ⦃s : PreSES C⦄, s.is_exact → (s.map F).is_exact)
+
+end Functor
 
 namespace SES
 
@@ -200,9 +208,15 @@ variable {C}
 @[simp] lemma zero_m (s t : SES C) : (0 : s ⟶ t).m = 0 := rfl
 @[simp] lemma zero_r (s t : SES C) : (0 : s ⟶ t).r = 0 := rfl
 
+variable (C)
 @[simps!]
 protected def functor : SES C ⥤ (Fin 3 ⥤ C) :=
     fullSubcategoryInclusion _ ⋙ PreSES.functor C
+
+variable {C D}
+@[simps]
+def map (s : SES C) (F : C ⥤ D) [F.PreservesSESs] : SES D :=
+⟨s.obj.map F, Functor.PreservesSESs.preserves s.property⟩
 
 end SES
 

@@ -1,12 +1,14 @@
 /-
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
+Authors: Johan Commelin, Jujian Zhang
 -/
 import Mathlib.RingTheory.Noetherian
 import Mathlib.CategoryTheory.ShortExactSequence
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Character
+import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Homology.Homology
 
 #align_import ring_theory.flat from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
@@ -49,19 +51,20 @@ This result is not yet formalised.
 
 -/
 
-
 universe u v
 
 namespace Module
 
-open Function (Injective)
-open CategoryTheory MonoidalCategory Limits
+open CategoryTheory Functor MonoidalCategory Limits
 
 open LinearMap (lsmul)
 
 variable (R : Type u) (M : Type u) [CommRing R] [AddCommGroup M] [Module R M]
 
 open TensorProduct
+
+def Flat.preserves_ses : Prop :=
+  (tensorRight <| ModuleCat.of R M).PreservesSESs
 
 def Flat.preserves_exactness : Prop :=
 ∀ ⦃N1 N2 N3 : ModuleCat.{u} R⦄ (l12 : N1 ⟶ N2) (l23 : N2 ⟶ N3)
@@ -71,18 +74,19 @@ def Flat.preserves_exactness : Prop :=
 
 def Flat.injective : Prop :=
 ∀ ⦃N N' : ModuleCat.{u} R⦄ (L : N ⟶ N'),
-  Injective L → Injective ((tensorRight (ModuleCat.of R M)).map L)
+  Function.Injective L → Function.Injective ((tensorRight (ModuleCat.of R M)).map L)
 
 def Flat.ideal : Prop :=
-  ∀ ⦃I : Ideal R⦄, Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
+  ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 
 def Flat.fg_ideal : Prop :=
-  ∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
+  ∀ ⦃I : Ideal R⦄ (_ : I.FG), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 
 /-- An `R`-module `M` is flat if for all finitely generated ideals `I` of `R`,
 the canonical map `I ⊗ M →ₗ M` is injective. -/
 class Flat  : Prop where
-  out : ∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
+  out : ∀ ⦃I : Ideal R⦄ (_ : I.FG),
+    Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 #align module.flat Module.Flat
 
 namespace Flat
@@ -96,6 +100,66 @@ instance self (R : Type u) [CommRing R] : Flat R R := ⟨by
   ext x
   simp⟩
 #align module.flat.self Module.Flat.self
+
+lemma Flat.fg_ideal_of_ideal (H : Flat.ideal R M) : Flat.fg_ideal R M := fun I _ => H I
+
+namespace injective_to_ideal
+
+lemma baer_iff_surjective :
+    Module.Baer.{u, u} R M ↔
+    ∀ (I : Ideal R), Function.Surjective (LinearMap.domRestrict' (M₂ := M) I) := by
+fconstructor
+· intro H I g
+  obtain ⟨L, H⟩:= H I g
+  refine ⟨L, LinearMap.ext fun x => H x.1 x.2⟩
+· intro H I g
+  obtain ⟨L, H⟩ := H I g
+  refine ⟨L, fun x hx => by convert FunLike.congr_fun H ⟨x, hx⟩⟩
+
+lemma lambek [CategoryTheory.Injective (ModuleCat.of R $ CharacterModule M)] :
+    Flat.injective R M := by
+  intros A B L hL
+  have m1 : Mono L
+  · rwa [ConcreteCategory.mono_iff_injective_of_preservesPullback]
+  rw [← LinearMap.ker_eq_bot, eq_bot_iff]
+  rintro z (hz : _ = 0)
+  simp only [tensorRight_obj, tensorRight_map] at hz
+  show z = 0
+  by_contra rid
+  obtain ⟨g, hg⟩ := exists_character_apply_ne_zero_of_ne_zero _ rid
+  let f : A →ₗ[R] (CharacterModule M) :=
+  { toFun := fun a =>
+    { toFun := fun m => g (a ⊗ₜ m)
+      map_add' := ?_
+      map_smul' := ?_ }
+    map_add' := ?_
+    map_smul' := ?_ }
+  pick_goal 2
+  · intros
+    simp only [tensorRight_obj, tmul_add]
+    rw [g.map_add]
+  pick_goal 2
+  · intros
+    simp only [tensorRight_obj, tmul_smul, eq_intCast, Int.cast_id]
+    rw [g.map_smul]
+  pick_goal 2
+  · intros
+    refine LinearMap.ext fun _ => ?_
+    simp only [tensorRight_obj, LinearMap.coe_mk, AddHom.coe_mk]
+    rw [LinearMap.add_apply]
+    simp only [LinearMap.coe_mk, AddHom.coe_mk]
+    rw [add_tmul, g.map_add]
+  pick_goal 2
+  · intros
+    refine LinearMap.ext fun _ => ?_
+    simp only [tensorRight_obj, LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply]
+    rw [LinearMap.bimodule_smul_apply]
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, tmul_smul]
+    rw [smul_tmul']
+
+  sorry
+
+end injective_to_ideal
 
 end Flat
 

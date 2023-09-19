@@ -9,6 +9,7 @@ universe u v w w'
 
 variable (R : Type u) [CommRing R]
 variable (M : Type w) [AddCommGroup M] [Module R M]
+variable (N : Type w) [AddCommGroup N] [Module R N]
 
 
 def CharacterModule : Type w :=
@@ -87,3 +88,43 @@ lemma exists_character_apply_ne_zero_of_ne_zero {m : M} (ne_zero : m ≠ 0) :
   erw [eq2]
   apply AddCommGroupCat.enough_injectives_aux_proofs.toRatCircle_apply_self_ne_zero
   assumption
+
+open TensorProduct
+
+@[simps!]
+def CharacterModule.uncurry : (N →ₗ[R] CharacterModule M) → CharacterModule (N ⊗[R] M) :=
+fun f => ⟨⟨ULift.down, by intros; rfl⟩, by intros; rfl⟩ ∘ₗ
+      (AddMonoidHom.toIntLinearMap <|
+        TensorProduct.toAddCommGroup' R (fun p => ULift.up <| f p.1 p.2)
+          (fun _ => by ext; dsimp; rw [map_zero]; rfl)
+          (fun _ => by ext; dsimp; rw [(f _).map_zero])
+          (fun _ _ _ => by ext; dsimp; rw [map_add, LinearMap.add_apply])
+          (fun _ _ _ => by ext; dsimp; rw [(f _).map_add])
+          (fun r n m => by ext; dsimp; rw [f.map_smul, LinearMap.bimodule_smul_apply]))
+
+@[simps]
+def CharacterModule.curry :
+  CharacterModule (N ⊗[R] M) → (N →ₗ[R] CharacterModule M) := fun g =>
+  { toFun := fun n =>
+    { toFun := fun m => g <| n ⊗ₜ m
+      map_add' := fun _ _ => by dsimp; rw [tmul_add, g.map_add]
+      map_smul' := fun _ _ => by dsimp; rw [tmul_smul, g.map_smul] }
+    map_add' := fun _ _ => LinearMap.ext fun _ => by
+      simp only [LinearMap.coe_mk, AddHom.coe_mk]
+      rw [add_tmul, g.map_add]
+      rfl
+    map_smul' := fun _ _ => LinearMap.ext fun _ => by
+      simp only [LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply]
+      rw [LinearMap.bimodule_smul_apply, ← smul_tmul']
+      simp only [LinearMap.coe_mk, AddHom.coe_mk, tmul_smul] }
+
+@[simps]
+def CharacterModule.homEquiv : (N →ₗ[R] CharacterModule M) ≃ CharacterModule (N ⊗[R] M) :=
+{ toFun := CharacterModule.uncurry R M N
+  invFun := CharacterModule.curry R M N
+  left_inv := fun _ => LinearMap.ext fun _ => LinearMap.ext fun _ => by
+    rw [curry_apply_apply, uncurry_apply, toAddCommGroup'_apply_tmul]
+  right_inv := fun _ => LinearMap.ext fun z => z.induction_on
+    (by simp only [map_zero])
+    (fun _ _ => by rw [uncurry_apply, toAddCommGroup'_apply_tmul, curry_apply_apply])
+    (fun x y hx hy => by rw [map_add, hx, hy, map_add]) }
