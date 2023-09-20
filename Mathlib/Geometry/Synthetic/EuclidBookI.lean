@@ -752,8 +752,8 @@ theorem diffside_of_sameside_2_paragram (afM : sameside a f M) (pgram1 : paragra
 
 theorem B_of_B_2_paragram (df : d ≠ f) (Badf : ¬B a d f) (pgram1 : paragram a d c b L M N O)
     (pgram2 : paragram e f c b L P N Q) : B e f d := by
-  have ⟨aL, dL, dM, _, _, _, _, aO, _, paraMO⟩ := pgram1; have ⟨eL, fL, fP, _, _, _, _, _, _, _⟩
-    := pgram2; exact B_of_col_diffside ⟨L, eL, fL, dL⟩ fP $ diffside_of_sameside_2_paragram
+  have ⟨aL, dL, dM, _, _, _, _, aO, _, paraMO⟩ := pgram1; have ⟨eL, fL, fP, _, _, _, _, _, _, _⟩ :=
+    pgram2; exact B_of_col_diffside ⟨L, eL, fL, dL⟩ fP $ diffside_of_sameside_2_paragram
     (sameside_of_not_B df Badf dM (offline_of_para' aO paraMO) ⟨L, aL, dL, fL⟩) pgram1 pgram2
 
 theorem sameside_of_B_para (Bfea : B f e a) (fP : online f P) (eQ : online e Q) (bQ : online b Q)
@@ -833,8 +833,8 @@ have bd_ba := (on_circle_iff_length_eq bβ dβ).mpr aβ
 exact ⟨c, d, L, aL, bL, cdL, eq_tri_of_length_online ab aL bL cdL.1 ab_ac bc_ba,
   eq_tri_of_length_online ab aL bL cdL.2.1 ab_ad bd_ba⟩
 /-- Euclid I.1, construction of an equilateral triangle on the sameside of a point -/
-theorem iseqtri_sameside_of_ne (ab : a ≠ b) (aL : online a L) (bL : online b L) (dL : ¬online d L)
-    : ∃ c, ¬online c L ∧ sameside c d L ∧ eq_tri a b c := by
+theorem iseqtri_sameside_of_ne (ab : a ≠ b) (aL : online a L) (bL : online b L) (dL : ¬online d L):
+  ∃ c, ¬online c L ∧ sameside c d L ∧ eq_tri a b c := by
   rcases iseqtri_iseqtri_diffside_of_ne ab with ⟨c1, c2, M, aM, bM, c1c2M, eqtri1, eqtri2⟩
   rcases sameside_or_of_diffside' dL (by rwa [line_unique_of_pts ab aM bM aL bL] at c1c2M)
     with c1dL | c2dL
@@ -1065,7 +1065,7 @@ theorem len_lt_of_ang_lt (tri_abc : triangle a b c) (ang_lt : angle c b a < angl
     length c a < length c b := by
   by_contra cb_le_ca; push_neg at cb_le_ca
   by_cases cb_ca : length c b = length c a
-  . linarith[angle_eq_of_iso ⟨by perma, cb_ca.symm⟩]
+  · linarith[angle_eq_of_iso ⟨by perma, cb_ca.symm⟩]
   linarith[ang_lt_of_len_lt (by perma) $ lt_of_le_of_ne cb_le_ca cb_ca]
 
 /--Euclid I.20, a triangle inequality-/
@@ -1336,8 +1336,8 @@ lemma B_sameside_of_2_paragram (Badf : B a d f) (pgram1 : paragram a d c b L M N
   exact ⟨Bet, sameside_of_B_prgram_pgram_trans Badf pgram1 pgram2⟩
 
 /--Euclid I.35, parallelograms sharing two parallels have the same area-/
-theorem area_eq_of_paragram (pgram1 : paragram a d c b L M N O) (pgram2 : paragram e f c b L P N Q)
-    : area a d b + area d b c = area e f b + area f b c := by
+theorem area_eq_of_paragram (pgram1 : paragram a d c b L M N O) (pgram2 : paragram e f c b L P N Q):
+    area a d b + area d b c = area e f b + area f b c := by
   wlog Badf : B a d f generalizing a b c d e f L M N O P Q; by_cases df : d = f; rw [←df] at pgram2
     ⊢; linperm [(len_ang_area_eq_of_parallelogram pgram1).2.2, (len_ang_area_eq_of_parallelogram
     pgram2).2.2]; exact (this pgram2 pgram1 $ B_of_B_2_paragram df Badf pgram1 pgram2).symm
@@ -1450,8 +1450,8 @@ lemma not_B_of_right_le_right (tri_abc : triangle a b c) (col_bcd : colinear b c
   have sum_three := sum_two_right_of_tri (triangle_of_ne_online (ne_13_of_B Bdbc) dL cL
     (online_1_of_triangle bL cL tri_abc))
   linperm[angle_nonneg b a d, (zero_lt_angle_of_tri (by
-    perma[triangle_of_ne_online (ne_13_of_B Bdbc) dL cL (online_1_of_triangle bL cL tri_abc)])
-    : 0 < angle d c a), angle_extension_of_B (ne_of_online dL $ online_1_of_triangle bL cL
+    perma[triangle_of_ne_online (ne_13_of_B Bdbc) dL cL (online_1_of_triangle bL cL tri_abc)]) :
+    0 < angle d c a), angle_extension_of_B (ne_of_online dL $ online_1_of_triangle bL cL
     tri_abc) Bdbc]
 
 lemma inter_sq_of_perp (Bbxc : B b x c) (aX : online a X) (xX : online x X)
