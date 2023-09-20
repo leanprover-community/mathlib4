@@ -471,9 +471,11 @@ theorem supported_comap_lmapDomain (f : α → α') (s : Set α') :
   exact Set.Subset.trans mapDomain_support hl
 #align finsupp.supported_comap_lmap_domain Finsupp.supported_comap_lmapDomain
 
-theorem lmapDomain_supported [Nonempty α] (f : α → α') (s : Set α) :
+theorem lmapDomain_supported (f : α → α') (s : Set α) :
     (supported M R s).map (lmapDomain M R f) = supported M R (f '' s) := by
   classical
+  cases isEmpty_or_nonempty α
+  · simp [s.eq_empty_of_isEmpty]
   inhabit α
   refine
     le_antisymm
