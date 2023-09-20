@@ -367,7 +367,7 @@ theorem eval_nat_cast {n : ℕ} : (n : R[X]).eval x = n := by simp only [← C_e
 @[simp]
 lemma eval_ofNat (n : ℕ) [n.AtLeastTwo] (a : R) :
     (no_index (OfNat.ofNat n : R[X])).eval a = OfNat.ofNat n := by
-  simp [OfNat.ofNat]
+  simp only [OfNat.ofNat, eval_nat_cast]
 
 @[simp]
 theorem eval_X : X.eval x = x :=
