@@ -448,6 +448,6 @@ theorem U_mul_S_mul_V_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
     fromColumns_mul_fromBlocks, svdV, mul_fromColumns, Matrix.mul_zero, add_zero,
     fromColumns_ext_iff, mul_V₂_eq_zero, and_true, svdU₁,
     Matrix.nonsing_inv_mul_cancel_right _ _ (IsUnit_det_svdσ_mapK _)]
-  exact Matrix.mul_left_injective_of_inv _ _ (V_mul_conjTranspose_V A)
+  exact Matrix.mul_left_injective_of_inv _ _ (V_mul_conjTranspose_V _)
 
 end Matrix
