@@ -789,8 +789,8 @@ instance instIsDomain1 : NoZeroDivisors (AddMonoidAlgebra (K s) (K s)) := inferI
 instance instIsDomain2 : IsDomain (AddMonoidAlgebra ℚ (K s)) := IsDomain.mk
 instance instIsDomain3 : IsDomain (GalConjClasses ℚ (K s) →₀ ℚ) :=
 MulEquiv.isDomain (mapDomainFixed s ℚ) (toConjAlgEquiv s ℚ).symm
+instance : AddZeroClass { x // x ∈ mapDomainFixed s ℚ } := inferInstance
 
-set_option synthInstance.maxHeartbeats 40000 in
 theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (K s)) (x0 : x ≠ 0)
     (x_ker : x ∈ RingHom.ker (Eval s ℚ)) :
     ∃ (w : ℚ) (_w0 : w ≠ 0) (q : Finset (GalConjClasses ℚ (K s))) (_hq :
@@ -853,7 +853,8 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
     Rat.smul_one_eq_coe]
 #align linear_independent_exp_aux2 linear_independent_exp_aux2
 
-set_option synthInstance.maxHeartbeats 40000 in
+instance : AddZeroClass { x // x ∈ ratCoeff s } := inferInstance
+
 theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s) (K s)) (x0 : x ≠ 0)
     (x_ker : x ∈ RingHom.ker (Eval s (K s))) :
     ∃ (w : ℚ) (_w0 : w ≠ 0) (q : Finset (GalConjClasses ℚ (K s))) (_hq :
