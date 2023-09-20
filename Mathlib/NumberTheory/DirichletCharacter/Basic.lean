@@ -19,7 +19,7 @@ of `toUnitHom χ`, the restriction of `χ` to a group homomorphism `(ZMod n)ˣ �
 Main definitions:
 
 - `DirichletCharacter`: The type representing a Dirichlet character.
-- `change_level`: Extend the Dirichlet character χ of level `n` to level `m`, where `n` divides `m`.
+- `changeLevel`: Extend the Dirichlet character χ of level `n` to level `m`, where `n` divides `m`.
 
 ## TODO
 
@@ -53,33 +53,33 @@ lemma periodic {m : ℕ} (hm : n ∣ m) : Function.Periodic χ m := by
 
 /-- A function that modifies the level of a Dirichlet character to some multiple
   of its original level. -/
-noncomputable def change_level {R : Type} [CommMonoidWithZero R] {n m : ℕ} (hm : n ∣ m) :
+noncomputable def changeLevel {R : Type} [CommMonoidWithZero R] {n m : ℕ} (hm : n ∣ m) :
     DirichletCharacter R n →* DirichletCharacter R m :=
   { toFun := fun ψ ↦ MulChar.ofUnitHom (ψ.toUnitHom.comp (ZMod.unitsMap hm)),
     map_one' := by ext; simp,
     map_mul' := fun ψ₁ ψ₂ ↦ by ext; simp }
 
-lemma change_level_def {m : ℕ} (hm : n ∣ m) :
-    change_level hm χ = MulChar.ofUnitHom (χ.toUnitHom.comp (ZMod.unitsMap hm)) := rfl
+lemma changeLevel_def {m : ℕ} (hm : n ∣ m) :
+    changeLevel hm χ = MulChar.ofUnitHom (χ.toUnitHom.comp (ZMod.unitsMap hm)) := rfl
 
-lemma change_level_def' {m : ℕ} (hm : n ∣ m) :
-    (change_level hm χ).toUnitHom = χ.toUnitHom.comp (Units.map (ZMod.castHom hm (ZMod n))) := by
+lemma changeLevel_def' {m : ℕ} (hm : n ∣ m) :
+    (changeLevel hm χ).toUnitHom = χ.toUnitHom.comp (Units.map (ZMod.castHom hm (ZMod n))) := by
   ext
-  rw [change_level_def, ZMod.unitsMap_def]
+  rw [changeLevel_def, ZMod.unitsMap_def]
   simp
 
 @[simp]
-lemma change_level_self : change_level (dvd_refl n) χ = χ := by
+lemma changeLevel_self : changeLevel (dvd_refl n) χ = χ := by
   ext
-  rw [change_level_def]
+  rw [changeLevel_def]
   simp [ZMod.unitsMap]
 
-lemma change_level_self_toUnitHom : (change_level (dvd_refl n) χ).toUnitHom = χ.toUnitHom := by
-  rw [change_level_self]
+lemma changeLevel_self_toUnitHom : (changeLevel (dvd_refl n) χ).toUnitHom = χ.toUnitHom := by
+  rw [changeLevel_self]
 
-lemma change_level_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
-  change_level (dvd_trans hm hd) χ = change_level hd (change_level hm χ) := by
-  simp only [change_level_def, toUnitHom_eq, ZMod.unitsMap, ofUnitHom_eq, Equiv.apply_symm_apply]
+lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
+  changeLevel (dvd_trans hm hd) χ = changeLevel hd (changeLevel hm χ) := by
+  simp only [changeLevel_def, toUnitHom_eq, ZMod.unitsMap, ofUnitHom_eq, Equiv.apply_symm_apply]
   rw [MonoidHom.comp_assoc, ←Units.map_comp]
   congr
   rw [← ZMod.castHom_comp hm hd]
