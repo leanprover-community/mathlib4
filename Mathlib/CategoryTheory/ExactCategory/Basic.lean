@@ -113,6 +113,8 @@ class AdmissibleEpi : Prop where
 lemma AdmissibleEpi.mem [AdmissibleEpi f] : (ShortComplex.gAdmissible (shortExact C)) f :=
   AdmissibleEpi.mem'
 
+namespace ExactCategory
+
 instance [AdmissibleMono f] [AdmissibleMono g] : AdmissibleMono (f ≫ g) :=
   ⟨ExactCategory.admissibleMono_stableUnderComposition f g
     (AdmissibleMono.mem f) (AdmissibleMono.mem g)⟩
@@ -168,8 +170,6 @@ instance [AdmissibleMono f] (g : X ⟶ X') : AdmissibleMono (pushout.inl : _ ⟶
 instance [AdmissibleMono f] (g : X ⟶ X') : AdmissibleMono (pushout.inr : _ ⟶ pushout f g) where
   mem' := ExactCategory.admissibleMono_stableUnderCobaseChange
     (IsPushout.of_hasPushout f g).flip (AdmissibleMono.mem f)
-
-namespace ExactCategory
 
 lemma shortExact_of_admissibleMono_of_isColimit (S : ShortComplex C)
     (hf : AdmissibleMono S.f) (hS : IsColimit (CokernelCofork.ofπ _ S.zero)) :
