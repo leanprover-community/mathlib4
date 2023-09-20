@@ -47,8 +47,9 @@ ERR_IBY = 11 # isolated by
 ERR_DOT = 12 # isolated or low focusing dot
 ERR_SEM = 13 # the substring " ;"
 ERR_WIN = 14 # Windows line endings "\r\n"
-ERR_TWS = 15 # Trailing whitespace
-ERR_CLN = 16 # Line starts with a colon
+ERR_TWS = 15 # trailing whitespace
+ERR_CLN = 16 # line starts with a colon
+ERR_4SP = 17 # second lint not indented
 
 exceptions = []
 
@@ -169,6 +170,18 @@ def long_lines_check(lines, path):
             continue
         if len(line) > 101:
             errors += [(ERR_LIN, line_nr, path)]
+    return errors, lines
+
+def four_spaces_in_second_line(lines, path):
+    errors = []
+    for (line_nr, line), (next_line_nr, next_line) in zip(lines, lines[1:]):
+        # Check if the current line matches "(lemma|theorem) .* :"
+        if re.search(r"(lemma|theorem) .* :$", line):
+            # Calculate the number of spaces before the first non-space character in the next line
+            num_spaces = len(next_line) - len(next_line.lstrip())
+            # Check if the number of leading spaces is not 4
+            if num_spaces != 4:
+                errors += [(ERR_4SP, next_line_nr, path)]
     return errors, lines
 
 def import_only_check(lines, path):
@@ -306,6 +319,8 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
         if errno == ERR_CLN:
             output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
+        if errno == ERR_4SP:
+            output_message(path, line_nr, "ERR_2SP", "If the theorem statement requires multiple lines, indent the subsequent lines by 4 spaces ")
 
 def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:
@@ -313,19 +328,19 @@ def lint(path, fix=False):
         # we will modify lines as we go, so we need to keep track of the original line numbers
         lines = f.readlines()
         enum_lines = enumerate(lines, 1)
-        errs, newlines = line_endings_check(enum_lines, path)
-        format_errors(errs)
-
-        errs,newlines = long_lines_check(newlines, path)
-        format_errors(errs)
-        errs,newlines = isolated_by_dot_semicolon_check(newlines, path)
-        format_errors(errs)
-        errs,newlines = set_option_check(newlines, path)
-        format_errors(errs)
-        if not import_only_check(newlines, path):
-            errs,newlines = regular_check(newlines, path)
+        newlines = enum_lines
+        for error_check in [line_endings_check,
+                            long_lines_check,
+                            four_spaces_in_second_line,
+                            isolated_by_dot_semicolon_check,
+                            set_option_check]:
+            errs, newlines = error_check(newlines, path)
             format_errors(errs)
-            errs,newlines = banned_import_check(newlines, path)
+
+        if not import_only_check(newlines, path):
+            errs, newlines = regular_check(newlines, path)
+            format_errors(errs)
+            errs, newlines = banned_import_check(newlines, path)
             format_errors(errs)
     # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
     if fix and new_exceptions and enum_lines != newlines:
