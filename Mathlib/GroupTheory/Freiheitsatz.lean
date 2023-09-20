@@ -235,6 +235,8 @@ noncomputable def subgroupEquiv (h : FreiheitsatzProp d.newRelator) :
       (FreeGroup.freeGroupCongr d.subgroupASetEquivSubgroupBSet)
     ((MonoidHom.ofInjective (h d.subgroupBSet d.conjVars_not_subset_subgroupBSet)))
 
+axiom letterMem : { n : Multiplicative ℤ // (d.x, n) ∈ d.subgroupA }
+
 noncomputable def toHNNExtension (h : FreiheitsatzProp d.newRelator) :
     OneRelator r →* HNNExtension _ d.subgroupA d.subgroupB (d.subgroupEquiv h) :=
   OneRelator.lift
