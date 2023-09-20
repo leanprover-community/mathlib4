@@ -144,6 +144,9 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] where
     aesop_cat
 #align category_theory.monoidal_category CategoryTheory.MonoidalCategory
 
+-- these are `def`s but should be lemmas, which would be ignored by the linter.
+attribute [nolint docBlame] MonoidalCategory.whiskerRight_def MonoidalCategory.whiskerLeft_def
+
 attribute [simp] MonoidalCategory.tensor_id
 attribute [reassoc] MonoidalCategory.tensor_comp
 attribute [simp] MonoidalCategory.tensor_comp
