@@ -50,18 +50,6 @@ open TensorProduct
 
 attribute [local ext] TensorProduct.ext
 
-instance : MonoidalCategoryStruct (ModuleCat.{u} R) where
-  tensorObj M N := ModuleCat.of R (M ⊗[R] N)
-  whiskerLeft M {_N₁ _N₂} f := f.lTensor M
-  whiskerRight {_M₁ _M₂} f N := f.rTensor N
-  tensorHom f g := TensorProduct.map f g
-  tensorUnit := ModuleCat.of R R
-  associator M N K := (TensorProduct.assoc R M N K).toModuleIso
-  leftUnitor M :=
-    (LinearEquiv.toModuleIso (TensorProduct.lid R M) : of R (R ⊗ M) ≅ of R M).trans (ofSelfIso M)
-  rightUnitor M :=
-    (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
-
 /-- (implementation) tensor product of R-modules -/
 def tensorObj (M N : ModuleCat R) : ModuleCat R :=
   ModuleCat.of R (M ⊗[R] N)
@@ -101,6 +89,26 @@ def associator (M : ModuleCat.{v} R) (N : ModuleCat.{w} R) (K : ModuleCat.{x} R)
     tensorObj (tensorObj M N) K ≅ tensorObj M (tensorObj N K) :=
   (TensorProduct.assoc R M N K).toModuleIso
 #align Module.monoidal_category.associator ModuleCat.MonoidalCategory.associator
+
+/-- (implementation) the left unitor for R-modules -/
+def leftUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (R ⊗[R] M) ≅ M :=
+  (LinearEquiv.toModuleIso (TensorProduct.lid R M) : of R (R ⊗ M) ≅ of R M).trans (ofSelfIso M)
+#align Module.monoidal_category.left_unitor ModuleCat.MonoidalCategory.leftUnitor
+
+/-- (implementation) the right unitor for R-modules -/
+def rightUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (M ⊗[R] R) ≅ M :=
+  (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
+#align Module.monoidal_category.right_unitor ModuleCat.MonoidalCategory.rightUnitor
+
+instance : MonoidalCategoryStruct (ModuleCat.{u} R) where
+  tensorObj := tensorObj
+  whiskerLeft := whiskerLeft
+  whiskerRight := whiskerRight
+  tensorHom f g := TensorProduct.map f g
+  tensorUnit := ModuleCat.of R R
+  associator := associator
+  leftUnitor := leftUnitor
+  rightUnitor := rightUnitor
 
 section
 
@@ -155,11 +163,6 @@ theorem pentagon (W X Y Z : ModuleCat R) :
   convert pentagon_aux R W X Y Z using 1
 #align Module.monoidal_category.pentagon ModuleCat.MonoidalCategory.pentagon
 
-/-- (implementation) the left unitor for R-modules -/
-def leftUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (R ⊗[R] M) ≅ M :=
-  (LinearEquiv.toModuleIso (TensorProduct.lid R M) : of R (R ⊗ M) ≅ of R M).trans (ofSelfIso M)
-#align Module.monoidal_category.left_unitor ModuleCat.MonoidalCategory.leftUnitor
-
 theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
   -- Porting note: broken ext
@@ -173,11 +176,6 @@ theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
   rw [LinearMap.map_smul]
   rfl
 #align Module.monoidal_category.left_unitor_naturality ModuleCat.MonoidalCategory.leftUnitor_naturality
-
-/-- (implementation) the right unitor for R-modules -/
-def rightUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (M ⊗[R] R) ≅ M :=
-  (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
-#align Module.monoidal_category.right_unitor ModuleCat.MonoidalCategory.rightUnitor
 
 theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
@@ -209,24 +207,15 @@ end MonoidalCategory
 
 open MonoidalCategory
 
-instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
-  -- data
-  (tensorObj := MonoidalCategory.tensorObj)
-  (tensorHom := @tensorHom _ _)
-  (whiskerLeft := @whiskerLeft _ _)
-  (whiskerRight := @whiskerRight _ _)
-  (tensorUnit := ModuleCat.of R R)
-  (associator := associator)
-  (leftUnitor := leftUnitor)
-  (rightUnitor := rightUnitor)
+instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) where
   -- properties
-  (tensor_id := fun M N ↦ tensor_id M N)
-  (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)
-  (associator_naturality := fun f g h ↦ MonoidalCategory.associator_naturality f g h)
-  (leftUnitor_naturality := fun f ↦ MonoidalCategory.leftUnitor_naturality f)
-  (rightUnitor_naturality := fun f ↦ rightUnitor_naturality f)
-  (pentagon := fun M N K L ↦ pentagon M N K L)
-  (triangle := fun M N ↦ triangle M N)
+  tensor_id := tensor_id
+  tensor_comp := MonoidalCategory.tensor_comp
+  associator_naturality := MonoidalCategory.associator_naturality
+  leftUnitor_naturality := MonoidalCategory.leftUnitor_naturality
+  rightUnitor_naturality := rightUnitor_naturality
+  pentagon := pentagon
+  triangle := triangle
 #align Module.monoidal_category ModuleCat.monoidalCategory
 
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative ring. -/
