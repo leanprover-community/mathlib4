@@ -37,14 +37,11 @@ open MulChar
 variable {R : Type} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R n)
 
 namespace DirichletCharacter
-lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) :
-  χ a = χ.toUnitHom ha.unit := by simp
+lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) : χ a = χ.toUnitHom ha.unit := by simp
 
-lemma toUnitHom_eq_iff (ψ : DirichletCharacter R n) :
-  toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
+lemma toUnitHom_eq_iff (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
 
-lemma eval_modulus_sub (x : ZMod n) :
-  χ (n - x) = χ (-x) := by simp
+lemma eval_modulus_sub (x : ZMod n) : χ (n - x) = χ (-x) := by simp
 
 lemma periodic {m : ℕ} (hm : n ∣ m) : Function.Periodic χ m := by
   intro a
