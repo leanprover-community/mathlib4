@@ -450,10 +450,6 @@ lemma mul_left_injective_of_inv
   dsimp at g
   rwa [← Matrix.mul_assoc, ←Matrix.mul_assoc, h, Matrix.one_mul, Matrix.one_mul] at g
 
-lemma V_conjTranspose_mul_inj (A : Matrix (Fin M) (Fin N) 𝕂) {m : Type*} :
-    Function.Injective (fun x : Matrix m (Fin N) 𝕂 => x * A.svdV) :=
-  Matrix.mul_right_injective_of_inv _ _ (V_mul_conjTranspose_V _)
-
 /-- **Singular Value Decomposition Theorem**
 Any matrix A (M × N) with rank r = A.rank and  with elements in ℝ or ℂ fields can be decompsed
 into three matrices:
@@ -471,6 +467,6 @@ theorem U_mul_S_mul_V_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
     fromColumns_mul_fromBlocks, svdV, mul_fromColumns, Matrix.mul_zero, add_zero,
     fromColumns_ext_iff, mul_V₂_eq_zero, and_true, svdU₁,
     Matrix.nonsing_inv_mul_cancel_right _ _ (IsUnit_det_svdσ_mapK _)]
-  exact (V_conjTranspose_mul_inj _)
+  exact Matrix.mul_right_injective_of_inv _ _ (V_mul_conjTranspose_V _)
 
 end Matrix
