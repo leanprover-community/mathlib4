@@ -177,7 +177,7 @@ end
 
 /-- Note that this provides the default `compatible_smul R R M N` instance through
 `IsScalarTower.left`. -/
-noncomputable instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R]
+instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R]
     [IsScalarTower R' R M]
     [DistribMulAction R' N] [IsScalarTower R' R N] : CompatibleSMul R R' M N :=
   ⟨fun r m n => by
@@ -318,7 +318,7 @@ noncomputable instance leftModule : Module R'' (M ⊗[R] N) :=
 noncomputable instance : Module R (M ⊗[R] N) :=
   TensorProduct.leftModule
 
-noncomputable instance [Module R''ᵐᵒᵖ M] [IsCentralScalar R'' M] :
+instance [Module R''ᵐᵒᵖ M] [IsCentralScalar R'' M] :
     IsCentralScalar R'' (M ⊗[R] N) where
   op_smul_eq_smul r x :=
     x.induction_on (by rw [smul_zero, smul_zero])
@@ -332,7 +332,7 @@ variable {R'₂ : Type*} [Monoid R'₂] [DistribMulAction R'₂ M]
 variable [SMulCommClass R R'₂ M]
 
 /-- `SMulCommClass R' R'₂ M` implies `SMulCommClass R' R'₂ (M ⊗[R] N)` -/
-noncomputable instance smulCommClass_left [SMulCommClass R' R'₂ M] :
+instance smulCommClass_left [SMulCommClass R' R'₂ M] :
     SMulCommClass R' R'₂ (M ⊗[R] N) where
   smul_comm r' r'₂ x :=
     TensorProduct.induction_on x (by simp_rw [TensorProduct.smul_zero])
@@ -343,7 +343,7 @@ noncomputable instance smulCommClass_left [SMulCommClass R' R'₂ M] :
 variable [SMul R'₂ R']
 
 /-- `IsScalarTower R'₂ R' M` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
-noncomputable instance isScalarTower_left [IsScalarTower R'₂ R' M] :
+instance isScalarTower_left [IsScalarTower R'₂ R' M] :
     IsScalarTower R'₂ R' (M ⊗[R] N) :=
   ⟨fun s r x =>
     x.induction_on (by simp)
@@ -355,7 +355,7 @@ variable [DistribMulAction R'₂ N] [DistribMulAction R' N]
 variable [CompatibleSMul R R'₂ M N] [CompatibleSMul R R' M N]
 
 /-- `IsScalarTower R'₂ R' N` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
-noncomputable instance isScalarTower_right [IsScalarTower R'₂ R' N] :
+instance isScalarTower_right [IsScalarTower R'₂ R' N] :
     IsScalarTower R'₂ R' (M ⊗[R] N) :=
   ⟨fun s r x =>
     x.induction_on (by simp)
@@ -367,7 +367,7 @@ end
 
 /-- A short-cut instance for the common case, where the requirements for the `compatible_smul`
 instances are sufficient. -/
-noncomputable instance isScalarTower [SMul R' R] [IsScalarTower R' R M] :
+instance isScalarTower [SMul R' R] [IsScalarTower R' R M] :
     IsScalarTower R' R (M ⊗[R] N) :=
   TensorProduct.isScalarTower_left
 #align tensor_product.is_scalar_tower TensorProduct.isScalarTower
@@ -461,7 +461,7 @@ variable (f : M →ₗ[R] N →ₗ[R] P)
 /-- Auxiliary function to constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
-noncomputable def liftAux : M ⊗[R] N →+ P :=
+def liftAux : M ⊗[R] N →+ P :=
   (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift fun p : M × N => f p.1 p.2) <|
     AddCon.addConGen_le fun x y hxy =>
       match x, y, hxy with
@@ -497,7 +497,7 @@ variable (f)
 /-- Constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P` with the property that
 its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
-noncomputable def lift : M ⊗[R] N →ₗ[R] P :=
+def lift : M ⊗[R] N →ₗ[R] P :=
   { liftAux f with map_smul' := liftAux.smul }
 #align tensor_product.lift TensorProduct.lift
 
@@ -554,7 +554,7 @@ variable (R M N P)
 /-- Linearly constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
-noncomputable def uncurry : (M →ₗ[R] N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] P :=
+def uncurry : (M →ₗ[R] N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] P :=
   LinearMap.flip <| lift <| LinearMap.lflip.comp (LinearMap.flip LinearMap.id)
 #align tensor_product.uncurry TensorProduct.uncurry
 
@@ -1293,13 +1293,13 @@ When `R` is a `Ring` we get the required `TensorProduct.compatible_smul` instanc
 `IsScalarTower`, but when it is only a `Semiring` we need to build it from scratch.
 The instance diamond in `compatible_smul` doesn't matter because it's in `Prop`.
 -/
-noncomputable instance CompatibleSMul.int : CompatibleSMul R ℤ M N :=
+instance CompatibleSMul.int : CompatibleSMul R ℤ M N :=
   ⟨fun r m n =>
     Int.induction_on r (by simp) (fun r ih => by simpa [add_smul, tmul_add, add_tmul] using ih)
       fun r ih => by simpa [sub_smul, tmul_sub, sub_tmul] using ih⟩
 #align tensor_product.compatible_smul.int TensorProduct.CompatibleSMul.int
 
-noncomputable instance CompatibleSMul.unit {S} [Monoid S] [DistribMulAction S M]
+instance CompatibleSMul.unit {S} [Monoid S] [DistribMulAction S M]
     [DistribMulAction S N]
     [CompatibleSMul R S M N] : CompatibleSMul R Sˣ M N :=
   ⟨fun s m n => (CompatibleSMul.smul_tmul (s : S) m n : _)⟩
