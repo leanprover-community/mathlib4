@@ -80,7 +80,7 @@ compile_inductive% Ordnode
 
 namespace Ordnode
 
-variable {α : Type _}
+variable {α : Type*}
 
 instance : EmptyCollection (Ordnode α) :=
   ⟨nil⟩

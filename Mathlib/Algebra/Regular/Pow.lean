@@ -20,7 +20,7 @@ algebra hierarchy.
 -/
 
 
-variable {R : Type _} {a b : R}
+variable {R : Type*} {a b : R}
 
 section Monoid
 

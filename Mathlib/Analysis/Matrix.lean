@@ -43,7 +43,7 @@ These are not declared as instances because there are several natural choices fo
 of a matrix.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 
 noncomputable section
@@ -52,7 +52,7 @@ open scoped BigOperators NNReal Matrix
 
 namespace Matrix
 
-variable {R l m n α β : Type _} [Fintype l] [Fintype m] [Fintype n]
+variable {R l m n α β : Type*} [Fintype l] [Fintype m] [Fintype n]
 
 /-! ### The elementwise supremum norm -/
 

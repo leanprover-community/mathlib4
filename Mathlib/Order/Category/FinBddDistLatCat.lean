@@ -30,7 +30,7 @@ structure FinBddDistLatCat where
 
 namespace FinBddDistLatCat
 
-instance : CoeSort FinBddDistLatCat (Type _) :=
+instance : CoeSort FinBddDistLatCat (Type*) :=
   ⟨fun X => X.toBddDistLatCat⟩
 
 instance (X : FinBddDistLatCat) : DistribLattice X :=
@@ -42,14 +42,14 @@ instance (X : FinBddDistLatCat) : BoundedOrder X :=
 attribute [instance] FinBddDistLatCat.isFintype
 
 /-- Construct a bundled `FinBddDistLatCat` from a `Nonempty` `BoundedOrder` `DistribLattice`. -/
-def of (α : Type _) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLatCat :=
+def of (α : Type*) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLatCat :=
   -- Porting note: was `⟨⟨⟨α⟩⟩⟩`
   -- see https://github.com/leanprover-community/mathlib4/issues/4998
   ⟨⟨{α := α}⟩⟩
 #align FinBddDistLat.of FinBddDistLatCat.of
 
 /-- Construct a bundled `FinBddDistLatCat` from a `Nonempty` `BoundedOrder` `DistribLattice`. -/
-def of' (α : Type _) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLatCat :=
+def of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLatCat :=
   haveI := Fintype.toBoundedOrder α
   -- Porting note: was `⟨⟨⟨α⟩⟩⟩`
   -- see https://github.com/leanprover-community/mathlib4/issues/4998

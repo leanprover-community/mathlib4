@@ -18,7 +18,7 @@ We define the global infix notation `::ₘ` for `Multiset.cons`.
 
 open List Subtype Nat Function
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
   is a type of finite sets with duplicates allowed.  -/
@@ -166,7 +166,7 @@ theorem cons_swap (a b : α) (s : Multiset α) : a ::ₘ b ::ₘ s = b ::ₘ a :
 
 section Rec
 
-variable {C : Multiset α → Sort _}
+variable {C : Multiset α → Sort*}
 
 /-- Dependent recursor on multisets.
 TODO: should be @[recursor 6], but then the definition of `Multiset.pi` fails with a stack
@@ -807,7 +807,7 @@ theorem card_eq_three {s : Multiset α} : card s = 3 ↔ ∃ x y z, s = {x, y, z
 
 /-- The strong induction principle for multisets. -/
 @[elab_as_elim]
-def strongInductionOn {p : Multiset α → Sort _} (s : Multiset α) (ih : ∀ s, (∀ t < s, p t) → p s) :
+def strongInductionOn {p : Multiset α → Sort*} (s : Multiset α) (ih : ∀ s, (∀ t < s, p t) → p s) :
     p s :=
     (ih s) fun t _h =>
       strongInductionOn t ih
@@ -815,7 +815,7 @@ termination_by _ => card s
 decreasing_by exact card_lt_of_lt _h
 #align multiset.strong_induction_on Multiset.strongInductionOnₓ -- Porting note: reorderd universes
 
-theorem strongInductionOn_eq {p : Multiset α → Sort _} (s : Multiset α) (H) :
+theorem strongInductionOn_eq {p : Multiset α → Sort*} (s : Multiset α) (H) :
     @strongInductionOn _ p s H = H s fun t _h => @strongInductionOn _ p t H := by
   rw [strongInductionOn]
 #align multiset.strong_induction_eq Multiset.strongInductionOn_eq
@@ -832,7 +832,7 @@ theorem case_strongInductionOn {p : Multiset α → Prop} (s : Multiset α) (h�
 `n`, one knows how to define `p s`. Then one can inductively define `p s` for all multisets `s` of
 cardinality less than `n`, starting from multisets of card `n` and iterating. This
 can be used either to define data, or to prove properties. -/
-def strongDownwardInduction {p : Multiset α → Sort _} {n : ℕ}
+def strongDownwardInduction {p : Multiset α → Sort*} {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁)
     (s : Multiset α) :
     card s ≤ n → p s :=
@@ -843,7 +843,7 @@ decreasing_by exact (tsub_lt_tsub_iff_left_of_le ht).2 (card_lt_of_lt _h)
 -- Porting note: reorderd universes
 #align multiset.strong_downward_induction Multiset.strongDownwardInductionₓ
 
-theorem strongDownwardInduction_eq {p : Multiset α → Sort _} {n : ℕ}
+theorem strongDownwardInduction_eq {p : Multiset α → Sort*} {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁)
     (s : Multiset α) :
     strongDownwardInduction H s = H s fun ht _hst => strongDownwardInduction H _ ht := by
@@ -852,14 +852,14 @@ theorem strongDownwardInduction_eq {p : Multiset α → Sort _} {n : ℕ}
 
 /-- Analogue of `strongDownwardInduction` with order of arguments swapped. -/
 @[elab_as_elim]
-def strongDownwardInductionOn {p : Multiset α → Sort _} {n : ℕ} :
+def strongDownwardInductionOn {p : Multiset α → Sort*} {n : ℕ} :
     ∀ s : Multiset α,
       (∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁) →
         card s ≤ n → p s :=
   fun s H => strongDownwardInduction H s
 #align multiset.strong_downward_induction_on Multiset.strongDownwardInductionOn
 
-theorem strongDownwardInductionOn_eq {p : Multiset α → Sort _} (s : Multiset α) {n : ℕ}
+theorem strongDownwardInductionOn_eq {p : Multiset α → Sort*} (s : Multiset α) {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁) :
     s.strongDownwardInductionOn H = H s fun {t} ht _h => t.strongDownwardInductionOn H ht := by
   dsimp only [strongDownwardInductionOn]
@@ -1593,7 +1593,7 @@ instance decidableDforallMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a 
 #align multiset.decidable_dforall_multiset Multiset.decidableDforallMultiset
 
 /-- decidable equality for functions whose domain is bounded by multisets -/
-instance decidableEqPiMultiset {β : α → Type _} [h : ∀ a, DecidableEq (β a)] :
+instance decidableEqPiMultiset {β : α → Type*} [h : ∀ a, DecidableEq (β a)] :
     DecidableEq (∀ a ∈ m, β a) := fun f g =>
   decidable_of_iff (∀ (a) (h : a ∈ m), f a h = g a h) (by simp [Function.funext_iff])
 #align multiset.decidable_eq_pi_multiset Multiset.decidableEqPiMultiset
@@ -2527,7 +2527,7 @@ instance : DistribLattice (Multiset α) :=
             simp only [max_min_distrib_left, Multiset.count_inter, Multiset.sup_eq_union,
               Multiset.count_union, Multiset.inf_eq_inter] }
 
-theorem count_map {α β : Type _} (f : α → β) (s : Multiset α) [DecidableEq β] (b : β) :
+theorem count_map {α β : Type*} (f : α → β) (s : Multiset α) [DecidableEq β] (b : β) :
     count b (map f s) = card (s.filter fun a => b = f a) := by
   simp [Bool.beq_eq_decide_eq, eq_comm, count, countp_map]
 #align multiset.count_map Multiset.count_map
@@ -2656,7 +2656,7 @@ inductive Rel (r : α → β → Prop) : Multiset α → Multiset β → Prop
 #align multiset.rel Multiset.Rel
 #align multiset.rel_iff Multiset.Rel_iff
 
-variable {δ : Type _} {r : α → β → Prop} {p : γ → δ → Prop}
+variable {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
 private theorem rel_flip_aux {s t} (h : Rel r s t) : Rel (flip r) t s :=
   Rel.recOn h Rel.zero fun h₀ _h₁ ih => Rel.cons h₀ ih

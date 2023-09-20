@@ -58,13 +58,13 @@ The implementation of the seminorms is taken almost literally from `ContinuousLi
 Schwartz space, tempered distributions
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
 open scoped BigOperators Nat
 
-variable {𝕜 𝕜' D E F G : Type _}
+variable {𝕜 𝕜' D E F G : Type*}
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 

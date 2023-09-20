@@ -150,7 +150,7 @@ namespace Complex
 
 section
 
-variable {α : Type _} {l : Filter α} {f g : α → ℂ}
+variable {α : Type*} {l : Filter α} {f g : α → ℂ}
 
 open Asymptotics
 
@@ -211,7 +211,7 @@ open Real
 
 namespace Asymptotics
 
-variable {α : Type _} {r c : ℝ} {l : Filter α} {f g : α → ℝ}
+variable {α : Type*} {r c : ℝ} {l : Filter α} {f g : α → ℝ}
 
 theorem IsBigOWith.rpow (h : IsBigOWith c l f g) (hc : 0 ≤ c) (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) :
     IsBigOWith (c ^ r) l (fun x => f x ^ r) fun x => g x ^ r := by

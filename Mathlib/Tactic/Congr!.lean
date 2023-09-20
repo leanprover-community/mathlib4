@@ -141,7 +141,7 @@ If successful, then returns then new goal, otherwise returns the original `MVarI
 def Lean.MVarId.propext (mvarId : MVarId) : MetaM MVarId := do
   let res ← observing? do
     -- Avoid applying `propext` if the target is not an equality of `Prop`s.
-    -- We don't want a unification specializing `Sort _` to `Prop`.
+    -- We don't want a unification specializing `Sort*` to `Prop`.
     let tgt ← withReducible mvarId.getType'
     let some (ty, _, _) := tgt.eq? | failure
     guard ty.isProp
@@ -153,7 +153,7 @@ def Lean.MVarId.propext (mvarId : MVarId) : MetaM MVarId := do
 Try to close the goal with using `proof_irrel_heq`. Returns whether or not it succeeds.
 
 We need to be somewhat careful not to assign metavariables while doing this, otherwise we might
-specialize `Sort _` to `Prop`.
+specialize `Sort*` to `Prop`.
 -/
 def Lean.MVarId.proofIrrelHeq (mvarId : MVarId) : MetaM Bool :=
   mvarId.withContext do
@@ -172,7 +172,7 @@ Try to close the goal using `Subsingleton.elim`. Returns whether or not it succe
 
 We are careful to apply `Subsingleton.elim` in a way that does not assign any metavariables.
 This is to prevent the `Subsingleton Prop` instance from being used as justification to specialize
-`Sort _` to `Prop`.
+`Sort*` to `Prop`.
 -/
 def Lean.MVarId.subsingletonElim (mvarId : MVarId) : MetaM Bool :=
   mvarId.withContext do

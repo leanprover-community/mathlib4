@@ -50,7 +50,7 @@ open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
 open scoped Classical Topology ENNReal MeasureTheory BigOperators
 
-variable {α β ι E F 𝕜 : Type _}
+variable {α β ι E F 𝕜 : Type*}
 
 namespace MeasureTheory
 
@@ -199,7 +199,7 @@ theorem tendsto_approxOn_range_Lp [BorelSpace E] {f : β → E} [hp : Fact (1 �
 #align measure_theory.simple_func.tendsto_approx_on_range_Lp MeasureTheory.SimpleFunc.tendsto_approxOn_range_Lp
 
 /-- Any function in `ℒp` can be approximated by a simple function if `p < ∞`. -/
-theorem _root_.MeasureTheory.Memℒp.exists_simpleFunc_snorm_sub_lt {E : Type _}
+theorem _root_.MeasureTheory.Memℒp.exists_simpleFunc_snorm_sub_lt {E : Type*}
     [NormedAddCommGroup E] {f : β → E} {μ : Measure β} (hf : Memℒp f p μ) (hp_ne_top : p ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ g : β →ₛ E, snorm (f - ⇑g) p μ < ε ∧ Memℒp g p μ := by
   borelize E
@@ -810,7 +810,7 @@ end CoeToLp
 
 section Order
 
-variable {G : Type _} [NormedLatticeAddCommGroup G]
+variable {G : Type*} [NormedLatticeAddCommGroup G]
 
 theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]

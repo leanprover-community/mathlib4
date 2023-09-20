@@ -18,7 +18,7 @@ on the type of locally constant functions.
 
 namespace LocallyConstant
 
-variable {X Y : Type _} [TopologicalSpace X]
+variable {X Y : Type*} [TopologicalSpace X]
 
 @[to_additive]
 instance [One Y] : One (LocallyConstant X Y) where one := const X 1
@@ -257,7 +257,7 @@ instance [CommRing Y] : CommRing (LocallyConstant X Y) :=
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
-variable {R : Type _}
+variable {R : Type*}
 
 instance [Monoid R] [MulAction R Y] : MulAction R (LocallyConstant X Y) :=
   Function.Injective.mulAction _ coe_injective fun _ _ => rfl
@@ -290,5 +290,50 @@ theorem coe_algebraMap (r : R) : ⇑(algebraMap R (LocallyConstant X Y) r) = alg
 #align locally_constant.coe_algebra_map LocallyConstant.coe_algebraMap
 
 end Algebra
+
+section Comap
+
+variable [TopologicalSpace Y]
+
+/-- `LocallyConstant.comap` is a `MonoidHom`. -/
+@[to_additive "`LocallyConstant.comap` is an `AddMonoidHom`."]
+noncomputable
+def comapMonoidHom [MulOneClass Z] (f : X → Y) (hf : Continuous f) :
+    LocallyConstant Y Z →* LocallyConstant X Z where
+  toFun := comap f
+  map_one' := by
+    ext x
+    simp only [hf, coe_comap, coe_one, Function.comp_apply, Pi.one_apply]
+  map_mul' r s := by
+    ext x
+    simp only [hf, coe_comap, coe_mul, Function.comp_apply, Pi.mul_apply]
+
+/-- `LocallyConstant.comap` is a linear map. -/
+noncomputable
+def comapₗ {R : Type*} [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → Y)
+    (hf : Continuous f) : LocallyConstant Y Z →ₗ[R] LocallyConstant X Z where
+  toFun := comap f
+  map_add' := (comapAddMonoidHom f hf).map_add'
+  map_smul' r s := by
+    ext x
+    simp only [hf, coe_comap, coe_smul, Function.comp_apply, Pi.smul_apply, RingHom.id_apply]
+
+lemma ker_comapₗ {R : Type*} [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → Y)
+    (hf : Continuous f) (hfs : Function.Surjective f) :
+    LinearMap.ker (comapₗ f hf : LocallyConstant Y Z →ₗ[R] LocallyConstant X Z) = ⊥ :=
+  LinearMap.ker_eq_bot_of_injective <| comap_injective _ hf hfs
+
+/-- `LocallyConstant.congrLeft` is a linear equivalence. -/
+noncomputable
+def congrLeftₗ {R : Type*} [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X ≃ₜ Y) :
+    LocallyConstant X Z ≃ₗ[R] LocallyConstant Y Z where
+  toFun := (congrLeft e).toFun
+  map_smul' := (comapₗ _ e.continuous_invFun).map_smul'
+  map_add' := (comapAddMonoidHom _ e.continuous_invFun).map_add'
+  invFun := (congrLeft e).invFun
+  left_inv := (congrLeft e).left_inv
+  right_inv := (congrLeft e).right_inv
+
+end Comap
 
 end LocallyConstant

@@ -42,7 +42,7 @@ open BigOperators Matrix
 
 open Finset Matrix SimpleGraph
 
-variable {V α β : Type _}
+variable {V α β : Type*}
 
 namespace Matrix
 

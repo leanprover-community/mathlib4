@@ -26,7 +26,7 @@ open CategoryTheory.Limits
 
 open CategoryTheory.MonoidalCategory
 
-variable (C : Type _) [Category C] [Preadditive C] [MonoidalCategory C]
+variable (C : Type*) [Category C] [Preadditive C] [MonoidalCategory C]
 
 /-- A category is `MonoidalPreadditive` if tensoring is additive in both factors.
 
@@ -85,20 +85,20 @@ theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [Monoid
 
 open BigOperators
 
-theorem whiskerLeft_sum (P : C) {Q R : C} {J : Type _} (s : Finset J) (g : J → (Q ⟶ R)) :
+theorem whiskerLeft_sum (P : C) {Q R : C} {J : Type*} (s : Finset J) (g : J → (Q ⟶ R)) :
     P ◁ ∑ j in s, g j = ∑ j in s, P ◁ g j :=
   map_sum ((tensoringLeft C).obj P).mapAddHom g s
 
-theorem sum_whiskerRight {Q R : C} {J : Type _} (s : Finset J) (g : J → (Q ⟶ R)) (P : C) :
+theorem sum_whiskerRight {Q R : C} {J : Type*} (s : Finset J) (g : J → (Q ⟶ R)) (P : C) :
     (∑ j in s, g j) ▷ P = ∑ j in s, g j ▷ P :=
   map_sum ((tensoringRight C).obj P).mapAddHom g s
 
-theorem tensor_sum {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
+theorem tensor_sum {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (f ⊗ ∑ j in s, g j) = ∑ j in s, f ⊗ g j := by
   simp [whiskerLeft_sum, sum_whiskerRight, Preadditive.comp_sum, tensorHom_def]
 #align category_theory.tensor_sum CategoryTheory.tensor_sum
 
-theorem sum_tensor {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
+theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (∑ j in s, g j) ⊗ f = ∑ j in s, g j ⊗ f := by
   simp [whiskerLeft_sum, sum_whiskerRight, Preadditive.sum_comp, tensorHom_def]
 #align category_theory.sum_tensor CategoryTheory.sum_tensor

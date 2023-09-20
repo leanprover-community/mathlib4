@@ -27,7 +27,7 @@ noetherian local domain `(R, m, k)`:
 -/
 
 
-variable (R : Type _) [CommRing R] (K : Type _) [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R : Type*) [CommRing R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped DiscreteValuation
 

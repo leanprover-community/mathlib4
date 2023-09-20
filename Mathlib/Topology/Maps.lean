@@ -49,7 +49,7 @@ open Set Filter Function
 
 open TopologicalSpace Topology Filter
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 section Inducing
 
@@ -118,7 +118,7 @@ theorem Inducing.image_mem_nhdsWithin {f : α → β} (hf : Inducing f) {a : α}
   hf.map_nhds_eq a ▸ image_mem_map hs
 #align inducing.image_mem_nhds_within Inducing.image_mem_nhdsWithin
 
-theorem Inducing.tendsto_nhds_iff {ι : Type _} {f : ι → β} {g : β → γ} {a : Filter ι} {b : β}
+theorem Inducing.tendsto_nhds_iff {ι : Type*} {f : ι → β} {g : β → γ} {a : Filter ι} {b : β}
     (hg : Inducing g) : Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) := by
   rw [hg.nhds_eq_comap, tendsto_comap_iff]
 #align inducing.tendsto_nhds_iff Inducing.tendsto_nhds_iff
@@ -237,7 +237,7 @@ theorem Embedding.map_nhds_of_mem {f : α → β} (hf : Embedding f) (a : α) (h
   hf.1.map_nhds_of_mem a h
 #align embedding.map_nhds_of_mem Embedding.map_nhds_of_mem
 
-theorem Embedding.tendsto_nhds_iff {ι : Type _} {f : ι → β} {g : β → γ} {a : Filter ι} {b : β}
+theorem Embedding.tendsto_nhds_iff {ι : Type*} {f : ι → β} {g : β → γ} {a : Filter ι} {b : β}
     (hg : Embedding g) : Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) :=
   hg.toInducing.tendsto_nhds_iff
 #align embedding.tendsto_nhds_iff Embedding.tendsto_nhds_iff
@@ -258,7 +258,7 @@ theorem Embedding.closure_eq_preimage_closure_image {e : α → β} (he : Embedd
 
 /-- The topology induced under an inclusion `f : X → Y` from the discrete topological space `Y`
 is the discrete topology on `X`. -/
-theorem Embedding.discreteTopology {X Y : Type _} [TopologicalSpace X] [tY : TopologicalSpace Y]
+theorem Embedding.discreteTopology {X Y : Type*} [TopologicalSpace X] [tY : TopologicalSpace Y]
     [DiscreteTopology Y] {f : X → Y} (hf : Embedding f) : DiscreteTopology X :=
   discreteTopology_iff_nhds.2 fun x => by
     rw [hf.nhds_eq_comap, nhds_discrete, comap_pure, ← image_singleton, hf.inj.preimage_image,
@@ -269,7 +269,7 @@ end Embedding
 
 /-- A function between topological spaces is a quotient map if it is surjective,
   and for all `s : Set β`, `s` is open iff its preimage is an open set. -/
-def QuotientMap {α : Type _} {β : Type _} [tα : TopologicalSpace α] [tβ : TopologicalSpace β]
+def QuotientMap {α : Type*} {β : Type*} [tα : TopologicalSpace α] [tβ : TopologicalSpace β]
     (f : α → β) : Prop :=
   Surjective f ∧ tβ = tα.coinduced f
 #align quotient_map QuotientMap
@@ -594,7 +594,7 @@ theorem OpenEmbedding.open_iff_image_open {f : α → β} (hf : OpenEmbedding f)
     apply preimage_image_eq _ hf.inj⟩
 #align open_embedding.open_iff_image_open OpenEmbedding.open_iff_image_open
 
-theorem OpenEmbedding.tendsto_nhds_iff {ι : Type _} {f : ι → β} {g : β → γ} {a : Filter ι} {b : β}
+theorem OpenEmbedding.tendsto_nhds_iff {ι : Type*} {f : ι → β} {g : β → γ} {a : Filter ι} {b : β}
     (hg : OpenEmbedding g) : Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) :=
   hg.toEmbedding.tendsto_nhds_iff
 #align open_embedding.tendsto_nhds_iff OpenEmbedding.tendsto_nhds_iff
@@ -676,7 +676,7 @@ structure ClosedEmbedding (f : α → β) extends Embedding f : Prop where
 
 variable {f : α → β}
 
-theorem ClosedEmbedding.tendsto_nhds_iff {ι : Type _} {g : ι → α} {a : Filter ι} {b : α}
+theorem ClosedEmbedding.tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α}
     (hf : ClosedEmbedding f) : Tendsto g a (𝓝 b) ↔ Tendsto (f ∘ g) a (𝓝 (f b)) :=
   hf.toEmbedding.tendsto_nhds_iff
 #align closed_embedding.tendsto_nhds_iff ClosedEmbedding.tendsto_nhds_iff

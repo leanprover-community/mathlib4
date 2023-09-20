@@ -336,7 +336,7 @@ theorem integral_zero : integral I l (fun _ => (0 : E)) vol = 0 :=
   hasIntegral_zero.integral_eq
 #align box_integral.integral_zero BoxIntegral.integral_zero
 
-theorem HasIntegral.sum {α : Type _} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
+theorem HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
     HasIntegral I l (fun x => ∑ i in s, f i x) vol (∑ i in s, g i) := by
   induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]
@@ -712,7 +712,7 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
 
 variable {l}
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- This is an auxiliary lemma used to prove two statements at once. Use one of the next two
 lemmas instead. -/

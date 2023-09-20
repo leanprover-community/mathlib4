@@ -70,7 +70,7 @@ open BigOperators
 
 variable (p : ℕ)
 
-variable (R : Type _) [CommRing R] [DecidableEq R]
+variable (R : Type*) [CommRing R] [DecidableEq R]
 
 /-- `wittPolynomial p R n` is the `n`-th Witt polynomial
 with respect to a prime `p` with coefficients in a commutative ring `R`.
@@ -113,7 +113,7 @@ If we map the coefficients through a ring homomorphism, we obtain the correspond
 over the target ring. -/
 section
 
-variable {R} {S : Type _} [CommRing S]
+variable {R} {S : Type*} [CommRing S]
 
 @[simp]
 theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
@@ -146,7 +146,7 @@ theorem wittPolynomial_one : wittPolynomial p R 1 = C (p : R) * X 1 + X 0 ^ p :=
     one_mul, pow_one, C_1, pow_zero, tsub_self, tsub_zero]
 #align witt_polynomial_one wittPolynomial_one
 
-theorem aeval_wittPolynomial {A : Type _} [CommRing A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
+theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
     aeval f (W_ R n) = ∑ i in range (n + 1), (p : A) ^ i * f i ^ p ^ (n - i) := by
   simp [wittPolynomial, AlgHom.map_sum, aeval_monomial, Finsupp.prod_single_index]
 #align aeval_witt_polynomial aeval_wittPolynomial

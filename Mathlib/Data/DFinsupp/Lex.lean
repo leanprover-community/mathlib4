@@ -16,7 +16,7 @@ This file defines the lexicographic order on `DFinsupp`.
 -/
 
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 namespace DFinsupp
 
@@ -85,7 +85,7 @@ variable [∀ i, LinearOrder (α i)]
 
 /-- Auxiliary helper to case split computably. There is no need for this to be public, as it
 can be written with `Or.by_cases` on `lt_trichotomy` once the instances below are constructed. -/
-private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) → Sort _}
+private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) → Sort*}
     (h_lt : ∀ {f g}, toLex f < toLex g → P (toLex f) (toLex g))
     (h_eq : ∀ {f g}, toLex f = toLex g → P (toLex f) (toLex g))
     (h_gt : ∀ {f g}, toLex g < toLex f → P (toLex f) (toLex g)) : ∀ f g, P f g :=

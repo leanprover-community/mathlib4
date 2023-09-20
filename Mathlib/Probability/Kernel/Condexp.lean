@@ -39,7 +39,7 @@ namespace ProbabilityTheory
 
 section AuxLemmas
 
-variable {Ω F : Type _} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f : Ω → F}
+variable {Ω F : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f : Ω → F}
 
 -- Porting note: todo: move to `MeasureTheory/MeasurableSpace`, after `Measurable.mono`
 theorem measurable_id'' (hm : m ≤ mΩ) : @Measurable Ω Ω mΩ m id :=
@@ -69,7 +69,7 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_id [NormedAddCommGroup
 
 end AuxLemmas
 
-variable {Ω F : Type _} [TopologicalSpace Ω] {m : MeasurableSpace Ω} [mΩ : MeasurableSpace Ω]
+variable {Ω F : Type*} [TopologicalSpace Ω] {m : MeasurableSpace Ω} [mΩ : MeasurableSpace Ω]
   [PolishSpace Ω] [BorelSpace Ω] [Nonempty Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
   [NormedAddCommGroup F] {f : Ω → F}
 

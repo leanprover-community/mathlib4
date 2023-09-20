@@ -41,7 +41,7 @@ This file develops the basic theory of left and right cosets.
 
 open Set Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- The left coset `a * s` for an element `a : α` and a subset `s : Set α` -/
 @[to_additive leftAddCoset "The left coset `a+s` for an element `a : α` and a subset `s : set α`"]
@@ -356,7 +356,7 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
   If `s` is a normal subgroup, `α ⧸ s` is a group -/
 @[to_additive "`α ⧸ s` is the quotient type representing the left cosets of `s`.  If `s` is a normal
  subgroup, `α ⧸ s` is a group"]
-instance : HasQuotient α (Subgroup α) :=
+instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
   ⟨fun s => Quotient (leftRel s)⟩
 
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
@@ -746,7 +746,7 @@ theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
 /-- The natural embedding `H ⧸ (⨅ i, f i).subgroupOf H ↪ Π i, H ⧸ (f i).subgroupOf H`. -/
 @[to_additive (attr := simps) "The natural embedding
  `H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]
-def quotientiInfSubgroupOfEmbedding {ι : Type _} (f : ι → Subgroup α) (H : Subgroup α) :
+def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α) :
     H ⧸ (⨅ i, f i).subgroupOf H ↪ ∀ i, H ⧸ (f i).subgroupOf H
     where
   toFun q i := quotientSubgroupOfMapOfLE H (iInf_le f i) q
@@ -759,7 +759,7 @@ def quotientiInfSubgroupOfEmbedding {ι : Type _} (f : ι → Subgroup α) (H : 
 
 -- porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
-theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type _} (f : ι → Subgroup α) (H : Subgroup α)
+theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α)
     (g : H) (i : ι) :
     quotientiInfSubgroupOfEmbedding f H (QuotientGroup.mk g) i =
       (QuotientGroup.mk g : { x // x ∈ H } ⧸ subgroupOf (f i) H) :=
@@ -769,7 +769,7 @@ theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type _} (f : ι → Subgr
 
 /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/
 @[to_additive (attr := simps) "The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`."]
-def quotientiInfEmbedding {ι : Type _} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i
+def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i
     where
   toFun q i := quotientMapOfLE (iInf_le f i) q
   inj' :=
@@ -779,7 +779,7 @@ def quotientiInfEmbedding {ι : Type _} (f : ι → Subgroup α) : (α ⧸ ⨅ i
 #align add_subgroup.quotient_infi_embedding AddSubgroup.quotientiInfEmbedding
 
 @[to_additive (attr := simp)]
-theorem quotientiInfEmbedding_apply_mk {ι : Type _} (f : ι → Subgroup α) (g : α) (i : ι) :
+theorem quotientiInfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (g : α) (i : ι) :
     quotientiInfEmbedding f (QuotientGroup.mk g) i = QuotientGroup.mk g :=
   rfl
 #align subgroup.quotient_infi_embedding_apply_mk Subgroup.quotientiInfEmbedding_apply_mk
@@ -810,7 +810,7 @@ theorem card_quotient_dvd_card [Fintype α] (s : Subgroup α) [DecidablePred (·
 
 open Fintype
 
-variable {H : Type _} [Group H]
+variable {H : Type*} [Group H]
 
 @[to_additive]
 theorem card_dvd_of_injective [Fintype α] [Fintype H] (f : α →* H) (hf : Function.Injective f) :

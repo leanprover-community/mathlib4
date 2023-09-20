@@ -78,7 +78,7 @@ open TopologicalSpace
 
 section TopologicalRing
 
-variable {X R : Type _} [TopologicalSpace X] [Semiring R]
+variable {X R : Type*} [TopologicalSpace X] [Semiring R]
 
 variable [TopologicalSpace R] [TopologicalSemiring R]
 
@@ -176,7 +176,7 @@ section IsROrC
 
 open IsROrC
 
-variable {X 𝕜 : Type _} [IsROrC 𝕜] [TopologicalSpace X]
+variable {X 𝕜 : Type*} [IsROrC 𝕜] [TopologicalSpace X]
 
 /-- An auxiliary lemma used in the proof of `ContinuousMap.idealOfSet_ofIdeal_eq_closure` which may
 be useful on its own. -/
@@ -404,7 +404,7 @@ namespace CharacterSpace
 
 open Function ContinuousMap
 
-variable (X 𝕜 : Type _) [TopologicalSpace X]
+variable (X 𝕜 : Type*) [TopologicalSpace X]
 
 section ContinuousMapEval
 

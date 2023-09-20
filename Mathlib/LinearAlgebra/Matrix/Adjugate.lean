@@ -354,7 +354,7 @@ theorem adjugate_diagonal (v : n → α) :
     · rw [updateColumn_ne hjk, diagonal_apply_ne' _ hjk]
 #align matrix.adjugate_diagonal Matrix.adjugate_diagonal
 
-theorem _root_.RingHom.map_adjugate {R S : Type _} [CommRing R] [CommRing S] (f : R →+* S)
+theorem _root_.RingHom.map_adjugate {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
     (M : Matrix n n R) : f.mapMatrix M.adjugate = Matrix.adjugate (f.mapMatrix M) := by
   ext i k
   have : Pi.single i (1 : S) = f ∘ Pi.single i 1 := by
@@ -364,7 +364,7 @@ theorem _root_.RingHom.map_adjugate {R S : Type _} [CommRing R] [CommRing S] (f 
     map_updateRow, ← RingHom.mapMatrix_apply, ← RingHom.map_det, ← adjugate_apply]
 #align ring_hom.map_adjugate RingHom.map_adjugate
 
-theorem _root_.AlgHom.map_adjugate {R A B : Type _} [CommSemiring R] [CommRing A] [CommRing B]
+theorem _root_.AlgHom.map_adjugate {R A B : Type*} [CommSemiring R] [CommRing A] [CommRing B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) (M : Matrix n n A) :
     f.mapMatrix M.adjugate = Matrix.adjugate (f.mapMatrix M) :=
   f.toRingHom.map_adjugate _

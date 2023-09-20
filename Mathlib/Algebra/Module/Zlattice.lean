@@ -35,11 +35,11 @@ namespace Zspan
 
 open MeasureTheory MeasurableSet Submodule
 
-variable {E ι : Type _}
+variable {E ι : Type*}
 
 section NormedLatticeField
 
-variable {K : Type _} [NormedLinearOrderedField K]
+variable {K : Type*} [NormedLinearOrderedField K]
 
 variable [NormedAddCommGroup E] [NormedSpace K E]
 

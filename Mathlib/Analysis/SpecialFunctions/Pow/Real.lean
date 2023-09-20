@@ -205,12 +205,12 @@ theorem le_rpow_add {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ y * x ^ z ≤ x ^
   · simp [rpow_add pos]
 #align real.le_rpow_add Real.le_rpow_add
 
-theorem rpow_sum_of_pos {ι : Type _} {a : ℝ} (ha : 0 < a) (f : ι → ℝ) (s : Finset ι) :
+theorem rpow_sum_of_pos {ι : Type*} {a : ℝ} (ha : 0 < a) (f : ι → ℝ) (s : Finset ι) :
     (a ^ ∑ x in s, f x) = ∏ x in s, a ^ f x :=
   map_sum (⟨⟨fun (x : ℝ) => (a ^ x : ℝ), rpow_zero a⟩, rpow_add ha⟩ : ℝ →+ (Additive ℝ)) f s
 #align real.rpow_sum_of_pos Real.rpow_sum_of_pos
 
-theorem rpow_sum_of_nonneg {ι : Type _} {a : ℝ} (ha : 0 ≤ a) {s : Finset ι} {f : ι → ℝ}
+theorem rpow_sum_of_nonneg {ι : Type*} {a : ℝ} (ha : 0 ≤ a) {s : Finset ι} {f : ι → ℝ}
     (h : ∀ x ∈ s, 0 ≤ f x) : (a ^ ∑ x in s, f x) = ∏ x in s, a ^ f x := by
   induction' s using Finset.cons_induction with i s hi ihs
   · rw [sum_empty, Finset.prod_empty, rpow_zero]
@@ -310,7 +310,7 @@ end Complex
 
 namespace Real
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 variable {x y z : ℝ}
 
@@ -402,6 +402,9 @@ theorem log_rpow {x : ℝ} (hx : 0 < x) (y : ℝ) : log (x ^ y) = y * log x := b
   apply exp_injective
   rw [exp_log (rpow_pos_of_pos hx y), ← exp_log hx, mul_comm, rpow_def_of_pos (exp_pos (log x)) y]
 #align real.log_rpow Real.log_rpow
+
+/-! Note: lemmas about `(∏ i in s, f i ^ r)` such as `Real.finset_prod_rpow` are proved
+in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
 /-!
 ## Order and monotonicity
@@ -667,7 +670,7 @@ end Sqrt
 
 variable {n : ℕ}
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 theorem exists_rat_pow_btwn_rat_aux (hn : n ≠ 0) (x y : ℝ) (h : x < y) (hy : 0 < y) :
     ∃ q : ℚ, 0 < q ∧ x < (q : ℝ) ^ n ∧ (q : ℝ) ^ n < y := by
@@ -690,7 +693,7 @@ theorem exists_rat_pow_btwn_rat (hn : n ≠ 0) {x y : ℚ} (h : x < y) (hy : 0 <
 #align real.exists_rat_pow_btwn_rat Real.exists_rat_pow_btwn_rat
 
 /-- There is a rational power between any two positive elements of an archimedean ordered field. -/
-theorem exists_rat_pow_btwn {α : Type _} [LinearOrderedField α] [Archimedean α] (hn : n ≠ 0)
+theorem exists_rat_pow_btwn {α : Type*} [LinearOrderedField α] [Archimedean α] (hn : n ≠ 0)
     {x y : α} (h : x < y) (hy : 0 < y) : ∃ q : ℚ, 0 < q ∧ x < (q : α) ^ n ∧ (q : α) ^ n < y := by
   obtain ⟨q₂, hx₂, hy₂⟩ := exists_rat_btwn (max_lt h hy)
   obtain ⟨q₁, hx₁, hq₁₂⟩ := exists_rat_btwn hx₂

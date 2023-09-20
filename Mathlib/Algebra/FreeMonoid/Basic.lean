@@ -20,7 +20,7 @@ import Mathlib.Data.List.BigOperators.Basic
 -/
 
 
-variable {α : Type _} {β : Type _} {γ : Type _} {M : Type _} [Monoid M] {N : Type _} [Monoid N]
+variable {α : Type*} {β : Type*} {γ : Type*} {M : Type*} [Monoid M] {N : Type*} [Monoid N]
 
 /-- Free monoid over a given alphabet. -/
 @[to_additive "Free nonabelian additive monoid over a given alphabet"]
@@ -157,19 +157,19 @@ theorem of_injective : Function.Injective (@of α) := List.singleton_injective
 @[to_additive (attr := elab_as_elim) "Recursor for `FreeAddMonoid` using `0` and
 `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`."]
 -- Porting note: change from `List.recOn` to `List.rec` since only the latter is computable
-def recOn {C : FreeMonoid α → Sort _} (xs : FreeMonoid α) (h0 : C 1)
+def recOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C xs → C (of x * xs)) : C xs := List.rec h0 ih xs
 #align free_monoid.rec_on FreeMonoid.recOn
 #align free_add_monoid.rec_on FreeAddMonoid.recOn
 
 @[to_additive (attr := simp)]
-theorem recOn_one {C : FreeMonoid α → Sort _} (h0 : C 1) (ih : ∀ x xs, C xs → C (of x * xs)) :
+theorem recOn_one {C : FreeMonoid α → Sort*} (h0 : C 1) (ih : ∀ x xs, C xs → C (of x * xs)) :
     @recOn α C 1 h0 ih = h0 := rfl
 #align free_monoid.rec_on_one FreeMonoid.recOn_one
 #align free_add_monoid.rec_on_zero FreeAddMonoid.recOn_zero
 
 @[to_additive (attr := simp)]
-theorem recOn_of_mul {C : FreeMonoid α → Sort _} (x : α) (xs : FreeMonoid α) (h0 : C 1)
+theorem recOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C xs → C (of x * xs)) : @recOn α C (of x * xs) h0 ih = ih x xs (recOn xs h0 ih) :=
   rfl
 #align free_monoid.rec_on_of_mul FreeMonoid.recOn_of_mul
@@ -179,19 +179,19 @@ theorem recOn_of_mul {C : FreeMonoid α → Sort _} (x : α) (xs : FreeMonoid α
 `[]` and `x :: xs`. -/
 @[to_additive (attr := elab_as_elim) "A version of `List.casesOn` for `FreeAddMonoid` using `0` and
 `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`."]
-def casesOn {C : FreeMonoid α → Sort _} (xs : FreeMonoid α) (h0 : C 1)
+def casesOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C (of x * xs)) : C xs := List.casesOn xs h0 ih
 #align free_monoid.cases_on FreeMonoid.casesOn
 #align free_add_monoid.cases_on FreeAddMonoid.casesOn
 
 @[to_additive (attr := simp)]
-theorem casesOn_one {C : FreeMonoid α → Sort _} (h0 : C 1) (ih : ∀ x xs, C (of x * xs)) :
+theorem casesOn_one {C : FreeMonoid α → Sort*} (h0 : C 1) (ih : ∀ x xs, C (of x * xs)) :
     @casesOn α C 1 h0 ih = h0 := rfl
 #align free_monoid.cases_on_one FreeMonoid.casesOn_one
 #align free_add_monoid.cases_on_zero FreeAddMonoid.casesOn_zero
 
 @[to_additive (attr := simp)]
-theorem casesOn_of_mul {C : FreeMonoid α → Sort _} (x : α) (xs : FreeMonoid α) (h0 : C 1)
+theorem casesOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C (of x * xs)) : @casesOn α C (of x * xs) h0 ih = ih x xs := rfl
 #align free_monoid.cases_on_of_mul FreeMonoid.casesOn_of_mul
 #align free_add_monoid.cases_on_of_add FreeAddMonoid.casesOn_of_add

@@ -26,7 +26,7 @@ open Classical Set Function Filter Finset Metric
 
 open Classical Topology Nat BigOperators uniformity NNReal ENNReal
 
-variable {α : Type _} {β : Type _} {ι : Type _}
+variable {α : Type*} {β : Type*} {ι : Type*}
 
 theorem tendsto_inverse_atTop_nhds_0_nat : Tendsto (fun n : ℕ => (n : ℝ)⁻¹) atTop (𝓝 0) :=
   tendsto_inv_atTop_zero.comp tendsto_nat_cast_atTop_atTop
@@ -53,12 +53,23 @@ theorem tendsto_one_div_add_atTop_nhds_0_nat :
   (tendsto_add_atTop_iff_nat 1).2 (_root_.tendsto_const_div_atTop_nhds_0_nat 1)
 #align tendsto_one_div_add_at_top_nhds_0_nat tendsto_one_div_add_atTop_nhds_0_nat
 
+theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_0_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ≥0 𝕜]
+    [TopologicalSpace 𝕜] [TopologicalSemiring 𝕜] [ContinuousSMul ℝ≥0 𝕜] :
+    Tendsto (algebraMap ℝ≥0 𝕜 ∘ fun n : ℕ => (n : ℝ≥0)⁻¹) atTop (nhds 0) := by
+  convert (continuous_algebraMap ℝ≥0 𝕜).continuousAt.tendsto.comp tendsto_inverse_atTop_nhds_0_nat
+  rw [map_zero]
+
+theorem tendsto_algebraMap_inverse_atTop_nhds_0_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ 𝕜]
+    [TopologicalSpace 𝕜] [TopologicalSemiring 𝕜] [ContinuousSMul ℝ 𝕜] :
+    Tendsto (algebraMap ℝ 𝕜 ∘ fun n : ℕ => (n : ℝ)⁻¹) atTop (nhds 0) :=
+  NNReal.tendsto_algebraMap_inverse_atTop_nhds_0_nat 𝕜
+
 /-- The limit of `n / (n + x)` is 1, for any constant `x` (valid in `ℝ` or any topological division
 algebra over `ℝ`, e.g., `ℂ`).
 
 TODO: introduce a typeclass saying that `1 / n` tends to 0 at top, making it possible to get this
 statement simultaneously on `ℚ`, `ℝ` and `ℂ`. -/
-theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type _} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
+theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
     [CharZero 𝕜] [Algebra ℝ 𝕜] [ContinuousSMul ℝ 𝕜] [TopologicalDivisionRing 𝕜] (x : 𝕜) :
     Tendsto (fun n : ℕ => (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
   refine' Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn => _)) _
@@ -96,7 +107,7 @@ theorem Nat.tendsto_pow_atTop_atTop_of_one_lt {m : ℕ} (h : 1 < m) :
   tsub_add_cancel_of_le (le_of_lt h) ▸ tendsto_add_one_pow_atTop_atTop_of_pos (tsub_pos_of_lt h)
 #align nat.tendsto_pow_at_top_at_top_of_one_lt Nat.tendsto_pow_atTop_atTop_of_one_lt
 
-theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
+theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type*} [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 ≤ r) (h₂ : r < 1) :
     Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) :=
   h₁.eq_or_lt.elim
@@ -107,7 +118,7 @@ theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField �
       (tendsto_inv_atTop_zero.comp this).congr fun n => by simp)
 #align tendsto_pow_at_top_nhds_0_of_lt_1 tendsto_pow_atTop_nhds_0_of_lt_1
 
-@[simp] theorem tendsto_pow_atTop_nhds_0_iff {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
+@[simp] theorem tendsto_pow_atTop_nhds_0_iff {𝕜 : Type*} [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} :
     Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ |r| < 1 := by
   rw [tendsto_zero_iff_abs_tendsto_zero]
@@ -123,7 +134,7 @@ theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField �
       exacts [⟨n, le_of_lt hn⟩, by simpa only [← abs_pow]]
   · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_0_of_lt_1 (abs_nonneg r)) h
 
-theorem tendsto_pow_atTop_nhdsWithin_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
+theorem tendsto_pow_atTop_nhdsWithin_0_of_lt_1 {𝕜 : Type*} [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 < r) (h₂ : r < 1) :
     Tendsto (fun n : ℕ => r ^ n) atTop (𝓝[>] 0) :=
   tendsto_inf.2
@@ -131,7 +142,7 @@ theorem tendsto_pow_atTop_nhdsWithin_0_of_lt_1 {𝕜 : Type _} [LinearOrderedFie
       tendsto_principal.2 <| eventually_of_forall fun _ => pow_pos h₁ _⟩
 #align tendsto_pow_at_top_nhds_within_0_of_lt_1 tendsto_pow_atTop_nhdsWithin_0_of_lt_1
 
-theorem uniformity_basis_dist_pow_of_lt_1 {α : Type _} [PseudoMetricSpace α] {r : ℝ} (h₀ : 0 < r)
+theorem uniformity_basis_dist_pow_of_lt_1 {α : Type*} [PseudoMetricSpace α] {r : ℝ} (h₀ : 0 < r)
     (h₁ : r < 1) :
     (uniformity α).HasBasis (fun _ : ℕ => True) fun k => { p : α × α | dist p.1 p.2 < r ^ k } :=
   Metric.mk_uniformity_basis (fun _ _ => pow_pos h₀ _) fun _ ε0 =>
@@ -218,7 +229,7 @@ theorem summable_geometric_two : Summable fun n : ℕ => ((1 : ℝ) / 2) ^ n :=
   ⟨_, hasSum_geometric_two⟩
 #align summable_geometric_two summable_geometric_two
 
-theorem summable_geometric_two_encode {ι : Type _} [Encodable ι] :
+theorem summable_geometric_two_encode {ι : Type*} [Encodable ι] :
     Summable fun i : ι => (1 / 2 : ℝ) ^ Encodable.encode i :=
   summable_geometric_two.comp_injective Encodable.encode_injective
 #align summable_geometric_two_encode summable_geometric_two_encode
@@ -476,7 +487,7 @@ def posSumOfEncodable {ε : ℝ} (hε : 0 < ε) (ι) [Encodable ι] :
     exact le_rfl
 #align pos_sum_of_encodable posSumOfEncodable
 
-theorem Set.Countable.exists_pos_hasSum_le {ι : Type _} {s : Set ι} (hs : s.Countable) {ε : ℝ}
+theorem Set.Countable.exists_pos_hasSum_le {ι : Type*} {s : Set ι} (hs : s.Countable) {ε : ℝ}
     (hε : 0 < ε) : ∃ ε' : ι → ℝ, (∀ i, 0 < ε' i) ∧ ∃ c, HasSum (fun i : s => ε' i) c ∧ c ≤ ε := by
   haveI := hs.toEncodable
   rcases posSumOfEncodable hε s with ⟨f, hf0, ⟨c, hfc, hcε⟩⟩
@@ -487,7 +498,7 @@ theorem Set.Countable.exists_pos_hasSum_le {ι : Type _} {s : Set ι} (hs : s.Co
   · simpa only [Subtype.coe_prop, dif_pos, Subtype.coe_eta]
 #align set.countable.exists_pos_has_sum_le Set.Countable.exists_pos_hasSum_le
 
-theorem Set.Countable.exists_pos_forall_sum_le {ι : Type _} {s : Set ι} (hs : s.Countable) {ε : ℝ}
+theorem Set.Countable.exists_pos_forall_sum_le {ι : Type*} {s : Set ι} (hs : s.Countable) {ε : ℝ}
     (hε : 0 < ε) : ∃ ε' : ι → ℝ,
     (∀ i, 0 < ε' i) ∧ ∀ t : Finset ι, ↑t ⊆ s → ∑ i in t, ε' i ≤ ε := by
   rcases hs.exists_pos_hasSum_le hε with ⟨ε', hpos, c, hε'c, hcε⟩
@@ -582,12 +593,12 @@ theorem tendsto_factorial_div_pow_self_atTop :
 
 section
 
-theorem tendsto_nat_floor_atTop {α : Type _} [LinearOrderedSemiring α] [FloorSemiring α] :
+theorem tendsto_nat_floor_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSemiring α] :
     Tendsto (fun x : α => ⌊x⌋₊) atTop atTop :=
   Nat.floor_mono.tendsto_atTop_atTop fun x => ⟨max 0 (x + 1), by simp [Nat.le_floor_iff]⟩
 #align tendsto_nat_floor_at_top tendsto_nat_floor_atTop
 
-variable {R : Type _} [TopologicalSpace R] [LinearOrderedField R] [OrderTopology R] [FloorRing R]
+variable {R : Type*} [TopologicalSpace R] [LinearOrderedField R] [OrderTopology R] [FloorRing R]
 
 theorem tendsto_nat_floor_mul_div_atTop {a : R} (ha : 0 ≤ a) :
     Tendsto (fun x => (⌊a * x⌋₊ : R) / x) atTop (𝓝 a) := by

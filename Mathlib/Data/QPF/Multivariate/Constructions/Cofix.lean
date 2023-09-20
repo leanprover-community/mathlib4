@@ -312,7 +312,7 @@ theorem Cofix.bisim₂ {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
 /-- Bisimulation principle the values `⟨a,f⟩` of the polynomial functor representing
 `Cofix F α` as well as an invariant `Q : β → Prop` and a state `β` generating the
 left-hand side and right-hand side of the equality through functions `u v : β → Cofix F α` -/
-theorem Cofix.bisim' {α : TypeVec n} {β : Type _} (Q : β → Prop) (u v : β → Cofix F α)
+theorem Cofix.bisim' {α : TypeVec n} {β : Type*} (Q : β → Prop) (u v : β → Cofix F α)
     (h : ∀ x, Q x → ∃ a f' f₀ f₁,
       Cofix.dest (u x) = q.abs ⟨a, q.P.appendContents f' f₀⟩ ∧
         Cofix.dest (v x) = q.abs ⟨a, q.P.appendContents f' f₁⟩ ∧

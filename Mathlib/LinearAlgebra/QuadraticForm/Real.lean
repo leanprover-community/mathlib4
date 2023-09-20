@@ -28,7 +28,7 @@ open scoped BigOperators
 
 open Real Finset
 
-variable {ι : Type _} [Fintype ι]
+variable {ι : Type*} [Fintype ι]
 
 /-- The isometry between a weighted sum of squares with weights `u` on the
 (non-zero) real numbers and the weighted sum of squares with weights `sign ∘ u`. -/
@@ -77,7 +77,7 @@ noncomputable def isometryEquivSignWeightedSumSquares [DecidableEq ι] (w : ι �
 
 /-- **Sylvester's law of inertia**: A nondegenerate real quadratic form is equivalent to a weighted
 sum of squares with the weights being ±1. -/
-theorem equivalent_one_neg_one_weighted_sum_squared {M : Type _} [AddCommGroup M] [Module ℝ M]
+theorem equivalent_one_neg_one_weighted_sum_squared {M : Type*} [AddCommGroup M] [Module ℝ M]
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) (hQ : (associated (R₁ := ℝ) Q).Nondegenerate) :
     ∃ w : Fin (FiniteDimensional.finrank ℝ M) → ℝ,
       (∀ i, w i = -1 ∨ w i = 1) ∧ Equivalent Q (weightedSumSquares ℝ w) :=
@@ -88,7 +88,7 @@ theorem equivalent_one_neg_one_weighted_sum_squared {M : Type _} [AddCommGroup M
 
 /-- **Sylvester's law of inertia**: A real quadratic form is equivalent to a weighted
 sum of squares with the weights being ±1 or 0. -/
-theorem equivalent_one_zero_neg_one_weighted_sum_squared {M : Type _} [AddCommGroup M] [Module ℝ M]
+theorem equivalent_one_zero_neg_one_weighted_sum_squared {M : Type*} [AddCommGroup M] [Module ℝ M]
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) :
     ∃ w : Fin (FiniteDimensional.finrank ℝ M) → ℝ,
       (∀ i, w i = -1 ∨ w i = 0 ∨ w i = 1) ∧ Equivalent Q (weightedSumSquares ℝ w) :=

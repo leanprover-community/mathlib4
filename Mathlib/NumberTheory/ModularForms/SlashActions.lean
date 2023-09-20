@@ -29,7 +29,7 @@ open Complex UpperHalfPlane
 
 open scoped UpperHalfPlane
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
 
@@ -42,7 +42,7 @@ local notation:1024 "↑ₘ[" R "]" A:1024 =>
   ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
 
 /-- A general version of the slash action of the space of modular forms.-/
-class SlashAction (β G α γ : Type _) [Group G] [AddMonoid α] [SMul γ α] where
+class SlashAction (β G α γ : Type*) [Group G] [AddMonoid α] [SMul γ α] where
   map : β → G → α → α
   zero_slash : ∀ (k : β) (g : G), map k g 0 = 0
   slash_one : ∀ (k : β) (a : α), map k 1 a = a
@@ -58,14 +58,14 @@ scoped[ModularForm] notation:100 f " ∣[" k "] " a:100 => SlashAction.map ℂ k
 open scoped ModularForm
 
 @[simp]
-theorem SlashAction.neg_slash {β G α γ : Type _} [Group G] [AddGroup α] [SMul γ α]
+theorem SlashAction.neg_slash {β G α γ : Type*} [Group G] [AddGroup α] [SMul γ α]
     [SlashAction β G α γ] (k : β) (g : G) (a : α) : (-a) ∣[k;γ] g = -a ∣[k;γ] g :=
   eq_neg_of_add_eq_zero_left <| by
     rw [← SlashAction.add_slash, add_left_neg, SlashAction.zero_slash]
 #align slash_action.neg_slash SlashAction.neg_slash
 
 @[simp]
-theorem SlashAction.smul_slash_of_tower {R β G α : Type _} (γ : Type _) [Group G] [AddGroup α]
+theorem SlashAction.smul_slash_of_tower {R β G α : Type*} (γ : Type*) [Group G] [AddGroup α]
     [Monoid γ] [MulAction γ α] [SMul R γ] [SMul R α] [IsScalarTower R γ α] [SlashAction β G α γ]
     (k : β) (g : G) (a : α) (r : R) : (r • a) ∣[k;γ] g = r • a ∣[k;γ] g := by
   rw [← smul_one_smul γ r a, SlashAction.smul_slash, smul_one_smul]
@@ -75,7 +75,7 @@ attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.smul_s
   SlashAction.add_slash
 
 /-- Slash_action induced by a monoid homomorphism.-/
-def monoidHomSlashAction {β G H α γ : Type _} [Group G] [AddMonoid α] [SMul γ α] [Group H]
+def monoidHomSlashAction {β G H α γ : Type*} [Group G] [AddMonoid α] [SMul γ α] [Group H]
     [SlashAction β G α γ] (h : H →* G) : SlashAction β H α γ where
   map k g := SlashAction.map γ k (h g)
   zero_slash k g := SlashAction.zero_slash k (h g)
@@ -127,7 +127,7 @@ private theorem add_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
 private theorem slash_one (k : ℤ) (f : ℍ → ℂ) : f ∣[k]1 = f :=
   funext <| by simp [slash, denom]
 
-variable {α : Type _} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
+variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
 private theorem smul_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f : ℍ → ℂ) (c : α) :
     (c • f) ∣[k]A = c • f ∣[k]A := by

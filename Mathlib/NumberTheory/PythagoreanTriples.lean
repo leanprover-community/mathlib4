@@ -271,7 +271,7 @@ For the classification of Pythagorean triples, we will use a parametrization of 
 -/
 
 
-variable {K : Type _} [Field K]
+variable {K : Type*} [Field K]
 
 /-- A parameterization of the unit circle that is useful for classifying Pythagorean triples.
  (To be applied in the case where `K = ℚ`.) -/

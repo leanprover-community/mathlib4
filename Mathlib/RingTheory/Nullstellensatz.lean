@@ -33,9 +33,9 @@ namespace MvPolynomial
 
 open MvPolynomial
 
-variable {k : Type _} [Field k]
+variable {k : Type*} [Field k]
 
-variable {σ : Type _}
+variable {σ : Type*}
 
 /-- Set of points that are zeroes of all polynomials in an ideal -/
 def zeroLocus (I : Ideal (MvPolynomial σ k)) : Set (σ → k) :=

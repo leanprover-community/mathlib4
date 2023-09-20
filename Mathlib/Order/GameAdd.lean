@@ -30,7 +30,7 @@ decreases at a time.
 -/
 
 
-variable {α β : Type _} {rα : α → α → Prop} {rβ : β → β → Prop}
+variable {α β : Type*} {rα : α → α → Prop} {rβ : β → β → Prop}
 
 /-! ### `Prod.GameAdd` -/
 
@@ -118,14 +118,14 @@ namespace Prod
 
 /-- Recursion on the well-founded `Prod.GameAdd` relation.
   Note that it's strictly more general to recurse on the lexicographic order instead. -/
-def GameAdd.fix {C : α → β → Sort _} (hα : WellFounded rα) (hβ : WellFounded rβ)
+def GameAdd.fix {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
     C a b :=
   @WellFounded.fix (α × β) (fun x => C x.1 x.2) _ (hα.prod_gameAdd hβ)
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) ⟨a, b⟩
 #align prod.game_add.fix Prod.GameAdd.fix
 
-theorem GameAdd.fix_eq {C : α → β → Sort _} (hα : WellFounded rα) (hβ : WellFounded rβ)
+theorem GameAdd.fix_eq {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
     GameAdd.fix hα hβ IH a b = IH a b fun a' b' _ => GameAdd.fix hα hβ IH a' b' :=
   WellFounded.fix_eq _ _ _
@@ -221,7 +221,7 @@ theorem WellFounded.sym2_gameAdd (h : WellFounded rα) : WellFounded (Sym2.GameA
 namespace Sym2
 
 /-- Recursion on the well-founded `Sym2.GameAdd` relation. -/
-def GameAdd.fix {C : α → α → Sort _} (hr : WellFounded rα)
+def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα ⟦(a₂, b₂)⟧ ⟦(a₁, b₁)⟧ → C a₂ b₂) → C a₁ b₁) (a b : α) :
     C a b := by
   -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.
@@ -231,7 +231,7 @@ def GameAdd.fix {C : α → α → Sort _} (hr : WellFounded rα)
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) (a, b)
 #align sym2.game_add.fix Sym2.GameAdd.fix
 
-theorem GameAdd.fix_eq {C : α → α → Sort _} (hr : WellFounded rα)
+theorem GameAdd.fix_eq {C : α → α → Sort*} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα ⟦(a₂, b₂)⟧ ⟦(a₁, b₁)⟧ → C a₂ b₂) → C a₁ b₁) (a b : α) :
     GameAdd.fix hr IH a b = IH a b fun a' b' _ => GameAdd.fix hr IH a' b' := by
   -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.

@@ -26,7 +26,7 @@ open BigOperators Matrix
 
 namespace Matrix
 
-variable {ι m n p : Type _} {α R S : Type _}
+variable {ι m n p : Type*} {α R S : Type*}
 
 variable [Fintype m] [Fintype n] [Fintype p]
 

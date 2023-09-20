@@ -29,7 +29,7 @@ open MeasureTheory ProbabilityTheory Function Set Filter
 
 open scoped MeasureTheory ENNReal Topology
 
-variable {α β γ : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
   {κ : kernel α β} {η : kernel (α × β) γ} {a : α}
 
 namespace ProbabilityTheory
@@ -236,7 +236,7 @@ theorem _root_.Measurable.set_lintegral_kernel {f : β → ℝ≥0∞} (hf : Mea
 
 end Lintegral
 
-variable {E : Type _} [NormedAddCommGroup E] [IsSFiniteKernel κ] [IsSFiniteKernel η]
+variable {E : Type*} [NormedAddCommGroup E] [IsSFiniteKernel κ] [IsSFiniteKernel η]
 
 theorem measurableSet_kernel_integrable ⦃f : α → β → E⦄ (hf : StronglyMeasurable (uncurry f)) :
     MeasurableSet {x | Integrable (f x) (κ x)} := by
@@ -250,7 +250,7 @@ open ProbabilityTheory ProbabilityTheory.kernel
 
 namespace MeasureTheory
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [IsSFiniteKernel κ]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [IsSFiniteKernel κ]
   [IsSFiniteKernel η]
 
 theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄

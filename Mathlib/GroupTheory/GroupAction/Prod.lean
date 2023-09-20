@@ -30,7 +30,7 @@ This was not done as part of the port in order to stay as close as possible to t
 -/
 
 
-variable {M N P E α β : Type _}
+variable {M N P E α β : Type*}
 
 namespace Prod
 
@@ -72,11 +72,11 @@ theorem smul_swap : (a • x).swap = a • x.swap :=
 #align prod.smul_swap Prod.smul_swap
 #align prod.vadd_swap Prod.vadd_swap
 
-theorem smul_zero_mk {α : Type _} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
+theorem smul_zero_mk {α : Type*} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
     a • ((0 : α), c) = (0, a • c) := by rw [Prod.smul_mk, smul_zero]
 #align prod.smul_zero_mk Prod.smul_zero_mk
 
-theorem smul_mk_zero {β : Type _} [Monoid M] [AddMonoid β] [DistribMulAction M β] (a : M) (b : α) :
+theorem smul_mk_zero {β : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] (a : M) (b : α) :
     a • (b, (0 : β)) = (a • b, 0) := by rw [Prod.smul_mk, smul_zero]
 #align prod.smul_mk_zero Prod.smul_mk_zero
 
@@ -167,10 +167,10 @@ instance mulAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M (�
   mul_smul _ _ _ := mk.inj_iff.mpr ⟨mul_smul _ _ _, mul_smul _ _ _⟩
   one_smul := fun ⟨_, _⟩ => mk.inj_iff.mpr ⟨one_smul _ _, one_smul _ _⟩
 
-instance smulZeroClass {R M N : Type _} [Zero M] [Zero N] [SMulZeroClass R M] [SMulZeroClass R N] :
+instance smulZeroClass {R M N : Type*} [Zero M] [Zero N] [SMulZeroClass R M] [SMulZeroClass R N] :
     SMulZeroClass R (M × N) where smul_zero _ := mk.inj_iff.mpr ⟨smul_zero _, smul_zero _⟩
 
-instance distribSMul {R M N : Type _} [AddZeroClass M] [AddZeroClass N] [DistribSMul R M]
+instance distribSMul {R M N : Type*} [AddZeroClass M] [AddZeroClass N] [DistribSMul R M]
     [DistribSMul R N] : DistribSMul R (M × N) where
   smul_add _ _ _ := mk.inj_iff.mpr ⟨smul_add _ _ _, smul_add _ _ _⟩
 

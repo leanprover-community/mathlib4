@@ -28,7 +28,7 @@ noncomputable section
 
 namespace Pmf
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open scoped Classical BigOperators NNReal ENNReal
 
@@ -108,7 +108,7 @@ end UniformOfFinset
 section UniformOfFintype
 
 /-- The uniform pmf taking the same uniform value on all of the fintype `α` -/
-def uniformOfFintype (α : Type _) [Fintype α] [Nonempty α] : Pmf α :=
+def uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] : Pmf α :=
   uniformOfFinset Finset.univ Finset.univ_nonempty
 #align pmf.uniform_of_fintype Pmf.uniformOfFintype
 
@@ -121,7 +121,7 @@ theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card 
 #align pmf.uniform_of_fintype_apply Pmf.uniformOfFintype_apply
 
 @[simp]
-theorem support_uniformOfFintype (α : Type _) [Fintype α] [Nonempty α] :
+theorem support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
     (uniformOfFintype α).support = ⊤ :=
   Set.ext fun x => by simp [mem_support_iff]
 #align pmf.support_uniform_of_fintype Pmf.support_uniformOfFintype

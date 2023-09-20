@@ -33,7 +33,7 @@ open Finset
 
 section Semiring
 
-variable {R : Type _} [Semiring R] (k m n : ℕ) (u v w : R)
+variable {R : Type*} [Semiring R] (k m n : ℕ) (u v w : R)
 
 /-- Shorthand for a trinomial -/
 noncomputable def trinomial :=

@@ -47,7 +47,7 @@ open IsROrC
 
 open scoped ComplexConjugate
 
-variable {𝕜 E F G : Type _} [IsROrC 𝕜]
+variable {𝕜 E F G : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 
@@ -247,7 +247,7 @@ instance : CstarRing (E →L[𝕜] E) :=
 
 section Real
 
-variable {E' : Type _} {F' : Type _}
+variable {E' : Type*} {F' : Type*}
 
 variable [NormedAddCommGroup E'] [NormedAddCommGroup F']
 
@@ -428,7 +428,7 @@ theorem eq_adjoint_iff (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
 
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
 for all basis vectors `x` and `y`. -/
-theorem eq_adjoint_iff_basis {ι₁ : Type _} {ι₂ : Type _} (b₁ : Basis ι₁ 𝕜 E) (b₂ : Basis ι₂ 𝕜 F)
+theorem eq_adjoint_iff_basis {ι₁ : Type*} {ι₂ : Type*} (b₁ : Basis ι₁ 𝕜 E) (b₂ : Basis ι₂ 𝕜 F)
     (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ (i₁ : ι₁) (i₂ : ι₂), ⟪A (b₁ i₁), b₂ i₂⟫ = ⟪b₁ i₁, B (b₂ i₂)⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
@@ -436,13 +436,13 @@ theorem eq_adjoint_iff_basis {ι₁ : Type _} {ι₂ : Type _} (b₁ : Basis ι�
   exact ext_inner_right_basis b₂ fun i₂ => by simp only [adjoint_inner_left, h i₁ i₂]
 #align linear_map.eq_adjoint_iff_basis LinearMap.eq_adjoint_iff_basis
 
-theorem eq_adjoint_iff_basis_left {ι : Type _} (b : Basis ι 𝕜 E) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
+theorem eq_adjoint_iff_basis_left {ι : Type*} (b : Basis ι 𝕜 E) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ i y, ⟪A (b i), y⟫ = ⟪b i, B y⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => Basis.ext b fun i => _⟩
   exact ext_inner_right 𝕜 fun y => by simp only [h i, adjoint_inner_left]
 #align linear_map.eq_adjoint_iff_basis_left LinearMap.eq_adjoint_iff_basis_left
 
-theorem eq_adjoint_iff_basis_right {ι : Type _} (b : Basis ι 𝕜 F) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
+theorem eq_adjoint_iff_basis_right {ι : Type*} (b : Basis ι 𝕜 F) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ i x, ⟪A x, b i⟫ = ⟪x, B (b i)⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
   ext x
@@ -481,7 +481,7 @@ theorem isSymmetric_iff_isSelfAdjoint (A : E →ₗ[𝕜] E) : IsSymmetric A ↔
 
 section Real
 
-variable {E' : Type _} {F' : Type _}
+variable {E' : Type*} {F' : Type*}
 
 variable [NormedAddCommGroup E'] [NormedAddCommGroup F']
 
@@ -524,7 +524,7 @@ end LinearMap
 
 namespace Matrix
 
-variable {m n : Type _} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
+variable {m n : Type*} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
 
 open scoped ComplexConjugate
 

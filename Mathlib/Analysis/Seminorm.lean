@@ -40,11 +40,11 @@ open NormedField Set Filter
 
 open BigOperators NNReal Pointwise Topology
 
-variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F G ι : Type _}
+variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F G ι : Type*}
 
 /-- A seminorm on a module over a normed ring is a function to the reals that is positive
 semidefinite, positive homogeneous, and subadditive. -/
-structure Seminorm (𝕜 : Type _) (E : Type _) [SeminormedRing 𝕜] [AddGroup E] [SMul 𝕜 E] extends
+structure Seminorm (𝕜 : Type*) (E : Type*) [SeminormedRing 𝕜] [AddGroup E] [SMul 𝕜 E] extends
   AddGroupSeminorm E where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
@@ -56,7 +56,7 @@ attribute [nolint docBlame] Seminorm.toAddGroupSeminorm
 /-- `SeminormClass F 𝕜 E` states that `F` is a type of seminorms on the `𝕜`-module `E`.
 
 You should extend this class when you extend `Seminorm`. -/
-class SeminormClass (F : Type _) (𝕜 E : outParam <| Type _) [SeminormedRing 𝕜] [AddGroup E]
+class SeminormClass (F : Type*) (𝕜 E : outParam <| Type*) [SeminormedRing 𝕜] [AddGroup E]
   [SMul 𝕜 E] extends AddGroupSeminormClass F E ℝ where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
@@ -609,7 +609,7 @@ protected theorem coe_sSup_eq {s : Set <| Seminorm 𝕜 E} (hs : BddAbove s) :
   Seminorm.coe_sSup_eq' (Seminorm.bddAbove_iff.mp hs)
 #align seminorm.coe_Sup_eq Seminorm.coe_sSup_eq
 
-protected theorem coe_iSup_eq {ι : Type _} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) :
+protected theorem coe_iSup_eq {ι : Type*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) :
     ↑(⨆ i, p i) = ⨆ i, ((p i : Seminorm 𝕜 E) : E → ℝ) := by
   rw [← sSup_range, Seminorm.coe_sSup_eq hp]
   exact iSup_range' (fun p : Seminorm 𝕜 E => (p : E → ℝ)) p
@@ -619,7 +619,7 @@ protected theorem sSup_apply {s : Set (Seminorm 𝕜 E)} (hp : BddAbove s) {x : 
     (sSup s) x = ⨆ p : s, (p : E → ℝ) x := by
   rw [Seminorm.coe_sSup_eq hp, iSup_apply]
 
-protected theorem iSup_apply {ι : Type _} {p : ι → Seminorm 𝕜 E}
+protected theorem iSup_apply {ι : Type*} {p : ι → Seminorm 𝕜 E}
     (hp : BddAbove (range p)) {x : E} : (⨆ i, p i) x = ⨆ i, p i x := by
   rw [Seminorm.coe_iSup_eq hp, iSup_apply]
 
@@ -1118,7 +1118,7 @@ end Convex
 
 section RestrictScalars
 
-variable (𝕜) {𝕜' : Type _} [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable (𝕜) {𝕜' : Type*} [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [NormOneClass 𝕜'] [AddCommGroup E] [Module 𝕜' E] [SMul 𝕜 E] [IsScalarTower 𝕜 𝕜' E]
 
 /-- Reinterpret a seminorm over a field `𝕜'` as a seminorm over a smaller field `𝕜`. This will
@@ -1356,6 +1356,28 @@ lemma bound_of_shell_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι)
   exact hf y (fun k hk ↦ (le_finset_sup_apply hk).trans_lt hlt) i hi (hiy ▸ hle)
 
 end ShellLemmas
+
+section NontriviallyNormedField
+
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
+lemma bddAbove_of_absorbent {p : ι → Seminorm 𝕜 E} {s : Set E} (hs : Absorbent 𝕜 s)
+    (h : ∀ x ∈ s, BddAbove (range fun i ↦ p i x)) :
+    BddAbove (range p) := by
+  rw [Seminorm.bddAbove_range_iff]
+  intro x
+  rcases hs x with ⟨r, hr, hrx⟩
+  rcases exists_lt_norm 𝕜 r with ⟨k, hk⟩
+  have hk0 : k ≠ 0 := norm_pos_iff.mp (hr.trans hk)
+  have : k⁻¹ • x ∈ s := by
+    rw [← mem_smul_set_iff_inv_smul_mem₀ hk0]
+    exact hrx k hk.le
+  rcases h (k⁻¹ • x) this with ⟨M, hM⟩
+  refine ⟨‖k‖ * M, forall_range_iff.mpr fun i ↦ ?_⟩
+  have := (forall_range_iff.mp hM) i
+  rwa [map_smul_eq_mul, norm_inv, inv_mul_le_iff (hr.trans hk)] at this
+
+end NontriviallyNormedField
 
 end Seminorm
 

@@ -24,7 +24,7 @@ noncomputable section
 
 namespace Finsupp
 
-variable {n : ℕ} (i : Fin n) {M : Type _} [Zero M] (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M)
+variable {n : ℕ} (i : Fin n) {M : Type*} [Zero M] (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M)
 
 /-- `tail` for maps `Fin (n + 1) →₀ M`. See `Fin.tail` for more details. -/
 def tail (s : Fin (n + 1) →₀ M) : Fin n →₀ M :=

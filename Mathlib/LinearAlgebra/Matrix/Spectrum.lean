@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.Spectrum
+import Mathlib.Data.Matrix.Rank
+import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 
 #align_import linear_algebra.matrix.spectrum from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
@@ -22,7 +24,7 @@ spectral theorem, diagonalization theorem
 
 namespace Matrix
 
-variable {𝕜 : Type _} [IsROrC 𝕜] [DecidableEq 𝕜] {n : Type _} [Fintype n] [DecidableEq n]
+variable {𝕜 : Type*} [IsROrC 𝕜] [DecidableEq 𝕜] {n : Type*} [Fintype n] [DecidableEq n]
 
 variable {A : Matrix n n 𝕜}
 
@@ -75,6 +77,11 @@ theorem eigenvectorMatrix_apply (i j : n) : hA.eigenvectorMatrix i j = hA.eigenv
   simp_rw [eigenvectorMatrix, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis,
     PiLp.basisFun_repr]
 #align matrix.is_hermitian.eigenvector_matrix_apply Matrix.IsHermitian.eigenvectorMatrix_apply
+
+/-- The columns of `Matrix.IsHermitian.eigenVectorMatrix` form the basis-/
+theorem transpose_eigenvectorMatrix_apply (i : n) :
+    hA.eigenvectorMatrixᵀ i = hA.eigenvectorBasis i :=
+  funext <| fun j => eigenvectorMatrix_apply hA j i
 
 theorem eigenvectorMatrixInv_apply (i j : n) :
     hA.eigenvectorMatrixInv i j = star (hA.eigenvectorBasis i j) := by
@@ -132,6 +139,27 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
   rw [← det_mul, spectral_theorem, det_mul, mul_comm, det_diagonal]
   simp_rw [Function.comp_apply]
 #align matrix.is_hermitian.det_eq_prod_eigenvalues Matrix.IsHermitian.det_eq_prod_eigenvalues
+
+/-- *spectral theorem* (Alternate form for convenience) A hermitian matrix can be can be
+replaced by a diagonal matrix sandwiched between the eigenvector matrices. This alternate form
+allows direct rewriting of A since: $ A = V D V⁻¹$ -/
+lemma spectral_theorem' :
+    A = hA.eigenvectorMatrix ⬝ diagonal ((↑) ∘ hA.eigenvalues) ⬝ hA.eigenvectorMatrixInv := by
+  simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using
+    congr_arg (hA.eigenvectorMatrix ⬝ ·) hA.spectral_theorem
+
+/-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
+lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
+  conv_lhs => rw [hA.spectral_theorem']
+  have hE := isUnit_det_of_invertible (hA.eigenvectorMatrix)
+  have hiE := isUnit_det_of_invertible (hA.eigenvectorMatrixInv)
+  simp only [rank_mul_eq_right_of_isUnit_det hA.eigenvectorMatrix _ hE,
+    rank_mul_eq_left_of_isUnit_det hA.eigenvectorMatrixInv _ hiE,
+    rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
+
+/-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
+lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
+  rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
 
 end IsHermitian
 

@@ -15,10 +15,10 @@ import Mathlib.Data.Nat.Cast.Prod
 
 namespace Prod
 
-variable {α β : Type _} [AddGroupWithOne α] [AddGroupWithOne β]
+variable {α β : Type*} [AddGroupWithOne α] [AddGroupWithOne β]
 
 instance : AddGroupWithOne (α × β) :=
-  { Prod.instAddMonoidWithOneProd, Prod.instAddGroupSum with
+  { Prod.instAddMonoidWithOne, Prod.instAddGroup with
     intCast := fun n => (n, n)
     intCast_ofNat := fun _ => by simp; rfl
     intCast_negSucc := fun _ => by simp; rfl }

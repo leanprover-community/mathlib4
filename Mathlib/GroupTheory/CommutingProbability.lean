@@ -29,7 +29,7 @@ open BigOperators
 
 open Fintype
 
-variable (M : Type _) [Mul M]
+variable (M : Type*) [Mul M]
 
 /-- The commuting probability of a finite type with a multiplication operation. -/
 def commProb : ℚ :=
@@ -41,14 +41,14 @@ theorem commProb_def :
   rfl
 #align comm_prob_def commProb_def
 
-theorem commProb_prod (M' : Type _) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
+theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
   simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ←Nat.cast_mul,
     ←Nat.card_prod, Commute, SemiconjBy, Prod.ext_iff]
   congr 2
   exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
     fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
 
-theorem commProb_pi (i : α → Type _) [Fintype α] [∀ a, Mul (i a)] :
+theorem commProb_pi (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
     commProb (∀ a, i a) = ∏ a, commProb (i a) := by
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ←Nat.cast_prod,
     ←Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
@@ -59,9 +59,6 @@ theorem commProb_pi (i : α → Type _) [Fintype α] [∀ a, Mul (i a)] :
 theorem commProb_function [Fintype α] [Mul β] :
     commProb (α → β) = (commProb β) ^ Fintype.card α := by
   rw [commProb_pi, Finset.prod_const, Finset.card_univ]
-
-instance instInfiniteProdSubtypeCommute [Infinite M] : Infinite { p : M × M // Commute p.1 p.2 } :=
-  Infinite.of_injective (fun m => ⟨⟨m, m⟩, rfl⟩) (by intro; simp)
 
 @[simp]
 theorem commProb_eq_zero_of_infinite [Infinite M] : commProb M = 0 :=
@@ -93,23 +90,7 @@ theorem commProb_eq_one_iff [h : Nonempty M] :
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
 #align comm_prob_eq_one_iff commProb_eq_one_iff
 
-variable (G : Type _) [Group G]
-
-theorem card_comm_eq_card_conjClasses_mul_card :
-    Nat.card { p : G × G // Commute p.1 p.2 } = Nat.card (ConjClasses G) * Nat.card G := by
-  rcases fintypeOrInfinite G; swap
-  · rw [Nat.card_eq_zero_of_infinite, @Nat.card_eq_zero_of_infinite G, mul_zero]
-  simp only [Nat.card_eq_fintype_card]
-  -- Porting note: Changed `calc` proof into a `rw` proof.
-  rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype fun g h : G ↦ Commute g h), card_sigma,
-    sum_equiv ConjAct.toConjAct.toEquiv (fun a ↦ card { b // Commute a b })
-      (fun g ↦ card (MulAction.fixedBy (ConjAct G) G g))
-      fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.to_eq,
-    MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group, ConjAct.card,
-    (Setoid.ext fun g h ↦ (Setoid.comm' _).trans isConj_iff.symm :
-      MulAction.orbitRel (ConjAct G) G = IsConj.setoid G),
-    @card_congr' (Quotient (IsConj.setoid G)) (ConjClasses G) _ _ rfl]
-#align card_comm_eq_card_conj_classes_mul_card card_comm_eq_card_conjClasses_mul_card
+variable (G : Type*) [Group G]
 
 theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
   rw [commProb, card_comm_eq_card_conjClasses_mul_card, Nat.cast_mul, sq]

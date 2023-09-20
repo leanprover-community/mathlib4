@@ -40,7 +40,7 @@ any `b' < b` also belongs to the range). The type of these embeddings from `r` t
 -/
 
 
-variable {α : Type _} {β : Type _} {γ : Type _} {r : α → α → Prop} {s : β → β → Prop}
+variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
 open Function
@@ -48,7 +48,7 @@ open Function
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≼i s` is an order
 embedding whose range is an initial segment. That is, whenever `b < f a` in `β` then `b` is in the
 range of `f`. -/
-structure InitialSeg {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
+structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
   /-- The order embedding is an initial segment -/
   init' : ∀ a b, s b (toRelEmbedding a) → ∃ a', toRelEmbedding a' = b
 #align initial_seg InitialSeg
@@ -232,7 +232,7 @@ segments.
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an order
 embedding whose range is an open interval `(-∞, top)` for some element `top` of `β`. Such order
 embeddings are called principal segments -/
-structure PrincipalSeg {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
+structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
   /-- The supremum of the principal segment -/
   top : β
   /-- The image of the order embedding is the set of elements `b` such that `s b top` -/
@@ -376,17 +376,17 @@ theorem topLTTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → �
 #align principal_seg.top_lt_top PrincipalSeg.topLTTop
 
 /-- Any element of a well order yields a principal segment -/
-def ofElement {α : Type _} (r : α → α → Prop) (a : α) : Subrel r { b | r b a } ≺i r :=
+def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r { b | r b a } ≺i r :=
   ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun h => ⟨⟨_, h⟩, rfl⟩, fun ⟨⟨_, h⟩, rfl⟩ => h⟩⟩
 #align principal_seg.of_element PrincipalSeg.ofElement
 
 @[simp]
-theorem ofElement_apply {α : Type _} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
+theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
   rfl
 #align principal_seg.of_element_apply PrincipalSeg.ofElement_apply
 
 @[simp]
-theorem ofElement_top {α : Type _} (r : α → α → Prop) (a : α) : (ofElement r a).top = a :=
+theorem ofElement_top {α : Type*} (r : α → α → Prop) (a : α) : (ofElement r a).top = a :=
   rfl
 #align principal_seg.of_element_top PrincipalSeg.ofElement_top
 
@@ -455,7 +455,7 @@ end PrincipalSeg
 In this lemma we use `Subrel` to indicate its principal segments because it's usually more
 convenient to use.
 -/
-theorem wellFounded_iff_wellFounded_subrel {β : Type _} {s : β → β → Prop} [IsTrans β s] :
+theorem wellFounded_iff_wellFounded_subrel {β : Type*} {s : β → β → Prop} [IsTrans β s] :
     WellFounded s ↔ ∀ b, WellFounded (Subrel s { b' | s b' b }) := by
   refine'
     ⟨fun wf b => ⟨fun b' => ((PrincipalSeg.ofElement _ b).acc b').mpr (wf.apply b')⟩, fun wf =>

@@ -54,7 +54,7 @@ namespace Matrix
 
 universe u u' v
 
-variable {l : Type _} {m : Type u} {n : Type u'} {α : Type v}
+variable {l : Type*} {m : Type u} {n : Type u'} {α : Type v}
 
 open Matrix BigOperators Equiv Equiv.Perm Finset
 

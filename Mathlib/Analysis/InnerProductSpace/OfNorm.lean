@@ -57,7 +57,7 @@ open IsROrC
 
 open scoped ComplexConjugate
 
-variable {𝕜 : Type _} [IsROrC 𝕜] (E : Type _) [NormedAddCommGroup E]
+variable {𝕜 : Type*} [IsROrC 𝕜] (E : Type*) [NormedAddCommGroup E]
 
 /-- Predicate for the parallelogram identity to hold in a normed group. This is a scalar-less
 version of `InnerProductSpace`. If you have an `InnerProductSpaceable` assumption, you can

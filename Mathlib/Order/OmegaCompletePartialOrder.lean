@@ -63,7 +63,7 @@ open Classical
 
 namespace OrderHom
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 variable [Preorder α] [Preorder β] [Preorder γ]
 
 /-- `Part.bind` as a monotone function -/
@@ -91,7 +91,7 @@ def Chain (α : Type u) [Preorder α] :=
 
 namespace Chain
 
-variable {α : Type u} {β : Type v} {γ : Type _}
+variable {α : Type u} {β : Type v} {γ : Type*}
 variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
@@ -175,7 +175,7 @@ call `ωSup`). In this sense, it is strictly weaker than join complete
 semi-lattices as only ω-sized totally ordered sets have a supremum.
 
 See the definition on page 114 of [gunter1992]. -/
-class OmegaCompletePartialOrder (α : Type _) extends PartialOrder α where
+class OmegaCompletePartialOrder (α : Type*) extends PartialOrder α where
   /-- The supremum of an increasing sequence -/
   ωSup : Chain α → α
   /-- `ωSup` is an upper bound of the increasing sequence -/
@@ -186,7 +186,7 @@ class OmegaCompletePartialOrder (α : Type _) extends PartialOrder α where
 
 namespace OmegaCompletePartialOrder
 
-variable {α : Type u} {β : Type v} {γ : Type _}
+variable {α : Type u} {β : Type v} {γ : Type*}
 
 variable [OmegaCompletePartialOrder α]
 
@@ -233,7 +233,7 @@ theorem ωSup_le_iff (c : Chain α) (x : α) : ωSup c ≤ x ↔ ∀ i, c i ≤ 
 
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
-def subtype {α : Type _} [OmegaCompletePartialOrder α] (p : α → Prop)
+def subtype {α : Type*} [OmegaCompletePartialOrder α] (p : α → Prop)
     (hp : ∀ c : Chain α, (∀ i ∈ c, p i) → p (ωSup c)) : OmegaCompletePartialOrder (Subtype p) :=
   OmegaCompletePartialOrder.lift (OrderHom.Subtype.val p)
     (fun c => ⟨ωSup _, hp (c.map (OrderHom.Subtype.val p)) fun _ ⟨n, q⟩ => q.symm ▸ (c n).2⟩)
@@ -312,7 +312,7 @@ end OmegaCompletePartialOrder
 
 namespace Part
 
-variable {α : Type u} {β : Type v} {γ : Type _}
+variable {α : Type u} {β : Type v} {γ : Type*}
 
 open OmegaCompletePartialOrder
 
@@ -400,7 +400,7 @@ end Part
 
 namespace Pi
 
-variable {α : Type _} {β : α → Type _} {γ : Type _}
+variable {α : Type*} {β : α → Type*} {γ : Type*}
 
 open OmegaCompletePartialOrder OmegaCompletePartialOrder.Chain
 
@@ -437,7 +437,7 @@ namespace Prod
 
 open OmegaCompletePartialOrder
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 variable [OmegaCompletePartialOrder α]
 variable [OmegaCompletePartialOrder β]
 variable [OmegaCompletePartialOrder γ]
@@ -489,7 +489,7 @@ theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f)
   exact ⟨fun H n f hf => H f hf n, fun H f hf n => H n f hf⟩
 #align complete_lattice.Sup_continuous CompleteLattice.sSup_continuous
 
-theorem iSup_continuous {ι : Sort _} {f : ι → α →o β} (h : ∀ i, Continuous (f i)) :
+theorem iSup_continuous {ι : Sort*} {f : ι → α →o β} (h : ∀ i, Continuous (f i)) :
     Continuous (⨆ i, f i) :=
   sSup_continuous _ <| Set.forall_range_iff.2 h
 #align complete_lattice.supr_continuous CompleteLattice.iSup_continuous
@@ -524,7 +524,7 @@ end CompleteLattice
 
 namespace CompleteLattice
 
-variable {α β : Type _} [OmegaCompletePartialOrder α] [CompleteLinearOrder β]
+variable {α β : Type*} [OmegaCompletePartialOrder α] [CompleteLinearOrder β]
 
 theorem inf_continuous (f g : α →o β) (hf : Continuous f) (hg : Continuous g) :
     Continuous (f ⊓ g) := by
@@ -544,7 +544,7 @@ end CompleteLattice
 
 namespace OmegaCompletePartialOrder
 
-variable {α : Type u} {α' : Type _} {β : Type v} {β' : Type _} {γ : Type _} {φ : Type _}
+variable {α : Type u} {α' : Type*} {β : Type v} {β' : Type*} {γ : Type*} {φ : Type*}
 
 variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
 variable [OmegaCompletePartialOrder γ] [OmegaCompletePartialOrder φ]
@@ -842,7 +842,7 @@ theorem ωSup_apply_ωSup (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) :
 
 /-- A family of continuous functions yields a continuous family of functions. -/
 @[simps]
-def flip {α : Type _} (f : α → β →𝒄 γ) : β →𝒄 α → γ where
+def flip {α : Type*} (f : α → β →𝒄 γ) : β →𝒄 α → γ where
   toFun x y := f y x
   monotone' x y h a := (f a).monotone h
   cont := by intro _; ext x; change f _ _ = _; rw [(f _).continuous]; rfl

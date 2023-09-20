@@ -30,13 +30,13 @@ namespace Quiver
 /-- A type synonym for the symmetrized quiver (with an arrow both ways for each original arrow).
     NB: this does not work for `Prop`-valued quivers. It requires `[Quiver.{v+1} V]`. -/
 -- Porting note: no hasNonemptyInstance linter yet
-def Symmetrify (V : Type _) := V
+def Symmetrify (V : Type*) := V
 #align quiver.symmetrify Quiver.Symmetrify
 
 instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
   ⟨fun a b : V ↦ Sum (a ⟶ b) (b ⟶ a)⟩
 
-variable (U V W : Type _) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
+variable (U V W : Type*) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
 
 /-- A quiver `HasReverse` if we can reverse an arrow `p` from `a` to `b` to get an arrow
     `p.reverse` from `b` to `a`.-/
@@ -174,7 +174,7 @@ def of : Prefunctor V (Symmetrify V) where
   map := Sum.inl
 #align quiver.symmetrify.of Quiver.Symmetrify.of
 
-variable {V' : Type _} [Quiver.{v' + 1} V']
+variable {V' : Type*} [Quiver.{v' + 1} V']
 
 /-- Given a quiver `V'` with reversible arrows, a prefunctor to `V'` can be lifted to one from
     `Symmetrify V` to `V'` -/
@@ -224,7 +224,7 @@ end Symmetrify
 
 namespace Push
 
-variable {V' : Type _} (σ : V → V')
+variable {V' : Type*} (σ : V → V')
 
 instance [HasReverse V] : HasReverse (Quiver.Push σ) where
   reverse' := fun

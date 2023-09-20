@@ -26,11 +26,11 @@ bipointed types. Two-pointed types form a full subcategory of those.
 
 open Function
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- Two-pointing of a type. This is a Type-valued termed `Nontrivial`. -/
 @[ext]
-structure TwoPointing (α : Type _) extends α × α where
+structure TwoPointing (α : Type*) extends α × α where
   /-- `fst` and `snd` are distinct terms -/
   fst_ne_snd : fst ≠ snd
   deriving DecidableEq

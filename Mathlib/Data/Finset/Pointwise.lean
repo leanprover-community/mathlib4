@@ -58,7 +58,7 @@ open Function MulOpposite
 
 open BigOperators Pointwise
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 namespace Finset
 
@@ -974,7 +974,7 @@ protected def commMonoid : CommMonoid (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_prod {ι : Type _} (s : Finset ι) (f : ι → Finset α) :
+theorem coe_prod {ι : Type*} (s : Finset ι) (f : ι → Finset α) :
     ↑(∏ i in s, f i) = ∏ i in s, (f i : Set α) :=
   map_prod ((coeMonoidHom) : Finset α →* Set α) _ _
 #align finset.coe_prod Finset.coe_prod

@@ -15,7 +15,7 @@ import Mathlib.Topology.UrysohnsLemma
 /-!
 # Continuous partition of unity
 
-In this file we define `PartitionOfUnity (ι X : Type _) [TopologicalSpace X] (s : Set X := univ)`
+In this file we define `PartitionOfUnity (ι X : Type*) [TopologicalSpace X] (s : Set X := univ)`
 to be a continuous partition of unity on `s` indexed by `ι`. More precisely, `f : PartitionOfUnity
 ι X s` is a collection of continuous functions `f i : C(X, ℝ)`, `i : ι`, such that
 
@@ -28,7 +28,7 @@ In the case `s = univ` the last assumption follows from the previous one but it 
 have this assumption in the case `s ≠ univ`.
 
 We also define a bump function covering,
-`BumpCovering (ι X : Type _) [TopologicalSpace X] (s : Set X := univ)`, to be a collection of
+`BumpCovering (ι X : Type*) [TopologicalSpace X] (s : Set X := univ)`, to be a collection of
 functions `f i : C(X, ℝ)`, `i : ι`, such that
 
 * the supports of `f i` form a locally finite family of sets;
@@ -96,7 +96,7 @@ If `X` is a normal paracompact space, then `PartitionOfUnity.exists_isSubordinat
 that for every open covering `U : Set (Set X)` of `s` there exists a partition of unity that is
 subordinate to `U`.
 -/
-structure PartitionOfUnity (ι X : Type _) [TopologicalSpace X] (s : Set X := univ) where
+structure PartitionOfUnity (ι X : Type*) [TopologicalSpace X] (s : Set X := univ) where
   toFun : ι → C(X, ℝ)
   locallyFinite' : LocallyFinite fun i => support (toFun i)
   nonneg' : 0 ≤ toFun
@@ -119,7 +119,7 @@ If `X` is a normal paracompact space, then `BumpCovering.exists_isSubordinate` g
 every open covering `U : Set (Set X)` of `s` there exists a `BumpCovering` of `s` that is
 subordinate to `U`.
 -/
-structure BumpCovering (ι X : Type _) [TopologicalSpace X] (s : Set X := univ) where
+structure BumpCovering (ι X : Type*) [TopologicalSpace X] (s : Set X := univ) where
   toFun : ι → C(X, ℝ)
   locallyFinite' : LocallyFinite fun i => support (toFun i)
   nonneg' : 0 ≤ toFun
@@ -131,7 +131,7 @@ variable {ι : Type u} {X : Type v} [TopologicalSpace X]
 
 namespace PartitionOfUnity
 
-variable {E : Type _} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
+variable {E : Type*} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
   {s : Set X} (f : PartitionOfUnity ι X s)
 
 instance : FunLike (PartitionOfUnity ι X s) ι fun _ ↦ C(X, ℝ) where

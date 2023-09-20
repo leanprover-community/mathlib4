@@ -47,7 +47,7 @@ variable (R : Type u) [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R 
 
 variable {ι : Type w} [DecidableEq ι] [Fintype ι]
 
-variable {κ : Type _} [DecidableEq κ] [Fintype κ]
+variable {κ : Type*} [DecidableEq κ] [Fintype κ]
 
 variable (b : Basis ι R M) (c : Basis κ R M)
 
@@ -125,11 +125,11 @@ end
 
 section
 
-variable {R : Type _} [CommRing R] {M : Type _} [AddCommGroup M] [Module R M]
+variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
 
-variable (N : Type _) [AddCommGroup N] [Module R N]
+variable (N : Type*) [AddCommGroup N] [Module R N]
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
  `End(M) ≃ M* ⊗ M`-/

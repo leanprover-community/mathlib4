@@ -23,7 +23,7 @@ open CategoryTheory.MonoidalCategory
 
 namespace CategoryTheory.Monoidal
 
-variable {C D : Type _} [Groupoid C] [Category D] [MonoidalCategory D]
+variable {C D : Type*} [Groupoid C] [Category D] [MonoidalCategory D]
 
 instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual F where
   rightDual :=

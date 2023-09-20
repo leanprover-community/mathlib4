@@ -28,7 +28,7 @@ and Verschiebung is equal to multiplication by `p`.
 
 namespace WittVector
 
-variable {p : ℕ} {R : Type _} [hp : Fact p.Prime] [CommRing R]
+variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 

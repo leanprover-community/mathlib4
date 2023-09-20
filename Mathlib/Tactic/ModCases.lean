@@ -20,14 +20,14 @@ there exists `0 ≤ z < n` such that `a ≡ z (mod n)`.
 It asserts that if `∃ z, lb ≤ z < n ∧ a ≡ z (mod n)` holds, then `p`
 (where `p` is the current goal).
 -/
-def OnModCases (n : ℕ) (a : ℤ) (lb : ℕ) (p : Sort _) :=
+def OnModCases (n : ℕ) (a : ℤ) (lb : ℕ) (p : Sort*) :=
 ∀ z, lb ≤ z ∧ z < n ∧ a ≡ ↑z [ZMOD ↑n] → p
 
 /--
 The first theorem we apply says that `∃ z, 0 ≤ z < n ∧ a ≡ z (mod n)`.
 The actual mathematical content of the proof is here.
 -/
-@[inline] def onModCases_start (p : Sort _) (a : ℤ) (n : ℕ) (hn : Nat.ble 1 n = true)
+@[inline] def onModCases_start (p : Sort*) (a : ℤ) (n : ℕ) (hn : Nat.ble 1 n = true)
     (H : OnModCases n a (nat_lit 0) p) : p :=
   H (a % ↑n).toNat <| by
     have := ofNat_pos.2 <| Nat.le_of_ble_eq_true hn
@@ -40,7 +40,7 @@ The actual mathematical content of the proof is here.
 The end point is that once we have reduced to `∃ z, n ≤ z < n ∧ a ≡ z (mod n)`
 there are no more cases to consider.
 -/
-@[inline] def onModCases_stop (p : Sort _) (n : ℕ) (a : ℤ) : OnModCases n a n p :=
+@[inline] def onModCases_stop (p : Sort*) (n : ℕ) (a : ℤ) : OnModCases n a n p :=
   fun _ h => (Nat.not_lt.2 h.1 h.2.1).elim
 
 /--
@@ -48,7 +48,7 @@ The successor case decomposes `∃ z, b ≤ z < n ∧ a ≡ z (mod n)` into
 `a ≡ b (mod n) ∨ ∃ z, b+1 ≤ z < n ∧ a ≡ z (mod n)`,
 and the `a ≡ b (mod n) → p` case becomes a subgoal.
 -/
-@[inline] def onModCases_succ {p : Sort _} {n : ℕ} {a : ℤ} (b : ℕ)
+@[inline] def onModCases_succ {p : Sort*} {n : ℕ} {a : ℤ} (b : ℕ)
     (h : a ≡ OfNat.ofNat b [ZMOD OfNat.ofNat n] → p) (H : OnModCases n a (Nat.add b 1) p) :
     OnModCases n a b p :=
   fun z ⟨h₁, h₂⟩ => if e : b = z then h (e ▸ h₂.2) else H _ ⟨Nat.lt_of_le_of_ne h₁ e, h₂⟩

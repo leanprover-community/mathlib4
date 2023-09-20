@@ -33,7 +33,7 @@ Almost no monoid is actually present in this file: most assumptions have been ge
 -- after the `ordered`-refactor is done.
 open Function
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section Mul
 
@@ -1547,7 +1547,7 @@ theorem StrictAntiOn.mul_antitone' (hf : StrictAntiOn f s) (hg : AntitoneOn g s)
 #align strict_anti_on.add_antitone StrictAntiOn.add_antitone
 
 @[to_additive (attr := simp) cmp_add_left]
-theorem cmp_mul_left' {α : Type _} [Mul α] [LinearOrder α] [CovariantClass α α (· * ·) (· < ·)]
+theorem cmp_mul_left' {α : Type*} [Mul α] [LinearOrder α] [CovariantClass α α (· * ·) (· < ·)]
     (a b c : α) :
     cmp (a * b) (a * c) = cmp b c :=
   (strictMono_id.const_mul' a).cmp_map_eq b c
@@ -1555,7 +1555,7 @@ theorem cmp_mul_left' {α : Type _} [Mul α] [LinearOrder α] [CovariantClass α
 #align cmp_add_left cmp_add_left
 
 @[to_additive (attr := simp) cmp_add_right]
-theorem cmp_mul_right' {α : Type _} [Mul α] [LinearOrder α]
+theorem cmp_mul_right' {α : Type*} [Mul α] [LinearOrder α]
     [CovariantClass α α (swap (· * ·)) (· < ·)] (a b c : α) :
     cmp (a * c) (b * c) = cmp a b :=
   (strictMono_id.mul_const' c).cmp_map_eq a b

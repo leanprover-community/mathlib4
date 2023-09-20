@@ -19,7 +19,7 @@ in `LinearAlgebra/Matrix/NonsingularInverse.lean`.
 
 open scoped Matrix
 
-variable {m n : Type _} {α : Type _}
+variable {m n : Type*} {α : Type*}
 
 variable [Fintype n] [DecidableEq n] [Semiring α]
 

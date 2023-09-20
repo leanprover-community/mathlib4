@@ -49,7 +49,7 @@ namespace Matrix
 
 open Matrix BigOperators
 
-variable {m n : Type _} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
+variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 
 variable {R : Type v} [CommRing R]
 
@@ -115,7 +115,7 @@ theorem det_eq_one_of_card_eq_zero {A : Matrix n n R} (h : Fintype.card n = 0) :
 Although `Unique` implies `DecidableEq` and `Fintype`, the instances might
 not be syntactically equal. Thus, we need to fill in the args explicitly. -/
 @[simp]
-theorem det_unique {n : Type _} [Unique n] [DecidableEq n] [Fintype n] (A : Matrix n n R) :
+theorem det_unique {n : Type*} [Unique n] [DecidableEq n] [Fintype n] (A : Matrix n n R) :
     det A = A default default := by simp [det_apply, univ_unique]
 #align matrix.det_unique Matrix.det_unique
 
@@ -569,7 +569,7 @@ theorem det_eq_of_forall_col_eq_smul_add_pred {n : ℕ} {A B : Matrix (Fin (n + 
 end DetEq
 
 @[simp]
-theorem det_blockDiagonal {o : Type _} [Fintype o] [DecidableEq o] (M : o → Matrix n n R) :
+theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Matrix n n R) :
     (blockDiagonal M).det = ∏ k, (M k).det := by
   -- Rewrite the determinants as a sum over permutations.
   simp_rw [det_apply']

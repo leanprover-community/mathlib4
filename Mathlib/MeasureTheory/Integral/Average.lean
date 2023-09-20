@@ -44,7 +44,7 @@ open ENNReal MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSp
 
 open scoped Topology BigOperators ENNReal Convex
 
-variable {α E F : Type _} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {α E F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [CompleteSpace E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {μ ν : Measure α}
   {s t : Set α}
 
@@ -769,7 +769,7 @@ we require that `⨍ y in a i, ‖f y - c‖ ∂μ` tends to `0`), then the inte
 to `c` if `gₙ` is supported in `aₙ`, has integral converging to one and supremum at most `K / μ aₙ`.
 -/
 theorem tendsto_integral_smul_of_tendsto_average_norm_sub
-    {ι : Type _} {a : ι → Set α} {l : Filter ι} {f : α → E} {c : E} {g : ι → α → ℝ} (K : ℝ)
+    {ι : Type*} {a : ι → Set α} {l : Filter ι} {f : α → E} {c : E} {g : ι → α → ℝ} (K : ℝ)
     (hf : Tendsto (fun i ↦ ⨍ y in a i, ‖f y - c‖ ∂μ) l (𝓝 0))
     (f_int : ∀ᶠ i in l, IntegrableOn f (a i) μ)
     (hg : Tendsto (fun i ↦ ∫ y, g i y ∂μ) l (𝓝 1))

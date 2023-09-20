@@ -132,7 +132,7 @@ theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
 #align nat_ordinal.succ_def NatOrdinal.succ_def
 
 /-- A recursor for `NatOrdinal`. Use as `induction x using NatOrdinal.rec`. -/
-protected def rec {β : NatOrdinal → Sort _} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
+protected def rec {β : NatOrdinal → Sort*} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
   h (toOrdinal a)
 #align nat_ordinal.rec NatOrdinal.rec
 

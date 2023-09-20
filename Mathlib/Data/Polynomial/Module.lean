@@ -45,10 +45,10 @@ See https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.231
 for the full discussion.
 -/
 @[nolint unusedArguments]
-def PolynomialModule (R M : Type _) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
+def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
 #align polynomial_module PolynomialModule
 
-variable (R M : Type _) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
+variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
 --porting note: stated instead of deriving
 noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.inhabited
@@ -56,7 +56,7 @@ noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.addCommG
 
 variable {M}
 
-variable {S : Type _} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
+variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
 
@@ -229,12 +229,12 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
 #align polynomial_module.equiv_polynomial_self PolynomialModule.equivPolynomialSelf
 
 /-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
-noncomputable def equivPolynomial {S : Type _} [CommRing S] [Algebra R S] :
+noncomputable def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] :
     PolynomialModule R S ≃ₗ[R] S[X] :=
   { (Polynomial.toFinsuppIso S).symm with map_smul' := fun _ _ => rfl }
 #align polynomial_module.equiv_polynomial PolynomialModule.equivPolynomial
 
-variable (R' : Type _) {M' : Type _} [CommRing R'] [AddCommGroup M'] [Module R' M']
+variable (R' : Type*) {M' : Type*} [CommRing R'] [AddCommGroup M'] [Module R' M']
 
 variable [Algebra R R'] [Module R M'] [IsScalarTower R R' M']
 

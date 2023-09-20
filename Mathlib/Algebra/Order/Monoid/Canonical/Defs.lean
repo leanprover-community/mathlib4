@@ -95,7 +95,7 @@ end ExistsMulOfLE
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
   This is satisfied by the natural numbers, for example, but not
   the integers or other nontrivial `OrderedAddCommGroup`s. -/
-class CanonicallyOrderedAddMonoid (α : Type _) extends OrderedAddCommMonoid α, Bot α where
+class CanonicallyOrderedAddMonoid (α : Type*) extends OrderedAddCommMonoid α, Bot α where
   /-- `⊥` is the least element -/
   protected bot_le : ∀ x : α, ⊥ ≤ x
   /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
@@ -121,7 +121,7 @@ instance (priority := 100) CanonicallyOrderedAddMonoid.toOrderBot (α : Type u)
   be more natural that collections of all things ≥ 1).
 -/
 @[to_additive]
-class CanonicallyOrderedMonoid (α : Type _) extends OrderedCommMonoid α, Bot α where
+class CanonicallyOrderedMonoid (α : Type*) extends OrderedCommMonoid α, Bot α where
   /-- `⊥` is the least element -/
   protected bot_le : ∀ x : α, ⊥ ≤ x
   /-- For `a ≤ b`, there is a `c` so `b = a * c`. -/
@@ -300,7 +300,7 @@ theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔
 
 end CanonicallyOrderedMonoid
 
-theorem pos_of_gt {M : Type _} [CanonicallyOrderedAddMonoid M] {n m : M} (h : n < m) : 0 < m :=
+theorem pos_of_gt {M : Type*} [CanonicallyOrderedAddMonoid M] {n m : M} (h : n < m) : 0 < m :=
   lt_of_le_of_lt (zero_le _) h
 #align pos_of_gt pos_of_gt
 
@@ -331,14 +331,14 @@ end NeZero
 
 /-- A canonically linear-ordered additive monoid is a canonically ordered additive monoid
     whose ordering is a linear order. -/
-class CanonicallyLinearOrderedAddMonoid (α : Type _)
+class CanonicallyLinearOrderedAddMonoid (α : Type*)
   extends CanonicallyOrderedAddMonoid α, LinearOrder α
 #align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddMonoid
 
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
     whose ordering is a linear order. -/
 @[to_additive]
-class CanonicallyLinearOrderedMonoid (α : Type _) extends CanonicallyOrderedMonoid α, LinearOrder α
+class CanonicallyLinearOrderedMonoid (α : Type*) extends CanonicallyOrderedMonoid α, LinearOrder α
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedMonoid
 
 section CanonicallyLinearOrderedMonoid

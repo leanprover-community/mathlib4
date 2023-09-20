@@ -50,7 +50,7 @@ namespace Game
 /-- Negation of games. -/
 def neg : Game → Game := Quot.lift (fun x => ⟦-x⟧) fun _ _ h => Quot.sound ((neg_equiv_neg_iff).2 h)
 
-instance : AddCommGroupWithOne Game where
+instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   zero := ⟦0⟧
   one := ⟦1⟧
   neg := neg
@@ -76,7 +76,7 @@ instance : AddCommGroupWithOne Game where
 instance : Inhabited Game :=
   ⟨0⟩
 
-instance : PartialOrder Game where
+instance instPartialOrderGame : PartialOrder Game where
   le := Quotient.lift₂ (· ≤ ·) fun x₁ y₁ x₂ y₂ hx hy => propext (le_congr hx hy)
   le_refl := by
     rintro ⟨x⟩

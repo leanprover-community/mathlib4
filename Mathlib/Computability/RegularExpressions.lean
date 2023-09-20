@@ -29,7 +29,7 @@ open Computability
 
 universe u
 
-variable {α β γ : Type _} [dec : DecidableEq α]
+variable {α β γ : Type*} [dec : DecidableEq α]
 
 /-- This is the definition of regular expressions. The names used here is to mirror the definition
 of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).

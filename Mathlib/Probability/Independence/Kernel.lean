@@ -49,7 +49,7 @@ open scoped BigOperators MeasureTheory ENNReal
 
 namespace ProbabilityTheory.kernel
 
-variable {α Ω ι : Type _}
+variable {α Ω ι : Type*}
 
 section Definitions
 
@@ -99,7 +99,7 @@ def IndepSet {_mΩ : MeasurableSpace Ω} (s t : Set Ω) (κ : kernel α Ω)
 spaces, each with a measurable space structure, is independent if the family of measurable space
 structures they generate on `Ω` is independent. For a function `g` with codomain having measurable
 space structure `m`, the generated measurable space structure is `measurable_space.comap g m`. -/
-def iIndepFun {_mΩ : MeasurableSpace Ω} {β : ι → Type _} (m : ∀ x : ι, MeasurableSpace (β x))
+def iIndepFun {_mΩ : MeasurableSpace Ω} {β : ι → Type*} (m : ∀ x : ι, MeasurableSpace (β x))
     (f : ∀ x : ι, Ω → β x) (κ : kernel α Ω)
     (μ : Measure α := by volume_tac) : Prop :=
   iIndep (fun x ↦ MeasurableSpace.comap (f x) (m x)) κ μ
@@ -275,7 +275,7 @@ theorem iIndep.indep {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
   exact iIndepSets.indepSets h_indep hij
 
 theorem iIndepFun.indepFun {_mΩ : MeasurableSpace Ω}
-    {κ : kernel α Ω} {μ : Measure α} {β : ι → Type _}
+    {κ : kernel α Ω} {μ : Measure α} {β : ι → Type*}
     {m : ∀ x, MeasurableSpace (β x)} {f : ∀ i, Ω → β i} (hf_Indep : iIndepFun m f κ μ) {i j : ι}
     (hij : i ≠ j) : IndepFun (f i) (f j) κ μ :=
   hf_Indep.indep hij
@@ -657,7 +657,7 @@ section IndepFun
 -/
 
 
-variable {β β' γ γ' : Type _} {_mα : MeasurableSpace α} {_mΩ : MeasurableSpace Ω}
+variable {β β' γ γ' : Type*} {_mα : MeasurableSpace α} {_mΩ : MeasurableSpace Ω}
   {κ : kernel α Ω} {μ : Measure α} {f : Ω → β} {g : Ω → β'}
 
 theorem indepFun_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
@@ -669,7 +669,7 @@ theorem indepFun_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
   · refine' fun s t hs ht => h (f ⁻¹' s) (g ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
   · rintro _ _ ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩; exact h s t hs ht
 
-theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type _} {β : ι → Type _}
+theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Type*}
     (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) :
     iIndepFun m f κ μ ↔
       ∀ (S : Finset ι) {sets : ∀ i : ι, Set (β i)} (_H : ∀ i, i ∈ S → MeasurableSet[m i] (sets i)),
@@ -734,7 +734,7 @@ theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
 /-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
 two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
 tuple `(f i)_i` for `i ∈ T`. -/
-theorem iIndepFun.indepFun_finset [IsMarkovKernel κ] {ι : Type _} {β : ι → Type _}
+theorem iIndepFun.indepFun_finset [IsMarkovKernel κ] {ι : Type*} {β : ι → Type*}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : iIndepFun m f κ μ) (hf_meas : ∀ i, Measurable (f i)) :
     IndepFun (fun a (i : S) => f i a) (fun a (i : T) => f i a) κ μ := by
@@ -827,7 +827,7 @@ theorem iIndepFun.indepFun_finset [IsMarkovKernel κ] {ι : Type _} {β : ι →
     show κ a (f i ⁻¹' (sets_s' i ∩ sets_t' i)) = κ a (f i ⁻¹' (sets_t' i))
     rw [h_sets_s'_univ hi, Set.univ_inter]
 
-theorem iIndepFun.indepFun_prod [IsMarkovKernel κ] {ι : Type _} {β : ι → Type _}
+theorem iIndepFun.indepFun_prod [IsMarkovKernel κ] {ι : Type*} {β : ι → Type*}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (hf_Indep : iIndepFun m f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (fun a => (f i a, f j a)) (f k) κ μ := by
@@ -855,7 +855,7 @@ theorem iIndepFun.indepFun_prod [IsMarkovKernel κ] {ι : Type _} {β : ι → T
   exact ⟨hik.symm, hjk.symm⟩
 
 @[to_additive]
-theorem iIndepFun.mul [IsMarkovKernel κ] {ι : Type _} {β : Type _} {m : MeasurableSpace β}
+theorem iIndepFun.mul [IsMarkovKernel κ] {ι : Type*} {β : Type*} {m : MeasurableSpace β}
     [Mul β] [MeasurableMul₂ β] {f : ι → Ω → β} (hf_Indep : iIndepFun (fun _ => m) f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (f i * f j) (f k) κ μ := by
@@ -865,7 +865,7 @@ theorem iIndepFun.mul [IsMarkovKernel κ] {ι : Type _} {β : Type _} {m : Measu
   exact IndepFun.comp this (measurable_fst.mul measurable_snd) measurable_id
 
 @[to_additive]
-theorem iIndepFun.indepFun_finset_prod_of_not_mem [IsMarkovKernel κ] {ι : Type _} {β : Type _}
+theorem iIndepFun.indepFun_finset_prod_of_not_mem [IsMarkovKernel κ] {ι : Type*} {β : Type*}
     {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
     (hf_Indep : iIndepFun (fun _ => m) f κ μ) (hf_meas : ∀ i, Measurable (f i))
     {s : Finset ι} {i : ι} (hi : i ∉ s) :
@@ -889,7 +889,7 @@ theorem iIndepFun.indepFun_finset_prod_of_not_mem [IsMarkovKernel κ] {ι : Type
       h_meas_left h_meas_right
 
 @[to_additive]
-theorem iIndepFun.indepFun_prod_range_succ [IsMarkovKernel κ] {β : Type _}
+theorem iIndepFun.indepFun_prod_range_succ [IsMarkovKernel κ] {β : Type*}
     {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ℕ → Ω → β}
     (hf_Indep : iIndepFun (fun _ => m) f κ μ) (hf_meas : ∀ i, Measurable (f i)) (n : ℕ) :
     IndepFun (∏ j in Finset.range n, f j) (f n) κ μ :=

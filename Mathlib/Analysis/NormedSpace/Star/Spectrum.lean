@@ -25,7 +25,7 @@ open Filter ENNReal spectrum CstarRing
 
 section UnitarySpectrum
 
-variable {𝕜 : Type _} [NormedField 𝕜] {E : Type _} [NormedRing E] [StarRing E] [CstarRing E]
+variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [NormedRing E] [StarRing E] [CstarRing E]
   [NormedAlgebra 𝕜 E] [CompleteSpace E]
 
 theorem unitary.spectrum_subset_circle (u : unitary E) :
@@ -52,7 +52,7 @@ section ComplexScalars
 
 open Complex
 
-variable {A : Type _} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
+variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
   [CstarRing A]
 
 local notation "↑ₐ" => algebraMap ℂ A
@@ -124,7 +124,7 @@ end ComplexScalars
 
 namespace StarAlgHom
 
-variable {F A B : Type _} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
+variable {F A B : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
   [CstarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CstarRing B]
   [hF : StarAlgHomClass F ℂ A B] (φ : F)
 
@@ -163,7 +163,7 @@ open ContinuousMap Complex
 
 open scoped ComplexStarModule
 
-variable {F A : Type _} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
+variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
   [CstarRing A] [StarModule ℂ A] [hF : AlgHomClass F ℂ A ℂ]
 
 /-- This instance is provided instead of `StarAlgHomClass` to avoid type class inference loops.

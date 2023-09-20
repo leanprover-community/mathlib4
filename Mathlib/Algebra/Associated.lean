@@ -14,7 +14,7 @@ import Mathlib.Algebra.Parity
 -/
 
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 section Prime
 
@@ -72,7 +72,7 @@ theorem not_prime_one : ¬Prime (1 : α) := fun h => h.not_unit isUnit_one
 
 section Map
 
-variable [CommMonoidWithZero β] {F : Type _} {G : Type _} [MonoidWithZeroHomClass F α β]
+variable [CommMonoidWithZero β] {F : Type*} {G : Type*} [MonoidWithZeroHomClass F α β]
   [MulHomClass G β α] (f : F) (g : G) {p : α}
 
 theorem comap_prime (hinv : ∀ a, g (f a : β) = a) (hp : Prime (f p)) : Prime p :=
@@ -140,7 +140,7 @@ theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWith
   exact dvd_mul_right _ _
 #align prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd
 
-theorem prime_pow_succ_dvd_mul {α : Type _} [CancelCommMonoidWithZero α] {p x y : α} (h : Prime p)
+theorem prime_pow_succ_dvd_mul {α : Type*} [CancelCommMonoidWithZero α] {p x y : α} (h : Prime p)
     {i : ℕ} (hxy : p ^ (i + 1) ∣ x * y) : p ^ (i + 1) ∣ x ∨ p ∣ y := by
   rw [or_iff_not_imp_right]
   intro hy
@@ -408,7 +408,7 @@ instance [Monoid α] : IsTrans α Associated :=
   ⟨fun _ _ _ => Associated.trans⟩
 
 /-- The setoid of the relation `x ~ᵤ y` iff there is a unit `u` such that `x * u = y` -/
-protected def setoid (α : Type _) [Monoid α] :
+protected def setoid (α : Type*) [Monoid α] :
     Setoid α where
   r := Associated
   iseqv := ⟨Associated.refl, Associated.symm, Associated.trans⟩
@@ -446,69 +446,69 @@ theorem associated_one_of_associated_mul_one [CommMonoid α] {a b : α} : a * b 
   | ⟨u, h⟩ => associated_one_of_mul_eq_one (b * u) <| by simpa [mul_assoc] using h
 #align associated_one_of_associated_mul_one associated_one_of_associated_mul_one
 
-theorem associated_mul_unit_left {β : Type _} [Monoid β] (a u : β) (hu : IsUnit u) :
+theorem associated_mul_unit_left {β : Type*} [Monoid β] (a u : β) (hu : IsUnit u) :
     Associated (a * u) a :=
   let ⟨u', hu⟩ := hu
   ⟨u'⁻¹, hu ▸ Units.mul_inv_cancel_right _ _⟩
 #align associated_mul_unit_left associated_mul_unit_left
 
-theorem associated_unit_mul_left {β : Type _} [CommMonoid β] (a u : β) (hu : IsUnit u) :
+theorem associated_unit_mul_left {β : Type*} [CommMonoid β] (a u : β) (hu : IsUnit u) :
     Associated (u * a) a := by
   rw [mul_comm]
   exact associated_mul_unit_left _ _ hu
 #align associated_unit_mul_left associated_unit_mul_left
 
-theorem associated_mul_unit_right {β : Type _} [Monoid β] (a u : β) (hu : IsUnit u) :
+theorem associated_mul_unit_right {β : Type*} [Monoid β] (a u : β) (hu : IsUnit u) :
     Associated a (a * u) :=
   (associated_mul_unit_left a u hu).symm
 #align associated_mul_unit_right associated_mul_unit_right
 
-theorem associated_unit_mul_right {β : Type _} [CommMonoid β] (a u : β) (hu : IsUnit u) :
+theorem associated_unit_mul_right {β : Type*} [CommMonoid β] (a u : β) (hu : IsUnit u) :
     Associated a (u * a) :=
   (associated_unit_mul_left a u hu).symm
 #align associated_unit_mul_right associated_unit_mul_right
 
-theorem associated_mul_isUnit_left_iff {β : Type _} [Monoid β] {a u b : β} (hu : IsUnit u) :
+theorem associated_mul_isUnit_left_iff {β : Type*} [Monoid β] {a u b : β} (hu : IsUnit u) :
     Associated (a * u) b ↔ Associated a b :=
   ⟨(associated_mul_unit_right _ _ hu).trans, (associated_mul_unit_left _ _ hu).trans⟩
 #align associated_mul_is_unit_left_iff associated_mul_isUnit_left_iff
 
-theorem associated_isUnit_mul_left_iff {β : Type _} [CommMonoid β] {u a b : β} (hu : IsUnit u) :
+theorem associated_isUnit_mul_left_iff {β : Type*} [CommMonoid β] {u a b : β} (hu : IsUnit u) :
     Associated (u * a) b ↔ Associated a b := by
   rw [mul_comm]
   exact associated_mul_isUnit_left_iff hu
 #align associated_is_unit_mul_left_iff associated_isUnit_mul_left_iff
 
-theorem associated_mul_isUnit_right_iff {β : Type _} [Monoid β] {a b u : β} (hu : IsUnit u) :
+theorem associated_mul_isUnit_right_iff {β : Type*} [Monoid β] {a b u : β} (hu : IsUnit u) :
     Associated a (b * u) ↔ Associated a b :=
   Associated.comm.trans <| (associated_mul_isUnit_left_iff hu).trans Associated.comm
 #align associated_mul_is_unit_right_iff associated_mul_isUnit_right_iff
 
-theorem associated_isUnit_mul_right_iff {β : Type _} [CommMonoid β] {a u b : β} (hu : IsUnit u) :
+theorem associated_isUnit_mul_right_iff {β : Type*} [CommMonoid β] {a u b : β} (hu : IsUnit u) :
     Associated a (u * b) ↔ Associated a b :=
   Associated.comm.trans <| (associated_isUnit_mul_left_iff hu).trans Associated.comm
 #align associated_is_unit_mul_right_iff associated_isUnit_mul_right_iff
 
 @[simp]
-theorem associated_mul_unit_left_iff {β : Type _} [Monoid β] {a b : β} {u : Units β} :
+theorem associated_mul_unit_left_iff {β : Type*} [Monoid β] {a b : β} {u : Units β} :
     Associated (a * u) b ↔ Associated a b :=
   associated_mul_isUnit_left_iff u.isUnit
 #align associated_mul_unit_left_iff associated_mul_unit_left_iff
 
 @[simp]
-theorem associated_unit_mul_left_iff {β : Type _} [CommMonoid β] {a b : β} {u : Units β} :
+theorem associated_unit_mul_left_iff {β : Type*} [CommMonoid β] {a b : β} {u : Units β} :
     Associated (↑u * a) b ↔ Associated a b :=
   associated_isUnit_mul_left_iff u.isUnit
 #align associated_unit_mul_left_iff associated_unit_mul_left_iff
 
 @[simp]
-theorem associated_mul_unit_right_iff {β : Type _} [Monoid β] {a b : β} {u : Units β} :
+theorem associated_mul_unit_right_iff {β : Type*} [Monoid β] {a b : β} {u : Units β} :
     Associated a (b * u) ↔ Associated a b :=
   associated_mul_isUnit_right_iff u.isUnit
 #align associated_mul_unit_right_iff associated_mul_unit_right_iff
 
 @[simp]
-theorem associated_unit_mul_right_iff {β : Type _} [CommMonoid β] {a b : β} {u : Units β} :
+theorem associated_unit_mul_right_iff {β : Type*} [CommMonoid β] {a b : β} {u : Units β} :
     Associated a (↑u * b) ↔ Associated a b :=
   associated_isUnit_mul_right_iff u.isUnit
 #align associated_unit_mul_right_iff associated_unit_mul_right_iff
@@ -699,7 +699,7 @@ theorem associated_eq_eq : (Associated : α → α → Prop) = Eq := by
   rw [associated_iff_eq]
 #align associated_eq_eq associated_eq_eq
 
-theorem prime_dvd_prime_iff_eq {M : Type _} [CancelCommMonoidWithZero M] [Unique Mˣ] {p q : M}
+theorem prime_dvd_prime_iff_eq {M : Type*} [CancelCommMonoidWithZero M] [Unique Mˣ] {p q : M}
     (pp : Prime p) (qp : Prime q) : p ∣ q ↔ p = q := by
   rw [pp.dvd_prime_iff_associated qp, ← associated_eq_eq]
 #align prime_dvd_prime_iff_eq prime_dvd_prime_iff_eq
@@ -708,7 +708,7 @@ end UniqueUnits
 
 section UniqueUnits₀
 
-variable {R : Type _} [CancelCommMonoidWithZero R] [Unique Rˣ] {p₁ p₂ : R} {k₁ k₂ : ℕ}
+variable {R : Type*} [CancelCommMonoidWithZero R] [Unique Rˣ] {p₁ p₂ : R} {k₁ k₂ : ℕ}
 
 theorem eq_of_prime_pow_eq (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₁ : 0 < k₁)
     (h : p₁ ^ k₁ = p₂ ^ k₂) : p₁ = p₂ := by
@@ -727,7 +727,7 @@ end UniqueUnits₀
 /-- The quotient of a monoid by the `Associated` relation. Two elements `x` and `y`
   are associated iff there is a unit `u` such that `x * u = y`. There is a natural
   monoid structure on `Associates α`. -/
-abbrev Associates (α : Type _) [Monoid α] : Type _ :=
+abbrev Associates (α : Type*) [Monoid α] : Type _ :=
   Quotient (Associated.setoid α)
 #align associates Associates
 
@@ -736,7 +736,7 @@ namespace Associates
 open Associated
 
 /-- The canonical quotient map from a monoid `α` into the `Associates` of `α` -/
-protected abbrev mk {α : Type _} [Monoid α] (a : α) : Associates α :=
+protected abbrev mk {α : Type*} [Monoid α] (a : α) : Associates α :=
   ⟦a⟧
 #align associates.mk Associates.mk
 

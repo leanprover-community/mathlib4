@@ -35,7 +35,7 @@ All definitions are in the `CategoryTheory` namespace.
 - `Coverage.toGrothendieck C`: A function which associates a Grothendieck topology to any coverage.
 - `Coverage.gi`: The two functions above form a Galois insertion.
 - `Presieve.isSheaf_coverage`: Given `K : Coverage C` with associated
-  Grothendieck topology `J`, a `Type _`-valued presheaf on `C` is a sheaf for `K` if and only if
+  Grothendieck topology `J`, a `Type*`-valued presheaf on `C` is a sheaf for `K` if and only if
   it is a sheaf for `J`.
 
 # References
@@ -291,7 +291,7 @@ namespace Presieve
 
 /--
 The main theorem of this file: Given a coverage `K` on `C`,
-a `Type _`-valued presheaf on `C` is a sheaf for `K` if and only if it is a sheaf for
+a `Type*`-valued presheaf on `C` is a sheaf for `K` if and only if it is a sheaf for
 the associated Grothendieck topology.
 -/
 theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :

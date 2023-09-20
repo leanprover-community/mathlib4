@@ -35,7 +35,7 @@ This file takes unital and non-unital structures and relates them.
 
 section Generic
 
-variable {R S A : Type _} [CommSemiring R] [Semiring A] [Algebra R A] [SetLike S A]
+variable {R S A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [SetLike S A]
   [hSA : NonUnitalSubsemiringClass S A] [hSRA : SMulMemClass S R A] (s : S)
 
 /-- The natural `R`-algebra homomorphism from the unitization of a non-unital subalgebra to
@@ -60,10 +60,10 @@ theorem NonUnitalSubalgebra.unitization_surjective :
     Algebra.adjoin_le fun a ha ↦ ⟨(⟨a, ha⟩ : s), by simp⟩
   fun x ↦ match this x.property with | ⟨y, hy⟩ => ⟨y, Subtype.ext hy⟩
 
-variable {R S A : Type _} [Field R] [Ring A] [Algebra R A]
+variable {R S A : Type*} [Field R] [Ring A] [Algebra R A]
     [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A] (s : S)
 
-theorem NonUnitalSubalgebra.unitization_injective {R S A : Type _} [Field R] [Ring A] [Algebra R A]
+theorem NonUnitalSubalgebra.unitization_injective {R S A : Type*} [Field R] [Ring A] [Algebra R A]
     [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A] (s : S)
     (h1 : (1 : A) ∉ s) : Function.Injective (NonUnitalSubalgebra.unitization s) := by
   refine' (injective_iff_map_eq_zero _).mpr fun x hx => _
@@ -87,7 +87,7 @@ theorem NonUnitalSubalgebra.unitization_injective {R S A : Type _} [Field R] [Ri
 
 /-- If a `NonUnitalSubalgebra` over a field does not contain `1`, then its unitization is
 isomorphic to its `Algebra.adjoin`. -/
-noncomputable def NonUnitalSubalgebra.unitizationAlgEquiv {R S A : Type _} [Field R] [Ring A]
+noncomputable def NonUnitalSubalgebra.unitizationAlgEquiv {R S A : Type*} [Field R] [Ring A]
     [Algebra R A] [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S R A]
     (s : S) (h1 : (1 : A) ∉ s) : Unitization R s ≃ₐ[R] Algebra.adjoin R (s : Set A) :=
   AlgEquiv.ofBijective (NonUnitalSubalgebra.unitization s)
@@ -97,7 +97,7 @@ end Generic
 
 section Subsemiring
 
-variable {R : Type _} [NonAssocSemiring R]
+variable {R : Type*} [NonAssocSemiring R]
 
 /-! ## Subsemirings -/
 
@@ -126,18 +126,18 @@ theorem NonUnitalSubsemiring.toSubsemiring_toNonUnitalSubsemiring (S : NonUnital
 
 /-- The natural `ℕ`-algebra homomorphism from the unitization of a non-unital subsemiring to
 its `Subsemiring.closure`. -/
-def NonUnitalSubsemiring.unitization {R : Type _} [Semiring R] (S : NonUnitalSubsemiring R) :
+def NonUnitalSubsemiring.unitization {R : Type*} [Semiring R] (S : NonUnitalSubsemiring R) :
     Unitization ℕ S →ₐ[ℕ] Subsemiring.closure (S : Set R) :=
   AlgEquiv.refl.arrowCongr (Subsemiring.closureEquivAdjoinNat (S : Set R)).symm <|
     NonUnitalSubalgebra.unitization (hSRA := AddSubmonoidClass.nsmulMemClass) S
 
 @[simp]
-theorem NonUnitalSubsemiring.unitization_apply_coe {R : Type _} [Semiring R]
+theorem NonUnitalSubsemiring.unitization_apply_coe {R : Type*} [Semiring R]
     (S : NonUnitalSubsemiring R) (x : Unitization ℕ S) :
     (S.unitization x : R) = algebraMap ℕ (Subsemiring.closure (S : Set R)) x.fst + x.snd :=
   rfl
 
-theorem NonUnitalSubsemiring.unitization_surjective {R : Type _} [Semiring R]
+theorem NonUnitalSubsemiring.unitization_surjective {R : Type*} [Semiring R]
     (S : NonUnitalSubsemiring R) : Function.Surjective S.unitization := by
   simpa [unitization, AlgEquiv.arrowCongr] using
     NonUnitalSubalgebra.unitization_surjective (hSRA := AddSubmonoidClass.nsmulMemClass) S
@@ -146,7 +146,7 @@ end Subsemiring
 
 section Subring
 
-variable {R : Type _} [Ring R]
+variable {R : Type*} [Ring R]
 
 /-! ## Subrings -/
 
@@ -190,7 +190,7 @@ end Subring
 
 section Subalgebra
 
-variable {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-! ## Subalgebras -/
 
@@ -225,7 +225,7 @@ end Subalgebra
 
 section StarSubalgebra
 
-variable {R A : Type _} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
+variable {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
 
 variable [Algebra R A] [StarModule R A]
 

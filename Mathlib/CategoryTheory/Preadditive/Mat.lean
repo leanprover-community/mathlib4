@@ -260,7 +260,7 @@ end Mat_
 
 namespace Functor
 
-variable {C} {D : Type _} [Category.{v₁} D] [Preadditive D]
+variable {C} {D : Type*} [Category.{v₁} D] [Preadditive D]
 
 attribute [local simp] Mat_.id_apply eqToHom_map
 
@@ -287,7 +287,7 @@ set_option linter.uppercaseLean3 false in
 /-- Composite functors induce composite functors on matrix categories.
 -/
 @[simps!]
-def mapMatComp {E : Type _} [Category.{v₁} E] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
+def mapMatComp {E : Type*} [Category.{v₁} E] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
     (G : D ⥤ E) [Functor.Additive G] : (F ⋙ G).mapMat_ ≅ F.mapMat_ ⋙ G.mapMat_ :=
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
     ext

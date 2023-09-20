@@ -32,9 +32,9 @@ hadamard product, hadamard
 -/
 
 
-variable {α β γ m n : Type _}
+variable {α β γ m n : Type*}
 
-variable {R : Type _}
+variable {R : Type*}
 
 namespace Matrix
 

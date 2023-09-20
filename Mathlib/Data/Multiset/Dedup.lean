@@ -16,7 +16,7 @@ namespace Multiset
 
 open List
 
-variable {α β : Type _} [DecidableEq α]
+variable {α β : Type*} [DecidableEq α]
 
 /-! ### dedup -/
 
@@ -144,7 +144,7 @@ theorem Nodup.le_dedup_iff_le {s t : Multiset α} (hno : s.Nodup) : s ≤ t.dedu
 
 end Multiset
 
-theorem Multiset.Nodup.le_nsmul_iff_le {α : Type _} {s t : Multiset α} {n : ℕ} (h : s.Nodup)
+theorem Multiset.Nodup.le_nsmul_iff_le {α : Type*} {s t : Multiset α} {n : ℕ} (h : s.Nodup)
     (hn : n ≠ 0) : s ≤ n • t ↔ s ≤ t := by
   classical
     rw [← h.le_dedup_iff_le, Iff.comm, ← h.le_dedup_iff_le]

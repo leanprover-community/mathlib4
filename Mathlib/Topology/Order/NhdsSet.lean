@@ -23,7 +23,7 @@ open scoped Topology
 
 section OrderClosedTopology
 
-variable {α : Type _} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] {a b c d : α}
+variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] {a b c d : α}
 
 /-!
 # Formulae for `𝓝ˢ` of intervals
@@ -164,7 +164,7 @@ end OrderClosedTopology
 ### Filter bases of `𝓝ˢ (Iic a)` and `𝓝ˢ (Ici a)`
 -/
 
-variable {α : Type _} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
+variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
 theorem hasBasis_nhdsSet_Iic_Iio (a : α) [h : Nonempty (Ioi a)] :
     HasBasis (𝓝ˢ (Iic a)) (a < ·) Iio := by

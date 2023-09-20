@@ -16,7 +16,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 
 open Function
 
-variable {M₀ G₀ M₀' G₀' : Type _}
+variable {M₀ G₀ M₀' G₀' : Type*}
 
 section MulZeroClass
 

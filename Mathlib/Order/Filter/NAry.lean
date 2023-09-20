@@ -31,7 +31,7 @@ open Filter
 
 namespace Filter
 
-variable {α α' β β' γ γ' δ δ' ε ε' : Type _} {m : α → β → γ} {f f₁ f₂ : Filter α}
+variable {α α' β β' γ γ' δ δ' ε ε' : Type*} {m : α → β → γ} {f f₁ f₂ : Filter α}
   {g g₁ g₂ : Filter β} {h h₁ h₂ : Filter γ} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {u : Set γ}
   {v : Set δ} {a : α} {b : β} {c : γ}
 

@@ -32,7 +32,7 @@ homeomorphism, ball
 -/
 
 open Set Metric Pointwise
-variable {E : Type _} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 noncomputable section
 
@@ -99,7 +99,7 @@ theorem Homeomorph.coe_unitBall_apply_zero :
   LocalHomeomorph.univUnitBall_apply_zero
 #align coe_homeomorph_unit_ball_apply_zero Homeomorph.coe_unitBall_apply_zero
 
-variable {P : Type _} [PseudoMetricSpace P] [NormedAddTorsor E P]
+variable {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
 namespace LocalHomeomorph
 

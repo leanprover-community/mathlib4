@@ -29,13 +29,13 @@ open BigOperators
 
 section StrictOrderedCommSemiring
 
-variable (R : Type _) [StrictOrderedCommSemiring R]
+variable (R : Type*) [StrictOrderedCommSemiring R]
 
-variable {M : Type _} [AddCommMonoid M] [Module R M]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
 
-variable {N : Type _} [AddCommMonoid N] [Module R N]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
 
-variable (ι : Type _) [DecidableEq ι]
+variable (ι : Type*) [DecidableEq ι]
 
 /-- Two vectors are in the same ray if either one of them is zero or some positive multiples of them
 are equal (in the typical case over a field, this means one of them is a nonnegative multiple of
@@ -167,7 +167,7 @@ theorem map (f : M →ₗ[R] N) (h : SameRay R x y) : SameRay R (f x) (f y) :=
 
 /-- The images of two vectors under an injective linear map are on the same ray if and only if the
 original vectors are on the same ray. -/
-theorem _root_.Function.Injective.sameRay_map_iff {F : Type _} [LinearMapClass F R M N] {f : F}
+theorem _root_.Function.Injective.sameRay_map_iff {F : Type*} [LinearMapClass F R M N] {f : F}
     (hf : Function.Injective f) : SameRay R (f x) (f y) ↔ SameRay R x y := by
   simp only [SameRay, map_zero, ← hf.eq_iff, map_smul]
 #align function.injective.same_ray_map_iff Function.Injective.sameRay_map_iff
@@ -181,7 +181,7 @@ theorem sameRay_map_iff (e : M ≃ₗ[R] N) : SameRay R (e x) (e y) ↔ SameRay 
 
 /-- If two vectors are on the same ray then both scaled by the same action are also on the same
 ray. -/
-theorem smul {S : Type _} [Monoid S] [DistribMulAction S M] [SMulCommClass R S M]
+theorem smul {S : Type*} [Monoid S] [DistribMulAction S M] [SMulCommClass R S M]
     (h : SameRay R x y) (s : S) : SameRay R (s • x) (s • y) :=
   h.map (s • (LinearMap.id : M →ₗ[R] M))
 #align same_ray.smul SameRay.smul
@@ -211,7 +211,7 @@ set_option linter.unusedVariables false in
 /-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
 `RayVector.Setoid` can be an instance. -/
 @[nolint unusedArguments]
-def RayVector (R M : Type _) [Zero M] :=
+def RayVector (R M : Type*) [Zero M] :=
   { v : M // v ≠ 0 }
 #align ray_vector RayVector
 
@@ -219,7 +219,7 @@ def RayVector (R M : Type _) [Zero M] :=
 instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
   coe := Subtype.val
 #align ray_vector.has_coe RayVector.coe
-instance {R M : Type _} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
+instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
   let ⟨x, hx⟩ := exists_ne (0 : M)
   ⟨⟨x, hx⟩⟩
 variable (R M)
@@ -307,11 +307,11 @@ theorem Module.Ray.map_symm (e : M ≃ₗ[R] N) : (Module.Ray.map e).symm = Modu
 
 section Action
 
-variable {G : Type _} [Group G] [DistribMulAction G M]
+variable {G : Type*} [Group G] [DistribMulAction G M]
 
 /-- Any invertible action preserves the non-zeroness of ray vectors. This is primarily of interest
 when `G = Rˣ` -/
-instance {R : Type _} : MulAction G (RayVector R M)
+instance {R : Type*} : MulAction G (RayVector R M)
     where
   smul r := Subtype.map ((· • ·) r) fun _ => (smul_ne_zero_iff_ne _).2
   mul_smul a b _ := Subtype.ext <| mul_smul a b _
@@ -386,9 +386,9 @@ end StrictOrderedCommSemiring
 
 section StrictOrderedCommRing
 
-variable {R : Type _} [StrictOrderedCommRing R]
+variable {R : Type*} [StrictOrderedCommRing R]
 
-variable {M N : Type _} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] {x y : M}
+variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] {x y : M}
 
 /-- `SameRay.neg` as an `iff`. -/
 @[simp]
@@ -423,17 +423,17 @@ theorem eq_zero_of_sameRay_self_neg [NoZeroSMulDivisors R M] (h : SameRay R x (-
 namespace RayVector
 
 /-- Negating a nonzero vector. -/
-instance {R : Type _} : Neg (RayVector R M) :=
+instance {R : Type*} : Neg (RayVector R M) :=
   ⟨fun v => ⟨-v, neg_ne_zero.2 v.prop⟩⟩
 
 /-- Negating a nonzero vector commutes with coercion to the underlying module. -/
 @[simp, norm_cast]
-theorem coe_neg {R : Type _} (v : RayVector R M) : ↑(-v) = -(v : M) :=
+theorem coe_neg {R : Type*} (v : RayVector R M) : ↑(-v) = -(v : M) :=
   rfl
 #align ray_vector.coe_neg RayVector.coe_neg
 
 /-- Negating a nonzero vector twice produces the original vector. -/
-instance {R : Type _} : InvolutiveNeg (RayVector R M)
+instance {R : Type*} : InvolutiveNeg (RayVector R M)
     where
   neg := Neg.neg
   neg_neg v := by rw [Subtype.ext_iff, coe_neg, coe_neg, neg_neg]
@@ -501,9 +501,9 @@ end StrictOrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {R : Type _} [LinearOrderedCommRing R]
+variable {R : Type*} [LinearOrderedCommRing R]
 
-variable {M : Type _} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
 -- Porting note: Needed to add coercion ↥ below
 /-- `SameRay` follows from membership of `MulAction.orbit` for the `Units.posSubgroup`. -/
@@ -644,9 +644,9 @@ end LinearOrderedCommRing
 
 namespace SameRay
 
-variable {R : Type _} [LinearOrderedField R]
+variable {R : Type*} [LinearOrderedField R]
 
-variable {M : Type _} [AddCommGroup M] [Module R M] {x y v₁ v₂ : M}
+variable {M : Type*} [AddCommGroup M] [Module R M] {x y v₁ v₂ : M}
 
 theorem exists_pos_left (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ r : R, 0 < r ∧ r • x = y :=
@@ -701,9 +701,9 @@ end SameRay
 
 section LinearOrderedField
 
-variable {R : Type _} [LinearOrderedField R]
+variable {R : Type*} [LinearOrderedField R]
 
-variable {M : Type _} [AddCommGroup M] [Module R M] {x y : M}
+variable {M : Type*} [AddCommGroup M] [Module R M] {x y : M}
 
 theorem exists_pos_left_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :
     (∃ r : R, 0 < r ∧ r • x = y) ↔ SameRay R x y := by

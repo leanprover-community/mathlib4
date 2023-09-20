@@ -56,13 +56,13 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
 open scoped NNReal ENNReal BigOperators Function
 
-variable {α : Type _} {E : α → Type _} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
+variable {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
 
 /-!
 ### `Memℓp` predicate
@@ -259,7 +259,7 @@ theorem finset_sum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ 
 
 section BoundedSMul
 
-variable {𝕜 : Type _} [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+variable {𝕜 : Type*} [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
 theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c • f) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -303,7 +303,7 @@ We choose to deal with this issue by making a type synonym for `∀ i, E i` rath
 subgroup itself, because this allows all the spaces `lp E p` (for varying `p`) to be subgroups of
 the same ambient group, which permits lemma statements like `lp.monotone` (below). -/
 @[nolint unusedArguments]
-def PreLp (E : α → Type _) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
+def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
   ∀ i, E i --deriving AddCommGroup
 #align pre_lp PreLp
 
@@ -314,7 +314,7 @@ instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
 #align pre_lp.unique PreLp.unique
 
 /-- lp space -/
-def lp (E : α → Type _) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
+def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
   carrier := { f | Memℓp f p }
   zero_mem' := zero_memℓp
   add_mem' := Memℓp.add
@@ -374,7 +374,7 @@ theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
 #align lp.coe_fn_add lp.coeFn_add
 
 -- porting note: removed `@[simp]` because `simp` can prove this
-theorem coeFn_sum {ι : Type _} (f : ι → lp E p) (s : Finset ι) :
+theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i in s, f i) = ∑ i in s, ⇑(f i) := by
   simp
 #align lp.coe_fn_sum lp.coeFn_sum
@@ -601,7 +601,7 @@ end ComparePointwise
 
 section BoundedSMul
 
-variable {𝕜 : Type _} {𝕜' : Type _}
+variable {𝕜 : Type*} {𝕜' : Type*}
 
 variable [NormedRing 𝕜] [NormedRing 𝕜']
 
@@ -696,7 +696,7 @@ end BoundedSMul
 
 section DivisionRing
 
-variable {𝕜 : Type _}
+variable {𝕜 : Type*}
 
 variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
@@ -712,7 +712,7 @@ end DivisionRing
 
 section NormedSpace
 
-variable {𝕜 : Type _} [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
+variable {𝕜 : Type*} [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
   norm_smul_le c f := norm_smul_le c f
@@ -766,7 +766,7 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     · simp only [lp.norm_eq_ciSup, lp.star_apply, norm_star]
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
-variable {𝕜 : Type _} [Star 𝕜] [NormedRing 𝕜]
+variable {𝕜 : Type*} [Star 𝕜] [NormedRing 𝕜]
 
 variable [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
@@ -777,7 +777,7 @@ end NormedStarGroup
 
 section NonUnitalNormedRing
 
-variable {I : Type _} {B : I → Type _} [∀ i, NonUnitalNormedRing (B i)]
+variable {I : Type*} {B : I → Type*} [∀ i, NonUnitalNormedRing (B i)]
 
 theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : Memℓp g ∞) :
     Memℓp (f * g) ∞ := by
@@ -855,7 +855,7 @@ end NonUnitalNormedRing
 
 section NormedRing
 
-variable {I : Type _} {B : I → Type _} [∀ i, NormedRing (B i)]
+variable {I : Type*} {B : I → Type*} [∀ i, NormedRing (B i)]
 
 instance _root_.PreLp.ring : Ring (PreLp B) :=
   Pi.ring
@@ -927,7 +927,7 @@ end NormedRing
 
 section NormedCommRing
 
-variable {I : Type _} {B : I → Type _} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
+variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
 
 instance inftyCommRing : CommRing (lp B ∞) :=
   { lp.inftyRing with
@@ -942,7 +942,7 @@ end NormedCommRing
 
 section Algebra
 
-variable {I : Type _} {𝕜 : Type _} {B : I → Type _}
+variable {I : Type*} {𝕜 : Type*} {B : I → Type*}
 
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
@@ -982,7 +982,7 @@ end Algebra
 
 section Single
 
-variable {𝕜 : Type _} [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+variable {𝕜 : Type*} [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
 variable [DecidableEq α]
 
@@ -1125,7 +1125,7 @@ theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
   exact this.trans_lt hfg
 #align lp.uniform_continuous_coe lp.uniformContinuous_coe
 
-variable {ι : Type _} {l : Filter ι} [Filter.NeBot l]
+variable {ι : Type*} {l : Filter ι} [Filter.NeBot l]
 
 theorem norm_apply_le_of_tendsto {C : ℝ} {F : ι → lp E ∞} (hCF : ∀ᶠ k in l, ‖F k‖ ≤ C)
     {f : ∀ a, E a} (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) (a : α) : ‖f a‖ ≤ C := by

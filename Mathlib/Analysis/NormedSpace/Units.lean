@@ -33,7 +33,7 @@ noncomputable section
 
 open Topology
 
-variable {R : Type _} [NormedRing R] [CompleteSpace R]
+variable {R : Type*} [NormedRing R] [CompleteSpace R]
 
 namespace Units
 

@@ -22,7 +22,7 @@ open CategoryTheory
 
 universe u
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 set_option linter.uppercaseLean3 false
 
@@ -34,19 +34,19 @@ structure Bipointed : Type (u + 1) where
 
 namespace Bipointed
 
-instance : CoeSort Bipointed (Type _) :=
+instance : CoeSort Bipointed (Type*) :=
   ⟨X⟩
 
 -- porting note: protected attribute does not work
 -- attribute [protected] Bipointed.X
 
 /-- Turns a bipointing into a bipointed type. -/
-def of {X : Type _} (to_prod : X × X) : Bipointed :=
+def of {X : Type*} (to_prod : X × X) : Bipointed :=
   ⟨X, to_prod⟩
 #align Bipointed.of Bipointed.of
 
 @[simp]
-theorem coe_of {X : Type _} (to_prod : X × X) : ↥(of to_prod) = X :=
+theorem coe_of {X : Type*} (to_prod : X × X) : ↥(of to_prod) = X :=
   rfl
 #align Bipointed.coe_of Bipointed.coe_of
 

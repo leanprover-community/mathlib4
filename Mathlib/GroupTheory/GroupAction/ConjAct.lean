@@ -34,7 +34,7 @@ is that some theorems about the group actions will not apply when since this
 -/
 
 
-variable (α M G G₀ R K : Type _)
+variable (α M G G₀ R K : Type*)
 
 /-- A type alias for a group `G`. `ConjAct G` acts on `G` by conjugation -/
 def ConjAct : Type _ :=
@@ -82,7 +82,7 @@ def toConjAct : G ≃* ConjAct G :=
 #align conj_act.to_conj_act ConjAct.toConjAct
 
 /-- A recursor for `ConjAct`, for use as `induction x using ConjAct.rec` when `x : ConjAct G`. -/
-protected def rec {C : ConjAct G → Sort _} (h : ∀ g, C (toConjAct g)) : ∀ g, C g :=
+protected def rec {C : ConjAct G → Sort*} (h : ∀ g, C (toConjAct g)) : ∀ g, C g :=
   h
 #align conj_act.rec ConjAct.rec
 

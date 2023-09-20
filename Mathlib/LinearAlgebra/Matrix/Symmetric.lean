@@ -22,7 +22,7 @@ symm, symmetric, matrix
 -/
 
 
-variable {α β n m R : Type _}
+variable {α β n m R : Type*}
 
 namespace Matrix
 
