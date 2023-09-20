@@ -24,6 +24,7 @@ def weakLeanArgs : Array String :=
 
 package mathlib where
   moreServerArgs := moreServerArgs
+  extraDepTargets := #[`checkToolchain]
 
 @[default_target]
 lean_lib Mathlib where
@@ -49,6 +50,20 @@ require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 require Cli from git "https://github.com/mhuisi/lean4-cli.git" @ "nightly"
 require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0.16"
+
+def noToolchainCheck := get_config? noToolchainCheck |>.isSome
+
+/-- Verify that the workspace's toolchain matches Mathlib's. If not, replace it and error. -/
+target checkToolchain pkg : PUnit := do
+  unless noToolchainCheck do
+    let wsToolchainFile := (← getRootPackage).dir / "lean-toolchain"
+    let mathlibToolchain ← IO.FS.readFile <| pkg.dir / "lean-toolchain"
+    unless (← IO.FS.readFile wsToolchainFile).trim = mathlibToolchain.trim do
+      IO.FS.writeFile wsToolchainFile mathlibToolchain
+      error <|
+        "the workspace's toolchain does match mathlib's, so it has been replaced; " ++
+        "you will need to rerun this `lake` command  to use the new toolchain"
+  return .nil
 
 lean_lib Cache where
   moreLeanArgs := moreLeanArgs
