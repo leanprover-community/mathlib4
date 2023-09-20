@@ -27,11 +27,11 @@ namespace Matrix
 
 open scoped ComplexOrder
 
-lemma rank_eq_card_pos_eigs_conj_transpose_mul_self (A: Matrix (Fin M) (Fin N) 𝕂) :
+lemma rank_eq_card_pos_eigs_conjTranspose_mul_self (A: Matrix (Fin M) (Fin N) 𝕂) :
     A.rank = Fintype.card {i // (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} := by
   rw [← rank_conjTranspose_mul_self, IsHermitian.rank_eq_card_non_zero_eigs]
 
-lemma rank_eq_card_pos_eigs_self_mul_conj_transpose (A: Matrix (Fin M) (Fin N) 𝕂) :
+lemma rank_eq_card_pos_eigs_self_mul_conjTranspose (A: Matrix (Fin M) (Fin N) 𝕂) :
     A.rank = Fintype.card {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} := by
   rw [← rank_self_mul_conjTranspose, IsHermitian.rank_eq_card_non_zero_eigs]
 
@@ -39,13 +39,13 @@ lemma rank_eq_card_pos_eigs_self_mul_conj_transpose (A: Matrix (Fin M) (Fin N) �
 Fin (A.rank) and the set non-zero eigenvalues of the matrix Aᴴ⬝A -/
 noncomputable def finRankEquivEigsConjTransposeMulSelf (A : Matrix (Fin M) (Fin N) 𝕂) :
     Fin (A.rank) ≃ {i // (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} :=
-  (Fintype.equivFinOfCardEq (rank_eq_card_pos_eigs_conj_transpose_mul_self A).symm).symm
+  (Fintype.equivFinOfCardEq (rank_eq_card_pos_eigs_conjTranspose_mul_self A).symm).symm
 
 /-- For matrix A of size m × n and rank A.rank : we have an bijection between elements of
 Fin (A.rank) and the set non-zero eigenvalues of the matrix A⬝Aᴴ -/
 noncomputable def finRankEquivEigsMulConjTranspose (A: Matrix (Fin M) (Fin N) 𝕂) :
     Fin (A.rank) ≃ {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} :=
-  (Fintype.equivFinOfCardEq (rank_eq_card_pos_eigs_self_mul_conj_transpose A).symm).symm
+  (Fintype.equivFinOfCardEq (rank_eq_card_pos_eigs_self_mul_conjTranspose A).symm).symm
 
 /-- For matrix of size m × n and rank A.rank : we have an bijection the elements
 of Fin n and the eigenvalues of the matrix Aᴴ⬝A, partitioned into
@@ -56,7 +56,7 @@ noncomputable def eigenColumnEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
   let en := Equiv.sumCompl (fun i =>  (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0)
   let eₙᵣ : {i // ¬(isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} ≃ Fin (N - A.rank) :=
     Fintype.equivFinOfCardEq (by rw [Fintype.card_subtype_compl, Fintype.card_fin,
-      rank_eq_card_pos_eigs_conj_transpose_mul_self])
+      rank_eq_card_pos_eigs_conjTranspose_mul_self])
   exact Equiv.trans en.symm  (Equiv.sumCongr (finRankEquivEigsConjTransposeMulSelf A).symm eₙᵣ)
 
 /-- For matrix of size m × n and rank A.rank : we have an bijeciton between the elements
@@ -67,10 +67,10 @@ noncomputable def eigenRowEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
     (Fin M) ≃ (Fin A.rank) ⊕ (Fin (M - A.rank)) := by
   let em := Equiv.sumCompl (fun i =>  (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0)
   let eᵣ' : {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin A.rank :=
-    Fintype.equivFinOfCardEq (by rw [rank_eq_card_pos_eigs_self_mul_conj_transpose])
+    Fintype.equivFinOfCardEq (by rw [rank_eq_card_pos_eigs_self_mul_conjTranspose])
   let eₘᵣ : {i // ¬(isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin (M - A.rank) :=
     Fintype.equivFinOfCardEq (by rw [Fintype.card_subtype_compl, Fintype.card_fin,
-      rank_eq_card_pos_eigs_self_mul_conj_transpose])
+      rank_eq_card_pos_eigs_self_mul_conjTranspose])
   exact Equiv.trans em.symm  (Equiv.sumCongr eᵣ' eₘᵣ)
 
 /-- When the eigenvalues of the matrix Aᴴ⬝A are partitioned using
@@ -85,7 +85,7 @@ lemma eigen_eigenColumnEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (N - A
     Equiv.sumCompl_apply_inr]
   let eₙᵣ : {i // ¬(isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} ≃ Fin (N - A.rank) := by
     apply Fintype.equivFinOfCardEq
-    rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_conj_transpose_mul_self]
+    rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_conjTranspose_mul_self]
   exact Iff.mp Function.nmem_support ((eₙᵣ.symm i).prop)
 
 /-- When the eigenvalues of the matrix A⬝Aᴴ are partitioned using
@@ -101,7 +101,7 @@ lemma eigen_eigenRowEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (M - A.ra
   let eₘᵣ : {i // ¬(isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃
     Fin (M - A.rank) := by
     apply Fintype.equivFinOfCardEq
-    rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_self_mul_conj_transpose]
+    rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_self_mul_conjTranspose]
   exact Iff.mp Function.nmem_support ((eₘᵣ.symm i).prop)
 
 end Matrix
