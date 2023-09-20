@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Vladimir Sedlacek. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author : Vladimir Sedlacek
+Authors: Vladimir Sedlacek
 -/
 import Mathlib.Geometry.Synthetic.Axioms
 
@@ -9,20 +9,18 @@ open incidence_geometry
 
 variable [i: incidence_geometry] {a b c : point}
 
-lemma ar132  : area a b c = area a c b
-  := by exact (area_invariant a b c).2
+lemma ar132  : area a b c = area a c b := by exact (area_invariant a b c).2
 
-lemma ar312  : area a b c = area c a b
-  := by exact (area_invariant a b c).1
+lemma ar312  : area a b c = area c a b := by exact (area_invariant a b c).1
 
-lemma ar231  : area a b c = area b c a
-  := by rw [(area_invariant a b c).1]; rw [(area_invariant c a b).1]
+lemma ar231  : area a b c = area b c a :=
+  by rw [(area_invariant a b c).1]; rw [(area_invariant c a b).1]
 
-lemma ar213  : area a b c = area b a c
-  := by rw [(area_invariant a b c).2]; rw [(area_invariant a c b).1]
+lemma ar213  : area a b c = area b a c :=
+  by rw [(area_invariant a b c).2]; rw [(area_invariant a c b).1]
 
-lemma ar321  : area a b c = area c b a
-  := by rw [(area_invariant a b c).2]; rw [(area_invariant c b a).1]
+lemma ar321  : area a b c = area c b a :=
+  by rw [(area_invariant a b c).2]; rw [(area_invariant c b a).1]
 
 lemma col213  : colinear a b c ↔ colinear b a c := by
   constructor
