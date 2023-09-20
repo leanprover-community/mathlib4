@@ -373,7 +373,7 @@ variable {f}
 
 /-- This is a technical result: quite often, we want to impose conditions at all infinite places
 but one and choose the value at the remaining place so that we can apply
-`exists_ne_zero_mem_ring_of_integers_lt`. -/
+`exists_ne_zero_mem_ringOfIntegers_lt`. -/
 theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁→ f w ≠ 0) :
     ∃ g : InfinitePlace K → ℝ≥0, (∀ w, w ≠ w₁ → g w = f w) ∧ ∏ w, (g w) ^ mult w = B := by
   let S := ∏ w in Finset.univ.erase w₁, (f w) ^ mult w
