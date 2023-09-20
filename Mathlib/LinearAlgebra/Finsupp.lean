@@ -1161,7 +1161,7 @@ protected theorem Submodule.finsupp_sum_mem {ι β : Type*} [Zero β] (S : Submo
 theorem LinearMap.map_finsupp_total (f : M →ₗ[R] N) {ι : Type*} {g : ι → M} (l : ι →₀ R) :
     f (Finsupp.total ι M R g l) = Finsupp.total ι N R (f ∘ g) l := by
   -- Porting note: `(· ∘ ·)` is required.
-  simp only [Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum, f.map_sum, f.map_smul, (· ∘ ·)]
+  simp only [Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum, map_sum, map_smul, (· ∘ ·)]
 #align linear_map.map_finsupp_total LinearMap.map_finsupp_total
 
 theorem Submodule.exists_finset_of_mem_iSup {ι : Sort _} (p : ι → Submodule R M) {m : M}
