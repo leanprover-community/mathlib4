@@ -1004,20 +1004,19 @@ theorem linear_independent_exp_aux'' (u : ι → ℂ) (hu : ∀ i, IsIntegral �
       ← nsmul_eq_smul_cast, ← smul_add, h, nsmul_zero]
 #align linear_independent_exp_aux'' linear_independent_exp_aux''
 
-set_option maxHeartbeats 800000 in
 theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
     (h : ∑ i, v i * exp (u i) = 0) :
     ∃ (w : ℤ) (w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℚ[X]) (_p0 : ∀ j, (p j).eval 0 ≠ 0)
       (w' : Fin n → ℤ),
         (w + ∑ j, w' j • ((p j).[ℂ]-roots.map fun x => exp x).sum : ℂ) = 0 := by
-  let s := range u v
   obtain ⟨w, w0, q, hq, w', h⟩ := linear_independent_exp_aux'' u hu u_inj v hv v0 h
-  let c : Fin q.card → GalConjClasses ℚ (K s) := fun j => q.equivFin.symm j
+  let c : Fin q.card → GalConjClasses ℚ (K (range u v)) := fun j => q.equivFin.symm j
   have hc : ∀ j, c j ∈ q := fun j => Finset.coe_mem _
   refine' ⟨w, w0, q.card, fun j => (c j).minpoly, _, fun j => w' (c j), _⟩
   · intro j; specialize hc j
-    suffices ((c j).minpoly.map (algebraMap ℚ (K s))).eval (algebraMap ℚ (K s) 0) ≠ 0 by
+    suffices ((c j).minpoly.map (algebraMap ℚ (K (range u v)))).eval
+        (algebraMap ℚ (K (range u v)) 0) ≠ 0 by
       rwa [eval_map, ← aeval_def, aeval_algebraMap_apply, _root_.map_ne_zero] at this
     rw [RingHom.map_zero, GalConjClasses.minpoly.map_eq_prod, eval_prod, prod_ne_zero_iff]
     intro a ha
@@ -1032,11 +1031,12 @@ theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ
     ((fun c ↦ w' c • (c.minpoly.[ℂ]-roots.map exp).sum) ·),
     sum_coe_sort _ (fun c ↦ w' c • (c.minpoly.[ℂ]-roots.map exp).sum)]
   refine' sum_congr rfl fun c _hc => _
-  have : c.minpoly.[ℂ]-roots = c.minpoly.[K s]-roots.map (algebraMap (K s) ℂ) := by
+  have : c.minpoly.[ℂ]-roots =
+      c.minpoly.[K (range u v)]-roots.map (algebraMap (K (range u v)) ℂ) := by
     change roots _ = _
-    rw [← roots_map, Polynomial.map_map, IsScalarTower.algebraMap_eq ℚ (K s) ℂ]
+    rw [← roots_map, Polynomial.map_map, IsScalarTower.algebraMap_eq ℚ (K (range u v)) ℂ]
     rw [splits_map_iff, RingHom.id_comp]; exact c.splits_minpoly
-  simp_rw [this, c.aroots_minpoly_eq_orbit_val, Multiset.map_map]; rfl
+  rw [this, c.aroots_minpoly_eq_orbit_val, Multiset.map_map, sum_eq_multiset_sum]; rfl
 #align linear_independent_exp_aux' linear_independent_exp_aux'
 
 theorem linear_independent_exp_aux (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
