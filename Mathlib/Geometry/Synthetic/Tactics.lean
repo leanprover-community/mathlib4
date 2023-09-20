@@ -5,7 +5,7 @@ Authors: Vladimir Sedlacek
 -/
 import Mathlib.Geometry.Synthetic.Axioms
 
-/-
+/-!
 Tactics document for permutation of arguments
 -/
 

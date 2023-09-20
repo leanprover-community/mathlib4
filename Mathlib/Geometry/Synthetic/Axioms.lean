@@ -6,7 +6,7 @@ Authors: André Hernandez-Espiet
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
 
-/-
+/-!
 Axioms of synthetic geometry
 -/
 
