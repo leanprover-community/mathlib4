@@ -42,7 +42,8 @@ variable (R A) in
 
 Note this is heterobasic; the bilinear form on the left can take values in an (commutative) algebra
 over the ring in which the right bilinear form is valued. -/
-def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
+noncomputable def tensorDistrib :
+    BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
   ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).dualMap
     ≪≫ₗ (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) A).symm
     ≪≫ₗ LinearMap.toBilin).toLinearMap
@@ -64,7 +65,8 @@ theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (
 
 /-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
 @[reducible]
-protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) : BilinForm A (M₁ ⊗[R] M₂) :=
+protected noncomputable def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) :
+    BilinForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 #align bilin_form.tmul BilinForm.tmul
 
@@ -79,7 +81,7 @@ lemma IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R M₂}
 
 variable (A) in
 /-- The base change of a bilinear form. -/
-protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
+protected noncomputable def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
   BilinForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.toBilin <| LinearMap.mul A A) B
 
 @[simp]

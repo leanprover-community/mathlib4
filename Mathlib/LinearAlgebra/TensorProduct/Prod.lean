@@ -28,7 +28,7 @@ variable [Module R M₁] [Module R M₂] [Module R M₃]
 attribute [ext] TensorProduct.ext
 
 /-- Tensor products distribute over a product on the right. -/
-def prodRight : M₁ ⊗[R] (M₂ × M₃) ≃ₗ[R] ((M₁ ⊗[R] M₂) × (M₁ ⊗[R] M₃)) :=
+noncomputable def prodRight : M₁ ⊗[R] (M₂ × M₃) ≃ₗ[R] ((M₁ ⊗[R] M₂) × (M₁ ⊗[R] M₃)) :=
   LinearEquiv.ofLinear
     (lift <|
       LinearMap.prodMapLinear R M₂ M₃ (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₃) R
@@ -48,7 +48,7 @@ def prodRight : M₁ ⊗[R] (M₂ × M₃) ≃ₗ[R] ((M₁ ⊗[R] M₂) × (M�
   (LinearEquiv.symm_apply_eq _).mpr rfl
 
 /-- Tensor products distribute over a product on the left . -/
-def prodLeft : (M₁ × M₂) ⊗[R] M₃ ≃ₗ[R] ((M₁ ⊗[R] M₃) × (M₂ ⊗[R] M₃)) :=
+noncomputable def prodLeft : (M₁ × M₂) ⊗[R] M₃ ≃ₗ[R] ((M₁ ⊗[R] M₃) × (M₂ ⊗[R] M₃)) :=
   TensorProduct.comm _ _ _
     ≪≫ₗ TensorProduct.prodRight R _ _ _
     ≪≫ₗ (TensorProduct.comm R _ _).prod (TensorProduct.comm R _ _)

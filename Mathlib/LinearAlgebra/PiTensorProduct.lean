@@ -582,7 +582,8 @@ theorem subsingletonEquiv_apply_tprod [Subsingleton ι] (i : ι) (f : ι → M) 
 section Tmul
 
 /-- Collapse a `TensorProduct` of `PiTensorProduct`s. -/
-private def tmul : ((⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M) →ₗ[R] ⨂[R] _ : Sum ι ι₂, M :=
+private noncomputable def tmul :
+    ((⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M) →ₗ[R] ⨂[R] _ : Sum ι ι₂, M :=
   TensorProduct.lift
     { toFun := fun a ↦
         PiTensorProduct.lift <|
@@ -597,7 +598,8 @@ private theorem tmul_apply (a : ι → M) (b : ι₂ → M) :
   rfl
 
 /-- Expand `PiTensorProduct` into a `TensorProduct` of two factors. -/
-private def tmulSymm : (⨂[R] _ : Sum ι ι₂, M) →ₗ[R] (⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M :=
+private noncomputable def tmulSymm :
+    (⨂[R] _ : Sum ι ι₂, M) →ₗ[R] (⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M :=
   -- by using tactic mode, we avoid the need for a lot of `@`s and `_`s
   PiTensorProduct.lift <| MultilinearMap.domCoprod (tprod R) (tprod R)
 
@@ -614,7 +616,7 @@ attribute [local ext] TensorProduct.ext
 
 For simplicity, this is defined only for homogeneously- (rather than dependently-) typed components.
 -/
-def tmulEquiv : ((⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M) ≃ₗ[R] ⨂[R] _ : Sum ι ι₂, M :=
+noncomputable def tmulEquiv : ((⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M) ≃ₗ[R] ⨂[R] _ : Sum ι ι₂, M :=
   LinearEquiv.ofLinear tmul tmulSymm
     (by
       ext x

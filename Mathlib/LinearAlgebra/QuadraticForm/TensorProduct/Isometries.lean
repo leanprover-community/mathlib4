@@ -54,7 +54,7 @@ theorem tmul_tensorMap_apply
 namespace Isometry
 
 /-- `TensorProduct.map` for `Quadraticform.Isometry`s -/
-def tmul
+noncomputable def tmul
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
     (f : Q₁ →qᵢ Q₂) (g : Q₃ →qᵢ Q₄) : (Q₁.tmul Q₃) →qᵢ (Q₂.tmul Q₄) where
@@ -90,7 +90,7 @@ theorem tmul_tensorComm_apply
   FunLike.congr_fun (tmul_comp_tensorComm Q₁ Q₂) x
 
 /-- `TensorProduct.comm` preserves tensor products of quadratic forms. -/
-def tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
+noncomputable def tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₁.tmul Q₂).IsometryEquiv (Q₂.tmul Q₁) where
   toLinearEquiv := TensorProduct.comm R M₁ M₂
   map_app' := tmul_tensorComm_apply Q₁ Q₂
@@ -127,7 +127,8 @@ theorem tmul_tensorAssoc_apply
   FunLike.congr_fun (tmul_comp_tensorAssoc Q₁ Q₂ Q₃) x
 
 /-- `TensorProduct.assoc` preserves tensor products of quadratic forms. -/
-def tensorAssoc (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃) :
+noncomputable def tensorAssoc (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂)
+    (Q₃ : QuadraticForm R M₃) :
     ((Q₁.tmul Q₂).tmul Q₃).IsometryEquiv (Q₁.tmul (Q₂.tmul Q₃)) where
   toLinearEquiv := TensorProduct.assoc R M₁ M₂ M₃
   map_app' := tmul_tensorAssoc_apply Q₁ Q₂ Q₃
@@ -164,7 +165,7 @@ theorem tmul_tensorRId_apply
   FunLike.congr_fun (comp_tensorRId_eq Q₁) x
 
 /-- `TensorProduct.rid` preserves tensor products of quadratic forms. -/
-def tensorRId (Q₁ : QuadraticForm R M₁):
+noncomputable def tensorRId (Q₁ : QuadraticForm R M₁):
     (Q₁.tmul (sq (R := R))).IsometryEquiv Q₁ where
   toLinearEquiv := TensorProduct.rid R M₁
   map_app' := tmul_tensorRId_apply Q₁
@@ -197,7 +198,7 @@ theorem tmul_tensorLId_apply
   FunLike.congr_fun (comp_tensorLId_eq Q₂) x
 
 /-- `TensorProduct.lid` preserves tensor products of quadratic forms. -/
-def tensorLId (Q₂ : QuadraticForm R M₂):
+noncomputable def tensorLId (Q₂ : QuadraticForm R M₂):
     ((sq (R := R)).tmul Q₂).IsometryEquiv Q₂ where
   toLinearEquiv := TensorProduct.lid R M₂
   map_app' := tmul_tensorLId_apply Q₂

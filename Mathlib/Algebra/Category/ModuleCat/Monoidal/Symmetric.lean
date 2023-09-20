@@ -22,7 +22,7 @@ namespace ModuleCat
 variable {R : Type u} [CommRing R]
 
 /-- (implementation) the braiding for R-modules -/
-def braiding (M N : ModuleCat.{u} R) : M ⊗ N ≅ N ⊗ M :=
+noncomputable def braiding (M N : ModuleCat.{u} R) : M ⊗ N ≅ N ⊗ M :=
   LinearEquiv.toModuleIso (TensorProduct.comm R M N)
 set_option linter.uppercaseLean3 false in
 #align Module.braiding ModuleCat.braiding
@@ -62,7 +62,7 @@ set_option linter.uppercaseLean3 false in
 attribute [local ext] TensorProduct.ext
 
 /-- The symmetric monoidal structure on `Module R`. -/
-instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
+noncomputable instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
   braiding := braiding
   braiding_naturality f g := braiding_naturality f g
   hexagon_forward := hexagon_forward

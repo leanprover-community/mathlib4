@@ -374,7 +374,7 @@ set_option linter.uppercaseLean3 false in
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
-def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
+noncomputable def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f :=
     { hom := (TensorProduct.curry f.hom).flip
       comm := fun g => by
@@ -418,7 +418,7 @@ theorem homEquiv_symm_apply_hom (f : B ⟶ (Rep.ihom A).obj C) :
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_equiv_symm_apply_hom Rep.homEquiv_symm_apply_hom
 
-instance : MonoidalClosed (Rep k G) where
+noncomputable instance : MonoidalClosed (Rep k G) where
   closed := fun A =>
   { isAdj :=
     { right := Rep.ihom A
@@ -461,7 +461,7 @@ variable (A B C)
 
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms`Hom(A ⊗ B, C)`
 and `Hom(B, Homₖ(A, C))`. -/
-def MonoidalClosed.linearHomEquiv : (A ⊗ B ⟶ C) ≃ₗ[k] B ⟶ A ⟶[Rep k G] C :=
+noncomputable def MonoidalClosed.linearHomEquiv : (A ⊗ B ⟶ C) ≃ₗ[k] B ⟶ A ⟶[Rep k G] C :=
   { (ihom.adjunction A).homEquiv _ _ with
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
@@ -470,7 +470,7 @@ def MonoidalClosed.linearHomEquiv : (A ⊗ B ⟶ C) ≃ₗ[k] B ⟶ A ⟶[Rep k 
 
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms`Hom(A ⊗ B, C)`
 and `Hom(A, Homₖ(B, C))`. -/
-def MonoidalClosed.linearHomEquivComm : (A ⊗ B ⟶ C) ≃ₗ[k] A ⟶ B ⟶[Rep k G] C :=
+noncomputable def MonoidalClosed.linearHomEquivComm : (A ⊗ B ⟶ C) ≃ₗ[k] A ⟶ B ⟶[Rep k G] C :=
   Linear.homCongr k (β_ A B) (Iso.refl _) ≪≫ₗ MonoidalClosed.linearHomEquiv _ _ _
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_closed.linear_hom_equiv_comm Rep.MonoidalClosed.linearHomEquivComm
@@ -516,7 +516,7 @@ variable {k G : Type u} [CommRing k] [Monoid G] {V W : Type u} [AddCommGroup V] 
   [Module k V] [Module k W] (ρ : Representation k G V) (τ : Representation k G W)
 
 /-- Tautological isomorphism to help Lean in typechecking. -/
-def repOfTprodIso : Rep.of (ρ.tprod τ) ≅ Rep.of ρ ⊗ Rep.of τ :=
+noncomputable def repOfTprodIso : Rep.of (ρ.tprod τ) ≅ Rep.of ρ ⊗ Rep.of τ :=
   Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align representation.Rep_of_tprod_iso Representation.repOfTprodIso
@@ -543,7 +543,7 @@ namespace Rep
 variable {k G : Type u} [CommRing k] [Monoid G]
 
 -- Verify that the symmetric monoidal structure is available.
-example : SymmetricCategory (Rep k G) := by infer_instance
+noncomputable example : SymmetricCategory (Rep k G) := by infer_instance
 
 example : MonoidalPreadditive (Rep k G) := by infer_instance
 

@@ -41,7 +41,7 @@ namespace MonModuleEquivalenceAlgebra
 -- Porting note : `simps(!)` doesn't work, I guess we will see what `simp` lemmas are needed and
 -- add them manually
 -- @[simps!]
-instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
+noncomputable instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
   { (inferInstance : AddCommGroup A.X) with
     one := A.one (1 : R)
     mul := fun x y => A.mul (x ⊗ₜ y)
@@ -93,7 +93,7 @@ theorem algebraMap (A : Mon_ (ModuleCat.{u} R)) (r : R) : algebraMap R A.X r = A
 /-- Converting a monoid object in `ModuleCat R` to a bundled algebra.
 -/
 @[simps!]
-def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
+noncomputable def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
   obj A := AlgebraCat.of R A.X
   map {A B} f :=
     { f.hom.toAddMonoidHom with
@@ -106,7 +106,7 @@ def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[simps]
-def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
+noncomputable def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
   X := ModuleCat.of R A
   one := Algebra.linearMap R A
   mul := LinearMap.mul' R A
@@ -156,7 +156,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[simps]
-def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
+noncomputable def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   obj := inverseObj
   map f :=
     { hom := f.toLinearMap
@@ -172,7 +172,7 @@ set_option maxHeartbeats 500000 in
 /-- The category of internal monoid objects in `ModuleCat R`
 is equivalent to the category of "native" bundled `R`-algebras.
 -/
-def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
+noncomputable def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
   functor := functor
   inverse := inverse
   unitIso :=
@@ -226,7 +226,7 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
 /-- The equivalence `Mon_ (ModuleCat R) ≌ AlgebraCat R`
 is naturally compatible with the forgetful functors to `ModuleCat R`.
 -/
-def monModuleEquivalenceAlgebraForget :
+noncomputable def monModuleEquivalenceAlgebraForget :
     MonModuleEquivalenceAlgebra.functor ⋙ forget₂ (AlgebraCat.{u} R) (ModuleCat.{u} R) ≅
       Mon_.forget (ModuleCat.{u} R) :=
   NatIso.ofComponents

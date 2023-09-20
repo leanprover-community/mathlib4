@@ -339,7 +339,7 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
 -- See https://github.com/leanprover-community/mathlib4/issues/5028
 /-- Given a nilpotent Lie subalgebra `H ⊆ L` together with `χ₁ χ₂ : H → R`, there is a natural
 `R`-bilinear product of root vectors and weight vectors, compatible with the actions of `H`. -/
-def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) :
+noncomputable def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) :
     rootSpace H χ₁ ⊗[R] weightSpace M χ₂ →ₗ⁅R,H⁆ weightSpace M χ₃ :=
   liftLie R H (rootSpace H χ₁) (weightSpace M χ₂) (weightSpace M χ₃)
     { toLinearMap := rootSpaceWeightSpaceProductAux R L H M hχ
@@ -361,7 +361,7 @@ theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ 
 
 /-- Given a nilpotent Lie subalgebra `H ⊆ L` together with `χ₁ χ₂ : H → R`, there is a natural
 `R`-bilinear product of root vectors, compatible with the actions of `H`. -/
-def rootSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) :
+noncomputable def rootSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) :
     rootSpace H χ₁ ⊗[R] rootSpace H χ₂ →ₗ⁅R,H⁆ rootSpace H χ₃ :=
   rootSpaceWeightSpaceProduct R L H L χ₁ χ₂ χ₃ hχ
 #align lie_algebra.root_space_product LieAlgebra.rootSpaceProduct

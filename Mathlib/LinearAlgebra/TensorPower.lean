@@ -76,12 +76,12 @@ theorem gOne_def : ₜ1 = tprod R (@Fin.elim0' M) :=
 #align tensor_power.ghas_one_def TensorPower.gOne_def
 
 /-- A variant of `PiTensorProduct.tmulEquiv` with the result indexed by `Fin (n + m)`. -/
-def mulEquiv {n m : ℕ} : (⨂[R]^n) M ⊗[R] (⨂[R]^m) M ≃ₗ[R] (⨂[R]^(n + m)) M :=
+noncomputable def mulEquiv {n m : ℕ} : (⨂[R]^n) M ⊗[R] (⨂[R]^m) M ≃ₗ[R] (⨂[R]^(n + m)) M :=
   (tmulEquiv R M).trans (reindex R M finSumFinEquiv)
 #align tensor_power.mul_equiv TensorPower.mulEquiv
 
 /-- As a graded monoid, `⨂[R]^i M` has a `(*) : ⨂[R]^i M → ⨂[R]^j M → ⨂[R]^(i + j) M`. -/
-instance gMul : GradedMonoid.GMul fun i => (⨂[R]^i) M where
+noncomputable instance gMul : GradedMonoid.GMul fun i => (⨂[R]^i) M where
   mul {i j} a b :=
     (TensorProduct.mk R _ _).compr₂ (↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(i + j)) M)) a b
 #align tensor_power.ghas_mul TensorPower.gMul
@@ -214,7 +214,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
 #align tensor_power.mul_assoc TensorPower.mul_assoc
 
 -- for now we just use the default for the `gnpow` field as it's easier.
-instance gmonoid : GradedMonoid.GMonoid fun i => (⨂[R]^i) M :=
+noncomputable instance gmonoid : GradedMonoid.GMonoid fun i => (⨂[R]^i) M :=
   { TensorPower.gMul, TensorPower.gOne with
     one_mul := fun a => gradedMonoid_eq_of_cast (zero_add _) (one_mul _)
     mul_one := fun a => gradedMonoid_eq_of_cast (add_zero _) (mul_one _)
@@ -253,7 +253,7 @@ theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
 #align tensor_power.algebra_map₀_mul_algebra_map₀ TensorPower.algebraMap₀_mul_algebraMap₀
 
-instance gsemiring : DirectSum.GSemiring fun i => (⨂[R]^i) M :=
+noncomputable instance gsemiring : DirectSum.GSemiring fun i => (⨂[R]^i) M :=
   { TensorPower.gmonoid with
     mul_zero := fun a => LinearMap.map_zero _
     zero_mul := fun b => LinearMap.map_zero₂ _ _
@@ -264,7 +264,7 @@ instance gsemiring : DirectSum.GSemiring fun i => (⨂[R]^i) M :=
     natCast_succ := fun n => by simp only [Nat.cast_succ, map_add, algebraMap₀_one] }
 #align tensor_power.gsemiring TensorPower.gsemiring
 
-example : Semiring (⨁ n : ℕ, (⨂[R]^n) M) := by infer_instance
+noncomputable example : Semiring (⨁ n : ℕ, (⨂[R]^n) M) := by infer_instance
 
 /-- The tensor powers form a graded algebra.
 
@@ -291,6 +291,6 @@ theorem galgebra_toFun_def (r : R) :
   rfl
 #align tensor_power.galgebra_to_fun_def TensorPower.galgebra_toFun_def
 
-example : Algebra R (⨁ n : ℕ, (⨂[R]^n) M) := by infer_instance
+noncomputable example : Algebra R (⨁ n : ℕ, (⨂[R]^n) M) := by infer_instance
 
 end TensorPower

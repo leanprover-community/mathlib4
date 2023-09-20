@@ -218,14 +218,14 @@ variable (M : ModuleCat.{v} R)
 
 /-- Extension of scalars turn an `R`-module into `S`-module by M ↦ S ⨂ M
 -/
-def obj' : ModuleCat S :=
+noncomputable def obj' : ModuleCat S :=
   ⟨TensorProduct R ((restrictScalars f).obj ⟨S⟩) M⟩
 #align category_theory.Module.extend_scalars.obj' ModuleCat.ExtendScalars.obj'
 
 /-- Extension of scalars is a functor where an `R`-module `M` is sent to `S ⊗ M` and
 `l : M1 ⟶ M2` is sent to `s ⊗ m ↦ s ⊗ l m`
 -/
-def map' {M1 M2 : ModuleCat.{v} R} (l : M1 ⟶ M2) : obj' f M1 ⟶ obj' f M2 :=
+noncomputable def map' {M1 M2 : ModuleCat.{v} R} (l : M1 ⟶ M2) : obj' f M1 ⟶ obj' f M2 :=
   by-- The "by apply" part makes this require 75% fewer heartbeats to process (#16371).
   apply @LinearMap.baseChange R S M1 M2 _ _ ((algebraMap S _).comp f).toAlgebra _ _ _ _ l
 #align category_theory.Module.extend_scalars.map' ModuleCat.ExtendScalars.map'
@@ -257,7 +257,8 @@ end ExtendScalars
 /-- Extension of scalars is a functor where an `R`-module `M` is sent to `S ⊗ M` and
 `l : M1 ⟶ M2` is sent to `s ⊗ m ↦ s ⊗ l m`
 -/
-def extendScalars {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
+noncomputable def extendScalars {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
+    (f : R →+* S) :
     ModuleCat R ⥤ ModuleCat S where
   obj M := ExtendScalars.obj' f M
   map l := ExtendScalars.map' f l
@@ -571,7 +572,7 @@ map `S ⨂ X → Y`, there is a `X ⟶ (restrictScalars f).obj Y`, i.e. `R`-line
 `x ↦ g (1 ⊗ x)`.
 -/
 @[simps apply]
-def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
+noncomputable def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
     X ⟶ (restrictScalars f).obj Y where
   toFun x := g <| (1 : S)⊗ₜ[R,f]x
   map_add' _ _ := by dsimp; rw [tmul_add, map_add]
@@ -606,7 +607,7 @@ Given `R`-module X and `S`-module Y and a map `X ⟶ (restrictScalars f).obj Y`,
 `s ⊗ x ↦ s • g x`.
 -/
 @[simps apply]
-def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
+noncomputable def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     (extendScalars f).obj X ⟶ Y := by
   letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
   refine {toFun := fun z => TensorProduct.lift ?_ z, map_add' := ?_, map_smul' := ?_}
@@ -637,7 +638,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
 bijectively correspond to `R`-linear maps `X ⟶ (restrictScalars f).obj Y`.
 -/
 @[simps symm_apply]
-def homEquiv {X Y} :
+noncomputable def homEquiv {X Y} :
     ((extendScalars f).obj X ⟶ Y) ≃ (X ⟶ (restrictScalars.{max v u₂,u₁,u₂} f).obj Y) where
   toFun := HomEquiv.toRestrictScalars.{u₁,u₂,v} f
   invFun := HomEquiv.fromExtendScalars.{u₁,u₂,v} f
@@ -665,7 +666,7 @@ def homEquiv {X Y} :
 For any `R`-module X, there is a natural `R`-linear map from `X` to `X ⨂ S` by sending `x ↦ x ⊗ 1`
 -/
 -- @[simps] Porting note: not in normal form and not used
-def Unit.map {X} : X ⟶ (extendScalars f ⋙ restrictScalars f).obj X where
+noncomputable def Unit.map {X} : X ⟶ (extendScalars f ⋙ restrictScalars f).obj X where
   toFun x := (1 : S)⊗ₜ[R,f]x
   map_add' x x' := by dsimp; rw [TensorProduct.tmul_add]
   map_smul' r x := by
@@ -679,7 +680,8 @@ The natural transformation from identity functor on `R`-module to the compositio
 restriction of scalars.
 -/
 @[simps]
-def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u₂,u₁,u₂} f where
+noncomputable def unit :
+    𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u₂,u₁,u₂} f where
   app _ := Unit.map.{u₁,u₂,v} f
 #align category_theory.Module.extend_restrict_scalars_adj.unit ModuleCat.ExtendRestrictScalarsAdj.unit
 
@@ -687,7 +689,7 @@ def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u�
 `s ⊗ y ↦ s • y`
 -/
 @[simps apply]
-def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by
+noncomputable def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by
   letI m1 : Module R S := Module.compHom S f
   letI m2 : Module R Y := Module.compHom Y f
   refine'
@@ -729,7 +731,8 @@ attribute [nolint simpNF] Counit.map_apply
 identity functor on `S`-module.
 -/
 @[simps app]
-def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ 𝟭 (ModuleCat S) where
+noncomputable def counit :
+    restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ 𝟭 (ModuleCat S) where
   app _ := Counit.map.{u₁,u₂,v} f
   naturality Y Y' g := by
     -- Porting note: this is very annoying; fix instances in concrete categories
@@ -755,7 +758,8 @@ end ExtendRestrictScalarsAdj
 scalars by `f` are adjoint to each other.
 -/
 -- @[simps] -- Porting note: removed not in normal form and not used
-def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
+noncomputable def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
+    (f : R →+* S) :
     extendScalars.{u₁,u₂,max v u₂} f ⊣ restrictScalars.{max v u₂,u₁,u₂} f where
   homEquiv _ _ := ExtendRestrictScalarsAdj.homEquiv.{v,u₁,u₂} f
   unit := ExtendRestrictScalarsAdj.unit.{v,u₁,u₂} f
@@ -779,11 +783,11 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
         congr 1
 #align category_theory.Module.extend_restrict_scalars_adj ModuleCat.extendRestrictScalarsAdj
 
-instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
+noncomputable instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
     CategoryTheory.IsLeftAdjoint (extendScalars f) :=
   ⟨_, extendRestrictScalarsAdj f⟩
 
-instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
+noncomputable instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
     CategoryTheory.IsRightAdjoint (restrictScalars f) :=
   ⟨_, extendRestrictScalarsAdj f⟩
 

@@ -631,7 +631,8 @@ end Finite
 end Module
 
 /-- Porting note: reminding Lean about this instance for Module.Finite.base_change -/
-local instance [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] :
+noncomputable local instance [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
+    [Module R M] :
   Module A (TensorProduct R A M) :=
   haveI : SMulCommClass R A A := IsScalarTower.to_smulCommClass
   TensorProduct.leftModule

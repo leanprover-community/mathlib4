@@ -36,7 +36,7 @@ section Pushout
 variable {R A B : CommRingCat.{u}} (f : R ⟶ A) (g : R ⟶ B)
 
 /-- The explicit cocone with tensor products as the fibered product in `CommRingCat`. -/
-def pushoutCocone : Limits.PushoutCocone f g := by
+noncomputable def pushoutCocone : Limits.PushoutCocone f g := by
   letI := RingHom.toAlgebra f
   letI := RingHom.toAlgebra g
   fapply Limits.PushoutCocone.mk
@@ -81,7 +81,7 @@ set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone_X CommRingCat.pushoutCocone_pt
 
 /-- Verify that the `pushout_cocone` is indeed the colimit. -/
-def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
+noncomputable def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
   Limits.PushoutCocone.isColimitAux' _ fun s => by
     letI := RingHom.toAlgebra f
     letI := RingHom.toAlgebra g
