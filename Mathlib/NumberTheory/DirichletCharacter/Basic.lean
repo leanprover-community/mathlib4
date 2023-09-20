@@ -74,7 +74,7 @@ lemma changeLevel_self_toUnitHom : (changeLevel (dvd_refl n) χ).toUnitHom = χ.
   rw [changeLevel_self]
 
 lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
-  changeLevel (dvd_trans hm hd) χ = changeLevel hd (changeLevel hm χ) := by
+    changeLevel (dvd_trans hm hd) χ = changeLevel hd (changeLevel hm χ) := by
   simp [changeLevel_def, MonoidHom.comp_assoc, ZMod.unitsMap_comp]
 
 end DirichletCharacter
