@@ -66,7 +66,7 @@ end instMonoidalCategory
 
 open instMonoidalCategory
 
-count_heartbeats in
+set_option maxHeartbeats 1600000 in
 noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (F := forget₂ (QuadraticModuleCat R) (ModuleCat R))
