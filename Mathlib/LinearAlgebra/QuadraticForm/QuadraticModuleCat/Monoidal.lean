@@ -22,41 +22,52 @@ namespace QuadraticModuleCat
 
 open QuadraticForm
 
+noncomputable section
+
 namespace instMonoidalCategory
 
 /-- Auxiliary definition used to fight a tmieout when building
 `QuadraticModuleCat.instMonoidalCategory`. -/
 @[simps! form]
-def tensorObj (X Y : QuadraticModuleCat.{u} R) : QuadraticModuleCat.{u} R :=
+noncomputable abbrev tensorObj (X Y : QuadraticModuleCat.{u} R) : QuadraticModuleCat.{u} R :=
   of (X.form.tmul Y.form)
 
 /-- Auxiliary definition used to fight a tmieout when building
 `QuadraticModuleCat.instMonoidalCategory`. -/
-def tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
+noncomputable abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
     tensorObj W Y ⟶ tensorObj X Z :=
   ⟨(f.toIsometry.tmul g.toIsometry :)⟩
 
 /-- Auxiliary definition used to fight a tmieout when building
 `QuadraticModuleCat.instMonoidalCategory`. -/
 @[simps! form]
-def tensorUnit : QuadraticModuleCat.{u} R := of (sq (R := R))
+abbrev tensorUnit : QuadraticModuleCat.{u} R := of (sq (R := R))
 
 set_option maxHeartbeats 3200000 in
+
 /-- Auxiliary definition used to fight a tmieout when building
 `QuadraticModuleCat.instMonoidalCategory`. -/
-def associator (X Y Z : QuadraticModuleCat.{u} R) :
+noncomputable abbrev associator (X Y Z : QuadraticModuleCat.{u} R) :
     tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) := by
   refine ofIso ?_
-  dsimp
-  have := tensorAssoc X.form Y.form Z.form
-  exact this
+  dsimp [tensorObj, of, instModuleCarrierToRingToModuleCatToSemiringToCommSemiringToAddCommMonoidInstAddCommGroupCarrierToRingToModuleCat]
+  exact tensorAssoc X.form Y.form Z.form
 
+open MonoidalCategory
+
+@[simp] theorem forget₂_map_associator_hom (X Y Z : QuadraticModuleCat.{u} R) :
+  (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (associator X Y Z).hom
+    = (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).hom := rfl
+
+@[simp] theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
+  (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (associator X Y Z).inv
+    = (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 end instMonoidalCategory
 
 open instMonoidalCategory
 
 count_heartbeats in
-instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
+noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (F := forget₂ (QuadraticModuleCat R) (ModuleCat R))
     (tensorObj := instMonoidalCategory.tensorObj)
