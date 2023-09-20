@@ -494,7 +494,7 @@ section AddMonoid
 variable {A B : Type*} [AddMonoid A] [AddMonoid B] [LinearOrder B] [OrderBot B]
   [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
   {D : A → B} (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-  (hD : Function.Injective D) {p : R[A]} {n : ℕ}
+  (hD : D.Injective) {p : R[A]} {n : ℕ}
 
 lemma Monic.pow (hp : p.Monic D) : (p ^ n).Monic D := by
   induction' n with n ih
