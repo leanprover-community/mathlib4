@@ -63,7 +63,7 @@ lemma changeLevel_def {m : ℕ} (hm : n ∣ m) :
     changeLevel hm χ = MulChar.ofUnitHom (χ.toUnitHom.comp (ZMod.unitsMap hm)) := rfl
 
 lemma changeLevel_def' {m : ℕ} (hm : n ∣ m) :
-    (changeLevel hm χ).toUnitHom = χ.toUnitHom.comp (Units.map (ZMod.castHom hm (ZMod n))) := by
+    (changeLevel hm χ).toUnitHom = χ.toUnitHom.comp (ZMod.unitsMap hm) := by
   ext
   rw [changeLevel_def, ZMod.unitsMap_def]
   simp
