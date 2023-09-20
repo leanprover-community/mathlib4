@@ -360,8 +360,8 @@ theorem B_or_B_of_B_B (cd : c ≠ d) (Babc : B a b c) (Babd : B a b d) :
     (online_3_of_B Babc aL bL) (online_3_of_B Babd aL bL) with Bet | Bet | Bet
   left; exact Bet; exfalso; exact (not_B324_of_B123_B124 Babc Babd) Bet; right; exact Bet
 -- same comment as previous
-theorem angle_extension_of_B_B (be : b ≠ e) (Babc : B a b c) (Babd : B a b d)
-    : angle e b d = angle e b c := by
+theorem angle_extension_of_B_B (be : b ≠ e) (Babc : B a b c) (Babd : B a b d) :
+    angle e b d = angle e b c := by
   by_cases cd : c = d; rw [cd]
   rcases B_or_B_of_B_B cd Babc Babd with Bet | Bet; symm
   repeat exact ang_654321_of_ang $ angle_extension_of_B be Bet
@@ -393,8 +393,8 @@ theorem diffside_of_B_offline (Babc : B a b c) (aL : online a L) (bL : online b 
   ⟨offline_of_B_offline Babc aL bL bN dN dL, offline_of_B_offline (B_symm Babc)
   (online_3_of_B Babc aL bL) bL bN dN dL, not_sameside13_of_B123_online2 Babc bN⟩
 
-theorem diffside_of_B_offline'' (Babc : B a b c) (aN : ¬online a N) (bN : online b N)
-     : diffside a c N :=
+theorem diffside_of_B_offline'' (Babc : B a b c) (aN : ¬online a N) (bN : online b N) :
+    diffside a c N :=
   ⟨aN, fun cN => aN $ online_3_of_B (B_symm Babc) cN bN, not_sameside13_of_B123_online2 Babc bN⟩
 
 theorem sameside_of_B_sameside_sameside (Babc : B a b c) (bL : online b L) (bM : online b M)
@@ -459,11 +459,11 @@ lemma angle_zero_of_lt_eq (ab : a ≠ b) (aL : online a L) (bL : online b L) (dc
   rcases line_of_pts a d with ⟨M, aM, dM⟩
   rcases line_of_pts a c with ⟨N, aN, cN⟩
   by_cases bcM : sameside b c M
-  . linarith[angle_add_of_sameside aL bL aM dM dcL bcM, angle_symm c a b]
+  · linarith[angle_add_of_sameside aL bL aM dM dcL bcM, angle_symm c a b]
   by_cases cM : online c M
-  . exact angle_zero_of_online (ne_of_sameside' aL $ sameside_symm dcL) (ne_of_sameside' aL dcL)
+  · exact angle_zero_of_online (ne_of_sameside' aL $ sameside_symm dcL) (ne_of_sameside' aL dcL)
       aM cM dM (B_of_col_sameside aL $ sameside_symm dcL)
-  . linarith[angle_symm b a d, angle_add_of_sameside aL bL aN cN (sameside_symm dcL) $
+  · linarith[angle_symm b a d, angle_add_of_sameside aL bL aN cN (sameside_symm dcL) $
       sameside_of_sameside_not_sameside ab aL aM aN bL dM cN cM dcL bcM, angle_symm d a c]
 --2023/5/4
 theorem angle_zero_of_lt_eq_B (ab : a ≠ b) (Bbcd : B b c d) (tri_bad : triangle b a d)
@@ -629,13 +629,13 @@ theorem pt_of_online_not_sameside (aL : online a L) (bL : online b L) (abM : ¬s
     ∃ c, online c M ∧ online c L :=
 pt_of_lines_inter $ lines_inter_of_not_sameside aL bL abM
 
-theorem sameside_of_para_online (aM : online a M) (bM : online b M) (paraMN : para M N)
-    : sameside a b N := by
+theorem sameside_of_para_online (aM : online a M) (bM : online b M) (paraMN : para M N) :
+    sameside a b N := by
   by_contra abO; rcases pt_of_online_not_sameside aM bM abO with ⟨c, cN, cM⟩
   exact not_para_of_inter cM cN paraMN
 
-theorem sameside_of_para_online' (aN : online a N) (bN : online b N) (paraMN : para M N)
-    : sameside a b M := sameside_of_para_online aN bN (para_symm paraMN)
+theorem sameside_of_para_online' (aN : online a N) (bN : online b N) (paraMN : para M N) :
+    sameside a b M := sameside_of_para_online aN bN (para_symm paraMN)
 
 theorem tri124_of_paragram (pgram : paragram a b c d M N O P) : triangle a b d := by
   have ⟨aM, bM, bN, cN, _, dO, _, aP, paraMO, paraNP⟩ := pgram
