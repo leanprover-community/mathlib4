@@ -352,18 +352,12 @@ variable [Fintype m] [DecidableEq m]
 variable [Fintype l] [DecidableEq l]
 
 lemma mul_left_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
-    Function.Injective (fun x : Matrix l m α => x * A) := by
-  intro u v g
-  replace g := congr_arg (fun x => x * B) g
-  dsimp at g
-  rwa [Matrix.mul_assoc, Matrix.mul_assoc, h, Matrix.mul_one, Matrix.mul_one] at g
+    Function.Injective (fun x : Matrix l m α => x * A) :=
+  fun _ _ g => by simpa only [Matrix.mul_assoc, Matrix.mul_one, h] using congr_arg (· * B) g
 
 lemma mul_right_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
-    Function.Injective (fun x : Matrix m l α => B * x) := by
-  intro u v g
-  replace g := congr_arg (fun x => A * x) g
-  dsimp at g
-  rwa [← Matrix.mul_assoc, ←Matrix.mul_assoc, h, Matrix.one_mul, Matrix.one_mul] at g
+    Function.Injective (fun x : Matrix m l α => B * x) :=
+  fun _ _ g => by simpa only [← Matrix.mul_assoc, Matrix.one_mul, h] using congr_arg (A * ·) g
 
 end InjectiveMul
 
