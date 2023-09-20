@@ -78,8 +78,10 @@ noncomputable def TensorProduct : Type _ :=
 variable {R}
 
 set_option quotPrecheck false in
+/-- foobar -/
 scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
 
+/-- foobar -/
 scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
 
 namespace TensorProduct
@@ -88,6 +90,7 @@ section Module
 
 -- porting note: This is added as a local instance for `SMul.aux`.
 -- For some reason type-class inference in Lean 3 unfolded this definition.
+/-- foobar -/
 noncomputable def addMonoid : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
@@ -113,8 +116,10 @@ noncomputable def tmul (m : M) (n : N) : M ⊗[R] N :=
 
 variable {R}
 
+/-- foobar -/
 infixl:100 " ⊗ₜ " => tmul _
 
+/-- foobar -/
 notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
 -- porting note: make the arguments of induction_on explicit
@@ -170,6 +175,7 @@ needed if `TensorProduct.smul_tmul`, `TensorProduct.smul_tmul'`, or `TensorProdu
 used.
 -/
 class CompatibleSMul [DistribMulAction R' N] : Prop where
+  /-- foobar -/
   smul_tmul : ∀ (r : R') (m : M) (n : N), (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n)
 #align tensor_product.compatible_smul TensorProduct.CompatibleSMul
 
@@ -1336,4 +1342,3 @@ theorem rTensor_neg (f : N →ₗ[R] P) : (-f).rTensor M = -f.rTensor M := by
 end LinearMap
 
 end Ring
-#lint
