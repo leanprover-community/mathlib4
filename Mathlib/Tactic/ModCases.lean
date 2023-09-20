@@ -11,6 +11,8 @@ The `mod_cases` tactic does case disjunction on `e % n`, where `e : ℤ`, to yie
 subgoals in which `e ≡ 0 [ZMOD n]`, ..., `e ≡ n-1 [ZMOD n]` are assumed.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.ModCases
 open Lean Meta Elab Tactic Term Qq Int
 

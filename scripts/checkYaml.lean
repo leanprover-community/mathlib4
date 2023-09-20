@@ -3,8 +3,8 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-
-import Mathlib.Tactic.Basic
+import Std.Lean.Util.Path
+import Mathlib.Lean.CoreM
 import Mathlib.Tactic.ToExpr
 
 /-! # Script to check `undergrad.yaml`, `overview.yaml`, and `100.yaml`
@@ -15,7 +15,7 @@ It verifies that the referenced declarations exist.
 -/
 
 open IO.FS Lean Lean.Elab
-open Lean Core Elab Command Std.Tactic.Lint
+open Lean Core Elab Command
 
 abbrev DBFile := Array (String × Name)
 
@@ -42,16 +42,10 @@ def processDb (decls : ConstMap) : String × String → IO Bool
   else
     return false
 
-elab "compileTimeSearchPath" : term =>
-  return toExpr (← searchPathRef.get)
-
 unsafe def main : IO Unit := do
-  searchPathRef.set compileTimeSearchPath
-  withImportModules [{module := `Mathlib}] {} (trustLevel := 1024) fun env =>
-    let ctx := {fileName := "", fileMap := default}
-    let state := {env}
-    Prod.fst <$> (CoreM.toIO · ctx state) do
-      let decls := env.constants
-      let results ← databases.mapM (fun p => processDb decls p)
-      if results.any id then
-        IO.Process.exit 1
+  CoreM.withImportModules #[`Mathlib]
+      (searchPath := compile_time_search_path%) (trustLevel := 1024) do
+    let decls := (←getEnv).constants
+    let results ← databases.mapM (fun p => processDb decls p)
+    if results.any id then
+      IO.Process.exit 1

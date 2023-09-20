@@ -314,8 +314,7 @@ def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃
     have c :
       (α_ Y' (Y ⊗ Y') X).hom ≫
           (𝟙 Y' ⊗ (α_ Y Y' X).hom) ≫ (α_ Y' Y (Y' ⊗ X)).inv ≫ (α_ (Y' ⊗ Y) Y' X).inv =
-        (α_ _ _ _).inv ⊗ 𝟙 _
-    coherence
+        (α_ _ _ _).inv ⊗ 𝟙 _ := by coherence
     slice_lhs 4 7 => rw [c]
     slice_lhs 3 5 => rw [← comp_tensor_id, ← comp_tensor_id, coevaluation_evaluation'']
     simp only [leftUnitor_conjugation]
@@ -330,8 +329,7 @@ def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃
     have c :
       (α_ (Y ⊗ Y') Y Z).hom ≫
           (α_ Y Y' (Y ⊗ Z)).hom ≫ (𝟙 Y ⊗ (α_ Y' Y Z).inv) ≫ (α_ Y (Y' ⊗ Y) Z).inv =
-        (α_ _ _ _).hom ⊗ 𝟙 Z
-    coherence
+        (α_ _ _ _).hom ⊗ 𝟙 Z := by coherence
     slice_lhs 5 8 => rw [c]
     slice_lhs 4 6 => rw [← comp_tensor_id, ← comp_tensor_id, evaluation_coevaluation'']
     simp only [leftUnitor_conjugation]
@@ -355,8 +353,7 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
     have c :
       (α_ X (Y ⊗ Y') Y).inv ≫
           ((α_ X Y Y').inv ⊗ 𝟙 Y) ≫ (α_ (X ⊗ Y) Y' Y).hom ≫ (α_ X Y (Y' ⊗ Y)).hom =
-        𝟙 _ ⊗ (α_ _ _ _).hom
-    coherence
+        𝟙 _ ⊗ (α_ _ _ _).hom := by coherence
     slice_lhs 4 7 => rw [c]
     slice_lhs 3 5 => rw [← id_tensor_comp, ← id_tensor_comp, evaluation_coevaluation'']
     simp only [rightUnitor_conjugation]
@@ -371,8 +368,7 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
     have c :
       (α_ Z Y' (Y ⊗ Y')).inv ≫
           (α_ (Z ⊗ Y') Y Y').inv ≫ ((α_ Z Y' Y).hom ⊗ 𝟙 Y') ≫ (α_ Z (Y' ⊗ Y) Y').hom =
-        𝟙 _ ⊗ (α_ _ _ _).inv
-    coherence
+        𝟙 _ ⊗ (α_ _ _ _).inv := by coherence
     slice_lhs 5 8 => rw [c]
     slice_lhs 4 6 => rw [← id_tensor_comp, ← id_tensor_comp, coevaluation_evaluation'']
     simp only [rightUnitor_conjugation]
@@ -436,8 +432,8 @@ structure shouldn't come from `has_left_dual` (e.g. in the category `FinVect k`,
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are
 naturally isomorphic).
 -/
-def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y
-    where isAdj := ⟨_, tensorLeftAdjunction (ᘁY) Y⟩
+def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y where
+  isAdj := ⟨_, tensorLeftAdjunction (ᘁY) Y⟩
 #align category_theory.closed_of_has_left_dual CategoryTheory.closedOfHasLeftDual
 
 /-- `tensorLeftHomEquiv` commutes with tensoring on the right -/

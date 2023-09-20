@@ -151,8 +151,7 @@ theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
             (by simp) (by simp))
         (fun t _ a _ => a ∈ t)
         (by simp [Classical.em])
-        (by simp_rw [mem_filter, Function.funext_iff, eq_iff_iff, mem_singleton, mem_pi,
-          mem_insert, iff_true, iff_false]; tauto)
+        (by simp_rw [mem_filter, Function.funext_iff, eq_iff_iff, mem_pi, mem_insert]; tauto)
         (by simp_rw [ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
 #align finset.prod_add Finset.prod_add
 

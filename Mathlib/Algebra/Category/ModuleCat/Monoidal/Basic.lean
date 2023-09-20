@@ -135,7 +135,7 @@ theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : ModuleCat R} (f�
 #align Module.monoidal_category.associator_naturality ModuleCat.MonoidalCategory.associator_naturality
 
 -- Porting note: very slow!
-set_option maxHeartbeats 1600000 in
+set_option maxHeartbeats 1200000 in
 theorem pentagon (W X Y Z : ModuleCat R) :
     whiskerRight (associator W X Y).hom Z ≫
         (associator W (tensorObj X Y) Z).hom ≫ whiskerLeft W (associator X Y Z).hom =

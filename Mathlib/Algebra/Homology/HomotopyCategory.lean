@@ -15,6 +15,8 @@ import Mathlib.CategoryTheory.Quotient
 with chain maps identified when they are homotopic.
 -/
 
+set_option autoImplicit true
+
 
 universe v u
 
@@ -36,10 +38,10 @@ def homotopic : HomRel (HomologicalComplex V c) := fun _ _ f g => Nonempty (Homo
 #align homotopic homotopic
 
 instance homotopy_congruence : Congruence (homotopic V c) where
-  isEquiv :=
+  equivalence :=
     { refl := fun C => ⟨Homotopy.refl C⟩
-      symm := fun _ _ ⟨w⟩ => ⟨w.symm⟩
-      trans := fun _ _ _ ⟨w₁⟩ ⟨w₂⟩ => ⟨w₁.trans w₂⟩ }
+      symm := fun ⟨w⟩ => ⟨w.symm⟩
+      trans := fun ⟨w₁⟩ ⟨w₂⟩ => ⟨w₁.trans w₂⟩ }
   compLeft := fun _ _ _ ⟨i⟩ => ⟨i.compLeft _⟩
   compRight := fun _ ⟨i⟩ => ⟨i.compRight _⟩
 #align homotopy_congruence homotopy_congruence

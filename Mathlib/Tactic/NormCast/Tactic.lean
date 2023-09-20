@@ -6,10 +6,8 @@ Authors: Paul-Nicolas Madelaine, Robert Y. Lewis, Mario Carneiro, Gabriel Ebner
 
 import Std.Tactic.NormCast.Ext
 import Std.Tactic.CoeExt
-import Mathlib.Tactic.SudoSetOption
 import Mathlib.Lean.Meta.Simp
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Nat.Cast.Defs
+import Std.Classes.Cast
 
 open Lean Meta Simp
 open Std.Tactic.NormCast
@@ -260,6 +258,7 @@ syntax (name := pushCast) "push_cast " (config)? (discharger)? (&" only")?
 @[tactic pushCast] def evalPushCast : Tactic := fun stx ↦ do
   let { ctx, dischargeWrapper, .. } ← withMainContext do
     mkSimpContext' (← pushCastExt.getTheorems) stx (eraseLocal := false)
+  let ctx := { ctx with config := { ctx.config with failIfUnchanged := false } }
   dischargeWrapper.with fun discharge? ↦
     discard <| simpLocation ctx discharge? (expandOptLocation stx[5])
 

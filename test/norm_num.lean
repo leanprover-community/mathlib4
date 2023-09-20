@@ -6,9 +6,11 @@ Authors: Simon Hudon, Mario Carneiro, Thomas Murrills
 
 import Mathlib.Tactic.NormNum
 
+private axiom test_sorry : ∀ {α}, α
 /-!
 # Tests for `norm_num` extensions
 -/
+set_option autoImplicit true
 
 -- We deliberately mock R and C here so that we don't have to import the deps
 axiom Real : Type
@@ -410,9 +412,9 @@ end Nat.div
 # Numbers in algebraic structures
 -/
 
--- noncomputable def foo : ℝ := 1
+noncomputable def foo : ℝ := 1
 
--- example : foo = 1 := by norm_num [foo]
+example : foo = 1 := by norm_num [foo]
 
 section
   variable [AddMonoidWithOne α]
@@ -521,6 +523,8 @@ end Transparency
 
 -- user command
 
+/-- info: True -/
+#guard_msgs in
 #norm_num 1 = 1
 example : 1 = 1 := by norm_num1
 -- #norm_num 2^4-1 ∣ 2^16-1
@@ -659,8 +663,16 @@ example : (- ((- (((66 - 86) - 36) / 94) - 3) / - - (77 / (56 - - - 79))) + 87) 
 
 example : 2 ^ 13 - 1 = Int.ofNat 8191 := by norm_num1
 
-def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
-instance : LinearOrderedField (R a b) := sorry
+example : 1 + 1 = 2 := by
+  fail_if_success
+    norm_num [this_doesnt_exist]
+  exact test_sorry
+
+example : 1 + 100 + a = a + 101 := by
+  norm_num [add_comm]
+
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
+noncomputable instance : LinearOrderedField (R a b) := test_sorry
 
 example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
   norm_num

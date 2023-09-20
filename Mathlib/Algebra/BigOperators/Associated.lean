@@ -50,6 +50,13 @@ theorem exists_mem_finset_dvd {s : Finset β} {f : β → α} : p ∣ s.prod f �
 
 end Prime
 
+theorem Prod.associated_iff {M N : Type*} [Monoid M] [Monoid N] {x z : M × N} :
+    x ~ᵤ z ↔ x.1 ~ᵤ z.1 ∧ x.2 ~ᵤ z.2 :=
+  ⟨fun ⟨u, hu⟩ => ⟨⟨(MulEquiv.prodUnits.toFun u).1, (Prod.eq_iff_fst_eq_snd_eq.1 hu).1⟩,
+    ⟨(MulEquiv.prodUnits.toFun u).2, (Prod.eq_iff_fst_eq_snd_eq.1 hu).2⟩⟩,
+  fun ⟨⟨u₁, h₁⟩, ⟨u₂, h₂⟩⟩ =>
+    ⟨MulEquiv.prodUnits.invFun (u₁, u₂), Prod.eq_iff_fst_eq_snd_eq.2 ⟨h₁, h₂⟩⟩⟩
+
 theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α} (hp : Prime p)
     {s : Multiset α} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
   Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_unit]) fun a s ih hs hps => by
@@ -63,22 +70,22 @@ theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α}
 
 theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
     [∀ a : α, DecidablePred (Associated a)] {s : Multiset α} (n : α) (h : ∀ a ∈ s, Prime a)
-    (div : ∀ a ∈ s, a ∣ n) (uniq : ∀ a, s.countp (Associated a) ≤ 1) : s.prod ∣ n := by
+    (div : ∀ a ∈ s, a ∣ n) (uniq : ∀ a, s.countP (Associated a) ≤ 1) : s.prod ∣ n := by
   induction' s using Multiset.induction_on with a s induct n primes divs generalizing n
   · simp only [Multiset.prod_zero, one_dvd]
   · rw [Multiset.prod_cons]
     obtain ⟨k, rfl⟩ : a ∣ n := div a (Multiset.mem_cons_self a s)
     apply mul_dvd_mul_left a
     refine induct _ (fun a ha => h a (Multiset.mem_cons_of_mem ha)) (fun b b_in_s => ?_)
-      fun a => (Multiset.countp_le_of_le _ (Multiset.le_cons_self _ _)).trans (uniq a)
+      fun a => (Multiset.countP_le_of_le _ (Multiset.le_cons_self _ _)).trans (uniq a)
     · have b_div_n := div b (Multiset.mem_cons_of_mem b_in_s)
       have a_prime := h a (Multiset.mem_cons_self a s)
       have b_prime := h b (Multiset.mem_cons_of_mem b_in_s)
       refine' (b_prime.dvd_or_dvd b_div_n).resolve_left fun b_div_a => _
       have assoc := b_prime.associated_of_dvd a_prime b_div_a
       have := uniq a
-      rw [Multiset.countp_cons_of_pos _ (Associated.refl _), Nat.succ_le_succ_iff, ← not_lt,
-        Multiset.countp_pos] at this
+      rw [Multiset.countP_cons_of_pos _ (Associated.refl _), Nat.succ_le_succ_iff, ← not_lt,
+        Multiset.countP_pos] at this
       exact this ⟨b, b_in_s, assoc.symm⟩
 #align multiset.prod_primes_dvd Multiset.prod_primes_dvd
 
@@ -90,10 +97,10 @@ theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [Unique αˣ] {s : 
         (by simpa only [Multiset.map_id', Finset.mem_def] using div)
         (by
           -- POrting note: was
-          -- `simp only [Multiset.map_id', associated_eq_eq, Multiset.countp_eq_card_filter, ←
+          -- `simp only [Multiset.map_id', associated_eq_eq, Multiset.countP_eq_card_filter, ←
           --    Multiset.count_eq_card_filter_eq, ← Multiset.nodup_iff_count_le_one, s.nodup]`
           intro a
-          simp only [Multiset.map_id', associated_eq_eq, Multiset.countp_eq_card_filter]
+          simp only [Multiset.map_id', associated_eq_eq, Multiset.countP_eq_card_filter]
           change Multiset.card (Multiset.filter (fun b => a = b) s.val) ≤ 1
           apply le_of_eq_of_le (Multiset.count_eq_card_filter_eq _ _).symm
           apply Multiset.nodup_iff_count_le_one.mp

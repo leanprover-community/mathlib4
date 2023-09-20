@@ -73,6 +73,22 @@ theorem Equivalent.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M�
   Nonempty.map2 IsometryEquiv.prod e₁ e₂
 #align quadratic_form.equivalent.prod QuadraticForm.Equivalent.prod
 
+/-- `LinearEquiv.prodComm` is isometric. -/
+@[simps!]
+def IsometryEquiv.prodComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
+    (Q₁.prod Q₂).IsometryEquiv (Q₂.prod Q₁) where
+  toLinearEquiv := LinearEquiv.prodComm _ _ _
+  map_app' _ := add_comm _ _
+
+/-- `LinearEquiv.prodProdProdComm` is isometric. -/
+@[simps!]
+def IsometryEquiv.prodProdProdComm
+    (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂)
+    (Q₃ : QuadraticForm R N₁) (Q₄ : QuadraticForm R N₂) :
+    ((Q₁.prod Q₂).prod (Q₃.prod Q₄)).IsometryEquiv ((Q₁.prod Q₃).prod (Q₂.prod Q₄)) where
+  toLinearEquiv := LinearEquiv.prodProdProdComm _ _ _ _ _
+  map_app' _ := add_add_add_comm _ _ _ _
+
 /-- If a product is anisotropic then its components must be. The converse is not true. -/
 theorem anisotropic_of_prod {R} [OrderedRing R] [Module R M₁] [Module R M₂]
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (h : (Q₁.prod Q₂).Anisotropic) :
@@ -168,7 +184,6 @@ theorem anisotropic_of_pi [Fintype ι] {R} [OrderedRing R] [∀ i, Module R (M�
 theorem nonneg_pi_iff [Fintype ι] {R} [OrderedRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} : (∀ x, 0 ≤ pi Q x) ↔ ∀ i x, 0 ≤ Q i x := by
   simp_rw [pi, sum_apply, comp_apply, LinearMap.proj_apply]
-  dsimp only
   constructor
   -- TODO: does this generalize to a useful lemma independent of `QuadraticForm`?
   · intro h i x

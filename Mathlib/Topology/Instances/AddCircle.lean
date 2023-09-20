@@ -459,7 +459,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
     Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
       (by
         refine' ⟨fun m₁ m₂ h => Subtype.ext _, fun u => _⟩
-        · simp_rw [Subtype.ext_iff, Subtype.coe_mk] at h
+        · simp_rw [Subtype.ext_iff] at h
           rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, ← Int.cast_ofNat m₁,
             ← Int.cast_ofNat m₂, ← Int.cast_sub, coe_eq_zero_iff] at h
           obtain ⟨m, hm⟩ := h
@@ -525,9 +525,8 @@ instance : ProperlyDiscontinuousVAdd (AddSubgroup.opposite (zmultiples p)) ℝ :
 instance : T2Space (AddCircle p) :=
   t2Space_of_properlyDiscontinuousVAdd_of_t2Space
 
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is normal. -/
-instance [Fact (0 < p)] : NormalSpace (AddCircle p) :=
-  normalOfCompactT2
+/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is T₄. -/
+instance [Fact (0 < p)] : T4Space (AddCircle p) := inferInstance
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is second-countable. -/
 instance : SecondCountableTopology (AddCircle p) :=
