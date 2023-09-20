@@ -6,6 +6,10 @@ Authors: André Hernandez-Espiet
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
 
+/-
+Axioms of synthetic geometry
+-/
+
 universe u1 u2 u3
 
 /-- `incidence_geometry` represents geometry in the Euclidean sense, with primitives for points
