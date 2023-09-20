@@ -214,7 +214,9 @@ instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) where
   associator_naturality := MonoidalCategory.associator_naturality
   leftUnitor_naturality := MonoidalCategory.leftUnitor_naturality
   rightUnitor_naturality := rightUnitor_naturality
-  pentagon := pentagon
+  pentagon W X Y Z := by
+    have := pentagon W X Y Z
+    convert this
   triangle := triangle
 #align Module.monoidal_category ModuleCat.monoidalCategory
 

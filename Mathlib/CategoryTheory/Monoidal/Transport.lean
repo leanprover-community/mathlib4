@@ -163,7 +163,7 @@ instance (e : C ≌ D) : Inhabited (Transported e) :=
 
 section
 
-attribute [local simp] transport_tensorUnit'
+attribute [local simp] transport_tensorUnit
 
 section
 
