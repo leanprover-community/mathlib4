@@ -88,10 +88,11 @@ example : ∀ (x : ℕ), x ≤ 6 := by
   guard_target = ∀ (x : ℕ), x ≤ 7
   exact test_sorry
 
-example : ∀ (x : ℕ) (w : x ≤ 6), x ≤ 8 := by
+#guard_msgs(drop info) in
+example : ∀ (x : ℕ) (_w : x ≤ 6), x ≤ 8 := by
   rw?
-  guard_target = ∀ (x : ℕ) (w : x ≤ 7), x ≤ 8
-  admit
+  guard_target = ∀ (x : ℕ) (_w : x ≤ 7), x ≤ 8
+  exact test_sorry
 
 -- check we can look inside let expressions
 #guard_msgs(drop info) in
@@ -123,4 +124,4 @@ def zero : Nat := 0
 #guard_msgs(drop info) in
 example : zero = 0 := by
   rw?
-  sorry
+  exact test_sorry
