@@ -6,6 +6,7 @@ import Mathlib.Algebra.Group.Basic
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
+set_option pp.unicode.fun true
 
 -- To see the (sorted) list of lemmas that `rw?` will try rewriting by, use:
 -- set_option trace.Tactic.rewrites.lemmas true
