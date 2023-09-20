@@ -14,23 +14,38 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 We do this construction knowing nothing about monoids.
 In particular, I want to claim that this file could be produced by a python script
-that just looks at the output of `#print monoid`:
+that just looks at what Lean 3's `#print monoid` printed a long time ago (it no longer looks like
+this due to the addition of `npow` fields):
+```
+structure monoid : Type u → Type u
+fields:
+monoid.mul : Π {M : Type u} [self : monoid M], M → M → M
+monoid.mul_assoc : ∀ {M : Type u} [self : monoid M] (a b c : M), a * b * c = a * (b * c)
+monoid.one : Π {M : Type u} [self : monoid M], M
+monoid.one_mul : ∀ {M : Type u} [self : monoid M] (a : M), 1 * a = a
+monoid.mul_one : ∀ {M : Type u} [self : monoid M] (a : M), a * 1 = a
+```
 
-  -- structure monoid : Type u → Type u
-  -- fields:
-  -- monoid.mul : Π {α : Type u} [c : monoid α], α → α → α
-  -- monoid.mul_assoc : ∀ {α : Type u} [c : monoid α] (a b c_1 : α), a * b * c_1 = a * (b * c_1)
-  -- monoid.one : Π (α : Type u) [c : monoid α], α
-  -- monoid.one_mul : ∀ {α : Type u} [c : monoid α] (a : α), 1 * a = a
-  -- monoid.mul_one : ∀ {α : Type u} [c : monoid α] (a : α), a * 1 = a
-
-and if we'd fed it the output of `#print comm_ring`, this file would instead build
+and if we'd fed it the output of Lean 3's `#print comm_ring`, this file would instead build
 colimits of commutative rings.
 
 A slightly bolder claim is that we could do this with tactics, as well.
 
-Note: `Monoid` and `CommRing` are no longer flat structures in Mathlib4
-
+Note: `Monoid` and `CommRing` are no longer flat structures in Mathlib4, and so `#print Monoid`
+gives the less clear
+```
+inductive Monoid.{u} : Type u → Type u
+number of parameters: 1
+constructors:
+Monoid.mk : {M : Type u} →
+  [toSemigroup : Semigroup M] →
+    [toOne : One M] →
+      (∀ (a : M), 1 * a = a) →
+        (∀ (a : M), a * 1 = a) →
+          (npow : ℕ → M → M) →
+            autoParam (∀ (x : M), npow 0 x = 1) _auto✝ →
+              autoParam (∀ (n : ℕ) (x : M), npow (n + 1) x = x * npow n x) _auto✝¹ → Monoid M
+```
 -/
 
 
@@ -55,8 +70,10 @@ variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{v})
 /-- An inductive type representing all monoid expressions (without relations)
 on a collection of types indexed by the objects of `J`.
 -/
-inductive Prequotient-- There's always `of`
-  | of : ∀ (j : J) (_ : F.obj j), Prequotient-- Then one generator for each operation
+inductive Prequotient
+  -- There's always `of`
+  | of : ∀ (j : J) (_ : F.obj j), Prequotient
+  -- Then one generator for each operation
   | one : Prequotient
   | mul : Prequotient → Prequotient → Prequotient
 set_option linter.uppercaseLean3 false in

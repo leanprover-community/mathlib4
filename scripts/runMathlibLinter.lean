@@ -23,10 +23,10 @@ unsafe def main (args : List String) : IO Unit := do
       | [] => some `Mathlib
       | [mod] => Syntax.decodeNameLit s!"`{mod}"
       | _ => none
-    | IO.eprintln "Usage: runLinter [--update] [Mathlib.Data.Nat]" *> IO.Process.exit 1
+    | IO.eprintln "Usage: runMathlibLinter [--update] [Mathlib.Data.Nat.Basic]" *> IO.Process.exit 1
   let nolintsFile := "scripts/nolints.json"
   let nolints ← readJsonFile NoLints nolintsFile
-  CoreM.withImportModules [module]
+  CoreM.withImportModules #[module]
       (searchPath := compile_time_search_path%) (trustLevel := 1024) do
     let decls ← getDeclsInPackage `Mathlib
     let linters ← getChecks (slow := true) (useOnly := false)
