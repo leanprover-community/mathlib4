@@ -15,6 +15,12 @@ import Mathlib.Algebra.Order.Monoid.NatCast
 An ordered additive commutative monoid with one in which addition is strictly monotone and `0 ≠ 1`
 has characteristic zero. This includes `StrictOrderedSemiring`s as well as `StarOrderedRing R` where
 `R` is a `Ring`.
+
+Note that these really are distinct classes because `StrictOrderedSemiring`s don't
+have a `star` operation (and even if they do, it may not induce the order), while a
+`StarOrderedRing` in general won't satisfy `0 < c → a < b → a * c < b * c` unless it is commutative.
+Moreover, `selfAdjoint R` is also an ordered additive commutative monoid with one when `R` is a
+`StarOrderedRing`, and in that case multiplication isn't even defined.
 -/
 
 
