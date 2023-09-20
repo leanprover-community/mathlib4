@@ -311,8 +311,8 @@ lemma piEquiv_apply_apply (v : ι → M) (w : ι → R) :
   congr
 
 @[simp] lemma range_piEquiv (v : ι → M) :
-    LinearMap.range (piEquiv ι R M v) = span R (range v) := by
-  ext; simp [mem_span_range_iff_exists_fun, piEquiv_apply_apply]
+    LinearMap.range (piEquiv ι R M v) = span R (range v) :=
+  Basis.constr_range _ _
 
 @[simp] lemma surjective_piEquiv_apply_iff (v : ι → M) :
     Surjective (piEquiv ι R M v) ↔ span R (range v) = ⊤ := by
