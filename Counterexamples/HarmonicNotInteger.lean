@@ -58,6 +58,12 @@ namespace padicValRat
   (hval : padicValRat p q < padicValRat p r) :
   padicValRat p (q + r) = padicValRat p q := by rw [min_eq_padicValRat hqr hq hr (ne_of_lt hval),min_eq_left (le_of_lt hval)]
 
+  lemma sum_lt_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
+  (hval₁ : padicValRat p q < padicValRat p r₁) (hval₂ : padicValRat p q < padicValRat p r₂):
+  padicValRat p q < padicValRat p (r₁ + r₂)  := by {
+    have H₁ : padicValRat p q < min (padicValRat p r₁) (padicValRat p r₂) := lt_min hval₁ hval₂
+    refine' lt_of_lt_of_le H₁ (padicValRat.min_le_padicValRat_add (p := p) hqr)
+  }
 -- ⊢ padicValRat 2 (1 / 2 ^ Nat.log 2 n) < padicValRat 2 (∑ x in Finset.range n \ {2 ^ Nat.log 2 n - 1}, 1 / (↑x + 1))
 
   theorem sum_ge_of_ge {p : ℕ} [hp : Fact (Nat.Prime p)] {n j : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i ≤ n → padicValRat p (F j) ≤ padicValRat p (F i)) (hn0 : ∑ i in Finset.range n, F i ≠ 0) : padicValRat p (F j) ≤ padicValRat p (∑ i in Finset.range n, F i) := by
@@ -70,11 +76,11 @@ namespace padicValRat
     · refine' le_trans _ (padicValRat.min_le_padicValRat_add (p := p) hn0)
       · exact le_min (hd (fun i hi => hF _ (by linarith)) h) (hF _ (by linarith))
 
-  theorem finset_sum_eq_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {n j : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i ≤ n → i ≠ j → padicValRat p (F j) < padicValRat p (F i)) (hn0 : ∑ i in Finset.range n, F i ≠ 0) : padicValRat p (F j) <  padicValRat p (∑ i in Finset.range n \ {j}, F i) := by
+  theorem finset_sum_eq_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {n j : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i ≤ n → i ≠ j → padicValRat p (F j) < padicValRat p (F i)) (hn0 : ∑ i in Finset.range n, F i ≠ 0) (hj₁ : padicValRat p (F j) < 0) (hj₂ : j ∈ Finset.range n): padicValRat p (F j) < padicValRat p (∑ i in Finset.range n \ {j}, F i) := by
   {
-    have hF' : (∀ i, i ≤ n → padicValRat p (F j) ≤ padicValRat p (F i)) := sorry
-    refine' lt_of_le_of_lt (sum_ge_of_ge hF' hn0) _
-    sorry
+    induction' j with d hd
+    simp at *
+
   }
   -- induction' n with d hd
   -- · exact False.elim (hn0 rfl)
@@ -190,6 +196,7 @@ theorem not_int_of_not_padic_int (a : ℚ) :
   }
 }
 
+@[simp]
 lemma padicValRat_2_pow (r : ℕ)  : padicValRat 2 (1 / 2^r) = -r := by {
   rw [one_div,padicValRat.inv,neg_inj,padicValRat.pow (by simp)]
   suffices : padicValRat 2 2 = 1
@@ -316,8 +323,8 @@ theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
       simpa only [ge_iff_le, gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel, Finset.mem_range, not_lt, Finset.singleton_subset_iff] using h
     }
     {
+      have := padicValRat_ge_neg_Nat_log_lt n
 
-      -- refine ?_
       sorry
     }
   }
