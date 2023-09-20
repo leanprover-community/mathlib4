@@ -41,6 +41,7 @@ instance (X : C) : MonoidalCategory (EndMonoidal X) where
   tensorObj f g := f ≫ g
   whiskerLeft {f g h} η := f ◁ η
   whiskerRight {f g} η h := η ▷ h
+  tensorHom {X₁ Y₁ X₂ Y₂} f g := (f ▷ X₂) ≫ (Y₁ ◁ g)
   tensorUnit' := 𝟙 _
   associator f g h := α_ f g h
   leftUnitor f := λ_ f
