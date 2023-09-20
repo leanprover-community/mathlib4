@@ -16,8 +16,8 @@ namespace ZMod
 variable {n m : ℕ}
 /-- `unitsMap` is a group homomorphism that maps units of `ZMod m` to units of `ZMod n` when `n`
 divides `m`. -/
-def unitsMap (hm : n ∣ m) : (ZMod m)ˣ →* (ZMod n)ˣ := Units.map (ZMod.castHom hm (ZMod n))
+def unitsMap (hm : n ∣ m) : (ZMod m)ˣ →* (ZMod n)ˣ := Units.map (castHom hm (ZMod n))
 
-lemma unitsMap_def (hm : n ∣ m) : ZMod.unitsMap hm = Units.map (ZMod.castHom hm (ZMod n)) := rfl
+lemma unitsMap_def (hm : n ∣ m) : unitsMap hm = Units.map (castHom hm (ZMod n)) := rfl
 
 end ZMod
