@@ -177,7 +177,8 @@ end
 
 /-- Note that this provides the default `compatible_smul R R M N` instance through
 `IsScalarTower.left`. -/
-noncomputable instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTower R' R M]
+noncomputable instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R]
+    [IsScalarTower R' R M]
     [DistribMulAction R' N] [IsScalarTower R' R N] : CompatibleSMul R R' M N :=
   ⟨fun r m n => by
     conv_lhs => rw [← one_smul R m]
@@ -317,7 +318,8 @@ noncomputable instance leftModule : Module R'' (M ⊗[R] N) :=
 noncomputable instance : Module R (M ⊗[R] N) :=
   TensorProduct.leftModule
 
-noncomputable instance [Module R''ᵐᵒᵖ M] [IsCentralScalar R'' M] : IsCentralScalar R'' (M ⊗[R] N) where
+noncomputable instance [Module R''ᵐᵒᵖ M] [IsCentralScalar R'' M] :
+    IsCentralScalar R'' (M ⊗[R] N) where
   op_smul_eq_smul r x :=
     x.induction_on (by rw [smul_zero, smul_zero])
       (fun x y => by rw [smul_tmul', smul_tmul', op_smul_eq_smul]) fun x y hx hy => by
@@ -330,7 +332,8 @@ variable {R'₂ : Type*} [Monoid R'₂] [DistribMulAction R'₂ M]
 variable [SMulCommClass R R'₂ M]
 
 /-- `SMulCommClass R' R'₂ M` implies `SMulCommClass R' R'₂ (M ⊗[R] N)` -/
-noncomputable instance smulCommClass_left [SMulCommClass R' R'₂ M] : SMulCommClass R' R'₂ (M ⊗[R] N) where
+noncomputable instance smulCommClass_left [SMulCommClass R' R'₂ M] :
+    SMulCommClass R' R'₂ (M ⊗[R] N) where
   smul_comm r' r'₂ x :=
     TensorProduct.induction_on x (by simp_rw [TensorProduct.smul_zero])
       (fun m n => by simp_rw [smul_tmul', smul_comm]) fun x y ihx ihy => by
@@ -340,7 +343,8 @@ noncomputable instance smulCommClass_left [SMulCommClass R' R'₂ M] : SMulCommC
 variable [SMul R'₂ R']
 
 /-- `IsScalarTower R'₂ R' M` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
-noncomputable instance isScalarTower_left [IsScalarTower R'₂ R' M] : IsScalarTower R'₂ R' (M ⊗[R] N) :=
+noncomputable instance isScalarTower_left [IsScalarTower R'₂ R' M] :
+    IsScalarTower R'₂ R' (M ⊗[R] N) :=
   ⟨fun s r x =>
     x.induction_on (by simp)
       (fun m n => by rw [smul_tmul', smul_tmul', smul_tmul', smul_assoc]) fun x y ihx ihy => by
@@ -351,7 +355,8 @@ variable [DistribMulAction R'₂ N] [DistribMulAction R' N]
 variable [CompatibleSMul R R'₂ M N] [CompatibleSMul R R' M N]
 
 /-- `IsScalarTower R'₂ R' N` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
-noncomputable instance isScalarTower_right [IsScalarTower R'₂ R' N] : IsScalarTower R'₂ R' (M ⊗[R] N) :=
+noncomputable instance isScalarTower_right [IsScalarTower R'₂ R' N] :
+    IsScalarTower R'₂ R' (M ⊗[R] N) :=
   ⟨fun s r x =>
     x.induction_on (by simp)
       (fun m n => by rw [← tmul_smul, ← tmul_smul, ← tmul_smul, smul_assoc]) fun x y ihx ihy => by
@@ -362,7 +367,8 @@ end
 
 /-- A short-cut instance for the common case, where the requirements for the `compatible_smul`
 instances are sufficient. -/
-noncomputable instance isScalarTower [SMul R' R] [IsScalarTower R' R M] : IsScalarTower R' R (M ⊗[R] N) :=
+noncomputable instance isScalarTower [SMul R' R] [IsScalarTower R' R M] :
+    IsScalarTower R' R (M ⊗[R] N) :=
   TensorProduct.isScalarTower_left
 #align tensor_product.is_scalar_tower TensorProduct.isScalarTower
 
@@ -936,7 +942,8 @@ combined with this definition, yields a bilinear multiplication on `M ⊗ N`:
 the `TensorProduct.semiring` instance (currently defined "by hand" using `TensorProduct.mul`).
 
 See also `mul_mul_mul_comm`. -/
-noncomputable def tensorTensorTensorComm : (M ⊗[R] N) ⊗[R] P ⊗[R] Q ≃ₗ[R] (M ⊗[R] P) ⊗[R] N ⊗[R] Q :=
+noncomputable def tensorTensorTensorComm :
+    (M ⊗[R] N) ⊗[R] P ⊗[R] Q ≃ₗ[R] (M ⊗[R] P) ⊗[R] N ⊗[R] Q :=
   let e₁ := TensorProduct.assoc R M N (P ⊗[R] Q)
   let e₂ := congr (1 : M ≃ₗ[R] M) (leftComm R N P Q)
   let e₃ := (TensorProduct.assoc R M P (N ⊗[R] Q)).symm
@@ -968,7 +975,8 @@ E.g., composition of linear maps gives a map `(M → N) ⊗ (N → P) → (M →
 `(M.dual ⊗ N) ⊗ (N.dual ⊗ P) → (M.dual ⊗ P)`, which agrees with the application of `contractRight`
 on `N ⊗ N.dual` after the suitable rebracketting.
 -/
-noncomputable def tensorTensorTensorAssoc : (M ⊗[R] N) ⊗[R] P ⊗[R] Q ≃ₗ[R] (M ⊗[R] N ⊗[R] P) ⊗[R] Q :=
+noncomputable def tensorTensorTensorAssoc :
+    (M ⊗[R] N) ⊗[R] P ⊗[R] Q ≃ₗ[R] (M ⊗[R] N ⊗[R] P) ⊗[R] Q :=
   (TensorProduct.assoc R (M ⊗[R] N) P Q).symm ≪≫ₗ
     congr (TensorProduct.assoc R M N P) (1 : Q ≃ₗ[R] Q)
 #align tensor_product.tensor_tensor_tensor_assoc TensorProduct.tensorTensorTensorAssoc
@@ -1291,7 +1299,8 @@ noncomputable instance CompatibleSMul.int : CompatibleSMul R ℤ M N :=
       fun r ih => by simpa [sub_smul, tmul_sub, sub_tmul] using ih⟩
 #align tensor_product.compatible_smul.int TensorProduct.CompatibleSMul.int
 
-noncomputable instance CompatibleSMul.unit {S} [Monoid S] [DistribMulAction S M] [DistribMulAction S N]
+noncomputable instance CompatibleSMul.unit {S} [Monoid S] [DistribMulAction S M]
+    [DistribMulAction S N]
     [CompatibleSMul R S M N] : CompatibleSMul R Sˣ M N :=
   ⟨fun s m n => (CompatibleSMul.smul_tmul (s : S) m n : _)⟩
 #align tensor_product.compatible_smul.unit TensorProduct.CompatibleSMul.unit
@@ -1327,3 +1336,4 @@ theorem rTensor_neg (f : N →ₗ[R] P) : (-f).rTensor M = -f.rTensor M := by
 end LinearMap
 
 end Ring
+#lint

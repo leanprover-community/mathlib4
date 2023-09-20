@@ -254,7 +254,8 @@ theorem mapBilinear_apply (f : M →ₗ[A] P) (g : N →ₗ[R] Q) :
 variable (R A B M N P Q)
 
 /-- Heterobasic version of `TensorProduct.homTensorHomMap` -/
-noncomputable def homTensorHomMap : ((M →ₗ[A] P) ⊗[R] (N →ₗ[R] Q)) →ₗ[B] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
+noncomputable def homTensorHomMap :
+    ((M →ₗ[A] P) ⊗[R] (N →ₗ[R] Q)) →ₗ[B] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
   lift <| mapBilinear R A B M N P Q
 
 variable {R A B M N P Q}
