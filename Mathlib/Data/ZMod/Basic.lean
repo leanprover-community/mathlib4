@@ -1167,8 +1167,7 @@ lemma castHom_self : ZMod.castHom dvd_rfl (ZMod n) = RingHom.id (ZMod n) :=
 
 @[simp]
 lemma castHom_comp {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
-    (ZMod.castHom hm (ZMod n)).comp (ZMod.castHom hd (ZMod m)) =
-    ZMod.castHom (dvd_trans hm hd) (ZMod n) :=
+    (castHom hm (ZMod n)).comp (castHom hd (ZMod m)) = castHom (dvd_trans hm hd) (ZMod n) :=
   RingHom.ext_zmod _ _
 
 section lift
