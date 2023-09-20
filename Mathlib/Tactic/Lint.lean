@@ -34,15 +34,3 @@ Linter that checks whether a structure should be in Prop.
     let allProofs ← projs.allM (do isProof <| ← mkConstWithLevelParams <| declName ++ ·)
     unless allProofs do return none
     return m!"all fields are propositional but the structure isn't."
-
-/--
-A linter for checking if any declaration whose type is not a class is marked as an instance.
--/
-@[std_linter] def nonClassInstance : Linter where
-  noErrorsFound := "No instances of non-classes"
-  errorsFound := "INSTANCES OF NON-CLASSES"
-  test declName := do
-    if !(← isInstance declName) then return none
-    let info ← getConstInfo declName
-    if !(← isClass? info.type).isSome then return "should not be an instance"
-    return none
