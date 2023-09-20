@@ -3,6 +3,7 @@ import Mathlib.Data.Set.Prod
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.SetLike.Basic
 
+private axiom test_sorry : ∀ {α}, α
 universe u v w
 set_option autoImplicit true
 
@@ -28,31 +29,31 @@ instance : SProd' (Finset α) (Finset β) (Finset (α × β)) := ⟨Finset.produ
 example (s : Set α) (t : Set β) : s ×ˢ' t = s ×ˢ' t := rfl
 example {α : Type u} {β : Type v} (s : Finset α) (t : Finset β) : s ×ˢ' t = s ×ˢ' t := rfl
 
-example (f : α × α → β) (s : Set (α × α)) : s.InjOn f := sorry
-example (f : α × α → β) (s t : Set α) : (s ×ˢ' t).InjOn f := sorry
-example (f : α × α → β) (s t : Finset α) : (s ×ˢ' t : Set (α × α)).InjOn f := sorry
-example (f : α × α → β) (s t : Finset α) : (s ×ˢ' t : Set _).InjOn f := sorry
-example (f : α × α → β) (s t : Finset α) : (s ×ˢ' t : Set _).InjOn f := sorry
-example (f : α × α → β) (s t : Finset α) : ((s : Set _) ×ˢ' (t : Set _)).InjOn f := sorry
-example (f : α × α → β) (s t : Finset α) : ((s : Set _) ×ˢ' (t : Set _)).InjOn f := sorry
-example (f : α × α → β) (s t : Finset α) : Set.InjOn f (s ×ˢ' t) := sorry
+example (f : α × α → β) (s : Set (α × α)) : s.InjOn f := test_sorry
+example (f : α × α → β) (s t : Set α) : (s ×ˢ' t).InjOn f := test_sorry
+example (f : α × α → β) (s t : Finset α) : (s ×ˢ' t : Set (α × α)).InjOn f := test_sorry
+example (f : α × α → β) (s t : Finset α) : (s ×ˢ' t : Set _).InjOn f := test_sorry
+example (f : α × α → β) (s t : Finset α) : (s ×ˢ' t : Set _).InjOn f := test_sorry
+example (f : α × α → β) (s t : Finset α) : ((s : Set _) ×ˢ' (t : Set _)).InjOn f := test_sorry
+example (f : α × α → β) (s t : Finset α) : ((s : Set _) ×ˢ' (t : Set _)).InjOn f := test_sorry
+example (f : α × α → β) (s t : Finset α) : Set.InjOn f (s ×ˢ' t) := test_sorry
 
 axiom Nat.card : Sort u → Nat
-example (s : Finset α) (t : Finset γ) : Nat.card (s ×ˢ' t) = 0 := sorry
+example (s : Finset α) (t : Finset γ) : Nat.card (s ×ˢ' t) = 0 := test_sorry
 
-example (s : Set α) (t : Set (α × ℕ)) : s ×ˢ' {n | 0 < n} = t := sorry
-example (s : Set α) (t : Set (α × ℕ)) : s ×ˢ' {1, 2, 3} = t := sorry
-example (s : Set α) (t : Set (ℕ × α)) : {1, 2, 3} ×ˢ' s = t := sorry
+example (s : Set α) (t : Set (α × ℕ)) : s ×ˢ' {n | 0 < n} = t := test_sorry
+example (s : Set α) (t : Set (α × ℕ)) : s ×ˢ' {1, 2, 3} = t := test_sorry
+example (s : Set α) (t : Set (ℕ × α)) : {1, 2, 3} ×ˢ' s = t := test_sorry
 
 -- These need `fbinop%`. (Comment out `macro_rules` above to check.)
 
 example {α : Type u} {β : Type v} (s : Finset α) (t : Set β) : s ×ˢ' t = s ×ˢ' t := rfl
-example (s : Finset α) (t : Finset (α × ℕ)) : s ×ˢ' {1, 2, 3} = t := sorry
-example (s : Finset α) (t : Finset (ℕ × α)) : {1, 2, 3} ×ˢ' s = t := sorry
-example (s : Finset α) (t : Finset (ℕ × α)) : ({1, 2, 3} ×ˢ' s).card = 22 := sorry
+example (s : Finset α) (t : Finset (α × ℕ)) : s ×ˢ' {1, 2, 3} = t := test_sorry
+example (s : Finset α) (t : Finset (ℕ × α)) : {1, 2, 3} ×ˢ' s = t := test_sorry
+example (s : Finset α) (_t : Finset (ℕ × α)) : ({1, 2, 3} ×ˢ' s).card = 22 := test_sorry
 #check ({1,2,3} ×ˢ' {4,5,6} : Finset _)
 
-example (s : Finset α) (t : Set β) (u : Finset γ) : Nat.card (s ×ˢ' t ×ˢ' u) = 0 := sorry
+example (s : Finset α) (t : Set β) (u : Finset γ) : Nat.card (s ×ˢ' t ×ˢ' u) = 0 := test_sorry
 
 example (s : Finset α) (t : Finset β) :
     (↑(s ×ˢ' t) : Set _) = (s : Set α) ×ˢ' t := Finset.coe_product s t
