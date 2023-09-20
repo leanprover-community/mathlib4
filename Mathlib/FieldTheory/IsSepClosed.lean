@@ -37,7 +37,7 @@ separable closure, separably closed
 - If `K` is a separably closed field containing `k`, then the maximal separable subextension
   of `K/k` is a separable closure of `k`.
 
-- In particular, separable closure exists.
+- In particular, a separable closure exists.
 
 - If `k` is a perfect field, then its separable closure coincides with its algebraic closure.
 
