@@ -114,11 +114,11 @@ theorem coneDiscreteComp_obj_mapCone :
 def piTopToPiCone :
     Limits.Fan.mk (πₓ (TopCat.of (∀ i, X i))) (proj X) ⟶ Grpd.piLimitFan fun i : I => πₓ (X i)
     where
-  Hom := CategoryTheory.Functor.pi' (proj X)
+  hom := CategoryTheory.Functor.pi' (proj X)
 #align fundamental_groupoid_functor.pi_Top_to_pi_cone FundamentalGroupoidFunctor.piTopToPiCone
 
 instance : IsIso (piTopToPiCone X) :=
-  haveI : IsIso (piTopToPiCone X).Hom := (inferInstance : IsIso (piIso X).inv)
+  haveI : IsIso (piTopToPiCone X).hom := (inferInstance : IsIso (piIso X).inv)
   Limits.Cones.cone_iso_of_hom_iso (piTopToPiCone X)
 
 /-- The fundamental groupoid functor preserves products -/
