@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot
+Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Order.Partition.Finpartition
+import Mathlib.Data.Set.Pairwise.Lattice
 
 #align_import data.setoid.partition from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
@@ -474,5 +475,80 @@ theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.
     simp only [Set.mem_preimage, Set.mem_singleton_iff, hs.mem_iff_index_eq]
     exact Quotient.eq''
 #align indexed_partition.proj_fiber IndexedPartition.proj_fiber
+
+/-- Combine functions with disjoint domains into a new function.
+You can use the regular expression `def.*piecewise` to search for
+other ways to define piecewise functions in mathlib4.-/
+def piecewise {β: Type*} (f : ι → α → β) : α → β := fun x => f (hs.index x) x
+
+open Function
+
+/-- A family of injective functions with pairwise disjoint
+domains and pairwise disjoint ranges can be glued together
+to form an injective function.-/
+theorem piecewise_inj {β : Type*} {f : ι → α → β}
+    (h_injOn : ∀ i, InjOn (f i) (s i))
+    (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i => (f i) '' (s i)):
+    Injective (piecewise hs f) := by
+  intro x y hfxy
+  set F := fun i => (f i) '' (s i)
+  let i := index hs x
+  have hix : piecewise hs f x = f i x := rfl
+  let j := index hs y
+  have hjy : piecewise hs f y = f j y := rfl
+  have hz : piecewise hs f x ∈ (⋃ i ∈ univ, F i) := by
+    simp only [mem_univ, iUnion_true, mem_iUnion, mem_image]
+    unfold piecewise
+    use i
+    use x
+    simp only [and_true]
+    exact mem_index hs x
+  choose k hk_exist hk_unique using pairwiseDisjoint_unique h_disjoint hz
+  set g := piecewise hs f
+  have hik : i = k := hk_unique i ⟨trivial, by
+    rw [hix]
+    simp only [mem_image]
+    use x
+    simp only [and_true]
+    exact mem_index hs x⟩
+  have hjk : j = k := hk_unique j ⟨trivial, by
+    rw [hfxy]
+    rw [hjy]
+    simp only [mem_image]
+    use y
+    simp only [and_true]
+    exact mem_index hs y⟩
+  have hij : i = j := hik.trans hjk.symm
+  rw [hix, hjy, hij] at hfxy
+  refine (h_injOn j) ?_ (mem_index hs y) hfxy
+  rw [← hij]
+  exact mem_index hs x
+
+/-- A family of bijective functions with pairwise disjoint
+domains and pairwise disjoint ranges can be glued together
+to form a bijective function.-/
+theorem piecewise_bij {β : Type*} {f : ι → α → β}
+    {t : ι → Set β} (ht : IndexedPartition t)
+    (hf : ∀ i, BijOn (f i) (s i) (t i)) :
+    Bijective (piecewise hs f) := by
+  set g := piecewise hs f
+  have hg_bij : ∀ i, BijOn g (s i) (t i) := by
+    intro i
+    refine BijOn.congr (hf i) ?_
+    intro x hx
+    unfold_let g
+    unfold piecewise
+    rw [hs.mem_iff_index_eq.mp hx]
+  have hg_inj : InjOn g (⋃ i, s i) := by
+    refine injOn_of_injective ?_ (⋃ (i : ι), s i)
+    refine piecewise_inj hs ?h_injOn ?h_disjoint
+    · exact fun i ↦ BijOn.injOn (hf i)
+    · unfold PairwiseDisjoint
+      simp only [fun i => BijOn.image_eq (hf i)]
+      intro i _ j _ hij
+      exact ht.disjoint hij
+  have hg := bijOn_iUnion hg_bij hg_inj
+  rw [hs.iUnion, ht.iUnion] at hg
+  exact bijective_iff_bijOn_univ.mpr hg
 
 end IndexedPartition
