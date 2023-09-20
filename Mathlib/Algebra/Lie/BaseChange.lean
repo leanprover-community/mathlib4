@@ -109,7 +109,8 @@ noncomputable instance : LieRing (A ⊗[R] L) where
   lie_self := bracket_lie_self R A L
   leibniz_lie := bracket_leibniz_lie R A L
 
-noncomputable instance lieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := map_smul _ _ _
+noncomputable instance lieAlgebra :
+    LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := map_smul _ _ _
 #align lie_algebra.extend_scalars.lie_algebra LieAlgebra.ExtendScalars.lieAlgebra
 
 end ExtendScalars
