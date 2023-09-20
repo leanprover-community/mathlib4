@@ -19,7 +19,7 @@ In this file we ...
 synthetic geometry, Euclid elements
 -/
 
-variable [i : incidence_geometry]
+variable [i : incidence_geometry] {a a1 a2 b b1 b2 c d e f g h j k l x y : incidence_geometry.point} {L M N O P Q R S T U W V X : incidence_geometry.line} {α β : incidence_geometry.circle} {r : ℝ}
 open incidence_geometry
 
 -------------------------------------------------- new  API ----------------------------------------
@@ -767,7 +767,7 @@ theorem sameside_online_of_diffside (dM : online d M) (aM : online a M) (aL : on
 theorem sameside_of_offline (bL : online b L) (cL : ¬online c L) (bM : ¬online b M)
     (eL : online e L) (eM : online e M) : ∃ d, online d M ∧ sameside d c L := by
   rcases online_ne_of_line M with ⟨a, d, ad, aM, dM⟩
-  wlog dL : ¬online d L; exact this bL cL bM eL eM d a ad.symm dM aM $
+  wlog dL : ¬online d L generalizing a d L; exact this bL cL eL d a ad.symm dM aM $
     offline_of_online_offline ad.symm bL (of_not_not dL) dM aM bM
   by_cases dcL : sameside d c L; exact ⟨d, dM, dcL⟩
   exact sameside_online_of_diffside dM eM eL ⟨cL, dL, not_sameside_symm dcL⟩
@@ -895,11 +895,11 @@ theorem angle_eq_of_iso (iso_abc : iso_tri a b c) : angle a b c = angle a c b :=
 theorem iso_of_angle_eq (tri_abc : triangle a b c) (abc_eq_acb : angle a b c = angle a c b) :
   length a b = length a c := by
 by_contra ab_ac
-wlog ab_le_ac : length a b ≤ length a c; exact this (by perma) abc_eq_acb.symm
+wlog ab_le_ac : length a b ≤ length a c generalizing b c; exact this (by perma) abc_eq_acb.symm
   (Ne.symm ab_ac) $ by linarith
 rcases B_length_eq_of_ne_lt (ne_12_of_tri tri_abc)
-  (by perm at *; exact Ne.lt_of_le ab_ac ab_le_ac) with ⟨d, Bcda, cd_ab⟩
-have ar_cdb_eq_bac := area_eq_of_sas (by linperm) (by perm) $
+  (by perma[Ne.lt_of_le ab_ac ab_le_ac] : length a b < length c a) with ⟨d, Bcda, cd_ab⟩
+have ar_cdb_eq_bac : area c d b = area b a c := area_eq_of_sas (by linperm) (by perm) $
   (angle_extension_of_B (ne_32_of_tri tri_abc) Bcda).trans abc_eq_acb.symm
 have split_ar_bca := area_add_of_B Bcda (tri231_of_tri123 tri_abc)
 have ar_abd_zero : area a b d = 0 := by linperm
@@ -984,8 +984,8 @@ theorem two_right_of_flat_angle (Babc : B a b c) (aL : online a L) (bL : online 
   by_cases dM : online d M; linarith[angle_extension_of_sameside (ne_12_of_B Babc) aL bL
     ⟨M, bM, eM, dM⟩ edL, angle_extension_of_sameside (ne_32_of_B Babc) (online_3_of_B Babc aL bL)
     bL ⟨M, bM, eM, dM⟩ edL]
-  wlog cdM : sameside c d M; linarith[this (B_symm Babc) (online_3_of_B Babc aL bL) bL dL N bN dN
-    e edL ebc_ra eba_ra M eM bM dM $ sameside_of_B_diffside_sameside Babc aL bL bM eM dM edL cdM]
+  wlog cdM : sameside c d M generalizing a c; linarith[this (B_symm Babc) (online_3_of_B Babc aL
+    bL) ebc_ra eba_ra $ sameside_of_B_diffside_sameside Babc aL bL bM eM dM edL cdM]
   have ebc_add : angle d b c = angle e b c - angle d b e :=
     by linarith[angle_add_of_sameside bM eM bL (online_3_of_B Babc aL bL) cdM edL]
   have dba_add : angle d b a = angle e b d + angle e b a := angle_add_of_sameside bN dN bL aL
@@ -1130,8 +1130,8 @@ theorem angle_copy' (ab : a ≠ b) (aL : online a L) (bL : online b L) (jL : ¬o
 theorem asa' (tri_abc : triangle a b c) (tri_def : triangle d e f) (ab_de : length a b = length d e)
     (bac_edf : angle b a c = angle e d f) (abc_def : angle a b c = angle d e f) :
     length a c = length d f ∧ length b c = length e f ∧ angle a c b = angle d f e := by
-  wlog df_le_ac : length d f ≤ length a c; have := this tri_def tri_abc ab_de.symm bac_edf.symm
-    abc_def.symm (by linarith); tauto
+  wlog df_le_ac : length d f ≤ length a c generalizing a b c d e f; have' := this tri_def tri_abc
+    ab_de.symm bac_edf.symm abc_def.symm (by linarith); tauto
   by_cases ac_df : length a c = length d f; have := sas ab_de ac_df bac_edf; tauto
   rcases B_length_eq_of_ne_lt (ne_13_of_tri tri_def) $ Ne.lt_of_le (Ne.symm ac_df) df_le_ac
     with ⟨g, Bagc, ag_df⟩
@@ -1152,8 +1152,8 @@ theorem asa (tri_abc : triangle a b c) (ab_de : length a b = length d e)
 theorem saa' (tri_abc : triangle a b c) (tri_def : triangle d e f) (ac_df : length a c =
     length d f) (bac_edf : angle b a c = angle e d f) (abc_def : angle a b c = angle d e f) :
     length a b = length d e ∧ length b c = length e f ∧ angle a c b = angle d f e := by
-  wlog de_le_ab : length d e ≤ length a b; have := this tri_def tri_abc ac_df.symm bac_edf.symm
-     abc_def.symm (by linarith); tauto
+  wlog de_le_ab : length d e ≤ length a b generalizing a b c d e f; have := this tri_def tri_abc
+     ac_df.symm bac_edf.symm abc_def.symm (by linarith); tauto
   by_cases ab_de : length a b = length d e; have := sas ab_de ac_df bac_edf; tauto
   rcases B_length_eq_of_ne_lt (ne_12_of_tri tri_def) $ Ne.lt_of_le (Ne.symm ab_de) de_le_ab
     with ⟨g, Bagb, ag_de⟩
@@ -1175,9 +1175,9 @@ theorem para_of_ang_eq (bc : b ≠ c) (aM : online a M) (bM : online b M) (bL : 
     (cL : online c L) (cN : online c N) (dN : online d N) (adL : diffside a d L)
     (cba_bcd : angle c b a = angle b c d) : para M N := by
   intro e; by_contra eMN; push_neg at eMN
-  wlog aeL : sameside a e L; exact this bc.symm dN cN cL bL bM aM (by perma) (by
-    linperm) e (by tauto) $ sameside_of_diffside_diffside adL ⟨adL.1, offline_of_online_inter bc aM
-    bM bL cL cN dN adL.1 adL.2.1 eMN.1 eMN.2, aeL⟩
+  wlog aeL : sameside a e L generalizing a b c d e M N; exact this bc.symm dN cN cL bL bM aM (by
+    perma) (by linperm) e (by tauto) $ sameside_of_diffside_diffside adL ⟨adL.1,
+    offline_of_online_inter bc aM bM bL cL cN dN adL.1 adL.2.1 eMN.1 eMN.2, aeL⟩
   have : angle c b e < angle b c d := internal_lt_external (B_of_col_diffside ⟨N, eMN.2, cN, dN⟩ cL
     $ diffside_of_sameside_diffside aeL adL) $ by perma[triangle_of_ne_online bc bL cL $
                 not_online_of_sameside $ sameside_symm aeL]
@@ -1187,9 +1187,9 @@ theorem para_of_ang_eq (bc : b ≠ c) (aM : online a M) (bM : online b M) (bL : 
 theorem alternate_eq_of_para (aM : online a M) (bM : online b M) (bL : online b L)
     (cL : online c L) (cN : online c N) (dN : online d N) (adL : diffside a d L)
     (paraMN : para M N) : angle a b c = angle b c d := by
-  wlog bcd_lt_abc : angle b c d < angle a b c; by_cases angle a b c = angle b c d; exact h;
-    push_neg at bcd_lt_abc; linperm[this dN cN cL bL bM aM (by perma) (para_symm paraMN)
-    (by linperm[lt_of_le_of_ne bcd_lt_abc h])]
+  wlog bcd_lt_abc : angle b c d < angle a b c generalizing a b c d M N; by_cases angle a b c =
+    angle b c d; exact h; push_neg at bcd_lt_abc; linperm[this dN cN cL bL bM aM (by perma)
+    (para_symm paraMN) $ by linperm[lt_of_le_of_ne bcd_lt_abc h]]
   rcases length_eq_B_of_ne (ne_of_online' bL adL.1) (ne_of_online bL adL.1) with ⟨e, Babe, -⟩
   have : angle c b a + angle c b e = 2 * rightangle :=
     two_right_of_flat_angle Babe aM bM $ offline_of_para' cN paraMN
@@ -1234,11 +1234,12 @@ theorem para_trans (MN : M ≠ N) (paraLM : para L M) (paraLN : para L N) : para
   rcases line_of_pts x y with ⟨O, xO, yO⟩
   rcases online_ne_of_point_line x M with ⟨a, xa, aM⟩
   rcases sameside_of_offline yO (offline_of_online_offline xa yO xO int.1 aM
-    (offline_of_para yL paraLM)) (offline_of_para yL paraLN) xO int.2 with ⟨b, bN, baO⟩
-  wlog yaN : sameside y a N; exact this MN.symm paraLN paraLM x ⟨int.2, int.1⟩ c d y Bcyd cL dL yL xyc
-    xyd O xO yO b (ne_of_sameside xO baO).symm bN a aM (by perma[baO]) $ sameside_of_sameside_diffside
-    xO int.2 int.1 yO bN aM baO ⟨offline_of_para yL paraLN, offline_of_online_offline xa bN int.2
-    int.1 aM $ online_of_ne_ne (ne_of_sameside xO baO) MN.symm bN int.2 int.1, yaN⟩
+    $ offline_of_para yL paraLM) (offline_of_para yL paraLN) xO int.2 with ⟨b, bN, baO⟩
+  wlog yaN : sameside y a N generalizing x y a b c d N M O; exact this MN.symm paraLN paraLM x
+    ⟨int.2, int.1⟩ c d y Bcyd cL dL yL xyc xyd O xO yO b (ne_of_sameside xO baO).symm bN a aM
+    (by perma[baO]) $ sameside_of_sameside_diffside xO int.2 int.1 yO bN aM baO ⟨offline_of_para
+    yL paraLN, offline_of_online_offline xa bN int.2 int.1 aM $ online_of_ne_ne
+    (ne_of_sameside xO baO) MN.symm bN int.2 int.1, yaN⟩
   have split := angle_add_of_sameside int.2 bN xO yO yaN baO
   have axy := right_of_para_right aM int.1 xO yO yL cL (not_online_of_sameside $ by perma[baO])
     (offline_of_online_offline (ne_21_of_B Bcyd) xO yO yL cL (offline_of_para' int.1 paraLM)) xyc
@@ -1291,7 +1292,7 @@ theorem pgram_of_para_len_eq (aL : online a L) (bL : online b L) (bO : online b 
     (bP : online b P) (cP : online c P) (aPd : diffside a d P) (paraLM : para L M)
     (ab_cd : length a b = length c d) : paragram a b d c L O M N := by
   have abc_bcd := alternate_eq_of_para aL bL bP cP cM dM aPd paraLM
-  obtain ⟨-, -, bca_cbd⟩ := sas (by perma) (by perm) (by perma)
+  obtain ⟨-, -, bca_cbd⟩ := sas (by perma : length b a = length c d) (length_symm b c) (by perma)
   exact ⟨aL, bL, bO, dO, dM, cM, cN, aN, paraLM, para_symm $
     para_of_ang_eq (ne_of_para' bL cM paraLM) aN cN cP bP bO dO aPd bca_cbd⟩
 
@@ -1335,9 +1336,9 @@ lemma B_sameside_of_2_paragram (Badf : B a d f) (pgram1 : paragram a d c b L M N
 /--Euclid I.35, parallelograms sharing two parallels have the same area-/
 theorem area_eq_of_paragram (pgram1 : paragram a d c b L M N O) (pgram2 : paragram e f c b L P N Q)
     : area a d b + area d b c = area e f b + area f b c := by
-  wlog Badf : B a d f; by_cases df : d = f; rw [←df] at pgram2 ⊢; linperm
-    [(len_ang_area_eq_of_parallelogram pgram1).2.2, (len_ang_area_eq_of_parallelogram pgram2).2.2];
-    exact (this pgram2 pgram1 $ B_of_B_2_paragram df Badf pgram1 pgram2).symm
+  wlog Badf : B a d f generalizing a b c d e f L M N O P Q; by_cases df : d = f; rw [←df] at pgram2
+    ⊢; linperm [(len_ang_area_eq_of_parallelogram pgram1).2.2, (len_ang_area_eq_of_parallelogram
+    pgram2).2.2]; exact (this pgram2 pgram1 $ B_of_B_2_paragram df Badf pgram1 pgram2).symm
   have ⟨Bfea, deP⟩ := B_sameside_of_2_paragram Badf pgram1 pgram2
   have ⟨aL, dL, dM, cM, cN, bN, bO, aO, paraLN, paraMO⟩ := pgram1
   have ⟨eL, fL, fP, cP, _, _, bQ, eQ, _, paraPQ⟩ := pgram2
@@ -1492,9 +1493,10 @@ theorem pythagoras_construct (tri_abc : triangle a b c) : ∃ d e f g h k L M N 
     ⟨g, f, S, T, R, ⟨aT, gT, gS, fS, fR, bR, bN, aN, paraTR, paraSN⟩, sq2, gcN⟩
   rcases square_of_len (ne_13_of_tri tri_abc) aM cM (online_2_of_triangle aM cM tri_abc) with
     ⟨h, k, V, U, W, ⟨aU, hU, hV, kV, kW, cW, cM, aM, paraUW, paraVM⟩, sq3, hbM⟩
-  exact ⟨d, e, f, g, h, k, L, M, N, O, P, Q, R, S, T, U, V, W, sq1, sq2, sq3, ⟨bL, cL, cO, dO, dP, eP,
-  eQ, bQ, para_symm paraPL, paraOQ⟩, ⟨gT, aT, aN, bN, bR, fR, fS, gS, paraTR, para_symm paraSN⟩, ⟨hU,
-  aU, aM, cM, cW, kW, kV, hV, paraUW, para_symm paraVM⟩, by perma[daL], by perma[hbM], by perma[gcN]⟩
+  exact ⟨d, e, f, g, h, k, L, M, N, O, P, Q, R, S, T, U, V, W, sq1, sq2, sq3, ⟨bL, cL, cO, dO, dP,
+    eP, eQ, bQ, para_symm paraPL, paraOQ⟩, ⟨gT, aT, aN, bN, bR, fR, fS, gS, paraTR, para_symm
+    paraSN⟩, ⟨hU, aU, aM, cM, cW, kW, kV, hV, paraUW, para_symm paraVM⟩, by perma[daL], by perma
+    [hbM], by perma[gcN]⟩
 
 /--Euclid I.47, the Pythagorean theorem-/
 theorem pythagoras (tri_abc : triangle a b c) (ang : angle c a b = rightangle)
@@ -1523,17 +1525,17 @@ theorem pythagoras (tri_abc : triangle a b c) (ang : angle c a b = rightangle)
     (sameside_of_para_online aT (online_3_of_B (B_symm Bcag) gT aT) paraTR) $
     diffside_of_sameside_diffside (sameside_symm $ sameside_of_para_online' fS gS paraNS) $
     diffside_symm cgN
-  have abe_split := angle_add_of_sameside bN aN bQ eQ (sameside_of_sameside_diffside bQ bL bN eQ cL aN
-    (sameside_symm $ sameside_of_pyth Beld aX lX pgram1 paraQX) $ diffside_of_sameside_diffside
-    (sameside_of_para_online' dP eP paraLP) $ diffside_symm adL) $ sameside_of_pyth Beld aX lX pgram1
-    paraQX
-  have bck_split := angle_add_of_sameside cL bL cW kW (sameside_of_sameside_diffside cW cM cL kW aM bL
-    (sameside_of_para_online aU (online_3_of_B (B_symm Bbah) hU aU) paraUW) $
+  have abe_split := angle_add_of_sameside bN aN bQ eQ (sameside_of_sameside_diffside bQ bL bN eQ cL
+    aN (sameside_symm $ sameside_of_pyth Beld aX lX pgram1 paraQX) $ diffside_of_sameside_diffside
+    (sameside_of_para_online' dP eP paraLP) $ diffside_symm adL) $ sameside_of_pyth Beld aX lX
+    pgram1 paraQX
+  have bck_split := angle_add_of_sameside cL bL cW kW (sameside_of_sameside_diffside cW cM cL kW aM
+    bL (sameside_of_para_online aU (online_3_of_B (B_symm Bbah) hU aU) paraUW) $
     diffside_of_sameside_diffside (sameside_of_para_online' hV kV paraMV) $ diffside_symm bhM)
     (sameside_symm $ sameside_of_para_online aU (online_3_of_B (B_symm Bbah) hU aU) paraUW)
-  have acd_split := angle_add_of_sameside cM aM cO dO (sameside_of_sameside_diffside cO cL cM dO bL aM
-    (sameside_symm $ sameside_of_pyth (B_symm Beld) aX lX ⟨cL, bL, bQ, eQ, eP, dP, dO, cO, paraLP,
-    para_symm paraOQ⟩ paraOX) $ diffside_symm adL) $ sameside_of_pyth (B_symm Beld) aX lX
+  have acd_split := angle_add_of_sameside cM aM cO dO (sameside_of_sameside_diffside cO cL cM dO bL
+    aM (sameside_symm $ sameside_of_pyth (B_symm Beld) aX lX ⟨cL, bL, bQ, eQ, eP, dP, dO, cO,
+    paraLP, para_symm paraOQ⟩ paraOX) $ diffside_symm adL) $ sameside_of_pyth (B_symm Beld) aX lX
     ⟨cL, bL, bQ, eQ, eP, dP, dO, cO, paraLP, para_symm paraOQ⟩ paraOX
   have ⟨ae_fc, _, _⟩ := sas (by linperm : length b a = length b f)
     (by linperm : length b e = length b c) $ by linperm
