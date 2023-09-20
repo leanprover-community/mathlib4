@@ -568,7 +568,7 @@ theorem update_apply {β : Sort*} (f : α → β) (a' : α) (b : β) (a : α) :
 #align function.update_apply Function.update_apply
 
 @[nontriviality]
-theorem update_eq_const [Subsingleton α] (a : α) (v : α') (f : α → α') :
+theorem update_eq_const_of_subsingleton [Subsingleton α] (a : α) (v : α') (f : α → α') :
     update f a v = const α v :=
   funext fun a' ↦ Subsingleton.elim a a' ▸ update_same _ _ _
 
