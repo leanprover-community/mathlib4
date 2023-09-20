@@ -180,7 +180,7 @@ instance [NumberField K] :  Nontrivial (E K) := by
   · have : Nonempty {w : InfinitePlace K // IsComplex w} := ⟨⟨w, hw⟩⟩
     exact nontrivial_prod_right
 
-theorem rank_space [NumberField K] : finrank ℝ (E K) = finrank ℚ K := by
+protected theorem finrank [NumberField K] : finrank ℝ (E K) = finrank ℚ K := by
   classical
   rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const,
     Finset.card_univ, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
@@ -325,15 +325,15 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
 variable [NumberField K]
 
 /-- The fudge factor that appears in the formula for the volume of `convexBodyLt`. -/
-noncomputable abbrev convexBodyLt_factor : ℝ≥0∞ :=
+noncomputable abbrev convexBodyLtFactor : ℝ≥0∞ :=
   (2 : ℝ≥0∞) ^ card {w : InfinitePlace K // IsReal w} *
     volume (ball (0 : ℂ) 1) ^ card {w : InfinitePlace K // IsComplex w}
 
-theorem convexBodyLt_factor_lt_pos : 0 < (convexBodyLt_factor K) := by
+theorem convexBodyLtFactor_lt_pos : 0 < (convexBodyLtFactor K) := by
   refine mul_pos (NeZero.ne _) ?_
   exact ENNReal.pow_ne_zero (ne_of_gt (measure_ball_pos _ _ (by norm_num))) _
 
-theorem convexBodyLt_factor_lt_top : (convexBodyLt_factor K) < ⊤ := by
+theorem convexBodyLtFactor_lt_top : (convexBodyLtFactor K) < ⊤ := by
   refine mul_lt_top ?_ ?_
   · exact ne_of_lt (pow_lt_top (lt_top_iff_ne_top.mpr two_ne_top) _)
   · exact ne_of_lt (pow_lt_top measure_ball_lt_top _)
@@ -341,7 +341,7 @@ theorem convexBodyLt_factor_lt_top : (convexBodyLt_factor K) < ⊤ := by
 /-- The volume of `(ConvexBodyLt K f)` where `convexBodyLt K f` is the set of points `x`
 such that `‖x w‖ < f w` for all infinite places `w`. -/
 theorem convexBodyLt_volume :
-    volume (convexBodyLt K f) = (convexBodyLt_factor K) * ∏ w, (f w) ^ (mult w) := by
+    volume (convexBodyLt K f) = (convexBodyLtFactor K) * ∏ w, (f w) ^ (mult w) := by
   calc
     _ = (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (2 * (f x.val))) *
           ∏ x : {w // InfinitePlace.IsComplex w}, volume (ball (0 : ℂ) 1) *
@@ -358,9 +358,9 @@ theorem convexBodyLt_volume :
           (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2)) := by
       simp_rw [ofReal_mul (by norm_num : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
         Finset.card_univ, ofReal_ofNat]
-    _ = (convexBodyLt_factor K) * ((∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val)) *
+    _ = (convexBodyLtFactor K) * ((∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val)) *
         (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2)) := by ring
-    _ = (convexBodyLt_factor K) * ∏ w, (f w) ^ (mult w) := by
+    _ = (convexBodyLtFactor K) * ∏ w, (f w) ^ (mult w) := by
       simp_rw [mult, pow_ite, pow_one, Finset.prod_ite, ofReal_coe_nnreal, not_isReal_iff_isComplex,
         coe_mul, coe_finset_prod, ENNReal.coe_pow]
       congr 2
@@ -402,7 +402,7 @@ noncomputable def minkowskiBound : ℝ≥0∞ :=
 
 theorem minkowskiBound_lt_top : minkowskiBound K < ⊤ := by
   refine mul_lt_top ?_ ?_
-  · exact ne_of_lt (fundamentalDomain_bounded (latticeBasis K)).measure_lt_top
+  · exact ne_of_lt (fundamentalDomain_isBounded (latticeBasis K)).measure_lt_top
   · exact ne_of_lt (pow_lt_top (lt_top_iff_ne_top.mpr two_ne_top) _)
 
 variable {f : InfinitePlace K → ℝ≥0}
