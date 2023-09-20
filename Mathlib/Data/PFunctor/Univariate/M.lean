@@ -8,13 +8,13 @@ import Mathlib.Data.PFunctor.Univariate.Basic
 #align_import data.pfunctor.univariate.M from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
-# Internal definition for M-types
+# M-types
 
 M types are potentially infinite tree-like structures. They are defined
 as the greatest fixpoint of a polynomial functor.
 
 Unfortunately, the data structure of the model of M types is inefficient, so we override the data
-structure of M types in `Data.PFunctor.MIntl.Implementation`.
+structure of M types.
 -/
 
 
