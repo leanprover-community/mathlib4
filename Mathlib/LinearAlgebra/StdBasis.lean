@@ -35,7 +35,7 @@ this is a basis over `Fin 3 → R`.
 -/
 
 
-open Function Submodule
+open Function Set Submodule
 
 open BigOperators
 
@@ -296,6 +296,29 @@ end
 end Module
 
 end Pi
+
+namespace Module
+
+variable (ι R M N : Type*) [Fintype ι] [CommSemiring R]
+  [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+
+/-- The natural linear equivalence: `Mⁱ ≃ Hom(Rⁱ, M)` for an `R`-module `M`. -/
+noncomputable def piEquiv : (ι → M) ≃ₗ[R] ((ι → R) →ₗ[R] M) := Basis.constr (Pi.basisFun R ι) R
+
+lemma piEquiv_apply_apply (v : ι → M) (w : ι → R) :
+    piEquiv ι R M v w = ∑ i, w i • v i := by
+  simp only [piEquiv, Basis.constr_apply_fintype, Basis.equivFun_apply]
+  congr
+
+@[simp] lemma range_piEquiv (v : ι → M) :
+    range (piEquiv ι R M v) = span R (range v) := by
+  ext; simp [mem_span_range_iff_exists_fun, piEquiv_apply_apply]
+
+@[simp] lemma surjective_piEquiv_apply_iff (v : ι → M) :
+    Surjective (piEquiv ι R M v) ↔ span R (range v) = ⊤ := by
+  rw [← range_iff_surjective, range_piEquiv, ← top_coe (R := R), SetLike.coe_set_eq]
+
+end Module
 
 namespace Matrix
 

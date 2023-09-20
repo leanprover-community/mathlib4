@@ -30,6 +30,7 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 bilinear
 -/
 
+open Function
 
 namespace LinearMap
 
@@ -318,6 +319,13 @@ theorem llcomp_apply (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) (x : M) :
 
 theorem llcomp_apply' (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) : llcomp R M Nₗ Pₗ f g = f ∘ₗ g := rfl
 #align linear_map.llcomp_apply' LinearMap.llcomp_apply'
+
+lemma inj_llcomp_flip_apply_of_surj (f : M →ₗ[R] Nₗ) (h : Surjective f) :
+    Injective <| (LinearMap.llcomp R M Nₗ Pₗ).flip f := by
+  intro g₁ g₂ hg
+  ext n
+  obtain ⟨m, rfl⟩ := h n
+  simpa using LinearMap.congr_fun hg m
 
 end
 
