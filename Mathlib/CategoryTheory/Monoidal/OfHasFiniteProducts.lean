@@ -45,17 +45,16 @@ open CategoryTheory.Limits
 section
 
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
-def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C :=
-  .ofTensorHom
-    (tensorUnit' := ⊤_ C)
-    (tensorObj := fun X Y ↦ X ⨯ Y)
-    (tensorHom := fun f g ↦ Limits.prod.map f g)
-    (associator := prod.associator)
-    (leftUnitor := fun P ↦ prod.leftUnitor P)
-    (rightUnitor := fun P ↦ prod.rightUnitor P)
-    (pentagon := prod.pentagon)
-    (triangle := prod.triangle)
-    (associator_naturality := @prod.associator_naturality _ _ _)
+def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C where
+  tensorUnit' := ⊤_ C
+  tensorObj := fun X Y ↦ X ⨯ Y
+  tensorHom := fun f g ↦ Limits.prod.map f g
+  associator := prod.associator
+  leftUnitor := fun P ↦ prod.leftUnitor P
+  rightUnitor := fun P ↦ prod.rightUnitor P
+  pentagon := prod.pentagon
+  triangle := prod.triangle
+  associator_naturality := @prod.associator_naturality _ _ _
 #align category_theory.monoidal_of_has_finite_products CategoryTheory.monoidalOfHasFiniteProducts
 
 end
@@ -137,17 +136,16 @@ end
 section
 
 /-- A category with an initial object and binary coproducts has a natural monoidal structure. -/
-def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=
-  .ofTensorHom
-    (tensorUnit' := ⊥_ C)
-    (tensorObj := fun X Y ↦ X ⨿ Y)
-    (tensorHom := fun f g ↦ Limits.coprod.map f g)
-    (associator := coprod.associator)
-    (leftUnitor := coprod.leftUnitor)
-    (rightUnitor := coprod.rightUnitor)
-    (pentagon := coprod.pentagon)
-    (triangle := coprod.triangle)
-    (associator_naturality := @coprod.associator_naturality _ _ _)
+def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C where
+  tensorUnit' := ⊥_ C
+  tensorObj := fun X Y ↦ X ⨿ Y
+  tensorHom := fun f g ↦ Limits.coprod.map f g
+  associator := coprod.associator
+  leftUnitor := coprod.leftUnitor
+  rightUnitor := coprod.rightUnitor
+  pentagon := coprod.pentagon
+  triangle := coprod.triangle
+  associator_naturality := @coprod.associator_naturality _ _ _
 #align category_theory.monoidal_of_has_finite_coproducts CategoryTheory.monoidalOfHasFiniteCoproducts
 
 end

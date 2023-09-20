@@ -197,24 +197,24 @@ end MonoidalCategory
 
 open MonoidalCategory
 
-instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
+instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) where
   -- data
-  (tensorObj := MonoidalCategory.tensorObj)
-  (tensorHom := @tensorHom _ _)
-  (whiskerLeft := @whiskerLeft _ _)
-  (whiskerRight := @whiskerRight _ _)
-  (tensorUnit' := ModuleCat.of R R)
-  (associator := associator)
-  (leftUnitor := leftUnitor)
-  (rightUnitor := rightUnitor)
+  tensorObj := MonoidalCategory.tensorObj
+  tensorHom := @tensorHom _ _
+  whiskerLeft := @whiskerLeft _ _
+  whiskerRight := @whiskerRight _ _
+  tensorUnit' := ModuleCat.of R R
+  associator := associator
+  leftUnitor := leftUnitor
+  rightUnitor := rightUnitor
   -- properties
-  (tensor_id := fun M N ↦ tensor_id M N)
-  (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)
-  (associator_naturality := fun f g h ↦ MonoidalCategory.associator_naturality f g h)
-  (leftUnitor_naturality := fun f ↦ MonoidalCategory.leftUnitor_naturality f)
-  (rightUnitor_naturality := fun f ↦ rightUnitor_naturality f)
-  (pentagon := fun M N K L ↦ pentagon M N K L)
-  (triangle := fun M N ↦ triangle M N)
+  tensor_id := fun M N ↦ tensor_id M N
+  tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h
+  associator_naturality := fun f g h ↦ MonoidalCategory.associator_naturality f g h
+  leftUnitor_naturality := fun f ↦ MonoidalCategory.leftUnitor_naturality f
+  rightUnitor_naturality := fun f ↦ rightUnitor_naturality f
+  pentagon := fun M N K L ↦ pentagon M N K L
+  triangle := fun M N ↦ triangle M N
 #align Module.monoidal_category ModuleCat.monoidalCategory
 
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative ring. -/

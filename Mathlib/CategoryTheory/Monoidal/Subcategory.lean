@@ -54,15 +54,14 @@ When `P` is a monoidal predicate, the full subcategory for `P` inherits the mono
 instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
   tensorHom f g := f ⊗ g
-  tensorHom_def f g := tensorHom_def (C := C) f g
   whiskerLeft := fun X _ _ f ↦ X.1 ◁ f
   whiskerRight := fun f Y ↦ (fun f ↦ f ▷ Y.1) f
   tensorUnit' := ⟨𝟙_ C, prop_id⟩
   associator X Y Z :=
     ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
       inv_hom_id (α_ X.1 Y.1 Z.1)⟩
-  whiskerLeft_id X Y := whiskerLeft_id X.1 Y.1
-  id_whiskerRight X Y := id_whiskerRight X.1 Y.1
+  whiskerRight_def {_ _} _f Y := whiskerRight_def _ Y.1
+  whiskerLeft_def X {_ _} _g := whiskerLeft_def X.1 _
   leftUnitor X := ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
   rightUnitor X := ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩
   tensor_id X Y := tensor_id X.1 Y.1

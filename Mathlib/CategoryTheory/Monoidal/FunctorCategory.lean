@@ -85,8 +85,9 @@ instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
   tensorObj F G := tensorObj F G
   tensorHom α β := tensorHom α β
   whiskerLeft F _ _ α := FunctorCategory.whiskerLeft F α
+  whiskerLeft_def F _ _ α := by ext; simp [whiskerLeft_def]
   whiskerRight α F := FunctorCategory.whiskerRight α F
-  tensorHom_def := by intros; ext; simp [tensorHom_def]
+  whiskerRight_def α F := by ext; simp [whiskerRight_def]
   tensorUnit' := (CategoryTheory.Functor.const C).obj (𝟙_ D)
   leftUnitor F := NatIso.ofComponents fun X => λ_ (F.obj X)
   rightUnitor F := NatIso.ofComponents fun X => ρ_ (F.obj X)
