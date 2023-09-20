@@ -207,17 +207,15 @@ end MonoidalCategory
 
 open MonoidalCategory
 
-instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) where
-  -- properties
-  tensor_id := tensor_id
-  tensor_comp := MonoidalCategory.tensor_comp
-  associator_naturality := MonoidalCategory.associator_naturality
-  leftUnitor_naturality := MonoidalCategory.leftUnitor_naturality
-  rightUnitor_naturality := rightUnitor_naturality
-  pentagon W X Y Z := by
-    have := pentagon W X Y Z
-    convert this
-  triangle := triangle
+set_option maxHeartbeats 400000 in
+instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
+  (tensor_id := fun M N ↦ tensor_id M N)
+  (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)
+  (associator_naturality := fun f g h ↦ MonoidalCategory.associator_naturality f g h)
+  (leftUnitor_naturality := fun f ↦ MonoidalCategory.leftUnitor_naturality f)
+  (rightUnitor_naturality := fun f ↦ rightUnitor_naturality f)
+  (pentagon := fun M N K L ↦ pentagon M N K L)
+  (triangle := fun M N ↦ triangle M N)
 #align Module.monoidal_category ModuleCat.monoidalCategory
 
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative ring. -/

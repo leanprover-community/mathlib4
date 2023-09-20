@@ -449,7 +449,7 @@ theorem tensor_inv_hom_id' {V W X Y Z : C} (f : V ⟶ W) [IsIso f] (g : X ⟶ Y)
 A constructor for monoidal categories that requires `tensorHom` instead of `whiskerLeft` and
 `whiskerRight`.
 -/
-def ofTensorHom [MonoidalCategoryStruct C]
+abbrev ofTensorHom [MonoidalCategoryStruct C]
     (tensor_id : ∀ X₁ X₂ : C, tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by
       aesop_cat)
     (id_tensorHom : ∀ (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂), tensorHom (𝟙 X) f = whiskerLeft X f := by
