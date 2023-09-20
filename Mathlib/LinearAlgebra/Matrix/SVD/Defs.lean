@@ -454,18 +454,18 @@ lemma V_conjTranspose_mul_inj (A : Matrix (Fin M) (Fin N) 𝕂) {m : Type*} :
     Function.Injective (fun x : Matrix m (Fin N) 𝕂 => x * A.svdV) :=
   Matrix.mul_right_injective_of_inv _ _ (V_mul_conjTranspose_V _)
 
-/-- # Main SVD Theorem
+/-- **Singular Value Decomposition Theorem**
 Any matrix A (M × N) with rank r = A.rank and  with elements in ℝ or ℂ fields can be decompsed
 into three matrices:
   * U: an M × M matrix containing the left eigenvectors of the matrix
   * S: an M × N matrix with an r × r block in the upper left corner with nonzero singular values
   * V: an N × N matrix containing the right eigenvectors of the matrix
 
-Note that UUᴴ = UᴴU = 1 and VVᴴ=VᴴV = 1 as can be seen in lemmas `U_inv` and `V_inv` together with
-`fromColumns_mul_fromRows_eq_one_comm` and `conjTranspose_fromColumns_eq_fromRows_conjTranspose` -/
+Note that UUᴴ = UᴴU = 1 and VVᴴ=VᴴV = 1 as proven in `V_conjTranspose_mul_V`,`V_mul_conjTranspose_V`
+`U_conjTranspose_mul_U` and  `U_mul_U_conjTranspose`-/
 
-theorem svd_theorem (A : Matrix (Fin M) (Fin N) 𝕂) :
-    A = A.svdU * (fromBlocks (map A.svdσ (algebraMap ℝ 𝕂)) 0 0 0) * A.svdVᴴ := by
+theorem U_mul_S_mul_V_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
+    A.svdU * (fromBlocks (map A.svdσ (algebraMap ℝ 𝕂)) 0 0 0) * A.svdVᴴ = A := by
   apply_fun (fun x => x * A.svdV)
   simp_rw [svdU, Matrix.mul_assoc, V_conjTranspose_mul_V, Matrix.mul_one,
     fromColumns_mul_fromBlocks, svdV, mul_fromColumns, Matrix.mul_zero, add_zero,
