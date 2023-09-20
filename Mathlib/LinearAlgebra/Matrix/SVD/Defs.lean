@@ -431,25 +431,6 @@ lemma U_mul_U_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdU * A.svdU�
     ←svdU, U_conjTranspose_mul_U ]
   exact eigenRowEquiv A
 
-lemma mul_right_injective_of_inv
-    {m n p α : Type _} [DecidableEq m] [CommRing α] [Fintype m] [Fintype n]
-    (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1):
-    Function.Injective (fun x : Matrix p m α => x * A) := by
-  intro u v g
-  replace g := congr_arg (fun x => x * B) g
-  dsimp at g
-  rwa [Matrix.mul_assoc, Matrix.mul_assoc, h, Matrix.mul_one, Matrix.mul_one] at g
-
-lemma mul_left_injective_of_inv
-    {m n p α : Type} [DecidableEq m] [CommRing α] [Fintype m] [Fintype n]
-    (A : Matrix m n α) (B : Matrix n m α) :
-    A * B = 1 → Function.Injective (fun x : Matrix m p α => B * x) := by
-  intro h
-  intro u v g
-  replace g := congr_arg (fun x => A * x) g
-  dsimp at g
-  rwa [← Matrix.mul_assoc, ←Matrix.mul_assoc, h, Matrix.one_mul, Matrix.one_mul] at g
-
 /-- **Singular Value Decomposition Theorem**
 Any matrix A (M × N) with rank r = A.rank and  with elements in ℝ or ℂ fields can be decompsed
 into three matrices:
