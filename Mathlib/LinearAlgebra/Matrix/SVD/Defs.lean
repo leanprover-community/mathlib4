@@ -431,9 +431,8 @@ lemma U_mul_U_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdU * A.svdU�
     ←svdU, U_conjTranspose_mul_U ]
   exact eigenRowEquiv A
 
-lemma Matrix.mul_right_injective_of_inv
-    {m n p α : Type _} [DecidableEq m] [DecidableEq n] [DecidableEq p] [CommRing α]
-    [Fintype m] [Fintype n] [Fintype p]
+lemma mul_right_injective_of_inv
+    {m n p α : Type _} [DecidableEq m] [CommRing α] [Fintype m] [Fintype n]
     (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1):
     Function.Injective (fun x : Matrix p m α => x * A) := by
   intro u v g
@@ -441,9 +440,8 @@ lemma Matrix.mul_right_injective_of_inv
   dsimp at g
   rwa [Matrix.mul_assoc, Matrix.mul_assoc, h, Matrix.mul_one, Matrix.mul_one] at g
 
-lemma Matrix.mul_left_injective_of_inv
-    {m n p α : Type} [DecidableEq m] [DecidableEq n] [DecidableEq p] [CommRing α]
-    [Fintype m] [Fintype n] [Fintype p]
+lemma mul_left_injective_of_inv
+    {m n p α : Type} [DecidableEq m] [CommRing α] [Fintype m] [Fintype n]
     (A : Matrix m n α) (B : Matrix n m α) :
     A * B = 1 → Function.Injective (fun x : Matrix m p α => B * x) := by
   intro h
@@ -452,7 +450,7 @@ lemma Matrix.mul_left_injective_of_inv
   dsimp at g
   rwa [← Matrix.mul_assoc, ←Matrix.mul_assoc, h, Matrix.one_mul, Matrix.one_mul] at g
 
-lemma V_conjTranspose_mul_inj (A : Matrix (Fin M) (Fin N) 𝕂) {m : Type} [DecidableEq m] [Fintype m]:
+lemma V_conjTranspose_mul_inj (A : Matrix (Fin M) (Fin N) 𝕂) {m : Type*} :
     Function.Injective (fun x : Matrix m (Fin N) 𝕂 => x * A.svdV) :=
   Matrix.mul_right_injective_of_inv _ _ (V_mul_conjTranspose_V _)
 
