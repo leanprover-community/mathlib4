@@ -164,7 +164,7 @@ theorem degree_modByMonic_lt [Nontrivial R] :
   termination_by degree_modByMonic_lt p q hq => p
 #align polynomial.degree_mod_by_monic_lt Polynomial.degree_modByMonic_lt
 
-theorem natDegree_modByMonic_lt [Nontrivial R] {p q : Polynomial R} (hmq : Monic q) (hq : q ≠ 1) :
+theorem natDegree_modByMonic_lt [Nontrivial R] (p : R[X]) {q : R[X]} (hmq : Monic q) (hq : q ≠ 1) :
     natDegree (p %ₘ q) < q.natDegree := by
   by_cases hpq : p %ₘ q = 0
   · rw [hpq, natDegree_zero, Nat.pos_iff_ne_zero]
