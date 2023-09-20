@@ -407,7 +407,7 @@ set_option linter.uppercaseLean3 false in
 
 noncomputable def ratCoeff : Subalgebra ℚ (AddMonoidAlgebra (K s) (K s))
     where
-  carrier x := ∀ i : K s, x i ∈ (⊥ : IntermediateField ℚ (K s))
+  carrier := {x | ∀ i : K s, x i ∈ (⊥ : IntermediateField ℚ (K s))}
   mul_mem' {a b} ha hb i := by
     rw [AddMonoidAlgebra.mul_apply]
     refine' sum_mem fun c _ => sum_mem fun d _ => _
