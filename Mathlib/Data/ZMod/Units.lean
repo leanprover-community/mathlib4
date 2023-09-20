@@ -21,10 +21,10 @@ def unitsMap (hm : n ∣ m) : (ZMod m)ˣ →* (ZMod n)ˣ := Units.map (castHom h
 lemma unitsMap_def (hm : n ∣ m) : unitsMap hm = Units.map (castHom hm (ZMod n)) := rfl
 
 lemma unitsMap_comp {d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
-  (unitsMap hm).comp (unitsMap hd) = unitsMap (dvd_trans hm hd) := by
-    simp only [unitsMap_def]
-    rw [← Units.map_comp]
-    exact congr_arg Units.map <| congr_arg RingHom.toMonoidHom <| castHom_comp hm hd
+    (unitsMap hm).comp (unitsMap hd) = unitsMap (dvd_trans hm hd) := by
+  simp only [unitsMap_def]
+  rw [← Units.map_comp]
+  exact congr_arg Units.map <| congr_arg RingHom.toMonoidHom <| castHom_comp hm hd
 
 @[simp]
 lemma unitsMap_self (n : ℕ) : unitsMap (dvd_refl n) = MonoidHom.id _ := by
