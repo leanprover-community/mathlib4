@@ -7,6 +7,9 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
 
 universe u1 u2 u3
+
+/-- `incidence_geometry` represents geometry in the Euclidean sense, with primitives for points
+lines and circles-/
 class incidence_geometry :=
 (point : Type u1)
 (line : Type u2)
