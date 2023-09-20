@@ -476,7 +476,6 @@ theorem lmapDomain_supported (f : α → α') (s : Set α) :
   classical
   cases isEmpty_or_nonempty α
   · simp [s.eq_empty_of_isEmpty]
-  inhabit α
   refine
     le_antisymm
       (map_le_iff_le_comap.2 <|
