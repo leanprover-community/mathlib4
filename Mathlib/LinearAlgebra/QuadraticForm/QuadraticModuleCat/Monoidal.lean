@@ -81,10 +81,17 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
     (tensorUnit' := tensorUnit)
     (εIsoSymm := eqToIso rfl)
     (associator := associator)
-    -- (associator_eq := sorry)
+    (associator_eq := fun X Y Z => by
+      dsimp only [forget₂_obj, forget₂_map_associator_hom]
+      simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom, Iso.refl_hom,
+        MonoidalCategory.tensor_id]
+      erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.comp_id]
+      rfl)
     (leftUnitor := fun X => ofIso (tensorLId X.form))
     -- (leftUnitor_eq := sorry)
     (rightUnitor := fun X => ofIso (tensorRId X.form))
     -- (rightUnitor_eq := sorry)
+
+end
 
 end QuadraticModuleCat
