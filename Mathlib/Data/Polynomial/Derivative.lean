@@ -220,10 +220,11 @@ theorem natDegree_derivative_le (p : R[X]) : p.derivative.natDegree ≤ p.natDeg
 
 theorem natDegree_iterate_derivative (p : R[X]) (k : ℕ) :
     (derivative^[k] p).natDegree ≤ p.natDegree - k := by
-  induction' k with d hd
-  · rw [Function.iterate_zero_apply, Nat.sub_zero]
-  rw [Function.iterate_succ_apply', Nat.sub_succ']
-  exact (natDegree_derivative_le _).trans <| Nat.sub_le_sub_right hd 1
+  induction k with
+  | zero => rw [Function.iterate_zero_apply, Nat.sub_zero]
+  | succ d hd =>
+      rw [Function.iterate_succ_apply', Nat.sub_succ']
+      exact (natDegree_derivative_le _).trans <| Nat.sub_le_sub_right hd 1
 
 @[simp]
 theorem derivative_nat_cast {n : ℕ} : derivative (n : R[X]) = 0 := by
@@ -406,8 +407,7 @@ theorem coeff_iterate_derivative {k} (p : R[X]) (m : ℕ) :
         _ = Nat.descFactorial (m.succ + k) k.succ • p.coeff (m + k.succ) := by
           rw [← Nat.succ_add, Nat.descFactorial_succ, add_tsub_cancel_right]
         _ = Nat.descFactorial (m + k.succ) k.succ • p.coeff (m + k.succ) := by
-          congr 1
-          rw [← Nat.succ_add_eq_succ_add m k]
+          rw [Nat.succ_add_eq_succ_add]
 
 theorem iterate_derivative_mul {n} (p q : R[X]) :
     derivative^[n] (p * q) =
