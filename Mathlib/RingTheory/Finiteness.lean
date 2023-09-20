@@ -631,6 +631,7 @@ end Finite
 end Module
 
 /-- Porting note: reminding Lean about this instance for Module.Finite.base_change -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable local instance [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
     [Module R M] :
   Module A (TensorProduct R A M) :=

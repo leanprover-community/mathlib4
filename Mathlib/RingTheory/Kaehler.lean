@@ -44,6 +44,7 @@ universe u v
 variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
 /-- The kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable abbrev KaehlerDifferential.ideal : Ideal (S ⊗[R] S) :=
   RingHom.ker (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S)
 #align kaehler_differential.ideal KaehlerDifferential.ideal
@@ -59,6 +60,7 @@ variable {R}
 variable {M : Type*} [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
 /-- For a `R`-derivation `S → M`, this is the map `S ⊗[R] S →ₗ[S] M` sending `s ⊗ₜ t ↦ s • D t`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def Derivation.tensorProductTo (D : Derivation R S M) : S ⊗[R] S →ₗ[S] M :=
   TensorProduct.AlgebraTensorModule.lift ((LinearMap.lsmul S (S →ₗ[R] M)).flip D.toLinearMap)
 #align derivation.tensor_product_to Derivation.tensorProductTo
@@ -145,10 +147,12 @@ def KaehlerDifferential : Type _ :=
   (KaehlerDifferential.ideal R S).Cotangent
 #align kaehler_differential KaehlerDifferential
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance : AddCommGroup (KaehlerDifferential R S) := by
   unfold KaehlerDifferential
   infer_instance
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R S) :=
   Ideal.Cotangent.moduleOfTower _
 #align kaehler_differential.module KaehlerDifferential.module
@@ -157,6 +161,7 @@ notation:100 "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
 instance : Nonempty (Ω[S⁄R]) := ⟨0⟩
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
   [SMulCommClass R R' S] :
     Module R' (Ω[S⁄R]) :=
@@ -179,12 +184,14 @@ instance KaehlerDifferential.isScalarTower' : IsScalarTower R (S ⊗[R] S) (Ω[S
 #align kaehler_differential.is_scalar_tower' KaehlerDifferential.isScalarTower'
 
 /-- The quotient map `I → Ω[S⁄R]` with `I` being the kernel of `S ⊗[R] S → S`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def KaehlerDifferential.fromIdeal :
     KaehlerDifferential.ideal R S →ₗ[S ⊗[R] S] Ω[S⁄R] :=
   (KaehlerDifferential.ideal R S).toCotangent
 #align kaehler_differential.from_ideal KaehlerDifferential.fromIdeal
 
 /-- (Implementation) The underlying linear map of the derivation into `Ω[S⁄R]`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def KaehlerDifferential.DLinearMap : S →ₗ[R] Ω[S⁄R] :=
   ((KaehlerDifferential.fromIdeal R S).restrictScalars R).comp
     ((TensorProduct.includeRight.toLinearMap - TensorProduct.includeLeft.toLinearMap :
@@ -203,6 +210,7 @@ set_option linter.uppercaseLean3 false in
 #align kaehler_differential.D_linear_map_apply KaehlerDifferential.DLinearMap_apply
 
 /-- The universal derivation into `Ω[S⁄R]`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
   { toLinearMap := KaehlerDifferential.DLinearMap R S
     map_one_eq_zero' := by
@@ -255,6 +263,7 @@ theorem KaehlerDifferential.span_range_derivation :
 variable {R S}
 
 /-- The linear map from `Ω[S⁄R]`, associated with a derivation. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ[S] M := by
   refine LinearMap.comp ((((KaehlerDifferential.ideal R S) •
     (⊤ : Submodule (S ⊗[R] S) (KaehlerDifferential.ideal R S))).restrictScalars S).liftQ ?_ ?_)
@@ -338,6 +347,7 @@ theorem KaehlerDifferential.tensorProductTo_surjective :
 
 /-- The `S`-linear maps from `Ω[S⁄R]` to `M` are (`S`-linearly) equivalent to `R`-derivations
 from `S` to `M`.  -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def KaehlerDifferential.linearMapEquivDerivation :
     (Ω[S⁄R] →ₗ[S] M) ≃ₗ[S] Derivation R S M :=
   { Derivation.llcomp.flip <| KaehlerDifferential.D R S with
@@ -348,6 +358,7 @@ noncomputable def KaehlerDifferential.linearMapEquivDerivation :
 #align kaehler_differential.linear_map_equiv_derivation KaehlerDifferential.linearMapEquivDerivation
 
 /-- The quotient ring of `S ⊗ S ⧸ J ^ 2` by `Ω[S⁄R]` is isomorphic to `S`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def KaehlerDifferential.quotientCotangentIdealRingEquiv :
     (S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) ⧸ (KaehlerDifferential.ideal R S).cotangentIdeal ≃+*
       S := by
@@ -361,6 +372,7 @@ noncomputable def KaehlerDifferential.quotientCotangentIdealRingEquiv :
 #align kaehler_differential.quotient_cotangent_ideal_ring_equiv KaehlerDifferential.quotientCotangentIdealRingEquiv
 
 /-- The quotient ring of `S ⊗ S ⧸ J ^ 2` by `Ω[S⁄R]` is isomorphic to `S` as an `S`-algebra. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def KaehlerDifferential.quotientCotangentIdeal :
     ((S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) ⧸
         (KaehlerDifferential.ideal R S).cotangentIdeal) ≃ₐ[S] S :=
@@ -627,6 +639,7 @@ A --→ B
 ↑     ↑
 |     |
 R --→ S -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def KaehlerDifferential.map : Ω[A⁄R] →ₗ[A] Ω[B⁄S] :=
   Derivation.liftKaehlerDifferential
     (((KaehlerDifferential.D S B).restrictScalars R).compAlgebraMap A)

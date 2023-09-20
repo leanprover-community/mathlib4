@@ -25,6 +25,7 @@ variable {R : Type u} [CommRing R]
 /-- Auxiliary definition for the `MonoidalClosed` instance on `Module R`.
 (This is only a separate definition in order to speed up typechecking. )
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     ((MonoidalCategory.tensorLeft M).obj N ⟶ P) ≃
       (N ⟶ ((linearCoyoneda R (ModuleCat R)).obj (op M)).obj P) where
@@ -40,6 +41,7 @@ noncomputable def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
 set_option linter.uppercaseLean3 false in
 #align Module.monoidal_closed_hom_equiv ModuleCat.monoidalClosedHomEquiv
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance : MonoidalClosed (ModuleCat.{u} R) where
   closed M :=
     { isAdj :=

@@ -47,18 +47,21 @@ variable [DecidableEq ι] [Fintype ι] (b : Basis ι R M)
 
 -- Porting note: doesn't like implicit ring in the tensor product
 /-- The natural left-handed pairing between a module and its dual. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def contractLeft : Module.Dual R M ⊗[R] M →ₗ[R] R :=
   (uncurry _ _ _ _).toFun LinearMap.id
 #align contract_left contractLeft
 
 -- Porting note: doesn't like implicit ring in the tensor product
 /-- The natural right-handed pairing between a module and its dual. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def contractRight : M ⊗[R] Module.Dual R M →ₗ[R] R :=
   (uncurry _ _ _ _).toFun (LinearMap.flip LinearMap.id)
 #align contract_right contractRight
 
 -- Porting note: doesn't like implicit ring in the tensor product
 /-- The natural map associating a linear map to the tensor product of two modules. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def dualTensorHom : Module.Dual R M ⊗[R] N →ₗ[R] M →ₗ[R] N :=
   let M' := Module.Dual R M
   (uncurry R M' N (M →ₗ[R] N) : _ → M' ⊗ N →ₗ[R] M →ₗ[R] N) LinearMap.smulRightₗ

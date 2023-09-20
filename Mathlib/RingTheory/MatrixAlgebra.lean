@@ -53,6 +53,7 @@ theorem toFunBilinear_apply (a : A) (m : Matrix n n R) :
 The function underlying `(A ⊗[R] Matrix n n R) →ₐ[R] Matrix n n A`,
 as an `R`-linear map.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def toFunLinear : A ⊗[R] Matrix n n R →ₗ[R] Matrix n n A :=
   TensorProduct.lift (toFunBilinear R A n)
 #align matrix_equiv_tensor.to_fun_linear MatrixEquivTensor.toFunLinear
@@ -61,6 +62,7 @@ variable [DecidableEq n] [Fintype n]
 
 /-- The function `(A ⊗[R] Matrix n n R) →ₐ[R] Matrix n n A`, as an algebra homomorphism.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def toFunAlgHom : A ⊗[R] Matrix n n R →ₐ[R] Matrix n n A :=
   algHomOfLinearMapTensorProduct (toFunLinear R A n)
     (by
@@ -88,6 +90,7 @@ theorem toFunAlgHom_apply (a : A) (m : Matrix n n R) :
 The bare function `Matrix n n A → A ⊗[R] Matrix n n R`.
 (We don't need to show that it's an algebra map, thankfully --- just that it's an inverse.)
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def invFun (M : Matrix n n A) : A ⊗[R] Matrix n n R :=
   ∑ p : n × n, M p.1 p.2 ⊗ₜ stdBasisMatrix p.1 p.2 1
 #align matrix_equiv_tensor.inv_fun MatrixEquivTensor.invFun
@@ -139,6 +142,7 @@ theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun R A n (toFunAlgHom R A n M
 
 The equivalence, ignoring the algebra structure, `(A ⊗[R] Matrix n n R) ≃ Matrix n n A`.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def equiv : A ⊗[R] Matrix n n R ≃ Matrix n n A where
   toFun := toFunAlgHom R A n
   invFun := invFun R A n
@@ -152,6 +156,7 @@ variable [Fintype n] [DecidableEq n]
 
 /-- The `R`-algebra isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def matrixEquivTensor : Matrix n n A ≃ₐ[R] A ⊗[R] Matrix n n R :=
   AlgEquiv.symm { MatrixEquivTensor.toFunAlgHom R A n, MatrixEquivTensor.equiv R A n with }
 #align matrix_equiv_tensor matrixEquivTensor

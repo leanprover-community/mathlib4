@@ -999,6 +999,7 @@ open Equiv
 variable [DecidableEq ιa] [DecidableEq ιb]
 
 /-- summand used in `AlternatingMap.domCoprod` -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def domCoprod.summand (a : AlternatingMap R' Mᵢ N₁ ιa)
     (b : AlternatingMap R' Mᵢ N₂ ιb)
     (σ : Perm.ModSumCongr ιa ιb) : MultilinearMap R' (fun _ : Sum ιa ιb => Mᵢ) (N₁ ⊗[R'] N₂) :=
@@ -1111,6 +1112,7 @@ The specialized version can be obtained by combining this definition with `finSu
 `LinearMap.mul'`.
 -/
 @[simps]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def domCoprod (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ N₂ ιb) :
     AlternatingMap R' Mᵢ (N₁ ⊗[R'] N₂) (Sum ιa ιb) :=
   { ∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ with
@@ -1135,6 +1137,7 @@ theorem domCoprod_coe (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap 
 
 /-- A more bundled version of `AlternatingMap.domCoprod` that maps
 `((ι₁ → N) → N₁) ⊗ ((ι₂ → N) → N₂)` to `(ι₁ ⊕ ι₂ → N) → N₁ ⊗ N₂`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def domCoprod' :
     AlternatingMap R' Mᵢ N₁ ιa ⊗[R'] AlternatingMap R' Mᵢ N₂ ιb →ₗ[R']
       AlternatingMap R' Mᵢ (N₁ ⊗[R'] N₂) (Sum ιa ιb) :=

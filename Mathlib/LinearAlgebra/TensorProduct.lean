@@ -71,6 +71,7 @@ variable (R)
 
 /-- The tensor product of two modules `M` and `N` over the same commutative semiring `R`.
 The localized notations are `M ⊗ N` and `M ⊗[R] N`, accessed by `open scoped TensorProduct`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def TensorProduct : Type _ :=
   (addConGen (TensorProduct.Eqv R M N)).Quotient
 #align tensor_product TensorProduct
@@ -88,18 +89,22 @@ section Module
 
 -- porting note: This is added as a local instance for `SMul.aux`.
 -- For some reason type-class inference in Lean 3 unfolded this definition.
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def addMonoid : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
     add_comm := fun x y =>
       AddCon.induction_on₂ x y fun _ _ =>
         Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance : Inhabited (M ⊗[R] N) :=
   ⟨0⟩
 
@@ -107,6 +112,7 @@ variable (R) {M N}
 
 /-- The canonical function `M → N → M ⊗ N`. The localized notations are `m ⊗ₜ n` and `m ⊗ₜ[R] n`,
 accessed by `open scoped TensorProduct`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def tmul (m : M) (n : N) : M ⊗[R] N :=
   AddCon.mk' _ <| FreeAddMonoid.of (m, n)
 #align tensor_product.tmul TensorProduct.tmul
@@ -177,8 +183,7 @@ end
 
 /-- Note that this provides the default `compatible_smul R R M N` instance through
 `IsScalarTower.left`. -/
-instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R]
-    [IsScalarTower R' R M]
+instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTower R' R M]
     [DistribMulAction R' N] [IsScalarTower R' R N] : CompatibleSMul R R' M N :=
   ⟨fun r m n => by
     conv_lhs => rw [← one_smul R m]
@@ -195,6 +200,7 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
 
 attribute [local instance] addMonoid
 /-- Auxiliary function to defining scalar multiplication on tensor product. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def SMul.aux {R' : Type*} [SMul R' M] (r : R') : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
   FreeAddMonoid.lift fun p : M × N => (r • p.1) ⊗ₜ p.2
 #align tensor_product.smul.aux TensorProduct.SMul.aux
@@ -219,6 +225,7 @@ action. Two natural ways in which this situation arises are:
 Note that in the special case that `R = R'`, since `R` is commutative, we just get the usual scalar
 action on a tensor product of two modules. This special case is important enough that, for
 performance reasons, we define it explicitly below. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance leftHasSMul : SMul R' (M ⊗[R] N) :=
   ⟨fun r =>
     (addConGen (TensorProduct.Eqv R M N)).lift (SMul.aux r : _ →+ M ⊗[R] N) <|
@@ -238,6 +245,7 @@ noncomputable instance leftHasSMul : SMul R' (M ⊗[R] N) :=
           (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]⟩
 #align tensor_product.left_has_smul TensorProduct.leftHasSMul
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance : SMul R (M ⊗[R] N) :=
   TensorProduct.leftHasSMul
 
@@ -271,6 +279,7 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
     rw [ihx, ihy, add_add_add_comm]
 #align tensor_product.add_smul TensorProduct.add_smul
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
   { TensorProduct.addCommSemigroup _ _,
     TensorProduct.addZeroClass _ _ with
@@ -279,6 +288,7 @@ noncomputable instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
     nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
       forall_const] }
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
   have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
   { smul := (· • ·)
@@ -292,6 +302,7 @@ noncomputable instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :
     smul_zero := TensorProduct.smul_zero }
 #align tensor_product.left_distrib_mul_action TensorProduct.leftDistribMulAction
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance : DistribMulAction R (M ⊗[R] N) :=
   TensorProduct.leftDistribMulAction
 
@@ -309,17 +320,18 @@ theorem smul_tmul_smul (r s : R) (m : M) (n : N) : (r • m) ⊗ₜ[R] (s • n)
   simp_rw [smul_tmul, tmul_smul, mul_smul]
 #align tensor_product.smul_tmul_smul TensorProduct.smul_tmul_smul
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance leftModule : Module R'' (M ⊗[R] N) :=
   { TensorProduct.leftDistribMulAction with
     add_smul := TensorProduct.add_smul
     zero_smul := TensorProduct.zero_smul }
 #align tensor_product.left_module TensorProduct.leftModule
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance : Module R (M ⊗[R] N) :=
   TensorProduct.leftModule
 
-instance [Module R''ᵐᵒᵖ M] [IsCentralScalar R'' M] :
-    IsCentralScalar R'' (M ⊗[R] N) where
+instance [Module R''ᵐᵒᵖ M] [IsCentralScalar R'' M] : IsCentralScalar R'' (M ⊗[R] N) where
   op_smul_eq_smul r x :=
     x.induction_on (by rw [smul_zero, smul_zero])
       (fun x y => by rw [smul_tmul', smul_tmul', op_smul_eq_smul]) fun x y hx hy => by
@@ -332,7 +344,8 @@ variable {R'₂ : Type*} [Monoid R'₂] [DistribMulAction R'₂ M]
 variable [SMulCommClass R R'₂ M]
 
 /-- `SMulCommClass R' R'₂ M` implies `SMulCommClass R' R'₂ (M ⊗[R] N)` -/
-instance smulCommClass_left [SMulCommClass R' R'₂ M] :
+-- `noncomputable` is a performance workaround for mathlib4#7103
+noncomputable instance smulCommClass_left [SMulCommClass R' R'₂ M] :
     SMulCommClass R' R'₂ (M ⊗[R] N) where
   smul_comm r' r'₂ x :=
     TensorProduct.induction_on x (by simp_rw [TensorProduct.smul_zero])
@@ -343,7 +356,8 @@ instance smulCommClass_left [SMulCommClass R' R'₂ M] :
 variable [SMul R'₂ R']
 
 /-- `IsScalarTower R'₂ R' M` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
-instance isScalarTower_left [IsScalarTower R'₂ R' M] :
+-- `noncomputable` is a performance workaround for mathlib4#7103
+noncomputable instance isScalarTower_left [IsScalarTower R'₂ R' M] :
     IsScalarTower R'₂ R' (M ⊗[R] N) :=
   ⟨fun s r x =>
     x.induction_on (by simp)
@@ -355,7 +369,8 @@ variable [DistribMulAction R'₂ N] [DistribMulAction R' N]
 variable [CompatibleSMul R R'₂ M N] [CompatibleSMul R R' M N]
 
 /-- `IsScalarTower R'₂ R' N` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
-instance isScalarTower_right [IsScalarTower R'₂ R' N] :
+-- `noncomputable` is a performance workaround for mathlib4#7103
+noncomputable instance isScalarTower_right [IsScalarTower R'₂ R' N] :
     IsScalarTower R'₂ R' (M ⊗[R] N) :=
   ⟨fun s r x =>
     x.induction_on (by simp)
@@ -367,7 +382,8 @@ end
 
 /-- A short-cut instance for the common case, where the requirements for the `compatible_smul`
 instances are sufficient. -/
-instance isScalarTower [SMul R' R] [IsScalarTower R' R M] :
+-- `noncomputable` is a performance workaround for mathlib4#7103
+noncomputable instance isScalarTower [SMul R' R] [IsScalarTower R' R M] :
     IsScalarTower R' R (M ⊗[R] N) :=
   TensorProduct.isScalarTower_left
 #align tensor_product.is_scalar_tower TensorProduct.isScalarTower
@@ -376,6 +392,7 @@ instance isScalarTower [SMul R' R] [IsScalarTower R' R M] :
 variable (R M N)
 
 /-- The canonical bilinear map `M → N → M ⊗[R] N`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def mk : M →ₗ[R] N →ₗ[R] M ⊗[R] N :=
   LinearMap.mk₂ R (· ⊗ₜ ·) add_tmul (fun c m n => by simp_rw [smul_tmul, tmul_smul])
     tmul_add tmul_smul
@@ -570,6 +587,7 @@ variable (R M N P)
 /-- A linear equivalence constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def lift.equiv : (M →ₗ[R] N →ₗ[R] P) ≃ₗ[R] M ⊗[R] N →ₗ[R] P :=
   { uncurry R M N P with
     invFun := fun f => (mk R M N).compr₂ f
@@ -591,6 +609,7 @@ theorem lift.equiv_symm_apply (f : M ⊗[R] N →ₗ[R] P) (m : M) (n : N) :
 
 /-- Given a linear map `M ⊗ N → P`, compose it with the canonical bilinear map `M → N → M ⊗ N` to
 form a bilinear map `M → N → P`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def lcurry : (M ⊗[R] N →ₗ[R] P) →ₗ[R] M →ₗ[R] N →ₗ[R] P :=
   (lift.equiv R M N P).symm
 #align tensor_product.lcurry TensorProduct.lcurry
@@ -604,6 +623,7 @@ theorem lcurry_apply (f : M ⊗[R] N →ₗ[R] P) (m : M) (n : N) : lcurry R M N
 
 /-- Given a linear map `M ⊗ N → P`, compose it with the canonical bilinear map `M → N → M ⊗ N` to
 form a bilinear map `M → N → P`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def curry (f : M ⊗[R] N →ₗ[R] P) : M →ₗ[R] N →ₗ[R] P :=
   lcurry R M N P f
 #align tensor_product.curry TensorProduct.curry
@@ -648,6 +668,7 @@ variable (R M)
 
 /-- The base ring is a left identity for the tensor product of modules, up to linear equivalence.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 protected noncomputable def lid : R ⊗[R] M ≃ₗ[R] M :=
   LinearEquiv.ofLinear (lift <| LinearMap.lsmul R M) (mk R R M 1) (LinearMap.ext fun _ => by simp)
     (ext' fun r m => by simp; rw [← tmul_smul, ← smul_tmul, smul_eq_mul, mul_one])
@@ -671,6 +692,7 @@ variable (R M N)
 
 /-- The tensor product of modules is commutative, up to linear equivalence.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 protected noncomputable def comm : M ⊗[R] N ≃ₗ[R] N ⊗[R] M :=
   LinearEquiv.ofLinear (lift (mk R N M).flip) (lift (mk R M N).flip) (ext' fun _ _ => rfl)
     (ext' fun _ _ => rfl)
@@ -694,6 +716,7 @@ variable (R M)
 
 /-- The base ring is a right identity for the tensor product of modules, up to linear equivalence.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 protected noncomputable def rid : M ⊗[R] R ≃ₗ[R] M :=
   LinearEquiv.trans (TensorProduct.comm R M R) (TensorProduct.lid R M)
 #align tensor_product.rid TensorProduct.rid
@@ -717,6 +740,7 @@ section
 variable (R M N P)
 
 /-- The associator for tensor product of R-modules, as a linear equivalence. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 protected noncomputable def assoc : (M ⊗[R] N) ⊗[R] P ≃ₗ[R] M ⊗[R] N ⊗[R] P := by
   refine
       LinearEquiv.ofLinear (lift <| lift <| comp (lcurry R _ _ _) <| mk _ _ _)
@@ -744,6 +768,7 @@ theorem assoc_symm_tmul (m : M) (n : N) (p : P) :
 #align tensor_product.assoc_symm_tmul TensorProduct.assoc_symm_tmul
 
 /-- The tensor product of a pair of linear maps between modules. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
   lift <| comp (compl₂ (mk _ _ _) g) f
 #align tensor_product.map TensorProduct.map
@@ -769,6 +794,7 @@ theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
 
 /-- Given submodules `p ⊆ P` and `q ⊆ Q`, this is the natural map: `p ⊗ q → P ⊗ Q`. -/
 @[simp]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def mapIncl (p : Submodule R P) (q : Submodule R Q) : p ⊗[R] q →ₗ[R] P ⊗[R] Q :=
   map p.subtype q.subtype
 #align tensor_product.map_incl TensorProduct.mapIncl
@@ -840,22 +866,26 @@ theorem map_smul_right (r : R) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : map f (
 variable (R M N P Q)
 
 /-- The tensor product of a pair of linear maps between modules, bilinear in both maps. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def mapBilinear : (M →ₗ[R] P) →ₗ[R] (N →ₗ[R] Q) →ₗ[R] M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
   LinearMap.mk₂ R map map_add_left map_smul_left map_add_right map_smul_right
 #align tensor_product.map_bilinear TensorProduct.mapBilinear
 
 /-- The canonical linear map from `P ⊗[R] (M →ₗ[R] Q)` to `(M →ₗ[R] P ⊗[R] Q)` -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def lTensorHomToHomLTensor : P ⊗[R] (M →ₗ[R] Q) →ₗ[R] M →ₗ[R] P ⊗[R] Q :=
   TensorProduct.lift (llcomp R M Q _ ∘ₗ mk R P Q)
 #align tensor_product.ltensor_hom_to_hom_ltensor TensorProduct.lTensorHomToHomLTensor
 
 /-- The canonical linear map from `(M →ₗ[R] P) ⊗[R] Q` to `(M →ₗ[R] P ⊗[R] Q)` -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def rTensorHomToHomRTensor : (M →ₗ[R] P) ⊗[R] Q →ₗ[R] M →ₗ[R] P ⊗[R] Q :=
   TensorProduct.lift (llcomp R M P _ ∘ₗ (mk R P Q).flip).flip
 #align tensor_product.rtensor_hom_to_hom_rtensor TensorProduct.rTensorHomToHomRTensor
 
 /-- The linear map from `(M →ₗ P) ⊗ (N →ₗ Q)` to `(M ⊗ N →ₗ P ⊗ Q)` sending `f ⊗ₜ g` to
 the `TensorProduct.map f g`, the tensor product of the two maps. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def homTensorHomMap : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) →ₗ[R] M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
   lift (mapBilinear R M N P Q)
 #align tensor_product.hom_tensor_hom_map TensorProduct.homTensorHomMap
@@ -889,6 +919,7 @@ end
 
 /-- If `M` and `P` are linearly equivalent and `N` and `Q` are linearly equivalent
 then `M ⊗ N` and `P ⊗ Q` are linearly equivalent. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) : M ⊗[R] N ≃ₗ[R] P ⊗[R] Q :=
   LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
     (ext' fun m n => by simp)
@@ -910,6 +941,7 @@ theorem congr_symm_tmul (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (p : P) (q : Q) 
 variable (R M N P Q)
 
 /-- A tensor product analogue of `mul_left_comm`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def leftComm : M ⊗[R] N ⊗[R] P ≃ₗ[R] N ⊗[R] M ⊗[R] P :=
   let e₁ := (TensorProduct.assoc R M N P).symm
   let e₂ := congr (TensorProduct.comm R M N) (1 : P ≃ₗ[R] P)
@@ -942,6 +974,7 @@ combined with this definition, yields a bilinear multiplication on `M ⊗ N`:
 the `TensorProduct.semiring` instance (currently defined "by hand" using `TensorProduct.mul`).
 
 See also `mul_mul_mul_comm`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def tensorTensorTensorComm :
     (M ⊗[R] N) ⊗[R] P ⊗[R] Q ≃ₗ[R] (M ⊗[R] P) ⊗[R] N ⊗[R] Q :=
   let e₁ := TensorProduct.assoc R M N (P ⊗[R] Q)
@@ -975,6 +1008,7 @@ E.g., composition of linear maps gives a map `(M → N) ⊗ (N → P) → (M →
 `(M.dual ⊗ N) ⊗ (N.dual ⊗ P) → (M.dual ⊗ P)`, which agrees with the application of `contractRight`
 on `N ⊗ N.dual` after the suitable rebracketting.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def tensorTensorTensorAssoc :
     (M ⊗[R] N) ⊗[R] P ⊗[R] Q ≃ₗ[R] (M ⊗[R] N ⊗[R] P) ⊗[R] Q :=
   (TensorProduct.assoc R (M ⊗[R] N) P Q).symm ≪≫ₗ
@@ -1003,11 +1037,13 @@ namespace LinearMap
 variable {N}
 
 /-- `lTensor M f : M ⊗ N →ₗ M ⊗ P` is the natural linear map induced by `f : N →ₗ P`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def lTensor (f : N →ₗ[R] P) : M ⊗[R] N →ₗ[R] M ⊗[R] P :=
   TensorProduct.map id f
 #align linear_map.ltensor LinearMap.lTensor
 
 /-- `rTensor f M : N₁ ⊗ M →ₗ N₂ ⊗ M` is the natural linear map induced by `f : N₁ →ₗ N₂`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def rTensor (f : N →ₗ[R] P) : N ⊗[R] M →ₗ[R] P ⊗[R] M :=
   TensorProduct.map f id
 #align linear_map.rtensor LinearMap.rTensor
@@ -1029,6 +1065,7 @@ open TensorProduct
 attribute [local ext high] TensorProduct.ext
 
 /-- `lTensorHom M` is the natural linear map that sends a linear map `f : N →ₗ P` to `M ⊗ f`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def lTensorHom : (N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] M ⊗[R] P where
   toFun := lTensor M
   map_add' f g := by
@@ -1041,6 +1078,7 @@ noncomputable def lTensorHom : (N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] M 
 #align linear_map.ltensor_hom LinearMap.lTensorHom
 
 /-- `rTensorHom M` is the natural linear map that sends a linear map `f : N →ₗ P` to `M ⊗ f`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def rTensorHom : (N →ₗ[R] P) →ₗ[R] N ⊗[R] M →ₗ[R] P ⊗[R] M where
   toFun f := f.rTensor M
   map_add' f g := by
@@ -1212,6 +1250,7 @@ open LinearMap
 variable (R)
 
 /-- Auxiliary function to defining negation multiplication on tensor product. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def Neg.aux : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
   FreeAddMonoid.lift fun p : M × N => (-p.1) ⊗ₜ p.2
 #align tensor_product.neg.aux TensorProduct.Neg.aux
@@ -1222,6 +1261,7 @@ theorem Neg.aux_of (m : M) (n : N) : Neg.aux R (FreeAddMonoid.of (m, n)) = (-m) 
   rfl
 #align tensor_product.neg.aux_of TensorProduct.Neg.aux_of
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance neg : Neg (M ⊗[R] N) where
   neg :=
     (addConGen (TensorProduct.Eqv R M N)).lift (Neg.aux R) <|
@@ -1254,6 +1294,7 @@ protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
     rw [hx, hy, add_zero]
 #align tensor_product.add_left_neg TensorProduct.add_left_neg
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
   { TensorProduct.addCommMonoid with
     neg := Neg.neg
@@ -1299,8 +1340,7 @@ instance CompatibleSMul.int : CompatibleSMul R ℤ M N :=
       fun r ih => by simpa [sub_smul, tmul_sub, sub_tmul] using ih⟩
 #align tensor_product.compatible_smul.int TensorProduct.CompatibleSMul.int
 
-instance CompatibleSMul.unit {S} [Monoid S] [DistribMulAction S M]
-    [DistribMulAction S N]
+instance CompatibleSMul.unit {S} [Monoid S] [DistribMulAction S M] [DistribMulAction S N]
     [CompatibleSMul R S M N] : CompatibleSMul R Sˣ M N :=
   ⟨fun s m n => (CompatibleSMul.smul_tmul (s : S) m n : _)⟩
 #align tensor_product.compatible_smul.unit TensorProduct.CompatibleSMul.unit

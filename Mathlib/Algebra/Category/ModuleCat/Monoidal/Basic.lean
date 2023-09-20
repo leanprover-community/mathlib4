@@ -51,22 +51,26 @@ open TensorProduct
 attribute [local ext] TensorProduct.ext
 
 /-- (implementation) tensor product of R-modules -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def tensorObj (M N : ModuleCat R) : ModuleCat R :=
   ModuleCat.of R (M ⊗[R] N)
 #align Module.monoidal_category.tensor_obj ModuleCat.MonoidalCategory.tensorObj
 
 /-- (implementation) tensor product of morphisms R-modules -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def tensorHom {M N M' N' : ModuleCat R} (f : M ⟶ N) (g : M' ⟶ N') :
     tensorObj M M' ⟶ tensorObj N N' :=
   TensorProduct.map f g
 #align Module.monoidal_category.tensor_hom ModuleCat.MonoidalCategory.tensorHom
 
 /-- (implementation) left whiskering for R-modules -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def whiskerLeft (M : ModuleCat R) {N₁ N₂ : ModuleCat R} (f : N₁ ⟶ N₂) :
     tensorObj M N₁ ⟶ tensorObj M N₂ :=
   f.lTensor M
 
 /-- (implementation) right whiskering for R-modules -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R) :
     tensorObj M₁ N ⟶ tensorObj M₂ N :=
   f.rTensor N
@@ -85,6 +89,7 @@ theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ �
 #align Module.monoidal_category.tensor_comp ModuleCat.MonoidalCategory.tensor_comp
 
 /-- (implementation) the associator for R-modules -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def associator (M : ModuleCat.{v} R) (N : ModuleCat.{w} R) (K : ModuleCat.{x} R) :
     tensorObj (tensorObj M N) K ≅ tensorObj M (tensorObj N K) :=
   (TensorProduct.assoc R M N K).toModuleIso
@@ -144,6 +149,7 @@ theorem pentagon (W X Y Z : ModuleCat R) :
 #align Module.monoidal_category.pentagon ModuleCat.MonoidalCategory.pentagon
 
 /-- (implementation) the left unitor for R-modules -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def leftUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (R ⊗[R] M) ≅ M :=
   (LinearEquiv.toModuleIso (TensorProduct.lid R M) : of R (R ⊗ M) ≅ of R M).trans (ofSelfIso M)
 #align Module.monoidal_category.left_unitor ModuleCat.MonoidalCategory.leftUnitor
@@ -163,6 +169,7 @@ theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
 #align Module.monoidal_category.left_unitor_naturality ModuleCat.MonoidalCategory.leftUnitor_naturality
 
 /-- (implementation) the right unitor for R-modules -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def rightUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (M ⊗[R] R) ≅ M :=
   (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
 #align Module.monoidal_category.right_unitor ModuleCat.MonoidalCategory.rightUnitor
@@ -197,6 +204,7 @@ end MonoidalCategory
 
 open MonoidalCategory
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) :=
   MonoidalCategory.ofTensorHom
   -- data

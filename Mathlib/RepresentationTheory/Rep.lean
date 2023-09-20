@@ -374,6 +374,7 @@ set_option linter.uppercaseLean3 false in
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f :=
     { hom := (TensorProduct.curry f.hom).flip
@@ -418,6 +419,7 @@ theorem homEquiv_symm_apply_hom (f : B ⟶ (Rep.ihom A).obj C) :
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_equiv_symm_apply_hom Rep.homEquiv_symm_apply_hom
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance : MonoidalClosed (Rep k G) where
   closed := fun A =>
   { isAdj :=
@@ -461,6 +463,7 @@ variable (A B C)
 
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms`Hom(A ⊗ B, C)`
 and `Hom(B, Homₖ(A, C))`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def MonoidalClosed.linearHomEquiv : (A ⊗ B ⟶ C) ≃ₗ[k] B ⟶ A ⟶[Rep k G] C :=
   { (ihom.adjunction A).homEquiv _ _ with
     map_add' := fun _ _ => rfl
@@ -470,6 +473,7 @@ noncomputable def MonoidalClosed.linearHomEquiv : (A ⊗ B ⟶ C) ≃ₗ[k] B �
 
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms`Hom(A ⊗ B, C)`
 and `Hom(A, Homₖ(B, C))`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def MonoidalClosed.linearHomEquivComm : (A ⊗ B ⟶ C) ≃ₗ[k] A ⟶ B ⟶[Rep k G] C :=
   Linear.homCongr k (β_ A B) (Iso.refl _) ≪≫ₗ MonoidalClosed.linearHomEquiv _ _ _
 set_option linter.uppercaseLean3 false in
@@ -516,6 +520,7 @@ variable {k G : Type u} [CommRing k] [Monoid G] {V W : Type u} [AddCommGroup V] 
   [Module k V] [Module k W] (ρ : Representation k G V) (τ : Representation k G W)
 
 /-- Tautological isomorphism to help Lean in typechecking. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def repOfTprodIso : Rep.of (ρ.tprod τ) ≅ Rep.of ρ ⊗ Rep.of τ :=
   Iso.refl _
 set_option linter.uppercaseLean3 false in
@@ -543,6 +548,7 @@ namespace Rep
 variable {k G : Type u} [CommRing k] [Monoid G]
 
 -- Verify that the symmetric monoidal structure is available.
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable example : SymmetricCategory (Rep k G) := by infer_instance
 
 example : MonoidalPreadditive (Rep k G) := by infer_instance

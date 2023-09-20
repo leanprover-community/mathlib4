@@ -28,6 +28,7 @@ variable [Module R M₁] [Module R M₂] [Module R M₃]
 attribute [ext] TensorProduct.ext
 
 /-- Tensor products distribute over a product on the right. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def prodRight : M₁ ⊗[R] (M₂ × M₃) ≃ₗ[R] ((M₁ ⊗[R] M₂) × (M₁ ⊗[R] M₃)) :=
   LinearEquiv.ofLinear
     (lift <|
@@ -48,6 +49,7 @@ noncomputable def prodRight : M₁ ⊗[R] (M₂ × M₃) ≃ₗ[R] ((M₁ ⊗[R]
   (LinearEquiv.symm_apply_eq _).mpr rfl
 
 /-- Tensor products distribute over a product on the left . -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def prodLeft : (M₁ × M₂) ⊗[R] M₃ ≃ₗ[R] ((M₁ ⊗[R] M₃) × (M₂ ⊗[R] M₃)) :=
   TensorProduct.comm _ _ _
     ≪≫ₗ TensorProduct.prodRight R _ _ _

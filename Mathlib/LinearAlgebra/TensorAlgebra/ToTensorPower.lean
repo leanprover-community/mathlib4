@@ -91,6 +91,7 @@ theorem ofDirectSum_of_tprod {n} (x : Fin n → M) :
 #align tensor_algebra.of_direct_sum_of_tprod TensorAlgebra.ofDirectSum_of_tprod
 
 /-- The canonical map from the tensor algebra to a direct sum of tensor powers. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def toDirectSum : TensorAlgebra R M →ₐ[R] ⨁ n, (⨂[R]^n) M :=
   TensorAlgebra.lift R <|
     DirectSum.lof R ℕ (fun n => (⨂[R]^n) M) _ ∘ₗ
@@ -176,6 +177,7 @@ theorem toDirectSum_ofDirectSum (x : ⨁ n, (⨂[R]^n) M) :
 
 /-- The tensor algebra is isomorphic to a direct sum of tensor powers. -/
 @[simps!]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def equivDirectSum : TensorAlgebra R M ≃ₐ[R] ⨁ n, (⨂[R]^n) M :=
   AlgEquiv.ofAlgHom toDirectSum ofDirectSum toDirectSum_comp_ofDirectSum
     ofDirectSum_comp_toDirectSum

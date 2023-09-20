@@ -50,6 +50,7 @@ variable [∀ i₁, Module R (M₁ i₁)] [Module R M₁'] [∀ i₂, Module R (
 
 /-- The linear equivalence `(⨁ i₁, M₁ i₁) ⊗ (⨁ i₂, M₂ i₂) ≃ (⨁ i₁, ⨁ i₂, M₁ i₁ ⊗ M₂ i₂)`, i.e.
 "tensor product distributes over direct sum". -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 protected noncomputable def directSum :
     ((⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂) ≃ₗ[R] ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2 := by
   -- porting note: entirely rewritten to allow unification to happen one step at a time
@@ -120,6 +121,7 @@ protected noncomputable def directSum :
 #align tensor_product.direct_sum TensorProduct.directSum
 
 /-- Tensor products distribute over a direct sum on the left . -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] ⨁ i, M₁ i ⊗[R] M₂' :=
   LinearEquiv.ofLinear
     (lift <|
@@ -141,6 +143,7 @@ noncomputable def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] �
 #align tensor_product.direct_sum_left TensorProduct.directSumLeft
 
 /-- Tensor products distribute over a direct sum on the right. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def directSumRight : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[R] ⨁ i, M₁' ⊗[R] M₂ i :=
   TensorProduct.comm R _ _ ≪≫ₗ directSumLeft R M₂ M₁' ≪≫ₗ
     DFinsupp.mapRange.linearEquiv fun _ => TensorProduct.comm R _ _

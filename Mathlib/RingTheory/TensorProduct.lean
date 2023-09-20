@@ -58,6 +58,7 @@ variable (r : R) (f g : M →ₗ[R] N)
 variable (A)
 
 /-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
   AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
 #align linear_map.base_change LinearMap.baseChange
@@ -96,6 +97,7 @@ variable (R A M N)
 
 /-- `baseChange` as a linear map. -/
 @[simps]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def baseChangeHom : (M →ₗ[R] N) →ₗ[R] A ⊗[R] M →ₗ[A] A ⊗[R] N where
   toFun := baseChange A
   map_add' := baseChange_add
@@ -157,6 +159,7 @@ The multiplication map on `A ⊗[R] B`,
 for a fixed pure tensor in the first argument,
 as an `R`-linear map.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def mulAux (a₁ : A) (b₁ : B) : A ⊗[R] B →ₗ[R] A ⊗[R] B :=
   TensorProduct.map (LinearMap.mulLeft R a₁) (LinearMap.mulLeft R b₁)
 #align algebra.tensor_product.mul_aux Algebra.TensorProduct.mulAux
@@ -171,6 +174,7 @@ theorem mulAux_apply (a₁ a₂ : A) (b₁ b₂ : B) :
 The multiplication map on `A ⊗[R] B`,
 as an `R`-bilinear map.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B :=
   TensorProduct.lift <|
     LinearMap.mk₂ R mulAux
@@ -213,12 +217,14 @@ protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
 
 theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
   rfl
 #align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance : AddMonoidWithOne (A ⊗[R] B) where
   natCast n := n ⊗ₜ 1
   natCast_zero := by simp
@@ -226,9 +232,11 @@ noncomputable instance : AddMonoidWithOne (A ⊗[R] B) where
 
 theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
 -- providing this instance separately makes some downstream code substantially faster
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance instMul : Mul (A ⊗[R] B) where
   mul a b := mul a b
 
@@ -240,6 +248,7 @@ theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
 
 -- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
 -- appears to help performance.
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance instSemiring : Semiring (A ⊗[R] B) where
   left_distrib a b c := by simp [HMul.hMul, Mul.mul]
   right_distrib a b c := by simp [HMul.hMul, Mul.mul]
@@ -260,6 +269,7 @@ theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[
 
 /-- The ring morphism `A →+* A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 @[simps]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def includeLeftRingHom : A →+* A ⊗[R] B where
   toFun a := a ⊗ₜ 1
   map_zero' := by simp
@@ -302,6 +312,7 @@ instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
 
 variable [CommSemiring S] [Algebra S A]
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
   { commutes' := fun r x => by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
@@ -317,6 +328,7 @@ example : (algebraNat : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance instAlgebra : Algebra R (A ⊗[R] B) :=
   inferInstance
 
@@ -327,6 +339,7 @@ theorem algebraMap_apply [SMulCommClass R S A] (r : S) :
 #align algebra.tensor_product.algebra_map_apply Algebra.TensorProduct.algebraMap_apply
 
 /-- The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def includeLeft [SMulCommClass R S A] : A →ₐ[S] A ⊗[R] B :=
   { includeLeftRingHom with commutes' := by simp }
 #align algebra.tensor_product.include_left Algebra.TensorProduct.includeLeft
@@ -338,6 +351,7 @@ theorem includeLeft_apply [SMulCommClass R S A] (a : A) :
 #align algebra.tensor_product.include_left_apply Algebra.TensorProduct.includeLeft_apply
 
 /-- The algebra morphism `B →ₐ[R] A ⊗[R] B` sending `b` to `1 ⊗ₜ b`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def includeRight : B →ₐ[R] A ⊗[R] B where
   toFun b := 1 ⊗ₜ b
   map_zero' := by simp
@@ -398,6 +412,7 @@ variable [CommRing R]
 variable [Ring A] [Algebra R A]
 variable [Ring B] [Algebra R B]
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance instRing : Ring (A ⊗[R] B) where
   zsmul := SubNegMonoid.zsmul
   zsmul_zero' := SubNegMonoid.zsmul_zero'
@@ -421,6 +436,7 @@ variable [CommRing R]
 variable [CommRing A] [Algebra R A]
 variable [CommRing B] [Algebra R B]
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
     mul_comm := fun x y => by
@@ -443,6 +459,7 @@ section RightAlgebra
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
 @[reducible]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def rightAlgebra : Algebra B (A ⊗[R] B) :=
   (Algebra.TensorProduct.includeRight.toRingHom : B →+* A ⊗[R] B).toAlgebra
 #align algebra.tensor_product.right_algebra Algebra.TensorProduct.rightAlgebra
@@ -460,11 +477,13 @@ end CommRing
 /-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely rings, by treating both as `ℤ`-algebras.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable example [Ring A] [Ring B] : Ring (A ⊗[ℤ] B) := by infer_instance
 
 /-- Verify that typeclass search finds the comm_ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely comm_rings, by treating both as `ℤ`-algebras.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable example [CommRing A] [CommRing B] : CommRing (A ⊗[ℤ] B) := by infer_instance
 
 /-!
@@ -578,6 +597,7 @@ variable (R A)
 
 /-- The base ring is a left identity for the tensor product of algebra, up to algebra isomorphism.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 protected noncomputable nonrec def lid : R ⊗[R] A ≃ₐ[R] A :=
   algEquivOfLinearEquivTensorProduct (TensorProduct.lid R A) (by
     simp only [mul_smul, lid_tmul, Algebra.smul_mul_assoc, Algebra.mul_smul_comm]
@@ -597,6 +617,7 @@ variable (S)
 
 Note that if `A` is commutative this can be instantiated with `S = A`.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 protected noncomputable nonrec def rid : A ⊗[R] R ≃ₐ[S] A :=
   algEquivOfLinearEquivTensorProduct (AlgebraTensorModule.rid R S A)
     (fun _a₁ _a₂ _r₁ _r₂ => smul_mul_smul _ _ _ _ |>.symm)
@@ -615,6 +636,7 @@ variable (B)
 
 /-- The tensor product of R-algebras is commutative, up to algebra isomorphism.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 protected noncomputable def comm : A ⊗[R] B ≃ₐ[R] B ⊗[R] A :=
   algEquivOfLinearEquivTensorProduct (_root_.TensorProduct.comm R A B) (by simp)
   fun r => by
@@ -657,6 +679,7 @@ variable (A B C)
 
 -- porting note: much nicer than Lean 3 proof
 /-- The associator for tensor product of R-algebras, as an algebra isomorphism. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 protected noncomputable def assoc : (A ⊗[R] B) ⊗[R] C ≃ₐ[R] A ⊗[R] B ⊗[R] C :=
   algEquivOfLinearEquivTripleTensorProduct
     (_root_.TensorProduct.assoc R A B C)
@@ -678,6 +701,7 @@ end
 variable {R S A}
 
 /-- The tensor product of a pair of algebra morphisms. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def map (f : A →ₐ[S] B) (g : C →ₐ[R] D) : A ⊗[R] C →ₐ[S] B ⊗[R] D :=
   algHomOfLinearMapTensorProduct (AlgebraTensorModule.map f.toLinearMap g.toLinearMap) (by simp)
     (by simp [AlgHom.commutes])
@@ -728,6 +752,7 @@ theorem map_range (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
 /-- Construct an isomorphism between tensor products of an S-algebra with an R-algebra
 from S- and R- isomorphisms between the tensor factors.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def congr (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) : A ⊗[R] C ≃ₐ[S] B ⊗[R] D :=
   AlgEquiv.ofAlgHom (map f g) (map f.symm g.symm)
     (ext' fun b d => by simp) (ext' fun a c => by simp)
@@ -770,6 +795,7 @@ variable (f : A →ₐ[R] S) (g : B →ₐ[R] S)
 variable (R)
 
 /-- `LinearMap.mul'` is an `AlgHom` on commutative rings. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def lmul' : S ⊗[R] S →ₐ[R] S :=
   algHomOfLinearMapTensorProduct (LinearMap.mul' R S)
     (fun a₁ a₂ b₁ b₂ => by simp only [LinearMap.mul'_apply, mul_mul_mul_comm]) fun r => by
@@ -800,6 +826,7 @@ theorem lmul'_comp_includeRight : (lmul' R : _ →ₐ[R] S).comp includeRight = 
 /-- If `S` is commutative, for a pair of morphisms `f : A →ₐ[R] S`, `g : B →ₐ[R] S`,
 We obtain a map `A ⊗[R] B →ₐ[R] S` that commutes with `f`, `g` via `a ⊗ b ↦ f(a) * g(b)`.
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def productMap : A ⊗[R] B →ₐ[R] S :=
   (lmul' R).comp (TensorProduct.map f g)
 #align algebra.tensor_product.product_map Algebra.TensorProduct.productMap
@@ -846,6 +873,7 @@ variable [CommSemiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
 `·/S/R`), then the product map of `f : A →ₐ[S] C` and `g : B →ₐ[R] C` is an `S`-algebra
 homomorphism. -/
 @[simps!]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
   { (productMap (f.restrictScalars R) g).toRingHom with
     commutes' := fun r => by
@@ -932,6 +960,7 @@ the `TensorProduct.map f g`, the tensor product of the two maps.
 
 This is an `AlgHom` version of `TensorProduct.AlgebraTensorModule.homTensorHomMap`. Like that
 definition, this is generalized across many different rings; namely a tower of algebras `A/S/R`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def endTensorEndAlgHom : End A M ⊗[R] End R N →ₐ[S] End A (M ⊗[R] N) :=
   Algebra.TensorProduct.algHomOfLinearMapTensorProduct
     (AlgebraTensorModule.homTensorHomMap R A S M N M N)
@@ -968,6 +997,7 @@ variable [IsScalarTower R A M] [IsScalarTower R B M]
 
 /-- An auxiliary definition, used for constructing the `Module (A ⊗[R] B) M` in
 `TensorProduct.Algebra.module` below. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def moduleAux : A ⊗[R] B →ₗ[R] M →ₗ[R] M :=
   TensorProduct.lift
     { toFun := fun a => a • (Algebra.lsmul R R M : B →ₐ[R] Module.End R M).toLinearMap
@@ -999,6 +1029,7 @@ multiplication, and one from this would-be instance. Arguably we could live with
 case the real fix is to address the ambiguity in notation, probably along the lines outlined here:
 https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.234773.20base.20change/near/240929258
 -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 protected noncomputable def module : Module (A ⊗[R] B) M where
   smul x m := moduleAux x m
   zero_smul m := by simp only [(· • ·), map_zero, LinearMap.zero_apply]

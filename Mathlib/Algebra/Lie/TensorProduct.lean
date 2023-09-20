@@ -47,11 +47,13 @@ attribute [local ext] TensorProduct.ext
 /-- It is useful to define the bracket via this auxiliary function so that we have a type-theoretic
 expression of the fact that `L` acts by linear endomorphisms. It simplifies the proofs in
 `lieRingModule` below. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def hasBracketAux (x : L) : Module.End R (M ⊗[R] N) :=
   (toEndomorphism R L M x).rTensor N + (toEndomorphism R L N x).lTensor M
 #align tensor_product.lie_module.has_bracket_aux TensorProduct.LieModule.hasBracketAux
 
 /-- The tensor product of two Lie modules is a Lie ring module. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance lieRingModule : LieRingModule L (M ⊗[R] N) where
   bracket x := hasBracketAux x
   add_lie x y t := by
@@ -91,6 +93,7 @@ variable (R L M N P Q)
 
 /-- The universal property for tensor product of modules of a Lie algebra: the `R`-linear
 tensor-hom adjunction is equivariant with respect to the `L` action. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def lift : (M →ₗ[R] N →ₗ[R] P) ≃ₗ⁅R,L⁆ M ⊗[R] N →ₗ[R] P :=
   { TensorProduct.lift.equiv R M N P with
     map_lie' := fun {x f} => by
@@ -109,6 +112,7 @@ theorem lift_apply (f : M →ₗ[R] N →ₗ[R] P) (m : M) (n : N) : lift R L M 
 
 Note that maps `f` of type `M →ₗ⁅R,L⁆ N →ₗ[R] P` are exactly those `R`-bilinear maps satisfying
 `⁅x, f m n⁆ = f ⁅x, m⁆ n + f m ⁅x, n⁆` for all `x, m, n` (see e.g, `LieModuleHom.map_lie₂`). -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def liftLie : (M →ₗ⁅R,L⁆ N →ₗ[R] P) ≃ₗ[R] M ⊗[R] N →ₗ⁅R,L⁆ P :=
   maxTrivLinearMapEquivLieModuleHom.symm ≪≫ₗ ↑(maxTrivEquiv (lift R L M N P)) ≪≫ₗ
     maxTrivLinearMapEquivLieModuleHom
@@ -134,6 +138,7 @@ variable {R L M N P Q}
 
 /-- A pair of Lie module morphisms `f : M → P` and `g : N → Q`, induce a Lie module morphism:
 `M ⊗ N → P ⊗ Q`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable nonrec def map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) : M ⊗[R] N →ₗ⁅R,L⁆ P ⊗[R] Q :=
   { map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) with
     map_lie' := fun {x t} => by
@@ -159,6 +164,7 @@ nonrec theorem map_tmul (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) (m :
 #align tensor_product.lie_module.map_tmul TensorProduct.LieModule.map_tmul
 
 /-- Given Lie submodules `M' ⊆ M` and `N' ⊆ N`, this is the natural map: `M' ⊗ N' → M ⊗ N`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def mapIncl (M' : LieSubmodule R L M) (N' : LieSubmodule R L N) :
     M' ⊗[R] N' →ₗ⁅R,L⁆ M ⊗[R] N :=
   map M'.incl N'.incl
@@ -185,6 +191,7 @@ variable [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 /-- The action of the Lie algebra on one of its modules, regarded as a morphism of Lie modules. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def toModuleHom : L ⊗[R] M →ₗ⁅R,L⁆ M :=
   TensorProduct.LieModule.liftLie R L L M M
     { (toEndomorphism R L M : L →ₗ[R] M →ₗ[R] M) with

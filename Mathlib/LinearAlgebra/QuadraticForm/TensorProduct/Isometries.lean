@@ -54,6 +54,7 @@ theorem tmul_tensorMap_apply
 namespace Isometry
 
 /-- `TensorProduct.map` for `Quadraticform.Isometry`s -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def tmul
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
@@ -90,6 +91,7 @@ theorem tmul_tensorComm_apply
   FunLike.congr_fun (tmul_comp_tensorComm Q₁ Q₂) x
 
 /-- `TensorProduct.comm` preserves tensor products of quadratic forms. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₁.tmul Q₂).IsometryEquiv (Q₂.tmul Q₁) where
   toLinearEquiv := TensorProduct.comm R M₁ M₂
@@ -127,6 +129,7 @@ theorem tmul_tensorAssoc_apply
   FunLike.congr_fun (tmul_comp_tensorAssoc Q₁ Q₂ Q₃) x
 
 /-- `TensorProduct.assoc` preserves tensor products of quadratic forms. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def tensorAssoc (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂)
     (Q₃ : QuadraticForm R M₃) :
     ((Q₁.tmul Q₂).tmul Q₃).IsometryEquiv (Q₁.tmul (Q₂.tmul Q₃)) where
@@ -165,6 +168,7 @@ theorem tmul_tensorRId_apply
   FunLike.congr_fun (comp_tensorRId_eq Q₁) x
 
 /-- `TensorProduct.rid` preserves tensor products of quadratic forms. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def tensorRId (Q₁ : QuadraticForm R M₁):
     (Q₁.tmul (sq (R := R))).IsometryEquiv Q₁ where
   toLinearEquiv := TensorProduct.rid R M₁
@@ -198,6 +202,7 @@ theorem tmul_tensorLId_apply
   FunLike.congr_fun (comp_tensorLId_eq Q₂) x
 
 /-- `TensorProduct.lid` preserves tensor products of quadratic forms. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def tensorLId (Q₂ : QuadraticForm R M₂):
     ((sq (R := R)).tmul Q₂).IsometryEquiv Q₂ where
   toLinearEquiv := TensorProduct.lid R M₂

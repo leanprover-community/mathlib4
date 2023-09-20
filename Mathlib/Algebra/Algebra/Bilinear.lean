@@ -36,6 +36,7 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
 #align linear_map.mul LinearMap.mul
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 #align linear_map.mul' LinearMap.mul'

@@ -84,6 +84,7 @@ theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M 
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
 bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
 @[simps]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
   { curry (f.restrictScalars R) with
     toFun := curry (f.restrictScalars R)
@@ -116,6 +117,7 @@ theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x �
 Constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P` with the
 property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
 the given bilinear map `M →[A] N →[R] P`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
   { lift (f.restrictScalars R) with
     map_smul' := fun c =>
@@ -149,6 +151,7 @@ Linearly constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M
 with the property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
 the given bilinear map `M →[A] N →[R] P`. -/
 @[simps]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[B] M ⊗[R] N →ₗ[A] P where
   toFun := lift
   map_add' _ _ := ext fun x y => by simp only [lift_tmul, add_apply]
@@ -161,6 +164,7 @@ noncomputable def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[B] M ⊗[R] N →
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
 bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
 @[simps]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def lcurry : (M ⊗[R] N →ₗ[A] P) →ₗ[B] M →ₗ[A] N →ₗ[R] P where
   toFun := curry
   map_add' _ _ := rfl
@@ -173,6 +177,7 @@ noncomputable def lcurry : (M ⊗[R] N →ₗ[A] P) →ₗ[B] M →ₗ[A] N →�
 A linear equivalence constructing a linear map `M ⊗[R] N →[A] P` given a
 bilinear map `M →[A] N →[R] P` with the property that its composition with the
 canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is the given bilinear map `M →[A] N →[R] P`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
   LinearEquiv.ofLinear (uncurry R A B M N P) (lcurry R A B M N P)
     (LinearMap.ext fun _ => ext fun x y => lift_tmul _ x y)
@@ -184,6 +189,7 @@ noncomputable def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N 
 
 The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
 @[simps! apply]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
   { mk R M N with map_smul' := fun _ _ => rfl }
 #align tensor_product.algebra_tensor_module.mk TensorProduct.AlgebraTensorModule.mk
@@ -192,6 +198,7 @@ noncomputable nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
 variable {R A B M N P Q}
 
 /-- Heterobasic version of `TensorProduct.map` -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
   lift <|
     { toFun := fun h => h ∘ₗ g,
@@ -241,6 +248,7 @@ theorem map_smul_left (b : B) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (b �
 variable (R A B M N P Q)
 
 /-- Heterobasic version of `TensorProduct.map_bilinear` -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def mapBilinear : (M →ₗ[A] P) →ₗ[B] (N →ₗ[R] Q) →ₗ[R] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
   LinearMap.mk₂' _ _ map map_add_left map_smul_left map_add_right map_smul_right
 
@@ -254,6 +262,7 @@ theorem mapBilinear_apply (f : M →ₗ[A] P) (g : N →ₗ[R] Q) :
 variable (R A B M N P Q)
 
 /-- Heterobasic version of `TensorProduct.homTensorHomMap` -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def homTensorHomMap :
     ((M →ₗ[A] P) ⊗[R] (N →ₗ[R] Q)) →ₗ[B] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
   lift <| mapBilinear R A B M N P Q
@@ -265,6 +274,7 @@ variable {R A B M N P Q}
   rfl
 
 /-- Heterobasic version of `TensorProduct.congr` -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P ⊗[R] Q) :=
   LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
     (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.apply_symm_apply _) (g.apply_symm_apply _))
@@ -297,6 +307,7 @@ theorem congr_mul (f₁ f₂ : M ≃ₗ[A] M) (g₁ g₂ : N ≃ₗ[R] N) :
 variable (R A M)
 
 /-- Heterobasic version of `TensorProduct.rid`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 protected noncomputable def rid : M ⊗[R] R ≃ₗ[A] M :=
   LinearEquiv.ofLinear
     (lift <| Algebra.lsmul _ _ _ |>.toLinearMap |>.flip)
@@ -338,6 +349,7 @@ Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`.
 
 Note this is especially useful with `A = R` (where it is a "more linear" version of
 `TensorProduct.assoc`), or with `B = A`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def assoc : (M ⊗[A] P) ⊗[R] Q ≃ₗ[B] M ⊗[A] (P ⊗[R] Q) :=
   LinearEquiv.ofLinear
     (lift <| lift <| lcurry R A B P Q _ ∘ₗ mk A B M (P ⊗[R] Q))
@@ -364,6 +376,7 @@ end assoc
 section leftComm
 
 /-- Heterobasic version of `TensorProduct.leftComm` -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def leftComm : M ⊗[A] (P ⊗[R] Q) ≃ₗ[A] P ⊗[A] (M ⊗[R] Q) :=
   let e₁ := (assoc R A A M P Q).symm
   let e₂ := congr (TensorProduct.comm A M P) (1 : Q ≃ₗ[R] Q)
@@ -387,6 +400,7 @@ end leftComm
 section rightComm
 
 /-- A tensor product analogue of `mul_right_comm`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
   LinearEquiv.ofLinear
     (lift <| TensorProduct.lift <| LinearMap.flip <|
@@ -418,6 +432,7 @@ end rightComm
 section tensorTensorTensorComm
 
 /-- Heterobasic version of `tensorTensorTensorComm`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def tensorTensorTensorComm :
   (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
 (assoc R A A (M ⊗[R] N) P Q).symm

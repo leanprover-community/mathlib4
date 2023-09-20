@@ -43,6 +43,7 @@ to the simple case defined here. See [this zulip thread](
 https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there.20code.20for.20X.3F/topic/Instances.20on.20.60sum.2Eelim.20A.20B.20i.60/near/218484619).
 -/
 @[simps apply]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
     (b : MultilinearMap R (fun _ : ι₂ => N) N₂) :
     MultilinearMap R (fun _ : Sum ι₁ ι₂ => N) (N₁ ⊗[R] N₂) where
@@ -59,6 +60,7 @@ noncomputable def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
 
 /-- A more bundled version of `MultilinearMap.domCoprod` that maps
 `((ι₁ → N) → N₁) ⊗ ((ι₂ → N) → N₂)` to `(ι₁ ⊕ ι₂ → N) → N₁ ⊗ N₂`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def domCoprod' :
     MultilinearMap R (fun _ : ι₁ => N) N₁ ⊗[R] MultilinearMap R (fun _ : ι₂ => N) N₂ →ₗ[R]
       MultilinearMap R (fun _ : Sum ι₁ ι₂ => N) (N₁ ⊗[R] N₂) :=

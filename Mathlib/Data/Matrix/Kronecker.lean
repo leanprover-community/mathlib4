@@ -434,6 +434,7 @@ variable [Module R α] [Module R β] [Module R γ]
 /-- The Kronecker tensor product. This is just a shorthand for `kroneckerMap (⊗ₜ)`.
 Prefer the notation `⊗ₖₜ` rather than this definition. -/
 @[simp]
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def kroneckerTMul : Matrix l m α → Matrix n p β → Matrix (l × n) (m × p) (α ⊗[R] β) :=
   kroneckerMap (· ⊗ₜ ·)
 #align matrix.kronecker_tmul Matrix.kroneckerTMul
@@ -452,6 +453,7 @@ theorem kroneckerTMul_apply (A : Matrix l m α) (B : Matrix n p β) (i₁ i₂ j
 #align matrix.kronecker_tmul_apply Matrix.kroneckerTMul_apply
 
 /-- `Matrix.kronecker` as a bilinear map. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def kroneckerTMulBilinear :
     Matrix l m α →ₗ[R] Matrix n p β →ₗ[R] Matrix (l × n) (m × p) (α ⊗[R] β) :=
   kroneckerMapBilinear (TensorProduct.mk R α β)

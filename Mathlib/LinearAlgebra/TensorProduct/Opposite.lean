@@ -27,6 +27,7 @@ open MulOpposite
 
 /-- `MulOpposite` distributes over `TensorProduct`. Note this is an `S`-algebra morphism, where
 `A/S/R` is a tower of algebras. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def opAlgEquiv : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ ≃ₐ[S] (A ⊗[R] B)ᵐᵒᵖ :=
   letI e₁ : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ ≃ₗ[S] (A ⊗[R] B)ᵐᵒᵖ :=
     TensorProduct.AlgebraTensorModule.congr

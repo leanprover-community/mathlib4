@@ -38,6 +38,7 @@ namespace ExtendScalars
 variable [CommRing R] [CommRing A] [Algebra R A] [LieRing L] [LieAlgebra R L]
 
 /-- The Lie bracket on the extension of a Lie algebra `L` over `R` by an algebra `A` over `R`. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
 private noncomputable def bracket' : A ⊗[R] L →ₗ[A] A ⊗[R] L →ₗ[A] A ⊗[R] L :=
   TensorProduct.curry <|
     TensorProduct.AlgebraTensorModule.map
@@ -48,6 +49,7 @@ private noncomputable def bracket' : A ⊗[R] L →ₗ[A] A ⊗[R] L →ₗ[A] A
 private theorem bracket'_tmul (s t : A) (x y : L) :
     bracket' R A L (s ⊗ₜ[R] x) (t ⊗ₜ[R] y) = (s * t) ⊗ₜ ⁅x, y⁆ := rfl
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance : Bracket (A ⊗[R] L) (A ⊗[R] L) where bracket x y := bracket' R A L x y
 
 private theorem bracket_def (x y : A ⊗[R] L) : ⁅x, y⁆ = bracket' R A L x y :=
@@ -103,12 +105,14 @@ private theorem bracket_leibniz_lie (x y z : A ⊗[R] L) :
     rw [map_add, LinearMap.add_apply, LinearMap.add_apply, LinearMap.add_apply, map_add, map_add,
       LinearMap.add_apply, h₁, h₂, add_add_add_comm]
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance : LieRing (A ⊗[R] L) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, LinearMap.map_add]
   lie_add x y z := by simp only [bracket_def, LinearMap.map_add]
   lie_self := bracket_lie_self R A L
   leibniz_lie := bracket_leibniz_lie R A L
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable instance lieAlgebra :
     LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := map_smul _ _ _
 #align lie_algebra.extend_scalars.lie_algebra LieAlgebra.ExtendScalars.lieAlgebra
