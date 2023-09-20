@@ -586,6 +586,12 @@ theorem cancel_left (hf : Function.Injective f) : f.comp g = f.comp g' ↔ g = g
   ⟨fun h ↦ ext fun x ↦ hf <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
 #align linear_map.cancel_left LinearMap.cancel_left
 
+lemma inj_comp_left_of_inj (hf : Injective f) : Injective fun g : M₁ →ₛₗ[σ₁₂] M₂ ↦ f.comp g :=
+  fun _ _ ↦ (cancel_left hf).mp
+
+lemma inj_comp_right_of_surj (hg : Surjective g) : Injective fun f : M₂ →ₛₗ[σ₂₃] M₃ ↦ f.comp g :=
+  fun _ _ ↦ (cancel_right hg).mp
+
 end
 
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]

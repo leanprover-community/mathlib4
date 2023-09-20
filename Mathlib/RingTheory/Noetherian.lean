@@ -298,7 +298,7 @@ instance isNoetherian_linearMap : IsNoetherian R (N →ₗ[R] M) := by
   obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R N
   let g : (N →ₗ[R] M) →ₗ[R] (Fin n → R) →ₗ[R] M := (LinearMap.llcomp R (Fin n → R) N M).flip f
   apply isNoetherian_of_injective g
-  apply LinearMap.inj_llcomp_flip_apply_of_surj
+  apply LinearMap.inj_comp_right_of_surj
   assumption
 
 end CommRing
