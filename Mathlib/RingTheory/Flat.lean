@@ -91,7 +91,7 @@ class Flat  : Prop where
 
 namespace Flat
 
-open TensorProduct LinearMap Submodule
+open TensorProduct LinearMap Submodule BigOperators
 
 instance self (R : Type u) [CommRing R] : Flat R R := ⟨by
   intro I _
@@ -116,7 +116,7 @@ fconstructor
   obtain ⟨L, H⟩ := H I g
   refine ⟨L, fun x hx => by convert FunLike.congr_fun H ⟨x, hx⟩⟩
 
-lemma lambek [CategoryTheory.Injective (ModuleCat.of R $ CharacterModule M)] :
+lemma lambek [h : CategoryTheory.Injective (ModuleCat.of R $ CharacterModule M)] :
     Flat.injective R M := by
   intros A B L hL
   have m1 : Mono L
@@ -156,8 +156,24 @@ lemma lambek [CategoryTheory.Injective (ModuleCat.of R $ CharacterModule M)] :
     rw [LinearMap.bimodule_smul_apply]
     simp only [LinearMap.coe_mk, AddHom.coe_mk, tmul_smul]
     rw [smul_tmul']
-
-  sorry
+  obtain ⟨f', hf'⟩ := h.factors (f : A ⟶ ModuleCat.of R (CharacterModule M)) L
+  obtain ⟨ι, a, m, s, rfl⟩ := TensorProduct.exists_rep _ z
+  let g' : (CharacterModule <| B ⊗[R] M) := CharacterModule.homEquiv _ _ _ f'
+  have EQ : g' (∑ i in s, L (a i) ⊗ₜ m i) = 0
+  · rw [LinearMap.map_sum] at hz
+    change ∑ i in s, (L (a i) ⊗ₜ m i) = 0 at hz
+    rw [hz, g'.map_zero]
+  refine hg ?_
+  rw [g.map_sum]
+  rw [g'.map_sum] at EQ
+  simp_rw [CharacterModule.homEquiv_apply, CharacterModule.uncurry_apply,
+    toAddCommGroup'_apply_tmul] at EQ
+  replace hf' : ∀ x, f' (L x) = f x := FunLike.congr_fun hf'
+  replace EQ : ∑ i in s, f (a i) (m i) = 0
+  · rw [← EQ]
+    refine Finset.sum_congr rfl fun _ _ => ?_
+    rw [hf']
+  convert EQ
 
 end injective_to_ideal
 

@@ -86,8 +86,8 @@ lemma exists_character_apply_ne_zero_of_ne_zero {m : M} (ne_zero : m ≠ 0) :
   have eq2 := (ULift.ext_iff _ _).mp eq1
   dsimp only at eq2
   erw [eq2]
-  apply AddCommGroupCat.enough_injectives_aux_proofs.toRatCircle_apply_self_ne_zero
-  assumption
+  exact fun rid => (ne_zero <|
+    AddCommGroupCat.enough_injectives_aux_proofs.eq_zero_of_toRatCircle_apply_self rid).elim
 
 open TensorProduct
 

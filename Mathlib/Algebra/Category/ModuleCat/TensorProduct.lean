@@ -90,7 +90,7 @@ variable {R S X}
 
 /-- uncurry a map from a tensor product to a bilinear map-/
 @[simps]
-def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : (tensorFunctor R S X).obj X' ⟶ Y) :
+def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : (tensorFunctor R S X).obj X' ⟶ Y) :
     X' ⟶ (homFunctor R S X).obj Y where
   toFun x' :=
     { toFun := (l <| . ⊗ₜ x')
@@ -102,7 +102,7 @@ def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : (tensorFunctor R 
 
 /-- curry a bilinear map into a map from tensor product -/
 @[simps]
-def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y)) :
+def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y)) :
     (X ⊗[R] X') →ₗ[S] Y :=
   let L : (X ⊗[R] X') →+ Y := (addConGen _).lift (FreeAddMonoid.lift fun p => l p.2 p.1) <|
     AddCon.addConGen_le fun p q H => show _ = _ from match p, q, H with
@@ -134,8 +134,8 @@ def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →
         rw [smul_add, map_add, map_add, smul_add, h, h'] }
 
 @[simp]
-lemma curry'_apply_tmul {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y))
-  (x : X) (x' : X') : curry' l (x ⊗ₜ x') = l x' x := rfl
+lemma uncurry'_apply_tmul {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y))
+  (x : X) (x' : X') : uncurry' l (x ⊗ₜ x') = l x' x := rfl
 
 variable (R S X)
 /-- The tensoring function is left adjoint to the hom functor. -/
@@ -143,28 +143,28 @@ variable (R S X)
 def tensorHomAdjunction : tensorFunctor R S X ⊣ homFunctor R S X :=
   Adjunction.mkOfHomEquiv
   { homEquiv := fun X' Y =>
-    { toFun := uncurry'
-      invFun := curry'
+    { toFun := curry'
+      invFun := uncurry'
       left_inv := fun l => LinearMap.ext fun x => x.induction_on (by simp only [map_zero])
-        (fun _ _ => by erw [curry'_apply_tmul, uncurry'_apply_apply])
+        (fun _ _ => by erw [uncurry'_apply_tmul, curry'_apply_apply])
         (fun _ _ h₁ h₂ => by rw [map_add, h₁, h₂, map_add])
       right_inv := fun l => LinearMap.ext fun x => LinearMap.ext fun z => by
-        rw [uncurry'_apply_apply, curry'_apply_tmul]
+        rw [curry'_apply_apply, uncurry'_apply_tmul]
         rfl }
     homEquiv_naturality_left_symm := fun {X' X''} Y f g => by
       simp only [homFunctor_obj, Equiv.coe_fn_symm_mk]
       refine LinearMap.ext fun x => x.induction_on ?_ ?_ ?_
       · rw [map_zero, map_zero]
       · intro x x'
-        rw [curry'_apply_tmul, comp_apply, comp_apply, tensorFunctor_map_apply]
-        erw [curry'_apply_tmul]
+        rw [uncurry'_apply_tmul, comp_apply, comp_apply, tensorFunctor_map_apply]
+        erw [uncurry'_apply_tmul]
       · intro _ _ hx hy
         rw [map_add, hx, hy, map_add]
     homEquiv_naturality_right := fun {X' Y Y'} f g => by
       simp only [homFunctor_obj, Equiv.coe_fn_mk]
       refine LinearMap.ext fun x => LinearMap.ext fun y => ?_
-      rw [uncurry'_apply_apply, comp_apply, comp_apply, homFunctor_map_apply, LinearMap.comp_apply,
-        uncurry'_apply_apply] }
+      rw [curry'_apply_apply, comp_apply, comp_apply, homFunctor_map_apply, LinearMap.comp_apply,
+        curry'_apply_apply] }
 
 instance : IsLeftAdjoint (tensorFunctor R S X) :=
 ⟨_, tensorHomAdjunction _ _ _⟩
@@ -209,7 +209,7 @@ lemma toAddCommGroup_apply_tmul {C : Type v} [AddCommGroup C]
   simp only [tmul._eq_1, AddCon.coe_mk', toAddCommGroup_apply]
   rw [LinearMap.toAddMonoidHom_coe]
   erw [Adjunction.mkOfHomEquiv_homEquiv]
-  simp only [ModuleCat.homFunctor_obj, Equiv.coe_fn_symm_mk, ModuleCat.curry'_apply,
+  simp only [ModuleCat.homFunctor_obj, Equiv.coe_fn_symm_mk, ModuleCat.uncurry'_apply,
     ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
   erw [FreeAddMonoid.lift_eval_of]
 
