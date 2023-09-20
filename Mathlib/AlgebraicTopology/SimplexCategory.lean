@@ -349,16 +349,15 @@ end Generators
 
 section Skeleton
 
-/-- The functor that exhibits `SimplexCategory` as skeleton
-of `NonemptyFinLinOrdCat` -/
+/-- The functor that exhibits `SimplexCategory` as skeleton of `NonemptyFinLinOrdCat` -/
 @[simps obj map]
-def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrdCat.{v} where
-  obj a := NonemptyFinLinOrdCat.of <| ULift (Fin (a.len + 1))
-  map f := ⟨fun i => ULift.up (f.toOrderHom i.down), fun i j h => f.toOrderHom.monotone h⟩
+def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrdCat where
+  obj a := NonemptyFinLinOrdCat.of (Fin (a.len + 1))
+  map f := f.toOrderHom
 #align simplex_category.skeletal_functor SimplexCategory.skeletalFunctor
 
 theorem skeletalFunctor.coe_map {Δ₁ Δ₂ : SimplexCategory} (f : Δ₁ ⟶ Δ₂) :
-    ↑(skeletalFunctor.{v}.map f) = ULift.up ∘ f.toOrderHom ∘ ULift.down :=
+    ↑(skeletalFunctor.map f) = f.toOrderHom :=
   rfl
 #align simplex_category.skeletal_functor.coe_map SimplexCategory.skeletalFunctor.coe_map
 
@@ -367,24 +366,20 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
     ext
     simpa
   apply Fintype.card_congr
-  exact Equiv.ulift.symm.trans
-    (((skeletalFunctor.{0} ⋙ forget NonemptyFinLinOrdCat).mapIso I).toEquiv.trans Equiv.ulift)
+  exact (((skeletalFunctor ⋙ forget NonemptyFinLinOrdCat).mapIso I).toEquiv)
 #align simplex_category.skeletal SimplexCategory.skeletal
 
 namespace SkeletalFunctor
 
-instance : Full skeletalFunctor.{v} where
-  preimage f :=
-    SimplexCategory.Hom.mk ⟨fun i => (f (ULift.up i)).down, fun i j h => f.monotone h⟩
+instance : Full skeletalFunctor where
+  preimage f := SimplexCategory.Hom.mk f
 
-instance : Faithful skeletalFunctor.{v} where
+instance : Faithful skeletalFunctor where
   map_injective {_ _ f g} h := by
-    ext x : 3
-    apply ULift.up_injective.{v}
-    change (skeletalFunctor.{v}.map f) ⟨x⟩ = (skeletalFunctor.map g) ⟨x⟩
-    rw [h]
+    ext1
+    exact h
 
-instance : EssSurj skeletalFunctor.{v} where
+instance : EssSurj skeletalFunctor where
   mem_essImage X :=
     ⟨mk (Fintype.card X - 1 : ℕ),
       ⟨by
@@ -393,24 +388,17 @@ instance : EssSurj skeletalFunctor.{v} where
         let f := monoEquivOfFin X aux
         have hf := (Finset.univ.orderEmbOfFin aux).strictMono
         refine'
-          { hom := ⟨fun i => f i.down, _⟩
-            inv := ⟨fun i => ⟨f.symm i⟩, _⟩
-            hom_inv_id := _
-            inv_hom_id := _ }
-        · rintro ⟨i⟩ ⟨j⟩ h
-          show f i ≤ f j
-          exact hf.monotone h
-        · intro i j h
-          show f.symm i ≤ f.symm j
-          rw [← hf.le_iff_le]
-          show f (f.symm i) ≤ f (f.symm j)
-          simpa only [OrderIso.apply_symm_apply]
-        · ext1 ⟨i⟩
-          exact congr_arg ULift.up (f.symm_apply_apply i)
-        · ext1 i
-          exact f.apply_symm_apply i⟩⟩
+          { hom := ⟨f, hf.monotone⟩
+            inv := ⟨f.symm, _⟩
+            hom_inv_id := by ext1; apply f.symm_apply_apply
+            inv_hom_id := by ext1; apply f.apply_symm_apply }
+        intro i j h
+        show f.symm i ≤ f.symm j
+        rw [← hf.le_iff_le]
+        show f (f.symm i) ≤ f (f.symm j)
+        simpa only [OrderIso.apply_symm_apply]⟩⟩
 
-noncomputable instance isEquivalence : IsEquivalence skeletalFunctor.{v} :=
+noncomputable instance isEquivalence : IsEquivalence skeletalFunctor :=
   Equivalence.ofFullyFaithfullyEssSurj skeletalFunctor
 #align simplex_category.skeletal_functor.is_equivalence SimplexCategory.SkeletalFunctor.isEquivalence
 
@@ -418,7 +406,7 @@ end SkeletalFunctor
 
 /-- The equivalence that exhibits `SimplexCategory` as skeleton
 of `NonemptyFinLinOrdCat` -/
-noncomputable def skeletalEquivalence : SimplexCategory ≌ NonemptyFinLinOrdCat.{v} :=
+noncomputable def skeletalEquivalence : SimplexCategory ≌ NonemptyFinLinOrdCat :=
   Functor.asEquivalence skeletalFunctor
 #align simplex_category.skeletal_equivalence SimplexCategory.skeletalEquivalence
 
@@ -427,7 +415,7 @@ end Skeleton
 /-- `SimplexCategory` is a skeleton of `NonemptyFinLinOrdCat`.
 -/
 noncomputable def isSkeletonOf :
-    IsSkeletonOf NonemptyFinLinOrdCat SimplexCategory skeletalFunctor.{v} where
+    IsSkeletonOf NonemptyFinLinOrdCat SimplexCategory skeletalFunctor where
   skel := skeletal
   eqv := SkeletalFunctor.isEquivalence
 #align simplex_category.is_skeleton_of SimplexCategory.isSkeletonOf
@@ -473,22 +461,18 @@ section EpiMono
 -/
 theorem mono_iff_injective {n m : SimplexCategory} {f : n ⟶ m} :
     Mono f ↔ Function.Injective f.toOrderHom := by
-  rw [← Functor.mono_map_iff_mono skeletalEquivalence.functor.{0}]
+  rw [← Functor.mono_map_iff_mono skeletalEquivalence.functor]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
-  rw [NonemptyFinLinOrdCat.mono_iff_injective, skeletalFunctor.coe_map,
-    Function.Injective.of_comp_iff ULift.up_injective,
-    Function.Injective.of_comp_iff' _ ULift.down_bijective]
+  rw [NonemptyFinLinOrdCat.mono_iff_injective, skeletalFunctor.coe_map]
 #align simplex_category.mono_iff_injective SimplexCategory.mono_iff_injective
 
 /-- A morphism in `SimplexCategory` is an epimorphism if and only if it is a surjective function
 -/
 theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
     Epi f ↔ Function.Surjective f.toOrderHom := by
-  rw [← Functor.epi_map_iff_epi skeletalEquivalence.functor.{0}]
+  rw [← Functor.epi_map_iff_epi skeletalEquivalence.functor]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
-  rw [NonemptyFinLinOrdCat.epi_iff_surjective, skeletalFunctor.coe_map,
-    Function.Surjective.of_comp_iff' ULift.up_bijective,
-    Function.Surjective.of_comp_iff _ ULift.down_surjective]
+  rw [NonemptyFinLinOrdCat.epi_iff_surjective, skeletalFunctor.coe_map]
 #align simplex_category.epi_iff_surjective SimplexCategory.epi_iff_surjective
 
 /-- A monomorphism in `SimplexCategory` must increase lengths-/
@@ -761,11 +745,11 @@ theorem len_lt_of_mono {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [hi : Mono i]
 #align simplex_category.len_lt_of_mono SimplexCategory.len_lt_of_mono
 
 noncomputable instance : SplitEpiCategory SimplexCategory :=
-  skeletalEquivalence.{0}.inverse.splitEpiCategoryImpOfIsEquivalence
+  skeletalEquivalence.inverse.splitEpiCategoryImpOfIsEquivalence
 
 instance : HasStrongEpiMonoFactorisations SimplexCategory :=
   Functor.hasStrongEpiMonoFactorisations_imp_of_isEquivalence
-    SimplexCategory.skeletalEquivalence.{0}.inverse
+    SimplexCategory.skeletalEquivalence.inverse
 
 instance : HasStrongEpiImages SimplexCategory :=
   Limits.hasStrongEpiImages_of_hasStrongEpiMonoFactorisations
