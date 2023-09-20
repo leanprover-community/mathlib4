@@ -83,7 +83,7 @@ def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus 
     (HomotopyCategory.Plus.ι C ⋙ F.mapHomotopyCategory (ComplexShape.up ℤ)) (by
       rintro ⟨X, ⟨n, _⟩⟩
       refine' ⟨n, _⟩
-      dsimp [HomotopyCategory.Plus.ι, Subcategory.ι, HomotopyCategory.quotient]
+      dsimp [HomotopyCategory.Plus.ι, Subcategory.ι, HomotopyCategory.quotient, Quotient.functor]
       infer_instance)
 
 noncomputable instance : (F.mapHomotopyCategoryPlus).CommShift ℤ := by

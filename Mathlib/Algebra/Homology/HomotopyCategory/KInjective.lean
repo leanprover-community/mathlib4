@@ -85,7 +85,7 @@ lemma homComplex_exactAt_of_KInjective [L.IsKInjective] (hK : ∀ (n : ℤ), K.E
   simp only [Cocycle.equivHom_symm_apply, Cocycle.cochain_ofHom_homOf_eq_coe,
     Cocycle.rightShift_coe, Cocycle.mk_coe, Cochain.ofHom_zero, add_zero] at hα
   refine' ⟨n.negOnePow • α.rightUnshift (n-1) (by linarith), _⟩
-  apply (Cochain.rightShiftEquiv K L n n 0 (zero_add n)).injective
+  apply (Cochain.rightShiftAddEquiv K L n n 0 (zero_add n)).injective
   dsimp [HomComplex]
   simp only [hα, δ_zsmul, Cochain.rightShift_zsmul,
     α.δ_rightUnshift (n-1) (by linarith) n 0 (by linarith),
