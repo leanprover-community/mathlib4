@@ -84,7 +84,7 @@ theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M 
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
 bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
 @[simps]
-nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
+noncomputable nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
   { curry (f.restrictScalars R) with
     toFun := curry (f.restrictScalars R)
     map_smul' := fun c x => LinearMap.ext fun y => f.map_smul c (x ⊗ₜ y) }
@@ -116,7 +116,7 @@ theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x �
 Constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P` with the
 property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
 the given bilinear map `M →[A] N →[R] P`. -/
-nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
+noncomputable nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
   { lift (f.restrictScalars R) with
     map_smul' := fun c =>
       show
@@ -149,7 +149,7 @@ Linearly constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M
 with the property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
 the given bilinear map `M →[A] N →[R] P`. -/
 @[simps]
-def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[B] M ⊗[R] N →ₗ[A] P where
+noncomputable def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[B] M ⊗[R] N →ₗ[A] P where
   toFun := lift
   map_add' _ _ := ext fun x y => by simp only [lift_tmul, add_apply]
   map_smul' _ _ := ext fun x y => by simp only [lift_tmul, smul_apply, RingHom.id_apply]
@@ -161,7 +161,7 @@ def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[B] M ⊗[R] N →ₗ[A] P where
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
 bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
 @[simps]
-def lcurry : (M ⊗[R] N →ₗ[A] P) →ₗ[B] M →ₗ[A] N →ₗ[R] P where
+noncomputable def lcurry : (M ⊗[R] N →ₗ[A] P) →ₗ[B] M →ₗ[A] N →ₗ[R] P where
   toFun := curry
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -173,7 +173,7 @@ def lcurry : (M ⊗[R] N →ₗ[A] P) →ₗ[B] M →ₗ[A] N →ₗ[R] P where
 A linear equivalence constructing a linear map `M ⊗[R] N →[A] P` given a
 bilinear map `M →[A] N →[R] P` with the property that its composition with the
 canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is the given bilinear map `M →[A] N →[R] P`. -/
-def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
+noncomputable def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
   LinearEquiv.ofLinear (uncurry R A B M N P) (lcurry R A B M N P)
     (LinearMap.ext fun _ => ext fun x y => lift_tmul _ x y)
     (LinearMap.ext fun f => LinearMap.ext fun x => LinearMap.ext fun y => lift_tmul f x y)
@@ -184,7 +184,7 @@ def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
 
 The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
 @[simps! apply]
-nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
+noncomputable nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
   { mk R M N with map_smul' := fun _ _ => rfl }
 #align tensor_product.algebra_tensor_module.mk TensorProduct.AlgebraTensorModule.mk
 #align tensor_product.algebra_tensor_module.mk_apply TensorProduct.AlgebraTensorModule.mk_apply
@@ -192,7 +192,7 @@ nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
 variable {R A B M N P Q}
 
 /-- Heterobasic version of `TensorProduct.map` -/
-def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
+noncomputable def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
   lift <|
     { toFun := fun h => h ∘ₗ g,
       map_add' := fun h₁ h₂ => LinearMap.add_comp g h₂ h₁,
@@ -241,7 +241,7 @@ theorem map_smul_left (b : B) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (b �
 variable (R A B M N P Q)
 
 /-- Heterobasic version of `TensorProduct.map_bilinear` -/
-def mapBilinear : (M →ₗ[A] P) →ₗ[B] (N →ₗ[R] Q) →ₗ[R] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
+noncomputable def mapBilinear : (M →ₗ[A] P) →ₗ[B] (N →ₗ[R] Q) →ₗ[R] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
   LinearMap.mk₂' _ _ map map_add_left map_smul_left map_add_right map_smul_right
 
 variable {R A B M N P Q}
@@ -254,7 +254,7 @@ theorem mapBilinear_apply (f : M →ₗ[A] P) (g : N →ₗ[R] Q) :
 variable (R A B M N P Q)
 
 /-- Heterobasic version of `TensorProduct.homTensorHomMap` -/
-def homTensorHomMap : ((M →ₗ[A] P) ⊗[R] (N →ₗ[R] Q)) →ₗ[B] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
+noncomputable def homTensorHomMap : ((M →ₗ[A] P) ⊗[R] (N →ₗ[R] Q)) →ₗ[B] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
   lift <| mapBilinear R A B M N P Q
 
 variable {R A B M N P Q}
@@ -264,7 +264,7 @@ variable {R A B M N P Q}
   rfl
 
 /-- Heterobasic version of `TensorProduct.congr` -/
-def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P ⊗[R] Q) :=
+noncomputable def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P ⊗[R] Q) :=
   LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
     (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.apply_symm_apply _) (g.apply_symm_apply _))
     (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.symm_apply_apply _) (g.symm_apply_apply _))
@@ -296,7 +296,7 @@ theorem congr_mul (f₁ f₂ : M ≃ₗ[A] M) (g₁ g₂ : N ≃ₗ[R] N) :
 variable (R A M)
 
 /-- Heterobasic version of `TensorProduct.rid`. -/
-protected def rid : M ⊗[R] R ≃ₗ[A] M :=
+protected noncomputable def rid : M ⊗[R] R ≃ₗ[A] M :=
   LinearEquiv.ofLinear
     (lift <| Algebra.lsmul _ _ _ |>.toLinearMap |>.flip)
     (mk R A M R |>.flip 1)
@@ -337,7 +337,7 @@ Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`.
 
 Note this is especially useful with `A = R` (where it is a "more linear" version of
 `TensorProduct.assoc`), or with `B = A`. -/
-def assoc : (M ⊗[A] P) ⊗[R] Q ≃ₗ[B] M ⊗[A] (P ⊗[R] Q) :=
+noncomputable def assoc : (M ⊗[A] P) ⊗[R] Q ≃ₗ[B] M ⊗[A] (P ⊗[R] Q) :=
   LinearEquiv.ofLinear
     (lift <| lift <| lcurry R A B P Q _ ∘ₗ mk A B M (P ⊗[R] Q))
     (lift <| uncurry R A B P Q _ ∘ₗ curry (mk R B _ Q))
@@ -363,7 +363,7 @@ end assoc
 section leftComm
 
 /-- Heterobasic version of `TensorProduct.leftComm` -/
-def leftComm : M ⊗[A] (P ⊗[R] Q) ≃ₗ[A] P ⊗[A] (M ⊗[R] Q) :=
+noncomputable def leftComm : M ⊗[A] (P ⊗[R] Q) ≃ₗ[A] P ⊗[A] (M ⊗[R] Q) :=
   let e₁ := (assoc R A A M P Q).symm
   let e₂ := congr (TensorProduct.comm A M P) (1 : Q ≃ₗ[R] Q)
   let e₃ := assoc R A A P M Q
@@ -386,7 +386,7 @@ end leftComm
 section rightComm
 
 /-- A tensor product analogue of `mul_right_comm`. -/
-def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
+noncomputable def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
   LinearEquiv.ofLinear
     (lift <| TensorProduct.lift <| LinearMap.flip <|
       lcurry R A A M Q ((M ⊗[R] Q) ⊗[A] P) ∘ₗ (mk A A (M ⊗[R] Q) P).flip)
@@ -417,7 +417,7 @@ end rightComm
 section tensorTensorTensorComm
 
 /-- Heterobasic version of `tensorTensorTensorComm`. -/
-def tensorTensorTensorComm :
+noncomputable def tensorTensorTensorComm :
   (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
 (assoc R A A (M ⊗[R] N) P Q).symm
   ≪≫ₗ congr (rightComm R A M P N).symm (1 : Q ≃ₗ[R] Q)
