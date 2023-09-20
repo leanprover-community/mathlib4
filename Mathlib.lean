@@ -2521,6 +2521,8 @@ import Mathlib.MeasureTheory.Measure.VectorMeasure
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.Tactic
+import Mathlib.ModelTheory.Algebra.Field.Basic
+import Mathlib.ModelTheory.Algebra.Field.CharP
 import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Basic
@@ -2560,6 +2562,7 @@ import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.NumberTheory.Cyclotomic.Rat
 import Mathlib.NumberTheory.Dioph
 import Mathlib.NumberTheory.DiophantineApproximation
+import Mathlib.NumberTheory.DirichletCharacter.Basic
 import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.Four
@@ -3061,6 +3064,7 @@ import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Change
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
+import Mathlib.Tactic.Clean
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
@@ -3107,7 +3111,6 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.LabelAttr
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
@@ -3511,7 +3514,6 @@ import Mathlib.Util.AtomM
 import Mathlib.Util.CompileInductive
 import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.DischargerAsTactic
-import Mathlib.Util.DummyLabelAttr
 import Mathlib.Util.Export
 import Mathlib.Util.Imports
 import Mathlib.Util.IncludeStr

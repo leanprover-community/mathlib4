@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.GroupCat.EpiMono
+import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Rat
@@ -43,38 +44,15 @@ set_option linter.uppercaseLean3 false
 
 namespace AddCommGroupCat
 
-theorem injective_of_injective_as_module [Injective (⟨A⟩ : ModuleCat ℤ)] :
-    CategoryTheory.Injective (⟨A,inferInstance⟩ : AddCommGroupCat) where
-  factors {X Y} g f m := by
-    let G : (⟨X⟩ : ModuleCat ℤ) ⟶ ⟨A⟩ :=
-      { g with map_smul' := by intros; apply map_zsmul (id g : X →+ A) }
-    let F : (⟨X⟩ : ModuleCat ℤ) ⟶ ⟨Y⟩ :=
-      { f with map_smul' := by intros; apply map_zsmul (id f : X →+ Y) }
-    have : Mono F := (ModuleCat.mono_iff_injective _).mpr <| (mono_iff_injective _).mp m
-    use (Injective.factorThru G F).toAddMonoidHom
-    ext x
-    exact FunLike.congr_fun (Injective.comp_factorThru G F) x
-#align AddCommGroup.injective_of_injective_as_module AddCommGroupCat.injective_of_injective_as_module
-
-theorem injective_as_module_of_injective_as_Ab [Injective (⟨A,inferInstance⟩ : AddCommGroupCat)] :
-    Injective (⟨A⟩ : ModuleCat ℤ) where
-  factors {X Y} g f m := by
-    -- Porting note: AddCommGroup.intModule not defeq to ModuleCat.isModule
-    let G : (⟨X,inferInstance⟩ : AddCommGroupCat) ⟶ ⟨A,inferInstance⟩ :=
-      @LinearMap.toAddMonoidHom _ _ _ _ _ _ _ _ (_) _ _ g
-    let F : (⟨X,inferInstance⟩ : AddCommGroupCat) ⟶ ⟨Y,inferInstance⟩ :=
-      @LinearMap.toAddMonoidHom _ _ _ _ _ _ _ _ (_) (_) _ f
-    have : Mono F := (mono_iff_injective _).mpr <| (ModuleCat.mono_iff_injective f).mp m
-    refine ⟨@LinearMap.mk _ _ _ _ _ _ _ _ _ (_) _ (Injective.factorThru G F).toAddHom ?_ , ?_⟩
-    · refine fun r x ↦ (congr_arg _ <| int_smul_eq_zsmul Y.isModule r x).trans ?_
-      apply map_zsmul (id <| Injective.factorThru G F : Y →+ A)
-    · ext x
-      exact congrFun (congrArg (·.toFun) <| Injective.comp_factorThru G F) x
-#align AddCommGroup.injective_as_module_of_injective_as_Ab AddCommGroupCat.injective_as_module_of_injective_as_Ab
+theorem injective_as_module_iff : Injective (⟨A⟩ : ModuleCat ℤ) ↔
+    Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
+  ((forget₂ (ModuleCat ℤ) AddCommGroupCat).asEquivalence.map_injective_iff ⟨A⟩).symm
+#noalign AddCommGroup.injective_of_injective_as_module
+#noalign AddCommGroup.injective_as_module_of_injective_as_Ab
 
 instance injective_of_divisible [DivisibleBy A ℤ] :
-    CategoryTheory.Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
-  @injective_of_injective_as_module A _ <|
+    Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
+  (injective_as_module_iff A).mp <|
     @Module.injective_object_of_injective_module ℤ _ A _ _ <|
       Module.Baer.injective fun I g ↦ by
         rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩
@@ -90,7 +68,7 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
         rfl
 #align AddCommGroup.injective_of_divisible AddCommGroupCat.injective_of_divisible
 
-instance injective_ratCircle : CategoryTheory.Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
+instance injective_ratCircle : Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
   injective_of_divisible _
 
@@ -102,7 +80,7 @@ variable (A_ : AddCommGroupCat.{u})
 def next : AddCommGroupCat.{u} := of <|
   (A_ ⟶ of <| ULift.{u} <| AddCircle (1 : ℚ)) → ULift.{u} (AddCircle (1 : ℚ))
 
-instance : CategoryTheory.Injective <| next A_ :=
+instance : Injective <| next A_ :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
   injective_of_divisible _
 
@@ -129,11 +107,11 @@ lemma _root_.LinearMap.toSpanSingleton_ker :
 
 lemma equivZModSpanAddOrderOf_apply_self :
     equivZModSpanAddOrderOf a ⟨a, Submodule.mem_span_singleton_self a⟩ = Submodule.Quotient.mk 1 :=
-  (LinearEquiv.eq_symm_apply _).mp (by ext; exact (one_zsmul a).symm)
+  (LinearEquiv.eq_symm_apply _).mp (one_zsmul _).symm
 
 /-- Given `n : ℕ`, the map `m ↦ m / n`. -/
 abbrev divBy (n : ℕ) : ℤ →ₗ[ℤ] AddCircle (1 : ℚ) :=
-  LinearMap.toSpanSingleton ℤ _ (Quotient.mk _ (n : ℚ)⁻¹)
+  LinearMap.toSpanSingleton ℤ _ (QuotientAddGroup.mk (n : ℚ)⁻¹)
 
 lemma divBy_self (n : ℕ) : divBy n n = 0 := by
   obtain rfl | h0 := eq_or_ne n 0
@@ -153,18 +131,17 @@ variable {a}
       · apply divBy_self
   e ∘ₗ equivZModSpanAddOrderOf a
 
-lemma toRatCircle_apply_self_ne_zero (ne_zero : a ≠ 0) :
-    toRatCircle ⟨a, Submodule.mem_span_singleton_self a⟩ ≠ 0 := by
+lemma eq_zero_of_toRatCircle_apply_self
+    (h : toRatCircle ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
   rw [toRatCircle, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
     equivZModSpanAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
-    LinearMap.toSpanSingleton_one]
-  intro h
-  obtain ⟨n, hn⟩ := (AddCircle.coe_eq_zero_iff _).mp h
+    LinearMap.toSpanSingleton_one, AddCircle.coe_eq_zero_iff] at h
+  obtain ⟨n, hn⟩ := h
   apply_fun Rat.den at hn
   rw [zsmul_one, Rat.coe_int_den, Rat.inv_coe_nat_den_of_pos] at hn
   · split_ifs at hn
     · cases hn
-    · rw [eq_comm, AddMonoid.addOrderOf_eq_one_iff] at hn; exact ne_zero hn
+    · rwa [eq_comm, AddMonoid.addOrderOf_eq_one_iff] at hn
   · split_ifs with h
     · norm_num
     · exact Nat.pos_of_ne_zero h
@@ -172,16 +149,16 @@ lemma toRatCircle_apply_self_ne_zero (ne_zero : a ≠ 0) :
 variable (A_)
 
 lemma toNext_inj : Function.Injective <| toNext A_ :=
-  (injective_iff_map_eq_zero _).2 fun a ↦ Function.mtr fun ne_zero h0 ↦
-    toRatCircle_apply_self_ne_zero ne_zero <| ULift.up_injective <| by
+  (injective_iff_map_eq_zero _).mpr fun a h0 ↦
+    eq_zero_of_toRatCircle_apply_self <| ULift.up_injective <|
       let f : of (ℤ ∙ a) ⟶ of (ULift.{u} <| AddCircle (1 : ℚ)) :=
-        AddMonoidHom.comp ⟨⟨ULift.up, rfl⟩, by intros; rfl⟩ toRatCircle.toAddMonoidHom
+        AddMonoidHom.comp ⟨⟨ULift.up, rfl⟩, fun _ _ ↦ rfl⟩ toRatCircle.toAddMonoidHom
       let g : of (ℤ ∙ a) ⟶ A_ := AddSubgroupClass.subtype _
-      have hg : Mono g := (mono_iff_injective _).mpr Subtype.val_injective
-      exact (FunLike.congr_fun (Injective.comp_factorThru f g) _).symm.trans (congr_fun h0 _)
+      have : Mono g := (mono_iff_injective _).mpr Subtype.val_injective
+      (FunLike.congr_fun (Injective.comp_factorThru f g) _).symm.trans (congr_fun h0 _)
 
 /-- An injective presentation of `A`: `A → ∏_{A →+ ℚ/ℤ}, ℚ/ℤ`. -/
-@[simps] def presentation : CategoryTheory.InjectivePresentation A_ where
+@[simps] def presentation : InjectivePresentation A_ where
   J := next A_
   injective := inferInstance
   f := toNext A_
@@ -189,7 +166,7 @@ lemma toNext_inj : Function.Injective <| toNext A_ :=
 
 end enough_injectives_aux_proofs
 
-instance enoughInjectives : CategoryTheory.EnoughInjectives (AddCommGroupCat.{u}) where
+instance enoughInjectives : EnoughInjectives (AddCommGroupCat.{u}) where
   presentation A_ := ⟨enough_injectives_aux_proofs.presentation A_⟩
 
 end AddCommGroupCat
