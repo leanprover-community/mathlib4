@@ -164,18 +164,13 @@ theorem degree_modByMonic_lt [Nontrivial R] :
   termination_by degree_modByMonic_lt p q hq => p
 #align polynomial.degree_mod_by_monic_lt Polynomial.degree_modByMonic_lt
 
-theorem natDegree_modByMonic_lt [Nontrivial R] {q : Polynomial R} (hq : q.Monic) (hqne : q ≠ 1) :
+theorem natDegree_modByMonic_lt [Nontrivial R] {p q : Polynomial R} (hq : q.Monic) (hqne : q ≠ 1) :
     natDegree (p %ₘ q) < q.natDegree := by
   by_cases hfq : p %ₘ q = 0
-  · rw [hfq, natDegree_zero]
-    rw [Nat.pos_iff_ne_zero]
+  · rw [hfq, natDegree_zero, Nat.pos_iff_ne_zero]
     contrapose! hqne
     exact eq_one_of_monic_natDegree_zero hq hqne
-  · rw [← Ne.def] at hfq
-    by_contra
-    have h2 : (p %ₘ q).degree < q.degree := degree_modByMonic_lt p hq
-    have h3 := natDegree_lt_natDegree hfq h2
-    contradiction
+  · exact natDegree_lt_natDegree hfq (degree_modByMonic_lt p hq)
 
 @[simp]
 theorem zero_modByMonic (p : R[X]) : 0 %ₘ p = 0 := by
