@@ -68,4 +68,21 @@ lemma change_level_def' {m : ℕ} (hm : n ∣ m) :
   rw [change_level_def, ZMod.unitsMap_def]
   simp
 
+@[simp]
+lemma change_level_self : change_level (dvd_refl n) χ = χ := by
+  ext
+  rw [change_level_def]
+  simp [ZMod.unitsMap]
+
+lemma change_level_self_toUnitHom : (change_level (dvd_refl n) χ).toUnitHom = χ.toUnitHom := by
+  rw [change_level_self]
+
+lemma change_level_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
+  change_level (dvd_trans hm hd) χ = change_level hd (change_level hm χ) := by
+  simp only [change_level_def, toUnitHom_eq, ZMod.unitsMap, ofUnitHom_eq, Equiv.apply_symm_apply]
+  rw [MonoidHom.comp_assoc, ←Units.map_comp]
+  congr
+  rw [← ZMod.castHom_comp hm hd]
+  rfl
+
 end DirichletCharacter
