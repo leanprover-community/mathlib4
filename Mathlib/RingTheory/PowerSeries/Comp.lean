@@ -57,7 +57,7 @@ The operation `f.comp g` can also be written `f ∘ᶠ g`.
                 or `g` has constant term `0`.
 
   `hasComp_iff'` if all zero-divisors of `R` are nilpotent then then `f.hasComp g`
-                iff `f` is a polynomial or `g` has milpotent constant term.
+                iff `f` is a polynomial or `g` has nilpotent constant term.
 
   `add_comp` if `f.hasComp h` and `g.hasComp h` then `(f + g) ∘ᶠ h = f ∘ᶠ h + g ∘ᶠ h`.
 

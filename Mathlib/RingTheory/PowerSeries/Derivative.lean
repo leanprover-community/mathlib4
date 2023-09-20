@@ -19,13 +19,15 @@ Under suitable assumptions, we prove that two power series are equal if their de
 are equal and their constant terms are equal. This gives us a simple tool for proving
 power series identities. For example, one can easily prove the power series identity
 `exp ( log (1+X)) = 1+X` by differentiating twice. Several examples of this kind of
-identity are contained in the accomanying file "Examples.lean".
+identity are contained in "Mathlib.RingTheory.PowerSeries.WellKnown".
 
 
 ## Main results
 
 - `PowerSeries.D_mul`  : the product rule (Leibniz' rule) for differentiating.
 - `PowerSeries.D_comp` : the chain rule for differentiating power series.
+- `PowerSeries.D.ext`  : two power series are equal if they have the same derivatives and the same
+constant terms.
 
 ## Notation
 
@@ -84,9 +86,11 @@ section CommutativeSemiring
 variable {R} [CommSemiring R]
 
 
-/-- The formal derivative of a power series in one variable.
+/--
+The formal derivative of a power series in one variable.
 This is defined here as a function, but will be packaged as a
-deribation `D` on `R⟦X⟧`.-/
+derivation `D` on `R⟦X⟧`.
+-/
 noncomputable def D_fun (f : R⟦X⟧) : R⟦X⟧ := mk λ n ↦ coeff R (n + 1) f * (n + 1)
 
 theorem coeff_D_fun (f : R⟦X⟧) (n : ℕ) : coeff R n f.D_fun = coeff R (n + 1) f * (n + 1) := by
