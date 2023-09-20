@@ -96,11 +96,11 @@ variable {F : J → C}
 which commutes with the cone and cocone legs. -/
 structure BiconeMorphism {F : J → C} (A B : Bicone F) where
   /-- A morphism between the two vertex objects of the bicones -/
-  Hom : A.pt ⟶ B.pt
-  /-- The triangle consisting of the two natural transformations and `Hom` commutes -/
-  wπ : ∀ j : J, Hom ≫ B.π j = A.π j := by aesop_cat
-  /-- The triangle consisting of the two natural transformations and `Hom` commutes -/
-  wι : ∀ j : J, A.ι j ≫ Hom = B.ι j := by aesop_cat
+  hom : A.pt ⟶ B.pt
+  /-- The triangle consisting of the two natural transformations and `hom` commutes -/
+  wπ : ∀ j : J, hom ≫ B.π j = A.π j := by aesop_cat
+  /-- The triangle consisting of the two natural transformations and `hom` commutes -/
+  wι : ∀ j : J, A.ι j ≫ hom = B.ι j := by aesop_cat
 
 attribute [reassoc (attr := simp)] BiconeMorphism.wι
 attribute [reassoc (attr := simp)] BiconeMorphism.wπ
@@ -108,15 +108,15 @@ attribute [reassoc (attr := simp)] BiconeMorphism.wπ
 /-- The category of bicones on a given diagram. -/
 @[simps]
 instance Bicone.category : Category (Bicone F) where
-  Hom A B := BiconeMorphism A B
-  comp f g := { Hom := f.Hom ≫ g.Hom }
-  id B := { Hom := 𝟙 B.pt }
+  hom A B := BiconeMorphism A B
+  comp f g := { hom := f.hom ≫ g.hom }
+  id B := { hom := 𝟙 B.pt }
 
 -- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
--- the Hom field of a category, we need to write the `ext` lemma in terms of the categorical
+-- the `hom` field of a category, we need to write the `ext` lemma in terms of the categorical
 -- morphism, rather than the underlying structure.
 @[ext]
-theorem BiconeMorphism.ext {c c' : Bicone F} (f g : c ⟶ c') (w : f.Hom = g.Hom) : f = g := by
+theorem BiconeMorphism.ext {c c' : Bicone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
   cases f
   cases g
   congr
@@ -131,9 +131,9 @@ namespace Bicones
 def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
     (wι : ∀ j, c.ι j ≫ φ.hom = c'.ι j := by aesop_cat)
     (wπ : ∀ j, φ.hom ≫ c'.π j = c.π j := by aesop_cat) : c ≅ c' where
-  hom := { Hom := φ.hom }
+  hom := { hom := φ.hom }
   inv :=
-    { Hom := φ.inv
+    { hom := φ.inv
       wι := fun j => φ.comp_inv_eq.mpr (wι j).symm
       wπ := fun j => φ.inv_comp_eq.mpr (wπ j).symm  }
 
@@ -150,7 +150,7 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
         rw [A.ι_π]
         aesop_cat }
   map f :=
-    { Hom := G.map f.Hom
+    { hom := G.map f.hom
       wπ := fun j => by simp [-BiconeMorphism.wπ, ← f.wπ j]
       wι := fun j => by simp [-BiconeMorphism.wι, ← f.wι j] }
 
@@ -166,7 +166,7 @@ attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
 /-- Extract the cone from a bicone. -/
 def toConeFunctor : Bicone F ⥤ Cone (Discrete.functor F) where
   obj B := { pt := B.pt, π := { app := fun j => B.π j.as } }
-  map {X Y} F := { Hom := F.Hom, w := fun _ => F.wπ _ }
+  map {X Y} F := { hom := F.hom, w := fun _ => F.wπ _ }
 
 /-- A shorthand for `toConeFunctor.obj` -/
 abbrev toCone (B : Bicone F) : Cone (Discrete.functor F) := toConeFunctor.obj B
@@ -192,7 +192,7 @@ theorem toCone_proj (B : Bicone F) (j : J) : Fan.proj B.toCone j = B.π j := rfl
 /-- Extract the cocone from a bicone. -/
 def toCoconeFunctor : Bicone F ⥤ Cocone (Discrete.functor F) where
   obj B := { pt := B.pt, ι := { app := fun j => B.ι j.as } }
-  map {X Y} F := { Hom := F.Hom, w := fun _ => F.wι _ }
+  map {X Y} F := { hom := F.hom, w := fun _ => F.wι _ }
 
 /-- A shorthand for `toCoconeFunctor.obj` -/
 abbrev toCocone (B : Bicone F) : Cocone (Discrete.functor F) := toCoconeFunctor.obj B
