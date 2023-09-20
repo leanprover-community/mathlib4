@@ -248,7 +248,7 @@ theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne.def, map_eq_empty]
 #align finset.map_nonempty Finset.map_nonempty
 
-alias map_nonempty ↔ _ Nonempty.map
+alias ⟨_, Nonempty.map⟩ := map_nonempty
 #align finset.nonempty.map Finset.Nonempty.map
 
 theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s :=

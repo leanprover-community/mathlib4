@@ -335,7 +335,7 @@ theorem inl_smul [Monoid S] [AddMonoid M] [SMul S R] [DistribMulAction S M] (s :
 
 theorem inl_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → R) :
     (inl (∑ i in s, f i) : tsze R M) = ∑ i in s, inl (f i) :=
-  (LinearMap.inl ℕ _ _).map_sum
+  map_sum (LinearMap.inl ℕ _ _) _ _
 #align triv_sq_zero_ext.inl_sum TrivSqZeroExt.inl_sum
 
 end
@@ -374,7 +374,7 @@ theorem inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S M] (r : S) (m : M)
 
 theorem inr_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → M) :
     (inr (∑ i in s, f i) : tsze R M) = ∑ i in s, inr (f i) :=
-  (LinearMap.inr ℕ _ _).map_sum
+  map_sum (LinearMap.inr ℕ _ _) _ _
 #align triv_sq_zero_ext.inr_sum TrivSqZeroExt.inr_sum
 
 end
@@ -481,7 +481,7 @@ variable (R)
 @[simp]
 theorem inr_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (m₁ m₂ : M) :
     (inr m₁ * inr m₂ : tsze R M) = 0 :=
-  ext (MulZeroClass.mul_zero _) <|
+  ext (mul_zero _) <|
     show (0 : R) • m₂ + (0 : Rᵐᵒᵖ) • m₁ = 0 by rw [zero_smul, zero_add, zero_smul]
 #align triv_sq_zero_ext.inr_mul_inr TrivSqZeroExt.inr_mul_inr
 
@@ -489,13 +489,13 @@ end
 
 theorem inl_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
     (inl r * inr m : tsze R M) = inr (r • m) :=
-  ext (MulZeroClass.mul_zero r) <|
+  ext (mul_zero r) <|
     show r • m + (0 : Rᵐᵒᵖ) • (0 : M) = r • m by rw [smul_zero, add_zero]
 #align triv_sq_zero_ext.inl_mul_inr TrivSqZeroExt.inl_mul_inr
 
 theorem inr_mul_inl [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
     (inr m * inl r : tsze R M) = inr (op r • m) :=
-  ext (MulZeroClass.zero_mul r) <|
+  ext (zero_mul r) <|
     show (0 : R) • (0 : M) + op r • m = op r • m by rw [smul_zero, zero_add]
 #align triv_sq_zero_ext.inr_mul_inl TrivSqZeroExt.inr_mul_inl
 
@@ -555,10 +555,10 @@ instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module R�
     NonAssocSemiring (tsze R M) :=
   { TrivSqZeroExt.addMonoidWithOne, TrivSqZeroExt.mulOneClass, TrivSqZeroExt.addCommMonoid with
     zero_mul := fun x =>
-      ext (MulZeroClass.zero_mul x.1) <|
+      ext (zero_mul x.1) <|
         show (0 : R) • x.2 + op x.1 • (0 : M) = 0 by rw [zero_smul, zero_add, smul_zero]
     mul_zero := fun x =>
-      ext (MulZeroClass.mul_zero x.1) <|
+      ext (mul_zero x.1) <|
         show x.1 • (0 : M) + (0 : Rᵐᵒᵖ) • x.2 = 0 by rw [smul_zero, zero_add, zero_smul]
     left_distrib := fun x₁ x₂ x₃ =>
       ext (mul_add x₁.1 x₂.1 x₃.1) <|

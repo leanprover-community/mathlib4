@@ -120,11 +120,11 @@ instance [NumberField K] : Finite (torsion K) := inferInstance
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
 /-- The order of the torsion subgroup as positive integer. -/
-def torsion_order [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype.card_pos⟩
+def torsionOrder [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype.card_pos⟩
 
-/-- If `k` does not divide `torsion_order` then there are no nontrivial roots of unity of
+/-- If `k` does not divide `torsionOrder` then there are no nontrivial roots of unity of
   order dividing `k`. -/
-theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.coprime k (torsion_order K)) :
+theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.Coprime k (torsionOrder K)) :
     ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
   rw [mem_rootsOfUnity]
   refine ⟨fun h => ?_, fun h => by rw [h, one_pow]⟩
@@ -136,15 +136,15 @@ theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.coprime k (tors
     rw [orderOf_submonoid (⟨ζ, hζ⟩ : torsion K)]
     exact orderOf_dvd_card_univ
 
-/-- The group of roots of unity of order dividing `torsion_order` is equal to the torsion
+/-- The group of roots of unity of order dividing `torsionOrder` is equal to the torsion
 group. -/
 theorem rootsOfUnity_eq_torsion [NumberField K] :
-    rootsOfUnity (torsion_order K) (𝓞 K) = torsion K := by
+    rootsOfUnity (torsionOrder K) (𝓞 K) = torsion K := by
   ext ζ
   rw [torsion, mem_rootsOfUnity]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
-    exact ⟨↑(torsion_order K), (torsion_order K).prop, h⟩
+    exact ⟨↑(torsionOrder K), (torsionOrder K).prop, h⟩
   · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ ⟨ζ, h⟩ _)
 
 end torsion

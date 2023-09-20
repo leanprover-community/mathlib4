@@ -310,7 +310,7 @@ theorem ClassGroup.mk0_eq_mk0_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
     have hy' : y ∈ R⁰ := mem_nonZeroDivisors_iff_ne_zero.mpr hy
     refine ⟨IsLocalization.mk' _ x ⟨y, hy'⟩, ?_, ?_⟩
     · contrapose! hx
-      rwa [mk'_eq_iff_eq_mul, MulZeroClass.zero_mul, ← (algebraMap R (FractionRing R)).map_zero,
+      rwa [mk'_eq_iff_eq_mul, zero_mul, ← (algebraMap R (FractionRing R)).map_zero,
         (IsFractionRing.injective R (FractionRing R)).eq_iff] at hx
     · exact (FractionalIdeal.mk'_mul_coeIdeal_eq_coeIdeal _ hy').mpr h
 #align class_group.mk0_eq_mk0_iff ClassGroup.mk0_eq_mk0_iff

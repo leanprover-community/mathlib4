@@ -694,7 +694,7 @@ theorem range_iff_surjective : range f = univ ↔ Surjective f :=
 #align set.range_iff_surjective Set.range_iff_surjective
 
 -- Porting note: Lean4 unfolds `Surjective` here, ruining dot notation
-alias range_iff_surjective ↔ _ _root_.Function.Surjective.range_eq
+alias ⟨_, _root_.Function.Surjective.range_eq⟩ := range_iff_surjective
 #align function.surjective.range_eq Function.Surjective.range_eq
 
 @[simp]
@@ -773,19 +773,7 @@ theorem image_union_image_compl_eq_range (f : α → β) : f '' s ∪ f '' sᶜ 
 #align set.image_union_image_compl_eq_range Set.image_union_image_compl_eq_range
 
 theorem insert_image_compl_eq_range (f : α → β) (x : α) : insert (f x) (f '' {x}ᶜ) = range f := by
-  ext y; rw [mem_range, mem_insert_iff, mem_image]
-  constructor
-  · rintro (h | ⟨x', _, h⟩)
-    · exact ⟨x, h.symm⟩
-    · exact ⟨x', h⟩
-  · rintro ⟨x', h⟩
-    by_cases hx : x' = x
-    · left
-      rw [← h, hx]
-    · right
-      refine' ⟨_, _, h⟩
-      rw [mem_compl_singleton_iff]
-      exact hx
+  rw [← image_insert_eq, insert_eq, union_compl_self, image_univ]
 #align set.insert_image_compl_eq_range Set.insert_image_compl_eq_range
 
 theorem image_preimage_eq_inter_range {f : α → β} {t : Set β} : f '' (f ⁻¹' t) = t ∩ range f :=
@@ -875,21 +863,18 @@ theorem range_id' : (range fun x : α => x) = univ :=
 
 @[simp]
 theorem _root_.Prod.range_fst [Nonempty β] : range (Prod.fst : α × β → α) = univ :=
-  Function.Surjective.range_eq Prod.fst_surjective
-  -- Porting note: should be `Prod.fst_surjective.range_eq` if dot notation works
+  Prod.fst_surjective.range_eq
 #align prod.range_fst Prod.range_fst
 
 @[simp]
 theorem _root_.Prod.range_snd [Nonempty α] : range (Prod.snd : α × β → β) = univ :=
-  Function.Surjective.range_eq Prod.snd_surjective
-  -- Porting note: should be `Prod.snd_surjective.range_eq` if dot notation works
+  Prod.snd_surjective.range_eq
 #align prod.range_snd Prod.range_snd
 
 @[simp]
 theorem range_eval {ι : Type*} {α : ι → Sort _} [∀ i, Nonempty (α i)] (i : ι) :
     range (eval i : (∀ i, α i) → α i) = univ :=
-  Function.Surjective.range_eq (surjective_eval i)
-  -- Porting note: should be `(surjective_eval i).range_eq` if dot notation works
+  (surjective_eval i).range_eq
 #align set.range_eval Set.range_eval
 
 theorem range_inl : range (@Sum.inl α β) = {x | Sum.isLeft x} := by ext (_|_) <;> simp
@@ -1335,7 +1320,7 @@ theorem Injective.image_injective (hf : Injective f) : Injective (image f) := by
 theorem Surjective.preimage_subset_preimage_iff {s t : Set β} (hf : Surjective f) :
     f ⁻¹' s ⊆ f ⁻¹' t ↔ s ⊆ t := by
   apply Set.preimage_subset_preimage_iff
-  rw [Function.Surjective.range_eq hf]
+  rw [hf.range_eq]
   apply subset_univ
 #align function.surjective.preimage_subset_preimage_iff Function.Surjective.preimage_subset_preimage_iff
 
@@ -1654,11 +1639,9 @@ section Sigma
 variable {α : Type*} {β : α → Type*} {i j : α} {s : Set (β i)}
 
 lemma sigma_mk_preimage_image' (h : i ≠ j) : Sigma.mk j ⁻¹' (Sigma.mk i '' s) = ∅ := by
-  change Sigma.mk j ⁻¹' {⟨i, u⟩ | u ∈ s} = ∅
-  simp [h]
+  simp [image, h]
 
 lemma sigma_mk_preimage_image_eq_self : Sigma.mk i ⁻¹' (Sigma.mk i '' s) = s := by
-  change Sigma.mk i ⁻¹' {⟨i, u⟩ | u ∈ s} = s
-  simp
+  simp [image]
 
 end Sigma

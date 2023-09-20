@@ -29,7 +29,7 @@ is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 
 noncomputable section
 
-open Classical NNReal Topology
+open Classical NNReal Topology Bornology
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
@@ -151,7 +151,7 @@ theorem op_norm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ x, ‖x‖ ≠ 0 → ‖f x‖ ≤ M * ‖x‖) : ‖f‖ ≤ M :=
   op_norm_le_bound f hMp fun x =>
     (ne_or_eq ‖x‖ 0).elim (hM x) fun h => by
-      simp only [h, MulZeroClass.mul_zero, norm_image_of_norm_zero f f.2 h, le_refl]
+      simp only [h, mul_zero, norm_image_of_norm_zero f f.2 h, le_refl]
 #align continuous_linear_map.op_norm_le_bound' ContinuousLinearMap.op_norm_le_bound'
 
 theorem op_norm_le_of_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) : ‖f‖ ≤ K :=
@@ -184,7 +184,7 @@ theorem le_op_norm : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   obtain ⟨C, _, hC⟩ := f.bound
   replace hC := hC x
   by_cases h : ‖x‖ = 0
-  · rwa [h, MulZeroClass.mul_zero] at hC ⊢
+  · rwa [h, mul_zero] at hC ⊢
   have hlt : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) (Ne.symm h)
   exact (div_le_iff hlt).mp
     (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff hlt).mpr <| by apply hc)
@@ -268,7 +268,7 @@ theorem op_norm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
 /-- The norm of the `0` operator is `0`. -/
 theorem op_norm_zero : ‖(0 : E →SL[σ₁₂] F)‖ = 0 :=
   le_antisymm (csInf_le bounds_bddBelow ⟨le_rfl, fun _ => le_of_eq (by
-    rw [MulZeroClass.zero_mul]
+    rw [zero_mul]
     exact norm_zero)⟩) (op_norm_nonneg _)
 #align continuous_linear_map.op_norm_zero ContinuousLinearMap.op_norm_zero
 
@@ -370,8 +370,8 @@ protected theorem tmp_topology_eq :
     rw [div_mul_cancel 1 hc₀.ne.symm] at hx₁
     exact (hf x hxc.le).trans (le_mul_of_one_le_right hε.le hx₁)
   · rintro ⟨S, ε⟩ ⟨hS, hε⟩
-    rw [NormedSpace.isVonNBounded_iff, ← bounded_iff_isBounded] at hS
-    rcases hS.subset_ball_lt 0 0 with ⟨δ, hδ, hSδ⟩
+    rw [NormedSpace.isVonNBounded_iff] at hS
+    rcases hS.subset_closedBall_lt 0 0 with ⟨δ, hδ, hSδ⟩
     exact ⟨ε / δ, div_pos hε hδ,
       (ContinuousLinearMap.tmp_closedBall_div_subset hε hδ).trans fun f hf x hx => hf x <| hSδ hx⟩
 #align continuous_linear_map.tmp_topology_eq ContinuousLinearMap.tmp_topology_eq
@@ -819,8 +819,6 @@ theorem flip_smul (c : 𝕜₃) (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : (c
 
 variable (E F G σ₁₃ σ₂₃)
 
-set_option maxHeartbeats 300000 in
-set_option synthInstance.maxHeartbeats 25000 in
 /-- Flip the order of arguments of a continuous bilinear map.
 This is a version bundled as a `LinearIsometryEquiv`.
 For an unbundled version see `ContinuousLinearMap.flip`. -/
@@ -836,13 +834,11 @@ def flipₗᵢ' : (E →SL[σ₁₃] F →SL[σ₂₃] G) ≃ₗᵢ[𝕜₃] F �
 
 variable {E F G σ₁₃ σ₂₃}
 
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem flipₗᵢ'_symm : (flipₗᵢ' E F G σ₂₃ σ₁₃).symm = flipₗᵢ' F E G σ₁₃ σ₂₃ :=
   rfl
 #align continuous_linear_map.flipₗᵢ'_symm ContinuousLinearMap.flipₗᵢ'_symm
 
-set_option synthInstance.maxHeartbeats 75000 in
 @[simp]
 theorem coe_flipₗᵢ' : ⇑(flipₗᵢ' E F G σ₂₃ σ₁₃) = flip :=
   rfl
@@ -850,7 +846,6 @@ theorem coe_flipₗᵢ' : ⇑(flipₗᵢ' E F G σ₂₃ σ₁₃) = flip :=
 
 variable (𝕜 E Fₗ Gₗ)
 
-set_option maxHeartbeats 250000 in
 /-- Flip the order of arguments of a continuous bilinear map.
 This is a version bundled as a `LinearIsometryEquiv`.
 For an unbundled version see `ContinuousLinearMap.flip`. -/
@@ -871,7 +866,6 @@ theorem flipₗᵢ_symm : (flipₗᵢ 𝕜 E Fₗ Gₗ).symm = flipₗᵢ 𝕜 F
   rfl
 #align continuous_linear_map.flipₗᵢ_symm ContinuousLinearMap.flipₗᵢ_symm
 
-set_option synthInstance.maxHeartbeats 60000 in
 @[simp]
 theorem coe_flipₗᵢ : ⇑(flipₗᵢ 𝕜 E Fₗ Gₗ) = flip :=
   rfl
@@ -1017,7 +1011,7 @@ variable (M₁ : Type u₁) [SeminormedAddCommGroup M₁] [NormedSpace 𝕜 M₁
 
 variable {Eₗ} (𝕜)
 
-set_option maxHeartbeats 750000 in
+set_option maxHeartbeats 500000 in
 /-- `ContinuousLinearMap.prodMap` as a continuous linear map. -/
 def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ × M₃ →L[𝕜] M₂ × M₄ :=
   ContinuousLinearMap.copy
@@ -1171,7 +1165,7 @@ theorem op_norm_mulLeftRight_le : ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
 
 /-- This is a mixin class for non-unital normed algebras which states that the left-regular
 representation of the algebra on itself is isometric. Every unital normed algebra with `‖1‖ = 1` is
-a regular normed algebra (see `NormedAlgebra.instRegularNormedAlgebra`). In addiiton, so is every
+a regular normed algebra (see `NormedAlgebra.instRegularNormedAlgebra`). In addition, so is every
 C⋆-algebra, non-unital included (see `CstarRing.instRegularNormedAlgebra`), but there are yet other
 examples. Any algebra with an approximate identity (e.g., $$L^1$$) is also regular.
 
@@ -1498,7 +1492,7 @@ theorem op_norm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
     (fun hn => ContinuousLinearMap.ext fun x => norm_le_zero_iff.1
       (calc
         _ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
-        _ = _ := by rw [hn, MulZeroClass.zero_mul]))
+        _ = _ := by rw [hn, zero_mul]))
     (by
       rintro rfl
       exact op_norm_zero)
@@ -1559,14 +1553,14 @@ variable {E' : Type*} [SeminormedAddCommGroup E'] [NormedSpace 𝕜 E'] [RingHom
 that it belongs to the closure of the image of a bounded set `s : Set (E →SL[σ₁₂] F)` under coercion
 to function. Coercion to function of the result is definitionally equal to `f`. -/
 @[simps! (config := { fullyApplied := false }) apply]
-def ofMemClosureImageCoeBounded (f : E' → F) {s : Set (E' →SL[σ₁₂] F)} (hs : Bounded s)
+def ofMemClosureImageCoeBounded (f : E' → F) {s : Set (E' →SL[σ₁₂] F)} (hs : IsBounded s)
     (hf : f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) : E' →SL[σ₁₂] F := by
   -- `f` is a linear map due to `linearMapOfMemClosureRangeCoe`
   refine' (linearMapOfMemClosureRangeCoe f _).mkContinuousOfExistsBound _
   · refine' closure_mono (image_subset_iff.2 fun g _ => _) hf
     exact ⟨g, rfl⟩
   · -- We need to show that `f` has bounded norm. Choose `C` such that `‖g‖ ≤ C` for all `g ∈ s`.
-    rcases bounded_iff_forall_norm_le.1 hs with ⟨C, hC⟩
+    rcases isBounded_iff_forall_norm_le.1 hs with ⟨C, hC⟩
     -- Then `‖g x‖ ≤ C * ‖x‖` for all `g ∈ s`, `x : E`, hence `‖f x‖ ≤ C * ‖x‖` for all `x`.
     have : ∀ x, IsClosed { g : E' → F | ‖g x‖ ≤ C * ‖x‖ } := fun x =>
       isClosed_Iic.preimage (@continuous_apply E' (fun _ => F) _ x).norm
@@ -1579,8 +1573,8 @@ that takes values in a bounded set and converges to `f` pointwise along a nontri
 `f` is a continuous (semi)linear map. -/
 @[simps! (config := { fullyApplied := false }) apply]
 def ofTendstoOfBoundedRange {α : Type*} {l : Filter α} [l.NeBot] (f : E' → F)
-    (g : α → E' →SL[σ₁₂] F) (hf : Tendsto (fun a x => g a x) l (𝓝 f)) (hg : Bounded (Set.range g)) :
-    E' →SL[σ₁₂] F :=
+    (g : α → E' →SL[σ₁₂] F) (hf : Tendsto (fun a x => g a x) l (𝓝 f))
+    (hg : IsBounded (Set.range g)) : E' →SL[σ₁₂] F :=
   ofMemClosureImageCoeBounded f hg <| mem_closure_of_tendsto hf <|
     eventually_of_forall fun _ => mem_image_of_mem _ <| Set.mem_range_self _
 #align continuous_linear_map.of_tendsto_of_bounded_range ContinuousLinearMap.ofTendstoOfBoundedRange
@@ -1595,7 +1589,7 @@ theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂
   rcases cauchySeq_iff_le_tendsto_0.1 hf with ⟨b, hb₀, hfb, hb_lim⟩
   -- Since `b → 0`, it suffices to show that `‖f n x - g x‖ ≤ b n * ‖x‖` for all `n` and `x`.
   suffices : ∀ n x, ‖f n x - g x‖ ≤ b n * ‖x‖
-  exact tendsto_iff_norm_tendsto_zero.2
+  exact tendsto_iff_norm_sub_tendsto_zero.2
     (squeeze_zero (fun n => norm_nonneg _) (fun n => op_norm_le_bound _ (hb₀ n) (this n)) hb_lim)
   intro n x
   -- Note that `f m x → g x`, hence `‖f n x - f m x‖ → ‖f n x - g x‖` as `m → ∞`
@@ -1621,7 +1615,7 @@ instance [CompleteSpace F] : CompleteSpace (E' →SL[σ₁₂] F) := by
   -- Next, we show that this `G` is a continuous linear map.
   -- This is done in `ContinuousLinearMap.ofTendstoOfBoundedRange`.
   set Glin : E' →SL[σ₁₂] F :=
-    ofTendstoOfBoundedRange _ _ (tendsto_pi_nhds.mpr hG) hf.bounded_range
+    ofTendstoOfBoundedRange _ _ (tendsto_pi_nhds.mpr hG) hf.isBounded_range
   -- Finally, `f n` converges to `Glin` in norm because of
   -- `ContinuousLinearMap.tendsto_of_tendsto_pointwise_of_cauchySeq`
   exact ⟨Glin, tendsto_of_tendsto_pointwise_of_cauchySeq (tendsto_pi_nhds.2 hG) hf⟩
@@ -1630,9 +1624,9 @@ instance [CompleteSpace F] : CompleteSpace (E' →SL[σ₁₂] F) := by
 in a proper space. Then `s` interpreted as a set in the space of maps `E → F` with topology of
 pointwise convergence is precompact: its closure is a compact set. -/
 theorem isCompact_closure_image_coe_of_bounded [ProperSpace F] {s : Set (E' →SL[σ₁₂] F)}
-    (hb : Bounded s) : IsCompact (closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) :=
+    (hb : IsBounded s) : IsCompact (closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) :=
   have : ∀ x, IsCompact (closure (apply' F σ₁₂ x '' s)) := fun x =>
-    ((apply' F σ₁₂ x).lipschitz.bounded_image hb).isCompact_closure
+    ((apply' F σ₁₂ x).lipschitz.isBounded_image hb).isCompact_closure
   isCompact_closure_of_subset_compact (isCompact_pi_infinite this)
     (image_subset_iff.2 fun _ hg _ => subset_closure <| mem_image_of_mem _ hg)
 #align continuous_linear_map.is_compact_closure_image_coe_of_bounded ContinuousLinearMap.isCompact_closure_image_coe_of_bounded
@@ -1643,7 +1637,7 @@ pointwise convergence is closed, then it is compact.
 
 TODO: reformulate this in terms of a type synonym with the right topology. -/
 theorem isCompact_image_coe_of_bounded_of_closed_image [ProperSpace F] {s : Set (E' →SL[σ₁₂] F)}
-    (hb : Bounded s) (hc : IsClosed (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) :
+    (hb : IsBounded s) (hc : IsClosed (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) :
     IsCompact (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) :=
   hc.closure_eq ▸ isCompact_closure_image_coe_of_bounded hb
 #align continuous_linear_map.is_compact_image_coe_of_bounded_of_closed_image ContinuousLinearMap.isCompact_image_coe_of_bounded_of_closed_image
@@ -1653,7 +1647,7 @@ image under coercion to functions `E → F` is a closed set. We don't have a nam
 with weak-* topology in `mathlib`, so we use an equivalent condition (see `isClosed_induced_iff'`).
 
 TODO: reformulate this in terms of a type synonym with the right topology. -/
-theorem isClosed_image_coe_of_bounded_of_weak_closed {s : Set (E' →SL[σ₁₂] F)} (hb : Bounded s)
+theorem isClosed_image_coe_of_bounded_of_weak_closed {s : Set (E' →SL[σ₁₂] F)} (hb : IsBounded s)
     (hc : ∀ f : E' →SL[σ₁₂] F,
       (⇑f : E' → F) ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) → f ∈ s) :
     IsClosed (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) :=
@@ -1666,7 +1660,7 @@ image under coercion to functions `E → F` is a compact set. We don't have a na
 with weak-* topology in `mathlib`, so we use an equivalent condition (see `isClosed_induced_iff'`).
 -/
 theorem isCompact_image_coe_of_bounded_of_weak_closed [ProperSpace F] {s : Set (E' →SL[σ₁₂] F)}
-    (hb : Bounded s) (hc : ∀ f : E' →SL[σ₁₂] F,
+    (hb : IsBounded s) (hc : ∀ f : E' →SL[σ₁₂] F,
       (⇑f : E' → F) ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) → f ∈ s) :
     IsCompact (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) :=
   isCompact_image_coe_of_bounded_of_closed_image hb <|
@@ -1691,7 +1685,7 @@ at distance `≤ r` from `f₀ : E →SL[σ₁₂] F` is closed in the topology 
 This is one of the key steps in the proof of the **Banach-Alaoglu** theorem. -/
 theorem isClosed_image_coe_closedBall (f₀ : E →SL[σ₁₂] F) (r : ℝ) :
     IsClosed (((↑) : (E →SL[σ₁₂] F) → E → F) '' closedBall f₀ r) :=
-  isClosed_image_coe_of_bounded_of_weak_closed bounded_closedBall (is_weak_closed_closedBall f₀ r)
+  isClosed_image_coe_of_bounded_of_weak_closed isBounded_closedBall (is_weak_closed_closedBall f₀ r)
 #align continuous_linear_map.is_closed_image_coe_closed_ball ContinuousLinearMap.isClosed_image_coe_closedBall
 
 /-- **Banach-Alaoglu** theorem. The set of functions `f : E → F` that represent continuous linear
@@ -1700,7 +1694,8 @@ pointwise convergence. Other versions of this theorem can be found in
 `Analysis.NormedSpace.WeakDual`. -/
 theorem isCompact_image_coe_closedBall [ProperSpace F] (f₀ : E →SL[σ₁₂] F) (r : ℝ) :
     IsCompact (((↑) : (E →SL[σ₁₂] F) → E → F) '' closedBall f₀ r) :=
-  isCompact_image_coe_of_bounded_of_weak_closed bounded_closedBall <| is_weak_closed_closedBall f₀ r
+  isCompact_image_coe_of_bounded_of_weak_closed isBounded_closedBall <|
+    is_weak_closed_closedBall f₀ r
 #align continuous_linear_map.is_compact_image_coe_closed_ball ContinuousLinearMap.isCompact_image_coe_closedBall
 
 end Completeness
@@ -2066,7 +2061,7 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   tfae_have 6 ↔ 8
   · simp_rw [bddAbove_def, Set.forall_range_iff]
   tfae_have 8 ↔ 9
-  · rw [ENNReal.iSup_coe_lt_top (fun i ↦ ‖f i‖₊), ← NNReal.bddAbove_coe, ← Set.range_comp]
+  · rw [ENNReal.iSup_coe_lt_top, ← NNReal.bddAbove_coe, ← Set.range_comp]
     rfl
   -- `3 ↔ 4` is the interesting part of the result. It is essentially a combination of
   -- `WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm` which turns

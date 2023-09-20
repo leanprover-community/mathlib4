@@ -377,7 +377,7 @@ def toPOUFun (i : ι) (x : X) : ℝ :=
 #align bump_covering.to_pou_fun BumpCovering.toPOUFun
 
 theorem toPOUFun_zero_of_zero {i : ι} {x : X} (h : f i x = 0) : f.toPOUFun i x = 0 := by
-  rw [toPOUFun, h, MulZeroClass.zero_mul]
+  rw [toPOUFun, h, zero_mul]
 #align bump_covering.to_pou_fun_zero_of_zero BumpCovering.toPOUFun_zero_of_zero
 
 theorem support_toPOUFun_subset (i : ι) : support (f.toPOUFun i) ⊆ support (f i) :=

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.Data.Int.Bitwise
 
 #align_import linear_algebra.matrix.zpow from "leanprover-community/mathlib"@"03fda9112aa6708947da13944a19310684bfdfcb"
 
@@ -17,7 +18,7 @@ the nonsingular inverse definition for negative powers.
 
 The main definition is a direct recursive call on the integer inductive type,
 as provided by the `DivInvMonoid.Pow` default implementation.
-The lemma names are taken from `Algebra.group_with_zero.power`.
+The lemma names are taken from `Algebra.GroupWithZero.Power`.
 
 ## Tags
 
@@ -252,7 +253,7 @@ theorem zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 
     rcases nonsing_inv_cancel_or_zero A with (⟨h, _⟩ | h)
     · apply zpow_add_one (isUnit_det_of_left_inverse h)
     · show A ^ (-((n + 1 : ℕ) : ℤ)) = A ^ (-((n + 2 : ℕ) : ℤ)) * A
-      simp_rw [zpow_neg_coe_nat, ← inv_pow', h, zero_pow Nat.succ_pos', MulZeroClass.zero_mul]
+      simp_rw [zpow_neg_coe_nat, ← inv_pow', h, zero_pow Nat.succ_pos', zero_mul]
 #align matrix.zpow_add_one_of_ne_neg_one Matrix.zpow_add_one_of_ne_neg_one
 
 set_option linter.deprecated false in

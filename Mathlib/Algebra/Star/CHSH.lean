@@ -82,7 +82,7 @@ The physical interpretation is that `A₀` and `A₁` are a pair of boolean obse
 are spacelike separated from another pair `B₀` and `B₁` of boolean observables.
 -/
 --@[nolint has_nonempty_instance] Porting note: linter does not exist
-structure IsCHSHTuple {R} [Monoid R] [StarSemigroup R] (A₀ A₁ B₀ B₁ : R) : Prop where
+structure IsCHSHTuple {R} [Monoid R] [StarMul R] (A₀ A₁ B₀ B₁ : R) : Prop where
   A₀_inv : A₀ ^ 2 = 1
   A₁_inv : A₁ ^ 2 = 1
   B₀_inv : B₀ ^ 2 = 1
@@ -112,7 +112,7 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
     simp only [A₁_inv, B₁_inv, sub_eq_add_neg, add_mul, mul_add, sub_mul, mul_sub, add_assoc,
       neg_add, neg_sub, sub_add, sub_sub, neg_mul, ← sq, A₀_inv, B₀_inv, ← sq, ← mul_assoc, one_mul,
       mul_one, add_right_neg, add_zero, sub_eq_add_neg, A₀_inv, mul_one, add_right_neg,
-      MulZeroClass.zero_mul]
+      zero_mul]
 set_option linter.uppercaseLean3 false in
 #align CHSH_id CHSH_id
 

@@ -109,10 +109,10 @@ theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     Int.cast_mul, zero_mul, add_zero] at this
   push_cast
   rw [mul_right_comm, mul_assoc, ← this]
-  suffices rdcp : r.den.coprime p
+  suffices rdcp : r.den.Coprime p
   · rw [rdcp.gcd_eq_one]
     simp only [mul_one, cast_one, sub_self]
-  apply coprime.symm
+  apply Coprime.symm
   apply (coprime_or_dvd_of_prime hp_prime.1 _).resolve_right
   rw [← Int.coe_nat_dvd, ← norm_int_lt_one_iff_dvd, not_lt]
   apply ge_of_eq
@@ -362,7 +362,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
   simp only [map_natCast, ZMod.nat_cast_self, RingHom.map_pow, RingHom.map_mul, ZMod.nat_cast_val]
   have hc' : c ≠ 0 := by
     rintro rfl
-    simp only [MulZeroClass.mul_zero] at hc
+    simp only [mul_zero] at hc
     contradiction
   conv_rhs =>
     congr
@@ -383,7 +383,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
     rw [DiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
     exact irreducible_p
   · rw [zero_pow hc0]
-    simp only [sub_zero, ZMod.cast_zero, MulZeroClass.mul_zero]
+    simp only [sub_zero, ZMod.cast_zero, mul_zero]
     rw [unitCoeff_spec hc']
     exact (dvd_pow_self (p : ℤ_[p]) hc0.ne').mul_left _
 #align padic_int.appr_spec PadicInt.appr_spec
