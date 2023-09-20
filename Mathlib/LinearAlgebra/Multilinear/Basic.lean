@@ -77,14 +77,11 @@ since `_inst` is a free variable and so the equality can just be substituted.
 
 open Function Fin Set BigOperators
 
-universe u v v' v₁ v₂ v₃ w u'
-
-variable {R : Type u} {ι : Type u'} {n : ℕ} {M : Fin n.succ → Type v} {M₁ : ι → Type v₁}
-  {M₂ : Type v₂} {M₃ : Type v₃} {M' : Type v'}
+variable {R S ι : Type*} {n : ℕ} {M : Fin n.succ → Type*} {M₁ : ι → Type*} {M₂ M₃ M' : Type*}
 
 /-- Multilinear maps over the ring `R`, from `∀ i, M₁ i` to `M₂` where `M₁ i` and `M₂` are modules
 over `R`. -/
-structure MultilinearMap (R : Type u) {ι : Type u'} (M₁ : ι → Type v) (M₂ : Type w) [Semiring R]
+structure MultilinearMap (R : Type*) {ι : Type*} (M₁ : ι → Type*) (M₂ : Type*) [Semiring R]
   [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)] [Module R M₂] where
   /-- The underlying multivariate function of a multilinear map. -/
   toFun : (∀ i, M₁ i) → M₂
@@ -238,16 +235,17 @@ instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) :=
   coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align multilinear_map.add_comm_monoid MultilinearMap.addCommMonoid
 
+/-- Coercion of a multilinear map to a function as an additive monoid homomorphism. -/
+def coeAddMonoidHom : MultilinearMap R M₁ M₂ →+ (((i : ι) → M₁ i) → M₂) :=
+  ⟨⟨FunLike.coe, rfl⟩, fun _ _ ↦ rfl⟩
+
 @[simp]
-theorem sum_apply {α : Type*} (f : α → MultilinearMap R M₁ M₂) (m : ∀ i, M₁ i) :
-    ∀ {s : Finset α}, (∑ a in s, f a) m = ∑ a in s, f a m := by
-  classical
-    apply Finset.induction
-    · rw [Finset.sum_empty]
-      simp
-    · intro a s has H
-      rw [Finset.sum_insert has]
-      simp [H, has]
+theorem coe_sum {α : Type*} (f : α → MultilinearMap R M₁ M₂) (s : Finset α) :
+    ⇑(∑ a in s, f a) = ∑ a in s, ⇑(f a) :=
+  map_sum coeAddMonoidHom f s
+
+theorem sum_apply {α : Type*} (f : α → MultilinearMap R M₁ M₂) (m : ∀ i, M₁ i) {s : Finset α} :
+    (∑ a in s, f a) m = ∑ a in s, f a m := by simp
 #align multilinear_map.sum_apply MultilinearMap.sum_apply
 
 /-- If `f` is a multilinear map, then `f.toLinearMap m i` is the linear map obtained by fixing all
@@ -283,22 +281,24 @@ def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, 
 
 section
 
-variable (R M₂)
+variable (R M₂ M₃)
 
-/-- The evaluation map from `ι → M₂` to `M₂` is multilinear at a given `i` when `ι` is subsingleton.
--/
+/-- Equivalence between linear maps `M₂ →ₗ[R] M₃` and one-multilinear maps. -/
 @[simps]
-def ofSubsingleton [Subsingleton ι] (i' : ι) : MultilinearMap R (fun _ : ι => M₂) M₂ where
-  toFun := Function.eval i'
-  map_add' m i x y := by
-    rw [Subsingleton.elim i i']
-    simp only [Function.eval, Function.update_same]
-  map_smul' m i r x := by
-    rw [Subsingleton.elim i i']
-    simp only [Function.eval, Function.update_same]
-#align multilinear_map.of_subsingleton MultilinearMap.ofSubsingleton
-#align multilinear_map.of_subsingleton_apply MultilinearMap.ofSubsingleton_apply
-
+def ofSubsingleton [Subsingleton ι] (i : ι) :
+    (M₂ →ₗ[R] M₃) ≃ MultilinearMap R (fun _ : ι ↦ M₂) M₃ where
+  toFun f :=
+    { toFun := fun x ↦ f (x i)
+      map_add' := by intros; simp [update_eq_const]
+      map_smul' := by intros; simp [update_eq_const] }
+  invFun f :=
+    { toFun := fun x ↦ f fun _ ↦ x
+      map_add' := fun x y ↦ by simpa [update_eq_const] using f.map_add 0 i x y
+      map_smul' := fun c x ↦ by simpa [update_eq_const] using f.map_smul 0 i c x }
+  left_inv f := rfl
+  right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
+#align multilinear_map.of_subsingleton MultilinearMap.ofSubsingletonₓ
+#align multilinear_map.of_subsingleton_apply MultilinearMap.ofSubsingleton_apply_applyₓ
 
 variable (M₁) {M₂}
 
@@ -824,6 +824,47 @@ end LinearMap
 
 namespace MultilinearMap
 
+section Semiring
+
+variable [Semiring R] [(i : ι) → AddCommMonoid (M₁ i)] [(i : ι) → Module R (M₁ i)]
+  [AddCommMonoid M₂] [Module R M₂]
+
+instance [Monoid S] [DistribMulAction S M₂] [Module R M₂] [SMulCommClass R S M₂] :
+    DistribMulAction S (MultilinearMap R M₁ M₂) :=
+  coe_injective.distribMulAction coeAddMonoidHom fun _ _ ↦ rfl
+
+section Module
+
+variable [Semiring S] [Module S M₂] [Module R M₂] [SMulCommClass R S M₂]
+
+/-- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
+addition and scalar multiplication. -/
+instance : Module S (MultilinearMap R M₁ M₂) :=
+  coe_injective.module _ coeAddMonoidHom fun _ _ ↦ rfl
+
+instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (MultilinearMap R M₁ M₂) :=
+  coe_injective.noZeroSMulDivisors _ rfl coe_smul
+
+end Module
+
+section OfSubsingleton
+
+variable (R S M₂ M₃)
+variable [AddCommMonoid M₃] [Semiring S] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
+
+/-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
+and one-multilinear maps `MultilinearMap R (fun _ : ι ↦ M₂) M₃`. -/
+@[simps (config := { simpRhs := true })]
+def ofSubsingletonₗ [Subsingleton ι] (i : ι) :
+    (M₂ →ₗ[R] M₃) ≃ₗ[S] MultilinearMap R (fun _ : ι ↦ M₂) M₃ :=
+  { ofSubsingleton R M₂ M₃ i with
+    map_add' := fun _ _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl }
+
+end OfSubsingleton
+
+end Semiring
+
 section CommSemiring
 
 variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M₂]
@@ -865,19 +906,6 @@ theorem map_update_smul [DecidableEq ι] [Fintype ι] (m : ∀ i, M₁ i) (i : �
     map_piecewise_smul f _ _ _
   simpa [← Function.update_smul c m] using this
 #align multilinear_map.map_update_smul MultilinearMap.map_update_smul
-
-section DistribMulAction
-
-variable {R' A : Type*} [Monoid R'] [Semiring A] [∀ i, Module A (M₁ i)] [DistribMulAction R' M₂]
-  [Module A M₂] [SMulCommClass A R' M₂]
-
-instance : DistribMulAction R' (MultilinearMap A M₁ M₂) where
-  one_smul _ := ext fun _ => one_smul _ _
-  mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
-  smul_zero _ := ext fun _ => smul_zero _
-  smul_add _ _ _ := ext fun _ => smul_add _ _ _
-
-end DistribMulAction
 
 section Module
 
