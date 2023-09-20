@@ -216,6 +216,7 @@ macro "∃' " bs:flexibleBinders ", " t:term : term => do
     | .std ty bind _, body => `(Exists fun ($bind : $ty) => $body)
     | .prop p, body => `($p ∧ $body)
     | .match discr patt, body => `(match $discr:term with | $patt => $body)
+    | .letI x val, body => `(letI $x := $val; $body)
 
 macro "∑ " bs:flexibleBinders ", " t:term : term => do
   let res ← expandFlexibleBinders (← `(flexibleBindersDom| finset%)) bs
@@ -224,6 +225,7 @@ macro "∑ " bs:flexibleBinders ", " t:term : term => do
   | .std ty bind (some dom), body => `(Finset.sum $dom fun ($bind : $ty) => $body)
   | .prop p, body => `(if $p then $body else 0)
   | .match discr patt, body => `(match $discr:term with | $patt => $body)
+  | .letI x val, body => `(letI $x := $val; $body)
 
 section
 variable (s : Set (Nat × Nat))
@@ -240,6 +242,8 @@ info: ∃ x,
 #guard_msgs in #check ∃' (x, y) ∈ s, x + y = 10
 /-- info: ∃ p, p ∈ s ∧ True ∧ False : Prop -/
 #guard_msgs in #check ∃' p ∈ s, True ∧ False
+/-- info: ∃ x, x < 10 ∧ ∃ y, y < 10 ∧ ∃ z, z ≤ 5 ∧ x + y = z : Prop -/
+#guard_msgs in #check ∃' ((x y : Nat) < 10) (z ≤ 5), x + y = z
 end
 
 section
