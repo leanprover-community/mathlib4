@@ -24,7 +24,7 @@ info: Try this: rw [@List.map_append]
 -/
 #guard_msgs in
 example (f : α → β) (L M : List α) : (L ++ M).map f = L.map f ++ M.map f := by
-  rw?!
+  rw?
 
 open CategoryTheory
 
@@ -34,7 +34,7 @@ info: Try this: rw [@Category.id_comp]
 -/
 #guard_msgs in
 example [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 𝟙 _ ≫ g = f ≫ g := by
-  rw?!
+  rw?
 
 /--
 info: Try this: rw [@mul_left_eq_self]
@@ -42,13 +42,7 @@ info: Try this: rw [@mul_left_eq_self]
 -/
 #guard_msgs in
 example [Group G] (h : G) : 1 * h = h := by
-  rw?!
-
-#guard_msgs(drop info) in
-example [Group G] (g h : G) : g * g⁻¹ * h = h := by
-  rw? -- the right answer is not the first solution, so we can't use rw?!
-  rw [mul_inv_self]
-  rw [one_mul]
+  rw?
 
 /--
 info: Try this: rw [← @Nat.prime_iff]
@@ -56,11 +50,11 @@ info: Try this: rw [← @Nat.prime_iff]
 -/
 #guard_msgs in
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
-  rw?!
+  rw?
 
 #guard_msgs(drop info) in
 example [Group G] (h : G) (hyp : g * 1 = h) : g = h := by
-  rw?! at hyp
+  rw? at hyp
   assumption
 
 #guard_msgs(drop info) in
@@ -90,20 +84,19 @@ lemma six_eq_seven : 6 = 7 := test_sorry
 -- it previously also reported `Nat.cast_ofNat`
 #guard_msgs(drop info) in
 example : ∀ (x : ℕ), x ≤ 6 := by
-  rw?!
+  rw?
   guard_target = ∀ (x : ℕ), x ≤ 7
   exact test_sorry
 
-#guard_msgs(drop info) in
-example : ∀ (x : ℕ) (_w : x ≤ 6), x ≤ 8 := by
-  rw?!
-  guard_target = ∀ (x : ℕ) (_w : x ≤ 7), x ≤ 8
-  exact test_sorry
+example : ∀ (x : ℕ) (w : x ≤ 6), x ≤ 8 := by
+  rw?
+  guard_target = ∀ (x : ℕ) (w : x ≤ 7), x ≤ 8
+  admit
 
 -- check we can look inside let expressions
 #guard_msgs(drop info) in
 example (n : ℕ) : let y := 3; n + y = 3 + n := by
-  rw?!
+  rw?
 
 axiom α : Type
 axiom f : α → α
@@ -116,12 +109,12 @@ axiom f_eq (n) : f n = z
 #guard_msgs(drop info) in
 lemma test : f n = f m := by
   rw?
-  rw [f_eq, f_eq]
+  rw [f_eq]
 
 -- Check that we can rewrite by local hypotheses.
 #guard_msgs(drop info) in
 example (h : 1 = 2) : 2 = 1 := by
-  rw?!
+  rw?
 
 def zero : Nat := 0
 
@@ -129,5 +122,5 @@ def zero : Nat := 0
 -- rather than `withReducible` `rfl`.
 #guard_msgs(drop info) in
 example : zero = 0 := by
-  rw?!
-  exact test_sorry
+  rw?
+  sorry
