@@ -26,4 +26,8 @@ lemma unitsMap_comp {d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
     rw [← Units.map_comp]
     exact congr_arg Units.map <| congr_arg RingHom.toMonoidHom <| castHom_comp hm hd
 
+@[simp]
+lemma unitsMap_self (n : ℕ) : unitsMap (dvd_refl n) = MonoidHom.id _ := by
+  simp [unitsMap, castHom_self]
+
 end ZMod

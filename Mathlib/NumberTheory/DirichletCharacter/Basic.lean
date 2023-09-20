@@ -64,23 +64,17 @@ lemma changeLevel_def {m : ℕ} (hm : n ∣ m) :
 
 lemma changeLevel_def' {m : ℕ} (hm : n ∣ m) :
     (changeLevel hm χ).toUnitHom = χ.toUnitHom.comp (ZMod.unitsMap hm) := by
-  ext
-  rw [changeLevel_def, ZMod.unitsMap_def]
-  simp
+  simp [changeLevel]
 
 @[simp]
 lemma changeLevel_self : changeLevel (dvd_refl n) χ = χ := by
-  ext
-  rw [changeLevel_def]
-  simp [ZMod.unitsMap]
+  simp [changeLevel, ZMod.unitsMap]
 
 lemma changeLevel_self_toUnitHom : (changeLevel (dvd_refl n) χ).toUnitHom = χ.toUnitHom := by
   rw [changeLevel_self]
 
 lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
   changeLevel (dvd_trans hm hd) χ = changeLevel hd (changeLevel hm χ) := by
-  simp only [changeLevel_def, toUnitHom_eq, ofUnitHom_eq, Equiv.apply_symm_apply]
-  rw [← ZMod.unitsMap_comp hm hd]
-  rfl
+  simp [changeLevel_def, MonoidHom.comp_assoc, ZMod.unitsMap_comp]
 
 end DirichletCharacter

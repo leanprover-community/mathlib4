@@ -1163,7 +1163,7 @@ theorem ringHom_eq_of_ker_eq [CommRing R] (f g : R →+* ZMod n)
 
 @[simp]
 lemma castHom_self : ZMod.castHom dvd_rfl (ZMod n) = RingHom.id (ZMod n) :=
-  RingHom.ext_zmod (ZMod.castHom dvd_rfl (ZMod n)) (RingHom.id (ZMod n))
+  Subsingleton.elim _ _
 
 @[simp]
 lemma castHom_comp {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
