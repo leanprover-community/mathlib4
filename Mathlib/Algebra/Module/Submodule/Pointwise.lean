@@ -24,12 +24,21 @@ and the actions
 
 which matches the action of `Set.mulActionSet`.
 
+This file also provides:
+* `Submodule.pointwiseSetSMulSubmodule`: for `R`-module `M`, a `s : Set R` can act on
+  `N : Submodule R M` by defining `s • N` to be the smallest submodule containing all `a • n`
+  where `a ∈ s` and `n ∈ N`.
+
 These actions are available in the `Pointwise` locale.
 
 ## Implementation notes
 
-Most of the lemmas in this file are direct copies of lemmas from
+For an `R`-module `M`, The action of a subset of `R` acting on a submodule of `M` introduced in
+section `set_acting_on_submodules` does not have a counterpart in
 `GroupTheory/Submonoid/Pointwise.lean`.
+
+Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
+lemmas from `GroupTheory/Submonoid/Pointwise.lean`.
 -/
 
 
@@ -280,7 +289,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseMulActionWithZero
 
 end
 
-section
+section set_acting_on_submodules
 
 variable [AddCommMonoid M] [Module R M]
 
@@ -494,6 +503,7 @@ lemma span_smul_submodule {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [
           rw [← mul_smul, smul_eq_mul, mul_comm, mul_smul]
           exact mem_set_smul_submodule_of_mem_mem _ _ (hc hi) <| Submodule.smul_mem _ _ hn) <|
     set_smul_submodule_mono_left _ Submodule.subset_span
-end
+
+end set_acting_on_submodules
 
 end Submodule
