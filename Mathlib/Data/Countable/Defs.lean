@@ -46,13 +46,13 @@ instance : Countable ℕ :=
 export Countable (exists_injective_nat)
 
 protected theorem Function.Injective.countable [Countable β] {f : α → β} (hf : Injective f) :
-  Countable α :=
+    Countable α :=
   let ⟨g, hg⟩ := exists_injective_nat β
   ⟨⟨g ∘ f, hg.comp hf⟩⟩
 #align function.injective.countable Function.Injective.countable
 
 protected theorem Function.Surjective.countable [Countable α] {f : α → β} (hf : Surjective f) :
-  Countable β :=
+    Countable β :=
   (injective_surjInv hf).countable
 #align function.surjective.countable Function.Surjective.countable
 
