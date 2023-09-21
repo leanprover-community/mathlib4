@@ -126,15 +126,18 @@ end padicValNat
 
 def harmonic : ℕ → ℚ := fun n => ∑ i in Finset.range n, 1 / (i + 1)
 
-lemma harmonic_ne_zero : ∀ n, n ≠ 0 → harmonic n > 0 := fun n Hn => Finset.sum_pos (fun i _ => div_pos zero_lt_one (by norm_cast; linarith)) (by (rwa [Finset.nonempty_range_iff]))
+lemma harmonic_ne_zero : ∀ n, n ≠ 0 → harmonic n > 0 := fun n Hn =>
+  Finset.sum_pos (fun _ _ => div_pos zero_lt_one
+  (by norm_cast; linarith))
+  (by (rwa [Finset.nonempty_range_iff]))
 
-lemma harmonic_singleton {n c : ℕ} (hc : c ∈ Finset.range n): harmonic n =1 / ((c + 1):ℚ) + ∑ x in Finset.range n \ {c}, 1 / ((x : ℚ) + 1) := by {
-  rw [add_comm]
-  unfold harmonic
-  rwa [Finset.sum_eq_sum_diff_singleton_add (i := c)]
-}
+lemma harmonic_singleton {n c : ℕ} (hc : c ∈ Finset.range n):
+  harmonic n = 1 / (c + 1) + ∑ x in Finset.range n \ {c}, 1 / ((x : ℚ) + 1) := by
+    unfold harmonic
+    rwa [add_comm, Finset.sum_eq_sum_diff_singleton_add (i := c)]
 
-lemma finset_range_sdiff_singleton_nonempty {c n : ℕ} (hn : 2 ≤ n) : Finset.Nonempty (Finset.range n \ {c}) := by {
+lemma finset_range_sdiff_singleton_nonempty {c n : ℕ} (hn : 2 ≤ n):
+  Finset.Nonempty (Finset.range n \ {c}) := by {
   rw [Finset.sdiff_nonempty,Finset.subset_singleton_iff, Finset.range_eq_empty_iff]
   push_neg
   refine' ⟨by linarith,fun Hnot => _⟩
