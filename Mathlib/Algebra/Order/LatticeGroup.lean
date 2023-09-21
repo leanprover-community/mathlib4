@@ -635,7 +635,7 @@ theorem mabs_mul_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : |a
 -- | |a| - |b| | ≤ |a - b|
 @[to_additive]
 theorem abs_abs_div_abs_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) :
-|(|a| / |b|)| ≤ |a / b| := by
+    |(|a| / |b|)| ≤ |a / b| := by
   rw [abs_eq_sup_inv, sup_le_iff]
   constructor
   · apply div_le_iff_le_mul.2
