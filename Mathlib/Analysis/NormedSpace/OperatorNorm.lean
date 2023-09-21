@@ -877,7 +877,7 @@ variable (F σ₁₂) [RingHomIsometric σ₁₂]
 vector.
 
 This is the continuous version of `LinearMap.applyₗ`. -/
-def apply' : E →SL[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F :=
+noncomputable def apply' : E →SL[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F :=
   flip (id 𝕜₂ (E →SL[σ₁₂] F))
 #align continuous_linear_map.apply' ContinuousLinearMap.apply'
 
@@ -894,7 +894,7 @@ variable (𝕜 Fₗ)
 vector.
 
 This is the continuous version of `LinearMap.applyₗ`. -/
-def apply : E →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] Fₗ :=
+noncomputable def apply : E →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] Fₗ :=
   flip (id 𝕜 (E →L[𝕜] Fₗ))
 #align continuous_linear_map.apply ContinuousLinearMap.apply
 
@@ -910,7 +910,7 @@ variable (σ₁₂ σ₂₃ E F G)
 set_option linter.uppercaseLean3 false
 
 /-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
-def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
+noncomputable def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
     (LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add fun c f g => by
       ext
