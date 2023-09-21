@@ -212,6 +212,12 @@ theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.s
 #align finsupp.prod_congr Finsupp.prod_congr
 #align finsupp.sum_congr Finsupp.sum_congr
 
+@[to_additive]
+theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
+    (h₀ : ∀ b ∈ f.support, b ≠ a → g b (f b) = 1) (h₁ : a ∉ f.support → g a (f a) = 1) :
+    f.prod g = g a (f a) :=
+  Finset.prod_eq_single a h₀ h₁
+
 end SumProd
 
 end Finsupp

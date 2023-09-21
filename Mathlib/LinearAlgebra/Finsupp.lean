@@ -503,7 +503,7 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
   · have : Finsupp.sum l (fun a => Finsupp.single (f a)) (f x) = 0 := by
       rw [h₂]
       rfl
-    rw [Finsupp.sum_apply, Finsupp.sum, Finset.sum_eq_single x, single_eq_same] at this
+    rw [Finsupp.sum_apply, Finsupp.sum_eq_single x, single_eq_same] at this
     · simpa
     · intro y hy xy
       simp [mt (H _ (h₁ hy) _ xs) xy]
