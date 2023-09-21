@@ -321,6 +321,11 @@ lemma opcyclesMap_comp_descOpcycles {A : C} (k : L.X i ⟶ A) (j : ι) (hj : c.p
       (by rw [← φ.comm_assoc, hk, comp_zero]) := by
   simp only [← cancel_epi (K.pOpcycles i), p_opcyclesMap_assoc, p_descOpcycles]
 
+@[reassoc (attr := simp)]
+lemma homology_π_ι (i : ι) [K.HasHomology i]:
+    K.homologyπ i ≫ K.homologyι i = K.iCycles i ≫ K.pOpcycles i :=
+  (K.sc i).homology_π_ι
+
 variable (C c)
 
 section

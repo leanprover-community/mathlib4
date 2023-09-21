@@ -412,6 +412,16 @@ lemma naturality_δ (f : S₁ ⟶ S₂) : f.f₀.τ₃ ≫ S₂.δ = S₁.δ ≫
   rw [← cancel_epi (pullback.snd : S₁.P ⟶ _), S₁.snd_δ_assoc, ← comp_τ₁, ← f.comm₂₃,
     comp_τ₁, naturality_φ₁_assoc, ← S₂.snd_δ, functorP_map, pullback.lift_snd_assoc, assoc]
 
+lemma comp_δ_eq {A : C} (x₀₃ : A ⟶ S.L₀.X₃) (x₁₂ : A ⟶ S.L₁.X₂) (x₂₁ : A ⟶ S.L₂.X₁)
+    (h₁₂ : x₁₂ ≫ S.L₁.g = x₀₃ ≫ S.v₀₁.τ₃) (h₂₁ : x₁₂ ≫ S.v₁₂.τ₂ = x₂₁ ≫ S.L₂.f) :
+    x₀₃ ≫ S.δ = x₂₁ ≫ S.v₂₃.τ₁ := by
+  have eq := (pullback.lift x₁₂ x₀₃ h₁₂) ≫= S.snd_δ
+  rw [pullback.lift_snd_assoc] at eq
+  rw [eq, ← assoc]
+  congr 1
+  simp only [← cancel_mono S.L₂.f, ← h₂₁, assoc, φ₁_L₂_f, φ₂, limit.lift_π_assoc,
+    PullbackCone.mk_π_app]
+
 variable (C)
 
 @[simps]

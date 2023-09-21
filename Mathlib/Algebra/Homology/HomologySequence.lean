@@ -270,6 +270,25 @@ lemma δ_naturality : HomologicalComplex.homologyMap τ.τ₃ i ≫ hS'.δ i j h
     hS.δ i j hij ≫ HomologicalComplex.homologyMap τ.τ₁ j :=
   SnakeInput.naturality_δ (snakeInputHom hS hS' τ i j hij)
 
+@[reassoc]
+lemma comp_δ_eq {A : C} (x₃ : A ⟶ S.X₃.X i) (x₂ : A ⟶ S.X₂.X i) (y₁ : A ⟶ S.X₁.X j)
+    (hx₃ : x₃ ≫ S.X₃.d i j = 0) (hx₂ : x₂ ≫ S.g.f i = x₃)
+    (hy₁ : y₁ ≫ S.f.f j = x₂ ≫ S.X₂.d i j) :
+    S.X₃.liftCycles x₃ j (c.next_eq' hij) hx₃ ≫ S.X₃.homologyπ i ≫ hS.δ i j hij =
+      S.X₁.liftCycles y₁ _ rfl (by
+        have := hS.mono_f
+        rw [← cancel_mono (S.f.f _), assoc, ← Hom.comm, reassoc_of% hy₁, S.X₂.d_comp_d,
+          comp_zero, zero_comp]) ≫ S.X₁.homologyπ j := by
+  have eq := (snakeInput hS i j hij).comp_δ_eq
+    (S.X₃.liftCycles x₃ j (c.next_eq' hij) hx₃ ≫ S.X₃.homologyπ i)
+    (x₂ ≫ S.X₂.pOpcycles i) (S.X₁.liftCycles y₁ _ rfl (by
+      have := hS.mono_f
+      rw [← cancel_mono (S.f.f _), assoc, ← Hom.comm, reassoc_of% hy₁, S.X₂.d_comp_d,
+        comp_zero, zero_comp])) (by simp [reassoc_of% hx₂]) (by
+        rw [← cancel_mono (S.X₂.iCycles j)]
+        simp [hy₁])
+  simpa only [assoc] using eq
+
 end ShortExact
 
 end ShortComplex
