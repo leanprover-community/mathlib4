@@ -230,8 +230,8 @@ instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) :=
 #align multilinear_map.add_comm_monoid MultilinearMap.addCommMonoid
 
 /-- Coercion of a multilinear map to a function as an additive monoid homomorphism. -/
-def coeAddMonoidHom : MultilinearMap R M₁ M₂ →+ (((i : ι) → M₁ i) → M₂) :=
-  ⟨⟨FunLike.coe, rfl⟩, fun _ _ ↦ rfl⟩
+@[simps] def coeAddMonoidHom : MultilinearMap R M₁ M₂ →+ (((i : ι) → M₁ i) → M₂) where
+  toFun := FunLike.coe; map_zero' := rfl; map_add' _ _ := rfl
 
 @[simp]
 theorem coe_sum {α : Type*} (f : α → MultilinearMap R M₁ M₂) (s : Finset α) :
