@@ -77,11 +77,14 @@ since `_inst` is a free variable and so the equality can just be substituted.
 
 open Function Fin Set BigOperators
 
-variable {R S ι : Type*} {n : ℕ} {M : Fin n.succ → Type*} {M₁ : ι → Type*} {M₂ M₃ M' : Type*}
+universe uR uS uι v v' v₁ v₂ v₃
+
+variable {R : Type uR} {S : Type uS} {ι : Type uι} {n : ℕ}
+  {M : Fin n.succ → Type v} {M₁ : ι → Type v₁} {M₂ : Type v₂} {M₃ : Type v₃} {M' : Type v'}
 
 /-- Multilinear maps over the ring `R`, from `∀ i, M₁ i` to `M₂` where `M₁ i` and `M₂` are modules
 over `R`. -/
-structure MultilinearMap (R : Type*) {ι : Type*} (M₁ : ι → Type*) (M₂ : Type*) [Semiring R]
+structure MultilinearMap (R : Type uR) {ι : Type uι} (M₁ : ι → Type v₁) (M₂ : Type v₂) [Semiring R]
   [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)] [Module R M₂] where
   /-- The underlying multivariate function of a multilinear map. -/
   toFun : (∀ i, M₁ i) → M₂
