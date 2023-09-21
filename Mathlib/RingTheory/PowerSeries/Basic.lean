@@ -2735,10 +2735,9 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
 theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R⟦X⟧) = f := by
   have this : support f ⊆ Ico 0 n
   · calc
-      support f
-        ⊆ range (f.natDegree + 1)  := supp_subset_range_natDegree_succ
-      _ ⊆ range n                  := Iff.mpr range_subset hn
-      _ = Ico 0 n                  := by rw [range_eq_Ico]
+      support f ⊆ range (f.natDegree + 1) := supp_subset_range_natDegree_succ
+      _         ⊆ range n                 := Iff.mpr range_subset hn
+      _         = Ico 0 n                 := by rw [range_eq_Ico]
   nth_rw 2 [←sum_monomial_eq f]
   rw [trunc, sum_eq_of_subset (hs := this), sum_congr rfl]
   · intros
