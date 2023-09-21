@@ -2875,7 +2875,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
   · rfl
 
 @[simp] theorem trunc_mul_trunc {n} (f g : R ⟦X⟧) :
-  trunc n ( f * (trunc n g) : R⟦X⟧ ) = trunc n ( f * g ) := by
+    trunc n ( f * (trunc n g) : R⟦X⟧ ) = trunc n ( f * g ) := by
   rw [mul_comm, trunc_trunc_mul, mul_comm]
 
 theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
