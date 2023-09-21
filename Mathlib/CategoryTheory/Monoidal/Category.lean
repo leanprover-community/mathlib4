@@ -111,36 +111,45 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] where
   rightUnitor : ∀ X : C, tensorObj X tensorUnit' ≅ X
   /-- The associator isomorphism `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
   associator : ∀ X Y Z : C, tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z)
+  /-- The left whiskering preserves the identity. -/
   whiskerLeft_id : ∀ (X Y : C), whiskerLeft X (𝟙 Y) = 𝟙 (tensorObj X Y) := by
     aesop_cat
+  /-- The left whiskering commutes with the composition. -/
   whiskerLeft_comp :
     ∀ (W : C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z),
       whiskerLeft W (f ≫ g) = whiskerLeft W f ≫ whiskerLeft W g := by
     aesop_cat
+  /-- `𝟙_ C ◁ f` is equal to `f` up to unitors. -/
   id_whiskerLeft :
     ∀ {X Y : C} (f : X ⟶ Y),
       whiskerLeft tensorUnit' f = (leftUnitor X).hom ≫ f ≫ (leftUnitor Y).inv := by
     aesop_cat
+  /-- `(X ⊗ Y) ◁ f` is equal to `X ◁ Y ◁ f` up to associators. -/
   tensor_whiskerLeft :
     ∀ (X Y : C) {Z Z' : C} (f : Z ⟶ Z'),
       whiskerLeft (tensorObj X Y) f =
         (associator X Y Z).hom ≫ whiskerLeft X (whiskerLeft Y f) ≫ (associator X Y Z').inv := by
     aesop_cat
+  /-- The right whiskering preserves the identity. -/
   id_whiskerRight : ∀ (X Y : C), whiskerRight (𝟙 X) Y = 𝟙 (tensorObj X Y) := by
     aesop_cat
+  /-- The right whiskering commutes with the composition. -/
   comp_whiskerRight :
     ∀ {W X Y : C} (f : W ⟶ X) (g : X ⟶ Y) (Z : C),
       whiskerRight (f ≫ g) Z = whiskerRight f Z ≫ whiskerRight g Z := by
     aesop_cat
+  /-- `f ▷ 𝟙_ C` is equal to `f` up to unitors. -/
   whiskerRight_id :
     ∀ {X Y : C} (f : X ⟶ Y),
       whiskerRight f tensorUnit' = (rightUnitor X).hom ≫ f ≫ (rightUnitor Y).inv := by
     aesop_cat
+  /-- `f ▷ (Y ⊗ Z)` is equal to `f ▷ Y ▷ Z` up to associators. -/
   whiskerRight_tensor :
     ∀ {X X' : C} (f : X ⟶ X') (Y Z : C),
       whiskerRight f (tensorObj Y Z) =
         (associator X Y Z).inv ≫ whiskerRight (whiskerRight f Y) Z ≫ (associator X' Y Z).hom := by
     aesop_cat
+  /-- `(X ◁ f) ▷ Z` is equal to `X ◁ (f ▷ Z)` up to associators.  -/
   whisker_assoc :
     ∀ (X : C) {Y Y' : C} (f : Y ⟶ Y') (Z : C),
       whiskerRight (whiskerLeft X f) Z =

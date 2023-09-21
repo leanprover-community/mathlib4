@@ -42,10 +42,12 @@ and also satisfies the two hexagon identities.
 class BraidedCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
   -- braiding natural iso:
   braiding : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X
+  /-- naturality of the braiding -/
   braiding_naturality_right :
     ∀ (X : C) {Y Z : C} (f : Y ⟶ Z),
       X ◁ f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ f ▷ X := by
     aesop_cat
+  /-- naturality of the braiding -/
   braiding_naturality_left :
     ∀ {X Y : C} (f : X ⟶ Y) (Z : C),
       f ▷ Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ Z ◁ f := by
