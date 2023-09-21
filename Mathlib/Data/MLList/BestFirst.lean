@@ -40,6 +40,14 @@ This is a somewhat baroque data structure designed for the application in this f
 If someone would like to generalize appropriately that would be great.
 
 We want to maintain a priority queue of `MLList m β`, each indexed by some `a : α` with a priority.
+(One could simplify matters here by simply flattening this out to a priority queue of pairs `α × β`,
+with the priority determined by the `α` factor.
+However the lazyness of `MLList` is essential to performance here:
+we will extract elements from these lists one at a time,
+and only when they at the head of the queue.
+If another item arrives at the head of the queue,
+we may not need to continue calculate the previous head's elements.)
+
 To complicate matters, the priorities might be expensive to calculate,
 so we instead keep track of a lower bound for each such `a : α`.
 The priority queue maintains the `MLList m β` in order of the current best lower bound for the
