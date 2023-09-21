@@ -3,6 +3,7 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Int.Order.Basic
 
+private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
 set_option autoImplicit true
 
@@ -42,11 +43,11 @@ example (A B : Rat) (h : 0 < A * B) : 0 < A*8*B := by
   linarith
 
 example [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
-  have h : 0 ≤ x := sorry
+  have h : 0 ≤ x := test_sorry
   linarith
 
 example [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
-  have h : 0 ≤ x := sorry
+  have h : 0 ≤ x := test_sorry
   linarith [h]
 
 example [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) :
@@ -518,8 +519,8 @@ example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
   linarith
 
 -- simulate the type of MvPolynomial
-def P : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
-instance : LinearOrderedField (P c d) := sorry
+def P : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
+noncomputable instance : LinearOrderedField (P c d) := test_sorry
 
 example (p : P PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
   linarith
