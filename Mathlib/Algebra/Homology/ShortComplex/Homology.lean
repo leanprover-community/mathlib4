@@ -1059,7 +1059,7 @@ lemma liftCycles_homologyπ_eq_zero_of_boundary [S.HasHomology]
   rw [S.liftCycles_leftHomologyπ_eq_zero_of_boundary_assoc k x hx, zero_comp]
 
 @[reassoc]
-lemma homologyι_descOpcycles_π_eq_zero_of_boundary [S.HasHomology]
+lemma homologyι_descOpcycles_eq_zero_of_boundary [S.HasHomology]
     (k : S.X₂ ⟶ A) (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
     S.homologyι ≫ S.descOpcycles k (by rw [hx, S.zero_assoc, zero_comp]) = 0 := by
   dsimp only [homologyι]

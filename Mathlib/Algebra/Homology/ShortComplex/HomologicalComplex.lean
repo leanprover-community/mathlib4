@@ -138,8 +138,7 @@ lemma toCycles_comp_homologyπ (i j : ι) [K.HasHomology j] :
 noncomputable def homologyIsCokernel (i j : ι) (hi : c.prev j = i) [K.HasHomology j] :
     IsColimit (CokernelCofork.ofπ (K.homologyπ j) (K.toCycles_comp_homologyπ i j)) := by
   subst hi
-  exact IsColimit.ofIsoColimit ((K.sc j).homologyIsCokernel)
-    (Cofork.ext (Iso.refl _) (by dsimp [homologyπ] ; simp))
+  exact ((K.sc j).homologyIsCokernel)
 
 variable (i)
 
@@ -195,6 +194,43 @@ instance [K.HasHomology i] : Mono (K.homologyι i) := by
   dsimp only [homologyι]
   infer_instance
 
+@[reassoc (attr := simp)]
+lemma fromOpcycles_d (i j k : ι) [K.HasHomology i] :
+    K.fromOpcycles i j ≫ K.d j k = 0 := by
+  simp only [← cancel_epi (K.pOpcycles i),
+   p_fromOpcycles_assoc, d_comp_d, comp_zero]
+
+variable {i}
+
+@[reassoc]
+lemma descOpcycles_comp {A A' : C} (k : K.X i ⟶ A) (j : ι) (hj : c.prev i = j)
+    (hk : K.d j i ≫ k = 0) (α : A ⟶ A') :
+    K.descOpcycles k j hj hk ≫ α = K.descOpcycles (k ≫ α) j hj
+      (by rw [reassoc_of% hk, zero_comp]) := by
+  simp only [← cancel_epi (K.pOpcycles i), p_descOpcycles_assoc, p_descOpcycles]
+
+lemma homologyι_descOpcycles_eq_zero_of_boundary {A : C} (k : K.X i ⟶ A) (j : ι)
+    (hj : c.prev i = j) {i' : ι} (x : K.X i' ⟶ A) (hx : k = K.d i i' ≫ x) :
+    K.homologyι i ≫ K.descOpcycles k j hj (by rw [hx, K.d_comp_d_assoc, zero_comp]) = 0 := by
+  by_cases c.Rel i i'
+  · obtain rfl := c.next_eq' h
+    exact (K.sc i).homologyι_descOpcycles_eq_zero_of_boundary _ x hx
+  · have : K.descOpcycles k j hj (by rw [hx, K.d_comp_d_assoc, zero_comp]) = 0 := by
+      rw [K.shape _ _ h, zero_comp] at hx
+      rw [← cancel_epi (K.pOpcycles i), comp_zero, p_descOpcycles, hx]
+    rw [this, comp_zero]
+
+@[reassoc (attr := simp)]
+lemma homologyι_comp_fromOpcycles (i j : ι) [K.HasHomology i] :
+    K.homologyι i ≫ K.fromOpcycles i j = 0 :=
+  K.homologyι_descOpcycles_eq_zero_of_boundary (K.d i j) _ rfl (𝟙 _) (by simp)
+
+noncomputable def homologyIsKernel (i j : ι) (hi : c.next i = j) [K.HasHomology i] :
+    IsLimit (KernelFork.ofι (K.homologyι i) (K.homologyι_comp_fromOpcycles i j)) := by
+  subst hi
+  exact (K.sc i).homologyIsKernel
+
+variable (i)
 variable {K L M}
 
 noncomputable def homologyMap : K.homology i ⟶ L.homology i :=
@@ -311,6 +347,16 @@ noncomputable def cyclesFunctor [CategoryWithHomology C] : HomologicalComplex C 
 noncomputable def opcyclesFunctor [CategoryWithHomology C] : HomologicalComplex C c ⥤ C where
   obj K := K.opcycles i
   map f := opcyclesMap f i
+
+@[simps]
+noncomputable def natTransHomologyι [CategoryWithHomology C] :
+    homologyFunctor C c i ⟶ opcyclesFunctor C c i where
+  app K := K.homologyι i
+
+@[simps]
+noncomputable def natTransHomologyπ [CategoryWithHomology C] :
+    cyclesFunctor C c i ⟶ homologyFunctor C c i where
+  app K := K.homologyπ i
 
 end
 
