@@ -61,7 +61,7 @@ variable (α) [Preorder α]
 The set of upper sets forms a topology. In general the upper set topology does not coincide with the
 upper topology.
 -/
-def upperSetTopology' : TopologicalSpace α :=
+def Topology.upperSet : TopologicalSpace α :=
 { IsOpen := IsUpperSet,
   isOpen_univ := isUpperSet_univ,
   isOpen_inter := fun _ _ => IsUpperSet.inter,
@@ -71,7 +71,7 @@ def upperSetTopology' : TopologicalSpace α :=
 The set of lower sets forms a topology. In general the lower set topology does not coincide with the
 lower topology.
 -/
-def lowerSetTopology' : TopologicalSpace α :=
+def Topology.lowerSet : TopologicalSpace α :=
 { IsOpen := IsLowerSet,
   isOpen_univ := isLowerSet_univ,
   isOpen_inter := fun _ _ => IsLowerSet.inter,
@@ -126,7 +126,7 @@ variable {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
 
 instance : Preorder (WithUpperSetTopology α) := ‹Preorder α›
 
-instance : TopologicalSpace (WithUpperSetTopology α) := upperSetTopology' α
+instance : TopologicalSpace (WithUpperSetTopology α) := Topology.upperSet α
 
 theorem ofUpperSet_le_iff {a b : WithUpperSetTopology α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b :=
   Iff.rfl
@@ -184,7 +184,7 @@ variable [Preorder α]
 
 instance : Preorder (WithLowerSetTopology α) := ‹Preorder α›
 
-instance : TopologicalSpace (WithLowerSetTopology α) := lowerSetTopology' α
+instance : TopologicalSpace (WithLowerSetTopology α) := Topology.lowerSet α
 
 theorem ofLowerSet_le_iff {a b : WithLowerSetTopology α} : ofLowerSet a ≤ ofLowerSet b ↔ a ≤ b :=
   Iff.rfl
@@ -220,14 +220,14 @@ The upper set topology is the topology where the open sets are the upper sets. I
 set topology does not coincide with the upper topology.
 -/
 class UpperSetTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
-  topology_eq_upperSetTopology : t = upperSetTopology' α
+  topology_eq_upperSetTopology : t = Topology.upperSet α
 
 instance [Preorder α] : UpperSetTopology (WithUpperSetTopology α) := ⟨rfl⟩
 
-instance [Preorder α] : @UpperSetTopology (WithUpperSetTopology α) (upperSetTopology' α) _ := ⟨rfl⟩
+instance [Preorder α] : @UpperSetTopology (WithUpperSetTopology α) (Topology.upperSet α) _ := ⟨rfl⟩
 
-instance [Preorder α] : @UpperSetTopology α (upperSetTopology' α) _ := by
-  letI := upperSetTopology' α
+instance [Preorder α] : @UpperSetTopology α (Topology.upperSet α) _ := by
+  letI := Topology.upperSet α
   exact ⟨rfl⟩
 
 /--
@@ -235,14 +235,14 @@ The lower set topology is the topology where the open sets are the lower sets. I
 set topology does not coincide with the lower topology.
 -/
 class LowerSetTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
-  topology_eq_lowerSetTopology : t = lowerSetTopology' α
+  topology_eq_lowerSetTopology : t = Topology.lowerSet α
 
 instance [Preorder α] : LowerSetTopology (WithLowerSetTopology α) := ⟨rfl⟩
 
-instance [Preorder α] : @LowerSetTopology (WithLowerSetTopology α) (lowerSetTopology' α) _ := ⟨rfl⟩
+instance [Preorder α] : @LowerSetTopology (WithLowerSetTopology α) (Topology.lowerSet α) _ := ⟨rfl⟩
 
-instance [Preorder α] : @LowerSetTopology α (lowerSetTopology' α) _ := by
-  letI := lowerSetTopology' α
+instance [Preorder α] : @LowerSetTopology α (Topology.lowerSet α) _ := by
+  letI := Topology.lowerSet α
   exact ⟨rfl⟩
 
 namespace UpperSetTopology
@@ -252,7 +252,7 @@ section Preorder
 variable (α)
 variable [Preorder α] [TopologicalSpace α] [UpperSetTopology α] {s : Set α}
 
-lemma topology_eq : ‹_› = upperSetTopology' α := topology_eq_upperSetTopology
+lemma topology_eq : ‹_› = Topology.upperSet α := topology_eq_upperSetTopology
 
 variable {α}
 
@@ -346,7 +346,7 @@ section Preorder
 variable (α)
 variable [Preorder α] [TopologicalSpace α] [LowerSetTopology α] {s : Set α}
 
-lemma topology_eq : ‹_› = lowerSetTopology' α := topology_eq_lowerSetTopology
+lemma topology_eq : ‹_› = Topology.lowerSet α := topology_eq_lowerSetTopology
 
 variable {α}
 
