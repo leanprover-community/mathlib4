@@ -200,8 +200,8 @@ A structure that holds a value and possibly a pointer to a memory region, if we
 unpickled that value from disk.
 -/
 structure WithCompactedRegion (α : Type) where
-  --- The referenced `CompatedRegion`
+  /-- The referenced `CompatedRegion` -/
   pointer? : Option CompactedRegion
-  --- The wrapped value
+  /-- The wrapped value -/
   val : α
 deriving Nonempty
