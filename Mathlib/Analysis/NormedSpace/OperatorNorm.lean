@@ -873,7 +873,7 @@ theorem coe_flipₗᵢ : ⇑(flipₗᵢ 𝕜 E Fₗ Gₗ) = flip :=
 
 variable (F σ₁₂) [RingHomIsometric σ₁₂]
 
--- Note: compilation runs away #7103
+-- `noncomputable` is a performance workaround for mathlib4#7103
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.
 
@@ -891,7 +891,7 @@ theorem apply_apply' (v : E) (f : E →SL[σ₁₂] F) : apply' F σ₁₂ v f =
 
 variable (𝕜 Fₗ)
 
--- Note: compilation runs away #7103
+-- `noncomputable` is a performance workaround for mathlib4#7103
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.
 
@@ -911,7 +911,7 @@ variable (σ₁₂ σ₂₃ E F G)
 
 set_option linter.uppercaseLean3 false
 
--- Note: compilation runs away #7103
+-- `noncomputable` is a performance workaround for mathlib4#7103
 /-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
 noncomputable def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
