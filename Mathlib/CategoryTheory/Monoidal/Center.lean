@@ -145,8 +145,8 @@ def tensorObj (X Y : Center C) : Center C :=
         calc
           _ = 𝟙 _ ⊗≫
             X.1 ◁ (HalfBraiding.β Y.2 U).hom ▷ U' ⊗≫
-              _ ◁ (HalfBraiding.β Y.2 U').hom ≫
-                (HalfBraiding.β X.2 U).hom ▷ _ ⊗≫
+              (_ ◁ (HalfBraiding.β Y.2 U').hom ≫
+                (HalfBraiding.β X.2 U).hom ▷ _) ⊗≫
                   U ◁ (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := by coherence
           _ = _ := by rw [whisker_exchange]; coherence
       naturality := fun {U U'} f => by
