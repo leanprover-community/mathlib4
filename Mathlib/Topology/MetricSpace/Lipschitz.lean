@@ -614,7 +614,7 @@ protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continu
   apply Iff.mpr continuous_iff_continuousAt
   intro x
   rcases (hf x) with ⟨K, t, ht, hK⟩
-  exact ContinuousOn.continuousAt (LipschitzOnWith.continuousOn hK) ht
+  exact ContinuousOn.continuousAt (hK.continuousOn) ht
 
 /-- The composition of locally Lipschitz functions is locally Lipschitz. --/
 protected lemma comp  {f : β → γ} {g : α → β}
@@ -646,8 +646,8 @@ protected lemma comp  {f : β → γ} {g : α → β}
     -- similarly, u contains an open subset V
     rcases (Iff.mp (mem_nhds_iff) hu) with ⟨V, hVt, hVopen, hgxV⟩
     -- by continuity, g⁻¹(u) contains the open subset g⁻¹(V)
-    have : ContinuousOn g U := LipschitzOnWith.continuousOn (LipschitzOnWith.mono hgL hUt)
-    have h : IsOpen (U ∩ (g ⁻¹' V)) := ContinuousOn.preimage_open_of_open this hUopen hVopen
+    have : ContinuousOn g U := (hgL.mono hUt).continuousOn
+    have h : IsOpen (U ∩ (g ⁻¹' V)) := this.preimage_open_of_open hUopen hVopen
     have : U ∩ (g ⁻¹' V) ⊆ t' := by rw [h₁]; apply inter_subset_inter hUt (preimage_mono hVt)
     -- now, U ∩ g⁻¹(V) is an open subset contained in t'
     rw [mem_nhds_iff]
@@ -659,7 +659,7 @@ protected lemma comp  {f : β → γ} {g : α → β}
     _ ⊆ g '' t ∩ u := by gcongr; apply image_preimage_subset
     _ ⊆ u := by apply inter_subset_right
   use Kf * Kg, t'
-  exact ⟨h₂, LipschitzOnWith.comp hfL (hgL.mono coe_subset) (Iff.mpr mapsTo' this)⟩
+  exact ⟨h₂, hfL.comp (hgL.mono coe_subset) (Iff.mpr mapsTo' this)⟩
 
 /-- If `f` and `g` are locally Lipschitz, so is the induced map `f × g` to the product type. -/
 protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (hg : LocallyLipschitz g) :
@@ -671,10 +671,8 @@ protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (
   constructor
   · exact Filter.inter_mem h₁t h₂t
   · intro y hy z hz
-    have h₁ : edist (f y) (f z) ≤ Kf * edist y z := by
-      exact LipschitzOnWith.mono hfL (inter_subset_left t₁ t₂) hy hz
-    have h₂ : edist (g y) (g z) ≤ Kg * edist y z := by
-      exact LipschitzOnWith.mono hgL (inter_subset_right t₁ t₂) hy hz
+    have h₁ : edist (f y) (f z) ≤ Kf * edist y z := hfL.mono (inter_subset_left t₁ t₂) hy hz
+    have h₂ : edist (g y) (g z) ≤ Kg * edist y z := hgL.mono (inter_subset_right t₁ t₂) hy hz
     rw [ENNReal.coe_mono.map_max, Prod.edist_eq, ENNReal.max_mul]
     exact max_le_max h₁ h₂
 
