@@ -321,7 +321,7 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
       rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih]
       have := dcongr_arg (fun x => (normalizeIsoApp' C η' x).hom)
         (normalizeObj_congr n (Quotient.mk (setoidHom X Y) h))
-      dsimp at this; simp [this]
+      simp [this]
 
 end
 

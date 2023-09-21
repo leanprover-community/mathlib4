@@ -254,9 +254,8 @@ def fromTransported (e : C ≌ D) : MonoidalFunctor (Transported e) C :=
 #align category_theory.monoidal.from_transported CategoryTheory.Monoidal.fromTransported
 
 instance instIsEquivalence_fromTransported (e : C ≌ D) :
-    IsEquivalence (fromTransported e).toFunctor := by
-  dsimp [fromTransported]
-  infer_instance
+    IsEquivalence (fromTransported e).toFunctor :=
+  inferInstanceAs <| IsEquivalence <| (e.functor.asEquivalence).inverse
 
 /-- The unit isomorphism upgrades to a monoidal isomorphism. -/
 @[simps! hom inv]

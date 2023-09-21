@@ -173,9 +173,9 @@ def LaxMonoidalFunctor.ofTensorHom (F : C ⥤ D)
   associativity := fun X Y Z => by
     simp_rw [← tensorHom_id, ← id_tensorHom, associativity]
   left_unitality := fun X => by
-    simp_rw [← tensorHom_id, ← id_tensorHom, left_unitality]
+    simp_rw [← tensorHom_id, left_unitality]
   right_unitality := fun X => by
-    simp_rw [← tensorHom_id, ← id_tensorHom, right_unitality]
+    simp_rw [← id_tensorHom, right_unitality]
 
 --Porting note: was `[simp, reassoc.1]`
 @[reassoc (attr := simp)]

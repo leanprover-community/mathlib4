@@ -111,8 +111,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
     { preserves := fun {f} =>
         { preserves := fun {b} i => isBilimitOfTotal _ (by
             dsimp
-            simp_rw [← whiskerLeft_comp]
-            simp_rw [← tensorHom_id, ← id_tensorHom]
+            simp_rw [← id_tensorHom]
             simp only [← tensor_comp, Category.comp_id, ← tensor_sum, ← tensor_id,
               IsBilimit.total i]) } }
 
@@ -121,7 +120,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
     { preserves := fun {f} =>
         { preserves := fun {b} i => isBilimitOfTotal _ (by
             dsimp
-            simp_rw [← tensorHom_id, ← id_tensorHom]
+            simp_rw [← tensorHom_id]
             simp only [← tensor_comp, Category.comp_id, ← sum_tensor, ← tensor_id,
                IsBilimit.total i]) } }
 
@@ -181,7 +180,7 @@ theorem leftDistributor_assoc {J : Type} [Fintype J] (X Y : C) (f : J → C) :
     asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, tensor_sum,
     id_tensor_comp, tensorIso_hom, leftDistributor_hom, biproduct.mapIso_hom, biproduct.ι_map,
     biproduct.ι_π, Finset.sum_dite_irrel, Finset.sum_dite_eq', Finset.sum_const_zero]
-  simp_rw [← tensorHom_id, ← id_tensorHom]
+  simp_rw [← id_tensorHom]
   simp only [← id_tensor_comp, biproduct.ι_π]
   simp only [id_tensor_comp, tensor_dite, comp_dite]
   simp
@@ -242,7 +241,7 @@ theorem rightDistributor_assoc {J : Type} [Fintype J] (f : J → C) (X Y : C) :
     comp_tensor_id, tensorIso_hom, rightDistributor_hom, biproduct.mapIso_hom, biproduct.ι_map,
     biproduct.ι_π, Finset.sum_dite_irrel, Finset.sum_dite_eq', Finset.sum_const_zero,
     Finset.mem_univ, if_true]
-  simp_rw [← tensorHom_id, ← id_tensorHom]
+  simp_rw [← tensorHom_id]
   simp only [← comp_tensor_id, biproduct.ι_π, dite_tensor, comp_dite]
   simp
 #align category_theory.right_distributor_assoc CategoryTheory.rightDistributor_assoc

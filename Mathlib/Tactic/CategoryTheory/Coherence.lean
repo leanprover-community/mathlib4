@@ -361,6 +361,8 @@ def coherence_loop (maxSteps := 47) : TacticM Unit :=
       -- and whose second terms can be identified by recursively called `coherence`.
       coherence_loop maxSteps'
 
+open Lean.Parser.Tactic
+
 /--
 Simp lemmas for rewriting a hom in monoical categories into a normal form.
 -/
