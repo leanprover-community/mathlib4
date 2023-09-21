@@ -3,9 +3,8 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Monoid.Lemmas
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Nat.Cast.Defs
 
 #align_import algebra.order.monoid.nat_cast from "leanprover-community/mathlib"@"07fee0ca54c320250c98bacf31ca5f288b2bcbe2"
 
@@ -16,6 +15,13 @@ import Mathlib.Data.Nat.Cast.Defs
 variable {α : Type*}
 
 open Function
+
+/- This isn't declared in `Mathlib.Algebra.Order.Monoid.Defs` in order to avoid
+corrupting the import hierarchy. -/
+-- see Note [lower instance priority]
+instance (priority := 100) OrderedAddCommMonoidWithOne.zeroLEOneClass {M : Type*}
+    [OrderedAddCommMonoidWithOne M] : ZeroLEOneClass M where
+  zero_le_one := OrderedAddCommMonoidWithOne.zero_le_one
 
 lemma lt_add_one [One α] [AddZeroClass α] [PartialOrder α] [ZeroLEOneClass α]
   [NeZero (1 : α)] [CovariantClass α α (·+·) (·<·)] (a : α) : a < a + 1 :=

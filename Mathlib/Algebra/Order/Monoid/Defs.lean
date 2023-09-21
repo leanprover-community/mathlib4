@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Monoid.Lemmas
-import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Order.BoundedOrder
 
@@ -56,11 +55,6 @@ section OrderedInstances
 instance (priority := 100) OrderedAddCommMonoidWithOne.toOrderedAddCommMonoid {M : Type*}
     [OrderedAddCommMonoidWithOne M] : OrderedAddCommMonoid M where
   add_le_add_left := OrderedAddCommMonoidWithOne.add_le_add_left
-
--- see Note [lower instance priority]
-instance (priority := 100) OrderedAddCommMonoidWithOne.zeroLEOneClass {M : Type*}
-    [OrderedAddCommMonoidWithOne M] : ZeroLEOneClass M where
-  zero_le_one := OrderedAddCommMonoidWithOne.zero_le_one
 
 @[to_additive]
 instance OrderedCommMonoid.to_covariantClass_left (M : Type*) [OrderedCommMonoid M] :
