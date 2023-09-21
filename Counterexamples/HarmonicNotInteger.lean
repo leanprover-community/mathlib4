@@ -83,50 +83,21 @@ namespace padicValRat
     · refine' le_trans _ (padicValRat.min_le_padicValRat_add (p := p) hn0)
       · exact le_min (hd (fun i hi => hF _ (by linarith)) h) (hF _ (by linarith))
 
-  theorem finset_gen_sum_lt_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {j : ℕ} {F : ℕ → ℚ} (S : Finset ℕ) (hS : S.Nonempty) (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
-  (hn1 : ∀ i : ℕ, 0 < F i): padicValRat p (F j) < padicValRat p (∑ i in S, F i) := by {
+  theorem finset_gen_sum_lt_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {j : ℕ}
+  {F : ℕ → ℚ} {S : Finset ℕ} (hS : S.Nonempty)
+  (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
+  (hn1 : ∀ i : ℕ, 0 < F i):
+  padicValRat p (F j) < padicValRat p (∑ i in S, F i) := by {
     induction' hS using Finset.Nonempty.cons_induction with k s S' Hnot Hne Hind
     simp only [Finset.sum_singleton]
     exact hF k (by simp)
     {
     rw [Finset.cons_eq_insert, Finset.sum_insert Hnot]
-    refine' sum_lt_of_lt (_) (hF _ (by simp [Finset.mem_insert, true_or])) (Hind (fun i hi => hF _ (by rw [Finset.cons_eq_insert,Finset.mem_insert]; exact Or.inr hi)))
-    sorry
+    refine' sum_lt_of_lt (_) (hF _ (by simp [Finset.mem_insert, true_or]))
+     (Hind (fun i hi => hF _ (by rw [Finset.cons_eq_insert,Finset.mem_insert]; exact Or.inr hi)))
+    refine' ne_of_gt (add_pos (hn1 s) (Finset.sum_pos (fun i _ => hn1 i) Hne))
     }
   }
-
-  theorem finset_gen_sum_lt_of_lt' {p : ℕ} [hp : Fact (Nat.Prime p)] {j : ℕ} {F : ℕ → ℚ} (S : Finset ℕ) (hS : S.Nonempty) (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
-  (hn1 : ∀ i : ℕ, 0 < F i): padicValRat p (F j) < padicValRat p (∑ i in S, F i) := by {
-    -- have hn0 : 0 < ∑ i in S, F i := Finset.sum_pos hn1 hS
-    induction' S using Finset.induction_on with k S' hS' H
-    simp only [ne_eq, Finset.not_mem_empty, IsEmpty.forall_iff, forall_const, not_false_eq_true, Finset.sum_empty] at *
-    rw [Finset.sum_insert hS']
-    refine' sum_lt_of_lt _ (hF _ (by simp [Finset.mem_insert, true_or])) (H _ (fun i hi => hF _ (Finset.mem_insert.mpr (Or.inr hi))) )
-    {
-      sorry
-    }
-    {
-      sorry
-    }
-    -- simp at hj
-    -- push_neg at hj
-    -- exact hj.2
-  }
-
-  theorem finset_sum_eq_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {n j : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i ≤ n → i ≠ j → padicValRat p (F j) < padicValRat p (F i)) (hn0 : ∑ i in Finset.range n \ {j}, F i ≠ 0) (hj₂ : j ∈ Finset.range n): padicValRat p (F j) < padicValRat p (∑ i in Finset.range n \ {j}, F i) := by
-  {
-
-
-
-  }
-  -- induction' n with d hd
-  -- · exact False.elim (hn0 rfl)
-  -- · rw [Finset.sum_range_succ] at hn0 ⊢
-    -- by_cases h : ∑ x : ℕ in Finset.range d, F x = 0
-    -- · rw [h, zero_add]
-    --   exact hF d (by linarith)
-    -- · refine' le_trans _ (padicValRat.min_le_padicValRat_add (p := p) hn0)
-    --   · exact le_min (hd (fun i hi => hF _ (by linarith)) h) (hF _ (by linarith))
 
 end padicValRat
 
@@ -200,9 +171,20 @@ lemma harmonic_singleton {n c : ℕ} (hc : c ∈ Finset.range n): harmonic n =1 
   rwa [Finset.sum_eq_sum_diff_singleton_add (i := c)]
 }
 
+lemma finset_range_sdiff_singleton_nonempty {c n : ℕ} (hn : 2 ≤ n) : Finset.Nonempty (Finset.range n \ {c}) := by {
+  rw [Finset.sdiff_nonempty,Finset.subset_singleton_iff, Finset.range_eq_empty_iff]
+  push_neg
+  refine' ⟨by linarith,fun Hnot => _⟩
+  suffices : n = 1; linarith
+  rw [← Finset.card_range n, ← Finset.card_singleton c, Hnot]
+}
 
-lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 1 ≤ n)(hc : c ∈ Finset.range n) : (∑ x in Finset.range n \ {c}, 1 / ((x + 1 : ℚ)) ≠ 0) := by {
-  sorry
+lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 2 ≤ n) : (∑ x in Finset.range n \ {c}, 1 / ((x + 1 : ℚ)) ≠ 0) := by {
+  refine' ne_of_gt _
+  refine' Finset.sum_pos (fun i _ => div_pos zero_lt_one _) _
+  norm_cast
+  simp only [add_pos_iff, or_true]
+  apply finset_range_sdiff_singleton_nonempty hn
 }
 
 theorem not_int_of_not_padic_int (a : ℚ) :
@@ -344,7 +326,7 @@ theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
     linarith
   }
   {
-    apply one_lt_zpow; try simp
+    apply one_lt_zpow; try norm_num
     apply lt_neg.mp
     rw [neg_zero]
     suffices Hlog : padicValRat 2 (harmonic n) = -Int.log 2 (n : ℚ)
@@ -354,16 +336,31 @@ theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
     rw [harmonic_singleton (pow2_log_in_finset Hn)]
     simp only [ge_iff_le, Finset.mem_range, not_lt, Finset.singleton_subset_iff, gt_iff_lt, pow_pos,
       Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel]
-    rw [padicValRat.sum_eq_of_lt (p := 2) _ (one_div_ne_zero <| pow_ne_zero _ two_ne_zero) (harmonic_singleton_ne_zero (le_trans (one_le_two) Hn) (pow2_log_in_finset Hn)) _]; apply padicValRat_2_pow
+    rw [padicValRat.sum_eq_of_lt (p := 2) _ (one_div_ne_zero <| pow_ne_zero _ two_ne_zero) (harmonic_singleton_ne_zero (Hn)) _]; apply padicValRat_2_pow
     {
       rw [harmonic_singleton (pow2_log_in_finset Hn)] at h
       simpa only [ge_iff_le, gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel, Finset.mem_range, not_lt, Finset.singleton_subset_iff] using h
     }
     {
-      refine' padicValRat.finset_gen_sum_lt_of_lt (p := 2) _ _ _ _
-      -- have := padicValRat_ge_neg_Nat_log_lt n
-
-      -- sorry
+      have := @padicValRat.finset_gen_sum_lt_of_lt 2 _ (2 ^ Nat.log 2 n - 1) (fun n => 1 / ((n + 1) : ℚ)) (Finset.range n \ {2^Nat.log 2 n - 1})
+      simp at *
+      apply this
+      {
+        apply finset_range_sdiff_singleton_nonempty Hn
+      }
+      {
+        intros i Hi₁ Hi₂
+        have := padicValRat_ge_neg_Nat_log_lt (n := n) (i+1)
+        simp at *
+        refine' this (by linarith) _
+        intro Hnot
+        rw [←Hnot] at Hi₂
+        simp only [ge_iff_le, add_le_iff_nonpos_left, nonpos_iff_eq_zero, add_tsub_cancel_right, not_true] at Hi₂
+      }
+      {
+      intros i
+      norm_cast; linarith
+      }
     }
   }
 }
