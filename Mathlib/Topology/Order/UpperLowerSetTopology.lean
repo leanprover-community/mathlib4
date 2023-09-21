@@ -322,18 +322,18 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [UpperSetTopology 
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
 
 lemma monotone_to_upperTopology_continuous [TopologicalSpace α]
-    [UpperSetTopology α] [TopologicalSpace β] [UpperTopology β] {f : α → β} (hf : Monotone f) :
+    [UpperSetTopology α] [TopologicalSpace β] [Topology.IsUpper β] {f : α → β} (hf : Monotone f) :
     Continuous f := by
   rw [continuous_def]
   intro s hs
   rw [isOpen_iff_isUpperSet]
   apply IsUpperSet.preimage _ hf
-  apply UpperTopology.isUpperSet_of_isOpen hs
+  apply Topology.IsUpper.isUpperSet_of_isOpen hs
 
 lemma upperSet_LE_upper {t₁ : TopologicalSpace α} [@UpperSetTopology α t₁ _]
-    {t₂ : TopologicalSpace α} [@UpperTopology α t₂ _] : t₁ ≤ t₂ := fun s hs => by
+    {t₂ : TopologicalSpace α} [@Topology.IsUpper α t₂ _] : t₁ ≤ t₂ := fun s hs => by
   rw [@isOpen_iff_isUpperSet α _ t₁]
-  exact UpperTopology.isUpperSet_of_isOpen hs
+  exact Topology.IsUpper.isUpperSet_of_isOpen hs
 
 end maps
 
@@ -403,16 +403,16 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [LowerSetTopology 
     (f:= (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
 
 lemma monotone_to_lowerTopology_continuous [TopologicalSpace α]
-    [LowerSetTopology α] [TopologicalSpace β] [LowerTopology β] {f : α → β} (hf : Monotone f) :
+    [LowerSetTopology α] [TopologicalSpace β] [Topology.IsLower β] {f : α → β} (hf : Monotone f) :
     Continuous f := by
   apply UpperSetTopology.monotone_to_upperTopology_continuous (α := αᵒᵈ) (β := βᵒᵈ)
     (f:= (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
   exact Monotone.dual hf
 
 lemma lowerSet_LE_lower {t₁ : TopologicalSpace α} [@LowerSetTopology α t₁ _]
-    {t₂ : TopologicalSpace α} [@LowerTopology α t₂ _] : t₁ ≤ t₂ := fun s hs => by
+    {t₂ : TopologicalSpace α} [@Topology.IsLower α t₂ _] : t₁ ≤ t₂ := fun s hs => by
   rw [@isOpen_iff_isLowerSet α _ t₁]
-  exact LowerTopology.isLowerSet_of_isOpen hs
+  exact Topology.IsLower.isLowerSet_of_isOpen hs
 
 end maps
 
