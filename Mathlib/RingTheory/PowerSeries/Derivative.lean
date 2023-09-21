@@ -132,7 +132,7 @@ theorem D_fun_mul (f g : R⟦X⟧) : D_fun (f * g) = f • g.D_fun + g • f.D_f
   ext n
   have h₁ : n < n + 1 := lt_succ_self n
   have h₂ : n < n + 1 + 1 := Nat.lt_add_right _ _ _ h₁
-  rw [coeff_D_fun, map_add, coeff_mul_stable, smul_eq_mul, smul_eq_mul,
+  rw [coeff_D_fun, map_add, coeff_mul_stable _ _ (lt_succ_self _), smul_eq_mul, smul_eq_mul,
     coeff_mul_stable₂ g f.D_fun h₂ h₁, coeff_mul_stable₂ f g.D_fun h₂ h₁,
     trunc_D_fun, trunc_D_fun, ←map_add, ←D_fun_coe_mul_coe, coeff_D_fun]
 
