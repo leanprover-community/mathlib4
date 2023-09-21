@@ -59,7 +59,8 @@ end AlexDisc
 @[simps]
 def alexDiscEquivPreord  : AlexDisc ≌ PreordCat where
   functor := forget₂ _ _ ⋙ topToPreord
-  inverse := { obj := λ X ↦ AlexDisc.of (WithUpperSetTopology X), map := WithUpperSetTopology.map }
+  inverse := { obj := λ X ↦ AlexDisc.of (Topology.WithUpperSet X),
+               map := Topology.WithUpperSet.map }
   unitIso := NatIso.ofComponents λ X ↦ AlexDisc.Iso.mk $ by
     dsimp; exact homeoWithUpperSetTopologyorderIso X
   counitIso := NatIso.ofComponents λ X ↦ PreordCat.Iso.mk $ by
