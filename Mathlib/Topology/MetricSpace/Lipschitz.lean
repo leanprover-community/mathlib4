@@ -19,10 +19,12 @@ A map `f : α → β` between two (extended) metric spaces is called *Lipschitz 
 with constant `K ≥ 0` if for all `x, y` we have `edist (f x) (f y) ≤ K * edist x y`.
 For a metric space, the latter inequality is equivalent to `dist (f x) (f y) ≤ K * dist x y`.
 There is also a version asserting this inequality only for `x` and `y` in some set `s`.
+Finally, `f : α → β` is called *locally Lipschitz continuous* if and only if
+each `x : α` has a neighbourhood on which `f` is Lipschitz continuous (w.r.t. to some constant).
 
 In this file we provide various ways to prove that various combinations of Lipschitz continuous
 functions are Lipschitz continuous. We also prove that Lipschitz continuous functions are
-uniformly continuous.
+uniformly continuous. Locally Lipschitz functions are continuous.
 
 ## Main definitions and lemmas
 
@@ -31,6 +33,8 @@ uniformly continuous.
 * `LipschitzWith.uniformContinuous`: a Lipschitz function is uniformly continuous
 * `LipschitzOnWith.uniformContinuousOn`: a function which is Lipschitz on a set `s` is uniformly
   continuous on `s`.
+* `LocallyLipschitz f`: states that `f` is locally Lipschitz
+* `LocallyLipschitz.continuous`: a locally Lipschitz function is continuous.
 
 
 ## Implementation notes
@@ -117,6 +121,11 @@ theorem MapsTo.lipschitzOnWith_iff_restrict [PseudoEMetricSpace α] [PseudoEMetr
 
 alias ⟨LipschitzOnWith.to_restrict_mapsTo, _⟩ := MapsTo.lipschitzOnWith_iff_restrict
 #align lipschitz_on_with.to_restrict_maps_to LipschitzOnWith.to_restrict_mapsTo
+
+/-- `f : α → β` is called **locally Lipschitz continuous** iff every point `p ∈ α`
+has a neighourhood on which `f` is Lipschitz. -/
+def LocallyLipschitz [PseudoEMetricSpace α] [PseudoEMetricSpace β] (f : α → β) : Prop :=
+  ∀ x : α, ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t
 
 namespace LipschitzWith
 
@@ -580,6 +589,117 @@ protected theorem iff_le_add_mul {f : α → ℝ} {K : ℝ≥0} :
 end Metric
 
 end LipschitzOnWith
+
+namespace LocallyLipschitz
+section EMetric
+variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
+
+/-- A Lipschitz function is locally Lipschitz. -/
+protected lemma of_Lipschitz {f : α → β} {K : ℝ≥0} (hf : LipschitzWith K f) : LocallyLipschitz f := by
+  intro x
+  use K, univ
+  rw [lipschitzOn_univ]
+  exact ⟨Filter.univ_mem, hf⟩
+
+/-- The identity function is locally Lipschitz. -/
+protected lemma id : LocallyLipschitz (@id α) := LocallyLipschitz.of_Lipschitz (LipschitzWith.id)
+
+/-- Constant functions are locally Lipschitz. -/
+protected lemma const (b : β) : LocallyLipschitz (fun _ : α ↦ b) :=
+  LocallyLipschitz.of_Lipschitz (LipschitzWith.const b)
+
+/-- A locally Lipschitz function is continuous. (The converse is false: for example,
+$x ↦ \sqrt{x}$ is continuous, but not locally Lipschitz at 0.) -/
+protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continuous f := by
+  apply Iff.mpr continuous_iff_continuousAt
+  intro x
+  rcases (hf x) with ⟨K, t, ht, hK⟩
+  exact ContinuousOn.continuousAt (LipschitzOnWith.continuousOn hK) ht
+
+/-- The composition of locally Lipschitz functions is locally Lipschitz. --/
+protected lemma comp  {f : β → γ} {g : α → β}
+    (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) : LocallyLipschitz (f ∘ g) := by
+  intro x
+  -- g is Lipschitz on t ∋ x, f is Lipschitz on u ∋ g(x)
+  rcases hg x with ⟨Kg, t, ht, hgL⟩
+  rcases hf (g x) with ⟨Kf, u, hu, hfL⟩
+  -- idea: shrink t to ensure it is mapped to u
+  -- more precisely: restrict g to t' := t ∩ g⁻¹(u); the preimage of u under g':=g∣t.
+  let g' := t.restrict g
+  let t' : Set α := ↑(g' ⁻¹' u)
+  -- The following is mathematically obvious; the sorries are merely wrestling with coercions.
+  have h₁ : t' = t ∩ g ⁻¹' u := by
+    apply Iff.mpr (Subset.antisymm_iff)
+    constructor
+    · intro x hx
+      constructor
+      · exact coe_subset hx
+      · -- as x ∈ t', we can apply g' (and land in u by definition), so g'(x)=g(x) ∈ u
+        sorry
+    · intro x hx
+      rcases hx with ⟨ht, hgu⟩
+      -- as x ∈ t, we can write g(x)=g'(x); the rhs lies in u, so x ∈ g⁻¹(u) also
+      sorry
+  have h₂ : t' ∈ 𝓝 x := by -- FIXME: the following is a tour de force; there must be a nicer proof
+    -- by ht, t contains an open subset U
+    rcases (Iff.mp (mem_nhds_iff) ht) with ⟨U, hUt, hUopen, hxU⟩
+    -- similarly, u contains an open subset V
+    rcases (Iff.mp (mem_nhds_iff) hu) with ⟨V, hVt, hVopen, hgxV⟩
+    -- by continuity, g⁻¹(u) contains the open subset g⁻¹(V)
+    have : ContinuousOn g U := LipschitzOnWith.continuousOn (LipschitzOnWith.mono hgL hUt)
+    have h : IsOpen (U ∩ (g ⁻¹' V)) := ContinuousOn.preimage_open_of_open this hUopen hVopen
+    have : U ∩ (g ⁻¹' V) ⊆ t' := by rw [h₁]; apply inter_subset_inter hUt (preimage_mono hVt)
+    -- now, U ∩ g⁻¹(V) is an open subset contained in t'
+    rw [mem_nhds_iff]
+    use U ∩ (g ⁻¹' V)
+    exact ⟨this, ⟨h, ⟨hxU, hgxV⟩⟩⟩
+  have : g '' t' ⊆ u := by calc g '' t'
+    _ = g '' (t ∩ g ⁻¹' u) := by rw [h₁]
+    _ ⊆ g '' t ∩ g '' (g ⁻¹' u) := by apply image_inter_subset
+    _ ⊆ g '' t ∩ u := by gcongr; apply image_preimage_subset
+    _ ⊆ u := by apply inter_subset_right
+  use Kf * Kg, t'
+  exact ⟨h₂, LipschitzOnWith.comp hfL (hgL.mono coe_subset) (Iff.mpr mapsTo' this)⟩
+
+/-- If `f` and `g` are locally Lipschitz, so is the induced map `f × g` to the product type. -/
+protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (hg : LocallyLipschitz g) :
+    LocallyLipschitz fun x => (f x, g x) := by
+  intro x
+  rcases hf x with ⟨Kf, t₁, h₁t, hfL⟩
+  rcases hg x with ⟨Kg, t₂, h₂t, hgL⟩
+  use max Kf Kg, t₁ ∩ t₂
+  constructor
+  · exact Filter.inter_mem h₁t h₂t
+  · intro y hy z hz
+    have h₁ : edist (f y) (f z) ≤ Kf * edist y z := by
+      exact LipschitzOnWith.mono hfL (inter_subset_left t₁ t₂) hy hz
+    have h₂ : edist (g y) (g z) ≤ Kg * edist y z := by
+      exact LipschitzOnWith.mono hgL (inter_subset_right t₁ t₂) hy hz
+    rw [ENNReal.coe_mono.map_max, Prod.edist_eq, ENNReal.max_mul]
+    exact max_le_max h₁ h₂
+
+protected theorem prod_mk_left (a : α) : LocallyLipschitz (Prod.mk a : β → α × β) :=
+  LocallyLipschitz.of_Lipschitz (LipschitzWith.prod_mk_left a)
+
+protected theorem prod_mk_right (b : β) : LocallyLipschitz (fun a : α => (a, b)) :=
+  LocallyLipschitz.of_Lipschitz (LipschitzWith.prod_mk_right b)
+
+protected theorem iterate {f : α → α} (hf : LocallyLipschitz f) : ∀ n, LocallyLipschitz f^[n]
+  | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
+  | n + 1 => by rw [iterate_add, iterate_one]; exact (LocallyLipschitz.iterate hf n).comp hf
+
+protected theorem mul {f g : Function.End α} (hf : LocallyLipschitz f)
+    (hg : LocallyLipschitz g) : LocallyLipschitz (f * g : Function.End α) := hf.comp hg
+
+protected theorem pow {f : Function.End α} (h : LocallyLipschitz f) :
+    ∀ n : ℕ, LocallyLipschitz (f ^ n : Function.End α)
+  | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
+  | n + 1 => by
+    rw [pow_succ]
+    exact h.mul (LocallyLipschitz.pow h n)
+end EMetric
+
+end LocallyLipschitz
 
 /-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical fiber”
 `{a} × t`, `a ∈ s`, and is Lipschitz continuous on each “horizontal fiber” `s × {b}`, `b ∈ t`
