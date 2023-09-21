@@ -569,7 +569,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
     · simp [ofDigits]
 
 theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits (n : ℕ) :
-     (p - 1) * ∑ i in range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
+    (p - 1) * ∑ i in range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · rcases eq_or_ne n 0 with rfl | hn
     · simp

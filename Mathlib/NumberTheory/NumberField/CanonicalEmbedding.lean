@@ -206,10 +206,10 @@ noncomputable def commMap : ((K →+* ℂ) → ℂ) →ₗ[ℝ] (E K) :=
     exact fun _ _ => ⟨rfl, rfl⟩ }
 
 theorem commMap_apply_of_isReal (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsReal w) :
-  (commMap K x).1 ⟨w, hw⟩ = (x w.embedding).re := rfl
+    (commMap K x).1 ⟨w, hw⟩ = (x w.embedding).re := rfl
 
 theorem commMap_apply_of_isComplex (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsComplex w) :
-  (commMap K x).2 ⟨w, hw⟩ = x w.embedding := rfl
+    (commMap K x).2 ⟨w, hw⟩ = x w.embedding := rfl
 
 @[simp]
 theorem commMap_canonical_eq_mixed (x : K) :

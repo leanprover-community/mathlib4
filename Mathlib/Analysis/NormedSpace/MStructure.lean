@@ -245,14 +245,14 @@ instance Subtype.boundedOrder [FaithfulSMul M X] :
 
 @[simp]
 theorem coe_bot [FaithfulSMul M X] :
-  --porting note: Manual correction of name required here
+    --porting note: Manual correction of name required here
     ↑(BoundedOrder.toOrderBot.toBot.bot : { P : M // IsLprojection X P }) = (0 : M) :=
   rfl
 #align is_Lprojection.coe_bot IsLprojection.coe_bot
 
 @[simp]
 theorem coe_top [FaithfulSMul M X] :
-  --porting note: Manual correction of name required here
+    --porting note: Manual correction of name required here
     ↑(BoundedOrder.toOrderTop.toTop.top : { P : M // IsLprojection X P }) = (1 : M) :=
   rfl
 #align is_Lprojection.coe_top IsLprojection.coe_top
