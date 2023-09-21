@@ -100,9 +100,6 @@ structure DeclCache (α : Type) where mk' ::
   cache : Cache α
   /-- Function for adding a declaration from the current file to the cache. -/
   addDecl : Name → ConstantInfo → α → MetaM α
-  /-- Function for adding a declaration from the library to the cache.
-  Defaults to the same behaviour as adding a declaration from the current file. -/
-  addLibraryDecl : Name → ConstantInfo → α → MetaM α := addDecl
 deriving Nonempty
 
 /--
@@ -137,6 +134,23 @@ def DeclCache.get (cache : DeclCache α) : MetaM α := do
   return a
 
 /--
+Access the cache (imports only). Suitable to get a value to be pickled and fed to `mkFromCache`
+later.
+-/
+def DeclCache.getImported (cache : DeclCache α) : MetaM α := cache.cache.get
+
+/--
+Creates a `DeclCache` from a pre-computed index, typically obtained via `DeclCache.getImports`.
+The cached structure `α` is initialized with the given value.
+When `get` is called, `addDecl` is additionally called for every constant in the current file.
+-/
+def DeclCache.mkFromCache (init : α) (addDecl : Name → ConstantInfo → α → MetaM α) :
+    IO (DeclCache α) := do
+  let cache ← Cache.mk (pure init)
+  pure { cache := cache, addDecl := addDecl }
+
+
+/--
 A type synonym for a `DeclCache` containing a pair of discrimination trees.
 The first will store declarations in the current file,
 the second will store declarations from imports (and will hopefully be "read-only" after creation).
@@ -163,7 +177,7 @@ def DiscrTreeCache.mk [BEq α] (profilingName : String)
   | some f => fun (T₁, T₂) => return (T₁, T₂.mapArrays f)
   | none => fun T => pure T
   match init with
-  | some t => return ⟨← Cache.mk (pure ({}, t)), addDecl, addLibraryDecl⟩
+  | some t => DeclCache.mkFromCache ({}, t) addDecl
   | none => DeclCache.mk profilingName ({}, {}) addDecl addLibraryDecl (post := post)
 
 /--
@@ -182,10 +196,10 @@ def DiscrTreeCache.getMatch (c : DiscrTreeCache α) (e : Expr) : MetaM (Array α
   return (← locals.getMatch e).reverse ++ (← imports.getMatch e).reverse
 
 /--
-A structure that holds the cached discrimination tree,
-and possibly a pointer to a memory region, if we unpickled the tree from disk.
+A structure that holds a value and possibly a pointer to a memory region, if we
+unpickled that value from disk.
 -/
-structure CachedData (α : Type) where
+structure WithCompactedRegion (α : Type) where
   pointer? : Option CompactedRegion
-  cache : DiscrTreeCache α
+  val : α
 deriving Nonempty

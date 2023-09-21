@@ -92,7 +92,7 @@ def cachePath : IO FilePath :=
   catch _ =>
     return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
 
-initialize cachedData : CachedData (Name × DeclMod) ← unsafe do
+initialize cachedData : WithCompactedRegion (DiscrTreeCache (Name × DeclMod)) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
     let (d, r) ← unpickle (DiscrTree (Name × DeclMod) true) path
@@ -103,7 +103,7 @@ initialize cachedData : CachedData (Name × DeclMod) ← unsafe do
 /--
 Retrieve the current current of lemmas.
 -/
-def librarySearchLemmas : DiscrTreeCache (Name × DeclMod) := cachedData.cache
+def librarySearchLemmas : DiscrTreeCache (Name × DeclMod) := cachedData.val
 
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) (depth) := do

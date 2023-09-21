@@ -1,2 +1,3 @@
+import MathlibExtras.Find
 import MathlibExtras.LibrarySearch
 import MathlibExtras.Rewrites

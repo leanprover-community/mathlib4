@@ -6,6 +6,7 @@ Authors: Sebastian Ullrich, Joachim Breitner
 import Lean
 import Std.Lean.Delaborator
 import Std.Data.String.Basic
+import Std.Util.Pickle
 import Mathlib.Tactic.Cache
 import Mathlib.Lean.Data.NameRel
 import Mathlib.Lean.Data.RBTree
@@ -102,7 +103,7 @@ def matchAnywhere (t : Expr) : MetaM ConstMatcher := withReducible do
     Lean.Meta.anyExpr cTy $ matchUpToHyps pat head
 
 /-!
-## The find tactic engine: Cache and matching
+## The find tactic engine
 -/
 
 /-- For all names `n` mentioned in the type of the constant `c`, add a mapping from
@@ -118,13 +119,31 @@ of constants they are mentinend in.
 
 The first `NameRel` is for library declaration (and doesn't change once populated),
 the second is for local declarations and is rebuilt upon every invocation of `#find`.  -/
-initialize findDeclsByConsts : DeclCache (NameRel × NameRel) ←
+def buildIndex : IO (DeclCache (NameRel × NameRel)) :=
   DeclCache.mk
     (profilingName := "#find: init cache")
     (empty := ({}, {}))
     (addLibraryDecl := fun _ c (m₁, m₂) ↦ return (← addDecl c m₁, m₂))
     (addDecl := fun _ c (m₁, m₂) ↦ return (m₁, ← addDecl c m₂))
 
+open System (FilePath)
+
+def cachePath : IO FilePath :=
+  try
+    return (← findOLean `MathlibExtras.Find).withExtension "extra"
+  catch _ =>
+    return "build" / "lib" / "MathlibExtras" / "Find.extra"
+
+initialize cachedData : WithCompactedRegion (DeclCache (NameRel × NameRel)) ← unsafe do
+  let path ← cachePath
+  if (← path.pathExists) then
+    let (d, r) ← unpickle (NameRel × NameRel) path
+    return ⟨r, ← DeclCache.mkFromCache d
+      (addDecl := fun _ c (m₁, m₂) ↦ return (m₁, ← addDecl c m₂)) ⟩
+  else
+    return ⟨none, ← buildIndex⟩
+
+def findDeclsByConsts  := cachedData.val
 
 -- NB: In large files it may be slightly wasteful to calculate a full NameSet for the local
 -- definition upon every invocation of `#find`, and a linear scan might work better. For now,

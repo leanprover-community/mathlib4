@@ -3,6 +3,16 @@ import Std.Tactic.GuardMsgs
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.RunCmd
 
+-- Recall that `#find` caches an index of imported lemmas on disk
+-- If you are modifying the way that `#find` indexes lemmas,
+-- while testing you will probably want to delete
+-- `build/lib/MathlibExtras/Find.extra`
+-- so that the cache is rebuilt.
+--
+-- The tests below are set up to only depend on local definitions (using `uniquenameforthistest`)
+-- so that this test file does not need to to be updated when Mathlib changes.
+
+
 /-- warning: Cannot search: No constants in search pattern. -/
 #guard_msgs in
 #find
