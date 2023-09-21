@@ -138,6 +138,13 @@ lemma continuous_id_mul_log : Continuous (fun x ↦ x * Real.log x) := by
 lemma convexOn_id_mul_log : ConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * Real.log x) := by
   sorry
 
+lemma id_mul_log_ge {x : ℝ} (hx : 0 ≤ x) :
+    Real.log (Real.exp 1) / (Real.exp 1) ≤ x * Real.log x := by
+  sorry
+
+lemma id_mul_log_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ x * Real.log x :=
+  mul_nonneg (zero_le_one.trans hx) (Real.log_nonneg hx)
+
 lemma measurable_id_mul_log : Measurable (fun x ↦ x * Real.log x) :=
   measurable_id'.mul Real.measurable_log
 
@@ -150,55 +157,27 @@ section definition
 -- TODO: this should be in EReal?
 -- TODO: should also take value ∞ when the log is not integrable
 noncomputable
-def KL (μ ν : Measure α) [Decidable (μ ≪ ν)] : ℝ≥0∞ :=
-  if μ ≪ ν then ENNReal.ofReal (∫ x, Real.log (μ.rnDeriv ν x).toReal ∂μ) else ∞
-
--- todo: extract useful lemmas then delete this
-lemma integral_log_rnDeriv_nonneg_aux' {μ ν : Measure α} [IsFiniteMeasure ν] [IsFiniteMeasure μ]
-    (hμν : μ ≪ ν) (hνμ : ν ≪ μ) (hμ : μ ≠ 0) :
-    - Real.log (ν Set.univ).toReal ≤ ∫ x, Real.log (μ.rnDeriv ν x).toReal ∂μ := by
-  have hν : ν ≠ 0 := by
-    refine fun hν_zero ↦ hμ ?_
-    ext1 s hs
-    refine hμν ?_
-    simp only [hν_zero, Measure.zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply]
-  calc - Real.log (ν Set.univ).toReal
-    ≤ - Real.log (μ.withDensity (ν.rnDeriv μ) Set.univ).toReal := by
-        have h_zero : μ.withDensity (ν.rnDeriv μ) ≠ 0 := by
-          rw [Ne.def, withDensity_rnDeriv_eq_zero]
-          refine fun h_sing ↦ hμ ?_
-          suffices μ ⟂ₘ μ by exact Measure.mutuallySingular_self this
-          exact h_sing.mono_ac Measure.AbsolutelyContinuous.rfl hμν
-        gcongr
-        · rw [ENNReal.toReal_pos_iff]
-          constructor
-          · rwa [Measure.measure_univ_pos]
-          · exact measure_lt_top _ _
-        · rw [ENNReal.toReal_le_toReal (measure_ne_top _ _) (measure_ne_top _ _)]
-          exact Measure.withDensity_rnDeriv_le _ _ _ MeasurableSet.univ
-  _ = - Real.log (∫⁻ x, ν.rnDeriv μ x ∂μ).toReal := by
-        congr
-        conv_lhs => rw [withDensity_apply _ MeasurableSet.univ]
-        simp only [Measure.restrict_univ]
-  _ = - Real.log (∫ x, (ν.rnDeriv μ x).toReal ∂μ) := by
-        rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable]
-        exact Measure.rnDeriv_lt_top _ _
-  _ ≤ - ∫ x, Real.log (ν.rnDeriv μ x).toReal ∂μ := by
-    gcongr
-    -- todo: false if μ is not a probability measure
-    sorry
-  _ = ∫ x, Real.log (μ.rnDeriv ν x).toReal ∂μ := by
-    rw [← integral_neg]
-    refine integral_congr_ae ?_
-    filter_upwards [inv_rnDeriv hμν hνμ] with x hx
-    rw [← hx]
-    simp only [Pi.inv_apply]
-    rw [← Real.log_inv, ENNReal.toReal_inv, inv_inv]
+def KL (μ ν : Measure α) [Decidable (μ ≪ ν)]
+    [Decidable (Integrable (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) μ)] : ℝ≥0∞ :=
+  if μ ≪ ν ∧ Integrable (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) μ
+    then ENNReal.ofReal (∫ x, Real.log (μ.rnDeriv ν x).toReal ∂μ) else ∞
 
 lemma integrable_toReal_rnDeriv {μ ν : Measure α} [IsFiniteMeasure μ] [SigmaFinite ν] :
     Integrable (fun x ↦ (μ.rnDeriv ν x).toReal) ν :=
   integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable
     (Measure.lintegral_rnDeriv_lt_top _ _).ne
+
+lemma integrable_aux {μ ν : Measure α}
+    (hμν : μ ≪ ν) (h_int : Integrable (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) μ) :
+    Integrable
+      (fun x ↦ (Measure.rnDeriv μ ν x).toReal * Real.log (Measure.rnDeriv μ ν x).toReal) ν := by
+  rw [← memℒp_one_iff_integrable]
+  constructor
+  · refine (Measurable.stronglyMeasurable ?_).aestronglyMeasurable
+    refine (Measure.measurable_rnDeriv _ _).ennreal_toReal.mul ?_
+    exact (Measure.measurable_rnDeriv _ _).ennreal_toReal.log
+  rw [snorm_one_eq_lintegral_nnnorm]
+  sorry
 
 lemma integral_log_rnDeriv_nonneg_aux {μ ν : Measure α} [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) μ) :
@@ -217,10 +196,9 @@ lemma integral_log_rnDeriv_nonneg_aux {μ ν : Measure α} [IsFiniteMeasure μ] 
   _ ≤ ∫ x, φ (μ.rnDeriv ν x).toReal ∂ν := by
     rw [← average_eq_integral, ← average_eq_integral]
     refine ConvexOn.map_average_le Real.convexOn_id_mul_log Real.continuous_id_mul_log.continuousOn
-      isClosed_Ici ?_ ?_ ?_
+      isClosed_Ici ?_ integrable_toReal_rnDeriv ?_
     · simp
-    · exact integrable_toReal_rnDeriv
-    · sorry
+    · exact integrable_aux hμν h_int
   _ = ∫ x, (μ.rnDeriv ν x).toReal * Real.log (μ.rnDeriv ν x).toReal ∂ν := rfl
   _ = ∫ x, Real.log (μ.rnDeriv ν x).toReal ∂μ := by
     conv_rhs =>
@@ -239,5 +217,93 @@ lemma integral_log_rnDeriv_nonneg_aux {μ ν : Measure α} [IsFiniteMeasure μ] 
     congr
 
 end definition
+
+section tilted
+
+noncomputable
+def Measure.tilted (μ : Measure α) (f : α → ℝ) :
+    Measure α :=
+  μ.withDensity (fun x ↦ ENNReal.ofReal <| Real.exp (f x - Real.log (∫ x, Real.exp (f x) ∂μ)))
+
+lemma tilted_absolutelyContinuous {μ : Measure α} {f : α → ℝ} :
+    μ.tilted f ≪ μ :=
+  withDensity_absolutelyContinuous _ _
+
+@[simp]
+lemma tilted_zero (μ : Measure α) [IsProbabilityMeasure μ] : μ.tilted 0 = μ := by
+  simp only [Measure.tilted, Pi.zero_apply, Real.exp_zero, integral_const, measure_univ,
+    ENNReal.one_toReal, smul_eq_mul, mul_one, Real.log_one, sub_self, ENNReal.ofReal_one]
+  exact withDensity_one
+
+lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
+    (hf : Integrable (fun x ↦ Real.exp (f x)) μ) :
+    0 < ∫ x, Real.exp (f x) ∂μ := by
+  rw [integral_pos_iff_support_of_nonneg]
+  · suffices (Function.support fun x ↦ Real.exp (f x)) = Set.univ by
+      rw [this]
+      simp only [Measure.measure_univ_pos, ne_eq]
+      exact hμ.out
+    ext1 x
+    simp only [Function.mem_support, ne_eq, Set.mem_univ, iff_true]
+    exact (Real.exp_pos _).ne'
+  · exact fun x ↦ (Real.exp_pos _).le
+  · exact hf
+
+lemma isProbabilityMeasure_tilted {μ : Measure α} [IsProbabilityMeasure μ] {f : α → ℝ}
+    (hf : Integrable (fun x ↦ Real.exp (f x)) μ) :
+    IsProbabilityMeasure (μ.tilted f) := by
+  constructor
+  simp only [Measure.tilted, MeasurableSet.univ, withDensity_apply, Measure.restrict_univ]
+  simp_rw [Real.exp_sub]
+  rw [← ofReal_integral_eq_lintegral_ofReal]
+  · suffices ∫ x, Real.exp (f x) / Real.exp (Real.log (∫ x, Real.exp (f x) ∂μ)) ∂μ = 1 by
+      simp only [this, ENNReal.ofReal_one]
+    rw [Real.exp_log]
+    · simp_rw [div_eq_mul_inv]
+      rw [integral_mul_right, mul_inv_cancel]
+      refine (ne_of_lt ?_).symm
+      exact integral_exp_pos hf
+    · exact integral_exp_pos hf
+  · exact hf.div_const _
+  · exact ae_of_all _ (fun x ↦ div_nonneg (Real.exp_pos _).le (Real.exp_pos _).le)
+
+lemma tilted_tilted (μ : Measure α) (f g : α → ℝ) :
+    (μ.tilted f).tilted g = μ.tilted (f + g) := by
+  sorry
+
+lemma absolutelyContinuous_tilted {μ : Measure α} [IsProbabilityMeasure μ] {f : α → ℝ} :
+    μ ≪ μ.tilted f := by
+  have : μ = (μ.tilted f).tilted (-f) := by
+    rw [tilted_tilted, add_right_neg, tilted_zero]
+  nth_rw 1 [this]
+  exact tilted_absolutelyContinuous
+
+lemma rnDeriv_tilted (μ : Measure α) [SigmaFinite μ] {f : α → ℝ} (hf : Measurable f) :
+    (μ.tilted f).rnDeriv μ
+      =ᵐ[μ] fun x ↦ ENNReal.ofReal <| Real.exp (f x - Real.log (∫ x, Real.exp (f x) ∂μ)) :=
+  Measure.rnDeriv_withDensity μ (hf.sub measurable_const).exp.ennreal_ofReal
+
+lemma log_rnDeriv_tilted (μ : Measure α) [SigmaFinite μ] {f : α → ℝ} (hf : Measurable f) :
+    (fun x ↦ Real.log ((μ.tilted f).rnDeriv μ x).toReal)
+      =ᵐ[μ] fun x ↦ f x - Real.log (∫ x, Real.exp (f x) ∂μ) := by
+  filter_upwards [rnDeriv_tilted μ hf] with x hx
+  rw [hx, ENNReal.toReal_ofReal (Real.exp_pos _).le, Real.log_exp]
+
+#exit
+
+end tilted
+
+lemma todo {μ ν : Measure α} [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≪ ν) (h_int : Integrable (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) μ) :
+    ∫ x, Real.log (μ.rnDeriv ν x).toReal ∂μ
+      ≤ ⨆ (f : α → ℝ) (hf : Integrable (fun x ↦ Real.exp (f x)) ν),
+          ∫ x, f x ∂μ - Real.log (∫ x, Real.exp (f x) ∂ν) := by
+  refine le_ciSup_of_le ?_ (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) ?_
+  · sorry
+  · simp only
+    rw [ciSup_pos]
+    swap
+    · sorry
+    sorry
 
 end MeasureTheory
