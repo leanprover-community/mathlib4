@@ -161,6 +161,24 @@ def line_endings_check(lines, path):
         newlines.append((line_nr, line))
     return errors, newlines
 
+def four_spaces_in_second_line(lines, path):
+    errors = []
+    # We never alter the first line, as it does not occur as next_line in the iteration over the
+    # zipped lines below, hence we add it here
+    newlines = [lines[0]]
+    for (_, line), (next_line_nr, next_line) in zip(lines, lines[1:]):
+        # Check if the current line matches "(lemma|theorem) .* :"
+        if re.search(r"^(lemma|theorem) .* :$", line):
+            # Calculate the number of spaces before the first non-space character in the next line
+            stripped_next_line = next_line.lstrip()
+            num_spaces = len(next_line) - len(stripped_next_line)
+            # Check if the number of leading spaces is not 4
+            if num_spaces != 4:
+                errors += [(ERR_4SP, next_line_nr, path)]
+                next_line = ' ' * 4 + stripped_next_line
+        newlines.append((next_line_nr, next_line))
+    return errors, newlines
+
 def long_lines_check(lines, path):
     errors = []
     # TODO: find a good way to break long lines
@@ -170,18 +188,6 @@ def long_lines_check(lines, path):
             continue
         if len(line) > 101:
             errors += [(ERR_LIN, line_nr, path)]
-    return errors, lines
-
-def four_spaces_in_second_line(lines, path):
-    errors = []
-    for (line_nr, line), (next_line_nr, next_line) in zip(lines, lines[1:]):
-        # Check if the current line matches "(lemma|theorem) .* :"
-        if re.search(r"^(lemma|theorem) .* :$", line):
-            # Calculate the number of spaces before the first non-space character in the next line
-            num_spaces = len(next_line) - len(next_line.lstrip())
-            # Check if the number of leading spaces is not 4
-            if num_spaces != 4:
-                errors += [(ERR_4SP, next_line_nr, path)]
     return errors, lines
 
 def import_only_check(lines, path):
@@ -330,8 +336,8 @@ def lint(path, fix=False):
         enum_lines = enumerate(lines, 1)
         newlines = enum_lines
         for error_check in [line_endings_check,
-                            long_lines_check,
                             four_spaces_in_second_line,
+                            long_lines_check,
                             isolated_by_dot_semicolon_check,
                             set_option_check]:
             errs, newlines = error_check(newlines, path)
