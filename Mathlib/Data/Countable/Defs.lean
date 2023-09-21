@@ -37,8 +37,7 @@ class Countable (α : Sort u) : Prop where
 #align countable Countable
 #align countable_iff_exists_injective countable_iff_exists_injective
 
-lemma Countable.exists_injective_nat (α : Sort u) [Countable α] :
-  ∃ f : α → ℕ, Injective f :=
+lemma Countable.exists_injective_nat (α : Sort u) [Countable α] : ∃ f : α → ℕ, Injective f :=
 Countable.exists_injective_nat'
 
 instance : Countable ℕ :=

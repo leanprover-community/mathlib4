@@ -67,9 +67,9 @@ set_option linter.uppercaseLean3 false in
 -- Porting note : this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
 -- so removed @[simp]
 theorem mk_coe (carrier) (presheaf) (h) :
-  (({ carrier
-      presheaf
-      IsSheaf := h } : SheafedSpace C) : TopCat) = carrier :=
+    (({ carrier
+    presheaf
+    IsSheaf := h } : SheafedSpace C) : TopCat) = carrier :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.mk_coe AlgebraicGeometry.SheafedSpace.mk_coe
