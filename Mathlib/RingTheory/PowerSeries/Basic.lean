@@ -2778,7 +2778,6 @@ theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n 
     contradiction
   · rfl
 
-
 @[simp] lemma trunc_zero' {f : R⟦X⟧} : trunc 0 f = 0 := rfl
 
 theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] {s : S} {G : R →+* S} {n} {f : R⟦X⟧} :
