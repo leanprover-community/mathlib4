@@ -2065,7 +2065,7 @@ theorem ContDiffAt.exists_lipschitzOnWith {f : E' → F'} {x : E'} (hf : ContDif
 #align cont_diff_at.exists_lipschitz_on_with ContDiffAt.exists_lipschitzOnWith
 
 /-- If `f` is `C^1`, it is locally Lipschitz. -/
-lemma ContDiff.locallyLipschitz {f : E → F} (hf : ContDiff ℝ 1 f) : LocallyLipschitz f := by
+lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : LocallyLipschitz f := by
   intro x
   rcases (ContDiffAt.exists_lipschitzOnWith (ContDiff.contDiffAt hf)) with ⟨K, t, ht, hf⟩
   use K, t
