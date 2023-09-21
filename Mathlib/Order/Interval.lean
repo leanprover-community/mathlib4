@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Init.Data.Prod
 
 #align_import order.interval from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -69,7 +68,7 @@ def toDualProd : NonemptyInterval α → αᵒᵈ × α :=
 
 @[simp]
 theorem toDualProd_apply (s : NonemptyInterval α) : s.toDualProd = (toDual s.fst, s.snd) :=
-  Prod.mk.eta.symm
+  rfl
 #align nonempty_interval.to_dual_prod_apply NonemptyInterval.toDualProd_apply
 
 theorem toDualProd_injective : Injective (toDualProd : NonemptyInterval α → αᵒᵈ × α) :=

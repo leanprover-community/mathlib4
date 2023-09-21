@@ -423,6 +423,10 @@ theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L�
   SetLike.coe_injective <| Set.image_image _ _ _
 #align intermediate_field.map_map IntermediateField.map_map
 
+theorem map_mono (f : L →ₐ[K] L') {S T : IntermediateField K L} (h : S ≤ T) :
+    S.map f ≤ T.map f :=
+  SetLike.coe_mono (Set.image_subset f h)
+
 /-- Given an equivalence `e : L ≃ₐ[K] L'` of `K`-field extensions and an intermediate
 field `E` of `L/K`, `intermediate_field_equiv_map e E` is the induced equivalence
 between `E` and `E.map e` -/
@@ -664,15 +668,11 @@ instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L
   right K F L
 #align intermediate_field.finite_dimensional_right IntermediateField.finiteDimensional_right
 
---Porting note: increased heartbeats
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem rank_eq_rank_subalgebra : Module.rank K F.toSubalgebra = Module.rank K F :=
   rfl
 #align intermediate_field.rank_eq_rank_subalgebra IntermediateField.rank_eq_rank_subalgebra
 
---Porting note: increased heartbeats
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :=
   rfl
@@ -721,10 +721,8 @@ theorem isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) := by
   rw [← isAlgebraic_iff_isIntegral, isAlgebraic_iff, isAlgebraic_iff_isIntegral]
 #align intermediate_field.is_integral_iff IntermediateField.isIntegral_iff
 
-theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) := by
-  by_cases hx : IsIntegral K x
-  · exact minpoly.eq_of_algebraMap_eq (algebraMap S L).injective hx rfl
-  · exact (minpoly.eq_zero hx).trans (minpoly.eq_zero (mt isIntegral_iff.mpr hx)).symm
+theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) :=
+  (minpoly.algebraMap_eq (algebraMap S L).injective x).symm
 #align intermediate_field.minpoly_eq IntermediateField.minpoly_eq
 
 end IntermediateField

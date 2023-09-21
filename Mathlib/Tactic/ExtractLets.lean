@@ -3,6 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Basic
 
 /-!
@@ -44,11 +45,6 @@ where
       let b' := b'.instantiate1 fvar
       let ty' ← mkLetFVars #[fvar] <| mk b'
       mvarId.change ty'
-
-/-- Counts the immediate depth of a nested `let` expression. -/
-def Lean.Expr.letDepth : Expr → Nat
-  | .letE _ _ _ b _ => b.letDepth + 1
-  | _ => 0
 
 /-- A more limited version of `Lean.MVarId.introN` that ensures the goal is a
 nested `let` expression. -/
