@@ -132,6 +132,34 @@ def insertAndEject
       | none => RBMap.empty
       | some m => q.insert n l |>.erase m.1
 
+partial def ensureFirstIsBest (q : BestFirstQueue prio ε m β maxSize) :
+    m (BestFirstQueue prio ε m β maxSize) := do
+  let s := @toStream (RBMap _ _ _) _ _ q
+  match s.next? with
+  | none =>
+    -- The queue is empty, nothing to do.
+    return q
+  | some ((n, l), s') => match s'.next? with
+    | none => do
+      -- There's only one element in the queue, no reordering necessary.
+      return q
+    | some ((m, _), _) =>
+      -- `n` is the first index, `m` is the second index.
+      -- We need to improve our estimate of the priority for `n` to make sure
+      -- it really should come before `m`.
+      match improveUntil (prio n.key) (m.estimate < ·) n.estimator with
+      | .error none =>
+        -- If we couldn't improve the estimate at all, it is exact, and hence the best element.
+        return q
+      | .error (some e') =>
+        -- If we improve the estimate, but it is still at most the estimate for `m`,
+        -- this is the best element, so all we need to do is store the updated estimate.
+        return q.erase n |>.insert ⟨n.key, e'⟩ l
+      | .ok e' =>
+        -- If we improved the estimate and it becomes greater than the estimate for `m`,
+        -- we re-insert `n` with its new estimate, and then try again.
+        ensureFirstIsBest (q.erase n |>.insert ⟨n.key, e'⟩ l)
+
 /--
 Pop a `β` off the `MLList m β` with lowest priority,
 also returning the index in `α` and the current best lower bound for its priority.
@@ -139,22 +167,20 @@ This may require improving estimates of priorities and shuffling the queue.
 -/
 partial def popWithBound (q : BestFirstQueue prio ε m β maxSize) :
     m (Option (((a : α) × (ε a) × β) × BestFirstQueue prio ε m β maxSize)) := do
-  let s := @toStream (RBMap _ _ _) _ _ q
-  match s.next? with
-  | none => pure none
-  | some ((n, l), s') => match s'.next? with
-    | none => do match ← l.uncons with
-      | none => pure none
-      | some (b, l') => pure <| some (⟨n.key, n.estimator, b⟩, RBMap.single n l')
-    | some ((m, _), _) =>
-      match improveUntil (prio n.key) (m.estimate < ·) n.estimator with
-      | .error e => do match ← l.uncons with
-        | none => popWithBound (q.erase n)
-        | some (b, l') =>
-          match e with
-          | none => pure <| some (⟨n.key, n.estimator, b⟩, q.modify n fun _ => l')
-          | some e' => pure <| some (⟨n.key, e', b⟩, q.erase n |>.insert ⟨n.key, e'⟩ l')
-      | .ok e' => popWithBound (q.erase n |>.insert ⟨n.key, e'⟩ l)
+  let q' ← ensureFirstIsBest q
+  match q'.min with
+  | none =>
+    -- The queue is empty, nothing to return.
+    return none
+  | some (n, l) =>
+    match ← l.uncons with
+    | none =>
+      -- The `MLList` associated to `n` was actually empty, so we remove `n` and try again.
+      popWithBound (q'.erase n)
+    | some (b, l') =>
+      -- Return the initial element `b` along with the current estimator,
+      -- and replace the `MLList` associated with `n` with its tail.
+      return some (⟨n.key, n.estimator, b⟩, q'.modify n fun _ => l')
 
 /--
 Pop a `β` off the `MLList m β` with lowest priority,
