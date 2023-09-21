@@ -245,10 +245,13 @@ Each build file also has a `Bool` indicating whether that file is required for c
 def mkBuildPaths (path : FilePath) : IO $ List (FilePath × Bool) := do
   let packageDir ← getPackageDir path
   return [
-    (packageDir / LIBDIR / path.withExtension "trace", true),
+    (packageDir / LIBDIR / path.withExtension "trace", true), -- this one has to be first
     (packageDir / LIBDIR / path.withExtension "olean", true),
+    (packageDir / LIBDIR / path.withExtension "olean.hash", true),
     (packageDir / LIBDIR / path.withExtension "ilean", true),
+    (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
     (packageDir / IRDIR  / path.withExtension "c", true),
+    (packageDir / IRDIR  / path.withExtension "c.hash", true),
     (packageDir / LIBDIR / path.withExtension "extra", false)]
 
 /-- Check that all required build files exist. -/
