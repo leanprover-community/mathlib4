@@ -329,7 +329,7 @@ noncomputable abbrev convexBodyLtFactor : ℝ≥0∞ :=
   (2 : ℝ≥0∞) ^ card {w : InfinitePlace K // IsReal w} *
     volume (ball (0 : ℂ) 1) ^ card {w : InfinitePlace K // IsComplex w}
 
-theorem convexBodyLtFactor_lt_pos : 0 < (convexBodyLtFactor K) := by
+theorem convexBodyLtFactor_pos : 0 < (convexBodyLtFactor K) := by
   refine mul_pos (NeZero.ne _) ?_
   exact ENNReal.pow_ne_zero (ne_of_gt (measure_ball_pos _ _ (by norm_num))) _
 
