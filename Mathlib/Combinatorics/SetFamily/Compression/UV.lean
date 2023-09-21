@@ -190,7 +190,7 @@ theorem compress_mem_compression_of_mem_compression (ha : a ∈ 𝓒 u v s) :
 /-- Compressing a family is idempotent. -/
 @[simp]
 theorem compression_idem (u v : α) (s : Finset α) :
-  𝓒 u v (𝓒 u v s) = 𝓒 u v s := by
+    𝓒 u v (𝓒 u v s) = 𝓒 u v s := by
   have h : filter (fun a => compress u v a ∉ 𝓒 u v s) (𝓒 u v s) = ∅ :=
     filter_false_of_mem fun a ha h => h <| compress_mem_compression_of_mem_compression ha
   rw [compression, image_filter]
@@ -276,7 +276,7 @@ theorem sup_sdiff_mem_of_mem_compression (ha : a ∈ 𝓒 u v s)
 /-- If `a` is in the `u, v`-compression but `v ≤ a`, then `a` must have been in the original
 family. -/
 theorem mem_of_mem_compression (ha : a ∈ 𝓒 u v s) (hva : v ≤ a) (hvu : v = ⊥ → u = ⊥) :
-  a ∈ s := by
+    a ∈ s := by
   rw [mem_compression] at ha
   obtain ha | ⟨_, b, hb, h⟩ := ha
   · exact ha.1

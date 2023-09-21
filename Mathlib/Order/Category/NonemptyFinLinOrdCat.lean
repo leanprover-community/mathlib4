@@ -163,7 +163,7 @@ set_option linter.uppercaseLean3 false in
 
 -- porting note: added to ease the following proof
 lemma forget_map_apply {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) (a : A) :
-  (forget NonemptyFinLinOrdCat).map f a = (f : OrderHom A B).toFun a := rfl
+    (forget NonemptyFinLinOrdCat).map f a = (f : OrderHom A B).toFun a := rfl
 
 theorem epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
     Epi f ↔ Function.Surjective f := by
