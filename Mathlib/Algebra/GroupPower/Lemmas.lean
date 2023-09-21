@@ -1130,7 +1130,7 @@ theorem cast_int_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b : R) :
 
 @[simp]
 theorem cast_int_mul_left (h : Commute a b) (m : ℤ) :
-   Commute ((m : R) * a) b :=
+    Commute ((m : R) * a) b :=
   SemiconjBy.cast_int_mul_left h m
 #align commute.cast_int_mul_left Commute.cast_int_mul_left
 
