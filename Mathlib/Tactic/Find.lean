@@ -128,12 +128,14 @@ def buildIndex : IO (DeclCache (NameRel × NameRel)) :=
 
 open System (FilePath)
 
+/-- Where to search for the cached index -/
 def cachePath : IO FilePath :=
   try
     return (← findOLean `MathlibExtras.Find).withExtension "extra"
   catch _ =>
     return "build" / "lib" / "MathlibExtras" / "Find.extra"
 
+/-- The `DeclCache` used by `#find`, together with the `CompactedRegion`, if present -/
 initialize cachedData : WithCompactedRegion (DeclCache (NameRel × NameRel)) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
@@ -143,7 +145,8 @@ initialize cachedData : WithCompactedRegion (DeclCache (NameRel × NameRel)) ←
   else
     return ⟨none, ← buildIndex⟩
 
-def findDeclsByConsts  := cachedData.val
+/-- The `DeclCache` used by `#find` -/
+def findDeclsByConsts : DeclCache (NameRel × NameRel) := cachedData.val
 
 -- NB: In large files it may be slightly wasteful to calculate a full NameSet for the local
 -- definition upon every invocation of `#find`, and a linear scan might work better. For now,
