@@ -2680,10 +2680,6 @@ theorem algebraMap_apply'' :
 #align power_series.algebra_map_apply'' PowerSeries.algebraMap_apply''
 
 end PowerSeries
-
-
-
-
 namespace PowerSeries
 
 open Nat hiding pow_succ pow_zero
