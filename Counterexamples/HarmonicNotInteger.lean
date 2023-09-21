@@ -25,6 +25,7 @@ open BigOperators
 
 namespace padicValRat
 
+  /-- Ultrametric property of a p-adic valuation. -/
   lemma min_eq_padicValRat_add {p : ℕ} [hp : Fact (Nat.Prime p)] {q r : ℚ}
   (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q ≠ padicValRat p r) :
   padicValRat p (q + r) = min (padicValRat p q) (padicValRat p r) := by
@@ -108,59 +109,42 @@ lemma harmonic_singleton {n c : ℕ} (hc : c ∈ Finset.range n):
     rwa [add_comm, Finset.sum_eq_sum_diff_singleton_add (i := c)]
 
 lemma finset_range_sdiff_singleton_nonempty {c n : ℕ} (hn : 2 ≤ n):
-  Finset.Nonempty (Finset.range n \ {c}) := by {
-  rw [Finset.sdiff_nonempty,Finset.subset_singleton_iff, Finset.range_eq_empty_iff]
-  push_neg
+  Finset.Nonempty (Finset.range n \ {c}) := by
+  rw [Finset.sdiff_nonempty,Finset.subset_singleton_iff, Finset.range_eq_empty_iff,not_or]
   refine' ⟨by linarith,fun Hnot => _⟩
   suffices : n = 1; linarith
   rw [← Finset.card_range n, ← Finset.card_singleton c, Hnot]
-}
 
-lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 2 ≤ n) : (∑ x in Finset.range n \ {c}, 1 / ((x + 1 : ℚ)) ≠ 0) := by {
-  refine' ne_of_gt _
-  refine' Finset.sum_pos (fun i _ => div_pos zero_lt_one _) _
-  norm_cast
-  simp only [add_pos_iff, or_true]
-  apply finset_range_sdiff_singleton_nonempty hn
-}
 
-theorem not_int_of_not_padic_int (a : ℚ) :
-  padicNorm 2 a > 1 → ¬ a.isInt := by {
-  intro H
+lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 2 ≤ n) :
+ (∑ x in Finset.range n \ {c}, 1 / ((x + 1 : ℚ)) ≠ 0) := by
+  refine' ne_of_gt <| Finset.sum_pos (fun i _ => div_pos zero_lt_one _)
+    (finset_range_sdiff_singleton_nonempty hn)
+  norm_cast; simp only [add_pos_iff, or_true]
+
+theorem not_int_of_not_padic_int {a : ℚ} (H : 1 < padicNorm 2 a):
+ ¬ a.isInt := by
   suffices : a.den ≠ 1; simpa [Rat.isInt]
   by_cases (a = 0)
-  {
-    rw [h] at H h
-    dsimp [padicNorm] at *
-    simp only at H
-  }
-  {
-    dsimp [padicNorm] at *
+  · subst h; try contradiction
+  · unfold padicNorm at H
     split_ifs at H; try contradiction
-    suffices : padicValRat 2 a < 0
-    unfold padicValRat at this
+    suffices : padicValRat 2 a < 0; unfold padicValRat at this
     intro Hden
-    rw [Hden] at this
-    simp only [padicValNat.one, sub_zero] at this
-    norm_cast at H
-    have Hz : 0 = -0 := by {norm_num}
-    rw [Hz]
-    apply lt_neg_of_lt_neg
-    have hx : (1 : ℚ) < 2 := by {norm_num}
+    rw [Hden] at this; simp only [padicValNat.one, sub_zero] at this
+    norm_cast
+    refine' neg_of_neg_pos _
+    have hx : (1 : ℚ) < 2 := by norm_num
     rw [← zpow_lt_iff_lt hx]
     simpa only [zpow_zero]
-  }
-}
 
-@[simp]
+
 lemma padicValRat_2_pow (r : ℕ)  : padicValRat 2 (1 / 2^r) = -r := by {
   rw [one_div,padicValRat.inv,neg_inj,padicValRat.pow (by simp)]
   suffices : padicValRat 2 2 = 1
   simp only [this, mul_one]
-  rw [←padicValRat.self (p := 2)]; simp only [Nat.cast_ofNat]
-  norm_num
+  rw [←padicValRat.self (p := 2) one_lt_two]; simp only [Nat.cast_ofNat]
 }
-
 
 lemma nat_log_not_dvd {n : ℕ} : ∀ i, 0 < i ∧ i ≠ 2^(Nat.log 2 n) ∧ i ≤ n → ¬ 2^(Nat.log 2 n) ∣ i := by {
   rintro i ⟨Hi₁,Hi₂,Hi₃⟩
