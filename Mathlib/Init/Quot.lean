@@ -22,8 +22,8 @@ variable {α : Sort u} {r : α → α → Prop} {motive : Quot r → Sort v}
 protected abbrev Quot.recOn'
     (q : Quot r)
     (f : (a : α) → motive (Quot.mk r a))
-    (h : (a b : α) → (p : r a b) → Eq.ndrec (f a) (Quot.sound p) = f b)
-    : motive q :=
+    (h : (a b : α) → (p : r a b) → Eq.ndrec (f a) (Quot.sound p) = f b) :
+    motive q :=
  q.rec f h
 #align quot.rec_on Quot.recOn'
 -- expected token
@@ -33,8 +33,8 @@ protected abbrev Quot.recOn'
 protected abbrev Quot.recOnSubsingleton'
     [h : (a : α) → Subsingleton (motive (Quot.mk r a))]
     (q : Quot r)
-    (f : (a : α) → motive (Quot.mk r a))
-    : motive q := by
+    (f : (a : α) → motive (Quot.mk r a)) :
+    motive q := by
   induction q using Quot.rec
   apply f
   apply Subsingleton.elim

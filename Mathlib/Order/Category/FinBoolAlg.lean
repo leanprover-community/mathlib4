@@ -90,9 +90,8 @@ instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg :=
 #align FinBoolAlg.has_forget_to_BoolAlg FinBoolAlg.hasForgetToBoolAlg
 
 instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
-  forget₂ :=
-    { obj := fun X => FinBddDistLat.of X
-      map := fun {X Y} f => f }
+  forget₂.obj X := FinBddDistLat.of X
+  forget₂.map f := f
   forget_comp := rfl
 #align FinBoolAlg.has_forget_to_FinBddDistLat FinBoolAlg.hasForgetToFinBddDistLat
 
@@ -105,10 +104,9 @@ instance forgetToBoolAlgFaithful : Faithful (forget₂ FinBoolAlg BoolAlg) :=
 #align FinBoolAlg.forget_to_BoolAlg_faithful FinBoolAlg.forgetToBoolAlgFaithful
 
 @[simps]
-instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd
-    where forget₂ :=
-    { obj := fun X => FinPartOrd.of X
-      map := fun {X Y} f => show OrderHom X Y from ↑(show BoundedLatticeHom X Y from f) }
+instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
+  forget₂.obj X := FinPartOrd.of X
+  forget₂.map {X Y} f := show OrderHom X Y from ↑(show BoundedLatticeHom X Y from f)
 #align FinBoolAlg.has_forget_to_FinPartOrd FinBoolAlg.hasForgetToFinPartOrd
 
 instance forgetToFinPartOrdFaithful : Faithful (forget₂ FinBoolAlg FinPartOrd) :=

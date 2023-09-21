@@ -96,8 +96,8 @@ instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrd LinOrd :=
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.has_forget_to_LinOrd NonemptyFinLinOrd.hasForgetToLinOrd
 
-instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrd FinPartOrd
-    where forget₂ :=
+instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrd FinPartOrd where
+  forget₂ :=
     { obj := fun X => FinPartOrd.of X
       map := @fun X Y => id }
 set_option linter.uppercaseLean3 false in
@@ -163,7 +163,7 @@ set_option linter.uppercaseLean3 false in
 
 -- porting note: added to ease the following proof
 lemma forget_map_apply {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) (a : A) :
-  (forget NonemptyFinLinOrd).map f a = (f : OrderHom A B).toFun a := rfl
+    (forget NonemptyFinLinOrdCat).map f a = (f : OrderHom A B).toFun a := rfl
 
 theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Epi f ↔ Function.Surjective f := by

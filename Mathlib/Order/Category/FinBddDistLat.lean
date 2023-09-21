@@ -71,10 +71,9 @@ instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat :=
   InducedCategory.hasForget₂ FinBddDistLat.toBddDistLat
 #align FinBddDistLat.has_forget_to_BddDistLat FinBddDistLat.hasForgetToBddDistLat
 
-instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd
-    where forget₂ :=
-    { obj := fun X => FinPartOrd.of X
-      map := fun {X Y} f => (show BoundedLatticeHom X Y from f : X →o Y) }
+instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
+  forget₂.obj X := FinPartOrd.of X
+  forget₂.map {X Y} f := show BoundedLatticeHom X Y from f : X →o Y
 #align FinBddDistLat.has_forget_to_FinPartOrd FinBddDistLat.hasForgetToFinPartOrd
 
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism

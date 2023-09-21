@@ -220,17 +220,14 @@ open Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0} {f : α → β}
 
-theorem bounded_preimage (hf : AntilipschitzWith K f) {s : Set β} (hs : Bounded s) :
-    Bounded (f ⁻¹' s) :=
-  Exists.intro (K * diam s) fun x hx y hy =>
-    calc
-      dist x y ≤ K * dist (f x) (f y) := hf.le_mul_dist x y
-      _ ≤ K * diam s := by gcongr; exact dist_le_diam_of_mem hs hx hy
-#align antilipschitz_with.bounded_preimage AntilipschitzWith.bounded_preimage
+theorem isBounded_preimage (hf : AntilipschitzWith K f) {s : Set β} (hs : IsBounded s) :
+    IsBounded (f ⁻¹' s) :=
+  isBounded_iff_ediam_ne_top.2 <| ne_top_of_le_ne_top
+    (ENNReal.mul_ne_top ENNReal.coe_ne_top hs.ediam_ne_top) (hf.ediam_preimage_le _)
+#align antilipschitz_with.bounded_preimage AntilipschitzWith.isBounded_preimage
 
 theorem tendsto_cobounded (hf : AntilipschitzWith K f) : Tendsto f (cobounded α) (cobounded β) :=
-  compl_surjective.forall.2 fun s (hs : IsBounded s) =>
-    Metric.isBounded_iff.2 <| hf.bounded_preimage <| Metric.isBounded_iff.1 hs
+  compl_surjective.forall.2 fun _ ↦ hf.isBounded_preimage
 #align antilipschitz_with.tendsto_cobounded AntilipschitzWith.tendsto_cobounded
 
 /-- The image of a proper space under an expanding onto map is proper. -/
@@ -240,7 +237,7 @@ protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : �
   refine ⟨fun x₀ r => ?_⟩
   let K := f ⁻¹' closedBall x₀ r
   have A : IsClosed K := isClosed_ball.preimage f_cont
-  have B : Bounded K := hK.bounded_preimage bounded_closedBall
+  have B : IsBounded K := hK.isBounded_preimage isBounded_closedBall
   have : IsCompact K := isCompact_iff_isClosed_bounded.2 ⟨A, B⟩
   convert this.image f_cont
   exact (hf.image_preimage _).symm

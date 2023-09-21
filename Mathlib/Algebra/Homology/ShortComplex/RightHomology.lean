@@ -7,7 +7,8 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 import Mathlib.CategoryTheory.Limits.Opposites
 
-/-! RightHomology of short complexes
+/-!
+# Right Homology of short complexes
 
 In this file, we define the dual notions to those defined in
 `Algebra.Homology.ShortComplex.LeftHomology`. In particular, if `S : ShortComplex C` is
@@ -22,7 +23,7 @@ Similarly, we define `S.opcycles` to be the `Q` field.
 
 In `Homology.lean`, when `S` has two compatible left and right homology data
 (i.e. they give the same `H` up to a canonical isomorphism), we shall define
-`[S.HasHomology]` and `S.homology` (TODO).
+`[S.HasHomology]` and `S.homology`.
 
 -/
 
@@ -39,7 +40,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C]
 
 /-- A right homology data for a short complex `S` consists of morphisms `p : S.X₂ ⟶ Q` and
 `ι : H ⟶ Q` such that `p` identifies `Q` to the kernel of `f : S.X₁ ⟶ S.X₂`,
-and that `ι` identifies `H` to the kernel of the induced map `g' : Q ⟶ S.X₃` --/
+and that `ι` identifies `H` to the kernel of the induced map `g' : Q ⟶ S.X₃` -/
 structure RightHomologyData where
   /-- a choice of cokernel of `S.f : S.X₁ ⟶ S.X₂`-/
   Q : C
@@ -91,8 +92,7 @@ def descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) : h.Q ⟶ A :=
   h.hp.desc (CokernelCofork.ofπ k hk)
 
 @[reassoc (attr := simp)]
-lemma p_descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) :
-  h.p ≫ h.descQ k hk = k :=
+lemma p_descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) : h.p ≫ h.descQ k hk = k :=
   h.hp.fac _ WalkingParallelPair.one
 
 /-- The morphism from the (right) homology attached to a morphism
@@ -448,7 +448,7 @@ def ofIsColimitCokernelCofork (φ : S₁ ⟶ S₂)
 
 variable (S)
 
-/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the right homology map
 data (for the identity of `S`) which relates the right homology data
 `RightHomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
 @[simps]
@@ -460,7 +460,7 @@ def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
   φQ := 𝟙 _
   φH := c.ι
 
-/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the right homology map
 data (for the identity of `S`) which relates the right homology data `ofZeros` and
 `ofIsColimitCokernelCofork`. -/
 @[simps]
@@ -685,8 +685,8 @@ lemma rightHomologyMap_zero [HasRightHomology S₁] [HasRightHomology S₂] :
 
 @[simp]
 lemma opcyclesMap_zero [HasRightHomology S₁] [HasRightHomology S₂] :
-  opcyclesMap (0 : S₁ ⟶ S₂) = 0 :=
-opcyclesMap'_zero _ _
+    opcyclesMap (0 : S₁ ⟶ S₂) = 0 :=
+  opcyclesMap'_zero _ _
 
 variable {S₁ S₂}
 
