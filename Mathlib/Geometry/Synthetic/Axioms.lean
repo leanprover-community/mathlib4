@@ -21,7 +21,7 @@ class incidence_geometry :=
 
 (online : point → line → Prop)
 (sameside : point → point → line → Prop)
-(B : point → point → point → Prop) -- Betweenness
+(B : point → point → point → Prop)
 (center_circle : point → circle → Prop)
 (on_circle : point → circle → Prop)
 (in_circle : point → circle → Prop)

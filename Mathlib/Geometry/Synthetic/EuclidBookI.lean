@@ -8,15 +8,8 @@ import Mathlib.Tactic.WLOG
 
 /-!
 # Synthetic Geometry, Euclid's Elements Book I using Avigad Axioms
-In this file we ...
-
-## Main definitions
-* `incidence_geometry` : class containing axioms...
-
-## Main results
-* `pythagorean_theorem` : The Pythagorean theorem
-## Tags
-synthetic geometry, Euclid elements
+In this file we prove the Pythagorean theorem (Euclid I.47) using Avigad's axioms for synthetic
+geometry.
 -/
 
 variable [i : incidence_geometry] {a a1 a2 b b1 b2 c d e f g h j k l x y :
@@ -49,7 +42,7 @@ lemma len_pos_of_nq (ab : a ≠ b) : 0 < length a b :=
 theorem ne_of_ne_len (ab : a ≠ b) (ab_cd : length a b = length c d) : c ≠ d :=
   fun ac => by linarith[length_eq_zero_iff.mpr ac, len_pos_of_nq ab]
 
-theorem ne_of_ne_len' (cd : c ≠ d) (ab_cd : length a b = length c d) : a ≠ b := --3/28/23
+theorem ne_of_ne_len' (cd : c ≠ d) (ab_cd : length a b = length c d) : a ≠ b :=
   ne_of_ne_len cd (ab_cd.symm)
 
 theorem length_sum_perm_of_B (Babc : B a b c) : 0 < length a b ∧ 0 < length b a ∧ 0 < length b c
@@ -94,7 +87,7 @@ theorem diffside_of_sameside_diffside (abL : sameside a b L) (acL : diffside a c
   diffside b c L := by
 by_contra h; unfold diffside at h; push_neg at h; exact acL.2.2
  (sameside_trans (sameside_symm abL) (h (not_online_of_sameside (sameside_symm abL)) acL.2.1))
---2023/4/23
+
 theorem sameside_of_diffside_diffside (abL : diffside a b L) (acL : diffside a c L) :
   sameside b c L := (or_iff_right acL.2.2).mp
   (sameside_or_of_diffside abL.1 abL.2.1 acL.2.1 abL.2.2)
@@ -110,10 +103,10 @@ rcases diffside_of_not_online cL with ⟨e, eL, ceL⟩; rcases pt_sameside_of_ci
 theorem online_of_col_online (ab : a ≠ b) (aL : online a L) (bL : online b L)
   (col_abc : colinear a b c) : online c L :=
 by rcases col_abc with ⟨L, aM, bM, cM⟩; rwa [line_unique_of_pts ab aM bM aL bL] at cM
---2023/4/8 (changed)
+
 theorem triangle_of_ne_online (ab : a ≠ b) (aL : online a L) (bL : online b L) (cL : ¬online c L) :
   triangle a b c := fun col => by exact cL (online_of_col_online ab aL bL col)
---2023/4/8
+
 theorem online_3_of_triangle (aL : online a L) (bL : online b L) (tri_abc : triangle a b c) :
   ¬online c L := fun cL => tri_abc ⟨L, aL, bL, cL⟩
 
@@ -127,7 +120,6 @@ theorem eq_tri_of_length_online (ab : a ≠ b) (aL : online a L) (bL : online b 
   (ab_ac : length a b = length a c) (bc_ba : length b c = length b a) : eq_tri a b c :=
 ⟨triangle_of_ne_online ab aL bL cL, by perma, by linperm, by linperm⟩
 
---3/23/23
 theorem B_circ_of_ne (ab : a ≠ b) (bc : b ≠ c) : ∃ (d : point) (α : circle), B a b d ∧
   center_circle b α ∧ on_circle c α ∧ on_circle d α := by
 rcases circle_of_ne bc with ⟨α, bα, cα⟩; rcases pt_oncircle_of_inside_ne ab
@@ -136,10 +128,10 @@ rcases circle_of_ne bc with ⟨α, bα, cα⟩; rcases pt_oncircle_of_inside_ne 
 theorem online_of_eq (ab : a = b) (aL : online a L) : online b L := by rwa [ab] at aL
 
 theorem online_of_eq' (ab : a = b) (bL : online b L) : online a L := by rwa [ab.symm] at bL
---2023/4/7
+
 theorem ne_12_of_tri (tri: triangle a b c) : a ≠ b :=
   fun ac => by rcases line_of_pts a c with ⟨L, aL, cL⟩; exact tri ⟨L, aL, online_of_eq ac aL, cL⟩
---2023/4/28
+
 theorem ne_21_of_tri (tri : triangle a b c) : b ≠ a := Ne.symm $ ne_12_of_tri tri
 
 theorem ne_23_of_tri (tri: triangle a b c) : b ≠ c :=
@@ -163,11 +155,11 @@ length a b < length a d)) with ⟨e, Babe, eα⟩; exact ⟨e, α, Babe, aα, d�
 
 theorem length_eq_of_oncircle (aα : center_circle a α) (bα : on_circle b α) (cα : on_circle c α) :
    length a b = length a c := (on_circle_iff_length_eq aα bα).mpr cα
---3/28/23
+
 theorem on_circle_of_oncircle_length (aα : center_circle a α) (bα : on_circle b α)
   (ab_ac : length a b ≠ length a c) : ¬on_circle c α :=
 fun cα => ab_ac (length_eq_of_oncircle aα bα cα)
---3/28/23
+
 theorem incircle_of_on_circle_length (aα : center_circle a α) (bα : on_circle b α)
   (ab_ac : length a b ≤ length a c) : ¬in_circle c α :=
 fun c_in_α => by linarith[(in_circle_iff_length_lt aα bα).mpr c_in_α]
@@ -179,47 +171,47 @@ length a f = length b e := by linarith[length_sum_perm_of_B Bdbe, length_sum_per
 theorem B_oncircle_of_inside_outside (a_in_α : in_circle a α) (b_out_α : out_circle b α) :
   ∃ (c : point), B a c b ∧ on_circle c α :=
 pt_on_circle_of_inside_outside b_out_α.1 a_in_α b_out_α.2
---3/28/23
+
 theorem out_circle_of_lt (aα : center_circle a α) (bα : on_circle b α)
     (ab_lt_ac : length a b < length a c) : out_circle c α := ⟨on_circle_of_oncircle_length aα bα
   (by linarith), incircle_of_on_circle_length aα bα (by linarith)⟩
---2023/4/5
+
 theorem sss (ab_de : length a b = length d e) (bc_ef : length b c = length e f)
 (ac_df : length a c = length d f) : angle a b c = angle d e f ∧ angle b a c = angle e d f
   ∧ angle a c b = angle d f e :=
 ⟨(SAS_iff_SSS (by linperm) bc_ef).mpr ac_df,
 (SAS_iff_SSS ab_de ac_df).mpr bc_ef, (SAS_iff_SSS (by linperm) (by linperm)).mpr ab_de⟩
---2023/4/5
+
 theorem sas (ab_de : length a b = length d e) (ac_df : length a c = length d f)
 (Abac : angle b a c = angle e d f) : length b c = length e f ∧ angle a b c = angle d e f ∧
   angle a c b = angle d f e :=
 ⟨(SAS_iff_SSS ab_de ac_df).1 Abac, (sss ab_de ((SAS_iff_SSS ab_de ac_df).1 Abac) ac_df).1,
-(sss ab_de ((SAS_iff_SSS ab_de ac_df).1 Abac) ac_df).2.2⟩ --Euclid I.4
---2023/4/6
-  theorem tri132_of_tri123 (tri_abc : triangle a b c) : triangle a c b :=
-fun col => by unfold colinear at col; simp_rw [And.comm] at col; exact tri_abc col
---2023/4/8
-  theorem tri231_of_tri123 (tri_abc : triangle a b c) : triangle b c a :=
-fun col => by rcases col with ⟨L, bL, cL, aL⟩; exact tri_abc ⟨L, aL, bL, cL⟩
---2023/4/14
-  theorem tri312 (tri_abc : triangle a b c) : triangle c a b :=
-    tri231_of_tri123 $ tri231_of_tri123 $ tri_abc
---2023/4/14
-  theorem tri213 (tri_abc : triangle a b c) : triangle b a c :=
-    tri132_of_tri123 $ tri231_of_tri123 $ tri_abc
- --2023/4/17
-  theorem tri321 (tri_abc : triangle a b c) : triangle c b a := tri132_of_tri123 $ tri312 tri_abc
---2023/4/7
+(sss ab_de ((SAS_iff_SSS ab_de ac_df).1 Abac) ac_df).2.2⟩
+
+theorem tri132_of_tri123 (tri_abc : triangle a b c) : triangle a c b :=
+  fun col => by unfold colinear at col; simp_rw [And.comm] at col; exact tri_abc col
+
+theorem tri231_of_tri123 (tri_abc : triangle a b c) : triangle b c a :=
+  fun col => by rcases col with ⟨L, bL, cL, aL⟩; exact tri_abc ⟨L, aL, bL, cL⟩
+
+theorem tri312 (tri_abc : triangle a b c) : triangle c a b :=
+  tri231_of_tri123 $ tri231_of_tri123 $ tri_abc
+
+theorem tri213 (tri_abc : triangle a b c) : triangle b a c :=
+  tri132_of_tri123 $ tri231_of_tri123 $ tri_abc
+
+theorem tri321 (tri_abc : triangle a b c) : triangle c b a := tri132_of_tri123 $ tri312 tri_abc
+
 theorem area_eq_of_sas (ab_de : length a b = length d e) (ac_df : length a c = length d f)
   (Abac_Aedf : angle b a c = angle e d f) : area a b c = area d e f :=
 area_eq_of_SSS ab_de ac_df (sas ab_de ac_df Abac_Aedf).1
---2023/4/7
-  theorem angle_extension_of_B (ac : a ≠ c) (Babb1 : B a b b1) : angle b a c = angle b1 a c := by
-rcases line_of_pts a b with ⟨L, aL, bL⟩; rcases line_of_pts a c with ⟨M, aM, cM⟩;
-refine angle_extension ((ne_12_of_B Babb1).symm) ((ne_13_of_B Babb1).symm) ac.symm ac.symm aL bL
-  (online_3_of_B Babb1 aL bL) aM cM cM (not_B_of_B Babb1) $ fun Bcac => (ne_13_of_B Bcac) rfl
---2023/4/8
-theorem area_add_of_B (Babc : B a b c) (tri_dac : triangle d a c) : --repeat?
+
+theorem angle_extension_of_B (ac : a ≠ c) (Babb1 : B a b b1) : angle b a c = angle b1 a c := by
+  rcases line_of_pts a b with ⟨L, aL, bL⟩; rcases line_of_pts a c with ⟨M, aM, cM⟩;
+  refine angle_extension ((ne_12_of_B Babb1).symm) ((ne_13_of_B Babb1).symm) ac.symm ac.symm aL bL
+    (online_3_of_B Babb1 aL bL) aM cM cM (not_B_of_B Babb1) $ fun Bcac => (ne_13_of_B Bcac) rfl
+
+theorem area_add_of_B (Babc : B a b c) (tri_dac : triangle d a c) :
   area d a b + area d c b = area d a c := by
 rcases line_of_pts a b with ⟨L, aL, bL⟩; have cL := online_3_of_B Babc aL bL
 exact (area_add_iff_B (ne_12_of_B Babc) (ne_23_of_B Babc) (Ne.symm (ne_13_of_B Babc)) aL bL cL
@@ -228,111 +220,110 @@ exact (area_add_iff_B (ne_12_of_B Babc) (ne_23_of_B Babc) (Ne.symm (ne_13_of_B B
 theorem area_add_of_B_offline (Babc : B a b c) (aL : online a L) (cL : online c L)
   (dL : ¬online d L) : area d a b + area d c b = area d a c :=
 area_add_of_B Babc $ by perma[triangle_of_ne_online (ne_13_of_B Babc) aL cL dL]
---2023/4/8
-  theorem col_of_area_zero_ne (ab : a ≠ b) (area_abc : area a b c = 0) : colinear a b c := by
-rcases line_of_pts a b with ⟨L, aL, bL⟩;
-exact ⟨L, aL, bL, (area_zero_iff_online ab aL bL).mp area_abc⟩
---2023/4/8
+
+theorem col_of_area_zero_ne (ab : a ≠ b) (area_abc : area a b c = 0) : colinear a b c := by
+  rcases line_of_pts a b with ⟨L, aL, bL⟩
+  exact ⟨L, aL, bL, (area_zero_iff_online ab aL bL).mp area_abc⟩
+
 theorem col_132_of_col (col_123 : colinear a b c) : colinear a c b := by
   rcases col_123 with ⟨L, aL, bL, cL⟩; exact ⟨L, aL, cL, bL⟩
---2023/4/14
+
 theorem col_213_of_col (col_123 : colinear a b c) : colinear b a c := by
   rcases col_123 with ⟨L, aL, bL, cL⟩; exact ⟨L, bL, aL, cL⟩
---2023/4/27
+
 theorem col_312 (col : colinear a b c) : colinear c a b := by
   rcases col with ⟨L, aL, bL, cL⟩; exact ⟨L, cL, aL, bL⟩
---2023/4/8
+
 theorem col_134_of_col_123_col_124 (ab : a ≠ b) (col_123 : colinear a b c)
   (col_124 : colinear a b d) : colinear a c d := by
 rcases col_123 with ⟨L, aL, bL, cL⟩; exact ⟨L, aL, cL, online_of_col_online ab aL bL col_124⟩
---2023/4/8
+
 theorem tri_143_of_tri_col (ad : a ≠ d) (tri_abc : triangle a b c) (col_abd : colinear a b d) :
   triangle a d c := fun col_adc => by rcases col_abd with ⟨L, aL, bL, dL⟩; exact tri_abc
                                         ⟨L, aL, bL, online_of_col_online ad aL dL col_adc⟩
---2023/4/8
+
 theorem col_of_B (Babc : B a b c) : colinear a b c := by
   rcases line_of_pts a b with ⟨L, aL, bL⟩; exact ⟨L, aL, bL, online_3_of_B Babc aL bL⟩
---2023/4/13
+
 theorem pt_inter_of_not_sameside (abL : ¬sameside a b L) :
     ∃ c M, online a M ∧ online b M ∧ online c M ∧ online c L := by
    rcases line_of_pts a b with ⟨M, aM, bM⟩; rcases pt_of_lines_inter $ lines_inter_of_not_sameside
     aM bM abL with ⟨c, cL, cM⟩; refine ⟨c, M, aM, bM, cM, cL⟩
---2023/4/13
+
 theorem ne_of_diffside (abL : diffside a b L) : a ≠ b :=
   fun ab => by rw [ab] at abL; exact abL.2.2 $ sameside_rfl_of_not_online abL.1
---2023/4/13
+
 theorem ne_of_online (aL : online a L) (bL : ¬online b L) : a ≠ b :=
   fun ab => by rw [ab] at aL; exact bL aL
---2023/4/24
+
 theorem ne_of_online' (aL : online a L) (bL : ¬online b L) : b ≠ a :=
   fun ab => by rw [←ab] at aL; exact bL aL
---2023/4/13
+
 theorem ne_line_of_online (bM : online b M) (bL : ¬online b L) : L ≠ M :=
   fun LM => by rw [←LM] at bM; exact bL bM
---2023/4/25
+
 theorem ne_line_of_online' (bM : online b M) (bL : ¬online b L) : M ≠ L :=
   Ne.symm $ ne_line_of_online bM bL
---2023/4/13
+
 theorem pt_B_of_diffside (abL : diffside a b L) : ∃ c, online c L ∧ B a c b := by
   rcases pt_inter_of_not_sameside abL.2.2 with ⟨c, M, aM, bM, cM, cL⟩
   refine ⟨c, cL, B_of_online_inter (Ne.symm $ ne_of_online cL abL.1) (ne_of_online cL abL.2.1)
     (ne_of_diffside abL) (Ne.symm $ ne_line_of_online bM abL.2.1) aM cM bM cL abL.2.2⟩
---2023/4/13
+
 theorem B_of_three_col_ne (ab : a ≠ b) (ac : a ≠ c) (bc : b ≠ c) (col_abc : colinear a b c) :
     B a b c ∨ B b a c ∨ B a c b := by
   rcases col_abc with ⟨L, aL, bL, cL⟩; exact B_of_three_online_ne ab ac bc aL bL cL
---2023/4/13
+
 theorem B_of_length_eq_col (ab : a ≠ b) (ac : a ≠ c) (col_abc : colinear a b c)
     (ab_cb : length a b = length c b) : B a b c := by
   rcases B_of_three_col_ne ab ac (ne_of_ne_len ab $ by linperm) col_abc
     with Babc | Bet | Bet; exact Babc; repeat {linarith [length_sum_perm_of_B Bet]}
---2023/4/13
+
 theorem length_zero_of_eq (ab : a = b) : length a b = 0 := (length_eq_zero_iff).mpr ab
---2023/4/13
+
 theorem eq_of_length_zero (ab_0 : length a b = 0) : a = b := (length_eq_zero_iff).mp ab_0
---2023/4/13
+
 theorem ne_of_triangle_length_eq (tri_abc : triangle a b c) (bd_cd : length b d = length c d) :
     b ≠ d := fun bd => ne_23_of_tri tri_abc $ bd.trans (eq_of_length_zero $ bd_cd.symm.trans $
       length_zero_of_eq bd).symm
---2023/4/14
+
 theorem len_21_of_len (ab_r : length a b = r) : length b a = r := by perma
---2023/4/14
+
 theorem len_43_of_len (ab_r : r = length a b) : r = length b a := by perma
---2023/4/14
+
 theorem len_2143_of_len (ab_cd : length a b = length c d) : length b a = length d c := by perma
---2023/4/14
+
 theorem ang_321_of_ang (abc_r : angle a b c = r) : angle c b a = r := by perma
---2023/4/14
+
 theorem ang_654_of_ang (abc_r : r = angle a b c) : r = angle c b a := by perma
---2023/4/14
+
 theorem ang_654321_of_ang (abc_def : angle a b c = angle d e f) : angle c b a = angle f e d :=
   by perma
---2023/5/2
+
 theorem angle_extension_of_B' (ac : a ≠ c) (Babb1 : B a b b1) : angle c a b = angle c a b1 :=
   ang_654321_of_ang $ angle_extension_of_B ac Babb1
---2023/4/14
+
 theorem online_of_B_online (Babc : B a b c) (aL : online a L) (cL : ¬online c L) : ¬online b L :=
   fun bL => cL (online_3_of_B Babc aL bL)
 
 theorem online_of_B_online' (Babc : B a b c) (bL : online b L) (cL : ¬online c L) : ¬online a L :=
   fun aL => cL (online_3_of_B Babc aL bL)
---2023/4/14
+
 theorem sameside_of_B_online_3 (Babc : B a b c) (aL : online a L) (cL : ¬online c L) :
     sameside b c L := sameside_of_B_not_online_2 Babc aL $ online_of_B_online Babc aL cL
---2023/4/18
+
 theorem ne_of_sameside (bL : online b L) (acL : sameside a c L) : a ≠ b :=
   (ne_of_online bL (not_online_of_sameside acL)).symm
---2023/4/14
+
 theorem ne_of_sameside' (cL : online c L) (abL : sameside a b L) : c ≠ a :=
   ne_of_online cL $ not_online_of_sameside abL
---2023/4/14
+
 theorem tri_of_B_B_tri (Babd : B a b d) (Bace : B a c e) (tri_abc : triangle a b c) :
     triangle a d e := tri132_of_tri123 $ tri_143_of_tri_col (ne_13_of_B Bace) (tri132_of_tri123 $
   tri_143_of_tri_col (ne_13_of_B Babd) tri_abc $ col_of_B Babd) $ col_of_B Bace
---2023/4/17
+
 theorem ne_21_of_B (Babc : B a b c) : b ≠ a := Ne.symm $ ne_12_of_B Babc
 
---2023/4/24
 theorem ne_32_of_B (Babc : B a b c) : c ≠ b := Ne.symm $ ne_23_of_B Babc
 
 theorem sameside_or_of_diffside' (cL : ¬online c L) (abL : diffside a b L) :
@@ -343,7 +334,7 @@ theorem rightangle_of_angle_eq (Babc : B a b c) (aL : online a L) (cL : online c
     angle d b a = rightangle ∧ angle d b c = rightangle := by
   have ang := ang_321_of_ang $ (angle_eq_iff_rightangle aL cL dL Babc).mp $ ang_321_of_ang dba_dbc
   exact ⟨ang, dba_dbc.symm.trans ang⟩
---2023/4/17 new
+
 theorem diffside_of_not_online' (aL : ¬online a L) : ∃ b, diffside a b L := by
   rcases diffside_of_not_online aL with ⟨b, bL, abL⟩; exact ⟨b, aL, bL, abL⟩
 
@@ -352,31 +343,31 @@ theorem pts_line_circle_of_not_sameside (aα : center_circle a α) (bα : on_cir
     online c L ∧ online d L ∧ on_circle c α ∧ on_circle d α :=
   pts_of_line_circle_inter $ line_circle_inter_of_not_sameside abL
   (by right; exact inside_circle_of_center aα) $ by left; exact bα
---2023/4/18 -- Can be compressed with Or.rec and such
+
 theorem B_or_B_of_B_B (cd : c ≠ d) (Babc : B a b c) (Babd : B a b d) :
     B b c d ∨ B b d c := by
   rcases line_of_pts a b with ⟨L, aL, bL⟩
   rcases B_of_three_online_ne (ne_23_of_B Babc) (ne_23_of_B Babd) cd bL
     (online_3_of_B Babc aL bL) (online_3_of_B Babd aL bL) with Bet | Bet | Bet
   left; exact Bet; exfalso; exact (not_B324_of_B123_B124 Babc Babd) Bet; right; exact Bet
--- same comment as previous
+
 theorem angle_extension_of_B_B (be : b ≠ e) (Babc : B a b c) (Babd : B a b d) :
     angle e b d = angle e b c := by
   by_cases cd : c = d; rw [cd]
   rcases B_or_B_of_B_B cd Babc Babd with Bet | Bet; symm
   repeat exact ang_654321_of_ang $ angle_extension_of_B be Bet
---2023/4/23
+
 theorem online_of_sameside_inter (ab : a ≠ b) (aL : online a L) (aM : online a M) (bL : online b L)
     (cM : online c M) (cdL : sameside c d L) : ¬online b M :=
   fun bM => (not_online_of_sameside cdL) (by rwa [line_unique_of_pts ab aM bM aL bL] at cM)
---2023/4/23
+
 theorem diffside_of_sameside_sameside (aL : online a L) (aM : online a M) (aN : online a N)
     (bL : online b L) (cM : online c M) (dN : online d N) (dcL : sameside d c L)
     (bcN : sameside b c N) : diffside b d M :=
   ⟨online_of_sameside_inter (ne_of_sameside' aN bcN) aL aM bL cM $ sameside_symm dcL,
   online_of_sameside_inter (ne_of_sameside' aL dcL) aN aM dN cM $ sameside_symm bcN,
   not_sameside_of_sameside_sameside aL aM aN bL cM dN (sameside_symm dcL) bcN⟩
---2023/4/23
+
 theorem angle_add_of_sameside (aL : online a L) (bL : online b L) (aM : online a M)
     (cM : online c M) (cdL : sameside c d L) (bdM : sameside b d M) :
     angle b a c = angle d a b + angle d a c := by
@@ -403,7 +394,7 @@ theorem sameside_of_B_sameside_sameside (Babc : B a b c) (bL : online b L) (bM :
   sameside_of_diffside_diffside (diffside_symm $ diffside_of_B_offline Babc aL bL bN dN $
   not_online_of_sameside $ sameside_symm edL) (diffside_of_sameside_sameside bL bN bM
   (online_3_of_B Babc aL bL) dN eM edL cdM)
---fix
+
 theorem B_or_B_of_sameside (bc : b ≠ c) (aL : online a L) (col : colinear a b c)
     (bcL : sameside b c L) : B a b c ∨ B a c b := by
   rcases B_of_three_col_ne (ne_of_sameside' aL bcL) (ne_of_sameside' aL $ sameside_symm bcL)
@@ -422,14 +413,14 @@ theorem sameside_of_B_diffside_sameside (Babc : B a b c) (aL : online a L) (bL :
    sameside_symm $ sameside_of_diffside_diffside ⟨offline_of_B_offline
     (B_symm Babc) (online_3_of_B Babc aL bL) bL bM eM $ not_online_of_sameside edL, dM, cdM⟩ $
     diffside_symm $ diffside_of_B_offline Babc aL bL bM eM $ not_online_of_sameside edL
---2023/4/25
+
 theorem offline_of_online_offline (bc : b ≠ c) (aL : online a L) (bL : online b L)
     (bM : online b M) (cM : online c M) (aM : ¬online a M) : ¬online c L :=
   online_2_of_triangle aL bL $ tri321 $ triangle_of_ne_online bc bM cM aM
 
 theorem offline_of_ne_online_offline (ab : a ≠ b) (aL : online a L) (bL : online b L)
     (aM : online a M) (cM : online c M) (cL : ¬online c L) : ¬online b M :=
-  fun bM => cL (by rwa[←line_unique_of_pts ab aL bL aM bM] at cM) --already have?
+  fun bM => cL (by rwa[←line_unique_of_pts ab aL bL aM bM] at cM)
 
 theorem online_of_angle_zero (ab : a ≠ b) (ac : a ≠ c) (aL : online a L) (bL : online b L)
     (bac_0 : angle  b a c = 0) : online c L ∧ ¬B b a c :=
@@ -465,12 +456,12 @@ lemma angle_zero_of_lt_eq (ab : a ≠ b) (aL : online a L) (bL : online b L) (dc
       aM cM dM (B_of_col_sameside aL $ sameside_symm dcL)
   · linarith[angle_symm b a d, angle_add_of_sameside aL bL aN cN (sameside_symm dcL) $
       sameside_of_sameside_not_sameside ab aL aM aN bL dM cN cM dcL bcM, angle_symm d a c]
---2023/5/4
+
 theorem angle_zero_of_lt_eq_B (ab : a ≠ b) (Bbcd : B b c d) (tri_bad : triangle b a d)
     (bad_bac : angle b a d = angle b a c) : angle c a d = 0 := by
   rcases line_of_pts a b with ⟨L, aL, bL⟩; exact angle_zero_of_lt_eq ab aL bL (sameside_symm $
     sameside_of_B_online_3 Bbcd bL (online_3_of_triangle bL aL tri_bad)) bad_bac
---2023/4/27
+
 theorem ne_of_col_tri (col_abc : colinear a b c) (tri_acd : triangle d a c) : d ≠ b := by
   rcases col_abc with ⟨L, aL, bL, cL⟩; exact ne_of_online' bL $ online_1_of_triangle aL cL tri_acd
 
@@ -501,7 +492,7 @@ theorem nonzero_angle_of_offline (ab : a ≠ b) (aL : online a L) (bL : online b
 theorem zero_lt_angle_of_offline (ab : a ≠ b) (aL : online a L) (bL : online b L)
     (cL : ¬online c L) : 0 < angle c a b :=
   lt_of_le_of_ne (angle_nonneg c a b) $ Ne.symm $ nonzero_angle_of_offline ab aL bL cL
---2023/5/5
+
 theorem zero_lt_angle_of_tri (tri_abc : triangle a b c) : 0 < angle c a b := by
   rcases line_of_pts a b with ⟨L, aL, bL⟩; exact zero_lt_angle_of_offline (ne_12_of_tri tri_abc) aL
     bL (online_3_of_triangle aL bL tri_abc)
@@ -510,7 +501,7 @@ theorem sameside_of_B_B (Babc : B a b c) (Bade : B a d e) (bL : online b L) (dL 
     (aL : ¬online a L) : sameside c e L :=
    sameside_of_diffside_diffside (diffside_of_B_offline' Babc bL aL) $ diffside_of_B_offline'
     Bade dL aL
---2023/4/28
+
 theorem angle_lt_of_B_tri (Bcdb : B c d b) (tri_abc : triangle a b c) :
     angle c a d < angle c a b := by
   rcases line_of_pts a b with ⟨L, aL, bL⟩; rcases line_of_pts a c with ⟨M, aM, cM⟩
@@ -519,7 +510,7 @@ theorem angle_lt_of_B_tri (Bcdb : B c d b) (tri_abc : triangle a b c) :
     bL $ online_3_of_triangle aL bL tri_abc
   linarith[angle_symm d a c, zero_lt_angle_of_offline (ne_12_of_tri tri_abc) aL bL (fun dL =>
     (online_3_of_triangle aL bL tri_abc) $ online_3_of_B (B_symm Bcdb) bL dL)]
---2023/4/29
+
 theorem ne_of_oncircle (aα : on_circle a α) (bα : ¬on_circle b α) : a ≠ b :=
   fun ab => bα $ by rwa [ab] at aα
 
@@ -547,7 +538,7 @@ theorem circint_of_lt_lt (aα : center_circle a α) (bβ : center_circle b β)
   rcases in_circle_of_lt_lt bβ aα dβ cα (by rw[abs_lt]; constructor; repeat
     linperm[abs_lt.mp lt_cen]) $ by linperm with ⟨f, fβ, fα⟩
   exact circles_inter_of_inside_on_circle eα fβ fα eβ
---2023/5/4
+
 theorem ang_2_nonzero_of_tri (tri_abc : triangle a b c) : angle b a c ≠ 0 := by
   rcases line_of_pts a b with ⟨L, aL, bL⟩; linarith[zero_lt_angle_of_offline (ne_12_of_tri
     tri_abc) aL bL (online_3_of_triangle aL bL tri_abc), angle_symm b a c]
@@ -589,20 +580,20 @@ theorem triangle_of_asa (tri_abc : triangle a b c) (ab_de : length a b = length 
 
 theorem triangle_of_saa (de : d ≠ e) (tri_abc : triangle a b c) (ac_df : length a c = length d f)
     (bac_edf : angle b a c = angle e d f) (abc_def : angle a b c = angle d e f) :
-    triangle d e f := by --do we reaaaaly need d ≠ e?
+    triangle d e f := by
   intro col_def
   have df := ne_of_ne_len (ne_13_of_tri tri_abc) ac_df
   rcases B_of_three_col_ne de df (ne_23_of_sa' tri_abc ac_df bac_edf) col_def with Bet | Bet | Bet
   exact (not_B_of_tri_ang (tri213 tri_abc) df de.symm bac_edf) Bet
   exact (not_B_of_tri_ang tri_abc (ne_23_of_sa' tri_abc ac_df bac_edf) de abc_def) Bet
   exact (not_B_of_tri_ang (tri213 tri_abc) de df.symm $ by linperm) Bet
---2023/5/9
+
 theorem offline_of_online_inter (bc : b ≠ c) (aM : online a M) (bM : online b M) (bL : online b L)
     (cL : online c L) (cN : online c N) (dN : online d N) (aL : ¬online a L) (dL : ¬online d L)
     (eM : online e M) (eN : online e N) : ¬online e L :=
   offline_of_online_offline (ne_of_online' eM $ offline_of_online_offline bc aM bM bL cL aL) bL cL
     cN eN $ offline_of_online_offline bc.symm dN cN cL bL dL
---2023/5/10
+
 theorem para_symm (paraMN : para M N) : para N M := fun e => by have := paraMN e; tauto
 
 theorem offline_of_para (aM : online a M) (paraMN : para M N) : ¬online a N := by
@@ -624,7 +615,7 @@ theorem diffside_of_B_sameside (Bcad : B c a d) (aL : online a L) (ceL : samesid
     diffside d e L :=
   diffside_symm $ diffside_of_sameside_diffside ceL $ diffside_of_B_offline' Bcad aL $
     not_online_of_sameside ceL
---2023/5/12
+
 theorem pt_of_online_not_sameside (aL : online a L) (bL : online b L) (abM : ¬sameside a b M) :
     ∃ c, online c M ∧ online c L :=
 pt_of_lines_inter $ lines_inter_of_not_sameside aL bL abM
@@ -677,7 +668,7 @@ theorem B_diagonal_of_quad (aL : online a L) (bL : online b L) (bM : online b M)
     online c P ∧ online b O ∧ online d O ∧ online e P ∧ online e O ∧
     diffside b d P ∧ diffside a c O := by
   rcases line_of_pts b d with ⟨O, bO, dO⟩; rcases line_of_pts a c with ⟨P, aP, cP⟩
-  rcases line_of_pts a d with ⟨Q, aQ, dQ⟩ --can get rid of this line by making bdP a lemma
+  rcases line_of_pts a d with ⟨Q, aQ, dQ⟩
   have acO := diffside_of_sameside_sameside bL bO bM aL dO cM cdL adM
   have bdP := diffside_of_sameside_sameside aL aP aQ bL cP dQ (by perma) $
     sameside_of_quad aL bL bM cM cN dN dQ aQ abN cdL adM
@@ -717,7 +708,7 @@ theorem diffside_of_B_pgram (Badf : B a d f) (pgram1 : paragram a d c b L M N O)
   exact diffside_of_diffside_para aO bO (diffside_of_B_para Badf aL dL dM cM cN paraLN) paraMO
 
 theorem sameside_of_B_pgram_pgram (Badf : B a d f) (pgram1 : paragram a d c b L M N O)
-    (pgram2 : paragram e f c b L P N Q) : sameside b d P := by --pgram2 is very strong
+    (pgram2 : paragram e f c b L P N Q) : sameside b d P := by
   have ⟨_, dL, dM, cM, cN, bN, _, _, paraLN, _⟩ := pgram1
   exact sameside_of_sameside_diffside cN cM pgram2.2.2.2.1 bN dM pgram2.2.2.1
     (sameside_of_para_online dL pgram2.2.1 paraLN) $ diffside_of_B_pgram Badf pgram1
@@ -818,7 +809,7 @@ theorem sameside_of_pyth (Beld : B e l d) (aX : online a X) (lX : online l X)
     $ sameside_symm $ sameside_of_para_online' aX lX paraQX) $ sameside_symm $
     sameside_of_para_online cO dO paraOQ
  ---------------------------------------- Book I Refactored ---------------------------------------
-              /-- Euclid I.1, construction of two equilateral triangles -/
+/-- Euclid I.1, construction of two equilateral triangles -/
 theorem iseqtri_iseqtri_diffside_of_ne (ab : a ≠ b) : ∃ (c d : point), ∃ (L : line), online a L ∧
   online b L ∧ diffside c d L ∧ eq_tri a b c ∧ eq_tri a b d := by
 rcases circle_of_ne ab with ⟨α, aα, bα⟩
@@ -832,6 +823,7 @@ have ab_ad := (on_circle_iff_length_eq aα bα).mpr dα
 have bd_ba := (on_circle_iff_length_eq bβ dβ).mpr aβ
 exact ⟨c, d, L, aL, bL, cdL, eq_tri_of_length_online ab aL bL cdL.1 ab_ac bc_ba,
   eq_tri_of_length_online ab aL bL cdL.2.1 ab_ad bd_ba⟩
+
 /-- Euclid I.1, construction of an equilateral triangle on the sameside of a point -/
 theorem iseqtri_sameside_of_ne (ab : a ≠ b) (aL : online a L) (bL : online b L) (dL : ¬online d L):
   ∃ c, ¬online c L ∧ sameside c d L ∧ eq_tri a b c := by
@@ -840,31 +832,36 @@ theorem iseqtri_sameside_of_ne (ab : a ≠ b) (aL : online a L) (bL : online b L
     with c1dL | c2dL
   refine ⟨c1, not_online_of_sameside c1dL, c1dL, eqtri1⟩
   refine ⟨c2, not_online_of_sameside c2dL, c2dL, eqtri2⟩
-              /-- Euclid I.1, construction of a single equilateral triangle -/
+
+/-- Euclid I.1, construction of a single equilateral triangle -/
 theorem iseqtri_of_ne (ab : a ≠ b) : ∃ (c : point), eq_tri a b c :=
   by rcases iseqtri_iseqtri_diffside_of_ne ab with ⟨c, -, -, -, -, -, eqtri, -⟩; exact ⟨c, eqtri⟩
-                          /-- Euclid I.2, collapsing compass -/
+
+/-- Euclid I.2, collapsing compass -/
 theorem length_eq_of_ne (a : point) (bc : b ≠ c) : ∃ (f : point), length a f = length b c := by
-  by_cases ab : a = b; rw [ab]; exact ⟨c, rfl⟩ --degenerate case
+  by_cases ab : a = b; rw [ab]; exact ⟨c, rfl⟩
   rcases iseqtri_of_ne ab with ⟨d, eqtri⟩
   rcases B_circ_of_ne (ne_32_of_tri eqtri.1) bc with ⟨e, α, Bdbe, bα, cα, eα⟩
   rcases B_circ_out_of_B (ne_31_of_tri eqtri.1) Bdbe eqtri.2.2.2 with ⟨f, β, Bdaf, dβ, eβ, fβ⟩
   have be_bc := (length_eq_of_oncircle bα cα eα).symm
   have de_df := length_eq_of_oncircle dβ eβ fβ
   have af_be := length_eq_of_B_B Bdbe Bdaf eqtri.2.2.2 de_df
-  exact ⟨f, af_be.trans be_bc⟩ --calc block?
-                          /-- Euclid I.2, generalization -/
+  exact ⟨f, af_be.trans be_bc⟩
+
+/-- Euclid I.2, generalization -/
 theorem length_eq_B_of_ne (ab : a ≠ b) (bc : b ≠ c) :
   ∃ (d : point), B a b d ∧ length b c = length b d := by
 rcases B_circ_of_ne ab bc with ⟨d, α, Babd, bα, cα, dα⟩;
   exact ⟨d, Babd, length_eq_of_oncircle bα cα dα⟩
-                          /-- Euclid I.2, generalization -/
+
+/-- Euclid I.2, generalization -/
 theorem length_eq_B_of_ne_four (ab : a ≠ b) (cd : c ≠ d) :
   ∃ (f : point), B a b f ∧ length c d = length b f := by
 rcases length_eq_of_ne b cd with ⟨e, be_cd⟩
 rcases length_eq_B_of_ne ab (ne_of_ne_len' cd be_cd) with ⟨f, Babf, be_bf⟩
 exact ⟨f, Babf, by linarith⟩
-                          /-- Euclid I.2, generalization -/
+
+/-- Euclid I.2, generalization -/
 theorem length_eq_of_sameside (aL : online a L) (bL : ¬online b L) (aM : ¬online a M)
     (dL : online d L) (dM : online d M) : ∃ e, online e M ∧ diffside e b L ∧
     length e d = length a b := by
@@ -882,19 +879,21 @@ theorem length_eq_of_sameside' (aL : online a L) (bL : ¬online b L) (aM : ¬onl
   exact ⟨f, online_3_of_B Bedf eM dM, by perma[sameside_of_B_diffside Bedf dL ebL],
     by perma[ab_df.symm]⟩
 
-                /-- Euclid I.3, Moving a smaller segment on top of a larger one -/
+/-- Euclid I.3, Moving a smaller segment on top of a larger one -/
 theorem B_length_eq_of_ne_lt (cd : c ≠ d) (cd_lt_ab : length c d < length a b) :
   ∃ (f : point), B a f b ∧ length a f = length c d := by
 rcases length_eq_of_ne a cd with ⟨e, ae_cd⟩
-rcases circle_of_ne (ne_of_ne_len' cd ae_cd) with ⟨α, aα, eα⟩ --combine into one line?
+rcases circle_of_ne (ne_of_ne_len' cd ae_cd) with ⟨α, aα, eα⟩
 rcases B_oncircle_of_inside_outside (inside_circle_of_center aα)
   (out_circle_of_lt aα eα (by rwa [← ae_cd] at cd_lt_ab)) with ⟨f, Bafb, fα⟩
 have ae_af := length_eq_of_oncircle aα eα fα
 exact ⟨f, Bafb, by linarith⟩
-                      /-- Euclid I.5, (part 1), isosceles triangles have equal angles -/
+
+/-- Euclid I.5, (part 1), isosceles triangles have equal angles -/
 theorem angle_eq_of_iso (iso_abc : iso_tri a b c) : angle a b c = angle a c b :=
   (sas (iso_abc).2 (iso_abc).2.symm $ by perm).2.2.symm
-                      /-- Euclid I.6, a triangle with equal angles is isosceles -/
+
+/-- Euclid I.6, a triangle with equal angles is isosceles -/
 theorem iso_of_angle_eq (tri_abc : triangle a b c) (abc_eq_acb : angle a b c = angle a c b) :
   length a b = length a c := by
 by_contra ab_ac
@@ -1262,7 +1261,7 @@ theorem para_of_offline (aM : ¬online a M) : ∃ N, online a N ∧ para M N := 
   refine ⟨N, aN, para_of_ang_eq (ne_of_online bM aM) cM bM bL aL aN dN cdL bad_abc.symm⟩
 
 /--Euclid I.32, the exterior angle equals the sum of the other two angles and the sum of all three
-  interior angles adds to two right angles-/ --make a bit prettier...
+  interior angles adds to two right angles-/
 theorem ext_int_sum_of_tri (Bbcd : B b c d) (tri_abc : triangle a b c) : angle a c d = angle b a c +
     angle a b c ∧ angle a b c + angle b c a + angle c a b = 2 * rightangle := by
   rcases line_of_pts a b with ⟨L, aL, bL⟩
@@ -1354,7 +1353,7 @@ theorem area_eq_of_paragram (pgram1 : paragram a d c b L M N O) (pgram2 : paragr
     by perma[(B_sameside_of_2_paragram Bfea ⟨fL, eL, eQ, bQ, bN, cN, cP, fP, paraLN, para_symm
     paraPQ⟩ ⟨dL, aL, aO, bO, bN, cN, cM, dM, paraLN, para_symm paraMO⟩).2])) (aeb_efc.trans $
     angle_extension_of_sameside (ne_of_para' fL cN paraLN) fP ⟨L, fL, eL, dL⟩ $ by
-    perma[deP]).symm).1.symm --perm possibilities? --maybe should be golfed more, would be weird
+    perma[deP]).symm).1.symm
   have ab_cd := len_eq_of_parallelogram' pgram1; have eb_cf := len_eq_of_parallelogram' pgram2
   have aeb_dfc := area_eq_of_SSS ae_df (by perma : length a b = length d c) $ by perma[eb_cf]
   have ar1 := paragram_area_comm pgram1
@@ -1458,7 +1457,7 @@ lemma inter_sq_of_perp (Bbxc : B b x c) (aX : online a X) (xX : online x X)
     (pgram1 : paragram b c d e L O P Q) (adL : diffside a d L) : ∃ l, online l X ∧ online l P := by
   have ⟨bL, cL, _, _, _, _, _, _, paraLP, _⟩ := pgram1
   by_cases paraXP : para X P; have := online_2_of_B Bbxc bL cL; have := para_trans
-    (ne_line_of_online aX adL.1) (para_symm paraLP) (para_symm paraXP) x; tauto --linpermlike
+    (ne_line_of_online aX adL.1) (para_symm paraLP) (para_symm paraXP) x; tauto
   unfold para at paraXP; push_neg at paraXP; exact paraXP
 
 /--A big enough angle has its perpendicular on a triangle side-/
@@ -1480,7 +1479,7 @@ lemma right_B_of_le_right (tri_abc : triangle a b c) (cab_le_ra : rightangle ≤
   have := not_B_of_right_le_right tri_abc ⟨L, bL, cL, dL⟩ adb cab_le_ra
   have := not_B_of_right_le_right (by perma[tri_abc] : triangle a c b) ⟨L, cL, bL, dL⟩ adc
     (by perma[cab_le_ra])
-  tauto --similar to linperm with tauto?
+  tauto
 
 /--Euclid I.47, the construction of the squares for the Pythagorean theorem-/
 theorem pythagoras_construct (tri_abc : triangle a b c) : ∃ d e f g h k L M N O P Q R S T U V W,
