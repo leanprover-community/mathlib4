@@ -384,12 +384,13 @@ end LayercakeLT
 
 section LayercakeIntegral
 
-variable {α : Type*} [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
+variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 
 /-- If `f` is integrable, then for any `c > 0` the set `{x | ‖f x‖ ≥ c}` has finite measure. -/
-lemma Integrable.measure_const_le_norm_lt_top {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E]
-    [BorelSpace E] {f : α → E} (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
+lemma Integrable.measure_const_le_norm_lt_top {E : Type*} [NormedAddCommGroup E]
+    {f : α → E} (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
     μ {a : α | c ≤ ‖f a‖} < ∞ := by
+  borelize E
   have norm_f_aemble : AEMeasurable (fun a ↦ ENNReal.ofReal ‖f a‖) μ :=
     (ENNReal.measurable_ofReal.comp measurable_norm).comp_aemeasurable f_intble.1.aemeasurable
   have markov := mul_meas_ge_le_lintegral₀ (μ := μ) norm_f_aemble (ENNReal.ofReal c)
@@ -410,11 +411,11 @@ lemma Integrable.measure_const_lt_norm_lt_top
   lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le))
     (Integrable.measure_const_le_norm_lt_top f_intble c_pos)
 
-variable {f : α → ℝ} (f_intble : Integrable f μ)
+variable {f : α → ℝ}
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
 measure. -/
-lemma Integrable.measure_const_le_lt_top {c : ℝ} (c_pos : 0 < c) :
+lemma Integrable.measure_const_le_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
     μ {a : α | c ≤ f a} < ∞ := by
   refine lt_of_le_of_lt (measure_mono ?_) (Integrable.measure_const_le_norm_lt_top f_intble c_pos)
   intro x hx
@@ -423,7 +424,7 @@ lemma Integrable.measure_const_le_lt_top {c : ℝ} (c_pos : 0 < c) :
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
 measure. -/
-lemma Integrable.measure_le_const_lt_top {c : ℝ} (c_neg : c < 0) :
+lemma Integrable.measure_le_const_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
   refine lt_of_le_of_lt (measure_mono ?_)
           (Integrable.measure_const_le_norm_lt_top f_intble (show 0 < -c by linarith))
@@ -433,14 +434,14 @@ lemma Integrable.measure_le_const_lt_top {c : ℝ} (c_neg : c < 0) :
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `t > 0` the set `{x | f x > t}` has finite
 measure. -/
-lemma Integrable.measure_const_lt_lt_top {c : ℝ} (c_pos : 0 < c) :
+lemma Integrable.measure_const_lt_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
     μ {a : α | c < f a} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_const_le_lt_top f_intble c_pos)
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `t < 0` the set `{x | f x < t}` has finite
 measure. -/
-lemma Integrable.measure_lt_const_lt_top {c : ℝ} (c_neg : c < 0) :
+lemma Integrable.measure_lt_const_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
     μ {a : α | f a < c} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_le_const_lt_top f_intble c_neg)
@@ -452,7 +453,8 @@ the Bochner integral of `f` can be written (roughly speaking) as:
 `∫ f ∂μ = ∫ t in 0..∞, μ {ω | f(ω) > t}`.
 
 See `lintegral_eq_lintegral_meas_lt` for a version with Lebesgue integral `∫⁻` instead. -/
-theorem integral_eq_integral_meas_lt (f_nn : 0 ≤ᵐ[μ] f) :
+theorem Integrable.integral_eq_integral_meas_lt [SigmaFinite μ]
+    (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
     (∫ ω, f ω ∂μ) = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t < f a}) := by
   have key := lintegral_eq_lintegral_meas_lt μ f_nn f_intble.aemeasurable
   have lhs_finite : ∫⁻ (ω : α), ENNReal.ofReal (f ω) ∂μ < ∞ := Integrable.lintegral_lt_top f_intble
