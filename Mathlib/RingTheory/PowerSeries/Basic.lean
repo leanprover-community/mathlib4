@@ -2682,6 +2682,14 @@ theorem coe_pow (n : ℕ) : ((φ ^ n : R[X]) : PowerSeries R) = (φ : PowerSerie
   coeToPowerSeries.ringHom.map_pow _ _
 #align polynomial.coe_pow Polynomial.coe_pow
 
+theorem eval₂_C_X_eq_coe : φ.eval₂ (PowerSeries.C R) PowerSeries.X = ↑φ := by
+  nth_rw 2 [←eval₂_C_X (p := φ)]
+  rw [←coeToPowerSeries.ringHom_apply, eval₂_eq_sum_range, eval₂_eq_sum_range, map_sum]
+  apply Finset.sum_congr rfl
+  intros
+  rw [map_mul, map_pow, coeToPowerSeries.ringHom_apply,
+    coeToPowerSeries.ringHom_apply, coe_C, coe_X]
+
 variable (A : Type*) [Semiring A] [Algebra R A]
 
 /-- The coercion from polynomials to power series

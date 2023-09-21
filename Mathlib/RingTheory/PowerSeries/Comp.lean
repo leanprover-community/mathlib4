@@ -86,31 +86,17 @@ then `(f ∘ᶠ g) ∘ᶠ h = 1` but `f ∘ᶠ (g ∘ᶠ h) = 0`. This is the re
 two partial results for associativity (`coe_comp_assoc` and `comp_assoc`).
 -/
 
-
 open Nat hiding pow_zero pow_succ
 open Polynomial hiding X_pow_dvd_iff
 open Finset hiding sum_comp
 open BigOperators Polynomial Finset.Nat
 open scoped Classical
 
-
 protected lemma IsNilpotent.pow_succ {n} {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (x ^ succ n) := by
   obtain ⟨N,hN⟩ := hx
   use N
   rw [←pow_mul, succ_mul, pow_add, hN, mul_zero]
-
-
-theorem Polynomial.eval₂_C_X_eq_coe {R : Type*} [CommSemiring R] (f : R[X]) :
-    f.eval₂ (PowerSeries.C R) PowerSeries.X = ↑f := by
-  nth_rw 2 [←eval₂_C_X (p := f)]
-  rw [←coeToPowerSeries.ringHom_apply, eval₂_eq_sum_range, eval₂_eq_sum_range, map_sum]
-  apply sum_congr rfl
-  intros
-  rw [map_mul, map_pow, coeToPowerSeries.ringHom_apply,
-    coeToPowerSeries.ringHom_apply, coe_C, coe_X]
-
-
 
 namespace PowerSeries
 
@@ -149,8 +135,7 @@ If not then `f ∘ᶠ g` defaults to `0`.
 -/
 scoped infixr:90 " ∘ᶠ "  => PowerSeries.comp
 
-
-/-
+/-!
 ## Criteria for `hasComp`
 
 The relation `hasComp` seems quite difficult to describe. It is neither symmetric,
@@ -739,7 +724,8 @@ theorem coe_comp_assoc {f : R[X]} {g h : R⟦X⟧} (hgh : g.hasComp h (R := R)) 
 
 @[simp] theorem comp_X (f : R⟦X⟧) : f ∘ᶠ X = f := by
   ext n
-  rw [coeff_comp_of_constantCoeff_eq_zero constantCoeff_X, eval₂_C_X_eq_coe, ←coeff_stable n.lt_succ_self]
+  rw [coeff_comp_of_constantCoeff_eq_zero constantCoeff_X, eval₂_C_X_eq_coe,
+    ←coeff_stable n.lt_succ_self]
 
 @[simp] theorem X_comp (f : R⟦X⟧) : X ∘ᶠ f = f := by
   rw [←Polynomial.coe_X, coe_comp_eq_eval₂, eval₂_X]
@@ -809,12 +795,11 @@ lemma hasComp_comp {f g h : R⟦X⟧} (hfg : f.hasComp g) (hh : IsNilpotent (con
   rwa [mem_range] at hm
   exact hn
 
-
-/-
+/--
 If the constant term of `h` is nilpotent then `(f ∘ᶠ g) ∘ᶠ h = f ∘ᶠ (g ∘ᶠ h)`.
 Another case of associativity is `coe_comp_assoc`.
 
-Note that associativity does *not* hold unconditionally.
+Note that associativity of `∘ᶠ` does *not* hold in all cases.
 -/
 theorem comp_assoc {f g h : R⟦X⟧} (hfg : f.hasComp g (R := R))
     (hh : IsNilpotent (constantCoeff R h)) : (f ∘ᶠ g) ∘ᶠ h = f ∘ᶠ (g ∘ᶠ h) := by
@@ -841,8 +826,6 @@ theorem comp_assoc {f g h : R⟦X⟧} (hfg : f.hasComp g (R := R))
     intro hx
     apply mul_eq_zero_of_left hx
 
-
-
 lemma rescale_eq_comp_mul_X {f} (r : R) : rescale r f = f ∘ᶠ (r • X) := by
   have : constantCoeff R (r • X) = 0
   · rw [smul_eq_C_mul, map_mul, constantCoeff_X, mul_zero]
@@ -856,7 +839,6 @@ lemma rescale_eq_comp_mul_X {f} (r : R) : rescale r f = f ∘ᶠ (r • X) := by
     contrapose h
     rw [not_not, mem_range]
     apply lt_succ_self
-
 
 theorem map_comp' {S} {f g : R⟦X⟧} [CommSemiring S] (h : f.hasComp g (R := R)) (γ : R →+* S) :
     map γ (f ∘ᶠ g) = (map γ f) ∘ᶠ (map γ g) := by
@@ -873,11 +855,7 @@ theorem map_comp' {S} {f g : R⟦X⟧} [CommSemiring S] (h : f.hasComp g (R := R
   intro n hn
   rw [coeff_map, ←map_pow, coeff_map, ←map_mul, hN n hn, map_zero]
 
-
-
 end CommutativeSemiring
-
-
 
 lemma neg_hasComp {R} [CommRing R] {f g: R⟦X⟧} (h : f.hasComp g) : (-f).hasComp g := by
   intro d
@@ -924,7 +902,6 @@ theorem inv_comp' {R} [Field R] {f g : R⟦X⟧} (hf : constantCoeff R f ≠ 0)
     · rw [←this, map_mul, h', mul_zero]
     rw [map_one] at this
     apply one_ne_zero this
-
 
 /-
 This statement will generalize to all commutative rings `R` (once the instance of `Inv` is created).
