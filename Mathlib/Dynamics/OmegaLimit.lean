@@ -237,7 +237,7 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   rcases hc₂ with ⟨v, hv₁, hv₂⟩
   let k := closure (image2 ϕ v s)
   have hk : IsCompact (k \ n) :=
-    IsCompact.diff (hc₁.of_isClosed_subset isClosed_closure hv₂) hn₁
+    (hc₁.of_isClosed_subset isClosed_closure hv₂).diff hn₁
   let j u := (closure (image2 ϕ (u ∩ v) s))ᶜ
   have hj₁ : ∀ u ∈ f, IsOpen (j u) := fun _ _ ↦ isOpen_compl_iff.mpr isClosed_closure
   have hj₂ : k \ n ⊆ ⋃ u ∈ f, j u := by
