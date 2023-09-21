@@ -159,20 +159,6 @@ def getCalcSteps' (steps : TSyntax ``calcSteps) : TermElabM (Array (TSyntax ``ca
     pure (#[step0] ++ rest)
   | _ => unreachable!
 
-/-- Elaborator for calc steps. Compared to `elabCalcSteps` from core, this inserts a
-calc widget for each proof.  -/
-def elabCalcStepsWithWidgets (indent : Nat) (steps : TSyntax ``calcSteps) : TermElabM Expr := do
-  let mut isFirst := true
-  for step in ← getCalcSteps' steps do
-    let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
-    let `(calcStep| $(_) := $proofTerm) := step | unreachable!
-    let json := open scoped ProofWidgets.Json in json% {"replaceRange": $(replaceRange),
-                                                        "isFirst": $(isFirst),
-                                                        "indent": $(indent)}
-    ProofWidgets.savePanelWidgetInfo proofTerm `CalcPanel (pure json)
-    isFirst := false
-  elabCalcSteps steps
-
 end Lean.Elab.Term
 
 
@@ -181,26 +167,18 @@ open Meta
 
 /-- Elaborator for the `calc` tactic mode variant with widgets. -/
 elab_rules : tactic
-| `(tactic|calc%$calcstx $stx) => withMainContext do
+| `(tactic|calc%$calcstx $stx) => do
+  dbg_trace "Fooo"
   let steps : TSyntax ``calcSteps := ⟨stx⟩
-  let (val, mvarIds) ← withCollectingNewGoalsFrom (tagSuffix := `calc) do
-    let target ← getMainTarget
-    let tag ← getMainTag
-    let some calcRange := (← getFileMap).rangeOfStx? calcstx | unreachable!
-    let indent := calcRange.start.character
-    runTermElab do
-    let mut val ← Term.elabCalcStepsWithWidgets indent steps
-    let mut valType ← inferType val
-    unless (← isDefEq valType target) do
-      let rec throwFailed :=
-        throwError "'calc' tactic failed, has type{indentExpr valType}\n
-          but it is expected to have type{indentExpr target}"
-      let some (_, _, rhs) ← Term.getCalcRelation? valType | throwFailed
-      let some (r, _, rhs') ← Term.getCalcRelation? target | throwFailed
-      let lastStep := mkApp2 r rhs rhs'
-      let lastStepGoal ← mkFreshExprSyntheticOpaqueMVar lastStep (tag := tag ++ `calc.step)
-      (val, valType) ← Term.mkCalcTrans val valType lastStepGoal lastStep
-      unless (← isDefEq valType target) do throwFailed
-    return val
-  (← getMainGoal).assign val
-  replaceMainGoal mvarIds
+  let some calcRange := (← getFileMap).rangeOfStx? calcstx | unreachable!
+  let indent := calcRange.start.character
+  let mut isFirst := true
+  for step in ← Lean.Elab.Term.getCalcSteps' steps do
+    let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
+    let `(calcStep| $(_) := $proofTerm) := step | unreachable!
+    let json := open scoped ProofWidgets.Json in json% {"replaceRange": $(replaceRange),
+                                                        "isFirst": $(isFirst),
+                                                        "indent": $(indent)}
+    ProofWidgets.savePanelWidgetInfo proofTerm `CalcPanel (pure json)
+    isFirst := false
+  evalCalc (← `(tactic|calc%$calcstx $stx))
