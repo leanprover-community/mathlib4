@@ -571,15 +571,16 @@ lemma adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (Hadd : ∀ x y, p x → p y → p (x + y)) (H0 : p 0)
     (Hmul : ∀ x y, p x → p y → p (x * y)) (Hsmul : ∀ (r : R) x, p x → p (r • x)) : p a :=
   Subtype.recOn a <| fun b hb => by
-  refine Exists.elim ?_ (fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc)
-  apply adjoin_induction hb
-  · exact fun x hx => ⟨subset_adjoin R hx, Hs x hx⟩
-  · exact fun x y hx hy => Exists.elim hx <| fun hx' hx => Exists.elim hy <| fun hy' hy =>
-      ⟨add_mem hx' hy', Hadd _ _ hx hy⟩
-  · exact ⟨_, H0⟩
-  · exact fun x y hx hy => Exists.elim hx <| fun hx' hx => Exists.elim hy <| fun hy' hy =>
-      ⟨mul_mem hx' hy', Hmul _ _ hx hy⟩
-  · exact fun r x hx => Exists.elim hx <| fun hx' hx => ⟨SMulMemClass.smul_mem r hx', Hsmul r _ hx⟩
+    refine Exists.elim ?_ (fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc)
+    apply adjoin_induction hb
+    · exact fun x hx => ⟨subset_adjoin R hx, Hs x hx⟩
+    · exact fun x y hx hy => Exists.elim hx <| fun hx' hx => Exists.elim hy <| fun hy' hy =>
+        ⟨add_mem hx' hy', Hadd _ _ hx hy⟩
+    · exact ⟨_, H0⟩
+    · exact fun x y hx hy => Exists.elim hx <| fun hx' hx => Exists.elim hy <| fun hy' hy =>
+        ⟨mul_mem hx' hy', Hmul _ _ hx hy⟩
+    · exact fun r x hx => Exists.elim hx <| fun hx' hx =>
+        ⟨SMulMemClass.smul_mem r hx', Hsmul r _ hx⟩
 
 protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) :=
   fun s S =>
