@@ -1180,6 +1180,7 @@ import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Shift.Induced
 import Mathlib.CategoryTheory.Shift.Localization
+import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
 import Mathlib.CategoryTheory.Shift.Quotient
 import Mathlib.CategoryTheory.Sigma.Basic
@@ -1912,6 +1913,7 @@ import Mathlib.Data.ZMod.Coprime
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Data.ZMod.Parity
 import Mathlib.Data.ZMod.Quotient
+import Mathlib.Data.ZMod.Units
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
 import Mathlib.Deprecated.Subfield

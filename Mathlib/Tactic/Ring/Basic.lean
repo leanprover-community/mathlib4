@@ -803,7 +803,7 @@ partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum s
 theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp
 
 theorem pow_add (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) :
-  (a : R) ^ (b₁ + b₂) = d := by subst_vars; simp [_root_.pow_add]
+    (a : R) ^ (b₁ + b₂) = d := by subst_vars; simp [_root_.pow_add]
 
 /-- Exponentiates two polynomials `va, vb`.
 
