@@ -1209,8 +1209,7 @@ namespace Units
 variable [Monoid M]
 
 theorem conj_pow (u : Mˣ) (x : M) (n : ℕ) :
-      ((↑u : M) * x * (↑u⁻¹ : M)) ^ n =
-      (u : M) * x ^ n * (↑u⁻¹ : M) :=
+    ((↑u : M) * x * (↑u⁻¹ : M)) ^ n = (u : M) * x ^ n * (↑u⁻¹ : M) :=
   (divp_eq_iff_mul_eq.2
   ((u.mk_semiconjBy x).pow_right n).eq.symm).symm
 #align units.conj_pow Units.conj_pow
