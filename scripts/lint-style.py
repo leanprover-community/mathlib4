@@ -326,7 +326,7 @@ def format_errors(errors):
         if errno == ERR_CLN:
             output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
         if errno == ERR_4SP:
-            output_message(path, line_nr, "ERR_2SP", "If the theorem statement requires multiple lines, indent the subsequent lines by 4 spaces")
+            output_message(path, line_nr, "ERR_4SP", "If the theorem statement requires multiple lines, indent the subsequent lines by 4 spaces")
 
 def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:
