@@ -868,7 +868,7 @@ theorem exists_subset_nhds_of_compactSpace [CompactSpace α] {ι : Type*} [Nonem
 #align exists_subset_nhds_of_compact_space exists_subset_nhds_of_compactSpace
 
 /-- If `f : α → β` is an `Inducing` map,
-the image `f '' s` of a set `s` is compact if and only `s` is compact. -/
+the image `f '' s` of a set `s` is compact if and only if `s` is compact. -/
 theorem Inducing.isCompact_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     IsCompact (f '' s) ↔ IsCompact s := by
   refine ⟨fun hs F F_ne_bot F_le => ?_, fun hs => hs.image hf.continuous⟩
