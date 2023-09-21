@@ -300,7 +300,7 @@ noncomputable def actRight : X P Q ⊗ T.X ⟶ X P Q :=
           dsimp
           simp only [comp_whiskerRight, whisker_assoc, Category.assoc, Iso.inv_hom_id_assoc]
           slice_lhs 3 4 =>
-            rw [← MonoidalCategory.whiskerLeft_comp, middle_assoc, 
+            rw [← MonoidalCategory.whiskerLeft_comp, middle_assoc,
               MonoidalCategory.whiskerLeft_comp]
           simp))
 set_option linter.uppercaseLean3 false in
@@ -988,7 +988,6 @@ set_option linter.uppercaseLean3 false in
 theorem whisker_exchange_bimod {X Y Z : Mon_ C} {M N : Bimod X Y} {P Q : Bimod Y Z} (f : M ⟶ N)
     (g : P ⟶ Q) : whiskerLeft M g ≫ whiskerRight f Q =
       whiskerRight f P ≫ whiskerLeft N g := by
-  dsimp [tensorHom]
   ext
   apply coequalizer.hom_ext
   dsimp
@@ -1020,7 +1019,6 @@ theorem pentagon_bimod {V W X Y Z : Mon_ C} (M : Bimod V W) (N : Bimod W X) (P :
   dsimp [AssociatorBimod.homAux]
   refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
   dsimp
-  simp only [id_tensorHom, tensorHom_id]
   slice_lhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc]
   slice_rhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_rhs 3 4 => rw [coequalizer.π_desc]
@@ -1063,7 +1061,6 @@ theorem triangle_bimod {X Y Z : Mon_ C} (M : Bimod X Y) (N : Bimod Y Z) :
   slice_lhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_lhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
   dsimp [LeftUnitorBimod.hom]
-  simp only [id_tensorHom, tensorHom_id]
   slice_lhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, coequalizer.π_desc]
   slice_rhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc]
   slice_rhs 1 2 => rw [coequalizer.condition]
