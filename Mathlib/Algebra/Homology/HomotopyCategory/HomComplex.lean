@@ -88,7 +88,7 @@ lemma mk_v (v : ∀ (p q : ℤ) (_ : p + n = q), F.X p ⟶ G.X q) (p q : ℤ) (h
     (Cochain.mk v).v p q hpq = v p q hpq := rfl
 
 lemma congr_v {z₁ z₂ : Cochain F G n} (h : z₁ = z₂) (p q : ℤ) (hpq : p + n = q) :
-  z₁.v p q hpq = z₂.v p q hpq := by subst h; rfl
+    z₁.v p q hpq = z₂.v p q hpq := by subst h; rfl
 
 @[ext]
 lemma ext (z₁ z₂ : Cochain F G n)
