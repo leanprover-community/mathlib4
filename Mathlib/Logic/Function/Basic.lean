@@ -584,7 +584,7 @@ theorem update_injective (f : ∀ a, β a) (a' : α) : Injective (update f a') :
 #align function.update_injective Function.update_injective
 
 lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a → Prop) :
-  (∀ x, p x (update f a b x)) ↔ p a b ∧ ∀ x, x ≠ a → p x (f x) := by
+    (∀ x, p x (update f a b x)) ↔ p a b ∧ ∀ x, x ≠ a → p x (f x) := by
   rw [← and_forall_ne a, update_same]
   simp (config := { contextual := true })
 #align function.forall_update_iff Function.forall_update_iff
@@ -723,7 +723,7 @@ lemma Injective.FactorsThrough (hf : Injective f) (g : α → γ) : g.FactorsThr
 #align function.injective.factors_through Function.Injective.FactorsThrough
 
 lemma FactorsThrough.extend_apply {g : α → γ} (hf : g.FactorsThrough f) (e' : β → γ) (a : α) :
-  extend f g e' (f a) = g a := by
+    extend f g e' (f a) = g a := by
   simp only [extend_def, dif_pos, exists_apply_eq_apply]
   exact hf (Classical.choose_spec (exists_apply_eq_apply f a))
 #align function.factors_through.extend_apply Function.FactorsThrough.extend_apply
@@ -740,8 +740,7 @@ theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f
   simp [Function.extend_def, hb]
 #align function.extend_apply' Function.extend_apply'
 
-lemma factorsThrough_iff (g : α → γ) [Nonempty γ] :
-  g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
+lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
 ⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
       funext (fun x => by simp only [comp_apply, hf.extend_apply])⟩,
   fun h _ _ hf => by rw [Classical.choose_spec h, comp_apply, comp_apply, hf]⟩
@@ -765,7 +764,7 @@ lemma FactorsThrough.apply_extend {δ} {g : α → γ} (hf : FactorsThrough g f)
 #align function.factors_through.apply_extend Function.FactorsThrough.apply_extend
 
 lemma Injective.apply_extend {δ} (hf : Injective f) (F : γ → δ) (g : α → γ) (e' : β → γ) (b : β) :
-  F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b :=
+    F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b :=
   (hf.FactorsThrough g).apply_extend F e' b
 #align function.injective.apply_extend Function.Injective.apply_extend
 
@@ -778,7 +777,7 @@ theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g �
 #align function.extend_injective Function.extend_injective
 
 lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsThrough g f) :
-  extend f g e' ∘ f = g :=
+    extend f g e' ∘ f = g :=
   funext $ fun a => hf.extend_apply e' a
 #align function.factors_through.extend_comp Function.FactorsThrough.extend_comp
 

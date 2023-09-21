@@ -80,19 +80,19 @@ instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
 
 @[to_additive (attr := simp)]
 theorem mul_apply {M N} [Mul M] [CommSemigroup N] (f g : M →ₙ* N) (x : M) :
-  (f * g) x = f x * g x := rfl
+    (f * g) x = f x * g x := rfl
 #align mul_hom.mul_apply MulHom.mul_apply
 #align add_hom.add_apply AddHom.add_apply
 
 @[to_additive]
 theorem mul_comp [Mul M] [Mul N] [CommSemigroup P] (g₁ g₂ : N →ₙ* P) (f : M →ₙ* N) :
-  (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
+    (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
 #align mul_hom.mul_comp MulHom.mul_comp
 #align add_hom.add_comp AddHom.add_comp
 
 @[to_additive]
 theorem comp_mul [Mul M] [CommSemigroup N] [CommSemigroup P] (g : N →ₙ* P) (f₁ f₂ : M →ₙ* N) :
-  g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
+    g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
   ext
   simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
 #align mul_hom.comp_mul MulHom.comp_mul
@@ -122,19 +122,19 @@ add_decl_doc AddMonoidHom.add
 
 @[to_additive (attr := simp)]
 theorem mul_apply {M N} [MulOneClass M] [CommMonoid N] (f g : M →* N) (x : M) :
-  (f * g) x = f x * g x := rfl
+    (f * g) x = f x * g x := rfl
 #align monoid_hom.mul_apply MonoidHom.mul_apply
 #align add_monoid_hom.add_apply AddMonoidHom.add_apply
 
 @[to_additive]
 theorem mul_comp [MulOneClass M] [MulOneClass N] [CommMonoid P] (g₁ g₂ : N →* P) (f : M →* N) :
-  (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
+    (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
 #align monoid_hom.mul_comp MonoidHom.mul_comp
 #align add_monoid_hom.add_comp AddMonoidHom.add_comp
 
 @[to_additive]
 theorem comp_mul [MulOneClass M] [CommMonoid N] [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
-  g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
+    g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
   ext
   simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
 #align monoid_hom.comp_mul MonoidHom.comp_mul
@@ -204,7 +204,7 @@ def ofMapDiv {H : Type*} [Group H] (f : G → H) (hf : ∀ x y, f (x / y) = f x 
 
 @[to_additive (attr := simp)]
 theorem coe_of_map_div {H : Type*} [Group H] (f : G → H) (hf : ∀ x y, f (x / y) = f x / f y) :
-  ↑(ofMapDiv f hf) = f := rfl
+    ↑(ofMapDiv f hf) = f := rfl
 #align monoid_hom.coe_of_map_div MonoidHom.coe_of_map_div
 #align add_monoid_hom.coe_of_map_sub AddMonoidHom.coe_of_map_sub
 
@@ -217,7 +217,7 @@ instance {M G} [MulOneClass M] [CommGroup G] : Inv (M →* G) :=
 
 @[to_additive (attr := simp)]
 theorem inv_apply {M G} [MulOneClass M] [CommGroup G] (f : M →* G) (x : M) :
-  f⁻¹ x = (f x)⁻¹ := rfl
+    f⁻¹ x = (f x)⁻¹ := rfl
 #align monoid_hom.inv_apply MonoidHom.inv_apply
 #align add_monoid_hom.neg_apply AddMonoidHom.neg_apply
 
@@ -247,7 +247,7 @@ instance {M G} [MulOneClass M] [CommGroup G] : Div (M →* G) :=
 
 @[to_additive (attr := simp)]
 theorem div_apply {M G} [MulOneClass M] [CommGroup G] (f g : M →* G) (x : M) :
-  (f / g) x = f x / g x := rfl
+    (f / g) x = f x / g x := rfl
 #align monoid_hom.div_apply MonoidHom.div_apply
 #align add_monoid_hom.sub_apply AddMonoidHom.sub_apply
 

@@ -1546,11 +1546,11 @@ theorem iInf_sigma {p : β → Type*} {f : Sigma p → α} : ⨅ x, f x = ⨅ (i
 #align infi_sigma iInf_sigma
 
 lemma iSup_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
-  (⨆ i, ⨆ j, f i j) = ⨆ x : Σ i, κ i, f x.1 x.2 :=
+    (⨆ i, ⨆ j, f i j) = ⨆ x : Σ i, κ i, f x.1 x.2 :=
 (iSup_sigma (f := λ x ↦ f x.1 x.2)).symm
 
 lemma iInf_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
-  (⨅ i, ⨅ j, f i j) = ⨅ x : Σ i, κ i, f x.1 x.2 :=
+    (⨅ i, ⨅ j, f i j) = ⨅ x : Σ i, κ i, f x.1 x.2 :=
 (iInf_sigma (f := λ x ↦ f x.1 x.2)).symm
 
 theorem iSup_prod {f : β × γ → α} : ⨆ x, f x = ⨆ (i) (j), f (i, j) :=
@@ -1918,12 +1918,12 @@ instance completeLattice [CompleteLattice α] [CompleteLattice β] : CompleteLat
 end Prod
 
 lemma sInf_prod [InfSet α] [InfSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
-  sInf (s ×ˢ t) = (sInf s, sInf t) :=
+    sInf (s ×ˢ t) = (sInf s, sInf t) :=
 congr_arg₂ Prod.mk (congr_arg sInf $ fst_image_prod _ ht) (congr_arg sInf $ snd_image_prod hs _)
 #align Inf_prod sInf_prod
 
 lemma sSup_prod [SupSet α] [SupSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
-  sSup (s ×ˢ t) = (sSup s, sSup t) :=
+    sSup (s ×ˢ t) = (sSup s, sSup t) :=
 congr_arg₂ Prod.mk (congr_arg sSup $ fst_image_prod _ ht) (congr_arg sSup $ snd_image_prod hs _)
 #align Sup_prod sSup_prod
 

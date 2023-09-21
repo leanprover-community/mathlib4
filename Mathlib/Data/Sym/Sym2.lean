@@ -705,7 +705,7 @@ theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : ⟦(
 
 @[simp]
 theorem other_eq_other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) :
-  Mem.other h = Mem.other' h := by rw [← congr_right, other_spec' h, other_spec]
+    Mem.other h = Mem.other' h := by rw [← congr_right, other_spec' h, other_spec]
 #align sym2.other_eq_other' Sym2.other_eq_other'
 
 theorem other_mem' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other' h ∈ z := by

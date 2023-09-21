@@ -526,7 +526,7 @@ lemma MapsTo.comp_left (g : β → γ) (hf : MapsTo f s t) : MapsTo (g ∘ f) s 
 #align set.maps_to.comp_left Set.MapsTo.comp_left
 
 lemma MapsTo.comp_right {s : Set β} {t : Set γ} (hg : MapsTo g s t) (f : α → β) :
-  MapsTo (g ∘ f) (f ⁻¹' s) t := fun _ hx ↦ hg hx
+    MapsTo (g ∘ f) (f ⁻¹' s) t := fun _ hx ↦ hg hx
 #align set.maps_to.comp_right Set.MapsTo.comp_right
 
 @[simp]
