@@ -416,6 +416,7 @@ def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 #align complex.tanh Complex.tanh
 
+/-- scoped notation for the complex exponential function -/
 scoped notation "cexp" => Complex.exp
 
 end
@@ -471,6 +472,7 @@ nonrec def tanh (x : ℝ) : ℝ :=
   (tanh x).re
 #align real.tanh Real.tanh
 
+/-- scoped notation for the real exponential function -/
 scoped notation "rexp" => Real.exp
 
 end
