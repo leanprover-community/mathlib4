@@ -50,7 +50,7 @@ open Lean Meta
 open Mathlib.Tactic.Rewrites
 
 /-- Separate a string into a list of strings by pulling off initial `(` or `]` characters,
-and pulilng off terminal `)`, `]`, or `,` characters. -/
+and pulling off terminal `)`, `]`, or `,` characters. -/
 partial def splitDelimiters (s : String) : List String :=
   if s.startsWith "(" || s.startsWith "[" then
     s.take 1 :: splitDelimiters (s.drop 1)
