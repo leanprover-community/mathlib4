@@ -49,7 +49,7 @@ If another item arrives at the head of the queue,
 we may not need to continue calculate the previous head's elements.)
 
 To complicate matters, the priorities might be expensive to calculate,
-so we instead keep track of a lower bound for each such `a : α`.
+so we instead keep track of a lower bound (where less is better) for each such `a : α`.
 The priority queue maintains the `MLList m β` in order of the current best lower bound for the
 corresponding `a : α`.
 When we insert a new `α × MLList m β` into the queue, we have to provide a lower bound,
