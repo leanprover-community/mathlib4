@@ -330,6 +330,10 @@ theorem bounds_bddBelow {f : ContinuousMultilinearMap 𝕜 E G} :
   ⟨0, fun _ ⟨hn, _⟩ => hn⟩
 #align continuous_multilinear_map.bounds_bdd_below ContinuousMultilinearMap.bounds_bddBelow
 
+theorem isLeast_op_norm : IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} ‖f‖ := by
+  apply IsClosed.csInf_mem
+
+
 theorem op_norm_nonneg : 0 ≤ ‖f‖ :=
   le_csInf bounds_nonempty fun _ ⟨hx, _⟩ => hx
 #align continuous_multilinear_map.op_norm_nonneg ContinuousMultilinearMap.op_norm_nonneg
@@ -337,18 +341,10 @@ theorem op_norm_nonneg : 0 ≤ ‖f‖ :=
 /-- The fundamental property of the operator norm of a continuous multilinear map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`. -/
 theorem le_op_norm : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := by
-  have A : 0 ≤ ∏ i, ‖m i‖ := prod_nonneg fun j _ => norm_nonneg _
-  cases' A.eq_or_lt with h hlt
-  · rcases prod_eq_zero_iff.1 h.symm with ⟨i, _, hi⟩
-    rw [norm_eq_zero] at hi
-    have : f m = 0 := f.map_coord_zero i hi
-    rw [this, norm_zero]
-    exact mul_nonneg (op_norm_nonneg f) A
-  · rw [← div_le_iff hlt]
-    apply le_csInf bounds_nonempty
-    rintro c ⟨_, hc⟩
-    rw [div_le_iff hlt]
-    apply hc
+  refine (IsClosed.csInf_mem ?_ bounds_nonempty bounds_bddBelow).2 m
+  simp only [Set.setOf_and, Set.setOf_forall]
+  exact isClosed_Ici.inter (isClosed_iInter fun m ↦
+    isClosed_le continuous_const (continuous_id.mul continuous_const))
 #align continuous_multilinear_map.le_op_norm ContinuousMultilinearMap.le_op_norm
 
 theorem le_of_op_norm_le {C : ℝ} (h : ‖f‖ ≤ C) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
@@ -475,6 +471,9 @@ theorem le_of_op_nnnorm_le {C : ℝ≥0} (h : ‖f‖₊ ≤ C) : ‖f m‖₊ �
   (f.le_op_nnnorm m).trans <| mul_le_mul' h le_rfl
 #align continuous_multilinear_map.le_of_op_nnnorm_le ContinuousMultilinearMap.le_of_op_nnnorm_le
 
+theorem op_nnnorm_le_iff {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ := by
+  exact_mod_cast op_norm_le_iff C.coe_nonneg
+
 theorem op_norm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖ = max ‖f‖ ‖g‖ :=
   le_antisymm
@@ -506,8 +505,13 @@ theorem norm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', N
 
 section
 
-variable (𝕜 G)
+variable (𝕜 G G')
 
+@[simp]
+theorem norm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
+    ‖ofSubsingleton 𝕜 G G' i f‖ = ‖f‖ := by
+  
+  
 theorem norm_ofSubsingleton_le [Subsingleton ι] (i' : ι) : ‖ofSubsingleton 𝕜 G i'‖ ≤ 1 :=
   op_norm_le_bound _ zero_le_one fun m => by
     rw [Fintype.prod_subsingleton _ i', one_mul, ofSubsingleton_apply]
