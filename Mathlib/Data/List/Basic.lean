@@ -4344,7 +4344,8 @@ theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn�
     · exact getD_cons_zero _ _ _
     · exact IH _
 
-@[simp] theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by
+@[simp]
+theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by
   induction' l with hd tl IH generalizing n
   · rfl
   · cases n
