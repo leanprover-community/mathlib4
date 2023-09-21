@@ -54,6 +54,10 @@ namespace padicValRat
    padicValRat p q < padicValRat p (r₁ + r₂) :=
    lt_of_lt_of_le (lt_min hval₁ hval₂) (padicValRat.min_le_padicValRat_add (p := p) (hp := hp) hqr)
 
+  /--
+    If the p-adic valuation of a finite set of positive rationals is greater than a given rational
+    number, then the p-adic valuation of their sum is also greater than the same rational number.
+  -/
   theorem finset_gen_sum_lt_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)]
   {F : ℕ → ℚ} {S : Finset ℕ} (hS : S.Nonempty)
   (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
