@@ -28,12 +28,13 @@ topology does not coincide with the lower topology.
 
 ## Implementation notes
 
-A type synonym `WithUpperSetTopology` is introduced and for a preorder `α`, `WithUpperSetTopology α`
-is made an instance of `TopologicalSpace` by the topology where the upper sets are the open sets.
+A type synonym `Topology.WithUpperSet` is introduced and for a preorder `α`,
+`Topology.WithUpperSet α` is made an instance of `TopologicalSpace` by the topology where the upper
+sets are the open sets.
 
 We define a mixin class `UpperSetTopology` for the class of types which are both a preorder and a
-topology and where the open sets are the upper sets. It is shown that `WithUpperSetTopology α` is an
-instance of `UpperSetTopology`.
+topology and where the open sets are the upper sets. It is shown that `Topology.WithUpperSet α` is
+an instance of `UpperSetTopology`.
 
 Similarly for the lower set topology.
 
@@ -82,132 +83,132 @@ end preorder
 open Set TopologicalSpace
 
 /-- Type synonym for a preorder equipped with the upper set topology. -/
-def WithUpperSetTopology (α : Type*) := α
+def Topology.WithUpperSet (α : Type*) := α
 
 /-- Type synonym for a preorder equipped with the lower set topology. -/
-def WithLowerSetTopology (α : Type*) := α
+def Topology.WithLowerSet (α : Type*) := α
 
-namespace WithUpperSetTopology
+namespace Topology.WithUpperSet
 
-/-- `toUpperSet` is the identity function to the `WithUpperSetTopology` of a type.  -/
+/-- `toUpperSet` is the identity function to the `Topology.WithUpperSet` of a type.  -/
 @[match_pattern]
-def toUpperSet : α ≃ WithUpperSetTopology α := Equiv.refl _
+def toUpperSet : α ≃ Topology.WithUpperSet α := Equiv.refl _
 
-/-- `ofUpperSet` is the identity function from the `WithUpperSetTopology` of a type.  -/
+/-- `ofUpperSet` is the identity function from the `Topology.WithUpperSet` of a type.  -/
 @[match_pattern]
-def ofUpperSet : WithUpperSetTopology α ≃ α := Equiv.refl _
+def ofUpperSet : Topology.WithUpperSet α ≃ α := Equiv.refl _
 
 @[simp]
-theorem to_withUpperSetTopology_symm_eq : (@toUpperSet α).symm = ofUpperSet := rfl
+theorem to_Topology.WithUpperSet_symm_eq : (@toUpperSet α).symm = ofUpperSet := rfl
 
 @[simp]
-theorem of_withUpperSetTopology_symm_eq : (@ofUpperSet α).symm = toUpperSet := rfl
+theorem of_Topology.WithUpperSet_symm_eq : (@ofUpperSet α).symm = toUpperSet := rfl
 
 @[simp]
-theorem toUpperSet_ofUpperSet (a : WithUpperSetTopology α) : toUpperSet (ofUpperSet a) = a := rfl
+theorem toUpperSet_ofUpperSet (a : Topology.WithUpperSet α) : toUpperSet (ofUpperSet a) = a := rfl
 
 @[simp]
 theorem ofUpperSet_toUpperSet (a : α) : ofUpperSet (toUpperSet a) = a := rfl
 
 theorem toUpperSet_inj {a b : α} : toUpperSet a = toUpperSet b ↔ a = b := Iff.rfl
 
-theorem ofUpperSet_inj {a b : WithUpperSetTopology α} : ofUpperSet a = ofUpperSet b ↔ a = b :=
+theorem ofUpperSet_inj {a b : Topology.WithUpperSet α} : ofUpperSet a = ofUpperSet b ↔ a = b :=
   Iff.rfl
 
-/-- A recursor for `WithUpperSetTopology`. Use as `induction x using WithUpperSetTopology.rec`. -/
-protected def rec {β : WithUpperSetTopology α → Sort*} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
+/-- A recursor for `Topology.WithUpperSet`. Use as `induction x using Topology.WithUpperSet.rec`. -/
+protected def rec {β : Topology.WithUpperSet α → Sort*} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
   fun a => h (ofUpperSet a)
 
-instance [Nonempty α] : Nonempty (WithUpperSetTopology α) := ‹Nonempty α›
+instance [Nonempty α] : Nonempty (Topology.WithUpperSet α) := ‹Nonempty α›
 
-instance [Inhabited α] : Inhabited (WithUpperSetTopology α) := ‹Inhabited α›
+instance [Inhabited α] : Inhabited (Topology.WithUpperSet α) := ‹Inhabited α›
 
 variable {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
 
-instance : Preorder (WithUpperSetTopology α) := ‹Preorder α›
+instance : Preorder (Topology.WithUpperSet α) := ‹Preorder α›
 
-instance : TopologicalSpace (WithUpperSetTopology α) := Topology.upperSet α
+instance : TopologicalSpace (Topology.WithUpperSet α) := Topology.upperSet α
 
-theorem ofUpperSet_le_iff {a b : WithUpperSetTopology α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b :=
+theorem ofUpperSet_le_iff {a b : Topology.WithUpperSet α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b :=
   Iff.rfl
 
 theorem toUpperSet_le_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b := Iff.rfl
 
 /-- `ofUpper` as an `OrderIso` -/
-def ofUpperSetOrderIso : OrderIso (WithUpperSetTopology α) α :=
+def ofUpperSetOrderIso : OrderIso (Topology.WithUpperSet α) α :=
 { ofUpperSet with
   map_rel_iff' := ofUpperSet_le_iff }
 
 /-- `toUpper` as an `OrderIso` -/
-def toUpperSetOrderIso : OrderIso α (WithUpperSetTopology α) :=
+def toUpperSetOrderIso : OrderIso α (Topology.WithUpperSet α) :=
 { toUpperSet with
   map_rel_iff' := toUpperSet_le_iff }
 
-end WithUpperSetTopology
+end Topology.WithUpperSet
 
-namespace WithLowerSetTopology
+namespace Topology.WithLowerSet
 
-/-- `toLowerSet` is the identity function to the `WithLowerSetTopology` of a type.  -/
+/-- `toLowerSet` is the identity function to the `Topology.WithLowerSet` of a type.  -/
 @[match_pattern]
-def toLowerSet : α ≃ WithLowerSetTopology α := Equiv.refl _
+def toLowerSet : α ≃ Topology.WithLowerSet α := Equiv.refl _
 
-/-- `ofLowerSet` is the identity function from the `WithLowerSetTopology` of a type.  -/
+/-- `ofLowerSet` is the identity function from the `Topology.WithLowerSet` of a type.  -/
 @[match_pattern]
-def ofLowerSet : WithLowerSetTopology α ≃ α := Equiv.refl _
+def ofLowerSet : Topology.WithLowerSet α ≃ α := Equiv.refl _
 
 @[simp]
-theorem to_withLowerSetTopology_symm_eq : (@toLowerSet α).symm = ofLowerSet := rfl
+theorem to_Topology.WithLowerSet_symm_eq : (@toLowerSet α).symm = ofLowerSet := rfl
 
 @[simp]
-theorem of_withLowerSetTopology_symm_eq : (@ofLowerSet α).symm = toLowerSet := rfl
+theorem of_Topology.WithLowerSet_symm_eq : (@ofLowerSet α).symm = toLowerSet := rfl
 
 @[simp]
-theorem toLowerSet_ofLowerSet (a : WithLowerSetTopology α) : toLowerSet (ofLowerSet a) = a := rfl
+theorem toLowerSet_ofLowerSet (a : Topology.WithLowerSet α) : toLowerSet (ofLowerSet a) = a := rfl
 
 @[simp]
 theorem ofLowerSet_toLowerSet (a : α) : ofLowerSet (toLowerSet a) = a := rfl
 
 theorem toLowerSet_inj {a b : α} : toLowerSet a = toLowerSet b ↔ a = b := Iff.rfl
 
-theorem ofLowerSet_inj {a b : WithLowerSetTopology α} : ofLowerSet a = ofLowerSet b ↔ a = b :=
+theorem ofLowerSet_inj {a b : Topology.WithLowerSet α} : ofLowerSet a = ofLowerSet b ↔ a = b :=
   Iff.rfl
 
-/-- A recursor for `WithLowerSetTopology`. Use as `induction x using WithLowerSetTopology.rec`. -/
-protected def rec {β : WithLowerSetTopology α → Sort*} (h : ∀ a, β (toLowerSet a)) : ∀ a, β a :=
+/-- A recursor for `Topology.WithLowerSet`. Use as `induction x using Topology.WithLowerSet.rec`. -/
+protected def rec {β : Topology.WithLowerSet α → Sort*} (h : ∀ a, β (toLowerSet a)) : ∀ a, β a :=
   fun a => h (ofLowerSet a)
 
-instance [Nonempty α] : Nonempty (WithLowerSetTopology α) := ‹Nonempty α›
+instance [Nonempty α] : Nonempty (Topology.WithLowerSet α) := ‹Nonempty α›
 
-instance [Inhabited α] : Inhabited (WithLowerSetTopology α) := ‹Inhabited α›
+instance [Inhabited α] : Inhabited (Topology.WithLowerSet α) := ‹Inhabited α›
 
 variable [Preorder α]
 
-instance : Preorder (WithLowerSetTopology α) := ‹Preorder α›
+instance : Preorder (Topology.WithLowerSet α) := ‹Preorder α›
 
-instance : TopologicalSpace (WithLowerSetTopology α) := Topology.lowerSet α
+instance : TopologicalSpace (Topology.WithLowerSet α) := Topology.lowerSet α
 
-theorem ofLowerSet_le_iff {a b : WithLowerSetTopology α} : ofLowerSet a ≤ ofLowerSet b ↔ a ≤ b :=
+theorem ofLowerSet_le_iff {a b : Topology.WithLowerSet α} : ofLowerSet a ≤ ofLowerSet b ↔ a ≤ b :=
   Iff.rfl
 
 theorem toLowerSet_le_iff {a b : α} : toLowerSet a ≤ toLowerSet b ↔ a ≤ b := Iff.rfl
 
 /-- `ofLower` as an `OrderIso` -/
-def ofLowerSetOrderIso : OrderIso (WithLowerSetTopology α) α :=
+def ofLowerSetOrderIso : OrderIso (Topology.WithLowerSet α) α :=
 { ofLowerSet with
   map_rel_iff' := ofLowerSet_le_iff }
 
 /-- `toLower` as an `OrderIso` -/
-def toLowerSetOrderIso : OrderIso α (WithLowerSetTopology α) :=
+def toLowerSetOrderIso : OrderIso α (Topology.WithLowerSet α) :=
 { toLowerSet with
   map_rel_iff' := toLowerSet_le_iff }
 
-end WithLowerSetTopology
+end Topology.WithLowerSet
 
 /--
 The Upper Set topology is homeomorphic to the Lower Set topology on the dual order
 -/
-def WithUpperSetTopology.toDualHomeomorph [Preorder α] :
-    WithUpperSetTopology α ≃ₜ WithLowerSetTopology αᵒᵈ where
+def Topology.WithUpperSet.toDualHomeomorph [Preorder α] :
+    Topology.WithUpperSet α ≃ₜ Topology.WithLowerSet αᵒᵈ where
   toFun := OrderDual.toDual
   invFun := OrderDual.ofDual
   left_inv := OrderDual.toDual_ofDual
@@ -222,9 +223,9 @@ set topology does not coincide with the upper topology.
 class UpperSetTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_upperSetTopology : t = Topology.upperSet α
 
-instance [Preorder α] : UpperSetTopology (WithUpperSetTopology α) := ⟨rfl⟩
+instance [Preorder α] : UpperSetTopology (Topology.WithUpperSet α) := ⟨rfl⟩
 
-instance [Preorder α] : @UpperSetTopology (WithUpperSetTopology α) (Topology.upperSet α) _ := ⟨rfl⟩
+instance [Preorder α] : @UpperSetTopology (Topology.WithUpperSet α) (Topology.upperSet α) _ := ⟨rfl⟩
 
 instance [Preorder α] : @UpperSetTopology α (Topology.upperSet α) _ := by
   letI := Topology.upperSet α
@@ -237,9 +238,9 @@ set topology does not coincide with the lower topology.
 class LowerSetTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_lowerSetTopology : t = Topology.lowerSet α
 
-instance [Preorder α] : LowerSetTopology (WithLowerSetTopology α) := ⟨rfl⟩
+instance [Preorder α] : LowerSetTopology (Topology.WithLowerSet α) := ⟨rfl⟩
 
-instance [Preorder α] : @LowerSetTopology (WithLowerSetTopology α) (Topology.lowerSet α) _ := ⟨rfl⟩
+instance [Preorder α] : @LowerSetTopology (Topology.WithLowerSet α) (Topology.lowerSet α) _ := ⟨rfl⟩
 
 instance [Preorder α] : @LowerSetTopology α (Topology.lowerSet α) _ := by
   letI := Topology.lowerSet α
@@ -263,10 +264,10 @@ instance instLowerSetTopologyDual [Preorder α] [TopologicalSpace α] [UpperSetT
     rw [(UpperSetTopology.topology_eq (α))]
 
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
-`WithUpperSetTopology α`.
+`Topology.WithUpperSet α`.
 -/
-def withUpperSetTopologyHomeomorph : WithUpperSetTopology α ≃ₜ α :=
-  WithUpperSetTopology.ofUpperSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+def Topology.WithUpperSetHomeomorph : Topology.WithUpperSet α ≃ₜ α :=
+  Topology.WithUpperSet.ofUpperSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 lemma isOpen_iff_isUpperSet : IsOpen s ↔ IsUpperSet s := by
   rw [topology_eq α]
@@ -357,10 +358,10 @@ instance instUpperSetTopologyDual [Preorder α] [TopologicalSpace α] [LowerSetT
     rw [(LowerSetTopology.topology_eq (α))]
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to
-`WithLowerSetTopology α`.
+`Topology.WithLowerSet α`.
 -/
-def withLowerSetTopologyHomeomorph : WithLowerSetTopology α ≃ₜ α :=
-  WithLowerSetTopology.ofLowerSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+def Topology.WithLowerSetHomeomorph : Topology.WithLowerSet α ≃ₜ α :=
+  Topology.WithLowerSet.ofLowerSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 lemma isOpen_iff_isLowerSet : IsOpen s ↔ IsLowerSet s := by
   rw [topology_eq α]
@@ -430,12 +431,12 @@ lemma lowerSet_dual_iff_upperSet [Preorder α] [TopologicalSpace α] :
   · apply LowerSetTopology.instUpperSetTopologyDual
   · apply UpperSetTopology.instLowerSetTopologyDual
 
-namespace WithUpperSetTopology
+namespace Topology.WithUpperSet
 variable [Preorder α] [Preorder β] [Preorder γ]
 
 /-- A monotone map between preorders spaces induces a continuous map between themselves considered
 with the upper set topology. -/
-def map (f : α →o β) : C(WithUpperSetTopology α, WithUpperSetTopology β) where
+def map (f : α →o β) : C(Topology.WithUpperSet α, Topology.WithUpperSet β) where
   toFun := toUpperSet ∘ f ∘ ofUpperSet
   continuous_toFun := continuous_def.2 λ _s hs ↦ IsUpperSet.preimage hs f.monotone
 
@@ -447,23 +448,23 @@ def map (f : α →o β) : C(WithUpperSetTopology α, WithUpperSetTopology β) w
   simp_rw [specializes_iff_closure_subset, UpperSetTopology.closure_singleton, Iic_subset_Iic,
     toUpperSet_le_iff]
 
-@[simp] lemma ofUpperSet_le_ofUpperSet {a b : WithUpperSetTopology α} :
+@[simp] lemma ofUpperSet_le_ofUpperSet {a b : Topology.WithUpperSet α} :
     ofUpperSet a ≤ ofUpperSet b ↔ b ⤳ a := toUpperSet_specializes_toUpperSet.symm
 
-@[simp] lemma isUpperSet_toUpperSet_preimage {s : Set (WithUpperSetTopology α)} :
+@[simp] lemma isUpperSet_toUpperSet_preimage {s : Set (Topology.WithUpperSet α)} :
     IsUpperSet (toUpperSet ⁻¹' s) ↔ IsOpen s := Iff.rfl
 
 @[simp] lemma isOpen_ofUpperSet_preimage {s : Set α} : IsOpen (ofUpperSet ⁻¹' s) ↔ IsUpperSet s :=
   isUpperSet_toUpperSet_preimage.symm
 
-end WithUpperSetTopology
+end Topology.WithUpperSet
 
-namespace WithLowerSetTopology
+namespace Topology.WithLowerSet
 variable [Preorder α] [Preorder β] [Preorder γ]
 
 /-- A monotone map between preorders spaces induces a continuous map between themselves considered
 with the lower set topology. -/
-def map (f : α →o β) : C(WithLowerSetTopology α, WithLowerSetTopology β) where
+def map (f : α →o β) : C(Topology.WithLowerSet α, Topology.WithLowerSet β) where
   toFun := toLowerSet ∘ f ∘ ofLowerSet
   continuous_toFun := continuous_def.2 λ _s hs ↦ IsLowerSet.preimage hs f.monotone
 
@@ -475,13 +476,13 @@ def map (f : α →o β) : C(WithLowerSetTopology α, WithLowerSetTopology β) w
   simp_rw [specializes_iff_closure_subset, LowerSetTopology.closure_singleton, Ici_subset_Ici,
     toLowerSet_le_iff]
 
-@[simp] lemma ofLowerSet_le_ofLowerSet {a b : WithLowerSetTopology α} :
+@[simp] lemma ofLowerSet_le_ofLowerSet {a b : Topology.WithLowerSet α} :
     ofLowerSet a ≤ ofLowerSet b ↔ a ⤳ b := toLowerSet_specializes_toLowerSet.symm
 
-@[simp] lemma isLowerSet_toLowerSet_preimage {s : Set (WithLowerSetTopology α)} :
+@[simp] lemma isLowerSet_toLowerSet_preimage {s : Set (Topology.WithLowerSet α)} :
     IsLowerSet (toLowerSet ⁻¹' s) ↔ IsOpen s := Iff.rfl
 
 @[simp] lemma isOpen_ofLowerSet_preimage {s : Set α} : IsOpen (ofLowerSet ⁻¹' s) ↔ IsLowerSet s :=
   isLowerSet_toLowerSet_preimage.symm
 
-end WithLowerSetTopology
+end Topology.WithLowerSet
