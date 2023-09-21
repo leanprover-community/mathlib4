@@ -50,8 +50,10 @@ lemma mul_le_mul_of_nonneg_left {R : Type*} [CommSemiring R] [PartialOrder R] [S
     simp only [←nonneg_iff, add_mul] at hx hy ⊢
     apply add_le_add <;> aesop
 
-/-- A commutative star-ordered semiring is an ordered semiring. -/
-instance {R : Type*} [CommSemiring R] [PartialOrder R] [StarOrderedRing R] :
+/-- A commutative star-ordered semiring is an ordered semiring.
+
+See note [lower instance priority]. -/
+instance (priority := 100) {R : Type*} [CommSemiring R] [PartialOrder R] [StarOrderedRing R] :
     OrderedCommSemiring R where
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
@@ -59,8 +61,10 @@ instance {R : Type*} [CommSemiring R] [PartialOrder R] [StarOrderedRing R] :
   mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
   mul_le_mul_of_nonneg_right a b c := by simpa only [mul_comm _ c] using mul_le_mul_of_nonneg_left
 
-/-- A commutative star-ordered ring is an ordered ring. -/
-instance {R : Type*} [CommRing R] [PartialOrder R] [StarOrderedRing R] :
+/-- A commutative star-ordered ring is an ordered ring.
+
+See note [lower instance priority]. -/
+instance (priority := 100) {R : Type*} [CommRing R] [PartialOrder R] [StarOrderedRing R] :
     OrderedCommRing R where
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := zero_le_one
