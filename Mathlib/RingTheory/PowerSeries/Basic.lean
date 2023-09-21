@@ -2927,7 +2927,6 @@ theorem coeff_mul_stable {d n} (f g) (h : d.succ ≤ n := by rfl) :
     coeff R d (f * g) = coeff R d (trunc n f * trunc n g) :=
   coeff_mul_stable₂ f g h h
 
-
 theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n + 1 := by
   rw [lt_succ_iff, natDegree_le_iff_coeff_eq_zero]
   intros
