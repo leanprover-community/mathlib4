@@ -2699,8 +2699,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
   ext d
   rw [coeff_trunc, coeff_trunc, Polynomial.coeff_coe]
   split_ifs with h
-  · have : d < m := lt_of_lt_of_le h hnm
-    rw [coeff_trunc, if_pos this]
+  · rw [coeff_trunc, if_pos <| lt_of_lt_of_le h hnm]
   · rfl
 
 @[simp] theorem trunc_trunc {n} (f : R⟦X⟧) : trunc n ↑(trunc n f) = trunc n f :=
