@@ -60,8 +60,16 @@ section Monoid
 
 variable [∀ i, Monoid (G i)] [Monoid H] {φ : ∀ i, H →* G i}
 
-instance monoid : Monoid (PushoutI φ) := by
+@[instance] protected def mul : Mul (PushoutI φ) := by
   delta PushoutI; infer_instance
+
+@[instance] protected def one : One (PushoutI φ) := by
+  delta PushoutI; infer_instance
+
+instance monoid : Monoid (PushoutI φ) :=
+  { mul_assoc := (Con.monoid _).mul_assoc,
+    one_mul := (Con.monoid _).one_mul
+    mul_one := (Con.monoid _).mul_one }
 
 /-- The map from each indexing group into the pushout -/
 def of (i : ι) : G i →* PushoutI φ :=
