@@ -302,12 +302,12 @@ lemma cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [MOD m]) : a ≡ b 
 
 lemma cancel_left_div_gcd' (hm : 0 < m) (hcd : c ≡ d [MOD m]) (h : c * a ≡ d * b [MOD m]) :
     a ≡ b [MOD m / gcd m c] :=
-(h.trans $ hcd.symm.mul_right b).cancel_left_div_gcd hm
+  (h.trans $ hcd.symm.mul_right b).cancel_left_div_gcd hm
 #align nat.modeq.cancel_left_div_gcd' Nat.ModEq.cancel_left_div_gcd'
 
 lemma cancel_right_div_gcd' (hm : 0 < m) (hcd : c ≡ d [MOD m]) (h : a * c ≡ b * d [MOD m]) :
     a ≡ b [MOD m / gcd m c] :=
-(h.trans $ hcd.symm.mul_left b).cancel_right_div_gcd hm
+  (h.trans $ hcd.symm.mul_left b).cancel_right_div_gcd hm
 #align nat.modeq.cancel_right_div_gcd' Nat.ModEq.cancel_right_div_gcd'
 
 /-- A common factor that's coprime with the modulus can be cancelled from a `ModEq` -/
