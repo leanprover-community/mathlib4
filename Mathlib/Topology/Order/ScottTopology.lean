@@ -40,9 +40,10 @@ It is shown that `WithScottTopology α` is an instance of `ScottTopology`.
 
 A class `Scott` is defined in `Topology.OmegaCompletePartialOrder` and made an instance of a
 topological space by defining the open sets to be those which have characteristic functions which
-are monotone and preserve limits of countable chains. Whilst this definition of the Scott topology
-coincides with the one given here in some special cases, in general they are not the same
-[Domain Theory, 2.2.4][abramsky_gabbay_maibaum_1994].
+are monotone and preserve limits of countable chains (`OmegaCompletePartialOrder.Continuous'`).
+A Scott continuous function between `OmegaCompletePartialOrder`s is always
+`OmegaCompletePartialOrder.Continuous'` (`ScottContinuous.continuous'`). The converse is true in
+some special cases, but not in general ([Domain Theory, 2.2.4][abramsky_gabbay_maibaum_1994]).
 
 ## References
 
