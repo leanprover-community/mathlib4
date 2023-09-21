@@ -224,6 +224,8 @@ set topology does not coincide with the upper topology.
 class Topology.IsUpperSet (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_upperSetTopology : t = Topology.upperSet α
 
+attribute [nolint docBlame] Topology.IsUpperSet.topology_eq_upperSetTopology
+
 instance [Preorder α] : Topology.IsUpperSet (Topology.WithUpperSet α) := ⟨rfl⟩
 
 instance [Preorder α] : @Topology.IsUpperSet (Topology.WithUpperSet α) (Topology.upperSet α) _ :=
@@ -239,6 +241,8 @@ set topology does not coincide with the lower topology.
 -/
 class Topology.IsLowerSet (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_lowerSetTopology : t = Topology.lowerSet α
+
+attribute [nolint docBlame] Topology.IsLowerSet.topology_eq_lowerSetTopology
 
 instance [Preorder α] : Topology.IsLowerSet (Topology.WithLowerSet α) := ⟨rfl⟩
 
