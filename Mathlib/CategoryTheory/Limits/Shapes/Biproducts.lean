@@ -108,7 +108,7 @@ attribute [reassoc (attr := simp)] BiconeMorphism.wπ
 /-- The category of bicones on a given diagram. -/
 @[simps]
 instance Bicone.category : Category (Bicone F) where
-  hom A B := BiconeMorphism A B
+  Hom A B := BiconeMorphism A B
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
