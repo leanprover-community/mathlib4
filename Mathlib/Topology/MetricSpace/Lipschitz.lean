@@ -591,11 +591,10 @@ end Metric
 end LipschitzOnWith
 
 namespace LocallyLipschitz
-section EMetric
-variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
+variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ] {f : α → β}
 
 /-- A Lipschitz function is locally Lipschitz. -/
-protected lemma of_Lipschitz {f : α → β} {K : ℝ≥0} (hf : LipschitzWith K f) : LocallyLipschitz f := by
+protected lemma of_Lipschitz {K : ℝ≥0} (hf : LipschitzWith K f) : LocallyLipschitz f := by
   intro x
   use K, univ
   rw [lipschitzOn_univ]
@@ -614,7 +613,7 @@ protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continu
   apply Iff.mpr continuous_iff_continuousAt
   intro x
   rcases (hf x) with ⟨K, t, ht, hK⟩
-  exact ContinuousOn.continuousAt (hK.continuousOn) ht
+  exact (hK.continuousOn).continuousAt ht
 
 /-- The composition of locally Lipschitz functions is locally Lipschitz. --/
 protected lemma comp  {f : β → γ} {g : α → β}
@@ -657,7 +656,7 @@ protected lemma comp  {f : β → γ} {g : α → β}
     _ = g '' (t ∩ g ⁻¹' u) := by rw [h₁]
     _ ⊆ g '' t ∩ g '' (g ⁻¹' u) := by apply image_inter_subset
     _ ⊆ g '' t ∩ u := by gcongr; apply image_preimage_subset
-    _ ⊆ u := by apply inter_subset_right
+    _ ⊆ u := inter_subset_right _ _
   use Kf * Kg, t'
   exact ⟨h₂, hfL.comp (hgL.mono coe_subset) (Iff.mpr mapsTo' this)⟩
 
@@ -684,7 +683,7 @@ protected theorem prod_mk_right (b : β) : LocallyLipschitz (fun a : α => (a, b
 
 protected theorem iterate {f : α → α} (hf : LocallyLipschitz f) : ∀ n, LocallyLipschitz f^[n]
   | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
-  | n + 1 => by rw [iterate_add, iterate_one]; exact (LocallyLipschitz.iterate hf n).comp hf
+  | n + 1 => by rw [iterate_add, iterate_one]; exact (hf.iterate n).comp hf
 
 protected theorem mul {f g : Function.End α} (hf : LocallyLipschitz f)
     (hg : LocallyLipschitz g) : LocallyLipschitz (f * g : Function.End α) := hf.comp hg
@@ -694,9 +693,36 @@ protected theorem pow {f : Function.End α} (h : LocallyLipschitz f) :
   | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
   | n + 1 => by
     rw [pow_succ]
-    exact h.mul (LocallyLipschitz.pow h n)
-end EMetric
+    exact h.mul (h.pow n)
 
+section Real
+variable {f g : α → ℝ}
+/-- The minimum of locally Lipschitz functions is locally Lipschitz. -/
+protected lemma min (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
+    LocallyLipschitz (fun x => min (f x) (g x)) := by
+  let m : ℝ × ℝ → ℝ := fun p ↦ min p.1 p.2
+  have h : LocallyLipschitz m := LocallyLipschitz.of_Lipschitz lipschitzWith_min
+  exact h.comp (hf.prod hg)
+
+/-- The maximum of locally Lipschitz functions is locally Lipschitz. -/
+protected lemma max (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
+    LocallyLipschitz (fun x => max (f x) (g x)) := by
+  let m : ℝ × ℝ → ℝ := fun p ↦ max p.1 p.2
+  have h : LocallyLipschitz m := LocallyLipschitz.of_Lipschitz lipschitzWith_max
+  exact h.comp (hf.prod hg)
+
+theorem max_const (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => max (f x) a :=
+  hf.max (LocallyLipschitz.const a)
+
+theorem const_max (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => max a (f x) := by
+  simpa [max_comm] using (hf.max_const a)
+
+theorem min_const (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => min (f x) a :=
+  hf.min (LocallyLipschitz.const a)
+
+theorem const_min (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => min a (f x) := by
+  simpa [min_comm] using (hf.min_const a)
+end Real
 end LocallyLipschitz
 
 /-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical fiber”
