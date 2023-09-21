@@ -331,20 +331,18 @@ theorem bounds_bddBelow {f : ContinuousMultilinearMap 𝕜 E G} :
 #align continuous_multilinear_map.bounds_bdd_below ContinuousMultilinearMap.bounds_bddBelow
 
 theorem isLeast_op_norm : IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} ‖f‖ := by
-  apply IsClosed.csInf_mem
-
+  refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
+  simp only [Set.setOf_and, Set.setOf_forall]
+  exact isClosed_Ici.inter (isClosed_iInter fun m ↦
+    isClosed_le continuous_const (continuous_id.mul continuous_const))
 
 theorem op_norm_nonneg : 0 ≤ ‖f‖ :=
-  le_csInf bounds_nonempty fun _ ⟨hx, _⟩ => hx
+  Real.sInf_nonneg _ fun _ ⟨hx, _⟩ => hx
 #align continuous_multilinear_map.op_norm_nonneg ContinuousMultilinearMap.op_norm_nonneg
 
 /-- The fundamental property of the operator norm of a continuous multilinear map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`. -/
-theorem le_op_norm : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := by
-  refine (IsClosed.csInf_mem ?_ bounds_nonempty bounds_bddBelow).2 m
-  simp only [Set.setOf_and, Set.setOf_forall]
-  exact isClosed_Ici.inter (isClosed_iInter fun m ↦
-    isClosed_le continuous_const (continuous_id.mul continuous_const))
+theorem le_op_norm : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := f.isLeast_op_norm.1.2 m
 #align continuous_multilinear_map.le_op_norm ContinuousMultilinearMap.le_op_norm
 
 theorem le_of_op_norm_le {C : ℝ} (h : ‖f‖ ≤ C) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
