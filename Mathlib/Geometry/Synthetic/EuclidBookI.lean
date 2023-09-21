@@ -1062,7 +1062,7 @@ theorem ang_lt_of_len_lt (tri_abc : triangle a b c) (len_lt : length c a < lengt
 /--Euclid I.19, larger angles correspond to larger opposide sides in a triangle-/
 theorem len_lt_of_ang_lt (tri_abc : triangle a b c) (ang_lt : angle c b a < angle c a b) :
     length c a < length c b := by
-  by_contra cb_le_ca; push_neg at cb_le_ca
+  push_contra cb_le_ca at cb_le_ca
   by_cases cb_ca : length c b = length c a
   · linarith[angle_eq_of_iso ⟨by perma, cb_ca.symm⟩]
   linarith[ang_lt_of_len_lt (by perma) $ lt_of_le_of_ne cb_le_ca cb_ca]
@@ -1175,7 +1175,7 @@ theorem saa (de : d ≠ e) (tri_abc : triangle a b c) (ac_df : length a c = leng
 theorem para_of_ang_eq (bc : b ≠ c) (aM : online a M) (bM : online b M) (bL : online b L)
     (cL : online c L) (cN : online c N) (dN : online d N) (adL : diffside a d L)
     (cba_bcd : angle c b a = angle b c d) : para M N := by
-  intro e; by_contra eMN; push_neg at eMN
+  intro e; push_contra eMN at eMN
   wlog aeL : sameside a e L generalizing a b c d e M N; exact this bc.symm dN cN cL bL bM aM (by
     perma) (by linperm) e (by tauto) $ sameside_of_diffside_diffside adL ⟨adL.1,
     offline_of_online_inter bc aM bM bL cL cN dN adL.1 adL.2.1 eMN.1 eMN.2, aeL⟩
