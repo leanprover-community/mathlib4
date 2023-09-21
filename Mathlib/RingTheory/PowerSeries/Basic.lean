@@ -2851,7 +2851,6 @@ scoped notation:9000 R "⟦X⟧" => PowerSeries R
 
 variable {R : Type*} [CommSemiring R]
 
-
 theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     trunc n ↑(trunc m f) = trunc n f := by
   ext d
