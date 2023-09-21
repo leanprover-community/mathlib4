@@ -824,47 +824,6 @@ end LinearMap
 
 namespace MultilinearMap
 
-section Semiring
-
-variable [Semiring R] [(i : ι) → AddCommMonoid (M₁ i)] [(i : ι) → Module R (M₁ i)]
-  [AddCommMonoid M₂] [Module R M₂]
-
-instance [Monoid S] [DistribMulAction S M₂] [Module R M₂] [SMulCommClass R S M₂] :
-    DistribMulAction S (MultilinearMap R M₁ M₂) :=
-  coe_injective.distribMulAction coeAddMonoidHom fun _ _ ↦ rfl
-
-section Module
-
-variable [Semiring S] [Module S M₂] [Module R M₂] [SMulCommClass R S M₂]
-
-/-- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
-addition and scalar multiplication. -/
-instance : Module S (MultilinearMap R M₁ M₂) :=
-  coe_injective.module _ coeAddMonoidHom fun _ _ ↦ rfl
-
-instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (MultilinearMap R M₁ M₂) :=
-  coe_injective.noZeroSMulDivisors _ rfl coe_smul
-
-end Module
-
-section OfSubsingleton
-
-variable (R S M₂ M₃)
-variable [AddCommMonoid M₃] [Semiring S] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
-
-/-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
-and one-multilinear maps `MultilinearMap R (fun _ : ι ↦ M₂) M₃`. -/
-@[simps (config := { simpRhs := true })]
-def ofSubsingletonₗ [Subsingleton ι] (i : ι) :
-    (M₂ →ₗ[R] M₃) ≃ₗ[S] MultilinearMap R (fun _ : ι ↦ M₂) M₃ :=
-  { ofSubsingleton R M₂ M₃ i with
-    map_add' := fun _ _ ↦ rfl
-    map_smul' := fun _ _ ↦ rfl }
-
-end OfSubsingleton
-
-end Semiring
-
 section CommSemiring
 
 variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M₂]
@@ -906,6 +865,19 @@ theorem map_update_smul [DecidableEq ι] [Fintype ι] (m : ∀ i, M₁ i) (i : �
     map_piecewise_smul f _ _ _
   simpa [← Function.update_smul c m] using this
 #align multilinear_map.map_update_smul MultilinearMap.map_update_smul
+
+section DistribMulAction
+
+variable {R' A : Type*} [Monoid R'] [Semiring A] [∀ i, Module A (M₁ i)] [DistribMulAction R' M₂]
+  [Module A M₂] [SMulCommClass A R' M₂]
+
+instance : DistribMulAction R' (MultilinearMap A M₁ M₂) where
+  one_smul _ := ext fun _ => one_smul _ _
+  mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
+  smul_zero _ := ext fun _ => smul_zero _
+  smul_add _ _ _ := ext fun _ => smul_add _ _ _
+
+end DistribMulAction
 
 section Module
 
