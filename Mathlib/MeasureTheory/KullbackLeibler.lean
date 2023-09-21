@@ -221,9 +221,12 @@ end definition
 section tilted
 
 noncomputable
+def Λ (μ : Measure α) (f : α → ℝ) : ℝ := Real.log (∫ x, Real.exp (f x) ∂μ)
+
+noncomputable
 def Measure.tilted (μ : Measure α) (f : α → ℝ) :
     Measure α :=
-  μ.withDensity (fun x ↦ ENNReal.ofReal <| Real.exp (f x - Real.log (∫ x, Real.exp (f x) ∂μ)))
+  μ.withDensity (fun x ↦ ENNReal.ofReal (Real.exp (f x - Λ μ f)))
 
 lemma tilted_absolutelyContinuous {μ : Measure α} {f : α → ℝ} :
     μ.tilted f ≪ μ :=
@@ -231,7 +234,7 @@ lemma tilted_absolutelyContinuous {μ : Measure α} {f : α → ℝ} :
 
 @[simp]
 lemma tilted_zero (μ : Measure α) [IsProbabilityMeasure μ] : μ.tilted 0 = μ := by
-  simp only [Measure.tilted, Pi.zero_apply, Real.exp_zero, integral_const, measure_univ,
+  simp only [Measure.tilted, Λ, Pi.zero_apply, Real.exp_zero, integral_const, measure_univ,
     ENNReal.one_toReal, smul_eq_mul, mul_one, Real.log_one, sub_self, ENNReal.ofReal_one]
   exact withDensity_one
 
@@ -256,9 +259,9 @@ lemma isProbabilityMeasure_tilted {μ : Measure α} [IsProbabilityMeasure μ] {f
   simp only [Measure.tilted, MeasurableSet.univ, withDensity_apply, Measure.restrict_univ]
   simp_rw [Real.exp_sub]
   rw [← ofReal_integral_eq_lintegral_ofReal]
-  · suffices ∫ x, Real.exp (f x) / Real.exp (Real.log (∫ x, Real.exp (f x) ∂μ)) ∂μ = 1 by
+  · suffices ∫ x, Real.exp (f x) / Real.exp (Λ μ f) ∂μ = 1 by
       simp only [this, ENNReal.ofReal_one]
-    rw [Real.exp_log]
+    rw [Λ, Real.exp_log]
     · simp_rw [div_eq_mul_inv]
       rw [integral_mul_right, mul_inv_cancel]
       refine (ne_of_lt ?_).symm
@@ -279,17 +282,14 @@ lemma absolutelyContinuous_tilted {μ : Measure α} [IsProbabilityMeasure μ] {f
   exact tilted_absolutelyContinuous
 
 lemma rnDeriv_tilted (μ : Measure α) [SigmaFinite μ] {f : α → ℝ} (hf : Measurable f) :
-    (μ.tilted f).rnDeriv μ
-      =ᵐ[μ] fun x ↦ ENNReal.ofReal <| Real.exp (f x - Real.log (∫ x, Real.exp (f x) ∂μ)) :=
+    (μ.tilted f).rnDeriv μ =ᵐ[μ] fun x ↦ ENNReal.ofReal (Real.exp (f x - Λ μ f)) :=
   Measure.rnDeriv_withDensity μ (hf.sub measurable_const).exp.ennreal_ofReal
 
 lemma log_rnDeriv_tilted (μ : Measure α) [SigmaFinite μ] {f : α → ℝ} (hf : Measurable f) :
     (fun x ↦ Real.log ((μ.tilted f).rnDeriv μ x).toReal)
-      =ᵐ[μ] fun x ↦ f x - Real.log (∫ x, Real.exp (f x) ∂μ) := by
+      =ᵐ[μ] fun x ↦ f x - Λ μ f := by
   filter_upwards [rnDeriv_tilted μ hf] with x hx
   rw [hx, ENNReal.toReal_ofReal (Real.exp_pos _).le, Real.log_exp]
-
-#exit
 
 end tilted
 
@@ -297,7 +297,7 @@ lemma todo {μ ν : Measure α} [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) μ) :
     ∫ x, Real.log (μ.rnDeriv ν x).toReal ∂μ
       ≤ ⨆ (f : α → ℝ) (hf : Integrable (fun x ↦ Real.exp (f x)) ν),
-          ∫ x, f x ∂μ - Real.log (∫ x, Real.exp (f x) ∂ν) := by
+          ∫ x, f x ∂μ - Λ ν f := by
   refine le_ciSup_of_le ?_ (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) ?_
   · sorry
   · simp only
