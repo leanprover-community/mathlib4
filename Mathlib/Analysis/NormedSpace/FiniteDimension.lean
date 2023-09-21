@@ -509,14 +509,14 @@ lemma properSpace_of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
       · simpa [dist_eq_norm, norm_smul, inv_mul_le_iff (pow_pos (zero_lt_one.trans hc) _)] using hy
       · have : c^n ≠ 0 := pow_ne_zero _ (norm_pos_iff.1 (zero_lt_one.trans hc))
         simp [smul_smul, mul_inv_cancel this]
-    exact IsCompact.of_isClosed_subset (hr.image Cf) isClosed_ball A
+    exact (hr.image Cf).of_isClosed_subset isClosed_ball A
   refine ⟨fun x s ↦ ?_⟩
   have L : ∀ᶠ n in (atTop : Filter ℕ), s ≤ ‖c‖^n * r := by
     have : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
       Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
     exact Tendsto.eventually_ge_atTop this s
   rcases L.exists with ⟨n, hn⟩
-  exact IsCompact.of_isClosed_subset (M n x) isClosed_ball (closedBall_subset_closedBall hn)
+  exact (M n x).of_isClosed_subset isClosed_ball (closedBall_subset_closedBall hn)
 
 end Riesz
 
@@ -620,7 +620,7 @@ nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
     rcases hx' with ⟨r, hr₀, hrK⟩
     have : FiniteDimensional ℝ E :=
       finiteDimensional_of_isCompact_closedBall ℝ hr₀
-        (IsCompact.of_isClosed_subset hK Metric.isClosed_ball hrK)
+        (hK.of_isClosed_subset Metric.isClosed_ball hrK)
     exact exists_mem_frontier_infDist_compl_eq_dist hx hK.ne_univ
   · refine' ⟨x, hx', _⟩
     rw [frontier_eq_closure_inter_closure] at hx'

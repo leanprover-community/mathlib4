@@ -643,7 +643,7 @@ theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set
     filter_upwards [self_mem_nhdsWithin]
     rintro ⟨p, x⟩ ⟨hp, -⟩
     refine' (HasCompactSupport.convolutionExists_right L _ hf (A _ hp) _).1
-    exact IsCompact.of_isClosed_subset hk (isClosed_tsupport _) (B p hp)
+    exact hk.of_isClosed_subset (isClosed_tsupport _) (B p hp)
   let K' := -k + {q₀.2}
   have hK' : IsCompact K' := hk.neg.add isCompact_singleton
   obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ IntegrableOn f U μ :=
@@ -1270,7 +1270,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     filter_upwards [A' q₀ hq₀]
     rintro ⟨p, x⟩ ⟨hp, -⟩
     refine' (HasCompactSupport.convolutionExists_right L _ hf (A _ hp) _).1
-    apply IsCompact.of_isClosed_subset hk (isClosed_tsupport _)
+    apply hk.of_isClosed_subset (isClosed_tsupport _)
     exact closure_minimal (support_subset_iff'.2 fun z hz => hgs _ _ hp hz) hk.isClosed
   have I2 : Integrable (fun a : G => L (f a) (g q₀.1 (q₀.2 - a))) μ := by
     have M : HasCompactSupport (g q₀.1) := HasCompactSupport.intro hk fun x hx => hgs q₀.1 x hq₀ hx
