@@ -34,9 +34,13 @@ Note we don't `extend Preadditive C` here, as `Abelian C` already extends it,
 and we'll need to have both typeclasses sometimes.
 -/
 class MonoidalPreadditive : Prop where
+  /-- The left whiskering preserves the zero. -/
   whiskerLeft_zero : ∀ {X Y Z : C}, X ◁ (0 : Y ⟶ Z) = 0 := by aesop_cat
+  /-- The right whiskering preserves the zero. -/
   zero_whiskerRight : ∀ {X Y Z : C}, (0 : Y ⟶ Z) ▷ X = 0 := by aesop_cat
+  /-- The left whiskering commutes with the addition. -/
   whiskerLeft_add : ∀ {X Y Z : C} (f g : Y ⟶ Z), X ◁ (f + g) = X ◁ f + X ◁ g := by aesop_cat
+  /-- The right whiskering commutes with the addition. -/
   add_whiskerRight : ∀ {X Y Z : C} (f g : Y ⟶ Z), (f + g) ▷ X = f ▷ X + g ▷ X := by aesop_cat
 #align category_theory.monoidal_preadditive CategoryTheory.MonoidalPreadditive
 
