@@ -28,7 +28,6 @@ open BigOperators
 
 namespace padicValRat
 
--- Keep
   lemma min_eq_padicValRat_add {p : ℕ} [hp : Fact (Nat.Prime p)] {q r : ℚ}
   (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q ≠ padicValRat p r) :
   padicValRat p (q + r) = min (padicValRat p q) (padicValRat p r) := by
@@ -48,44 +47,15 @@ namespace padicValRat
         (by rw [add_neg_cancel_right, add_sub_cancel])
       _ = min (padicValRat p (q + r)) (padicValRat p r) := by rw [padicValRat.neg]
 
--- Keep
   lemma add_eq_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {q r : ℚ} (hqr : q + r ≠ 0)
   (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q < padicValRat p r) :
   padicValRat p (q + r) = padicValRat p q :=
   by rw [min_eq_padicValRat_add hqr hq hr (ne_of_lt hval),min_eq_left (le_of_lt hval)]
 
--- Keep
   lemma add_lt_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
   (hval₁ : padicValRat p q < padicValRat p r₁) (hval₂ : padicValRat p q < padicValRat p r₂) :
    padicValRat p q < padicValRat p (r₁ + r₂) :=
    lt_of_lt_of_le (lt_min hval₁ hval₂) (padicValRat.min_le_padicValRat_add (p := p) (hp := hp) hqr)
-
--- Keep
-  -- theorem finset_sum_ge_of_ge {p : ℕ} [hp : Fact (Nat.Prime p)] {n j : ℕ} {F : ℕ → ℚ}
-  -- (hF : ∀ i, i ≤ n → padicValRat p (F j) ≤ padicValRat p (F i))
-  -- (hn0 : ∑ i in Finset.range n, F i ≠ 0) : padicValRat p (F j) ≤
-  --  padicValRat p (∑ i in Finset.range n, F i) := by
-  -- induction' n with d hd
-  -- · exact False.elim (hn0 rfl)
-  -- · rw [Finset.sum_range_succ] at hn0 ⊢
-  --   by_cases h : ∑ x : ℕ in Finset.range d, F x = 0
-  --   · rw [h, zero_add]
-  --     exact hF d (by linarith)
-  --   · refine' le_trans _ (padicValRat.min_le_padicValRat_add (p := p) hn0)
-  --     · exact le_min (hd (fun i hi => hF _ (by linarith)) h) (hF _ (by linarith))
-
-  -- theorem finset_sum_lt_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {n j : ℕ} {F : ℕ → ℚ}
-  -- (hF : ∀ i, i ≤ n → padicValRat p (F j) < padicValRat p (F i))
-  -- (hn0 : ∑ i in Finset.range n, F i ≠ 0) :
-  -- padicValRat p (F j) < padicValRat p (∑ i in Finset.range n, F i) := by
-  -- induction' n with d hd
-  -- · exact False.elim (hn0 rfl)
-  -- · rw [Finset.sum_range_succ] at hn0 ⊢
-  --   by_cases h : ∑ x : ℕ in Finset.range d, F x = 0
-  --   · rw [h, zero_add]
-  --     exact hF d (by linarith)
-  --   · refine' le_trans _ (padicValRat.min_le_padicValRat_add (p := p) hn0)
-  --     · exact le_min (hd (fun i hi => hF _ (by linarith)) h) (hF _ (by linarith))
 
   theorem finset_gen_sum_lt_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)]
   {F : ℕ → ℚ} {S : Finset ℕ} (hS : S.Nonempty)
