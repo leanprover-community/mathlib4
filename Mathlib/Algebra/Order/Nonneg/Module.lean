@@ -22,21 +22,25 @@ variable {𝕜 E : Type*}
 variable [OrderedSemiring 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E]
 
+
 namespace Nonneg
 
+-- TODO: remove `prettyPrint := false` once #6833 is merged
+local notation3 (prettyPrint := false) "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
+
 /-- A module over and ordered Semiring is also a module over just the non-negative scalars. -/
-instance instModule : Module { c : 𝕜 // 0 ≤ c } E :=
+instance instModule : Module 𝕜≥0 E :=
   Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
 
 @[simp, norm_cast]
-lemma coe_smul (a : { c : 𝕜 // 0 ≤ c }) (x : E) : (a : 𝕜) • x = a • x :=
+lemma coe_smul (a : 𝕜≥0) (x : E) : (a : 𝕜) • x = a • x :=
   rfl
 
 @[simp]
-lemma mk_smul (a) (ha) (x : E) : (⟨a, ha⟩ : { c : 𝕜 // 0 ≤ c }) • x = a • x :=
+lemma mk_smul (a) (ha) (x : E) : (⟨a, ha⟩ : 𝕜≥0) • x = a • x :=
   rfl
 
-instance instIsScalarTower : IsScalarTower { c : 𝕜 // 0 ≤ c } 𝕜 E :=
+instance instIsScalarTower : IsScalarTower 𝕜≥0 𝕜 E :=
   SMul.comp.isScalarTower ↑Nonneg.coeRingHom
 
 end Nonneg
