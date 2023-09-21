@@ -584,7 +584,7 @@ variable [TopologicalAddGroup G]
 
 protected theorem HasCompactSupport.convolution [T2Space G] (hcf : HasCompactSupport f)
     (hcg : HasCompactSupport g) : HasCompactSupport (f ⋆[L, μ] g) :=
-  IsCompact.of_isClosed_subset (hcg.isCompact.add hcf) isClosed_closure <|
+  (hcg.isCompact.add hcf).of_isClosed_subset isClosed_closure <|
     closure_minimal
       ((support_convolution_subset_swap L).trans <| add_subset_add subset_closure subset_closure)
       (hcg.isCompact.add hcf).isClosed
