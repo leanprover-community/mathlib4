@@ -2838,10 +2838,6 @@ theorem coeff_mul_eq_coeff_trunc_mul_trunc {d n} (f g) (h : d < n) :
 
 end Trunc
 end PowerSeries
-
-
-
-
 namespace PowerSeries
 
 open Nat hiding pow_succ pow_zero
