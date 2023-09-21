@@ -21,8 +21,8 @@ def CategoryTheory.Limits.CokernelCofork.IsColimit.ofπ'
 
 variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
 
-variable {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact)
-  (K L : HomologicalComplex C c) (φ : K ⟶ L)
+variable {S S' : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact) (hS' : S'.ShortExact)
+  (τ : S ⟶ S') (K L : HomologicalComplex C c) (φ : K ⟶ L)
   {i j : ι} (hij : c.Rel i j)
 
 namespace HomologicalComplex
@@ -185,6 +185,7 @@ def cyclesLeftExact :
         iCycles_d, comp_zero]
     · rw [← cancel_mono (S.X₂.iCycles i), liftCycles_comp_cyclesMap, liftCycles_i, H.2])
 
+@[simps]
 noncomputable def snakeInput : ShortComplex.SnakeInput C where
   L₀ := (homologyFunctor C c i).mapShortComplex.obj S
   L₁ := (opcyclesFunctor C c i).mapShortComplex.obj S
@@ -215,6 +216,16 @@ noncomputable def snakeInput : ShortComplex.SnakeInput C where
     infer_instance
   L₁_exact := opcyclesRightExact hS i
   L₂_exact := cyclesLeftExact hS j
+
+@[simps]
+noncomputable def snakeInputHom : snakeInput hS i j hij ⟶ snakeInput hS' i j hij where
+  f₀ := (homologyFunctor C c i).mapShortComplex.map τ
+  f₁ := (opcyclesFunctor C c i).mapShortComplex.map τ
+  f₂ := (cyclesFunctor C c j).mapShortComplex.map τ
+  f₃ := (homologyFunctor C c j).mapShortComplex.map τ
+  comm₀₁ := by ext <;> dsimp <;> simp
+  comm₁₂ := by ext <;> dsimp <;> simp
+  comm₂₃ := by ext <;> dsimp <;> simp
 
 end HomologySequence
 
@@ -254,6 +265,10 @@ lemma exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i) (Homolo
       ShortComplex.isoMk (asIso (S.X₁.homologyι i))
         (asIso (S.X₂.homologyι i)) (asIso (S.X₃.homologyι i)) (by aesop_cat) (by aesop_cat)
     exact ShortComplex.exact_of_iso e.symm (opcyclesRightExact hS i)
+
+lemma δ_naturality : HomologicalComplex.homologyMap τ.τ₃ i ≫ hS'.δ i j hij =
+    hS.δ i j hij ≫ HomologicalComplex.homologyMap τ.τ₁ j :=
+  SnakeInput.naturality_δ (snakeInputHom hS hS' τ i j hij)
 
 end ShortExact
 
