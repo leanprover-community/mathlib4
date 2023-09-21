@@ -76,7 +76,13 @@ lemma withDensity_inv_same (μ : Measure α) {f : α → ℝ≥0∞}
 lemma Measure.rnDeriv_ne_top (μ ν : Measure α) [SigmaFinite μ] : ∀ᵐ x ∂ν, μ.rnDeriv ν x ≠ ∞ := by
   filter_upwards [Measure.rnDeriv_lt_top μ ν] with x hx using hx.ne
 
-lemma Measure.rnDeriv_pos {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
+lemma Measure.rnDeriv_pos {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+    ∀ᵐ x ∂μ, 0 < μ.rnDeriv ν x := by
+  rw [← Measure.withDensity_rnDeriv_eq _ _  hμν,
+    ae_withDensity_iff (Measure.measurable_rnDeriv _ _), Measure.withDensity_rnDeriv_eq _ _  hμν]
+  exact ae_of_all _ (fun x hx ↦ lt_of_le_of_ne (zero_le _) hx.symm)
+
+lemma Measure.rnDeriv_pos' {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
     (hμν : μ ≪ ν) (hνμ : ν ≪ μ) :
     ∀ᵐ x ∂ν, 0 < μ.rnDeriv ν x := by
   let s := {x | μ.rnDeriv ν x = 0}
@@ -104,7 +110,7 @@ lemma inv_rnDeriv {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
   conv in (Measure.rnDeriv (Measure.withDensity ν (Measure.rnDeriv μ ν)) ν)⁻¹ => rw [← this]
   rw [withDensity_inv_same]
   · exact Measure.measurable_rnDeriv _ _
-  · exact Measure.rnDeriv_pos hμν hνμ
+  · exact Measure.rnDeriv_pos' hμν hνμ
   · exact Measure.rnDeriv_ne_top _ _
 
 lemma Measure.mutuallySingular_self {μ : Measure α} (h : μ ⟂ₘ μ) : μ = 0 := by
@@ -216,12 +222,22 @@ lemma integral_log_rnDeriv_nonneg_aux {μ ν : Measure α} [IsFiniteMeasure μ] 
     swap; · exact (Measure.measurable_rnDeriv _ _).ennreal_toNNReal
     congr
 
+lemma integral_log_rnDeriv_nonneg
+    {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≪ ν) (h_int : Integrable (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) μ) :
+    0 ≤ ∫ x, Real.log (μ.rnDeriv ν x).toReal ∂μ := by
+  refine le_trans ?_ (integral_log_rnDeriv_nonneg_aux hμν h_int)
+  simp only [measure_univ, ENNReal.one_toReal, Real.log_one, mul_zero, le_refl]
+
 end definition
 
 section tilted
 
 noncomputable
 def Λ (μ : Measure α) (f : α → ℝ) : ℝ := Real.log (∫ x, Real.exp (f x) ∂μ)
+
+@[simp]
+lemma Λ_zero_right (μ : Measure α) [IsProbabilityMeasure μ] : Λ μ 0 = 0 := by simp [Λ]
 
 noncomputable
 def Measure.tilted (μ : Measure α) (f : α → ℝ) :
@@ -281,29 +297,119 @@ lemma absolutelyContinuous_tilted {μ : Measure α} [IsProbabilityMeasure μ] {f
   nth_rw 1 [this]
   exact tilted_absolutelyContinuous
 
-lemma rnDeriv_tilted (μ : Measure α) [SigmaFinite μ] {f : α → ℝ} (hf : Measurable f) :
+lemma rnDeriv_tilted_left_self (μ : Measure α) [SigmaFinite μ] {f : α → ℝ} (hf : Measurable f) :
     (μ.tilted f).rnDeriv μ =ᵐ[μ] fun x ↦ ENNReal.ofReal (Real.exp (f x - Λ μ f)) :=
   Measure.rnDeriv_withDensity μ (hf.sub measurable_const).exp.ennreal_ofReal
 
-lemma log_rnDeriv_tilted (μ : Measure α) [SigmaFinite μ] {f : α → ℝ} (hf : Measurable f) :
+lemma log_rnDeriv_tilted_left_self (μ : Measure α) [SigmaFinite μ] {f : α → ℝ} (hf : Measurable f) :
     (fun x ↦ Real.log ((μ.tilted f).rnDeriv μ x).toReal)
       =ᵐ[μ] fun x ↦ f x - Λ μ f := by
-  filter_upwards [rnDeriv_tilted μ hf] with x hx
+  filter_upwards [rnDeriv_tilted_left_self μ hf] with x hx
   rw [hx, ENNReal.toReal_ofReal (Real.exp_pos _).le, Real.log_exp]
 
+lemma rnDeriv_tilted_left (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
+    {f : α → ℝ} (hf : Measurable f) :
+    (fun x ↦ ((μ.tilted f).rnDeriv ν x).toReal)
+      =ᵐ[ν] fun x ↦ Real.exp (f x - Λ μ f) * (μ.rnDeriv ν x).toReal := by
+  sorry
+
+lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
+    {f : α → ℝ} (hf : Measurable f) :
+    (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal)
+      =ᵐ[ν] fun x ↦ Real.exp (- f x + Λ ν f) * (μ.rnDeriv ν x).toReal := by
+  sorry
+
 end tilted
+
+lemma todo_aux {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {f : α → ℝ}
+    (hμν : μ ≪ ν) (hfμ : Integrable f μ) (hfν : Integrable (fun x ↦ Real.exp (f x)) ν)
+    (h_int : Integrable (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) μ) :
+    ∫ x, Real.log (μ.rnDeriv ν x).toReal ∂μ - ∫ x, Real.log (μ.rnDeriv (ν.tilted f) x).toReal ∂μ
+      = ∫ x, f x ∂μ - Λ ν f := by
+  calc ∫ x, Real.log (Measure.rnDeriv μ ν x).toReal ∂μ
+        - ∫ x, Real.log (μ.rnDeriv (ν.tilted f) x).toReal ∂μ
+    = ∫ x, Real.log (Measure.rnDeriv μ ν x).toReal ∂μ
+          - ∫ x, Real.log (Real.exp (- f x + Λ ν f) * (μ.rnDeriv ν x).toReal) ∂μ := by
+        refine congr_arg₂ _ rfl ?_
+        refine integral_congr_ae (hμν.ae_eq ?_)
+        have hf' : Measurable f := by
+          -- generalize `rnDeriv_tilted_right` to require only AEMeasurable
+          -- do the same in `Measure.rnDeriv_withDensity`
+          suffices AEMeasurable f μ by sorry
+          have : f = fun x ↦ Real.log (Real.exp (f x)) := by
+            ext
+            rw [Real.log_exp]
+          rw [this]
+          refine Real.measurable_log.comp_aemeasurable ?_
+          have h' := hfν.1
+          sorry
+        filter_upwards [rnDeriv_tilted_right μ ν hf'] with x hx
+        rw [hx]
+  _ = ∫ x, Real.log (Measure.rnDeriv μ ν x).toReal ∂μ
+          - ∫ x, - f x + Λ ν f + Real.log (μ.rnDeriv ν x).toReal ∂μ := by
+        refine congr_arg₂ _ rfl ?_
+        refine integral_congr_ae ?_
+        have h_lt_top : ∀ᵐ x ∂μ, Measure.rnDeriv μ ν x < ∞ := hμν.ae_le (Measure.rnDeriv_lt_top μ ν)
+        filter_upwards [Measure.rnDeriv_pos hμν, h_lt_top] with x hx_rnDeriv_pos hx_lt_top
+        rw [Real.log_mul (Real.exp_pos _).ne']
+        · rw [Real.log_exp]
+        · rw [ne_eq, ENNReal.toReal_eq_zero_iff]
+          simp [hx_rnDeriv_pos.ne', hx_lt_top.ne]
+  _ = ∫ x, Real.log (Measure.rnDeriv μ ν x).toReal ∂μ
+          - (- ∫ x, f x ∂μ + Λ ν f + ∫ x, Real.log ((μ.rnDeriv ν x).toReal) ∂μ) := by
+        congr
+        rw [← integral_neg, integral_add ?_ h_int]
+        swap; · exact hfμ.neg.add (integrable_const _)
+        rw [integral_add ?_ (integrable_const _)]
+        swap; · exact hfμ.neg
+        simp only [integral_const, measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul]
+  _ = ∫ x, f x ∂μ - Λ ν f := by ring
+
+lemma todo' {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≪ ν) (h_int : Integrable (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) μ) :
+    ⨆ (f : α → ℝ) (hfμ : Integrable f μ)
+        (hfν : Integrable (fun x ↦ Real.exp (f x)) ν), ∫ x, f x ∂μ - Λ ν f
+      ≤ ∫ x, Real.log (μ.rnDeriv ν x).toReal ∂μ := by
+  have : ∀ (f : α → ℝ) (hfμ : Integrable f μ) (hfν : Integrable (fun x ↦ Real.exp (f x)) ν),
+      ∫ x, f x ∂μ - Λ ν f
+        = ∫ x, Real.log (μ.rnDeriv ν x).toReal ∂μ
+          - ∫ x, Real.log (μ.rnDeriv (ν.tilted f) x).toReal ∂μ :=
+    fun f hfμ hfν ↦ (todo_aux hμν hfμ hfν h_int).symm
+  refine ciSup_le (fun f ↦ ?_)
+  by_cases hfμ : Integrable f μ
+  · simp only [hfμ, ciSup_unique]
+    by_cases hf : Integrable (fun x ↦ Real.exp (f x)) ν
+    · rw [this f hfμ hf]
+      simp only [hf, ciSup_unique, tsub_le_iff_right, le_add_iff_nonneg_right]
+      have : IsProbabilityMeasure (Measure.tilted ν f) := isProbabilityMeasure_tilted hf
+      refine integral_log_rnDeriv_nonneg (hμν.trans absolutelyContinuous_tilted) ?_
+      sorry
+    · simp only [hf]
+      rw [Real.ciSup_empty]
+      exact integral_log_rnDeriv_nonneg hμν h_int
+  · simp only [hfμ]
+    rw [Real.ciSup_empty]
+    exact integral_log_rnDeriv_nonneg hμν h_int
 
 lemma todo {μ ν : Measure α} [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) μ) :
     ∫ x, Real.log (μ.rnDeriv ν x).toReal ∂μ
-      ≤ ⨆ (f : α → ℝ) (hf : Integrable (fun x ↦ Real.exp (f x)) ν),
-          ∫ x, f x ∂μ - Λ ν f := by
+      ≤ ⨆ (f : α → ℝ) (hfμ : Integrable f μ) (hfν : Integrable (fun x ↦ Real.exp (f x)) ν),
+        ∫ x, f x ∂μ - Λ ν f := by
   refine le_ciSup_of_le ?_ (fun x ↦ Real.log (μ.rnDeriv ν x).toReal) ?_
   · sorry
   · simp only
+    rw [ciSup_pos h_int]
     rw [ciSup_pos]
     swap
     · sorry
+    simp only [le_sub_self_iff, Λ]
+    suffices ∫ x, Real.exp (Real.log (μ.rnDeriv ν x).toReal) ∂ν = 1 by
+      simp [this]
+    have : (fun x ↦ Real.exp (Real.log (μ.rnDeriv ν x).toReal))
+        =ᵐ[ν] fun x ↦ (μ.rnDeriv ν x).toReal := by
+      sorry
+    rw [integral_congr_ae this]
     sorry
 
 end MeasureTheory
