@@ -68,7 +68,7 @@ in more details below in the paragraph on associativity.
 
 noncomputable section
 
-variable {𝕜 : Type _} {E F G H : Type _}
+variable {𝕜 : Type*} {E F G H : Type*}
 
 open Filter List
 
@@ -649,7 +649,7 @@ and `comp_partial_sum_target m M N`, yielding equal sums for functions that corr
 other under the bijection. As `comp_change_of_variables m M N` is a dependent function, stating
 that it is a bijection is not directly possible, but the consequence on sums can be stated
 more easily. -/
-theorem compChangeOfVariables_sum {α : Type _} [AddCommMonoid α] (m M N : ℕ)
+theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
     (f : (Σ n : ℕ, Fin n → ℕ) → α) (g : (Σ n, Composition n) → α)
     (h : ∀ (e) (he : e ∈ compPartialSumSource m M N), f e = g (compChangeOfVariables m M N e he)) :
     ∑ e in compPartialSumSource m M N, f e = ∑ e in compPartialSumTarget m M N, g e := by
@@ -743,7 +743,7 @@ end FormalMultilinearSeries
 
 open FormalMultilinearSeries
 
-set_option maxHeartbeats 450000 in
+set_option maxHeartbeats 300000 in
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, then
 `g ∘ f` admits the power series `q.comp p` at `x`. -/
 theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinearSeries 𝕜 F G}
@@ -878,6 +878,16 @@ theorem AnalyticAt.comp {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt �
   (hq.comp hp).analyticAt
 #align analytic_at.comp AnalyticAt.comp
 
+/-- If two functions `g` and `f` are analytic respectively on `s.image f` and `s`, then `g ∘ f` is
+analytic on `s`. -/
+theorem AnalyticOn.comp' {s : Set E} {g : F → G} {f : E → F} (hg : AnalyticOn 𝕜 g (s.image f))
+    (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (g ∘ f) s :=
+  fun z hz => (hg (f z) (Set.mem_image_of_mem f hz)).comp (hf z hz)
+
+theorem AnalyticOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F} (hg : AnalyticOn 𝕜 g t)
+    (hf : AnalyticOn 𝕜 f s) (st : Set.MapsTo f s t) : AnalyticOn 𝕜 (g ∘ f) s :=
+  comp' (mono hg (Set.mapsTo'.mp st)) hf
+
 /-!
 ### Associativity of the composition of formal multilinear series
 
@@ -972,7 +982,6 @@ theorem sigma_pi_composition_eq_iff
         ofFn fun i : Fin (Composition.length a') => (b' i).blocks.sum at this
     simpa [Composition.blocks_sum, Composition.ofFn_blocksFun] using this
   induction h
-  simp only [true_and_iff, eq_self_iff_true, heq_iff_eq]
   ext1
   · rfl
   · simp only [heq_eq_eq, ofFn_inj] at H ⊢
@@ -1170,8 +1179,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
       rw [get_of_eq (splitWrtComposition_join _ _ _)]
       · simp only [get_ofFn]
         rfl
-      · simp only [map_ofFn]
-        congr
+      · congr
       · simp only [map_ofFn]
         rfl
 #align composition.sigma_equiv_sigma_pi Composition.sigmaEquivSigmaPi

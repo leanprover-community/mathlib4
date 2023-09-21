@@ -36,7 +36,7 @@ namespace StarSubalgebra
 -/
 add_decl_doc StarSubalgebra.toSubalgebra
 
-variable {F R A B C : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B C : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [StarRing A] [Algebra R A] [StarModule R A]
 
@@ -57,6 +57,10 @@ instance subsemiringClass : SubsemiringClass (StarSubalgebra R A) A where
   mul_mem {s} := s.mul_mem'
   one_mem {s} := s.one_mem'
   zero_mem {s} := s.zero_mem'
+
+instance smulMemClass : SMulMemClass (StarSubalgebra R A) R A where
+  smul_mem {s} r a (ha : a ∈ s.toSubalgebra) :=
+    (SMulMemClass.smul_mem r ha : r • a ∈ s.toSubalgebra)
 
 instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Algebra R A]
     [StarModule R A] : SubringClass (StarSubalgebra R A) A where
@@ -220,6 +224,7 @@ theorem map_map (S : StarSubalgebra R A) (g : B →⋆ₐ[R] C) (f : A →⋆ₐ
   SetLike.coe_injective <| Set.image_image _ _ _
 #align star_subalgebra.map_map StarSubalgebra.map_map
 
+@[simp]
 theorem mem_map {S : StarSubalgebra R A} {f : A →⋆ₐ[R] B} {y : B} :
     y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
   Subsemiring.mem_map
@@ -325,7 +330,7 @@ namespace Subalgebra
 
 open Pointwise
 
-variable {F R A B : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -412,7 +417,7 @@ end Subalgebra
 
 namespace StarSubalgebra
 
-variable {F R A B : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -682,16 +687,16 @@ theorem sInf_toSubalgebra (S : Set (StarSubalgebra R A)) :
 #align star_subalgebra.Inf_to_subalgebra StarSubalgebra.sInf_toSubalgebra
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} {S : ι → StarSubalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
+theorem coe_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
   simp [iInf]
 #align star_subalgebra.coe_infi StarSubalgebra.coe_iInf
 
-theorem mem_iInf {ι : Sort _} {S : ι → StarSubalgebra R A} {x : A} :
+theorem mem_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} {x : A} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
 #align star_subalgebra.mem_infi StarSubalgebra.mem_iInf
 
 @[simp]
-theorem iInf_toSubalgebra {ι : Sort _} (S : ι → StarSubalgebra R A) :
+theorem iInf_toSubalgebra {ι : Sort*} (S : ι → StarSubalgebra R A) :
     (⨅ i, S i).toSubalgebra = ⨅ i, (S i).toSubalgebra :=
   SetLike.coe_injective <| by simp
 #align star_subalgebra.infi_to_subalgebra StarSubalgebra.iInf_toSubalgebra
@@ -721,7 +726,7 @@ namespace StarAlgHom
 
 open StarSubalgebra
 
-variable {F R A B : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -791,6 +796,20 @@ protected def codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : 
   toAlgHom := AlgHom.codRestrict f.toAlgHom S.toSubalgebra hf
   map_star' := fun x => Subtype.ext (map_star f x)
 
+@[simp]
+theorem coe_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
+    ↑(f.codRestrict S hf x) = f x :=
+  rfl
+
+@[simp]
+theorem subtype_comp_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B)
+    (hf : ∀ x : A, f x ∈ S) : S.subtype.comp (f.codRestrict S hf) = f :=
+  StarAlgHom.ext <| coe_codRestrict _ S hf
+
+theorem injective_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
+    Function.Injective (StarAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
+  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
+
 /-- Restriction of the codomain of a `StarAlgHom` to its range. -/
 def rangeRestrict (f : A →⋆ₐ[R] B) : A →⋆ₐ[R] f.range :=
   StarAlgHom.codRestrict f _ fun x => ⟨x, rfl⟩
@@ -808,7 +827,7 @@ end StarAlgHom
 
 section RestrictScalars
 
-variable (R : Type _) {S A B : Type _} [CommSemiring R]
+variable (R : Type*) {S A B : Type*} [CommSemiring R]
   [CommSemiring S] [Semiring A] [Semiring B] [Algebra R S] [Algebra S A] [Algebra S B]
   [Algebra R A] [Algebra R B] [IsScalarTower R S A] [IsScalarTower R S B] [Star A] [Star B]
 

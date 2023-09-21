@@ -24,10 +24,12 @@ This file defines minimal and maximal of a set with respect to an arbitrary rela
 Do we need a `Finset` version?
 -/
 
+set_option autoImplicit true
+
 
 open Function Set
 
-variable {α : Type _} (r r₁ r₂ : α → α → Prop) (s t : Set α) (a b : α)
+variable {α : Type*} (r r₁ r₂ : α → α → Prop) (s t : Set α) (a b : α)
 
 /-- Turns a set into an antichain by keeping only the "maximal" elements. -/
 def maximals : Set α :=
@@ -349,7 +351,7 @@ theorem RelEmbedding.inter_preimage_minimals_eq_of_subset (f : r ↪r s) (h : y 
   rw [inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset _ h]; simp [f.map_rel_iff]
 
 theorem RelEmbedding.minimals_preimage_eq (f : r ↪r s) (y : Set β) :
-  minimals r (f ⁻¹' y) = f ⁻¹' minimals s (y ∩ range f) := by
+    minimals r (f ⁻¹' y) = f ⁻¹' minimals s (y ∩ range f) := by
   convert (f.inter_preimage_minimals_eq univ y).symm; simp [univ_inter]; simp [inter_comm]
 
 theorem inter_maximals_preimage_inter_eq_of_rel_iff_rel_on

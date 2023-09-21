@@ -27,7 +27,7 @@ section
 
 open DirectSum
 
-variable {ι : Type _} (A : ι → Type _) (M : ι → Type _)
+variable {ι : Type*} (A : ι → Type*) (M : ι → Type*)
 
 namespace DirectSum
 
@@ -85,8 +85,8 @@ section
 
 open GradedMonoid DirectSum Gmodule
 
-instance [DecidableEq ι] [GMonoid A] [Gmodule A M] : SMul (⨁ i, A i) (⨁ i, M i)
-    where smul x y := smulAddMonoidHom A M x y
+instance [DecidableEq ι] [GMonoid A] [Gmodule A M] : SMul (⨁ i, A i) (⨁ i, M i) where
+  smul x y := smulAddMonoidHom A M x y
 
 @[simp]
 theorem smul_def [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i, A i) (y : ⨁ i, M i) :
@@ -160,7 +160,7 @@ end
 
 open DirectSum BigOperators
 
-variable {ι R A M σ σ' : Type _}
+variable {ι R A M σ σ' : Type*}
 
 variable [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra R A]
 

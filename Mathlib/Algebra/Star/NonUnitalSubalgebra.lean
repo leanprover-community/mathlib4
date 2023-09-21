@@ -22,32 +22,34 @@ In this file we define `NonUnitalStarSubalgebra`s and the usual operations on th
 namespace StarMemClass
 
 /-- If a type carries an involutive star, then any star-closed subset does too. -/
-instance instInvolutiveStar {S R : Type _} [InvolutiveStar R] [SetLike S R] [StarMemClass S R]
+instance instInvolutiveStar {S R : Type*} [InvolutiveStar R] [SetLike S R] [StarMemClass S R]
     (s : S) : InvolutiveStar s where
   star_involutive r := Subtype.ext <| star_star (r : R)
 
-/-- In a star semigroup (i.e., a semigroup with an antimultiplicative involutive star operation),
-any star-closed subset which is also closed under multiplication is itself a star semigroup. -/
-instance instStarSemigroup {S R : Type _} [Semigroup R] [StarSemigroup R] [SetLike S R]
-    [MulMemClass S R] [StarMemClass S R] (s : S) : StarSemigroup s where
+/-- In a star magma (i.e., a multiplication with an antimultiplicative involutive star
+operation), any star-closed subset which is also closed under multiplication is itself a star
+magma. -/
+instance instStarMul {S R : Type*} [Mul R] [StarMul R] [SetLike S R]
+    [MulMemClass S R] [StarMemClass S R] (s : S) : StarMul s where
   star_mul _ _ := Subtype.ext <| star_mul _ _
 
 /-- In a `StarAddMonoid` (i.e., an additive monoid with an additive involutive star operation), any
 star-closed subset which is also closed under addition and contains zero is itself a
 `StarAddMonoid`. -/
-instance instStarAddMonoid {S R : Type _} [AddMonoid R] [StarAddMonoid R] [SetLike S R]
+instance instStarAddMonoid {S R : Type*} [AddMonoid R] [StarAddMonoid R] [SetLike S R]
     [AddSubmonoidClass S R] [StarMemClass S R] (s : S) : StarAddMonoid s where
   star_add _ _ := Subtype.ext <| star_add _ _
 
-/-- In a star ring (i.e., a non-unital semiring with an additive, antimultiplicative, involutive
-star operation), an star-closed non-unital subsemiring is itself a star ring. -/
-instance instStarRing {S R : Type _} [NonUnitalSemiring R] [StarRing R] [SetLike S R]
+/-- In a star ring (i.e., a non-unital, non-associative, semiring with an additive,
+antimultiplicative, involutive star operation), a star-closed non-unital subsemiring is itself a
+star ring. -/
+instance instStarRing {S R : Type*} [NonUnitalNonAssocSemiring R] [StarRing R] [SetLike S R]
     [NonUnitalSubsemiringClass S R] [StarMemClass S R] (s : S) : StarRing s :=
-  { StarMemClass.instStarSemigroup s, StarMemClass.instStarAddMonoid s with }
+  { StarMemClass.instStarMul s, StarMemClass.instStarAddMonoid s with }
 
 /-- In a star `R`-module (i.e., `star (r • m) = (star r) • m`) any star-closed subset which is also
 closed under the scalar action by `R` is itself a star `R`-module. -/
-instance instStarModule {S : Type _} (R : Type _) {M : Type _} [Star R] [Star M] [SMul R M]
+instance instStarModule {S : Type*} (R : Type*) {M : Type*} [Star R] [Star M] [SMul R M]
     [StarModule R M] [SetLike S M] [SMulMemClass S R M] [StarMemClass S M] (s : S) :
     StarModule R s where
   star_smul _ _ := Subtype.ext <| star_smul _ _
@@ -292,7 +294,7 @@ theorem toNonUnitalSubalgebra_subtype :
   rfl
 
 @[simp]
-theorem toSubring_subtype {R A : Type _} [CommRing R] [NonUnitalRing A] [Module R A] [Star A]
+theorem toSubring_subtype {R A : Type*} [CommRing R] [NonUnitalRing A] [Module R A] [Star A]
     (S : NonUnitalStarSubalgebra R A) :
     NonUnitalSubringClass.subtype S = NonUnitalStarSubalgebraClass.subtype S :=
   rfl
@@ -319,6 +321,7 @@ theorem map_map (S : NonUnitalStarSubalgebra R A) (g : B →⋆ₙₐ[R] C) (f :
     (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
+@[simp]
 theorem mem_map {S : NonUnitalStarSubalgebra R A} {f : F} {y : B} :
     y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
   NonUnitalSubalgebra.mem_map
@@ -353,7 +356,7 @@ theorem mem_comap (S : NonUnitalStarSubalgebra R B) (f : F) (x : A) : x ∈ coma
 theorem coe_comap (S : NonUnitalStarSubalgebra R B) (f : F) : comap f S = f ⁻¹' (S : Set B) :=
   rfl
 
-instance instNoZeroDivisors {R A : Type _} [CommSemiring R] [NonUnitalSemiring A] [NoZeroDivisors A]
+instance instNoZeroDivisors {R A : Type*} [CommSemiring R] [NonUnitalSemiring A] [NoZeroDivisors A]
     [Module R A] [Star A] (S : NonUnitalStarSubalgebra R A) : NoZeroDivisors S :=
   NonUnitalSubsemiringClass.noZeroDivisors S
 
@@ -419,11 +422,11 @@ theorem coe_range (φ : F) :
   by ext; rw [SetLike.mem_coe, mem_range]; rfl
 
 theorem range_comp (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) :
-  NonUnitalStarAlgHom.range (g.comp f) = (NonUnitalStarAlgHom.range f).map g :=
+    NonUnitalStarAlgHom.range (g.comp f) = (NonUnitalStarAlgHom.range f).map g :=
   SetLike.coe_injective (Set.range_comp g f)
 
 theorem range_comp_le_range (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) :
-  NonUnitalStarAlgHom.range (g.comp f) ≤ NonUnitalStarAlgHom.range g :=
+    NonUnitalStarAlgHom.range (g.comp f) ≤ NonUnitalStarAlgHom.range g :=
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 
 /-- Restrict the codomain of a non-unital star algebra homomorphism. -/
@@ -732,14 +735,14 @@ theorem sInf_toNonUnitalSubalgebra (S : Set (NonUnitalStarSubalgebra R A)) :
   SetLike.coe_injective <| by simp
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} {S : ι → NonUnitalStarSubalgebra R A} :
+theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} :
     (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by simp [iInf]
 
-theorem mem_iInf {ι : Sort _} {S : ι → NonUnitalStarSubalgebra R A} {x : A} :
+theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} {x : A} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
 
 @[simp]
-theorem iInf_toNonUnitalSubalgebra {ι : Sort _} (S : ι → NonUnitalStarSubalgebra R A) :
+theorem iInf_toNonUnitalSubalgebra {ι : Sort*} (S : ι → NonUnitalStarSubalgebra R A) :
     (⨅ i, S i).toNonUnitalSubalgebra = ⨅ i, (S i).toNonUnitalSubalgebra :=
   SetLike.coe_injective <| by simp
 
@@ -891,7 +894,7 @@ end Prod
 
 section iSupLift
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
     (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
@@ -1022,7 +1025,7 @@ theorem center_toNonUnitalSubalgebra :
   rfl
 
 @[simp]
-theorem center_eq_top (A : Type _) [NonUnitalCommSemiring A] [StarRing A] [Module R A]
+theorem center_eq_top (A : Type*) [NonUnitalCommSemiring A] [StarRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] : center R A = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ A)
 
@@ -1031,7 +1034,7 @@ variable {R A}
 instance instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
   NonUnitalSubalgebra.center.instNonUnitalCommSemiring
 
-instance instNonUnitalCommRing {A : Type _} [NonUnitalRing A] [StarRing A] [Module R A]
+instance instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [StarRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
   NonUnitalSubalgebra.center.instNonUnitalCommRing
 

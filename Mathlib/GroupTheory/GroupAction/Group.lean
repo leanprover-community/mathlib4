@@ -79,7 +79,7 @@ def MulAction.toPermHom : α →* Equiv.Perm β where
 /-- Given an action of an additive group `α` on a set `β`, each `g : α` defines a permutation of
 `β`. -/
 @[simps!]
-def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
+def AddAction.toPermHom (α : Type*) [AddGroup α] [AddAction α β] :
     α →+ Additive (Equiv.Perm β) :=
   MonoidHom.toAdditive'' <| MulAction.toPermHom (Multiplicative α) β
 #align add_action.to_perm_hom AddAction.toPermHom
@@ -87,19 +87,19 @@ def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
 /-- The tautological action by `Equiv.Perm α` on `α`.
 
 This generalizes `Function.End.applyMulAction`.-/
-instance Equiv.Perm.applyMulAction (α : Type _) : MulAction (Equiv.Perm α) α where
+instance Equiv.Perm.applyMulAction (α : Type*) : MulAction (Equiv.Perm α) α where
   smul f a := f a
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 #align equiv.perm.apply_mul_action Equiv.Perm.applyMulAction
 
 @[simp]
-protected theorem Equiv.Perm.smul_def {α : Type _} (f : Equiv.Perm α) (a : α) : f • a = f a :=
+protected theorem Equiv.Perm.smul_def {α : Type*} (f : Equiv.Perm α) (a : α) : f • a = f a :=
   rfl
 #align equiv.perm.smul_def Equiv.Perm.smul_def
 
 /-- `Equiv.Perm.applyMulAction` is faithful. -/
-instance Equiv.Perm.applyFaithfulSMul (α : Type _) : FaithfulSMul (Equiv.Perm α) α :=
+instance Equiv.Perm.applyFaithfulSMul (α : Type*) : FaithfulSMul (Equiv.Perm α) α :=
   ⟨Equiv.ext⟩
 #align equiv.perm.apply_has_faithful_smul Equiv.Perm.applyFaithfulSMul
 
@@ -331,7 +331,7 @@ section Arrow
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
 @[to_additive (attr := simps) arrowAddAction
       "If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`"]
-def arrowAction {G A B : Type _} [DivisionMonoid G] [MulAction G A] : MulAction G (A → B) where
+def arrowAction {G A B : Type*} [DivisionMonoid G] [MulAction G A] : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul := by
     intro f
@@ -347,7 +347,7 @@ def arrowAction {G A B : Type _} [DivisionMonoid G] [MulAction G A] : MulAction 
 attribute [local instance] arrowAction
 
 /-- When `B` is a monoid, `ArrowAction` is additionally a `MulDistribMulAction`. -/
-def arrowMulDistribMulAction {G A B : Type _} [Group G] [MulAction G A] [Monoid B] :
+def arrowMulDistribMulAction {G A B : Type*} [Group G] [MulAction G A] [Monoid B] :
     MulDistribMulAction G (A → B) where
   smul_one _ := rfl
   smul_mul _ _ _ := rfl

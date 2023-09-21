@@ -45,7 +45,7 @@ shadow, set family
 
 open Finset Nat
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Finset
 

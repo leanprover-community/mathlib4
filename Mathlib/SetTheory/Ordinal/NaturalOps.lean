@@ -41,6 +41,8 @@ between both types, we attempt to prove and state most results on `Ordinal`.
   form.
 -/
 
+set_option autoImplicit true
+
 
 universe u v
 
@@ -48,7 +50,7 @@ open Function Order
 
 noncomputable section
 
-/-! ### Basic casts between `ordinal` and `nat_ordinal` -/
+/-! ### Basic casts between `Ordinal` and `NatOrdinal` -/
 
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def NatOrdinal : Type _ :=
@@ -83,8 +85,8 @@ theorem toOrdinal_symm_eq : NatOrdinal.toOrdinal.symm = Ordinal.toNatOrdinal :=
 
 -- porting note: used to use dot notation, but doesn't work in Lean 4 with `OrderIso`
 @[simp]
-theorem toOrdinal_toNatOrdinal (a : NatOrdinal) : Ordinal.toNatOrdinal (NatOrdinal.toOrdinal a) = a
- := rfl
+theorem toOrdinal_toNatOrdinal (a : NatOrdinal) :
+    Ordinal.toNatOrdinal (NatOrdinal.toOrdinal a) = a := rfl
 #align nat_ordinal.to_ordinal_to_nat_ordinal NatOrdinal.toOrdinal_toNatOrdinal
 
 theorem lt_wf : @WellFounded NatOrdinal (· < ·) :=
@@ -132,7 +134,7 @@ theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
 #align nat_ordinal.succ_def NatOrdinal.succ_def
 
 /-- A recursor for `NatOrdinal`. Use as `induction x using NatOrdinal.rec`. -/
-protected def rec {β : NatOrdinal → Sort _} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
+protected def rec {β : NatOrdinal → Sort*} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
   h (toOrdinal a)
 #align nat_ordinal.rec NatOrdinal.rec
 

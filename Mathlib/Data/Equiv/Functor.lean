@@ -18,6 +18,8 @@ def Functor.mapEquiv (f : Type u → Type v) [functor f] [LawfulFunctor f] :
 
 -/
 
+set_option autoImplicit true
+
 open Equiv
 
 namespace Functor
@@ -32,11 +34,10 @@ def map_equiv (h : α ≃ β) : f α ≃ f β where
   right_inv x := by simp [map_map]
 
 @[simp]
-lemma map_equiv_apply (h : α ≃ β) (x : f α) :
-  (map_equiv f h : f α ≃ f β) x = map h x := rfl
+lemma map_equiv_apply (h : α ≃ β) (x : f α) : (map_equiv f h : f α ≃ f β) x = map h x := rfl
 
 @[simp]
 lemma map_equiv_symm_apply (h : α ≃ β) (y : f β) :
-  (map_equiv f h : f α ≃ f β).symm y = map h.symm y := rfl
+    (map_equiv f h : f α ≃ f β).symm y = map h.symm y := rfl
 
 end Functor

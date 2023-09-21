@@ -37,7 +37,7 @@ universe polymorphism functor
 
 universe u₀ u₁ v₀ v₁ v₂ w w₀ w₁
 
-variable {s : Type u₀} {s' : Type u₁} {r r' w w' : Type _}
+variable {s : Type u₀} {s' : Type u₁} {r r' w w' : Type*}
 
 /-- Given a universe polymorphic type family `M.{u} : Type u₁ → Type
 u₂`, this class convert between instantiations, from
@@ -47,6 +47,9 @@ class ULiftable (f : Type u₀ → Type u₁) (g : Type v₀ → Type v₁) wher
 #align uliftable ULiftable
 
 namespace ULiftable
+
+instance symm (f : Type u₀ → Type u₁) (g : Type v₀ → Type v₁) [ULiftable f g] : ULiftable g f where
+  congr e := (ULiftable.congr e.symm).symm
 
 /-- The most common practical use `ULiftable` (together with `down`), this function takes
 `x : M.{u} α` and lifts it to `M.{max u v} (ULift.{v} α)` -/
@@ -160,3 +163,17 @@ instance {m m'} [ULiftable m m'] : ULiftable (WriterT s m) (WriterT (ULift s) m'
 instance WriterT.instULiftableULiftULift {m m'} [ULiftable m m'] :
     ULiftable (WriterT (ULift.{max v₀ u₀} s) m) (WriterT (ULift.{max v₁ u₀} s) m') :=
   WriterT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
+
+instance Except.instULiftable {ε : Type u₀} : ULiftable (Except.{u₀,v₁} ε) (Except.{u₀,v₂} ε) where
+  congr e :=
+    { toFun := Except.map e
+      invFun := Except.map e.symm
+      left_inv := fun f => by cases f <;> simp [Except.map]
+      right_inv := fun f => by cases f <;> simp [Except.map] }
+
+instance Option.instULiftable : ULiftable Option.{u₀} Option.{u₁} where
+  congr e :=
+    { toFun := Option.map e
+      invFun := Option.map e.symm
+      left_inv := fun f => by cases f <;> simp
+      right_inv := fun f => by cases f <;> simp }

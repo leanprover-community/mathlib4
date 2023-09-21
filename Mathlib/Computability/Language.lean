@@ -3,7 +3,7 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
 -/
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
@@ -24,7 +24,7 @@ open List Set Computability
 
 universe v
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- A language is a set of strings over an alphabet. -/
 def Language (α) :=

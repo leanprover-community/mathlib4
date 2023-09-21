@@ -29,14 +29,46 @@ variable {C : Type u₁} [Category.{v₁} C] [HasZeroMorphisms C]
 
 variable {D : Type u₂} [Category.{v₂} D] [HasZeroMorphisms D]
 
-variable (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
-
 namespace CategoryTheory.Limits
+
+namespace KernelFork
+
+variable {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
+  (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
+
+@[reassoc (attr := simp)]
+lemma map_condition : G.map c.ι ≫ G.map f = 0 := by
+  rw [← G.map_comp, c.condition, G.map_zero]
+
+/-- A kernel fork for `f` is mapped to a kernel fork for `G.map f` if `G` is a functor
+which preserves zero morphisms. -/
+def map : KernelFork (G.map f) :=
+  KernelFork.ofι (G.map c.ι) (c.map_condition G)
+
+@[simp]
+lemma map_ι : (c.map G).ι = G.map c.ι := rfl
+
+/-- The underlying cone of a kernel fork is mapped to a limit cone if and only if
+the mapped kernel fork is limit. -/
+def isLimitMapConeEquiv :
+    IsLimit (G.mapCone c) ≃ IsLimit (c.map G) := by
+  refine' (IsLimit.postcomposeHomEquiv _ _).symm.trans (IsLimit.equivIsoLimit _)
+  refine' parallelPair.ext (Iso.refl _) (Iso.refl _) _ _ <;> simp
+  exact Cones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
+
+/-- A limit kernel fork is mapped to a limit kernel fork by a functor `G` when this functor
+preserves the corresponding limit. -/
+def mapIsLimit (hc : IsLimit c) (G : C ⥤ D)
+    [Functor.PreservesZeroMorphisms G] [PreservesLimit (parallelPair f 0) G] :
+    IsLimit (c.map G) :=
+  c.isLimitMapConeEquiv G (isLimitOfPreserves G hc)
+
+end KernelFork
 
 section Kernels
 
-variable {X Y Z : C} {f : X ⟶ Y} {h : Z ⟶ X} (w : h ≫ f = 0)
-
+variable (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
+  {X Y Z : C} {f : X ⟶ Y} {h : Z ⟶ X} (w : h ≫ f = 0)
 
 /-- The map of a kernel fork is a limit iff
 the kernel fork consisting of the mapped morphisms is a limit.
@@ -49,11 +81,8 @@ def isLimitMapConeForkEquiv' :
     IsLimit (G.mapCone (KernelFork.ofι h w)) ≃
       IsLimit
         (KernelFork.ofι (G.map h) (by simp only [← G.map_comp, w, Functor.map_zero]) :
-          Fork (G.map f) 0) := by
-  refine' (IsLimit.postcomposeHomEquiv _ _).symm.trans (IsLimit.equivIsoLimit _)
-  refine' parallelPair.ext (Iso.refl _) (Iso.refl _) _ _ <;> simp
-  refine' Fork.ext (Iso.refl _) _
-  simp [Fork.ι]
+          Fork (G.map f) 0) :=
+  KernelFork.isLimitMapConeEquiv _ _
 #align category_theory.limits.is_limit_map_cone_fork_equiv' CategoryTheory.Limits.isLimitMapConeForkEquiv'
 
 /-- The property of preserving kernels expressed in terms of kernel forks.
@@ -82,8 +111,8 @@ def isLimitOfHasKernelOfPreservesLimit [PreservesLimit (parallelPair f 0) G] :
   isLimitForkMapOfIsLimit' G (kernel.condition f) (kernelIsKernel f)
 #align category_theory.limits.is_limit_of_has_kernel_of_preserves_limit CategoryTheory.Limits.isLimitOfHasKernelOfPreservesLimit
 
-instance [PreservesLimit (parallelPair f 0) G] : HasKernel (G.map f)
-    where exists_limit := ⟨⟨_, isLimitOfHasKernelOfPreservesLimit G f⟩⟩
+instance [PreservesLimit (parallelPair f 0) G] : HasKernel (G.map f) where
+  exists_limit := ⟨⟨_, isLimitOfHasKernelOfPreservesLimit G f⟩⟩
 
 variable [HasKernel (G.map f)]
 
@@ -129,9 +158,44 @@ theorem kernel_map_comp_preserves_kernel_iso_inv {X' Y' : C} (g : X' ⟶ Y') [Ha
 
 end Kernels
 
+namespace CokernelCofork
+
+variable {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f)
+  (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
+
+@[reassoc (attr := simp)]
+lemma map_condition : G.map f ≫ G.map c.π = 0 := by
+  rw [← G.map_comp, c.condition, G.map_zero]
+
+/-- A cokernel cofork for `f` is mapped to a cokernel cofork for `G.map f` if `G` is a functor
+which preserves zero morphisms. -/
+def map : CokernelCofork (G.map f) :=
+  CokernelCofork.ofπ (G.map c.π) (c.map_condition G)
+
+@[simp]
+lemma map_π : (c.map G).π = G.map c.π := rfl
+
+/-- The underlying cocone of a cokernel cofork is mapped to a colimit cocone if and only if
+the mapped cokernel cofork is colimit. -/
+def isColimitMapCoconeEquiv :
+    IsColimit (G.mapCocone c) ≃ IsColimit (c.map G) := by
+  refine' (IsColimit.precomposeHomEquiv _ _).symm.trans (IsColimit.equivIsoColimit _)
+  refine' parallelPair.ext (Iso.refl _) (Iso.refl _) _ _ <;> simp
+  exact Cocones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
+
+/-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`
+when this functor preserves the corresponding colimit. -/
+def mapIsColimit  (hc : IsColimit c) (G : C ⥤ D)
+    [Functor.PreservesZeroMorphisms G] [PreservesColimit (parallelPair f 0) G] :
+    IsColimit (c.map G) :=
+  c.isColimitMapCoconeEquiv G (isColimitOfPreserves G hc)
+
+end CokernelCofork
+
 section Cokernels
 
-variable {X Y Z : C} {f : X ⟶ Y} {h : Y ⟶ Z} (w : f ≫ h = 0)
+variable (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
+  {X Y Z : C} {f : X ⟶ Y} {h : Y ⟶ Z} (w : f ≫ h = 0)
 
 /-- The map of a cokernel cofork is a colimit iff
 the cokernel cofork consisting of the mapped morphisms is a colimit.
@@ -144,13 +208,8 @@ def isColimitMapCoconeCoforkEquiv' :
     IsColimit (G.mapCocone (CokernelCofork.ofπ h w)) ≃
       IsColimit
         (CokernelCofork.ofπ (G.map h) (by simp only [← G.map_comp, w, Functor.map_zero]) :
-          Cofork (G.map f) 0) := by
-  refine' (IsColimit.precomposeHomEquiv _ _).symm.trans (IsColimit.equivIsoColimit _)
-  refine' parallelPair.ext (Iso.refl _) (Iso.refl _) _ _ <;> simp
-  refine' Cofork.ext (Iso.refl _) _
-  simp only [Cofork.π, Iso.refl_hom, id_comp, Cocones.precompose_obj_ι, NatTrans.comp_app,
-    parallelPair.ext_hom_app, Functor.mapCocone_ι_app, Cofork.ofπ_ι_app]
-  apply Category.comp_id
+          Cofork (G.map f) 0) :=
+  CokernelCofork.isColimitMapCoconeEquiv _ _
 #align category_theory.limits.is_colimit_map_cocone_cofork_equiv' CategoryTheory.Limits.isColimitMapCoconeCoforkEquiv'
 
 /-- The property of preserving cokernels expressed in terms of cokernel coforks.
@@ -180,8 +239,8 @@ def isColimitOfHasCokernelOfPreservesColimit [PreservesColimit (parallelPair f 0
   isColimitCoforkMapOfIsColimit' G (cokernel.condition f) (cokernelIsCokernel f)
 #align category_theory.limits.is_colimit_of_has_cokernel_of_preserves_colimit CategoryTheory.Limits.isColimitOfHasCokernelOfPreservesColimit
 
-instance [PreservesColimit (parallelPair f 0) G] : HasCokernel (G.map f)
-    where exists_colimit := ⟨⟨_, isColimitOfHasCokernelOfPreservesColimit G f⟩⟩
+instance [PreservesColimit (parallelPair f 0) G] : HasCokernel (G.map f) where
+  exists_colimit := ⟨⟨_, isColimitOfHasCokernelOfPreservesColimit G f⟩⟩
 
 variable [HasCokernel (G.map f)]
 
@@ -228,5 +287,37 @@ theorem preserves_cokernel_iso_comp_cokernel_map {X' Y' : C} (g : X' ⟶ Y') [Ha
 #align category_theory.limits.preserves_cokernel_iso_comp_cokernel_map CategoryTheory.Limits.preserves_cokernel_iso_comp_cokernel_map
 
 end Cokernels
+
+variable (X Y : C) (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
+
+noncomputable instance preservesKernelZero :
+    PreservesLimit (parallelPair (0 : X ⟶ Y) 0) G where
+  preserves {c} hc := by
+    have := KernelFork.IsLimit.isIso_ι c hc rfl
+    refine' (KernelFork.isLimitMapConeEquiv c G).symm _
+    refine' IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (G.map_zero _ _)) _
+    exact (Fork.ext (G.mapIso (asIso (Fork.ι c))).symm (by simp))
+
+noncomputable instance preservesCokernelZero :
+    PreservesColimit (parallelPair (0 : X ⟶ Y) 0) G where
+  preserves {c} hc := by
+    have := CokernelCofork.IsColimit.isIso_π c hc rfl
+    refine' (CokernelCofork.isColimitMapCoconeEquiv c G).symm _
+    refine' IsColimit.ofIsoColimit (CokernelCofork.IsColimit.ofId _ (G.map_zero _ _)) _
+    exact (Cofork.ext (G.mapIso (asIso (Cofork.π c))) (by simp))
+
+variable {X Y}
+
+/-- The kernel of a zero map is preserved by any functor which preserves zero morphisms. -/
+noncomputable def preservesKernelZero' (f : X ⟶ Y) (hf : f = 0) :
+    PreservesLimit (parallelPair f 0) G := by
+  rw [hf]
+  infer_instance
+
+/-- The cokernel of a zero map is preserved by any functor which preserves zero morphisms. -/
+noncomputable def preservesCokernelZero' (f : X ⟶ Y) (hf : f = 0) :
+    PreservesColimit (parallelPair f 0) G := by
+  rw [hf]
+  infer_instance
 
 end CategoryTheory.Limits

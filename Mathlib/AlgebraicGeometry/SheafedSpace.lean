@@ -21,7 +21,7 @@ presheaves.
 open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
   CategoryTheory.Functor
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
 -- Porting note: removed
 -- local attribute [tidy] tactic.op_induction'
@@ -48,7 +48,7 @@ instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.coe_carrier AlgebraicGeometry.SheafedSpace.coeCarrier
 
-instance coeSort : CoeSort (SheafedSpace C) (Type _) where
+instance coeSort : CoeSort (SheafedSpace C) (Type*) where
   coe := fun X => X.1
 
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
@@ -67,9 +67,9 @@ set_option linter.uppercaseLean3 false in
 -- Porting note : this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
 -- so removed @[simp]
 theorem mk_coe (carrier) (presheaf) (h) :
-  (({ carrier
-      presheaf
-      IsSheaf := h } : SheafedSpace C) : TopCat) = carrier :=
+    (({ carrier
+        presheaf
+        IsSheaf := h } : SheafedSpace C) : TopCat) = carrier :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.mk_coe AlgebraicGeometry.SheafedSpace.mk_coe

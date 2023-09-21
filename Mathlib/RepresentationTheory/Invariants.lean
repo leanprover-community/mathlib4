@@ -29,7 +29,7 @@ open Representation
 
 namespace GroupAlgebra
 
-variable (k G : Type _) [CommSemiring k] [Group G]
+variable (k G : Type*) [CommSemiring k] [Group G]
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
@@ -69,7 +69,7 @@ section Invariants
 
 open GroupAlgebra
 
-variable {k G V : Type _} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
 
 variable (ρ : Representation k G V)
 

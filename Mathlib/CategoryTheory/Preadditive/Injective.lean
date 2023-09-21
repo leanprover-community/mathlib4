@@ -309,7 +309,7 @@ end Injective
 
 namespace Adjunction
 
-variable {D : Type _} [Category D] {F : C ⥤ D} {G : D ⥤ C}
+variable {D : Type*} [Category D] {F : C ⥤ D} {G : D ⥤ C}
 
 theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : Injective I) :
     Injective (G.obj I) :=
@@ -347,7 +347,10 @@ end Adjunction
 
 namespace Equivalence
 
-variable {D : Type _} [Category D] (F : C ≌ D)
+variable {D : Type*} [Category D] (F : C ≌ D)
+
+theorem map_injective_iff (P : C) : Injective (F.functor.obj P) ↔ Injective P :=
+  ⟨F.symm.toAdjunction.injective_of_map_injective P, F.symm.toAdjunction.map_injective P⟩
 
 /-- Given an equivalence of categories `F`, an injective presentation of `F(X)` induces an
 injective presentation of `X.` -/

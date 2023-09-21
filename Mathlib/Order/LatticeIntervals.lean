@@ -28,7 +28,7 @@ In the following, `*` can represent either `c`, `o`, or `i`.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Set
 

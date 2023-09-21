@@ -3,6 +3,7 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
+import Mathlib.Init.CCLemmas
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.ContinuedFractions.Translations
 
@@ -45,7 +46,7 @@ namespace GeneralizedContinuedFraction
 open GeneralizedContinuedFraction (of)
 
 -- Fix a discrete linear ordered floor field and a value `v`.
-variable {K : Type _} [LinearOrderedField K] [FloorRing K] {v : K}
+variable {K : Type*} [LinearOrderedField K] [FloorRing K] {v : K}
 
 namespace IntFractPair
 

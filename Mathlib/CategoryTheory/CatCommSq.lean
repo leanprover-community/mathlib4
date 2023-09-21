@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type _} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
+variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type*} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
   [Category C₅] [Category C₆]
   (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ ⥤ C₄)
 
@@ -73,16 +73,16 @@ def hInv (_ : CatCommSq T.functor L R B.functor) : CatCommSq T.inverse R L B.inv
       isoWhiskerRight T.counitIso _ ≪≫ Functor.leftUnitor _
 
 lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
-  hInv T.symm R L B.symm (hInv T L R B h) = h := by
-    ext X
-    erw [← cancel_mono (B.functor.map (L.map (T.unitIso.hom.app X))),
-      ← h.iso'.hom.naturality (T.unitIso.hom.app X), hInv_iso'_hom_app, hInv_iso'_inv_app]
-    dsimp
-    simp only [Functor.comp_obj, assoc, ← Functor.map_comp, Iso.inv_hom_id_app,
-      Equivalence.counitInv_app_functor, Functor.map_id]
-    simp only [Functor.map_comp, Equivalence.fun_inv_map, assoc,
-      Equivalence.counitInv_functor_comp, comp_id, Iso.inv_hom_id_app_assoc]
-    rfl
+    hInv T.symm R L B.symm (hInv T L R B h) = h := by
+  ext X
+  erw [← cancel_mono (B.functor.map (L.map (T.unitIso.hom.app X))),
+    ← h.iso'.hom.naturality (T.unitIso.hom.app X), hInv_iso'_hom_app, hInv_iso'_inv_app]
+  dsimp
+  simp only [Functor.comp_obj, assoc, ← Functor.map_comp, Iso.inv_hom_id_app,
+    Equivalence.counitInv_app_functor, Functor.map_id]
+  simp only [Functor.map_comp, Equivalence.fun_inv_map, assoc,
+    Equivalence.counitInv_functor_comp, comp_id, Iso.inv_hom_id_app_assoc]
+  rfl
 
 /-- In a square of categories, when the top and bottom functors are part
 of equivalence of categorires, it is equivalent to show 2-commutativity for

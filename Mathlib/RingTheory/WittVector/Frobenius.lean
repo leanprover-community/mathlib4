@@ -7,7 +7,7 @@ import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.ZMod.Algebra
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
-import Mathlib.FieldTheory.PerfectClosure
+import Mathlib.FieldTheory.Perfect
 
 #align_import ring_theory.witt_vector.frobenius from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
@@ -50,7 +50,7 @@ and bundle it into `WittVector.frobenius`.
 
 namespace WittVector
 
-variable {p : ℕ} {R S : Type _} [hp : Fact p.Prime] [CommRing R] [CommRing S]
+variable {p : ℕ} {R S : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -116,7 +116,7 @@ def frobeniusPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 Our next goal is to prove
 ```
 lemma map_frobeniusPoly (n : ℕ) :
-  MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n
+    MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n
 ```
 This lemma has a rather long proof, but it mostly boils down to applying induction,
 and then using the following two key facts at the right point.
@@ -196,11 +196,11 @@ theorem map_frobeniusPoly (n : ℕ) :
   ring
 #align witt_vector.map_frobenius_poly WittVector.map_frobeniusPoly
 
-theorem frobeniusPoly_zMod (n : ℕ) :
+theorem frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by
   rw [frobeniusPoly, RingHom.map_add, RingHom.map_pow, RingHom.map_mul, map_X, map_C]
-  simp only [Int.cast_ofNat, add_zero, eq_intCast, ZMod.nat_cast_self, MulZeroClass.zero_mul, C_0]
-#align witt_vector.frobenius_poly_zmod WittVector.frobeniusPoly_zMod
+  simp only [Int.cast_ofNat, add_zero, eq_intCast, ZMod.nat_cast_self, zero_mul, C_0]
+#align witt_vector.frobenius_poly_zmod WittVector.frobeniusPoly_zmod
 
 @[simp]
 theorem bind₁_frobeniusPoly_wittPolynomial (n : ℕ) :
@@ -305,7 +305,7 @@ theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x
     _ = x.coeff n ^ p := ?_
   · conv_rhs => rw [aeval_eq_eval₂Hom, eval₂Hom_map_hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl
-  · rw [frobeniusPoly_zMod]
+  · rw [frobeniusPoly_zmod]
   · rw [map_pow, aeval_X]
 #align witt_vector.coeff_frobenius_char_p WittVector.coeff_frobenius_charP
 
@@ -326,10 +326,13 @@ variable (R)
 def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
   { (WittVector.frobenius : WittVector p R →+* WittVector p R) with
     toFun := WittVector.frobenius
-    invFun := map (pthRoot R p)
-    left_inv := fun f => ext fun n => by rw [frobenius_eq_map_frobenius]; exact pthRoot_frobenius _
-    right_inv := fun f =>
-      ext fun n => by rw [frobenius_eq_map_frobenius]; exact frobenius_pthRoot _ }
+    invFun := map (_root_.frobeniusEquiv R p).symm
+    left_inv := fun f => ext fun n => by
+      rw [frobenius_eq_map_frobenius]
+      exact frobeniusEquiv_symm_apply_frobenius R p _
+    right_inv := fun f => ext fun n => by
+      rw [frobenius_eq_map_frobenius]
+      exact frobenius_apply_frobeniusEquiv_symm R p _ }
 #align witt_vector.frobenius_equiv WittVector.frobeniusEquiv
 
 theorem frobenius_bijective [PerfectRing R p] :

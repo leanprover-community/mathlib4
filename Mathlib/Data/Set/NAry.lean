@@ -26,7 +26,7 @@ and `Set.image2` already fulfills this task.
 open Function
 
 namespace Set
-variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type _} {f f' : α → β → γ} {g g' : α → β → γ → δ}
+variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*} {f f' : α → β → γ} {g g' : α → β → γ → δ}
 variable {s s' : Set α} {t t' : Set β} {u u' : Set γ} {v : Set δ} {a a' : α} {b b' : β} {c c' : γ}
   {d d' : δ}
 
@@ -110,8 +110,8 @@ lemma image_prod : (fun x : α × β ↦ f x.1 x.2) '' s ×ˢ t = image2 f s t :
 
 -- Porting note: Removing `simp` - LHS does not simplify
 lemma image2_curry (f : α × β → γ) (s : Set α) (t : Set β) :
-  image2 (fun a b ↦ f (a, b)) s t = f '' s ×ˢ t :=
-by simp [←image_uncurry_prod, uncurry]
+    image2 (fun a b ↦ f (a, b)) s t = f '' s ×ˢ t := by
+  simp [←image_uncurry_prod, uncurry]
 #align set.image2_curry Set.image2_curry
 
 theorem image2_swap (s : Set α) (t : Set β) : image2 f s t = image2 (fun a b => f b a) t s := by
@@ -175,6 +175,11 @@ theorem image2_eq_empty_iff : image2 f s t = ∅ ↔ s = ∅ ∨ t = ∅ := by
   rw [← not_nonempty_iff_eq_empty, image2_nonempty_iff, not_and_or]
   simp [not_nonempty_iff_eq_empty]
 #align set.image2_eq_empty_iff Set.image2_eq_empty_iff
+
+theorem Subsingleton.image2 (hs : s.Subsingleton) (ht : t.Subsingleton) (f : α → β → γ) :
+    (image2 f s t).Subsingleton := by
+  rw [← image_prod]
+  apply (hs.prod ht).image
 
 theorem image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ image2 f s' t := by
   rintro _ ⟨a, b, ⟨h1a, h2a⟩, hb, rfl⟩
