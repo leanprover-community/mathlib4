@@ -103,7 +103,7 @@ def matchAnywhere (t : Expr) : MetaM ConstMatcher := withReducible do
     Lean.Meta.anyExpr cTy $ matchUpToHyps pat head
 
 /-!
-## The find tactic engine
+## The find tactic engine: Index and matching
 -/
 
 /-- For all names `n` mentioned in the type of the constant `c`, add a mapping from
@@ -114,43 +114,36 @@ private def addDecl (c : ConstantInfo) (m : NameRel) : CoreM NameRel := do
   let consts := c.type.foldConsts {} (flip NameSet.insert)
   return consts.fold (init := m) fun m n => m.insert n c.name
 
+private def addLibraryDecl (c : ConstantInfo) : NameRel × NameRel → CoreM (NameRel × NameRel)
+  | (m₁, m₂) => do return (← addDecl c m₁, m₂)
+
+private def addLocalDecl (c : ConstantInfo) : NameRel × NameRel → CoreM (NameRel × NameRel)
+  | (m₁, m₂) => do return (m₁, ← addDecl c m₂)
+
 /-- The declaration cache used by `#find`, stores `NameRel` mapping names to the name
 of constants they are mentinend in.
 
 The first `NameRel` is for library declaration (and doesn't change once populated),
 the second is for local declarations and is rebuilt upon every invocation of `#find`.  -/
-def buildIndex : IO (DeclCache (NameRel × NameRel)) :=
-  DeclCache.mk
-    (profilingName := "#find: init cache")
-    (empty := ({}, {}))
-    (addLibraryDecl := fun _ c (m₁, m₂) ↦ return (← addDecl c m₁, m₂))
-    (addDecl := fun _ c (m₁, m₂) ↦ return (m₁, ← addDecl c m₂))
-
-open System (FilePath)
-
-/-- Where to search for the cached index -/
-def cachePath : IO FilePath :=
-  try
-    return (← findOLean `MathlibExtras.Find).withExtension "extra"
-  catch _ =>
-    return "build" / "lib" / "MathlibExtras" / "Find.extra"
-
-/-- The `DeclCache` used by `#find`, together with the `CompactedRegion`, if present -/
-initialize cachedData : WithCompactedRegion (DeclCache (NameRel × NameRel)) ← unsafe do
-  let path ← cachePath
-  if (← path.pathExists) then
-    let (d, r) ← unpickle (NameRel × NameRel) path
-    return ⟨r, ← DeclCache.mkFromCache d
-      (addDecl := fun _ c (m₁, m₂) ↦ return (m₁, ← addDecl c m₂)) ⟩
-  else
-    return ⟨none, ← buildIndex⟩
-
-/-- The `DeclCache` used by `#find` -/
-def findDeclsByConsts : DeclCache (NameRel × NameRel) := cachedData.val
+def Index := DeclCache (NameRel × NameRel)
 
 -- NB: In large files it may be slightly wasteful to calculate a full NameSet for the local
 -- definition upon every invocation of `#find`, and a linear scan might work better. For now,
 -- this keeps the code below more uniform.
+
+/-- Create a fresh index.  -/
+def Index.mk : IO Index :=
+  DeclCache.mk
+    (profilingName := "#find: init cache")
+    (empty := ({}, {}))
+    (addLibraryDecl := fun _ c m => addLibraryDecl c m)
+    (addDecl := fun _ c m => addLocalDecl c m)
+
+/-- Create an index from a cached value -/
+def Index.mkFromCache (init : NameRel × NameRel) : IO Index :=
+  DeclCache.mkFromCache init
+    (addDecl := fun _ c m => addLocalDecl c m)
+
 
 /-- The parsed and elaborated arguments to `#find`  -/
 structure Arguments where
@@ -171,8 +164,10 @@ structure Result where
   hits : Array (ConstantInfo × Option Name)
 
 /-- The core of the `#find` tactic with all parsing/printing factored out, for
-programmatic use.  -/
-def find (args : Arguments) (maxShown := 200) : MetaM (Except MessageData Result) := do
+programmatic use (e.g. the loogle CLI).
+It also does not use the implicit global Index, but rather expects one as an argument. -/
+def find (index : Index) (args : Arguments) (maxShown := 200) :
+    MetaM (Except MessageData Result) := do
   profileitM Exception "#find" (← getOptions) do
     -- Collect set of names to query the index by
     let needles : NameSet :=
@@ -189,7 +184,7 @@ def find (args : Arguments) (maxShown := 200) : MetaM (Except MessageData Result
         matchAnywhere t
 
     -- Query the declaration cache
-    let (m₁, m₂) ← findDeclsByConsts.get
+    let (m₁, m₂) ← index.get
     let hits := RBTree.intersects <| needles.toArray.map <| fun needle =>
       (m₁.find needle).union (m₂.find needle)
 
@@ -296,6 +291,28 @@ def parseFindFilters (args : TSyntax ``find_filters) : TermElabM Arguments :=
     pure {idents, namePats, terms}
 
 
+/-
+###  The per-module cache used by the `#find` command
+-/
+
+open System (FilePath)
+
+/-- Where to search for the cached index -/
+def cachePath : IO FilePath :=
+  try
+    return (← findOLean `MathlibExtras.Find).withExtension "extra"
+  catch _ =>
+    return "build" / "lib" / "MathlibExtras" / "Find.extra"
+
+/-- The `DeclCache` used by `#find`, together with the `CompactedRegion`, if present -/
+initialize cachedData : WithCompactedRegion (DeclCache (NameRel × NameRel)) ← unsafe do
+  let path ← cachePath
+  if (← path.pathExists) then
+    let (d, r) ← unpickle (NameRel × NameRel) path
+    return ⟨r, ← Index.mkFromCache d⟩
+  else
+    return ⟨none, ← Index.mk⟩
+
 open Command
 
 /--
@@ -370,7 +387,7 @@ find lemmas that you have not yet imported, and the cache will stay up-to-date.
 -/
 elab s:"#find " args:find_filters : command => liftTermElabM do
   profileitM Exception "find" (← getOptions) do
-    match ← find (← parseFindFilters args) with
+    match ← find cachedData.val (← parseFindFilters args) with
     | .error warn =>
       Lean.logWarningAt s warn
     | .ok result =>

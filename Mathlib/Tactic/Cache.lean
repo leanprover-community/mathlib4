@@ -134,10 +134,10 @@ def DeclCache.get (cache : DeclCache α) : MetaM α := do
   return a
 
 /--
-Access the cache (imports only). Suitable to get a value to be pickled and fed to `mkFromCache`
-later.
+Access the cache (imports only).
+Suitable to get a value to be pickled and fed to `mkFromCache` later.
 -/
-def DeclCache.getImported (cache : DeclCache α) : MetaM α := cache.cache.get
+def DeclCache.getImported (cache : DeclCache α) : CoreM α := cache.cache.get
 
 /--
 Creates a `DeclCache` from a pre-computed index, typically obtained via `DeclCache.getImports`.

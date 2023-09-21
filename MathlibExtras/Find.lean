@@ -20,4 +20,4 @@ open Mathlib.Tactic.Find
 run_cmd liftTermElabM do
   let path ← cachePath
   _ ← path.parent.mapM fun p => IO.FS.createDirAll p
-  pickle path (← (← buildIndex).getImported) `Find
+  pickle path (← (← Index.mk).getImported) `Find
