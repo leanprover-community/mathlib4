@@ -17,3 +17,14 @@ example [AddCommMonoid α] {a b c d : α} : (a + b) + (c + d) = a + d + c + b :=
 example (xs ys : List α) :
     (xs ++ ys ++ ys).length = 2 * ys.length + xs.length := by
   rw_search
+
+/-- info: Try this: rw [Int.add_right_comm, @add_rotate, Int.add_right_comm, Int.sub_add_cancel] -/
+#guard_msgs in
+example {a b c : Int} : a + b = c + b + (a - c) := by
+  rw_search
+
+/-! A test of the current tokenization scheme. -/
+/-- info: ["(", "[", "5", ",", "3", "]", ",", "4", "+", "(", "2", "*", "1", ")", ")"] -/
+#guard_msgs in
+open Mathlib.Tactic.RewriteSearch in
+#eval ("([5, 3], 4 + (2 * 1))".splitOn.map splitDelimiters).join

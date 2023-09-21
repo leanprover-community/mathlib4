@@ -52,26 +52,35 @@ open Mathlib.Tactic.Rewrites
 /-- Separate a string into a list of strings by pulling off initial `(` or `]` characters,
 and pulling off terminal `)`, `]`, or `,` characters. -/
 partial def splitDelimiters (s : String) : List String :=
-  if s.startsWith "(" || s.startsWith "[" then
-    s.take 1 :: splitDelimiters (s.drop 1)
-  else if s.endsWith ")" || s.endsWith "]" || s.endsWith "," then
-    splitDelimiters (s.dropRight 1) ++ [s.takeRight 1]
-  else
-    [s]
+  let rec auxStart front pre :=
+    let head := s.get front
+    if head = '(' || head = '[' then
+      auxStart (s.next front) (head.toString :: pre)
+    else
+      (front, pre)
+  let rec auxEnd back suff :=
+    let last := s.get back
+    if last = ')' || last = ']' || last = ',' then
+      auxEnd (s.prev back) (last.toString :: suff)
+    else
+      (back, suff)
+  let (frontAfterStart, pre) := auxStart 0 []
+  let (backAfterEnd, suff) := auxEnd (s.prev s.endPos) []
+  pre.reverse ++ [s.extract frontAfterStart (s.next backAfterEnd)] ++ suff
 
 /--
 Tokenize a string at whitespace, and then pull off delimiters.
 -/
--- This appears to work better than just breaking the string into characters,
+-- `rw_search` seems to return better results if we tokenize
+-- rather than just breaking the string into characters,
 -- but more extensive testing would be great!
+-- Tokenizing of course makes the edit distance calculations cheaper,
+-- because the lists are significantly shorter.
+-- On the other hand, because we currently use unweighted edit distance,
+-- this makes it "cheap" to change one identifier for another.
 def tokenize (e : Expr) : MetaM (List String) := do
   let s := (← ppExpr e).pretty
   return s.splitOn.map splitDelimiters |>.join
-
-/-- info: ["1", "+", "(", "3", "+", "5", ")"] -/
-#guard_msgs in
-open Qq in
-#eval tokenize q(1 + (3 + 5))
 
 /--
 Data structure containing the history of a rewrite search.
