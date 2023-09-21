@@ -168,7 +168,7 @@ def four_spaces_in_second_line(lines, path):
     newlines = [lines[0]]
     for (_, line), (next_line_nr, next_line) in zip(lines, lines[1:]):
         # Check if the current line matches "(lemma|theorem) .* :"
-        if re.search(r"^(lemma|theorem) .* :$", line):
+        if re.search(r"\S* *(lemma|theorem) .* :$", line):
             # Calculate the number of spaces before the first non-space character in the next line
             stripped_next_line = next_line.lstrip()
             num_spaces = len(next_line) - len(stripped_next_line)
