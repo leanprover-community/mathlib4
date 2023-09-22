@@ -237,40 +237,40 @@ section meagre
 open Function TopologicalSpace Set
 variable {α : Type*} [TopologicalSpace α]
 
-/-- A set is nowhere dense iff its closure has empty interior. -/
+/-- A set is called **nowhere dense** iff its closure has empty interior. -/
 def IsNowhereDense (s : Set α) := interior (closure s) = ∅
 
 /-- A closed set is nowhere dense iff its interior is empty. -/
-lemma closed_nowhere_dense_iff {s : Set α} (hs : IsClosed s) :
+lemma IsClosed.nowhere_dense_iff {s : Set α} (hs : IsClosed s) :
     IsNowhereDense s ↔ interior s = ∅ := by
   rw [IsNowhereDense, IsClosed.closure_eq hs]
 
 /-- If a set `s` is nowhere dense, so is its closure.-/
-lemma closure_nowhere_dense {s : Set α} (hs : IsNowhereDense s) : IsNowhereDense (closure s) := by
+lemma IsNowhereDense.closure_nowhere_dense {s : Set α} (hs : IsNowhereDense s) :
+    IsNowhereDense (closure s) := by
   rw [IsNowhereDense, closure_closure]
   exact hs
 
 /-- A nowhere dense set `s` is contained in a closed nowhere dense set (namely, its closure). -/
-lemma nowhere_dense_contained_in_closed_nowhere_dense {s : Set α} (hs : IsNowhereDense s) :
-    ∃ t : Set α, s ⊆ t ∧ IsNowhereDense t ∧ IsClosed t := by
-  use closure s
-  exact ⟨subset_closure, ⟨closure_nowhere_dense hs, isClosed_closure⟩⟩
+lemma IsNowhereDense.subset_of_closed_nowhere_dense {s : Set α} (hs : IsNowhereDense s) :
+    ∃ t : Set α, s ⊆ t ∧ IsNowhereDense t ∧ IsClosed t :=
+  ⟨closure s, subset_closure, ⟨hs.closure_nowhere_dense, isClosed_closure⟩⟩
 
 /-- A set `s` is closed and nowhere dense iff its complement `sᶜ` is open and dense. -/
 lemma closed_nowhere_dense_iff_complement {s : Set α} :
     IsClosed s ∧ IsNowhereDense s ↔ IsOpen sᶜ ∧ Dense sᶜ := by
   constructor
   · rintro ⟨hclosed, hNowhereDense⟩
-    rw [closed_nowhere_dense_iff hclosed] at hNowhereDense
+    rw [hclosed.nowhere_dense_iff] at hNowhereDense
     exact ⟨isOpen_compl_iff.mpr hclosed, interior_eq_empty_iff_dense_compl.mp hNowhereDense⟩
   · rintro ⟨hopen, hdense⟩
     constructor
     · exact { isOpen_compl := hopen }
     · have : IsClosed s := by exact { isOpen_compl := hopen }
-      rw [closed_nowhere_dense_iff this, interior_eq_empty_iff_dense_compl]
+      rw [this.nowhere_dense_iff, interior_eq_empty_iff_dense_compl]
       exact hdense
 
-/-- A set is **meagre** iff its complement is a residual (or comeagre) set. -/
+/-- A set is called **meagre** iff its complement is a residual (or comeagre) set. -/
 def IsMeagre (s : Set α) := sᶜ ∈ residual α
 
 /-- The empty set is meagre. -/
@@ -322,7 +322,7 @@ lemma meagre_iff_countable_union_nowhere_dense {s : Set α} : IsMeagre s ↔
     have hnowhereDense' : ∀ (t : Set α), t ∈ s'' → IsClosed t ∧ IsNowhereDense t := by
       rintro t ⟨x, hx, hclosed⟩
       rw [← hclosed]
-      exact ⟨isClosed_closure, closure_nowhere_dense (hnowhereDense x hx)⟩
+      exact ⟨isClosed_closure, (hnowhereDense x hx).closure_nowhere_dense⟩
     have h' : ∀ (t : Set α), t ∈ complement → IsOpen t ∧ Dense t := by
       rintro t ⟨x, hx, hcompl⟩
       rw [← hcompl]
