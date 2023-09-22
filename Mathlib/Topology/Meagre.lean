@@ -8,7 +8,7 @@ import Mathlib.Topology.GDelta
 /-!
 ## Nowhere dense and meagre sets
 Define nowhere dense and meagre sets (`IsNowhereDense` and `IsMeagre`, respectively)
-and prove their basic properties.
+as complements of open dense and residual sets, respectively, and prove their basic properties.
 
 Main properties:
 - `closure_nowhere_dense`: the closure of a nowhere dense set is nowhere dense
@@ -60,8 +60,27 @@ lemma closed_nowhere_dense_iff_complement {s : Set α} :
       rw [closed_nowhere_dense_iff this, interior_eq_empty_iff_dense_compl]
       exact hdense
 
-/-- A set is **meagre** iff it is contained in the countable union of nowhere dense sets. -/
-def IsMeagre (s : Set α) := ∃ S : Set (Set α), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S
+/-- A set is **meagre** iff its complement is a residual (or comeagre) set. -/
+def IsMeagre (s : Set α) := sᶜ ∈ residual α
+
+/-- The empty set is meagre. -/
+lemma meagre_empty : IsMeagre (∅ : Set α) := by
+  rw [IsMeagre, compl_empty]
+  exact Filter.univ_mem
+
+/-- Subsets of meagre sets are meagre. -/
+lemma IsMeagre.mono {s t: Set α} (hs : IsMeagre s) (hts: t ⊆ s) : IsMeagre t :=
+  Filter.mem_of_superset hs (compl_subset_compl.mpr hts)
+
+/-- A finite intersection of meagre sets is meagre. -/
+-- xxx is this superfluous?
+lemma IsMeagre.inter {s t : Set α} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
+  hs.mono (inter_subset_left s t)
+
+/-- A countable union of meagre sets is meagre. -/
+lemma meagre_iUnion {s : ℕ → Set α} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, (s n)) := by
+  rw [IsMeagre, compl_iUnion]
+  exact countable_iInter_mem.mpr hs
 
 -- TODO: move to the right place!
 lemma sUnion_subset_mono1 {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, t ⊆ f t) :
@@ -85,42 +104,12 @@ lemma sUnion_subset_closure {s : Set (Set α)} : ⋃₀ s ⊆ ⋃₀ (closure ''
 lemma sUnion_supset_interior {s : Set (Set α)} : ⋃₀ (interior '' s) ⊆ ⋃₀ s:=
   sUnion_subset_mono2 (by apply interior_subset)
 
-/-- A set is meagre iff its complement is residual (or comeagre). -/
-lemma meagre_iff_complement_comeagre {s : Set α} : IsMeagre s ↔ sᶜ ∈ residual α := by
+/-- A set is meagre iff it is contained in the countable union of nowhere dense sets. -/
+lemma meagre_iff_countable_union_nowhere_dense {s : Set α} : IsMeagre s ↔
+    ∃ S : Set (Set α), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
   constructor
-  · rintro ⟨s', ⟨hnowhereDense, hcountable, hss'⟩⟩
-    -- Passing to the closure, assume all U_i are closed nowhere dense.
-    let s'' := closure '' s'
-    have hnowhereDense' : ∀ (t : Set α), t ∈ s'' → IsClosed t ∧ IsNowhereDense t := by
-      rintro t ⟨x, hx, hclosed⟩
-      rw [← hclosed]
-      exact ⟨isClosed_closure, closure_nowhere_dense (hnowhereDense x hx)⟩
-    have hcountable' : Set.Countable s'' := Countable.image hcountable _
-    have hss'' : s ⊆ ⋃₀ s'' := calc
-      s ⊆ ⋃₀ s' := hss'
-      _ ⊆ ⋃₀ s'' := sUnion_subset_closure
-    -- Then each U_i^c is open and dense.
-    have h : ∀ (t : Set α), t ∈ s'' → IsOpen tᶜ ∧ Dense tᶜ  :=
-      fun t ht ↦ Iff.mp closed_nowhere_dense_iff_complement (hnowhereDense' t ht)
-    let complement := compl '' s''
-    have h' : ∀ (t : Set α), t ∈ complement → IsOpen t ∧ Dense t := by
-      rintro t ⟨x, hx, hcompl⟩
-      rw [← hcompl]
-      exact h x hx
-    -- and we compute ⋂ U_iᶜ ⊆ sᶜ, completing the proof.
-    have h2: ⋂₀ complement ⊆ sᶜ := calc ⋂₀ complement
-        _ = (⋃₀ s'')ᶜ := by rw [←compl_sUnion]
-        _ ⊆ sᶜ := Iff.mpr compl_subset_compl hss''
-    rw [mem_residual_iff]
-    use complement
-    constructor
-    · intro t ht
-      exact (h' t ht).1
-    · constructor
-      · intro t ht
-        exact (h' t ht).2
-      · exact ⟨Countable.image hcountable' compl, h2⟩
-  · intro hs -- suppose sᶜ is comeagre, then sᶜ ⊇ ⋂ U i for open dense sets U_i
+  · intro hs -- suppose s is meagre, i.e. sᶜ is residual
+    rw [IsMeagre] at hs
     rw [mem_residual_iff] at hs
     rcases hs with ⟨s', ⟨hopen, hdense, hcountable, hss'⟩⟩
     have h : s ⊆ ⋃₀ (compl '' s') := calc
@@ -136,7 +125,6 @@ lemma meagre_iff_complement_comeagre {s : Set α} : IsMeagre s ↔ sᶜ ∈ resi
       exact Iff.mpr closed_nowhere_dense_iff_complement this
     have : ∀ t : Set α, t ∈ s' → IsNowhereDense tᶜ := fun t ht ↦ (this t ht).2
     -- Thus (s'')ᶜ =s is meagre.
-    rw [IsMeagre]
     use compl '' s'
     constructor
     · rintro t ⟨x, hx, hcompl⟩
@@ -145,23 +133,36 @@ lemma meagre_iff_complement_comeagre {s : Set α} : IsMeagre s ↔ sᶜ ∈ resi
     · constructor
       · exact Countable.image hcountable _
       · apply h
-
-/-- The empty set is meagre. -/
-lemma meagre_empty : IsMeagre (∅ : Set α) := by
-  rw [meagre_iff_complement_comeagre, compl_empty, ← Filter.eventuallyEq_univ]
-
-/-- Subsets of meagre sets are meagre. -/
-lemma meagre_mono {s t: Set α} (hs : IsMeagre s) (hts: t ⊆ s) : IsMeagre t := by
-  rw [← compl_subset_compl] at hts
-  rw [meagre_iff_complement_comeagre] at *
-  exact Filter.mem_of_superset hs hts
-
-/-- A finite intersection of meagre sets is meagre. -/
--- xxx is this superfluous? I presume it is?
-lemma meagre_inter {s t : Set α} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
-  meagre_mono hs (inter_subset_left s t)
-
-/-- A countable union of meagre sets is meagre. -/
-lemma meagre_iUnion {s : ℕ → Set α} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, (s n)) := by
-  simp only [meagre_iff_complement_comeagre, compl_iUnion] at *
-  exact Iff.mpr countable_iInter_mem hs
+  · -- assume s is the countable union of nowhere dense sets s_i
+    rintro ⟨s', ⟨hnowhereDense, hcountable, hss'⟩⟩
+    -- Passing to the closure, assume all s_i are closed nowhere dense.
+    let s'' := closure '' s'
+    have hnowhereDense' : ∀ (t : Set α), t ∈ s'' → IsClosed t ∧ IsNowhereDense t := by
+      rintro t ⟨x, hx, hclosed⟩
+      rw [← hclosed]
+      exact ⟨isClosed_closure, closure_nowhere_dense (hnowhereDense x hx)⟩
+    have hcountable' : Set.Countable s'' := Countable.image hcountable _
+    have hss'' : s ⊆ ⋃₀ s'' := calc
+      s ⊆ ⋃₀ s' := hss'
+      _ ⊆ ⋃₀ s'' := sUnion_subset_closure
+    -- Then each s_iᶜ is open and dense.
+    have h : ∀ (t : Set α), t ∈ s'' → IsOpen tᶜ ∧ Dense tᶜ  :=
+      fun t ht ↦ Iff.mp closed_nowhere_dense_iff_complement (hnowhereDense' t ht)
+    let complement := compl '' s''
+    have h' : ∀ (t : Set α), t ∈ complement → IsOpen t ∧ Dense t := by
+      rintro t ⟨x, hx, hcompl⟩
+      rw [← hcompl]
+      exact h x hx
+    -- and we compute ⋂ s_iᶜ ⊆ sᶜ, completing the proof.
+    have h2: ⋂₀ complement ⊆ sᶜ := calc ⋂₀ complement
+        _ = (⋃₀ s'')ᶜ := by rw [←compl_sUnion]
+        _ ⊆ sᶜ := Iff.mpr compl_subset_compl hss''
+    rw [IsMeagre, mem_residual_iff]
+    use complement
+    constructor
+    · intro t ht
+      exact (h' t ht).1
+    · constructor
+      · intro t ht
+        exact (h' t ht).2
+      · exact ⟨Countable.image hcountable' compl, h2⟩
