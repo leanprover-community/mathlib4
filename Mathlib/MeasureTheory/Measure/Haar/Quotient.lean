@@ -62,27 +62,6 @@ instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [M
 #align quotient_group.has_measurable_smul QuotientGroup.measurableSMul
 #align quotient_add_group.has_measurable_vadd QuotientAddGroup.measurableVAdd
 
-
-
-
--- Move somewhere 9/14/23 Where?
-
-variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
-  [BorelSpace G] {Γ : Subgroup G} [PolishSpace G] [T2Space (G ⧸ Γ)]
-  [SecondCountableTopology (G ⧸ Γ)]
---@[to_additive]
-theorem QuotientGroup.sound [Subgroup.Normal Γ] (U : Set (G ⧸ Γ)) (g : (Subgroup.opposite Γ)) :
-    g • (QuotientGroup.mk' Γ) ⁻¹' U = (QuotientGroup.mk' Γ) ⁻¹' U := by
-  rw [QuotientGroup.coe_mk']
-  ext x
-  simp only [mem_preimage]
-  have := @Set.mem_inv_smul_set_iff (x := x) (A := (mk' Γ) ⁻¹' U) (a := g⁻¹) _ _
-  simp only [inv_inv, coe_mk', mem_preimage] at this
-  convert this using 2
-  apply @Quotient.sound (a := x) (s := (QuotientGroup.leftRel Γ)) (b := g⁻¹ • x)
-  use g
-  simp
-
 end
 
 section smulInvariantMeasure
