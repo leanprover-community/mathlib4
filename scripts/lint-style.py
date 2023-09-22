@@ -162,29 +162,36 @@ def line_endings_check(lines, path):
     return errors, newlines
 
 def four_spaces_in_second_line(lines, path):
+    # TODO: also fix the space for all lines before ":=", right now we only fix the line after
+    # the first line break
     errors = []
     # We never alter the first line, as it does not occur as next_line in the iteration over the
     # zipped lines below, hence we add it here
     newlines = [lines[0]]
     annotated_lines = list(annotate_comments(lines))
-    for (_, line, is_comment), (next_line_nr, next_line, _) in zip(annotated_lines, annotated_lines[1:]):
+    for (_, line, is_comment), (next_line_nr, next_line, _) in zip(annotated_lines,
+                                                                   annotated_lines[1:]):
         # Check if the current line matches "(lemma|theorem) .* :"
         new_next_line = next_line
-        if (not is_comment) and re.search(r"^(protected )?(def|lemma|theorem) (?!.*:=).*(where)?$", line):
+        if (not is_comment) and re.search(r"^(protected )?(def|lemma|theorem) (?!.*:=).*(where)?$",
+                                          line):
             # Calculate the number of spaces before the first non-space character in the next line
             if next_line and not next_line.startswith("#"):
                 stripped_next_line = next_line.lstrip()
                 num_spaces = len(next_line) - len(stripped_next_line)
-                if stripped_next_line.startswith("|") or line.endswith("where\n"):
+                # The match with "| " could potentially match with a different usage of the same
+                # symbol, e.g. some sort of norm. In that case a space is not necessary, so
+                # looking for "| " should be enough.
+                if stripped_next_line.startswith("| ") or line.endswith("where\n"):
+                    # Check and fix if the number of leading space is not 2
                     if num_spaces != 2:
                         errors += [(ERR_4SP, next_line_nr, path)]
                         new_next_line = ' ' * 2 + stripped_next_line
-                # Check if the number of leading spaces is not 4
+                # Check and fix if the number of leading spaces is not 4
                 else:
                     if num_spaces != 4:
                         errors += [(ERR_4SP, next_line_nr, path)]
                         new_next_line = ' ' * 4 + stripped_next_line
-
         newlines.append((next_line_nr, new_next_line))
     return errors, newlines
 
