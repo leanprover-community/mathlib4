@@ -225,7 +225,7 @@ expansion of the logarithm, in `hasSum_pow_div_log_of_abs_lt_1`.
 Porting note: TODO: use one of generic theorems about Taylor's series to prove this estimate.
 -/
 theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
-  |(∑ i in range n, x ^ (i + 1) / (i + 1)) + log (1 - x)| ≤ |x| ^ (n + 1) / (1 - |x|) := by
+    |(∑ i in range n, x ^ (i + 1) / (i + 1)) + log (1 - x)| ≤ |x| ^ (n + 1) / (1 - |x|) := by
   /- For the proof, we show that the derivative of the function to be estimated is small,
     and then apply the mean value inequality. -/
   let F : ℝ → ℝ := fun x => (∑ i in range n, x ^ (i + 1) / (i + 1)) + log (1 - x)

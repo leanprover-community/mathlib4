@@ -1773,7 +1773,7 @@ theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
 #align real.exp_near_sub Real.expNear_sub
 
 theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) :
-  |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
+    |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp [expNear]
   convert exp_bound (n := m) h ?_ using 1
   field_simp [mul_comm]
@@ -1809,7 +1809,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
 #align real.exp_1_approx_succ_eq Real.exp_1_approx_succ_eq
 
 theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :
-  |exp x - a| ≤ b := by simpa using h
+    |exp x - a| ≤ b := by simpa using h
 #align real.exp_approx_start Real.exp_approx_start
 
 theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x| ^ 4 * (5 / 96) :=

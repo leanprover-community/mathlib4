@@ -1493,7 +1493,7 @@ theorem dist_div_div_le_of_le (h₁ : dist a₁ b₁ ≤ r₁) (h₂ : dist a₂
 
 @[to_additive]
 theorem abs_dist_sub_le_dist_mul_mul (a₁ a₂ b₁ b₂ : E) :
-  |dist a₁ b₁ - dist a₂ b₂| ≤ dist (a₁ * a₂) (b₁ * b₂) := by
+    |dist a₁ b₁ - dist a₂ b₂| ≤ dist (a₁ * a₂) (b₁ * b₂) := by
   simpa only [dist_mul_left, dist_mul_right, dist_comm b₂] using
     abs_dist_sub_le (a₁ * a₂) (b₁ * b₂) (b₁ * a₂)
 #align abs_dist_sub_le_dist_mul_mul abs_dist_sub_le_dist_mul_mul

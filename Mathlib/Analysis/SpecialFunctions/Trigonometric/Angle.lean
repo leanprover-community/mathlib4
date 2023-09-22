@@ -473,7 +473,7 @@ theorem cos_pi_div_two_sub (θ : Angle) : cos (↑(π / 2) - θ) = sin θ := by
 #align real.angle.cos_pi_div_two_sub Real.Angle.cos_pi_div_two_sub
 
 theorem abs_sin_eq_of_two_nsmul_eq {θ ψ : Angle} (h : (2 : ℕ) • θ = (2 : ℕ) • ψ) :
-  |sin θ| = |sin ψ| := by
+    |sin θ| = |sin ψ| := by
   rw [two_nsmul_eq_iff] at h
   rcases h with (rfl | rfl)
   · rfl
@@ -481,13 +481,13 @@ theorem abs_sin_eq_of_two_nsmul_eq {θ ψ : Angle} (h : (2 : ℕ) • θ = (2 : 
 #align real.angle.abs_sin_eq_of_two_nsmul_eq Real.Angle.abs_sin_eq_of_two_nsmul_eq
 
 theorem abs_sin_eq_of_two_zsmul_eq {θ ψ : Angle} (h : (2 : ℤ) • θ = (2 : ℤ) • ψ) :
-  |sin θ| = |sin ψ| := by
+    |sin θ| = |sin ψ| := by
   simp_rw [two_zsmul, ← two_nsmul] at h
   exact abs_sin_eq_of_two_nsmul_eq h
 #align real.angle.abs_sin_eq_of_two_zsmul_eq Real.Angle.abs_sin_eq_of_two_zsmul_eq
 
 theorem abs_cos_eq_of_two_nsmul_eq {θ ψ : Angle} (h : (2 : ℕ) • θ = (2 : ℕ) • ψ) :
-  |cos θ| = |cos ψ| := by
+    |cos θ| = |cos ψ| := by
   rw [two_nsmul_eq_iff] at h
   rcases h with (rfl | rfl)
   · rfl
@@ -495,7 +495,7 @@ theorem abs_cos_eq_of_two_nsmul_eq {θ ψ : Angle} (h : (2 : ℕ) • θ = (2 : 
 #align real.angle.abs_cos_eq_of_two_nsmul_eq Real.Angle.abs_cos_eq_of_two_nsmul_eq
 
 theorem abs_cos_eq_of_two_zsmul_eq {θ ψ : Angle} (h : (2 : ℤ) • θ = (2 : ℤ) • ψ) :
-  |cos θ| = |cos ψ| := by
+    |cos θ| = |cos ψ| := by
   simp_rw [two_zsmul, ← two_nsmul] at h
   exact abs_cos_eq_of_two_nsmul_eq h
 #align real.angle.abs_cos_eq_of_two_zsmul_eq Real.Angle.abs_cos_eq_of_two_zsmul_eq
@@ -651,7 +651,7 @@ theorem abs_toReal_neg_coe_eq_self_iff {θ : ℝ} : |(-θ : Angle).toReal| = θ 
 #align real.angle.abs_to_real_neg_coe_eq_self_iff Real.Angle.abs_toReal_neg_coe_eq_self_iff
 
 theorem abs_toReal_eq_pi_div_two_iff {θ : Angle} :
-  |θ.toReal| = π / 2 ↔ θ = (π / 2 : ℝ) ∨ θ = (-π / 2 : ℝ) := by
+    |θ.toReal| = π / 2 ↔ θ = (π / 2 : ℝ) ∨ θ = (-π / 2 : ℝ) := by
   rw [abs_eq (div_nonneg Real.pi_pos.le two_pos.le), ← neg_div, toReal_eq_pi_div_two_iff,
     toReal_eq_neg_pi_div_two_iff]
 #align real.angle.abs_to_real_eq_pi_div_two_iff Real.Angle.abs_toReal_eq_pi_div_two_iff

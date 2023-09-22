@@ -1567,7 +1567,7 @@ theorem abs_sub_round (x : α) : |x - round x| ≤ 1 / 2 := by
 #align abs_sub_round abs_sub_round
 
 theorem abs_sub_round_div_natCast_eq {m n : ℕ} :
-  |(m : α) / n - round ((m : α) / n)| = ↑(min (m % n) (n - m % n)) / n := by
+    |(m : α) / n - round ((m : α) / n)| = ↑(min (m % n) (n - m % n)) / n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
   have hn' : 0 < (n : α) := by

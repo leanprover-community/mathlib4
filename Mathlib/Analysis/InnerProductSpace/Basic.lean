@@ -1641,7 +1641,7 @@ theorem norm_inner_div_norm_mul_norm_eq_one_iff (x y : E) :
 norms, has absolute value 1 if and only if they are nonzero and one is
 a multiple of the other. One form of equality case for Cauchy-Schwarz. -/
 theorem abs_real_inner_div_norm_mul_norm_eq_one_iff (x y : F) :
-  |⟪x, y⟫_ℝ / (‖x‖ * ‖y‖)| = 1 ↔ x ≠ 0 ∧ ∃ r : ℝ, r ≠ 0 ∧ y = r • x :=
+    |⟪x, y⟫_ℝ / (‖x‖ * ‖y‖)| = 1 ↔ x ≠ 0 ∧ ∃ r : ℝ, r ≠ 0 ∧ y = r • x :=
   @norm_inner_div_norm_mul_norm_eq_one_iff ℝ F _ _ _ x y
 #align abs_real_inner_div_norm_mul_norm_eq_one_iff abs_real_inner_div_norm_mul_norm_eq_one_iff
 

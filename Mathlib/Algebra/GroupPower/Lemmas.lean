@@ -466,7 +466,7 @@ theorem abs_zsmul (n : ℤ) (a : α) : |n • a| = |n| • |a| := by
 #align abs_zsmul abs_zsmul
 
 theorem abs_add_eq_add_abs_le (hle : a ≤ b) :
-  |a + b| = |a| + |b| ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
+    |a + b| = |a| + |b| ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   obtain a0 | a0 := le_or_lt 0 a <;> obtain b0 | b0 := le_or_lt 0 b
   · simp [a0, b0, abs_of_nonneg, add_nonneg a0 b0]
   · exact (lt_irrefl (0 : α) <| a0.trans_lt <| hle.trans_lt b0).elim
