@@ -117,7 +117,7 @@ end
 variable {P} {P' : C → Prop} [MonoidalPredicate P']
 
 -- needed for `aesop_cat`
-attribute [simp] comp_def id_def in
+attribute [simp] FullSubcategory.comp_def FullSubcategory.id_def in
 /-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
 subcategories. -/
 @[simps]
