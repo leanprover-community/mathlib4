@@ -74,43 +74,42 @@ lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
     changeLevel (dvd_trans hm hd) χ = changeLevel hd (changeLevel hm χ) := by
   simp [changeLevel_def, MonoidHom.comp_assoc, ZMod.unitsMap_comp]
 
-lemma unitsMap_comp {d m : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
-    (ZMod.unitsMap hm).comp (ZMod.unitsMap hd) = ZMod.unitsMap (dvd_trans hm hd) := by
-  simp only [ZMod.unitsMap_def]
-  rw [← Units.map_comp]
-  exact congr_arg Units.map <| congr_arg RingHom.toMonoidHom <| ZMod.castHom_comp hm hd
-
-lemma ofUnitHom_eq {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
+lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
     (changeLevel hm χ) a = χ a := by
   simpa [changeLevel_def, Function.comp_apply, MonoidHom.coe_comp] using
       toUnitHom_eq_char' _ <| ZMod.IsUnit_cast_of_dvd hm a
 
 /-- χ₀ of level d factors through χ of level n if d ∣ n and χ₀ = χ ∘ (ZMod n → ZMod d). -/
-structure FactorsThrough (d : ℕ) : Prop :=
+structure FactorsThrough (d : ℕ) (χ₀ : DirichletCharacter R d) : Prop :=
   /-- `d` divides `n`, so `d` is a potential level through which `χ` factors. -/
   (dvd : d ∣ n)
   /-- A character `χ₀` of level `d` such that `χ` is just the change in level of `χ₀` to `n`. -/
-  (indChar : ∃ χ₀ : DirichletCharacter R d, χ = changeLevel dvd χ₀)
+  (eq_changeLevel : χ = changeLevel dvd χ₀)
 
 namespace FactorsThrough
-lemma spec {d : ℕ} (h : FactorsThrough χ d) :
-    χ = changeLevel h.dvd (Classical.choose (h.indChar)) := Classical.choose_spec (h.indChar)
+lemma spec {d : ℕ} (χ₀ : DirichletCharacter R d) (h : FactorsThrough χ d χ₀) :
+    χ = changeLevel h.dvd χ₀ := h.eq_changeLevel
 end FactorsThrough
 
 /-- The set of natural numbers for which a Dirichlet character is periodic. -/
-def conductorSet : Set ℕ := {x : ℕ | FactorsThrough χ x}
+def conductorSet : Set ℕ := {x : ℕ | ∃ χ₀, FactorsThrough χ x χ₀}
 
--- cant use dot notation for factors_through and conductor set
-lemma mem_conductorSet_iff {x : ℕ} : x ∈ conductorSet χ ↔ FactorsThrough χ x := Iff.refl _
+-- can't use dot notation for factorsThrough and conductorSet
+lemma mem_conductorSet_iff {x : ℕ} : x ∈ conductorSet χ ↔ ∃ χ₀, FactorsThrough χ x χ₀ := Iff.refl _
 
 lemma level_mem_conductorSet : n ∈ conductorSet χ :=
-  (mem_conductorSet_iff _).2
-    { dvd := dvd_rfl,
-      indChar := ⟨χ, (changeLevel_self χ).symm⟩, }
+  (mem_conductorSet_iff χ ).mpr <| ⟨χ,
+  { dvd := Nat.dvd_refl n,
+    eq_changeLevel := (changeLevel_self χ).symm}⟩
 
-lemma mem_conductorSet_dvd {x : ℕ} (hx : x ∈ conductorSet χ) : x ∣ n := hx.1
 
-lemma FactorsThrough_of_mem_conductorSet {x : ℕ} (hx : x ∈ conductorSet χ) : FactorsThrough χ x :=
+lemma mem_conductorSet_dvd {x : ℕ} (hx : x ∈ conductorSet χ) : x ∣ n := by
+  cases' hx with χ₀ hx
+  exact hx.dvd
+
+
+lemma FactorsThrough_of_mem_conductorSet {x : ℕ} (hx : x ∈ conductorSet χ) :
+    ∃ (χ₀ : DirichletCharacter R x), FactorsThrough χ x χ₀ :=
   hx
 
 /-- The minimum natural number n for which a Dirichlet character is periodic.
