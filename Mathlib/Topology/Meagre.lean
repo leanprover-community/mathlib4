@@ -79,27 +79,6 @@ lemma meagre_iUnion {s : ℕ → Set α} (hs : ∀ n, IsMeagre (s n)) : IsMeagre
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
--- TODO: move to the right place! Data.Set.Lattice
-/-- `sUnion` is monotone under taking a subset of each set. -/
-lemma sUnion_mono_subsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, t ⊆ f t) :
-    ⋃₀ s ⊆ ⋃₀ (f '' s) :=
-  fun _ ⟨t, htx, hxt⟩ ↦ ⟨f t, mem_image_of_mem f htx, hf t hxt⟩
-
-/-- `sUnion` is monotone under taking a superset of each set. -/
-lemma sUnion_mono_supsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, f t ⊆ t) :
-    ⋃₀ (f '' s) ⊆ ⋃₀ s  :=
-  -- let t ∈ f '' s be arbitrary; then t = f u for some u : Set α
-  fun _ ⟨_, ⟨u, hus, hut⟩, hxt⟩ ↦ ⟨u, hus, (Eq.trans_subset hut.symm (hf u)) hxt⟩
-
--- xxx: find_home says Topology.Meagre; that seems like a bug
-/-- `sUnion` is monotone under taking the closure of each set. -/
-lemma sUnion_subset_closure {s : Set (Set α)} : ⋃₀ s ⊆ ⋃₀ (closure '' s) :=
-  sUnion_mono_subsets (by apply subset_closure)
-
-/-- `sUnion` is monotone under taking the interior of each set. -/
-lemma sUnion_supset_interior {s : Set (Set α)} : ⋃₀ (interior '' s) ⊆ ⋃₀ s:=
-  sUnion_mono_supsets (by apply interior_subset)
-
 /-- A set is meagre iff it is contained in the countable union of nowhere dense sets. -/
 lemma meagre_iff_countable_union_nowhere_dense {s : Set α} : IsMeagre s ↔
     ∃ S : Set (Set α), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
