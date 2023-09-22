@@ -30,4 +30,10 @@ lemma unitsMap_comp {d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
 lemma unitsMap_self (n : ℕ) : unitsMap (dvd_refl n) = MonoidHom.id _ := by
   simp [unitsMap, castHom_self]
 
+lemma IsUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) :  IsUnit ((a : ZMod m) : ZMod n) := by
+    rw [←@ZMod.castHom_apply _ _ _ n _ hm (a : ZMod m)]
+    change IsUnit ((ZMod.castHom hm (ZMod n) : ZMod m →* ZMod n) ↑a)
+    rw [←Units.coe_map (ZMod.castHom hm (ZMod n) : ZMod m →* ZMod n) a]
+    apply Units.isUnit
+
 end ZMod

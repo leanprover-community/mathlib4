@@ -74,4 +74,45 @@ lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
     changeLevel (dvd_trans hm hd) χ = changeLevel hd (changeLevel hm χ) := by
   simp [changeLevel_def, MonoidHom.comp_assoc, ZMod.unitsMap_comp]
 
+lemma unitsMap_comp {d m : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
+  (ZMod.unitsMap hm).comp (ZMod.unitsMap hd) = ZMod.unitsMap (dvd_trans hm hd) := by
+    simp only [ZMod.unitsMap_def]
+    rw [← Units.map_comp]
+    exact congr_arg Units.map <| congr_arg RingHom.toMonoidHom <| ZMod.castHom_comp hm hd
+
+lemma ofUnitHom_eq {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
+  (changeLevel hm χ) a = χ a := by
+  simpa [changeLevel_def, Function.comp_apply, MonoidHom.coe_comp] using
+      toUnitHom_eq_char' _ <| ZMod.IsUnit_cast_of_dvd hm a
+
+/-- χ₀ of level d factors through χ of level n if d ∣ n and χ₀ = χ ∘ (ZMod n → ZMod d). -/
+structure FactorsThrough (d : ℕ) : Prop :=
+  /-- `d` divides `n`, so `d` is a potential level through which `χ` factors. -/
+  (dvd : d ∣ n)
+  /-- A character `χ₀` of level `d` such that `χ` is just the change in level of `χ₀` to `n`. -/
+  (indChar : ∃ χ₀ : DirichletCharacter R d, χ = changeLevel dvd χ₀)
+
+namespace FactorsThrough
+lemma spec {d : ℕ} (h : FactorsThrough χ d) :
+  χ = changeLevel h.dvd (Classical.choose (h.indChar)) := Classical.choose_spec (h.indChar)
+end FactorsThrough
+
+/-- The set of natural numbers for which a Dirichlet character is periodic. -/
+def conductorSet : Set ℕ := {x : ℕ | FactorsThrough χ x}
+
+-- cant use dot notation for factors_through and conductor set
+lemma mem_conductorSet_iff {x : ℕ} : x ∈ conductorSet χ ↔ FactorsThrough χ x := Iff.refl _
+
+lemma level_mem_conductorSet : n ∈ conductorSet χ := (mem_conductorSet_iff _).2
+{ dvd := dvd_rfl,
+  indChar := ⟨χ, (changeLevel_self χ).symm⟩, }
+
+lemma mem_conductor_set_dvd {x : ℕ} (hx : x ∈ conductorSet χ) : x ∣ n := hx.1
+
+lemma mem_conductor_set_factors_through {x : ℕ} (hx : x ∈ conductorSet χ) : FactorsThrough χ x := hx
+
+/-- The minimum natural number n for which a Dirichlet character is periodic.
+  The Dirichlet character χ can then alternatively be reformulated on ℤ/nℤ. -/
+noncomputable def conductor : ℕ := sInf (conductorSet χ)
+
 end DirichletCharacter
