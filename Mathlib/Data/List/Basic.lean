@@ -437,7 +437,6 @@ theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length
 
 #align list.eq_replicate List.eq_replicate
 
-@[simp]
 theorem replicate_append (m n) (a : α) : replicate m a ++ replicate n a = replicate (m + n) a := by
   induction m <;> simp [*, zero_add, succ_add, replicate]
 
