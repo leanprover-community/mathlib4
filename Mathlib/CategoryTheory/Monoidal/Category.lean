@@ -68,8 +68,6 @@ class MonoidalCategoryStruct (C : Type u) [𝒞 : Category.{v} C] where
   -- By default, it is defined in terms of whiskerings.
   tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂) : (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂) :=
     whiskerRight f X₂ ≫ whiskerLeft Y₁ g
-  -- Porting note: Adding a prime here, so I can later define `tensorUnit` unprimed with explicit
-  --               argument `C`
   /-- The tensor unity in the monoidal structure `𝟙_ C` -/
   tensorUnit : C
   /-- The associator isomorphism `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
@@ -104,9 +102,9 @@ scoped infixr:70 " ⊗ " => MonoidalCategoryStruct.tensorHom
 scoped notation "𝟙_ " C:max => (MonoidalCategoryStruct.tensorUnit : C)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Used to ensure that `𝟙_` is delaborated wtih the explicit type -/
+/-- Used to ensure that `𝟙_` notation is used, as the ascription makes this not automatic. -/
 @[delab app.CategoryTheory.MonoidalCategoryStruct.tensorUnit]
-def delabTensorUnit : Delab := do
+def delabTensorUnit : Delab := whenPPOption getPPNotation do
   let e ← getExpr
   guard <| e.isAppOfArity ``MonoidalCategoryStruct.tensorUnit 3
   let C ← withNaryArg 0 delab
