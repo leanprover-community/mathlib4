@@ -370,7 +370,7 @@ end CategoryTheory.Iso
 in `MonCat` -/
 @[to_additive addEquivIsoAddMonCatIso]
 def mulEquivIsoMonCatIso {X Y : Type u} [Monoid X] [Monoid Y] :
-  X ≃* Y ≅ MonCat.of X ≅ MonCat.of Y where
+    X ≃* Y ≅ MonCat.of X ≅ MonCat.of Y where
   hom e := e.toMonCatIso
   inv i := i.monCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in

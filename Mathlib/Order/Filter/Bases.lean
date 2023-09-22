@@ -286,7 +286,7 @@ protected theorem IsBasis.hasBasis (h : IsBasis p s) : HasBasis h.filter p s :=
 #align filter.is_basis.has_basis Filter.IsBasis.hasBasis
 
 protected theorem HasBasis.mem_of_superset (hl : l.HasBasis p s) (hi : p i) (ht : s i ⊆ t) :
-     t ∈ l :=
+    t ∈ l :=
   hl.mem_iff.2 ⟨i, hi, ht⟩
 #align filter.has_basis.mem_of_superset Filter.HasBasis.mem_of_superset
 

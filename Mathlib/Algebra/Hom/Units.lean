@@ -497,7 +497,7 @@ protected theorem mul_eq_mul_of_div_eq_div (hb : IsUnit b) (hd : IsUnit d)
 
 @[to_additive]
 protected theorem div_eq_div_iff (hb : IsUnit b) (hd : IsUnit d) :
-  a / b = c / d ↔ a * d = c * b := by
+    a / b = c / d ↔ a * d = c * b := by
   rw [← (hb.mul hd).mul_left_inj, ← mul_assoc, hb.div_mul_cancel, ← mul_assoc, mul_right_comm,
     hd.div_mul_cancel]
 #align is_unit.div_eq_div_iff IsUnit.div_eq_div_iff

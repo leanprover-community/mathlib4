@@ -814,7 +814,7 @@ equalities. -/
   "Copy of a `ZeroHom` with a new `toFun` equal to the old one. Useful to fix
   definitional equalities."]
 protected def OneHom.copy [One M] [One N] (f : OneHom M N) (f' : M → N) (h : f' = f) :
-  OneHom M N where
+    OneHom M N where
   toFun := f'
   map_one' := h.symm ▸ f.map_one'
 #align one_hom.copy OneHom.copy
@@ -840,7 +840,7 @@ equalities. -/
   "Copy of an `AddHom` with a new `toFun` equal to the old one. Useful to fix
   definitional equalities."]
 protected def MulHom.copy [Mul M] [Mul N] (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
-  M →ₙ* N where
+    M →ₙ* N where
   toFun := f'
   map_mul' := h.symm ▸ f.map_mul'
 #align mul_hom.copy MulHom.copy
@@ -917,14 +917,14 @@ protected theorem MonoidHom.map_one [MulOneClass M] [MulOneClass N] (f : M →* 
 #align add_monoid_hom.map_zero AddMonoidHom.map_zero
 
 protected theorem MonoidWithZeroHom.map_one [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
-  f 1 = 1 := f.map_one'
+    f 1 = 1 := f.map_one'
 #align monoid_with_zero_hom.map_one MonoidWithZeroHom.map_one
 
 /-- If `f` is an additive monoid homomorphism then `f 0 = 0`. -/
 add_decl_doc AddMonoidHom.map_zero
 
 protected theorem MonoidWithZeroHom.map_zero [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
-  f 0 = 0 := f.map_zero'
+    f 0 = 0 := f.map_zero'
 #align monoid_with_zero_hom.map_zero MonoidWithZeroHom.map_zero
 
 @[to_additive]
@@ -936,7 +936,7 @@ protected theorem MulHom.map_mul [Mul M] [Mul N] (f : M →ₙ* N) (a b : M) : f
 /-- If `f` is a monoid homomorphism then `f (a * b) = f a * f b`. -/
 @[to_additive]
 protected theorem MonoidHom.map_mul [MulOneClass M] [MulOneClass N] (f : M →* N) (a b : M) :
-  f (a * b) = f a * f b := f.map_mul' a b
+    f (a * b) = f a * f b := f.map_mul' a b
 #align monoid_hom.map_mul MonoidHom.map_mul
 #align add_monoid_hom.map_add AddMonoidHom.map_add
 
@@ -1045,7 +1045,7 @@ def MulHom.comp [Mul M] [Mul N] [Mul P] (hnp : N →ₙ* P) (hmn : M →ₙ* N) 
 /-- Composition of monoid morphisms as a monoid morphism. -/
 @[to_additive]
 def MonoidHom.comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (hnp : N →* P) (hmn : M →* N) :
-  M →* P where
+    M →* P where
   toFun := hnp ∘ hmn
   map_one' := by simp
   map_mul' := by simp
@@ -1278,7 +1278,7 @@ theorem MonoidWithZeroHom.id_comp [MulZeroOneClass M] [MulZeroOneClass N] (f : M
 
 @[to_additive]
 protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M) (n : ℕ) :
-  f (a ^ n) = f a ^ n := map_pow f a n
+    f (a ^ n) = f a ^ n := map_pow f a n
 #align monoid_hom.map_pow MonoidHom.map_pow
 #align add_monoid_hom.map_nsmul AddMonoidHom.map_nsmul
 
@@ -1428,29 +1428,29 @@ theorem comp_one [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : N →* P) 
 
 /-- Group homomorphisms preserve inverse. -/
 @[to_additive "Additive group homomorphisms preserve negation."]
-protected theorem map_inv [Group α] [DivisionMonoid β] (f : α →* β) (a : α) :
-  f a⁻¹ = (f a)⁻¹ := map_inv f _
+protected theorem map_inv [Group α] [DivisionMonoid β] (f : α →* β) (a : α) : f a⁻¹ = (f a)⁻¹ :=
+  map_inv f _
 #align monoid_hom.map_inv MonoidHom.map_inv
 #align add_monoid_hom.map_neg AddMonoidHom.map_neg
 
 /-- Group homomorphisms preserve integer power. -/
 @[to_additive "Additive group homomorphisms preserve integer scaling."]
 protected theorem map_zpow [Group α] [DivisionMonoid β] (f : α →* β) (g : α) (n : ℤ) :
-  f (g ^ n) = f g ^ n := map_zpow f g n
+    f (g ^ n) = f g ^ n := map_zpow f g n
 #align monoid_hom.map_zpow MonoidHom.map_zpow
 #align add_monoid_hom.map_zsmul AddMonoidHom.map_zsmul
 
 /-- Group homomorphisms preserve division. -/
 @[to_additive "Additive group homomorphisms preserve subtraction."]
 protected theorem map_div [Group α] [DivisionMonoid β] (f : α →* β) (g h : α) :
-  f (g / h) = f g / f h := map_div f g h
+    f (g / h) = f g / f h := map_div f g h
 #align monoid_hom.map_div MonoidHom.map_div
 #align add_monoid_hom.map_sub AddMonoidHom.map_sub
 
 /-- Group homomorphisms preserve division. -/
 @[to_additive "Additive group homomorphisms preserve subtraction."]
 protected theorem map_mul_inv [Group α] [DivisionMonoid β] (f : α →* β) (g h : α) :
-  f (g * h⁻¹) = f g * (f h)⁻¹ := by simp
+    f (g * h⁻¹) = f g * (f h)⁻¹ := by simp
 #align monoid_hom.map_mul_inv MonoidHom.map_mul_inv
 #align add_monoid_hom.map_add_neg AddMonoidHom.map_add_neg
 
