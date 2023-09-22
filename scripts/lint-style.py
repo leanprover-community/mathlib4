@@ -167,7 +167,7 @@ def four_spaces_in_second_line(lines, path):
     # zipped lines below, hence we add it here
     newlines = [lines[0]]
     for (_, line), (next_line_nr, next_line) in zip(lines, lines[1:]):
-        modified_next_line = next_line
+        new_next_line = next_line
         # Check if the current line matches "(lemma|theorem) .* :"
         if re.search(r"^(protected )?(def|lemma|theorem) .* :$", line):
             # Calculate the number of spaces before the first non-space character in the next line
@@ -176,8 +176,8 @@ def four_spaces_in_second_line(lines, path):
             # Check if the number of leading spaces is not 4
             if num_spaces != 4:
                 errors += [(ERR_4SP, next_line_nr, path)]
-                modified_next_line = ' ' * 4 + stripped_next_line
-        newlines.append((next_line_nr, modified_next_line))
+                new_next_line = ' ' * 4 + stripped_next_line
+        newlines.append((next_line_nr, new_next_line))
     return errors, newlines
 
 def long_lines_check(lines, path):
