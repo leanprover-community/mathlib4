@@ -56,8 +56,12 @@ lemma mul_le_mul_of_nonneg_left {R : Type*} [CommSemiring R] [PartialOrder R] [S
 
 /-- A commutative star-ordered semiring is an ordered semiring.
 
-See note [lower instance priority]. -/
-instance (priority := 100) toOrderedCommSemiring {R : Type*} [CommSemiring R] [PartialOrder R]
+This is not registered as an instance because it introduces a type class loop between `CommSemiring`
+and `OrderedCommSemiring`, and it seem loops still cause issues sometimes.
+
+See note [reducible non-instances]. -/
+@[reducible]
+def toOrderedCommSemiring (R : Type*) [CommSemiring R] [PartialOrder R]
     [StarOrderedRing R] : OrderedCommSemiring R where
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
@@ -67,10 +71,14 @@ instance (priority := 100) toOrderedCommSemiring {R : Type*} [CommSemiring R] [P
 
 /-- A commutative star-ordered ring is an ordered ring.
 
-See note [lower instance priority]. -/
-instance (priority := 100) toOrderedCommRing {R : Type*} [CommRing R] [PartialOrder R]
+This is not registered as an instance because it introduces a type class loop between `CommSemiring`
+and `OrderedCommSemiring`, and it seem loops still cause issues sometimes.
+
+See note [reducible non-instances]. -/
+@[reducible]
+def toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
     [StarOrderedRing R] : OrderedCommRing R where
   add_le_add_left _ _ := add_le_add_left
-  zero_le_one := zero_le_one
+  zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
   mul_comm := mul_comm
-  mul_nonneg _ _ := mul_nonneg
+  mul_nonneg _ _ := let _ := toOrderedCommSemiring R; mul_nonneg
