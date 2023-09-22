@@ -219,7 +219,12 @@ def setupLCtx (lctx : LocalContext) (boundNames : HashSet Name) :
 /-- Given an expression, generate a matcher for it.
 The `boundFVars` hash map records which state variables certain fvars correspond to.
 The `localFVars` hash map records which local variable the matcher should use for an exact
-expression match. -/
+expression match.
+
+If it succeeds generating a matcher, returns
+1. a list of keys that should be used for the `delab` attribute
+   when defining the elaborator
+2. a `Term` that represents a `Matcher` for the given expression `e`. -/
 partial def exprToMatcher (boundFVars : HashMap FVarId Name) (localFVars : HashMap FVarId Term)
       (e : Expr) :
     OptionT TermElabM (List Name × Term) := do
