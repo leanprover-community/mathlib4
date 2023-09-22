@@ -169,14 +169,21 @@ def four_spaces_in_second_line(lines, path):
     for (_, line), (next_line_nr, next_line) in zip(lines, lines[1:]):
         new_next_line = next_line
         # Check if the current line matches "(lemma|theorem) .* :"
-        if re.search(r"^(protected )?(def|lemma|theorem) .* :$", line):
+        if re.search(r"^(protected )?(def|lemma|theorem) (?!.*:=).*(where)?$", line):
             # Calculate the number of spaces before the first non-space character in the next line
-            stripped_next_line = next_line.lstrip()
-            num_spaces = len(next_line) - len(stripped_next_line)
-            # Check if the number of leading spaces is not 4
-            if num_spaces != 4:
-                errors += [(ERR_4SP, next_line_nr, path)]
-                new_next_line = ' ' * 4 + stripped_next_line
+            if next_line and not next_line.startswith("#"):
+                stripped_next_line = next_line.lstrip()
+                num_spaces = len(next_line) - len(stripped_next_line)
+                if stripped_next_line.startswith("|") or line.endswith("where\n"):
+                    if num_spaces != 2:
+                        errors += [(ERR_4SP, next_line_nr, path)]
+                        new_next_line = ' ' * 2 + stripped_next_line
+                # Check if the number of leading spaces is not 4
+                else:
+                    if num_spaces != 4:
+                        errors += [(ERR_4SP, next_line_nr, path)]
+                        new_next_line = ' ' * 4 + stripped_next_line
+
         newlines.append((next_line_nr, new_next_line))
     return errors, newlines
 
