@@ -23,7 +23,7 @@ Main definitions:
 
 ## TODO
 
-- definition of conductor
+- properties of the conductor
 
 ## Tags
 
