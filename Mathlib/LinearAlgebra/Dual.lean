@@ -1521,7 +1521,7 @@ namespace LinearMap
 -- see https://github.com/leanprover-community/mathlib/pull/17521#discussion_r1083242551
 @[simp]
 theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
-  -- Porting note: broken dot notation lean4#1910
+    -- Porting note: broken dot notation lean4#1910
     finrank K (LinearMap.range f.dualMap) = finrank K (LinearMap.range f) := by
   have that := Submodule.finrank_quotient_add_finrank (LinearMap.range f)
   -- Porting note: Again LinearEquiv.finrank_eq needs help

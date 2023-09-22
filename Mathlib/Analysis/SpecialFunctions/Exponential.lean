@@ -69,7 +69,7 @@ theorem hasStrictFDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝔸).
   convert (hasFPowerSeriesAt_exp_zero_of_radius_pos h).hasStrictFDerivAt
   ext x
   change x = expSeries 𝕂 𝔸 1 fun _ => x
-  simp [expSeries_apply_eq]
+  simp [expSeries_apply_eq, Nat.factorial]
 #align has_strict_fderiv_at_exp_zero_of_radius_pos hasStrictFDerivAt_exp_zero_of_radius_pos
 
 /-- The exponential in a Banach algebra `𝔸` over a normed field `𝕂` has Fréchet derivative

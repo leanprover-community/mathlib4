@@ -7,12 +7,13 @@ Authors: Moritz Doll, Robert Y. Lewis
 import Mathlib.Tactic.Zify
 import Std.Tactic.GuardExpr
 
+private axiom test_sorry : ∀ {α}, α
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify
   guard_target =~ (c : ℤ) < (a : ℤ) + 3 * (b : ℤ)
   zify at h
   guard_hyp h :~ ¬(x : ℤ) * (y : ℤ) * (z : ℤ) < (0 : ℤ)
-  sorry
+  exact test_sorry
 
 -- TODO: These are verbatim copies of the tests from mathlib3. It would be nice to add more.
 

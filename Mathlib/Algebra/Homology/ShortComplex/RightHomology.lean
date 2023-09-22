@@ -92,8 +92,7 @@ def descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) : h.Q ⟶ A :=
   h.hp.desc (CokernelCofork.ofπ k hk)
 
 @[reassoc (attr := simp)]
-lemma p_descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) :
-  h.p ≫ h.descQ k hk = k :=
+lemma p_descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) : h.p ≫ h.descQ k hk = k :=
   h.hp.fac _ WalkingParallelPair.one
 
 /-- The morphism from the (right) homology attached to a morphism
@@ -686,8 +685,8 @@ lemma rightHomologyMap_zero [HasRightHomology S₁] [HasRightHomology S₂] :
 
 @[simp]
 lemma opcyclesMap_zero [HasRightHomology S₁] [HasRightHomology S₂] :
-  opcyclesMap (0 : S₁ ⟶ S₂) = 0 :=
-opcyclesMap'_zero _ _
+    opcyclesMap (0 : S₁ ⟶ S₂) = 0 :=
+  opcyclesMap'_zero _ _
 
 variable {S₁ S₂}
 
