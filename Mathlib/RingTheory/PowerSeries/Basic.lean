@@ -1857,7 +1857,7 @@ theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n 
 
 @[simp] lemma trunc_zero' {f : R⟦X⟧} : trunc 0 f = 0 := rfl
 
-theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] {s : S} {G : R →+* S} {n} {f : R⟦X⟧} :
+theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+* S) (n) (f : R⟦X⟧) :
     (trunc n f).eval₂ G s = ∑ i in range n, G (coeff R i f) * s ^ i := by
   cases n with
   | zero =>
@@ -1871,7 +1871,7 @@ theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] {s : S} {G : R →+*
     congr
     rw [coeff_trunc, if_pos h]
 
-@[simp] theorem trunc_X {n} : trunc (n + 2) X = (Polynomial.X : R[X]) := by
+@[simp] theorem trunc_X (n) : trunc (n + 2) X = (Polynomial.X : R[X]) := by
   ext d
   rw [coeff_trunc, coeff_X]
   split_ifs with h₁ h₂
@@ -2763,7 +2763,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
   trunc_trunc_of_le f
 
 @[simp] theorem trunc_trunc_mul {n} (f g : R ⟦X⟧) :
-    trunc n ( (trunc n f) * g : R⟦X⟧ ) = trunc n ( f * g ) := by
+    trunc n ((trunc n f) * g : R⟦X⟧) = trunc n (f * g) := by
   ext m
   rw [coeff_trunc, coeff_trunc]
   split_ifs with h
@@ -2774,7 +2774,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
   · rfl
 
 @[simp] theorem trunc_mul_trunc {n} (f g : R ⟦X⟧) :
-    trunc n ( f * (trunc n g) : R⟦X⟧ ) = trunc n ( f * g ) := by
+    trunc n (f * (trunc n g) : R⟦X⟧) = trunc n (f * g) := by
   rw [mul_comm, trunc_trunc_mul, mul_comm]
 
 theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
