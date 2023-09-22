@@ -228,8 +228,8 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
           counit :=
           { app := fun Y => (ihom.ev X.1).app Y.1
             naturality := fun Y Z f => ihom.ev_naturality X.1 f }
-          left_triangle := by ext Y; simp; exact ihom.ev_coev X.1 Y.1
-          right_triangle := by ext Y; simp; exact ihom.coev_ev X.1 Y.1 } } }
+          left_triangle := by ext Y; simp
+          right_triangle := by ext Y; simp } } }
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory
 
 @[simp]
