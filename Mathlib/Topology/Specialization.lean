@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Topology.Separation
 import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Order.Category.PreordCat
+import Mathlib.Order.Category.Preord
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Order.UpperLowerSetTopology
 
@@ -84,6 +84,6 @@ def homeoWithUpperSetTopologyorderIso (α : Type*) [TopologicalSpace α] [Alexan
 
 /-- Sends a topological space to its specialisation order. -/
 @[simps]
-def topToPreord : TopCat ⥤ PreordCat where
-  obj X := PreordCat.of $ Specialization X
+def topToPreord : TopCat ⥤ Preord where
+  obj X := Preord.of $ Specialization X
   map := Specialization.map
