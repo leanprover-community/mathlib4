@@ -88,12 +88,12 @@ variable [Category.{v₁} C]
 
 /-- The monoidal opposite of a morphism `f : X ⟶ Y` is just `f`, thought of as `mop X ⟶ mop Y`. -/
 def Quiver.Hom.mop {X Y : C} (f : X ⟶ Y) : @Quiver.Hom Cᴹᵒᵖ _ (mop X) (mop Y) :=
-  f
+  ⟨f⟩
 #align quiver.hom.mop Quiver.Hom.mop
 
 /-- We can think of a morphism `f : mop X ⟶ mop Y` as a morphism `X ⟶ Y`. -/
 def Quiver.Hom.unmop {X Y : Cᴹᵒᵖ} (f : X ⟶ Y) : unmop X ⟶ unmop Y :=
-  f
+  f.hom
 #align quiver.hom.unmop Quiver.Hom.unmop
 
 namespace CategoryTheory
@@ -152,14 +152,9 @@ namespace Iso
 variable {X Y : C}
 
 /-- An isomorphism in `C` gives an isomorphism in `Cᴹᵒᵖ`. -/
-@[simps]
-def mop (f : X ≅ Y) : mop X ≅ mop Y where
-  hom := f.hom.mop
-  inv := f.inv.mop
-  -- Porting note: it's a pity `attribute [aesop safe apply (rule_sets [CategoryTheory])] unmop_inj`
-  -- doesn't automate these proofs.
-  hom_inv_id := unmop_inj (by simp)
-  inv_hom_id := unmop_inj (by simp)
+@[simps!]
+def mop (f : X ≅ Y) : mop X ≅ mop Y :=
+  (inducedFunctor _).preimageIso f
 #align category_theory.iso.mop CategoryTheory.Iso.mop
 
 end Iso
