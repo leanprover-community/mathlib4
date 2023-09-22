@@ -438,7 +438,8 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
     Spec.sheafedSpaceObj_carrier, Spec.sheafedSpaceObj_presheaf,
     SpecΓIdentity_inv_app, Category.id_comp] at this
   rw [← op_inv, Quiver.Hom.op_inj.eq_iff] at this
-  rw [SpecΓIdentity_hom_app]
+  -- Note: changed from `rw` to `simp_rw` to improve performance
+  simp_rw [SpecΓIdentity_hom_app]
   convert this using 1
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 
