@@ -74,11 +74,21 @@ instance InducedCategory.category : Category.{v} (InducedCategory D F) where
   comp f g := ⟨f.hom ≫ g.hom⟩
 #align category_theory.induced_category.category CategoryTheory.InducedCategory.category
 
+@[simp] theorem InducedCategory.hom_id (X : InducedCategory D F) :
+    (𝟙 X : X ⟶ X).hom = 𝟙 (F X) := rfl
+
+@[simp] theorem InducedCategory.hom_comp {W X Y : InducedCategory D F} (f : W ⟶ X) (g : X ⟶ Y) :
+    (f ≫ g).hom = f.hom ≫ g.hom := rfl
+
 variable {F} in
 @[ext]
-theorem InducedCategory.hom_ext {X Y : InducedCategory D F} {f g : X ⟶ Y} (h : f.hom = g.hom) :
+theorem InducedCategory.hom_ext {X Y : InducedCategory D F} ⦃f g : X ⟶ Y⦄ (h : f.hom = g.hom) :
     f = g := by
   cases f; cases g; congr
+
+theorem InducedCategory.hom_injective {X Y : InducedCategory D F} :
+    Function.Injective (InducedCategory.Hom.hom (X := X) (Y := Y)) :=
+  InducedCategory.hom_ext
 
 /-- The forgetful functor from an induced category to the original category,
 forgetting the extra data.
@@ -125,18 +135,21 @@ instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
   InducedCategory.category FullSubcategory.obj
 #align category_theory.full_subcategory.category CategoryTheory.FullSubcategory.category
 
-variable {Z} in
-@[simp] theorem FullSubcategory.hom_id (X : FullSubcategory Z) : (𝟙 X : X ⟶ X).hom = 𝟙 X.obj := rfl
+section
+variable {Z}
 
-variable {Z} in
+@[simp] theorem FullSubcategory.hom_id (X : FullSubcategory Z) :
+    (𝟙 X : X ⟶ X).hom = 𝟙 X.obj := rfl
+
 @[simp] theorem FullSubcategory.hom_comp {W X Y : FullSubcategory Z} (f : W ⟶ X) (g : X ⟶ Y) :
-  (f ≫ g).hom = f.hom ≫ g.hom := rfl
+    (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
-variable {Z} in
 @[ext]
-theorem FullSubcategory.hom_ext {X Y : FullSubcategory Z} {f g : X ⟶ Y} (h : f.hom = g.hom) :
+theorem FullSubcategory.hom_ext {X Y : FullSubcategory Z} ⦃f g : X ⟶ Y⦄ (h : f.hom = g.hom) :
     f = g :=
   InducedCategory.hom_ext h
+
+end
 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).

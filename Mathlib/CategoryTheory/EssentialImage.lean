@@ -109,7 +109,7 @@ image of `F`.
 def toEssImage (F : C ⥤ D) : C ⥤ F.EssImageSubcategory :=
   FullSubcategory.lift _ F (obj_mem_essImage _)
 #align category_theory.functor.to_ess_image CategoryTheory.Functor.toEssImage
-#align category_theory.functor.to_ess_image_map CategoryTheory.Functor.toEssImage_map
+#align category_theory.functor.to_ess_image_map CategoryTheory.Functor.toEssImage_map_homₓ
 #align category_theory.functor.to_ess_image_obj_obj CategoryTheory.Functor.toEssImage_obj_obj
 
 /-- The functor `F` factorises through its essential image, where the first functor is essentially
@@ -135,8 +135,7 @@ class EssSurj (F : C ⥤ D) : Prop where
 #align category_theory.ess_surj CategoryTheory.EssSurj
 
 instance EssSurj.toEssImage : EssSurj F.toEssImage where
-  mem_essImage := fun ⟨_, hY⟩ =>
-    ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
+  mem_essImage := fun ⟨_, hY⟩ => ⟨_, ⟨F.essImageInclusion.preimageIso (Functor.essImage.getIso hY)⟩⟩
 
 variable (F) [EssSurj F]
 

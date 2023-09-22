@@ -70,8 +70,8 @@ variable {K : Type u} [Monoid K]
 def Discrete.monoidalFunctorComp (F : M →* N) (G : N →* K) :
     Discrete.monoidalFunctor F ⊗⋙ Discrete.monoidalFunctor G ≅ Discrete.monoidalFunctor (G.comp F)
     where
-  hom := { app := fun X => 𝟙 _ }
-  inv := { app := fun X => 𝟙 _ }
+  hom := ⟨{ app := fun X => 𝟙 _ }⟩
+  inv := ⟨{ app := fun X => 𝟙 _ }⟩
 #align category_theory.discrete.monoidal_functor_comp CategoryTheory.Discrete.monoidalFunctorComp
 #align category_theory.discrete.add_monoidal_functor_comp CategoryTheory.Discrete.addMonoidalFunctorComp
 

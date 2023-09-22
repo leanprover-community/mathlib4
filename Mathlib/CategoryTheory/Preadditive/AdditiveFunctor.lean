@@ -221,7 +221,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
-    (AdditiveFunctor.forget C D).map α = α :=
+    (AdditiveFunctor.forget C D).map α = α.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.forget_map CategoryTheory.AdditiveFunctor.forget_map
@@ -304,21 +304,21 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem AdditiveFunctor.ofLeftExact_map {F G : C ⥤ₗ D} (α : F ⟶ G) :
-    (AdditiveFunctor.ofLeftExact C D).map α = α :=
+    ((AdditiveFunctor.ofLeftExact C D).map α).hom = α.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Additive_Functor.of_left_exact_map CategoryTheory.AdditiveFunctor.ofLeftExact_map
 
 @[simp]
 theorem AdditiveFunctor.ofRightExact_map {F G : C ⥤ᵣ D} (α : F ⟶ G) :
-    (AdditiveFunctor.ofRightExact C D).map α = α :=
+    ((AdditiveFunctor.ofRightExact C D).map α).hom = α.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Additive_Functor.of_right_exact_map CategoryTheory.AdditiveFunctor.ofRightExact_map
 
 @[simp]
 theorem AdditiveFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
-    (AdditiveFunctor.ofExact C D).map α = α :=
+    ((AdditiveFunctor.ofExact C D).map α).hom = α.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Additive_Functor.of_exact_map CategoryTheory.AdditiveFunctor.ofExact_map

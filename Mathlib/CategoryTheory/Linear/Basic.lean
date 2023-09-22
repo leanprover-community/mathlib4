@@ -99,20 +99,25 @@ universe u'
 
 variable {D : Type u'} (F : D → C)
 
-instance inducedCategory : Linear.{w, v} R (InducedCategory C F)
-    where
-  homModule X Y := @Linear.homModule R _ C _ _ _ (F X) (F Y)
-  smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
-  comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
+instance _root_.CategoryTheory.InducedCategory.Hom.instModule
+    (X Y : InducedCategory C F) [Module R (F X ⟶ F Y)] :
+    Module R (X ⟶ Y) :=
+  Function.Injective.module _
+    ({ toFun := (·.hom), map_zero' := rfl, map_add' := fun _ _ => rfl } : (X ⟶ Y) →+ _)
+    InducedCategory.hom_ext (by aesop_cat)
+
+instance inducedCategory : Linear.{w, v} R (InducedCategory C F) where
+  homModule X Y := CategoryTheory.InducedCategory.Hom.instModule F X Y
+  smul_comp _ _ _ _ _ _ := InducedCategory.hom_ext <| smul_comp _ _ _ _ _ _
+  comp_smul _ _ _ _ _ _ := InducedCategory.hom_ext <| comp_smul _ _ _ _ _ _
 #align category_theory.linear.induced_category CategoryTheory.Linear.inducedCategory
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Linear.{w, v} R (FullSubcategory Z)
-    where
-  homModule X Y := @Linear.homModule R _ C _ _ _ X.obj Y.obj
-  smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
-  comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
+instance fullSubcategory (Z : C → Prop) : Linear.{w, v} R (FullSubcategory Z) where
+  homModule X Y := CategoryTheory.InducedCategory.Hom.instModule FullSubcategory.obj X Y
+  smul_comp _ _ _ _ _ _ := InducedCategory.hom_ext <| smul_comp _ _ _ _ _ _
+  comp_smul _ _ _ _ _ _ := InducedCategory.hom_ext <| comp_smul _ _ _ _ _ _
 #align category_theory.linear.full_subcategory CategoryTheory.Linear.fullSubcategory
 
 variable (R)

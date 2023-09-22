@@ -61,7 +61,8 @@ abbrev ObjAsType : Type :=
 #align category_theory.fin_category.obj_as_type CategoryTheory.FinCategory.ObjAsType
 
 instance {i j : ObjAsType α} : Fintype (i ⟶ j) :=
-  FinCategory.fintypeHom ((Fintype.equivFin α).symm i) _
+  Fintype.ofEquiv ((Fintype.equivFin α).symm i ⟶ (Fintype.equivFin α).symm j) <| Equiv.symm <|
+    equivOfFullyFaithful (inducedFunctor _)
 
 /-- The constructed category is indeed equivalent to `α`. -/
 noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=

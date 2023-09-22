@@ -100,7 +100,8 @@ lemma ext' {F G : LaxMonoidalFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.a
 
 @[simp]
 theorem comp_toNatTrans {F G H : MonoidalFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
-    (α ≫ β).toNatTrans = @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.toNatTrans β.toNatTrans :=
+    (α ≫ β).hom.toNatTrans =
+      @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.hom.toNatTrans β.hom.toNatTrans :=
   rfl
 #align category_theory.monoidal_nat_trans.comp_to_nat_trans CategoryTheory.MonoidalNatTrans.comp_toNatTrans
 

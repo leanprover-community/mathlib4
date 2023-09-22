@@ -271,22 +271,24 @@ instance categoryLaxBraidedFunctor : Category (LaxBraidedFunctor C D) :=
 
 -- Porting note: added, as `MonoidalNatTrans.ext` does not apply to morphisms.
 @[ext]
-lemma ext' {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.app X = β.app X) : α = β :=
-  MonoidalNatTrans.ext _ _ (funext w)
+lemma ext' {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.hom.app X = β.hom.app X) :
+    α = β :=
+  InducedCategory.hom_ext <| MonoidalNatTrans.ext _ _ (funext w)
 
 @[simp]
 theorem comp_toNatTrans {F G H : LaxBraidedFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
-    (α ≫ β).toNatTrans = @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.toNatTrans β.toNatTrans :=
+    (α ≫ β).hom.toNatTrans =
+      @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.hom.toNatTrans β.hom.toNatTrans :=
   rfl
 #align category_theory.lax_braided_functor.comp_to_nat_trans CategoryTheory.LaxBraidedFunctor.comp_toNatTrans
 
 /-- Interpret a natural isomorphism of the underlying lax monoidal functors as an
 isomorphism of the lax braided monoidal functors.
 -/
-@[simps]
+@[simp]
 def mkIso {F G : LaxBraidedFunctor C D} (i : F.toLaxMonoidalFunctor ≅ G.toLaxMonoidalFunctor) :
     F ≅ G :=
-  { i with }
+  (inducedFunctor _).preimageIso i
 #align category_theory.lax_braided_functor.mk_iso CategoryTheory.LaxBraidedFunctor.mkIso
 
 end LaxBraidedFunctor
@@ -345,21 +347,23 @@ instance categoryBraidedFunctor : Category (BraidedFunctor C D) :=
 
 -- Porting note: added, as `MonoidalNatTrans.ext` does not apply to morphisms.
 @[ext]
-lemma ext' {F G : BraidedFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.app X = β.app X) : α = β :=
-  MonoidalNatTrans.ext _ _ (funext w)
+lemma ext' {F G : BraidedFunctor C D} {α β : F ⟶ G}
+    (w : ∀ X : C, α.hom.hom.app X = β.hom.hom.app X) : α = β :=
+  InducedCategory.hom_ext <| InducedCategory.hom_ext <| MonoidalNatTrans.ext _ _ (funext w)
 
 @[simp]
 theorem comp_toNatTrans {F G H : BraidedFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
-    (α ≫ β).toNatTrans = @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.toNatTrans β.toNatTrans :=
+    (α ≫ β).hom.hom.toNatTrans =
+      @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.hom.hom.toNatTrans β.hom.hom.toNatTrans :=
   rfl
 #align category_theory.braided_functor.comp_to_nat_trans CategoryTheory.BraidedFunctor.comp_toNatTrans
 
 /-- Interpret a natural isomorphism of the underlying monoidal functors as an
 isomorphism of the braided monoidal functors.
 -/
-@[simps]
+@[simp]
 def mkIso {F G : BraidedFunctor C D} (i : F.toMonoidalFunctor ≅ G.toMonoidalFunctor) : F ≅ G :=
-  { i with }
+  (inducedFunctor _).preimageIso i
 #align category_theory.braided_functor.mk_iso CategoryTheory.BraidedFunctor.mkIso
 
 end BraidedFunctor

@@ -99,18 +99,44 @@ universe u'
 
 variable {D : Type u'} (F : D → C)
 
+@[simps]
+instance (X Y : InducedCategory C F) [Zero (F X ⟶ F Y)] : Zero (X ⟶ Y) where
+  zero := ⟨0⟩
+
+@[simps]
+instance (X Y : InducedCategory C F) [Add (F X ⟶ F Y)] : Add (X ⟶ Y) where
+  add f g := ⟨f.hom + g.hom⟩
+
+@[simps]
+instance (X Y : InducedCategory C F) [Sub (F X ⟶ F Y)] : Sub (X ⟶ Y) where
+  sub f g := ⟨f.hom - g.hom⟩
+
+@[simps]
+instance (X Y : InducedCategory C F) [Neg (F X ⟶ F Y)] : Neg (X ⟶ Y) where
+  neg f := ⟨-f.hom⟩
+
+@[simps]
+instance {α} (X Y : InducedCategory C F) [SMul α (F X ⟶ F Y)] : SMul α (X ⟶ Y) where
+  smul a f := ⟨a • f.hom⟩
+
+instance _root_.CategoryTheory.InducedCategory.Hom.instAddCommGroup
+    (X Y : InducedCategory C F) [AddCommGroup (F X ⟶ F Y)] :
+    AddCommGroup (X ⟶ Y) :=
+  Function.Injective.addCommGroup _ InducedCategory.hom_ext
+    (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat)
+
 instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
-  homGroup P Q := @Preadditive.homGroup C _ _ (F P) (F Q)
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+  homGroup X Y := InducedCategory.Hom.instAddCommGroup _ X Y
+  add_comp _ _ _ _ _ _ := InducedCategory.hom_ext <| add_comp _ _ _ _ _ _
+  comp_add _ _ _ _ _ _ := InducedCategory.hom_ext <| comp_add _ _ _ _ _ _
 #align category_theory.preadditive.induced_category CategoryTheory.Preadditive.inducedCategory
 
 end InducedCategory
 
 instance fullSubcategory (Z : C → Prop) : Preadditive.{v} (FullSubcategory Z) where
-  homGroup P Q := @Preadditive.homGroup C _ _ P.obj Q.obj
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+  homGroup P Q := InducedCategory.Hom.instAddCommGroup FullSubcategory.obj P Q
+  add_comp _ _ _ _ _ _ := InducedCategory.hom_ext <| add_comp _ _ _ _ _ _
+  comp_add _ _ _ _ _ _ := InducedCategory.hom_ext <| comp_add _ _ _ _ _ _
 #align category_theory.preadditive.full_subcategory CategoryTheory.Preadditive.fullSubcategory
 
 instance (X : C) : AddCommGroup (End X) := by
