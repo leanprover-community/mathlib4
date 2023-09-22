@@ -119,8 +119,8 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
     specialize ha (U :: xs)
     intro h₂
     -- We massage the goal into a form amenable to the application of `ha`.
-    rw [succ_eq_add_one, ← append_replicate, ← append_assoc, ← cons_append, replicate_one, append_assoc,
-      singleton_append]
+    rw [succ_eq_add_one, ← append_replicate, ← append_assoc, ← cons_append, replicate_one,
+      append_assoc, singleton_append]
     apply ha
     apply Derivable.r3
     change Derivable (↑(M :: replicate (c + 3 * a) I) ++ ↑(replicate 3 I) ++ xs)

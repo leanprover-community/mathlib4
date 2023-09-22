@@ -472,7 +472,8 @@ def ListBlank.bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ) (f
   rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine' Quotient.sound' (Or.inl ⟨i * n, _⟩)
   rw [List.append_bind, mul_comm]; congr
   induction' i with i IH; rfl
-  simp only [IH, e, List.append_replicate, Nat.mul_succ, add_comm, List.replicate_succ, List.cons_bind]
+  simp only [IH, e, List.append_replicate, Nat.mul_succ, add_comm, List.replicate_succ,
+    List.cons_bind]
 #align turing.list_blank.bind Turing.ListBlank.bind
 
 @[simp]
