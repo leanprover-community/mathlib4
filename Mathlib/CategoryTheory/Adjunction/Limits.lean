@@ -68,7 +68,7 @@ Auxiliary definition for `functorialityIsLeftAdjoint`.
 @[simps]
 def functorialityUnit :
     𝟭 (Cocone K) ⟶ Cocones.functoriality _ F ⋙ functorialityRightAdjoint adj K where
-    app c := { hom := adj.unit.app c.pt }
+  app c := { hom := adj.unit.app c.pt }
 #align category_theory.adjunction.functoriality_unit CategoryTheory.Adjunction.functorialityUnit
 
 /-- The counit for the adjunction for `Cocones.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
