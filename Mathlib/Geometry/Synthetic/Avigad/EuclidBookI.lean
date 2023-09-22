@@ -1436,7 +1436,7 @@ lemma right_of_online_right (bd : b ≠ d) (tri_abc : triangle a b c) (bL : onli
     cdM⟩) cL bL (online_1_of_triangle bL cL tri_abc)]
 
 lemma ne_of_perp_ineq (Bxdy : B x d y) (tri_abc : triangle a b c) (bL : online b L)
-    (cL : online c L) (xL : online x L) (dL : online d L) (cab_le_ra : rightangle ≤ angle c a b)
+    (cL : online c L) (xL : online x L) (cab_le_ra : rightangle ≤ angle c a b)
     (ady : angle a d y = rightangle) : b ≠ d := by
   intro bd; rw[←bd] at Bxdy ady
   linperm[right_of_online_right (ne_23_of_B Bxdy) tri_abc bL cL (online_3_of_B Bxdy xL bL) ady,
@@ -1467,14 +1467,14 @@ lemma right_B_of_le_right (tri_abc : triangle a b c) (cab_le_ra : rightangle ≤
   rcases perpendicular_of_not_online (online_1_of_triangle bL cL tri_abc) with
     ⟨x, y, d, Bxdy, xL, _, dL, adx, ady⟩
   have adb := right_of_online_right (ne_21_of_B Bxdy)
-    (by perma[triangle_of_ne_online (ne_of_perp_ineq Bxdy tri_abc bL cL xL dL cab_le_ra ady) bL dL
+    (by perma[triangle_of_ne_online (ne_of_perp_ineq Bxdy tri_abc bL cL xL cab_le_ra ady) bL dL
           (online_1_of_triangle bL cL tri_abc)] : triangle a d b) dL bL xL adx
   have adc := right_of_online_right (ne_21_of_B Bxdy)
     (by perma[triangle_of_ne_online (ne_of_perp_ineq Bxdy (by perma[tri_abc] : triangle a c b)
-    cL bL xL dL (by perma[cab_le_ra]) ady) cL dL (online_1_of_triangle bL cL tri_abc)] : triangle
+    cL bL xL (by perma[cab_le_ra]) ady) cL dL (online_1_of_triangle bL cL tri_abc)] : triangle
      a d c) dL cL xL adx
-  have := B_of_three_col_ne (ne_of_perp_ineq Bxdy tri_abc bL cL xL dL cab_le_ra ady).symm
-    (ne_of_perp_ineq Bxdy (by perma[tri_abc] : triangle a c b) cL bL xL dL (by perma[cab_le_ra])
+  have := B_of_three_col_ne (ne_of_perp_ineq Bxdy tri_abc bL cL xL cab_le_ra ady).symm
+    (ne_of_perp_ineq Bxdy (by perma[tri_abc] : triangle a c b) cL bL xL (by perma[cab_le_ra])
     ady).symm (ne_23_of_tri tri_abc) ⟨L, dL, bL, cL⟩
   have := not_B_of_right_le_right tri_abc ⟨L, bL, cL, dL⟩ adb cab_le_ra
   have := not_B_of_right_le_right (by perma[tri_abc] : triangle a c b) ⟨L, cL, bL, dL⟩ adc

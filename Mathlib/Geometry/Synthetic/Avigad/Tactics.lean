@@ -88,12 +88,15 @@ lemma para21 {L M : line}: para L M ↔ para M L := by
 
 namespace Lean.Elab.Tactic
 
+/- Definitions for perm tactic-/
 def getFVars (e : Expr) : Array FVarId :=
   (Lean.collectFVars {} e).fvarIds
 
+/- Definitions for perm tactic-/
 def getNthArgName (tgt : Expr) (n : Nat) : MetaM Name :=
   ((getFVars (Lean.Expr.getArg! tgt n)).get! 0).getUserName
 
+/- Definitions for perm tactic-/
 def lte (n1 : @& Name) (n2: @& Name) : Bool :=
   Name.lt n1 n2 || n1 = n2
 
@@ -256,6 +259,7 @@ macro_rules
   | `(tactic| perm at $h:ident, $hs:ident,*) => `(tactic| perm at $h; perm at $hs,*)
 
 open Lean Meta in
+/- Definitions for perm tactic-/
 def haveExpr (n : Name) (h : Expr) :=
   withMainContext do
     let t ← inferType h
@@ -266,6 +270,7 @@ def haveExpr (n : Name) (h : Expr) :=
 
 open Parser Tactic Syntax
 
+/- Definitions for perm tactic-/
 syntax "havePerms" (" [" term,* "]")? : tactic
 
 elab_rules : tactic
@@ -335,6 +340,7 @@ elab_rules: tactic
       if !ldecl.isImplementationDetail then evalTactic (← `(tactic| perm only [$perm_type] at
         $name))
 
+/- Definitions for perm tactic-/
 elab "assumption_symm" : tactic => withMainContext do
   for ldecl in ← getLCtx do
     let name := mkIdent ldecl.userName
@@ -374,8 +380,11 @@ macro_rules
   | `(tactic| linperm) => `(tactic| perm at *; linarith)
   | `(tactic| linperm [$args,*] ) => `(tactic| perm at *; havePerms [$args,*]; linarith)
 
+
+/- Tactic for breaking ands up-/
 macro "splitAll" : tactic => `(tactic | repeat' constructor)
 
+/- by_contra followed push_neg-/
 syntax "push_contra" binderIdent location: tactic
 
 macro_rules
