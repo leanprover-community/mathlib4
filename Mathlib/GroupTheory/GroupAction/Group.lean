@@ -6,7 +6,7 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.GroupTheory.GroupAction.Units
 
-#align_import group_theory.group_action.group from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
+#align_import group_theory.group_action.group from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Group actions applied to various types of group
@@ -245,7 +245,7 @@ variable (β)
 /-- Each element of the group defines an additive monoid isomorphism.
 
 This is a stronger version of `MulAction.toPerm`. -/
-@[simps (config := { simpRhs := true })]
+@[simps! (config := { simpRhs := true })]
 def DistribMulAction.toAddEquiv (x : α) : β ≃+ β :=
   { DistribMulAction.toAddMonoidHom β x, MulAction.toPermHom α β x with }
 #align distrib_mul_action.to_add_equiv DistribMulAction.toAddEquiv
@@ -264,6 +264,16 @@ def DistribMulAction.toAddAut : α →* AddAut β where
   map_mul' _ _ := AddEquiv.ext (mul_smul _ _)
 #align distrib_mul_action.to_add_aut DistribMulAction.toAddAut
 #align distrib_mul_action.to_add_aut_apply DistribMulAction.toAddAut_apply
+
+/-- Each non-zero element of a `GroupWithZero` defines an additive monoid isomorphism of an
+`AddMonoid` on which it acts distributively.
+This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
+def DistribMulAction.toAddEquiv₀ {α : Type*} (β : Type*) [GroupWithZero α] [AddMonoid β]
+    [DistribMulAction α β] (x : α) (hx : x ≠ 0) : β ≃+ β :=
+  { DistribMulAction.toAddMonoidHom β x with
+    invFun := fun b ↦ x⁻¹ • b
+    left_inv := fun b ↦ inv_smul_smul₀ hx b
+    right_inv := fun b ↦ smul_inv_smul₀ hx b }
 
 variable {α β}
 
@@ -302,7 +312,7 @@ variable (β)
 /-- Each element of the group defines a multiplicative monoid isomorphism.
 
 This is a stronger version of `MulAction.toPerm`. -/
-@[simps (config := { simpRhs := true })]
+@[simps! (config := { simpRhs := true })]
 def MulDistribMulAction.toMulEquiv (x : α) : β ≃* β :=
   { MulDistribMulAction.toMonoidHom β x, MulAction.toPermHom α β x with }
 #align mul_distrib_mul_action.to_mul_equiv MulDistribMulAction.toMulEquiv

@@ -479,15 +479,17 @@ theorem y_smooth : ContDiffOn ℝ ⊤ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
     exact this.le.trans hp.2.le
   · exact (locallyIntegrable_const _).indicator measurableSet_closedBall
   · apply ContDiffOn.mul
-    · norm_cast
-      refine'
-        (contDiffOn_const.mul _).inv fun x hx =>
-          ne_of_gt (mul_pos (u_int_pos E) (pow_pos (abs_pos_of_pos hx.1.1) (finrank ℝ E)))
-      apply ContDiffOn.pow
-      simp_rw [← Real.norm_eq_abs]
-      apply @ContDiffOn.norm ℝ
-      · exact contDiffOn_fst
-      · intro x hx; exact ne_of_gt hx.1.1
+    · refine
+        (contDiffOn_const.mul ?_).inv fun x hx => ne_of_gt (mul_pos (u_int_pos E) ?_)
+      swap
+      · norm_cast
+        exact (pow_pos (abs_pos_of_pos hx.1.1) (finrank ℝ E))
+      · norm_cast
+        apply ContDiffOn.pow
+        simp_rw [← Real.norm_eq_abs]
+        apply @ContDiffOn.norm ℝ
+        · exact contDiffOn_fst
+        · intro x hx; exact ne_of_gt hx.1.1
     · apply (u_smooth E).comp_contDiffOn
       exact ContDiffOn.smul (contDiffOn_fst.inv fun x hx => ne_of_gt hx.1.1) contDiffOn_snd
 #align exists_cont_diff_bump_base.Y_smooth ExistsContDiffBumpBase.y_smooth

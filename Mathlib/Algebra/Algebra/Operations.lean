@@ -638,7 +638,7 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
 variable {R A}
 
 theorem smul_def (s : SetSemiring A) (P : Submodule R A) :
-  s • P = span R (SetSemiring.down s) * P :=
+    s • P = span R (SetSemiring.down s) * P :=
   rfl
 #align submodule.smul_def Submodule.smul_def
 

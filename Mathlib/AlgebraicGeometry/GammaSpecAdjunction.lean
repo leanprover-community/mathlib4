@@ -181,13 +181,16 @@ def toΓSpecCBasicOpens :
 @[simps]
 def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.obj (op X))) where
   base := X.toΓSpecBase
-  c :=
-    TopCat.Sheaf.restrictHomEquivHom (structureSheaf (Γ.obj (op X))).1 _ isBasis_basic_opens
-      X.toΓSpecCBasicOpens
+  c := by
+    let equiv := TopCat.Sheaf.restrictHomEquivHom (structureSheaf ↑(Γ.obj (op X))).val
+      ((TopCat.Sheaf.pushforward (toΓSpecBase X)).obj (𝒪 X)) isBasis_basic_opens
+    apply equiv.toFun
+    convert toΓSpecCBasicOpens X
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace
 
 -- Porting Note: Now need much more hand holding: all variables explicit, and need to tidy up
 -- significantly, was `TopCat.Sheaf.extend_hom_app _ _ _ _`
+set_option maxHeartbeats 500000 in
 theorem toΓSpecSheafedSpace_app_eq :
     X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) = X.toΓSpecCApp r := by
   have := TopCat.Sheaf.extend_hom_app (Spec.toSheafedSpace.obj (op (Γ.obj (op X)))).presheaf
@@ -197,7 +200,6 @@ theorem toΓSpecSheafedSpace_app_eq :
   rw [←this]
   dsimp
   congr
-
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_eq
 
 -- Porting note : need a helper lemma `toΓSpecSheafedSpace_app_spec_assoc` to help compile
@@ -208,6 +210,7 @@ theorem toΓSpecSheafedSpace_app_eq :
   (X.toΓSpecSheafedSpace_app_eq r).symm ▸ X.toΓSpecCApp_spec r
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_spec AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_spec
 
+set_option maxHeartbeats 400000 in
 /-- The map on stalks induced by the unit commutes with maps from `Γ(X)` to
     stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_toΓSpec (x : X) :
@@ -333,17 +336,6 @@ theorem right_triangle (R : CommRingCat) :
   · intro r; apply toOpen_res
 #align algebraic_geometry.Γ_Spec.right_triangle AlgebraicGeometry.ΓSpec.right_triangle
 
--- Porting note : the two unification hint is to help compile `locallyRingedSpaceAdjunction`
--- faster, from 900000 to normal maxHeartbeats
-/-- opposite of composition of two functors -/
-unif_hint uh_functor_op1 where ⊢
-  Functor.op (Spec.toLocallyRingedSpace.rightOp ⋙ Γ) ≟
-  Spec.toLocallyRingedSpace.{u} ⋙ Γ.rightOp in
-
-/-- opposite of identity functor -/
-unif_hint uh_functor_op2 where ⊢
-  Functor.op (𝟭 CommRingCat.{u}) ≟ 𝟭 CommRingCatᵒᵖ in
-
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
 --Porting Note: `simps` cause a time out, so `Unit` and `counit` will be added manually
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} :=
@@ -365,11 +357,11 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction
 
 lemma locallyRingedSpaceAdjunction_unit :
-  locallyRingedSpaceAdjunction.unit = identityToΓSpec := rfl
+    locallyRingedSpaceAdjunction.unit = identityToΓSpec := rfl
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_unit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_unit
 
 lemma locallyRingedSpaceAdjunction_counit :
-  locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
+    locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_counit
 
 -- Porting Note: Commented
@@ -449,7 +441,8 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
     Spec.sheafedSpaceObj_carrier, Spec.sheafedSpaceObj_presheaf,
     SpecΓIdentity_inv_app, Category.id_comp] at this
   rw [← op_inv, Quiver.Hom.op_inj.eq_iff] at this
-  rw [SpecΓIdentity_hom_app]
+  -- Note: changed from `rw` to `simp_rw` to improve performance
+  simp_rw [SpecΓIdentity_hom_app]
   convert this using 1
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 

@@ -873,11 +873,12 @@ theorem coe_flipₗᵢ : ⇑(flipₗᵢ 𝕜 E Fₗ Gₗ) = flip :=
 
 variable (F σ₁₂) [RingHomIsometric σ₁₂]
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.
 
 This is the continuous version of `LinearMap.applyₗ`. -/
-def apply' : E →SL[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F :=
+noncomputable def apply' : E →SL[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F :=
   flip (id 𝕜₂ (E →SL[σ₁₂] F))
 #align continuous_linear_map.apply' ContinuousLinearMap.apply'
 
@@ -890,11 +891,12 @@ theorem apply_apply' (v : E) (f : E →SL[σ₁₂] F) : apply' F σ₁₂ v f =
 
 variable (𝕜 Fₗ)
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.
 
 This is the continuous version of `LinearMap.applyₗ`. -/
-def apply : E →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] Fₗ :=
+noncomputable def apply : E →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] Fₗ :=
   flip (id 𝕜 (E →L[𝕜] Fₗ))
 #align continuous_linear_map.apply ContinuousLinearMap.apply
 
@@ -909,8 +911,9 @@ variable (σ₁₂ σ₂₃ E F G)
 
 set_option linter.uppercaseLean3 false
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 /-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
-def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
+noncomputable def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
     (LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add fun c f g => by
       ext
@@ -1880,8 +1883,10 @@ def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] F�
         simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
       map_smul' := fun m c => by
         ext x
+        dsimp
+        rw [Pi.smul_apply]
         simp only [smul_smul, coe_smulRightₗ, Algebra.id.smul_eq_mul, coe_smul', smulRight_apply,
-          LinearMap.smul_apply, RingHom.id_apply, Pi.smul_apply] }
+          LinearMap.smul_apply, RingHom.id_apply] }
     1 fun c x => by
       simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
         le_refl]

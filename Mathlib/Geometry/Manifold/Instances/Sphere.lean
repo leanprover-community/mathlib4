@@ -254,16 +254,15 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     rw [duh]
     ring
   convert
-    congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
+    congr_arg₂ (·+·) (congr_arg (· • (y : E)) h₁) (congr_arg (· • v) h₂) using 1
   · simp [inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
-      mul_pow, Real.norm_eq_abs, sq_abs, norm_smul]
-    -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
-    · rw [split, add_comm]
-      ac_rfl
+      mul_pow, Real.norm_eq_abs, sq_abs, norm_smul, @mul_smul _ _ _ ?_]
   -- Porting note: this branch did not exit in ml3
   · rw [split, add_comm]
+    clear_value y
     congr!
     dsimp
+    norm_cast
     rw [one_smul]
 #align stereo_left_inv stereo_left_inv
 
