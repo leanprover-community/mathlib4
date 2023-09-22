@@ -168,7 +168,7 @@ def four_spaces_in_second_line(lines, path):
     newlines = [lines[0]]
     for (_, line), (next_line_nr, next_line) in zip(lines, lines[1:]):
         # Check if the current line matches "(lemma|theorem) .* :"
-        if re.search(r"^(protected )?(lemma|theorem) .* :$", line):
+        if re.search(r"^(protected )?(def|lemma|theorem) .* :$", line):
             # Calculate the number of spaces before the first non-space character in the next line
             stripped_next_line = next_line.lstrip()
             num_spaces = len(next_line) - len(stripped_next_line)
@@ -326,7 +326,7 @@ def format_errors(errors):
         if errno == ERR_CLN:
             output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
         if errno == ERR_4SP:
-            output_message(path, line_nr, "ERR_4SP", "If the theorem statement requires multiple lines, indent the subsequent lines by 4 spaces")
+            output_message(path, line_nr, "ERR_4SP", "If the theorem/def statement requires multiple lines, indent the subsequent lines by 4 spaces")
 
 def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:
