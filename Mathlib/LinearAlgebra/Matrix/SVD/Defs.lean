@@ -229,6 +229,10 @@ lemma ξ_toBlocks₂₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdξ.toBlocks₂�
 @[simp]
 lemma ξ_toBlocks₂₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdξ.toBlocks₂₂ = 0 := rfl
 
+lemma conjTranspose_svdσ_eq_svdσ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdσᴴ = A.svdσ := by
+  rw [conjTranspose_eq_transpose_of_trivial, svdσ]
+  simp
+
 lemma μ_block (A : Matrix (Fin M) (Fin N) 𝕂) :
     (reindex (eigenColumnEquiv A) (eigenColumnEquiv A))
       (diagonal ( (isHermitian_transpose_mul_self A).eigenvalues)) =
@@ -283,6 +287,7 @@ lemma V₁_mul_μ_mul_V₁_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
   rw [Matrix.mul_assoc]
   apply map_zero
 
+/-- **Reduced spectral theorem**, left eigenvector version. -/
 lemma U₁'_mul_μ'_mul_U₁'_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
     A.svdU₁' * (A.svdμ'.map (algebraMap ℝ 𝕂)) * A.svdU₁'ᴴ = A * Aᴴ := by
   let hAAH := isHermitian_mul_conjTranspose_self A
@@ -305,6 +310,7 @@ lemma U₁'_mul_μ'_mul_U₁'_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
   rw [map_zero]
 
 open scoped ComplexOrder
+
 lemma eigenvalues_conjTranspose_mul_self_nonneg {m n : Type*}
     [Fintype m] [Fintype n] [DecidableEq n] {A : Matrix m n 𝕂} :
     ∀ i , 0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
@@ -332,7 +338,7 @@ lemma svdσ_inv (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdσ⁻¹ =
     ((finRankEquivEigsConjTransposeMulSelf A).1 i).prop
 
 lemma σ_inv_μ_σ_inv_eq_one (A : Matrix (Fin M) (Fin N) 𝕂) :
-    (A.svdσ⁻¹)ᴴ * A.svdμ * A.svdσ⁻¹ = 1 := by
+    (A.svdσ⁻¹) * A.svdμ * A.svdσ⁻¹ = 1 := by
   rw [svdσ_inv, svdμ]
   simp only [ne_eq, one_div, reindex_apply, submatrix_diagonal_equiv, diagonal_conjTranspose,
     star_trivial, diagonal_mul_diagonal, Function.comp_apply]
@@ -369,13 +375,38 @@ lemma svdσ_inv_mapK (A : Matrix (Fin M) (Fin N) 𝕂) :
   simp only [map_zero, _root_.map_one, map_one]
   apply IsUnit_det_svdσ
 
+lemma mul_V₂_eq_zero (A : Matrix (Fin M) (Fin N) 𝕂) :
+    A * A.svdV₂ = 0 := by
+  suffices h : Aᴴ * A * A.svdV₂ = 0
+  · exact (conjTranspose_mul_self_mul_eq_zero _ _).1 h
+  rw [←V₁_mul_μ_mul_V₁_conjTranspose, Matrix.mul_assoc, V₁_conjTranspose_mul_V₂, Matrix.mul_zero]
+
+lemma U₁_mul_μ_mul_U₁_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
+    A.svdU₁ * (A.svdμ.map (algebraMap ℝ 𝕂)) * A.svdU₁ᴴ = A * Aᴴ := by
+  unfold svdU₁
+  have h1 : A * A.svdV₂ * (A * A.svdV₂)ᴴ = 0 := by rw [mul_V₂_eq_zero, Matrix.zero_mul]
+  have h2 : A.svdV * A.svdVᴴ = A.svdV₁ * A.svdV₁ᴴ + A.svdV₂ * A.svdV₂ᴴ := by
+    rw [svdV, conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromColumns_mul_fromRows]
+
+  rw [svdσ_inv_mapK, Matrix.conjTranspose_mul, Matrix.conjTranspose_mul,
+    Matrix.mul_assoc (A * A.svdV₁) , ← Matrix.map_mul, Matrix.mul_assoc (A * A.svdV₁),
+    ← Matrix.conjTranspose_map, ← Matrix.mul_assoc _ _ (A.svdV₁ᴴ * Aᴴ), ← Matrix.map_mul,
+    conjTranspose_nonsing_inv, conjTranspose_svdσ_eq_svdσ, σ_inv_μ_σ_inv_eq_one,
+    Matrix.map_one _ (RingHom.map_zero _) (RingHom.map_one _), Matrix.one_mul, ← conjTranspose_mul,
+    ← add_zero ((A*A.svdV₁) * ( A*A.svdV₁)ᴴ), ← h1, Matrix.mul_assoc, Matrix.mul_assoc,
+    ← Matrix.mul_add, conjTranspose_mul, conjTranspose_mul, ← Matrix.mul_assoc, ← Matrix.mul_assoc,
+    ← Matrix.add_mul, ← h2, V_mul_conjTranspose_V, Matrix.one_mul]
+  intros x
+  rw [IsROrC.star_def, IsROrC.algebraMap_eq_ofReal, starRingEnd_apply, star_trivial,
+    IsROrC.star_def, IsROrC.conj_ofReal]
+
 lemma U₁_conjTranspose_mul_U₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdU₁ᴴ * A.svdU₁ = 1 := by
   rw [svdU₁, conjTranspose_mul, conjTranspose_mul, Matrix.mul_assoc, Matrix.mul_assoc,
     Matrix.mul_assoc, ← Matrix.mul_assoc Aᴴ, ←V₁_mul_μ_mul_V₁_conjTranspose, Matrix.mul_assoc,
     ← Matrix.mul_assoc _ A.svdV₁, V₁_conjTranspose_mul_V₁, Matrix.one_mul,
     Matrix.mul_assoc A.svdV₁, ← Matrix.mul_assoc _ A.svdV₁, V₁_conjTranspose_mul_V₁,
     Matrix.one_mul, svdσ_inv_mapK, ← conjTranspose_map, ← Matrix.map_mul, ← Matrix.map_mul,
-    ← Matrix.mul_assoc, σ_inv_μ_σ_inv_eq_one]
+    ← Matrix.mul_assoc, conjTranspose_nonsing_inv, conjTranspose_svdσ_eq_svdσ, σ_inv_μ_σ_inv_eq_one]
   simp only [map_zero, _root_.map_one, map_one]
   intros x
   rw [IsROrC.star_def, IsROrC.algebraMap_eq_ofReal, starRingEnd_apply, star_trivial,
@@ -400,12 +431,6 @@ lemma U₁'_conjTranspose_mul_U₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdU₁
     Matrix.mul_eq_one_comm.1 (IsHermitian.eigenvectorMatrix_mul_inv _)]
   funext i j
   simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, not_false_eq_true, one_apply_ne, zero_apply]
-
-lemma mul_V₂_eq_zero (A : Matrix (Fin M) (Fin N) 𝕂) :
-    A * A.svdV₂ = 0 := by
-  suffices h : Aᴴ * A * A.svdV₂ = 0
-  · exact (conjTranspose_mul_self_mul_eq_zero _ _).1 h
-  rw [←V₁_mul_μ_mul_V₁_conjTranspose, Matrix.mul_assoc, V₁_conjTranspose_mul_V₂, Matrix.mul_zero]
 
 lemma conjTranspose_mul_U₂_eq_zero (A : Matrix (Fin M) (Fin N) 𝕂) : Aᴴ * A.svdU₂ = 0 := by
   suffices h : A * Aᴴ * A.svdU₂ = 0
