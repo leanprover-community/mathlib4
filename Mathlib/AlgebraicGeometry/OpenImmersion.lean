@@ -3,7 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Geometry.SheafedSpace.OpenImmersion
+import Mathlib.Geometry.RingedSpace.OpenImmersion
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 
