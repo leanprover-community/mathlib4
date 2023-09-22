@@ -121,7 +121,7 @@ instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
 @[coe]
 def toRingEquiv [Mul α] [Add α] [Mul β] [Add β] [RingEquivClass F α β] (f : F) :
     α ≃+* β :=
-{ (f : α ≃* β), (f : α ≃+ β) with }
+  { (f : α ≃* β), (f : α ≃+ β) with }
 
 end RingEquivClass
 
