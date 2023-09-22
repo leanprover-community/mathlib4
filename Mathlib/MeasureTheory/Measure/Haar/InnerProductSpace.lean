@@ -111,11 +111,18 @@ open BigOperators ENNReal
 -- See: https://github.com/leanprover/lean4/issues/2220
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
+theorem ball_zero_eq (ι : Type*) [Fintype ι] (r : ℝ) (hr : 0 ≤ r) :
+    Metric.ball (0 : EuclideanSpace ℝ ι) r = {x | ∑ i, x i ^ 2 < r ^ 2} := by
+  ext
+  simp only [mem_setOf, mem_ball_zero_iff, norm_eq, Real.norm_eq_abs, sq_abs]
+  rw [Real.sqrt_lt _ hr]
+  exact Finset.sum_nonneg fun _ _ => sq_nonneg _
+
 theorem unit_ball_equiv (ι : Type*) [Fintype ι] :
     (equiv ι ℝ) '' Metric.ball (0 : EuclideanSpace ℝ ι) 1 = {x : ι → ℝ | ∑ i, x i ^ 2 < 1} := by
-  ext; simp_rw [PiLp.continuousLinearEquiv_apply, mem_image_equiv, mem_ball_zero_iff, norm_eq,
-    WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, Real.sqrt_lt' (by norm_num : (0 : ℝ) < 1),
-    one_pow, mem_setOf_eq]
+  ext
+  simp_rw [PiLp.continuousLinearEquiv_apply, mem_image_equiv, ball_zero_eq _ _ zero_le_one, one_pow,
+    mem_setOf,WithLp.equiv_symm_pi_apply]
 
 @[simp]
 theorem volume_ball (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
