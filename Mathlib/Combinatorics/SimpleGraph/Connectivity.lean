@@ -842,7 +842,8 @@ instance (p : G.Walk v w) : Decidable p.Nil :=
   | cons _ _ => isFalse fun.
 
 protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | .nil => rfl
-    lemma not_nil_of_ne {p : G.Walk v w} : v ≠ w → ¬ p.Nil := mt Nil.eq
+
+lemma not_nil_of_ne {p : G.Walk v w} : v ≠ w → ¬ p.Nil := mt Nil.eq
 
 lemma nil_iff_support_eq {p : G.Walk v w} : p.Nil ↔ p.support = [v] := by
   cases p <;> simp
