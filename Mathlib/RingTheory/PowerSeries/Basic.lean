@@ -1883,6 +1883,14 @@ theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+*
     rw [hd]
     exact n.one_lt_succ_succ
 
+lemma trunc_X_of {n : ℕ} (hn : 2 ≤ n) : trunc n X = (Polynomial.X : R[X]) := by
+  cases n with
+  | zero => contradiction
+  | succ n =>
+    cases n with
+    | zero => contradiction
+    | succ n => exact trunc_X n
+
 end Trunc
 
 
