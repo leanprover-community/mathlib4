@@ -20,18 +20,18 @@ open Lean Parser Elab Command
 to disable the compiler in a given file or a given section.
 This is a hack to work around mathlib4#7103. -/
 def elabSuppressCompilationDecl : CommandElab := fun
-| `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)? $(recKind?)?
-    def $id $sig:optDeclSig $val:declVal $(term?)? $(decr?)?) => do
-  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)? $(recKind?)?
-    def $id $sig:optDeclSig $val:declVal $(term?)? $(decr?)?)
-| `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)? $(recKind?)?
-    def $id $sig:optDeclSig $val:declVal deriving $derivs,* $(term?)? $(decr?)?) => do
-  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)? $(recKind?)?
-    def $id $sig:optDeclSig $val:declVal deriving $derivs,* $(term?)? $(decr?)?)
-| `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)? $(recKind?)?
-    $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal $(term?)?) => do
-  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)? $(recKind?)?
-    $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal $(term?)?)
+| `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
+    $(recKind?)? def $id $sig:optDeclSig $val:declVal $(term?)? $(decr?)?) => do
+  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
+    $(recKind?)? def $id $sig:optDeclSig $val:declVal $(term?)? $(decr?)?)
+| `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
+    $(recKind?)? def $id $sig:optDeclSig $val:declVal deriving $derivs,* $(term?)? $(decr?)?) => do
+  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
+    $(recKind?)? def $id $sig:optDeclSig $val:declVal deriving $derivs,* $(term?)? $(decr?)?)
+| `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
+    $(recKind?)? $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal $(term?)?) => do
+  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
+    $(recKind?)? $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal $(term?)?)
 | _ => throwUnsupportedSyntax
 
 /-- Replacing `def` and `instance` by `noncomputable def` and `noncomputable instance`, designed
