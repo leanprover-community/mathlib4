@@ -166,15 +166,11 @@ def four_spaces_in_second_line(lines, path):
     # We never alter the first line, as it does not occur as next_line in the iteration over the
     # zipped lines below, hence we add it here
     newlines = [lines[0]]
-    in_docstring = False
-    for (_, line), (next_line_nr, next_line) in zip(lines, lines[1:]):
-        new_next_line = next_line
-        if line.startswith("/-"):
-            in_docstring = True
-        if line.endswith("-/\n"):
-            in_docstring = False
+    annotated_lines = list(annotate_comments(lines))
+    for (_, line, is_comment), (next_line_nr, next_line, _) in zip(annotated_lines, annotated_lines[1:]):
         # Check if the current line matches "(lemma|theorem) .* :"
-        if (not in_docstring) and re.search(r"^(protected )?(def|lemma|theorem) (?!.*:=).*(where)?$", line):
+        new_next_line = next_line
+        if (not is_comment) and re.search(r"^(protected )?(def|lemma|theorem) (?!.*:=).*(where)?$", line):
             # Calculate the number of spaces before the first non-space character in the next line
             if next_line and not next_line.startswith("#"):
                 stripped_next_line = next_line.lstrip()
