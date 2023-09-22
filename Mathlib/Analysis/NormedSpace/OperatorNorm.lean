@@ -9,6 +9,7 @@ import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.Module.StrongTopology
+import Mathlib.Tactic.SuppressCompilation
 
 #align_import analysis.normed_space.operator_norm from "leanprover-community/mathlib"@"f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f"
 
@@ -26,8 +27,7 @@ is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 
 -/
 
-
-noncomputable section
+suppress_compilation
 
 open Classical NNReal Topology Bornology
 
@@ -120,7 +120,7 @@ def opNorm (f : E →SL[σ₁₂] F) :=
   sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ }
 #align continuous_linear_map.op_norm ContinuousLinearMap.opNorm
 
-instance hasOpNorm : Norm (E →SL[σ₁₂] F) :=
+noncomputable instance hasOpNorm : Norm (E →SL[σ₁₂] F) :=
   ⟨opNorm⟩
 #align continuous_linear_map.has_op_norm ContinuousLinearMap.hasOpNorm
 
@@ -385,14 +385,14 @@ protected theorem tmpUniformSpace_eq :
   exact ContinuousLinearMap.tmp_topology_eq
 #align continuous_linear_map.tmp_uniform_space_eq ContinuousLinearMap.tmpUniformSpace_eq
 
-instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) :=
+noncomputable instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) :=
   ContinuousLinearMap.tmpPseudoMetricSpace.replaceUniformity
     (congr_arg _ ContinuousLinearMap.tmpUniformSpace_eq.symm)
 #align continuous_linear_map.to_pseudo_metric_space ContinuousLinearMap.toPseudoMetricSpace
 
 /-- Continuous linear maps themselves form a seminormed space with respect to
     the operator norm. -/
-instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
+noncomputable instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
   dist_eq := ContinuousLinearMap.tmpSeminormedAddCommGroup.dist_eq
 #align continuous_linear_map.to_seminormed_add_comm_group ContinuousLinearMap.toSeminormedAddCommGroup
 
@@ -454,7 +454,7 @@ theorem op_nnnorm_comp_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) 
 #align continuous_linear_map.op_nnnorm_comp_le ContinuousLinearMap.op_nnnorm_comp_le
 
 /-- Continuous linear maps form a seminormed ring with respect to the operator norm. -/
-instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
+noncomputable instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
   { ContinuousLinearMap.toSeminormedAddCommGroup, ContinuousLinearMap.ring with
     norm_mul := fun f g => op_norm_comp_le f g }
 #align continuous_linear_map.to_semi_normed_ring ContinuousLinearMap.toSemiNormedRing
