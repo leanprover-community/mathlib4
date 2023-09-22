@@ -1,6 +1,7 @@
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
+private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 
 -- We deliberately mock R here so that we don't have to import the deps
@@ -102,6 +103,10 @@ example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
   trivial -- FIXME: not needed in lean 3
 
 -- Example with ring failing to discharge, to normalizing the goal
+/--
+info: Try this: ring_nf
+-/
+#guard_msgs in
 example : (22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 47) = (74 = 75) := by
   conv => ring
   trivial
@@ -112,13 +117,17 @@ example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
   trivial
 
 -- Example with ring failing to discharge, to normalizing the goal
+/--
+info: Try this: ring_nf
+-/
+#guard_msgs in
 example (x : ℕ) : (22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 + 1)
                     = (7 * x + 46 = 7 * x + 47) := by
   conv => ring
   trivial
 
 -- check that mdata is consumed
-def f : Nat → Nat := sorry
+noncomputable def f : Nat → Nat := test_sorry
 
 example (a : Nat) : 1 * f a * 1 = f (a + 0) := by
   have ha : a + 0 = a := by ring
@@ -134,8 +143,8 @@ example (a b : ℤ) : a+b=0 ↔ b+a=0 := by
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
 
 -- simulate the type of MvPolynomial
-def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
-instance : CommRing (R a b) := sorry
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
+noncomputable instance : CommRing (R a b) := test_sorry
 
 example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
   ring

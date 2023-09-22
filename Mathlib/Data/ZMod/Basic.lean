@@ -443,11 +443,11 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
         map_mul' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_castIso, Fin.coe_mul, Fin.coe_mul, Fin.coe_castIso, Fin.coe_castIso, ← h]
+          rw [Fin.coe_cast, Fin.coe_mul, Fin.coe_mul, Fin.coe_cast, Fin.coe_cast, ← h]
         map_add' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_castIso, Fin.val_add, Fin.val_add, Fin.coe_castIso, Fin.coe_castIso, ← h] }
+          rw [Fin.coe_cast, Fin.val_add, Fin.val_add, Fin.coe_cast, Fin.coe_cast, ← h] }
 #align zmod.ring_equiv_congr ZMod.ringEquivCongr
 
 end CharEq
@@ -673,25 +673,25 @@ theorem eq_iff_modEq_nat (n : ℕ) {a b : ℕ} : (a : ZMod n) = b ↔ a ≡ b [M
     exact Iff.rfl
 #align zmod.eq_iff_modeq_nat ZMod.eq_iff_modEq_nat
 
-theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.coprime x n) :
+theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
     ((x : ZMod n) * (x : ZMod n)⁻¹) = 1 := by
-  rw [Nat.coprime, Nat.gcd_comm, Nat.gcd_rec] at h
+  rw [Nat.Coprime, Nat.gcd_comm, Nat.gcd_rec] at h
   rw [mul_inv_eq_gcd, val_nat_cast, h, Nat.cast_one]
 #align zmod.coe_mul_inv_eq_one ZMod.coe_mul_inv_eq_one
 
 /-- `unitOfCoprime` makes an element of `(ZMod n)ˣ` given
   a natural number `x` and a proof that `x` is coprime to `n`  -/
-def unitOfCoprime {n : ℕ} (x : ℕ) (h : Nat.coprime x n) : (ZMod n)ˣ :=
+def unitOfCoprime {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) : (ZMod n)ˣ :=
   ⟨x, x⁻¹, coe_mul_inv_eq_one x h, by rw [mul_comm, coe_mul_inv_eq_one x h]⟩
 #align zmod.unit_of_coprime ZMod.unitOfCoprime
 
 @[simp]
-theorem coe_unitOfCoprime {n : ℕ} (x : ℕ) (h : Nat.coprime x n) :
+theorem coe_unitOfCoprime {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
     (unitOfCoprime x h : ZMod n) = x :=
   rfl
 #align zmod.coe_unit_of_coprime ZMod.coe_unitOfCoprime
 
-theorem val_coe_unit_coprime {n : ℕ} (u : (ZMod n)ˣ) : Nat.coprime (u : ZMod n).val n := by
+theorem val_coe_unit_coprime {n : ℕ} (u : (ZMod n)ˣ) : Nat.Coprime (u : ZMod n).val n := by
   cases' n with n
   · rcases Int.units_eq_one_or u with (rfl | rfl) <;> simp
   apply Nat.coprime_of_mul_modEq_one ((u⁻¹ : Units (ZMod (n + 1))) : ZMod (n + 1)).val
@@ -726,7 +726,7 @@ theorem inv_mul_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a⁻¹ * a = 1 :
 -- TODO: this equivalence is true for `ZMod 0 = ℤ`, but needs to use different functions.
 /-- Equivalence between the units of `ZMod n` and
 the subtype of terms `x : ZMod n` for which `x.val` is coprime to `n` -/
-def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.coprime x.val n }
+def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.Coprime x.val n }
     where
   toFun x := ⟨x, val_coe_unit_coprime x⟩
   invFun x := unitOfCoprime x.1.val x.2
@@ -740,7 +740,7 @@ def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.
 See `Ideal.quotientInfRingEquivPiQuotient` for the Chinese remainder theorem for ideals in any
 ring.
 -/
-def chineseRemainder {m n : ℕ} (h : m.coprime n) : ZMod (m * n) ≃+* ZMod m × ZMod n :=
+def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m × ZMod n :=
   let to_fun : ZMod (m * n) → ZMod m × ZMod n :=
     ZMod.castHom (show m.lcm n ∣ m * n by simp [Nat.lcm_dvd_iff]) (ZMod m × ZMod n)
   let inv_fun : ZMod m × ZMod n → ZMod (m * n) := fun x =>
@@ -1095,7 +1095,7 @@ variable (p : ℕ) [Fact p.Prime]
 private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 := by
   obtain ⟨k, rfl⟩ := nat_cast_zmod_surjective a
   apply coe_mul_inv_eq_one
-  apply Nat.coprime.symm
+  apply Nat.Coprime.symm
   rwa [Nat.Prime.coprime_iff_not_dvd Fact.out, ← CharP.cast_eq_zero_iff (ZMod p)]
 
 /-- Field structure on `ZMod p` if `p` is prime. -/
@@ -1162,8 +1162,13 @@ theorem ringHom_eq_of_ker_eq [CommRing R] (f g : R →+* ZMod n)
 #align zmod.ring_hom_eq_of_ker_eq ZMod.ringHom_eq_of_ker_eq
 
 @[simp]
-lemma castHom_self {n : ℕ} : ZMod.castHom dvd_rfl (ZMod n) = RingHom.id (ZMod n) :=
-  RingHom.ext_zmod (ZMod.castHom dvd_rfl (ZMod n)) (RingHom.id (ZMod n))
+lemma castHom_self : ZMod.castHom dvd_rfl (ZMod n) = RingHom.id (ZMod n) :=
+  Subsingleton.elim _ _
+
+@[simp]
+lemma castHom_comp {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
+    (castHom hm (ZMod n)).comp (castHom hd (ZMod m)) = castHom (dvd_trans hm hd) (ZMod n) :=
+  RingHom.ext_zmod _ _
 
 section lift
 
