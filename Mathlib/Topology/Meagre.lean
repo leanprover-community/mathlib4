@@ -48,11 +48,8 @@ lemma closed_nowhere_dense_iff_complement {s : Set α} :
     IsClosed s ∧ IsNowhereDense s ↔ IsOpen sᶜ ∧ Dense sᶜ := by
   constructor
   · rintro ⟨hclosed, hNowhereDense⟩
-    constructor
-    · exact Iff.mpr isOpen_compl_iff hclosed
-    · rw [← interior_eq_empty_iff_dense_compl]
-      rw [closed_nowhere_dense_iff hclosed] at hNowhereDense
-      exact hNowhereDense
+    rw [closed_nowhere_dense_iff hclosed] at hNowhereDense
+    exact ⟨isOpen_compl_iff.mpr hclosed, interior_eq_empty_iff_dense_compl.mp hNowhereDense⟩
   · rintro ⟨hopen, hdense⟩
     constructor
     · exact { isOpen_compl := hopen }
@@ -85,20 +82,14 @@ lemma meagre_iUnion {s : ℕ → Set α} (hs : ∀ n, IsMeagre (s n)) : IsMeagre
 -- TODO: move to the right place! Data.Set.Lattice
 /-- `sUnion` is monotone under taking a subset of each set. -/
 lemma sUnion_mono_subsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, t ⊆ f t) :
-    ⋃₀ s ⊆ ⋃₀ (f '' s) := by
-  rintro x ⟨t, htx, hxt⟩
-  use f t
-  exact ⟨mem_image_of_mem f htx, hf t hxt⟩
+    ⋃₀ s ⊆ ⋃₀ (f '' s) :=
+  fun _ ⟨t, htx, hxt⟩ ↦ ⟨f t, mem_image_of_mem f htx, hf t hxt⟩
 
 /-- `sUnion` is monotone under taking a superset of each set. -/
-lemma sUnion_mono_supsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, t ⊇ f t) :
-    ⋃₀ s ⊇ ⋃₀ (f '' s) := by
+lemma sUnion_mono_supsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, f t ⊆ t) :
+    ⋃₀ (f '' s) ⊆ ⋃₀ s  :=
   -- let t ∈ f '' s be arbitrary; then t = f u for some u : Set α
-  rintro x ⟨t, ⟨u, hus, hut⟩, hxt⟩
-  have : u ⊇ t := by rw [← hut]; exact hf u
-  rw [mem_sUnion]
-  use u
-  exact ⟨hus, this hxt⟩
+  fun _ ⟨_, ⟨u, hus, hut⟩, hxt⟩ ↦ ⟨u, hus, (Eq.trans_subset hut.symm (hf u)) hxt⟩
 
 -- xxx: find_home says Topology.Meagre; that seems like a bug
 /-- `sUnion` is monotone under taking the closure of each set. -/
@@ -118,7 +109,7 @@ lemma meagre_iff_countable_union_nowhere_dense {s : Set α} : IsMeagre s ↔
     rcases hs with ⟨s', ⟨hopen, hdense, hcountable, hss'⟩⟩
     have h : s ⊆ ⋃₀ (compl '' s') := calc
       s = sᶜᶜ := by rw [compl_compl s]
-      _ ⊆ (⋂₀ s')ᶜ := Iff.mpr compl_subset_compl hss'
+      _ ⊆ (⋂₀ s')ᶜ := compl_subset_compl.mpr hss'
       _ = ⋃₀ (compl '' s') := by rw [compl_sInter]
     -- Each u_iᶜ is closed and nowhere dense, hence nowhere dense. Thus, (s'')ᶜ =s is meagre.
     use compl '' s'
