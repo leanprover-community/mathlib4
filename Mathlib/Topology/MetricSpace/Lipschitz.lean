@@ -594,15 +594,15 @@ namespace LocallyLipschitz
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ] {f : α → β}
 
 /-- A Lipschitz function is locally Lipschitz. -/
-protected lemma of_Lipschitz {K : ℝ≥0} (hf : LipschitzWith K f) : LocallyLipschitz f :=
+protected lemma _root_.LipschitzWith.locally {K : ℝ≥0} (hf : LipschitzWith K f) : LocallyLipschitz f :=
   fun _ ↦ ⟨K, ⟨univ, ⟨Filter.univ_mem, Iff.mpr (lipschitzOn_univ) hf⟩⟩⟩
 
 /-- The identity function is locally Lipschitz. -/
-protected lemma id : LocallyLipschitz (@id α) := LocallyLipschitz.of_Lipschitz (LipschitzWith.id)
+protected lemma id : LocallyLipschitz (@id α) := LipschitzWith.id.locally
 
 /-- Constant functions are locally Lipschitz. -/
 protected lemma const (b : β) : LocallyLipschitz (fun _ : α ↦ b) :=
-  LocallyLipschitz.of_Lipschitz (LipschitzWith.const b)
+  (LipschitzWith.const b).locally
 
 /-- A locally Lipschitz function is continuous. (The converse is false: for example,
 $x ↦ \sqrt{x}$ is continuous, but not locally Lipschitz at 0.) -/
@@ -673,10 +673,10 @@ protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (
     exact max_le_max h₁ h₂
 
 protected theorem prod_mk_left (a : α) : LocallyLipschitz (Prod.mk a : β → α × β) :=
-  LocallyLipschitz.of_Lipschitz (LipschitzWith.prod_mk_left a)
+  (LipschitzWith.prod_mk_left a).locally
 
 protected theorem prod_mk_right (b : β) : LocallyLipschitz (fun a : α => (a, b)) :=
-  LocallyLipschitz.of_Lipschitz (LipschitzWith.prod_mk_right b)
+  (LipschitzWith.prod_mk_right b).locally
 
 protected theorem iterate {f : α → α} (hf : LocallyLipschitz f) : ∀ n, LocallyLipschitz f^[n]
   | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
@@ -696,17 +696,13 @@ section Real
 variable {f g : α → ℝ}
 /-- The minimum of locally Lipschitz functions is locally Lipschitz. -/
 protected lemma min (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
-    LocallyLipschitz (fun x => min (f x) (g x)) := by
-  let m : ℝ × ℝ → ℝ := fun p ↦ min p.1 p.2
-  have h : LocallyLipschitz m := LocallyLipschitz.of_Lipschitz lipschitzWith_min
-  exact h.comp (hf.prod hg)
+    LocallyLipschitz (fun x => min (f x) (g x)) :=
+  lipschitzWith_min.locally.comp (hf.prod hg)
 
 /-- The maximum of locally Lipschitz functions is locally Lipschitz. -/
 protected lemma max (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
-    LocallyLipschitz (fun x => max (f x) (g x)) := by
-  let m : ℝ × ℝ → ℝ := fun p ↦ max p.1 p.2
-  have h : LocallyLipschitz m := LocallyLipschitz.of_Lipschitz lipschitzWith_max
-  exact h.comp (hf.prod hg)
+    LocallyLipschitz (fun x => max (f x) (g x)) :=
+  lipschitzWith_max.locally.comp (hf.prod hg)
 
 theorem max_const (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => max (f x) a :=
   hf.max (LocallyLipschitz.const a)
