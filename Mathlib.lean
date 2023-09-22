@@ -2020,9 +2020,9 @@ import Mathlib.Geometry.Manifold.VectorBundle.Pullback
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.WhitneyEmbedding
-import Mathlib.Geometry.Synthetic.Axioms
-import Mathlib.Geometry.Synthetic.EuclidBookI
-import Mathlib.Geometry.Synthetic.Tactics
+import Mathlib.Geometry.Synthetic.Avigad.Axioms
+import Mathlib.Geometry.Synthetic.Avigad.EuclidBookI
+import Mathlib.Geometry.Synthetic.Avigad.Tactics
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.ClassEquation

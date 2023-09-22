@@ -3,7 +3,7 @@ Copyright (c) 2023 Vladimir Sedlacek. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vladimir Sedlacek
 -/
-import Mathlib.Geometry.Synthetic.Axioms
+import Mathlib.Geometry.Synthetic.Avigad.Axioms
 
 /-!
 Tactics document for permutation of arguments

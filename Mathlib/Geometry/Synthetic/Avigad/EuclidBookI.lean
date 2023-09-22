@@ -3,7 +3,7 @@ Copyright (c) 2023 André Hernandez-Espiet. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: André Hernandez-Espiet
 -/
-import Mathlib.Geometry.Synthetic.Tactics
+import Mathlib.Geometry.Synthetic.Avigad.Tactics
 import Mathlib.Tactic.WLOG
 
 /-!
