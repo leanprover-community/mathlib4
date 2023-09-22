@@ -5,7 +5,7 @@ Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Module.Basic
-
+import Mathlib.Algebra.Order.Module
 
 /-!
 # Modules over nonnegative elements
@@ -20,13 +20,15 @@ These instances are useful for working with `ConvexCone`.
 variable {𝕜 E : Type*}
 
 variable [OrderedSemiring 𝕜]
-variable [AddCommMonoid E] [Module 𝕜 E]
-
 
 namespace Nonneg
 
 -- TODO: remove `prettyPrint := false` once #6833 is merged
 local notation3 (prettyPrint := false) "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
+
+section AddCommMonoid
+
+variable [AddCommMonoid E] [Module 𝕜 E]
 
 /-- A module over and ordered Semiring is also a module over just the non-negative scalars. -/
 instance instModule : Module 𝕜≥0 E :=
@@ -42,5 +44,16 @@ lemma mk_smul (a) (ha) (x : E) : (⟨a, ha⟩ : 𝕜≥0) • x = a • x :=
 
 instance instIsScalarTower : IsScalarTower 𝕜≥0 𝕜 E :=
   SMul.comp.isScalarTower ↑Nonneg.coeRingHom
+
+end AddCommMonoid
+
+section OrderedAddCommMonoid
+
+variable [OrderedAddCommMonoid E] [Module 𝕜 E] [hE : OrderedSMul 𝕜 E]
+
+instance instOrderedSmul : OrderedSMul 𝕜≥0 E :=
+  ⟨hE.1, hE.2⟩
+
+end OrderedAddCommMonoid
 
 end Nonneg
