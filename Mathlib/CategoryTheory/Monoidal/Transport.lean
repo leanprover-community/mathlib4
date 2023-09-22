@@ -42,12 +42,10 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- The data needed to induce a `MonoidalCategory` via the functor `F`; namely, pre-existing
 definitions of `⊗`, `𝟙_`, `▷`, `◁` that are preserved by `F`.
-
-Note that `μIsoSymm` and `εIsoSymm` correspond to the reversed versions of
-`CategoryTheory.LaxMonoidalFunctor.μIso` and `CategoryTheory.LaxMonoidalFunctor.εIso`.
 -/
 structure InducingFunctorData (F : D ⥤ C) where
   tensorObj : D → D → D
+  /-- Analogous to the reversed version of `CategoryTheory.LaxMonoidalFunctor.μIso` -/
   μIsoSymm : ∀ X Y,
     F.obj (tensorObj X Y) ≅ F.obj X ⊗ F.obj Y
   whiskerLeft : ∀ (X : D) {Y₁ Y₂ : D} (_f : Y₁ ⟶ Y₂), tensorObj X Y₁ ⟶ tensorObj X Y₂
@@ -68,6 +66,7 @@ structure InducingFunctorData (F : D ⥤ C) where
         = (μIsoSymm _ _).hom ≫ (F.map f ⊗ F.map g) ≫ (μIsoSymm _ _).inv :=
     by aesop_cat
   tensorUnit' : D
+  /-- Analogous to the reversed version of `CategoryTheory.LaxMonoidalFunctor.εIso` -/
   εIsoSymm : F.obj tensorUnit' ≅ 𝟙_ _
   associator : ∀ X Y Z : D, tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z)
   associator_eq : ∀ X Y Z : D,
@@ -86,6 +85,24 @@ structure InducingFunctorData (F : D ⥤ C) where
     F.map (rightUnitor X).hom =
       ((μIsoSymm _ _ ≪≫ (.refl _ ⊗ εIsoSymm)) ≪≫ ρ_ (F.obj X)).hom :=
     by aesop_cat
+
+attribute [inherit_doc MonoidalCategory.tensorObj] InducingFunctorData.tensorObj
+attribute [inherit_doc MonoidalCategory.whiskerLeft] InducingFunctorData.whiskerLeft
+attribute [inherit_doc MonoidalCategory.whiskerRight] InducingFunctorData.whiskerRight
+attribute [inherit_doc MonoidalCategory.tensorHom] InducingFunctorData.tensorHom
+attribute [inherit_doc MonoidalCategory.tensorUnit'] InducingFunctorData.tensorUnit'
+attribute [inherit_doc MonoidalCategory.associator] InducingFunctorData.associator
+attribute [inherit_doc MonoidalCategory.leftUnitor] InducingFunctorData.leftUnitor
+attribute [inherit_doc MonoidalCategory.rightUnitor] InducingFunctorData.rightUnitor
+
+-- these are theorems so don't need docstrings (std4#217)
+attribute [nolint docBlame]
+  InducingFunctorData.whiskerLeft_eq
+  InducingFunctorData.whiskerRight_eq
+  InducingFunctorData.tensorHom_eq
+  InducingFunctorData.associator_eq
+  InducingFunctorData.leftUnitor_eq
+  InducingFunctorData.rightUnitor_eq
 
 /--
 Induce the lawfulness of the monoidal structure along an faithful functor of (plain) categories,
