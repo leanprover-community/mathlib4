@@ -130,23 +130,23 @@ lemma meagre_iff_countable_union_nowhere_dense {s : Set α} : IsMeagre s ↔
     rw [IsMeagre, mem_residual_iff]
     -- Passing to the closure, assume all s_i are closed nowhere dense.
     let s'' := closure '' s'
+    -- Then each s_iᶜ is open and dense.
+    let complement := compl '' s''
     have hnowhereDense' : ∀ (t : Set α), t ∈ s'' → IsClosed t ∧ IsNowhereDense t := by
       rintro t ⟨x, hx, hclosed⟩
       rw [← hclosed]
       exact ⟨isClosed_closure, closure_nowhere_dense (hnowhereDense x hx)⟩
-    have hss'' : s ⊆ ⋃₀ s'' := calc
-      s ⊆ ⋃₀ s' := hss'
-      _ ⊆ ⋃₀ s'' := sUnion_subset_closure
-    -- Then each s_iᶜ is open and dense.
-    let complement := compl '' s''
     have h' : ∀ (t : Set α), t ∈ complement → IsOpen t ∧ Dense t := by
       rintro t ⟨x, hx, hcompl⟩
       rw [← hcompl]
       exact closed_nowhere_dense_iff_complement.mp (hnowhereDense' x hx)
     -- and we compute ⋂ U_iᶜ ⊆ sᶜ, completing the proof.
+    have hss'' : s ⊆ ⋃₀ s'' := calc
+      s ⊆ ⋃₀ s' := hss'
+      _ ⊆ ⋃₀ s'' := sUnion_subset_closure
     have h₂: ⋂₀ complement ⊆ sᶜ := calc ⋂₀ complement
-        _ = (⋃₀ s'')ᶜ := by rw [←compl_sUnion]
-        _ ⊆ sᶜ := Iff.mpr compl_subset_compl hss''
+      _ = (⋃₀ s'')ᶜ := by rw [←compl_sUnion]
+      _ ⊆ sᶜ := compl_subset_compl.mpr hss''
     use complement
     exact ⟨fun t ht ↦ (h' t ht).1, fun t ht ↦(h' t ht).2,
            Countable.image (Countable.image hcountable _) compl, h₂⟩
