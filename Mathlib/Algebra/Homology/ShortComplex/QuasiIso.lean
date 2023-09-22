@@ -44,17 +44,17 @@ lemma quasiIso_iff (φ : S₁ ⟶ S₂) :
 instance quasiIso_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ] : QuasiIso φ :=
   ⟨IsIso.of_iso (homologyMapIso (asIso φ))⟩
 
-lemma quasiIso_comp' (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) (hφ : QuasiIso φ) (hφ' : QuasiIso φ') :
+lemma quasiIso_comp'' (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) (hφ : QuasiIso φ) (hφ' : QuasiIso φ') :
     QuasiIso (φ ≫ φ') := by
   rw [quasiIso_iff] at hφ hφ' ⊢
   rw [homologyMap_comp]
   infer_instance
 
-instance quasiIso_comp (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [QuasiIso φ] [QuasiIso φ'] :
+instance quasiIso_comp (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [hφ : QuasiIso φ] [hφ' : QuasiIso φ'] :
     QuasiIso (φ ≫ φ') :=
-  quasiIso_comp' φ φ' inferInstance inferInstance
+  quasiIso_comp'' φ φ' hφ hφ'
 
-lemma quasiIso_of_comp_left' (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃)
+lemma quasiIso_of_comp_left'' (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃)
     (hφ : QuasiIso φ) (hφφ' : QuasiIso (φ ≫ φ')) :
     QuasiIso φ' := by
   rw [quasiIso_iff] at hφ hφφ' ⊢
@@ -62,46 +62,47 @@ lemma quasiIso_of_comp_left' (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃)
   exact IsIso.of_isIso_comp_left (homologyMap φ) (homologyMap φ')
 
 lemma quasiIso_of_comp_left (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃)
-    [QuasiIso φ] [QuasiIso (φ ≫ φ')] :
+    [hφ : QuasiIso φ] [hφφ' : QuasiIso (φ ≫ φ')] :
     QuasiIso φ' :=
-  quasiIso_of_comp_left' φ φ' inferInstance inferInstance
+  quasiIso_of_comp_left'' φ φ' hφ hφφ'
 
-lemma quasiIso_iff_comp_left' (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) (hφ : QuasiIso φ) :
+
+lemma quasiIso_iff_comp_left'' (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) (hφ : QuasiIso φ) :
     QuasiIso (φ ≫ φ') ↔ QuasiIso φ' := by
   constructor
-  . exact quasiIso_of_comp_left' φ φ' hφ
-  . exact quasiIso_comp' φ φ' hφ
+  . exact quasiIso_of_comp_left'' φ φ' hφ
+  . exact quasiIso_comp'' φ φ' hφ
 
 @[simp]
-lemma quasiIso_iff_comp_left (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [QuasiIso φ] :
+lemma quasiIso_iff_comp_left (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [hφ : QuasiIso φ] :
     QuasiIso (φ ≫ φ') ↔ QuasiIso φ' :=
-  quasiIso_iff_comp_left' φ φ' inferInstance
+  quasiIso_iff_comp_left'' φ φ' hφ
 
-lemma quasiIso_of_comp_right' (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃)
+lemma quasiIso_of_comp_right'' (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃)
     (hφ' : QuasiIso φ') (hφφ' : QuasiIso (φ ≫ φ')) :
     QuasiIso φ := by
   rw [quasiIso_iff] at hφ' hφφ' ⊢
   rw [homologyMap_comp] at hφφ'
   exact IsIso.of_isIso_comp_right (homologyMap φ) (homologyMap φ')
 
-lemma quasiIso_iff_comp_right' (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) (hφ' : QuasiIso φ') :
+lemma quasiIso_iff_comp_right'' (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) (hφ' : QuasiIso φ') :
     QuasiIso (φ ≫ φ') ↔ QuasiIso φ := by
   constructor
-  . exact quasiIso_of_comp_right' φ φ' hφ'
+  . exact quasiIso_of_comp_right'' φ φ' hφ'
   . intro hφ
-    exact quasiIso_comp' φ φ' hφ hφ'
+    exact quasiIso_comp'' φ φ' hφ hφ'
 
 @[simp]
-lemma quasiIso_iff_comp_right (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [QuasiIso φ'] :
+lemma quasiIso_iff_comp_right (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [hφ' : QuasiIso φ'] :
     QuasiIso (φ ≫ φ') ↔ QuasiIso φ :=
-  quasiIso_iff_comp_right' φ φ' inferInstance
+  quasiIso_iff_comp_right'' φ φ' hφ'
 
 lemma quasiIso_of_comp_right (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃)
-    [QuasiIso φ'] [QuasiIso (φ ≫ φ')] :
+    [hφ' : QuasiIso φ'] [hφφ' : QuasiIso (φ ≫ φ')] :
     QuasiIso φ :=
-  quasiIso_of_comp_right' φ φ' inferInstance inferInstance
+  quasiIso_of_comp_right'' φ φ' hφ' hφφ'
 
-lemma quasiIso_of_arrow_mk_iso' (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : Arrow.mk φ ≅ Arrow.mk φ')
+lemma quasiIso_of_arrow_mk_iso'' (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : Arrow.mk φ ≅ Arrow.mk φ')
     (hφ : QuasiIso φ) : QuasiIso φ' := by
   let α : S₃ ⟶ S₁ := e.inv.left
   let β : S₂ ⟶ S₄ := e.hom.right
@@ -112,12 +113,12 @@ lemma quasiIso_of_arrow_mk_iso' (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : 
     ← Arrow.comp_right, e.inv_hom_id, Arrow.id_right, comp_id]
 
 lemma quasiIso_of_arrow_mk_iso (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : Arrow.mk φ ≅ Arrow.mk φ')
-    [QuasiIso φ] : QuasiIso φ' :=
-  quasiIso_of_arrow_mk_iso' φ φ' e inferInstance
+    [hφ : QuasiIso φ] : QuasiIso φ' :=
+  quasiIso_of_arrow_mk_iso'' φ φ' e hφ
 
 lemma quasiIso_iff_of_arrow_mk_iso (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : Arrow.mk φ ≅ Arrow.mk φ') :
     QuasiIso φ ↔ QuasiIso φ' :=
-  ⟨quasiIso_of_arrow_mk_iso' φ φ' e, quasiIso_of_arrow_mk_iso' φ' φ e.symm⟩
+  ⟨quasiIso_of_arrow_mk_iso'' φ φ' e, quasiIso_of_arrow_mk_iso'' φ' φ e.symm⟩
 
 lemma LeftHomologyMapData.quasiIso_iff {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData}
     {h₂ : S₂.LeftHomologyData} (γ : LeftHomologyMapData φ h₁ h₂) :
