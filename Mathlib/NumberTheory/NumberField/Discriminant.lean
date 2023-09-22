@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Localization.NormTrace
 # Number field discriminant
 This file defines the discriminant of a number field.
 
-## Main definitions and results
+## Main definitions
  - `discr` the absolute discriminant of a number field.
 
 ## Tags
@@ -22,7 +22,7 @@ number field, discriminant
 
 namespace NumberField
 
-open NumberField Classical
+open Classical NumberField Matrix
 
 variable (K : Type*) [Field K] [NumberField K]
 
@@ -51,7 +51,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     volume (fundamentalDomain (latticeBasis K)) =
       (2 : ℝ≥0)⁻¹ ^ Fintype.card { w : InfinitePlace K // IsComplex w } *
         Real.toNNReal (Real.sqrt |discr K|) := by
-  rw [← toNNReal_eq_toNNReal_iff' (ne_of_lt (fundamentalDomain_bounded _).measure_lt_top)
+  rw [← toNNReal_eq_toNNReal_iff' (ne_of_lt (fundamentalDomain_isBounded _).measure_lt_top)
     (ENNReal.mul_ne_top (coe_ne_top) (coe_ne_top)), toNNReal_mul, toNNReal_coe]
   let f :  Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →+* ℂ) :=
     (canonicalEmbedding.latticeBasis K).indexEquiv (Pi.basisFun ℂ _)
@@ -64,15 +64,15 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     calc
       _ = Real.toNNReal (|((mixedEmbedding.stdBasis K).toMatrix
             ((latticeBasis K).reindex e.symm)).det|) := by
-        rw [fundamentalDomain_reindex _ e.symm, measure_fundamentalDomain
+        rw [← fundamentalDomain_reindex _ e.symm, measure_fundamentalDomain
           ((latticeBasis K).reindex e.symm), volume_fundamentalDomain_stdBasis, mul_one]
         rfl
       _ = Real.toNNReal (Complex.abs ((matrix_to_stdBasis K).det * N.det)) := by
         rw [← Complex.abs_ofReal, ← Complex.ofReal_eq_coe, RingHom.map_det, RingHom.mapMatrix_apply,
           this, Matrix.det_mul, Matrix.det_transpose, Matrix.det_reindex_self]
       _ = (2 : ℝ≥0)⁻¹ ^ Fintype.card {w // IsComplex w} * Real.toNNReal (Complex.abs N.det) := by
-        rw [map_mul, det_matrix_to_stdBasis, Real.toNNReal_mul (Complex.abs.nonneg _),
-          Complex.abs_pow, map_mul, Complex.abs_I, mul_one, map_inv₀, Complex.abs_two,
+        rw [_root_.map_mul, det_matrix_to_stdBasis, Real.toNNReal_mul (Complex.abs.nonneg _),
+          Complex.abs_pow, _root_.map_mul, Complex.abs_I, mul_one, map_inv₀, Complex.abs_two,
           Real.toNNReal_pow (by norm_num), Real.toNNReal_inv, Real.toNNReal_ofNat]
       _ = (2 : ℝ≥0)⁻¹ ^ Fintype.card {w : InfinitePlace K // IsComplex w} *
             Real.toNNReal (Real.sqrt (Complex.abs (N.det ^ 2))) := by
@@ -84,7 +84,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
   ext : 2
   dsimp only
   rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp, Equiv.symm_symm,
-    latticeBasis_apply, ← comm_map_canonical_eq_mixed, Complex.ofReal_eq_coe,
+    latticeBasis_apply, ← commMap_canonical_eq_mixed, Complex.ofReal_eq_coe,
     stdBasis_repr_eq_matrix_to_stdBasis_mul K _ (fun _ => rfl)]
   rfl
 
@@ -95,6 +95,7 @@ namespace Rat
 open NumberField
 
 /-- The absolute discriminant of the number field `ℚ` is 1. -/
+@[simp]
 theorem numberField_discr : discr ℚ = 1 := by
   let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
     Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
@@ -108,5 +109,7 @@ theorem numberField_discr : discr ℚ = 1 := by
         show (AddEquiv.symm ↑ringOfIntegersEquiv) (1 : ℤ) = ringOfIntegersEquiv.symm 1 by rfl,
         map_one, mul_one]
     _ = 1 := by rw [Algebra.trace_eq_matrix_trace b]; norm_num
+
+alias _root_.NumberField.discr_rat := numberField_discr
 
 end Rat

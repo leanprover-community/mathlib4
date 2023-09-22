@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.GroupTheory.Congruence
 
@@ -34,16 +34,16 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 -/
 
 
-/- Note: we can't extend both `AddCon R` and `MulCon R` in Lean 3 due to interactions between old-
-and new-style structures. We can revisit this in Lean 4. (After and not during the port!) -/
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation
 which preserves both. -/
-structure RingCon (R : Type*) [Add R] [Mul R] extends Setoid R where
-  /-- Ring congruence relations are closed under addition -/
-  add' : ∀ {w x y z}, r w x → r y z → r (w + y) (x + z)
-  /-- Ring congruence relations are closed under multiplication -/
-  mul' : ∀ {w x y z}, r w x → r y z → r (w * y) (x * z)
+structure RingCon (R : Type*) [Add R] [Mul R] extends Con R, AddCon R where
 #align ring_con RingCon
+
+/-- The induced multiplicative congruence from a `RingCon`. -/
+add_decl_doc RingCon.toCon
+
+/-- The induced additive congruence from a `RingCon`. -/
+add_decl_doc RingCon.toAddCon
 
 variable {α R : Type*}
 
@@ -62,8 +62,7 @@ inductive RingConGen.Rel [Add R] [Mul R] (r : R → R → Prop) : R → R → Pr
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
     relation. -/
-def ringConGen [Add R] [Mul R] (r : R → R → Prop) : RingCon R
-    where
+def ringConGen [Add R] [Mul R] (r : R → R → Prop) : RingCon R where
   r := RingConGen.Rel r
   iseqv := ⟨RingConGen.Rel.refl, @RingConGen.Rel.symm _ _ _ _, @RingConGen.Rel.trans _ _ _ _⟩
   add' := RingConGen.Rel.add
@@ -76,16 +75,6 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
-/-- Every `RingCon` is also an `AddCon` -/
-def toAddCon : AddCon R :=
-  { c with }
-#align ring_con.to_add_con RingCon.toAddCon
-
-/-- Every `RingCon` is also a `Con` -/
-def toCon : Con R :=
-  { c with }
-#align ring_con.to_con RingCon.toCon
-
 --Porting note: upgrade to `FunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 instance : FunLike (RingCon R) R fun _ => R → Prop :=
@@ -93,13 +82,17 @@ instance : FunLike (RingCon R) R fun _ => R → Prop :=
     coe_injective' := fun x y h => by
       rcases x with ⟨⟨x, _⟩, _⟩
       rcases y with ⟨⟨y, _⟩, _⟩
-      have : x = y := h
-      subst x; rfl }
+      congr!
+      rw [Setoid.ext_iff,(show x.Rel = y.Rel from h)]
+      simp}
 
-@[simp]
 theorem rel_eq_coe : c.r = c :=
   rfl
 #align ring_con.rel_eq_coe RingCon.rel_eq_coe
+
+@[simp]
+theorem toCon_coe_eq_coe : (c.toCon : R → R → Prop) = c :=
+  rfl
 
 protected theorem refl (x) : c x x :=
   c.refl' x
@@ -121,13 +114,12 @@ protected theorem mul {w x y z} : c w x → c y z → c (w * y) (x * z) :=
   c.mul'
 #align ring_con.mul RingCon.mul
 
-@[simp]
-theorem rel_mk {s : Setoid R} {ha hm a b} : RingCon.mk s ha hm a b ↔ Setoid.r a b :=
-  Iff.rfl
-#align ring_con.rel_mk RingCon.rel_mk
-
 instance : Inhabited (RingCon R) :=
   ⟨ringConGen EmptyRelation⟩
+
+@[simp]
+theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ @Setoid.r _ s.toSetoid a b :=
+  Iff.rfl
 
 end Basic
 
@@ -158,8 +150,8 @@ instance : CoeTC R c.Quotient :=
 
 -- Lower the priority since it unifies with any quotient type.
 /-- The quotient by a decidable congruence relation has decidable equality. -/
-instance (priority := 500) [d : ∀ a b, Decidable (c a b)] : DecidableEq c.Quotient := by
-  delta RingCon.Quotient; infer_instance
+instance (priority := 500) [_d : ∀ a b, Decidable (c a b)] : DecidableEq c.Quotient :=
+  inferInstanceAs (DecidableEq (Quotient c.toSetoid))
 
 @[simp]
 theorem quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=
@@ -400,7 +392,6 @@ instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R 
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient :=
   { c.toCon.mulAction with
-    smul := (· • ·)
     smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
     smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add _ _ _ }
 

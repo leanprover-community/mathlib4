@@ -38,8 +38,8 @@ private theorem free_and_finite_fin (n : ℕ) (N : Fin n → Type*) [∀ i, AddC
   induction' n with n ih
   · haveI : IsEmpty (Fin Nat.zero) := inferInstanceAs (IsEmpty (Fin 0))
     exact
-      ⟨Module.Free.of_equiv (constLinearEquivOfIsEmpty R N M₂),
-        Module.Finite.equiv (constLinearEquivOfIsEmpty R N M₂)⟩
+      ⟨Module.Free.of_equiv (constLinearEquivOfIsEmpty R R N M₂),
+        Module.Finite.equiv (constLinearEquivOfIsEmpty R R N M₂)⟩
   · suffices
       Module.Free R (N 0 →ₗ[R] MultilinearMap R (fun i : Fin n => N i.succ) M₂) ∧
         Module.Finite R (N 0 →ₗ[R] MultilinearMap R (fun i : Fin n => N i.succ) M₂) by
@@ -61,7 +61,7 @@ private theorem free_and_finite :
   have := @free_and_finite_fin R M₂ _ _ _ _ _ (Fintype.card ι)
     (fun x => M₁ ((Fintype.equivFin ι).symm x))
   cases' this with l r
-  have e := domDomCongrLinearEquiv' R M₁ M₂ (Fintype.equivFin ι)
+  have e := domDomCongrLinearEquiv' R R M₁ M₂ (Fintype.equivFin ι)
   exact ⟨Module.Free.of_equiv e.symm, Module.Finite.equiv e.symm⟩
 
 instance _root_.Module.Finite.multilinearMap : Module.Finite R (MultilinearMap R M₁ M₂) :=

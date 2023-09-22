@@ -16,7 +16,7 @@ namespace BinaryHeap
 /-- Core operation for binary heaps, expressed directly on arrays.
 Given an array which is a max-heap, push item `i` down to restore the max-heap property. -/
 def heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
-  {a' : Array α // a'.size = a.size} :=
+    {a' : Array α // a'.size = a.size} :=
   let left := 2 * i.1 + 1
   let right := left + 1
   have left_le : i ≤ left := Nat.le_trans
@@ -59,7 +59,7 @@ def mkHeap (lt : α → α → Bool) (a : Array α) : {a' : Array α // a'.size 
 /-- Core operation for binary heaps, expressed directly on arrays.
 Given an array which is a max-heap, push item `i` up to restore the max-heap property. -/
 def heapifyUp (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
-  {a' : Array α // a'.size = a.size} :=
+    {a' : Array α // a'.size = a.size} :=
 if i0 : i.1 = 0 then ⟨a, rfl⟩ else
   have : (i.1 - 1) / 2 < i := lt_of_le_of_lt (Nat.div_le_self ..) $
     Nat.sub_lt (Nat.pos_iff_ne_zero.2 i0) Nat.one_pos

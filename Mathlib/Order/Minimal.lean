@@ -351,7 +351,7 @@ theorem RelEmbedding.inter_preimage_minimals_eq_of_subset (f : r ↪r s) (h : y 
   rw [inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset _ h]; simp [f.map_rel_iff]
 
 theorem RelEmbedding.minimals_preimage_eq (f : r ↪r s) (y : Set β) :
-  minimals r (f ⁻¹' y) = f ⁻¹' minimals s (y ∩ range f) := by
+    minimals r (f ⁻¹' y) = f ⁻¹' minimals s (y ∩ range f) := by
   convert (f.inter_preimage_minimals_eq univ y).symm; simp [univ_inter]; simp [inter_comm]
 
 theorem inter_maximals_preimage_inter_eq_of_rel_iff_rel_on
