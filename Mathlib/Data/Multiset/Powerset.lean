@@ -23,15 +23,21 @@ variable {α : Type*}
 
 /-! ### powerset -/
 
---Porting note: TODO: Write a more efficient version
 /-- A helper function for the powerset of a multiset. Given a list `l`, returns a list
 of sublists of `l` as multisets. -/
 def powersetAux (l : List α) : List (Multiset α) :=
-  (sublists l).map (↑)
+  l.foldr (fun a acc => acc >>= (fun x => [x, a ::ₘ x])) [0]
 #align multiset.powerset_aux Multiset.powersetAux
 
-theorem powersetAux_eq_map_coe {l : List α} : powersetAux l = (sublists l).map (↑) :=
-  rfl
+theorem powersetAux_eq_map_coe {l : List α} : powersetAux l = (sublists l).map (↑) := by
+  induction l
+  · case nil => rfl
+  · case cons hd tl ih =>
+    have : List.map ofList (List.bind (sublists tl) fun x ↦ [x, hd :: x]) =
+        List.bind (List.map ofList (sublists tl)) fun x ↦ [x, hd ::ₘ x] := by
+      simp [List.bind_map, List.map_bind]
+    simp only [powersetAux, List.foldr, bind_eq_bind, sublists_cons, this]
+    congr
 #align multiset.powerset_aux_eq_map_coe Multiset.powersetAux_eq_map_coe
 
 @[simp]
@@ -163,7 +169,7 @@ theorem revzip_powersetAux_perm_aux' {l : List α} :
 theorem revzip_powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) :
     revzip (powersetAux l₁) ~ revzip (powersetAux l₂) := by
   haveI := Classical.decEq α
-  simp [fun l : List α => revzip_powersetAux_lemma l revzip_powersetAux, coe_eq_coe.2 p]
+  simp only [fun l : List α => revzip_powersetAux_lemma l revzip_powersetAux, coe_eq_coe.2 p]
   exact (powersetAux_perm p).map _
 #align multiset.revzip_powerset_aux_perm Multiset.revzip_powersetAux_perm
 
