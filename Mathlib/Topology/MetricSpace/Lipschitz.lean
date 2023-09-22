@@ -608,7 +608,7 @@ protected lemma const (b : β) : LocallyLipschitz (fun _ : α ↦ b) :=
 /-- A locally Lipschitz function is continuous. (The converse is false: for example,
 $x ↦ \sqrt{x}$ is continuous, but not locally Lipschitz at 0.) -/
 protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continuous f := by
-  apply Iff.mpr continuous_iff_continuousAt
+  apply continuous_iff_continuousAt.mpr
   intro x
   rcases (hf x) with ⟨K, t, ht, hK⟩
   exact (hK.continuousOn).continuousAt ht
@@ -623,25 +623,17 @@ protected lemma comp  {f : β → γ} {g : α → β}
   -- idea: shrink t to ensure it is mapped to u
   -- more precisely: restrict g to t' := t ∩ g⁻¹(u); the preimage of u under g':=g∣t.
   let g' := t.restrict g
-  let t' : Set α := ↑(g' ⁻¹' u)
-  -- The following is mathematically obvious; the sorries are merely wrestling with coercions.
+  set t' : Set α := ↑(g' ⁻¹' u) with ht'
   have h₁ : t' = t ∩ g ⁻¹' u := by
-    apply Iff.mpr (Subset.antisymm_iff)
-    constructor
-    · intro x hx
-      constructor
-      · exact coe_subset hx
-      · -- as x ∈ t', we can apply g' (and land in u by definition), so g'(x)=g(x) ∈ u
-        sorry
-    · intro x hx
-      rcases hx with ⟨ht, hgu⟩
-      -- as x ∈ t, we can write g(x)=g'(x); the rhs lies in u, so x ∈ g⁻¹(u) also
-      sorry
-  have h₂ : t' ∈ 𝓝 x := by -- FIXME: the following is a tour de force; there must be a nicer proof
+    rw [ht']
+    ext1 y
+    simp [Lean.Internal.coeM]
+    aesop
+  have h₂ : t' ∈ 𝓝 x := by -- FIXME: surely, there is a nicer proof
     -- by ht, t contains an open subset U
-    rcases (Iff.mp (mem_nhds_iff) ht) with ⟨U, hUt, hUopen, hxU⟩
+    rcases (mem_nhds_iff.mp ht) with ⟨U, hUt, hUopen, hxU⟩
     -- similarly, u contains an open subset V
-    rcases (Iff.mp (mem_nhds_iff) hu) with ⟨V, hVt, hVopen, hgxV⟩
+    rcases (mem_nhds_iff.mp hu) with ⟨V, hVt, hVopen, hgxV⟩
     -- by continuity, g⁻¹(u) contains the open subset g⁻¹(V)
     have : ContinuousOn g U := (hgL.mono hUt).continuousOn
     have h : IsOpen (U ∩ (g ⁻¹' V)) := this.preimage_open_of_open hUopen hVopen
@@ -656,7 +648,7 @@ protected lemma comp  {f : β → γ} {g : α → β}
     _ ⊆ g '' t ∩ u := by gcongr; apply image_preimage_subset
     _ ⊆ u := inter_subset_right _ _
   use Kf * Kg, t'
-  exact ⟨h₂, hfL.comp (hgL.mono coe_subset) (Iff.mpr mapsTo' this)⟩
+  exact ⟨h₂, hfL.comp (hgL.mono coe_subset) (mapsTo'.mpr this)⟩
 
 /-- If `f` and `g` are locally Lipschitz, so is the induced map `f × g` to the product type. -/
 protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (hg : LocallyLipschitz g) :
