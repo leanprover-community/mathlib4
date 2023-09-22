@@ -135,8 +135,7 @@ class EssSurj (F : C ⥤ D) : Prop where
 #align category_theory.ess_surj CategoryTheory.EssSurj
 
 instance EssSurj.toEssImage : EssSurj F.toEssImage where
-  mem_essImage := fun ⟨_, hY⟩ =>
-    ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
+  mem_essImage := fun ⟨_, hY⟩ => ⟨_, ⟨F.essImageInclusion.preimageIso (Functor.essImage.getIso hY)⟩⟩
 
 variable (F) [EssSurj F]
 
