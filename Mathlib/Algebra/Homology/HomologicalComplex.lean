@@ -94,7 +94,7 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
 
 /-- The obvious isomorphism `K.X p ≅ K.X q` when `p = q`. -/
 def XIsoOfEq (K : HomologicalComplex V c) {p q : ι} (h : p = q) : K.X p ≅ K.X q :=
- eqToIso (by rw [h])
+  eqToIso (by rw [h])
 
 @[simp]
 lemma XIsoOfEq_rfl (K : HomologicalComplex V c) (p : ι) :
