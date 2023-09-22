@@ -122,7 +122,7 @@ theorem MapsTo.lipschitzOnWith_iff_restrict [PseudoEMetricSpace α] [PseudoEMetr
 alias ⟨LipschitzOnWith.to_restrict_mapsTo, _⟩ := MapsTo.lipschitzOnWith_iff_restrict
 #align lipschitz_on_with.to_restrict_maps_to LipschitzOnWith.to_restrict_mapsTo
 
-/-- `f : α → β` is called **locally Lipschitz continuous** iff every point `p ∈ α`
+/-- `f : α → β` is called **locally Lipschitz continuous** iff every point `x`
 has a neighourhood on which `f` is Lipschitz. -/
 def LocallyLipschitz [PseudoEMetricSpace α] [PseudoEMetricSpace β] (f : α → β) : Prop :=
   ∀ x : α, ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t
@@ -594,11 +594,8 @@ namespace LocallyLipschitz
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ] {f : α → β}
 
 /-- A Lipschitz function is locally Lipschitz. -/
-protected lemma of_Lipschitz {K : ℝ≥0} (hf : LipschitzWith K f) : LocallyLipschitz f := by
-  intro x
-  use K, univ
-  rw [lipschitzOn_univ]
-  exact ⟨Filter.univ_mem, hf⟩
+protected lemma of_Lipschitz {K : ℝ≥0} (hf : LipschitzWith K f) : LocallyLipschitz f :=
+  fun _ ↦ ⟨K, ⟨univ, ⟨Filter.univ_mem, Iff.mpr (lipschitzOn_univ) hf⟩⟩⟩
 
 /-- The identity function is locally Lipschitz. -/
 protected lemma id : LocallyLipschitz (@id α) := LocallyLipschitz.of_Lipschitz (LipschitzWith.id)
