@@ -336,6 +336,7 @@ theorem right_triangle (R : CommRingCat) :
   · intro r; apply toOpen_res
 #align algebraic_geometry.Γ_Spec.right_triangle AlgebraicGeometry.ΓSpec.right_triangle
 
+set_option maxHeartbeats 300000 in
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
 --Porting Note: `simps` cause a time out, so `Unit` and `counit` will be added manually
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} :=
@@ -344,7 +345,7 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
       counit := (NatIso.op SpecΓIdentity).inv
       left_triangle := by
         ext X; erw [Category.id_comp]
-        exact congr_arg Quiver.Hom.op (left_triangle X)
+        convert congr_arg Quiver.Hom.op (left_triangle X)
       right_triangle := by
         ext R : 2
         -- Porting note : a little bit hand holding
