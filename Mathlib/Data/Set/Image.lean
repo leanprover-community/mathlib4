@@ -106,7 +106,7 @@ theorem preimage_diff (f : α → β) (s t : Set β) : f ⁻¹' (s \ t) = f ⁻�
 @[simp]
 lemma preimage_symmDiff {f : α → β} (s t : Set β) : f ⁻¹' (s ∆ t) = (f ⁻¹' s) ∆ (f ⁻¹' t) :=
   rfl
-+#align set.preimage_symm_diff Set.preimage_symmDiff
+#align set.preimage_symm_diff Set.preimage_symmDiff
 
 @[simp]
 theorem preimage_ite (f : α → β) (s t₁ t₂ : Set β) :
@@ -183,7 +183,7 @@ theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻�
 
 @[simp] theorem preimage_singleton_true (p : α → Prop) : p ⁻¹' {True} = {a | p a} := by ext; simp
 #align set.preimage_singleton_true Set.preimage_singleton_true
-e
+
 @[simp] theorem preimage_singleton_false (p : α → Prop) : p ⁻¹' {False} = {a | ¬p a} := by ext; simp
 #align set.preimage_singleton_false Set.preimage_singleton_false
 
@@ -1363,9 +1363,9 @@ theorem LeftInverse.preimage_preimage {g : β → α} (h : LeftInverse g f) (s :
     f ⁻¹' (g ⁻¹' s) = s := by rw [← preimage_comp, h.comp_eq_id, preimage_id]
 #align function.left_inverse.preimage_preimage Function.LeftInverse.preimage_preimage
 
-+rotected theorem Involutive.preimage {f : α → α} (hf : Involutive f) : Involutive (preimage f) :=
-+ hf.rightInverse.preimage_preimage
-+align function.involutive.preimage Function.Involutive.preimage
+protected theorem Involutive.preimage {f : α → α} (hf : Involutive f) : Involutive (preimage f) :=
+  hf.rightInverse.preimage_preimage
+#align function.involutive.preimage Function.Involutive.preimage
 
 end Function
 
