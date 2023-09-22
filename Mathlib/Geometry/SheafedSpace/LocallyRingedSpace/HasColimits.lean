@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Geometry.SheafedSpace.LocallyRingedSpace
 import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.Geometry.SheafedSpace.OpenImmersion
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 #align_import algebraic_geometry.locally_ringed_space.has_colimits from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
