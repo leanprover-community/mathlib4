@@ -18,88 +18,13 @@ https://kconrad.math.uconn.edu/blurbs/gradnumthy/padicharmonicsum.pdf
 
 namespace Counterexample
 
-open Rat
+
 open BigOperators
 
-
-
-namespace padicValRat
-
-  /-- Ultrametric property of a p-adic valuation. -/
-  lemma min_eq_padicValRat_add {p : ℕ} [hp : Fact (Nat.Prime p)] {q r : ℚ}
-  (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q ≠ padicValRat p r) :
-  padicValRat p (q + r) = min (padicValRat p q) (padicValRat p r) := by
-    have Hmin := padicValRat.min_le_padicValRat_add (p := p) (hp := hp) hqr
-    wlog h : padicValRat p q < padicValRat p r generalizing q r with Hgen
-    · push_neg at h; rw [add_comm, min_comm]
-      exact (Hgen (by rwa [add_comm]) hr hq hval.symm
-      (by rwa [min_comm,add_comm])
-      (Ne.lt_of_le (Ne.symm hval) h))
-    · rw [min_eq_left (le_of_lt h)] at Hmin ⊢
-      suffices Hreq : padicValRat p q ≥ padicValRat p (q + r) by linarith
-      suffices Haux : padicValRat p q ≥ min (padicValRat p (q + r)) (padicValRat p r) by
-        rw [min_def] at Haux; split_ifs at Haux with Hspl; try assumption; linarith
-      calc padicValRat p q = padicValRat p ((q + r) - r) := by congr; simp
-      _ ≥ min (padicValRat p (q + r)) (padicValRat p (-r)) :=
-      ge_iff_le.mp <| le_trans (padicValRat.min_le_padicValRat_add (q := q+r) (r := -r) (by simpa))
-        (by rw [add_neg_cancel_right, add_sub_cancel])
-      _ = min (padicValRat p (q + r)) (padicValRat p r) := by rw [padicValRat.neg]
-
-  lemma add_eq_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {q r : ℚ} (hqr : q + r ≠ 0)
-  (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q < padicValRat p r) :
-  padicValRat p (q + r) = padicValRat p q :=
-  by rw [min_eq_padicValRat_add hqr hq hr (ne_of_lt hval),min_eq_left (le_of_lt hval)]
-
-  lemma add_lt_of_lt {p : ℕ} [hp : Fact (Nat.Prime p)] {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
-  (hval₁ : padicValRat p q < padicValRat p r₁) (hval₂ : padicValRat p q < padicValRat p r₂) :
-   padicValRat p q < padicValRat p (r₁ + r₂) :=
-   lt_of_lt_of_le (lt_min hval₁ hval₂) (padicValRat.min_le_padicValRat_add (p := p) (hp := hp) hqr)
-
-  /--
-    If the p-adic valuation of a finite set of positive rationals is greater than a given rational
-    number, then the p-adic valuation of their sum is also greater than the same rational number.
-  -/
-  theorem finset_gen_sum_lt_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)]
-  {F : ℕ → ℚ} {S : Finset ℕ} (hS : S.Nonempty)
-  (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
-  (hn1 : ∀ i : ℕ, 0 < F i):
-  padicValRat p (F j) < padicValRat p (∑ i in S, F i) := by
-    induction' hS using Finset.Nonempty.cons_induction with k s S' Hnot Hne Hind
-    · rw [Finset.sum_singleton]
-      exact hF k (by simp)
-    · rw [Finset.cons_eq_insert, Finset.sum_insert Hnot]
-      exact add_lt_of_lt
-        (ne_of_gt (add_pos (hn1 s) (Finset.sum_pos (fun i _ => hn1 i) Hne)))
-        (hF _ (by simp [Finset.mem_insert, true_or]))
-        (Hind (fun i hi => hF _ (by rw [Finset.cons_eq_insert,Finset.mem_insert]; exact Or.inr hi)))
-
-end padicValRat
-
-namespace padicValNat
-
-  lemma le_nat_log {p : ℕ} [hp : Fact (Nat.Prime p)] (n : ℕ):
-    padicValNat p n ≤ Nat.log p n  := by
-      by_cases (n = 0)
-      · simp only [h, padicValNat.zero, Nat.log_zero_right, le_refl]
-      · refine' Nat.le_log_of_pow_le (Nat.Prime.one_lt hp.elim) _
-        by_contra Hnot; push_neg at Hnot
-        exact h (Nat.eq_zero_of_dvd_of_lt (pow_padicValNat_dvd (p := p) (n := n)) Hnot)
-
-  lemma le_nat_log_gen {p n₁ n₂ : ℕ} [Fact (Nat.Prime p)] (hn : n₁ ≤ n₂):
-    padicValNat p n₁ ≤ Nat.log p n₂ := le_trans (le_nat_log n₁) (Nat.log_mono_right hn)
-
-  lemma nat_log_eq_padicvalnat_iff {p : ℕ} [hp : Fact (Nat.Prime p)] (n : ℕ)(hn : 0 < n):
-  Nat.log p n = padicValNat p n ↔ n < p^(padicValNat p n + 1) := by
-    · rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by linarith⟩)]
-      · rw [and_iff_right_iff_imp]
-        exact (fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd)
-
-end padicValNat
-
-/-- The nth-harmonic number defined as a finset sum of reciprocals. -/
+/-- The nth-harmonic number defined as a finset sum of consecutive reciprocals. -/
 def harmonic : ℕ → ℚ := fun n => ∑ i in Finset.range n, 1 / (i + 1)
 
-lemma harmonic_ne_zero : ∀ n, n ≠ 0 → harmonic n > 0 := fun n Hn =>
+lemma harmonic_pos : ∀ n, n ≠ 0 → 0 < harmonic n  := fun n Hn =>
   Finset.sum_pos (fun _ _ => div_pos zero_lt_one
   (by norm_cast; linarith))
   (by (rwa [Finset.nonempty_range_iff]))
@@ -147,7 +72,7 @@ lemma padicValRat_2_pow (r : ℕ) : padicValRat 2 (1 / 2^r) = -r := by
   simp only [this, mul_one]
   rw [←padicValRat.self (p := 2) one_lt_two]; simp only [Nat.cast_ofNat]
 
-
+/-- For `i` less than `n`, `2^Nat.log 2 n` does not divide `i` unless `i` is equal to it. -/
 lemma nat_log_not_dvd {n : ℕ} :
  ∀ i, 0 < i ∧ i ≠ 2^(Nat.log 2 n) ∧ i ≤ n → ¬ 2^(Nat.log 2 n) ∣ i := by
   rintro i ⟨Hi₁,Hi₂,Hi₃⟩
@@ -209,7 +134,7 @@ theorem harmonic_padicValRat_2 {n : ℕ} (Hn : 2 ≤ n):
   simp only [gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel]
   rw [padicValRat.add_eq_of_lt (p := 2) _ (one_div_ne_zero <| pow_ne_zero _ two_ne_zero)
   (harmonic_singleton_ne_zero (Hn)) _]; apply padicValRat_2_pow
-  · have := harmonic_ne_zero n
+  · have := harmonic_pos n
     rw [harmonic_singleton (pow2_log_in_finset Hn)] at this
     refine' ne_of_gt _
     simp only [ne_eq, ge_iff_le, gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat,
@@ -227,13 +152,14 @@ theorem harmonic_padicValRat_2 {n : ℕ} (Hn : 2 ≤ n):
       refine' Hi₂ _
       simp only [add_tsub_cancel_right]
 
+/-- The n-th harmonic number is not an integer for n ≥ 2. -/
 theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by
   intro n Hn
   refine' not_int_of_not_padic_int _
   dsimp [padicNorm]
   split_ifs with h
   · exfalso
-    exact ((ne_of_gt <| harmonic_ne_zero n (by linarith)) h)
+    exact (ne_of_gt <| harmonic_pos n (by linarith)) h
   · refine' one_lt_zpow one_lt_two _ (lt_neg.mp _)
     rw [neg_zero, harmonic_padicValRat_2 Hn,Int.log_natCast, Left.neg_neg_iff,
      Nat.cast_pos, Nat.log_pos_iff]
