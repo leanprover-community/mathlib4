@@ -44,8 +44,6 @@ variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 namespace CochainComplex
 
-section
-
 variable {F G K L : CochainComplex C ℤ} (n m : ℤ)
 
 namespace HomComplex
@@ -83,14 +81,14 @@ def mk (v : ∀ (p q : ℤ) (_ : p + n = q), F.X p ⟶ G.X q) : Cochain F G n :=
 /-- The value of a cochain on a triplet `⟨p, q, hpq⟩`. -/
 @[pp_dot]
 def v (γ : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
-  F.X p ⟶ G.X q := γ ⟨p, q, hpq⟩
+    F.X p ⟶ G.X q := γ ⟨p, q, hpq⟩
 
 @[simp]
 lemma mk_v (v : ∀ (p q : ℤ) (_ : p + n = q), F.X p ⟶ G.X q) (p q : ℤ) (hpq : p + n = q) :
     (Cochain.mk v).v p q hpq = v p q hpq := rfl
 
 lemma congr_v {z₁ z₂ : Cochain F G n} (h : z₁ = z₂) (p q : ℤ) (hpq : p + n = q) :
-  z₁.v p q hpq = z₂.v p q hpq := by subst h; rfl
+    z₁.v p q hpq = z₂.v p q hpq := by subst h; rfl
 
 @[ext]
 lemma ext (z₁ z₂ : Cochain F G n)
@@ -548,3 +546,125 @@ def HomComplex : CochainComplex AddCommGroupCat ℤ where
   d_comp_d' _ _ _ _ _  := by ext; apply δ_δ
 
 namespace HomComplex
+
+/-- The subgroup of cocycles in `Cochain F G n`. -/
+def cocycle : AddSubgroup (Cochain F G n) :=
+  AddMonoidHom.ker (δ_hom F G n (n+1))
+
+/-- The type of `n`-cocycles, as a subtype of `Cochain F G n`. -/
+def Cocycle : Type v := cocycle F G n
+
+instance : AddCommGroup (Cocycle F G n) := by
+  dsimp only [Cocycle]
+  infer_instance
+
+namespace Cocycle
+
+variable {F G n}
+
+instance : Coe (Cocycle F G n) (Cochain F G n) where
+  coe x := x.1
+
+@[ext]
+lemma ext (z₁ z₂ : Cocycle F G n) (h : (z₁ : Cochain F G n) = z₂) : z₁ = z₂ :=
+  Subtype.ext h
+
+lemma ext_iff (z₁ z₂ : Cocycle F G n) : z₁ = z₂ ↔ (z₁ : Cochain F G n) = z₂ :=
+  Subtype.ext_iff
+
+variable (F G n)
+
+@[simp]
+lemma coe_zero : (↑(0 : Cocycle F G n) : Cochain F G n) = 0 := by rfl
+
+variable {F G n}
+
+@[simp]
+lemma coe_add (z₁ z₂ : Cocycle F G n) :
+    (↑(z₁ + z₂) : Cochain F G n) = (z₁ : Cochain F G n) + (z₂ : Cochain F G n) := rfl
+
+@[simp]
+lemma coe_neg (z : Cocycle F G n) :
+    (↑(-z) : Cochain F G n) = -(z : Cochain F G n) := rfl
+
+@[simp]
+lemma coe_zsmul (z : Cocycle F G n) (x : ℤ) :
+    (↑(x • z) : Cochain F G n) = x • (z : Cochain F G n) := rfl
+
+@[simp]
+lemma coe_sub (z₁ z₂ : Cocycle F G n) :
+    (↑(z₁ - z₂) : Cochain F G n) = (z₁ : Cochain F G n) - (z₂ : Cochain F G n) := rfl
+
+variable (n)
+
+lemma mem_iff (hnm : n + 1 = m) (z : Cochain F G n) :
+    z ∈ cocycle F G n ↔ δ n m z = 0 := by subst hnm; rfl
+
+variable {n}
+
+/-- Constructor for `Cocycle F G n`, taking as inputs `z : Cochain F G n`, an integer
+`m : ℤ` such that `n + 1 = m`, and the relation `δ n m z = 0`. -/
+@[simps]
+def mk (z : Cochain F G n) (m : ℤ) (hnm : n + 1 = m) (h : δ n m z = 0) : Cocycle F G n :=
+  ⟨z, by simpa only [mem_iff n m hnm z] using h⟩
+
+@[simp]
+lemma δ_eq_zero {n : ℤ} (z : Cocycle F G n) (m : ℤ) : δ n m (z : Cochain F G n) = 0 := by
+  by_cases h : n + 1 = m
+  · rw [← mem_iff n m h]
+    exact z.2
+  · exact δ_shape n m h _
+
+/-- The `0`-cocycle associated to a morphism in `CochainComplex C ℤ`. -/
+@[simps!]
+def ofHom (φ : F ⟶ G) : Cocycle F G 0 := mk (Cochain.ofHom φ) 1 (zero_add 1) (by simp)
+
+/-- The morphism in `CochainComplex C ℤ` associated to a `0`-cocycle. -/
+@[simps]
+def homOf (z : Cocycle F G 0) : F ⟶ G where
+  f i := (z : Cochain _ _ _).v i i (add_zero i)
+  comm' := by
+    rintro i j rfl
+    rcases z with ⟨z, hz⟩
+    dsimp
+    rw [mem_iff 0 1 (zero_add 1)] at hz
+    simpa only [δ_zero_cochain_v, Cochain.zero_v, sub_eq_zero]
+      using Cochain.congr_v hz i (i + 1) rfl
+
+@[simp]
+lemma homOf_ofHom_eq_self (φ : F ⟶ G) : homOf (ofHom φ) = φ := by aesop_cat
+
+@[simp]
+lemma ofHom_homOf_eq_self (z : Cocycle F G 0) : ofHom (homOf z) = z := by aesop_cat
+
+@[simp]
+lemma cochain_ofHom_homOf_eq_coe (z : Cocycle F G 0) :
+    Cochain.ofHom (homOf z) = (z : Cochain F G 0) := by
+  simpa only [ext_iff] using ofHom_homOf_eq_self z
+
+variable (F G)
+
+/-- The additive equivalence between morphisms in `CochainComplex C ℤ` and `0`-cocycles. -/
+@[simps]
+def equivHom : (F ⟶ G) ≃+ Cocycle F G 0 where
+  toFun := ofHom
+  invFun := homOf
+  left_inv := homOf_ofHom_eq_self
+  right_inv := ofHom_homOf_eq_self
+  map_add' := by aesop_cat
+
+variable (K)
+
+/-- The `1`-cocycle given by the differential on a cochain complex. -/
+@[simps!]
+def diff : Cocycle K K 1 :=
+  Cocycle.mk (Cochain.diff K) 2 rfl (by
+    ext p q hpq
+    simp only [Cochain.zero_v, δ_v 1 2 rfl _ p q hpq _ _ rfl rfl, Cochain.diff_v,
+      HomologicalComplex.d_comp_d, smul_zero, add_zero])
+
+end Cocycle
+
+end HomComplex
+
+end CochainComplex

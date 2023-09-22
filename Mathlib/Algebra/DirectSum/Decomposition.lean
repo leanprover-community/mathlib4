@@ -137,7 +137,7 @@ lemma decomposeAddEquiv_apply (a : M) :
 
 @[simp]
 lemma decomposeAddEquiv_symm_apply (a : ⨁ i, ℳ i) :
-  (decomposeAddEquiv ℳ).symm a = (decompose ℳ).symm a := rfl
+    (decomposeAddEquiv ℳ).symm a = (decompose ℳ).symm a := rfl
 
 @[simp]
 theorem decompose_zero : decompose ℳ (0 : M) = 0 :=
