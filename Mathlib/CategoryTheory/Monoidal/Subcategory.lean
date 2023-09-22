@@ -116,6 +116,8 @@ end
 
 variable {P} {P' : C → Prop} [MonoidalPredicate P']
 
+-- needed for `aesop_cat`
+attribute [simp] comp_def id_def in
 /-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
 subcategories. -/
 @[simps]
@@ -124,19 +126,6 @@ def fullMonoidalSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
   toFunctor := FullSubcategory.map h
   ε := 𝟙 _
   μ X Y := 𝟙 _
-  -- `aesop_cat` can't do the `erw`
-  left_unitality X := by
-    dsimp only
-    simp
-    erw [tensor_id, Category.id_comp]
-  right_unitality X := by
-    dsimp only
-    simp
-    erw [tensor_id, Category.id_comp]
-  associativity X Y Z := by
-    dsimp only
-    simp
-    erw [tensor_id, tensor_id, Category.comp_id, Category.id_comp]
 
 #align category_theory.monoidal_category.full_monoidal_subcategory.map CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.map
 
