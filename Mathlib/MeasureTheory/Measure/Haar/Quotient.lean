@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Group.FundamentalDomain
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.MeasureTheory.Constructions.Polish
 
-#align_import measure_theory.measure.haar.quotient from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
+#align_import measure_theory.measure.haar.quotient from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Haar quotient measure
@@ -47,7 +47,7 @@ Note that a group `G` with Haar measure that is both left and right invariant is
 
 open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
 
-open scoped Pointwise NNReal
+open scoped Pointwise NNReal ENNReal
 
 section
 

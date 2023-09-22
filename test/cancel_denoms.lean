@@ -1,8 +1,8 @@
 import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.Ring
 
-set_option autoImplicit true
-
+private axiom test_sorry : ∀ {α}, α
+universe u
 section
 variable {α : Type u} [LinearOrderedField α] (a b c d : α)
 
@@ -81,7 +81,7 @@ example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   rw [← h]
   ring
 
-example (h : 40 * (4 * a + d * (5 * b)) ≠ 20 * (40 * c - 4 * (8 * a) + b * 2 * (5 * d) - 40 * b)) : a/5 + d*(b/4) ≠ c - 4*a/5 + b*2*d/8 - b := by
+example (h : 2 * (4 * a + d * 5 * b) ≠ (40 * c - 32 * a + b * 2 * 5 * d - 40 * b)) : a/5 + d*(b/4) ≠ c - 4*a/5 + b*2*d/8 - b := by
   cancel_denoms
   assumption
 
@@ -89,9 +89,9 @@ end
 
 section
 -- simulate the type of complex numbers
-def C : Type := sorry
-instance : Field C := sorry
-instance : CharZero C := sorry
+def C : Type := test_sorry
+noncomputable instance : Field C := test_sorry
+instance : CharZero C := test_sorry
 variable (a b c d : C)
 example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   cancel_denoms

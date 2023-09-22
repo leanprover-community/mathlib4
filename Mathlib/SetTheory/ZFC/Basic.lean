@@ -151,7 +151,7 @@ def Equiv : PSet → PSet → Prop
 #align pSet.equiv PSet.Equiv
 
 theorem equiv_iff :
-   ∀ {x y : PSet},
+    ∀ {x y : PSet},
       Equiv x y ↔ (∀ i, ∃ j, Equiv (x.Func i) (y.Func j)) ∧ ∀ j, ∃ i, Equiv (x.Func i) (y.Func j)
   | ⟨_, _⟩, ⟨_, _⟩ => Iff.rfl
 #align pSet.equiv_iff PSet.equiv_iff
@@ -1821,5 +1821,24 @@ theorem choice_mem (y : ZFSet.{u}) (yx : y ∈ x) : (choice x ′ y : Class.{u})
   rw [@map_fval _ (Classical.allDefinable _) x y yx, Class.coe_mem, Class.coe_apply]
   exact choice_mem_aux x h y yx
 #align Set.choice_mem ZFSet.choice_mem
+
+private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
+  (mk $ PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
+    ext x
+    rw [mem_toSet, ←mk_out x, mk_mem_iff, mk_out]
+    refine' ⟨_, λ xs ↦ ⟨equivShrink s (Subtype.mk x xs), _⟩⟩
+    · rintro ⟨b, h2⟩
+      rw [←ZFSet.eq, ZFSet.mk_out] at h2
+      simp [h2]
+    · simp [PSet.Equiv.refl]
+
+/-- `ZFSet.toSet` as an equivalence. -/
+@[simps apply_coe]
+noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
+  toFun x := ⟨x.toSet, x.small_toSet⟩
+  invFun := λ ⟨s, h⟩ ↦ mk $ PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
+  left_inv := Function.rightInverse_of_injective_of_leftInverse (by intros x y; simp)
+    λ s ↦ Subtype.coe_injective $ toSet_equiv_aux s.2
+  right_inv s := Subtype.coe_injective $ toSet_equiv_aux s.2
 
 end ZFSet
