@@ -111,7 +111,7 @@ lemma padicValRat_ge_neg_Nat_log_ge {p n : ℕ}[hp : Fact (Nat.Prime p)]:
  ∀ q, q ≤ n → -Nat.log p n ≤ padicValRat p (1 / q) := by
   intros q Hq
   rw [one_div,padicValRat.inv,padicValRat.of_nat, neg_le_neg_iff, Nat.cast_le]
-  exact padicValNat.le_nat_log_gen Hq
+  exact le_nat_log_gen Hq
 
 lemma padicValRat_ge_neg_Nat_log_lt (n : ℕ):
  ∀ q, 0 < q ∧ q ≤ n → q ≠ 2^Nat.log 2 n →
