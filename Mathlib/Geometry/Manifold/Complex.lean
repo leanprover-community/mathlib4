@@ -125,7 +125,7 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M 
 (pre)connected compact open set, then it is a constant on this set. -/
 theorem apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a b : M}
     (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hpc : IsPreconnected U) (hc : IsCompact U)
-     (ho : IsOpen U) (ha : a ∈ U) (hb : b ∈ U) : f a = f b := by
+    (ho : IsOpen U) (ha : a ∈ U) (hb : b ∈ U) : f a = f b := by
   refine ?_
   -- Subtract `f b` to avoid the assumption `[StrictConvexSpace ℝ F]`
   wlog hb₀ : f b = 0 generalizing f

@@ -784,7 +784,7 @@ theorem le_ncard_of_inj_on_range {n : ℕ} (f : ℕ → α) (hf : ∀ i < n, f i
 
 theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hinj : ∀ a₁ a₂ ha₁ ha₂, f a₁ ha₁ = f a₂ ha₂ → a₁ = a₂) (hst : t.ncard ≤ s.ncard)
-  (ht : t.Finite := by toFinite_tac) :
+    (ht : t.Finite := by toFinite_tac) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
   intro b hb
   set f' : s → t := fun x ↦ ⟨f x.1 x.2, hf _ _⟩

@@ -71,13 +71,11 @@ inductive UFModel.Agrees (arr : Array α) (f : α → β) : ∀ {n}, (Fin n → 
 
 namespace UFModel.Agrees
 
-theorem mk' {arr : Array α} {f : α → β} {n} {g : Fin n → β}
-    (e : n = arr.size)
-  (H : ∀ i h₁ h₂, f (arr.get ⟨i, h₁⟩) = g ⟨i, h₂⟩) :
-  Agrees arr f g := by
-    cases e
-    have : (fun i ↦ f (arr.get i)) = g := by funext ⟨i, h⟩; apply H
-    cases this; constructor
+theorem mk' {arr : Array α} {f : α → β} {n} {g : Fin n → β} (e : n = arr.size)
+    (H : ∀ i h₁ h₂, f (arr.get ⟨i, h₁⟩) = g ⟨i, h₂⟩) : Agrees arr f g := by
+  cases e
+  have : (fun i ↦ f (arr.get i)) = g := by funext ⟨i, h⟩; apply H
+  cases this; constructor
 
 theorem size_eq {arr : Array α} {m : Fin n → β} (H : Agrees arr f m) : n = arr.size := by
   cases H; rfl
@@ -93,8 +91,8 @@ theorem empty {f : α → β} {g : Fin 0 → β} : Agrees #[] f g := mk' rfl λ.
 
 theorem push {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
     (k) (hk : k = n + 1) (x) (m' : Fin k → β)
-  (hm₁ : ∀ (i : Fin k) (h : i < n), m' i = m ⟨i, h⟩)
-  (hm₂ : ∀ (h : n < k), f x = m' ⟨n, h⟩) : Agrees (arr.push x) f m' := by
+    (hm₁ : ∀ (i : Fin k) (h : i < n), m' i = m ⟨i, h⟩)
+    (hm₂ : ∀ (h : n < k), f x = m' ⟨n, h⟩) : Agrees (arr.push x) f m' := by
   cases H
   have : k = (arr.push x).size := by simp [hk]
   refine mk' this fun i h₁ h₂ ↦ ?_
@@ -139,7 +137,7 @@ theorem empty : UFModel.empty.Models (α := α) #[] := ⟨Agrees.empty, Agrees.e
 
 theorem push {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
     (k) (hk : k = n + 1) (x) :
-  (m.push k (hk ▸ Nat.le_add_right ..)).Models (arr.push ⟨n, x, 0⟩) := by
+    (m.push k (hk ▸ Nat.le_add_right ..)).Models (arr.push ⟨n, x, 0⟩) := by
   apply H.imp <;>
   · intro H
     refine H.push _ hk _ _ (fun i h ↦ ?_) (fun h ↦ ?_) <;>
@@ -147,7 +145,7 @@ theorem push {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
 
 theorem setParent {arr : Array (UFNode α)} {n} {m : UFModel n} (hm : m.Models arr)
     (i j H hi x) (hp : x.parent = j.1) (hrk : x.rank = arr[i].rank) :
-  (m.setParent i j H).Models (arr.set ⟨i.1, hi⟩ x) :=
+    (m.setParent i j H).Models (arr.set ⟨i.1, hi⟩ x) :=
   ⟨hm.1.set
       (fun k (h : (k:ℕ) ≠ i) ↦ by simp [UFModel.setParent, h.symm])
       (fun h ↦ by simp [UFModel.setParent, hp]),
@@ -179,13 +177,13 @@ def rank (self : UnionFind α) (i : Nat) : Nat :=
 
 def rankMaxAux (self : UnionFind α) : ∀ (i : Nat),
     {k : Nat // ∀ j < i, ∀ h, (self.arr.get ⟨j, h⟩).rank ≤ k}
-| 0 => ⟨0, λ.⟩
-| i+1 => by
-  let ⟨k, H⟩ := rankMaxAux self i
-  refine ⟨max k (if h : _ then (self.arr.get ⟨i, h⟩).rank else 0), fun j hj h ↦ ?_⟩
-  match j, lt_or_eq_of_le (Nat.le_of_lt_succ hj) with
-  | j, Or.inl hj => exact le_trans (H _ hj h) (le_max_left _ _)
-  | _, Or.inr rfl => simp [h, le_max_right]
+  | 0 => ⟨0, λ.⟩
+  | i+1 => by
+    let ⟨k, H⟩ := rankMaxAux self i
+    refine ⟨max k (if h : _ then (self.arr.get ⟨i, h⟩).rank else 0), fun j hj h ↦ ?_⟩
+    match j, lt_or_eq_of_le (Nat.le_of_lt_succ hj) with
+    | j, Or.inl hj => exact le_trans (H _ hj h) (le_max_left _ _)
+    | _, Or.inr rfl => simp [h, le_max_right]
 
 def rankMax (self : UnionFind α) := (rankMaxAux self self.size).1 + 1
 

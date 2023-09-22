@@ -489,7 +489,7 @@ theorem coe_monoidHom_refl {M} [MulOneClass M] : (refl M : M →* M) = MonoidHom
 @[to_additive]
 theorem coe_monoidHom_trans {M N P} [MulOneClass M] [MulOneClass N] [MulOneClass P]
     (e₁ : M ≃* N) (e₂ : N ≃* P) :
-  (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
+    (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
 #align mul_equiv.coe_monoid_hom_trans MulEquiv.coe_monoidHom_trans
 #align add_equiv.coe_add_monoid_hom_trans AddEquiv.coe_addMonoidHom_trans
 
@@ -642,8 +642,7 @@ for multiplicative maps from a monoid to a commutative monoid.
 -- porting note: @[simps apply] removed because it was making a lemma which
 -- wasn't in simp normal form.
 def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
-    (f : M ≃* N) (g : P ≃* Q) :
-  (M →* P) ≃* (N →* Q) where
+    (f : M ≃* N) (g : P ≃* Q) : (M →* P) ≃* (N →* Q) where
   toFun h := g.toMonoidHom.comp (h.comp f.symm.toMonoidHom)
   invFun k := g.symm.toMonoidHom.comp (k.comp f.toMonoidHom)
   left_inv h := by ext; simp
@@ -692,7 +691,7 @@ theorem piCongrRight_symm {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)
 @[to_additive (attr := simp)]
 theorem piCongrRight_trans {η : Type*} {Ms Ns Ps : η → Type*} [∀ j, Mul (Ms j)]
     [∀ j, Mul (Ns j)] [∀ j, Mul (Ps j)] (es : ∀ j, Ms j ≃* Ns j) (fs : ∀ j, Ns j ≃* Ps j) :
-  (piCongrRight es).trans (piCongrRight fs) = piCongrRight fun i => (es i).trans (fs i) := rfl
+    (piCongrRight es).trans (piCongrRight fs) = piCongrRight fun i => (es i).trans (fs i) := rfl
 #align mul_equiv.Pi_congr_right_trans MulEquiv.piCongrRight_trans
 #align add_equiv.Pi_congr_right_trans AddEquiv.piCongrRight_trans
 

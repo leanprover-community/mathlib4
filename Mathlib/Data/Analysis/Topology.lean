@@ -250,8 +250,8 @@ theorem LocallyFinite.Realizer.to_locallyFinite [TopologicalSpace α] {F : Ctop.
   ⟨_, F.mem_nhds.2 ⟨(R.bas a).1, (R.bas a).2, Subset.refl _⟩, ⟨R.sets a⟩⟩
 #align locally_finite.realizer.to_locally_finite LocallyFinite.Realizer.to_locallyFinite
 
-theorem locallyFinite_iff_exists_realizer [TopologicalSpace α]
-    (F : Ctop.Realizer α) {f : β → Set α} : LocallyFinite f ↔ Nonempty (LocallyFinite.Realizer F f) :=
+theorem locallyFinite_iff_exists_realizer [TopologicalSpace α] (F : Ctop.Realizer α)
+    {f : β → Set α} : LocallyFinite f ↔ Nonempty (LocallyFinite.Realizer F f) :=
   ⟨fun h ↦
     let ⟨g, h₁⟩ := Classical.axiom_of_choice h
     let ⟨g₂, h₂⟩ :=

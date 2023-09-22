@@ -172,7 +172,7 @@ variable {xs : Vector α n}
 
 theorem mapAccumr_bisim {f₁ : α → σ₁ → σ₁ × β} {f₂ : α → σ₂ → σ₂ × β} {s₁ : σ₁} {s₂ : σ₂}
     (R : σ₁ → σ₂ → Prop) (h₀ : R s₁ s₂)
-      (hR : ∀ {s q} a, R s q → R (f₁ a s).1 (f₂ a q).1 ∧ (f₁ a s).2 = (f₂ a q).2) :
+    (hR : ∀ {s q} a, R s q → R (f₁ a s).1 (f₂ a q).1 ∧ (f₁ a s).2 = (f₂ a q).2) :
     R (mapAccumr f₁ xs s₁).fst (mapAccumr f₂ xs s₂).fst
     ∧ (mapAccumr f₁ xs s₁).snd = (mapAccumr f₂ xs s₂).snd := by
   induction xs using Vector.revInductionOn generalizing s₁ s₂

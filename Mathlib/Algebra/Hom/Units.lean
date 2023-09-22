@@ -231,7 +231,7 @@ theorem of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x 
 @[to_additive]
 theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
     {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
-  IsUnit (f x) ↔ IsUnit x := ⟨of_leftInverse g hfg, map _⟩
+    IsUnit (f x) ↔ IsUnit x := ⟨of_leftInverse g hfg, map _⟩
 #align is_unit_map_of_left_inverse isUnit_map_of_leftInverse
 #align is_add_unit_map_of_left_inverse isAddUnit_map_of_leftInverse
 

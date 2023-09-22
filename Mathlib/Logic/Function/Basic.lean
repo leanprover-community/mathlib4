@@ -153,8 +153,8 @@ theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective 
 
 lemma Injective.dite (p : α → Prop) [DecidablePred p]
     {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}
-  (hf : Injective f) (hf' : Injective f')
-  (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
+    (hf : Injective f) (hf' : Injective f')
+    (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
   Function.Injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) :=
 by intros x₁ x₂ h
    dsimp only at h
@@ -748,7 +748,7 @@ lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ 
 
 lemma FactorsThrough.apply_extend {δ} {g : α → γ} (hf : FactorsThrough g f)
     (F : γ → δ) (e' : β → γ) (b : β) :
-  F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b := by
+    F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b := by
   by_cases hb : ∃ a, f a = b
   case pos =>
     rcases hb with ⟨a, ha⟩

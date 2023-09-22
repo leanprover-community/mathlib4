@@ -120,7 +120,7 @@ theorem toNat_top : toNat ⊤ = 0 :=
 @[elab_as_elim]
 def recTopCoe {C : ℕ∞ → Sort*} (h₁ : C ⊤) (h₂ : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
   | none => h₁
-| Option.some a => h₂ a
+  | Option.some a => h₂ a
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]

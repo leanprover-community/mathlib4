@@ -987,7 +987,7 @@ See also `multiplicity_eq_count_normalizedFactors` if `n` is given by `multiplic
 -/
 theorem count_normalizedFactors_eq [DecidableEq R] {p x : R} (hp : Irreducible p)
     (hnorm : normalize p = p) {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
-  (normalizedFactors x).count p = n := by
+    (normalizedFactors x).count p = n := by
   letI : DecidableRel ((· ∣ ·) : R → R → Prop) := fun _ _ => Classical.propDecidable _
   by_cases hx0 : x = 0
   · simp [hx0] at hlt
@@ -1005,7 +1005,7 @@ See also `multiplicity_eq_count_normalizedFactors` if `n` is given by `multiplic
 -/
 theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Irreducible p)
     (hnorm : normalize p = p) {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
-  (normalizedFactors x).count p = n := by
+    (normalizedFactors x).count p = n := by
   rcases hp with (rfl | hp)
   · cases n
     · exact count_eq_zero.2 (zero_not_mem_normalizedFactors _)

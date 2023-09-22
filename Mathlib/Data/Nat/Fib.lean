@@ -132,8 +132,8 @@ lemma fib_strictMonoOn : StrictMonoOn fib (Set.Ici 2)
 
 lemma fib_lt_fib {m : ℕ} (hm : 2 ≤ m) : ∀ {n}, fib m < fib n ↔ m < n
   | 0 => by simp [hm]
-| 1 => by simp [hm]
-| n + 2 => fib_strictMonoOn.lt_iff_lt hm $ by simp
+  | 1 => by simp [hm]
+  | n + 2 => fib_strictMonoOn.lt_iff_lt hm $ by simp
 
 theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n := by
   induction' five_le_n with n five_le_n IH
@@ -148,11 +148,11 @@ theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n := by
 
 lemma le_fib_add_one : ∀ n, n ≤ fib n + 1
   | 0 => zero_le_one
-| 1 => one_le_two
-| 2 => le_rfl
-| 3 => le_rfl
-| 4 => le_rfl
-| _n + 5 => (le_fib_self le_add_self).trans $ le_succ _
+  | 1 => one_le_two
+  | 2 => le_rfl
+  | 3 => le_rfl
+  | 4 => le_rfl
+  | _n + 5 => (le_fib_self le_add_self).trans $ le_succ _
 
 /-- Subsequent Fibonacci numbers are coprime,
   see https://proofwiki.org/wiki/Consecutive_Fibonacci_Numbers_are_Coprime -/

@@ -2004,8 +2004,8 @@ get something like this: (assumption `hf` could be weakened, but the important t
 of the conclusion)
 ```
 lemma ContinuousOn.comp_fract {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-  {f : X → ℝ → Y} {g : X → ℝ} (hf : Continuous ↿f) (hg : Continuous g) (h : ∀ s, f s 0 = f s 1) :
-  Continuous (fun x ↦ f x (fract (g x)))
+    {f : X → ℝ → Y} {g : X → ℝ} (hf : Continuous ↿f) (hg : Continuous g) (h : ∀ s, f s 0 = f s 1) :
+    Continuous (fun x ↦ f x (fract (g x)))
 ```
 With `ContinuousAt` you can be even more precise about what to prove in case of discontinuities,
 see e.g. `ContinuousAt.comp_div_cases`.

@@ -477,8 +477,8 @@ def reorderLambda (src : Expr) (reorder : List (List Nat) := []) : MetaM Expr :=
     mkLambdaFVars (xs.permute! reorder) e
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
-def updateDecl
-    (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) : MetaM ConstantInfo := do
+def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
+    MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.join then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
