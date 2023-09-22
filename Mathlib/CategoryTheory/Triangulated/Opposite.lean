@@ -88,8 +88,6 @@ lemma shiftFunctorZero_op_hom_app (X : Cᵒᵖ) :
   erw [@pullbackShiftFunctorZero_hom_app (OppositeShift C ℤ), oppositeShiftFunctorZero_hom_app]
   rfl
 
-attribute [reassoc] op_comp unop_comp
-
 lemma shiftFunctorZero_op_inv_app (X : Cᵒᵖ) :
     (shiftFunctorZero Cᵒᵖ ℤ).inv.app X =
       ((shiftFunctorZero C ℤ).hom.app X.unop).op ≫
