@@ -2017,6 +2017,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Pullback
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.WhitneyEmbedding
+import Mathlib.Geometry.SheafedSpace.Basic
 import Mathlib.Geometry.SheafedSpace.LocallyRingedSpace
 import Mathlib.Geometry.SheafedSpace.LocallyRingedSpace.HasColimits
 import Mathlib.Geometry.SheafedSpace.OpenImmersion
@@ -2024,7 +2025,6 @@ import Mathlib.Geometry.SheafedSpace.PresheafedSpace
 import Mathlib.Geometry.SheafedSpace.PresheafedSpace.Gluing
 import Mathlib.Geometry.SheafedSpace.PresheafedSpace.HasColimits
 import Mathlib.Geometry.SheafedSpace.RingedSpace
-import Mathlib.Geometry.SheafedSpace.Basic
 import Mathlib.Geometry.SheafedSpace.Stalks
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Archimedean
