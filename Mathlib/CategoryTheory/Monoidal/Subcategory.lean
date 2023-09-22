@@ -54,22 +54,22 @@ When `P` is a monoidal predicate, the full subcategory for `P` inherits the mono
 instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
   tensorHom f g := ⟨f.hom ⊗ g.hom⟩
-  tensorHom_def _f _g := InducedCategory.hom_ext <| tensorHom_def _ _
+  tensorHom_def _f _g := FullSubcategory.hom_ext <| tensorHom_def _ _
   whiskerLeft := fun X _ _ f ↦ ⟨X.1 ◁ f.hom⟩
   whiskerRight := fun f Y ↦ ⟨f.hom ▷ Y.1⟩
   tensorUnit' := ⟨𝟙_ C, prop_id⟩
   associator X Y Z := (fullSubcategoryInclusion P).preimageIso (α_ X.1 Y.1 Z.1)
-  whiskerLeft_id X Y := InducedCategory.hom_ext <| whiskerLeft_id X.1 Y.1
-  id_whiskerRight X Y := InducedCategory.hom_ext <| id_whiskerRight X.1 Y.1
+  whiskerLeft_id X Y := FullSubcategory.hom_ext <| whiskerLeft_id X.1 Y.1
+  id_whiskerRight X Y := FullSubcategory.hom_ext <| id_whiskerRight X.1 Y.1
   leftUnitor X := (fullSubcategoryInclusion P).preimageIso (λ_ X.1)
   rightUnitor X := (fullSubcategoryInclusion P).preimageIso (ρ_ X.1)
-  tensor_id X Y := InducedCategory.hom_ext <| tensor_id X.1 Y.1
-  tensor_comp _f₁ _f₂ _g₁ _g₂ := InducedCategory.hom_ext <| tensor_comp _ _ _ _
-  associator_naturality _f₁ _f₂ _f₃ := InducedCategory.hom_ext <| associator_naturality _ _ _
-  leftUnitor_naturality _f := InducedCategory.hom_ext <| leftUnitor_naturality _
-  rightUnitor_naturality _f := InducedCategory.hom_ext <| rightUnitor_naturality _
-  pentagon W X Y Z := InducedCategory.hom_ext <| pentagon W.1 X.1 Y.1 Z.1
-  triangle X Y := InducedCategory.hom_ext <| triangle X.1 Y.1
+  tensor_id X Y := FullSubcategory.hom_ext <| tensor_id X.1 Y.1
+  tensor_comp _f₁ _f₂ _g₁ _g₂ := FullSubcategory.hom_ext <| tensor_comp _ _ _ _
+  associator_naturality _f₁ _f₂ _f₃ := FullSubcategory.hom_ext <| associator_naturality _ _ _
+  leftUnitor_naturality _f := FullSubcategory.hom_ext <| leftUnitor_naturality _
+  rightUnitor_naturality _f := FullSubcategory.hom_ext <| rightUnitor_naturality _
+  pentagon W X Y Z := FullSubcategory.hom_ext <| pentagon W.1 X.1 Y.1 Z.1
+  triangle X Y := FullSubcategory.hom_ext <| triangle X.1 Y.1
 #align category_theory.monoidal_category.full_monoidal_subcategory CategoryTheory.MonoidalCategory.fullMonoidalSubcategory
 
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
@@ -221,13 +221,13 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
       adj :=
         Adjunction.mkOfUnitCounit
         { unit :=
-          { app := fun Y => (ihom.coev X.1).app Y.1
-            naturality := fun Y Z f => ihom.coev_naturality X.1 f }
+          { app := fun Y => ⟨(ihom.coev X.1).app Y.1⟩
+            naturality := fun Y Z f => FullSubcategory.hom_ext <| ihom.coev_naturality X.1 f.1 }
           counit :=
-          { app := fun Y => (ihom.ev X.1).app Y.1
-            naturality := fun Y Z f => ihom.ev_naturality X.1 f }
+          { app := fun Y => ⟨(ihom.ev X.1).app Y.1⟩
+            naturality := fun Y Z f => FullSubcategory.hom_ext <| ihom.ev_naturality X.1 f.1 }
           left_triangle := by ext Y; simp; exact ihom.ev_coev X.1 Y.1
-          right_triangle := by ext Y; simp; exact ihom.coev_ev X.1 Y.1 } } }
+          right_triangle := by ext Y; simp } } }
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory
 
 @[simp]
@@ -238,7 +238,7 @@ theorem fullMonoidalClosedSubcategory_ihom_obj (X Y : FullSubcategory P) :
 
 @[simp]
 theorem fullMonoidalClosedSubcategory_ihom_map (X : FullSubcategory P) {Y Z : FullSubcategory P}
-    (f : Y ⟶ Z) : (ihom X).map f = (ihom X.obj).map f :=
+    (f : Y ⟶ Z) : ((ihom X).map f).hom = (ihom X.obj).map f.hom :=
   rfl
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory_ihom_map CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory_ihom_map
 
