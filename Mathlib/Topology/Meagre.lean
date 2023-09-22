@@ -109,60 +109,44 @@ lemma meagre_iff_countable_union_nowhere_dense {s : Set α} : IsMeagre s ↔
     ∃ S : Set (Set α), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
   constructor
   · intro hs -- suppose s is meagre, i.e. sᶜ is residual
-    rw [IsMeagre] at hs
-    rw [mem_residual_iff] at hs
+    rw [IsMeagre, mem_residual_iff] at hs
     rcases hs with ⟨s', ⟨hopen, hdense, hcountable, hss'⟩⟩
     have h : s ⊆ ⋃₀ (compl '' s') := calc
       s = sᶜᶜ := by rw [compl_compl s]
       _ ⊆ (⋂₀ s')ᶜ := Iff.mpr compl_subset_compl hss'
       _ = ⋃₀ (compl '' s') := by rw [compl_sInter]
-    -- Each u_iᶜ is closed and nowhere dense, hence nowhere dense.
-    have : ∀ t : Set α, t ∈ s' → IsClosed tᶜ ∧ IsNowhereDense tᶜ := by
-      intro t ht
-      have : IsOpen tᶜᶜ ∧ Dense tᶜᶜ := by
-        rw [compl_compl]
-        exact ⟨hopen t ht, hdense t ht⟩
-      exact Iff.mpr closed_nowhere_dense_iff_complement this
-    have : ∀ t : Set α, t ∈ s' → IsNowhereDense tᶜ := fun t ht ↦ (this t ht).2
-    -- Thus (s'')ᶜ =s is meagre.
+    -- Each u_iᶜ is closed and nowhere dense, hence nowhere dense. Thus, (s'')ᶜ =s is meagre.
     use compl '' s'
     constructor
     · rintro t ⟨x, hx, hcompl⟩
       rw [← hcompl]
-      exact this x hx
-    · constructor
-      · exact Countable.image hcountable _
-      · apply h
-  · -- assume s is the countable union of nowhere dense sets s_i
+      have : IsOpen xᶜᶜ ∧ Dense xᶜᶜ := by
+        rw [compl_compl]
+        exact ⟨hopen x hx, hdense x hx⟩
+      exact (closed_nowhere_dense_iff_complement.mpr this).2
+    · exact ⟨Countable.image hcountable _, h⟩
+  · -- Assume `s` is the countable union of nowhere dense sets s_i.
     rintro ⟨s', ⟨hnowhereDense, hcountable, hss'⟩⟩
+    rw [IsMeagre, mem_residual_iff]
     -- Passing to the closure, assume all s_i are closed nowhere dense.
     let s'' := closure '' s'
     have hnowhereDense' : ∀ (t : Set α), t ∈ s'' → IsClosed t ∧ IsNowhereDense t := by
       rintro t ⟨x, hx, hclosed⟩
       rw [← hclosed]
       exact ⟨isClosed_closure, closure_nowhere_dense (hnowhereDense x hx)⟩
-    have hcountable' : Set.Countable s'' := Countable.image hcountable _
     have hss'' : s ⊆ ⋃₀ s'' := calc
       s ⊆ ⋃₀ s' := hss'
       _ ⊆ ⋃₀ s'' := sUnion_subset_closure
     -- Then each s_iᶜ is open and dense.
-    have h : ∀ (t : Set α), t ∈ s'' → IsOpen tᶜ ∧ Dense tᶜ  :=
-      fun t ht ↦ Iff.mp closed_nowhere_dense_iff_complement (hnowhereDense' t ht)
     let complement := compl '' s''
     have h' : ∀ (t : Set α), t ∈ complement → IsOpen t ∧ Dense t := by
       rintro t ⟨x, hx, hcompl⟩
       rw [← hcompl]
-      exact h x hx
-    -- and we compute ⋂ s_iᶜ ⊆ sᶜ, completing the proof.
-    have h2: ⋂₀ complement ⊆ sᶜ := calc ⋂₀ complement
+      exact closed_nowhere_dense_iff_complement.mp (hnowhereDense' x hx)
+    -- and we compute ⋂ U_iᶜ ⊆ sᶜ, completing the proof.
+    have h₂: ⋂₀ complement ⊆ sᶜ := calc ⋂₀ complement
         _ = (⋃₀ s'')ᶜ := by rw [←compl_sUnion]
         _ ⊆ sᶜ := Iff.mpr compl_subset_compl hss''
-    rw [IsMeagre, mem_residual_iff]
     use complement
-    constructor
-    · intro t ht
-      exact (h' t ht).1
-    · constructor
-      · intro t ht
-        exact (h' t ht).2
-      · exact ⟨Countable.image hcountable' compl, h2⟩
+    exact ⟨fun t ht ↦ (h' t ht).1, fun t ht ↦(h' t ht).2,
+           Countable.image (Countable.image hcountable _) compl, h₂⟩
