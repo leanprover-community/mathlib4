@@ -125,8 +125,6 @@ def zeckendorf : ℕ → List ℕ
     zeckendorf (n + 1) = greatestFib (n + 1) :: zeckendorf (n + 1 - fib (greatestFib (n + 1))) := by
   simp [zeckendorf]
 
-attribute [eqns zeckendorf_zero zeckendorf_succ] zeckendorf
-
 @[simp] lemma zeckendorf_of_pos : ∀ {n}, 0 < n →
     zeckendorf n = greatestFib n :: zeckendorf (n - fib (greatestFib n))
   | _n + 1, _ => zeckendorf_succ _
