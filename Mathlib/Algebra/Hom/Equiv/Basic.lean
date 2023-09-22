@@ -622,7 +622,7 @@ where the equivalence between the targets is multiplicative.
 @[to_additive (attr := simps apply) "An additive analogue of `Equiv.arrowCongr`,
   where the equivalence between the targets is additive."]
 def arrowCongr {M N P Q : Type*} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
-  (M → P) ≃* (N → Q) where
+    (M → P) ≃* (N → Q) where
   toFun h n := g (h (f.symm n))
   invFun k m := g.symm (k (f m))
   left_inv h := by ext; simp

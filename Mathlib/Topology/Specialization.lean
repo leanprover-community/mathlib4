@@ -72,14 +72,14 @@ open Set Specialization WithUpperSetTopology
 
 /-- A preorder is isomorphic to the specialisation order of its upper set topology. -/
 def orderIsoSpecializationWithUpperSetTopology (α : Type*) [Preorder α] :
-  α ≃o Specialization (WithUpperSetTopology α) where
+    α ≃o Specialization (WithUpperSetTopology α) where
   toEquiv := toUpperSet.trans toEquiv
   map_rel_iff' := by simp
 
 /-- An Alexandrov-discrete space is isomorphic to the upper set topology of its specialisation
 order. -/
 def homeoWithUpperSetTopologyorderIso (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] :
-  α ≃ₜ WithUpperSetTopology (Specialization α) :=
+    α ≃ₜ WithUpperSetTopology (Specialization α) :=
 (toEquiv.trans toUpperSet).toHomeomorph λ s ↦ by simp [Set.preimage_comp]
 
 /-- Sends a topological space to its specialisation order. -/
