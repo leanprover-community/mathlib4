@@ -101,13 +101,13 @@ instance self (R : Type u) [CommRing R] : Flat R R := ⟨by
   simp⟩
 #align module.flat.self Module.Flat.self
 
-lemma Flat.fg_ideal_of_ideal (H : Flat.ideal R M) : Flat.fg_ideal R M := fun I _ => H I
+lemma fg_ideal_of_ideal (H : Flat.ideal R M) : Flat.fg_ideal R M := fun I _ => H I
 
-namespace injective_to_ideal
+namespace injective_of_ideal
 
 lemma baer_iff_surjective :
     Module.Baer.{u, u} R M ↔
-    ∀ (I : Ideal R), Function.Surjective (LinearMap.domRestrict' (M₂ := M) I) := by
+    ∀ (I : Ideal R), Function.Surjective <| LinearMap.domRestrict' (M₂ := M) I := by
 fconstructor
 · intro H I g
   obtain ⟨L, H⟩:= H I g
@@ -116,7 +116,7 @@ fconstructor
   obtain ⟨L, H⟩ := H I g
   refine ⟨L, fun x hx => by convert FunLike.congr_fun H ⟨x, hx⟩⟩
 
-lemma lambek [h : CategoryTheory.Injective (ModuleCat.of R $ CharacterModule M)] :
+lemma lambek [h : CategoryTheory.Injective (ModuleCat.of R <| CharacterModule M)] :
     Flat.injective R M := by
   intros A B L hL
   have m1 : Mono L
@@ -175,7 +175,88 @@ lemma lambek [h : CategoryTheory.Injective (ModuleCat.of R $ CharacterModule M)]
     rw [hf']
   convert EQ
 
-end injective_to_ideal
+lemma injective_of_baer (h : Module.Baer.{u, u} R <| CharacterModule M) :
+    Flat.injective R M :=
+  lambek (h := (Module.injective_iff_injective_object _ _).mp <| Module.Baer.injective h)
+
+lemma injective_of_surjective
+    (h : ∀ (I : Ideal R), Function.Surjective <|
+      LinearMap.domRestrict' (M₂ := CharacterModule M) I) :
+    Flat.injective R M :=
+  injective_of_baer _ _ <| (baer_iff_surjective _ _).mpr h
+
+lemma characterfy_surj_of_inj (I : Ideal R)
+    (inj : Function.Injective <| (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
+    Function.Surjective <|
+      (LinearMap.characterfy (R := R) (M := I ⊗[R] M) (N := M)
+        (TensorProduct.lift ((lsmul R M).comp I.subtype))) := by
+  apply LinearMap.charaterfy_surjective_of_injective
+  assumption
+
+lemma baer_characterModule_of_injective
+    (inj : ∀ (I : Ideal R), Function.Injective <|
+      (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
+    Module.Baer.{u, u} R (CharacterModule M) := by
+  rw [baer_iff_surjective]
+  intro I L
+  obtain ⟨F, hF⟩ := characterfy_surj_of_inj R _ I (inj I) <| CharacterModule.uncurry R _ _ L
+  refine ⟨CharacterModule.curry _ _ _ <|
+    (CharacterModule.cong R (R ⊗[R] M) M (TensorProduct.lid _ _)).symm F,
+    FunLike.ext _ _ fun i => FunLike.ext _ _ fun m => ?_⟩
+  simp only [CharacterModule.cong_symm_apply, characterfy_apply, domRestrict'_apply]
+  rw [CharacterModule.curry_apply_apply, LinearMap.comp_apply]
+  simp only [AddMonoidHom.coe_toIntLinearMap, toAddMonoidHom_coe, LinearEquiv.coe_coe, lid_tmul]
+  have EQ := FunLike.congr_fun hF (i ⊗ₜ m)
+  simp only [characterfy_apply] at EQ
+  rw [LinearMap.comp_apply] at EQ
+  simp only [AddMonoidHom.coe_toIntLinearMap, toAddMonoidHom_coe, lift.tmul, LinearMap.coe_comp,
+    coeSubtype, Function.comp_apply, lsmul_apply] at EQ
+  exact EQ
+
+lemma main (ideal : Flat.ideal R M) : Flat.injective R M := by
+  apply injective_of_baer
+  apply baer_characterModule_of_injective
+  exact ideal
+
+end injective_of_ideal
+
+lemma injective_of_ideal (ideal : Flat.ideal R M) : Flat.injective R M :=
+  injective_of_ideal.main R M ideal
+
+namespace ideal_of_fg_ideal
+
+end ideal_of_fg_ideal
+
+lemma tfae : List.TFAE
+    [ Flat.injective R M,
+      Flat.ideal R M,
+      Flat.fg_ideal R M ] := by
+  tfae_have 2 → 1
+  · apply injective_of_ideal
+  tfae_have 1 → 2
+  · intro H I
+    specialize H (ModuleCat.ofHom (R := R) (X := I) (Y := R) <| Submodule.subtype _)
+      (Submodule.injective_subtype _)
+    intro x y h
+    apply H
+    simp only [tensorRight_obj, tensorRight_map]
+    change TensorProduct.map _ LinearMap.id _ =
+      TensorProduct.map _ LinearMap.id _
+    apply_fun TensorProduct.lid R M using LinearEquiv.injective _
+    change ((TensorProduct.lid _ _).toLinearMap ∘ₗ _) x =
+      ((TensorProduct.lid _ _).toLinearMap ∘ₗ _) _
+    convert h <;>
+    · refine TensorProduct.ext ?_
+      ext i m : 2
+      simp only [compr₂_apply, mk_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+        Function.comp_apply, lift.tmul, coeSubtype, lsmul_apply]
+      rfl
+  tfae_have 2 → 3
+  · intro H I _
+    exact H I
+  tfae_have 3 → 2
+  · sorry
+  tfae_finish
 
 end Flat
 

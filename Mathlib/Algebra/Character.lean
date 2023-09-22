@@ -28,31 +28,26 @@ instance : Module R (CharacterModule M) := by
   delta CharacterModule
   infer_instance
 
-@[simps]
-def CharacterModuleFunctor :
-    (ModuleCat.{max u v} R)ᵒᵖ ⥤ ModuleCat.{max u v} R where
-  obj M := ModuleCat.of R <| CharacterModule M.unop
-  map {X Y} L :=
-  { toFun := (. ∘ₗ L.unop.toAddMonoidHom.toIntLinearMap)
-    map_add' := fun _ _ => LinearMap.ext fun _ => rfl
-    map_smul' := fun _ _ => LinearMap.ext fun _ => by
-      simp only [LinearMap.coe_comp, AddMonoidHom.coe_toIntLinearMap, LinearMap.toAddMonoidHom_coe,
-        Function.comp_apply, RingHom.id_apply]
-      rw [LinearMap.bimodule_smul_apply, LinearMap.bimodule_smul_apply, LinearMap.comp_apply]
-      simp only [AddMonoidHom.coe_toIntLinearMap, LinearMap.toAddMonoidHom_coe, map_smul] }
-  map_id {_} := LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
-  map_comp _ _ := LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
+variable {R}
+@[simps] def LinearMap.characterfy {M N : Type w}
+    [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    (L : M →ₗ[R] N) : CharacterModule N →ₗ[R] CharacterModule M where
+  toFun := (. ∘ₗ L.toAddMonoidHom.toIntLinearMap)
+  map_add' _ _ := FunLike.ext _ _ fun _ => rfl
+  map_smul' _ _ := FunLike.ext _ _ fun _ => by
+    rw [RingHom.id_apply, LinearMap.bimodule_smul_apply, LinearMap.comp_apply,
+      LinearMap.bimodule_smul_apply, LinearMap.comp_apply]
+    simp only [AddMonoidHom.coe_toIntLinearMap, LinearMap.toAddMonoidHom_coe, map_smul]
 
-namespace CharacterModuleFunctor
-
-lemma map_surjective_of_injective_unop {M N : (ModuleCat R)ᵒᵖ}
-    (L : M ⟶ N) (hL : Function.Injective L.unop) :
-    Function.Surjective <| (CharacterModuleFunctor R).map L := by
+lemma LinearMap.charaterfy_surjective_of_injective {M N : Type w}
+    [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    (L : M →ₗ[R] N) (inj : Function.Injective L) :
+    Function.Surjective L.characterfy := by
   rintro (g : _ →ₗ[_] _)
-  let L' := AddCommGroupCat.ofHom L.unop.toAddMonoidHom
+  let L' := AddCommGroupCat.ofHom L.toAddMonoidHom
   have m1 : Mono <| L'
   · rw [AddCommGroupCat.mono_iff_injective]
-    exact hL
+    exact inj
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
   have i1 : Injective (AddCommGroupCat.of <| ULift <| AddCircle (1 : ℚ)) :=
     AddCommGroupCat.injective_of_divisible _
@@ -61,6 +56,22 @@ lemma map_surjective_of_injective_unop {M N : (ModuleCat R)ᵒᵖ}
   exact ⟨⟨⟨ULift.down, by intros; rfl⟩, by intros; rfl⟩ ∘ₗ
     (Injective.factorThru g' L').toIntLinearMap, LinearMap.ext fun _ => congr_arg ULift.down <|
       FunLike.congr_fun (Injective.comp_factorThru g' L') _⟩
+
+variable (R)
+@[simps]
+def CharacterModuleFunctor :
+    (ModuleCat.{max u v} R)ᵒᵖ ⥤ ModuleCat.{max u v} R where
+  obj M := ModuleCat.of R <| CharacterModule M.unop
+  map L := L.unop.characterfy
+  map_id {_} := LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
+  map_comp _ _ := LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
+
+namespace CharacterModuleFunctor
+
+lemma map_surjective_of_injective_unop {M N : (ModuleCat R)ᵒᵖ}
+    (L : M ⟶ N) (hL : Function.Injective L.unop) :
+    Function.Surjective <| (CharacterModuleFunctor R).map L :=
+  L.unop.charaterfy_surjective_of_injective hL
 
 end CharacterModuleFunctor
 
@@ -128,3 +139,20 @@ def CharacterModule.homEquiv : (N →ₗ[R] CharacterModule M) ≃ CharacterModu
     (by simp only [map_zero])
     (fun _ _ => by rw [uncurry_apply, toAddCommGroup'_apply_tmul, curry_apply_apply])
     (fun x y hx hy => by rw [map_add, hx, hy, map_add]) }
+
+@[simps]
+def CharacterModule.cong (e : M ≃ₗ[R] N) : CharacterModule M ≃ₗ[R] CharacterModule N where
+  toFun := e.symm.toLinearMap.characterfy
+  map_add' := map_add _
+  map_smul' := map_smul _
+  invFun := e.toLinearMap.characterfy
+  left_inv _ := FunLike.ext _ _ fun _ => by
+    simp only [LinearMap.characterfy_apply]
+    rw [LinearMap.comp_apply, LinearMap.comp_apply, AddMonoidHom.coe_toIntLinearMap,
+      AddMonoidHom.coe_toIntLinearMap]
+    simp only [LinearMap.toAddMonoidHom_coe, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
+  right_inv _ := FunLike.ext _ _ fun _ => by
+    simp only [LinearMap.characterfy_apply]
+    rw [LinearMap.comp_apply, LinearMap.comp_apply, AddMonoidHom.coe_toIntLinearMap,
+      AddMonoidHom.coe_toIntLinearMap]
+    simp only [LinearMap.toAddMonoidHom_coe, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply]
