@@ -1863,7 +1863,7 @@ theorem degree_trunc_lt (f : R⟦X⟧) (n) : (trunc n f).degree < n := by
   intros
   rw [coeff_trunc]
   split_ifs with h
-  · rw [←not_le] at h;
+  · rw [←not_le] at h
     contradiction
   · rfl
 
