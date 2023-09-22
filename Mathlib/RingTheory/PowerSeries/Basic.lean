@@ -2824,7 +2824,7 @@ theorem coeff_coe_trunc_of_lt {n m} {f : R⟦X⟧} (h : n < m) :
     coeff R n (trunc m f) = coeff R n f := by
   rwa [coeff_coe, coeff_trunc, if_pos]
 
-/-- The `n`-th coefficient of a`f*g` may be calculated
+/-- The `n`-th coefficient of `f*g` may be calculated
 from the truncations of `f` and `g`.-/
 theorem coeff_mul_eq_coeff_trunc_mul_trunc₂ {n a b} (f g) (ha : n < a) (hb : n < b) :
     coeff R n (f * g) = coeff R n (trunc a f * trunc b g) := by
