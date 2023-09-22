@@ -1858,6 +1858,15 @@ theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n 
 
 @[simp] lemma trunc_zero' {f : R⟦X⟧} : trunc 0 f = 0 := rfl
 
+theorem degree_trunc_lt (f : R⟦X⟧) (n) : (trunc n f).degree < n := by
+  rw [degree_lt_iff_coeff_zero]
+  intros
+  rw [coeff_trunc]
+  split_ifs with h
+  · rw [←not_le] at h;
+    contradiction
+  · rfl
+
 theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+* S) (n) (f : R⟦X⟧) :
     (trunc n f).eval₂ G s = ∑ i in range n, G (coeff R i f) * s ^ i := by
   cases n with
