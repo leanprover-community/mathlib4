@@ -584,7 +584,7 @@ theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne
 #align padic_val_nat_primes padicValNat_primes
 
   /-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`.-/
-  lemma le_nat_log {p : ℕ} [hp : Fact (Nat.Prime p)] (n : ℕ):
+  lemma le_nat_log (n : ℕ) [hp : Fact (Nat.Prime p)]:
     padicValNat p n ≤ Nat.log p n  := by
       by_cases (n = 0)
       · simp only [h, padicValNat.zero, Nat.log_zero_right, le_refl]
@@ -592,12 +592,12 @@ theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne
         by_contra Hnot; push_neg at Hnot
         exact h (Nat.eq_zero_of_dvd_of_lt (pow_padicValNat_dvd (p := p) (n := n)) Hnot)
 
-  lemma le_nat_log_gen {p n₁ n₂ : ℕ} [Fact (Nat.Prime p)] (hn : n₁ ≤ n₂):
+  lemma le_nat_log_gen {n₁ n₂ : ℕ} [Fact (Nat.Prime p)] (hn : n₁ ≤ n₂):
     padicValNat p n₁ ≤ Nat.log p n₂ := le_trans (le_nat_log n₁) (Nat.log_mono_right hn)
 
   /-- The p-adic valuation of `n` is equal to the logarithm w.r.t `p` iff
       `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
-  lemma nat_log_eq_padicvalnat_iff {p : ℕ} [hp : Fact (Nat.Prime p)] (n : ℕ)(hn : 0 < n):
+  lemma nat_log_eq_padicvalnat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n):
   Nat.log p n = padicValNat p n ↔ n < p^(padicValNat p n + 1) := by
     · rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by linarith⟩)]
       · rw [and_iff_right_iff_imp]
