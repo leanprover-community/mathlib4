@@ -225,6 +225,135 @@ lemma injective_of_ideal (ideal : Flat.ideal R M) : Flat.injective R M :=
 
 namespace ideal_of_fg_ideal
 
+variable {R M}
+variable (m : Submodule R M)
+
+@[ext]
+structure _root_.Submodule.fgSubmodule :=
+(asSubmodule : Submodule R M)
+(le : asSubmodule ≤ m)
+(fg : Submodule.FG asSubmodule)
+
+instance : PartialOrder m.fgSubmodule :=
+PartialOrder.lift fgSubmodule.asSubmodule fun _ _ h => Submodule.fgSubmodule.ext _ _ h
+
+instance : Sup m.fgSubmodule where
+  sup a b := ⟨a.1 ⊔ b.1, sup_le a.2 b.2, Submodule.FG.sup a.3 b.3⟩
+
+instance : SemilatticeSup m.fgSubmodule where
+  le_sup_left a _ := le_sup_left (a := a.1)
+  le_sup_right _ b := le_sup_right (b := b.1)
+  sup_le a _ _ := sup_le (a := a.1)
+
+instance : IsDirected m.fgSubmodule (. ≤ .) where
+  directed a b := ⟨a ⊔ b, le_sup_left, le_sup_right⟩
+
+instance : Inhabited m.fgSubmodule where
+  default := ⟨⊥, bot_le, Submodule.fg_bot⟩
+
+instance : SetLike m.fgSubmodule M where
+  coe a := a.1
+  coe_injective' := by intro a b h; simp only [SetLike.coe_set_eq] at h; ext1; exact h
+
+@[simps]
+def _root_.Submodule.principalSubmodule (i : m) : m.fgSubmodule where
+  asSubmodule := Submodule.span R {i.1}
+  le := Submodule.span_le.mpr <| Set.singleton_subset_iff.mpr i.2
+  fg := Submodule.fg_span_singleton _
+
+lemma _root_.Submodule.principalSubmodule_smul_le (r : R) (i : m) :
+    m.principalSubmodule (r • i) ≤ m.principalSubmodule i :=
+  Submodule.span_le.mpr <| Set.singleton_subset_iff.mpr <| Submodule.mem_span_singleton.mpr ⟨r, rfl⟩
+
+lemma _root_.Submodule.mem_principalSubmodule_self (i : m) : (i : M) ∈ m.principalSubmodule i :=
+  Submodule.mem_span_singleton_self _
+
+@[simps]
+def _root_.Submodule.doubletonSubmodule (i j : m) : m.fgSubmodule where
+  asSubmodule := Submodule.span R {i.1, j.1}
+  le := Submodule.span_le.mpr <| fun x hx => by aesop
+  fg := Submodule.fg_span <| by aesop
+
+lemma _root_.Submodule.mem_self_doubletonSubmodule_left (i j : m) :
+    i.1 ∈ m.doubletonSubmodule i j :=
+  Submodule.subset_span <| by aesop
+
+lemma _root_.Submodule.mem_self_doubletonSubmodule_right (i j : m) :
+    j.1 ∈ m.doubletonSubmodule i j :=
+  Submodule.subset_span <| by aesop
+
+lemma _root_.Submodule.principalSubmodule_le_doubletonSubmodule_left (i j : m) :
+    m.principalSubmodule i ≤ m.doubletonSubmodule i j :=
+  Submodule.span_mono <| by aesop
+
+lemma _root_.Submodule.principalSubmodule_le_doubletonSubmodule_right (i j : m) :
+    m.principalSubmodule j ≤ m.doubletonSubmodule i j :=
+  Submodule.span_mono <| by aesop
+
+lemma _root_.Submodule.principalSubmodule_add_le_doubletonSubmodule (i j : m) :
+    m.principalSubmodule (i + j) ≤ m.doubletonSubmodule i j :=
+  Submodule.span_le.mpr <| Set.singleton_subset_iff.mpr <| Submodule.add_mem _
+    (m.mem_self_doubletonSubmodule_left _ _) (m.mem_self_doubletonSubmodule_right _ _)
+
+variable [DecidableEq m.fgSubmodule]
+
+def _root_.Submodule.asDirectLimit : Type _ :=
+  DirectLimit (R := R) (ι := m.fgSubmodule)
+    (fun (a : m.fgSubmodule) => a.asSubmodule) <| fun _ _ h => Submodule.ofLe h
+
+instance : AddCommGroup m.asDirectLimit := by
+  delta asDirectLimit
+  infer_instance
+
+instance : Module R m.asDirectLimit := by
+  delta asDirectLimit
+  infer_instance
+
+def _root_.Submodule.asDirectLimitToSelf : m.asDirectLimit →ₗ[R] m :=
+DirectLimit.lift _ _ _ _ (fun i => Submodule.ofLe i.le) <| fun _ _ _ _ => Subtype.ext rfl
+
+@[simp] lemma _root_.Submodule.asDirectLimitToSelf_apply_of (a : m.fgSubmodule) (i : a) :
+    m.asDirectLimitToSelf (DirectLimit.of _ _ _ _ a i) = Submodule.ofLe a.le i := by
+  delta asDirectLimitToSelf
+  erw [DirectLimit.lift_of]
+
+@[simps]
+def _root_.Submodule.toAsDirectLimit : m →ₗ[R] m.asDirectLimit where
+  toFun x := DirectLimit.of _ _ _ _ (m.principalSubmodule x) <| ⟨_, m.mem_principalSubmodule_self _⟩
+  map_add' x y := by
+    simp only [principalSubmodule_asSubmodule, AddSubmonoid.coe_add, coe_toAddSubmonoid]
+    let n : m.fgSubmodule := m.doubletonSubmodule x y
+    have le1 : m.principalSubmodule x ≤ n := m.principalSubmodule_le_doubletonSubmodule_left _ _
+    have le2 : m.principalSubmodule y ≤ n := m.principalSubmodule_le_doubletonSubmodule_right _ _
+    have le3 : m.principalSubmodule (x + y) ≤ n :=
+      m.principalSubmodule_add_le_doubletonSubmodule _ _
+    have eq1 := DirectLimit.of_f (R := R) (ι := m.fgSubmodule) (G := fun a => a.asSubmodule)
+      (f := fun _ _ h => Submodule.ofLe h) (i := m.principalSubmodule x)
+      (j := n) (hij := le1) (x := ⟨x, m.mem_principalSubmodule_self _⟩)
+    have eq2 := DirectLimit.of_f (R := R) (ι := m.fgSubmodule) (G := fun a => a.asSubmodule)
+      (f := fun _ _ h => Submodule.ofLe h) (i := m.principalSubmodule y)
+      (j := n) (hij := le2) (x := ⟨y, m.mem_principalSubmodule_self _⟩)
+    have eq3 := DirectLimit.of_f (R := R) (ι := m.fgSubmodule) (G := fun a => a.asSubmodule)
+      (f := fun _ _ h => Submodule.ofLe h) (i := m.principalSubmodule (x + y))
+      (j := n) (hij := le3) (x := ⟨x.1 + y.1, ?will_be_automatic⟩)
+    simp only [doubletonSubmodule_asSubmodule, principalSubmodule_asSubmodule] at eq1 eq2 eq3
+    rw [← eq1, ← eq2, ← _root_.map_add]
+    exact eq3.symm
+  map_smul' r x := by
+    simp only [principalSubmodule_asSubmodule, SetLike.val_smul, RingHom.id_apply]
+    have le1 : m.principalSubmodule (r • x) ≤ m.principalSubmodule x
+    · exact m.principalSubmodule_smul_le _ _
+    have eq1 := DirectLimit.of_f (R := R) (ι := m.fgSubmodule) (G := fun a => a.asSubmodule)
+      (f := fun _ _ h => Submodule.ofLe h) (i := m.principalSubmodule <| r • x)
+      (j := m.principalSubmodule x) (hij := le1) (x := ⟨r • x, m.mem_principalSubmodule_self _⟩)
+    simp only [principalSubmodule_asSubmodule, SetLike.val_smul] at eq1
+    rw [← eq1, ← LinearMap.map_smul]
+    congr
+
+def _root_.Submodule.equivAsDirectLimit : m ≃ₗ[R] m.asDirectLimit :=
+LinearEquiv.ofLinear m.toAsDirectLimit m.asDirectLimitToSelf _ _
+
+
 end ideal_of_fg_ideal
 
 lemma tfae : List.TFAE
