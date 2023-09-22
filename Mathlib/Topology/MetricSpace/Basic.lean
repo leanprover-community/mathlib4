@@ -1953,7 +1953,7 @@ lemma eventually_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
     ∀ᶠ r in 𝓝 (0 : ℝ), IsCompact (closedBall x r) := by
   rcases local_compact_nhds (x := x) (n := univ) univ_mem with ⟨s, hs, -, s_compact⟩
   filter_upwards [eventually_closedBall_subset hs] with r hr
-  exact isCompact_of_isClosed_subset s_compact isClosed_ball hr
+  exact IsCompact.of_isClosed_subset s_compact isClosed_ball hr
 
 lemma exists_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
     ∃ r, 0 < r ∧ IsCompact (closedBall x r) := by
@@ -2204,7 +2204,7 @@ export ProperSpace (isCompact_closedBall)
 /-- In a proper pseudometric space, all spheres are compact. -/
 theorem isCompact_sphere {α : Type*} [PseudoMetricSpace α] [ProperSpace α] (x : α) (r : ℝ) :
     IsCompact (sphere x r) :=
-  isCompact_of_isClosed_subset (isCompact_closedBall x r) isClosed_sphere sphere_subset_closedBall
+  (isCompact_closedBall x r).of_isClosed_subset isClosed_sphere sphere_subset_closedBall
 #align is_compact_sphere isCompact_sphere
 
 /-- In a proper pseudometric space, any sphere is a `CompactSpace` when considered as a subtype. -/
@@ -2239,7 +2239,7 @@ theorem tendsto_dist_left_cocompact_atTop [ProperSpace α] (x : α) :
 useful when the lower bound for the radius is 0. -/
 theorem properSpace_of_compact_closedBall_of_le (R : ℝ)
     (h : ∀ x : α, ∀ r, R ≤ r → IsCompact (closedBall x r)) : ProperSpace α :=
-  ⟨fun x r => isCompact_of_isClosed_subset (h x (max r R) (le_max_right _ _)) isClosed_ball
+  ⟨fun x r => IsCompact.of_isClosed_subset (h x (max r R) (le_max_right _ _)) isClosed_ball
     (closedBall_subset_closedBall <| le_max_left _ _)⟩
 #align proper_space_of_compact_closed_ball_of_le properSpace_of_compact_closedBall_of_le
 
@@ -2298,8 +2298,7 @@ theorem exists_pos_lt_subset_ball (hr : 0 < r) (hs : IsClosed s) (h : s ⊆ ball
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · exact ⟨r / 2, ⟨half_pos hr, half_lt_self hr⟩, empty_subset _⟩
   have : IsCompact s :=
-    isCompact_of_isClosed_subset (isCompact_closedBall x r) hs
-      (h.trans ball_subset_closedBall)
+    (isCompact_closedBall x r).of_isClosed_subset hs (h.trans ball_subset_closedBall)
   obtain ⟨y, hys, hy⟩ : ∃ y ∈ s, s ⊆ closedBall x (dist y x) :=
     this.exists_forall_ge hne (continuous_id.dist continuous_const).continuousOn
   have hyr : dist y x < r := h hys
@@ -2558,7 +2557,7 @@ theorem isCompact_of_isClosed_isBounded [ProperSpace α] (hc : IsClosed s) (hb :
   rcases eq_empty_or_nonempty s with (rfl | ⟨x, -⟩)
   · exact isCompact_empty
   · rcases hb.subset_closedBall x with ⟨r, hr⟩
-    exact isCompact_of_isClosed_subset (isCompact_closedBall x r) hc hr
+    exact (isCompact_closedBall x r).of_isClosed_subset hc hr
 #align metric.is_compact_of_is_closed_bounded Metric.isCompact_of_isClosed_isBounded
 
 /-- The **Heine–Borel theorem**: In a proper space, the closure of a bounded set is compact. -/

@@ -162,7 +162,7 @@ protected theorem traverse_map {α β γ : Type u} (g : α → β) (f : β → G
 variable [LawfulApplicative F] [LawfulApplicative G]
 
 protected theorem id_traverse {σ α} (x : σ ⊕ α) :
-  Sum.traverse (pure : α → Id α) x = x := by cases x <;> rfl
+    Sum.traverse (pure : α → Id α) x = x := by cases x <;> rfl
 #align sum.id_traverse Sum.id_traverse
 
 protected theorem comp_traverse {α β γ : Type u} (f : β → F γ) (g : α → G β) (x : σ ⊕ α) :
