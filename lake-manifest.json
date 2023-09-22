@@ -12,10 +12,10 @@
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "4f8b397237411249930791f1cba0a9d2880a02dd",
+    "rev": "ebc619e0f1d8afc3043222eb3acd72f02eae1de1",
     "opts": {},
     "name": "aesop",
-    "inputRev?": "master",
+    "inputRev?": "ext",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/mhuisi/lean4-cli.git",
