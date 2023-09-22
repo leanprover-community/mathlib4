@@ -12,15 +12,19 @@ import Mathlib.Algebra.Star.Order
 A noncommutative star-ordered ring is generally not an ordered ring. Indeed, in a star-ordered
 ring, nonnegative elements are self-adjoint, but the product of self-adjoint elements is
 self-adjoint if and only if they commute. Therefore, a necessary condition for a star-ordered ring
-to be an ordered ring is that all nonnegative elements commute.
+to be an ordered ring is that all nonnegative elements commute.  Consequently, if a star-ordered
+ring is spanned by it nonnegative elements (as is the case for C⋆-algebras) and it is also an
+ordered ring, then it is commutative.
 
-In this file we prove a kind of converse: a *commutative* star-ordered ring is an ordered ring.
+In this file we prove the converse: a *commutative* star-ordered ring is an ordered ring.
 -/
 
 namespace StarOrderedRing
 
 /- This example shows that nonnegative elements in a ordered semiring which is also star-ordered
-must commute. -/
+must commute. We provide this only as an example as opposed to a lemma because we never expect the
+type class assumptions to be satisfied without a `CommSemiring` intance already in scope; not that
+it is impossible, only that it shouldn't occur in practice. -/
 example {R : Type*} [OrderedSemiring R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     x * y = y * x := by
   -- nonnegative elements are self-adjoint; we prove it by hand to avoid adding imports
@@ -53,8 +57,8 @@ lemma mul_le_mul_of_nonneg_left {R : Type*} [CommSemiring R] [PartialOrder R] [S
 /-- A commutative star-ordered semiring is an ordered semiring.
 
 See note [lower instance priority]. -/
-instance (priority := 100) {R : Type*} [CommSemiring R] [PartialOrder R] [StarOrderedRing R] :
-    OrderedCommSemiring R where
+instance (priority := 100) toOrderedCommSemiring {R : Type*} [CommSemiring R] [PartialOrder R]
+    [StarOrderedRing R] : OrderedCommSemiring R where
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
   mul_comm := mul_comm
@@ -64,8 +68,8 @@ instance (priority := 100) {R : Type*} [CommSemiring R] [PartialOrder R] [StarOr
 /-- A commutative star-ordered ring is an ordered ring.
 
 See note [lower instance priority]. -/
-instance (priority := 100) {R : Type*} [CommRing R] [PartialOrder R] [StarOrderedRing R] :
-    OrderedCommRing R where
+instance (priority := 100) toOrderedCommRing {R : Type*} [CommRing R] [PartialOrder R]
+    [StarOrderedRing R] : OrderedCommRing R where
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := zero_le_one
   mul_comm := mul_comm
