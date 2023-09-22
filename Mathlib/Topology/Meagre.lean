@@ -82,14 +82,16 @@ lemma meagre_iUnion {s : ℕ → Set α} (hs : ∀ n, IsMeagre (s n)) : IsMeagre
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
--- TODO: move to the right place!
-lemma sUnion_subset_mono1 {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, t ⊆ f t) :
+-- TODO: move to the right place! Data.Set.Lattice
+/-- `sUnion` is monotone under taking a subset of each set. -/
+lemma sUnion_mono_subsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, t ⊆ f t) :
     ⋃₀ s ⊆ ⋃₀ (f '' s) := by
   rintro x ⟨t, htx, hxt⟩
   use f t
   exact ⟨mem_image_of_mem f htx, hf t hxt⟩
 
-lemma sUnion_subset_mono2 {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, t ⊇ f t) :
+/-- `sUnion` is monotone under taking a superset of each set. -/
+lemma sUnion_mono_supsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, t ⊇ f t) :
     ⋃₀ s ⊇ ⋃₀ (f '' s) := by
   -- let t ∈ f '' s be arbitrary; then t = f u for some u : Set α
   rintro x ⟨t, ⟨u, hus, hut⟩, hxt⟩
@@ -98,11 +100,14 @@ lemma sUnion_subset_mono2 {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t
   use u
   exact ⟨hus, this hxt⟩
 
+-- xxx: find_home says Topology.Meagre; that seems like a bug
+/-- `sUnion` is monotone under taking the closure of each set. -/
 lemma sUnion_subset_closure {s : Set (Set α)} : ⋃₀ s ⊆ ⋃₀ (closure '' s) :=
-  sUnion_subset_mono1 (by apply subset_closure)
+  sUnion_mono_subsets (by apply subset_closure)
 
+/-- `sUnion` is monotone under taking the interior of each set. -/
 lemma sUnion_supset_interior {s : Set (Set α)} : ⋃₀ (interior '' s) ⊆ ⋃₀ s:=
-  sUnion_subset_mono2 (by apply interior_subset)
+  sUnion_mono_supsets (by apply interior_subset)
 
 /-- A set is meagre iff it is contained in the countable union of nowhere dense sets. -/
 lemma meagre_iff_countable_union_nowhere_dense {s : Set α} : IsMeagre s ↔
