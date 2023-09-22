@@ -49,7 +49,7 @@ ERR_SEM = 13 # the substring " ;"
 ERR_WIN = 14 # Windows line endings "\r\n"
 ERR_TWS = 15 # trailing whitespace
 ERR_CLN = 16 # line starts with a colon
-ERR_4SP = 17 # second lint not indented
+ERR_4SP = 17 # second line not indented
 
 exceptions = []
 
