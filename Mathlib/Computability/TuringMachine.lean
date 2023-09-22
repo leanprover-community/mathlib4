@@ -91,7 +91,7 @@ theorem BlankExtends.below_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
     BlankExtends l l₁ → BlankExtends l l₂ → l₁.length ≤ l₂.length → BlankExtends l₁ l₂ := by
   rintro ⟨i, rfl⟩ ⟨j, rfl⟩ h; use j - i
   simp only [List.length_append, add_le_add_iff_left, List.length_replicate] at h
-  simp only [List.append_replicate, add_tsub_cancel_of_le h, List.append_assoc]
+  simp only [List.replicate_append, add_tsub_cancel_of_le h, List.append_assoc]
 #align turing.blank_extends.below_of_le Turing.BlankExtends.below_of_le
 
 /-- Any two extensions by blank `l₁,l₂` of `l` have a common join (which can be taken to be the
@@ -106,7 +106,7 @@ theorem BlankExtends.above_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
     BlankExtends l₁ l → BlankExtends l₂ l → l₁.length ≤ l₂.length → BlankExtends l₁ l₂ := by
   rintro ⟨i, rfl⟩ ⟨j, e⟩ h; use i - j
   refine' List.append_right_cancel (e.symm.trans _)
-  rw [List.append_assoc, List.append_replicate, tsub_add_cancel_of_le]
+  rw [List.append_assoc, List.replicate_append, tsub_add_cancel_of_le]
   apply_fun List.length at e
   simp only [List.length_append, List.length_replicate] at e
   rwa [← add_le_add_iff_left, e, add_le_add_iff_right]
@@ -472,7 +472,7 @@ def ListBlank.bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ) (f
   rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine' Quotient.sound' (Or.inl ⟨i * n, _⟩)
   rw [List.append_bind, mul_comm]; congr
   induction' i with i IH; rfl
-  simp only [IH, e, List.append_replicate, Nat.mul_succ, add_comm, List.replicate_succ,
+  simp only [IH, e, List.replicate_append, Nat.mul_succ, add_comm, List.replicate_succ,
     List.cons_bind]
 #align turing.list_blank.bind Turing.ListBlank.bind
 

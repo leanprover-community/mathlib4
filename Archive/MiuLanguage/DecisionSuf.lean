@@ -59,7 +59,7 @@ private theorem der_cons_replicate (n : ℕ) : Derivable (M :: replicate (2 ^ n)
   · -- base case
     constructor
   · -- inductive step
-    rw [succ_eq_add_one, pow_add, pow_one 2, mul_two, ←append_replicate]
+    rw [succ_eq_add_one, pow_add, pow_one 2, mul_two, ←replicate_append]
     exact Derivable.r2 hk
 
 /-!
@@ -84,18 +84,18 @@ an even number of `U`s and `z` is any `Miustr`.
 Any number of successive occurrences of `"UU"` can be removed from the end of a `Derivable` `Miustr`
 to produce another `Derivable` `Miustr`.
 -/
-theorem der_of_der_append_replicate_U_even {z : Miustr} {m : ℕ}
+theorem der_of_der_replicate_append_U_even {z : Miustr} {m : ℕ}
     (h : Derivable (z ++ ↑(replicate (m * 2) U))) : Derivable z := by
   induction' m with k hk
   · revert h
     rw [replicate, append_nil]; exact id
   · apply hk
-    simp only [succ_mul, ←append_replicate] at h
+    simp only [succ_mul, ←replicate_append] at h
     rw [← append_nil ↑(z ++ ↑(replicate (k * 2) U))]
     apply Derivable.r4
     rwa [append_nil, append_assoc]
 set_option linter.uppercaseLean3 false in
-#align miu.der_of_der_append_replicate_U_even Miu.der_of_der_append_replicate_U_even
+#align miu.der_of_der_replicate_append_U_even Miu.der_of_der_replicate_append_U_even
 
 /-!
 In fine-tuning my application of `simp`, I issued the following commend to determine which lemmas
@@ -119,12 +119,12 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
     specialize ha (U :: xs)
     intro h₂
     -- We massage the goal into a form amenable to the application of `ha`.
-    rw [succ_eq_add_one, ← append_replicate, ← append_assoc, ← cons_append, replicate_one,
+    rw [succ_eq_add_one, ← replicate_append, ← append_assoc, ← cons_append, replicate_one,
       append_assoc, singleton_append]
     apply ha
     apply Derivable.r3
     change Derivable (↑(M :: replicate (c + 3 * a) I) ++ ↑(replicate 3 I) ++ xs)
-    rwa [cons_append, append_replicate, add_assoc]
+    rwa [cons_append, replicate_append, add_assoc]
 set_option linter.uppercaseLean3 false in
 #align miu.der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append Miu.der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append
 
@@ -177,7 +177,7 @@ end Arithmetic
 theorem replicate_pow_minus_append {m : ℕ} :
     M :: replicate (2 ^ m - 1) I ++ [I] = M :: replicate (2 ^ m) I := by
   change M :: replicate (2 ^ m - 1) I ++ replicate 1 I = M :: replicate (2 ^ m) I
-  rw [cons_append, append_replicate, tsub_add_cancel_of_le (one_le_pow' m 1)]
+  rw [cons_append, replicate_append, tsub_add_cancel_of_le (one_le_pow' m 1)]
 #align miu.replicate_pow_minus_append Miu.replicate_pow_minus_append
 
 /--
@@ -206,10 +206,10 @@ theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
     rw [Nat.mul_div_cancel']
     · exact add_tsub_cancel_of_le hm.1
     · exact (modEq_iff_dvd' hm.1).mp hm.2.symm
-  rw [append_assoc, append_replicate _ _] at hw₃
+  rw [append_assoc, replicate_append _ _] at hw₃
   cases' add_mod2 ((2 ^ m - c) / 3) with t ht
   rw [ht] at hw₃
-  exact der_of_der_append_replicate_U_even hw₃
+  exact der_of_der_replicate_append_U_even hw₃
 set_option linter.uppercaseLean3 false in
 #align miu.der_replicate_I_of_mod3 Miu.der_replicate_I_of_mod3
 
@@ -234,10 +234,10 @@ example (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) : Derivable (M :: replicate c I)
     rw [Nat.mul_div_cancel']
     · exact add_tsub_cancel_of_le hm.1
     · exact (modEq_iff_dvd' hm.1).mp hm.2.symm
-  rw [append_assoc, append_replicate _ _] at hw₃
+  rw [append_assoc, replicate_append _ _] at hw₃
   cases' add_mod2 ((2 ^ m - c) / 3) with t ht
   rw [ht] at hw₃
-  exact der_of_der_append_replicate_U_even hw₃
+  exact der_of_der_replicate_append_U_even hw₃
 
 /-!
 ### `Decstr` is a sufficient condition

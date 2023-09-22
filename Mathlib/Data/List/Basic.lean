@@ -438,11 +438,11 @@ theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length
 #align list.eq_replicate List.eq_replicate
 
 @[simp]
-theorem append_replicate (m n) (a : α) : replicate m a ++ replicate n a = replicate (m + n) a := by
+theorem replicate_append (m n) (a : α) : replicate m a ++ replicate n a = replicate (m + n) a := by
   induction m <;> simp [*, zero_add, succ_add, replicate]
 
 theorem replicate_succ' (n) (a : α) : replicate (n + 1) a = replicate n a ++ [a] :=
-  Eq.symm (append_replicate n 1 a)
+  Eq.symm (replicate_append n 1 a)
 #align list.replicate_succ' List.replicate_succ'
 
 theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h =>
