@@ -340,7 +340,7 @@ instance addCommMonoid : AddCommMonoid (OuterMeasure α) :=
 /-- `(⇑)` as an `AddMonoidHom`. -/
 @[simps]
 def coeFnAddMonoidHom : OuterMeasure α →+ Set α → ℝ≥0∞ where
-    toFun := (⇑)
+  toFun := (⇑)
     map_zero' := coe_zero
     map_add' := coe_add
 #align measure_theory.outer_measure.coe_fn_add_monoid_hom MeasureTheory.OuterMeasure.coeFnAddMonoidHom

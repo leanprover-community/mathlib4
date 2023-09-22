@@ -139,7 +139,7 @@ theorem det_adjustToOrientation :
 #align orthonormal_basis.det_adjust_to_orientation OrthonormalBasis.det_adjustToOrientation
 
 theorem abs_det_adjustToOrientation (v : ι → E) :
-    |(e.adjustToOrientation x).toBasis.det v| = |e.toBasis.det v| := by
+  |(e.adjustToOrientation x).toBasis.det v| = |e.toBasis.det v| := by
   simp [toBasis_adjustToOrientation]
 #align orthonormal_basis.abs_det_adjust_to_orientation OrthonormalBasis.abs_det_adjustToOrientation
 
@@ -249,7 +249,7 @@ theorem volumeForm_neg_orientation : (-o).volumeForm = -o.volumeForm := by
 #align orientation.volume_form_neg_orientation Orientation.volumeForm_neg_orientation
 
 theorem volumeForm_robust' (b : OrthonormalBasis (Fin n) ℝ E) (v : Fin n → E) :
-    |o.volumeForm v| = |b.toBasis.det v| := by
+  |o.volumeForm v| = |b.toBasis.det v| := by
   cases n
   · refine' o.eq_or_eq_neg_of_isEmpty.elim _ _ <;> rintro rfl <;> simp
   · rw [o.volumeForm_robust (b.adjustToOrientation o) (b.orientation_adjustToOrientation o),
@@ -308,7 +308,7 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
 /-- The output of the volume form of an oriented real inner product space `E` when evaluated on an
 orthonormal basis is ±1. -/
 theorem abs_volumeForm_apply_of_orthonormal (v : OrthonormalBasis (Fin n) ℝ E) :
-    |o.volumeForm v| = 1 := by
+  |o.volumeForm v| = 1 := by
   simpa [o.volumeForm_robust' v v] using congr_arg abs v.toBasis.det_self
 #align orientation.abs_volume_form_apply_of_orthonormal Orientation.abs_volumeForm_apply_of_orthonormal
 

@@ -608,7 +608,7 @@ def fst : Submodule R (M × M₂) :=
 /-- `M` as a submodule of `M × N` is isomorphic to `M`. -/
 @[simps]
 def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where -- Porting note: proofs were `tidy` or `simp`
-  toFun x := x.1.1
+    toFun x := x.1.1
   invFun m := ⟨⟨m, 0⟩, by simp only [fst, comap_bot, mem_ker, snd_apply]⟩
   map_add' := by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.fst_add, Subtype.forall,
     implies_true, Prod.forall, forall_const]
@@ -643,7 +643,7 @@ def snd : Submodule R (M × M₂) :=
 /-- `N` as a submodule of `M × N` is isomorphic to `N`. -/
 @[simps]
 def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where -- Porting note: proofs were `tidy` or `simp`
-  toFun x := x.1.2
+    toFun x := x.1.2
   invFun n := ⟨⟨0, n⟩, by simp only [snd, comap_bot, mem_ker, fst_apply]⟩
   map_add' := by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.snd_add, Subtype.forall,
     implies_true, Prod.forall, forall_const]

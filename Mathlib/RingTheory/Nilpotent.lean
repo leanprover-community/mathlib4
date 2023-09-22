@@ -75,7 +75,7 @@ theorem IsNilpotent.sub_one_isUnit [Ring R] {r : R} (hnil : IsNilpotent r) : IsU
     simp
 
 theorem Commute.IsNilpotent.add_isUnit [Ring R] {r : R} {u : Rˣ} (hnil : IsNilpotent r)
-  (hru : Commute r (↑u⁻¹ : R)) : IsUnit (u + r) := by
+    (hru : Commute r (↑u⁻¹ : R)) : IsUnit (u + r) := by
   rw [← Units.isUnit_mul_units _ u⁻¹, add_mul, Units.mul_inv, ← IsUnit.neg_iff, add_comm, neg_add,
     ← sub_eq_add_neg]
   obtain ⟨n, hn⟩ := hnil

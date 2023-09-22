@@ -480,7 +480,7 @@ theorem le_seminorm (k n : ℕ) (f : 𝓢(E, F)) (x : E) :
 
 Variant for functions `𝓢(ℝ, F)`. -/
 theorem le_seminorm' (k n : ℕ) (f : 𝓢(ℝ, F)) (x : ℝ) :
-    |x| ^ k * ‖iteratedDeriv n f x‖ ≤ SchwartzMap.seminorm 𝕜 k n f := by
+  |x| ^ k * ‖iteratedDeriv n f x‖ ≤ SchwartzMap.seminorm 𝕜 k n f := by
   have := le_seminorm 𝕜 k n f x
   rwa [← Real.norm_eq_abs, ← norm_iteratedFDeriv_eq_norm_iteratedDeriv]
 #align schwartz_map.le_seminorm' SchwartzMap.le_seminorm'

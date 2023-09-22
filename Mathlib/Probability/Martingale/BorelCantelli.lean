@@ -303,7 +303,7 @@ theorem predictablePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω
 #align measure_theory.borel_cantelli.predictable_part_process_ae_eq MeasureTheory.BorelCantelli.predictablePart_process_ae_eq
 
 theorem process_difference_le (s : ℕ → Set Ω) (ω : Ω) (n : ℕ) :
-    |process s (n + 1) ω - process s n ω| ≤ (1 : ℝ≥0) := by
+  |process s (n + 1) ω - process s n ω| ≤ (1 : ℝ≥0) := by
   norm_cast
   rw [process, process, Finset.sum_apply, Finset.sum_apply,
     Finset.sum_range_succ_sub_sum, ← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]

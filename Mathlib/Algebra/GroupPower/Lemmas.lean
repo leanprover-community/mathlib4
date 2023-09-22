@@ -466,7 +466,7 @@ theorem abs_zsmul (n : ℤ) (a : α) : |n • a| = |n| • |a| := by
 #align abs_zsmul abs_zsmul
 
 theorem abs_add_eq_add_abs_le (hle : a ≤ b) :
-    |a + b| = |a| + |b| ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
+  |a + b| = |a| + |b| ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   obtain a0 | a0 := le_or_lt 0 a <;> obtain b0 | b0 := le_or_lt 0 b
   · simp [a0, b0, abs_of_nonneg, add_nonneg a0 b0]
   · exact (lt_irrefl (0 : α) <| a0.trans_lt <| hle.trans_lt b0).elim
@@ -1116,7 +1116,7 @@ theorem units_zpow_right {a : M} {u : Mˣ} (h : Commute a u)
 
 @[to_additive (attr := simp)]
 theorem units_zpow_left {u : Mˣ} {a : M} (h : Commute (↑u) a)
-  (m : ℤ) : Commute (↑(u ^ m)) a :=
+    (m : ℤ) : Commute (↑(u ^ m)) a :=
   (h.symm.units_zpow_right m).symm
 #align commute.units_zpow_left Commute.units_zpow_left
 #align add_commute.add_units_zsmul_left AddCommute.addUnits_zsmul_left
@@ -1135,7 +1135,7 @@ theorem cast_int_mul_left (h : Commute a b) (m : ℤ) :
 #align commute.cast_int_mul_left Commute.cast_int_mul_left
 
 theorem cast_int_mul_cast_int_mul (h : Commute a b)
-  (m n : ℤ) : Commute (m * a : R) (n * b : R) :=
+    (m n : ℤ) : Commute (m * a : R) (n * b : R) :=
   SemiconjBy.cast_int_mul_cast_int_mul h m n
 #align commute.cast_int_mul_cast_int_mul Commute.cast_int_mul_cast_int_mul
 

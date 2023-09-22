@@ -83,7 +83,7 @@ args.foldrM (λarg i:Expr => do
 /-- `mkOpList op empty [x1, x2, ...]` is defined as `op x1 (op x2 ...)`.
   Returns `empty` if the list is empty. -/
 def mkOpList (op : Expr) (empty : Expr) : List Expr → Expr
-| []        => empty
+  | []        => empty
 | [e]       => e
 | (e :: es) => mkApp2 op e $ mkOpList op empty es
 
@@ -95,7 +95,7 @@ def mkOrList : List Expr → Expr := mkOpList (mkConst `Or) (mkConst `False)
 
 /-- Drops the final element of a list. -/
 def List.init : List α → List α
-| []     => []
+  | []     => []
 | [_]    => []
 | a::l => a::init l
 
@@ -239,7 +239,7 @@ listBoolMerge [false, true, false, true] [0, 1, 2, 3, 4] = [none, (some 0), none
 ```
 -/
 def listBoolMerge {α : Type*} : List Bool → List α → List (Option α)
-| [], _ => []
+  | [], _ => []
 | false :: xs, ys => none :: listBoolMerge xs ys
 | true :: xs, y :: ys => some y :: listBoolMerge xs ys
 | true :: _, [] => []
@@ -247,7 +247,7 @@ def listBoolMerge {α : Type*} : List Bool → List α → List (Option α)
 /-- Proves the right to left direction of a generated iff theorem.
 -/
 def toInductive (mvar : MVarId) (cs : List Name)
-  (gs : List Expr) (s : List Shape) (h : FVarId) :
+    (gs : List Expr) (s : List Shape) (h : FVarId) :
   MetaM Unit := do
   match s.length with
   | 0       => do let _ ← mvar.cases h

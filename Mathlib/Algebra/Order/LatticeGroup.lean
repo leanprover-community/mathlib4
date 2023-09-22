@@ -570,7 +570,7 @@ def latticeOrderedCommGroupToDistribLattice (α : Type u) [s : Lattice α] [Comm
 -- |a ⊔ c - (b ⊔ c)| + |a ⊓ c-b ⊓ c| = |a - b|
 @[to_additive]
 theorem abs_div_sup_mul_abs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
-    |(a ⊔ c) / (b ⊔ c)| * |(a ⊓ c) / (b ⊓ c)| = |a / b| := by
+  |(a ⊔ c) / (b ⊔ c)| * |(a ⊓ c) / (b ⊓ c)| = |a / b| := by
   letI : DistribLattice α := LatticeOrderedCommGroup.latticeOrderedCommGroupToDistribLattice α
   calc
     |(a ⊔ c) / (b ⊔ c)| * |(a ⊓ c) / (b ⊓ c)| =
@@ -592,7 +592,7 @@ theorem abs_div_sup_mul_abs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)]
 
 @[to_additive abs_sup_sub_sup_le_abs]
 theorem mabs_sup_div_sup_le_mabs [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
-    |(a ⊔ c) / (b ⊔ c)| ≤ |a / b| := by
+  |(a ⊔ c) / (b ⊔ c)| ≤ |a / b| := by
   apply le_of_mul_le_of_one_le_left
   · rw [abs_div_sup_mul_abs_div_inf]
   · exact one_le_abs _
@@ -601,7 +601,7 @@ theorem mabs_sup_div_sup_le_mabs [CovariantClass α α (· * ·) (· ≤ ·)] (a
 
 @[to_additive abs_inf_sub_inf_le_abs]
 theorem mabs_inf_div_inf_le_mabs [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
-    |(a ⊓ c) / (b ⊓ c)| ≤ |a / b| := by
+  |(a ⊓ c) / (b ⊓ c)| ≤ |a / b| := by
   apply le_of_mul_le_of_one_le_right
   · rw [abs_div_sup_mul_abs_div_inf]
   · exact one_le_abs _
@@ -613,7 +613,7 @@ theorem mabs_inf_div_inf_le_mabs [CovariantClass α α (· * ·) (· ≤ ·)] (a
 -- |(a ⊔ c) - (b ⊔ c)| ⊔ |(a ⊓ c) - (b ⊓ c)| ≤ |a - b|
 @[to_additive Birkhoff_inequalities]
 theorem m_Birkhoff_inequalities [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
-    |(a ⊔ c) / (b ⊔ c)| ⊔ |(a ⊓ c) / (b ⊓ c)| ≤ |a / b| :=
+  |(a ⊔ c) / (b ⊔ c)| ⊔ |(a ⊓ c) / (b ⊓ c)| ≤ |a / b| :=
   sup_le (mabs_sup_div_sup_le_mabs a b c) (mabs_inf_div_inf_le_mabs a b c)
 set_option linter.uppercaseLean3 false in
 #align lattice_ordered_comm_group.m_Birkhoff_inequalities LatticeOrderedCommGroup.m_Birkhoff_inequalities
@@ -635,7 +635,7 @@ theorem mabs_mul_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : |a
 -- | |a| - |b| | ≤ |a - b|
 @[to_additive]
 theorem abs_abs_div_abs_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) :
-    |(|a| / |b|)| ≤ |a / b| := by
+  |(|a| / |b|)| ≤ |a / b| := by
   rw [abs_eq_sup_inv, sup_le_iff]
   constructor
   · apply div_le_iff_le_mul.2

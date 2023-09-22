@@ -493,7 +493,7 @@ theorem norm_intervalIntegral_eq (f : ℝ → E) (a b : ℝ) (μ : Measure ℝ) 
 #align interval_integral.norm_interval_integral_eq intervalIntegral.norm_intervalIntegral_eq
 
 theorem abs_intervalIntegral_eq (f : ℝ → ℝ) (a b : ℝ) (μ : Measure ℝ) :
-    |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| :=
+  |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| :=
   norm_intervalIntegral_eq f a b μ
 #align interval_integral.abs_interval_integral_eq intervalIntegral.abs_intervalIntegral_eq
 
@@ -534,7 +534,7 @@ theorem norm_integral_eq_norm_integral_Ioc (f : ℝ → E) :
 #align interval_integral.norm_integral_eq_norm_integral_Ioc intervalIntegral.norm_integral_eq_norm_integral_Ioc
 
 theorem abs_integral_eq_abs_integral_uIoc (f : ℝ → ℝ) :
-    |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| :=
+  |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| :=
   norm_integral_eq_norm_integral_Ioc f
 #align interval_integral.abs_integral_eq_abs_integral_uIoc intervalIntegral.abs_integral_eq_abs_integral_uIoc
 
@@ -1370,7 +1370,7 @@ theorem integral_nonneg (hab : a ≤ b) (hf : ∀ u, u ∈ Icc a b → 0 ≤ f u
 #align interval_integral.integral_nonneg intervalIntegral.integral_nonneg
 
 theorem abs_integral_le_integral_abs (hab : a ≤ b) :
-    |∫ x in a..b, f x ∂μ| ≤ ∫ x in a..b, |f x| ∂μ := by
+  |∫ x in a..b, f x ∂μ| ≤ ∫ x in a..b, |f x| ∂μ := by
   simpa only [← Real.norm_eq_abs] using norm_integral_le_integral_norm hab
 #align interval_integral.abs_integral_le_integral_abs intervalIntegral.abs_integral_le_integral_abs
 

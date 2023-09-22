@@ -986,7 +986,7 @@ the number of times it divides `x`.
 See also `multiplicity_eq_count_normalizedFactors` if `n` is given by `multiplicity p x`.
 -/
 theorem count_normalizedFactors_eq [DecidableEq R] {p x : R} (hp : Irreducible p)
-  (hnorm : normalize p = p) {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
+    (hnorm : normalize p = p) {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
   (normalizedFactors x).count p = n := by
   letI : DecidableRel ((· ∣ ·) : R → R → Prop) := fun _ _ => Classical.propDecidable _
   by_cases hx0 : x = 0
@@ -1004,7 +1004,7 @@ the number of times it divides `x`. This is a slightly more general version of
 See also `multiplicity_eq_count_normalizedFactors` if `n` is given by `multiplicity p x`.
 -/
 theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Irreducible p)
-  (hnorm : normalize p = p) {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
+    (hnorm : normalize p = p) {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
   (normalizedFactors x).count p = n := by
   rcases hp with (rfl | hp)
   · cases n

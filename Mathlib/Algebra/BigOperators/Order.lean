@@ -257,7 +257,7 @@ theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι �
 end OrderedCommMonoid
 
 theorem abs_sum_le_sum_abs {G : Type*} [LinearOrderedAddCommGroup G] (f : ι → G) (s : Finset ι) :
-    |∑ i in s, f i| ≤ ∑ i in s, |f i| := le_sum_of_subadditive _ abs_zero abs_add s f
+  |∑ i in s, f i| ≤ ∑ i in s, |f i| := le_sum_of_subadditive _ abs_zero abs_add s f
 #align finset.abs_sum_le_sum_abs Finset.abs_sum_le_sum_abs
 
 theorem abs_sum_of_nonneg {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
@@ -271,7 +271,7 @@ theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι →
 #align finset.abs_sum_of_nonneg' Finset.abs_sum_of_nonneg'
 
 theorem abs_prod {R : Type*} [LinearOrderedCommRing R] {f : ι → R} {s : Finset ι} :
-    |∏ x in s, f x| = ∏ x in s, |f x| :=
+  |∏ x in s, f x| = ∏ x in s, |f x| :=
   (absHom.toMonoidHom : R →* R).map_prod _ _
 #align finset.abs_prod Finset.abs_prod
 

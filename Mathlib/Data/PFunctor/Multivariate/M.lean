@@ -143,7 +143,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Using corecursion, construct the contents of an M-type -/
 def M.corecContents {α : TypeVec.{u} n}
-                    {β : Type u}
+    {β : Type u}
                     (g₀ : β → P.A)
                     (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
                     (g₂ : ∀ b : β, P.last.B (g₀ b) → β)

@@ -129,7 +129,7 @@ theorem ofFractionRing_injective : Function.Injective (ofFractionRing : _ → Ra
 #align ratfunc.of_fraction_ring_injective RatFunc.ofFractionRing_injective
 
 theorem toFractionRing_injective : Function.Injective (toFractionRing : _ → FractionRing K[X])
-  -- porting note: the `xy` input was `rfl` and then there was no need for the `subst`
+    -- porting note: the `xy` input was `rfl` and then there was no need for the `subst`
   | ⟨x⟩, ⟨y⟩, xy => by subst xy; rfl
 #align ratfunc.to_fraction_ring_injective RatFunc.toFractionRing_injective
 

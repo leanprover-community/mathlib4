@@ -409,7 +409,7 @@ variable (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
 the truncated expectation) along the sequence `c^n`, for any `c > 1`, up to a given `ε > 0`.
 This follows from a variance control. -/
 theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : ∀ᵐ ω, ∀ᶠ n : ℕ in atTop,
-    |∑ i in range ⌊c ^ n⌋₊, truncation (X i) i ω - 𝔼[∑ i in range ⌊c ^ n⌋₊, truncation (X i) i]| <
+  |∑ i in range ⌊c ^ n⌋₊, truncation (X i) i ω - 𝔼[∑ i in range ⌊c ^ n⌋₊, truncation (X i) i]| <
     ε * ⌊c ^ n⌋₊ := by
   /- Let `S n = ∑ i in range n, Y i` where `Y i = truncation (X i) i`. We should show that
     `|S k - 𝔼[S k]| / k ≤ ε` along the sequence of powers of `c`. For this, we apply Borel-Cantelli:

@@ -452,7 +452,7 @@ theorem sub_convergents_eq {ifp : IntFractPair K}
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`. -/
 theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
-    |v - (of v).convergents n| ≤ 1 / ((of v).denominators n * ((of v).denominators <| n + 1)) := by
+  |v - (of v).convergents n| ≤ 1 / ((of v).denominators n * ((of v).denominators <| n + 1)) := by
   -- shorthand notation
   let g := of v
   let nextConts := g.continuantsAux (n + 2)

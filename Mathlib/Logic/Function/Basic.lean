@@ -68,7 +68,7 @@ theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f 
 #align function.on_fun_apply Function.onFun_apply
 
 lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
-  (hα : α = α') (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
+    (hα : α = α') (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
   subst hα
   have : ∀a, HEq (f a) (f' a) := λ a => h a a (HEq.refl a)
   have : β = β' := by funext a
@@ -152,7 +152,7 @@ theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective 
 #align function.injective_of_subsingleton Function.injective_of_subsingleton
 
 lemma Injective.dite (p : α → Prop) [DecidablePred p]
-  {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}
+    {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}
   (hf : Injective f) (hf' : Injective f')
   (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
   Function.Injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) :=
@@ -747,7 +747,7 @@ lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ 
 #align function.factors_through_iff Function.factorsThrough_iff
 
 lemma FactorsThrough.apply_extend {δ} {g : α → γ} (hf : FactorsThrough g f)
-  (F : γ → δ) (e' : β → γ) (b : β) :
+    (F : γ → δ) (e' : β → γ) (b : β) :
   F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b := by
   by_cases hb : ∃ a, f a = b
   case pos =>

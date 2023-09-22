@@ -168,7 +168,7 @@ theorem Set.Finite.isOpen_sInter {s : Set (Set α)} (hs : s.Finite) :
 #align is_open_sInter Set.Finite.isOpen_sInter
 
 theorem Set.Finite.isOpen_biInter {s : Set β} {f : β → Set α} (hs : s.Finite)
-  (h : ∀ i ∈ s, IsOpen (f i)) :
+    (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
   sInter_image f s ▸ (hs.image _).isOpen_sInter (ball_image_iff.2 h)
 #align is_open_bInter Set.Finite.isOpen_biInter
@@ -254,7 +254,7 @@ theorem IsClosed.sdiff {s t : Set α} (h₁ : IsClosed s) (h₂ : IsOpen t) : Is
 #align is_closed.sdiff IsClosed.sdiff
 
 theorem Set.Finite.isClosed_biUnion {s : Set β} {f : β → Set α} (hs : s.Finite)
-  (h : ∀ i ∈ s, IsClosed (f i)) :
+    (h : ∀ i ∈ s, IsClosed (f i)) :
     IsClosed (⋃ i ∈ s, f i) := by
   simp only [← isOpen_compl_iff, compl_iUnion] at *
   exact hs.isOpen_biInter h

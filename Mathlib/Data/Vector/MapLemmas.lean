@@ -118,7 +118,7 @@ theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ�
 
 @[simp]
 theorem mapAccumr₂_mapAccumr₂_left_right
-  (f₁ : γ → β → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
+    (f₁ : γ → β → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂).snd ys s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
@@ -171,7 +171,7 @@ section Bisim
 variable {xs : Vector α n}
 
 theorem mapAccumr_bisim {f₁ : α → σ₁ → σ₁ × β} {f₂ : α → σ₂ → σ₂ × β} {s₁ : σ₁} {s₂ : σ₂}
-      (R : σ₁ → σ₂ → Prop) (h₀ : R s₁ s₂)
+    (R : σ₁ → σ₂ → Prop) (h₀ : R s₁ s₂)
       (hR : ∀ {s q} a, R s q → R (f₁ a s).1 (f₂ a q).1 ∧ (f₁ a s).2 = (f₂ a q).2) :
     R (mapAccumr f₁ xs s₁).fst (mapAccumr f₂ xs s₂).fst
     ∧ (mapAccumr f₁ xs s₁).snd = (mapAccumr f₂ xs s₂).snd := by

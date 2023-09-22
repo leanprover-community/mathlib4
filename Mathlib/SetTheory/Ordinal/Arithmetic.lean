@@ -997,7 +997,7 @@ theorem div_mul_cancel : ∀ {a b : Ordinal}, a ≠ 0 → a ∣ b → a * (b / a
 #align ordinal.div_mul_cancel Ordinal.div_mul_cancel
 
 theorem le_of_dvd : ∀ {a b : Ordinal}, b ≠ 0 → a ∣ b → a ≤ b
-  -- Porting note: `⟨b, rfl⟩ => by` → `⟨b, e⟩ => by subst e`
+    -- Porting note: `⟨b, rfl⟩ => by` → `⟨b, e⟩ => by subst e`
   | a, _, b0, ⟨b, e⟩ => by
     subst e
     -- Porting note: `Ne` is required.

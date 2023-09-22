@@ -827,7 +827,7 @@ theorem map.of {x} : map f (of x) = of (f x) :=
 
 @[to_additive]
 theorem map.unique (g : FreeGroup α →* FreeGroup β)
-  (hg : ∀ x, g (FreeGroup.of x) = FreeGroup.of (f x)) :
+    (hg : ∀ x, g (FreeGroup.of x) = FreeGroup.of (f x)) :
   ∀ {x}, g x = map f x := by
   rintro ⟨L⟩
   exact List.recOn L g.map_one fun ⟨x, b⟩ t (ih : g (FreeGroup.mk t) = map f (FreeGroup.mk t)) =>
@@ -1149,7 +1149,7 @@ theorem reduce.red : Red L (reduce L) := by
 -- porting notes: deleted mathport junk and manually formatted below.
 @[to_additive]
 theorem reduce.not {p : Prop} : ∀ {L₁ L₂ L₃ : List (α × Bool)} {x : α} {b},
-  ((reduce L₁) = L₂ ++ ((x,b)::(x ,!b)::L₃)) → p
+    ((reduce L₁) = L₂ ++ ((x,b)::(x ,!b)::L₃)) → p
   | [], L2 ,L3, _, _ => fun h => by cases L2 <;> injections
   | (x, b)::L1, L2, L3, x', b' => by
       dsimp
