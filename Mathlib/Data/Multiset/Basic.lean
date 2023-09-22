@@ -891,16 +891,16 @@ theorem coe_replicate (n : ℕ) (a : α) : (List.replicate n a : Multiset α) = 
 @[simp] theorem replicate_succ (a : α) (n) : replicate (n + 1) a = a ::ₘ replicate n a := rfl
 #align multiset.replicate_succ Multiset.replicate_succ
 
-theorem replicate_add (m n : ℕ) (a : α) : replicate (m + n) a = replicate m a + replicate n a :=
-  congr_arg _ <| List.replicate_add ..
-#align multiset.replicate_add Multiset.replicate_add
+@[simp]
+theorem append_replicate (m n : ℕ) (a : α) : replicate m a + replicate n a = replicate (m + n) a :=
+  congr_arg _ <| List.append_replicate _ _ _
 
 /-- `Multiset.replicate` as an `AddMonoidHom`. -/
 @[simps]
 def replicateAddMonoidHom (a : α) : ℕ →+ Multiset α where
   toFun := fun n => replicate n a
   map_zero' := replicate_zero a
-  map_add' := fun _ _ => replicate_add _ _ a
+  map_add' := fun _ _ => Eq.symm (append_replicate _ _ a)
 #align multiset.replicate_add_monoid_hom Multiset.replicateAddMonoidHom
 #align multiset.replicate_add_monoid_hom_apply Multiset.replicateAddMonoidHom_apply
 
