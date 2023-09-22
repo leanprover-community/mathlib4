@@ -404,8 +404,7 @@ lemma Integrable.measure_const_le_norm_lt_top {E : Type*} [NormedAddCommGroup E]
     using ENNReal.mul_lt_top c_inv_ne_top (lt_of_le_of_lt markov f_intble.2).ne
 
 /-- If `f` is integrable, then for any `c > 0` the set `{x | ‖f x‖ > c}` has finite measure. -/
-lemma Integrable.measure_const_lt_norm_lt_top
-    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+lemma Integrable.measure_const_lt_norm_lt_top {E : Type*} [NormedAddCommGroup E]
     {f : α → E} (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
     μ {a : α | c < ‖f a‖} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le))
