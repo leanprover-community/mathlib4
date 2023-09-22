@@ -28,9 +28,9 @@ field `K`.
 
 * `isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if `|norm ℚ x| = 1`.
 
-* `Units.mem_torsion`: an unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite places of `K`.
+* `Units.mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite places of `K`.
 
-* `Units.exist_unique_eq_mul_prod`: an unit `x : (𝓞 K)ˣ` can be written in a unique way as the
+* `Units.exist_unique_eq_mul_prod`: a unit `x : (𝓞 K)ˣ` can be written in a unique way as the
 product of a root of unity times the product of powers of units of the fundamental system.
 
 ## Tags
@@ -161,7 +161,8 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
 
 end torsion
 
-namespace dirichlet
+namespace dirichletUnitTheorem
+
 -- This section is devoted to the proof of Dirichlet's unit theorem
 -- We define a group morphism from `(𝓞 K)ˣ` to `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀`
 -- is a distinguished (arbitrary) infinite place, prove that its kernel is the torsion subgroup
@@ -199,7 +200,7 @@ variable {K}
 theorem logEmbedding_component (x : (𝓞 K)ˣ) (w : {w : InfinitePlace K // w ≠ w₀}) :
     (logEmbedding K x) w = mult w.val * Real.log (w.val x) := rfl
 
-theorem logEmbedding_sum_component (x : (𝓞 K)ˣ) :
+theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
     ∑ w, logEmbedding K x w = - mult (w₀ : InfinitePlace K) * Real.log (w₀ (x : K)) := by
   have h := congr_arg Real.log (prod_eq_abs_norm (x : K))
   rw [show |(Algebra.norm ℚ) (x : K)| = 1 from isUnit_iff_norm.mp x.isUnit, Rat.cast_one,
@@ -230,7 +231,7 @@ theorem logEmbedding_eq_zero_iff (x : (𝓞 K)ˣ) :
     · suffices - mult w₀ * Real.log (w₀ (x : K)) = 0 by
         rw [neg_mul, neg_eq_zero, ← hw] at this
         exact mult_log_place_eq_zero.mp this
-      rw [← logEmbedding_sum_component, Finset.sum_eq_zero]
+      rw [← sum_logEmbedding_component, Finset.sum_eq_zero]
       exact fun w _ => congrFun h w
     · exact mult_log_place_eq_zero.mp (congrFun h ⟨w, hw⟩)
   · ext w
@@ -249,7 +250,7 @@ theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h :
       refine mul_le_mul ?_ le_rfl hx ?_
       all_goals { rw [mult]; split_ifs <;> norm_num }
   by_cases hw : w = w₀
-  · have hyp := congr_arg (‖·‖) (logEmbedding_sum_component x).symm
+  · have hyp := congr_arg (‖·‖) (sum_logEmbedding_component x).symm
     replace hyp := (le_of_eq hyp).trans (norm_sum_le _ _)
     simp_rw [norm_mul, norm_neg, Real.norm_eq_abs, Nat.abs_cast] at hyp
     refine (le_trans ?_ hyp).trans ?_
@@ -270,7 +271,8 @@ theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h :
 variable (K)
 
 /-- The lattice formed by the image of the logarithmic embedding. -/
-noncomputable def unitLattice : AddSubgroup ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+noncomputable def _root_.NumberField.Units.unitLattice :
+    AddSubgroup ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
   AddSubgroup.map (logEmbedding K) ⊤
 
 theorem unitLattice_inter_ball_finite (r : ℝ) :
@@ -295,8 +297,9 @@ theorem unitLattice_inter_ball_finite (r : ℝ) :
     exact ⟨h_int, h_le⟩
 
 section span_top
--- To prove that the span over `ℝ` of the `unit_lattice` is equal to the full space, we construct
--- for each infinite place `w₁ ≠ w₀` an unit `u_w₁` of `K` such that, for all infinite places
+
+-- To prove that the span over `ℝ` of the `unitLattice` is equal to the full space, we construct
+-- for each infinite place `w₁ ≠ w₀` a unit `u_w₁` of `K` such that, for all infinite places
 -- `w` such that `w ≠ w₁`, we have `Real.log w (u_w₁) < 0` (and thus `Real.log w₁ (u_w₁) > 0`).
 -- It follows then from a determinant computation (using `Matrix.det_ne_zero_of_neg`) that the
 -- image by `logEmbedding` of these units is a `ℝ`-linearly independent family.
@@ -387,7 +390,7 @@ theorem seq_norm_bdd (n : ℕ) :
         rw [← Algebra.norm_localization ℤ (Sₘ := K) (nonZeroDivisors ℤ)]
         exact (seq_next K w₁ hB (seq K w₁ hB n).prop).choose_spec.2.2
 
-/-- Construct an unit associated to the place `w₁`. The family, for `w₁ ≠ w₀`, formed by the
+/-- Construct a unit associated to the place `w₁`. The family, for `w₁ ≠ w₀`, formed by the
 image by the `logEmbedding` of these units  is `ℝ`-linearly independent, see
 `unit_lattice_span_eq_top`. -/
 theorem exists_unit (w₁ : InfinitePlace K ) :
@@ -441,7 +444,7 @@ theorem unitLattice_span_eq_top :
   refine add_pos_of_nonneg_of_pos ?_ ?_
   · rw [sub_nonneg]
     exact le_abs_self _
-  · rw [logEmbedding_sum_component (exists_unit K w).choose]
+  · rw [sum_logEmbedding_component (exists_unit K w).choose]
     refine mul_pos_of_neg_of_neg ?_ ((exists_unit K w).choose_spec _ w.prop.symm)
     rw [mult]; split_ifs <;> norm_num
   · refine mul_neg_of_pos_of_neg ?_ ((exists_unit K w).choose_spec x ?_)
@@ -455,7 +458,7 @@ def _root_.NumberField.Units.rank : ℕ := Fintype.card (InfinitePlace K) - 1
 
 open FiniteDimensional
 
-theorem unitLattice_discrete : DiscreteTopology (unitLattice K) := by
+instance _root_.NumberField.Units.instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
   refine discreteTopology_of_open_singleton_zero ?_
   refine isOpen_singleton_of_finite_mem_nhds 0 (s := Metric.closedBall 0 1) ?_ ?_
   · exact Metric.closedBall_mem_nhds _ (by norm_num)
@@ -471,34 +474,35 @@ protected theorem finrank :
   simp only [finrank_fintype_fun_eq_card, Fintype.card_subtype_compl,
     Fintype.card_ofSubsingleton, rank]
 
-theorem unitLattice_moduleFree : Module.Free ℤ (unitLattice K) := by
-  have := unitLattice_discrete K
-  exact Zlattice.module_free ℝ (unitLattice_span_eq_top K)
+instance _root_.NumberField.Units.instModuleFree_unitLattice : Module.Free ℤ (unitLattice K) :=
+  Zlattice.module_free ℝ (unitLattice_span_eq_top K)
 
-theorem unitLattice_moduleFinite : Module.Finite ℤ (unitLattice K) := by
-  have := unitLattice_discrete K
-  exact Zlattice.module_finite ℝ (unitLattice_span_eq_top K)
+instance _root_.NumberField.Units.instModuleFinite_unitLattice : Module.Finite ℤ (unitLattice K) :=
+  Zlattice.module_finite ℝ (unitLattice_span_eq_top K)
 
-theorem unitLattice_rank : finrank ℤ (unitLattice K) = Units.rank K := by
-  have := unitLattice_discrete K
-  rw [← dirichlet.finrank]
+@[simp]
+theorem _root_.NumberField.Units.unitLattice_rank :
+    finrank ℤ (unitLattice K) = Units.rank K := by
+  rw [← dirichletUnitTheorem.finrank]
   exact Zlattice.rank ℝ (unitLattice_span_eq_top K)
 
-end dirichlet
+end dirichletUnitTheorem
 
 variable [NumberField K]
 
+open dirichletUnitTheorem
+
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) := by
-  let f : (dirichlet.unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) := by
+  let f : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) := by
     refine AddEquiv.toIntLinearEquiv ?_
-    rw [dirichlet.unitLattice, ← AddMonoidHom.range_eq_map (dirichlet.logEmbedding K)]
-    refine (QuotientAddGroup.quotientKerEquivRange (dirichlet.logEmbedding K)).symm.trans ?_
+    rw [unitLattice, ← AddMonoidHom.range_eq_map (logEmbedding K)]
+    refine (QuotientAddGroup.quotientKerEquivRange (logEmbedding K)).symm.trans ?_
     refine (QuotientAddGroup.quotientAddEquivOfEq ?_).trans
       (QuotientAddGroup.quotientKerEquivOfSurjective
         (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))) (fun x => ?_))
     · ext
-      rw [AddMonoidHom.mem_ker, AddMonoidHom.mem_ker, dirichlet.logEmbedding_eq_zero_iff,
+      rw [AddMonoidHom.mem_ker, AddMonoidHom.mem_ker, logEmbedding_eq_zero_iff,
         MonoidHom.toAdditive_apply_apply, ofMul_eq_zero, QuotientGroup.mk'_apply,
         QuotientGroup.eq_one_iff]
       rfl
@@ -507,12 +511,10 @@ def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsio
         QuotientGroup.out_eq']
       rfl
   have : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
-      (dirichlet.unitLattice_moduleFree K).of_equiv'  f
-  have : Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) := by
-    have := dirichlet.unitLattice_moduleFinite K
-    exact Module.Finite.equiv f
+    (instModuleFree_unitLattice K).of_equiv' f
+  have : Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) := Module.Finite.equiv f
   have : FiniteDimensional.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
-    rw [← LinearEquiv.finrank_eq f, dirichlet.unitLattice_rank]
+    rw [← LinearEquiv.finrank_eq f, unitLattice_rank]
   refine Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq ?_)
   rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, this, Fintype.card_fin]
 
