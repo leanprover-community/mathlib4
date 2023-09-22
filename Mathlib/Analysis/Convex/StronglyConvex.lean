@@ -28,7 +28,7 @@ variable {n : Type _} [Fintype n]  {E : Type*} [NormedAddCommGroup E] [InnerProd
 def StronglyConvexOn (s : Set E) (m : ℝ) (f : E → ℝ) : Prop :=
  m > 0 ∧ ConvexOn ℝ s (fun x ↦ f x - m / 2 * ‖x‖ ^ 2)
 
-variable (s : Set E) {f : E → ℝ}
+variable (s : Set E) {f : E → ℝ} {m : ℝ}
 
 lemma equiv_lemma {x y : E} {a b m: ℝ} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) :
     a * (f x - m / 2 * ‖x‖ ^ 2) + b * (f y - m / 2 * ‖y‖ ^ 2) + m / 2 * ‖a • x + b • y‖ ^ 2
