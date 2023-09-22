@@ -96,6 +96,7 @@ namespace padicValNat
 
 end padicValNat
 
+/-- The nth-harmonic number defined as a finset sum of reciprocals. -/
 def harmonic : ℕ → ℚ := fun n => ∑ i in Finset.range n, 1 / (i + 1)
 
 lemma harmonic_ne_zero : ∀ n, n ≠ 0 → harmonic n > 0 := fun n Hn =>
@@ -122,6 +123,7 @@ lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 2 ≤ n) :
     (finset_range_sdiff_singleton_nonempty hn)
   norm_cast; simp only [add_pos_iff, or_true]
 
+/-- If a rational is not a 2-adic integer, it is not an integer. -/
 theorem not_int_of_not_padic_int {a : ℚ} (H : 1 < padicNorm 2 a):
  ¬ a.isInt := by
   suffices : a.den ≠ 1; simpa [Rat.isInt]
@@ -139,146 +141,100 @@ theorem not_int_of_not_padic_int {a : ℚ} (H : 1 < padicNorm 2 a):
     simpa only [zpow_zero]
 
 
-lemma padicValRat_2_pow (r : ℕ)  : padicValRat 2 (1 / 2^r) = -r := by {
+lemma padicValRat_2_pow (r : ℕ) : padicValRat 2 (1 / 2^r) = -r := by
   rw [one_div,padicValRat.inv,neg_inj,padicValRat.pow (by simp)]
   suffices : padicValRat 2 2 = 1
   simp only [this, mul_one]
   rw [←padicValRat.self (p := 2) one_lt_two]; simp only [Nat.cast_ofNat]
-}
 
-lemma nat_log_not_dvd {n : ℕ} : ∀ i, 0 < i ∧ i ≠ 2^(Nat.log 2 n) ∧ i ≤ n → ¬ 2^(Nat.log 2 n) ∣ i := by {
+
+lemma nat_log_not_dvd {n : ℕ} :
+ ∀ i, 0 < i ∧ i ≠ 2^(Nat.log 2 n) ∧ i ≤ n → ¬ 2^(Nat.log 2 n) ∣ i := by
   rintro i ⟨Hi₁,Hi₂,Hi₃⟩
   simp only [Nat.instDvdNat]
-  push_neg
-  intros c Hc
+  push_neg; intros c Hc
   have Hle : n < 2 ^ (Nat.log 2 n + 1) := Nat.lt_pow_succ_log_self (by simp) n
   have Hpow : 2 ^ Nat.log 2 n * 2 = 2 ^(Nat.log 2 n + 1) := by exact rfl
   obtain ⟨k,Hk⟩ := Nat.even_or_odd' c
   by_cases (k = 0)
-  {
-    rw [h, mul_zero] at Hk
+  · subst h
+    rw [mul_zero, zero_add] at Hk
     rcases Hk with rfl | rfl
-    linarith
-    simp only [zero_add, mul_one] at Hc
-    exact Hi₂ Hc
-  }
+    · linarith
+    · exact Hi₂ (Hc ▸ mul_one (2^Nat.log 2 n))
   rcases Hk with rfl | rfl
-  {
-    rw [← mul_assoc, Hpow] at Hc
-    {
-      suffices Hnk : n < i by linarith
-      calc n ≤ n * k := Nat.le_mul_of_pos_right (Nat.pos_of_ne_zero h)
-      _ < 2^(Nat.log 2 n + 1) * k := Nat.mul_lt_mul Hle (le_refl _) (Nat.pos_of_ne_zero h)
-      _ = i := Hc.symm
-    }
-  }
-  {
-    rw [mul_add, ← mul_assoc, Hpow, mul_one] at Hc
+  · rw [← mul_assoc, Hpow] at Hc
+    suffices Hnk : n < i by linarith
+    calc n ≤ n * k := Nat.le_mul_of_pos_right (Nat.pos_of_ne_zero h)
+    _ < 2^(Nat.log 2 n + 1) * k := Nat.mul_lt_mul Hle (le_refl _) (Nat.pos_of_ne_zero h)
+    _ = i := Hc.symm
+  · rw [mul_add, ← mul_assoc, Hpow, mul_one] at Hc
     suffices Hnk : n < i by linarith
     calc n < 2 ^ (Nat.log 2 n + 1) := Hle
     _ ≤  2 ^ (Nat.log 2 n + 1)*k := Nat.le_mul_of_pos_right (Nat.pos_of_ne_zero h)
     _ < 2 ^ (Nat.log 2 n + 1)*k + 2^ Nat.log 2 n := by linarith
     _ = i := Hc.symm
-  }
-  }
-
 
 lemma padicValRat_ge_neg_Nat_log_ne {n : ℕ}:
-∀ q, 0 < q ∧ q ≤ n → q ≠ 2^Nat.log 2 n → padicValRat 2 (1 / q) ≠ -Nat.log 2 n := by {
+ ∀ q, 0 < q ∧ q ≤ n → q ≠ 2^Nat.log 2 n → padicValRat 2 (1 / q) ≠ -Nat.log 2 n := by
   rintro q ⟨Hq₁,Hq₂⟩ Hq₃
-  rw [one_div,padicValRat.inv,padicValRat.of_nat]
-  simp only [ne_eq, neg_inj, Nat.cast_inj]
-  intro Hnot
-  have := pow_padicValNat_dvd (p := 2) (n := q)
-  rw [Hnot] at this
-  exact nat_log_not_dvd (n := n) q ⟨Hq₁,Hq₃,Hq₂⟩ this
-}
+  rw [one_div,padicValRat.inv,padicValRat.of_nat,ne_eq,neg_inj,Nat.cast_inj]
+  exact (fun Hnot => nat_log_not_dvd (n := n) q ⟨Hq₁,Hq₃,Hq₂⟩
+    (Hnot ▸ pow_padicValNat_dvd (p := 2) (n := q)))
 
 lemma padicValRat_ge_neg_Nat_log_ge {p n : ℕ}[hp : Fact (Nat.Prime p)]:
-  ∀ q, q ≤ n → -Nat.log p n ≤ padicValRat p (1 / q) := by {
+ ∀ q, q ≤ n → -Nat.log p n ≤ padicValRat p (1 / q) := by
   intros q Hq
   rw [one_div,padicValRat.inv,padicValRat.of_nat, neg_le_neg_iff, Nat.cast_le]
-  apply padicValNat.le_nat_log_gen Hq
-}
+  exact padicValNat.le_nat_log_gen Hq
 
 lemma padicValRat_ge_neg_Nat_log_lt (n : ℕ):
-∀ q, 0 < q ∧ q ≤ n → q ≠ 2^Nat.log 2 n → padicValRat 2 (1 / 2^Nat.log 2 n) < padicValRat 2 (1 / q) := by {
+ ∀ q, 0 < q ∧ q ≤ n → q ≠ 2^Nat.log 2 n →
+  padicValRat 2 (1 / 2^Nat.log 2 n) < padicValRat 2 (1 / q) := by
   rintro q ⟨Hq₁,Hq₂⟩ Hq₃
-  have H₁ := padicValRat_ge_neg_Nat_log_ne q ⟨Hq₁,Hq₂⟩ Hq₃
-  have H₂ := padicValRat_ge_neg_Nat_log_ge (p := 2) q Hq₂
   rw [padicValRat_2_pow]
-  exact lt_of_le_of_ne H₂ H₁.symm
-}
+  exact (lt_of_le_of_ne
+   (padicValRat_ge_neg_Nat_log_ge (p := 2) q Hq₂)
+   (padicValRat_ge_neg_Nat_log_ne q ⟨Hq₁,Hq₂⟩ Hq₃).symm)
 
-lemma pow2_log_in_finset {n : ℕ} (hn : 2 ≤ n) : 2^(Nat.log 2 n) - 1 ∈ Finset.range n := by {
-    simp only [ge_iff_le, Finset.mem_range]
-    have H := Nat.pow_log_le_add_one 2 n
-    rw [le_iff_lt_or_eq] at H
-    rcases H with H₁ | H₂
-    {
-      simp only [ge_iff_le, gt_iff_lt]
-      refine' Nat.sub_lt_right_of_lt_add _ H₁
-      calc 1 ≤ 2 := by norm_num
-      _ = 2^1 := by norm_num
-      _ <= 2 ^ Nat.log 2 n := by {
-        refine' Nat.pow_le_pow_of_le_right (by norm_num) _
-        rw [←Nat.pow_le_iff_le_log (by norm_num) _]
-        simpa
-        linarith
-      }
-    }
-    have Habs : n + 1 ≤ n := by {
-      rw [← H₂]
-      apply Nat.pow_log_le_self; linarith
-    }
-    linarith
-}
+lemma pow2_log_in_finset {n : ℕ} (hn : 2 ≤ n):
+ 2^(Nat.log 2 n) - 1 ∈ Finset.range n := Finset.mem_range.mpr <| lt_of_lt_of_le
+ (Nat.sub_lt (pow_pos zero_lt_two _) zero_lt_one) (Nat.pow_log_le_self 2 (by linarith))
 
+/-- The 2-adic valuation of the n-th harmonic number is the negative of the logarithm
+    of n. -/
+theorem harmonic_padicValRat_2 {n : ℕ} (Hn : 2 ≤ n):
+ padicValRat 2 (harmonic n) = -Int.log 2 (n : ℚ) := by
+  rw [Int.log_natCast,harmonic_singleton (pow2_log_in_finset Hn)]
+  simp only [gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel]
+  rw [padicValRat.add_eq_of_lt (p := 2) _ (one_div_ne_zero <| pow_ne_zero _ two_ne_zero)
+  (harmonic_singleton_ne_zero (Hn)) _]; apply padicValRat_2_pow
+  · have := harmonic_ne_zero n
+    rw [harmonic_singleton (pow2_log_in_finset Hn)] at this
+    refine' ne_of_gt _
+    simp only [ne_eq, ge_iff_le, gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat,
+      sub_add_cancel, Finset.mem_range, not_lt, Finset.singleton_subset_iff] at this
+    exact (this (by linarith))
+  · have := padicValRat.finset_gen_sum_lt_of_lt (p := 2) (j := 2 ^ Nat.log 2 n - 1)
+      (finset_range_sdiff_singleton_nonempty Hn) (F := fun n => 1 / ((n + 1) : ℚ))
+      (S := Finset.range n \ {2^Nat.log 2 n - 1})
+    simp [-one_div] at *
+    refine' this (fun i Hi₁ Hi₂ => _) (fun i => div_pos zero_lt_one (by norm_cast;linarith))
+    · have := padicValRat_ge_neg_Nat_log_lt (n := n) (i+1)
+      simp only [Nat.cast_add, Nat.cast_one] at this
+      refine' this ⟨by linarith, by linarith⟩ (fun Hnot => _)
+      rw [← Hnot] at Hi₂
+      refine' Hi₂ _
+      simp only [add_tsub_cancel_right]
 
-theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by {
+theorem harmonic_not_int : ∀ n, n ≥ 2 → ¬ (harmonic n).isInt := by
   intro n Hn
-  apply not_int_of_not_padic_int
-  unfold padicNorm
+  refine' not_int_of_not_padic_int _
+  dsimp [padicNorm]
   split_ifs with h
-  {
-    have := harmonic_ne_zero n
-    rw [h] at this
-    apply this
-    linarith
-  }
-  {
-    apply one_lt_zpow; try norm_num
-    apply lt_neg.mp
-    rw [neg_zero]
-    suffices Hlog : padicValRat 2 (harmonic n) = -Int.log 2 (n : ℚ)
-    rw [Hlog]
-    simp only [Int.log_natCast, Left.neg_neg_iff, Nat.cast_pos, Nat.log_pos_iff, and_true, Hn]
-    simp only [Int.log_natCast]
-    rw [harmonic_singleton (pow2_log_in_finset Hn)]
-    simp only [ge_iff_le, Finset.mem_range, not_lt, Finset.singleton_subset_iff, gt_iff_lt, pow_pos,
-      Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel]
-    rw [padicValRat.add_eq_of_lt (p := 2) _ (one_div_ne_zero <| pow_ne_zero _ two_ne_zero) (harmonic_singleton_ne_zero (Hn)) _]; apply padicValRat_2_pow
-    {
-      rw [harmonic_singleton (pow2_log_in_finset Hn)] at h
-      simpa only [ge_iff_le, gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel, Finset.mem_range, not_lt, Finset.singleton_subset_iff] using h
-    }
-    {
-      have := @padicValRat.finset_gen_sum_lt_of_lt (p := 2) (j := 2 ^ Nat.log 2 n - 1) _ (F := fun n => 1 / ((n + 1) : ℚ)) (Finset.range n \ {2^Nat.log 2 n - 1})
-      simp at *
-      apply this (finset_range_sdiff_singleton_nonempty Hn)
-      {
-        intros i Hi₁ Hi₂
-        have := padicValRat_ge_neg_Nat_log_lt (n := n) (i+1)
-        simp at *
-        refine' this (by linarith) _
-        intro Hnot
-        rw [←Hnot] at Hi₂
-        simp only [ge_iff_le, add_le_iff_nonpos_left, nonpos_iff_eq_zero, add_tsub_cancel_right, not_true] at Hi₂
-      }
-      {
-      intros i
-      norm_cast; linarith
-      }
-    }
-  }
-}
+  · exfalso
+    exact ((ne_of_gt <| harmonic_ne_zero n (by linarith)) h)
+  · refine' one_lt_zpow one_lt_two _ (lt_neg.mp _)
+    rw [neg_zero, harmonic_padicValRat_2 Hn,Int.log_natCast, Left.neg_neg_iff,
+     Nat.cast_pos, Nat.log_pos_iff]
+    exact ⟨Hn,one_lt_two⟩
