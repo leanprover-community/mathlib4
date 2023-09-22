@@ -902,7 +902,8 @@ an artificial way to generate a measure downstairs such that the pair satisfies 
 @[to_additive IsAddFundamentalDomain.addQuotientVolumeEqVolumePreimage_addQuotientMeasure]
 lemma IsFundamentalDomain.quotientVolumeEqVolumePreimage_quotientMeasure
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s) :
-    @QuotientVolumeEqVolumePreimage G α _ _ _ (fund_dom_s.nullMeasurableSet.quotientMeasure G volume) :=
+    @QuotientVolumeEqVolumePreimage G α _ _ _
+      (fund_dom_s.nullMeasurableSet.quotientMeasure G volume) :=
   { projection_respects_measure' := by
       intro t fund_dom_t U meas_U
       rw [fund_dom_s.quotientMeasure_invariant _ fund_dom_t,

@@ -164,7 +164,8 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientVolumeEqVolumePreimage_
     (hV : μ V = volume (π ⁻¹' V ∩ s)) (neTopV : μ V ≠ ⊤) : QuotientVolumeEqVolumePreimage μ := by
   apply fund_dom_s.QuotientVolumeEqVolumePreimage
   intro U meas_U
-  let μ' : Measure (G ⧸ Γ) := fund_dom_s.nullMeasurableSet.quotientMeasure (Subgroup.opposite Γ) volume
+  let μ' : Measure (G ⧸ Γ) := fund_dom_s.nullMeasurableSet.quotientMeasure
+    (Subgroup.opposite Γ) volume
   haveI has_fund : HasFundamentalDomain (Subgroup.opposite Γ) G := ⟨⟨s, fund_dom_s⟩⟩
   have : QuotientVolumeEqVolumePreimage μ' :=
     fund_dom_s.QuotientVolumeEqVolumePreimage_quotientMeasure
