@@ -106,7 +106,7 @@ theorem cast_negOfNat (n : ℕ) : ((negOfNat n : ℤ) : R) = -n := by simp [Int.
 
 @[simp, norm_cast]
 theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
-  | (m : ℕ), (n : ℕ) => by simp [← Int.ofNat_add, Nat.cast_add]
+  | (m : ℕ), (n : ℕ) => by simp [-Int.natCast_add, ← Int.ofNat_add]
   | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_add_neg]
   | -[m+1], (n : ℕ) => by
     erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_iff_eq_add, add_assoc,

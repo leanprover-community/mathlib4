@@ -17,7 +17,7 @@ def transpose {m n} (A : m → n → ℕ) : n → m → ℕ
   | i, j => A j i
 
 theorem transpose_apply {m n} (A : m → n → ℕ) (i j) :
-  transpose A i j = A j i := rfl
+    transpose A i j = A j i := rfl
 
 attribute [eqns transpose_apply] transpose
 

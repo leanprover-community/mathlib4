@@ -296,19 +296,19 @@ theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rf
 
 @[simp]
 theorem add_apply [Add α] (A B : Matrix m n α) (i : m) (j : n) :
-  (A + B) i j = (A i j) + (B i j) := rfl
+    (A + B) i j = (A i j) + (B i j) := rfl
 
 @[simp]
 theorem smul_apply [SMul β α] (r : β) (A : Matrix m n α) (i : m) (j : n) :
-  (r • A) i j = r • (A i j) := rfl
+    (r • A) i j = r • (A i j) := rfl
 
 @[simp]
 theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
-  (A - B) i j = (A i j) - (B i j) := rfl
+    (A - B) i j = (A i j) - (B i j) := rfl
 
 @[simp]
 theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
-  (-A) i j = -(A i j) := rfl
+    (-A) i j = -(A i j) := rfl
 
 end
 
@@ -1003,9 +1003,6 @@ protected theorem add_mul [Fintype m] (L M : Matrix l m α) (N : Matrix m n α) 
 
 instance nonUnitalNonAssocSemiring [Fintype n] : NonUnitalNonAssocSemiring (Matrix n n α) :=
   { Matrix.addCommMonoid with
-    mul := (· * ·)
-    add := (· + ·)
-    zero := 0
     mul_zero := Matrix.mul_zero
     zero_mul := Matrix.zero_mul
     left_distrib := Matrix.mul_add

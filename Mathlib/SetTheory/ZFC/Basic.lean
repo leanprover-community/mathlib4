@@ -151,7 +151,7 @@ def Equiv : PSet → PSet → Prop
 #align pSet.equiv PSet.Equiv
 
 theorem equiv_iff :
-   ∀ {x y : PSet},
+    ∀ {x y : PSet},
       Equiv x y ↔ (∀ i, ∃ j, Equiv (x.Func i) (y.Func j)) ∧ ∀ j, ∃ i, Equiv (x.Func i) (y.Func j)
   | ⟨_, _⟩, ⟨_, _⟩ => Iff.rfl
 #align pSet.equiv_iff PSet.equiv_iff

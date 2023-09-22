@@ -325,7 +325,7 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
 
 /- -- Previously, the relatively useless :
 lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
-  (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
+    (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
 -/
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
