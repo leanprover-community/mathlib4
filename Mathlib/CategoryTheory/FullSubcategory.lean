@@ -115,9 +115,9 @@ instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
 
 -- these lemmas are not particularly well-typed, so would probably be dangerous as simp lemmas
 
-lemma id_def (X : FullSubcategory Z) : 𝟙 X = 𝟙 X.obj := rfl
+lemma FullSubcategory.id_def (X : FullSubcategory Z) : 𝟙 X = 𝟙 X.obj := rfl
 
-lemma comp_def {X Y Z : FullSubcategory Z} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma FullSubcategory.comp_def {X Y Z : FullSubcategory Z} (f : X ⟶ Y) (g : Y ⟶ Z) :
   f ≫ g = (f ≫ g : X.obj ⟶ Z.obj) := rfl
 
 /-- The forgetful functor from a full subcategory into the original category
