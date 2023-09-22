@@ -561,10 +561,11 @@ set_option linter.uppercaseLean3 false in
 
 variable (V G)
 
+set_option maxHeartbeats 400000 in
 /-- When `V` is monoidal the forgetful functor `Action V G` to `V` is monoidal. -/
 @[simps]
 def forgetMonoidal : MonoidalFunctor (Action V G) V :=
-  { Action.forget _ _ with
+  { toFunctor := Action.forget _ _
     ε := 𝟙 _
     μ := fun X Y => 𝟙 _ }
 set_option linter.uppercaseLean3 false in
@@ -579,6 +580,7 @@ section
 
 variable [BraidedCategory V]
 
+set_option maxHeartbeats 400000 in
 instance : BraidedCategory (Action V G) :=
   braidedCategoryOfFaithful (forgetMonoidal V G) (fun X Y => mkIso (β_ _ _)
     (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by aesop_cat)
