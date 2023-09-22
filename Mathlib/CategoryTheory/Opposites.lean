@@ -69,7 +69,7 @@ instance Category.opposite : Category.{v₁} Cᵒᵖ where
   id X := (𝟙 (unop X)).op
 #align category_theory.category.opposite CategoryTheory.Category.opposite
 
-@[simp]
+@[simp, reassoc]
 theorem op_comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).op = g.op ≫ f.op :=
   rfl
 #align category_theory.op_comp CategoryTheory.op_comp
@@ -79,7 +79,7 @@ theorem op_id {X : C} : (𝟙 X).op = 𝟙 (op X) :=
   rfl
 #align category_theory.op_id CategoryTheory.op_id
 
-@[simp]
+@[simp, reassoc]
 theorem unop_comp {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).unop = g.unop ≫ f.unop :=
   rfl
 #align category_theory.unop_comp CategoryTheory.unop_comp
