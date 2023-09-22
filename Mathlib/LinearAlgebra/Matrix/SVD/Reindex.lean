@@ -27,11 +27,11 @@ namespace Matrix
 
 open scoped ComplexOrder
 
-lemma rank_eq_card_pos_eigs_conjTranspose_mul_self (A: Matrix (Fin M) (Fin N) 𝕂) :
+lemma rank_eq_card_pos_eigs_conjTranspose_mul_self (A : Matrix (Fin M) (Fin N) 𝕂) :
     A.rank = Fintype.card {i // (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} := by
   rw [← rank_conjTranspose_mul_self, IsHermitian.rank_eq_card_non_zero_eigs]
 
-lemma rank_eq_card_pos_eigs_self_mul_conjTranspose (A: Matrix (Fin M) (Fin N) 𝕂) :
+lemma rank_eq_card_pos_eigs_self_mul_conjTranspose (A : Matrix (Fin M) (Fin N) 𝕂) :
     A.rank = Fintype.card {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} := by
   rw [← rank_self_mul_conjTranspose, IsHermitian.rank_eq_card_non_zero_eigs]
 
@@ -51,7 +51,7 @@ noncomputable def finRankEquivEigsMulConjTranspose (A: Matrix (Fin M) (Fin N) �
 of Fin n and the eigenvalues of the matrix Aᴴ⬝A, partitioned into
 - non-zero eigenvalues: (exactly A.rank) of them, see `fin_rank_equiv_eigs_conjTranspose_mul_self`
 - zero eigenvalues: (exactly n - A.rank) of them -/
-noncomputable def eigenColumnEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
+noncomputable def eigenColumnEquiv (A : Matrix (Fin M) (Fin N) 𝕂) :
     (Fin N) ≃ (Fin A.rank) ⊕ (Fin (N - A.rank)) := by
   let en := Equiv.sumCompl (fun i =>  (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0)
   let eₙᵣ : {i // ¬(isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} ≃ Fin (N - A.rank) :=
@@ -63,7 +63,7 @@ noncomputable def eigenColumnEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
 of Fin (height) and the eigevalues of the matrix A⬝Aᴴ partitioned into
 - non-zero eigenvalues: (exactly A.rank) of them see `fin_rank_equiv_eigs_mul_conjTranspose`
 - zero eigenvalues: (exactly height - A.rank) of them -/
-noncomputable def eigenRowEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
+noncomputable def eigenRowEquiv (A : Matrix (Fin M) (Fin N) 𝕂) :
     (Fin M) ≃ (Fin A.rank) ⊕ (Fin (M - A.rank)) := by
   let em := Equiv.sumCompl (fun i =>  (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0)
   let eᵣ' : {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin A.rank :=
@@ -77,7 +77,7 @@ noncomputable def eigenRowEquiv (A: Matrix (Fin M) (Fin N) 𝕂) :
 `equiv_fin_width_eigs_conjTranspose_mul_self` i.e. into non-zero and zero eigenvalues, any element
 from the second partition is obviously zero! -/
 @[simp]
-lemma eigen_eigenColumnEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (N - A.rank)) :
+lemma eigen_eigenColumnEquiv_inr (A : Matrix (Fin M) (Fin N) 𝕂) (i: Fin (N - A.rank)) :
   (isHermitian_transpose_mul_self A).eigenvalues
     ((eigenColumnEquiv A).symm (Sum.inr i)) = 0 := by
   unfold eigenColumnEquiv Equiv.sumCongr
@@ -92,7 +92,7 @@ lemma eigen_eigenColumnEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (N - A
 `equiv_fin_height_eigs_mul_conjTranspose` i.e. into non-zero and zero eigenvalues, any element from
 the second partition is obviously zero! -/
 @[simp]
-lemma eigen_eigenRowEquiv_inr (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (M - A.rank)) :
+lemma eigen_eigenRowEquiv_inr (A : Matrix (Fin M) (Fin N) 𝕂) (i: Fin (M - A.rank)) :
     (isHermitian_mul_conjTranspose_self A).eigenvalues
       ((eigenRowEquiv A).symm (Sum.inr i)) = 0 := by
   unfold eigenRowEquiv Equiv.sumCongr
