@@ -30,7 +30,6 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 bilinear
 -/
 
-
 namespace LinearMap
 
 section Semiring
