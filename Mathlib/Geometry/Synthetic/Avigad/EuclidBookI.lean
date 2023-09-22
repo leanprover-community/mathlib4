@@ -792,7 +792,7 @@ theorem quad_add_of_quad (Babc : B a b c) (Bdef : B d e f) (aL : online a L) (bL
     (online_3_of_B Bdef dN eN) (not_online_of_sameside acN), area_add_of_B_offline Bagf aP fP
     ceP.2.1, area_add_of_B_offline Bcge cO eO afO.2.1, area_add_of_B_offline Bcge cO eO afO.1,
     area_add_of_B_offline Babc aL (online_3_of_B Babc aL bL)
-    (not_online_of_sameside (by perma[feL]))]
+    (not_online_of_sameside (by perma[feL] :))]
 
 theorem B_of_sq (Bbxc : B b x c) (xX : online x X) (lX : online l X) (lP : online l P)
     (paraQX : para Q X) (paraOX : para O X) (pgram : paragram b c d e L O P Q) : B e l d := by
@@ -1242,12 +1242,12 @@ theorem para_trans (MN : M ≠ N) (paraLM : para L M) (paraLN : para L N) : para
     yL paraLN, offline_of_online_offline xa bN int.2 int.1 aM $ online_of_ne_ne
     (ne_of_sameside xO baO) MN.symm bN int.2 int.1, yaN⟩
   have split := angle_add_of_sameside int.2 bN xO yO yaN baO
-  have axy := right_of_para_right aM int.1 xO yO yL cL (not_online_of_sameside $ by perma[baO])
+  have axy := right_of_para_right aM int.1 xO yO yL cL (not_online_of_sameside $ sameside_symm baO)
     (offline_of_online_offline (ne_21_of_B Bcyd) xO yO yL cL (offline_of_para' int.1 paraLM)) xyc
-    (by perma[paraLM])
-  have bxy := right_of_para_right bN int.2 xO yO yL cL (not_online_of_sameside $ by perma[baO])
+    (para_symm paraLM)
+  have bxy := right_of_para_right bN int.2 xO yO yL cL (not_online_of_sameside baO)
     (offline_of_online_offline (ne_21_of_B Bcyd) xO yO yL cL (offline_of_para' int.1 paraLM)) xyc
-    (by perma[paraLN])
+    (para_symm paraLN)
   linarith[zero_lt_angle_of_tri $ triangle_of_ne_online (ne_of_sameside xO baO).symm int.2 bN
     (not_online_of_sameside $ sameside_symm yaN)]
 
@@ -1275,9 +1275,9 @@ theorem ext_int_sum_of_tri (Bbcd : B b c d) (tri_abc : triangle a b c) : angle a
     cM cN cO eM aN (online_3_of_B (B_symm Bbcd) dO cO) (sameside_of_para_online aL bL paraLM) ebN)
     (by perma[paraLM])
   have acd_split := angle_add_of_sameside cN aN cO dO
-    (by perma[sameside_of_B_diffside Bbcd cN (by perma[ebN])]) (by perma
+    (by perma[sameside_of_B_diffside Bbcd cN (by perma[ebN] :)]) (by perma
     [(sameside_of_sameside_diffside cM cN cO eM aN (online_3_of_B (B_symm Bbcd) dO cO)
-    (sameside_of_para_online aL bL paraLM) ebN)])
+    (sameside_of_para_online aL bL paraLM) ebN)] :)
   have flat_sum := two_right_of_flat_angle Bbcd (online_3_of_B (B_symm Bbcd) dO cO) cO
     (online_1_of_triangle (online_3_of_B (B_symm Bbcd) dO cO) cO tri_abc)
   exact ⟨by linperm, by linperm⟩
@@ -1370,7 +1370,7 @@ lemma paragram_of_tri_para (bc : b ≠ c) (bM : online b M) (cM : online c M) (a
   rcases line_of_pts a c with ⟨L, aL, cL⟩
   rcases line_of_pts a b with ⟨P, aP, bP⟩
   rcases length_eq_of_sameside bP (online_3_of_triangle aP bP
-    (by perma[triangle_of_ne_online bc bM cM $ offline_of_para' aN paraMN]))
+    (by perma[triangle_of_ne_online bc bM cM $ offline_of_para' aN paraMN] :))
     (offline_of_para bM paraMN) aP aN with ⟨d, dN, dcP, da_bc⟩
   rcases line_of_pts d b with ⟨O, dO, bO⟩
   exact ⟨d, L, O, pgram_of_para_len_eq dN aN aL cL cM bM bO dO aP bP dcP (by perma) da_bc⟩
