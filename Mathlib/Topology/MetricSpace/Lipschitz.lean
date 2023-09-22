@@ -594,7 +594,8 @@ namespace LocallyLipschitz
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ] {f : α → β}
 
 /-- A Lipschitz function is locally Lipschitz. -/
-protected lemma _root_.LipschitzWith.locally {K : ℝ≥0} (hf : LipschitzWith K f) : LocallyLipschitz f :=
+protected lemma _root_.LipschitzWith.locally {K : ℝ≥0} (hf : LipschitzWith K f) :
+    LocallyLipschitz f :=
   fun _ ↦ ⟨K, ⟨univ, ⟨Filter.univ_mem, Iff.mpr (lipschitzOn_univ) hf⟩⟩⟩
 
 /-- The identity function is locally Lipschitz. -/
