@@ -136,7 +136,8 @@ def SuffixTrie.insert (t : SuffixTrie) (n : Lean.Name) : SuffixTrie := Id.run $ 
   pure t
 
 /-- Insert a declaration into a `SuffixTrie`, if the name isn't blacklisted. -/
-def SuffixTrie.addDecl (name : Lean.Name) (_ : ConstantInfo) (t : SuffixTrie) : MetaM SuffixTrie := do
+def SuffixTrie.addDecl (name : Lean.Name) (_ : ConstantInfo) (t : SuffixTrie) :
+    MetaM SuffixTrie := do
   if ← name.isBlackListed then
     return t
   return t.insert name
@@ -374,11 +375,9 @@ combined in a single query, comma-separated.
 
 2. By lemma name substring:
    ```lean
-   #find Real.sin, "two"
+   #find "differ"
    ```
-   restricts the search above to those lemmas that have `"two"` as part of the lemma _name_.
-
-   (Currently, substring searches _must_ be combined with other kind of queries.)
+   finds all lemmas that have `"differ"` somewhere in their lemma _name_.
 
 3. By subexpression:
    ```lean
