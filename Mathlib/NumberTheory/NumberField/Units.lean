@@ -27,7 +27,8 @@ as an additive `ℤ`-module.
 
 ## Main results
 
-* `NumberField.isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if `|norm ℚ x| = 1`.
+* `NumberField.isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if
+`|norm ℚ x| = 1`.
 
 * `NumberField.Units.mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite
 places of `K`.
