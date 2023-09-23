@@ -18,20 +18,23 @@ field `K`.
 
 ## Main definitions
 
-* `Units.rank`: the unit rank of the number field `K`.
+* `NumberField.Units.rank`: the unit rank of the number field `K`.
 
-* `Units.fundSystem`: a fundamental system of units of `K`.
+* `NumberField.Units.fundSystem`: a fundamental system of units of `K`.
 
-* `Units.basisModTorsion`: a `ℤ`-basis of `(𝓞 K)ˣ ⧸ (torsion K)` (as an additive `ℤ`-module).
+* `NumberField.Units.basisModTorsion`: a `ℤ`-basis of `(𝓞 K)ˣ ⧸ (torsion K)`
+as an additive `ℤ`-module.
 
 ## Main results
 
-* `isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if `|norm ℚ x| = 1`.
+* `NumberField.isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if `|norm ℚ x| = 1`.
 
-* `Units.mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite places of `K`.
+* `NumberField.Units.mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite
+places of `K`.
 
-* `Units.exist_unique_eq_mul_prod`: a unit `x : (𝓞 K)ˣ` can be written in a unique way as the
-product of a root of unity times the product of powers of units of the fundamental system.
+* `NumberField.Units.exist_unique_eq_mul_prod`: **Dirichlet Unit Theorem**. Any unit `x` of `𝓞 K`
+can be written uniquely as the product of a root of unity and powers of the units of a
+fundamental system.
 
 ## Tags
 number field, units
@@ -60,11 +63,11 @@ section IsUnit
 
 variable {K}
 
-theorem isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
+theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
-#align is_unit_iff_norm isUnit_iff_norm
+#align is_unit_iff_norm NumberField.isUnit_iff_norm
 
 end IsUnit
 
@@ -535,8 +538,8 @@ theorem fun_eq_repr {x ζ : (𝓞 K)ˣ} {f : Fin (rank K) → ℤ} (hζ : ζ ∈
                     _ = ∑ i, (f i) • (basisModTorsion K i) := by
                       simp_rw [fundSystem, QuotientGroup.out_eq', ofMul_toMul]
 
-/-- Any unit `x` of `𝓞 K` can be written uniquely as a root of unity times the product of powers
-of the units of the fundamental system. -/
+/-- **Dirichlet Unit Theorem**. Any unit `x` of `𝓞 K` can be written uniquely as the product of
+a root of unity and powers of the units of a fundamental system. -/
 theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K) (e : Fin (rank K) → ℤ),
     x = ζ * ∏ i, (fundSystem K i) ^ (e i) := by
   let ζ := x * (∏ i, (fundSystem K i) ^ ((basisModTorsion K).repr (Additive.ofMul ↑x) i))⁻¹
