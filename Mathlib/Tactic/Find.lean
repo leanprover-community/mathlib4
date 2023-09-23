@@ -136,6 +136,7 @@ def SuffixTrie.insert (t : SuffixTrie) (n : Lean.Name) : SuffixTrie := Id.run $ 
   pure t
 
 /-- Insert a declaration into a `SuffixTrie`, if the name isn't blacklisted. -/
+@[nolint unusedArguments]
 def SuffixTrie.addDecl (name : Lean.Name) (_ : ConstantInfo) (t : SuffixTrie) :
     MetaM SuffixTrie := do
   if ← name.isBlackListed then
@@ -148,7 +149,9 @@ def SuffixTrie.find (t : SuffixTrie) (s : String) : Array Name := Array.flatten 
 /-- The index used by `#find`: A declaration cache with a `NameRel` mapping names to the name
 of constants they are mentinend in, and a declaration cache storing a suffix trie. -/
 structure Index where mk'' ::
+  /-- Maps names to the names of constants they are mentioned in. -/
   nameRelCache : DeclCache2 NameRel
+  /-- Suffix trie of lemma names -/
   trieCache: DeclCache2 SuffixTrie
 deriving Nonempty
 
