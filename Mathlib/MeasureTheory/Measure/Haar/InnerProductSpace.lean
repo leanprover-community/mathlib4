@@ -114,9 +114,9 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 @[simp]
 theorem volume_ball (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
     volume (Metric.ball x r) = NNReal.pi * (ENNReal.ofReal r) ^ 2 := by
-  obtain hr | hr := lt_or_le r 0
-  · rw [Metric.ball_eq_empty.mpr (le_of_lt hr), measure_empty, ← zero_eq_ofReal.mpr
-      (le_of_lt hr), zero_pow zero_lt_two, mul_zero]
+  obtain hr | hr := le_total r 0
+  · rw [Metric.ball_eq_empty.mpr hr, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow zero_lt_two,
+      mul_zero]
   · suffices volume (Metric.ball (0 : EuclideanSpace ℝ (Fin 2)) 1) = NNReal.pi by
       rw [Measure.addHaar_ball _ _ hr, finrank_euclideanSpace_fin, ofReal_pow hr, this, mul_comm]
     calc
