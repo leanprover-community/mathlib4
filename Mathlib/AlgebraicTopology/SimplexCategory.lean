@@ -6,7 +6,7 @@ Authors: Johan Commelin, Scott Morrison, Adam Topaz
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
-import Mathlib.Order.Category.NonemptyFinLinOrdCat
+import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 
 #align_import algebraic_topology.simplex_category from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Functor.ReflectsIso
 We construct a skeletal model of the simplex category, with objects `ℕ` and the
 morphism `n ⟶ m` being the monotone maps from `Fin (n+1)` to `Fin (m+1)`.
 
-We show that this category is equivalent to `NonemptyFinLinOrdCat`.
+We show that this category is equivalent to `NonemptyFinLinOrd`.
 
 ## Remarks
 
@@ -349,10 +349,11 @@ end Generators
 
 section Skeleton
 
-/-- The functor that exhibits `SimplexCategory` as skeleton of `NonemptyFinLinOrdCat` -/
+/-- The functor that exhibits `SimplexCategory` as skeleton
+of `NonemptyFinLinOrd` -/
 @[simps obj map]
-def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrdCat where
-  obj a := NonemptyFinLinOrdCat.of (Fin (a.len + 1))
+def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrd where
+  obj a := NonemptyFinLinOrd.of (Fin (a.len + 1))
   map f := f.toOrderHom
 #align simplex_category.skeletal_functor SimplexCategory.skeletalFunctor
 
@@ -366,7 +367,7 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
     ext
     simpa
   apply Fintype.card_congr
-  exact (((skeletalFunctor ⋙ forget NonemptyFinLinOrdCat).mapIso I).toEquiv)
+  exact (((skeletalFunctor ⋙ forget NonemptyFinLinOrd).mapIso I).toEquiv)
 #align simplex_category.skeletal SimplexCategory.skeletal
 
 namespace SkeletalFunctor
@@ -405,17 +406,17 @@ noncomputable instance isEquivalence : IsEquivalence skeletalFunctor :=
 end SkeletalFunctor
 
 /-- The equivalence that exhibits `SimplexCategory` as skeleton
-of `NonemptyFinLinOrdCat` -/
-noncomputable def skeletalEquivalence : SimplexCategory ≌ NonemptyFinLinOrdCat :=
+of `NonemptyFinLinOrd` -/
+noncomputable def skeletalEquivalence : SimplexCategory ≌ NonemptyFinLinOrd :=
   Functor.asEquivalence skeletalFunctor
 #align simplex_category.skeletal_equivalence SimplexCategory.skeletalEquivalence
 
 end Skeleton
 
-/-- `SimplexCategory` is a skeleton of `NonemptyFinLinOrdCat`.
+/-- `SimplexCategory` is a skeleton of `NonemptyFinLinOrd`.
 -/
 noncomputable def isSkeletonOf :
-    IsSkeletonOf NonemptyFinLinOrdCat SimplexCategory skeletalFunctor where
+    IsSkeletonOf NonemptyFinLinOrd SimplexCategory skeletalFunctor where
   skel := skeletal
   eqv := SkeletalFunctor.isEquivalence
 #align simplex_category.is_skeleton_of SimplexCategory.isSkeletonOf
@@ -463,7 +464,7 @@ theorem mono_iff_injective {n m : SimplexCategory} {f : n ⟶ m} :
     Mono f ↔ Function.Injective f.toOrderHom := by
   rw [← Functor.mono_map_iff_mono skeletalEquivalence.functor]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
-  rw [NonemptyFinLinOrdCat.mono_iff_injective, skeletalFunctor.coe_map]
+  rw [NonemptyFinLinOrd.mono_iff_injective, skeletalFunctor.coe_map]
 #align simplex_category.mono_iff_injective SimplexCategory.mono_iff_injective
 
 /-- A morphism in `SimplexCategory` is an epimorphism if and only if it is a surjective function
@@ -472,7 +473,7 @@ theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
     Epi f ↔ Function.Surjective f.toOrderHom := by
   rw [← Functor.epi_map_iff_epi skeletalEquivalence.functor]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
-  rw [NonemptyFinLinOrdCat.epi_iff_surjective, skeletalFunctor.coe_map]
+  rw [NonemptyFinLinOrd.epi_iff_surjective, skeletalFunctor.coe_map]
 #align simplex_category.epi_iff_surjective SimplexCategory.epi_iff_surjective
 
 /-- A monomorphism in `SimplexCategory` must increase lengths-/
@@ -785,9 +786,9 @@ end EpiMono
 to the category attached to the ordered set `{0, 1, ..., n}` -/
 @[simps! obj map]
 def toCat : SimplexCategory ⥤ Cat.{0} :=
-  SimplexCategory.skeletalFunctor ⋙ forget₂ NonemptyFinLinOrdCat LinOrdCat ⋙
-      forget₂ LinOrdCat LatCat ⋙ forget₂ LatCat PartOrdCat ⋙
-      forget₂ PartOrdCat PreordCat ⋙ preordCatToCat
+  SimplexCategory.skeletalFunctor ⋙ forget₂ NonemptyFinLinOrd LinOrd ⋙
+      forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
+      forget₂ PartOrd Preord ⋙ preordToCat
 set_option linter.uppercaseLean3 false in
 #align simplex_category.to_Cat SimplexCategory.toCat
 
