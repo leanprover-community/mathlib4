@@ -465,11 +465,11 @@ section
 variable {D : Type*} [Category D] {F G : C ⥤ Dᵒᵖ} (e : F ≅ G) (X : C)
 
 @[reassoc (attr := simp)]
-lemma Iso.unop_hom_inv_id_app : (e.hom.app X).unop ≫ (e.inv.app X).unop = 𝟙 _ := by
+lemma unop_hom_inv_id_app : (e.hom.app X).unop ≫ (e.inv.app X).unop = 𝟙 _ := by
   rw [← unop_comp, inv_hom_id_app, unop_id]
 
 @[reassoc (attr := simp)]
-lemma Iso.unop_inv_hom_id_app : (e.inv.app X).unop ≫ (e.hom.app X).unop = 𝟙 _ := by
+lemma unop_inv_hom_id_app : (e.inv.app X).unop ≫ (e.hom.app X).unop = 𝟙 _ := by
   rw [← unop_comp, hom_inv_id_app, unop_id]
 
 end
