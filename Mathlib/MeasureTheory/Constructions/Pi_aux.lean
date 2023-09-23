@@ -37,7 +37,7 @@ theorem measurePreserving_piCongrLeft (f : ι' ≃ ι) :
   map_eq := by
     refine' (pi_eq fun s _ => _).symm
     rw [MeasurableEquiv.map_apply, MeasurableEquiv.piCongrLeft_eq,
-      piCongrLeft_preimage_univ_pi, pi_pi _ _, prod_univ_comp_equiv (fun i => μ i (s i)) f]
+      piCongrLeft_preimage_univ_pi, pi_pi _ _, f.prod_comp (fun i => μ i (s i))]
 
 theorem measurePreserving_piSum {π : ι ⊕ ι' → Type _} [∀ i, MeasurableSpace (π i)]
     (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)] :

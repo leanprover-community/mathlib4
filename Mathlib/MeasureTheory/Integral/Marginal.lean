@@ -46,8 +46,8 @@ theorem measurable_update_left {a : δ} {x : π a} :
     exact measurable_const
   · exact measurable_pi_apply j
 
-theorem measurable_updateSet {s : Finset δ} {x : ∀ i, π i}  : Measurable (updateSet x s) := by
-  simp_rw [updateSet, measurable_pi_iff]
+theorem measurable_updateFinset {s : Finset δ} {x : ∀ i, π i}  : Measurable (updateFinset x s) := by
+  simp_rw [updateFinset, measurable_pi_iff]
   intro i
   by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
 
@@ -66,7 +66,7 @@ variable {s t : Finset δ} {f g : (∀ i, π i) → ℝ≥0∞} {x y : ∀ i, π
   This is the marginal distribution of all variables not in `s`. -/
 def marginal (μ : ∀ i, Measure (π i)) (s : Finset δ) (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
     ℝ≥0∞ :=
-  ∫⁻ y : ∀ i : s, π i, f (updateSet x s y) ∂Measure.pi fun i : s => μ i
+  ∫⁻ y : ∀ i : s, π i, f (updateFinset x s y) ∂Measure.pi fun i : s => μ i
 
 -- Note: this notation is not a binder. This is more convenient since it returns a function.
 notation "∫⋯∫_" s ", " f " ∂" μ:70 => marginal μ s f
@@ -80,9 +80,9 @@ theorem _root_.Measurable.marginal (hf : Measurable f) : Measurable (∫⋯∫_s
   refine' hf.comp _
   rw [measurable_pi_iff]; intro i
   by_cases hi : i ∈ s
-  · simp [hi, updateSet]
+  · simp [hi, updateFinset]
     exact measurable_pi_iff.1 measurable_snd _
-  · simp [hi, updateSet]
+  · simp [hi, updateFinset]
     exact measurable_pi_iff.1 measurable_fst _
 
 @[simp] theorem marginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫_∅, f ∂μ = f := by
@@ -96,7 +96,7 @@ theorem _root_.Measurable.marginal (hf : Measurable f) : Measurable (∫⋯∫_s
 theorem marginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
     (h : ∀ (i) (_ : i ∉ s), x i = y i) :
     (∫⋯∫_s, f ∂μ) x = (∫⋯∫_s, f ∂μ) y := by
-  dsimp [marginal, updateSet]; rcongr; exact h _ ‹_›
+  dsimp [marginal, updateFinset]; rcongr; exact h _ ‹_›
 
 theorem marginal_update_of_mem [DecidableEq δ] {i : δ} (hi : i ∈ s)
     (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) (y : π i) :
@@ -111,18 +111,18 @@ theorem marginal_union [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf :
   ext1 x
   let e := MeasurableEquiv.piFinsetUnion π hst
   calc (∫⋯∫_s ∪ t, f ∂μ) x
-      = ∫⁻ (y : (i : ↥(s ∪ t)) → π i), f (updateSet x (s ∪ t) y)
+      = ∫⁻ (y : (i : ↥(s ∪ t)) → π i), f (updateFinset x (s ∪ t) y)
           ∂.pi fun i' : ↥(s ∪ t) ↦ μ i' := by rfl
-    _ = ∫⁻ (y : ((i : s) → π i) × ((j : t) → π j)), f (updateSet x (s ∪ t) _)
+    _ = ∫⁻ (y : ((i : s) → π i) × ((j : t) → π j)), f (updateFinset x (s ∪ t) _)
           ∂(Measure.pi fun i : s ↦ μ i).prod (.pi fun j : t ↦ μ j) := by
         rw [measurePreserving_piFinsetUnion μ hst |>.lintegral_map_equiv]
-    _ = ∫⁻ (y : (i : s) → π i), ∫⁻ (z : (j : t) → π j), f (updateSet x (s ∪ t) (e (y, z)))
+    _ = ∫⁻ (y : (i : s) → π i), ∫⁻ (z : (j : t) → π j), f (updateFinset x (s ∪ t) (e (y, z)))
           ∂.pi fun j : t ↦ μ j ∂.pi fun i : s ↦ μ i := by
         apply lintegral_prod
         apply Measurable.aemeasurable
-        exact hf.comp <| measurable_updateSet.comp e.measurable
+        exact hf.comp <| measurable_updateFinset.comp e.measurable
     _ = (∫⋯∫_s, ∫⋯∫_t, f ∂μ ∂μ) x := by
-        simp_rw [marginal, updateSet_updateSet hst]
+        simp_rw [marginal, updateFinset_updateFinset hst]
         rfl
 
 theorem marginal_union' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {s t : Finset δ}
@@ -137,9 +137,9 @@ theorem marginal_singleton [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (
   let e := (MeasurableEquiv.piUnique fun j : α ↦ π j).symm
   ext1 x
   calc (∫⋯∫_{i}, f ∂μ) x
-      = ∫⁻ (y : π (default : α)), f (updateSet x {i} (e y)) ∂μ (default : α) := by
+      = ∫⁻ (y : π (default : α)), f (updateFinset x {i} (e y)) ∂μ (default : α) := by
         simp_rw [marginal, ← Measure.map_piUnique_symm, lintegral_map_equiv]
-    _ = ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by simp [update_eq_updateSet]
+    _ = ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by simp [update_eq_updateFinset]
 
 /-- Peel off a single integral from a `marginal` integral at the beginning (compare with
 `marginal_insert'`, which peels off an integral at the end). -/
@@ -181,7 +181,7 @@ theorem marginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : ∫
     ∫⋯∫_univ, f ∂μ = fun _ => ∫⁻ x, f x ∂Measure.pi μ := by
   let e : { j // j ∈ Finset.univ } ≃ δ := Equiv.subtypeUnivEquiv mem_univ
   ext1 x
-  simp_rw [marginal, ← Measure.pi_map_left μ e, lintegral_map_equiv, updateSet]
+  simp_rw [marginal, ← Measure.pi_map_left μ e, lintegral_map_equiv, updateFinset]
   simp
   rfl
 

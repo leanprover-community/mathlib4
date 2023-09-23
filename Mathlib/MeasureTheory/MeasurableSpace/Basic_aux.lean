@@ -73,7 +73,7 @@ variable {α}
 theorem measurable_piCongrLeft (f : ι' ≃ ι) : Measurable (piCongrLeft α f) := by
   rw [measurable_pi_iff]
   intro i
-  simp_rw [piCongrLeft_apply']
+  simp_rw [piCongrLeft_apply_eq_cast]
   apply Measurable.eq_mp α (f.apply_symm_apply i)
   exact measurable_pi_apply (f.symm i)
 
