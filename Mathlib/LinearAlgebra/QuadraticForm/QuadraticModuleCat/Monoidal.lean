@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
 import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct.Isometries
 
@@ -93,23 +93,15 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
     (rightUnitor := fun X => ofIso (tensorRId X.form))
     -- (rightUnitor_eq := sorry)
 
-#check 1
-
+variable (R) in
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a monoidal functor. -/
 def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) := by
   rw [instMonoidalCategory]
   exact Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R))
     _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-instance : Faithful (toModuleCatMonoidalFunctor (R := R)).toFunctor :=
+instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
   forget₂_faithful _ _
-
-instance : BraidedCategory (QuadraticModuleCat.{u} R) :=
-  braidedCategoryOfFaithful toModuleCatMonoidalFunctor
-    (fun X Y => ofIso <| tensorComm X.form Y.form)
-    (fun X Y => by
-      dsimp
-      sorry)
 
 end
 
