@@ -1794,11 +1794,7 @@ theorem rescale_mul (a b : R) : rescale (a * b) = (rescale b).comp (rescale a) :
 
 end CommSemiring
 
-end CommSemiring
-
 section Trunc
-variable [Semiring R]
-open Finset Nat
 variable [Semiring R]
 open Finset Nat
 
