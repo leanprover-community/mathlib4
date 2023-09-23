@@ -13,7 +13,7 @@ import Mathlib.GroupTheory.Complement
 
 ## Pushouts of Monoids and Groups
 
-This file defines wide Pushouts of monoids and groups and proves some properties
+This file defines wide pushouts of monoids and groups and proves some properties
 of the amalgamated product of groups (i.e. the special case where all the maps
 in the diagram are injective).
 
@@ -30,6 +30,11 @@ groups then so is `of`
 - `Monoid.PushoutI.Reduced.eq_empty_of_mem_range`: For any word `w` in the coproduct,
 if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
 `w` itself is not in the image of the base monoid.
+
+## References
+
+* The normal form theorem follows these [notes](https://webspace.maths.qmul.ac.uk/i.m.chiswell/ggt/lecture_notes/lecture2.pdf)
+from Queen Mary University
 
 ## Tags
 
