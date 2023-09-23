@@ -183,7 +183,7 @@ See `mkAssumptionSet` for an explanation of why this is needed.
 -/
 def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
     MetaM (List Expr) := do
-  g.withContext (Elab.Term.TermElabM.run' do pure ((← lemmas.mapM id) ++ (← ctx)))
+  g.withContext (Elab.Term.TermElabM.run' do pure ((← ctx) ++ (← lemmas.mapM id)))
 
 /-- Returns the list of tactics corresponding to applying the available lemmas to the goal. -/
 def applyLemmas (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))

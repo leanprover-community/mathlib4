@@ -587,7 +587,6 @@ instance (priority := 100) CharOne.subsingleton [CharP R 1] : Subsingleton R :=
       _ = 0 * r := by rw [CharP.cast_eq_zero]
       _ = 0 := by rw [MulZeroClass.zero_mul]
 
-
 theorem false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False :=
   false_of_nontrivial_of_subsingleton R
 #align char_p.false_of_nontrivial_of_char_one CharP.false_of_nontrivial_of_char_one

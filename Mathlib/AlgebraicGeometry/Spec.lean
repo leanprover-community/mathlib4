@@ -190,8 +190,6 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
         toOpen R U ≫ β.c.app (op U)) :
     α = β := by
   ext : 1
-  -- See https://github.com/leanprover/std4/pull/158
-  swap
   · exact w
   · apply
       ((TopCat.Sheaf.pushforward β.base).obj X.sheaf).hom_ext _ PrimeSpectrum.isBasis_basic_opens
@@ -420,7 +418,7 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
           ⟨p, hpr⟩ _).trans e
   set s' := (Spec.topMap (algebraMap R S) _* (structureSheaf S).1).map (homOfLE hrU).op s with h
   replace e : ((Spec.topMap (algebraMap R S) _* (structureSheaf S).val).germ ⟨p, hpr⟩) s' = y
-  . rw [h]; exact e
+  · rw [h]; exact e
   clear_value s'; clear! U
   obtain ⟨⟨s, ⟨_, n, rfl⟩⟩, hsn⟩ :=
     @IsLocalization.surj _ _ _ _ _ _

@@ -284,6 +284,8 @@ variable (A)
 
 We instantiate this definition as generally as possible, and assume that the
 commutative ring `R` is an integral domain only when this is needed for proving.
+
+In this generality, this construction is also known as the *total fraction ring* of `R`.
 -/
 @[reducible]
 def FractionRing :=

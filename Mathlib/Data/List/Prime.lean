@@ -73,7 +73,7 @@ theorem perm_of_prod_eq_prod :
       have hl₂' : ∀ p ∈ (b :: l₂).erase a, Prime p := fun p hp => hl₂ p (mem_of_mem_erase hp)
       have ha : a ∈ b :: l₂ :=
         mem_list_primes_of_dvd_prod (hl₁ a (mem_cons_self _ _)) hl₂
-          (h ▸ by rw [prod_cons] ; exact dvd_mul_right _ _)
+          (h ▸ by rw [prod_cons]; exact dvd_mul_right _ _)
       have hb : b :: l₂ ~ a :: (b :: l₂).erase a := perm_cons_erase ha
       have hl : prod l₁ = prod ((b :: l₂).erase a) :=
         (mul_right_inj' (hl₁ a (mem_cons_self _ _)).ne_zero).1 <| by

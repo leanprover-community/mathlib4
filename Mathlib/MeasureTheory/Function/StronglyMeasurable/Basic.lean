@@ -865,8 +865,7 @@ theorem _root_.MeasurableEmbedding.stronglyMeasurable_extend {f : α → β} {g 
   · rcases hx with ⟨y, rfl⟩
     simpa only [SimpleFunc.extend_apply, hg.injective, Injective.extend_apply] using
       hf.tendsto_approx y
-  ·
-    simpa only [hx, SimpleFunc.extend_apply', not_false_iff, extend_apply'] using
+  · simpa only [hx, SimpleFunc.extend_apply', not_false_iff, extend_apply'] using
       hg'.tendsto_approx x
 #align measurable_embedding.strongly_measurable_extend MeasurableEmbedding.stronglyMeasurable_extend
 
@@ -1601,6 +1600,11 @@ theorem comp_quasiMeasurePreserving {γ : Type _} {_ : MeasurableSpace γ} {_ : 
     (hf : QuasiMeasurePreserving f μ ν) : AEStronglyMeasurable (g ∘ f) μ :=
   (hg.mono' hf.absolutelyContinuous).comp_measurable hf.measurable
 #align measure_theory.ae_strongly_measurable.comp_quasi_measure_preserving MeasureTheory.AEStronglyMeasurable.comp_quasiMeasurePreserving
+
+theorem comp_measurePreserving {γ : Type _} {_ : MeasurableSpace γ} {_ : MeasurableSpace α}
+    {f : γ → α} {μ : Measure γ} {ν : Measure α} (hg : AEStronglyMeasurable g ν)
+    (hf : MeasurePreserving f μ ν) : AEStronglyMeasurable (g ∘ f) μ :=
+  hg.comp_quasiMeasurePreserving hf.quasiMeasurePreserving
 
 theorem isSeparable_ae_range (hf : AEStronglyMeasurable f μ) :
     ∃ t : Set β, IsSeparable t ∧ ∀ᵐ x ∂μ, f x ∈ t := by

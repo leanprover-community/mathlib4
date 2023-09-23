@@ -340,7 +340,7 @@ theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, 
     @HEq (Path.Homotopic.Quotient _ _) ⟦p₁⟧ (Path.Homotopic.Quotient _ _) ⟦p₂⟧ := by
   obtain rfl : x₀ = x₂ := by convert hp 0 <;> simp
   obtain rfl : x₁ = x₃ := by convert hp 1 <;> simp
-  rw [heq_iff_eq]; congr ; ext t; exact hp t
+  rw [heq_iff_eq]; congr; ext t; exact hp t
 #align path.homotopic.hpath_hext Path.Homotopic.hpath_hext
 
 end Homotopic

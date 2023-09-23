@@ -188,14 +188,14 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
         ⟨t, ht, { y : α | (x, y) ∈ t' }, h <| mk_mem_prod hx hx,
           fun ⟨a, b⟩ ⟨(h₁ : a ∈ t), (h₂ : (x, b) ∈ t')⟩ =>
           ht'₂ <| prod_mk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
-    ⟨x, ht''₂ <| by dsimp [gen] ; exact this⟩
+    ⟨x, ht''₂ <| by dsimp [gen]; exact this⟩
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
     Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
   refine (lift'_neBot_iff ?_).mpr (fun s hs => ?_)
-  . refine monotone_const.inter ?_
+  · refine monotone_const.inter ?_
     simp_rw [UniformSpace.ball]
     exact monotone_preimage
-  . let ⟨y, hy⟩ := h_ex s hs
+  · let ⟨y, hy⟩ := h_ex s hs
     have : pureCauchy y ∈ range pureCauchy ∩ { y : CauchyFilter α | (f, y) ∈ s } :=
       ⟨mem_range_self y, hy⟩
     exact ⟨_, this⟩
@@ -236,7 +236,7 @@ instance : CompleteSpace (CauchyFilter α) :=
         have : t' ⊆ { y : α | (f', pureCauchy y) ∈ gen t } := fun x hx =>
           (f ×ˢ pure x).sets_of_superset (prod_mem_prod ht' hx) h
         f.sets_of_superset ht' <| Subset.trans this (preimage_mono ht₂)
-    ⟨f', by simp [nhds_eq_uniformity] ; assumption⟩
+    ⟨f', by simp [nhds_eq_uniformity]; assumption⟩
 
 end
 
@@ -644,16 +644,16 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     -- porting note: had to insert rewrites to switch between Quot.mk, Quotient.mk, Quotient.mk'
     rw [← Quotient.mk,extension_coe (SeparationQuotient.uniformContinuous_lift _),
       SeparationQuotient.lift_mk (uniformContinuous_coe α), map_coe]
-    . rfl
-    . exact uniformContinuous_quotient_mk
+    · rfl
+    · exact uniformContinuous_quotient_mk
   · intro a
     refine' Completion.induction_on a
         (isClosed_eq (continuous_extension.comp continuous_map) continuous_id) fun a => _
     rw [map_coe]
     -- porting note: add SeparationQuotient.lift_mk' for Quotient.mk' ?
-    . rw [extension_coe (SeparationQuotient.uniformContinuous_lift _), Quotient.mk',
+    · rw [extension_coe (SeparationQuotient.uniformContinuous_lift _), Quotient.mk',
         SeparationQuotient.lift_mk (uniformContinuous_coe α) _]
-    . exact uniformContinuous_quotient_mk
+    · exact uniformContinuous_quotient_mk
 #align uniform_space.completion.completion_separation_quotient_equiv UniformSpace.Completion.completionSeparationQuotientEquiv
 
 theorem uniformContinuous_completionSeparationQuotientEquiv :

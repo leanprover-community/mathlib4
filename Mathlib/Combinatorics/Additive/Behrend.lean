@@ -266,7 +266,7 @@ theorem exists_large_sphere (n d : ℕ) : ∃ k, (d ^ n / ↑(n * d ^ 2) : ℝ) 
     cast_one, mul_one, sub_add, sub_sub_self]
   apply one_le_mul_of_one_le_of_one_le
   · rwa [one_le_cast]
-  rw [← one_eq_succ_zero, _root_.le_sub_iff_add_le]
+  rw [_root_.le_sub_iff_add_le]
   norm_num
   exact one_le_cast.2 hd
 #align behrend.exists_large_sphere Behrend.exists_large_sphere

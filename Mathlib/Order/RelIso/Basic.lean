@@ -843,7 +843,7 @@ lexicographic orders on the sum.
 def sumLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso α₁ β₁ r₁ s₁) (e₂ : @RelIso α₂ β₂ r₂ s₂) :
     Sum.Lex r₁ r₂ ≃r Sum.Lex s₁ s₂ :=
   ⟨Equiv.sumCongr e₁.toEquiv e₂.toEquiv, @fun a b => by
-    cases' e₁ with f hf ; cases' e₂ with g hg ; cases a <;> cases b <;> simp [hf, hg]⟩
+    cases' e₁ with f hf; cases' e₂ with g hg; cases a <;> cases b <;> simp [hf, hg]⟩
 #align rel_iso.sum_lex_congr RelIso.sumLexCongr
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the

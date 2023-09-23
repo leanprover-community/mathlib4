@@ -471,7 +471,7 @@ theorem truncate_liftFun (s : S) : WittVector.truncate n (liftFun f s) = f n s :
   ext i
   simp only [liftFun, TruncatedWittVector.coeff_mk, WittVector.truncate_mk']
   rw [← f_compat (i + 1) n i.is_lt, RingHom.comp_apply, TruncatedWittVector.coeff_truncate]
-  congr with _
+  congr 1 with _
 #align witt_vector.truncate_lift_fun WittVector.truncate_liftFun
 
 variable (f)

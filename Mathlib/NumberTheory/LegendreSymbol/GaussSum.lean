@@ -175,11 +175,12 @@ nonrec theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : Mul
 is a unit in the source ring and `n` is a natural number, the `p^n`th power of the Gauss
 sum of`χ` and `ψ` is `χ (p^n)` times the original Gauss sum. -/
 theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {χ : MulChar R R'}
-    (hχ : IsQuadratic χ) (ψ : AddChar R R') : gaussSum χ ψ ^ p ^ n = χ (p ^ n) * gaussSum χ ψ := by
+    (hχ : IsQuadratic χ) (ψ : AddChar R R') :
+    gaussSum χ ψ ^ p ^ n = χ ((p : R) ^ n) * gaussSum χ ψ := by
   induction' n with n ih
-  · rw [pow_zero, pow_one, Nat.cast_one, MulChar.map_one, one_mul]
-  · rw [pow_succ, mul_comm p, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc,
-      ← pow_apply' χ fp.1.pos (p ^ n), hχ.pow_char p, ← map_mul, Nat.cast_mul]
+  · rw [pow_zero, pow_one, pow_zero, MulChar.map_one, one_mul]
+  · rw [pow_succ, mul_comm p, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc, pow_succ,
+      mul_comm (p : R), map_mul, ← pow_apply' χ fp.1.pos ((p : R) ^ n), hχ.pow_char p]
 #align mul_char.is_quadratic.gauss_sum_frob_iter MulChar.IsQuadratic.gaussSum_frob_iter
 
 end gaussSum_frob
@@ -200,7 +201,7 @@ This version can be used when `R` is not a field, e.g., `ℤ/8ℤ`. -/
 theorem Char.card_pow_char_pow {χ : MulChar R R'} (hχ : IsQuadratic χ) (ψ : AddChar R R') (p n : ℕ)
     [fp : Fact p.Prime] [hch : CharP R' p] (hp : IsUnit (p : R)) (hp' : p ≠ 2)
     (hg : gaussSum χ ψ ^ 2 = χ (-1) * Fintype.card R) :
-    (χ (-1) * Fintype.card R) ^ (p ^ n / 2) = χ (p ^ n) := by
+    (χ (-1) * Fintype.card R) ^ (p ^ n / 2) = χ ((p : R) ^ n) := by
   have : gaussSum χ ψ ≠ 0 := by
     intro hf; rw [hf, zero_pow (by norm_num : 0 < 2), eq_comm, mul_eq_zero] at hg
     exact not_isUnit_prime_of_dvd_card p
@@ -232,12 +233,12 @@ theorem Char.card_pow_card {F : Type _} [Field F] [Fintype F] {F' : Type _} [Fie
   rw [Ne, ← Nat.prime_dvd_prime_iff_eq hp' hp, ← isUnit_iff_not_dvd_char, hchar] at hch₁
   -- Porting note: original proof is below and, as noted above, `FF'` needs to
   -- be replaced by its definition before unification to avoid time out
-  --  exact Char.card_pow_char_pow (hχ₂.comp _) ψ.char (ringChar FF') n' hch₁ (hchar ▸ hch₂)
+  -- exact Char.card_pow_char_pow (hχ₂.comp _) ψ.char (ringChar FF') n' hch₁ (hchar ▸ hch₂)
   --      (gaussSum_sq (hχ₁.comp <| RingHom.injective _) (hχ₂.comp _) ψ.prim)
   have := Char.card_pow_char_pow (hχ₂.comp (algebraMap F' FF')) ψ.char
     (ringChar FF') n' hch₁ (hchar ▸ hch₂)
     (gaussSum_sq (hχ₁.comp <| RingHom.injective _) (hχ₂.comp _) ψ.prim)
-  simp_rw [FF'_def, Nat.cast_pow] at this
+  simp_rw [FF'_def] at this
   exact this
 #align char.card_pow_card Char.card_pow_card
 
@@ -359,7 +360,7 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
 
   -- this allows us to apply `card_pow_char_pow` to our situation
   have h := Char.card_pow_char_pow hq ψ₈.char (ringChar FF) n hu hFF hg
-  rw [ZMod.card, ← hchar, hχ, one_mul, ← hc] at h
+  rw [ZMod.card, ← hchar, hχ, one_mul, ← hc, ← Nat.cast_pow (ringChar F), ← hc] at h
 
   -- finally, we change `2` to `8` on the left hand side
   convert_to (8 : F) ^ (Fintype.card F / 2) = _
@@ -367,6 +368,7 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
       (FiniteField.isSquare_iff hF <| hp2 2).mp ⟨2, pow_two 2⟩, one_mul]
   apply (algebraMap F FF).injective
   simp only [map_pow, map_ofNat, map_intCast]
+  simp only [Nat.cast_ofNat, ringHomComp_apply, eq_intCast] at h
   exact h
 #align finite_field.two_pow_card FiniteField.two_pow_card
 

@@ -106,8 +106,8 @@ theorem succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
     ext x
     by_cases hx : x = 0
     · rwa [hx]
-    · rw [← Fin.succ_pred x hx]
-      convert congr_fun h (Fin.pred x hx)
+    · rw [← Fin.succ_pred x <| Fin.vne_of_ne hx]
+      convert congr_fun h (Fin.pred x <| Fin.vne_of_ne hx)
 #align sensitivity.Q.succ_n_eq Sensitivity.Q.succ_n_eq
 
 /-- The adjacency relation defining the graph structure on `Q n`:
@@ -131,7 +131,7 @@ theorem adj_iff_proj_eq {p q : Q n.succ} (h₀ : p 0 ≠ q 0) : q ∈ p.adjacent
     use 0, h₀
     intro y hy
     contrapose! hy
-    rw [← Fin.succ_pred _ hy]
+    rw [← Fin.succ_pred _ <| Fin.vne_of_ne hy]
     apply congr_fun heq
 #align sensitivity.Q.adj_iff_proj_eq Sensitivity.Q.adj_iff_proj_eq
 
@@ -142,14 +142,15 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
   constructor
   · rintro ⟨i, h_eq, h_uni⟩
     have h_i : i ≠ 0 := fun h_i => absurd h₀ (by rwa [h_i] at h_eq )
-    use i.pred h_i,
+    use i.pred <| Fin.vne_of_ne h_i,
       show p (Fin.succ (Fin.pred i _)) ≠ q (Fin.succ (Fin.pred i _)) by rwa [Fin.succ_pred]
     intro y hy
     simp [Eq.symm (h_uni _ hy)]
   · rintro ⟨i, h_eq, h_uni⟩
     use i.succ, h_eq
     intro y hy
-    rw [← Fin.pred_inj (ha := ?ha) (hb := ?hb), Fin.pred_succ]
+    rw [← Fin.pred_inj (ha := Fin.vne_of_ne (?ha : y ≠ 0)) (hb := Fin.vne_of_ne (?hb : i.succ ≠ 0)),
+      Fin.pred_succ]
     case ha =>
       contrapose! hy
       rw [hy, h₀]
@@ -230,11 +231,11 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
   induction' n with n ih
-  · dsimp [ε] at h ; exact h fun _ => true
+  · dsimp [ε] at h; exact h fun _ => true
   · cases' v with v₁ v₂
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
-      [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h);
-      let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred h)]
+      [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred <| Fin.vne_of_ne h);
+      let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred <| Fin.vne_of_ne h)]
     all_goals
       specialize h q
       first

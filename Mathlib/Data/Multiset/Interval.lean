@@ -9,8 +9,8 @@ Authors: Eric Wieser
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.LocallyFinite
-import Mathlib.Data.Dfinsupp.Interval
-import Mathlib.Data.Dfinsupp.Multiset
+import Mathlib.Data.DFinsupp.Interval
+import Mathlib.Data.DFinsupp.Multiset
 import Mathlib.Data.Nat.Interval
 
 /-!
@@ -21,7 +21,7 @@ cardinality of its finite intervals.
 
 ## Implementation notes
 
-We implement the intervals via the intervals on `Dfinsupp`, rather than via filtering
+We implement the intervals via the intervals on `DFinsupp`, rather than via filtering
 `Multiset.Powerset`; this is because `(Multiset.replicate n x).Powerset` has `2^n` entries not `n+1`
 entries as it contains duplicates. We do not go via `Finsupp` as this would be noncomputable, and
 multisets are typically used computationally.
@@ -29,7 +29,7 @@ multisets are typically used computationally.
 -/
 
 
-open Finset Dfinsupp Function
+open Finset DFinsupp Function
 
 open BigOperators Pointwise
 
@@ -42,21 +42,21 @@ variable [DecidableEq α] (f g : Multiset α)
 instance : LocallyFiniteOrder (Multiset α) :=
   LocallyFiniteOrder.ofIcc (Multiset α)
     (fun f g =>
-      (Finset.Icc (Multiset.toDfinsupp f) (Multiset.toDfinsupp g)).map
-      Multiset.equivDfinsupp.toEquiv.symm.toEmbedding)
+      (Finset.Icc (Multiset.toDFinsupp f) (Multiset.toDFinsupp g)).map
+      Multiset.equivDFinsupp.toEquiv.symm.toEmbedding)
     fun f g x => by simp
 
 theorem Icc_eq :
     Finset.Icc f g =
-      (Finset.Icc (Multiset.toDfinsupp f) (Multiset.toDfinsupp g)).map
-      Multiset.equivDfinsupp.toEquiv.symm.toEmbedding :=
+      (Finset.Icc (Multiset.toDFinsupp f) (Multiset.toDFinsupp g)).map
+      Multiset.equivDFinsupp.toEquiv.symm.toEmbedding :=
   rfl
 #align multiset.Icc_eq Multiset.Icc_eq
 
 theorem card_Icc :
     (Finset.Icc f g).card = ∏ i in f.toFinset ∪ g.toFinset, (g.count i + 1 - f.count i) := by
-  simp_rw [Icc_eq, Finset.card_map, Dfinsupp.card_Icc, Nat.card_Icc, Multiset.toDfinsupp_apply,
-    toDfinsupp_support]
+  simp_rw [Icc_eq, Finset.card_map, DFinsupp.card_Icc, Nat.card_Icc, Multiset.toDFinsupp_apply,
+    toDFinsupp_support]
 #align multiset.card_Icc Multiset.card_Icc
 
 theorem card_Ico :

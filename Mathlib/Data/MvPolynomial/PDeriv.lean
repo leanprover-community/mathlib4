@@ -78,7 +78,7 @@ theorem pderiv_monomial {i : σ} :
       ← (monomial _).map_smul]
     refine' (Finset.sum_eq_single i (fun j _ hne => _) fun hi => _).trans _
     · simp [Pi.single_eq_of_ne hne]
-    · rw [Finsupp.not_mem_support_iff] at hi ; simp [hi]
+    · rw [Finsupp.not_mem_support_iff] at hi; simp [hi]
     · simp
 #align mv_polynomial.pderiv_monomial MvPolynomial.pderiv_monomial
 

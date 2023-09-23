@@ -795,7 +795,7 @@ we can define `P` for all natural numbers. -/
 @[elab_as_elim]
 def recOnPrimePow {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1)
     (h : ∀ a p n : ℕ, p.Prime → ¬p ∣ a → 0 < n → P a → P (p ^ n * a)) : ∀ a : ℕ, P a := fun a =>
-  Nat.strong_rec_on a fun n =>
+  Nat.strongRecOn a fun n =>
     match n with
     | 0 => fun _ => h0
     | 1 => fun _ => h1

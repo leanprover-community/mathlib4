@@ -507,9 +507,9 @@ def sumCompl {α : Type _} (p : α → Prop) [DecidablePred p] :
   toFun := Sum.elim Subtype.val Subtype.val
   invFun a := if h : p a then Sum.inl ⟨a, h⟩ else Sum.inr ⟨a, h⟩
   left_inv := by
-    rintro (⟨x, hx⟩ | ⟨x, hx⟩) <;> dsimp;
-    { rw [dif_pos] }
-    { rw [dif_neg] }
+    rintro (⟨x, hx⟩ | ⟨x, hx⟩) <;> dsimp
+    · rw [dif_pos]
+    · rw [dif_neg]
   right_inv a := by
     dsimp
     split_ifs <;> rfl

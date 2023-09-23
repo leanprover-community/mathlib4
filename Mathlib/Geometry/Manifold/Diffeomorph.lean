@@ -220,13 +220,12 @@ theorem coe_trans (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J�
 #align diffeomorph.coe_trans Diffeomorph.coe_trans
 
 /-- Inverse of a diffeomorphism. -/
+@[pp_dot]
 protected def symm (h : M ≃ₘ^n⟮I, J⟯ N) : N ≃ₘ^n⟮J, I⟯ M where
   contMDiff_toFun := h.contMDiff_invFun
   contMDiff_invFun := h.contMDiff_toFun
   toEquiv := h.toEquiv.symm
 #align diffeomorph.symm Diffeomorph.symm
-
-pp_extended_field_notation Diffeomorph.symm
 
 @[simp]
 theorem apply_symm_apply (h : M ≃ₘ^n⟮I, J⟯ N) (x : N) : h (h.symm x) = x :=
@@ -324,7 +323,7 @@ theorem contMDiffWithinAt_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) 
     ContMDiffWithinAt I I' m (f ∘ h) s x ↔ ContMDiffWithinAt J I' m f (h.symm ⁻¹' s) (h x) := by
   constructor
   · intro Hfh
-    rw [← h.symm_apply_apply x] at Hfh 
+    rw [← h.symm_apply_apply x] at Hfh
     simpa only [(· ∘ ·), h.apply_symm_apply] using
       Hfh.comp (h x) (h.symm.contMDiffWithinAt.of_le hm) (mapsTo_preimage _ _)
   · rw [← h.image_eq_preimage]
@@ -580,7 +579,7 @@ def toTransDiffeomorph (e : E ≃ₘ[𝕜] F) : M ≃ₘ⟮I, I.transDiffeomorph
   contMDiff_invFun x := by
     refine' contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, _⟩
     refine' e.symm.contDiff.contDiffWithinAt.congr' (fun y hy => _) _
-    · simp only [mem_inter_iff, I.extChartAt_transDiffeomorph_target] at hy 
+    · simp only [mem_inter_iff, I.extChartAt_transDiffeomorph_target] at hy
       simp only [Equiv.coe_refl, Equiv.refl_symm, id, (· ∘ ·),
         I.coe_extChartAt_transDiffeomorph_symm, (extChartAt I x).right_inv hy.1]
     exact ⟨(extChartAt _ x).map_source (mem_extChartAt_source _ x), trivial, by

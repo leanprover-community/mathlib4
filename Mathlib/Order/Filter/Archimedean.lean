@@ -42,6 +42,10 @@ theorem tendsto_nat_cast_atTop_atTop [StrictOrderedSemiring R] [Archimedean R] :
   tendsto_nat_cast_atTop_iff.2 tendsto_id
 #align tendsto_coe_nat_at_top_at_top tendsto_nat_cast_atTop_atTop
 
+theorem Filter.Eventually.nat_cast_atTop [StrictOrderedSemiring R] [Archimedean R] {p : R → Prop}
+    (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℕ) in atTop, p n := by
+  rw [←Nat.comap_cast_atTop (R := R)]; exact h.comap _
+
 @[simp] theorem Int.comap_cast_atTop [StrictOrderedRing R] [Archimedean R] :
     comap ((↑) : ℤ → R) atTop = atTop :=
   comap_embedding_atTop (fun _ _ => Int.cast_le) fun r =>
@@ -71,6 +75,14 @@ theorem tendsto_int_cast_atTop_atTop [StrictOrderedRing R] [Archimedean R] :
   tendsto_int_cast_atTop_iff.2 tendsto_id
 #align tendsto_coe_int_at_top_at_top tendsto_int_cast_atTop_atTop
 
+theorem Filter.Eventually.int_cast_atTop [StrictOrderedRing R] [Archimedean R] {p : R → Prop}
+    (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℤ) in atTop, p n := by
+  rw [←Int.comap_cast_atTop (R := R)]; exact h.comap _
+
+theorem Filter.Eventually.int_cast_atBot [StrictOrderedRing R] [Archimedean R] {p : R → Prop}
+    (h : ∀ᶠ (x:R) in atBot, p x) : ∀ᶠ (n:ℤ) in atBot, p n := by
+  rw [←Int.comap_cast_atBot (R := R)]; exact h.comap _
+
 @[simp]
 theorem Rat.comap_cast_atTop [LinearOrderedField R] [Archimedean R] :
     comap ((↑) : ℚ → R) atTop = atTop :=
@@ -94,6 +106,14 @@ theorem tendsto_rat_cast_atBot_iff [LinearOrderedField R] [Archimedean R] {f : �
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atBot ↔ Tendsto f l atBot := by
   rw [← @Rat.comap_cast_atBot R, tendsto_comap_iff]; rfl
 #align tendsto_coe_rat_at_bot_iff tendsto_rat_cast_atBot_iff
+
+theorem Filter.Eventually.rat_cast_atTop [LinearOrderedField R] [Archimedean R] {p : R → Prop}
+    (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℚ) in atTop, p n := by
+  rw [←Rat.comap_cast_atTop (R := R)]; exact h.comap _
+
+theorem Filter.Eventually.rat_cast_atBot [LinearOrderedField R] [Archimedean R] {p : R → Prop}
+    (h : ∀ᶠ (x:R) in atBot, p x) : ∀ᶠ (n:ℚ) in atBot, p n := by
+  rw [←Rat.comap_cast_atBot (R := R)]; exact h.comap _
 
 -- porting note: new lemma
 theorem atTop_hasAntitoneBasis_of_archimedean [StrictOrderedSemiring R] [Archimedean R] :

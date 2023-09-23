@@ -213,8 +213,6 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
           c := limit.π _ (op j) }
       naturality := fun {j j'} f => by
         ext1
-        -- See https://github.com/leanprover/std4/pull/158
-        swap
         · ext x
           exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
         · ext ⟨U, hU⟩
@@ -305,8 +303,6 @@ set_option linter.uppercaseLean3 false in
 theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) :
     (colimitCocone F).ι.app j ≫ desc F s = s.ι.app j := by
   ext U
-  -- See https://github.com/leanprover/std4/pull/158
-  swap
   · simp [desc]
   · -- Porting note : the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
     -- but this has to be expanded a bit
@@ -338,9 +334,6 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       rw [colimit.ι_desc, mapCocone_ι_app, ← w j]
       simp
     ext : 1
-    swap
-    -- could `ext` please not reorder goals?
-    -- See https://github.com/leanprover/std4/pull/158
     · exact t
     · refine NatTrans.ext _ _ (funext fun U => limit_obj_ext fun j => ?_)
       dsimp only [colimitCocone_pt, colimit_carrier, leftOp_obj, pushforwardDiagramToColimit_obj,

@@ -30,7 +30,7 @@ and value respectively with `Bitraverse f g : AList key val → IO (AList key' v
 
 * `Bitraversable`: Bare typeclass to hold the `Bitraverse` function.
 * `LawfulBitraversable`: Typeclass for the laws of the `Bitraverse` function. Similar to
-  `IsLawfulTraversable`.
+  `LawfulTraversable`.
 
 ## References
 

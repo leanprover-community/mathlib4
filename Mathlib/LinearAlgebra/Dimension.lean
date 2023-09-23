@@ -9,7 +9,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.LinearAlgebra.Dfinsupp
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Isomorphisms

@@ -13,11 +13,12 @@ import Mathlib.Logic.Equiv.TransferInstance
 noncomputable section
 
 -- FIXME: here and below, why doesn't `to_additive` work?
+-- We're waiting on the fix for https://github.com/leanprover/lean4/issues/2077 to arrive.
 
-instance [Zero α] [Small α] : Zero (Shrink α) := (equivShrink _).symm.Zero
+instance [Zero α] [Small α] : Zero (Shrink α) := (equivShrink _).symm.zero
 
 @[to_additive existing]
-instance [One α] [Small α] : One (Shrink α) := (equivShrink _).symm.One
+instance [One α] [Small α] : One (Shrink α) := (equivShrink _).symm.one
 
 @[simp]
 lemma equivShrink_symm_zero [Zero α] [Small α] : (equivShrink α).symm 0 = 0 :=
@@ -27,10 +28,10 @@ lemma equivShrink_symm_zero [Zero α] [Small α] : (equivShrink α).symm 0 = 0 :
 lemma equivShrink_symm_one [One α] [Small α] : (equivShrink α).symm 1 = 1 :=
   (equivShrink α).symm_apply_apply 1
 
-instance [Add α] [Small α] : Add (Shrink α) := (equivShrink _).symm.Add
+instance [Add α] [Small α] : Add (Shrink α) := (equivShrink _).symm.add
 
 @[to_additive existing]
-instance [Mul α] [Small α] : Mul (Shrink α) := (equivShrink _).symm.Mul
+instance [Mul α] [Small α] : Mul (Shrink α) := (equivShrink _).symm.mul
 
 @[simp]
 lemma equivShrink_symm_add [Add α] [Small α] (x y : Shrink α) :
@@ -56,10 +57,10 @@ lemma equivShrink_mul [Mul α] [Small α] (x y : α) :
   rw [Equiv.mul_def]
   simp
 
-instance [Sub α] [Small α] : Sub (Shrink α) := (equivShrink _).symm.Sub
+instance [Sub α] [Small α] : Sub (Shrink α) := (equivShrink _).symm.sub
 
 @[to_additive existing]
-instance [Div α] [Small α] : Div (Shrink α) := (equivShrink _).symm.Div
+instance [Div α] [Small α] : Div (Shrink α) := (equivShrink _).symm.div
 
 @[simp]
 lemma equivShrink_symm_sub [Sub α] [Small α] (x y : Shrink α) :

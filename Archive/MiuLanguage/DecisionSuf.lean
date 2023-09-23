@@ -299,7 +299,7 @@ relate to `count U`.
 
 theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
   induction' xs with z zs hzs
-  · exfalso; rw [count] at h ; contradiction
+  · exfalso; rw [count] at h; contradiction
   · rw [mem_cons]
     cases z <;> try exact Or.inl rfl
     all_goals right; simp only [count_cons, if_false] at h; exact hzs h

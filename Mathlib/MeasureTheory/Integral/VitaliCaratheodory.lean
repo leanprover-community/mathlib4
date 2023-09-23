@@ -249,11 +249,10 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable [SigmaFinite 
     · have := le_g1 x
       simp only [h, Set.indicator_of_mem, top_le_iff] at this
       simp [this]
-    · have : f x = fmeas.mk f x := by rw [Set.compl_subset_comm] at hs ; exact hs h
+    · have : f x = fmeas.mk f x := by rw [Set.compl_subset_comm] at hs; exact hs h
       rw [this]
       exact (f_lt_g0 x).trans_le le_self_add
-  ·
-    calc
+  · calc
       ∫⁻ x, g0 x + g1 x ∂μ = (∫⁻ x, g0 x ∂μ) + ∫⁻ x, g1 x ∂μ :=
         lintegral_add_left g0_cont.measurable _
       _ ≤ (∫⁻ x, f x ∂μ) + ε / 2 + (0 + ε / 2) := by
@@ -301,8 +300,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
     simp only [hasFiniteIntegral_iff_norm, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
     convert gint_ne.lt_top using 1
   · rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
-    ·
-      calc
+    · calc
         ENNReal.toReal (∫⁻ a : α, ENNReal.ofReal (g a).toReal ∂μ) =
             ENNReal.toReal (∫⁻ a : α, g a ∂μ) :=
           by congr 1

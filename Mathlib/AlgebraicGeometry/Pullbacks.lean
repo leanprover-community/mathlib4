@@ -675,7 +675,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
     rfl
   · simp only [Category.comp_id, Category.id_comp]
   -- Porting note : this `IsIso` instance was `inferInstance`
-  . apply IsIso.comp_isIso
+  · apply IsIso.comp_isIso
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base' AlgebraicGeometry.Scheme.Pullback.openCoverOfBase'
 
 /-- Given an open cover `{ Zᵢ }` of `Z`, then `X ×[Z] Y` is covered by `Xᵢ ×[Zᵢ] Yᵢ`, where
@@ -695,7 +695,7 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
   -- Porting note : deviated from original proof a bit so that it won't timeout.
   rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]
   apply pullback.hom_ext <;> dsimp <;>
-  . simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
+  · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
       limit.lift_π_assoc, cospan_left, Category.comp_id, limit.isoLimitCone_inv_π,
       limit.isoLimitCone_inv_π_assoc, pullbackSymmetry_hom_comp_fst_assoc,
       pullbackSymmetry_hom_comp_snd_assoc]

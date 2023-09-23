@@ -219,7 +219,7 @@ theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y)
     f (x + n) = f x + ∑ m : ℕ in Finset.range n, log (x + m) := by
   induction' n with n hn
   · simp
-  · have : x + n.succ = x + n + 1 := by push_cast ; ring
+  · have : x + n.succ = x + n + 1 := by push_cast; ring
     rw [this, hf_feq, hn]
     rw [Finset.range_succ, Finset.sum_insert Finset.not_mem_range_self]
     abel

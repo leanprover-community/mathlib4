@@ -123,8 +123,8 @@ theorem Functor.leftDerived_map_eq (F : C ⥤ D) [F.Additive] (n : ℕ) {X Y : C
   apply HomotopyCategory.eq_of_homotopy
   apply Functor.mapHomotopy
   apply ProjectiveResolution.liftHomotopy f
-  . simp
-  . simp [w]
+  · simp
+  · simp [w]
 #align category_theory.functor.left_derived_map_eq CategoryTheory.Functor.leftDerived_map_eq
 
 /-- The natural transformation between left-derived functors induced by a natural transformation. -/

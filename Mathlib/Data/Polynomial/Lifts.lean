@@ -184,7 +184,7 @@ theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     rw [habs, eraseLead_zero, eq_self_iff_true, not_true] at erase_zero
     exact erase_zero
   have lead_zero : p.coeff p.natDegree ≠ 0 := by
-    rw [← leadingCoeff, Ne.def, leadingCoeff_eq_zero] ; exact pzero
+    rw [← leadingCoeff, Ne.def, leadingCoeff_eq_zero]; exact pzero
   obtain ⟨lead, hlead⟩ :=
     monomial_mem_lifts_and_degree_eq
       (monomial_mem_lifts p.natDegree ((lifts_iff_coeff_lifts p).1 hlifts p.natDegree))

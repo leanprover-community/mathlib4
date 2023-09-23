@@ -8,7 +8,7 @@ Authors: Pierre-Alexandre Bazin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.LinearAlgebra.Dfinsupp
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.RingTheory.Ideal.Operations
 
 /-!

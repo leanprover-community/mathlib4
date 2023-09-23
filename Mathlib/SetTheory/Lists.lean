@@ -301,7 +301,7 @@ theorem Equiv.antisymm_iff {l₁ l₂ : Lists' α true} : of' l₁ ~ of' l₂ �
   refine' ⟨fun h => _, fun ⟨h₁, h₂⟩ => Equiv.antisymm h₁ h₂⟩
   cases' h with _ _ _ h₁ h₂
   · simp [Lists'.Subset.refl]
-  . exact ⟨h₁, h₂⟩
+  · exact ⟨h₁, h₂⟩
 #align lists.equiv.antisymm_iff Lists.Equiv.antisymm_iff
 
 attribute [refl] Equiv.refl
@@ -347,9 +347,9 @@ theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l�
     -- Assumption fails.
     simp only [Lists'.toList, Sigma.eta, List.find?, List.mem_cons, forall_eq_or_imp]
     constructor
-    . intros l₂ l₃ h₁ h₂
+    · intros l₂ l₃ h₁ h₂
       exact IH₁ h₁ h₂
-    . intros a h₁ l₂ l₃ h₂ h₃
+    · intros a h₁ l₂ l₃ h₂ h₃
       exact IH _ h₁ h₂ h₃
 #align lists.equiv.trans Lists.Equiv.trans
 

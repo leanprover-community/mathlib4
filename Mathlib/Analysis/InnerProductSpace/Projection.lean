@@ -1289,13 +1289,13 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
   · simp
   · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
     -- porting note: was in the previous `simp_rw`, no longer works
-    rw [Dfinsupp.singleAddHom_apply]
+    rw [DFinsupp.singleAddHom_apply]
     obtain rfl | hij := Decidable.eq_or_ne i j
-    · rw [orthogonalProjection_mem_subspace_eq_self, Dfinsupp.single_eq_same]
+    · rw [orthogonalProjection_mem_subspace_eq_self, DFinsupp.single_eq_same]
     · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
-        Dfinsupp.single_eq_of_ne hij.symm]
+        DFinsupp.single_eq_of_ne hij.symm]
       exact hV.isOrtho hij.symm x.prop
-  · simp_rw [map_add, Dfinsupp.add_apply]
+  · simp_rw [map_add, DFinsupp.add_apply]
     exact congr_arg₂ (· + ·) hx hy
 #align orthogonal_family.projection_direct_sum_coe_add_hom OrthogonalFamily.projection_directSum_coeAddHom
 
@@ -1310,19 +1310,19 @@ def OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → Sub
     [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (h : iSup V = ⊤) : DirectSum.Decomposition V
     where
-  decompose' x := Dfinsupp.equivFunOnFintype.symm fun i => orthogonalProjection (V i) x
+  decompose' x := DFinsupp.equivFunOnFintype.symm fun i => orthogonalProjection (V i) x
   left_inv x := by
     dsimp only
     letI := fun i => Classical.decEq (V i)
-    rw [DirectSum.coeAddMonoidHom, DirectSum.toAddMonoid, Dfinsupp.liftAddHom_apply,
-      Dfinsupp.sumAddHom_apply, Dfinsupp.sum_eq_sum_fintype]
+    rw [DirectSum.coeAddMonoidHom, DirectSum.toAddMonoid, DFinsupp.liftAddHom_apply,
+      DFinsupp.sumAddHom_apply, DFinsupp.sum_eq_sum_fintype]
     · simp_rw [Equiv.apply_symm_apply, AddSubmonoidClass.coe_subtype]
       exact hV.sum_projection_of_mem_iSup _ ((h.ge : _) Submodule.mem_top)
     · intro i
       exact map_zero _
   right_inv x := by
     dsimp only
-    simp_rw [hV.projection_directSum_coeAddHom, Dfinsupp.equivFunOnFintype_symm_coe]
+    simp_rw [hV.projection_directSum_coeAddHom, DFinsupp.equivFunOnFintype_symm_coe]
 #align orthogonal_family.decomposition OrthogonalFamily.decomposition
 
 end OrthogonalFamily

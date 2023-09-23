@@ -8,20 +8,26 @@
     "name": "proofwidgets",
     "inputRev?": "v0.0.11"}},
   {"git":
+   {"url": "https://github.com/mhuisi/lean4-cli.git",
+    "subDir?": null,
+    "rev": "5a858c32963b6b19be0d477a30a1f4b6c120be7e",
+    "name": "Cli",
+    "inputRev?": "nightly"}},
+  {"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
-    "rev": "c71f94e34c1cda52eef5c93dc9da409ab2727420",
+    "rev": "e6ca4e7e6b13ceee845e40a904c1a71ed9866574",
     "name": "Qq",
     "inputRev?": "master"}},
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "ca73109cc40837bc61df8024c9016da4b4f99d4c",
+    "rev": "f04538ab6ad07642368cf11d2702acc0a9b4bcee",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "e68aa8f5fe47aad78987df45f99094afbcb5e936",
+    "rev": "dff883c55395438ae2a5c65ad5ddba084b600feb",
     "name": "std",
     "inputRev?": "main"}}]}

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module set_theory.cardinal.basic
-! leanprover-community/mathlib commit 9bb28972724354ac0574e2b318be896ec252025f
+! leanprover-community/mathlib commit 3ff3f2d6a3118b8711063de7111a0d77a53219a8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -107,10 +107,10 @@ instance Cardinal.isEquivalent : Setoid (Type u) where
 /-- `Cardinal.{u}` is the type of cardinal numbers in `Type u`,
   defined as the quotient of `Type u` by existence of an equivalence
   (a bijection with explicit inverse). -/
+@[pp_with_univ]
 def Cardinal : Type (u + 1) :=
   Quotient Cardinal.isEquivalent
 #align cardinal Cardinal
-pp_with_univ Cardinal
 
 namespace Cardinal
 
@@ -1958,7 +1958,7 @@ theorem toPartENat_lift (c : Cardinal.{v}) : toPartENat (lift.{u, v} c) = toPart
     simp only [toNat_lift]
     rw [lift_lt_aleph0]
     exact hc
-  . rw [toPartENat_apply_of_aleph0_le hc, toPartENat_apply_of_aleph0_le _]
+  · rw [toPartENat_apply_of_aleph0_le hc, toPartENat_apply_of_aleph0_le _]
     rw [aleph0_le_lift]
     exact hc
 #align cardinal.to_part_enat_lift Cardinal.toPartENat_lift

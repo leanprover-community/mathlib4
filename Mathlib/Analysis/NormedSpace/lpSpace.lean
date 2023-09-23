@@ -1236,8 +1236,8 @@ lemma LipschitzWith.uniformly_bounded [PseudoMetricSpace α] (g : α → ι → 
     _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add _ _
     _ ≤ ↑K * dist a a₀ + M := by
         gcongr
-        . exact lipschitzWith_iff_dist_le_mul.1 (hg i) a a₀
-        . exact hM ⟨i, rfl⟩
+        · exact lipschitzWith_iff_dist_le_mul.1 (hg i) a a₀
+        · exact hM ⟨i, rfl⟩
 
 theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι)) (s : Set α) (K : ℝ≥0) :
     LipschitzOnWith K f s ↔ ∀ i : ι, LipschitzOnWith K (fun a : α ↦ f a i) s := by

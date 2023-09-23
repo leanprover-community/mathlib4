@@ -543,7 +543,7 @@ theorem lintegral_add_aux {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Me
         ∫⁻ a, (⨆ n, (eapprox f n : α → ℝ≥0∞) a) + ⨆ n, (eapprox g n : α → ℝ≥0∞) a ∂μ :=
       by simp only [iSup_eapprox_apply, hf, hg]
     _ = ∫⁻ a, ⨆ n, (eapprox f n + eapprox g n : α → ℝ≥0∞) a ∂μ := by
-      congr ; funext a
+      congr; funext a
       rw [ENNReal.iSup_add_iSup_of_monotone]; · rfl
       · intro i j h
         exact monotone_eapprox _ h a
@@ -612,7 +612,7 @@ theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0�
     ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂μ i := by
   simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_sum, ENNReal.tsum_eq_iSup_sum]
   rw [iSup_comm]
-  congr ; funext s
+  congr; funext s
   induction' s using Finset.induction_on with i s hi hs;
   · apply bot_unique
     simp

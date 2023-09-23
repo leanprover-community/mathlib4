@@ -99,7 +99,7 @@ def limitConeIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitCone.{v,u} F) 
           rw [← S.w f]
           rfl }
   uniq S m h := by
-    apply ContinuousMap.ext ; intros a ; apply Subtype.ext ; funext j
+    apply ContinuousMap.ext; intros a; apply Subtype.ext; funext j
     dsimp
     rw [← h]
     rfl

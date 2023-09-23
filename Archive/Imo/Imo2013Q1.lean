@@ -62,7 +62,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     rw [← two_mul] at ht
     cases' t with t
     -- Eliminate the zero case to simplify later calculations.
-    · exfalso; rw [Nat.mul_zero] at ht ; exact PNat.ne_zero n ht
+    · exfalso; rw [Nat.mul_zero] at ht; exact PNat.ne_zero n ht
     -- Now we have ht : ↑n = 2 * (t + 1).
     let t_succ : ℕ+ := ⟨t + 1, t.succ_pos⟩
     obtain ⟨pm, hpm⟩ := hpk t_succ

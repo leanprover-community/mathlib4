@@ -87,7 +87,7 @@ class CreatesLimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
 
 -- This should be used with explicit universe variables.
 /-- `F` creates limits if it creates limits of shape `J` for any `J`. -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 class CreatesLimitsOfSize (F : C ⥤ D) where
   CreatesLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesLimitsOfShape J F := by
     infer_instance
@@ -120,7 +120,7 @@ class CreatesColimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
 
 -- This should be used with explicit universe variables.
 /-- `F` creates colimits if it creates colimits of shape `J` for any small `J`. -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 class CreatesColimitsOfSize (F : C ⥤ D) where
   CreatesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesColimitsOfShape J F := by
     infer_instance

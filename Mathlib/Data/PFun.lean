@@ -126,7 +126,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
   ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun f =>
-    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp ; congr ⟩
+    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr ⟩
 #align pfun.equiv_subtype PFun.equivSubtype
 
 theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
@@ -230,7 +230,7 @@ instance monad : Monad (PFun α) where
 
 instance lawfulMonad : LawfulMonad (PFun α) := LawfulMonad.mk'
   (bind_pure_comp := fun f x => funext fun a => Part.bind_some_eq_map _ _)
-  (id_map := fun f => by funext a ; dsimp [Functor.map, PFun.map] ; cases f a; rfl)
+  (id_map := fun f => by funext a; dsimp [Functor.map, PFun.map]; cases f a; rfl)
   (pure_bind := fun x f => funext fun a => Part.bind_some _ (f x))
   (bind_assoc := fun f g k => funext fun a => (f a).bind_assoc (fun b => g b a) fun b => k b a)
 #align pfun.is_lawful_monad PFun.lawfulMonad
@@ -263,7 +263,7 @@ def fix (f : α →. Sum β α) : α →. β := fun a =>
 
 theorem dom_of_mem_fix {f : α →. Sum β α} {a : α} {b : β} (h : b ∈ f.fix a) : (f a).Dom := by
   let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
-  rw [WellFounded.fixFEq] at h₂ ; exact h₂.fst.fst
+  rw [WellFounded.fixFEq] at h₂; exact h₂.fst.fst
 #align pfun.dom_of_mem_fix PFun.dom_of_mem_fix
 
 theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
@@ -330,10 +330,10 @@ theorem fix_fwd {f : α →. Sum β α} {b : β} {a a' : α} (hb : b ∈ f.fix a
 @[elab_as_elim]
 def fixInduction {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') : C a := by
-  have h₂ := (Part.mem_assert_iff.1 h).snd;
+  have h₂ := (Part.mem_assert_iff.1 h).snd
   -- Porting note: revert/intro trick required to address `generalize_proofs` bug
   revert h₂
-  generalize_proofs h₁;
+  generalize_proofs h₁
   intro h₂; clear h
   induction' h₁ with a ha IH
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
@@ -451,10 +451,10 @@ theorem preimage_union (s t : Set β) : f.preimage (s ∪ t) = f.preimage s ∪ 
   Rel.preimage_union _ s t
 #align pfun.preimage_union PFun.preimage_union
 
-theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext ; simp [mem_preimage, mem_dom]
+theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext; simp [mem_preimage, mem_dom]
 #align pfun.preimage_univ PFun.preimage_univ
 
-theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext ; simp
+theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext; simp
 #align pfun.coe_preimage PFun.coe_preimage
 
 /-- Core of a set `s : Set β` with respect to a partial function `f : α →. β`. Set of all `a : α`
@@ -501,7 +501,7 @@ theorem core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = 
 end
 
 theorem core_restrict (f : α → β) (s : Set β) : (f : α →. β).core s = s.preimage f := by
-  ext x ; simp [core_def]
+  ext x; simp [core_def]
 #align pfun.core_restrict PFun.core_restrict
 
 theorem preimage_subset_core (f : α →. β) (s : Set β) : f.preimage s ⊆ f.core s :=

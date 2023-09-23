@@ -1021,7 +1021,7 @@ instance : SuccOrder (WithTop α) where
     · exact le_top
     change _ ≤ ite _ _ _
     split_ifs
-    . exact le_top
+    · exact le_top
     · exact some_le_some.2 (le_succ a)
   max_of_succ_le {a} ha := by
     cases a

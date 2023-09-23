@@ -251,7 +251,7 @@ structure Sieve {C : Type u₁} [Category.{v₁} C] (X : C) where
   downward_closed : ∀ {Y Z f} (_ : arrows f) (g : Z ⟶ Y), arrows (g ≫ f)
 #align category_theory.sieve CategoryTheory.Sieve
 
-pp_extended_field_notation Sieve.arrows
+attribute [pp_dot] Sieve.arrows
 
 namespace Sieve
 
@@ -339,8 +339,8 @@ instance : CompleteLattice (Sieve X)
   le_sup_right _ _ _ _ := Or.inr
   sup_le _ _ _ h₁ h₂ _ f := by--ℰ S hS Y f := by
     rintro (hf | hf)
-    . exact h₁ _ hf
-    . exact h₂ _ hf
+    · exact h₁ _ hf
+    · exact h₂ _ hf
   inf_le_left _ _ _ _ := And.left
   inf_le_right _ _ _ _ := And.right
   le_inf _ _ _ p q _ _ z := ⟨p _ z, q _ z⟩

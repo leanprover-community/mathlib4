@@ -292,7 +292,7 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
           c1 = map f (corec parallel.aux1 (l, S)) ∧
             c2 = corec parallel.aux1 (l.map (map f), S.map (map f)))
       _ ⟨[], S, rfl, rfl⟩
-  intro c1 c2 h;
+  intro c1 c2 h
   exact
     match c1, c2, h with
     | _, _, ⟨l, S, rfl, rfl⟩ => by

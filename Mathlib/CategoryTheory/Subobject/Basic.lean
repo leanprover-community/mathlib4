@@ -610,14 +610,14 @@ def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y where
   map_rel_iff' {A B} := by
     dsimp
     constructor
-    . intro h
+    · intro h
       apply_fun (map e.inv).obj at h
-      . simpa only [← map_comp, e.hom_inv_id, map_id] using h
-      . apply Functor.monotone
-    . intro h
+      · simpa only [← map_comp, e.hom_inv_id, map_id] using h
+      · apply Functor.monotone
+    · intro h
       apply_fun (map e.hom).obj at h
-      . exact h
-      . apply Functor.monotone
+      · exact h
+      · apply Functor.monotone
 #align category_theory.subobject.map_iso_to_order_iso CategoryTheory.Subobject.mapIsoToOrderIso
 
 @[simp]

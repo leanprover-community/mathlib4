@@ -11,7 +11,7 @@ Authors: David Loeffler
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.SchwartzSpace
+import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 /-!

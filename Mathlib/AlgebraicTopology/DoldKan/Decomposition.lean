@@ -53,7 +53,7 @@ the $y_i$ are in degree $n$. -/
 theorem decomposition_Q (n q : ℕ) :
     ((Q q).f (n + 1) : X _[n + 1] ⟶ X _[n + 1]) =
       ∑ i : Fin (n + 1) in Finset.filter (fun i : Fin (n + 1) => (i : ℕ) < q) Finset.univ,
-        (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ (Fin.rev i) := by
+        (P i).f (n + 1) ≫ X.δ i.revPerm.succ ≫ X.σ (Fin.revPerm i) := by
   induction' q with q hq
   · simp only [Nat.zero_eq, Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
       Finset.filter_False, Finset.sum_empty]
@@ -73,9 +73,9 @@ theorem decomposition_Q (n q : ℕ) :
       congr
       · have hnaq' : n = a + q := by linarith
         simp only [Fin.val_mk, (HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq',
-          q'.rev_eq hnaq', neg_neg]
+          q'.revPerm_eq hnaq', neg_neg]
         rfl
-      . ext ⟨i, hi⟩
+      · ext ⟨i, hi⟩
         simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ,
           forall_true_left, Finset.mem_filter, lt_self_iff_false, or_true, and_self, not_true,
           Finset.mem_erase, ne_eq, Fin.mk.injEq, true_and]
@@ -103,7 +103,8 @@ variable {X} {n : ℕ} {Z Z' : C} (f : MorphComponents X n Z) (g : X' ⟶ X) (h 
 
 /-- The morphism `X _[n+1] ⟶ Z ` associated to `f : MorphComponents X n Z`. -/
 def φ {Z : C} (f : MorphComponents X n Z) : X _[n + 1] ⟶ Z :=
-  PInfty.f (n + 1) ≫ f.a + ∑ i : Fin (n + 1), (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ f.b (Fin.rev i)
+  PInfty.f (n + 1) ≫ f.a + ∑ i : Fin (n + 1), (P i).f (n + 1) ≫ X.δ i.revPerm.succ ≫
+    f.b (Fin.revPerm i)
 #align algebraic_topology.dold_kan.morph_components.φ AlgebraicTopology.DoldKan.MorphComponents.φ
 
 variable (X n)
@@ -121,7 +122,7 @@ theorem id_φ : (id X n).φ = 𝟙 _ := by
   simp only [← P_add_Q_f (n + 1) (n + 1), φ]
   congr 1
   · simp only [id, PInfty_f, P_f_idem]
-  . exact Eq.trans (by congr ; simp) (decomposition_Q n (n + 1)).symm
+  · exact Eq.trans (by congr; simp) (decomposition_Q n (n + 1)).symm
 #align algebraic_topology.dold_kan.morph_components.id_φ AlgebraicTopology.DoldKan.MorphComponents.id_φ
 
 variable {X n}

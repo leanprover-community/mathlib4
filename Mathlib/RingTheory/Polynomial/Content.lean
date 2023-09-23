@@ -180,8 +180,8 @@ theorem normalize_content {p : R[X]} : normalize p.content = p.content :=
 @[simp]
 theorem normUnit_content {p : R[X]} : normUnit (content p) = 1 := by
   by_cases hp0 : p.content = 0
-  . simp [hp0]
-  . ext
+  · simp [hp0]
+  · ext
     apply mul_left_cancel₀ hp0
     erw [← normalize_apply, normalize_content, mul_one]
 
@@ -388,8 +388,7 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
       ← Nat.cast_withBot, ← degree_eq_natDegree q.primPart_ne_zero] at heq
     rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
     suffices h : (q.primPart * p.primPart).content = 1
-    ·
-      rw [mul_assoc, content_C_mul, content_C_mul, mul_comm p.primPart, mul_assoc, content_C_mul,
+    · rw [mul_assoc, content_C_mul, content_C_mul, mul_comm p.primPart, mul_assoc, content_C_mul,
         content_C_mul, h, mul_one, content_primPart, content_primPart, mul_one, mul_one]
     rw [← normalize_content, normalize_eq_one, isUnit_iff_dvd_one,
       content_eq_gcd_leadingCoeff_content_eraseLead, leadingCoeff_mul, gcd_comm]

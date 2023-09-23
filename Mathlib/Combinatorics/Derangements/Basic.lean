@@ -91,10 +91,10 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
           { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
       -- porting note: `subtypeSubtypeEquivSubtypeInter` no longer works with placeholder `_`s.
       refine' Equiv.sumCongr _ _
-      . exact subtypeSubtypeEquivSubtypeInter
+      · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (a ∈ fixedPoints ·)
-      . exact subtypeSubtypeEquivSubtypeInter
+      · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (¬a ∈ fixedPoints ·)
     _ ≃ Sum { f : Perm α // fixedPoints f = {a} } { f : Perm α // fixedPoints f = ∅ } := by

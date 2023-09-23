@@ -57,7 +57,7 @@ instance [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
   ofNat := n.cast
 
 @[simp, norm_cast] theorem Nat.cast_ofNat [NatCast R] [Nat.AtLeastTwo n] :
-  (Nat.cast (OfNat.ofNat n) : R) = OfNat.ofNat n := rfl
+  (Nat.cast (no_index (OfNat.ofNat n)) : R) = OfNat.ofNat n := rfl
 
 theorem Nat.cast_eq_ofNat [NatCast R] [Nat.AtLeastTwo n] : (Nat.cast n : R) = OfNat.ofNat n := rfl
 

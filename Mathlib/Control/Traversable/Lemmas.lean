@@ -25,21 +25,21 @@ Inspired by [The Essence of the Iterator Pattern][gibbons2009].
 
 universe u
 
-open IsLawfulTraversable
+open LawfulTraversable
 
 open Function hiding comp
 
 open Functor
 
-attribute [functor_norm] IsLawfulTraversable.naturality
+attribute [functor_norm] LawfulTraversable.naturality
 
-attribute [simp] IsLawfulTraversable.id_traverse
+attribute [simp] LawfulTraversable.id_traverse
 
 namespace Traversable
 
 variable {t : Type u → Type u}
 
-variable [Traversable t] [IsLawfulTraversable t]
+variable [Traversable t] [LawfulTraversable t]
 
 variable (F G : Type u → Type u)
 
@@ -81,14 +81,14 @@ theorem map_eq_traverse_id : map (f := t) f = traverse (m := Id) (pure ∘ f) :=
 theorem map_traverse (x : t α) : map f <$> traverse g x = traverse (map f ∘ g) x := by
   rw [map_eq_traverse_id f]
   refine' (comp_traverse (pure ∘ f) g x).symm.trans _
-  congr ; apply Comp.applicative_comp_id
+  congr; apply Comp.applicative_comp_id
 #align traversable.map_traverse Traversable.map_traverse
 
 theorem traverse_map (f : β → F γ) (g : α → β) (x : t α) :
     traverse f (g <$> x) = traverse (f ∘ g) x := by
   rw [@map_eq_traverse_id t _ _ _ _ g]
   refine' (comp_traverse (G := Id) f (pure ∘ g) x).symm.trans _
-  congr ; apply Comp.applicative_id_comp
+  congr; apply Comp.applicative_id_comp
 #align traversable.traverse_map Traversable.traverse_map
 
 theorem pure_traverse (x : t α) : traverse pure x = (pure x : F (t α)) := by

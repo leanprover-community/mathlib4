@@ -89,7 +89,7 @@ instance : Traversable LazyList where
   map := @LazyList.traverse Id _
   traverse := @LazyList.traverse
 
-instance : IsLawfulTraversable LazyList := by
+instance : LawfulTraversable LazyList := by
   apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f xs
   · induction' xs using LazyList.rec with _ _ _ _ ih
     · rfl

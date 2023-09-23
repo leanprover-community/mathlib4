@@ -55,8 +55,8 @@ def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option
 def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where
   toFun f := ⟨coeWithTop.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
   invFun f := f.1.optionElim f.2 f.2.2
-  left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def] ; rfl
-  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def] ; rfl
+  left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def]; rfl
+  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def]; rfl
 #align function.embedding.option_embedding_equiv Function.Embedding.optionEmbeddingEquiv
 #align function.embedding.option_embedding_equiv_apply_snd_coe Function.Embedding.optionEmbeddingEquiv_apply_snd_coe
 #align function.embedding.option_embedding_equiv_symm_apply Function.Embedding.optionEmbeddingEquiv_symm_apply

@@ -161,6 +161,11 @@ theorem AnalyticOn.contDiffOn [CompleteSpace F] (h : AnalyticOn 𝕜 f s) {n : �
     exact iteratedFDerivWithin_of_isOpen _ t_open hx
 #align analytic_on.cont_diff_on AnalyticOn.contDiffOn
 
+theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : ℕ∞} :
+    ContDiffAt 𝕜 n f x := by
+  obtain ⟨s, hs, hf⟩ := h.exists_mem_nhds_analyticOn
+  exact hf.contDiffOn.contDiffAt hs
+
 end fderiv
 
 section deriv

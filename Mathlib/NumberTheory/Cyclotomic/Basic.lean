@@ -506,7 +506,7 @@ theorem splitting_field_cyclotomic : IsSplittingField K L (cyclotomic n K) :=
       rw [← ((iff_adjoin_eq_top {n} K L).1 inferInstance).2]
       letI := Classical.decEq L
       -- todo: make `exists_prim_root` take an explicit `L`
-      obtain ⟨ζ : L, hζ⟩ := IsCyclotomicExtension.exists_prim_root K (mem_singleton n)
+      obtain ⟨ζ : L, hζ⟩ := IsCyclotomicExtension.exists_prim_root K (B := L) (mem_singleton n)
       exact adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ }
 #align is_cyclotomic_extension.splitting_field_cyclotomic IsCyclotomicExtension.splitting_field_cyclotomic
 
@@ -555,9 +555,9 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : K)] :
   rw [← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
 -- Porting note: the first `?_` was `forall_eq.2 ⟨ζ, hζ⟩` that now fails.
   refine ⟨?_, ?_⟩
-  . simp only [mem_singleton_iff, forall_eq]
+  · simp only [mem_singleton_iff, forall_eq]
     exact ⟨ζ, hζ⟩
-  . rw [← Algebra.eq_top_iff, ← SplittingField.adjoin_rootSet, eq_comm]
+  · rw [← Algebra.eq_top_iff, ← SplittingField.adjoin_rootSet, eq_comm]
     exact IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ
 #align cyclotomic_field.is_cyclotomic_extension CyclotomicField.isCyclotomicExtension
 

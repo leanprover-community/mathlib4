@@ -61,7 +61,7 @@ In the definitions below, we use the following notation:
 
 Recall that if `Y` has a zero, then `X →₀ Y` is the type of functions from `X` to `Y` with finite
 support, i.e. such that only finitely many elements of `X` get sent to non-zero terms in `Y`.
-The definition of `MvPolynomial σ R` is `(σ →₀ ℕ) →₀ R` ; here `σ →₀ ℕ` denotes the space of all
+The definition of `MvPolynomial σ R` is `(σ →₀ ℕ) →₀ R`; here `σ →₀ ℕ` denotes the space of all
 monomials in the variables, and the function to `R` sends a monomial to its coefficient in
 the polynomial being represented.
 
@@ -151,7 +151,7 @@ instance isScalarTower_right [CommSemiring S₁] [DistribSMul R S₁] [IsScalarT
 
 instance smulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommClass R S₁ S₁] :
     SMulCommClass R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.sMulCommClass_self _
+  AddMonoidAlgebra.smulCommClass_self _
 #align mv_polynomial.smul_comm_class_right MvPolynomial.smulCommClass_right
 
 /-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/

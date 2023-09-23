@@ -273,7 +273,7 @@ theorem isAffineOpen_iff_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : Is
     dsimp [Opens.inclusion]
     rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_coe, Subtype.range_coe]
     rfl
-  . infer_instance
+  · infer_instance
 #align algebraic_geometry.is_affine_open_iff_of_is_open_immersion AlgebraicGeometry.isAffineOpen_iff_of_isOpenImmersion
 
 instance Scheme.quasi_compact_of_affine (X : Scheme) [IsAffine X] : CompactSpace X :=
@@ -349,7 +349,7 @@ theorem IsAffineOpen.basicOpenIsAffine {X : Scheme} {U : Opens X} (hU : IsAffine
     Scheme.Spec.map
       (CommRingCat.ofHom (algebraMap ((X.presheaf.obj <| op U)) (Localization.Away f))).op ≫
     hU.fromSpec
-  . exact PresheafedSpace.IsOpenImmersion.comp (hf := inferInstance) (hg := inferInstance)
+  · exact PresheafedSpace.IsOpenImmersion.comp (hf := inferInstance) (hg := inferInstance)
   convert
     rangeIsAffineOpenOfOpenImmersion
       (Scheme.Spec.map
@@ -406,7 +406,7 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine (X : Scheme) [IsAffine X]
       ((Scheme.Spec.obj (op (Scheme.Γ.obj (op X)))).basicOpen
         ((inv (X.isoSpec.hom.1.c.app (op ((Opens.map (inv X.isoSpec.hom).val.base).obj ⊤))))
           ((X.presheaf.map (eqToHom <| by congr)) f)))
-  . congr
+  · congr
     · rw [← IsIso.inv_eq_inv, IsIso.inv_inv, IsIso.Iso.inv_inv, NatIso.app_hom]
       -- Porting note : added this `change` to prevent timeout
       change SpecΓIdentity.hom.app (X.presheaf.obj <| op ⊤) = _

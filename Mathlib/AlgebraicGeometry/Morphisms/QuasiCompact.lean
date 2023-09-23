@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 
 ! This file was ported from Lean 3 source module algebraic_geometry.morphisms.quasi_compact
-! leanprover-community/mathlib commit 13361559d66b84f80b6d5a1c4a26aa5054766725
+! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -326,7 +326,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     convert congr_arg (X.presheaf.map (homOfLE _).op) H
     · simp only [← comp_apply, ← Functor.map_comp]
       rfl
-    . rw [map_zero]
+    · rw [map_zero]
       simp only [Scheme.basicOpen_res, ge_iff_le, inf_le_right]
   choose n hn using H'
   haveI := hs.to_subtype
@@ -334,7 +334,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   use Finset.univ.sup n
   suffices ∀ i : s, X.presheaf.map (homOfLE (h₁ i)).op (f ^ Finset.univ.sup n * x) = 0 by
     subst e
-    apply TopCat.Sheaf.eq_of_locally_eq.{u + 1, u} X.sheaf fun i : s => (i : Opens X.carrier)
+    apply TopCat.Sheaf.eq_of_locally_eq X.sheaf fun i : s => (i : Opens X.carrier)
     intro i
     rw [map_zero]
     apply this

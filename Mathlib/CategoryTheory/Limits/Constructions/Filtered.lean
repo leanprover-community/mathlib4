@@ -70,9 +70,9 @@ def liftToFinsetColimitCocone [HasFiniteCoproducts C] [HasFilteredColimitsOfSize
         apply colimit.hom_ext
         rintro ⟨⟨j, hj⟩⟩
         convert h j using 1
-        . simp [← colimit.w (liftToFinset F) ⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩]
+        · simp [← colimit.w (liftToFinset F) ⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩]
           rfl
-        . aesop_cat }
+        · aesop_cat }
 #align category_theory.limits.coproducts_from_finite_filtered.lift_to_finset_colimit_cocone CategoryTheory.Limits.CoproductsFromFiniteFiltered.liftToFinsetColimitCocone
 
 end CoproductsFromFiniteFiltered

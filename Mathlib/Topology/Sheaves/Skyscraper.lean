@@ -235,8 +235,8 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
         (Presheaf.isSheaf_on_pUnit_of_isTerminal _ (by
           dsimp [skyscraperPresheaf]
           rw [if_neg]
-          . exact terminalIsTerminal
-          . exact Set.not_mem_empty PUnit.unit)))
+          · exact terminalIsTerminal
+          · exact Set.not_mem_empty PUnit.unit)))
 #align skyscraper_presheaf_is_sheaf skyscraperPresheaf_isSheaf
 
 /--

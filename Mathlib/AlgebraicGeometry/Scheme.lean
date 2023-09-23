@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 
 ! This file was ported from Lean 3 source module algebraic_geometry.Scheme
-! leanprover-community/mathlib commit 06c75afebd8b612d3b20fe836424298f2387ca53
+! leanprover-community/mathlib commit 88474d1b5af6d37c2ab728b757771bced7f5194c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -232,6 +232,9 @@ theorem specMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 /-- The spectrum, as a contravariant functor from commutative rings to schemes.
 -/
 -- porting note: removed @[simps]
+-- TODO: We need to decide whether `Spec_obj` or `Spec.obj` the simp-normal form.
+-- We probably want `Spec.obj`, but note
+-- `locallyRingedSpaceObj` is currently the simp-normal form of `toLocallyRingedSpace.obj`.
 def Spec : CommRingCatᵒᵖ ⥤ Scheme where
   obj R := specObj (unop R)
   map f := specMap f.unop
@@ -302,9 +305,9 @@ theorem mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.ge
 theorem mem_basicOpen_top' {U : Opens X} (f : X.presheaf.obj (op U)) (x : X.carrier) :
     x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ (⟨x, m⟩ : U) f) := by
   fconstructor
-  . rintro ⟨y, hy1, rfl⟩
+  · rintro ⟨y, hy1, rfl⟩
     exact ⟨y.2, hy1⟩
-  . rintro ⟨m, hm⟩
+  · rintro ⟨m, hm⟩
     exact ⟨⟨x, m⟩, hm, rfl⟩
 
 @[simp]

@@ -165,7 +165,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
     (multiplicity.squarefree_iff_multiplicity_le_one (X ^ n - 1)).1 hfree
       (map (Int.castRingHom (ZMod p)) P) with
     hle hunit
-  · rw [Nat.cast_one] at habs ; exact hle.not_lt habs
+  · rw [Nat.cast_one] at habs; exact hle.not_lt habs
   · replace hunit := degree_eq_zero_of_isUnit hunit
     rw [degree_map_eq_of_leadingCoeff_ne_zero (Int.castRingHom (ZMod p)) _] at hunit
     · exact (minpoly.degree_pos (isIntegral h hpos)).ne' hunit

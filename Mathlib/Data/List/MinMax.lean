@@ -217,11 +217,11 @@ theorem index_of_argmax :
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
     · cases not_le_of_lt ‹_› ‹_›
     · rw [if_pos rfl]
-    . rw [if_neg, if_neg]
+    · rw [if_neg, if_neg]
       exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
       · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne'
       · exact ne_of_apply_ne _ ‹f hd < f _›.ne'
-    . rw [if_pos rfl]
+    · rw [if_pos rfl]
       exact Nat.zero_le _
 #align list.index_of_argmax List.index_of_argmax
 
@@ -390,6 +390,18 @@ theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m 
 theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a :=
   @maximum_eq_coe_iff αᵒᵈ _ _ _
 #align list.minimum_eq_coe_iff List.minimum_eq_coe_iff
+
+theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := by
+  induction l with
+  | nil => simp
+  | cons h t ih =>
+    simp [List.maximum_cons, ih]
+
+theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a := by
+  induction l with
+  | nil => simp
+  | cons h t ih =>
+    simp [List.minimum_cons, ih]
 
 end LinearOrder
 

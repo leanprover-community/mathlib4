@@ -28,7 +28,7 @@ This also applies to inverse limits, where `{J : Type u} [preorder J] [is_direct
 
 The theorem is specialized to nonempty finite types (which are compact Hausdorff with the
 discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
-`nonempty_sections_of_finite_inverse_system` in the file `category_theory.cofiltered_system`.
+`nonempty_sections_of_finite_inverse_system` in the file `CategoryTheory.CofilteredSystem`.
 
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
