@@ -1843,12 +1843,6 @@ theorem trunc_add (n) (φ ψ : R⟦X⟧) : trunc n (φ + ψ) = trunc n φ + trun
     · rw [zero_add]
 #align power_series.trunc_add PowerSeries.trunc_add
 
-/--
-`R⟦X⟧` is notation for `PowerSeries R`,
-the semiring of formal power series in one variable over a semiring `R`.
--/
-scoped notation:9000 R "⟦X⟧" => PowerSeries R
-
 theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
     trunc n.succ f = trunc n f + Polynomial.monomial n (coeff R n f) := by
   rw [trunc, Ico_zero_eq_range, sum_range_succ, trunc, Ico_zero_eq_range]
@@ -1864,7 +1858,16 @@ theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n 
 
 @[simp] lemma trunc_zero' {f : R⟦X⟧} : trunc 0 f = 0 := rfl
 
-theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] {s : S} {G : R →+* S} {n} {f : R⟦X⟧} :
+theorem degree_trunc_lt (f : R⟦X⟧) (n) : (trunc n f).degree < n := by
+  rw [degree_lt_iff_coeff_zero]
+  intros
+  rw [coeff_trunc]
+  split_ifs with h
+  · rw [←not_le] at h
+    contradiction
+  · rfl
+
+theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+* S) (n) (f : R⟦X⟧) :
     (trunc n f).eval₂ G s = ∑ i in range n, G (coeff R i f) * s ^ i := by
   cases n with
   | zero =>
@@ -1878,7 +1881,7 @@ theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] {s : S} {G : R →+*
     congr
     rw [coeff_trunc, if_pos h]
 
-@[simp] theorem trunc_X {n} : trunc (n + 2) X = (Polynomial.X : R[X]) := by
+@[simp] theorem trunc_X (n) : trunc (n + 2) X = (Polynomial.X : R[X]) := by
   ext d
   rw [coeff_trunc, coeff_X]
   split_ifs with h₁ h₂
@@ -1889,6 +1892,14 @@ theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] {s : S} {G : R →+*
     apply h₁
     rw [hd]
     exact n.one_lt_succ_succ
+
+lemma trunc_X_of {n : ℕ} (hn : 2 ≤ n) : trunc n X = (Polynomial.X : R[X]) := by
+  cases n with
+  | zero => contradiction
+  | succ n =>
+    cases n with
+    | zero => contradiction
+    | succ n => exact trunc_X n
 
 end Trunc
 
@@ -2719,9 +2730,9 @@ namespace PowerSeries
 
 section Algebra
 
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : PowerSeries R)
+variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : R⟦X⟧)
 
-instance algebraPolynomial : Algebra R[X] (PowerSeries A) :=
+instance algebraPolynomial : Algebra R[X] A⟦X⟧ :=
   RingHom.toAlgebra (Polynomial.coeToPowerSeries.algHom A).toRingHom
 #align power_series.algebra_polynomial PowerSeries.algebraPolynomial
 
@@ -2770,7 +2781,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
   trunc_trunc_of_le f
 
 @[simp] theorem trunc_trunc_mul {n} (f g : R ⟦X⟧) :
-    trunc n ( (trunc n f) * g : R⟦X⟧ ) = trunc n ( f * g ) := by
+    trunc n ((trunc n f) * g : R⟦X⟧) = trunc n (f * g) := by
   ext m
   rw [coeff_trunc, coeff_trunc]
   split_ifs with h
@@ -2781,7 +2792,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
   · rfl
 
 @[simp] theorem trunc_mul_trunc {n} (f g : R ⟦X⟧) :
-    trunc n ( f * (trunc n g) : R⟦X⟧ ) = trunc n ( f * g ) := by
+    trunc n (f * (trunc n g) : R⟦X⟧) = trunc n (f * g) := by
   rw [mul_comm, trunc_trunc_mul, mul_comm]
 
 theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
@@ -2809,22 +2820,21 @@ theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R
 
 /-- The function `coeff n : R⟦X⟧ → R` is continuous. I.e. `coeff n f` depends only on a sufficiently
 long truncation of the power series `f`.-/
-theorem coeff_stable {n m} {f : R⟦X⟧} (h : n < m) :
-    coeff R n f = coeff R n (trunc m f) := by
+theorem coeff_coe_trunc_of_lt {n m} {f : R⟦X⟧} (h : n < m) :
+    coeff R n (trunc m f) = coeff R n f := by
   rwa [coeff_coe, coeff_trunc, if_pos]
 
-/-- The `n`-th coefficient of a`f*g` may be calculated
+/-- The `n`-th coefficient of `f*g` may be calculated
 from the truncations of `f` and `g`.-/
-theorem coeff_mul_stable₂ {n a b} (f g) (ha : n < a) (hb : n < b) :
+theorem coeff_mul_eq_coeff_trunc_mul_trunc₂ {n a b} (f g) (ha : n < a) (hb : n < b) :
     coeff R n (f * g) = coeff R n (trunc a f * trunc b g) := by
   symm
-  rw [←succ_le] at ha hb
-  rw [coeff_stable n.lt_succ_self, ←trunc_trunc_mul_trunc, trunc_trunc_of_le f ha,
-    trunc_trunc_of_le g hb, trunc_trunc_mul_trunc, ←coeff_stable n.lt_succ_self]
+  rw [←coeff_coe_trunc_of_lt n.lt_succ_self, ←trunc_trunc_mul_trunc, trunc_trunc_of_le f ha,
+    trunc_trunc_of_le g hb, trunc_trunc_mul_trunc, coeff_coe_trunc_of_lt n.lt_succ_self]
 
-theorem coeff_mul_stable {d n} (f g) (h : d < n) :
+theorem coeff_mul_eq_coeff_trunc_mul_trunc {d n} (f g) (h : d < n) :
     coeff R d (f * g) = coeff R d (trunc n f * trunc n g) :=
-  coeff_mul_stable₂ f g h h
+  coeff_mul_eq_coeff_trunc_mul_trunc₂ f g h h
 
 end Trunc
 end PowerSeries
