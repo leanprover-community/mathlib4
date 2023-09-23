@@ -990,7 +990,7 @@ instance [i : SigmaFinite (volume : Measure α)] [i' : HasFundamentalDomain G α
     rw [← preimage_smul_inv]
     apply measurableSet_preimage (measurable_const_smul g⁻¹) (by apply (hA_meas n))
   · rw [← image_iUnion,  hA']
-    refine image_univ_of_surjective (by convert surjective_quotient_mk α)
+    refine image_univ_of_surjective (by convert surjective_quotient_mk' α)
 
 /-- A measure `μ` on `α ⧸ G` satisfying `QuotientVolumeEqVolumePreimage` and having finite covolume
 is a finite measure. -/
