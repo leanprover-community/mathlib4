@@ -283,20 +283,23 @@ theorem stdBasis_apply_ofIsComplex_snd (x : E K) (w : {w : InfinitePlace K // Is
 
 variable (K)
 
+theorem fundamentalDomain_stdBasis :
+    fundamentalDomain (stdBasis K) =
+        (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
+        (Set.univ.pi fun _ => Complex.measurableEquivPi⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) := by
+  ext
+  simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
+
 theorem volume_fundamentalDomain_stdBasis :
     volume (fundamentalDomain (stdBasis K)) = 1 := by
-  rw [show fundamentalDomain (stdBasis K) =
-        (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
-        (Set.univ.pi fun _ => Complex.measurableEquivPi⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) by
-      ext x; simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi],
-    volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi, Real.volume_Ico,
-    sub_zero, ENNReal.ofReal_one, Finset.prod_const_one, one_mul,
+  rw [fundamentalDomain_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi,
+    Real.volume_Ico, sub_zero, ENNReal.ofReal_one, Finset.prod_const_one, one_mul,
     Complex.volume_preserving_equiv_pi.measure_preimage ?_, volume_pi, pi_pi, Real.volume_Ico,
     sub_zero, ENNReal.ofReal_one, Finset.prod_const_one, Finset.prod_const_one]
   exact MeasurableSet.pi Set.countable_univ (fun _ _ => measurableSet_Ico)
 
 /-- The `Equiv` between `index K` and `K →+* ℂ` defined by sending a real infinite place `w` to
-the unique corresponding complex embedding `w.embedding`, the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
+the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
 complex infinite place `w` to `w.embedding` (resp. `conjugate w.embedding`). -/
 def indexEquiv : (index K) ≃ (K →+* ℂ) := by
   refine Equiv.ofBijective (fun c => ?_)
@@ -331,8 +334,8 @@ theorem indexEquiv_apply_ofIsComplex_snd (w : {w : InfinitePlace K // IsComplex 
 
 variable (K)
 
-/-- The matrix that gives the representation on `stdBasis` of the image by `comm_map` of an
-element `x` of `(K →+* ℂ) → ℂ` fixed by the transformation `x_φ ↦ conj x_(conjugate φ)`,
+/-- The matrix that gives the representation on `stdBasis` of the image by `commMap` of an
+element `x` of `(K →+* ℂ) → ℂ` fixed by the map `x_φ ↦ conj x_(conjugate φ)`,
 see `stdBasis_repr_eq_matrix_to_stdBasis_mul`. -/
 def matrix_to_stdBasis : Matrix (index K) (index K) ℂ :=
   fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
@@ -354,6 +357,9 @@ theorem det_matrix_to_stdBasis :
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
       rw [Finset.prod_const, Fintype.card]
 
+/-- Let `x : (K →+* ℂ) → ℂ` such that `x_φ = conj x_(conj φ)` for all `φ : K →+* ℂ`, then the
+representation of `comMap K x` on `stdBasis` is given (up to reindexing) by the multiplication of
+`matrix_to_stdBasis` by `x`. -/
 theorem stdBasis_repr_eq_matrix_to_stdBasis_mul (x : (K →+* ℂ) → ℂ)
     (hx : ∀ φ, conj (x φ) = x (ComplexEmbedding.conjugate φ)) (c : index K) :
     ((stdBasis K).repr (commMap K x) c : ℂ) =
