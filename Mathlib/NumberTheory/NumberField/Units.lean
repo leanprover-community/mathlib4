@@ -33,8 +33,8 @@ as an additive `ℤ`-module.
 places of `K`.
 
 * `NumberField.Units.exist_unique_eq_mul_prod`: **Dirichlet Unit Theorem**. Any unit `x` of `𝓞 K`
-can be written uniquely as the product of a root of unity and powers of the units of a
-fundamental system.
+can be written uniquely as the product of a root of unity and powers of the units of of the
+fundamental system `fundSystem`.
 
 ## Tags
 number field, units
@@ -456,12 +456,18 @@ theorem unitLattice_span_eq_top :
 
 end span_top
 
+end dirichletUnitTheorem
+
+section statements
+
+variable [NumberField K]
+
+open dirichletUnitTheorem FiniteDimensional Classical
+
 /-- The unit rank of the number field `K`, it is equal to `card (InfinitePlace K) - 1`. -/
-def _root_.NumberField.Units.rank : ℕ := Fintype.card (InfinitePlace K) - 1
+def rank : ℕ := Fintype.card (InfinitePlace K) - 1
 
-open FiniteDimensional
-
-instance _root_.NumberField.Units.instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
+instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
   refine discreteTopology_of_open_singleton_zero ?_
   refine isOpen_singleton_of_finite_mem_nhds 0 (s := Metric.closedBall 0 1) ?_ ?_
   · exact Metric.closedBall_mem_nhds _ (by norm_num)
@@ -472,28 +478,22 @@ instance _root_.NumberField.Units.instDiscrete_unitLattice : DiscreteTopology (u
     rintro ⟨x, hx, rfl⟩
     exact ⟨Subtype.mem x, hx⟩
 
-protected theorem finrank :
+protected theorem finrank_eq_rank :
     finrank ℝ ({w : InfinitePlace K // w ≠ w₀} → ℝ) = Units.rank K := by
   simp only [finrank_fintype_fun_eq_card, Fintype.card_subtype_compl,
     Fintype.card_ofSubsingleton, rank]
 
-instance _root_.NumberField.Units.instModuleFree_unitLattice : Module.Free ℤ (unitLattice K) :=
+instance instModuleFree_unitLattice : Module.Free ℤ (unitLattice K) :=
   Zlattice.module_free ℝ (unitLattice_span_eq_top K)
 
-instance _root_.NumberField.Units.instModuleFinite_unitLattice : Module.Finite ℤ (unitLattice K) :=
+instance instModuleFinite_unitLattice : Module.Finite ℤ (unitLattice K) :=
   Zlattice.module_finite ℝ (unitLattice_span_eq_top K)
 
 @[simp]
-theorem _root_.NumberField.Units.unitLattice_rank :
+theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
-  rw [← dirichletUnitTheorem.finrank]
+  rw [← Units.finrank_eq_rank]
   exact Zlattice.rank ℝ (unitLattice_span_eq_top K)
-
-end dirichletUnitTheorem
-
-variable [NumberField K]
-
-open dirichletUnitTheorem
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) := by
@@ -526,6 +526,9 @@ units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   fun i => Quotient.out' (Additive.toMul (basisModTorsion K i))
 
+/-- The exponents that appear in the unique decomposition of a unit as the product of
+a root of unity and powers of the units of the fundamental system `fundSystem` (see
+`exist_unique_eq_mul_prod`) are given by the representation of the unit of `basisModTorsion`. -/
 theorem fun_eq_repr {x ζ : (𝓞 K)ˣ} {f : Fin (rank K) → ℤ} (hζ : ζ ∈ torsion K)
     (h : x = ζ * ∏ i, (fundSystem K i) ^ (f i)) :
     f = (basisModTorsion K).repr (Additive.ofMul ↑x) := by
@@ -539,7 +542,7 @@ theorem fun_eq_repr {x ζ : (𝓞 K)ˣ} {f : Fin (rank K) → ℤ} (hζ : ζ ∈
                       simp_rw [fundSystem, QuotientGroup.out_eq', ofMul_toMul]
 
 /-- **Dirichlet Unit Theorem**. Any unit `x` of `𝓞 K` can be written uniquely as the product of
-a root of unity and powers of the units of a fundamental system. -/
+a root of unity and powers of the units of the fundamental system `fundSystem`. -/
 theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K) (e : Fin (rank K) → ℤ),
     x = ζ * ∏ i, (fundSystem K i) ^ (e i) := by
   let ζ := x * (∏ i, (fundSystem K i) ^ ((basisModTorsion K).repr (Additive.ofMul ↑x) i))⁻¹
@@ -559,5 +562,7 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K) (e : F
     ext1; dsimp only
     nth_rewrite 1 [hf]
     rw [_root_.mul_inv_cancel_right]
+
+end statements
 
 end NumberField.Units
