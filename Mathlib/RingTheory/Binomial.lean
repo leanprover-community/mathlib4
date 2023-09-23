@@ -61,25 +61,14 @@ theorem ascPochEval_eq_ascPochhammer_eval (r:R) :
   | (k + 1) => by
     rw [ascPochhammer_succ_eval, ← ascPochEval_eq_ascPochhammer_eval r k, ascPochEval_succ]
 
-end Ring
-
-namespace Commute
-
-theorem translate_comm_translate (r s : R) (k n : ℕ) (h : Commute r s): Commute (r + k) (s + n) :=
-  (h.add_left (Nat.cast_commute k s)).add_right (Nat.commute_cast (r+k) n)
-
 theorem translate_comm_ascPochEval (r s : R) (k : ℕ) (h : Commute r s) : ∀ (n : ℕ),
-  Commute (r + k) (Ring.ascPochEval s n)
+  Commute (r + k) (ascPochEval s n)
 | 0 => by
-  rw [Ring.ascPochEval_zero]
-  exact one_right (r + ↑k)
+  rw [ascPochEval_zero]
+  exact Commute.one_right (r + ↑k)
 | (n + 1) => by
-  rw [Ring.ascPochEval_succ]
-  exact (translate_comm_ascPochEval r s k h n).mul_right (translate_comm_translate r s k n h)
-
-end Commute
-
-namespace Ring
+  rw [ascPochEval_succ]
+  exact (translate_comm_ascPochEval r s k h n).mul_right (Nat.add_cast_commute_add_cast r s k n h)
 
 theorem ascPochEval_add_right (r : R) (n : ℕ) : ∀ (k : ℕ),
   ascPochEval r (n + k) = ascPochEval r n * ascPochEval (r + n) k
