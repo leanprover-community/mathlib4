@@ -446,26 +446,6 @@ lemma Integrable.measure_lt_const_lt_top (f_intble : Integrable f μ) {c : ℝ} 
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_le_const_lt_top f_intble c_neg)
 
-#check ae_restrict_of_ae
-#check aemeasurable_restrict_iff_comap_subtype
-
-#check AEMeasurable.restrict
-#check AEStronglyMeasurable.restrict
---#check Integrable.restrict
---#check HasFiniteIntegral.restrict
-
--- Should be a lemma in Mathlib.
-lemma MeasureTheory.HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
-    HasFiniteIntegral f (μ.restrict s) := by
-  refine lt_of_le_of_lt ?_ h
-  convert lintegral_mono_set (μ := μ) (s := s) (t := univ) (f := fun x ↦ ↑‖f x‖₊) (subset_univ s)
-  exact Measure.restrict_univ.symm
-
--- Should be a lemma in Mathlib.
-lemma MeasureTheory.Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
-    Integrable f (μ.restrict s) :=
-  ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
-
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For an integrable a.e.-nonnegative real-valued function `f` on a sigma-finite measure space,
@@ -482,6 +462,7 @@ theorem Integrable.integral_eq_integral_meas_lt
   have f_intble' : Integrable f (μ.restrict s) := f_intble.restrict
   have f_aemble' : AEMeasurable f (μ.restrict s) := f_intble.aemeasurable.restrict
   have obs : ∫ ω, f ω ∂μ = ∫ ω, f ω ∂(μ.restrict s) := by
+    -- The proof of this observation should be trivial. :(
     refine (set_integral_eq_integral_of_ae_compl_eq_zero ?_).symm
     simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
                  MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at f_ae_zero_outside
@@ -495,6 +476,7 @@ theorem Integrable.integral_eq_integral_meas_lt
     · exact NullMeasurableSet.of_null f_ae_zero_outside
   rw [obs]
   have obs' : ∀ t ∈ Ioi (0 : ℝ), (μ {a : α | t < f a}) = ((μ.restrict s) {a : α | t < f a}) := by
+    -- The proof of this observation should be trivial. :(
     intro t ht
     rw [Measure.restrict_apply₀]
     · simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,

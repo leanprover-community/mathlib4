@@ -1445,6 +1445,22 @@ end Integrable
 
 end MeasureTheory
 
+section restrict
+
+variable {E : Type*} [NormedAddCommGroup E] {f : α → E}
+
+lemma MeasureTheory.HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
+    HasFiniteIntegral f (μ.restrict s) := by
+  refine lt_of_le_of_lt ?_ h
+  convert lintegral_mono_set (μ := μ) (s := s) (t := univ) (f := fun x ↦ ↑‖f x‖₊) (subset_univ s)
+  exact Measure.restrict_univ.symm
+
+lemma MeasureTheory.Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
+    Integrable f (μ.restrict s) :=
+  ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
+
+end restrict
+
 open MeasureTheory
 
 variable {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [NontriviallyNormedField 𝕜]
