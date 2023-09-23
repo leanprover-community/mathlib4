@@ -3835,6 +3835,30 @@ def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
           · simp }⟩
 #align equiv.sigma_equiv_option_of_inhabited Equiv.sigmaEquivOptionOfInhabited
 
+variable [DecidableEq α] {s t : Finset α}
+/-- `s ∪ t` (using finset union) is equivalent to `s ∪ t` (using set union) -/
+@[simps!]
+def finsetUnion (s t : Finset α) :
+    ((s ∪ t : Finset α) : Set α) ≃ (s ∪ t : Set α) :=
+  subtypeEquivRight <| by simp
+
+/-- The disjoint union of finsets is a sum -/
+def finsetUnionEquivSum (s t : Finset α) (h : Disjoint s t) :
+    (s ∪ t : Finset α) ≃ s ⊕ t :=
+  (Equiv.finsetUnion s t).trans <| Equiv.Set.union <| by
+    rw [← Finset.coe_inter, ← Finset.coe_empty]
+    exact h.le_bot
+
+@[simp]
+theorem finsetUnionEquivSum_symm_inl (h : Disjoint s t) (x : s) :
+    (finsetUnionEquivSum s t h).symm (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
+  rfl
+
+@[simp]
+theorem finsetUnionEquivSum_symm_inr (h : Disjoint s t) (y : t) :
+    (finsetUnionEquivSum s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
+  rfl
+
 end Equiv
 
 namespace Multiset
