@@ -32,14 +32,14 @@ variable {𝕜 F : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
 
-variable {f : F → 𝕜} {f' x : F}
+variable {f : F → 𝕜} {f' x : F} {L : Filter F} {s : Set F}
 
 section Composition
 
 open Set Filter
 
-variable {g : 𝕜 → 𝕜} {x : F} {g' : 𝕜}
-variable {L : Filter F} {L' : Filter 𝕜} {t : Set 𝕜}
+variable {g : 𝕜 → 𝕜} {g' : 𝕜}
+variable {L' : Filter 𝕜} {t : Set 𝕜}
 
 theorem HasGradientAtFilter.comp
   (hg : HasGradientAtFilter g g' (f x) L') (hf : HasGradientAtFilter f f' x L)
@@ -88,12 +88,12 @@ theorem HasGradientAtFilter.const_smul (h : HasGradientAtFilter f f' x L) (c : �
   exact h.const_smul c
 
 nonrec theorem HasGradientWithinAt.const_smul (h : HasGradientWithinAt f f' s x) (c : 𝕜) :
-    HasGradientWithinAt (fun x => c • f x) ((starRingEnd 𝕜) c • f') s x :=
-  h.const_smul c
+    HasGradientWithinAt (fun x => c • f x) ((starRingEnd 𝕜) c • f') s x := by
+  exact h.const_smul c
 
 nonrec theorem HasGradientAt.const_smul (h : HasGradientAt f f' x) (c : 𝕜) :
-    HasGradientAt (fun x => c • f x) ((starRingEnd 𝕜) c • f') x :=
-    h.const_smul c
+    HasGradientAt (fun x => c • f x) ((starRingEnd 𝕜) c • f') x := by
+  exact  h.const_smul c
 
 theorem Gradient_const_smul (h : DifferentiableAt 𝕜 f x) (c : 𝕜) :
     ∇ (fun y => c • f y) x = (starRingEnd 𝕜) c • ∇ f x :=
@@ -187,12 +187,12 @@ theorem HasGradientAtFilter.sum (h : ∀ i ∈ u, HasGradientAtFilter (A i) (A' 
   exact HasFDerivAtFilter.sum h
 
 theorem HasGradientWithinAt.sum (h : ∀ i ∈ u, HasGradientWithinAt (A i) (A' i) s x) :
-    HasGradientWithinAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) s x :=
-  HasGradientAtFilter.sum h
+    HasGradientWithinAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) s x := by
+  exact HasGradientAtFilter.sum h
 
 theorem HasGradientAt.sum (h : ∀ i ∈ u, HasGradientAt (A i) (A' i) x) :
-    HasGradientAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x :=
-  HasGradientAtFilter.sum h
+    HasGradientAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x := by
+  exact HasGradientAtFilter.sum h
 
 theorem Gradient_sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
     ∇ (fun y => ∑ i in u, A i y) x = ∑ i in u, ∇ (A i) x :=
@@ -211,10 +211,10 @@ theorem HasGradientAtFilter.neg (h : HasGradientAtFilter f f' x L) :
   exact h.neg
 
 nonrec theorem HasGradientWithinAt.neg (h : HasGradientWithinAt f f' s x) :
-    HasGradientWithinAt (fun x => -f x) (-f') s x := h.neg
+    HasGradientWithinAt (fun x => -f x) (-f') s x := by exact h.neg
 
 nonrec theorem HasGradientAt.neg (h : HasGradientAt f f' x) :
-    HasGradientAt (fun x => -f x) (-f') x := h.neg
+    HasGradientAt (fun x => -f x) (-f') x := by exact h.neg
 
 theorem Gradient_neg : ∇ (fun y => - f y) x = - ∇ f x := by
   unfold Gradient
@@ -255,8 +255,8 @@ nonrec theorem HasGradientWithinAt.sub_const (hf : HasGradientWithinAt f f' s x)
   hf.sub_const c
 
 nonrec theorem HasGradientAt.sub_const (hf : HasGradientAt f f' x) (c : 𝕜) :
-    HasGradientAt (fun x => f x - c) f' x :=
-  hf.sub_const c
+    HasGradientAt (fun x => f x - c) f' x := by
+  exact hf.sub_const c
 
 theorem Gradient_sub_const (c : 𝕜) : ∇ (fun y => f y - c) x = ∇ f x := by
   simp only [sub_eq_add_neg, Gradient_add_const]
