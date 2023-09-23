@@ -1522,6 +1522,33 @@ theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U �
 #align topological_group.t2_space_of_one_sep TopologicalGroup.t2Space_of_one_sep
 #align topological_add_group.t2_space_of_zero_sep TopologicalAddGroup.t2Space_of_zero_sep
 
+/-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
+is closed, symmetric, and satisfies `V * V ⊆ U`. -/
+@[to_additive]
+theorem exists_nhds_one_isClosed_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1) :
+    ∃ V ∈ 𝓝 1, IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U := by
+  have A : (fun p : G × G => p.1 * p.2) ⁻¹' U ∈ 𝓝 ((1, 1) : G × G) :=
+    continuousAt_fst.mul continuousAt_snd (by simpa)
+  simp only [nhds_prod_eq, Filter.mem_prod_self_iff, prod_subset_iff, mem_preimage] at A
+  rcases A with ⟨V, V_mem, hV⟩
+  rcases exists_mem_nhds_isClosed_subset V_mem with ⟨W, W_mem, W_closed, hW⟩
+  refine ⟨W ∩ W⁻¹, Filter.inter_mem W_mem (inv_mem_nhds_one G W_mem), W_closed.inter W_closed.inv,
+    by simp [inter_comm], ?_⟩
+  calc
+  W ∩ W⁻¹ * (W ∩ W⁻¹)
+    ⊆ W * W := mul_subset_mul (inter_subset_left _ _) (inter_subset_left _ _)
+  _ ⊆ V * V := mul_subset_mul hW hW
+  _ ⊆ U := by rintro - ⟨y, z, hy, hz, rfl⟩; exact hV y hy z hz
+
+/-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
+is closed and satisfies `V ⊆ U`. For stronger properties, see
+`exists_nhds_one_isClosed_inv_eq_mul_subset`. -/
+@[to_additive]
+theorem exists_nhds_one_isClosed_subset {U : Set G} (hU : U ∈ 𝓝 1) :
+    ∃ V ∈ 𝓝 1, IsClosed V ∧ V ⊆ U := by
+  rcases exists_nhds_one_isClosed_inv_eq_mul_subset hU with ⟨V, hV, V_closed, -, V_mul⟩
+  refine ⟨V, hV, V_closed, Subset.trans (subset_mul_left V (mem_of_mem_nhds hV)) V_mul⟩
+
 variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
 
 @[to_additive]
@@ -1707,16 +1734,8 @@ admits a closed compact subset that is a neighborhood of `0`."]
 theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
     {L : Set G} (Lcomp : IsCompact L) (L1 : L ∈ 𝓝 (1 : G)) :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ L ∧ K ∈ 𝓝 (1 : G) := by
-  rcases exists_open_nhds_one_mul_subset L1 with ⟨V, hVo, hV₁, hVL⟩
-  have hcVL : closure V ⊆ L :=
-    calc
-      closure V = 1 * closure V := (one_mul _).symm
-      _ ⊆ V * closure V :=
-        mul_subset_mul_right <| singleton_subset_iff.2 hV₁
-      _ = V * V := hVo.mul_closure _
-      _ ⊆ L := hVL
-  exact ⟨closure V, Lcomp.of_isClosed_subset isClosed_closure hcVL, isClosed_closure,
-    hcVL, mem_of_superset (hVo.mem_nhds hV₁) subset_closure⟩
+  rcases exists_nhds_one_isClosed_subset L1 with ⟨K, hK, K_closed, KL⟩
+  exact ⟨K, Lcomp.of_isClosed_subset K_closed KL, K_closed, KL, hK⟩
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
 neighborhood of the identity, even without separation assumptions on the space. -/
