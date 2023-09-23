@@ -66,8 +66,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
     rintro y - z
     obtain ⟨r, rfl⟩ := hx y
     obtain ⟨s, rfl⟩ := hx z
-    -- is there `rw` lemmas for this?
-    show s.1 * x * (r.1 * x) = r.1 * x * (s.1 * x)
+    simp only [Subring.smul_def, smul_eq_mul]
     rw [← r.2, ← s.2, mul_assoc, mul_assoc, ← r.2, ← s.2, mul_assoc, mul_assoc, r.2]
   have card_D : Fintype.card D = q ^ n := card_eq_pow_finrank
   have h1qn : 1 ≤ q ^ n := by rw [← card_D]; exact Fintype.card_pos
