@@ -15,6 +15,7 @@ import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GeneralizeProofs
+import Mathlib.Tactic.SimpRw
 
 #align_import logic.equiv.basic from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
@@ -918,6 +919,21 @@ def arrowProdEquivProdArrow (α β γ : Type*) : (γ → α × β) ≃ (γ → �
 
 open Sum
 
+/-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
+functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEquivProdArrow`. -/
+@[simps]
+def piSum (π : ι ⊕ ι' → Type _) : ((∀ i, π (inl i)) × ∀ i', π (inr i')) ≃ ∀ i, π i
+    where
+  toFun f := Sum.rec f.1 f.2
+  invFun g := ⟨fun i => g (inl i), fun i' => g (inr i')⟩
+  left_inv f := Prod.ext rfl rfl
+  right_inv g := by ext (i | i) <;> rfl
+
+@[simps!]
+def piSumRev (π : ι → Type _) (π' : ι' → Type _) :
+    ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i, Sum.elim π π' i :=
+  Equiv.piSum (Sum.elim π π')
+
 /-- The type of functions on a sum type `α ⊕ β` is equivalent to the type of pairs of functions
 on `α` and on `β`. -/
 def sumArrowEquivProdArrow (α β γ : Type*) : (Sum α β → γ) ≃ (α → γ) × (β → γ) :=
@@ -1174,6 +1190,12 @@ def subtypeEquivRight {p q : α → Prop} (e : ∀ x, p x ↔ q x) : { x // p x 
 #align equiv.subtype_equiv_right Equiv.subtypeEquivRight
 #align equiv.subtype_equiv_right_apply_coe Equiv.subtypeEquivRight_apply_coe
 #align equiv.subtype_equiv_right_symm_apply_coe Equiv.subtypeEquivRight_symm_apply_coe
+
+lemma subtypeEquivRight_apply {p q : α → Prop} (e : ∀ x, p x ↔ q x)
+    (z : { x // p x }) : subtypeEquivRight e z = ⟨z, (e z.1).mp z.2⟩ := rfl
+
+lemma subtypeEquivRight_symm_apply {p q : α → Prop} (e : ∀ x, p x ↔ q x)
+    (z : { x // q x }) : (subtypeEquivRight e).symm z = ⟨z, (e z.1).mpr z.2⟩ := rfl
 
 /-- If `α ≃ β`, then for any predicate `p : β → Prop` the subtype `{a // p (e a)}` is equivalent
 to the subtype `{b // p b}`. -/
@@ -1856,6 +1878,25 @@ around it in the case where `b` is of the form `e a`, so we can use `f a` instea
 lemma piCongrLeft_apply_apply (f : ∀ a, P (e a)) (a : α) :
     (piCongrLeft P e) f (e a) = f a :=
   piCongrLeft'_symm_apply_apply P e.symm f a
+
+open Sum
+
+lemma piCongrLeft_apply_eq_cast {P : β → Sort v} {e : α ≃ β}
+    (f : (a : α) → P (e a)) (b : β) :
+    piCongrLeft P e f b = cast (congr_arg P (e.apply_symm_apply b)) (f (e.symm b)) :=
+  Eq.rec_eq_cast _ _
+
+theorem piCongrLeft_sum_inl (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+    (g : ∀ i, π (e (inr i))) (i : ι) :
+    piCongrLeft π e (piSum (fun x => π (e x)) (f, g)) (e (inl i)) = f i := by
+  simp_rw [piCongrLeft_apply_eq_cast, piSum_apply, sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)),
+    cast_cast, cast_eq]
+
+theorem piCongrLeft_sum_inr (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+    (g : ∀ i, π (e (inr i))) (j : ι') :
+    piCongrLeft π e (piSum (fun x => π (e x)) (f, g)) (e (inr j)) = g j := by
+  simp_rw [piCongrLeft_apply_eq_cast, piSum_apply, sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)),
+    cast_cast, cast_eq]
 
 end
 

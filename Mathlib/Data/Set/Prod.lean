@@ -915,3 +915,29 @@ theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α 
 end Pi
 
 end Set
+
+namespace Equiv
+
+open Set
+variable {ι ι' : Type*} {α : ι → Type*}
+
+theorem piCongrLeft_symm_preimage_pi (f : ι' ≃ ι) (s : Set ι) (t : ∀ i, Set (α i)) :
+    ((f.piCongrLeft α).symm ⁻¹' (f ⁻¹' s).pi fun i' => t <| f i') = s.pi t := by
+  ext; simp_rw [mem_preimage, Set.mem_pi, piCongrLeft_symm_apply]
+  convert f.forall_congr_left; rfl
+
+theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
+    f.piCongrLeft α ⁻¹' pi univ t = pi univ fun i => t (f i) := by
+  apply Set.ext; rw [← (f.piCongrLeft α).symm.forall_congr_left]
+  intro x; simp_rw [mem_preimage, apply_symm_apply, mem_univ_pi]
+  exact f.forall_congr_left.symm
+
+theorem piSum_preimage_univ_pi (π : ι ⊕ ι' → Type _) (t : ∀ i, Set (π i)) :
+    piSum π  ⁻¹' pi univ t = pi univ (fun i => t (.inl i)) ×ˢ pi univ fun i => t (.inr i) := by
+  ext
+  simp_rw [mem_preimage, mem_prod, mem_univ_pi, piSum_apply]
+  constructor
+  · intro h; constructor <;> intro i <;> apply h
+  · rintro ⟨h₁, h₂⟩ (i|i) <;> simp <;> apply_assumption
+
+end Equiv
