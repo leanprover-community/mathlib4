@@ -227,6 +227,9 @@ theorem compl_insert : (insert a s)ᶜ = sᶜ.erase a := by
   simp only [not_or, mem_insert, iff_self_iff, mem_compl, mem_erase]
 #align finset.compl_insert Finset.compl_insert
 
+theorem insert_compl_insert (ha : a ∉ s) : insert a (insert a s)ᶜ = sᶜ := by
+  simp_rw [@eq_compl_comm _ _ s, compl_insert, compl_erase, compl_compl, erase_insert ha]
+
 @[simp]
 theorem insert_compl_self (x : α) : insert x ({x}ᶜ : Finset α) = univ := by
   rw [← compl_erase, erase_singleton, compl_empty]
@@ -255,6 +258,10 @@ theorem image_univ_of_surjective [Fintype β] {f : β → α} (hf : Surjective f
     univ.image f = univ :=
   eq_univ_of_forall <| hf.forall.2 fun _ => mem_image_of_mem _ <| mem_univ _
 #align finset.image_univ_of_surjective Finset.image_univ_of_surjective
+
+theorem _root_.Equiv.finset_image_univ_eq_univ [Fintype β] [DecidableEq β]
+    (f : α ≃ β) : univ.image f = univ :=
+  Finset.image_univ_of_surjective f.surjective
 
 end BooleanAlgebra
 
