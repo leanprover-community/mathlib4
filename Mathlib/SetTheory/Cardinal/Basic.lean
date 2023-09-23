@@ -1673,12 +1673,13 @@ theorem nat_add_aleph0 (n : ℕ) : ↑n + ℵ₀ = ℵ₀ := by rw [add_comm, al
 
 /-- This function sends finite cardinals to the corresponding natural, and infinite cardinals
   to 0. -/
-def toNat : ZeroHom Cardinal ℕ :=
-  ⟨fun c => if h : c < aleph0.{v} then Classical.choose (lt_aleph0.1 h) else 0, by
+def toNat : ZeroHom Cardinal ℕ where
+  toFun c := if h : c < aleph0.{v} then Classical.choose (lt_aleph0.1 h) else 0
+  map_zero' := by
     have h : 0 < ℵ₀ := nat_lt_aleph0 0
     dsimp only
     rw [dif_pos h, ← Cardinal.natCast_inj, ← Classical.choose_spec (lt_aleph0.1 h),
-      Nat.cast_zero]⟩
+      Nat.cast_zero]
 #align cardinal.to_nat Cardinal.toNat
 
 theorem toNat_apply_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) :
@@ -1900,7 +1901,7 @@ theorem toPartENat_surjective : Surjective toPartENat := fun x =>
 #align cardinal.to_part_enat_surjective Cardinal.toPartENat_surjective
 
 theorem toPartENat_eq_top_iff_le_aleph0 {c : Cardinal} :
-  toPartENat c = ⊤ ↔ ℵ₀ ≤ c := by
+    toPartENat c = ⊤ ↔ ℵ₀ ≤ c := by
   cases lt_or_ge c ℵ₀ with
   | inl hc =>
     simp only [toPartENat_apply_of_lt_aleph0 hc, PartENat.natCast_ne_top, false_iff, not_le, hc]
@@ -1908,7 +1909,7 @@ theorem toPartENat_eq_top_iff_le_aleph0 {c : Cardinal} :
 #align to_part_enat_eq_top_iff_le_aleph_0 Cardinal.toPartENat_eq_top_iff_le_aleph0
 
 lemma toPartENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
-  toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
+    toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
   cases lt_or_ge c ℵ₀ with
   | inl hc =>
     rw [toPartENat_apply_of_lt_aleph0 hc]
@@ -1927,7 +1928,7 @@ lemma toPartENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
 #align to_part_enat_le_iff_le_of_le_aleph_0 Cardinal.toPartENat_le_iff_of_le_aleph0
 
 lemma toPartENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
-  toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
+    toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
   cases lt_or_ge c ℵ₀ with
   | inl hc =>
     rw [toPartENat_apply_of_lt_aleph0 hc]
@@ -1941,13 +1942,13 @@ lemma toPartENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
 #align to_part_enat_le_iff_le_of_lt_aleph_0 Cardinal.toPartENat_le_iff_of_lt_aleph0
 
 lemma toPartENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
-  toPartENat c = toPartENat c' ↔ c = c' := by
+    toPartENat c = toPartENat c' ↔ c = c' := by
   rw [le_antisymm_iff, le_antisymm_iff, toPartENat_le_iff_of_le_aleph0 hc,
     toPartENat_le_iff_of_le_aleph0 hc']
 #align to_part_enat_eq_iff_eq_of_le_aleph_0 Cardinal.toPartENat_eq_iff_of_le_aleph0
 
 theorem toPartENat_mono {c c' : Cardinal} (h : c ≤ c') :
-  toPartENat c ≤ toPartENat c' := by
+    toPartENat c ≤ toPartENat c' := by
   cases lt_or_ge c ℵ₀ with
   | inl hc =>
     rw [toPartENat_apply_of_lt_aleph0 hc]

@@ -269,8 +269,8 @@ variable {ι : Type*}
 
 @[to_additive]
 instance Pi.continuousInv {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Inv (C i)]
-    [∀ i, ContinuousInv (C i)] : ContinuousInv (∀ i, C i)
-    where continuous_inv := continuous_pi fun i => (continuous_apply i).inv
+    [∀ i, ContinuousInv (C i)] : ContinuousInv (∀ i, C i) where
+  continuous_inv := continuous_pi fun i => (continuous_apply i).inv
 #align pi.has_continuous_inv Pi.continuousInv
 #align pi.has_continuous_neg Pi.continuousNeg
 
@@ -305,11 +305,11 @@ theorem isClosed_setOf_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
 
 end PointwiseLimits
 
-instance [TopologicalSpace H] [Inv H] [ContinuousInv H] : ContinuousNeg (Additive H)
-    where continuous_neg := @continuous_inv H _ _ _
+instance [TopologicalSpace H] [Inv H] [ContinuousInv H] : ContinuousNeg (Additive H) where
+  continuous_neg := @continuous_inv H _ _ _
 
-instance [TopologicalSpace H] [Neg H] [ContinuousNeg H] : ContinuousInv (Multiplicative H)
-    where continuous_inv := @continuous_neg H _ _ _
+instance [TopologicalSpace H] [Neg H] [ContinuousNeg H] : ContinuousInv (Multiplicative H) where
+  continuous_inv := @continuous_neg H _ _ _
 
 end ContinuousInv
 
@@ -604,8 +604,8 @@ theorem tendsto_inv_nhdsWithin_Iic_inv {a : H} : Tendsto Inv.inv (𝓝[≤] a⁻
 end OrderedCommGroup
 
 @[to_additive]
-instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H)
-    where continuous_inv := continuous_inv.prod_map continuous_inv
+instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H) where
+  continuous_inv := continuous_inv.prod_map continuous_inv
 
 @[to_additive]
 instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]
@@ -1715,7 +1715,7 @@ theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
         mul_subset_mul_right <| singleton_subset_iff.2 hV₁
       _ = V * V := hVo.mul_closure _
       _ ⊆ L := hVL
-  exact ⟨closure V, isCompact_of_isClosed_subset Lcomp isClosed_closure hcVL, isClosed_closure,
+  exact ⟨closure V, Lcomp.of_isClosed_subset isClosed_closure hcVL, isClosed_closure,
     hcVL, mem_of_superset (hVo.mem_nhds hV₁) subset_closure⟩
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
@@ -1773,11 +1773,13 @@ end
 
 end FilterMul
 
-instance {G} [TopologicalSpace G] [Group G] [TopologicalGroup G] : TopologicalAddGroup (Additive G)
-    where continuous_neg := @continuous_inv G _ _ _
+instance {G} [TopologicalSpace G] [Group G] [TopologicalGroup G] :
+    TopologicalAddGroup (Additive G) where
+  continuous_neg := @continuous_inv G _ _ _
 
 instance {G} [TopologicalSpace G] [AddGroup G] [TopologicalAddGroup G] :
-    TopologicalGroup (Multiplicative G) where continuous_inv := @continuous_neg G _ _ _
+    TopologicalGroup (Multiplicative G) where
+  continuous_inv := @continuous_neg G _ _ _
 
 section Quotient
 
@@ -1830,8 +1832,8 @@ open MulOpposite (continuous_op continuous_unop)
 variable [Monoid α] [TopologicalSpace α] [Monoid β] [TopologicalSpace β]
 
 @[to_additive]
-instance [ContinuousMul α] : TopologicalGroup αˣ
-    where continuous_inv := Units.continuous_iff.2 <| ⟨continuous_coe_inv, continuous_val⟩
+instance [ContinuousMul α] : TopologicalGroup αˣ where
+  continuous_inv := Units.continuous_iff.2 <| ⟨continuous_coe_inv, continuous_val⟩
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
 of the units of each monoid. -/

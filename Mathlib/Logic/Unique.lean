@@ -204,10 +204,12 @@ instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, �
   default := isEmptyElim
   uniq _ := funext isEmptyElim
 
-theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) := by
-  ext x
-  rw [Subsingleton.elim x default]
-  rfl
+theorem eq_const_of_subsingleton [Subsingleton α] (f : α → β) (a : α) :
+    f = Function.const α (f a) :=
+  funext fun x ↦ Subsingleton.elim x a ▸ rfl
+
+theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) :=
+  eq_const_of_subsingleton ..
 #align eq_const_of_unique eq_const_of_unique
 
 theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
