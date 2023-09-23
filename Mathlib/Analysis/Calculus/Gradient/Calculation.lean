@@ -6,7 +6,7 @@ Authors: Chenyi Li, Ziyu Wang, Yu Penghao, Cao Zhipeng
 import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Comp
-import Gradient.Basic
+import Mathlib.Analysis.Calculus.Gradient.Basic
 
 /-!
 # Gradient
