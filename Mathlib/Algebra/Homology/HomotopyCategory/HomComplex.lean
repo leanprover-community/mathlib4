@@ -81,14 +81,14 @@ def mk (v : ∀ (p q : ℤ) (_ : p + n = q), F.X p ⟶ G.X q) : Cochain F G n :=
 /-- The value of a cochain on a triplet `⟨p, q, hpq⟩`. -/
 @[pp_dot]
 def v (γ : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
-  F.X p ⟶ G.X q := γ ⟨p, q, hpq⟩
+    F.X p ⟶ G.X q := γ ⟨p, q, hpq⟩
 
 @[simp]
 lemma mk_v (v : ∀ (p q : ℤ) (_ : p + n = q), F.X p ⟶ G.X q) (p q : ℤ) (hpq : p + n = q) :
     (Cochain.mk v).v p q hpq = v p q hpq := rfl
 
 lemma congr_v {z₁ z₂ : Cochain F G n} (h : z₁ = z₂) (p q : ℤ) (hpq : p + n = q) :
-  z₁.v p q hpq = z₂.v p q hpq := by subst h; rfl
+    z₁.v p q hpq = z₂.v p q hpq := by subst h; rfl
 
 @[ext]
 lemma ext (z₁ z₂ : Cochain F G n)

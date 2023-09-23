@@ -74,31 +74,30 @@ def BiUnique : Prop := LeftUnique R ∧ RightUnique R
 variable {R}
 
 lemma RightTotal.rel_forall (h : RightTotal R) :
-  ((R ⇒ (· → ·)) ⇒ (· → ·)) (λ p => ∀i, p i) (λ q => ∀i, q i) :=
+    ((R ⇒ (· → ·)) ⇒ (· → ·)) (λ p => ∀i, p i) (λ q => ∀i, q i) :=
 λ _ _ Hrel H b => Exists.elim (h b) (λ _ Rab => Hrel Rab (H _))
 #align relator.right_total.rel_forall Relator.RightTotal.rel_forall
 
 lemma LeftTotal.rel_exists (h : LeftTotal R) :
-  ((R ⇒ (· → ·)) ⇒ (· → ·)) (λ p => ∃i, p i) (λ q => ∃i, q i) :=
+    ((R ⇒ (· → ·)) ⇒ (· → ·)) (λ p => ∃i, p i) (λ q => ∃i, q i) :=
 λ _ _ Hrel ⟨a, pa⟩ => (h a).imp $ λ _ Rab => Hrel Rab pa
 #align relator.left_total.rel_exists Relator.LeftTotal.rel_exists
 
 lemma BiTotal.rel_forall (h : BiTotal R) :
-  ((R ⇒ Iff) ⇒ Iff) (λ p => ∀i, p i) (λ q => ∀i, q i) :=
+    ((R ⇒ Iff) ⇒ Iff) (λ p => ∀i, p i) (λ q => ∀i, q i) :=
 λ _ _ Hrel =>
   ⟨λ H b => Exists.elim (h.right b) (λ _ Rab => (Hrel Rab).mp (H _)),
     λ H a => Exists.elim (h.left a) (λ _ Rab => (Hrel Rab).mpr (H _))⟩
 #align relator.bi_total.rel_forall Relator.BiTotal.rel_forall
 
 lemma BiTotal.rel_exists (h : BiTotal R) :
-  ((R ⇒ Iff) ⇒ Iff) (λ p => ∃i, p i) (λ q => ∃i, q i) :=
+    ((R ⇒ Iff) ⇒ Iff) (λ p => ∃i, p i) (λ q => ∃i, q i) :=
 λ _ _ Hrel =>
   ⟨λ ⟨a, pa⟩ => (h.left a).imp $ λ _ Rab => (Hrel Rab).1 pa,
     λ ⟨b, qb⟩ => (h.right b).imp $ λ _ Rab => (Hrel Rab).2 qb⟩
 #align relator.bi_total.rel_exists Relator.BiTotal.rel_exists
 
-lemma left_unique_of_rel_eq {eq' : β → β → Prop} (he : (R ⇒ (R ⇒ Iff)) Eq eq') :
-  LeftUnique R :=
+lemma left_unique_of_rel_eq {eq' : β → β → Prop} (he : (R ⇒ (R ⇒ Iff)) Eq eq') : LeftUnique R :=
 λ a b c (ac : R a c) (bc : R b c) => (he ac bc).mpr ((he bc bc).mp rfl)
 #align relator.left_unique_of_rel_eq Relator.left_unique_of_rel_eq
 

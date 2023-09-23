@@ -426,7 +426,7 @@ theorem productIso_hom_comp_eval {J : Type v} (F : J → Type u) [UnivLE.{v, u}]
 -- `elementwise` seems to be broken. Applied to the previous lemma, it should produce:
 @[simp]
 theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) (x) :
-   (equivShrink _).symm ((productIso F).hom x) j = Pi.π F j x :=
+    (equivShrink _).symm ((productIso F).hom x) j = Pi.π F j x :=
   congr_fun (productIso_hom_comp_eval F j) x
 
 @[elementwise (attr := simp)]
