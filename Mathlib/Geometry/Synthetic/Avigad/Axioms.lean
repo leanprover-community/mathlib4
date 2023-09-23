@@ -11,17 +11,17 @@ Axioms of synthetic geometry
 -/
 
 /-! Universes for points lines and circles-/
-universe u1 u2 u3
+universe u
 
 /-- `incidence_geometry` represents geometry in the Euclidean sense, with primitives for points
 lines and circles-/
 class incidence_geometry :=
 /--Points in the plane-/
-(point : Type u1)
+(point : Type u)
 /--Lines in the plane-/
-(line : Type u2)
+(line : Type u)
 /--Circles in the plane-/
-(circle : Type u3)
+(circle : Type u)
 
 /--A point being on a line-/
 (online : point → line → Prop)
