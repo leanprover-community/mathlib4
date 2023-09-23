@@ -54,7 +54,7 @@ coordinates needed.
 
 ## Tags
 
-combinatorial line, Ramsey theory, arithmetic progession
+combinatorial line, Ramsey theory, arithmetic progression
 
 ### References
 

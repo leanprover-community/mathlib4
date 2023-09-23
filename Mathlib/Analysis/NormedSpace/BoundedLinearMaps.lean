@@ -268,7 +268,7 @@ section BilinearMap
 namespace ContinuousLinearMap
 
 /-! We prove some computation rules for continuous (semi-)bilinear maps in their first argument.
-  If `f` is a continuuous bilinear map, to use the corresponding rules for the second argument, use
+  If `f` is a continuous bilinear map, to use the corresponding rules for the second argument, use
   `(f _).map_add` and similar.
 
 We have to assume that `F` and `G` are normed spaces in this section, to use

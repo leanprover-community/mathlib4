@@ -62,7 +62,7 @@ variable {α : Type u}
 attribute [local simp] List.append_eq_has_append
 
 -- porting notes: to_additive.map_namespace is not supported yet
--- worked aruond it by putting a few extra manual mappings (but not too many all in all)
+-- worked around it by putting a few extra manual mappings (but not too many all in all)
 -- run_cmd to_additive.map_namespace `FreeGroup `FreeAddGroup
 
 /-- Reduction step for the additive free group relation: `w + x + (-x) + v ~> w + v` -/

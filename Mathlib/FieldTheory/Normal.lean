@@ -197,7 +197,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
         FiniteDimensional.finrank_pos
   let C := AdjoinRoot (minpoly F x)
   haveI Hx_irred := Fact.mk (minpoly.irreducible Hx)
--- Porting note: `heval` added since now Lean wants the proof explictely in several places.
+-- Porting note: `heval` added since now Lean wants the proof explicitly in several places.
   have heval : eval₂ (algebraMap F D) (AdjoinRoot.root q) (minpoly F x) = 0 := by
     rw [algebraMap_eq F E D, ← eval₂_map, hr, AdjoinRoot.algebraMap_eq, eval₂_mul,
       AdjoinRoot.eval₂_root, MulZeroClass.zero_mul]

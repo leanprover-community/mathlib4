@@ -371,7 +371,7 @@ noncomputable def presheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G
     intro X
     -- porting note: somehow `apply` in Lean 3 is leaving a typeclass goal,
     -- perhaps due to elaboration order. The corresponding `apply` in Lean 4 fails
-    -- because the instance can't yet be synthezised. I hence reorder the proof.
+    -- because the instance can't yet be synthesized. I hence reorder the proof.
     suffices IsIso (yoneda.map ((sheafHom H i.hom).app X)) by
       apply isIso_of_reflects_iso _ yoneda
     use (sheafYonedaHom H i.inv).app X

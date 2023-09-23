@@ -285,7 +285,7 @@ def isColimitWhiskerEquiv (t : Cocone G) : IsColimit (t.whisker F) ≃ IsColimit
 #align category_theory.functor.final.is_colimit_whisker_equiv CategoryTheory.Functor.Final.isColimitWhiskerEquiv
 
 /-- When `F` is cofinal, and `t : Cocone (F ⋙ G)`,
-`extendCocone.obj t` is a colimit coconne exactly when `t` is.
+`extendCocone.obj t` is a colimit cocone exactly when `t` is.
 -/
 def isColimitExtendCoconeEquiv (t : Cocone (F ⋙ G)) :
     IsColimit (extendCocone.obj t) ≃ IsColimit t :=

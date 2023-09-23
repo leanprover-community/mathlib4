@@ -1509,8 +1509,8 @@ theorem Metric.cauchySeq_iff' {u : β → α} :
 #align metric.cauchy_seq_iff' Metric.cauchySeq_iff'
 
 -- see Note [nolint_ge]
-/-- In a pseudometric space, unifom Cauchy sequences are characterized by the fact that, eventually,
-the distance between all its elements is uniformly, arbitrarily small -/
+/-- In a pseudometric space, uniform Cauchy sequences are characterized by the fact that,
+eventually, the distance between all its elements is uniformly, arbitrarily small -/
 -- porting note: no attr @[nolint ge_or_gt]
 theorem Metric.uniformCauchySeqOn_iff {γ : Type _} {F : β → γ → α} {s : Set γ} :
     UniformCauchySeqOn F atTop s ↔ ∀ ε > (0 : ℝ),

@@ -70,7 +70,7 @@ applying `invRotate` gives a triangle that can be thought of as:
   Z⟦-1⟧  ───>  X  ───> Y  ───> Z
 ```
 (note that this diagram doesn't technically fit the definition of triangle, as `Z⟦-1⟧⟦1⟧` is
-not necessarily equal to `Z`, but it is isomorphic, by the `counitIso` of `shifEquiv C 1`)
+not necessarily equal to `Z`, but it is isomorphic, by the `counitIso` of `shiftEquiv C 1`)
 -/
 @[simps!]
 def Triangle.invRotate (T : Triangle C) : Triangle C :=

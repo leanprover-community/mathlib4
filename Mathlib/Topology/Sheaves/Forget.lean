@@ -189,7 +189,7 @@ theorem isSheaf_iff_isSheaf_comp : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F �
       exact asIso f
       rintro ⟨_ | _⟩ <;>
         · simp
-    · -- Returning to the task of shwoing that `G.map f` is an isomorphism,
+    · -- Returning to the task of showing that `G.map f` is an isomorphism,
       -- we note that `G.map f` is almost but not quite (see below) a morphism
       -- from the sheaf condition cone for `F ⋙ G` to the
       -- image under `G` of the equalizer cone for the sheaf condition diagram.

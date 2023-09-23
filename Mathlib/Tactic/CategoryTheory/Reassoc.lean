@@ -8,7 +8,7 @@ import Mathlib.Util.AddRelatedDecl
 import Mathlib.Lean.Meta.Simp
 
 /-!
-# The `reasoc` attribute
+# The `reassoc` attribute
 
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`,
 where `f g : X ⟶ Y` in some category

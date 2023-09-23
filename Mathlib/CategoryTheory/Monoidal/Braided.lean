@@ -279,7 +279,7 @@ theorem comp_toNatTrans {F G H : LaxBraidedFunctor C D} {α : F ⟶ G} {β : G �
   rfl
 #align category_theory.lax_braided_functor.comp_to_nat_trans CategoryTheory.LaxBraidedFunctor.comp_toNatTrans
 
-/-- Interpret a natural isomorphism of the underlyling lax monoidal functors as an
+/-- Interpret a natural isomorphism of the underlying lax monoidal functors as an
 isomorphism of the lax braided monoidal functors.
 -/
 @[simps]

@@ -42,7 +42,7 @@ open BigOperators
 variable {α : Type _} [DecidableEq α] {m : Multiset α}
 
 /-- Auxiliary definition for the `hasCoeToSort` instance. This prevents the `hasCoe m α`
-instance from inadverently applying to other sigma types. One should not use this definition
+instance from inadvertently applying to other sigma types. One should not use this definition
 directly. -/
 -- Porting note: @[nolint has_nonempty_instance]
 def Multiset.ToType (m : Multiset α) : Type _ :=

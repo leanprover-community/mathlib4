@@ -141,7 +141,7 @@ end One
 
 end Zero
 
-/-- Coerc an arithmetic function with values in `ℕ` to one with values in `R`. We cannot inline
+/-- Coerce an arithmetic function with values in `ℕ` to one with values in `R`. We cannot inline
 this in `natCoe` because it gets unfolded too much. -/
 @[coe]  -- porting note: added `coe` tag.
 def natToArithmeticFunction [AddMonoidWithOne R] :

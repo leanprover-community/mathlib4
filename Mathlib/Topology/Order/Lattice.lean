@@ -37,7 +37,7 @@ open Topology
 `⊓:L×L → L` is continuous.
 -/
 class ContinuousInf (L : Type _) [TopologicalSpace L] [Inf L] : Prop where
-  /-- The infinimum is continuous -/
+  /-- The infimum is continuous -/
   continuous_inf : Continuous fun p : L × L => p.1 ⊓ p.2
 #align has_continuous_inf ContinuousInf
 

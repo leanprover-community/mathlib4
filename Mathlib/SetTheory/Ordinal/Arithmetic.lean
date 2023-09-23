@@ -1726,7 +1726,7 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein ((· < ·) : o.out.α �
 
 theorem sup_typein_limit {o : Ordinal} (ho : ∀ a, a < o → succ a < o) :
     sup.{u, u} (typein ((· < ·) : o.out.α → o.out.α → Prop)) = o := by
-  -- Portinh note: `rwa` → `rw` & `assumption`
+  -- Porting note: `rwa` → `rw` & `assumption`
   rw [(sup_eq_lsub_iff_succ.{u, u} (typein (· < ·))).2] <;> rw [lsub_typein o]; assumption
 #align ordinal.sup_typein_limit Ordinal.sup_typein_limit
 

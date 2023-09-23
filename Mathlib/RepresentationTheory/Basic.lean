@@ -27,7 +27,7 @@ representations.
   * Representation.character
   * Representation.tprod
   * Representation.linHom
-  * Represensation.dual
+  * Representation.dual
 
 ## Implementation notes
 

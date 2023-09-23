@@ -506,8 +506,6 @@ theorem set_integral_prod (f : α × β → E) {s : Set α} {t : Set β}
     (hf : IntegrableOn f (s ×ˢ t) (μ.prod ν)) :
     (∫ z in s ×ˢ t, f z ∂μ.prod ν) = ∫ x in s, ∫ y in t, f (x, y) ∂ν ∂μ := by
   simp only [← Measure.prod_restrict s t, IntegrableOn] at hf ⊢
-  -- Porting note: added
-  rw [← Measure.prod_restrict s t] at hf ⊢
   exact integral_prod f hf
 #align measure_theory.set_integral_prod MeasureTheory.set_integral_prod
 

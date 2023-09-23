@@ -40,7 +40,7 @@ def modifyMetavarDecl [MonadMCtx m] (mvarId : MVarId)
 /--
 `modifyTarget mvarId f` updates the target of the metavariable `mvarId` with
 `f`. For any `e`, `f e` must be defeq to `e`. If `mvarId` does not refer to
-a declared metvariable, nothing happens.
+a declared metavariable, nothing happens.
 -/
 def modifyTarget [MonadMCtx m] (mvarId : MVarId) (f : Expr → Expr) : m Unit :=
   modifyMetavarDecl mvarId fun mdecl ↦

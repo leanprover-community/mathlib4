@@ -379,7 +379,7 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
   choose Z e1 e2 he2 _ _ using fun I : B.Arrow => I.hf
   -- Construct a compatible system of local sections over this large cover, using the chosen
   -- representatives of our local sections.
-  -- The compatilibity here follows from the separatedness assumption.
+  -- The compatibility here follows from the separatedness assumption.
   let w : Meq P B := meqOfSep P hsep X S s T t ht
   -- The associated gluing will be the candidate section.
   use mk w

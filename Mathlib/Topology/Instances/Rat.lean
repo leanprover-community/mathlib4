@@ -15,7 +15,7 @@ import Mathlib.Topology.Instances.Nat
 import Mathlib.Topology.Instances.Real
 
 /-!
-# Topology on the ratonal numbers
+# Topology on the rational numbers
 
 The structure of a metric space on `ℚ` is introduced in this file, induced from `ℝ`.
 -/

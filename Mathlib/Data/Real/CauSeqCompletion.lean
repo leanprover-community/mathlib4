@@ -28,7 +28,7 @@ variable {α : Type _} [LinearOrderedField α]
 
 variable {β : Type _} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
--- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Caucy`.
+-- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Cauchy`.
 /-- The Cauchy completion of a ring with absolute value. -/
 def Cauchy :=
   @Quotient (CauSeq _ abv) CauSeq.equiv

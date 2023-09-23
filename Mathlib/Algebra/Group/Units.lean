@@ -214,7 +214,7 @@ instance : Inhabited αˣ :=
 attribute [instance] AddUnits.instInhabitedAddUnits
 
 /-- Units of a monoid have a representation of the base value in the `Monoid`. -/
-@[to_additive "Additive units of an addditive monoid have a representation of the base value in
+@[to_additive "Additive units of an additive monoid have a representation of the base value in
 the `AddMonoid`."]
 instance [Repr α] : Repr αˣ :=
   ⟨reprPrec ∘ val⟩

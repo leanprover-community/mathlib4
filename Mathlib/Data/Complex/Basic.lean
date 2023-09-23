@@ -23,7 +23,7 @@ open BigOperators
 
 open Set Function
 
-/-! ### Definition and basic arithmmetic -/
+/-! ### Definition and basic arithmetic -/
 
 
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/

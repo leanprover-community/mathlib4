@@ -31,7 +31,7 @@ If we have `category.{v} C`, then `ULiftHom.{w} C` is endowed with a category in
 whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
 
 This is a category equivalent to `C`. The forward direction of the equivalence is `ULiftHom.up`,
-the backward direction is `ULiftHom.donw` and the equivalence is `ULiftHom.equiv`.
+the backward direction is `ULiftHom.down` and the equivalence is `ULiftHom.equiv`.
 
 # AsSmall
 

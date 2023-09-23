@@ -48,7 +48,7 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
   an intermediate algebra `𝕊` which is commutative, then the function `(u : 𝕊) ↦ exp 𝕂 (u • x)`
   still has strict Fréchet derivative `exp 𝕂 (t • x) • (1 : 𝔸 →L[𝕂] 𝔸).smulRight x` at `t`.
 
-### Compatibilty with `Real.exp` and `Complex.exp`
+### Compatibility with `Real.exp` and `Complex.exp`
 
 - `Complex.exp_eq_exp_ℂ` : `Complex.exp = exp ℂ ℂ`
 - `Real.exp_eq_exp_ℝ` : `Real.exp = exp ℝ ℝ`
@@ -241,7 +241,7 @@ API, so we leave that to a future refactor (see leanprover-community/mathlib#190
 
 We could also go the other way around and deduce `hasFDerivAt_exp_of_mem_ball` from
 `hasFDerivAt_exp_smul_const_of_mem_ball` applied to `𝕊 := 𝔸`, `x := (1 : 𝔸)`, and `t := x`.
-However, doing so would make the aformentioned `elementalAlgebra` refactor harder, so for now we
+However, doing so would make the aforementioned `elementalAlgebra` refactor harder, so for now we
 just prove these two lemmas independently.
 
 A last strategy would be to deduce everything from the more general non-commutative case,

@@ -19,7 +19,7 @@ When a module carries a bilinear form, the Lie algebra of endomorphisms of the m
 distinguished Lie subalgebra: the skew-adjoint endomorphisms. Such subalgebras are important
 because they provide a simple, explicit construction of the so-called classical Lie algebras.
 
-This file defines the Lie subalgebra of skew-adjoint endomorphims cut out by a bilinear form on
+This file defines the Lie subalgebra of skew-adjoint endomorphisms cut out by a bilinear form on
 a module and proves some basic related results. It also provides the corresponding definitions and
 results for the Lie algebra of square matrices.
 

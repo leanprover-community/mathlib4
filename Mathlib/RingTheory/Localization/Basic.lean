@@ -61,7 +61,7 @@ structure with an isomorphic one; one way around this is to isolate a predicate 
 a structure up to isomorphism, and reason about things that satisfy the predicate.
 
 A previous version of this file used a fully bundled type of ring localization maps,
-then used a type synonym `f.codomain` for `f : :ocalizationMap M S` to instantiate the
+then used a type synonym `f.codomain` for `f : LocalizationMap M S` to instantiate the
 `R`-algebra structure on `S`. This results in defining ad-hoc copies for everything already
 defined on `S`. By making `IsLocalization` a predicate on the `algebraMap R S`,
 we can ensure the localization map commutes nicely with other `algebraMap`s.

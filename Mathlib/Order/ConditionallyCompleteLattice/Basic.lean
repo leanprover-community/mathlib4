@@ -1474,7 +1474,7 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type _}
     le_csInf := (@WithTop.conditionallyCompleteLattice αᵒᵈ _).csSup_le }
 #align with_bot.conditionally_complete_lattice WithBot.conditionallyCompleteLattice
 
--- Poting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
+-- Porting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
 noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
   { instInfSetWithTop, instSupSetWithTop, WithTop.boundedOrder, WithTop.lattice with

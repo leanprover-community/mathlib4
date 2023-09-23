@@ -257,7 +257,7 @@ local notation:max "backFace " i:arg => Fin.insertNth i (a i)
 box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, is differentiable on its interior with derivative
 `f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹` and the divergence `λ x, ∑ i, f' x eᵢ i` is integrable on `[a, b]`,
 where `eᵢ = Pi.single i 1` is the `i`-th basis vector, then its integral is equal to the sum of
-integrals of `f` over the faces of `[a, b]`, taken with appropriat signs.
+integrals of `f` over the faces of `[a, b]`, taken with appropriate signs.
 
 Moreover, the same is true if the function is not differentiable at countably many
 points of the interior of `[a, b]`.

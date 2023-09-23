@@ -188,7 +188,7 @@ def upShadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 #align finset.up_shadow Finset.upShadow
 
 -- mathport name: finset.up_shadow
--- Porting note: added `inheric_doc` to calm linter
+-- Porting note: added `inherit_doc` to calm linter
 @[inherit_doc] scoped[FinsetFamily] notation:90 "∂⁺ " => Finset.upShadow
 
 /-- The upper shadow of the empty set is empty. -/

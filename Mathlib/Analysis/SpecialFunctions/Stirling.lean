@@ -29,7 +29,7 @@ ingredients are
  - taking the logarithm of the sequence and
  - using the series expansion of $\log(1 + x)$.
 
-**Part 2**: We use the fact that the series defined in part 1 converges againt a real number $a$
+**Part 2**: We use the fact that the series defined in part 1 converges against a real number $a$
 and prove that $a = \sqrt{\pi}$. Here the main ingredient is the convergence of Wallis' product
 formula for `π`.
 -/

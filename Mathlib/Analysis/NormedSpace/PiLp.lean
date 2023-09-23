@@ -486,7 +486,7 @@ edistance, and having as uniformity the product uniformity. -/
 instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
   @EMetricSpace.ofT0PseudoEMetricSpace (PiLp p α) _ Pi.instT0Space
 
-/-- pseudometric space instance on the product of finitely many psuedometric spaces, using the
+/-- pseudometric space instance on the product of finitely many pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
 instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
   ((pseudoMetricAux p β).replaceUniformity (aux_uniformity_eq p β).symm).replaceBornology fun s =>

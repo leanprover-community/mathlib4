@@ -1731,7 +1731,7 @@ theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective 
   apply Sym2.map.injective hinj
 #align simple_graph.hom.map_edge_set.injective SimpleGraph.Hom.mapEdgeSet.injective
 
-/-- Every graph homomomorphism from a complete graph is injective. -/
+/-- Every graph homomorphism from a complete graph is injective. -/
 theorem injective_of_top_hom (f : (⊤ : SimpleGraph V) →g G') : Function.Injective f := by
   intro v w h
   contrapose! h

@@ -218,7 +218,7 @@ def RayVector (R M : Type _) [Zero M] :=
   { v : M // v ≠ 0 }
 #align ray_vector RayVector
 
--- Porting note: Made Coe into CoeOut so it's not dangeorus anymore
+-- Porting note: Made Coe into CoeOut so it's not dangerous anymore
 instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
   coe := Subtype.val
 #align ray_vector.has_coe RayVector.coe

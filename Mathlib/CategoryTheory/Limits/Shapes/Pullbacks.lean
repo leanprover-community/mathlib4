@@ -1036,7 +1036,7 @@ def Cone.ofPullbackCone {F : WalkingCospan ⥤ C} (t : PullbackCone (F.map inl) 
     we get a cocone on `F`.
 
     If you're thinking about using this, have a look at `hasPushouts_of_hasColimit_span`, which
-    you may find to be an easiery way of achieving your goal.  -/
+    you may find to be an easier way of achieving your goal. -/
 @[simps]
 def Cocone.ofPushoutCocone {F : WalkingSpan ⥤ C} (t : PushoutCocone (F.map fst) (F.map snd)) :
     Cocone F where

@@ -552,7 +552,7 @@ abbrev prod.fst {X Y : C} [HasBinaryProduct X Y] : X ⨯ Y ⟶ X :=
   limit.π (pair X Y) ⟨WalkingPair.left⟩
 #align category_theory.limits.prod.fst CategoryTheory.Limits.prod.fst
 
-/-- The projecton map to the second component of the product. -/
+/-- The projection map to the second component of the product. -/
 abbrev prod.snd {X Y : C} [HasBinaryProduct X Y] : X ⨯ Y ⟶ Y :=
   limit.π (pair X Y) ⟨WalkingPair.right⟩
 #align category_theory.limits.prod.snd CategoryTheory.Limits.prod.snd

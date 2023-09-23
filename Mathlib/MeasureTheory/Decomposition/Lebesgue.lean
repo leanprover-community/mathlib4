@@ -683,7 +683,7 @@ instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (μ ν : Mea
     -- As `S` is finite with respect to both `μ` and `ν`, it is clear that `μn n` and `νn n` are
     -- finite measures for all `n : ℕ`. Thus, we may apply the finite Lebesgue decomposition theorem
     -- to `μn n` and `νn n`. We define `ξ` as the sum of the singular part of the Lebesgue
-    -- decompositions of `μn n` and `νn n`, and `f` as the sum of the Radon-Nikodym derviatives of
+    -- decompositions of `μn n` and `νn n`, and `f` as the sum of the Radon-Nikodym derivatives of
     -- `μn n` and `νn n` restricted on `S n`
     set ξ := sum fun n => singularPart (μn n) (νn n) with hξ
     set f := ∑' n, (S.set n).indicator (rnDeriv (μn n) (νn n))

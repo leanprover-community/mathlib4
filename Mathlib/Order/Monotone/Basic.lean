@@ -25,7 +25,7 @@ to mean "decreasing".
 * `Monotone f`: A function `f` between two preorders is monotone if `a ≤ b` implies `f a ≤ f b`.
 * `Antitone f`: A function `f` between two preorders is antitone if `a ≤ b` implies `f b ≤ f a`.
 * `MonotoneOn f s`: Same as `Monotone f`, but for all `a, b ∈ s`.
-* `AntitoneoN f s`: Same as `Antitone f`, but for all `a, b ∈ s`.
+* `AntitoneOn f s`: Same as `Antitone f`, but for all `a, b ∈ s`.
 * `StrictMono f` : A function `f` between two preorders is strictly monotone if `a < b` implies
   `f a < f b`.
 * `StrictAnti f` : A function `f` between two preorders is strictly antitone if `a < b` implies

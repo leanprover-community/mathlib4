@@ -129,7 +129,7 @@ theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :
       CategoryTheory.types_comp_apply, CategoryTheory.types_comp_apply, e']; rfl
 #align Top.presheaf.stalk_to_fiber_injective TopCat.Presheaf.stalkToFiber_injective
 
-/-- The isomorphism betweeen a stalk of the sheafification and the original stalk.
+/-- The isomorphism between a stalk of the sheafification and the original stalk.
 -/
 def sheafifyStalkIso (x : X) : F.sheafify.presheaf.stalk x ≅ F.stalk x :=
   (Equiv.ofBijective _ ⟨stalkToFiber_injective _ _, stalkToFiber_surjective _ _⟩).toIso

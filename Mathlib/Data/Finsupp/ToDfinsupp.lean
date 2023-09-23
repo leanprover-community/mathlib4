@@ -245,7 +245,7 @@ def finsuppAddEquivDfinsupp [DecidableEq ι] [AddZeroClass M] [∀ m : M, Decida
 
 variable (R)
 
-/-- The additive version of `Finsupp.toTinsupp`. Note that this is `noncomputable` because
+/-- The additive version of `Finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
 -- porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
 --@[simps? (config := { fullyApplied := false })]

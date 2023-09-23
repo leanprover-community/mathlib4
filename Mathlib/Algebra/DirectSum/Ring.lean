@@ -19,7 +19,7 @@ over `⨁ i, A i` such that `(*) : A i → A j → A (i + j)`; that is to say, `
 additively-graded ring. The typeclasses are:
 
 * `DirectSum.GNonUnitalNonAssocSemiring A`
-* `DirectSsum.GSemiring A`
+* `DirectSum.GSemiring A`
 * `DirectSum.GRing A`
 * `DirectSum.GCommSemiring A`
 * `DirectSum.GCommRing A`
@@ -62,7 +62,7 @@ Additionally, this module provides helper functions to construct `GSemiring` and
 instances for:
 
 * `A : ι → Submonoid S`:
-  `DirectSum.GSemiring.ofAddAubmonoids`, `DirectSum.GCommSemiring.ofAddSubmonoids`.
+  `DirectSum.GSemiring.ofAddSubmonoids`, `DirectSum.GCommSemiring.ofAddSubmonoids`.
 * `A : ι → Subgroup S`:
   `DirectSum.GSemiring.ofAddSubgroups`, `DirectSum.GCommSemiring.ofAddSubgroups`.
 * `A : ι → Submodule S`:

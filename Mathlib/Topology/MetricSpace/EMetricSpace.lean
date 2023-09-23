@@ -407,7 +407,7 @@ def PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpace �
 instance {α : Type _} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricSpace (Subtype p) :=
   PseudoEMetricSpace.induced Subtype.val ‹_›
 
-/-- The extended psuedodistance on a subset of a pseudoemetric space is the restriction of
+/-- The extended pseudodistance on a subset of a pseudoemetric space is the restriction of
 the original pseudodistance, by definition -/
 theorem Subtype.edist_eq {p : α → Prop} (x y : Subtype p) : edist x y = edist (x : α) y := rfl
 #align subtype.edist_eq Subtype.edist_eq

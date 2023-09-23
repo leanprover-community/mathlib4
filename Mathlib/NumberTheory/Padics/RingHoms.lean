@@ -266,7 +266,7 @@ def toZMod : ℤ_[p] →+* ZMod p :=
 /-- `z - (toZMod z : ℤ_[p])` is contained in the maximal ideal of `ℤ_[p]`, for every `z : ℤ_[p]`.
 
 The coercion from `ZMod p` to `ℤ_[p]` is `ZMod.cast`,
-which coerces `ZMod p` into artibrary rings.
+which coerces `ZMod p` into arbitrary rings.
 This is unfortunate, but a consequence of the fact that we allow `ZMod p`
 to coerce to rings of arbitrary characteristic, instead of only rings of characteristic `p`.
 This coercion is only a ring homomorphism if it coerces into a ring whose characteristic divides

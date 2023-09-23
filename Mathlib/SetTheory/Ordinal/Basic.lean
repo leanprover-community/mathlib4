@@ -32,7 +32,7 @@ initial segment (or, equivalently, in any way). This total order is well founded
 * `Ordinal.lift` lifts an ordinal in universe `u` to an ordinal in universe `max u v`.
   For a version registering additionally that this is an initial segment embedding, see
   `Ordinal.lift.initialSeg`.
-  For a version regiserting that it is a principal segment embedding if `u < v`, see
+  For a version registering that it is a principal segment embedding if `u < v`, see
   `Ordinal.lift.principalSeg`.
 * `Ordinal.omega` or `ω` is the order type of `ℕ`. This definition is universe polymorphic:
   `Ordinal.omega.{u} : Ordinal.{u}` (contrast with `ℕ : Type`, which lives in a specific

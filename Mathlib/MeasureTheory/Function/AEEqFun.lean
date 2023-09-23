@@ -930,7 +930,7 @@ theorem coeFn_toAEEqFun (f : C(α, β)) : f.toAEEqFun μ =ᵐ[μ] f :=
 
 variable [Group β] [TopologicalGroup β]
 
-/-- The `MulFom` from the group of continuous maps from `α` to `β` to the group of equivalence
+/-- The `MulHom` from the group of continuous maps from `α` to `β` to the group of equivalence
 classes of `μ`-almost-everywhere measurable functions. -/
 @[to_additive "The `AddHom` from the group of continuous maps from `α` to `β` to the group of
 equivalence classes of `μ`-almost-everywhere measurable functions."]

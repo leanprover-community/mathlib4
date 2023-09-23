@@ -47,7 +47,7 @@ open MonCat.FilteredColimits (colimit_one_eq colimit_mul_mk_eq)
 
 -- We use parameters here, mainly so we can have the abbreviations `G` and `G.mk` below, without
 -- passing around `F` all the time.
-variable {J : Type v}[SmallCategory J] [IsFiltered J] (F : J ⥤ GroupCat.{max v u})
+variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ GroupCat.{max v u})
 
 /-- The colimit of `F ⋙ forget₂ Group Mon` in the category `Mon`.
 In the following, we will show that this has the structure of a group.

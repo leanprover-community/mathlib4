@@ -555,6 +555,7 @@ attribute [local ext] Subtype.eq
 
 section ModuleStructure
 
+-- Porting note: Is "Semiodule" a typo of "Semimodule" or "Submodule"?
 /-!
 ### Semiodule structure
 

@@ -114,7 +114,7 @@ variable [TopologicalSpace α] [Preorder α] [t : OrderClosedTopology α]
 
 namespace Subtype
 
--- todo: add `OrderEmbedding.orderClosedtopology`
+-- todo: add `OrderEmbedding.orderClosedTopology`
 instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
   have this : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
     continuous_subtype_val.prod_map continuous_subtype_val

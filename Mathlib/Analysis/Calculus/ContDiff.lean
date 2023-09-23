@@ -1896,7 +1896,7 @@ theorem contDiff_clm_apply_iff {n : ℕ∞} {f : E → F →L[𝕜] G} [FiniteDi
 /-- This is a useful lemma to prove that a certain operation preserves functions being `C^n`.
 When you do induction on `n`, this gives a useful characterization of a function being `C^(n+1)`,
 assuming you have already computed the derivative. The advantage of this version over
-`contDiff_succ_iff_fderiv` is that both occurences of `ContDiff` are for functions with the same
+`contDiff_succ_iff_fderiv` is that both occurrences of `ContDiff` are for functions with the same
 domain and codomain (`E` and `F`). This is not the case for `contDiff_succ_iff_fderiv`, which
 often requires an inconvenient need to generalize `F`, which results in universe issues
 (see the discussion in the section of `ContDiff.comp`).
@@ -2016,7 +2016,7 @@ theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith {E F : Type _} [NormedAddC
   (exists_gt _).imp <| hf.exists_lipschitzOnWith_of_nnnorm_lt hs
 #align has_ftaylor_series_up_to_on.exists_lipschitz_on_with HasFTaylorSeriesUpToOn.exists_lipschitzOnWith
 
-/-- If `f` is `C^1` within a conves set `s` at `x`, then it is Lipschitz on a neighborhood of `x`
+/-- If `f` is `C^1` within a convex set `s` at `x`, then it is Lipschitz on a neighborhood of `x`
 within `s`. -/
 theorem ContDiffWithinAt.exists_lipschitzOnWith {E F : Type _} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F} {s : Set E} {x : E}

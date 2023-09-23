@@ -108,8 +108,8 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     have x_ne_y : x ≠ y := mt (@diag_subset (x, y)) this
     -- Since γ is compact and Hausdorff, it is normal, hence T₃.
     haveI : NormalSpace γ := normalOfCompactT2
-    -- So there are closed neighboords V₁ and V₂ of x and y contained in disjoint open neighborhoods
-    -- U₁ and U₂.
+    -- So there are closed neighborhoods V₁ and V₂ of x and y contained in
+    -- disjoint open neighborhoods U₁ and U₂.
     obtain
       ⟨U₁, _, V₁, V₁_in, U₂, _, V₂, V₂_in, V₁_cl, V₂_cl, U₁_op, U₂_op, VU₁, VU₂, hU₁₂⟩ :=
       disjoint_nested_nhds x_ne_y
