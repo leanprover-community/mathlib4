@@ -13,13 +13,16 @@ import Mathlib.Tactic.RunCmd
 -- so that this test file does not need to to be updated when Mathlib changes.
 
 
-/-- warning: Cannot search: No constants in search pattern. -/
+/-- warning: Cannot search: No constants or name fragments in search pattern. -/
 #guard_msgs in
 #find
 
-/-- warning: Cannot search: No constants in search pattern. -/
+/--
+info: Found 0 definitions whose name contains "namefragmentsearch".
+Of these, 0 have a name containing "namefragmentsearch".
+-/
 #guard_msgs in
-#find "foobar"
+#find "namefragmentsearch"
 
 /-- We use this definition in all tests below to get reproducible results,
 including the statistics about how many lemas were found in the index. -/
@@ -34,6 +37,24 @@ info: Found 1 definitions mentioning uniquenameforthistest.
 -/
 #guard_msgs in
 #find uniquenameforthistest
+
+/--
+info: Found 2 definitions whose name contains "uniquenameforthistest".
+Of these, 2 have a name containing "uniquenameforthistest".
+• uniquenameforthistest
+• uniquenameforthistest_eq_true
+-/
+#guard_msgs in
+#find "uniquenameforthistest"
+
+/--
+info: Found 2 definitions whose name contains "uenameforthis".
+Of these, 2 have a name containing "uenameforthis".
+• uniquenameforthistest
+• uniquenameforthistest_eq_true
+-/
+#guard_msgs in
+#find "uenameforthis"
 
 /--
 info: Found 1 definitions mentioning uniquenameforthistest.

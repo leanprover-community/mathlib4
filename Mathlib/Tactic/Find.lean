@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich, Joachim Breitner
 -/
 import Lean
+import Lean.Data.Trie
 import Std.Lean.Delaborator
 import Std.Data.String.Basic
 import Std.Util.Pickle
@@ -103,33 +104,79 @@ def matchAnywhere (t : Expr) : MetaM ConstMatcher := withReducible do
     Lean.Meta.anyExpr cTy $ matchUpToHyps pat head
 
 /-!
-## The find tactic engine: Index and matching
+## The two indexes used
+
+`#find` uses two indexes: One mapping names to names of constants that mention
+that name anywhere, which is the primary index that we use.
+
+Additionaly, for queries that involve _only_ lemma name fragments, we maintain a suffix trie
+of lemma names.
 -/
 
 /-- For all names `n` mentioned in the type of the constant `c`, add a mapping from
 `n` to `c.name` to the relation. -/
-private def addDecl (_ : Lean.Name) (c : ConstantInfo) (m : NameRel) : MetaM NameRel := do
-  if ← c.name.isBlackListed then
+private def addDecl (name : Lean.Name) (c : ConstantInfo) (m : NameRel) : MetaM NameRel := do
+  if ← name.isBlackListed then
     return m
   let consts := c.type.foldConsts {} (flip NameSet.insert)
-  return consts.fold (init := m) fun m n => m.insert n c.name
+  return consts.fold (init := m) fun m n => m.insert n name
 
-/-- The declaration cache used by `#find`, stores `NameRel` mapping names to the name
-of constants they are mentinend in.  -/
-def Index := DeclCache2 NameRel
+
+/-- A suffix trie for `Name`s -/
+def SuffixTrie := Lean.Data.Trie (Array Name)
+deriving Nonempty
+
+/-- Insert a `Name` into a `SuffixTrie` -/
+def SuffixTrie.insert (t : SuffixTrie) (n : Lean.Name) : SuffixTrie := Id.run $ do
+  let mut t := t
+  let s := n.toString
+  for i in List.range (s.length - 1) do -- -1 to not consider the empty suffix
+    let suf := s.drop i
+    t := t.upsert suf fun ns? => ns? |>.getD #[] |>.push n
+  pure t
+
+/-- Insert a declaration into a `SuffixTrie`, if the name isn't blacklisted. -/
+def SuffixTrie.addDecl (name : Lean.Name) (_ : ConstantInfo) (t : SuffixTrie) : MetaM SuffixTrie := do
+  if ← name.isBlackListed then
+    return t
+  return t.insert name
+
+/-- Search the suffix trie, returning an empty array if nothing matches -/
+def SuffixTrie.find (t : SuffixTrie) (s : String) : Array Name := Array.flatten (t.findPrefix s)
+
+/-- The index used by `#find`: A declaration cache with a `NameRel` mapping names to the name
+of constants they are mentinend in, and a declaration cache storing a suffix trie. -/
+structure Index where mk'' ::
+  nameRelCache : DeclCache2 NameRel
+  trieCache: DeclCache2 SuffixTrie
+deriving Nonempty
 
 -- NB: In large files it may be slightly wasteful to calculate a full NameSet for the local
 -- definition upon every invocation of `#find`, and a linear scan might work better. For now,
 -- this keeps the code below more uniform.
 
 /-- Create a fresh index.  -/
-def Index.mk : IO Index :=
-  DeclCache2.mk (profilingName := "#find: init cache") (empty := {}) (addDecl := addDecl)
+def Index.mk : IO Index := do
+  let c1 ← DeclCache2.mk "#find: init cache" .empty addDecl
+  let c2 ← DeclCache2.mk "#find: init trie" .empty SuffixTrie.addDecl
+  pure ⟨c1, c2⟩
+
+/-- The part of the index that includes the imported definitions, for example to be persisted and
+distributed by `MathlibExtras.Find`.  -/
+def Index.getCache (i : Index) : CoreM (NameRel × SuffixTrie) := do
+  let r ← i.nameRelCache.getImported
+  let t ← i.trieCache.getImported
+  pure (r, t)
 
 /-- Create an index from a cached value -/
-def Index.mkFromCache (init : NameRel) : IO Index :=
-  DeclCache2.mkFromCache .empty addDecl init
+def Index.mkFromCache (init : NameRel × SuffixTrie) : IO Index := do
+  let c1 ← DeclCache2.mkFromCache .empty addDecl init.1
+  let c2 ← DeclCache2.mkFromCache .empty SuffixTrie.addDecl init.2
+  pure ⟨c1, c2⟩
 
+/-!
+## The core find tactic engine
+-/
 
 /-- The parsed and elaborated arguments to `#find`  -/
 structure Arguments where
@@ -159,24 +206,32 @@ def find (index : Index) (args : Arguments) (maxShown := 200) :
     let needles : NameSet :=
           {} |> args.idents.foldl NameSet.insert
              |> args.terms.foldl (fun s (_,t) => t.foldConsts s (flip NameSet.insert))
-    if needles.isEmpty then do
-      return .error m!"Cannot search: No constants in search pattern."
+    let (indexHits, indexSummary) ← do
+      if needles.isEmpty then do
+        if args.namePats.isEmpty then
+          return .error m!"Cannot search: No constants or name fragments in search pattern."
+        -- No constants in patterns, use trie
+        let (t₁, t₂) ← index.trieCache.get
+        let hitArrays := args.namePats.map (fun s => (s, t₁.find s ++ t₂.find s))
+        -- If we have more than one name fragment pattern, use the one that returns the smallest
+        -- array of names
+        let hitArrays := hitArrays.qsort fun (_, a₁) (_, a₂) => a₁.size < a₂.size
+        let (needle, hits) := hitArrays.get! 0
+        let indexSummary := m!"Found {hits.size} definitions whose name contains \"{needle}\"."
+        pure (hits, indexSummary)
+      else do
+        -- Query the declaration cache
+        let (m₁, m₂) ← index.nameRelCache.get
+        let hits := RBTree.intersects <| needles.toArray.map <| fun needle =>
+          (m₁.find needle).union (m₂.find needle)
 
-    -- Prepare term patterns
-    let pats ← liftM <| args.terms.mapM fun (isConclusionPattern, t) =>
-      if isConclusionPattern then
-        matchConclusion t
-      else
-        matchAnywhere t
-
-    -- Query the declaration cache
-    let (m₁, m₂) ← index.get
-    let hits := RBTree.intersects <| needles.toArray.map <| fun needle =>
-      (m₁.find needle).union (m₂.find needle)
+        let needlesList := MessageData.andList (needles.toArray.map .ofName)
+        let indexSummary := m!"Found {hits.size} definitions mentioning {needlesList}."
+        pure (hits.toArray, indexSummary)
 
     -- Filter by name patterns
     let nameMatchers := args.namePats.map String.Matcher.ofString
-    let hits2 := hits.toArray.filter fun n => nameMatchers.all fun m =>
+    let hits2 := indexHits.filter fun n => nameMatchers.all fun m =>
       m.find? n.toString |>.isSome
 
     -- Obtain ConstantInfos
@@ -184,6 +239,11 @@ def find (index : Index) (args : Arguments) (maxShown := 200) :
     let hits3 := hits2.filterMap env.find?
 
     -- Filter by term patterns
+    let pats ← liftM <| args.terms.mapM fun (isConclusionPattern, t) =>
+      if isConclusionPattern then
+        matchConclusion t
+      else
+        matchAnywhere t
     let hits4 ← hits3.filterM fun ci => pats.allM (· ci)
 
     -- Add defining module index
@@ -211,8 +271,7 @@ def find (index : Index) (args : Arguments) (maxShown := 200) :
     let summary ← IO.mkRef MessageData.nil
     let addLine line := do summary.set <| (← summary.get) ++ line ++ Format.line
 
-    let needlesList := MessageData.andList (needles.toArray.map .ofName)
-    addLine m!"Found {hits.size} definitions mentioning {needlesList}."
+    addLine indexSummary
     unless (args.namePats.isEmpty) do
       let nameList := MessageData.andList <| args.namePats.map fun s => m!"\"{s}\""
       addLine $ m!"Of these, {hits2.size} have a name containing {nameList}."
@@ -290,14 +349,14 @@ def cachePath : IO FilePath :=
   catch _ =>
     return "build" / "lib" / "MathlibExtras" / "Find.extra"
 
-/-- The `DeclCache` used by `#find`, together with the `CompactedRegion`, if present -/
-initialize cachedData : WithCompactedRegion (DeclCache2 NameRel) ← unsafe do
+/-- The `DeclCache` used by `#find` -/
+initialize cachedIndex : Index ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
-    let (d, r) ← unpickle _ path
-    return ⟨r, ← Index.mkFromCache d⟩
+    let (d, _) ← unpickle _ path
+    Index.mkFromCache d
   else
-    return ⟨none, ← Index.mk⟩
+    Index.mk
 
 open Command
 
@@ -363,17 +422,16 @@ will find all lemmas which mention the constants `Real.sin` and `tsum`, have `"t
 substring of the lemma name, include a product and a power somewhere in the type, *and* have a
 hypothesis of the form `_ < _`.
 
-At least some filter must mention a concrete name, because `#find` maintains an index of which
-lemmas mention which other constants. This is also why the _first_ use of `#find` will be somewhat
-slow (typically less than half a minute with all of `Mathlib` imported), but subsequent uses are
-faster.
-
-It may be useful to open a scratch file, `import Mathlib`, and use `#find` there, this way you will
-find lemmas that you have not yet imported, and the cache will stay up-to-date.
+`#find` maintains an index of which lemmas mention which other constants and name fragments.
+If you have downloaded the olean cache for mathlib, the index will be precomputed. If not,
+the _first_ use of `#find` in a module will be slow (in the order of minutes). If you cannot use
+the distributed cache, it may be useful to open a scratch file, `import Mathlib`, and use `#find`
+there, this way you will find lemmas that you have not yet imported, and the
+cache will stay up-to-date.
 -/
 elab s:"#find " args:find_filters : command => liftTermElabM do
   profileitM Exception "find" (← getOptions) do
-    match ← find cachedData.val (← parseFindFilters args) with
+    match ← find cachedIndex (← parseFindFilters args) with
     | .error warn =>
       Lean.logWarningAt s warn
     | .ok result =>

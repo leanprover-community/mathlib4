@@ -138,8 +138,10 @@ A type synonym for a `DeclCache` containing a pair of elements.
 The first will store declarations in the current file,
 the second will store declarations from imports (and will hopefully be "read-only" after creation).
 -/
-@[reducible]
 def DeclCache2 (α : Type) := DeclCache (α × α)
+
+instance (α : Type) [h : Nonempty α] : Nonempty (DeclCache2 α) :=
+  h.elim fun x => @instNonemptyDeclCache _ ⟨x,x⟩
 
 /--
 Creates a `DeclCache`.
