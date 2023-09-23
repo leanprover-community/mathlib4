@@ -45,23 +45,6 @@ open Category Limits Preadditive ZeroObject
 
 variable (C : Type*) [Category C]
 
-section
-
--- trying to improve automation in this file
-
-variable {C}
-variable {D : Type*} [Category D] {F G : C ⥤ Dᵒᵖ} (e : F ≅ G) (X : C)
-
-@[reassoc (attr := simp)]
-lemma Iso.unop_hom_inv_id_app : (e.hom.app X).unop ≫ (e.inv.app X).unop = 𝟙 _ := by
-  rw [← unop_comp, inv_hom_id_app, unop_id]
-
-@[reassoc (attr := simp)]
-lemma Iso.unop_inv_hom_id_app : (e.inv.app X).unop ≫ (e.hom.app X).unop = 𝟙 _ := by
-  rw [← unop_comp, hom_inv_id_app, unop_id]
-
-end
-
 namespace Pretriangulated
 
 variable [HasShift C ℤ]
@@ -168,13 +151,25 @@ noncomputable def opShiftFunctorEquivalence (n : ℤ) : Cᵒᵖ ≌ Cᵒᵖ wher
     rw [shift_shiftFunctorCompIsoId_neg_add_self_hom_app n X.unop, Iso.inv_hom_id_app])
 
 /-! The naturality of the unit and counit isomorphisms are restated in the following
-lemmas so as to mitigate the need of `erw`. -/
+lemmas so as to mitigate the need for `erw`. -/
+
+@[reassoc (attr := simp)]
+lemma opShiftFunctorEquivalence_unitIso_hom_naturality (n : ℤ) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    f ≫ (opShiftFunctorEquivalence C n).unitIso.hom.app Y =
+      (opShiftFunctorEquivalence C n).unitIso.hom.app X ≫ (f⟦n⟧').unop⟦n⟧'.op :=
+  (opShiftFunctorEquivalence C n).unitIso.hom.naturality f
 
 @[reassoc (attr := simp)]
 lemma opShiftFunctorEquivalence_unitIso_inv_naturality (n : ℤ) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     (f⟦n⟧').unop⟦n⟧'.op ≫ (opShiftFunctorEquivalence C n).unitIso.inv.app Y =
       (opShiftFunctorEquivalence C n).unitIso.inv.app X ≫ f :=
   (opShiftFunctorEquivalence C n).unitIso.inv.naturality f
+
+@[reassoc (attr := simp)]
+lemma opShiftFunctorEquivalence_counitIso_hom_naturality (n : ℤ) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    f.unop⟦n⟧'.op⟦n⟧' ≫ (opShiftFunctorEquivalence C n).counitIso.hom.app Y =
+      (opShiftFunctorEquivalence C n).counitIso.hom.app X ≫ f :=
+  (opShiftFunctorEquivalence C n).counitIso.hom.naturality f
 
 @[reassoc (attr := simp)]
 lemma opShiftFunctorEquivalence_counitIso_inv_naturality (n : ℤ) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
@@ -373,19 +368,19 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)
     ∃ (c : T₁.obj₃ ⟶ T₂.obj₃), T₁.mor₂ ≫ c = b ≫ T₂.mor₂ ∧
       T₁.mor₃ ≫ a⟦1⟧' = c ≫ T₂.mor₃ := by
   rw [mem_distinguishedTriangles_iff] at hT₁ hT₂
-  obtain ⟨c, hc₁, hc₂⟩ := Pretriangulated.complete_distinguished_triangle_morphism₁ _ _ hT₂ hT₁ b.unop
-    a.unop (Quiver.Hom.op_inj comm.symm)
+  obtain ⟨c, hc₁, hc₂⟩ :=
+    Pretriangulated.complete_distinguished_triangle_morphism₁ _ _ hT₂ hT₁
+      b.unop a.unop (Quiver.Hom.op_inj comm.symm)
   dsimp at c hc₁ hc₂
-  simp only [neg_comp, assoc, comp_neg, neg_inj] at hc₂
+  replace hc₂ := ((opShiftFunctorEquivalence C 1).unitIso.hom.app T₂.obj₁).unop ≫= hc₂
+  dsimp at hc₂
+  simp only [assoc, Iso.unop_hom_inv_id_app_assoc] at hc₂
   refine' ⟨c.op, Quiver.Hom.unop_inj hc₁.symm, Quiver.Hom.unop_inj _⟩
   apply (shiftFunctor C (1 : ℤ)).map_injective
-  rw [unop_comp, unop_comp, Functor.map_comp, Functor.map_comp, Quiver.Hom.unop_op,
-      ← cancel_epi ((opShiftFunctorEquivalence C 1).unitIso.inv.app T₂.obj₁).unop, hc₂]
-  apply Quiver.Hom.op_inj
-  simp only [op_comp, Functor.id_obj, Opposite.op_unop, Functor.comp_obj, Functor.op_obj,
-    Opposite.unop_op, Quiver.Hom.op_unop, assoc]
-  congr 1
-  exact (opShiftFunctorEquivalence C 1).unitIso.inv.naturality a
+  rw [unop_comp, unop_comp, Functor.map_comp, Functor.map_comp,
+    Quiver.Hom.unop_op, hc₂, ← unop_comp_assoc, ← unop_comp_assoc,
+    ← opShiftFunctorEquivalence_unitIso_inv_naturality]
+  simp
 
 scoped instance : Pretriangulated Cᵒᵖ where
   distinguishedTriangles := distinguishedTriangles C
