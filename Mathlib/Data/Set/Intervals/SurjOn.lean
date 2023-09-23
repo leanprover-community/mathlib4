@@ -2,7 +2,6 @@
 Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-Ported by: Joël Riou
 -/
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Function

@@ -2,7 +2,6 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Antoine Labelle, Rémi Bottinelli
-Ported by: Joël Riou, Rémi Bottinelli
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push

@@ -471,6 +471,9 @@ theorem mk_surjective : Function.Surjective <| @mk _ _ s :=
 #align quotient_group.mk_surjective QuotientGroup.mk_surjective
 #align quotient_add_group.mk_surjective QuotientAddGroup.mk_surjective
 
+@[to_additive (attr := simp)]
+lemma range_mk : range (QuotientGroup.mk (s := s)) = univ := range_iff_surjective.mpr mk_surjective
+
 @[to_additive (attr := elab_as_elim)]
 theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (QuotientGroup.mk z)) : C x :=
   Quotient.inductionOn' x H

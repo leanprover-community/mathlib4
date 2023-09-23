@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Joseph Myers
 -/
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
+
+#align_import geometry.euclidean.basic from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
+
 /-!
 # Perpendicular bisector of a segment
 

@@ -264,6 +264,11 @@ instance normal_iSup {ι : Type _} (t : ι → IntermediateField F K) [h : ∀ i
   exact Polynomial.splits_comp_of_splits _ (inclusion hE).toRingHom this
 #align intermediate_field.normal_supr IntermediateField.normal_iSup
 
+instance normal_sup
+    (E E' : IntermediateField F K) [Normal F E] [Normal F E'] :
+    Normal F (E ⊔ E' : IntermediateField F K) :=
+  iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by intro i; cases i <;> infer_instance)
+
 -- Porting note `[Field F] [Field K] [Algebra F K]` added by hand.
 variable {F K} {L : Type _} [Field F] [Field K] [Field L] [Algebra F L] [Algebra K L]
   [Algebra F K] [IsScalarTower F K L]

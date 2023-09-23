@@ -220,7 +220,7 @@ theorem inv_invApp (U : Opens X) :
           -- See https://github.com/leanprover-community/mathlib4/issues/5026
           -- I think this is because `Set.preimage_image_eq _ H.base_open.inj` can't see through a
           -- structure
-          apply congr_arg (op .); ext
+          apply congr_arg (op ·); ext
           dsimp [openFunctor, IsOpenMap.functor]
           rw [Set.preimage_image_eq _ H.base_open.inj])) := by
   rw [← cancel_epi (H.invApp U), IsIso.hom_inv_id]
@@ -236,7 +236,7 @@ theorem invApp_app (U : Opens X) :
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
         -- I think this is because `Set.preimage_image_eq _ H.base_open.inj` can't see through a
         -- structure
-        apply congr_arg (op .); ext
+        apply congr_arg (op ·); ext
         dsimp [openFunctor, IsOpenMap.functor]
         rw [Set.preimage_image_eq _ H.base_open.inj])) :=
   by rw [invApp, Category.assoc, IsIso.inv_hom_id, Category.comp_id]

@@ -462,11 +462,17 @@ lemma works {a b : ℕ} (hab : a ≤ b) (h : b < a) : false := by
 
 end T
 
--- example (a b c : ℚ) (h : a ≠ b) (h3 : b ≠ c) (h2 : a ≥ b) : b ≠ c :=
--- by linarith {split_ne := tt}
+example (a b c : ℚ) (h : a ≠ b) (h3 : b ≠ c) (h2 : a ≥ b) : b ≠ c :=
+by linarith (config := {splitNe := true})
 
--- example (a b c : ℚ) (h : a ≠ b) (h2 : a ≥ b) (h3 : b ≠ c) : a > b :=
--- by linarith {split_ne := tt}
+example (a b c : ℚ) (h : a ≠ b) (h2 : a ≥ b) (h3 : b ≠ c) : a > b :=
+by linarith (config := {splitNe := true})
+
+example (a b : ℕ) (h1 : b ≠ a) (h2 : b ≤ a) : b < a :=
+by linarith (config := {splitNe := true})
+
+example (a b : ℕ) (h1 : b ≠ a) (h2 : ¬a < b) : b < a :=
+by linarith (config := {splitNe := true})
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
 

@@ -2,7 +2,6 @@
 Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
-Ported by: Frédéric Dupuis
 -/
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Logic.Equiv.Basic

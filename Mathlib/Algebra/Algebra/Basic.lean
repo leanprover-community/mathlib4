@@ -582,7 +582,10 @@ variable (R)
 See note [reducible non-instances]. -/
 @[reducible]
 def semiringToRing [Semiring A] [Algebra R A] : Ring A :=
-  { Module.addCommMonoidToAddCommGroup R, (inferInstance : Semiring A) with }
+  { Module.addCommMonoidToAddCommGroup R, (inferInstance : Semiring A) with
+    intCast := fun z => algebraMap R A z
+    intCast_ofNat := fun z => by simp only [Int.cast_ofNat, map_natCast]
+    intCast_negSucc := fun z => by simp }
 #align algebra.semiring_to_ring Algebra.semiringToRing
 
 end Ring

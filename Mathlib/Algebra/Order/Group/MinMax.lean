@@ -15,7 +15,7 @@ import Mathlib.Algebra.Order.Monoid.MinMax
 
 section
 
-variable {α : Type _} [Group α] [LinearOrder α] [CovariantClass α α (. * .) (. ≤ .)]
+variable {α : Type _} [Group α] [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)]
 
 @[to_additive (attr := simp)]
 theorem max_one_div_max_inv_one_eq_self (a : α) : max a 1 / max a⁻¹ 1 = a := by

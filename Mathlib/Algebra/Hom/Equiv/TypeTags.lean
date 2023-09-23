@@ -2,7 +2,6 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
-Ported by: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags

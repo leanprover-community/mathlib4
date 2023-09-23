@@ -139,7 +139,7 @@ class EquivLike (E : Sort _) (α β : outParam (Sort _)) where
   left_inv : ∀ e, Function.LeftInverse (inv e) (coe e)
   /-- The coercions are right inverses. -/
   right_inv : ∀ e, Function.RightInverse (inv e) (coe e)
-  /-- If two coercions to functions are jointly injective. -/
+  /-- The two coercions to functions are jointly injective. -/
   coe_injective' : ∀ e g, coe e = coe g → inv e = inv g → e = g
   -- This is mathematically equivalent to either of the coercions to functions being injective, but
   -- the `inv` hypothesis makes this easier to prove with `congr'`

@@ -1169,7 +1169,7 @@ theorem castLT_castAdd (m : ℕ) (i : Fin n) : castLT (castAdd m i) (castAdd_lt 
 
 /-- For rewriting in the reverse direction, see `Fin.castIso_castAdd_left`. -/
 theorem castAdd_castIso {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
-    castAdd m (Fin.castIso h i) = Fin.castIso (congr_arg (. + m) h) (castAdd m i) :=
+    castAdd m (Fin.castIso h i) = Fin.castIso (congr_arg (· + m) h) (castAdd m i) :=
   ext rfl
 #align fin.cast_add_cast Fin.castAdd_castIso
 
@@ -1389,7 +1389,7 @@ theorem castIso_addNat_zero {n n' : ℕ} (i : Fin n) (h : n + 0 = n') :
 
 /-- For rewriting in the reverse direction, see `Fin.castIso_addNat_left`. -/
 theorem addNat_castIso {n n' m : ℕ} (i : Fin n') (h : n' = n) :
-    addNat (castIso h i) m = castIso (congr_arg (. + m) h) (addNat i m) :=
+    addNat (castIso h i) m = castIso (congr_arg (· + m) h) (addNat i m) :=
   ext rfl
 #align fin.add_nat_cast Fin.addNat_castIso
 

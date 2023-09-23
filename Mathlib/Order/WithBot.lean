@@ -109,7 +109,7 @@ theorem recBotCoe_coe {C : WithBot α → Sort _} (d : C ⊥) (f : ∀ a : α, C
   rfl
 #align with_bot.rec_bot_coe_coe WithBot.recBotCoe_coe
 
-/-- Specialization of `Option.get_or_else` to values in `WithBot α` that respects API boundaries.
+/-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries.
 -/
 def unbot' (d : α) (x : WithBot α) : α :=
   recBotCoe d id x
@@ -243,6 +243,11 @@ protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α)
   | none, _ => bot_le
   | Option.some _, hb => some_le_some.2 <| h <| some_le_some.1 hb
 #align is_max.with_bot IsMax.withBot
+
+theorem le_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
+    a ≤ unbot b h ↔ (a : WithBot α) ≤ b := by
+  match b, h with
+  | some _, _ => simp only [unbot_coe, coe_le_coe]
 
 end LE
 
@@ -679,7 +684,7 @@ theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) 
   rfl
 #align with_top.of_dual_apply_coe WithTop.ofDual_apply_coe
 
-/-- Specialization of `Option.get_or_else` to values in `WithTop α` that respects API boundaries.
+/-- Specialization of `Option.getD` to values in `WithTop α` that respects API boundaries.
 -/
 def untop' (d : α) (x : WithTop α) : α :=
   recTopCoe d id x
@@ -860,6 +865,10 @@ protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
   rw [← toDual_le_toDual_iff] at hb
   simpa [toDual_le_iff] using (IsMax.withBot h : IsMax (toDual a : WithBot αᵒᵈ)) hb
 #align is_min.with_top IsMin.withTop
+
+theorem untop_le_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
+    untop a h ≤ b ↔ a ≤ (b : WithTop α) :=
+  @WithBot.le_unbot_iff αᵒᵈ _ _ _ _
 
 end LE
 
@@ -1289,7 +1298,7 @@ instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     · simp
     · simp
     · simp
-    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (. < .) _ a b⟩
+    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (· < ·) _ a b⟩
 #align with_top.trichotomous.lt WithTop.trichotomous.lt
 
 instance IsWellOrder.lt [Preorder α] [h : IsWellOrder α (· < ·)] :
@@ -1303,7 +1312,7 @@ instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
     · simp
     · simp
     · simp
-    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (. > .) _ a b⟩
+    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (· > ·) _ a b⟩
 #align with_top.trichotomous.gt WithTop.trichotomous.gt
 
 instance IsWellOrder.gt [Preorder α] [h : IsWellOrder α (· > ·)] :

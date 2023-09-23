@@ -2,7 +2,6 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
-Ported by: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Combinatorics.Quiver.Basic
@@ -118,6 +117,13 @@ macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
   aesop $c* (options := { introsTransparency? := some .default, terminal := true })
   (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
 
+/--
+We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop_cat`
+-/
+macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
+`(tactic|
+  aesop? $c* (options := { introsTransparency? := some .default, terminal := true })
+  (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
 A variant of `aesop_cat` which does not fail when it is unable to solve the
 goal. Use this only for exploration! Nonterminal `aesop` is even worse than

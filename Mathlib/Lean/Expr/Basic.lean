@@ -94,7 +94,7 @@ Note: this declaration also occurs as `shouldIgnore` in the Lean 4 file `test/le
 def isInternal' (declName : Name) : Bool :=
   declName.isInternal ||
   match declName with
-  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
+  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s
   | _        => true
 
 

@@ -40,12 +40,16 @@ theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
   rfl
 #align option.coe_def Option.coe_def
 
-#align option.get_or_else Option.getD
+theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃ x ∈ o, f x = y := by simp
+#align option.mem_map Option.mem_map
 
-@[simp]
-theorem getD_coe (x y : α) : Option.getD (↑x) y = x :=
-  rfl
-#align option.get_or_else_coe Option.getD_coe
+theorem forall_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
+    (∀ y ∈ o.map f, p y) ↔ ∀ x ∈ o, p (f x) := by simp
+#align option.forall_mem_map Option.forall_mem_map
+
+theorem exists_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
+    (∃ y ∈ o.map f, p y) ↔ ∃ x ∈ o, p (f x) := by simp
+#align option.exists_mem_map Option.exists_mem_map
 
 theorem coe_get {o : Option α} (h : o.isSome) : ((Option.get _ h : α) : Option α) = o :=
   Option.some_get h

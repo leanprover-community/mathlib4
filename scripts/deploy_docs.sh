@@ -40,6 +40,7 @@ lake build Std:docs Qq:docs Mathlib:docs Archive:docs Counterexamples:docs docs:
 cd ..
 rm -rf mathlib4_docs/docs/
 cp -r "workaround/build/doc" mathlib4_docs/docs
+cp mathlib4/docs/{100.yaml,overview.yaml,undergrad.yaml} mathlib4_docs/docs
 ssh_key=$PWD/deploy_key
 echo "$MATHLIB4_DOCS_KEY" > $ssh_key
 chmod 600 $ssh_key

@@ -2,7 +2,6 @@
 Copyright (c) 2018 Johan Commelin All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
-Ported by: Winston Yin
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Group.Units

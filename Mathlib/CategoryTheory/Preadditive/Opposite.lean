@@ -33,11 +33,6 @@ instance moduleEndLeft {X : Cᵒᵖ} {Y : C} : Module (End X) (unop X ⟶ Y) whe
 #align category_theory.module_End_left CategoryTheory.moduleEndLeft
 
 @[simp]
-theorem unop_zero (X Y : Cᵒᵖ) : (0 : X ⟶ Y).unop = 0 :=
-  rfl
-#align category_theory.unop_zero CategoryTheory.unop_zero
-
-@[simp]
 theorem unop_add {X Y : Cᵒᵖ} (f g : X ⟶ Y) : (f + g).unop = f.unop + g.unop :=
   rfl
 #align category_theory.unop_add CategoryTheory.unop_add
@@ -51,11 +46,6 @@ theorem unop_zsmul {X Y : Cᵒᵖ} (k : ℤ) (f : X ⟶ Y) : (k • f).unop = k 
 theorem unop_neg {X Y : Cᵒᵖ} (f : X ⟶ Y) : (-f).unop = -f.unop :=
   rfl
 #align category_theory.unop_neg CategoryTheory.unop_neg
-
-@[simp]
-theorem op_zero (X Y : C) : (0 : X ⟶ Y).op = 0 :=
-  rfl
-#align category_theory.op_zero CategoryTheory.op_zero
 
 @[simp]
 theorem op_add {X Y : C} (f g : X ⟶ Y) : (f + g).op = f.op + g.op :=

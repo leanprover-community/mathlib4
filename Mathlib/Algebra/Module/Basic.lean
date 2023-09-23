@@ -209,22 +209,6 @@ theorem smul_add_one_sub_smul {R : Type _} [Ring R] [Module R M] {r : R} {m : M}
 
 end AddCommMonoid
 
-variable (R)
-
-/-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
-structure.
-See note [reducible non-instances]. -/
-@[reducible]
-def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
-  { (inferInstance : AddCommMonoid M) with
-    neg := fun a => (-1 : R) • a
-    add_left_neg := fun a =>
-      show (-1 : R) • a + a = 0 by
-        nth_rw 2 [← one_smul R a]
-        rw [← add_smul, add_left_neg, zero_smul] }
-#align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
-
-variable {R}
 
 section AddCommGroup
 
@@ -321,6 +305,27 @@ theorem sub_smul (r s : R) (y : M) : (r - s) • y = r • y - s • y := by
 #align sub_smul sub_smul
 
 end Module
+
+variable (R)
+
+/-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
+structure.
+See note [reducible non-instances]. -/
+@[reducible]
+def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
+  { (inferInstance : AddCommMonoid M) with
+    neg := fun a => (-1 : R) • a
+    add_left_neg := fun a =>
+      show (-1 : R) • a + a = 0 by
+        nth_rw 2 [← one_smul R a]
+        rw [← add_smul, add_left_neg, zero_smul]
+    zsmul := fun z a => (z : R) • a
+    zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
+    zsmul_succ' := fun z a => by simp [add_comm, add_smul]
+    zsmul_neg' := fun z a => by simp [←smul_assoc, neg_one_smul] }
+#align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
+
+variable {R}
 
 /-- A module over a `Subsingleton` semiring is a `Subsingleton`. We cannot register this
 as an instance because Lean has no way to guess `R`. -/
