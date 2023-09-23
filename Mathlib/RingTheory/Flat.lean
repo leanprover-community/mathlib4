@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.ShortExactSequence
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Character
+import Mathlib.Algebra.DirectLimitAndTensorProduct
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Homology.Homology
 
@@ -350,9 +351,56 @@ def _root_.Submodule.toAsDirectLimit : m →ₗ[R] m.asDirectLimit where
     rw [← eq1, ← LinearMap.map_smul]
     congr
 
+@[simps!]
 def _root_.Submodule.equivAsDirectLimit : m ≃ₗ[R] m.asDirectLimit :=
-LinearEquiv.ofLinear m.toAsDirectLimit m.asDirectLimitToSelf _ _
+LinearEquiv.ofLinear m.toAsDirectLimit m.asDirectLimitToSelf
+  (FunLike.ext _ _ fun x => x.induction_on fun i x => by
+    rw [LinearMap.comp_apply, LinearMap.id_apply, toAsDirectLimit_apply,
+      asDirectLimitToSelf_apply_of]
+    exact Eq.symm <| DirectLimit.of_f (R := R) (ι := m.fgSubmodule) (G := fun a => a.asSubmodule)
+      (f := fun _ _ h => Submodule.ofLe h) (i := m.principalSubmodule ⟨x.1, i.le x.2⟩) (j := i)
+      (hij := Submodule.span_le.mpr <| Set.singleton_subset_iff.mpr <| x.2)
+      (x := ⟨x.1, m.mem_principalSubmodule_self _⟩))
+  (FunLike.ext _ _ fun _ => by
+    rw [LinearMap.comp_apply, LinearMap.id_apply, toAsDirectLimit_apply,
+      asDirectLimitToSelf_apply_of]
+    rfl)
 
+section
+
+variable (N : Type u) [AddCommGroup N] [Module R N]
+
+def _root_.Submodule.tensorProductAsDirectLimit  : Type u :=
+Module.DirectLimit (R := R) (ι := m.fgSubmodule) (fun i => i.asSubmodule ⊗[R] N) <| fun _ _ h =>
+  TensorProduct.map (Submodule.ofLe h) LinearMap.id
+
+instance : AddCommGroup (m.tensorProductAsDirectLimit N) := by
+  delta tensorProductAsDirectLimit
+  infer_instance
+
+instance : Module R (m.tensorProductAsDirectLimit N) := by
+  delta tensorProductAsDirectLimit
+  infer_instance
+
+@[simps!]
+def _root_.Submodule.tensorProductEquiv :
+    m ⊗[R] N ≃ₗ[R] m.asDirectLimit ⊗[R] N :=
+  TensorProduct.congr m.equivAsDirectLimit <| LinearEquiv.refl _ _
+
+set_option maxHeartbeats 1000000 in
+@[simps!]
+def _root_.Submodule.asDirectLimitTensorEquiv :
+    m.asDirectLimit ⊗[R] N ≃ₗ[R]
+    m.tensorProductAsDirectLimit N :=
+  (Module.directLimitCommutesTensorProduct (R := R) (ι := m.fgSubmodule)
+    (G := fun a => a.asSubmodule) (f := fun _ _ h => Submodule.ofLe h) N).symm
+
+@[simps!]
+def _root_.Submodule.tensorProductEquivDirectLimit :
+    m ⊗[R] N ≃ₗ[R] m.tensorProductAsDirectLimit N :=
+  m.tensorProductEquiv N ≪≫ₗ m.asDirectLimitTensorEquiv N
+
+end
 
 end ideal_of_fg_ideal
 
