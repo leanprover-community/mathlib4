@@ -411,7 +411,7 @@ section Coprod
 variable [Mul M] [Mul N] [CommSemigroup P] (f : M →ₙ* P) (g : N →ₙ* P)
 
 /-- Coproduct of two `MulHom`s with the same codomain:
-  `f.coprod g (p : M × N) = f p.1 * g p.2`. 
+  `f.coprod g (p : M × N) = f p.1 * g p.2`.
   (Commutative codomain; for the general case, see `MulHom.noncommCoprod`) -/
 @[to_additive
     "Coproduct of two `AddHom`s with the same codomain:
@@ -439,7 +439,7 @@ end Coprod
 
 section noncommCoprod
 
-variable {M N P : Type*} [Mul M] [Mul N] [Semigroup P] 
+variable {M N P : Type*} [Mul M] [Mul N] [Semigroup P]
   (f : M →ₙ* P) (g : N →ₙ* P) (comm : ∀ m n, Commute (f m) (g n))
 
 /-- Coproduct of two `MulHom`s with the same codomain with commutation assumption :
@@ -455,25 +455,25 @@ def noncommCoprod : M × N →ₙ* P where
     simp only [Prod.fst_mul, Prod.snd_mul, map_mul]
     simp only [mul_assoc]
     apply congr_arg₂ _ rfl
-    simp only [← mul_assoc] 
+    simp only [← mul_assoc]
     apply congr_arg₂ _ _ rfl
     apply comm
-    
+
 @[to_additive (attr := simp)]
-theorem noncommCoprod_apply (p : M × N) : 
+theorem noncommCoprod_apply (p : M × N) :
   f.noncommCoprod g comm p = f p.1 * g p.2 :=
   rfl
 
 /- -- simp_normal_form complains
 @[to_additive (attr := simp)]
-theorem noncommCoprod_apply' (p : M × N) : 
+theorem noncommCoprod_apply' (p : M × N) :
     f.noncommCoprod g comm p = g p.2 * f p.1 :=
   comm p.1 p.2
 -/
 
 @[to_additive]
 theorem comp_noncommCoprod {Q : Type*} [Semigroup Q] (h : P →ₙ* Q) :
-    h.comp (f.noncommCoprod g comm) = 
+    h.comp (f.noncommCoprod g comm) =
       (h.comp f).noncommCoprod (h.comp g) (fun m n ↦ by
         simp only [coe_comp, Function.comp_apply]
         exact Commute.map (comm m n) h) :=
@@ -583,7 +583,7 @@ theorem snd_comp_inr : (snd M N).comp (inr M N) = id N :=
 #align add_monoid_hom.snd_comp_inr AddMonoidHom.snd_comp_inr
 
 @[to_additive]
-theorem inl_inr_commute (m : M) (n : N) : 
+theorem inl_inr_commute (m : M) (n : N) :
     Commute ((inl M N) m) ((inr M N) n) := by
   rw [Commute, SemiconjBy]
   simp only [inl_apply, inr_apply, Prod.mk_mul_mk, mul_one, one_mul]
@@ -675,7 +675,7 @@ section Coprod
 variable [CommMonoid P] (f : M →* P) (g : N →* P)
 
 /-- Coproduct of two `MonoidHom`s with the same codomain:
-  `f.coprod g (p : M × N) = f p.1 * g p.2`. 
+  `f.coprod g (p : M × N) = f p.1 * g p.2`.
   (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.)-/
 @[to_additive
     "Coproduct of two `AddMonoidHom`s with the same codomain:
@@ -726,17 +726,17 @@ theorem comp_coprod {Q : Type*} [CommMonoid Q] (h : P →* Q) (f : M →* P) (g 
 
 end Coprod
 
-section noncommCoprod 
+section noncommCoprod
 
-variable {P : Type*} [Monoid P] 
+variable {P : Type*} [Monoid P]
   (f : M →* P) (g : N →* P) (comm : ∀ m n, Commute (f m) (g n))
-  
-/-- Coproduct of two `MonoidHom`s with the same codomain, 
-  with a commutation assumption: 
-  `f.noncommCoprod g _ (p : M × N) = f p.1 * g p.2`. 
+
+/-- Coproduct of two `MonoidHom`s with the same codomain,
+  with a commutation assumption:
+  `f.noncommCoprod g _ (p : M × N) = f p.1 * g p.2`.
   (Noncommutative case; in the commutative case, use `MonoidHom.coprod`.)-/
 @[to_additive
-    "Coproduct of two `AddMonoidHom`s with the same codomain, 
+    "Coproduct of two `AddMonoidHom`s with the same codomain,
     with a commutation assumption:
     `f.noncommCoprod g (p : M × N) = f p.1 + g p.2`.
     (Noncommutative case; in the commutative case, use `AddHom.coprod`.)"]
@@ -746,20 +746,20 @@ def noncommCoprod : M × N →* P where
     simp only [Prod.fst_mul, Prod.snd_mul, map_mul]
     simp only [mul_assoc]
     apply congr_arg₂ _ rfl
-    simp only [← mul_assoc] 
+    simp only [← mul_assoc]
     apply congr_arg₂ _ _ rfl
     apply comm
   map_one' := by
     simp only [Prod.fst_one, Prod.snd_one, map_one, mul_one]
-    
+
 @[to_additive (attr := simp)]
-theorem noncommCoprod_apply (p : M × N) : 
+theorem noncommCoprod_apply (p : M × N) :
   f.noncommCoprod g comm p = f p.1 * g p.2 :=
   rfl
 
 /- -- simp_normal_form complains
 @[to_additive (attr := simp)]
-theorem noncommCoprod_apply' (p : M × N) : 
+theorem noncommCoprod_apply' (p : M × N) :
     f.noncommCoprod g comm p = g p.2 * f p.1 :=
   comm p.1 p.2
 -/
@@ -773,28 +773,28 @@ theorem noncommCoprod_comp_inr : (f.noncommCoprod g comm).comp (inr M N) = g :=
   ext fun x => by simp [noncommCoprod_apply]
 
 @[to_additive]
-theorem noncommCoprod.commute (f : M × N →* P) (m : M) (n : N) : 
-    Commute (f.comp (inl M N) m) (f.comp (inr M N) n) := by 
+theorem noncommCoprod.commute (f : M × N →* P) (m : M) (n : N) :
+    Commute (f.comp (inl M N) m) (f.comp (inr M N) n) := by
   simp only [coe_comp, Function.comp_apply]
   apply Commute.map
   apply inl_inr_commute
 
 @[to_additive (attr := simp)]
-theorem noncommCoprod_unique (f : M × N →* P) : 
+theorem noncommCoprod_unique (f : M × N →* P) :
 -- {comm : ∀ m n,   Commute (f.comp (inl M N) m) (f.comp (inr M N) n)}  :
-    (f.comp (inl M N)).noncommCoprod (f.comp (inr M N)) (noncommCoprod.commute f) = f := 
+    (f.comp (inl M N)).noncommCoprod (f.comp (inr M N)) (noncommCoprod.commute f) = f :=
   ext fun x => by simp [coprod_apply, inl_apply, inr_apply, ← map_mul]
 
 @[to_additive (attr := simp)]
 theorem noncommCoprod_inl_inr {M N : Type*} [Monoid M] [Monoid N]:
     (inl M N).noncommCoprod (inr M N) (inl_inr_commute (M := M) (N := N)) = id (M × N) := by
-  convert noncommCoprod_unique _ 
+  convert noncommCoprod_unique _
   simp only [id_comp]
   simp only [id_comp]
 
 @[to_additive]
 theorem comp_noncommCoprod {Q : Type*} [Monoid Q] (h : P →* Q) :
-    h.comp (f.noncommCoprod g comm) = 
+    h.comp (f.noncommCoprod g comm) =
       (h.comp f).noncommCoprod (h.comp g) (fun m n ↦ by
         simp only [coe_comp, Function.comp_apply]
         exact Commute.map (comm m n) h) :=
