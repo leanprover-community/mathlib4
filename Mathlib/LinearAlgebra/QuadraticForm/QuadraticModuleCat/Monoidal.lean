@@ -44,14 +44,12 @@ noncomputable abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X
 @[simps! form]
 abbrev tensorUnit : QuadraticModuleCat.{u} R := of (sq (R := R))
 
-set_option maxHeartbeats 3200000 in
-
 /-- Auxiliary definition used to fight a tmieout when building
 `QuadraticModuleCat.instMonoidalCategory`. -/
 noncomputable abbrev associator (X Y Z : QuadraticModuleCat.{u} R) :
     tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) := by
   refine ofIso ?_
-  dsimp [tensorObj, of, instModuleCarrierToRingToModuleCatToSemiringToCommSemiringToAddCommMonoidInstAddCommGroupCarrierToRingToModuleCat]
+  dsimp [tensorObj, of]
   exact tensorAssoc X.form Y.form Z.form
 
 open MonoidalCategory
@@ -84,8 +82,8 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
     (associator := associator)
     (associator_eq := fun X Y Z => by
       dsimp only [forget₂_obj, forget₂_map_associator_hom]
-      simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom, Iso.refl_hom,
-        MonoidalCategory.tensor_id]
+      simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
+        Iso.refl_hom, MonoidalCategory.tensor_id]
       erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.comp_id]
       rfl)
     (leftUnitor := fun X => ofIso (tensorLId X.form))
