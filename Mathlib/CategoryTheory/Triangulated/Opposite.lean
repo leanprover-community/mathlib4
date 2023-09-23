@@ -376,10 +376,11 @@ noncomputable def contractibleTriangleIso (X : Cᵒᵖ) :
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
     { hom := 0
       inv := 0
-      inv_hom_id := IsZero.eq_of_tgt (by
+      inv_hom_id := (by
+        apply IsZero.eq_of_tgt
         rw [IsZero.iff_id_eq_zero]
         change (𝟙 ((0 : C)⟦(-1 : ℤ)⟧)).op = 0
-        rw [← Functor.map_id, id_zero, Functor.map_zero, op_zero]) _ _ }
+        rw [← Functor.map_id, id_zero, Functor.map_zero, op_zero]) }
     (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
 lemma contractible_distinguished (X : Cᵒᵖ) :
@@ -486,7 +487,8 @@ lemma unop_distinguished (T : Triangle Cᵒᵖ) (hT : T ∈ distTriang Cᵒᵖ) 
 
 namespace Opposite
 
-/-scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ := by
+set_option maxHeartbeats 400000 in
+scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ := by
   have : ∀ ⦃X₁ X₂ X₃ : C⦄ (u₁₂ : X₁ ⟶ X₂) (u₂₃ : X₂ ⟶ X₃),
     ∃ (Z₁₂ Z₂₃ Z₁₃ : C)
       (v₁₂ : Z₁₂ ⟶ X₁) (w₁₂ : X₂ ⟶ Z₁₂⟦(1 : ℤ)⟧) (h₁₂ : Triangle.mk v₁₂ u₁₂ w₁₂ ∈ distTriang C)
@@ -577,8 +579,31 @@ namespace Opposite
             have eq := (shiftFunctorComm Cᵒᵖ 1 (-1)).hom.naturality w₁₂.op
             dsimp at eq
             rw [reassoc_of% eq]
-            -- shiftFUnctorComm _ a b when a + b = 0... ?
-            sorry }⟩-/
+            rw [shiftFunctor_op_map _ _ (neg_add_self 1) w₁₂.op]
+            simp only [← Functor.map_comp_assoc, ← Functor.map_comp, assoc]
+            erw [Iso.inv_hom_id_app_assoc]
+            simp only [Functor.op_obj, Opposite.unop_op, Opposite.op_unop, Quiver.Hom.unop_op, Functor.map_comp, ← assoc]
+            congr 2
+            simp only [assoc]
+            rw [shiftFunctorComm_hom_app_of_add_eq_zero _ _ (add_neg_self 1)]
+            simp only [Functor.comp_obj, Functor.id_obj, assoc]
+            rw [shiftFunctorCompIsoId_op_hom_app]
+            rw [shiftFunctorCompIsoId_op_inv_app]
+            simp only [shiftFunctor_op_map _ _ (neg_add_self 1)]
+            simp only [shiftFunctor_op_map _ _ (add_neg_self 1)]
+            simp
+            rw [opShiftFunctorEquivalence_counitIso_inv_app _ _ _ (add_neg_self 1)]
+            rw [opShiftFunctorEquivalence_counitIso_inv_app _ _ _ (add_neg_self 1)]
+            simp only [Functor.id_obj, Functor.comp_obj, unop_comp, Opposite.unop_op, Quiver.Hom.unop_op,
+              Functor.map_comp, op_comp, assoc]
+            simp only [← op_comp, ← op_comp_assoc, assoc, ← Functor.map_comp, ← Functor.map_comp_assoc,
+              ← unop_comp, ← unop_comp_assoc]
+            rw [Iso.inv_hom_id_app]
+            rw [Iso.inv_hom_id_app]
+            simp only [Functor.op_obj, Opposite.unop_op, unop_id, Functor.map_id, id_comp, op_comp, assoc]
+            simp only [← assoc];congr 1; simp only [assoc]
+            rw [shift_shiftFunctorCompIsoId_add_neg_self_hom_app]
+            simp only [← op_comp_assoc, ← op_comp, assoc, Iso.inv_hom_id_app, Functor.id_obj, comp_id] }⟩
 
 end Opposite
 

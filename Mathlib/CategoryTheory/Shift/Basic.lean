@@ -680,6 +680,24 @@ lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m�
       (m₁ + m₂) (m₂ + m₃) (m₁ + (m₂ + m₃)) rfl rfl (add_assoc _ _ _) X]
 #align category_theory.shift_functor_comm_hom_app_comp_shift_shift_functor_add_hom_app CategoryTheory.shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app
 
+lemma shiftFunctorComm_hom_app_of_add_eq_zero (m n : A) (hmn : m + n = 0) (X : C) :
+    (shiftFunctorComm C m n).hom.app X =
+      (shiftFunctorCompIsoId C m n hmn).hom.app X ≫
+        (shiftFunctorCompIsoId C n m (by rw [add_comm, hmn])).inv.app X := by
+  dsimp only [shiftFunctorCompIsoId]
+  simp only [Functor.comp_obj, shiftFunctorComm_eq C m n 0 hmn, Iso.trans_hom,
+    Iso.symm_hom, NatTrans.comp_app, Functor.id_obj, Iso.trans_inv, Iso.symm_inv,
+    Category.assoc, Iso.hom_inv_id_app_assoc]
+
+lemma shiftFunctorComm_inv_app_of_add_eq_zero (m n : A) (hmn : m + n = 0) (X : C) :
+    (shiftFunctorComm C m n).inv.app X =
+      (shiftFunctorCompIsoId C n m (by rw [add_comm, hmn])).hom.app X ≫
+      (shiftFunctorCompIsoId C m n hmn).inv.app X := by
+  dsimp only [shiftFunctorCompIsoId]
+  simp only [Functor.comp_obj, shiftFunctorComm_eq C m n 0 hmn, Iso.trans_inv,
+    Iso.symm_inv, NatTrans.comp_app, Functor.id_obj, Iso.trans_hom, Iso.symm_hom,
+    Category.assoc, Iso.hom_inv_id_app_assoc]
+
 end AddCommMonoid
 
 variable {D : Type*} [Category D] [AddMonoid A] [HasShift D A]
