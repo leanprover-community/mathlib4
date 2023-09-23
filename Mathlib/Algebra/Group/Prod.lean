@@ -21,7 +21,7 @@ trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
 * `inl M N : M →* M × N`, `inr M N : N →* M × N`: inclusions of first/second monoid
   into the product;
 * `f.prod g` : `M →* N × P`: sends `x` to `(f x, g x)`;
-* (when `P` is commutative) `f.coprod g : M × N →* P` sends `(x, y)` to `f x * g y`, 
+* (when `P` is commutative) `f.coprod g : M × N →* P` sends `(x, y)` to `f x * g y`,
 and `comm` says that the elements in the ranges of `f` and `g` commute pairwise,
 `f.noncommCoprod g comm` is the analogous `M × N →* P`.
 * `f.prodMap g : M × N → M' × N'`: `prod.map f g` as a `MonoidHom`,
