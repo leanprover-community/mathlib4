@@ -121,7 +121,7 @@ scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
 
 @[simp]
 theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
-  (F ⋙ G).map f = G.map (F.map f) := rfl
+    (F ⋙ G).map f = G.map (F.map f) := rfl
 #align category_theory.functor.comp_map CategoryTheory.Functor.comp_map
 
 -- These are not simp lemmas because rewriting along equalities between functors

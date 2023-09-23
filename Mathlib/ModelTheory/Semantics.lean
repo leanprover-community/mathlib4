@@ -353,9 +353,9 @@ theorem realize_iff : (φ.iff ψ).Realize v xs ↔ (φ.Realize v xs ↔ ψ.Reali
 #align first_order.language.bounded_formula.realize_iff FirstOrder.Language.BoundedFormula.realize_iff
 
 theorem realize_castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} {φ : L.BoundedFormula α m}
-    {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ castIso h) := by
+    {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ cast h) := by
   subst h
-  simp only [castLE_rfl, castIso_refl, OrderIso.coe_refl, Function.comp.right_id]
+  simp only [castLE_rfl, cast_refl, OrderIso.coe_refl, Function.comp.right_id]
 #align first_order.language.bounded_formula.realize_cast_le_of_eq FirstOrder.Language.BoundedFormula.realize_castLE_of_eq
 
 theorem realize_mapTermRel_id [L'.Structure M]
@@ -419,7 +419,7 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
       by_cases h : k < m
       · rw [if_pos h]
         refine' (congr rfl (ext _)).trans (snoc_last _ _)
-        simp only [coe_orderIso_apply, coe_castAdd, val_last, self_eq_add_right]
+        simp only [coe_cast, coe_castAdd, val_last, self_eq_add_right]
         refine'
           le_antisymm (le_of_add_le_add_left ((hmn.trans (Nat.succ_le_of_lt h)).trans _)) n'.zero_le
         rw [add_zero]
@@ -428,7 +428,7 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
         simp
     · simp only [Function.comp_apply, Fin.snoc_castSucc]
       refine' (congr rfl (ext _)).trans (snoc_castSucc _ _ _)
-      simp only [coe_castSucc, coe_orderIso_apply]
+      simp only [coe_castSucc, coe_cast]
       split_ifs <;> simp
 #align first_order.language.bounded_formula.realize_lift_at FirstOrder.Language.BoundedFormula.realize_liftAt
 
@@ -447,6 +447,7 @@ theorem realize_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : α �
   rw [if_pos i.is_lt]
 #align first_order.language.bounded_formula.realize_lift_at_one_self FirstOrder.Language.BoundedFormula.realize_liftAt_one_self
 
+@[simp]
 theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : β → M} {xs : Fin n → M} :
     (φ.subst tf).Realize v xs ↔ φ.Realize (fun a => (tf a).realize v) xs :=
   realize_mapTermRel_id

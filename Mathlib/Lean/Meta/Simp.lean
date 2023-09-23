@@ -56,6 +56,18 @@ def mkEqSymm (e : Expr) (r : Simp.Result) : MetaM Simp.Result :=
 def mkCast (r : Simp.Result) (e : Expr) : MetaM Expr := do
   mkAppM ``cast #[← r.getProof, e]
 
+/--
+Constructs a proof that the original expression is true
+given a simp result which simplifies the target to `True`.
+-/
+def Result.ofTrue (r : Simp.Result) : MetaM (Option Expr) :=
+  if r.expr.isConstOf ``True then
+    some <$> match r.proof? with
+    | some proof => mkOfEqTrue proof
+    | none => pure (mkConst ``True.intro)
+  else
+    pure none
+
 /-- Return all propositions in the local context. -/
 def getPropHyps : MetaM (Array FVarId) := do
   let mut result := #[]
@@ -110,7 +122,7 @@ lemmas.
 Remark: either the length of the arrays is the same,
 or the length of the first one is 0 and the length of the second one is 1. -/
 def mkSimpTheoremsFromConst' (declName : Name) (post : Bool) (inv : Bool) (prio : Nat) :
-  MetaM (Array Name × Array SimpTheorem) := do
+    MetaM (Array Name × Array SimpTheorem) := do
   let cinfo ← getConstInfo declName
   let val := mkConst declName (cinfo.levelParams.map mkLevelParam)
   withReducible do

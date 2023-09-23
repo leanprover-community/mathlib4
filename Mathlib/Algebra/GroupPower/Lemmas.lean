@@ -9,6 +9,7 @@ import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Algebra.Group.Opposite
 
 #align_import algebra.group_power.lemmas from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
@@ -1129,7 +1130,7 @@ theorem cast_int_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b : R) :
 
 @[simp]
 theorem cast_int_mul_left (h : Commute a b) (m : ℤ) :
-   Commute ((m : R) * a) b :=
+    Commute ((m : R) * a) b :=
   SemiconjBy.cast_int_mul_left h m
 #align commute.cast_int_mul_left Commute.cast_int_mul_left
 
@@ -1208,14 +1209,13 @@ namespace Units
 variable [Monoid M]
 
 theorem conj_pow (u : Mˣ) (x : M) (n : ℕ) :
-      ((↑u : M) * x * (↑u⁻¹ : M)) ^ n =
-      (u : M) * x ^ n * (↑u⁻¹ : M) :=
+    ((↑u : M) * x * (↑u⁻¹ : M)) ^ n = (u : M) * x ^ n * (↑u⁻¹ : M) :=
   (divp_eq_iff_mul_eq.2
   ((u.mk_semiconjBy x).pow_right n).eq.symm).symm
 #align units.conj_pow Units.conj_pow
 
 theorem conj_pow' (u : Mˣ) (x : M) (n : ℕ) :
-  ((↑u⁻¹ : M) * x * (u : M)) ^ n = (↑u⁻¹ : M) * x ^ n * (u : M) :=
+    ((↑u⁻¹ : M) * x * (u : M)) ^ n = (↑u⁻¹ : M) * x ^ n * (u : M) :=
   u⁻¹.conj_pow x n
 #align units.conj_pow' Units.conj_pow'
 

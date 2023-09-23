@@ -161,7 +161,7 @@ theorem IsOpen.union (h₁ : IsOpen s₁) (h₂ : IsOpen s₂) : IsOpen (s₁ �
 #align is_open_empty isOpen_empty
 
 theorem Set.Finite.isOpen_sInter {s : Set (Set α)} (hs : s.Finite) :
-  (∀ t ∈ s, IsOpen t) → IsOpen (⋂₀ s) :=
+    (∀ t ∈ s, IsOpen t) → IsOpen (⋂₀ s) :=
   Finite.induction_on hs (fun _ => by rw [sInter_empty]; exact isOpen_univ) fun _ _ ih h => by
     simp only [sInter_insert, ball_insert_iff] at h ⊢
     exact h.1.inter (ih h.2)
@@ -174,7 +174,7 @@ theorem Set.Finite.isOpen_biInter {s : Set β} {f : β → Set α} (hs : s.Finit
 #align is_open_bInter Set.Finite.isOpen_biInter
 
 theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set α} (h : ∀ i, IsOpen (s i)) :
-  IsOpen (⋂ i, s i) :=
+    IsOpen (⋂ i, s i) :=
   (finite_range _).isOpen_sInter  (forall_range_iff.2 h)
 #align is_open_Inter isOpen_iInter_of_finite
 
@@ -326,6 +326,9 @@ theorem subset_interior_iff {s t : Set α} : t ⊆ interior s ↔ ∃ U, IsOpen 
   ⟨fun h => ⟨interior s, isOpen_interior, h, interior_subset⟩, fun ⟨_U, hU, htU, hUs⟩ =>
     htU.trans (interior_maximal hUs hU)⟩
 #align subset_interior_iff subset_interior_iff
+
+lemma interior_subset_iff : interior s ⊆ t ↔ ∀ U, IsOpen U → U ⊆ s → U ⊆ t := by
+  simp [interior]
 
 @[mono]
 theorem interior_mono {s t : Set α} (h : s ⊆ t) : interior s ⊆ interior t :=

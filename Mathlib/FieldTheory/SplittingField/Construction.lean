@@ -100,7 +100,7 @@ theorem natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegr
 #align polynomial.nat_degree_remove_factor Polynomial.natDegree_removeFactor
 
 theorem natDegree_removeFactor' {f : K[X]} {n : ℕ} (hfn : f.natDegree = n + 1) :
-  f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
+    f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
 #align polynomial.nat_degree_remove_factor' Polynomial.natDegree_removeFactor'
 
 /-- Auxiliary construction to a splitting field of a polynomial, which removes
@@ -194,14 +194,13 @@ theorem adjoin_rootSet (n : ℕ) :
   Nat.recOn (motive := fun n =>
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n),
-        Algebra.adjoin K
-            (↑(f.map <| algebraMap K <| SplittingFieldAux n f).roots.toFinset :
-              Set (SplittingFieldAux n f)) = ⊤)
+        Algebra.adjoin K (f.rootSet (SplittingFieldAux n f)) = ⊤)
     n (fun {K} _ f _hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
     fun n ih {K} _ f hfn => by
     have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn; cases hfn
     have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf; exact hndf rfl
     have hmf0 : map (algebraMap K (SplittingFieldAux n.succ f)) f ≠ 0 := map_ne_zero hfn0
+    rw [rootSet_def, aroots_def]
     rw [algebraMap_succ, ←map_map, ←X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
     rw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
       Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton,
@@ -212,9 +211,7 @@ theorem adjoin_rootSet (n : ℕ) :
         (SplittingFieldAux n f.removeFactor)]` -/
     have := IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
         (SplittingFieldAux n f.removeFactor)
-        (↑(f.removeFactor.map <| algebraMap (AdjoinRoot f.factor) <|
-          SplittingFieldAux n f.removeFactor).roots.toFinset :
-              Set (SplittingFieldAux n f.removeFactor))
+        (f.removeFactor.rootSet (SplittingFieldAux n f.removeFactor))
     refine this.trans ?_
     rw [ih _ (natDegree_removeFactor' hfn), Subalgebra.restrictScalars_top]
 #align polynomial.splitting_field_aux.adjoin_root_set Polynomial.SplittingFieldAux.adjoin_rootSet
