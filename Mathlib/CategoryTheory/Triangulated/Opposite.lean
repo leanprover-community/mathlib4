@@ -45,6 +45,23 @@ open Category Limits Preadditive ZeroObject
 
 variable (C : Type*) [Category C]
 
+section
+
+-- trying to improve automation in this file
+
+variable {C}
+variable {D : Type*} [Category D] {F G : C ⥤ Dᵒᵖ} (e : F ≅ G) (X : C)
+
+@[reassoc (attr := simp)]
+lemma Iso.unop_hom_inv_id_app : (e.hom.app X).unop ≫ (e.inv.app X).unop = 𝟙 _ := by
+  rw [← unop_comp, inv_hom_id_app, unop_id]
+
+@[reassoc (attr := simp)]
+lemma Iso.unop_inv_hom_id_app : (e.inv.app X).unop ≫ (e.hom.app X).unop = 𝟙 _ := by
+  rw [← unop_comp, hom_inv_id_app, unop_id]
+
+end
+
 namespace Pretriangulated
 
 variable [HasShift C ℤ]
@@ -149,6 +166,16 @@ noncomputable def opShiftFunctorEquivalence (n : ℤ) : Cᵒᵖ ≌ Cᵒᵖ wher
     change (shiftFunctorCompIsoId C n (-n) (add_neg_self n)).inv.app (X.unop⟦-n⟧) ≫
       ((shiftFunctorCompIsoId C (-n) n (neg_add_self n)).hom.app X.unop)⟦-n⟧' = 𝟙 _
     rw [shift_shiftFunctorCompIsoId_neg_add_self_hom_app n X.unop, Iso.inv_hom_id_app])
+
+/-! The naturality of the unit and counit isomorphisms are restated in the following
+lemmas so as to mitigate the need of `erw`. -/
+
+@[reassoc (attr := simp)]
+lemma opShiftFunctorEquivalence_unitIso_inv_naturality (n : ℤ) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    ((shiftFunctor C n).map ((shiftFunctor Cᵒᵖ n).map f).unop).op ≫
+        (opShiftFunctorEquivalence C n).unitIso.inv.app Y =
+      (opShiftFunctorEquivalence C n).unitIso.inv.app X ≫ f :=
+  (opShiftFunctorEquivalence C n).unitIso.inv.naturality f
 
 variable {C}
 
@@ -300,17 +327,18 @@ lemma isomorphic_distinguished (T₁ : Triangle Cᵒᵖ)
   exact Pretriangulated.isomorphic_distinguished _ hT₁ _
     ((triangleOpEquivalence C).inverse.mapIso e).unop.symm
 
+/-- Up to rotation, the contractible triangle `X ⟶ X ⟶ 0 ⟶ X⟦1⟧` for `X : Cᵒᵖ` corresponds
+to the contractible triangle for `X.unop` in `C`. -/
+@[simps!]
 noncomputable def contractibleTriangleIso (X : Cᵒᵖ) :
     contractibleTriangle X ≅ (triangleOpEquivalence C).functor.obj
       (Opposite.op (contractibleTriangle X.unop).invRotate) :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-    { hom := 0
-      inv := 0
-      inv_hom_id := (by
-        apply IsZero.eq_of_tgt
-        rw [IsZero.iff_id_eq_zero]
-        change (𝟙 ((0 : C)⟦(-1 : ℤ)⟧)).op = 0
-        rw [← Functor.map_id, id_zero, Functor.map_zero, op_zero]) }
+    (IsZero.iso (isZero_zero _) (by
+      dsimp
+      rw [IsZero.iff_id_eq_zero]
+      change (𝟙 ((0 : C)⟦(-1 : ℤ)⟧)).op = 0
+      rw [← Functor.map_id, id_zero, Functor.map_zero, op_zero]))
     (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
 lemma contractible_distinguished (X : Cᵒᵖ) :
@@ -319,32 +347,20 @@ lemma contractible_distinguished (X : Cᵒᵖ) :
   exact ⟨_, inv_rot_of_dist_triangle _ (Pretriangulated.contractible_distinguished X.unop),
     ⟨contractibleTriangleIso X⟩⟩
 
-noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnop
-    (T : Triangle Cᵒᵖ) :
+/-- Isomorphism expressing a compatibility of the equivalence `triangleOpEquivalence C`
+with the rotation of triangles. -/
+noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnopIso (T : Triangle Cᵒᵖ) :
     Triangle.rotate ((triangleOpEquivalence C).inverse.obj (Triangle.rotate T)).unop ≅
-      ((triangleOpEquivalence C).inverse.obj T).unop := by
-  refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-      (-((opShiftFunctorEquivalence C 1).unitIso.app T.obj₁).unop) (by simp) _ _
-  · dsimp
-    rw [comp_neg]
-    rw [id_comp]
-    erw [Functor.map_neg]
-    dsimp
-    rw [comp_neg, neg_comp, neg_neg]
-    apply Quiver.Hom.op_inj
-    simp only [op_comp, assoc]
-    erw [(opShiftFunctorEquivalence C 1).unitIso.inv.naturality T.mor₁]
-    dsimp
-    rw [Iso.hom_inv_id_app_assoc]
-  · dsimp
-    simp only [Functor.map_id, comp_id, neg_comp, neg_inj, ← unop_comp_assoc,
-      Iso.inv_hom_id_app, Functor.comp_obj, Functor.op_obj, unop_id, id_comp]
+      ((triangleOpEquivalence C).inverse.obj T).unop :=
+  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+      (-((opShiftFunctorEquivalence C 1).unitIso.app T.obj₁).unop) (by simp)
+        (Quiver.Hom.op_inj (by aesop_cat)) (by aesop_cat)
 
 lemma rotate_distinguished_triangle (T : Triangle Cᵒᵖ) :
     T ∈ distinguishedTriangles C ↔ T.rotate ∈ distinguishedTriangles C := by
   simp only [mem_distinguishedTriangles_iff, Pretriangulated.rotate_distinguished_triangle
     ((triangleOpEquivalence C).inverse.obj (T.rotate)).unop]
-  exact distinguished_iff_of_iso (rotateTriangleOpEquivalenceInverseObjRotateUnop T).symm
+  exact distinguished_iff_of_iso (rotateTriangleOpEquivalenceInverseObjRotateUnopIso T).symm
 
 lemma distinguished_cocone_triangle {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     ∃ (Z : Cᵒᵖ) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
