@@ -25,7 +25,7 @@ this is the usual left or right quotient of a group by a subgroup.
 ## Main definitions
 
 * `rel`: The double coset relation defined by two subgroups `H K` of `G`.
-* `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, ``H \ G / K`.
+* `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
 -- porting note: removed import
 -- import Mathlib.Tactic.Group

@@ -1224,7 +1224,7 @@ end DeleteFar
 /-! ## Map and comap -/
 
 
-/-- Given an injective function, there is an covariant induced map on graphs by pushing forward
+/-- Given an injective function, there is a covariant induced map on graphs by pushing forward
 the adjacency relation.
 
 This is injective (see `SimpleGraph.map_injective`). -/
@@ -1656,7 +1656,7 @@ abbrev Embedding :=
   RelEmbedding G.Adj G'.Adj
 #align simple_graph.embedding SimpleGraph.Embedding
 
-/-- A graph isomorphism is an bijective map on vertex sets that respects adjacency relations.
+/-- A graph isomorphism is a bijective map on vertex sets that respects adjacency relations.
 
 The notation `G ≃g G'` represents the type of graph isomorphisms.
 -/

@@ -47,7 +47,7 @@ The lemmas listed here don't show all hypotheses. Refer to the actual lemmas for
 Linearity:
 - `setToFun_zero_left : setToFun μ 0 hT f = 0`
 - `setToFun_add_left : setToFun μ (T + T') _ f = setToFun μ T hT f + setToFun μ T' hT' f`
-- `setToFun_smul_left : setToFun μ (λ s, c • (T s)) (hT.smul c) f = c • setToFun μ T hT f`
+- `setToFun_smul_left : setToFun μ (fun s ↦ c • (T s)) (hT.smul c) f = c • setToFun μ T hT f`
 - `setToFun_zero : setToFun μ T hT (0 : α → E) = 0`
 - `setToFun_neg : setToFun μ T hT (-f) = - setToFun μ T hT f`
 If `f` and `g` are integrable:

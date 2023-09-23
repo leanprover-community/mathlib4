@@ -272,7 +272,7 @@ def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂
   map_zero' := rfl
 #align linear_map.eval_add_monoid_hom LinearMap.evalAddMonoidHom
 
-/-- `linear_map.toAddMonoidHom` promoted to an `toAddMonoidHom` -/
+/-- `linear_map.toAddMonoidHom` promoted to a `toAddMonoidHom` -/
 def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂
     where
   toFun := toAddMonoidHom
@@ -1080,7 +1080,7 @@ theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h : a ≠ 0
     (by rw [map_le_iff_le_comap, ← comap_smul f _ a h, ← map_le_iff_le_comap])
 #align submodule.map_smul Submodule.map_smul
 
--- Porting note: `⨅ h : a ≠ 0, p.comap f` gets a `unusedVariables` lint, but
+-- Porting note: `⨅ h : a ≠ 0, p.comap f` gets an `unusedVariables` lint, but
 -- `⨅ _ : a ≠ 0, p.comap f` is ill-formed. So, this is written `iInf (fun _ : a ≠ 0 => p.comap f)`.
 theorem comap_smul' (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) :
     p.comap (a • f) = iInf (fun _ : a ≠ 0 => p.comap f) := by
@@ -2168,7 +2168,7 @@ theorem ker_comp (l : M →ₛₗ[σ₁₂] M₂) :
 
 variable {f g}
 
-/-- An linear map `f : M →ₗ[R] M₂` with a left-inverse `g : M₂ →ₗ[R] M` defines a linear
+/-- A linear map `f : M →ₗ[R] M₂` with a left-inverse `g : M₂ →ₗ[R] M` defines a linear
 equivalence between `M` and `f.range`.
 
 This is a computable alternative to `LinearEquiv.ofInjective`, and a bidirectional version of

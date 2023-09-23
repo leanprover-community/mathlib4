@@ -87,12 +87,13 @@ theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R M a)
 
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
 bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
-@[simps!]
+@[simps]
 nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
   { curry (f.restrictScalars R) with
     toFun := curry (f.restrictScalars R)
     map_smul' := fun c x => LinearMap.ext fun y => f.map_smul c (x ⊗ₜ y) }
 #align tensor_product.algebra_tensor_module.curry TensorProduct.AlgebraTensorModule.curry
+#align tensor_product.algebra_tensor_module.curry_apply TensorProduct.AlgebraTensorModule.curry_apply
 
 theorem restrictScalars_curry (f : M ⊗[R] N →ₗ[A] P) :
     restrictScalars R (curry f) = TensorProduct.curry (f.restrictScalars R) :=
@@ -195,10 +196,11 @@ def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[A] M ⊗[R] N →ₗ[A] P :=
 /-- Heterobasic version of `TensorProduct.mk`:
 
 The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
-@[simps!]
+@[simps! apply]
 nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
   { mk R M N with map_smul' := fun _ _ => rfl }
 #align tensor_product.algebra_tensor_module.mk TensorProduct.AlgebraTensorModule.mk
+#align tensor_product.algebra_tensor_module.mk_apply TensorProduct.AlgebraTensorModule.mk_apply
 
 attribute [local ext high] TensorProduct.ext
 

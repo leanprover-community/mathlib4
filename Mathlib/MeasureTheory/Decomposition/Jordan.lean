@@ -440,7 +440,7 @@ namespace SignedMeasure
 open JordanDecomposition
 
 /-- `MeasureTheory.SignedMeasure.toJordanDecomposition` and
-`MeasureTheory.JordanDecomposition.toSignedMeasure` form a `Equiv`. -/
+`MeasureTheory.JordanDecomposition.toSignedMeasure` form an `Equiv`. -/
 @[simps apply symm_apply]
 def toJordanDecompositionEquiv (α : Type _) [MeasurableSpace α] :
     SignedMeasure α ≃ JordanDecomposition α where

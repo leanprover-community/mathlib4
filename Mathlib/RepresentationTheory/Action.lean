@@ -119,7 +119,7 @@ namespace Hom
 attribute [reassoc] comm
 attribute [local simp] comm comm_assoc
 
-/-- The identity morphism on a `Action V G`. -/
+/-- The identity morphism on an `Action V G`. -/
 @[simps]
 def id (M : Action V G) : Action.Hom M M where hom := 𝟙 M.V
 set_option linter.uppercaseLean3 false in

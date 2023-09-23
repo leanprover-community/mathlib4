@@ -378,7 +378,7 @@ open AlgebraicTopology CategoryTheory Limits
 
 /-- If `C` is a preadditive category and `X` is an augmented simplicial object
 in `C` that has an extra degeneracy, then the augmentation on the alternating
-face map complex of `X` is an homotopy equivalence. -/
+face map complex of `X` is a homotopy equivalence. -/
 noncomputable def homotopyEquiv {C : Type _} [Category C] [Preadditive C] [HasZeroObject C]
     {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X) :
     HomotopyEquiv (AlgebraicTopology.AlternatingFaceMapComplex.obj (drop.obj X))

@@ -43,7 +43,7 @@ whereas `MvPolynomial.map` is the "map" operation for the other pair.
 
 ## Implementation notes
 
-We add an `LawfulMonad` instance for the (`bind₁`, `join₁`) pair.
+We add a `LawfulMonad` instance for the (`bind₁`, `join₁`) pair.
 The second pair cannot be instantiated as a `Monad`,
 since it is not a monad in `Type` but in `CommRing` (or rather `CommSemiRing`).
 

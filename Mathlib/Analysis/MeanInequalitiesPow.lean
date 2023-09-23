@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 
 ! This file was ported from Lean 3 source module analysis.mean_inequalities_pow
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
+! leanprover-community/mathlib commit ccdbfb6e5614667af5aa3ab2d50885e0ef44a46f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -160,7 +160,7 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0) {p : ℝ} (hp : 1 �
   · simp only [one_div, inv_mul_cancel_left₀, Ne.def, mul_eq_zero, two_ne_zero, one_ne_zero,
       not_false_iff]
   · have A : p - 1 ≠ 0 := ne_of_gt (sub_pos.2 h'p)
-    simp only [mul_rpow, rpow_sub' _ A, _root_.div_eq_inv_mul, rpow_one, mul_one]
+    simp only [mul_rpow, rpow_sub' _ A, div_eq_inv_mul, rpow_one, mul_one]
     ring
 #align nnreal.rpow_add_le_mul_rpow_add_rpow NNReal.rpow_add_le_mul_rpow_add_rpow
 
@@ -207,7 +207,7 @@ theorem rpow_add_rpow_le_add {p : ℝ} (a b : ℝ≥0) (hp1 : 1 ≤ p) :
 theorem rpow_add_rpow_le {p q : ℝ} (a b : ℝ≥0) (hp_pos : 0 < p) (hpq : p ≤ q) :
     (a ^ q + b ^ q) ^ (1 / q) ≤ (a ^ p + b ^ p) ^ (1 / p) := by
   have h_rpow : ∀ a : ℝ≥0, a ^ q = (a ^ p) ^ (q / p) := fun a => by
-    rw [← NNReal.rpow_mul, _root_.div_eq_inv_mul, ← mul_assoc, _root_.mul_inv_cancel hp_pos.ne.symm,
+    rw [← NNReal.rpow_mul, div_eq_inv_mul, ← mul_assoc, _root_.mul_inv_cancel hp_pos.ne.symm,
       one_mul]
   have h_rpow_add_rpow_le_add :
     ((a ^ p) ^ (q / p) + (b ^ p) ^ (q / p)) ^ (1 / (q / p)) ≤ a ^ p + b ^ p := by
@@ -301,7 +301,7 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 1
   · simp [← mul_assoc, ENNReal.inv_mul_cancel two_ne_zero two_ne_top]
   · have _ : p - 1 ≠ 0 := ne_of_gt (sub_pos.2 h'p)
     simp only [mul_rpow_of_nonneg _ _ (zero_le_one.trans hp), rpow_sub _ _ two_ne_zero two_ne_top,
-      div_eq_inv_mul, rpow_one, mul_one]
+      ENNReal.div_eq_inv_mul, rpow_one, mul_one]
     ring
 #align ennreal.rpow_add_le_mul_rpow_add_rpow ENNReal.rpow_add_le_mul_rpow_add_rpow
 

@@ -431,7 +431,7 @@ theorem idZeroEquivIsoZero_apply_inv (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIso
   rfl
 #align category_theory.limits.id_zero_equiv_iso_zero_apply_inv CategoryTheory.Limits.idZeroEquivIsoZero_apply_inv
 
-/-- If `0 : X ⟶ Y` is an monomorphism, then `X ≅ 0`. -/
+/-- If `0 : X ⟶ Y` is a monomorphism, then `X ≅ 0`. -/
 @[simps]
 def isoZeroOfMonoZero {X Y : C} (h : Mono (0 : X ⟶ Y)) : X ≅ 0 where
   hom := 0

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module topology.algebra.monoid
-! leanprover-community/mathlib commit 6efec6bb9fcaed3cf1baaddb2eaadd8a2a06679c
+! leanprover-community/mathlib commit 1ac8d4304efba9d03fa720d06516fac845aa5353
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -341,7 +341,7 @@ homomorphisms that has a `MonoidHomClass` instance) to `M₁ → M₂`. -/
 @[to_additive (attr := simps (config := .asFn))
   "Construct a bundled additive monoid homomorphism `M₁ →+ M₂` from a function `f`
 and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another
-type of bundled homomorphisms that has a `add_monoid_hom_class` instance) to `M₁ → M₂`."]
+type of bundled homomorphisms that has an `AddMonoidHomClass` instance) to `M₁ → M₂`."]
 def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂
     where
@@ -503,7 +503,7 @@ theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :
 
 /-- Given a neighborhood `U` of `1` there is an open neighborhood `V` of `1`
 such that `VV ⊆ U`. -/
-@[to_additive "Given a open neighborhood `U` of `0` there is a open neighborhood `V` of `0`
+@[to_additive "Given an open neighborhood `U` of `0` there is an open neighborhood `V` of `0`
   such that `V + V ⊆ U`."]
 theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
     ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ V * V ⊆ U := by
@@ -870,26 +870,26 @@ namespace ContinuousMap
 variable [Mul X] [ContinuousMul X]
 
 /-- The continuous map `fun y => y * x` -/
-@[to_additive "The continuous map `fun y => y + x"]
+@[to_additive "The continuous map `fun y => y + x`"]
 protected def mulRight (x : X) : C(X, X) :=
   mk _ (continuous_mul_right x)
 #align continuous_map.mul_right ContinuousMap.mulRight
 #align continuous_map.add_right ContinuousMap.addRight
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
   rfl
 #align continuous_map.coe_mul_right ContinuousMap.coe_mulRight
 #align continuous_map.coe_add_right ContinuousMap.coe_addRight
 
 /-- The continuous map `fun y => x * y` -/
-@[to_additive "The continuous map `fun y => x + y"]
+@[to_additive "The continuous map `fun y => x + y`"]
 protected def mulLeft (x : X) : C(X, X) :=
   mk _ (continuous_mul_left x)
 #align continuous_map.mul_left ContinuousMap.mulLeft
 #align continuous_map.add_left ContinuousMap.addLeft
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = fun y => x * y :=
   rfl
 #align continuous_map.coe_mul_left ContinuousMap.coe_mulLeft

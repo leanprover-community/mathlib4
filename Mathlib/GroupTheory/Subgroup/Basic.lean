@@ -196,7 +196,7 @@ theorem mul_mem_cancel_left {x y : G} (h : x ∈ H) : x * y ∈ H ↔ y ∈ H :=
 namespace SubgroupClass
 
 /-- A subgroup of a group inherits an inverse. -/
-@[to_additive "An additive subgroup of a `add_group` inherits an inverse."]
+@[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
 instance inv {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
   [SubgroupClass S G] {H : S} : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
@@ -204,7 +204,7 @@ instance inv {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
 #align add_subgroup_class.has_neg AddSubgroupClass.neg
 
 /-- A subgroup of a group inherits a division -/
-@[to_additive "An additive subgroup of an `add_group` inherits a subtraction."]
+@[to_additive "An additive subgroup of an `AddGroup` inherits a subtraction."]
 instance div {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
   [SubgroupClass S G] {H : S} : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
@@ -308,7 +308,7 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 #align add_subgroup_class.coe_zsmul AddSubgroupClass.coe_zsmul
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
-@[to_additive "The inclusion homomorphism from a additive subgroup `H` contained in `K` to `K`."]
+@[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : S} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _=> rfl
 #align subgroup_class.inclusion SubgroupClass.inclusion
@@ -664,7 +664,7 @@ instance one : One H :=
 #align add_subgroup.has_zero AddSubgroup.zero
 
 /-- A subgroup of a group inherits an inverse. -/
-@[to_additive "A `AddSubgroup` of a `AddGroup` inherits an inverse."]
+@[to_additive "An `AddSubgroup` of an `AddGroup` inherits an inverse."]
 instance inv : Inv H :=
   ⟨fun a => ⟨a⁻¹, H.inv_mem a.2⟩⟩
 #align subgroup.has_inv Subgroup.inv
@@ -804,7 +804,7 @@ theorem subtype_injective : Function.Injective (Subgroup.subtype H) :=
 #align add_subgroup.subtype_injective AddSubgroup.subtype_injective
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
-@[to_additive "The inclusion homomorphism from a additive subgroup `H` contained in `K` to `K`."]
+@[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
 #align subgroup.inclusion Subgroup.inclusion
@@ -850,7 +850,7 @@ def topEquiv : (⊤ : Subgroup G) ≃* G :=
 #align add_subgroup.top_equiv_symm_apply_coe AddSubgroup.topEquiv_symm_apply_coe
 #align add_subgroup.top_equiv_apply AddSubgroup.topEquiv_apply
 
-/-- The trivial subgroup `{1}` of an group `G`. -/
+/-- The trivial subgroup `{1}` of a group `G`. -/
 @[to_additive "The trivial `AddSubgroup` `{0}` of an `AddGroup` `G`."]
 instance : Bot (Subgroup G) :=
   ⟨{ (⊥ : Submonoid G) with inv_mem' := by simp}⟩
@@ -959,7 +959,7 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 #align add_subgroup.bot_or_exists_ne_zero AddSubgroup.bot_or_exists_ne_zero
 
 /-- The inf of two subgroups is their intersection. -/
-@[to_additive "The inf of two `add_subgroups`s is their intersection."]
+@[to_additive "The inf of two `AddSubgroup`s is their intersection."]
 instance : Inf (Subgroup G) :=
   ⟨fun H₁ H₂ =>
     { H₁.toSubmonoid ⊓ H₂.toSubmonoid with
@@ -1975,7 +1975,7 @@ namespace AddSubgroup
 
 variable (H : AddSubgroup A)
 
-/-- A add_subgroup is characteristic if it is fixed by all automorphisms.
+/-- An `AddSubgroup` is characteristic if it is fixed by all automorphisms.
   Several equivalent conditions are provided by lemmas of the form `Characteristic.iff...` -/
 structure Characteristic : Prop where
   /-- `H` is fixed by all automorphisms -/
@@ -3422,7 +3422,7 @@ def subgroupComap (f : G →* G') (H' : Subgroup G') : H'.comap f →* H' :=
 #align monoid_hom.subgroup_comap_apply_coe MonoidHom.subgroupComap_apply_coe
 
 /-- The `MonoidHom` from a subgroup to its image. -/
-@[to_additive (attr := simps!) "the `add_monoid_hom` from an additive subgroup to its image"]
+@[to_additive (attr := simps!) "the `AddMonoidHom` from an additive subgroup to its image"]
 def subgroupMap (f : G →* G') (H : Subgroup G) : H →* H.map f :=
   f.submonoidMap H.toSubmonoid
 #align monoid_hom.subgroup_map MonoidHom.subgroupMap

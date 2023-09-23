@@ -34,14 +34,14 @@ variable {α : Type u}
 /-- An ordered additive commutative group is an additive commutative group
 with a partial order in which addition is strictly monotone. -/
 class OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α where
-  /-- Addition is monotone in a ordered additive commutative group. -/
+  /-- Addition is monotone in an ordered additive commutative group. -/
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align ordered_add_comm_group OrderedAddCommGroup
 
-/-- An ordered commutative group is an commutative group
+/-- An ordered commutative group is a commutative group
 with a partial order in which multiplication is strictly monotone. -/
 class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
-  /-- Multiplication is monotone in a ordered commutative group. -/
+  /-- Multiplication is monotone in an ordered commutative group. -/
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 #align ordered_comm_group OrderedCommGroup
 
@@ -1090,7 +1090,7 @@ class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, Li
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
-  Instances should include number systems with an infinite element adjoined.` -/
+  Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommGroupWithTop (α : Type _) extends LinearOrderedAddCommMonoidWithTop α,
   SubNegMonoid α, Nontrivial α where
   protected neg_top : -(⊤ : α) = ⊤

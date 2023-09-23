@@ -36,7 +36,8 @@ variable (C : Type _) [Category C]
 -- local attribute [tidy] tactic.op_induction'
 -- A possible replacement would be:
 -- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
--- but it doesn't seem necessary here.
+-- but this would probably require https://github.com/JLimperg/aesop/issues/59
+-- In any case, it doesn't seem necessary here.
 
 namespace AlgebraicGeometry
 

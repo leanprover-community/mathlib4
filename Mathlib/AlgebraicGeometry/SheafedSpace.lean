@@ -21,24 +21,22 @@ We further describe how to apply functors and natural transformations to the val
 presheaves.
 -/
 
-
-universe v u
-
 open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
   CategoryTheory.Functor
 
-variable (C : Type u) [Category.{v} C]
+variable (C : Type _) [Category C]
 
 -- Porting note: removed
 -- local attribute [tidy] tactic.op_induction'
 -- as it isn't needed here. If it is useful elsewhere
 -- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
--- should suffice.
+-- should suffice, but may need
+-- https://github.com/JLimperg/aesop/issues/59
 
 namespace AlgebraicGeometry
 
 /-- A `SheafedSpace C` is a topological space equipped with a sheaf of `C`s. -/
-structure SheafedSpace extends PresheafedSpace.{_, _, v} C where
+structure SheafedSpace extends PresheafedSpace C where
   /-- A sheafed space is presheafed space which happens to be sheaf. -/
   IsSheaf : presheaf.IsSheaf
 set_option linter.uppercaseLean3 false in
@@ -54,14 +52,14 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.coe_carrier AlgebraicGeometry.SheafedSpace.coeCarrier
 
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
-def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat.{v}) :=
+def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.sheaf AlgebraicGeometry.SheafedSpace.sheaf
 
 -- Porting note : this is a syntactic tautology, so removed
 -- @[simp]
--- theorem as_coe (X : SheafedSpace.{v} C) : X.carrier = (X : TopCat.{v}) :=
+-- theorem as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
 --   rfl
 -- set_option linter.uppercaseLean3 false in
 #noalign algebraic_geometry.SheafedSpace.as_coe
@@ -71,12 +69,12 @@ set_option linter.uppercaseLean3 false in
 theorem mk_coe (carrier) (presheaf) (h) :
   (({ carrier
       presheaf
-      IsSheaf := h } : SheafedSpace.{v} C) : TopCat.{v}) = carrier :=
+      IsSheaf := h } : SheafedSpace C) : TopCat) = carrier :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.mk_coe AlgebraicGeometry.SheafedSpace.mk_coe
 
-instance (X : SheafedSpace.{v} C) : TopologicalSpace X :=
+instance (X : SheafedSpace C) : TopologicalSpace X :=
   X.carrier.str
 
 /-- The trivial `unit` valued sheaf on any topological space. -/
@@ -89,11 +87,11 @@ instance : Inhabited (SheafedSpace (Discrete Unit)) :=
   ⟨unit (TopCat.of PEmpty)⟩
 
 instance : Category (SheafedSpace C) :=
-  show Category (InducedCategory (PresheafedSpace.{_, _, v} C) SheafedSpace.toPresheafedSpace) by
+  show Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace) by
     infer_instance
 
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/
-def forgetToPresheafedSpace : SheafedSpace.{v} C ⥤ PresheafedSpace.{_, _, v} C :=
+def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
   inducedFunctor _
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.forget_to_PresheafedSpace AlgebraicGeometry.SheafedSpace.forgetToPresheafedSpace
@@ -105,7 +103,7 @@ instance forgetToPresheafedSpace_full : Full <| forgetToPresheafedSpace (C := C)
 -- Porting note : can't derive `Faithful` functor automatically
 instance forgetToPresheafedSpace_faithful : Faithful <| forgetToPresheafedSpace (C := C) where
 
-instance is_presheafedSpace_iso {X Y : SheafedSpace.{v} C} (f : X ⟶ Y) [IsIso f] :
+instance is_presheafedSpace_iso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     @IsIso (PresheafedSpace C) _ _ _ f :=
   SheafedSpace.forgetToPresheafedSpace.map_isIso f
 set_option linter.uppercaseLean3 false in
@@ -116,7 +114,7 @@ section
 attribute [local simp] id comp
 
 @[simp]
-theorem id_base (X : SheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat.{v}) :=
+theorem id_base (X : SheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.id_base AlgebraicGeometry.SheafedSpace.id_base
@@ -164,7 +162,7 @@ variable (C)
 
 /-- The forgetful functor from `SheafedSpace` to `Top`. -/
 def forget : SheafedSpace C ⥤ TopCat where
-  obj X := (X : TopCat.{v})
+  obj X := (X : TopCat)
   map {X Y} f := f.base
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.forget AlgebraicGeometry.SheafedSpace.forget
@@ -175,7 +173,7 @@ open TopCat.Presheaf
 
 /-- The restriction of a sheafed space along an open embedding into the space.
 -/
-def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) :
+def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : OpenEmbedding f) :
     SheafedSpace C :=
   { X.toPresheafedSpace.restrict h with IsSheaf := isSheaf_of_openEmbedding h X.IsSheaf }
 set_option linter.uppercaseLean3 false in

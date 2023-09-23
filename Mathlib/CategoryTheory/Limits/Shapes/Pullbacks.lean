@@ -255,7 +255,7 @@ theorem span_map_id {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (w : WalkingSpan) :
     (span f g).map (WalkingSpan.Hom.id w) = 𝟙 _ := rfl
 #align category_theory.limits.span_map_id CategoryTheory.Limits.span_map_id
 
-/-- Every diagram indexing an pullback is naturally isomorphic (actually, equal) to a `cospan` -/
+/-- Every diagram indexing a pullback is naturally isomorphic (actually, equal) to a `cospan` -/
 -- @[simps (config := { rhsMd := semireducible })]  Porting note: no semireducible
 @[simps!]
 def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map inr) :=

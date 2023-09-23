@@ -261,7 +261,7 @@ def preservesLimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesLimitsOfSize
   preservesLimitsOfShape {_J} _𝒥₁ := preservesLimitsOfShapeOfNatIso h
 #align category_theory.limits.preserves_limits_of_nat_iso CategoryTheory.Limits.preservesLimitsOfNatIso
 
-/-- Transfer preservation of limits along a equivalence in the shape. -/
+/-- Transfer preservation of limits along an equivalence in the shape. -/
 def preservesLimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J' F where
   preservesLimit {K} :=
@@ -324,7 +324,7 @@ def preservesColimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesColimitsOf
   preservesColimitsOfShape {_J} _𝒥₁ := preservesColimitsOfShapeOfNatIso h
 #align category_theory.limits.preserves_colimits_of_nat_iso CategoryTheory.Limits.preservesColimitsOfNatIso
 
-/-- Transfer preservation of colimits along a equivalence in the shape. -/
+/-- Transfer preservation of colimits along an equivalence in the shape. -/
 def preservesColimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesColimitsOfShape J F] : PreservesColimitsOfShape J' F where
   preservesColimit {K} :=
@@ -607,7 +607,7 @@ def reflectsLimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [ReflectsLimitsOfSize.{
   reflectsLimitsOfShape := reflectsLimitsOfShapeOfNatIso h
 #align category_theory.limits.reflects_limits_of_nat_iso CategoryTheory.Limits.reflectsLimitsOfNatIso
 
-/-- Transfer reflection of limits along a equivalence in the shape. -/
+/-- Transfer reflection of limits along an equivalence in the shape. -/
 def reflectsLimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [ReflectsLimitsOfShape J F] : ReflectsLimitsOfShape J' F where
   reflectsLimit {K} :=
@@ -717,7 +717,7 @@ def reflectsColimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [ReflectsColimitsOfSi
   reflectsColimitsOfShape := reflectsColimitsOfShapeOfNatIso h
 #align category_theory.limits.reflects_colimits_of_nat_iso CategoryTheory.Limits.reflectsColimitsOfNatIso
 
-/-- Transfer reflection of colimits along a equivalence in the shape. -/
+/-- Transfer reflection of colimits along an equivalence in the shape. -/
 def reflectsColimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [ReflectsColimitsOfShape J F] : ReflectsColimitsOfShape J' F where
   reflectsColimit :=

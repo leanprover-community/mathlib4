@@ -49,7 +49,7 @@ structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Mo
 add_decl_doc Submodule.toAddSubmonoid
 #align submodule.to_add_submonoid Submodule.toAddSubmonoid
 
-/-- Reinterpret a `Submodule` as an `SubMulAction`. -/
+/-- Reinterpret a `Submodule` as a `SubMulAction`. -/
 add_decl_doc Submodule.toSubMulAction
 #align submodule.to_sub_mul_action Submodule.toSubMulAction
 

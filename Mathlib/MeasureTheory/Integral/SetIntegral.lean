@@ -959,7 +959,7 @@ s i, f x ∂μ = μ (s i) • b + o(μ (s i))` at a filter `li` provided that `s
 along `li`. Since `μ (s i)` is an `ℝ≥0∞` number, we use `(μ (s i)).toReal` in the actual statement.
 
 Often there is a good formula for `(μ (s i)).toReal`, so the formalization can take an optional
-argument `m` with this formula and a proof `of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
+argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae [NormedSpace ℝ E] [CompleteSpace E]
     {μ : Measure α} {l : Filter α} [l.IsMeasurablyGenerated] {f : α → E} {b : E}
@@ -990,7 +990,7 @@ provided that `s i` tends to `(𝓝[t] a).smallSets` along `li`.  Since `μ (s i
 number, we use `(μ (s i)).toReal` in the actual statement.
 
 Often there is a good formula for `(μ (s i)).toReal`, so the formalization can take an optional
-argument `m` with this formula and a proof `of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
+argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem ContinuousWithinAt.integral_sub_linear_isLittleO_ae [TopologicalSpace α]
     [OpensMeasurableSpace α] [NormedSpace ℝ E] [CompleteSpace E] {μ : Measure α}
@@ -1007,11 +1007,11 @@ theorem ContinuousWithinAt.integral_sub_linear_isLittleO_ae [TopologicalSpace α
 /-- Fundamental theorem of calculus for set integrals, `nhds` version: if `μ` is a locally finite
 measure and `f` is an almost everywhere measurable function that is continuous at a point `a`, then
 `∫ x in s i, f x ∂μ = μ (s i) • f a + o(μ (s i))` at `li` provided that `s` tends to
-`(𝓝 a).smallSets` along `li.  Since `μ (s i)` is an `ℝ≥0∞` number, we use `(μ (s i)).toReal` in
+`(𝓝 a).smallSets` along `li`. Since `μ (s i)` is an `ℝ≥0∞` number, we use `(μ (s i)).toReal` in
 the actual statement.
 
 Often there is a good formula for `(μ (s i)).toReal`, so the formalization can take an optional
-argument `m` with this formula and a proof `of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
+argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem ContinuousAt.integral_sub_linear_isLittleO_ae [TopologicalSpace α] [OpensMeasurableSpace α]
     [NormedSpace ℝ E] [CompleteSpace E] {μ : Measure α} [IsLocallyFiniteMeasure μ] {a : α}
@@ -1028,7 +1028,7 @@ finite measure, `f` is continuous on a measurable set `t`, and `a ∈ t`, then `
 Since `μ (s i)` is an `ℝ≥0∞` number, we use `(μ (s i)).toReal` in the actual statement.
 
 Often there is a good formula for `(μ (s i)).toReal`, so the formalization can take an optional
-argument `m` with this formula and a proof `of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
+argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem ContinuousOn.integral_sub_linear_isLittleO_ae [TopologicalSpace α] [OpensMeasurableSpace α]
     [NormedSpace ℝ E] [CompleteSpace E] [SecondCountableTopologyEither α E] {μ : Measure α}

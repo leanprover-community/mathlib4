@@ -411,6 +411,7 @@ theorem log_rpow {x : ℝ} (hx : 0 < x) (y : ℝ) : log (x ^ y) = y * log x := b
 -/
 
 
+@[gcongr]
 theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z := by
   rw [le_iff_eq_or_lt] at hx; cases' hx with hx hx
   · rw [← hx, zero_rpow (ne_of_gt hz)]
@@ -419,6 +420,7 @@ theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z :
     exact mul_lt_mul_of_pos_right (log_lt_log hx hxy) hz
 #align real.rpow_lt_rpow Real.rpow_lt_rpow
 
+@[gcongr]
 theorem rpow_le_rpow {x y z : ℝ} (h : 0 ≤ x) (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z := by
   rcases eq_or_lt_of_le h₁ with (rfl | h₁'); · rfl
   rcases eq_or_lt_of_le h₂ with (rfl | h₂'); · simp
@@ -472,6 +474,7 @@ theorem rpow_lt_rpow_of_exponent_lt (hx : 1 < x) (hyz : y < z) : x ^ y < x ^ z :
   rw [exp_lt_exp]; exact mul_lt_mul_of_pos_left hyz (log_pos hx)
 #align real.rpow_lt_rpow_of_exponent_lt Real.rpow_lt_rpow_of_exponent_lt
 
+@[gcongr]
 theorem rpow_le_rpow_of_exponent_le (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x ^ z := by
   repeat' rw [rpow_def_of_pos (lt_of_lt_of_le zero_lt_one hx)]
   rw [exp_le_exp]; exact mul_le_mul_of_nonneg_left hyz (log_nonneg hx)

@@ -34,6 +34,7 @@ instance : BundledHom.ParentProjection @LinearOrder.toPartialOrder :=
 
 deriving instance LargeCategory for LinOrdCat
 
+-- Porting note: Probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory LinOrdCat :=
   BundledHom.concreteCategory _
 

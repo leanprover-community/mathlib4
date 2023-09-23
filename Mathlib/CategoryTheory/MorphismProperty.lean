@@ -615,7 +615,7 @@ variable [ConcreteCategory C]
 
 open Function
 
-attribute [local instance] ConcreteCategory.hasCoeToFun ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
 
 variable (C)
 

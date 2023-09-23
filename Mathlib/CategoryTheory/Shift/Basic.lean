@@ -24,7 +24,7 @@ would be the degree `i+n`-th term of `C`.
 ## Main definitions
 * `HasShift`: A typeclass asserting the existence of a shift functor.
 * `shiftEquiv`: When the indexing monoid is a group, then the functor indexed by `n` and `-n` forms
-  an self-equivalence of `C`.
+  a self-equivalence of `C`.
 * `shiftComm`: When the indexing monoid is commutative, then shifts commute as well.
 
 ## Implementation Notes

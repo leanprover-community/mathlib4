@@ -518,7 +518,7 @@ structure Relation (S : J.Cover X) where
 
 attribute [reassoc] Relation.w
 
-/-- Map a `Arrow` along a refinement `S ⟶ T`. -/
+/-- Map an `Arrow` along a refinement `S ⟶ T`. -/
 @[simps]
 def Arrow.map {S T : J.Cover X} (I : S.Arrow) (f : S ⟶ T) : T.Arrow :=
   ⟨I.Y, I.f, f.le _ I.hf⟩

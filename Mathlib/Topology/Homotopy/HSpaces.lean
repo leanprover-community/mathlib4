@@ -37,7 +37,7 @@ equal to the product of `H-space` structures on `G` and `G'`.
 
 ## To Do
 * Prove that for every `normed_add_torsor Z` and every `z : Z`, the operation
-`λ x y, midpoint x y` defines a `H-space` structure with `z` as a "neutral element".
+`λ x y, midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
 first three inherit the structure because they are topological groups (they are Lie groups,
 actually), isomorphic to the invertible elements in `ℤ`, in `ℂ` and in the quaternion; and the

@@ -1369,9 +1369,9 @@ def NormedGroup.induced [Group E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f :
 #align normed_add_group.induced NormedAddGroup.induced
 
 -- See note [reducible non-instances].
-/-- An injective group homomorphism from an `CommGroup` to a `NormedGroup` induces a
+/-- An injective group homomorphism from a `CommGroup` to a `NormedGroup` induces a
 `NormedCommGroup` structure on the domain. -/
-@[to_additive (attr := reducible) "An injective group homomorphism from an `CommGroup` to a
+@[to_additive (attr := reducible) "An injective group homomorphism from a `CommGroup` to a
 `NormedCommGroup` induces a `NormedCommGroup` structure on the domain."]
 def NormedCommGroup.induced [CommGroup E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕)
     (h : Injective f) : NormedCommGroup E :=

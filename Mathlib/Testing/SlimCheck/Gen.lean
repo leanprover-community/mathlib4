@@ -74,7 +74,7 @@ def arrayOf (x : Gen α) : Gen (Array α) := do
     res := res.push (← x)
   pure res
 
-/-- Create an `List` of examples using `x`. The size is controlled
+/-- Create a `List` of examples using `x`. The size is controlled
 by the size parameter of `Gen`. -/
 def listOf (x : Gen α) : Gen (List α) :=
   arrayOf x >>= pure ∘ Array.toList

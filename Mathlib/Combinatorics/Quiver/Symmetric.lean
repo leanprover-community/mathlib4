@@ -54,7 +54,7 @@ def reverse {V} [Quiver.{v + 1} V] [HasReverse V] {a b : V} : (a ⟶ b) → (b �
   HasReverse.reverse'
 #align quiver.reverse Quiver.reverse
 
-/-- A quiver `HasInvolutiveReverse` if reversing twice is the identity.`-/
+/-- A quiver `HasInvolutiveReverse` if reversing twice is the identity. -/
 class HasInvolutiveReverse extends HasReverse V where
   /-- `reverse` is involutive -/
   inv' : ∀ {a b : V} (f : a ⟶ b), reverse (reverse f) = f

@@ -1936,7 +1936,7 @@ theorem ext_of_generateFrom_of_cover {S T : Set (Set α)} (h_gen : ‹_› = gen
 #align measure_theory.measure.ext_of_generate_from_of_cover MeasureTheory.Measure.ext_of_generateFrom_of_cover
 
 /-- Two measures are equal if they are equal on the π-system generating the σ-algebra,
-  and they are both finite on a increasing spanning sequence of sets in the π-system.
+  and they are both finite on an increasing spanning sequence of sets in the π-system.
   This lemma is formulated using `sUnion`. -/
 theorem ext_of_generateFrom_of_cover_subset {S T : Set (Set α)} (h_gen : ‹_› = generateFrom S)
     (h_inter : IsPiSystem S) (h_sub : T ⊆ S) (hc : T.Countable) (hU : ⋃₀ T = univ)
@@ -1948,7 +1948,7 @@ theorem ext_of_generateFrom_of_cover_subset {S T : Set (Set α)} (h_gen : ‹_�
 #align measure_theory.measure.ext_of_generate_from_of_cover_subset MeasureTheory.Measure.ext_of_generateFrom_of_cover_subset
 
 /-- Two measures are equal if they are equal on the π-system generating the σ-algebra,
-  and they are both finite on a increasing spanning sequence of sets in the π-system.
+  and they are both finite on an increasing spanning sequence of sets in the π-system.
   This lemma is formulated using `iUnion`.
   `FiniteSpanningSetsIn.ext` is a reformulation of this lemma. -/
 theorem ext_of_generateFrom_of_iUnion (C : Set (Set α)) (B : ℕ → Set α) (hA : ‹_› = generateFrom C)

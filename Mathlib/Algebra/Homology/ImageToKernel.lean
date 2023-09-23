@@ -60,12 +60,22 @@ theorem subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
   rfl
 #align subobject_of_le_as_image_to_kernel subobject_ofLE_as_imageToKernel
 
+attribute [local instance] ConcreteCategory.funLike
+
 -- porting note: removed elementwise attribute which does not seem to be helpful here
+-- a more suitable lemma is added below
 @[reassoc (attr := simp)]
 theorem imageToKernel_arrow (w : f ≫ g = 0) :
     imageToKernel f g w ≫ (kernelSubobject g).arrow = (imageSubobject f).arrow := by
   simp [imageToKernel]
 #align image_to_kernel_arrow imageToKernel_arrow
+
+@[simp]
+lemma imageToKernel_arrow_apply [ConcreteCategory V] (w : f ≫ g = 0)
+    (x : (forget V).obj (Subobject.underlying.obj (imageSubobject f))) :
+    (kernelSubobject g).arrow (imageToKernel f g w x) =
+      (imageSubobject f).arrow x := by
+  rw [← comp_apply, imageToKernel_arrow]
 
 -- This is less useful as a `simp` lemma than it initially appears,
 -- as it "loses" the information the morphism factors through the image.
@@ -282,12 +292,26 @@ def homology.map (p : α.right = β.left) : homology f g w ⟶ homology f' g' w'
       simp only [cokernel.condition, comp_zero])
 #align homology.map homology.map
 
--- porting note: removed elementwise attribute which does not seem to be helpful here
+-- porting note: removed elementwise attribute which does not seem to be helpful here,
+-- the correct lemma is stated below
 @[reassoc (attr := simp)]
 theorem homology.π_map (p : α.right = β.left) :
     homology.π f g w ≫ homology.map w w' α β p = kernelSubobjectMap β ≫ homology.π f' g' w' := by
   simp only [homology.π, homology.map, cokernel.π_desc]
 #align homology.π_map homology.π_map
+
+section
+
+attribute [local instance] ConcreteCategory.funLike
+
+@[simp]
+lemma homology.π_map_apply [ConcreteCategory.{w} V] (p : α.right = β.left)
+    (x : (forget V).obj (Subobject.underlying.obj (kernelSubobject g))) :
+    homology.map w w' α β p (homology.π f g w x) =
+      homology.π f' g' w' (kernelSubobjectMap β x) := by
+  simp only [← comp_apply, homology.π_map w w' α β p]
+
+end
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem homology.map_desc (p : α.right = β.left) {D : V} (k : (kernelSubobject g' : V) ⟶ D)

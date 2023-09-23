@@ -26,9 +26,9 @@ bernsteinPolynomial (R : Type*) [comm_ring R] (n ν : ℕ) : R[X] :=
 and the fact that for `ν : fin (n+1)` these are linearly independent over `ℚ`.
 
 We prove the basic identities
-* `(Finset.range (n + 1)).sum (λ ν, bernsteinPolynomial R n ν) = 1`
-* `(Finset.range (n + 1)).sum (λ ν, ν • bernsteinPolynomial R n ν) = n • X`
-* `(Finset.range (n + 1)).sum (λ ν, (ν * (ν-1)) • bernsteinPolynomial R n ν) = (n * (n-1)) • X^2`
+* `(Finset.range (n + 1)).sum (fun ν ↦ bernsteinPolynomial R n ν) = 1`
+* `(Finset.range (n + 1)).sum (fun ν ↦ ν • bernsteinPolynomial R n ν) = n • X`
+* `(Finset.range (n + 1)).sum (fun ν ↦ (ν * (ν-1)) • bernsteinPolynomial R n ν) = (n * (n-1)) • X^2`
 
 ## Notes
 

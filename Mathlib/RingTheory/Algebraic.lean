@@ -239,7 +239,7 @@ theorem isAlgebraic_of_larger_base_of_injective (hinj : Function.Injective (alge
   _root_.isAlgebraic_of_larger_base_of_injective hinj (A_alg x)
 #align algebra.is_algebraic_of_larger_base_of_injective Algebra.isAlgebraic_of_larger_base_of_injective
 
-/-- If x is a algebraic over K, then x is algebraic over L when L is an extension of K -/
+/-- If x is algebraic over K, then x is algebraic over L when L is an extension of K -/
 theorem _root_.isAlgebraic_of_larger_base {x : A} (A_alg : _root_.IsAlgebraic K x) :
     _root_.IsAlgebraic L x :=
   _root_.isAlgebraic_of_larger_base_of_injective (algebraMap K L).injective A_alg

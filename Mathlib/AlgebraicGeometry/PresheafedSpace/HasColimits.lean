@@ -404,8 +404,8 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
     refine' (F.obj (unop X)).presheaf.mapIso (eqToIso _)
     simp only [Functor.op_obj, unop_op, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
       Set.preimage_preimage]
-    simp_rw [← comp_app]
-    refine congr_arg (Set.preimage . U.1) (funext fun x => congr_fun ?_ x)
+    refine congr_arg (Set.preimage . U.1) (funext fun x => ?_)
+    erw [←comp_app]
     congr
     exact ι_preservesColimitsIso_inv (forget C) F (unop X)
   · intro X Y f

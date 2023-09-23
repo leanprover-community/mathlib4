@@ -511,7 +511,7 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
       return { expr := q($n' / $d'), proof? := q(IsRat.nonneg_to_eq $p $pn' $pd') }
 
 /--
-A extension for `norm_num`.
+An extension for `norm_num`.
 -/
 structure NormNumExt where
   /-- The extension should be run in the `pre` phase when used as simp plugin. -/

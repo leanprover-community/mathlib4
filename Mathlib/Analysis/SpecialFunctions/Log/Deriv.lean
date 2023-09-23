@@ -223,7 +223,7 @@ open scoped BigOperators
 
 /-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series
-expansion of the logarithm, in `has_sum_pow_div_log_of_abs_lt_1`.
+expansion of the logarithm, in `hasSum_pow_div_log_of_abs_lt_1`.
 
 Porting note: TODO: use one of generic theorems about Taylor's series to prove this estimate.
 -/

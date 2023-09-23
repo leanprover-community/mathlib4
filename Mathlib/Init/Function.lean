@@ -68,7 +68,7 @@ fun _ _ h ↦ hf (hg h)
 
 /-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
-@[reducible] def Surjective (f : α → β) : Prop := ∀ b, ∃ a, f a = b
+def Surjective (f : α → β) : Prop := ∀ b, ∃ a, f a = b
 
 theorem Surjective.comp {g : β → φ} {f : α → β} (hg : Surjective g) (hf : Surjective f) :
   Surjective (g ∘ f) :=

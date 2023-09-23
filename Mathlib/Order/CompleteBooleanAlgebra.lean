@@ -82,6 +82,36 @@ instance (priority := 100) CompleteDistribLattice.toCoframe [CompleteDistribLatt
   { ‹CompleteDistribLattice α› with }
 #align complete_distrib_lattice.to_coframe CompleteDistribLattice.toCoframe
 
+-- See note [lower instance priority]
+instance (priority := 100) CompleteLinearOrder.toCompleteDistribLattice [CompleteLinearOrder α] :
+    CompleteDistribLattice α where
+  inf_sSup_le_iSup_inf a s := open Classical in
+    if h : ∀ b ∈ s, b ≤ a then by
+      rw [inf_eq_right.2 (sSup_le_iff.2 h)]
+      refine sSup_le_iff.2 fun b hb => ?_
+      refine le_trans ?_ (le_iSup _ b)
+      refine le_trans ?_ (le_iSup _ hb)
+      rw [inf_eq_right.2 (h b hb)]
+    else by
+      have ⟨b, hb, hab⟩ : ∃ b ∈ s, a < b := by simpa using h
+      refine le_trans ?_ (le_iSup _ b)
+      refine le_trans ?_ (le_iSup _ hb)
+      rw [inf_eq_left.2 (by exact le_trans (le_of_lt hab) (le_sSup hb))]
+      rw [inf_eq_left.2 (le_of_lt hab)]
+  iInf_sup_le_sup_sInf a s := open Classical in
+    if h : ∀ b ∈ s, a ≤ b then by
+      rw [sup_eq_right.2 (le_sInf_iff.2 h)]
+      refine le_sInf_iff.2 fun b hb => ?_
+      refine le_trans (iInf_le _ b) ?_
+      refine le_trans (iInf_le _ hb) ?_
+      rw [sup_eq_right.2 (h b hb)]
+    else by
+      have ⟨b, hb, hab⟩ : ∃ b ∈ s, b < a := by simpa using h
+      refine le_trans (iInf_le _ b) ?_
+      refine le_trans (iInf_le _ hb) ?_
+      rw [sup_eq_left.2 (le_of_lt hab)]
+      rw [sup_eq_left.2 (by exact le_trans (sInf_le hb) (le_of_lt hab))]
+
 section Frame
 
 variable [Frame α] {s t : Set α} {a b : α}

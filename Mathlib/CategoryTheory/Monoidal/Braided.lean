@@ -273,6 +273,11 @@ instance categoryLaxBraidedFunctor : Category (LaxBraidedFunctor C D) :=
   InducedCategory.category LaxBraidedFunctor.toLaxMonoidalFunctor
 #align category_theory.lax_braided_functor.category_lax_braided_functor CategoryTheory.LaxBraidedFunctor.categoryLaxBraidedFunctor
 
+-- Porting note: added, as `MonoidalNatTrans.ext` does not apply to morphisms.
+@[ext]
+lemma ext' {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.app X = β.app X) : α = β :=
+  MonoidalNatTrans.ext _ _ (funext w)
+
 @[simp]
 theorem comp_toNatTrans {F G H : LaxBraidedFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
     (α ≫ β).toNatTrans = @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.toNatTrans β.toNatTrans :=
@@ -341,6 +346,11 @@ def comp (F : BraidedFunctor C D) (G : BraidedFunctor D E) : BraidedFunctor C E 
 instance categoryBraidedFunctor : Category (BraidedFunctor C D) :=
   InducedCategory.category BraidedFunctor.toMonoidalFunctor
 #align category_theory.braided_functor.category_braided_functor CategoryTheory.BraidedFunctor.categoryBraidedFunctor
+
+-- Porting note: added, as `MonoidalNatTrans.ext` does not apply to morphisms.
+@[ext]
+lemma ext' {F G : BraidedFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.app X = β.app X) : α = β :=
+  MonoidalNatTrans.ext _ _ (funext w)
 
 @[simp]
 theorem comp_toNatTrans {F G H : BraidedFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :

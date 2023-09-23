@@ -234,7 +234,7 @@ theorem coe_map (S : StarSubalgebra R A) (f : A →⋆ₐ[R] B) : (S.map f : Set
   rfl
 #align star_subalgebra.coe_map StarSubalgebra.coe_map
 
-/-- Preimage of a star subalgebra under an star algebra homomorphism. -/
+/-- Preimage of a star subalgebra under a star algebra homomorphism. -/
 def comap (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) : StarSubalgebra R A :=
   { S.toSubalgebra.comap f.toAlgHom with
     star_mem' := @fun a ha => show f (star a) ∈ S from (map_star f a).symm ▸ star_mem ha }

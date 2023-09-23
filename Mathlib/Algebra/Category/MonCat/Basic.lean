@@ -140,7 +140,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddMon.of_hom AddMonCat.ofHom
 
-/-- Typecheck a `AddMonoidHom` as a morphism in `AddMonCat`. -/
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddMonCat`. -/
 add_decl_doc AddMonCat.ofHom
 
 @[to_additive (attr := simp)]
@@ -272,7 +272,7 @@ instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonC
 @[to_additive]
 def ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶ of Y := f
 
-/-- Typecheck a `AddMonoidHom` as a morphism in `AddCommMonCat`. -/
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddCommMonCat`. -/
 add_decl_doc AddCommMonCat.ofHom
 
 @[to_additive (attr := simp)]

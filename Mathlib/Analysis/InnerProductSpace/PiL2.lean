@@ -537,7 +537,7 @@ protected theorem coe_mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.spa
   classical rw [OrthonormalBasis.mk, _root_.Basis.coe_toOrthonormalBasis, Basis.coe_mk]
 #align orthonormal_basis.coe_mk OrthonormalBasis.coe_mk
 
-/-- Any finite subset of a orthonormal family is an `OrthonormalBasis` for its span. -/
+/-- Any finite subset of an orthonormal family is an `OrthonormalBasis` for its span. -/
 protected def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι') :
     OrthonormalBasis s 𝕜 (span 𝕜 (s.image v' : Set E)) :=
   let e₀' : Basis s 𝕜 _ :=

@@ -91,7 +91,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.homotopy_P_infty_to_id AlgebraicTopology.DoldKan.homotopyPInftyToId
 
 /-- The inclusion of the Moore complex in the alternating face map complex
-is an homotopy equivalence -/
+is a homotopy equivalence -/
 @[simps]
 def homotopyEquivNormalizedMooreComplexAlternatingFaceMapComplex {A : Type _} [Category A]
     [Abelian A] {Y : SimplicialObject A} :

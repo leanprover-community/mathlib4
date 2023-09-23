@@ -364,10 +364,10 @@ In this section we formulate `has_*fderiv*_pi` theorems as `iff`s, and provide t
 theorem:
 
 * the version without `'` deals with `φ : Π i, E → F' i` and `φ' : Π i, E →L[𝕜] F' i`
-  and is designed to deduce differentiability of `λ x i, φ i x` from differentiability
+  and is designed to deduce differentiability of `fun x i ↦ φ i x` from differentiability
   of each `φ i`;
 * the version with `'` deals with `Φ : E → Π i, F' i` and `Φ' : E →L[𝕜] Π i, F' i`
-  and is designed to deduce differentiability of the components `λ x, Φ x i` from
+  and is designed to deduce differentiability of the components `fun x ↦ Φ x i` from
   differentiability of `Φ`.
 -/
 

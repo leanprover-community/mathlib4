@@ -18,11 +18,11 @@ In this file we define the integral of a function `f : ℂⁿ → E` over a toru
 `{z : ℂⁿ | ∀ i, z i ∈ Metric.sphere (c i) (R i)}`. In order to do this, we define
 `torusMap (c : ℂⁿ) (R θ : ℝⁿ)` to be the point in `ℂⁿ` given by $z_k=c_k+R_ke^{θ_ki}$,
 where $i$ is the imaginary unit, then define `torusIntegral f c R` as the integral over
-the cube $[0, (λ _, 2π)] = \{θ\|∀ k, 0 ≤ θ_k ≤ 2π\}$ of the Jacobian of the
+the cube $[0, (fun _ ↦ 2π)] = \{θ\|∀ k, 0 ≤ θ_k ≤ 2π\}$ of the Jacobian of the
 `torusMap` multiplied by `f (torusMap c R θ)`.
 
 We also define a predicate saying that `f ∘ torusMap c R` is integrable on the cube
-`[0, (λ _, 2\pi)]`.
+`[0, (fun _ ↦ 2π)]`.
 
 ## Main definitions
 
@@ -31,7 +31,7 @@ We also define a predicate saying that `f ∘ torusMap c R` is integrable on the
 
 * `TorusIntegrable f c R`: a function `f : ℂⁿ → E` is integrable over the generalized torus
   with center `c : ℂⁿ` and radius `R : ℝⁿ` if `f ∘ torusMap c R` is integrable on the
-  closed cube `Icc (0 : ℝⁿ) (λ _, 2 * π)`;
+  closed cube `Icc (0 : ℝⁿ) (fun _ ↦ 2 * π)`;
 
 * `torusIntegral f c R`: the integral of a function `f : ℂⁿ → E` over a torus with
   center `c ∈ ℂⁿ` and radius `R ∈ ℝⁿ` defined as
@@ -104,7 +104,7 @@ theorem torusMap_zero_radius (c : ℂⁿ) : torusMap c 0 = const ℝⁿ c :=
 -/
 
 /-- A function `f : ℂⁿ → E` is integrable on the generalized torus if the function
-`f ∘ torusMap c R θ` is integrable on `Icc (0 : ℝⁿ) (λ _, 2 * π)`-/
+`f ∘ torusMap c R θ` is integrable on `Icc (0 : ℝⁿ) (fun _ ↦ 2 * π)`. -/
 def TorusIntegrable (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : Prop :=
   IntegrableOn (fun θ : ℝⁿ => f (torusMap c R θ)) (Icc (0 : ℝⁿ) fun _ => 2 * π) volume
 #align torus_integrable TorusIntegrable

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jireh Loreaux
 
 ! This file was ported from Lean 3 source module group_theory.subsemigroup.center
-! leanprover-community/mathlib commit a437a2499163d85d670479f69f625f461cc5fef9
+! leanprover-community/mathlib commit 1ac8d4304efba9d03fa720d06516fac845aa5353
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

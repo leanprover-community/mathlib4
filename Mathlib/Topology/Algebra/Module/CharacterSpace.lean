@@ -94,7 +94,7 @@ instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A)
     map_zero := fun φ => map_zero φ
     map_mul := fun φ => φ.prop.2 }
 
-/-- An element of the character space, as an non-unital algebra homomorphism. -/
+/-- An element of the character space, as a non-unital algebra homomorphism. -/
 def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[𝕜] 𝕜 where
   toFun := (φ : A → 𝕜)
   map_mul' := map_mul φ

@@ -106,13 +106,18 @@ def germ (F : X.Presheaf C) {U : Opens X} (x : U) : F.obj (op U) ⟶ stalk F x :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ TopCat.Presheaf.germ
 
-@[elementwise (attr := simp)]
 theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) :
     F.map i.op ≫ germ F x = germ F (i x : V) :=
   let i' : (⟨U, x.2⟩ : OpenNhds x.1) ⟶ ⟨V, (i x : V).2⟩ := i
   colimit.w ((OpenNhds.inclusion x.1).op ⋙ F) i'.op
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res TopCat.Presheaf.germ_res
+
+-- Porting note : `@[elementwise]` did not generate the best lemma when applied to `germ_res`
+theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
+  (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [←comp_apply, germ_res]
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.germ_res_apply TopCat.Presheaf.germ_res_apply
 
 /-- A morphism from the stalk of `F` at `x` to some object `Y` is completely determined by its
 composition with the `germ` morphisms.
@@ -167,9 +172,8 @@ set_option linter.uppercaseLean3 false in
 -- (colim.map (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) ℱ) :
 --   colim.obj ((OpenNhds.inclusion (f x) ⋙ Opens.map f).op ⋙ ℱ) ⟶ _) ≫
 -- colimit.pre ((OpenNhds.inclusion x).op ⋙ ℱ) (OpenNhds.map f x).op
-namespace stalkPushforward
 
--- Porting note: TODO: attribute [local tidy] tactic.op_induction'
+namespace stalkPushforward
 
 @[simp]
 theorem id (ℱ : X.Presheaf C) (x : X) :
@@ -177,13 +181,10 @@ theorem id (ℱ : X.Presheaf C) (x : X) :
   -- Porting note: We need to this to help ext tactic.
   change (_ : colimit _ ⟶  _) = (_ : colimit _ ⟶  _)
   ext1 j
-  induction' j using Opposite.rec with j
-  -- Porting note: unsupported non-interactive tactic tactic.op_induction'
-  -- run_tac
-  --   tactic.op_induction'
+  induction' j with j
   rcases j with ⟨⟨_, _⟩, _⟩
   erw [colimit.ι_map_assoc]
-  simpa [stalkFunctor, stalkPushforward] using by rfl
+  simp [stalkFunctor, stalkPushforward]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.id TopCat.Presheaf.stalkPushforward.id
 

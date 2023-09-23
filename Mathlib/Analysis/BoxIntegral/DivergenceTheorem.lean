@@ -20,7 +20,7 @@ import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 In this file we prove the Divergence Theorem for a Henstock-Kurzweil style integral. The theorem
 says the following. Let `f : ℝⁿ → Eⁿ` be a function differentiable on a closed rectangular box
-`I` with derivative `f' x : ℝⁿ →L[ℝ] Eⁿ` at `x ∈ I`. Then the divergence `λ x, ∑ k, f' x eₖ k`,
+`I` with derivative `f' x : ℝⁿ →L[ℝ] Eⁿ` at `x ∈ I`. Then the divergence `fun x ↦ ∑ k, f' x eₖ k`,
 where `eₖ = Pi.single k 1` is the `k`-th basis vector, is integrable on `I`, and its integral is
 equal to the sum of integrals of `f` over the faces of `I` taken with appropriate signs.
 
@@ -81,7 +81,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
   -- Porting note: Lean fails to find `α` in the next line
   set e : ℝ → (Fin n → ℝ) → (Fin (n + 1) → ℝ) := i.insertNth (α := fun _ ↦ ℝ)
   /- **Plan of the proof**. The difference of the integrals of the affine function
-    `λ y, a + f' (y - x)` over the faces `x i = I.upper i` and `x i = I.lower i` is equal to the
+    `fun y ↦ a + f' (y - x)` over the faces `x i = I.upper i` and `x i = I.lower i` is equal to the
     volume of `I` multiplied by `f' (Pi.single i 1)`, so it suffices to show that the integral of
     `f y - a - f' (y - x)` over each of these faces is less than or equal to `ε * c * vol I`. We
     integrate a function of the norm `≤ ε * diam I.Icc` over a box of volume
@@ -145,7 +145,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
 
 /-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
-the partial derivative `λ x, f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
+the partial derivative `fun x ↦ f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
 equal to the difference of integrals of `f` over the faces `x i = I.upper i` and `x i = I.lower i`.
 
 More precisely, we use a non-standard generalization of the Henstock-Kurzweil integral and

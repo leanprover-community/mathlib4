@@ -1404,7 +1404,7 @@ theorem isBigO_iff_isBoundedUnder_le_div (h : ∀ᶠ x in l, g'' x ≠ 0) :
       eventually_congr <| h.mono fun x hx => (div_le_iff <| norm_pos_iff.2 hx).symm
 #align asymptotics.is_O_iff_is_bounded_under_le_div Asymptotics.isBigO_iff_isBoundedUnder_le_div
 
-/-- `(λ x, c) =O[l] f` if and only if `f` is bounded away from zero. -/
+/-- `(fun x ↦ c) =O[l] f` if and only if `f` is bounded away from zero. -/
 theorem isBigO_const_left_iff_pos_le_norm {c : E''} (hc : c ≠ 0) :
     (fun _x => c) =O[l] f' ↔ ∃ b, 0 < b ∧ ∀ᶠ x in l, b ≤ ‖f' x‖ := by
   constructor

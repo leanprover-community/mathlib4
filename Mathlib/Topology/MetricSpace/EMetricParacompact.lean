@@ -53,7 +53,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
   refine' ⟨fun ι s ho hcov => _⟩
   simp only [iUnion_eq_univ_iff] at hcov
   -- choose a well founded order on `S`
-  -- porting note: todo: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι
+  -- porting note: todo: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι`
   let _ : LinearOrder ι := by classical exact linearOrderOfSTO WellOrderingRel
   have wf : WellFounded ((· < ·) : ι → ι → Prop) := @IsWellFounded.wf ι WellOrderingRel _
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.

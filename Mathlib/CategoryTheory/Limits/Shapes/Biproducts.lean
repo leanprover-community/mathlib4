@@ -406,7 +406,7 @@ theorem biproduct.bicone_ι (f : J → C) [HasBiproduct f] (b : J) :
     (biproduct.bicone f).ι b = biproduct.ι f b := rfl
 #align category_theory.limits.biproduct.bicone_ι CategoryTheory.Limits.biproduct.bicone_ι
 
-/-- Note that as this lemma has a `if` in the statement, we include a `DecidableEq` argument.
+/-- Note that as this lemma has an `if` in the statement, we include a `DecidableEq` argument.
 This means you may not be able to `simp` using this lemma unless you `open Classical`. -/
 @[reassoc]
 theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J) :
@@ -946,7 +946,7 @@ instance (priority := 100) hasBiproduct_unique : HasBiproduct f :=
   HasBiproduct.mk (limitBiconeOfUnique f)
 #align category_theory.limits.has_biproduct_unique CategoryTheory.Limits.hasBiproduct_unique
 
-/-- A biproduct over a index type with exactly one term is just the object over that term. -/
+/-- A biproduct over an index type with exactly one term is just the object over that term. -/
 @[simps!]
 def biproductUniqueIso : ⨁ f ≅ f default :=
   (biproduct.uniqueUpToIso _ (limitBiconeOfUnique f).isBilimit).symm

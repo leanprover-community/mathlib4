@@ -83,7 +83,7 @@ instance wellPowered_moduleCat : WellPowered (ModuleCat.{v} R) :=
 attribute [local instance] hasKernels_moduleCat
 
 /-- Bundle an element `m : M` such that `f m = 0` as a term of `kernelSubobject f`. -/
-noncomputable def toKernelSubobject {M N : ModuleCat R} {f : M ⟶ N} :
+noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
     LinearMap.ker f →ₗ[R] kernelSubobject f :=
   (kernelSubobjectIso f ≪≫ ModuleCat.kernelIsoKer f).inv
 #align Module.to_kernel_subobject ModuleCat.toKernelSubobject

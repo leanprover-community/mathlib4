@@ -201,7 +201,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     · apply isOpen_lt <;> continuity
     · rw [Set.mem_setOf_eq, w₂]
       exact sub_lt_self _ pos
-  -- Fixing `x` for a moment, we have a family of functions `λ y, g x y`
+  -- Fixing `x` for a moment, we have a family of functions `fun y ↦ g x y`
   -- which on different patches (the `U x y`) are greater than `f z - ε`.
   -- Taking the supremum of these functions
   -- indexed by a finite collection of patches which cover `X`
@@ -389,7 +389,7 @@ theorem Subalgebra.SeparatesPoints.isROrC_to_real {A : Subalgebra 𝕜 C(X, 𝕜
     ext1
     simp only [coe_smul, coe_one, smul_apply, one_apply, Algebra.id.smul_eq_mul, mul_one,
       const_apply]
-  -- Consider now the function `λ x, |f x - f x₂| ^ 2`
+  -- Consider now the function `fun x ↦ |f x - f x₂| ^ 2`
   refine' ⟨_, ⟨(⟨IsROrC.normSq, continuous_normSq⟩ : C(𝕜, ℝ)).comp F, _, rfl⟩, _⟩
   · -- This is also an element of the subalgebra, and takes only real values
     rw [SetLike.mem_coe, Subalgebra.mem_comap]

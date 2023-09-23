@@ -42,7 +42,7 @@ def punitEquivDiscretePUnit : FundamentalGroupoid PUnit.{u + 1} ≌ Discrete PUn
   CategoryTheory.Equivalence.mk (Functor.star _) ((CategoryTheory.Functor.const _).obj PUnit.unit)
     -- Porting note: was `by decide`
     (NatIso.ofComponents fun _ => eqToIso (by simp))
-    (Functor.pUnitExt _ _)
+    (Functor.punitExt _ _)
 #align fundamental_groupoid.punit_equiv_discrete_punit FundamentalGroupoid.punitEquivDiscretePUnit
 
 end FundamentalGroupoid

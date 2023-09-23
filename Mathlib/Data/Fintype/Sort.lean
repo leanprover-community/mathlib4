@@ -35,7 +35,7 @@ def monoEquivOfFin (α : Type _) [Fintype α] [LinearOrder α] {k : ℕ} (h : Fi
 variable {α : Type _} [DecidableEq α] [Fintype α] [LinearOrder α] {m n : ℕ} {s : Finset α}
 
 /-- If `α` is a linearly ordered fintype, `s : Finset α` has cardinality `m` and its complement has
-cardinality `n`, then `Fin m ⊕ Fin n ≃ α`. The equivalence sends elements of Fin m` to
+cardinality `n`, then `Fin m ⊕ Fin n ≃ α`. The equivalence sends elements of `Fin m` to
 elements of `s` and elements of `Fin n` to elements of `sᶜ` while preserving order on each
 "half" of `Fin m ⊕ Fin n` (using `Set.orderIsoOfFin`). -/
 def finSumEquivOfFinset (hm : s.card = m) (hn : sᶜ.card = n) : Sum (Fin m) (Fin n) ≃ α :=

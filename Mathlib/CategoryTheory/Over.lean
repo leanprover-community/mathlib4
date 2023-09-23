@@ -473,8 +473,8 @@ theorem mono_of_mono_right {f g : Under X} (k : f ⟶ g) [hk : Mono k.right] : M
 #align category_theory.under.mono_of_mono_right CategoryTheory.Under.mono_of_mono_right
 
 /--
-If `k.right` is a epimorphism, then `k` is a epimorphism. In other words, `Under.forget X` reflects
-epimorphisms.
+If `k.right` is an epimorphism, then `k` is an epimorphism. In other words, `Under.forget X`
+reflects epimorphisms.
 The converse of `CategoryTheory.Under.epi_right_of_epi`.
 
 This lemma is not an instance, to avoid loops in type class inference.
@@ -484,8 +484,8 @@ theorem epi_of_epi_right {f g : Under X} (k : f ⟶ g) [hk : Epi k.right] : Epi 
 #align category_theory.under.epi_of_epi_right CategoryTheory.Under.epi_of_epi_right
 
 /--
-If `k` is a epimorphism, then `k.right` is a epimorphism. In other words, `Under.forget X` preserves
-epimorphisms.
+If `k` is an epimorphism, then `k.right` is an epimorphism. In other words, `Under.forget X`
+preserves epimorphisms.
 The converse of `CategoryTheory.under.epi_of_epi_right`.
 -/
 instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right := by

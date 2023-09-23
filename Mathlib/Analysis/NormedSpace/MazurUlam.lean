@@ -65,7 +65,7 @@ theorem midpoint_fixed {x y : PE} :
   -- midpoint `z` of `[x, y]`.
   set R : PE ≃ᵢ PE := (pointReflection ℝ z).toIsometryEquiv
   set f : PE ≃ᵢ PE → PE ≃ᵢ PE := fun e => ((e.trans R).trans e.symm).trans R
-  -- Note that `f` doubles the value of ``dist (e z) z`
+  -- Note that `f` doubles the value of `dist (e z) z`
   have hf_dist : ∀ e, dist (f e z) z = 2 * dist (e z) z := by
     intro e
     dsimp

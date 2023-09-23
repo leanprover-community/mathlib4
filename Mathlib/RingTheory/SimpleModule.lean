@@ -50,13 +50,6 @@ theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
   ⟨⟨0, by
       have h : (⊥ : Submodule R M) ≠ ⊤ := bot_ne_top
       contrapose! h
-      -- Porting note: push_neg at h not giving fun y => 0 = y
-      have h : ∀ (y : M), 0 = y := by
-        intro y
-        have em := Classical.em (0 = y)
-        match em with
-        | .inl h' => exact h'
-        | .inr h' => apply False.elim <| h ⟨y,h'⟩
       ext x
       simp [Submodule.mem_bot, Submodule.mem_top, h x]⟩⟩
 #align is_simple_module.nontrivial IsSimpleModule.nontrivial

@@ -14,7 +14,7 @@ import Mathlib.GroupTheory.Perm.Support
 /-!
 # Permutations from a list
 
-A list `l : List α` can be interpreted as a `Equiv.Perm α` where each element in the list
+A list `l : List α` can be interpreted as an `Equiv.Perm α` where each element in the list
 is permuted to the next one, defined as `formPerm`. When we have that `Nodup l`,
 we prove that `Equiv.Perm.support (formPerm l) = l.toFinset`, and that
 `formPerm l` is rotationally invariant, in `formPerm_rotate`.
@@ -42,7 +42,7 @@ variable [DecidableEq α] (l : List α)
 
 open Equiv Equiv.Perm
 
-/-- A list `l : List α` can be interpreted as a `Equiv.Perm α` where each element in the list
+/-- A list `l : List α` can be interpreted as an `Equiv.Perm α` where each element in the list
 is permuted to the next one, defined as `formPerm`. When we have that `Nodup l`,
 we prove that `Equiv.Perm.support (formPerm l) = l.toFinset`, and that
 `formPerm l` is rotationally invariant, in `formPerm_rotate`.

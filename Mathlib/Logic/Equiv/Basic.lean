@@ -62,7 +62,7 @@ def pprodEquivProd : PProd α β ≃ α × β where
 
 /-- Product of two equivalences, in terms of `PProd`. If `α ≃ β` and `γ ≃ δ`, then
 `PProd α γ ≃ PProd β δ`. -/
--- porting note: in Lean 3 this had @[congr]`
+-- porting note: in Lean 3 this had `@[congr]`
 @[simps apply]
 def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β δ where
   toFun x := ⟨e₁ x.1, e₂ x.2⟩
@@ -1430,7 +1430,7 @@ where `p : β → Prop`, permuting only the `b : β` that satisfy `p b`.
 This can be used to extend the domain across a function `f : α → β`,
 keeping everything outside of `Set.range f` fixed. For this use-case `Equiv` given by `f` can
 be constructed by `Equiv.of_leftInverse'` or `Equiv.of_leftInverse` when there is a known
-inverse, or `Equiv.ofInjective` in the general case.`.
+inverse, or `Equiv.ofInjective` in the general case.
 -/
 def Perm.extendDomain : Perm β' :=
   (permCongr f e).subtypeCongr (Equiv.refl _)

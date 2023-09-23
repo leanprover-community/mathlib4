@@ -1192,7 +1192,7 @@ theorem accPt_iff_frequently (x : α) (C : Set α) : AccPt x (𝓟 C) ↔ ∃ᶠ
 #align acc_pt_iff_frequently accPt_iff_frequently
 
 /-- If `x` is an accumulation point of `F` and `F ≤ G`, then
-`x` is an accumulation point of `D. -/
+`x` is an accumulation point of `D`. -/
 theorem AccPt.mono {x : α} {F G : Filter α} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G :=
   NeBot.mono h (inf_le_inf_left _ hFG)
 #align acc_pt.mono AccPt.mono
@@ -1887,7 +1887,7 @@ Note: for the most part this note also applies to other properties
 ### The traditional way
 As an example, let's look at addition `(+) : M → M → M`. We can state that this is continuous
 in different definitionally equal ways (omitting some typing information)
-* `Continuous (λ p, p.1 + p.2)`;
+* `Continuous (fun p ↦ p.1 + p.2)`;
 * `Continuous (Function.uncurry (+))`;
 * `Continuous ↿(+)`. (`↿` is notation for recursively uncurrying a function)
 
@@ -1920,9 +1920,9 @@ This has the following advantages
 * `Continuous.add _ _` is recognized correctly by the elaborator and gives useful new goals.
 * It works generally, since the domain is a variable.
 
-As an example for an unary operation, we have `Continuous.neg`.
+As an example for a unary operation, we have `Continuous.neg`.
 ```
-Continuous.neg {f : α → G} (hf : Continuous f) : Continuous (λ x, -f x)
+Continuous.neg {f : α → G} (hf : Continuous f) : Continuous (fun x ↦ -f x)
 ```
 For unary functions, the elaborator is not confused when applying the traditional lemma
 (like `continuous_neg`), but it's still convenient to have the short version available (compare
@@ -1938,7 +1938,7 @@ The correct continuity principle for this operation is something like this:
 {f : X → F} {γ γ' : ∀ x, Path (f x) (f x)} {t₀ s : X → I}
   (hγ : Continuous ↿γ) (hγ' : Continuous ↿γ')
   (ht : Continuous t₀) (hs : Continuous s) :
-  Continuous (λ x, strans (γ x) (γ' x) (t x) (s x))
+  Continuous (fun x ↦ strans (γ x) (γ' x) (t x) (s x))
 ```
 Note that *all* arguments of `strans` are indexed over `X`, even the basepoint `x`, and the last
 argument `s` that arises since `Path x x` has a coercion to `I → F`. The paths `γ` and `γ'` (which
@@ -1968,7 +1968,7 @@ of the conclusion)
 ```
 lemma ContinuousOn.comp_fract {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y]
   {f : X → ℝ → Y} {g : X → ℝ} (hf : Continuous ↿f) (hg : Continuous g) (h : ∀ s, f s 0 = f s 1) :
-  Continuous (λ x, f x (fract (g x)))
+  Continuous (fun x ↦ f x (fract (g x)))
 ```
 With `ContinuousAt` you can be even more precise about what to prove in case of discontinuities,
 see e.g. `ContinuousAt.comp_div_cases`.
@@ -1990,14 +1990,14 @@ Another better solution is to reformulate composition lemmas to have the followi
 `ContinuousAt g y → ContinuousAt f x → f x = y → ContinuousAt (g ∘ f) x`.
 This is even useful if the proof of `f x = y` is `rfl`.
 The reason that this works better is because the type of `hg` doesn't mention `f`.
-Only after elaborating the two `continuous_at` arguments, Lean will try to unify `f x` with `y`,
+Only after elaborating the two `ContinuousAt` arguments, Lean will try to unify `f x` with `y`,
 which is often easy after having chosen the correct functions for `f` and `g`.
 Here is an example that shows the difference:
 ```
 example [TopologicalSpace α] [TopologicalSpace β] {x₀ : α} (f : α → α → β)
     (hf : ContinuousAt (Function.uncurry f) (x₀, x₀)) :
     ContinuousAt (fun x ↦ f x x) x₀ :=
-  -- hf.comp x₀ (continuousAt_id.prod continuousAt_id) -- type mismatch
+  -- hf.comp (continuousAt_id.prod continuousAt_id) -- type mismatch
   -- hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl -- works
 ```
 -/

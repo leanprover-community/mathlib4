@@ -31,7 +31,7 @@ section Semigroup
 is equal to a multiplication on the left by `x * y`.
 -/
 @[to_additive (attr := simp) "Composing two additions on the left by `y` then `x`
-is equal to a addition on the left by `x + y`."]
+is equal to an addition on the left by `x + y`."]
 theorem comp_mul_left [Semigroup α] (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
   ext z
   simp [mul_assoc]
@@ -42,7 +42,7 @@ theorem comp_mul_left [Semigroup α] (x y : α) : (x * ·) ∘ (y * ·) = (x * y
 is equal to a multiplication on the right by `y * x`.
 -/
 @[to_additive (attr := simp) "Composing two additions on the right by `y` and `x`
-is equal to a addition on the right by `y + x`."]
+is equal to an addition on the right by `y + x`."]
 theorem comp_mul_right [Semigroup α] (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
   ext z
   simp [mul_assoc]

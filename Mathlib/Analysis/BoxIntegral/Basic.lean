@@ -15,7 +15,7 @@ import Mathlib.Topology.UniformSpace.Compact
 /-!
 # Integrals of Riemann, Henstock-Kurzweil, and McShane
 
-In this file we define the integral of a function over a box in `ℝⁿ. The same definition works for
+In this file we define the integral of a function over a box in `ℝⁿ`. The same definition works for
 Riemann, Henstock-Kurzweil, and McShane integrals.
 
 As usual, we represent `ℝⁿ` as the type of functions `ι → ℝ` for some finite type `ι`. A rectangular
@@ -812,7 +812,7 @@ box `J ≤ I` such that
 the distance between the term `vol J (f x)` of an integral sum corresponding to `J` and `g J` is
 less than or equal to `ε` if `x ∈ s` and is less than or equal to `ε * B J` otherwise.
 
-Then `f` is integrable on `I along `l` with integral `g I`. -/
+Then `f` is integrable on `I` along `l` with integral `g I`. -/
 theorem HasIntegral.of_le_Henstock_of_forall_isLittleO (hl : l ≤ Henstock) (B : ι →ᵇᵃ[I] ℝ)
     (hB0 : ∀ J, 0 ≤ B J) (g : ι →ᵇᵃ[I] F) (s : Set ℝⁿ) (hs : s.Countable)
     (H₁ : ∀ (c : ℝ≥0), ∀ x ∈ Box.Icc I ∩ s, ∀ ε > (0 : ℝ),

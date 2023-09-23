@@ -335,7 +335,7 @@ instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(
       continuous_eval'.comp (continuous_snd.prod_map continuous_id)
     exact h1.mul h2⟩
 
-/-- Coercion to a function as an `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
+/-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps)
   "Coercion to a function as an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`." ]
 def coeFnMonoidHom [Monoid β] [ContinuousMul β] : C(α, β) →* α → β where

@@ -401,13 +401,13 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         ext x
         apply ULift.ext
         dsimp [LocallyConstant.ofClopen]
-        simp only [FunctorToTypes.map_comp_apply, forget_ContinuousMap_mk, Function.comp_apply]
-        rw [if_neg]
+        rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
+          Function.comp_apply, if_neg]
         refine' mt (fun α => hVU α) _
         simp only [Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
       apply_fun fun e => (e y).down  at H
       dsimp [LocallyConstant.ofClopen] at H
-      rw [if_pos hyV] at H
+      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map

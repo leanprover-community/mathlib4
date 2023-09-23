@@ -167,7 +167,7 @@ section SMul
 /-! ### Derivative of the product of a scalar-valued function and a vector-valued function
 
 If `c` is a differentiable scalar-valued function and `f` is a differentiable vector-valued
-function, then `λ x, c x • f x` is differentiable as well. Lemmas in this section works for
+function, then `fun x ↦ c x • f x` is differentiable as well. Lemmas in this section works for
 function `c` taking values in the base field, as well as in a normed algebra over the base
 field: e.g., they work for `c : E → ℂ` and `f : E → F` provided that `F` is a complex
 normed vector space.

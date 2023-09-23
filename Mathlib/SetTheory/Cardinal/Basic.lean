@@ -952,7 +952,7 @@ instance (a : Cardinal.{u}) : Small.{u} (Set.Iic a) := by
 instance (a : Cardinal.{u}) : Small.{u} (Set.Iio a) :=
   small_subset Iio_subset_Iic_self
 
-/-- A set of cardinals is bounded above iff it's small, i.e. it corresponds to an usual ZFC set. -/
+/-- A set of cardinals is bounded above iff it's small, i.e. it corresponds to a usual ZFC set. -/
 theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :=
   ⟨fun ⟨a, ha⟩ => @small_subset _ (Iic a) s (fun x h => ha h) _, by
     rintro ⟨ι, ⟨e⟩⟩

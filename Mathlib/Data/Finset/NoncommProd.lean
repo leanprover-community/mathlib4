@@ -228,7 +228,7 @@ namespace Finset
 variable [Monoid β] [Monoid γ]
 
 
-/-- Proof used in definition of `Finset.noncommProd -/
+/-- Proof used in definition of `Finset.noncommProd` -/
 @[to_additive]
 theorem noncommProd_lemma (s : Finset α) (f : α → β)
     (comm : (s : Set α).Pairwise fun a b => Commute (f a) (f b)) :

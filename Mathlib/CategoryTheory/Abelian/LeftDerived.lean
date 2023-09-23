@@ -162,7 +162,7 @@ def leftDerivedZeroToSelfAppIso [EnoughProjectives C] [PreservesFiniteColimits F
 #align category_theory.abelian.functor.left_derived_zero_to_self_app_iso CategoryTheory.Abelian.Functor.leftDerivedZeroToSelfAppIso
 
 /-- Given `P : ProjectiveResolution X` and `Q : ProjectiveResolution Y` and a morphism `f : X ⟶ Y`,
-naturality of the square given by `left_derived_zero_to_self_obj_hom. -/
+naturality of the square given by `leftDerived_zero_to_self_obj_hom`. -/
 theorem leftDerived_zero_to_self_natural [EnoughProjectives C] {X : C} {Y : C} (f : X ⟶ Y)
     (P : ProjectiveResolution X) (Q : ProjectiveResolution Y) :
     (F.leftDerived 0).map f ≫ leftDerivedZeroToSelfApp F Q =

@@ -315,7 +315,7 @@ theorem sub_self_re : a - a.re = a.im :=
 * `j * j = c₂`;
 * `i * j = k`, `j * i = -k`;
 * `k * k = -c₁ * c₂`;
-* `i * k = c₁ * j`, `k * i = `-c₁ * j`;
+* `i * k = c₁ * j`, `k * i = -c₁ * j`;
 * `j * k = -c₂ * i`, `k * j = c₂ * i`.  -/
 instance : Mul ℍ[R,c₁,c₂] :=
   ⟨fun a b =>

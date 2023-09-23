@@ -87,7 +87,7 @@ theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClop
     rw [h]
     rintro x ⟨T, hT, hx⟩
     refine' ⟨_, ⟨⟨T, hT⟩, rfl⟩, _⟩
-    dsimp only
+    dsimp only [forget_map_eq_coe]
     rwa [← (hV ⟨T, hT⟩).2]
   have := hU.2.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
   -- Porting note: same remark as after `hB`
@@ -132,7 +132,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   obtain ⟨j, V, hV, h⟩ := exists_clopen_of_cofiltered C hC hU
   use j, LocallyConstant.ofClopen hV
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
-  rw [LocallyConstant.coe_comap ((forget Profinite).map _) _ (C.π.app j).continuous]
+  rw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
   conv_rhs => rw [Set.preimage_comp]
   rw [LocallyConstant.ofClopen_fiber_zero hV, ← h]
 set_option linter.uppercaseLean3 false in
@@ -168,11 +168,11 @@ theorem exists_locallyConstant_finite_aux {α : Type _} [Finite α] (hC : IsLimi
   rw [h]
   dsimp
   ext1 x
-  rw [LocallyConstant.coe_comap ((forget Profinite).map _) _ (C.π.app (j a)).continuous]
+  rw [LocallyConstant.coe_comap _ _ (C.π.app (j a)).continuous]
   dsimp [LocallyConstant.flip, LocallyConstant.unflip]
-  rw [LocallyConstant.coe_comap ((forget Profinite).map _) _ (C.π.app j0).continuous]
+  rw [LocallyConstant.coe_comap _ _ (C.π.app j0).continuous]
   dsimp
-  rw [LocallyConstant.coe_comap ((forget Profinite).map _) _ _]
+  rw [LocallyConstant.coe_comap _ _ _]
   -- Porting note: `repeat' rw [LocallyConstant.coe_comap]` didn't work
   -- so I did all three rewrites manually
   · dsimp
@@ -192,11 +192,11 @@ theorem exists_locallyConstant_finite_nonempty {α : Type _} [Finite α] [Nonemp
   let σ : (α → Fin 2) → α := fun f => if h : ∃ a : α, ι a = f then h.choose else default
   refine' ⟨j, gg.map σ, _⟩
   ext x
-  rw [LocallyConstant.coe_comap ((forget Profinite).map _) _ (C.π.app j).continuous]
+  rw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
   dsimp
   have h1 : ι (f x) = gg (C.π.app j x) := by
     change f.map (fun a b => if a = b then (0 : Fin 2) else 1) x = _
-    rw [h, LocallyConstant.coe_comap ((forget Profinite).map _) _ (C.π.app j).continuous]
+    rw [h, LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
     rfl
   have h2 : ∃ a : α, ι a = gg (C.π.app j x) := ⟨f x, h1⟩
   rw [dif_pos h2]
@@ -248,7 +248,7 @@ theorem exists_locallyConstant {α : Type _} (hC : IsLimit C) (f : LocallyConsta
     refine' ⟨j, ⟨ff ∘ g', g'.isLocallyConstant.comp _⟩, _⟩
     ext1 t
     apply_fun fun e => e t at hj
-    rw [LocallyConstant.coe_comap ((forget Profinite).map _) _ (C.π.app j).continuous] at hj ⊢
+    rw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous] at hj ⊢
     dsimp at hj ⊢
     rw [← hj]
     rfl

@@ -62,7 +62,7 @@ See `L1Space.lean` for `L¹` space.
 * `comp`         : Use `comp g f` to get `[g ∘ f]` from `g : β → γ` and `[f] : α →ₘ γ` when `g` is
                  continuous. Use `comp_measurable` if `g` is only measurable (this requires the
                  target space to be second countable).
-* `comp₂`        : Use `comp₂ g f₁ f₂ to get `[λ a, g (f₁ a) (f₂ a)]`.
+* `comp₂`        : Use `comp₂ g f₁ f₂` to get `[fun a ↦ g (f₁ a) (f₂ a)]`.
                  For example, `[f + g]` is `comp₂ (+)`
 
 

@@ -46,7 +46,7 @@ The versions vary by:
 * in case when we count pigeons by some weight function `w` and consider a function `f` between
   `Finset`s `s` and `t`, we can either assume that each pigeon is in one of the pigeonholes
   (`∀ x ∈ s, f x ∈ t`), or assume that for `y ∉ t`, the total weight of the pigeons in this
-  pigeonhole `∑ x in s.filter (λ x, f x = y), w x` is nonpositive or nonnegative depending on
+  pigeonhole `∑ x in s.filter (fun x ↦ f x = y), w x` is nonpositive or nonnegative depending on
   the inequality we are proving.
 
 Lemma names follow `mathlib` convention (e.g.,
@@ -97,7 +97,7 @@ There are a few bits we can change in this theorem:
 
 * reverse all inequalities, with obvious adjustments to the name;
 * replace the assumption `∀ a ∈ s, f a ∈ t` with
-  `∀ y ∉ t, (∑ x in s.filter (λ x, f x = y), w x) ≤ 0`,
+  `∀ y ∉ t, (∑ x in s.filter (fun x ↦ f x = y), w x) ≤ 0`,
   and replace `of_maps_to` with `of_sum_fiber_nonpos` in the name;
 * use non-strict inequalities assuming `t` is nonempty.
 

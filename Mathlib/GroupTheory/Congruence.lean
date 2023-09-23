@@ -959,7 +959,7 @@ theorem lift_apply_mk' (f : c.Quotient →* P) :
 
 /-- Homomorphisms on the quotient of a monoid by a congruence relation are equal if they
     are equal on elements that are coercions from the monoid. -/
-@[to_additive "Homomorphisms on the quotient of an AddMonoid` by an additive congruence relation
+@[to_additive "Homomorphisms on the quotient of an `AddMonoid` by an additive congruence relation
 are equal if they are equal on elements that are coercions from the `AddMonoid`."]
 theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g := by
   rw [← lift_apply_mk' f, ← lift_apply_mk' g]
@@ -1244,7 +1244,7 @@ protected theorem zpow : ∀ (n : ℤ) {w x}, c w x → c (w ^ n) (x ^ n)
 /-- The inversion induced on the quotient by a congruence relation on a type with a
     inversion. -/
 @[to_additive "The negation induced on the quotient by an additive congruence relation on a type
-with an negation."]
+with a negation."]
 instance hasInv : Inv c.Quotient :=
   ⟨(Quotient.map' Inv.inv) fun _ _ => c.inv⟩
 #align con.has_inv Con.hasInv
