@@ -108,24 +108,15 @@ def matchAnywhere (t : Expr) : MetaM ConstMatcher := withReducible do
 
 /-- For all names `n` mentioned in the type of the constant `c`, add a mapping from
 `n` to `c.name` to the relation. -/
-private def addDecl (c : ConstantInfo) (m : NameRel) : CoreM NameRel := do
+private def addDecl (_ : Lean.Name) (c : ConstantInfo) (m : NameRel) : MetaM NameRel := do
   if ← c.name.isBlackListed then
     return m
   let consts := c.type.foldConsts {} (flip NameSet.insert)
   return consts.fold (init := m) fun m n => m.insert n c.name
 
-private def addLibraryDecl (c : ConstantInfo) : NameRel × NameRel → CoreM (NameRel × NameRel)
-  | (m₁, m₂) => do return (← addDecl c m₁, m₂)
-
-private def addLocalDecl (c : ConstantInfo) : NameRel × NameRel → CoreM (NameRel × NameRel)
-  | (m₁, m₂) => do return (m₁, ← addDecl c m₂)
-
 /-- The declaration cache used by `#find`, stores `NameRel` mapping names to the name
-of constants they are mentinend in.
-
-The first `NameRel` is for library declaration (and doesn't change once populated),
-the second is for local declarations and is rebuilt upon every invocation of `#find`.  -/
-def Index := DeclCache (NameRel × NameRel)
+of constants they are mentinend in.  -/
+def Index := DeclCache2 NameRel
 
 -- NB: In large files it may be slightly wasteful to calculate a full NameSet for the local
 -- definition upon every invocation of `#find`, and a linear scan might work better. For now,
@@ -133,16 +124,11 @@ def Index := DeclCache (NameRel × NameRel)
 
 /-- Create a fresh index.  -/
 def Index.mk : IO Index :=
-  DeclCache.mk
-    (profilingName := "#find: init cache")
-    (empty := ({}, {}))
-    (addLibraryDecl := fun _ c m => addLibraryDecl c m)
-    (addDecl := fun _ c m => addLocalDecl c m)
+  DeclCache2.mk (profilingName := "#find: init cache") (empty := {}) (addDecl := addDecl)
 
 /-- Create an index from a cached value -/
-def Index.mkFromCache (init : NameRel × NameRel) : IO Index :=
-  DeclCache.mkFromCache init
-    (addDecl := fun _ c m => addLocalDecl c m)
+def Index.mkFromCache (init : NameRel) : IO Index :=
+  DeclCache2.mkFromCache .empty addDecl init
 
 
 /-- The parsed and elaborated arguments to `#find`  -/
@@ -305,10 +291,10 @@ def cachePath : IO FilePath :=
     return "build" / "lib" / "MathlibExtras" / "Find.extra"
 
 /-- The `DeclCache` used by `#find`, together with the `CompactedRegion`, if present -/
-initialize cachedData : WithCompactedRegion (DeclCache (NameRel × NameRel)) ← unsafe do
+initialize cachedData : WithCompactedRegion (DeclCache2 NameRel) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
-    let (d, r) ← unpickle (NameRel × NameRel) path
+    let (d, r) ← unpickle _ path
     return ⟨r, ← Index.mkFromCache d⟩
   else
     return ⟨none, ← Index.mk⟩

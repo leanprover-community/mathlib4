@@ -149,14 +149,62 @@ def DeclCache.mkFromCache (init : α) (addDecl : Name → ConstantInfo → α �
   let cache ← Cache.mk (pure init)
   pure { cache := cache, addDecl := addDecl }
 
-
 /--
-A type synonym for a `DeclCache` containing a pair of discrimination trees.
+A type synonym for a `DeclCache` containing a pair of elements.
 The first will store declarations in the current file,
 the second will store declarations from imports (and will hopefully be "read-only" after creation).
 -/
-@[reducible] def DiscrTreeCache (α : Type) : Type :=
-  DeclCache (DiscrTree α true × DiscrTree α true)
+@[reducible]
+def DeclCache2 (α : Type) := DeclCache (α × α)
+
+/--
+Creates a `DeclCache`.
+The cached structure `α` is initialized with `empty`,
+and then `addLibraryDecl` is called for every imported constant, and the result is cached.
+After all imported constants have been added, we run `post`.
+When `get` is called, `addDecl` is also called for every constant in the current file.
+-/
+def DeclCache2.mk (profilingName : String) (empty : α)
+    (addDecl : Name → ConstantInfo → α → MetaM α)
+    (post : α → MetaM α := fun a => pure a) : IO (DeclCache2 α) :=
+  DeclCache.mk profilingName
+    (empty := (empty, empty))
+    (addDecl := fun n c (m₁, m₂) => do pure (← addDecl n c m₁, m₂))
+    (addLibraryDecl := fun n c (m₁, m₂) => do pure (m₁, ← addDecl n c m₂))
+    (post := fun (m₁, m₂) => return (m₁, ← post m₂))
+
+/--
+Access the cache.
+Calling this function for the first time
+will initialize the cache with the function
+provided in the constructor.
+-/
+def DeclCache2.get (cache : DeclCache2 α) : MetaM (α × α) := DeclCache.get cache
+
+/--
+Access the cache (imports only).
+Suitable to get a value to be pickled and fed to `mkFromCache` later.
+-/
+def DeclCache2.getImported (cache : DeclCache2 α) : CoreM α := do
+  let (_, m₂) ← cache.cache.get
+  pure m₂
+
+/--
+Creates a `DeclCache2` from a pre-computed index, typically obtained via `DeclCache2.getImports`.
+The cached structure `α` is initialized with the given value.
+When `get` is called, `addDecl` is additionally called for every constant in the current file.
+-/
+def DeclCache2.mkFromCache (empty : α) (addDecl : Name → ConstantInfo → α → MetaM α) (cached : α) :
+    IO (DeclCache2 α) :=
+  DeclCache.mkFromCache
+    (init := (empty, cached))
+    (addDecl := fun n c (m₁, m₂) => do pure (← addDecl n c m₁, m₂))
+
+
+/--
+A type synonym for a `DeclCache` containing a pair of discrimination trees.
+-/
+@[reducible] def DiscrTreeCache (α : Type) : Type := DeclCache2 (DiscrTree α true)
 
 /--
 Build a `DiscrTreeCache`,
@@ -167,18 +215,14 @@ def DiscrTreeCache.mk [BEq α] (profilingName : String)
     (post? : Option (Array α → Array α) := none)
     (init : Option (DiscrTree α true) := none) :
     IO (DiscrTreeCache α) :=
-  let updateTree := fun name constInfo tree => do
+  let addDecl := fun name constInfo tree => do
     return (← processDecl name constInfo).foldl (fun t (k, v) => t.insertIfSpecific k v) tree
-  let addDecl := fun name constInfo (tree₁, tree₂) => do
-    return (← updateTree name constInfo tree₁, tree₂)
-  let addLibraryDecl := fun name constInfo (tree₁, tree₂) => do
-    return (tree₁, ← updateTree name constInfo tree₂)
   let post := match post? with
-  | some f => fun (T₁, T₂) => return (T₁, T₂.mapArrays f)
+  | some f => fun T => pure (T.mapArrays f)
   | none => fun T => pure T
   match init with
-  | some t => DeclCache.mkFromCache ({}, t) addDecl
-  | none => DeclCache.mk profilingName ({}, {}) addDecl addLibraryDecl (post := post)
+  | some t => DeclCache2.mkFromCache {} addDecl t
+  | none => DeclCache2.mk profilingName {} addDecl post
 
 /--
 Get matches from both the discrimination tree for declarations in the current file,
