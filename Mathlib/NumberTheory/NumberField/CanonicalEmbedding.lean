@@ -535,7 +535,9 @@ open MeasureTheory MeasureTheory.Measure Classical NNReal ENNReal FiniteDimensio
 variable [NumberField K]
 
 /-- The bound that appears in Minkowski Convex Body theorem, see
-`MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`. -/
+`MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`. See
+`NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis` for the computation of
+`volume (fundamentalDomain (latticeBasis K))`. -/
 noncomputable def minkowskiBound : ℝ≥0∞ :=
   volume (fundamentalDomain (latticeBasis K)) * 2 ^ (finrank ℝ (E K))
 
