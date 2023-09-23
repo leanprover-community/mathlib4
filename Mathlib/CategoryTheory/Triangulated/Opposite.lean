@@ -339,7 +339,7 @@ lemma contractible_distinguished (X : Cᵒᵖ) :
 /-- Isomorphism expressing a compatibility of the equivalence `triangleOpEquivalence C`
 with the rotation of triangles. -/
 noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnopIso (T : Triangle Cᵒᵖ) :
-    Triangle.rotate ((triangleOpEquivalence C).inverse.obj (Triangle.rotate T)).unop ≅
+    ((triangleOpEquivalence C).inverse.obj T.rotate).unop.rotate ≅
       ((triangleOpEquivalence C).inverse.obj T).unop :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
       (-((opShiftFunctorEquivalence C 1).unitIso.app T.obj₁).unop) (by simp)
