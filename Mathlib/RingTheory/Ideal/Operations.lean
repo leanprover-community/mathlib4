@@ -634,7 +634,7 @@ theorem finset_inf_span_singleton {ι : Type _} (s : Finset ι) (I : ι → R)
 
 theorem iInf_span_singleton {ι : Type _} [Fintype ι] (I : ι → R)
     (hI : ∀ (i j) (_ : i ≠ j), IsCoprime (I i) (I j)) :
-    (⨅ i, Ideal.span ({I i} : Set R)) = Ideal.span {∏ i, I i} := by
+    ⨅ i, Ideal.span ({I i} : Set R) = Ideal.span {∏ i, I i} := by
   rw [← Finset.inf_univ_eq_iInf, finset_inf_span_singleton]
   rwa [Finset.coe_univ, Set.pairwise_univ]
 #align ideal.infi_span_singleton Ideal.iInf_span_singleton

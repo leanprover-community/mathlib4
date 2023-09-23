@@ -232,7 +232,7 @@ theorem coe_iSup {ι} (s : ι → Opens α) : ((⨆ i, s i : Opens α) : Set α)
   simp [iSup]
 #align topological_space.opens.coe_supr TopologicalSpace.Opens.coe_iSup
 
-theorem iSup_def {ι} (s : ι → Opens α) : (⨆ i, s i) = ⟨⋃ i, s i, isOpen_iUnion fun i => (s i).2⟩ :=
+theorem iSup_def {ι} (s : ι → Opens α) : ⨆ i, s i = ⟨⋃ i, s i, isOpen_iUnion fun i => (s i).2⟩ :=
   ext <| coe_iSup s
 #align topological_space.opens.supr_def TopologicalSpace.Opens.iSup_def
 

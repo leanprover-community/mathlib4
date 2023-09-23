@@ -63,7 +63,7 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
       · exact mul_nonneg (mul_nonneg haz hav) hbu
       · exact mul_nonneg (mul_nonneg hbz hau) hbv
       · exact mul_nonneg hau hav
-    have hw : (∑ i, w i) = az * av + bz * au := by
+    have hw : ∑ i, w i = az * av + bz * au := by
       trans az * av * bu + (bz * au * bv + au * av)
       . simp [Fin.sum_univ_succ, Fin.sum_univ_zero]
       rw [← one_mul (au * av), ← habz, add_mul, ← add_assoc, add_add_add_comm, mul_assoc, ← mul_add,
@@ -84,7 +84,7 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
 
 /-- **Stone's Separation Theorem** -/
 theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) (hst : Disjoint s t) :
-    ∃ C : Set E, Convex 𝕜 C ∧ Convex 𝕜 (Cᶜ) ∧ s ⊆ C ∧ t ⊆ Cᶜ := by
+    ∃ C : Set E, Convex 𝕜 C ∧ Convex 𝕜 Cᶜ ∧ s ⊆ C ∧ t ⊆ Cᶜ := by
   let S : Set (Set E) := { C | Convex 𝕜 C ∧ Disjoint C t }
   obtain ⟨C, hC, hsC, hCmax⟩ :=
     zorn_subset_nonempty S

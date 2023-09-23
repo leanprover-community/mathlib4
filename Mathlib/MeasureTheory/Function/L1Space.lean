@@ -68,11 +68,11 @@ namespace MeasureTheory
 
 
 theorem lintegral_nnnorm_eq_lintegral_edist (f : α → β) :
-    (∫⁻ a, ‖f a‖₊ ∂μ) = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_eq_coe_nnnorm]
+    ∫⁻ a, ‖f a‖₊ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_eq_coe_nnnorm]
 #align measure_theory.lintegral_nnnorm_eq_lintegral_edist MeasureTheory.lintegral_nnnorm_eq_lintegral_edist
 
 theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
-    (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) = ∫⁻ a, edist (f a) 0 ∂μ := by
+    ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by
   simp only [ofReal_norm_eq_coe_nnnorm, edist_eq_coe_nnnorm]
 #align measure_theory.lintegral_norm_eq_lintegral_edist MeasureTheory.lintegral_norm_eq_lintegral_edist
 
@@ -88,12 +88,12 @@ theorem lintegral_nnnorm_zero : (∫⁻ _ : α, ‖(0 : β)‖₊ ∂μ) = 0 := 
 #align measure_theory.lintegral_nnnorm_zero MeasureTheory.lintegral_nnnorm_zero
 
 theorem lintegral_nnnorm_add_left {f : α → β} (hf : AEStronglyMeasurable f μ) (g : α → γ) :
-    (∫⁻ a, ‖f a‖₊ + ‖g a‖₊ ∂μ) = (∫⁻ a, ‖f a‖₊ ∂μ) + ∫⁻ a, ‖g a‖₊ ∂μ :=
+    ∫⁻ a, ‖f a‖₊ + ‖g a‖₊ ∂μ = (∫⁻ a, ‖f a‖₊ ∂μ) + ∫⁻ a, ‖g a‖₊ ∂μ :=
   lintegral_add_left' hf.ennnorm _
 #align measure_theory.lintegral_nnnorm_add_left MeasureTheory.lintegral_nnnorm_add_left
 
 theorem lintegral_nnnorm_add_right (f : α → β) {g : α → γ} (hg : AEStronglyMeasurable g μ) :
-    (∫⁻ a, ‖f a‖₊ + ‖g a‖₊ ∂μ) = (∫⁻ a, ‖f a‖₊ ∂μ) + ∫⁻ a, ‖g a‖₊ ∂μ :=
+    ∫⁻ a, ‖f a‖₊ + ‖g a‖₊ ∂μ = (∫⁻ a, ‖f a‖₊ ∂μ) + ∫⁻ a, ‖g a‖₊ ∂μ :=
   lintegral_add_right' _ hg.ennnorm
 #align measure_theory.lintegral_nnnorm_add_right MeasureTheory.lintegral_nnnorm_add_right
 
@@ -358,7 +358,7 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
   -- Show `2 * bound` `HasFiniteIntegral`
   · rw [hasFiniteIntegral_iff_ofReal] at bound_hasFiniteIntegral
     · calc
-        (∫⁻ a, b a ∂μ) = 2 * ∫⁻ a, ENNReal.ofReal (bound a) ∂μ := by
+        ∫⁻ a, b a ∂μ = 2 * ∫⁻ a, ENNReal.ofReal (bound a) ∂μ := by
           rw [lintegral_const_mul']
           exact coe_ne_top
         _ ≠ ∞ := mul_ne_top coe_ne_top bound_hasFiniteIntegral.ne
@@ -371,7 +371,7 @@ end DominatedConvergence
 
 section PosPart
 
-/-! Lemmas used for defining the positive part of a `L¹` function -/
+/-! Lemmas used for defining the positive part of an `L¹` function -/
 
 
 theorem HasFiniteIntegral.max_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
@@ -998,7 +998,7 @@ theorem integrable_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEM
 
 section PosPart
 
-/-! ### Lemmas used for defining the positive part of a `L¹` function -/
+/-! ### Lemmas used for defining the positive part of an `L¹` function -/
 
 
 theorem Integrable.pos_part {f : α → ℝ} (hf : Integrable f μ) :

@@ -1241,7 +1241,7 @@ protected theorem zpow : ∀ (n : ℤ) {w x}, c w x → c (w ^ n) (x ^ n)
 #align con.zpow Con.zpow
 #align add_con.zsmul AddCon.zsmul
 
-/-- The inversion induced on the quotient by a congruence relation on a type with a
+/-- The inversion induced on the quotient by a congruence relation on a type with an
     inversion. -/
 @[to_additive "The negation induced on the quotient by an additive congruence relation on a type
 with a negation."]

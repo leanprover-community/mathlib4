@@ -527,7 +527,7 @@ theorem integral_pos : 0 < ∫ x, f x ∂μ := by
   exact measure_ball_pos μ c f.rOut_pos
 #align cont_diff_bump.integral_pos ContDiffBump.integral_pos
 
-theorem integral_normed : (∫ x, f.normed μ x ∂μ) = 1 := by
+theorem integral_normed : ∫ x, f.normed μ x ∂μ = 1 := by
   simp_rw [ContDiffBump.normed, div_eq_mul_inv, mul_comm (f _), ← smul_eq_mul, integral_smul]
   exact inv_mul_cancel f.integral_pos.ne'
 #align cont_diff_bump.integral_normed ContDiffBump.integral_normed
@@ -558,7 +558,7 @@ theorem tendsto_support_normed_smallSets {ι} {φ : ι → ContDiffBump c} {l : 
 
 variable (μ)
 
-theorem integral_normed_smul [CompleteSpace X] (z : X) : (∫ x, f.normed μ x • z ∂μ) = z := by
+theorem integral_normed_smul [CompleteSpace X] (z : X) : ∫ x, f.normed μ x • z ∂μ = z := by
   simp_rw [integral_smul_const, f.integral_normed (μ := μ), one_smul]
 #align cont_diff_bump.integral_normed_smul ContDiffBump.integral_normed_smul
 

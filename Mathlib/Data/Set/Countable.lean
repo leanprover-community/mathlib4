@@ -154,7 +154,7 @@ protected theorem Countable.preimage {s : Set β} (hs : s.Countable) {f : α →
 #align set.countable.preimage Set.Countable.preimage
 
 theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Prop} (h : ∃ x, p x) :
-    (∃ s : ℕ → α, (∀ n, p (s n)) ∧ (⨆ n, s n) = ⊤) ↔
+    (∃ s : ℕ → α, (∀ n, p (s n)) ∧ ⨆ n, s n = ⊤) ↔
       ∃ S : Set α, S.Countable ∧ (∀ s ∈ S, p s) ∧ sSup S = ⊤ := by
   constructor
   · rintro ⟨s, hps, hs⟩
@@ -172,7 +172,7 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
 #align set.exists_seq_supr_eq_top_iff_countable Set.exists_seq_iSup_eq_top_iff_countable
 
 theorem exists_seq_cover_iff_countable {p : Set α → Prop} (h : ∃ s, p s) :
-    (∃ s : ℕ → Set α, (∀ n, p (s n)) ∧ (⋃ n, s n) = univ) ↔
+    (∃ s : ℕ → Set α, (∀ n, p (s n)) ∧ ⋃ n, s n = univ) ↔
       ∃ S : Set (Set α), S.Countable ∧ (∀ s ∈ S, p s) ∧ ⋃₀ S = univ :=
   exists_seq_iSup_eq_top_iff_countable h
 #align set.exists_seq_cover_iff_countable Set.exists_seq_cover_iff_countable

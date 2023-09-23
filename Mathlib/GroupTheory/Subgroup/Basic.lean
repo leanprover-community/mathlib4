@@ -1270,7 +1270,7 @@ theorem closure_eq_bot_iff (G : Type _) [Group G] (S : Set G) : closure S = ⊥ 
 
 @[to_additive]
 theorem iSup_eq_closure {ι : Sort _} (p : ι → Subgroup G) :
-    (⨆ i, p i) = closure (⋃ i, (p i : Set G)) := by simp_rw [closure_iUnion, closure_eq]
+    ⨆ i, p i = closure (⋃ i, (p i : Set G)) := by simp_rw [closure_iUnion, closure_eq]
 #align subgroup.supr_eq_closure Subgroup.iSup_eq_closure
 #align add_subgroup.supr_eq_closure AddSubgroup.iSup_eq_closure
 
@@ -1527,7 +1527,7 @@ theorem comap_sup_comap_le (H K : Subgroup N) (f : G →* N) :
 
 @[to_additive]
 theorem iSup_comap_le {ι : Sort _} (f : G →* N) (s : ι → Subgroup N) :
-    (⨆ i, (s i).comap f) ≤ (iSup s).comap f :=
+    ⨆ i, (s i).comap f ≤ (iSup s).comap f :=
   Monotone.le_map_iSup fun _ _ => comap_mono
 #align subgroup.supr_comap_le Subgroup.iSup_comap_le
 #align add_subgroup.supr_comap_le AddSubgroup.iSup_comap_le

@@ -114,7 +114,7 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     intro ν' h_ν'_in
     rw [mem_setOf_eq] at h_ν'_in
     refine' ⟨ν'.restrict s, _, restrict_le_self⟩
-    refine' ⟨ν' + (⊤ : Measure α).restrict (sᶜ), _, _⟩
+    refine' ⟨ν' + (⊤ : Measure α).restrict sᶜ, _, _⟩
     · rw [mem_setOf_eq, add_right_comm, Measure.le_iff]
       intro t h_meas_t
       repeat' rw [← measure_inter_add_diff t h_meas_s]

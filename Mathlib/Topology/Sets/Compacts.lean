@@ -565,7 +565,7 @@ theorem coe_sdiff [T2Space α] (s t : CompactOpens α) : (↑(s \ t) : Set α) =
 #align topological_space.compact_opens.coe_sdiff TopologicalSpace.CompactOpens.coe_sdiff
 
 @[simp]
-theorem coe_compl [T2Space α] [CompactSpace α] (s : CompactOpens α) : (↑(sᶜ) : Set α) = ↑sᶜ :=
+theorem coe_compl [T2Space α] [CompactSpace α] (s : CompactOpens α) : (↑sᶜ : Set α) = (↑s)ᶜ :=
   rfl
 #align topological_space.compact_opens.coe_compl TopologicalSpace.CompactOpens.coe_compl
 

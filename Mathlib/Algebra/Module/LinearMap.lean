@@ -738,7 +738,7 @@ abbrev Module.End (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Modu
   M →ₗ[R] M
 #align module.End Module.End
 
-/-- Reinterpret an additive homomorphism as a `ℕ`-linear map. -/
+/-- Reinterpret an additive homomorphism as an `ℕ`-linear map. -/
 def AddMonoidHom.toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) : M →ₗ[ℕ] M₂
     where
   toFun := f

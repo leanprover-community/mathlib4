@@ -75,7 +75,7 @@ variable (𝕜)
 theorem Lp.ae_eq_zero_of_forall_set_integral_eq_zero' (hm : m ≤ m0) (f : Lp E' p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
-    (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → (∫ x in s, f x ∂μ) = 0)
+    (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = 0)
     (hf_meas : AEStronglyMeasurable' m f μ) : f =ᵐ[μ] 0 := by
   let f_meas : lpMeas E' 𝕜 m p μ := ⟨f, hf_meas⟩
   -- Porting note: `simp only` does not call `rfl` to try to close the goal. See https://github.com/leanprover-community/mathlib4/issues/5025
@@ -96,7 +96,7 @@ theorem Lp.ae_eq_zero_of_forall_set_integral_eq_zero' (hm : m ≤ m0) (f : Lp E'
 theorem Lp.ae_eq_of_forall_set_integral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
-    (hfg : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → (∫ x in s, f x ∂μ) = ∫ x in s, g x ∂μ)
+    (hfg : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
     (hf_meas : AEStronglyMeasurable' m f μ) (hg_meas : AEStronglyMeasurable' m g μ) :
     f =ᵐ[μ] g := by
   suffices h_sub : ⇑(f - g) =ᵐ[μ] 0
@@ -122,7 +122,7 @@ variable {𝕜}
 theorem ae_eq_of_forall_set_integral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     {f g : α → F'} (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
-    (hfg_eq : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → (∫ x in s, f x ∂μ) = ∫ x in s, g x ∂μ)
+    (hfg_eq : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
     (hfm : AEStronglyMeasurable' m f μ) (hgm : AEStronglyMeasurable' m g μ) : f =ᵐ[μ] g := by
   rw [← ae_eq_trim_iff_of_aeStronglyMeasurable' hm hfm hgm]
   have hf_mk_int_finite :
@@ -150,7 +150,7 @@ theorem ae_eq_of_forall_set_integral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFi
   have hfg_mk_eq :
     ∀ s : Set α,
       MeasurableSet[m] s →
-        μ.trim hm s < ∞ → (∫ x in s, hfm.mk f x ∂μ.trim hm) = ∫ x in s, hgm.mk g x ∂μ.trim hm := by
+        μ.trim hm s < ∞ → ∫ x in s, hfm.mk f x ∂μ.trim hm = ∫ x in s, hgm.mk g x ∂μ.trim hm := by
     intro s hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
     rw [restrict_trim hm _ hs, ← integral_trim hm hfm.stronglyMeasurable_mk, ←
@@ -167,13 +167,13 @@ section IntegralNormLE
 
 variable {s : Set α}
 
-/-- Let `m` be a sub-σ-algebra of `m0`, `f` a `m0`-measurable function and `g` a `m`-measurable
+/-- Let `m` be a sub-σ-algebra of `m0`, `f` an `m0`-measurable function and `g` an `m`-measurable
 function, such that their integrals coincide on `m`-measurable sets with finite measure.
 Then `∫ x in s, ‖g x‖ ∂μ ≤ ∫ x in s, ‖f x‖ ∂μ` on all `m`-measurable sets with finite measure. -/
 theorem integral_norm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
     (hf : StronglyMeasurable f) (hfi : IntegrableOn f s μ) (hg : StronglyMeasurable[m] g)
     (hgi : IntegrableOn g s μ)
-    (hgf : ∀ t, MeasurableSet[m] t → μ t < ∞ → (∫ x in t, g x ∂μ) = ∫ x in t, f x ∂μ)
+    (hgf : ∀ t, MeasurableSet[m] t → μ t < ∞ → ∫ x in t, g x ∂μ = ∫ x in t, f x ∂μ)
     (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) : (∫ x in s, ‖g x‖ ∂μ) ≤ ∫ x in s, ‖f x‖ ∂μ := by
   rw [integral_norm_eq_pos_sub_neg hgi, integral_norm_eq_pos_sub_neg hfi]
   have h_meas_nonneg_g : MeasurableSet[m] {x | 0 ≤ g x} :=
@@ -199,14 +199,14 @@ theorem integral_norm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : �
     exact set_integral_nonpos_le (hm _ h_meas_nonpos_g) hf hfi
 #align measure_theory.integral_norm_le_of_forall_fin_meas_integral_eq MeasureTheory.integral_norm_le_of_forall_fin_meas_integral_eq
 
-/-- Let `m` be a sub-σ-algebra of `m0`, `f` a `m0`-measurable function and `g` a `m`-measurable
+/-- Let `m` be a sub-σ-algebra of `m0`, `f` an `m0`-measurable function and `g` an `m`-measurable
 function, such that their integrals coincide on `m`-measurable sets with finite measure.
 Then `∫⁻ x in s, ‖g x‖₊ ∂μ ≤ ∫⁻ x in s, ‖f x‖₊ ∂μ` on all `m`-measurable sets with finite
 measure. -/
 theorem lintegral_nnnorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
     (hf : StronglyMeasurable f) (hfi : IntegrableOn f s μ) (hg : StronglyMeasurable[m] g)
     (hgi : IntegrableOn g s μ)
-    (hgf : ∀ t, MeasurableSet[m] t → μ t < ∞ → (∫ x in t, g x ∂μ) = ∫ x in t, f x ∂μ)
+    (hgf : ∀ t, MeasurableSet[m] t → μ t < ∞ → ∫ x in t, g x ∂μ = ∫ x in t, f x ∂μ)
     (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) : (∫⁻ x in s, ‖g x‖₊ ∂μ) ≤ ∫⁻ x in s, ‖f x‖₊ ∂μ := by
   rw [← ofReal_integral_norm_eq_lintegral_nnnorm hfi, ←
     ofReal_integral_norm_eq_lintegral_nnnorm hgi, ENNReal.ofReal_le_ofReal_iff]

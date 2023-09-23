@@ -790,10 +790,22 @@ theorem le_of_le_of_equiv {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ≈ z) : x 
   h₁.trans h₂.1
 #align pgame.le_of_le_of_equiv PGame.le_of_le_of_equiv
 
+instance : Trans
+    ((· ≤ ·) : PGame → PGame → Prop)
+    ((· ≈ ·) : PGame → PGame → Prop)
+    ((· ≤ ·) : PGame → PGame → Prop) where
+  trans := le_of_le_of_equiv
+
 @[trans]
 theorem le_of_equiv_of_le {x y z : PGame} (h₁ : x ≈ y) : y ≤ z → x ≤ z :=
   h₁.1.trans
 #align pgame.le_of_equiv_of_le PGame.le_of_equiv_of_le
+
+instance : Trans
+    ((· ≈ ·) : PGame → PGame → Prop)
+    ((· ≤ ·) : PGame → PGame → Prop)
+    ((· ≤ ·) : PGame → PGame → Prop) where
+  trans := le_of_equiv_of_le
 
 theorem Lf.not_equiv {x y : PGame} (h : x ⧏ y) : ¬(x ≈ y) := fun h' => h.not_ge h'.2
 #align pgame.lf.not_equiv PGame.Lf.not_equiv
@@ -855,6 +867,12 @@ theorem lt_of_lt_of_equiv {x y z : PGame} (h₁ : x < y) (h₂ : y ≈ z) : x < 
 theorem lt_of_equiv_of_lt {x y z : PGame} (h₁ : x ≈ y) : y < z → x < z :=
   h₁.1.trans_lt
 #align pgame.lt_of_equiv_of_lt PGame.lt_of_equiv_of_lt
+
+instance : Trans
+    ((· ≈ ·) : PGame → PGame → Prop)
+    ((· < ·) : PGame → PGame → Prop)
+    ((· < ·) : PGame → PGame → Prop) where
+  trans := lt_of_equiv_of_lt
 
 theorem lt_congr_imp {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) (h : x₁ < y₁) : x₂ < y₂ :=
   hx.2.trans_lt (h.trans_le hy.1)

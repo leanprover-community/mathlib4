@@ -107,7 +107,7 @@ theorem tendsto_inv₀ {x : G₀} (hx : x ≠ 0) : Tendsto Inv.inv (𝓝 x) (�
   continuousAt_inv₀ hx
 #align tendsto_inv₀ tendsto_inv₀
 
-theorem continuousOn_inv₀ : ContinuousOn (Inv.inv : G₀ → G₀) ({0}ᶜ) := fun _x hx =>
+theorem continuousOn_inv₀ : ContinuousOn (Inv.inv : G₀ → G₀) {0}ᶜ := fun _x hx =>
   (continuousAt_inv₀ hx).continuousWithinAt
 #align continuous_on_inv₀ continuousOn_inv₀
 
@@ -322,7 +322,7 @@ theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
     exact (continuousAt_pow x (m + 1)).inv₀ (pow_ne_zero _ hx)
 #align continuous_at_zpow₀ continuousAt_zpow₀
 
-theorem continuousOn_zpow₀ (m : ℤ) : ContinuousOn (fun x : G₀ => x ^ m) ({0}ᶜ) := fun _x hx =>
+theorem continuousOn_zpow₀ (m : ℤ) : ContinuousOn (fun x : G₀ => x ^ m) {0}ᶜ := fun _x hx =>
   (continuousAt_zpow₀ _ _ (Or.inl hx)).continuousWithinAt
 #align continuous_on_zpow₀ continuousOn_zpow₀
 

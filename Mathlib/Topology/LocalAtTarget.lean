@@ -83,7 +83,7 @@ theorem isOpen_iff_inter_of_iSup_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsOpe
   constructor
   · exact fun H i => H.inter (U i).2
   · intro H
-    have : (⋃ i, (U i : Set β)) = Set.univ := by
+    have : ⋃ i, (U i : Set β) = Set.univ := by
       convert congr_arg (SetLike.coe) hU
       simp
     rw [← s.inter_univ, ← this, Set.inter_iUnion]
@@ -102,7 +102,7 @@ theorem isOpen_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
 
 theorem isClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
     IsClosed s ↔ ∀ i, IsClosed ((↑) ⁻¹' s : Set (U i)) := by
-  simpa using isOpen_iff_coe_preimage_of_iSup_eq_top hU (sᶜ)
+  simpa using isOpen_iff_coe_preimage_of_iSup_eq_top hU sᶜ
 #align is_closed_iff_coe_preimage_of_supr_eq_top isClosed_iff_coe_preimage_of_iSup_eq_top
 
 theorem isClosedMap_iff_isClosedMap_of_iSup_eq_top :

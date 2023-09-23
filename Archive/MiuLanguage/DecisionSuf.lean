@@ -75,7 +75,7 @@ where `d ≡ c [MOD 3]`.
 Given the above lemmas, the desired result reduces to an arithmetic result, given in the file
 `arithmetic.lean`.
 
-We'll use this result to show we can derive an `Miustr` of the form `M::z` where `z` is an string
+We'll use this result to show we can derive an `Miustr` of the form `M::z` where `z` is a string
 consisting only of `I`s such that `count I z ≡ 1 or 2 [MOD 3]`.
 
 As an intermediate step, we show that derive `z` from `zt`, where `t` is an `Miustr` consisting of

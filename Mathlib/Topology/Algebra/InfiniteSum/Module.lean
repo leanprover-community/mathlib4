@@ -29,7 +29,7 @@ theorem Summable.smul_const (hf : Summable f) (a : M) : Summable fun z => f z �
   (hf.hasSum.smul_const _).summable
 #align summable.smul_const Summable.smul_const
 
-theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : (∑' z, f z • a) = (∑' z, f z) • a :=
+theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : ∑' z, f z • a = (∑' z, f z) • a :=
   (hf.hasSum.smul_const _).tsum_eq
 #align tsum_smul_const tsum_smul_const
 
@@ -86,7 +86,7 @@ protected theorem ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ]
 #align continuous_linear_equiv.summable ContinuousLinearEquiv.summable
 
 theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι → M} (e : M ≃SL[σ] M₂)
-    {y : M₂} : (∑' z, e (f z)) = y ↔ (∑' z, f z) = e.symm y := by
+    {y : M₂} : (∑' z, e (f z)) = y ↔ ∑' z, f z = e.symm y := by
   by_cases hf : Summable f
   · exact
       ⟨fun h => (e.hasSum.mp ((e.summable.mpr hf).hasSum_iff.mpr h)).tsum_eq, fun h =>

@@ -927,7 +927,7 @@ theorem sup_dualAnnihilator_le_inf (U V : Submodule R M) :
 
 /-- See also `Subspace.dualAnnihilator_iInf_eq` for vector subspaces when `ι` is finite. -/
 theorem iSup_dualAnnihilator_le_iInf {ι : Type _} (U : ι → Submodule R M) :
-    (⨆ i : ι, (U i).dualAnnihilator) ≤ (⨅ i : ι, U i).dualAnnihilator := by
+    ⨆ i : ι, (U i).dualAnnihilator ≤ (⨅ i : ι, U i).dualAnnihilator := by
   rw [le_dualAnnihilator_iff_le_dualCoannihilator, dualCoannihilator_iSup_eq]
   apply iInf_mono
   exact fun i : ι => le_dualAnnihilator_dualCoannihilator (U i)

@@ -81,7 +81,7 @@ namespace IsCyclotomicExtension
 
 variable (n)
 
-/-- If `B` is a `n`-th cyclotomic extension of `A`, then `zeta n A B` is a primitive root of
+/-- If `B` is an `n`-th cyclotomic extension of `A`, then `zeta n A B` is a primitive root of
 unity in `B`. -/
 noncomputable def zeta : B :=
   (exists_prim_root A <| Set.mem_singleton n : ∃ r : B, IsPrimitiveRoot r n).choose

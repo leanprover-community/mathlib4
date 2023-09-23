@@ -234,11 +234,11 @@ theorem eq_singularPart {s : Measure α} {f : α → ℝ≥0∞} (hf : Measurabl
   obtain ⟨hmeas, hsing, hadd'⟩ := haveLebesgueDecomposition_spec μ ν
   obtain ⟨⟨S, hS₁, hS₂, hS₃⟩, ⟨T, hT₁, hT₂, hT₃⟩⟩ := hs, hsing
   rw [hadd'] at hadd
-  have hνinter : ν ((S ∩ T)ᶜ) = 0 := by
+  have hνinter : ν (S ∩ T)ᶜ = 0 := by
     rw [compl_inter]
     refine' nonpos_iff_eq_zero.1 (le_trans (measure_union_le _ _) _)
     rw [hT₃, hS₃, add_zero]
-  have heq : s.restrict ((S ∩ T)ᶜ) = (μ.singularPart ν).restrict ((S ∩ T)ᶜ) := by
+  have heq : s.restrict (S ∩ T)ᶜ = (μ.singularPart ν).restrict (S ∩ T)ᶜ := by
     ext1 A hA
     have hf : ν.withDensity f (A ∩ (S ∩ T)ᶜ) = 0 := by
       refine' withDensity_absolutelyContinuous ν _ _
@@ -250,7 +250,7 @@ theorem eq_singularPart {s : Measure α} {f : α → ℝ≥0∞} (hf : Measurabl
       exact hνinter ▸ measure_mono (inter_subset_right _ _)
     rw [restrict_apply hA, restrict_apply hA, ← add_zero (s (A ∩ (S ∩ T)ᶜ)), ← hf, ← add_apply, ←
       hadd, add_apply, hrn, add_zero]
-  have heq' : ∀ A : Set α, MeasurableSet A → s A = s.restrict ((S ∩ T)ᶜ) A := by
+  have heq' : ∀ A : Set α, MeasurableSet A → s A = s.restrict (S ∩ T)ᶜ A := by
     intro A hA
     have hsinter : s (A ∩ (S ∩ T)) = 0 := by
       rw [← nonpos_iff_eq_zero]
@@ -318,7 +318,7 @@ theorem eq_withDensity_rnDeriv {s : Measure α} {f : α → ℝ≥0∞} (hf : Me
   obtain ⟨hmeas, hsing, hadd'⟩ := haveLebesgueDecomposition_spec μ ν
   obtain ⟨⟨S, hS₁, hS₂, hS₃⟩, ⟨T, hT₁, hT₂, hT₃⟩⟩ := hs, hsing
   rw [hadd'] at hadd
-  have hνinter : ν ((S ∩ T)ᶜ) = 0 := by
+  have hνinter : ν (S ∩ T)ᶜ = 0 := by
     rw [compl_inter]
     refine' nonpos_iff_eq_zero.1 (le_trans (measure_union_le _ _) _)
     rw [hT₃, hS₃, add_zero]
@@ -363,7 +363,7 @@ theorem eq_rnDeriv [SigmaFinite ν] {s : Measure α} {f : α → ℝ≥0∞} (hf
   refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite hf (measurable_rnDeriv μ ν) _
   intro a ha _
   calc
-    (∫⁻ x : α in a, f x ∂ν) = ν.withDensity f a := (withDensity_apply f ha).symm
+    ∫⁻ x : α in a, f x ∂ν = ν.withDensity f a := (withDensity_apply f ha).symm
     _ = ν.withDensity (μ.rnDeriv ν) a := by rw [eq_withDensity_rnDeriv hf hs hadd]
     _ = ∫⁻ x : α in a, μ.rnDeriv ν x ∂ν := withDensity_apply _ ha
 #align measure_theory.measure.eq_rn_deriv MeasureTheory.Measure.eq_rnDeriv
@@ -404,7 +404,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
   choose f hf₁ hf₂ hf₃ using this
   -- set `A` to be the intersection of all the negative parts of obtained Hahn decompositions
   -- and we show that `μ A = 0`
-  set A := ⋂ n, f nᶜ with hA₁
+  set A := ⋂ n, (f n)ᶜ with hA₁
   have hAmeas : MeasurableSet A := MeasurableSet.iInter fun n => (hf₁ n).compl
   have hA₂ : ∀ n : ℕ, μ.toSignedMeasure - ((1 / (n + 1) : ℝ≥0) • ν).toSignedMeasure ≤[A] 0 := by
     intro n; exact restrict_le_restrict_subset _ _ (hf₁ n).compl (hf₃ n) (iInter_subset _ _)
@@ -479,7 +479,7 @@ theorem sup_mem_measurableLE {f g : α → ℝ≥0∞} (hf : f ∈ measurableLE 
 #align measure_theory.measure.lebesgue_decomposition.sup_mem_measurable_le MeasureTheory.Measure.LebesgueDecomposition.sup_mem_measurableLE
 
 theorem iSup_succ_eq_sup {α} (f : ℕ → α → ℝ≥0∞) (m : ℕ) (a : α) :
-    (⨆ (k : ℕ) (_ : k ≤ m + 1), f k a) = f m.succ a ⊔ ⨆ (k : ℕ) (_ : k ≤ m), f k a := by
+    ⨆ (k : ℕ) (_ : k ≤ m + 1), f k a = f m.succ a ⊔ ⨆ (k : ℕ) (_ : k ≤ m), f k a := by
   refine Option.ext fun x => ?_
   simp only [Option.mem_def, ENNReal.some_eq_coe]
   constructor <;> intro h <;> rw [← h]; symm
@@ -722,7 +722,7 @@ instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (μ ν : Mea
         · exact fun n => (S.set_mem n).inter (hA₁ n)
       -- We will now show `ν Bᶜ = 0`. This follows since `Bᶜ = ⋃ n, S.set n ∩ (A n)ᶜ` and thus,
       -- `ν Bᶜ = ∑ i, ν (S.set i ∩ (A i)ᶜ) = ∑ i, (νn i) (A i)ᶜ = 0`
-      · have hcompl : IsCompl (⋃ n, S.set n ∩ A n) (⋃ n, S.set n ∩ A nᶜ) := by
+      · have hcompl : IsCompl (⋃ n, S.set n ∩ A n) (⋃ n, S.set n ∩ (A n)ᶜ) := by
           constructor
           · rw [disjoint_iff_inf_le]
             rintro x ⟨hx₁, hx₂⟩; rw [mem_iUnion] at hx₁ hx₂

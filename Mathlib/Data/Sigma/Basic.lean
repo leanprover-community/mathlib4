@@ -75,6 +75,14 @@ theorem ext_iff {x₀ x₁ : Sigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq
   cases x₀; cases x₁; exact Sigma.mk.inj_iff
 #align sigma.ext_iff Sigma.ext_iff
 
+/-- A version of `Iff.mp Sigma.ext_iff` for functions from a nonempty type to a sigma type. -/
+theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type _} [Nonempty γ]
+    {a b : α} {f : γ → β a} {g : γ → β b} (h : Sigma.mk a ∘ f = Sigma.mk b ∘ g) :
+    a = b ∧ HEq f g := by
+  rcases ‹Nonempty γ› with ⟨i⟩
+  obtain rfl : a = b := congr_arg Sigma.fst (congr_fun h i)
+  simpa [Function.funext_iff] using h
+
 /-- A specialized ext lemma for equality of sigma types over an indexed subtype. -/
 @[ext]
 theorem subtype_ext {β : Type _} {p : α → β → Prop} :

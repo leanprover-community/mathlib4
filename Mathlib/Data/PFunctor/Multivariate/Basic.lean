@@ -227,15 +227,15 @@ open TypeVec
 
 variable {n : ℕ} (P : MvPFunctor.{u} (n + 1))
 
-/-- Split polynomial functor, get a n-ary functor
-from a `n+1`-ary functor -/
+/-- Split polynomial functor, get an n-ary functor
+from an `n+1`-ary functor -/
 def drop : MvPFunctor n where
   A := P.A
   B a := (P.B a).drop
 #align mvpfunctor.drop MvPFunctor.drop
 
 /-- Split polynomial functor, get a univariate functor
-from a `n+1`-ary functor -/
+from an `n+1`-ary functor -/
 def last : PFunctor where
   A := P.A
   B a := (P.B a).last

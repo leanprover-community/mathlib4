@@ -20,7 +20,7 @@ We define the variance of a real-valued random variable as `Var[X] = ğ”¼[(X - ğ
 
 ## Main definitions
 
-* `ProbabilityTheory.evariance`: the variance of a real-valued random variable as a extended
+* `ProbabilityTheory.evariance`: the variance of a real-valued random variable as an extended
   non-negative real.
 * `ProbabilityTheory.variance`: the variance of a real-valued random variable as a real number.
 

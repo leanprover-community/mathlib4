@@ -190,7 +190,7 @@ section HeytingAlgebra
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] (f : F)
 
 @[simp]
-theorem map_compl (a : α) : f (aᶜ) = f aᶜ := by rw [← himp_bot, ← himp_bot, map_himp, map_bot]
+theorem map_compl (a : α) : f aᶜ = (f a)ᶜ := by rw [← himp_bot, ← himp_bot, map_himp, map_bot]
 #align map_compl map_compl
 
 @[simp]

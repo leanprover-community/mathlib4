@@ -1961,7 +1961,7 @@ bounded `iSup` can be produced from taking a finite number of non-zero elements 
 satisfy `p i`, coercing them to `γ`, and summing them. -/
 theorem _root_.AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop) [DecidablePred p]
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
-    (⨆ (i) (_ : p i), S i) = -- Porting note: Removing `h` results in a timeout
+    ⨆ (i) (_ : p i), S i = -- Porting note: Removing `h` results in a timeout
       AddMonoidHom.mrange ((sumAddHom fun i => (S i).subtype).comp (filterAddMonoidHom _ p)) := by
   apply le_antisymm
   · refine' iSup₂_le fun i hi y hy => ⟨Dfinsupp.single i ⟨y, hy⟩, _⟩

@@ -938,7 +938,7 @@ variable (v w : VectorMeasure α M) {i j : Set α}
 theorem restrict_le_restrict_iUnion {f : ℕ → Set α} (hf₁ : ∀ n, MeasurableSet (f n))
     (hf₂ : ∀ n, v ≤[f n] w) : v ≤[⋃ n, f n] w := by
   refine' restrict_le_restrict_of_subset_le v w fun a ha₁ ha₂ => _
-  have ha₃ : (⋃ n, a ∩ disjointed f n) = a := by
+  have ha₃ : ⋃ n, a ∩ disjointed f n = a := by
     rwa [← Set.inter_iUnion, iUnion_disjointed, Set.inter_eq_left_iff_subset]
   have ha₄ : Pairwise (Disjoint on fun n => a ∩ disjointed f n) :=
     (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right

@@ -4,14 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 
 ! This file was ported from Lean 3 source module ring_theory.witt_vector.is_poly
-! leanprover-community/mathlib commit 168ad7fc5d8173ad38be9767a22d50b8ecf1cd00
+! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.Data.MvPolynomial.Funext
-import Mathlib.RingTheory.WittVector.WittAttributes
 /-!
 # The `is_poly` predicate
 
@@ -324,7 +323,7 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
   ext  -- porting note: `ext` was not in the mathport output.
-  rw [wittPolynomial_eq_sum_c_mul_x_pow, AlgHom.map_sum, Finset.sum_eq_single 0]
+  rw [wittPolynomial_eq_sum_C_mul_X_pow, AlgHom.map_sum, Finset.sum_eq_single 0]
   · simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
       eq_self_iff_true]
   · intro i _hi hi0

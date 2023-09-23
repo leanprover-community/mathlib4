@@ -100,7 +100,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
       (∫⁻ x, g x ∂μ) ≤ (∫⁻ x, f x ∂μ) + ε := by
   induction' f using MeasureTheory.SimpleFunc.induction with c s hs f₁ f₂ _ h₁ h₂ generalizing ε
   · let f := SimpleFunc.piecewise s hs (SimpleFunc.const α c) (SimpleFunc.const α 0)
-    by_cases h : (∫⁻ x, f x ∂μ) = ⊤
+    by_cases h : ∫⁻ x, f x ∂μ = ⊤
     · refine'
         ⟨fun _ => c, fun x => _, lowerSemicontinuous_const, by
           simp only [_root_.top_add, le_top, h]⟩
@@ -189,10 +189,10 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
       ENNReal.continuous_coe.comp_lowerSemicontinuous (gcont n) fun x y hxy =>
         ENNReal.coe_le_coe.2 hxy
   · calc
-      (∫⁻ x, ∑' n : ℕ, g n x ∂μ) = ∑' n, ∫⁻ x, g n x ∂μ := by
+      ∫⁻ x, ∑' n : ℕ, g n x ∂μ = ∑' n, ∫⁻ x, g n x ∂μ := by
         rw [lintegral_tsum fun n => (gcont n).measurable.coe_nnreal_ennreal.aemeasurable]
-      _ ≤ ∑' n, (∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ) + δ n := (ENNReal.tsum_le_tsum hg)
-      _ = (∑' n, ∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ) + ∑' n, δ n := ENNReal.tsum_add
+      _ ≤ ∑' n, ((∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ) + δ n) := (ENNReal.tsum_le_tsum hg)
+      _ = ∑' n, ∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ + ∑' n, δ n := ENNReal.tsum_add
       _ ≤ (∫⁻ x : α, f x ∂μ) + ε := by
         refine' add_le_add _ hδ.le
         rw [← lintegral_tsum]
@@ -254,7 +254,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable [SigmaFinite 
       exact (f_lt_g0 x).trans_le le_self_add
   ·
     calc
-      (∫⁻ x, g0 x + g1 x ∂μ) = (∫⁻ x, g0 x ∂μ) + ∫⁻ x, g1 x ∂μ :=
+      ∫⁻ x, g0 x + g1 x ∂μ = (∫⁻ x, g0 x ∂μ) + ∫⁻ x, g1 x ∂μ :=
         lintegral_add_left g0_cont.measurable _
       _ ≤ (∫⁻ x, f x ∂μ) + ε / 2 + (0 + ε / 2) := by
         refine' add_le_add _ _

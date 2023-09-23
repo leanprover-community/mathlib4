@@ -155,7 +155,7 @@ theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).c
 
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`. -/
 theorem finprod_heightOneSpectrum_factorization (I : Ideal R) (hI : I ≠ 0) :
-    (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I) = I := by
+    ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I = I := by
   rw [← associated_iff_eq, ← Associates.mk_eq_mk_iff_associated]
   apply Associates.eq_of_eq_counts
   · apply Associates.finprod_ne_zero I

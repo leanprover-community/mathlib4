@@ -72,7 +72,7 @@ def iterate {α : Sort u} (op : α → α) : ℕ → α → α
  | 0,      a => a
  | succ k, a => iterate op k (op a)
 
-notation f "^["n"]" => iterate f n
+notation:max f "^["n"]" => iterate f n
 
 /-! bit0/bit1 properties -/
 section bit

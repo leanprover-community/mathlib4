@@ -510,7 +510,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   -- If one of the sets is empty, then all the sums are zero
   by_cases Ai_empty : ∃ i, A i = ∅
   · rcases Ai_empty with ⟨i, hi⟩
-    have : (∑ j in A i, g i j) = 0 := by rw [hi, Finset.sum_empty]
+    have : ∑ j in A i, g i j = 0 := by rw [hi, Finset.sum_empty]
     rw [f.map_coord_zero i this]
     have : piFinset A = ∅ := by
       refine Finset.eq_empty_of_forall_not_mem fun r hr => ?_

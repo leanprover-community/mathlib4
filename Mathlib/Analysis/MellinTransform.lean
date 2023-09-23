@@ -127,7 +127,7 @@ theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / 
 #align mellin_div_const mellin_div_const
 
 theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : a ≠ 0) :
-    mellin (fun t => f (t ^ a)) s = (|a|)⁻¹ • mellin f (s / a) := by
+    mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
   -- note: this is also true for a = 0 (both sides are zero), but this is mathematically
   -- uninteresting and rather time-consuming to check
   simp_rw [mellin]

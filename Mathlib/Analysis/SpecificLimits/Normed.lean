@@ -238,7 +238,7 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
   by_cases h0 : r = 0
   · exact tendsto_const_nhds.congr'
       (mem_atTop_sets.2 ⟨1, fun n hn ↦ by simp [zero_lt_one.trans_le hn, h0]⟩)
-  have hr' : 1 < (|r|)⁻¹ := one_lt_inv (abs_pos.2 h0) hr
+  have hr' : 1 < |r|⁻¹ := one_lt_inv (abs_pos.2 h0) hr
   rw [tendsto_zero_iff_norm_tendsto_zero]
   simpa [div_eq_mul_inv] using tendsto_pow_const_div_const_pow_of_one_lt k hr'
 #align tendsto_pow_const_mul_const_pow_of_abs_lt_one tendsto_pow_const_mul_const_pow_of_abs_lt_one
@@ -298,7 +298,7 @@ theorem summable_geometric_of_norm_lt_1 (h : ‖ξ‖ < 1) : Summable fun n : �
   ⟨_, hasSum_geometric_of_norm_lt_1 h⟩
 #align summable_geometric_of_norm_lt_1 summable_geometric_of_norm_lt_1
 
-theorem tsum_geometric_of_norm_lt_1 (h : ‖ξ‖ < 1) : (∑' n : ℕ, ξ ^ n) = (1 - ξ)⁻¹ :=
+theorem tsum_geometric_of_norm_lt_1 (h : ‖ξ‖ < 1) : ∑' n : ℕ, ξ ^ n = (1 - ξ)⁻¹ :=
   (hasSum_geometric_of_norm_lt_1 h).tsum_eq
 #align tsum_geometric_of_norm_lt_1 tsum_geometric_of_norm_lt_1
 
@@ -310,7 +310,7 @@ theorem summable_geometric_of_abs_lt_1 {r : ℝ} (h : |r| < 1) : Summable fun n 
   summable_geometric_of_norm_lt_1 h
 #align summable_geometric_of_abs_lt_1 summable_geometric_of_abs_lt_1
 
-theorem tsum_geometric_of_abs_lt_1 {r : ℝ} (h : |r| < 1) : (∑' n : ℕ, r ^ n) = (1 - r)⁻¹ :=
+theorem tsum_geometric_of_abs_lt_1 {r : ℝ} (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   tsum_geometric_of_norm_lt_1 h
 #align tsum_geometric_of_abs_lt_1 tsum_geometric_of_abs_lt_1
 

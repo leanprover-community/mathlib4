@@ -103,7 +103,7 @@ theorem Matrix.represents_iff {A : Matrix ι ι R} {f : Module.End R M} :
 #align matrix.represents_iff Matrix.represents_iff
 
 theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
-    A.Represents b f ↔ ∀ j, (∑ i : ι, A i j • b i) = f (b j) := by
+    A.Represents b f ↔ ∀ j, ∑ i : ι, A i j • b i = f (b j) := by
   constructor
   · intro h i
     have := LinearMap.congr_fun h (Pi.single i 1)

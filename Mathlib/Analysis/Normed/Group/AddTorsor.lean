@@ -287,16 +287,20 @@ theorem Continuous.vsub {f g : α → P} (hf : Continuous f) (hg : Continuous g)
 #align continuous.vsub Continuous.vsub
 
 nonrec theorem ContinuousAt.vsub {f g : α → P} {x : α} (hf : ContinuousAt f x)
-  (hg : ContinuousAt g x) :
+    (hg : ContinuousAt g x) :
     ContinuousAt (f -ᵥ g) x :=
   hf.vsub hg
 #align continuous_at.vsub ContinuousAt.vsub
 
 nonrec theorem ContinuousWithinAt.vsub {f g : α → P} {x : α} {s : Set α}
-  (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
     ContinuousWithinAt (f -ᵥ g) s x :=
   hf.vsub hg
 #align continuous_within_at.vsub ContinuousWithinAt.vsub
+
+theorem ContinuousOn.vsub {f g : α → P} {s : Set α} (hf : ContinuousOn f s)
+    (hg : ContinuousOn g s) : ContinuousOn (f -ᵥ g) s := fun x hx ↦
+  (hf x hx).vsub (hg x hx)
 
 end
 

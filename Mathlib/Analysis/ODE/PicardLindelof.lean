@@ -323,7 +323,7 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
 #align picard_lindelof.fun_space.dist_next_apply_le_of_le PicardLindelof.FunSpace.dist_next_apply_le_of_le
 
 theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v.tMin v.tMax) :
-    dist ((next^[n]) f₁ t) ((next^[n]) f₂ t) ≤ (v.L * |t.1 - v.t₀|) ^ n / n ! * dist f₁ f₂ := by
+    dist (next^[n] f₁ t) (next^[n] f₂ t) ≤ (v.L * |t.1 - v.t₀|) ^ n / n ! * dist f₁ f₂ := by
   induction' n with n ihn generalizing t
   · rw [Nat.zero_eq, pow_zero, Nat.factorial_zero, Nat.cast_one, div_one, one_mul]
     exact dist_apply_le_dist f₁ f₂ t
@@ -332,7 +332,7 @@ theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v
 #align picard_lindelof.fun_space.dist_iterate_next_apply_le PicardLindelof.FunSpace.dist_iterate_next_apply_le
 
 theorem dist_iterate_next_le (f₁ f₂ : FunSpace v) (n : ℕ) :
-    dist ((next^[n]) f₁) ((next^[n]) f₂) ≤ (v.L * v.tDist) ^ n / n ! * dist f₁ f₂ := by
+    dist (next^[n] f₁) (next^[n] f₂) ≤ (v.L * v.tDist) ^ n / n ! * dist f₁ f₂ := by
   refine' dist_le_of_forall fun t => (dist_iterate_next_apply_le _ _ _ _).trans _
   have : |(t - v.t₀ : ℝ)| ≤ v.tDist := v.dist_t₀_le t
   gcongr
@@ -345,7 +345,7 @@ variable [CompleteSpace E]
 section
 
 theorem exists_contracting_iterate :
-    ∃ (N : ℕ) (K : _), ContractingWith K ((FunSpace.next : v.FunSpace → v.FunSpace)^[N]) := by
+    ∃ (N : ℕ) (K : _), ContractingWith K (FunSpace.next : v.FunSpace → v.FunSpace)^[N] := by
   rcases ((Real.tendsto_pow_div_factorial_atTop (v.L * v.tDist)).eventually
     (gt_mem_nhds zero_lt_one)).exists with ⟨N, hN⟩
   have : (0 : ℝ) ≤ (v.L * v.tDist) ^ N / N ! :=

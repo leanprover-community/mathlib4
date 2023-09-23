@@ -203,12 +203,12 @@ protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
 #align has_strict_fderiv_at.comp HasStrictFDerivAt.comp
 
 protected theorem Differentiable.iterate {f : E → E} (hf : Differentiable 𝕜 f) (n : ℕ) :
-    Differentiable 𝕜 (f^[n]) :=
+    Differentiable 𝕜 f^[n] :=
   Nat.recOn n differentiable_id fun _ ihn => ihn.comp hf
 #align differentiable.iterate Differentiable.iterate
 
 protected theorem DifferentiableOn.iterate {f : E → E} (hf : DifferentiableOn 𝕜 f s)
-    (hs : MapsTo f s s) (n : ℕ) : DifferentiableOn 𝕜 (f^[n]) s :=
+    (hs : MapsTo f s s) (n : ℕ) : DifferentiableOn 𝕜 f^[n] s :=
   Nat.recOn n differentiableOn_id fun _ ihn => ihn.comp hf hs
 #align differentiable_on.iterate DifferentiableOn.iterate
 
@@ -216,7 +216,7 @@ variable {x}
 
 protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
-    HasFDerivAtFilter (f^[n]) (f' ^ n) x L := by
+    HasFDerivAtFilter f^[n] (f' ^ n) x L := by
   induction' n with n ihn
   · exact hasFDerivAtFilter_id x L
   · rw [Function.iterate_succ, pow_succ']
@@ -225,7 +225,7 @@ protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
 #align has_fderiv_at_filter.iterate HasFDerivAtFilter.iterate
 
 protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
-    (hx : f x = x) (n : ℕ) : HasFDerivAt (f^[n]) (f' ^ n) x := by
+    (hx : f x = x) (n : ℕ) : HasFDerivAt f^[n] (f' ^ n) x := by
   refine' HasFDerivAtFilter.iterate hf _ hx n
   -- Porting note: was `convert hf.continuousAt`
   have := hf.continuousAt
@@ -236,7 +236,7 @@ protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : 
 
 protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivWithinAt f f' s x) (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) :
-    HasFDerivWithinAt (f^[n]) (f' ^ n) s x := by
+    HasFDerivWithinAt f^[n] (f' ^ n) s x := by
   refine' HasFDerivAtFilter.iterate hf _ hx n
   rw [_root_.nhdsWithin] -- Porting note: Added `rw` to get rid of an error
   convert tendsto_inf.2 ⟨hf.continuousWithinAt, _⟩
@@ -245,7 +245,7 @@ protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
 
 protected theorem HasStrictFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasStrictFDerivAt f f' x) (hx : f x = x) (n : ℕ) :
-    HasStrictFDerivAt (f^[n]) (f' ^ n) x := by
+    HasStrictFDerivAt f^[n] (f' ^ n) x := by
   induction' n with n ihn
   · exact hasStrictFDerivAt_id x
   · rw [Function.iterate_succ, pow_succ']
@@ -254,12 +254,12 @@ protected theorem HasStrictFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E}
 #align has_strict_fderiv_at.iterate HasStrictFDerivAt.iterate
 
 protected theorem DifferentiableAt.iterate {f : E → E} (hf : DifferentiableAt 𝕜 f x) (hx : f x = x)
-    (n : ℕ) : DifferentiableAt 𝕜 (f^[n]) x :=
+    (n : ℕ) : DifferentiableAt 𝕜 f^[n] x :=
   (hf.hasFDerivAt.iterate hx n).differentiableAt
 #align differentiable_at.iterate DifferentiableAt.iterate
 
 protected theorem DifferentiableWithinAt.iterate {f : E → E} (hf : DifferentiableWithinAt 𝕜 f s x)
-    (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : DifferentiableWithinAt 𝕜 (f^[n]) s x :=
+    (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : DifferentiableWithinAt 𝕜 f^[n] s x :=
   (hf.hasFDerivWithinAt.iterate hx hs n).differentiableWithinAt
 #align differentiable_within_at.iterate DifferentiableWithinAt.iterate
 

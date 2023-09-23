@@ -143,12 +143,12 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
 #align clifford_algebra.graded_algebra CliffordAlgebra.gradedAlgebra
 
 set_option maxHeartbeats 300000 in
-theorem iSup_ι_range_eq_top : (⨆ i : ℕ, LinearMap.range (ι Q) ^ i) = ⊤ := by
+theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := by
   rw [← (DirectSum.Decomposition.isInternal (evenOdd Q)).submodule_iSup_eq_top, eq_comm]
   calc
     -- porting note: needs extra annotations, no longer unifies against the goal in the face of
     -- ambiguity
-    (⨆ (i : ZMod 2) (j : { n : ℕ // ↑n = i }), LinearMap.range (ι Q) ^ (j : ℕ)) =
+    ⨆ (i : ZMod 2) (j : { n : ℕ // ↑n = i }), LinearMap.range (ι Q) ^ (j : ℕ) =
         ⨆ i : Σ i : ZMod 2, { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (i.2 : ℕ) :=
       by rw [iSup_sigma]
     _ = ⨆ i : ℕ, LinearMap.range (ι Q) ^ i :=

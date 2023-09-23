@@ -787,7 +787,7 @@ theorem continuousWithinAt_diff_self {f : α → β} {s : Set α} {x : α} :
 
 @[simp]
 theorem continuousWithinAt_compl_self {f : α → β} {a : α} :
-    ContinuousWithinAt f ({a}ᶜ) a ↔ ContinuousAt f a := by
+    ContinuousWithinAt f {a}ᶜ a ↔ ContinuousAt f a := by
   rw [compl_eq_univ_diff, continuousWithinAt_diff_self, continuousWithinAt_univ]
 #align continuous_within_at_compl_self continuousWithinAt_compl_self
 
@@ -1122,7 +1122,7 @@ theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a
     cases' hx with hx hx
     · apply ContinuousWithinAt.union
       · exact (hf x hx).congr (fun y hy => if_pos hy.2) (if_pos hx.2)
-      · have : x ∉ closure ({ a | p a }ᶜ) := fun h => hx' ⟨subset_closure hx.2, by
+      · have : x ∉ closure { a | p a }ᶜ := fun h => hx' ⟨subset_closure hx.2, by
           rwa [closure_compl] at h⟩
         exact continuousWithinAt_of_not_mem_closure fun h =>
           this (closure_inter_subset_inter_closure _ _ h).2
@@ -1165,7 +1165,7 @@ theorem ContinuousOn.if {α β : Type _} [TopologicalSpace α] [TopologicalSpace
 
 theorem ContinuousOn.piecewise {s t : Set α} {f g : α → β} [∀ a, Decidable (a ∈ t)]
     (ht : ∀ a ∈ s ∩ frontier t, f a = g a) (hf : ContinuousOn f <| s ∩ closure t)
-    (hg : ContinuousOn g <| s ∩ closure (tᶜ)) : ContinuousOn (piecewise t f g) s :=
+    (hg : ContinuousOn g <| s ∩ closure tᶜ) : ContinuousOn (piecewise t f g) s :=
   hf.if ht hg
 #align continuous_on.piecewise ContinuousOn.piecewise
 
@@ -1205,7 +1205,7 @@ theorem Continuous.if_const (p : Prop) {f g : α → β} [Decidable p] (hf : Con
 
 theorem continuous_piecewise {s : Set α} {f g : α → β} [∀ a, Decidable (a ∈ s)]
     (hs : ∀ a ∈ frontier s, f a = g a) (hf : ContinuousOn f (closure s))
-    (hg : ContinuousOn g (closure (sᶜ))) : Continuous (piecewise s f g) :=
+    (hg : ContinuousOn g (closure sᶜ)) : Continuous (piecewise s f g) :=
   continuous_if hs hf hg
 #align continuous_piecewise continuous_piecewise
 
@@ -1236,13 +1236,13 @@ theorem ite_inter_closure_eq_of_inter_frontier_eq {s s' t : Set α}
 #align ite_inter_closure_eq_of_inter_frontier_eq ite_inter_closure_eq_of_inter_frontier_eq
 
 theorem ite_inter_closure_compl_eq_of_inter_frontier_eq {s s' t : Set α}
-    (ht : s ∩ frontier t = s' ∩ frontier t) : t.ite s s' ∩ closure (tᶜ) = s' ∩ closure (tᶜ) := by
+    (ht : s ∩ frontier t = s' ∩ frontier t) : t.ite s s' ∩ closure tᶜ = s' ∩ closure tᶜ := by
   rw [← ite_compl, ite_inter_closure_eq_of_inter_frontier_eq]
   rwa [frontier_compl, eq_comm]
 #align ite_inter_closure_compl_eq_of_inter_frontier_eq ite_inter_closure_compl_eq_of_inter_frontier_eq
 
 theorem continuousOn_piecewise_ite' {s s' t : Set α} {f f' : α → β} [∀ x, Decidable (x ∈ t)]
-    (h : ContinuousOn f (s ∩ closure t)) (h' : ContinuousOn f' (s' ∩ closure (tᶜ)))
+    (h : ContinuousOn f (s ∩ closure t)) (h' : ContinuousOn f' (s' ∩ closure tᶜ))
     (H : s ∩ frontier t = s' ∩ frontier t) (Heq : EqOn f f' (s ∩ frontier t)) :
     ContinuousOn (t.piecewise f f') (t.ite s s') := by
   apply ContinuousOn.piecewise

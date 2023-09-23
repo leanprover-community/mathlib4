@@ -85,7 +85,7 @@ theorem dense_image (di : DenseInducing i) {s : Set α} : Dense (i '' s) ↔ Den
 
 /-- If `i : α → β` is a dense embedding with dense complement of the range, then any compact set in
 `α` has empty interior. -/
-theorem interior_compact_eq_empty [T2Space β] (di : DenseInducing i) (hd : Dense (range iᶜ))
+theorem interior_compact_eq_empty [T2Space β] (di : DenseInducing i) (hd : Dense (range i)ᶜ)
     {s : Set α} (hs : IsCompact s) : interior s = ∅ := by
   refine' eq_empty_iff_forall_not_mem.2 fun x hx => _
   rw [mem_interior_iff_mem_nhds] at hx

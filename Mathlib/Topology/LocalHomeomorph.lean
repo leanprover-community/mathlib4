@@ -548,7 +548,7 @@ theorem of_symm_image_eq (h : e.symm '' (e.target ∩ t) = e.source ∩ s) : e.I
   LocalEquiv.IsImage.of_symm_image_eq h
 #align local_homeomorph.is_image.of_symm_image_eq LocalHomeomorph.IsImage.of_symm_image_eq
 
-protected theorem compl (h : e.IsImage s t) : e.IsImage (sᶜ) (tᶜ) := fun _ hx => (h hx).not
+protected theorem compl (h : e.IsImage s t) : e.IsImage sᶜ tᶜ := fun _ hx => (h hx).not
 #align local_homeomorph.is_image.compl LocalHomeomorph.IsImage.compl
 
 protected theorem inter {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :

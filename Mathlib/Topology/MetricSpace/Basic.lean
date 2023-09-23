@@ -464,12 +464,12 @@ theorem ball_eq_ball' (ε : ℝ) (x : α) :
 #align metric.ball_eq_ball' Metric.ball_eq_ball'
 
 @[simp]
-theorem iUnion_ball_nat (x : α) : (⋃ n : ℕ, ball x n) = univ :=
+theorem iUnion_ball_nat (x : α) : ⋃ n : ℕ, ball x n = univ :=
   iUnion_eq_univ_iff.2 fun y => exists_nat_gt (dist y x)
 #align metric.Union_ball_nat Metric.iUnion_ball_nat
 
 @[simp]
-theorem iUnion_ball_nat_succ (x : α) : (⋃ n : ℕ, ball x (n + 1)) = univ :=
+theorem iUnion_ball_nat_succ (x : α) : ⋃ n : ℕ, ball x (n + 1) = univ :=
   iUnion_eq_univ_iff.2 fun y => (exists_nat_gt (dist y x)).imp fun _ h => h.trans (lt_add_one _)
 #align metric.Union_ball_nat_succ Metric.iUnion_ball_nat_succ
 
@@ -649,11 +649,11 @@ theorem dist_lt_add_of_nonempty_ball_inter_ball (h : (ball x ε₁ ∩ ball y ε
 #align metric.dist_lt_add_of_nonempty_ball_inter_ball Metric.dist_lt_add_of_nonempty_ball_inter_ball
 
 @[simp]
-theorem iUnion_closedBall_nat (x : α) : (⋃ n : ℕ, closedBall x n) = univ :=
+theorem iUnion_closedBall_nat (x : α) : ⋃ n : ℕ, closedBall x n = univ :=
   iUnion_eq_univ_iff.2 fun y => exists_nat_ge (dist y x)
 #align metric.Union_closed_ball_nat Metric.iUnion_closedBall_nat
 
-theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : (⋃ n : ℕ, s ∩ closedBall x n) = s := by
+theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : ⋃ n : ℕ, s ∩ closedBall x n = s := by
   rw [← inter_iUnion, iUnion_closedBall_nat, inter_univ]
 #align metric.Union_inter_closed_ball_nat Metric.iUnion_inter_closedBall_nat
 
@@ -1150,7 +1150,7 @@ distance coincide. -/
 
 -- porting note: new
 theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
-    (⨅ ε > (0 : ℝ), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε }) =
+    ⨅ ε > (0 : ℝ), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } =
       ⨅ ε > (0 : ℝ≥0∞), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } := by
   simp only [le_antisymm_iff, le_iInf_iff, le_principal_iff]
   refine ⟨fun ε hε => ?_, fun ε hε => ?_⟩

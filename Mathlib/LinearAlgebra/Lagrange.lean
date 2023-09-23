@@ -256,7 +256,7 @@ theorem degree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
 
 -- Porting note: Added `Nat.cast_withBot` rewrites
 theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
-    (∑ j in s, Lagrange.basis s v j) = 1 := by
+    ∑ j in s, Lagrange.basis s v j = 1 := by
   refine' eq_of_degrees_lt_of_eval_index_eq s hvs (lt_of_le_of_lt (degree_sum_le _ _) _) _ _
   · rw [Nat.cast_withBot, Finset.sup_lt_iff (WithBot.bot_lt_coe s.card)]
     intro i hi

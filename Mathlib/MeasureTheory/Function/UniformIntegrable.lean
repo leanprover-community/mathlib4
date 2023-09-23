@@ -535,7 +535,7 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp
       (dist_comm (g x) (f n x) ▸ (hN x hx).le :
         dist (f n x) (g x) ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
     refine' le_trans this _
-    rw [div_mul_eq_div_mul_one_div, ← ENNReal.ofReal_toReal (measure_lt_top μ (tᶜ)).ne,
+    rw [div_mul_eq_div_mul_one_div, ← ENNReal.ofReal_toReal (measure_lt_top μ tᶜ).ne,
       ENNReal.ofReal_rpow_of_nonneg ENNReal.toReal_nonneg hdivp, ← ENNReal.ofReal_mul, mul_assoc]
     · refine' ENNReal.ofReal_le_ofReal (mul_le_of_le_one_right hε'.le _)
       rw [mul_comm, mul_one_div, div_le_one]

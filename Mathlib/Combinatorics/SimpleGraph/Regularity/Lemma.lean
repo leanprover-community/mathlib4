@@ -96,13 +96,13 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   · exact ⟨dum, hdum₁, (le_initialBound ε l).trans hdum₂.ge,
       hdum₂.le.trans (initialBound_le_bound ε l), (dum.isUniformOne G).mono hε₁⟩
   -- Else, set up the induction on energy. We phrase it through the existence for each `i` of an
-  -- equipartition of size bounded by `stepBound^[i]) (initialBound ε l)` and which is either
+  -- equipartition of size bounded by `stepBound^[i] (initialBound ε l)` and which is either
   -- `ε`-uniform or has energy at least `ε ^ 5 / 4 * i`.
   have : Nonempty α := by
     rw [← Fintype.card_pos_iff]
     exact (bound_pos _ _).trans_le hα
   suffices h : ∀ i, ∃ P : Finpartition (univ : Finset α), P.IsEquipartition ∧ t ≤ P.parts.card ∧
-    P.parts.card ≤ (stepBound^[i]) t ∧ (P.IsUniform G ε ∨ ε ^ 5 / 4 * i ≤ P.energy G)
+    P.parts.card ≤ stepBound^[i] t ∧ (P.IsUniform G ε ∨ ε ^ 5 / 4 * i ≤ P.energy G)
   -- For `i > 4 / ε ^ 5` we know that the partition we get can't have energy `≥ ε ^ 5 / 4 * i > 1`,
   -- so it must instead be `ε`-uniform and we won.
   · obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := h (⌊4 / ε ^ 5⌋₊ + 1)
@@ -142,7 +142,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     rw [div_mul_eq_mul_div, div_le_iff (show (0 : ℝ) < 4 by norm_num)] at hi
     norm_num at hi
     rwa [le_div_iff' (pow_pos hε _)]
-  have hsize : P.parts.card ≤ (stepBound^[⌊4 / ε ^ 5⌋₊]) t :=
+  have hsize : P.parts.card ≤ stepBound^[⌊4 / ε ^ 5⌋₊] t :=
     hP₃.trans (monotone_iterate_of_id_le le_stepBound (Nat.le_floor hi) _)
   have hPα : P.parts.card * 16 ^ P.parts.card ≤ card α :=
     (Nat.mul_le_mul hsize (Nat.pow_le_pow_of_le_right (by norm_num) hsize)).trans hα

@@ -14,7 +14,7 @@ import Mathlib.Data.FunLike.Basic
 /-!
 # Freiman homomorphisms
 
-In this file, we define Freiman homomorphisms. A `n`-Freiman homomorphism on `A` is a function
+In this file, we define Freiman homomorphisms. An `n`-Freiman homomorphism on `A` is a function
 `f : α → β` such that `f (x₁) * ... * f (xₙ) = f (y₁) * ... * f (yₙ)` for all
 `x₁, ..., xₙ, y₁, ..., yₙ ∈ A` such that `x₁ * ... * xₙ = y₁ * ... * yₙ`. In particular, any
 `MulHom` is a Freiman homomorphism.
@@ -67,12 +67,12 @@ structure AddFreimanHom (A : Set α) (β : Type _) [AddCommMonoid α] [AddCommMo
     (s.map toFun).sum = (t.map toFun).sum
 #align add_freiman_hom AddFreimanHom
 
-/-- A `n`-Freiman homomorphism on a set `A` is a map which preserves products of `n` elements. -/
+/-- An `n`-Freiman homomorphism on a set `A` is a map which preserves products of `n` elements. -/
 @[to_additive AddFreimanHom]
 structure FreimanHom (A : Set α) (β : Type _) [CommMonoid α] [CommMonoid β] (n : ℕ) where
   /-- The underlying function. -/
   toFun : α → β
-  /-- A `n`-Freiman homomorphism preserves products of `n` elements. -/
+  /-- An `n`-Freiman homomorphism preserves products of `n` elements. -/
   map_prod_eq_map_prod' {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
     (hs : Multiset.card s = n) (ht : Multiset.card t = n) (h : s.prod = t.prod) :
     (s.map toFun).prod = (t.map toFun).prod
@@ -106,7 +106,7 @@ You should extend this class when you extend `FreimanHom`. -/
       sums-preserving morphisms. You should extend this class when you extend `AddFreimanHom`."]
 class FreimanHomClass (F : Type _) (A : outParam <| Set α) (β : outParam <| Type _) [CommMonoid α]
   [CommMonoid β] (n : ℕ) [FunLike F α fun _ => β] : Prop where
-  /-- A `n`-Freiman homomorphism preserves products of `n` elements. -/
+  /-- An `n`-Freiman homomorphism preserves products of `n` elements. -/
   map_prod_eq_map_prod' (f : F) {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A)
     (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A) (hs : Multiset.card s = n) (ht : Multiset.card t = n)
     (h : s.prod = t.prod) :
@@ -534,7 +534,7 @@ def FreimanHom.toFreimanHom (h : m ≤ n) (f : A →*[n] β) : A →*[m] β wher
 #align freiman_hom.to_freiman_hom FreimanHom.toFreimanHom
 #align add_freiman_hom.to_add_freiman_hom AddFreimanHom.toAddFreimanHom
 
-/-- A `n`-Freiman homomorphism is also a `m`-Freiman homomorphism for any `m ≤ n`. -/
+/-- An `n`-Freiman homomorphism is also a `m`-Freiman homomorphism for any `m ≤ n`. -/
 @[to_additive AddFreimanHom.addFreimanHomClass_of_le
       "An additive `n`-Freiman homomorphism is
       also an additive `m`-Freiman homomorphism for any `m ≤ n`."]

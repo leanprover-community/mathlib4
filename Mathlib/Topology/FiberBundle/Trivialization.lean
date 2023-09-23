@@ -455,6 +455,25 @@ theorem image_preimage_eq_prod_univ {s : Set B} (hb : s ⊆ e.baseSet) :
     ⟨e.invFun p, mem_preimage.mpr ((e.proj_symm_apply hp').symm ▸ hp.1), e.apply_symm_apply hp'⟩
 #align trivialization.image_preimage_eq_prod_univ Trivialization.image_preimage_eq_prod_univ
 
+theorem tendsto_nhds_iff {l : Filter α} {f : α → Z} {z : Z} (hz : z ∈ e.source) :
+    Tendsto f l (𝓝 z) ↔
+      Tendsto (proj ∘ f) l (𝓝 (proj z)) ∧ Tendsto (fun x ↦ (e (f x)).2) l (𝓝 (e z).2) := by
+  rw [e.nhds_eq_comap_inf_principal hz, tendsto_inf, tendsto_comap_iff, Prod.tendsto_iff, coe_coe,
+    tendsto_principal, coe_fst _ hz]
+  by_cases hl : ∀ᶠ x in l, f x ∈ e.source
+  · simp only [hl, and_true]
+    refine (tendsto_congr' ?_).and Iff.rfl
+    exact hl.mono fun x ↦ e.coe_fst
+  · simp only [hl, and_false, false_iff, not_and]
+    rw [e.source_eq] at hl hz
+    exact fun h _ ↦ hl <| h <| e.open_baseSet.mem_nhds hz
+
+theorem nhds_eq_inf_comap {z : Z} (hz : z ∈ e.source) :
+    𝓝 z = comap proj (𝓝 (proj z)) ⊓ comap (Prod.snd ∘ e) (𝓝 (e z).2) := by
+  refine eq_of_forall_le_iff fun l ↦ ?_
+  rw [le_inf_iff, ← tendsto_iff_comap, ← tendsto_iff_comap]
+  exact e.tendsto_nhds_iff hz
+
 /-- The preimage of a subset of the base set is homeomorphic to the product with the fiber. -/
 def preimageHomeomorph {s : Set B} (hb : s ⊆ e.baseSet) : proj ⁻¹' s ≃ₜ s × F :=
   (e.toLocalHomeomorph.homeomorphOfImageSubsetSource (e.preimage_subset_source hb)

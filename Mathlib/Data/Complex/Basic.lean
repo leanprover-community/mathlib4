@@ -1108,21 +1108,21 @@ theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| :
 instance : NeZero (1 : ℝ) :=
  ⟨by apply one_ne_zero⟩
 
-theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max (|z.re|) (|z.im|) := by
+theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max |z.re| |z.im| := by
   cases' z with x y
   simp only [abs_apply, normSq_mk, ← sq]
   by_cases hle : |x| ≤ |y|
   · calc
       Real.sqrt (x ^ 2 + y ^ 2) ≤ Real.sqrt (y ^ 2 + y ^ 2) :=
         Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle) _)
-      _ = Real.sqrt 2 * max (|x|) (|y|) := by
+      _ = Real.sqrt 2 * max |x| |y| := by
         rw [max_eq_right hle, ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
   · have hle' := le_of_not_le hle
     rw [add_comm]
     calc
       Real.sqrt (y ^ 2 + x ^ 2) ≤ Real.sqrt (x ^ 2 + x ^ 2) :=
         Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle') _)
-      _ = Real.sqrt 2 * max (|x|) (|y|) := by
+      _ = Real.sqrt 2 * max |x| |y| := by
         rw [max_eq_left hle', ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
 #align complex.abs_le_sqrt_two_mul_max Complex.abs_le_sqrt_two_mul_max
 
@@ -1145,7 +1145,7 @@ theorem abs_cast_nat (n : ℕ) : Complex.abs (n : ℂ) = n := by
 #align complex.abs_cast_nat Complex.abs_cast_nat
 
 @[simp, norm_cast]
-theorem int_cast_abs (n : ℤ) : (|↑n|) = Complex.abs n := by
+theorem int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := by
   rw [← ofReal_int_cast, abs_ofReal]
 #align complex.int_cast_abs Complex.int_cast_abs
 

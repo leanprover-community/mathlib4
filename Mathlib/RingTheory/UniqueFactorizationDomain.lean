@@ -986,8 +986,7 @@ theorem multiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : 
       le_multiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
     simp
   rw [le_multiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
-#align unique_factorization_monoid.multiplicity_eq_count_normalized_factors
-  UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors
+#align unique_factorization_monoid.multiplicity_eq_count_normalized_factors UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors
 
 
 /-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by

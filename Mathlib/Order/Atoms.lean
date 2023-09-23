@@ -907,7 +907,7 @@ theorem isCoatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
 #align set.is_coatom_iff Set.isCoatom_iff
 
 theorem isCoatom_singleton_compl (x : α) : IsCoatom ({x}ᶜ : Set α) :=
-  (isCoatom_iff ({x}ᶜ)).mpr ⟨x, rfl⟩
+  (isCoatom_iff {x}ᶜ).mpr ⟨x, rfl⟩
 #align set.is_coatom_singleton_compl Set.isCoatom_singleton_compl
 
 instance : IsAtomistic (Set α) where
