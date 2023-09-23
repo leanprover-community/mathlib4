@@ -679,6 +679,14 @@ theorem pi_univ (s : Set ι) : (pi s fun i => (univ : Set (α i))) = univ :=
   eq_univ_of_forall fun _ _ _ => mem_univ _
 #align set.pi_univ Set.pi_univ
 
+theorem mem_pi_univ {ι : Type _} {α : ι → Type _} (t : ∀ i, Set (α i)) (x : ∀ i, α i) :
+    x ∈ pi univ t ↔ ∀ i, x i ∈ t i := by simp
+
+theorem pi_univ_ite {ι} {α : ι → Type _} (s : Set ι) [DecidablePred (· ∈ s)]
+    (t : ∀ i, Set (α i)) :
+    (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by
+  ext; simp_rw [Set.mem_pi]; apply forall_congr'; intro i; split_ifs with h <;> simp [h]
+
 theorem pi_mono (h : ∀ i ∈ s, t₁ i ⊆ t₂ i) : pi s t₁ ⊆ pi s t₂ := fun _ hx i hi => h i hi <| hx i hi
 #align set.pi_mono Set.pi_mono
 
