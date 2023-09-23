@@ -554,7 +554,7 @@ private lemma coeff_mul_comp_stable {f g h : R⟦X⟧} (hf : f.hasComp h) (hg : 
   apply finsum_congr
   intro n
   by_cases hn : n.succ ≤ M
-  · rw [coeff_stable hn, ←trunc_trunc_mul_trunc, ←coeff_stable hn]
+  · rw [←coeff_coe_trunc_of_lt hn, ←trunc_trunc_mul_trunc, coeff_coe_trunc_of_lt hn]
   · rw [not_le, lt_succ] at hn
     rw [hNfg, coeff_mul, sum_mul]
     · symm
@@ -599,15 +599,15 @@ theorem mul_comp {f g h : R⟦X⟧} (hf : f.hasComp h) (hg : g.hasComp h) :
     (f * g) ∘ᶠ h = f ∘ᶠ h * g ∘ᶠ h := by
   ext d
   obtain ⟨Nfg,hNfg⟩ := coeff_mul_comp_stable hf hg d
-  have hN_mul := coeff_mul_stable (f ∘ᶠ h) (g ∘ᶠ h) d.lt_succ_self
+  have hN_mul := coeff_mul_eq_coeff_trunc_mul_trunc (f ∘ᶠ h) (g ∘ᶠ h) d.lt_succ_self
   rw [hN_mul]
   obtain ⟨Nf,hNf⟩ := trunc_comp_stable hf d.succ
   obtain ⟨Ng,hNg⟩ := trunc_comp_stable hg d.succ
   set N := Nfg.max (Nf.max Ng)
   rw [hNf N, hNg N, hNfg N]
   symm
-  rw [coeff_stable d.lt_succ_self, trunc_trunc_mul_trunc, coe_comp_eq_eval₂, coe_comp_eq_eval₂,
-    ←Polynomial.coe_mul, coe_comp_eq_eval₂, eval₂_mul, ←coeff_stable d.lt_succ_self]
+  rw [←coeff_coe_trunc_of_lt d.lt_succ_self, trunc_trunc_mul_trunc, coe_comp_eq_eval₂, coe_comp_eq_eval₂,
+    ←Polynomial.coe_mul, coe_comp_eq_eval₂, eval₂_mul, coeff_coe_trunc_of_lt d.lt_succ_self]
   apply le_max_left
   apply le_of_max_le_right
   apply le_max_right
@@ -725,7 +725,7 @@ theorem coe_comp_assoc {f : R[X]} {g h : R⟦X⟧} (hgh : g.hasComp h (R := R)) 
 @[simp] theorem comp_X (f : R⟦X⟧) : f ∘ᶠ X = f := by
   ext n
   rw [coeff_comp_of_constantCoeff_eq_zero constantCoeff_X, eval₂_C_X_eq_coe,
-    ←coeff_stable n.lt_succ_self]
+    coeff_coe_trunc_of_lt n.lt_succ_self]
 
 @[simp] theorem X_comp (f : R⟦X⟧) : X ∘ᶠ f = f := by
   rw [←Polynomial.coe_X, coe_comp_eq_eval₂, eval₂_X]
