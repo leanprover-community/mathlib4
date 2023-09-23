@@ -105,7 +105,7 @@ instance : FunLike (α ≃ β) α (fun _ => β) :=
   EmbeddingLike.toFunLike
 
 @[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
-rfl
+  rfl
 #align equiv.coe_fn_mk Equiv.coe_fn_mk
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/

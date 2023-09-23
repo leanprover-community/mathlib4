@@ -32,7 +32,7 @@ variable [Preadditive C]
 
 namespace Projective
 
-theorem projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj (P : C):
+theorem projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj (P : C) :
     Projective P ↔ (preadditiveCoyoneda.obj (op P)).PreservesEpimorphisms := by
   rw [projective_iff_preservesEpimorphisms_coyoneda_obj]
   refine' ⟨fun h : (preadditiveCoyoneda.obj (op P) ⋙

@@ -38,7 +38,7 @@ def DList.join {α : Type _} : List (DList α) → DList α
 /-- Convert a lazily-evaluated `List` to a `DList` -/
 -- Ported from Lean 3 core
 def DList.lazy_ofList (l : Thunk (List α)) : DList α :=
-⟨fun xs => l.get ++ xs, fun t => by simp⟩
+  ⟨fun xs => l.get ++ xs, fun t => by simp⟩
 #align dlist.lazy_of_list Std.DList.lazy_ofList
 
 @[simp]

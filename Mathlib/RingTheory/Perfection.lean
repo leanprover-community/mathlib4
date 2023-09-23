@@ -279,7 +279,7 @@ theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
 
 variable {p R P}
 
-/-- A perfection map induces an isomorphism to the prefection. -/
+/-- A perfection map induces an isomorphism to the perfection. -/
 noncomputable def equiv {π : P →+* R} (m : PerfectionMap p π) : P ≃+* Ring.Perfection R p :=
   RingEquiv.ofBijective (Perfection.lift p P R π)
     ⟨fun _ _ hxy => m.Injective fun n => (congr_arg (Perfection.coeff R p n) hxy : _), fun f =>

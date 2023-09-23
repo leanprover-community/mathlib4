@@ -170,9 +170,9 @@ theorem gnpowRec_succ (n : ℕ) (a : GradedMonoid A) :
 
 end GMonoid
 
-/-- A tactic to for use as an optional value for `Gmonoid.gnpow_zero'' -/
+/-- A tactic to for use as an optional value for `GMonoid.gnpow_zero'`. -/
 macro "apply_gmonoid_gnpowRec_zero_tac" : tactic => `(tactic| apply GMonoid.gnpowRec_zero)
-/-- A tactic to for use as an optional value for `Gmonoid.gnpow_succ'' -/
+/-- A tactic to for use as an optional value for `GMonoid.gnpow_succ'`. -/
 macro "apply_gmonoid_gnpowRec_succ_tac" : tactic => `(tactic| apply GMonoid.gnpowRec_succ)
 
 /-- A graded version of `Monoid`
@@ -180,9 +180,9 @@ macro "apply_gmonoid_gnpowRec_succ_tac" : tactic => `(tactic| apply GMonoid.gnpo
 Like `Monoid.npow`, this has an optional `GMonoid.gnpow` field to allow definitional control of
 natural powers of a graded monoid. -/
 class GMonoid [AddMonoid ι] extends GMul A, GOne A where
-  /-- Muliplication by `one` on the left is the identity -/
+  /-- Multiplication by `one` on the left is the identity -/
   one_mul (a : GradedMonoid A) : 1 * a = a
-  /-- Muliplication by `one` on the right is the identity -/
+  /-- Multiplication by `one` on the right is the identity -/
   mul_one (a : GradedMonoid A) : a * 1 = a
   /-- Multiplication is associative -/
   mul_assoc (a b c : GradedMonoid A) : a * b * c = a * (b * c)
@@ -468,7 +468,7 @@ instance CommMonoid.gCommMonoid [AddCommMonoid ι] [CommMonoid R] :
 /-- When all the indexed types are the same, the dependent product is just the regular product. -/
 @[simp]
 theorem List.dProd_monoid {α} [AddMonoid ι] [Monoid R] (l : List α) (fι : α → ι) (fA : α → R) :
-    @List.dProd _ _ (fun _:ι => R) _ _ l fι fA = (l.map fA).prod := by
+    @List.dProd _ _ (fun _ : ι => R) _ _ l fι fA = (l.map fA).prod := by
   match l with
   | [] =>
     rw [List.dProd_nil, List.map_nil, List.prod_nil]

@@ -859,7 +859,7 @@ theorem finite_range (f : ι → α) [Finite ι] : (range f).Finite :=
 #align set.finite_range Set.finite_range
 
 theorem Finite.dependent_image {s : Set α} (hs : s.Finite) (F : ∀ i ∈ s, β) :
-    { y : β | ∃ (x : _)(hx : x ∈ s), y = F x hx }.Finite := by
+    { y : β | ∃ (x : _) (hx : x ∈ s), y = F x hx }.Finite := by
   cases hs
   simpa [range, eq_comm] using finite_range fun x : s => F x x.2
 #align set.finite.dependent_image Set.Finite.dependent_image
@@ -1083,7 +1083,7 @@ theorem Finite.fin_embedding {s : Set α} (h : s.Finite) :
 #align set.finite.fin_embedding Set.Finite.fin_embedding
 
 theorem Finite.fin_param {s : Set α} (h : s.Finite) :
-    ∃ (n : ℕ)(f : Fin n → α), Injective f ∧ range f = s :=
+    ∃ (n : ℕ) (f : Fin n → α), Injective f ∧ range f = s :=
   let ⟨n, f, hf⟩ := h.fin_embedding
   ⟨n, f, f.injective, hf⟩
 #align set.finite.fin_param Set.Finite.fin_param

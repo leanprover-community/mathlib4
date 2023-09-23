@@ -243,7 +243,7 @@ def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
 #align measure_theory.signed_measure.to_jordan_decomposition MeasureTheory.SignedMeasure.toJordanDecomposition
 
 theorem toJordanDecomposition_spec (s : SignedMeasure α) :
-    ∃ (i : Set α)(hi₁ : MeasurableSet i)(hi₂ : 0 ≤[i] s)(hi₃ : s ≤[iᶜ] 0),
+    ∃ (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : 0 ≤[i] s) (hi₃ : s ≤[iᶜ] 0),
       s.toJordanDecomposition.posPart = s.toMeasureOfZeroLE i hi₁ hi₂ ∧
         s.toJordanDecomposition.negPart = s.toMeasureOfLEZero (iᶜ) hi₁.compl hi₃ := by
   set i := choose s.exists_compl_positive_negative

@@ -12,7 +12,7 @@ import Mathlib.Order.Filter.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
-# Minimum and maximum w.r.t. a filter and on a aet
+# Minimum and maximum w.r.t. a filter and on a set
 
 ## Main Definitions
 

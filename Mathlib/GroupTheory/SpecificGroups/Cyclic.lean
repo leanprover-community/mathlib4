@@ -166,7 +166,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
       Infinite.exists_not_mem_finset
         (Finset.image (fun x => g ^ x) <| Finset.range <| orderOf g)
     apply hx
-    rw [← mem_powers_iff_mem_range_order_of' (x:=g) (y:=x) ho, Submonoid.mem_powers_iff]
+    rw [← mem_powers_iff_mem_range_order_of' (x := g) (y := x) ho, Submonoid.mem_powers_iff]
     obtain ⟨k, hk⟩ := h x
     dsimp at hk
     obtain ⟨k, rfl | rfl⟩ := k.eq_nat_or_neg

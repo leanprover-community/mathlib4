@@ -154,7 +154,7 @@ def Truncated (n : ℕ) :=
 set_option linter.uppercaseLean3 false in
 #align sSet.truncated SSet.Truncated
 
-instance Truncated.largeCategory (n : ℕ) : LargeCategory (Truncated n):= by
+instance Truncated.largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 

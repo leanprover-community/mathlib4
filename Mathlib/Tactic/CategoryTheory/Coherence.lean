@@ -292,11 +292,13 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
     simp only [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂]))
 
-lemma insert_id_lhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) : f = g :=
-by simpa using w
+lemma insert_id_lhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
+    f = g := by
+  simpa using w
 
-lemma insert_id_rhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) : f = g :=
-by simpa using w
+lemma insert_id_rhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
+    f = g := by
+  simpa using w
 
 /-- If either the lhs or rhs is not a composition, compose it on the right with an identity. -/
 def insertTrailingIds (g : MVarId) : MetaM MVarId := do

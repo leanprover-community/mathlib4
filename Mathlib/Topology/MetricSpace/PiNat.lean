@@ -366,7 +366,7 @@ theorem isOpen_cylinder (x : ∀ n, E n) (n : ℕ) : IsOpen (cylinder x n) := by
 #align pi_nat.is_open_cylinder PiNat.isOpen_cylinder
 
 theorem isTopologicalBasis_cylinders :
-    IsTopologicalBasis { s : Set (∀ n, E n) | ∃ (x : ∀ n, E n)(n : ℕ), s = cylinder x n } := by
+    IsTopologicalBasis { s : Set (∀ n, E n) | ∃ (x : ∀ n, E n) (n : ℕ), s = cylinder x n } := by
   apply isTopologicalBasis_of_open_of_nhds
   · rintro u ⟨x, n, rfl⟩
     apply isOpen_cylinder

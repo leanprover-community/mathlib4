@@ -359,7 +359,7 @@ theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
     exact add_mem ((le_sup_left : p ≤ p ⊔ p') hy) ((le_sup_right : p' ≤ p ⊔ p') hz)⟩
 #align submodule.mem_sup Submodule.mem_sup
 
-theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p)(z : p'), (y : M) + z = x :=
+theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p) (z : p'), (y : M) + z = x :=
   mem_sup.trans <| by simp only [Subtype.exists, exists_prop]
 #align submodule.mem_sup' Submodule.mem_sup'
 

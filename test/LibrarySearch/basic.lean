@@ -78,14 +78,14 @@ example (a : ℕ) (h : a < 0) : False := by library_search -- says `exact Nat.no
 -- An inductive type hides the constructor's arguments enough
 -- so that `library_search` doesn't accidentally close the goal.
 inductive P : ℕ → Prop
-| gt_in_head {n : ℕ} : n < 0 → P n
+  | gt_in_head {n : ℕ} : n < 0 → P n
 
 -- This lemma with `>` as its head symbol should also be found for goals with head symbol `<`.
 theorem lemma_with_gt_in_head (a : ℕ) (h : P a) : 0 > a := by cases h; assumption
 
 -- This lemma with `false` as its head symbols should also be found for goals with head symbol `¬`.
-theorem lemma_with_false_in_head (a b : ℕ) (_h1 : a < b) (h2 : P a) : False :=
-by apply Nat.not_lt_zero; cases h2; assumption
+theorem lemma_with_false_in_head (a b : ℕ) (_h1 : a < b) (h2 : P a) : False := by
+  apply Nat.not_lt_zero; cases h2; assumption
 
 example (a : ℕ) (h : P a) : 0 > a := by library_search -- says `exact lemma_with_gt_in_head a h`
 example (a : ℕ) (h : P a) : a < 0 := by library_search -- says `exact lemma_with_gt_in_head a h`
@@ -126,10 +126,10 @@ by library_search using P, Q -- exact P ∩ Q
 -- Check that we don't use sorryAx:
 -- (see https://github.com/leanprover-community/mathlib4/issues/226)
 
-theorem Bool_eq_iff {A B: Bool} : (A = B) = (A ↔ B) :=
+theorem Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) :=
   by (cases A <;> cases B <;> simp)
 
-theorem Bool_eq_iff2 {A B: Bool} : (A = B) = (A ↔ B) :=
+theorem Bool_eq_iff2 {A B : Bool} : (A = B) = (A ↔ B) :=
   by library_search -- exact Bool_eq_iff
 
 assert_no_sorry Bool_eq_iff2

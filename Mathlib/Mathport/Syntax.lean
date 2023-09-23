@@ -306,8 +306,6 @@ macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
 
 /- M -/ syntax (name := addHintTactic) "add_hint_tactic " tactic : command
 
-/- S -/ syntax (name := explode) "#explode " ident : command
-
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
 
 /- N -/ syntax (name := defReplacer) "def_replacer " ident Parser.Term.optType : command

@@ -66,7 +66,7 @@ instances for:
 * `A : ι → Subgroup S`:
   `DirectSum.GSemiring.ofAddSubgroups`, `DirectSum.GCommSemiring.ofAddSubgroups`.
 * `A : ι → Submodule S`:
-  `DirectSum.GSemiring.ofSubmodules`, `DirectSum.GcommSemiring.ofSubmodules`.
+  `DirectSum.GSemiring.ofSubmodules`, `DirectSum.GCommSemiring.ofSubmodules`.
 
 If `CompleteLattice.independent (Set.range A)`, these provide a gradation of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as

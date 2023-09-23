@@ -108,7 +108,7 @@ export InvMemClass (inv_mem)
 
 /-- `NegMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under negation. -/
 class NegMemClass (S G : Type _) [Neg G] [SetLike S G] : Prop where
-/-- `s` is closed under negation -/
+  /-- `s` is closed under negation -/
   neg_mem : ∀ {s : S} {x}, x ∈ s → -x ∈ s
 #align neg_mem_class NegMemClass
 
@@ -370,7 +370,7 @@ structure Subgroup (G : Type _) [Group G] extends Submonoid G where
 /-- An additive subgroup of an additive group `G` is a subset containing 0, closed
 under addition and additive inverse. -/
 structure AddSubgroup (G : Type _) [AddGroup G] extends AddSubmonoid G where
-/-- `G` is closed under negation -/
+  /-- `G` is closed under negation -/
   neg_mem' {x} : x ∈ carrier → -x ∈ carrier
 #align add_subgroup AddSubgroup
 
@@ -2330,7 +2330,7 @@ instance Centralizer.characteristic [hH : H.Characteristic] :
 
 end Centralizer
 
-/-- Commutivity of a subgroup -/
+/-- Commutativity of a subgroup -/
 structure IsCommutative : Prop where
   /-- `*` is commutative on `H` -/
   is_comm : IsCommutative H (· * ·)
@@ -2338,7 +2338,7 @@ structure IsCommutative : Prop where
 
 attribute [class] IsCommutative
 
-/-- Commutivity of an additive subgroup -/
+/-- Commutativity of an additive subgroup -/
 structure _root_.AddSubgroup.IsCommutative (H : AddSubgroup A) : Prop where
   /-- `+` is commutative on `H` -/
   is_comm : _root_.IsCommutative H (· + ·)
@@ -3509,7 +3509,7 @@ theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
 #align add_subgroup.mem_sup AddSubgroup.mem_sup
 
 @[to_additive]
-theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s)(z : t), (y : C) * z = x :=
+theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s) (z : t), (y : C) * z = x :=
   mem_sup.trans <| by simp only [SetLike.exists, coe_mk, exists_prop]
 #align subgroup.mem_sup' Subgroup.mem_sup'
 #align add_subgroup.mem_sup' AddSubgroup.mem_sup'
@@ -3613,7 +3613,7 @@ theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgr
 /-- Elements of disjoint, normal subgroups commute. -/
 @[to_additive "Elements of disjoint, normal subgroups commute."]
 theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Normal) (hH₂ : H₂.Normal)
--- Porting note: Goal was `Commute x y`. Removed ambiguity.
+    -- Porting note: Goal was `Commute x y`. Removed ambiguity.
     (hdis : Disjoint H₁ H₂) (x y : G) (hx : x ∈ H₁) (hy : y ∈ H₂) : _root_.Commute x y := by
   suffices x * y * x⁻¹ * y⁻¹ = 1 by
     show x * y = y * x

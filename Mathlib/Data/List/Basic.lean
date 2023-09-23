@@ -404,13 +404,13 @@ theorem append_right_cancel {s₁ s₂ t : List α} (h : s₁ ++ t = s₂ ++ t) 
 #align list.append_right_cancel List.append_right_cancel
 
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
-fun _ _ ↦ append_left_cancel
+  fun _ _ ↦ append_left_cancel
 #align list.append_right_injective List.append_right_injective
 
 #align list.append_right_inj List.append_right_inj
 
 theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
-fun _ _ ↦ append_right_cancel
+  fun _ _ ↦ append_right_cancel
 #align list.append_left_injective List.append_left_injective
 
 #align list.append_left_inj List.append_left_inj
@@ -3031,7 +3031,7 @@ end SplitAtOn
 
 section ModifyLast
 
-theorem modifyLast.go_append_one (f : α → α) (a : α) (tl : List α) (r : Array α):
+theorem modifyLast.go_append_one (f : α → α) (a : α) (tl : List α) (r : Array α) :
     modifyLast.go f (tl ++ [a]) r = (r.toListAppend <| modifyLast.go f (tl ++ [a]) #[]) := by
   cases tl with
   | nil =>
@@ -3139,7 +3139,7 @@ theorem mem_attach (l : List α) : ∀ x, x ∈ l.attach
 
 @[simp]
 theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {l H b} :
-    b ∈ pmap f l H ↔ ∃ (a : _)(h : a ∈ l), f a (H a h) = b := by
+    b ∈ pmap f l H ↔ ∃ (a : _) (h : a ∈ l), f a (H a h) = b := by
   simp only [pmap_eq_map_attach, mem_map, mem_attach, true_and_iff, Subtype.exists, eq_comm]
 #align list.mem_pmap List.mem_pmap
 

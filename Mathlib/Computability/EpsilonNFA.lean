@@ -15,7 +15,7 @@ import Mathlib.Computability.NFA
 
 This file contains the definition of an epsilon Nondeterministic Finite Automaton (`εNFA`), a state
 machine which determines whether a string (implemented as a list over an arbitrary alphabet) is in a
-regular set by evaluating the string over every possible path, also having access to ε-transitons,
+regular set by evaluating the string over every possible path, also having access to ε-transitions,
 which can be followed without reading a character.
 Since this definition allows for automata with infinite states, a `Fintype` instance must be
 supplied for true `εNFA`'s.

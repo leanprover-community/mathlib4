@@ -491,7 +491,7 @@ theorem torsionBySet_isInternal {p : ι → Ideal R}
     (CompleteLattice.independent_iff_supIndep.mpr <| supIndep_torsionBySet_ideal hp)
     (by
       apply (iSup_subtype'' ↑S fun i => torsionBySet R M <| p i).trans
-      -- Porting note: timesout if we change apply below to <|
+      -- Porting note: times out if we change apply below to <|
       apply (iSup_torsionBySet_ideal_eq_torsionBySet_iInf hp).trans <|
         (Module.isTorsionBySet_iff_torsionBySet_eq_top _).mp hM)
 #align submodule.torsion_by_set_is_internal Submodule.torsionBySet_isInternal

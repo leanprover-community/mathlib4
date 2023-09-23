@@ -347,7 +347,7 @@ def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
   ∫ θ : ℝ in (0)..2 * π, deriv (circleMap c R) θ • f (circleMap c R θ)
 #align circle_integral circleIntegral
 
-notation3"∮ "(...)" in ""C("c", "R")"", "r:(scoped f => circleIntegral f c R) => r
+notation3 "∮ "(...)" in ""C("c", "R")"", "r:(scoped f => circleIntegral f c R) => r
 
 theorem circleIntegral_def_Icc (f : ℂ → E) (c : ℂ) (R : ℝ) :
     (∮ z in C(c, R), f z) = ∫ θ in Icc 0 (2 * π),

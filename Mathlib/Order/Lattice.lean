@@ -32,7 +32,7 @@ of `sup` over `inf`, on the left or on the right.
   commutative, associative and idempotent.
 
 * `Lattice`: a type class for lattices
-* `Lattice.mk'`: an alternative constructor for `Lattice` via profs that `⊔` and `⊓` are
+* `Lattice.mk'`: an alternative constructor for `Lattice` via proofs that `⊔` and `⊓` are
   commutative, associative and satisfy a pair of "absorption laws".
 
 * `DistribLattice`: a type class for distributive lattices.

@@ -11,9 +11,9 @@ example [AddZeroClass G] {a : G} : a + a = a + (a + 0) := by
   nth_rw 2 [←add_zero a]
 
 structure F :=
-(a : ℕ)
-(v : Vector ℕ a)
-(p : v.val = [])
+  (a : ℕ)
+  (v : Vector ℕ a)
+  (p : v.val = [])
 
 example (f : F) : f.v.val = [] := by
   nth_rw 1 [f.p]

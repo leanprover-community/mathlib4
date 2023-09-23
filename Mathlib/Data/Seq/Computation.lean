@@ -914,7 +914,7 @@ theorem terminates_map_iff (f : α → β) (s : Computation α) : Terminates (ma
 -- Parallel computation
 /-- `c₁ <|> c₂` calculates `c₁` and `c₂` simultaneously, returning
   the first one that gives a result. -/
-def orElse (c₁: Computation α) (c₂: Unit → Computation α): Computation α :=
+def orElse (c₁ : Computation α) (c₂ : Unit → Computation α) : Computation α :=
   @Computation.corec α (Computation α × Computation α)
     (fun ⟨c₁, c₂⟩ =>
       match destruct c₁ with

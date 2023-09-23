@@ -133,7 +133,7 @@ you should provide instances transferring
 Typically this is done using the `Function.Injective.Z` definition mentioned above.
 ```
 instance SubY.toZ [Z α] : Z (SubY α) :=
-coe_injective.Z coe ...
+  coe_injective.Z coe ...
 ```
 
 ## Morphisms and equivalences

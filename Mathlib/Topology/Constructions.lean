@@ -1287,7 +1287,7 @@ theorem isOpen_set_pi {i : Set ι} {s : ∀ a, Set (π a)} (hi : i.Finite)
 
 theorem isOpen_pi_iff {s : Set (∀ a, π a)} :
     IsOpen s ↔
-      ∀ f, f ∈ s → ∃ (I : Finset ι)(u : ∀ a, Set (π a)),
+      ∀ f, f ∈ s → ∃ (I : Finset ι) (u : ∀ a, Set (π a)),
         (∀ a, a ∈ I → IsOpen (u a) ∧ f a ∈ u a) ∧ (I : Set ι).pi u ⊆ s := by
   rw [isOpen_iff_nhds]
   simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff]

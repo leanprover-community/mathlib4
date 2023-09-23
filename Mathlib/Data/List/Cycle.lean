@@ -616,7 +616,7 @@ theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
 
 /-- A `s : Cycle α` that is made up of at least two unique elements. -/
 def Nontrivial (s : Cycle α) : Prop :=
-  ∃ (x y : α)(_h : x ≠ y), x ∈ s ∧ y ∈ s
+  ∃ (x y : α) (_h : x ≠ y), x ∈ s ∧ y ∈ s
 #align cycle.nontrivial Cycle.Nontrivial
 
 @[simp]

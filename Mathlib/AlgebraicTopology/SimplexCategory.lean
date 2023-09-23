@@ -637,7 +637,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
 
 theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (n + 1) ⟶ Δ')
     (hθ : ¬Function.Injective θ.toOrderHom) :
-    ∃ (i : Fin (n + 1))(θ' : mk n ⟶ Δ'), θ = σ i ≫ θ' := by
+    ∃ (i : Fin (n + 1)) (θ' : mk n ⟶ Δ'), θ = σ i ≫ θ' := by
   simp only [Function.Injective, exists_prop, not_forall] at hθ
   -- as θ is not injective, there exists `x<y` such that `θ x = θ y`
   -- and then, `θ x = θ (x+1)`
@@ -704,7 +704,7 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
 
 theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
     (hθ : ¬Function.Surjective θ.toOrderHom) :
-    ∃ (i : Fin (n + 2))(θ' : Δ ⟶ mk n), θ = θ' ≫ δ i := by
+    ∃ (i : Fin (n + 2)) (θ' : Δ ⟶ mk n), θ = θ' ≫ δ i := by
   cases' not_forall.mp hθ with i hi
   use i
   exact eq_comp_δ_of_not_surjective' θ i (not_exists.mp hi)

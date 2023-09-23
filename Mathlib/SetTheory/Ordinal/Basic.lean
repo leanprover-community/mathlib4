@@ -1346,7 +1346,7 @@ theorem ord_eq_Inf (α : Type u) : ord (#α) = ⨅ r : { r // IsWellOrder α r }
   rfl
 #align cardinal.ord_eq_Inf Cardinal.ord_eq_Inf
 
-theorem ord_eq (α) : ∃ (r : α → α → Prop)(wo : IsWellOrder α r), ord (#α) = @type α r wo :=
+theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord (#α) = @type α r wo :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
 #align cardinal.ord_eq Cardinal.ord_eq

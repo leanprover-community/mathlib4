@@ -604,7 +604,7 @@ attribute [nontriviality] isAddUnit_of_subsingleton
 
 @[to_additive]
 instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
-{ prf := fun _ ↦ id }
+  { prf := fun _ ↦ id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]

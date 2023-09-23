@@ -179,7 +179,7 @@ def node' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
 /-- Basic pretty printing for `Ordnode α` that shows the structure of the tree.
 
      repr {3, 1, 2, 4} = ((∅ 1 ∅) 2 ((∅ 3 ∅) 4 ∅)) -/
-def repr {α} [Repr α]  (o: Ordnode α) (n: ℕ) : Std.Format :=
+def repr {α} [Repr α]  (o : Ordnode α) (n : ℕ) : Std.Format :=
   match o with
   | nil => (Std.Format.text "∅")
   | node _ l x r =>
@@ -335,11 +335,11 @@ def All (P : α → Prop) : Ordnode α → Prop
 #align ordnode.all Ordnode.All
 
 instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P] → Decidable (All P t)
-| nil => decidableTrue
-| node _ l _ r =>
-  have : Decidable (All P l) := All.decidable l
-  have : Decidable (All P r) := All.decidable r
-  And.decidable
+  | nil => decidableTrue
+  | node _ l _ r =>
+    have : Decidable (All P l) := All.decidable l
+    have : Decidable (All P r) := All.decidable r
+    And.decidable
 #align ordnode.all.decidable Ordnode.All.decidable
 
 /-- O(n). Does any element of the map satisfy property `P`?
@@ -352,11 +352,11 @@ def Any (P : α → Prop) : Ordnode α → Prop
 #align ordnode.any Ordnode.Any
 
 instance Any.decidable {P : α → Prop} : (t: Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
-| nil => decidableFalse
-| node _ l _ r =>
-  have : Decidable (Any P l) := Any.decidable l
-  have : Decidable (Any P r) := Any.decidable r
-  Or.decidable
+  | nil => decidableFalse
+  | node _ l _ r =>
+    have : Decidable (Any P l) := Any.decidable l
+    have : Decidable (Any P r) := Any.decidable r
+    Or.decidable
 #align ordnode.any.decidable Ordnode.Any.decidable
 
 /-- O(n). Exact membership in the set. This is useful primarily for stating

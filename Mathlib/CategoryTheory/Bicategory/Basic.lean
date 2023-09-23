@@ -38,7 +38,7 @@ require this functor directly. Instead, it requires the whiskering functions. Fo
 2-morphism `whiskerLeft f η : f ≫ g ⟶ f ≫ h`. Similarly, for a 2-morphism `η : f ⟶ g`
 between 1-morphisms `f g : a ⟶ b` and a 1-morphism `f : b ⟶ c`, there is a 2-morphism
 `whiskerRight η h : f ≫ h ⟶ g ≫ h`. These satisfy the exchange law
-`whiskerLeft f θ ≫ whiskerRight η i = whiskerRight η h ≫ whiskerReft g θ`,
+`whiskerLeft f θ ≫ whiskerRight η i = whiskerRight η h ≫ whiskerLeft g θ`,
 which is required as an axiom in the definition here.
 -/
 

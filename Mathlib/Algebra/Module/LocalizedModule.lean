@@ -559,7 +559,7 @@ attribute [nolint docBlame] IsLocalizedModule.map_units IsLocalizedModule.surj'
 
 -- Porting note: Manually added to make `S` and `f` explicit.
 lemma IsLocalizedModule.surj [IsLocalizedModule S f] (y : M') : ∃ x : M × S, x.2 • y = f x.1 :=
-surj' y
+  surj' y
 
 -- Porting note: Manually added to make `S` and `f` explicit.
 lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :

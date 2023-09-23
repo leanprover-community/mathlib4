@@ -266,7 +266,7 @@ protected theorem forall_coe {α : Type _} (s : Finset α) (p : s → Prop) :
 
 -- Porting note: @[simp] can prove this
 protected theorem exists_coe {α : Type _} (s : Finset α) (p : s → Prop) :
-    (∃ x : s, p x) ↔ ∃ (x : α)(h : x ∈ s), p ⟨x, h⟩ :=
+    (∃ x : s, p x) ↔ ∃ (x : α) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.exists
 #align finset.exists_coe Finset.exists_coe
 
@@ -894,7 +894,7 @@ theorem cons_subset_cons {hs ht} : s.cons a hs ⊆ t.cons a ht ↔ s ⊆ t := by
   rwa [← coe_subset, coe_cons, coe_cons, Set.insert_subset_insert_iff, coe_subset]
 #align finset.cons_subset_cons Finset.cons_subset_cons
 
-theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _)(h : a ∉ s), s.cons a h ⊆ t := by
+theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _) (h : a ∉ s), s.cons a h ⊆ t := by
   refine' ⟨fun h => _, fun ⟨a, ha, h⟩ => ssubset_of_ssubset_of_subset (ssubset_cons _) h⟩
   obtain ⟨a, hs, ht⟩ := not_subset.1 h.2
   exact ⟨a, ht, cons_subset.2 ⟨hs, h.subset⟩⟩
@@ -2621,13 +2621,13 @@ instance decidableEqPiFinset {β : α → Type _} [_h : ∀ a, DecidableEq (β a
 #align finset.decidable_eq_pi_finset Finset.decidableEqPiFinset
 
 instance decidableDexistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
-    Decidable (∃ (a : _)(h : a ∈ s), p a h) :=
+    Decidable (∃ (a : _) (h : a ∈ s), p a h) :=
   Multiset.decidableDexistsMultiset
 #align finset.decidable_dexists_finset Finset.decidableDexistsFinset
 
 instance decidableExistsAndFinset {p : α → Prop} [_hp : ∀ (a), Decidable (p a)] :
     Decidable (∃ a ∈ s, p a) :=
-  decidable_of_iff (∃ (a : _)(_ : a ∈ s), p a) (by simp)
+  decidable_of_iff (∃ (a : _) (_ : a ∈ s), p a) (by simp)
 
 end DecidablePiExists
 

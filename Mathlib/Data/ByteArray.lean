@@ -42,7 +42,7 @@ namespace ByteSlice
 
 /-- Convert a byte slice into an array, by copying the data if necessary. -/
 def toArray : ByteSlice → ByteArray
-| ⟨arr, off, len⟩ => arr.extract off len
+  | ⟨arr, off, len⟩ => arr.extract off len
 
 /-- Index into a byte slice. The `getOp` function allows the use of the `buf[i]` notation. -/
 @[inline] def getOp (self : ByteSlice) (idx : Nat) : UInt8 := self.arr.get! (self.off + idx)
@@ -65,7 +65,7 @@ end ByteSlice
 
 /-- Convert a terminal byte slice into a regular byte slice. -/
 def ByteSliceT.toSlice : ByteSliceT → ByteSlice
-| ⟨arr, off⟩ => ⟨arr, off, arr.size - off⟩
+  | ⟨arr, off⟩ => ⟨arr, off, arr.size - off⟩
 
 /-- Convert a byte array into a byte slice. -/
 def ByteArray.toSlice (arr : ByteArray) : ByteSlice := ⟨arr, 0, arr.size⟩

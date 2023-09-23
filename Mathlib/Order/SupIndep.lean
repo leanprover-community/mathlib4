@@ -262,7 +262,7 @@ theorem independent_def' : Independent t ↔ ∀ i, Disjoint (t i) (sSup (t '' {
 #align complete_lattice.independent_def' CompleteLattice.independent_def'
 
 theorem independent_def'' :
-    Independent t ↔ ∀ i, Disjoint (t i) (sSup { a | ∃ (j : _)(_ : j ≠ i), t j = a }) := by
+    Independent t ↔ ∀ i, Disjoint (t i) (sSup { a | ∃ (j : _) (_ : j ≠ i), t j = a }) := by
   rw [independent_def']
   aesop
 #align complete_lattice.independent_def'' CompleteLattice.independent_def''

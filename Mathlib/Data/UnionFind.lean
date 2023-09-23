@@ -65,7 +65,7 @@ structure UFNode (α : Type _) where
   rank : Nat
 
 inductive UFModel.Agrees (arr : Array α) (f : α → β) : ∀ {n}, (Fin n → β) → Prop
-| mk : Agrees arr f fun i ↦ f (arr.get i)
+  | mk : Agrees arr f fun i ↦ f (arr.get i)
 
 namespace UFModel.Agrees
 

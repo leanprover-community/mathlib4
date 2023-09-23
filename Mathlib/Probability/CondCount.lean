@@ -17,7 +17,7 @@ The classical formulation of probability states that the probability of an event
 finite probability space is the ratio of that event to all possible events.
 This notion can be expressed with measure theory using
 the counting measure. In particular, given the sets `s` and `t`, we define the probability of `t`
-occurring in `s` to be `|s|⁻¹ * |s ∩ t|`. With this definition, we recover the the probability over
+occurring in `s` to be `|s|⁻¹ * |s ∩ t|`. With this definition, we recover the probability over
 the entire sample space when `s = Set.univ`.
 
 Classical probability is often used in combinatorics and we prove some useful lemmas in this file

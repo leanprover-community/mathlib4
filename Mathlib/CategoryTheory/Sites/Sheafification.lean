@@ -232,7 +232,7 @@ theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : P.obj (op X)) :
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
 theorem exists_rep {X : C} {P : Cᵒᵖ ⥤ D} (x : (J.plusObj P).obj (op X)) :
-    ∃ (S : J.Cover X)(y : Meq P S), x = mk y := by
+    ∃ (S : J.Cover X) (y : Meq P S), x = mk y := by
   obtain ⟨S, y, h⟩ := Concrete.colimit_exists_rep (J.diagram P X) x
   use S.unop, Meq.equiv _ _ y
   rw [← h]
@@ -241,7 +241,7 @@ theorem exists_rep {X : C} {P : Cᵒᵖ ⥤ D} (x : (J.plusObj P).obj (op X)) :
 #align category_theory.grothendieck_topology.plus.exists_rep CategoryTheory.GrothendieckTopology.Plus.exists_rep
 
 theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P S) (y : Meq P T) :
-    mk x = mk y ↔ ∃ (W : J.Cover X)(h1 : W ⟶ S)(h2 : W ⟶ T), x.refine h1 = y.refine h2 := by
+    mk x = mk y ↔ ∃ (W : J.Cover X) (h1 : W ⟶ S) (h2 : W ⟶ T), x.refine h1 = y.refine h2 := by
   constructor
   · intro h
     obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq _ _ _ h

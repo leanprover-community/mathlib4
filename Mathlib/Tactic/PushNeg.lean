@@ -148,7 +148,7 @@ def pushNegTarget : TacticM Unit := withMainContext do
   replaceMainGoal [← applySimpResultToTarget goal tgt (← pushNegCore tgt)]
 
 /-- Execute main loop of `push_neg` at a local hypothesis. -/
-def pushNegLocalDecl (fvarId : FVarId): TacticM Unit := withMainContext do
+def pushNegLocalDecl (fvarId : FVarId) : TacticM Unit := withMainContext do
   let ldecl ← fvarId.getDecl
   if ldecl.isAuxDecl then return
   let tgt ← instantiateMVars ldecl.type

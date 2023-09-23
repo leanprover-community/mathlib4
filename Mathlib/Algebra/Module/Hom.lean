@@ -18,7 +18,7 @@ This file defines instances for `Module`, `MulAction` and related structures on 
 These are analogous to the instances in `Algebra.Module.Pi`, but for bundled instead of unbundled
 functions.
 
-We also define bundled versions of `(c • ·)` and `(· • ·)` as `AddMonoidhom.smulLeft` and
+We also define bundled versions of `(c • ·)` and `(· • ·)` as `AddMonoidHom.smulLeft` and
 `AddMonoidHom.smul`, respectively.
 -/
 

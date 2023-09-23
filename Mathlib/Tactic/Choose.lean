@@ -50,15 +50,15 @@ Rationale:
 in eliminating dependencies on propositions.
 -/
 inductive ElimStatus
-| success
-| failure (ts : List Expr)
+  | success
+  | failure (ts : List Expr)
 
 /-- Combine two statuses, keeping a success from either side
 or merging the failures. -/
 def ElimStatus.merge : ElimStatus → ElimStatus → ElimStatus
-| success, _ => success
-| _, success => success
-| failure ts₁, failure ts₂ => failure (ts₁ ++ ts₂)
+  | success, _ => success
+  | _, success => success
+  | failure ts₁, failure ts₂ => failure (ts₁ ++ ts₂)
 
 /-- `mkFreshNameFrom orig base` returns `mkFreshUserName base` if ``orig = `_``
 and `orig` otherwise. -/

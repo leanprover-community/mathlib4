@@ -35,10 +35,10 @@ of the oplax functor associated with it is already done. For example, the compos
 pseudofunctors can be defined by using the composition of oplax functors as follows:
 ```lean
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
-mkOfOplax ((F : OplaxFunctor B C).comp G)
-{ mapIdIso := λ a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
-  mapCompIso := λ f g =>
-    (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
+  mkOfOplax ((F : OplaxFunctor B C).comp G)
+  { mapIdIso := λ a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
+    mapCompIso := λ f g =>
+      (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
 ```
 although the composition of pseudofunctors in this file is defined by using the default constructor
 because `obviously` wasn't smart enough in mathlib3 and the porter of this file was too lazy

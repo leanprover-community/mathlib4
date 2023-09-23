@@ -397,7 +397,7 @@ section CanonicallyOrderedMonoid
 
 variable [CanonicallyOrderedMonoid M] {f : ι → M} {s t : Finset ι}
 
-@[to_additive (attr:=simp) sum_eq_zero_iff]
+@[to_additive (attr := simp) sum_eq_zero_iff]
 theorem prod_eq_one_iff' : (∏ x in s, f x) = 1 ↔ ∀ x ∈ s, f x = 1 :=
   prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
 #align finset.prod_eq_one_iff' Finset.prod_eq_one_iff'

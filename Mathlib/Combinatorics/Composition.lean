@@ -802,7 +802,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
   invFun s :=
     { boundaries :=
         { i : Fin n.succ |
-            i = 0 ∨ i = Fin.last n ∨ ∃ (j : Fin (n - 1))(_hj : j ∈ s), (i : ℕ) = j + 1 }.toFinset
+            i = 0 ∨ i = Fin.last n ∨ ∃ (j : Fin (n - 1)) (_hj : j ∈ s), (i : ℕ) = j + 1 }.toFinset
       zero_mem := by simp
       getLast_mem := by simp }
   left_inv := by

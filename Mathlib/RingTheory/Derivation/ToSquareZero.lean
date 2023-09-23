@@ -117,7 +117,7 @@ theorem liftOfDerivationToSquareZero_mk_apply' (d : Derivation R A I) (x : A) :
   simp only [Ideal.Quotient.eq_zero_iff_mem.mpr (d x).prop, zero_add]
 
 /-- Given a tower of algebras `R → A → B`, and a square-zero `I : ideal B`,
-there is a 1-1 correspondance between `R`-derivations from `A` to `I` and
+there is a 1-1 correspondence between `R`-derivations from `A` to `I` and
 lifts `A →ₐ[R] B` of the canonical map `A →ₐ[R] B ⧸ I`. -/
 @[simps!]
 def derivationToSquareZeroEquivLift : Derivation R A I ≃

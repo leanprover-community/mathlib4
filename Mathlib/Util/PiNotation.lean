@@ -36,7 +36,7 @@ macro_rules
   | `(Π $x:ident $pred:binderPred, $p) => `(Π $x:ident, satisfies_binder_pred% $x $pred → $p)
   | `(Π _ $pred:binderPred, $p) => `(Π x, satisfies_binder_pred% x $pred → $p)
 
-/-- Since pi notation and forall notation are interchangable, we can
+/-- Since pi notation and forall notation are interchangeable, we can
 parse it by simply using the pre-existing forall parser. -/
 @[macro PiNotation.piNotation] def replacePiNotation : Lean.Macro
   | .node info _ args => return .node info ``Lean.Parser.Term.forall args

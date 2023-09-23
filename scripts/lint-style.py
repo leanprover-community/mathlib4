@@ -44,7 +44,7 @@ ERR_SAV = 4 # ᾰ
 ERR_RNT = 5 # reserved notation
 ERR_OPT = 6 # set_option
 ERR_AUT = 7 # malformed authors list
-ERR_TAC = 9 # imported tactic{,.omega,.observe}
+ERR_TAC = 9 # imported Mathlib.Tactic
 ERR_UNF = 10 # unfreeze_local_instances
 ERR_IBY = 11 # isolated by
 
@@ -83,6 +83,8 @@ new_exceptions = False
 def skip_comments(enumerate_lines):
     in_comment = False
     for line_nr, line in enumerate_lines:
+        if line.startswith("--"):
+            continue
         if "/-" in line:
             in_comment = True
         if "-/" in line:
@@ -219,13 +221,13 @@ def regular_check(lines, path):
                 errors += [(ERR_IMP, line_nr, path)]
     return errors
 
-def import_omega_check(lines, path):
+def banned_import_check(lines, path):
     errors = []
     for line_nr, line in skip_comments(enumerate(lines, 1)):
         imports = line.split()
         if imports[0] != "import":
             break
-        if imports[1] in ["tactic", "tactic.omega", "tactic.observe"]:
+        if imports[1] in ["Mathlib.Tactic"]:
             errors += [(ERR_TAC, line_nr, path)]
     return errors
 
@@ -278,7 +280,7 @@ def format_errors(errors):
         if errno == ERR_AUT:
             output_message(path, line_nr, "ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
         if errno == ERR_TAC:
-            output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder, nor tactic.omega or tactic.observe")
+            output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
         if errno == ERR_IBY:
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
 
@@ -301,7 +303,7 @@ def lint(path):
         format_errors(errs)
         errs = set_option_check(lines, path)
         format_errors(errs)
-        errs = import_omega_check(lines, path)
+        errs = banned_import_check(lines, path)
         format_errors(errs)
 
 for filename in sys.argv[1:]:

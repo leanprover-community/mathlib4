@@ -322,7 +322,7 @@ theorem decode_zero : (decode 0 : Option Bool) = some false :=
 #align encodable.decode_zero Encodable.decode_zero
 
 @[simp]
-theorem decode_one : (decode 1: Option Bool) = some true :=
+theorem decode_one : (decode 1 : Option Bool) = some true :=
   rfl
 #align encodable.decode_one Encodable.decode_one
 

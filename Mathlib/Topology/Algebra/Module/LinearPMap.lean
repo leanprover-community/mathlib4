@@ -153,7 +153,7 @@ theorem IsClosable.closureIsClosable {f : E →ₗ.[R] F} (hf : f.IsClosable) : 
 #align linear_pmap.is_closable.closure_is_closable LinearPMap.IsClosable.closureIsClosable
 
 theorem isClosable_iff_exists_closed_extension {f : E →ₗ.[R] F} :
-    f.IsClosable ↔ ∃ (g : E →ₗ.[R] F)(_ : g.IsClosed), f ≤ g :=
+    f.IsClosable ↔ ∃ (g : E →ₗ.[R] F) (_ : g.IsClosed), f ≤ g :=
   ⟨fun h => ⟨f.closure, h.closure_isClosed, f.le_closure⟩, fun ⟨_, hg, h⟩ =>
     hg.isClosable.leIsClosable h⟩
 #align linear_pmap.is_closable_iff_exists_closed_extension LinearPMap.isClosable_iff_exists_closed_extension

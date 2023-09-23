@@ -87,7 +87,7 @@ set_option linter.uppercaseLean3 false in
 
 -- porting note: added to ease automation
 @[ext]
-lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x): f = g := by
+lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
   apply h
 

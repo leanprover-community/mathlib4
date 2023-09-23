@@ -187,8 +187,8 @@ def epiComp {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : IndexSet Δ₁) (p : Δ�
 
 variable {Δ' : SimplexCategoryᵒᵖ} (θ : Δ ⟶ Δ')
 
-/-- When `A : index_set Δ` and `θ : Δ → Δ'` is a morphism in `simplex_categoryᵒᵖ`,
-an element in `index_set Δ'` can be defined by using the epi-mono factorisation
+/-- When `A : IndexSet Δ` and `θ : Δ → Δ'` is a morphism in `SimplexCategoryᵒᵖ`,
+an element in `IndexSet Δ'` can be defined by using the epi-mono factorisation
 of `θ.unop ≫ A.e`. -/
 def pull : IndexSet Δ' :=
   mk (factorThruImage (θ.unop ≫ A.e))
@@ -244,7 +244,7 @@ variable [HasFiniteCoproducts C]
 --porting note: removed @[nolint has_nonempty_instance]
 /-- A splitting of a simplicial object `X` consists of the datum of a sequence
 of objects `N`, a sequence of morphisms `ι : N n ⟶ X _[n]` such that
-for all `Δ : SimplexCategoryhᵒᵖ`, the canonical map `Splitting.map X ι Δ`
+for all `Δ : SimplexCategoryᵒᵖ`, the canonical map `Splitting.map X ι Δ`
 is an isomorphism. -/
 structure Splitting (X : SimplicialObject C) where
   N : ℕ → C

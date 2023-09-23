@@ -124,7 +124,7 @@ def commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace
   s.toSubalgebra.commRingTopologicalClosure hs
 #align star_subalgebra.comm_ring_topological_closure StarSubalgebra.commRingTopologicalClosure
 
-/-- Continuous `StarAlgHom`s from the the topological closure of a `StarSubalgebra` whose
+/-- Continuous `StarAlgHom`s from the topological closure of a `StarSubalgebra` whose
 compositions with the `StarSubalgebra.inclusion` map agree are, in fact, equal. -/
 theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra R A}
     {φ ψ : S.topologicalClosure →⋆ₐ[R] B} (hφ : Continuous φ) (hψ : Continuous ψ)

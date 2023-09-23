@@ -147,7 +147,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
 #align monoid_hom.transfer_eq_prod_quotient_orbit_rel_zpowers_quot
   MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot
 
-/-- Auxillary lemma in order to state `transfer_eq_pow`. -/
+/-- Auxiliary lemma in order to state `transfer_eq_pow`. -/
 theorem transfer_eq_pow_aux (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
     g ^ H.index ∈ H := by
@@ -225,7 +225,7 @@ noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Sub
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
 
-/-- Auxillary lemma in order to state `transfer_sylow_eq_pow`. -/
+/-- Auxiliary lemma in order to state `transfer_sylow_eq_pow`. -/
 theorem transfer_sylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
     (h : g₀⁻¹ * g ^ k * g₀ ∈ P) : g₀⁻¹ * g ^ k * g₀ = g ^ k := by
   haveI : (P : Subgroup G).IsCommutative :=

@@ -40,7 +40,7 @@ variable (A : Type _) [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A]
 variable {K : Type _} [Field K] [Algebra A K] [IsFractionRing A K]
 
 theorem exists_reduced_fraction (x : K) :
-    ∃ (a : A)(b : nonZeroDivisors A), (∀ {d}, d ∣ a → d ∣ b → IsUnit d) ∧ mk' K a b = x := by
+    ∃ (a : A) (b : nonZeroDivisors A), (∀ {d}, d ∣ a → d ∣ b → IsUnit d) ∧ mk' K a b = x := by
   obtain ⟨⟨b, b_nonzero⟩, a, hab⟩ := exists_integer_multiple (nonZeroDivisors A) x
   obtain ⟨a', b', c', no_factor, rfl, rfl⟩ :=
     UniqueFactorizationMonoid.exists_reduced_factors' a b

@@ -257,7 +257,7 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRef
   ⟨Lex.refl_right _ _⟩
 
 instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
-⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
+  ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :

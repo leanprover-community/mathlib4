@@ -205,20 +205,20 @@ class ConditionallyCompleteLinearOrder (α : Type _) extends ConditionallyComple
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
 
 instance (α : Type _) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
-{ ‹ConditionallyCompleteLinearOrder α› with
-  max := Sup.sup, min := Inf.inf,
-  min_def := fun a b ↦ by
-    by_cases hab : a = b
-    · simp [hab]
-    · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
-      · simp [h₁]
-      · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂]
-  max_def := fun a b ↦ by
-    by_cases hab : a = b
-    · simp [hab]
-    · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
-      · simp [h₁]
-      · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂] }
+  { ‹ConditionallyCompleteLinearOrder α› with
+    max := Sup.sup, min := Inf.inf,
+    min_def := fun a b ↦ by
+      by_cases hab : a = b
+      · simp [hab]
+      · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
+        · simp [h₁]
+        · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂]
+    max_def := fun a b ↦ by
+      by_cases hab : a = b
+      · simp [hab]
+      · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
+        · simp [h₁]
+        · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂] }
 
 /-- A conditionally complete linear order with `Bot` is a linear order with least element, in which
 every nonempty subset which is bounded above has a supremum, and every nonempty subset (necessarily
@@ -312,12 +312,12 @@ should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
 instance : ConditionallyCompleteLattice my_T :=
-{ inf := better_inf,
-  le_inf := ...,
-  inf_le_right := ...,
-  inf_le_left := ...
-  -- don't care to fix sup, sInf
-  ..conditionallyCompleteLatticeOfsSup my_T _ }
+  { inf := better_inf,
+    le_inf := ...,
+    inf_le_right := ...,
+    inf_le_left := ...
+    -- don't care to fix sup, sInf
+    ..conditionallyCompleteLatticeOfsSup my_T _ }
 ```
 -/
 def conditionallyCompleteLatticeOfsSup (α : Type _) [H1 : PartialOrder α] [H2 : SupSet α]
@@ -364,12 +364,12 @@ should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
 instance : ConditionallyCompleteLattice my_T :=
-{ inf := better_inf,
-  le_inf := ...,
-  inf_le_right := ...,
-  inf_le_left := ...
-  -- don't care to fix sup, sSup
-  ..conditionallyCompleteLatticeOfsInf my_T _ }
+  { inf := better_inf,
+    le_inf := ...,
+    inf_le_right := ...,
+    inf_le_left := ...
+    -- don't care to fix sup, sSup
+    ..conditionallyCompleteLatticeOfsInf my_T _ }
 ```
 -/
 def conditionallyCompleteLatticeOfsInf (α : Type _) [H1 : PartialOrder α] [H2 : InfSet α]

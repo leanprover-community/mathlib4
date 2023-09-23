@@ -125,7 +125,7 @@ Core tactic for `constructorm`. Calls `constructor` on all subgoals for which
 * `throwOnNoMatch`: if true, throws an error if no match is found
 -/
 partial def constructorMatching (g : MVarId) (matcher : Expr → MetaM Bool)
-    (recursive := false) (throwOnNoMatch := !recursive): MetaM (List MVarId) := do
+    (recursive := false) (throwOnNoMatch := !recursive) : MetaM (List MVarId) := do
   let result ←
     (if recursive then (do
       let result ← go g

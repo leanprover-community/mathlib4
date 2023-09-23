@@ -120,7 +120,7 @@ instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass 
   NoZeroDivisors.to_isDomain _
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of an `Orderedring` is an `Orderedring`. -/
+/-- A subring of an `OrderedRing` is an `OrderedRing`. -/
 instance (priority := 75) toOrderedRing {R} [OrderedRing R] [SetLike S R] [SubringClass S R] :
     OrderedRing s :=
   Subtype.coe_injective.orderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)

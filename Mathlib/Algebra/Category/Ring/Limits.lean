@@ -52,13 +52,13 @@ set_option linter.uppercaseLean3 false in
 /-- The flat sections of a functor into `SemiRing` form a subsemiring of all sections.
 -/
 def sectionsSubsemiring (F : J ⥤ SemiRingCatMax.{v, u}) : Subsemiring.{max v u} (∀ j, F.obj j) :=
--- Porting note : if `f` and `g` were inlined, it does not compile
-letI f : J ⥤ AddMonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} AddCommMonCat.{max v u} ⋙
-  forget₂ AddCommMonCat AddMonCat
-letI g : J ⥤ MonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} MonCat.{max v u}
-{ (MonCat.sectionsSubmonoid.{v, u} (J := J) g),
-  (AddMonCat.sectionsAddSubmonoid.{v, u} (J := J) f) with
-  carrier := (F ⋙ forget SemiRingCat).sections }
+  -- Porting note : if `f` and `g` were inlined, it does not compile
+  letI f : J ⥤ AddMonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} AddCommMonCat.{max v u} ⋙
+    forget₂ AddCommMonCat AddMonCat
+  letI g : J ⥤ MonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} MonCat.{max v u}
+  { (MonCat.sectionsSubmonoid.{v, u} (J := J) g),
+    (AddMonCat.sectionsAddSubmonoid.{v, u} (J := J) f) with
+    carrier := (F ⋙ forget SemiRingCat).sections }
 set_option linter.uppercaseLean3 false in
 #align SemiRing.sections_subsemiring SemiRingCat.sectionsSubsemiring
 
@@ -72,7 +72,7 @@ set_option linter.uppercaseLean3 false in
 def limitπRingHom (F : J ⥤ SemiRingCatMax.{v, u}) (j) :
     (Types.limitCone.{v, u} (F ⋙ forget SemiRingCat)).pt →+* (F ⋙ forget SemiRingCat).obj j :=
   -- Porting note : if `f` and `g` were inlined, it does not compile
-  letI f : J ⥤ AddMonCat.{max v u}:= F ⋙ forget₂ SemiRingCatMax.{v, u} AddCommMonCat.{max v u} ⋙
+  letI f : J ⥤ AddMonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} AddCommMonCat.{max v u} ⋙
     forget₂ AddCommMonCat AddMonCat
   { AddMonCat.limitπAddMonoidHom f j,
     MonCat.limitπMonoidHom (F ⋙ forget₂ SemiRingCat MonCat.{max v u}) j with

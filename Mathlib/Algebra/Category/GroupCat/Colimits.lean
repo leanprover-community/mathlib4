@@ -112,7 +112,7 @@ def ColimitType : Type v :=
 #align AddCommGroup.colimits.colimit_type AddCommGroupCat.Colimits.ColimitType
 
 instance ColimitTypeInhabited : Inhabited (ColimitType.{v} F) :=
-⟨Quot.mk _ zero⟩
+  ⟨Quot.mk _ zero⟩
 
 instance : AddCommGroup (ColimitType F) where
   zero := Quot.mk _ zero

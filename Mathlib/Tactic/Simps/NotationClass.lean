@@ -64,7 +64,7 @@ def copyFirst : findArgType := λ _ _ args => return (args.push <| args[0]?.getD
 def copySecond : findArgType := λ _ _ args => return (args.push <| args[1]?.getD default).map some
 
 /-- Find arguments by prepending `ℕ` and duplicating the first argument. Used for `nsmul`. -/
-def nsmulArgs: findArgType := λ _ _ args =>
+def nsmulArgs : findArgType := λ _ _ args =>
   return #[Expr.const `Nat [], args[0]?.getD default] ++ args |>.map some
 
 /-- Find arguments by prepending `ℤ` and duplicating the first argument. Used for `zsmul`. -/

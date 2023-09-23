@@ -111,7 +111,7 @@ protected theorem ind {β : R[S⁻¹] → Prop} (c : ∀ (r : R) (s : S), β (r 
 #align ore_localization.ind OreLocalization.ind
 
 theorem oreDiv_eq_iff {r₁ r₂ : R} {s₁ s₂ : S} :
-    r₁ /ₒ s₁ = r₂ /ₒ s₂ ↔ ∃ (u : S)(v : R), r₂ * u = r₁ * v ∧ (s₂ : R) * u = s₁ * v :=
+    r₁ /ₒ s₁ = r₂ /ₒ s₂ ↔ ∃ (u : S) (v : R), r₂ * u = r₁ * v ∧ (s₂ : R) * u = s₁ * v :=
   Quotient.eq''
 #align ore_localization.ore_div_eq_iff OreLocalization.oreDiv_eq_iff
 

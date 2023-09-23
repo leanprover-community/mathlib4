@@ -428,14 +428,14 @@ Possible TODO for the future:
 Enable the following definitions, and write a lot of supporting lemmas.
 
 def bind (f : R →+* mv_polynomial τ S) (g : σ → mv_polynomial τ S) :
-  mv_polynomial σ R →+* mv_polynomial τ S :=
-eval₂_hom f g
+    mv_polynomial σ R →+* mv_polynomial τ S :=
+  eval₂_hom f g
 
 def join (f : R →+* S) : mv_polynomial (mv_polynomial σ R) S →ₐ[S] mv_polynomial σ S :=
-aeval (map f)
+  aeval (map f)
 
 def ajoin [algebra R S] : mv_polynomial (mv_polynomial σ R) S →ₐ[S] mv_polynomial σ S :=
-join (algebra_map R S)
+  join (algebra_map R S)
 
 -/
 end MvPolynomial
