@@ -471,6 +471,9 @@ theorem le_of_op_nnnorm_le {C : ℝ≥0} (h : ‖f‖₊ ≤ C) : ‖f m‖₊ �
 theorem op_nnnorm_le_iff {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ := by
   simp only [← NNReal.coe_le_coe]; simp [op_norm_le_iff _ C.coe_nonneg, NNReal.coe_prod]
 
+theorem isLeast_op_nnnorm : IsLeast {C : ℝ≥0 | ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊} ‖f‖₊ := by
+  simpa only [← op_nnnorm_le_iff] using isLeast_Ici
+
 theorem op_nnnorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   eq_of_forall_ge_iff fun _ ↦ by simp [op_nnnorm_le_iff, Prod.nnnorm_def', forall_and]
