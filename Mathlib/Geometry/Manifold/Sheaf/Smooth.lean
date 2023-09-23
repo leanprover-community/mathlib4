@@ -82,7 +82,7 @@ def smoothSheaf : TopCat.Sheaf (Type u) (TopCat.of M) :=
 
 variable {M}
 
-instance smoothSheaf.has_coe_to_fun (U : (Opens (TopCat.of M))ᵒᵖ) :
+instance smoothSheaf.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
     CoeFun ((smoothSheaf IM I M N).val.obj U) (fun _ ↦ ↑(unop U) → N) :=
   (contDiffWithinAt_localInvariantProp IM I ⊤).sheafHasCoeToFun _ _ _
 
@@ -315,6 +315,10 @@ def smoothSheafCommRing : TopCat.Sheaf CommRingCat.{u} (TopCat.of M) :=
 -- smooth functions gives the sheaf-of-types of smooth functions.
 example : (CategoryTheory.sheafCompose _ (CategoryTheory.forget CommRingCat)).obj
     (smoothSheafCommRing IM I M R) = (smoothSheaf IM I M R) := rfl
+
+instance smoothSheafCommRing.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
+    CoeFun ((smoothSheafCommRing IM I M R).val.obj U) (fun _ ↦ ↑(unop U) → R) :=
+  (contDiffWithinAt_localInvariantProp IM I ⊤).sheafHasCoeToFun _ _ _
 
 open CategoryTheory Limits
 
