@@ -431,6 +431,9 @@ theorem op_nnnorm_eq_of_bounds {φ : E →SL[σ₁₂] F} (M : ℝ≥0) (h_above
 theorem op_nnnorm_le_iff {f : E →SL[σ₁₂] F} {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊ :=
   op_norm_le_iff C.2
 
+theorem isLeast_op_nnnorm : IsLeast {C : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊} ‖f‖₊ := by
+  simpa only [← op_nnnorm_le_iff] using isLeast_Ici
+
 instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
   ⟨op_norm_smul_le⟩
