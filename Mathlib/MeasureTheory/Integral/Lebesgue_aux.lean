@@ -11,20 +11,22 @@ A supplement to the file `DMeasureTheory.Integral.Lebesgue`, doing some missing 
 -/
 
 open scoped ENNReal
+open MeasureTheory Measure
 set_option autoImplicit true
 
 -- move these
-alias ⟨_, ENNReal.monotone2⟩ := ENNReal.coe_le_coe
-attribute [gcongr] ENNReal.monotone2
+alias ⟨_, ENNReal.coe_monotone⟩ := ENNReal.coe_le_coe
+attribute [gcongr] ENNReal.coe_monotone
 
 namespace MeasureTheory
 
 -- workaround for the known eta-reduction issue with `@[gcongr]`
-@[gcongr] theorem lintegral_mono2 ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) :
+@[gcongr] theorem lintegral_mono_fn ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) :
     lintegral μ f ≤ lintegral μ g :=
 lintegral_mono hfg
 
-@[gcongr] theorem lintegral_mono3 ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) (h2 : μ ≤ ν) :
+-- workaround for the known eta-reduction issue with `@[gcongr]`
+@[gcongr] theorem lintegral_mono_fn_measure ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) (h2 : μ ≤ ν) :
     lintegral μ f ≤ lintegral ν g :=
 lintegral_mono' h2 hfg
 
@@ -34,3 +36,9 @@ lintegral_mono' h2 hfg
 
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
     ∫⁻ x, f x ∂μ = 0 := by convert lintegral_zero_measure f
+
+protected theorem MeasurePreserving.lintegral_map_equiv {α β}
+    [MeasurableSpace α] [MeasurableSpace β]
+    {μ : Measure α} {ν : Measure β}
+    (f : β → ℝ≥0∞) (g : α ≃ᵐ β) (hg : MeasurePreserving g μ ν) :
+    ∫⁻ a, f a ∂ν = ∫⁻ a, f (g a) ∂μ := by rw [← MeasureTheory.lintegral_map_equiv f g, hg.map_eq]

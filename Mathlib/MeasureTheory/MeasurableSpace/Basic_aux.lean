@@ -104,6 +104,13 @@ def MeasurableEquiv.piSum (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (
 theorem MeasurableEquiv.piSum_eq (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (α i)] :
   (MeasurableEquiv.piSum α : _ → _) = Equiv.piSum α := by rfl
 
+-- we really need a linter that warns me if I don't have a `[DecidableEq ι]` argument here.
+variable (α) in
+def MeasurableEquiv.piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : Disjoint s t) :
+    ((∀ i : s, α i) × ∀ i : t, α i) ≃ᵐ ∀ i : (s ∪ t : Finset ι), α i :=
+  let e := (finsetUnionEquivSum s t h).symm
+  MeasurableEquiv.piSum (fun b ↦ α (e b)) |>.trans <| .piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e
+
 end MeasurableOnFamily
 
 open Finset

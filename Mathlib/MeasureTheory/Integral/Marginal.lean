@@ -109,23 +109,18 @@ theorem marginal_update_of_mem [DecidableEq δ] {i : δ} (hi : i ∈ s)
 theorem marginal_union [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
     (hst : Disjoint s t) : ∫⋯∫_s ∪ t, f ∂μ = ∫⋯∫_s, ∫⋯∫_t, f ∂μ ∂μ := by
   ext1 x
-  set e₁ := (finsetUnionEquivSum s t hst).symm
-  set e₂ := MeasurableEquiv.piCongrLeft (fun i : ↥(s ∪ t) => π i) e₁
-  set e₃ := MeasurableEquiv.piSum fun b ↦ π (e₁ b)
+  let e := MeasurableEquiv.piFinsetUnion π hst
   calc (∫⋯∫_s ∪ t, f ∂μ) x
       = ∫⁻ (y : (i : ↥(s ∪ t)) → π i), f (updateSet x (s ∪ t) y)
           ∂.pi fun i' : ↥(s ∪ t) ↦ μ i' := by rfl
-    _ = ∫⁻ (y : (i : s ⊕ t) → π (e₁ i)), f (updateSet x (s ∪ t) (e₂ y))
-          ∂.pi fun i' : s ⊕ t ↦ μ (e₁ i') := by
-        simp_rw [← Measure.pi_map_left _ e₁, lintegral_map_equiv]
-    _ = ∫⁻ (y : ((i : s) → π i) × ((j : t) → π j)), f (updateSet x (s ∪ t) (e₂ (e₃ y)))
+    _ = ∫⁻ (y : ((i : s) → π i) × ((j : t) → π j)), f (updateSet x (s ∪ t) _)
           ∂(Measure.pi fun i : s ↦ μ i).prod (.pi fun j : t ↦ μ j) := by
-        simp_rw [← Measure.pi_sum, lintegral_map_equiv]; rfl
-    _ = ∫⁻ (y : (i : s) → π i), ∫⁻ (z : (j : t) → π j), f (updateSet x (s ∪ t) (e₂ (e₃ (y, z))))
+        rw [measurePreserving_piFinsetUnion μ hst |>.lintegral_map_equiv]
+    _ = ∫⁻ (y : (i : s) → π i), ∫⁻ (z : (j : t) → π j), f (updateSet x (s ∪ t) (e (y, z)))
           ∂.pi fun j : t ↦ μ j ∂.pi fun i : s ↦ μ i := by
         apply lintegral_prod
         apply Measurable.aemeasurable
-        exact hf.comp <| measurable_updateSet.comp <| e₂.measurable.comp e₃.measurable
+        exact hf.comp <| measurable_updateSet.comp e.measurable
     _ = (∫⋯∫_s, ∫⋯∫_t, f ∂μ ∂μ) x := by
         simp_rw [marginal, updateSet_updateSet hst]
         rfl
