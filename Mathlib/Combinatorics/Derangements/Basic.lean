@@ -2,16 +2,13 @@
 Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
-
-! This file was ported from Lean 3 source module combinatorics.derangements.basic
-! leanprover-community/mathlib commit 9407b03373c8cd201df99d6bc5514fc2db44054f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Option
+
+#align_import combinatorics.derangements.basic from "leanprover-community/mathlib"@"9407b03373c8cd201df99d6bc5514fc2db44054f"
 
 /-!
 # Derangements on types

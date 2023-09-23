@@ -3,16 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
-
-! This file was ported from Lean 3 source module linear_algebra.span
-! leanprover-community/mathlib commit 10878f6bf1dab863445907ab23fbfcefcb5845d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.Order.CompactlyGenerated
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Tactic.Ring
+
+#align_import linear_algebra.span from "leanprover-community/mathlib"@"10878f6bf1dab863445907ab23fbfcefcb5845d0"
 
 /-!
 # The span of a set of vectors, as a submodule
@@ -366,7 +363,7 @@ theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
     · exact ⟨0, by simp, 0, by simp⟩
     · rintro _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
       exact ⟨_, add_mem hy₁ hy₂, _, add_mem hz₁ hz₂, by
-        rw [add_assoc, add_assoc, ← add_assoc y₂,  ← add_assoc z₁, add_comm y₂]⟩
+        rw [add_assoc, add_assoc, ← add_assoc y₂, ← add_assoc z₁, add_comm y₂]⟩
     · rintro a _ ⟨y, hy, z, hz, rfl⟩
       exact ⟨_, smul_mem _ a hy, _, smul_mem _ a hz, by simp [smul_add]⟩, by
     rintro ⟨y, hy, z, hz, rfl⟩
@@ -960,33 +957,38 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
 
-variable {σ₁₂ : R →+* R₂}
+variable {F : Type _} {σ₁₂ : R →+* R₂} [SemilinearMapClass F σ₁₂ M M₂]
 
-/-- If two linear maps are equal on a set `s`, then they are equal on `Submodule.span s`.
-
-See also `LinearMap.eqOn_span'` for a version using `Set.EqOn`. -/
-theorem eqOn_span {s : Set M} {f g : M →ₛₗ[σ₁₂] M₂} (H : Set.EqOn f g s) ⦃x⦄ (h : x ∈ span R s) :
-    f x = g x := by refine' span_induction h H _ _ _ <;> simp (config := { contextual := true })
-#align linear_map.eq_on_span LinearMap.eqOn_span
+/-- Two linear maps are equal on `Submodule.span s` iff they are equal on `s`. -/
+theorem eqOn_span_iff {s : Set M} {f g : F} : Set.EqOn f g (span R s) ↔ Set.EqOn f g s := by
+  rw [← le_eqLocus, span_le]; rfl
 
 /-- If two linear maps are equal on a set `s`, then they are equal on `Submodule.span s`.
 
 This version uses `Set.EqOn`, and the hidden argument will expand to `h : x ∈ (span R s : Set M)`.
 See `LinearMap.eqOn_span` for a version that takes `h : x ∈ span R s` as an argument. -/
-theorem eqOn_span' {s : Set M} {f g : M →ₛₗ[σ₁₂] M₂} (H : Set.EqOn f g s) :
+theorem eqOn_span' {s : Set M} {f g : F} (H : Set.EqOn f g s) :
     Set.EqOn f g (span R s : Set M) :=
-  eqOn_span H
+  eqOn_span_iff.2 H
 #align linear_map.eq_on_span' LinearMap.eqOn_span'
+
+/-- If two linear maps are equal on a set `s`, then they are equal on `Submodule.span s`.
+
+See also `LinearMap.eqOn_span'` for a version using `Set.EqOn`. -/
+theorem eqOn_span {s : Set M} {f g : F} (H : Set.EqOn f g s) ⦃x⦄ (h : x ∈ span R s) :
+    f x = g x :=
+  eqOn_span' H h
+#align linear_map.eq_on_span LinearMap.eqOn_span
 
 /-- If `s` generates the whole module and linear maps `f`, `g` are equal on `s`, then they are
 equal. -/
-theorem ext_on {s : Set M} {f g : M →ₛₗ[σ₁₂] M₂} (hv : span R s = ⊤) (h : Set.EqOn f g s) : f = g :=
-  LinearMap.ext fun _ => eqOn_span h (eq_top_iff'.1 hv _)
+theorem ext_on {s : Set M} {f g : F} (hv : span R s = ⊤) (h : Set.EqOn f g s) : f = g :=
+  FunLike.ext _ _ fun _ => eqOn_span h (eq_top_iff'.1 hv _)
 #align linear_map.ext_on LinearMap.ext_on
 
 /-- If the range of `v : ι → M` generates the whole module and linear maps `f`, `g` are equal at
 each `v i`, then they are equal. -/
-theorem ext_on_range {ι : Type _} {v : ι → M} {f g : M →ₛₗ[σ₁₂] M₂} (hv : span R (Set.range v) = ⊤)
+theorem ext_on_range {ι : Type _} {v : ι → M} {f g : F} (hv : span R (Set.range v) = ⊤)
     (h : ∀ i, f (v i) = g (v i)) : f = g :=
   ext_on hv (Set.forall_range_iff.2 h)
 #align linear_map.ext_on_range LinearMap.ext_on_range

@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.sigma.basic
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Function
 import Std.Tactic.Ext
 import Mathlib.Logic.Function.Basic
+
+#align_import data.sigma.basic from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Sigma types
@@ -26,7 +23,7 @@ exactly two elements (see `Equiv.sumEquivSigmaBool`).
 `Σ x, A x` is notation for `Sigma A` (note that this is `\Sigma`, not the sum operator `∑`).
 `Σ x y z ..., A x y z ...` is notation for `Σ x, Σ y, Σ z, ..., A x y z ...`. Here we have
 `α : Type _`, `β : α → Type _`, `γ : Π a : α, β a → Type _`, ...,
-`A : Π (a : α) (b : β a) (c : γ a b) ..., Type _`  with `x : α` `y : β x`, `z : γ x y`, ...
+`A : Π (a : α) (b : β a) (c : γ a b) ..., Type _` with `x : α` `y : β x`, `z : γ x y`, ...
 
 ## Notes
 

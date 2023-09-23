@@ -3,11 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
-
-! This file was ported from Lean 3 source module linear_algebra.basic
-! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Module.Hom
@@ -16,6 +11,8 @@ import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.Finsupp.Basic
+
+#align_import linear_algebra.basic from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
 /-!
 # Linear algebra
@@ -1257,28 +1254,41 @@ theorem range_neg {R : Type _} {R₂ : Type _} {M : Type _} {M₂ : Type _} [Sem
 #align linear_map.range_neg LinearMap.range_neg
 
 /-- A linear map version of `toAddMonoidHom.eqLocus` -/
-def eqLocus (f g : M →ₛₗ[τ₁₂] M₂) : Submodule R M :=
-  { f.toAddMonoidHom.eqLocusM g.toAddMonoidHom with
+def eqLocus (f g : F) : Submodule R M :=
+  { (f : M →+ M₂).eqLocusM g with
     carrier := { x | f x = g x }
     smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
-      simpa only [LinearMap.map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx }
+      simpa only [map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx }
 #align linear_map.eq_locus LinearMap.eqLocus
 
 @[simp]
-theorem mem_eqLocus {x : M} {f g : M →ₛₗ[τ₁₂] M₂} : x ∈ f.eqLocus g ↔ f x = g x :=
+theorem mem_eqLocus {x : M} {f g : F} : x ∈ eqLocus f g ↔ f x = g x :=
   Iff.rfl
 #align linear_map.mem_eq_locus LinearMap.mem_eqLocus
 
-theorem eqLocus_toAddSubmonoid (f g : M →ₛₗ[τ₁₂] M₂) :
-    (f.eqLocus g).toAddSubmonoid = (f : M →+ M₂).eqLocusM g :=
+theorem eqLocus_toAddSubmonoid (f g : F) :
+    (eqLocus f g).toAddSubmonoid = (f : M →+ M₂).eqLocusM g :=
   rfl
 #align linear_map.eq_locus_to_add_submonoid LinearMap.eqLocus_toAddSubmonoid
 
 @[simp]
-theorem eqLocus_same (f : M →ₛₗ[τ₁₂] M₂) : f.eqLocus f = ⊤ :=
-  SetLike.ext fun _ => by
-    simp only [mem_eqLocus, mem_top]
+theorem eqLocus_eq_top {f g : F} : eqLocus f g = ⊤ ↔ f = g := by
+    simp [SetLike.ext_iff, FunLike.ext_iff]
+
+@[simp]
+theorem eqLocus_same (f : F) : eqLocus f f = ⊤ := eqLocus_eq_top.2 rfl
 #align linear_map.eq_locus_same LinearMap.eqLocus_same
+
+theorem le_eqLocus {f g : F} {S : Submodule R M} : S ≤ eqLocus f g ↔ Set.EqOn f g S := Iff.rfl
+
+theorem eqOn_sup {f g : F} {S T : Submodule R M} (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
+    Set.EqOn f g ↑(S ⊔ T) := by
+  rw [← le_eqLocus] at hS hT ⊢
+  exact sup_le hS hT
+
+theorem ext_on_codisjoint {f g : F} {S T : Submodule R M} (hST : Codisjoint S T)
+    (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) : f = g :=
+  FunLike.ext _ _ fun _ ↦ eqOn_sup hS hT <| hST.eq_top.symm ▸ trivial
 
 end
 
@@ -1481,7 +1491,7 @@ theorem ker_toAddSubgroup (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubgro
   rfl
 #align linear_map.ker_to_add_subgroup LinearMap.ker_toAddSubgroup
 
-theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : f.eqLocus g = ker (f - g) :=
+theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : eqLocus f g = ker (f - g) :=
   SetLike.ext fun _ => sub_eq_zero.symm
 #align linear_map.eq_locus_eq_ker_sub LinearMap.eqLocus_eq_ker_sub
 

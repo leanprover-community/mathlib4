@@ -2,17 +2,14 @@
 Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module group_theory.double_coset
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.Data.Set.Basic
+
+#align_import group_theory.double_coset from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Double cosets

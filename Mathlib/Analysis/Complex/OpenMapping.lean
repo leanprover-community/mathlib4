@@ -2,15 +2,12 @@
 Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
-
-! This file was ported from Lean 3 source module analysis.complex.open_mapping
-! leanprover-community/mathlib commit f9dd3204df14a0749cd456fac1e6849dfe7d2b88
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.AbsMax
+
+#align_import analysis.complex.open_mapping from "leanprover-community/mathlib"@"f9dd3204df14a0749cd456fac1e6849dfe7d2b88"
 
 /-!
 # The open mapping theorem for holomorphic functions

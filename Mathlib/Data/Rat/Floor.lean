@@ -2,16 +2,13 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Kappelmann
-
-! This file was ported from Lean 3 source module data.rat.floor
-! leanprover-community/mathlib commit e1bccd6e40ae78370f01659715d3c948716e3b7e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Data.Rat.Cast
 import Mathlib.Tactic.FieldSimp
+
+#align_import data.rat.floor from "leanprover-community/mathlib"@"e1bccd6e40ae78370f01659715d3c948716e3b7e"
 
 /-!
 # Floor Function for Rational Numbers

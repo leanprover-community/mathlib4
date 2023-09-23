@@ -2,14 +2,11 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.basis
-! leanprover-community/mathlib commit 6c263e4bfc2e6714de30f22178b4d0ca4d149a76
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.LinearAlgebra.Matrix.ToLin
+
+#align_import linear_algebra.matrix.basis from "leanprover-community/mathlib"@"6c263e4bfc2e6714de30f22178b4d0ca4d149a76"
 
 /-!
 # Bases and matrices

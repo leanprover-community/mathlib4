@@ -2,14 +2,11 @@
 Copyright (c) 2021 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
-
-! This file was ported from Lean 3 source module topology.homotopy.product
-! leanprover-community/mathlib commit 6a51706df6baee825ace37c94dc9f75b64d7f035
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Homotopy.Path
+
+#align_import topology.homotopy.product from "leanprover-community/mathlib"@"6a51706df6baee825ace37c94dc9f75b64d7f035"
 
 /-!
 # Product of homotopies
@@ -92,7 +89,7 @@ variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {A : Type 
   {f₀ f₁ : C(A, α)} {g₀ g₁ : C(A, β)} {S : Set A}
 
 /-- The product of homotopies `F` and `G`,
-  where `F` takes `f₀` to `f₁`  and `G` takes `g₀` to `g₁` -/
+  where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
 @[simps]
 def Homotopy.prod (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
     Homotopy (ContinuousMap.prodMk f₀ g₀) (ContinuousMap.prodMk f₁ g₁) where
@@ -102,7 +99,7 @@ def Homotopy.prod (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
 #align continuous_map.homotopy.prod ContinuousMap.Homotopy.prod
 
 /-- The relative product of homotopies `F` and `G`,
-  where `F` takes `f₀` to `f₁`  and `G` takes `g₀` to `g₁` -/
+  where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
 @[simps!]
 def HomotopyRel.prod (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel g₀ g₁ S) :
     HomotopyRel (prodMk f₀ g₀) (prodMk f₁ g₁) S :=

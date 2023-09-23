@@ -2,14 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Heather Macbeth
-
-! This file was ported from Lean 3 source module topology.continuous_function.stone_weierstrass
-! leanprover-community/mathlib commit 16e59248c0ebafabd5d071b1cd41743eb8698ffb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.ContinuousFunction.Weierstrass
 import Mathlib.Data.IsROrC.Basic
+
+#align_import topology.continuous_function.stone_weierstrass from "leanprover-community/mathlib"@"16e59248c0ebafabd5d071b1cd41743eb8698ffb"
 
 /-!
 # The Stone-Weierstrass theorem

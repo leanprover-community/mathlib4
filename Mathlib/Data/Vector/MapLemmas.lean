@@ -128,8 +128,7 @@ theorem mapAccumr₂_mapAccumr₂_left_right
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_right_left  (f₁ : α → γ → σ₁ → σ₁ × φ)
-                                          (f₂ : α → β → σ₂ → σ₂ × γ) :
+theorem mapAccumr₂_mapAccumr₂_right_left (f₁ : α → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ xs (mapAccumr₂ f₂ xs ys s₂).snd s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
@@ -141,8 +140,7 @@ theorem mapAccumr₂_mapAccumr₂_right_left  (f₁ : α → γ → σ₁ → σ
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ)
-                                          (f₂ : α → β → σ₂ → σ₂ × γ) :
+theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ ys (mapAccumr₂ f₂ xs ys s₂).snd s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂

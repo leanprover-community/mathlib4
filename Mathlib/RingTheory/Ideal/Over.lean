@@ -2,15 +2,12 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.ideal.over
-! leanprover-community/mathlib commit 198cb64d5c961e1a8d0d3e219feb7058d5353861
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Integral
+
+#align_import ring_theory.ideal.over from "leanprover-community/mathlib"@"198cb64d5c961e1a8d0d3e219feb7058d5353861"
 
 /-!
 # Ideals over/under ideals

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.quadratic_form.prod
-! leanprover-community/mathlib commit 9b2755b951bc323c962bd072cd447b375cf58101
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+
+#align_import linear_algebra.quadratic_form.prod from "leanprover-community/mathlib"@"9b2755b951bc323c962bd072cd447b375cf58101"
 
 /-! # Quadratic form on product and pi types
 
@@ -29,7 +26,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 ## Implementation notes
 
 Many of the lemmas in this file could be generalized into results about sums of positive and
-non-negative elements, and would generalize to any map `Q`  where `Q 0 = 0`, not just quadratic
+non-negative elements, and would generalize to any map `Q` where `Q 0 = 0`, not just quadratic
 forms specifically.
 
 -/

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
-
-! This file was ported from Lean 3 source module geometry.manifold.cont_mdiff_mfderiv
-! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.MFDeriv
 import Mathlib.Geometry.Manifold.ContMDiffMap
+
+#align_import geometry.manifold.cont_mdiff_mfderiv from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-!
 ### Interactions between differentiability, smoothness and manifold derivatives
@@ -204,7 +201,7 @@ theorem ContMDiffAt.mfderiv_const {x₀ : M} {f : M → M'} (hf : ContMDiffAt I 
 We have to assume that `f` is `C^(n+1)` at `(x₀, g(x₀))` and `g` is `C^n` at `x₀`.
 We have to insert a coordinate change from `x₀` to `g₁(x)` to make the derivative sensible.
 
-This is  similar to `ContMDiffAt.mfderiv`, but where the continuous linear map is applied to a
+This is similar to `ContMDiffAt.mfderiv`, but where the continuous linear map is applied to a
 (variable) vector.
 -/
 theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M) (g₁ : N' → N) (g₂ : N' → E)

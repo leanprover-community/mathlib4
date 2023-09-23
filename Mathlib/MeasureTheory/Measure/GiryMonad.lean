@@ -2,13 +2,10 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module measure_theory.measure.giry_monad
-! leanprover-community/mathlib commit 56f4cd1ef396e9fd389b5d8371ee9ad91d163625
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
+
+#align_import measure_theory.measure.giry_monad from "leanprover-community/mathlib"@"56f4cd1ef396e9fd389b5d8371ee9ad91d163625"
 
 /-!
 # The Giry monad

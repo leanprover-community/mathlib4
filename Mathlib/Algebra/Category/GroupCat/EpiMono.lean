@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
-
-! This file was ported from Lean 3 source module algebra.category.Group.epi_mono
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.GroupTheory.QuotientGroup
+
+#align_import algebra.category.Group.epi_mono from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Monomorphisms and epimorphisms in `Group`
@@ -86,7 +83,7 @@ theorem ker_eq_bot_of_mono [Mono f] : f.ker = ⊥ :=
 
 @[to_additive]
 theorem mono_iff_ker_eq_bot : Mono f ↔ f.ker = ⊥ :=
-  ⟨fun _ => ker_eq_bot_of_mono f,  fun h =>
+  ⟨fun _ => ker_eq_bot_of_mono f, fun h =>
     ConcreteCategory.mono_of_injective _ <| (MonoidHom.ker_eq_bot_iff f).1 h⟩
 #align Group.mono_iff_ker_eq_bot GroupCat.mono_iff_ker_eq_bot
 #align AddGroup.mono_iff_ker_eq_bot AddGroupCat.mono_iff_ker_eq_bot

@@ -2,11 +2,6 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
-
-! This file was ported from Lean 3 source module data.dfinsupp.basic
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.BigOperators.Basic
@@ -14,6 +9,8 @@ import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.Data.Finset.Preimage
+
+#align_import data.dfinsupp.basic from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 # Dependent functions with finite support
@@ -1128,6 +1125,32 @@ theorem eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by
   ext i
   by_cases h : f i ≠ 0 <;> [skip; rw [not_not] at h] <;> simp [h]
 #align dfinsupp.eq_mk_support DFinsupp.eq_mk_support
+
+/-- Equivalence between dependent functions with finite support `s : Finset ι` and functions
+`∀ i, {x : β i // x ≠ 0}`. -/
+@[simps]
+def subtypeSupportEqEquiv (s : Finset ι) :
+    {f : Π₀ i, β i // f.support = s} ≃ ∀ i : s, {x : β i // x ≠ 0} where
+  toFun | ⟨f, hf⟩ => fun ⟨i, hi⟩ ↦ ⟨f i, (f.mem_support_toFun i).1 <| hf.symm ▸ hi⟩
+  invFun f := ⟨mk s fun i ↦ (f i).1, Finset.ext fun i ↦ by
+    -- TODO: `simp` fails to use `(f _).2` inside `∃ _, _`
+    calc
+      i ∈ support (mk s fun i ↦ (f i).1) ↔ ∃ h : i ∈ s, (f ⟨i, h⟩).1 ≠ 0 := by simp
+      _ ↔ ∃ _ : i ∈ s, True := exists_congr fun h ↦ (iff_true _).mpr (f _).2
+      _ ↔ i ∈ s := by simp⟩
+  left_inv := by
+    rintro ⟨f, rfl⟩
+    ext i
+    simpa using Eq.symm
+  right_inv f := by
+    ext1
+    simp [Subtype.eta]; rfl
+
+/-- Equivalence between all dependent finitely supported functions `f : Π₀ i, β i` and type
+of pairs `⟨s : Finset ι, f : ∀ i : s, {x : β i // x ≠ 0}⟩`. -/
+@[simps! apply_fst apply_snd_coe]
+def sigmaFinsetFunEquiv : (Π₀ i, β i) ≃ Σ s : Finset ι, ∀ i : s, {x : β i // x ≠ 0} :=
+  (Equiv.sigmaFiberEquiv DFinsupp.support).symm.trans (.sigmaCongrRight subtypeSupportEqEquiv)
 
 @[simp]
 theorem support_zero : (0 : Π₀ i, β i).support = ∅ :=

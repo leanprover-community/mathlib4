@@ -2,17 +2,14 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.friendship_graphs
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.LinearAlgebra.Matrix.Charpoly.FiniteField
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.IntervalCases
+
+#align_import wiedijk_100_theorems.friendship_graphs from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # The Friendship Theorem

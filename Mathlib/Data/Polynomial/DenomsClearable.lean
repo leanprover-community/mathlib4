@@ -2,14 +2,11 @@
 Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.denoms_clearable
-! leanprover-community/mathlib commit 85d9f2189d9489f9983c0d01536575b0233bd305
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.EraseLead
 import Mathlib.Data.Polynomial.Eval
+
+#align_import data.polynomial.denoms_clearable from "leanprover-community/mathlib"@"85d9f2189d9489f9983c0d01536575b0233bd305"
 
 /-!
 # Denominators of evaluation of polynomials at ratios

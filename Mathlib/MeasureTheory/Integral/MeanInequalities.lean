@@ -2,16 +2,13 @@
 Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.integral.mean_inequalities
-! leanprover-community/mathlib commit 13bf7613c96a9fd66a81b9020a82cad9a6ea1fcf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
+
+#align_import measure_theory.integral.mean_inequalities from "leanprover-community/mathlib"@"13bf7613c96a9fd66a81b9020a82cad9a6ea1fcf"
 
 /-!
 # Mean value inequalities for integrals

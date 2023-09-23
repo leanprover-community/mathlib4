@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.uniform_space.separation
-! leanprover-community/mathlib commit 0c1f285a9f6e608ae2bdffa3f993eafb01eba829
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.Separation
+
+#align_import topology.uniform_space.separation from "leanprover-community/mathlib"@"0c1f285a9f6e608ae2bdffa3f993eafb01eba829"
 
 /-!
 # Hausdorff properties of uniform spaces. Separation quotient.

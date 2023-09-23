@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.pfun
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Part
 import Mathlib.Data.Rel
+
+#align_import data.pfun from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Partial functions
@@ -63,7 +60,7 @@ def PFun (α β : Type _) :=
   α → Part β
 #align pfun PFun
 
-/-- `α  →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`.  -/
+/-- `α →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`.  -/
 infixr:25 " →. " => PFun
 
 namespace PFun

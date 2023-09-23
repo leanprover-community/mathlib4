@@ -2,11 +2,6 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module sorgenfrey_line
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Algebra.Order.Archimedean
@@ -14,6 +9,9 @@ import Mathlib.Topology.Paracompact
 import Mathlib.Topology.MetricSpace.Metrizable
 import Mathlib.Topology.MetricSpace.EMetricParacompact
 import Mathlib.Data.Set.Intervals.Monotone
+import Mathlib.Topology.Separation.NotNormal
+
+#align_import sorgenfrey_line from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 # Sorgenfrey line
@@ -38,7 +36,7 @@ Prove that the Sorgenfrey line is a paracompact space.
 
 open Set Filter TopologicalSpace
 
-open scoped Topology Filter
+open scoped Topology Filter Cardinal
 
 namespace Counterexample
 
@@ -78,7 +76,7 @@ theorem isOpen_Ici (a : ℝₗ) : IsOpen (Ici a) :=
   iUnion_Ico_right a ▸ isOpen_iUnion (isOpen_Ico a)
 #align counterexample.sorgenfrey_line.is_open_Ici Counterexample.SorgenfreyLine.isOpen_Ici
 
-theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (fun b => a < b) fun b => Ico a b := by
+theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := by
   rw [TopologicalSpace.nhds_generateFrom]
   haveI : Nonempty { x // x ≤ a } := Set.nonempty_Iic_subtype
   have : (⨅ x : { i // i ≤ a }, 𝓟 (Ici ↑x)) = 𝓟 (Ici a) := by
@@ -235,9 +233,15 @@ theorem isClopen_Ici_prod (x : ℝₗ × ℝₗ) : IsClopen (Ici x) :=
   (Ici_prod_eq x).symm ▸ (isClopen_Ici _).prod (isClopen_Ici _)
 #align counterexample.sorgenfrey_line.is_clopen_Ici_prod Counterexample.SorgenfreyLine.isClopen_Ici_prod
 
+theorem cardinal_antidiagonal (c : ℝₗ) : #{x : ℝₗ × ℝₗ | x.1 + x.2 = c} = 𝔠 := by
+  rw [← Cardinal.mk_real]
+  exact Equiv.cardinal_eq ⟨fun x ↦ toReal x.1.1,
+    fun x ↦ ⟨(toReal.symm x, c - toReal.symm x), by simp⟩,
+    fun ⟨x, hx⟩ ↦ by ext <;> simp [← hx.out], fun x ↦ rfl⟩
+
 /-- Any subset of an antidiagonal `{(x, y) : ℝₗ × ℝₗ| x + y = c}` is a closed set. -/
-theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ}
-    (hs : ∀ x : ℝₗ × ℝₗ, x ∈ s → x.1 + x.2 = c) : IsClosed s := by
+theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ} (hs : ∀ x ∈ s, x.1 + x.2 = c) :
+    IsClosed s := by
   rw [← closure_subset_iff_isClosed]
   rintro ⟨x, y⟩ H
   obtain rfl : x + y = c := by
@@ -252,30 +256,47 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
     rwa [← add_le_add_iff_left, hs _ H, add_le_add_iff_right]
 #align counterexample.sorgenfrey_line.is_closed_of_subset_antidiagonal Counterexample.SorgenfreyLine.isClosed_of_subset_antidiagonal
 
+open Subtype in
+instance (c : ℝₗ) : DiscreteTopology {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
+  forall_open_iff_discrete.1 fun U ↦ isClosed_compl_iff.1 <| isClosed_induced_iff.2
+    ⟨val '' Uᶜ, isClosed_of_subset_antidiagonal <| coe_image_subset _ Uᶜ,
+      preimage_image_eq _ val_injective⟩
+
+/-- The Sorgenfrey plane `ℝₗ × ℝₗ` is not a normal space. -/
+theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) :=
+  (isClosed_antidiagonal 0).not_normal_of_continuum_le_mk (cardinal_antidiagonal _).ge
+#align counterexample.sorgenfrey_line.not_normal_space_prod Counterexample.SorgenfreyLine.not_normalSpace_prod
+
+/-- An antidiagonal is a separable set but is not a separable space. -/
+theorem isSeparable_antidiagonal (c : ℝₗ) : IsSeparable {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
+  isSeparable_of_separableSpace _
+
+/-- An antidiagonal is a separable set but is not a separable space. -/
+theorem not_separableSpace_antidiagonal (c : ℝₗ) :
+    ¬SeparableSpace {x : ℝₗ × ℝₗ | x.1 + x.2 = c} := by
+  rw [separableSpace_iff_countable, ← Cardinal.mk_le_aleph0_iff, cardinal_antidiagonal, not_le]
+  exact Cardinal.aleph0_lt_continuum
+
 theorem nhds_prod_antitone_basis_inv_pnat (x y : ℝₗ) :
     (𝓝 (x, y)).HasAntitoneBasis fun n : ℕ+ => Ico x (x + (n : ℝₗ)⁻¹) ×ˢ Ico y (y + (n : ℝₗ)⁻¹) := by
   rw [nhds_prod_eq]
   exact (nhds_antitone_basis_Ico_inv_pnat x).prod (nhds_antitone_basis_Ico_inv_pnat y)
 #align counterexample.sorgenfrey_line.nhds_prod_antitone_basis_inv_pnat Counterexample.SorgenfreyLine.nhds_prod_antitone_basis_inv_pnat
 
-/-- The product of the Sorgenfrey line and itself is not a normal topological space. -/
-theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) := by
+/-- The sets of rational and irrational points of the antidiagonal `{(x, y) | x + y = 0}` cannot be
+separated by open neighborhoods. This implies that `ℝₗ × ℝₗ` is not a normal space. -/
+theorem not_separatedNhds_rat_irrational_antidiag :
+  ¬SeparatedNhds {x : ℝₗ × ℝₗ | x.1 + x.2 = 0 ∧ ∃ r : ℚ, ↑r = x.1}
+    {x : ℝₗ × ℝₗ | x.1 + x.2 = 0 ∧ Irrational (toReal x.1)} := by
   have h₀ : ∀ {n : ℕ+}, 0 < (n : ℝ)⁻¹ := inv_pos.2 (Nat.cast_pos.2 (PNat.pos _))
   have h₀' : ∀ {n : ℕ+} {x : ℝ}, x < x + (n : ℝ)⁻¹ := lt_add_of_pos_right _ h₀
-  intro
   /- Let `S` be the set of points `(x, y)` on the line `x + y = 0` such that `x` is rational.
     Let `T` be the set of points `(x, y)` on the line `x + y = 0` such that `x` is irrational.
     These sets are closed, see `SorgenfreyLine.isClosed_of_subset_antidiagonal`, and disjoint. -/
   set S := {x : ℝₗ × ℝₗ | x.1 + x.2 = 0 ∧ ∃ r : ℚ, ↑r = x.1}
   set T := {x : ℝₗ × ℝₗ | x.1 + x.2 = 0 ∧ Irrational (toReal x.1)}
-  have hSc : IsClosed S := isClosed_of_subset_antidiagonal fun x hx => hx.1
-  have hTc : IsClosed T := isClosed_of_subset_antidiagonal fun x hx => hx.1
-  have hd : Disjoint S T := by
-    rw [disjoint_iff_inf_le]
-    rintro ⟨x, y⟩ ⟨⟨-, r, rfl : _ = x⟩, -, hr⟩
-    exact r.not_irrational hr
   -- Consider disjoint open sets `U ⊇ S` and `V ⊇ T`.
-  rcases normal_separation hSc hTc hd with ⟨U, V, Uo, Vo, SU, TV, UV⟩
+  rintro ⟨U, V, Uo, Vo, SU, TV, UV⟩
   /- For each point `(x, -x) ∈ T`, choose a neighborhood
     `Ico x (x + k⁻¹) ×ˢ Ico (-x) (-x + k⁻¹) ⊆ V`. -/
   have : ∀ x : ℝₗ, Irrational (toReal x) →
@@ -316,7 +337,6 @@ theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) := by
   · refine' (nhds_antitone_basis_Ico_inv_pnat (-x)).2 hnN ⟨neg_le_neg hxn.1.le, _⟩
     simp only [add_neg_lt_iff_le_add', lt_neg_add_iff_add_lt]
     exact hxn.2
-#align counterexample.sorgenfrey_line.not_normal_space_prod Counterexample.SorgenfreyLine.not_normalSpace_prod
 
 /-- Topology on the Sorgenfrey line is not metrizable. -/
 theorem not_metrizableSpace : ¬MetrizableSpace ℝₗ := by

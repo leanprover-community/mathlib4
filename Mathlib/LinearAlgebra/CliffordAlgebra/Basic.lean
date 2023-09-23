@@ -2,15 +2,12 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Utensil Song
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.basic
-! leanprover-community/mathlib commit d46774d43797f5d1f507a63a6e904f7a533ae74a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.RingQuot
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+
+#align_import linear_algebra.clifford_algebra.basic from "leanprover-community/mathlib"@"d46774d43797f5d1f507a63a6e904f7a533ae74a"
 
 /-!
 # Clifford Algebras

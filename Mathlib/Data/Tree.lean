@@ -2,17 +2,14 @@
 Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
-
-! This file was ported from Lean 3 source module data.tree
-! leanprover-community/mathlib commit ed989ff568099019c6533a4d94b27d852a5710d8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Std.Data.RBMap
 import Mathlib.Data.Num.Basic
 import Mathlib.Order.Basic
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Util.CompileInductive
+
+#align_import data.tree from "leanprover-community/mathlib"@"ed989ff568099019c6533a4d94b27d852a5710d8"
 
 /-!
 # Binary tree

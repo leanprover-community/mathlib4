@@ -2,13 +2,10 @@
 Copyright (c) 2022 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich
-
-! This file was ported from Lean 3 source module measure_theory.measure.sub
-! leanprover-community/mathlib commit 562bbf524c595c153470e53d36c57b6f891cc480
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+
+#align_import measure_theory.measure.sub from "leanprover-community/mathlib"@"562bbf524c595c153470e53d36c57b6f891cc480"
 
 /-!
 # Subtraction of measures

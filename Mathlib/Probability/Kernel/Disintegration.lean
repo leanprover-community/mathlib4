@@ -2,15 +2,12 @@
 Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.kernel.disintegration
-! leanprover-community/mathlib commit 6315581f5650ffa2fbdbbbedc41243c8d7070981
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Kernel.CondCdf
 import Mathlib.MeasureTheory.Constructions.Polish
 import Mathlib.Probability.Kernel.IntegralCompProd
+
+#align_import probability.kernel.disintegration from "leanprover-community/mathlib"@"6315581f5650ffa2fbdbbbedc41243c8d7070981"
 
 /-!
 # Disintegration of measures on product spaces

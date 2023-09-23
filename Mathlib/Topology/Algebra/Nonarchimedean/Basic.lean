@@ -2,15 +2,12 @@
 Copyright (c) 2021 Ashwin Iyengar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Ashwin Iyengar, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.nonarchimedean.basic
-! leanprover-community/mathlib commit 83f81aea33931a1edb94ce0f32b9a5d484de6978
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Algebra.Ring.Basic
+
+#align_import topology.algebra.nonarchimedean.basic from "leanprover-community/mathlib"@"83f81aea33931a1edb94ce0f32b9a5d484de6978"
 
 /-!
 # Nonarchimedean Topology

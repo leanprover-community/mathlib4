@@ -2,16 +2,13 @@
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
-
-! This file was ported from Lean 3 source module computability.language
-! leanprover-community/mathlib commit a239cd3e7ac2c7cde36c913808f9d40c411344f6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
+
+#align_import computability.language from "leanprover-community/mathlib"@"a239cd3e7ac2c7cde36c913808f9d40c411344f6"
 
 /-!
 # Languages
@@ -37,7 +34,7 @@ def Language (α) :=
 instance : Membership (List α) (Language α) := ⟨Set.Mem⟩
 instance : Singleton (List α) (Language α) := ⟨Set.singleton⟩
 instance : Insert (List α) (Language α) := ⟨Set.insert⟩
-instance : CompleteBooleanAlgebra (Language α) := Set.instCompleteBooleanAlgebraSet
+instance : CompleteAtomicBooleanAlgebra (Language α) := Set.completeAtomicBooleanAlgebra
 
 namespace Language
 
@@ -292,7 +289,7 @@ theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ 
 #align language.one_add_kstar_mul_self_eq_kstar Language.one_add_kstar_mul_self_eq_kstar
 
 instance : KleeneAlgebra (Language α) :=
-  { Language.instSemiringLanguage, Set.instCompleteBooleanAlgebraSet with
+  { Language.instSemiringLanguage, Set.completeAtomicBooleanAlgebra with
     kstar := fun L ↦ L∗,
     one_le_kstar := fun a l hl ↦ ⟨[], hl, by simp⟩,
     mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,

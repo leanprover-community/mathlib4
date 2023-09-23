@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
-
-! This file was ported from Lean 3 source module algebra.associated
-! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Parity
+
+#align_import algebra.associated from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
 /-!
 # Associated, prime, and irreducible elements.
@@ -933,7 +930,7 @@ theorem dvd_of_mk_le_mk {a b : α} : Associates.mk a ≤ Associates.mk b → a �
             b = a * c * ↑d := hd.symm
             _ = a * (↑d * c) := by ac_rfl
             ⟩
-    Quotient.inductionOn c' step  hc'
+    Quotient.inductionOn c' step hc'
 #align associates.dvd_of_mk_le_mk Associates.dvd_of_mk_le_mk
 
 theorem mk_le_mk_of_dvd {a b : α} : a ∣ b → Associates.mk a ≤ Associates.mk b := fun ⟨c, hc⟩ =>

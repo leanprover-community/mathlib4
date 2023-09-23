@@ -2,16 +2,13 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.num.basic
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.Int.Basic
 import Lean.Linter.Deprecated
+
+#align_import data.num.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 /-!
 # Binary representation of integers using inductive types
 

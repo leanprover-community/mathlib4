@@ -2,11 +2,6 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.prime
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.Parity
@@ -16,6 +11,8 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Order.Bounds.Basic
+
+#align_import data.nat.prime from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Prime numbers
@@ -694,7 +691,7 @@ theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Pr
 #align nat.eq_or_coprime_of_le_prime Nat.eq_or_coprime_of_le_prime
 
 theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
-  simp_rw [_root_.dvd_prime_pow  (prime_iff.mp pp)  m, associated_eq_eq]
+  simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]
 #align nat.dvd_prime_pow Nat.dvd_prime_pow
 
 theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_neq : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)

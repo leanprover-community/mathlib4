@@ -2,16 +2,13 @@
 Copyright (c) 2020 Pim Spelier, Daan van Gent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Spelier, Daan van Gent
-
-! This file was ported from Lean 3 source module computability.tm_computable
-! leanprover-community/mathlib commit 6f9cb03e8a39ea345796a13c6639cb330e50869b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Encoding
 import Mathlib.Computability.TuringMachine
 import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Polynomial.Eval
+
+#align_import computability.tm_computable from "leanprover-community/mathlib"@"6f9cb03e8a39ea345796a13c6639cb330e50869b"
 
 /-!
 # Computable functions

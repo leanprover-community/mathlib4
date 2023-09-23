@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.zmod.defs
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.Lattice
+
+#align_import data.zmod.defs from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
 /-!
 # Definition of `ZMod n` + basic results.
@@ -46,7 +43,7 @@ to register the ring structure on `ZMod n` as type class instance.
 open Nat.ModEq Int
 
 /-- Multiplicative commutative semigroup structure on `Fin n`. -/
-instance (n : ℕ) : CommSemigroup (Fin n) :=
+instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
   { inferInstanceAs (Mul (Fin n)) with
     mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
       Fin.eq_of_veq <|
@@ -55,6 +52,7 @@ instance (n : ℕ) : CommSemigroup (Fin n) :=
           _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
           _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
     mul_comm := Fin.mul_comm }
+#align fin.comm_semigroup Fin.instCommSemigroup
 
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
@@ -65,18 +63,30 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
 
 /-- Commutative ring structure on `Fin n`. -/
-instance (n : ℕ) [NeZero n] : CommRing (Fin n) :=
-  { Fin.instAddMonoidWithOneFin n, Fin.addCommGroup n,
-    Fin.instCommSemigroupFin n with
-    one_mul := Fin.one_mul
-    mul_one := Fin.mul_one
+instance instDistrib (n : ℕ) : Distrib (Fin n) :=
+  { Fin.addCommSemigroup n, Fin.instCommSemigroup n with
     left_distrib := left_distrib_aux n
     right_distrib := fun a b c => by
-      rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm],
+      rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
+#align fin.distrib Fin.instDistrib
+
+/-- Commutative ring structure on `fin n`. -/
+instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
+  { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
+    one_mul := Fin.one_mul
+    mul_one := Fin.mul_one,
     -- porting note: new, see
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
     zero_mul := Fin.zero_mul
     mul_zero := Fin.mul_zero }
+#align fin.comm_ring Fin.instCommRing
+
+/-- Note this is more general than `fin.comm_ring` as it applies (vacuously) to `fin 0` too. -/
+instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
+  { toInvolutiveNeg := Fin.instInvolutiveNeg n
+    mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
+    neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul }
+#align fin.has_distrib_neg Fin.instHasDistribNeg
 
 end Fin
 

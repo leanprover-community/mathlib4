@@ -2,11 +2,6 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.hahn_series
-! leanprover-community/mathlib commit a484a7d0eade4e1268f4fb402859b6686037f965
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Algebra.BigOperators.Finprod
@@ -15,6 +10,8 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Finsupp.Pwo
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Algebra.Order.Group.WithTop
+
+#align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 
 /-!
 # Hahn Series

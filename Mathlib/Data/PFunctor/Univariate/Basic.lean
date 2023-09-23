@@ -2,13 +2,10 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.pfunctor.univariate.basic
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.W.Basic
+
+#align_import data.pfunctor.univariate.basic from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Polynomial functors
@@ -90,7 +87,7 @@ such that `P.B a` is empty to yield a finite tree -/
 
 variable {P}
 
-/-- root element  of a W tree -/
+/-- root element of a W tree -/
 def W.head : W P → P.A
   | ⟨a, _f⟩ => a
 #align pfunctor.W.head PFunctor.W.head

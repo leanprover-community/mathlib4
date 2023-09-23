@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.algebra.order.upper_lower
-! leanprover-community/mathlib commit 992efbda6f85a5c9074375d3c7cb9764c64d8f72
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Group.Basic
+
+#align_import topology.algebra.order.upper_lower from "leanprover-community/mathlib"@"992efbda6f85a5c9074375d3c7cb9764c64d8f72"
 
 /-!
 # Topological facts about upper/lower/order-connected sets

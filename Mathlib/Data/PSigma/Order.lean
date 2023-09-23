@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Minchao Wu
-
-! This file was ported from Lean 3 source module data.psigma.order
-! leanprover-community/mathlib commit 62a5626868683c104774de8d85b9855234ac807c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.BoundedOrder
 import Mathlib.Mathport.Notation
 import Init.NotationExtra
+
+#align_import data.psigma.order from "leanprover-community/mathlib"@"62a5626868683c104774de8d85b9855234ac807c"
 
 /-!
 # Lexicographic order on a sigma type

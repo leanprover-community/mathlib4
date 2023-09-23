@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module algebra.star.module
-! leanprover-community/mathlib commit aa6669832974f87406a3d9d70fc5707a60546207
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.LinearAlgebra.Prod
+
+#align_import algebra.star.module from "leanprover-community/mathlib"@"aa6669832974f87406a3d9d70fc5707a60546207"
 
 /-!
 # The star operation, bundled as a star-linear equiv

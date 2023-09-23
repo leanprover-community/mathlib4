@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.ordinal.arithmetic
-! leanprover-community/mathlib commit e08a42b2dd544cf11eba72e5fc7bf199d4349925
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Basic
+
+#align_import set_theory.ordinal.arithmetic from "leanprover-community/mathlib"@"31b269b60935483943542d547a6dd83a66b37dc7"
 
 /-!
 # Ordinal arithmetic
@@ -1078,7 +1075,7 @@ theorem dvd_iff_mod_eq_zero {a b : Ordinal} : b ∣ a ↔ a % b = 0 :=
 #align ordinal.dvd_iff_mod_eq_zero Ordinal.dvd_iff_mod_eq_zero
 
 @[simp]
-theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x :=  by
+theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
   · rwa [mod_def, mul_add_div, mul_add, ← sub_sub, add_sub_cancel, mod_def]
@@ -1998,6 +1995,21 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
       ext b hb
       exact H b hb⟩
 #align ordinal.is_normal.eq_iff_zero_and_succ Ordinal.IsNormal.eq_iff_zero_and_succ
+
+/-- A two-argument version of `Ordinal.blsub`.
+We don't develop a full API for this, since it's only used in a handful of existence results. -/
+def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) :
+    Ordinal :=
+  lsub (fun x : o₁.out.α × o₂.out.α => op (typein_lt_self x.1) (typein_lt_self x.2))
+#align ordinal.blsub₂ Ordinal.blsub₂
+
+theorem lt_blsub₂ {o₁ o₂ : Ordinal}
+    (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
+    (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
+  convert lt_lsub _ (Prod.mk (enum (· < · ) a (by rwa [type_lt]))
+    (enum (· < · ) b (by rwa [type_lt])))
+  simp only [typein_enum]
+#align ordinal.lt_blsub₂ Ordinal.lt_blsub₂
 
 /-! ### Minimum excluded ordinals -/
 

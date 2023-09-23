@@ -2,16 +2,13 @@
 Copyright (c) 2022 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
-
-! This file was ported from Lean 3 source module representation_theory.group_cohomology.resolution
-! leanprover-community/mathlib commit cec81510e48e579bde6acd8568c06a87af045b63
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.AlgebraicTopology.ExtraDegeneracy
 import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.RepresentationTheory.Rep
+
+#align_import representation_theory.group_cohomology.resolution from "leanprover-community/mathlib"@"cec81510e48e579bde6acd8568c06a87af045b63"
 
 /-!
 # The structure of the `k[G]`-module `k[Gⁿ]`

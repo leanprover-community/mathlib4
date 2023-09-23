@@ -2,17 +2,14 @@
 Copyright (c) 2022 Bhavik Mehta, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.set_family.lym
-! leanprover-community/mathlib commit 861a26926586cd46ff80264d121cdb6fa0e35cc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.SetFamily.Shadow
 import Mathlib.Data.Rat.Order
+
+#align_import combinatorics.set_family.lym from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
 
 /-!
 # Lubell-Yamamoto-Meshalkin inequality and Sperner's theorem

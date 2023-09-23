@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.group_action.embedding
-! leanprover-community/mathlib commit a437a2499163d85d670479f69f625f461cc5fef9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Pi
+
+#align_import group_theory.group_action.embedding from "leanprover-community/mathlib"@"a437a2499163d85d670479f69f625f461cc5fef9"
 
 /-!
 # Group actions on embeddings

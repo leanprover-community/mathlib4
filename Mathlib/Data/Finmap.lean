@@ -2,15 +2,12 @@
 Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.finmap
-! leanprover-community/mathlib commit cea83e192eae2d368ab2b500a0975667da42c920
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.AList
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Part
+
+#align_import data.finmap from "leanprover-community/mathlib"@"cea83e192eae2d368ab2b500a0975667da42c920"
 
 /-!
 # Finite maps over `Multiset`

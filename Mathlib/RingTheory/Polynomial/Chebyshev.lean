@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.chebyshev
-! leanprover-community/mathlib commit d774451114d6045faeb6751c396bea1eb9058946
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Tactic.LinearCombination
+
+#align_import ring_theory.polynomial.chebyshev from "leanprover-community/mathlib"@"d774451114d6045faeb6751c396bea1eb9058946"
 
 /-!
 # Chebyshev polynomials

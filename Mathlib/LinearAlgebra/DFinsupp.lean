@@ -2,14 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
-
-! This file was ported from Lean 3 source module linear_algebra.dfinsupp
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.Basis
+
+#align_import linear_algebra.dfinsupp from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Properties of the module `Π₀ i, M i`
@@ -261,7 +258,7 @@ section CoprodMap
 
 variable [DecidableEq ι] [∀ x : N, Decidable (x ≠ 0)]
 
-/-- Given a family of linear maps `f i : M i  →ₗ[R] N`, we can form a linear map
+/-- Given a family of linear maps `f i : M i →ₗ[R] N`, we can form a linear map
 `(Π₀ i, M i) →ₗ[R] N` which sends `x : Π₀ i, M i` to the sum over `i` of `f i` applied to `x i`.
 This is the map coming from the universal property of `Π₀ i, M i` as the coproduct of the `M i`.
 See also `LinearMap.coprod` for the binary product version. -/

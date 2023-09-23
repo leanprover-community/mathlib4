@@ -2,11 +2,6 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.convex.strict_convex_space
-! leanprover-community/mathlib commit a63928c34ec358b5edcda2bf7513c50052a5230f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Convex.Strict
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.NormedSpace.AffineIsometry
+
+#align_import analysis.convex.strict_convex_space from "leanprover-community/mathlib"@"a63928c34ec358b5edcda2bf7513c50052a5230f"
 
 /-!
 # Strictly convex spaces

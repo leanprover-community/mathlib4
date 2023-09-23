@@ -2,11 +2,6 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.power_series.basic
-! leanprover-community/mathlib commit 2d5739b61641ee4e7e53eca5688a08f66f2e6a60
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Interval
 import Mathlib.Data.MvPolynomial.Basic
@@ -16,6 +11,8 @@ import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.Tactic.Linarith
+
+#align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
 /-!
 # Formal power series
@@ -909,7 +906,7 @@ section LocalRing
 
 variable {S : Type _} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
 
--- Thanks to the linter for informing us that  this instance does
+-- Thanks to the linter for informing us that this instance does
 -- not actually need R and S to be local rings!
 /-- The map `A[[X]] → B[[X]]` induced by a local ring hom `A → B` is local -/
 instance map.isLocalRingHom : IsLocalRingHom (map σ f) :=

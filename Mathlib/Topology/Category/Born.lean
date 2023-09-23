@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.category.Born
-! leanprover-community/mathlib commit 2143571557740bf69d0631339deea0d0e479df54
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Topology.Bornology.Hom
+
+#align_import topology.category.Born from "leanprover-community/mathlib"@"2143571557740bf69d0631339deea0d0e479df54"
 
 /-!
 # The category of bornologies

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.tm_to_partrec
-! leanprover-community/mathlib commit 6155d4351090a6fad236e3d2e4e0e4e7342668e8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Halting
 import Mathlib.Computability.TuringMachine
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Tactic.DeriveFintype
+
+#align_import computability.tm_to_partrec from "leanprover-community/mathlib"@"6155d4351090a6fad236e3d2e4e0e4e7342668e8"
 
 /-!
 # Modelling partial recursive functions using Turing machines

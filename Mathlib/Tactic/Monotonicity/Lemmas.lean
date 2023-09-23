@@ -26,8 +26,8 @@ attribute [mono] inter_subset_inter union_subset_union
                  image_subset preimage_mono prod_mono Monotone.set_prod seq_mono
                  image2_subset OrderEmbedding.monotone
 attribute [mono] upperBounds_mono_set lowerBounds_mono_set
-                 upperBounds_mono_mem  lowerBounds_mono_mem
-                 upperBounds_mono  lowerBounds_mono
+                 upperBounds_mono_mem lowerBounds_mono_mem
+                 upperBounds_mono lowerBounds_mono
                  BddAbove.mono BddBelow.mono
 
 attribute [mono] add_le_add mul_le_mul neg_le_neg

@@ -2,11 +2,6 @@
 Copyright (c) 2020 Bhavik Mehta, Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Aaron Anderson
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.partition
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Combinatorics.Partition
@@ -15,6 +10,8 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.ApplyFun
+
+#align_import wiedijk_100_theorems.partition from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Euler's Partition Theorem

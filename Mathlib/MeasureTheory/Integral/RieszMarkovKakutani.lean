@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jesse Reimann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jesse Reimann, Kalle Kytölä
-
-! This file was ported from Lean 3 source module measure_theory.integral.riesz_markov_kakutani
-! leanprover-community/mathlib commit b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.Sets.Compacts
+
+#align_import measure_theory.integral.riesz_markov_kakutani from "leanprover-community/mathlib"@"b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f"
 
 /-!
 #  Riesz–Markov–Kakutani representation theorem

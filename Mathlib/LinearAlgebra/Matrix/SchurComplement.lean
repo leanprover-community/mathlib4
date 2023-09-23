@@ -2,15 +2,12 @@
 Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Eric Wieser, Jeremy Avigad, Johan Commelin
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.schur_complement
-! leanprover-community/mathlib commit a176cb1219e300e85793d44583dede42377b51af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Invertible
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.PosDef
+
+#align_import linear_algebra.matrix.schur_complement from "leanprover-community/mathlib"@"a176cb1219e300e85793d44583dede42377b51af"
 
 /-! # 2×2 block matrices and the Schur complement
 
@@ -194,7 +191,7 @@ theorem isUnit_fromBlocks_zero₂₁ {A : Matrix m m α} {B : Matrix m n α} {D 
 
 /-- A lower block-triangular matrix is invertible iff both elements of its diagonal are.
 
-This is a propositional form of  `Matrix.fromBlocksZero₁₂InvertibleEquiv` forms an `iff`. -/
+This is a propositional form of `Matrix.fromBlocksZero₁₂InvertibleEquiv` forms an `iff`. -/
 @[simp]
 theorem isUnit_fromBlocks_zero₁₂ {A : Matrix m m α} {C : Matrix n m α} {D : Matrix n n α} :
     IsUnit (fromBlocks A 0 C D) ↔ IsUnit A ∧ IsUnit D := by

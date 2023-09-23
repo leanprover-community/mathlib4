@@ -2,13 +2,10 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.opposites
-! leanprover-community/mathlib commit dde670c9a3f503647fd5bfdf1037bad526d3397a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Equivalence
+
+#align_import category_theory.opposites from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
 
 /-!
 # Opposite categories
@@ -646,7 +643,7 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ
     where
   functor :=
     { obj := fun F => F.unop.rightOp
-      map := fun η => NatTrans.rightOp η.unop  }
+      map := fun η => NatTrans.rightOp η.unop }
   inverse :=
     { obj := fun F => op F.leftOp
       map := fun η => η.leftOp.op }

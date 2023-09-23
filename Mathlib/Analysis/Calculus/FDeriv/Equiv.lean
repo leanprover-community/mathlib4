@@ -2,14 +2,11 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.fderiv.equiv
-! leanprover-community/mathlib commit e3fb84046afd187b710170887195d50bada934ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
+
+#align_import analysis.calculus.fderiv.equiv from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 
 /-!
 # The derivative of a linear equivalence
@@ -450,7 +447,7 @@ section
 
 /-
   In the special case of a normed space over the reals,
-  we can use  scalar multiplication in the `tendsto` characterization
+  we can use scalar multiplication in the `tendsto` characterization
   of the Fréchet derivative.
 -/
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]

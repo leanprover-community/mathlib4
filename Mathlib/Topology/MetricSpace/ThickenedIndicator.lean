@@ -2,15 +2,12 @@
 Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
-
-! This file was ported from Lean 3 source module topology.metric_space.thickened_indicator
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+#align_import topology.metric_space.thickened_indicator from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Thickened indicators

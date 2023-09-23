@@ -2,16 +2,13 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.perm.fin
-! leanprover-community/mathlib commit 7e1c1263b6a25eb90bf16e80d8f47a657e403c4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Equiv.Fintype
+
+#align_import group_theory.perm.fin from "leanprover-community/mathlib"@"7e1c1263b6a25eb90bf16e80d8f47a657e403c4c"
 
 /-!
 # Permutations of `Fin n`

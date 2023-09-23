@@ -2,11 +2,6 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.bilinear_form
-! leanprover-community/mathlib commit 075b3f7d19b9da85a0b54b3e33055a74fc388dec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
@@ -14,6 +9,8 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.LinearAlgebra.BilinearForm
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+
+#align_import linear_algebra.matrix.bilinear_form from "leanprover-community/mathlib"@"075b3f7d19b9da85a0b54b3e33055a74fc388dec"
 
 /-!
 # Bilinear form

@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.real.ennreal
-! leanprover-community/mathlib commit ccdbfb6e5614667af5aa3ab2d50885e0ef44a46f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.NNReal
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.Tactic.GCongr.Core
+
+#align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
 /-!
 # Extended non-negative reals
@@ -131,6 +128,10 @@ noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
       inferInstanceAs (CommSemiring ℝ≥0∞) with
     mul_le_mul_left := fun _ _ => mul_le_mul_left'
     zero_le_one := zero_le 1 }
+
+noncomputable instance : Unique (AddUnits ℝ≥0∞) where
+  default := 0
+  uniq a := AddUnits.ext <| le_zero_iff.1 <| by rw [← a.add_neg]; exact le_self_add
 
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
 
@@ -1413,6 +1414,15 @@ protected theorem mul_div_cancel' (h0 : a ≠ 0) (hI : a ≠ ∞) : a * (b / a) 
   rw [mul_comm, ENNReal.div_mul_cancel h0 hI]
 #align ennreal.mul_div_cancel' ENNReal.mul_div_cancel'
 
+-- porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
+protected theorem mul_comm_div : a / b * c = a * (c / b) := by
+  simp only [div_eq_mul_inv, mul_right_comm, ←mul_assoc]
+#align ennreal.mul_comm_div ENNReal.mul_comm_div
+
+protected theorem mul_div_right_comm : a * b / c = a / c * b := by
+  simp only [div_eq_mul_inv, mul_right_comm]
+#align ennreal.mul_div_right_comm ENNReal.mul_div_right_comm
+
 instance : InvolutiveInv ℝ≥0∞ where
   inv_inv a := by
     by_cases a = 0 <;> cases a <;> simp_all [none_eq_top, some_eq_coe, -coe_inv, (coe_inv _).symm]
@@ -1439,6 +1449,10 @@ protected theorem inv_eq_zero : a⁻¹ = 0 ↔ a = ∞ :=
 
 protected theorem inv_ne_zero : a⁻¹ ≠ 0 ↔ a ≠ ∞ := by simp
 #align ennreal.inv_ne_zero ENNReal.inv_ne_zero
+
+protected theorem div_pos (ha : a ≠ 0) (hb : b ≠ ∞) : 0 < a / b :=
+  ENNReal.mul_pos ha <| ENNReal.inv_ne_zero.2 hb
+#align ennreal.div_pos ENNReal.div_pos
 
 protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : a ≠ ∞ ∨ b ≠ 0) :
     (a * b)⁻¹ = a⁻¹ * b⁻¹ := by

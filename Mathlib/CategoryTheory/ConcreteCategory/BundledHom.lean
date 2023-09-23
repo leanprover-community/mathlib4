@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yury Kudryashov
-
-! This file was ported from Lean 3 source module category_theory.concrete_category.bundled_hom
-! leanprover-community/mathlib commit 77ca1ed347337ecbafa9d9f4a55e330e44e9f9f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+
+#align_import category_theory.concrete_category.bundled_hom from "leanprover-community/mathlib"@"77ca1ed347337ecbafa9d9f4a55e330e44e9f9f8"
 
 /-!
 # Category instances for algebraic structures that use bundled homs.

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.sheaves.sheafify
-! leanprover-community/mathlib commit bb103f356534a9a7d3596a672097e375290a4c3a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.LocalPredicate
 import Mathlib.Topology.Sheaves.Stalks
+
+#align_import topology.sheaves.sheafify from "leanprover-community/mathlib"@"bb103f356534a9a7d3596a672097e375290a4c3a"
 
 /-!
 # Sheafification of `Type` valued presheaves

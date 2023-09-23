@@ -2,16 +2,13 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.quadratic_form.basic
-! leanprover-community/mathlib commit 11b92770e4d49ff3982504c4dab918ac0887fe33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Invertible
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+
+#align_import linear_algebra.quadratic_form.basic from "leanprover-community/mathlib"@"11b92770e4d49ff3982504c4dab918ac0887fe33"
 
 /-!
 # Quadratic forms

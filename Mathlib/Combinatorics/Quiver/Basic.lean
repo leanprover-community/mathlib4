@@ -3,13 +3,10 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Scott Morrison
 Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module combinatorics.quiver.basic
-! leanprover-community/mathlib commit 56adee5b5eef9e734d82272918300fca4f3e7cef
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Opposite
+
+#align_import combinatorics.quiver.basic from "leanprover-community/mathlib"@"56adee5b5eef9e734d82272918300fca4f3e7cef"
 
 /-!
 # Quivers

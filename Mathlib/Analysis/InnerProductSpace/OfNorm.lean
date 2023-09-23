@@ -2,14 +2,11 @@
 Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.of_norm
-! leanprover-community/mathlib commit baa88307f3e699fa7054ef04ec79fa4f056169cb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Analysis.InnerProductSpace.Basic
+
+#align_import analysis.inner_product_space.of_norm from "leanprover-community/mathlib"@"baa88307f3e699fa7054ef04ec79fa4f056169cb"
 
 /-!
 # Inner product space derived from a norm

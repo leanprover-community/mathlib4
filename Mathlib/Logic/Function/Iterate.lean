@@ -2,13 +2,10 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module logic.function.iterate
-! leanprover-community/mathlib commit 792a2a264169d64986541c6f8f7e3bbb6acb6295
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Conjugate
+
+#align_import logic.function.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"
 
 /-!
 # Iterations of a function

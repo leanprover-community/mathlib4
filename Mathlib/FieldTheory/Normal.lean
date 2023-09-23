@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module field_theory.normal
-! leanprover-community/mathlib commit 9fb8964792b4237dac6200193a0d533f1b3f7423
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.Tower
 import Mathlib.GroupTheory.Solvable
 import Mathlib.RingTheory.PowerBasis
+
+#align_import field_theory.normal from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
 
 /-!
 # Normal field extensions

@@ -2,14 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.monoid.min_max
-! leanprover-community/mathlib commit de87d5053a9fe5cbde723172c0fb7e27e7436473
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.MinMax
 import Mathlib.Algebra.Order.Monoid.Lemmas
+
+#align_import algebra.order.monoid.min_max from "leanprover-community/mathlib"@"de87d5053a9fe5cbde723172c0fb7e27e7436473"
 
 /-!
 # Lemmas about `min` and `max` in an ordered monoid.

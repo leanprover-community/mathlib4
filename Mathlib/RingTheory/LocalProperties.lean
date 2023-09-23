@@ -2,11 +2,6 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.local_properties
-! leanprover-community/mathlib commit a7c017d750512a352b623b1824d75da5998457d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Localization.AtPrime
@@ -15,6 +10,8 @@ import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.RingHomProperties
+
+#align_import ring_theory.local_properties from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
 /-!
 # Local properties of commutative rings

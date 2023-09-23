@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.sigma.order
-! leanprover-community/mathlib commit 1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.BoundedOrder
 import Mathlib.Mathport.Notation
+
+#align_import data.sigma.order from "leanprover-community/mathlib"@"1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a"
 
 /-!
 # Orders on a sigma type

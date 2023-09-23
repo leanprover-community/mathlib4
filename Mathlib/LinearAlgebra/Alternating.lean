@@ -2,11 +2,6 @@
 Copyright (c) 2020 Zhangir Azerbayev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Zhangir Azerbayev
-
-! This file was ported from Lean 3 source module linear_algebra.alternating
-! leanprover-community/mathlib commit bd65478311e4dfd41f48bf38c7e3b02fb75d0163
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.Perm.Sign
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.Perm.Subgroup
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.Multilinear.Basis
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+
+#align_import linear_algebra.alternating from "leanprover-community/mathlib"@"bd65478311e4dfd41f48bf38c7e3b02fb75d0163"
 
 /-!
 # Alternating Maps

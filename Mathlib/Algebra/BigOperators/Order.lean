@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.big_operators.order
-! leanprover-community/mathlib commit 824f9ae93a4f5174d2ea948e2d75843dd83447bb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.GCongr.Core
+
+#align_import algebra.big_operators.order from "leanprover-community/mathlib"@"824f9ae93a4f5174d2ea948e2d75843dd83447bb"
 
 /-!
 # Results about big operators with values in an ordered algebraic structure.

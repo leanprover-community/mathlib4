@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.group.with_one.basic
-! leanprover-community/mathlib commit 4dc134b97a3de65ef2ed881f3513d56260971562
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.Hom.Equiv.Basic
+
+#align_import algebra.group.with_one.basic from "leanprover-community/mathlib"@"4dc134b97a3de65ef2ed881f3513d56260971562"
 
 /-!
 # More operations on `WithOne` and `WithZero`

@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.with_bot
-! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
+
+#align_import order.with_bot from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
 /-!
 # `WithBot`, `WithTop`
@@ -1210,7 +1207,7 @@ instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) := instDecidabl
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] :
     @DecidableRel (WithTop α) (· ≤ ·) := fun _ _ =>
-  decidable_of_decidable_of_iff  toDual_le_toDual_iff
+  decidable_of_decidable_of_iff toDual_le_toDual_iff
 #align with_top.decidable_le WithTop.decidableLE
 
 instance decidableLT [LT α] [@DecidableRel α (· < ·)] :

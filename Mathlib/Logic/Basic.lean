@@ -2,11 +2,6 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
-
-! This file was ported from Lean 3 source module logic.basic
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
@@ -15,6 +10,8 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.LeftRight
 import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
+
+#align_import logic.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Basic logic properties

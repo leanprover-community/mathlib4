@@ -106,7 +106,7 @@ lemma isSheafFor_of_factorsThru
   refine ⟨?_, fun x hx => ?_⟩
   · intro x y₁ y₂ h₁ h₂
     refine hS.1.ext (fun Y g hg => ?_)
-    simp only [← h2 hg, op_comp, P.map_comp, types_comp_apply, h₁ _ (h1 _ ), h₂ _ (h1  _)]
+    simp only [← h2 hg, op_comp, P.map_comp, types_comp_apply, h₁ _ (h1 _ ), h₂ _ (h1 _)]
   let y : S.FamilyOfElements P := fun Y g hg => P.map (i _).op (x (e hg) (h1 _))
   have hy : y.Compatible := by
     intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ h

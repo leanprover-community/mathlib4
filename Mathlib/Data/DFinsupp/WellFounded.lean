@@ -2,16 +2,13 @@
 Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
-
-! This file was ported from Lean 3 source module data.dfinsupp.well_founded
-! leanprover-community/mathlib commit e9b8651eb1ad354f4de6be35a38ef31efcd2cfaa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.DFinsupp.Lex
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Antisymmetrization
 import Mathlib.SetTheory.Ordinal.Basic
+
+#align_import data.dfinsupp.well_founded from "leanprover-community/mathlib"@"e9b8651eb1ad354f4de6be35a38ef31efcd2cfaa"
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `DFinsupp` and `Pi`
@@ -235,10 +232,10 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
     exact ⟨i, fun j hj ↦ Quot.sound (he j hj), hl⟩⟩
 #align dfinsupp.well_founded_lt DFinsupp.wellFoundedLT
 
-instance DFinsupp.well_founded_lt' [∀ i, CanonicallyOrderedAddMonoid (α i)]
+instance DFinsupp.wellFoundedLT' [∀ i, CanonicallyOrderedAddMonoid (α i)]
     [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Π₀ i, α i) :=
   DFinsupp.wellFoundedLT fun _i a => (zero_le a).not_lt
-#align dfinsupp.well_founded_lt' DFinsupp.well_founded_lt'
+#align dfinsupp.well_founded_lt' DFinsupp.wellFoundedLT'
 
 instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (∀ i, α i) :=
@@ -261,4 +258,3 @@ instance DFinsupp.wellFoundedLT_of_finite [Finite ι] [∀ i, Zero (α i)] [∀ 
   have := Fintype.ofFinite ι
   ⟨InvImage.wf equivFunOnFintype Pi.wellFoundedLT.wf⟩
 #align dfinsupp.well_founded_lt_of_finite DFinsupp.wellFoundedLT_of_finite
-

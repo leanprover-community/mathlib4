@@ -2,14 +2,11 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Jireh Loreaux
-
-! This file was ported from Lean 3 source module group_theory.subsemigroup.centralizer
-! leanprover-community/mathlib commit cc67cd75b4e54191e13c2e8d722289a89e67e4fa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subsemigroup.Center
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+
+#align_import group_theory.subsemigroup.centralizer from "leanprover-community/mathlib"@"cc67cd75b4e54191e13c2e8d722289a89e67e4fa"
 
 /-!
 # Centralizers of magmas and semigroups
