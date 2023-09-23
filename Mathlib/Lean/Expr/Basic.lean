@@ -160,7 +160,7 @@ def updateType (c : ConstantInfo) (type : Expr) : ConstantInfo :=
 
 /-- Update the level parameters of a `ConstantInfo`. -/
 def updateLevelParams (c : ConstantInfo) (levelParams : List Name) :
-  ConstantInfo :=
+    ConstantInfo :=
   c.updateConstantVal {c.toConstantVal with levelParams}
 
 /-- Update the value of a `ConstantInfo`, if it has one. -/
