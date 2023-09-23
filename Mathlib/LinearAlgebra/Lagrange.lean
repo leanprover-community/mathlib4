@@ -567,12 +567,12 @@ set_option linter.uppercaseLean3 false in
 #align lagrange.X_sub_C_dvd_nodal Lagrange.X_sub_C_dvd_nodal
 
 theorem nodal_insert_eq_nodal [DecidableEq ι] {i : ι} (hi : i ∉ s) :
-nodal (insert i s) v = (X - C (v i)) * nodal s v := by
+    nodal (insert i s) v = (X - C (v i)) * nodal s v := by
   simp_rw [nodal, prod_insert hi]
 #align lagrange.nodal_insert_eq_nodal Lagrange.nodal_insert_eq_nodal
 
 theorem derivative_nodal [DecidableEq ι] :
-derivative (nodal s v) = ∑ i in s, nodal (s.erase i) v := by
+    derivative (nodal s v) = ∑ i in s, nodal (s.erase i) v := by
   refine' s.induction_on _ fun i t hit IH => _
   · rw [nodal_empty, derivative_one, sum_empty]
   · rw [nodal_insert_eq_nodal hit, derivative_mul, IH, derivative_sub, derivative_X, derivative_C,

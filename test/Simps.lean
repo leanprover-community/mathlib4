@@ -1029,14 +1029,14 @@ instance {α β} : CoeFun (FurtherDecoratedEquiv α β) (λ _ => α → β) :=
   ⟨λ f => f.toDecoratedEquiv⟩
 
 def FurtherDecoratedEquiv.symm {α β : Sort _} (e : FurtherDecoratedEquiv α β) :
-  FurtherDecoratedEquiv β α :=
+    FurtherDecoratedEquiv β α :=
   { toDecoratedEquiv := e.toDecoratedEquiv.symm
     Q_toFun := e.Q_invFun
     Q_invFun := e.Q_toFun }
 
 def FurtherDecoratedEquiv.Simps.apply {α β : Sort _} (e : FurtherDecoratedEquiv α β) : α → β := e
 def FurtherDecoratedEquiv.Simps.symm_apply {α β : Sort _} (e : FurtherDecoratedEquiv α β) :
-  β → α := e.symm
+    β → α := e.symm
 
 initialize_simps_projections FurtherDecoratedEquiv
   (toFun → apply, invFun → symm_apply, -toDecoratedEquiv, toEquiv' → toEquiv', -toEquiv')
@@ -1115,17 +1115,16 @@ class AddHomPlus [Add ι] [∀ i, AddCommMonoid (A i)] :=
   (myMul {i} : A i →+ A i)
 
 def AddHomPlus.Simps.apply [Add ι] [∀ i, AddCommMonoid (A i)] [AddHomPlus A] {i : ι} (x : A i) :
-  A i :=
-AddHomPlus.myMul x
+    A i :=
+  AddHomPlus.myMul x
 
 initialize_simps_projections AddHomPlus (myMul_toFun → apply, -myMul)
 
 class AddHomPlus2 [Add ι] :=
   (myMul {i j} : A i ≃ (A j ≃ A (i + j)))
 
-def AddHomPlus2.Simps.mul [Add ι] [AddHomPlus2 A] {i j : ι}
-  (x : A i) (y : A j) : A (i + j) :=
-AddHomPlus2.myMul x y
+def AddHomPlus2.Simps.mul [Add ι] [AddHomPlus2 A] {i j : ι} (x : A i) (y : A j) : A (i + j) :=
+  AddHomPlus2.myMul x y
 
 initialize_simps_projections AddHomPlus2 (-myMul, myMul_toFun_toFun → mul)
 

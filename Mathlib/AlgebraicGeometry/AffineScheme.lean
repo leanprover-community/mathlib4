@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-import Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
+import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.RingTheory.Localization.InvSubmonoid
 
@@ -519,7 +519,8 @@ theorem isLocalization_basicOpen {X : Scheme} {U : Opens X} (hU : IsAffineOpen U
   -- Porting note : `erw naturality_assoc` for some reason does not work, so changed to a version
   -- where `naturality` is used, the good thing is that `erw` is changed back to `rw`
   simp only [←Category.assoc]
-  rw [hU.fromSpec.val.c.naturality, hU.fromSpec_app_eq]
+  -- Note: changed `rw` to `simp_rw` to improve performance
+  simp_rw [hU.fromSpec.val.c.naturality, hU.fromSpec_app_eq]
   -- simp only [Category.assoc]
   -- rw [hU.fromSpec_app_eq]
   dsimp
