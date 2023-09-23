@@ -452,8 +452,8 @@ variable {M N P : Type*} [Mul M] [Mul N] [Semigroup P]
     `f.noncommCoprod g _ (p : M × N) = f p.1 + g p.2`.
     (For the commutative case, use `AddHom.coprod`)"]
 def noncommCoprod : M × N →ₙ* P where
-  toFun := fun mn ↦ (f mn.fst) * (g mn.snd)
-  map_mul' := fun mn mn' ↦ by
+  toFun mn := (f mn.fst) * (g mn.snd)
+  map_mul' mn mn' := by
     simp only [Prod.fst_mul, Prod.snd_mul, map_mul]
     simp only [mul_assoc]
     apply congr_arg₂ _ rfl
