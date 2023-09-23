@@ -52,8 +52,7 @@ and cross-references there.
 
 
 noncomputable section
-open scoped Manifold
-open TopologicalSpace Opposite
+open Manifold TopologicalSpace Opposite
 
 universe u
 
