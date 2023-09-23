@@ -300,7 +300,117 @@ lemma isomorphic_distinguished (T₁ : Triangle Cᵒᵖ)
   exact Pretriangulated.isomorphic_distinguished _ hT₁ _
     ((triangleOpEquivalence C).inverse.mapIso e).unop.symm
 
+noncomputable def contractibleTriangleIso (X : Cᵒᵖ) :
+    contractibleTriangle X ≅ (triangleOpEquivalence C).functor.obj
+      (Opposite.op (contractibleTriangle X.unop).invRotate) :=
+  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+    { hom := 0
+      inv := 0
+      inv_hom_id := (by
+        apply IsZero.eq_of_tgt
+        rw [IsZero.iff_id_eq_zero]
+        change (𝟙 ((0 : C)⟦(-1 : ℤ)⟧)).op = 0
+        rw [← Functor.map_id, id_zero, Functor.map_zero, op_zero]) }
+    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+
+lemma contractible_distinguished (X : Cᵒᵖ) :
+    contractibleTriangle X ∈ distinguishedTriangles C := by
+  rw [mem_distinguishedTriangles_iff']
+  exact ⟨_, inv_rot_of_dist_triangle _ (Pretriangulated.contractible_distinguished X.unop),
+    ⟨contractibleTriangleIso X⟩⟩
+
+noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnop
+    (T : Triangle Cᵒᵖ) :
+    Triangle.rotate ((triangleOpEquivalence C).inverse.obj (Triangle.rotate T)).unop ≅
+      ((triangleOpEquivalence C).inverse.obj T).unop := by
+  refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+      (-((opShiftFunctorEquivalence C 1).unitIso.app T.obj₁).unop) (by simp) _ _
+  · dsimp
+    rw [comp_neg]
+    rw [id_comp]
+    erw [Functor.map_neg]
+    dsimp
+    rw [comp_neg, neg_comp, neg_neg]
+    apply Quiver.Hom.op_inj
+    simp only [op_comp, assoc]
+    erw [(opShiftFunctorEquivalence C 1).unitIso.inv.naturality T.mor₁]
+    dsimp
+    rw [Iso.hom_inv_id_app_assoc]
+  · dsimp
+    simp only [Functor.map_id, comp_id, neg_comp, neg_inj, ← unop_comp_assoc,
+      Iso.inv_hom_id_app, Functor.comp_obj, Functor.op_obj, unop_id, id_comp]
+
+lemma rotate_distinguished_triangle (T : Triangle Cᵒᵖ) :
+    T ∈ distinguishedTriangles C ↔ T.rotate ∈ distinguishedTriangles C := by
+  simp only [mem_distinguishedTriangles_iff, Pretriangulated.rotate_distinguished_triangle
+    ((triangleOpEquivalence C).inverse.obj (T.rotate)).unop]
+  exact distinguished_iff_of_iso (rotateTriangleOpEquivalenceInverseObjRotateUnop T).symm
+
+lemma distinguished_cocone_triangle {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    ∃ (Z : Cᵒᵖ) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
+      Triangle.mk f g h ∈ distinguishedTriangles C := by
+  obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle₁ f.unop
+  simp only [mem_distinguishedTriangles_iff]
+  refine' ⟨_, g.op, (opShiftFunctorEquivalence C 1).counitIso.inv.app (Opposite.op Z) ≫
+    (shiftFunctor Cᵒᵖ (1 : ℤ)).map h.op, _⟩
+  dsimp
+  convert H using 2
+  dsimp
+  rw [Functor.map_comp]
+  apply Quiver.Hom.op_inj
+  rw [op_comp, op_comp, shift_unop_opShiftFunctorEquivalence_counitIso_inv_app (Opposite.op Z) 1]
+  erw [← (opShiftFunctorEquivalence C 1).unitIso.hom.naturality h.op,
+    assoc, Iso.hom_inv_id_app, comp_id]
+  rfl
+
+lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)
+    (hT₁ : T₁ ∈ distinguishedTriangles C) (hT₂ : T₂ ∈ distinguishedTriangles C)
+    (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (comm : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
+    ∃ (c : T₁.obj₃ ⟶ T₂.obj₃), T₁.mor₂ ≫ c = b ≫ T₂.mor₂ ∧
+      T₁.mor₃ ≫ a⟦1⟧' = c ≫ T₂.mor₃ := by
+  rw [mem_distinguishedTriangles_iff] at hT₁ hT₂
+  obtain ⟨c, hc₁, hc₂⟩ := Pretriangulated.complete_distinguished_triangle_morphism₁ _ _ hT₂ hT₁ b.unop
+    a.unop (Quiver.Hom.op_inj comm.symm)
+  dsimp at c hc₁ hc₂
+  simp only [neg_comp, assoc, comp_neg, neg_inj] at hc₂
+  refine' ⟨c.op, Quiver.Hom.unop_inj hc₁.symm, Quiver.Hom.unop_inj _⟩
+  apply (shiftFunctor C (1 : ℤ)).map_injective
+  rw [unop_comp, unop_comp, Functor.map_comp, Functor.map_comp, Quiver.Hom.unop_op,
+      ← cancel_epi ((opShiftFunctorEquivalence C 1).unitIso.inv.app T₂.obj₁).unop, hc₂]
+  apply Quiver.Hom.op_inj
+  simp only [op_comp, Functor.id_obj, Opposite.op_unop, Functor.comp_obj, Functor.op_obj,
+    Opposite.unop_op, Quiver.Hom.op_unop, assoc]
+  congr 1
+  exact (opShiftFunctorEquivalence C 1).unitIso.inv.naturality a
+
+scoped instance : Pretriangulated Cᵒᵖ where
+  distinguishedTriangles := distinguishedTriangles C
+  isomorphic_distinguished := isomorphic_distinguished
+  contractible_distinguished := contractible_distinguished
+  distinguished_cocone_triangle := distinguished_cocone_triangle
+  rotate_distinguished_triangle := rotate_distinguished_triangle
+  complete_distinguished_triangle_morphism := complete_distinguished_triangle_morphism
+
 end Opposite
+
+variable {C}
+
+lemma mem_distTriang_op_iff (T : Triangle Cᵒᵖ) :
+    (T ∈ distTriang Cᵒᵖ) ↔ ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C := by
+  rfl
+
+lemma mem_distTriang_op_iff' (T : Triangle Cᵒᵖ) :
+    (T ∈ distTriang Cᵒᵖ) ↔ ∃ (T' : Triangle C) (_ : T' ∈ distTriang C),
+      Nonempty (T ≅ (triangleOpEquivalence C).functor.obj (Opposite.op T')) :=
+  Opposite.mem_distinguishedTriangles_iff' T
+
+lemma op_distinguished (T : Triangle C) (hT : T ∈ distTriang C) :
+    ((triangleOpEquivalence C).functor.obj (Opposite.op T)) ∈ distTriang Cᵒᵖ := by
+  rw [mem_distTriang_op_iff']
+  exact ⟨T, hT, ⟨Iso.refl _⟩⟩
+
+lemma unop_distinguished (T : Triangle Cᵒᵖ) (hT : T ∈ distTriang Cᵒᵖ) :
+    ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C := hT
 
 end Pretriangulated
 
