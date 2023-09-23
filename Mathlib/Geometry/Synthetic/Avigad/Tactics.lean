@@ -91,7 +91,8 @@ namespace Lean.Elab.Tactic
 /-- Definitions for perm tactic-/
 def getNthArgName (tgt : Expr) (n : Nat) : MetaM Name :=
   do
-    let some id := Lean.Expr.fvarId? (Lean.Expr.getArg! tgt n) | throwError "argument {n} is not a free variable"
+    let some id := Lean.Expr.fvarId? (Lean.Expr.getArg! tgt n) | throwError
+      "argument {n} is not a free variable"
     id.getUserName
 
 /-- Definitions for perm tactic-/
