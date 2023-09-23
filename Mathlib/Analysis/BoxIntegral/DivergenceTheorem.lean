@@ -111,7 +111,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       · intro y hy
         refine' (hε y hy).trans (mul_le_mul_of_nonneg_left _ h0.le)
         rw [← dist_eq_norm]
-        exact dist_le_diam_of_mem I.isCompact_Icc.bounded hy hxI
+        exact dist_le_diam_of_mem I.isCompact_Icc.isBounded hy hxI
       rw [two_mul, add_mul]
       exact norm_sub_le_of_le (hε _ (this _ Hl)) (hε _ (this _ Hu))
   calc

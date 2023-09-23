@@ -407,14 +407,14 @@ variable {A B C}
 /-- Porting note: if we generate this with `@[simps]` the linter complains some types in the LHS
 simplify. -/
 theorem homEquiv_apply_hom (f : A ⊗ B ⟶ C) :
-  (homEquiv A B C f).hom = (TensorProduct.curry f.hom).flip := rfl
+    (homEquiv A B C f).hom = (TensorProduct.curry f.hom).flip := rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_equiv_apply_hom Rep.homEquiv_apply_hom
 
 /-- Porting note: if we generate this with `@[simps]` the linter complains some types in the LHS
 simplify. -/
 theorem homEquiv_symm_apply_hom (f : B ⟶ (Rep.ihom A).obj C) :
-  ((homEquiv A B C).symm f).hom = TensorProduct.uncurry k A B C f.hom.flip := rfl
+    ((homEquiv A B C).symm f).hom = TensorProduct.uncurry k A B C f.hom.flip := rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_equiv_symm_apply_hom Rep.homEquiv_symm_apply_hom
 
@@ -630,7 +630,8 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
         dsimp [counitIsoAddEquiv]
 /- Porting note: rest of broken proof was `simp`. -/
         rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply]
-        erw [Representation.ofModule_asAlgebraHom_apply_apply]
+        rw [AddEquiv.trans_apply]
+        erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]
         exact AddEquiv.symm_apply_apply _ _}
 set_option linter.uppercaseLean3 false in
 #align Rep.counit_iso Rep.counitIso

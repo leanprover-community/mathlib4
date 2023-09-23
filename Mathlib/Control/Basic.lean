@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Init.Control.Combinators
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Attr.Core
+import Std.Data.List.Basic
 
 #align_import control.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -77,14 +78,6 @@ variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
 open List
 
-/-- A generalization of `List.partition` which partitions the list according to a monadic
-predicate. `List.partition` corresponds to the case where `f = Id`. -/
-def List.partitionM {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool) :
-    List α → f (List α × List α)
-  | [] => pure ([], [])
-  | x :: xs => condM (p x)
-    (Prod.map (cons x) id <$> List.partitionM p xs)
-    (Prod.map id (cons x) <$> List.partitionM p xs)
 #align list.mpartition List.partitionM
 
 theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
@@ -147,7 +140,7 @@ section
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 theorem joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
-  joinM (Functor.map f <$> a) = f <$> joinM a := by
+    joinM (Functor.map f <$> a) = f <$> joinM a := by
   simp only [joinM, (· ∘ ·), id.def, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
 #align mjoin_map_map joinM_map_map
 

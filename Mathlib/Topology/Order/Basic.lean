@@ -1430,6 +1430,40 @@ theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α] {y : 
   this.of_diff countable_setOf_covby_right
 #align set.pairwise_disjoint.countable_of_Ioo Set.PairwiseDisjoint.countable_of_Ioo
 
+instance instIsCountablyGenerated_atTop [SecondCountableTopology α] :
+    IsCountablyGenerated (atTop : Filter α) := by
+  by_cases h : ∃ (x : α), IsTop x
+  · rcases h with ⟨x, hx⟩
+    rw [atTop_eq_pure_of_isTop hx]
+    exact isCountablyGenerated_pure x
+  · rcases exists_countable_basis α with ⟨b, b_count, b_ne, hb⟩
+    have : Countable b := by exact Iff.mpr countable_coe_iff b_count
+    have A : ∀ (s : b), ∃ (x : α), x ∈ (s : Set α) := by
+      intro s
+      have : (s : Set α) ≠ ∅ := by
+        intro H
+        apply b_ne
+        convert s.2
+        exact H.symm
+      exact Iff.mp nmem_singleton_empty this
+    choose a ha using A
+    have : (atTop : Filter α) = (generate (Ici '' (range a))) := by
+      apply atTop_eq_generate_of_not_bddAbove
+      intro ⟨x, hx⟩
+      simp only [IsTop, not_exists, not_forall, not_le] at h
+      rcases h x with ⟨y, hy⟩
+      obtain ⟨s, sb, -, hs⟩ : ∃ s, s ∈ b ∧ y ∈ s ∧ s ⊆ Ioi x :=
+        hb.exists_subset_of_mem_open hy isOpen_Ioi
+      have I : a ⟨s, sb⟩ ≤ x := hx (mem_range_self _)
+      have J : x < a ⟨s, sb⟩ := hs (ha ⟨s, sb⟩)
+      exact lt_irrefl _ (I.trans_lt J)
+    rw [this]
+    exact ⟨_, (countable_range _).image _, rfl⟩
+
+instance instIsCountablyGenerated_atBot [SecondCountableTopology α] :
+    IsCountablyGenerated (atBot : Filter α) :=
+  @instIsCountablyGenerated_atTop αᵒᵈ _ _ _ _
+
 section Pi
 
 /-!
@@ -2797,6 +2831,14 @@ theorem IsClosed.csInf_mem {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B :
     sInf s ∈ s :=
   (isGLB_csInf hs B).mem_of_isClosed hs hc
 #align is_closed.cInf_mem IsClosed.csInf_mem
+
+theorem IsClosed.isLeast_csInf {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddBelow s) :
+    IsLeast s (sInf s) :=
+  ⟨hc.csInf_mem hs B, (isGLB_csInf hs B).1⟩
+
+theorem IsClosed.isGreatest_csSup {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddAbove s) :
+    IsGreatest s (sSup s) :=
+  IsClosed.isLeast_csInf (α := αᵒᵈ) hc hs B
 
 /-- If a monotone function is continuous at the supremum of a nonempty bounded above set `s`,
 then it sends this supremum to the supremum of the image of `s`. -/

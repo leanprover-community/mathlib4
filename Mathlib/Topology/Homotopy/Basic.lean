@@ -243,8 +243,7 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
         (F.continuous.comp (by continuity)).continuousOn
         (G.continuous.comp (by continuity)).continuousOn _
     rintro x hx
-    rw [hx]
-    norm_num
+    norm_num [hx]
   map_zero_left x := by norm_num
   map_one_left x := by norm_num
 #align continuous_map.homotopy.trans ContinuousMap.Homotopy.trans
@@ -268,8 +267,7 @@ theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homo
   simp only [coe_symm_eq, symm_apply]
   split_ifs with h₁ h₂ h₂
   · have ht : (t : ℝ) = 1 / 2 := by linarith
-    simp only [ht]
-    norm_num
+    norm_num [ht]
   · congr 2
     apply Subtype.ext
     simp only [coe_symm_eq]
@@ -567,6 +565,10 @@ theorem symm ⦃f g : C(X, Y)⦄ (h : HomotopicWith f g P) : HomotopicWith g f P
   ⟨h.some.symm⟩
 #align continuous_map.homotopic_with.symm ContinuousMap.HomotopicWith.symm
 
+-- Note: this was formerly tagged with `@[trans]`, and although the `trans` attribute accepted it
+-- the `trans` tactic could not use it.
+-- An update to the trans tactic coming in mathlib4#7014 will reject this attribute.
+-- It could be restored by changing the argument order to `HomotopicWith P f g`.
 @[trans]
 theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicWith f g P) (h₁ : HomotopicWith g h P) :
     HomotopicWith f h P :=
