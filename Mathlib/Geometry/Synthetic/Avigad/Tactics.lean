@@ -89,12 +89,10 @@ lemma para21 {L M : line}: para L M ↔ para M L := by
 namespace Lean.Elab.Tactic
 
 /-- Definitions for perm tactic-/
-def getFVars (e : Expr) : Array FVarId :=
-  (Lean.collectFVars {} e).fvarIds
-
-/-- Definitions for perm tactic-/
 def getNthArgName (tgt : Expr) (n : Nat) : MetaM Name :=
-  ((getFVars (Lean.Expr.getArg! tgt n)).get! 0).getUserName
+  do
+    let some id := Lean.Expr.fvarId? (Lean.Expr.getArg! tgt n) | throwError "argument {n} is not a free variable"
+    id.getUserName
 
 /-- Definitions for perm tactic-/
 def lte (n1 : @& Name) (n2: @& Name) : Bool :=
