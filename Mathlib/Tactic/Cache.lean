@@ -134,22 +134,6 @@ def DeclCache.get (cache : DeclCache α) : MetaM α := do
   return a
 
 /--
-Access the cache (imports only).
-Suitable to get a value to be pickled and fed to `mkFromCache` later.
--/
-def DeclCache.getImported (cache : DeclCache α) : CoreM α := cache.cache.get
-
-/--
-Creates a `DeclCache` from a pre-computed index, typically obtained via `DeclCache.getImports`.
-The cached structure `α` is initialized with the given value.
-When `get` is called, `addDecl` is additionally called for every constant in the current file.
--/
-def DeclCache.mkFromCache (init : α) (addDecl : Name → ConstantInfo → α → MetaM α) :
-    IO (DeclCache α) := do
-  let cache ← Cache.mk (pure init)
-  pure { cache := cache, addDecl := addDecl }
-
-/--
 A type synonym for a `DeclCache` containing a pair of elements.
 The first will store declarations in the current file,
 the second will store declarations from imports (and will hopefully be "read-only" after creation).
@@ -195,10 +179,9 @@ The cached structure `α` is initialized with the given value.
 When `get` is called, `addDecl` is additionally called for every constant in the current file.
 -/
 def DeclCache2.mkFromCache (empty : α) (addDecl : Name → ConstantInfo → α → MetaM α) (cached : α) :
-    IO (DeclCache2 α) :=
-  DeclCache.mkFromCache
-    (init := (empty, cached))
-    (addDecl := fun n c (m₁, m₂) => do pure (← addDecl n c m₁, m₂))
+    IO (DeclCache2 α) := do
+  let cache ← Cache.mk (pure (empty, cached))
+  pure { cache, addDecl := fun n c (m₁, m₂) => do pure (← addDecl n c m₁, m₂) }
 
 
 /--
