@@ -158,17 +158,33 @@ noncomputable def smooth_sheaf_Group : TopCat.Sheaf GroupCat.{u} (TopCat.of M) :
 
 end LieGroup
 
+section AddCommLieGroup
+variable [AddCommGroup A] [AddCommGroup A'] [LieAddGroup I A] [LieAddGroup I' A']
+
+instance (U : (Opens (TopCat.of M))ᵒᵖ) : AddCommGroup ((smooth_sheaf IM I M A).val.obj U) :=
+  (SmoothMap.addCommGroup : AddCommGroup C^∞⟮IM, (unop U : Opens M); I, A⟯)
+
+/-- The presheaf of smooth functions from `M` to `A`, for `A` an additive abelian Lie group, as a
+presheaf of additive abelian groups. -/
+def smooth_presheaf_AddCommGroup : TopCat.Presheaf AddCommGroupCat.{u} (TopCat.of M) :=
+  { obj := fun U ↦ AddCommGroupCat.of ((smooth_sheaf IM I M A).val.obj U)
+    map := fun h ↦ AddCommGroupCat.ofHom <|
+      SmoothMap.restrictAddMonoidHom IM I A <| CategoryTheory.leOfHom h.unop
+    map_id := fun _ ↦ rfl
+    map_comp := fun _ _ ↦ rfl }
+
+end AddCommLieGroup
+
 section CommLieGroup
 variable [CommGroup A] [CommGroup A'] [LieGroup I A] [LieGroup I' A']
 
--- @[to_additive]
+@[to_additive existing]
 instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommGroup ((smooth_sheaf IM I M A).val.obj U) :=
   (SmoothMap.commGroup : CommGroup C^∞⟮IM, (unop U : Opens M); I, A⟯)
 
 /-- The presheaf of smooth functions from `M` to `A`, for `A` an abelian Lie group, as a
 presheaf of abelian groups. -/
--- @[to_additive smooth_presheaf_AddCommGroup "The presheaf of smooth functions from
--- `M` to `A`, for `A` an abelian additive Lie group, as a presheaf of abelian additive groups."]
+@[to_additive existing]
 def smooth_presheaf_CommGroup : TopCat.Presheaf CommGroupCat.{u} (TopCat.of M) :=
   { obj := fun U ↦ CommGroupCat.of ((smooth_sheaf IM I M A).val.obj U)
     map := fun h ↦ CommGroupCat.ofHom <|
@@ -178,9 +194,9 @@ def smooth_presheaf_CommGroup : TopCat.Presheaf CommGroupCat.{u} (TopCat.of M) :
 
 /-- The sheaf of smooth functions from `M` to `A`, for `A` an abelian Lie group, as a
 sheaf of abelian groups. -/
--- @[to_additive smooth_sheaf_AddCommGroup "The sheaf of smooth functions from `M` to
--- `A`, for `A` an abelian additive Lie group, as a sheaf of abelian additive groups."]
-def smooth_sheaf_CommGroup : TopCat.Sheaf CommGroupCat.{u} (TopCat.of M) :=
+@[to_additive "The sheaf of smooth functions from `M` to
+`A`, for `A` an abelian additive Lie group, as a sheaf of abelian additive groups."]
+noncomputable def smooth_sheaf_CommGroup : TopCat.Sheaf CommGroupCat.{u} (TopCat.of M) :=
   { val := smooth_presheaf_CommGroup IM I M A
     cond := by
       rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _ (CategoryTheory.forget CommGroupCat)]
@@ -189,16 +205,29 @@ def smooth_sheaf_CommGroup : TopCat.Sheaf CommGroupCat.{u} (TopCat.of M) :=
 /-- For a manifold `M` and a smooth homomorphism `φ` between abelian Lie groups `A`, `A'`, the
 'left-composition-by-`φ`' morphism of sheaves from `smooth_sheaf_CommGroup IM I M A` to
 `smooth_sheaf_CommGroup IM I' M A'`. -/
-@[to_additive "For a manifold `M` and a smooth homomorphism `φ` between abelian additive Lie groups
-`A`, `A'`, the 'left-composition-by-`φ`' morphism of sheaves from
-`smooth_sheaf_AddCommGroup IM I M A` to `smooth_sheaf_AddCommGroup IM I' M A'`."]
 def smooth_sheaf_CommGroup.comp_left (φ : A →* A') (hφ : Smooth I I' φ) :
     smooth_sheaf_CommGroup IM I M A ⟶ smooth_sheaf_CommGroup IM I' M A' :=
-  CategoryTheory.Sheaf.hom.mk <|
-  { app := fun U ↦ CommGroup.of_hom <| smooth_map.comp_left_monoid_hom _ _ φ hφ
-    naturality' := fun U V f ↦ rfl }
+  CategoryTheory.Sheaf.Hom.mk <|
+  { app := fun _ ↦ CommGroupCat.ofHom <| SmoothMap.compLeftMonoidHom _ _ φ hφ
+    naturality := fun _ _ _ ↦ rfl }
 
 end CommLieGroup
+
+section AddCommLieGroup
+variable [AddCommGroup A] [AddCommGroup A'] [LieAddGroup I A] [LieAddGroup I' A']
+
+/-- For a manifold `M` and a smooth homomorphism `φ` between abelian additive Lie groups
+`A`, `A'`, the 'left-composition-by-`φ`' morphism of sheaves from
+`smooth_sheaf_AddCommGroup IM I M A` to `smooth_sheaf_AddCommGroup IM I' M A'`. -/
+def smooth_sheaf_AddCommGroup.comp_left (φ : A →+ A') (hφ : Smooth I I' φ) :
+    smooth_sheaf_AddCommGroup IM I M A ⟶ smooth_sheaf_AddCommGroup IM I' M A' :=
+  CategoryTheory.Sheaf.Hom.mk <|
+  { app := fun _ ↦ AddCommGroupCat.ofHom <| SmoothMap.compLeftAddMonoidHom _ _ φ hφ
+    naturality := fun _ _ _ ↦ rfl }
+
+attribute [to_additive existing] smooth_sheaf_CommGroup.comp_left
+
+end AddCommLieGroup
 
 section SmoothRing
 variable [Ring R] [SmoothRing I R]
@@ -245,12 +274,12 @@ commutative rings. -/
 def smooth_sheaf_CommRing : TopCat.Sheaf CommRingCat.{u} (TopCat.of M) :=
   { val := smooth_presheaf_CommRing IM I M R
     cond := by
-      rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _ (CategoryTheory.forget CommRing)]
+      rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _ (CategoryTheory.forget CommRingCat)]
       exact CategoryTheory.Sheaf.cond (smooth_sheaf IM I M R) }
 
 -- sanity check: applying the `CommRingCat`-to-`TypeCat` forgetful functor to the sheaf-of-rings of
 -- smooth functions gives the sheaf-of-types of smooth functions.
 example : (CategoryTheory.sheafCompose _ (CategoryTheory.forget CommRingCat)).obj
-    (smooth_sheaf_CommRing.{u} IM I M R) = (smooth_sheaf IM I M R) := rfl
+    (smooth_sheaf_CommRing IM I M R) = (smooth_sheaf IM I M R) := rfl
 
 end SmoothCommRing
