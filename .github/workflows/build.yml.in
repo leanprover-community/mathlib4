@@ -110,7 +110,12 @@ jobs:
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake build
+          run: |
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build | tee stdout.log"
+
+      - name: check for noisy stdout lines
+        run: |
+          ! grep "stdout:" stdout.log
 
       - name: build library_search cache
         run: lake build MathlibExtras

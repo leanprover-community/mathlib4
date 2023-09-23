@@ -301,7 +301,7 @@ theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFi
     FinitaryExtensive C ↔ IsVanKampenColimit c₀ := by
   refine' ⟨fun H => H.2 c₀ hc₀, fun H => _⟩
   constructor
-  simp_rw [BinaryCofan.isVanKampen_iff] at H⊢
+  simp_rw [BinaryCofan.isVanKampen_iff] at H ⊢
   intro X Y c hc X' Y' c' αX αY f hX hY
   obtain ⟨d, hd, hd'⟩ :=
     Limits.BinaryCofan.IsColimit.desc' hc (HT.from _ ≫ c₀.inl) (HT.from _ ≫ c₀.inr)
@@ -326,7 +326,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
         cases' h : s.fst x with val val
         · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inl.injEq,
             exists_unique_eq']
-        · apply_fun f  at h
+        · apply_fun f at h
           cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαY val : _).symm
       delta ExistsUnique at this
       choose l hl hl' using this
@@ -337,7 +337,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
         intro x
         cases' h : s.fst x with val val
-        · apply_fun f  at h
+        · apply_fun f at h
           cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαX val : _).symm
         · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inr.injEq,
             exists_unique_eq']
@@ -474,7 +474,7 @@ instance : FinitaryExtensive TopCat.{u} := by
         intro x
         cases' h : s.fst x with val val
         · exact ⟨val, rfl, fun y h => Sum.inl_injective h.symm⟩
-        · apply_fun f  at h
+        · apply_fun f at h
           cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
             (ConcreteCategory.congr_hom hαY val : _).symm
       delta ExistsUnique at this
@@ -490,7 +490,7 @@ instance : FinitaryExtensive TopCat.{u} := by
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
         intro x
         cases' h : s.fst x with val val
-        · apply_fun f  at h
+        · apply_fun f at h
           cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
             (ConcreteCategory.congr_hom hαX val : _).symm
         · exact ⟨val, rfl, fun y h => Sum.inr_injective h.symm⟩

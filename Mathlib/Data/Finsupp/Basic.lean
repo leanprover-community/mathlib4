@@ -994,8 +994,8 @@ theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := fun r hr
   let ⟨t, ht1, ht2⟩ := mem_frange.1 hr
   ht2 ▸ by
     classical
-      rw [single_apply] at ht2⊢
-      split_ifs  at ht2⊢
+      rw [single_apply] at ht2 ⊢
+      split_ifs at ht2 ⊢
       · exact Finset.mem_singleton_self _
       · exact (t ht2.symm).elim
 #align finsupp.frange_single Finsupp.frange_single

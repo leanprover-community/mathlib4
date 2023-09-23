@@ -276,7 +276,7 @@ theorem basisUnique.repr_eq_zero_iff {ι : Type _} [Unique ι] {h : finrank K V 
 
 theorem cardinal_mk_le_finrank_of_linearIndependent [FiniteDimensional K V] {ι : Type w} {b : ι → V}
     (h : LinearIndependent K b) : (#ι) ≤ finrank K V := by
-  rw [← lift_le.{_, max v w}]
+  rw [← lift_le.{max v w}]
   simpa [← finrank_eq_rank', -finrank_eq_rank] using
     cardinal_lift_le_rank_of_linearIndependent h
 #align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent
@@ -1339,7 +1339,7 @@ theorem is_simple_module_of_finrank_eq_one {A} [Semiring A] [Module A V] [SMul K
     [IsScalarTower K A V] (h : finrank K V = 1) : IsSimpleOrder (Submodule A V) := by
   haveI := nontrivial_of_finrank_eq_succ h
   refine' ⟨fun S => or_iff_not_imp_left.2 fun hn => _⟩
-  rw [← restrictScalars_inj K] at hn⊢
+  rw [← restrictScalars_inj K] at hn ⊢
   haveI : FiniteDimensional _ _ := finiteDimensional_of_finrank_eq_succ h
   refine' Submodule.eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm _)
   simpa only [h, finrank_bot] using Submodule.finrank_strictMono (Ne.bot_lt hn)

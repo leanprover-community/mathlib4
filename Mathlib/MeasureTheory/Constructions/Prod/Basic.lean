@@ -38,7 +38,7 @@ We also prove Tonelli's theorem.
   `α × β → ℝ≥0∞` we have `∫⁻ z, f z ∂(μ.prod ν) = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ`. The version
   for functions `α → β → ℝ≥0∞` is reversed, and called `lintegral_lintegral`. Both versions have
   a variant with `_symm` appended, where the order of integration is reversed.
-  The lemma `measurable.lintegral_prod_right'` states that the inner integral of the right-hand side
+  The lemma `Measurable.lintegral_prod_right'` states that the inner integral of the right-hand side
   is measurable.
 
 ## Implementation Notes
@@ -217,7 +217,7 @@ theorem MeasurableEmbedding.prod_mk {α β γ δ : Type _} {mα : MeasurableSpac
   have h_inj : Function.Injective fun x : γ × α => (g x.fst, f x.snd) := by
     intro x y hxy
     rw [← @Prod.mk.eta _ _ x, ← @Prod.mk.eta _ _ y]
-    simp only [Prod.mk.inj_iff] at hxy⊢
+    simp only [Prod.mk.inj_iff] at hxy ⊢
     exact ⟨hg.injective hxy.1, hf.injective hxy.2⟩
   refine' ⟨h_inj, _, _⟩
   · exact (hg.measurable.comp measurable_fst).prod_mk (hf.measurable.comp measurable_snd)
@@ -834,6 +834,11 @@ instance fst.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
     exact measure_univ
 #align measure_theory.measure.fst.measure_theory.is_probability_measure MeasureTheory.Measure.fst.instIsProbabilityMeasure
 
+@[simp]
+lemma fst_prod [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
+  ext1 s hs
+  rw [fst_apply hs, ← prod_univ, prod_prod, measure_univ, mul_one]
+
 theorem fst_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX : AEMeasurable X μ)
     (hY : AEMeasurable Y μ) : (μ.map fun a => (X a, Y a)).fst = μ.map X := by
   ext1 s hs
@@ -869,6 +874,11 @@ instance snd.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
     rw [snd_univ]
     exact measure_univ
 #align measure_theory.measure.snd.measure_theory.is_probability_measure MeasureTheory.Measure.snd.instIsProbabilityMeasure
+
+@[simp]
+lemma snd_prod [IsProbabilityMeasure μ] : (μ.prod ν).snd = ν := by
+  ext1 s hs
+  rw [snd_apply hs, ← univ_prod, prod_prod, measure_univ, one_mul]
 
 theorem snd_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX : AEMeasurable X μ)
     (hY : AEMeasurable Y μ) : (μ.map fun a => (X a, Y a)).snd = μ.map Y := by

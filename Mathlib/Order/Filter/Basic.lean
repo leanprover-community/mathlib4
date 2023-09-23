@@ -2979,7 +2979,7 @@ theorem tendsto_comap'_iff {m : α → β} {f : Filter α} {g : Filter β} {i : 
 
 theorem Tendsto.of_tendsto_comp {f : α → β} {g : β → γ} {a : Filter α} {b : Filter β} {c : Filter γ}
     (hfg : Tendsto (g ∘ f) a c) (hg : comap g c ≤ b) : Tendsto f a b := by
-  rw [tendsto_iff_comap] at hfg⊢
+  rw [tendsto_iff_comap] at hfg ⊢
   calc
     a ≤ comap (g ∘ f) c := hfg
     _ ≤ comap f b := by simpa [comap_comap] using comap_mono hg

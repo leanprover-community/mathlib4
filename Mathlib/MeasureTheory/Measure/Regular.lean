@@ -220,7 +220,7 @@ class Regular (μ : Measure α) extends IsFiniteMeasureOnCompacts μ, OuterRegul
 /-- A measure `μ` is weakly regular if
   - it is outer regular: `μ(A) = inf {μ(U) | A ⊆ U open}` for `A` measurable;
   - it is inner regular for open sets, using closed sets:
-    `μ(U) = sup {μ(F) | F ⊆ U compact}` for `U` open. -/
+    `μ(U) = sup {μ(F) | F ⊆ U closed}` for `U` open. -/
 class WeaklyRegular (μ : Measure α) extends OuterRegular μ : Prop where
   protected innerRegular : InnerRegular μ IsClosed IsOpen
 #align measure_theory.measure.weakly_regular MeasureTheory.Measure.WeaklyRegular

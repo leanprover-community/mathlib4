@@ -183,7 +183,7 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
   obtain ⟨hxs, hx⟩ := hx
   specialize hx hxs N
   rw [Egorov.mem_notConvergentSeq_iff] at hx
-  push_neg  at hx
+  push_neg at hx
   rw [dist_comm]
   exact lt_of_le_of_lt (hx n hn) hN
 #align measure_theory.egorov.tendsto_uniformly_on_diff_Union_not_convergent_seq MeasureTheory.Egorov.tendstoUniformlyOn_diff_iUnionNotConvergentSeq

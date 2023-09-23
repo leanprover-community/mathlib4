@@ -277,7 +277,7 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
   · apply memℓp_gen
     have := (hf.summable hp).mul_left (↑(‖c‖₊ ^ p.toReal) : ℝ)
     simp_rw [← coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul, NNReal.summable_coe,
-      ← NNReal.mul_rpow] at this⊢
+      ← NNReal.mul_rpow] at this ⊢
     refine' NNReal.summable_of_le _ this
     intro i
     exact NNReal.rpow_le_rpow (nnnorm_smul_le _ _) ENNReal.toReal_nonneg
@@ -670,7 +670,8 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     -- TODO: some `IsLUB` API should make it a one-liner from here.
     refine' hcf.right _
     have := hfc.left
-    simp_rw [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff'] at this⊢
+    simp_rw [mem_upperBounds, Set.mem_range,
+      forall_exists_index, forall_apply_eq_imp_iff'] at this ⊢
     intro a
     exact (norm_smul_le _ _).trans (this a)
   · letI inst : NNNorm (lp E p) := ⟨fun f => ⟨‖f‖, norm_nonneg' _⟩⟩
@@ -1086,13 +1087,13 @@ protected theorem hasSum_single [Fact (1 ≤ p)] (hp : p ≠ ⊤) (f : lp E p) :
   have hp₀ : 0 < p := zero_lt_one.trans_le Fact.out
   have hp' : 0 < p.toReal := ENNReal.toReal_pos hp₀.ne' hp
   have := lp.hasSum_norm hp' f
-  rw [HasSum, Metric.tendsto_nhds] at this⊢
+  rw [HasSum, Metric.tendsto_nhds] at this ⊢
   intro ε hε
   refine' (this _ (Real.rpow_pos_of_pos hε p.toReal)).mono _
   intro s hs
   rw [← Real.rpow_lt_rpow_iff dist_nonneg (le_of_lt hε) hp']
   rw [dist_comm] at hs
-  simp only [dist_eq_norm, Real.norm_eq_abs] at hs⊢
+  simp only [dist_eq_norm, Real.norm_eq_abs] at hs ⊢
   have H : ‖(∑ i in s, lp.single p i (f i : E i)) - f‖ ^ p.toReal =
       ‖f‖ ^ p.toReal - ∑ i in s, ‖f i‖ ^ p.toReal := by
     simpa only [coeFn_neg, Pi.neg_apply, lp.single_neg, Finset.sum_neg_distrib, neg_sub_neg,

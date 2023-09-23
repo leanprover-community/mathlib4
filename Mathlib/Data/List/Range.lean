@@ -31,7 +31,7 @@ namespace List
 
 variable {α : Type u}
 
-@[simp] theorem range'_one : range' s 1 step = [s] := rfl
+@[simp] theorem range'_one {step} : range' s 1 step = [s] := rfl
 
 #align list.length_range' List.length_range'
 #align list.range'_eq_nil List.range'_eq_nil

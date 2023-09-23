@@ -225,7 +225,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     exact ⟨n, hn.le⟩
   show Monotone F
   · intro m n hmn x hx
-    simp only [mem_Ici, mem_preimage] at hx⊢
+    simp only [mem_Ici, mem_preimage] at hx ⊢
     apply le_trans (pow_le_pow_of_le_one' a_lt_one.le hmn) hx
 #align is_open.exists_Union_is_closed IsOpen.exists_iUnion_isClosed
 

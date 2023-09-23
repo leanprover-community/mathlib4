@@ -1149,7 +1149,7 @@ theorem Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {
     (h_op : ∃ A, ∀ x y, ‖op x y‖ ≤ A * ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) := by
   cases' h_op with A h_op
   rcases hg with ⟨C, hC⟩; rw [eventually_map] at hC
-  rw [NormedCommGroup.tendsto_nhds_one] at hf⊢
+  rw [NormedCommGroup.tendsto_nhds_one] at hf ⊢
   intro ε ε₀
   rcases exists_pos_mul_lt ε₀ (A * C) with ⟨δ, δ₀, hδ⟩
   filter_upwards [hf δ δ₀, hC]with i hf hg
@@ -1562,7 +1562,7 @@ theorem nnnorm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖₊ ≤ n * ‖a�
 @[to_additive]
 theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) :
     a ^ n ∈ closedBall (b ^ n) (n • r) := by
-  simp only [mem_closedBall, dist_eq_norm_div, ← div_pow] at h⊢
+  simp only [mem_closedBall, dist_eq_norm_div, ← div_pow] at h ⊢
   refine' (norm_pow_le_mul_norm n (a / b)).trans _
   simpa only [nsmul_eq_mul] using mul_le_mul_of_nonneg_left h n.cast_nonneg
 #align pow_mem_closed_ball pow_mem_closedBall
@@ -1570,7 +1570,7 @@ theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) :
 
 @[to_additive]
 theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ ball (b ^ n) (n • r) := by
-  simp only [mem_ball, dist_eq_norm_div, ← div_pow] at h⊢
+  simp only [mem_ball, dist_eq_norm_div, ← div_pow] at h ⊢
   refine' lt_of_le_of_lt (norm_pow_le_mul_norm n (a / b)) _
   replace hn : 0 < (n : ℝ);
   · norm_cast

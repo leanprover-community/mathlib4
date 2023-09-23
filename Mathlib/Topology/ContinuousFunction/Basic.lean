@@ -68,10 +68,10 @@ theorem map_continuousWithinAt (f : F) (s : Set α) (a : α) : ContinuousWithinA
   (map_continuous f).continuousWithinAt
 #align map_continuous_within_at map_continuousWithinAt
 
-instance : CoeTC F C(α, β) :=
-  ⟨fun f =>
-    { toFun := f
-      continuous_toFun := map_continuous f }⟩
+/-- Coerce a bundled morphism with a `ContinuousMapClass` instance to a `ContinuousMap`. -/
+@[coe] def toContinuousMap (f : F) : C(α, β) := ⟨f, map_continuous f⟩
+
+instance : CoeTC F C(α, β) := ⟨toContinuousMap⟩
 
 end ContinuousMapClass
 
@@ -87,7 +87,6 @@ instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
   coe := ContinuousMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
   map_continuous := ContinuousMap.continuous_toFun
-
 
 /- Porting note: Probably not needed anymore
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`

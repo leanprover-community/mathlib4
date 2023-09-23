@@ -23,10 +23,6 @@ assumptions on `p`.
 The valuation induces a norm on `ℚ`. This norm is a nonarchimedean absolute value.
 It takes values in {0} ∪ {1/p^k | k ∈ ℤ}.
 
-## Notations
-
-This file uses the local notation `/.` for `rat.mk`.
-
 ## Implementation notes
 
 Much, but not all, of this file assumes that `p` is prime. This assumption is inferred automatically

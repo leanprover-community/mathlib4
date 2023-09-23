@@ -565,7 +565,7 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
   -- when the last coefficient is zero but there is a nonzero coefficient on the last row or the
   -- last column, we will first put this nonzero coefficient in last position, and then argue as
   -- above.
-  push_neg  at hM
+  push_neg at hM
   simp only [not_and_or, IsTwoBlockDiagonal, toBlocks₁₂, toBlocks₂₁, ← Matrix.ext_iff] at H
   have : ∃ i : Fin r, M (inl i) (inr unit) ≠ 0 ∨ M (inr unit) (inl i) ≠ 0 := by
     cases' H with H H
@@ -725,7 +725,7 @@ theorem diagonal_transvection_induction (P : Matrix n n 𝕜 → Prop) (M : Matr
     · simp only [← Matrix.mul_assoc, List.prod_cons, mul_eq_mul, List.map]
       apply IH
       exact hmul _ _ PE (htransvec _)
-  · simp only [Matrix.mul_assoc, List.prod_cons, mul_eq_mul, List.map] at IH⊢
+  · simp only [Matrix.mul_assoc, List.prod_cons, mul_eq_mul, List.map] at IH ⊢
     exact hmul _ _ (htransvec _) IH
 #align matrix.diagonal_transvection_induction Matrix.diagonal_transvection_induction
 

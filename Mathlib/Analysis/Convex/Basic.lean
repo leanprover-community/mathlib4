@@ -124,7 +124,7 @@ theorem convex_pi {ι : Type _} {E : ι → Type _} [∀ i, AddCommMonoid (E i)]
 theorem Directed.convex_iUnion {ι : Sort _} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
     (hc : ∀ ⦃i : ι⦄, Convex 𝕜 (s i)) : Convex 𝕜 (⋃ i, s i) := by
   rintro x hx y hy a b ha hb hab
-  rw [mem_iUnion] at hx hy⊢
+  rw [mem_iUnion] at hx hy ⊢
   obtain ⟨i, hx⟩ := hx
   obtain ⟨j, hy⟩ := hy
   obtain ⟨k, hik, hjk⟩ := hdir i j

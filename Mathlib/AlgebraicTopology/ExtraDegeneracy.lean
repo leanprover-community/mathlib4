@@ -119,17 +119,17 @@ def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegenera
     simp only [assoc, ← SimplicialObject.δ_naturality, ed.s₀_comp_δ₁_assoc, reassoc_of% h]
   s_comp_δ₀ n := by
     have h := ed.s_comp_δ₀
-    dsimp at h⊢
+    dsimp at h ⊢
     simpa only [assoc, ← SimplicialObject.δ_naturality, reassoc_of% h] using
       congr_app (drop.mapIso e).inv_hom_id (op [n])
   s_comp_δ n i := by
     have h := ed.s_comp_δ n i
-    dsimp at h⊢
+    dsimp at h ⊢
     simp only [assoc, ← SimplicialObject.δ_naturality, reassoc_of% h,
       ← SimplicialObject.δ_naturality_assoc]
   s_comp_σ n i := by
     have h := ed.s_comp_σ n i
-    dsimp at h⊢
+    dsimp at h ⊢
     simp only [assoc, ← SimplicialObject.σ_naturality, reassoc_of% h,
       ← SimplicialObject.σ_naturality_assoc]
 #align simplicial_object.augmented.extra_degeneracy.of_iso SimplicialObject.Augmented.ExtraDegeneracy.ofIso

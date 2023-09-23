@@ -249,7 +249,7 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq _ _ _ h
     use W.unop, h1.unop, h2.unop
     ext I
-    apply_fun Multiequalizer.ι (W.unop.index P) I  at hh
+    apply_fun Multiequalizer.ι (W.unop.index P) I at hh
     convert hh
     all_goals
       dsimp [diagram]
@@ -260,7 +260,7 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     use op S, h1.op, h2.op
     apply Concrete.multiequalizer_ext
     intro i
-    apply_fun fun ee => ee i  at e
+    apply_fun fun ee => ee i at e
     convert e
     all_goals
       dsimp [diagram]
@@ -310,7 +310,7 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : (J.plusObj P).obj
   let IS : S.Arrow := I.fromMiddle
   specialize hh IS
   let IW : (W IS).Arrow := I.toMiddle
-  apply_fun fun e => e IW  at hh
+  apply_fun fun e => e IW at hh
   convert hh using 1
   · let Rx : Sx.Relation :=
       ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.toMiddleHom ≫ I.fromMiddleHom, leOfHom ex _ I.hf,
@@ -333,7 +333,7 @@ theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
   obtain ⟨W, h1, h2, hh⟩ := h
   apply hsep X W
   intro I
-  apply_fun fun e => e I  at hh
+  apply_fun fun e => e I at hh
   exact hh
 #align category_theory.grothendieck_topology.plus.inj_of_sep CategoryTheory.GrothendieckTopology.Plus.inj_of_sep
 
@@ -433,8 +433,8 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
   · intro x y h
     apply sep P S _ _
     intro I
-    apply_fun Meq.equiv _ _  at h
-    apply_fun fun e => e I  at h
+    apply_fun Meq.equiv _ _ at h
+    apply_fun fun e => e I at h
     convert h <;> erw [Meq.equiv_apply, ← comp_apply, Multiequalizer.lift_ι] <;> rfl
   · rintro (x : (multiequalizer (S.index _) : D))
     obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)

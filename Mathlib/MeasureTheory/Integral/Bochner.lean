@@ -1260,6 +1260,10 @@ theorem L1.norm_eq_integral_norm (f : α →₁[μ] H) : ‖f‖ = ∫ a, ‖f a
 set_option linter.uppercaseLean3 false in
 #align measure_theory.L1.norm_eq_integral_norm MeasureTheory.L1.norm_eq_integral_norm
 
+theorem L1.dist_eq_integral_dist (f g : α →₁[μ] H) : dist f g = ∫ a, dist (f a) (g a) ∂μ := by
+  simp only [dist_eq_norm, L1.norm_eq_integral_norm]
+  exact integral_congr_ae <| (Lp.coeFn_sub _ _).fun_comp norm
+
 theorem L1.norm_of_fun_eq_integral_norm {f : α → H} (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ∫ a, ‖f a‖ ∂μ := by
   rw [L1.norm_eq_integral_norm]

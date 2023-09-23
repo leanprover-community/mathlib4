@@ -1253,11 +1253,15 @@ def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β �
 --porting note: was attribute [simp] LiftRelAux but right now `simp` on defs is a Lean 4 catastrophe
 -- Instead we add the equation lemmas and tag them @[simp]
 @[simp] lemma LiftRelAux_inl_inl : LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
-@[simp] lemma LiftRelAux_inl_inr : LiftRelAux R C (Sum.inl a) (Sum.inr cb) = ∃ b, b ∈ cb ∧ R a b :=
+@[simp] lemma LiftRelAux_inl_inr {cb} :
+    LiftRelAux R C (Sum.inl a) (Sum.inr cb) = ∃ b, b ∈ cb ∧ R a b :=
   rfl
-@[simp] lemma LiftRelAux_inr_inl : LiftRelAux R C (Sum.inr ca) (Sum.inl b) = ∃ a, a ∈ ca ∧ R a b :=
+@[simp] lemma LiftRelAux_inr_inl {ca} :
+    LiftRelAux R C (Sum.inr ca) (Sum.inl b) = ∃ a, a ∈ ca ∧ R a b :=
   rfl
-@[simp] lemma LiftRelAux_inr_inr : LiftRelAux R C (Sum.inr ca) (Sum.inr cb) = C ca cb := rfl
+@[simp] lemma LiftRelAux_inr_inr {ca cb} :
+    LiftRelAux R C (Sum.inr ca) (Sum.inr cb) = C ca cb :=
+  rfl
 
 @[simp]
 theorem LiftRelAux.ret_left (R : α → β → Prop) (C : Computation α → Computation β → Prop) (a cb) :

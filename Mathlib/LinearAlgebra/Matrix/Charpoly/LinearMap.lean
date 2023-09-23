@@ -135,7 +135,7 @@ theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
 
 theorem Matrix.Represents.add {A A' : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : Matrix.Represents b A' f') : (A + A').Represents b (f + f') := by
-  delta Matrix.Represents at h h'⊢; rw [map_add, map_add, h, h']
+  delta Matrix.Represents at h h' ⊢; rw [map_add, map_add, h, h']
 #align matrix.represents.add Matrix.Represents.add
 
 theorem Matrix.Represents.zero : (0 : Matrix ι ι R).Represents b 0 := by

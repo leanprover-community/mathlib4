@@ -76,7 +76,7 @@ theorem IsTrail.even_countp_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
         rintro rfl
         exact huv.ne
     · rw [decide_eq_true_eq, not_or] at h
-      simp only [h.1, h.2, not_false_iff, true_and_iff, add_zero, Ne.def] at ih⊢
+      simp only [h.1, h.2, not_false_iff, true_and_iff, add_zero, Ne.def] at ih ⊢
       rw [ih]
       constructor <;>
         · rintro h' h'' rfl

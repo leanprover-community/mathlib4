@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module field_theory.is_alg_closed.classification
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
+! leanprover-community/mathlib commit 0723536a0522d24fc2f159a096fb3304bef77472
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -177,10 +177,8 @@ variable {K L : Type} [Field K] [Field L] [IsAlgClosed K] [IsAlgClosed L]
 
 /-- Two uncountable algebraically closed fields of characteristic zero are isomorphic
 if they have the same cardinality. -/
-@[nolint defLemma]
 theorem ringEquivOfCardinalEqOfCharZero [CharZero K] [CharZero L] (hK : ℵ₀ < (#K))
-    (hKL : (#K) = (#L)) : K ≃+* L := by
-  apply Classical.choice
+    (hKL : (#K) = (#L)) : Nonempty (K ≃+* L) := by
   cases' exists_isTranscendenceBasis ℤ
     (show Function.Injective (algebraMap ℤ K) from Int.cast_injective) with s hs
   cases' exists_isTranscendenceBasis ℤ
@@ -194,8 +192,9 @@ theorem ringEquivOfCardinalEqOfCharZero [CharZero K] [CharZero L] (hK : ℵ₀ <
 #align is_alg_closed.ring_equiv_of_cardinal_eq_of_char_zero IsAlgClosed.ringEquivOfCardinalEqOfCharZero
 
 private theorem ringEquivOfCardinalEqOfCharP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
-    (hK : ℵ₀ < (#K)) (hKL : (#K) = (#L)) : K ≃+* L := by
-  apply Classical.choice
+    (hK : ℵ₀ < (#K)) (hKL : (#K) = (#L)) : Nonempty (K ≃+* L) := by
+  letI : Algebra (ZMod p) K := ZMod.algebra _ _
+  letI : Algebra (ZMod p) L := ZMod.algebra _ _
   cases' exists_isTranscendenceBasis (ZMod p)
     (show Function.Injective (algebraMap (ZMod p) K) from RingHom.injective _) with s hs
   cases' exists_isTranscendenceBasis (ZMod p)
@@ -213,15 +212,16 @@ private theorem ringEquivOfCardinalEqOfCharP (p : ℕ) [Fact p.Prime] [CharP K p
 if they have the same cardinality and the same characteristic. -/
 @[nolint defLemma]
 theorem ringEquivOfCardinalEqOfCharEq (p : ℕ) [CharP K p] [CharP L p] (hK : ℵ₀ < (#K))
-    (hKL : (#K) = (#L)) : K ≃+* L := by
-  apply Classical.choice
+    (hKL : (#K) = (#L)) : Nonempty (K ≃+* L) := by
   rcases CharP.char_is_prime_or_zero K p with (hp | hp)
   · haveI : Fact p.Prime := ⟨hp⟩
-    exact ⟨ringEquivOfCardinalEqOfCharP p hK hKL⟩
+    letI : Algebra (ZMod p) K := ZMod.algebra _ _
+    letI : Algebra (ZMod p) L := ZMod.algebra _ _
+    exact ringEquivOfCardinalEqOfCharP p hK hKL
   · simp only [hp] at *
     letI : CharZero K := CharP.charP_to_charZero K
     letI : CharZero L := CharP.charP_to_charZero L
-    exact ⟨ringEquivOfCardinalEqOfCharZero hK hKL⟩
+    exact ringEquivOfCardinalEqOfCharZero hK hKL
 #align is_alg_closed.ring_equiv_of_cardinal_eq_of_char_eq IsAlgClosed.ringEquivOfCardinalEqOfCharEq
 
 end IsAlgClosed

@@ -31,8 +31,6 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 /-- Construct a cone for the empty diagram given an object. -/
 @[simps]
 def asEmptyCone (X : C) : Cone (Functor.empty.{0} C) :=

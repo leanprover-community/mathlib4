@@ -148,7 +148,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
         apply h
         subst a
         exact hx
-      · simp only [h', mem_union, mem_singleton] at hx⊢
+      · simp only [h', mem_union, mem_singleton] at hx ⊢
         cases' hx with hx hx'
         · exact Or.inl hx
         · exact Or.inr (h _ hx')

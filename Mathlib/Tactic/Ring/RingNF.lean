@@ -17,6 +17,9 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 
 -/
 
+-- In this file we would like to be able to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
+
 namespace Mathlib.Tactic
 open Lean hiding Rat
 open Qq Meta

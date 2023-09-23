@@ -335,7 +335,7 @@ theorem support_mul_le (f g : Perm α) : (f * g).support ≤ f.support ⊔ g.sup
 theorem exists_mem_support_of_mem_support_prod {l : List (Perm α)} {x : α}
     (hx : x ∈ l.prod.support) : ∃ f : Perm α, f ∈ l ∧ x ∈ f.support := by
   contrapose! hx
-  simp_rw [mem_support, not_not] at hx⊢
+  simp_rw [mem_support, not_not] at hx ⊢
   induction' l with f l ih
   · rfl
   · rw [List.prod_cons, mul_apply, ih, hx]
@@ -455,7 +455,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     support (swap x y * swap y z) = {x, y, z} := by
   simp only [List.not_mem_nil, and_true_iff, List.mem_cons, not_false_iff, List.nodup_cons,
     List.mem_singleton, and_self_iff, List.nodup_nil] at h
-  push_neg  at h
+  push_neg at h
   apply le_antisymm
   · convert support_mul_le (swap x y) (swap y z) using 1
     rw [support_swap h.left.left, support_swap h.right.left]
@@ -528,7 +528,7 @@ theorem eq_on_support_mem_disjoint {l : List (Perm α)} (h : f ∈ l) (hl : l.Pa
 
 theorem Disjoint.mono {x y : Perm α} (h : Disjoint f g) (hf : x.support ≤ f.support)
     (hg : y.support ≤ g.support) : Disjoint x y := by
-  rw [disjoint_iff_disjoint_support] at h⊢
+  rw [disjoint_iff_disjoint_support] at h ⊢
   exact h.mono hf hg
 #align equiv.perm.disjoint.mono Equiv.Perm.Disjoint.mono
 

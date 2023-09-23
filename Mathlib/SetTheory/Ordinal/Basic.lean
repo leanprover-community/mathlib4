@@ -1267,7 +1267,7 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
   ⟨↑lift.initialSeg.{u, max (u + 1) v}, univ.{u, v}, by
     refine' fun b => inductionOn b _; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
-    · rw [← lift_id (type s)] at h⊢
+    · rw [← lift_id (type s)] at h ⊢
       cases' lift_type_lt.{_,_,v}.1 h with f
       cases' f with f a hf
       exists a

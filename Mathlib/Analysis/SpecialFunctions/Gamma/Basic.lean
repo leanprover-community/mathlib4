@@ -426,7 +426,6 @@ theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : 
     have b : ∀ m : ℕ, s + 1 ≠ -m := by
       intro m; have := h2 (1 + m)
       contrapose! this
-      push_neg at this
       rw [← eq_sub_iff_add_eq] at this
       simpa using this
     refine' DifferentiableAt.div (DifferentiableAt.comp _ (hn a b) _) _ _

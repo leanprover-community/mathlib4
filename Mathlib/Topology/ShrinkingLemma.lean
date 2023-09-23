@@ -191,7 +191,7 @@ theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i
     rcases em (∃ (j : _) (_ : j ≠ i), x ∈ v j) with (⟨j, hji, hj⟩ | h)
     · use j
       rwa [update_noteq hji]
-    · push_neg  at h
+    · push_neg at h
       use i
       rw [update_same]
       exact hvi ⟨hx, mem_biInter h⟩

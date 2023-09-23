@@ -849,7 +849,7 @@ theorem sup_limZero {f g : CauSeq α abs} (hf : LimZero f) (hg : LimZero g) : Li
   | ε, ε0 =>
     (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun i H j ij => by
       let ⟨H₁, H₂⟩ := H _ ij
-      rw [abs_lt] at H₁ H₂⊢
+      rw [abs_lt] at H₁ H₂ ⊢
       exact ⟨lt_sup_iff.mpr (Or.inl H₁.1), sup_lt_iff.mpr ⟨H₁.2, H₂.2⟩⟩
 #align cau_seq.sup_lim_zero CauSeq.sup_limZero
 
@@ -857,7 +857,7 @@ theorem inf_limZero {f g : CauSeq α abs} (hf : LimZero f) (hg : LimZero g) : Li
   | ε, ε0 =>
     (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun i H j ij => by
       let ⟨H₁, H₂⟩ := H _ ij
-      rw [abs_lt] at H₁ H₂⊢
+      rw [abs_lt] at H₁ H₂ ⊢
       exact ⟨lt_inf_iff.mpr ⟨H₁.1, H₂.1⟩, inf_lt_iff.mpr (Or.inl H₁.2)⟩
 #align cau_seq.inf_lim_zero CauSeq.inf_limZero
 

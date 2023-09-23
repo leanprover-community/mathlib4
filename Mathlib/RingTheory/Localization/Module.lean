@@ -46,7 +46,7 @@ variable {M : Type _} [AddCommMonoid M] [Module R M] [Module Rₛ M] [IsScalarTo
 
 theorem LinearIndependent.localization {ι : Type _} {b : ι → M} (hli : LinearIndependent R b) :
     LinearIndependent Rₛ b := by
-  rw [linearIndependent_iff'] at hli⊢
+  rw [linearIndependent_iff'] at hli ⊢
   intro s g hg i hi
   choose! a g' hg' using IsLocalization.exist_integer_multiples S s g
   specialize hli s g' _ i hi
@@ -75,11 +75,11 @@ open Submodule
 
 theorem LinearIndependent.localization_localization {ι : Type _} {v : ι → A}
     (hv : LinearIndependent R v) : LinearIndependent Rₛ (algebraMap A Aₛ ∘ v) := by
-  rw [linearIndependent_iff'] at hv⊢
+  rw [linearIndependent_iff'] at hv ⊢
   intro s g hg i hi
   choose! a g' hg' using IsLocalization.exist_integer_multiples S s g
   have h0 : algebraMap A Aₛ (∑ i in s, g' i • v i) = 0 := by
-    apply_fun (· • ·) (a : R)  at hg
+    apply_fun (· • ·) (a : R) at hg
     rw [smul_zero, Finset.smul_sum] at hg
     rw [map_sum, ← hg]
     refine' Finset.sum_congr rfl fun i hi => _

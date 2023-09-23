@@ -408,7 +408,7 @@ instance : InfSet (LieSubmodule R L M) :=
     { sInf {((s : Submodule R M)) | s ∈ S} with
       lie_mem := fun {x m} h ↦ by
         simp only [Submodule.mem_carrier, mem_iInter, Submodule.sInf_coe, mem_setOf_eq,
-          forall_apply_eq_imp_iff₂, forall_exists_index, and_imp] at h⊢
+          forall_apply_eq_imp_iff₂, forall_exists_index, and_imp] at h ⊢
         intro N hN; apply N.lie_mem (h N hN) }⟩
 
 @[simp]
@@ -707,7 +707,7 @@ def map : LieSubmodule R L M' :=
     lie_mem := fun {x m'} h ↦ by
       rcases h with ⟨m, hm, hfm⟩; use ⁅x, m⁆; constructor
       · apply N.lie_mem hm
-      · norm_cast  at hfm; simp [hfm] }
+      · norm_cast at hfm; simp [hfm] }
 #align lie_submodule.map LieSubmodule.map
 
 @[simp]
@@ -864,7 +864,7 @@ theorem map_mono : Monotone (map f) := fun I₁ I₂ h ↦ by
 
 @[mono]
 theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by
-  rw [← SetLike.coe_subset_coe] at h⊢
+  rw [← SetLike.coe_subset_coe] at h ⊢
   dsimp only [SetLike.coe]
   exact Set.preimage_mono h
 #align lie_ideal.comap_mono LieIdeal.comap_mono
@@ -1092,7 +1092,7 @@ theorem map_comap_eq (h : f.IsIdealMorphism) : map f (comap f J) = f.idealRange 
   · rw [le_inf_iff]; exact ⟨f.map_le_idealRange _, map_comap_le⟩
   · rw [f.isIdealMorphism_def] at h
     rw [← SetLike.coe_subset_coe, LieSubmodule.inf_coe, ← coe_toSubalgebra, h]
-    rintro y ⟨⟨x, h₁⟩, h₂⟩; rw [← h₁] at h₂⊢; exact mem_map h₂
+    rintro y ⟨⟨x, h₁⟩, h₂⟩; rw [← h₁] at h₂ ⊢; exact mem_map h₂
 #align lie_ideal.map_comap_eq LieIdeal.map_comap_eq
 
 @[simp]

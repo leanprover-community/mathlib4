@@ -247,7 +247,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
           simpa [← Nat.cast_withBot, hb', degree_eq_bot] using hx'
         exact ⟨b, hb, (degree_eq_natDegree hb').ge⟩
     · exact h.imp fun x y hxy hxy' => hxy (natDegree_eq_of_degree_eq hxy')
-  · push_neg  at H
+  · push_neg at H
     rw [Finset.sum_eq_zero H, natDegree_zero, eq_comm, show 0 = ⊥ from rfl, Finset.sup_eq_bot_iff]
     intro x hx
     simp [H x hx]

@@ -297,7 +297,7 @@ theorem lxor'_trichotomy {a b c : ℕ} (h : a ≠ lxor' b c) :
   obtain ⟨i, ⟨hi, hi'⟩⟩ := exists_most_significant_bit (lxor'_ne_zero.2 h)
   have : testBit a i = true ∨ testBit b i = true ∨ testBit c i = true := by
     contrapose! hi
-    simp only [Bool.eq_false_eq_not_eq_true, Ne, testBit_lxor'] at hi⊢
+    simp only [Bool.eq_false_eq_not_eq_true, Ne, testBit_lxor'] at hi ⊢
     rw [hi.1, hi.2.1, hi.2.2, Bool.xor_false, Bool.xor_false]
   -- If, say, `a` has a one bit at position `i`, then `a xor v` has a zero bit at position `i`, but
   -- the same bits as `a` in positions greater than `j`, so `a xor v < a`.

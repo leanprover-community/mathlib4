@@ -160,9 +160,9 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
     by_cases hs₃ : sᶜ.card = 0
     · rw [hs₃, le_zero_iff]
       rw [Finset.card_compl, tsub_eq_zero_iff_le, LE.le.le_iff_eq (Finset.card_le_univ _), eq_comm,
-        Finset.card_eq_iff_eq_univ] at hs₃⊢
+        Finset.card_eq_iff_eq_univ] at hs₃ ⊢
       rw [hs₃]
-      rw [Finset.eq_univ_iff_forall] at hs₃⊢
+      rw [Finset.eq_univ_iff_forall] at hs₃ ⊢
       exact fun p =>
         Exists.elim (exists_line p)-- If `s = univ`, then show `s.bUnion t = univ`
         fun l hl => Finset.mem_biUnion.mpr ⟨l, Finset.mem_univ l, Set.mem_toFinset.mpr hl⟩

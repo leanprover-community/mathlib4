@@ -132,7 +132,7 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
 
       rw [GE.ge] at e1
       --porting note: Bump index in nth_rewrite
-      nth_rewrite 2 [← add_zero ‖R • x‖]  at e1
+      nth_rewrite 2 [← add_zero ‖R • x‖] at e1
       rw [add_le_add_iff_left, two_smul, ← two_mul] at e1
       rw [le_antisymm_iff]
       refine' ⟨_, norm_nonneg _⟩
@@ -213,7 +213,7 @@ instance Subtype.partialOrder [FaithfulSMul M X] :
   le P Q := (↑P : M) = ↑(P ⊓ Q)
   le_refl P := by simpa only [coe_inf, ← sq] using P.prop.proj.eq.symm
   le_trans P Q R h₁ h₂ := by
-    simp only [coe_inf] at h₁ h₂⊢
+    simp only [coe_inf] at h₁ h₂ ⊢
     rw [h₁, mul_assoc, ← h₂]
   le_antisymm P Q h₁ h₂ := Subtype.eq (by convert (P.prop.commute Q.prop).eq)
 

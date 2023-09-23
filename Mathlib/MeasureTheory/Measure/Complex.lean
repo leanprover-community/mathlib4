@@ -17,7 +17,8 @@ This file proves some elementary results about complex measures. In particular, 
 a complex measure is always in the form `s + it` where `s` and `t` are signed measures.
 
 The complex measure is defined to be vector measure over `ℂ`, this definition can be found
-in `measure_theory.measure.vector_measure` and is known as `MeasureTheory.ComplexMeasure`.
+in `Mathlib/MeasureTheory/Measure/VectorMeasure.lean` and is known as
+`MeasureTheory.ComplexMeasure`.
 
 ## Main definitions
 
@@ -116,14 +117,14 @@ def equivSignedMeasureₗ : ComplexMeasure α ≃ₗ[R] SignedMeasure α × Sign
 
 end
 
-theorem absolutelyContinuous_eNNReal_iff (c : ComplexMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
+theorem absolutelyContinuous_ennreal_iff (c : ComplexMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     c ≪ᵥ μ ↔ ComplexMeasure.re c ≪ᵥ μ ∧ ComplexMeasure.im c ≪ᵥ μ := by
   constructor <;> intro h
   · constructor <;> · intro i hi; simp [h hi]
   · intro i hi
     rw [← Complex.re_add_im (c i), (_ : (c i).re = 0), (_ : (c i).im = 0)]
     exacts [by simp, h.2 hi, h.1 hi]
-#align measure_theory.complex_measure.absolutely_continuous_ennreal_iff MeasureTheory.ComplexMeasure.absolutelyContinuous_eNNReal_iff
+#align measure_theory.complex_measure.absolutely_continuous_ennreal_iff MeasureTheory.ComplexMeasure.absolutelyContinuous_ennreal_iff
 
 end ComplexMeasure
 

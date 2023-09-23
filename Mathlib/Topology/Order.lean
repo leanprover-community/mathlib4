@@ -133,7 +133,7 @@ theorem nhds_mkOfNhds_single [DecidableEq α] {a₀ : α} {l : Filter α} (h : p
     · exact hs
     · rwa [update_noteq hb]
   · have hs' := hs
-    rw [update_noteq ha] at hs⊢
+    rw [update_noteq ha] at hs ⊢
     exact ⟨{a}, rfl, singleton_subset_iff.mpr hs, forall_eq.2 hs'⟩
 #align topological_space.nhds_mk_of_nhds_single TopologicalSpace.nhds_mkOfNhds_single
 

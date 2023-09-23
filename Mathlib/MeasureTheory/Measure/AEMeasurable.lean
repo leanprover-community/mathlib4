@@ -98,7 +98,7 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
         _⟩
     ext ⟨x, hx⟩
     simp only [mem_preimage, mem_iUnion, Subtype.coe_mk, Set.restrict, mem_inter_iff,
-      mem_compl_iff] at hx⊢
+      mem_compl_iff] at hx ⊢
     constructor
     · rintro ⟨i, hxt, hxs⟩
       rwa [hs _ _ hxs]

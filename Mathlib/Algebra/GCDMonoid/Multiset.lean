@@ -250,7 +250,7 @@ theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
     ← gcd_dedup, dedup_nsmul (card_pos.2 hs).ne', dedup_singleton, gcd_singleton]
       exact ⟨⟨rfl, h⟩, normalize_one⟩
     · choose f hf using @gcd_dvd _ _ _ s
-      push_neg  at h
+      push_neg at h
       refine' ⟨s.pmap @f fun _ ↦ id, _, extract_gcd' s _ h _⟩ <;>
       · rw [map_pmap]
         conv_lhs => rw [← s.map_id, ← s.pmap_eq_map _ _ fun _ ↦ id]

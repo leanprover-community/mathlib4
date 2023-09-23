@@ -1209,7 +1209,7 @@ theorem groupSmul_span_eq_top {G : Type _} [Group G] [DistribMulAction G R] [Dis
   rw [eq_top_iff]
   intro j hj
   rw [← hv] at hj
-  rw [Submodule.mem_span] at hj⊢
+  rw [Submodule.mem_span] at hj ⊢
   refine' fun p hp => hj p fun u hu => _
   obtain ⟨i, rfl⟩ := hu
   have : ((w i)⁻¹ • (1 : R)) • w i • v i ∈ p := p.smul_mem ((w i)⁻¹ • (1 : R)) (hp ⟨i, rfl⟩)

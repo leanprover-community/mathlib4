@@ -299,7 +299,7 @@ theorem young_inequality (a b : ℝ≥0∞) {p q : ℝ} (hpq : p.IsConjugateExpo
   · refine' le_trans le_top (le_of_eq _)
     repeat rw [div_eq_mul_inv]
     cases' h with h h <;> rw [h] <;> simp [h, hpq.pos, hpq.symm.pos]
-  push_neg  at h
+  push_neg at h
   -- if a ≠ ⊤ and b ≠ ⊤, use the nnreal version: nnreal.young_inequality_real
   rw [← coe_toNNReal h.left, ← coe_toNNReal h.right, ← coe_mul, coe_rpow_of_nonneg _ hpq.nonneg,
     coe_rpow_of_nonneg _ hpq.symm.nonneg, ENNReal.ofReal, ENNReal.ofReal, ←
@@ -612,7 +612,7 @@ theorem inner_le_Lp_mul_Lq_tsum_of_nonneg (hpq : p.IsConjugateExponent q) (hf : 
       (∑' i, f i * g i) ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
   lift f to ι → ℝ≥0 using hf
   lift g to ι → ℝ≥0 using hg
-  norm_cast  at *
+  norm_cast at *
   exact NNReal.inner_le_Lp_mul_Lq_tsum hpq hf_sum hg_sum
 #align real.inner_le_Lp_mul_Lq_tsum_of_nonneg Real.inner_le_Lp_mul_Lq_tsum_of_nonneg
 
@@ -705,7 +705,7 @@ theorem Lp_add_le_hasSum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : 
   lift g to ι → ℝ≥0 using hg
   lift A to ℝ≥0 using hA
   lift B to ℝ≥0 using hB
-  norm_cast  at hfA hgB
+  norm_cast at hfA hgB
   obtain ⟨C, hC₁, hC₂⟩ := NNReal.Lp_add_le_hasSum hp hfA hgB
   use C
   norm_cast

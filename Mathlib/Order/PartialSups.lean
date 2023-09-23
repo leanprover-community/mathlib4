@@ -123,7 +123,7 @@ theorem partialSups_eq_sup'_range (f : ℕ → α) (n : ℕ) :
     partialSups f n = (Finset.range (n + 1)).sup' ⟨n, Finset.self_mem_range_succ n⟩ f := by
   induction' n with n ih
   · simp
-  · dsimp [partialSups] at ih⊢
+  · dsimp [partialSups] at ih ⊢
     simp_rw [@Finset.range_succ n.succ]
     rw [ih, Finset.sup'_insert, sup_comm]
 #align partial_sups_eq_sup'_range partialSups_eq_sup'_range
@@ -134,7 +134,7 @@ theorem partialSups_eq_sup_range [SemilatticeSup α] [OrderBot α] (f : ℕ → 
     partialSups f n = (Finset.range (n + 1)).sup f := by
   induction' n with n ih
   · simp
-  · dsimp [partialSups] at ih⊢
+  · dsimp [partialSups] at ih ⊢
     rw [Finset.range_succ, Finset.sup_insert, sup_comm, ih]
 #align partial_sups_eq_sup_range partialSups_eq_sup_range
 

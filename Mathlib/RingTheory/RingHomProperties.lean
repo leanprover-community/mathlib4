@@ -20,10 +20,10 @@ import Mathlib.RingTheory.IsTensorProduct
 We provide the basic framework for talking about properties of ring homomorphisms.
 The following meta-properties of predicates on ring homomorphisms are defined
 
-* `ring_hom.respects_iso`: `P` respects isomorphisms if `P f → P (e ≫ f)` and
+* `RingHom.RespectsIso`: `P` respects isomorphisms if `P f → P (e ≫ f)` and
   `P f → P (f ≫ e)`, where `e` is an isomorphism.
-* `ring_hom.stable_under_composition`: `P` is stable under composition if `P f → P g → P (f ≫ g)`.
-* `ring_hom.stable_under_base_change`: `P` is stable under base change if `P (S ⟶ Y)`
+* `RingHom.StableUnderComposition`: `P` is stable under composition if `P f → P g → P (f ≫ g)`.
+* `RingHom.StableUnderBaseChange`: `P` is stable under base change if `P (S ⟶ Y)`
   implies `P (X ⟶ X ⊗[S] Y)`.
 
 -/
@@ -40,7 +40,7 @@ variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop
 
 section RespectsIso
 
-/-- A property `respects_iso` if it still holds when composed with an isomorphism -/
+/-- A property `RespectsIso` if it still holds when composed with an isomorphism -/
 def RespectsIso : Prop :=
   (∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
       ∀ (f : R →+* S) (e : S ≃+* T) (_ : P f), P (e.toRingHom.comp f)) ∧
@@ -98,7 +98,7 @@ end RespectsIso
 
 section StableUnderComposition
 
-/-- A property is `stable_under_composition` if the composition of two such morphisms
+/-- A property is `StableUnderComposition` if the composition of two such morphisms
 still falls in the class. -/
 def StableUnderComposition : Prop :=
   ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
@@ -114,18 +114,18 @@ theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition 
   · introv H
     skip
     apply hP
-    exacts[H, hP' e]
+    exacts [H, hP' e]
   · introv H
     skip
     apply hP
-    exacts[hP' e, H]
+    exacts [hP' e, H]
 #align ring_hom.stable_under_composition.respects_iso RingHom.StableUnderComposition.respectsIso
 
 end StableUnderComposition
 
 section StableUnderBaseChange
 
-/-- A morphism property `P` is `stable_under_base_change` if `P(S →+* A)` implies
+/-- A morphism property `P` is `StableUnderBaseChange` if `P(S →+* A)` implies
 `P(B →+* A ⊗[S] B)`. -/
 def StableUnderBaseChange : Prop :=
   ∀ (R S R' S') [CommRing R] [CommRing S] [CommRing R'] [CommRing S'],
@@ -142,7 +142,6 @@ theorem StableUnderBaseChange.mk (h₁ : RespectsIso @P)
             P (Algebra.TensorProduct.includeLeft.toRingHom : S →+* TensorProduct R S T)) :
     StableUnderBaseChange @P := by
   introv R h H
-  skip
   let e := h.symm.1.equiv
   let f' :=
     Algebra.TensorProduct.productMap (IsScalarTower.toAlgHom R R' S')

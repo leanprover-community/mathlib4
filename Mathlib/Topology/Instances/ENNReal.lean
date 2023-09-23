@@ -1272,7 +1272,7 @@ theorem hasSum_lt {f g : α → ℝ≥0∞} {sf sg : ℝ≥0∞} {i : α} (h : �
     lift g to α → ℝ≥0 using hg'
     lift sf to ℝ≥0 using hsf
     lift sg to ℝ≥0 using hsg
-    simp only [coe_le_coe, coe_lt_coe] at h hi⊢
+    simp only [coe_le_coe, coe_lt_coe] at h hi ⊢
     exact NNReal.hasSum_lt h hi (ENNReal.hasSum_coe.1 hf) (ENNReal.hasSum_coe.1 hg)
 #align ennreal.has_sum_lt ENNReal.hasSum_lt
 
@@ -1295,7 +1295,7 @@ theorem summable_of_nonneg_of_le {f g : β → ℝ} (hg : ∀ b, 0 ≤ g b) (hgf
     (hf : Summable f) : Summable g := by
   lift f to β → ℝ≥0 using fun b => (hg b).trans (hgf b)
   lift g to β → ℝ≥0 using hg
-  rw [NNReal.summable_coe] at hf⊢
+  rw [NNReal.summable_coe] at hf ⊢
   exact NNReal.summable_of_le (fun b => NNReal.coe_le_coe.1 (hgf b)) hf
 #align summable_of_nonneg_of_le summable_of_nonneg_of_le
 

@@ -90,6 +90,9 @@ set_option linter.uppercaseLean3 false in
 instance : Quiver LocallyRingedSpace :=
   ⟨Hom⟩
 
+@[ext] lemma Hom.ext' (X Y : LocallyRingedSpace) {f g : X ⟶ Y} (h : f.val = g.val) : f = g :=
+Hom.ext _ _ h
+
 -- TODO perhaps we should make a bundled `LocalRing` and return one here?
 -- TODO define `sheaf.stalk` so we can write `X.𝒪.stalk` here?
 /-- The stalk of a locally ringed space, just as a `CommRing`.

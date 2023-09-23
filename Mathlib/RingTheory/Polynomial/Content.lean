@@ -166,7 +166,7 @@ theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
     by_cases h0 : n ∈ p.support
     · rw [h n h0, coeff_zero]
     · rw [mem_support_iff] at h0
-      push_neg  at h0
+      push_neg at h0
       simp [h0]
   · intro x
     simp [h]

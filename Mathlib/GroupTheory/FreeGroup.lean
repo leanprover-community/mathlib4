@@ -765,8 +765,8 @@ theorem lift.range_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range
   rintro _ ⟨⟨L⟩, rfl⟩;
     exact
       List.recOn L s.one_mem fun ⟨x, b⟩ tl ih =>
-        Bool.recOn b (by simp at ih⊢; exact s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
-          (by simp at ih⊢; exact s.mul_mem (H ⟨x, rfl⟩) ih)
+        Bool.recOn b (by simp at ih ⊢; exact s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
+          (by simp at ih ⊢; exact s.mul_mem (H ⟨x, rfl⟩) ih)
 #align free_group.lift.range_le FreeGroup.lift.range_le
 #align free_add_group.lift.range_le FreeAddGroup.lift.range_le
 
@@ -998,7 +998,7 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
     exact List.recOn L
      (by rfl)
      (fun ⟨⟨⟩, b⟩ tl ih => by
-        cases b <;> simp [zpow_add] at ih⊢ <;> rw [ih] <;> rfl)
+        cases b <;> simp [zpow_add] at ih ⊢ <;> rw [ih] <;> rfl)
   right_inv x :=
     Int.induction_on x (by simp)
       (fun i ih => by

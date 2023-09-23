@@ -188,10 +188,10 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
     -- porting note: used to be `ext x`
     refine' ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext _ _)
     · specialize h ⟨WalkingPair.left⟩
-      apply_fun fun e => e x  at h
+      apply_fun fun e => e x at h
       exact h
     · specialize h ⟨WalkingPair.right⟩
-      apply_fun fun e => e x  at h
+      apply_fun fun e => e x at h
       exact h
 #align Top.prod_binary_fan_is_limit TopCat.prodBinaryFanIsLimit
 

@@ -231,7 +231,7 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
     classical
       simp_rw [coeff_monomial, if_pos] at hj hi
       simp_rw [coeff_monomial_mul'] at hi hj
-      split_ifs  at hi hj with hi hi
+      split_ifs at hi hj with hi hi
       · exact ⟨Or.inr hi, _, hj⟩
       · exact ⟨Or.inl hj, hj.symm ▸ dvd_zero _⟩
     -- Porting note: two goals remain at this point in Lean 4

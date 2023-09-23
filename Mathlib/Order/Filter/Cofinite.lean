@@ -167,7 +167,7 @@ theorem Filter.Tendsto.exists_within_forall_le {α β : Type _} [LinearOrder β]
     refine' ⟨a₀, ha₀s, fun a has => (lt_or_le (f a) x).elim _ (le_trans ha₀.le)⟩
     exact fun h => others_bigger a ⟨h, has⟩
   · -- in this case, f is constant because all values are at top
-    push_neg  at not_all_top
+    push_neg at not_all_top
     obtain ⟨a₀, ha₀s⟩ := hs
     exact ⟨a₀, ha₀s, fun a ha => not_all_top a ha (f a₀)⟩
 #align filter.tendsto.exists_within_forall_le Filter.Tendsto.exists_within_forall_le

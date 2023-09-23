@@ -254,8 +254,8 @@ theorem nndist_le (hf : HolderWith C r f) (x y : X) :
 theorem dist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ} (hd : dist x y ≤ d) :
     dist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
   lift d to ℝ≥0 using dist_nonneg.trans hd
-  rw [dist_nndist] at hd⊢
-  norm_cast  at hd⊢
+  rw [dist_nndist] at hd ⊢
+  norm_cast at hd ⊢
   exact hf.nndist_le_of_le hd
 #align holder_with.dist_le_of_le HolderWith.dist_le_of_le
 

@@ -477,7 +477,7 @@ theorem rootMultiplicity_X_sub_C_pow (a : R) (n : ℕ) : rootMultiplicity a ((X 
   · refine' rootMultiplicity_eq_zero _
     simp only [eval_one, IsRoot.def, not_false_iff, one_ne_zero, pow_zero, Nat.zero_eq]
   have hzero := pow_ne_zero n.succ (X_sub_C_ne_zero a)
-  rw [pow_succ (X - C a) n] at hzero⊢
+  rw [pow_succ (X - C a) n] at hzero ⊢
   simp only [rootMultiplicity_mul hzero, rootMultiplicity_X_sub_C_self, hn, Nat.one_add]
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_multiplicity_X_sub_C_pow Polynomial.rootMultiplicity_X_sub_C_pow
@@ -992,7 +992,7 @@ theorem mem_rootSet_of_ne {p : T[X]} {S : Type _} [CommRing S] [IsDomain S] [Alg
 theorem rootSet_maps_to' {p : T[X]} {S S'} [CommRing S] [IsDomain S] [Algebra T S] [CommRing S']
     [IsDomain S'] [Algebra T S'] (hp : p.map (algebraMap T S') = 0 → p.map (algebraMap T S) = 0)
     (f : S →ₐ[T] S') : (p.rootSet S).MapsTo f (p.rootSet S') := fun x hx => by
-  rw [mem_rootSet'] at hx⊢
+  rw [mem_rootSet'] at hx ⊢
   rw [aeval_algHom, AlgHom.comp_apply, hx.2, _root_.map_zero]
   exact ⟨mt hp hx.1, rfl⟩
 #align polynomial.root_set_maps_to' Polynomial.rootSet_maps_to'

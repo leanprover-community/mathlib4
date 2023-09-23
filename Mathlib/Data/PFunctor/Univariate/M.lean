@@ -520,7 +520,7 @@ theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x 
     constructor
   · cases' ps_hd with a i
     induction' x using PFunctor.M.casesOn' with x_a x_f
-    simp only [iselect, isubtree] at ps_ih⊢
+    simp only [iselect, isubtree] at ps_ih ⊢
     by_cases h'' : a = x_a
     subst x_a
     · simp only [dif_pos, eq_self_iff_true, casesOn_mk']
@@ -682,11 +682,11 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
     apply bisim.tail h₀
   cases' i with a' i
   obtain rfl : a = a' := by rcases hh with hh|hh <;> cases isPath_cons hh <;> rfl
-  dsimp only [iselect] at ps_ih⊢
+  dsimp only [iselect] at ps_ih ⊢
   have h₁ := bisim.tail h₀ i
   induction' h : f i using PFunctor.M.casesOn' with a₀ f₀
   induction' h' : f' i using PFunctor.M.casesOn' with a₁ f₁
-  simp only [h, h', isubtree_cons] at ps_ih⊢
+  simp only [h, h', isubtree_cons] at ps_ih ⊢
   rw [h, h'] at h₁
   obtain rfl : a₀ = a₁ := bisim.head h₁
   apply ps_ih _ _ _ h₁

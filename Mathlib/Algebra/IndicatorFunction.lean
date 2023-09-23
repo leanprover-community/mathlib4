@@ -114,7 +114,7 @@ theorem mulIndicator_eq_self : s.mulIndicator f = f ↔ mulSupport f ⊆ s := by
 @[to_additive]
 theorem mulIndicator_eq_self_of_superset (h1 : s.mulIndicator f = f) (h2 : s ⊆ t) :
     t.mulIndicator f = f := by
-  rw [mulIndicator_eq_self] at h1⊢
+  rw [mulIndicator_eq_self] at h1 ⊢
   exact Subset.trans h1 h2
 #align set.mul_indicator_eq_self_of_superset Set.mulIndicator_eq_self_of_superset
 #align set.indicator_eq_self_of_superset Set.indicator_eq_self_of_superset

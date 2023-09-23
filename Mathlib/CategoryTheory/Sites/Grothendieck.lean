@@ -198,7 +198,7 @@ theorem arrow_max (f : Y ⟶ X) (S : Sieve X) (hf : S f) : J.Covers S f := by
 /-- The stability axiom in 'arrow' form: If `S` covers `f` then `S` covers `g ≫ f` for any `g`. -/
 theorem arrow_stable (f : Y ⟶ X) (S : Sieve X) (h : J.Covers S f) {Z : C} (g : Z ⟶ Y) :
     J.Covers S (g ≫ f) := by
-  rw [covers_iff] at h⊢
+  rw [covers_iff] at h ⊢
   simp [h, Sieve.pullback_comp]
 #align category_theory.grothendieck_topology.arrow_stable CategoryTheory.GrothendieckTopology.arrow_stable
 
@@ -230,7 +230,7 @@ def trivial : GrothendieckTopology C where
   sieves X := {⊤}
   top_mem' X := rfl
   pullback_stable' X Y S f hf := by
-    rw [Set.mem_singleton_iff] at hf⊢
+    rw [Set.mem_singleton_iff] at hf ⊢
     simp [hf]
   transitive' X S hS R hR := by
     rw [Set.mem_singleton_iff, ← Sieve.id_mem_iff_eq_top] at hS

@@ -1352,7 +1352,7 @@ theorem vadd_right_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
 /-- The span of two points that lie in an affine subspace is contained in that subspace. -/
 theorem affineSpan_pair_le_of_mem_of_mem {p₁ p₂ : P} {s : AffineSubspace k P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) : line[k, p₁, p₂] ≤ s := by
-  rw [affineSpan_le, Set.insert_subset, Set.singleton_subset_iff]
+  rw [affineSpan_le, Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨hp₁, hp₂⟩
 #align affine_span_pair_le_of_mem_of_mem affineSpan_pair_le_of_mem_of_mem
 

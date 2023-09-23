@@ -359,7 +359,7 @@ instance : Setoid (Lists α) :=
 section Decidable
 
 /-- Auxiliary function to prove termination of decidability checking -/
-@[simp]
+@[simp, deprecated] -- porting note: replaced by termination_by
 def Equiv.decidableMeas :
     (PSum (Σ' _l₁ : Lists α, Lists α) <|
         PSum (Σ' _l₁ : Lists' α true, Lists' α true) (Σ' _a : Lists α, Lists' α true)) →
@@ -430,7 +430,11 @@ mutual
         mem.decidable a l₂
       refine' decidable_of_iff' (a ~ ⟨_, b⟩ ∨ a ∈ l₂) _
       rw [← Lists'.mem_cons]; rfl
-end termination_by' ⟨_, InvImage.wf Equiv.decidableMeas Nat.lt_wfRel.wf⟩
+end
+termination_by
+  Subset.decidable x y => sizeOf x + sizeOf y
+  Equiv.decidable x y => sizeOf x + sizeOf y
+  mem.decidable x y => sizeOf x + sizeOf y
 #align lists.equiv.decidable Lists.Equiv.decidable
 #align lists.subset.decidable Lists.Subset.decidable
 #align lists.mem.decidable Lists.mem.decidable

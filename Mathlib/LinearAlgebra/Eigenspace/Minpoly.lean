@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 
 ! This file was ported from Lean 3 source module linear_algebra.eigenspace.minpoly
-! leanprover-community/mathlib commit 8efcf8022aac8e01df8d302dcebdbc25d6a886c8
+! leanprover-community/mathlib commit c3216069e5f9369e6be586ccbfcde2592b3cec92
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

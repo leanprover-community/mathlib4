@@ -42,7 +42,7 @@ def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
 
 instance : AddCommGroup I.Cotangent := by delta Cotangent; infer_instance
 
-instance CotangentModule : Module (R ⧸ I) I.Cotangent := by delta Cotangent; infer_instance
+instance cotangentModule : Module (R ⧸ I) I.Cotangent := by delta Cotangent; infer_instance
 
 instance : Inhabited I.Cotangent := ⟨0⟩
 
@@ -148,8 +148,7 @@ noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal :
   refine
   { LinearMap.codRestrict (I.cotangentIdeal.restrictScalars R) I.cotangentToQuotientSquare
       fun x => by { rw [← to_quotient_square_range]; exact LinearMap.mem_range_self _ _ },
-    Equiv.ofBijective _ ⟨?_, ?_⟩ with
-  }
+    Equiv.ofBijective _ ⟨?_, ?_⟩ with }
   · rintro x y e
     replace e := congr_arg Subtype.val e
     obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
@@ -181,7 +180,7 @@ variable {A B : Type _} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B := by
   refine { Ideal.Quotient.lift (RingHom.ker f.toRingHom ^ 2) f.toRingHom ?_ with commutes' := ?_ }
   · intro a ha; exact Ideal.pow_le_self two_ne_zero ha
-  · intro r;
+  · intro r
     rw [IsScalarTower.algebraMap_apply R A, RingHom.toFun_eq_coe, Ideal.Quotient.algebraMap_eq,
       Ideal.Quotient.lift_mk]
     exact f.map_algebraMap r
@@ -212,7 +211,7 @@ variable (R : Type _) [CommRing R] [LocalRing R]
 def CotangentSpace : Type _ := (maximalIdeal R).Cotangent
 #align local_ring.cotangent_space LocalRing.CotangentSpace
 
-instance : Module (ResidueField R) (CotangentSpace R) := Ideal.CotangentModule _
+instance : Module (ResidueField R) (CotangentSpace R) := Ideal.cotangentModule _
 
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
   Module.IsTorsionBySet.isScalarTower _

@@ -549,7 +549,7 @@ theorem geom_sum_ne_zero [LinearOrderedRing α] (hx : x ≠ -1) (hn : n ≠ 0) :
   rw [Ne.def, eq_neg_iff_add_eq_zero, ← Ne.def] at hx
   obtain h | h := hx.lt_or_lt
   · have := geom_sum_alternating_of_lt_neg_one h n.one_lt_succ_succ
-    split_ifs  at this
+    split_ifs at this
     · exact this.ne
     · exact (zero_lt_one.trans this).ne'
   · exact (geom_sum_pos' h n.succ.succ_ne_zero).ne'

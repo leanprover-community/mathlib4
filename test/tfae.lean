@@ -111,6 +111,11 @@ end seven
 
 section context
 
+example (n : ℕ) : List.TFAE [n = 1, n + 1 = 2] := by
+  generalize n = m
+  tfae_have 1 ↔ 2; simp
+  tfae_finish
+
 example (h₁ : P → Q) (h₂ : Q → P) : TFAE [P, Q] := by
   tfae_finish
 

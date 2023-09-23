@@ -1588,7 +1588,7 @@ theorem snorm_indicator_ge_of_bdd_below (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α
   filter_upwards [hf] with x hx
   rw [nnnorm_indicator_eq_indicator_nnnorm]
   by_cases hxs : x ∈ s
-  · simp only [Set.indicator_of_mem hxs] at hx⊢
+  · simp only [Set.indicator_of_mem hxs] at hx ⊢
     exact ENNReal.rpow_le_rpow (ENNReal.coe_le_coe.2 (hx hxs)) ENNReal.toReal_nonneg
   · simp [Set.indicator_of_not_mem hxs]
 #align measure_theory.snorm_indicator_ge_of_bdd_below MeasureTheory.snorm_indicator_ge_of_bdd_below

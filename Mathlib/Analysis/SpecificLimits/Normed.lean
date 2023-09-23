@@ -71,7 +71,7 @@ theorem tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 𝔸 : Type _} [No
     [NormedAddCommGroup 𝔸] [NormedSpace 𝕜 𝔸] {l : Filter ι} {ε : ι → 𝕜} {f : ι → 𝔸}
     (hε : Tendsto ε l (𝓝 0)) (hf : Filter.IsBoundedUnder (· ≤ ·) l (norm ∘ f)) :
     Tendsto (ε • f) l (𝓝 0) := by
-  rw [← isLittleO_one_iff 𝕜] at hε⊢
+  rw [← isLittleO_one_iff 𝕜] at hε ⊢
   simpa using IsLittleO.smul_isBigO hε (hf.isBigO_const (one_ne_zero : (1 : 𝕜) ≠ 0))
 #align normed_field.tendsto_zero_smul_of_tendsto_zero_of_bounded NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded
 

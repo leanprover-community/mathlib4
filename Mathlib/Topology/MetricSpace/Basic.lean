@@ -1235,15 +1235,10 @@ See Note [forgetful inheritance].
 -/
 @[reducible]
 def PseudoMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
-    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α where
-  toDist := m.toDist
-  dist_self := dist_self
-  dist_comm := dist_comm
-  dist_triangle := dist_triangle
-  edist := edist
-  edist_dist := edist_dist
-  toUniformSpace := U
-  uniformity_dist := H.trans PseudoMetricSpace.uniformity_dist
+    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α :=
+  { m with
+    toUniformSpace := U
+    uniformity_dist := H.trans PseudoMetricSpace.uniformity_dist }
 #align pseudo_metric_space.replace_uniformity PseudoMetricSpace.replaceUniformity
 
 theorem PseudoMetricSpace.replaceUniformity_eq {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
@@ -1251,6 +1246,11 @@ theorem PseudoMetricSpace.replaceUniformity_eq {α} [U : UniformSpace α] (m : P
   ext
   rfl
 #align pseudo_metric_space.replace_uniformity_eq PseudoMetricSpace.replaceUniformity_eq
+
+-- ensure that the bornology is unchanged when replacing the uniformity.
+example {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
+    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) :
+  (PseudoMetricSpace.replaceUniformity m H).toBornology = m.toBornology := rfl
 
 /-- Build a new pseudo metric space from an old one where the bundled topological structure is
 provably (but typically non-definitionaly) equal to some given topological structure.
@@ -1320,6 +1320,11 @@ theorem PseudoMetricSpace.replaceBornology_eq {α} [m : PseudoMetricSpace α] [B
   ext
   rfl
 #align pseudo_metric_space.replace_bornology_eq PseudoMetricSpace.replaceBornology_eq
+
+-- ensure that the uniformity is unchanged when replacing the bornology.
+example {α} [B : Bornology α] (m : PseudoMetricSpace α)
+    (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :
+  (PseudoMetricSpace.replaceBornology m H).toUniformSpace = m.toUniformSpace := rfl
 
 /-- A very useful criterion to show that a space is complete is to show that all sequences
 which satisfy a bound of the form `dist (u n) (u m) < B N` for all `n m ≥ N` are
@@ -2765,14 +2770,14 @@ theorem nonempty_iInter_of_nonempty_biInter [CompleteSpace α] {s : ℕ → Set 
 
 end Diam
 
-theorem exists_local_min_mem_ball [ProperSpace α] [TopologicalSpace β]
+theorem exists_isLocalMin_mem_ball [ProperSpace α] [TopologicalSpace β]
     [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} {a z : α} {r : ℝ}
     (hf : ContinuousOn f (closedBall a r)) (hz : z ∈ closedBall a r)
     (hf1 : ∀ z' ∈ sphere a r, f z < f z') : ∃ z ∈ ball a r, IsLocalMin f z := by
   simp_rw [← closedBall_diff_ball] at hf1
-  exact (isCompact_closedBall a r).exists_local_min_mem_open ball_subset_closedBall hf hz hf1
+  exact (isCompact_closedBall a r).exists_isLocalMin_mem_open ball_subset_closedBall hf hz hf1
     isOpen_ball
-#align metric.exists_local_min_mem_ball Metric.exists_local_min_mem_ball
+#align metric.exists_local_min_mem_ball Metric.exists_isLocalMin_mem_ball
 
 end Metric
 

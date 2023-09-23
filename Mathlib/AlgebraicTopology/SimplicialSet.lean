@@ -124,7 +124,7 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
   map {m₁ m₂} f α :=
     ⟨f.unop ≫ (α : Δ[n].obj m₁), by
       intro h; apply α.property
-      rw [Set.eq_univ_iff_forall] at h⊢; intro j
+      rw [Set.eq_univ_iff_forall] at h ⊢; intro j
       apply Or.imp _ id (h j)
       intro hj
       exact Set.range_comp_subset_range _ _ hj⟩

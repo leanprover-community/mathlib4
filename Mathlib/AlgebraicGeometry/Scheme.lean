@@ -67,6 +67,9 @@ protected abbrev sheaf (X : Scheme) :=
   X.toSheafedSpace.sheaf
 #align algebraic_geometry.Scheme.sheaf AlgebraicGeometry.Scheme.sheaf
 
+instance : CoeSort Scheme (Type _) where
+  coe X := X.carrier
+
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
 @[simps!]
 def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace :=

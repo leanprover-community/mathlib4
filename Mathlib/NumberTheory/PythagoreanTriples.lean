@@ -202,7 +202,7 @@ theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / I
   have hk : (k : ℤ) ≠ 0 := by
     norm_cast
     rwa [pos_iff_ne_zero] at k0
-  rw [Int.gcd_mul_right, h2, Int.natAbs_ofNat, one_mul] at h⊢
+  rw [Int.gcd_mul_right, h2, Int.natAbs_ofNat, one_mul] at h ⊢
   rw [mul_comm x0, mul_comm y0, mul_iff k hk] at h
   rwa [Int.mul_ediv_cancel _ hk, Int.mul_ediv_cancel _ hk, Int.mul_ediv_cancel_left _ hk]
 #align pythagorean_triple.normalize PythagoreanTriple.normalize

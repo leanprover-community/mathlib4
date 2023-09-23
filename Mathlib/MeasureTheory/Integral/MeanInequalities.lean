@@ -369,7 +369,7 @@ theorem lintegral_Lp_add_le {p : ℝ} {f g : α → ℝ≥0∞} (hf : AEMeasurab
     exact zero_le _
   have htop : (∫⁻ a, (f + g) a ^ p ∂μ) ≠ ⊤ := by
     rw [← Ne.def] at hf_top hg_top
-    rw [← lt_top_iff_ne_top] at hf_top hg_top⊢
+    rw [← lt_top_iff_ne_top] at hf_top hg_top ⊢
     exact lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top hf hf_top hg_top hp1
   exact lintegral_Lp_add_le_aux hpq hf hf_top hg hg_top h0 htop
 #align ennreal.lintegral_Lp_add_le ENNReal.lintegral_Lp_add_le
