@@ -4354,6 +4354,7 @@ theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD 
     · rfl
     · simp [ih]
 
+set_option linter.deprecated false in
 @[deprecated getD_eq_get]
 theorem getD_eq_nthLe {n : ℕ} (hn : n < l.length) : l.getD n d = l.nthLe n hn :=
   getD_eq_get ..
