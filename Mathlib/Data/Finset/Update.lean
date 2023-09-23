@@ -24,7 +24,7 @@ def updateSet (x : ∀ i, π i) (s : Finset ι) [DecidablePred (· ∈ s)] (y : 
     π i :=
   if hi : i ∈ s then y ⟨i, hi⟩ else x i
 
-open Finset
+open Finset Equiv
 
 theorem updateSet_empty [DecidableEq ι] {y} : updateSet x ∅ y = x :=
   rfl
@@ -48,9 +48,7 @@ theorem update_eq_updateSet [DecidableEq ι] {i y} :
 
 theorem updateSet_updateSet [DecidableEq ι] {s t : Finset ι} (hst : Disjoint s t) {y z} :
     updateSet (updateSet x s y) t z =
-    updateSet x (s ∪ t)
-      (Equiv.piCongrLeft (fun i : ↥(s ∪ t) ↦ π i) (finsetUnionEquivSum s t hst).symm <|
-      Equiv.piSum _ ⟨y, z⟩) := by
+    updateSet x (s ∪ t) (Equiv.piFinsetUnion π hst ⟨y, z⟩) := by
   set e₁ := finsetUnionEquivSum s t hst |>.symm
   congr with i
   by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
