@@ -5,6 +5,7 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
 #align_import measure_theory.integral.layercake from "leanprover-community/mathlib"@"08a4542bec7242a5c60f179e4e49de8c0d677b1b"
 
@@ -445,6 +446,26 @@ lemma Integrable.measure_lt_const_lt_top (f_intble : Integrable f μ) {c : ℝ} 
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_le_const_lt_top f_intble c_neg)
 
+#check ae_restrict_of_ae
+#check aemeasurable_restrict_iff_comap_subtype
+
+#check AEMeasurable.restrict
+#check AEStronglyMeasurable.restrict
+--#check Integrable.restrict
+--#check HasFiniteIntegral.restrict
+
+-- Should be a lemma in Mathlib.
+lemma MeasureTheory.HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
+    HasFiniteIntegral f (μ.restrict s) := by
+  refine lt_of_le_of_lt ?_ h
+  convert lintegral_mono_set (μ := μ) (s := s) (t := univ) (f := fun x ↦ ↑‖f x‖₊) (subset_univ s)
+  exact Measure.restrict_univ.symm
+
+-- Should be a lemma in Mathlib.
+lemma MeasureTheory.Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
+    Integrable f (μ.restrict s) :=
+  ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
+
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For an integrable a.e.-nonnegative real-valued function `f` on a sigma-finite measure space,
@@ -452,18 +473,64 @@ the Bochner integral of `f` can be written (roughly speaking) as:
 `∫ f ∂μ = ∫ t in 0..∞, μ {ω | f(ω) > t}`.
 
 See `lintegral_eq_lintegral_meas_lt` for a version with Lebesgue integral `∫⁻` instead. -/
-theorem Integrable.integral_eq_integral_meas_lt [SigmaFinite μ]
+theorem Integrable.integral_eq_integral_meas_lt
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
     (∫ ω, f ω ∂μ) = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t < f a}) := by
-  have key := lintegral_eq_lintegral_meas_lt μ f_nn f_intble.aemeasurable
-  have lhs_finite : ∫⁻ (ω : α), ENNReal.ofReal (f ω) ∂μ < ∞ := Integrable.lintegral_lt_top f_intble
-  have rhs_finite : ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a} < ∞ := by simp only [← key, lhs_finite]
-  have rhs_integrand_finite : ∀ (t : ℝ), t > 0 → μ {a | t < f a} < ∞ :=
-    fun t ht ↦ Integrable.measure_const_lt_lt_top f_intble ht
+  obtain ⟨s, ⟨_, f_ae_zero_outside, s_sigmafin⟩⟩ :=
+    f_intble.aefinStronglyMeasurable.exists_set_sigmaFinite
+  have f_nn' : 0 ≤ᵐ[μ.restrict s] f := ae_restrict_of_ae f_nn
+  have f_intble' : Integrable f (μ.restrict s) := f_intble.restrict
+  have f_aemble' : AEMeasurable f (μ.restrict s) := f_intble.aemeasurable.restrict
+  have obs : ∫ ω, f ω ∂μ = ∫ ω, f ω ∂(μ.restrict s) := by
+    refine (set_integral_eq_integral_of_ae_compl_eq_zero ?_).symm
+    simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
+                 MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at f_ae_zero_outside
+    simp only [Filter.Eventually, mem_ae_iff]
+    rw [Measure.restrict_apply₀] at f_ae_zero_outside
+    · apply le_antisymm _ (zero_le _)
+      rw [← f_ae_zero_outside]
+      apply measure_mono
+      intro x hx
+      aesop
+    · exact NullMeasurableSet.of_null f_ae_zero_outside
+  rw [obs]
+  have obs' : ∀ t ∈ Ioi (0 : ℝ), (μ {a : α | t < f a}) = ((μ.restrict s) {a : α | t < f a}) := by
+    intro t ht
+    rw [Measure.restrict_apply₀]
+    · simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
+                 MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at f_ae_zero_outside
+      rw [Measure.restrict_apply₀] at f_ae_zero_outside
+      · apply le_antisymm _ (measure_mono (inter_subset_left _ _))
+        apply (measure_mono (Eq.symm (inter_union_compl {x | t < f x} s)).le).trans
+        apply (measure_union_le _ _).trans
+        have wow : μ ({x | t < f x} ∩ sᶜ) = 0 := by
+          apply le_antisymm _ (zero_le _)
+          rw [← f_ae_zero_outside]
+          apply measure_mono
+          gcongr
+          intro x hx
+          simp only [mem_setOf_eq, mem_compl_iff] at hx ⊢
+          have : 0 < f x := lt_trans ht hx
+          exact this.ne.symm
+        simp only [wow, add_zero, le_refl]
+      · exact NullMeasurableSet.of_null f_ae_zero_outside
+    · exact f_aemble'.nullMeasurable measurableSet_Ioi
+  have obs'' := @set_integral_congr ℝ ℝ _ _ (fun t ↦ ENNReal.toReal (μ {a : α | t < f a}))
+          (fun t ↦ ENNReal.toReal ((μ.restrict s) {a : α | t < f a})) _ (volume : Measure ℝ) _
+          (measurableSet_Ioi (a := (0 : ℝ)))
+          (fun x x_in_Ioi ↦ congrArg ENNReal.toReal (obs' x x_in_Ioi))
+  rw [obs'']
+  have key := lintegral_eq_lintegral_meas_lt (μ.restrict s) f_nn' f_aemble'
+  have lhs_finite : ∫⁻ (ω : α), ENNReal.ofReal (f ω) ∂(μ.restrict s) < ∞ :=
+    Integrable.lintegral_lt_top f_intble'
+  have rhs_finite : ∫⁻ (t : ℝ) in Set.Ioi 0, (μ.restrict s) {a | t < f a} < ∞ :=
+    by simp only [← key, lhs_finite]
+  have rhs_integrand_finite : ∀ (t : ℝ), t > 0 → (μ.restrict s) {a | t < f a} < ∞ :=
+    fun t ht ↦ Integrable.measure_const_lt_lt_top f_intble' ht
   convert (ENNReal.toReal_eq_toReal lhs_finite.ne rhs_finite.ne).mpr key
-  · exact integral_eq_lintegral_of_nonneg_ae f_nn f_intble.aestronglyMeasurable
+  · exact integral_eq_lintegral_of_nonneg_ae f_nn' f_intble'.aestronglyMeasurable
   · have aux := @integral_eq_lintegral_of_nonneg_ae _ _ ((volume : Measure ℝ).restrict (Set.Ioi 0))
-      (fun t ↦ ENNReal.toReal (μ {a : α | t < f a})) ?_ ?_
+      (fun t ↦ ENNReal.toReal ((μ.restrict s) {a : α | t < f a})) ?_ ?_
     · rw [aux]
       congr 1
       apply set_lintegral_congr_fun measurableSet_Ioi (eventually_of_forall _)
