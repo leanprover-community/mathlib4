@@ -199,7 +199,8 @@ sheaf of abelian groups. -/
 noncomputable def smoothSheafCommGroup : TopCat.Sheaf CommGroupCat.{u} (TopCat.of M) :=
   { val := smoothPresheafCommGroup IM I M A
     cond := by
-      rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _ (CategoryTheory.forget CommGroupCat)]
+      rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _
+        (CategoryTheory.forget CommGroupCat)]
       exact CategoryTheory.Sheaf.cond (smoothSheaf IM I M A) }
 
 /-- For a manifold `M` and a smooth homomorphism `φ` between abelian Lie groups `A`, `A'`, the
@@ -274,7 +275,8 @@ commutative rings. -/
 def smoothSheafCommRing : TopCat.Sheaf CommRingCat.{u} (TopCat.of M) :=
   { val := smoothPresheafCommRing IM I M R
     cond := by
-      rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _ (CategoryTheory.forget CommRingCat)]
+      rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _
+        (CategoryTheory.forget CommRingCat)]
       exact CategoryTheory.Sheaf.cond (smoothSheaf IM I M R) }
 
 -- sanity check: applying the `CommRingCat`-to-`TypeCat` forgetful functor to the sheaf-of-rings of
