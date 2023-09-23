@@ -100,7 +100,7 @@ def smoothSheaf.eval (x : M) : (smoothSheaf IM I M N).presheaf.stalk x → N :=
 
 /-- Canonical map from the stalk of `smoothSheaf IM I M N` at `x` to `N`, given by evaluating
 sections at `x`, considered as a morphism in the category of types. -/
-def smoothSheaf.evalHom (x : M) : (smoothSheaf IM I M N).presheaf.stalk x ⟶ N :=
+def smoothSheaf.evalHom (x : TopCat.of M) : (smoothSheaf IM I M N).presheaf.stalk x ⟶ N :=
   TopCat.stalkToFiber (StructureGroupoid.LocalInvariantProp.localPredicate M N _) x
 
 open CategoryTheory Limits
@@ -355,8 +355,7 @@ def smoothSheafCommRing.evalHom (x : TopCat.of M) :
 
 /-- Canonical ring homomorphism from the stalk of `smoothSheafCommRing IM I M R` at `x` to `R`,
 given by evaluating sections at `x`. -/
-def smoothSheafCommRing.eval (x : TopCat.of M) :
-    (smoothSheafCommRing IM I M R).presheaf.stalk x →+* CommRingCat.of R :=
+def smoothSheafCommRing.eval (x : M) : (smoothSheafCommRing IM I M R).presheaf.stalk x →+* R :=
   smoothSheafCommRing.evalHom IM I M R x
 
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_eval (x : TopCat.of M) (U) :
