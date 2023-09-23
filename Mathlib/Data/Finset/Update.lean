@@ -53,8 +53,8 @@ theorem updateFinset_updateFinset [DecidableEq ι] {s t : Finset ι} (hst : Disj
   set e₁ := finsetUnionEquivSum s t hst |>.symm
   congr with i
   by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
-    simp only [updateFinset, his, hit, dif_pos, dif_neg, Finset.mem_union, true_or_iff, false_or_iff,
-      not_false_iff]
+    simp only [updateFinset, his, hit, dif_pos, dif_neg, Finset.mem_union, true_or_iff,
+      false_or_iff, not_false_iff]
   · exfalso; exact Finset.disjoint_left.mp hst his hit
   · exact piCongrLeft_sum_inl (fun b : ↥(s ∪ t) => π b) e₁ y z ⟨i, his⟩ |>.symm
   · exact piCongrLeft_sum_inr (fun b : ↥(s ∪ t) => π b) e₁ y z ⟨i, _⟩ |>.symm
