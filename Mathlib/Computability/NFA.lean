@@ -103,7 +103,7 @@ theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.ste
 #align NFA.eval_append_singleton NFA.eval_append_singleton
 
 /-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
-def accepts : Language α := fun x => ∃ S ∈ M.accept, S ∈ M.eval x
+def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 #align NFA.accepts NFA.accepts
 
 theorem mem_accepts : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by rfl

@@ -12,7 +12,7 @@ import Mathlib.GroupTheory.GroupAction.Basic
 
 # Fixing submonoid, fixing subgroup of an action
 
-In the presence of of an action of a monoid or a group,
+In the presence of an action of a monoid or a group,
 this file defines the fixing submonoid or the fixing subgroup,
 and relates it to the set of fixed points via a Galois connection.
 

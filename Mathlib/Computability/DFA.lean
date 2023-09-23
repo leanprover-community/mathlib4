@@ -92,7 +92,7 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
 #align DFA.eval_from_of_append DFA.evalFrom_of_append
 
 /-- `M.accepts` is the language of `x` such that `M.eval x` is an accept state. -/
-def accepts : Language α := fun x => M.eval x ∈ M.accept
+def accepts : Language α := {x | M.eval x ∈ M.accept}
 #align DFA.accepts DFA.accepts
 
 theorem mem_accepts (x : List α) : x ∈ M.accepts ↔ M.evalFrom M.start x ∈ M.accept := by rfl

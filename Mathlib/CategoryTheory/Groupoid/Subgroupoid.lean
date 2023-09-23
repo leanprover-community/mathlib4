@@ -484,7 +484,7 @@ theorem Map.arrows_iff (hφ : Function.Injective φ.obj) (S : Subgroupoid C) {c 
 
 /-- The "forward" image of a subgroupoid under a functor injective on objects -/
 def map (hφ : Function.Injective φ.obj) (S : Subgroupoid C) : Subgroupoid D where
-  arrows := Map.Arrows φ hφ S
+  arrows c d := {x | Map.Arrows φ hφ S c d x}
   inv := by
     rintro _ _ _ ⟨⟩
     rw [inv_eq_inv, ← Functor.map_inv, ← inv_eq_inv]
@@ -628,7 +628,7 @@ theorem isTotallyDisconnected_iff :
 
 /-- The isotropy subgroupoid of `S` -/
 def disconnect : Subgroupoid C where
-  arrows c d f := c = d ∧ f ∈ S.arrows c d
+  arrows c d := {f | c = d ∧ f ∈ S.arrows c d}
   inv := by rintro _ _ _ ⟨rfl, h⟩; exact ⟨rfl, S.inv h⟩
   mul := by rintro _ _ _ _ ⟨rfl, h⟩ _ ⟨rfl, h'⟩; exact ⟨rfl, S.mul h h'⟩
 #align category_theory.subgroupoid.disconnect CategoryTheory.Subgroupoid.disconnect
@@ -661,7 +661,7 @@ variable (D : Set C)
 
 /-- The full subgroupoid on a set `D : Set C` -/
 def full : Subgroupoid C where
-  arrows c d _ := c ∈ D ∧ d ∈ D
+  arrows c d := {_f | c ∈ D ∧ d ∈ D}
   inv := by rintro _ _ _ ⟨⟩; constructor <;> assumption
   mul := by rintro _ _ _ _ ⟨⟩ _ ⟨⟩; constructor <;> assumption
 #align category_theory.subgroupoid.full CategoryTheory.Subgroupoid.full

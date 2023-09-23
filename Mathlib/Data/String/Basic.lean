@@ -19,7 +19,7 @@ namespace String
 -- TODO: upstream to std or remove
 theorem Iterator.hasNext_cons_addChar (c : Char) (cs : List Char) (i : Pos) :
     hasNext ⟨⟨c :: cs⟩, i + c⟩ = hasNext ⟨⟨cs⟩, i⟩ := by
-  simp [hasNext, Nat.add_lt_add_iff_lt_right]
+  simp [hasNext]
 
 /-- `<` on string iterators. This coincides with `<` on strings as lists. -/
 def ltb (s₁ s₂ : Iterator) : Bool :=

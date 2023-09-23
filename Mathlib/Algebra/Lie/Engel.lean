@@ -23,7 +23,7 @@ Engel's theorem is true for any coefficients (i.e., it is really a theorem about
 we work with coefficients in any commutative ring `R` throughout.
 
 On the other hand, Engel's theorem is not true for infinite-dimensional Lie algebras and so a
-finite-dimensionality assumption is required. We prove the theorem subject to the the assumption
+finite-dimensionality assumption is required. We prove the theorem subject to the assumption
 that the Lie algebra is Noetherian as an `R`-module, though actually we only need the slightly
 weaker property that the relation `>` is well-founded on the complete lattice of Lie subalgebras.
 

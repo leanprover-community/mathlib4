@@ -691,13 +691,13 @@ theorem prod_mono' [OrderedCommMonoid M] : Monotone fun f : ι → M ↦ ∏ i, 
 #align fintype.prod_mono' Fintype.prod_mono'
 #align fintype.sum_mono Fintype.sum_mono
 
-@[to_additive sum_strict_mono]
-theorem prod_strict_mono' [OrderedCancelCommMonoid M] : StrictMono fun f : ι → M ↦ ∏ x, f x :=
+@[to_additive sum_strictMono]
+theorem prod_strictMono' [OrderedCancelCommMonoid M] : StrictMono fun f : ι → M ↦ ∏ x, f x :=
   fun _ _ hfg ↦
   let ⟨hle, i, hlt⟩ := Pi.lt_def.mp hfg
   Finset.prod_lt_prod' (fun i _ ↦ hle i) ⟨i, Finset.mem_univ i, hlt⟩
-#align fintype.prod_strict_mono' Fintype.prod_strict_mono'
-#align fintype.sum_strict_mono Fintype.sum_strict_mono
+#align fintype.prod_strict_mono' Fintype.prod_strictMono'
+#align fintype.sum_strict_mono Fintype.sum_strictMono
 
 end Fintype
 

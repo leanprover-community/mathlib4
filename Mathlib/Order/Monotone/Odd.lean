@@ -12,7 +12,7 @@ import Mathlib.Algebra.Order.Group.Instances
 # Monotonicity of odd functions
 
 An odd function on a linear ordered additive commutative group `G` is monotone on the whole group
-provided that is is monotone on `Set.Ici 0`, see `monotone_of_odd_of_monotoneOn_nonneg`. We also
+provided that it is monotone on `Set.Ici 0`, see `monotone_of_odd_of_monotoneOn_nonneg`. We also
 prove versions of this lemma for `Antitone`, `StrictMono`, and `StrictAnti`.
 -/
 

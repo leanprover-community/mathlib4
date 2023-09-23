@@ -194,14 +194,22 @@ protected theorem surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
 #align local_homeomorph.surj_on LocalHomeomorph.surjOn
 
-/-- A homeomorphism induces a local homeomorphism on the whole space -/
-@[simps! (config := mfld_cfg)]
-def _root_.Homeomorph.toLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α β where
-  toLocalEquiv := e.toEquiv.toLocalEquiv
-  open_source := isOpen_univ
-  open_target := isOpen_univ
+/-- Interpret a `Homeomorph` as a `LocalHomeomorph` by restricting it
+to an open set `s` in the domain and to `t` in the codomain. -/
+@[simps! (config := .asFn) apply symm_apply toLocalEquiv,
+  simps! (config := .lemmasOnly) source target]
+def _root_.Homeomorph.toLocalHomeomorphOfImageEq (e : α ≃ₜ β) (s : Set α) (hs : IsOpen s)
+    (t : Set β) (h : e '' s = t) : LocalHomeomorph α β where
+  toLocalEquiv := e.toLocalEquivOfImageEq s t h
+  open_source := hs
+  open_target := by simpa [← h]
   continuous_toFun := e.continuous.continuousOn
   continuous_invFun := e.symm.continuous.continuousOn
+
+/-- A homeomorphism induces a local homeomorphism on the whole space -/
+@[simps! (config := mfld_cfg)]
+def _root_.Homeomorph.toLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α β :=
+  e.toLocalHomeomorphOfImageEq univ isOpen_univ univ <| by rw [image_univ, e.surjective.range_eq]
 #align homeomorph.to_local_homeomorph Homeomorph.toLocalHomeomorph
 
 /-- Replace `toLocalEquiv` field to provide better definitional equalities. -/

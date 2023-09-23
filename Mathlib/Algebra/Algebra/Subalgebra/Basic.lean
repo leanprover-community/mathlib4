@@ -1473,7 +1473,7 @@ section Nat
 
 variable {R : Type _} [Semiring R]
 
-/-- A subsemiring is a `ℕ`-subalgebra. -/
+/-- A subsemiring is an `ℕ`-subalgebra. -/
 def subalgebraOfSubsemiring (S : Subsemiring R) : Subalgebra ℕ R :=
   { S with algebraMap_mem' := fun i => coe_nat_mem S i }
 #align subalgebra_of_subsemiring subalgebraOfSubsemiring

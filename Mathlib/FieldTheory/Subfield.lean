@@ -51,7 +51,7 @@ Notation used here:
 
 ## Implementation notes
 
-A subfield is implemented as a subring which is is closed under `⁻¹`.
+A subfield is implemented as a subring which is closed under `⁻¹`.
 
 Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆` and `∩`), although
 `∈` is defined as membership of a subfield's underlying set.

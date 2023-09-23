@@ -741,7 +741,12 @@ theorem contMDiffWithinAt_insert_self :
   refine Iff.rfl.and <| (contDiffWithinAt_congr_nhds ?_).trans contDiffWithinAt_insert_self
   simp only [← map_extChartAt_nhdsWithin I, nhdsWithin_insert, Filter.map_sup, Filter.map_pure]
 
-alias contMDiffWithinAt_insert_self ↔ ContMDiffWithinAt.of_insert ContMDiffWithinAt.insert
+alias contMDiffWithinAt_insert_self ↔ ContMDiffWithinAt.of_insert _
+
+-- TODO: use `alias` again once it can make protected theorems
+theorem ContMDiffWithinAt.insert (h : ContMDiffWithinAt I I' n f s x) :
+    ContMDiffWithinAt I I' n f (insert x s) x :=
+  contMDiffWithinAt_insert_self.2 h
 
 theorem ContMDiffAt.contMDiffWithinAt (hf : ContMDiffAt I I' n f x) :
     ContMDiffWithinAt I I' n f s x :=

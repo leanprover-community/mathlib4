@@ -577,7 +577,7 @@ for the vanishing of elements (especially in modules over division rings).
 
 
 /-- `NoZeroSMulDivisors R M` states that a scalar multiple is `0` only if either argument is `0`.
-This a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
+This is a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
 
 The main application of `NoZeroSMulDivisors R M`, when `M` is a module,
 is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0`.

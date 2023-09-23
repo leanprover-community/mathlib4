@@ -18,7 +18,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 ## Main definitions
 
 * `LocalizedModule.r` : the equivalence relation defining this localization, namely
-  `(m, s) ≈ (m', s')` if and only if if there is some `u : S` such that `u • s' • m = u • s • m'`.
+  `(m, s) ≈ (m', s')` if and only if there is some `u : S` such that `u • s' • m = u • s • m'`.
 * `LocalizedModule M S` : the localized module by `S`.
 * `LocalizedModule.mk`  : the canonical map sending `(m, s) : M × S ↦ m/s : LocalizedModule M S`
 * `LocalizedModule.liftOn` : any well defined function `f : M × S → α` respecting `r` descents to

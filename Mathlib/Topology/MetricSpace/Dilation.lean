@@ -325,7 +325,7 @@ theorem comp_apply (g : β →ᵈ γ) (f : α →ᵈ β) (x : α) : (g.comp f : 
 -- Porting note: removed `simp` because it's difficult to auto prove `hne`
 /-- Ratio of the composition `g.comp f` of two dilations is the product of their ratios. We assume
 that there exist two points in `α` at extended distance neither `0` nor `∞` because otherwise
-`Dilation.ratio (g.comp f) = Dilation.ratio f = 1` while `Dilation.ratio g` can by any number. This
+`Dilation.ratio (g.comp f) = Dilation.ratio f = 1` while `Dilation.ratio g` can be any number. This
 version works for most general spaces, see also `Dilation.ratio_comp` for a version assuming that
 `α` is a nontrivial metric space. -/
 theorem ratio_comp' {g : β →ᵈ γ} {f : α →ᵈ β}

@@ -884,15 +884,16 @@ theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
   rfl
 #align intermediate_field.adjoin.finrank IntermediateField.adjoin.finrank
 
-theorem minpoly.natDegree_le {x : L} [FiniteDimensional K L] (hx : IsIntegral K x) :
+theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).natDegree ≤ finrank K L :=
-  le_of_eq_of_le (IntermediateField.adjoin.finrank hx).symm K⟮x⟯.toSubmodule.finrank_le
-#align minpoly.nat_degree_le IntermediateField.minpoly.natDegree_le
+  le_of_eq_of_le (IntermediateField.adjoin.finrank (isIntegral_of_finite _ _)).symm
+    K⟮x⟯.toSubmodule.finrank_le
+#align minpoly.nat_degree_le minpoly.natDegree_le
 
-theorem minpoly.degree_le {x : L} [FiniteDimensional K L] (hx : IsIntegral K x) :
+theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).degree ≤ finrank K L :=
-  degree_le_of_natDegree_le (minpoly.natDegree_le hx)
-#align minpoly.degree_le IntermediateField.minpoly.degree_le
+  degree_le_of_natDegree_le (minpoly.natDegree_le x)
+#align minpoly.degree_le minpoly.degree_le
 
 end PowerBasis
 

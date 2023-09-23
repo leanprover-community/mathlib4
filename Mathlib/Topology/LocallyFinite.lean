@@ -59,7 +59,7 @@ theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g
 theorem _root_.locallyFinite_iff_smallSets :
     LocallyFinite f ↔ ∀ x, ∀ᶠ s in (𝓝 x).smallSets, { i | (f i ∩ s).Nonempty }.Finite :=
   forall_congr' fun _ => Iff.symm <|
-    eventually_small_sets' fun _s _t hst ht =>
+    eventually_smallSets' fun _s _t hst ht =>
       ht.subset fun _i hi => hi.mono <| inter_subset_inter_right _ hst
 #align locally_finite_iff_small_sets locallyFinite_iff_smallSets
 
@@ -199,7 +199,7 @@ theorem preimage_continuous {g : Y → X} (hf : LocallyFinite f) (hg : Continuou
 theorem prod_right (hf : LocallyFinite f) (g : ι → Set Y) : LocallyFinite (fun i ↦ f i ×ˢ g i) :=
   (hf.preimage_continuous continuous_fst).subset fun _ ↦ prod_subset_preimage_fst _ _
 
-theorem prod_left {g : ι → Set Y} (hg : LocallyFinite g) (f : ι → Set Y) :
+theorem prod_left {g : ι → Set Y} (hg : LocallyFinite g) (f : ι → Set X) :
     LocallyFinite (fun i ↦ f i ×ˢ g i) :=
   (hg.preimage_continuous continuous_snd).subset fun _ ↦ prod_subset_preimage_snd _ _
 

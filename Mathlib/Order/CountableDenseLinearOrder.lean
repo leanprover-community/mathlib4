@@ -142,7 +142,7 @@ variable (β)
     partial isomorphism can be extended to one defined at `a`. -/
 def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α) :
     Cofinal (PartialIso α β) where
-  carrier f := ∃ b : β, (a, b) ∈ f.val
+  carrier := {f | ∃ b : β, (a, b) ∈ f.val}
   mem_gt f := by
     cases' exists_across f a with b a_b
     refine
@@ -163,7 +163,7 @@ variable (α) {β}
     partial isomorphism can be extended to include `b`. We prove this by symmetry. -/
 def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β) :
     Cofinal (PartialIso α β) where
-  carrier f := ∃ a, (a, b) ∈ f.val
+  carrier := {f | ∃ a, (a, b) ∈ f.val}
   mem_gt f := by
     rcases (definedAtLeft α b).mem_gt f.comm with ⟨f', ⟨a, ha⟩, hl⟩
     refine' ⟨f'.comm, ⟨a, _⟩, _⟩

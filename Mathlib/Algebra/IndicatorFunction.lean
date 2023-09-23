@@ -869,6 +869,20 @@ theorem mulIndicator_iUnion_apply {ι M} [CompleteLattice M] [One M] (h1 : (⊥ 
 #align set.mul_indicator_Union_apply Set.mulIndicator_iUnion_apply
 #align set.indicator_Union_apply Set.indicator_iUnion_apply
 
+@[to_additive] lemma mulIndicator_iInter_apply {ι M} [Nonempty ι] [CompleteLattice M] [One M]
+    (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α → M) (x : α) :
+    mulIndicator (⋂ i, s i) f x = ⨅ i, mulIndicator (s i) f x := by
+  by_cases hx : x ∈ ⋂ i, s i
+  · rw [mulIndicator_of_mem hx]
+    rw [mem_iInter] at hx
+    refine le_antisymm ?_ (by simp only [mulIndicator_of_mem (hx _), ciInf_const, le_refl])
+    exact le_iInf (fun j ↦ by simp only [mulIndicator_of_mem (hx j), le_refl])
+  · rw [mulIndicator_of_not_mem hx]
+    simp only [mem_iInter, not_exists, not_forall] at hx
+    rcases hx with ⟨j, hj⟩
+    refine le_antisymm (by simp only [← h1, le_iInf_iff, bot_le, forall_const]) ?_
+    simpa [mulIndicator_of_not_mem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x
+
 end Order
 
 section CanonicallyOrderedMonoid

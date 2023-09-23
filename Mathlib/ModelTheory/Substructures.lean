@@ -24,7 +24,7 @@ substructure `s` under the homomorphism `f`, as a substructure.
 * `FirstOrder.Language.Substructure.map` is defined so that `s.map f` is the image of the
 substructure `s` under the homomorphism `f`, as a substructure.
 * `FirstOrder.Language.Hom.range` is defined so that `f.range` is the range of the
-the homomorphism `f`, as a substructure.
+homomorphism `f`, as a substructure.
 * `FirstOrder.Language.Hom.domRestrict` and `FirstOrder.Language.Hom.codRestrict` restrict
 the domain and codomain respectively of first-order homomorphisms to substructures.
 * `FirstOrder.Language.Embedding.domRestrict` and `FirstOrder.Language.Embedding.codRestrict`

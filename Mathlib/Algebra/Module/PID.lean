@@ -25,7 +25,7 @@ import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
 * `R` is a PID and `M` is a (finitely generated for main statements) `R`-module, with additional
   torsion hypotheses in the intermediate lemmas.
-* `N` is a `R`-module lying over a higher type universe than `R`. This assumption is needed on the
+* `N` is an `R`-module lying over a higher type universe than `R`. This assumption is needed on the
   final statement for technical reasons.
 * `p` is an irreducible element of `R` or a tuple of these.
 

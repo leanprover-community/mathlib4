@@ -647,7 +647,7 @@ variable {n : ℕ}
 -- Porting note: split out `aux_IH` and `quotient_mk_comp_C_isIntegral_of_jacobson'`
 -- from the long proof of `Ideal.MvPolynomial.quotient_mk_comp_C_isIntegral_of_jacobson`
 
-/-- The constant coefficient as a R-linear morphism -/
+/-- The constant coefficient as an R-linear morphism -/
 private noncomputable def Cₐ (R : Type u) (S : Type v)
     [CommRing R] [CommRing S] [Algebra R S] : S →ₐ[R] S[X] :=
   { Polynomial.C with commutes' := fun r => by rfl }

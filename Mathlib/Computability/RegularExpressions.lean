@@ -395,11 +395,8 @@ theorem rmatch_iff_matches' (P : RegularExpression α) :
       tauto
 #align regular_expression.rmatch_iff_matches RegularExpression.rmatch_iff_matches'
 
-instance (P : RegularExpression α) : DecidablePred P.matches' := by
-  intro x
-  change Decidable (x ∈ P.matches')
-  rw [← rmatch_iff_matches']
-  exact instDecidableEqBool (rmatch P x) True
+instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _ ↦
+  decidable_of_iff _ (rmatch_iff_matches' _ _)
 
 /-- Map the alphabet of a regular expression. -/
 @[simp]

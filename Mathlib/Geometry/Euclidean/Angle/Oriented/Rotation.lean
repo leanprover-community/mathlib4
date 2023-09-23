@@ -258,7 +258,7 @@ theorem oangle_rotation_self_right {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     o.oangle x (o.rotation θ x) = θ := by simp [hx]
 #align orientation.oangle_rotation_self_right Orientation.oangle_rotation_self_right
 
-/-- Rotating the first vector by the angle between the two vectors results an an angle of 0. -/
+/-- Rotating the first vector by the angle between the two vectors results in an angle of 0. -/
 @[simp]
 theorem oangle_rotation_oangle_left (x y : V) : o.oangle (o.rotation (o.oangle x y) x) y = 0 := by
   by_cases hx : x = 0
@@ -269,7 +269,7 @@ theorem oangle_rotation_oangle_left (x y : V) : o.oangle (o.rotation (o.oangle x
 #align orientation.oangle_rotation_oangle_left Orientation.oangle_rotation_oangle_left
 
 /-- Rotating the first vector by the angle between the two vectors and swapping the vectors
-results an an angle of 0. -/
+results in an angle of 0. -/
 @[simp]
 theorem oangle_rotation_oangle_right (x y : V) : o.oangle y (o.rotation (o.oangle x y) x) = 0 := by
   rw [oangle_rev]

@@ -270,7 +270,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     exact ⟨s.nonempty, s.isCompact⟩
   rw [this]
   refine' isClosed_of_closure_subset fun s hs => ⟨_, _⟩
-  · -- take a set set t which is nonempty and at a finite distance of s
+  · -- take a set t which is nonempty and at a finite distance of s
     rcases mem_closure_iff.1 hs ⊤ ENNReal.coe_lt_top with ⟨t, ht, Dst⟩
     rw [edist_comm] at Dst
     -- since `t` is nonempty, so is `s`
