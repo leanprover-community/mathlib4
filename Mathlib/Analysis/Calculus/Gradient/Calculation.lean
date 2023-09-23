@@ -6,9 +6,9 @@ Authors: Chenyi Li, Ziyu Wang, Yu Penghao, Cao Zhipeng
 import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.Gradient.Basic
+import Gradient.Basic
 
-/-
+/-!
 # Gradient
 
 ## Main results
@@ -28,7 +28,7 @@ noncomputable section
 
 open Topology InnerProductSpace Set
 
-variable {𝕜 F : Type*} [IsROrC 𝕜] 
+variable {𝕜 F : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
 
@@ -38,10 +38,10 @@ section Composition
 
 open Set Filter
 
-variable {g : 𝕜 → 𝕜} {x : F} {g' : 𝕜} 
+variable {g : 𝕜 → 𝕜} {x : F} {g' : 𝕜}
 variable {L : Filter F} {L' : Filter 𝕜} {t : Set 𝕜}
 
-theorem HasGradientAtFilter.comp 
+theorem HasGradientAtFilter.comp
   (hg : HasGradientAtFilter g g' (f x) L') (hf : HasGradientAtFilter f f' x L)
   (hL : Tendsto f L L') : HasGradientAtFilter (g ∘ f) (g' • f') x L := by
     have eq : (starRingEnd 𝕜) g' • (toDual 𝕜 F) f' =
@@ -49,18 +49,18 @@ theorem HasGradientAtFilter.comp
     rw [HasGradientAtFilter, ← eq]
     exact hg.hasDerivAtFilter.comp_hasFDerivAtFilter x hf hL
 
-theorem HasGradientWithinAt.comp 
-  (hg : HasGradientWithinAt g g' t (f x)) (hf : HasGradientWithinAt f f' s x) 
+theorem HasGradientWithinAt.comp
+  (hg : HasGradientWithinAt g g' t (f x)) (hf : HasGradientWithinAt f f' s x)
   (hst : MapsTo f s t) :
     HasGradientWithinAt (g ∘ f) (g' • f') s x :=
       HasGradientAtFilter.comp hg hf <| hf.continuousWithinAt.tendsto_nhdsWithin hst
 
-theorem HasGradientAt.comp_hasGradientWithinAt 
+theorem HasGradientAt.comp_hasGradientWithinAt
   (hg : HasGradientAt g g' (f x)) (hf : HasGradientWithinAt f f' s x) :
     HasGradientWithinAt (g ∘ f) (g' • f') s x :=
       hg.comp hf hf.continuousWithinAt
 
-theorem HasGradientWithinAt.comp_of_mem 
+theorem HasGradientWithinAt.comp_of_mem
     (hg : HasGradientWithinAt g g' t (f x)) (hf : HasGradientWithinAt f f' s x)
     (hst : Tendsto f (𝓝[s] x) (𝓝[t] f x)) : HasGradientWithinAt (g ∘ f) (g' • f') s x :=
       HasGradientAtFilter.comp hg hf hst
@@ -82,7 +82,7 @@ open Set Filter
 
 theorem HasGradientAtFilter.const_smul (h : HasGradientAtFilter f f' x L) (c : 𝕜) :
     HasGradientAtFilter (fun x => c • f x) ((starRingEnd 𝕜) c • f') x L := by
-  have : c • (toDual 𝕜 F) f' = (toDual 𝕜 F) ((starRingEnd 𝕜) c • f') := by 
+  have : c • (toDual 𝕜 F) f' = (toDual 𝕜 F) ((starRingEnd 𝕜) c • f') := by
     rw [map_smulₛₗ, RingHomCompTriple.comp_apply, RingHom.id_apply]
   rw [HasGradientAtFilter, ← this]; rw [HasGradientAtFilter] at h
   exact h.const_smul c
@@ -92,7 +92,7 @@ nonrec theorem HasGradientWithinAt.const_smul (h : HasGradientWithinAt f f' s x)
   h.const_smul c
 
 nonrec theorem HasGradientAt.const_smul (h : HasGradientAt f f' x) (c : 𝕜) :
-    HasGradientAt (fun x => c • f x) ((starRingEnd 𝕜) c • f') x := 
+    HasGradientAt (fun x => c • f x) ((starRingEnd 𝕜) c • f') x :=
     h.const_smul c
 
 theorem Gradient_const_smul (h : DifferentiableAt 𝕜 f x) (c : 𝕜) :
@@ -114,15 +114,15 @@ end ConstSmul
 
 section Add
 
-variable {f' : F} {g : F → 𝕜} {x : F} {g' : F} 
+variable {f' : F} {g : F → 𝕜} {x : F} {g' : F}
 variable {L : Filter F} {f : F → 𝕜} {L' : Filter 𝕜} {t : Set 𝕜}
 
 theorem HasGradientAtFilter.add (hf : HasGradientAtFilter f f' x L)
     (hg : HasGradientAtFilter g g' x L) :
       HasGradientAtFilter (fun y => f y + g y) (f' + g') x L := by
-        rw [HasGradientAtFilter] ; rw [HasGradientAtFilter] at hf hg
+        rw [HasGradientAtFilter]; rw [HasGradientAtFilter] at hf hg
         have : (toDual 𝕜 F) (f' + g') = (toDual 𝕜 F) f' + (toDual 𝕜 F) g' := by simp
-        rw [this] ; exact hf.add hg
+        rw [this]; exact hf.add hg
 
 nonrec theorem HasGradientWithinAt.add (hf : HasGradientWithinAt f f' s x)
     (hg : HasGradientWithinAt g g' s x) : HasGradientWithinAt (fun y => f y + g y) (f' + g') s x :=
@@ -226,10 +226,10 @@ section Sub
 
 /-! ### Derivative of the difference of two functions -/
 
-variable {f' : F} {g : F → 𝕜} {x : F} {g' : F} 
+variable {f' : F} {g : F → 𝕜} {x : F} {g' : F}
 variable {L : Filter F} {f : F → 𝕜} {L' : Filter 𝕜} {t : Set 𝕜}
 
-theorem HasGradientAtFilter.sub (hf : HasGradientAtFilter f f' x L) 
+theorem HasGradientAtFilter.sub (hf : HasGradientAtFilter f f' x L)
   (hg : HasGradientAtFilter g g' x L) :
     HasGradientAtFilter (fun x => f x - g x) (f' - g') x L := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
@@ -287,41 +287,43 @@ variable {a' b' c' d' : F} {a b c d : F → 𝕜} {x : F}
 
 open ContinuousLinearMap
 
-lemma equiv_lemma_mul : c x • (toDual 𝕜 F) d' + d x • (toDual 𝕜 F) c' 
+lemma equiv_lemma_mul : c x • (toDual 𝕜 F) d' + d x • (toDual 𝕜 F) c'
   = (toDual 𝕜 F) ((starRingEnd 𝕜) (c x) • d' + (starRingEnd 𝕜) (d x) • c'):= by
   simp only [map_add, map_smulₛₗ, RingHomCompTriple.comp_apply, RingHom.id_apply]
 
 theorem HasGradientAt.mul (hc : HasGradientAt c c' x) (hd : HasGradientAt d d' x) :
-    HasGradientAt (fun y => c y * d y) ((starRingEnd 𝕜) (c x) • d' + (starRingEnd 𝕜) (d x) • c') x := by
+    HasGradientAt (fun y => c y * d y)
+      ((starRingEnd 𝕜) (c x) • d' + (starRingEnd 𝕜) (d x) • c') x := by
   rw [HasGradientAt_iff_HasFDerivAt, ← equiv_lemma_mul]
   rw [HasGradientAt_iff_HasFDerivAt] at hc hd
   exact hc.mul hd
 
-theorem HasGradientWithinAt.mul (hc : HasGradientWithinAt c c' s x) (hd : HasGradientWithinAt d d' s x) :
-    HasGradientWithinAt (fun y => c y * d y) ((starRingEnd 𝕜) (c x) • d' 
+theorem HasGradientWithinAt.mul (hc : HasGradientWithinAt c c' s x)
+  (hd : HasGradientWithinAt d d' s x) :
+    HasGradientWithinAt (fun y => c y * d y) ((starRingEnd 𝕜) (c x) • d'
       + (starRingEnd 𝕜) (d x) • c') s x := by
   rw [HasGradientWithinAt_iff_HasFDerivWithinAt, ← equiv_lemma_mul]
   rw [HasGradientWithinAt_iff_HasFDerivWithinAt] at hc hd
   exact hc.mul hd
 
 theorem Gradient_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) :
-    ∇ (fun y => c y * d y) x = (starRingEnd 𝕜) (c x) • ∇ d x 
-      + (starRingEnd 𝕜) (d x) • ∇ c x := 
+    ∇ (fun y => c y * d y) x = (starRingEnd 𝕜) (c x) • ∇ d x
+      + (starRingEnd 𝕜) (d x) • ∇ c x :=
   (hc.hasGradientAt.mul hd.hasGradientAt).gradient
 
 variable [InnerProductSpace ℝ F] {a' b' c' d' : F} {a b c d : F → ℝ} {x : F}
 
 theorem HasGradientAt.mul' (hc : HasGradientAt c c' x) (hd : HasGradientAt d d' x) :
-    HasGradientAt (fun y => c y * d y) ((c x) • d' + (d x) • c') x := 
+    HasGradientAt (fun y => c y * d y) ((c x) • d' + (d x) • c') x :=
       HasGradientAt.mul hc hd
 
-theorem HasGradientWithinAt.mul' (hc : HasGradientWithinAt c c' s x) 
+theorem HasGradientWithinAt.mul' (hc : HasGradientWithinAt c c' s x)
   (hd : HasGradientWithinAt d d' s x) :
-    HasGradientWithinAt (fun y => c y * d y) ((c x) • d' + (d x) • c') s x := 
+    HasGradientWithinAt (fun y => c y * d y) ((c x) • d' + (d x) • c') s x :=
       hc.mul hd
 
 theorem Gradient_mul' (hc : DifferentiableAt ℝ c x) (hd : DifferentiableAt ℝ d x) :
-    ∇ (fun y => c y * d y) x = (c x) • ∇ d x + (d x) • ∇ c x := 
+    ∇ (fun y => c y * d y) x = (c x) • ∇ d x + (d x) • ∇ c x :=
       Gradient_mul hc hd
 
 end Mul
@@ -336,7 +338,7 @@ lemma equiv_lemma_mul_const : d • (toDual 𝕜 F) c' = (toDual 𝕜 F) ((starR
 theorem HasGradientWithinAt.mul_const (hc : HasGradientWithinAt c c' s x) :
     HasGradientWithinAt (fun y => c y * d) ((starRingEnd 𝕜) d • c') s x := by
   rw [HasGradientWithinAt_iff_HasFDerivWithinAt, ← equiv_lemma_mul_const]
-  rw [HasGradientWithinAt_iff_HasFDerivWithinAt] at hc 
+  rw [HasGradientWithinAt_iff_HasFDerivWithinAt] at hc
   exact hc.mul_const d
 
 theorem HasGradientAt.mul_const (hc : HasGradientAt c c' x) :
@@ -346,7 +348,7 @@ theorem HasGradientAt.mul_const (hc : HasGradientAt c c' x) :
   exact hc.mul_const d
 
 theorem Gradient_mul_const (hc : DifferentiableAt 𝕜 c x) :
-    ∇ (fun y => c y * d) x = (starRingEnd 𝕜) d • ∇ c x := 
+    ∇ (fun y => c y * d) x = (starRingEnd 𝕜) d • ∇ c x :=
     (hc.hasGradientAt.mul_const d).gradient
 
 lemma equiv_lemma_const_mul : b • (toDual 𝕜 F) a' = (toDual 𝕜 F) ((starRingEnd 𝕜) b • a') := by
@@ -355,7 +357,7 @@ lemma equiv_lemma_const_mul : b • (toDual 𝕜 F) a' = (toDual 𝕜 F) ((starR
 theorem HasGradientWithinAt.const_mul (ha : HasGradientWithinAt a a' s x) :
     HasGradientWithinAt (fun y => b * a y) ((starRingEnd 𝕜) b • a') s x := by
   rw [HasGradientWithinAt_iff_HasFDerivWithinAt, ← equiv_lemma_const_mul]
-  rw [HasGradientWithinAt_iff_HasFDerivWithinAt] at ha 
+  rw [HasGradientWithinAt_iff_HasFDerivWithinAt] at ha
   exact ha.const_mul b
 
 theorem HasGradientAt.const_mul (ha : HasGradientAt a a' x) :
@@ -371,27 +373,27 @@ theorem Gradient_const_mul (ha : DifferentiableAt 𝕜 a x) :
 variable [InnerProductSpace ℝ F] {c' a': F} {c a: F → ℝ} {x : F} (d b: ℝ)
 
 theorem HasGradientWithinAt.mul_const' (hc : HasGradientWithinAt c c' s x) :
-    HasGradientWithinAt (fun y => c y * d) (d • c') s x := 
-      HasGradientWithinAt.mul_const d hc 
+    HasGradientWithinAt (fun y => c y * d) (d • c') s x :=
+      HasGradientWithinAt.mul_const d hc
 
 theorem HasGradientAt.mul_const' (hc : HasGradientAt c c' x) :
-    HasGradientAt (fun y => c y * d) (d • c') x := 
+    HasGradientAt (fun y => c y * d) (d • c') x :=
       HasGradientAt.mul_const d hc
 
 theorem Gradient_mul_const' (hc : DifferentiableAt ℝ c x) :
-    ∇ (fun y => c y * d) x = d • ∇ c x := 
-      Gradient_mul_const d hc 
+    ∇ (fun y => c y * d) x = d • ∇ c x :=
+      Gradient_mul_const d hc
 
 theorem HasGradientWithinAt.const_mul' (ha : HasGradientWithinAt a a' s x) :
     HasGradientWithinAt (fun y => b * a y) (b • a') s x :=
       HasGradientWithinAt.const_mul b ha
 
 theorem HasGradientAt.const_mul' (ha : HasGradientAt a a' x) :
-    HasGradientAt (fun y => b * a y) (b • a') x := 
+    HasGradientAt (fun y => b * a y) (b • a') x :=
       HasGradientAt.const_mul b ha
 
 theorem Gradient_const_mul' (ha : DifferentiableAt ℝ a x) :
     ∇ (fun y => b * a y) x = b • ∇ a x :=
-     Gradient_const_mul b ha 
+     Gradient_const_mul b ha
 
 end Mul_const

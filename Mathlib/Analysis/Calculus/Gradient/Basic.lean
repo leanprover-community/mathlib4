@@ -6,9 +6,8 @@ Authors: Ziyu Wang, Chenyi Li, Yu Penghao, Cao Zhipeng
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.Calculus.FDeriv.Basic
 import Mathlib.Analysis.Calculus.Deriv.Basic
-noncomputable section
 
-/-
+/-!
 # Gradient
 
 ## Main Definitions
@@ -47,7 +46,9 @@ This file contains the following parts of gradient.
 
 open Topology InnerProductSpace Set
 
-variable {𝕜 F : Type*} [IsROrC 𝕜] 
+noncomputable section
+
+variable {𝕜 F : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
 
@@ -75,9 +76,11 @@ def Gradient (f : F → 𝕜) (x : F) : F := (toDual 𝕜 F).symm (fderiv 𝕜 f
 
 notation "∇" => Gradient
 
+variable {s : Set F} {L : Filter F}
+
 theorem HasGradientWithinAt_iff_HasFDerivWithinAt {s : Set F} :
   HasGradientWithinAt f f' s x ↔ HasFDerivWithinAt f (toDual 𝕜 F f') s x := by
-  constructor <;> (intro h ; exact h)
+  constructor <;> (intro h; exact h)
 
 theorem HasGradientWithinAt.hasFDerivWithinAt {s : Set F} (h : HasGradientWithinAt f f' s x) :
   HasFDerivWithinAt f (toDual 𝕜 F f') s x := HasGradientWithinAt_iff_HasFDerivWithinAt.mp h
@@ -88,7 +91,7 @@ theorem HasFDerivWithinAt.hasGradientWithinAt {s : Set F}
 
 theorem HasGradientAt_iff_HasFDerivAt :
   HasGradientAt f f' x ↔ HasFDerivAt f (toDual 𝕜 F f') x := by
-  constructor <;> (intro h ; exact h)
+  constructor <;> (intro h; exact h)
 
 theorem HasGradientAt.hasFDerivAt (h : HasGradientAt f f' x) :
   HasFDerivAt f (toDual 𝕜 F f') x := HasGradientAt_iff_HasFDerivAt.mp h
@@ -163,8 +166,8 @@ theorem HasFDerivAt.hasGradientAt' {frechet : F →L[𝕜] 𝕜} (h : HasFDerivA
     exact h.hasGradientAt
 
 theorem HasGradientAt_iff_HasFDerivAt' {frechet : F →L[𝕜] 𝕜} :
-  HasGradientAt f ((toDual 𝕜 F).symm frechet) x ↔ HasFDerivAt f frechet x := 
-    ⟨ fun h ↦ h.hasFDerivAt', fun h ↦ h.hasGradientAt' ⟩ 
+  HasGradientAt f ((toDual 𝕜 F).symm frechet) x ↔ HasFDerivAt f frechet x :=
+    ⟨ fun h ↦ h.hasFDerivAt', fun h ↦ h.hasGradientAt' ⟩
 
 theorem DifferentiableAt.hasGradientAt (h : DifferentiableAt 𝕜 f x) :
   HasGradientAt f (∇ f x) x := by
@@ -172,7 +175,7 @@ theorem DifferentiableAt.hasGradientAt (h : DifferentiableAt 𝕜 f x) :
   exact h.hasFDerivAt
 
 theorem HasGradientAt.differentiableAt (h : HasGradientAt f f' x) :
-  DifferentiableAt 𝕜 f x := by use ((toDual 𝕜 F) f') ; apply h.hasFDerivAt
+  DifferentiableAt 𝕜 f x := by use ((toDual 𝕜 F) f'); apply h.hasFDerivAt
 
 @[simp]
 theorem HasGradientAt_iff_DifferentiableAt : HasGradientAt f (∇ f x) x ↔ DifferentiableAt 𝕜 f x :=
@@ -204,21 +207,21 @@ theorem StarRingEnd_eq_toDual : ((toDual 𝕜 𝕜) (starRingEnd 𝕜 g')) 1 = g
 theorem Mul_one_eq_SterRingEnd (g' : 𝕜) : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
   (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
       refine Iff.mpr ContinuousLinearMap.ext_iff ?_
-      simp ; intro v ; rw [toDual_eq_inner, IsROrC.inner_apply, mul_comm]
+      simp; intro v; rw [toDual_eq_inner, IsROrC.inner_apply, mul_comm]
 
 theorem SterRingEnd_eq_Mul_one (g' : 𝕜) : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
   g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
       refine Iff.mpr ContinuousLinearMap.ext_iff ?_
-      simp ; intro  ; rw [toDual_eq_inner, IsROrC.inner_apply, mul_comm]
+      simp; intro ; rw [toDual_eq_inner, IsROrC.inner_apply, mul_comm]
       rw [RingHomCompTriple.comp_apply, RingHom.id_apply]
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
   HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
-  rw [HasDerivAtFilter, Mul_one_eq_SterRingEnd] ; exact h
+  rw [HasDerivAtFilter, Mul_one_eq_SterRingEnd]; exact h
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
   HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by
-  rw [HasGradientAtFilter, ← SterRingEnd_eq_Mul_one] ; exact h
+  rw [HasGradientAtFilter, ← SterRingEnd_eq_Mul_one]; exact h
 
 theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
   HasDerivAt g (starRingEnd 𝕜 g') u := by
@@ -325,8 +328,8 @@ theorem HasGradientWithinAt.congr_of_eventuallyEq (h : HasGradientWithinAt f f' 
   HasGradientAtFilter.congr_of_eventuallyEq h h₁ hx
 
 theorem HasGradientWithinAt.congr_of_eventuallyEq_of_mem (h : HasGradientWithinAt f f' s x)
-    (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : HasGradientWithinAt f₁ f' s x :=
-  h.congr_of_eventuallyEq h₁ (h₁.eq_of_nhdsWithin hx)
+    (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : HasGradientWithinAt f₁ f' s x := by
+  apply h.congr_of_eventuallyEq h₁ (h₁.eq_of_nhdsWithin hx)
 
 theorem HasGradientAt.congr_of_eventuallyEq (h : HasGradientAt f f' x) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasGradientAt f₁ f' x := HasGradientAtFilter.congr_of_eventuallyEq h h₁ (mem_of_mem_nhds h₁ : _)
@@ -347,7 +350,7 @@ section Const
 variable (c : 𝕜) (s x L)
 
 theorem hasGradientAtFilter_const : HasGradientAtFilter (fun _ => c) 0 x L := by
-  rw [HasGradientAtFilter, map_zero] ; apply hasFDerivAtFilter_const c x L
+  rw [HasGradientAtFilter, map_zero]; apply hasFDerivAtFilter_const c x L
 
 theorem hasGradientWithinAt_const : HasGradientWithinAt (fun _ => c) 0 s x :=
   hasGradientAtFilter_const _ _ _
@@ -370,7 +373,7 @@ nonrec theorem HasGradientAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasGrad
     Tendsto f L (𝓝 (f x)) := h.tendsto_nhds hL
 
 theorem HasGradientWithinAt.continuousWithinAt (h : HasGradientWithinAt f f' s x) :
-    ContinuousWithinAt f s x := HasGradientAtFilter.tendsto_nhds inf_le_left h
+    ContinuousWithinAt f s x := by apply HasGradientAtFilter.tendsto_nhds inf_le_left h
 
 theorem HasGradientAt.continuousAt (h : HasGradientAt f f' x) : ContinuousAt f x :=
   HasGradientAtFilter.tendsto_nhds le_rfl h
