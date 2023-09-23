@@ -382,6 +382,8 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)
     ← opShiftFunctorEquivalence_unitIso_inv_naturality]
   simp
 
+/-- The pretriangulated structure on the opposite category of
+a pretriangulated category. -/
 scoped instance : Pretriangulated Cᵒᵖ where
   distinguishedTriangles := distinguishedTriangles C
   isomorphic_distinguished := isomorphic_distinguished
