@@ -52,35 +52,35 @@ open scoped Topology Manifold
 /-! ### Definition of smooth functions between manifolds -/
 
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a smooth manifold `M` over the pair `(E, H)`.
-  {E : Type _}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type _} [TopologicalSpace M] [ChartedSpace H M]
+  {E : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
   -- declare a smooth manifold `M'` over the pair `(E', H')`.
-  {E' : Type _}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H']
-  (I' : ModelWithCorners 𝕜 E' H') {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M']
+  {E' : Type*}
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   [SmoothManifoldWithCorners I' M']
   -- declare a manifold `M''` over the pair `(E'', H'')`.
-  {E'' : Type _}
-  [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type _} [TopologicalSpace H'']
-  {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type _} [TopologicalSpace M''] [ChartedSpace H'' M'']
+  {E'' : Type*}
+  [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
+  {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare a smooth manifold `N` over the pair `(F, G)`.
-  {F : Type _}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type _} [TopologicalSpace G]
-  {J : ModelWithCorners 𝕜 F G} {N : Type _} [TopologicalSpace N] [ChartedSpace G N]
+  {F : Type*}
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   [SmoothManifoldWithCorners J N]
   -- declare a smooth manifold `N'` over the pair `(F', G')`.
-  {F' : Type _}
-  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type _} [TopologicalSpace G']
-  {J' : ModelWithCorners 𝕜 F' G'} {N' : Type _} [TopologicalSpace N'] [ChartedSpace G' N']
+  {F' : Type*}
+  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
+  {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   [SmoothManifoldWithCorners J' N']
   -- F₁, F₂, F₃, F₄ are normed spaces
-  {F₁ : Type _}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type _} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type _} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type _}
+  {F₁ : Type*}
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
+  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
   [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
   {e : LocalHomeomorph M H}
@@ -238,33 +238,51 @@ def Smooth (f : M → M') :=
   ContMDiff I I' ⊤ f
 #align smooth Smooth
 
-/-! ### Basic properties of smooth functions between manifolds -/
-
-
 variable {I I'}
+
+/-! ### Deducing smoothness from higher smoothness -/
+
+theorem ContMDiffWithinAt.of_le (hf : ContMDiffWithinAt I I' n f s x) (le : m ≤ n) :
+    ContMDiffWithinAt I I' m f s x :=
+  ⟨hf.1, hf.2.of_le le⟩
+#align cont_mdiff_within_at.of_le ContMDiffWithinAt.of_le
+
+theorem ContMDiffAt.of_le (hf : ContMDiffAt I I' n f x) (le : m ≤ n) : ContMDiffAt I I' m f x :=
+  ContMDiffWithinAt.of_le hf le
+#align cont_mdiff_at.of_le ContMDiffAt.of_le
+
+theorem ContMDiffOn.of_le (hf : ContMDiffOn I I' n f s) (le : m ≤ n) : ContMDiffOn I I' m f s :=
+  fun x hx => (hf x hx).of_le le
+#align cont_mdiff_on.of_le ContMDiffOn.of_le
+
+theorem ContMDiff.of_le (hf : ContMDiff I I' n f) (le : m ≤ n) : ContMDiff I I' m f := fun x =>
+  (hf x).of_le le
+#align cont_mdiff.of_le ContMDiff.of_le
+
+/-! ### Basic properties of smooth functions between manifolds -/
 
 theorem ContMDiff.smooth (h : ContMDiff I I' ⊤ f) : Smooth I I' f :=
   h
 #align cont_mdiff.smooth ContMDiff.smooth
 
-theorem Smooth.contMDiff (h : Smooth I I' f) : ContMDiff I I' ⊤ f :=
-  h
+theorem Smooth.contMDiff (h : Smooth I I' f) : ContMDiff I I' n f :=
+  h.of_le le_top
 #align smooth.cont_mdiff Smooth.contMDiff
 
 theorem ContMDiffOn.smoothOn (h : ContMDiffOn I I' ⊤ f s) : SmoothOn I I' f s :=
   h
 #align cont_mdiff_on.smooth_on ContMDiffOn.smoothOn
 
-theorem SmoothOn.contMDiffOn (h : SmoothOn I I' f s) : ContMDiffOn I I' ⊤ f s :=
-  h
+theorem SmoothOn.contMDiffOn (h : SmoothOn I I' f s) : ContMDiffOn I I' n f s :=
+  h.of_le le_top
 #align smooth_on.cont_mdiff_on SmoothOn.contMDiffOn
 
 theorem ContMDiffAt.smoothAt (h : ContMDiffAt I I' ⊤ f x) : SmoothAt I I' f x :=
   h
 #align cont_mdiff_at.smooth_at ContMDiffAt.smoothAt
 
-theorem SmoothAt.contMDiffAt (h : SmoothAt I I' f x) : ContMDiffAt I I' ⊤ f x :=
-  h
+theorem SmoothAt.contMDiffAt (h : SmoothAt I I' f x) : ContMDiffAt I I' n f x :=
+  h.of_le le_top
 #align smooth_at.cont_mdiff_at SmoothAt.contMDiffAt
 
 theorem ContMDiffWithinAt.smoothWithinAt (h : ContMDiffWithinAt I I' ⊤ f s x) :
@@ -273,8 +291,8 @@ theorem ContMDiffWithinAt.smoothWithinAt (h : ContMDiffWithinAt I I' ⊤ f s x) 
 #align cont_mdiff_within_at.smooth_within_at ContMDiffWithinAt.smoothWithinAt
 
 theorem SmoothWithinAt.contMDiffWithinAt (h : SmoothWithinAt I I' f s x) :
-    ContMDiffWithinAt I I' ⊤ f s x :=
-  h
+    ContMDiffWithinAt I I' n f s x :=
+  h.of_le le_top
 #align smooth_within_at.cont_mdiff_within_at SmoothWithinAt.contMDiffWithinAt
 
 theorem ContMDiff.contMDiffAt (h : ContMDiff I I' n f) : ContMDiffAt I I' n f x :=
@@ -629,25 +647,6 @@ theorem smooth_iff_target :
   contMDiff_iff_target
 #align smooth_iff_target smooth_iff_target
 
-/-! ### Deducing smoothness from higher smoothness -/
-
-theorem ContMDiffWithinAt.of_le (hf : ContMDiffWithinAt I I' n f s x) (le : m ≤ n) :
-    ContMDiffWithinAt I I' m f s x :=
-  ⟨hf.1, hf.2.of_le le⟩
-#align cont_mdiff_within_at.of_le ContMDiffWithinAt.of_le
-
-theorem ContMDiffAt.of_le (hf : ContMDiffAt I I' n f x) (le : m ≤ n) : ContMDiffAt I I' m f x :=
-  ContMDiffWithinAt.of_le hf le
-#align cont_mdiff_at.of_le ContMDiffAt.of_le
-
-theorem ContMDiffOn.of_le (hf : ContMDiffOn I I' n f s) (le : m ≤ n) : ContMDiffOn I I' m f s :=
-  fun x hx => (hf x hx).of_le le
-#align cont_mdiff_on.of_le ContMDiffOn.of_le
-
-theorem ContMDiff.of_le (hf : ContMDiff I I' n f) (le : m ≤ n) : ContMDiff I I' m f := fun x =>
-  (hf x).of_le le
-#align cont_mdiff.of_le ContMDiff.of_le
-
 /-! ### Deducing smoothness from smoothness one step beyond -/
 
 
@@ -741,7 +740,7 @@ theorem contMDiffWithinAt_insert_self :
   refine Iff.rfl.and <| (contDiffWithinAt_congr_nhds ?_).trans contDiffWithinAt_insert_self
   simp only [← map_extChartAt_nhdsWithin I, nhdsWithin_insert, Filter.map_sup, Filter.map_pure]
 
-alias contMDiffWithinAt_insert_self ↔ ContMDiffWithinAt.of_insert _
+alias ⟨ContMDiffWithinAt.of_insert, _⟩ := contMDiffWithinAt_insert_self
 
 -- TODO: use `alias` again once it can make protected theorems
 theorem ContMDiffWithinAt.insert (h : ContMDiffWithinAt I I' n f s x) :
@@ -1342,8 +1341,8 @@ theorem contMDiffWithinAt_iff_contDiffWithinAt {f : E → E'} {s : Set E} {x : E
   exact ContDiffWithinAt.continuousWithinAt
 #align cont_mdiff_within_at_iff_cont_diff_within_at contMDiffWithinAt_iff_contDiffWithinAt
 
-alias contMDiffWithinAt_iff_contDiffWithinAt ↔
-  ContMDiffWithinAt.contDiffWithinAt ContDiffWithinAt.contMDiffWithinAt
+alias ⟨ContMDiffWithinAt.contDiffWithinAt, ContDiffWithinAt.contMDiffWithinAt⟩ :=
+  contMDiffWithinAt_iff_contDiffWithinAt
 #align cont_mdiff_within_at.cont_diff_within_at ContMDiffWithinAt.contDiffWithinAt
 #align cont_diff_within_at.cont_mdiff_within_at ContDiffWithinAt.contMDiffWithinAt
 
@@ -1352,7 +1351,7 @@ theorem contMDiffAt_iff_contDiffAt {f : E → E'} {x : E} :
   rw [← contMDiffWithinAt_univ, contMDiffWithinAt_iff_contDiffWithinAt, contDiffWithinAt_univ]
 #align cont_mdiff_at_iff_cont_diff_at contMDiffAt_iff_contDiffAt
 
-alias contMDiffAt_iff_contDiffAt ↔ ContMDiffAt.contDiffAt ContDiffAt.contMDiffAt
+alias ⟨ContMDiffAt.contDiffAt, ContDiffAt.contMDiffAt⟩ := contMDiffAt_iff_contDiffAt
 #align cont_mdiff_at.cont_diff_at ContMDiffAt.contDiffAt
 #align cont_diff_at.cont_mdiff_at ContDiffAt.contMDiffAt
 
@@ -1361,7 +1360,7 @@ theorem contMDiffOn_iff_contDiffOn {f : E → E'} {s : Set E} :
   forall_congr' <| by simp [contMDiffWithinAt_iff_contDiffWithinAt]
 #align cont_mdiff_on_iff_cont_diff_on contMDiffOn_iff_contDiffOn
 
-alias contMDiffOn_iff_contDiffOn ↔ ContMDiffOn.contDiffOn ContDiffOn.contMDiffOn
+alias ⟨ContMDiffOn.contDiffOn, ContDiffOn.contMDiffOn⟩ := contMDiffOn_iff_contDiffOn
 #align cont_mdiff_on.cont_diff_on ContMDiffOn.contDiffOn
 #align cont_diff_on.cont_mdiff_on ContDiffOn.contMDiffOn
 
@@ -1369,7 +1368,7 @@ theorem contMDiff_iff_contDiff {f : E → E'} : ContMDiff 𝓘(𝕜, E) 𝓘(�
   rw [← contDiffOn_univ, ← contMDiffOn_univ, contMDiffOn_iff_contDiffOn]
 #align cont_mdiff_iff_cont_diff contMDiff_iff_contDiff
 
-alias contMDiff_iff_contDiff ↔ ContMDiff.contDiff ContDiff.contMDiff
+alias ⟨ContMDiff.contDiff, ContDiff.contMDiff⟩ := contMDiff_iff_contDiff
 #align cont_mdiff.cont_diff ContMDiff.contDiff
 #align cont_diff.cont_mdiff ContDiff.contMDiff
 
@@ -1643,7 +1642,7 @@ end Projections
 theorem contMDiffWithinAt_prod_iff (f : M → M' × N') {s : Set M} {x : M} :
     ContMDiffWithinAt I (I'.prod J') n f s x ↔
       ContMDiffWithinAt I I' n (Prod.fst ∘ f) s x ∧ ContMDiffWithinAt I J' n (Prod.snd ∘ f) s x :=
-  by refine' ⟨fun h => ⟨h.fst, h.snd⟩, fun h => _⟩; simpa only [Prod.mk.eta] using h.1.prod_mk h.2
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod_mk h.2⟩
 #align cont_mdiff_within_at_prod_iff contMDiffWithinAt_prod_iff
 
 theorem contMDiffAt_prod_iff (f : M → M' × N') {x : M} :
@@ -1750,7 +1749,7 @@ use `𝓘(𝕜, Π i, F i)` as the model space.
 -/
 
 
-variable {ι : Type _} [Fintype ι] {Fi : ι → Type _} [∀ i, NormedAddCommGroup (Fi i)]
+variable {ι : Type*} [Fintype ι] {Fi : ι → Type*} [∀ i, NormedAddCommGroup (Fi i)]
   [∀ i, NormedSpace 𝕜 (Fi i)] {φ : M → ∀ i, Fi i}
 
 theorem contMDiffWithinAt_pi_space :
@@ -1870,7 +1869,6 @@ theorem ContMDiff.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁}
 #align cont_mdiff.clm_apply ContMDiff.clm_apply
 
 -- porting note: Lean 3 code didn't need `@`
-set_option maxHeartbeats 400000 in
 theorem ContMDiffWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f s x) :
     ContMDiffWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) n
@@ -1897,7 +1895,6 @@ theorem ContMDiff.clm_precomp {f : M → F₁ →L[𝕜] F₂} (hf : ContMDiff I
   (hf x).clm_precomp
 
 -- porting note: Lean 3 code didn't need `@`
-set_option maxHeartbeats 400000 in
 theorem ContMDiffWithinAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M} {x : M}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) n f s x) :
     ContMDiffWithinAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) n
@@ -1985,7 +1982,7 @@ theorem ContMDiff.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ �
 
 /-! ### Smoothness of standard operations -/
 
-variable {V : Type _} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 
 /-- On any vector space, multiplication by a scalar is a smooth operation. -/
 theorem smooth_smul : Smooth (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) fun p : 𝕜 × V => p.1 • p.2 :=
@@ -2178,4 +2175,3 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : LocalHomeomorph M M') :
 #align is_local_structomorph_on_cont_diff_groupoid_iff isLocalStructomorphOn_contDiffGroupoid_iff
 
 end
-

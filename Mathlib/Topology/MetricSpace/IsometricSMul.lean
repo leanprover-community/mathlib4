@@ -420,16 +420,16 @@ theorem nndist_div_left [Group G] [PseudoMetricSpace G] [IsometricSMul G G]
 #align nndist_div_left nndist_div_left
 #align nndist_sub_left nndist_sub_left
 
-namespace Metric
-
 /-- If `G` acts isometrically on `X`, then the image of a bounded set in `X` under scalar
-multiplication by `c : G` is bounded. See also `Metric.Bounded.smul₀` for a similar lemma about
+multiplication by `c : G` is bounded. See also `Bornology.IsBounded.smul₀` for a similar lemma about
 normed spaces. -/
 @[to_additive "Given an additive isometric action of `G` on `X`, the image of a bounded set in `X`
 under translation by `c : G` is bounded"]
-theorem Bounded.smul [PseudoMetricSpace X] [SMul G X] [IsometricSMul G X] {s : Set X}
-    (hs : Bounded s) (c : G) : Bounded (c • s) :=
-  (isometry_smul X c).lipschitz.bounded_image hs
+theorem Bornology.IsBounded.smul [PseudoMetricSpace X] [SMul G X] [IsometricSMul G X] {s : Set X}
+    (hs : IsBounded s) (c : G) : IsBounded (c • s) :=
+  (isometry_smul X c).lipschitz.isBounded_image hs
+
+namespace Metric
 
 variable [PseudoMetricSpace X] [Group G] [MulAction G X] [IsometricSMul G X]
 
@@ -505,7 +505,7 @@ end Metric
 
 section Instances
 
-variable {Y : Type _} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [SMul M X]
+variable {Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [SMul M X]
   [IsometricSMul M X]
 
 @[to_additive]
@@ -550,12 +550,12 @@ instance ULift.isometricSMul' : IsometricSMul M (ULift X) :=
 #align ulift.has_isometric_vadd' ULift.isometricVAdd'
 
 @[to_additive]
-instance {ι} {X : ι → Type _} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]
+instance {ι} {X : ι → Type*} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]
     [∀ i, IsometricSMul M (X i)] : IsometricSMul M (∀ i, X i) :=
   ⟨fun c => isometry_dcomp (fun _ => (c • ·)) fun i => isometry_smul (X i) c⟩
 
 @[to_additive]
-instance Pi.isometricSMul' {ι} {M X : ι → Type _} [Fintype ι] [∀ i, SMul (M i) (X i)]
+instance Pi.isometricSMul' {ι} {M X : ι → Type*} [Fintype ι] [∀ i, SMul (M i) (X i)]
     [∀ i, PseudoEMetricSpace (X i)] [∀ i, IsometricSMul (M i) (X i)] :
     IsometricSMul (∀ i, M i) (∀ i, X i) :=
   ⟨fun c => isometry_dcomp (fun i => (c i • ·)) fun _ => isometry_smul _ _⟩
@@ -563,7 +563,7 @@ instance Pi.isometricSMul' {ι} {M X : ι → Type _} [Fintype ι] [∀ i, SMul 
 #align pi.has_isometric_vadd' Pi.isometricVAdd'
 
 @[to_additive]
-instance Pi.isometricSMul'' {ι} {M : ι → Type _} [Fintype ι] [∀ i, Mul (M i)]
+instance Pi.isometricSMul'' {ι} {M : ι → Type*} [Fintype ι] [∀ i, Mul (M i)]
     [∀ i, PseudoEMetricSpace (M i)] [∀ i, IsometricSMul (M i)ᵐᵒᵖ (M i)] :
     IsometricSMul (∀ i, M i)ᵐᵒᵖ (∀ i, M i) :=
   ⟨fun c => isometry_dcomp (fun i (x : M i) => x * c.unop i) fun _ => isometry_mul_right _⟩

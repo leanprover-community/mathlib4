@@ -31,7 +31,7 @@ open Real IsAbsoluteValue Finset
 
 section
 
-variable {α : Type _} {β : Type _} [Ring β] [LinearOrderedField α] [Archimedean α] {abv : β → α}
+variable {α : Type*} {β : Type*} [Ring β] [LinearOrderedField α] [Archimedean α] {abv : β → α}
   [IsAbsoluteValue abv]
 
 theorem isCauSeq_of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
@@ -82,7 +82,7 @@ end
 
 section NoArchimedean
 
-variable {α : Type _} {β : Type _} [Ring β] [LinearOrderedField α] {abv : β → α}
+variable {α : Type*} {β : Type*} [Ring β] [LinearOrderedField α] {abv : β → α}
   [IsAbsoluteValue abv]
 
 theorem isCauSeq_series_of_abv_le_of_isCauSeq {f : ℕ → β} {g : ℕ → α} (n : ℕ) :
@@ -123,9 +123,9 @@ end NoArchimedean
 
 section
 
-variable {α : Type _} [LinearOrderedField α] [Archimedean α]
+variable {α : Type*} [LinearOrderedField α] [Archimedean α]
 
-theorem isCauSeq_geo_series {β : Type _} [Ring β] [Nontrivial β] {abv : β → α} [IsAbsoluteValue abv]
+theorem isCauSeq_geo_series {β : Type*} [Ring β] [Nontrivial β] {abv : β → α} [IsAbsoluteValue abv]
     (x : β) (hx1 : abv x < 1) : IsCauSeq abv fun n => ∑ m in range n, x ^ m :=
   have hx1' : abv x ≠ 1 := fun h => by simp [h, lt_irrefl] at hx1
   isCauSeq_series_of_abv_isCauSeq
@@ -153,7 +153,7 @@ theorem isCauSeq_geo_series_const (a : α) {x : α} (hx1 : |x| < 1) :
   simpa [mul_sum] using this
 #align is_cau_geo_series_const isCauSeq_geo_series_const
 
-variable {β : Type _} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
+variable {β : Type*} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
 
 theorem series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1 : r < 1)
     (h : ∀ m, n ≤ m → abv (f m.succ) ≤ r * abv (f m)) :
@@ -182,7 +182,7 @@ theorem series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (h
     exact ih _ h _ (by simp) rfl
 #align series_ratio_test series_ratio_test
 
-theorem sum_range_diag_flip {α : Type _} [AddCommMonoid α] (n : ℕ) (f : ℕ → ℕ → α) :
+theorem sum_range_diag_flip {α : Type*} [AddCommMonoid α] (n : ℕ) (f : ℕ → ℕ → α) :
     (∑ m in range n, ∑ k in range (m + 1), f k (m - k)) =
       ∑ m in range n, ∑ k in range (n - m), f m k := by
   rw [sum_sigma', sum_sigma']
@@ -217,13 +217,13 @@ end
 
 section NoArchimedean
 
-variable {α : Type _} {β : Type _} [LinearOrderedField α] {abv : β → α}
+variable {α : Type*} {β : Type*} [LinearOrderedField α] {abv : β → α}
 
 section
 
 variable [Semiring β] [IsAbsoluteValue abv]
 
-theorem abv_sum_le_sum_abv {γ : Type _} (f : γ → β) (s : Finset γ) :
+theorem abv_sum_le_sum_abv {γ : Type*} (f : γ → β) (s : Finset γ) :
     abv (∑ k in s, f k) ≤ ∑ k in s, abv (f k) :=
   haveI := Classical.decEq γ
   Finset.induction_on s (by simp [abv_zero abv]) fun a s has ih => by
@@ -416,6 +416,9 @@ def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 #align complex.tanh Complex.tanh
 
+/-- scoped notation for the complex exponential function -/
+scoped notation "cexp" => Complex.exp
+
 end
 
 end Complex
@@ -468,6 +471,9 @@ the complex hyperbolic tangent -/
 nonrec def tanh (x : ℝ) : ℝ :=
   (tanh x).re
 #align real.tanh Real.tanh
+
+/-- scoped notation for the real exponential function -/
+scoped notation "rexp" => Real.exp
 
 end
 
@@ -529,7 +535,7 @@ theorem exp_multiset_sum (s : Multiset ℂ) : exp s.sum = (s.map exp).prod :=
   @MonoidHom.map_multiset_prod (Multiplicative ℂ) ℂ _ _ expMonoidHom s
 #align complex.exp_multiset_sum Complex.exp_multiset_sum
 
-theorem exp_sum {α : Type _} (s : Finset α) (f : α → ℂ) :
+theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
     exp (∑ x in s, f x) = ∏ x in s, exp (f x) :=
   @map_prod (Multiplicative ℂ) α ℂ _ _ _ _ expMonoidHom f s
 #align complex.exp_sum Complex.exp_sum
@@ -907,7 +913,6 @@ theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2)
 #align complex.cos_sub_cos Complex.cos_sub_cos
 
 theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) := by
-  have h2 : (2 : ℂ) ≠ 0 := by norm_num
   calc
     cos x + cos y = cos ((x + y) / 2 + (x - y) / 2) + cos ((x + y) / 2 - (x - y) / 2) := ?_
     _ =
@@ -916,7 +921,7 @@ theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) 
       ?_
     _ = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) := ?_
 
-  · congr <;> field_simp [h2]
+  · congr <;> field_simp
   · rw [cos_add, cos_sub]
   ring
 #align complex.cos_add_cos Complex.cos_add_cos
@@ -1046,9 +1051,8 @@ theorem sin_sq : sin x ^ 2 = 1 - cos x ^ 2 := by rw [← sin_sq_add_cos_sq x, ad
 #align complex.sin_sq Complex.sin_sq
 
 theorem inv_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) : (1 + tan x ^ 2)⁻¹ = cos x ^ 2 := by
-  have : cos x ^ 2 ≠ 0 := pow_ne_zero 2 hx
   rw [tan_eq_sin_div_cos, div_pow]
-  field_simp [this]
+  field_simp
 #align complex.inv_one_add_tan_sq Complex.inv_one_add_tan_sq
 
 theorem tan_sq_div_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) :
@@ -1149,7 +1153,7 @@ theorem exp_multiset_sum (s : Multiset ℝ) : exp s.sum = (s.map exp).prod :=
   @MonoidHom.map_multiset_prod (Multiplicative ℝ) ℝ _ _ expMonoidHom s
 #align real.exp_multiset_sum Real.exp_multiset_sum
 
-theorem exp_sum {α : Type _} (s : Finset α) (f : α → ℝ) :
+theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     exp (∑ x in s, f x) = ∏ x in s, exp (f x) :=
   @map_prod (Multiplicative ℝ) α ℝ _ _ _ _ expMonoidHom f s
 #align real.exp_sum Real.exp_sum
@@ -1462,15 +1466,16 @@ theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i in range
       refine' le_lim (CauSeq.le_of_exists ⟨n, fun j hj => _⟩)
       simp only [exp', const_apply, re_sum]
       norm_cast
-      rw [← Nat.add_sub_of_le hj, Finset.sum_range_add]
-      refine' le_add_of_nonneg_right (sum_nonneg fun i _ => _)
+      refine sum_le_sum_of_subset_of_nonneg (range_mono hj) fun _ _ _ ↦ ?_
       positivity
     _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
 #align real.sum_le_exp_of_nonneg Real.sum_le_exp_of_nonneg
 
 theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
   calc
-    1 + x + x ^ 2 / 2 = ∑ i in range 3, x ^ i / i ! := by simp [Finset.sum_range_succ]; ring_nf
+    1 + x + x ^ 2 / 2 = ∑ i in range 3, x ^ i / i ! := by
+        simp [factorial, Finset.sum_range_succ]
+        ring_nf
     _ ≤ exp x := sum_le_exp_of_nonneg hx 3
 #align real.quadratic_le_exp_of_nonneg Real.quadratic_le_exp_of_nonneg
 
@@ -1573,7 +1578,7 @@ end Real
 
 namespace Complex
 
-theorem sum_div_factorial_le {α : Type _} [LinearOrderedField α] (n j : ℕ) (hn : 0 < n) :
+theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (hn : 0 < n) :
     (∑ m in filter (fun k => n ≤ k) (range j),
       (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
   calc
@@ -1598,7 +1603,7 @@ theorem sum_div_factorial_le {α : Type _} [LinearOrderedField α] (n j : ℕ) (
       · rw [← Nat.cast_pow, ← Nat.cast_mul, Nat.cast_le, add_comm]
         exact Nat.factorial_mul_pow_le_factorial
     _ = (n.factorial : α)⁻¹ * ∑ m in range (j - n), (n.succ : α)⁻¹ ^ m := by
-      simp [mul_inv, mul_sum.symm, sum_mul.symm, -Nat.factorial_succ, mul_comm, inv_pow]
+      simp [mul_inv, mul_sum.symm, sum_mul.symm, mul_comm, inv_pow]
     _ = ((n.succ : α) - n.succ * (n.succ : α)⁻¹ ^ (j - n)) / (n.factorial * n) := by
       have h₁ : (n.succ : α) ≠ 1 :=
         @Nat.cast_one α _ ▸ mt Nat.cast_inj.1 (mt Nat.succ.inj (pos_iff_ne_zero.1 hn))
@@ -1684,16 +1689,16 @@ theorem abs_exp_sub_one_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1) ≤ 2 
     abs (exp x - 1) = abs (exp x - ∑ m in range 1, x ^ m / m.factorial) := by simp [sum_range_succ]
     _ ≤ abs x ^ 1 * ((Nat.succ 1 : ℝ) * ((Nat.factorial 1) * (1 : ℕ) : ℝ)⁻¹) :=
       (exp_bound hx (by decide))
-    _ = 2 * abs x := by simp [two_mul, mul_two, mul_add, mul_comm, add_mul]
+    _ = 2 * abs x := by simp [two_mul, mul_two, mul_add, mul_comm, add_mul, Nat.factorial]
 #align complex.abs_exp_sub_one_le Complex.abs_exp_sub_one_le
 
 theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 - x) ≤ abs x ^ 2 :=
   calc
     abs (exp x - 1 - x) = abs (exp x - ∑ m in range 2, x ^ m / m.factorial) := by
-      simp [sub_eq_add_neg, sum_range_succ_comm, add_assoc]
+      simp [sub_eq_add_neg, sum_range_succ_comm, add_assoc, Nat.factorial]
     _ ≤ abs x ^ 2 * ((Nat.succ 2 : ℝ) * (Nat.factorial 2 * (2 : ℕ) : ℝ)⁻¹) :=
       (exp_bound hx (by decide))
-    _ ≤ abs x ^ 2 * 1 := by gcongr; norm_num
+    _ ≤ abs x ^ 2 * 1 := by gcongr; norm_num [Nat.factorial]
     _ = abs x ^ 2 := by rw [mul_one]
 #align complex.abs_exp_sub_one_sub_id_le Complex.abs_exp_sub_one_sub_id_le
 
@@ -1758,7 +1763,7 @@ theorem expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
 @[simp]
 theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
   simp [expNear, range_succ, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
-      mul_inv]
+      mul_inv, Nat.factorial]
   ac_rfl
 #align real.exp_near_succ Real.expNear_succ
 
@@ -1783,7 +1788,7 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
   subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
   convert mul_le_mul_of_nonneg_left (a := abs' x ^ n / ↑(Nat.factorial n))
       (le_sub_iff_add_le'.1 e) ?_ using 1
-  · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, ← pow_abs, mul_inv]
+  · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, ← pow_abs, mul_inv, Nat.factorial]
     ac_rfl
   · simp [div_nonneg, abs_nonneg]
 #align real.exp_approx_succ Real.exp_approx_succ
@@ -1820,7 +1825,7 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
         (congr_arg (fun x : ℂ => x / 2)
           (by
             simp only [sum_range_succ]
-            simp [pow_succ]
+            simp [pow_succ, Nat.factorial]
             apply Complex.ext <;> simp [div_eq_mul_inv, normSq] <;> ring_nf
             )))
     _ ≤ abs ((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) / 2) +
@@ -1834,7 +1839,7 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
       gcongr
       · exact Complex.exp_bound (by simpa) (by decide)
       · exact Complex.exp_bound (by simpa) (by decide)
-    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num
+    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num [Nat.factorial]
 #align real.cos_bound Real.cos_bound
 
 theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 4 * (5 / 96) :=
@@ -1851,7 +1856,7 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
         (congr_arg (fun x : ℂ => x / 2)
           (by
             simp only [sum_range_succ]
-            simp [pow_succ]
+            simp [pow_succ, Nat.factorial]
             apply Complex.ext <;> simp [div_eq_mul_inv, normSq]; ring)))
     _ ≤ abs ((Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) * I / 2) +
           abs (-((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) * I) / 2) :=
@@ -1864,7 +1869,7 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
       gcongr
       · exact Complex.exp_bound (by simpa) (by decide)
       · exact Complex.exp_bound (by simpa) (by decide)
-    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num
+    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num [Nat.factorial]
 #align real.sin_bound Real.sin_bound
 
 theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
@@ -1942,15 +1947,8 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- Porting note: was `norm_num [Finset.sum] <;> nlinarith`
       -- This proof should be restored after the norm_num plugin for big operators is ported.
       -- (It may also need the positivity extensions in #3907.)
-      rw [Finset.sum, range_val]
-      nth_rw 1 [← two_add_one_eq_three]
-      rw [← Nat.succ_eq_add_one, Multiset.range_succ, Multiset.map_cons, Multiset.sum_cons]
-      nth_rw 3 [← one_add_one_eq_two]
-      rw [← Nat.succ_eq_add_one, Multiset.range_succ, Multiset.map_cons, Multiset.sum_cons]
-      nth_rw 3 [← zero_add 1]
-      rw [← Nat.succ_eq_add_one, Multiset.range_succ, Multiset.map_cons, Multiset.sum_cons]
-      rw [Multiset.range_zero, Multiset.map_zero, Multiset.sum_zero]
-      norm_num
+      repeat erw [Finset.sum_range_succ]
+      norm_num [Nat.factorial]
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff] <;> nlinarith
 #align real.exp_bound_div_one_sub_of_interval' Real.exp_bound_div_one_sub_of_interval'
@@ -2001,7 +1999,7 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
   · abel
   · rw [← Real.exp_nat_mul]
     congr 1
-    field_simp [(Nat.cast_ne_zero (R := ℝ)).mpr hn]
+    field_simp
     ring_nf
   · rwa [add_comm, ← sub_eq_add_neg, sub_nonneg, div_le_one]
     positivity

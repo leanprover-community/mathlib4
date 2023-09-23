@@ -35,13 +35,13 @@ this is a basis over `Fin 3 → R`.
 -/
 
 
-open Function Submodule
+open Function Set Submodule
 
 open BigOperators
 
 namespace LinearMap
 
-variable (R : Type _) {ι : Type _} [Semiring R] (φ : ι → Type _) [∀ i, AddCommMonoid (φ i)]
+variable (R : Type*) {ι : Type*} [Semiring R] (φ : ι → Type*) [∀ i, AddCommMonoid (φ i)]
   [∀ i, Module R (φ i)] [DecidableEq ι]
 
 /-- The standard basis of the product of `φ`. -/
@@ -168,11 +168,11 @@ open LinearMap
 
 open Set
 
-variable {R : Type _}
+variable {R : Type*}
 
 section Module
 
-variable {η : Type _} {ιs : η → Type _} {Ms : η → Type _}
+variable {η : Type*} {ιs : η → Type*} {Ms : η → Type*}
 
 theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
     [DecidableEq η] (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent R (v i)) :
@@ -297,9 +297,32 @@ end Module
 
 end Pi
 
+namespace Module
+
+variable (ι R M N : Type*) [Fintype ι] [CommSemiring R]
+  [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+
+/-- The natural linear equivalence: `Mⁱ ≃ Hom(Rⁱ, M)` for an `R`-module `M`. -/
+noncomputable def piEquiv : (ι → M) ≃ₗ[R] ((ι → R) →ₗ[R] M) := Basis.constr (Pi.basisFun R ι) R
+
+lemma piEquiv_apply_apply (v : ι → M) (w : ι → R) :
+    piEquiv ι R M v w = ∑ i, w i • v i := by
+  simp only [piEquiv, Basis.constr_apply_fintype, Basis.equivFun_apply]
+  congr
+
+@[simp] lemma range_piEquiv (v : ι → M) :
+    LinearMap.range (piEquiv ι R M v) = span R (range v) :=
+  Basis.constr_range _ _
+
+@[simp] lemma surjective_piEquiv_apply_iff (v : ι → M) :
+    Surjective (piEquiv ι R M v) ↔ span R (range v) = ⊤ := by
+  rw [← LinearMap.range_eq_top, range_piEquiv]
+
+end Module
+
 namespace Matrix
 
-variable (R : Type _) (m n : Type _) [Fintype m] [Fintype n] [Semiring R]
+variable (R : Type*) (m n : Type*) [Fintype m] [Fintype n] [Semiring R]
 
 /-- The standard basis of `Matrix m n R`. -/
 noncomputable def stdBasis : Basis (m × n) R (Matrix m n R) :=

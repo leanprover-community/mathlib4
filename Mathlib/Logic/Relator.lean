@@ -12,6 +12,8 @@ import Mathlib.Logic.Basic
 # Relator for functions, pairs, sums, and lists.
 -/
 
+set_option autoImplicit true
+
 namespace Relator
 universe u₁ u₂ v₁ v₂
 
@@ -72,31 +74,30 @@ def BiUnique : Prop := LeftUnique R ∧ RightUnique R
 variable {R}
 
 lemma RightTotal.rel_forall (h : RightTotal R) :
-  ((R ⇒ (· → ·)) ⇒ (· → ·)) (λ p => ∀i, p i) (λ q => ∀i, q i) :=
+    ((R ⇒ (· → ·)) ⇒ (· → ·)) (λ p => ∀i, p i) (λ q => ∀i, q i) :=
 λ _ _ Hrel H b => Exists.elim (h b) (λ _ Rab => Hrel Rab (H _))
 #align relator.right_total.rel_forall Relator.RightTotal.rel_forall
 
 lemma LeftTotal.rel_exists (h : LeftTotal R) :
-  ((R ⇒ (· → ·)) ⇒ (· → ·)) (λ p => ∃i, p i) (λ q => ∃i, q i) :=
+    ((R ⇒ (· → ·)) ⇒ (· → ·)) (λ p => ∃i, p i) (λ q => ∃i, q i) :=
 λ _ _ Hrel ⟨a, pa⟩ => (h a).imp $ λ _ Rab => Hrel Rab pa
 #align relator.left_total.rel_exists Relator.LeftTotal.rel_exists
 
 lemma BiTotal.rel_forall (h : BiTotal R) :
-  ((R ⇒ Iff) ⇒ Iff) (λ p => ∀i, p i) (λ q => ∀i, q i) :=
+    ((R ⇒ Iff) ⇒ Iff) (λ p => ∀i, p i) (λ q => ∀i, q i) :=
 λ _ _ Hrel =>
   ⟨λ H b => Exists.elim (h.right b) (λ _ Rab => (Hrel Rab).mp (H _)),
     λ H a => Exists.elim (h.left a) (λ _ Rab => (Hrel Rab).mpr (H _))⟩
 #align relator.bi_total.rel_forall Relator.BiTotal.rel_forall
 
 lemma BiTotal.rel_exists (h : BiTotal R) :
-  ((R ⇒ Iff) ⇒ Iff) (λ p => ∃i, p i) (λ q => ∃i, q i) :=
+    ((R ⇒ Iff) ⇒ Iff) (λ p => ∃i, p i) (λ q => ∃i, q i) :=
 λ _ _ Hrel =>
   ⟨λ ⟨a, pa⟩ => (h.left a).imp $ λ _ Rab => (Hrel Rab).1 pa,
     λ ⟨b, qb⟩ => (h.right b).imp $ λ _ Rab => (Hrel Rab).2 qb⟩
 #align relator.bi_total.rel_exists Relator.BiTotal.rel_exists
 
-lemma left_unique_of_rel_eq {eq' : β → β → Prop} (he : (R ⇒ (R ⇒ Iff)) Eq eq') :
-  LeftUnique R :=
+lemma left_unique_of_rel_eq {eq' : β → β → Prop} (he : (R ⇒ (R ⇒ Iff)) Eq eq') : LeftUnique R :=
 λ a b c (ac : R a c) (bc : R b c) => (he ac bc).mpr ((he bc bc).mp rfl)
 #align relator.left_unique_of_rel_eq Relator.left_unique_of_rel_eq
 
@@ -114,7 +115,7 @@ lemma bi_total_eq {α : Type u₁} : Relator.BiTotal (@Eq α) :=
   { left := λ a => ⟨a, rfl⟩, right := λ a => ⟨a, rfl⟩ }
 #align relator.bi_total_eq Relator.bi_total_eq
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 variable {r : α → β → Prop} {p : β → γ → Prop} {q : γ → δ → Prop}
 
 lemma LeftUnique.flip (h : LeftUnique r) : RightUnique (flip r) :=
@@ -136,5 +137,55 @@ lemma rel_iff : ((·↔·) ⇒ (·↔·) ⇒ (·↔·)) (·↔·) (·↔·) :=
 lemma rel_eq {r : α → β → Prop} (hr : BiUnique r) : (r ⇒ r ⇒ (·↔·)) (·=·) (·=·) :=
   λ _ _ h₁ _ _ h₂ => ⟨λ h => hr.right h₁ $ h.symm ▸ h₂, λ h => hr.left h₁ $ h.symm ▸ h₂⟩
 #align relator.rel_eq Relator.rel_eq
+
+open Function
+
+namespace LeftTotal
+
+protected lemma refl (hr : ∀ a : α, r₁₁ a a) :
+    LeftTotal r₁₁ :=
+  fun a ↦ ⟨a, hr _⟩
+
+protected lemma symm (hr : ∀ (a : α) (b : β), r₁₂ a b → r₂₁ b a) :
+    LeftTotal r₁₂ → RightTotal r₂₁ :=
+  fun h a ↦ (h a).imp (fun _ ↦ hr _ _)
+
+protected lemma trans (hr : ∀ (a : α) (b : β) (c : γ), r₁₂ a b → r₂₃ b c → r₁₃ a c) :
+    LeftTotal r₁₂ → LeftTotal r₂₃ → LeftTotal r₁₃ :=
+  fun h₁ h₂ a ↦ let ⟨b, hab⟩ := h₁ a; let ⟨c, hbc⟩ := h₂ b; ⟨c, hr _ _ _ hab hbc⟩
+
+end LeftTotal
+
+namespace RightTotal
+
+protected lemma refl (hr : ∀ a : α, r₁₁ a a) :
+    RightTotal r₁₁ :=
+  LeftTotal.refl hr
+
+protected lemma symm (hr : ∀ (a : α) (b : β), r₁₂ a b → r₂₁ b a) :
+    RightTotal r₁₂ → LeftTotal r₂₁ :=
+  LeftTotal.symm (fun _ _ ↦ hr _ _)
+
+protected lemma trans (hr : ∀ (a : α) (b : β) (c : γ), r₁₂ a b → r₂₃ b c → r₁₃ a c) :
+    RightTotal r₁₂ → RightTotal r₂₃ → RightTotal r₁₃ :=
+  swap <| LeftTotal.trans (fun _ _ _ ↦ swap <| hr _ _ _)
+
+end RightTotal
+
+namespace BiTotal
+
+protected lemma refl (hr : ∀ a : α, r₁₁ a a) :
+    BiTotal r₁₁ :=
+  ⟨LeftTotal.refl hr, RightTotal.refl hr⟩
+
+protected lemma symm (hr : ∀ (a : α) (b : β), r₁₂ a b → r₂₁ b a) :
+    BiTotal r₁₂ → BiTotal r₂₁ :=
+  fun h ↦ ⟨h.2.symm hr, h.1.symm hr⟩
+
+protected lemma trans (hr : ∀ (a : α) (b : β) (c : γ), r₁₂ a b → r₂₃ b c → r₁₃ a c) :
+    BiTotal r₁₂ → BiTotal r₂₃ → BiTotal r₁₃ :=
+  fun h₁ h₂ ↦ ⟨h₁.1.trans hr h₂.1, h₁.2.trans hr h₂.2⟩
+
+end BiTotal
 
 end Relator

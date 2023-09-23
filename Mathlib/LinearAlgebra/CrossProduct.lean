@@ -42,7 +42,7 @@ open Matrix
 
 open Matrix
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 /-- The cross product of two vectors in $R^3$ for $R$ a commutative ring. -/
 def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R := by
@@ -73,7 +73,7 @@ theorem cross_anticomm (v w : Fin 3 → R) : -(v ×₃ w) = w ×₃ v := by
   simp [cross_apply, mul_comm]
 #align cross_anticomm cross_anticomm
 
-alias cross_anticomm ← neg_cross
+alias neg_cross := cross_anticomm
 #align neg_cross neg_cross
 
 @[simp]

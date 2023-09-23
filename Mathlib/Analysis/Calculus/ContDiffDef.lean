@@ -524,7 +524,7 @@ theorem contDiffWithinAt_insert {y : E} :
   simp_rw [ContDiffWithinAt, insert_comm x y, nhdsWithin_insert_of_ne h]
 #align cont_diff_within_at_insert contDiffWithinAt_insert
 
-alias contDiffWithinAt_insert ↔ ContDiffWithinAt.of_insert ContDiffWithinAt.insert'
+alias ⟨ContDiffWithinAt.of_insert, ContDiffWithinAt.insert'⟩ := contDiffWithinAt_insert
 #align cont_diff_within_at.of_insert ContDiffWithinAt.of_insert
 #align cont_diff_within_at.insert' ContDiffWithinAt.insert'
 
@@ -812,6 +812,14 @@ theorem iteratedFDerivWithin_succ_eq_comp_left {n : ℕ} :
         fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s :=
   rfl
 #align iterated_fderiv_within_succ_eq_comp_left iteratedFDerivWithin_succ_eq_comp_left
+
+theorem fderivWithin_iteratedFDerivWithin {s : Set E} {n : ℕ} :
+    fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s =
+      (continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) => E) F).symm ∘
+        iteratedFDerivWithin 𝕜 (n + 1) f s := by
+  rw [iteratedFDerivWithin_succ_eq_comp_left]
+  ext1 x
+  simp only [Function.comp_apply, LinearIsometryEquiv.symm_apply_apply]
 
 theorem norm_fderivWithin_iteratedFDerivWithin {n : ℕ} :
     ‖fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s x‖ =
@@ -1572,7 +1580,7 @@ theorem support_iteratedFDeriv_subset (n : ℕ) : support (iteratedFDeriv 𝕜 n
 
 theorem HasCompactSupport.iteratedFDeriv (hf : HasCompactSupport f) (n : ℕ) :
     HasCompactSupport (iteratedFDeriv 𝕜 n f) :=
-  isCompact_of_isClosed_subset hf isClosed_closure (tsupport_iteratedFDeriv_subset n)
+  hf.of_isClosed_subset isClosed_closure (tsupport_iteratedFDeriv_subset n)
 #align has_compact_support.iterated_fderiv HasCompactSupport.iteratedFDeriv
 
 theorem norm_fderiv_iteratedFDeriv {n : ℕ} :
@@ -1706,7 +1714,7 @@ theorem ContDiff.continuous_fderiv (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
 continuous. -/
 theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
     Continuous fun p : E × E => (fderiv 𝕜 f p.1 : E → F) p.2 :=
-  have A : Continuous fun q : (E →L[𝕜] F) × E => q.1 q.2 := isBoundedBilinearMapApply.continuous
+  have A : Continuous fun q : (E →L[𝕜] F) × E => q.1 q.2 := isBoundedBilinearMap_apply.continuous
   have B : Continuous fun p : E × E => (fderiv 𝕜 f p.1, p.2) :=
     ((h.continuous_fderiv hn).comp continuous_fst).prod_mk continuous_snd
   A.comp B

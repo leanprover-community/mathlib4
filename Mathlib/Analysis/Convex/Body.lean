@@ -36,12 +36,12 @@ open Pointwise
 
 open NNReal
 
-variable {V : Type _}
+variable {V : Type*}
 
 /-- Let `V` be a real topological vector space. A subset of `V` is a convex body if and only if
 it is convex, compact, and nonempty.
 -/
-structure ConvexBody (V : Type _) [TopologicalSpace V] [AddCommMonoid V] [SMul ℝ V] where
+structure ConvexBody (V : Type*) [TopologicalSpace V] [AddCommMonoid V] [SMul ℝ V] where
   carrier : Set V
   convex' : Convex ℝ carrier
   isCompact' : IsCompact carrier
@@ -132,8 +132,8 @@ end ContinuousAdd
 
 variable [ContinuousSMul ℝ V]
 
-instance : SMul ℝ (ConvexBody V)
-    where smul c K := ⟨c • (K : Set V), K.convex.smul _, K.isCompact.smul _, K.nonempty.smul_set⟩
+instance : SMul ℝ (ConvexBody V) where
+  smul c K := ⟨c • (K : Set V), K.convex.smul _, K.isCompact.smul _, K.nonempty.smul_set⟩
 
 @[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
@@ -162,13 +162,13 @@ section SeminormedAddCommGroup
 
 variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] (K L : ConvexBody V)
 
-protected theorem bounded : Metric.Bounded (K : Set V) :=
-  K.isCompact.bounded
-#align convex_body.bounded ConvexBody.bounded
+protected theorem isBounded : Bornology.IsBounded (K : Set V) :=
+  K.isCompact.isBounded
+#align convex_body.bounded ConvexBody.isBounded
 
 theorem hausdorffEdist_ne_top {K L : ConvexBody V} : EMetric.hausdorffEdist (K : Set V) L ≠ ⊤ := by
   apply_rules [Metric.hausdorffEdist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
-    ConvexBody.bounded]
+    ConvexBody.isBounded]
 #align convex_body.Hausdorff_edist_ne_top ConvexBody.hausdorffEdist_ne_top
 
 /-- Convex bodies in a fixed seminormed space $V$ form a pseudo-metric space under the Hausdorff

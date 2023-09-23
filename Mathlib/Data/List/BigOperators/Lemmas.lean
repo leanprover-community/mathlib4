@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
+import Mathlib.Init.CCLemmas
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupPower.Basic
@@ -22,7 +23,7 @@ import Mathlib.Data.Set.Basic
 
 open MulOpposite List
 
-variable {ι α M N P M₀ G R : Type _}
+variable {ι α M N P M₀ G R : Type*}
 
 namespace Commute
 
@@ -157,7 +158,7 @@ section MonoidHom
 variable [Monoid M] [Monoid N]
 
 /-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
-theorem unop_map_list_prod {F : Type _} [MonoidHomClass F M Nᵐᵒᵖ] (f : F) (l : List M) :
+theorem unop_map_list_prod {F : Type*} [MonoidHomClass F M Nᵐᵒᵖ] (f : F) (l : List M) :
     (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod := by
   rw [map_list_prod f l, MulOpposite.unop_list_prod, List.map_map]
 #align unop_map_list_prod unop_map_list_prod

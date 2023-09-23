@@ -178,7 +178,7 @@ theorem nthLe_index_of [DecidableEq α] {l : List α} (H : Nodup l) (n h) :
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
     forall_congr' fun a =>
-      have : [a, a] <+ l ↔ 1 < count a l := (@le_count_iff_replicate_sublist _ _ _ 2 _).symm
+      have : replicate 2 a <+ l ↔ 1 < count a l := (le_count_iff_replicate_sublist ..).symm
       (not_congr this).trans not_lt
 #align list.nodup_iff_count_le_one List.nodup_iff_count_le_one
 
@@ -194,7 +194,7 @@ theorem nodup_replicate (a : α) : ∀ {n : ℕ}, Nodup (replicate n a) ↔ n �
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
     count a l = 1 :=
-  _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos.2 h))
+  _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos_iff_mem.2 h))
 #align list.count_eq_one_of_mem List.count_eq_one_of_mem
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) :
@@ -275,7 +275,7 @@ theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
     Nodup.of_map Subtype.val ((attach_map_val l).symm ▸ h)⟩
 #align list.nodup_attach List.nodup_attach
 
-alias nodup_attach ↔ Nodup.of_attach Nodup.attach
+alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 #align list.nodup.attach List.Nodup.attach
 #align list.nodup.of_attach List.Nodup.of_attach
 
@@ -350,7 +350,7 @@ protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l�
         exact n rfl⟩
 #align list.nodup.product List.Nodup.product
 
-theorem Nodup.sigma {σ : α → Type _} {l₂ : ∀ a , List (σ a)} (d₁ : Nodup l₁)
+theorem Nodup.sigma {σ : α → Type*} {l₂ : ∀ a , List (σ a)} (d₁ : Nodup l₁)
     (d₂ : ∀ a , Nodup (l₂ a)) : (l₁.sigma l₂).Nodup :=
   nodup_bind.2
     ⟨fun a _ => (d₂ a).map fun b b' h => by injection h with _ h,
@@ -422,11 +422,13 @@ theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α �
 
 theorem Nodup.pairwise_of_forall_ne {l : List α} {r : α → α → Prop} (hl : l.Nodup)
     (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
-  classical
-    refine' pairwise_of_reflexive_on_dupl_of_forall_ne _ h
-    intro x hx
-    rw [nodup_iff_count_le_one] at hl
-    exact absurd (hl x) hx.not_le
+  apply pairwise_iff_forall_sublist.mpr
+  intro a b hab
+  if heq : a = b then
+    cases heq; have := nodup_iff_sublist.mp hl _ hab; contradiction
+  else
+    apply h <;> try (apply hab.subset; simp)
+    exact heq
 #align list.nodup.pairwise_of_forall_ne List.Nodup.pairwise_of_forall_ne
 
 theorem Nodup.pairwise_of_set_pairwise {l : List α} {r : α → α → Prop} (hl : l.Nodup)
@@ -435,8 +437,8 @@ theorem Nodup.pairwise_of_set_pairwise {l : List α} {r : α → α → Prop} (h
 #align list.nodup.pairwise_of_set_pairwise List.Nodup.pairwise_of_set_pairwise
 
 @[simp]
-theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup)
-    : { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
+theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) :
+    { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
   induction' l with a l ih
   · simp
   rw [List.nodup_cons] at hl

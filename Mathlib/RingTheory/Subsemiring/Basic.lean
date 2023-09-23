@@ -31,11 +31,11 @@ section AddSubmonoidWithOneClass
 
 /-- `AddSubmonoidWithOneClass S R` says `S` is a type of subsets `s ≤ R` that contain `0`, `1`,
 and are closed under `(+)` -/
-class AddSubmonoidWithOneClass (S R : Type _) [AddMonoidWithOne R]
+class AddSubmonoidWithOneClass (S R : Type*) [AddMonoidWithOne R]
   [SetLike S R] extends AddSubmonoidClass S R, OneMemClass S R : Prop
 #align add_submonoid_with_one_class AddSubmonoidWithOneClass
 
-variable {S R : Type _} [AddMonoidWithOne R] [SetLike S R] (s : S)
+variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
 
 theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
@@ -58,12 +58,12 @@ section SubsemiringClass
 
 /-- `SubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative and an additive submonoid. -/
-class SubsemiringClass (S : Type _) (R : Type u) [NonAssocSemiring R]
+class SubsemiringClass (S : Type*) (R : Type u) [NonAssocSemiring R]
   [SetLike S R] extends SubmonoidClass S R, AddSubmonoidClass S R : Prop
 #align subsemiring_class SubsemiringClass
 
 -- See note [lower instance priority]
-instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type _)
+instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type*)
     (R : Type u) [NonAssocSemiring R] [SetLike S R] [h : SubsemiringClass S R] :
     AddSubmonoidWithOneClass S R :=
   { h with }
@@ -95,7 +95,7 @@ instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
 def subtype : s →+* R :=
-  { SubmonoidClass.Subtype s, AddSubmonoidClass.Subtype s with toFun := (↑) }
+  { SubmonoidClass.subtype s, AddSubmonoidClass.subtype s with toFun := (↑) }
 #align subsemiring_class.subtype SubsemiringClass.subtype
 
 @[simp]
@@ -321,7 +321,7 @@ protected theorem add_mem {x y : R} : x ∈ s → y ∈ s → x + y ∈ s :=
 #align subsemiring.add_mem Subsemiring.add_mem
 
 /-- Product of a list of elements in a `Subsemiring` is in the `Subsemiring`. -/
-nonrec theorem list_prod_mem {R : Type _} [Semiring R] (s : Subsemiring R) {l : List R} :
+nonrec theorem list_prod_mem {R : Type*} [Semiring R] (s : Subsemiring R) {l : List R} :
     (∀ x ∈ l, x ∈ s) → l.prod ∈ s :=
   list_prod_mem
 #align subsemiring.list_prod_mem Subsemiring.list_prod_mem
@@ -346,14 +346,14 @@ protected theorem multiset_sum_mem (m : Multiset R) : (∀ a ∈ m, a ∈ s) →
 
 /-- Product of elements of a subsemiring of a `CommSemiring` indexed by a `Finset` is in the
     subsemiring. -/
-protected theorem prod_mem {R : Type _} [CommSemiring R] (s : Subsemiring R) {ι : Type _}
+protected theorem prod_mem {R : Type*} [CommSemiring R] (s : Subsemiring R) {ι : Type*}
     {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i in t, f i) ∈ s :=
   prod_mem h
 #align subsemiring.prod_mem Subsemiring.prod_mem
 
 /-- Sum of elements in a `Subsemiring` of a `Semiring` indexed by a `Finset`
 is in the `add_subsemiring`. -/
-protected theorem sum_mem (s : Subsemiring R) {ι : Type _} {t : Finset ι} {f : ι → R}
+protected theorem sum_mem (s : Subsemiring R) {ι : Type*} {t : Finset ι} {f : ι → R}
     (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
   sum_mem h
 #align subsemiring.sum_mem Subsemiring.sum_mem
@@ -388,7 +388,7 @@ instance nontrivial [Nontrivial R] : Nontrivial s :=
   nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
 #align subsemiring.nontrivial Subsemiring.nontrivial
 
-protected theorem pow_mem {R : Type _} [Semiring R] (s : Subsemiring R) {x : R} (hx : x ∈ s)
+protected theorem pow_mem {R : Type*} [Semiring R] (s : Subsemiring R) {x : R} (hx : x ∈ s)
     (n : ℕ) : x ^ n ∈ s :=
   pow_mem hx n
 #align subsemiring.pow_mem Subsemiring.pow_mem
@@ -920,6 +920,21 @@ theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s)
   (@closure_le _ _ _ ⟨⟨⟨p, @Hmul⟩, H1⟩, @Hadd, H0⟩).2 Hs h
 #align subsemiring.closure_induction Subsemiring.closure_induction
 
+@[elab_as_elim]
+theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
+    (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (H0 : p 0 (zero_mem _)) (H1 : p 1 (one_mem _))
+    (Hadd : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    {a : R} (ha : a ∈ closure s) : p a ha := by
+  refine' Exists.elim _ fun (ha : a ∈ closure s) (hc : p a ha) => hc
+  refine'
+    closure_induction ha (fun m hm => ⟨subset_closure hm, Hs m hm⟩) ⟨zero_mem _, H0⟩
+      ⟨one_mem _, H1⟩ ?_ ?_
+  · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
+      ⟨add_mem hx' hy', Hadd _ _ _ _ hx hy⟩)
+  · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
+      ⟨mul_mem hx' hy', Hmul _ _ _ _ hx hy⟩)
+
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[elab_as_elim]
 theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {x} {y : R} (hx : x ∈ closure s)
@@ -1007,7 +1022,7 @@ theorem map_sup (s t : Subsemiring R) (f : R →+* S) : (s ⊔ t).map f = s.map 
   (gc_map_comap f).l_sup
 #align subsemiring.map_sup Subsemiring.map_sup
 
-theorem map_iSup {ι : Sort _} (f : R →+* S) (s : ι → Subsemiring R) :
+theorem map_iSup {ι : Sort*} (f : R →+* S) (s : ι → Subsemiring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align subsemiring.map_supr Subsemiring.map_iSup
@@ -1016,7 +1031,7 @@ theorem comap_inf (s t : Subsemiring S) (f : R →+* S) : (s ⊓ t).comap f = s.
   (gc_map_comap f).u_inf
 #align subsemiring.comap_inf Subsemiring.comap_inf
 
-theorem comap_iInf {ι : Sort _} (f : R →+* S) (s : ι → Subsemiring S) :
+theorem comap_iInf {ι : Sort*} (f : R →+* S) (s : ι → Subsemiring S) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align subsemiring.comap_infi Subsemiring.comap_iInf
@@ -1118,7 +1133,7 @@ namespace RingHom
 
 variable [NonAssocSemiring T] {s : Subsemiring R}
 
-variable {σR σS : Type _}
+variable {σR σS : Type*}
 
 variable [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R] [SubsemiringClass σS S]
 
@@ -1322,7 +1337,7 @@ section Actions
 
 namespace Subsemiring
 
-variable {R' α β : Type _}
+variable {R' α β : Type*}
 
 section NonAssocSemiring
 
@@ -1427,7 +1442,7 @@ end Actions
 -- While this definition is not about `Subsemiring`s, this is the earliest we have
 -- both `StrictOrderedSemiring` and `Submonoid` available.
 /-- Submonoid of positive elements of an ordered semiring. -/
-def posSubmonoid (R : Type _) [StrictOrderedSemiring R] : Submonoid R
+def posSubmonoid (R : Type*) [StrictOrderedSemiring R] : Submonoid R
     where
   carrier := { x | 0 < x }
   one_mem' := show (0 : R) < 1 from zero_lt_one
@@ -1435,7 +1450,7 @@ def posSubmonoid (R : Type _) [StrictOrderedSemiring R] : Submonoid R
 #align pos_submonoid posSubmonoid
 
 @[simp]
-theorem mem_posSubmonoid {R : Type _} [StrictOrderedSemiring R] (u : Rˣ) :
+theorem mem_posSubmonoid {R : Type*} [StrictOrderedSemiring R] (u : Rˣ) :
     ↑u ∈ posSubmonoid R ↔ (0 : R) < u :=
   Iff.rfl
 #align mem_pos_monoid mem_posSubmonoid

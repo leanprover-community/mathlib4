@@ -33,7 +33,7 @@ noncomputable section
 
 open Topology
 
-variable {R : Type _} [NormedRing R] [CompleteSpace R]
+variable {R : Type*} [NormedRing R] [CompleteSpace R]
 
 namespace Units
 
@@ -46,7 +46,7 @@ def oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
   val_inv := mul_neg_geom_series t h
   inv_val := geom_series_mul_neg t h
 #align units.one_sub Units.oneSub
-#align units.coe_one_sub Units.oneSub_val
+#align units.coe_one_sub Units.val_oneSub
 
 /-- In a complete normed ring, a perturbation of a unit `x` by an element `t` of distance less than
 `‖x⁻¹‖⁻¹` from `x` is a unit.  Here we construct its `Units` structure. -/
@@ -63,7 +63,7 @@ def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
         _ = 1 := mul_inv_cancel (ne_of_gt hpos)))
     (x + t) (by simp [mul_add]) _ rfl
 #align units.add Units.add
-#align units.coe_add Units.add_val
+#align units.coe_add Units.val_add
 
 /-- In a complete normed ring, an element `y` of distance less than `‖x⁻¹‖⁻¹` from `x` is a unit.
 Here we construct its `Units` structure. -/
@@ -71,7 +71,7 @@ Here we construct its `Units` structure. -/
 def ofNearby (x : Rˣ) (y : R) (h : ‖y - x‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
   (x.add (y - x : R) h).copy y (by simp) _ rfl
 #align units.unit_of_nearby Units.ofNearby
-#align units.coe_unit_of_nearby Units.ofNearby_val
+#align units.coe_unit_of_nearby Units.val_ofNearby
 
 /-- The group of units of a complete normed ring is an open subset of the ring. -/
 protected theorem isOpen : IsOpen { x : R | IsUnit x } := by
@@ -111,7 +111,7 @@ open Classical BigOperators
 open Asymptotics Filter Metric Finset Ring
 
 theorem inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
-  rw [← inverse_unit (Units.oneSub t h), Units.oneSub_val]
+  rw [← inverse_unit (Units.oneSub t h), Units.val_oneSub]
 #align normed_ring.inverse_one_sub NormedRing.inverse_one_sub
 
 /-- The formula `Ring.inverse (x + t) = Ring.inverse (1 + x⁻¹ * t) * x⁻¹` holds for `t` sufficiently
@@ -122,8 +122,8 @@ theorem inverse_add (x : Rˣ) :
   rw [Metric.eventually_nhds_iff]
   refine ⟨‖(↑x⁻¹ : R)‖⁻¹, by cancel_denoms, fun t ht ↦ ?_⟩
   rw [dist_zero_right] at ht
-  rw [← x.add_val t ht, inverse_unit, Units.add, Units.copy_eq, mul_inv_rev, Units.val_mul,
-    ← inverse_unit, Units.oneSub_val, sub_neg_eq_add]
+  rw [← x.val_add t ht, inverse_unit, Units.add, Units.copy_eq, mul_inv_rev, Units.val_mul,
+    ← inverse_unit, Units.val_oneSub, sub_neg_eq_add]
 #align normed_ring.inverse_add NormedRing.inverse_add
 
 theorem inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
@@ -216,8 +216,8 @@ theorem inverse_continuousAt (x : Rˣ) : ContinuousAt inverse (x : R) := by
     (inverse_add_norm_diff_first_order x).trans_isLittleO (isLittleO_id_const one_ne_zero).norm_left
   have h_lim : Tendsto (fun y : R => y - x) (𝓝 x) (𝓝 0) := by
     refine' tendsto_zero_iff_norm_tendsto_zero.mpr _
-    exact tendsto_iff_norm_tendsto_zero.mp tendsto_id
-  rw [ContinuousAt, tendsto_iff_norm_tendsto_zero, inverse_unit]
+    exact tendsto_iff_norm_sub_tendsto_zero.mp tendsto_id
+  rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero, inverse_unit]
   simpa [(· ∘ ·)] using h_is_o.norm_left.tendsto_div_nhds_zero.comp h_lim
 #align normed_ring.inverse_continuous_at NormedRing.inverse_continuousAt
 

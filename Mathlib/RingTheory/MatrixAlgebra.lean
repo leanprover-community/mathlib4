@@ -40,7 +40,7 @@ The function underlying `(A ⊗[R] Matrix n n R) →ₐ[R] Matrix n n A`,
 as an `R`-bilinear map.
 -/
 def toFunBilinear : A →ₗ[R] Matrix n n R →ₗ[R] Matrix n n A :=
-  (Algebra.lsmul R (Matrix n n A)).toLinearMap.compl₂ (Algebra.linearMap R A).mapMatrix
+  (Algebra.lsmul R R (Matrix n n A)).toLinearMap.compl₂ (Algebra.linearMap R A).mapMatrix
 #align matrix_equiv_tensor.to_fun_bilinear MatrixEquivTensor.toFunBilinear
 
 @[simp]
@@ -65,7 +65,7 @@ def toFunAlgHom : A ⊗[R] Matrix n n R →ₐ[R] Matrix n n A :=
   algHomOfLinearMapTensorProduct (toFunLinear R A n)
     (by
       intros
-      simp_rw [toFunLinear, lift.tmul, toFunBilinear_apply, mul_eq_mul, Matrix.map_mul]
+      simp_rw [toFunLinear, lift.tmul, toFunBilinear_apply, Matrix.map_mul]
       ext
       dsimp
       simp_rw [Matrix.mul_apply, Matrix.smul_apply, Matrix.map_apply, smul_eq_mul, Finset.mul_sum,
@@ -80,7 +80,7 @@ def toFunAlgHom : A ⊗[R] Matrix n n R →ₐ[R] Matrix n n A :=
 @[simp]
 theorem toFunAlgHom_apply (a : A) (m : Matrix n n R) :
     toFunAlgHom R A n (a ⊗ₜ m) = a • m.map (algebraMap R A) := by
-  simp [toFunAlgHom, algHomOfLinearMapTensorProduct, toFunLinear]; rfl
+  simp [toFunAlgHom, algHomOfLinearMapTensorProduct, toFunLinear]
 #align matrix_equiv_tensor.to_fun_alg_hom_apply MatrixEquivTensor.toFunAlgHom_apply
 
 /-- (Implementation detail.)
@@ -127,10 +127,11 @@ theorem right_inv (M : Matrix n n A) : (toFunAlgHom R A n) (invFun R A n M) = M 
 #align matrix_equiv_tensor.right_inv MatrixEquivTensor.right_inv
 
 theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun R A n (toFunAlgHom R A n M) = M := by
-  induction' M using TensorProduct.induction_on with a m x y hx hy
-  · simp
-  · simp
-  · rw [map_add]
+  induction M using TensorProduct.induction_on with
+  | zero => simp
+  | tmul a m => simp
+  | add x y hx hy =>
+    rw [map_add]
     conv_rhs => rw [← hx, ← hy, ← invFun_add]
 #align matrix_equiv_tensor.left_inv MatrixEquivTensor.left_inv
 

@@ -56,9 +56,9 @@ variable (F : J ⥤ K ⥤ C)
 structure DiagramOfCones where
   obj : ∀ j : J, Cone (F.obj j)
   map : ∀ {j j' : J} (f : j ⟶ j'), (Cones.postcompose (F.map f)).obj (obj j) ⟶ obj j'
-  id : ∀ j : J, (map (𝟙 j)).Hom = 𝟙 _ := by aesop_cat
+  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by aesop_cat
   comp : ∀ {j₁ j₂ j₃ : J} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃),
-    (map (f ≫ g)).Hom = (map f).Hom ≫ (map g).Hom := by aesop_cat
+    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by aesop_cat
 #align category_theory.limits.diagram_of_cones CategoryTheory.Limits.DiagramOfCones
 
 variable {F}
@@ -69,7 +69,7 @@ from a `DiagramOfCones`.
 @[simps]
 def DiagramOfCones.conePoints (D : DiagramOfCones F) : J ⥤ C where
   obj j := (D.obj j).pt
-  map f := (D.map f).Hom
+  map f := (D.map f).hom
   map_id j := D.id j
   map_comp f g := D.comp f g
 #align category_theory.limits.diagram_of_cones.cone_points CategoryTheory.Limits.DiagramOfCones.conePoints
@@ -91,8 +91,8 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
                   dsimp; simp only [Category.id_comp]
                   have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f)
                   dsimp at this
-                  simp only [Category.id_comp, CategoryTheory.Functor.map_id, NatTrans.id_app]
-                    at this
+                  simp? at this says
+                    simp only [Category.id_comp, Functor.map_id, NatTrans.id_app] at this
                   exact this } }
       naturality := fun j j' f =>
         (Q j').hom_ext
@@ -162,7 +162,7 @@ and the universal cone morphisms between these.
 @[simps]
 noncomputable def DiagramOfCones.mkOfHasLimits : DiagramOfCones F where
   obj j := limit.cone (F.obj j)
-  map f := { Hom := lim.map (F.map f) }
+  map f := { hom := lim.map (F.map f) }
 #align category_theory.limits.diagram_of_cones.mk_of_has_limits CategoryTheory.Limits.DiagramOfCones.mkOfHasLimits
 
 -- Satisfying the inhabited linter.

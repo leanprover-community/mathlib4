@@ -36,10 +36,10 @@ bilinear, tensor, tensor product
 
 section Semiring
 
-variable {R : Type _} [CommSemiring R]
-variable {R' : Type _} [Monoid R']
-variable {R'' : Type _} [Semiring R'']
-variable {M : Type _} {N : Type _} {P : Type _} {Q : Type _} {S : Type _}
+variable {R : Type*} [CommSemiring R]
+variable {R' : Type*} [Monoid R']
+variable {R'' : Type*} [Semiring R'']
+variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
 variable [Module R M] [Module R N] [Module R P] [Module R Q] [Module R S]
 variable [DistribMulAction R' M]
@@ -119,12 +119,14 @@ notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
 -- porting note: make the arguments of induction_on explicit
 @[elab_as_elim]
-protected theorem induction_on {C : M ⊗[R] N → Prop} (z : M ⊗[R] N) (C0 : C 0)
-    (C1 : ∀ x y, C <| x ⊗ₜ[R] y) (Cp : ∀ x y, C x → C y → C (x + y)) : C z :=
+protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
+    (zero : motive 0)
+    (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
   AddCon.induction_on z fun x =>
-    FreeAddMonoid.recOn x C0 fun ⟨m, n⟩ y ih => by
+    FreeAddMonoid.recOn x zero fun ⟨m, n⟩ y ih => by
       rw [AddCon.coe_add]
-      exact Cp _ _ (C1 ..) ih
+      exact add _ _ (tmul ..) ih
 #align tensor_product.induction_on TensorProduct.induction_on
 
 variable (M)
@@ -167,7 +169,7 @@ Note that `Module R' (M ⊗[R] N)` is available even without this typeclass on `
 needed if `TensorProduct.smul_tmul`, `TensorProduct.smul_tmul'`, or `TensorProduct.tmul_smul` is
 used.
 -/
-class CompatibleSMul [DistribMulAction R' N] where
+class CompatibleSMul [DistribMulAction R' N] : Prop where
   smul_tmul : ∀ (r : R') (m : M) (n : N), (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n)
 #align tensor_product.compatible_smul TensorProduct.CompatibleSMul
 
@@ -192,12 +194,12 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
 
 attribute [local instance] addMonoid
 /-- Auxiliary function to defining scalar multiplication on tensor product. -/
-def SMul.aux {R' : Type _} [SMul R' M] (r : R') : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
+def SMul.aux {R' : Type*} [SMul R' M] (r : R') : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
   FreeAddMonoid.lift fun p : M × N => (r • p.1) ⊗ₜ p.2
 #align tensor_product.smul.aux TensorProduct.SMul.aux
 attribute [-instance] addMonoid
 
-theorem SMul.aux_of {R' : Type _} [SMul R' M] (r : R') (m : M) (n : N) :
+theorem SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
     SMul.aux r (.of (m, n)) = (r • m) ⊗ₜ[R] n :=
   rfl
 #align tensor_product.smul.aux_of TensorProduct.SMul.aux_of
@@ -308,7 +310,6 @@ theorem smul_tmul_smul (r s : R) (m : M) (n : N) : (r • m) ⊗ₜ[R] (s • n)
 
 instance leftModule : Module R'' (M ⊗[R] N) :=
   { TensorProduct.leftDistribMulAction with
-    smul := (· • ·)
     add_smul := TensorProduct.add_smul
     zero_smul := TensorProduct.zero_smul }
 #align tensor_product.left_module TensorProduct.leftModule
@@ -325,7 +326,7 @@ instance [Module R''ᵐᵒᵖ M] [IsCentralScalar R'' M] : IsCentralScalar R'' (
 section
 
 -- Like `R'`, `R'₂` provides a `DistribMulAction R'₂ (M ⊗[R] N)`
-variable {R'₂ : Type _} [Monoid R'₂] [DistribMulAction R'₂ M]
+variable {R'₂ : Type*} [Monoid R'₂] [DistribMulAction R'₂ M]
 variable [SMulCommClass R R'₂ M]
 
 /-- `SMulCommClass R' R'₂ M` implies `SMulCommClass R' R'₂ (M ⊗[R] N)` -/
@@ -393,7 +394,7 @@ section
 
 open BigOperators
 
-theorem sum_tmul {α : Type _} (s : Finset α) (m : α → M) (n : N) :
+theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
     (∑ a in s, m a) ⊗ₜ[R] n = ∑ a in s, m a ⊗ₜ[R] n := by
   classical
     induction' s using Finset.induction with a s has ih h
@@ -401,7 +402,7 @@ theorem sum_tmul {α : Type _} (s : Finset α) (m : α → M) (n : N) :
     · simp [Finset.sum_insert has, add_tmul, ih]
 #align tensor_product.sum_tmul TensorProduct.sum_tmul
 
-theorem tmul_sum (m : M) {α : Type _} (s : Finset α) (n : α → N) :
+theorem tmul_sum (m : M) {α : Type*} (s : Finset α) (n : α → N) :
     (m ⊗ₜ[R] ∑ a in s, n a) = ∑ a in s, m ⊗ₜ[R] n a := by
   classical
     induction' s using Finset.induction with a s has ih h
@@ -430,6 +431,19 @@ theorem map₂_mk_top_top_eq_top : Submodule.map₂ (mk R M N) ⊤ ⊤ = ⊤ := 
   rw [← top_le_iff, ← span_tmul_eq_top, Submodule.map₂_eq_span_image2]
   exact Submodule.span_mono fun _ ⟨m, n, h⟩ => ⟨m, n, trivial, trivial, h⟩
 #align tensor_product.map₂_mk_top_top_eq_top TensorProduct.map₂_mk_top_top_eq_top
+
+theorem exists_eq_tmul_of_forall (x : TensorProduct R M N)
+    (h : ∀ (m₁ m₂ : M) (n₁ n₂ : N), ∃ m n, m₁ ⊗ₜ n₁ + m₂ ⊗ₜ n₂ = m ⊗ₜ[R] n) :
+    ∃ m n, x = m ⊗ₜ n := by
+  induction x using TensorProduct.induction_on with
+  | zero =>
+    use 0, 0
+    rw [TensorProduct.zero_tmul]
+  | tmul m n => use m, n
+  | add x y h₁ h₂ =>
+    obtain ⟨m₁, n₁, rfl⟩ := h₁
+    obtain ⟨m₂, n₂, rfl⟩ := h₂
+    apply h
 
 end Module
 
@@ -755,7 +769,7 @@ def mapIncl (p : Submodule R P) (q : Submodule R Q) : p ⊗[R] q →ₗ[R] P ⊗
 
 section
 
-variable {P' Q' : Type _}
+variable {P' Q' : Type*}
 variable [AddCommMonoid P'] [Module R P']
 variable [AddCommMonoid Q'] [Module R Q']
 
@@ -796,13 +810,13 @@ protected theorem map_pow (f : M →ₗ[R] M) (g : N →ₗ[R] N) (n : ℕ) :
 #align tensor_product.map_pow TensorProduct.map_pow
 
 theorem map_add_left (f₁ f₂ : M →ₗ[R] P) (g : N →ₗ[R] Q) :
-  map (f₁ + f₂) g = map f₁ g + map f₂ g := by
+    map (f₁ + f₂) g = map f₁ g + map f₂ g := by
   ext
   simp only [add_tmul, compr₂_apply, mk_apply, map_tmul, add_apply]
 #align tensor_product.map_add_left TensorProduct.map_add_left
 
 theorem map_add_right (f : M →ₗ[R] P) (g₁ g₂ : N →ₗ[R] Q) :
-  map f (g₁ + g₂) = map f g₁ + map f g₂ := by
+    map f (g₁ + g₂) = map f g₁ + map f g₂ := by
   ext
   simp only [tmul_add, compr₂_apply, mk_apply, map_tmul, add_apply]
 #align tensor_product.map_add_right TensorProduct.map_add_right
@@ -1176,8 +1190,8 @@ end Semiring
 
 section Ring
 
-variable {R : Type _} [CommSemiring R]
-variable {M : Type _} {N : Type _} {P : Type _} {Q : Type _} {S : Type _}
+variable {R : Type*} [CommSemiring R]
+variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*}
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q] [AddCommGroup S]
 variable [Module R M] [Module R N] [Module R P] [Module R Q] [Module R S]
 

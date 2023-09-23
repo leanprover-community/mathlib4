@@ -22,9 +22,9 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type _} [CommRing R] (M : Submonoid R) {S : Type _} [CommRing S]
+variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
 
-variable [Algebra R S] {P : Type _} [CommRing P]
+variable [Algebra R S] {P : Type*} [CommRing P]
 
 open Function BigOperators
 
@@ -32,7 +32,7 @@ namespace IsLocalization
 
 section LocalizationLocalization
 
-variable (N : Submonoid S) (T : Type _) [CommRing T] [Algebra R T]
+variable (N : Submonoid S) (T : Type*) [CommRing T] [Algebra R T]
 
 section
 
@@ -71,8 +71,8 @@ theorem localization_localization_map_units [IsLocalization N T]
 #align is_localization.localization_localization_map_units IsLocalization.localization_localization_map_units
 
 theorem localization_localization_surj [IsLocalization N T] (x : T) :
-    ∃ y : R × localizationLocalizationSubmodule M N, x * algebraMap R T y.2 = algebraMap R T y.1
-    := by
+    ∃ y : R × localizationLocalizationSubmodule M N,
+        x * algebraMap R T y.2 = algebraMap R T y.1 := by
   rcases IsLocalization.surj N x with ⟨⟨y, s⟩, eq₁⟩
   -- x = y / s
   rcases IsLocalization.surj M y with ⟨⟨z, t⟩, eq₂⟩
@@ -271,7 +271,7 @@ namespace IsFractionRing
 
 open IsLocalization
 
-theorem isFractionRing_of_isLocalization (S T : Type _) [CommRing S] [CommRing T] [Algebra R S]
+theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] [IsLocalization M S] [IsFractionRing R T]
     (hM : M ≤ nonZeroDivisors R) : IsFractionRing S T := by
   have := isLocalization_of_submonoid_le S T M (nonZeroDivisors R) hM
@@ -287,10 +287,10 @@ theorem isFractionRing_of_isLocalization (S T : Type _) [CommRing S] [CommRing T
     rw [map_zero]
     apply hx
     rw [← (map_units S s).mul_left_inj, mul_assoc, e, ← map_mul, hz, map_zero,
-      MulZeroClass.zero_mul]
+      zero_mul]
 #align is_fraction_ring.is_fraction_ring_of_is_localization IsFractionRing.isFractionRing_of_isLocalization
 
-theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type _) [CommRing S]
+theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) [CommRing S]
     [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     [IsLocalization M S] [IsFractionRing R T] : IsFractionRing S T := by
   haveI := IsFractionRing.nontrivial R T

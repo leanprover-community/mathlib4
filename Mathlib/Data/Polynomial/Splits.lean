@@ -178,7 +178,7 @@ theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map
         (show ¬IsUnit (f.map i) from mt isUnit_iff_degree_eq_zero.1 hf0) hf0'
     let ⟨x, hx⟩ := exists_root_of_degree_eq_one (hs.resolve_left hf0' hg.1 hg.2)
     let ⟨i, hi⟩ := hg.2
-    ⟨x, by rw [← eval_map, hi, eval_mul, show _ = _ from hx, MulZeroClass.zero_mul]⟩
+    ⟨x, by rw [← eval_map, hi, eval_mul, show _ = _ from hx, zero_mul]⟩
 #align polynomial.exists_root_of_splits' Polynomial.exists_root_of_splits'
 
 theorem roots_ne_zero_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : natDegree (f.map i) ≠ 0) :
@@ -208,7 +208,7 @@ theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits i p
   obtain ⟨q, he, hd, hr⟩ := exists_prod_multiset_X_sub_C_mul (p.map i)
   rw [← splits_id_iff_splits, ← he] at hsplit
   rw [← he] at hp
-  have hq : q ≠ 0 := fun h => hp (by rw [h, MulZeroClass.mul_zero])
+  have hq : q ≠ 0 := fun h => hp (by rw [h, mul_zero])
   rw [← hd, add_right_eq_self]
   by_contra h
   have h' : (map (RingHom.id L) q).natDegree ≠ 0 := by simp [h]
@@ -371,7 +371,7 @@ theorem eq_X_sub_C_of_splits_of_single_root {x : K} {h : K[X]} (h_splits : Split
 set_option linter.uppercaseLean3 false in
 #align polynomial.eq_X_sub_C_of_splits_of_single_root Polynomial.eq_X_sub_C_of_splits_of_single_root
 
-theorem mem_lift_of_splits_of_roots_mem_range (R : Type _) [CommRing R] [Algebra R K] {f : K[X]}
+theorem mem_lift_of_splits_of_roots_mem_range (R : Type*) [CommRing R] [Algebra R K] {f : K[X]}
     (hs : f.Splits (RingHom.id K)) (hm : f.Monic) (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) :
     f ∈ Polynomial.lifts (algebraMap R K) := by
   rw [eq_prod_roots_of_monic_of_splits_id hm hs, lifts_iff_liftsRing]
@@ -446,9 +446,9 @@ theorem splits_iff_card_roots {p : K[X]} :
 #align polynomial.splits_iff_card_roots Polynomial.splits_iff_card_roots
 
 theorem aeval_root_derivative_of_splits [Algebra K L] {P : K[X]} (hmo : P.Monic)
-    (hP : P.Splits (algebraMap K L)) {r : L} (hr : r ∈ (P.map (algebraMap K L)).roots) :
+    (hP : P.Splits (algebraMap K L)) {r : L} (hr : r ∈ P.aroots L) :
     aeval r (Polynomial.derivative P) =
-    (((P.map <| algebraMap K L).roots.erase r).map fun a => r - a).prod := by
+    (((P.aroots L).erase r).map fun a => r - a).prod := by
   replace hmo := hmo.map (algebraMap K L)
   replace hP := (splits_id_iff_splits (algebraMap K L)).2 hP
   rw [aeval_def, ← eval_map, ← derivative_map]
