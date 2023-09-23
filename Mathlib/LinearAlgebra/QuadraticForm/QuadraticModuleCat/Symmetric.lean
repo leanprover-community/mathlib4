@@ -31,8 +31,8 @@ instance : BraidedCategory (QuadraticModuleCat.{u} R) :=
     (fun _X _Y => by aesop_cat)
 
 variable (R) in
-/-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a monoidal functor. -/
-@[simps]
+/-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a braided functor. -/
+@[simps toMonoidalFunctor]
 def toModuleCatBraidedFunctor : BraidedFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) where
   toMonoidalFunctor := toModuleCatMonoidalFunctor R
 
