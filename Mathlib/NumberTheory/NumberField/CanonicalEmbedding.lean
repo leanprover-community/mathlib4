@@ -250,8 +250,6 @@ end commMap
 
 noncomputable section stdBasis
 
-variable [NumberField K]
-
 open Classical Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
   ComplexConjugate
 
@@ -260,8 +258,8 @@ variable [NumberField K]
 /-- The type indexing the basis `stdBasis`. -/
 abbrev index := {w : InfinitePlace K // IsReal w} ⊕ ({w : InfinitePlace K // IsComplex w}) × (Fin 2)
 
-/-- The `ℝ`-basis of `({w // IsReal w} → ℝ) × ({ w // IsComplex w } → ℂ)` formed of the vector
-equal to `1` at `w` and `0` elsewhere for `IsReal w` and of the couple of vectors equal to `1`
+/-- The `ℝ`-basis of `({w // IsReal w} → ℝ) × ({ w // IsComplex w } → ℂ)` formed by the vector
+equal to `1` at `w` and `0` elsewhere for `IsReal w` and by the couple of vectors equal to `1`
 (resp. `I`) at `w` and `0` elsewhere for `IsComplex w`. -/
 def stdBasis : Basis (index K) ℝ (E K) :=
   Basis.prod (Pi.basisFun ℝ _)
@@ -293,9 +291,9 @@ theorem fundamentalDomain_stdBasis :
 theorem volume_fundamentalDomain_stdBasis :
     volume (fundamentalDomain (stdBasis K)) = 1 := by
   rw [fundamentalDomain_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi,
-    Real.volume_Ico, sub_zero, ENNReal.ofReal_one, Finset.prod_const_one, one_mul,
     Complex.volume_preserving_equiv_pi.measure_preimage ?_, volume_pi, pi_pi, Real.volume_Ico,
-    sub_zero, ENNReal.ofReal_one, Finset.prod_const_one, Finset.prod_const_one]
+    sub_zero, ENNReal.ofReal_one, Finset.prod_const_one, Finset.prod_const_one,
+    Finset.prod_const_one, one_mul]
   exact MeasurableSet.pi Set.countable_univ (fun _ _ => measurableSet_Ico)
 
 /-- The `Equiv` between `index K` and `K →+* ℂ` defined by sending a real infinite place `w` to
@@ -352,13 +350,12 @@ theorem det_matrix_to_stdBasis :
           det_reindex_self, det_blockDiagonal]
   _ = ∏ k : { w : InfinitePlace K // IsComplex w }, (2⁻¹ * Complex.I) := by
       refine Finset.prod_congr (Eq.refl _) (fun _ _ => ?_)
-      simp_rw [smul_of, smul_cons, smul_eq_mul, mul_one, smul_empty, det_fin_two_of, mul_neg,
-        sub_neg_eq_add, ← mul_add, ← two_mul, inv_mul_cancel_left₀ (two_ne_zero (α := ℂ))]
+      field_simp; ring
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
       rw [Finset.prod_const, Fintype.card]
 
 /-- Let `x : (K →+* ℂ) → ℂ` such that `x_φ = conj x_(conj φ)` for all `φ : K →+* ℂ`, then the
-representation of `comMap K x` on `stdBasis` is given (up to reindexing) by the multiplication of
+representation of `comMap K x` on `stdBasis` is given (up to reindexing) by the product of
 `matrix_to_stdBasis` by `x`. -/
 theorem stdBasis_repr_eq_matrix_to_stdBasis_mul (x : (K →+* ℂ) → ℂ)
     (hx : ∀ φ, conj (x φ) = x (ComplexEmbedding.conjugate φ)) (c : index K) :

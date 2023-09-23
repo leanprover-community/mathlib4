@@ -53,7 +53,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
         Real.toNNReal (Real.sqrt |discr K|) := by
   rw [← toNNReal_eq_toNNReal_iff' (ne_of_lt (fundamentalDomain_isBounded _).measure_lt_top)
     (ENNReal.mul_ne_top (coe_ne_top) (coe_ne_top)), toNNReal_mul, toNNReal_coe]
-  let f :  Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →+* ℂ) :=
+  let f : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →+* ℂ) :=
     (canonicalEmbedding.latticeBasis K).indexEquiv (Pi.basisFun ℂ _)
   let e : (index K) ≃ Module.Free.ChooseBasisIndex ℤ (𝓞 K) := (indexEquiv K).trans f.symm
   let M := (mixedEmbedding.stdBasis K).toMatrix ((latticeBasis K).reindex e.symm)
