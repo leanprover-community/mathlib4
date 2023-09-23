@@ -368,7 +368,7 @@ set_option linter.uppercaseLean3 false in
 /-- The forgetful functor from commutative groups to types preserves all limits. (That is, the
 underlying types could have been computed instead as limits in the category of types.)
 -/
-@[to_additive AddCommGroupCat.forgetPreservesLimits
+@[to_additive
   "The forgetful functor from additive commutative groups to types preserves all limits.
   (That is, the underlying types could have been computed instead as limits in the category of
   types.)"]
@@ -385,7 +385,11 @@ noncomputable instance forgetPreservesLimitsOfSize :
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_preserves_limits_of_size CommGroupCat.forgetPreservesLimitsOfSize
 set_option linter.uppercaseLean3 false in
-#align AddCommGroup.forget_preserves_limits AddCommGroupCat.forgetPreservesLimits
+#align AddCommGroup.forget_preserves_limits AddCommGroupCat.forgetPreservesLimitsOfSize
+
+@[to_additive]
+noncomputable instance forgetPreservesLimits : PreservesLimits (forget CommGroupCat.{u}) :=
+  CommGroupCat.forgetPreservesLimitsOfSize.{u, u}
 
 -- Verify we can form limits indexed over smaller categories.
 example (f : ℕ → AddCommGroupCat) : HasProduct f := by infer_instance
