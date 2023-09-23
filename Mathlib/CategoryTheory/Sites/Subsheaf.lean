@@ -126,7 +126,7 @@ theorem Subpresheaf.eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
   · rintro rfl
     infer_instance
   · intro H
-    ext (U x)
+    ext U x
     apply iff_true_iff.mpr
     rw [← IsIso.inv_hom_id_apply (G.ι.app U) x]
     exact ((inv (G.ι.app U)) x).2
@@ -302,7 +302,7 @@ noncomputable def Subpresheaf.sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presie
 
 theorem Subpresheaf.to_sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSheaf J F') :
     Subpresheaf.homOfLe (G.le_sheafify J) ≫ G.sheafifyLift f h = f := by
-  ext (U s)
+  ext U s
   apply (h _ ((Subpresheaf.homOfLe (G.le_sheafify J)).app U s).prop).isSeparatedFor.ext
   intro V i hi
   have := elementwise_of% f.naturality
@@ -315,7 +315,7 @@ theorem Subpresheaf.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
     (l₁ l₂ : (G.sheafify J).toPresheaf ⟶ F')
     (e : Subpresheaf.homOfLe (G.le_sheafify J) ≫ l₁ = Subpresheaf.homOfLe (G.le_sheafify J) ≫ l₂) :
     l₁ = l₂ := by
-  ext (U⟨s, hs⟩)
+  ext U ⟨s, hs⟩
   apply (h _ hs).isSeparatedFor.ext
   rintro V i hi
   dsimp at hi
@@ -437,7 +437,7 @@ instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Mono (imageSheafι f) :=
 
 instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (toImageSheaf f) := by
   refine' ⟨@fun G' g₁ g₂ e => _⟩
-  ext (U⟨s, hx⟩)
+  ext U ⟨s, hx⟩
   apply ((isSheaf_iff_isSheaf_of_type J _).mp G'.2 _ hx).isSeparatedFor.ext
   rintro V i ⟨y, e'⟩
   change (g₁.val.app _ ≫ G'.val.map _) _ = (g₂.val.app _ ≫ G'.val.map _) _

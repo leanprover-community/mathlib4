@@ -71,7 +71,7 @@ variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAdd
 theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E => (0 : F)) = 0 := by
   induction' n with n IH
   · ext m; simp
-  · ext (x m)
+  · ext x m
     rw [iteratedFDeriv_succ_apply_left, IH]
     change (fderiv 𝕜 (fun _ : E => (0 : E[×n]→L[𝕜] F)) x : E → E[×n]→L[𝕜] F) (m 0) (tail m) = _
     rw [fderiv_const]
@@ -369,7 +369,7 @@ theorem HasFTaylorSeriesUpToOn.compContinuousLinearMap (hf : HasFTaylorSeriesUpT
   · intro m hm x hx
     convert (hA m).hasFDerivAt.comp_hasFDerivWithinAt x
         ((hf.fderivWithin m hm (g x) hx).comp x g.hasFDerivWithinAt (Subset.refl _))
-    ext (y v)
+    ext y v
     change p (g x) (Nat.succ m) (g ∘ cons y v) = p (g x) m.succ (cons (g y) (g ∘ v))
     rw [comp_cons]
   · intro m hm

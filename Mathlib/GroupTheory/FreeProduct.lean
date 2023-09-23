@@ -155,7 +155,7 @@ def lift : (∀ i, M i →* N) ≃ (FreeProduct M →* N) where
   invFun f i := f.comp of
   left_inv := by
     intro fi
-    ext (i x)
+    ext i x
     rw [MonoidHom.comp_apply, of_apply, Con.lift_mk', FreeMonoid.lift_eval_of]
   right_inv := by
     intro f

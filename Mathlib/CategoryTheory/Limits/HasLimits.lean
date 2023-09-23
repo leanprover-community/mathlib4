@@ -1108,7 +1108,7 @@ theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ 
 @[simp] -- Porting note: proof adjusted to account for @[simps] on all fields of colim
 theorem colimit.map_desc (c : Cocone G) :
     colimMap α ≫ colimit.desc G c = colimit.desc F ((Cocones.precompose α).obj c) := by
-  apply Limits.colimit.hom_ext; intro j
+  ext j
   simp [← assoc, colimit.ι_map, assoc, colimit.ι_desc, colimit.ι_desc]
 #align category_theory.limits.colimit.map_desc CategoryTheory.Limits.colimit.map_desc
 

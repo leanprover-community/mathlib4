@@ -66,14 +66,14 @@ theorem Complex.hasSum_sin' (z : ℂ) :
     neg_mul, neg_div, mul_assoc, mul_div_cancel_left _ (two_ne_zero : (2 : ℂ) ≠ 0), Complex.div_I]
 #align complex.has_sum_sin' Complex.hasSum_sin'
 
-/-- The power series expansion of `complex.cos`. -/
+/-- The power series expansion of `Complex.cos`. -/
 theorem Complex.hasSum_cos (z : ℂ) :
     HasSum (fun n : ℕ => (-1) ^ n * z ^ (2 * n) / ↑(2 * n)!) (Complex.cos z) := by
   convert Complex.hasSum_cos' z using 1
   simp_rw [mul_pow, pow_mul, Complex.I_sq, mul_comm]
 #align complex.has_sum_cos Complex.hasSum_cos
 
-/-- The power series expansion of `complex.sin`. -/
+/-- The power series expansion of `Complex.sin`. -/
 theorem Complex.hasSum_sin (z : ℂ) :
     HasSum (fun n : ℕ => (-1) ^ n * z ^ (2 * n + 1) / ↑(2 * n + 1)!) (Complex.sin z) := by
   convert Complex.hasSum_sin' z using 1
@@ -101,13 +101,13 @@ theorem Complex.sin_eq_tsum (z : ℂ) :
   (Complex.hasSum_sin z).tsum_eq.symm
 #align complex.sin_eq_tsum Complex.sin_eq_tsum
 
-/-- The power series expansion of `real.cos`. -/
+/-- The power series expansion of `Real.cos`. -/
 theorem Real.hasSum_cos (r : ℝ) :
     HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n) / ↑(2 * n)!) (Real.cos r) := by
   exact_mod_cast Complex.hasSum_cos r
 #align real.has_sum_cos Real.hasSum_cos
 
-/-- The power series expansion of `real.sin`. -/
+/-- The power series expansion of `Real.sin`. -/
 theorem Real.hasSum_sin (r : ℝ) :
     HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n + 1) / ↑(2 * n + 1)!) (Real.sin r) := by
   exact_mod_cast Complex.hasSum_sin r

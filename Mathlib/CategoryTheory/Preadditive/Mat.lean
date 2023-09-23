@@ -119,6 +119,7 @@ instance : Category.{v₁} (Mat_ C) where
     rw [Finset.sum_comm]
 
 -- porting note: added because `DMatrix.ext` is not triggered automatically
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 theorem hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
   DMatrix.ext_iff.mp H
@@ -208,11 +209,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C)
               substs h h'
               rfl
             ι_π := fun j j' => by
-              -- porting note: it was `ext (x y)`; it seems that when it uses a given
-              -- ext lemma, the mathlib4 `ext` tactic is not able to introduce
-              -- more than one named variable?
-              ext x
-              intro y
+              ext x y
               dsimp
               simp_rw [dite_comp, comp_dite]
               simp only [ite_self, dite_eq_ite, dif_ctx_congr, Limits.comp_zero, Limits.zero_comp,
@@ -312,8 +309,8 @@ namespace Mat_
 def embedding : C ⥤ Mat_ C where
   obj X := ⟨PUnit, fun _ => X⟩
   map f _ _ := f
-  map_id _ := by ext ⟨⟩; rintro ⟨⟩; simp
-  map_comp _ _ := by ext ⟨⟩; rintro ⟨⟩ ; simp
+  map_id _ := by ext ⟨⟩; simp
+  map_comp _ _ := by ext ⟨⟩; simp
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.embedding CategoryTheory.Mat_.embedding
 
@@ -360,8 +357,7 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     intro j
     simp only [Category.id_comp, Category.assoc, biproduct.lift_π, biproduct.ι_desc_assoc,
       biproduct.ι_π]
-    ext ⟨⟩
-    rintro ⟨⟩
+    ext ⟨⟩ ⟨⟩
     simp only [embedding, comp_apply, comp_dite, dite_comp, comp_zero, zero_comp,
       Finset.sum_dite_eq', Finset.mem_univ, ite_true, eqToHom_refl, Category.comp_id]
     split_ifs with h
@@ -413,11 +409,11 @@ theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive 
     F.map f ≫ (additiveObjIsoBiproduct F N).hom =
       (additiveObjIsoBiproduct F M).hom ≫
         biproduct.matrix fun i j => F.map ((embedding C).map (f i j)) := by
-  refine' biproduct.hom_ext _ _ (fun i => _)
+  ext i : 1
   simp only [Category.assoc, additiveObjIsoBiproduct_hom_π, isoBiproductEmbedding_hom,
     embedding_obj_ι, embedding_obj_X, biproduct.lift_π, biproduct.matrix_π,
     ← cancel_epi (additiveObjIsoBiproduct F M).inv, Iso.inv_hom_id_assoc]
-  refine' biproduct.hom_ext' _ _ (fun j => _)
+  ext j : 1
   simp only [ι_additiveObjIsoBiproduct_inv_assoc, isoBiproductEmbedding_inv,
     biproduct.ι_desc, ← F.map_comp]
   congr 1
@@ -445,7 +441,7 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
   map_id X := by
     dsimp
     ext i j
-    by_cases h : i = j
+    by_cases h : j = i
     . subst h; simp
     . simp [h]
 set_option linter.uppercaseLean3 false in
@@ -577,6 +573,7 @@ section
 variable {R : Type u} [Semiring R]
 
 -- porting note: added because `Matrix.ext` is not triggered automatically
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 theorem hom_ext {X Y : Mat R} (f g : X ⟶ Y) (h : ∀ i j, f i j = g i j) : f = g :=
   Matrix.ext_iff.mp h

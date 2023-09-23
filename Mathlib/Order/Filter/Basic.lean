@@ -204,8 +204,8 @@ theorem sInter_mem {s : Set (Set α)} (hfin : s.Finite) : ⋂₀ s ∈ f ↔ ∀
 #align filter.sInter_mem Filter.sInter_mem
 
 @[simp]
-theorem iInter_mem {β : Type v} {s : β → Set α} [Finite β] : (⋂ i, s i) ∈ f ↔ ∀ i, s i ∈ f := by
-  simpa using biInter_mem finite_univ
+theorem iInter_mem {β : Sort v} {s : β → Set α} [Finite β] : (⋂ i, s i) ∈ f ↔ ∀ i, s i ∈ f :=
+  (sInter_mem (finite_range _)).trans forall_range_iff
 #align filter.Inter_mem Filter.iInter_mem
 
 theorem exists_mem_subset_iff : (∃ t ∈ f, t ⊆ s) ↔ s ∈ f :=

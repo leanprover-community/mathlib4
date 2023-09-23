@@ -53,3 +53,7 @@ example [Group G] (g h : G) : g * g⁻¹ * h = h := by
 
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
   rw?!
+
+example [Group G] (h : G) (hyp : g * 1 = h) : g = h := by
+  rw?! at hyp
+  assumption

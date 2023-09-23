@@ -111,14 +111,14 @@ set_option linter.uppercaseLean3 false in
 
 theorem wPathCasesOn_eta {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
     (h : P.WPath ⟨a, f⟩ ⟹ α) : P.wPathCasesOn (P.wPathDestLeft h) (P.wPathDestRight h) = h := by
-  ext (i x) ; cases x <;> rfl
+  ext i x ; cases x <;> rfl
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_path_cases_on_eta MvPFunctor.wPathCasesOn_eta
 
 theorem comp_wPathCasesOn {α β : TypeVec n} (h : α ⟹ β) {a : P.A} {f : P.last.B a → P.last.W}
     (g' : P.drop.B a ⟹ α) (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
     h ⊚ P.wPathCasesOn g' g = P.wPathCasesOn (h ⊚ g') fun i => h ⊚ g i := by
-  ext (i x) ; cases x <;> rfl
+  ext i x ; cases x <;> rfl
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.comp_W_path_cases_on MvPFunctor.comp_wPathCasesOn
 

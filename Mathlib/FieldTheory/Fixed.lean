@@ -68,10 +68,8 @@ class IsInvariantSubfield (S : Subfield F) : Prop where
 
 variable (S : Subfield F)
 
---instance : MulSemiringAction M S := Submonoid.mulSemiringAction S.toSubmonoid
-
-instance IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] : MulSemiringAction M S
-    where
+instance IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] :
+    MulSemiringAction M S where
   smul m x := ⟨m • x.1, IsInvariantSubfield.smul_mem m x.2⟩
   one_smul s := Subtype.eq <| one_smul M s.1
   mul_smul m₁ m₂ s := Subtype.eq <| mul_smul m₁ m₂ s.1
@@ -81,8 +79,8 @@ instance IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] : Mul
   smul_mul m s₁ s₂ := Subtype.eq <| smul_mul' m s₁.1 s₂.1
 #align is_invariant_subfield.to_mul_semiring_action IsInvariantSubfield.toMulSemiringAction
 
-instance [IsInvariantSubfield M S] : IsInvariantSubring M S.toSubring
-    where smul_mem := IsInvariantSubfield.smul_mem
+instance [IsInvariantSubfield M S] : IsInvariantSubring M S.toSubring where
+  smul_mem := IsInvariantSubfield.smul_mem
 
 end InvariantSubfields
 
@@ -97,15 +95,15 @@ def subfield : Subfield F :=
     (by ext z; simp [fixedPoints, FixedBy.subfield, iInf, Subfield.mem_sInf]; rfl)
 #align fixed_points.subfield FixedPoints.subfield
 
-instance : IsInvariantSubfield M (FixedPoints.subfield M F)
-    where smul_mem g x hx g' := by rw [hx, hx]
+instance : IsInvariantSubfield M (FixedPoints.subfield M F) where
+  smul_mem g x hx g' := by rw [hx, hx]
 
-instance : SMulCommClass M (FixedPoints.subfield M F) F
-    where smul_comm m f f' := show m • (↑f * f') = f * m • f' by rw [smul_mul', f.prop m]
+instance : SMulCommClass M (FixedPoints.subfield M F) F where
+  smul_comm m f f' := show m • (↑f * f') = f * m • f' by rw [smul_mul', f.prop m]
 
-instance smul_comm_class' : SMulCommClass (FixedPoints.subfield M F) M F :=
+instance smulCommClass' : SMulCommClass (FixedPoints.subfield M F) M F :=
   SMulCommClass.symm _ _ _
-#align fixed_points.smul_comm_class' FixedPoints.smul_comm_class'
+#align fixed_points.smul_comm_class' FixedPoints.smulCommClass'
 
 @[simp]
 theorem smul (m : M) (x : FixedPoints.subfield M F) : m • x = x :=

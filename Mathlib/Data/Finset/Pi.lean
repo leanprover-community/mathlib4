@@ -117,7 +117,7 @@ theorem pi_singletons {β : Type _} (s : Finset α) (f : α → β) :
   constructor
   · simp
   intro a ha
-  ext (i hi)
+  ext i hi
   rw [mem_pi] at ha
   simpa using ha i hi
 #align finset.pi_singletons Finset.pi_singletons

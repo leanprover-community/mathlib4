@@ -93,7 +93,7 @@ theorem rel_iff {H K : Subgroup G} {x y : G} :
 
 theorem bot_rel_eq_leftRel (H : Subgroup G) :
     (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
-  ext (a b)
+  ext a b
   rw [rel_iff, Setoid.Rel, QuotientGroup.leftRel_apply]
   constructor
   · rintro ⟨a, rfl : a = 1, b, hb, rfl⟩
@@ -105,7 +105,7 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
 
 theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
     (setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
-  ext (a b)
+  ext a b
   rw [rel_iff, Setoid.Rel, QuotientGroup.rightRel_apply]
   constructor
   · rintro ⟨b, hb, a, rfl : a = 1, rfl⟩

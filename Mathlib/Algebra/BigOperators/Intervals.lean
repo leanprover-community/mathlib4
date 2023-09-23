@@ -110,7 +110,7 @@ theorem prod_Ico_eq_div {δ : Type _} [CommGroup δ] (f : ℕ → δ) {m n : ℕ
 #align finset.sum_Ico_eq_sub Finset.sum_Ico_eq_sub
 
 @[to_additive]
-theorem prod_range_sub_prod_range {α : Type _} [CommGroup α] {f : ℕ → α} {n m : ℕ} (hnm : n ≤ m) :
+theorem prod_range_div_prod_range {α : Type _} [CommGroup α] {f : ℕ → α} {n m : ℕ} (hnm : n ≤ m) :
     ((∏ k in range m, f k) / ∏ k in range n, f k) =
     ∏ k in (range m).filter fun k => n ≤ k, f k := by
   rw [← prod_Ico_eq_div f hnm]
@@ -118,7 +118,7 @@ theorem prod_range_sub_prod_range {α : Type _} [CommGroup α] {f : ℕ → α} 
   apply Finset.ext
   simp only [mem_Ico, mem_filter, mem_range, *]
   tauto
-#align finset.prod_range_sub_prod_range Finset.prod_range_sub_prod_range
+#align finset.prod_range_sub_prod_range Finset.prod_range_div_prod_range
 #align finset.sum_range_sub_sum_range Finset.sum_range_sub_sum_range
 
 /-- The two ways of summing over `(i,j)` in the range `a<=i<=j<b` are equal. -/

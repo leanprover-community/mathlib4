@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.euclidean_domain.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
+! leanprover-community/mathlib commit bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -106,6 +106,10 @@ theorem mul_div_assoc (x : R) {y z : R} (h : z ∣ y) : x * y / z = x * (y / z) 
   rcases h with ⟨p, rfl⟩
   rw [mul_div_cancel_left _ hz, mul_left_comm, mul_div_cancel_left _ hz]
 #align euclidean_domain.mul_div_assoc EuclideanDomain.mul_div_assoc
+
+protected theorem mul_div_cancel' {a b : R} (hb : b ≠ 0) (hab : b ∣ a) : b * (a / b) = a := by
+  rw [← mul_div_assoc _ hab, mul_div_cancel_left _ hb]
+#align euclidean_domain.mul_div_cancel' EuclideanDomain.mul_div_cancel'
 
 -- This generalizes `Int.div_one`, see note [simp-normal form]
 @[simp]

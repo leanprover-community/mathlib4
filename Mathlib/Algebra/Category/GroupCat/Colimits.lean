@@ -327,7 +327,7 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
     simp only [coequalizer_as_cokernel, cokernel.π_desc_assoc, Category.comp_id]
     rfl
   inv_hom_id := by
-    ext x : 2
+    ext x
     exact QuotientAddGroup.induction_on x <| cokernel.π_desc_apply f _ _
 #align AddCommGroup.cokernel_iso_quotient AddCommGroupCat.cokernelIsoQuotient
 

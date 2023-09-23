@@ -2660,7 +2660,8 @@ theorem range_top_iff_surjective {N} [Group N] {f : G →* N} :
 #align add_monoid_hom.range_top_iff_surjective AddMonoidHom.range_top_iff_surjective
 
 /-- The range of a surjective monoid homomorphism is the whole of the codomain. -/
-@[to_additive "The range of a surjective `AddMonoid` homomorphism is the whole of the codomain."]
+@[to_additive (attr := simp)
+  "The range of a surjective `AddMonoid` homomorphism is the whole of the codomain."]
 theorem range_top_of_surjective {N} [Group N] (f : G →* N) (hf : Function.Surjective f) :
     f.range = (⊤ : Subgroup N) :=
   range_top_iff_surjective.2 hf

@@ -486,7 +486,7 @@ theorem mapDomain_mul {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β]
   simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_mul]
   rw [Finsupp.sum_mapDomain_index]
   · congr
-    ext (a b)
+    ext a b
     rw [Finsupp.sum_mapDomain_index]
     · simp
     · simp [mul_add]
@@ -1557,7 +1557,7 @@ theorem mapDomain_mul {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β]
   simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_add]
   rw [Finsupp.sum_mapDomain_index]
   · congr
-    ext (a b)
+    ext a b
     rw [Finsupp.sum_mapDomain_index]
     · simp
     · simp [mul_add]

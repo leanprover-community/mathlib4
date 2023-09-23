@@ -418,8 +418,7 @@ theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Func
   · intro h
     haveI : Limits.PreservesLimits profiniteToCompHaus := inferInstance
     haveI : Mono (profiniteToCompHaus.map f) := inferInstance
-    -- Porting note: now need `erw`?
-    erw [← CompHaus.mono_iff_injective]
+    rw [← CompHaus.mono_iff_injective]
     assumption
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget Profinite).mono_of_mono_map

@@ -224,7 +224,7 @@ theorem StableUnderBaseChange.baseChange_map [HasPullbacks C] {P : MorphismPrope
     pullbackRightPullbackFstIso Y.hom f g.left ≪≫
       pullback.congrHom (g.w.trans (Category.comp_id _)) rfl
   have : e.inv ≫ pullback.snd = ((baseChange f).map g).left := by
-    apply pullback.hom_ext <;> dsimp <;> simp
+    ext <;> dsimp <;> simp
   rw [← this, hP.respectsIso.cancel_left_isIso]
   exact hP.snd _ _ H
 #align category_theory.morphism_property.stable_under_base_change.base_change_map CategoryTheory.MorphismProperty.StableUnderBaseChange.baseChange_map
@@ -242,7 +242,7 @@ theorem StableUnderBaseChange.pullback_map [HasPullbacks C] {P : MorphismPropert
           ((baseChange _).map (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g')).left) ≫
         (pullbackSymmetry _ _).hom ≫
           ((baseChange g').map (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f')).left :=
-    by apply pullback.hom_ext <;> dsimp <;> simp
+    by ext <;> dsimp <;> simp
   rw [this]
   apply hP' <;> rw [hP.respectsIso.cancel_left_isIso]
   exacts [hP.baseChange_map _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,
@@ -493,6 +493,14 @@ lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInvert
 
 instance (W : MorphismProperty C) (D : Type _) [Category D] : Category (FunctorsInverting W D) :=
   FullSubcategory.category _
+
+-- Porting note: add another `@[ext]` lemma
+-- since `ext` can't see through the definition to use `NatTrans.ext`.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
+@[ext]
+lemma FunctorsInverting.hom_ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInverting W D}
+    {α β : F₁ ⟶ F₂} (h : α.app = β.app) : α = β :=
+  NatTrans.ext _ _ h
 
 /-- A constructor for `W.FunctorsInverting D` -/
 def FunctorsInverting.mk {W : MorphismProperty C} {D : Type _} [Category D] (F : C ⥤ D)

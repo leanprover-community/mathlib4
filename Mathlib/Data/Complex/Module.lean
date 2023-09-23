@@ -306,7 +306,7 @@ theorem conjAe_coe : ⇑conjAe = conj :=
 @[simp]
 theorem toMatrix_conjAe :
     LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
-  ext (i j)
+  ext i j
   -- Porting note: replaced non-terminal `simp [LinearMap.toMatrix_apply]`
   fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 #align complex.to_matrix_conj_ae Complex.toMatrix_conjAe

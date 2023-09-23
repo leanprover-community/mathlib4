@@ -184,8 +184,8 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
         (fun s m hm => _)⟩⟩
   . simp_rw [Category.assoc, ← pullback.condition, ← Category.assoc, s.condition]
   . simp only [assoc, lift_fst_assoc, pullback.condition]
-  . apply pullback.hom_ext <;> simp
-  . apply pullback.hom_ext
+  . ext <;> simp
+  . ext
     . simp [s.condition]
     . simp
   . apply pullback.hom_ext

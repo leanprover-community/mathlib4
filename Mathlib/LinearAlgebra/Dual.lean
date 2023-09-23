@@ -445,7 +445,7 @@ theorem dualBasis_apply (i : ι) (m : M) : b.dualBasis i m = b.repr m i :=
 
 @[simp]
 theorem coe_dualBasis : ⇑b.dualBasis = b.coord := by
-  ext (i x)
+  ext i x
   apply dualBasis_apply
 #align basis.coe_dual_basis Basis.coe_dualBasis
 
@@ -1028,7 +1028,7 @@ theorem dualLift_of_mem {φ : Module.Dual K W} {w : V} (hw : w ∈ W) : W.dualLi
 
 @[simp]
 theorem dualRestrict_comp_dualLift (W : Subspace K V) : W.dualRestrict.comp W.dualLift = 1 := by
-  ext (φ x)
+  ext φ x
   simp
 #align subspace.dual_restrict_comp_dual_lift Subspace.dualRestrict_comp_dualLift
 
@@ -1303,7 +1303,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_surjective (f : M →ₗ[R] M')
   · rw [LinearMap.range_comp_of_range_eq_top]
     apply LinearEquiv.range
   · apply congr_arg
-    ext (φ x)
+    ext φ x
     simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, LinearMap.dualMap_apply,
       LinearEquiv.dualMap_apply, mkQ_apply, LinearMap.quotKerEquivOfSurjective,
       LinearEquiv.trans_symm, LinearEquiv.trans_apply, LinearEquiv.ofTop_symm_apply,

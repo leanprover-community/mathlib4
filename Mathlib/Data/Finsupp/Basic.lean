@@ -628,16 +628,10 @@ def mapDomainEmbedding {α β : Type _} (f : α ↪ β) : (α →₀ ℕ) ↪ β
 theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (g : M →+ N) :
     (mapDomain.addMonoidHom f).comp (mapRange.addMonoidHom g) =
       (mapRange.addMonoidHom g).comp (mapDomain.addMonoidHom f) := by
-  apply Finsupp.addHom_ext'
-  intro x
-  apply AddMonoidHom.ext
-  intro x_1
-  apply Finsupp.ext
-  intro a
+  ext
   simp only [AddMonoidHom.coe_comp, Finsupp.mapRange_single, Finsupp.mapDomain.addMonoidHom_apply,
     Finsupp.singleAddHom_apply, eq_self_iff_true, Function.comp_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.addMonoidHom_apply]
-  -- porting note: this is ugly, just expanded the Lean 3 proof; `ext` didn't work in the same way
 #align finsupp.map_domain.add_monoid_hom_comp_map_range Finsupp.mapDomain.addMonoidHom_comp_mapRange
 
 /-- When `g` preserves addition, `mapRange` and `mapDomain` commute. -/

@@ -215,9 +215,7 @@ def summand (A : IndexSet Δ) : C :=
 variable [HasFiniteCoproducts C]
 
 /-- The coproduct of the family `summand N Δ` -/
-@[simp]
-def coprod :=
-  ∐ summand N Δ
+abbrev coprod := ∐ summand N Δ
 #align simplicial_object.splitting.coprod SimplicialObject.Splitting.coprod
 
 variable {Δ}
@@ -301,8 +299,7 @@ theorem ιSummand_comp_app (f : X ⟶ Y) {Δ : SimplexCategoryᵒᵖ} (A : Index
 theorem hom_ext' {Z : C} {Δ : SimplexCategoryᵒᵖ} (f g : X.obj Δ ⟶ Z)
     (h : ∀ A : IndexSet Δ, s.ιSummand A ≫ f = s.ιSummand A ≫ g) : f = g := by
   rw [← cancel_epi (s.iso Δ).hom]
-  apply colimit.hom_ext
-  rintro ⟨A⟩
+  ext A
   simpa only [ιSummand_eq, iso_hom, map, colimit.ι_desc_assoc, Cofan.mk_ι_app] using h A
 #align simplicial_object.splitting.hom_ext' SimplicialObject.Splitting.hom_ext'
 
@@ -338,7 +335,7 @@ def ofIso (e : X ≅ Y) : Splitting Y where
   ι n := s.ι n ≫ e.hom.app (op [n])
   map_isIso Δ := by
     convert (inferInstance : IsIso ((s.iso Δ).hom ≫ e.hom.app Δ))
-    apply colimit.hom_ext
+    ext
     simp [map]
 #align simplicial_object.splitting.of_iso SimplicialObject.Splitting.ofIso
 

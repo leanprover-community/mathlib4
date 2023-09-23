@@ -1183,6 +1183,7 @@ theorem rangeS_top_iff_surjective {f : R →+* S} :
 #align ring_hom.srange_top_iff_surjective RingHom.rangeS_top_iff_surjective
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
+@[simp]
 theorem rangeS_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     f.rangeS = (⊤ : Subsemiring S) :=
   rangeS_top_iff_surjective.2 hf

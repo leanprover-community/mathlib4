@@ -76,7 +76,7 @@ theorem stdBasis_ne (i j : ι) (h : j ≠ i) (b : φ i) : stdBasis R φ i b j = 
 #align linear_map.std_basis_ne LinearMap.stdBasis_ne
 
 theorem stdBasis_eq_pi_diag (i : ι) : stdBasis R φ i = pi (diag i) := by
-  ext (x j)
+  ext x j
   -- Porting note: made types explicit
   convert (update_apply (R := R) (φ := φ) (ι := ι) 0 x i j _).symm
   rfl
@@ -314,7 +314,7 @@ variable {n m}
 theorem stdBasis_eq_stdBasisMatrix (i : n) (j : m) [DecidableEq n] [DecidableEq m] :
     stdBasis R n m (i, j) = stdBasisMatrix i j (1 : R) := by
   -- Porting note: `simp` fails to apply `Pi.basis_apply`
-  ext (a b)
+  ext a b
   by_cases hi : i = a <;> by_cases hj : j = b
   · simp [stdBasis, hi, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
       StdBasisMatrix.apply_same]

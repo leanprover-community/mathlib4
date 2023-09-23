@@ -160,7 +160,8 @@ theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.I
   choose m m_spec m_uniq using fun x : s.pt =>
     Fsh U ((piOpensIsoSectionsFamily F U).hom (s.ι x)) (h_compatible x)
   refine' ⟨m, _, _⟩
-  · -- Porting note : Lean can't use `limit.hom_ext` as an `ext` lemma
+  · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+    -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext fun ⟨i⟩ => funext fun x => ?_
     simp [res]
     exact m_spec x i

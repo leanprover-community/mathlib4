@@ -152,7 +152,7 @@ theorem Integrable.ae_eq_of_withDensityᵥ_eq {f g : α → E} (hf : Integrable 
 theorem WithDensityᵥEq.congr_ae {f g : α → E} (h : f =ᵐ[μ] g) :
     μ.withDensityᵥ f = μ.withDensityᵥ g := by
   by_cases hf : Integrable f μ
-  · ext i; intro hi
+  · ext i hi
     rw [withDensityᵥ_apply hf hi, withDensityᵥ_apply (hf.congr h) hi]
     exact integral_congr_ae (ae_restrict_of_ae h)
   · have hg : ¬Integrable g μ := by intro hg; exact hf (hg.congr h.symm)
@@ -171,7 +171,7 @@ theorem withDensityᵥ_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) 
       @toSignedMeasure α _ (μ.withDensity f) (isFiniteMeasure_withDensity hf) := by
   have hfi := integrable_toReal_of_lintegral_ne_top hfm hf
   haveI := isFiniteMeasure_withDensity hf
-  ext i; intro hi
+  ext i hi
   rw [withDensityᵥ_apply hfi hi, toSignedMeasure_apply_measurable hi, withDensity_apply _ hi,
     integral_toReal hfm.restrict]
   refine' ae_lt_top' hfm.restrict (ne_top_of_le_ne_top hf _)
@@ -188,7 +188,7 @@ theorem withDensityᵥ_eq_withDensity_pos_part_sub_withDensity_neg_part {f : α 
           (isFiniteMeasure_withDensity_ofReal hfi.neg.2) := by
   haveI := isFiniteMeasure_withDensity_ofReal hfi.2
   haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2
-  ext i; intro hi
+  ext i hi
   rw [withDensityᵥ_apply hfi hi,
     integral_eq_lintegral_pos_part_sub_lintegral_neg_part hfi.integrableOn,
     VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,

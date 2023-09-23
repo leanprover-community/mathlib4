@@ -200,6 +200,9 @@ protected theorem const (b : β) : LipschitzWith 0 fun _ : α => b := fun x y =>
   simp only [edist_self, zero_le]
 #align lipschitz_with.const LipschitzWith.const
 
+protected theorem const' (b : β) {K : ℝ≥0} : LipschitzWith K fun _ : α => b := fun x y => by
+  simp only [edist_self, zero_le]
+
 protected theorem id : LipschitzWith 1 (@id α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
 #align lipschitz_with.id LipschitzWith.id
@@ -669,9 +672,8 @@ theorem LipschitzOnWith.extend_real [PseudoMetricSpace α] {f : α → ℝ} {s :
 #align lipschitz_on_with.extend_real LipschitzOnWith.extend_real
 
 /-- A function `f : α → (ι → ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz
-extension to the whole space.
-TODO: state the same result (with the same proof) for the space `ℓ^∞ (ι, ℝ)` over a possibly
-infinite type `ι`. -/
+extension to the whole space. The same result for the space `ℓ^∞ (ι, ℝ)` over a possibly infinite
+type `ι` is implemented in `LipschitzOnWith.extend_lp_infty`.-/
 theorem LipschitzOnWith.extend_pi [PseudoMetricSpace α] [Fintype ι] {f : α → ι → ℝ} {s : Set α}
     {K : ℝ≥0} (hf : LipschitzOnWith K f s) : ∃ g : α → ι → ℝ, LipschitzWith K g ∧ EqOn f g s := by
   have : ∀ i, ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s := fun i => by

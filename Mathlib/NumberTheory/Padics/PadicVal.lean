@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Y. Lewis
+Authors: Robert Y. Lewis, Matthew Robert Ballard
 
 ! This file was ported from Lean 3 source module number_theory.padics.padic_val
 ! leanprover-community/mathlib commit 60fa54e778c9e85d930efae172435f42fb0d71f7
@@ -10,6 +10,8 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.Data.Nat.MaxPowDiv
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # p-adic Valuation
@@ -94,6 +96,37 @@ theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p 
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
   eq_zero_iff.2 <| Or.inr <| Or.inr h
 #align padic_val_nat.eq_zero_of_not_dvd padicValNat.eq_zero_of_not_dvd
+
+open Nat.maxPowDiv
+
+theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
+    p.maxPowDiv n = multiplicity p n := by
+  apply multiplicity.unique <| pow_dvd p n
+  intro h
+  apply Nat.not_lt.mpr <| le_of_dvd hp hn h
+  simp
+
+theorem maxPowDiv_eq_multiplicity_get {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h : Finite p n) :
+    p.maxPowDiv n = (multiplicity p n).get h := by
+  rw [PartENat.get_eq_iff_eq_coe.mpr]
+  apply maxPowDiv_eq_multiplicity hp hn|>.symm
+
+/-- Allows for more efficient code for `padicValNat` -/
+@[csimp]
+theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
+  ext p n
+  by_cases (1 < p ∧ 0 < n)
+  · dsimp [padicValNat]
+    rw [dif_pos ⟨Nat.ne_of_gt h.1,h.2⟩, maxPowDiv_eq_multiplicity_get h.1 h.2]
+  · simp only [not_and_or,not_gt_eq,le_zero_iff] at h
+    apply h.elim
+    · intro h
+      interval_cases p
+      · simp [Classical.em]
+      · dsimp [padicValNat, maxPowDiv]
+        rw [go_eq, if_neg, dif_neg] <;> simp
+    · intro h
+      simp [h]
 
 end padicValNat
 

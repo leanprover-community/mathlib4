@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 
 ! This file was ported from Lean 3 source module ring_theory.polynomial.gauss_lemma
-! leanprover-community/mathlib commit df76f43357840485b9d04ed5dee5ab115d420e87
+! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -57,11 +57,8 @@ variable (K : Type _) [Field K] [Algebra R K]
 theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) {g : K[X]}
     (hg : g.Monic) (hd : g ∣ f.map (algebraMap R K)) :
     g ∈ lifts (algebraMap (integralClosure R K) K) := by
-  -- Porting note: the next line was ` := polynomial.splitting_field_aux.is_scalar_tower`
-  haveI : IsScalarTower R K g.SplittingField := IsScalarTower.of_algebraMap_eq (congrFun rfl)
-  have :=
-    mem_lift_of_splits_of_roots_mem_range (integralClosure R g.SplittingField)
-      ((splits_id_iff_splits _).2 <| SplittingField.splits g) (hg.map _) fun a ha =>
+  have := mem_lift_of_splits_of_roots_mem_range (integralClosure R g.SplittingField)
+    ((splits_id_iff_splits _).2 <| SplittingField.splits g) (hg.map _) fun a ha =>
       (SetLike.ext_iff.mp (integralClosure R g.SplittingField).range_algebraMap _).mpr <|
         roots_mem_integralClosure hf ?_
   · rw [lifts_iff_coeff_lifts, ← RingHom.coe_range, Subalgebra.range_algebraMap] at this

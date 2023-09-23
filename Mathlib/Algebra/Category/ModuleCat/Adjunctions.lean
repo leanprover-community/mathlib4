@@ -291,7 +291,7 @@ instance : Preadditive (Free R C) where
   comp_add X Y Z f g g' := by
     dsimp [CategoryTheory.categoryFree]
     rw [← Finsupp.sum_add]
-    congr ; ext (r h)
+    congr; ext r h
     rw [Finsupp.sum_add_index'] <;> · simp [mul_add]
 
 instance : Linear R (Free R C) where
@@ -302,7 +302,7 @@ instance : Linear R (Free R C) where
   comp_smul X Y Z f r g := by
     dsimp [CategoryTheory.categoryFree]
     simp_rw [Finsupp.smul_sum]
-    congr ; ext (h s)
+    congr; ext h s
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.smul_sum, mul_left_comm]
 
 theorem single_comp_single {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (r s : R) :

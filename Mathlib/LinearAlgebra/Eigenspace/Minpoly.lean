@@ -101,25 +101,17 @@ theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly K f).IsRoot �
 
 /-- An endomorphism of a finite-dimensional vector space has finitely many eigenvalues. -/
 noncomputable instance (f : End K V) : Fintype f.Eigenvalues :=
-  -- Porting note: added `show` to avoid unfolding `Set K` to `K → Prop`
-  show Fintype { μ : K | f.HasEigenvalue μ } from
-  Set.Finite.fintype
-    (by
-      have h : minpoly K f ≠ 0 := minpoly.ne_zero f.isIntegral
-      convert (minpoly K f).rootSet_finite K
-      ext μ
-      -- Porting note: was
-      -- have : μ ∈ {μ : K | f.eigenspace μ = ⊥ → False} ↔ ¬f.eigenspace μ = ⊥ := by tauto
-      -- convert rfl.mpr this
-      -- simp only [Polynomial.rootSet_def, Polynomial.mem_roots h, ← hasEigenvalue_iff_isRoot,
-      --   HasEigenvalue]
-      -- which didn't work, but worked with
-      -- simp only [Polynomial.rootSet_def, Polynomial.mem_roots h, ← hasEigenvalue_iff_isRoot,
-      --   HasEigenvalue, (Multiset.mem_toFinset), Algebra.id.map_eq_id, iff_self, Ne.def,
-      --   Polynomial.map_id, Finset.mem_coe]
-      -- but the code below is simpler.
-      rw [Set.mem_setOf_eq, hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot,
-        coe_aeval_eq_eval])
+  Set.Finite.fintype <| show {μ | eigenspace f μ ≠ ⊥}.Finite by
+    have h : minpoly K f ≠ 0 := minpoly.ne_zero f.isIntegral
+    convert (minpoly K f).rootSet_finite K
+    ext μ
+    -- Porting note: was the below, but this applied unwanted simp lemmas
+    -- ```
+    -- classical simp [Polynomial.rootSet_def, Polynomial.mem_roots h, ← hasEigenvalue_iff_isRoot,
+    --   HasEigenvalue]
+    -- ```
+    rw [Set.mem_setOf_eq, ← HasEigenvalue, hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot,
+      coe_aeval_eq_eval]
 
 end End
 

@@ -41,15 +41,14 @@ namespace Imo2019Q4
 
 theorem upper_bound {k n : ℕ} (hk : k > 0)
     (h : (k ! : ℤ) = ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i)) : n < 6 := by
-  have prime_2 : Prime (2 : ℤ) := prime_iff_prime_int.mp prime_two
   have h2 : n * (n - 1) / 2 < k := by
     suffices multiplicity 2 (k ! : ℤ) = (n * (n - 1) / 2 : ℕ) by
       rw [← PartENat.coe_lt_coe, ← this]; change multiplicity ((2 : ℕ) : ℤ) _ < _
       simp_rw [Int.coe_nat_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
-    rw [h, multiplicity.Finset.prod prime_2, ← sum_range_id, Nat.cast_sum]
+    rw [h, multiplicity.Finset.prod Int.prime_two, ← sum_range_id, Nat.cast_sum]
     apply sum_congr rfl; intro i hi
-    rw [multiplicity_sub_of_gt, multiplicity_pow_self_of_prime prime_2]
-    rwa [multiplicity_pow_self_of_prime prime_2, multiplicity_pow_self_of_prime prime_2,
+    rw [multiplicity_sub_of_gt, multiplicity_pow_self_of_prime Int.prime_two]
+    rwa [multiplicity_pow_self_of_prime Int.prime_two, multiplicity_pow_self_of_prime Int.prime_two,
       PartENat.coe_lt_coe, ← mem_range]
   rw [← not_le]; intro hn
   apply _root_.ne_of_lt _ h.symm

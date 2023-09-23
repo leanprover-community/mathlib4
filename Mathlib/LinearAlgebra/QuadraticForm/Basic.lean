@@ -998,7 +998,7 @@ theorem QuadraticForm.toMatrix'_smul (a : R₁) (Q : QuadraticForm R₁ (n → R
 #align quadratic_form.to_matrix'_smul QuadraticForm.toMatrix'_smul
 
 theorem QuadraticForm.isSymm_toMatrix' (Q : QuadraticForm R₁ (n → R₁)) : Q.toMatrix'.IsSymm := by
-  ext (i j)
+  ext i j
   rw [toMatrix', Matrix.transpose_apply, BilinForm.toMatrix'_apply, BilinForm.toMatrix'_apply,
     associated_isSymm]
 #align quadratic_form.is_symm_to_matrix' QuadraticForm.isSymm_toMatrix'

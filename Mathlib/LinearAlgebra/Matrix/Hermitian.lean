@@ -54,7 +54,7 @@ protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermiti
 
 -- @[ext] -- Porting note: incorrect ext, not a structure or a lemma proving x = y
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
-  intro h; ext (i j); exact h i j
+  intro h; ext i j; exact h i j
 #align matrix.is_hermitian.ext Matrix.IsHermitian.ext
 
 theorem IsHermitian.apply {A : Matrix n n α} (h : A.IsHermitian) (i j : n) : star (A j i) = A i j :=
@@ -280,7 +280,7 @@ theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n 
   · rintro (h : Aᴴ = A) x y
     rw [h]
   · intro h
-    ext (i j)
+    ext i j
     simpa only [(Pi.single_star i 1).symm, ← star_mulVec, mul_one, dotProduct_single,
       single_vecMul, star_one, one_mul] using h (Pi.single i 1) (Pi.single j 1)
 #align matrix.is_hermitian_iff_is_symmetric Matrix.isHermitian_iff_isSymmetric

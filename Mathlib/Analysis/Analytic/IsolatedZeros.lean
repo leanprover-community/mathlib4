@@ -167,7 +167,7 @@ variable {U : Set 𝕜}
 analytic on a connected set `U` and vanishes in arbitrary neighborhoods of a point `z₀ ∈ U`, then
 it is identically zero in `U`.
 For higher-dimensional versions requiring that the function vanishes in a neighborhood of `z₀`,
-see `eq_on_zero_of_preconnected_of_eventually_eq_zero`. -/
+see `AnalyticOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero`. -/
 theorem eqOn_zero_of_preconnected_of_frequently_eq_zero (hf : AnalyticOn 𝕜 f U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfw : ∃ᶠ z in 𝓝[≠] z₀, f z = 0) : EqOn f 0 U :=
   hf.eqOn_zero_of_preconnected_of_eventuallyEq_zero hU h₀
@@ -184,7 +184,7 @@ theorem eqOn_zero_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hU 
 analytic on a connected set `U` and coincide at points which accumulate to a point `z₀ ∈ U`, then
 they coincide globally in `U`.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
-see `eq_on_of_preconnected_of_eventually_eq`. -/
+see `AnalyticOn.eqOn_of_preconnected_of_eventuallyEq`. -/
 theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOn 𝕜 f U) (hg : AnalyticOn 𝕜 g U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : EqOn f g U := by
   have hfg' : ∃ᶠ z in 𝓝[≠] z₀, (f - g) z = 0 :=
@@ -203,7 +203,7 @@ theorem eqOn_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hg : Ana
 field `𝕜` are analytic everywhere and coincide at points which accumulate to a point `z₀`, then
 they coincide globally.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
-see `eq_of_eventually_eq`. -/
+see `AnalyticOn.eq_of_eventuallyEq`. -/
 theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOn 𝕜 f univ) (hg : AnalyticOn 𝕜 g univ)
     (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : f = g :=
   funext fun x =>

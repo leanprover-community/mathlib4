@@ -489,9 +489,9 @@ syntax "rel" " [" term,* "]" : tactic
 
 elab_rules : tactic
   | `(tactic| rel [$hyps,*]) => do
-    let hyps ← hyps.getElems.mapM (elabTerm · none)
     let g ← getMainGoal
     g.withContext do
+    let hyps ← hyps.getElems.mapM (elabTerm · none)
     let .app (.app _rel lhs) rhs ← withReducible g.getType'
       | throwError "rel failed, goal not a relation"
     unless ← isDefEq (← inferType lhs) (← inferType rhs) do

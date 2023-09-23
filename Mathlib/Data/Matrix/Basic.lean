@@ -2873,7 +2873,7 @@ theorem diagonal_updateRow_single [DecidableEq n] [Zero α] (v : n → α) (i : 
 theorem updateRow_submatrix_equiv [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : l)
     (r : o → α) (e : l ≃ m) (f : o ≃ n) :
     updateRow (A.submatrix e f) i r = (A.updateRow (e i) fun j => r (f.symm j)).submatrix e f := by
-  ext (i' j)
+  ext i' j
   simp only [submatrix_apply, updateRow_apply, Equiv.apply_eq_iff_eq, Equiv.symm_apply_apply]
 #align matrix.update_row_submatrix_equiv Matrix.updateRow_submatrix_equiv
 

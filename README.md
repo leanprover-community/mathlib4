@@ -6,6 +6,10 @@
 
 This is the work in progress port of [mathlib](https://github.com/leanprover-community/mathlib) to [Lean 4](https://leanprover.github.io/).
 
+## Documentation
+The [mathlib4 docs](https://leanprover-community.github.io/mathlib4_docs/index.html) are
+[generated automatically](https://github.com/leanprover/doc-gen4) from the source `.lean` files.
+
 ## Contributing
 A guide on how to port a file from mathlib3 to mathlib4 can be found in the [wiki](https://github.com/leanprover-community/mathlib4/wiki/Porting-wiki).
 The porting effort is coordinated through [zulip](https://leanprover.zulipchat.com/),
