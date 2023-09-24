@@ -21,10 +21,10 @@ variable {𝕜 E : Type*}
 
 variable [OrderedSemiring 𝕜]
 
-namespace Nonneg
-
 -- TODO: remove `prettyPrint := false` once #6833 is merged
 local notation3 (prettyPrint := false) "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
+
+namespace Nonneg
 
 section AddCommMonoid
 
