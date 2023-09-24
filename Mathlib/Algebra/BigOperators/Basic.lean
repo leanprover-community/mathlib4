@@ -1232,7 +1232,7 @@ theorem prod_range_succ' (f : ℕ → β) :
 
 @[to_additive]
 theorem eventually_constant_prod {u : ℕ → β} {N : ℕ} (hu : ∀ n ≥ N, u n = 1) {n : ℕ} (hn : N ≤ n) :
-    (∏ k in range (n + 1), u k) = ∏ k in range (N + 1), u k := by
+    (∏ k in range n, u k) = ∏ k in range N, u k := by
   obtain ⟨m, rfl : n = N + m⟩ := le_iff_exists_add.mp hn
   clear hn
   induction' m with m hm
