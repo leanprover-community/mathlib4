@@ -128,8 +128,7 @@ theorem map_id (S : PointedCone 𝕜 E) : S.map LinearMap.id = S :=
 
 /-- The preimage of a convex cone under a `𝕜`-linear map is a convex cone. -/
 def comap (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 F) : PointedCone 𝕜 E :=
-  let f' := LinearMap.restrictScalars 𝕜≥0 f
-  Submodule.comap f' S
+  Submodule.comap (f : E →ₗ[𝕜≥0] F) S
 
 @[simp, norm_cast]
 theorem coe_comap (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 F) : (S.comap f : Set E) = f ⁻¹' S :=
