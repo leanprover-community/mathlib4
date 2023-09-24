@@ -30,7 +30,7 @@ section AddCommMonoid
 
 variable [AddCommMonoid E] [Module 𝕜 E]
 
-/-- A module over and ordered Semiring is also a module over just the non-negative scalars. -/
+/-- A module over an ordered semiring is also a module over just the non-negative scalars. -/
 instance instModule : Module 𝕜≥0 E :=
   Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
 

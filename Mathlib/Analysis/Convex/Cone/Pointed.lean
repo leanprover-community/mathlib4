@@ -26,9 +26,11 @@ variable {𝕜 E F G : Type*}
 
 /-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
 abbrev PointedCone (𝕜 : Type*) (E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=
-  Submodule { c : 𝕜 // 0 ≤ c } E
+  Submodule {c : 𝕜 // 0 ≤ c} E
 
 namespace PointedCone
+
+open Function
 
 -- TODO: remove `prettyPrint := false` once #6833 is merged
 local notation3 (prettyPrint := false) "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
@@ -44,7 +46,7 @@ instance : Coe (PointedCone 𝕜 E) (ConvexCone 𝕜 E) where
     smul_mem' := fun c hc _ hx => S.smul_mem ⟨c, le_of_lt hc⟩ hx
     add_mem' := fun _ hx _ hy => S.add_mem hx hy }
 
-theorem coe_injective : Function.Injective ((↑) : PointedCone 𝕜 E → ConvexCone 𝕜 E) :=
+theorem coe_injective : Injective ((↑) : PointedCone 𝕜 E → ConvexCone 𝕜 E) :=
   fun _ _ => by simp
 
 @[simp]
@@ -59,7 +61,7 @@ instance instZero (S : PointedCone 𝕜 E) : Zero S :=
   ⟨0, S.zero_mem⟩
 
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
-def _root_.ConvexCone.toSubmodule {S : ConvexCone 𝕜 E} (hS : S.Pointed) : Submodule 𝕜≥0 E where
+def _root_.ConvexCone.toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) : PointedCone 𝕜 E where
   carrier := S
   add_mem' := fun hx hy => S.add_mem hx hy
   zero_mem' := hS
@@ -74,13 +76,13 @@ def _root_.ConvexCone.toSubmodule {S : ConvexCone 𝕜 E} (hS : S.Pointed) : Sub
       exact hx
 
 @[simp]
-lemma _root_.ConvexCone.mem_toSubmodule {S : ConvexCone 𝕜 E} (hS : S.Pointed) (x : E) :
-    x ∈ S.toSubmodule hS ↔ x ∈ S :=
+lemma _root_.ConvexCone.mem_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) (x : E) :
+    x ∈ S.toPointedCone hS ↔ x ∈ S :=
   Iff.rfl
 
 @[simp]
-lemma _root_.ConvexCone.coe_toSubmodule {S : ConvexCone 𝕜 E} (hS : S.Pointed) :
-    (S.toSubmodule hS : Set E) = S :=
+lemma _root_.ConvexCone.coe_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) :
+    (S.toPointedCone hS : Set E) = S :=
   rfl
 
 end Definitions
@@ -157,13 +159,13 @@ variable [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
 module. -/
 def positive : PointedCone 𝕜 E :=
-  (ConvexCone.positive 𝕜 E).toSubmodule <| ConvexCone.pointed_positive 𝕜 E
+  (ConvexCone.positive 𝕜 E).toPointedCone <| ConvexCone.pointed_positive 𝕜 E
 
 @[simp]
 theorem mem_positive {x : E} : x ∈ positive 𝕜 E ↔ 0 ≤ x :=
   Iff.rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_positive : ↑(positive 𝕜 E) = ConvexCone.positive 𝕜 E :=
   rfl
 
@@ -174,7 +176,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 /-- The inner dual cone of a pointed cone is a pointed cone. -/
 def dual (S : PointedCone ℝ E) : PointedCone ℝ E :=
-  ((S : Set E).innerDualCone).toSubmodule <| pointed_innerDualCone (S : Set E)
+  ((S : Set E).innerDualCone).toPointedCone <| pointed_innerDualCone (S : Set E)
 
 @[simp, norm_cast]
 theorem coe_dual (S : PointedCone ℝ E) : ↑(dual S) = (S : Set E).innerDualCone :=
