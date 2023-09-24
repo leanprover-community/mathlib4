@@ -14,7 +14,7 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
 In this file we prove the following layer cake formula.
 
-Consider a non-negative measurable function `f` on a sigma-finite measure space. Apply pointwise
+Consider a non-negative measurable function `f` on a smeasure space. Apply pointwise
 to it an increasing absolutely continuous function `G : ℝ≥0 → ℝ≥0` vanishing at the origin, with
 derivative `G' = g` on the positive real line (in other words, `G` a primitive of a non-negative
 locally integrable function `g` on the positive real line). Then the integral of the result,
@@ -167,6 +167,7 @@ theorem Ioc_disjoint_Ioi {α : Type*} [Preorder α] (a : α) {b c : α} (h : b �
 
 open scoped Topology
 
+
 theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable' (μ : Measure α)
     (f_nn : 0 ≤ f) (f_mble : Measurable f)
     (g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t) (g_mble : Measurable g)
@@ -174,7 +175,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable' (μ : Measure α)
     (∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ) =
       ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
   have f_nonneg : ∀ ω, 0 ≤ f ω := fun ω ↦ f_nn ω
-  -- trivial case where `g` is ae zero
+  -- trivial case where `g` is ae zero. Then both integrals vanish.
   by_cases H1 : g =ᵐ[volume.restrict (Ioi (0 : ℝ))] 0
   · have A : ∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ = 0 := by
       have : ∀ ω, ∫ t in (0)..f ω, g t = ∫ t in (0)..f ω, 0 := by
@@ -189,21 +190,23 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable' (μ : Measure α)
           filter_upwards [H1] with t ht using by simp [ht]
       simp [lintegral_congr_ae this]
     rw [A, B]
-  -- trivial case where both sides are obviously infinite
-  by_cases H2 : ∃ s ≥ 0, 0 < ∫ t in (0)..s, g t ∧ μ {a : α | s < f a} = ∞
+  -- easy case where both sides are obviously infinite: for some `s`, one has
+  -- `μ {a : α | s < f a} = ∞` and moreover `g` is not ae zero on `[0, s]`.
+  by_cases H2 : ∃ s > 0, 0 < ∫ t in (0)..s, g t ∧ μ {a : α | s < f a} = ∞
   · rcases H2 with ⟨s, s_pos, hs, h's⟩
+    rw [intervalIntegral.integral_of_le s_pos.le] at hs
+    /- The first integral is infinite, as for `t ∈ [0, s]` one has `μ {a : α | t ≤ f a} = ∞`,
+    and moreover the additional integral `g` is not uniformly zero. -/
     have A : ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) = ∞ := by
       rw [eq_top_iff]
       calc
       ∞ = ∫⁻ t in Ioc 0 s, ∞ * ENNReal.ofReal (g t) := by
-          rw [lintegral_const_mul, ENNReal.top_mul]
-          · rw [← ofReal_integral_eq_lintegral_ofReal]
-            · rw [intervalIntegral.integral_of_le s_pos] at hs
-              simpa only [not_lt, ge_iff_le, ne_eq, ENNReal.ofReal_eq_zero, not_le] using hs
-            ·
-
-          · exact ENNReal.measurable_ofReal.comp g_mble
-
+          have I_pos : ∫⁻ (a : ℝ) in Ioc 0 s, ENNReal.ofReal (g a) ≠ 0 := by
+            rw [← ofReal_integral_eq_lintegral_ofReal (g_intble s s_pos).1]
+            · simpa only [not_lt, ge_iff_le, ne_eq, ENNReal.ofReal_eq_zero, not_le] using hs
+            · filter_upwards [ae_restrict_mem measurableSet_Ioc] with t ht using g_nn _ ht.1
+          rw [lintegral_const_mul, ENNReal.top_mul I_pos]
+          exact ENNReal.measurable_ofReal.comp g_mble
       _ ≤ ∫⁻ t in Ioc 0 s, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
           apply set_lintegral_mono' measurableSet_Ioc (fun x hx ↦ ?_)
           rw [← h's]
@@ -211,12 +214,31 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable' (μ : Measure α)
           exact measure_mono (fun a ha ↦ hx.2.trans (le_of_lt ha))
       _ ≤ ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) :=
           lintegral_mono_set Ioc_subset_Ioi_self
-
-      -- minorer par l'intégale de 0 à s, de ∞ * g t = ∞
-    have B : ∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ = ∞ := by sorry
-      -- intégrer juste sur s ≤ f, et minorer l'intégrale par μ {s ≤ f} * ∫_0 ^s g = ∞
+    /- The second integral is infinite, as one integrate on those `ω` where `f ω > s`: this is
+    an infinite measure set, and on it the integrand is bounded below by `∫ t in 0..s, g t`
+    which is positive. -/
+    have B : ∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ = ∞ := by
+      rw [eq_top_iff]
+      calc
+      ∞ = ∫⁻ ω in {a | s < f a}, ENNReal.ofReal (∫ t in (0)..s, g t) ∂μ := by
+          simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
+            h's, ne_eq, ENNReal.ofReal_eq_zero, not_le]
+          rw [ENNReal.mul_top]
+          simpa [intervalIntegral.integral_of_le s_pos.le] using hs
+      _ ≤ ∫⁻ ω in {a | s < f a}, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ := by
+          apply set_lintegral_mono' (measurableSet_lt measurable_const f_mble) (fun a ha ↦ ?_)
+          apply ENNReal.ofReal_le_ofReal
+          apply intervalIntegral.integral_mono_interval le_rfl s_pos.le (le_of_lt ha)
+          · filter_upwards [ae_restrict_mem measurableSet_Ioc] with t ht using g_nn _ ht.1
+          · exact g_intble _ (s_pos.trans ha)
+      _ ≤ ∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ := set_lintegral_le_lintegral _ _ _
     rw [A, B]
-  -- interesting case.
+  /- It remains to handle the interesting case, where `g` is not zero, but both integrals are
+  not obviously infinite. Let `M` be the largest number such that `g = 0` on `[0, M]`. Then we
+  may restrict `μ` to the points where `f ω > M` (as the other ones do not contribute to the
+  integral). The restricted measure `ν` is sigma-finite, as `μ` gives finite measure to
+  `{ω | f ω > a}` for any `a > M` (otherwise, we would be in the easy case above). Therefore,
+  this case follows from the case where the measure is sigma-finite, applied to `ν`. -/
   push_neg at H2
   have M_bdd : BddAbove {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by
     contrapose! H1

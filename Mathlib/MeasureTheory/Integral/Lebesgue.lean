@@ -287,6 +287,10 @@ theorem set_lintegral_mono' {s : Set α} {f g : α → ℝ≥0∞} (hs : Measura
     (hfg : ∀ x ∈ s, f x ≤ g x) : ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ :=
   set_lintegral_mono_ae' hs (ae_of_all _ hfg)
 
+theorem set_lintegral_le_lintegral (s : Set α) (f : α → ℝ≥0∞) :
+    ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x, f x ∂μ :=
+  lintegral_mono' Measure.restrict_le_self le_rfl
+
 theorem lintegral_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ :=
   le_antisymm (lintegral_mono_ae <| h.le) (lintegral_mono_ae <| h.symm.le)
 #align measure_theory.lintegral_congr_ae MeasureTheory.lintegral_congr_ae
