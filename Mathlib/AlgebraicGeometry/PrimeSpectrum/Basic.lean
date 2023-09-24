@@ -74,9 +74,9 @@ instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
   ⟨⟨I, hI.isPrime⟩⟩
 
 /-- The prime spectrum of the zero ring is empty. -/
-theorem punit (x : PrimeSpectrum PUnit) : False :=
-  x.1.ne_top_iff_one.1 x.2.1 <| Eq.substr (Subsingleton.elim 1 (0 : PUnit)) x.1.zero_mem
-#align prime_spectrum.punit PrimeSpectrum.punit
+instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
+  ⟨fun x ↦ x.IsPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
+#align prime_spectrum.punit PrimeSpectrum.instIsEmptyPrimeSpectrum
 
 variable (R S)
 
@@ -567,6 +567,10 @@ instance quasiSober : QuasiSober (PrimeSpectrum R) :=
   ⟨fun {S} h₁ h₂ =>
     ⟨⟨_, isIrreducible_iff_vanishingIdeal_isPrime.1 h₁⟩, by
       rw [IsGenericPoint, closure_singleton, zeroLocus_vanishingIdeal_eq_closure, h₂.closure_eq]⟩⟩
+
+/-- The prime spectrum of a commutative ring is a compact topological space. -/
+instance compactSpace : CompactSpace (PrimeSpectrum R) := by
+  rw [← TopologicalSpace.Opens.isCompactElement_top_iff]
 
 section Comap
 

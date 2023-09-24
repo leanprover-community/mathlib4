@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Order.Atoms
+import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.SupClosed
@@ -53,6 +54,8 @@ This is demonstrated by means of the following four lemmas:
 complete lattice, well-founded, compact
 -/
 
+open Function
+
 variable {ι : Sort*} {α : Type*} [CompleteLattice α] {f : ι → α}
 
 namespace CompleteLattice
@@ -77,6 +80,15 @@ above `k` has a finite subset with `sSup` above `k`.  Such an element is also ca
 def IsCompactElement {α : Type*} [CompleteLattice α] (k : α) :=
   ∀ s : Set α, k ≤ sSup s → ∃ t : Finset α, ↑t ⊆ s ∧ k ≤ t.sup id
 #align complete_lattice.is_compact_element CompleteLattice.IsCompactElement
+
+#check
+
+lemma isCompactElement_top_of_injective {α β : Type*} [CompleteLattice α] [CompleteLattice β]
+    {f : α → β} (f_sups : ∀ S, ) (f_inj : Injective f)
+    (hx : IsCompactElement (⊤ : β)) : IsCompactElement (⊤ : α) := by
+  intro s hs
+  have := hx (f '' s) (by rw [← map_sSup, ← map_top f])
+  rcases hfx (f '' s) (by rw [sSup_image]; exact (f_mono hs).trans ?_)
 
 theorem isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
     CompleteLattice.IsCompactElement k ↔

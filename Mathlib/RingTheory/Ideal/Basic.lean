@@ -6,7 +6,6 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 import Mathlib.Algebra.Associated
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.Order.Atoms
-import Mathlib.Order.CompactlyGenerated
 import Mathlib.Tactic.Abel
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp
