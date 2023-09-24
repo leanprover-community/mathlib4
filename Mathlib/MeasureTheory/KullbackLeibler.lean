@@ -84,20 +84,6 @@ lemma Measure.rnDeriv_pos {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
     ae_withDensity_iff (Measure.measurable_rnDeriv _ _), Measure.withDensity_rnDeriv_eq _ _  hμν]
   exact ae_of_all _ (fun x hx ↦ lt_of_le_of_ne (zero_le _) hx.symm)
 
-lemma Measure.rnDeriv_pos' {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
-    (hμν : μ ≪ ν) (hνμ : ν ≪ μ) :
-    ∀ᵐ x ∂ν, 0 < μ.rnDeriv ν x := by
-  let s := {x | μ.rnDeriv ν x = 0}
-  have hs : ∀ x ∈ s, μ.rnDeriv ν x = 0 := fun x hx ↦ hx
-  have hs_meas : MeasurableSet s := Measure.measurable_rnDeriv _ _ (measurableSet_singleton 0)
-  suffices ν s = 0 by
-    rw [ae_iff]
-    simpa only [not_lt, nonpos_iff_eq_zero] using this
-  have hμs : μ s = 0 := by
-    rw [← Measure.withDensity_rnDeriv_eq _ _  hμν, withDensity_apply _ hs_meas,
-      set_lintegral_congr_fun hs_meas (ae_of_all _ hs), lintegral_zero]
-  exact hνμ hμs
-
 lemma inv_rnDeriv {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
     (hμν : μ ≪ ν) (hνμ : ν ≪ μ) :
     (μ.rnDeriv ν)⁻¹ =ᵐ[μ] ν.rnDeriv μ := by
@@ -112,7 +98,7 @@ lemma inv_rnDeriv {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
   conv in (Measure.rnDeriv (Measure.withDensity ν (Measure.rnDeriv μ ν)) ν)⁻¹ => rw [← this]
   rw [withDensity_inv_same]
   · exact Measure.measurable_rnDeriv _ _
-  · exact Measure.rnDeriv_pos' hμν hνμ
+  · exact hνμ.ae_le (Measure.rnDeriv_pos hμν)
   · exact Measure.rnDeriv_ne_top _ _
 
 lemma Measure.mutuallySingular_self {μ : Measure α} (h : μ ⟂ₘ μ) : μ = 0 := by
@@ -416,7 +402,6 @@ lemma rnDeriv_tilted_left (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
       =ᵐ[ν] fun x ↦ exp (f x - Λ μ f) * (μ.rnDeriv ν x).toReal := by
   sorry
 
-/-- superseded by `rnDeriv_tilted_right` -/
 lemma rnDeriv_tilted_right_of_absolutelyContinuous (μ ν : Measure α) [SigmaFinite μ]
     [IsProbabilityMeasure ν] (hμν : μ ≪ ν)
     {f : α → ℝ} (hf : Measurable f) (h_int : Integrable (fun x ↦ exp (f x)) ν) :
@@ -676,12 +661,22 @@ lemma todo {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure 
     rw [ciSup_pos h_int]
     rw [ciSup_pos]
     swap
-    · sorry
+    · have : (fun x ↦ exp (log (ENNReal.toReal (μ.rnDeriv ν x))))
+          =ᵐ[ν] fun x ↦ if μ.rnDeriv ν x = 0 then 1 else (μ.rnDeriv ν x).toReal := by
+        filter_upwards [Measure.rnDeriv_lt_top μ ν] with x hx
+        by_cases h_zero : μ.rnDeriv ν x = 0
+        · simp only [h_zero, ENNReal.zero_toReal, log_zero, exp_zero, ite_true]
+        rw [Real.exp_log, if_neg h_zero]
+        rw [ENNReal.toReal_pos_iff]
+        exact ⟨lt_of_le_of_ne (zero_le _) (Ne.symm h_zero), hx⟩
+      rw [integrable_congr this]
+      sorry
+      --exact integrable_toReal_rnDeriv
     simp only [le_sub_self_iff, Λ]
-    suffices ∫ x, exp (log (μ.rnDeriv ν x).toReal) ∂ν = 1 by
-      simp [this]
+    suffices ∫ x, exp (log (μ.rnDeriv ν x).toReal) ∂ν ≤ 1 by
+      sorry
     have : (fun x ↦ exp (log (μ.rnDeriv ν x).toReal))
-        =ᵐ[ν] fun x ↦ (μ.rnDeriv ν x).toReal := by
+        =ᵐ[ν] fun x ↦ if μ.rnDeriv ν x = 0 then 1 else (μ.rnDeriv ν x).toReal := by
       sorry
     rw [integral_congr_ae this]
     sorry
