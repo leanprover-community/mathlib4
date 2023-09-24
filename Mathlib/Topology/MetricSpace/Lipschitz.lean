@@ -24,7 +24,7 @@ each `x : α` has a neighbourhood on which `f` is Lipschitz continuous (w.r.t. t
 
 In this file we provide various ways to prove that various combinations of Lipschitz continuous
 functions are Lipschitz continuous. We also prove that Lipschitz continuous functions are
-uniformly continuous. Locally Lipschitz functions are continuous.
+uniformly continuous, and that locally Lipschitz functions are continuous.
 
 ## Main definitions and lemmas
 
@@ -594,7 +594,7 @@ namespace LocallyLipschitz
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ] {f : α → β}
 
 /-- A Lipschitz function is locally Lipschitz. -/
-protected lemma _root_.LipschitzWith.locally {K : ℝ≥0} (hf : LipschitzWith K f) :
+protected lemma _root_.LipschitzWith.locallyLipschitz {K : ℝ≥0} (hf : LipschitzWith K f) :
     LocallyLipschitz f :=
   fun _ ↦ ⟨K, univ, Filter.univ_mem, lipschitzOn_univ.mpr hf⟩
 
