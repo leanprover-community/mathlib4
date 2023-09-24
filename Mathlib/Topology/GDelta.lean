@@ -240,6 +240,12 @@ variable {α : Type*} [TopologicalSpace α]
 /-- A set is called **nowhere dense** iff its closure has empty interior. -/
 def IsNowhereDense (s : Set α) := interior (closure s) = ∅
 
+/-- The empty set is nowhere dense. -/
+@[simp]
+lemma isNowhereDense_of_empty : IsNowhereDense (∅ : Set α) := by
+  unfold IsNowhereDense
+  rw [closure_empty, interior_empty]
+
 /-- A closed set is nowhere dense iff its interior is empty. -/
 lemma IsClosed.nowhere_dense_iff {s : Set α} (hs : IsClosed s) :
     IsNowhereDense s ↔ interior s = ∅ := by
