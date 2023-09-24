@@ -643,7 +643,7 @@ See note [reducible non-instances]. -/
 add_decl_doc AddAction.compHom
 
 @[to_additive]
-theorem MulAction.compHom_smul_def
+theorem compHom_smul_def
     {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G] (f : E →* F) (a : E) (x : G) :
     letI : MulAction E G := MulAction.compHom _ f
     a • x = (f a) • x := rfl
@@ -651,7 +651,7 @@ theorem MulAction.compHom_smul_def
 /-- If an action is transitive, then composing this action with a surjective homomorphism gives
 again a transitive action. -/
 @[to_additive]
-theorem MulAction.isPretransitive_compHom
+theorem isPretransitive_compHom
     {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G] [IsPretransitive F G]
     {f : E →* F} (hf : Surjective f) :
     letI : MulAction E G := MulAction.compHom _ f
