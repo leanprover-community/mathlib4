@@ -237,7 +237,7 @@ lemma isProperMap_iff_isClosedMap_and_tendsto_cofinite [T1Space Y] :
   refine and_congr_right fun f_cont ↦ and_congr_right fun _ ↦
     ⟨fun H y ↦ (H y).compl_mem_cocompact, fun H y ↦ ?_⟩
   rcases mem_cocompact.mp (H y) with ⟨K, hK, hKy⟩
-  exact isCompact_of_isClosed_subset hK (isClosed_singleton.preimage f_cont)
+  exact hK.of_isClosed_subset (isClosed_singleton.preimage f_cont)
     (compl_le_compl_iff_le.mp hKy)
 
 /-- A continuous map from a compact space to a T₂ space is a proper map. -/
@@ -246,7 +246,7 @@ theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) 
 
 /-- If `Y` is locally compact and Hausdorff, then proper maps `X → Y` are exactly continuous maps
 such that the preimage of any compact set is compact. -/
-theorem isProperMap_iff_isCompact_preimage [T2Space Y] [LocallyCompactSpace Y] :
+theorem isProperMap_iff_isCompact_preimage [T2Space Y] [WeaklyLocallyCompactSpace Y] :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) := by
   constructor <;> intro H
   -- The direct implication follows from the previous results
@@ -265,14 +265,14 @@ theorem isProperMap_iff_isCompact_preimage [T2Space Y] [LocallyCompactSpace Y] :
     exact ⟨x, hx⟩
 
 /-- Version of `isProperMap_iff_isCompact_preimage` in terms of `cocompact`. -/
-lemma isProperMap_iff_tendsto_cocompact [T2Space Y] [LocallyCompactSpace Y] :
+lemma isProperMap_iff_tendsto_cocompact [T2Space Y] [WeaklyLocallyCompactSpace Y] :
     IsProperMap f ↔ Continuous f ∧ Tendsto f (cocompact X) (cocompact Y) := by
   simp_rw [isProperMap_iff_isCompact_preimage, hasBasis_cocompact.tendsto_right_iff,
     ← mem_preimage, eventually_mem_set, preimage_compl]
   refine and_congr_right fun f_cont ↦
     ⟨fun H K hK ↦ (H hK).compl_mem_cocompact, fun H K hK ↦ ?_⟩
   rcases mem_cocompact.mp (H K hK) with ⟨K', hK', hK'y⟩
-  exact isCompact_of_isClosed_subset hK' (hK.isClosed.preimage f_cont)
+  exact hK'.of_isClosed_subset (hK.isClosed.preimage f_cont)
     (compl_le_compl_iff_le.mp hK'y)
 
 /-- A proper map `f : X → Y` is **universally closed**: for any topological space `Z`, the map

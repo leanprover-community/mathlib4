@@ -54,7 +54,7 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
   congr 1 with t
-  simp only [Function.comp_apply, LinearMap.map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
+  simp only [Function.comp_apply, map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
 #align image_parallelepiped image_parallelepiped
 
 /-- Reindexing a family of vectors does not change their parallelepiped. -/
@@ -193,7 +193,7 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
 
 @[simp]
 theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
-   (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
+    (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
 #align basis.coe_parallelepiped Basis.coe_parallelepiped
 
 @[simp]
@@ -210,8 +210,9 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     @LinearMap.continuous_of_finiteDimensional _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ this (e.toLinearMap))
     (have := FiniteDimensional.of_fintype_basis (b.map e)
     -- Porting note: Lean cannot infer the instance above
-    @LinearMap.isOpenMap_of_finiteDimensional _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ this _ e.surjective)
-    := PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
+    @LinearMap.isOpenMap_of_finiteDimensional _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ this _
+      e.surjective) :=
+  PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 #align basis.parallelepiped_map Basis.parallelepiped_map
 
 variable [MeasurableSpace E] [BorelSpace E]
@@ -225,6 +226,23 @@ irreducible_def Basis.addHaar (b : Basis ι ℝ E) : Measure E :=
 instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := by
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 #align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
+
+instance [SecondCountableTopology E] (b : Basis ι ℝ E) :
+    SigmaFinite b.addHaar := by
+  rw [Basis.addHaar_def]; exact sigmaFinite_addHaarMeasure
+
+/-- Let `μ` be a σ-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
+defined by `b` iff the parallelepiped defined by `b` has measure `1` for `μ`. -/
+theorem Basis.addHaar_eq_iff [SecondCountableTopology E] (b : Basis ι ℝ E) (μ : Measure E)
+    [SigmaFinite μ] [IsAddLeftInvariant μ] :
+    b.addHaar = μ ↔ μ b.parallelepiped = 1 := by
+  rw [Basis.addHaar_def]
+  exact addHaarMeasure_eq_iff b.parallelepiped μ
+
+@[simp]
+theorem Basis.addHaar_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
+    (b.reindex e).addHaar = b.addHaar := by
+  rw [Basis.addHaar, b.parallelepiped_reindex e, ← Basis.addHaar]
 
 theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self
@@ -275,5 +293,8 @@ protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
 
 theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
 #align euclidean_space.coe_measurable_equiv EuclideanSpace.coe_measurableEquiv
+
+theorem coe_measurableEquiv_symm :
+    ⇑(EuclideanSpace.measurableEquiv ι).symm = (WithLp.equiv 2 _).symm := rfl
 
 end EuclideanSpace

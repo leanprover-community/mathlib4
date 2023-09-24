@@ -1580,7 +1580,7 @@ theorem support_iteratedFDeriv_subset (n : ℕ) : support (iteratedFDeriv 𝕜 n
 
 theorem HasCompactSupport.iteratedFDeriv (hf : HasCompactSupport f) (n : ℕ) :
     HasCompactSupport (iteratedFDeriv 𝕜 n f) :=
-  isCompact_of_isClosed_subset hf isClosed_closure (tsupport_iteratedFDeriv_subset n)
+  hf.of_isClosed_subset isClosed_closure (tsupport_iteratedFDeriv_subset n)
 #align has_compact_support.iterated_fderiv HasCompactSupport.iteratedFDeriv
 
 theorem norm_fderiv_iteratedFDeriv {n : ℕ} :
@@ -1714,7 +1714,7 @@ theorem ContDiff.continuous_fderiv (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
 continuous. -/
 theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
     Continuous fun p : E × E => (fderiv 𝕜 f p.1 : E → F) p.2 :=
-  have A : Continuous fun q : (E →L[𝕜] F) × E => q.1 q.2 := isBoundedBilinearMapApply.continuous
+  have A : Continuous fun q : (E →L[𝕜] F) × E => q.1 q.2 := isBoundedBilinearMap_apply.continuous
   have B : Continuous fun p : E × E => (fderiv 𝕜 f p.1, p.2) :=
     ((h.continuous_fderiv hn).comp continuous_fst).prod_mk continuous_snd
   A.comp B

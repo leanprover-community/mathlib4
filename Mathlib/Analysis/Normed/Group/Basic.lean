@@ -672,26 +672,26 @@ theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w�
 #align norm_div_sub_norm_div_le_norm_div norm_div_sub_norm_div_le_norm_div
 #align norm_sub_sub_norm_sub_le_norm_sub norm_sub_sub_norm_sub_le_norm_sub
 
-@[to_additive bounded_iff_forall_norm_le]
-theorem bounded_iff_forall_norm_le' : Bounded s ↔ ∃ C, ∀ x ∈ s, ‖x‖ ≤ C := by
-  simpa only [Set.subset_def, mem_closedBall_one_iff] using bounded_iff_subset_ball (1 : E)
-#align bounded_iff_forall_norm_le' bounded_iff_forall_norm_le'
-#align bounded_iff_forall_norm_le bounded_iff_forall_norm_le
+@[to_additive isBounded_iff_forall_norm_le]
+theorem isBounded_iff_forall_norm_le' : Bornology.IsBounded s ↔ ∃ C, ∀ x ∈ s, ‖x‖ ≤ C := by
+  simpa only [Set.subset_def, mem_closedBall_one_iff] using isBounded_iff_subset_closedBall (1 : E)
+#align bounded_iff_forall_norm_le' isBounded_iff_forall_norm_le'
+#align bounded_iff_forall_norm_le isBounded_iff_forall_norm_le
 
-alias ⟨Metric.Bounded.exists_norm_le', _⟩ := bounded_iff_forall_norm_le'
-#align metric.bounded.exists_norm_le' Metric.Bounded.exists_norm_le'
+alias ⟨Bornology.IsBounded.exists_norm_le', _⟩ := isBounded_iff_forall_norm_le'
+#align metric.bounded.exists_norm_le' Bornology.IsBounded.exists_norm_le'
 
-alias ⟨Metric.Bounded.exists_norm_le, _⟩ := bounded_iff_forall_norm_le
-#align metric.bounded.exists_norm_le Metric.Bounded.exists_norm_le
+alias ⟨Bornology.IsBounded.exists_norm_le, _⟩ := isBounded_iff_forall_norm_le
+#align metric.bounded.exists_norm_le Bornology.IsBounded.exists_norm_le
 
-attribute [to_additive existing Metric.Bounded.exists_norm_le] Metric.Bounded.exists_norm_le'
+attribute [to_additive existing exists_norm_le] Bornology.IsBounded.exists_norm_le'
 
-@[to_additive Metric.Bounded.exists_pos_norm_le]
-theorem Metric.Bounded.exists_pos_norm_le' (hs : Metric.Bounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ ≤ R :=
+@[to_additive exists_pos_norm_le]
+theorem Bornology.IsBounded.exists_pos_norm_le' (hs : IsBounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ ≤ R :=
   let ⟨R₀, hR₀⟩ := hs.exists_norm_le'
   ⟨max R₀ 1, by positivity, fun x hx => (hR₀ x hx).trans <| le_max_left _ _⟩
-#align metric.bounded.exists_pos_norm_le' Metric.Bounded.exists_pos_norm_le'
-#align metric.bounded.exists_pos_norm_le Metric.Bounded.exists_pos_norm_le
+#align metric.bounded.exists_pos_norm_le' Bornology.IsBounded.exists_pos_norm_le'
+#align metric.bounded.exists_pos_norm_le Bornology.IsBounded.exists_pos_norm_le
 
 @[to_additive (attr := simp 1001) mem_sphere_iff_norm]
 -- porting note: increase priority so the left-hand side doesn't reduce
@@ -854,12 +854,17 @@ theorem MonoidHomClass.uniformContinuous_of_bound [MonoidHomClass 𝓕 E F] (f :
 #align add_monoid_hom_class.uniform_continuous_of_bound AddMonoidHomClass.uniformContinuous_of_bound
 
 @[to_additive IsCompact.exists_bound_of_continuousOn]
-theorem IsCompact.exists_bound_of_continuous_on' [TopologicalSpace α] {s : Set α} (hs : IsCompact s)
+theorem IsCompact.exists_bound_of_continuousOn' [TopologicalSpace α] {s : Set α} (hs : IsCompact s)
     {f : α → E} (hf : ContinuousOn f s) : ∃ C, ∀ x ∈ s, ‖f x‖ ≤ C :=
-  (bounded_iff_forall_norm_le'.1 (hs.image_of_continuousOn hf).bounded).imp fun _C hC _x hx =>
+  (isBounded_iff_forall_norm_le'.1 (hs.image_of_continuousOn hf).isBounded).imp fun _C hC _x hx =>
     hC _ <| Set.mem_image_of_mem _ hx
-#align is_compact.exists_bound_of_continuous_on' IsCompact.exists_bound_of_continuous_on'
+#align is_compact.exists_bound_of_continuous_on' IsCompact.exists_bound_of_continuousOn'
 #align is_compact.exists_bound_of_continuous_on IsCompact.exists_bound_of_continuousOn
+
+@[to_additive]
+theorem HasCompactMulSupport.exists_bound_of_continuous [TopologicalSpace α]
+    {f : α → E} (hf : HasCompactMulSupport f) (h'f : Continuous f) : ∃ C, ∀ x, ‖f x‖ ≤ C := by
+  simpa using (hf.isCompact_range h'f).isBounded.exists_norm_le'
 
 @[to_additive]
 theorem MonoidHomClass.isometry_iff_norm [MonoidHomClass 𝓕 E F] (f : 𝓕) :
@@ -1059,19 +1064,17 @@ theorem OneHomClass.bound_of_antilipschitz [OneHomClass 𝓕 E F] (f : 𝓕) {K 
 end NNNorm
 
 @[to_additive]
-theorem tendsto_iff_norm_tendsto_one {f : α → E} {a : Filter α} {b : E} :
+theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖) a (𝓝 0) := by
-  convert tendsto_iff_dist_tendsto_zero (f := f) (x := a) (a := b) using 1
-  simp [dist_eq_norm_div]
-#align tendsto_iff_norm_tendsto_one tendsto_iff_norm_tendsto_one
-#align tendsto_iff_norm_tendsto_zero tendsto_iff_norm_tendsto_zero
+  simp only [← dist_eq_norm_div, ← tendsto_iff_dist_tendsto_zero]
+#align tendsto_iff_norm_tendsto_one tendsto_iff_norm_div_tendsto_zero
+#align tendsto_iff_norm_tendsto_zero tendsto_iff_norm_sub_tendsto_zero
 
 @[to_additive]
-theorem tendsto_one_iff_norm_tendsto_one {f : α → E} {a : Filter α} :
-    Tendsto f a (𝓝 1) ↔ Tendsto (fun e => ‖f e‖) a (𝓝 0) := by
-  rw [tendsto_iff_norm_tendsto_one]
-  simp only [div_one]
-#align tendsto_one_iff_norm_tendsto_one tendsto_one_iff_norm_tendsto_one
+theorem tendsto_one_iff_norm_tendsto_zero {f : α → E} {a : Filter α} :
+    Tendsto f a (𝓝 1) ↔ Tendsto (‖f ·‖) a (𝓝 0) :=
+  tendsto_iff_norm_div_tendsto_zero.trans <| by simp only [div_one]
+#align tendsto_one_iff_norm_tendsto_one tendsto_one_iff_norm_tendsto_zero
 #align tendsto_zero_iff_norm_tendsto_zero tendsto_zero_iff_norm_tendsto_zero
 
 @[to_additive]
@@ -1092,7 +1095,7 @@ real function `a` which tends to `0`, then `f` tends to `1`. In this pair of lem
 \"eventually\" and the non-`'` version is phrased absolutely."]
 theorem squeeze_one_norm' {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h : ∀ᶠ n in t₀, ‖f n‖ ≤ a n)
     (h' : Tendsto a t₀ (𝓝 0)) : Tendsto f t₀ (𝓝 1) :=
-  tendsto_one_iff_norm_tendsto_one.2 <|
+  tendsto_one_iff_norm_tendsto_zero.2 <|
     squeeze_zero' (eventually_of_forall fun _n => norm_nonneg' _) h h'
 #align squeeze_one_norm' squeeze_one_norm'
 #align squeeze_zero_norm' squeeze_zero_norm'
@@ -1987,9 +1990,9 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
   suffices ∀ n ≥ N, d n = d N by exact (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
   intro n hn
   dsimp
-  rw [eventually_constant_prod _ hn]
+  rw [eventually_constant_prod _ (add_le_add_right hn 1)]
   intro m hm
-  simp [huv m hm]
+  simp [huv m (le_of_lt hm)]
 #align cauchy_seq_prod_of_eventually_eq cauchySeq_prod_of_eventually_eq
 #align cauchy_seq_sum_of_eventually_eq cauchySeq_sum_of_eventually_eq
 
@@ -2117,7 +2120,7 @@ variable [NormedAddGroup α] {f : α → E}
 theorem HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSupport f) :
     ∃ R : ℝ, 0 < R ∧ ∀ x : α, R ≤ ‖x‖ → f x = 1 := by
   obtain ⟨K, ⟨hK1, hK2⟩⟩ := exists_compact_iff_hasCompactMulSupport.mpr hf
-  obtain ⟨S, hS, hS'⟩ := hK1.bounded.exists_pos_norm_le
+  obtain ⟨S, hS, hS'⟩ := hK1.isBounded.exists_pos_norm_le
   refine' ⟨S + 1, by positivity, fun x hx => hK2 x ((mt <| hS' x) _)⟩
   -- porting note: `ENNReal.add_lt_add` should be `protected`?
   -- [context: we used `_root_.add_lt_add` in a previous version of this proof]
