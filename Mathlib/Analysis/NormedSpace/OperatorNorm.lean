@@ -431,6 +431,9 @@ theorem op_nnnorm_eq_of_bounds {φ : E →SL[σ₁₂] F} (M : ℝ≥0) (h_above
 theorem op_nnnorm_le_iff {f : E →SL[σ₁₂] F} {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊ :=
   op_norm_le_iff C.2
 
+theorem isLeast_op_nnnorm : IsLeast {C : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊} ‖f‖₊ := by
+  simpa only [← op_nnnorm_le_iff] using isLeast_Ici
+
 instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
   ⟨op_norm_smul_le⟩
@@ -873,11 +876,12 @@ theorem coe_flipₗᵢ : ⇑(flipₗᵢ 𝕜 E Fₗ Gₗ) = flip :=
 
 variable (F σ₁₂) [RingHomIsometric σ₁₂]
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.
 
 This is the continuous version of `LinearMap.applyₗ`. -/
-def apply' : E →SL[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F :=
+noncomputable def apply' : E →SL[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F :=
   flip (id 𝕜₂ (E →SL[σ₁₂] F))
 #align continuous_linear_map.apply' ContinuousLinearMap.apply'
 
@@ -890,11 +894,12 @@ theorem apply_apply' (v : E) (f : E →SL[σ₁₂] F) : apply' F σ₁₂ v f =
 
 variable (𝕜 Fₗ)
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.
 
 This is the continuous version of `LinearMap.applyₗ`. -/
-def apply : E →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] Fₗ :=
+noncomputable def apply : E →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] Fₗ :=
   flip (id 𝕜 (E →L[𝕜] Fₗ))
 #align continuous_linear_map.apply ContinuousLinearMap.apply
 
@@ -909,8 +914,9 @@ variable (σ₁₂ σ₂₃ E F G)
 
 set_option linter.uppercaseLean3 false
 
+-- `noncomputable` is a performance workaround for mathlib4#7103
 /-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
-def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
+noncomputable def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
     (LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add fun c f g => by
       ext

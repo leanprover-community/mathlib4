@@ -858,6 +858,22 @@ def ofSubsingletonₗ [Subsingleton ι] (i : ι) :
     map_smul' := fun _ _ ↦ rfl }
 
 end OfSubsingleton
+variable (M₂ M₃ R' A)
+
+/-- `MultilinearMap.domDomCongr` as a `LinearEquiv`. -/
+@[simps apply symm_apply]
+def domDomCongrLinearEquiv {ι₁ ι₂} (σ : ι₁ ≃ ι₂) :
+    MultilinearMap A (fun _ : ι₁ => M₂) M₃ ≃ₗ[R'] MultilinearMap A (fun _ : ι₂ => M₂) M₃ :=
+  { (domDomCongrEquiv σ :
+      MultilinearMap A (fun _ : ι₁ => M₂) M₃ ≃+ MultilinearMap A (fun _ : ι₂ => M₂) M₃) with
+    map_smul' := fun c f => by
+      ext
+      simp [MultilinearMap.domDomCongr] }
+#align multilinear_map.dom_dom_congr_linear_equiv MultilinearMap.domDomCongrLinearEquiv
+#align multilinear_map.dom_dom_congr_linear_equiv_apply MultilinearMap.domDomCongrLinearEquiv_apply
+#align multilinear_map.dom_dom_congr_linear_equiv_symm_apply MultilinearMap.domDomCongrLinearEquiv_symm_apply
+variable (R M₁)
+variable (R S M₁ M₂ M₃)
 
 /-- The dependent version of `MultilinearMap.domDomCongrLinearEquiv`. -/
 @[simps apply symm_apply]
