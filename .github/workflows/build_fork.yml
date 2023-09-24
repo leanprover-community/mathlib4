@@ -150,7 +150,7 @@ jobs:
 
       - name: build mathlib
         id: build
-        uses: liskin/gh-problem-matcher-wrap@v2
+        uses: liskin/gh-problem-matcher-wrap@v2.0.2
         with:
           linters: gcc
           run: |
