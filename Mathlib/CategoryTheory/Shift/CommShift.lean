@@ -162,6 +162,18 @@ instance id : CommShift (𝟭 C) A where
 
 variable {C F G}
 
+@[simp]
+lemma commShiftIso_id_hom_app (a : A) (X : C) :
+    ((𝟭 C).commShiftIso a).hom.app X = 𝟙 _ := by
+  dsimp [commShiftIso, iso]
+  rw [id_comp]
+
+@[simp]
+lemma commShiftIso_id_inv_app (a : A) (X : C) :
+    ((𝟭 C).commShiftIso a).inv.app X = 𝟙 _ := by
+  dsimp [commShiftIso, iso]
+  rw [id_comp]
+
 variable [F.CommShift A] [G.CommShift A]
 
 instance comp : (F ⋙ G).CommShift A where
