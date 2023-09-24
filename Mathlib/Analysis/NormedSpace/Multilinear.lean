@@ -489,11 +489,12 @@ theorem op_nnnorm_pi
     ‖pi f‖₊ = ‖f‖₊ :=
   eq_of_forall_ge_iff fun _ ↦ by simpa [op_nnnorm_le_iff, pi_nnnorm_le_iff] using forall_swap
 
-theorem norm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', NormedAddCommGroup (E' i')]
+theorem op_norm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
+    [∀ i', NormedAddCommGroup (E' i')]
     [∀ i', NormedSpace 𝕜 (E' i')] (f : ∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) :
     ‖pi f‖ = ‖f‖ :=
   congr_arg NNReal.toReal (op_nnnorm_pi f)
-#align continuous_multilinear_map.norm_pi ContinuousMultilinearMap.norm_pi
+#align continuous_multilinear_map.norm_pi ContinuousMultilinearMap.op_norm_pi
 
 section
 
