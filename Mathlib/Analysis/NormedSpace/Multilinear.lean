@@ -574,7 +574,7 @@ def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', Norm
     { piEquiv with
       map_add' := fun _ _ => rfl
       map_smul' := fun _ _ => rfl }
-  norm_map' := norm_pi
+  norm_map' := op_norm_pi
 #align continuous_multilinear_map.piₗᵢ ContinuousMultilinearMap.piₗᵢ
 
 end
