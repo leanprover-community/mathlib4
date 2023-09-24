@@ -20,10 +20,12 @@ Main definitions:
 
 - `DirichletCharacter`: The type representing a Dirichlet character.
 - `changeLevel`: Extend the Dirichlet character χ of level `n` to level `m`, where `n` divides `m`.
+- `conductor`: The conductor of a Dirichlet character.
+- `isPrimitive`: If the level is equal to the conductor.
 
 ## TODO
 
-- properties of the conductor
+- reduction, even, odd
 
 ## Tags
 
@@ -113,5 +115,73 @@ lemma mem_conductorSet_dvd {x : ℕ} (hx : x ∈ conductorSet χ) : x ∣ n := h
 /-- The minimum natural number `n` for which a Dirichlet character is periodic.
 The Dirichlet character `χ` can then alternatively be reformulated on `ℤ/nℤ`. -/
 noncomputable def conductor : ℕ := sInf (conductorSet χ)
+
+lemma conductor_mem_conductorSet : conductor χ ∈ conductorSet χ :=
+  Nat.sInf_mem (Set.nonempty_of_mem (level_mem_conductorSet χ))
+
+lemma conductor_dvd_level : conductor χ ∣ n := (conductor_mem_conductorSet χ).1
+
+lemma FactorsThrough_conductor : FactorsThrough χ (conductor χ) := conductor_mem_conductorSet χ
+
+lemma conductor_one (hn : 0 < n) : conductor (1 : DirichletCharacter R n) = 1 := by
+  suffices : conductor (1 : DirichletCharacter R n) ≤ 1
+  · cases' Nat.le_one_iff_eq_zero_or_eq_one.mp this with h1 h2
+    · have := FactorsThrough.dvd (1 : DirichletCharacter R n) <| FactorsThrough_conductor 1
+      aesop
+    · exact h2
+  · apply Nat.sInf_le ((mem_conductorSet_iff _).2 ⟨one_dvd _, 1, _⟩)
+    ext
+    rw [changeLevel_def]
+    simp
+
+variable {χ}
+lemma eq_one_iff_conductor_eq_one (hn : 0 < n) : χ = 1 ↔ conductor χ = 1 := by
+  refine' ⟨λ h => by rw [h, conductor_one hn], λ hχ => _⟩
+  obtain ⟨h', χ₀, h⟩ := FactorsThrough_conductor χ
+  rw [h]
+  ext
+  rw [changeLevel_def, ZMod.unitsMap_def]
+  simp only [toUnitHom_eq, ofUnitHom_eq, Units.isUnit, not_true, equivToUnitHom_symm_coe,
+    MonoidHom.coe_comp, Function.comp_apply, coe_equivToUnitHom, Units.coe_map, MonoidHom.coe_coe,
+    ZMod.castHom_apply, one_apply_coe]
+  convert MonoidHom.map_one (χ₀ : ZMod (conductor χ) →* R)
+  have : Subsingleton (ZMod (conductor χ)) := by
+    rw [hχ]
+    infer_instance
+  simp
+
+lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 :=
+  ⟨λ h => by
+    rw [←zero_dvd_iff]
+    convert conductor_dvd_level χ
+    rw [h],
+  λ h => by
+    rw [conductor, Nat.sInf_eq_zero]
+    left
+    exact ⟨zero_dvd_iff.2 h, ⟨changeLevel (by {rw [h]}) χ, by
+        rw [← changeLevel_trans _ _ _, changeLevel_self _]⟩⟩⟩
+
+variable (χ)
+
+/-- A character is primitive if its level is equal to its conductor. -/
+def isPrimitive : Prop := conductor χ = n
+
+lemma isPrimitive_def : isPrimitive χ ↔ conductor χ = n := ⟨λ h => h, λ h => h⟩
+
+lemma isPrimitive_one_level_one : isPrimitive (1 : DirichletCharacter R 1) :=
+  Nat.dvd_one.1 (conductor_dvd_level _)
+
+lemma isPritive_one_level_zero : isPrimitive (1 :  DirichletCharacter R 0) := by
+  rw [isPrimitive_def, conductor, Nat.sInf_eq_zero]
+  left
+  rw [conductorSet]
+  simp only [Set.mem_setOf_eq]
+  fconstructor
+  simp only [true_and, ZMod.cast_id', id.def, MonoidHom.coe_mk, dvd_zero]
+  refine ⟨1, by simp⟩
+
+lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
+  rw [(isPrimitive_def _).1 isPrimitive_one_level_one]
+  apply one_dvd _
 
 end DirichletCharacter
