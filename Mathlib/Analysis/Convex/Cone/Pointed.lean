@@ -33,7 +33,7 @@ namespace PointedCone
 open Function
 
 -- TODO: remove `prettyPrint := false` once #6833 is merged
-local notation3 (prettyPrint := false) "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
+local notation3 (prettyPrint := false) "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
 section Definitions
 
