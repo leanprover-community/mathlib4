@@ -112,8 +112,8 @@ lemma FactorsThrough_of_mem_conductorSet {x : ℕ} (hx : x ∈ conductorSet χ) 
     ∃ (χ₀ : DirichletCharacter R x), FactorsThrough χ x χ₀ :=
   hx
 
-/-- The minimum natural number n for which a Dirichlet character is periodic.
-  The Dirichlet character χ can then alternatively be reformulated on ℤ/nℤ. -/
+/-- The minimum natural number `n` for which a Dirichlet character is periodic.
+The Dirichlet character `χ` can then alternatively be reformulated on `ℤ/nℤ`. -/
 noncomputable def conductor : ℕ := sInf (conductorSet χ)
 
 end DirichletCharacter
