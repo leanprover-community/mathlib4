@@ -1459,6 +1459,26 @@ lemma MeasureTheory.Integrable.restrict (f_intble : Integrable f μ) {s : Set α
     Integrable f (μ.restrict s) :=
   ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
 
+lemma integral_eq_integral_restrict {s : Set α} (hs : f =ᵐ[Measure.restrict μ sᶜ] 0) :
+    ∫ ω, f ω ∂μ = ∫ ω, f ω ∂(μ.restrict s) := by
+  refine (set_integral_eq_integral_of_ae_compl_eq_zero ?_).symm
+  simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
+                MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at hs
+  simp only [Filter.Eventually, mem_ae_iff]
+  rw [Measure.restrict_apply₀] at hs
+  · apply le_antisymm _ (zero_le _)
+    rw [← hs]
+    apply measure_mono
+    intro x hx
+    aesop
+  · exact NullMeasurableSet.of_null hs
+
+lemma MeasureTheory.Integrable.measure_preimage_eq_measure_restrict_preimage_of_aeeq_compl_zero
+    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+    {f : α → E} (f_intble : Integrable f μ) {s : Set α}
+    (hs : f =ᵐ[Measure.restrict μ sᶜ] 0) {t : Set E} (t_mble : MeasurableSet t) (ht : 0 ∉ t) :
+    (μ (f ⁻¹' t)) = ((μ.restrict s) (f ⁻¹' t)) := by
+
 end restrict
 
 open MeasureTheory

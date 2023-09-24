@@ -462,42 +462,15 @@ theorem Integrable.integral_eq_integral_meas_lt
   have f_nn' : 0 ≤ᵐ[μ.restrict s] f := ae_restrict_of_ae f_nn
   have f_intble' : Integrable f (μ.restrict s) := f_intble.restrict
   have f_aemble' : AEMeasurable f (μ.restrict s) := f_intble.aemeasurable.restrict
-  have obs : ∫ ω, f ω ∂μ = ∫ ω, f ω ∂(μ.restrict s) := by
-    -- The proof of this observation should be trivial. :(
-    refine (set_integral_eq_integral_of_ae_compl_eq_zero ?_).symm
-    simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
-                 MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at f_ae_zero_outside
-    simp only [Filter.Eventually, mem_ae_iff]
-    rw [Measure.restrict_apply₀] at f_ae_zero_outside
-    · apply le_antisymm _ (zero_le _)
-      rw [← f_ae_zero_outside]
-      apply measure_mono
-      intro x hx
-      aesop
-    · exact NullMeasurableSet.of_null f_ae_zero_outside
+  have obs : ∫ ω, f ω ∂μ = ∫ ω, f ω ∂(μ.restrict s) :=
+    integral_eq_integral_restrict f_ae_zero_outside
   rw [obs]
   have obs' : ∀ t ∈ Ioi (0 : ℝ), (μ {a : α | t < f a}) = ((μ.restrict s) {a : α | t < f a}) := by
-    -- The proof of this observation should be trivial. :(
     intro t ht
-    rw [Measure.restrict_apply₀]
-    · simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
-                 MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at f_ae_zero_outside
-      rw [Measure.restrict_apply₀] at f_ae_zero_outside
-      · apply le_antisymm _ (measure_mono (inter_subset_left _ _))
-        apply (measure_mono (Eq.symm (inter_union_compl {x | t < f x} s)).le).trans
-        apply (measure_union_le _ _).trans
-        have wow : μ ({x | t < f x} ∩ sᶜ) = 0 := by
-          apply le_antisymm _ (zero_le _)
-          rw [← f_ae_zero_outside]
-          apply measure_mono
-          gcongr
-          intro x hx
-          simp only [mem_setOf_eq, mem_compl_iff] at hx ⊢
-          have : 0 < f x := lt_trans ht hx
-          exact this.ne.symm
-        simp only [wow, add_zero, le_refl]
-      · exact NullMeasurableSet.of_null f_ae_zero_outside
-    · exact f_aemble'.nullMeasurable measurableSet_Ioi
+    convert f_intble.measure_preimage_eq_measure_restrict_preimage_of_aeeq_compl_zero
+            f_ae_zero_outside (measurableSet_Ioi) ?_
+    simp only [mem_Ioi, not_lt] at ht ⊢
+    exact ht.le
   have obs'' := @set_integral_congr ℝ ℝ _ _ (fun t ↦ ENNReal.toReal (μ {a : α | t < f a}))
           (fun t ↦ ENNReal.toReal ((μ.restrict s) {a : α | t < f a})) _ (volume : Measure ℝ) _
           (measurableSet_Ioi (a := (0 : ℝ)))
