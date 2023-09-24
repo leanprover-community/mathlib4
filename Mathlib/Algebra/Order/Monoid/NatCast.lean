@@ -18,13 +18,13 @@ variable {α : Type*}
 open Function
 
 lemma lt_add_one [One α] [AddZeroClass α] [PartialOrder α] [ZeroLEOneClass α]
-  [NeZero (1 : α)] [CovariantClass α α (·+·) (·<·)] (a : α) : a < a + 1 :=
-lt_add_of_pos_right _ zero_lt_one
+    [NeZero (1 : α)] [CovariantClass α α (·+·) (·<·)] (a : α) : a < a + 1 :=
+  lt_add_of_pos_right _ zero_lt_one
 #align lt_add_one lt_add_one
 
 lemma lt_one_add [One α] [AddZeroClass α] [PartialOrder α] [ZeroLEOneClass α]
-  [NeZero (1 : α)] [CovariantClass α α (swap (·+·)) (·<·)] (a : α) : a < 1 + a :=
-lt_add_of_pos_left _ zero_lt_one
+    [NeZero (1 : α)] [CovariantClass α α (swap (·+·)) (·<·)] (a : α) : a < 1 + a :=
+  lt_add_of_pos_left _ zero_lt_one
 #align lt_one_add lt_one_add
 
 variable [AddMonoidWithOne α]
@@ -49,14 +49,14 @@ lemma zero_le_four [Preorder α] [ZeroLEOneClass α] [CovariantClass α α (·+�
 
 lemma one_le_two [LE α] [ZeroLEOneClass α] [CovariantClass α α (·+·) (·≤·)] :
     (1 : α) ≤ 2 :=
-calc (1 : α) = 1 + 0 := (add_zero 1).symm
+  calc (1 : α) = 1 + 0 := (add_zero 1).symm
      _ ≤ 1 + 1 := add_le_add_left zero_le_one _
      _ = 2 := one_add_one_eq_two
 #align one_le_two one_le_two
 
 lemma one_le_two' [LE α] [ZeroLEOneClass α] [CovariantClass α α (swap (·+·)) (·≤·)] :
     (1 : α) ≤ 2 :=
-calc (1 : α) = 0 + 1 := (zero_add 1).symm
+  calc (1 : α) = 0 + 1 := (zero_add 1).symm
      _ ≤ 1 + 1 := add_le_add_right zero_le_one _
      _ = 2 := one_add_one_eq_two
 #align one_le_two' one_le_two'
