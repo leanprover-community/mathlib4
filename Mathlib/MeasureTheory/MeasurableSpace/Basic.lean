@@ -1113,10 +1113,10 @@ namespace MeasurableSpace
 @[simp] theorem generateFrom_singleton (s : Set α) :
     generateFrom {s} = MeasurableSpace.comap (· ∈ s) ⊤ := by
   classical
-  letI : MeasurableSpace α := generate_from {s}
-  refine' le_antisymm (generate_from_le fun t ht => ⟨{True}, trivial, by simp [ht.symm]⟩) _
+  letI : MeasurableSpace α := generateFrom {s}
+  refine' le_antisymm (generateFrom_le fun t ht => ⟨{True}, trivial, by simp [ht.symm]⟩) _
   rintro _ ⟨u, -, rfl⟩
-  exact (show MeasurableSet s from generate_measurable.basic _ <| mem_singleton s).Mem trivial
+  exact (show MeasurableSet s from GenerateMeasurable.basic _ <| mem_singleton s).Mem trivial
 #align measurable_space.generate_from_singleton MeasurableSpace.generateFrom_singleton
 
 end MeasurableSpace
@@ -1611,10 +1611,10 @@ def sumCompl {s : Set α} [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
 /-- Convert a measurable involutive function `f` to a measurable permutation with
 `toFun = invFun = f`. See also `Function.Involutive.toPerm`. -/
 @[simps toEquiv]
-def ofInvolutive (f : α → α) (hf : Involutive f) (hf' : Measurable f) : α ≃ᵐ α :=
-  { hf.toPerm _ with
-    measurable_to_fun := hf'
-    measurable_inv_fun := hf' }
+def ofInvolutive (f : α → α) (hf : Involutive f) (hf' : Measurable f) : α ≃ᵐ α where
+  toEquiv := hf.toPerm
+  measurable_toFun := hf'
+  measurable_invFun := hf'
 #align measurable_equiv.of_involutive MeasurableEquiv.ofInvolutive
 
 @[simp] theorem ofInvolutive_apply (f : α → α) (hf : Involutive f) (hf' : Measurable f) (a : α) :
@@ -1633,15 +1633,15 @@ variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α 
 
 @[simp] theorem comap_eq (hf : MeasurableEmbedding f) : MeasurableSpace.comap f ‹_› = ‹_› :=
   hf.Measurable.comap_le.antisymm fun s h =>
-    ⟨_, hf.measurableSet_image' h, hf.Injective.preimage_image _⟩
+    ⟨_, hf.measurableSet_image' h, hf.injective.preimage_image _⟩
 #align measurable_embedding.comap_eq MeasurableEmbedding.comap_eq
 
 theorem iff_comap_eq :
     MeasurableEmbedding f ↔
       Injective f ∧ MeasurableSpace.comap f ‹_› = ‹_› ∧ MeasurableSet (range f) :=
-  ⟨fun hf => ⟨hf.Injective, hf.comap_eq, hf.measurableSet_range⟩, fun hf =>
-    { Injective := hf.1
-      Measurable := by rw [← hf.2.1]; exact comap_measurable f
+  ⟨fun hf ↦ ⟨hf.injective, hf.comap_eq, hf.measurableSet_range⟩, fun hf ↦
+    { injective := hf.1
+      mweasurable := by rw [← hf.2.1]; exact comap_measurable f
       measurableSet_image' := by
         rw [← hf.2.1]
         rintro _ ⟨s, hs, rfl⟩
