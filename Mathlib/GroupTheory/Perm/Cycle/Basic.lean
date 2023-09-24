@@ -100,6 +100,12 @@ theorem SameCycle.trans : SameCycle f x y → SameCycle f y z → SameCycle f x 
   fun ⟨i, hi⟩ ⟨j, hj⟩ => ⟨j + i, by rw [zpow_add, mul_apply, hi, hj]⟩
 #align equiv.perm.same_cycle.trans Equiv.Perm.SameCycle.trans
 
+theorem SameCycle.equivalence : Equivalence (SameCycle f) :=
+  ⟨SameCycle.refl f, SameCycle.symm, SameCycle.trans⟩
+
+def SameCycle.setoid (f : Perm α) : Setoid α :=
+  ⟨SameCycle f, SameCycle.equivalence⟩
+
 @[simp]
 theorem sameCycle_one : SameCycle 1 x y ↔ x = y := by simp [SameCycle]
 #align equiv.perm.same_cycle_one Equiv.Perm.sameCycle_one
