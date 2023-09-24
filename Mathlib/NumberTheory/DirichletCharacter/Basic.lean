@@ -119,7 +119,7 @@ noncomputable def conductor : ℕ := sInf (conductorSet χ)
 lemma conductor_mem_conductorSet : conductor χ ∈ conductorSet χ :=
   Nat.sInf_mem (Set.nonempty_of_mem (level_mem_conductorSet χ))
 
-lemma conductor_dvd_level : conductor χ ∣ n := (conductor_mem_conductorSet χ).1
+lemma conductor_dvd_level : conductor χ ∣ n := (conductor_mem_conductorSet χ).dvd
 
 lemma FactorsThrough_conductor : FactorsThrough χ (conductor χ) := conductor_mem_conductorSet χ
 
@@ -129,12 +129,13 @@ lemma conductor_one (hn : 0 < n) : conductor (1 : DirichletCharacter R n) = 1 :=
     · have := FactorsThrough.dvd (1 : DirichletCharacter R n) <| FactorsThrough_conductor 1
       aesop
     · exact h2
-  · apply Nat.sInf_le ((mem_conductorSet_iff _).2 ⟨one_dvd _, 1, _⟩)
+  · apply Nat.sInf_le ((mem_conductorSet_iff _).mpr ⟨one_dvd _, 1, _⟩)
     ext
     rw [changeLevel_def]
     simp
 
 variable {χ}
+
 lemma eq_one_iff_conductor_eq_one (hn : 0 < n) : χ = 1 ↔ conductor χ = 1 := by
   refine' ⟨λ h => by rw [h, conductor_one hn], λ hχ => _⟩
   obtain ⟨h', χ₀, h⟩ := FactorsThrough_conductor χ
@@ -158,7 +159,7 @@ lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 :=
   λ h => by
     rw [conductor, Nat.sInf_eq_zero]
     left
-    exact ⟨zero_dvd_iff.2 h, ⟨changeLevel (by {rw [h]}) χ, by
+    exact ⟨zero_dvd_iff.mpr h, ⟨changeLevel (by rw [h]) χ, by
         rw [← changeLevel_trans _ _ _, changeLevel_self _]⟩⟩⟩
 
 variable (χ)
@@ -169,7 +170,7 @@ def isPrimitive : Prop := conductor χ = n
 lemma isPrimitive_def : isPrimitive χ ↔ conductor χ = n := ⟨λ h => h, λ h => h⟩
 
 lemma isPrimitive_one_level_one : isPrimitive (1 : DirichletCharacter R 1) :=
-  Nat.dvd_one.1 (conductor_dvd_level _)
+  Nat.dvd_one.mp (conductor_dvd_level _)
 
 lemma isPritive_one_level_zero : isPrimitive (1 :  DirichletCharacter R 0) := by
   rw [isPrimitive_def, conductor, Nat.sInf_eq_zero]
@@ -181,7 +182,7 @@ lemma isPritive_one_level_zero : isPrimitive (1 :  DirichletCharacter R 0) := by
   refine ⟨1, by simp⟩
 
 lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
-  rw [(isPrimitive_def _).1 isPrimitive_one_level_one]
+  rw [(isPrimitive_def _).mp isPrimitive_one_level_one]
   apply one_dvd _
 
 end DirichletCharacter
