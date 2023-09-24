@@ -1473,7 +1473,7 @@ lemma integral_eq_integral_restrict {s : Set α} (hs : f =ᵐ[Measure.restrict �
     aesop
   · exact NullMeasurableSet.of_null hs
 
-lemma MeasureTheory.Integrable.measure_preimage_eq_measure_restrict_preimage_of_aeeq_compl_zero
+lemma MeasureTheory.Integrable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_zero
     {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
     {f : α → E} (f_intble : Integrable f μ) {s : Set α}
     (hs : f =ᵐ[Measure.restrict μ sᶜ] 0) {t : Set E} (t_mble : MeasurableSet t) (ht : 0 ∉ t) :

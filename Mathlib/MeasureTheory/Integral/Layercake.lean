@@ -467,7 +467,7 @@ theorem Integrable.integral_eq_integral_meas_lt
   rw [obs]
   have obs' : ∀ t ∈ Ioi (0 : ℝ), (μ {a : α | t < f a}) = ((μ.restrict s) {a : α | t < f a}) := by
     intro t ht
-    convert f_intble.measure_preimage_eq_measure_restrict_preimage_of_aeeq_compl_zero
+    convert f_intble.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_zero
             f_ae_zero_outside (measurableSet_Ioi) ?_
     simp only [mem_Ioi, not_lt] at ht ⊢
     exact ht.le
