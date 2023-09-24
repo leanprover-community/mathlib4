@@ -45,6 +45,8 @@ with the original topology. See `Topology.Specialization`.
 upper set topology, lower set topology, preorder, Alexandrov
 -/
 
+open Set TopologicalSpace
+
 variable {α β γ : Type*}
 
 namespace Topology
@@ -67,13 +69,8 @@ def lowerSet (α :  Type*) [Preorder α] : TopologicalSpace α where
   isOpen_inter _ _ := IsLowerSet.inter
   isOpen_sUnion _ := isLowerSet_sUnion
 
-open Set TopologicalSpace
-
 /-- Type synonym for a preorder equipped with the upper set topology. -/
 def WithUpperSet (α : Type*) := α
-
-/-- Type synonym for a preorder equipped with the lower set topology. -/
-def WithLowerSet (α : Type*) := α
 
 namespace WithUpperSet
 
@@ -116,6 +113,9 @@ def toUpperSetOrderIso : α ≃o WithUpperSet α where
   map_rel_iff' := toUpperSet_le_iff
 
 end WithUpperSet
+
+/-- Type synonym for a preorder equipped with the lower set topology. -/
+def WithLowerSet (α : Type*) := α
 
 namespace WithLowerSet
 
@@ -348,14 +348,14 @@ end maps
 
 end IsLowerSet
 
-lemma isUpperSet_dual_iff_isLowerSet [Preorder α] [TopologicalSpace α] :
+lemma isUpperSet_orderDual [Preorder α] [TopologicalSpace α] :
     Topology.IsUpperSet αᵒᵈ ↔ Topology.IsLowerSet α := by
   constructor
   · apply OrderDual.instIsLowerSet
   · apply OrderDual.instIsUpperSet
 
-lemma isLowerSet_dual_iff_isUpperSet [Preorder α] [TopologicalSpace α] :
-    Topology.IsLowerSet αᵒᵈ ↔ Topology.IsUpperSet α := isUpperSet_dual_iff_isLowerSet.symm
+lemma isLowerSet_orderDual [Preorder α] [TopologicalSpace α] :
+    Topology.IsLowerSet αᵒᵈ ↔ Topology.IsUpperSet α := isUpperSet_orderDual.symm
 
 namespace WithUpperSet
 variable [Preorder α] [Preorder β] [Preorder γ]
