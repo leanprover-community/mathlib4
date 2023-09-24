@@ -352,10 +352,6 @@ theorem isCompactElement_iff (s : Opens α) :
     exact fun i => Finset.le_sup
 #align topological_space.opens.is_compact_element_iff TopologicalSpace.Opens.isCompactElement_iff
 
-theorem isCompactElement_top_iff :
-    CompleteLattice.IsCompactElement (⊤ : Opens α) ↔ CompactSpace α := by
-  rw [← isCompact_univ_iff, isCompactElement_iff, coe_top]
-
 /-- The preimage of an open set, as an open set. -/
 def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where
   toFun s := ⟨f ⁻¹' s, s.2.preimage f.continuous⟩
