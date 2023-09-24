@@ -785,8 +785,8 @@ lemma XYIdeal_mul_XYIdeal (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
   apply congr_arg (_ ∘ _)
   convert top_mul (_ : Ideal W.CoordinateRing)
   simp_rw [XClass, ← @Set.image_singleton _ _ <| CoordinateRing.mk W, ← map_span, ← Ideal.map_sup,
-    eq_top_iff_one, mem_map_iff_of_surjective _ <| AdjoinRoot.mk_surjective W.monic_polynomial,
-    ← span_insert, mem_span_insert', mem_span_singleton']
+    eq_top_iff_one, mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert,
+    mem_span_insert', mem_span_singleton']
   by_cases hx : x₁ = x₂
   · rcases hx, Y_eq_of_Y_ne h₁' h₂' hx (hxy hx) with ⟨rfl, rfl⟩
     let y := (y₁ - W.negY x₁ y₁) ^ 2
