@@ -20,6 +20,10 @@ variable {X Y}
 
 noncomputable def mapMap : X.mapObj p ⟶ Y.mapObj p := fun _ => Limits.Sigma.map (fun i => φ i)
 
+lemma congr_mapMap (φ₁ φ₂ : X ⟶ Y) (h : φ₁ = φ₂) : mapMap φ₁ p = mapMap φ₂ p := by
+  subst h
+  rfl
+
 variable (X)
 
 @[simp]
