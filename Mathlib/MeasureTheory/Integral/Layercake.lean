@@ -52,7 +52,9 @@ are also included.
  * `integral_eq_integral_meas_lt`:
    A Bochner integral version of the most common special case of the layer cake formulas, stating
    that for an integrable and a.e.-nonnegative function f we have
-   ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt .
+   ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt. In this result, sigma-finiteness of μ does not need to be
+   explicitly assumed, because integrability guarantees sigma-finiteness of the restriction of μ
+   to the support of f.
 
 ## Tags
 
@@ -448,9 +450,8 @@ lemma Integrable.measure_lt_const_lt_top (f_intble : Integrable f μ) {c : ℝ} 
 
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
-For an integrable a.e.-nonnegative real-valued function `f` on a sigma-finite measure space,
-the Bochner integral of `f` can be written (roughly speaking) as:
-`∫ f ∂μ = ∫ t in 0..∞, μ {ω | f(ω) > t}`.
+For an integrable a.e.-nonnegative real-valued function `f`, the Bochner integral of `f` can be
+written (roughly speaking) as: `∫ f ∂μ = ∫ t in 0..∞, μ {ω | f(ω) > t}`.
 
 See `lintegral_eq_lintegral_meas_lt` for a version with Lebesgue integral `∫⁻` instead. -/
 theorem Integrable.integral_eq_integral_meas_lt
