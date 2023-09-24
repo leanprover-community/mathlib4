@@ -1443,23 +1443,21 @@ theorem toL1_smul' (f : α → β) (hf : Integrable f μ) (k : 𝕜) :
 
 end Integrable
 
-end MeasureTheory
-
 section restrict
 
 variable {E : Type*} [NormedAddCommGroup E] {f : α → E}
 
-lemma MeasureTheory.HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
+lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
     HasFiniteIntegral f (μ.restrict s) := by
   refine lt_of_le_of_lt ?_ h
   convert lintegral_mono_set (μ := μ) (s := s) (t := univ) (f := fun x ↦ ↑‖f x‖₊) (subset_univ s)
   exact Measure.restrict_univ.symm
 
-lemma MeasureTheory.Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
+lemma Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
     Integrable f (μ.restrict s) :=
   ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
 
-lemma MeasureTheory.Integrable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_zero
+lemma Integrable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_zero
     {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
     {f : α → E} (f_intble : Integrable f μ) {s : Set α}
     (hs : f =ᵐ[Measure.restrict μ sᶜ] 0) {t : Set E} (t_mble : MeasurableSet t) (ht : 0 ∉ t) :
@@ -1494,6 +1492,8 @@ lemma restrict_aeeq_zero_iff_ae_mem_eq_zero [MeasurableSpace E] [MeasurableSingl
     convert f_mble (MeasurableSet.singleton 0)
 
 end restrict
+
+end MeasureTheory
 
 open MeasureTheory
 

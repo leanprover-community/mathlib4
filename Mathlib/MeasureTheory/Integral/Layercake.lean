@@ -387,6 +387,8 @@ end LayercakeLT
 
 section LayercakeIntegral
 
+namespace MeasureTheory
+
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 
 /-- If `f` is integrable, then for any `c > 0` the set `{x | ‖f x‖ ≥ c}` has finite measure. -/
@@ -448,21 +450,6 @@ lemma Integrable.measure_lt_const_lt_top (f_intble : Integrable f μ) {c : ℝ} 
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_le_const_lt_top f_intble c_neg)
 
-lemma integral_eq_integral_restrict  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {f : α → E} {s : Set α} (hs : f =ᵐ[Measure.restrict μ sᶜ] 0) :
-    ∫ ω, f ω ∂μ = ∫ ω, f ω ∂(μ.restrict s) := by
-  refine (set_integral_eq_integral_of_ae_compl_eq_zero ?_).symm
-  simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
-                MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at hs
-  simp only [Filter.Eventually, mem_ae_iff]
-  rw [Measure.restrict_apply₀] at hs
-  · apply le_antisymm _ (zero_le _)
-    rw [← hs]
-    apply measure_mono
-    intro x hx
-    aesop
-  · exact NullMeasurableSet.of_null hs
-
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For an integrable a.e.-nonnegative real-valued function `f`, the Bochner integral of `f` can be
@@ -478,7 +465,7 @@ theorem Integrable.integral_eq_integral_meas_lt
   have f_intble' : Integrable f (μ.restrict s) := f_intble.restrict
   have f_aemble' : AEMeasurable f (μ.restrict s) := f_intble.aemeasurable.restrict
   have obs : ∫ ω, f ω ∂μ = ∫ ω, f ω ∂(μ.restrict s) :=
-    integral_eq_integral_restrict f_ae_zero_outside
+    integral_eq_integral_restrict f_ae_zero_outside f_intble.aemeasurable.restrict.nullMeasurable
   rw [obs]
   have obs' : ∀ t ∈ Ioi (0 : ℝ), (μ {a : α | t < f a}) = ((μ.restrict s) {a : α | t < f a}) := by
     intro t ht
@@ -510,5 +497,7 @@ theorem Integrable.integral_eq_integral_meas_lt
     · apply Measurable.aestronglyMeasurable
       refine Measurable.ennreal_toReal ?_
       exact Antitone.measurable (fun _ _ hst ↦ measure_mono (fun _ h ↦ lt_of_le_of_lt hst h))
+
+end MeasureTheory
 
 end LayercakeIntegral
