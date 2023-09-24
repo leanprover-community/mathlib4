@@ -1190,12 +1190,74 @@ end Trunc
 
 namespace Multiset
 
-variable [Fintype α] [DecidableEq α]
+variable [Fintype α] [DecidableEq α] [Fintype β] [DecidableEq β]
 
 @[simp]
 theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
   count_eq_one_of_mem Finset.univ.nodup (Finset.mem_univ _)
 #align multiset.count_univ Multiset.count_univ
+
+/-- For functions on finite sets, they are bijections iff they map universes into universes. -/
+@[simp]
+theorem bijective_iff_map_univ_eq_univ (f : α → β) :
+  Function.Bijective f ↔ map f (Finset.univ : Finset α).val = univ.val := by
+  constructor
+  {
+    intro ⟨inj, surj⟩
+    ext b
+    rw [count_univ, count_map]
+    apply Multiset.card_eq_one.mpr
+    have ⟨a, hab⟩ := surj b
+    apply Exists.intro a
+    ext c
+    rw [count_singleton, count_filter]
+    apply dite (c = a)
+    intro hca
+    rw [hca]
+    simp only [count_univ, ite_true, ite_eq_left_iff]
+    intro hba
+    exact hba (Eq.symm hab)
+    intro hca
+    simp only [mem_val, mem_univ, not_true, count_univ, hca, ite_false, ite_eq_right_iff]
+    intro hbc
+    exact hca (Eq.symm (inj (hab.trans hbc)))
+  }
+  intro univ_eq
+  constructor
+  { -- injective
+    intro a b fab
+    have h : count (f a) (Multiset.map f univ.val) = 1
+    rw [univ_eq, count_univ]
+    rw [count_map] at h
+    have h1 := card_eq_one.mp h
+    rcases h1 with ⟨c, hc⟩
+    have ha : a = c
+    {
+      apply Multiset.mem_singleton.mp
+      rw [←hc]
+      simp
+    }
+    have hb : b = c
+    {
+      apply Multiset.mem_singleton.mp
+      rw [←hc]
+      simp [fab]
+    }
+    rw [ha,hb]
+  }
+  { -- surjective
+    intro b
+    have h : count b (Multiset.map f univ.val) = 1
+    rw [univ_eq, count_univ]
+    rw [count_map] at h
+    have h1 := card_eq_one.mp h
+    rcases h1 with ⟨a, ha⟩
+    apply Exists.intro a
+    have ha2 : a ∈ Multiset.filter (fun a ↦ b = f a) univ.val
+    rw [ha, Multiset.mem_singleton]
+    simp only [Multiset.mem_filter, mem_val, mem_univ, true_and] at ha2
+    rw [ha2]
+  }
 
 end Multiset
 
