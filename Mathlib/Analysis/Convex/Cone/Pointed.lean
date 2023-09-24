@@ -27,7 +27,7 @@ variable {𝕜 E F G : Type*}
 local notation3 (prettyPrint := false) "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
 /-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
-abbrev PointedCone (𝕜) (E) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=
+abbrev PointedCone (𝕜 E) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=
   Submodule {c : 𝕜 // 0 ≤ c} E
 
 namespace PointedCone
