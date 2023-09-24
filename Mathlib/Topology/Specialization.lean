@@ -3,10 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Separation
-import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Order.Category.PreordCat
+import Mathlib.Order.Category.Preord
 import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Separation
 import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
@@ -15,7 +15,7 @@ import Mathlib.Topology.Order.UpperLowerSetTopology
 This file defines a type synonym for a topological space considered with its specialisation order.
 -/
 
-open CategoryTheory
+open CategoryTheory Topology
 
 /-- Type synonym for a topological space considered with its specialisation order. -/
 def Specialization (α : Type*) := α
@@ -68,22 +68,22 @@ def map (f : C(α, β)) : Specialization α →o Specialization β where
 
 end Specialization
 
-open Set Specialization WithUpperSetTopology
+open Set Specialization WithUpperSet
 
 /-- A preorder is isomorphic to the specialisation order of its upper set topology. -/
 def orderIsoSpecializationWithUpperSetTopology (α : Type*) [Preorder α] :
-  α ≃o Specialization (WithUpperSetTopology α) where
+    α ≃o Specialization (WithUpperSet α) where
   toEquiv := toUpperSet.trans toEquiv
   map_rel_iff' := by simp
 
 /-- An Alexandrov-discrete space is isomorphic to the upper set topology of its specialisation
 order. -/
 def homeoWithUpperSetTopologyorderIso (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] :
-  α ≃ₜ WithUpperSetTopology (Specialization α) :=
+    α ≃ₜ WithUpperSet (Specialization α) :=
 (toEquiv.trans toUpperSet).toHomeomorph λ s ↦ by simp [Set.preimage_comp]
 
 /-- Sends a topological space to its specialisation order. -/
 @[simps]
-def topToPreord : TopCat ⥤ PreordCat where
-  obj X := PreordCat.of $ Specialization X
+def topToPreord : TopCat ⥤ Preord where
+  obj X := Preord.of $ Specialization X
   map := Specialization.map
