@@ -29,17 +29,26 @@ open Classical BigOperators
 
 # sup-degree and inf-degree of an `AddMonoidAlgebra`
 
-Let `R` be a semiring and let `A` be a `SemilatticeSup`.
-For an element `f : R[A]`, this file defines
-* `AddMonoidAlgebra.supDegree`: the sup-degree taking values in `WithBot A`,
-* `AddMonoidAlgebra.infDegree`: the inf-degree taking values in `WithTop A`.
+Let `R` be a semiring and let `A` an `AddMonoid`.
+Given a degree function `D : A → B` into a SemilatticeSup/Inf `B` with Bot/Top,
+for an element `f : R[A]`, this file defines
+* `AddMonoidAlgebra.supDegree`: the sup-degree taking values in `B`,
+* `AddMonoidAlgebra.infDegree`: the inf-degree taking values in `B`,
+* `AddMonoidAlgebra.leadingCoeff`: the coefficient achieving sup-degree, when `B` is a linear order,
+* `AddMonoidAlgebra.Monic`: that the leading coefficient is 1.
 
-If the grading type `A` is a linearly ordered additive monoid, then these two notions of degree
-coincide with the standard one:
+We do not dualize `leadingCoeff` and `Monic` to `infDegree` as of now, because we expect
+`supDegree` will be used more often. `MvPolynomial.degrees` and many other defs in the same
+file are special examples of `supDegree`.
+
+When `B` is a linearly ordered, then these two notions of degree coincide with the standard one:
 * the sup-degree is the maximum of the exponents of the monomials that appear with non-zero
   coefficient in `f`, or `⊥`, if `f = 0`;
 * the inf-degree is the minimum of the exponents of the monomials that appear with non-zero
   coefficient in `f`, or `⊤`, if `f = 0`.
+
+For example, when `A = B = ℕ` and `D := id`, the sup-degree coincides with `Polynomial.natDegree`,
+and when `A = ℕ`, `B = WithBot ℕ`, `D := WithBot.some`, it coincides with `Polynomial.degree`.
 
 The main results are
 * `AddMonoidAlgebra.supDegree_mul_le`:
@@ -51,22 +60,8 @@ The main results are
 * `AddMonoidAlgebra.le_infDegree_add`:
   the inf-degree of a sum is at least the inf of the inf-degrees.
 
-## Implementation notes
-
-The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
-"generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
-Next, the general lemmas get specialized twice:
-* once for `supDegree` (essentially a simple application) and
-* once for `infDegree` (a simple application, via `OrderDual`).
-
-These final lemmas are the ones that likely get used the most.  The generic lemmas about
-`Finset.support.sup` may not be used directly much outside of this file.
-To see this in action, you can look at the triple
-`(sup_support_mul_le, maxDegree_mul_le, le_minDegree_mul)`.
 -/
 
-
-section GeneralResultsAssumingSemilatticeSup
 
 variable [SemilatticeSup B] [OrderBot B] [SemilatticeInf T] [OrderTop T]
 
@@ -209,15 +204,8 @@ theorem le_inf_support_finset_prod (degt0 : 0 ≤ degt 0)
 
 end CommutativeLemmas
 
-end GeneralResultsAssumingSemilatticeSup
 
 
-/-! ### Shorthands for special cases
-Note that these definitions are reducible, in order to make it easier to apply the more generic
-lemmas above. -/
-
-
-section Degrees
 
 variable [Semiring R]
 
@@ -540,7 +528,5 @@ theorem le_infDegree_mul (f g : R[A]) :
   le_inf_support_mul (fun {a b : A} => (map_add D a b).ge) _ _
 
 end InfDegree
-
-end Degrees
 
 end AddMonoidAlgebra
