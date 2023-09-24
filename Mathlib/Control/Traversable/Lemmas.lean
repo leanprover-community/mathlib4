@@ -122,7 +122,7 @@ theorem traverse_comp (g : α → F β) (h : β → G γ) :
 #align traversable.traverse_comp Traversable.traverse_comp
 
 theorem traverse_eq_map_id' (f : β → γ) :
-  traverse (m := Id) (pure ∘ f) = pure ∘ (map f : t β → t γ) := by
+    traverse (m := Id) (pure ∘ f) = pure ∘ (map f : t β → t γ) := by
   ext
   exact traverse_eq_map_id _ _
 #align traversable.traverse_eq_map_id' Traversable.traverse_eq_map_id'
