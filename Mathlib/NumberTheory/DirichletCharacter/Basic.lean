@@ -79,38 +79,37 @@ lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
   simpa [changeLevel_def, Function.comp_apply, MonoidHom.coe_comp] using
       toUnitHom_eq_char' _ <| ZMod.IsUnit_cast_of_dvd hm a
 
-/-- χ₀ of level d factors through χ of level n if d ∣ n and χ₀ = χ ∘ (ZMod n → ZMod d). -/
-structure FactorsThrough (d : ℕ) (χ₀ : DirichletCharacter R d) : Prop :=
-  /-- `d` divides `n`, so `d` is a potential level through which `χ` factors. -/
-  (dvd : d ∣ n)
-  /-- A character `χ₀` of level `d` such that `χ` is just the change in level of `χ₀` to `n`. -/
-  (eq_changeLevel : χ = changeLevel dvd χ₀)
+/-- `χ` of level `n` factors through a Dirichlet character `χ₀` of level `d` if `d ∣ n` and
+`χ₀ = χ ∘ (ZMod n → ZMod d)`. -/
+def FactorsThrough (d : ℕ) : Prop :=
+  ∃ (h : d ∣ n) (χ₀ : DirichletCharacter R d), χ = changeLevel h χ₀
 
 namespace FactorsThrough
-lemma spec {d : ℕ} (χ₀ : DirichletCharacter R d) (h : FactorsThrough χ d χ₀) :
-    χ = changeLevel h.dvd χ₀ := h.eq_changeLevel
+
+/-- The fact that `d` divides `n` when `χ` factors through a Dirichlet character at level `d` -/
+def dvd {d : ℕ} (h : FactorsThrough χ d) : d ∣ n := h.1
+
+/-- The Dirichlet character at level `d` through which `χ` factors -/
+noncomputable
+def χ₀ {d : ℕ} (h : FactorsThrough χ d) : DirichletCharacter R d := Classical.choose h.2
+
+/-- The fact that `χ` factors through `χ₀` of level `d` -/
+noncomputable
+def eq_changeLevel {d : ℕ} (h : FactorsThrough χ d) : χ = changeLevel h.dvd h.χ₀ :=
+  Classical.choose_spec h.2
+
+lemma same_level : FactorsThrough χ n := ⟨dvd_refl n, χ, (changeLevel_self χ).symm⟩
+
 end FactorsThrough
 
 /-- The set of natural numbers for which a Dirichlet character is periodic. -/
-def conductorSet : Set ℕ := {x : ℕ | ∃ χ₀, FactorsThrough χ x χ₀}
+def conductorSet : Set ℕ := {x : ℕ | FactorsThrough χ x}
 
--- can't use dot notation for factorsThrough and conductorSet
-lemma mem_conductorSet_iff {x : ℕ} : x ∈ conductorSet χ ↔ ∃ χ₀, FactorsThrough χ x χ₀ := Iff.refl _
+lemma mem_conductorSet_iff {x : ℕ} : x ∈ conductorSet χ ↔ FactorsThrough χ x := Iff.refl _
 
-lemma level_mem_conductorSet : n ∈ conductorSet χ :=
-  (mem_conductorSet_iff χ ).mpr <| ⟨χ,
-  { dvd := Nat.dvd_refl n,
-    eq_changeLevel := (changeLevel_self χ).symm}⟩
+lemma level_mem_conductorSet : n ∈ conductorSet χ := FactorsThrough.same_level χ
 
-
-lemma mem_conductorSet_dvd {x : ℕ} (hx : x ∈ conductorSet χ) : x ∣ n := by
-  cases' hx with χ₀ hx
-  exact hx.dvd
-
-
-lemma FactorsThrough_of_mem_conductorSet {x : ℕ} (hx : x ∈ conductorSet χ) :
-    ∃ (χ₀ : DirichletCharacter R x), FactorsThrough χ x χ₀ :=
-  hx
+lemma mem_conductorSet_dvd {x : ℕ} (hx : x ∈ conductorSet χ) : x ∣ n := hx.dvd
 
 /-- The minimum natural number `n` for which a Dirichlet character is periodic.
 The Dirichlet character `χ` can then alternatively be reformulated on `ℤ/nℤ`. -/
