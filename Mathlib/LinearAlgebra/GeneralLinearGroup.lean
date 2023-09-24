@@ -21,7 +21,7 @@ See also `Matrix.GeneralLinearGroup`
 -/
 
 
-variable (R M : Type _)
+variable (R M : Type*)
 
 namespace LinearMap
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.Order.Category.PartOrdCat
+import Mathlib.Order.Category.PartOrd
 
 #align_import order.category.FinPartOrd from "leanprover-community/mathlib"@"937b1c59c58710ef8ed91f8727ef402d49d621a2"
 
@@ -30,17 +30,17 @@ set_option linter.uppercaseLean3 false -- `FinPartOrd`
 
 /-- The category of finite partial orders with monotone functions. -/
 structure FinPartOrd where
-  toPartOrdCat : PartOrdCat
-  [isFintype : Fintype toPartOrdCat]
+  toPartOrd : PartOrd
+  [isFintype : Fintype toPartOrd]
 #align FinPartOrd FinPartOrd
 
 namespace FinPartOrd
 
-instance : CoeSort FinPartOrd (Type _) :=
-  ⟨fun X => X.toPartOrdCat⟩
+instance : CoeSort FinPartOrd (Type*) :=
+  ⟨fun X => X.toPartOrd⟩
 
 instance (X : FinPartOrd) : PartialOrder X :=
-  X.toPartOrdCat.str
+  X.toPartOrd.str
 
 attribute [instance] FinPartOrd.isFintype
 
@@ -48,28 +48,28 @@ attribute [instance] FinPartOrd.isFintype
 #noalign FinPartOrd.coe_to_PartOrd
 
 /-- Construct a bundled `FinPartOrd` from `PartialOrder` + `Fintype`. -/
-def of (α : Type _) [PartialOrder α] [Fintype α] : FinPartOrd :=
+def of (α : Type*) [PartialOrder α] [Fintype α] : FinPartOrd :=
   ⟨⟨α, inferInstance⟩⟩
 #align FinPartOrd.of FinPartOrd.of
 
 @[simp]
-theorem coe_of (α : Type _) [PartialOrder α] [Fintype α] : ↥(of α) = α := rfl
+theorem coe_of (α : Type*) [PartialOrder α] [Fintype α] : ↥(of α) = α := rfl
 #align FinPartOrd.coe_of FinPartOrd.coe_of
 
 instance : Inhabited FinPartOrd :=
   ⟨of PUnit⟩
 
 instance largeCategory : LargeCategory FinPartOrd :=
-  InducedCategory.category FinPartOrd.toPartOrdCat
+  InducedCategory.category FinPartOrd.toPartOrd
 #align FinPartOrd.large_category FinPartOrd.largeCategory
 
 instance concreteCategory : ConcreteCategory FinPartOrd :=
-  InducedCategory.concreteCategory FinPartOrd.toPartOrdCat
+  InducedCategory.concreteCategory FinPartOrd.toPartOrd
 #align FinPartOrd.concrete_category FinPartOrd.concreteCategory
 
-instance hasForgetToPartOrdCat : HasForget₂ FinPartOrd PartOrdCat :=
-  InducedCategory.hasForget₂ FinPartOrd.toPartOrdCat
-#align FinPartOrd.has_forget_to_PartOrd FinPartOrd.hasForgetToPartOrdCat
+instance hasForgetToPartOrd : HasForget₂ FinPartOrd PartOrd :=
+  InducedCategory.hasForget₂ FinPartOrd.toPartOrd
+#align FinPartOrd.has_forget_to_PartOrd FinPartOrd.hasForgetToPartOrd
 
 instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
   forget₂ :=
@@ -108,7 +108,7 @@ def dualEquiv : FinPartOrd ≌ FinPartOrd :=
 
 end FinPartOrd
 
-theorem FinPartOrd_dual_comp_forget_to_partOrdCat :
-    FinPartOrd.dual ⋙ forget₂ FinPartOrd PartOrdCat =
-      forget₂ FinPartOrd PartOrdCat ⋙ PartOrdCat.dual := rfl
-#align FinPartOrd_dual_comp_forget_to_PartOrd FinPartOrd_dual_comp_forget_to_partOrdCat
+theorem FinPartOrd_dual_comp_forget_to_partOrd :
+    FinPartOrd.dual ⋙ forget₂ FinPartOrd PartOrd =
+      forget₂ FinPartOrd PartOrd ⋙ PartOrd.dual := rfl
+#align FinPartOrd_dual_comp_forget_to_PartOrd FinPartOrd_dual_comp_forget_to_partOrd

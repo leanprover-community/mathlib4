@@ -8,6 +8,7 @@ import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Ring
 
 #align_import algebra.continued_fractions.computation.correctness_terminating from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 
@@ -51,7 +52,7 @@ namespace GeneralizedContinuedFraction
 
 open GeneralizedContinuedFraction (of)
 
-variable {K : Type _} [LinearOrderedField K] {v : K} {n : ℕ}
+variable {K : Type*} [LinearOrderedField K] {v : K} {n : ℕ}
 
 /-- Given two continuants `pconts` and `conts` and a value `fr`, this function returns
 - `conts.a / conts.b` if `fr = 0`

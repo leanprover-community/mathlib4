@@ -54,7 +54,7 @@ filter, germ
 
 namespace Filter
 
-variable {α β γ δ : Type _} {l : Filter α} {f g h : α → β}
+variable {α β γ δ : Type*} {l : Filter α} {f g h : α → β}
 
 theorem const_eventuallyEq' [NeBot l] {a b : β} : (∀ᶠ _ in l, a = b) ↔ a = b :=
   eventually_const
@@ -70,19 +70,19 @@ theorem EventuallyEq.comp_tendsto {f' : α → β} (H : f =ᶠ[l] f') {g : γ �
 #align filter.eventually_eq.comp_tendsto Filter.EventuallyEq.comp_tendsto
 
 /-- Setoid used to define the space of germs. -/
-def germSetoid (l : Filter α) (β : Type _) : Setoid (α → β) where
+def germSetoid (l : Filter α) (β : Type*) : Setoid (α → β) where
   r := EventuallyEq l
   iseqv := ⟨EventuallyEq.refl _, EventuallyEq.symm, EventuallyEq.trans⟩
 #align filter.germ_setoid Filter.germSetoid
 
 /-- The space of germs of functions `α → β` at a filter `l`. -/
-def Germ (l : Filter α) (β : Type _) : Type _ :=
+def Germ (l : Filter α) (β : Type*) : Type _ :=
   Quotient (germSetoid l β)
 #align filter.germ Filter.Germ
 
 /-- Setoid used to define the filter product. This is a dependent version of
   `Filter.germSetoid`. -/
-def productSetoid (l : Filter α) (ε : α → Type _) : Setoid ((a : _) → ε a) where
+def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a) where
   r f g := ∀ᶠ a in l, f a = g a
   iseqv :=
     ⟨fun _ => eventually_of_forall fun _ => rfl, fun h => h.mono fun _ => Eq.symm,
@@ -92,13 +92,13 @@ def productSetoid (l : Filter α) (ε : α → Type _) : Setoid ((a : _) → ε 
 /-- The filter product `(a : α) → ε a` at a filter `l`. This is a dependent version of
   `Filter.Germ`. -/
 -- Porting note: removed @[protected]
-def Product (l : Filter α) (ε : α → Type _) : Type _ :=
+def Product (l : Filter α) (ε : α → Type*) : Type _ :=
   Quotient (productSetoid l ε)
 #align filter.product Filter.Product
 
 namespace Product
 
-variable {ε : α → Type _}
+variable {ε : α → Type*}
 
 instance coeTC : CoeTC ((a : _) → ε a) (l.Product ε) :=
   ⟨@Quotient.mk' _ (productSetoid _ ε)⟩
@@ -161,7 +161,7 @@ def map' {lc : Filter γ} (F : (α → β) → γ → δ) (hF : (l.EventuallyEq 
 
 /-- Given a germ `f : Germ l β` and a function `F : (α → β) → γ` sending eventually equal functions
 to the same value, returns the value `F` takes on functions having germ `f` at `l`. -/
-def liftOn {γ : Sort _} (f : Germ l β) (F : (α → β) → γ) (hF : (l.EventuallyEq ⇒ (· = ·)) F F) :
+def liftOn {γ : Sort*} (f : Germ l β) (F : (α → β) → γ) (hF : (l.EventuallyEq ⇒ (· = ·)) F F) :
     γ :=
   Quotient.liftOn' f F hF
 #align filter.germ.lift_on Filter.Germ.liftOn
@@ -177,7 +177,7 @@ theorem coe_eq : (f : Germ l β) = g ↔ f =ᶠ[l] g :=
   Quotient.eq''
 #align filter.germ.coe_eq Filter.Germ.coe_eq
 
-alias coe_eq ↔ _ _root_.Filter.EventuallyEq.germ_eq
+alias ⟨_, _root_.Filter.EventuallyEq.germ_eq⟩ := coe_eq
 #align filter.eventually_eq.germ_eq Filter.EventuallyEq.germ_eq
 
 /-- Lift a function `β → γ` to a function `Germ l β → Germ l γ`. -/
@@ -224,7 +224,7 @@ theorem coe_tendsto {f : α → β} {lb : Filter β} : (f : Germ l β).Tendsto l
   Iff.rfl
 #align filter.germ.coe_tendsto Filter.Germ.coe_tendsto
 
-alias coe_tendsto ↔ _ _root_.Filter.Tendsto.germ_tendsto
+alias ⟨_, _root_.Filter.Tendsto.germ_tendsto⟩ := coe_tendsto
 #align filter.tendsto.germ_tendsto Filter.Tendsto.germ_tendsto
 
 /-- Given two germs `f : Germ l β`, and `g : Germ lc α`, where `l : Filter α`, if `g` tends to `l`,
@@ -333,7 +333,7 @@ instance inhabited [Inhabited β] : Inhabited (Germ l β) :=
 
 section Monoid
 
-variable {M : Type _} {G : Type _}
+variable {M : Type*} {G : Type*}
 
 @[to_additive]
 instance mul [Mul M] : Mul (Germ l M) :=
@@ -366,7 +366,6 @@ instance commSemigroup [CommSemigroup M] : CommSemigroup (Germ l M) :=
 @[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ l M) :=
   { Germ.semigroup with
-    mul := (· * ·)
     mul_left_cancel := fun f₁ f₂ f₃ =>
       inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
         coe_eq.2 ((coe_eq.1 H).mono fun _x => mul_left_cancel) }
@@ -374,7 +373,6 @@ instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ
 @[to_additive]
 instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (Germ l M) :=
   { Germ.semigroup with
-    mul := (· * ·)
     mul_right_cancel := fun f₁ f₂ f₃ =>
       inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
         coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel }
@@ -419,8 +417,8 @@ instance monoid [Monoid M] : Monoid (Germ l M) :=
 
 /-- Coercion from functions to germs as a monoid homomorphism. -/
 @[to_additive "Coercion from functions to germs as an additive monoid homomorphism."]
-def coeMulHom [Monoid M] (l : Filter α) : (α → M) →* Germ l M :=
-  ⟨⟨ofFun, rfl⟩, fun _ _ => rfl⟩
+def coeMulHom [Monoid M] (l : Filter α) : (α → M) →* Germ l M where
+  toFun := ofFun; map_one' := rfl; map_mul' _ _ := rfl
 #align filter.germ.coe_mul_hom Filter.Germ.coeMulHom
 #align filter.germ.coe_add_hom Filter.Germ.coeAddHom
 
@@ -538,7 +536,7 @@ end Monoid
 
 section Ring
 
-variable {R : Type _}
+variable {R : Type*}
 
 instance nontrivial [Nontrivial R] [NeBot l] : Nontrivial (Germ l R) :=
   let ⟨x, y, h⟩ := exists_pair_ne R
@@ -625,7 +623,7 @@ end Ring
 
 section Module
 
-variable {M N R : Type _}
+variable {M N R : Type*}
 
 @[to_additive]
 instance instSMul' [SMul M β] : SMul (Germ l M) (Germ l β) :=

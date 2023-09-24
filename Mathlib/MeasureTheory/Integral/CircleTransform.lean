@@ -29,7 +29,7 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue 
 
 noncomputable section
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E] (R : ℝ) (z w : ℂ)
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (R : ℝ) (z w : ℂ)
 
 namespace Complex
 

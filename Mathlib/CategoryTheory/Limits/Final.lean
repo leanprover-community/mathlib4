@@ -97,12 +97,12 @@ class Initial (F : C ⥤ D) : Prop where
 
 attribute [instance] Initial.out
 
-instance final_op_of_initial (F : C ⥤ D) [Initial F] : Final F.op
-    where out d := isConnected_of_equivalent (costructuredArrowOpEquivalence F (unop d))
+instance final_op_of_initial (F : C ⥤ D) [Initial F] : Final F.op where
+  out d := isConnected_of_equivalent (costructuredArrowOpEquivalence F (unop d))
 #align category_theory.functor.final_op_of_initial CategoryTheory.Functor.final_op_of_initial
 
-instance initial_op_of_final (F : C ⥤ D) [Final F] : Initial F.op
-    where out d := isConnected_of_equivalent (structuredArrowOpEquivalence F (unop d))
+instance initial_op_of_final (F : C ⥤ D) [Final F] : Initial F.op where
+  out d := isConnected_of_equivalent (structuredArrowOpEquivalence F (unop d))
 #align category_theory.functor.initial_op_of_final CategoryTheory.Functor.initial_op_of_final
 
 theorem final_of_initial_op (F : C ⥤ D) [Initial F.op] : Final F :=
@@ -201,7 +201,7 @@ it suffices to perform that construction for some other pair of choices
 and to show how to transport such a construction
 *both* directions along a morphism between such choices.
 -/
-def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort _)
+def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
     (h₁ :
       ∀ (X₁ X₂) (k₁ : d ⟶ F.obj X₁) (k₂ : d ⟶ F.obj X₂) (f : X₁ ⟶ X₂),
         k₁ ≫ F.map f = k₂ → Z X₁ k₁ → Z X₂ k₂)
@@ -249,7 +249,7 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G
               rw [← a, Functor.map_comp, Category.assoc, ← Functor.comp_map, c.w] at z
               rw [z]
             · rw [← Functor.map_comp_assoc] } }
-  map f := { Hom := f.Hom }
+  map f := { hom := f.hom }
 #align category_theory.functor.final.extend_cocone CategoryTheory.Functor.Final.extendCocone
 
 @[simp]
@@ -424,7 +424,6 @@ theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
       exact ⟨StructuredArrow.mk y⟩
     apply zigzag_isConnected
     rintro ⟨⟨⟨⟩⟩, X₁, f₁⟩ ⟨⟨⟨⟩⟩, X₂, f₂⟩
-    dsimp at *
     let y₁ := colimit.ι (F ⋙ coyoneda.obj (op d)) X₁ f₁
     let y₂ := colimit.ι (F ⋙ coyoneda.obj (op d)) X₂ f₂
     have e : y₁ = y₂ := by
@@ -489,7 +488,7 @@ it suffices to perform that construction for some other pair of choices
 and to show how to transport such a construction
 *both* directions along a morphism between such choices.
 -/
-def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort _)
+def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
     (h₁ :
       ∀ (X₁ X₂) (k₁ : F.obj X₁ ⟶ d) (k₂ : F.obj X₂ ⟶ d) (f : X₁ ⟶ X₂),
         F.map f ≫ k₂ = k₁ → Z X₁ k₁ → Z X₂ k₂)
@@ -540,7 +539,7 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G
               rw [← a, Functor.map_comp, ← Functor.comp_map, ← Category.assoc, ← Category.assoc,
                 c.w, z, Category.assoc]
             · rw [← Functor.map_comp] } }
-  map f := { Hom := f.Hom }
+  map f := { hom := f.hom }
 #align category_theory.functor.initial.extend_cone CategoryTheory.Functor.Initial.extendCone
 
 @[simp]
@@ -760,8 +759,7 @@ theorem final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
   infer_instance
 
 theorem initial_comp [Initial F] [Initial G] : Initial (F ⋙ G) := by
-  suffices : Final (F ⋙ G).op
-  · exact initial_of_final_op _
+  suffices Final (F ⋙ G).op from initial_of_final_op _
   exact final_comp F.op G.op
 
 theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := by
@@ -781,8 +779,7 @@ theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := 
   exact fun H => IsIso.of_isIso_comp_left (colimit.pre _ (s₁.inverse ⋙ F ⋙ s₂.functor)) _
 
 theorem initial_of_initial_comp [Initial F] [Initial (F ⋙ G)] : Initial G := by
-  suffices : Final G.op
-  · exact initial_of_final_op _
+  suffices Final G.op from initial_of_final_op _
   have : Final (F.op ⋙ G.op) := show Final (F ⋙ G).op from inferInstance
   exact final_of_final_comp F.op G.op
 
@@ -863,7 +860,7 @@ This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which st
 adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
 -/
 theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
-  IsCofilteredOrEmpty D :=
+    IsCofilteredOrEmpty D :=
   have : IsFilteredOrEmpty Dᵒᵖ := IsFilteredOrEmpty.of_final F.op
   isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
 

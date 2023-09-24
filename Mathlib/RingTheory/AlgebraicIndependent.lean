@@ -47,9 +47,9 @@ open Classical BigOperators
 
 universe x u v w
 
-variable {ι : Type _} {ι' : Type _} (R : Type _) {K : Type _}
+variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
 
-variable {A : Type _} {A' A'' : Type _} {V : Type u} {V' : Type _}
+variable {A : Type*} {A' A'' : Type*} {V : Type u} {V' : Type*}
 
 variable (x : ι → A)
 
@@ -194,7 +194,7 @@ theorem algebraicIndependent_subtype_range {ι} {f : ι → A} (hf : Injective f
   Iff.symm <| algebraicIndependent_equiv' (Equiv.ofInjective f hf) rfl
 #align algebraic_independent_subtype_range algebraicIndependent_subtype_range
 
-alias algebraicIndependent_subtype_range ↔ AlgebraicIndependent.of_subtype_range _
+alias ⟨AlgebraicIndependent.of_subtype_range, _⟩ := algebraicIndependent_subtype_range
 #align algebraic_independent.of_subtype_range AlgebraicIndependent.of_subtype_range
 
 theorem algebraicIndependent_image {ι} {s : Set ι} {f : ι → A} (hf : Set.InjOn f s) :
@@ -210,7 +210,7 @@ theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
 
 /-- A set of algebraically independent elements in an algebra `A` over a ring `K` is also
 algebraically independent over a subring `R` of `K`. -/
-theorem AlgebraicIndependent.restrictScalars {K : Type _} [CommRing K] [Algebra R K] [Algebra K A]
+theorem AlgebraicIndependent.restrictScalars {K : Type*} [CommRing K] [Algebra R K] [Algebra K A]
     [IsScalarTower R K A] (hinj : Function.Injective (algebraMap R K))
     (ai : AlgebraicIndependent K x) : AlgebraicIndependent R x := by
   have : (aeval x : MvPolynomial ι K →ₐ[K] A).toRingHom.comp (MvPolynomial.map (algebraMap R K)) =
@@ -322,7 +322,7 @@ theorem AlgebraicIndependent.image {ι} {s : Set ι} {f : ι → A}
   convert AlgebraicIndependent.image_of_comp s f id hs
 #align algebraic_independent.image AlgebraicIndependent.image
 
-theorem algebraicIndependent_iUnion_of_directed {η : Type _} [Nonempty η] {s : η → Set A}
+theorem algebraicIndependent_iUnion_of_directed {η : Type*} [Nonempty η] {s : η → Set A}
     (hs : Directed (· ⊆ ·) s) (h : ∀ i, AlgebraicIndependent R ((↑) : s i → A)) :
     AlgebraicIndependent R ((↑) : (⋃ i, s i) → A) := by
   refine' algebraicIndependent_of_finite (⋃ i, s i) fun t ht ft => _
@@ -462,8 +462,7 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
 set_option linter.uppercaseLean3 false in
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_X_some AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
 
-set_option synthInstance.maxHeartbeats 1000000 in
-set_option maxHeartbeats 1000000 in
+set_option synthInstance.maxHeartbeats 40000 in
 theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
     (hx : AlgebraicIndependent R x) (a : A) :
     RingHom.comp

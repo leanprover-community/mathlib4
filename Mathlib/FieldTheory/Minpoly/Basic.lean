@@ -19,7 +19,7 @@ such as irreducibility under the assumption `B` is a domain.
 
 open Classical Polynomial Set Function
 
-variable {A B B' : Type _}
+variable {A B B' : Type*}
 
 section MinPolyDef
 
@@ -64,16 +64,21 @@ theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
   dif_neg hx
 #align minpoly.eq_zero minpoly.eq_zero
 
-theorem minpoly_algHom (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
+theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
     minpoly A (f x) = minpoly A x := by
   refine' dif_ctx_congr (isIntegral_algHom_iff _ hf) (fun _ => _) fun _ => rfl
   simp_rw [← Polynomial.aeval_def, aeval_algHom, AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
-#align minpoly.minpoly_alg_hom minpoly.minpoly_algHom
+#align minpoly.minpoly_alg_hom minpoly.algHom_eq
+
+theorem algebraMap_eq {B} [CommRing B] [Algebra A B] [Algebra B B'] [IsScalarTower A B B']
+    (h : Function.Injective (algebraMap B B')) (x : B) :
+    minpoly A (algebraMap B B' x) = minpoly A x :=
+  algHom_eq (IsScalarTower.toAlgHom A B B') h x
 
 @[simp]
-theorem minpoly_algEquiv (f : B ≃ₐ[A] B') (x : B) : minpoly A (f x) = minpoly A x :=
-  minpoly_algHom (f : B →ₐ[A] B') f.injective x
-#align minpoly.minpoly_alg_equiv minpoly.minpoly_algEquiv
+theorem algEquiv_eq (f : B ≃ₐ[A] B') (x : B) : minpoly A (f x) = minpoly A x :=
+  algHom_eq (f : B →ₐ[A] B') f.injective x
+#align minpoly.minpoly_alg_equiv minpoly.algEquiv_eq
 
 variable (A x)
 
@@ -95,7 +100,7 @@ theorem ne_one [Nontrivial B] : minpoly A x ≠ 1 := by
   simpa using congr_arg (Polynomial.aeval x) h
 #align minpoly.ne_one minpoly.ne_one
 
-theorem map_ne_one [Nontrivial B] {R : Type _} [Semiring R] [Nontrivial R] (f : A →+* R) :
+theorem map_ne_one [Nontrivial B] {R : Type*} [Semiring R] [Nontrivial R] (f : A →+* R) :
     (minpoly A x).map f ≠ 1 := by
   by_cases hx : IsIntegral A x
   · exact mt ((monic hx).eq_one_of_map_eq_one f) (ne_one A x)
@@ -148,7 +153,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   have : natDegree r ≤ 0 := by
     have hr0 : r ≠ 0 := by
       rintro rfl
-      exact ne_zero hx (MulZeroClass.mul_zero p ▸ hr)
+      exact ne_zero hx (mul_zero p ▸ hr)
     apply_fun natDegree at hr
     rw [hm.natDegree_mul' hr0] at hr
     apply Nat.le_of_add_le_add_left

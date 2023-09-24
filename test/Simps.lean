@@ -4,10 +4,12 @@ import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Prod.Basic
+import Mathlib.Tactic.Common
 
 -- set_option trace.simps.debug true
 -- set_option trace.simps.verbose true
 -- set_option pp.universes true
+set_option autoImplicit true
 
 open Lean Meta Elab Term Command Simps
 
@@ -803,8 +805,7 @@ example {x : Set ℕ} (h : Set.univ = x) : Nat.SetPlus1.s = x := by
 def Nat.SetPlus2 : SetPlus ℕ := ⟨Set.univ, 1, trivial⟩
 
 example {x : Set ℕ} (h : Set.univ = x) : Nat.SetPlus2.s = x := by
-  dsimp only [Nat.SetPlus2_s]
-  -- successIfFail { rw [h] } -- todo
+  fail_if_success { rw [h] }
   exact h
 
 @[simps (config := {rhsMd := .default})]
@@ -941,13 +942,12 @@ example (h : false) (x y : { x : Fin (Nat.add 3 0) // 1 + 1 = 2 }) : myTypeDef.A
   guard_target = { _x : Fin 3 // True } = Unit
   /- note: calling only one of `simp` or `dsimp` does not produce the current target
   as the following tests show. -/
-  -- successIfFail { guard_hyp x : { x : Fin 3 // true } }
+  fail_if_success { guard_hyp x : { _x : Fin 3 // true } }
   dsimp at x
-  -- successIfFail { guard_hyp x : { x : Fin 3 // true } }
+  fail_if_success { guard_hyp x : { _x : Fin 3 // true } }
   simp at y
-  -- successIfFail { guard_hyp y : { x : Fin 3 // true } }
+  fail_if_success { guard_hyp y : { _x : Fin 3 // true } }
   simp at x
-  dsimp at y
   guard_hyp x : { _x : Fin 3 // True }
   guard_hyp y : { _x : Fin 3 // True }
   contradiction
@@ -1029,14 +1029,14 @@ instance {α β} : CoeFun (FurtherDecoratedEquiv α β) (λ _ => α → β) :=
   ⟨λ f => f.toDecoratedEquiv⟩
 
 def FurtherDecoratedEquiv.symm {α β : Sort _} (e : FurtherDecoratedEquiv α β) :
-  FurtherDecoratedEquiv β α :=
+    FurtherDecoratedEquiv β α :=
   { toDecoratedEquiv := e.toDecoratedEquiv.symm
     Q_toFun := e.Q_invFun
     Q_invFun := e.Q_toFun }
 
 def FurtherDecoratedEquiv.Simps.apply {α β : Sort _} (e : FurtherDecoratedEquiv α β) : α → β := e
 def FurtherDecoratedEquiv.Simps.symm_apply {α β : Sort _} (e : FurtherDecoratedEquiv α β) :
-  β → α := e.symm
+    β → α := e.symm
 
 initialize_simps_projections FurtherDecoratedEquiv
   (toFun → apply, invFun → symm_apply, -toDecoratedEquiv, toEquiv' → toEquiv', -toEquiv')
@@ -1115,17 +1115,16 @@ class AddHomPlus [Add ι] [∀ i, AddCommMonoid (A i)] :=
   (myMul {i} : A i →+ A i)
 
 def AddHomPlus.Simps.apply [Add ι] [∀ i, AddCommMonoid (A i)] [AddHomPlus A] {i : ι} (x : A i) :
-  A i :=
-AddHomPlus.myMul x
+    A i :=
+  AddHomPlus.myMul x
 
 initialize_simps_projections AddHomPlus (myMul_toFun → apply, -myMul)
 
 class AddHomPlus2 [Add ι] :=
   (myMul {i j} : A i ≃ (A j ≃ A (i + j)))
 
-def AddHomPlus2.Simps.mul [Add ι] [AddHomPlus2 A] {i j : ι}
-  (x : A i) (y : A j) : A (i + j) :=
-AddHomPlus2.myMul x y
+def AddHomPlus2.Simps.mul [Add ι] [AddHomPlus2 A] {i j : ι} (x : A i) (y : A j) : A (i + j) :=
+  AddHomPlus2.myMul x y
 
 initialize_simps_projections AddHomPlus2 (-myMul, myMul_toFun_toFun → mul)
 

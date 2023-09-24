@@ -28,16 +28,22 @@ homomorphism, iterate
 
 open Function
 
-variable {M : Type _} {N : Type _} {G : Type _} {H : Type _}
+variable {M : Type*} {N : Type*} {G : Type*} {H : Type*}
 
 /-- An auxiliary lemma that can be used to prove `⇑(f ^ n) = ⇑f^[n]`. -/
-theorem hom_coe_pow {F : Type _} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
+theorem hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
     (hmul : ∀ f g, c (f * g) = c f ∘ c g) (f : F) : ∀ n, c (f ^ n) = (c f)^[n]
   | 0 => by
     rw [pow_zero, h1]
     rfl
   | n + 1 => by rw [pow_succ, iterate_succ', hmul, hom_coe_pow c h1 hmul f n]
 #align hom_coe_pow hom_coe_pow
+
+@[to_additive (attr := simp)]
+theorem iterate_map_mul {M F : Type _} [MulOneClass M]
+    (f : F) (n : ℕ) (x y : M) [MulHomClass F M M] :
+    f^[n] (x * y) = f^[n] x * f^[n] y :=
+  Function.Semiconj₂.iterate (map_mul f) n x y
 
 namespace MonoidHom
 
@@ -50,12 +56,6 @@ theorem iterate_map_one (f : M →* M) (n : ℕ) : f^[n] 1 = 1 :=
   iterate_fixed f.map_one n
 #align monoid_hom.iterate_map_one MonoidHom.iterate_map_one
 #align add_monoid_hom.iterate_map_zero AddMonoidHom.iterate_map_zero
-
-@[to_additive (attr := simp)]
-theorem iterate_map_mul (f : M →* M) (n : ℕ) (x y) : f^[n] (x * y) = f^[n] x * f^[n] y :=
-  Semiconj₂.iterate f.map_mul n x y
-#align monoid_hom.iterate_map_mul MonoidHom.iterate_map_mul
-#align add_monoid_hom.iterate_map_add AddMonoidHom.iterate_map_add
 
 end
 
@@ -119,7 +119,7 @@ namespace RingHom
 
 section Semiring
 
-variable {R : Type _} [Semiring R] (f : R →+* R) (n : ℕ) (x y : R)
+variable {R : Type*} [Semiring R] (f : R →+* R) (n : ℕ) (x y : R)
 
 theorem coe_pow (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ => rfl) f n
@@ -133,14 +133,6 @@ theorem iterate_map_zero : f^[n] 0 = 0 :=
   f.toAddMonoidHom.iterate_map_zero n
 #align ring_hom.iterate_map_zero RingHom.iterate_map_zero
 
-theorem iterate_map_add : f^[n] (x + y) = f^[n] x + f^[n] y :=
-  f.toAddMonoidHom.iterate_map_add n x y
-#align ring_hom.iterate_map_add RingHom.iterate_map_add
-
-theorem iterate_map_mul : f^[n] (x * y) = f^[n] x * f^[n] y :=
-  f.toMonoidHom.iterate_map_mul n x y
-#align ring_hom.iterate_map_mul RingHom.iterate_map_mul
-
 theorem iterate_map_pow (a) (n m : ℕ) : f^[n] (a ^ m) = f^[n] a ^ m :=
   f.toMonoidHom.iterate_map_pow n a m
 #align ring_hom.iterate_map_pow RingHom.iterate_map_pow
@@ -151,7 +143,7 @@ theorem iterate_map_smul (n m : ℕ) (x : R) : f^[n] (m • x) = m • f^[n] x :
 
 end Semiring
 
-variable {R : Type _} [Ring R] (f : R →+* R) (n : ℕ) (x y : R)
+variable {R : Type*} [Ring R] (f : R →+* R) (n : ℕ) (x y : R)
 
 theorem iterate_map_sub : f^[n] (x - y) = f^[n] x - f^[n] y :=
   f.toAddMonoidHom.iterate_map_sub n x y
@@ -239,7 +231,7 @@ theorem SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :
 #align add_semiconj_by.function_semiconj_add_left AddSemiconjBy.function_semiconj_add_left
 
 @[to_additive]
-theorem Commute.function_commute_mul_left (h : _root_.Commute a b) :
+theorem Commute.function_commute_mul_left (h : Commute a b) :
     Function.Commute (a * ·) (b * ·) :=
   SemiconjBy.function_semiconj_mul_left h
 #align commute.function_commute_mul_left Commute.function_commute_mul_left
@@ -252,8 +244,8 @@ theorem SemiconjBy.function_semiconj_mul_right_swap (h : SemiconjBy a b c) :
 #align add_semiconj_by.function_semiconj_add_right_swap AddSemiconjBy.function_semiconj_add_right_swap
 
 @[to_additive]
-theorem Commute.function_commute_mul_right (h : _root_.Commute a b) :
-  Function.Commute (· * a) (· * b) :=
+theorem Commute.function_commute_mul_right (h : Commute a b) :
+    Function.Commute (· * a) (· * b) :=
   SemiconjBy.function_semiconj_mul_right_swap h
 #align commute.function_commute_mul_right Commute.function_commute_mul_right
 #align add_commute.function_commute_add_right AddCommute.function_commute_add_right

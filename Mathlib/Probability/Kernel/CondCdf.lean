@@ -49,7 +49,7 @@ open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
 section AuxLemmasToBeMoved
 
-variable {α β ι : Type _}
+variable {α β ι : Type*}
 
 namespace Directed
 
@@ -88,7 +88,7 @@ theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
 #align real.Inter_Iic_rat Real.iInter_Iic_rat
 
 -- todo after the port: move to order/filter/at_top_bot
-theorem atBot_le_nhds_bot {α : Type _} [TopologicalSpace α] [LinearOrder α] [OrderBot α]
+theorem atBot_le_nhds_bot {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderBot α]
     [OrderTopology α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
   cases subsingleton_or_nontrivial α
   · simp only [nhds_discrete, le_pure_iff, mem_atBot_sets, mem_singleton_iff,
@@ -103,13 +103,13 @@ theorem atBot_le_nhds_bot {α : Type _} [TopologicalSpace α] [LinearOrder α] [
 #align at_bot_le_nhds_bot atBot_le_nhds_bot
 
 -- todo after the port: move to order/filter/at_top_bot
-theorem atTop_le_nhds_top {α : Type _} [TopologicalSpace α] [LinearOrder α] [OrderTop α]
+theorem atTop_le_nhds_top {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderTop α]
     [OrderTopology α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
   @atBot_le_nhds_bot αᵒᵈ _ _ _ _
 #align at_top_le_nhds_top atTop_le_nhds_top
 
 -- todo: move to topology/algebra/order/monotone_convergence
-theorem tendsto_of_antitone {ι α : Type _} [Preorder ι] [TopologicalSpace α]
+theorem tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
     Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
   @tendsto_of_monotone ι αᵒᵈ _ _ _ _ _ h_mono
@@ -139,7 +139,7 @@ theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Counta
   cases nonempty_encodable β
   cases isEmpty_or_nonempty β
   · -- Porting note: the next `simp only` doesn't do anything, so added a workaround below.
-    simp only [WithTop.iInf_empty, lintegral_const]
+    -- simp only [WithTop.iInf_empty, lintegral_const]
     conv =>
       lhs
       congr
@@ -173,7 +173,7 @@ end AuxLemmasToBeMoved
 
 namespace MeasureTheory.Measure
 
-variable {α β : Type _} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
+variable {α β : Type*} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
 
 /-- Measure on `α` such that for a measurable set `s`, `ρ.Iic_snd r s = ρ (s ×ˢ Iic r)`. -/
 noncomputable def IicSnd (r : ℝ) : Measure α :=
@@ -272,7 +272,7 @@ open MeasureTheory
 
 namespace ProbabilityTheory
 
-variable {α β ι : Type _} {mα : MeasurableSpace α}
+variable {α β ι : Type*} {mα : MeasurableSpace α}
 
 attribute [local instance] MeasureTheory.Measure.IsFiniteMeasure.IicSnd
 
@@ -756,7 +756,7 @@ theorem continuousWithinAt_condCdf'_Ici (ρ : Measure (α × ℝ)) (a : α) (x :
   convert Monotone.tendsto_nhdsWithin_Ioi (monotone_condCdf' ρ a) x
   rw [sInf_image']
   have h' : ⨅ r : Ioi x, condCdf' ρ a r = ⨅ r : { r' : ℚ // x < r' }, condCdf' ρ a r := by
-    refine' iInf_Ioi_eq_iInf_rat_gt x _ (monotone_condCdf' ρ a)
+    refine' Real.iInf_Ioi_eq_iInf_rat_gt x _ (monotone_condCdf' ρ a)
     refine' ⟨0, fun z => _⟩
     rintro ⟨u, -, rfl⟩
     exact condCdf'_nonneg ρ a u
@@ -858,9 +858,7 @@ theorem measurable_condCdf (ρ : Measure (α × ℝ)) (x : ℝ) : Measurable fun
     congr with q
     rw [condCdf_eq_condCdfRat]
   rw [this]
-  exact
-    measurable_ciInf (fun q => measurable_condCdfRat ρ q) fun a =>
-      bddBelow_range_condCdfRat_gt ρ a _
+  exact measurable_iInf (fun q => measurable_condCdfRat ρ q)
 #align probability_theory.measurable_cond_cdf ProbabilityTheory.measurable_condCdf
 
 /-- Auxiliary lemma for `set_lintegral_cond_cdf`. -/
@@ -901,13 +899,12 @@ theorem set_lintegral_condCdf (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x
       (measurable_condCdf ρ q).ennreal_ofReal]
   rotate_left
   · intro b
-    simp_rw [h_coe]
     rw [set_lintegral_condCdf_rat ρ _ hs]
     exact measure_ne_top ρ _
   · refine' Monotone.directed_ge fun i j hij a => ENNReal.ofReal_le_ofReal ((condCdf ρ a).mono _)
     rw [h_coe, h_coe]
     exact_mod_cast hij
-  simp_rw [h_coe, set_lintegral_condCdf_rat ρ _ hs]
+  simp_rw [set_lintegral_condCdf_rat ρ _ hs]
   rw [← measure_iInter_eq_iInf]
   · rw [← prod_iInter]
     congr with y

@@ -6,7 +6,7 @@ Authors: Johan Commelin, Scott Morrison, Adam Topaz
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
-import Mathlib.Order.Category.NonemptyFinLinOrdCat
+import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 
 #align_import algebraic_topology.simplex_category from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Functor.ReflectsIso
 We construct a skeletal model of the simplex category, with objects `ℕ` and the
 morphism `n ⟶ m` being the monotone maps from `Fin (n+1)` to `Fin (m+1)`.
 
-We show that this category is equivalent to `NonemptyFinLinOrdCat`.
+We show that this category is equivalent to `NonemptyFinLinOrd`.
 
 ## Remarks
 
@@ -85,7 +85,7 @@ theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
 #align simplex_category.mk_len SimplexCategory.mk_len
 
 /-- A recursor for `SimplexCategory`. Use it as `induction Δ using SimplexCategory.rec`. -/
-protected def rec {F : ∀ _ : SimplexCategory, Sort _} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
+protected def rec {F : ∀ _ : SimplexCategory, Sort*} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
   h n.len
 #align simplex_category.rec SimplexCategory.rec
 
@@ -215,8 +215,6 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
     δ i ≫ δ j.succ = δ j ≫ δ (Fin.castSucc i) := by
   ext k
   dsimp [δ, Fin.succAbove]
-  simp only [OrderEmbedding.toOrderHom_coe, OrderEmbedding.coe_ofStrictMono, Function.comp_apply,
-    SimplexCategory.Hom.toOrderHom_mk, OrderHom.comp_coe]
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   rcases k with ⟨k, _⟩
@@ -279,7 +277,8 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
   simp [Fin.lt_iff_val_lt_val, Fin.ite_val, Fin.dite_val]
   split_ifs
-  all_goals try simp <;> linarith
+  any_goals simp
+  all_goals linarith
 #align simplex_category.δ_comp_σ_self SimplexCategory.δ_comp_σ_self
 
 @[reassoc]
@@ -296,7 +295,6 @@ theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 ([n] :
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
-  simp only [Fin.mk_lt_mk]
   split_ifs <;> simp <;> simp at * <;> linarith
 #align simplex_category.δ_comp_σ_succ SimplexCategory.δ_comp_σ_succ
 
@@ -352,10 +350,10 @@ end Generators
 section Skeleton
 
 /-- The functor that exhibits `SimplexCategory` as skeleton
-of `NonemptyFinLinOrdCat` -/
+of `NonemptyFinLinOrd` -/
 @[simps obj map]
-def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrdCat.{v} where
-  obj a := NonemptyFinLinOrdCat.of <| ULift (Fin (a.len + 1))
+def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrd.{v} where
+  obj a := NonemptyFinLinOrd.of <| ULift (Fin (a.len + 1))
   map f := ⟨fun i => ULift.up (f.toOrderHom i.down), fun i j h => f.toOrderHom.monotone h⟩
 #align simplex_category.skeletal_functor SimplexCategory.skeletalFunctor
 
@@ -370,7 +368,7 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
     simpa
   apply Fintype.card_congr
   exact Equiv.ulift.symm.trans
-    (((skeletalFunctor.{0} ⋙ forget NonemptyFinLinOrdCat).mapIso I).toEquiv.trans Equiv.ulift)
+    (((skeletalFunctor.{0} ⋙ forget NonemptyFinLinOrd).mapIso I).toEquiv.trans Equiv.ulift)
 #align simplex_category.skeletal SimplexCategory.skeletal
 
 namespace SkeletalFunctor
@@ -419,17 +417,17 @@ noncomputable instance isEquivalence : IsEquivalence skeletalFunctor.{v} :=
 end SkeletalFunctor
 
 /-- The equivalence that exhibits `SimplexCategory` as skeleton
-of `NonemptyFinLinOrdCat` -/
-noncomputable def skeletalEquivalence : SimplexCategory ≌ NonemptyFinLinOrdCat.{v} :=
+of `NonemptyFinLinOrd` -/
+noncomputable def skeletalEquivalence : SimplexCategory ≌ NonemptyFinLinOrd.{v} :=
   Functor.asEquivalence skeletalFunctor
 #align simplex_category.skeletal_equivalence SimplexCategory.skeletalEquivalence
 
 end Skeleton
 
-/-- `SimplexCategory` is a skeleton of `NonemptyFinLinOrdCat`.
+/-- `SimplexCategory` is a skeleton of `NonemptyFinLinOrd`.
 -/
 noncomputable def isSkeletonOf :
-    IsSkeletonOf NonemptyFinLinOrdCat SimplexCategory skeletalFunctor.{v} where
+    IsSkeletonOf NonemptyFinLinOrd SimplexCategory skeletalFunctor.{v} where
   skel := skeletal
   eqv := SkeletalFunctor.isEquivalence
 #align simplex_category.is_skeleton_of SimplexCategory.isSkeletonOf
@@ -477,7 +475,7 @@ theorem mono_iff_injective {n m : SimplexCategory} {f : n ⟶ m} :
     Mono f ↔ Function.Injective f.toOrderHom := by
   rw [← Functor.mono_map_iff_mono skeletalEquivalence.functor.{0}]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
-  rw [NonemptyFinLinOrdCat.mono_iff_injective, skeletalFunctor.coe_map,
+  rw [NonemptyFinLinOrd.mono_iff_injective, skeletalFunctor.coe_map,
     Function.Injective.of_comp_iff ULift.up_injective,
     Function.Injective.of_comp_iff' _ ULift.down_bijective]
 #align simplex_category.mono_iff_injective SimplexCategory.mono_iff_injective
@@ -488,7 +486,7 @@ theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
     Epi f ↔ Function.Surjective f.toOrderHom := by
   rw [← Functor.epi_map_iff_epi skeletalEquivalence.functor.{0}]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
-  rw [NonemptyFinLinOrdCat.epi_iff_surjective, skeletalFunctor.coe_map,
+  rw [NonemptyFinLinOrd.epi_iff_surjective, skeletalFunctor.coe_map,
     Function.Surjective.of_comp_iff' ULift.up_bijective,
     Function.Surjective.of_comp_iff _ ULift.down_surjective]
 #align simplex_category.epi_iff_surjective SimplexCategory.epi_iff_surjective
@@ -803,9 +801,9 @@ end EpiMono
 to the category attached to the ordered set `{0, 1, ..., n}` -/
 @[simps! obj map]
 def toCat : SimplexCategory ⥤ Cat.{0} :=
-  SimplexCategory.skeletalFunctor ⋙ forget₂ NonemptyFinLinOrdCat LinOrdCat ⋙
-      forget₂ LinOrdCat LatCat ⋙ forget₂ LatCat PartOrdCat ⋙
-      forget₂ PartOrdCat PreordCat ⋙ preordCatToCat
+  SimplexCategory.skeletalFunctor ⋙ forget₂ NonemptyFinLinOrd LinOrd ⋙
+      forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
+      forget₂ PartOrd Preord ⋙ preordToCat
 set_option linter.uppercaseLean3 false in
 #align simplex_category.to_Cat SimplexCategory.toCat
 

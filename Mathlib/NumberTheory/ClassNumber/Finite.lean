@@ -35,7 +35,7 @@ open scoped BigOperators
 
 section EuclideanDomain
 
-variable {R S : Type _} (K L : Type _) [EuclideanDomain R] [CommRing S] [IsDomain S]
+variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
 
 variable [Field K] [Field L]
 
@@ -51,7 +51,7 @@ variable [ist : IsScalarTower R S L] [iic : IsIntegralClosure S R L]
 
 variable (abv : AbsoluteValue R ℤ)
 
-variable {ι : Type _} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
+variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
 such that for every `R`-integral element `a : S` with coordinates `≤ y`,
@@ -89,8 +89,8 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
     abv (Algebra.norm R a) ≤ normBound abv bS * y ^ Fintype.card ι := by
   conv_lhs => rw [← bS.sum_repr a]
   rw [Algebra.norm_apply, ← LinearMap.det_toMatrix bS]
-  simp only [Algebra.norm_apply, AlgHom.map_sum, AlgHom.map_smul, LinearEquiv.map_sum,
-    LinearEquiv.map_smul, Algebra.toMatrix_lmul_eq, normBound, smul_mul_assoc, ← mul_pow]
+  simp only [Algebra.norm_apply, AlgHom.map_sum, AlgHom.map_smul, map_sum,
+    map_smul, Algebra.toMatrix_lmul_eq, normBound, smul_mul_assoc, ← mul_pow]
   --Porting note: rest of proof was
   -- convert Matrix.det_sum_smul_le Finset.univ _ hy using 3
   -- · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
@@ -108,7 +108,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
 
 /-- If the `R`-integral element `a : S` has coordinates `< y` with respect to some basis `b`,
 its norm is strictly less than `normBound abv b * y ^ dim S`. -/
-theorem norm_lt {T : Type _} [LinearOrderedRing T] (a : S) {y : T}
+theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
     (hy : ∀ k, (abv (bS.repr a k) : T) < y) :
     (abv (Algebra.norm R a) : T) < normBound abv bS * y ^ Fintype.card ι := by
   obtain ⟨i⟩ := bS.index_nonempty
@@ -215,7 +215,6 @@ open Real
 
 attribute [-instance] Real.decidableEq
 
-set_option maxHeartbeats 800000 in
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
 theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     ∃ q : S,
@@ -264,7 +263,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   refine' Int.cast_lt.mp ((norm_lt abv bS _ fun i => lt_of_le_of_lt _ (hjk' i)).trans_le _)
   · apply le_of_eq
     congr
-    simp_rw [LinearEquiv.map_sum, LinearEquiv.map_sub, LinearEquiv.map_smul, Finset.sum_apply',
+    simp_rw [map_sum, LinearEquiv.map_sub, LinearEquiv.map_smul, Finset.sum_apply',
       Finsupp.sub_apply, Finsupp.smul_apply, Finset.sum_sub_distrib, Basis.repr_self_apply,
       smul_eq_mul, mul_boole, Finset.sum_ite_eq', Finset.mem_univ, if_true]
   · exact_mod_cast ε_le

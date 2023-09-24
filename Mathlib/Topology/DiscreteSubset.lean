@@ -28,7 +28,7 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 
 open Set Filter Function Topology
 
-variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 
 lemma tendsto_cofinite_cocompact_iff :
     Tendsto f cofinite (cocompact _) ↔ ∀ K, IsCompact K → Set.Finite (f ⁻¹' K) := by
@@ -36,7 +36,7 @@ lemma tendsto_cofinite_cocompact_iff :
   refine' forall₂_congr (fun K _ ↦ _)
   simp only [mem_compl_iff, eventually_cofinite, not_not, preimage]
 
-lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [LocallyCompactSpace Y]
+lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocallyCompactSpace Y]
     (hf' : Continuous f) (hf : Tendsto f cofinite (cocompact _)) :
     DiscreteTopology X := by
   refine' singletons_open_iff_discrete.mp (fun x ↦ _)
@@ -57,7 +57,7 @@ lemma IsClosed.tendsto_coe_cofinite_of_discreteTopology
     Tendsto ((↑) : s → X) cofinite (cocompact _) :=
   tendsto_cofinite_cocompact_of_discrete hs.closedEmbedding_subtype_val.tendsto_cocompact
 
-lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [LocallyCompactSpace X]
+lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) :
     Tendsto ((↑) : s → X) cofinite (cocompact _) ↔ DiscreteTopology s :=
   ⟨continuous_subtype_val.discrete_of_tendsto_cofinite_cocompact,

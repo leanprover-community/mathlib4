@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 open Localization Category
 
-variable {C₁ C₂ D₁ D₂ : Type _} [Category C₁] [Category C₂] [Category D₁] [Category D₂]
+variable {C₁ C₂ D₁ D₂ : Type*} [Category C₁] [Category C₂] [Category D₁] [Category D₂]
   {G : C₁ ⥤ C₂} {F : C₂ ⥤ C₁} (adj : G ⊣ F)
   (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L₁.IsLocalization W₁]
   (L₂ : C₂ ⥤ D₂) (W₂ : MorphismProperty C₂) [L₂.IsLocalization W₂]
@@ -107,14 +107,14 @@ noncomputable def localization : G' ⊣ F' :=
 
 @[simp]
 lemma localization_unit_app (X₁ : C₁) :
-  (adj.localization L₁ W₁ L₂ W₂ G' F').unit.app (L₁.obj X₁) =
+    (adj.localization L₁ W₁ L₂ W₂ G' F').unit.app (L₁.obj X₁) =
     L₁.map (adj.unit.app X₁) ≫ (CatCommSq.iso F L₂ L₁ F').hom.app (G.obj X₁) ≫
       F'.map ((CatCommSq.iso G L₁ L₂ G').hom.app X₁) := by
   apply Localization.ε_app
 
 @[simp]
 lemma localization_counit_app (X₂ : C₂) :
-  (adj.localization L₁ W₁ L₂ W₂ G' F').counit.app (L₂.obj X₂) =
+    (adj.localization L₁ W₁ L₂ W₂ G' F').counit.app (L₂.obj X₂) =
     G'.map ((CatCommSq.iso F L₂ L₁ F').inv.app X₂) ≫
       (CatCommSq.iso G L₁ L₂ G').inv.app (F.obj X₂) ≫
       L₂.map (adj.counit.app X₂) := by

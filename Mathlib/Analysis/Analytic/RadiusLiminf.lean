@@ -18,8 +18,8 @@ because this would create a circular dependency once we redefine `exp` using
 -/
 
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open scoped Topology Classical BigOperators NNReal ENNReal
 
@@ -35,7 +35,7 @@ variable (p : FormalMultilinearSeries 𝕜 E F)
 $\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. The actual statement uses `ℝ≥0` and some
 coercions. -/
 theorem radius_eq_liminf :
-  p.radius = liminf (fun n => (1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
+    p.radius = liminf (fun n => (1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
   -- porting note: added type ascription to make elaborated statement match Lean 3 version
   have :
     ∀ (r : ℝ≥0) {n : ℕ},

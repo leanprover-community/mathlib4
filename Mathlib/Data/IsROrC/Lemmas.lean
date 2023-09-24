@@ -12,7 +12,7 @@ import Mathlib.Data.IsROrC.Basic
 /-! # Further lemmas about `IsROrC` -/
 
 
-variable {K E : Type _} [IsROrC K]
+variable {K E : Type*} [IsROrC K]
 
 namespace Polynomial
 

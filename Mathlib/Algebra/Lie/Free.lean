@@ -105,7 +105,7 @@ theorem Rel.subRight {a b : lib R X} (c : lib R X) (h : Rel R X a b) : Rel R X (
   simpa only [sub_eq_add_neg] using h.add_right (-c)
 #align free_lie_algebra.rel.sub_right FreeLieAlgebra.Rel.subRight
 
-theorem Rel.smulOfTower {S : Type _} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (t : S)
+theorem Rel.smulOfTower {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (t : S)
     (a b : lib R X) (h : Rel R X a b) : Rel R X (t • a) (t • b) := by
   rw [← smul_one_smul R t a, ← smul_one_smul R t b]
   exact h.smul _
@@ -122,22 +122,22 @@ instance : Inhabited (FreeLieAlgebra R X) := by rw [FreeLieAlgebra]; infer_insta
 
 namespace FreeLieAlgebra
 
-instance {S : Type _} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
+instance {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
     SMul S (FreeLieAlgebra R X) where smul t := Quot.map ((· • ·) t) (Rel.smulOfTower t)
 
-instance {S : Type _} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R]
-    [IsScalarTower S R R] [IsCentralScalar S R] : IsCentralScalar S (FreeLieAlgebra R X)
-    where op_smul_eq_smul t := Quot.ind fun a => congr_arg (Quot.mk _) (op_smul_eq_smul t a)
+instance {S : Type*} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R]
+    [IsScalarTower S R R] [IsCentralScalar S R] : IsCentralScalar S (FreeLieAlgebra R X) where
+  op_smul_eq_smul t := Quot.ind fun a => congr_arg (Quot.mk _) (op_smul_eq_smul t a)
 
 instance : Zero (FreeLieAlgebra R X) where zero := Quot.mk _ 0
 
-instance : Add (FreeLieAlgebra R X)
-    where add := Quot.map₂ (· + ·) (fun _ _ _ => Rel.addLeft _) fun _ _ _ => Rel.add_right _
+instance : Add (FreeLieAlgebra R X) where
+  add := Quot.map₂ (· + ·) (fun _ _ _ => Rel.addLeft _) fun _ _ _ => Rel.add_right _
 
 instance : Neg (FreeLieAlgebra R X) where neg := Quot.map Neg.neg fun _ _ => Rel.neg
 
-instance : Sub (FreeLieAlgebra R X)
-    where sub := Quot.map₂ Sub.sub (fun _ _ _ => Rel.subLeft _) fun _ _ _ => Rel.subRight _
+instance : Sub (FreeLieAlgebra R X) where
+  sub := Quot.map₂ Sub.sub (fun _ _ _ => Rel.subLeft _) fun _ _ _ => Rel.subRight _
 
 instance : AddGroup (FreeLieAlgebra R X) :=
   Function.Surjective.addGroup (Quot.mk _) (surjective_quot_mk _) rfl (fun _ _ => rfl)
@@ -150,7 +150,7 @@ instance : AddCommGroup (FreeLieAlgebra R X) :=
   { (inferInstance : AddGroup (FreeLieAlgebra R X)),
     (inferInstance :  AddCommSemigroup (FreeLieAlgebra R X)) with }
 
-instance {S : Type _} [Semiring S] [Module S R] [IsScalarTower S R R] :
+instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] :
     Module S (FreeLieAlgebra R X) :=
   Function.Surjective.module S ⟨⟨Quot.mk (Rel R X), rfl⟩, fun _ _ => rfl⟩
     (surjective_quot_mk _) (fun _ _ => rfl)
