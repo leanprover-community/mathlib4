@@ -64,7 +64,7 @@ noncomputable section
 
 open scoped ENNReal MeasureTheory
 
-open Set MeasureTheory Filter
+open Set MeasureTheory Filter Measure
 
 /-! ### Layercake formula -/
 
@@ -161,6 +161,162 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
   exact (ENNReal.measurable_ofReal.comp (g_mble.comp measurable_snd)).aemeasurable.indicator₀ mble₀
 #align measure_theory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable
 
+theorem Ioc_disjoint_Ioi {α : Type*} [Preorder α] (a : α) {b c : α} (h : b ≤ c) :
+    Disjoint (Ioc a b) (Ioi c) :=
+  disjoint_left.mpr (fun _ hx hy ↦ (hx.2.trans h).not_lt hy)
+
+open scoped Topology
+
+theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable' (μ : Measure α)
+    (f_nn : 0 ≤ f) (f_mble : Measurable f)
+    (g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t) (g_mble : Measurable g)
+    (g_nn : ∀ t > 0, 0 ≤ g t) :
+    (∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ) =
+      ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
+  have f_nonneg : ∀ ω, 0 ≤ f ω := fun ω ↦ f_nn ω
+  -- trivial case where `g` is ae zero
+  by_cases H1 : g =ᵐ[volume.restrict (Ioi (0 : ℝ))] 0
+  · have A : ∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ = 0 := by
+      have : ∀ ω, ∫ t in (0)..f ω, g t = ∫ t in (0)..f ω, 0 := by
+        intro ω
+        simp_rw [intervalIntegral.integral_of_le (f_nonneg ω)]
+        apply integral_congr_ae
+        exact ae_restrict_of_ae_restrict_of_subset Ioc_subset_Ioi_self H1
+      simp [this]
+    have B : ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) = 0 := by
+      have : (fun t ↦ μ {a : α | t ≤ f a} * ENNReal.ofReal (g t))
+        =ᵐ[volume.restrict (Ioi (0:ℝ))] 0 := by
+          filter_upwards [H1] with t ht using by simp [ht]
+      simp [lintegral_congr_ae this]
+    rw [A, B]
+  -- trivial case where both sides are obviously infinite
+  by_cases H2 : ∃ s ≥ 0, 0 < ∫ t in (0)..s, g t ∧ μ {a : α | s < f a} = ∞
+  · rcases H2 with ⟨s, s_pos, hs, h's⟩
+    have A : ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) = ∞ := by
+      rw [eq_top_iff]
+      calc
+      ∞ = ∫⁻ t in Ioc 0 s, ∞ * ENNReal.ofReal (g t) := by
+          rw [lintegral_const_mul, ENNReal.top_mul]
+          · rw [← ofReal_integral_eq_lintegral_ofReal]
+            · rw [intervalIntegral.integral_of_le s_pos] at hs
+              simpa only [not_lt, ge_iff_le, ne_eq, ENNReal.ofReal_eq_zero, not_le] using hs
+            ·
+
+          · exact ENNReal.measurable_ofReal.comp g_mble
+
+      _ ≤ ∫⁻ t in Ioc 0 s, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
+          apply set_lintegral_mono' measurableSet_Ioc (fun x hx ↦ ?_)
+          rw [← h's]
+          gcongr
+          exact measure_mono (fun a ha ↦ hx.2.trans (le_of_lt ha))
+      _ ≤ ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) :=
+          lintegral_mono_set Ioc_subset_Ioi_self
+
+      -- minorer par l'intégale de 0 à s, de ∞ * g t = ∞
+    have B : ∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ = ∞ := by sorry
+      -- intégrer juste sur s ≤ f, et minorer l'intégrale par μ {s ≤ f} * ∫_0 ^s g = ∞
+    rw [A, B]
+  -- interesting case.
+  push_neg at H2
+  have M_bdd : BddAbove {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by
+    contrapose! H1
+    have : ∀ (n : ℕ), g =ᵐ[volume.restrict (Ioc (0 : ℝ) n)] 0 := by
+      intro n
+      rcases not_bddAbove_iff.1 H1 n with ⟨s, hs, ns⟩
+      exact ae_restrict_of_ae_restrict_of_subset (Ioc_subset_Ioc_right ns.le) hs
+    have Hg : g =ᵐ[volume.restrict (⋃ (n : ℕ), (Ioc (0 : ℝ) n))] 0 :=
+      (ae_restrict_iUnion_iff _ _).2 this
+    have : (⋃ (n : ℕ), (Ioc (0 : ℝ) n)) = Ioi 0 :=
+      iUnion_Ioc_eq_Ioi_self_iff.2 (fun x hx ↦ exists_nat_ge x)
+    rwa [this] at Hg
+  let M : ℝ := sSup {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0}
+  have M_nonneg : 0 ≤ M := le_csSup M_bdd (by simpa using trivial)
+  have hgM : g =ᵐ[volume.restrict (Ioc (0 : ℝ) M)] 0 := sorry
+  sorry
+
+#exit
+
+
+  let ν := μ.restrict {a : α | M < f a}
+  have : SigmaFinite ν := by
+    obtain ⟨u, -, uM, ulim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), M < u n) ∧ Tendsto u atTop (𝓝 M) :=
+      exists_seq_strictAnti_tendsto M
+    let s : ν.FiniteSpanningSetsIn univ :=
+    { set := fun n ↦ {a | f a ≤ M} ∪ {a | u n < f a}
+      set_mem := fun n ↦ trivial
+      finite := by
+        intro n
+        have I : ν {a | f a ≤ M} = 0 := by
+          rw [Measure.restrict_apply (measurableSet_le f_mble measurable_const)]
+          convert measure_empty
+          rw [← disjoint_iff_inter_eq_empty]
+          exact disjoint_left.mpr (fun a ha ↦ by simpa using ha)
+        have J : μ {a | u n < f a} < ∞ := by
+          rw [lt_top_iff_ne_top]
+          apply H2
+          by_contra H3
+          rw [not_lt, intervalIntegral.integral_of_le (M_nonneg.trans (uM n).le)] at H3
+          have g_nn_ae : ∀ᵐ t ∂(volume.restrict (Ioc 0 (u n))), 0 ≤ g t := by
+            filter_upwards [ae_restrict_mem measurableSet_Ioc] with s hs using g_nn _ hs.1
+          have Ig : ∫ (t : ℝ) in Ioc 0 (u n), g t = 0 :=
+            le_antisymm H3 (integral_nonneg_of_ae g_nn_ae)
+          have J : ∀ᵐ t ∂(volume.restrict (Ioc 0 (u n))), g t = 0 :=
+            (integral_eq_zero_iff_of_nonneg_ae g_nn_ae
+              (g_intble (u n) (M_nonneg.trans_lt (uM n))).1).1 Ig
+          have : u n ≤ M := le_csSup M_bdd J
+          exact lt_irrefl _ (this.trans_lt (uM n))
+        refine lt_of_le_of_lt (measure_union_le _ _) ?_
+        rw [I, zero_add]
+        apply lt_of_le_of_lt _ J
+        exact restrict_le_self _ (measurableSet_lt measurable_const f_mble)
+      spanning := by
+        apply eq_univ_iff_forall.2 (fun a ↦ ?_)
+        rcases le_or_lt (f a) M with ha|ha
+        · exact mem_iUnion.2 ⟨0, Or.inl ha⟩
+        · obtain ⟨n, hn⟩ : ∃ n, u n < f a := ((tendsto_order.1 ulim).2 _ ha).exists
+          exact mem_iUnion.2 ⟨n, Or.inr hn⟩ }
+    exact ⟨⟨s⟩⟩
+  have A : ∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ
+         = ∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂ν := by
+    have meas : MeasurableSet {a | M < f a} := measurableSet_lt measurable_const f_mble
+    have I : ∫⁻ (x : α) in {a | M < f a}ᶜ, ENNReal.ofReal (∫ t in (0).. f x, g t) ∂μ
+             = ∫⁻ (x : α) in {a | M < f a}ᶜ, 0 ∂μ := by
+      apply set_lintegral_congr_fun meas.compl (eventually_of_forall (fun s hs ↦ ?_))
+      have : ∫ (t : ℝ) in (0)..f s, g t = ∫ (t : ℝ) in (0)..f s, 0 := by
+        simp_rw [intervalIntegral.integral_of_le (f_nonneg s)]
+        apply integral_congr_ae
+        apply ae_mono (restrict_mono ?_ le_rfl) hgM
+        apply Ioc_subset_Ioc_right
+        simpa using hs
+      simp [this]
+    simp only [lintegral_const, zero_mul] at I
+    rw [← lintegral_add_compl _ meas, I, add_zero]
+  have B : ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t)
+           = ∫⁻ t in Ioi 0, ν {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
+    have B1 : ∫⁻ t in Ioc 0 M, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t)
+         = ∫⁻ t in Ioc 0 M, ν {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
+      apply lintegral_congr_ae
+      filter_upwards [hgM] with t ht
+      simp [ht]
+    have B2 : ∫⁻ t in Ioi M, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t)
+              = ∫⁻ t in Ioi M, ν {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
+      apply set_lintegral_congr_fun measurableSet_Ioi (eventually_of_forall (fun t ht ↦ ?_))
+      rw [Measure.restrict_apply (measurableSet_le measurable_const f_mble)]
+      congr 3
+      exact (inter_eq_left_iff_subset.2 (fun a ha ↦ (mem_Ioi.1 ht).trans_le ha)).symm
+    have I : Ioi (0 : ℝ) = Ioc (0 : ℝ) M ∪ Ioi M := (Ioc_union_Ioi_eq_Ioi M_nonneg).symm
+    have J : Disjoint (Ioc 0 M) (Ioi M) := Ioc_disjoint_Ioi _ le_rfl
+    rw [I, lintegral_union measurableSet_Ioi J, lintegral_union measurableSet_Ioi J, B1, B2]
+  rw [A, B]
+  exact lintegral_comp_eq_lintegral_meas_le_mul_of_measurable ν
+    (ae_mono restrict_le_self f_nn) (f_mble.mono_measure restrict_le_self) g_intble g_mble g_nn
+
+
+
+
+
+#exit
+
 /-- The layer cake formula / Cavalieri's principle / tail probability formula:
 
 Let `f` be a non-negative measurable function on a sigma-finite measure space. Let `G` be an
@@ -229,6 +385,18 @@ theorem lintegral_eq_lintegral_meas_le (μ : Measure α) [SigmaFinite μ] (f_nn 
   congr with ω
   simp only [intervalIntegral.integral_const, sub_zero, Algebra.id.smul_eq_mul, mul_one]
 #align measure_theory.lintegral_eq_lintegral_meas_le MeasureTheory.lintegral_eq_lintegral_meas_le
+
+
+
+theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable' (μ : Measure α) --[SigmaFinite μ]
+    (f_nn : 0 ≤ᵐ[μ] f) (f_mble : AEMeasurable f μ) :
+    (∫⁻ ω, ENNReal.ofReal (f ω) ∂μ) = ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} := by
+  by_cases H : ∃ t > 0, μ {a : α | t ≤ f a} = ∞
+  ·
+
+
+#exit
+
 
 /-- An application of the layer cake formula / Cavalieri's principle / tail probability formula:
 
