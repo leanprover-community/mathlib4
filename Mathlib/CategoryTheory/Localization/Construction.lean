@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.MorphismProperty
-import Mathlib.CategoryTheory.Category.QuivCat
+import Mathlib.CategoryTheory.Category.Quiv
 
 #align_import category_theory.localization.construction from "leanprover-community/mathlib"@"1a5e56f2166e4e9d0964c71f4273b1d39227678d"
 
@@ -152,7 +152,7 @@ variable {W} (G : C ⥤ D) (hG : W.IsInvertedBy G)
 /-- The lifting of a functor to the path category of `LocQuiver W` -/
 @[simps!]
 def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
-  QuivCat.lift
+  Quiv.lift
     { obj := fun X => G.obj X.obj
       map := by
         intros X Y
