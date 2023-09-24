@@ -7,7 +7,7 @@ import Mathlib.Algebra.Hom.Equiv.TypeTags
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.GroupTheory.IsFreeGroup
+import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.LinearAlgebra.Dimension
 
 #align_import group_theory.free_abelian_group_finsupp from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
