@@ -552,44 +552,6 @@ theorem subtype_comp_ofLe (p q : Submodule R M) (h : p ≤ q) :
   rfl
 #align submodule.subtype_comp_of_le Submodule.subtype_comp_ofLe
 
-variable (R)
-
-@[simp]
-theorem subsingleton_iff : Subsingleton (Submodule R M) ↔ Subsingleton M :=
-  have h : Subsingleton (Submodule R M) ↔ Subsingleton (AddSubmonoid M) := by
-    rw [← subsingleton_iff_bot_eq_top, ← subsingleton_iff_bot_eq_top, ← toAddSubmonoid_eq]; rfl
-  h.trans AddSubmonoid.subsingleton_iff
-#align submodule.subsingleton_iff Submodule.subsingleton_iff
-
-@[simp]
-theorem nontrivial_iff : Nontrivial (Submodule R M) ↔ Nontrivial M :=
-  not_iff_not.mp
-    ((not_nontrivial_iff_subsingleton.trans <| subsingleton_iff R).trans
-      not_nontrivial_iff_subsingleton.symm)
-#align submodule.nontrivial_iff Submodule.nontrivial_iff
-
-variable {R}
-
-instance [Subsingleton M] : Unique (Submodule R M) :=
-  ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ ((subsingleton_iff R).mpr ‹_›) a _⟩
-
-instance unique' [Subsingleton R] : Unique (Submodule R M) := by
-  haveI := Module.subsingleton R M; infer_instance
-#align submodule.unique' Submodule.unique'
-
-instance [Nontrivial M] : Nontrivial (Submodule R M) :=
-  (nontrivial_iff R).mpr ‹_›
-
-theorem mem_right_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p} :
-    (x : M) ∈ p' ↔ x = 0 :=
-  ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x x.2 hx, fun h => h.symm ▸ p'.zero_mem⟩
-#align submodule.mem_right_iff_eq_zero_of_disjoint Submodule.mem_right_iff_eq_zero_of_disjoint
-
-theorem mem_left_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p'} :
-    (x : M) ∈ p ↔ x = 0 :=
-  ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x hx x.2, fun h => h.symm ▸ p.zero_mem⟩
-#align submodule.mem_left_iff_eq_zero_of_disjoint Submodule.mem_left_iff_eq_zero_of_disjoint
-
 section
 
 variable [RingHomSurjective σ₁₂] {F : Type*} [sc : SemilinearMapClass F σ₁₂ M M₂]
