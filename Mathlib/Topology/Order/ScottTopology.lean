@@ -112,9 +112,9 @@ lemma ScottHausdorffTopology.Lower_IsOpen {s : Set α} (h : IsLowerSet s) :
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
 topology.
 -/
-def ScottTopology' : TopologicalSpace α := upperSetTopology' α ⊔ ScottHausdorffTopology
+def ScottTopology' : TopologicalSpace α := Topology.upperSet α ⊔ ScottHausdorffTopology
 
-lemma upper_le_Scott : upperSetTopology' α ≤  ScottTopology' := le_sup_left
+lemma upper_le_Scott : Topology.upperSet α ≤  ScottTopology' := le_sup_left
 
 lemma ScottHausdorff_le_Scott : @ScottHausdorffTopology α ≤  @ScottTopology' α := le_sup_right
 
@@ -205,19 +205,19 @@ variable [Preorder α] [Preorder β]
 
 open TopologicalSpace
 
-lemma UpperSetTopology_Monotone_coinduced_LE' {t₁ : TopologicalSpace α} [UpperSetTopology α]
+lemma UpperSetTopology_Monotone_coinduced_LE' {t₁ : TopologicalSpace α} [Topology.IsUpperSet α]
   {f : α → β}  (hf : Monotone f) : coinduced f t₁ ≤ @ScottTopology' β _ := by
   apply le_sup_of_le_left
   rwa [← continuous_iff_coinduced_le,
-    ← @UpperSetTopology.monotone_iff_continuous α β _ _ t₁ _ (upperSetTopology' β) _ _ ]
+    ← @Topology.IsUpperSet.monotone_iff_continuous α β _ _ t₁ (Topology.upperSet β) _ _ ]
 
-lemma UpperSetTopology_Monotone_coinduced_LE {t₁ : TopologicalSpace α} [UpperSetTopology α]
+lemma UpperSetTopology_Monotone_coinduced_LE {t₁ : TopologicalSpace α} [Topology.IsUpperSet α]
     {t₂ : TopologicalSpace β} [ScottTopology β] {f : α → β} (hf : Monotone f) :
     coinduced f t₁ ≤ t₂ := by
   rw [ScottTopology.topology_eq β]
   apply UpperSetTopology_Monotone_coinduced_LE' hf
 
-lemma Monotone_From_UpperSetTopology_Continuous {t₁ : TopologicalSpace α} [UpperSetTopology α]
+lemma Monotone_From_UpperSetTopology_Continuous {t₁ : TopologicalSpace α} [Topology.IsUpperSet α]
     {t₂ : TopologicalSpace β} [ScottTopology β] {f : α → β} (hf : Monotone f)  : Continuous f := by
   rw [continuous_iff_coinduced_le]
   apply UpperSetTopology_Monotone_coinduced_LE hf
@@ -278,8 +278,8 @@ lemma isLowerSet_of_isClosed {s : Set α} : IsClosed s → IsLowerSet s := fun h
 
 lemma lowerClosure_le_closure {s : Set α} : lowerClosure s ≤ closure s := by
   convert closure.mono (@upper_le_Scott α _)
-  rw [@UpperSetTopology.closure_eq_lowerClosure α _ (upperSetTopology' α) ?_ s]
-  exact instUpperSetTopologyUpperSetTopology'
+  rw [@Topology.IsUpperSet.closure_eq_lowerClosure α _ (Topology.upperSet α) ?_ s]
+  exact?
   exact topology_eq α
 
 /--
@@ -402,6 +402,6 @@ lemma scottHausdorffTopology_le_of_scottTopology [TopologicalSpace α] [ScottTop
   rw [ScottTopology.topology_eq α, ScottTopology']
   apply le_sup_right
 
-lemma scottHausdorffTopology_le_Lower [TopologicalSpace α] [LowerTopology α] :
+lemma scottHausdorffTopology_le_Lower [TopologicalSpace α] [Topology.IsLower α] :
     ScottHausdorffTopology ≤ ‹TopologicalSpace α› :=
-  fun _ h => ScottHausdorffTopology.Lower_IsOpen (LowerTopology.isLowerSet_of_isOpen h)
+  fun _ h => ScottHausdorffTopology.Lower_IsOpen (Topology.IsLower.isLowerSet_of_isOpen h)
