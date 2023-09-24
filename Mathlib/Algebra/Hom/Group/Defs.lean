@@ -1119,7 +1119,7 @@ theorem MonoidWithZeroHom.comp_apply [MulZeroOneClass M] [MulZeroOneClass N] [Mu
 @[to_additive "Composition of additive monoid homomorphisms is associative."]
 theorem OneHom.comp_assoc {Q : Type*} [One M] [One N] [One P] [One Q]
     (f : OneHom M N) (g : OneHom N P) (h : OneHom P Q) :
-  (h.comp g).comp f = h.comp (g.comp f) := rfl
+    (h.comp g).comp f = h.comp (g.comp f) := rfl
 #align one_hom.comp_assoc OneHom.comp_assoc
 #align zero_hom.comp_assoc ZeroHom.comp_assoc
 
@@ -1132,7 +1132,7 @@ theorem MulHom.comp_assoc {Q : Type*} [Mul M] [Mul N] [Mul P] [Mul Q]
 @[to_additive]
 theorem MonoidHom.comp_assoc {Q : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass P]
     [MulOneClass Q] (f : M →* N) (g : N →* P) (h : P →* Q) :
-  (h.comp g).comp f = h.comp (g.comp f) := rfl
+    (h.comp g).comp f = h.comp (g.comp f) := rfl
 #align monoid_hom.comp_assoc MonoidHom.comp_assoc
 #align add_monoid_hom.comp_assoc AddMonoidHom.comp_assoc
 
@@ -1158,14 +1158,14 @@ theorem MulHom.cancel_right [Mul M] [Mul N] [Mul P] {g₁ g₂ : N →ₙ* P} {f
 @[to_additive]
 theorem MonoidHom.cancel_right [MulOneClass M] [MulOneClass N] [MulOneClass P]
     {g₁ g₂ : N →* P} {f : M →* N} (hf : Function.Surjective f) :
-  g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
+    g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => MonoidHom.ext <| hf.forall.2 (FunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
 #align monoid_hom.cancel_right MonoidHom.cancel_right
 #align add_monoid_hom.cancel_right AddMonoidHom.cancel_right
 
 theorem MonoidWithZeroHom.cancel_right [MulZeroOneClass M] [MulZeroOneClass N] [MulZeroOneClass P]
     {g₁ g₂ : N →*₀ P} {f : M →*₀ N} (hf : Function.Surjective f) :
-  g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
+    g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => MonoidWithZeroHom.ext <| hf.forall.2 (FunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
 #align monoid_with_zero_hom.cancel_right MonoidWithZeroHom.cancel_right
 
