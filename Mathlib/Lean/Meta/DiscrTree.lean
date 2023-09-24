@@ -57,8 +57,11 @@ variable {m : Type → Type} [Monad m]
 partial def Trie.mapArraysM (t : DiscrTree.Trie α s) (f : Array α → m (Array β)) :
     m (DiscrTree.Trie β s) := do
   match t with
-  | .node vs children =>
-    return .node (← f vs) (← children.mapM fun (k, t') => do pure (k, ← t'.mapArraysM f))
+  | .empty => pure .empty
+  | .values vs t => pure $ .values (← f vs) (← t.mapArraysM f)
+  | .path ks t => pure $ .path ks (← t.mapArraysM f)
+  | .branch children =>
+    return .branch (← children.mapM fun (k, t') => do pure (k, ← t'.mapArraysM f))
 
 /-- Apply a monadic function to the array of values at each node in a `DiscrTree`. -/
 def mapArraysM (d : DiscrTree α s) (f : Array α → m (Array β)) : m (DiscrTree β s) := do
