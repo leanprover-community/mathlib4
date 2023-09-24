@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Bases
 
-#align_import topology.dense_embedding from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
+#align_import topology.dense_embedding from "leanprover-community/mathlib"@"148aefbd371a25f1cff33c85f20c661ce3155def"
 
 /-!
 # Dense embeddings
@@ -14,8 +14,8 @@ import Mathlib.Topology.Bases
 This file defines three properties of functions:
 
 * `DenseRange f`      means `f` has dense image;
-* `DenseInducing i`   means `i` is also `Inducing`;
-* `DenseEmbedding e`  means `e` is also an `Embedding`.
+* `DenseInducing i`   means `i` is also `Inducing`, namely it induces the topology on its codomain;
+* `DenseEmbedding e`  means `e` is further an `Embedding`, namely it is injective and `Inducing`.
 
 The main theorem `continuous_extend` gives a criterion for a function
 `f : X → Z` to a T₃ space Z to extend along a dense embedding
@@ -201,6 +201,7 @@ theorem continuousAt_extend [T3Space γ] {b : β} {f : α → γ} (di : DenseInd
   have V₁_in : V₁ ∈ 𝓝 b := by
     filter_upwards [hf]
     rintro x ⟨c, hc⟩
+    unfold_let φ
     rwa [di.extend_eq_of_tendsto hc]
   obtain ⟨V₂, V₂_in, V₂_op, hV₂⟩ : ∃ V₂ ∈ 𝓝 b, IsOpen V₂ ∧ ∀ x ∈ i ⁻¹' V₂, f x ∈ V' := by
     simpa [and_assoc] using

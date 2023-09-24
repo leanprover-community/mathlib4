@@ -168,7 +168,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type max v u} [SmallCategory K] [FinCateg
   rw [limit.lift_π]
   dsimp
   rw [ι_colimitLimitIso_limit_π_assoc]
-  simp_rw [← NatTrans.comp_app, ← Category.assoc, ← NatTrans.comp_app]
+  simp_rw [← Category.assoc, ← NatTrans.comp_app]
   rw [limit.lift_π, Category.assoc]
   congr 1
   rw [← Iso.comp_inv_eq]

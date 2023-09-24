@@ -56,7 +56,7 @@ theorem verschiebungFun_coeff_succ (x : 𝕎 R) (n : ℕ) :
 
 @[ghost_simps]
 theorem ghostComponent_zero_verschiebungFun (x : 𝕎 R) :
-  ghostComponent 0 (verschiebungFun x) = 0 := by
+    ghostComponent 0 (verschiebungFun x) = 0 := by
   rw [ghostComponent_apply, aeval_wittPolynomial, Finset.range_one, Finset.sum_singleton,
     verschiebungFun_coeff_zero, pow_zero, pow_zero, pow_one, one_mul]
 #align witt_vector.ghost_component_zero_verschiebung_fun WittVector.ghostComponent_zero_verschiebungFun
@@ -66,7 +66,7 @@ theorem ghostComponent_verschiebungFun (x : 𝕎 R) (n : ℕ) :
     ghostComponent (n + 1) (verschiebungFun x) = p * ghostComponent n x := by
   simp only [ghostComponent_apply, aeval_wittPolynomial]
   rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl, zero_pow (pow_pos hp.1.pos _),
-    MulZeroClass.mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
+    mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
   rintro i -
   simp only [pow_succ, mul_assoc, verschiebungFun_coeff, if_neg (Nat.succ_ne_zero i),
     Nat.succ_sub_succ, tsub_zero]

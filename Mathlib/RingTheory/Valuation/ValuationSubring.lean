@@ -615,7 +615,7 @@ theorem image_maximalIdeal : ((↑) : A → K) '' LocalRing.maximalIdeal A = A.n
   ext a
   simp only [Set.mem_image, SetLike.mem_coe, mem_nonunits_iff_exists_mem_maximalIdeal]
   erw [Subtype.exists]
-  simp_rw [Subtype.coe_mk, exists_and_right, exists_eq_right]
+  simp_rw [exists_and_right, exists_eq_right]
   -- Porting note: added
   simp
 #align valuation_subring.image_maximal_ideal ValuationSubring.image_maximalIdeal
@@ -709,7 +709,7 @@ def principalUnitGroupEquiv :
       rw [A.coe_mem_principalUnitGroup_iff]; simpa using SetLike.coe_mem x⟩
   left_inv x := by simp
   right_inv x := by simp
-  map_mul' x y := by rfl
+  map_mul' x y := rfl
 #align valuation_subring.principal_unit_group_equiv ValuationSubring.principalUnitGroupEquiv
 
 @[simp]

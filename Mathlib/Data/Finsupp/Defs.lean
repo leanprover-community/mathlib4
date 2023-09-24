@@ -544,7 +544,7 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
     classical
     simp [Function.update, Ne.def]
     split_ifs with hb ha ha <;>
-    simp only [*, not_false_iff, iff_true, not_true, iff_false]
+      try simp only [*, not_false_iff, iff_true, not_true, iff_false]
     · rw [Finset.mem_erase]
       simp
     · rw [Finset.mem_erase]
@@ -734,8 +734,8 @@ theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
   rfl
 #align finsupp.of_support_finite_coe Finsupp.ofSupportFinite_coe
 
-instance canLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite
-    where prf f hf := ⟨ofSupportFinite f hf, rfl⟩
+instance canLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
+  prf f hf := ⟨ofSupportFinite f hf, rfl⟩
 #align finsupp.can_lift Finsupp.canLift
 
 end OfSupportFinite

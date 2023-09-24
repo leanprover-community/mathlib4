@@ -115,6 +115,16 @@ theorem count_toMultiset [DecidableEq α] (f : α →₀ ℕ) (a : α) : (toMult
     _ = f a := by rw [Multiset.count_singleton_self, mul_one]
 #align finsupp.count_to_multiset Finsupp.count_toMultiset
 
+theorem toMultiset_sup [DecidableEq α] (f g : α →₀ ℕ) :
+    toMultiset (f ⊔ g) = toMultiset f ∪ toMultiset g := by
+  ext
+  simp_rw [Multiset.count_union, Finsupp.count_toMultiset, Finsupp.sup_apply, sup_eq_max]
+
+theorem toMultiset_inf [DecidableEq α] (f g : α →₀ ℕ) :
+    toMultiset (f ⊓ g) = toMultiset f ∩ toMultiset g := by
+  ext
+  simp_rw [Multiset.count_inter, Finsupp.count_toMultiset, Finsupp.inf_apply, inf_eq_min]
+
 @[simp]
 theorem mem_toMultiset (f : α →₀ ℕ) (i : α) : i ∈ toMultiset f ↔ i ∈ f.support := by
   classical
@@ -174,6 +184,14 @@ theorem toFinsupp_eq_iff {s : Multiset α} {f : α →₀ ℕ} :
   Multiset.toFinsupp.apply_eq_iff_symm_apply
 #align multiset.to_finsupp_eq_iff Multiset.toFinsupp_eq_iff
 
+theorem toFinsupp_union (s t : Multiset α) : toFinsupp (s ∪ t) = toFinsupp s ⊔ toFinsupp t := by
+  ext
+  simp [sup_eq_max]
+
+theorem toFinsupp_inter (s t : Multiset α) : toFinsupp (s ∩ t) = toFinsupp s ⊓ toFinsupp t := by
+  ext
+  simp [inf_eq_min]
+
 end Multiset
 
 @[simp]
@@ -202,7 +220,7 @@ theorem coe_orderIsoMultiset [DecidableEq ι] : ⇑(@orderIsoMultiset ι _) = to
 
 @[simp]
 theorem coe_orderIsoMultiset_symm [DecidableEq ι] :
-  ⇑(@orderIsoMultiset ι).symm = Multiset.toFinsupp :=
+    ⇑(@orderIsoMultiset ι).symm = Multiset.toFinsupp :=
   rfl
 #align finsupp.coe_order_iso_multiset_symm Finsupp.coe_orderIsoMultiset_symm
 

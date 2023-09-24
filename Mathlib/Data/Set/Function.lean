@@ -166,7 +166,7 @@ theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s
   simp only [Injective, Subtype.ext_iff, val_codRestrict_apply]
 #align set.injective_cod_restrict Set.injective_codRestrict
 
-alias injective_codRestrict ↔ _ _root_.Function.Injective.codRestrict
+alias ⟨_, _root_.Function.Injective.codRestrict⟩ := injective_codRestrict
 #align function.injective.cod_restrict Function.Injective.codRestrict
 
 variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ f₃ : α → β} {g g₁ g₂ : β → γ}
@@ -203,11 +203,16 @@ theorem eqOn_comm : EqOn f₁ f₂ s ↔ EqOn f₂ f₁ s :=
   ⟨EqOn.symm, EqOn.symm⟩
 #align set.eq_on_comm Set.eqOn_comm
 
--- porting note: can't add `@[refl]` for some reason
+-- This can not be tagged as `@[refl]` with the current argument order.
+-- See note below at `EqOn.trans`.
 theorem eqOn_refl (f : α → β) (s : Set α) : EqOn f f s := fun _ _ => rfl
 #align set.eq_on_refl Set.eqOn_refl
 
-@[trans]
+-- Note: this was formerly tagged with `@[trans]`, and although the `trans` attribute accepted it
+-- the `trans` tactic could not use it.
+-- An update to the trans tactic coming in mathlib4#7014 will reject this attribute.
+-- It can be restored by changing the argument order from `EqOn f₁ f₂ s` to `EqOn s f₁ f₂`.
+-- This change will be made separately: [zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Reordering.20arguments.20of.20.60Set.2EEqOn.60/near/390467581).
 theorem EqOn.trans (h₁ : EqOn f₁ f₂ s) (h₂ : EqOn f₂ f₃ s) : EqOn f₁ f₃ s := fun _ hx =>
   (h₁ hx).trans (h₂ hx)
 #align set.eq_on.trans Set.EqOn.trans
@@ -242,7 +247,7 @@ theorem eqOn_range {ι : Sort*} {f : ι → α} {g₁ g₂ : α → β} :
   forall_range_iff.trans <| funext_iff.symm
 #align set.eq_on_range Set.eqOn_range
 
-alias eqOn_range ↔ EqOn.comp_eq _
+alias ⟨EqOn.comp_eq, _⟩ := eqOn_range
 #align set.eq_on.comp_eq Set.EqOn.comp_eq
 
 /-! ### Congruence lemmas -/
@@ -526,7 +531,7 @@ lemma MapsTo.comp_left (g : β → γ) (hf : MapsTo f s t) : MapsTo (g ∘ f) s 
 #align set.maps_to.comp_left Set.MapsTo.comp_left
 
 lemma MapsTo.comp_right {s : Set β} {t : Set γ} (hg : MapsTo g s t) (f : α → β) :
-  MapsTo (g ∘ f) (f ⁻¹' s) t := fun _ hx ↦ hg hx
+    MapsTo (g ∘ f) (f ⁻¹' s) t := fun _ hx ↦ hg hx
 #align set.maps_to.comp_right Set.MapsTo.comp_right
 
 @[simp]
@@ -582,9 +587,9 @@ lemma restrictPreimage_bijective (hf : Bijective f) : Bijective (t.restrictPreim
   ⟨t.restrictPreimage_injective hf.1, t.restrictPreimage_surjective hf.2⟩
 #align set.restrict_preimage_bijective Set.restrictPreimage_bijective
 
-alias Set.restrictPreimage_injective  ← _root_.Function.Injective.restrictPreimage
-alias Set.restrictPreimage_surjective ← _root_.Function.Surjective.restrictPreimage
-alias Set.restrictPreimage_bijective  ← _root_.Function.Bijective.restrictPreimage
+alias _root_.Function.Injective.restrictPreimage := Set.restrictPreimage_injective
+alias _root_.Function.Surjective.restrictPreimage := Set.restrictPreimage_surjective
+alias _root_.Function.Bijective.restrictPreimage := Set.restrictPreimage_bijective
 #align function.bijective.restrict_preimage Function.Bijective.restrictPreimage
 #align function.surjective.restrict_preimage Function.Surjective.restrictPreimage
 #align function.injective.restrict_preimage Function.Injective.restrictPreimage
@@ -620,7 +625,7 @@ theorem InjOn.ne_iff {x y} (h : InjOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x �
   (h.eq_iff hx hy).not
 #align set.inj_on.ne_iff Set.InjOn.ne_iff
 
-alias InjOn.ne_iff ↔ _ InjOn.ne
+alias ⟨_, InjOn.ne⟩ := InjOn.ne_iff
 #align set.inj_on.ne Set.InjOn.ne
 
 theorem InjOn.congr (h₁ : InjOn f₁ s) (h : EqOn f₁ f₂ s) : InjOn f₂ s := fun _ hx _ hy =>
@@ -660,7 +665,7 @@ theorem injective_iff_injOn_univ : Injective f ↔ InjOn f univ :=
 theorem injOn_of_injective (h : Injective f) (s : Set α) : InjOn f s := fun _ _ _ _ hxy => h hxy
 #align set.inj_on_of_injective Set.injOn_of_injective
 
-alias injOn_of_injective ← _root_.Function.Injective.injOn
+alias _root_.Function.Injective.injOn := injOn_of_injective
 #align function.injective.inj_on Function.Injective.injOn
 
 -- A specialization of `injOn_of_injective` for `Subtype.val`.
@@ -694,7 +699,7 @@ theorem injOn_iff_injective : InjOn f s ↔ Injective (s.restrict f) :=
     congr_arg Subtype.val <| @H ⟨a, as⟩ ⟨b, bs⟩ h⟩
 #align set.inj_on_iff_injective Set.injOn_iff_injective
 
-alias Set.injOn_iff_injective ↔ InjOn.injective _
+alias ⟨InjOn.injective, _⟩ := Set.injOn_iff_injective
 #align set.inj_on.injective Set.InjOn.injective
 
 theorem MapsTo.restrict_inj (h : MapsTo f s t) : Injective (h.restrict f s t) ↔ InjOn f s := by
@@ -1017,7 +1022,7 @@ theorem bijective_iff_bijOn_univ : Bijective f ↔ BijOn f univ univ :=
     ⟨Iff.mpr injective_iff_injOn_univ inj, Iff.mpr surjective_iff_surjOn_univ surj⟩
 #align set.bijective_iff_bij_on_univ Set.bijective_iff_bijOn_univ
 
-alias bijective_iff_bijOn_univ ↔ _root_.Function.Bijective.bijOn_univ _
+alias ⟨_root_.Function.Bijective.bijOn_univ, _⟩ := bijective_iff_bijOn_univ
 #align function.bijective.bij_on_univ Function.Bijective.bijOn_univ
 
 theorem BijOn.compl (hst : BijOn f s t) (hf : Bijective f) : BijOn f sᶜ tᶜ :=
@@ -1188,6 +1193,7 @@ lemma InvOn.comp (hf : InvOn f' f s t) (hg : InvOn g' g t p) (fst : MapsTo f s t
   ⟨hf.1.comp hg.1 fst, hf.2.comp hg.2 g'pt⟩
 #align set.inv_on.comp Set.InvOn.comp
 
+@[symm]
 theorem InvOn.symm (h : InvOn f' f s t) : InvOn f f' t s :=
   ⟨h.right, h.left⟩
 #align set.inv_on.symm Set.InvOn.symm
@@ -1263,7 +1269,7 @@ theorem InjOn.invFunOn_image [Nonempty α] (h : InjOn f s₂) (ht : s₁ ⊆ s�
   h.leftInvOn_invFunOn.image_image' ht
 #align set.inj_on.inv_fun_on_image Set.InjOn.invFunOn_image
 
-theorem _root_.Function.LeftInvOn_invFunOn_of_subset_image_image [Nonempty α]
+theorem _root_.Function.leftInvOn_invFunOn_of_subset_image_image [Nonempty α]
     (h : s ⊆ (invFunOn f s) '' (f '' s)) : LeftInvOn (invFunOn f s) f s :=
   fun x hx ↦ by
     obtain ⟨-, ⟨x, hx', rfl⟩, rfl⟩ := h hx
@@ -1272,7 +1278,7 @@ theorem _root_.Function.LeftInvOn_invFunOn_of_subset_image_image [Nonempty α]
 theorem injOn_iff_invFunOn_image_image_eq_self [Nonempty α] :
     InjOn f s ↔ (invFunOn f s) '' (f '' s) = s :=
   ⟨fun h ↦ h.invFunOn_image Subset.rfl, fun h ↦
-    (Function.LeftInvOn_invFunOn_of_subset_image_image h.symm.subset).injOn⟩
+    (Function.leftInvOn_invFunOn_of_subset_image_image h.symm.subset).injOn⟩
 
 theorem _root_.Function.invFunOn_injOn_image [Nonempty α] (f : α → β) (s : Set α) :
     Set.InjOn (invFunOn f s) (f '' s) := by
@@ -1607,7 +1613,7 @@ theorem strictMono_restrict [Preorder α] [Preorder β] {f : α → β} {s : Set
     StrictMono (s.restrict f) ↔ StrictMonoOn f s := by simp [Set.restrict, StrictMono, StrictMonoOn]
 #align strict_mono_restrict strictMono_restrict
 
-alias strictMono_restrict ↔ _root_.StrictMono.of_restrict _root_.StrictMonoOn.restrict
+alias ⟨_root_.StrictMono.of_restrict, _root_.StrictMonoOn.restrict⟩ := strictMono_restrict
 #align strict_mono.of_restrict StrictMono.of_restrict
 #align strict_mono_on.restrict StrictMonoOn.restrict
 
@@ -1736,8 +1742,7 @@ theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [L
 theorem antitoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [LinearOrder β]
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : AntitoneOn φ t)
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : AntitoneOn ψ s :=
-  MonotoneOn.dual_right (monotoneOn_of_rightInvOn_of_mapsTo (AntitoneOn.dual_left hφ) φψs ψts)
--- Porting note: dot notation for `*.dual_*` didn't work
+  (monotoneOn_of_rightInvOn_of_mapsTo hφ.dual_left φψs ψts).dual_right
 #align function.antitone_on_of_right_inv_on_of_maps_to Function.antitoneOn_of_rightInvOn_of_mapsTo
 
 end Function
@@ -1806,7 +1811,7 @@ variable {e}
 @[simp] lemma bijOn_symm : BijOn e.symm t s ↔ BijOn e s t := bijOn_comm e.symm.invOn
 #align equiv.bij_on_symm Equiv.bijOn_symm
 
-alias bijOn_symm ↔ _root_.Set.BijOn.of_equiv_symm _root_.Set.BijOn.equiv_symm
+alias ⟨_root_.Set.BijOn.of_equiv_symm, _root_.Set.BijOn.equiv_symm⟩ := bijOn_symm
 #align set.bij_on.of_equiv_symm Set.BijOn.of_equiv_symm
 #align set.bij_on.equiv_symm Set.BijOn.equiv_symm
 

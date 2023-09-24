@@ -9,7 +9,7 @@ import Std.Tactic.RCases
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.SolveByElim
-import Mathlib.Util.DummyLabelAttr
+import Std.Test.Internal.DummyLabelAttr
 
 set_option autoImplicit true
 
@@ -113,7 +113,6 @@ example : 6 = 6 ∧ [7] = [7] := by
 -- Test that `solve_by_elim*`, which works on multiple goals,
 -- successfully uses the relevant local hypotheses for each goal.
 example (f g : ℕ → Prop) : (∃ k : ℕ, f k) ∨ (∃ k : ℕ, g k) ↔ ∃ k : ℕ, f k ∨ g k := by
-  dsimp at *
   fconstructor
   rintro (⟨n, fn⟩ | ⟨n, gn⟩)
   pick_goal 3

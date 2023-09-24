@@ -624,7 +624,7 @@ theorem Red.invRev {L₁ L₂ : List (α × Bool)} (h : Red L₁ L₂) : Red (in
 
 @[to_additive (attr := simp)]
 theorem Red.step_invRev_iff :
-  Red.Step (FreeGroup.invRev L₁) (FreeGroup.invRev L₂) ↔ Red.Step L₁ L₂ :=
+    Red.Step (FreeGroup.invRev L₁) (FreeGroup.invRev L₂) ↔ Red.Step L₁ L₂ :=
   ⟨fun h => by simpa only [invRev_invRev] using h.invRev, fun h => h.invRev⟩
 #align free_group.red.step_inv_rev_iff FreeGroup.Red.step_invRev_iff
 #align free_add_group.red.step_neg_rev_iff FreeAddGroup.Red.step_negRev_iff
@@ -735,7 +735,7 @@ theorem lift.of {x} : lift f (of x) = f x :=
 
 @[to_additive]
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
-  g x = FreeGroup.lift f x :=
+    g x = FreeGroup.lift f x :=
   FunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
 #align free_group.lift.unique FreeGroup.lift.unique
 #align free_add_group.lift.unique FreeAddGroup.lift.unique
@@ -814,7 +814,7 @@ theorem map.id' (x : FreeGroup α) : map (fun z => z) x = x :=
 
 @[to_additive]
 theorem map.comp {γ : Type w} (f : α → β) (g : β → γ) (x) :
-  map g (map f x) = map (g ∘ f) x := by
+    map g (map f x) = map (g ∘ f) x := by
   rcases x with ⟨L⟩; simp [(· ∘ ·)]
 #align free_group.map.comp FreeGroup.map.comp
 #align free_add_group.map.comp FreeAddGroup.map.comp
@@ -1219,10 +1219,10 @@ theorem reduce.eq_of_red (H : Red L₁ L₂) : reduce L₁ = reduce L₂ :=
 #align free_group.reduce.eq_of_red FreeGroup.reduce.eq_of_red
 #align free_add_group.reduce.eq_of_red FreeAddGroup.reduce.eq_of_red
 
-alias reduce.eq_of_red ← red.reduce_eq
+alias red.reduce_eq := reduce.eq_of_red
 #align free_group.red.reduce_eq FreeGroup.red.reduce_eq
 
-alias FreeAddGroup.reduce.eq_of_red ← freeAddGroup.red.reduce_eq
+alias freeAddGroup.red.reduce_eq := FreeAddGroup.reduce.eq_of_red
 #align free_group.free_add_group.red.reduce_eq FreeGroup.freeAddGroup.red.reduce_eq
 
 @[to_additive]
