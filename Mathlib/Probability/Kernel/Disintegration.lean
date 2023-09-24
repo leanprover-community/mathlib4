@@ -553,8 +553,8 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
       · rfl
       · exact measurable_prod_mk_left hs
     · rw [Measure.fst_map_prod_mk]
-      . simp only [Prod_map, id_eq]; rfl
-      . exact (hf.measurable.comp measurable_snd)
+      · simp only [Prod_map, id_eq]; rfl
+      · exact (hf.measurable.comp measurable_snd)
   rw [hρ'] at hρ''
   suffices : ∀ᵐ x ∂ρ.fst, ∀ s, MeasurableSet s →
     ((ρ.map (Prod.map id f)).condKernel x) s = (ρ.condKernel x) (f ⁻¹' s)
