@@ -389,39 +389,13 @@ section LayercakeIntegral
 
 namespace MeasureTheory
 
-variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
-
-/-- If `f` is integrable, then for any `c > 0` the set `{x | ‖f x‖ ≥ c}` has finite measure. -/
-lemma Integrable.measure_const_le_norm_lt_top {E : Type*} [NormedAddCommGroup E]
-    {f : α → E} (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
-    μ {a : α | c ≤ ‖f a‖} < ∞ := by
-  borelize E
-  have norm_f_aemble : AEMeasurable (fun a ↦ ENNReal.ofReal ‖f a‖) μ :=
-    (ENNReal.measurable_ofReal.comp measurable_norm).comp_aemeasurable f_intble.1.aemeasurable
-  have markov := mul_meas_ge_le_lintegral₀ (μ := μ) norm_f_aemble (ENNReal.ofReal c)
-  have obs : ∫⁻ (a : α), ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ (a : α), ‖f a‖₊ ∂μ :=
-    lintegral_congr (fun x ↦ ofReal_norm_eq_coe_nnnorm (f x))
-  simp_rw [ENNReal.ofReal_le_ofReal_iff (norm_nonneg _), obs] at markov
-  have c_inv_ne_top : (ENNReal.ofReal c)⁻¹ ≠ ∞ :=
-    ENNReal.inv_ne_top.mpr (ENNReal.ofReal_pos.mpr c_pos).ne.symm
-  simpa [← mul_assoc,
-         ENNReal.inv_mul_cancel (ENNReal.ofReal_pos.mpr c_pos).ne.symm ENNReal.ofReal_ne_top]
-    using ENNReal.mul_lt_top c_inv_ne_top (lt_of_le_of_lt markov f_intble.2).ne
-
-/-- If `f` is integrable, then for any `c > 0` the set `{x | ‖f x‖ > c}` has finite measure. -/
-lemma Integrable.measure_const_lt_norm_lt_top {E : Type*} [NormedAddCommGroup E]
-    {f : α → E} (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
-    μ {a : α | c < ‖f a‖} < ∞ :=
-  lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le))
-    (Integrable.measure_const_le_norm_lt_top f_intble c_pos)
-
-variable {f : α → ℝ}
+variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {f : α → ℝ}
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
 measure. -/
 lemma Integrable.measure_const_le_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
     μ {a : α | c ≤ f a} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_) (Integrable.measure_const_le_norm_lt_top f_intble c_pos)
+  refine lt_of_le_of_lt (measure_mono ?_) (f_intble.measure_ge_lt_top c_pos)
   intro x hx
   simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
   exact hx.trans (le_abs_self _)
@@ -430,8 +404,7 @@ lemma Integrable.measure_const_le_lt_top (f_intble : Integrable f μ) {c : ℝ} 
 measure. -/
 lemma Integrable.measure_le_const_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_)
-          (Integrable.measure_const_le_norm_lt_top f_intble (show 0 < -c by linarith))
+  refine lt_of_le_of_lt (measure_mono ?_) (f_intble.measure_ge_lt_top (show 0 < -c by linarith))
   intro x hx
   simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
   exact (show -c ≤ - f x by linarith).trans (neg_le_abs_self _)
