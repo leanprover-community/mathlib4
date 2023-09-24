@@ -18,7 +18,6 @@ as it allows us to use the `Module` API to work with convex cones.
 ## TODO
 
 - Rewrite proper cones using pointed cones.
-- Construct products and/or direct sums of pointed cones.
 
 -/
 
