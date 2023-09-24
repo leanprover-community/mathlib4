@@ -34,7 +34,7 @@ def measurableEquivPi : ℂ ≃ᵐ (Fin 2 → ℝ) :=
 
 @[simp]
 theorem measurableEquivPi_apply (a : ℂ) :
-    measurableEquivPi a = Fin.cons a.re (Fin.cons a.im finZeroElim) := rfl
+    measurableEquivPi a = ![a.re, a.im] := rfl
 
 @[simp]
 theorem measurableEquivPi_symm_apply (p : (Fin 2) → ℝ) :
