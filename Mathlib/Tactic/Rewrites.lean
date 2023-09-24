@@ -90,6 +90,9 @@ def addLemma (name : Name) (constInfo : ConstantInfo)
     (lemmas : DiscrTree (Name × Bool × Nat) true) : MetaM (DiscrTree (Name × Bool × Nat) true) := do
   let mut lemmas := lemmas
   for (key, value) in ← processLemma name constInfo do
+    -- To avoid stack overflows in processing the `DiscrTree`,
+    -- we truncate any excessively long keys.
+    let key := key[:1000].toArray
     lemmas := lemmas.insertIfSpecific key value
   return lemmas
 

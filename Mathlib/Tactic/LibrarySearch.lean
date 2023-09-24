@@ -69,6 +69,13 @@ def addLemma (name : Name) (constInfo : ConstantInfo)
     (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
   let mut lemmas := lemmas
   for (key, value) in ← processLemma name constInfo do
+    -- To avoid stack overflows in processing the `DiscrTree`,
+    -- we truncate any excessively long keys.
+    -- As of 2023-09-24, this only affected 12 declarations.
+    -- It's possible that this truncation still allows us to find these declarations
+    -- or that a slightly more careful truncation would do so,
+    -- but this would require further investigation.
+    let key := key[:1000].toArray
     lemmas := lemmas.insertIfSpecific key value
   return lemmas
 
