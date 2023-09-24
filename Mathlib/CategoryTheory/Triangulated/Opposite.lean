@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
 import Mathlib.CategoryTheory.Triangulated.Triangulated
-import Mathlib.CategoryTheory.Triangulated.Functor
+import Mathlib.CategoryTheory.Triangulated.Adjunction
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -739,6 +739,25 @@ instance : (unopUnop C).IsTriangulated where
       slice_rhs 2 3 =>
         rw [← op_comp, ← op_comp, Iso.inv_hom_id_app]
       simp
+
+noncomputable instance : (opOpEquivalence C).inverse.CommShift ℤ :=
+  (inferInstance : (unopUnop C).CommShift ℤ)
+
+noncomputable instance : (opOpEquivalence C).functor.CommShift ℤ :=
+  (opOpEquivalence C).commShiftFunctor ℤ
+
+noncomputable instance : (opOp C).CommShift ℤ :=
+  (inferInstance : (opOpEquivalence C).functor.CommShift ℤ)
+
+instance : (opOpEquivalence C).CommShift ℤ := (opOpEquivalence C).commShift_of_inverse ℤ
+
+instance : (opOpEquivalence C).IsTriangulated :=
+  Equivalence.IsTriangulated.mk'' _ (inferInstance : (unopUnop C).IsTriangulated)
+
+instance : (unopUnop C).IsTriangulated := inferInstance
+
+instance : (opOp C).IsTriangulated :=
+  (inferInstance : (opOpEquivalence C).functor.IsTriangulated)
 
 end Opposite
 

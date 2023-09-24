@@ -98,6 +98,27 @@ lemma mk' (h : NatTrans.CommShift adj.unit A) :
 
 end CommShift
 
+variable {A}
+
+@[reassoc]
+lemma shift_unit_app [adj.CommShift A] (a : A) (X : C) :
+    (adj.unit.app X)⟦a⟧' =
+      adj.unit.app (X⟦a⟧) ≫
+        F.map ((G.commShiftIso a).hom.app X) ≫
+          (F.commShiftIso a).hom.app (G.obj X) := by
+  simpa [Functor.commShiftIso_comp_hom_app] using NatTrans.CommShift.comm_app adj.unit a X
+
+@[reassoc]
+lemma shift_counit_app [adj.CommShift A] (a : A) (X : D) :
+    (adj.counit.app X)⟦a⟧' =
+      (G.commShiftIso a).inv.app (F.obj X) ≫ G.map ((F.commShiftIso a).inv.app X)
+        ≫ adj.counit.app (X⟦a⟧) := by
+  have eq := NatTrans.CommShift.comm_app adj.counit a X
+  simp only [Functor.comp_obj, Functor.id_obj, Functor.commShiftIso_comp_hom_app, assoc,
+    Functor.CommShift.commShiftIso_id_hom_app, comp_id] at eq
+  simp only [← eq, Functor.comp_obj, ← G.map_comp_assoc, Iso.inv_hom_id_app,
+    Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc]
+
 namespace RightAdjointCommShift
 
 variable {Z}
@@ -242,11 +263,34 @@ namespace CommShift
 
 attribute [instance] commShift_unitIso_hom commShift_counitIso_hom
 
+instance [h : E.functor.CommShift A] : E.symm.inverse.CommShift A := h
+instance [h : E.inverse.CommShift A] : E.symm.functor.CommShift A := h
+
 lemma mk' [E.functor.CommShift A] [E.inverse.CommShift A]
     (h : NatTrans.CommShift E.unitIso.hom A) :
     E.CommShift A where
   commShift_counitIso_hom :=
     (Adjunction.CommShift.mk' E.toAdjunction A h).commShift_counit
+
+lemma mk'' [E.functor.CommShift A] [E.inverse.CommShift A]
+    (h : NatTrans.CommShift E.counitIso.hom A) :
+    E.CommShift A where
+  commShift_unitIso_hom := by
+    have h' := NatTrans.CommShift.of_iso_inv E.counitIso A
+    have : NatTrans.CommShift E.unitIso.symm.hom A :=
+      (Adjunction.CommShift.mk' E.symm.toAdjunction A h').commShift_counit
+    exact NatTrans.CommShift.of_iso_inv E.unitIso.symm A
+
+instance [E.functor.CommShift A] [E.inverse.CommShift A] [E.CommShift A] :
+    E.toAdjunction.CommShift A where
+  commShift_unit := commShift_unitIso_hom
+  commShift_counit := commShift_counitIso_hom
+
+
+instance [E.functor.CommShift A] [E.inverse.CommShift A] [E.CommShift A] :
+    E.symm.CommShift A := mk' _ _ (by
+  dsimp only [Equivalence.symm, Iso.symm]
+  infer_instance)
 
 end CommShift
 
@@ -258,6 +302,17 @@ lemma commShift_of_functor [E.functor.CommShift Z] :
     E.CommShift Z := by
   letI := E.commShiftInverse Z
   exact CommShift.mk' _ _ (E.toAdjunction.commShift_of_leftAdjoint Z).commShift_unit
+
+noncomputable def commShiftFunctor [E.inverse.CommShift Z] : E.functor.CommShift Z :=
+  E.symm.toAdjunction.rightAdjointCommShift Z
+
+lemma commShift_of_inverse [E.inverse.CommShift Z] :
+    letI := E.commShiftFunctor Z
+    E.CommShift Z := by
+  letI := E.commShiftFunctor Z
+  apply CommShift.mk''
+  have : NatTrans.CommShift E.counitIso.symm.hom Z := (E.symm.toAdjunction.commShift_of_leftAdjoint Z).commShift_unit
+  exact NatTrans.CommShift.of_iso_inv E.counitIso.symm Z
 
 end Equivalence
 
