@@ -68,9 +68,14 @@ end Semiring
 
 section Semiring
 
-theorem dvd_sum [Semiring β]
-    {b : β} {s : Finset α} {f : α → β} (h : ∀ x ∈ s, b ∣ f x) : b ∣ ∑ x in s, f x :=
-  Multiset.dvd_sum fun y hy => by rcases Multiset.mem_map.1 hy with ⟨x, hx, rfl⟩; exact h x hx
+theorem dvd_sum [NonUnitalSemiring β]
+    {b : β} {s : Finset α} {f : α → β} (h : ∀ x ∈ s, b ∣ f x) : b ∣ ∑ x in s, f x := by
+  classical
+  revert h
+  induction' s using Finset.induction_on with a s ha ih; simp
+  intro h
+  rw [Finset.sum_insert ha]
+  exact dvd_add (h a (mem_insert_self a s)) (ih fun a' ha' ↦ h a' (mem_insert_of_mem ha'))
 #align finset.dvd_sum Finset.dvd_sum
 
 variable [NonAssocSemiring β]
