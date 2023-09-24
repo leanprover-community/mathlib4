@@ -165,8 +165,8 @@ set_option linter.deprecated false in
 @[deprecated chain_iff_get]
 theorem chain_iff_nthLe {R} {a : α} {l : List α} : Chain R a l ↔
     (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
-          ∀ (i) (h : i < length l - 1),
-            R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h)) :=
+    ∀ (i) (h : i < length l - 1),
+    R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h)) :=
   by rw [chain_iff_get]; simp [nthLe]
 #align list.chain_iff_nth_le List.chain_iff_nthLe
 
