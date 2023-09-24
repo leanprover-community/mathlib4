@@ -250,8 +250,8 @@ theorem appendFun_comp_splitFun {α γ : TypeVec n} {β δ : Type*} {ε : TypeVe
 
 theorem appendFun_comp  {α₀ α₁ α₂ : TypeVec n}
     {β₀ β₁ β₂ : Type*}
-                        (f₀ : α₀ ⟹ α₁) (f₁ : α₁ ⟹ α₂)
-                        (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
+    (f₀ : α₀ ⟹ α₁) (f₁ : α₁ ⟹ α₂)
+    (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
     (f₁ ⊚ f₀ ::: g₁ ∘ g₀) = (f₁ ::: g₁) ⊚ (f₀ ::: g₀) :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_comp TypeVec.appendFun_comp

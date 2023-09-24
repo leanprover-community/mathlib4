@@ -516,7 +516,8 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
 
 /-- Define `motive v` by case-analysis on `v : Vector α n` -/
 def casesOn {motive : ∀ {n}, Vector α n → Sort*} (v : Vector α m)
-    (nil : motive nil) (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
+    (nil : motive nil)
+    (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
     motive v :=
   inductionOn (C := motive) v nil @fun _ hd tl _ => cons hd tl
 
