@@ -87,15 +87,14 @@ def FactorsThrough (d : ℕ) : Prop :=
 namespace FactorsThrough
 
 /-- The fact that `d` divides `n` when `χ` factors through a Dirichlet character at level `d` -/
-def dvd {d : ℕ} (h : FactorsThrough χ d) : d ∣ n := h.1
+lemma dvd {d : ℕ} (h : FactorsThrough χ d) : d ∣ n := h.1
 
 /-- The Dirichlet character at level `d` through which `χ` factors -/
 noncomputable
 def χ₀ {d : ℕ} (h : FactorsThrough χ d) : DirichletCharacter R d := Classical.choose h.2
 
 /-- The fact that `χ` factors through `χ₀` of level `d` -/
-noncomputable
-def eq_changeLevel {d : ℕ} (h : FactorsThrough χ d) : χ = changeLevel h.dvd h.χ₀ :=
+lemma eq_changeLevel {d : ℕ} (h : FactorsThrough χ d) : χ = changeLevel h.dvd h.χ₀ :=
   Classical.choose_spec h.2
 
 lemma same_level : FactorsThrough χ n := ⟨dvd_refl n, χ, (changeLevel_self χ).symm⟩
