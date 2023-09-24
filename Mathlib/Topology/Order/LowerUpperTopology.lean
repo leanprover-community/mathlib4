@@ -447,12 +447,10 @@ end CompleteLattice_IsUpper
 
 lemma isUpper_orderDual [Preorder α] [TopologicalSpace α] : IsUpper αᵒᵈ ↔ IsLower α := by
   constructor
-  · apply IsUpper.instIsLowerDual
-  · apply IsLower.instIsUpperDual
+  · apply OrderDual.instIsLower
+  · apply OrderDual.instIsUpper
 
-lemma isLower_orderDual [Preorder α] [TopologicalSpace α] : IsLower αᵒᵈ ↔ IsUpper α := by
-  constructor
-  · apply IsLower.instIsUpperDual
-  · apply IsUpper.instIsLowerDual
+lemma isLower_orderDual [Preorder α] [TopologicalSpace α] : IsLower αᵒᵈ ↔ IsUpper α :=
+  isUpper_orderDual.symm
 
 end Topology
