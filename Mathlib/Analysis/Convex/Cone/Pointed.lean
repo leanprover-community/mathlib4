@@ -108,8 +108,7 @@ between pointed cones induced from linear maps between the ambient modules that 
 
 /-- The image of a pointed cone under a `𝕜`-linear map is a pointed cone. -/
 def map (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 E) : PointedCone 𝕜 F :=
-  let f' := LinearMap.restrictScalars 𝕜≥0 f
-  Submodule.map f' S
+  Submodule.map (f : E →ₗ[𝕜≥0] F) S
 
 @[simp, norm_cast]
 theorem coe_map (S : PointedCone 𝕜 E) (f : E →ₗ[𝕜] F) : (S.map f : Set F) = f '' S :=
