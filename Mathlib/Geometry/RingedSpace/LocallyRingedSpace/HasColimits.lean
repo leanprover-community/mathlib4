@@ -3,9 +3,9 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.LocallyRingedSpace
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.AlgebraicGeometry.OpenImmersion.Basic
+import Mathlib.Geometry.RingedSpace.OpenImmersion
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 #align_import algebraic_geometry.locally_ringed_space.has_colimits from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
