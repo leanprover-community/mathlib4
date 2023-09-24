@@ -1471,7 +1471,7 @@ lemma MeasureTheory.Integrable.measure_preimage_eq_measure_restrict_preimage_of_
     · apply le_antisymm _ (measure_mono (inter_subset_left _ _))
       apply (measure_mono (Eq.symm (inter_union_compl (f ⁻¹' t) s)).le).trans
       apply (measure_union_le _ _).trans
-      have wow : μ ((f ⁻¹' t) ∩ sᶜ) = 0 := by
+      have obs : μ ((f ⁻¹' t) ∩ sᶜ) = 0 := by
         apply le_antisymm _ (zero_le _)
         rw [← hs]
         apply measure_mono
@@ -1479,9 +1479,19 @@ lemma MeasureTheory.Integrable.measure_preimage_eq_measure_restrict_preimage_of_
         intro x hx hfx
         simp only [mem_preimage, mem_setOf_eq] at hx hfx
         exact ht (hfx ▸ hx)
-      simp only [wow, add_zero, le_refl]
+      simp only [obs, add_zero, le_refl]
     · exact NullMeasurableSet.of_null hs
   · exact f_intble.restrict.aemeasurable.nullMeasurable t_mble
+
+lemma restrict_aeeq_zero_iff_ae_mem_eq_zero [MeasurableSpace E] [MeasurableSingletonClass E]
+    {s : Set α} (f_mble : NullMeasurable f (μ.restrict s)) :
+    f =ᵐ[Measure.restrict μ s] 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 := by
+  simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
+             Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
+  rw [Measure.restrict_apply₀]
+  · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
+  · apply NullMeasurableSet.compl
+    convert f_mble (MeasurableSet.singleton 0)
 
 end restrict
 

@@ -448,8 +448,9 @@ lemma Integrable.measure_lt_const_lt_top (f_intble : Integrable f μ) {c : ℝ} 
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_le_const_lt_top f_intble c_neg)
 
-lemma integral_eq_integral_restrict {s : Set α} (hs : f =ᵐ[Measure.restrict μ sᶜ] 0) :
-    ∫ ω, f ω ∂μ = 0 := by
+lemma integral_eq_integral_restrict  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {f : α → E} {s : Set α} (hs : f =ᵐ[Measure.restrict μ sᶜ] 0) :
+    ∫ ω, f ω ∂μ = ∫ ω, f ω ∂(μ.restrict s) := by
   refine (set_integral_eq_integral_of_ae_compl_eq_zero ?_).symm
   simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
                 MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at hs
