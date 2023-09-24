@@ -254,18 +254,6 @@ theorem subtype_comp_ofLe (p q : Submodule R M) (h : p ≤ q) :
 #align submodule.subtype_comp_of_le Submodule.subtype_comp_ofLe
 
 end AddCommMonoid
-section AddCommGroup
-
-variable [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M)
-
-variable [AddCommGroup M₂] [Module R M₂]
-
--- See `neg_coe_set`
-theorem neg_coe : -(p : Set M) = p :=
-  Set.ext fun _ => p.neg_mem_iff
-#align submodule.neg_coe Submodule.neg_coe
-
-end AddCommGroup
 
 end Submodule
 

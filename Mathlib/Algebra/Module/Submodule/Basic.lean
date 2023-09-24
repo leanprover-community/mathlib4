@@ -540,6 +540,11 @@ instance addCommGroup : AddCommGroup p :=
   { p.toAddSubgroup.toAddCommGroup with }
 #align submodule.add_comm_group Submodule.addCommGroup
 
+-- See `neg_coe_set`
+theorem neg_coe : -(p : Set M) = p :=
+  Set.ext fun _ => p.neg_mem_iff
+#align submodule.neg_coe Submodule.neg_coe
+
 end AddCommGroup
 
 section IsDomain
