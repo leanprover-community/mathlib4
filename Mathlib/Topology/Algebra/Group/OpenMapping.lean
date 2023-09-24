@@ -1,19 +1,22 @@
 /-
-Copyright (c) 2019 Jan-David Salchow. All rights reserved.
+Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
+Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
-import Mathlib.Analysis.NormedSpace.LinearIsometry
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Topology.Algebra.Module.StrongTopology
 import Mathlib.Topology.MetricSpace.Baire
+
+/-! # Open mapping theorem for morphisms of topological groups
+
+We prove that a continuous surjective group morphism from a sigma-compact group to a locally compact
+group is automatically open, in `MonoidHom.isOpenMap_of_sigmaCompact`.
+
+We deduce this from a similar statement for the orbits of continuous actions of sigma-compact groups
+on Baire spaces, given in `isOpenMap_smul_of_sigmaCompact`.
+-/
 
 open scoped Topology Pointwise
 
-open MulAction Set
+open MulAction Set Function
 
 variable {G X : Type*} [TopologicalSpace G] [TopologicalSpace X]
   [Group G] [TopologicalGroup G] [MulAction G X]
@@ -33,8 +36,8 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
   so does `V • x`. Its interior contains a point `g' x` with `g' ∈ V`. Then `g'⁻¹ • V • x` contains
   a neighborhood of `x`, and it is included in `V⁻¹ • V • x`, which is itself contained in `U • x`
   if `V` is small enough. -/
-  obtain ⟨V, V_mem, V_closed, V_symm, VU⟩ : ∃ V ∈ 𝓝 (1 : G), IsClosed V ∧ V = V⁻¹ ∧ V * V ⊆ U :=
-    exists_nhds_isClosed_inv_eq_mul_subset hU
+  obtain ⟨V, V_mem, V_closed, V_symm, VU⟩ : ∃ V ∈ 𝓝 (1 : G), IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U :=
+    exists_nhds_one_isClosed_inv_eq_mul_subset hU
   obtain ⟨s, s_count, hs⟩ : ∃ (s : Set G), s.Countable ∧ ⋃ g ∈ s, g • V = univ := by
     apply countable_cover_nhds_of_sigma_compact (fun g ↦ ?_)
     convert smul_mem_nhds g V_mem
@@ -73,7 +76,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
   have : (g'⁻¹ • V) • {x} ⊆ U • ({x} : Set X) := by
     apply smul_subset_smul_right
     apply Subset.trans (smul_set_subset_smul (inv_mem_inv.2 hg')) ?_
-    rw [← V_symm]
+    rw [V_symm]
     exact VU
   exact Filter.mem_of_superset J this
 
@@ -100,3 +103,17 @@ theorem isOpenMap_smul_of_sigmaCompact (x : X) : IsOpenMap (fun (g : G) ↦ g �
   refine ⟨t, ht.trans ?_, t_open, gt⟩
   rintro - ⟨t, -, ht, rfl, rfl⟩
   exact ⟨t • g, by simpa using ht, by simp [← smul_assoc]⟩
+
+/-- A surjective morphism of topological groups is open when the source group is sigma-compact and
+the target group is a Baire space (for instance a locally compact group). -/
+@[to_additive]
+theorem MonoidHom.isOpenMap_of_sigmaCompact
+    {H : Type*} [Group H] [TopologicalSpace H] [BaireSpace H] [T2Space H] [ContinuousMul H]
+    (f : G →* H) (hf : Function.Surjective f) (h'f : Continuous f) :
+    IsOpenMap f := by
+  let A : MulAction G H := MulAction.compHom _ f
+  have : ContinuousSMul G H := continuousSMul_compHom h'f
+  have : IsPretransitive G H := isPretransitive_compHom hf
+  have : f = (fun (g : G) ↦ g • (1 : H)) := by simp [MulAction.compHom_smul_def]
+  rw [this]
+  exact isOpenMap_smul_of_sigmaCompact _
