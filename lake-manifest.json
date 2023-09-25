@@ -18,14 +18,6 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/JLimperg/aesop",
-    "subDir?": null,
-    "rev": "1a0cded2be292b5496e659b730d2accc742de098",
-    "opts": {},
-    "name": "aesop",
-    "inputRev?": "master",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/EdAyers/ProofWidgets4",
     "subDir?": null,
     "rev": "65bba7286e2395f3163fd0277110578f19b8170f",
@@ -39,6 +31,14 @@
     "rev": "c1c51f28c5e8d397f0068fbef0e256ab3d636ed0",
     "opts": {},
     "name": "std",
+    "inputRev?": "lean-pr-testing-2577",
+    "inherited": false}},
+  {"git":
+   {"url": "https://github.com/nomeata/aesop",
+    "subDir?": null,
+    "rev": "ec2ae458a767aa468eb774fd1f3f7ed807eb9a13",
+    "opts": {},
+    "name": "aesop",
     "inputRev?": "lean-pr-testing-2577",
     "inherited": false}}],
  "name": "mathlib"}
