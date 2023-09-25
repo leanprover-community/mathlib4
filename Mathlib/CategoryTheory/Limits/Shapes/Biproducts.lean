@@ -58,8 +58,9 @@ namespace CategoryTheory
 namespace Limits
 
 variable {J : Type w}
-
-variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
+universe uC' uC uD' uD
+variable {C : Type uC} [Category.{uC'} C] [HasZeroMorphisms C]
+variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
 
 /-- A `c : Bicone F` is:
 * an object `c.pt` and
@@ -91,15 +92,15 @@ theorem bicone_ι_π_ne {F : J → C} (B : Bicone F) {j j' : J} (h : j ≠ j') :
 
 variable {F : J → C}
 
-/-- A cone morphism between two cones for the same diagram is a morphism of the cone points which
-commutes with the cone legs. -/
+/-- A bicone morphism between two bicones for the same diagram is a morphism of the bicone points
+which commutes with the cone and cocone legs. -/
 structure BiconeMorphism {F : J → C} (A B : Bicone F) where
-  /-- A morphism between the two vertex objects of the cones -/
-  Hom : A.pt ⟶ B.pt
-  /-- The triangle consisting of the two natural transformations and `Hom` commutes -/
-  wπ : ∀ j : J, Hom ≫ B.π j = A.π j := by aesop_cat
-  /-- The triangle consisting of the two natural transformations and `Hom` commutes -/
-  wι : ∀ j : J, A.ι j ≫ Hom = B.ι j := by aesop_cat
+  /-- A morphism between the two vertex objects of the bicones -/
+  hom : A.pt ⟶ B.pt
+  /-- The triangle consisting of the two natural transformations and `hom` commutes -/
+  wπ : ∀ j : J, hom ≫ B.π j = A.π j := by aesop_cat
+  /-- The triangle consisting of the two natural transformations and `hom` commutes -/
+  wι : ∀ j : J, A.ι j ≫ hom = B.ι j := by aesop_cat
 
 attribute [reassoc (attr := simp)] BiconeMorphism.wι
 attribute [reassoc (attr := simp)] BiconeMorphism.wπ
@@ -108,8 +109,52 @@ attribute [reassoc (attr := simp)] BiconeMorphism.wπ
 @[simps]
 instance Bicone.category : Category (Bicone F) where
   Hom A B := BiconeMorphism A B
-  comp f g := { Hom := f.Hom ≫ g.Hom }
-  id B := { Hom := 𝟙 B.pt }
+  comp f g := { hom := f.hom ≫ g.hom }
+  id B := { hom := 𝟙 B.pt }
+
+-- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
+-- the `hom` field of a category, we need to write the `ext` lemma in terms of the categorical
+-- morphism, rather than the underlying structure.
+@[ext]
+theorem BiconeMorphism.ext {c c' : Bicone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
+  cases f
+  cases g
+  congr
+
+namespace Bicones
+
+/-- To give an isomorphism between cocones, it suffices to give an
+  isomorphism between their vertices which commutes with the cocone
+  maps. -/
+-- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
+@[aesop apply safe (rule_sets [CategoryTheory]), simps]
+def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
+    (wι : ∀ j, c.ι j ≫ φ.hom = c'.ι j := by aesop_cat)
+    (wπ : ∀ j, φ.hom ≫ c'.π j = c.π j := by aesop_cat) : c ≅ c' where
+  hom := { hom := φ.hom }
+  inv :=
+    { hom := φ.inv
+      wι := fun j => φ.comp_inv_eq.mpr (wι j).symm
+      wπ := fun j => φ.inv_comp_eq.mpr (wπ j).symm  }
+
+variable (F) in
+/-- A functor `G : C ⥤ D` sends bicones over `F` to bicones over `G.obj ∘ F` functorially. -/
+@[simps]
+def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
+    Bicone F ⥤ Bicone (G.obj ∘ F) where
+  obj A :=
+    { pt := G.obj A.pt
+      π := fun j => G.map (A.π j)
+      ι := fun j => G.map (A.ι j)
+      ι_π := fun i j => (Functor.map_comp _ _ _).symm.trans <| by
+        rw [A.ι_π]
+        aesop_cat }
+  map f :=
+    { hom := G.map f.hom
+      wπ := fun j => by simp [-BiconeMorphism.wπ, ← f.wπ j]
+      wι := fun j => by simp [-BiconeMorphism.wι, ← f.wι j] }
+
+end Bicones
 
 namespace Bicone
 
@@ -119,47 +164,53 @@ attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
 attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
 
 /-- Extract the cone from a bicone. -/
-def toCone : Bicone F ⥤ Cone (Discrete.functor F) where
+def toConeFunctor : Bicone F ⥤ Cone (Discrete.functor F) where
   obj B := { pt := B.pt, π := { app := fun j => B.π j.as } }
-  map {X Y} F := { Hom := F.Hom, w := fun _ => F.wπ _ }
-#align category_theory.limits.bicone.to_cone CategoryTheory.Limits.Bicone.toConeₓ
+  map {X Y} F := { hom := F.hom, w := fun _ => F.wπ _ }
+
+/-- A shorthand for `toConeFunctor.obj` -/
+abbrev toCone (B : Bicone F) : Cone (Discrete.functor F) := toConeFunctor.obj B
+#align category_theory.limits.bicone.to_cone CategoryTheory.Limits.Bicone.toCone
 
 -- TODO Consider changing this API to `toFan (B : Bicone F) : Fan F`.
 
 @[simp]
-theorem toCone_pt (B : Bicone F) : (toCone.obj B).pt = B.pt := rfl
+theorem toCone_pt (B : Bicone F) : B.toCone.pt = B.pt := rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.limits.bicone.to_cone_X CategoryTheory.Limits.Bicone.toCone_pt
 
 @[simp]
-theorem toCone_π_app (B : Bicone F) (j : Discrete J) : (toCone.obj B).π.app j = B.π j.as := rfl
+theorem toCone_π_app (B : Bicone F) (j : Discrete J) : B.toCone.π.app j = B.π j.as := rfl
 #align category_theory.limits.bicone.to_cone_π_app CategoryTheory.Limits.Bicone.toCone_π_app
 
-theorem toCone_π_app_mk (B : Bicone F) (j : J) : (toCone.obj B).π.app ⟨j⟩ = B.π j := rfl
+theorem toCone_π_app_mk (B : Bicone F) (j : J) : B.toCone.π.app ⟨j⟩ = B.π j := rfl
 #align category_theory.limits.bicone.to_cone_π_app_mk CategoryTheory.Limits.Bicone.toCone_π_app_mk
 
 @[simp]
-theorem toCone_proj (B : Bicone F) (j : J) : Fan.proj (toCone.obj B) j = B.π j := rfl
+theorem toCone_proj (B : Bicone F) (j : J) : Fan.proj B.toCone j = B.π j := rfl
 
 /-- Extract the cocone from a bicone. -/
-def toCocone : Bicone F ⥤ Cocone (Discrete.functor F) where
+def toCoconeFunctor : Bicone F ⥤ Cocone (Discrete.functor F) where
   obj B := { pt := B.pt, ι := { app := fun j => B.ι j.as } }
-  map {X Y} F := { Hom := F.Hom, w := fun _ => F.wι _ }
-#align category_theory.limits.bicone.to_cocone CategoryTheory.Limits.Bicone.toCoconeₓ
+  map {X Y} F := { hom := F.hom, w := fun _ => F.wι _ }
+
+/-- A shorthand for `toCoconeFunctor.obj` -/
+abbrev toCocone (B : Bicone F) : Cocone (Discrete.functor F) := toCoconeFunctor.obj B
+#align category_theory.limits.bicone.to_cocone CategoryTheory.Limits.Bicone.toCocone
 
 @[simp]
-theorem toCocone_pt (B : Bicone F) : (toCocone.obj B).pt = B.pt := rfl
+theorem toCocone_pt (B : Bicone F) : B.toCocone.pt = B.pt := rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.limits.bicone.to_cocone_X CategoryTheory.Limits.Bicone.toCocone_pt
 
 @[simp]
-theorem toCocone_ι_app (B : Bicone F) (j : Discrete J) : (toCocone.obj B).ι.app j = B.ι j.as := rfl
+theorem toCocone_ι_app (B : Bicone F) (j : Discrete J) : B.toCocone.ι.app j = B.ι j.as := rfl
 #align category_theory.limits.bicone.to_cocone_ι_app CategoryTheory.Limits.Bicone.toCocone_ι_app
 
 @[simp]
-theorem toCocone_proj (B : Bicone F) (j : J) : Cofan.proj (toCocone.obj B) j = B.ι j := rfl
+theorem toCocone_proj (B : Bicone F) (j : J) : Cofan.proj B.toCocone j = B.ι j := rfl
 
-theorem toCocone_ι_app_mk (B : Bicone F) (j : J) : (toCocone.obj B).ι.app ⟨j⟩ = B.ι j := rfl
+theorem toCocone_ι_app_mk (B : Bicone F) (j : J) : B.toCocone.ι.app ⟨j⟩ = B.ι j := rfl
 #align category_theory.limits.bicone.to_cocone_ι_app_mk CategoryTheory.Limits.Bicone.toCocone_ι_app_mk
 
 /-- We can turn any limit cone over a discrete collection of objects into a bicone. -/
@@ -171,7 +222,7 @@ def ofLimitCone {f : J → C} {t : Cone (Discrete.functor f)} (ht : IsLimit t) :
   ι_π j j' := by simp
 #align category_theory.limits.bicone.of_limit_cone CategoryTheory.Limits.Bicone.ofLimitCone
 
-theorem ι_of_isLimit {f : J → C} {t : Bicone f} (ht : IsLimit (toCone.obj t)) (j : J) :
+theorem ι_of_isLimit {f : J → C} {t : Bicone f} (ht : IsLimit t.toCone) (j : J) :
     t.ι j = ht.lift (Fan.mk _ fun j' => if h : j = j' then eqToHom (congr_arg f h) else 0) :=
   ht.hom_ext fun j' => by
     rw [ht.fac]
@@ -188,7 +239,7 @@ def ofColimitCocone {f : J → C} {t : Cocone (Discrete.functor f)} (ht : IsColi
   ι_π j j' := by simp
 #align category_theory.limits.bicone.of_colimit_cocone CategoryTheory.Limits.Bicone.ofColimitCocone
 
-theorem π_of_isColimit {f : J → C} {t : Bicone f} (ht : IsColimit (toCocone.obj t)) (j : J) :
+theorem π_of_isColimit {f : J → C} {t : Bicone f} (ht : IsColimit t.toCocone) (j : J) :
     t.π j = ht.desc (Cofan.mk _ fun j' => if h : j' = j then eqToHom (congr_arg f h) else 0) :=
   ht.hom_ext fun j' => by
     rw [ht.fac]
@@ -198,8 +249,8 @@ theorem π_of_isColimit {f : J → C} {t : Bicone f} (ht : IsColimit (toCocone.o
 /-- Structure witnessing that a bicone is both a limit cone and a colimit cocone. -/
 -- @[nolint has_nonempty_instance] Porting note: removed
 structure IsBilimit {F : J → C} (B : Bicone F) where
-  isLimit : IsLimit (toCone.obj B)
-  isColimit : IsColimit (toCocone.obj B)
+  isLimit : IsLimit B.toCone
+  isColimit : IsColimit B.toCocone
 #align category_theory.limits.bicone.is_bilimit CategoryTheory.Limits.Bicone.IsBilimit
 #align category_theory.limits.bicone.is_bilimit.is_limit CategoryTheory.Limits.Bicone.IsBilimit.isLimit
 #align category_theory.limits.bicone.is_bilimit.is_colimit CategoryTheory.Limits.Bicone.IsBilimit.isColimit
@@ -234,18 +285,18 @@ def whisker {f : J → C} (c : Bicone f) (g : K ≃ J) : Bicone (f ∘ g) where
 /-- Taking the cone of a whiskered bicone results in a cone isomorphic to one gained
 by whiskering the cone and postcomposing with a suitable isomorphism. -/
 def whiskerToCone {f : J → C} (c : Bicone f) (g : K ≃ J) :
-    toCone.obj (c.whisker g) ≅
+    (c.whisker g).toCone ≅
       (Cones.postcompose (Discrete.functorComp f g).inv).obj
-        ((toCone.obj c).whisker (Discrete.functor (Discrete.mk ∘ g))) :=
+        (c.toCone.whisker (Discrete.functor (Discrete.mk ∘ g))) :=
   Cones.ext (Iso.refl _) (by aesop_cat)
 #align category_theory.limits.bicone.whisker_to_cone CategoryTheory.Limits.Bicone.whiskerToCone
 
 /-- Taking the cocone of a whiskered bicone results in a cone isomorphic to one gained
 by whiskering the cocone and precomposing with a suitable isomorphism. -/
 def whiskerToCocone {f : J → C} (c : Bicone f) (g : K ≃ J) :
-    toCocone.obj (c.whisker g) ≅
+    (c.whisker g).toCocone ≅
       (Cocones.precompose (Discrete.functorComp f g).hom).obj
-        ((toCocone.obj c).whisker (Discrete.functor (Discrete.mk ∘ g))) :=
+        (c.toCocone.whisker (Discrete.functor (Discrete.mk ∘ g))) :=
   Cocones.ext (Iso.refl _) (by aesop_cat)
 #align category_theory.limits.bicone.whisker_to_cocone CategoryTheory.Limits.Bicone.whiskerToCocone
 
@@ -311,26 +362,24 @@ def biproduct.isBilimit (F : J → C) [HasBiproduct F] : (biproduct.bicone F).Is
 #align category_theory.limits.biproduct.is_bilimit CategoryTheory.Limits.biproduct.isBilimit
 
 /-- `biproduct.bicone F` is a limit cone. -/
-def biproduct.isLimit (F : J → C) [HasBiproduct F] :
-    IsLimit (Bicone.toCone.obj (biproduct.bicone F)) :=
+def biproduct.isLimit (F : J → C) [HasBiproduct F] : IsLimit (biproduct.bicone F).toCone :=
   (getBiproductData F).isBilimit.isLimit
 #align category_theory.limits.biproduct.is_limit CategoryTheory.Limits.biproduct.isLimit
 
 /-- `biproduct.bicone F` is a colimit cocone. -/
-def biproduct.isColimit (F : J → C) [HasBiproduct F] :
-    IsColimit (Bicone.toCocone.obj (biproduct.bicone F)) :=
+def biproduct.isColimit (F : J → C) [HasBiproduct F] : IsColimit (biproduct.bicone F).toCocone :=
   (getBiproductData F).isBilimit.isColimit
 #align category_theory.limits.biproduct.is_colimit CategoryTheory.Limits.biproduct.isColimit
 
 instance (priority := 100) hasProduct_of_hasBiproduct [HasBiproduct F] : HasProduct F :=
   HasLimit.mk
-    { cone := Bicone.toCone.obj (biproduct.bicone F)
+    { cone := (biproduct.bicone F).toCone
       isLimit := biproduct.isLimit F }
 #align category_theory.limits.has_product_of_has_biproduct CategoryTheory.Limits.hasProduct_of_hasBiproduct
 
 instance (priority := 100) hasCoproduct_of_hasBiproduct [HasBiproduct F] : HasCoproduct F :=
   HasColimit.mk
-    { cocone := Bicone.toCocone.obj (biproduct.bicone F)
+    { cocone := (biproduct.bicone F).toCocone
       isColimit := biproduct.isColimit F }
 #align category_theory.limits.has_coproduct_of_has_biproduct CategoryTheory.Limits.hasCoproduct_of_hasBiproduct
 
@@ -491,7 +540,7 @@ theorem biproduct.ι_desc {f : J → C} [HasBiproduct f] {P : C} (p : ∀ b, f b
 indexed by the same type, we obtain a map between the biproducts. -/
 abbrev biproduct.map {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ b, f b ⟶ g b) :
     ⨁ f ⟶ ⨁ g :=
-  IsLimit.map (Bicone.toCone.obj (biproduct.bicone f)) (biproduct.isLimit g)
+  IsLimit.map (biproduct.bicone f).toCone (biproduct.isLimit g)
     (Discrete.natTrans (fun j => p j.as))
 #align category_theory.limits.biproduct.map CategoryTheory.Limits.biproduct.map
 
@@ -499,7 +548,7 @@ abbrev biproduct.map {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ 
 This construction only exists in order to show it is equal to `biproduct.map`. -/
 abbrev biproduct.map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ b, f b ⟶ g b) :
     ⨁ f ⟶ ⨁ g :=
-  IsColimit.map (biproduct.isColimit f) (Bicone.toCocone.obj (biproduct.bicone g))
+  IsColimit.map (biproduct.isColimit f) (biproduct.bicone g).toCocone
     (Discrete.natTrans fun j => p j.as)
 #align category_theory.limits.biproduct.map' CategoryTheory.Limits.biproduct.map'
 
@@ -576,7 +625,7 @@ theorem biproduct.ι_map {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : 
     (j : J) : biproduct.ι f j ≫ biproduct.map p = p j ≫ biproduct.ι g j := by
   rw [biproduct.map_eq_map']
   apply
-    Limits.IsColimit.ι_map (biproduct.isColimit f) (Bicone.toCocone.obj (biproduct.bicone g))
+    Limits.IsColimit.ι_map (biproduct.isColimit f) (biproduct.bicone g).toCocone
     (Discrete.natTrans fun j => p j.as) (Discrete.mk j)
 #align category_theory.limits.biproduct.ι_map CategoryTheory.Limits.biproduct.ι_map
 
@@ -1199,7 +1248,7 @@ def toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) where
 
 /-- A binary bicone is a limit cone if and only if the corresponding bicone is a limit cone. -/
 def toBiconeIsLimit {X Y : C} (b : BinaryBicone X Y) :
-    IsLimit (Bicone.toCone.obj b.toBicone) ≃ IsLimit b.toCone :=
+    IsLimit b.toBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <|
     Cones.ext (Iso.refl _) fun j => by
       cases' j with as; cases as <;> simp
@@ -1208,7 +1257,7 @@ def toBiconeIsLimit {X Y : C} (b : BinaryBicone X Y) :
 /-- A binary bicone is a colimit cocone if and only if the corresponding bicone is a colimit
     cocone. -/
 def toBiconeIsColimit {X Y : C} (b : BinaryBicone X Y) :
-    IsColimit (Bicone.toCocone.obj b.toBicone)  ≃ IsColimit b.toCocone :=
+    IsColimit b.toBicone.toCocone ≃ IsColimit b.toCocone :=
   IsColimit.equivIsoColimit <|
     Cocones.ext (Iso.refl _) fun j => by
       cases' j with as; cases as <;> simp
@@ -1235,14 +1284,14 @@ def toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X Y 
 /-- A bicone over a pair is a limit cone if and only if the corresponding binary bicone is a limit
     cone.  -/
 def toBinaryBiconeIsLimit {X Y : C} (b : Bicone (pairFunction X Y)) :
-    IsLimit b.toBinaryBicone.toCone ≃ IsLimit (toCone.obj b) :=
+    IsLimit b.toBinaryBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <| Cones.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
 #align category_theory.limits.bicone.to_binary_bicone_is_limit CategoryTheory.Limits.Bicone.toBinaryBiconeIsLimit
 
 /-- A bicone over a pair is a colimit cocone if and only if the corresponding binary bicone is a
     colimit cocone. -/
 def toBinaryBiconeIsColimit {X Y : C} (b : Bicone (pairFunction X Y)) :
-    IsColimit b.toBinaryBicone.toCocone ≃ IsColimit (toCocone.obj b) :=
+    IsColimit b.toBinaryBicone.toCocone ≃ IsColimit b.toCocone :=
   IsColimit.equivIsoColimit <| Cocones.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
 #align category_theory.limits.bicone.to_binary_bicone_is_colimit CategoryTheory.Limits.Bicone.toBinaryBiconeIsColimit
 

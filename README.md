@@ -29,7 +29,7 @@ documentation](https://leanprover.github.io/documentation/), the documentation
 of mathlib consists of:
 
 - [The mathlib4 docs](https://leanprover-community.github.io/mathlib4_docs/index.html): documentation [generated
-  automatically](https://github.com/leanprover-community/doc-gen4) from the source `.lean` files.
+  automatically](https://github.com/leanprover/doc-gen4) from the source `.lean` files.
 - A description of [currently covered theories](https://leanprover-community.github.io/theories.html),
   as well as an [overview](https://leanprover-community.github.io/mathlib-overview.html) for mathematicians.
 - Some [extra Lean documentation](https://leanprover-community.github.io/learn.html) not specific to mathlib (see "Miscellaneous topics")

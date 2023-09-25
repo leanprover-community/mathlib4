@@ -1174,8 +1174,8 @@ theorem MultilinearMap.domCoprod_alternization_coe [DecidableEq ιa] [DecidableE
         Equiv.Perm.sign σa • Equiv.Perm.sign σb •
           MultilinearMap.domCoprod (a.domDomCongr σa) (b.domDomCongr σb) := by
   simp_rw [← MultilinearMap.domCoprod'_apply, MultilinearMap.alternatization_coe]
-  simp_rw [TensorProduct.sum_tmul, TensorProduct.tmul_sum, LinearMap.map_sum, ←
-    TensorProduct.smul_tmul', TensorProduct.tmul_smul]
+  simp_rw [TensorProduct.sum_tmul, TensorProduct.tmul_sum, _root_.map_sum,
+    ← TensorProduct.smul_tmul', TensorProduct.tmul_smul]
   rfl
 #align multilinear_map.dom_coprod_alternization_coe MultilinearMap.domCoprod_alternization_coe
 
