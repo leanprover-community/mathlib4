@@ -26,6 +26,18 @@ Main definitions:
 ## TODO
 
 - reduction, even, odd
+- add
+  `lemma unitsMap_surjective {n m : ℕ} (h : n ∣ m) (hm : m ≠ 0) : Function.Surjective (unitsMap h)`
+  and then
+  ```
+  lemma changeLevel_injective {d : ℕ} (h : d ∣ n) (hn : n ≠ 0) :
+      Function.Injective (changeLevel (R := R) h)
+  ```
+  and
+  ```
+  lemma changeLevel_trivial_iff {d : ℕ} {χ : DirichletCharacter R n} {χ' : DirichletCharacter R d}
+    (hdn : d ∣ n) (hn : n ≠ 0) (h : χ = changeLevel hdn χ') : χ = 1 ↔ χ' = 1
+  ```
 
 ## Tags
 
