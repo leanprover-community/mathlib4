@@ -5,7 +5,6 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Analysis.SpecialFunctions.Integrals
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
 #align_import measure_theory.integral.layercake from "leanprover-community/mathlib"@"08a4542bec7242a5c60f179e4e49de8c0d677b1b"
 
@@ -14,7 +13,7 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
 In this file we prove the following layer cake formula.
 
-Consider a non-negative measurable function `f` on a smeasure space. Apply pointwise
+Consider a non-negative measurable function `f` on a measure space. Apply pointwise
 to it an increasing absolutely continuous function `G : ℝ≥0 → ℝ≥0` vanishing at the origin, with
 derivative `G' = g` on the positive real line (in other words, `G` a primitive of a non-negative
 locally integrable function `g` on the positive real line). Then the integral of the result,
@@ -52,9 +51,7 @@ are also included.
  * `integral_eq_integral_meas_lt`:
    A Bochner integral version of the most common special case of the layer cake formulas, stating
    that for an integrable and a.e.-nonnegative function f we have
-   ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt. In this result, sigma-finiteness of μ does not need to be
-   explicitly assumed, because integrability guarantees sigma-finiteness of the restriction of μ
-   to the support of f.
+   ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt.
 
 ## Tags
 
@@ -444,7 +441,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
 
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
-For a nonnegative function `f` on a sigma-finite measure space, the Lebesgue integral of `f` can
+For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
 be written (roughly speaking) as: `∫⁻ f ∂μ = ∫⁻ t in 0..∞, μ {ω | f(ω) ≥ t}`.
 
 See `lintegral_eq_lintegral_meas_lt` for a version with sets of the form `{ω | f(ω) > t}`
@@ -466,7 +463,7 @@ theorem lintegral_eq_lintegral_meas_le (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
 
 /-- An application of the layer cake formula / Cavalieri's principle / tail probability formula:
 
-For a nonnegative function `f` on a sigma-finite measure space, the Lebesgue integral of `f` can
+For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
 be written (roughly speaking) as: `∫⁻ f^p ∂μ = p * ∫⁻ t in 0..∞, t^(p-1) * μ {ω | f(ω) ≥ t}`.
 
 See `lintegral_rpow_eq_lintegral_meas_lt_mul` for a version with sets of the form `{ω | f(ω) > t}`
@@ -533,7 +530,7 @@ theorem lintegral_comp_eq_lintegral_meas_lt_mul (μ : Measure α) (f_nn : 0 ≤�
 
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
-For a nonnegative function `f` on a sigma-finite measure space, the Lebesgue integral of `f` can
+For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
 be written (roughly speaking) as: `∫⁻ f ∂μ = ∫⁻ t in 0..∞, μ {ω | f(ω) > t}`.
 
 See `lintegral_eq_lintegral_meas_le` for a version with sets of the form `{ω | f(ω) ≥ t}`
@@ -550,7 +547,7 @@ theorem lintegral_eq_lintegral_meas_lt (μ : Measure α)
 
 /-- An application of the layer cake formula / Cavalieri's principle / tail probability formula:
 
-For a nonnegative function `f` on a sigma-finite measure space, the Lebesgue integral of `f` can
+For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
 be written (roughly speaking) as: `∫⁻ f^p ∂μ = p * ∫⁻ t in 0..∞, t^(p-1) * μ {ω | f(ω) > t}`.
 
 See `lintegral_rpow_eq_lintegral_meas_le_mul` for a version with sets of the form `{ω | f(ω) ≥ t}`
