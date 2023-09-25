@@ -51,24 +51,4 @@ partial def getSubexpressionMatches (d : DiscrTree α s) (e : Expr) : MetaM (Arr
   | _ =>
     e.foldlM (fun a f => do pure <| a ++ (← d.getSubexpressionMatches f)) (← d.getMatch e).reverse
 
-variable {m : Type → Type} [Monad m]
-
-/-- Apply a monadic function to the array of values at each node in a `DiscrTree`. -/
-partial def Trie.mapArraysM (t : DiscrTree.Trie α s) (f : Array α → m (Array β)) :
-    m (DiscrTree.Trie β s) := do
-  match t with
-  | .empty => pure .empty
-  | .values vs t => pure $ .values (← f vs) (← t.mapArraysM f)
-  | .path ks t => pure $ .path ks (← t.mapArraysM f)
-  | .branch children =>
-    return .branch (← children.mapM fun (k, t') => do pure (k, ← t'.mapArraysM f))
-
-/-- Apply a monadic function to the array of values at each node in a `DiscrTree`. -/
-def mapArraysM (d : DiscrTree α s) (f : Array α → m (Array β)) : m (DiscrTree β s) := do
-  pure { root := ← d.root.mapM (fun t => t.mapArraysM f) }
-
-/-- Apply a function to the array of values at each node in a `DiscrTree`. -/
-def mapArrays (d : DiscrTree α s) (f : Array α → Array β) : DiscrTree β s :=
-  d.mapArraysM fun A => (pure (f A) : Id (Array β))
-
 end Lean.Meta.DiscrTree

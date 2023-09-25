@@ -1,4 +1,4 @@
-{"version": 5,
+{"version": 6,
  "packagesDir": "lake-packages",
  "packages":
  [{"git":
@@ -26,18 +26,19 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/leanprover/std4",
-    "subDir?": null,
-    "rev":  "67855403d60daf181775fa1ec63b04e70bcc3921",
-    "opts": {},
-    "name": "std",
-    "inputRev?": "main",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/EdAyers/ProofWidgets4",
     "subDir?": null,
     "rev": "65bba7286e2395f3163fd0277110578f19b8170f",
     "opts": {},
     "name": "proofwidgets",
     "inputRev?": "v0.0.16",
-    "inherited": false}}]}
+    "inherited": false}},
+  {"git":
+   {"url": "https://github.com/nomeata/std4",
+    "subDir?": null,
+    "rev": "c1c51f28c5e8d397f0068fbef0e256ab3d636ed0",
+    "opts": {},
+    "name": "std",
+    "inputRev?": "lean-pr-testing-2577",
+    "inherited": false}}],
+ "name": "mathlib"}

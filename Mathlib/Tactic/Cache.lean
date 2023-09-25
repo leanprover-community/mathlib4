@@ -5,6 +5,7 @@ Authors: Gabriel Ebner
 -/
 import Lean
 import Mathlib.Lean.Meta.DiscrTree
+import Std.Lean.Meta.DiscrTree
 
 /-!
 # Once-per-file cache for tactics
