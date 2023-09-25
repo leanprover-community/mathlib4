@@ -2,7 +2,8 @@ import Mathlib.CategoryTheory.GradedObject.Bifunctor
 
 namespace CategoryTheory
 
-variable {C₁ C₂ C₃ C₄ : Type*} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
+variable {C₁ C₂ C₁₂ C₃ C₄ : Type*}
+  [Category C₁] [Category C₂] [Category C₃] [Category C₄] [Category C₁₂]
   (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
 
 namespace GradedObject
@@ -98,6 +99,55 @@ noncomputable def mapTrifunctorMapFunctor
         simp only [← NatTrans.comp_app]
         congr 1
         simp }
+
+end
+
+section
+
+variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
+
+@[simps]
+def bifunctorComp₁₂Obj (X₁ : C₁) : C₂ ⥤ C₃ ⥤ C₄ where
+  obj X₂ :=
+    { obj := fun X₃ => (G.obj ((F₁₂.obj X₁).obj X₂)).obj X₃
+      map := fun {X₃ Y₃} φ => (G.obj ((F₁₂.obj X₁).obj X₂)).map φ }
+  map {X₂ Y₂} φ :=
+    { app := fun X₃ => (G.map ((F₁₂.obj X₁).map φ)).app X₃ }
+
+@[simps]
+def bifunctorComp₁₂ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ where
+  obj X₁ := bifunctorComp₁₂Obj F₁₂ G X₁
+  map {X₁ Y₁} φ :=
+    { app := fun X₂ =>
+        { app := fun X₃ => (G.map ((F₁₂.map φ).app X₂)).app X₃ }
+      naturality := fun {X₂ Y₂} ψ => by
+        ext X₃
+        dsimp
+        simp only [← NatTrans.comp_app, ← G.map_comp, NatTrans.naturality] }
+
+variable
+  {I₁ I₂ I₁₂ I₃ J : Type*} (p : I₁ × I₂ → I₁₂) (q : I₁₂ × I₃ → J)
+    (r : I₁ × I₂ × I₃ → J) (hpqr : ∀ i₁ i₂ i₃, r ⟨i₁, i₂, i₃⟩ = q ⟨p ⟨i₁, i₂⟩, i₃⟩)
+
+noncomputable def mapBifunctor₁₂BifunctorMapObj (X₁ : GradedObject I₁ C₁)
+    (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
+    [HasMap (((mapBifunctorFunctor F₁₂ I₁ I₂).obj X₁).obj X₂) p]
+    [HasMap (((mapBifunctorFunctor G I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ p X₁ X₂)).obj X₃) q] :
+    GradedObject J C₄ :=
+  mapBifunctorMapObj G q (mapBifunctorMapObj F₁₂ p X₁ X₂) X₃
+
+section
+
+variable (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
+  [HasMap (((mapBifunctorFunctor F₁₂ I₁ I₂).obj X₁).obj X₂) p]
+  [HasMap (((mapBifunctorFunctor G I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ p X₁ X₂)).obj X₃) q]
+  [HasMap ((((mapTrifunctorFunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r]
+
+/-def mapBifunctor₁₂BifunctorMapObjIso :
+  mapBifunctor₁₂BifunctorMapObj F₁₂ G p q X₁ X₂ X₃ ≅
+    mapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ := sorry-/
+
+end
 
 end
 

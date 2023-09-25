@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.GradedObject.Bifunctor
+import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 namespace CategoryTheory
 
