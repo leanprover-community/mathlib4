@@ -599,8 +599,9 @@ theorem mul_comp {f g h : R⟦X⟧} (hf : f.hasComp h) (hg : g.hasComp h) :
   set N := Nfg.max (Nf.max Ng)
   rw [hNf N, hNg N, hNfg N]
   symm
-  rw [←coeff_coe_trunc_of_lt d.lt_succ_self, trunc_trunc_mul_trunc, coe_comp_eq_eval₂, coe_comp_eq_eval₂,
-    ←Polynomial.coe_mul, coe_comp_eq_eval₂, eval₂_mul, coeff_coe_trunc_of_lt d.lt_succ_self]
+  rw [←coeff_coe_trunc_of_lt d.lt_succ_self, trunc_trunc_mul_trunc, coe_comp_eq_eval₂,
+    coe_comp_eq_eval₂, ←Polynomial.coe_mul, coe_comp_eq_eval₂, eval₂_mul,
+    coeff_coe_trunc_of_lt d.lt_succ_self]
   apply le_max_left
   apply le_of_max_le_right
   apply le_max_right
