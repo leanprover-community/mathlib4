@@ -104,6 +104,7 @@ variable (f) in
 theorem SameCycle.equivalence : Equivalence (SameCycle f) :=
   ⟨SameCycle.refl f, SameCycle.symm, SameCycle.trans⟩
 
+/-- The setoid defined by the `SameCycle` relation. -/
 def SameCycle.setoid (f : Perm α) : Setoid α where
   iseqv := SameCycle.equivalence f
 
