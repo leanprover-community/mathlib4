@@ -11,7 +11,7 @@ import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Set.Basic
