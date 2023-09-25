@@ -54,9 +54,9 @@ open BigOperators Finset
 theorem prod_Icc_factorial : ∀ n : ℕ, (∏ x in Icc 1 n, x !) = sf n
   | 0 => rfl
   | n + 1 => by
-    rw [prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n, Nat.factorial_succ,
-      prod_Ico_factorial_eq_superFactorial n, superFactorial, factorial, Nat.succ_eq_add_one,
-      mul_comm]
+    rw [← Ico_succ_right 1 n.succ, prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n,
+    Nat.factorial_succ, Ico_succ_right 1 n, prod_Icc_factorial n, superFactorial, factorial,
+    Nat.succ_eq_add_one, mul_comm]
 
 @[simp]
 theorem prod_range_add_one_eq_superFactorial : ∀ n : ℕ, (∏ x in range n, (x + 1) !) = sf n
