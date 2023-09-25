@@ -121,7 +121,7 @@ lemma conductor_mem_conductorSet : conductor χ ∈ conductorSet χ :=
 
 lemma conductor_dvd_level : conductor χ ∣ n := (conductor_mem_conductorSet χ).dvd
 
-lemma FactorsThrough_conductor : FactorsThrough χ (conductor χ) := conductor_mem_conductorSet χ
+lemma factorsThrough_conductor : FactorsThrough χ (conductor χ) := conductor_mem_conductorSet χ
 
 lemma conductor_one (hn : 0 < n) : conductor (1 : DirichletCharacter R n) = 1 := by
   suffices : conductor (1 : DirichletCharacter R n) ≤ 1
