@@ -232,15 +232,13 @@ lemma isOpen_iff_upper_and_DirSupInacc {u : Set α} :
   · refine' And.imp_right _
     intros h d d₁ d₂ a d₃ ha
     obtain ⟨b, hbd, hbdu⟩ := h d₁ d₂ d₃ ha
-    use b
-    exact ⟨hbd, mem_of_subset_of_mem hbdu ⟨left_mem_Ici, hbd⟩⟩
+    exact ⟨b, hbd, mem_of_subset_of_mem hbdu ⟨left_mem_Ici, hbd⟩⟩
   · intros h
     constructor
     · exact h.1
     · intros d d₁ d₂ a d₃ ha
       obtain ⟨b, hbd, hbu⟩ := h.2 d₁ d₂ d₃ ha
-      use b
-      exact ⟨hbd, Subset.trans (inter_subset_left (Ici b) d) (h.1.Ici_subset hbu)⟩
+      exact ⟨b, hbd, Subset.trans (inter_subset_left (Ici b) d) (h.1.Ici_subset hbu)⟩
 
 lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
     ↔ (IsLowerSet s ∧
