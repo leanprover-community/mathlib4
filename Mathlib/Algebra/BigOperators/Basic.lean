@@ -592,13 +592,6 @@ theorem Equiv.prod_comp_finset {ι'} [DecidableEq ι] (e : ι ≃ ι') (f : ι' 
 #align finset.equiv.prod_comp_finset Finset.Equiv.prod_comp_finset
 #align finset.equiv.sum_comp_finset Finset.Equiv.sum_comp_finset
 
-/-- For the special case when `s = univ`, see `Equiv.prod_comp` -/
-@[to_additive]
-theorem prod_comp_equiv [DecidableEq γ] {s : Finset α} (f : γ → β) (g : α ≃ γ) :
-    ∏ a in s, f (g a) = ∏ b in s.image g, f b := by
-  classical
-  simp [Equiv.prod_comp_finset g f rfl]
-
 @[to_additive]
 theorem prod_finset_product (r : Finset (γ × α)) (s : Finset γ) (t : γ → Finset α)
     (h : ∀ p : γ × α, p ∈ r ↔ p.1 ∈ s ∧ p.2 ∈ t p.1) {f : γ × α → β} :
