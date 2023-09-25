@@ -24,8 +24,10 @@ namespace Lean
 namespace Meta.DiscrTree
 
 partial def Trie.getElements : Trie α s → Array α
-  | Trie.node vs children =>
-    vs ++ children.concatMap fun (_, child) ↦ child.getElements
+  | .empty => #[]
+  | .values vs t => vs ++ t.getElements
+  | .path _ t => t.getElements
+  | .branch cs => cs.concatMap fun (_, child) ↦ child.getElements
 
 def getElements (d : DiscrTree α s) : Array α :=
   d.1.toList.toArray.concatMap fun (_, child) => child.getElements
