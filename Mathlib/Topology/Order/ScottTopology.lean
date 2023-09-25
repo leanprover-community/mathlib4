@@ -287,9 +287,7 @@ The closure of a singleton `{a}` in the Scott topology is the right-closed left-
 
 variable [Preorder β] [TopologicalSpace β] [IsScott β]
 
-lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f := by
-  rw [Monotone]
-  intros a b hab
+lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f := fun _ b hab => by
   let u := (Iic (f b))ᶜ
   by_contra h
   have s1 : IsOpen u
