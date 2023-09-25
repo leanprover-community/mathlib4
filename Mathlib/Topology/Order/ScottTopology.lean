@@ -15,28 +15,27 @@ This file introduces the Scott topology on a preorder.
 
 - `DirSupInacc` - a set `u` is said to be inaccessible by directed joins if, when the least upper
   bound of a directed set `d` lies in `u` then `d` has non-empty intersection with `u`.
-- `Topology.Scott` - the Scott topology is defined as the join of the topology of upper sets and the
+- `Scott` - the Scott topology is defined as the join of the topology of upper sets and the
   Scott-Hausdorff topology (the topological space where a set `u` is open if, when the least upper
   bound of a directed set `d` lies in `u` then there is a tail of `d` which is a subset of `u`).
 
 ## Main statements
 
-- `Topology.IsScott.isUpperSet_of_isOpen`: Scott open sets are upper.
-- `Topology.IsScott.isLowerSet_of_isClosed`: Scott closed sets are lower.
-- `Topology.IsScott.monotone_of_continuous`: Functions continuous wrt the Scott topology are
-  monotone.
-- `Topology.IsScott.scottContinuous_iff_continuous` - a function is Scott continuous (preserves least
-  upper bounds of directed sets) if and only if it is continuous wrt the Scott topology.
-- `Topology.IsScott.instT0Space` - the Scott topology on a partial order is T₀.
+- `IsScott.isUpperSet_of_isOpen`: Scott open sets are upper.
+- `IsScott.isLowerSet_of_isClosed`: Scott closed sets are lower.
+- `IsScott.monotone_of_continuous`: Functions continuous wrt the Scott topology are monotone.
+- `IsScott.scottContinuous_iff_continuous` - a function is Scott continuous (preserves least upper
+  bounds of directed sets) if and only if it is continuous wrt the Scott topology.
+- `IsScott.instT0Space` - the Scott topology on a partial order is T₀.
 
 ## Implementation notes
 
-A type synonym `Topology.WithScott` is introduced and for a preorder `α`, `Topology.WithScott α`
-is made an instance of `topological_space` by the `Topology.Scott`.
+A type synonym `WithScott` is introduced and for a preorder `α`, `WithScott α` is made an instance
+of `TopologicalSpace` by the `Scott` topology.
 
-We define a mixin class `Topology.IsScott` for the class of types which are both a preorder and a
-topology and where the topology is the `Topology.Scott`.
-It is shown that `Topology.WithScott α` is an instance of `Topology.IsScott`.
+We define a mixin class `IsScott` for the class of types which are both a preorder and a
+topology and where the topology is the `Scott` topology. It is shown that `WithScott α` is an
+instance of `IsScott`.
 
 A class `Scott` is defined in `Topology.OmegaCompletePartialOrder` and made an instance of a
 topological space by defining the open sets to be those which have characteristic functions which
@@ -72,12 +71,13 @@ set `d` lies in `u` then `d` has non-empty intersection with `u`.
 def DirSupInacc (u : Set α) : Prop :=
   ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a → a ∈ u → (d ∩ u).Nonempty
 
+namespace Topology
 /--
 The Scott-Hausdorff topology is defined as the topological space where a set `u` is open if, when
 the least upper bound of a directed set `d` lies in `u` then there is a tail of `d` which is a
 subset of `u`.
 -/
-def Topology.ScottHausdorff : TopologicalSpace α :=
+def ScottHausdorff : TopologicalSpace α :=
 { IsOpen := fun u => ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u,
   isOpen_univ := by
@@ -101,8 +101,7 @@ def Topology.ScottHausdorff : TopologicalSpace α :=
     use b
     exact ⟨hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩ }
 
-lemma Topology.ScottHausdorff.Lower_IsOpen {s : Set α} (h : IsLowerSet s) :
-    Topology.ScottHausdorff.IsOpen s := by
+lemma ScottHausdorff.Lower_IsOpen {s : Set α} (h : IsLowerSet s) : ScottHausdorff.IsOpen s := by
   rintro d ⟨b, hb⟩ _ a hda ha
   use b
   exact ⟨hb,Subset.trans (inter_subset_right (Ici b) d)
@@ -112,90 +111,91 @@ lemma Topology.ScottHausdorff.Lower_IsOpen {s : Set α} (h : IsLowerSet s) :
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
 topology.
 -/
-def Topology.Scott : TopologicalSpace α := Topology.upperSet α ⊔ Topology.ScottHausdorff
+def Scott : TopologicalSpace α := upperSet α ⊔ ScottHausdorff
 
-lemma upper_le_Scott : Topology.upperSet α ≤  Topology.Scott := le_sup_left
+lemma upper_le_Scott : upperSet α ≤  Scott := le_sup_left
 
-lemma ScottHausdorff_le_Scott : @Topology.ScottHausdorff α ≤  @Topology.Scott α := le_sup_right
+lemma ScottHausdorff_le_Scott : @ScottHausdorff α ≤  @Scott α := le_sup_right
+
+end Topology
 
 end preorder
 
+namespace Topology
 /--
 Type synonym for a preorder equipped with the Scott topology
 -/
-def Topology.WithScott := α
+def WithScott := α
 
 variable {α β}
 
-namespace Topology.WithScott
+namespace WithScott
 
-/-- `toScott` is the identity function to the `Topology.WithScott` of a type.  -/
-@[match_pattern] def toScott : α ≃ Topology.WithScott α := Equiv.refl _
+/-- `toScott` is the identity function to the `WithScott` of a type.  -/
+@[match_pattern] def toScott : α ≃ WithScott α := Equiv.refl _
 
-/-- `ofScott` is the identity function from the `Topology.WithScott` of a type.  -/
-@[match_pattern] def ofScott : Topology.WithScott α ≃ α := Equiv.refl _
+/-- `ofScott` is the identity function from the `WithScott` of a type.  -/
+@[match_pattern] def ofScott : WithScott α ≃ α := Equiv.refl _
 
 @[simp] lemma toScott_symm_eq : (@toScott α).symm = ofScott := rfl
 @[simp] lemma ofScott_symm_eq : (@ofScott α).symm = toScott := rfl
-@[simp] lemma toScott_ofScott (a : Topology.WithScott α) : toScott (ofScott a) = a := rfl
+@[simp] lemma toScott_ofScott (a : WithScott α) : toScott (ofScott a) = a := rfl
 @[simp] lemma ofScott_toScott (a : α) : ofScott (toScott a) = a := rfl
 -- porting note: removed @[simp] to make linter happy
 lemma toScott_inj {a b : α} : toScott a = toScott b ↔ a = b := Iff.rfl
 -- porting note: removed @[simp] to make linter happy
-lemma ofScott_inj {a b : Topology.WithScott α} : ofScott a = ofScott b ↔ a = b :=
-Iff.rfl
+lemma ofScott_inj {a b : WithScott α} : ofScott a = ofScott b ↔ a = b := Iff.rfl
 
-/-- A recursor for `Topology.WithScott`. Use as `induction x using Topology.WithScott.rec`. -/
-protected def rec {β : Topology.WithScott α → Sort _}
+/-- A recursor for `WithScott`. Use as `induction x using WithScott.rec`. -/
+protected def rec {β : WithScott α → Sort _}
   (h : ∀ a, β (toScott a)) : ∀ a, β a := fun a => h (ofScott a)
 
-instance [Nonempty α] : Nonempty (Topology.WithScott α) := ‹Nonempty α›
-instance [Inhabited α] : Inhabited (Topology.WithScott α) := ‹Inhabited α›
+instance [Nonempty α] : Nonempty (WithScott α) := ‹Nonempty α›
+instance [Inhabited α] : Inhabited (WithScott α) := ‹Inhabited α›
 
 variable [Preorder α]
 
-instance : Preorder (Topology.WithScott α) := ‹Preorder α›
+instance : Preorder (WithScott α) := ‹Preorder α›
 
-instance : TopologicalSpace (Topology.WithScott α) := Topology.Scott
+instance : TopologicalSpace (WithScott α) := Scott
 
-end Topology.WithScott
+end WithScott
 
 /--
 The Scott topology is defined as the join of the topology of upper sets and the topological space
 where a set `u` is open if, when the least upper bound of a directed set `d` lies in `u` then there
 is a tail of `d` which is a subset of `u`.
 -/
-class Topology.IsScott (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
-  topology_eq_ScottTopology : t = Topology.Scott
+class IsScott (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
+  topology_eq_ScottTopology : t = Scott
 
 attribute [nolint docBlame]
-  Topology.IsScott.topology_eq_ScottTopology
+  IsScott.topology_eq_ScottTopology
 
-instance [Preorder α] : Topology.IsScott (Topology.WithScott α) :=
+instance [Preorder α] : IsScott (WithScott α) :=
   ⟨rfl⟩
 
-namespace Topology.IsScott
+namespace IsScott
 
 section preorder
 
 variable [Preorder α]
 
 lemma isOpen_iff_upper_and_Scott_Hausdorff_Open' {u : Set α} :
-  IsOpen (Topology.WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ Topology.ScottHausdorff.IsOpen u :=
-Iff.rfl
+  IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ ScottHausdorff.IsOpen u := Iff.rfl
 
-variable [TopologicalSpace α] [Topology.IsScott α]
+variable [TopologicalSpace α] [IsScott α]
 
 variable (α)
 
-lemma topology_eq : ‹_› = Topology.Scott := topology_eq_ScottTopology
+lemma topology_eq : ‹_› = Scott := topology_eq_ScottTopology
 
 variable {α}
 
-/-- If `α` is equipped with the Scott topology, then it is homeomorphic to `Topology.WithScott α`.
+/-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
 -/
-def Topology.WithScottHomeomorph : Topology.WithScott α ≃ₜ α :=
-  Topology.WithScott.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+def WithScottHomeomorph : WithScott α ≃ₜ α :=
+  WithScott.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 end preorder
 
@@ -206,19 +206,19 @@ variable [Preorder α] [Preorder β]
 open TopologicalSpace
 
 lemma UpperSetTopology_Monotone_coinduced_LE' {t₁ : TopologicalSpace α} [Topology.IsUpperSet α]
-  {f : α → β}  (hf : Monotone f) : coinduced f t₁ ≤ @Topology.Scott β _ := by
+  {f : α → β}  (hf : Monotone f) : coinduced f t₁ ≤ @Scott β _ := by
   apply le_sup_of_le_left
   rwa [← continuous_iff_coinduced_le,
-    ← @Topology.IsUpperSet.monotone_iff_continuous α β _ _ t₁ (Topology.upperSet β) _ _ ]
+    ← @IsUpperSet.monotone_iff_continuous α β _ _ t₁ (upperSet β) _ _ ]
 
 lemma UpperSetTopology_Monotone_coinduced_LE {t₁ : TopologicalSpace α} [Topology.IsUpperSet α]
-    {t₂ : TopologicalSpace β} [Topology.IsScott β] {f : α → β} (hf : Monotone f) :
+    {t₂ : TopologicalSpace β} [IsScott β] {f : α → β} (hf : Monotone f) :
     coinduced f t₁ ≤ t₂ := by
-  rw [Topology.IsScott.topology_eq β]
+  rw [IsScott.topology_eq β]
   apply UpperSetTopology_Monotone_coinduced_LE' hf
 
 lemma Monotone_From_UpperSetTopology_Continuous {t₁ : TopologicalSpace α} [Topology.IsUpperSet α]
-    {t₂ : TopologicalSpace β} [Topology.IsScott β] {f : α → β} (hf : Monotone f)  : Continuous f := by
+    {t₂ : TopologicalSpace β} [IsScott β] {f : α → β} (hf : Monotone f)  : Continuous f := by
   rw [continuous_iff_coinduced_le]
   apply UpperSetTopology_Monotone_coinduced_LE hf
 
@@ -226,11 +226,10 @@ end morphisms
 
 section preorder
 
-variable [Preorder α] [TopologicalSpace α] [Topology.IsScott α] {u : Set α}
+variable [Preorder α] [TopologicalSpace α] [IsScott α] {u : Set α}
 
 lemma isOpen_iff_upper_and_Scott_Hausdorff_Open :
-    IsOpen u ↔
-      IsUpperSet u ∧ Topology.ScottHausdorff.IsOpen u := by erw [topology_eq α]; rfl
+    IsOpen u ↔ IsUpperSet u ∧ ScottHausdorff.IsOpen u := by erw [topology_eq α]; rfl
 
 lemma isOpen_iff_upper_and_DirSupInacc {u : Set α} :
     IsOpen u ↔ IsUpperSet u ∧ DirSupInacc u := by
@@ -278,8 +277,8 @@ lemma isLowerSet_of_isClosed {s : Set α} : IsClosed s → IsLowerSet s := fun h
 
 lemma lowerClosure_le_closure {s : Set α} : lowerClosure s ≤ closure s := by
   convert closure.mono (@upper_le_Scott α _)
-  rw [@Topology.IsUpperSet.closure_eq_lowerClosure α _ (Topology.upperSet α) ?_ s]
-  · exact Topology.instIsUpperSetUpperSet
+  rw [@Topology.IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
+  · exact instIsUpperSetUpperSet
   · exact topology_eq α
 
 /--
@@ -299,7 +298,7 @@ The closure of a singleton `{a}` in the Scott topology is the right-closed left-
   · rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
     apply lowerClosure_le_closure
 
-variable [Preorder β] [TopologicalSpace β] [Topology.IsScott β]
+variable [Preorder β] [TopologicalSpace β] [IsScott β]
 
 lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f := by
   rw [Monotone]
@@ -350,7 +349,7 @@ lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f :=
 end preorder
 
 section partial_order
-variable [PartialOrder α] [TopologicalSpace α] [Topology.IsScott α]
+variable [PartialOrder α] [TopologicalSpace α] [IsScott α]
 
 /--
 The Scott topology on a partial order is T₀.
@@ -358,11 +357,13 @@ The Scott topology on a partial order is T₀.
 -- see Note [lower instance priority]
 instance (priority := 90): T0Space α :=
     (t0Space_iff_inseparable α).2 $ fun x y h => Iic_injective $
-  by simpa only [inseparable_iff_closure_eq, Topology.IsScott.closure_singleton] using h
+  by simpa only [inseparable_iff_closure_eq, IsScott.closure_singleton] using h
 
 end partial_order
 
-end Topology.IsScott
+end IsScott
+
+end Topology
 
 section complete_lattice
 
