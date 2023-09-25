@@ -265,15 +265,15 @@ lemma weightSpace_zero_normalizer_eq_self [LieAlgebra.IsNilpotent R L] :
   use k + 1
   simpa [pow_succ', LinearMap.mul_eq_comp]
 
-lemma supr_ucs_le_weightSpace_zero [LieAlgebra.IsNilpotent R L] :
+lemma iSup_ucs_le_weightSpace_zero [LieAlgebra.IsNilpotent R L] :
     ⨆ k, (⊥ : LieSubmodule R L M).ucs k ≤ weightSpace M (0 : L → R) := by
   simpa using LieSubmodule.ucs_le_of_normalizer_eq_self (weightSpace_zero_normalizer_eq_self R L M)
 
-lemma weightSpace_zero_eq_supr_ucs [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] :
+lemma weightSpace_zero_eq_iSup_ucs [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] :
     weightSpace M (0 : L → R) = ⨆ k, (⊥ : LieSubmodule R L M).ucs k := by
   obtain ⟨k, hk⟩ := (LieSubmodule.isNilpotent_iff_exists_self_le_ucs
     <| weightSpace M (0 : L → R)).mp inferInstance
-  refine le_antisymm (le_trans hk ?_) (supr_ucs_le_weightSpace_zero R L M)
+  refine le_antisymm (le_trans hk ?_) (iSup_ucs_le_weightSpace_zero R L M)
   exact le_iSup (fun k ↦ (⊥ : LieSubmodule R L M).ucs k) k
 
 variable {L}
