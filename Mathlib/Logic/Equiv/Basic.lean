@@ -922,7 +922,7 @@ open Sum
 /-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
 functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEquivProdArrow`. -/
 @[simps]
-def piSum (π : ι ⊕ ι' → Type _) : ((∀ i, π (inl i)) × ∀ i', π (inr i')) ≃ ∀ i, π i
+def sumPiEquivProdPi (π : ι ⊕ ι' → Type _) : ((∀ i, π (inl i)) × ∀ i', π (inr i')) ≃ ∀ i, π i
     where
   toFun f := Sum.rec f.1 f.2
   invFun g := ⟨fun i => g (inl i), fun i' => g (inr i')⟩
@@ -930,9 +930,9 @@ def piSum (π : ι ⊕ ι' → Type _) : ((∀ i, π (inl i)) × ∀ i', π (inr
   right_inv g := by ext (i | i) <;> rfl
 
 @[simps!]
-def piSumRev (π : ι → Type _) (π' : ι' → Type _) :
+def sumPiEquivProdPiRev (π : ι → Type _) (π' : ι' → Type _) :
     ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i, Sum.elim π π' i :=
-  Equiv.piSum (Sum.elim π π')
+  Equiv.sumPiEquivProdPi (Sum.elim π π')
 
 /-- The type of functions on a sum type `α ⊕ β` is equivalent to the type of pairs of functions
 on `α` and on `β`. -/
@@ -1888,15 +1888,15 @@ lemma piCongrLeft_apply_eq_cast {P : β → Sort v} {e : α ≃ β}
 
 theorem piCongrLeft_sum_inl (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (i : ι) :
-    piCongrLeft π e (piSum (fun x => π (e x)) (f, g)) (e (inl i)) = f i := by
-  simp_rw [piCongrLeft_apply_eq_cast, piSum_apply, sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)),
-    cast_cast, cast_eq]
+    piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) (f, g)) (e (inl i)) = f i := by
+  simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_apply,
+    sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)), cast_cast, cast_eq]
 
 theorem piCongrLeft_sum_inr (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (j : ι') :
-    piCongrLeft π e (piSum (fun x => π (e x)) (f, g)) (e (inr j)) = g j := by
-  simp_rw [piCongrLeft_apply_eq_cast, piSum_apply, sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)),
-    cast_cast, cast_eq]
+    piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) (f, g)) (e (inr j)) = g j := by
+  simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_apply,
+    sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)), cast_cast, cast_eq]
 
 end
 
