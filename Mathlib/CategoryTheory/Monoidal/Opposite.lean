@@ -152,9 +152,14 @@ namespace Iso
 variable {X Y : C}
 
 /-- An isomorphism in `C` gives an isomorphism in `Cᴹᵒᵖ`. -/
-@[simps!]
-def mop (f : X ≅ Y) : mop X ≅ mop Y :=
-  (inducedFunctor _).preimageIso f
+@[simps]
+def mop (f : X ≅ Y) : mop X ≅ mop Y where
+  hom := f.hom.mop
+  inv := f.inv.mop
+  -- Porting note: it's a pity `attribute [aesop safe apply (rule_sets [CategoryTheory])] unmop_inj`
+  -- doesn't automate these proofs.
+  hom_inv_id := unmop_inj (by simp)
+  inv_hom_id := unmop_inj (by simp)
 #align category_theory.iso.mop CategoryTheory.Iso.mop
 
 end Iso
