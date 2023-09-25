@@ -228,13 +228,13 @@ lemma isOpen_iff_upper_and_DirSupInacc {u : Set α} :
   rw [isOpen_iff_upper_and_Scott_Hausdorff_Open]
   constructor
   · refine' And.imp_right _
-    intros h d d₁ d₂ a d₃ ha
+    intros h _ d₁ d₂ _ d₃ ha
     obtain ⟨b, hbd, hbdu⟩ := h d₁ d₂ d₃ ha
     exact ⟨b, hbd, mem_of_subset_of_mem hbdu ⟨left_mem_Ici, hbd⟩⟩
   · intros h
     constructor
     · exact h.1
-    · intros d d₁ d₂ a d₃ ha
+    · intros d d₁ d₂ _ d₃ ha
       obtain ⟨b, hbd, hbu⟩ := h.2 d₁ d₂ d₃ ha
       exact ⟨b, hbd, Subset.trans (inter_subset_left (Ici b) d) (h.1.Ici_subset hbu)⟩
 
