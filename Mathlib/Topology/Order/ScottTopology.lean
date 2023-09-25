@@ -210,8 +210,8 @@ lemma UpperSetTopology_Monotone_coinduced_LE {t₁ : TopologicalSpace α} [Topol
   rw [IsScott.topology_eq β]
   apply UpperSetTopology_Monotone_coinduced_LE' hf
 
-lemma Monotone_From_UpperSetTopology_Continuous {_ : TopologicalSpace α} [Topology.IsUpperSet α]
-    {_ : TopologicalSpace β} [IsScott β] {f : α → β} (hf : Monotone f)  : Continuous f :=
+lemma Monotone_From_UpperSetTopology_Continuous [TopologicalSpace α] [Topology.IsUpperSet α]
+    [TopologicalSpace β] [IsScott β] {f : α → β} (hf : Monotone f)  : Continuous f :=
   continuous_iff_coinduced_le.mpr (UpperSetTopology_Monotone_coinduced_LE hf)
 
 end morphisms
