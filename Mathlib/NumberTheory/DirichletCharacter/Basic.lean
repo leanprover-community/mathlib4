@@ -136,50 +136,28 @@ lemma conductor_one (hn : 0 < n) : conductor (1 : DirichletCharacter R n) = 1 :=
 
 variable {χ}
 
-lemma eq_one_iff_conductor_eq_one (hn : 0 < n) : χ = 1 ↔ conductor χ = 1 := by
-  refine' ⟨λ h => by rw [h, conductor_one hn], λ hχ => _⟩
+lemma eq_one_iff_conductor_eq_one (hn : n ≠ 0) : χ = 1 ↔ conductor χ = 1 := by
+  refine ⟨fun h ↦ h ▸ conductor_one hn, fun hχ ↦ ?_⟩
   obtain ⟨h', χ₀, h⟩ := FactorsThrough_conductor χ
-  rw [h]
-  ext
-  rw [changeLevel_def, ZMod.unitsMap_def]
-  simp only [toUnitHom_eq, ofUnitHom_eq, Units.isUnit, not_true, equivToUnitHom_symm_coe,
-    MonoidHom.coe_comp, Function.comp_apply, coe_equivToUnitHom, Units.coe_map, MonoidHom.coe_coe,
-    ZMod.castHom_apply, one_apply_coe]
-  convert MonoidHom.map_one (χ₀ : ZMod (conductor χ) →* R)
-  have : Subsingleton (ZMod (conductor χ)) := by
-    rw [hχ]
-    infer_instance
-  simp
+  exact (level_one' χ₀ hχ ▸ h).trans <| changeLevel_trivial h'
 
-lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 :=
-  ⟨λ h => by
-    rw [←zero_dvd_iff]
-    convert conductor_dvd_level χ
-    rw [h],
-  λ h => by
-    rw [conductor, Nat.sInf_eq_zero]
-    left
-    exact ⟨zero_dvd_iff.mpr h, ⟨changeLevel (by rw [h]) χ, by
-        rw [← changeLevel_trans _ _ _, changeLevel_self _]⟩⟩⟩
+lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 := by
+  refine ⟨(conductor_ne_zero χ).mtr, ?_⟩
+  rintro rfl
+  exact Nat.sInf_eq_zero.mpr <| Or.inl <| level_mem_conductorSet χ
 
 variable (χ)
 
 /-- A character is primitive if its level is equal to its conductor. -/
 def isPrimitive : Prop := conductor χ = n
 
-lemma isPrimitive_def : isPrimitive χ ↔ conductor χ = n := ⟨λ h => h, λ h => h⟩
+lemma isPrimitive_def : isPrimitive χ ↔ conductor χ = n := Iff.rfl
 
 lemma isPrimitive_one_level_one : isPrimitive (1 : DirichletCharacter R 1) :=
   Nat.dvd_one.mp (conductor_dvd_level _)
 
-lemma isPritive_one_level_zero : isPrimitive (1 :  DirichletCharacter R 0) := by
-  rw [isPrimitive_def, conductor, Nat.sInf_eq_zero]
-  left
-  rw [conductorSet]
-  simp only [Set.mem_setOf_eq]
-  fconstructor
-  simp only [true_and, ZMod.cast_id', id.def, MonoidHom.coe_mk, dvd_zero]
-  refine ⟨1, by simp⟩
+lemma isPritive_one_level_zero : isPrimitive (1 : DirichletCharacter R 0) :=
+  conductor_eq_zero_iff_level_eq_zero.mpr rfl
 
 lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
   rw [(isPrimitive_def _).mp isPrimitive_one_level_one]
