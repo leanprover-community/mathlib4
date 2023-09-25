@@ -77,11 +77,11 @@ The Scott-Hausdorff topology is defined as the topological space where a set `u`
 the least upper bound of a directed set `d` lies in `u` then there is a tail of `d` which is a
 subset of `u`.
 -/
-def scottHausdorff : TopologicalSpace α :=
-{ IsOpen := fun u => ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
-    a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u,
+def scottHausdorff : TopologicalSpace α where
+  IsOpen u := ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
+    a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
   isOpen_univ := fun d ⟨b, hb⟩ _ _ _ _ => ⟨b, hb, (Ici b ∩ d).subset_univ⟩
-  isOpen_inter := fun s t hs ht d hd₁ hd₂ a hd₃ ha => by
+  isOpen_inter s t hs ht d hd₁ hd₂ a hd₃ ha := by
     obtain ⟨b₁, hb₁d, hb₁ds⟩ := hs hd₁ hd₂ hd₃ ha.1
     obtain ⟨b₂, hb₂d, hb₂dt⟩ := ht hd₁ hd₂ hd₃ ha.2
     obtain ⟨c, hcd, hc⟩ := hd₂ b₁ hb₁d b₂ hb₂d
@@ -94,7 +94,7 @@ def scottHausdorff : TopologicalSpace α :=
         _ ⊆ s ∩ t := inter_subset_inter hb₁ds hb₂dt
   isOpen_sUnion := fun s h d hd₁ hd₂ a hd₃ ⟨s₀, hs₀s, has₀⟩ => by
     obtain ⟨b, hbd, hbds₀⟩ := h s₀ hs₀s hd₁ hd₂ hd₃ has₀
-    exact ⟨b, hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩ }
+    exact ⟨b, hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩
 
 lemma ScottHausdorff.isOpen_of_isLowerSet {s : Set α} (h : IsLowerSet s) :
     scottHausdorff.IsOpen s := fun d ⟨b, hb⟩ _ _ hda ha =>
