@@ -391,38 +391,6 @@ namespace MeasureTheory
 
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {f : α → ℝ}
 
-/-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
-measure. -/
-lemma Integrable.measure_const_le_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
-    μ {a : α | c ≤ f a} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_) (f_intble.measure_ge_lt_top c_pos)
-  intro x hx
-  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
-  exact hx.trans (le_abs_self _)
-
-/-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
-measure. -/
-lemma Integrable.measure_le_const_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
-    μ {a : α | f a ≤ c} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_) (f_intble.measure_ge_lt_top (show 0 < -c by linarith))
-  intro x hx
-  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
-  exact (show -c ≤ - f x by linarith).trans (neg_le_abs_self _)
-
-/-- If `f` is `ℝ`-valued and integrable, then for any `t > 0` the set `{x | f x > t}` has finite
-measure. -/
-lemma Integrable.measure_const_lt_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
-    μ {a : α | c < f a} < ∞ :=
-  lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
-    (Integrable.measure_const_le_lt_top f_intble c_pos)
-
-/-- If `f` is `ℝ`-valued and integrable, then for any `t < 0` the set `{x | f x < t}` has finite
-measure. -/
-lemma Integrable.measure_lt_const_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
-    μ {a : α | f a < c} < ∞ :=
-  lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
-    (Integrable.measure_le_const_lt_top f_intble c_neg)
-
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For an integrable a.e.-nonnegative real-valued function `f`, the Bochner integral of `f` can be
@@ -457,7 +425,7 @@ theorem Integrable.integral_eq_integral_meas_lt
   have rhs_finite : ∫⁻ (t : ℝ) in Set.Ioi 0, (μ.restrict s) {a | t < f a} < ∞ :=
     by simp only [← key, lhs_finite]
   have rhs_integrand_finite : ∀ (t : ℝ), t > 0 → (μ.restrict s) {a | t < f a} < ∞ :=
-    fun t ht ↦ Integrable.measure_const_lt_lt_top f_intble' ht
+    fun t ht ↦ Integrable.measure_gt_lt_top f_intble' ht
   convert (ENNReal.toReal_eq_toReal lhs_finite.ne rhs_finite.ne).mpr key
   · exact integral_eq_lintegral_of_nonneg_ae f_nn' f_intble'.aestronglyMeasurable
   · have aux := @integral_eq_lintegral_of_nonneg_ae _ _ ((volume : Measure ℝ).restrict (Set.Ioi 0))
