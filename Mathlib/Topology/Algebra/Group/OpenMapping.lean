@@ -31,7 +31,7 @@ Baire space. Then the orbit map is open around zero. It follows in
 `isOpenMap_vadd_of_sigmaCompact` that it is open around any point."]
 theorem smul_singleton_mem_nhds_of_sigmaCompact
     {U : Set G} (hU : U ∈ 𝓝 1) (x : X) : U • {x} ∈ 𝓝 x := by
-  /- Consider a small closed neighborhood `V` of the identity. Then the space is covered by
+  /- Consider a small closed neighborhood `V` of the identity. Then the group is covered by
   countably many translates of `V`, say `gᵢ V`. Let also `Kₙ` be a sequence of compact sets covering
   the space. Then the image of `Kₙ ∩ gᵢ V` in the orbit is compact, and their unions covers the
   space. By Baire, one of them has nonempty interior. Then `gᵢ V • x` has nonempty interior, and

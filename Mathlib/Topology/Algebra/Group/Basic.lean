@@ -1527,10 +1527,7 @@ is closed, symmetric, and satisfies `V * V ⊆ U`. -/
 @[to_additive]
 theorem exists_nhds_one_isClosed_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1) :
     ∃ V ∈ 𝓝 1, IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U := by
-  have A : (fun p : G × G => p.1 * p.2) ⁻¹' U ∈ 𝓝 ((1, 1) : G × G) :=
-    continuousAt_fst.mul continuousAt_snd (by simpa)
-  simp only [nhds_prod_eq, Filter.mem_prod_self_iff, prod_subset_iff, mem_preimage] at A
-  rcases A with ⟨V, V_mem, hV⟩
+  rcases exists_nhds_one_split hU with ⟨V, V_mem, hV⟩
   rcases exists_mem_nhds_isClosed_subset V_mem with ⟨W, W_mem, W_closed, hW⟩
   refine ⟨W ∩ W⁻¹, Filter.inter_mem W_mem (inv_mem_nhds_one G W_mem), W_closed.inter W_closed.inv,
     by simp [inter_comm], ?_⟩
@@ -1539,15 +1536,6 @@ theorem exists_nhds_one_isClosed_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 
     ⊆ W * W := mul_subset_mul (inter_subset_left _ _) (inter_subset_left _ _)
   _ ⊆ V * V := mul_subset_mul hW hW
   _ ⊆ U := by rintro - ⟨y, z, hy, hz, rfl⟩; exact hV y hy z hz
-
-/-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
-is closed and satisfies `V ⊆ U`. For stronger properties, see
-`exists_nhds_one_isClosed_inv_eq_mul_subset`. -/
-@[to_additive]
-theorem exists_nhds_one_isClosed_subset {U : Set G} (hU : U ∈ 𝓝 1) :
-    ∃ V ∈ 𝓝 1, IsClosed V ∧ V ⊆ U := by
-  rcases exists_nhds_one_isClosed_inv_eq_mul_subset hU with ⟨V, hV, V_closed, -, V_mul⟩
-  refine ⟨V, hV, V_closed, Subset.trans (subset_mul_left V (mem_of_mem_nhds hV)) V_mul⟩
 
 variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
 
@@ -1734,7 +1722,7 @@ admits a closed compact subset that is a neighborhood of `0`."]
 theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
     {L : Set G} (Lcomp : IsCompact L) (L1 : L ∈ 𝓝 (1 : G)) :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ L ∧ K ∈ 𝓝 (1 : G) := by
-  rcases exists_nhds_one_isClosed_subset L1 with ⟨K, hK, K_closed, KL⟩
+  rcases exists_mem_nhds_isClosed_subset L1 with ⟨K, hK, K_closed, KL⟩
   exact ⟨K, Lcomp.of_isClosed_subset K_closed KL, K_closed, KL, hK⟩
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
