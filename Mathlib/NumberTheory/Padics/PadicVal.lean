@@ -442,8 +442,8 @@ lemma min_eq_padicValRat_add {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr 
       (by rwa [min_comm, add_comm])
       (hval.symm.lt_of_le h)
   · rw [min_eq_left (le_of_lt h)] at Hmin ⊢
-    suffices Hreq : padicValRat p q ≥ padicValRat p (q + r) by linarith
-    suffices Haux : padicValRat p q ≥ min (padicValRat p (q + r)) (padicValRat p r) by
+    suffices Hreq : padicValRat p (q + r) ≤ padicValRat p q by linarith
+    suffices Haux : min (padicValRat p (q + r)) (padicValRat p r) ≤ padicValRat p q by
       rw [min_def] at Haux
       split_ifs at Haux with Hspl
       · assumption
@@ -455,13 +455,13 @@ lemma min_eq_padicValRat_add {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr 
     _ = min (padicValRat p (q + r)) (padicValRat p r) := by rw [padicValRat.neg]
 
 lemma add_eq_of_lt {q r : ℚ} (hqr : q + r ≠ 0)
-(hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q < padicValRat p r) :
-padicValRat p (q + r) = padicValRat p q :=
-by rw [min_eq_padicValRat_add hqr hq hr (ne_of_lt hval),min_eq_left (le_of_lt hval)]
+    (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q < padicValRat p r) :
+    padicValRat p (q + r) = padicValRat p q := by
+  rw [min_eq_padicValRat_add hqr hq hr (ne_of_lt hval),min_eq_left (le_of_lt hval)]
 
 lemma add_lt_of_lt {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
-(hval₁ : padicValRat p q < padicValRat p r₁) (hval₂ : padicValRat p q < padicValRat p r₂) :
-  padicValRat p q < padicValRat p (r₁ + r₂) :=
+    (hval₁ : padicValRat p q < padicValRat p r₁) (hval₂ : padicValRat p q < padicValRat p r₂) :
+    padicValRat p q < padicValRat p (r₁ + r₂) :=
   lt_of_lt_of_le (lt_min hval₁ hval₂) (padicValRat.min_le_padicValRat_add hqr)
 
 open BigOperators
@@ -483,10 +483,9 @@ theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < pa
 
 /-- If the p-adic valuation of a finite set of positive rationals is greater than a given rational
 number, then the p-adic valuation of their sum is also greater than the same rational number. -/
-theorem finset_gen_sum_lt_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)]
-{F : ℕ → ℚ} {S : Finset ℕ} (hS : S.Nonempty)
-(hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i)) (hn1 : ∀ i : ℕ, 0 < F i):
-    padicValRat p (F j) < padicValRat p (∑ i in S, F i) := by
+theorem sum_gt_of_gt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S : Finset ℕ}
+    (hS : S.Nonempty) (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
+    (hn1 : ∀ i : ℕ, 0 < F i) : padicValRat p (F j) < padicValRat p (∑ i in S, F i) := by
   induction' hS using Finset.Nonempty.cons_induction with k s S' Hnot Hne Hind
   · rw [Finset.sum_singleton]
     exact hF k (by simp)
@@ -584,20 +583,20 @@ theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne
 #align padic_val_nat_primes padicValNat_primes
 
 /-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`.-/
-lemma le_nat_log (n : ℕ) [hp : Fact (Nat.Prime p)]: padicValNat p n ≤ Nat.log p n := by
+lemma le_nat_log (n : ℕ) [hp : Fact (Nat.Prime p)] : padicValNat p n ≤ Nat.log p n := by
   by_cases (n = 0)
   · simp only [h, padicValNat.zero, Nat.log_zero_right, le_refl]
   · refine' Nat.le_log_of_pow_le (Nat.Prime.one_lt hp.elim) _
     by_contra Hnot; push_neg at Hnot
     exact h (Nat.eq_zero_of_dvd_of_lt (pow_padicValNat_dvd (p := p) (n := n)) Hnot)
 
-lemma le_nat_log_gen {n₁ n₂ : ℕ} [Fact (Nat.Prime p)] (hn : n₁ ≤ n₂):
+lemma le_nat_log_of_le {n₁ n₂ : ℕ} [Fact (Nat.Prime p)] (hn : n₁ ≤ n₂) :
     padicValNat p n₁ ≤ Nat.log p n₂ := le_trans (le_nat_log n₁) (Nat.log_mono_right hn)
 
 /-- The p-adic valuation of `n` is equal to the logarithm w.r.t `p` iff
     `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
-lemma nat_log_eq_padicvalnat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n):
-    Nat.log p n = padicValNat p n ↔ n < p^(padicValNat p n + 1) := by
+lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n) :
+    Nat.log p n = padicValNat p n ↔ n < p ^ (padicValNat p n + 1) := by
   rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by linarith⟩), and_iff_right_iff_imp]
   exact (fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd)
 
