@@ -18,13 +18,13 @@ import Mathlib.Tactic.Linarith
 
 variable {R : Type*} {x y : R}
 
-lemma dvd_smul_of_dvd {M : Type*} [SMul M R] [Semiring R] [SMulCommClass M R R]
+lemma dvd_smul_of_dvd {M : Type*} [SMul M R] [Semigroup R] [SMulCommClass M R R]
     {m : M} (h : x ∣ y) : x ∣ m • y :=
   let ⟨k, hk⟩ := h; ⟨m • k, by rw [mul_smul_comm, ← hk]⟩
 
-lemma dvd_nsmul_of_dvd [Semiring R] {n : ℕ} (h : x ∣ y) : x ∣ n • y := dvd_smul_of_dvd h
+lemma dvd_nsmul_of_dvd [NonUnitalSemiring R] {n : ℕ} (h : x ∣ y) : x ∣ n • y := dvd_smul_of_dvd h
 
-lemma dvd_zsmul_of_dvd [Ring R] {z : ℤ} (h : x ∣ y) : x ∣ z • y := dvd_smul_of_dvd h
+lemma dvd_zsmul_of_dvd [NonUnitalRing R] {z : ℤ} (h : x ∣ y) : x ∣ z • y := dvd_smul_of_dvd h
 
 namespace Commute
 
