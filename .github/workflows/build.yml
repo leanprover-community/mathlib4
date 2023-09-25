@@ -179,8 +179,8 @@ jobs:
         run: |
           lake exe cache get
           # We pipe the output of `lake build` to a file,
-          # and if we find " Building " in that file we kill `lake build`, and error.
-          lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building " && kill $! ))
+          # and if we find " Building Mathlib" in that file we kill `lake build`, and error.
+          lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building Mathlib" && kill $! ))
 
       - name: build archive
         run: |
@@ -219,7 +219,7 @@ jobs:
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe runMathlibLinter
 
       - name: Post comments for lean-pr-testing branch
         if: always()

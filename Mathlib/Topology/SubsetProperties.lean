@@ -128,10 +128,10 @@ theorem IsCompact.diff (hs : IsCompact s) (ht : IsOpen t) : IsCompact (s \ t) :=
 #align is_compact.diff IsCompact.diff
 
 /-- A closed subset of a compact set is a compact set. -/
-theorem isCompact_of_isClosed_subset (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
+theorem IsCompact.of_isClosed_subset (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
     IsCompact t :=
   inter_eq_self_of_subset_right h ▸ hs.inter_right ht
-#align is_compact_of_is_closed_subset isCompact_of_isClosed_subset
+#align is_compact_of_is_closed_subset IsCompact.of_isClosed_subset
 
 theorem IsCompact.image_of_continuousOn {f : α → β} (hs : IsCompact s) (hf : ContinuousOn f s) :
     IsCompact (f '' s) := by
@@ -306,7 +306,7 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed (Z : ℕ �
   have Zmono : Antitone Z := antitone_nat_of_succ_le hZd
   have hZd : Directed (· ⊇ ·) Z := directed_of_sup Zmono
   have : ∀ i, Z i ⊆ Z 0 := fun i => Zmono <| zero_le i
-  have hZc : ∀ i, IsCompact (Z i) := fun i => isCompact_of_isClosed_subset hZ0 (hZcl i) (this i)
+  have hZc : ∀ i, IsCompact (Z i) := fun i => hZ0.of_isClosed_subset (hZcl i) (this i)
   IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed Z hZd hZn hZc hZcl
 #align is_compact.nonempty_Inter_of_sequence_nonempty_compact_closed IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed
 
@@ -733,7 +733,7 @@ theorem compactSpace_of_finite_subfamily_closed
 #align compact_space_of_finite_subfamily_closed compactSpace_of_finite_subfamily_closed
 
 theorem IsClosed.isCompact [CompactSpace α] {s : Set α} (h : IsClosed s) : IsCompact s :=
-  isCompact_of_isClosed_subset isCompact_univ h (subset_univ _)
+  isCompact_univ.of_isClosed_subset h (subset_univ _)
 #align is_closed.is_compact IsClosed.isCompact
 
 /-- `α` is a noncompact topological space if it is not a compact space. -/
@@ -867,8 +867,8 @@ theorem exists_subset_nhds_of_compactSpace [CompactSpace α] {ι : Type*} [Nonem
   exists_subset_nhds_of_isCompact' hV (fun i => (hV_closed i).isCompact) hV_closed hU
 #align exists_subset_nhds_of_compact_space exists_subset_nhds_of_compactSpace
 
-/-- If `f : α → β` is an `Inducing` map, then the image `f '' s` of a set `s` is compact if and only
-if the set `s` is closed. -/
+/-- If `f : α → β` is an `Inducing` map,
+the image `f '' s` of a set `s` is compact if and only if `s` is compact. -/
 theorem Inducing.isCompact_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     IsCompact (f '' s) ↔ IsCompact s := by
   refine ⟨fun hs F F_ne_bot F_le => ?_, fun hs => hs.image hf.continuous⟩
@@ -878,8 +878,8 @@ theorem Inducing.isCompact_iff {f : α → β} (hf : Inducing f) {s : Set α} :
 #align inducing.is_compact_iff Inducing.isCompact_iff
 
 /-- If `f : α → β` is an `Embedding` (or more generally, an `Inducing` map, see
-`Inducing.isCompact_iff`), then the image `f '' s` of a set `s` is compact if and only if the set
-`s` is closed. -/
+`Inducing.isCompact_iff`), the image `f '' s` of a set `s` is compact if and only if the set
+`s` is compact. -/
 theorem Embedding.isCompact_iff_isCompact_image {f : α → β} (hf : Embedding f) :
     IsCompact s ↔ IsCompact (f '' s) :=
   hf.toInducing.isCompact_iff.symm

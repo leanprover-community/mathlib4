@@ -124,7 +124,7 @@ def torsionOrder [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype.
 
 /-- If `k` does not divide `torsionOrder` then there are no nontrivial roots of unity of
   order dividing `k`. -/
-theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.coprime k (torsionOrder K)) :
+theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.Coprime k (torsionOrder K)) :
     ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
   rw [mem_rootsOfUnity]
   refine ⟨fun h => ?_, fun h => by rw [h, one_pow]⟩
