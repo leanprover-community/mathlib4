@@ -6,6 +6,18 @@ Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 
 import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 import Mathlib.Tactic.Linarith
+
+/-!
+# Dirac's theorem
+
+In this file we state `Dirac's theorem` about `Hamiltonian graphs`.
+
+
+## Main results
+
+- `Dirac`: the statement of `Dirac's theorem`.
+-/
+
 open BigOperators
 
 variable {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} [DecidableRel G.Adj] {u v : V}

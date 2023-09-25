@@ -8,6 +8,19 @@ import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Trails
 import Mathlib.Algebra.BigOperators.Basic
 
+/-!
+# Hamiltonian Graphs
+
+In this file we introduce `Hamitonian paths`, `cylces` and `graphs`,
+two main concepts in the theory of graphs.
+
+## Main results
+
+- `IsHamiltonian`: the definition of `Hamitonian paths`
+- `IsHamiltonianCycle`: the definition of `Hamitonian cycles`
+- `IsHamiltonian`: the definition of `Hamitonian graphs`
+-/
+
 open BigOperators
 
 variable {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} [DecidableRel G.Adj] {u v : V}
