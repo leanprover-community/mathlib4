@@ -92,4 +92,40 @@ def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
 @[simp] lemma mkDerivationEquiv_symm_apply (D : Derivation R R[X] A) :
     (mkDerivationEquiv R).symm D = D X := rfl
 
+/--
+  If `f` is a polynomial over `R`
+  and `d : A → M` is an `R`-derivation
+  then for all `a : A` we have
+
+    `d(f(a)) = f.derivative (a) * d a`.
+-/
+theorem Derivation_eval₂ {R A M} [CommSemiring R] [CommSemiring A] [Algebra R A]
+    [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+    (d : Derivation R A M) (f : R[X]) (a : A) :
+    d (f.eval₂ (algebraMap R A) a) = f.derivative.eval₂ (algebraMap R A) a • d a := by
+  --write both sides of the equation as derivations in `f` and apply `derivation_ext`
+  let _ : Module R[X] M := Module.compHom M <| eval₂RingHom (algebraMap R A) a
+  have _ : IsScalarTower R R[X] M := {
+    smul_assoc := fun r f m ↦ by
+      change eval₂ _ a (r • f) • m = r • (eval₂ _ a f • m)
+      rw [eval₂_smul, Algebra.algebraMap_eq_smul_one, smul_mul_assoc, one_mul, smul_assoc]
+  }
+  let LHS : Derivation R R[X] M := {
+    toFun := fun f ↦ d (f.eval₂ (algebraMap R A) a)
+    map_add' := fun f g ↦ by dsimp; rw [eval₂_add, map_add]
+    map_smul' := fun r f ↦ by
+      dsimp;
+      rw [eval₂_smul, Algebra.algebraMap_eq_smul_one, smul_mul_assoc, one_mul, Derivation.map_smul]
+    map_one_eq_zero' := by
+      rw [LinearMap.coe_mk, AddHom.coe_mk, eval₂_one, Derivation.map_one_eq_zero]
+    leibniz' := fun f g ↦ by
+      dsimp; rw [eval₂_mul, Derivation.leibniz]
+      rfl
+  }
+  change LHS f = derivative f • _
+  rw [←mkDerivation_apply]
+  congr
+  apply derivation_ext
+  rw [Derivation.mk_coe, LinearMap.coe_mk, AddHom.coe_mk, eval₂_X, mkDerivation_X]
+
 end Polynomial

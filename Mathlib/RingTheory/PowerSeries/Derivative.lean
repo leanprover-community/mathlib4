@@ -6,6 +6,7 @@ Authors: Richard M. Hill
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.RingTheory.PowerSeries.Comp
+import Mathlib.Data.Polynomial.Derivation
 
 /-!
 # Definitions
@@ -38,44 +39,6 @@ constant terms.
 
 
 open Polynomial Finset Derivation Algebra BigOperators
-
-/--
-  If `f` is a polynomial over `R`
-  and `d : A → M` is an `R`-derivation
-  then for all `a : A` we have
-
-    `d(f(a)) = f.derivative (a) * d a`.
--/
-theorem Derivation.polynomial_eval₂ {R A M} [CommSemiring R] [CommSemiring A] [Algebra R A]
-    [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
-    (d : Derivation R A M) (f : R[X]) (a : A) :
-    d (f.eval₂ (algebraMap R A) a) = f.derivative.eval₂ (algebraMap R A) a • d a := by
-  /-
-    TODO : If `Polynomial.derivation_ext` is added (a version of
-    `mv_polynomial.derivation_ext` for one variable) then there would be a simpler proof
-    of the following result:
-    Show that both sides of the equation are derivations
-    on the polynomial ring (when regarded as functions of `f`).
-    Then by `ext`, they are equal iff they agree in the case `f = X`.
-    This case is follows from `eval₂_X` and `eval₂_one`.
-  -/
-  rw [eval₂_eq_sum_range, map_sum, sum_range_succ', leibniz,
-    leibniz_pow, map_algebraMap, zero_nsmul, smul_zero, smul_zero,
-    zero_add, add_zero]
-  by_cases f.natDegree = 0
-  · rw [h, sum_range_zero, derivative_of_natDegree_zero h, eval₂_zero, zero_smul]
-  · have : f.derivative.natDegree < f.natDegree := natDegree_derivative_lt h
-    rw [eval₂_eq_sum_range' (hn := this), sum_smul]
-    apply sum_congr rfl
-    intros
-    rw [leibniz, leibniz_pow, map_algebraMap, smul_zero, add_zero,
-      add_tsub_cancel_right, coeff_derivative, map_mul, IsScalarTower.algebraMap_smul,
-      algebraMap_eq_smul_one, algebraMap_eq_smul_one, smul_mul_assoc,
-      mul_smul_comm, one_mul, smul_mul_assoc, smul_mul_assoc, one_mul,
-      smul_assoc, smul_assoc, ←Nat.cast_succ, ←nsmul_eq_smul_cast]
-
-
-
 
 
 namespace PowerSeries
@@ -198,8 +161,7 @@ theorem trunc_D' (f : R⟦X⟧) (n : ℕ) : trunc (n-1) (D R f) = derivative (tr
     rw [succ_sub_one, trunc_D]
 
 theorem D_eval₂ (f : R[X]) (g : R⟦X⟧) :
-    D R (f.eval₂ (C R) g) = (derivative f).eval₂ (C R) g * D R g :=
-  Derivation.polynomial_eval₂ (D R) f g
+    D R (f.eval₂ (C R) g) = (derivative f).eval₂ (C R) g * D R g := Derivation_eval₂ (D R) f g
 
 /--
 A special case of the "chain rule" for formal power series in one variable:
