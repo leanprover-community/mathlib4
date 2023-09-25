@@ -836,8 +836,9 @@ instance [IsEmpty α] : Unique (Finset α) where
   default := ∅
   uniq _ := eq_empty_of_forall_not_mem isEmptyElim
 
-instance (i : α) : Unique ({i} : Finset α) :=
-  ⟨⟨⟨i, mem_singleton_self i⟩⟩, fun j ↦ Subtype.ext <| mem_singleton.mp j.2⟩
+instance (i : α) : Unique ({i} : Finset α) where
+  default := ⟨i, mem_singleton_self i⟩
+  uniq j := Subtype.ext <| mem_singleton.mp j.2
 
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
@@ -3846,14 +3847,12 @@ variable [DecidableEq α] {s t : Finset α}
 @[simps!]
 def finsetUnion (s t : Finset α) :
     ((s ∪ t : Finset α) : Set α) ≃ (s ∪ t : Set α) :=
-  subtypeEquivRight <| by simp
+  Equiv.Set.ofEq <| coe_union _ _
 
 /-- The disjoint union of finsets is a sum -/
-def finsetUnionEquivSum (s t : Finset α) (h : Disjoint s t) :
+def Equiv.Finset.union (s t : Finset α) (h : Disjoint s t) :
     (s ∪ t : Finset α) ≃ s ⊕ t :=
-  (Equiv.finsetUnion s t).trans <| Equiv.Set.union <| by
-    rw [← Finset.coe_inter, ← Finset.coe_empty]
-    exact h.le_bot
+  (Equiv.finsetUnion s t).trans <| Equiv.Set.union (disjoint_coe.mpr h).le_bot
 
 @[simp]
 theorem finsetUnionEquivSum_symm_inl (h : Disjoint s t) (x : s) :
