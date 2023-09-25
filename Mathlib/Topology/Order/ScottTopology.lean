@@ -200,10 +200,9 @@ variable [Preorder α] [Preorder β]
 open TopologicalSpace
 
 lemma UpperSetTopology_Monotone_coinduced_LE' {t₁ : TopologicalSpace α} [Topology.IsUpperSet α]
-  {f : α → β}  (hf : Monotone f) : coinduced f t₁ ≤ @Scott β _ := by
-  apply le_sup_of_le_left
+    {f : α → β}  (hf : Monotone f) : coinduced f t₁ ≤ @Scott β _ := le_sup_of_le_left (by
   rwa [← continuous_iff_coinduced_le,
-    ← @IsUpperSet.monotone_iff_continuous α β _ _ t₁ (upperSet β) _ _ ]
+    ← @IsUpperSet.monotone_iff_continuous α β _ _ t₁ (upperSet β) _ _ ])
 
 lemma UpperSetTopology_Monotone_coinduced_LE {t₁ : TopologicalSpace α} [Topology.IsUpperSet α]
     {t₂ : TopologicalSpace β} [IsScott β] {f : α → β} (hf : Monotone f) :
@@ -211,10 +210,9 @@ lemma UpperSetTopology_Monotone_coinduced_LE {t₁ : TopologicalSpace α} [Topol
   rw [IsScott.topology_eq β]
   apply UpperSetTopology_Monotone_coinduced_LE' hf
 
-lemma Monotone_From_UpperSetTopology_Continuous {t₁ : TopologicalSpace α} [Topology.IsUpperSet α]
-    {t₂ : TopologicalSpace β} [IsScott β] {f : α → β} (hf : Monotone f)  : Continuous f := by
-  rw [continuous_iff_coinduced_le]
-  apply UpperSetTopology_Monotone_coinduced_LE hf
+lemma Monotone_From_UpperSetTopology_Continuous {_ : TopologicalSpace α} [Topology.IsUpperSet α]
+    {_ : TopologicalSpace β} [IsScott β] {f : α → β} (hf : Monotone f)  : Continuous f :=
+  continuous_iff_coinduced_le.mpr (UpperSetTopology_Monotone_coinduced_LE hf)
 
 end morphisms
 
