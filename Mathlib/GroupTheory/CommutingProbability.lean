@@ -238,23 +238,21 @@ open Pointwise
 
 lemma _root_.Set.Finite.pow {A : Set G} (hA : A.Finite) (n : ℕ) : (A ^ n).Finite := by
   induction' n with n hn
-  · rw [pow_zero]
-    exact Set.finite_one
-  · rw [pow_succ]
-    exact hA.mul hn
+  · exact Set.finite_one
+  · exact hA.mul hn
+
+lemma _root_.Set.Infinite.mul {A B : Set G} (hA : A.Infinite) (hB : B.Infinite) :
+    (A * B).Infinite :=
+  Set.infinite_mul.mpr (Or.inl ⟨hA, hB.nonempty⟩)
 
 lemma _root_.Set.Infinite.pow_succ {A : Set G} (hA : A.Infinite) (n : ℕ) : (A ^ (n + 1)).Infinite := by
   induction' n with n hn
   · rwa [Nat.zero_add, pow_one]
-  · rw [pow_add, pow_one, Set.infinite_mul]
-    exact Or.inl ⟨hn, hA.nonempty⟩
+  · exact hA.mul hn
 
-lemma Set.ncard_smul (A : Set G) (g : G) : Set.ncard (g • A) = Set.ncard A := by
-  symm
-  apply Set.ncard_congr
-  · exact fun a => Set.smul_mem_smul_set
-  · exact fun a b _ _ h => mul_right_injective g h
-  · exact fun b ⟨a, ha, hb⟩ => ⟨a, ha, hb⟩
+lemma Set.ncard_smul (A : Set G) (g : G) : Set.ncard (g • A) = Set.ncard A :=
+  (Set.ncard_congr (fun a _ ↦ g • a) (fun _ => Set.smul_mem_smul_set)
+    (fun _ _ _ _ h => mul_right_injective g h) (fun _ ⟨a, ha, hb⟩ => ⟨a, ha, hb⟩)).symm
 
 -- growth lemma for powers of symmetric sets
 lemma mylem (A : Set G) (hA : A⁻¹ = A) (k : ℕ) (g : G)
