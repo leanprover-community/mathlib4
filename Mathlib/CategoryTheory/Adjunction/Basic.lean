@@ -610,6 +610,7 @@ namespace Equivalence
 
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`. -/
+@[pp_dot]
 def toAdjunction (e : C ≌ D) : e.functor ⊣ e.inverse :=
   mkOfUnitCounit
     ⟨e.unit, e.counit, by
@@ -624,16 +625,14 @@ def toAdjunction (e : C ≌ D) : e.functor ⊣ e.inverse :=
 #align category_theory.equivalence.to_adjunction CategoryTheory.Equivalence.toAdjunction
 
 @[simp]
-theorem asEquivalence_toAdjunction_unit {e : C ≌ D} :
-    e.functor.asEquivalence.toAdjunction.unit = e.unit :=
+theorem toAdjunction_unit (e : C ≌ D) : e.toAdjunction.unit = e.unit :=
   rfl
-#align category_theory.equivalence.as_equivalence_to_adjunction_unit CategoryTheory.Equivalence.asEquivalence_toAdjunction_unit
+#align category_theory.equivalence.as_equivalence_to_adjunction_unit CategoryTheory.Equivalence.toAdjunction_unitₓ
 
 @[simp]
-theorem asEquivalence_toAdjunction_counit {e : C ≌ D} :
-    e.functor.asEquivalence.toAdjunction.counit = e.counit :=
+theorem toAdjunction_counit (e : C ≌ D) : e.toAdjunction.counit = e.counit :=
   rfl
-#align category_theory.equivalence.as_equivalence_to_adjunction_counit CategoryTheory.Equivalence.asEquivalence_toAdjunction_counit
+#align category_theory.equivalence.as_equivalence_to_adjunction_counit CategoryTheory.Equivalence.toAdjunction_counitₓ
 
 end Equivalence
 
