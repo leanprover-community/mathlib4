@@ -336,8 +336,8 @@ theorem monomial_single_add : monomial (Finsupp.single n e + s) a = X n ^ e * mo
 #align mv_polynomial.monomial_single_add MvPolynomial.monomial_single_add
 
 theorem C_mul_X_pow_eq_monomial {s : σ} {a : R} {n : ℕ} :
-    C a * X s ^ n = monomial (Finsupp.single s n) a :=
-  by rw [← zero_add (Finsupp.single s n), monomial_add_single, C_apply]
+    C a * X s ^ n = monomial (Finsupp.single s n) a := by
+  rw [← zero_add (Finsupp.single s n), monomial_add_single, C_apply]
 #align mv_polynomial.C_mul_X_pow_eq_monomial MvPolynomial.C_mul_X_pow_eq_monomial
 
 theorem C_mul_X_eq_monomial {s : σ} {a : R} : C a * X s = monomial (Finsupp.single s 1) a := by
