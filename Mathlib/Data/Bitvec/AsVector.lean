@@ -121,7 +121,17 @@ variable {x y : BitVec n} {m : Nat}
 -/
 
 theorem zero_asVector :
-    (BitVec.zero m).asVector = Vector.replicate m false := by
+    (BitVec.zero n).asVector = Vector.replicate n false := by
+  sorry
+
+theorem negOne_asVector :
+    (-1 : BitVec n).asVector = Vector.replicate n true := by
+  sorry
+
+theorem one_asVector :
+    (1 : BitVec n).asVector = match n with
+      | 0 => sorry
+      | n+1 => Vector.snoc (.zero n) true := by
   sorry
 
 /-!

@@ -99,6 +99,4 @@ def ofLEList (bs : List Bool) : BitVec bs.length :=
 def ofBEList (bs : List Bool) : BitVec bs.length :=
   (ofLEList bs.reverse).cast (List.length_reverse ..)
 
-
-
 end Std.BitVec
