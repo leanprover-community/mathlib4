@@ -3167,6 +3167,30 @@ theorem Ico_ae_eq_Ioc : Ico a b =ᵐ[μ] Ioc a b :=
   Ico_ae_eq_Ioc' (measure_singleton a) (measure_singleton b)
 #align measure_theory.Ico_ae_eq_Ioc MeasureTheory.Ico_ae_eq_Ioc
 
+theorem restrict_Iio_eq_restrict_Iic : μ.restrict (Iio a) = μ.restrict (Iic a) :=
+  restrict_congr_set Iio_ae_eq_Iic
+
+theorem restrict_Ioi_eq_restrict_Ici : μ.restrict (Ioi a) = μ.restrict (Ici a) :=
+  restrict_congr_set Ioi_ae_eq_Ici
+
+theorem restrict_Ioo_eq_restrict_Ioc : μ.restrict (Ioo a b) = μ.restrict (Ioc a b) :=
+  restrict_congr_set Ioo_ae_eq_Ioc
+
+theorem restrict_Ioc_eq_restrict_Icc : μ.restrict (Ioc a b) = μ.restrict (Icc a b) :=
+  restrict_congr_set Ioc_ae_eq_Icc
+
+theorem restrict_Ioo_eq_restrict_Ico : μ.restrict (Ioo a b) = μ.restrict (Ico a b) :=
+  restrict_congr_set Ioo_ae_eq_Ico
+
+theorem restrict_Ioo_eq_restrict_Icc : μ.restrict (Ioo a b) = μ.restrict (Icc a b) :=
+  restrict_congr_set Ioo_ae_eq_Icc
+
+theorem restrict_Ico_eq_restrict_Icc : μ.restrict (Ico a b) = μ.restrict (Icc a b) :=
+  restrict_congr_set Ico_ae_eq_Icc
+
+theorem restrict_Ico_eq_restrict_Ioc : μ.restrict (Ico a b) = μ.restrict (Ioc a b) :=
+  restrict_congr_set Ico_ae_eq_Ioc
+
 end
 
 open Interval
