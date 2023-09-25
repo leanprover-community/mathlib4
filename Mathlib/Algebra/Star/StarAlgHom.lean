@@ -512,7 +512,7 @@ end Unital
 
 /-! ### Operations on the product type
 
-Note that this is copied from [`NonUnitalAlg`](Mathlib/Algebra/Hom/NonUnitalAlg). -/
+Note that this is copied from [`Algebra.Hom.NonUnitalAlg`](../Hom/NonUnitalAlg). -/
 
 
 namespace NonUnitalStarAlgHom
