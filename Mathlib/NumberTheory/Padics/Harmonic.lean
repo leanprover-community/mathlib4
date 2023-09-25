@@ -61,11 +61,9 @@ theorem not_int_of_not_padic_int {a : ℚ} (H : 1 < padicNorm 2 a) :
     rw [← zpow_lt_iff_lt hx]
     simpa only [zpow_zero]
 
-
 lemma padicValRat_two_pow_div (r : ℕ) : padicValRat 2 (1 / 2^r) = -r := by
-  rw [one_div, padicValRat.inv, neg_inj, padicValRat.pow (by simp)]
-  suffices padicValRat 2 2 = 1 by simp only [this, mul_one]
-  rw [←padicValRat.self (p := 2) one_lt_two]; simp only [Nat.cast_ofNat]
+  rw [← padicValRat.self_pow_div (p := 2) (r := r)]
+  simp only [one_div, Nat.cast_ofNat]
 
 /-- For `i` less than `n`, `2^Nat.log 2 n` does not divide `i` unless `i` is equal to it. -/
 lemma nat_log_not_dvd {n i : ℕ} (Hi₁ : 0 < i) (Hi₂ : i ≠ 2 ^ Nat.log 2 n) (Hi₃ : i ≤ n) :
