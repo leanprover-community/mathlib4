@@ -1529,8 +1529,7 @@ lemma ae_restrict_eq_zero_iff_ae_eq_zero_of_mem [MeasurableSpace E] [MeasurableS
   · apply NullMeasurableSet.compl
     convert f_mble (MeasurableSet.singleton 0)
 
-lemma ae_restrict_eq_zero_iff_ae_eq_zero_of_mem' [MeasurableSpace E] [MeasurableSingletonClass E]
-    {s : Set α} (s_mble : MeasurableSet s) :
+lemma ae_restrict_eq_zero_iff_ae_eq_zero_of_mem' {s : Set α} (s_mble : MeasurableSet s) :
     f =ᵐ[Measure.restrict μ s] 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 := by
   simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
              Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
