@@ -12,6 +12,10 @@ group is automatically open, in `MonoidHom.isOpenMap_of_sigmaCompact`.
 
 We deduce this from a similar statement for the orbits of continuous actions of sigma-compact groups
 on Baire spaces, given in `isOpenMap_smul_of_sigmaCompact`.
+
+Note that a sigma-compactness assumption is necessary. Indeed, let `G` be the real line with
+the discrete topology, and `H` the real line with the usual topology. Both are locally compact
+groups, and the identity from `G` to `H` is continuous but not open.
 -/
 
 open scoped Topology Pointwise
