@@ -929,10 +929,12 @@ def sumPiEquivProdPi (π : ι ⊕ ι' → Type _) : ((∀ i, π (inl i)) × ∀ 
   left_inv f := Prod.ext rfl rfl
   right_inv g := by ext (i | i) <;> rfl
 
+/-- The equivalence between a product of two dependent functions types and a single dependent
+function type. Basically a symmetric version of `Equiv.sumPiEquivProdPi`. -/
 @[simps!]
 def sumPiEquivProdPiRev (π : ι → Type _) (π' : ι' → Type _) :
     ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i, Sum.elim π π' i :=
-  Equiv.sumPiEquivProdPi (Sum.elim π π')
+  sumPiEquivProdPi (Sum.elim π π')
 
 /-- The type of functions on a sum type `α ⊕ β` is equivalent to the type of pairs of functions
 on `α` and on `β`. -/
