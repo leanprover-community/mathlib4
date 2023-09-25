@@ -52,7 +52,9 @@ are also included.
  * `integral_eq_integral_meas_lt`:
    A Bochner integral version of the most common special case of the layer cake formulas, stating
    that for an integrable and a.e.-nonnegative function f we have
-   ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt .
+   ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt. In this result, sigma-finiteness of μ does not need to be
+   explicitly assumed, because integrability guarantees sigma-finiteness of the restriction of μ
+   to the support of f.
 
 ## Tags
 
@@ -574,39 +576,15 @@ end LayercakeLT
 
 section LayercakeIntegral
 
-variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
+namespace MeasureTheory
 
-/-- If `f` is integrable, then for any `c > 0` the set `{x | ‖f x‖ ≥ c}` has finite measure. -/
-lemma Integrable.measure_const_le_norm_lt_top {E : Type*} [NormedAddCommGroup E]
-    {f : α → E} (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
-    μ {a : α | c ≤ ‖f a‖} < ∞ := by
-  borelize E
-  have norm_f_aemble : AEMeasurable (fun a ↦ ENNReal.ofReal ‖f a‖) μ :=
-    (ENNReal.measurable_ofReal.comp measurable_norm).comp_aemeasurable f_intble.1.aemeasurable
-  have markov := mul_meas_ge_le_lintegral₀ (μ := μ) norm_f_aemble (ENNReal.ofReal c)
-  have obs : ∫⁻ (a : α), ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ (a : α), ‖f a‖₊ ∂μ :=
-    lintegral_congr (fun x ↦ ofReal_norm_eq_coe_nnnorm (f x))
-  simp_rw [ENNReal.ofReal_le_ofReal_iff (norm_nonneg _), obs] at markov
-  have c_inv_ne_top : (ENNReal.ofReal c)⁻¹ ≠ ∞ :=
-    ENNReal.inv_ne_top.mpr (ENNReal.ofReal_pos.mpr c_pos).ne.symm
-  simpa [← mul_assoc,
-         ENNReal.inv_mul_cancel (ENNReal.ofReal_pos.mpr c_pos).ne.symm ENNReal.ofReal_ne_top]
-    using ENNReal.mul_lt_top c_inv_ne_top (lt_of_le_of_lt markov f_intble.2).ne
-
-/-- If `f` is integrable, then for any `c > 0` the set `{x | ‖f x‖ > c}` has finite measure. -/
-lemma Integrable.measure_const_lt_norm_lt_top {E : Type*} [NormedAddCommGroup E]
-    {f : α → E} (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
-    μ {a : α | c < ‖f a‖} < ∞ :=
-  lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le))
-    (Integrable.measure_const_le_norm_lt_top f_intble c_pos)
-
-variable {f : α → ℝ}
+variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {f : α → ℝ}
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
 measure. -/
 lemma Integrable.measure_const_le_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
     μ {a : α | c ≤ f a} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_) (Integrable.measure_const_le_norm_lt_top f_intble c_pos)
+  refine lt_of_le_of_lt (measure_mono ?_) (f_intble.measure_ge_lt_top c_pos)
   intro x hx
   simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
   exact hx.trans (le_abs_self _)
@@ -615,8 +593,7 @@ lemma Integrable.measure_const_le_lt_top (f_intble : Integrable f μ) {c : ℝ} 
 measure. -/
 lemma Integrable.measure_le_const_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_)
-          (Integrable.measure_const_le_norm_lt_top f_intble (show 0 < -c by linarith))
+  refine lt_of_le_of_lt (measure_mono ?_) (f_intble.measure_ge_lt_top (show 0 < -c by linarith))
   intro x hx
   simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
   exact (show -c ≤ - f x by linarith).trans (neg_le_abs_self _)
@@ -637,9 +614,8 @@ lemma Integrable.measure_lt_const_lt_top (f_intble : Integrable f μ) {c : ℝ} 
 
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
-For an integrable a.e.-nonnegative real-valued function `f` on a sigma-finite measure space,
-the Bochner integral of `f` can be written (roughly speaking) as:
-`∫ f ∂μ = ∫ t in 0..∞, μ {ω | f(ω) > t}`.
+For an integrable a.e.-nonnegative real-valued function `f`, the Bochner integral of `f` can be
+written (roughly speaking) as: `∫ f ∂μ = ∫ t in 0..∞, μ {ω | f(ω) > t}`.
 
 See `lintegral_eq_lintegral_meas_lt` for a version with Lebesgue integral `∫⁻` instead. -/
 theorem Integrable.integral_eq_integral_meas_lt
@@ -650,42 +626,15 @@ theorem Integrable.integral_eq_integral_meas_lt
   have f_nn' : 0 ≤ᵐ[μ.restrict s] f := ae_restrict_of_ae f_nn
   have f_intble' : Integrable f (μ.restrict s) := f_intble.restrict
   have f_aemble' : AEMeasurable f (μ.restrict s) := f_intble.aemeasurable.restrict
-  have obs : ∫ ω, f ω ∂μ = ∫ ω, f ω ∂(μ.restrict s) := by
-    -- The proof of this observation should be trivial. :(
-    refine (set_integral_eq_integral_of_ae_compl_eq_zero ?_).symm
-    simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
-                 MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at f_ae_zero_outside
-    simp only [Filter.Eventually, mem_ae_iff]
-    rw [Measure.restrict_apply₀] at f_ae_zero_outside
-    · apply le_antisymm _ (zero_le _)
-      rw [← f_ae_zero_outside]
-      apply measure_mono
-      intro x hx
-      aesop
-    · exact NullMeasurableSet.of_null f_ae_zero_outside
+  have obs : ∫ ω, f ω ∂μ = ∫ ω, f ω ∂(μ.restrict s) :=
+    integral_eq_integral_restrict f_ae_zero_outside f_intble.aemeasurable.restrict.nullMeasurable
   rw [obs]
   have obs' : ∀ t ∈ Ioi (0 : ℝ), (μ {a : α | t < f a}) = ((μ.restrict s) {a : α | t < f a}) := by
-    -- The proof of this observation should be trivial. :(
     intro t ht
-    rw [Measure.restrict_apply₀]
-    · simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
-                 MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at f_ae_zero_outside
-      rw [Measure.restrict_apply₀] at f_ae_zero_outside
-      · apply le_antisymm _ (measure_mono (inter_subset_left _ _))
-        apply (measure_mono (Eq.symm (inter_union_compl {x | t < f x} s)).le).trans
-        apply (measure_union_le _ _).trans
-        have wow : μ ({x | t < f x} ∩ sᶜ) = 0 := by
-          apply le_antisymm _ (zero_le _)
-          rw [← f_ae_zero_outside]
-          apply measure_mono
-          gcongr
-          intro x hx
-          simp only [mem_setOf_eq, mem_compl_iff] at hx ⊢
-          have : 0 < f x := lt_trans ht hx
-          exact this.ne.symm
-        simp only [wow, add_zero, le_refl]
-      · exact NullMeasurableSet.of_null f_ae_zero_outside
-    · exact f_aemble'.nullMeasurable measurableSet_Ioi
+    convert f_intble.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_zero
+            f_ae_zero_outside (measurableSet_Ioi) ?_
+    simp only [mem_Ioi, not_lt] at ht ⊢
+    exact ht.le
   have obs'' := @set_integral_congr ℝ ℝ _ _ (fun t ↦ ENNReal.toReal (μ {a : α | t < f a}))
           (fun t ↦ ENNReal.toReal ((μ.restrict s) {a : α | t < f a})) _ (volume : Measure ℝ) _
           (measurableSet_Ioi (a := (0 : ℝ)))
@@ -710,5 +659,7 @@ theorem Integrable.integral_eq_integral_meas_lt
     · apply Measurable.aestronglyMeasurable
       refine Measurable.ennreal_toReal ?_
       exact Antitone.measurable (fun _ _ hst ↦ measure_mono (fun _ h ↦ lt_of_le_of_lt hst h))
+
+end MeasureTheory
 
 end LayercakeIntegral

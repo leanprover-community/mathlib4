@@ -825,6 +825,12 @@ theorem Integrable.measure_ge_lt_top {f : α → β} (hf : Integrable f μ) {ε 
     (memℒp_one_iff_integrable.2 hf).snorm_ne_top
 #align measure_theory.integrable.measure_ge_lt_top MeasureTheory.Integrable.measure_ge_lt_top
 
+/-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
+where `‖f x‖ > ε` is finite for all positive `ε`. -/
+lemma Integrable.measure_gt_lt_top {f : α → β} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
+    μ {x | ε < ‖f x‖} < ∞ :=
+  lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le)) (hf.measure_ge_lt_top hε)
+
 theorem LipschitzWith.integrable_comp_iff_of_antilipschitz {K K'} {f : α → β} {g : β → γ}
     (hg : LipschitzWith K g) (hg' : AntilipschitzWith K' g) (g0 : g 0 = 0) :
     Integrable (g ∘ f) μ ↔ Integrable f μ := by
@@ -1443,23 +1449,57 @@ theorem toL1_smul' (f : α → β) (hf : Integrable f μ) (k : 𝕜) :
 
 end Integrable
 
-end MeasureTheory
-
 section restrict
 
 variable {E : Type*} [NormedAddCommGroup E] {f : α → E}
 
-lemma MeasureTheory.HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
+lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
     HasFiniteIntegral f (μ.restrict s) := by
   refine lt_of_le_of_lt ?_ h
   convert lintegral_mono_set (μ := μ) (s := s) (t := univ) (f := fun x ↦ ↑‖f x‖₊) (subset_univ s)
   exact Measure.restrict_univ.symm
 
-lemma MeasureTheory.Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
+lemma Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
     Integrable f (μ.restrict s) :=
   ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
 
+lemma Integrable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_zero
+    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+    {f : α → E} (f_intble : Integrable f μ) {s : Set α}
+    (hs : f =ᵐ[Measure.restrict μ sᶜ] 0) {t : Set E} (t_mble : MeasurableSet t) (ht : 0 ∉ t) :
+    (μ (f ⁻¹' t)) = ((μ.restrict s) (f ⁻¹' t)) := by
+  rw [Measure.restrict_apply₀]
+  · simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
+                MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at hs
+    rw [Measure.restrict_apply₀] at hs
+    · apply le_antisymm _ (measure_mono (inter_subset_left _ _))
+      apply (measure_mono (Eq.symm (inter_union_compl (f ⁻¹' t) s)).le).trans
+      apply (measure_union_le _ _).trans
+      have obs : μ ((f ⁻¹' t) ∩ sᶜ) = 0 := by
+        apply le_antisymm _ (zero_le _)
+        rw [← hs]
+        apply measure_mono
+        gcongr
+        intro x hx hfx
+        simp only [mem_preimage, mem_setOf_eq] at hx hfx
+        exact ht (hfx ▸ hx)
+      simp only [obs, add_zero, le_refl]
+    · exact NullMeasurableSet.of_null hs
+  · exact f_intble.restrict.aemeasurable.nullMeasurable t_mble
+
+lemma restrict_aeeq_zero_iff_ae_mem_eq_zero [MeasurableSpace E] [MeasurableSingletonClass E]
+    {s : Set α} (f_mble : NullMeasurable f (μ.restrict s)) :
+    f =ᵐ[Measure.restrict μ s] 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 := by
+  simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
+             Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
+  rw [Measure.restrict_apply₀]
+  · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
+  · apply NullMeasurableSet.compl
+    convert f_mble (MeasurableSet.singleton 0)
+
 end restrict
+
+end MeasureTheory
 
 open MeasureTheory
 

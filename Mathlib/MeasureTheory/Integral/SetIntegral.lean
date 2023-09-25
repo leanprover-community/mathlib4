@@ -403,6 +403,12 @@ theorem set_integral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s →
   set_integral_eq_integral_of_ae_compl_eq_zero (eventually_of_forall h)
 #align measure_theory.set_integral_eq_integral_of_forall_compl_eq_zero MeasureTheory.set_integral_eq_integral_of_forall_compl_eq_zero
 
+lemma integral_eq_integral_restrict [MeasurableSpace E] [MeasurableSingletonClass E]
+    (hs : f =ᵐ[Measure.restrict μ sᶜ] 0) (f_mble : NullMeasurable f (μ.restrict sᶜ)) :
+    ∫ ω, f ω ∂μ = ∫ ω in s, f ω ∂μ := by
+  refine (set_integral_eq_integral_of_ae_compl_eq_zero ?_).symm
+  rwa [restrict_aeeq_zero_iff_ae_mem_eq_zero f_mble] at hs
+
 theorem set_integral_neg_eq_set_integral_nonpos [LinearOrder E] {f : α → E}
     (hf : AEStronglyMeasurable f μ) :
     ∫ x in {x | f x < 0}, f x ∂μ = ∫ x in {x | f x ≤ 0}, f x ∂μ := by
