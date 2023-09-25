@@ -59,7 +59,7 @@ theorem prod_Icc_factorial : ∀ n : ℕ, (∏ x in Icc 1 n, x !) = sf n
     Nat.succ_eq_add_one, mul_comm]
 
 @[simp]
-theorem prod_range_add_one_eq_superFactorial : ∀ n : ℕ, (∏ x in range n, (x + 1) !) = sf n
+theorem prod_range_factorial_succ : ∀ n : ℕ, ∏ x in range n, (x + 1)! = sf n
   | 0 => rfl
   | n + 1 => by
     rw [Finset.prod_range_succ, prod_range_add_one_eq_superFactorial n, superFactorial, mul_comm,
