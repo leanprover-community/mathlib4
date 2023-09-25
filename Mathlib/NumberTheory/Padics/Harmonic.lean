@@ -16,9 +16,6 @@ https://kconrad.math.uconn.edu/blurbs/gradnumthy/padicharmonicsum.pdf
 
 -/
 
-namespace Counterexample
-
-
 open BigOperators
 
 /-- The nth-harmonic number defined as a finset sum of consecutive reciprocals. -/
@@ -39,7 +36,6 @@ lemma finset_range_sdiff_singleton_nonempty {c n : ℕ} (hn : 2 ≤ n) :
   refine' ⟨by linarith, fun Hnot => _⟩
   suffices n = 1 by linarith
   rw [← Finset.card_range n, ← Finset.card_singleton c, Hnot]
-
 
 lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 2 ≤ n) :
     ∑ x in Finset.range n \ {c}, 1 / (x + 1 : ℚ) ≠ 0 := by
@@ -103,7 +99,7 @@ lemma padicValRat_ge_neg_nat_log_ne {n q : ℕ}(Hq₁ : 0 < q)(Hq₂ : q ≤ n)(
   exact (fun Hnot => nat_log_not_dvd (n := n) Hq₁ Hq₃ Hq₂
     (Hnot ▸ pow_padicValNat_dvd (p := 2) (n := q)))
 
-lemma padicValRat_ge_neg_Nat_log_ge {p n q : ℕ}[hp : Fact (Nat.Prime p)] (Hq : q ≤ n):
+lemma padicValRat_ge_neg_Nat_log_ge {p n q : ℕ}[hp : Fact (Nat.Prime p)](Hq : q ≤ n) :
     -Nat.log p n ≤ padicValRat p (1 / q) := by
   rw [one_div, padicValRat.inv, padicValRat.of_nat, neg_le_neg_iff, Nat.cast_le]
   exact le_nat_log_of_le Hq

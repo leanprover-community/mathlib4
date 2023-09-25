@@ -3,7 +3,6 @@ import Counterexamples.CharPZeroNeCharZero
 import Counterexamples.Cyclotomic105
 import Counterexamples.DirectSumIsInternal
 import Counterexamples.Girard
-import Counterexamples.HarmonicNotInteger
 import Counterexamples.HomogeneousPrimeNotPrime
 import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
