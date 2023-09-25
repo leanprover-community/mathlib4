@@ -318,9 +318,8 @@ lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f :=
     rw [isOpen_iff_upper_and_DirSupInacc]
     constructor
     · exact IsUpperSet.preimage (isUpperSet_of_isOpen hu) h.monotone
-    · intros d hd₁ hd₂ a hd₃ ha
-      rw [isOpen_iff_upper_and_DirSupInacc] at hu
-      exact image_inter_nonempty_iff.mp $ hu.2 (hd₁.image f)
+    · rw [isOpen_iff_upper_and_DirSupInacc] at hu
+      exact fun _ hd₁ hd₂ _ hd₃ ha => image_inter_nonempty_iff.mp $ hu.2 (hd₁.image f)
           (directedOn_image.mpr (hd₂.mono (by simp only [Order.Preimage]; apply h.monotone)))
           (h hd₁ hd₂ hd₃) ha
   · intros hf d d₁ d₂ a d₃
