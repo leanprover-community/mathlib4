@@ -130,11 +130,11 @@ lemma PosSemidef.eigenvalues_nonneg [DecidableEq n] [DecidableEq 𝕜] {A : Matr
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
   (hA.re_dotProduct_nonneg _).trans_eq (hA.1.eigenvalues_eq _).symm
 
-lemma eigenvalues_conjTranspose_mul_self_nonneg {A : Matrix m n 𝕜} [DecidableEq n] [DecidableEq 𝕜] :
+lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] [DecidableEq 𝕜] :
     ∀ i , 0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
   (Matrix.posSemidef_conjTranspose_mul_self _).eigenvalues_nonneg
 
-lemma eigenvalues_self_mul_conjTranspose_nonneg {A : Matrix m n 𝕜} [DecidableEq m] [DecidableEq 𝕜] :
+lemma eigenvalues_self_mul_conjTranspose_nonneg (A : Matrix m n 𝕜) [DecidableEq m] [DecidableEq 𝕜] :
     ∀ i , 0 ≤ (isHermitian_mul_conjTranspose_self A).eigenvalues i :=
   (Matrix.posSemidef_self_mul_conjTranspose _).eigenvalues_nonneg
 
