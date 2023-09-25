@@ -127,7 +127,23 @@ def bifunctorComp₁₂ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ where
 
 variable
   {I₁ I₂ I₁₂ I₃ J : Type*} (p : I₁ × I₂ → I₁₂) (q : I₁₂ × I₃ → J)
-    (r : I₁ × I₂ × I₃ → J) (hpqr : ∀ i₁ i₂ i₃, r ⟨i₁, i₂, i₃⟩ = q ⟨p ⟨i₁, i₂⟩, i₃⟩)
+    (r : I₁ × I₂ × I₃ → J) (hr : ∀ (i : I₁ × I₂ × I₃), r i = q ⟨p ⟨i.1, i.2.1⟩, i.2.2⟩)
+
+variable (I₃)
+
+def p' : I₁ × I₂ × I₃ → I₁₂ × I₃ := fun ⟨i₁, i₂, i₃⟩ => ⟨p ⟨i₁, i₂⟩, i₃⟩
+
+variable (I₁ I₂)
+
+@[simps]
+def π₁₂_₃ : I₁ × I₂ × I₃ → I₁ × I₂ := fun ⟨i₁, i₂, _⟩ => ⟨i₁, i₂⟩
+
+variable {I₁ I₂ I₃} (I₁₂)
+
+def γ (X₃ : GradedObject I₃ C₃) : GradedObject (I₁₂ × I₃) (C₁₂ ⥤ C₄) :=
+  fun ⟨_, k⟩ => G.flip.obj (X₃ k)
+
+variable {I₁₂}
 
 noncomputable def mapBifunctor₁₂BifunctorMapObj (X₁ : GradedObject I₁ C₁)
     (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
@@ -142,10 +158,48 @@ variable (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ :
   [HasMap (((mapBifunctorFunctor F₁₂ I₁ I₂).obj X₁).obj X₂) p]
   [HasMap (((mapBifunctorFunctor G I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ p X₁ X₂)).obj X₃) q]
   [HasMap ((((mapTrifunctorFunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r]
+  [HasMap ((((mapTrifunctorFunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) (p' I₃ p)]
+  [HasMap (((((mapTrifunctorFunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj (p' I₃ p)) q]
+  [HasMap ((comap _ (π₁₂_₃ I₁ I₂ I₃)).obj (((mapBifunctorFunctor F₁₂ I₁ I₂).obj X₁).obj X₂)) (p' I₃ p)]
+  [PreservesMap (γ G I₁₂ X₃) (p' I₃ p) ((comap _ (π₁₂_₃ I₁ I₂ I₃)).obj (((mapBifunctorFunctor F₁₂ I₁ I₂).obj X₁).obj X₂))]
 
-/-def mapBifunctor₁₂BifunctorMapObjIso :
-  mapBifunctor₁₂BifunctorMapObj F₁₂ G p q X₁ X₂ X₃ ≅
-    mapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ := sorry-/
+attribute [local ext] mapObj_ext
+
+noncomputable def mapBifunctor₁₂BifunctorMapObjIso₁ :
+    ((mapBifunctorFunctor G I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ p X₁ X₂)).obj X₃ ≅
+    (applyFunctorsObj (γ G I₁₂ X₃)).obj
+      (((comap _ (π₁₂_₃ I₁ I₂ I₃)).obj (((mapBifunctorFunctor F₁₂ I₁ I₂).obj X₁).obj X₂)).mapObj (p' I₃ p)) :=
+  isoMk  _ _ (fun ⟨i₁₂, j⟩ => by
+    refine' (G.mapIso _).app (X₃ j)
+    exact
+      { hom := descMapObj _ _ (fun ⟨i₁, i₂⟩ _ =>
+          ((comap C₁₂ (π₁₂_₃ I₁ I₂ I₃)).obj
+            (((mapBifunctorFunctor F₁₂ I₁ I₂).obj X₁).obj X₂)).ιMapObj (p' I₃ p) ⟨i₁, i₂, j⟩ ⟨i₁₂, j⟩ (by aesop))
+        inv := descMapObj _ _ (fun ⟨i₁, i₂, i₃⟩ h =>
+          (((mapBifunctorFunctor F₁₂ I₁ I₂).obj X₁).obj X₂).ιMapObj p ⟨i₁, i₂⟩ i₁₂ (congr_arg _root_.Prod.fst h))
+        inv_hom_id := by
+          ext ⟨i₁, i₂, i₃⟩ h
+          obtain rfl : i₃ = j := congr_arg _root_.Prod.snd h
+          simp })
+
+noncomputable def mapBifunctor₁₂BifunctorMapObjIso₂ :
+    ((((mapTrifunctorFunctor
+      (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj (p' I₃ p) ≅
+    (applyFunctorsObj (γ G I₁₂ X₃)).obj
+      (((comap _ (π₁₂_₃ I₁ I₂ I₃)).obj (((mapBifunctorFunctor F₁₂ I₁ I₂).obj X₁).obj X₂)).mapObj (p' I₃ p)) :=
+  (comapObjApplyFunctorsObjObjMapObjIso (γ G I₁₂ X₃) (p' I₃ p) ((comap _ (π₁₂_₃ I₁ I₂ I₃)).obj (((mapBifunctorFunctor F₁₂ I₁ I₂).obj X₁).obj X₂)))
+
+noncomputable def mapBifunctor₁₂BifunctorMapObjIso₃ :
+    (((((mapTrifunctorFunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj (p' I₃ p)).mapObj q ≅
+      mapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ :=
+  ((((mapTrifunctorFunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObjMapObjIso (p' I₃ p) q r hr
+
+noncomputable def mapBifunctor₁₂BifunctorMapObjIso :
+    mapBifunctor₁₂BifunctorMapObj F₁₂ G p q X₁ X₂ X₃ ≅
+      mapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ :=
+  mapIso (mapBifunctor₁₂BifunctorMapObjIso₁ F₁₂ G p X₁ X₂ X₃ ≪≫
+    (mapBifunctor₁₂BifunctorMapObjIso₂ F₁₂ G p X₁ X₂ X₃).symm) q ≪≫
+      mapBifunctor₁₂BifunctorMapObjIso₃ F₁₂ G p q r hr X₁ X₂ X₃
 
 end
 

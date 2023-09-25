@@ -24,7 +24,7 @@ end
 
 section
 
-variable {I J : Type*} (X Y Z : GradedObject I C) (φ : X ⟶ Y) (ψ : Y ⟶ Z) (p : I → J)
+variable {I J : Type*} (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 
 abbrev HasMap : Prop := ∀ (j : J), HasCoproduct (fun (i : (p ⁻¹' {j})) => X i)
 
@@ -89,6 +89,13 @@ variable {X Z}
 
 @[simp]
 lemma mapMap_comp : mapMap (φ ≫ ψ) p = mapMap φ p ≫ mapMap ψ p := by aesop_cat
+
+@[simps]
+noncomputable def mapIso : X.mapObj p ≅ Y.mapObj p where
+  hom := mapMap e.hom p
+  inv := mapMap e.inv p
+  hom_inv_id := by rw [← mapMap_comp, e.hom_inv_id, mapMap_id]
+  inv_hom_id := by rw [← mapMap_comp, e.inv_hom_id, mapMap_id]
 
 variable (C)
 
