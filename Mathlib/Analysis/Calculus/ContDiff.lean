@@ -84,7 +84,7 @@ theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
 /-- Constants are `C^∞`.
 -/
 theorem contDiff_const {c : F} : ContDiff 𝕜 n fun _ : E => c := by
-  suffices h : ContDiff 𝕜 ∞ fun _ : E => c; · exact h.of_le le_top
+  suffices h : ContDiff 𝕜 ∞ fun _ : E => c from h.of_le le_top
   rw [contDiff_top_iff_fderiv]
   refine' ⟨differentiable_const c, _⟩
   rw [fderiv_const]
@@ -142,7 +142,7 @@ theorem iteratedFDeriv_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) :
 /-- Unbundled bounded linear functions are `C^∞`.
 -/
 theorem IsBoundedLinearMap.contDiff (hf : IsBoundedLinearMap 𝕜 f) : ContDiff 𝕜 n f := by
-  suffices h : ContDiff 𝕜 ∞ f; · exact h.of_le le_top
+  suffices h : ContDiff 𝕜 ∞ f from h.of_le le_top
   rw [contDiff_top_iff_fderiv]
   refine' ⟨hf.differentiable, _⟩
   simp_rw [hf.fderiv]
@@ -186,7 +186,7 @@ theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
 /-- Bilinear functions are `C^∞`.
 -/
 theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContDiff 𝕜 n b := by
-  suffices h : ContDiff 𝕜 ∞ b; · exact h.of_le le_top
+  suffices h : ContDiff 𝕜 ∞ b from h.of_le le_top
   rw [contDiff_top_iff_fderiv]
   refine' ⟨hb.differentiable, _⟩
   simp only [hb.fderiv]
@@ -429,8 +429,8 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_right (g : G ≃L[𝕜] 
     simp only [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, comp_apply,
       ContinuousMultilinearMap.compContinuousLinearMapEquivL_apply,
       ContinuousMultilinearMap.compContinuousLinearMap_apply]
-    rw [ContinuousLinearEquiv.comp_right_fderivWithin _ (g.uniqueDiffOn_preimage_iff.2 hs x hx)]
-    rfl
+    rw [ContinuousLinearEquiv.comp_right_fderivWithin _ (g.uniqueDiffOn_preimage_iff.2 hs x hx),
+      ContinuousLinearMap.coe_comp', coe_coe, comp_apply, tail_def, tail_def]
 #align continuous_linear_equiv.iterated_fderiv_within_comp_right ContinuousLinearEquiv.iteratedFDerivWithin_comp_right
 
 /-- The iterated derivative of the composition with a linear map on the right is

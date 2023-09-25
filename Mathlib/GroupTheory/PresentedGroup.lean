@@ -3,7 +3,7 @@ Copyright (c) 2019 Michael Howes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Howes
 -/
-import Mathlib.GroupTheory.FreeGroup
+import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.QuotientGroup
 
 #align_import group_theory.presented_group from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
