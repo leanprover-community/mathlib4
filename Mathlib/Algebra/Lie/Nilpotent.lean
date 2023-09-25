@@ -528,7 +528,7 @@ theorem LieModule.isNilpotent_of_top_iff :
 #align lie_module.is_nilpotent_of_top_iff LieModule.isNilpotent_of_top_iff
 
 @[simp] lemma LieModule.isNilpotent_of_top_iff' :
-    IsNilpotent R L (⊤ : LieSubmodule R L M) ↔ IsNilpotent R L M :=
+    IsNilpotent R L {x // x ∈ (⊤ : LieSubmodule R L M)} ↔ IsNilpotent R L M :=
   Equiv.lieModule_isNilpotent_iff 1 (LinearEquiv.ofTop ⊤ rfl) fun _ _ ↦ rfl
 
 end Morphisms
