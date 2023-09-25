@@ -103,6 +103,31 @@ lemma same_level : FactorsThrough χ n := ⟨dvd_refl n, χ, (changeLevel_self �
 
 end FactorsThrough
 
+lemma level_one (χ : DirichletCharacter R 1) : χ = 1 := by
+  ext
+  simp [units_eq_one]
+
+lemma level_one' (hn : n = 1) : χ = 1 := by
+  subst hn
+  exact level_one _
+
+instance : Subsingleton (DirichletCharacter R 1) := by
+  refine subsingleton_iff.mpr (fun χ χ' ↦ ?_)
+  simp [level_one]
+
+noncomputable instance : Inhabited (DirichletCharacter R n) := ⟨1⟩
+
+noncomputable instance : Unique (DirichletCharacter R 1) := Unique.mk' (DirichletCharacter R 1)
+
+lemma changeLevel_trivial {d : ℕ} (h : d ∣ n) :
+    changeLevel h (1 : DirichletCharacter R d) = 1 := by
+  simp [changeLevel]
+
+lemma factorsThrough_one_iff : FactorsThrough χ 1 ↔ χ = 1 := by
+  refine ⟨fun ⟨_, χ₀, hχ₀⟩ ↦ ?_,
+          fun h ↦ ⟨one_dvd n, 1, by rw [h, changeLevel_trivial]⟩⟩
+  rwa [level_one χ₀, changeLevel_trivial] at hχ₀
+
 /-- The set of natural numbers for which a Dirichlet character is periodic. -/
 def conductorSet : Set ℕ := {x : ℕ | FactorsThrough χ x}
 
@@ -123,22 +148,21 @@ lemma conductor_dvd_level : conductor χ ∣ n := (conductor_mem_conductorSet χ
 
 lemma factorsThrough_conductor : FactorsThrough χ (conductor χ) := conductor_mem_conductorSet χ
 
-lemma conductor_one (hn : 0 < n) : conductor (1 : DirichletCharacter R n) = 1 := by
-  suffices : conductor (1 : DirichletCharacter R n) ≤ 1
-  · cases' Nat.le_one_iff_eq_zero_or_eq_one.mp this with h1 h2
-    · have := FactorsThrough.dvd (1 : DirichletCharacter R n) <| FactorsThrough_conductor 1
-      aesop
-    · exact h2
-  · apply Nat.sInf_le ((mem_conductorSet_iff _).mpr ⟨one_dvd _, 1, _⟩)
-    ext
-    rw [changeLevel_def]
-    simp
+lemma conductor_ne_zero (hn : n ≠ 0) : conductor χ ≠ 0 :=
+  fun h ↦ hn <| Nat.eq_zero_of_zero_dvd <| h ▸ conductor_dvd_level _
+
+lemma conductor_one (hn : n ≠ 0) : conductor (1 : DirichletCharacter R n) = 1 := by
+  suffices : FactorsThrough (1 : DirichletCharacter R n) 1
+  · have h : conductor (1 : DirichletCharacter R n) ≤ 1 :=
+      Nat.sInf_le <| (mem_conductorSet_iff _).mpr this
+    exact Nat.le_antisymm h (Nat.pos_of_ne_zero <| conductor_ne_zero _ hn)
+  · exact (factorsThrough_one_iff _).mpr rfl
 
 variable {χ}
 
 lemma eq_one_iff_conductor_eq_one (hn : n ≠ 0) : χ = 1 ↔ conductor χ = 1 := by
   refine ⟨fun h ↦ h ▸ conductor_one hn, fun hχ ↦ ?_⟩
-  obtain ⟨h', χ₀, h⟩ := FactorsThrough_conductor χ
+  obtain ⟨h', χ₀, h⟩ := factorsThrough_conductor χ
   exact (level_one' χ₀ hχ ▸ h).trans <| changeLevel_trivial h'
 
 lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 := by
