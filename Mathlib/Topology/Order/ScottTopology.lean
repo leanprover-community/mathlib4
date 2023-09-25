@@ -80,11 +80,8 @@ subset of `u`.
 def scottHausdorff : TopologicalSpace α :=
 { IsOpen := fun u => ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u,
-  isOpen_univ := by
-    rintro d ⟨b, hb⟩ _ _ _ _
-    exact ⟨b, hb, (Ici b ∩ d).subset_univ⟩,
-  isOpen_inter := by
-    intros s t hs ht d hd₁ hd₂ a hd₃ ha
+  isOpen_univ := fun d ⟨b, hb⟩ _ _ _ _ => ⟨b, hb, (Ici b ∩ d).subset_univ⟩
+  isOpen_inter := fun s t hs ht d hd₁ hd₂ a hd₃ ha => by
     obtain ⟨b₁, hb₁d, hb₁ds⟩ := hs hd₁ hd₂ hd₃ ha.1
     obtain ⟨b₂, hb₂d, hb₂dt⟩ := ht hd₁ hd₂ hd₃ ha.2
     obtain ⟨c, hcd, hc⟩ := hd₂ b₁ hb₁d b₂ hb₂d
@@ -95,8 +92,7 @@ def scottHausdorff : TopologicalSpace α :=
           apply subset_inter (Ici_subset_Ici.mpr hc.1) (Ici_subset_Ici.mpr hc.2) }
         _ = (Ici b₁ ∩ d) ∩ (Ici b₂ ∩ d) := by rw [inter_inter_distrib_right]
         _ ⊆ s ∩ t := inter_subset_inter hb₁ds hb₂dt
-  isOpen_sUnion := by
-    rintro s h d hd₁ hd₂ a hd₃ ⟨s₀, hs₀s, has₀⟩
+  isOpen_sUnion := fun s h d hd₁ hd₂ a hd₃ ⟨s₀, hs₀s, has₀⟩ => by
     obtain ⟨b, hbd, hbds₀⟩ := h s₀ hs₀s hd₁ hd₂ hd₃ has₀
     exact ⟨b, hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩ }
 
