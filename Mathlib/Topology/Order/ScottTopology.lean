@@ -115,7 +115,7 @@ def Scott : TopologicalSpace α := upperSet α ⊔ scottHausdorff
 
 lemma upperSet_le_Scott : upperSet α ≤  Scott := le_sup_left
 
-lemma ScottHausdorff_le_Scott : @scottHausdorff α ≤  @Scott α := le_sup_right
+lemma scottHausdorff_le_Scott : @scottHausdorff α ≤ @Scott α := le_sup_right
 
 end Topology
 
