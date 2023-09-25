@@ -3855,12 +3855,12 @@ def Equiv.Finset.union (s t : Finset α) (h : Disjoint s t) :
   (Equiv.finsetUnion s t).trans <| Equiv.Set.union (disjoint_coe.mpr h).le_bot
 
 @[simp]
-theorem finsetUnionEquivSum_symm_inl (h : Disjoint s t) (x : s) :
+theorem Equiv.Finset.union_symm_inl (h : Disjoint s t) (x : s) :
     (finsetUnionEquivSum s t h).symm (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
   rfl
 
 @[simp]
-theorem finsetUnionEquivSum_symm_inr (h : Disjoint s t) (y : t) :
+theorem Equiv.Finset.union_symm_inr (h : Disjoint s t) (y : t) :
     (finsetUnionEquivSum s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
   rfl
 
