@@ -949,9 +949,10 @@ theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
   exact f.forall_congr_left.symm
 
 theorem piSum_preimage_univ_pi (π : ι ⊕ ι' → Type _) (t : ∀ i, Set (π i)) :
-    piSum π ⁻¹' pi univ t = pi univ (fun i => t (.inl i)) ×ˢ pi univ fun i => t (.inr i) := by
+    sumPiEquivProdPi π ⁻¹' pi univ t =
+    pi univ (fun i => t (.inl i)) ×ˢ pi univ fun i => t (.inr i) := by
   ext
-  simp_rw [mem_preimage, mem_prod, mem_univ_pi, piSum_apply]
+  simp_rw [mem_preimage, mem_prod, mem_univ_pi, sumPiEquivProdPi_apply]
   constructor
   · intro h; constructor <;> intro i <;> apply h
   · rintro ⟨h₁, h₂⟩ (i|i) <;> simp <;> apply_assumption
