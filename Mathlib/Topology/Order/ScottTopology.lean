@@ -31,12 +31,12 @@ This file introduces the Scott topology on a preorder.
 
 ## Implementation notes
 
-A type synonym `WithScottTopology` is introduced and for a preorder `α`, `WithScottTopology α`
+A type synonym `Topology.WithScott` is introduced and for a preorder `α`, `Topology.WithScott α`
 is made an instance of `topological_space` by the `Topology.Scott`.
 
 We define a mixin class `ScottTopology` for the class of types which are both a preorder and a
 topology and where the topology is the `Topology.Scott`.
-It is shown that `WithScottTopology α` is an instance of `ScottTopology`.
+It is shown that `Topology.WithScott α` is an instance of `ScottTopology`.
 
 A class `Scott` is defined in `Topology.OmegaCompletePartialOrder` and made an instance of a
 topological space by defining the open sets to be those which have characteristic functions which
@@ -123,42 +123,42 @@ end preorder
 /--
 Type synonym for a preorder equipped with the Scott topology
 -/
-def WithScottTopology := α
+def Topology.WithScott := α
 
 variable {α β}
 
-namespace WithScottTopology
+namespace Topology.WithScott
 
-/-- `toScott` is the identity function to the `WithScottTopology` of a type.  -/
-@[match_pattern] def toScott : α ≃ WithScottTopology α := Equiv.refl _
+/-- `toScott` is the identity function to the `Topology.WithScott` of a type.  -/
+@[match_pattern] def toScott : α ≃ Topology.WithScott α := Equiv.refl _
 
-/-- `ofScott` is the identity function from the `WithScottTopology` of a type.  -/
-@[match_pattern] def ofScott : WithScottTopology α ≃ α := Equiv.refl _
+/-- `ofScott` is the identity function from the `Topology.WithScott` of a type.  -/
+@[match_pattern] def ofScott : Topology.WithScott α ≃ α := Equiv.refl _
 
 @[simp] lemma toScott_symm_eq : (@toScott α).symm = ofScott := rfl
 @[simp] lemma ofScott_symm_eq : (@ofScott α).symm = toScott := rfl
-@[simp] lemma toScott_ofScott (a : WithScottTopology α) : toScott (ofScott a) = a := rfl
+@[simp] lemma toScott_ofScott (a : Topology.WithScott α) : toScott (ofScott a) = a := rfl
 @[simp] lemma ofScott_toScott (a : α) : ofScott (toScott a) = a := rfl
 -- porting note: removed @[simp] to make linter happy
 lemma toScott_inj {a b : α} : toScott a = toScott b ↔ a = b := Iff.rfl
 -- porting note: removed @[simp] to make linter happy
-lemma ofScott_inj {a b : WithScottTopology α} : ofScott a = ofScott b ↔ a = b :=
+lemma ofScott_inj {a b : Topology.WithScott α} : ofScott a = ofScott b ↔ a = b :=
 Iff.rfl
 
-/-- A recursor for `WithScottTopology`. Use as `induction x using WithScottTopology.rec`. -/
-protected def rec {β : WithScottTopology α → Sort _}
+/-- A recursor for `Topology.WithScott`. Use as `induction x using Topology.WithScott.rec`. -/
+protected def rec {β : Topology.WithScott α → Sort _}
   (h : ∀ a, β (toScott a)) : ∀ a, β a := fun a => h (ofScott a)
 
-instance [Nonempty α] : Nonempty (WithScottTopology α) := ‹Nonempty α›
-instance [Inhabited α] : Inhabited (WithScottTopology α) := ‹Inhabited α›
+instance [Nonempty α] : Nonempty (Topology.WithScott α) := ‹Nonempty α›
+instance [Inhabited α] : Inhabited (Topology.WithScott α) := ‹Inhabited α›
 
 variable [Preorder α]
 
-instance : Preorder (WithScottTopology α) := ‹Preorder α›
+instance : Preorder (Topology.WithScott α) := ‹Preorder α›
 
-instance : TopologicalSpace (WithScottTopology α) := Topology.Scott
+instance : TopologicalSpace (Topology.WithScott α) := Topology.Scott
 
-end WithScottTopology
+end Topology.WithScott
 
 /--
 The Scott topology is defined as the join of the topology of upper sets and the topological space
@@ -171,7 +171,7 @@ class ScottTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop 
 attribute [nolint docBlame]
   ScottTopology.topology_eq_ScottTopology
 
-instance [Preorder α] : ScottTopology (WithScottTopology α) :=
+instance [Preorder α] : ScottTopology (Topology.WithScott α) :=
   ⟨rfl⟩
 
 namespace ScottTopology
@@ -181,7 +181,7 @@ section preorder
 variable [Preorder α]
 
 lemma isOpen_iff_upper_and_Scott_Hausdorff_Open' {u : Set α} :
-  IsOpen (WithScottTopology.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ Topology.ScottHausdorff.IsOpen u :=
+  IsOpen (Topology.WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ Topology.ScottHausdorff.IsOpen u :=
 Iff.rfl
 
 variable [TopologicalSpace α] [ScottTopology α]
@@ -192,10 +192,10 @@ lemma topology_eq : ‹_› = Topology.Scott := topology_eq_ScottTopology
 
 variable {α}
 
-/-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScottTopology α`.
+/-- If `α` is equipped with the Scott topology, then it is homeomorphic to `Topology.WithScott α`.
 -/
-def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
-  WithScottTopology.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+def Topology.WithScottHomeomorph : Topology.WithScott α ≃ₜ α :=
+  Topology.WithScott.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 end preorder
 
