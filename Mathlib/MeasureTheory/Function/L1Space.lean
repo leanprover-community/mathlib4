@@ -851,14 +851,14 @@ lemma Integrable.measure_le_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : 
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x > c}` has finite
 measure. -/
-lemma Integrable.measure_lt_lt_top {f : α → ℝ} (hf : Integrable f μ) {ε : ℝ} (ε_pos : 0 < ε) :
+lemma Integrable.measure_gt_lt_top {f : α → ℝ} (hf : Integrable f μ) {ε : ℝ} (ε_pos : 0 < ε) :
     μ {a : α | ε < f a} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_ge_lt_top hf ε_pos)
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x < c}` has finite
 measure. -/
-lemma Integrable.measure_lt_const_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
+lemma Integrable.measure_lt_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
     μ {a : α | f a < c} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_le_lt_top hf c_neg)
