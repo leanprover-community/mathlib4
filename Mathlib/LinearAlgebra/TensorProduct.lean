@@ -791,7 +791,6 @@ theorem lift_comp_map (i : P →ₗ[R] Q →ₗ[R] Q') (f : M →ₗ[R] P) (g : 
   ext' fun _ _ => rfl
 #align tensor_product.lift_comp_map TensorProduct.lift_comp_map
 
-
 attribute [local ext high] ext
 
 @[simp]
