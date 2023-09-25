@@ -10,6 +10,20 @@ namespace GradedObject
 
 section
 
+@[simps]
+def isoMk {I : Type*} (X Y : GradedObject I C) (e : ∀ i, X i ≅ Y i) : X ≅ Y where
+  hom i := (e i).hom
+  inv i := (e i).inv
+
+lemma isIso_of_isIso_apply {I : Type*} {X Y : GradedObject I C} (f : X ⟶ Y)
+    (h : ∀ i, IsIso (f i)) : IsIso f := by
+  change IsIso (isoMk X Y (fun i => asIso (f i))).hom
+  infer_instance
+
+end
+
+section
+
 variable {I J : Type*} (X Y Z : GradedObject I C) (φ : X ⟶ Y) (ψ : Y ⟶ Z) (p : I → J)
 
 abbrev HasMap : Prop := ∀ (j : J), HasCoproduct (fun (i : (p ⁻¹' {j})) => X i)
@@ -20,6 +34,11 @@ noncomputable def mapObj : GradedObject J C := fun j => ∐ (fun (i : (p ⁻¹' 
 
 noncomputable def ιMapObj (i : I) (j : J) (hij : p i = j) : X i ⟶ X.mapObj p j :=
   Sigma.ι (fun (i' : (p ⁻¹' {j})) => X i') ⟨i, hij⟩
+
+@[simps]
+noncomputable def coconeMapObj (j : J) : Cocone (Discrete.functor (fun (i : (p ⁻¹' {j})) => X i)) where
+  pt := X.mapObj p j
+  ι := Discrete.natTrans (fun ⟨i⟩ => X.ιMapObj p i.1 j i.2)
 
 lemma mapObj_ext {A : C} {j : J} (f g : X.mapObj p j ⟶ A)
     (hfg : ∀ (i : I) (hij : p i = j), X.ιMapObj p i j hij ≫ f = X.ιMapObj p i j hij ≫ g) :
@@ -38,6 +57,15 @@ noncomputable def descMapObj {A : C} {j : J} (φ : ∀ (i : I) (_ : p i = j), X 
 lemma ι_descMapObj {A : C} {j : J} (φ : ∀ (i : I) (_ : p i = j), X i ⟶ A) (i : I) (hi : p i = j) :
     X.ιMapObj p i j hi ≫ X.descMapObj p φ = φ i hi := by
   simp [descMapObj, ιMapObj]
+
+@[simps]
+noncomputable def isColimitCoconeMapObj (j : J) : IsColimit (X.coconeMapObj p j) where
+  desc s := descMapObj _ _ (fun i hi => s.ι.app ⟨⟨i, hi⟩⟩)
+  fac s := fun ⟨i, hi⟩ => by simp
+  uniq s m hm := by
+    apply mapObj_ext
+    intro i hi
+    simpa using hm ⟨i, hi⟩
 
 variable {X Y}
 
@@ -122,17 +150,33 @@ noncomputable def comapObjApplyFunctorsObjObjMapObj
     exact (F (p i)).map (X.ιMapObj p i _ rfl))
 
 @[reassoc (attr := simp)]
-lemma ι_comapObjApplyFunctorsObjObjMapObjNatTrans (i : I)
+lemma ι_comapObjApplyFunctorsObjObjMapObj (i : I)
     [HasMap ((applyFunctorsObj ((comap (C ⥤ D) p).obj F)).obj X) p] :
     ιMapObj _ p i _ rfl ≫ comapObjApplyFunctorsObjObjMapObj F p X (p i) =
       (F (p i)).map (X.ιMapObj p i _ rfl) := by
   apply ι_descMapObj
 
-instance [X.HasMap p] [F.PreservesMap p X] :
+@[reassoc (attr := simp)]
+lemma ι_comapObjApplyFunctorsObjObjMapObj' (i : I) (j : J) (hi : p i = j)
+    [HasMap ((applyFunctorsObj ((comap (C ⥤ D) p).obj F)).obj X) p] :
+    ((applyFunctorsObj ((comap (C ⥤ D) p).obj F)).obj X).ιMapObj p i j hi ≫
+      comapObjApplyFunctorsObjObjMapObj F p X j =
+        eqToHom (by subst hi; rfl) ≫ (F j).map (X.ιMapObj p i j hi) := by
+  subst hi
+  simp
+
+variable [X.HasMap p]
+
+noncomputable def mapCoconeMapObj (j : J) := (F j).mapCocone (X.coconeMapObj p j)
+
+noncomputable def isColimitMapCoconeMapObj [F.PreservesMap p X] (j : J) :
+    IsColimit (F.mapCoconeMapObj p X j) :=
+  isColimitOfPreserves (F j) (X.isColimitCoconeMapObj p j)
+
+instance [F.PreservesMap p X] :
     HasMap ((applyFunctorsObj ((comap (C ⥤ D) p).obj F)).obj X) p := by
   intro j
-  have : HasColimit ((Discrete.functor (fun (i : (p ⁻¹' {j})) => X i)) ⋙ F j) :=
-    ⟨_, isColimitOfPreserves (F j) (colimit.isColimit _)⟩
+  have : HasColimit _ := ⟨_, F.isColimitMapCoconeMapObj p X j⟩
   let e : Discrete.functor (fun (i : (p ⁻¹' {j})) => (F (p i)).obj (X i)) ≅
     Discrete.functor (fun (i : (p ⁻¹' {j})) => X i) ⋙ F j :=
       Discrete.natIso (fun ⟨i⟩ => eqToIso (by
@@ -140,10 +184,52 @@ instance [X.HasMap p] [F.PreservesMap p X] :
         rfl))
   exact hasColimitOfIso e
 
---variable [X.HasMap p] [F.PreservesMap p X]
--- construction of a "cocone" and show it is colimit in order to express
--- that `comapObjApplyFunctorsObjObjMapObj` induces an isomorphism in each degree
+noncomputable def coconeMapObjApplyFunctors (j : J)
+    [HasMap ((applyFunctorsObj ((comap (C ⥤ D) p).obj F)).obj X) p] :=
+  (((comap _ p).obj F).applyFunctorsObj.obj X).coconeMapObj p j
 
+noncomputable def isColimitCoconeMapObjApplyFunctors (j : J)
+    [HasMap ((applyFunctorsObj ((comap (C ⥤ D) p).obj F)).obj X) p] :
+    IsColimit (F.coconeMapObjApplyFunctors p X j) := by
+  apply isColimitCoconeMapObj
+
+noncomputable def mapCoconeMapObj' (j : J) : Cocone (Discrete.functor (fun (i : (p ⁻¹' {j})) => (F (p i)).obj (X i))) :=
+  (Cocones.precompose ((Discrete.natIso (fun ⟨i⟩ => eqToIso (by obtain ⟨i, rfl⟩ := i; rfl))).hom)).obj (F.mapCoconeMapObj p X j)
+
+variable [F.PreservesMap p X]
+
+noncomputable def isColimitMapCoconeMapObj' (j : J) : IsColimit (F.mapCoconeMapObj' p X j) :=
+  (IsColimit.precomposeHomEquiv _ _).symm (F.isColimitMapCoconeMapObj p X j)
+
+instance (j : J) : IsIso (F.comapObjApplyFunctorsObjObjMapObj p X j) := by
+  suffices F.comapObjApplyFunctorsObjObjMapObj p X j =
+      (IsColimit.coconePointUniqueUpToIso (F.isColimitCoconeMapObjApplyFunctors p X j)
+        (F.isColimitMapCoconeMapObj' p X j)).hom by
+    rw [this]
+    infer_instance
+  apply mapObj_ext
+  rintro i hi
+  rw [ι_comapObjApplyFunctorsObjObjMapObj']
+  erw [IsColimit.comp_coconePointUniqueUpToIso_hom]
+  rfl
+
+instance : IsIso (F.comapObjApplyFunctorsObjObjMapObj p X) :=
+  isIso_of_isIso_apply _ (fun _ => inferInstance)
+
+@[simps! hom]
+noncomputable def comapObjApplyFunctorsObjObjMapObjIso :
+    (((comap _ p).obj F).applyFunctorsObj.obj X).mapObj p ≅
+        F.applyFunctorsObj.obj (X.mapObj p) :=
+  asIso (F.comapObjApplyFunctorsObjObjMapObj p X)
+
+lemma applyFunctorsObjObjMapObj_ext (j : J) {A : D}
+    (f g : F.applyFunctorsObj.obj (X.mapObj p) j ⟶ A)
+    (h : ∀ (i : I) (hi : p i = j), (F j).map (X.ιMapObj p i j hi) ≫ f = (F j).map (X.ιMapObj p i j hi) ≫ g) :
+    f = g := by
+  rw [← cancel_epi ((eval j).mapIso (F.comapObjApplyFunctorsObjObjMapObjIso p X)).hom]
+  apply mapObj_ext
+  intro i hi
+  simp [h]
 
 end
 
