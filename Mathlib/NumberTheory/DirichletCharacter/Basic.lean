@@ -35,7 +35,7 @@ Main definitions:
   ```
   and
   ```
-  lemma changeLevel_trivial_iff {d : ℕ} {χ : DirichletCharacter R n} {χ' : DirichletCharacter R d}
+  lemma changeLevel_one_iff {d : ℕ} {χ : DirichletCharacter R n} {χ' : DirichletCharacter R d}
     (hdn : d ∣ n) (hn : n ≠ 0) (h : χ = changeLevel hdn χ') : χ = 1 ↔ χ' = 1
   ```
 
@@ -131,14 +131,14 @@ noncomputable instance : Inhabited (DirichletCharacter R n) := ⟨1⟩
 
 noncomputable instance : Unique (DirichletCharacter R 1) := Unique.mk' (DirichletCharacter R 1)
 
-lemma changeLevel_trivial {d : ℕ} (h : d ∣ n) :
+lemma changeLevel_one {d : ℕ} (h : d ∣ n) :
     changeLevel h (1 : DirichletCharacter R d) = 1 := by
   simp [changeLevel]
 
 lemma factorsThrough_one_iff : FactorsThrough χ 1 ↔ χ = 1 := by
   refine ⟨fun ⟨_, χ₀, hχ₀⟩ ↦ ?_,
-          fun h ↦ ⟨one_dvd n, 1, by rw [h, changeLevel_trivial]⟩⟩
-  rwa [level_one χ₀, changeLevel_trivial] at hχ₀
+          fun h ↦ ⟨one_dvd n, 1, by rw [h, changeLevel_one]⟩⟩
+  rwa [level_one χ₀, changeLevel_one] at hχ₀
 
 /-- The set of natural numbers for which a Dirichlet character is periodic. -/
 def conductorSet : Set ℕ := {x : ℕ | FactorsThrough χ x}
@@ -175,7 +175,7 @@ variable {χ}
 lemma eq_one_iff_conductor_eq_one (hn : n ≠ 0) : χ = 1 ↔ conductor χ = 1 := by
   refine ⟨fun h ↦ h ▸ conductor_one hn, fun hχ ↦ ?_⟩
   obtain ⟨h', χ₀, h⟩ := factorsThrough_conductor χ
-  exact (level_one' χ₀ hχ ▸ h).trans <| changeLevel_trivial h'
+  exact (level_one' χ₀ hχ ▸ h).trans <| changeLevel_one h'
 
 lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 := by
   refine ⟨(conductor_ne_zero χ).mtr, ?_⟩
