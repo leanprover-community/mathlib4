@@ -281,9 +281,9 @@ The closure of a singleton `{a}` in the Scott topology is the right-closed left-
   rw [le_antisymm_iff]
   constructor
   · apply closure_minimal
-    rw [singleton_subset_iff, mem_Iic]
-    rw [isClosed_iff_lower_and_subset_implies_LUB_mem]
-    exact ⟨isLowerSet_Iic a, fun _ _ _ _ d₃ d₄ => (isLUB_le_iff d₃).mpr d₄⟩
+    · rw [singleton_subset_iff, mem_Iic]
+    · rw [isClosed_iff_lower_and_subset_implies_LUB_mem]
+      exact ⟨isLowerSet_Iic a, fun _ _ _ _ d₃ d₄ => (isLUB_le_iff d₃).mpr d₄⟩
   · rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
     apply lowerClosure_le_closure
 
