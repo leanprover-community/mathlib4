@@ -382,27 +382,118 @@ instance : Module R (m.tensorProductAsDirectLimit N) := by
   delta tensorProductAsDirectLimit
   infer_instance
 
-@[simps!]
 def _root_.Submodule.tensorProductEquiv :
     m ⊗[R] N ≃ₗ[R] m.asDirectLimit ⊗[R] N :=
   TensorProduct.congr m.equivAsDirectLimit <| LinearEquiv.refl _ _
 
+@[simp] lemma _root_.Submodule.tensorProductEquiv_apply_tmul (x : m) (n : N) :
+    m.tensorProductEquiv N (x ⊗ₜ n) =
+    DirectLimit.of _ _ _ _ (m.principalSubmodule x) ⟨x, m.mem_principalSubmodule_self _⟩ ⊗ₜ n := by
+  delta tensorProductEquiv
+  rw [TensorProduct.congr_tmul, equivAsDirectLimit_apply]
+  rfl
+
+@[simp] lemma _root_.Submodule.tensorProductEquiv_symm_apply_tmul_of {a : m.fgSubmodule} (x : a) (n : N) :
+    (m.tensorProductEquiv N).symm (DirectLimit.of _ _ _ _ a x ⊗ₜ n) =
+    ⟨x, a.le x.2⟩ ⊗ₜ n := by
+  delta tensorProductEquiv
+  rw [TensorProduct.congr_symm_tmul, equivAsDirectLimit_symm_apply, asDirectLimitToSelf_apply_of]
+  rfl
+
 set_option maxHeartbeats 1000000 in
-@[simps!]
 def _root_.Submodule.asDirectLimitTensorEquiv :
     m.asDirectLimit ⊗[R] N ≃ₗ[R]
     m.tensorProductAsDirectLimit N :=
   (Module.directLimitCommutesTensorProduct (R := R) (ι := m.fgSubmodule)
     (G := fun a => a.asSubmodule) (f := fun _ _ h => Submodule.ofLe h) N).symm
 
-@[simps!]
+example : true := rfl
+
+set_option maxHeartbeats 1000000 in
+lemma _root_.Submodule.asDirectLimitTensorEquiv_apply_of_tmul {a : m.fgSubmodule} (x : a) (n : N) :
+    m.asDirectLimitTensorEquiv N (DirectLimit.of _ _ _ _ a x ⊗ₜ n) =
+    DirectLimit.of _ _ _ _ a (x ⊗ₜ n) := by
+  have EQ1 : _ = _ :=
+    Module.directLimitCommutesTensorProduct_symm_apply (R := R) (ι := m.fgSubmodule)
+      (G := fun a => a.asSubmodule) (f := fun _ _ h => Submodule.ofLe h) N
+      (DirectLimit.of _ _ _ _ a x ⊗ₜ n)
+  rw [tensorProductWithDirectLimitToDirectLimitOfTensorProduct_apply_of_tmul] at EQ1
+  exact EQ1
+
+example : true := rfl
+
+set_option maxHeartbeats 1000000 in
+lemma _root_.Submodule.asDirectLimitTensorEquiv_symm_apply_of_tmul {a : m.fgSubmodule}
+    (x : a) (n : N) :
+    (m.asDirectLimitTensorEquiv N).symm (DirectLimit.of _ _ _ _ a (x ⊗ₜ n)) =
+    DirectLimit.of _ _ _ _ a x ⊗ₜ n := by
+  have EQ1 : _ = _ :=
+    Module.directLimitOfTensorProductToTensorProductWithDirectLimit_apply_of_tmul
+      (R := R) (ι := m.fgSubmodule) (G := fun a => a.asSubmodule)
+      (f := fun _ _ h => Submodule.ofLe h) (g := x) (m := n)
+  exact EQ1
+
+example : true := rfl
+
 def _root_.Submodule.tensorProductEquivDirectLimit :
     m ⊗[R] N ≃ₗ[R] m.tensorProductAsDirectLimit N :=
   m.tensorProductEquiv N ≪≫ₗ m.asDirectLimitTensorEquiv N
 
+example : true := rfl
+
+lemma _root_.Submodule.tensorProductEquivDirectLimit_apply_tmul (x : m) (n : N) :
+    m.tensorProductEquivDirectLimit N (x ⊗ₜ n) =
+    DirectLimit.of _ _ _ _ (m.principalSubmodule x)
+      (⟨x, m.mem_principalSubmodule_self _⟩ ⊗ₜ n) := by
+  delta tensorProductEquivDirectLimit
+  rw [LinearEquiv.trans_apply, tensorProductEquiv_apply_tmul,
+    asDirectLimitTensorEquiv_apply_of_tmul]
+
+lemma _root_.Submodule.tensorProductEquivDirectLimit_symm_apply_of {a : m.fgSubmodule}
+    (x : a) (n : N) :
+    (m.tensorProductEquivDirectLimit N).symm (DirectLimit.of _ _ _ _ a (x ⊗ₜ n)) =
+    ⟨_, a.le x.2⟩ ⊗ₜ n := by
+  delta tensorProductEquivDirectLimit
+  rw [LinearEquiv.trans_symm, LinearEquiv.trans_apply,
+    asDirectLimitTensorEquiv_symm_apply_of_tmul,
+    tensorProductEquiv_symm_apply_tmul_of]
+
 end
 
+lemma key_identity (I : Ideal R) [DecidableEq I.fgSubmodule] :
+    TensorProduct.lift ((lsmul R M).comp I.subtype) =
+    DirectLimit.lift _ _ _ _
+      (fun i => TensorProduct.lift <| (lsmul R M).comp i.asSubmodule.subtype) (fun i j h x =>
+        x.induction_on
+          (by simp only [LinearMap.map_zero])
+          (fun a m => by
+            simp only [TensorProduct.map_tmul, TensorProduct.lift.tmul,
+              LinearMap.comp_apply]
+            congr)
+          (fun _ _ hx hy => by
+            dsimp only at hx hy ⊢
+            simp only [_root_.map_add, hx, hy])) ∘ₗ
+    (I.tensorProductEquivDirectLimit M).toLinearMap :=
+  TensorProduct.ext <| FunLike.ext _ _ fun a => FunLike.ext _ _ fun m => by
+    simp only [compr₂_apply, mk_apply, lift.tmul, LinearMap.coe_comp, coeSubtype,
+      Function.comp_apply, lsmul_apply]
+    erw [tensorProductEquivDirectLimit_apply_tmul]
+    simp_rw [DirectLimit.lift_of]
+    rw [TensorProduct.lift.tmul]
+    rfl
+
+lemma main (fg_ideal : Flat.fg_ideal R M) : Flat.ideal R M := by
+  intro I
+  classical
+  rw [key_identity, LinearMap.coe_comp]
+  exact Function.Injective.comp
+    (hf:= LinearEquiv.injective _)
+    (hg := Module.lift_inj _ _ _ _ _ _ fun i => fg_ideal i.fg)
+
 end ideal_of_fg_ideal
+
+lemma ideal_of_fg_ideal (fg_ideal : Flat.fg_ideal R M) : Flat.ideal R M :=
+  ideal_of_fg_ideal.main fg_ideal
 
 lemma tfae : List.TFAE
     [ Flat.injective R M,
@@ -432,7 +523,7 @@ lemma tfae : List.TFAE
   · intro H I _
     exact H I
   tfae_have 3 → 2
-  · sorry
+  · apply Module.Flat.ideal_of_fg_ideal
   tfae_finish
 
 end Flat
