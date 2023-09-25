@@ -58,13 +58,11 @@ are also included.
 layer cake representation, Cavalieri's principle, tail probability formula
 -/
 
-
 noncomputable section
 
 open scoped ENNReal MeasureTheory Topology
 
 open Set MeasureTheory Filter Measure
-
 
 namespace MeasureTheory
 
@@ -243,9 +241,9 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
           exact measure_mono (fun a ha ↦ hx.2.trans (le_of_lt ha))
       _ ≤ ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) :=
           lintegral_mono_set Ioc_subset_Ioi_self
-    /- The second integral is infinite, as one integrates on those `ω` where `f ω > s`: this is
-    an infinite measure set, and on it the integrand is bounded below by `∫ t in 0..s, g t`
-    which is positive. -/
+    /- The second integral is infinite, as one integrates amont other things on those `ω` where
+    `f ω > s`: this is an infinite measure set, and on it the integrand is bounded below
+    by `∫ t in 0..s, g t` which is positive. -/
     have B : ∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ = ∞ := by
       rw [eq_top_iff]
       calc
@@ -266,7 +264,9 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
   not obviously infinite. Let `M` be the largest number such that `g = 0` on `[0, M]`. Then we
   may restrict `μ` to the points where `f ω > M` (as the other ones do not contribute to the
   integral). The restricted measure `ν` is sigma-finite, as `μ` gives finite measure to
-  `{ω | f ω > a}` for any `a > M` (otherwise, we would be in the easy case above). Therefore,
+  `{ω | f ω > a}` for any `a > M` (otherwise, we would be in the easy case above), so that
+  one can write (a full measure subset of) the space as the countable union of the finite measure
+  sets `{ω | f ω > uₙ}` for `uₙ` a sequence decreasing to `M`. Therefore,
   this case follows from the case where the measure is sigma-finite, applied to `ν`. -/
   push_neg at H2
   have M_bdd : BddAbove {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by
@@ -340,12 +340,12 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
         · obtain ⟨n, hn⟩ : ∃ n, u n < f a := ((tendsto_order.1 ulim).2 _ ha).exists
           exact mem_iUnion.2 ⟨n, Or.inr hn⟩ }
     exact ⟨⟨s⟩⟩
-  -- the first integral with respect to `μ` and to `ν` coincides, as points with `f a ≤ M` are
+  -- the first integrals with respect to `μ` and to `ν` coincide, as points with `f a ≤ M` are
   -- weighted by zero as `g` vanishes there.
   have A : ∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ
          = ∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂ν := by
     have meas : MeasurableSet {a | M < f a} := measurableSet_lt measurable_const f_mble
-    have I : ∫⁻ (x : α) in {a | M < f a}ᶜ, ENNReal.ofReal (∫ t in (0).. f x, g t) ∂μ
+    have I : ∫⁻ ω in {a | M < f a}ᶜ, ENNReal.ofReal (∫ t in (0).. f ω, g t) ∂μ
              = ∫⁻ _ in {a | M < f a}ᶜ, 0 ∂μ := by
       apply set_lintegral_congr_fun meas.compl (eventually_of_forall (fun s hs ↦ ?_))
       have : ∫ (t : ℝ) in (0)..f s, g t = ∫ (t : ℝ) in (0)..f s, 0 := by
@@ -357,7 +357,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
       simp [this]
     simp only [lintegral_const, zero_mul] at I
     rw [← lintegral_add_compl _ meas, I, add_zero]
-  -- the second integral with respect to `μ` and to `ν` coincides, as points with `f a ≤ M` do not
+  -- the second integrals with respect to `μ` and to `ν` coincide, as points with `f a ≤ M` do not
   -- contribute to either integral since the weight `g` vanishes.
   have B : ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t)
            = ∫⁻ t in Ioi 0, ν {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
