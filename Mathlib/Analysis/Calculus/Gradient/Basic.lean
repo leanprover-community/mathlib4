@@ -123,19 +123,7 @@ theorem toDual_of_toDual_gradient (gradient : F) :
 section GradientUniqueness
 
 variable {gradf gradg : F}
-/-
-theorem toDual_unique {f₁ g₁ : F} (h : ((toDual 𝕜 F) f₁) = ((toDual 𝕜 F) g₁)) : f₁ = g₁ := by
-  have h₁: ∀ x : F , ((toDual 𝕜 F) f₁) x = ((toDual 𝕜 F) g₁) x :=
-    fun x => congrFun (congrArg FunLike.coe h) x
-  specialize h₁ (f₁ - g₁)
-  have : ((toDual 𝕜 F) f₁) (f₁ - g₁) = ⟪f₁, f₁ - g₁⟫ := rfl
-  rw [this] at h₁
-  have : ((toDual 𝕜 F) g₁) (f₁ - g₁) = ⟪g₁, f₁ - g₁⟫ := rfl
-  rw [this] at h₁
-  have : ⟪f₁, f₁ - g₁⟫ - ⟪g₁, f₁ - g₁⟫ = 0 := by rw [h₁, sub_self]
-  rw [← inner_sub_left, inner_self_eq_zero, sub_eq_zero] at this
-  exact this
--/
+
 theorem HasGradientAt.unique (hf : HasGradientAt f gradf x) (hg : HasGradientAt f gradg x) :
   gradf = gradg := (toDual 𝕜 F).injective ((hf.hasFDerivAt).unique hg.hasFDerivAt)
 
