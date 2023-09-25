@@ -15,7 +15,7 @@ This file introduces the Scott topology on a preorder.
 
 - `DirSupInacc` - a set `u` is said to be inaccessible by directed joins if, when the least upper
   bound of a directed set `d` lies in `u` then `d` has non-empty intersection with `u`.
-- `ScottTopology'` - the Scott topology is defined as the join of the topology of upper sets and the
+- `Topology.Scott` - the Scott topology is defined as the join of the topology of upper sets and the
   Scott-Hausdorff topology (the topological space where a set `u` is open if, when the least upper
   bound of a directed set `d` lies in `u` then there is a tail of `d` which is a subset of `u`).
 
@@ -32,10 +32,10 @@ This file introduces the Scott topology on a preorder.
 ## Implementation notes
 
 A type synonym `WithScottTopology` is introduced and for a preorder `α`, `WithScottTopology α`
-is made an instance of `topological_space` by the `ScottTopology'`.
+is made an instance of `topological_space` by the `Topology.Scott`.
 
 We define a mixin class `ScottTopology` for the class of types which are both a preorder and a
-topology and where the topology is the `ScottTopology'`.
+topology and where the topology is the `Topology.Scott`.
 It is shown that `WithScottTopology α` is an instance of `ScottTopology`.
 
 A class `Scott` is defined in `Topology.OmegaCompletePartialOrder` and made an instance of a
@@ -112,11 +112,11 @@ lemma Topology.ScottHausdorff.Lower_IsOpen {s : Set α} (h : IsLowerSet s) :
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
 topology.
 -/
-def ScottTopology' : TopologicalSpace α := Topology.upperSet α ⊔ Topology.ScottHausdorff
+def Topology.Scott : TopologicalSpace α := Topology.upperSet α ⊔ Topology.ScottHausdorff
 
-lemma upper_le_Scott : Topology.upperSet α ≤  ScottTopology' := le_sup_left
+lemma upper_le_Scott : Topology.upperSet α ≤  Topology.Scott := le_sup_left
 
-lemma ScottHausdorff_le_Scott : @Topology.ScottHausdorff α ≤  @ScottTopology' α := le_sup_right
+lemma ScottHausdorff_le_Scott : @Topology.ScottHausdorff α ≤  @Topology.Scott α := le_sup_right
 
 end preorder
 
@@ -156,7 +156,7 @@ variable [Preorder α]
 
 instance : Preorder (WithScottTopology α) := ‹Preorder α›
 
-instance : TopologicalSpace (WithScottTopology α) := ScottTopology'
+instance : TopologicalSpace (WithScottTopology α) := Topology.Scott
 
 end WithScottTopology
 
@@ -166,7 +166,7 @@ where a set `u` is open if, when the least upper bound of a directed set `d` lie
 is a tail of `d` which is a subset of `u`.
 -/
 class ScottTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
-  topology_eq_ScottTopology : t = ScottTopology'
+  topology_eq_ScottTopology : t = Topology.Scott
 
 attribute [nolint docBlame]
   ScottTopology.topology_eq_ScottTopology
@@ -188,7 +188,7 @@ variable [TopologicalSpace α] [ScottTopology α]
 
 variable (α)
 
-lemma topology_eq : ‹_› = ScottTopology' := topology_eq_ScottTopology
+lemma topology_eq : ‹_› = Topology.Scott := topology_eq_ScottTopology
 
 variable {α}
 
@@ -206,7 +206,7 @@ variable [Preorder α] [Preorder β]
 open TopologicalSpace
 
 lemma UpperSetTopology_Monotone_coinduced_LE' {t₁ : TopologicalSpace α} [Topology.IsUpperSet α]
-  {f : α → β}  (hf : Monotone f) : coinduced f t₁ ≤ @ScottTopology' β _ := by
+  {f : α → β}  (hf : Monotone f) : coinduced f t₁ ≤ @Topology.Scott β _ := by
   apply le_sup_of_le_left
   rwa [← continuous_iff_coinduced_le,
     ← @Topology.IsUpperSet.monotone_iff_continuous α β _ _ t₁ (Topology.upperSet β) _ _ ]
@@ -399,7 +399,7 @@ variable [Preorder α]
 
 lemma scottHausdorffTopology_le_of_scottTopology [TopologicalSpace α] [ScottTopology α] :
     Topology.ScottHausdorff ≤ ‹TopologicalSpace α› := by
-  rw [ScottTopology.topology_eq α, ScottTopology']
+  rw [ScottTopology.topology_eq α, Topology.Scott]
   apply le_sup_right
 
 lemma scottHausdorffTopology_le_Lower [TopologicalSpace α] [Topology.IsLower α] :
