@@ -62,7 +62,7 @@ theorem not_int_of_not_padic_int {a : ℚ} (H : 1 < padicNorm 2 a) :
     simpa only [zpow_zero]
 
 
-lemma padicValRat_2_pow (r : ℕ) : padicValRat 2 (1 / 2^r) = -r := by
+lemma padicValRat_two_pow_div (r : ℕ) : padicValRat 2 (1 / 2^r) = -r := by
   rw [one_div, padicValRat.inv, neg_inj, padicValRat.pow (by simp)]
   suffices padicValRat 2 2 = 1 by simp only [this, mul_one]
   rw [←padicValRat.self (p := 2) one_lt_two]; simp only [Nat.cast_ofNat]
@@ -106,7 +106,7 @@ lemma padicValRat_ge_neg_Nat_log_ge {p n q : ℕ}[hp : Fact (Nat.Prime p)](Hq : 
 
 lemma padicValRat_ge_neg_Nat_log_lt (n q : ℕ) (Hq₁ : 0 < q) (Hq₂ : q ≤ n)(Hq₃ : q ≠ 2^Nat.log 2 n) :
     padicValRat 2 (1 / 2^Nat.log 2 n) < padicValRat 2 (1 / q) := by
-  rw [padicValRat_2_pow]
+  rw [padicValRat_two_pow_div]
   exact (lt_of_le_of_ne
    (padicValRat_ge_neg_Nat_log_ge (p := 2) Hq₂)
    (padicValRat_ge_neg_nat_log_ne Hq₁ Hq₂ Hq₃).symm)
@@ -124,7 +124,7 @@ theorem harmonic_padicValRat_2 {n : ℕ} (Hn : 2 ≤ n) :
   simp only [gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel]
   rw [padicValRat.add_eq_of_lt (p := 2) _
       (one_div_ne_zero <| pow_ne_zero _ two_ne_zero) (harmonic_singleton_ne_zero Hn) _]
-  apply padicValRat_2_pow
+  apply padicValRat_two_pow_div
   · have := harmonic_pos n
     rw [harmonic_singleton (two_pow_log_mem_range Hn)] at this
     refine' ne_of_gt _
