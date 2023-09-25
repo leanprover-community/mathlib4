@@ -75,6 +75,82 @@ section Layercake
 
 namespace MeasureTheory
 
+section
+
+variable {α : Type*} [MeasurableSpace α] (μ : Measure α)
+
+variable {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β]
+
+theorem meas_eq_pos_of_meas_le_ne_meas_lt
+    {α : Type*} [MeasurableSpace α] {μ : Measure α} {R : Type*} [LinearOrder R]
+    {g : α → R} {t : R} (ht : μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}) :
+    0 < μ {a : α | g a = t} := by
+  by_contra con
+  rw [not_lt, nonpos_iff_eq_zero] at con
+  apply ht
+  refine le_antisymm ?_ (measure_mono (fun a ha ↦ le_of_lt ha))
+  have uni : {a : α | t ≤ g a} = {a : α | t < g a} ∪ {a : α | t = g a} := by
+    ext a
+    simpa only [mem_setOf, mem_union] using le_iff_lt_or_eq
+  rw [show {a : α | t = g a} = {a : α | g a = t} by simp_rw [eq_comm]] at uni
+  have μ_le_add := measure_union_le (μ := μ) {a : α | t < g a} {a : α | g a = t}
+  rwa [con, add_zero, ← uni] at μ_le_add
+#align measure.meas_le_ne_meas_lt_subset_meas_pos MeasureTheory.meas_eq_pos_of_meas_le_ne_meas_lt
+
+theorem countable_meas_le_ne_meas_lt₀_of_sigmaFinite [SigmaFinite μ] {R : Type*} [LinearOrder R]
+    [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : NullMeasurable g μ) :
+    {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable :=
+  Countable.mono (fun _ h ↦ meas_eq_pos_of_meas_le_ne_meas_lt h)
+    (Measure.countable_meas_level_set_pos₀ g_mble)
+
+theorem countable_meas_le_ne_meas_lt₀ {R : Type*} [LinearOrder R]
+    [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : NullMeasurable g μ) :
+    {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable := by
+  let F : R → ℝ≥0∞ := fun t ↦ μ {a : α | t ≤ g a}
+  let A : TopologicalSpace R := Preorder.topology R
+  have : OrderTopology R := ⟨rfl⟩
+  have : Set.Countable {t | ¬ContinuousAt F t} := by
+    apply Antitone.countable_not_continuousAt
+    exact fun s t hst ↦ measure_mono (fun a ha ↦ hst.trans ha)
+  apply Countable.mono _ this
+  rw [← compl_subset_compl]
+  intro x hx
+  simp only [ge_iff_le, mem_compl_iff, mem_setOf_eq, not_not] at hx
+  simp only [ne_eq, mem_compl_iff, mem_setOf_eq, not_not]
+  apply le_antisymm sorry
+
+
+
+
+
+
+
+
+#exit
+
+
+
+theorem countable_meas_le_ne_meas_lt [SigmaFinite μ] {R : Type*} [LinearOrder R]
+    [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : Measurable g) :
+    {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable :=
+  countable_meas_le_ne_meas_lt₀ (μ := μ) g_mble.nullMeasurable
+#align measure.countable_meas_le_ne_meas_lt MeasureTheory.countable_meas_le_ne_meas_lt
+
+theorem meas_le_ae_eq_meas_lt₀ [SigmaFinite μ] {R : Type*} [LinearOrder R] [MeasurableSpace R]
+    [MeasurableSingletonClass R] (ν : Measure R) [NoAtoms ν] {g : α → R}
+    (g_mble : NullMeasurable g μ) :
+    (fun t => μ {a : α | t ≤ g a}) =ᵐ[ν] fun t => μ {a : α | t < g a} :=
+  Set.Countable.measure_zero (countable_meas_le_ne_meas_lt₀ μ g_mble) _
+
+theorem meas_le_ae_eq_meas_lt [SigmaFinite μ] {R : Type*} [LinearOrder R] [MeasurableSpace R]
+    [MeasurableSingletonClass R] (ν : Measure R) [NoAtoms ν] {g : α → R} (g_mble : Measurable g) :
+    (fun t => μ {a : α | t ≤ g a}) =ᵐ[ν] fun t => μ {a : α | t < g a} :=
+  Set.Countable.measure_zero (countable_meas_le_ne_meas_lt μ g_mble) _
+#align measure.meas_le_ae_eq_meas_lt MeasureTheory.meas_le_ae_eq_meas_lt
+
+end
+
+
 variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
 
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
@@ -166,12 +242,31 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
     mble₀.nullMeasurableSet
 #align measure_theory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
 
+theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite_aux
+    (μ : Measure α) [SigmaFinite μ]
+    (f_nn : 0 ≤ f) (f_mble : Measurable f)
+    (g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t) (g_mble : Measurable g)
+    (g_nn : ∀ t > 0, 0 ≤ g t)
+    (F : ℝ → ℝ≥0∞) (hF : ∀ t > 0, F t ≤ μ {a : α | t ≤ f a})
+    (h'F : ∀ t > 0, μ {a : α | t < f a} ≤ F t) :
+    (∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ) =
+      ∫⁻ t in Ioi 0, F t * ENNReal.ofReal (g t) := by
+  rw [lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite μ f_nn f_mble g_intble
+    g_mble g_nn]
+  apply lintegral_congr_ae
+  filter_upwards [ae_restrict_mem measurableSet_Ioi, meas_le_ae_eq_meas_lt μ _ f_mble] with
+    t tpos ht
+  congr 1
+  exact le_antisymm (ht.le.trans (h'F _ tpos)) (hF _ tpos)
+
 theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
     (f_nn : 0 ≤ f) (f_mble : Measurable f)
     (g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t) (g_mble : Measurable g)
-    (g_nn : ∀ t > 0, 0 ≤ g t) :
+    (g_nn : ∀ t > 0, 0 ≤ g t)
+    (F : ℝ → ℝ≥0∞) (hF : ∀ t > 0, F t ≤ μ {a : α | t ≤ f a})
+    (h'F : ∀ t > 0, μ {a : α | t < f a} ≤ F t) :
     (∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ) =
-      ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
+      ∫⁻ t in Ioi 0, F t * ENNReal.ofReal (g t) := by
   have f_nonneg : ∀ ω, 0 ≤ f ω := fun ω ↦ f_nn ω
   -- trivial case where `g` is ae zero. Then both integrals vanish.
   by_cases H1 : g =ᵐ[volume.restrict (Ioi (0 : ℝ))] 0
@@ -182,9 +277,8 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
         apply integral_congr_ae
         exact ae_restrict_of_ae_restrict_of_subset Ioc_subset_Ioi_self H1
       simp [this]
-    have B : ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) = 0 := by
-      have : (fun t ↦ μ {a : α | t ≤ f a} * ENNReal.ofReal (g t))
-        =ᵐ[volume.restrict (Ioi (0:ℝ))] 0 := by
+    have B : ∫⁻ t in Ioi 0, F t * ENNReal.ofReal (g t) = 0 := by
+      have : (fun t ↦ F t * ENNReal.ofReal (g t)) =ᵐ[volume.restrict (Ioi (0:ℝ))] 0 := by
           filter_upwards [H1] with t ht using by simp [ht]
       simp [lintegral_congr_ae this]
     rw [A, B]
@@ -195,7 +289,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
     rw [intervalIntegral.integral_of_le s_pos.le] at hs
     /- The first integral is infinite, as for `t ∈ [0, s]` one has `μ {a : α | t ≤ f a} = ∞`,
     and moreover the additional integral `g` is not uniformly zero. -/
-    have A : ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) = ∞ := by
+    have A : ∫⁻ t in Ioi 0, F t * ENNReal.ofReal (g t) = ∞ := by
       rw [eq_top_iff]
       calc
       ∞ = ∫⁻ t in Ioc 0 s, ∞ * ENNReal.ofReal (g t) := by
@@ -205,12 +299,12 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
             · filter_upwards [ae_restrict_mem measurableSet_Ioc] with t ht using g_nn _ ht.1
           rw [lintegral_const_mul, ENNReal.top_mul I_pos]
           exact ENNReal.measurable_ofReal.comp g_mble
-      _ ≤ ∫⁻ t in Ioc 0 s, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
+      _ ≤ ∫⁻ t in Ioc 0 s, F t * ENNReal.ofReal (g t) := by
           apply set_lintegral_mono' measurableSet_Ioc (fun x hx ↦ ?_)
           rw [← h's]
           gcongr
-          exact measure_mono (fun a ha ↦ hx.2.trans (le_of_lt ha))
-      _ ≤ ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) :=
+          exact (measure_mono (fun a ha ↦ hx.2.trans_lt ha)).trans (h'F x hx.1)
+      _ ≤ ∫⁻ t in Ioi 0, F t * ENNReal.ofReal (g t) :=
           lintegral_mono_set Ioc_subset_Ioi_self
     /- The second integral is infinite, as one integrate on those `ω` where `f ω > s`: this is
     an infinite measure set, and on it the integrand is bounded below by `∫ t in 0..s, g t`
@@ -253,7 +347,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
   have zero_mem : 0 ∈ {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by simpa using trivial
   have M_nonneg : 0 ≤ M := le_csSup M_bdd zero_mem
   have hgM : g =ᵐ[volume.restrict (Ioc (0 : ℝ) M)] 0 := by
-    rw [restrict_Ioc_eq_restrict_Ioo]
+    rw [← restrict_Ioo_eq_restrict_Ioc]
     obtain ⟨u, -, uM, ulim⟩ : ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n < M) ∧ Tendsto u atTop (𝓝 M) :=
       exists_seq_strictMono_tendsto M
     have I : ∀ n, g =ᵐ[volume.restrict (Ioc (0 : ℝ) (u n))] 0 := by
@@ -320,25 +414,48 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
       simp [this]
     simp only [lintegral_const, zero_mul] at I
     rw [← lintegral_add_compl _ meas, I, add_zero]
-  have B : ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t)
-           = ∫⁻ t in Ioi 0, ν {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
-    have B1 : ∫⁻ t in Ioc 0 M, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t)
-         = ∫⁻ t in Ioc 0 M, ν {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
+  let G := (Ioi M).piecewise F (fun t ↦ ν {a | t ≤ f a})
+  have B : ∫⁻ t in Ioi 0, F t * ENNReal.ofReal (g t)
+           = ∫⁻ t in Ioi 0, G t * ENNReal.ofReal (g t) := by
+    have B1 : ∫⁻ t in Ioc 0 M, F t * ENNReal.ofReal (g t)
+              = ∫⁻ t in Ioc 0 M, G t * ENNReal.ofReal (g t) := by
       apply lintegral_congr_ae
       filter_upwards [hgM] with t ht
       simp [ht]
-    have B2 : ∫⁻ t in Ioi M, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t)
-              = ∫⁻ t in Ioi M, ν {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
+    have B2 : ∫⁻ t in Ioi M, F t * ENNReal.ofReal (g t)
+              = ∫⁻ t in Ioi M, G t * ENNReal.ofReal (g t) := by
       apply set_lintegral_congr_fun measurableSet_Ioi (eventually_of_forall (fun t ht ↦ ?_))
-      rw [Measure.restrict_apply (measurableSet_le measurable_const f_mble)]
-      congr 3
-      exact (inter_eq_left_iff_subset.2 (fun a ha ↦ (mem_Ioi.1 ht).trans_le ha)).symm
+      have : G t = F t := piecewise_eq_of_mem _ _ _ ht
+      rw [this]
     have I : Ioi (0 : ℝ) = Ioc (0 : ℝ) M ∪ Ioi M := (Ioc_union_Ioi_eq_Ioi M_nonneg).symm
     have J : Disjoint (Ioc 0 M) (Ioi M) := Ioc_disjoint_Ioi le_rfl
     rw [I, lintegral_union measurableSet_Ioi J, lintegral_union measurableSet_Ioi J, B1, B2]
   rw [A, B]
-  exact lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
-    ν f_nn f_mble g_intble g_mble g_nn
+  have C1 : ∀ t > 0, ν {a | t < f a} ≤ G t := by
+    intro t t_pos
+    by_cases ht : t ∈ Ioi M
+    · have : G t = F t := piecewise_eq_of_mem _ _ _ ht
+      apply (le_trans _ (h'F t t_pos)).trans this.symm.le
+      exact restrict_le_self _ (measurableSet_lt measurable_const f_mble)
+    · have : G t = ν {a | t ≤ f a} := piecewise_eq_of_not_mem _ _ _ ht
+      rw [this]
+      exact measure_mono (fun a ha ↦ le_of_lt (show t < f a from ha))
+  have C2 : ∀ t > 0, G t ≤ ν {a | t ≤ f a} := by
+    intro t t_pos
+    by_cases ht : t ∈ Ioi M
+    · have I : ν {a | t ≤ f a} = μ {a | t ≤ f a} := by
+        rw [Measure.restrict_apply (measurableSet_le measurable_const f_mble)]
+        congr 3
+        exact inter_eq_left_iff_subset.2 (fun a ha ↦ (mem_Ioi.1 ht).trans_le ha)
+      have J : G t = F t := piecewise_eq_of_mem _ _ _ ht
+      rw [I, J]
+      exact hF t t_pos
+    · have : G t = ν {a | t ≤ f a} := piecewise_eq_of_not_mem _ _ _ ht
+      rw [this]
+  exact lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite_aux
+    ν f_nn f_mble g_intble g_mble g_nn G C2 C1
+
+#exit
 
 /-- The layer cake formula / Cavalieri's principle / tail probability formula:
 
@@ -465,50 +582,6 @@ open MeasureTheory
 variable {α : Type*} [MeasurableSpace α] (μ : Measure α)
 
 variable {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β]
-
-namespace Measure
-
-theorem meas_eq_pos_of_meas_le_ne_meas_lt
-    {α : Type*} [MeasurableSpace α] {μ : Measure α} {R : Type*} [LinearOrder R]
-    {g : α → R} {t : R} (ht : μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}) :
-    0 < μ {a : α | g a = t} := by
-  by_contra con
-  rw [not_lt, nonpos_iff_eq_zero] at con
-  apply ht
-  refine le_antisymm ?_ (measure_mono (fun a ha ↦ le_of_lt ha))
-  have uni : {a : α | t ≤ g a} = {a : α | t < g a} ∪ {a : α | t = g a} := by
-    ext a
-    simpa only [mem_setOf, mem_union] using le_iff_lt_or_eq
-  rw [show {a : α | t = g a} = {a : α | g a = t} by simp_rw [eq_comm]] at uni
-  have μ_le_add := measure_union_le (μ := μ) {a : α | t < g a} {a : α | g a = t}
-  rwa [con, add_zero, ← uni] at μ_le_add
-#align measure.meas_le_ne_meas_lt_subset_meas_pos Measure.meas_eq_pos_of_meas_le_ne_meas_lt
-
-theorem countable_meas_le_ne_meas_lt₀ [SigmaFinite μ] {R : Type*} [LinearOrder R]
-    [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : NullMeasurable g μ) :
-    {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable :=
-  Countable.mono (fun _ h ↦ meas_eq_pos_of_meas_le_ne_meas_lt h)
-    (Measure.countable_meas_level_set_pos₀ g_mble)
-
-theorem countable_meas_le_ne_meas_lt [SigmaFinite μ] {R : Type*} [LinearOrder R]
-    [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : Measurable g) :
-    {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable :=
-  countable_meas_le_ne_meas_lt₀ (μ := μ) g_mble.nullMeasurable
-#align measure.countable_meas_le_ne_meas_lt Measure.countable_meas_le_ne_meas_lt
-
-theorem meas_le_ae_eq_meas_lt₀ [SigmaFinite μ] {R : Type*} [LinearOrder R] [MeasurableSpace R]
-    [MeasurableSingletonClass R] (ν : Measure R) [NoAtoms ν] {g : α → R}
-    (g_mble : NullMeasurable g μ) :
-    (fun t => μ {a : α | t ≤ g a}) =ᵐ[ν] fun t => μ {a : α | t < g a} :=
-  Set.Countable.measure_zero (Measure.countable_meas_le_ne_meas_lt₀ μ g_mble) _
-
-theorem meas_le_ae_eq_meas_lt [SigmaFinite μ] {R : Type*} [LinearOrder R] [MeasurableSpace R]
-    [MeasurableSingletonClass R] (ν : Measure R) [NoAtoms ν] {g : α → R} (g_mble : Measurable g) :
-    (fun t => μ {a : α | t ≤ g a}) =ᵐ[ν] fun t => μ {a : α | t < g a} :=
-  Set.Countable.measure_zero (Measure.countable_meas_le_ne_meas_lt μ g_mble) _
-#align measure.meas_le_ae_eq_meas_lt Measure.meas_le_ae_eq_meas_lt
-
-end Measure
 
 variable {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
 
