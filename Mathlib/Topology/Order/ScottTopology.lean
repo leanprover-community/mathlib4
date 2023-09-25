@@ -97,11 +97,9 @@ def scottHausdorff : TopologicalSpace α :=
     exact ⟨b, hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩ }
 
 lemma ScottHausdorff.isOpen_of_isLowerSet {s : Set α} (h : IsLowerSet s) :
-    scottHausdorff.IsOpen s := by
-  rintro d ⟨b, hb⟩ _ a hda ha
-  use b
-  exact ⟨hb,Subset.trans (inter_subset_right (Ici b) d)
-    (fun c hc => h (mem_upperBounds.mp hda.1 _ hc) ha)⟩
+    scottHausdorff.IsOpen s := fun d ⟨b, hb⟩ _ _ hda ha =>
+      ⟨b, hb,Subset.trans (inter_subset_right (Ici b) d)
+      (fun _ hc => h (mem_upperBounds.mp hda.1 _ hc) ha)⟩
 
 /--
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
