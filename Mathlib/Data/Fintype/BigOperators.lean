@@ -282,11 +282,6 @@ open Finset
 variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α₂] [CommMonoid M]
 
 @[to_additive]
-theorem prod_sum_univ [Fintype α] [Fintype γ] (f : α ⊕ γ → M) :
-    ∏ x, f x = (∏ x, f (Sum.inl x)) * ∏ x, f (Sum.inr x) := by
-  rw [← univ_disjSum_univ, prod_disj_sum]
-
-@[to_additive]
 theorem Fintype.prod_sum_elim (f : α₁ → M) (g : α₂ → M) :
     ∏ x, Sum.elim f g x = (∏ a₁, f a₁) * ∏ a₂, g a₂ :=
   prod_disj_sum _ _ _
