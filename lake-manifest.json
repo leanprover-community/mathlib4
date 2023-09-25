@@ -26,19 +26,19 @@
     "inputRev?": "v0.0.16",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/nomeata/std4",
-    "subDir?": null,
-    "rev": "c1c51f28c5e8d397f0068fbef0e256ab3d636ed0",
-    "opts": {},
-    "name": "std",
-    "inputRev?": "lean-pr-testing-2577",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/nomeata/aesop",
     "subDir?": null,
     "rev": "ec2ae458a767aa468eb774fd1f3f7ed807eb9a13",
     "opts": {},
     "name": "aesop",
+    "inputRev?": "lean-pr-testing-2577",
+    "inherited": false}},
+  {"git":
+   {"url": "https://github.com/nomeata/std4",
+    "subDir?": null,
+    "rev": "2bfe269dab61ab8645aad16d3f9f52e81ea3f891",
+    "opts": {},
+    "name": "std",
     "inputRev?": "lean-pr-testing-2577",
     "inherited": false}}],
  "name": "mathlib"}
