@@ -277,15 +277,13 @@ lemma lowerClosure_le_closure {s : Set α} : lowerClosure s ≤ closure s := by
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 (-∞,a].
 -/
-@[simp] lemma closure_singleton {a : α} : closure {a} = Iic a := by
-  rw [le_antisymm_iff]
-  constructor
-  · apply closure_minimal
-    · rw [singleton_subset_iff, mem_Iic]
-    · rw [isClosed_iff_lower_and_subset_implies_LUB_mem]
-      exact ⟨isLowerSet_Iic a, fun _ _ _ _ d₃ d₄ => (isLUB_le_iff d₃).mpr d₄⟩
-  · rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
-    apply lowerClosure_le_closure
+@[simp] lemma closure_singleton {a : α} : closure {a} = Iic a := le_antisymm
+  (closure_minimal (by rw [singleton_subset_iff, mem_Iic])
+  (isClosed_iff_lower_and_subset_implies_LUB_mem.mpr
+    ⟨isLowerSet_Iic a, fun _ _ _ _ d₃ d₄ => (isLUB_le_iff d₃).mpr d₄⟩))
+  ( by
+    rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
+    apply lowerClosure_le_closure)
 
 variable [Preorder β] [TopologicalSpace β] [IsScott β]
 
