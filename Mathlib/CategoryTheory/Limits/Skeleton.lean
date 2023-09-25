@@ -37,7 +37,7 @@ theorem Limits.HasZeroObject.transport (e : C ≌ D) [Limits.HasZeroObject C] :
     Limits.HasZeroObject D where
   zero := let ⟨_Z, hZ⟩ := Limits.HasZeroObject.zero (C := C); ⟨_, Limits.IsZero.transport e hZ⟩
 
-attribute [pp_dot] NatTrans.app Equivalence.counitInv Equivalence.counit Equivalence.toAdjunction Equivalence.symm
+attribute [pp_dot] Equivalence.toAdjunction
 
 /-- Transport `Limits.HasZeroMorphisms` along an equivalence. -/
 def Limits.HasZeroMorphisms.transport (e : C ≌ D) [Limits.HasZeroMorphisms C] :
