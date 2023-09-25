@@ -10,6 +10,7 @@ import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
+import Std.Lean.Meta.DiscrTree
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
 import Std.Tactic.CoeExt -- just to copy the attribute
@@ -912,10 +913,10 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         ""}`@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both {
         src} and the target declaration {tgt}."
     warnAttr stx Std.Tactic.Ext.extExtension
-      (fun b n => (b.tree.elements.any fun t => t.declName = n)) thisAttr `ext src tgt
-    warnAttr stx Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src tgt
-    warnAttr stx Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src tgt
-    warnAttr stx Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src tgt
+      (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
+    warnAttr stx Mathlib.Tactic.reflExt (·.values.contains ·) thisAttr `refl src tgt
+    warnAttr stx Mathlib.Tactic.symmExt (·.values.contains ·) thisAttr `symm src tgt
+    warnAttr stx Mathlib.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
     warnAttr stx Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src tgt
     warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
