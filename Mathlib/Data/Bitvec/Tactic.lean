@@ -104,7 +104,7 @@ namespace Bitvec.Tactic
   section Desugar
     variable (x y : Bitvec n)
 
-    @[aesop norm simp (rule_sets [Mathlib.Data.Bitvec])]
+    @[aesop norm 5 simp (rule_sets [Mathlib.Data.Bitvec])]
     protected theorem desugar_add : x + y = x.add y :=
       rfl
 
@@ -116,7 +116,7 @@ namespace Bitvec.Tactic
     protected theorem desugar_mul : x * y = x.mul y :=
       rfl
 
-    @[aesop norm 6 simp (rule_sets [Mathlib.Data.Bitvec])]
+    @[aesop norm 5 simp (rule_sets [Mathlib.Data.Bitvec])]
     protected theorem desugar_neg : -x  = Bitvec.neg x :=
       rfl
 
@@ -136,11 +136,11 @@ namespace Bitvec.Tactic
     protected theorem desugar_xor : x ^^^ y = x.xor y :=
       rfl
 
-    @[aesop norm 5 simp (rule_sets [Mathlib.Data.Bitvec])]
+    @[aesop norm 4 simp (rule_sets [Mathlib.Data.Bitvec])]
     protected theorem desugar_zero : (0 : Bitvec n) = Vector.replicate n false :=
       rfl
 
-    @[aesop norm 5 simp (rule_sets [Mathlib.Data.Bitvec])]
+    @[aesop norm 0 simp (rule_sets [Mathlib.Data.Bitvec])]
     protected theorem desugar_negOne : (-1 : Bitvec n) = Vector.replicate n true := by
       rw[neg_one]
 
@@ -148,7 +148,7 @@ namespace Bitvec.Tactic
       Vector.map_eq_mapAccumr
       Vector.map₂_eq_mapAccumr₂
 
-    attribute [-simp]
+    attribute [aesop norm simp]
       Vector.mapAccumr_eq_map_of_constant_state
       Vector.mapAccumr₂_eq_map₂_of_constant_state
       Vector.mapAccumr_eq_map_of_unused_state
@@ -158,17 +158,11 @@ namespace Bitvec.Tactic
 
   macro "aesop_bitvec" opt:Aesop.tactic_clause* : tactic =>
     `(tactic|
-        simp only [
-          (· / ·), Div.div
-        ] <;>
         aesop (rule_sets [Mathlib.Data.Bitvec]) (options := {terminal := false}) $opt*
     )
 
   macro "aesop_bitvec?" opt:Aesop.tactic_clause* : tactic =>
     `(tactic|
-        simp only [
-          (· / ·), Div.div
-        ] <;>
         aesop? (rule_sets [Mathlib.Data.Bitvec]) (options := {terminal := false}) $opt*
       )
 

@@ -43,114 +43,138 @@ theorem refine_some_some (h : x = y) : some x ⊑ some y :=
   Refinement.bothSome h
 
 macro "alive_auto" : tactic => `(tactic|
+      try (ext; simp)
 --   try ring <;>
-  (aesop_bitvec (options := {
-      terminal := false,
-      warnOnNonterminal := false,
-  }))
+--   (aesop_bitvec (options := {
+--       terminal := false,
+--       warnOnNonterminal := false,
+--   }))
+      sorry
 )
 
 open Bitvec
+
+-- bisim
 theorem bitvec_AddSub_1043 :
  ∀ (w : ℕ) (C1 Z RHS : Bitvec w), (Z &&& C1 ^^^ C1) + 1 + RHS = RHS - (Z ||| ~~~C1)
 := by
-      alive_auto
       sorry
 
-
+-- bisim
 theorem bitvec_AddSub_1152:
  ∀ (y x : Bitvec 1), x + y = x ^^^ y
-:= by alive_auto
+:= by sorry
 
+-- hard (shift)
 theorem bitvec_AddSub_1156 :
  ∀ (w : ℕ) (b : Bitvec w), b + b = b <<< 1
 := by sorry -- shifts are hard
 
+-- ring
 theorem bitvec_AddSub_1164 :
  ∀ (w : ℕ) (a b : Bitvec w), 0 - a + b = b - a
 := by sorry --ring
 
+-- ring
 theorem bitvec_AddSub_1165 :
  ∀ (w : ℕ) (a b : Bitvec w), 0 - a + (0 - b) = 0 - (a + b)
 := by sorry -- ring
 
+-- ring
 theorem bitvec_AddSub_1176 :
  ∀ (w : ℕ) (a b : Bitvec w), a + (0 - b) = a - b
 := by sorry -- ring
 
+-- bisim
 theorem bitvec_AddSub_1202 :
  ∀ (w : ℕ) (x C : Bitvec w), (x ^^^ -1) + C = C - 1 - x
 := by intros;
-      alive_auto
+      rw[Bitvec.Tactic.desugar_negOne]
+      simp [Bitvec.Tactic.desugar_xor, Bitvec.xor]
+      rw[Vector.map_eq_mapAccumr]
+      simp?
+      -- alive_auto
       save
       skip
       sorry
 
+-- bisim
 theorem bitvec_AddSub_1295 :
  ∀ (w : ℕ) (a b : Bitvec w), (a &&& b) + (a ^^^ b) = a ||| b
-:= by alive_auto
-      try sorry
+:= by sorry
 
+-- bisim
 theorem bitvec_AddSub_1309 :
  ∀ (w : ℕ) (a b : Bitvec w), (a &&& b) + (a ||| b) = a + b
 := by alive_auto
       try sorry
 
+-- ring
 theorem bitvec_AddSub_1539 :
  ∀ (w : ℕ) (a x : Bitvec w), x - (0 - a) = x + a
 := by alive_auto
       try sorry
 
+-- ring
 theorem bitvec_AddSub_1539_2 :
  ∀ (w : ℕ) (x C : Bitvec w), x - C = x + -C
 := by alive_auto
       try sorry
 
+-- bisim
 theorem bitvec_AddSub_1556:
  ∀ (y x : Bitvec 1), x - y = x ^^^ y
 := by alive_auto
       try sorry
 
+-- bisim
 theorem bitvec_AddSub_1560 :
  ∀ (w : ℕ) (a : Bitvec w), -1 - a = a ^^^ -1
 := by alive_auto
       try sorry
 
+-- bisim
 theorem bitvec_AddSub_1564 :
  ∀ (w : ℕ) (x C : Bitvec w), C - (x ^^^ -1) = x + (C + 1)
 := by alive_auto
       try sorry
 
+-- ring
 theorem bitvec_AddSub_1574 :
  ∀ (w : ℕ) (X C C2 : Bitvec w), C - (X + C2) = C - C2 - X
 := by alive_auto
       try sorry
 
+-- ring
 theorem bitvec_AddSub_1614 :
  ∀ (w : ℕ) (Y X : Bitvec w), X - (X + Y) = 0 - Y
 := by alive_auto
       try sorry
 
+-- ring
 theorem bitvec_AddSub_1619 :
  ∀ (w : ℕ) (Y X : Bitvec w), X - Y - X = 0 - Y
 := by alive_auto
       try sorry
 
+-- bisim
 theorem bitvec_AddSub_1624 :
  ∀ (w : ℕ) (A B : Bitvec w), (A ||| B) - (A ^^^ B) = A &&& B
 := by alive_auto
       try sorry
 
+-- ext-simp-bitblast
 theorem bitvec_AndOrXor_135 :
  ∀ (w : ℕ) (X C1 C2 : Bitvec w), (X ^^^ C1) &&& C2 = X &&& C2 ^^^ C1 &&& C2
-:= by alive_auto
-      try sorry
+:= by sorry
 
+-- ext-simp-bitblast
 theorem bitvec_AndOrXor_144 :
  ∀ (w : ℕ) (X C1 C2 : Bitvec w), (X ||| C1) &&& C2 = (X ||| C1 &&& C2) &&& C2
 := by alive_auto
       try sorry
 
+-- unknown
 theorem bitvec_AndOrXor_698 :
  ∀ (w : ℕ) (a b d : Bitvec w),
   Bitvec.ofBool (a &&& b == 0) &&& Bitvec.ofBool (a &&& d == 0) = Bitvec.ofBool (a &&& (b ||| d) == 0)

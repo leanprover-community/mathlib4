@@ -297,7 +297,6 @@ theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (
   If an accumulation function `f`, given an initial state `s`, produces `s` as its output state
   for all possible input bits, then the state is redundant and can be optimized out
 -/
-@[simp]
 theorem mapAccumr_eq_map_of_constant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
     mapAccumr f xs s = (s, (map (fun x => (f x s).snd) xs)) := by
   clear ys
@@ -307,7 +306,6 @@ theorem mapAccumr_eq_map_of_constant_state (f : α → σ → σ × β) (s : σ)
   If an accumulation function `f`, given an initial state `s`, produces `s` as its output state
   for all possible input bits, then the state is redundant and can be optimized out
 -/
-@[simp]
 theorem mapAccumr₂_eq_map₂_of_constant_state (f : α → β → σ → σ × γ) (s : σ)
     (h : ∀ a b, (f a b s).fst = s) :
     mapAccumr₂ f xs ys s = (s, (map₂ (fun x y => (f x y s).snd) xs ys)) := by
@@ -317,7 +315,6 @@ theorem mapAccumr₂_eq_map₂_of_constant_state (f : α → β → σ → σ ×
   If an accumulation function `f`, produces the same output bits regardless of accumulation state,
   then the state is redundant and can be optimized out
 -/
-@[simp]
 theorem mapAccumr_eq_map_of_unused_state (f : α → σ → σ × β) (s : σ)
     (h : ∀ a s s', (f a s).snd = (f a s').snd) :
     (mapAccumr f xs s).snd = (map (fun x => (f x s).snd) xs) :=
@@ -328,7 +325,6 @@ theorem mapAccumr_eq_map_of_unused_state (f : α → σ → σ × β) (s : σ)
   If an accumulation function `f`, produces the same output bits regardless of accumulation state,
   then the state is redundant and can be optimized out
 -/
-@[simp]
 theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × γ) (s : σ)
     (h : ∀ a b s s', (f a b s).snd = (f a b s').snd) :
     (mapAccumr₂ f xs ys s).snd = (map₂ (fun x y => (f x y s).snd) xs ys) :=
