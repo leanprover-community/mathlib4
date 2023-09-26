@@ -307,7 +307,7 @@ theorem nat_lt_one_iff (m : ℕ) : padicNorm p m < 1 ↔ p ∣ m := by
 
 /-- If a rational is not a p-adic integer, it is not an integer. -/
 theorem not_int_of_not_padic_int (p : ℕ) {a : ℚ} [hp : Fact (Nat.Prime p)]
-  (H : 1 < padicNorm p a) : ¬ a.isInt := by
+    (H : 1 < padicNorm p a) : ¬ a.isInt := by
   suffices : a.den ≠ 1; simpa [Rat.isInt]
   by_cases h : a = 0
   · subst h; contradiction
