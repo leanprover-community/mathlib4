@@ -29,9 +29,9 @@ Rayleigh's theorem.
 * `rayleigh_compl`: Let `r` be a real number greater than 1, and `1/r + 1/s = 1`.
   Then the complement of `B_r` is `B'_s`.
 * `rayleigh_pos`: Let `r` be a real number greater than 1, and `1/r + 1/s = 1`.
-  Then every positive integer is in exactly one of `B⁺_r` or `B⁺'_s`.
+  Then `B⁺_r` and `B⁺'_s` partition the positive integers.
 * `rayleigh_irr_pos`: Let `r` be an irrational number greater than 1, and `1/r + 1/s = 1`.
-  Then every positive integer is in exactly one of `B⁺_r` or `B⁺_s`.
+  Then `B⁺_r` and `B⁺_s` partition the positive integers.
 
 ## References
 
@@ -149,43 +149,53 @@ theorem rayleigh_compl {r s : ℝ} (hrs : r.IsConjugateExponent s) :
       exact (Beatty.no_anticollision hrs ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
 
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
-than 1, and `1/r + 1/s = 1`. Then every positive integer is in exactly one of `B⁺_r` or `B⁺'_s`. -/
+than 1, and `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺'_s` partition the positive integers. -/
 theorem rayleigh_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
-    ∀ {j : ℤ}, j > 0 →
-      (j ∈ beattySetPos r ∧ j ∉ beattySetPos' s) ∨ (j ∉ beattySetPos r ∧ j ∈ beattySetPos' s) := by
-  intro j hj
+    beattySetPos r ∆ beattySetPos' s = {n | 0 < n} := by
+  apply Set.eq_of_subset_of_subset
+  · intro j hj
+    rcases Set.mem_of_mem_of_subset hj Set.symmDiff_subset_union with ⟨k, hk, hjk⟩ | ⟨k, hk, hjk⟩
+    · rw [Set.mem_setOf_eq, ← hjk, beattySequence, Int.floor_pos]
+      exact one_le_mul_of_one_le_of_one_le (by norm_cast) hrs.one_lt.le
+    · rw [Set.mem_setOf_eq, ← hjk, beattySequence', ← Int.ceil_sub_one, Int.ceil_pos, sub_pos]
+      exact one_lt_mul_of_le_of_lt (by norm_cast) hrs.symm.one_lt
+  intro j (hj : 0 < j)
   have hb₁ : ∀ s ≥ 0, j ∈ beattySetPos s ↔ j ∈ beattySet s := by
     intro _ hs
     refine ⟨fun ⟨k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨k, hk⟩ ↦ ⟨k, ?_, hk⟩⟩
-    rw [← hk, beattySequence, gt_iff_lt, Int.floor_pos] at hj
+    rw [← hk, beattySequence, Int.floor_pos] at hj
     have := pos_of_mul_pos_left (lt_of_lt_of_le zero_lt_one hj) hs
     rwa [Int.cast_pos] at this
   have hb₂ : ∀ s ≥ 0, j ∈ beattySetPos' s ↔ j ∈ beattySet' s := by
     intro _ hs
     refine ⟨fun ⟨k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨k, hk⟩ ↦ ⟨k, ?_, hk⟩⟩
-    rw [← hk, beattySequence', gt_iff_lt, lt_sub_iff_add_lt, zero_add] at hj
+    rw [← hk, beattySequence', lt_sub_iff_add_lt, zero_add] at hj
     have hj := Int.ceil_pos.1 (lt_trans zero_lt_one hj)
     have := pos_of_mul_pos_left hj hs
     rwa [Int.cast_pos] at this
-  rw [hb₁ _ hrs.nonneg, hb₂ _ hrs.symm.nonneg, ← rayleigh_compl hrs,
+  rw [Set.mem_symmDiff, hb₁ _ hrs.nonneg, hb₂ _ hrs.symm.nonneg, ← rayleigh_compl hrs,
     Set.not_mem_compl_iff, Set.mem_compl_iff, and_self, and_self]
   exact or_not
 
 /-- Rayleigh's theorem on Beatty sequences. Let `r` be an irrational number greater than 1, and
-`1/r + 1/s = 1`. Then every positive integer is in exactly one of `B⁺_r` or `B⁺_s`. -/
+`1/r + 1/s = 1`. Then `B⁺_r` and `B⁺_s` partition the positive integers. -/
 theorem rayleigh_irr_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) (hr : Irrational r) :
-    ∀ {j : ℤ}, j > 0 →
-      (j ∈ beattySetPos r ∧ j ∉ beattySetPos s) ∨ (j ∉ beattySetPos r ∧ j ∈ beattySetPos s) := by
+    beattySetPos r ∆ beattySetPos s = {n | 0 < n} := by
+  apply Set.eq_of_subset_of_subset
+  · intro j hj
+    rcases Set.mem_of_mem_of_subset hj Set.symmDiff_subset_union with
+      ⟨k, hk, hjk⟩ | ⟨k, hk, hjk⟩ <;>
+      rw [Set.mem_setOf_eq, ← hjk, beattySequence, Int.floor_pos] <;>
+      apply one_le_mul_of_one_le_of_one_le (by norm_cast) <;>
+      [exact hrs.one_lt.le; exact hrs.symm.one_lt.le]
   intro j hj
-  have hb : ∀ s, Irrational s → (j ∈ beattySetPos s ↔ j ∈ beattySetPos' s) := by
-    intro s hs_irr
-    dsimp only [beattySetPos, beattySequence, beattySetPos', beattySequence']
-    congr! 5; rename_i k; rw [and_congr_right_iff]; intro hk; congr!
-    symm; rw [sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one, add_sub_cancel]
-    refine ⟨lt_of_le_of_ne (Int.floor_le _) fun h ↦ ?_, (Int.lt_floor_add_one _).le⟩
-    exact Irrational.ne_int (hs_irr.int_mul hk.ne') ⌊k * s⌋ h.symm
   have hs : Irrational s := by
     convert ((hr.sub_int 1).int_div one_ne_zero).int_add 1
     rw [Int.cast_one, add_div' _ _ _ hrs.sub_one_ne_zero, one_mul, sub_add_cancel, hrs.conj_eq]
-  rw [hb _ hs]
-  exact rayleigh_pos hrs hj
+  have hb : beattySetPos s = beattySetPos' s := by
+    dsimp only [beattySetPos, beattySequence, beattySetPos', beattySequence']
+    congr! 4; rename_i k; rw [and_congr_right_iff]; intro hk; congr!
+    symm; rw [sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one, add_sub_cancel]
+    refine ⟨lt_of_le_of_ne (Int.floor_le _) fun h ↦ ?_, (Int.lt_floor_add_one _).le⟩
+    exact Irrational.ne_int (hs.int_mul hk.ne') ⌊k * s⌋ h.symm
+  rwa [hb, rayleigh_pos hrs]
