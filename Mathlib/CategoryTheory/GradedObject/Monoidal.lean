@@ -4,13 +4,36 @@ namespace CategoryTheory
 
 variable {I : Type*} [AddMonoid I] {C : Type*} [Category C] [MonoidalCategory C]
 
+namespace MonoidalCategory
+
+variable (C)
+
+@[simps!]
+def curriedAssociatorNatIso :
+    bifunctorComp₁₂ (curryObj (MonoidalCategory.tensor C)) (curryObj (MonoidalCategory.tensor C)) ≅
+      bifunctorComp₂₃ (curryObj (MonoidalCategory.tensor C)) (curryObj (MonoidalCategory.tensor C)) :=
+  NatIso.ofComponents
+    (fun X₁ => NatIso.ofComponents
+      (fun X₂ => NatIso.ofComponents
+        (fun X₃ => associator X₁ X₂ X₃)
+          (fun {X₃ Y₃} φ => by simpa using associator_naturality (𝟙 X₁) (𝟙 X₂) φ))
+        (fun {X₂ Y₂} φ => by
+          ext X₃
+          dsimp [curryObj] -- missing @simps
+          simp))
+        (fun {X₁ Y₁} φ => by
+          ext X₂ X₃
+          dsimp [curryObj] -- missing @simps
+          simp)
+
+end MonoidalCategory
 namespace GradedObject
 
-abbrev HasTensor (X : GradedObject I C) (Y : GradedObject I C) : Prop :=
+abbrev HasTensor (X Y : GradedObject I C) : Prop :=
   HasMap (((mapBifunctorFunctor (curryObj (MonoidalCategory.tensor C)) I I).obj X).obj Y)
     (fun x => x.1 + x.2)
 
-noncomputable def tensorObj (X : GradedObject I C) (Y : GradedObject I C) [HasTensor X Y] :
+noncomputable abbrev tensorObj (X Y : GradedObject I C) [HasTensor X Y] :
     GradedObject I C :=
   mapBifunctorMapObj (curryObj (MonoidalCategory.tensor C)) (fun x => x.1 + x.2) X Y
 
@@ -52,7 +75,20 @@ lemma tensor_comp {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X�
   apply congr_mapMap
   simp
 
-variable [∀ (X : GradedObject I C) (Y : GradedObject I C), HasTensor X Y]
+abbrev HasAssociator (X₁ X₂ X₃ : GradedObject I C) [HasTensor X₁ X₂] [HasTensor X₂ X₃]
+   [HasTensor (tensorObj X₁ X₂) X₃] [HasTensor X₁ (tensorObj X₂ X₃)] :=
+  HasGoodAssociator (MonoidalCategory.curriedAssociatorNatIso C)
+    (fun ⟨i, j⟩ => i + j) (fun ⟨i, j⟩ => i + j) (fun ⟨i, j⟩ => i + j) (fun ⟨i, j⟩ => i + j)
+    (fun ⟨i, j, k⟩ => i + j + k) (fun ⟨_, _, _⟩ => rfl) (fun ⟨i, j, k⟩ => add_assoc i j k)
+    X₁ X₂ X₃
+
+noncomputable def associator (X₁ X₂ X₃ : GradedObject I C) [HasTensor X₁ X₂] [HasTensor X₂ X₃]
+  [HasTensor (tensorObj X₁ X₂) X₃] [HasTensor X₁ (tensorObj X₂ X₃)] [H : HasAssociator X₁ X₂ X₃] :
+  tensorObj (tensorObj X₁ X₂) X₃ ≅ tensorObj X₁ (tensorObj X₂ X₃) :=
+    mapBifunctorBifunctorAssociator (H := H)
+
+variable [∀ (X₁ X₂ : GradedObject I C), HasTensor X₁ X₂]
+  [∀ (X₁ X₂ X₃ : GradedObject I C), HasAssociator X₁ X₂ X₃]
 
 /-noncomputable instance : MonoidalCategory (GradedObject I C) where
   tensorObj X Y := tensorObj X Y
@@ -61,9 +97,7 @@ variable [∀ (X : GradedObject I C) (Y : GradedObject I C), HasTensor X Y]
   whiskerLeft X _ _ φ := whiskerLeft X φ
   whiskerRight {_ _ φ Y} := whiskerRight φ Y
   tensorUnit' := sorry
-  associator X Y Z := by
-    dsimp
-    sorry
+  associator X₁ X₂ X₃ := associator X₁ X₂ X₃
   associator_naturality := sorry
   leftUnitor := sorry
   leftUnitor_naturality := sorry
