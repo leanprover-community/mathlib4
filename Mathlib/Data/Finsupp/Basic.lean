@@ -454,8 +454,7 @@ theorem mapDomain_apply {f : α → β} (hf : Function.Injective f) (x : α →�
   rw [mapDomain, sum_apply, sum_eq_single a, single_eq_same]
   · intro b _ hba
     exact single_eq_of_ne (hf.ne hba)
-  · intro h
-    rw [not_mem_support_iff.1 h, single_zero, zero_apply]
+  · simp
 #align finsupp.map_domain_apply Finsupp.mapDomain_apply
 
 theorem mapDomain_notin_range {f : α → β} (x : α →₀ M) (a : β) (h : a ∉ Set.range f) :
@@ -1214,8 +1213,7 @@ theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f 
     rw [Finsupp.curry, sum_apply, sum_apply, sum_eq_single, this, if_pos rfl]
     · intro b _ b_ne
       rw [this b, if_neg b_ne]
-    · intro hxy
-      rw [this (x, y), if_pos rfl, not_mem_support_iff.mp hxy]
+    · simp
 #align finsupp.curry_apply Finsupp.curry_apply
 
 theorem sum_curry_index (f : α × β →₀ M) (g : α → β → M → N) (hg₀ : ∀ a b, g a b 0 = 0)

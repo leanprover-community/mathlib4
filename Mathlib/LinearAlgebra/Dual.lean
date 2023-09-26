@@ -743,8 +743,7 @@ theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
   · simp [h.eval, smul_eq_mul]
   · intro q _ q_ne
     simp [q_ne.symm, h.eval, smul_eq_mul]
-  · intro p_not_in
-    simp [Finsupp.not_mem_support_iff.1 p_not_in]
+  · simp
 #align module.dual_bases.dual_lc Module.DualBases.dual_lc
 
 @[simp]

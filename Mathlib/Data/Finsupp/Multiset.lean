@@ -110,8 +110,8 @@ theorem count_toMultiset [DecidableEq α] (f : α →₀ ℕ) (a : α) : (toMult
     _ = f.sum fun x n => n * ({x} : Multiset α).count a := by simp only [Multiset.count_nsmul]
     _ = f a * ({a} : Multiset α).count a :=
       sum_eq_single _
-        (fun a' _ H => by simp only [Multiset.count_singleton, if_false, H.symm, mul_zero]) fun H =>
-        by simp only [not_mem_support_iff.1 H, zero_mul]
+        (fun a' _ H => by simp only [Multiset.count_singleton, if_false, H.symm, mul_zero])
+        (by simp)
     _ = f a := by rw [Multiset.count_singleton_self, mul_one]
 #align finsupp.count_to_multiset Finsupp.count_toMultiset
 
