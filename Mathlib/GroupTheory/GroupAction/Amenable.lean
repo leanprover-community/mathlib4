@@ -6,6 +6,24 @@ Authors: Matthias Uschold
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Data.Real.ENNReal
 
+
+/-!
+# Amenable Monoid Actions
+
+In this file, we define amenability of a monoid action.
+
+## Main Definitions
+
+- `mean`: defines means as finitely additive probability measures
+- `invariant_mean`: defines when a mean is invariant under a monoid action
+- `amenable`: A monoid action is amenable if there exists an invariant mean
+
+## References
+
+
+
+-/
+
 universe u v
 variable (M : Type u) (α : Type v) [Monoid M] [MulAction M α]
 
@@ -16,16 +34,16 @@ structure mean where
             → μ (X ∪ Y) = μ X + μ Y
 
 @[coe]
-instance : Coe (mean α) (Set α → ENNReal) where
+instance : CoeFun (mean α) (λ _ => Set α → ENNReal) where
   coe := mean.μ
 
 structure invariant_mean extends mean α where
   invariance: ∀ (A: Set α), ∀ (g: M),
       μ ((λ (x:α) => g•x) '' A) = μ A
 
-example (m : invariant_mean M α ) (A: Set α )
+example (m : mean α ) (A: Set α )
   : ENNReal
-  := m.μ A
+  := m A
 
 def amenable : Prop
   := Nonempty (invariant_mean M α)
