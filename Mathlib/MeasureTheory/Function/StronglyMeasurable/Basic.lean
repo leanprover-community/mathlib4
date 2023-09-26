@@ -135,6 +135,11 @@ theorem stronglyMeasurable_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} [Top
   ⟨fun _ => SimpleFunc.ofIsEmpty, isEmptyElim⟩
 #align measure_theory.strongly_measurable_of_is_empty MeasureTheory.stronglyMeasurable_of_isEmpty
 
+theorem stronglyMeasurable_of_fintype [Fintype α] {_ : MeasurableSpace α}
+    [MeasurableSingletonClass α] [TopologicalSpace β]
+    (f : α → β) : StronglyMeasurable f :=
+  ⟨fun _ => SimpleFunc.ofFintype f, fun _ => tendsto_const_nhds⟩
+
 theorem stronglyMeasurable_const {α β} {_ : MeasurableSpace α} [TopologicalSpace β] {b : β} :
     StronglyMeasurable fun _ : α => b :=
   ⟨fun _ => SimpleFunc.const α b, fun _ => tendsto_const_nhds⟩

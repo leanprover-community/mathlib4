@@ -128,10 +128,10 @@ theorem IsCompact.diff (hs : IsCompact s) (ht : IsOpen t) : IsCompact (s \ t) :=
 #align is_compact.diff IsCompact.diff
 
 /-- A closed subset of a compact set is a compact set. -/
-theorem isCompact_of_isClosed_subset (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
+theorem IsCompact.of_isClosed_subset (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
     IsCompact t :=
   inter_eq_self_of_subset_right h ▸ hs.inter_right ht
-#align is_compact_of_is_closed_subset isCompact_of_isClosed_subset
+#align is_compact_of_is_closed_subset IsCompact.of_isClosed_subset
 
 theorem IsCompact.image_of_continuousOn {f : α → β} (hs : IsCompact s) (hf : ContinuousOn f s) :
     IsCompact (f '' s) := by
@@ -306,7 +306,7 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed (Z : ℕ �
   have Zmono : Antitone Z := antitone_nat_of_succ_le hZd
   have hZd : Directed (· ⊇ ·) Z := directed_of_sup Zmono
   have : ∀ i, Z i ⊆ Z 0 := fun i => Zmono <| zero_le i
-  have hZc : ∀ i, IsCompact (Z i) := fun i => isCompact_of_isClosed_subset hZ0 (hZcl i) (this i)
+  have hZc : ∀ i, IsCompact (Z i) := fun i => hZ0.of_isClosed_subset (hZcl i) (this i)
   IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed Z hZd hZn hZc hZcl
 #align is_compact.nonempty_Inter_of_sequence_nonempty_compact_closed IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed
 
@@ -733,7 +733,7 @@ theorem compactSpace_of_finite_subfamily_closed
 #align compact_space_of_finite_subfamily_closed compactSpace_of_finite_subfamily_closed
 
 theorem IsClosed.isCompact [CompactSpace α] {s : Set α} (h : IsClosed s) : IsCompact s :=
-  isCompact_of_isClosed_subset isCompact_univ h (subset_univ _)
+  isCompact_univ.of_isClosed_subset h (subset_univ _)
 #align is_closed.is_compact IsClosed.isCompact
 
 /-- `α` is a noncompact topological space if it is not a compact space. -/
@@ -867,8 +867,8 @@ theorem exists_subset_nhds_of_compactSpace [CompactSpace α] {ι : Type*} [Nonem
   exists_subset_nhds_of_isCompact' hV (fun i => (hV_closed i).isCompact) hV_closed hU
 #align exists_subset_nhds_of_compact_space exists_subset_nhds_of_compactSpace
 
-/-- If `f : α → β` is an `Inducing` map, then the image `f '' s` of a set `s` is compact if and only
-if the set `s` is closed. -/
+/-- If `f : α → β` is an `Inducing` map,
+the image `f '' s` of a set `s` is compact if and only if `s` is compact. -/
 theorem Inducing.isCompact_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     IsCompact (f '' s) ↔ IsCompact s := by
   refine ⟨fun hs F F_ne_bot F_le => ?_, fun hs => hs.image hf.continuous⟩
@@ -878,8 +878,8 @@ theorem Inducing.isCompact_iff {f : α → β} (hf : Inducing f) {s : Set α} :
 #align inducing.is_compact_iff Inducing.isCompact_iff
 
 /-- If `f : α → β` is an `Embedding` (or more generally, an `Inducing` map, see
-`Inducing.isCompact_iff`), then the image `f '' s` of a set `s` is compact if and only if the set
-`s` is closed. -/
+`Inducing.isCompact_iff`), the image `f '' s` of a set `s` is compact if and only if the set
+`s` is compact. -/
 theorem Embedding.isCompact_iff_isCompact_image {f : α → β} (hf : Embedding f) :
     IsCompact s ↔ IsCompact (f '' s) :=
   hf.toInducing.isCompact_iff.symm
@@ -949,8 +949,8 @@ theorem IsCompact.prod {s : Set α} {t : Set β} (hs : IsCompact s) (ht : IsComp
 #align is_compact.prod IsCompact.prod
 
 /-- Finite topological spaces are compact. -/
-instance (priority := 100) Finite.compactSpace [Finite α] : CompactSpace α
-    where isCompact_univ := finite_univ.isCompact
+instance (priority := 100) Finite.compactSpace [Finite α] : CompactSpace α where
+  isCompact_univ := finite_univ.isCompact
 #align finite.compact_space Finite.compactSpace
 
 /-- The product of two compact spaces is compact. -/
@@ -1104,6 +1104,13 @@ theorem exists_compact_superset [WeaklyLocallyCompactSpace α] {K : Set α} (hK 
   exact iUnion₂_subset fun x hx ↦ interior_mono <| subset_iUnion₂ (s := fun x _ ↦ s x) x hx
 #align exists_compact_superset exists_compact_superset
 
+/-- In a weakly locally compact space,
+the filters `𝓝 x` and `cocompact α` are disjoint for all `α`. -/
+theorem disjoint_nhds_cocompact [WeaklyLocallyCompactSpace α] (x : α) :
+    Disjoint (𝓝 x) (cocompact α) :=
+  let ⟨_, hc, hx⟩ := exists_compact_mem_nhds x
+  disjoint_of_disjoint_of_mem disjoint_compl_right hx hc.compl_mem_cocompact
+
 /-- There are various definitions of "locally compact space" in the literature,
 which agree for Hausdorff spaces but not in general.
 This one is the precise condition on X needed
@@ -1127,11 +1134,6 @@ theorem local_compact_nhds [LocallyCompactSpace α] {x : α} {n : Set α} (h : n
     ∃ s ∈ 𝓝 x, s ⊆ n ∧ IsCompact s :=
   LocallyCompactSpace.local_compact_nhds _ _ h
 #align local_compact_nhds local_compact_nhds
-
-/-- In a locally compact space, the filters `𝓝 x` and `cocompact α` are disjoint for all `α`. -/
-theorem disjoint_nhds_cocompact [LocallyCompactSpace α] (x : α) : Disjoint (𝓝 x) (cocompact α) :=
-  let ⟨_, hx, _, hc⟩ := local_compact_nhds (univ_mem (f := 𝓝 x));
-  disjoint_of_disjoint_of_mem disjoint_compl_right hx hc.compl_mem_cocompact
 
 theorem locallyCompactSpace_of_hasBasis {ι : α → Type*} {p : ∀ x, ι x → Prop}
     {s : ∀ x, ι x → Set α} (h : ∀ x, (𝓝 x).HasBasis (p x) (s x))
@@ -1302,7 +1304,7 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace α] {S : Se
 
 /-- A σ-compact space is a space that is the union of a countable collection of compact subspaces.
   Note that a locally compact separable T₂ space need not be σ-compact.
-  The sequence can be extracted using `topological_space.compact_covering`. -/
+  The sequence can be extracted using `compactCovering`. -/
 class SigmaCompactSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- In a σ-compact space, there exists (by definition) a countable collection of compact subspaces
   that cover the entire space. -/

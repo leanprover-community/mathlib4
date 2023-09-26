@@ -80,7 +80,7 @@ def toFunAlgHom : A ⊗[R] Matrix n n R →ₐ[R] Matrix n n A :=
 @[simp]
 theorem toFunAlgHom_apply (a : A) (m : Matrix n n R) :
     toFunAlgHom R A n (a ⊗ₜ m) = a • m.map (algebraMap R A) := by
-  simp [toFunAlgHom, algHomOfLinearMapTensorProduct, toFunLinear]; rfl
+  simp [toFunAlgHom, algHomOfLinearMapTensorProduct, toFunLinear]
 #align matrix_equiv_tensor.to_fun_alg_hom_apply MatrixEquivTensor.toFunAlgHom_apply
 
 /-- (Implementation detail.)

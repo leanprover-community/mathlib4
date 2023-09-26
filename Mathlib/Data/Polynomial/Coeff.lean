@@ -100,7 +100,7 @@ theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
 @[simp]
 theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
     coeff (∑ b in s, f b) n = ∑ b in s, coeff (f b) n :=
-  (lcoeff R n).map_sum
+  map_sum (lcoeff R n) _ _
 #align polynomial.finset_sum_coeff Polynomial.finset_sum_coeff
 
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
@@ -302,7 +302,7 @@ theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := isRegular_X.pow 
 
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
-  rw [(commute_X (C r : R[X])).add_pow, ← lcoeff_apply, LinearMap.map_sum]
+  rw [(commute_X (C r : R[X])).add_pow, ← lcoeff_apply, map_sum]
   simp only [one_pow, mul_one, lcoeff_apply, ← C_eq_nat_cast, ← C_pow, coeff_mul_C, Nat.cast_id]
   rw [Finset.sum_eq_single k, coeff_X_pow_self, one_mul]
   · intro _ _ h

@@ -330,7 +330,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.agree' PFunctor.M.Agree'
 
 @[simp]
-theorem dest_mk (x : F.Obj <| M F) : dest (M.mk x) = x := by rfl
+theorem dest_mk (x : F.Obj <| M F) : dest (M.mk x) = x := rfl
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.dest_mk PFunctor.M.dest_mk
 
@@ -535,7 +535,7 @@ theorem head_mk (x : F.Obj (M F)) : head (M.mk x) = x.1 :=
   Eq.symm <|
     calc
       x.1 = (dest (M.mk x)).1 := by rw [dest_mk]
-      _ = head (M.mk x) := by rfl
+      _ = head (M.mk x) := rfl
 
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.head_mk PFunctor.M.head_mk
@@ -562,7 +562,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem iselect_nil [DecidableEq F.A] [Inhabited (M F)] {a} (f : F.B a → M F) :
-    iselect nil (M.mk ⟨a, f⟩) = a := by rfl
+    iselect nil (M.mk ⟨a, f⟩) = a := rfl
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.iselect_nil PFunctor.M.iselect_nil
 

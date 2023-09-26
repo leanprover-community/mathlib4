@@ -6,7 +6,8 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Ring.Defs
+import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Divisibility
