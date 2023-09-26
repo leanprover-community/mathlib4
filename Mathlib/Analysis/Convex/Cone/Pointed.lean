@@ -39,18 +39,22 @@ section Definitions
 variable [OrderedSemiring 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E]
 
-instance : Coe (PointedCone 𝕜 E) (ConvexCone 𝕜 E) where
-  coe := fun S => {
+/-- Every pointed cone is a convex cone. -/
+@[coe]
+def toConvexCone (S : PointedCone 𝕜 E) : ConvexCone 𝕜 E where
     carrier := S
-    smul_mem' := fun c hc _ hx => S.smul_mem ⟨c, le_of_lt hc⟩ hx
-    add_mem' := fun _ hx _ hy => S.add_mem hx hy }
+    smul_mem' c hc _ hx := S.smul_mem ⟨c, le_of_lt hc⟩ hx
+    add_mem' _ hx _ hy := S.add_mem hx hy
+
+instance : Coe (PointedCone 𝕜 E) (ConvexCone 𝕜 E) where
+  coe := toConvexCone
 
 theorem coe_injective : Injective ((↑) : PointedCone 𝕜 E → ConvexCone 𝕜 E) :=
-  fun _ _ => by simp
+  fun _ _ => by simp [toConvexCone]
 
 @[simp]
 theorem coe_pointed (S : PointedCone 𝕜 E) : (S : ConvexCone 𝕜 E).Pointed := by
-  simp [ConvexCone.Pointed]
+  simp [toConvexCone, ConvexCone.Pointed]
 
 @[ext]
 theorem ext {S T : PointedCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
@@ -62,7 +66,7 @@ instance instZero (S : PointedCone 𝕜 E) : Zero S :=
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
 def _root_.ConvexCone.toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) : PointedCone 𝕜 E where
   carrier := S
-  add_mem' := fun hx hy => S.add_mem hx hy
+  add_mem' hx hy := S.add_mem hx hy
   zero_mem' := hS
   smul_mem' := fun ⟨c, hc⟩ x hx => by
     simp_rw [SetLike.mem_coe]
@@ -79,9 +83,9 @@ lemma _root_.ConvexCone.mem_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointe
     x ∈ S.toPointedCone hS ↔ x ∈ S :=
   Iff.rfl
 
-@[simp]
+@[simp, norm_cast]
 lemma _root_.ConvexCone.coe_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) :
-    (S.toPointedCone hS : Set E) = S :=
+    (S.toPointedCone hS : ConvexCone 𝕜 E) = S :=
   rfl
 
 end Definitions
