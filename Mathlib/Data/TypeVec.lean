@@ -390,7 +390,7 @@ def PredLast (α : TypeVec n) {β : Type*} (p : β → Prop) : ∀ ⦃i⦄, (α.
 /-- `RelLast α r x y` says that `p` the last elements of `x y : α.append1 β` are related by `r` and
 all the other elements are equal. -/
 def RelLast (α : TypeVec n) {β γ : Type _} (r : β → γ → Prop) :
-      ∀ ⦃i⦄, (α.append1 β) i → (α.append1 γ) i → Prop
+    ∀ ⦃i⦄, (α.append1 β) i → (α.append1 γ) i → Prop
   | Fin2.fs _ => Eq
   | Fin2.fz => r
 #align typevec.rel_last TypeVec.RelLast
@@ -616,21 +616,21 @@ def toSubtype :
 /-- arrow that rearranges the type of `Subtype_` to turn a vector of subtypes
 into a subtype of vector -/
 def ofSubtype {n} {α : TypeVec.{u} n} (p : α ⟹ «repeat» n Prop) :
-      Subtype_ p ⟹ fun i : Fin2 n => { x // ofRepeat <| p i x }
+    Subtype_ p ⟹ fun i : Fin2 n => { x // ofRepeat <| p i x }
   | Fin2.fs i, x => ofSubtype _ i x
   | Fin2.fz,   x => x
 #align typevec.of_subtype TypeVec.ofSubtype
 
 /-- similar to `toSubtype` adapted to relations (i.e. predicate on product) -/
 def toSubtype' {n} {α : TypeVec.{u} n} (p : α ⊗ α ⟹ «repeat» n Prop) :
-      (fun i : Fin2 n => { x : α i × α i // ofRepeat <| p i (prod.mk _ x.1 x.2) }) ⟹ Subtype_ p
+    (fun i : Fin2 n => { x : α i × α i // ofRepeat <| p i (prod.mk _ x.1 x.2) }) ⟹ Subtype_ p
   | Fin2.fs i, x => toSubtype' (dropFun p) i x
   | Fin2.fz, x => ⟨x.val, cast (by congr) x.property⟩
 #align typevec.to_subtype' TypeVec.toSubtype'
 
 /-- similar to `of_subtype` adapted to relations (i.e. predicate on product) -/
 def ofSubtype' {n} {α : TypeVec.{u} n} (p : α ⊗ α ⟹ «repeat» n Prop) :
-      Subtype_ p ⟹ fun i : Fin2 n => { x : α i × α i // ofRepeat <| p i (prod.mk _ x.1 x.2) }
+    Subtype_ p ⟹ fun i : Fin2 n => { x : α i × α i // ofRepeat <| p i (prod.mk _ x.1 x.2) }
   | Fin2.fs i, x => ofSubtype' _ i x
   | Fin2.fz, x => ⟨x.val, cast (by congr) x.property⟩
 #align typevec.of_subtype' TypeVec.ofSubtype'

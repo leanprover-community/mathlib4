@@ -469,7 +469,7 @@ theorem compProd_eq_sum_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : 
 #align probability_theory.kernel.comp_prod_eq_sum_comp_prod ProbabilityTheory.kernel.compProd_eq_sum_compProd
 
 theorem compProd_eq_sum_compProd_left (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ) :
-  κ ⊗ₖ η = kernel.sum fun n => seq κ n ⊗ₖ η := by
+    κ ⊗ₖ η = kernel.sum fun n => seq κ n ⊗ₖ η := by
   by_cases h : IsSFiniteKernel η
   swap
   · simp_rw [compProd_of_not_isSFiniteKernel_right _ _ h]

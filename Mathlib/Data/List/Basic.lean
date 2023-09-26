@@ -321,12 +321,12 @@ theorem subset_append_of_subset_right' (l l₁ l₂ : List α) : l ⊆ l₂ → 
 
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
   (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
-cons_subset.2 ⟨ainm, lsubm⟩
+  cons_subset.2 ⟨ainm, lsubm⟩
 #align list.cons_subset_of_subset_of_mem List.cons_subset_of_subset_of_mem
 
 theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l₁ ⊆ l) (l₂subl : l₂ ⊆ l) :
-  l₁ ++ l₂ ⊆ l :=
-fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
+    l₁ ++ l₂ ⊆ l :=
+  fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 #align list.append_subset_of_subset_of_subset List.append_subset_of_subset_of_subset
 
 -- Porting note: in Std
@@ -3549,7 +3549,7 @@ theorem filter_false (l : List α) :
 
 /- Porting note: need a helper theorem for span.loop. -/
 theorem span.loop_eq_take_drop :
-  ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
+    ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
   | [], l₂ => by simp [span.loop, takeWhile, dropWhile]
   | (a :: l), l₂ => by
     cases hp : p a <;> simp [hp, span.loop, span.loop_eq_take_drop, takeWhile, dropWhile]
