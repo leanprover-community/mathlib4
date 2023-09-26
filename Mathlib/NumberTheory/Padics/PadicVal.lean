@@ -587,11 +587,10 @@ theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne
 
 /-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`.-/
 lemma le_nat_log (n : ℕ) [hp : Fact (Nat.Prime p)] : padicValNat p n ≤ Nat.log p n := by
-  by_cases (n = 0)
-  · simp only [h, padicValNat.zero, Nat.log_zero_right, le_refl]
-  · refine' Nat.le_log_of_pow_le (Nat.Prime.one_lt hp.elim) _
-    by_contra Hnot; push_neg at Hnot
-    exact h (Nat.eq_zero_of_dvd_of_lt (pow_padicValNat_dvd (p := p) (n := n)) Hnot)
+  rcases eq_or_ne n 0 with rfl | h
+  · rw [padicValNat.zero, Nat.log_zero_right]
+  · refine' Nat.le_log_of_pow_le hp.elim.one_lt _
+    exact le_of_dvd (Nat.pos_of_ne_zero h) pow_padicValNat_dvd
 
 lemma le_nat_log_of_le {n₁ n₂ : ℕ} [Fact (Nat.Prime p)] (hn : n₁ ≤ n₂) :
     padicValNat p n₁ ≤ Nat.log p n₂ := le_trans (le_nat_log n₁) (Nat.log_mono_right hn)
