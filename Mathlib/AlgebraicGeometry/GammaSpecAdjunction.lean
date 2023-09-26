@@ -177,6 +177,7 @@ def toΓSpecCBasicOpens :
     apply X.presheaf.map_comp
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_c_basic_opens AlgebraicGeometry.LocallyRingedSpace.toΓSpecCBasicOpens
 
+set_option maxHeartbeats 0 in
 /-- The canonical morphism of sheafed spaces from `X` to the spectrum of its global sections. -/
 @[simps]
 def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.obj (op X))) where
@@ -186,6 +187,7 @@ def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.
       X.toΓSpecCBasicOpens
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace
 
+set_option maxHeartbeats 0 in
 -- Porting Note: Now need much more hand holding: all variables explicit, and need to tidy up
 -- significantly, was `TopCat.Sheaf.extend_hom_app _ _ _ _`
 theorem toΓSpecSheafedSpace_app_eq :

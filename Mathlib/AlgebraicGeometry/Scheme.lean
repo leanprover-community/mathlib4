@@ -356,6 +356,7 @@ end BasicOpen
 
 end Scheme
 
+set_option maxHeartbeats 0 in
 theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
     (Scheme.Spec.obj <| op R).basicOpen ((SpecΓIdentity.app R).inv f) =
       PrimeSpectrum.basicOpen f := by
