@@ -24,7 +24,7 @@ namespace Subgroup
 /-- pull a subgroup back to an opposite subgroup along `unop`-/
 @[to_additive (attr := simps)
 "pull an additive subgroup back to an opposite additive subgroup along `unop`"]
-def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
+protected def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
   carrier := MulOpposite.unop ⁻¹' (H : Set G)
   one_mem' := H.one_mem
   mul_mem' ha hb := H.mul_mem hb ha
@@ -33,7 +33,7 @@ def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
 /-- pull an opposite subgroup back to a subgroup along `op`-/
 @[to_additive (attr := simps)
 "pull an opposite additive subgroup back to an additive subgroup along `op`"]
-def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
+protected def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
   carrier := MulOpposite.op ⁻¹' (H : Set Gᵐᵒᵖ)
   one_mem' := H.one_mem
   mul_mem' := fun ha hb => H.mul_mem hb ha
