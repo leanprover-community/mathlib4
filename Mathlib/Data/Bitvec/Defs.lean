@@ -106,13 +106,11 @@ protected def shiftRight (x : BitVec w) (n : Nat) : BitVec w :=
 
 /-- Signed less than for bitvectors. -/
 protected def slt (x y : BitVec (w + 1)) : Prop :=
-  if (y.val >>> w) < (x.val >>> w) then True
-  else x.val >>> w = y.val >>> w ∧ x.val % 2^w < y.val % 2^w
+  ((x.val >>> w = 1) ∧ (y.val >>> w = 0)) ∨ ((x.val >>> w = y.val >>> w) ∧ x < y)
 
 /-- Signed less than or equal to for bitvectors. -/
 protected def sle (x y : BitVec (w + 1)) : Prop :=
-  if (y.val >>> w) < (x.val >>> w) then True
-  else (x.val >>> w = y.val >>> w) ∧ x.val % 2^w ≤ y.val % 2^w
+  ((x.val >>> w = 1) ∧ (y.val >>> w = 0)) ∨ ((x.val >>> w = y.val >>> w) ∧ x ≤ y)
 
 /-- Signed greater than for bitvectors. -/
 protected def sgt (x y : BitVec (w + 1)) : Prop := BitVec.slt y x
@@ -147,25 +145,25 @@ def extract (i j) (x : BitVec w) : BitVec (i - j + 1) :=
   BitVec.ofNat _ (x.val >>> j)
 
 /-- Generate and concatenate `i` copies of a bitvector. -/
-def repeat_ : (i : Nat) → BitVec w → BitVec (w * i)
+def replicate : (i : Nat) → BitVec w → BitVec (w * i)
   | 0,   _ => 0
   | n + 1, x =>
     have hEq : w + w * n = w * (n + 1) := by
       rw [Nat.mul_add, Nat.add_comm, Nat.mul_one]
-    hEq ▸ (x ++ repeat_ n x)
+    hEq ▸ (x ++ replicate n x)
 
 /-- Pad a bitvector by the zero bitvector of length `i`. -/
 def zeroExtend (i : Nat) (x : BitVec w) : BitVec (w + i) :=
   have hEq : w+i = i+w := Nat.add_comm _ _
   hEq ▸ ((0 : BitVec i) ++ x)
 
-/-- Extend a bitvector by repeating the last element `i` times. -/
+/-- Extend a bitvector by repeating the most significant bit `i` times. -/
 def signExtend (i) (x : BitVec w) : BitVec (w + i) :=
   have hEq : ((w - 1) - (w - 1) + 1) * i + w = w + i := by
     rw [Nat.sub_self, Nat.zero_add, Nat.one_mul, Nat.add_comm]
-  hEq ▸ ((repeat_ i (extract (w - 1) (w - 1) x)) ++ x)
+  hEq ▸ ((replicate i (extract (w - 1) (w - 1) x)) ++ x)
 
-/-- Shrink a bitvector. -/
+/-- Keep the `v` least significant bits of a bitvector. -/
 def shrink (v) (x : BitVec w) : BitVec v :=
   if hZero : 0 < v then
     have hEq : v - 1 + 0 + 1 = v := by
