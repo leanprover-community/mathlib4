@@ -130,7 +130,6 @@ instance prod [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [Poli
     PolishSpace (α × β) :=
   letI := upgradePolishSpace α
   letI := upgradePolishSpace β
-  letI : MetricSpace (α × β) := Prod.metricSpaceMax
   inferInstance
 
 /-- The disjoint union of two Polish spaces is Polish. -/

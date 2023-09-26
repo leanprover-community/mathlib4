@@ -17,7 +17,12 @@ structure on Polish spaces.
 
 ## Main definitions and results
 
-First, we define the class of analytic sets and establish its basic properties.
+First, we define standard Borel apaces.
+
+* A `StandardBorelSpace α` is a typeclass for measurable spaces which arise as the Borel sets
+  of some Polish topology.
+
+Next, we define the class of analytic sets and establish its basic properties.
 
 * `MeasureTheory.AnalyticSet s`: a set in a topological space is analytic if it is the continuous
   image of a Polish space. Equivalently, it is empty, or the image of `ℕ → ℕ`.
@@ -42,16 +47,16 @@ analytic sets.
   is a measurable embedding for the Borel sigma-algebra.
 * `ContinuousOn.measurableEmbedding` is the same result for a map restricted to a measurable set
   on which it is continuous.
-* `Measurable.measurableEmbedding` states that a measurable injective map from a Polish space
-  to a second-countable topological space is a measurable embedding.
+* `Measurable.measurableEmbedding` states that a measurable injective map from
+  a standard Borel space to a second-countable topological space is a measurable embedding.
 * `isClopenable_iff_measurableSet`: in a Polish space, a set is clopenable (i.e., it can be made
   open and closed by using a finer Polish topology) if and only if it is Borel-measurable.
 
 We use this to prove several versions of the Borel isomorphism theorem.
 
-* `PolishSpace.measurableEquivOfNotCountable` : Any two uncountable Polish spaces
+* `PolishSpace.measurableEquivOfNotCountable` : Any two uncountable standard Borel spaces
   are Borel isomorphic.
-* `PolishSpace.Equiv.measurableEquiv` : Any two Polish spaces of the same cardinality
+* `PolishSpace.Equiv.measurableEquiv` : Any two standard Borel spaces of the same cardinality
   are Borel isomorphic.
 -/
 
@@ -97,7 +102,11 @@ theorem eq_borel_upgradeStandardBorel [MeasurableSpace α] [StandardBorelSpace �
   @BorelSpace.measurable_eq _ (upgradeStandardBorel α).toTopologicalSpace _
     (upgradeStandardBorel α).toBorelSpace
 
-variable {α} [MeasurableSpace α]
+variable {α}
+
+section
+
+variable [MeasurableSpace α]
 
 instance standardBorel_of_polish [τ : TopologicalSpace α]
     [BorelSpace α] [PolishSpace α] : StandardBorelSpace α := by exists τ
@@ -132,6 +141,8 @@ instance pi_countable {ι : Type*} [Countable ι] {α : ι → Type*} [∀ n, Me
 end instances
 
 end StandardBorelSpace
+
+end section
 
 variable [TopologicalSpace α] {ι : Type*}
 
@@ -1007,7 +1018,7 @@ end PolishSpace
 
 namespace MeasureTheory
 
-variable (α : Type*)
+variable (α)
 variable [MeasurableSpace α] [StandardBorelSpace α]
 
 theorem exists_nat_measurableEquiv_range_coe_fin_of_finite [Finite α] :
