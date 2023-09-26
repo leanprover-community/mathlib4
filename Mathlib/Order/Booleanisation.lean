@@ -18,14 +18,18 @@ complements.
 ## Main declarations
 
 * `Booleanisation`: Boolean algebra containing a given generalised Boolean algebra as a sublattice.
-* `Booleanisation.inlLatticeHom`: Boolean algebra containing a given generalised Boolean algebra as a sublattice.
+* `Booleanisation.inlLatticeHom`: Boolean algebra containing a given generalised Boolean algebra as
+  a sublattice.
 -/
 
 open Function
 
 variable {α : Type*}
 
-/-- Boolean algebra containing a given generalised Boolean algebra `α` as a sublattice. -/
+/-- Boolean algebra containing a given generalised Boolean algebra `α` as a sublattice.
+
+This should be thought of as made of a copy of `α` (representing elements of `α`) living under
+another copy of `α` (representing complements of elements of `α`). -/
 def Booleanisation (α : Type*) := α ⊕ α
 
 namespace Booleanisation
@@ -34,14 +38,28 @@ instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) := S
 
 variable [GeneralizedBooleanAlgebra α] {x y : Booleanisation α} {a b : α}
 
+/-- The natural inclusion `a ↦ a` from a generalized Boolean algebra to its generated Boolean
+algebra. -/
 @[match_pattern] abbrev inl : α → Booleanisation α := Sum.inl
+
+/-- The inclusion `a ↦ aᶜ from a generalized Boolean algebra to its generated Boolean algebra. -/
 @[match_pattern] abbrev inr : α → Booleanisation α := Sum.inr
 
+/-- The order on `Booleanisation α` is as follows: For `a b : α`,
+* `a ≤ b` iff `a ≤ b` in `α`
+* `a ≤ bᶜ` iff `a` and `b` are disjoint in `α`
+* `aᶜ ≤ bᶜ` iff `b ≤ a` in `α`
+* `¬ aᶜ ≤ b` -/
 protected inductive LE : Booleanisation α → Booleanisation α → Prop
   | protected inl {a b} : a ≤ b → Booleanisation.LE (inl a) (inl b)
   | protected inr {a b} : a ≤ b → Booleanisation.LE (inr b) (inr a)
   | protected sep {a b} : Disjoint a b → Booleanisation.LE (inl a) (inr b)
 
+/-- The order on `Booleanisation α` is as follows: For `a b : α`,
+* `a < b` iff `a < b` in `α`
+* `a < bᶜ` iff `a` and `b` are disjoint in `α`
+* `aᶜ < bᶜ` iff `b < a` in `α`
+* `¬ aᶜ < b` -/
 protected inductive LT : Booleanisation α → Booleanisation α → Prop
   | protected inl {a b} : a < b → Booleanisation.LT (inl a) (inl b)
   | protected inr {a b} : a < b → Booleanisation.LT (inr b) (inr a)
@@ -53,6 +71,11 @@ instance instLE : LE (Booleanisation α) where
 instance instLT : LT (Booleanisation α) where
   lt := Booleanisation.LT
 
+/-- The supremum on `Booleanisation α` is as follows: For `a b : α`,
+* `a ⊔ b` is `a ⊔ b`
+* `a ⊔ bᶜ` is `(b \ a)ᶜ`
+* `aᶜ ⊔ b` is `(a \ b)ᶜ`
+* `aᶜ ⊔ bᶜ` is `(a ⊓ b)ᶜ` -/
 instance instSup : Sup (Booleanisation α) where
   sup x y := match x, y with
     | inl a, inl b => inl (a ⊔ b)
@@ -60,6 +83,11 @@ instance instSup : Sup (Booleanisation α) where
     | inr a, inl b => inr (a \ b)
     | inr a, inr b => inr (a ⊓ b)
 
+/-- The infimum on `Booleanisation α` is as follows: For `a b : α`,
+* `a ⊓ b` is `a ⊓ b`
+* `a ⊓ bᶜ` is `a \ b`
+* `aᶜ ⊓ b` is `b \ a`
+* `aᶜ ⊓ bᶜ` is `(a ⊔ b)ᶜ` -/
 instance instInf : Inf (Booleanisation α) where
   inf x y := match x, y with
     | inl a, inl b => inl (a ⊓ b)
@@ -67,17 +95,25 @@ instance instInf : Inf (Booleanisation α) where
     | inr a, inl b => inl (b \ a)
     | inr a, inr b => inr (a ⊔ b)
 
+/-- The bottom element of `Booleanisation α` is the bottom element of `α`. -/
 instance instBot : Bot (Booleanisation α) where
   bot := inl ⊥
 
+/-- The top element of `Booleanisation α` is the complement of the bottom element of `α`. -/
 instance instTop : Top (Booleanisation α) where
   top := inr ⊥
 
+/-- The complement operator on `Booleanisation α` sends `a` to `aᶜ` and `aᶜ` to `a`, for `a : α`. -/
 instance instCompl : HasCompl (Booleanisation α) where
   compl x := match x with
     | inl a => inr a
     | inr a => inl a
 
+/-- The difference operator on `Booleanisation α` is as follows: For `a b : α`,
+* `a \ b` is `a \ b`
+* `a \ bᶜ` is `a ⊓ b`
+* `aᶜ \ b` is `(a ⊔ b)ᶜ`
+* `aᶜ \ bᶜ` is `b \ a` -/
 instance instSDiff : SDiff (Booleanisation α) where
   sdiff x y  := match x, y with
     | inl a, inl b => inl (a \ b)
