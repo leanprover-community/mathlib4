@@ -123,6 +123,9 @@ lemma smoothSheaf.eval_surjective (x : M) : Function.Surjective (smoothSheaf.eva
   intro n
   exact ⟨⊤, fun _ ↦ n, smooth_const, rfl⟩
 
+instance [Nontrivial N] (x : M) : Nontrivial ((smoothSheaf IM I M N).presheaf.stalk x) :=
+  (smoothSheaf.eval_surjective IM I N x).nontrivial
+
 variable {IM I N}
 
 @[simp] lemma smoothSheaf.eval_germ (U : Opens (TopCat.of M)) (x : U)
@@ -399,5 +402,8 @@ lemma smoothSheafCommRing.eval_surjective (x) :
   obtain ⟨y, rfl⟩ := smoothSheaf.eval_surjective IM I R x r
   use (smoothSheafCommRing.forgetStalk IM I M R x).inv y
   apply smoothSheafCommRing.forgetStalk_inv_comp_eval_apply
+
+instance [Nontrivial R] (x : M) : Nontrivial ((smoothSheafCommRing IM I M R).presheaf.stalk x) :=
+  (smoothSheafCommRing.eval_surjective IM I M R x).nontrivial
 
 end SmoothCommRing
