@@ -35,10 +35,21 @@ noncomputable def mapObj : GradedObject J C := fun j => ∐ (fun (i : (p ⁻¹' 
 noncomputable def ιMapObj (i : I) (j : J) (hij : p i = j) : X i ⟶ X.mapObj p j :=
   Sigma.ι (fun (i' : (p ⁻¹' {j})) => X i') ⟨i, hij⟩
 
+abbrev MapObjCandidate (j : J) := Cofan (fun (i : (p ⁻¹' {j})) => X i)
+
 @[simps]
-noncomputable def coconeMapObj (j : J) : Cocone (Discrete.functor (fun (i : (p ⁻¹' {j})) => X i)) where
-  pt := X.mapObj p j
-  ι := Discrete.natTrans (fun ⟨i⟩ => X.ιMapObj p i.1 j i.2)
+def MapObjCandidate.mk (j : J) (pt : C) (ι' : ∀ (i : I) (_ : p i = j), X i ⟶ pt): MapObjCandidate X p j where
+  pt := pt
+  ι := Discrete.natTrans (fun ⟨i, hi⟩ => ι' i hi)
+
+@[simps!]
+noncomputable def coconeMapObj (j : J) : MapObjCandidate X p j :=
+  MapObjCandidate.mk X p j (X.mapObj p j) (fun i hi => X.ιMapObj p i j hi)
+
+--@[simps]
+--noncomputable def coconeMapObj (j : J) : MapObjCandidate X p j where
+--  pt := X.mapObj p j
+--  ι := Discrete.natTrans (fun ⟨i⟩ => X.ιMapObj p i.1 j i.2)
 
 lemma mapObj_ext {A : C} {j : J} (f g : X.mapObj p j ⟶ A)
     (hfg : ∀ (i : I) (hij : p i = j), X.ιMapObj p i j hij ≫ f = X.ιMapObj p i j hij ≫ g) :
@@ -66,6 +77,31 @@ noncomputable def isColimitCoconeMapObj (j : J) : IsColimit (X.coconeMapObj p j)
     apply mapObj_ext
     intro i hi
     simpa using hm ⟨i, hi⟩
+
+namespace MapObjCandidate
+
+lemma hasMap (c : ∀ j, MapObjCandidate X p j) (hc : ∀ j, IsColimit (c j)) :
+    X.HasMap p := fun j => ⟨_, hc j⟩
+
+variable {j X p}
+  (c : MapObjCandidate X p j) (hc : IsColimit c) [X.HasMap p]
+
+abbrev ι' (i : I) (hi : p i = j) : X i ⟶ c.pt := c.proj ⟨i, hi⟩
+
+noncomputable def iso : c.pt ≅ X.mapObj p j :=
+  IsColimit.coconePointUniqueUpToIso hc (X.isColimitCoconeMapObj p j)
+
+@[reassoc (attr := simp)]
+lemma ι'_iso_hom (i : I) (hi : p i = j) :
+    c.ι' i hi ≫ (c.iso hc).hom = X.ιMapObj p i j hi := by
+  apply IsColimit.comp_coconePointUniqueUpToIso_hom
+
+@[reassoc (attr := simp)]
+lemma ι'_iso_inv (i : I) (hi : p i = j) :
+    X.ιMapObj p i j hi ≫ (c.iso hc).inv = c.ι' i hi := by
+  apply IsColimit.comp_coconePointUniqueUpToIso_inv
+
+end MapObjCandidate
 
 variable {X Y}
 

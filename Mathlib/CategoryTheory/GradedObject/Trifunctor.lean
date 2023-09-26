@@ -287,8 +287,6 @@ def p'' : I₁ × I₂ × I₃ → I₁ × I₂₃ := fun ⟨i₁, i₂₃⟩ =>
 
 variable {I₁} (I₂₃)
 
---def π₁_₂₃ : I₁ × I₂ × I₃ → I₂ × I₃ := _root_.Prod.snd--fun ⟨_, i₂₃⟩ => i₂₃
-
 def γ' (X₁ : GradedObject I₁ C₁) : GradedObject (I₁ × I₂₃) (C₂₃ ⥤ C₄) :=
   fun ⟨i₁, _⟩ => F.obj (X₁ i₁)
 
@@ -310,12 +308,6 @@ variable (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ :
   [HasMap (((mapBifunctorFunctor G₂₃ I₂ I₃).obj X₂).obj X₃) p]
   [HasMap (((mapBifunctorFunctor F I₁ I₂₃).obj X₁).obj (mapBifunctorMapObj G₂₃ p X₂ X₃)) q]
   [H : HasGoodBifunctorBifunctor₂₃Obj F G₂₃ p q r hr X₁ X₂ X₃]
-  --[HasMap (((mapBifunctorFunctor F I₁ I₂₃).obj X₁).obj (mapBifunctorMapObj G₂₃ p X₂ X₃)) q]
-  --[HasMap ((((mapTrifunctorFunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r]
-  --[HasMap ((((mapTrifunctorFunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) (p'' I₁ p)]
-  --[HasMap (((((mapTrifunctorFunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj (p'' I₁ p)) q]
-  --[HasMap ((comap C₂₃ _root_.Prod.snd).obj (((mapBifunctorFunctor G₂₃ I₂ I₃).obj X₂).obj X₃)) (p'' I₁ p)]
-  --[PreservesMap (γ' F I₂₃ X₁) (p'' I₁ p) ((comap C₂₃ _root_.Prod.snd).obj (((mapBifunctorFunctor G₂₃ I₂ I₃).obj X₂).obj X₃))]
 
 attribute [local ext] mapObj_ext
 

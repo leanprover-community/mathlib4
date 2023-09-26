@@ -25,6 +25,12 @@ noncomputable def mapBifunctorMapObj (X : GradedObject I C₁) (Y : GradedObject
   [HasMap (((mapBifunctorFunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
     (((mapBifunctorFunctor F I J).obj X).obj Y).mapObj p
 
+noncomputable def ιMapBifunctorMapObj (p : I × J → K) (X : GradedObject I C₁) (Y : GradedObject J C₂)
+    [HasMap (((mapBifunctorFunctor F I J).obj X).obj Y) p]
+    (i : I) (j : J) (k : K) (h : p ⟨i, j⟩ = k) :
+    (F.obj (X i)).obj (Y j) ⟶ mapBifunctorMapObj F p X Y k :=
+  (((mapBifunctorFunctor F I J).obj X).obj Y).ιMapObj p ⟨i, j⟩ k h
+
 @[simp]
 noncomputable def mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂)
     {Y₁ Y₂ : GradedObject J C₂} (g : Y₁ ⟶ Y₂)
@@ -32,6 +38,16 @@ noncomputable def mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁
     [HasMap (((mapBifunctorFunctor F I J).obj X₂).obj Y₂) p] :
     mapBifunctorMapObj F p X₁ Y₁ ⟶ mapBifunctorMapObj F p X₂ Y₂ :=
   GradedObject.mapMap (((mapBifunctorFunctor F I J).map f).app Y₁ ≫ ((mapBifunctorFunctor F I J).obj X₂).map g) p
+
+@[reassoc (attr := simp)]
+lemma ι_mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂)
+    {Y₁ Y₂ : GradedObject J C₂} (g : Y₁ ⟶ Y₂)
+    [HasMap (((mapBifunctorFunctor F I J).obj X₁).obj Y₁) p]
+    [HasMap (((mapBifunctorFunctor F I J).obj X₂).obj Y₂) p]
+    (i : I) (j : J) (k : K) (h : p ⟨i, j⟩ = k) :
+    ιMapBifunctorMapObj F p X₁ Y₁ i j k h ≫ mapBifunctorMapMap F p f g k =
+      (F.map (f i)).app (Y₁ j) ≫ (F.obj (X₂ i)).map (g j) ≫ ιMapBifunctorMapObj F p X₂ Y₂ i j k h := by
+  simp [ιMapBifunctorMapObj, mapBifunctorMapMap]
 
 @[simps]
 noncomputable def mapBifunctorMapFunctor [∀ X Y, HasMap (((mapBifunctorFunctor F I J).obj X).obj Y) p] :
