@@ -3,32 +3,33 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Tactic.Linarith
 
 /-!
 # Lemmas about divisibility in rings
 
-# Main results:
- * `dvd_smul_of_dvd`: stating that `x ∣ y → x ∣ m • y` for any scalar `m`.
- * `Commute.pow_dvd_add_pow_of_pow_eq_zero_right`: stating that if `y` is nilpotent then
-   `x ^ m ∣ (x + y) ^ p` for sufficiently large `p` (together with many variations for convenience).
+## Main results:
+* `dvd_smul_of_dvd`: stating that `x ∣ y → x ∣ m • y` for any scalar `m`.
+* `Commute.pow_dvd_add_pow_of_pow_eq_zero_right`: stating that if `y` is nilpotent then
+  `x ^ m ∣ (x + y) ^ p` for sufficiently large `p` (together with many variations for convenience).
 -/
 
-variable {R : Type*} {x y : R}
+variable {R : Type*}
 
-lemma dvd_smul_of_dvd {M : Type*} [SMul M R] [Semiring R] [SMulCommClass M R R]
-    {m : M} (h : x ∣ y) : x ∣ m • y :=
+lemma dvd_smul_of_dvd {M : Type*} [SMul M R] [Semigroup R] [SMulCommClass M R R] {x y : R}
+    (m : M) (h : x ∣ y) : x ∣ m • y :=
   let ⟨k, hk⟩ := h; ⟨m • k, by rw [mul_smul_comm, ← hk]⟩
 
-lemma dvd_nsmul_of_dvd [Semiring R] {n : ℕ} (h : x ∣ y) : x ∣ n • y := dvd_smul_of_dvd h
+lemma dvd_nsmul_of_dvd [NonUnitalSemiring R] {x y : R} (n : ℕ) (h : x ∣ y) : x ∣ n • y :=
+  dvd_smul_of_dvd n h
 
-lemma dvd_zsmul_of_dvd [Ring R] {z : ℤ} (h : x ∣ y) : x ∣ z • y := dvd_smul_of_dvd h
+lemma dvd_zsmul_of_dvd [NonUnitalRing R] {x y : R} (z : ℤ) (h : x ∣ y) : x ∣ z • y :=
+  dvd_smul_of_dvd z h
 
 namespace Commute
 
-variable {n m p : ℕ} (hp : n + m ≤ p + 1)
+variable {x y : R} {n m p : ℕ} (hp : n + m ≤ p + 1)
 
 section Semiring
 

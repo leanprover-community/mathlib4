@@ -10,7 +10,7 @@ import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Nat.Order.Basic
 
 #align_import algebra.group_power.ring from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
