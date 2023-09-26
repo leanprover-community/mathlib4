@@ -436,7 +436,7 @@ theorem min_le_padicValRat_add {q r : ℚ} (hqr : q + r ≠ 0) :
 #align padic_val_rat.min_le_padic_val_rat_add padicValRat.min_le_padicValRat_add
 
 /-- Ultrametric property of a p-adic valuation. -/
-lemma min_eq_padicValRat_add {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
+lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
     (hval : padicValRat p q ≠ padicValRat p r) :
     padicValRat p (q + r) = min (padicValRat p q) (padicValRat p r) := by
   have h1 := min_le_padicValRat_add (p := p) hqr
@@ -455,7 +455,7 @@ lemma min_eq_padicValRat_add {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr 
 lemma add_eq_of_lt {q r : ℚ} (hqr : q + r ≠ 0)
     (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q < padicValRat p r) :
     padicValRat p (q + r) = padicValRat p q := by
-  rw [min_eq_padicValRat_add hqr hq hr (ne_of_lt hval),min_eq_left (le_of_lt hval)]
+  rw [add_eq_min hqr hq hr (ne_of_lt hval),min_eq_left (le_of_lt hval)]
 
 lemma add_lt_of_lt {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
     (hval₁ : padicValRat p q < padicValRat p r₁) (hval₂ : padicValRat p q < padicValRat p r₂) :
