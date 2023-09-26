@@ -535,6 +535,13 @@ protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : Lipschi
   lipschitzOnWith_iff_restrict.mpr <| hg.to_restrict.comp (hf.to_restrict_mapsTo hmaps)
 #align lipschitz_on_with.comp LipschitzOnWith.comp
 
+/-- If `f` and `g` are Lipschitz on `s`, so is the induced map `f × g` to the product type. -/
+protected theorem prod {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith Kf f s)
+    (hg : LipschitzOnWith Kg g s) : LipschitzOnWith (max Kf Kg) (fun x => (f x, g x)) s := by
+  intro _ hx _ hy
+  rw [ENNReal.coe_mono.map_max, Prod.edist_eq, ENNReal.max_mul]
+  exact max_le_max (hf hx hy) (hg hx hy)
+
 end EMetric
 
 section Metric
@@ -620,7 +627,7 @@ protected lemma comp  {f : β → γ} {g : α → β}
   -- g is Lipschitz on t ∋ x, f is Lipschitz on u ∋ g(x)
   rcases hg x with ⟨Kg, t, ht, hgL⟩
   rcases hf (g x) with ⟨Kf, u, hu, hfL⟩
-  refine ⟨Kf * Kg, t ∩ g⁻¹' u, inter_mem ht (hg.continuous.continuousAt hu), ?_⟩ 
+  refine ⟨Kf * Kg, t ∩ g⁻¹' u, inter_mem ht (hg.continuous.continuousAt hu), ?_⟩
   exact hfL.comp (hgL.mono (inter_subset_left _ _))
     ((mapsTo_preimage g u).mono_left (inter_subset_right _ _))
 
@@ -630,14 +637,8 @@ protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (
   intro x
   rcases hf x with ⟨Kf, t₁, h₁t, hfL⟩
   rcases hg x with ⟨Kg, t₂, h₂t, hgL⟩
-  use max Kf Kg, t₁ ∩ t₂
-  constructor
-  · exact Filter.inter_mem h₁t h₂t
-  · intro y hy z hz
-    have h₁ : edist (f y) (f z) ≤ Kf * edist y z := hfL.mono (inter_subset_left t₁ t₂) hy hz
-    have h₂ : edist (g y) (g z) ≤ Kg * edist y z := hgL.mono (inter_subset_right t₁ t₂) hy hz
-    rw [ENNReal.coe_mono.map_max, Prod.edist_eq, ENNReal.max_mul]
-    exact max_le_max h₁ h₂
+  refine ⟨max Kf Kg, t₁ ∩ t₂, Filter.inter_mem h₁t h₂t, ?_⟩
+  exact (hfL.mono (inter_subset_left t₁ t₂)).prod (hgL.mono (inter_subset_right t₁ t₂))
 
 protected theorem prod_mk_left (a : α) : LocallyLipschitz (Prod.mk a : β → α × β) :=
   (LipschitzWith.prod_mk_left a).locallyLipschitz
