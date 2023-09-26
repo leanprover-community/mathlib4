@@ -227,27 +227,9 @@ protected theorem convex : Convex 𝕜 (S : Set E) :=
 
 end Module
 
-end OrderedSemiring
-
-section LinearOrderedField
-
-variable [LinearOrderedField 𝕜]
-
-section AddCommMonoid
+section Maps
 
 variable [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
-
-section MulAction
-
-variable [MulAction 𝕜 E] (S : ConvexCone 𝕜 E)
-
-theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : E} : c • x ∈ S ↔ x ∈ S :=
-  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ S.smul_mem (inv_pos.2 hc) h, S.smul_mem hc⟩
-#align convex_cone.smul_mem_iff ConvexCone.smul_mem_iff
-
-end MulAction
-
-section Module
 
 variable [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
 
@@ -309,9 +291,25 @@ theorem mem_comap {f : E →ₗ[𝕜] F} {S : ConvexCone 𝕜 F} {x : E} : x ∈
   Iff.rfl
 #align convex_cone.mem_comap ConvexCone.mem_comap
 
-end Module
+end Maps
 
-end AddCommMonoid
+end OrderedSemiring
+
+section LinearOrderedField
+
+variable [LinearOrderedField 𝕜]
+
+section MulAction
+
+variable [AddCommMonoid E]
+
+variable [MulAction 𝕜 E] (S : ConvexCone 𝕜 E)
+
+theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : E} : c • x ∈ S ↔ x ∈ S :=
+  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ S.smul_mem (inv_pos.2 hc) h, S.smul_mem hc⟩
+#align convex_cone.smul_mem_iff ConvexCone.smul_mem_iff
+
+end MulAction
 
 section OrderedAddCommGroup
 

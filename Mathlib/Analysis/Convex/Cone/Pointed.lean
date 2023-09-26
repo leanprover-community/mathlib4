@@ -114,6 +114,11 @@ def map (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 E) : PointedCone 𝕜 F :=
   Submodule.map (f : E →ₗ[𝕜≥0] F) S
 
 @[simp, norm_cast]
+theorem toConvexCone_map (S : PointedCone 𝕜 E) (f : E →ₗ[𝕜] F) :
+    (S.map f : ConvexCone 𝕜 F) = (S : ConvexCone 𝕜 E).map f := by
+  aesop
+
+@[simp, norm_cast]
 theorem coe_map (S : PointedCone 𝕜 E) (f : E →ₗ[𝕜] F) : (S.map f : Set F) = f '' S :=
   rfl
 
