@@ -645,7 +645,7 @@ end StrongLawNonneg
 /-- **Strong law of large numbers**, almost sure version: if `X n` is a sequence of independent
 identically distributed integrable real-valued random variables, then `∑ i in range n, X i / n`
 converges almost surely to `𝔼[X 0]`. We give here the strong version, due to Etemadi, that only
-requires pairwise independence. Supersed by `strong_law_ae`, which works for random variables
+requires pairwise independence. Superseded by `strong_law_ae`, which works for random variables
 taking values in any Banach space. -/
 theorem strong_law_ae_real (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
     (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
@@ -731,7 +731,7 @@ lemma strong_law_ae_of_measurable
     (X : ℕ → Ω → E) (hint : Integrable (X 0)) (h' : StronglyMeasurable (X 0))
     (hindep : Pairwise (fun i j ↦ IndepFun (X i) (X j))) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i in range n, X i ω)) atTop (𝓝 𝔼[X 0]) := by
-  /- Choose a simple function `φ` such that  `φ (X 0)` approximates well enough `X 0` -- this is
+  /- Choose a simple function `φ` such that `φ (X 0)` approximates well enough `X 0` -- this is
   possible as `X 0` is strongly measurable. Then `φ (X n)` approximates well `X n`.
   Then the strong law for `φ (X n)` implies the strong law for `X n`, up to a small
   error controlled by `n⁻¹ ∑_{i=0}^{n-1} ‖X i - φ (X i)‖`. This one is also controlled thanks

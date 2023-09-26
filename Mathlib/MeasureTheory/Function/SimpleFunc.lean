@@ -1315,7 +1315,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddMonoid γ] {P : Sim
 /-- In a topological vector space, the addition of a measurable function and a simple function is
 measurable. -/
 theorem _root_.Measurable.add_simpleFunc
-    {E : Type*} [MeasurableSpace α] [MeasurableSpace E] [AddGroup E] [MeasurableAdd E]
+    {E : Type*} {_ : MeasurableSpace α} [MeasurableSpace E] [AddGroup E] [MeasurableAdd E]
     {g : α → E} (hg : Measurable g) (f : SimpleFunc α E) :
     Measurable (g + (f : α → E)) := by
   classical
@@ -1340,7 +1340,7 @@ theorem _root_.Measurable.add_simpleFunc
 /-- In a topological vector space, the addition of a simple function and a measurable function is
 measurable. -/
 theorem _root_.Measurable.simpleFunc_add
-    {E : Type*} [MeasurableSpace α] [MeasurableSpace E] [AddGroup E] [MeasurableAdd E]
+    {E : Type*} {_ : MeasurableSpace α} [MeasurableSpace E] [AddGroup E] [MeasurableAdd E]
     {g : α → E} (hg : Measurable g) (f : SimpleFunc α E) :
     Measurable ((f : α → E) + g) := by
   classical
