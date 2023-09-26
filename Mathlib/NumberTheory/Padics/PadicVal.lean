@@ -496,7 +496,7 @@ theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < pa
 
 /-- If the p-adic valuation of a finite set of positive rationals is greater than a given rational
 number, then the p-adic valuation of their sum is also greater than the same rational number. -/
-theorem sum_gt_of_gt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S : Finset ℕ}
+theorem lt_sum_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S : Finset ℕ}
     (hS : S.Nonempty) (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
     (hn1 : ∀ i : ℕ, 0 < F i) : padicValRat p (F j) < padicValRat p (∑ i in S, F i) := by
   induction' hS using Finset.Nonempty.cons_induction with k s S' Hnot Hne Hind
