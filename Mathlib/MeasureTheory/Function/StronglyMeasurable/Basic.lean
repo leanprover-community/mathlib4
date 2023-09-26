@@ -466,7 +466,7 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
 function is measurable. Note that this is not true without further second-countability assumptions
 for the addition of two measurable functions. -/
 theorem _root_.Measurable.add_stronglyMeasurable
-    {α E : Type*} [MeasurableSpace α] [AddGroup E] [TopologicalSpace E]
+    {α E : Type*} {_ : MeasurableSpace α} [AddGroup E] [TopologicalSpace E]
     [MeasurableSpace E] [BorelSpace E] [ContinuousAdd E] [PseudoMetrizableSpace E]
     {g f : α → E} (hg : Measurable g) (hf : StronglyMeasurable f) :
     Measurable (g + f) := by
@@ -480,7 +480,7 @@ theorem _root_.Measurable.add_stronglyMeasurable
 function is measurable. Note that this is not true without further second-countability assumptions
 for the subtraction of two measurable functions. -/
 theorem _root_.Measurable.sub_stronglyMeasurable
-    {α E : Type*} [MeasurableSpace α] [AddCommGroup E] [TopologicalSpace E]
+    {α E : Type*} {_ : MeasurableSpace α} [AddCommGroup E] [TopologicalSpace E]
     [MeasurableSpace E] [BorelSpace E] [ContinuousAdd E] [ContinuousNeg E] [PseudoMetrizableSpace E]
     {g f : α → E} (hg : Measurable g) (hf : StronglyMeasurable f) :
     Measurable (g - f) := by
@@ -491,7 +491,7 @@ theorem _root_.Measurable.sub_stronglyMeasurable
 function is measurable. Note that this is not true without further second-countability assumptions
 for the addition of two measurable functions. -/
 theorem _root_.Measurable.stronglyMeasurable_add
-    {α E : Type*} [MeasurableSpace α] [AddGroup E] [TopologicalSpace E]
+    {α E : Type*} {_ : MeasurableSpace α} [AddGroup E] [TopologicalSpace E]
     [MeasurableSpace E] [BorelSpace E] [ContinuousAdd E] [PseudoMetrizableSpace E]
     {g f : α → E} (hg : Measurable g) (hf : StronglyMeasurable f) :
     Measurable (f + g) := by

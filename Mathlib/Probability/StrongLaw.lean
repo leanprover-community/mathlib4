@@ -835,8 +835,7 @@ theorem strong_law_ae
   have : 𝔼[X 0] = 𝔼[Y 0] := integral_congr_ae (AEStronglyMeasurable.ae_eq_mk (A 0).1)
   rw [this]
   apply Tendsto.congr (fun n ↦ ?_) h₂
-  congr
-  ext i
+  congr with i
   exact (h₁ i).symm
 
 end StrongLawVectorSpace
@@ -849,7 +848,7 @@ variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)
 
 /-- **Strong law of large numbers**, Lᵖ version: if `X n` is a sequence of independent
 identically distributed random variables in Lᵖ, then `n⁻¹ • ∑ i in range n, X i`
-converges in `Lᵖ to `𝔼[X 0]`. -/
+converges in `Lᵖ` to `𝔼[X 0]`. -/
 theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ → Ω → E) (hℒp : Memℒp (X 0) p)
     (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     Tendsto (fun (n : ℕ) => snorm (fun ω => (n : ℝ) ⁻¹ • (∑ i in range n, X i ω) - 𝔼[X 0]) p ℙ)
