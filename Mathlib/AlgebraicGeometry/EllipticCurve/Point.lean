@@ -718,7 +718,7 @@ variable {F : Type u} [Field F] {W : WeierstrassCurve F} {x₁ x₂ y₁ y₂ : 
   (h₂' : W.equation x₂ y₂)
 
 -- porting note: increased `maxHeartbeats` for `ring1`
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 0 in
 lemma XYIdeal_neg_mul : XYIdeal W x₁ (C <| W.negY x₁ y₁) * XYIdeal W x₁ (C y₁) = XIdeal W x₁ := by
   have Y_rw :
     (Y - C (C y₁)) * (Y - C (C (W.negY x₁ y₁))) -

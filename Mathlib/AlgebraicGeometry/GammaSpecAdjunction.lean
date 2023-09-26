@@ -210,6 +210,7 @@ theorem toΓSpecSheafedSpace_app_eq :
   (X.toΓSpecSheafedSpace_app_eq r).symm ▸ X.toΓSpecCApp_spec r
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_spec AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_spec
 
+set_option maxHeartbeats 0 in
 /-- The map on stalks induced by the unit commutes with maps from `Γ(X)` to
     stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_toΓSpec (x : X) :
@@ -228,6 +229,7 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
   apply germ_res
 #align algebraic_geometry.LocallyRingedSpace.to_stalk_stalk_map_to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toStalk_stalkMap_toΓSpec
 
+set_option maxHeartbeats 0 in
 /-- The canonical morphism from `X` to the spectrum of its global sections. -/
 @[simps! val_base]
 def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
@@ -320,6 +322,7 @@ theorem left_triangle (X : LocallyRingedSpace) :
   X.Γ_Spec_left_triangle
 #align algebraic_geometry.Γ_Spec.left_triangle AlgebraicGeometry.ΓSpec.left_triangle
 
+set_option maxHeartbeats 0 in
 /-- `SpecΓIdentity` is iso so these are mutually two-sided inverses. -/
 theorem right_triangle (R : CommRingCat) :
     identityToΓSpec.app (Spec.toLocallyRingedSpace.obj <| op R) ≫
@@ -335,6 +338,7 @@ theorem right_triangle (R : CommRingCat) :
   · intro r; apply toOpen_res
 #align algebraic_geometry.Γ_Spec.right_triangle AlgebraicGeometry.ΓSpec.right_triangle
 
+set_option maxHeartbeats 0 in
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
 --Porting Note: `simps` cause a time out, so `Unit` and `counit` will be added manually
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} :=
@@ -409,12 +413,14 @@ theorem adjunction_unit_app {X : Scheme} :
 -- Porting Note: Commented
 -- attribute [local semireducible] locallyRingedSpaceAdjunction ΓSpec.adjunction
 
+set_option maxHeartbeats 0 in
 instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdjunction.counit := by
   dsimp only [locallyRingedSpaceAdjunction, Adjunction.mkOfUnitCounit_counit]
   -- Porting Note: `dsimp` was unnecessary and had to make this explicit
   convert IsIso.of_iso_inv (NatIso.op SpecΓIdentity) using 1
 #align algebraic_geometry.Γ_Spec.is_iso_LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_locallyRingedSpaceAdjunction_counit
 
+set_option maxHeartbeats 0 in
 instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
   apply (config := { allowSynthFailures := true }) NatIso.isIso_of_isIso_app
   intro R
