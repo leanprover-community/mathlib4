@@ -650,15 +650,15 @@ protected theorem iterate {f : α → α} (hf : LocallyLipschitz f) : ∀ n, Loc
   | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
   | n + 1 => by rw [iterate_add, iterate_one]; exact (hf.iterate n).comp hf
 
-protected theorem mul {f g : Function.End α} (hf : LocallyLipschitz f)
+protected theorem mul_end {f g : Function.End α} (hf : LocallyLipschitz f)
     (hg : LocallyLipschitz g) : LocallyLipschitz (f * g : Function.End α) := hf.comp hg
 
-protected theorem pow {f : Function.End α} (h : LocallyLipschitz f) :
+protected theorem pow_end {f : Function.End α} (h : LocallyLipschitz f) :
     ∀ n : ℕ, LocallyLipschitz (f ^ n : Function.End α)
   | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
   | n + 1 => by
     rw [pow_succ]
-    exact h.mul (h.pow n)
+    exact h.mul_end (h.pow_end n)
 
 section Real
 variable {f g : α → ℝ}
@@ -683,6 +683,7 @@ theorem min_const (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x =
 
 theorem const_min (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => min a (f x) := by
   simpa [min_comm] using (hf.min_const a)
+
 end Real
 end LocallyLipschitz
 
