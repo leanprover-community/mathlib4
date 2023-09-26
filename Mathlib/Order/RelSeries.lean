@@ -6,6 +6,8 @@ Authors: Jujian Zhang
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.Rel
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 /-!
 # Series of a relation
@@ -16,6 +18,7 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 -/
 
 variable {α : Type _} (r : Rel α α)
+variable {β : Type _} (s : Rel β β)
 
 /--
 Let `r` be a relation on `α`, a relation series of `r` of length `n` is a series
@@ -154,6 +157,80 @@ protected noncomputable def withLength [r.InfiniteDimensional] (n : ℕ) : RelSe
 lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
+instance membership : Membership α (RelSeries r) :=
+  ⟨fun x s => x ∈ Set.range s⟩
+
+theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
+  Iff.rfl
+
+/-- start of a series -/
+def bot (x : RelSeries r) : α := x 0
+
+/-- end of a series -/
+def top (x : RelSeries r) : α := x <| Fin.last _
+
+lemma bot_mem (x : RelSeries r) : x.bot ∈ x := ⟨_, rfl⟩
+
+lemma top_mem (x : RelSeries r) : x.top ∈ x := ⟨_, rfl⟩
+
+/--
+If `a_0 --r-> a_1 --r-> ... --r-> a_n` and `b_0 --r-> b_1 --r-> ... --r-> b_m` are two strict series
+such that `r a_n b_0`, then there is a chain of length `n + m + 1` given by
+`a_0 --r-> a_1 --r-> ... --r-> a_n --r-> b_0 --r-> b_1 --r-> ... --r-> b_m`.
+-/
+@[simps]
+def append (p q : RelSeries r) (connect : r p.top q.bot) : RelSeries r where
+  length := p.length + q.length + 1
+  toFun := Fin.append p q ∘ Fin.cast (by ring)
+  step := fun i => by
+    obtain (hi|rfl|hi) :=
+      lt_trichotomy i (Fin.castLE (by linarith) (Fin.last _ : Fin (p.length + 1)))
+    · convert p.step ⟨i.1, hi⟩ <;>
+      · convert Fin.append_left p q _
+        rfl
+    · convert connect
+      · convert Fin.append_left p q _
+        rfl
+      · convert Fin.append_right p q _
+        rfl
+    · set x := _; set y := _
+      change r (Fin.append p q x) (Fin.append p q y)
+      have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
+        i.2.trans <| by linarith⟩
+      · ext
+        change _ = _ + (_ - _)
+        rw [Nat.add_sub_cancel']
+        dsimp
+        exact hi
+      have hy : y = Fin.natAdd _ ⟨i - p.length, by
+        apply Nat.sub_lt_left_of_lt_add (le_of_lt hi); exact i.2⟩
+      · ext
+        change _ = _ + (_ - _)
+        conv_rhs => rw [Nat.add_comm p.length 1, add_assoc]
+        rw [Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi)]
+        conv_rhs => rw [add_comm]
+      rw [hx, Fin.append_right, hy, Fin.append_right]
+      convert q.step ⟨i - (p.length + 1), ?_⟩
+      pick_goal 2
+      · apply Nat.sub_lt_left_of_lt_add hi
+        convert i.2 using 1
+        simp only [Fin.coe_castLE, Fin.val_last, Nat.succ_eq_add_one]
+        ring
+      · rw [Fin.succ_mk, Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
+          Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
+        exact hi
+
+/--
+For two sets `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
+`r`-series can be pushed out to an `s`-series by
+`a₀ --r-> a₁ --r-> ... --r-> aₙ ↦ f a₀ --s-> f a₁ --s-> ... --s-> f aₙ`
+-/
+@[simps]
+def map (p : RelSeries r) (f : α → β) (map : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) : RelSeries s where
+  length := p.length
+  toFun := f.comp p
+  step := (map <| p.step .)
+
 end RelSeries
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
@@ -166,7 +243,7 @@ abbrev InfiniteDimensionalOrder (γ : Type _) [Preorder γ] :=
 
 section LTSeries
 
-variable (α) [Preorder α]
+variable (α) [Preorder α] [Preorder β]
 /--
 If `α` is a preorder, a LTSeries is a relation series of the less than relation.
 -/
@@ -207,6 +284,35 @@ lemma strictMono (x : LTSeries α) : StrictMono x :=
 
 lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
+
+
+/-- an alternative constructor of `LTSeries` using `StrictMono` functions. -/
+@[simps]
+def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) : LTSeries α :=
+{ toFun := toFun
+  step := fun i => strictMono <| lt_add_one i.1 }
+
+/--
+For two pre-ordered sets `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
+can be pushed out to a strict chain of `β` by
+`a₀ < a₁ < ... < aₙ ↦ f a₀ < f a₁ < ... < f aₙ`
+-/
+@[simps!]
+def map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β :=
+  LTSeries.mk p.length (f.comp p) (hf.comp p.strictMono)
+
+/--
+For two pre-ordered sets `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
+strict series of `β` can be pulled back to a strict chain of `α` by
+`b₀ < b₁ < ... < bₙ ↦ f⁻¹ b₀ < f⁻¹ b₁ < ... < f⁻¹ bₙ` where `f⁻¹ bᵢ` is an arbitrary element in the
+preimage of `f⁻¹ {bᵢ}`.
+-/
+@[simps!]
+noncomputable def comap (p : LTSeries β) (f : α → β)
+  (comap : ∀ ⦃x y⦄, f x < f y → x < y)
+  (surjective : Function.Surjective f) :
+  LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
+    (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
 end LTSeries
 
