@@ -27,7 +27,7 @@ lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n :=
 
 lemma harmonic_singleton {n c : ℕ} (hc : c ∈ Finset.range n) :
     harmonic n = 1 / (c + 1) + ∑ x in Finset.range n \ {c}, 1 / ((x : ℚ) + 1) := by
-  unfold harmonic
+  dsimp [harmonic]
   rwa [add_comm, Finset.sum_eq_sum_diff_singleton_add (i := c)]
 
 lemma finset_range_sdiff_singleton_nonempty {c n : ℕ} (hn : 2 ≤ n) :
@@ -43,29 +43,11 @@ lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 2 ≤ n) :
     (finset_range_sdiff_singleton_nonempty hn)
   norm_cast; simp only [add_pos_iff, or_true]
 
-/-- If a rational is not a 2-adic integer, it is not an integer. -/
-theorem not_int_of_not_padic_int {a : ℚ} (H : 1 < padicNorm 2 a) :
-    ¬ a.isInt := by
-  suffices : a.den ≠ 1; simpa [Rat.isInt]
-  by_cases h : a = 0
-  · subst h; contradiction
-  · unfold padicNorm at H
-    split_ifs at H; contradiction
-    suffices padicValRat 2 a < 0 by
-      unfold padicValRat at this
-      intro Hden
-      rw [Hden] at this; simp only [padicValNat.one, sub_zero] at this
-      norm_cast
-    refine' neg_of_neg_pos _
-    have hx : (1 : ℚ) < 2 := by norm_num
-    rw [← zpow_lt_iff_lt hx]
-    simpa only [zpow_zero]
-
-lemma padicValRat_two_pow_div (r : ℕ) : padicValRat 2 (1 / 2^r) = -r := by
+lemma padicValRat_two_pow_div (r : ℕ) : padicValRat 2 (1 / 2 ^ r) = -r := by
   rw [← padicValRat.self_pow_div (p := 2) (r := r)]
   simp only [one_div, Nat.cast_ofNat]
 
-/-- For `i` less than `n`, `2^Nat.log 2 n` does not divide `i` unless `i` is equal to it. -/
+/-- For `i` less than `n`, `2 ^ Nat.log 2 n` does not divide `i` unless `i` is equal to it. -/
 lemma nat_log_not_dvd {n i : ℕ} (Hi₁ : 0 < i) (Hi₂ : i ≠ 2 ^ Nat.log 2 n) (Hi₃ : i ≤ n) :
     ¬ 2^(Nat.log 2 n) ∣ i := by
   rintro ⟨c,Hc⟩
@@ -77,7 +59,7 @@ lemma nat_log_not_dvd {n i : ℕ} (Hi₁ : 0 < i) (Hi₂ : i ≠ 2 ^ Nat.log 2 n
     rw [mul_zero, zero_add] at Hk
     rcases Hk with rfl | rfl
     · linarith
-    · exact Hi₂ (Hc ▸ mul_one (2^Nat.log 2 n))
+    · exact Hi₂ (Hc ▸ mul_one (2 ^ Nat.log 2 n))
   rcases Hk with rfl | rfl
   · rw [← mul_assoc, Hpow] at Hc
     suffices Hnk : n < i by linarith
@@ -88,10 +70,11 @@ lemma nat_log_not_dvd {n i : ℕ} (Hi₁ : 0 < i) (Hi₂ : i ≠ 2 ^ Nat.log 2 n
     suffices Hnk : n < i by linarith
     calc n < 2 ^ (Nat.log 2 n + 1) := Hle
     _ ≤  2 ^ (Nat.log 2 n + 1)*k := Nat.le_mul_of_pos_right (Nat.pos_of_ne_zero h)
-    _ < 2 ^ (Nat.log 2 n + 1)*k + 2^ Nat.log 2 n := by linarith
+    _ < 2 ^ (Nat.log 2 n + 1)*k + 2 ^ Nat.log 2 n := by linarith
     _ = i := Hc.symm
 
-lemma padicValRat_ge_neg_nat_log_ne {n q : ℕ}(Hq₁ : 0 < q)(Hq₂ : q ≤ n)(Hq₃ : q ≠ 2^Nat.log 2 n) :
+lemma padicValRat_ge_neg_nat_log_ne {n q : ℕ}(Hq₁ : 0 < q)
+  (Hq₂ : q ≤ n)(Hq₃ : q ≠ 2 ^ Nat.log 2 n) :
     padicValRat 2 (1 / q) ≠ -Nat.log 2 n := by
   rw [one_div, padicValRat.inv, padicValRat.of_nat, ne_eq, neg_inj, Nat.cast_inj]
   exact (fun Hnot => nat_log_not_dvd (n := n) Hq₁ Hq₃ Hq₂
@@ -102,15 +85,16 @@ lemma padicValRat_ge_neg_Nat_log_ge {p n q : ℕ}[hp : Fact (Nat.Prime p)](Hq : 
   rw [one_div, padicValRat.inv, padicValRat.of_nat, neg_le_neg_iff, Nat.cast_le]
   exact le_nat_log_of_le Hq
 
-lemma padicValRat_ge_neg_Nat_log_lt (n q : ℕ) (Hq₁ : 0 < q) (Hq₂ : q ≤ n)(Hq₃ : q ≠ 2^Nat.log 2 n) :
-    padicValRat 2 (1 / 2^Nat.log 2 n) < padicValRat 2 (1 / q) := by
+lemma padicValRat_ge_neg_Nat_log_lt (n q : ℕ) (Hq₁ : 0 < q)
+  (Hq₂ : q ≤ n) (Hq₃ : q ≠ 2 ^ Nat.log 2 n) :
+    padicValRat 2 (1 / 2 ^ Nat.log 2 n) < padicValRat 2 (1 / q) := by
   rw [padicValRat_two_pow_div]
   exact (lt_of_le_of_ne
    (padicValRat_ge_neg_Nat_log_ge (p := 2) Hq₂)
    (padicValRat_ge_neg_nat_log_ne Hq₁ Hq₂ Hq₃).symm)
 
 lemma two_pow_log_mem_range {n : ℕ} (hn : 2 ≤ n) :
-    2^(Nat.log 2 n) - 1 ∈ Finset.range n :=
+    2 ^ (Nat.log 2 n) - 1 ∈ Finset.range n :=
   Finset.mem_range.mpr <| lt_of_lt_of_le (Nat.sub_lt (pow_pos zero_lt_two _) zero_lt_one)
   (Nat.pow_log_le_self 2 (by linarith))
 
@@ -131,7 +115,7 @@ theorem harmonic_two_adicValRat {n : ℕ} (Hn : 2 ≤ n) :
     exact this (by linarith)
   · have := padicValRat.sum_gt_of_gt (p := 2) (j := 2 ^ Nat.log 2 n - 1)
       (finset_range_sdiff_singleton_nonempty Hn) (F := fun n => 1 / ((n + 1) : ℚ))
-      (S := Finset.range n \ {2^Nat.log 2 n - 1})
+      (S := Finset.range n \ {2 ^ Nat.log 2 n - 1})
     simp only [Finset.mem_range, Finset.mem_sdiff, Finset.mem_singleton,
       Finset.singleton_subset_iff, pow_pos, Nat.cast_pred, Nat.cast_pow,
       sub_add_cancel, and_imp,gt_iff_lt] at this
@@ -146,7 +130,7 @@ theorem harmonic_two_adicValRat {n : ℕ} (Hn : 2 ≤ n) :
 /-- The n-th harmonic number is not an integer for n ≥ 2. -/
 theorem harmonic_not_int {n : ℕ} (Hn : 2 ≤ n) :
     ¬(harmonic n).isInt := by
-  refine' not_int_of_not_padic_int _
+  refine' padicNorm.not_int_of_not_padic_int 2 _
   dsimp [padicNorm]
   rw [if_neg (ne_of_gt <| harmonic_pos (by linarith))]
   refine' one_lt_zpow one_lt_two _ (lt_neg.mp _)
