@@ -203,8 +203,8 @@ def padicValRat (p : ℕ) (q : ℚ) : ℤ :=
 #align padic_val_rat padicValRat
 
 lemma padicValRat_def (p : ℕ) (q : ℚ) :
-  padicValRat p q = padicValInt p q.num - padicValNat p q.den
-    := rfl
+    padicValRat p q = padicValInt p q.num - padicValNat p q.den :=
+  rfl
 
 namespace padicValRat
 
