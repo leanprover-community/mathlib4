@@ -111,6 +111,32 @@ theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
     rw [← insert_erase (mem_univ (-1 : Kˣ)), prod_insert (not_mem_erase _ _), this, mul_one]
 #align finite_field.prod_univ_units_id_eq_neg_one FiniteField.prod_univ_units_id_eq_neg_one
 
+theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial K]
+    (G : Subgroup Kˣ) [Fintype G] : (Fintype.card G : K) ≠ 0 := by
+  let n := Fintype.card G
+  intro nzero
+  have ⟨p, char_p⟩ := CharP.exists K
+  have hd : p ∣ n := (CharP.cast_eq_zero_iff K p n).mp nzero
+  cases CharP.char_is_prime_or_zero K p with
+  | inr pzero =>
+    exact (Fintype.card_pos).ne' <| Nat.eq_zero_of_zero_dvd <| pzero ▸ hd
+  | inl pprime =>
+    have fact_pprime := Fact.mk pprime
+    -- G has an element x of order p by Cauchy's theorem
+    have ⟨x, hx⟩ := exists_prime_orderOf_dvd_card p hd
+    -- F has an element u (= ↑↑x) of order p
+    let u := ((x : Kˣ) : K)
+    have hu : orderOf u = p := by rwa [orderOf_units, orderOf_subgroup]
+    -- u ^ p = 1 implies (u - 1) ^ p = 0 and hence u = 1 ...
+    have h : u = 1 := by
+      rw [← sub_left_inj, sub_self 1]
+      apply pow_eq_zero (n := p)
+      rw [sub_pow_char_of_commute, one_pow, ← hu, pow_orderOf_eq_one, sub_self]
+      exact Commute.one_right u
+    -- ... meaning x didn't have order p after all, contradiction
+    apply pprime.one_lt.ne
+    rw [← hu, h, orderOf_one]
+
 section
 
 variable [GroupWithZero K] [Fintype K]
@@ -178,32 +204,6 @@ theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣
       rcases hx y with ⟨j, rfl⟩
       rw [← pow_mul, mul_comm, pow_mul, h, one_pow]
 #align finite_field.forall_pow_eq_one_iff FiniteField.forall_pow_eq_one_iff
-
-theorem card_cast_subgroup_card_ne_zero {F : Type} [Ring F] [NoZeroDivisors F] [Nontrivial F]
-    (G : Subgroup Fˣ) [Fintype G] : (Fintype.card G : F) ≠ 0 := by
-  let n := Fintype.card G
-  intro nzero
-  have ⟨p, char_p⟩ := CharP.exists F
-  have hd : p ∣ n := (CharP.cast_eq_zero_iff F p n).mp nzero
-  cases CharP.char_is_prime_or_zero F p with
-  | inr pzero =>
-    exact (Fintype.card_pos).ne' <| Nat.eq_zero_of_zero_dvd <| pzero ▸ hd
-  | inl pprime =>
-    have fact_pprime := Fact.mk pprime
-    -- G has an element x of order p by Cauchy's theorem
-    have ⟨x, hx⟩ := exists_prime_orderOf_dvd_card p hd
-    -- F has an element u (= ↑↑x) of order p
-    let u := ((x : Fˣ) : F)
-    have hu : orderOf u = p := by rwa [orderOf_units, orderOf_subgroup]
-    -- u ^ p = 1 implies (u - 1) ^ p = 0 and hence u = 1 ...
-    have h : u = 1 := by
-      rw [← sub_left_inj, sub_self 1]
-      apply pow_eq_zero (n := p)
-      rw [sub_pow_char_of_commute, one_pow, ← hu, pow_orderOf_eq_one, sub_self]
-      exact Commute.one_right u
-    -- ... meaning x didn't have order p after all, contradiction
-    apply pprime.one_lt.ne
-    rw [← hu, h, orderOf_one]
 
 /-- The sum of `x ^ i` as `x` ranges over the units of a finite field of cardinality `q`
 is equal to `0` unless `(q - 1) ∣ i`, in which case the sum is `q - 1`. -/
