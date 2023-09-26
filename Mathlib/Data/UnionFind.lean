@@ -214,7 +214,7 @@ def push (self : UnionFind α) (x : α) : UnionFind α where
   model := let ⟨_, hm⟩ := self.model'; ⟨_, _, hm.push _ rfl _⟩
 
 def findAux (self : UnionFind α) (x : Fin self.size) :
-  (s : Array (UFNode α)) ×' (root : Fin s.size) ×'
+    (s : Array (UFNode α)) ×' (root : Fin s.size) ×'
     ∃ n, ∃ (m : UFModel n) (m' : UFModel n),
       m.Models self.arr ∧ m'.Models s ∧ m'.rank = m.rank ∧
       (∃ hr, (m'.parent ⟨root, hr⟩).1 = root) ∧
@@ -246,7 +246,7 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
 termination_by _ α self x => self.rankMax - self.rank x
 
 def find (self : UnionFind α) (x : Fin self.size) :
-  (s : UnionFind α) × (root : Fin s.size) ×'
+    (s : UnionFind α) × (root : Fin s.size) ×'
     s.size = self.size ∧ (s.arr.get root).parent = root :=
   let ⟨s, root, H⟩ := self.findAux x
   have : _ ∧ s.size = self.size ∧ s[root.1].parent = root :=

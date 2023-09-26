@@ -135,7 +135,7 @@ initialize_simps_projections NonUnitalStarAlgHom
 
 @[simp]
 protected theorem coe_coe {F : Type*} [NonUnitalStarAlgHomClass F R A B] (f : F) :
-  ⇑(f : A →⋆ₙₐ[R] B) = f := rfl
+    ⇑(f : A →⋆ₙₐ[R] B) = f := rfl
 #align non_unital_star_alg_hom.coe_coe NonUnitalStarAlgHom.coe_coe
 
 @[simp]
@@ -512,7 +512,7 @@ end Unital
 
 /-! ### Operations on the product type
 
-Note that this is copied from [`Algebra/Hom/NonUnitalAlg`](NonUnitalAlg). -/
+Note that this is copied from [`Algebra.Hom.NonUnitalAlg`](../Hom/NonUnitalAlg). -/
 
 
 namespace NonUnitalStarAlgHom

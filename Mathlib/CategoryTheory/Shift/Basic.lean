@@ -170,7 +170,7 @@ def shiftFunctorAdd (i j : A) : shiftFunctor C (i + j) ≅ shiftFunctor C i ⋙ 
 
 /-- When `k = i + j`, shifting by `k` is the same as shifting by `i` and then shifting by `j`. -/
 def shiftFunctorAdd' (i j k : A) (h : i + j = k) :
-  shiftFunctor C k ≅ shiftFunctor C i ⋙ shiftFunctor C j :=
+    shiftFunctor C k ≅ shiftFunctor C i ⋙ shiftFunctor C j :=
   eqToIso (by rw [h]) ≪≫ shiftFunctorAdd C i j
 #align category_theory.shift_functor_add' CategoryTheory.shiftFunctorAdd'
 
