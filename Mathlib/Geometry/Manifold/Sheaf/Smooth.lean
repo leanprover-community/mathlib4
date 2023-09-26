@@ -368,7 +368,7 @@ given by evaluating sections at `x`. -/
 def smoothSheafCommRing.eval (x : M) : (smoothSheafCommRing IM I M R).presheaf.stalk x →+* R :=
   smoothSheafCommRing.evalHom IM I M R x
 
-@[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_eval (x : TopCat.of M) (U) :
+@[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_evalHom (x : TopCat.of M) (U) :
     colimit.ι ((OpenNhds.inclusion x).op ⋙ _) U ≫ smoothSheafCommRing.evalHom IM I M R x =
     smoothSheafCommRing.evalAt _ _ _ _ _ _ :=
   colimit.ι_desc _ _
@@ -382,10 +382,10 @@ def smoothSheafCommRing.eval (x : M) : (smoothSheafCommRing IM I M R).presheaf.s
   intro U
   show (colimit.ι _ U) ≫ _ = colimit.ι ((OpenNhds.inclusion x).op ⋙ _) U ≫ _
   rw [smoothSheafCommRing.ι_forgetStalk_inv_assoc]
-  convert congr_arg (fun i ↦ (forget CommRingCat).map i) (smoothSheafCommRing.ι_eval IM I M R x U)
+  convert congr_arg (fun i ↦ (forget CommRingCat).map i) (smoothSheafCommRing.ι_evalHom ..)
   exact smoothSheaf.ι_evalHom IM I R x U
 
-@[simp, reassoc, elementwise] lemma smoothSheafCommRing.forgetStalk_hom_comp_eval
+@[simp, reassoc, elementwise] lemma smoothSheafCommRing.forgetStalk_hom_comp_evalHom
     (x : TopCat.of M) :
     (smoothSheafCommRing.forgetStalk IM I M R x).hom ≫ (smoothSheaf.evalHom IM I R x) =
     (forget _).map (smoothSheafCommRing.evalHom _ _ _ _ _) := by
