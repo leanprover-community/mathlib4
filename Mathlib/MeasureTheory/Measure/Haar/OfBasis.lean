@@ -193,7 +193,7 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
 
 @[simp]
 theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
-   (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
+    (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
 #align basis.coe_parallelepiped Basis.coe_parallelepiped
 
 @[simp]
