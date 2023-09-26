@@ -222,10 +222,7 @@ jobs:
           cd lean4checker
           lake build
           cd ..
-          eval $(lake env | sed 's/^/export /')
-          # Note that `lean4checker` will parallelise internally if called without an argument,
-          # but this requires more RAM than is available on the CI runners.
-          grep '^import Mathlib.' Mathlib.lean | sed 's/import //' | xargs -n 1 -P 12 lean4checker/build/bin/lean4checker
+          lake env lean4checker/build/bin/lean4checker
 
       - name: Post comments for lean-pr-testing branch
         if: always()
