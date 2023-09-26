@@ -894,7 +894,7 @@ theorem Inducing.isCompact_preimage {f : α → β} (hf : Inducing f) (hf' : IsC
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
 theorem ClosedEmbedding.isCompact_preimage {f : α → β} (hf : ClosedEmbedding f)
     {K : Set β} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
-  Inducing.isCompact_preimage hf.toInducing (hf.closed_range) hK
+  hf.toInducing.isCompact_preimage (hf.closed_range) hK
 #align closed_embedding.is_compact_preimage ClosedEmbedding.isCompact_preimage
 
 /-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.
