@@ -314,7 +314,7 @@ theorem not_int_of_not_padic_int (p : ℕ) {a : ℚ} [hp : Fact (Nat.Prime p)]
   · unfold padicNorm at H
     split_ifs at H; contradiction
     suffices padicValRat p a < 0 by
-      simp only [padicValRat] at this
+      rw [padicValRat_def] at this
       intro Hden
       rw [Hden] at this; simp only [padicValNat.one, sub_zero] at this
       norm_cast
