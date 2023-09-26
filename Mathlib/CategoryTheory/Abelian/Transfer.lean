@@ -281,9 +281,9 @@ lemma adjointToInjective_spec [PreservesFiniteLimits L] {A X Y : 𝒜}
   have := toInjectiveUnder_spec adj g f
   rw [← adj.homEquiv_apply_eq] at this
   rw [← this]
-  simp only [adjointToInjective, toInjectiveUnder, Adjunction.homEquiv_counit, Functor.id_obj, Adjunction.homEquiv_unit,
-    Functor.comp_obj, Functor.map_comp, Adjunction.unit_naturality_assoc, Category.assoc, Adjunction.counit_naturality,
-    Adjunction.left_triangle_components_assoc]
+  simp only [adjointToInjective, toInjectiveUnder, Adjunction.homEquiv_counit, Functor.id_obj,
+    Adjunction.homEquiv_unit, Functor.comp_obj, Functor.map_comp, Adjunction.unit_naturality_assoc,
+    Category.assoc, Adjunction.counit_naturality, Adjunction.left_triangle_components_assoc]
   generalize_proofs h1 h2
   congr 4
   ext
