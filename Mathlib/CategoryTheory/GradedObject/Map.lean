@@ -51,19 +51,13 @@ noncomputable def ιMapObj (i : I) (j : J) (hij : p i = j) : X i ⟶ X.mapObj p 
 
 abbrev MapObjCandidate (j : J) := Cofan (fun (i : (p ⁻¹' {j})) => X i)
 
-@[simps]
-def MapObjCandidate.mk (j : J) (pt : C) (ι' : ∀ (i : I) (_ : p i = j), X i ⟶ pt): MapObjCandidate X p j where
-  pt := pt
-  ι := Discrete.natTrans (fun ⟨i, hi⟩ => ι' i hi)
+@[simps!]
+def MapObjCandidate.mk (j : J) (pt : C) (ι' : ∀ (i : I) (_ : p i = j), X i ⟶ pt) : MapObjCandidate X p j :=
+  Cofan.mk pt (fun ⟨i, hi⟩ => ι' i hi)
 
 @[simps!]
 noncomputable def coconeMapObj (j : J) : MapObjCandidate X p j :=
   MapObjCandidate.mk X p j (X.mapObj p j) (fun i hi => X.ιMapObj p i j hi)
-
---@[simps]
---noncomputable def coconeMapObj (j : J) : MapObjCandidate X p j where
---  pt := X.mapObj p j
---  ι := Discrete.natTrans (fun ⟨i⟩ => X.ιMapObj p i.1 j i.2)
 
 lemma mapObj_ext {A : C} {j : J} (f g : X.mapObj p j ⟶ A)
     (hfg : ∀ (i : I) (hij : p i = j), X.ιMapObj p i j hij ≫ f = X.ιMapObj p i j hij ≫ g) :
