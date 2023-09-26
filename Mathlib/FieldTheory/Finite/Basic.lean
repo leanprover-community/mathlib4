@@ -228,7 +228,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
 #align finite_field.sum_pow_units FiniteField.sum_pow_units
 
 /-- The sum of a nontrivial subgroup of the units of a field is zero. -/
-theorem sum_subgroup_units_zero_of_ne_bot {G : Subgroup Kˣ} [Fintype G] (hg : G ≠ ⊥) :
+theorem sum_subgroup_units_eq_zero {G : Subgroup Kˣ} [Fintype G] (hg : G ≠ ⊥) :
     ∑ x : G, (x.val : K) = 0 := by
   rw [Subgroup.ne_bot_iff_exists_ne_one] at hg
   rcases hg with ⟨a, ha⟩
