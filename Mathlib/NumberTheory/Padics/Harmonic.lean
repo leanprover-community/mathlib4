@@ -131,8 +131,7 @@ theorem padicValRat_two_harmonic {n : ℕ} (Hn : 2 ≤ n) :
 theorem harmonic_not_int {n : ℕ} (Hn : 2 ≤ n) :
     ¬(harmonic n).isInt := by
   refine' padicNorm.not_int_of_not_padic_int 2 _
-  dsimp [padicNorm]
-  rw [if_neg (ne_of_gt <| harmonic_pos (by linarith))]
+  rw [padicNorm.eq_zpow_of_nonzero (harmonic_pos (by linarith)).ne']
   refine' one_lt_zpow one_lt_two _ (lt_neg.mp _)
   rw [neg_zero, padicValRat_two_harmonic Hn,Int.log_natCast, Left.neg_neg_iff,
     Nat.cast_pos, Nat.log_pos_iff]
