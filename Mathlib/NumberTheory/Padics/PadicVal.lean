@@ -457,7 +457,7 @@ lemma add_eq_of_lt {q r : ℚ} (hqr : q + r ≠ 0)
     padicValRat p (q + r) = padicValRat p q := by
   rw [add_eq_min hqr hq hr (ne_of_lt hval),min_eq_left (le_of_lt hval)]
 
-lemma add_lt_of_lt {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
+lemma lt_add_of_lt {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
     (hval₁ : padicValRat p q < padicValRat p r₁) (hval₂ : padicValRat p q < padicValRat p r₂) :
     padicValRat p q < padicValRat p (r₁ + r₂) :=
   lt_of_lt_of_le (lt_min hval₁ hval₂) (padicValRat.min_le_padicValRat_add hqr)
@@ -497,7 +497,7 @@ theorem lt_sum_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S 
   · rw [Finset.sum_singleton]
     exact hF k (by simp)
   · rw [Finset.cons_eq_insert, Finset.sum_insert Hnot]
-    exact padicValRat.add_lt_of_lt
+    exact padicValRat.lt_add_of_lt
       (ne_of_gt (add_pos (hn1 s) (Finset.sum_pos (fun i _ => hn1 i) Hne)))
       (hF _ (by simp [Finset.mem_insert, true_or]))
       (Hind (fun i hi => hF _ (by rw [Finset.cons_eq_insert,Finset.mem_insert]; exact Or.inr hi)))
