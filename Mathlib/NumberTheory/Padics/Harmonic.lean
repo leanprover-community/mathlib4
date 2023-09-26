@@ -33,9 +33,9 @@ lemma harmonic_singleton {n c : ℕ} (hc : c ∈ Finset.range n) :
 lemma finset_range_sdiff_singleton_nonempty {c n : ℕ} (hn : 2 ≤ n) :
     Finset.Nonempty (Finset.range n \ {c}) := by
   rw [Finset.sdiff_nonempty, Finset.subset_singleton_iff, Finset.range_eq_empty_iff, not_or]
-  refine' ⟨by linarith, fun Hnot => _⟩
-  suffices n = 1 by linarith
-  rw [← Finset.card_range n, ← Finset.card_singleton c, Hnot]
+  refine' ⟨ne_of_gt <| lt_of_lt_of_le zero_lt_two hn, fun Hnot => _⟩
+  have : n = 1 := by rw [← Finset.card_range n, ← Finset.card_singleton c, Hnot]
+  simp only [this] at hn
 
 lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 2 ≤ n) :
     ∑ x in Finset.range n \ {c}, 1 / (x + 1 : ℚ) ≠ 0 := by
