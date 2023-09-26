@@ -19,16 +19,10 @@ def curriedAssociatorNatIso :
       (fun X₂ => NatIso.ofComponents
         (fun X₃ => associator X₁ X₂ X₃)
           (fun {X₃ Y₃} φ => by simpa using associator_naturality (𝟙 X₁) (𝟙 X₂) φ))
-        (fun {X₂ Y₂} φ => by
-          ext X₃
-          dsimp [curryObj] -- missing @simps
-          simp))
-        (fun {X₁ Y₁} φ => by
-          ext X₂ X₃
-          dsimp [curryObj] -- missing @simps
-          simp)
+        (by aesop_cat)) (by aesop_cat)
 
 end MonoidalCategory
+
 namespace GradedObject
 
 abbrev HasTensor (X₁ X₂ : GradedObject I C) : Prop :=
@@ -172,29 +166,37 @@ section
 
 variable {X₁ X₂ X₃}
 
-/-@[ext]
+@[ext]
 lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
+    [H : HasAssociator X₁ X₂ X₃]
     (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),
       ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f = ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
-  sorry
+  apply mapBifunctorBifunctor₂₃MapObj_ext (H := H.H₂₃)
+  intro i₁ i₂ i₃ (hi : i₁ + (i₂ + i₃) = j)
+  exact h i₁ i₂ i₃ (by rw [add_assoc, hi])
 
 @[ext]
 lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X₃ j ⟶ A)
+    [H : HasAssociator X₁ X₂ X₃]
     (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),
       ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f = ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
-  sorry-/
+  apply mapBifunctor₁₂BifunctorMapObj_ext (H := H.H₁₂)
+  intro i₁ i₂ i₃ (hi : i₁ + i₂ + i₃ = j)
+  apply h
 
 end
 
-/-@[reassoc (attr := simp)]
+@[reassoc (attr := simp)]
 lemma ιTensorObj₃'_associator_hom [HasAssociator X₁ X₂ X₃] (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ (associator X₁ X₂ X₃).hom j =
-      (α_ _ _ _).hom ≫ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h := sorry
+      (α_ _ _ _).hom ≫ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h := by
+  apply ι_mapBifunctorBifunctorAssociator_hom (MonoidalCategory.curriedAssociatorNatIso C)
 
 @[reassoc (attr := simp)]
 lemma ιTensorObj₃_associator_inv [HasAssociator X₁ X₂ X₃] (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ (associator X₁ X₂ X₃).inv j =
-      (α_ _ _ _).inv ≫ ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h := sorry-/
+      (α_ _ _ _).inv ≫ ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h := by
+  apply ι_mapBifunctorBifunctorAssociator_inv (MonoidalCategory.curriedAssociatorNatIso C)
 
 end
 
@@ -381,7 +383,7 @@ lemma ιTensorObj_rightUnitor_hom (X : GradedObject I C) (i : I) :
     Iso.hom_inv_id_assoc, ← MonoidalCategory.tensor_comp_assoc, id_comp,
     Iso.hom_inv_id, MonoidalCategory.tensor_id, id_comp]
 
-/-lemma triangle (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂]
+lemma triangle (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂]
     [HasTensor (tensorObj X₁ tensorUnit) X₂]
     [HasTensor X₁ (tensorObj tensorUnit X₂)] [HasAssociator X₁ tensorUnit X₂] :
   (associator X₁ tensorUnit X₂).hom ≫ tensorHom (𝟙 X₁) (leftUnitor X₂).hom =
@@ -405,7 +407,7 @@ lemma ιTensorObj_rightUnitor_hom (X : GradedObject I C) (i : I) :
   · apply IsInitial.hom_ext
     apply isInitialTensor
     apply tensorIsInitial
-    exact isInitialTensorUnitApply C k h'-/
+    exact isInitialTensorUnitApply C k h'
 
 end
 
@@ -418,7 +420,7 @@ variable
   [∀ X₂, PreservesColimit (Functor.empty.{0} C)
     ((curryObj (MonoidalCategory.tensor C)).flip.obj X₂)]
 
-/-noncomputable instance : MonoidalCategory (GradedObject I C) where
+noncomputable instance : MonoidalCategory (GradedObject I C) where
   tensorObj X Y := tensorObj X Y
   tensorHom f g := tensorHom f g
   tensorHom_def f g := tensorHom_def f g
@@ -433,7 +435,7 @@ variable
   rightUnitor_naturality := rightUnitor_naturality
   tensor_comp f₁ f₂ g₁ g₂ := tensor_comp f₁ g₁ f₂ g₂
   pentagon := sorry
-  triangle X₁ X₂ := sorry-/
+  triangle X₁ X₂ := triangle X₁ X₂
 
 end GradedObject
 

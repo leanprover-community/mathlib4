@@ -49,6 +49,7 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E
 
 /-- The object level part of the currying functor. (See `curry` for the functorial version.)
 -/
+@[simps]
 def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E
     where
   obj X :=
