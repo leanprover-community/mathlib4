@@ -33,6 +33,7 @@ The proofs are those of [bourbaki1989] (chap. 2, §3, n°6)
   *The tensor product of commutative semigroups*,
   Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
 
+* Treat algebras (further PR)
 -/
 
 
