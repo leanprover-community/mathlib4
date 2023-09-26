@@ -1237,6 +1237,9 @@ theorem coe_mul (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
 theorem mul_apply (f g : α →ᵇ R) (x : α) : (f * g) x = f x * g x := rfl
 #align bounded_continuous_function.mul_apply BoundedContinuousFunction.mul_apply
 
+theorem mul_compContinuous (f g : α →ᵇ R) [TopologicalSpace γ] (h : C(γ, α)) :
+    (g * f).compContinuous h = g.compContinuous h * f.compContinuous h := rfl
+
 instance : NonUnitalRing (α →ᵇ R) :=
   FunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
@@ -1470,6 +1473,9 @@ theorem coe_star (f : α →ᵇ β) : ⇑(star f) = star (⇑f) := rfl
 theorem star_apply (f : α →ᵇ β) (x : α) : star f x = star (f x) := rfl
 #align bounded_continuous_function.star_apply BoundedContinuousFunction.star_apply
 
+theorem star_compContinuous (f : α →ᵇ β) [TopologicalSpace γ] (h : C(γ, α)) :
+    (star f).compContinuous h = star (f.compContinuous h) := rfl
+
 instance : NormedStarGroup (α →ᵇ β) where
   norm_star f := by simp only [norm_eq, star_apply, norm_star]
 
@@ -1622,5 +1628,28 @@ theorem abs_self_eq_nnrealPart_add_nnrealPart_neg (f : α →ᵇ ℝ) :
 #align bounded_continuous_function.abs_self_eq_nnreal_part_add_nnreal_part_neg BoundedContinuousFunction.abs_self_eq_nnrealPart_add_nnrealPart_neg
 
 end NonnegativePart
+
+section compContinuous_algebra
+
+/-!
+### Algebraic versions of `BoundedContinuousFunction.compContinuous
+
+Fill as needed!
+-/
+
+variable [TopologicalSpace β] [TopologicalSpace γ]
+
+@[simps]
+def compContinuousStarAlgHom {𝕜 : Type*} [NormedField 𝕜] [NormedRing α] [NormedAlgebra 𝕜 α]
+    [StarAddMonoid α] [NormedStarGroup α] (f : C(β, γ)) : (γ →ᵇ α) →⋆ₐ[𝕜] (β →ᵇ α) where
+  toFun φ := φ.compContinuous f
+  map_one' := one_compContinuous f
+  map_mul' _ _ := mul_compContinuous _ _ f
+  map_zero' := zero_compContinuous f
+  map_add' _ _ := add_compContinuous _ _ f
+  commutes' _ := rfl
+  map_star' _ := star_compContinuous _ f
+
+end compContinuous_algebra
 
 end BoundedContinuousFunction

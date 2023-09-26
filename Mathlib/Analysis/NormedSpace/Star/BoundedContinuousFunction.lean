@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.NormedSpace.Star.GelfandDuality
 import Mathlib.Topology.StoneCech
+import Mathlib.Topology.ContinuousFunction.Ideals
 
 /-!
 # StoneCech
@@ -50,9 +51,12 @@ theorem continuous_evalCharacterSpace :
     Continuous (evalCharacterSpace X) :=
   continuous_induced_rng.mpr <| continuous_of_continuous_eval fun f ↦ f.continuous
 
+#check BoundedContinuousFunction.semilatticeInf
+
 noncomputable
 def foo (X : Type*) [TopologicalSpace X] : characterSpace ℂ (X →ᵇ ℂ) ≃ₜ StoneCech X where
-  toFun := sorry
+  toFun := (CharacterSpace.homeoEval (StoneCech X) ℂ).symm ∘ CharacterSpace.compContinuousMap
+    sorry
   invFun := stoneCechExtend (continuous_evalCharacterSpace X)
   left_inv := sorry
   right_inv := sorry

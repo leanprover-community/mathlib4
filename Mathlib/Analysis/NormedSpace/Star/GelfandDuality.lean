@@ -40,12 +40,11 @@ and even an equivalence between C⋆-algebras.
 
 ## TODO
 
-* Show that if `X` is a compact Hausdorff space, then `X` is (canonically) homeomorphic to
-  `characterSpace ℂ C(X, ℂ)`.
-* Conclude using the previous fact that the functors `C(·, ℂ)` and `characterSpace ℂ ·` along with
-  the canonical homeomorphisms described above constitute a natural contravariant equivalence of
-  the categories of compact Hausdorff spaces (with continuous maps) and commutative unital
-  C⋆-algebras (with unital ⋆-algebra homomorphisms); this is known as **Gelfand duality**.
+* Use `WeakDual.CharacterSpace.homeoEval` to prove that the functors `C(·, ℂ)` and
+  `characterSpace ℂ ·` along with the canonical homeomorphisms described above constitute a natural
+  contravariant equivalence of the categories of compact Hausdorff spaces (with continuous maps)
+  and commutative unital C⋆-algebras (with unital ⋆-algebra homomorphisms);
+  this is known as **Gelfand duality**.
 
 ## Tags
 
