@@ -3,7 +3,7 @@ Copyright (c) 2023 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Data.Matrix.Basic
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-! # Linear programming
 
@@ -19,28 +19,29 @@ TODO
 open Matrix
 
 /-- Linear program in the canonical form. -/
-structure CanonicalLP (m n α : Type _) [Fintype m] [Fintype n] [LinearOrderedField α] where
-  A : Matrix m n α /- matrix of coefficients -/
-  b : m → α        /- right-hand side -/
-  c : n → α        /- coefficients -/
+structure CanonicalLP (m n K : Type _) [Fintype m] [Fintype n] [LinearOrderedField K] where
+  A : (n → K) →ₗ[K] (m → K) /- (possibly not a) matrix of coefficients -/
+  b : m → K                /- right-hand side -/
+  c : n → K                /- objective function coefficients -/
 
-variable {m n α : Type _} [Fintype m] [Fintype n] [LinearOrderedField α]
+variable {m n K : Type _} [Fintype m] [Fintype n] [LinearOrderedField K]
 
-def CanonicalLP.Admits (P : CanonicalLP m n α) (x : n → α) : Prop :=
-  P.A.mulVec x = P.b ∧ 0 ≤ x
+def CanonicalLP.Admits (P : CanonicalLP m n K) (x : n → K) : Prop :=
+  P.A x = P.b ∧ 0 ≤ x
 
-def CanonicalLP.HasMinAt (P : CanonicalLP m n α) (x : n → α) : Prop :=
+def CanonicalLP.HasMinAt (P : CanonicalLP m n K) (x : n → K) : Prop :=
   P.Admits x ∧ (∀ y, P.Admits y → P.c ⬝ᵥ x ≤ P.c ⬝ᵥ y)
 
-def CanonicalLP.HasMin (P : CanonicalLP m n α) : Prop :=
-  ∃ x : n → α, P.HasMinAt x
+def CanonicalLP.HasMin (P : CanonicalLP m n K) : Prop :=
+  ∃ x : n → K, P.HasMinAt x
 
-def CanonicalLP.Minimum (P : CanonicalLP m n α) (d : α) : Prop :=
-  ∃ x : n → α, P.HasMinAt x ∧ d = P.c ⬝ᵥ x
--- Or should it be `CanonicalLP.Minimum (P) : Option α` instead?
+def CanonicalLP.Minimum (P : CanonicalLP m n K) (d : K) : Prop :=
+  ∃ x : n → K, P.HasMinAt x ∧ d = P.c ⬝ᵥ x
+-- Or should it be `CanonicalLP.Minimum (P) : Option K` instead?
+-- Or `CanonicalLP.Minimum (P) : P.HasMin → K` something?
 
 example : (@CanonicalLP.mk (Fin 2) (Fin 3) ℚ _ _ _
-      ![![1, 2, 0], ![1, -1, 4]] ![5, 3] 0
+      (Matrix.toLin' ![![1, 2, 0], ![1, -1, 4]]) ![5, 3] 0
     ).Admits ![1, 2, 1] := by
   constructor
   · ext i : 1
