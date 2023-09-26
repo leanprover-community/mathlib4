@@ -344,6 +344,7 @@ lemma mem_posFittingComp [LieAlgebra.IsNilpotent R L] (m : M) :
     m ∈ posFittingComp R L M ↔ m ∈ ⨆ (x : L), posFittingCompOf R M x := by
   rfl
 
+-- TODO Prove that when `M` is Noetherian and Artinian, this becomes an equality.
 lemma posFittingComp_le_iInf_lowerCentralSeries [LieAlgebra.IsNilpotent R L] :
     posFittingComp R L M ≤ ⨅ k, lowerCentralSeries R L M k := by
   simp [posFittingComp]
