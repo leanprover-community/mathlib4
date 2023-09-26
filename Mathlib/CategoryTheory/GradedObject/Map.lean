@@ -20,6 +20,20 @@ lemma isIso_of_isIso_apply {I : Type*} {X Y : GradedObject I C} (f : X ⟶ Y)
   change IsIso (isoMk X Y (fun i => asIso (f i))).hom
   infer_instance
 
+@[reassoc (attr := simp)]
+lemma iso_hom_inv_id_apply {I : Type*} {X Y : GradedObject I C} (e : X ≅ Y) (i : I) :
+    e.hom i ≫ e.inv i = 𝟙 _ :=
+  congr_fun e.hom_inv_id i
+
+@[reassoc (attr := simp)]
+lemma iso_inv_hom_id_apply {I : Type*} {X Y : GradedObject I C} (e : X ≅ Y) (i : I) :
+    e.inv i ≫ e.hom i = 𝟙 _ :=
+  congr_fun e.inv_hom_id i
+
+instance {I : Type*} {X Y : GradedObject I C} (f : X ⟶ Y) [IsIso f] (i : I) : IsIso (f i) := by
+  change IsIso ((eval i).map f)
+  infer_instance
+
 end
 
 section

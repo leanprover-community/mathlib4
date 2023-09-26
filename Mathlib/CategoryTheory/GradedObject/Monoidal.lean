@@ -172,20 +172,19 @@ section
 
 variable {X₁ X₂ X₃}
 
-/-@[ext 1100]
+/-@[ext]
 lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
     (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),
       ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f = ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
   sorry
 
-@[ext 1100]
+@[ext]
 lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X₃ j ⟶ A)
     (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),
       ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f = ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
   sorry-/
 
 end
-
 
 /-@[reassoc (attr := simp)]
 lemma ιTensorObj₃'_associator_hom [HasAssociator X₁ X₂ X₃] (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
@@ -303,6 +302,15 @@ lemma leftUnitor_naturality {X₁ X₂ : GradedObject I C} (f : X₁ ⟶ X₂) :
   rw [← cancel_mono (leftUnitor X₂).inv, assoc, assoc, Iso.hom_inv_id, comp_id,
     leftUnitor_inv_naturality, Iso.hom_inv_id_assoc]
 
+@[reassoc (attr := simp)]
+lemma ιTensorObj_leftUnitor_hom (X : GradedObject I C) (i : I) :
+    ιTensorObj tensorUnit X 0 i i (zero_add i) ≫ (leftUnitor X).hom i =
+      ((tensorUnit₀ I C).hom ⊗ 𝟙 (X i)) ≫ (λ_ (X i)).hom := by
+  rw [← cancel_mono ((leftUnitor X).inv i), assoc, assoc,
+    iso_hom_inv_id_apply, comp_id, leftUnitor_inv_apply,
+    Iso.hom_inv_id_assoc, hom_inv_id_tensor_assoc, MonoidalCategory.tensor_id,
+    id_comp, id_comp]
+
 @[simps! pt]
 noncomputable def tensorUnitCandidate (i : I) : TensorCandidate X tensorUnit i :=
   TensorCandidate.mk _ _ _ (X i) (fun a b h =>
@@ -364,15 +372,40 @@ lemma rightUnitor_naturality {X₁ X₂ : GradedObject I C} (f : X₁ ⟶ X₂) 
   rw [← cancel_mono (rightUnitor X₂).inv, assoc, assoc, Iso.hom_inv_id, comp_id,
     rightUnitor_inv_naturality, Iso.hom_inv_id_assoc]
 
+@[reassoc (attr := simp)]
+lemma ιTensorObj_rightUnitor_hom (X : GradedObject I C) (i : I) :
+    ιTensorObj X tensorUnit i 0 i (add_zero i) ≫ (rightUnitor X).hom i =
+      (𝟙 (X i ) ⊗ (tensorUnit₀ I C).hom) ≫ (ρ_ (X i)).hom := by
+  rw [← cancel_mono ((rightUnitor X).inv i), assoc, assoc,
+    iso_hom_inv_id_apply, comp_id, rightUnitor_inv_apply,
+    Iso.hom_inv_id_assoc, ← MonoidalCategory.tensor_comp_assoc, id_comp,
+    Iso.hom_inv_id, MonoidalCategory.tensor_id, id_comp]
+
 /-lemma triangle (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂]
     [HasTensor (tensorObj X₁ tensorUnit) X₂]
     [HasTensor X₁ (tensorObj tensorUnit X₂)] [HasAssociator X₁ tensorUnit X₂] :
   (associator X₁ tensorUnit X₂).hom ≫ tensorHom (𝟙 X₁) (leftUnitor X₂).hom =
     tensorHom (rightUnitor X₁).hom (𝟙 X₂) := by
-  ext j i₁ i₂ i₃ h
-  dsimp
-  simp only [ιTensorObj₃'_associator_hom_assoc]
-  sorry-/
+  ext j i₁ k i₂ h
+  simp only [categoryOfGradedObjects_comp, ιTensorObj₃'_associator_hom_assoc]
+  by_cases h' : k = 0
+  · subst h'
+    rw [ιTensorObj₃_eq X₁ tensorUnit X₂ i₁ 0 i₂ j h i₂ (zero_add i₂),
+      ιTensorObj₃'_eq X₁ tensorUnit X₂ i₁ 0 i₂ j h i₁ (add_zero i₁), assoc, assoc,
+      ι_tensorHom, ι_tensorHom, categoryOfGradedObjects_id, categoryOfGradedObjects_id,
+      ← cancel_epi ((𝟙 (X₁ i₁) ⊗ (tensorUnit₀ I C).inv) ⊗ 𝟙 (X₂ i₂)),
+      associator_naturality_assoc (𝟙 (X₁ i₁)) (tensorUnit₀ I C).inv (𝟙 (X₂ i₂)),
+      ← MonoidalCategory.tensor_comp_assoc, ← MonoidalCategory.tensor_comp_assoc,
+      assoc, assoc, id_comp, id_comp, ιTensorObj_leftUnitor_hom,
+      ← MonoidalCategory.tensor_comp_assoc, id_comp, Iso.inv_hom_id, MonoidalCategory.tensor_id,
+      id_comp, triangle_assoc, ← MonoidalCategory.tensor_comp_assoc,
+      ← MonoidalCategory.tensor_comp_assoc, comp_id, comp_id, assoc, ιTensorObj_rightUnitor_hom,
+      ← MonoidalCategory.tensor_comp_assoc, id_comp, Iso.inv_hom_id, MonoidalCategory.tensor_id,
+      id_comp]
+  · apply IsInitial.hom_ext
+    apply isInitialTensor
+    apply tensorIsInitial
+    exact isInitialTensorUnitApply C k h'-/
 
 end
 
@@ -400,7 +433,7 @@ variable
   rightUnitor_naturality := rightUnitor_naturality
   tensor_comp f₁ f₂ g₁ g₂ := tensor_comp f₁ g₁ f₂ g₂
   pentagon := sorry
-  triangle X₁ X₂ := triangle X₁ X₂-/
+  triangle X₁ X₂ := sorry-/
 
 end GradedObject
 
