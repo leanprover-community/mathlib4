@@ -303,7 +303,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
 
 variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
 
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 0 in
 /-- If `I` is a prime ideal of `R[X]` and `pX ∈ I` is a non-constant polynomial,
   then the map `R →+* R[x]/I` descends to an integral map when localizing at `pX.leadingCoeff`.
   In particular `X` is integral because it satisfies `pX`, and constants are trivially integral,
