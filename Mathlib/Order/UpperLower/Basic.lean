@@ -43,8 +43,7 @@ makes them order-isomorphic to lower sets and antichains, and matches the conven
 Lattice structure on antichains. Order equivalence between upper/lower sets and antichains.
 -/
 
-
-open OrderDual Set
+open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
@@ -53,7 +52,7 @@ variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 section LE
 
-variable [LE α] [LE β] {s t : Set α}
+variable [LE α] [LE β] {s t : Set α} {a : α}
 
 /-- An upper set in an order `α` is a set such that any element greater than one of its members is
 also a member. Also called up-set, upward-closed set. -/
@@ -198,6 +197,20 @@ alias ⟨_, IsUpperSet.ofDual⟩ := isLowerSet_preimage_toDual_iff
 
 alias ⟨_, IsLowerSet.ofDual⟩ := isUpperSet_preimage_toDual_iff
 #align is_lower_set.of_dual IsLowerSet.ofDual
+
+lemma IsUpperSet.sdiff (hs : IsUpperSet s) (ht : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
+    IsUpperSet (s \ t) :=
+  λ _b _c hbc hb ↦ ⟨hs hbc hb.1, λ hc ↦ hb.2 $ ht _ hb.1 _ hc hbc⟩
+
+lemma IsLowerSet.sdiff (hs : IsLowerSet s) (ht : ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t) :
+    IsLowerSet (s \ t) :=
+  λ _b _c hcb hb ↦ ⟨hs hcb hb.1, λ hc ↦ hb.2 $ ht _ hb.1 _ hc hcb⟩
+
+lemma IsUpperSet.erase (hs : IsUpperSet s) (has : ∀ b ∈ s, b ≤ a → b = a) : IsUpperSet (s \ {a}) :=
+  hs.sdiff $ by simpa using has
+
+lemma IsLowerSet.erase (hs : IsLowerSet s) (has : ∀ b ∈ s, a ≤ b → b = a) : IsLowerSet (s \ {a}) :=
+  hs.sdiff $ by simpa using has
 
 end LE
 
@@ -432,15 +445,15 @@ instance : SetLike (UpperSet α) α where
   coe := UpperSet.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-@[ext]
-theorem ext {s t : UpperSet α} : (s : Set α) = t → s = t :=
-  SetLike.ext'
-#align upper_set.ext UpperSet.ext
-
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : UpperSet α) : Set α := s
 
 initialize_simps_projections UpperSet (carrier → coe)
+
+@[ext]
+theorem ext {s t : UpperSet α} : (s : Set α) = t → s = t :=
+  SetLike.ext'
+#align upper_set.ext UpperSet.ext
 
 @[simp]
 theorem carrier_eq_coe (s : UpperSet α) : s.carrier = s :=
@@ -451,9 +464,8 @@ protected theorem upper (s : UpperSet α) : IsUpperSet (s : Set α) :=
   s.upper'
 #align upper_set.upper UpperSet.upper
 
-@[simp]
-theorem mem_mk (carrier : Set α) (upper') {a : α} : a ∈ mk carrier upper' ↔ a ∈ carrier :=
-  Iff.rfl
+@[simp, norm_cast] lemma coe_mk (s : Set α) (hs) : mk s hs = s := rfl
+@[simp] lemma mem_mk {s : Set α} (hs) {a : α} : a ∈ mk s hs ↔ a ∈ s := Iff.rfl
 #align upper_set.mem_mk UpperSet.mem_mk
 
 end UpperSet
@@ -483,9 +495,8 @@ protected theorem lower (s : LowerSet α) : IsLowerSet (s : Set α) :=
   s.lower'
 #align lower_set.lower LowerSet.lower
 
-@[simp]
-theorem mem_mk (carrier : Set α) (lower') {a : α} : a ∈ mk carrier lower' ↔ a ∈ carrier :=
-  Iff.rfl
+@[simp, norm_cast] lemma coe_mk (s : Set α) (hs) : mk s hs = s := rfl
+@[simp] lemma mem_mk {s : Set α} (hs) {a : α} : a ∈ mk s hs ↔ a ∈ s := Iff.rfl
 #align lower_set.mem_mk LowerSet.mem_mk
 
 end LowerSet
@@ -526,6 +537,8 @@ theorem coe_subset_coe : (s : Set α) ⊆ t ↔ t ≤ s :=
   Iff.rfl
 #align upper_set.coe_subset_coe UpperSet.coe_subset_coe
 
+@[simp, norm_cast] lemma coe_ssubset_coe : (s : Set α) ⊂ t ↔ t < s := Iff.rfl
+
 @[simp, norm_cast]
 theorem coe_top : ((⊤ : UpperSet α) : Set α) = ∅ :=
   rfl
@@ -543,6 +556,9 @@ theorem coe_eq_univ : (s : Set α) = univ ↔ s = ⊥ := by simp [SetLike.ext'_i
 @[simp, norm_cast]
 theorem coe_eq_empty : (s : Set α) = ∅ ↔ s = ⊤ := by simp [SetLike.ext'_iff]
 #align upper_set.coe_eq_empty UpperSet.coe_eq_empty
+
+@[simp, norm_cast] lemma coe_nonempty : (s : Set α).Nonempty ↔ s ≠ ⊤ :=
+  nonempty_iff_ne_empty.trans coe_eq_empty.not
 
 @[simp, norm_cast]
 theorem coe_sup (s t : UpperSet α) : (↑(s ⊔ t) : Set α) = (s : Set α) ∩ t :=
@@ -670,10 +686,10 @@ instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
 instance : Inhabited (LowerSet α) :=
   ⟨⊥⟩
 
-@[norm_cast] -- porting note: no longer a `simp`
-theorem coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t :=
-  Iff.rfl
+@[simp, norm_cast] lemma coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t := Iff.rfl
 #align lower_set.coe_subset_coe LowerSet.coe_subset_coe
+
+@[simp, norm_cast] lemma coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t := Iff.rfl
 
 @[simp, norm_cast]
 theorem coe_top : ((⊤ : LowerSet α) : Set α) = univ :=
@@ -692,6 +708,9 @@ theorem coe_eq_univ : (s : Set α) = univ ↔ s = ⊤ := by simp [SetLike.ext'_i
 @[simp, norm_cast]
 theorem coe_eq_empty : (s : Set α) = ∅ ↔ s = ⊥ := by simp [SetLike.ext'_iff]
 #align lower_set.coe_eq_empty LowerSet.coe_eq_empty
+
+@[simp, norm_cast] lemma coe_nonempty : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
+  nonempty_iff_ne_empty.trans coe_eq_empty.not
 
 @[simp, norm_cast]
 theorem coe_sup (s t : LowerSet α) : (↑(s ⊔ t) : Set α) = (s : Set α) ∪ t :=
@@ -878,6 +897,24 @@ theorem compl_iInf₂ (f : ∀ i, κ i → UpperSet α) :
     (⨅ (i) (j), f i j).compl = ⨅ (i) (j), (f i j).compl := by simp_rw [UpperSet.compl_iInf]
 #align upper_set.compl_infi₂ UpperSet.compl_iInf₂
 
+-- TODO: Introduce an `IsMinOn` predicate?
+/-- Remove a maximal element from a lower set. -/
+def erase (s : UpperSet α) (a : α) (has : ∀ b ∈ s, b ≤ a → b = a) : UpperSet α where
+  carrier := s \ {a}
+  upper' := s.upper.erase has
+
+lemma le_erase {has} : s ≤ s.erase a has := diff_subset _ _
+
+lemma lt_erase {has} (ha : a ∈ s) : s < s.erase a has :=
+  coe_ssubset_coe.1 $ sdiff_lt (singleton_subset_iff.2 ha) $ singleton_ne_empty _
+
+@[simp, norm_cast]
+lemma coe_erase (s : UpperSet α) (a : α) (ha) : (s.erase a ha : Set α) = ↑s \ {a} := rfl
+
+@[simp] lemma erase_idem (s : UpperSet α) (a : α) (ha) :
+    ((s.erase a ha).erase a λ _b hb ↦ ha _ hb.1) = s.erase a ha :=
+  SetLike.coe_injective sdiff_idem
+
 end UpperSet
 
 namespace LowerSet
@@ -945,6 +982,24 @@ theorem compl_iSup₂ (f : ∀ i, κ i → LowerSet α) :
 theorem compl_iInf₂ (f : ∀ i, κ i → LowerSet α) :
     (⨅ (i) (j), f i j).compl = ⨅ (i) (j), (f i j).compl := by simp_rw [LowerSet.compl_iInf]
 #align lower_set.compl_infi₂ LowerSet.compl_iInf₂
+
+-- TODO: Introduce an `IsMaxOn` predicate?
+/-- Remove a maximal element from a lower set. -/
+def erase (s : LowerSet α) (a : α) (has : ∀ b ∈ s, a ≤ b → b = a) : LowerSet α where
+  carrier := s \ {a}
+  lower' := s.lower.erase has
+
+lemma erase_le {has} : s.erase a has ≤ s :=diff_subset _ _
+
+lemma erase_lt {has} (ha : a ∈ s) : s.erase a has < s :=
+  sdiff_lt (singleton_subset_iff.2 ha) $ singleton_ne_empty _
+
+@[simp, norm_cast]
+lemma coe_erase (s : LowerSet α) (a : α) (ha) : (s.erase a ha : Set α) = ↑s \ {a} := rfl
+
+@[simp] lemma erase_idem (s : LowerSet α) (a : α) (ha) :
+    ((s.erase a ha).erase a λ _b hb ↦ ha _ hb.1) = s.erase a ha :=
+  SetLike.coe_injective sdiff_idem
 
 end LowerSet
 
@@ -1159,16 +1214,40 @@ theorem Ici_le_Ioi (a : α) : Ici a ≤ Ioi a :=
 #align upper_set.Ici_le_Ioi UpperSet.Ici_le_Ioi
 
 @[simp]
-nonrec theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ⊤ :=
-  SetLike.coe_injective Ioi_top
-#align upper_set.Ioi_top UpperSet.Ioi_top
-
-@[simp]
 nonrec theorem Ici_bot [OrderBot α] : Ici (⊥ : α) = ⊥ :=
   SetLike.coe_injective Ici_bot
 #align upper_set.Ici_bot UpperSet.Ici_bot
 
+@[simp]
+nonrec theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ⊤ :=
+  SetLike.coe_injective Ioi_top
+#align upper_set.Ioi_top UpperSet.Ioi_top
+
+@[simp] lemma Ici_ne_top (a : α) : Ici a ≠ ⊤ := SetLike.coe_ne_coe.1 nonempty_Ici.ne_empty
+@[simp] lemma le_Ici : s ≤ Ici a ↔ a ∈ s := ⟨λ h ↦ h le_rfl, λ ha ↦ s.upper.Ici_subset ha⟩
+
+@[simp] lemma erase_inf_Ici (has) (ha : a ∈ s) : s.erase a has ⊓ Ici a = s := by
+  refine' ge_antisymm (le_inf le_erase $ le_Ici.2 ha) λ b hb ↦ _
+  obtain rfl | hba := eq_or_ne b a
+  · exact subset_union_right _ _ (mem_Ici.2 le_rfl)
+  · exact subset_union_left _ _ ⟨hb, hba⟩
+
+@[simp] lemma Ici_inf_erase (has) (ha : a ∈ s) : Ici a ⊓ s.erase a has = s := by
+  rw [inf_comm, erase_inf_Ici _ ha]
+
 end Preorder
+
+section PartialOrder
+variable [PartialOrder α] {a b : α}
+
+nonrec lemma Ici_injective : Injective (Ici : α → UpperSet α) := λ _a _b hab ↦
+  Ici_injective $ congr_arg ((↑) : _ → Set α) hab
+
+@[simp] lemma Ici_inj : Ici a = Ici b ↔ a = b := Ici_injective.eq_iff
+
+lemma Ici_ne_Ici : Ici a ≠ Ici b ↔ a ≠ b := Ici_inj.not
+
+end PartialOrder
 
 @[simp]
 theorem Ici_sup [SemilatticeSup α] (a b : α) : Ici (a ⊔ b) = Ici a ⊔ Ici b :=
@@ -1261,7 +1340,31 @@ nonrec theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ⊥ :=
   SetLike.coe_injective Iio_bot
 #align lower_set.Iio_bot LowerSet.Iio_bot
 
+@[simp] lemma Iic_ne_bot (a : α) : Iic a ≠ ⊥ := SetLike.coe_ne_coe.1 nonempty_Iic.ne_empty
+@[simp] lemma Iic_le : Iic a ≤ s ↔ a ∈ s := ⟨λ h ↦ h le_rfl, λ ha ↦ s.lower.Iic_subset ha⟩
+
+@[simp] lemma erase_sup_Iic (has) (ha : a ∈ s) : s.erase a has ⊔ Iic a = s := by
+  refine' le_antisymm (sup_le erase_le $ Iic_le.2 ha) λ b hb ↦ _
+  obtain rfl | hba := eq_or_ne b a
+  · exact subset_union_right _ _ (mem_Iic.2 le_rfl)
+  · exact subset_union_left _ _ ⟨hb, hba⟩
+
+@[simp] lemma Iic_sup_erase (has) (ha : a ∈ s) : Iic a ⊔ s.erase a has = s := by
+  rw [sup_comm, erase_sup_Iic _ ha]
+
 end Preorder
+
+section PartialOrder
+variable [PartialOrder α] {a b : α}
+
+nonrec lemma Iic_injective : Injective (Iic : α → LowerSet α) := λ _a _b hab ↦
+  Iic_injective $ congr_arg ((↑) : _ → Set α) hab
+
+@[simp] lemma Iic_inj : Iic a = Iic b ↔ a = b := Iic_injective.eq_iff
+
+lemma Iic_ne_Iic : Iic a ≠ Iic b ↔ a ≠ b := Iic_inj.not
+
+end PartialOrder
 
 @[simp]
 theorem Iic_inf [SemilatticeInf α] (a b : α) : Iic (a ⊓ b) = Iic a ⊓ Iic b :=
