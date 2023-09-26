@@ -74,9 +74,12 @@ class IsROrC (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K
   /-- only an instance in the `ComplexOrder` locale -/
   [toPartialOrder : PartialOrder K]
   le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
+  -- note we cannot put this in the `extends` clause
+  [toDecidableEq : DecidableEq K]
 #align is_R_or_C IsROrC
 
 scoped[ComplexOrder] attribute [instance 100] IsROrC.toPartialOrder
+attribute [instance 100] IsROrC.toDecidableEq
 
 end
 

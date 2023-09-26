@@ -128,10 +128,10 @@ theorem IsCompact.diff (hs : IsCompact s) (ht : IsOpen t) : IsCompact (s \ t) :=
 #align is_compact.diff IsCompact.diff
 
 /-- A closed subset of a compact set is a compact set. -/
-theorem isCompact_of_isClosed_subset (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
+theorem IsCompact.of_isClosed_subset (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
     IsCompact t :=
   inter_eq_self_of_subset_right h ▸ hs.inter_right ht
-#align is_compact_of_is_closed_subset isCompact_of_isClosed_subset
+#align is_compact_of_is_closed_subset IsCompact.of_isClosed_subset
 
 theorem IsCompact.image_of_continuousOn {f : α → β} (hs : IsCompact s) (hf : ContinuousOn f s) :
     IsCompact (f '' s) := by
@@ -306,7 +306,7 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed (Z : ℕ �
   have Zmono : Antitone Z := antitone_nat_of_succ_le hZd
   have hZd : Directed (· ⊇ ·) Z := directed_of_sup Zmono
   have : ∀ i, Z i ⊆ Z 0 := fun i => Zmono <| zero_le i
-  have hZc : ∀ i, IsCompact (Z i) := fun i => isCompact_of_isClosed_subset hZ0 (hZcl i) (this i)
+  have hZc : ∀ i, IsCompact (Z i) := fun i => hZ0.of_isClosed_subset (hZcl i) (this i)
   IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed Z hZd hZn hZc hZcl
 #align is_compact.nonempty_Inter_of_sequence_nonempty_compact_closed IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed
 
@@ -733,7 +733,7 @@ theorem compactSpace_of_finite_subfamily_closed
 #align compact_space_of_finite_subfamily_closed compactSpace_of_finite_subfamily_closed
 
 theorem IsClosed.isCompact [CompactSpace α] {s : Set α} (h : IsClosed s) : IsCompact s :=
-  isCompact_of_isClosed_subset isCompact_univ h (subset_univ _)
+  isCompact_univ.of_isClosed_subset h (subset_univ _)
 #align is_closed.is_compact IsClosed.isCompact
 
 /-- `α` is a noncompact topological space if it is not a compact space. -/

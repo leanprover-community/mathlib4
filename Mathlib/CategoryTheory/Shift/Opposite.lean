@@ -18,7 +18,7 @@ However, for the application to (pre)triangulated categories, we would like to
 define the shift on `Cᵒᵖ` so that `shiftFunctor Cᵒᵖ n` for `n : ℤ` identifies to
 `(shiftFunctor C (-n)).op` rather than `(shiftFunctor C n).op`. Then, the construction
 of the shift on `Cᵒᵖ` shall combine the shift on `OppositeShift C A` and another
-construction of the "pullback" of a shift by a monoid morphism like `n ↦ -n` (TODO).
+construction of the "pullback" of a shift by a monoid morphism like `n ↦ -n`.
 
 -/
 

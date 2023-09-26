@@ -561,7 +561,7 @@ protected theorem map_one {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) :
 
 @[to_additive]
 protected theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) {x : M} :
-  h x = 1 ↔ x = 1 :=
+    h x = 1 ↔ x = 1 :=
   MulEquivClass.map_eq_one_iff h
 #align mul_equiv.map_eq_one_iff MulEquiv.map_eq_one_iff
 #align add_equiv.map_eq_zero_iff AddEquiv.map_eq_zero_iff
@@ -622,7 +622,7 @@ where the equivalence between the targets is multiplicative.
 @[to_additive (attr := simps apply) "An additive analogue of `Equiv.arrowCongr`,
   where the equivalence between the targets is additive."]
 def arrowCongr {M N P Q : Type*} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
-  (M → P) ≃* (N → Q) where
+    (M → P) ≃* (N → Q) where
   toFun h n := g (h (f.symm n))
   invFun k m := g.symm (k (f m))
   left_inv h := by ext; simp
@@ -718,7 +718,7 @@ def piSubsingleton {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Subsingle
 /-- A multiplicative equivalence of groups preserves inversion. -/
 @[to_additive "An additive equivalence of additive groups preserves negation."]
 protected theorem map_inv [Group G] [DivisionMonoid H] (h : G ≃* H) (x : G) :
-  h x⁻¹ = (h x)⁻¹ :=
+    h x⁻¹ = (h x)⁻¹ :=
   _root_.map_inv h x
 #align mul_equiv.map_inv MulEquiv.map_inv
 #align add_equiv.map_neg AddEquiv.map_neg
@@ -726,7 +726,7 @@ protected theorem map_inv [Group G] [DivisionMonoid H] (h : G ≃* H) (x : G) :
 /-- A multiplicative equivalence of groups preserves division. -/
 @[to_additive "An additive equivalence of additive groups preserves subtractions."]
 protected theorem map_div [Group G] [DivisionMonoid H] (h : G ≃* H) (x y : G) :
-  h (x / y) = h x / h y :=
+    h (x / y) = h x / h y :=
   _root_.map_div h x y
 #align mul_equiv.map_div MulEquiv.map_div
 #align add_equiv.map_sub AddEquiv.map_sub
