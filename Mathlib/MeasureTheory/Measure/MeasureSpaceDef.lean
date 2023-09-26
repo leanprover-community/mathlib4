@@ -425,9 +425,7 @@ theorem ae_all_iff {ι : Sort*} [Countable ι] {p : α → ι → Prop} :
 
 theorem all_ae_of {ι : Sort _} {p : α → ι → Prop} (hp : ∀ᵐ a ∂μ, ∀ i, p a i) (i : ι) :
     ∀ᵐ a ∂μ, p a i := by
-  change μ { a | ¬ ∀ i, p a i } = 0 at hp
-  simp_rw [not_forall, Set.setOf_exists fun i x => ¬p x i] at hp
-  exact le_zero_iff.1 <| hp ▸ measure_mono (Set.subset_iUnion (fun i => {a | ¬p a i}) i)
+  filter_upwards [hp] with a ha using ha i
 
 theorem ae_ball_iff {S : Set ι} (hS : S.Countable) {p : ∀ (_x : α), ∀ i ∈ S, Prop} :
     (∀ᵐ x ∂μ, ∀ i (hi : i ∈ S), p x i hi) ↔ ∀ i (hi : i ∈ S), ∀ᵐ x ∂μ, p x i hi :=

@@ -478,7 +478,7 @@ theorem set_integral_condKernel_univ_left {ρ : Measure (α × Ω)} [IsFiniteMea
 
 end IntegralCondKernel
 
-section Unqiue
+section Unique
 
 /-! ### Uniqueness
 
@@ -591,7 +591,7 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
   · rfl
   · exact measurable_id.prod_map hf.measurable hs
 
-end Unqiue
+end Unique
 
 end Polish
 
