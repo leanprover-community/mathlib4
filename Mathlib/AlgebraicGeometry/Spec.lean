@@ -123,6 +123,7 @@ theorem Spec.sheafedSpaceMap_id {R : CommRingCat} :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.SheafedSpace_map_id AlgebraicGeometry.Spec.sheafedSpaceMap_id
 
+set_option maxHeartbeats 0 in
 theorem Spec.sheafedSpaceMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.sheafedSpaceMap (f ≫ g) = Spec.sheafedSpaceMap g ≫ Spec.sheafedSpaceMap f :=
   AlgebraicGeometry.PresheafedSpace.Hom.ext _ _ (Spec.topMap_comp f g) <| by
@@ -215,6 +216,7 @@ def Spec.locallyRingedSpaceObj (R : CommRingCat) : LocallyRingedSpace :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.LocallyRingedSpace_obj AlgebraicGeometry.Spec.locallyRingedSpaceObj
 
+set_option maxHeartbeats 0 in
 @[elementwise]
 theorem stalkMap_toStalk {R S : CommRingCat} (f : R ⟶ S) (p : PrimeSpectrum S) :
     toStalk R (PrimeSpectrum.comap f p) ≫ PresheafedSpace.stalkMap (Spec.sheafedSpaceMap f) p =
