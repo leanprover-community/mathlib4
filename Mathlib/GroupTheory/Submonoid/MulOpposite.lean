@@ -36,14 +36,14 @@ protected def unop {M : Type*} [MulOneClass M] (x : Submonoid (MulOpposite M)) :
 @[to_additive (attr := simps) "A additive submonoid `H` of `G` determines an additive submonoid
 `H.opposite` of the opposite group `Gᵐᵒᵖ`."]
 def opEquiv : Submonoid M ≃ Submonoid Mᵐᵒᵖ where
-  toFun := op
-  invFun := unop
+  toFun := Submonoid.op
+  invFun := Submonoid.unop
   left_inv _ := SetLike.coe_injective rfl
   right_inv _ := SetLike.coe_injective rfl
 
 /-- Bijection between a submonoid `H` and its opposite. -/
 @[to_additive (attr := simps!) "Bijection between an additive submonoid `H` and its opposite."]
-def equivOp (H : Submonoid M) : H ≃ op H :=
+def equivOp (H : Submonoid M) : H ≃ H.op :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 
 end Submonoid

@@ -51,8 +51,8 @@ protected def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
 @[to_additive (attr := simps) "An additive subgroup `H` of `G` determines an additive subgroup
 `H.opposite` of the opposite additive group `Gᵃᵒᵖ`."]
 def opEquiv : Subgroup G ≃ Subgroup Gᵐᵒᵖ where
-  toFun := op
-  invFun := unop
+  toFun := Subgroup.op
+  invFun := Subgroup.unop
   left_inv _ := SetLike.coe_injective rfl
   right_inv _ := SetLike.coe_injective rfl
 #align subgroup.opposite Subgroup.opEquiv
@@ -60,7 +60,7 @@ def opEquiv : Subgroup G ≃ Subgroup Gᵐᵒᵖ where
 
 /-- Bijection between a subgroup `H` and its opposite. -/
 @[to_additive (attr := simps!) "Bijection between an additive subgroup `H` and its opposite."]
-def equivOp (H : Subgroup G) : H ≃ op H :=
+def equivOp (H : Subgroup G) : H ≃ H.op :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 #align subgroup.opposite_equiv Subgroup.equivOp
 #align add_subgroup.opposite_equiv AddSubgroup.equivOp

@@ -73,7 +73,7 @@ variable {H} [Normal H]
 
 noncomputable instance : MulAction G H.QuotientDiff where
   smul g :=
-    Quotient.map' (fun α => MulOpposite.op g⁻¹ • α) fun α β h =>
+    Quotient.map' (fun α => op g⁻¹ • α) fun α β h =>
       Subtype.ext
         (by
           rwa [smul_diff_smul', coe_mk, coe_one, mul_eq_one_iff_eq_inv, mul_right_eq_self, ←
