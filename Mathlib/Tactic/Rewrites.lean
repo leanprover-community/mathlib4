@@ -113,7 +113,7 @@ def cachePath : IO FilePath :=
   catch _ =>
     return "build" / "lib" / "MathlibExtras" / "Rewrites.extra"
 
-initialize cachedData : CachedData (Name × Bool × Nat) ← unsafe do
+initialize cachedData : WithCompactedRegion (DiscrTreeCache (Name × Bool × Nat)) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
     let (d, r) ← unpickle (DiscrTree (Name × Bool × Nat) true) path
@@ -124,7 +124,7 @@ initialize cachedData : CachedData (Name × Bool × Nat) ← unsafe do
 /--
 Retrieve the current cache of lemmas.
 -/
-def rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) := cachedData.cache
+def rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) := cachedData.val
 
 /-- Data structure recording a potential rewrite to report from the `rw?` tactic. -/
 structure RewriteResult where

@@ -2188,8 +2188,6 @@
  ["docBlame", "Mathlib.ProjectionNotation.delabProjectionApp'.walkUp"],
  ["docBlame", "Mathlib.ProjectionNotation.pp.collapseStructureProjections"],
  ["docBlame", "Mathlib.ProxyType.defaultMkProxyType.mkCType"],
- ["docBlame", "Mathlib.Tactic.CachedData.cache"],
- ["docBlame", "Mathlib.Tactic.CachedData.pointer?"],
  ["docBlame", "Mathlib.Tactic.Conv.convLHS"],
  ["docBlame", "Mathlib.Tactic.Conv.convRHS"],
  ["docBlame", "Mathlib.Tactic.Conv.convRun_conv_"],
