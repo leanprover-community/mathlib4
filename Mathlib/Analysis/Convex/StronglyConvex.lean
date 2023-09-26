@@ -8,7 +8,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 /-!
 # Stongly convex functions from InnerProductSpace E to ℝ
 
-In this file, we define the strongly convex functions and prove the basic properties
+In this file, we define strongly convex functions and prove the basic properties
 of a strongly convex function.
 We prove the equivalent definitions for a strongly convex functions.
 We prove the tighter bound for a strongly bound comparing with a general convex function.
