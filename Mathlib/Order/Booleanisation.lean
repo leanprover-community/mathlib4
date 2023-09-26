@@ -18,8 +18,13 @@ complements.
 ## Main declarations
 
 * `Booleanisation`: Boolean algebra containing a given generalised Boolean algebra as a sublattice.
-* `Booleanisation.inlLatticeHom`: Boolean algebra containing a given generalised Boolean algebra as
+* `Booleanisation.liftLatticeHom`: Boolean algebra containing a given generalised Boolean algebra as
   a sublattice.
+
+## Future work
+
+If mathlib ever acquires `GenBoolAlg`, the category of generalised Boolean algebras, then one could
+show that `Booleanisation` is the free functor from `GenBoolAlg` to `BoolAlg`.
 -/
 
 open Function
@@ -40,10 +45,10 @@ variable [GeneralizedBooleanAlgebra α] {x y : Booleanisation α} {a b : α}
 
 /-- The natural inclusion `a ↦ a` from a generalized Boolean algebra to its generated Boolean
 algebra. -/
-@[match_pattern] abbrev inl : α → Booleanisation α := Sum.inl
+@[match_pattern] def lift : α → Booleanisation α := Sum.inl
 
 /-- The inclusion `a ↦ aᶜ from a generalized Boolean algebra to its generated Boolean algebra. -/
-@[match_pattern] abbrev inr : α → Booleanisation α := Sum.inr
+@[match_pattern] def comp : α → Booleanisation α := Sum.inr
 
 /-- The order on `Booleanisation α` is as follows: For `a b : α`,
 * `a ≤ b` iff `a ≤ b` in `α`
@@ -51,9 +56,9 @@ algebra. -/
 * `aᶜ ≤ bᶜ` iff `b ≤ a` in `α`
 * `¬ aᶜ ≤ b` -/
 protected inductive LE : Booleanisation α → Booleanisation α → Prop
-  | protected inl {a b} : a ≤ b → Booleanisation.LE (inl a) (inl b)
-  | protected inr {a b} : a ≤ b → Booleanisation.LE (inr b) (inr a)
-  | protected sep {a b} : Disjoint a b → Booleanisation.LE (inl a) (inr b)
+  | protected lift {a b} : a ≤ b → Booleanisation.LE (lift a) (lift b)
+  | protected comp {a b} : a ≤ b → Booleanisation.LE (comp b) (comp a)
+  | protected sep {a b} : Disjoint a b → Booleanisation.LE (lift a) (comp b)
 
 /-- The order on `Booleanisation α` is as follows: For `a b : α`,
 * `a < b` iff `a < b` in `α`
@@ -61,13 +66,15 @@ protected inductive LE : Booleanisation α → Booleanisation α → Prop
 * `aᶜ < bᶜ` iff `b < a` in `α`
 * `¬ aᶜ < b` -/
 protected inductive LT : Booleanisation α → Booleanisation α → Prop
-  | protected inl {a b} : a < b → Booleanisation.LT (inl a) (inl b)
-  | protected inr {a b} : a < b → Booleanisation.LT (inr b) (inr a)
-  | protected sep {a b} : Disjoint a b → Booleanisation.LT (inl a) (inr b)
+  | protected lift {a b} : a < b → Booleanisation.LT (lift a) (lift b)
+  | protected comp {a b} : a < b → Booleanisation.LT (comp b) (comp a)
+  | protected sep {a b} : Disjoint a b → Booleanisation.LT (lift a) (comp b)
 
+@[inherit_doc]
 instance instLE : LE (Booleanisation α) where
   le := Booleanisation.LE
 
+@[inherit_doc]
 instance instLT : LT (Booleanisation α) where
   lt := Booleanisation.LT
 
@@ -78,10 +85,10 @@ instance instLT : LT (Booleanisation α) where
 * `aᶜ ⊔ bᶜ` is `(a ⊓ b)ᶜ` -/
 instance instSup : Sup (Booleanisation α) where
   sup x y := match x, y with
-    | inl a, inl b => inl (a ⊔ b)
-    | inl a, inr b => inr (b \ a)
-    | inr a, inl b => inr (a \ b)
-    | inr a, inr b => inr (a ⊓ b)
+    | lift a, lift b => lift (a ⊔ b)
+    | lift a, comp b => comp (b \ a)
+    | comp a, lift b => comp (a \ b)
+    | comp a, comp b => comp (a ⊓ b)
 
 /-- The infimum on `Booleanisation α` is as follows: For `a b : α`,
 * `a ⊓ b` is `a ⊓ b`
@@ -90,24 +97,24 @@ instance instSup : Sup (Booleanisation α) where
 * `aᶜ ⊓ bᶜ` is `(a ⊔ b)ᶜ` -/
 instance instInf : Inf (Booleanisation α) where
   inf x y := match x, y with
-    | inl a, inl b => inl (a ⊓ b)
-    | inl a, inr b => inl (a \ b)
-    | inr a, inl b => inl (b \ a)
-    | inr a, inr b => inr (a ⊔ b)
+    | lift a, lift b => lift (a ⊓ b)
+    | lift a, comp b => lift (a \ b)
+    | comp a, lift b => lift (b \ a)
+    | comp a, comp b => comp (a ⊔ b)
 
 /-- The bottom element of `Booleanisation α` is the bottom element of `α`. -/
 instance instBot : Bot (Booleanisation α) where
-  bot := inl ⊥
+  bot := lift ⊥
 
 /-- The top element of `Booleanisation α` is the complement of the bottom element of `α`. -/
 instance instTop : Top (Booleanisation α) where
-  top := inr ⊥
+  top := comp ⊥
 
 /-- The complement operator on `Booleanisation α` sends `a` to `aᶜ` and `aᶜ` to `a`, for `a : α`. -/
 instance instCompl : HasCompl (Booleanisation α) where
   compl x := match x with
-    | inl a => inr a
-    | inr a => inl a
+    | lift a => comp a
+    | comp a => lift a
 
 /-- The difference operator on `Booleanisation α` is as follows: For `a b : α`,
 * `a \ b` is `a \ b`
@@ -116,148 +123,148 @@ instance instCompl : HasCompl (Booleanisation α) where
 * `aᶜ \ bᶜ` is `b \ a` -/
 instance instSDiff : SDiff (Booleanisation α) where
   sdiff x y  := match x, y with
-    | inl a, inl b => inl (a \ b)
-    | inl a, inr b => inl (a ⊓ b)
-    | inr a, inl b => inr (a ⊔ b)
-    | inr a, inr b => inl (b \ a)
+    | lift a, lift b => lift (a \ b)
+    | lift a, comp b => lift (a ⊓ b)
+    | comp a, lift b => comp (a ⊔ b)
+    | comp a, comp b => lift (b \ a)
 
-@[simp] lemma inl_le_inl : inl a ≤ inl b ↔ a ≤ b := ⟨by rintro ⟨_⟩; assumption, LE.inl⟩
-@[simp] lemma inr_le_inr : inr a ≤ inr b ↔ b ≤ a := ⟨by rintro ⟨_⟩; assumption, LE.inr⟩
-@[simp] lemma inl_le_inr : inl a ≤ inr b ↔ Disjoint a b := ⟨by rintro ⟨_⟩; assumption, LE.sep⟩
-@[simp] lemma not_inr_le_inl : ¬ inr a ≤ inl b := λ h ↦ nomatch h
+@[simp] lemma lift_le_lift : lift a ≤ lift b ↔ a ≤ b := ⟨by rintro ⟨_⟩; assumption, LE.lift⟩
+@[simp] lemma comp_le_comp : comp a ≤ comp b ↔ b ≤ a := ⟨by rintro ⟨_⟩; assumption, LE.comp⟩
+@[simp] lemma lift_le_comp : lift a ≤ comp b ↔ Disjoint a b := ⟨by rintro ⟨_⟩; assumption, LE.sep⟩
+@[simp] lemma not_comp_le_lift : ¬ comp a ≤ lift b := λ h ↦ nomatch h
 
-@[simp] lemma inl_lt_inl : inl a < inl b ↔ a < b := ⟨by rintro ⟨_⟩; assumption, LT.inl⟩
-@[simp] lemma inr_lt_inr : inr a < inr b ↔ b < a := ⟨by rintro ⟨_⟩; assumption, LT.inr⟩
-@[simp] lemma inl_lt_inr : inl a < inr b ↔ Disjoint a b := ⟨by rintro ⟨_⟩; assumption, LT.sep⟩
-@[simp] lemma not_inr_lt_inl : ¬ inr a < inl b := λ h ↦ nomatch h
+@[simp] lemma lift_lt_lift : lift a < lift b ↔ a < b := ⟨by rintro ⟨_⟩; assumption, LT.lift⟩
+@[simp] lemma comp_lt_comp : comp a < comp b ↔ b < a := ⟨by rintro ⟨_⟩; assumption, LT.comp⟩
+@[simp] lemma lift_lt_comp : lift a < comp b ↔ Disjoint a b := ⟨by rintro ⟨_⟩; assumption, LT.sep⟩
+@[simp] lemma not_comp_lt_lift : ¬ comp a < lift b := λ h ↦ nomatch h
 
-@[simp] lemma inl_sup_inl (a b : α) : inl a ⊔ inl b = inl (a ⊔ b) := rfl
-@[simp] lemma inl_sup_inr (a b : α) : inl a ⊔ inr b = inr (b \ a) := rfl
-@[simp] lemma inr_sup_inl (a b : α) : inr a ⊔ inl b = inr (a \ b) := rfl
-@[simp] lemma inr_sup_inr (a b : α) : inr a ⊔ inr b = inr (a ⊓ b) := rfl
+@[simp] lemma lift_sup_lift (a b : α) : lift a ⊔ lift b = lift (a ⊔ b) := rfl
+@[simp] lemma lift_sup_comp (a b : α) : lift a ⊔ comp b = comp (b \ a) := rfl
+@[simp] lemma comp_sup_lift (a b : α) : comp a ⊔ lift b = comp (a \ b) := rfl
+@[simp] lemma comp_sup_comp (a b : α) : comp a ⊔ comp b = comp (a ⊓ b) := rfl
 
-@[simp] lemma inl_inf_inl (a b : α) : inl a ⊓ inl b = inl (a ⊓ b) := rfl
-@[simp] lemma inl_inf_inr (a b : α) : inl a ⊓ inr b = inl (a \ b) := rfl
-@[simp] lemma inr_inf_inl (a b : α) : inr a ⊓ inl b = inl (b \ a) := rfl
-@[simp] lemma inr_inf_inr (a b : α) : inr a ⊓ inr b = inr (a ⊔ b) := rfl
+@[simp] lemma lift_inf_lift (a b : α) : lift a ⊓ lift b = lift (a ⊓ b) := rfl
+@[simp] lemma lift_inf_comp (a b : α) : lift a ⊓ comp b = lift (a \ b) := rfl
+@[simp] lemma comp_inf_lift (a b : α) : comp a ⊓ lift b = lift (b \ a) := rfl
+@[simp] lemma comp_inf_comp (a b : α) : comp a ⊓ comp b = comp (a ⊔ b) := rfl
 
-@[simp] lemma inl_bot : inl (⊥ : α) = ⊥ := rfl
-@[simp] lemma inr_bot : inr (⊥ : α) = ⊤ := rfl
+@[simp] lemma lift_bot : lift (⊥ : α) = ⊥ := rfl
+@[simp] lemma comp_bot : comp (⊥ : α) = ⊤ := rfl
 
-@[simp] lemma compl_inl (a : α) : (inl a)ᶜ = inr a := rfl
-@[simp] lemma compl_inr (a : α) : (inr a)ᶜ = inl a := rfl
+@[simp] lemma compl_lift (a : α) : (lift a)ᶜ = comp a := rfl
+@[simp] lemma compl_comp (a : α) : (comp a)ᶜ = lift a := rfl
 
-@[simp] lemma inl_sdiff_inl (a b : α) : inl a \ inl b = inl (a \ b) := rfl
-@[simp] lemma inl_sdiff_inr (a b : α) : inl a \ inr b = inl (a ⊓ b) := rfl
-@[simp] lemma inr_sdiff_inl (a b : α) : inr a \ inl b = inr (a ⊔ b) := rfl
-@[simp] lemma inr_sdiff_inr (a b : α) : inr a \ inr b = inl (b \ a) := rfl
+@[simp] lemma lift_sdiff_lift (a b : α) : lift a \ lift b = lift (a \ b) := rfl
+@[simp] lemma lift_sdiff_comp (a b : α) : lift a \ comp b = lift (a ⊓ b) := rfl
+@[simp] lemma comp_sdiff_lift (a b : α) : comp a \ lift b = comp (a ⊔ b) := rfl
+@[simp] lemma comp_sdiff_comp (a b : α) : comp a \ comp b = lift (b \ a) := rfl
 
 instance instPreorder : Preorder (Booleanisation α) where
   lt := (· < ·)
   lt_iff_le_not_le x y := match x, y with
-    | inl a, inl b => by simp [lt_iff_le_not_le]
-    | inl a, inr b => by simp
-    | inr a, inl b => by simp
-    | inr a, inr b => by simp [lt_iff_le_not_le]
+    | lift a, lift b => by simp [lt_iff_le_not_le]
+    | lift a, comp b => by simp
+    | comp a, lift b => by simp
+    | comp a, comp b => by simp [lt_iff_le_not_le]
   le_refl x := match x with
-    | inl a => LE.inl le_rfl
-    | inr a => LE.inr le_rfl
+    | lift a => LE.lift le_rfl
+    | comp a => LE.comp le_rfl
   le_trans x y z hxy hyz := match x, y, z, hxy, hyz with
-    | inl a, inl b, inl c, LE.inl hab, LE.inl hbc => LE.inl $ hab.trans hbc
-    | inl a, inl b, inr c, LE.inl hab, LE.sep hbc => LE.sep $ hbc.mono_left hab
-    | inl a, inr b, inr c, LE.sep hab, LE.inr hcb => LE.sep $ hab.mono_right hcb
-    | inr a, inr b, inr c, LE.inr hba, LE.inr hcb => LE.inr $ hcb.trans hba
+    | lift a, lift b, lift c, LE.lift hab, LE.lift hbc => LE.lift $ hab.trans hbc
+    | lift a, lift b, comp c, LE.lift hab, LE.sep hbc => LE.sep $ hbc.mono_left hab
+    | lift a, comp b, comp c, LE.sep hab, LE.comp hcb => LE.sep $ hab.mono_right hcb
+    | comp a, comp b, comp c, LE.comp hba, LE.comp hcb => LE.comp $ hcb.trans hba
 
 instance instPartialOrder : PartialOrder (Booleanisation α) where
   le_antisymm x y hxy hyx := match x, y, hxy, hyx with
-    | inl a, inl b, LE.inl hab, LE.inl hba => by rw [hab.antisymm hba]
-    | inr a, inr b, LE.inr hab, LE.inr hba => by rw [hab.antisymm hba]
+    | lift a, lift b, LE.lift hab, LE.lift hba => by rw [hab.antisymm hba]
+    | comp a, comp b, LE.comp hab, LE.comp hba => by rw [hab.antisymm hba]
 
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instSemilatticeSup : SemilatticeSup (Booleanisation α) where
   le_sup_left x y := match x, y with
-    | inl a, inl b => LE.inl le_sup_left
-    | inl a, inr b => LE.sep disjoint_sdiff_self_right
-    | inr a, inl b => LE.inr sdiff_le
-    | inr a, inr b => LE.inr inf_le_left
+    | lift a, lift b => LE.lift le_sup_left
+    | lift a, comp b => LE.sep disjoint_sdiff_self_right
+    | comp a, lift b => LE.comp sdiff_le
+    | comp a, comp b => LE.comp inf_le_left
   le_sup_right x y := match x, y with
-    | inl a, inl b => LE.inl le_sup_right
-    | inl a, inr b => LE.inr sdiff_le
-    | inr a, inl b => LE.sep disjoint_sdiff_self_right
-    | inr a, inr b => LE.inr inf_le_right
+    | lift a, lift b => LE.lift le_sup_right
+    | lift a, comp b => LE.comp sdiff_le
+    | comp a, lift b => LE.sep disjoint_sdiff_self_right
+    | comp a, comp b => LE.comp inf_le_right
   sup_le x y z hxz hyz := match x, y, z, hxz, hyz with
-    | inl a, inl b, inl c, LE.inl hac, LE.inl hbc => LE.inl $ sup_le hac hbc
-    | inl a, inl b, inr c, LE.sep hac, LE.sep hbc => LE.sep $ hac.sup_left hbc
-    | inl a, inr b, inr c, LE.sep hac, LE.inr hcb => LE.inr $ le_sdiff.2 ⟨hcb, hac.symm⟩
-    | inr a, inl b, inr c, LE.inr hca, LE.sep hbc => LE.inr $ le_sdiff.2 ⟨hca, hbc.symm⟩
-    | inr a, inr b, inr c, LE.inr hca, LE.inr hcb => LE.inr $ le_inf hca hcb
+    | lift a, lift b, lift c, LE.lift hac, LE.lift hbc => LE.lift $ sup_le hac hbc
+    | lift a, lift b, comp c, LE.sep hac, LE.sep hbc => LE.sep $ hac.sup_left hbc
+    | lift a, comp b, comp c, LE.sep hac, LE.comp hcb => LE.comp $ le_sdiff.2 ⟨hcb, hac.symm⟩
+    | comp a, lift b, comp c, LE.comp hca, LE.sep hbc => LE.comp $ le_sdiff.2 ⟨hca, hbc.symm⟩
+    | comp a, comp b, comp c, LE.comp hca, LE.comp hcb => LE.comp $ le_inf hca hcb
 
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instSemilatticeInf : SemilatticeInf (Booleanisation α) where
   inf_le_left x y := match x, y with
-    | inl a, inl b => LE.inl inf_le_left
-    | inl a, inr b => LE.inl sdiff_le
-    | inr a, inl b => LE.sep disjoint_sdiff_self_left
-    | inr a, inr b => LE.inr le_sup_left
+    | lift a, lift b => LE.lift inf_le_left
+    | lift a, comp b => LE.lift sdiff_le
+    | comp a, lift b => LE.sep disjoint_sdiff_self_left
+    | comp a, comp b => LE.comp le_sup_left
   inf_le_right x y := match x, y with
-    | inl a, inl b => LE.inl inf_le_right
-    | inl a, inr b => LE.sep disjoint_sdiff_self_left
-    | inr a, inl b => LE.inl sdiff_le
-    | inr a, inr b => LE.inr le_sup_right
+    | lift a, lift b => LE.lift inf_le_right
+    | lift a, comp b => LE.sep disjoint_sdiff_self_left
+    | comp a, lift b => LE.lift sdiff_le
+    | comp a, comp b => LE.comp le_sup_right
   le_inf x y z hxz hyz := match x, y, z, hxz, hyz with
-    | inl a, inl b, inl c, LE.inl hab, LE.inl hac => LE.inl $ le_inf hab hac
-    | inl a, inl b, inr c, LE.inl hab, LE.sep hac => LE.inl $ le_sdiff.2 ⟨hab, hac⟩
-    | inl a, inr b, inl c, LE.sep hab, LE.inl hac => LE.inl $ le_sdiff.2 ⟨hac, hab⟩
-    | inl a, inr b, inr c, LE.sep hab, LE.sep hac => LE.sep $ hab.sup_right hac
-    | inr a, inr b, inr c, LE.inr hba, LE.inr hca => LE.inr $ sup_le hba hca
+    | lift a, lift b, lift c, LE.lift hab, LE.lift hac => LE.lift $ le_inf hab hac
+    | lift a, lift b, comp c, LE.lift hab, LE.sep hac => LE.lift $ le_sdiff.2 ⟨hab, hac⟩
+    | lift a, comp b, lift c, LE.sep hab, LE.lift hac => LE.lift $ le_sdiff.2 ⟨hac, hab⟩
+    | lift a, comp b, comp c, LE.sep hab, LE.sep hac => LE.sep $ hab.sup_right hac
+    | comp a, comp b, comp c, LE.comp hba, LE.comp hca => LE.comp $ sup_le hba hca
 
 instance instDistribLattice : DistribLattice (Booleanisation α) where
   inf_le_left _ _ := inf_le_left
   inf_le_right _ _ := inf_le_right
   le_inf _ _ _ := le_inf
   le_sup_inf x y z := match x, y, z with
-    | inl a, inl b, inl c => LE.inl le_sup_inf
-    | inl a, inl b, inr c => LE.inl $ by simp [sup_left_comm, sup_comm]
-    | inl a, inr b, inl c => LE.inl $ by simp [sup_left_comm, sup_comm (a := b \ a)]
-    | inl a, inr b, inr c => LE.inr $ by rw [sup_sdiff]
-    | inr a, inl b, inl c => LE.inr $ by rw [sdiff_inf]
-    | inr a, inl b, inr c => LE.inr $ by rw [sdiff_sdiff_right']
-    | inr a, inr b, inl c => LE.inr $ by rw [sdiff_sdiff_right', sup_comm]
-    | inr a, inr b, inr c => LE.inr inf_sup_left.le
+    | lift a, lift b, lift c => LE.lift le_sup_inf
+    | lift a, lift b, comp c => LE.lift $ by simp [sup_left_comm, sup_comm]
+    | lift a, comp b, lift c => LE.lift $ by simp [sup_left_comm, sup_comm (a := b \ a)]
+    | lift a, comp b, comp c => LE.comp $ by rw [sup_sdiff]
+    | comp a, lift b, lift c => LE.comp $ by rw [sdiff_inf]
+    | comp a, lift b, comp c => LE.comp $ by rw [sdiff_sdiff_right']
+    | comp a, comp b, lift c => LE.comp $ by rw [sdiff_sdiff_right', sup_comm]
+    | comp a, comp b, comp c => LE.comp inf_sup_left.le
 
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instBoundedOrder : BoundedOrder (Booleanisation α) where
   le_top x := match x with
-    | inl a => LE.sep disjoint_bot_right
-    | inr a => LE.inr bot_le
+    | lift a => LE.sep disjoint_bot_right
+    | comp a => LE.comp bot_le
   bot_le x := match x with
-    | inl a => LE.inl bot_le
-    | inr a => LE.sep disjoint_bot_left
+    | lift a => LE.lift bot_le
+    | comp a => LE.sep disjoint_bot_left
 
 instance instBooleanAlgebra : BooleanAlgebra (Booleanisation α) where
   le_top _ := le_top
   bot_le _ := bot_le
   inf_compl_le_bot x := match x with
-    | inl a => by simp
-    | inr a => by simp
+    | lift a => by simp
+    | comp a => by simp
   top_le_sup_compl x := match x with
-    | inl a => by simp
-    | inr a => by simp
+    | lift a => by simp
+    | comp a => by simp
   sdiff_eq x y := match x, y with
-    | inl a, inl b => by simp
-    | inl a, inr b => by simp
-    | inr a, inl b => by simp
-    | inr a, inr b => by simp
+    | lift a, lift b => by simp
+    | lift a, comp b => by simp
+    | comp a, lift b => by simp
+    | comp a, comp b => by simp
 
 /-- The embedding from a generalised Boolean algebra to its generated Boolean algebra. -/
-def inlLatticeHom : LatticeHom α (Booleanisation α) where
-  toFun := inl
+def liftLatticeHom : LatticeHom α (Booleanisation α) where
+  toFun := lift
   map_sup' _ _ := rfl
   map_inf' _ _ := rfl
 
-lemma inlLatticeHom_injective : Injective (inlLatticeHom (α := α)) := Sum.inl_injective
+lemma liftLatticeHom_injective : Injective (liftLatticeHom (α := α)) := Sum.inl_injective
 
 end Booleanisation
