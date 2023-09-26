@@ -254,30 +254,21 @@ lemma div2_eq_zero {x : ℕ} :
     rw[div2_succ_succ] at h
     contradiction
 
-lemma bitwise_eq_bitwise' (f) :
-    bitwise f = bitwise' f := by
+lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
   funext x y
   have ⟨k, hk⟩ : ∃ k, k = x+y := by use x+y
   induction' k using Nat.strongInductionOn with k ih generalizing x y
-  by_cases h1 : x = 0
-  <;> by_cases h2 : y = 0
+  by_cases h1 : x = 0 <;> by_cases h2 : y = 0
   · unfold bitwise
     simp [h1, h2]
   · unfold bitwise bitwise'; simp[h1]; aesop
+  · unfold bitwise bitwise' binaryRec
+    simp only [h1, h2, if_true, if_false, dite_false]
+    split_ifs with hx <;>
+    simp [hx, bit_decomp]
   · unfold bitwise
-    simp [h2]
-    split_ifs with hx hf
-    · contradiction
-    · unfold bitwise' binaryRec
-      simp [hx, hf]
-      exact Eq.symm (bit_decomp x)
-    · unfold bitwise' binaryRec
-      simp [hx, hf]
-  · rw [← bit_decomp x, ← bit_decomp y]
-    unfold bitwise
-    rw [bit_decomp, bit_decomp, mod_two_of_bodd, mod_two_of_bodd]
-    nth_rewrite 8 [← bit_decomp x]
-    nth_rewrite 8 [← bit_decomp y]
+    rw [mod_two_of_bodd, mod_two_of_bodd, if_neg h1, if_neg h2]
+    conv_rhs => rw [← bit_decomp x, ← bit_decomp y]
     rw [bitwise'_bit']
     · cases' hx: bodd x
       <;> cases' hy: bodd y
