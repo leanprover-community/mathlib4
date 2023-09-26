@@ -563,6 +563,15 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
   rw [inter_empty]
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
 
+/-- Given a predicate on `β` and `set α` where both `α` and `β` are measurable spaces, if the
+predicate holds for almost every `x : β` and
+- `∅ : set α`
+- a family of sets generating the σ-algebra of `α`
+Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
+disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
+
+This is an AE version of `MeasurableSpace.induction_on_inter` where the condition is dependent
+on a measurable space `β`. -/
 theorem _root_.MeasurableSpace.ae_induction_on_inter {β} [MeasurableSpace β] {μ : Measure β}
     {C : β → Set α → Prop} {s : Set (Set α)} [m : MeasurableSpace α]
     (h_eq : m = MeasurableSpace.generateFrom s)
