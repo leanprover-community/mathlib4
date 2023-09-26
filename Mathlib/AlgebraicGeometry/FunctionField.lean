@@ -121,6 +121,7 @@ theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
   rfl
 #align algebraic_geometry.generic_point_eq_bot_of_affine AlgebraicGeometry.genericPoint_eq_bot_of_affine
 
+set_option maxHeartbeats 0 in
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
     IsFractionRing R (Scheme.Spec.obj <| op R).functionField := by
   convert StructureSheaf.IsLocalization.to_stalk R (genericPoint _)
