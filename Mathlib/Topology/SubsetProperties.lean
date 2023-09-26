@@ -288,7 +288,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed {ι : Type
     (hZc : ∀ i, IsCompact (Z i)) (hZcl : ∀ i, IsClosed (Z i)) : (⋂ i, Z i).Nonempty := by
   let i₀ := hι.some
   suffices (Z i₀ ∩ ⋂ i, Z i).Nonempty by
-    rwa [inter_eq_right_iff_subset.mpr (iInter_subset _ i₀)] at this
+    rwa [inter_eq_right.mpr (iInter_subset _ i₀)] at this
   simp only [nonempty_iff_ne_empty] at hZn ⊢
   apply mt ((hZc i₀).elim_directed_family_closed Z hZcl)
   push_neg
