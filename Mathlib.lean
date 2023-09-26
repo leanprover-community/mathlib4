@@ -969,6 +969,10 @@ import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.GradedObject
+import Mathlib.CategoryTheory.GradedObject.Bifunctor
+import Mathlib.CategoryTheory.GradedObject.Map
+import Mathlib.CategoryTheory.GradedObject.Monoidal
+import Mathlib.CategoryTheory.GradedObject.Trifunctor
 import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
