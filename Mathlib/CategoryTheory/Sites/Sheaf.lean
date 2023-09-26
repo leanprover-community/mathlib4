@@ -122,7 +122,7 @@ def _root_.CategoryTheory.Presieve.FamilyOfElements.SieveCompatible.cone :
     of the family. -/
 def homEquivAmalgamation : (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t }
     where
-  toFun l := ⟨l.Hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
+  toFun l := ⟨l.hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
   invFun t := ⟨t.1, fun f => t.2 f.unop.1.hom f.unop.2⟩
   left_inv _ := rfl
   right_inv _ := rfl

@@ -1696,8 +1696,7 @@ def trNormal : Stmt₁ → Stmt'₁
 
 theorem stepAux_move (d : Dir) (q : Stmt'₁) (v : σ) (T : Tape Bool) :
     stepAux (moveₙ d q) v T = stepAux q v ((Tape.move d)^[n] T) := by
-  suffices : ∀ i, stepAux ((Stmt.move d)^[i] q) v T = stepAux q v ((Tape.move d)^[i] T)
-  exact this n
+  suffices ∀ i, stepAux ((Stmt.move d)^[i] q) v T = stepAux q v ((Tape.move d)^[i] T) from this n
   intro i; induction' i with i IH generalizing T; · rfl
   rw [iterate_succ', iterate_succ]
   simp only [stepAux, Function.comp_apply]

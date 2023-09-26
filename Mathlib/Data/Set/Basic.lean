@@ -5,8 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Order.SymmDiff
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.ByContra
 
-#align_import data.set.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
+#align_import data.set.basic from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
 /-!
 # Basic properties of sets
@@ -2831,12 +2833,24 @@ theorem inclusion_injective (h : s ⊆ t) : Injective (inclusion h)
   | ⟨_, _⟩, ⟨_, _⟩ => Subtype.ext_iff_val.2 ∘ Subtype.ext_iff_val.1
 #align set.inclusion_injective Set.inclusion_injective
 
+@[simp]
+theorem inclusion_inj (h : s ⊆ t) {x y : s} : inclusion h x = inclusion h y ↔ x = y :=
+  (inclusion_injective h).eq_iff
+
 theorem eq_of_inclusion_surjective {s t : Set α} {h : s ⊆ t}
     (h_surj : Function.Surjective (inclusion h)) : s = t := by
   refine' Set.Subset.antisymm h (fun x hx => _)
   obtain ⟨y, hy⟩ := h_surj ⟨x, hx⟩
   exact mem_of_eq_of_mem (congr_arg Subtype.val hy).symm y.prop
 #align set.eq_of_inclusion_surjective Set.eq_of_inclusion_surjective
+
+@[simp]
+theorem inclusion_le_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
+    inclusion h x ≤ inclusion h y ↔ x ≤ y := Iff.rfl
+
+@[simp]
+theorem inclusion_lt_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
+    inclusion h x < inclusion h y ↔ x < y := Iff.rfl
 
 end Inclusion
 
@@ -3004,3 +3018,7 @@ theorem subset_right_of_subset_union (h : s ⊆ t ∪ u) (hab : Disjoint s t) : 
 #align disjoint.subset_right_of_subset_union Disjoint.subset_right_of_subset_union
 
 end Disjoint
+
+@[simp] theorem Prop.compl_singleton (p : Prop) : ({p}ᶜ : Set Prop) = {¬p} :=
+  ext fun q ↦ by simpa [@Iff.comm q] using not_iff
+#align Prop.compl_singleton Prop.compl_singleton

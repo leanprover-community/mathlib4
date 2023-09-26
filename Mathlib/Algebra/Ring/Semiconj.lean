@@ -3,7 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Group.Semiconj
+import Mathlib.Algebra.Group.Semiconj.Defs
 import Mathlib.Algebra.Ring.Defs
 
 #align_import algebra.ring.semiconj from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"

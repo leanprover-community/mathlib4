@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Init.Core
 import Std.Data.List.Lemmas
+import Mathlib.Tactic.Common
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"9da1b3534b65d9661eb8f42443598a92bbb49211"
 
@@ -320,12 +321,12 @@ theorem subset_append_of_subset_right' (l l₁ l₂ : List α) : l ⊆ l₂ → 
 
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
   (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
-cons_subset.2 ⟨ainm, lsubm⟩
+  cons_subset.2 ⟨ainm, lsubm⟩
 #align list.cons_subset_of_subset_of_mem List.cons_subset_of_subset_of_mem
 
 theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l₁ ⊆ l) (l₂subl : l₂ ⊆ l) :
-  l₁ ++ l₂ ⊆ l :=
-fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
+    l₁ ++ l₂ ⊆ l :=
+  fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 #align list.append_subset_of_subset_of_subset List.append_subset_of_subset_of_subset
 
 -- Porting note: in Std
@@ -822,12 +823,12 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 #align list.head_eq_head' List.head!_eq_head?
 
-theorem surjective_head [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
-#align list.surjective_head List.surjective_head
+theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
+#align list.surjective_head List.surjective_head!
 
-theorem surjective_head' : Surjective (@head? α) :=
+theorem surjective_head? : Surjective (@head? α) :=
   Option.forall.2 ⟨⟨[], rfl⟩, fun x => ⟨[x], rfl⟩⟩
-#align list.surjective_head' List.surjective_head'
+#align list.surjective_head' List.surjective_head?
 
 theorem surjective_tail : Surjective (@tail α)
   | [] => ⟨[], rfl⟩
@@ -890,6 +891,9 @@ theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! �
   have h' := mem_cons_self l.head! l.tail
   rwa [cons_head!_tail h] at h'
 #align list.head_mem_self List.head!_mem_self
+
+theorem head_mem {l : List α} : ∀ (h : l ≠ nil), l.head h ∈ l := by
+  cases l <;> simp
 
 @[simp]
 theorem head?_map (f : α → β) (l) : head? (map f l) = (head? l).map f := by cases l <;> rfl
@@ -2128,17 +2132,8 @@ theorem drop_length_cons {l : List α} (h : l ≠ []) (a : α) :
     exact ih h₁ y
 #align list.drop_length_cons List.drop_length_cons
 
-/-- Dropping the elements up to `n` in `l₁ ++ l₂` is the same as dropping the elements up to `n`
-in `l₁`, dropping the elements up to `n - l₁.length` in `l₂`, and appending them. -/
-theorem drop_append_eq_append_drop {l₁ l₂ : List α} {n : ℕ} :
-    drop n (l₁ ++ l₂) = drop n l₁ ++ drop (n - l₁.length) l₂ := by
-  induction l₁ generalizing n; · simp
-  cases n <;> simp [*]
 #align list.drop_append_eq_append_drop List.drop_append_eq_append_drop
 
-theorem drop_append_of_le_length {l₁ l₂ : List α} {n : ℕ} (h : n ≤ l₁.length) :
-    (l₁ ++ l₂).drop n = l₁.drop n ++ l₂ := by
-  simp [drop_append_eq_append_drop, tsub_eq_zero_iff_le.mpr h]
 #align list.drop_append_of_le_length List.drop_append_of_le_length
 
 /-- Dropping the elements up to `l₁.length + i` in `l₁ + l₂` is the same as dropping the elements
@@ -2784,7 +2779,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
     List.foldlM f b l = foldl (fun mb a => mb >>= fun b => f b a) (pure b) l := by
   suffices h :
     ∀ mb : m β, (mb >>= fun b => List.foldlM f b l) = foldl (fun mb a => mb >>= fun b => f b a) mb l
-  · simp [← h (pure b)]
+    by simp [← h (pure b)]
   induction l with
   | nil => intro; simp
   | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ←l_ih, functor_norm]
@@ -3554,7 +3549,7 @@ theorem filter_false (l : List α) :
 
 /- Porting note: need a helper theorem for span.loop. -/
 theorem span.loop_eq_take_drop :
-  ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
+    ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
   | [], l₂ => by simp [span.loop, takeWhile, dropWhile]
   | (a :: l), l₂ => by
     cases hp : p a <;> simp [hp, span.loop, span.loop_eq_take_drop, takeWhile, dropWhile]

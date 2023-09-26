@@ -139,6 +139,21 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p
   exact degree_mul_leadingCoeff_inv q hq.ne_zero ▸ degree_eq_one_of_irreducible_of_root this hx
 #align is_alg_closed.of_exists_root IsAlgClosed.of_exists_root
 
+theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
+    [IsAlgClosed k] : IsAlgClosed k' := by
+  apply IsAlgClosed.of_exists_root
+  intro p hmp hp
+  have hpe : degree (p.map e.symm.toRingHom) ≠ 0 := by
+    rw [degree_map]
+    exact ne_of_gt (degree_pos_of_irreducible hp)
+  rcases IsAlgClosed.exists_root (k := k) (p.map e.symm) hpe with ⟨x, hx⟩
+  use e x
+  rw [IsRoot] at hx
+  apply e.symm.injective
+  rw [map_zero, ← hx]
+  clear hx hpe hp hmp
+  induction p using Polynomial.induction_on <;> simp_all
+
 theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducible p) :
     p.degree = 1 :=
   degree_eq_one_of_irreducible_of_splits hp (IsAlgClosed.splits_codomain _)
@@ -303,8 +318,8 @@ AlgHom.comp
   (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly R x).toAlgHom
 
 -- porting note: this was much faster in lean 3
-set_option maxHeartbeats 800000 in
-set_option synthInstance.maxHeartbeats 400000 in
+set_option maxHeartbeats 300000 in
+set_option synthInstance.maxHeartbeats 200000 in
 theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
   rw [eq_top_iff]
   intro x _
@@ -362,8 +377,11 @@ variable {M}
 
 private theorem FractionRing.isAlgebraic :
     letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+    letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
     Algebra.IsAlgebraic (FractionRing R) (FractionRing S) := by
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+  letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
+  have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
   intro
   exact
     (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
@@ -373,6 +391,10 @@ private theorem FractionRing.isAlgebraic :
   closed extension of R. -/
 noncomputable irreducible_def lift : S →ₐ[R] M := by
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+  letI := FractionRing.liftAlgebra R M
+  letI := FractionRing.liftAlgebra R (FractionRing S)
+  have := FractionRing.isScalarTower_liftAlgebra R M
+  have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
   have : Algebra.IsAlgebraic (FractionRing R) (FractionRing S) :=
     FractionRing.isAlgebraic hS
   let f : FractionRing S →ₐ[FractionRing R] M := lift_aux (FractionRing R) (FractionRing S) M this
