@@ -269,11 +269,12 @@ lemma iSup_ucs_le_weightSpace_zero [LieAlgebra.IsNilpotent R L] :
     ⨆ k, (⊥ : LieSubmodule R L M).ucs k ≤ weightSpace M (0 : L → R) := by
   simpa using LieSubmodule.ucs_le_of_normalizer_eq_self (weightSpace_zero_normalizer_eq_self R L M)
 
-lemma weightSpace_zero_eq_iSup_ucs [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] :
-    weightSpace M (0 : L → R) = ⨆ k, (⊥ : LieSubmodule R L M).ucs k := by
+/-- See also `LieModule.iInf_lowerCentralSeries_eq_posFittingComp`. -/
+lemma iSup_ucs_eq_weightSpace_zero [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] :
+    ⨆ k, (⊥ : LieSubmodule R L M).ucs k = weightSpace M (0 : L → R) := by
   obtain ⟨k, hk⟩ := (LieSubmodule.isNilpotent_iff_exists_self_le_ucs
     <| weightSpace M (0 : L → R)).mp inferInstance
-  refine le_antisymm (le_trans hk ?_) (iSup_ucs_le_weightSpace_zero R L M)
+  refine le_antisymm (iSup_ucs_le_weightSpace_zero R L M) (le_trans hk ?_)
   exact le_iSup (fun k ↦ (⊥ : LieSubmodule R L M).ucs k) k
 
 variable {L}
@@ -344,10 +345,35 @@ lemma mem_posFittingComp [LieAlgebra.IsNilpotent R L] (m : M) :
     m ∈ posFittingComp R L M ↔ m ∈ ⨆ (x : L), posFittingCompOf R M x := by
   rfl
 
--- TODO Prove that when `M` is Noetherian and Artinian, this becomes an equality.
+lemma posFittingCompOf_le_posFittingComp [LieAlgebra.IsNilpotent R L] (x : L) :
+    posFittingCompOf R M x ≤ posFittingComp R L M := by
+  rw [posFittingComp]; exact le_iSup (posFittingCompOf R M) x
+
 lemma posFittingComp_le_iInf_lowerCentralSeries [LieAlgebra.IsNilpotent R L] :
     posFittingComp R L M ≤ ⨅ k, lowerCentralSeries R L M k := by
   simp [posFittingComp]
+
+/-- See also `LieModule.iSup_ucs_eq_weightSpace_zero`. -/
+@[simp] lemma iInf_lowerCentralSeries_eq_posFittingComp
+    [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] [IsArtinian R M] :
+    ⨅ k, lowerCentralSeries R L M k = posFittingComp R L M := by
+  refine le_antisymm ?_ (posFittingComp_le_iInf_lowerCentralSeries R L M)
+  apply iInf_lcs_le_of_isNilpotent_quot
+  rw [LieModule.isNilpotent_iff_forall']
+  intro x
+  obtain ⟨k, hk⟩ := exists_coe_posFittingCompOf_eq_of_isArtinian R M x
+  use k
+  ext ⟨m⟩
+  set F := posFittingComp R L M
+  replace hk : (toEndomorphism R L M x ^ k) m ∈ F := by
+    apply posFittingCompOf_le_posFittingComp R L M x
+    rw [← LieSubmodule.mem_coeSubmodule, hk]
+    apply LinearMap.mem_range_self
+  suffices (toEndomorphism R L (M ⧸ F) x ^ k) (LieSubmodule.Quotient.mk (N := F) m) =
+    LieSubmodule.Quotient.mk (N := F) ((toEndomorphism R L M x ^ k) m) by simpa [this]
+  have := LinearMap.congr_fun (LinearMap.commute_pow_left_of_commute
+    (LieSubmodule.Quotient.toEndomorphism_comp_mk' F x) k) m
+  simpa using this
 
 @[simp] lemma posFittingComp_eq_bot_of_isNilpotent
     [LieAlgebra.IsNilpotent R L] [IsNilpotent R L M] :
