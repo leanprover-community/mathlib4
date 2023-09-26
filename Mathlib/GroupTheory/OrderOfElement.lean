@@ -923,7 +923,7 @@ theorem orderOf_eq_card_zpowers : orderOf x = Fintype.card (zpowers x) :=
 #align order_eq_card_zpowers orderOf_eq_card_zpowers
 #align add_order_eq_card_zmultiples addOrderOf_eq_card_zmultiples
 
-@[to_additive]
+@[to_additive card_zmultiples_le]
 theorem card_zpowers_le {G : Type} [Group G] [Fintype G] (a : G) (k : ℕ) (k_pos : 0 < k)
     (ha : a ^ k = 1) : Fintype.card (Subgroup.zpowers a) ≤ k := by
   rw [← orderOf_eq_card_zpowers]
