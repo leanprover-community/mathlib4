@@ -132,6 +132,10 @@ def insertAndEject
       | none => RBMap.empty
       | some m => q.insert n l |>.erase m.1
 
+/--
+By improving priority estimates as needed, and permuting elements,
+ensure that the first element of the queue has the greatest priority.
+-/
 partial def ensureFirstIsBest (q : BestFirstQueue prio ε m β maxSize) :
     m (BestFirstQueue prio ε m β maxSize) := do
   let s := @toStream (RBMap _ _ _) _ _ q

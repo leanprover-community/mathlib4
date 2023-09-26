@@ -52,13 +52,13 @@ open Mathlib.Tactic.Rewrites
 /-- Separate a string into a list of strings by pulling off initial `(` or `]` characters,
 and pulling off terminal `)`, `]`, or `,` characters. -/
 partial def splitDelimiters (s : String) : List String :=
-  let rec auxStart front pre :=
+  let rec /-- Pull off leading delimiters. -/ auxStart front pre :=
     let head := s.get front
     if head = '(' || head = '[' then
       auxStart (s.next front) (head.toString :: pre)
     else
       (front, pre)
-  let rec auxEnd back suff :=
+  let rec /-- Pull off trailing delimiters. -/ auxEnd back suff :=
     let last := s.get back
     if last = ')' || last = ']' || last = ',' then
       auxEnd (s.prev back) (last.toString :: suff)
