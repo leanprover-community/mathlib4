@@ -44,7 +44,7 @@ lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 2 ≤ n) :
   norm_cast; simp only [add_pos_iff, or_true]
 
 lemma padicValRat_two_pow_div (r : ℕ) : padicValRat 2 (1 / 2 ^ r) = -r := by
-  rw [← padicValRat.self_pow_div (p := 2) (r := r)]
+  rw [one_div, ← padicValRat.self_pow_div (p := 2) (r := r)]
   simp only [one_div, Nat.cast_ofNat]
 
 /-- For `i` less than `n`, `2 ^ Nat.log 2 n` does not divide `i` unless `i` is equal to it. -/
