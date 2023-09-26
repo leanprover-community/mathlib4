@@ -18,13 +18,17 @@ Rayleigh's theorem.
 * `beattySequence`: In the Beatty sequence for real number `r`, the `k`th term is `⌊k * r⌋`.
 * `beattySequence'`: In this variant of the Beatty sequence for `r`, the `k`th term is
   `⌈k * r⌉ - 1`.
-* `beattySet`: Define the Beatty set for `r ∈ ℝ` to be `B_r := {⌊k * r⌋ | k ∈ ℤ}`.
-* `beattySet'`: Define another Beatty set for `r ∈ ℝ` to be `B'_r := {⌈k * r⌉ - 1 | k ∈ ℤ}`.
-* `beattySetPos`: Define the positive Beatty set for `r ∈ ℝ` to be `B⁺_r := {⌊r⌋, ⌊2r⌋, ⌊3r⌋, ...}`.
-* `beattySetPos'`: Define another positive Beatty set for `r ∈ ℝ` to be
-  `B⁺'_r := {⌈r⌉-1, ⌈2r⌉-1, ⌈3r⌉-1, ...}`.
 
 ## Main statements
+
+Define the following Beatty sets, where `r` denotes a real number:
+
+* `B_r := {⌊k * r⌋ | k ∈ ℤ}`
+* `B'_r := {⌈k * r⌉ - 1 | k ∈ ℤ}`
+* `B⁺_r := {⌊r⌋, ⌊2r⌋, ⌊3r⌋, ...}`
+* `B⁺'_r := {⌈r⌉-1, ⌈2r⌉-1, ⌈3r⌉-1, ...}`
+
+The main statements are:
 
 * `rayleigh_compl`: Let `r` be a real number greater than 1, and `1/r + 1/s = 1`.
   Then the complement of `B_r` is `B'_s`.
@@ -50,29 +54,13 @@ noncomputable def beattySequence (r : ℝ) : ℤ → ℤ :=
 noncomputable def beattySequence' (r : ℝ) : ℤ → ℤ :=
   fun k ↦ ⌈k * r⌉ - 1
 
-/-- Define the Beatty set for `r ∈ ℝ` to be `B_r := {⌊k * r⌋ | k ∈ ℤ}`. -/
-def beattySet (r : ℝ) : Set ℤ :=
-  { beattySequence r k | k }
-
-/-- Define another Beatty set for `r ∈ ℝ` to be `B'_r := {⌈k * r⌉ - 1 | k ∈ ℤ}`. -/
-def beattySet' (r : ℝ) : Set ℤ :=
-  { beattySequence' r k | k }
-
-/-- Define the positive Beatty set for `r ∈ ℝ` to be `B⁺_r := {⌊r⌋, ⌊2r⌋, ⌊3r⌋, ...}`. -/
-def beattySetPos (r : ℝ) : Set ℤ :=
-  { beattySequence r k | k > 0 }
-
-/-- Define another positive Beatty set for `r ∈ ℝ` to be `B⁺'_r := {⌈r⌉-1, ⌈2r⌉-1, ⌈3r⌉-1, ...}`. -/
-def beattySetPos' (r : ℝ) : Set ℤ :=
-  { beattySequence' r k | k > 0 }
-
 namespace Beatty
 
 variable {r s : ℝ} (hrs : r.IsConjugateExponent s) {j k : ℤ}
 
 /-- Let `r > 1` and `1/r + 1/s = 1`. Then `B_r` and `B'_s` are disjoint (i.e. no collision exists).
 -/
-theorem no_collision : Disjoint (beattySet r) (beattySet' s) := by
+theorem no_collision : Disjoint {beattySequence r k | k} {beattySequence' s k | k} := by
   rw [Set.disjoint_left]
   intro j ⟨k, h₁⟩ ⟨m, h₂⟩
   rw [beattySequence, Int.floor_eq_iff, ← div_le_iff hrs.pos, ← lt_div_iff hrs.pos] at h₁
@@ -104,7 +92,8 @@ theorem no_anticollision :
   exact (lt_self_iff_false _).1 (lt_of_le_of_lt' h₄ h₃)
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B_r` or `B_r` jumps over `j`. -/
-theorem hit_or_miss (h : r > 0) : j ∈ beattySet r ∨ (∃ k : ℤ, k * r < j ∧ j + 1 ≤ (k + 1) * r) := by
+theorem hit_or_miss (h : r > 0) :
+    j ∈ {beattySequence r k | k} ∨ (∃ k : ℤ, k * r < j ∧ j + 1 ≤ (k + 1) * r) := by
   -- for both cases, the candidate is `k = ⌈(j + 1) / r⌉ - 1`
   cases lt_or_ge ((⌈(j + 1) / r⌉ - 1) * r) j
   · refine Or.inr ⟨⌈(j + 1) / r⌉ - 1, by simpa, ?_⟩
@@ -119,7 +108,7 @@ theorem hit_or_miss (h : r > 0) : j ∈ beattySet r ∨ (∃ k : ℤ, k * r < j 
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B'_r` or `B'_r` jumps over `j`. -/
 theorem hit_or_miss' (h : r > 0) :
-    j ∈ beattySet' r ∨ (∃ k : ℤ, k * r ≤ j ∧ j + 1 < (k + 1) * r) := by
+    j ∈ {beattySequence' r k | k} ∨ (∃ k : ℤ, k * r ≤ j ∧ j + 1 < (k + 1) * r) := by
   -- for both cases, the candidate is `k = ⌊(j + 1) / r⌋`
   cases le_or_gt (⌊(j + 1) / r⌋ * r) j
   · refine Or.inr ⟨⌊(j + 1) / r⌋, ‹_›, ?_⟩
@@ -136,14 +125,14 @@ end Beatty
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
 than 1, and `1/r + 1/s = 1`. Then the complement of `B_r` is `B'_s`. -/
 theorem rayleigh_compl {r s : ℝ} (hrs : r.IsConjugateExponent s) :
-    (beattySet r)ᶜ = beattySet' s := by
+    {beattySequence r k | k}ᶜ = {beattySequence' s k | k} := by
   ext j
-  by_cases h₁ : j ∈ beattySet r
-  · by_cases h₂ : j ∈ beattySet' s
+  by_cases h₁ : j ∈ {beattySequence r k | k}
+  · by_cases h₂ : j ∈ {beattySequence' s k | k}
     · exact (Set.not_disjoint_iff.2 ⟨j, h₁, h₂⟩ (Beatty.no_collision hrs)).elim
-    · simp [Set.compl, h₁, h₂]
-  · by_cases h₂ : j ∈ beattySet' s
-    · simp [Set.compl, h₁, h₂]
+    · simp only [Set.mem_compl_iff, h₁, h₂]
+  · by_cases h₂ : j ∈ {beattySequence' s k | k}
+    · simp only [Set.mem_compl_iff, h₁, h₂]
     · have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hrs.pos).resolve_left h₁
       have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hrs.symm.pos).resolve_left h₂
       exact (Beatty.no_anticollision hrs ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
@@ -151,7 +140,7 @@ theorem rayleigh_compl {r s : ℝ} (hrs : r.IsConjugateExponent s) :
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
 than 1, and `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺'_s` partition the positive integers. -/
 theorem rayleigh_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
-    beattySetPos r ∆ beattySetPos' s = {n | 0 < n} := by
+    {beattySequence r k | k > 0} ∆ {beattySequence' s k | k > 0} = {n | 0 < n} := by
   apply Set.eq_of_subset_of_subset
   · intro j hj
     rcases Set.mem_of_mem_of_subset hj Set.symmDiff_subset_union with ⟨k, hk, hjk⟩ | ⟨k, hk, hjk⟩
@@ -160,13 +149,13 @@ theorem rayleigh_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     · rw [Set.mem_setOf_eq, ← hjk, beattySequence', ← Int.ceil_sub_one, Int.ceil_pos, sub_pos]
       exact one_lt_mul_of_le_of_lt (by norm_cast) hrs.symm.one_lt
   intro j (hj : 0 < j)
-  have hb₁ : ∀ s ≥ 0, j ∈ beattySetPos s ↔ j ∈ beattySet s := by
+  have hb₁ : ∀ s ≥ 0, j ∈ {beattySequence s k | k > 0} ↔ j ∈ {beattySequence s k | k} := by
     intro _ hs
     refine ⟨fun ⟨k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨k, hk⟩ ↦ ⟨k, ?_, hk⟩⟩
     rw [← hk, beattySequence, Int.floor_pos] at hj
     have := pos_of_mul_pos_left (lt_of_lt_of_le zero_lt_one hj) hs
     rwa [Int.cast_pos] at this
-  have hb₂ : ∀ s ≥ 0, j ∈ beattySetPos' s ↔ j ∈ beattySet' s := by
+  have hb₂ : ∀ s ≥ 0, j ∈ {beattySequence' s k | k > 0} ↔ j ∈ {beattySequence' s k | k} := by
     intro _ hs
     refine ⟨fun ⟨k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨k, hk⟩ ↦ ⟨k, ?_, hk⟩⟩
     rw [← hk, beattySequence', lt_sub_iff_add_lt, zero_add] at hj
@@ -180,7 +169,7 @@ theorem rayleigh_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
 /-- Rayleigh's theorem on Beatty sequences. Let `r` be an irrational number greater than 1, and
 `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺_s` partition the positive integers. -/
 theorem rayleigh_irr_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) (hr : Irrational r) :
-    beattySetPos r ∆ beattySetPos s = {n | 0 < n} := by
+    {beattySequence r k | k > 0} ∆ {beattySequence s k | k > 0} = {n | 0 < n} := by
   apply Set.eq_of_subset_of_subset
   · intro j hj
     rcases Set.mem_of_mem_of_subset hj Set.symmDiff_subset_union with
@@ -192,8 +181,8 @@ theorem rayleigh_irr_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) (hr : Irrat
   have hs : Irrational s := by
     convert ((hr.sub_int 1).int_div one_ne_zero).int_add 1
     rw [Int.cast_one, add_div' _ _ _ hrs.sub_one_ne_zero, one_mul, sub_add_cancel, hrs.conj_eq]
-  have hb : beattySetPos s = beattySetPos' s := by
-    dsimp only [beattySetPos, beattySequence, beattySetPos', beattySequence']
+  have hb : {beattySequence s k | k > 0} = {beattySequence' s k | k > 0} := by
+    dsimp only [beattySequence, beattySequence']
     congr! 4; rename_i k; rw [and_congr_right_iff]; intro hk; congr!
     symm; rw [sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one, add_sub_cancel]
     refine ⟨lt_of_le_of_ne (Int.floor_le _) fun h ↦ ?_, (Int.lt_floor_add_one _).le⟩
