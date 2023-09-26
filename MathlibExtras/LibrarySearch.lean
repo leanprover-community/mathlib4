@@ -19,4 +19,4 @@ open Mathlib.Tactic.LibrarySearch
 run_cmd liftTermElabM do
   let path ← cachePath
   _ ← path.parent.mapM fun p => IO.FS.createDirAll p
-  pickle path (← (← buildDiscrTree).get).2 `LibrarySearch
+  pickle path (← (← buildDiscrTree).getImported) `LibrarySearch
