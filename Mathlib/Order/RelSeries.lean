@@ -231,6 +231,81 @@ def map (p : RelSeries r) (f : α → β) (map : ∀ ⦃x y : α⦄, r x y → s
   toFun := f.comp p
   step := (map <| p.step .)
 
+/--
+If `a_0 --r-> a_1 --r-> ... --r-> a_n` is an `r`-series and `a` is such that
+`a_i --r-> a --r-> a_{i + 1}`, then
+`a_0 --r-> a_1 --r-> ... --r-> a_i --r-> a --r-> a_{i + 1} --r-> ... --r-> a_n`
+is another `r`-series
+-/
+@[simps]
+def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
+  (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
+  length := p.length + 1
+  toFun :=  (Fin.castSucc i.succ).insertNth a p
+  step := fun m => by
+    set x := _; set y := _
+    change r x y
+    obtain (hm|hm|hm) := lt_trichotomy m.1 i.1
+    · have hx : x = p m
+      · change Fin.insertNth _ _ _ _ = _
+        rw [Fin.insertNth_apply_below]
+        swap; exact hm.trans (lt_add_one _)
+        simp only [Fin.castLT_castSucc, eq_rec_constant]
+      convert p.step ⟨m, hm.trans i.2⟩
+      change Fin.insertNth _ _ _ _ = _
+      rw [Fin.insertNth_apply_below]
+      simp only [eq_rec_constant]
+      congr
+      change m.1 + 1 < i.1 + 1
+      simpa only [add_lt_add_iff_right]
+    · have hx : x = p m
+      · change Fin.insertNth _ _ _ _ = _
+        rw [Fin.insertNth_apply_below]
+        swap
+        · change m.1 < i.1 + 1
+          rw [hm]
+          exact lt_add_one _
+        simp only [Fin.castLT_castSucc, eq_rec_constant]
+      rw [hx]
+      convert prev_connect
+      · ext; exact hm
+      · change Fin.insertNth _ _ _ _ = _
+        have H : m.succ = i.succ.castSucc
+        · ext; change _ + 1 = _ + 1; rw [hm]
+        rw [H, Fin.insertNth_apply_same]
+    · rw [Nat.lt_iff_add_one_le, le_iff_lt_or_eq] at hm
+      obtain (hm|hm) := hm
+      · have hx : x = p ⟨m.1 - 1, (Nat.sub_lt (by linarith) (by linarith)).trans m.2⟩
+        · change Fin.insertNth _ _ _ _ = _
+          rw [Fin.insertNth_apply_above]
+          swap; exact hm
+          simp only [eq_rec_constant]
+          congr
+        have hy : y = p m
+        · change Fin.insertNth _ _ _ _ = _
+          rw [Fin.insertNth_apply_above]
+          swap; exact hm.trans (lt_add_one _)
+          simp only [Fin.pred_succ, eq_rec_constant]
+        rw [hy]
+        convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by linarith) m.2⟩
+        ext
+        symm
+        exact Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
+      · have hx : x = a
+        · change Fin.insertNth _ _ _ _ = _
+          have H : m.castSucc = i.succ.castSucc
+          · ext; change m.1 = i.1 + 1; rw [hm]
+          rw [H, Fin.insertNth_apply_same]
+        have hy : y = p m
+        · change Fin.insertNth _ _ _ _ = _
+          rw [Fin.insertNth_apply_above]
+          swap; change i.1 + 1 < m.1 + 1; rw [hm]; exact lt_add_one _
+          simp only [Fin.pred_succ, eq_rec_constant]
+        rw [hy]
+        convert connect_next
+        ext
+        exact hm.symm
+
 end RelSeries
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
