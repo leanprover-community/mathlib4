@@ -50,11 +50,7 @@ initialize proposeLemmas : DeclCache (DiscrTree Name true) ←
       let (mvars, _, _) ← forallMetaTelescope constInfo.type
       let mut lemmas := lemmas
       for m in mvars do
-        let key := (← DiscrTree.mkPath (← inferType m))
-        -- To avoid stack overflows in processing the `DiscrTree`,
-        -- we truncate any excessively long keys.
-        let key := key[:1000].toArray
-        lemmas := lemmas.insertIfSpecific key name
+        lemmas := lemmas.insertIfSpecific (← DiscrTree.mkPath (← inferType m)) name
       pure lemmas
 
 /-- Shortcut for calling `solveByElim`. -/
