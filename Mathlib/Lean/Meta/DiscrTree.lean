@@ -53,19 +53,25 @@ partial def getSubexpressionMatches (d : DiscrTree α s) (e : Expr) : MetaM (Arr
 
 variable {m : Type → Type} [Monad m]
 
-/-- Apply a monadic function to the array of values at each node in a `DiscrTree`. -/
-partial def Trie.mapArraysM (t : DiscrTree.Trie α s) (f : Array α → m (Array β)) :
-    m (DiscrTree.Trie β s) := do
-  match t with
-  | .node vs children =>
-    return .node (← f vs) (← children.mapM fun (k, t') => do pure (k, ← t'.mapArraysM f))
 
-/-- Apply a monadic function to the array of values at each node in a `DiscrTree`. -/
-def mapArraysM (d : DiscrTree α s) (f : Array α → m (Array β)) : m (DiscrTree β s) := do
-  pure { root := ← d.root.mapM (fun t => t.mapArraysM f) }
+/-- A better representaton for lists-of-quadruples -/
+private inductive Ctxt (α β γ δ : Type)
+  | empty : Ctxt α β γ δ
+  | ctxt : α → β → γ → δ → Ctxt α β γ δ → Ctxt α β γ δ
+
+/-- Apply a function to the array of values at each node in a `DiscrTree`. -/
+partial def Trie.mapArrays (t : Trie α s) (f : Array α → Array β) : Trie β s :=
+  let .node vs0 cs0 := t
+  go Ctxt.empty #[] (f vs0) cs0.toList
+where
+  /- This implementation as a single tail-recursive function is chosen to not blow the
+     interpreter stack when the `Trie` is very deep -/
+  go  | .empty, cs, vs, []                   => .node vs cs
+      | .ctxt cs vs todo k ps, cs', vs', []  => go ps (cs.push (k, .node vs' cs')) vs todo
+      | ps, cs, vs, (k, .node vs' cs')::todo => go (.ctxt cs vs todo k ps) #[] (f vs') cs'.toList
 
 /-- Apply a function to the array of values at each node in a `DiscrTree`. -/
 def mapArrays (d : DiscrTree α s) (f : Array α → Array β) : DiscrTree β s :=
-  d.mapArraysM fun A => (pure (f A) : Id (Array β))
+  { root := d.root.map (fun t => t.mapArrays f) }
 
 end Lean.Meta.DiscrTree
