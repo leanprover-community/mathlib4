@@ -3852,24 +3852,24 @@ def finsetUnion (s t : Finset α) :
   Equiv.Set.ofEq <| coe_union _ _
 
 /-- The disjoint union of finsets is a sum -/
-def Equiv.Finset.union (s t : Finset α) (h : Disjoint s t) :
+def Finset.union (s t : Finset α) (h : Disjoint s t) :
     (s ∪ t : Finset α) ≃ s ⊕ t :=
   (Equiv.finsetUnion s t).trans <| Equiv.Set.union (disjoint_coe.mpr h).le_bot
 
 @[simp]
-theorem Equiv.Finset.union_symm_inl (h : Disjoint s t) (x : s) :
+theorem Finset.union_symm_inl (h : Disjoint s t) (x : s) :
     (Equiv.Finset.union s t h).symm (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
   rfl
 
 @[simp]
-theorem Equiv.Finset.union_symm_inr (h : Disjoint s t) (y : t) :
+theorem Finset.union_symm_inr (h : Disjoint s t) (y : t) :
     (Equiv.Finset.union s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
   rfl
 
-def Equiv.piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h : Disjoint s t) :
+def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h : Disjoint s t) :
     ((∀ i : s, α i) × ∀ i : t, α i) ≃ ∀ i : (s ∪ t : Finset ι), α i :=
   let e := (Equiv.Finset.union s t h).symm
-  Equiv.sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
+  sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
 
 end Equiv
 
