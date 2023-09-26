@@ -268,9 +268,6 @@ theorem sum_subgroup_units {G : Subgroup Kˣ} [Fintype G] [Decidable (G = ⊥)] 
   · simp only [G_bot, ite_false]
     exact sum_subgroup_units_zero_of_ne_bot K G_bot
 
--- example [Group G] (a : G) : G ≃ G := by
---   exact Equiv.inv (sorryAx (Type ?u.888298) true)
-
 theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     {G : Subgroup Fˣ} [Fintype G] {k : ℕ} (k_pos : 0 < k)
     (k_lt_card_G : k < Fintype.card G) : ∑ x : G, ((x : Fˣ) : F) ^ k = 0 := by
