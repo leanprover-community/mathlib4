@@ -88,6 +88,9 @@ lemma _root_.ConvexCone.coe_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointe
     (S.toPointedCone hS : ConvexCone 𝕜 E) = S :=
   rfl
 
+instance canLift : CanLift (ConvexCone 𝕜 E) (PointedCone 𝕜 E) (↑) fun S => S.Pointed where
+  prf S hS := ⟨S.toPointedCone hS, S.coe_toPointedCone hS⟩
+
 end Definitions
 
 section Maps
