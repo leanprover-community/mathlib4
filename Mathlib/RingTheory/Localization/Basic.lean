@@ -94,7 +94,7 @@ variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemirin
 
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
-/-- The typeclass `IsLocalization (M : Submodule R) S` where `S` is an `R`-algebra
+/-- The typeclass `IsLocalization (M : Submonoid R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
 class IsLocalization : Prop where
   --Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.

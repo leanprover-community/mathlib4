@@ -990,7 +990,7 @@ theorem blimsup_and_le_inf : (blimsup u f fun x => p x ∧ q x) ≤ blimsup u f 
 
 @[simp]
 theorem bliminf_sup_le_inf_aux_left :
-  (blimsup u f fun x => p x ∧ q x) ≤ blimsup u f p :=
+    (blimsup u f fun x => p x ∧ q x) ≤ blimsup u f p :=
   blimsup_and_le_inf.trans inf_le_left
 
 @[simp]

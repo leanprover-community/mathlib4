@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.LinearAlgebra.Vandermonde
 
 /-!
 # Superfactorial
@@ -45,6 +46,21 @@ theorem superFactorial_one : sf 1 = 1 :=
 @[simp]
 theorem superFactorial_two : sf 2 = 2 :=
   rfl
+
+variable {R : Type*} [CommRing R]
+
+theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
+    (Matrix.vandermonde (fun (i : Fin (n + 1)) ↦ (i : R))).det = Nat.superFactorial n := by
+  induction' n with n hn
+  · simp [Matrix.det_vandermonde]
+  · rw [Nat.superFactorial, Matrix.det_vandermonde, Fin.prod_univ_succAbove _ 0]
+    push_cast
+    congr
+    · simp only [Fin.val_zero, Nat.cast_zero, sub_zero]
+      norm_cast
+      simp [Fin.prod_univ_eq_prod_range (fun i ↦ (↑i + 1)) (n + 1)]
+    · rw [Matrix.det_vandermonde] at hn
+      simp [hn]
 
 end SuperFactorial
 

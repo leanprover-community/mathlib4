@@ -164,8 +164,7 @@ instance : MulAction α (UpperSet α) :=
 
 @[to_additive]
 instance commSemigroup : CommSemigroup (UpperSet α) :=
-  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (UpperSet α)) with
-    mul := (· * ·) }
+  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (UpperSet α)) with }
 
 @[to_additive]
 private theorem one_mul (s : UpperSet α) : 1 * s = s :=
@@ -227,8 +226,7 @@ instance : MulAction α (LowerSet α) :=
 
 @[to_additive]
 instance commSemigroup : CommSemigroup (LowerSet α) :=
-  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (LowerSet α)) with
-    mul := (· * ·) }
+  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (LowerSet α)) with }
 
 @[to_additive]
 private theorem one_mul (s : LowerSet α) : 1 * s = s :=

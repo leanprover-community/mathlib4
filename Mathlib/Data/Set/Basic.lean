@@ -8,7 +8,7 @@ import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 
-#align_import data.set.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
+#align_import data.set.basic from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
 /-!
 # Basic properties of sets
@@ -3018,3 +3018,7 @@ theorem subset_right_of_subset_union (h : s ⊆ t ∪ u) (hab : Disjoint s t) : 
 #align disjoint.subset_right_of_subset_union Disjoint.subset_right_of_subset_union
 
 end Disjoint
+
+@[simp] theorem Prop.compl_singleton (p : Prop) : ({p}ᶜ : Set Prop) = {¬p} :=
+  ext fun q ↦ by simpa [@Iff.comm q] using not_iff
+#align Prop.compl_singleton Prop.compl_singleton
