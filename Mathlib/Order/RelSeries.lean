@@ -6,6 +6,7 @@ Authors: Jujian Zhang
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.Rel
+import Mathlib.Tactic.Linarith
 
 /-!
 # Series of a relation
@@ -111,6 +112,28 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
     simp [Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1]
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
+
+/--
+A strict series `a_0 --r-> a_1 --r-> ... --r-> a_n` in `α` gives a strict series in `αᵒᵈ` by
+reversing the series `a_n <-r-- a_{n - 1} <-r-- ... <-r-- a_1 <-r-- a_0`.
+-/
+@[simps]
+def reverse (p : RelSeries r) : RelSeries (fun (a b : α) => r b a) where
+  length := p.length
+  toFun := p ∘ Fin.rev
+    -- p ∘ (Sub.sub ⟨p.length, lt_add_one _⟩)
+  step := fun i => by
+    rw [Function.comp_apply, Function.comp_apply]
+    have hi : i.1 + 1 ≤ p.length
+    · linarith [i.2]
+    convert p.step ⟨p.length - (i.1 + 1), _⟩
+    · ext; simp
+    · ext
+      simp only [Fin.val_rev, Fin.coe_castSucc, Nat.succ_sub_succ_eq_sub, Fin.val_succ]
+      rw [Nat.sub_eq_iff_eq_add, add_assoc, add_comm 1 i.1, Nat.sub_add_cancel]
+      · assumption
+      · linarith
+    exact Nat.sub_lt_self (by linarith) hi
 
 end RelSeries
 
