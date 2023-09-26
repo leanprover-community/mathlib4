@@ -2,11 +2,6 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module data.nat.bitwise
-! leanprover-community/mathlib commit 6afc9b06856ad973f6a2619e3e8a0a8d537a58f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Lean.Elab.Tactic
 import Mathlib.Data.List.Basic
@@ -14,7 +9,8 @@ import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Set
+
+#align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
 /-!
 # Bitwise operations on natural numbers
@@ -71,13 +67,14 @@ theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n 
 #align nat.zero_of_test_bit_eq_ff Nat.zero_of_testBit_eq_false
 
 @[simp]
-theorem zero_testBit (i : ℕ) : testBit 0 i = false := by simp only [testBit, shiftr_zero, bodd_zero]
+theorem zero_testBit (i : ℕ) : testBit 0 i = false := by
+  simp only [testBit, zero_shiftRight, bodd_zero]
 #align nat.zero_test_bit Nat.zero_testBit
 
 /-- The ith bit is the ith element of `n.bits`. -/
 theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
   induction' i with i ih generalizing n
-  · simp [testBit, shiftr, bodd_eq_bits_head, List.getI_zero_eq_headI]
+  · simp [testBit, bodd_eq_bits_head, List.getI_zero_eq_headI]
   conv_lhs => rw [← bit_decomp n]
   rw [testBit_succ, ih n.div2, div2_bits_eq_tail]
   cases n.bits <;> simp
@@ -91,8 +88,8 @@ theorem eq_of_testBit_eq {n m : ℕ} (h : ∀ i, testBit n i = testBit m i) : n 
   induction' m using Nat.binaryRec with b' m
   · simp only [zero_testBit] at h
     exact zero_of_testBit_eq_false h
-  suffices h' : n = m
-  · rw [h', show b = b' by simpa using h 0]
+  suffices h' : n = m by
+    rw [h', show b = b' by simpa using h 0]
   exact hn fun i => by convert h (i + 1) using 1 <;> rw [testBit_succ]
 #align nat.eq_of_test_bit_eq Nat.eq_of_testBit_eq
 
@@ -141,11 +138,11 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
 
 @[simp]
 theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
-  rw [testBit, shiftr_eq_div_pow, Nat.div_self (pow_pos (α := ℕ) zero_lt_two n), bodd_one]
+  rw [testBit, shiftRight_eq_div_pow, Nat.div_self (pow_pos (α := ℕ) zero_lt_two n), bodd_one]
 #align nat.test_bit_two_pow_self Nat.testBit_two_pow_self
 
 theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = false := by
-  rw [testBit, shiftr_eq_div_pow]
+  rw [testBit, shiftRight_eq_div_pow]
   cases' hm.lt_or_lt with hm hm
   · rw [Nat.div_eq_zero, bodd_zero]
     exact Nat.pow_lt_pow_of_lt_right one_lt_two hm
@@ -298,12 +295,12 @@ theorem lxor'_trichotomy {a b c : ℕ} (h : a ≠ lxor' b c) :
   obtain ⟨i, ⟨hi, hi'⟩⟩ := exists_most_significant_bit (lxor'_ne_zero.2 h)
   have : testBit a i = true ∨ testBit b i = true ∨ testBit c i = true := by
     contrapose! hi
-    simp only [Bool.eq_false_eq_not_eq_true, Ne, testBit_lxor'] at hi⊢
+    simp only [Bool.eq_false_eq_not_eq_true, Ne, testBit_lxor'] at hi ⊢
     rw [hi.1, hi.2.1, hi.2.2, Bool.xor_false, Bool.xor_false]
   -- If, say, `a` has a one bit at position `i`, then `a xor v` has a zero bit at position `i`, but
   -- the same bits as `a` in positions greater than `j`, so `a xor v < a`.
   rcases this with (h | h | h)
-  on_goal 1 => left ; rw [hbc]
+  on_goal 1 => left; rw [hbc]
   on_goal 2 => right; left; rw [hac]
   on_goal 3 => right; right; rw [hab]
   all_goals

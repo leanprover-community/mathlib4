@@ -2,11 +2,6 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.nat.multiplicity
-! leanprover-community/mathlib commit ceb887ddf3344dab425292e497fa2af91498437c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.GeomSum
@@ -15,6 +10,8 @@ import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.Prime
 import Mathlib.RingTheory.Multiplicity
+
+#align_import data.nat.multiplicity from "leanprover-community/mathlib"@"ceb887ddf3344dab425292e497fa2af91498437c"
 
 /-!
 # Natural number multiplicity
@@ -25,19 +22,23 @@ coefficients.
 
 ## Multiplicity calculations
 
-* `Nat.multiplicity_factorial`: Legendre's Theorem. The multiplicity of `p` in `n!` is
-  `n/p + ... + n/p^b` for any `b` such that `n/p^(b + 1) = 0`.
-* `Nat.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than that of
-  `n!`.
-* `Nat.multiplicity_choose`: The multiplicity of `p` in `n.choose k` is the number of carries when
-  `k` and`n - k` are added in base `p`.
+* `Nat.Prime.multiplicity_factorial`: Legendre's Theorem. The multiplicity of `p` in `n!` is
+  `n/p + ... + n/p^b` for any `b` such that `n/p^(b + 1) = 0`. See `padicValNat_factorial` for this
+  result stated in the language of `p`-adic valuations and
+  `sub_one_mul_padicValNat_factorial_eq_sub_sum_digits` for a related result.
+* `Nat.Prime.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than
+  that of `n!`.
+* `Nat.Prime.multiplicity_choose`: Kummer's Theorem. The multiplicity of `p` in `n.choose k` is the
+   number of carries when `k` and `n - k` are added in base `p`. See `padicValNat_choose` for the
+   same result but stated in the language of `p`-adic valuations and
+   `sub_one_mul_padicValNat_choose_eq_sub_sum_digits` for a related result.
 
 ## Other declarations
 
 * `Nat.multiplicity_eq_card_pow_dvd`: The multiplicity of `m` in `n` is the number of positive
   natural numbers `i` such that `m ^ i` divides `n`.
 * `Nat.multiplicity_two_factorial_lt`: The multiplicity of `2` in `n!` is strictly less than `n`.
-* `Nat.prime.multiplicity_something`: Specialization of `multiplicity.something` to a prime in the
+* `Nat.Prime.multiplicity_something`: Specialization of `multiplicity.something` to a prime in the
   naturals. Avoids having to provide `p ≠ 1` and other trivialities, along with translating between
   `Prime` and `Nat.Prime`.
 
@@ -173,11 +174,11 @@ theorem multiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
 #align nat.prime.multiplicity_factorial_le_div_pred Nat.Prime.multiplicity_factorial_le_div_pred
 
 theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
-    (∑ i in Finset.Ico 1 b, n / p ^ i) =
+    ∑ i in Finset.Ico 1 b, n / p ^ i =
       ((∑ i in Finset.Ico 1 b, k / p ^ i) + ∑ i in Finset.Ico 1 b, (n - k) / p ^ i) +
         ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
   calc
-    (∑ i in Finset.Ico 1 b, n / p ^ i) = ∑ i in Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
+    ∑ i in Finset.Ico 1 b, n / p ^ i = ∑ i in Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
       simp only [add_tsub_cancel_of_le hkn]
     _ = ∑ i in Finset.Ico 1 b,
           (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) :=
@@ -185,25 +186,37 @@ theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
     _ = _ := by simp [sum_add_distrib, sum_boole]
 #align nat.prime.multiplicity_choose_aux Nat.Prime.multiplicity_choose_aux
 
+/-- The multiplicity of `p` in `choose (n + k) k` is the number of carries when `k` and `n`
+  are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
+  is any bound greater than `log p (n + k)`. -/
+theorem multiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k) < b) :
+    multiplicity p (choose (n + k) k) =
+      ((Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card := by
+  have h₁ :
+      multiplicity p (choose (n + k) k) + multiplicity p (k ! * n !) =
+        ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card +
+          multiplicity p (k ! * n !) := by
+    rw [← hp.multiplicity_mul, ← mul_assoc]
+    have := (add_tsub_cancel_right n k) ▸ choose_mul_factorial_mul_factorial (le_add_left k n)
+    rw [this, hp.multiplicity_factorial hnb, hp.multiplicity_mul,
+      hp.multiplicity_factorial ((log_mono_right (le_add_left k n)).trans_lt hnb),
+      hp.multiplicity_factorial ((log_mono_right (le_add_left n k)).trans_lt
+      (add_comm n k ▸ hnb)), multiplicity_choose_aux hp (le_add_left k n)]
+    simp [add_comm]
+  refine (PartENat.add_right_cancel_iff ?_).1 h₁
+  apply PartENat.ne_top_iff_dom.2
+  exact finite_nat_iff.2 ⟨hp.ne_one, mul_pos (factorial_pos k) (factorial_pos n)⟩
+
 /-- The multiplicity of `p` in `choose n k` is the number of carries when `k` and `n - k`
   are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
   is any bound greater than `log p n`. -/
 theorem multiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
     multiplicity p (choose n k) =
       ((Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card := by
-  have h₁ :
-    multiplicity p (choose n k) + multiplicity p (k ! * (n - k)!) =
-      ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card +
-        multiplicity p (k ! * (n - k)!) := by
-    rw [← hp.multiplicity_mul, ← mul_assoc, choose_mul_factorial_mul_factorial hkn,
-      hp.multiplicity_factorial hnb, hp.multiplicity_mul,
-      hp.multiplicity_factorial ((log_mono_right hkn).trans_lt hnb),
-      hp.multiplicity_factorial (lt_of_le_of_lt (log_mono_right tsub_le_self) hnb),
-      multiplicity_choose_aux hp hkn]
-    simp [add_comm]
-  refine (PartENat.add_right_cancel_iff ?_).1 h₁
-  apply PartENat.ne_top_iff_dom.2
-  exact finite_nat_iff.2 ⟨hp.ne_one, mul_pos (factorial_pos k) (factorial_pos (n - k))⟩
+  have := Nat.sub_add_cancel hkn
+  convert @multiplicity_choose' p (n - k) k b hp _
+  · rw [this]
+  exact this.symm ▸ hnb
 #align nat.prime.multiplicity_choose Nat.Prime.multiplicity_choose
 
 /-- A lower bound on the multiplicity of `p` in `choose n k`. -/
@@ -284,7 +297,7 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
     · simpa [bit0_eq_two_mul n]
     · suffices multiplicity 2 (2 * n + 1) + multiplicity 2 (2 * n)! < ↑(2 * n) + 1 by
         simpa [succ_eq_add_one, multiplicity.mul, h2, prime_two, Nat.bit1_eq_succ_bit0,
-          bit0_eq_two_mul n]
+          bit0_eq_two_mul n, factorial]
       rw [multiplicity_eq_zero.2 (two_not_dvd_two_mul_add_one n), zero_add]
       refine' this.trans _
       exact_mod_cast lt_succ_self _

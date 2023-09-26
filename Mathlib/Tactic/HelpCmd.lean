@@ -41,8 +41,8 @@ it will appear as a `(currently: true)` note next to the option.
 
 The form `#help option id` will show only options that begin with `id`.
 -/
-elab "#help" &"option" id:(ident)? : command => do
-  let id := id.map (·.getId.toString false)
+elab "#help " &"option" id:(ppSpace Parser.rawIdent)? : command => do
+  let id := id.map (·.raw.getId.toString false)
   let mut decls : Lean.RBMap _ _ compare := {}
   for (name, decl) in show Lean.RBMap .. from ← getOptionDecls do
     let name := name.toString false
@@ -83,8 +83,8 @@ as the docstring will be displayed here.
 
 The form `#help attr id` will show only attributes that begin with `id`.
 -/
-elab "#help" (&"attr" <|> &"attribute") id:(ident)? : command => do
-  let id := id.map (·.getId.toString false)
+elab "#help " (&"attr" <|> &"attribute") id:(ppSpace Parser.rawIdent)? : command => do
+  let id := id.map (·.raw.getId.toString false)
   let mut decls : Lean.RBMap _ _ compare := {}
   for (name, decl) in ← attributeMapRef.get do
     let name := name.toString false
@@ -136,8 +136,8 @@ but you can click to go to the definition.) It also shows the doc string if avai
 
 The form `#help cats id` will show only syntax categories that begin with `id`.
 -/
-elab "#help" &"cats" id:(ident)? : command => do
-  let id := id.map (·.getId.toString false)
+elab "#help " &"cats" id:(ppSpace Parser.rawIdent)? : command => do
+  let id := id.map (·.raw.getId.toString false)
   let mut decls : Lean.RBMap _ _ compare := {}
   for (name, cat) in (Parser.parserExtension.getState (← getEnv)).categories do
     let name := name.toString false
@@ -173,7 +173,8 @@ name of the syntax (which you can also click to go to the definition), and the d
 * The form `#help cat+ C` will also show information about any `macro`s and `elab`s
   associated to the listed syntaxes.
 -/
-elab "#help" &"cat" more:"+"? catStx:ident id:(ident <|> str)? : command => do
+elab "#help " &"cat" more:"+"? ppSpace catStx:ident
+    id:(ppSpace (Parser.rawIdent <|> str))? : command => do
   let id := id.map fun id ↦ match id.raw with
     | .ident _ _ v _ => v.toString false
     | id => id.isStrLit?.get!
@@ -234,26 +235,26 @@ elab "#help" &"cat" more:"+"? catStx:ident id:(ident <|> str)? : command => do
 The command `#help term` shows all term syntaxes that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-macro "#help" tk:&"term" more:"+"? id:(ident <|> str)? : command =>
+macro "#help " tk:&"term" more:"+"? id:(ppSpace (Parser.rawIdent <|> str))? : command =>
   `(#help cat$[+%$more]? $(mkIdentFrom tk `term) $(id.map (⟨·.raw⟩))?)
 
 /--
 The command `#help tactic` shows all tactics that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-macro "#help" tk:&"tactic" more:"+"? id:(ident <|> str)? : command => do
+macro "#help " tk:&"tactic" more:"+"? id:(ppSpace (Parser.rawIdent <|> str))? : command => do
   `(#help cat$[+%$more]? $(mkIdentFrom tk `tactic) $(id.map (⟨·.raw⟩))?)
 
 /--
 The command `#help conv` shows all tactics that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-macro "#help" tk:&"conv" more:"+"? id:(ident <|> str)? : command =>
+macro "#help " tk:&"conv" more:"+"? id:(ppSpace (Parser.rawIdent <|> str))? : command =>
   `(#help cat$[+%$more]? $(mkIdentFrom tk `conv) $(id.map (⟨·.raw⟩))?)
 
 /--
 The command `#help command` shows all commands that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-macro "#help" tk:&"command" more:"+"? id:(ident <|> str)? : command =>
+macro "#help " tk:&"command" more:"+"? id:(ppSpace (Parser.rawIdent <|> str))? : command =>
   `(#help cat$[+%$more]? $(mkIdentFrom tk `command) $(id.map (⟨·.raw⟩))?)

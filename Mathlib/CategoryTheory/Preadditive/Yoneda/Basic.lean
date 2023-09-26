@@ -2,16 +2,13 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.preadditive.yoneda.basic
-! leanprover-community/mathlib commit 09f981f72d43749f1fa072deade828d9c1e185bb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.GroupCat.Preadditive
+
+#align_import category_theory.preadditive.yoneda.basic from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
 
 /-!
 # The Yoneda embedding for preadditive categories
@@ -59,13 +56,13 @@ structure, see `preadditiveYonedaObj`.
 def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat.{v} where
   obj Y := preadditiveYonedaObj Y ⋙ forget₂ _ _
   map f :=
-    { app := fun X => AddCommGroupCat.Hom.mk
+    { app := fun X =>
         { toFun := fun g => g ≫ f
           map_zero' := Limits.zero_comp
           map_add' := fun g g' => add_comp _ _ _ _ _ _ }
-      naturality := fun X X' g => AddCommGroupCat.ext _ _ _ _ fun x => Category.assoc _ _ _ }
-  map_id _ := by ext ; dsimp ; simp
-  map_comp f g := by ext ; dsimp ; simp
+      naturality := fun X X' g => AddCommGroupCat.ext fun x => Category.assoc _ _ _ }
+  map_id _ := by ext; dsimp; simp
+  map_comp f g := by ext; dsimp; simp
 #align category_theory.preadditive_yoneda CategoryTheory.preadditiveYoneda
 
 /-- The Yoneda embedding for preadditive categories sends an object `X` to the copresheaf sending an
@@ -88,14 +85,14 @@ structure, see `preadditiveCoyonedaObj`.
 def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat.{v} where
   obj X := preadditiveCoyonedaObj X ⋙ forget₂ _ _
   map f :=
-    { app := fun Y => AddCommGroupCat.Hom.mk
+    { app := fun Y =>
         { toFun := fun g => f.unop ≫ g
           map_zero' := Limits.comp_zero
           map_add' := fun g g' => comp_add _ _ _ _ _ _ }
       naturality := fun Y Y' g =>
-        AddCommGroupCat.ext _ _ _ _ fun x => Eq.symm <| Category.assoc _ _ _ }
-  map_id _ := by ext ; dsimp ; simp
-  map_comp f g := by ext ; dsimp ; simp
+        AddCommGroupCat.ext fun x => Eq.symm <| Category.assoc _ _ _ }
+  map_id _ := by ext; dsimp; simp
+  map_comp f g := by ext; dsimp; simp
 #align category_theory.preadditive_coyoneda CategoryTheory.preadditiveCoyoneda
 
 instance additive_yonedaObj (X : C) : Functor.Additive (preadditiveYonedaObj X) where

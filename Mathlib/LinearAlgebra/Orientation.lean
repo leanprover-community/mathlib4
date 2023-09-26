@@ -2,14 +2,11 @@
 Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module linear_algebra.orientation
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.Determinant
+
+#align_import linear_algebra.orientation from "leanprover-community/mathlib"@"0c1d80f5a86b36c1db32e021e8d19ae7809d5b79"
 
 /-!
 # Orientations of modules
@@ -43,13 +40,13 @@ open BigOperators
 
 section OrderedCommSemiring
 
-variable (R : Type _) [StrictOrderedCommSemiring R]
+variable (R : Type*) [StrictOrderedCommSemiring R]
 
-variable (M : Type _) [AddCommMonoid M] [Module R M]
+variable (M : Type*) [AddCommMonoid M] [Module R M]
 
-variable {N : Type _} [AddCommMonoid N] [Module R N]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
 
-variable (ι : Type _)
+variable (ι ι' : Type*)
 
 /-- An orientation of a module, intended to be used when `ι` is a `Fintype` with the same
 cardinality as a basis. -/
@@ -88,9 +85,38 @@ theorem Orientation.map_symm (e : M ≃ₗ[R] N) :
     (Orientation.map ι e).symm = Orientation.map ι e.symm := rfl
 #align orientation.map_symm Orientation.map_symm
 
+section Reindex
+
+variable (R M) {ι ι'}
+
+/-- An equivalence between indices implies an equivalence between orientations. -/
+def Orientation.reindex (e : ι ≃ ι') : Orientation R M ι ≃ Orientation R M ι' :=
+  Module.Ray.map <| AlternatingMap.domDomLcongr R e
+#align orientation.reindex Orientation.reindex
+
+@[simp]
+theorem Orientation.reindex_apply (e : ι ≃ ι') (v : AlternatingMap R M R ι) (hv : v ≠ 0) :
+    Orientation.reindex R M e (rayOfNeZero _ v hv) =
+      rayOfNeZero _ (v.domDomCongr e) (mt (v.domDomCongr_eq_zero_iff e).mp hv) :=
+  rfl
+#align orientation.reindex_apply Orientation.reindex_apply
+
+@[simp]
+theorem Orientation.reindex_refl : (Orientation.reindex R M <| Equiv.refl ι) = Equiv.refl _ := by
+  rw [Orientation.reindex, AlternatingMap.domDomLcongr_refl, Module.Ray.map_refl]
+#align orientation.reindex_refl Orientation.reindex_refl
+
+@[simp]
+theorem Orientation.reindex_symm (e : ι ≃ ι') :
+    (Orientation.reindex R M e).symm = Orientation.reindex R M e.symm :=
+  rfl
+#align orientation.reindex_symm Orientation.reindex_symm
+
+end Reindex
+
 /-- A module is canonically oriented with respect to an empty index type. -/
-instance (priority := 100) IsEmpty.oriented [Nontrivial R] [IsEmpty ι] : Module.Oriented R M ι
-    where positiveOrientation :=
+instance (priority := 100) IsEmpty.oriented [Nontrivial R] [IsEmpty ι] : Module.Oriented R M ι where
+  positiveOrientation :=
     rayOfNeZero R (AlternatingMap.constLinearEquivOfIsEmpty 1) <|
       AlternatingMap.constLinearEquivOfIsEmpty.injective.ne (by exact one_ne_zero)
 #align is_empty.oriented IsEmpty.oriented
@@ -116,23 +142,26 @@ end OrderedCommSemiring
 
 section OrderedCommRing
 
-variable {R : Type _} [StrictOrderedCommRing R]
+variable {R : Type*} [StrictOrderedCommRing R]
 
-variable {M N : Type _} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
-set_option maxHeartbeats 400000 in -- Porting note: added
-set_option synthInstance.etaExperiment true in -- Porting note: added
 @[simp]
-protected theorem Orientation.map_neg {ι : Type _} (f : M ≃ₗ[R] N) (x : Orientation R M ι) :
+protected theorem Orientation.map_neg {ι : Type*} (f : M ≃ₗ[R] N) (x : Orientation R M ι) :
     Orientation.map ι f (-x) = -Orientation.map ι f x :=
   Module.Ray.map_neg _ x
 #align orientation.map_neg Orientation.map_neg
 
+@[simp]
+protected theorem Orientation.reindex_neg {ι ι' : Type*} (e : ι ≃ ι') (x : Orientation R M ι) :
+    Orientation.reindex R M e (-x) = -Orientation.reindex R M e x :=
+  Module.Ray.map_neg _ x
+#align orientation.reindex_neg Orientation.reindex_neg
+
 namespace Basis
 
-variable {ι : Type _}
+variable {ι ι' : Type*}
 
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- The value of `Orientation.map` when the index type has the cardinality of a basis, in terms
 of `f.det`. -/
 theorem map_orientation_eq_det_inv_smul [Finite ι] (e : Basis ι R M) (x : Orientation R M ι)
@@ -148,18 +177,22 @@ theorem map_orientation_eq_det_inv_smul [Finite ι] (e : Basis ι R M) (x : Orie
     LinearEquiv.coe_inv_det]
 #align basis.map_orientation_eq_det_inv_smul Basis.map_orientation_eq_det_inv_smul
 
-variable [Fintype ι] [DecidableEq ι]
+variable [Fintype ι] [DecidableEq ι] [Fintype ι'] [DecidableEq ι']
 
 /-- The orientation given by a basis. -/
 protected def orientation [Nontrivial R] (e : Basis ι R M) : Orientation R M ι :=
   rayOfNeZero R _ e.det_ne_zero
 #align basis.orientation Basis.orientation
 
-set_option synthInstance.etaExperiment true in -- Porting note: added
 theorem orientation_map [Nontrivial R] (e : Basis ι R M) (f : M ≃ₗ[R] N) :
     (e.map f).orientation = Orientation.map ι f e.orientation := by
   simp_rw [Basis.orientation, Orientation.map_apply, Basis.det_map']
 #align basis.orientation_map Basis.orientation_map
+
+theorem orientation_reindex [Nontrivial R] (e : Basis ι R M) (eι : ι ≃ ι') :
+    (e.reindex eι).orientation = Orientation.reindex R M eι e.orientation := by
+  simp_rw [Basis.orientation, Orientation.reindex_apply, Basis.det_reindex']
+#align basis.orientation_reindex Basis.orientation_reindex
 
 /-- The orientation given by a basis derived using `units_smul`, in terms of the product of those
 units. -/
@@ -186,16 +219,14 @@ end OrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {R : Type _} [LinearOrderedCommRing R]
+variable {R : Type*} [LinearOrderedCommRing R]
 
-variable {M : Type _} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 namespace Orientation
 
-set_option maxHeartbeats 350000 in -- Porting note: added
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- A module `M` over a linearly ordered commutative ring has precisely two "orientations" with
 respect to an empty index type. (Note that these are only orientations of `M` of in the conventional
 mathematical sense if `M` is zero-dimensional.) -/
@@ -206,14 +237,13 @@ theorem eq_or_eq_neg_of_isEmpty [Nontrivial R] [IsEmpty ι] (o : Orientation R M
   simp only [ray_eq_iff, sameRay_neg_swap]
   rw [sameRay_or_sameRay_neg_iff_not_linearIndependent]
   intro h
-  let a : R := AlternatingMap.constLinearEquivOfIsEmpty.symm x
-  have H : LinearIndependent R ![a, 1] := by
-    let f := (@AlternatingMap.constLinearEquivOfIsEmpty ι R M R _ _ _ _ _ _).symm
-    rw [show ![a, 1] = (f.toLinearMap ∘ ![x, AlternatingMap.constOfIsEmpty R M 1])
-      by (ext i ; fin_cases i <;> simp)]
-    exact h.map' f.toLinearMap f.ker
+  set f : AlternatingMap R M R ι ≃ₗ[R] R := AlternatingMap.constLinearEquivOfIsEmpty.symm
+  have H : LinearIndependent R ![f x, 1] := by
+    convert h.map' f.toLinearMap f.ker
+    ext i
+    fin_cases i <;> simp
   rw [linearIndependent_iff'] at H
-  simpa using H Finset.univ ![1, -a] (by simp [Fin.sum_univ_succ]) 0 (by simp)
+  simpa using H Finset.univ ![1, -f x] (by simp [Fin.sum_univ_succ]) 0 (by simp)
 #align orientation.eq_or_eq_neg_of_is_empty Orientation.eq_or_eq_neg_of_isEmpty
 
 end Orientation
@@ -222,7 +252,6 @@ namespace Basis
 
 variable [Fintype ι] [DecidableEq ι]
 
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- The orientations given by two bases are equal if and only if the determinant of one basis
 with respect to the other is positive. -/
 theorem orientation_eq_iff_det_pos (e₁ e₂ : Basis ι R M) :
@@ -234,8 +263,6 @@ theorem orientation_eq_iff_det_pos (e₁ e₂ : Basis ι R M) :
 
 #align basis.orientation_eq_iff_det_pos Basis.orientation_eq_iff_det_pos
 
-set_option maxHeartbeats 300000 in -- Porting note: added
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- Given a basis, any orientation equals the orientation given by that basis or its negation. -/
 theorem orientation_eq_or_eq_neg (e : Basis ι R M) (x : Orientation R M ι) :
     x = e.orientation ∨ x = -e.orientation := by
@@ -246,7 +273,6 @@ theorem orientation_eq_or_eq_neg (e : Basis ι R M) (x : Orientation R M ι) :
     lt_or_lt_iff_ne, ne_comm]
 #align basis.orientation_eq_or_eq_neg Basis.orientation_eq_or_eq_neg
 
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- Given a basis, an orientation equals the negation of that given by that basis if and only
 if it does not equal that given by that basis. -/
 theorem orientation_ne_iff_eq_neg (e : Basis ι R M) (x : Orientation R M ι) :
@@ -255,8 +281,6 @@ theorem orientation_ne_iff_eq_neg (e : Basis ι R M) (x : Orientation R M ι) :
     h.symm ▸ (Module.Ray.ne_neg_self e.orientation).symm⟩
 #align basis.orientation_ne_iff_eq_neg Basis.orientation_ne_iff_eq_neg
 
-set_option maxHeartbeats 250000 in -- Porting note: added
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- Composing a basis with a linear equiv gives the same orientation if and only if the
 determinant is positive. -/
 theorem orientation_comp_linearEquiv_eq_iff_det_pos (e : Basis ι R M) (f : M ≃ₗ[R] M) :
@@ -265,8 +289,6 @@ theorem orientation_comp_linearEquiv_eq_iff_det_pos (e : Basis ι R M) (f : M �
     LinearEquiv.coe_det]
 #align basis.orientation_comp_linear_equiv_eq_iff_det_pos Basis.orientation_comp_linearEquiv_eq_iff_det_pos
 
-set_option maxHeartbeats 350000 in -- Porting note: added
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- Composing a basis with a linear equiv gives the negation of that orientation if and only if
 the determinant is negative. -/
 theorem orientation_comp_linearEquiv_eq_neg_iff_det_neg (e : Basis ι R M) (f : M ≃ₗ[R] M) :
@@ -275,8 +297,6 @@ theorem orientation_comp_linearEquiv_eq_neg_iff_det_neg (e : Basis ι R M) (f : 
     LinearEquiv.coe_det]
 #align basis.orientation_comp_linear_equiv_eq_neg_iff_det_neg Basis.orientation_comp_linearEquiv_eq_neg_iff_det_neg
 
-set_option maxHeartbeats 300000 in -- Porting note: added
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- Negating a single basis vector (represented using `units_smul`) negates the corresponding
 orientation. -/
 @[simp]
@@ -316,7 +336,6 @@ theorem adjustToOrientation_apply_eq_or_eq_neg [Nontrivial R] [Nonempty ι] (e :
   · by_cases hi : i = Classical.arbitrary ι <;> simp [unitsSMul_apply, hi]
 #align basis.adjust_to_orientation_apply_eq_or_eq_neg Basis.adjustToOrientation_apply_eq_or_eq_neg
 
-set_option synthInstance.etaExperiment true in -- Porting note: added
 theorem det_adjustToOrientation [Nontrivial R] [Nonempty ι] (e : Basis ι R M)
     (x : Orientation R M ι) :
     (e.adjustToOrientation x).det = e.det ∨ (e.adjustToOrientation x).det = -e.det := by
@@ -330,7 +349,6 @@ theorem det_adjustToOrientation [Nontrivial R] [Nonempty ι] (e : Basis ι R M)
     simp
 #align basis.det_adjust_to_orientation Basis.det_adjustToOrientation
 
-set_option synthInstance.etaExperiment true in -- Porting note: added
 @[simp]
 theorem abs_det_adjustToOrientation [Nontrivial R] [Nonempty ι] (e : Basis ι R M)
     (x : Orientation R M ι) (v : ι → M) : |(e.adjustToOrientation x).det v| = |e.det v| := by
@@ -343,11 +361,11 @@ end LinearOrderedCommRing
 
 section LinearOrderedField
 
-variable {R : Type _} [LinearOrderedField R]
+variable {R : Type*} [LinearOrderedField R]
 
-variable {M : Type _} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 namespace Orientation
 
@@ -355,9 +373,6 @@ variable [Fintype ι] [_i : FiniteDimensional R M]
 
 open FiniteDimensional
 
-set_option maxHeartbeats 350000 in -- Porting note: added
-set_option synthInstance.maxHeartbeats 25000 in -- Porting note : added
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- If the index type has cardinality equal to the finite dimension, any two orientations are
 equal or negations. -/
 theorem eq_or_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = finrank R M) :
@@ -366,12 +381,11 @@ theorem eq_or_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = fin
   letI := Classical.decEq ι
   -- Porting note: this needs to be made explicit for the simp below
   have orientation_neg_neg :
-    ∀ f : Basis ι R M,  - -Basis.orientation f = Basis.orientation f := by simp
+    ∀ f : Basis ι R M, - -Basis.orientation f = Basis.orientation f := by simp
   rcases e.orientation_eq_or_eq_neg x₁ with (h₁ | h₁) <;>
     rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂, orientation_neg_neg]
 #align orientation.eq_or_eq_neg Orientation.eq_or_eq_neg
 
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- If the index type has cardinality equal to the finite dimension, an orientation equals the
 negation of another orientation if and only if they are not equal. -/
 theorem ne_iff_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = finrank R M) :
@@ -380,8 +394,6 @@ theorem ne_iff_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = fi
     he.symm ▸ (Module.Ray.ne_neg_self x₂).symm⟩
 #align orientation.ne_iff_eq_neg Orientation.ne_iff_eq_neg
 
-set_option synthInstance.maxHeartbeats 30000 in -- Porting note : added
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- The value of `Orientation.map` when the index type has cardinality equal to the finite
 dimension, in terms of `f.det`. -/
 theorem map_eq_det_inv_smul (x : Orientation R M ι) (f : M ≃ₗ[R] M)
@@ -390,8 +402,6 @@ theorem map_eq_det_inv_smul (x : Orientation R M ι) (f : M ≃ₗ[R] M)
   e.map_orientation_eq_det_inv_smul x f
 #align orientation.map_eq_det_inv_smul Orientation.map_eq_det_inv_smul
 
-set_option maxHeartbeats 350000 in -- Porting note: added
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- If the index type has cardinality equal to the finite dimension, composing an alternating
 map with the same linear equiv on each argument gives the same orientation if and only if the
 determinant is positive. -/
@@ -406,8 +416,6 @@ theorem map_eq_iff_det_pos (x : Orientation R M ι) (f : M ≃ₗ[R] M)
   rw [map_eq_det_inv_smul _ _ h, units_inv_smul, units_smul_eq_self_iff, LinearEquiv.coe_det]
 #align orientation.map_eq_iff_det_pos Orientation.map_eq_iff_det_pos
 
-set_option maxHeartbeats 550000 in -- Porting note: added
-set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- If the index type has cardinality equal to the finite dimension, composing an alternating
 map with the same linear equiv on each argument gives the negation of that orientation if and
 only if the determinant is negative. -/

@@ -2,15 +2,12 @@
 Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.order.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
+
+#align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
 
 
 /-!
@@ -50,7 +47,7 @@ instance linearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ :
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 
 
--- Not using `infer_instance` avoids `classical.choice` in the following two
+-- Not using `inferInstance` avoids `Classical.choice` in the following two
 instance linearOrderedSemiring : LinearOrderedSemiring ℕ :=
   inferInstance
 
@@ -93,6 +90,11 @@ theorem one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n �
   | n + 2 => by simp
 #align nat.one_lt_iff_ne_zero_and_ne_one Nat.one_lt_iff_ne_zero_and_ne_one
 
+theorem le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1
+  | 0 => by decide
+  | 1 => by decide
+  | n + 2 => by simp
+
 #align nat.mul_ne_zero Nat.mul_ne_zero
 
 -- Porting note: already in Std
@@ -115,26 +117,11 @@ theorem zero_max : max 0 n = n :=
 #align nat.zero_max Nat.zero_max
 
 @[simp]
-theorem min_eq_zero_iff : min m n = 0 ↔ m = 0 ∨ n = 0 := by
-  constructor
-  · intro h
-    cases' le_total m n with H H
-    · simpa [H] using Or.inl h
-    · simpa [H] using Or.inr h
-  · rintro (rfl | rfl) <;> simp
+theorem min_eq_zero_iff : min m n = 0 ↔ m = 0 ∨ n = 0 := min_eq_bot
 #align nat.min_eq_zero_iff Nat.min_eq_zero_iff
 
 @[simp]
-theorem max_eq_zero_iff : max m n = 0 ↔ m = 0 ∧ n = 0 := by
-  constructor
-  · intro h
-    cases' le_total m n with H H
-    · simp only [H, max_eq_right] at h
-      exact ⟨le_antisymm (H.trans h.le) (zero_le _), h⟩
-    · simp only [H, max_eq_left] at h
-      exact ⟨h, le_antisymm (H.trans h.le) (zero_le _)⟩
-  · rintro ⟨rfl, rfl⟩
-    simp
+theorem max_eq_zero_iff : max m n = 0 ↔ m = 0 ∧ n = 0 := max_eq_bot
 #align nat.max_eq_zero_iff Nat.max_eq_zero_iff
 
 theorem add_eq_max_iff : m + n = max m n ↔ m = 0 ∨ n = 0 := by
@@ -175,17 +162,7 @@ theorem lt_one_iff {n : ℕ} : n < 1 ↔ n = 0 :=
 
 /-! ### `add` -/
 
-
-theorem add_pos_left {m : ℕ} (h : 0 < m) (n : ℕ) : 0 < m + n :=
-  calc
-    m + n > 0 + n := Nat.add_lt_add_right h n
-    _ = n := Nat.zero_add n
-    _ ≥ 0 := zero_le n
 #align nat.add_pos_left Nat.add_pos_left
-
-theorem add_pos_right (m : ℕ) {n : ℕ} (h : 0 < n) : 0 < m + n := by
-  rw [add_comm]
-  exact add_pos_left h m
 #align nat.add_pos_right Nat.add_pos_right
 
 theorem add_pos_iff_pos_or_pos (m n : ℕ) : 0 < m + n ↔ 0 < m ∨ 0 < n :=
@@ -269,7 +246,7 @@ theorem lt_of_lt_pred (h : m < n - 1) : m < n :=
 #align nat.lt_of_lt_pred Nat.lt_of_lt_pred
 
 theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ l := by
-  cases' le_or_lt m k with h' h' <;> [left, right]
+  cases' le_or_lt m k with h' h' <;> [left; right]
   · exact h'
   · replace h' := add_lt_add_right h' l
     rw [h] at h'
@@ -343,6 +320,13 @@ theorem lt_mul_self_iff : ∀ {n : ℕ}, n < n * n ↔ 1 < n
   | n + 1 => lt_mul_iff_one_lt_left n.succ_pos
 #align nat.lt_mul_self_iff Nat.lt_mul_self_iff
 
+theorem add_sub_one_le_mul (hm : m ≠ 0) (hn : n ≠ 0) : m + n - 1 ≤ m * n := by
+  cases m
+  · cases hm rfl
+  · rw [succ_add, succ_sub_one, succ_mul]
+    exact add_le_add_right (le_mul_of_one_le_right' $ succ_le_iff.2 $ pos_iff_ne_zero.2 hn) _
+#align nat.add_sub_one_le_mul Nat.add_sub_one_le_mul
+
 /-!
 ### Recursion and induction principles
 
@@ -388,7 +372,7 @@ theorem set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S
 
 
 protected theorem div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n :=
-  (Nat.eq_zero_or_pos k).elim (fun k0 => by rw [k0, Nat.div_zero] ; apply zero_le) fun k0 =>
+  (Nat.eq_zero_or_pos k).elim (fun k0 => by rw [k0, Nat.div_zero]; apply zero_le) fun k0 =>
     le_of_mul_le_mul_left
       (calc
         k * (m / k) ≤ m % k + k * (m / k) := Nat.le_add_left _ _
@@ -424,7 +408,7 @@ theorem div_mul_div_le_div (m n k : ℕ) : m / k * n / m ≤ n / k :=
   else
     calc
       m / k * n / m ≤ n * m / k / m :=
-        Nat.div_le_div_right (by rw [mul_comm] ; exact mul_div_le_mul_div_assoc _ _ _)
+        Nat.div_le_div_right (by rw [mul_comm]; exact mul_div_le_mul_div_assoc _ _ _)
       _ = n / k := by
         { rw [Nat.div_div_eq_div_mul, mul_comm n, mul_comm k,
             Nat.mul_div_mul_left _ _ (Nat.pos_of_ne_zero hm0)] }
@@ -621,13 +605,13 @@ theorem findGreatest_eq_iff :
         exact ⟨le_rfl, fun _ => hk, fun n hlt hle => (hlt.not_le hle).elim⟩
       · rintro ⟨hle, h0, hm⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt)
-        exacts[rfl, (hm hlt le_rfl hk).elim]
+        exacts [rfl, (hm hlt le_rfl hk).elim]
     · rw [findGreatest_of_not hk, ihk]
       constructor
       · rintro ⟨hle, hP, hm⟩
         refine ⟨hle.trans k.le_succ, hP, fun n hlt hle => ?_⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt')
-        exacts[hk, hm hlt <| lt_succ_iff.1 hlt']
+        exacts [hk, hm hlt <| lt_succ_iff.1 hlt']
       · rintro ⟨hle, hP, hm⟩
         refine ⟨lt_succ_iff.1 (hle.lt_of_ne ?_), hP, fun n hlt hle => hm hlt (hle.trans k.le_succ)⟩
         rintro rfl
@@ -637,6 +621,9 @@ theorem findGreatest_eq_iff :
 theorem findGreatest_eq_zero_iff : Nat.findGreatest P k = 0 ↔ ∀ ⦃n⦄, 0 < n → n ≤ k → ¬P n := by
   simp [findGreatest_eq_iff]
 #align nat.find_greatest_eq_zero_iff Nat.findGreatest_eq_zero_iff
+
+@[simp] lemma findGreatest_pos : 0 < Nat.findGreatest P k ↔ ∃ n, 0 < n ∧ n ≤ k ∧ P n := by
+  rw [pos_iff_ne_zero, Ne.def, findGreatest_eq_zero_iff]; push_neg; rfl
 
 theorem findGreatest_spec (hmb : m ≤ n) (hm : P m) : P (Nat.findGreatest P n) := by
   by_cases h : Nat.findGreatest P n = 0
@@ -703,7 +690,7 @@ protected theorem bit1_le {n m : ℕ} (h : n ≤ m) : bit1 n ≤ bit1 m :=
 #align nat.bit1_le Nat.bit1_le
 
 theorem bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
-  | true, _, _, h => Nat.bit1_le  h
+  | true, _, _, h => Nat.bit1_le h
   | false, _, _, h => Nat.bit0_le h
 #align nat.bit_le Nat.bit_le
 

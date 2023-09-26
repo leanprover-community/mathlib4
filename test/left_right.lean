@@ -1,11 +1,11 @@
 import Mathlib.Tactic.LeftRight
 
-def zero: Nat := by
+def zero : Nat := by
   left
 
 #eval zero -- 0
 
-def two: Nat := by
+def two : Nat := by
   right
   exact 1
 

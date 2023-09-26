@@ -2,15 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.group.with_one.defs
-! leanprover-community/mathlib commit 995b47e555f1b6297c7cf16855f1023e355219fb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.WithBot
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Lift
+
+#align_import algebra.group.with_one.defs from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
@@ -26,8 +22,8 @@ information about these structures (which are not that standard in informal math
 ## Porting notes
 
 In Lean 3, we use `id` here and there to get correct types of proofs. This is required because
-`with_one` and `with_zero` are marked as `irreducible` at the end of `algebra.group.with_one.defs`,
-so proofs that use `option α` instead of `with_one α` no longer typecheck. In Lean 4, both types are
+`WithOne` and `WithZero` are marked as `Irreducible` at the end of `algebra.group.with_one.defs`,
+so proofs that use `Option α` instead of `WithOne α` no longer typecheck. In Lean 4, both types are
 plain `def`s, so we don't need these `id`s.
 -/
 
@@ -81,12 +77,6 @@ instance inv [Inv α] : Inv (WithOne α) :=
 #align with_zero.has_neg WithZero.neg
 
 @[to_additive]
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) :=
-  { WithOne.inv with
-    inv_inv := fun a =>
-      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
-
-@[to_additive]
 instance invOneClass [Inv α] : InvOneClass (WithOne α) :=
   { WithOne.one, WithOne.inv with inv_one := rfl }
 
@@ -113,7 +103,7 @@ instance coeTC : CoeTC α (WithOne α) :=
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
 @[to_additive (attr := elab_as_elim)
   "Recursor for `WithZero` using the preferred forms `0` and `↑a`."]
-def recOneCoe {C : WithOne α → Sort _} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
+def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
   | Option.none => h₁
   | Option.some x => h₂ x
 #align with_one.rec_one_coe WithOne.recOneCoe
@@ -126,9 +116,9 @@ def recOneCoe {C : WithOne α → Sort _} (h₁ : C 1) (h₂ : ∀ a : α, C a) 
 attribute [elab_as_elim] WithZero.recZeroCoe
 
 
-/-- Deconstruct a `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
+/-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
-      "Deconstruct a `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
+      "Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
 def unone {x : WithOne α} (hx : x ≠ 1) : α :=
   WithBot.unbot x hx
 #align with_one.unone WithOne.unone
@@ -299,11 +289,6 @@ theorem inv_zero [Inv α] : (0 : WithZero α)⁻¹ = 0 :=
   rfl
 #align with_zero.inv_zero WithZero.inv_zero
 
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) :=
-  { WithZero.inv with
-    inv_inv := fun a =>
-      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
-
 instance invOneClass [InvOneClass α] : InvOneClass (WithZero α) :=
   { WithZero.one, WithZero.inv with inv_one := show ((1⁻¹ : α) : WithZero α) = 1 by simp }
 
@@ -351,25 +336,6 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) :=
 
 instance divInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) :=
   { WithZero.divInvMonoid, WithZero.invOneClass with }
-
-instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
-  { WithZero.divInvMonoid, WithZero.involutiveInv with
-    mul_inv_rev := fun a b =>
-      match a, b with
-      | none, none => rfl
-      | none, some b => rfl
-      | some a, none => rfl
-      | some a, some b => congr_arg some <| mul_inv_rev _ _,
-    inv_eq_of_mul := fun a b ↦
-      match a, b with
-      | none, none => fun _ ↦ rfl
-      | none, some b => fun _ ↦ by contradiction
-      | some a, none => fun _ ↦ by contradiction
-      | some a, some b => fun h ↦
-        congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h }
-
-instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) :=
-  { WithZero.divisionMonoid, WithZero.commSemigroup with }
 
 section Group
 

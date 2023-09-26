@@ -2,14 +2,12 @@
 Copyright (c) 2022 María Inés de Frutos-Fernández, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed.group.seminorm
-! leanprover-community/mathlib commit 09079525fd01b3dda35e96adaa08d2f943e1648c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Positivity
 import Mathlib.Data.Real.NNReal
+import Mathlib.Tactic.GCongr
+
+#align_import analysis.normed.group.seminorm from "leanprover-community/mathlib"@"09079525fd01b3dda35e96adaa08d2f943e1648c"
 
 /-!
 # Group seminorms
@@ -53,11 +51,11 @@ open Set
 
 open NNReal
 
-variable {ι R R' E F G : Type _}
+variable {ι R R' E F G : Type*}
 
 /-- A seminorm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
 subadditive and such that `f (-x) = f x` for all `x`. -/
-structure AddGroupSeminorm (G : Type _) [AddGroup G] where
+structure AddGroupSeminorm (G : Type*) [AddGroup G] where
   -- porting note: can't extend `ZeroHom G ℝ` because otherwise `to_additive` won't work since
   -- we aren't using old structures
   /-- The bare function of an `AddGroupSeminorm`. -/
@@ -73,7 +71,7 @@ structure AddGroupSeminorm (G : Type _) [AddGroup G] where
 /-- A seminorm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
 and such that `f x⁻¹ = f x` for all `x`. -/
 @[to_additive]
-structure GroupSeminorm (G : Type _) [Group G] where
+structure GroupSeminorm (G : Type*) [Group G] where
   /-- The bare function of a `GroupSeminorm`. -/
   protected toFun : G → ℝ
   /-- The image of one is zero. -/
@@ -87,7 +85,7 @@ structure GroupSeminorm (G : Type _) [Group G] where
 
 /-- A nonarchimedean seminorm on an additive group `G` is a function `f : G → ℝ` that preserves
 zero, is nonarchimedean and such that `f (-x) = f x` for all `x`. -/
-structure NonarchAddGroupSeminorm (G : Type _) [AddGroup G] extends ZeroHom G ℝ where
+structure NonarchAddGroupSeminorm (G : Type*) [AddGroup G] extends ZeroHom G ℝ where
   /-- The seminorm applied to a sum is dominated by the maximum of the function applied to the
   addends. -/
   protected add_le_max' : ∀ r s, toFun (r + s) ≤ max (toFun r) (toFun s)
@@ -102,7 +100,7 @@ structure NonarchAddGroupSeminorm (G : Type _) [AddGroup G] extends ZeroHom G �
 
 /-- A norm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is subadditive
 and such that `f (-x) = f x` and `f x = 0 → x = 0` for all `x`. -/
-structure AddGroupNorm (G : Type _) [AddGroup G] extends AddGroupSeminorm G where
+structure AddGroupNorm (G : Type*) [AddGroup G] extends AddGroupSeminorm G where
   /-- If the image under the seminorm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 #align add_group_norm AddGroupNorm
@@ -110,14 +108,14 @@ structure AddGroupNorm (G : Type _) [AddGroup G] extends AddGroupSeminorm G wher
 /-- A seminorm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
 and such that `f x⁻¹ = f x` and `f x = 0 → x = 1` for all `x`. -/
 @[to_additive]
-structure GroupNorm (G : Type _) [Group G] extends GroupSeminorm G where
+structure GroupNorm (G : Type*) [Group G] extends GroupSeminorm G where
   /-- If the image under the norm is zero, then the argument is one. -/
   protected eq_one_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 1
 #align group_norm GroupNorm
 
 /-- A nonarchimedean norm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
 nonarchimedean and such that `f (-x) = f x` and `f x = 0 → x = 0` for all `x`. -/
-structure NonarchAddGroupNorm (G : Type _) [AddGroup G] extends NonarchAddGroupSeminorm G where
+structure NonarchAddGroupNorm (G : Type*) [AddGroup G] extends NonarchAddGroupSeminorm G where
   /-- If the image under the norm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 #align nonarch_add_group_norm NonarchAddGroupNorm
@@ -126,7 +124,7 @@ structure NonarchAddGroupNorm (G : Type _) [AddGroup G] extends NonarchAddGroupS
 the additive group `α`.
 
 You should extend this class when you extend `NonarchAddGroupSeminorm`. -/
-class NonarchAddGroupSeminormClass (F : Type _) (α : outParam <| Type _) [AddGroup α] extends
+class NonarchAddGroupSeminormClass (F : Type*) (α : outParam <| Type*) [AddGroup α] extends
   NonarchimedeanHomClass F α ℝ where
   /-- The image of zero is zero. -/
   protected map_zero (f : F) : f 0 = 0
@@ -138,7 +136,7 @@ class NonarchAddGroupSeminormClass (F : Type _) (α : outParam <| Type _) [AddGr
 additive group `α`.
 
 You should extend this class when you extend `NonarchAddGroupNorm`. -/
-class NonarchAddGroupNormClass (F : Type _) (α : outParam <| Type _) [AddGroup α] extends
+class NonarchAddGroupNormClass (F : Type*) (α : outParam <| Type*) [AddGroup α] extends
   NonarchAddGroupSeminormClass F α where
   /-- If the image under the norm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
@@ -246,7 +244,7 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
 variable (p q) (f : F →* E)
 
 @[to_additive]
-instance : Zero (GroupSeminorm E) :=
+instance instZeroGroupSeminorm : Zero (GroupSeminorm E) :=
   ⟨{  toFun := 0
       map_one' := Pi.zero_apply _
       mul_le' := fun _ _ => (zero_add _).ge
@@ -398,7 +396,7 @@ theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
   ⟨0, by
     rintro _ ⟨x, rfl⟩
     dsimp
-    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩ -- porting note: was `positivity`
+    positivity⟩
 #align group_seminorm.mul_bdd_below_range_add GroupSeminorm.mul_bddBelow_range_add
 #align add_group_seminorm.add_bdd_below_range_add AddGroupSeminorm.add_bddBelow_range_add
 
@@ -407,17 +405,17 @@ noncomputable instance : Inf (GroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := fun x => ⨅ y, p y + q (x / y)
       map_one' :=
-        cinfᵢ_eq_of_forall_ge_of_forall_gt_exists_lt
+        ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
           -- porting note: replace `add_nonneg` with `positivity` once we have the extension
           (fun x => add_nonneg (map_nonneg _ _) (map_nonneg _ _)) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
-        le_cinfᵢ_add_cinfᵢ fun u v => by
-          refine' cinfᵢ_le_of_le mul_bddBelow_range_add (u * v) _
+        le_ciInf_add_ciInf fun u v => by
+          refine' ciInf_le_of_le mul_bddBelow_range_add (u * v) _
           rw [mul_div_mul_comm, add_add_add_comm]
           exact add_le_add (map_mul_le_add p _ _) (map_mul_le_add q _ _)
       inv' := fun x =>
-        (inv_surjective.infᵢ_comp _).symm.trans <| by
+        (inv_surjective.iInf_comp _).symm.trans <| by
           simp_rw [map_inv_eq_map p, ← inv_div', map_inv_eq_map q] }⟩
 
 @[to_additive (attr := simp)]
@@ -431,12 +429,12 @@ noncomputable instance : Lattice (GroupSeminorm E) :=
   { GroupSeminorm.semilatticeSup with
     inf := (· ⊓ ·)
     inf_le_left := fun p q x =>
-      cinfᵢ_le_of_le mul_bddBelow_range_add x <| by rw [div_self', map_one_eq_zero q, add_zero]
+      ciInf_le_of_le mul_bddBelow_range_add x <| by rw [div_self', map_one_eq_zero q, add_zero]
     inf_le_right := fun p q x =>
-      cinfᵢ_le_of_le mul_bddBelow_range_add (1 : E) <| by
+      ciInf_le_of_le mul_bddBelow_range_add (1 : E) <| by
         simpa only [div_one x, map_one_eq_zero p, zero_add (q x)] using le_rfl
     le_inf := fun a b c hb hc x =>
-      le_cinfᵢ fun u => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
+      le_ciInf fun u => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
 
 end CommGroup
 
@@ -472,10 +470,9 @@ instance toSMul : SMul R (AddGroupSeminorm E) :=
       map_zero' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_zero, mul_zero]
       add_le' := fun _ _ => by
-        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
-        exact
-          (mul_le_mul_of_nonneg_left (map_add_le_add _ _ _) <| NNReal.coe_nonneg _).trans_eq
-            (mul_add _ _ _)
+        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ← mul_add]
+        gcongr
+        apply map_add_le_add
       neg' := fun x => by simp_rw [map_neg_eq_map] }⟩
 
 @[simp, norm_cast]
@@ -608,8 +605,7 @@ theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
   ⟨0, by
     rintro _ ⟨x, rfl⟩
     dsimp
-    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩
-    -- porting note: was `positivity`
+    positivity⟩
 #align nonarch_add_group_seminorm.add_bdd_below_range_add NonarchAddGroupSeminorm.add_bddBelow_range_add
 
 end AddCommGroup
@@ -647,10 +643,9 @@ instance : SMul R (GroupSeminorm E) :=
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_one_eq_zero p,
           mul_zero]
       mul_le' := fun _ _ => by
-        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
-        exact
-          (mul_le_mul_of_nonneg_left (map_mul_le_add p _ _) <| NNReal.coe_nonneg _).trans_eq
-            (mul_add _ _ _)
+        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ←mul_add]
+        gcongr
+        apply map_mul_le_add
       inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
 
 @[to_additive existing AddGroupSeminorm.isScalarTower]
@@ -709,7 +704,8 @@ instance : SMul R (NonarchAddGroupSeminorm E) :=
       add_le_max' := fun x y => by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ←
           mul_max_of_nonneg _ _ NNReal.zero_le_coe]
-        exact mul_le_mul_of_nonneg_left (map_add_le_max p _ _) NNReal.zero_le_coe
+        gcongr
+        apply map_add_le_max
       neg' := fun x => by simp_rw [map_neg_eq_map p] }⟩
 
 instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :

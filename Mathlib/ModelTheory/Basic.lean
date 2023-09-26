@@ -2,14 +2,11 @@
 Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
-
-! This file was ported from Lean 3 source module model_theory.basic
-! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.SetTheory.Cardinal.Basic
+
+#align_import model_theory.basic from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
 # Basics on First-Order Structures
@@ -29,15 +26,9 @@ structures.
 * A `FirstOrder.Language.Embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
-* A `FirstOrder.Language.ElementaryEmbedding`, denoted `M ↪ₑ[L] N`, is an embedding from the
-  `L`-structure `M` to the `L`-structure `N` that commutes with the realizations of all formulas.
 * A `FirstOrder.Language.Equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
-
-## TODO
-
-Use `[Countable L.symbols]` instead of `[L.countable]`.
 
 ## References
 For the Flypitch project:
@@ -47,6 +38,8 @@ For the Flypitch project:
 the continuum hypothesis*][flypitch_itp]
 
 -/
+
+set_option autoImplicit true
 
 
 universe u v u' v' w w'
@@ -65,9 +58,9 @@ namespace FirstOrder
   type of relations of every natural-number arity. -/
 @[nolint checkUnivs]
 structure Language where
-  /-- For every arity, a `Type _` of functions of that arity -/
+  /-- For every arity, a `Type*` of functions of that arity -/
   Functions : ℕ → Type u
-  /-- For every arity, a `Type _` of relations of that arity -/
+  /-- For every arity, a `Type*` of relations of that arity -/
   Relations : ℕ → Type v
 #align first_order.language FirstOrder.Language
 
@@ -100,14 +93,14 @@ instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) := inferInstan
 
 @[simp]
 theorem lift_mk {i : ℕ} :
-    Cardinal.lift.{v,u} (#Sequence₂ a₀ a₁ a₂ i)
-      = (#Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
+    Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
+      = #(Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
   rcases i with (_ | _ | _ | i) <;>
     simp only [Sequence₂, mk_uLift, mk_fintype, Fintype.card_of_isEmpty, Nat.cast_zero, lift_zero]
 #align first_order.sequence₂.lift_mk FirstOrder.Sequence₂.lift_mk
 
 @[simp]
-theorem sum_card : (Cardinal.sum fun i => #Sequence₂ a₀ a₁ a₂ i) = (#a₀) + (#a₁) + (#a₂) := by
+theorem sum_card : Cardinal.sum (fun i => #(Sequence₂ a₀ a₁ a₂ i)) = #a₀ + #a₁ + #a₂ := by
   rw [sum_nat_eq_add_sum_succ, sum_nat_eq_add_sum_succ, sum_nat_eq_add_sum_succ]
   simp [add_assoc, Sequence₂]
 #align first_order.sequence₂.sum_card FirstOrder.Sequence₂.sum_card
@@ -179,8 +172,8 @@ variable {L} {L' : Language.{u', v'}}
 
 theorem card_eq_card_functions_add_card_relations :
     L.card =
-      (Cardinal.sum fun l => Cardinal.lift.{v} (#L.Functions l)) +
-        Cardinal.sum fun l => Cardinal.lift.{u} (#L.Relations l) := by
+      (Cardinal.sum fun l => Cardinal.lift.{v} #(L.Functions l)) +
+        Cardinal.sum fun l => Cardinal.lift.{u} #(L.Relations l) := by
   simp [card, Symbols]
 #align first_order.language.card_eq_card_functions_add_card_relations FirstOrder.Language.card_eq_card_functions_add_card_relations
 
@@ -190,12 +183,12 @@ instance [L.IsRelational] {n : ℕ} : IsEmpty (L.Functions n) :=
 instance [L.IsAlgebraic] {n : ℕ} : IsEmpty (L.Relations n) :=
   IsAlgebraic.empty_relations n
 
-instance isRelational_of_empty_functions {symb : ℕ → Type _} :
+instance isRelational_of_empty_functions {symb : ℕ → Type*} :
     IsRelational ⟨fun _ => Empty, symb⟩ :=
   ⟨fun _ => instIsEmptyEmpty⟩
 #align first_order.language.is_relational_of_empty_functions FirstOrder.Language.isRelational_of_empty_functions
 
-instance isAlgebraic_of_empty_relations {symb : ℕ → Type _} : IsAlgebraic ⟨symb, fun _ => Empty⟩ :=
+instance isAlgebraic_of_empty_relations {symb : ℕ → Type*} : IsAlgebraic ⟨symb, fun _ => Empty⟩ :=
   ⟨fun _ => instIsEmptyEmpty⟩
 #align first_order.language.is_algebraic_of_empty_relations FirstOrder.Language.isAlgebraic_of_empty_relations
 
@@ -257,15 +250,15 @@ instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ
 
 @[simp]
 theorem card_functions_sum (i : ℕ) :
-    (#(L.sum L').Functions i)
-      = (Cardinal.lift.{u'} (#L.Functions i) + Cardinal.lift.{u} (#L'.Functions i) : Cardinal) := by
+    #((L.sum L').Functions i)
+      = (Cardinal.lift.{u'} #(L.Functions i) + Cardinal.lift.{u} #(L'.Functions i) : Cardinal) := by
   simp [Language.sum]
 #align first_order.language.card_functions_sum FirstOrder.Language.card_functions_sum
 
 @[simp]
 theorem card_relations_sum (i : ℕ) :
-    (#(L.sum L').Relations i) =
-      Cardinal.lift.{v'} (#L.Relations i) + Cardinal.lift.{v} (#L'.Relations i) := by
+    #((L.sum L').Relations i) =
+      Cardinal.lift.{v'} #(L.Relations i) + Cardinal.lift.{v} #(L'.Relations i) := by
   simp [Language.sum]
 #align first_order.language.card_relations_sum FirstOrder.Language.card_relations_sum
 
@@ -274,14 +267,14 @@ theorem card_sum :
     (L.sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
   simp only [card_eq_card_functions_add_card_relations, card_functions_sum, card_relations_sum,
     sum_add_distrib', lift_add, lift_sum, lift_lift]
-  simp only [add_assoc, add_comm (Cardinal.sum fun i => (#L'.Functions i).lift)]
+  simp only [add_assoc, add_comm (Cardinal.sum fun i => (#(L'.Functions i)).lift)]
 #align first_order.language.card_sum FirstOrder.Language.card_sum
 
 @[simp]
 theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
     (Language.mk₂ c f₁ f₂ r₁ r₂).card =
-      Cardinal.lift.{v} (#c) + Cardinal.lift.{v} (#f₁) + Cardinal.lift.{v} (#f₂) +
-          Cardinal.lift.{u} (#r₁) + Cardinal.lift.{u} (#r₂) := by
+      Cardinal.lift.{v} #c + Cardinal.lift.{v} #f₁ + Cardinal.lift.{v} #f₂ +
+          Cardinal.lift.{u} #r₁ + Cardinal.lift.{u} #r₂ := by
   simp [card_eq_card_functions_add_card_relations, add_assoc]
 #align first_order.language.card_mk₂ FirstOrder.Language.card_mk₂
 
@@ -296,18 +289,22 @@ class Structure where
   /-- Interpretation of the function symbols -/
   funMap : ∀ {n}, L.Functions n → (Fin n → M) → M
   /-- Interpretation of the relation symbols -/
-  rel_map : ∀ {n}, L.Relations n → (Fin n → M) → Prop
+  RelMap : ∀ {n}, L.Relations n → (Fin n → M) → Prop
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure FirstOrder.Language.Structure
+set_option linter.uppercaseLean3 false in
+#align first_order.language.Structure.fun_map FirstOrder.Language.Structure.funMap
+set_option linter.uppercaseLean3 false in
+#align first_order.language.Structure.rel_map FirstOrder.Language.Structure.RelMap
 
 variable (N : Type w') [L.Structure M] [L.Structure N]
 
 open Structure
 
-/-- Used for defining `FirstOrder.Language.Theory.Model.inhabited`. -/
-def inhabited.trivialStructure {α : Type _} [Inhabited α] : L.Structure α :=
+/-- Used for defining `FirstOrder.Language.Theory.ModelType.instInhabited`. -/
+def Inhabited.trivialStructure {α : Type*} [Inhabited α] : L.Structure α :=
   ⟨default, default⟩
-#align first_order.language.inhabited.trivial_structure FirstOrder.Language.inhabited.trivialStructure
+#align first_order.language.inhabited.trivial_structure FirstOrder.Language.Inhabited.trivialStructure
 
 /-! ### Maps -/
 
@@ -327,7 +324,7 @@ structure Hom where
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
     intros; trivial
   /-- The homomorphism sends related elements to related elements -/
-  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r x → rel_map r (toFun ∘ x) := by
+  map_rel' : ∀ {n} (r : L.Relations n) (x), RelMap r x → RelMap r (toFun ∘ x) := by
     -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
 #align first_order.language.hom FirstOrder.Language.Hom
@@ -341,7 +338,7 @@ structure Embedding extends M ↪ N where
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
     -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
-  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r (toFun ∘ x) ↔ rel_map r x := by
+  map_rel' : ∀ {n} (r : L.Relations n) (x), RelMap r (toFun ∘ x) ↔ RelMap r x := by
     -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
 #align first_order.language.embedding FirstOrder.Language.Embedding
@@ -355,7 +352,7 @@ structure Equiv extends M ≃ N where
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
     -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
-  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r (toFun ∘ x) ↔ rel_map r x := by
+  map_rel' : ∀ {n} (r : L.Relations n) (x), RelMap r (toFun ∘ x) ↔ RelMap r x := by
     -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
 #align first_order.language.equiv FirstOrder.Language.Equiv
@@ -365,7 +362,7 @@ scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L
 
 -- Porting note: was [L.Structure P] and [L.Structure Q]
 -- The former reported an error.
-variable {L M N} {P : Type _} [Structure L P] {Q : Type _} [Structure L Q]
+variable {L M N} {P : Type*} [Structure L P] {Q : Type*} [Structure L Q]
 
 --Porting note: new definition
 /-- Interpretation of a constant symbol -/
@@ -442,14 +439,14 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem relMap_apply₁ (r : r₁) (x : M) :
-    @Structure.rel_map _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 r ![x] = (x ∈ r₁' r) :=
+    @Structure.RelMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 r ![x] = (x ∈ r₁' r) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.rel_map_apply₁ FirstOrder.Language.Structure.relMap_apply₁
 
 @[simp]
 theorem relMap_apply₂ (r : r₂) (x y : M) :
-    @Structure.rel_map _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 r ![x, y] = r₂' r x y :=
+    @Structure.RelMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 r ![x, y] = r₂' r x y :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.rel_map_apply₂ FirstOrder.Language.Structure.relMap_apply₂
@@ -458,18 +455,18 @@ end Structure
 
 /-- `HomClass L F M N` states that `F` is a type of `L`-homomorphisms. You should extend this
   typeclass when you extend `FirstOrder.Language.Hom`. -/
-class HomClass (L : outParam Language) (F : Type _) (M N : outParam <| Type _)
-  [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] where
+class HomClass (L : outParam Language) (F : Type*) (M N : outParam <| Type*)
+  [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
-  map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), rel_map r x → rel_map r (φ ∘ x)
+  map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r x → RelMap r (φ ∘ x)
 #align first_order.language.hom_class FirstOrder.Language.HomClass
 
 /-- `StrongHomClass L F M N` states that `F` is a type of `L`-homomorphisms which preserve
   relations in both directions. -/
-class StrongHomClass (L : outParam Language) (F : Type _) (M N : outParam <| Type _)
-  [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] where
+class StrongHomClass (L : outParam Language) (F : Type*) (M N : outParam <| Type*)
+  [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
-  map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), rel_map r (φ ∘ x) ↔ rel_map r x
+  map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
 #align first_order.language.strong_hom_class FirstOrder.Language.StrongHomClass
 
 --Porting note: using implicit brackets for `Structure` arguments
@@ -480,7 +477,7 @@ instance (priority := 100) StrongHomClass.homClass [L.Structure M]
 #align first_order.language.strong_hom_class.hom_class FirstOrder.Language.StrongHomClass.homClass
 
 /-- Not an instance to avoid a loop. -/
-def HomClass.strongHomClassOfIsAlgebraic [L.IsAlgebraic] {F M N} [L.Structure M] [L.Structure N]
+theorem HomClass.strongHomClassOfIsAlgebraic [L.IsAlgebraic] {F M N} [L.Structure M] [L.Structure N]
     [FunLike F M fun _ => N] [HomClass L F M N] : StrongHomClass L F M N where
   map_fun := HomClass.map_fun
   map_rel _ n R _ := (IsAlgebraic.empty_relations n).elim R
@@ -545,7 +542,7 @@ theorem map_constants (φ : M →[L] N) (c : L.Constants) : φ c = c :=
 
 @[simp]
 theorem map_rel (φ : M →[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
-    rel_map r x → rel_map r (φ ∘ x) :=
+    RelMap r x → RelMap r (φ ∘ x) :=
   HomClass.map_rel φ r x
 #align first_order.language.hom.map_rel FirstOrder.Language.Hom.map_rel
 
@@ -631,7 +628,7 @@ theorem map_constants (φ : M ↪[L] N) (c : L.Constants) : φ c = c :=
 
 @[simp]
 theorem map_rel (φ : M ↪[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
-    rel_map r (φ ∘ x) ↔ rel_map r x :=
+    RelMap r (φ ∘ x) ↔ RelMap r x :=
   StrongHomClass.map_rel φ r x
 #align first_order.language.embedding.map_rel FirstOrder.Language.Embedding.map_rel
 
@@ -801,7 +798,7 @@ theorem map_constants (φ : M ≃[L] N) (c : L.Constants) : φ c = c :=
 
 @[simp]
 theorem map_rel (φ : M ≃[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
-    rel_map r (φ ∘ x) ↔ rel_map r x :=
+    RelMap r (φ ∘ x) ↔ RelMap r x :=
   StrongHomClass.map_rel φ r x
 #align first_order.language.equiv.map_rel FirstOrder.Language.Equiv.map_rel
 
@@ -904,11 +901,11 @@ def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F 
 
 section SumStructure
 
-variable (L₁ L₂ : Language) (S : Type _) [L₁.Structure S] [L₂.Structure S]
+variable (L₁ L₂ : Language) (S : Type*) [L₁.Structure S] [L₂.Structure S]
 
 instance sumStructure : (L₁.sum L₂).Structure S where
   funMap := Sum.elim funMap funMap
-  rel_map := Sum.elim rel_map rel_map
+  RelMap := Sum.elim RelMap RelMap
 set_option linter.uppercaseLean3 false in
 #align first_order.language.sum_Structure FirstOrder.Language.sumStructure
 
@@ -928,13 +925,13 @@ theorem funMap_sum_inr {n : ℕ} (f : L₂.Functions n) :
 
 @[simp]
 theorem relMap_sum_inl {n : ℕ} (R : L₁.Relations n) :
-    @rel_map (L₁.sum L₂) S _ n (Sum.inl R) = rel_map R :=
+    @RelMap (L₁.sum L₂) S _ n (Sum.inl R) = RelMap R :=
   rfl
 #align first_order.language.rel_map_sum_inl FirstOrder.Language.relMap_sum_inl
 
 @[simp]
 theorem relMap_sum_inr {n : ℕ} (R : L₂.Relations n) :
-    @rel_map (L₁.sum L₂) S _ n (Sum.inr R) = rel_map R :=
+    @RelMap (L₁.sum L₂) S _ n (Sum.inr R) = RelMap R :=
   rfl
 #align first_order.language.rel_map_sum_inr FirstOrder.Language.relMap_sum_inr
 
@@ -948,14 +945,14 @@ variable [Language.empty.Structure M] [Language.empty.Structure N]
 
 @[simp]
 theorem empty.nonempty_embedding_iff :
-    Nonempty (M ↪[Language.empty] N) ↔ Cardinal.lift.{w'} (#M) ≤ Cardinal.lift.{w} (#N) :=
+    Nonempty (M ↪[Language.empty] N) ↔ Cardinal.lift.{w'} #M ≤ Cardinal.lift.{w} #N :=
   _root_.trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map fun f => { toEmbedding := f }⟩
     Cardinal.lift_mk_le'.symm
 #align first_order.language.empty.nonempty_embedding_iff FirstOrder.Language.empty.nonempty_embedding_iff
 
 @[simp]
 theorem empty.nonempty_equiv_iff :
-    Nonempty (M ≃[Language.empty] N) ↔ Cardinal.lift.{w'} (#M) = Cardinal.lift.{w} (#N) :=
+    Nonempty (M ≃[Language.empty] N) ↔ Cardinal.lift.{w'} #M = Cardinal.lift.{w} #N :=
   _root_.trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
     Cardinal.lift_mk_eq'.symm
 #align first_order.language.empty.nonempty_equiv_iff FirstOrder.Language.empty.nonempty_equiv_iff
@@ -976,12 +973,12 @@ instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M fun _ => N] 
   ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩
 #align first_order.language.strong_hom_class_empty FirstOrder.Language.strongHomClassEmpty
 
-/-- Makes a `Language.empty.hom` out of any function. -/
+/-- Makes a `Language.empty.Hom` out of any function. -/
 @[simps]
 def _root_.Function.emptyHom (f : M → N) : M →[Language.empty] N where toFun := f
 #align function.empty_hom Function.emptyHom
 
-/-- Makes a `Language.empty.embedding` out of any function. -/
+/-- Makes a `Language.empty.Embedding` out of any function. -/
 --@[simps] Porting note: commented out and lemmas added manually
 def _root_.Embedding.empty (f : M ↪ N) : M ↪[Language.empty] N where toEmbedding := f
 #align embedding.empty Embedding.empty
@@ -994,7 +991,7 @@ theorem toFun_embedding_empty (f : M ↪ N) : (Embedding.empty f : M → N) = f 
 theorem toEmbedding_embedding_empty (f : M ↪ N) : (Embedding.empty f).toEmbedding = f :=
   rfl
 
-/-- Makes a `Language.empty.equiv` out of any function. -/
+/-- Makes a `Language.empty.Equiv` out of any function. -/
 --@[simps] Porting note: commented out and lemmas added manually
 def _root_.Equiv.empty (f : M ≃ N) : M ≃[Language.empty] N where toEquiv := f
 #align equiv.empty Equiv.empty
@@ -1019,12 +1016,12 @@ open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 
 open FirstOrder
 
-variable {L : Language} {M : Type _} {N : Type _} [L.Structure M]
+variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 
 /-- A structure induced by a bijection. -/
 @[simps!]
 def inducedStructure (e : M ≃ N) : L.Structure N :=
-  ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => rel_map r (e.symm ∘ x)⟩
+  ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => RelMap r (e.symm ∘ x)⟩
 set_option linter.uppercaseLean3 false in
 #align equiv.induced_Structure Equiv.inducedStructure
 
@@ -1051,7 +1048,7 @@ theorem toFun_inducedStructureEquiv (e : M ≃ N) :
 
 @[simp]
 theorem toFun_inducedStructureEquiv_Symm (e : M ≃ N) :
-  (by
+    (by
     letI : L.Structure N := inducedStructure e
     exact FunLike.coe (@inducedStructureEquiv L M N _ e).symm) = (e.symm : N → M) :=
   rfl

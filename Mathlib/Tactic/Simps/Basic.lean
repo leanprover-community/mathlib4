@@ -7,13 +7,14 @@ Authors: Floris van Doorn
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Lean.Message
 import Mathlib.Lean.Expr.Basic
-import Mathlib.Data.String.Defs
 import Mathlib.Data.KVMap
 import Mathlib.Tactic.Simps.NotationClass
 import Std.Classes.Dvd
+import Std.Data.String.Basic
 import Std.Util.LibraryNote
 import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
 import Mathlib.Lean.Linter
+import Std.Data.List.Count
 
 /-!
 # Simps attribute
@@ -187,7 +188,7 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure MyProd (α β : Type _) := (fst : α) (snd : β)
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
   @[simps] def foo : Prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
@@ -204,7 +205,7 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure MyProd (α β : Type _) := (fst : α) (snd : β)
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
   @[simps fst fst_fst snd] def foo : Prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
@@ -262,16 +263,16 @@ namespace Command
 
 /-- Syntax for renaming a projection in `initialize_simps_projections`. -/
 syntax simpsRule.rename := ident " → " ident
-/-- Syntax for making a  projection non-default in `initialize_simps_projections`. -/
+/-- Syntax for making a projection non-default in `initialize_simps_projections`. -/
 syntax simpsRule.erase := "-" ident
 /-- Syntax for making a projection default in `initialize_simps_projections`. -/
 syntax simpsRule.add := "+" ident
 /-- Syntax for making a projection prefix. -/
-syntax simpsRule.prefix := &"as_prefix" ident
+syntax simpsRule.prefix := &"as_prefix " ident
 /-- Syntax for a single rule in `initialize_simps_projections`. -/
 syntax simpsRule := simpsRule.prefix <|> simpsRule.rename <|> simpsRule.erase <|> simpsRule.add
 /-- Syntax for `initialize_simps_projections`. -/
-syntax simpsProj := (ppSpace ident (" (" simpsRule,+ ")")?)
+syntax simpsProj := ppSpace ident (" (" simpsRule,+ ")")?
 
 /--
 This command specifies custom names and custom projections for the simp attribute `simpsAttr`.
@@ -431,7 +432,7 @@ inductive ProjectionRule where
     which is used to declare hover information. -/
   | rename (oldName : Name) (oldStx : Syntax) (newName : Name) (newStx : Syntax) :
       ProjectionRule
-  /-- A adding rule `+fieldName` -/
+  /-- An adding rule `+fieldName` -/
   | add : Name → Syntax → ProjectionRule
   /-- A hiding rule `-fieldName` -/
   | erase : Name → Syntax → ProjectionRule
@@ -487,7 +488,7 @@ partial def getCompositeOfProjectionsAux
     throwError "{e} doesn't have a structure as type"
   let projs := getStructureFieldsFlattened env structName
   let projInfo := projs.toList.map fun p ↦ do
-    (← (p.getString ++ "_").isPrefixOf? proj, p)
+    ((← proj.dropPrefix? (p.getString ++ "_")).toString, p)
   let some (projRest, projName) := projInfo.reduceOption.getLast? |
     throwError "Failed to find constructor {proj.dropRight 1} in structure {structName}."
   let newE ← mkProjection e projName
@@ -507,7 +508,7 @@ partial def getCompositeOfProjectionsAux
   Note that this function is similar to elaborating dot notation, but it can do a little more.
   Example: if we do
   ```
-  structure gradedFun (A : ℕ → Type _) where
+  structure gradedFun (A : ℕ → Type*) where
     toFun := ∀ i j, A i →+ A j →+ A (i + j)
   initialize_simps_projections (toFun_toFun_toFun → myMul)
   ```
@@ -541,7 +542,7 @@ def mkParsedProjectionData (structName : Name) : CoreM (Array ParsedProjectionDa
 
 /-- Execute the projection renamings (and turning off projections) as specified by `rules`. -/
 def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array ProjectionRule) :
-  CoreM (Array ParsedProjectionData) := do
+    CoreM (Array ParsedProjectionData) := do
   let projs : Array ParsedProjectionData := rules.foldl (init := projs) fun projs rule ↦
     match rule with
     | .rename strName strStx newName newStx =>
@@ -585,7 +586,7 @@ def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array Pro
     }custom projection)."
   pure projs
 
-/-- Auxilliary function for `getRawProjections`.
+/-- Auxiliary function for `getRawProjections`.
   Generates the default projection, and looks for a custom projection declared by the user,
   and replaces the default projection with the custom one, if it can find it. -/
 def findProjection (str : Name) (proj : ParsedProjectionData)
@@ -626,8 +627,8 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
 /-- Checks if there are declarations in the current file in the namespace `{str}.Simps` that are
   not used. -/
 def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedProjectionData) :
-  CoreM Unit := do
-  let nrCustomProjections := projs.toList.countp (·.isCustom)
+    CoreM Unit := do
+  let nrCustomProjections := projs.toList.countP (·.isCustom)
   let env ← getEnv
   let customDeclarations := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
     if (str ++ `Simps).isPrefixOf nm && !nm.isInternal' then xs.push nm else xs
@@ -646,7 +647,7 @@ an applicable name. (e.g. `Iso.inv`)
 Implementation note: getting rid of TermElabM is tricky, since `Expr.mkAppOptM` doesn't allow to
 keep metavariables around, which are necessary for `OutParam`. -/
 def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args : Array Expr) :
-  TermElabM <| Option (Expr × Name) := do
+    TermElabM <| Option (Expr × Name) := do
   if let some ⟨className, isNotation, findArgs⟩ :=
     notationClassAttr.find? (← getEnv) proj.strName then
     let findArgs ← unsafe evalConst findArgType findArgs
@@ -681,11 +682,11 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
       return (projExpr, projName)
   return none
 
-/-- Auxilliary function for `getRawProjections`.
+/-- Auxiliary function for `getRawProjections`.
 Find custom projections, automatically found by simps.
 These come from `FunLike` and `SetLike` instances. -/
 def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
-  CoreM (Array ParsedProjectionData) := do
+    CoreM (Array ParsedProjectionData) := do
   let strDecl ← getConstInfo str
   trace[simps.debug] "debug: {projs}"
   MetaM.run' <| TermElabM.run' (s := {levelNames := strDecl.levelParams}) <|
@@ -798,21 +799,21 @@ composite of multiple projections).
 /-- Parse a rule for `initialize_simps_projections`. It is `<name>→<name>`, `-<name>`, `+<name>`
   or `as_prefix <name>`.-/
 def elabSimpsRule : Syntax → CommandElabM ProjectionRule
-| `(simpsRule| $id1 → $id2)   => return .rename id1.getId id1.raw id2.getId id2.raw
-| `(simpsRule| - $id)         => return .erase id.getId id.raw
-| `(simpsRule| + $id)         => return .add id.getId id.raw
-| `(simpsRule| as_prefix $id) => return .prefix id.getId id.raw
-| _                           => Elab.throwUnsupportedSyntax
+  | `(simpsRule| $id1 → $id2)   => return .rename id1.getId id1.raw id2.getId id2.raw
+  | `(simpsRule| - $id)         => return .erase id.getId id.raw
+  | `(simpsRule| + $id)         => return .add id.getId id.raw
+  | `(simpsRule| as_prefix $id) => return .prefix id.getId id.raw
+  | _                           => Elab.throwUnsupportedSyntax
 
 /-- Function elaborating `initialize_simps_projections`. -/
 @[command_elab «initialize_simps_projections»] def elabInitializeSimpsProjections : CommandElab
-| stx@`(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
-  let stxs := stxs.getD <| .mk #[]
-  let rules ← stxs.getElems.raw.mapM elabSimpsRule
-  let nm ← resolveGlobalConstNoOverload id
-  _ ← liftTermElabM <| addTermInfo id.raw <| ← mkConstWithLevelParams nm
-  _ ← liftCoreM <| getRawProjections stx nm true rules trc.isSome
-| _ => throwUnsupportedSyntax
+  | stx@`(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
+    let stxs := stxs.getD <| .mk #[]
+    let rules ← stxs.getElems.raw.mapM elabSimpsRule
+    let nm ← resolveGlobalConstNoOverload id
+    _ ← liftTermElabM <| addTermInfo id.raw <| ← mkConstWithLevelParams nm
+    _ ← liftCoreM <| getRawProjections stx nm true rules trc.isSome
+  | _ => throwUnsupportedSyntax
 
 /-- Configuration options for `@[simps]` -/
 structure Config where
@@ -834,7 +835,7 @@ structure Config where
   /-- List of types in which we are not recursing to generate simplification lemmas.
   E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not
   `e_apply_fst`. -/
-  notRecursive := [`Prod, `PProd, `Opposite]
+  notRecursive := [`Prod, `PProd, `Opposite, `PreOpposite]
   /-- Output debug messages. Not used much, use `set_option simps.debug true` instead. -/
   debug := false
   deriving Inhabited
@@ -1117,7 +1118,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs
     let newTodo := todo.filterMap
-      fun (x, stx) ↦ ((proj.getString ++ "_").isPrefixOf? x).map (·, stx)
+      fun (x, stx) ↦ (x.dropPrefix? (proj.getString ++ "_")).map (·.toString, stx)
     -- we only continue with this field if it is default or mentioned in todo
     if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return #[]
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed.group.pointwise
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+#align_import analysis.normed.group.pointwise from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Properties of pointwise addition of sets in normed groups
@@ -21,34 +18,34 @@ Notably, we show that the sum of bounded sets remain bounded.
 
 open Metric Set Pointwise Topology
 
-variable {E : Type _}
+variable {E : Type*}
 
 section SeminormedGroup
 
 variable [SeminormedGroup E] {ε δ : ℝ} {s t : Set E} {x y : E}
 
 @[to_additive]
-theorem Metric.Bounded.mul (hs : Bounded s) (ht : Bounded t) : Bounded (s * t) := by
+theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s * t) := by
   obtain ⟨Rs, hRs⟩ : ∃ R, ∀ x ∈ s, ‖x‖ ≤ R := hs.exists_norm_le'
   obtain ⟨Rt, hRt⟩ : ∃ R, ∀ x ∈ t, ‖x‖ ≤ R := ht.exists_norm_le'
-  refine' bounded_iff_forall_norm_le'.2 ⟨Rs + Rt, _⟩
+  refine' isBounded_iff_forall_norm_le'.2 ⟨Rs + Rt, _⟩
   rintro z ⟨x, y, hx, hy, rfl⟩
   exact norm_mul_le_of_le (hRs x hx) (hRt y hy)
-#align metric.bounded.mul Metric.Bounded.mul
-#align metric.bounded.add Metric.Bounded.add
+#align metric.bounded.mul Bornology.IsBounded.mul
+#align metric.bounded.add Bornology.IsBounded.add
 
 @[to_additive]
-theorem Metric.Bounded.inv : Bounded s → Bounded s⁻¹ := by
-  simp_rw [bounded_iff_forall_norm_le', ← image_inv, ball_image_iff, norm_inv']
+theorem Bornology.IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
+  simp_rw [isBounded_iff_forall_norm_le', ← image_inv, ball_image_iff, norm_inv']
   exact id
-#align metric.bounded.inv Metric.Bounded.inv
-#align metric.bounded.neg Metric.Bounded.neg
+#align metric.bounded.inv Bornology.IsBounded.inv
+#align metric.bounded.neg Bornology.IsBounded.neg
 
 @[to_additive]
-theorem Metric.Bounded.div (hs : Bounded s) (ht : Bounded t) : Bounded (s / t) :=
-  (div_eq_mul_inv _ _).symm.subst <| hs.mul ht.inv
-#align metric.bounded.div Metric.Bounded.div
-#align metric.bounded.sub Metric.Bounded.sub
+theorem Bornology.IsBounded.div (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s / t) :=
+  div_eq_mul_inv s t ▸ hs.mul ht.inv
+#align metric.bounded.div Bornology.IsBounded.div
+#align metric.bounded.sub Bornology.IsBounded.sub
 
 end SeminormedGroup
 
@@ -205,10 +202,10 @@ theorem smul_closedBall_one : x • closedBall (1 : E) δ = closedBall x δ := b
 
 @[to_additive]
 theorem mul_ball_one : s * ball 1 δ = thickening δ s := by
-  rw [thickening_eq_bunionᵢ_ball]
-  convert unionᵢ₂_mul (fun x (_ : x ∈ s) => {x}) (ball (1 : E) δ)
-  exact s.bunionᵢ_of_singleton.symm
-  ext (x y)
+  rw [thickening_eq_biUnion_ball]
+  convert iUnion₂_mul (fun x (_ : x ∈ s) => {x}) (ball (1 : E) δ)
+  exact s.biUnion_of_singleton.symm
+  ext x
   simp_rw [singleton_mul_ball, mul_one]
 #align mul_ball_one mul_ball_one
 #align add_ball_zero add_ball_zero
@@ -254,9 +251,9 @@ variable {ε δ s t x y}
 @[to_additive]
 theorem IsCompact.mul_closedBall_one (hs : IsCompact s) (hδ : 0 ≤ δ) :
     s * closedBall (1 : E) δ = cthickening δ s := by
-  rw [hs.cthickening_eq_bunionᵢ_closedBall hδ]
+  rw [hs.cthickening_eq_biUnion_closedBall hδ]
   ext x
-  simp only [mem_mul, dist_eq_norm_div, exists_prop, mem_unionᵢ, mem_closedBall, exists_and_left,
+  simp only [mem_mul, dist_eq_norm_div, exists_prop, mem_iUnion, mem_closedBall, exists_and_left,
     mem_closedBall_one_iff, ← eq_div_iff_mul_eq'', div_one, exists_eq_right]
 #align is_compact.mul_closed_ball_one IsCompact.mul_closedBall_one
 #align is_compact.add_closed_ball_zero IsCompact.add_closedBall_zero
@@ -308,4 +305,3 @@ theorem IsCompact.closedBall_div (hs : IsCompact s) (hδ : 0 ≤ δ) (x : E) :
 #align is_compact.closed_ball_sub IsCompact.closedBall_sub
 
 end SeminormedCommGroup
-

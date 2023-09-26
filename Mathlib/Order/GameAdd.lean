@@ -2,14 +2,11 @@
 Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
-
-! This file was ported from Lean 3 source module order.game_add
-! leanprover-community/mathlib commit fee218fb033b2fd390c447f8be27754bc9093be9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Logic.Relation
+
+#align_import order.game_add from "leanprover-community/mathlib"@"fee218fb033b2fd390c447f8be27754bc9093be9"
 
 /-!
 # Game addition relation
@@ -32,8 +29,10 @@ We also define `Sym2.GameAdd`, which is the unordered pair analog of `Prod.GameA
 decreases at a time.
 -/
 
+set_option autoImplicit true
 
-variable {α β : Type _} {rα : α → α → Prop} {rβ : β → β → Prop}
+
+variable {α β : Type*} {rα : α → α → Prop} {rβ : β → β → Prop}
 
 /-! ### `Prod.GameAdd` -/
 
@@ -62,10 +61,10 @@ theorem gameAdd_iff {rα rβ} {x y : α × β} :
     GameAdd rα rβ x y ↔ rα x.1 y.1 ∧ x.2 = y.2 ∨ rβ x.2 y.2 ∧ x.1 = y.1 := by
   constructor
   · rintro (@⟨a₁, a₂, b, h⟩ | @⟨a, b₁, b₂, h⟩)
-    exacts[Or.inl ⟨h, rfl⟩, Or.inr ⟨h, rfl⟩]
+    exacts [Or.inl ⟨h, rfl⟩, Or.inr ⟨h, rfl⟩]
   · revert x y
     rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ (⟨h, rfl : b₁ = b₂⟩ | ⟨h, rfl : a₁ = a₂⟩)
-    exacts[GameAdd.fst h, GameAdd.snd h]
+    exacts [GameAdd.fst h, GameAdd.snd h]
 #align prod.game_add_iff Prod.gameAdd_iff
 
 theorem gameAdd_mk_iff {rα rβ} {a₁ a₂ : α} {b₁ b₂ : β} :
@@ -106,7 +105,7 @@ theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
   induction' hb with b hb ihb
   refine' Acc.intro _ fun h => _
   rintro (⟨ra⟩ | ⟨rb⟩)
-  exacts[iha _ ra (Acc.intro b hb), ihb _ rb]
+  exacts [iha _ ra (Acc.intro b hb), ihb _ rb]
 #align acc.prod_game_add Acc.prod_gameAdd
 
 /-- The `Prod.GameAdd` relation on well-founded inputs is well-founded.
@@ -121,14 +120,14 @@ namespace Prod
 
 /-- Recursion on the well-founded `Prod.GameAdd` relation.
   Note that it's strictly more general to recurse on the lexicographic order instead. -/
-def GameAdd.fix {C : α → β → Sort _} (hα : WellFounded rα) (hβ : WellFounded rβ)
+def GameAdd.fix {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
     C a b :=
   @WellFounded.fix (α × β) (fun x => C x.1 x.2) _ (hα.prod_gameAdd hβ)
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) ⟨a, b⟩
 #align prod.game_add.fix Prod.GameAdd.fix
 
-theorem GameAdd.fix_eq {C : α → β → Sort _} (hα : WellFounded rα) (hβ : WellFounded rβ)
+theorem GameAdd.fix_eq {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
     GameAdd.fix hα hβ IH a b = IH a b fun a' b' _ => GameAdd.fix hα hβ IH a' b' :=
   WellFounded.fix_eq _ _ _
@@ -224,17 +223,22 @@ theorem WellFounded.sym2_gameAdd (h : WellFounded rα) : WellFounded (Sym2.GameA
 namespace Sym2
 
 /-- Recursion on the well-founded `Sym2.GameAdd` relation. -/
-def GameAdd.fix {C : α → α → Sort _} (hr : WellFounded rα)
+def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα ⟦(a₂, b₂)⟧ ⟦(a₁, b₁)⟧ → C a₂ b₂) → C a₁ b₁) (a b : α) :
-    C a b :=
-  @WellFounded.fix (α × α) (fun x => C x.1 x.2) _ hr.sym2_gameAdd.of_quotient_lift₂
+    C a b := by
+  -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.
+  have := hr.sym2_gameAdd
+  dsimp only [GameAdd, lift₂, FunLike.coe, EquivLike.coe] at this
+  exact @WellFounded.fix (α × α) (fun x => C x.1 x.2) _ this.of_quotient_lift₂
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) (a, b)
 #align sym2.game_add.fix Sym2.GameAdd.fix
 
-theorem GameAdd.fix_eq {C : α → α → Sort _} (hr : WellFounded rα)
+theorem GameAdd.fix_eq {C : α → α → Sort*} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα ⟦(a₂, b₂)⟧ ⟦(a₁, b₁)⟧ → C a₂ b₂) → C a₁ b₁) (a b : α) :
-    GameAdd.fix hr IH a b = IH a b fun a' b' _ => GameAdd.fix hr IH a' b' :=
-  WellFounded.fix_eq _ _ _
+    GameAdd.fix hr IH a b = IH a b fun a' b' _ => GameAdd.fix hr IH a' b' := by
+  -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.
+  dsimp [GameAdd.fix]
+  exact WellFounded.fix_eq _ _ _
 #align sym2.game_add.fix_eq Sym2.GameAdd.fix_eq
 
 /-- Induction on the well-founded `Sym2.GameAdd` relation. -/

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.antilipschitz
-! leanprover-community/mathlib commit 97f079b7e89566de3a1143f887713667328c38ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.UniformSpace.CompleteSeparated
+
+#align_import topology.metric_space.antilipschitz from "leanprover-community/mathlib"@"97f079b7e89566de3a1143f887713667328c38ba"
 
 /-!
 # Antilipschitz functions
@@ -20,13 +17,13 @@ For a metric space, the latter inequality is equivalent to `dist x y ≤ K * dis
 
 ## Implementation notes
 
-The parameter `K` has type `ℝ≥0`. This way we avoid conjuction in the definition and have
+The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the definition and have
 coercions both to `ℝ` and `ℝ≥0∞`. We do not require `0 < K` in the definition, mostly because
 we do not have a `posreal` type.
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open scoped NNReal ENNReal Uniformity Topology
 open Set Filter Bornology
@@ -57,8 +54,8 @@ theorem antilipschitzWith_iff_le_mul_nndist :
   norm_cast
 #align antilipschitz_with_iff_le_mul_nndist antilipschitzWith_iff_le_mul_nndist
 
-alias antilipschitzWith_iff_le_mul_nndist ↔
-  AntilipschitzWith.le_mul_nndist AntilipschitzWith.of_le_mul_nndist
+alias ⟨AntilipschitzWith.le_mul_nndist, AntilipschitzWith.of_le_mul_nndist⟩ :=
+  antilipschitzWith_iff_le_mul_nndist
 #align antilipschitz_with.le_mul_nndist AntilipschitzWith.le_mul_nndist
 #align antilipschitz_with.of_le_mul_nndist AntilipschitzWith.of_le_mul_nndist
 
@@ -68,8 +65,8 @@ theorem antilipschitzWith_iff_le_mul_dist :
   norm_cast
 #align antilipschitz_with_iff_le_mul_dist antilipschitzWith_iff_le_mul_dist
 
-alias antilipschitzWith_iff_le_mul_dist ↔
-  AntilipschitzWith.le_mul_dist AntilipschitzWith.of_le_mul_dist
+alias ⟨AntilipschitzWith.le_mul_dist, AntilipschitzWith.of_le_mul_dist⟩ :=
+  antilipschitzWith_iff_le_mul_dist
 #align antilipschitz_with.le_mul_dist AntilipschitzWith.le_mul_dist
 #align antilipschitz_with.of_le_mul_dist AntilipschitzWith.of_le_mul_dist
 
@@ -104,7 +101,7 @@ protected def k (_hf : AntilipschitzWith K f) : ℝ≥0 := K
 set_option linter.uppercaseLean3 false in
 #align antilipschitz_with.K AntilipschitzWith.k
 
-protected theorem injective {α : Type _} {β : Type _} [EMetricSpace α] [PseudoEMetricSpace β]
+protected theorem injective {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
     {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) : Function.Injective f := fun x y h => by
   simpa only [h, edist_self, mul_zero, edist_le_zero] using hf x y
 #align antilipschitz_with.injective AntilipschitzWith.injective
@@ -177,7 +174,7 @@ protected theorem uniformInducing (hf : AntilipschitzWith K f) (hfc : UniformCon
   ⟨le_antisymm hf.comap_uniformity_le hfc.le_comap⟩
 #align antilipschitz_with.uniform_inducing AntilipschitzWith.uniformInducing
 
-protected theorem uniformEmbedding {α : Type _} {β : Type _} [EMetricSpace α] [PseudoEMetricSpace β]
+protected theorem uniformEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
     {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     UniformEmbedding f :=
   ⟨hf.uniformInducing hfc, hf.injective⟩
@@ -188,13 +185,13 @@ theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
   (hf.uniformInducing hfc).isComplete_range
 #align antilipschitz_with.is_complete_range AntilipschitzWith.isComplete_range
 
-theorem isClosed_range {α β : Type _} [PseudoEMetricSpace α] [EMetricSpace β] [CompleteSpace α]
+theorem isClosed_range {α β : Type*} [PseudoEMetricSpace α] [EMetricSpace β] [CompleteSpace α]
     {f : α → β} {K : ℝ≥0} (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     IsClosed (range f) :=
   (hf.isComplete_range hfc).isClosed
 #align antilipschitz_with.is_closed_range AntilipschitzWith.isClosed_range
 
-theorem closedEmbedding {α : Type _} {β : Type _} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
+theorem closedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
     {f : α → β} [CompleteSpace α] (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     ClosedEmbedding f :=
   { (hf.uniformEmbedding hfc).embedding with closed_range := hf.isClosed_range hfc }
@@ -223,27 +220,24 @@ open Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0} {f : α → β}
 
-theorem bounded_preimage (hf : AntilipschitzWith K f) {s : Set β} (hs : Bounded s) :
-    Bounded (f ⁻¹' s) :=
-  Exists.intro (K * diam s) fun x hx y hy =>
-    calc
-      dist x y ≤ K * dist (f x) (f y) := hf.le_mul_dist x y
-      _ ≤ K * diam s := mul_le_mul_of_nonneg_left (dist_le_diam_of_mem hs hx hy) K.2
-#align antilipschitz_with.bounded_preimage AntilipschitzWith.bounded_preimage
+theorem isBounded_preimage (hf : AntilipschitzWith K f) {s : Set β} (hs : IsBounded s) :
+    IsBounded (f ⁻¹' s) :=
+  isBounded_iff_ediam_ne_top.2 <| ne_top_of_le_ne_top
+    (ENNReal.mul_ne_top ENNReal.coe_ne_top hs.ediam_ne_top) (hf.ediam_preimage_le _)
+#align antilipschitz_with.bounded_preimage AntilipschitzWith.isBounded_preimage
 
 theorem tendsto_cobounded (hf : AntilipschitzWith K f) : Tendsto f (cobounded α) (cobounded β) :=
-  compl_surjective.forall.2 fun s (hs : IsBounded s) =>
-    Metric.isBounded_iff.2 <| hf.bounded_preimage <| Metric.isBounded_iff.1 hs
+  compl_surjective.forall.2 fun _ ↦ hf.isBounded_preimage
 #align antilipschitz_with.tendsto_cobounded AntilipschitzWith.tendsto_cobounded
 
 /-- The image of a proper space under an expanding onto map is proper. -/
-protected theorem properSpace {α : Type _} [MetricSpace α] {K : ℝ≥0} {f : α → β} [ProperSpace α]
+protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : α → β} [ProperSpace α]
     (hK : AntilipschitzWith K f) (f_cont : Continuous f) (hf : Function.Surjective f) :
     ProperSpace β := by
   refine ⟨fun x₀ r => ?_⟩
   let K := f ⁻¹' closedBall x₀ r
   have A : IsClosed K := isClosed_ball.preimage f_cont
-  have B : Bounded K := hK.bounded_preimage bounded_closedBall
+  have B : IsBounded K := hK.isBounded_preimage isBounded_closedBall
   have : IsCompact K := isCompact_iff_isClosed_bounded.2 ⟨A, B⟩
   convert this.image f_cont
   exact (hf.image_preimage _).symm

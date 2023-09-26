@@ -26,4 +26,4 @@ example : ∃ x : Nat, ∃ y : Nat, x = y := by
 -/
 
 macro "existsi " es:term,+ : tactic =>
-  `(tactic|refine ⟨$es,*, ?_⟩)
+  `(tactic| refine ⟨$es,*, ?_⟩)

@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.dedup
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Nodup
+
+#align_import data.multiset.dedup from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Erasing duplicates in a multiset.
@@ -19,7 +16,7 @@ namespace Multiset
 
 open List
 
-variable {α β : Type _} [DecidableEq α]
+variable {α β : Type*} [DecidableEq α]
 
 /-! ### dedup -/
 
@@ -84,7 +81,7 @@ theorem dedup_eq_self {s : Multiset α} : dedup s = s ↔ Nodup s :=
   ⟨fun e => e ▸ nodup_dedup s, Quot.induction_on s fun _ h => congr_arg ofList h.dedup⟩
 #align multiset.dedup_eq_self Multiset.dedup_eq_self
 
-alias dedup_eq_self ↔ _ Nodup.dedup
+alias ⟨_, Nodup.dedup⟩ := dedup_eq_self
 #align multiset.nodup.dedup Multiset.Nodup.dedup
 
 theorem count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m then 1 else 0 :=
@@ -94,9 +91,9 @@ theorem count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m th
 #align multiset.count_dedup Multiset.count_dedup
 
 @[simp]
-theorem dedup_idempotent {m : Multiset α} : m.dedup.dedup = m.dedup :=
-  Quot.induction_on m fun _ => @congr_arg _ _ _ _ ofList List.dedup_idempotent
-#align multiset.dedup_idempotent Multiset.dedup_idempotent
+theorem dedup_idem {m : Multiset α} : m.dedup.dedup = m.dedup :=
+  Quot.induction_on m fun _ => @congr_arg _ _ _ _ ofList List.dedup_idem
+#align multiset.dedup_idempotent Multiset.dedup_idem
 
 @[simp]
 theorem dedup_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multiset β) :
@@ -147,7 +144,7 @@ theorem Nodup.le_dedup_iff_le {s t : Multiset α} (hno : s.Nodup) : s ≤ t.dedu
 
 end Multiset
 
-theorem Multiset.Nodup.le_nsmul_iff_le {α : Type _} {s t : Multiset α} {n : ℕ} (h : s.Nodup)
+theorem Multiset.Nodup.le_nsmul_iff_le {α : Type*} {s t : Multiset α} {n : ℕ} (h : s.Nodup)
     (hn : n ≠ 0) : s ≤ n • t ↔ s ≤ t := by
   classical
     rw [← h.le_dedup_iff_le, Iff.comm, ← h.le_dedup_iff_le]

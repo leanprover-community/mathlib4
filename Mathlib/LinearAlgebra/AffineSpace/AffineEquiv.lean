@@ -2,15 +2,11 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.affine_equiv
-! leanprover-community/mathlib commit bd1fc183335ea95a9519a1630bcf901fe9326d83
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.Algebra.Invertible
+
+#align_import linear_algebra.affine_space.affine_equiv from "leanprover-community/mathlib"@"bd1fc183335ea95a9519a1630bcf901fe9326d83"
 
 /-!
 # Affine equivalences
@@ -41,16 +37,13 @@ open Function Set
 
 open Affine
 
--- Porting note: this is needed because of lean4#2074
-attribute [-instance] Ring.toNonAssocRing
-
 /-- An affine equivalence is an equivalence between affine spaces such that both forward
 and inverse maps are affine.
 
 We define it using an `Equiv` for the map and a `LinearEquiv` for the linear part in order
 to allow affine equivalences with good definitional equalities. -/
 --@[nolint has_nonempty_instance]
-structure AffineEquiv (k P₁ P₂ : Type _) {V₁ V₂ : Type _} [Ring k] [AddCommGroup V₁] [Module k V₁]
+structure AffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
   [AddTorsor V₁ P₁] [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] extends P₁ ≃ P₂ where
   linear : V₁ ≃ₗ[k] V₂
   map_vadd' : ∀ (p : P₁) (v : V₁), toEquiv (v +ᵥ p) = linear v +ᵥ toEquiv p
@@ -58,7 +51,7 @@ structure AffineEquiv (k P₁ P₂ : Type _) {V₁ V₂ : Type _} [Ring k] [AddC
 
 notation:25 P₁ " ≃ᵃ[" k:25 "] " P₂:0 => AffineEquiv k P₁ P₂
 
-variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type _} [Ring k] [AddCommGroup V₁] [Module k V₁]
+variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
   [AddTorsor V₁ P₁] [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [AddCommGroup V₃]
   [Module k V₃] [AddTorsor V₃ P₃] [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄]
 
@@ -523,7 +516,7 @@ theorem constVAdd_zsmul (z : ℤ) (v : V₁) : constVAdd k P₁ (z • v) = cons
 
 section Homothety
 
-variable {R V P : Type _} [CommRing R] [AddCommGroup V] [Module R V] [AffineSpace V P]
+variable {R V P : Type*} [CommRing R] [AddCommGroup V] [Module R V] [AffineSpace V P]
 
 /-- Fixing a point in affine space, homothety about this point gives a group homomorphism from (the
 centre of) the units of the scalars into the group of affine equivalences. -/
@@ -653,7 +646,7 @@ theorem vadd_lineMap (v : V₁) (p₁ p₂ : P₁) (c : k) :
   (constVAdd k P₁ v).apply_lineMap p₁ p₂ c
 #align affine_map.vadd_line_map AffineMap.vadd_lineMap
 
-variable {R' : Type _} [CommRing R'] [Module R' V₁]
+variable {R' : Type*} [CommRing R'] [Module R' V₁]
 
 theorem homothety_neg_one_apply (c p : P₁) : homothety c (-1 : R') p = pointReflection R' c p := by
   -- porting note: added `()`, `_`, and `neg_vsub_eq_vsub_rev`

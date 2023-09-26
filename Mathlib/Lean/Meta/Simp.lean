@@ -12,6 +12,8 @@ import Std.Tactic.OpenPrivate
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
 
+set_option autoImplicit true
+
 open Lean Elab.Tactic
 
 def Lean.PHashSet.toList [BEq α] [Hashable α] (s : Lean.PHashSet α) : List α :=
@@ -53,6 +55,18 @@ def mkEqSymm (e : Expr) (r : Simp.Result) : MetaM Simp.Result :=
 
 def mkCast (r : Simp.Result) (e : Expr) : MetaM Expr := do
   mkAppM ``cast #[← r.getProof, e]
+
+/--
+Constructs a proof that the original expression is true
+given a simp result which simplifies the target to `True`.
+-/
+def Result.ofTrue (r : Simp.Result) : MetaM (Option Expr) :=
+  if r.expr.isConstOf ``True then
+    some <$> match r.proof? with
+    | some proof => mkOfEqTrue proof
+    | none => pure (mkConst ``True.intro)
+  else
+    pure none
 
 /-- Return all propositions in the local context. -/
 def getPropHyps : MetaM (Array FVarId) := do
@@ -108,7 +122,7 @@ lemmas.
 Remark: either the length of the arrays is the same,
 or the length of the first one is 0 and the length of the second one is 1. -/
 def mkSimpTheoremsFromConst' (declName : Name) (post : Bool) (inv : Bool) (prio : Nat) :
-  MetaM (Array Name × Array SimpTheorem) := do
+    MetaM (Array Name × Array SimpTheorem) := do
   let cinfo ← getConstInfo declName
   let val := mkConst declName (cinfo.levelParams.map mkLevelParam)
   withReducible do
@@ -171,19 +185,30 @@ def addSimpAttrFromSyntax (declName : Name) (ext : SimpExtension) (attrKind : At
 
 end Simp
 
-/-- Construct a `SimpTheorems` from a list of names. (i.e. as with `simp only`). -/
-def simpTheoremsOfNames (lemmas : List Name) : MetaM SimpTheorems := do
-  lemmas.foldlM (·.addConst ·) (← simpOnlyBuiltins.foldlM (·.addConst ·) {})
+/-- Construct a `SimpTheorems` from a list of names. -/
+def simpTheoremsOfNames (lemmas : List Name := []) (simpOnly : Bool := false) :
+    MetaM SimpTheorems := do
+  lemmas.foldlM (·.addConst ·)
+    (if simpOnly then
+      ← simpOnlyBuiltins.foldlM (·.addConst ·) {}
+    else
+      ← getSimpTheorems)
 
-/-- Simplify an expression using only a list of lemmas specified by name. -/
 -- TODO We need to write a `mkSimpContext` in `MetaM`
 -- that supports all the bells and whistles in `simp`.
 -- It should generalize this, and another partial implementation in `Tactic.Simps.Basic`.
+
+/-- Construct a `Simp.Context` from a list of names. -/
+def Simp.Context.ofNames (lemmas : List Name := []) (simpOnly : Bool := false)
+    (config : Simp.Config := {}) : MetaM Simp.Context := do pure <|
+  { simpTheorems := #[← simpTheoremsOfNames lemmas simpOnly],
+    congrTheorems := ← Lean.Meta.getSimpCongrTheorems,
+    config := config }
+
+/-- Simplify an expression using only a list of lemmas specified by name. -/
 def simpOnlyNames (lemmas : List Name) (e : Expr) (config : Simp.Config := {}) :
     MetaM Simp.Result := do
-  (·.1) <$> simp e
-    { simpTheorems := #[← simpTheoremsOfNames lemmas], congrTheorems := ← getSimpCongrTheorems,
-      config := config }
+  (·.1) <$> simp e (← Simp.Context.ofNames lemmas true config)
 
 /--
 Given a simplifier `S : Expr → MetaM Simp.Result`,

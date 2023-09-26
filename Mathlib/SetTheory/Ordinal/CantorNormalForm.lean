@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.ordinal.cantor_normal_form
-! leanprover-community/mathlib commit 991ff3b5269848f6dd942ae8e9dd3c946035dc8b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Exponential
+
+#align_import set_theory.ordinal.cantor_normal_form from "leanprover-community/mathlib"@"991ff3b5269848f6dd942ae8e9dd3c946035dc8b"
 
 /-!
 # Cantor Normal Form
@@ -44,7 +41,7 @@ namespace Ordinal
 
 /-- Inducts on the base `b` expansion of an ordinal. -/
 @[elab_as_elim]
-noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort _} (H0 : C 0)
+noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : ∀ o, C o := fun o ↦ by
     by_cases h : o = 0
     · rw [h]; exact H0
@@ -55,14 +52,14 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_rec Ordinal.CNFRec
 
 @[simp]
-theorem CNFRec_zero {C : Ordinal → Sort _} (b : Ordinal) (H0 : C 0)
+theorem CNFRec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : @CNFRec b C H0 H 0 = H0 := by
   rw [CNFRec, dif_pos rfl]
   rfl
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_rec_zero Ordinal.CNFRec_zero
 
-theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort _} (ho : o ≠ 0) (H0 : C 0)
+theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) :
     @CNFRec b C H0 H o = H o ho (@CNFRec b C H0 H _) := by rw [CNFRec, dif_neg ho]
 set_option linter.uppercaseLean3 false in

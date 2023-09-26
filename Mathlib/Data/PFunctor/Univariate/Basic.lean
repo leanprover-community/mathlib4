@@ -2,13 +2,10 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.pfunctor.univariate.basic
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.W.Basic
+
+#align_import data.pfunctor.univariate.basic from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Polynomial functors
@@ -45,12 +42,12 @@ instance : Inhabited PFunctor :=
 variable (P : PFunctor) {α β : Type u}
 
 /-- Applying `P` to an object of `Type` -/
-def Obj (α : Type _) :=
+def Obj (α : Type*) :=
   Σx : P.A, P.B x → α
 #align pfunctor.obj PFunctor.Obj
 
 /-- Applying `P` to a morphism of `Type` -/
-def map {α β : Type _} (f : α → β) : P.Obj α → P.Obj β :=
+def map {α β : Type*} (f : α → β) : P.Obj α → P.Obj β :=
   fun ⟨a, g⟩ => ⟨a, f ∘ g⟩
 #align pfunctor.map PFunctor.map
 
@@ -65,7 +62,7 @@ protected theorem map_eq {α β : Type _} (f : α → β) (a : P.A) (g : P.B a �
   rfl
 #align pfunctor.map_eq PFunctor.map_eq
 
-protected theorem id_map {α : Type _} : ∀ x : P.Obj α, id <$> x = id x := fun ⟨_a, _b⟩ => rfl
+protected theorem id_map {α : Type*} : ∀ x : P.Obj α, id <$> x = id x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.id_map PFunctor.id_map
 
 protected theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) :
@@ -90,7 +87,7 @@ such that `P.B a` is empty to yield a finite tree -/
 
 variable {P}
 
-/-- root element  of a W tree -/
+/-- root element of a W tree -/
 def W.head : W P → P.A
   | ⟨a, _f⟩ => a
 #align pfunctor.W.head PFunctor.W.head
@@ -121,7 +118,7 @@ theorem W.mk_dest (p : W P) : W.mk (W.dest p) = p := by cases p; rfl
 variable (P)
 
 /-- `Idx` identifies a location inside the application of a pfunctor.
-For `F : pfunctor`, `x : F.obj α` and `i : F.Idx`, `i` can designate
+For `F : PFunctor`, `x : F.obj α` and `i : F.Idx`, `i` can designate
 one part of `x` or is invalid, if `i.1 ≠ x.1` -/
 def IdxCat :=
   Σx : P.A, P.B x

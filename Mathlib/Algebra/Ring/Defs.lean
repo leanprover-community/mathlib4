@@ -2,17 +2,14 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
-
-! This file was ported from Lean 3 source module algebra.ring.defs
-! leanprover-community/mathlib commit 76de8ae01554c3b37d66544866659ff174e66e1f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Logic.Nontrivial
 import Mathlib.Tactic.Spread
+import Mathlib.Util.AssertExists
+
+#align_import algebra.ring.defs from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
 
 /-!
 # Semirings and rings
@@ -26,15 +23,14 @@ the present file is about their interaction.
 * `Distrib`: Typeclass for distributivity of multiplication over addition.
 * `HasDistribNeg`: Typeclass for commutativity of negation and multiplication. This is useful when
   dealing with multiplicative submonoids which are closed under negation without being closed under
-  addition, for example `units`.
-* `(NonUnital_)(NonAssoc_)(Semi)ring`: Typeclasses for possibly non-unital or non-associative
+  addition, for example `Units`.
+* `(NonUnital)(NonAssoc)(Semi)Ring`: Typeclasses for possibly non-unital or non-associative
   rings and semirings. Some combinations are not defined yet because they haven't found use.
 
 ## Tags
 
 `Semiring`, `CommSemiring`, `Ring`, `CommRing`, domain, `IsDomain`, nonzero, units
 -/
-
 
 universe u v w x
 
@@ -43,13 +39,13 @@ variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
 open Function
 
 /-!
-### `distrib` class
+### `Distrib` class
 -/
 
 
 /-- A typeclass stating that multiplication is left and right distributive
 over addition. -/
-class Distrib (R : Type _) extends Mul R, Add R where
+class Distrib (R : Type*) extends Mul R, Add R where
   /-- Multiplication is left distributive over addition -/
   protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
   /-- Multiplication is right distributive over addition -/
@@ -57,24 +53,24 @@ class Distrib (R : Type _) extends Mul R, Add R where
 #align distrib Distrib
 
 /-- A typeclass stating that multiplication is left distributive over addition. -/
-class LeftDistribClass (R : Type _) [Mul R] [Add R] where
+class LeftDistribClass (R : Type*) [Mul R] [Add R] : Prop where
   /-- Multiplication is left distributive over addition -/
   protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
 #align left_distrib_class LeftDistribClass
 
 /-- A typeclass stating that multiplication is right distributive over addition. -/
-class RightDistribClass (R : Type _) [Mul R] [Add R] where
+class RightDistribClass (R : Type*) [Mul R] [Add R] : Prop where
   /-- Multiplication is right distributive over addition -/
   protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 #align right_distrib_class RightDistribClass
 
 -- see Note [lower instance priority]
-instance (priority := 100) Distrib.leftDistribClass (R : Type _) [Distrib R] : LeftDistribClass R :=
+instance (priority := 100) Distrib.leftDistribClass (R : Type*) [Distrib R] : LeftDistribClass R :=
   ⟨Distrib.left_distrib⟩
 #align distrib.left_distrib_class Distrib.leftDistribClass
 
 -- see Note [lower instance priority]
-instance (priority := 100) Distrib.rightDistribClass (R : Type _) [Distrib R] :
+instance (priority := 100) Distrib.rightDistribClass (R : Type*) [Distrib R] :
     RightDistribClass R :=
   ⟨Distrib.right_distrib⟩
 #align distrib.right_distrib_class Distrib.rightDistribClass
@@ -84,7 +80,7 @@ theorem left_distrib [Mul R] [Add R] [LeftDistribClass R] (a b c : R) :
   LeftDistribClass.left_distrib a b c
 #align left_distrib left_distrib
 
-alias left_distrib ← mul_add
+alias mul_add := left_distrib
 #align mul_add mul_add
 
 theorem right_distrib [Mul R] [Add R] [RightDistribClass R] (a b c : R) :
@@ -92,7 +88,7 @@ theorem right_distrib [Mul R] [Add R] [RightDistribClass R] (a b c : R) :
   RightDistribClass.right_distrib a b c
 #align right_distrib right_distrib
 
-alias right_distrib ← add_mul
+alias add_mul := right_distrib
 #align add_mul add_mul
 
 theorem distrib_three_right [Mul R] [Add R] [RightDistribClass R] (a b c d : R) :
@@ -100,9 +96,18 @@ theorem distrib_three_right [Mul R] [Add R] [RightDistribClass R] (a b c d : R) 
 #align distrib_three_right distrib_three_right
 
 /-!
-### Semirings
--/
+### Classes of semirings and rings
 
+We make sure that the canonical path from `NonAssocSemiring` to `Ring` passes through `Semiring`,
+as this is a path which is followed all the time in linear algebra where the defining semilinear map
+`σ : R →+* S` depends on the `NonAssocSemiring` structure of `R` and `S` while the module
+definition depends on the `Semiring` structure.
+
+It is not currently possible to adjust priorities by hand (see lean4#2115). Instead, the last
+declared instance is used, so we make sure that `Semiring` is declared after `NonAssocRing`, so
+that `Semiring -> NonAssocSemiring` is tried before `NonAssocRing -> NonAssocSemiring`.
+TODO: clean this once lean4#2115 is fixed
+-/
 
 /-- A not-necessarily-unital, not-necessarily-associative semiring. -/
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
@@ -117,8 +122,30 @@ class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZe
     AddCommMonoidWithOne α
 #align non_assoc_semiring NonAssocSemiring
 
+/-- A not-necessarily-unital, not-necessarily-associative ring. -/
+class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
+#align non_unital_non_assoc_ring NonUnitalNonAssocRing
+
+-- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
+-- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
+/-- An associative but not-necessarily unital ring. -/
+class NonUnitalRing (α : Type*) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
+#align non_unital_ring NonUnitalRing
+
+/-- A unital but not-necessarily-associative ring. -/
+class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
+    AddCommGroupWithOne α
+#align non_assoc_ring NonAssocRing
+
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
+
+class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+#align ring Ring
+
+/-!
+### Semirings
+-/
 
 section DistribMulOneClass
 
@@ -196,15 +223,15 @@ theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (if P then 1 else 0) * a = if P then a else 0 := by simp
 #align boole_mul boole_mul
 
-theorem ite_mul_zero_left {α : Type _} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
+theorem ite_mul_zero_left {α : Type*} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
     ite P (a * b) 0 = ite P a 0 * b := by by_cases h : P <;> simp [h]
 #align ite_mul_zero_left ite_mul_zero_left
 
-theorem ite_mul_zero_right {α : Type _} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
+theorem ite_mul_zero_right {α : Type*} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
     ite P (a * b) 0 = a * ite P b 0 := by by_cases h : P <;> simp [h]
 #align ite_mul_zero_right ite_mul_zero_right
 
-theorem ite_and_mul_zero {α : Type _} [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q]
+theorem ite_and_mul_zero {α : Type*} [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q]
     (a b : α) : ite (P ∧ Q) (a * b) 0 = ite P a 0 * ite Q b 0 := by
   simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
 #align ite_and_mul_zero ite_and_mul_zero
@@ -247,7 +274,7 @@ section HasDistribNeg
 
 This is useful for dealing with submonoids of a ring that contain `-1` without having to duplicate
 lemmas. -/
-class HasDistribNeg (α : Type _) [Mul α] extends InvolutiveNeg α where
+class HasDistribNeg (α : Type*) [Mul α] extends InvolutiveNeg α where
   /-- Negation is left distributive over multiplication -/
   neg_mul : ∀ x y : α, -x * y = -(x * y)
   /-- Negation is right distributive over multiplication -/
@@ -320,25 +347,6 @@ end HasDistribNeg
 ### Rings
 -/
 
-
-/-- A not-necessarily-unital, not-necessarily-associative ring. -/
-class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
-#align non_unital_non_assoc_ring NonUnitalNonAssocRing
-
--- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
--- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
-/-- An associative but not-necessarily unital ring. -/
-class NonUnitalRing (α : Type _) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
-#align non_unital_ring NonUnitalRing
-
-/-- A unital but not-necessarily-associative ring. -/
-class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
-    AddCommGroupWithOne α
-#align non_assoc_ring NonAssocRing
-
-class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
-#align ring Ring
-
 section NonUnitalNonAssocRing
 
 variable [NonUnitalNonAssocRing α]
@@ -354,41 +362,18 @@ theorem mul_sub_left_distrib (a b c : α) : a * (b - c) = a * b - a * c := by
   simpa only [sub_eq_add_neg, neg_mul_eq_mul_neg] using mul_add a b (-c)
 #align mul_sub_left_distrib mul_sub_left_distrib
 
-alias mul_sub_left_distrib ← mul_sub
+alias mul_sub := mul_sub_left_distrib
 #align mul_sub mul_sub
 
 theorem mul_sub_right_distrib (a b c : α) : (a - b) * c = a * c - b * c := by
   simpa only [sub_eq_add_neg, neg_mul_eq_neg_mul] using add_mul a (-b) c
 #align mul_sub_right_distrib mul_sub_right_distrib
 
-alias mul_sub_right_distrib ← sub_mul
+alias sub_mul := mul_sub_right_distrib
 #align sub_mul sub_mul
 
-variable {a b c d e : α}
-
-/-- An iff statement following from right distributivity in rings and the definition
-  of subtraction. -/
-theorem mul_add_eq_mul_add_iff_sub_mul_add_eq : a * e + c = b * e + d ↔ (a - b) * e + c = d :=
-  calc
-    a * e + c = b * e + d ↔ a * e + c = d + b * e := by simp [add_comm]
-    _ ↔ a * e + c - b * e = d :=
-      Iff.intro
-        (fun h => by
-          rw [h]
-          simp)
-        fun h => by
-        rw [← h]
-        simp
-    _ ↔ (a - b) * e + c = d := by simp [sub_mul, sub_add_eq_add_sub]
-#align mul_add_eq_mul_add_iff_sub_mul_add_eq mul_add_eq_mul_add_iff_sub_mul_add_eq
-
-/-- A simplification of one side of an equation exploiting right distributivity in rings
-  and the definition of subtraction. -/
-theorem sub_mul_add_eq_of_mul_add_eq_mul_add (h : a * e + c = b * e + d) : (a - b) * e + c = d :=
-  calc
-    (a - b) * e + c = a * e + c - b * e := by simp [sub_mul, sub_add_eq_add_sub]
-    _ = d := by rw [h]; simp [@add_sub_cancel α]
-#align sub_mul_add_eq_of_mul_add_eq_mul_add sub_mul_add_eq_of_mul_add_eq_mul_add
+#noalign mul_add_eq_mul_add_iff_sub_mul_add_eq
+#noalign sub_mul_add_eq_of_mul_add_eq_mul_add
 
 end NonUnitalNonAssocRing
 
@@ -416,18 +401,14 @@ variable [Ring α] {a b c d e : α}
 
 -- A (unital, associative) ring is a not-necessarily-unital ring
 -- see Note [lower instance priority]
-instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α where
-  __ := ‹Ring α›
-  zero_mul := fun a => add_left_cancel (a := 0 * a) <| by rw [← add_mul, zero_add, add_zero]
-  mul_zero := fun a => add_left_cancel (a := a * 0) <| by rw [← mul_add, add_zero, add_zero]
+instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
+  { ‹Ring α› with }
 #align ring.to_non_unital_ring Ring.toNonUnitalRing
 
 -- A (unital, associative) ring is a not-necessarily-associative ring
 -- see Note [lower instance priority]
-instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α where
-  __ := ‹Ring α›
-  zero_mul := fun a => add_left_cancel (a := 0 * a) <| by rw [← add_mul, zero_add, add_zero]
-  mul_zero := fun a => add_left_cancel (a := a * 0) <| by rw [← mul_add, add_zero, add_zero]
+instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
+  { ‹Ring α› with }
 #align ring.to_non_assoc_ring Ring.toNonAssocRing
 
 /- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
@@ -476,3 +457,13 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
   To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
 class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop
 #align is_domain IsDomain
+
+/-!
+Previously an import dependency on `Mathlib.Algebra.Group.Basic` had crept in.
+In general, the `.Defs` files in the basic algebraic hierarchy should only depend on earlier `.Defs`
+files, without importing `.Basic` theory development.
+
+These `assert_not_exists` statements guard against this returning.
+-/
+assert_not_exists DivisionMonoid.toDivInvOneMonoid
+assert_not_exists mul_rotate

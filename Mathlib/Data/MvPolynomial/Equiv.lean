@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.mv_polynomial.equiv
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.Polynomial.AlgebraMap
@@ -14,6 +9,8 @@ import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Algebra.BigOperators.Fin
+
+#align_import data.mv_polynomial.equiv from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Equivalences between polynomial rings
@@ -25,9 +22,9 @@ based on equivalences between the underlying types.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type _` (indexing the variables)
++ `σ : Type*` (indexing the variables)
 
-+ `R : Type _` `[CommSemiring R]` (the coefficients)
++ `R : Type*` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
 This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
@@ -47,7 +44,7 @@ equivalence, isomorphism, morphism, ring hom, hom
 
 noncomputable section
 
-open Classical BigOperators Polynomial Set Function Finsupp AddMonoidAlgebra
+open BigOperators Polynomial Set Function Finsupp AddMonoidAlgebra
 
 universe u v w x
 
@@ -55,7 +52,7 @@ variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
 
 namespace MvPolynomial
 
-variable {σ : Type _} {a a' a₁ a₂ : R} {e : ℕ} {s : σ →₀ ℕ}
+variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {s : σ →₀ ℕ}
 
 section Equiv
 
@@ -123,7 +120,7 @@ theorem mapEquiv_trans [CommSemiring S₁] [CommSemiring S₂] [CommSemiring S�
       map_map]
 #align mv_polynomial.map_equiv_trans MvPolynomial.mapEquiv_trans
 
-variable {A₁ A₂ A₃ : Type _} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
+variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
 
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 
@@ -159,7 +156,7 @@ variable (S₁ S₂ S₃)
 
 /-- The function from multivariable polynomials in a sum of two types,
 to multivariable polynomials in one of the types,
-with coefficents in multivariable polynomials in the other type.
+with coefficients in multivariable polynomials in the other type.
 
 See `sumRingEquiv` for the ring isomorphism.
 -/
@@ -186,7 +183,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.sum_to_iter_Xr MvPolynomial.sumToIter_Xr
 
 /-- The function from multivariable polynomials in one type,
-with coefficents in multivariable polynomials in another type,
+with coefficients in multivariable polynomials in another type,
 to multivariable polynomials in the sum of the two types.
 
 See `sumRingEquiv` for the ring isomorphism.
@@ -221,7 +218,7 @@ def isEmptyAlgEquiv [he : IsEmpty σ] : MvPolynomial σ R ≃ₐ[R] R :=
       ext
       simp [Algebra.ofId_apply, algebraMap_eq])
     (by
-      ext (i m)
+      ext i m
       exact IsEmpty.elim' he i)
 #align mv_polynomial.is_empty_alg_equiv MvPolynomial.isEmptyAlgEquiv
 
@@ -251,7 +248,7 @@ def mvPolynomialEquivMvPolynomial [CommSemiring S₃] (f : MvPolynomial S₁ R �
 
 /-- The ring isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,
-with coefficents in multivariable polynomials in the other type.
+with coefficients in multivariable polynomials in the other type.
 -/
 def sumRingEquiv : MvPolynomial (Sum S₁ S₂) R ≃+* MvPolynomial S₁ (MvPolynomial S₂ R) := by
   apply mvPolynomialEquivMvPolynomial R (Sum S₁ S₂) _ _ (sumToIter R S₁ S₂) (iterToSum R S₁ S₂)
@@ -265,14 +262,14 @@ def sumRingEquiv : MvPolynomial (Sum S₁ S₂) R ≃+* MvPolynomial S₁ (MvPol
 
 /-- The algebra isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,
-with coefficents in multivariable polynomials in the other type.
+with coefficients in multivariable polynomials in the other type.
 -/
 def sumAlgEquiv : MvPolynomial (Sum S₁ S₂) R ≃ₐ[R] MvPolynomial S₁ (MvPolynomial S₂ R) :=
   { sumRingEquiv R S₁ S₂ with
     commutes' := by
       intro r
-      have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := by rfl
-      have B : algebraMap R (MvPolynomial (Sum S₁ S₂) R) r = C r := by rfl
+      have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := rfl
+      have B : algebraMap R (MvPolynomial (Sum S₁ S₂) R) r = C r := rfl
       simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe_apply,
         Equiv.coe_fn_mk, B, sumToIter_C, A] }
 #align mv_polynomial.sum_alg_equiv MvPolynomial.sumAlgEquiv

@@ -2,13 +2,10 @@
 Copyright (c) 2019 Minchao Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
-
-! This file was ported from Lean 3 source module data.list.min_max
-! leanprover-community/mathlib commit 6d0adfa76594f304b4650d098273d4366edeb61b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
+
+#align_import data.list.min_max from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 
 /-!
 # Minimum and maximum of lists
@@ -19,16 +16,18 @@ The main definitions are `argmax`, `argmin`, `minimum` and `maximum` for lists.
 
 `argmax f l` returns `some a`, where `a` of `l` that maximises `f a`. If there are `a b` such that
   `f a = f b`, it returns whichever of `a` or `b` comes first in the list.
-  `argmax f []` = none`
+  `argmax f [] = none`
 
-`minimum l` returns an `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
+`minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`
 -/
+
+set_option autoImplicit true
 
 
 namespace List
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section ArgAux
 
@@ -95,14 +94,14 @@ variable [Preorder β] [@DecidableRel β (· < ·)] {f : α → β} {l : List α
 
 /-- `argmax f l` returns `some a`, where `f a` is maximal among the elements of `l`, in the sense
 that there is no `b ∈ l` with `f a < f b`. If `a`, `b` are such that `f a = f b`, it returns
-whichever of `a` or `b` comes first in the list. `argmax f []` = none`. -/
+whichever of `a` or `b` comes first in the list. `argmax f [] = none`. -/
 def argmax (f : α → β) (l : List α) : Option α :=
   l.foldl (argAux fun b c => f c < f b) none
 #align list.argmax List.argmax
 
 /-- `argmin f l` returns `some a`, where `f a` is minimal among the elements of `l`, in the sense
 that there is no `b ∈ l` with `f b < f a`. If `a`, `b` are such that `f a = f b`, it returns
-whichever of `a` or `b` comes first in the list. `argmin f []` = none`. -/
+whichever of `a` or `b` comes first in the list. `argmin f [] = none`. -/
 def argmin (f : α → β) (l : List α) :=
   l.foldl (argAux fun b c => f b < f c) none
 #align list.argmin List.argmin
@@ -208,7 +207,7 @@ theorem index_of_argmax :
     ∀ {l : List α} {m : α}, m ∈ argmax f l → ∀ {a}, a ∈ l → f m ≤ f a → l.indexOf m ≤ l.indexOf a
   | [], m, _, _, _, _ => by simp
   | hd :: tl, m, hm, a, ha, ham => by
-    simp only [indexOf_cons, argmax_cons, Option.mem_def] at hm⊢
+    simp only [indexOf_cons, argmax_cons, Option.mem_def] at hm ⊢
     cases h : argmax f tl
     · rw [h] at hm
       simp_all
@@ -217,11 +216,11 @@ theorem index_of_argmax :
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
     · cases not_le_of_lt ‹_› ‹_›
     · rw [if_pos rfl]
-    . rw [if_neg, if_neg]
+    · rw [if_neg, if_neg]
       exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
       · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne'
       · exact ne_of_apply_ne _ ‹f hd < f _›.ne'
-    . rw [if_pos rfl]
+    · rw [if_pos rfl]
       exact Nat.zero_le _
 #align list.index_of_argmax List.index_of_argmax
 
@@ -270,13 +269,13 @@ section Preorder
 
 variable [Preorder α] [@DecidableRel α (· < ·)] {l : List α} {a m : α}
 
-/-- `maximum l` returns an `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
+/-- `maximum l` returns a `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
 `[]`  -/
 def maximum (l : List α) : WithBot α :=
   argmax id l
 #align list.maximum List.maximum
 
-/-- `minimum l` returns an `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
+/-- `minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`  -/
 def minimum (l : List α) : WithTop α :=
   argmin id l
@@ -363,9 +362,9 @@ theorem le_maximum_of_mem' (ha : a ∈ l) : (a : WithBot α) ≤ maximum l :=
   le_of_not_lt <| not_lt_maximum_of_mem' ha
 #align list.le_maximum_of_mem' List.le_maximum_of_mem'
 
-theorem le_minimum_of_mem' (ha : a ∈ l) : minimum l ≤ (a : WithTop α) :=
+theorem minimum_le_of_mem' (ha : a ∈ l) : minimum l ≤ (a : WithTop α) :=
   @le_maximum_of_mem' αᵒᵈ _ _ _ ha
-#align list.le_minimum_of_mem' List.le_minimum_of_mem'
+#align list.le_minimum_of_mem' List.minimum_le_of_mem'
 
 theorem minimum_concat (a : α) (l : List α) : minimum (l ++ [a]) = min (minimum l) a :=
   @maximum_concat αᵒᵈ _ _ _
@@ -380,6 +379,16 @@ theorem minimum_cons (a : α) (l : List α) : minimum (a :: l) = min ↑a (minim
   @maximum_cons αᵒᵈ _ _ _
 #align list.minimum_cons List.minimum_cons
 
+theorem maximum_le_of_forall_le {b : WithBot α} (h : ∀ a ∈ l, a ≤ b) : l.maximum ≤ b := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    simp only [maximum_cons, ge_iff_le, max_le_iff, WithBot.coe_le_coe]
+    exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
+
+theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b ≤ l.minimum :=
+  maximum_le_of_forall_le (α:= αᵒᵈ) h
+
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
   rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
   simp only [id_eq, and_congr_right_iff, and_iff_left_iff_imp]
@@ -390,6 +399,73 @@ theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m 
 theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a :=
   @maximum_eq_coe_iff αᵒᵈ _ _ _
 #align list.minimum_eq_coe_iff List.minimum_eq_coe_iff
+
+theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := by
+  induction l with
+  | nil => simp
+  | cons h t ih =>
+    simp [maximum_cons, ih]
+
+theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a :=
+  coe_le_maximum_iff (α := αᵒᵈ)
+
+theorem maximum_ne_bot_of_ne_nil (h : l ≠ []) : l.maximum ≠ ⊥ :=
+  match l, h with | _ :: _, _ => by simp [maximum_cons]
+
+theorem minimum_ne_top_of_ne_nil (h : l ≠ []) : l.minimum ≠ ⊤ :=
+  @maximum_ne_bot_of_ne_nil αᵒᵈ _ _ h
+
+theorem maximum_ne_bot_of_length_pos (h : 0 < l.length) : l.maximum ≠ ⊥ :=
+  match l, h with | _ :: _, _ => by simp [maximum_cons]
+
+theorem minimum_ne_top_of_length_pos (h : 0 < l.length) : l.minimum ≠ ⊤ :=
+  maximum_ne_bot_of_length_pos (α := αᵒᵈ) h
+
+/-- The maximum value in a non-empty `List`. -/
+def maximum_of_length_pos (h : 0 < l.length) : α :=
+  WithBot.unbot l.maximum (maximum_ne_bot_of_length_pos h)
+
+/-- The minimum value in a non-empty `List`. -/
+def minimum_of_length_pos (h : 0 < l.length) : α :=
+  maximum_of_length_pos (α := αᵒᵈ) h
+
+@[simp]
+lemma coe_maximum_of_length_pos (h : 0 < l.length) :
+    (l.maximum_of_length_pos h : α) = l.maximum :=
+  WithBot.coe_unbot _ _
+
+@[simp]
+lemma coe_minimum_of_length_pos (h : 0 < l.length) :
+    (l.minimum_of_length_pos h : α) = l.minimum :=
+  WithTop.coe_untop _ _
+
+@[simp]
+theorem le_maximum_of_length_pos_iff (h : 0 < l.length) :
+    b ≤ maximum_of_length_pos h ↔ b ≤ l.maximum :=
+  WithBot.le_unbot_iff _
+
+@[simp]
+theorem minimum_of_length_pos_le_iff (h : 0 < l.length) :
+    minimum_of_length_pos h ≤ b ↔ l.minimum ≤ b :=
+  le_maximum_of_length_pos_iff (α := αᵒᵈ) h
+
+theorem le_maximum_of_length_pos_of_mem (h : a ∈ l) (w : 0 < l.length) :
+    a ≤ l.maximum_of_length_pos w := by
+  simp [le_maximum_of_length_pos_iff]
+  exact le_maximum_of_mem' h
+
+theorem minimum_of_length_pos_le_of_mem (h : a ∈ l) (w : 0 < l.length) :
+    l.minimum_of_length_pos w ≤ a :=
+  le_maximum_of_length_pos_of_mem (α := αᵒᵈ) h w
+
+theorem getElem_le_maximum_of_length_pos (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
+    l[i] ≤ l.maximum_of_length_pos h := by
+  apply le_maximum_of_length_pos_of_mem
+  exact get_mem l i w
+
+theorem minimum_of_length_pos_le_getElem (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
+    l.minimum_of_length_pos h ≤ l[i] :=
+  getElem_le_maximum_of_length_pos (α := αᵒᵈ) w
 
 end LinearOrder
 

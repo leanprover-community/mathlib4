@@ -2,15 +2,12 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.limits.kan_extension
-! leanprover-community/mathlib commit c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.StructuredArrow
+
+#align_import category_theory.limits.kan_extension from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
 
 /-!
 
@@ -187,11 +184,11 @@ set_option linter.uppercaseLean3 false in
 
 theorem reflective [Full ι] [Faithful ι] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
     IsIso (adjunction D ι).counit := by
-  suffices : ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X) by
+    apply NatIso.isIso_of_isIso_app
   intro F
-  suffices : ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).counit F) X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).counit F) X) by
+    apply NatIso.isIso_of_isIso_app
   intro X
   dsimp [adjunction, equiv]
   simp only [Category.id_comp]
@@ -352,11 +349,11 @@ set_option linter.uppercaseLean3 false in
 
 theorem coreflective [Full ι] [Faithful ι] [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] :
     IsIso (adjunction D ι).unit := by
-  suffices : ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).unit X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).unit X) by
+    apply NatIso.isIso_of_isIso_app
   intro F
-  suffices : ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).unit F) X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).unit F) X) by
+    apply NatIso.isIso_of_isIso_app
   intro X
   dsimp [adjunction, equiv]
   simp only [Category.comp_id]

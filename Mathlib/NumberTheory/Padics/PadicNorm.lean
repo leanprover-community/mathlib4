@@ -2,14 +2,11 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module number_theory.padics.padic_norm
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.NumberTheory.Padics.PadicVal
+
+#align_import number_theory.padics.padic_norm from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # p-adic norm
@@ -22,10 +19,6 @@ assumptions on `p`.
 
 The valuation induces a norm on `ℚ`. This norm is a nonarchimedean absolute value.
 It takes values in {0} ∪ {1/p^k | k ∈ ℤ}.
-
-## Notations
-
-This file uses the local notation `/.` for `rat.mk`.
 
 ## Implementation notes
 
@@ -314,7 +307,7 @@ theorem nat_lt_one_iff (m : ℕ) : padicNorm p m < 1 ↔ p ∣ m := by
 
 open BigOperators
 
-theorem sum_lt {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
+theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i in s, F i) < t := by
   classical
     refine' s.induction_on (by rintro ⟨-, ⟨⟩⟩) _
@@ -328,7 +321,7 @@ theorem sum_lt {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     · simp_all
 #align padic_norm.sum_lt padicNorm.sum_lt
 
-theorem sum_le {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
+theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i in s, F i) ≤ t := by
   classical
     refine' s.induction_on (by rintro ⟨-, ⟨⟩⟩) _
@@ -342,14 +335,14 @@ theorem sum_le {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     · simp_all
 #align padic_norm.sum_le padicNorm.sum_le
 
-theorem sum_lt' {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α}
+theorem sum_lt' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
     (hF : ∀ i ∈ s, padicNorm p (F i) < t) (ht : 0 < t) : padicNorm p (∑ i in s, F i) < t := by
   obtain rfl | hs := Finset.eq_empty_or_nonempty s
   · simp [ht]
   · exact sum_lt hs hF
 #align padic_norm.sum_lt' padicNorm.sum_lt'
 
-theorem sum_le' {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α}
+theorem sum_le' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
     (hF : ∀ i ∈ s, padicNorm p (F i) ≤ t) (ht : 0 ≤ t) : padicNorm p (∑ i in s, F i) ≤ t := by
   obtain rfl | hs := Finset.eq_empty_or_nonempty s
   · simp [ht]

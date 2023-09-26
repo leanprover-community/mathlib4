@@ -2,23 +2,20 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.functor.basic
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Basic
+
+#align_import category_theory.functor.basic from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
 
 /-!
 # Functors
 
 Defines a functor between categories, extending a `Prefunctor` between quivers.
 
-Introduces notation `C ⥤ D` for the type of all functors from `C` to `D`.
-(Unfortunately the `⇒` arrow (`\functor`) is taken by core,
-but in mathlib4 we should switch to this.)
+Introduces, in the `CategoryTheory` scope, notations `C ⥤ D` for the type of all functors
+from `C` to `D`, `𝟭` for the identity functor and `⋙` for functor composition.
+
+TODO: Switch to using the `⇒` arrow.
 -/
 
 
@@ -53,30 +50,12 @@ structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.
 add_decl_doc Functor.toPrefunctor
 #align category_theory.functor.to_prefunctor CategoryTheory.Functor.toPrefunctor
 
-/--
-This unexpander will pretty print `F.obj X` properly.
-Without this, we would have `Prefunctor.obj F.toPrefunctor X`.
--/
-@[app_unexpander Prefunctor.obj] def
-  unexpandFunctorObj : Lean.PrettyPrinter.Unexpander
-  | `($_ $(F).toPrefunctor $(X)*)  => set_option hygiene false in `($(F).obj $(X)*)
-  | _                           => throw ()
-
-/--
-This unexpander will pretty print `F.map f` properly.
-Without this, we would have `Prefunctor.map F.toPrefunctor f`.
--/
-@[app_unexpander Prefunctor.map] def
-  unexpandFunctorMap : Lean.PrettyPrinter.Unexpander
-  | `($_ $(F).toPrefunctor $(X)*)  => set_option hygiene false in `($(F).map $(X)*)
-  | _                           => throw ()
-
 end
 
 /-- Notation for a functor between categories. -/
 -- A functor is basically a function, so give ⥤ a similar precedence to → (25).
 -- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
-infixr:26 " ⥤ " => Functor -- type as \func
+scoped [CategoryTheory] infixr:26 " ⥤ " => Functor -- type as \func
 
 attribute [simp] Functor.map_id Functor.map_comp
 
@@ -105,7 +84,7 @@ protected def id : C ⥤ C where
 #align category_theory.functor.id CategoryTheory.Functor.id
 
 /-- Notation for the identity functor on a category. -/
-notation "𝟭" => Functor.id -- Type this as `\sb1`
+scoped [CategoryTheory] notation "𝟭" => Functor.id -- Type this as `\sb1`
 
 instance : Inhabited (C ⥤ C) :=
   ⟨Functor.id C⟩
@@ -133,16 +112,16 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
-  map_comp := by intros ; dsimp ; rw [F.map_comp, G.map_comp]
+  map_comp := by intros; dsimp; rw [F.map_comp, G.map_comp]
 #align category_theory.functor.comp CategoryTheory.Functor.comp
 #align category_theory.functor.comp_obj CategoryTheory.Functor.comp_obj
 
 /-- Notation for composition of functors. -/
-infixr:80 " ⋙ " => comp
+scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
 
 @[simp]
 theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
-  (F ⋙ G).map f = G.map (F.map f) := rfl
+    (F ⋙ G).map f = G.map (F.map f) := rfl
 #align category_theory.functor.comp_map CategoryTheory.Functor.comp_map
 
 -- These are not simp lemmas because rewriting along equalities between functors

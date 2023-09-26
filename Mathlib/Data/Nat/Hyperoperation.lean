@@ -2,14 +2,11 @@
 Copyright (c) 2023 Mark Andrew Gerads. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mark Andrew Gerads, Junyan Xu, Eric Wieser
-
-! This file was ported from Lean 3 source module data.nat.hyperoperation
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Nat.Parity
+
+#align_import data.nat.hyperoperation from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Hyperoperation sequence
@@ -63,7 +60,7 @@ theorem hyperoperation_recursion (n m k : ℕ) :
 -- Interesting hyperoperation lemmas
 @[simp]
 theorem hyperoperation_one : hyperoperation 1 = (· + ·) := by
-  ext (m k)
+  ext m k
   induction' k with bn bih
   · rw [Nat.add_zero m, hyperoperation]
   · rw [hyperoperation_recursion, bih, hyperoperation_zero]
@@ -72,7 +69,7 @@ theorem hyperoperation_one : hyperoperation 1 = (· + ·) := by
 
 @[simp]
 theorem hyperoperation_two : hyperoperation 2 = (· * ·) := by
-  ext (m k)
+  ext m k
   induction' k with bn bih
   · rw [hyperoperation]
     exact (Nat.mul_zero m).symm
@@ -85,7 +82,7 @@ theorem hyperoperation_two : hyperoperation 2 = (· * ·) := by
 
 @[simp]
 theorem hyperoperation_three : hyperoperation 3 = (· ^ ·) := by
-  ext (m k)
+  ext m k
   induction' k with bn bih
   · rw [hyperoperation_ge_three_eq_one]
     exact (pow_zero m).symm

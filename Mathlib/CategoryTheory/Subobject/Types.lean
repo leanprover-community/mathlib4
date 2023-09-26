@@ -2,14 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.subobject.types
-! leanprover-community/mathlib commit 610955826b3be3caaab5170fef04ecd5458521bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.CategoryTheory.Types
+
+#align_import category_theory.subobject.types from "leanprover-community/mathlib"@"610955826b3be3caaab5170fef04ecd5458521bf"
 
 /-!
 # `Type u` is well-powered
@@ -51,18 +48,11 @@ noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ S
             exact ⟨t.1 x, congr_fun t.w x⟩) }
   inverse :=
     { obj := fun s => MonoOver.mk' (Subtype.val : s → α)
-      map := fun {s t} b =>
-        MonoOver.homMk (fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩)
-          (by
-            funext
-            simp) }
+      map := fun {s t} b => MonoOver.homMk (fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }
   unitIso :=
-    NatIso.ofComponents
-      (fun f =>
-        MonoOver.isoMk (Equiv.ofInjective f.1.hom ((mono_iff_injective _).mp f.2)).toIso
-          (by aesop_cat))
-      (by aesop_cat)
-  counitIso := NatIso.ofComponents (fun s => eqToIso Subtype.range_val) (by aesop_cat)
+    NatIso.ofComponents fun f =>
+      MonoOver.isoMk (Equiv.ofInjective f.1.hom ((mono_iff_injective _).mp f.2)).toIso
+  counitIso := NatIso.ofComponents fun s => eqToIso Subtype.range_val
 #align types.mono_over_equivalence_set Types.monoOverEquivalenceSet
 
 instance : WellPowered (Type u) :=

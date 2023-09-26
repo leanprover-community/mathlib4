@@ -2,15 +2,13 @@
 Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.real.sqrt
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Star.Order
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Tactic.Positivity
+
+#align_import data.real.sqrt from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
 /-!
 # Square root of a real number
@@ -37,6 +35,8 @@ this sequence actually converges to `Real.sqrt (mk f)`.
 
 square root
 -/
+
+set_option autoImplicit true
 
 open Set Filter
 open scoped Filter NNReal Topology
@@ -124,6 +124,10 @@ theorem sqrt_div (x y : ℝ≥0) : sqrt (x / y) = sqrt x / sqrt y :=
 theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 #align nnreal.continuous_sqrt NNReal.continuous_sqrt
 
+@[simp] theorem sqrt_pos : 0 < sqrt x ↔ 0 < x := by simp [pos_iff_ne_zero]
+
+alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
+
 end NNReal
 
 namespace Real
@@ -208,7 +212,7 @@ theorem sqrt_eq_cases : sqrt x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0
     · exact Or.inl ⟨mul_self_sqrt hle, sqrt_nonneg x⟩
     · exact Or.inr ⟨hlt, sqrt_eq_zero_of_nonpos hlt.le⟩
   · rintro (⟨rfl, hy⟩ | ⟨hx, rfl⟩)
-    exacts[sqrt_mul_self hy, sqrt_eq_zero_of_nonpos hx.le]
+    exacts [sqrt_mul_self hy, sqrt_eq_zero_of_nonpos hx.le]
 #align real.sqrt_eq_cases Real.sqrt_eq_cases
 
 theorem sqrt_eq_iff_mul_self_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : sqrt x = y ↔ y * y = x :=
@@ -347,32 +351,44 @@ theorem sqrt_pos : 0 < sqrt x ↔ 0 < x :=
   lt_iff_lt_of_le_iff_le (Iff.trans (by simp [le_antisymm_iff, sqrt_nonneg]) sqrt_eq_zero')
 #align real.sqrt_pos Real.sqrt_pos
 
-alias sqrt_pos ↔ _ sqrt_pos_of_pos
+alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 #align real.sqrt_pos_of_pos Real.sqrt_pos_of_pos
 
-/-
-section
+end Real
 
-Porting note: todo: restore positivity plugin
-open Tactic Tactic.Positivity
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+/-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
+positive. -/
+@[positivity NNReal.sqrt _]
+def evalNNRealSqrt : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app _ (a : Q(NNReal))) ← whnfR e | throwError "not NNReal.sqrt"
+  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
+  let ra ← core zα' pα' a
+  assertInstancesCommute
+  match ra with
+  | .positive pa => pure (.positive (q(NNReal.sqrt_pos_of_pos $pa) : Expr))
+  | _ => failure -- this case is dealt with by generic nonnegativity of nnreals
 
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
-@[positivity]
-unsafe def _root_.tactic.positivity_sqrt : expr → tactic strictness
-  | q(Real.sqrt $(a)) => do
-    (-- if can prove `0 < a`, report positivity
-        do
-          let positive pa ← core a
-          positive <$> mk_app `` sqrt_pos_of_pos [pa]) <|>
-        nonnegative <$> mk_app `` sqrt_nonneg [a]
-  |-- else report nonnegativity
-    _ =>
-    failed
-#align tactic.positivity_sqrt tactic.positivity_sqrt
+@[positivity Real.sqrt _]
+def evalSqrt : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app _ (a : Q(Real))) ← whnfR e | throwError "not Real.sqrt"
+  let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
+  let ra ← core zα' pα' a
+  assertInstancesCommute
+  match ra with
+  | .positive pa => pure (.positive (q(Real.sqrt_pos_of_pos $pa) : Expr))
+  | _ => pure (.nonnegative (q(Real.sqrt_nonneg $a) : Expr))
 
-end
--/
+end Mathlib.Meta.Positivity
+
+namespace Real
 
 @[simp]
 theorem sqrt_mul (hx : 0 ≤ x) (y : ℝ) : sqrt (x * y) = sqrt x * sqrt y := by
@@ -450,18 +466,22 @@ theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : Real.sqrt ↑a ≤ Nat.sqrt a + 1
     exact le_of_lt (Nat.lt_succ_sqrt' a)
 #align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
 
+/-- Although the instance `IsROrC.toStarOrderedRing` exists, it is locked behind the
+`ComplexOrder` scope because currently the order on `ℂ` is not enabled globally. But we
+want `StarOrderedRing ℝ` to be available globally, so we include this instance separately.
+In addition, providing this instance here makes it available earlier in the import
+hierarchy; otherwise in order to access it we would need to import `Data.IsROrC.Basic` -/
 instance : StarOrderedRing ℝ :=
-  { Real.orderedAddCommGroup with
-    nonneg_iff := fun r => by
-      refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩
-      rintro ⟨s, rfl⟩
-      exact mul_self_nonneg s }
+  StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
+    refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩
+    rintro ⟨s, rfl⟩
+    exact mul_self_nonneg s
 
 end Real
 
 open Real
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem Filter.Tendsto.sqrt {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tendsto f l (𝓝 x)) :
     Tendsto (fun x => sqrt (f x)) l (𝓝 (sqrt x)) :=

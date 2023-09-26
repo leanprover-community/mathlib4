@@ -2,14 +2,11 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module linear_algebra.basis.bilinear
-! leanprover-community/mathlib commit 87c54600fe3cdc7d32ff5b50873ac724d86aef8d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.BilinearMap
+
+#align_import linear_algebra.basis.bilinear from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 
 /-!
 # Lemmas about bilinear maps with a basis over each argument
@@ -18,11 +15,11 @@ import Mathlib.LinearAlgebra.BilinearMap
 
 namespace LinearMap
 
-variable {ι₁ ι₂ : Type _}
+variable {ι₁ ι₂ : Type*}
 
-variable {R R₂ S S₂ M N P : Type _}
+variable {R R₂ S S₂ M N P : Type*}
 
-variable {Mₗ Nₗ Pₗ : Type _}
+variable {Mₗ Nₗ Pₗ : Type*}
 
 variable [CommSemiring R] [CommSemiring S] [CommSemiring R₂] [CommSemiring S₂]
 

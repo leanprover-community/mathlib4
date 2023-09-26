@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module data.real.cau_seq_completion
-! leanprover-community/mathlib commit cf4c49c445991489058260d75dae0ff2b1abca28
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.CauSeq
+
+#align_import data.real.cau_seq_completion from "leanprover-community/mathlib"@"cf4c49c445991489058260d75dae0ff2b1abca28"
 
 /-!
 # Cauchy completion
@@ -24,11 +21,11 @@ open CauSeq
 
 section
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
-variable {β : Type _} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
+variable {β : Type*} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
--- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Caucy`.
+-- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Cauchy`.
 /-- The Cauchy completion of a ring with absolute value. -/
 def Cauchy :=
   @Quotient (CauSeq _ abv) CauSeq.equiv
@@ -111,11 +108,11 @@ theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
   rfl
 #align cau_seq.completion.mk_sub CauSeq.Completion.mk_sub
 
-instance {γ : Type _} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy abv) :=
+instance {γ : Type*} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy abv) :=
   ⟨fun c => (Quotient.map ((· • ·) c)) fun _ _ hf => smul_equiv_smul _ hf⟩
 
 @[simp]
-theorem mk_smul {γ : Type _} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
+theorem mk_smul {γ : Type*} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
     c • mk f = mk (c • f) :=
   rfl
 #align cau_seq.completion.mk_smul CauSeq.Completion.mk_smul
@@ -165,7 +162,7 @@ private theorem one_def : 1 = @mk _ _ _ _ abv _ 1 :=
   rfl
 
 instance Cauchy.ring : Ring (Cauchy abv) :=
-  Function.Surjective.ring mk (surjective_quotient_mk _) zero_def.symm one_def.symm
+  Function.Surjective.ring mk (surjective_quotient_mk' _) zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -189,12 +186,12 @@ end
 
 section
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
-variable {β : Type _} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
+variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) :=
-  Function.Surjective.commRing mk (surjective_quotient_mk _) zero_def.symm one_def.symm
+  Function.Surjective.commRing mk (surjective_quotient_mk' _) zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -205,9 +202,9 @@ open Classical
 
 section
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
-variable {β : Type _} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
+variable {β : Type*} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance : RatCast (Cauchy abv) :=
   ⟨fun q => ofRat q⟩
@@ -234,7 +231,7 @@ noncomputable instance : Inv (Cauchy abv) :=
 -- porting note: simp can prove this
 -- @[simp]
 theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
-  congr_arg mk <| by rw [dif_pos] <;> [rfl, exact zero_limZero]
+  congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
 #align cau_seq.completion.inv_zero CauSeq.Completion.inv_zero
 
 @[simp]
@@ -266,7 +263,7 @@ protected theorem mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1
 #align cau_seq.completion.mul_inv_cancel CauSeq.Completion.mul_inv_cancel
 
 theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
-  congr_arg mk <| by split_ifs with h <;> [simp [const_limZero.1 h], rfl]
+  congr_arg mk <| by split_ifs with h <;> [simp [const_limZero.1 h]; rfl]
 #align cau_seq.completion.of_rat_inv CauSeq.Completion.ofRat_inv
 
 /- porting note: This takes a long time to compile.
@@ -285,7 +282,7 @@ theorem ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) 
 
 /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
 
-The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
+The representative chosen is the one passed in the VM to `Quot.mk`, so two cauchy sequences
 converging to the same number may be printed differently.
 -/
 unsafe instance [Repr β] : Repr (Cauchy abv) where
@@ -298,9 +295,9 @@ end
 
 section
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
-variable {β : Type _} [Field β] {abv : β → α} [IsAbsoluteValue abv]
+variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv]
 
 /-- The Cauchy completion forms a field. -/
 noncomputable instance Cauchy.field : Field (Cauchy abv) :=
@@ -310,13 +307,13 @@ end
 
 end CauSeq.Completion
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
 namespace CauSeq
 
 section
 
-variable (β : Type _) [Ring β] (abv : β → α) [IsAbsoluteValue abv]
+variable (β : Type*) [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
 /-- A class stating that a ring with an absolute value is complete, i.e. every Cauchy
 sequence has a limit. -/
@@ -330,7 +327,7 @@ end
 
 section
 
-variable {β : Type _} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
+variable {β : Type*} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
 
 variable [IsComplete β abv]
 
@@ -412,7 +409,7 @@ end
 
 section
 
-variable {β : Type _} [Field β] {abv : β → α} [IsAbsoluteValue abv] [IsComplete β abv]
+variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv] [IsComplete β abv]
 
 theorem lim_inv {f : CauSeq β abv} (hf : ¬LimZero f) : lim (inv f hf) = (lim f)⁻¹ :=
   have hl : lim f ≠ 0 := by rwa [← lim_eq_zero_iff] at hf

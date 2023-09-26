@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.group_action.group
-! leanprover-community/mathlib commit ba2245edf0c8bb155f1569fd9b9492a9b384cde6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.GroupTheory.GroupAction.Units
+
+#align_import group_theory.group_action.group from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Group actions applied to various types of group
@@ -79,10 +76,10 @@ def MulAction.toPermHom : α →* Equiv.Perm β where
 #align mul_action.to_perm_hom MulAction.toPermHom
 #align mul_action.to_perm_hom_apply MulAction.toPermHom_apply
 
-/-- Given an action of a additive group `α` on a set `β`, each `g : α` defines a permutation of
+/-- Given an action of an additive group `α` on a set `β`, each `g : α` defines a permutation of
 `β`. -/
 @[simps!]
-def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
+def AddAction.toPermHom (α : Type*) [AddGroup α] [AddAction α β] :
     α →+ Additive (Equiv.Perm β) :=
   MonoidHom.toAdditive'' <| MulAction.toPermHom (Multiplicative α) β
 #align add_action.to_perm_hom AddAction.toPermHom
@@ -90,19 +87,19 @@ def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
 /-- The tautological action by `Equiv.Perm α` on `α`.
 
 This generalizes `Function.End.applyMulAction`.-/
-instance Equiv.Perm.applyMulAction (α : Type _) : MulAction (Equiv.Perm α) α where
+instance Equiv.Perm.applyMulAction (α : Type*) : MulAction (Equiv.Perm α) α where
   smul f a := f a
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 #align equiv.perm.apply_mul_action Equiv.Perm.applyMulAction
 
 @[simp]
-protected theorem Equiv.Perm.smul_def {α : Type _} (f : Equiv.Perm α) (a : α) : f • a = f a :=
+protected theorem Equiv.Perm.smul_def {α : Type*} (f : Equiv.Perm α) (a : α) : f • a = f a :=
   rfl
 #align equiv.perm.smul_def Equiv.Perm.smul_def
 
 /-- `Equiv.Perm.applyMulAction` is faithful. -/
-instance Equiv.Perm.applyFaithfulSMul (α : Type _) : FaithfulSMul (Equiv.Perm α) α :=
+instance Equiv.Perm.applyFaithfulSMul (α : Type*) : FaithfulSMul (Equiv.Perm α) α :=
   ⟨Equiv.ext⟩
 #align equiv.perm.apply_has_faithful_smul Equiv.Perm.applyFaithfulSMul
 
@@ -268,6 +265,16 @@ def DistribMulAction.toAddAut : α →* AddAut β where
 #align distrib_mul_action.to_add_aut DistribMulAction.toAddAut
 #align distrib_mul_action.to_add_aut_apply DistribMulAction.toAddAut_apply
 
+/-- Each non-zero element of a `GroupWithZero` defines an additive monoid isomorphism of an
+`AddMonoid` on which it acts distributively.
+This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
+def DistribMulAction.toAddEquiv₀ {α : Type*} (β : Type*) [GroupWithZero α] [AddMonoid β]
+    [DistribMulAction α β] (x : α) (hx : x ≠ 0) : β ≃+ β :=
+  { DistribMulAction.toAddMonoidHom β x with
+    invFun := fun b ↦ x⁻¹ • b
+    left_inv := fun b ↦ inv_smul_smul₀ hx b
+    right_inv := fun b ↦ smul_inv_smul₀ hx b }
+
 variable {α β}
 
 theorem smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
@@ -314,7 +321,7 @@ def MulDistribMulAction.toMulEquiv (x : α) : β ≃* β :=
 
 variable (α)
 
-/-- Each element of the group defines an multiplicative monoid isomorphism.
+/-- Each element of the group defines a multiplicative monoid isomorphism.
 
 This is a stronger version of `MulAction.toPermHom`. -/
 @[simps]
@@ -334,7 +341,7 @@ section Arrow
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
 @[to_additive (attr := simps) arrowAddAction
       "If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`"]
-def arrowAction {G A B : Type _} [DivisionMonoid G] [MulAction G A] : MulAction G (A → B) where
+def arrowAction {G A B : Type*} [DivisionMonoid G] [MulAction G A] : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul := by
     intro f
@@ -350,7 +357,7 @@ def arrowAction {G A B : Type _} [DivisionMonoid G] [MulAction G A] : MulAction 
 attribute [local instance] arrowAction
 
 /-- When `B` is a monoid, `ArrowAction` is additionally a `MulDistribMulAction`. -/
-def arrowMulDistribMulAction {G A B : Type _} [Group G] [MulAction G A] [Monoid B] :
+def arrowMulDistribMulAction {G A B : Type*} [Group G] [MulAction G A] [Monoid B] :
     MulDistribMulAction G (A → B) where
   smul_one _ := rfl
   smul_mul _ _ _ := rfl

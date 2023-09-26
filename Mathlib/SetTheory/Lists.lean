@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.lists
-! leanprover-community/mathlib commit 497d1e06409995dd8ec95301fa8d8f3480187f4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
+
+#align_import set_theory.lists from "leanprover-community/mathlib"@"497d1e06409995dd8ec95301fa8d8f3480187f4c"
 
 /-!
 # A computable model of ZFA without infinity
@@ -44,7 +41,7 @@ This calls for a two-steps definition of ZFA lists:
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Prelists, helper type to define `Lists`. `Lists' α false` are the "atoms", a copy of `α`.
 `Lists' α true` are the "proper" ZFA prelists, inductively defined from the empty ZFA prelist and
@@ -57,11 +54,12 @@ inductive Lists'.{u} (α : Type u) : Bool → Type u
   | cons' {b} : Lists' α b → Lists' α true → Lists' α true
   deriving DecidableEq
 #align lists' Lists'
+compile_inductive% Lists'
 
 /-- Hereditarily finite list, aka ZFA list. A ZFA list is either an "atom" (`b = false`),
 corresponding to an element of `α`, or a "proper" ZFA list, inductively defined from the empty ZFA
 list and from appending a ZFA list to a proper ZFA list. -/
-def Lists (α : Type _) :=
+def Lists (α : Type*) :=
   Σb, Lists' α b
 #align lists Lists
 
@@ -259,14 +257,10 @@ instance : Inhabited (Lists α) :=
 
 instance [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_instance
 
--- Porting note: 'Lists'._sizeOf_inst' does not have executable code.
--- So noncomputable is added.
-noncomputable instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
+instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
 
--- Porting note: Made noncomputable because code generator does not support recursor
--- Lists'.rec yet
 /-- A recursion principle for pairs of ZFA lists and proper ZFA prelists. -/
-noncomputable def inductionMut (C : Lists α → Sort _) (D : Lists' α true → Sort _)
+def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
     (C0 : ∀ a, C (atom a)) (C1 : ∀ l, D l → C (of' l))
     (D0 : D Lists'.nil) (D1 : ∀ a l, C a → D l → D (Lists'.cons a l)) :
     PProd (∀ l, C l) (∀ l, D l) := by
@@ -304,7 +298,7 @@ theorem Equiv.antisymm_iff {l₁ l₂ : Lists' α true} : of' l₁ ~ of' l₂ �
   refine' ⟨fun h => _, fun ⟨h₁, h₂⟩ => Equiv.antisymm h₁ h₂⟩
   cases' h with _ _ _ h₁ h₂
   · simp [Lists'.Subset.refl]
-  . exact ⟨h₁, h₂⟩
+  · exact ⟨h₁, h₂⟩
 #align lists.equiv.antisymm_iff Lists.Equiv.antisymm_iff
 
 attribute [refl] Equiv.refl
@@ -313,8 +307,9 @@ theorem equiv_atom {a} {l : Lists α} : atom a ~ l ↔ atom a = l :=
   ⟨fun h => by cases h; rfl, fun h => h ▸ Equiv.refl _⟩
 #align lists.equiv_atom Lists.equiv_atom
 
+@[symm]
 theorem Equiv.symm {l₁ l₂ : Lists α} (h : l₁ ~ l₂) : l₂ ~ l₁ := by
-  cases' h with _ _ _ h₁ h₂ <;> [rfl, exact Equiv.antisymm h₂ h₁]
+  cases' h with _ _ _ h₁ h₂ <;> [rfl; exact Equiv.antisymm h₂ h₁]
 #align lists.equiv.symm Lists.Equiv.symm
 
 theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l₃ → l₁ ~ l₃ := by
@@ -350,21 +345,20 @@ theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l�
     -- Assumption fails.
     simp only [Lists'.toList, Sigma.eta, List.find?, List.mem_cons, forall_eq_or_imp]
     constructor
-    . intros l₂ l₃ h₁ h₂
+    · intros l₂ l₃ h₁ h₂
       exact IH₁ h₁ h₂
-    . intros a h₁ l₂ l₃ h₂ h₃
+    · intros a h₁ l₂ l₃ h₂ h₃
       exact IH _ h₁ h₂ h₃
 #align lists.equiv.trans Lists.Equiv.trans
 
-instance : Setoid (Lists α) :=
+instance instSetoidLists : Setoid (Lists α) :=
   ⟨(· ~ ·), Equiv.refl, @Equiv.symm _, @Equiv.trans _⟩
 
 section Decidable
 
--- porting note: Noncomputable because Lists.instSizeOfLists is
-/-- Auxillary function to prove termination of decidability checking -/
-@[simp]
-noncomputable def Equiv.decidableMeas :
+/-- Auxiliary function to prove termination of decidability checking -/
+@[simp, deprecated] -- porting note: replaced by termination_by
+def Equiv.decidableMeas :
     (PSum (Σ' _l₁ : Lists α, Lists α) <|
         PSum (Σ' _l₁ : Lists' α true, Lists' α true) (Σ' _a : Lists α, Lists' α true)) →
       ℕ
@@ -434,7 +428,11 @@ mutual
         mem.decidable a l₂
       refine' decidable_of_iff' (a ~ ⟨_, b⟩ ∨ a ∈ l₂) _
       rw [← Lists'.mem_cons]; rfl
-end termination_by' ⟨_, InvImage.wf Equiv.decidableMeas Nat.lt_wfRel.wf⟩
+end
+termination_by
+  Subset.decidable x y => sizeOf x + sizeOf y
+  Equiv.decidable x y => sizeOf x + sizeOf y
+  mem.decidable x y => sizeOf x + sizeOf y
 #align lists.equiv.decidable Lists.Equiv.decidable
 #align lists.subset.decidable Lists.Subset.decidable
 #align lists.mem.decidable Lists.mem.decidable
@@ -461,7 +459,7 @@ theorem Subset.trans {l₁ l₂ l₃ : Lists' α true} (h₁ : l₁ ⊆ l₂) (h
 end Lists'
 
 /-- `Finsets` are defined via equivalence classes of `Lists` -/
-def Finsets (α : Type _) :=
+def Finsets (α : Type*) :=
   Quotient (@Lists.instSetoidLists α)
 #align finsets Finsets
 

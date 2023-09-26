@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module data.finset.sigma
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Set.Sigma
+
+#align_import data.finset.sigma from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Finite sets in a sigma type
@@ -33,13 +30,13 @@ is computable and universe-polymorphic.
 
 open Function Multiset
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 namespace Finset
 
 section Sigma
 
-variable {α : ι → Type _} {β : Type _} (s s₁ s₂ : Finset ι) (t t₁ t₂ : ∀ i, Finset (α i))
+variable {α : ι → Type*} {β : Type*} (s s₁ s₂ : Finset ι) (t t₁ t₂ : ∀ i, Finset (α i))
 
 /-- `s.sigma t` is the finset of dependent pairs `⟨i, a⟩` such that `i ∈ s` and `a ∈ t i`. -/
 protected def sigma : Finset (Σi, α i) :=
@@ -85,17 +82,17 @@ theorem pairwiseDisjoint_map_sigmaMk :
 #align finset.pairwise_disjoint_map_sigma_mk Finset.pairwiseDisjoint_map_sigmaMk
 
 @[simp]
-theorem disjUnionᵢ_map_sigma_mk :
-    s.disjUnionᵢ (fun i => (t i).map (Embedding.sigmaMk i)) pairwiseDisjoint_map_sigmaMk =
+theorem disjiUnion_map_sigma_mk :
+    s.disjiUnion (fun i => (t i).map (Embedding.sigmaMk i)) pairwiseDisjoint_map_sigmaMk =
       s.sigma t :=
   rfl
-#align finset.disj_Union_map_sigma_mk Finset.disjUnionᵢ_map_sigma_mk
+#align finset.disj_Union_map_sigma_mk Finset.disjiUnion_map_sigma_mk
 
-theorem sigma_eq_bunionᵢ [DecidableEq (Σi, α i)] (s : Finset ι) (t : ∀ i, Finset (α i)) :
-    s.sigma t = s.bunionᵢ fun i => (t i).map <| Embedding.sigmaMk i := by
+theorem sigma_eq_biUnion [DecidableEq (Σi, α i)] (s : Finset ι) (t : ∀ i, Finset (α i)) :
+    s.sigma t = s.biUnion fun i => (t i).map <| Embedding.sigmaMk i := by
   ext ⟨x, y⟩
   simp [and_left_comm]
-#align finset.sigma_eq_bUnion Finset.sigma_eq_bunionᵢ
+#align finset.sigma_eq_bUnion Finset.sigma_eq_biUnion
 
 variable (s t) (f : (Σi, α i) → β)
 
@@ -116,7 +113,7 @@ end Sigma
 
 section SigmaLift
 
-variable {α β γ : ι → Type _} [DecidableEq ι]
+variable {α β γ : ι → Type*} [DecidableEq ι]
 
 /-- Lifts maps `α i → β i → Finset (γ i)` to a map `Σ i, α i → Σ i, β i → Finset (Σ i, γ i)`. -/
 def sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β) :
@@ -126,7 +123,7 @@ def sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) 
 
 theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β)
     (x : Sigma γ) :
-    x ∈ sigmaLift f a b ↔ ∃ (ha : a.1 = x.1)(hb : b.1 = x.1), x.2 ∈ f (ha ▸ a.2) (hb ▸ b.2) := by
+    x ∈ sigmaLift f a b ↔ ∃ (ha : a.1 = x.1) (hb : b.1 = x.1), x.2 ∈ f (ha ▸ a.2) (hb ▸ b.2) := by
   obtain ⟨⟨i, a⟩, j, b⟩ := a, b
   obtain rfl | h := Decidable.eq_or_ne i j
   · constructor
@@ -175,14 +172,14 @@ theorem sigmaLift_nonempty :
 theorem sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by
   simp_rw [sigmaLift]
   split_ifs with h
-  . simp [h, forall_prop_of_true h]
-  . simp [h, forall_prop_of_false h]
+  · simp [h, forall_prop_of_true h]
+  · simp [h, forall_prop_of_false h]
 #align finset.sigma_lift_eq_empty Finset.sigmaLift_eq_empty
 
 theorem sigmaLift_mono (h : ∀ ⦃i⦄ ⦃a : α i⦄ ⦃b : β i⦄, f a b ⊆ g a b) (a : Σi, α i) (b : Σi, β i) :
     sigmaLift f a b ⊆ sigmaLift g a b := by
   rintro x hx
-  rw [mem_sigmaLift] at hx⊢
+  rw [mem_sigmaLift] at hx ⊢
   obtain ⟨ha, hb, hx⟩ := hx
   exact ⟨ha, hb, h hx⟩
 #align finset.sigma_lift_mono Finset.sigmaLift_mono

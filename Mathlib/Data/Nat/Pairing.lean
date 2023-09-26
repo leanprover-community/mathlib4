@@ -2,16 +2,13 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.pairing
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.Set.Lattice
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Monoid.MinMax
+
+#align_import data.nat.pairing from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 #  Naturals pairing function
@@ -56,7 +53,7 @@ theorem pair_unpair (n : ℕ) : pair (unpair n).1 (unpair n).2 = n := by
   split_ifs with h
   · simp [pair, h, sm]
   · have hl : n - s * s - s ≤ s :=
-      tsub_le_iff_left.mpr (tsub_le_iff_left.mpr <| by rw [← add_assoc] ; apply sqrt_le_add)
+      tsub_le_iff_left.mpr (tsub_le_iff_left.mpr <| by rw [← add_assoc]; apply sqrt_le_add)
     simp [pair, hl.not_lt, add_assoc, add_tsub_cancel_of_le (le_of_not_gt h), sm]
 #align nat.mkpair_unpair Nat.pair_unpair
 
@@ -96,7 +93,7 @@ theorem pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :
 
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
-  simp [unpair];
+  simp [unpair]
   by_cases h : n - s * s < s <;> simp [h]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
   · simp at h
@@ -138,7 +135,7 @@ theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair
     simp [not_lt_of_gt (lt_of_le_of_lt h₁ h)]
     apply add_lt_add
     exact mul_self_lt_mul_self h
-    apply add_lt_add_right ; assumption
+    apply add_lt_add_right; assumption
 #align nat.mkpair_lt_mkpair_left Nat.pair_lt_pair_left
 
 theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pair a b₂ := by
@@ -186,16 +183,16 @@ open Nat
 section CompleteLattice
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem supᵢ_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
-    (⨆ n : ℕ, f n.unpair.1 n.unpair.2) = ⨆ (i : ℕ) (j : ℕ), f i j := by
-  rw [← (supᵢ_prod : (⨆ i : ℕ × ℕ, f i.1 i.2) = _), ← Nat.surjective_unpair.supᵢ_comp]
-#align supr_unpair supᵢ_unpair
+theorem iSup_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
+    ⨆ n : ℕ, f n.unpair.1 n.unpair.2 = ⨆ (i : ℕ) (j : ℕ), f i j := by
+  rw [← (iSup_prod : ⨆ i : ℕ × ℕ, f i.1 i.2 = _), ← Nat.surjective_unpair.iSup_comp]
+#align supr_unpair iSup_unpair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem infᵢ_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
-    (⨅ n : ℕ, f n.unpair.1 n.unpair.2) = ⨅ (i : ℕ) (j : ℕ), f i j :=
-  supᵢ_unpair (show ℕ → ℕ → αᵒᵈ from f)
-#align infi_unpair infᵢ_unpair
+theorem iInf_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
+    ⨅ n : ℕ, f n.unpair.1 n.unpair.2 = ⨅ (i : ℕ) (j : ℕ), f i j :=
+  iSup_unpair (show ℕ → ℕ → αᵒᵈ from f)
+#align infi_unpair iInf_unpair
 
 end CompleteLattice
 
@@ -203,22 +200,22 @@ namespace Set
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem unionᵢ_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
-    (⋃ n : ℕ, s n.unpair.fst ×ˢ t n.unpair.snd) = (⋃ n, s n) ×ˢ ⋃ n, t n := by
-  rw [← Set.unionᵢ_prod]
-  exact surjective_unpair.unionᵢ_comp (fun x => s x.fst ×ˢ t x.snd)
-#align set.Union_unpair_prod Set.unionᵢ_unpair_prod
+theorem iUnion_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
+    ⋃ n : ℕ, s n.unpair.fst ×ˢ t n.unpair.snd = (⋃ n, s n) ×ˢ ⋃ n, t n := by
+  rw [← Set.iUnion_prod]
+  exact surjective_unpair.iUnion_comp (fun x => s x.fst ×ˢ t x.snd)
+#align set.Union_unpair_prod Set.iUnion_unpair_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem unionᵢ_unpair {α} (f : ℕ → ℕ → Set α) :
-    (⋃ n : ℕ, f n.unpair.1 n.unpair.2) = ⋃ (i : ℕ) (j : ℕ), f i j :=
-  supᵢ_unpair f
-#align set.Union_unpair Set.unionᵢ_unpair
+theorem iUnion_unpair {α} (f : ℕ → ℕ → Set α) :
+    ⋃ n : ℕ, f n.unpair.1 n.unpair.2 = ⋃ (i : ℕ) (j : ℕ), f i j :=
+  iSup_unpair f
+#align set.Union_unpair Set.iUnion_unpair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem interᵢ_unpair {α} (f : ℕ → ℕ → Set α) :
-    (⋂ n : ℕ, f n.unpair.1 n.unpair.2) = ⋂ (i : ℕ) (j : ℕ), f i j :=
-  infᵢ_unpair f
-#align set.Inter_unpair Set.interᵢ_unpair
+theorem iInter_unpair {α} (f : ℕ → ℕ → Set α) :
+    ⋂ n : ℕ, f n.unpair.1 n.unpair.2 = ⋂ (i : ℕ) (j : ℕ), f i j :=
+  iInf_unpair f
+#align set.Inter_unpair Set.iInter_unpair
 
 end Set

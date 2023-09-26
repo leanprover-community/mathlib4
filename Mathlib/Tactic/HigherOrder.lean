@@ -7,7 +7,7 @@ import Lean.Elab.Term
 import Lean.Meta.Tactic.Apply
 import Lean.Meta.Tactic.Assumption
 import Lean.Elab.DeclarationRange
-import Mathlib.Control.SimpSet
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # HigherOrder attribute
@@ -30,18 +30,18 @@ namespace Tactic
 /-- `mkComp v e` checks whether `e` is a sequence of nested applications `f (g (h v))`, and if so,
 returns the expression `f ∘ g ∘ h`. If `e = v` it returns `id`. -/
 def mkComp (v : Expr) : Expr → MetaM Expr
-| .app f e =>
-  if e.equal v then
-    return f
-  else do
-    if v.occurs f then
-      throwError "mkComp failed occurs check"
-    let e' ← mkComp v e
-    mkAppM ``Function.comp #[f, e']
-| e => do
-  guard (e.equal v)
-  let t ← inferType e
-  mkAppOptM ``id #[t]
+  | .app f e =>
+    if e.equal v then
+      return f
+    else do
+      if v.occurs f then
+        throwError "mkComp failed occurs check"
+      let e' ← mkComp v e
+      mkAppM ``Function.comp #[f, e']
+  | e => do
+    guard (e.equal v)
+    let t ← inferType e
+    mkAppOptM ``id #[t]
 
 /--
 From a lemma of the shape `∀ x, f (g x) = h x`

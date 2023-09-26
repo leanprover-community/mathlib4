@@ -2,14 +2,11 @@
 Copyright (c) 2021 Gabriel Moise. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.inc_matrix
-! leanprover-community/mathlib commit bb168510ef455e9280a152e7f31673cabd3d7496
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Matrix.Basic
+
+#align_import combinatorics.simple_graph.inc_matrix from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 
 /-!
 # Incidence matrix of a simple graph
@@ -52,7 +49,7 @@ open BigOperators Matrix
 
 namespace SimpleGraph
 
-variable (R : Type _) {α : Type _} (G : SimpleGraph α)
+variable (R : Type*) {α : Type*} (G : SimpleGraph α)
 
 /-- `G.incMatrix R` is the `α × Sym2 α` matrix whose `(a, e)`-entry is `1` if `e` is incident to
 `a` and `0` otherwise. -/
@@ -121,19 +118,19 @@ section NonAssocSemiring
 variable [Fintype α] [NonAssocSemiring R] {a b : α} {e : Sym2 α}
 
 theorem sum_incMatrix_apply [DecidableEq α] [DecidableRel G.Adj] :
-    (∑ e, G.incMatrix R a e) = G.degree a := by
+    ∑ e, G.incMatrix R a e = G.degree a := by
   simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset]
 #align simple_graph.sum_inc_matrix_apply SimpleGraph.sum_incMatrix_apply
 
 theorem incMatrix_mul_transpose_diag [DecidableEq α] [DecidableRel G.Adj] :
-    (G.incMatrix R ⬝ (G.incMatrix R)ᵀ) a a = G.degree a := by
+    (G.incMatrix R * (G.incMatrix R)ᵀ) a a = G.degree a := by
   rw [← sum_incMatrix_apply]
   simp only [mul_apply, incMatrix_apply', transpose_apply, mul_ite, mul_one, mul_zero]
   simp_all only [ite_true, sum_boole]
 #align simple_graph.inc_matrix_mul_transpose_diag SimpleGraph.incMatrix_mul_transpose_diag
 
 theorem sum_incMatrix_apply_of_mem_edgeSet :
-    e ∈ G.edgeSet → (∑ a, G.incMatrix R a e) = 2 := by
+    e ∈ G.edgeSet → ∑ a, G.incMatrix R a e = 2 := by
   classical
     refine' e.ind _
     intro a b h
@@ -146,12 +143,12 @@ theorem sum_incMatrix_apply_of_mem_edgeSet :
 #align simple_graph.sum_inc_matrix_apply_of_mem_edge_set SimpleGraph.sum_incMatrix_apply_of_mem_edgeSet
 
 theorem sum_incMatrix_apply_of_not_mem_edgeSet (h : e ∉ G.edgeSet) :
-    (∑ a, G.incMatrix R a e) = 0 :=
+    ∑ a, G.incMatrix R a e = 0 :=
   sum_eq_zero fun _ _ => G.incMatrix_of_not_mem_incidenceSet fun he => h he.1
 #align simple_graph.sum_inc_matrix_apply_of_not_mem_edge_set SimpleGraph.sum_incMatrix_apply_of_not_mem_edgeSet
 
 theorem incMatrix_transpose_mul_diag [DecidableRel G.Adj] :
-    ((G.incMatrix R)ᵀ ⬝ G.incMatrix R) e e = if e ∈ G.edgeSet then 2 else 0 := by
+    ((G.incMatrix R)ᵀ * G.incMatrix R) e e = if e ∈ G.edgeSet then 2 else 0 := by
   classical
     simp only [Matrix.mul_apply, incMatrix_apply', transpose_apply, ← ite_and_mul_zero, one_mul,
       sum_boole, and_self_iff]
@@ -177,7 +174,7 @@ section Semiring
 variable [Fintype (Sym2 α)] [Semiring R] {a b : α} {e : Sym2 α}
 
 theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
-    (G.incMatrix R ⬝ (G.incMatrix R)ᵀ) a b = (1 : R) := by
+    (G.incMatrix R * (G.incMatrix R)ᵀ) a b = (1 : R) := by
   classical
     simp_rw [Matrix.mul_apply, Matrix.transpose_apply, incMatrix_apply_mul_incMatrix_apply,
       Set.indicator_apply, Pi.one_apply, sum_boole]
@@ -188,9 +185,9 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
 #align simple_graph.inc_matrix_mul_transpose_apply_of_adj SimpleGraph.incMatrix_mul_transpose_apply_of_adj
 
 theorem incMatrix_mul_transpose [Fintype α] [DecidableEq α] [DecidableRel G.Adj] :
-    G.incMatrix R ⬝ (G.incMatrix R)ᵀ = fun a b =>
+    G.incMatrix R * (G.incMatrix R)ᵀ = fun a b =>
       if a = b then (G.degree a : R) else if G.Adj a b then 1 else 0 := by
-  ext (a b)
+  ext a b
   split_ifs with h h'
   · subst b
     rename Semiring R => sr

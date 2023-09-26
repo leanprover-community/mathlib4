@@ -2,16 +2,13 @@
 Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
-
-! This file was ported from Lean 3 source module model_theory.syntax
-! leanprover-community/mathlib commit d565b3df44619c1498326936be16f1a935df0728
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.ModelTheory.LanguageMap
+
+#align_import model_theory.syntax from "leanprover-community/mathlib"@"d565b3df44619c1498326936be16f1a935df0728"
 
 /-!
 # Basics on First-Order Syntax
@@ -21,7 +18,7 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 ## Main Definitions
 * A `FirstOrder.Language.Term` is defined so that `L.Term α` is the type of `L`-terms with free
   variables indexed by `α`.
-* A `FirstOrder.Language.Formula` is defined so that `L.formula α` is the type of `L`-formulas with
+* A `FirstOrder.Language.Formula` is defined so that `L.Formula α` is the type of `L`-formulas with
   free variables indexed by `α`.
 * A `FirstOrder.Language.Sentence` is a formula with no free variables.
 * A `FirstOrder.Language.Theory` is a set of sentences.
@@ -41,10 +38,10 @@ variables with given terms.
 constants in the language and having extra variables indexed by the same type.
 
 ## Implementation Notes
-* Formulas use a modified version of de Bruijn variables. Specifically, a `L.boundedFormula α n`
+* Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
 is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-indexed by `Fin n`, which can. For any `φ : L.boundedFormula α (n + 1)`, we define the formula
-`∀' φ : L.boundedFormula α n` by universally quantifying over the variable indexed by
+indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
+`∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
 `n : Fin (n + 1)`.
 
 ## References
@@ -65,9 +62,9 @@ namespace Language
 
 variable (L : Language.{u, v}) {L' : Language}
 
-variable {M : Type w} {N P : Type _} [L.Structure M] [L.Structure N] [L.Structure P]
+variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
 
-variable {α : Type u'} {β : Type v'} {γ : Type _}
+variable {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder
 
@@ -91,7 +88,7 @@ open Finset
 @[simp]
 def varFinset [DecidableEq α] : L.Term α → Finset α
   | var i => {i}
-  | func _f ts => univ.bunionᵢ fun i => (ts i).varFinset
+  | func _f ts => univ.biUnion fun i => (ts i).varFinset
 #align first_order.language.term.var_finset FirstOrder.Language.Term.varFinset
 
 --Porting note: universes in different order
@@ -100,7 +97,7 @@ def varFinset [DecidableEq α] : L.Term α → Finset α
 def varFinsetLeft [DecidableEq α] : L.Term (Sum α β) → Finset α
   | var (Sum.inl i) => {i}
   | var (Sum.inr _i) => ∅
-  | func _f ts => univ.bunionᵢ fun i => (ts i).varFinsetLeft
+  | func _f ts => univ.biUnion fun i => (ts i).varFinsetLeft
 #align first_order.language.term.var_finset_left FirstOrder.Language.Term.varFinsetLeft
 
 --Porting note: universes in different order
@@ -147,18 +144,18 @@ def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (_f : t.varFinset → β)
   | var a, f => var (f ⟨a, mem_singleton_self a⟩)
   | func F ts, f =>
     func F fun i => (ts i).restrictVar (f ∘ Set.inclusion
-      (subset_bunionᵢ_of_mem (fun i => varFinset (ts i)) (mem_univ i)))
+      (subset_biUnion_of_mem (fun i => varFinset (ts i)) (mem_univ i)))
 #align first_order.language.term.restrict_var FirstOrder.Language.Term.restrictVar
 
 --Porting note: universes in different order
 /-- Restricts a term to use only a set of the given variables on the left side of a sum. -/
-def restrictVarLeft [DecidableEq α] {γ : Type _} :
+def restrictVarLeft [DecidableEq α] {γ : Type*} :
     ∀ (t : L.Term (Sum α γ)) (_f : t.varFinsetLeft → β), L.Term (Sum β γ)
   | var (Sum.inl a), f => var (Sum.inl (f ⟨a, mem_singleton_self a⟩))
   | var (Sum.inr a), _f => var (Sum.inr a)
   | func F ts, f =>
     func F fun i =>
-      (ts i).restrictVarLeft (f ∘ Set.inclusion (subset_bunionᵢ_of_mem
+      (ts i).restrictVarLeft (f ∘ Set.inclusion (subset_biUnion_of_mem
         (fun i => varFinsetLeft (ts i)) (mem_univ i)))
 #align first_order.language.term.restrict_var_left FirstOrder.Language.Term.restrictVarLeft
 
@@ -248,7 +245,7 @@ instance inhabitedOfConstant [Inhabited L.Constants] : Inhabited (L.Term α) :=
 
 /-- Raises all of the `Fin`-indexed variables of a term greater than or equal to `m` by `n'`. -/
 def liftAt {n : ℕ} (n' m : ℕ) : L.Term (Sum α (Fin n)) → L.Term (Sum α (Fin (n + n'))) :=
-  relabel (Sum.map id fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat n' i)
+  relabel (Sum.map id fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat i n')
 #align first_order.language.term.lift_at FirstOrder.Language.Term.liftAt
 
 --Porting note: universes in different order
@@ -429,7 +426,7 @@ open Finset
 def freeVarFinset [DecidableEq α] : ∀ {n}, L.BoundedFormula α n → Finset α
   | _n, falsum => ∅
   | _n, equal t₁ t₂ => t₁.varFinsetLeft ∪ t₂.varFinsetLeft
-  | _n, rel _R ts => univ.bunionᵢ fun i => (ts i).varFinsetLeft
+  | _n, rel _R ts => univ.biUnion fun i => (ts i).varFinsetLeft
   | _n, imp f₁ f₂ => f₁.freeVarFinset ∪ f₂.freeVarFinset
   | _n, all f => f.freeVarFinset
 #align first_order.language.bounded_formula.free_var_finset FirstOrder.Language.BoundedFormula.freeVarFinset
@@ -488,7 +485,7 @@ def restrictFreeVar [DecidableEq α] :
       (t₂.restrictVarLeft (f ∘ Set.inclusion (subset_union_right _ _)))
   | _n, rel R ts, f =>
     rel R fun i => (ts i).restrictVarLeft (f ∘ Set.inclusion
-      (subset_bunionᵢ_of_mem (fun i => Term.varFinsetLeft (ts i)) (mem_univ i)))
+      (subset_biUnion_of_mem (fun i => Term.varFinsetLeft (ts i)) (mem_univ i)))
   | _n, imp φ₁ φ₂, f =>
     (φ₁.restrictFreeVar (f ∘ Set.inclusion (subset_union_left _ _))).imp
       (φ₂.restrictFreeVar (f ∘ Set.inclusion (subset_union_right _ _)))
@@ -648,7 +645,6 @@ theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
 #align first_order.language.bounded_formula.relabel_sum_inl FirstOrder.Language.BoundedFormula.relabel_sum_inl
 
 /-- Substitutes the variables in a given formula with terms. -/
-@[simp]
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=
   φ.mapTermRel (fun _ t => t.subst (Sum.elim (Term.relabel Sum.inl ∘ f) (var ∘ Sum.inr)))
     (fun _ => id) fun _ => id
@@ -671,6 +667,15 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (Sum α (Fin 
     (φ.toFormula.relabel
         (Sum.elim (Sum.inl ∘ Sum.inl) (Sum.map Sum.inr id ∘ finSumFinEquiv.symm))).all
 #align first_order.language.bounded_formula.to_formula FirstOrder.Language.BoundedFormula.toFormula
+
+/-- take the disjunction of a finite set of formulas -/
+noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  (s.toList.map f).foldr (. ⊔ .) ⊥
+
+/-- take the conjunction of a finite set of formulas -/
+noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  (s.toList.map f).foldr (. ⊓ .) ⊤
+
 
 variable {l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
 
@@ -792,7 +797,7 @@ theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex
 
 --Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
-  If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.to_prenex_imp_right ψ`
+  If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.toPrenexImpRight ψ`
   is a prenex normal form for `φ.imp ψ`. -/
 def toPrenexImpRight : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
   | n, φ, BoundedFormula.ex ψ => ((φ.liftAt 1 n).toPrenexImpRight ψ).ex
@@ -822,7 +827,7 @@ theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ
 
 --Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
-  If `φ` and `ψ` are in prenex normal form, then `φ.to_prenex_imp ψ`
+  If `φ` and `ψ` are in prenex normal form, then `φ.toPrenexImp ψ`
   is a prenex normal form for `φ.imp ψ`. -/
 def toPrenexImp : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
   | n, BoundedFormula.ex φ, ψ => (φ.toPrenexImp (ψ.liftAt 1 n)).all
@@ -1023,17 +1028,33 @@ def graph (f : L.Functions n) : L.Formula (Fin (n + 1)) :=
 #align first_order.language.formula.graph FirstOrder.Language.Formula.graph
 
 /-- The negation of a formula. -/
-protected nonrec def not (φ : L.Formula α) : L.Formula α :=
+protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
   φ.not
 #align first_order.language.formula.not FirstOrder.Language.Formula.not
 
 /-- The implication between formulas, as a formula. -/
-protected def imp : L.Formula α → L.Formula α → L.Formula α :=
+protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 #align first_order.language.formula.imp FirstOrder.Language.Formula.imp
 
+/-- Given a map `f : α → β ⊕ γ`, `iAlls f φ` transforms a `L.Formula α`
+into a `L.Formula β` by renaming variables with the map `f` and then universally
+quantifying over all variables `Sum.inr _`. -/
+noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) : L.Formula β :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
+
+/-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
+into a `L.Formula β` by renaming variables with the map `f` and then universally
+quantifying over all variables `Sum.inr _`. -/
+noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) : L.Formula β :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).exs
+
 /-- The biimplication between formulas, as a formula. -/
-protected nonrec def iff (φ ψ : L.Formula α) : L.Formula α :=
+protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
 #align first_order.language.formula.iff FirstOrder.Language.Formula.iff
 
@@ -1099,7 +1120,7 @@ variable (L)
 
 /-- A sentence indicating that a structure has `n` distinct elements. -/
 protected def Sentence.cardGe (n : ℕ) : L.Sentence :=
-  (((((List.finRange n).product (List.finRange n)).filter fun ij : _ × _ => ij.1 ≠ ij.2).map
+  ((((List.finRange n ×ˢ List.finRange n).filter fun ij : _ × _ => ij.1 ≠ ij.2).map
           fun ij : _ × _ => ∼((&ij.1).bdEqual &ij.2)).foldr
       (· ⊓ ·) ⊤).exs
 #align first_order.language.sentence.card_ge FirstOrder.Language.Sentence.cardGe
@@ -1116,7 +1137,8 @@ def nonemptyTheory : L.Theory :=
 
 /-- A theory indicating that each of a set of constants is distinct. -/
 def distinctConstantsTheory (s : Set α) : L[[α]].Theory :=
-  (fun ab : α × α => ((L.con ab.1).term.equal (L.con ab.2).term).not) '' (s ×ˢ s ∩ Set.diagonal αᶜ)
+  (fun ab : α × α => ((L.con ab.1).term.equal (L.con ab.2).term).not) ''
+  (s ×ˢ s ∩ (Set.diagonal α)ᶜ)
 #align first_order.language.distinct_constants_theory FirstOrder.Language.distinctConstantsTheory
 
 variable {L}
@@ -1133,23 +1155,23 @@ theorem directed_distinctConstantsTheory :
   Monotone.directed_le monotone_distinctConstantsTheory
 #align first_order.language.directed_distinct_constants_theory FirstOrder.Language.directed_distinctConstantsTheory
 
-theorem distinctConstantsTheory_eq_unionᵢ (s : Set α) :
+theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     L.distinctConstantsTheory s =
       ⋃ t : Finset s,
         L.distinctConstantsTheory (t.map (Function.Embedding.subtype fun x => x ∈ s)) := by
   classical
     simp only [distinctConstantsTheory]
-    rw [← image_unionᵢ, ← unionᵢ_inter]
+    rw [← image_iUnion, ← iUnion_inter]
     refine' congr rfl (congr (congr rfl _) rfl)
     ext ⟨i, j⟩
-    simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_unionᵢ,
+    simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
     refine' ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, _⟩, ⟨h.2, _⟩⟩, _⟩
     · simp
     · simp
     · rintro ⟨t, ⟨is, _⟩, ⟨js, _⟩⟩
       exact ⟨is, js⟩
-#align first_order.language.distinct_constants_theory_eq_Union FirstOrder.Language.distinctConstantsTheory_eq_unionᵢ
+#align first_order.language.distinct_constants_theory_eq_Union FirstOrder.Language.distinctConstantsTheory_eq_iUnion
 
 end Cardinality
 

@@ -2,13 +2,11 @@
 Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.complex.basic
-! leanprover-community/mathlib commit caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Algebra.GroupWithZero.Bitwise
+
+#align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
 /-!
 # The complex numbers
@@ -23,7 +21,7 @@ open BigOperators
 
 open Set Function
 
-/-! ### Definition and basic arithmmetic -/
+/-! ### Definition and basic arithmetic -/
 
 
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
@@ -232,7 +230,7 @@ theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 (r : ℂ)  :=
   ext_iff.2 <| by simp [bit0]
 #align complex.of_real_bit0 Complex.ofReal_bit0
 
-@[simp,  norm_cast]
+@[simp, norm_cast]
 theorem ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : ℂ) = bit1 (r : ℂ) :=
   ext_iff.2 <| by simp [bit1]
 #align complex.of_real_bit1 Complex.ofReal_bit1
@@ -365,27 +363,52 @@ defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
   pullback_nonzero re rfl rfl
 
+-- porting note: moved from `Module/Data/Complex/Basic.lean`
+section SMul
+
+variable {R : Type*} [SMul R ℝ]
+
+/- The useless `0` multiplication in `smul` is to make sure that
+`RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
+instance instSMulRealComplex : SMul R ℂ where
+  smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
+
+theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
+#align complex.smul_re Complex.smul_re
+
+theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by simp [(· • ·), SMul.smul]
+#align complex.smul_im Complex.smul_im
+
+@[simp]
+theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
+  rfl
+#align complex.real_smul Complex.real_smul
+
+end SMul
+
 -- Porting note: proof needed modifications and rewritten fields
 instance addCommGroup : AddCommGroup ℂ :=
-{ zero := (0 : ℂ)
-  add := (· + ·)
-  neg := Neg.neg
-  sub := Sub.sub
-  nsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
-  zsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
-  zsmul_zero':= by intros; ext <;> simp
-  nsmul_zero := by intros; ext <;> simp
-  nsmul_succ := by
-    intros; ext <;> simp [AddMonoid.nsmul_succ, add_mul, add_comm]
-  zsmul_succ' := by
-    intros; ext <;> simp [SubNegMonoid.zsmul_succ', add_mul, add_comm]
-  zsmul_neg' := by
-    intros; ext <;> simp [zsmul_neg', add_mul]
-  add_assoc := by intros; ext <;> simp [add_assoc]
-  zero_add := by intros; ext <;> simp
-  add_zero := by intros; ext <;> simp
-  add_comm := by intros; ext <;> simp [add_comm]
-  add_left_neg := by intros; ext <;> simp }
+  { zero := (0 : ℂ)
+    add := (· + ·)
+    neg := Neg.neg
+    sub := Sub.sub
+    nsmul := fun n z => n • z
+    zsmul := fun n z => n • z
+    zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
+    nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
+    nsmul_succ := by
+      intros; ext <;> simp [AddMonoid.nsmul_succ, add_mul, add_comm,
+        smul_re, smul_im]
+    zsmul_succ' := by
+      intros; ext <;> simp [SubNegMonoid.zsmul_succ', add_mul, add_comm,
+        smul_re, smul_im]
+    zsmul_neg' := by
+      intros; ext <;> simp [zsmul_neg', add_mul, smul_re, smul_im]
+    add_assoc := by intros; ext <;> simp [add_assoc]
+    zero_add := by intros; ext <;> simp
+    add_zero := by intros; ext <;> simp
+    add_comm := by intros; ext <;> simp [add_comm]
+    add_left_neg := by intros; ext <;> simp }
 
 
 instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
@@ -409,9 +432,6 @@ instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
 -- Porting note: proof needed modifications and rewritten fields
 instance commRing : CommRing ℂ :=
   { Complex.addGroupWithOne with
-    zero := (0 : ℂ)
-    add := (· + ·)
-    one := 1
     mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
     add_comm := by intros; ext <;> simp [add_comm]
@@ -424,7 +444,7 @@ instance commRing : CommRing ℂ :=
     mul_assoc := by intros; ext <;> simp [mul_assoc] <;> ring
     one_mul := by intros; ext <;> simp [one_mul]
     mul_one := by intros; ext <;> simp [mul_one]
-    mul_comm := by intros; ext <;> simp [mul_comm] ; ring }
+    mul_comm := by intros; ext <;> simp [mul_comm]; ring }
 
 /-- This shortcut instance ensures we do not find `Ring` via the noncomputable `Complex.field`
 instance. -/
@@ -479,15 +499,16 @@ set_option linter.uppercaseLean3 false in
 
 --Porting note: new theorem
 @[simp, norm_cast]
-theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ) : ℂ) = OfNat.ofNat n :=
+theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n) : ℝ) : ℂ) = OfNat.ofNat n :=
   rfl
 
 @[simp]
-theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℂ).re = OfNat.ofNat n :=
+theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = OfNat.ofNat n :=
   rfl
 
 @[simp]
-theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℂ).im = 0 :=
+theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).im = 0 :=
   rfl
 
 end
@@ -549,7 +570,7 @@ theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
 #align complex.conj_eq_iff_real Complex.conj_eq_iff_real
 
 theorem conj_eq_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
-  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩ ; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
+  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
 #align complex.conj_eq_iff_re Complex.conj_eq_iff_re
 
 theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
@@ -557,7 +578,7 @@ theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 #align complex.conj_eq_iff_im Complex.conj_eq_iff_im
 
--- `simpNF` complains about this being provable by `is_R_or_C.star_def` even
+-- `simpNF` complains about this being provable by `IsROrC.star_def` even
 -- though it's not imported by this file.
 -- Porting note: linter `simpNF` not found
 @[simp]
@@ -657,7 +678,7 @@ theorem normSq_mul (z w : ℂ) : normSq (z * w) = normSq z * normSq w :=
 #align complex.norm_sq_mul Complex.normSq_mul
 
 theorem normSq_add (z w : ℂ) : normSq (z + w) = normSq z + normSq w + 2 * (z * conj w).re := by
-  dsimp [normSq] ; ring
+  dsimp [normSq]; ring
 #align complex.norm_sq_add Complex.normSq_add
 
 theorem re_sq_le_normSq (z : ℂ) : z.re * z.re ≤ normSq z :=
@@ -757,13 +778,60 @@ protected theorem mul_inv_cancel {z : ℂ} (h : z ≠ 0) : z * z⁻¹ = 1 := by
     ofReal_one]
 #align complex.mul_inv_cancel Complex.mul_inv_cancel
 
+noncomputable instance : RatCast ℂ where
+  ratCast := Rat.castRec
+
+/-! ### Cast lemmas -/
+
+@[simp, norm_cast]
+theorem ofReal_nat_cast (n : ℕ) : ((n : ℝ) : ℂ) = n :=
+  map_natCast ofReal n
+#align complex.of_real_nat_cast Complex.ofReal_nat_cast
+
+@[simp, norm_cast]
+theorem nat_cast_re (n : ℕ) : (n : ℂ).re = n := by rw [← ofReal_nat_cast, ofReal_re]
+#align complex.nat_cast_re Complex.nat_cast_re
+
+@[simp, norm_cast]
+theorem nat_cast_im (n : ℕ) : (n : ℂ).im = 0 := by rw [← ofReal_nat_cast, ofReal_im]
+#align complex.nat_cast_im Complex.nat_cast_im
+
+@[simp, norm_cast]
+theorem ofReal_int_cast (n : ℤ) : ((n : ℝ) : ℂ) = n :=
+  map_intCast ofReal n
+#align complex.of_real_int_cast Complex.ofReal_int_cast
+
+@[simp, norm_cast]
+theorem int_cast_re (n : ℤ) : (n : ℂ).re = n := by rw [← ofReal_int_cast, ofReal_re]
+#align complex.int_cast_re Complex.int_cast_re
+
+@[simp, norm_cast]
+theorem int_cast_im (n : ℤ) : (n : ℂ).im = 0 := by rw [← ofReal_int_cast, ofReal_im]
+#align complex.int_cast_im Complex.int_cast_im
+
+@[simp, norm_cast]
+theorem rat_cast_im (q : ℚ) : (q : ℂ).im = 0 := by
+  show (Rat.castRec q : ℂ).im = 0
+  cases q
+  simp [Rat.castRec]
+#align complex.rat_cast_im Complex.rat_cast_im
+
+@[simp, norm_cast]
+theorem rat_cast_re (q : ℚ) : (q : ℂ).re = (q : ℝ) := by
+  show (Rat.castRec q : ℂ).re = _
+  cases q
+  simp [Rat.castRec, normSq, Rat.mk_eq_divInt, Rat.mkRat_eq_div, div_eq_mul_inv, *]
+#align complex.rat_cast_re Complex.rat_cast_re
+
 /-! ### Field instance and lemmas -/
 
-
-noncomputable instance : Field ℂ :=
-{ inv := Inv.inv
+noncomputable instance instField : Field ℂ :=
+{ qsmul := fun n z => n • z
+  qsmul_eq_mul' := fun n z => ext_iff.2 <| by simp [Rat.smul_def, smul_re, smul_im]
+  inv := Inv.inv
   mul_inv_cancel := @Complex.mul_inv_cancel
   inv_zero := Complex.inv_zero }
+#align complex.field Complex.instField
 
 section
 set_option linter.deprecated false
@@ -827,51 +895,11 @@ theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 #align complex.norm_sq_div Complex.normSq_div
 
-/-! ### Cast lemmas -/
-
-
-@[simp, norm_cast]
-theorem ofReal_nat_cast (n : ℕ) : ((n : ℝ) : ℂ) = n :=
-  map_natCast ofReal n
-#align complex.of_real_nat_cast Complex.ofReal_nat_cast
-
-@[simp, norm_cast]
-theorem nat_cast_re (n : ℕ) : (n : ℂ).re = n := by rw [← ofReal_nat_cast, ofReal_re]
-#align complex.nat_cast_re Complex.nat_cast_re
-
-@[simp, norm_cast]
-theorem nat_cast_im (n : ℕ) : (n : ℂ).im = 0 := by rw [← ofReal_nat_cast, ofReal_im]
-#align complex.nat_cast_im Complex.nat_cast_im
-
-@[simp, norm_cast]
-theorem ofReal_int_cast (n : ℤ) : ((n : ℝ) : ℂ) = n :=
-  map_intCast ofReal n
-#align complex.of_real_int_cast Complex.ofReal_int_cast
-
-@[simp, norm_cast]
-theorem int_cast_re (n : ℤ) : (n : ℂ).re = n := by rw [← ofReal_int_cast, ofReal_re]
-#align complex.int_cast_re Complex.int_cast_re
-
-@[simp, norm_cast]
-theorem int_cast_im (n : ℤ) : (n : ℂ).im = 0 := by rw [← ofReal_int_cast, ofReal_im]
-#align complex.int_cast_im Complex.int_cast_im
-
 @[simp, norm_cast]
 theorem ofReal_rat_cast (n : ℚ) : ((n : ℝ) : ℂ) = (n : ℂ) :=
   map_ratCast ofReal n
 #align complex.of_real_rat_cast Complex.ofReal_rat_cast
 
--- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
-@[simp]
-theorem rat_cast_re (q : ℚ) : (q : ℂ).re = (q : ℂ) := by
- rw [← ofReal_rat_cast, ofReal_re]
-#align complex.rat_cast_re Complex.rat_cast_re
-
--- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
-@[simp]
-theorem rat_cast_im (q : ℚ) : (q : ℂ).im = 0 := by
- rw [← ofReal_rat_cast, ofReal_im]
-#align complex.rat_cast_im Complex.rat_cast_im
 
 /-! ### Characteristic zero -/
 
@@ -881,16 +909,19 @@ instance charZero : CharZero ℂ :=
     rwa [← ofReal_nat_cast, ofReal_eq_zero, Nat.cast_eq_zero] at h
 #align complex.char_zero_complex Complex.charZero
 
+-- Test if the `ℚ` smul instance is correct.
+example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
+
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
-  have : (↑(↑2 : ℝ) : ℂ)  = (2 : ℂ) := by rfl
+  have : (↑(↑2 : ℝ) : ℂ) = (2 : ℂ) := rfl
   simp only [add_conj, ofReal_mul, ofReal_one, ofReal_bit0, this,
     mul_div_cancel_left (z.re : ℂ) two_ne_zero]
 #align complex.re_eq_add_conj Complex.re_eq_add_conj
 
 /-- A complex number `z` minus its conjugate `conj z` is `2i` times its imaginary part. -/
 theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
-  have : (↑2 : ℝ ) * I = 2 * I := by rfl
+  have : (↑2 : ℝ ) * I = 2 * I := rfl
   simp only [sub_conj, ofReal_mul, ofReal_one, ofReal_bit0, mul_right_comm, this,
     mul_div_cancel_left _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 #align complex.im_eq_sub_conj Complex.im_eq_sub_conj
@@ -991,7 +1022,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem abs_two : Complex.abs 2 = 2 :=
   calc
-    Complex.abs 2 = Complex.abs (2 : ℝ) := by rfl
+    Complex.abs 2 = Complex.abs (2 : ℝ) := rfl
     _ = (2 : ℝ) := Complex.abs_of_nonneg (by norm_num)
 #align complex.abs_two Complex.abs_two
 
@@ -1008,7 +1039,7 @@ theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
 #align complex.abs_conj Complex.abs_conj
 
 @[simp]
-theorem abs_prod {ι : Type _} (s : Finset ι) (f : ι → ℂ) :
+theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     Complex.abs (s.prod f) = s.prod fun I => Complex.abs (f I) :=
   map_prod Complex.abs _ _
 #align complex.abs_prod Complex.abs_prod
@@ -1073,21 +1104,21 @@ theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| :
 instance : NeZero (1 : ℝ) :=
  ⟨by apply one_ne_zero⟩
 
-theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max (|z.re|) (|z.im|) := by
+theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max |z.re| |z.im| := by
   cases' z with x y
   simp only [abs_apply, normSq_mk, ← sq]
   by_cases hle : |x| ≤ |y|
   · calc
       Real.sqrt (x ^ 2 + y ^ 2) ≤ Real.sqrt (y ^ 2 + y ^ 2) :=
         Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle) _)
-      _ = Real.sqrt 2 * max (|x|) (|y|) := by
+      _ = Real.sqrt 2 * max |x| |y| := by
         rw [max_eq_right hle, ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
   · have hle' := le_of_not_le hle
     rw [add_comm]
     calc
       Real.sqrt (y ^ 2 + x ^ 2) ≤ Real.sqrt (x ^ 2 + x ^ 2) :=
         Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle') _)
-      _ = Real.sqrt 2 * max (|x|) (|y|) := by
+      _ = Real.sqrt 2 * max |x| |y| := by
         rw [max_eq_left hle', ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
 #align complex.abs_le_sqrt_two_mul_max Complex.abs_le_sqrt_two_mul_max
 
@@ -1110,127 +1141,13 @@ theorem abs_cast_nat (n : ℕ) : Complex.abs (n : ℂ) = n := by
 #align complex.abs_cast_nat Complex.abs_cast_nat
 
 @[simp, norm_cast]
-theorem int_cast_abs (n : ℤ) : (|↑n|) = Complex.abs n := by
+theorem int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := by
   rw [← ofReal_int_cast, abs_ofReal]
 #align complex.int_cast_abs Complex.int_cast_abs
 
 theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
   simp [abs, sq, abs_def, Real.mul_self_sqrt (normSq_nonneg _)]
 #align complex.norm_sq_eq_abs Complex.normSq_eq_abs
-
-/-- We put a partial order on ℂ so that `z ≤ w` exactly if `w - z` is real and nonnegative.
-Complex numbers with different imaginary parts are incomparable.
--/
-protected def partialOrder : PartialOrder ℂ where
-  le z w := z.re ≤ w.re ∧ z.im = w.im
-  lt z w := z.re < w.re ∧ z.im = w.im
-  lt_iff_le_not_le z w := by
-    dsimp
-    rw [lt_iff_le_not_le]
-    tauto
-  le_refl x := ⟨le_rfl, rfl⟩
-  le_trans x y z h₁ h₂ := ⟨h₁.1.trans h₂.1, h₁.2.trans h₂.2⟩
-  le_antisymm z w h₁ h₂ := ext (h₁.1.antisymm h₂.1) h₁.2
-#align complex.partial_order Complex.partialOrder
-
-namespace _root_.ComplexOrder
-
--- Porting note: made section into namespace to allow scoping
-scoped[ComplexOrder] attribute [instance] Complex.partialOrder
-
-end _root_.ComplexOrder
-
-section ComplexOrder
-
-open ComplexOrder
-
-theorem le_def {z w : ℂ} : z ≤ w ↔ z.re ≤ w.re ∧ z.im = w.im :=
-  Iff.rfl
-#align complex.le_def Complex.le_def
-
-theorem lt_def {z w : ℂ} : z < w ↔ z.re < w.re ∧ z.im = w.im :=
-  Iff.rfl
-#align complex.lt_def Complex.lt_def
-
-
-@[simp, norm_cast]
-theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by simp [le_def, ofReal']
-#align complex.real_le_real Complex.real_le_real
-
-@[simp, norm_cast]
-theorem real_lt_real {x y : ℝ} : (x : ℂ) < (y : ℂ) ↔ x < y := by simp [lt_def, ofReal']
-#align complex.real_lt_real Complex.real_lt_real
-
-
-@[simp, norm_cast]
-theorem zero_le_real {x : ℝ} : (0 : ℂ) ≤ (x : ℂ) ↔ 0 ≤ x :=
-  real_le_real
-#align complex.zero_le_real Complex.zero_le_real
-
-@[simp, norm_cast]
-theorem zero_lt_real {x : ℝ} : (0 : ℂ) < (x : ℂ) ↔ 0 < x :=
-  real_lt_real
-#align complex.zero_lt_real Complex.zero_lt_real
-
-theorem not_le_iff {z w : ℂ} : ¬z ≤ w ↔ w.re < z.re ∨ z.im ≠ w.im := by
-  rw [le_def, not_and_or, not_le]
-#align complex.not_le_iff Complex.not_le_iff
-
-theorem not_lt_iff {z w : ℂ} : ¬z < w ↔ w.re ≤ z.re ∨ z.im ≠ w.im := by
-  rw [lt_def, not_and_or, not_lt]
-#align complex.not_lt_iff Complex.not_lt_iff
-
-theorem not_le_zero_iff {z : ℂ} : ¬z ≤ 0 ↔ 0 < z.re ∨ z.im ≠ 0 :=
-  not_le_iff
-#align complex.not_le_zero_iff Complex.not_le_zero_iff
-
-theorem not_lt_zero_iff {z : ℂ} : ¬z < 0 ↔ 0 ≤ z.re ∨ z.im ≠ 0 :=
-  not_lt_iff
-#align complex.not_lt_zero_iff Complex.not_lt_zero_iff
-
-theorem eq_re_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re := by
-  ext
-  rfl
-  simp only [← (Complex.le_def.1 hz).2, Complex.zero_im, Complex.ofReal_im]
-#align complex.eq_re_of_real_le Complex.eq_re_ofReal_le
-
-/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℂ` is a strictly ordered ring.
--/
-protected def strictOrderedCommRing : StrictOrderedCommRing ℂ :=
-{ zero_le_one := ⟨zero_le_one, rfl⟩
-  add_le_add_left := fun w z h y => ⟨add_le_add_left h.1 _, congr_arg₂ (· + ·) rfl h.2⟩
-  mul_pos := fun z w hz hw => by
-    simp [lt_def, mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
-  mul_comm := by intros; ext <;> ring_nf }
-#align complex.strict_ordered_comm_ring Complex.strictOrderedCommRing
-
-scoped[ComplexOrder] attribute [instance] Complex.strictOrderedCommRing
-
-/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℂ` is a star ordered ring.
-(That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
--/
-protected def starOrderedRing : StarOrderedRing ℂ :=
-{ nonneg_iff := fun r => by
-    refine' ⟨fun hr => ⟨Real.sqrt r.re, _⟩, fun h => _⟩
-    · have h₁ : 0 ≤ r.re := by
-        rw [le_def] at hr
-        exact hr.1
-      have h₂ : r.im = 0 := by
-        rw [le_def] at hr
-        exact hr.2.symm
-      ext
-      · simp only [ofReal_im, star_def, ofReal_re, sub_zero, conj_re, mul_re, mul_zero, ←
-          Real.sqrt_mul h₁ r.re, Real.sqrt_mul_self h₁]
-      · simp only [h₂, add_zero, ofReal_im, star_def, zero_mul, conj_im, mul_im, mul_zero,
-          neg_zero]
-    · obtain ⟨s, rfl⟩ := h
-      simp only [← normSq_eq_conj_mul_self, normSq_nonneg, zero_le_real, star_def]
-  add_le_add_left := by intros; simp [le_def] at *; assumption }
-#align complex.star_ordered_ring Complex.starOrderedRing
-
-scoped[ComplexOrder] attribute [instance] Complex.starOrderedRing
-
-end ComplexOrder
 
 /-! ### Cauchy sequences -/
 
@@ -1257,7 +1174,7 @@ noncomputable def cauSeqIm (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=
 #align complex.cau_seq_im Complex.cauSeqIm
 
 theorem isCauSeq_abs {f : ℕ → ℂ} (hf : IsCauSeq Complex.abs f) :
-  IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
+    IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
   let ⟨i, hi⟩ := hf ε ε0
   ⟨i, fun j hj => lt_of_le_of_lt
     (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
@@ -1269,7 +1186,7 @@ noncomputable def limAux (f : CauSeq ℂ Complex.abs) : ℂ :=
 #align complex.lim_aux Complex.limAux
 
 theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
-  f ≈ CauSeq.const Complex.abs (limAux f) := fun ε ε0 =>
+    f ≈ CauSeq.const Complex.abs (limAux f) := fun ε ε0 =>
   (exists_forall_ge_and
   (CauSeq.equiv_lim ⟨_, isCauSeq_re f⟩ _ (half_pos ε0))
         (CauSeq.equiv_lim ⟨_, isCauSeq_im f⟩ _ (half_pos ε0))).imp
@@ -1281,7 +1198,7 @@ theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
     rwa [add_halves] at this
 #align complex.equiv_lim_aux Complex.equiv_limAux
 
-instance : CauSeq.IsComplete ℂ Complex.abs :=
+instance instIsComplete : CauSeq.IsComplete ℂ Complex.abs :=
   ⟨fun f => ⟨limAux f, equiv_limAux f⟩⟩
 
 open CauSeq
@@ -1297,18 +1214,18 @@ theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ Complex.abs) :
 #align complex.lim_eq_lim_im_add_lim_re Complex.lim_eq_lim_im_add_lim_re
 
 theorem lim_re (f : CauSeq ℂ Complex.abs) : lim (cauSeqRe f) = (lim f).re := by
-  rw [lim_eq_lim_im_add_lim_re] ; simp [ofReal']
+  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal']
 #align complex.lim_re Complex.lim_re
 
 theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := by
-  rw [lim_eq_lim_im_add_lim_re] ; simp [ofReal']
+  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal']
 #align complex.lim_im Complex.lim_im
 
 theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
-  IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
+    IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
   let ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
-    rw [← RingHom.map_sub, abs_conj] ; exact hi j hj⟩
+    rw [← RingHom.map_sub, abs_conj]; exact hi j hj⟩
 #align complex.is_cau_seq_conj Complex.isCauSeq_conj
 
 /-- The complex conjugate of a complex Cauchy sequence, as a complex Cauchy sequence. -/
@@ -1318,7 +1235,7 @@ noncomputable def cauSeqConj (f : CauSeq ℂ Complex.abs) : CauSeq ℂ Complex.a
 
 theorem lim_conj (f : CauSeq ℂ Complex.abs) : lim (cauSeqConj f) = conj (lim f) :=
   Complex.ext (by simp [cauSeqConj, (lim_re _).symm, cauSeqRe])
-    (by simp [cauSeqConj, (lim_im _).symm, cauSeqIm, (lim_neg _).symm] ; rfl)
+    (by simp [cauSeqConj, (lim_im _).symm, cauSeqIm, (lim_neg _).symm]; rfl)
 #align complex.lim_conj Complex.lim_conj
 
 /-- The absolute value of a complex Cauchy sequence, as a real Cauchy sequence. -/
@@ -1332,7 +1249,7 @@ theorem lim_abs (f : CauSeq ℂ Complex.abs) : lim (cauSeqAbs f) = Complex.abs (
     ⟨i, fun j hj => lt_of_le_of_lt (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
 #align complex.lim_abs Complex.lim_abs
 
-variable {α : Type _} (s : Finset α)
+variable {α : Type*} (s : Finset α)
 
 @[simp, norm_cast]
 theorem ofReal_prod (f : α → ℝ) : ((∏ i in s, f i : ℝ) : ℂ) = ∏ i in s, (f i : ℂ) :=

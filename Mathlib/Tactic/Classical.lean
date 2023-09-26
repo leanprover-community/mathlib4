@@ -42,7 +42,9 @@ def bar : Bool := by
 Note that (unlike lean 3) `classical` is a scoping tactic - it adds the instance only within the
 scope of the tactic.
 -/
-elab "classical" tacs:tacticSeq : tactic => do
+-- FIXME: using ppDedent looks good in the common case, but produces the incorrect result when
+-- the `classical` does not scope over the rest of the block.
+elab "classical" tacs:ppDedent(tacticSeq) : tactic => do
   modifyEnv Meta.instanceExtension.pushScope
   Meta.addInstance ``Classical.propDecidable .local 10
   try Elab.Tactic.evalTactic tacs

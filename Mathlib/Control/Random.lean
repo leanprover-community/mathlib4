@@ -3,26 +3,39 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
-import Mathlib.Init.Algebra.Order
+
+import Mathlib.Init.Order.Defs
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Int.Order
+import Mathlib.Control.ULiftable
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Basic
+import Mathlib.Order.ULift
+
+#align_import control.random from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
 /-!
 # Rand Monad and Random Class
+
 This module provides tools for formulating computations guided by randomness and for
 defining objects that can be created randomly.
+
 ## Main definitions
-  * `Rand` and `RandG` monad for computations guided by randomness;
-  * `Random` class for objects that can be generated randomly;
-    * `random` to generate one object;
-  * `BoundedRandom` class for objects that can be generated randomly inside a range;
-    * `randomR` to generate one object inside a range;
-  * `IO.runRand` to run a randomized computation inside the `IO` monad;
+
+* `Rand` and `RandG` monad for computations guided by randomness;
+* `Random` class for objects that can be generated randomly;
+  * `random` to generate one object;
+* `BoundedRandom` class for objects that can be generated randomly inside a range;
+  * `randomR` to generate one object inside a range;
+* `IO.runRand` to run a randomized computation inside the `IO` monad;
+
 ## References
-  * Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
+
+* Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
+
 -/
+
+set_option autoImplicit true
 
 /-- A monad to generate random objects using the generic generator type `g` -/
 abbrev RandG (g : Type) := StateM (ULift g)
@@ -67,7 +80,7 @@ open Rand
 def rand (α : Type u) [Random α] [RandomGen g] : RandG g α := Random.random
 
 /-- Generate a random value of type `α` between `x` and `y` inclusive. -/
-def randBound (α : Type u) [Preorder α]  [BoundedRandom α] (lo hi : α) (h : lo ≤ hi) [RandomGen g] :
+def randBound (α : Type u) [Preorder α] [BoundedRandom α] (lo hi : α) (h : lo ≤ hi) [RandomGen g] :
     RandG g {a // lo ≤ a ∧ a ≤ hi} :=
   BoundedRandom.randomR lo hi h
 
@@ -82,6 +95,9 @@ def randBool [RandomGen g] : RandG g Bool :=
 
 instance : Random Bool where
   random := randBool
+
+instance {α : Type u} [Random α] : Random (ULift.{v} α) where
+  random {g} := ULiftable.up (random : RandG g α)
 
 instance : BoundedRandom Nat where
   randomR := λ lo hi h _ => do
@@ -105,6 +121,12 @@ instance {n : Nat} : BoundedRandom (Fin n) where
   randomR := λ lo hi h _ => do
     let ⟨r, h1, h2⟩ ← randBound Nat lo.val hi.val h
     pure ⟨⟨r, Nat.lt_of_le_of_lt h2 hi.isLt⟩, h1, h2⟩
+
+instance {α : Type u} [Preorder α] [BoundedRandom α] : BoundedRandom (ULift.{v} α) where
+  randomR {g} lo hi h := do
+    let ⟨v⟩
+      ← (ULiftable.up (BoundedRandom.randomR lo.down hi.down h : RandG g _) : RandG g (ULift.{v} _))
+    pure ⟨ULift.up v.val, v.prop⟩
 
 end Random
 

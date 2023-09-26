@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.bornology.constructions
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Bornology.Basic
+
+#align_import topology.bornology.constructions from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Bornology structure on products and subtypes
@@ -23,23 +20,23 @@ open Set Filter Bornology Function
 
 open Filter
 
-variable {α β ι : Type _} {π : ι → Type _} [Fintype ι] [Bornology α] [Bornology β]
+variable {α β ι : Type*} {π : ι → Type*} [Fintype ι] [Bornology α] [Bornology β]
   [∀ i, Bornology (π i)]
 
-instance : Bornology (α × β)
-    where
+instance Prod.instBornology : Bornology (α × β) where
   cobounded' := (cobounded α).coprod (cobounded β)
   le_cofinite' :=
     @coprod_cofinite α β ▸ coprod_mono ‹Bornology α›.le_cofinite ‹Bornology β›.le_cofinite
+#align prod.bornology Prod.instBornology
 
-instance : Bornology (∀ i, π i)
-    where
+instance Pi.instBornology : Bornology (∀ i, π i) where
   cobounded' := Filter.coprodᵢ fun i => cobounded (π i)
   le_cofinite' := @coprodᵢ_cofinite ι π _ ▸ Filter.coprodᵢ_mono fun _ => Bornology.le_cofinite _
+#align pi.bornology Pi.instBornology
 
 /-- Inverse image of a bornology. -/
 @[reducible]
-def Bornology.induced {α β : Type _} [Bornology β] (f : α → β) : Bornology α
+def Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology α
     where
   cobounded' := comap f (cobounded β)
   le_cofinite' := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
@@ -131,7 +128,7 @@ theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, I
 -/
 
 
-theorem isBounded_induced {α β : Type _} [Bornology β] {f : α → β} {s : Set α} :
+theorem isBounded_induced {α β : Type*} [Bornology β] {f : α → β} {s : Set α} :
     @IsBounded α (Bornology.induced f) s ↔ IsBounded (f '' s) :=
   compl_mem_comap
 #align bornology.is_bounded_induced Bornology.isBounded_induced
@@ -156,7 +153,7 @@ instance [BoundedSpace α] [BoundedSpace β] : BoundedSpace (α × β) := by
 instance [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := by
   simp [← cobounded_eq_bot_iff, cobounded_pi]
 
-theorem boundedSpace_induced_iff {α β : Type _} [Bornology β] {f : α → β} :
+theorem boundedSpace_induced_iff {α β : Type*} [Bornology β] {f : α → β} :
     @BoundedSpace α (Bornology.induced f) ↔ IsBounded (range f) := by
   rw [← @isBounded_univ _ (Bornology.induced f), isBounded_induced, image_univ]
 -- porting note: had to explicitly provided the bornology to `isBounded_univ`.
@@ -171,10 +168,10 @@ theorem boundedSpace_val_set_iff {s : Set α} : BoundedSpace s ↔ IsBounded s :
   boundedSpace_subtype_iff
 #align bounded_space_coe_set_iff boundedSpace_val_set_iff
 
-alias boundedSpace_subtype_iff ↔ _ Bornology.IsBounded.boundedSpace_subtype
+alias ⟨_, Bornology.IsBounded.boundedSpace_subtype⟩ := boundedSpace_subtype_iff
 #align bornology.is_bounded.bounded_space_subtype Bornology.IsBounded.boundedSpace_subtype
 
-alias boundedSpace_val_set_iff ↔ _ Bornology.IsBounded.boundedSpace_val
+alias ⟨_, Bornology.IsBounded.boundedSpace_val⟩ := boundedSpace_val_set_iff
 #align bornology.is_bounded.bounded_space_coe Bornology.IsBounded.boundedSpace_val
 
 instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=

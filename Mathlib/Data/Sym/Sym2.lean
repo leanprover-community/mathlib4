@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kyle Miller All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module data.sym.sym2
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2.Init
 import Mathlib.Data.SetLike.Basic
+
+#align_import data.sym.sym2 from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # The symmetric square
@@ -57,7 +54,7 @@ open Finset Function Sym
 
 universe u
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace Sym2
 
@@ -130,13 +127,13 @@ protected theorem inductionOn₂ {f : Sym2 α → Sym2 β → Prop} (i : Sym2 α
 -- porting note: `exists` seems to be an invalid identifier
 protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f ⟦(x, y)⟧ :=
-  (surjective_quotient_mk _).exists.trans Prod.exists
+  (surjective_quotient_mk' _).exists.trans Prod.exists
 #align sym2.exists Sym2.exists
 
 -- porting note: `forall` seems to be an invalid identifier
 protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
     (∀ x : Sym2 α, f x) ↔ ∀ x y, f ⟦(x, y)⟧ :=
-  (surjective_quotient_mk _).forall.trans Prod.forall
+  (surjective_quotient_mk' _).forall.trans Prod.forall
 #align sym2.forall Sym2.forall
 
 -- porting note: The `⟦⟧` notation does not infer the setoid structure automatically
@@ -183,7 +180,7 @@ def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } 
   toFun f :=
     Quotient.lift (uncurry ↑f) <| by
       rintro _ _ ⟨⟩
-      exacts[rfl, f.prop _ _]
+      exacts [rfl, f.prop _ _]
   invFun F := ⟨curry (F ∘ Quotient.mk''), fun a₁ a₂ => congr_arg F eq_swap⟩
   left_inv f := Subtype.ext rfl
   right_inv F := funext <| Sym2.ind fun x y => rfl
@@ -211,11 +208,11 @@ def lift₂ :
     Quotient.lift₂ (fun (a : α × α) (b : β × β) => f.1 a.1 a.2 b.1 b.2)
       (by
         rintro _ _ _ _ ⟨⟩ ⟨⟩
-        exacts[rfl, (f.2 _ _ _ _).2, (f.2 _ _ _ _).1, (f.2 _ _ _ _).1.trans (f.2 _ _ _ _).2])
+        exacts [rfl, (f.2 _ _ _ _).2, (f.2 _ _ _ _).1, (f.2 _ _ _ _).1.trans (f.2 _ _ _ _).2])
   invFun F :=
     ⟨fun a₁ a₂ b₁ b₂ => F ⟦(a₁, a₂)⟧ ⟦(b₁, b₂)⟧, fun a₁ a₂ b₁ b₂ => by
       constructor
-      exacts[congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
+      exacts [congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
   left_inv f := Subtype.ext rfl
   right_inv F := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
 #align sym2.lift₂ Sym2.lift₂
@@ -240,7 +237,7 @@ theorem coe_lift₂_symm_apply (F : Sym2 α → Sym2 β → γ) (a₁ a₂ : α)
 def map (f : α → β) : Sym2 α → Sym2 β :=
   Quotient.map (Prod.map f f)
     (by
-      intro _ _ h;
+      intro _ _ h
       cases h
       · constructor
       apply Rel.swap)
@@ -340,11 +337,11 @@ theorem mem_iff {a b c : α} : a ∈ (⟦(b, c)⟧ : Sym2 α) ↔ a = b ∨ a = 
 #align sym2.mem_iff Sym2.mem_iff
 
 theorem out_fst_mem (e : Sym2 α) : e.out.1 ∈ e :=
-  ⟨e.out.2, by rw [Prod.mk.eta, e.out_eq]⟩
+  ⟨e.out.2, by rw [e.out_eq]⟩
 #align sym2.out_fst_mem Sym2.out_fst_mem
 
 theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
-  ⟨e.out.1, by rw [eq_swap, Prod.mk.eta, e.out_eq]⟩
+  ⟨e.out.1, by rw [eq_swap, e.out_eq]⟩
 #align sym2.out_snd_mem Sym2.out_snd_mem
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ (⟦(a, b)⟧ : Sym2 α), p c) ↔ p a ∧ p b := by
@@ -590,12 +587,12 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
         rintro ⟨x, hx⟩ ⟨y, hy⟩ h
         cases' x with _ x; · simp at hx
         cases' x with _ x; · simp at hx
-        cases' x with _ x; swap;
+        cases' x with _ x; swap
         · exfalso
           simp at hx
         cases' y with _ y; · simp at hy
         cases' y with _ y; · simp at hy
-        cases' y with _ y; swap;
+        cases' y with _ y; swap
         · exfalso
           simp at hy
         rcases perm_card_two_iff.mp h with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
@@ -618,7 +615,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
 
 /-- The symmetric square is equivalent to the second symmetric power.
 -/
-def equivSym (α : Type _) : Sym2 α ≃ Sym α 2 :=
+def equivSym (α : Type*) : Sym2 α ≃ Sym α 2 :=
   Equiv.trans sym2EquivSym' symEquivSym'.symm
 #align sym2.equiv_sym Sym2.equivSym
 
@@ -626,7 +623,7 @@ def equivSym (α : Type _) : Sym2 α ≃ Sym α 2 :=
 two. (This is currently a synonym for `equivSym`, but it's provided
 in case the definition for `Sym` changes.)
 -/
-def equivMultiset (α : Type _) : Sym2 α ≃ { s : Multiset α // Multiset.card s = 2 } :=
+def equivMultiset (α : Type*) : Sym2 α ≃ { s : Multiset α // Multiset.card s = 2 } :=
   equivSym α
 #align sym2.equiv_multiset Sym2.equivMultiset
 
@@ -649,10 +646,10 @@ theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Re
 
 /-- Given `[DecidableEq α]` and `[Fintype α]`, the following instance gives `Fintype (Sym2 α)`.
 -/
-instance instRelDecidable (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
+instance instRelDecidable (α : Type*) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
   decidable_of_bool (relBool x y) (relBool_spec x y)
 -- Porting note: add this other version needed for Data.Finset.Sym
-instance instRelDecidable' (α : Type _) [DecidableEq α] :
+instance instRelDecidable' (α : Type*) [DecidableEq α] :
   DecidableRel (· ≈ · : α × α → α × α → Prop) := instRelDecidable _
 
 -- porting note: extra definitions and lemmas for proving decidable equality in `Sym2`
@@ -708,7 +705,7 @@ theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : ⟦(
 
 @[simp]
 theorem other_eq_other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) :
-  Mem.other h = Mem.other' h := by rw [← congr_right, other_spec' h, other_spec]
+    Mem.other h = Mem.other' h := by rw [← congr_right, other_spec' h, other_spec]
 #align sym2.other_eq_other' Sym2.other_eq_other'
 
 theorem other_mem' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other' h ∈ z := by
@@ -724,14 +721,13 @@ theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb 
 
 theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a :=
   by classical
-    rw [other_eq_other'] at hb⊢
+    rw [other_eq_other'] at hb ⊢
     convert other_invol' ha hb using 2
     apply other_eq_other'
 #align sym2.other_invol Sym2.other_invol
 
--- porting note: updating `×ˢ` to the new notation `×ᶠ`
 theorem filter_image_quotient_mk''_isDiag [DecidableEq α] (s : Finset α) :
-    ((s ×ᶠ s).image Quotient.mk'').filter IsDiag = s.diag.image Quotient.mk'' := by
+    ((s ×ˢ s).image Quotient.mk'').filter IsDiag = s.diag.image Quotient.mk'' := by
   ext z
   induction' z using Sym2.inductionOn
   simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
@@ -744,9 +740,8 @@ theorem filter_image_quotient_mk''_isDiag [DecidableEq α] (s : Finset α) :
     exact ⟨⟨a, a, ⟨ha, ha⟩, rfl⟩, rfl⟩
 #align sym2.filter_image_quotient_mk_is_diag Sym2.filter_image_quotient_mk''_isDiag
 
--- porting note: updating `×ˢ` to the new notation `×ᶠ`
 theorem filter_image_quotient_mk''_not_isDiag [DecidableEq α] (s : Finset α) :
-    (((s ×ᶠ s).image Quotient.mk'').filter fun a : Sym2 α => ¬a.IsDiag) =
+    (((s ×ˢ s).image Quotient.mk'').filter fun a : Sym2 α => ¬a.IsDiag) =
       s.offDiag.image Quotient.mk'' := by
   ext z
   induction z using Sym2.inductionOn

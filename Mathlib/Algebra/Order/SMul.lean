@@ -2,18 +2,16 @@
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module algebra.order.smul
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Positivity
+
+#align_import algebra.order.smul from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Ordered scalar product
@@ -47,7 +45,7 @@ open Pointwise
 /-- The ordered scalar product property is when an ordered additive commutative monoid
 with a partial order has a scalar multiplication which is compatible with the order.
 -/
-class OrderedSMul (R M : Type _) [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] :
+class OrderedSMul (R M : Type*) [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] :
   Prop where
   /-- Scalar multiplication by positive elements preserves the order. -/
   protected smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, a < b → 0 < c → c • a < c • b
@@ -55,22 +53,23 @@ class OrderedSMul (R M : Type _) [OrderedSemiring R] [OrderedAddCommMonoid M] [S
   protected lt_of_smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, c • a < c • b → 0 < c → a < b
 #align ordered_smul OrderedSMul
 
-variable {ι 𝕜 R M N : Type _}
+variable {ι 𝕜 R M N : Type*}
 
 namespace OrderDual
 
-instance [Zero R] [AddZeroClass M] [SMulWithZero R M] : SMulWithZero R Mᵒᵈ :=
-  { instSMulOrderDual with
+instance OrderDual.instSMulWithZero [Zero R] [AddZeroClass M] [SMulWithZero R M] :
+    SMulWithZero R Mᵒᵈ :=
+  { OrderDual.instSMul with
     zero_smul := fun m => OrderDual.rec (zero_smul _) m
     smul_zero := fun r => OrderDual.rec (@smul_zero R M _ _) r }
 
-instance [Monoid R] [MulAction R M] : MulAction R Mᵒᵈ :=
-  { instSMulOrderDual with
+instance OrderDual.instMulAction [Monoid R] [MulAction R M] : MulAction R Mᵒᵈ :=
+  { OrderDual.instSMul with
     one_smul := fun m => OrderDual.rec (one_smul _) m
     mul_smul := fun r => OrderDual.rec (@mul_smul R M _ _) r }
 
 instance [MonoidWithZero R] [AddMonoid M] [MulActionWithZero R M] : MulActionWithZero R Mᵒᵈ :=
-  { instMulActionOrderDual , instSMulWithZeroOrderDualInstZeroOrderDualToZero with }
+  { OrderDual.instMulAction, OrderDual.instSMulWithZero with }
 
 instance [MonoidWithZero R] [AddMonoid M] [DistribMulAction R M] : DistribMulAction R Mᵒᵈ where
   smul_add _ a := OrderDual.rec (fun _ b => OrderDual.rec (smul_add _ _) b) a
@@ -88,11 +87,11 @@ section OrderedSMul
 variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [OrderedSMul R M]
   {s : Set M} {a b : M} {c : R}
 
-theorem smul_lt_smul_of_pos : a < b → 0 < c → c • a < c • b :=
+@[gcongr] theorem smul_lt_smul_of_pos : a < b → 0 < c → c • a < c • b :=
   OrderedSMul.smul_lt_smul_of_pos
 #align smul_lt_smul_of_pos smul_lt_smul_of_pos
 
-theorem smul_le_smul_of_nonneg (h₁ : a ≤ b) (h₂ : 0 ≤ c) : c • a ≤ c • b := by
+@[gcongr] theorem smul_le_smul_of_nonneg (h₁ : a ≤ b) (h₂ : 0 ≤ c) : c • a ≤ c • b := by
   rcases h₁.eq_or_lt with (rfl | hab)
   · rfl
   · rcases h₂.eq_or_lt with (rfl | hc)
@@ -130,7 +129,7 @@ theorem smul_pos_iff_of_pos (hc : 0 < c) : 0 < c • a ↔ 0 < a :=
     _ ↔ 0 < a := smul_lt_smul_iff_of_pos hc
 #align smul_pos_iff_of_pos smul_pos_iff_of_pos
 
-alias smul_pos_iff_of_pos ↔ _ smul_pos
+alias ⟨_, smul_pos⟩ := smul_pos_iff_of_pos
 #align smul_pos smul_pos
 
 theorem monotone_smul_left (hc : 0 ≤ c) : Monotone (SMul.smul c : M → M) := fun _ _ h =>
@@ -182,13 +181,13 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
 instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
     cases n
-    · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, coe_nat_zsmul] at hn⊢
+    · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, coe_nat_zsmul] at hn ⊢
       exact strictMono_smul_left hn
     · cases (Int.negSucc_not_pos _).1 hn
 #align int.ordered_smul Int.orderedSMul
 
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
-instance LinearOrderedSemiring.toOrderedSMul {R : Type _} [LinearOrderedSemiring R] :
+instance LinearOrderedSemiring.toOrderedSMul {R : Type*} [LinearOrderedSemiring R] :
     OrderedSMul R R :=
   OrderedSMul.mk'' fun _ => strictMono_mul_left_of_pos
 #align linear_ordered_semiring.to_ordered_smul LinearOrderedSemiring.toOrderedSMul
@@ -218,7 +217,7 @@ instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :
   OrderedSMul.mk' fun _ _ _ h hc =>
     ⟨smul_le_smul_of_nonneg h.1.1 hc.le, smul_le_smul_of_nonneg h.1.2 hc.le⟩
 
-instance Pi.orderedSMul {M : ι → Type _} [∀ i, OrderedAddCommMonoid (M i)]
+instance Pi.orderedSMul {M : ι → Type*} [∀ i, OrderedAddCommMonoid (M i)]
     [∀ i, MulActionWithZero 𝕜 (M i)] [∀ i, OrderedSMul 𝕜 (M i)] : OrderedSMul 𝕜 (∀ i, M i) :=
   OrderedSMul.mk' fun _ _ _ h hc i => smul_le_smul_of_nonneg (h.le i) hc.le
 #align pi.ordered_smul Pi.orderedSMul

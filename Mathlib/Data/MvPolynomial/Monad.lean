@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module data.mv_polynomial.monad
-! leanprover-community/mathlib commit 5120cf49cb659e2499edd7e4d336a04efd598f2f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.Variables
+
+#align_import data.mv_polynomial.monad from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 
@@ -43,7 +40,7 @@ whereas `MvPolynomial.map` is the "map" operation for the other pair.
 
 ## Implementation notes
 
-We add an `LawfulMonad` instance for the (`bind₁`, `join₁`) pair.
+We add a `LawfulMonad` instance for the (`bind₁`, `join₁`) pair.
 The second pair cannot be instantiated as a `Monad`,
 since it is not a monad in `Type` but in `CommRing` (or rather `CommSemiRing`).
 
@@ -58,9 +55,9 @@ namespace MvPolynomial
 
 open Finsupp
 
-variable {σ : Type _} {τ : Type _}
+variable {σ : Type*} {τ : Type*}
 
-variable {R S T : Type _} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
 
 /--
 `bind₁` is the "left hand side" bind operation on `MvPolynomial`, operating on the variable type.
@@ -224,12 +221,12 @@ theorem bind₂_id : bind₂ (RingHom.id (MvPolynomial σ R)) = join₂ :=
   rfl
 #align mv_polynomial.bind₂_id MvPolynomial.bind₂_id
 
-theorem bind₁_bind₁ {υ : Type _} (f : σ → MvPolynomial τ R) (g : τ → MvPolynomial υ R)
+theorem bind₁_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → MvPolynomial υ R)
     (φ : MvPolynomial σ R) : (bind₁ g) (bind₁ f φ) = bind₁ (fun i => bind₁ g (f i)) φ := by
   simp [bind₁, ← comp_aeval]
 #align mv_polynomial.bind₁_bind₁ MvPolynomial.bind₁_bind₁
 
-theorem bind₁_comp_bind₁ {υ : Type _} (f : σ → MvPolynomial τ R) (g : τ → MvPolynomial υ R) :
+theorem bind₁_comp_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → MvPolynomial υ R) :
     (bind₁ g).comp (bind₁ f) = bind₁ fun i => bind₁ g (f i) := by
   ext1
   apply bind₁_bind₁
@@ -244,13 +241,13 @@ theorem bind₂_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* MvPolynomia
   RingHom.congr_fun (bind₂_comp_bind₂ f g) φ
 #align mv_polynomial.bind₂_bind₂ MvPolynomial.bind₂_bind₂
 
-theorem rename_comp_bind₁ {υ : Type _} (f : σ → MvPolynomial τ R) (g : τ → υ) :
+theorem rename_comp_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ) :
     (rename g).comp (bind₁ f) = bind₁ fun i => rename g <| f i := by
   ext1 i
   simp
 #align mv_polynomial.rename_comp_bind₁ MvPolynomial.rename_comp_bind₁
 
-theorem rename_bind₁ {υ : Type _} (f : σ → MvPolynomial τ R) (g : τ → υ) (φ : MvPolynomial σ R) :
+theorem rename_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ) (φ : MvPolynomial σ R) :
     rename g (bind₁ f φ) = bind₁ (fun i => rename g <| f i) φ :=
   AlgHom.congr_fun (rename_comp_bind₁ f g) φ
 #align mv_polynomial.rename_bind₁ MvPolynomial.rename_bind₁
@@ -262,13 +259,13 @@ theorem map_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* T) (φ : MvPoly
   simp only [Function.comp_apply, map_X]
 #align mv_polynomial.map_bind₂ MvPolynomial.map_bind₂
 
-theorem bind₁_comp_rename {υ : Type _} (f : τ → MvPolynomial υ R) (g : σ → τ) :
+theorem bind₁_comp_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ → τ) :
     (bind₁ f).comp (rename g) = bind₁ (f ∘ g) := by
   ext1 i
   simp
 #align mv_polynomial.bind₁_comp_rename MvPolynomial.bind₁_comp_rename
 
-theorem bind₁_rename {υ : Type _} (f : τ → MvPolynomial υ R) (g : σ → τ) (φ : MvPolynomial σ R) :
+theorem bind₁_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ → τ) (φ : MvPolynomial σ R) :
     bind₁ f (rename g φ) = bind₁ (f ∘ g) φ :=
   AlgHom.congr_fun (bind₁_comp_rename f g) φ
 #align mv_polynomial.bind₁_rename MvPolynomial.bind₁_rename
@@ -357,22 +354,20 @@ theorem bind₂_monomial_one (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ)
 
 section
 
-open Classical
-
-theorem vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
-    (bind₁ f φ).vars ⊆ φ.vars.bunionᵢ fun i => (f i).vars := by
+theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
+    (bind₁ f φ).vars ⊆ φ.vars.biUnion fun i => (f i).vars := by
   calc
     (bind₁ f φ).vars = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (coeff x φ))).vars :=
       by rw [← AlgHom.map_sum, ← φ.as_sum]
-    _ ≤ φ.support.bunionᵢ fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (coeff i φ))).vars :=
+    _ ≤ φ.support.biUnion fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (coeff i φ))).vars :=
       (vars_sum_subset _ _)
-    _ = φ.support.bunionᵢ fun d : σ →₀ ℕ => vars (C (coeff d φ) * ∏ i in d.support, f i ^ d i) := by
+    _ = φ.support.biUnion fun d : σ →₀ ℕ => vars (C (coeff d φ) * ∏ i in d.support, f i ^ d i) := by
       simp only [bind₁_monomial]
-    _ ≤ φ.support.bunionᵢ fun d : σ →₀ ℕ => d.support.bunionᵢ fun i => vars (f i) := ?_
+    _ ≤ φ.support.biUnion fun d : σ →₀ ℕ => d.support.biUnion fun i => vars (f i) := ?_
     -- proof below
-    _ ≤ φ.vars.bunionᵢ fun i : σ => vars (f i) := ?_
+    _ ≤ φ.vars.biUnion fun i : σ => vars (f i) := ?_
     -- proof below
-  · apply Finset.bunionᵢ_mono
+  · apply Finset.biUnion_mono
     intro d _hd
     calc
       vars (C (coeff d φ) * ∏ i : σ in d.support, f i ^ d i) ≤
@@ -380,13 +375,13 @@ theorem vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
         vars_mul _ _
       _ ≤ (∏ i : σ in d.support, f i ^ d i).vars := by
         simp only [Finset.empty_union, vars_C, Finset.le_iff_subset, Finset.Subset.refl]
-      _ ≤ d.support.bunionᵢ fun i : σ => vars (f i ^ d i) := (vars_prod _)
-      _ ≤ d.support.bunionᵢ fun i : σ => (f i).vars := ?_
-    apply Finset.bunionᵢ_mono
+      _ ≤ d.support.biUnion fun i : σ => vars (f i ^ d i) := (vars_prod _)
+      _ ≤ d.support.biUnion fun i : σ => (f i).vars := ?_
+    apply Finset.biUnion_mono
     intro i _hi
     apply vars_pow
   · intro j
-    simp_rw [Finset.mem_bunionᵢ]
+    simp_rw [Finset.mem_biUnion]
     rintro ⟨d, hd, ⟨i, hi, hj⟩⟩
     exact ⟨i, (mem_vars _).mpr ⟨d, hd, hi⟩, hj⟩
 #align mv_polynomial.vars_bind₁ MvPolynomial.vars_bind₁
@@ -396,7 +391,7 @@ end
 theorem mem_vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) {j : τ}
     (h : j ∈ (bind₁ f φ).vars) : ∃ i : σ, i ∈ φ.vars ∧ j ∈ (f i).vars := by
   classical
-  simpa only [exists_prop, Finset.mem_bunionᵢ, mem_support_iff, Ne.def] using vars_bind₁ f φ h
+  simpa only [exists_prop, Finset.mem_biUnion, mem_support_iff, Ne.def] using vars_bind₁ f φ h
 #align mv_polynomial.mem_vars_bind₁ MvPolynomial.mem_vars_bind₁
 
 instance monad : Monad fun σ => MvPolynomial σ R
@@ -430,14 +425,14 @@ Possible TODO for the future:
 Enable the following definitions, and write a lot of supporting lemmas.
 
 def bind (f : R →+* mv_polynomial τ S) (g : σ → mv_polynomial τ S) :
-  mv_polynomial σ R →+* mv_polynomial τ S :=
-eval₂_hom f g
+    mv_polynomial σ R →+* mv_polynomial τ S :=
+  eval₂_hom f g
 
 def join (f : R →+* S) : mv_polynomial (mv_polynomial σ R) S →ₐ[S] mv_polynomial σ S :=
-aeval (map f)
+  aeval (map f)
 
 def ajoin [algebra R S] : mv_polynomial (mv_polynomial σ R) S →ₐ[S] mv_polynomial σ S :=
-join (algebra_map R S)
+  join (algebra_map R S)
 
 -/
 end MvPolynomial
