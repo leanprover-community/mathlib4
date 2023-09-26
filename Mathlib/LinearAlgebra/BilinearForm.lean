@@ -443,7 +443,7 @@ theorem sum_left {α} (t : Finset α) (g : α → M) (w : M) :
 @[simp]
 theorem sum_right {α} (t : Finset α) (w : M) (g : α → M) :
     B w (∑ i in t, g i) = ∑ i in t, B w (g i) :=
-  (BilinForm.toLin' B w).map_sum
+  map_sum (BilinForm.toLin' B w) _ _
 #align bilin_form.sum_right BilinForm.sum_right
 
 variable (R₂)
@@ -526,6 +526,11 @@ theorem BilinForm.toLin_symm :
     (BilinForm.toLin.symm : _ ≃ₗ[R₂] BilinForm R₂ M₂) = LinearMap.toBilin :=
   LinearMap.toBilin.symm_symm
 #align bilin_form.to_lin_symm BilinForm.toLin_symm
+
+@[simp, norm_cast]
+theorem LinearMap.toBilin_apply (f : M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) (x y : M₂) :
+    toBilin f x y = f x y :=
+  rfl
 
 @[simp, norm_cast]
 theorem BilinForm.toLin_apply (x : M₂) : ⇑(BilinForm.toLin B₂ x) = B₂ x :=
@@ -1106,7 +1111,7 @@ def isPairSelfAdjointSubmodule : Submodule R₂ (Module.End R₂ M₂) where
 
 @[simp]
 theorem mem_isPairSelfAdjointSubmodule (f : Module.End R₂ M₂) :
-    f ∈ isPairSelfAdjointSubmodule B₂ F₂ ↔ IsPairSelfAdjoint B₂ F₂ f := by rfl
+    f ∈ isPairSelfAdjointSubmodule B₂ F₂ ↔ IsPairSelfAdjoint B₂ F₂ f :=  by rfl
 #align bilin_form.mem_is_pair_self_adjoint_submodule BilinForm.mem_isPairSelfAdjointSubmodule
 
 theorem isPairSelfAdjoint_equiv (e : M₂' ≃ₗ[R₂] M₂) (f : Module.End R₂ M₂) :

@@ -777,7 +777,7 @@ theorem Function.Surjective.connectedSpace [ConnectedSpace α] [TopologicalSpace
 
 instance Quotient.instConnectedSpace {s : Setoid α} [ConnectedSpace α] :
     ConnectedSpace (Quotient s) :=
-  (surjective_quotient_mk _).connectedSpace continuous_coinduced_rng
+  (surjective_quotient_mk' _).connectedSpace continuous_coinduced_rng
 
 theorem DenseRange.preconnectedSpace [TopologicalSpace β] [PreconnectedSpace α] {f : α → β}
     (hf : DenseRange f) (hc : Continuous f) : PreconnectedSpace β :=

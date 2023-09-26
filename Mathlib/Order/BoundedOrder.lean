@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
 import Mathlib.Order.ULift
+import Mathlib.Tactic.PushNeg
 
 #align_import order.bounded_order from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 

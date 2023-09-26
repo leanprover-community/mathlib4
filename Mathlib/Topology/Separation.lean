@@ -31,9 +31,9 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
 * `T3Space`: A T₃ space, is one where given any closed `C` and `x ∉ C`,
   there is disjoint open sets containing `x` and `C` respectively. In `mathlib`, T₃ implies T₂.₅.
-* `NormalSpace`: A T₄ space (sometimes referred to as normal, but authors vary on
-  whether this includes T₂; `mathlib` does), is one where given two disjoint closed sets,
-  we can find two open sets that separate them. In `mathlib`, T₄ implies T₃.
+* `NormalSpace`: A normal space, is one where given two disjoint closed sets,
+  we can find two open sets that separate them.
+* `T4Space`: A T₄ space is a normal T₁ space. T₄ implies T₃.
 * `T5Space`: A T₅ space, also known as a *completely normal Hausdorff space*
 
 ## Main results
@@ -410,6 +410,12 @@ theorem Ne.nhdsWithin_diff_singleton [T1Space α] {x y : α} (h : x ≠ y) (s : 
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 #align ne.nhds_within_diff_singleton Ne.nhdsWithin_diff_singleton
 
+lemma nhdsWithin_compl_singleton_le [T1Space α] (x y : α) : 𝓝[{x}ᶜ] x ≤ 𝓝[{y}ᶜ] x := by
+  rcases eq_or_ne x y with rfl|hy
+  · exact Eq.le rfl
+  · rw [Ne.nhdsWithin_compl_singleton hy]
+    exact nhdsWithin_le_nhds
+
 theorem isOpen_setOf_eventually_nhdsWithin [T1Space α] {p : α → Prop} :
     IsOpen { x | ∀ᶠ y in 𝓝[≠] x, p y } := by
   refine' isOpen_iff_mem_nhds.mpr fun a ha => _
@@ -455,7 +461,7 @@ theorem Bornology.relativelyCompact.isBounded_iff [T1Space α] {s : Set α} :
   constructor
   · rintro ⟨t, ht₁, ht₂, hst⟩
     rw [compl_subset_compl] at hst
-    exact isCompact_of_isClosed_subset ht₂ isClosed_closure (closure_minimal hst ht₁)
+    exact ht₂.of_isClosed_subset isClosed_closure (closure_minimal hst ht₁)
   · intro h
     exact ⟨closure s, isClosed_closure, h, compl_subset_compl.mpr subset_closure⟩
 #align bornology.relatively_compact.is_bounded_iff Bornology.relativelyCompact.isBounded_iff
@@ -673,12 +679,12 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space α] {x y : α} {s t : Se
 #align insert_mem_nhds_within_of_subset_insert insert_mem_nhdsWithin_of_subset_insert
 
 @[simp]
-theorem sInter_sets_nhds [T1Space α] (x : α) : ⋂₀ (𝓝 x).sets = {x} := by
-  simp [sInter_nhds_sets_eq_specializes]
+theorem ker_nhds [T1Space α] (x : α) : (𝓝 x).ker = {x} := by
+  simp [ker_nhds_eq_specializes]
 
 theorem biInter_basis_nhds [T1Space α] {ι : Sort*} {p : ι → Prop} {s : ι → Set α} {x : α}
     (h : (𝓝 x).HasBasis p s) : ⋂ (i) (_ : p i), s i = {x} := by
-  rw [← h.sInter_sets, sInter_sets_nhds]
+  rw [← h.ker, ker_nhds]
 #align bInter_basis_nhds biInter_basis_nhds
 
 @[simp]
@@ -1337,7 +1343,7 @@ theorem IsCompact.inter [T2Space α] {s t : Set α} (hs : IsCompact s) (ht : IsC
 
 theorem isCompact_closure_of_subset_compact [T2Space α] {s t : Set α} (ht : IsCompact t)
     (h : s ⊆ t) : IsCompact (closure s) :=
-  isCompact_of_isClosed_subset ht isClosed_closure (closure_minimal h ht.isClosed)
+  ht.of_isClosed_subset isClosed_closure (closure_minimal h ht.isClosed)
 #align is_compact_closure_of_subset_compact isCompact_closure_of_subset_compact
 
 @[simp]
@@ -1735,21 +1741,22 @@ instance [RegularSpace α] : T3Space (SeparationQuotient α) where
 
 end T3
 
-section Normality
+section NormalSpace
 
--- todo: rename this to `T4Space`, introduce `NormalSpace` without `T1Space` assumption
-/-- A T₄ space, also known as a normal space (although this condition sometimes
-  omits T₂), is one in which for every pair of disjoint closed sets `C` and `D`,
-  there exist disjoint open sets containing `C` and `D` respectively. -/
-class NormalSpace (α : Type u) [TopologicalSpace α] extends T1Space α : Prop where
+/-- A topological space is said to be a *normal space* if any two disjoint closed sets
+have disjoint open neighborhoods. -/
+class NormalSpace (X : Type u) [TopologicalSpace X] : Prop where
   /-- Two disjoint sets in a normal space admit disjoint neighbourhoods. -/
-  normal : ∀ s t : Set α, IsClosed s → IsClosed t → Disjoint s t → SeparatedNhds s t
-#align normal_space NormalSpace
+  normal : ∀ s t : Set X, IsClosed s → IsClosed t → Disjoint s t → SeparatedNhds s t
 
 theorem normal_separation [NormalSpace α] {s t : Set α} (H1 : IsClosed s) (H2 : IsClosed t)
     (H3 : Disjoint s t) : SeparatedNhds s t :=
   NormalSpace.normal s t H1 H2 H3
 #align normal_separation normal_separation
+
+theorem disjoint_nhdsSet_nhdsSet [NormalSpace α] {s t : Set α} (hs : IsClosed s) (ht : IsClosed t)
+    (hd : Disjoint s t) : Disjoint (𝓝ˢ s) (𝓝ˢ t) :=
+  (normal_separation hs ht hd).disjoint_nhdsSet
 
 theorem normal_exists_closure_subset [NormalSpace α] {s t : Set α} (hs : IsClosed s) (ht : IsOpen t)
     (hst : s ⊆ t) : ∃ u, IsOpen u ∧ s ⊆ u ∧ closure u ⊆ t := by
@@ -1761,49 +1768,18 @@ theorem normal_exists_closure_subset [NormalSpace α] {s t : Set α} (hs : IsClo
   exact fun x hxs hxt => hs't'.le_bot ⟨hxs, hxt⟩
 #align normal_exists_closure_subset normal_exists_closure_subset
 
--- see Note [lower instance priority]
-instance (priority := 100) NormalSpace.t3Space [NormalSpace α] : T3Space α where
-  regular hs hxs := by simpa only [nhdsSet_singleton] using (normal_separation hs isClosed_singleton
-    (disjoint_singleton_right.mpr hxs)).disjoint_nhdsSet
-#align normal_space.t3_space NormalSpace.t3Space
-
--- We can't make this an instance because it could cause an instance loop.
--- porting note: todo: now we can
-theorem normalOfCompactT2 [CompactSpace α] [T2Space α] : NormalSpace α :=
-  ⟨fun _s _t hs ht => isCompact_isCompact_separated hs.isCompact ht.isCompact⟩
-#align normal_of_compact_t2 normalOfCompactT2
-
+/-- If the codomain of a closed embedding is a normal space, then so is the domain. -/
 protected theorem ClosedEmbedding.normalSpace [TopologicalSpace β] [NormalSpace β] {f : α → β}
     (hf : ClosedEmbedding f) : NormalSpace α where
-  toT1Space := hf.toEmbedding.t1Space
   normal s t hs ht hst := by
     have H : SeparatedNhds (f '' s) (f '' t) :=
       NormalSpace.normal (f '' s) (f '' t) (hf.isClosedMap s hs) (hf.isClosedMap t ht)
         (disjoint_image_of_injective hf.inj hst)
     exact (H.preimage hf.continuous).mono (subset_preimage_image _ _) (subset_preimage_image _ _)
-#align closed_embedding.normal_space ClosedEmbedding.normalSpace
 
-namespace SeparationQuotient
-
-/-- The `SeparationQuotient` of a normal space is a T₄ space. We don't have separate typeclasses
-for normal spaces (without T₁ assumption) and T₄ spaces, so we use the same class for assumption
-and for conclusion.
-
-One can prove this using a homeomorphism between `α` and `SeparationQuotient α`. We give an
-alternative proof that works without assuming that `α` is a T₁ space. -/
-instance [NormalSpace α] : NormalSpace (SeparationQuotient α) where
-  normal s t hs ht hd := separatedNhds_iff_disjoint.2 <| by
-    rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
-    exact (normal_separation (hs.preimage continuous_mk) (ht.preimage continuous_mk)
-      (hd.preimage mk)).disjoint_nhdsSet
-
-end SeparationQuotient
-
-variable (α)
-
-/-- A T₃ topological space with second countable topology is a normal space.
-This lemma is not an instance to avoid a loop. -/
-theorem normalSpaceOfT3SecondCountable [SecondCountableTopology α] [T3Space α] : NormalSpace α := by
+/-- A regular topological space with second countable topology is a normal space. -/
+instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
+    [RegularSpace α] [SecondCountableTopology α] : NormalSpace α := by
   have key : ∀ {s t : Set α}, IsClosed t → Disjoint s t →
     ∃ U : Set (countableBasis α), (s ⊆ ⋃ u ∈ U, ↑u) ∧ (∀ u ∈ U, Disjoint (closure ↑u) t) ∧
       ∀ n : ℕ, IsClosed (⋃ (u ∈ U) (_ : Encodable.encode u ≤ n), closure (u : Set α)) := by
@@ -1822,7 +1798,7 @@ theorem normalSpaceOfT3SecondCountable [SecondCountableTopology α] [T3Space α]
     · simp only [← iSup_eq_iUnion, iSup_and']
       exact (((finite_le_nat n).preimage_embedding (Encodable.encode' _)).subset <|
         inter_subset_right _ _).isClosed_biUnion fun u _ => isClosed_closure
-  refine' ⟨fun s t hs ht hd => _⟩
+  refine' { normal := fun s t hs ht hd => _ }
   rcases key ht hd with ⟨U, hsU, hUd, hUc⟩
   rcases key hs hd.symm with ⟨V, htV, hVd, hVc⟩
   refine ⟨⋃ u ∈ U, ↑u \ ⋃ (v ∈ V) (_ : Encodable.encode v ≤ Encodable.encode u), closure ↑v,
@@ -1844,7 +1820,48 @@ theorem normalSpaceOfT3SecondCountable [SecondCountableTopology α] [T3Space α]
     rintro a ⟨u, huU, hau, haV⟩ v hvV hav
     cases' le_total (Encodable.encode u) (Encodable.encode v) with hle hle
     exacts [⟨u, huU, hle, subset_closure hau⟩, (haV _ hvV hle <| subset_closure hav).elim]
-#align normal_space_of_t3_second_countable normalSpaceOfT3SecondCountable
+#align normal_space_of_t3_second_countable NormalSpace.of_regularSpace_secondCountableTopology
+
+end NormalSpace
+
+section Normality
+
+/-- A T₄ space is a normal T₁ space. -/
+class T4Space (α : Type u) [TopologicalSpace α] extends T1Space α, NormalSpace α : Prop
+#align normal_space NormalSpace
+
+instance (priority := 100) [T1Space α] [NormalSpace α] : T4Space α := ⟨⟩
+
+-- see Note [lower instance priority]
+instance (priority := 100) T4Space.t3Space [T4Space α] : T3Space α where
+  regular hs hxs := by simpa only [nhdsSet_singleton] using (normal_separation hs isClosed_singleton
+    (disjoint_singleton_right.mpr hxs)).disjoint_nhdsSet
+#align normal_space.t3_space T4Space.t3Space
+
+instance (priority := 100) T4Space.of_compactSpace_t2Space [CompactSpace α] [T2Space α] :
+    T4Space α where
+  normal _s _t hs ht := isCompact_isCompact_separated hs.isCompact ht.isCompact
+#align normal_of_compact_t2 T4Space.of_compactSpace_t2Space
+
+/-- If the codomain of a closed embedding is a T₄ space, then so is the domain. -/
+protected theorem ClosedEmbedding.t4Space [TopologicalSpace β] [T4Space β] {f : α → β}
+    (hf : ClosedEmbedding f) : T4Space α where
+  toT1Space := hf.toEmbedding.t1Space
+  toNormalSpace := hf.normalSpace
+#align closed_embedding.normal_space ClosedEmbedding.t4Space
+
+namespace SeparationQuotient
+
+/-- The `SeparationQuotient` of a normal space is a normal space. -/
+instance [NormalSpace α] : NormalSpace (SeparationQuotient α) where
+  normal s t hs ht hd := separatedNhds_iff_disjoint.2 <| by
+    rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
+    exact disjoint_nhdsSet_nhdsSet (hs.preimage continuous_mk) (ht.preimage continuous_mk)
+      (hd.preimage mk)
+
+end SeparationQuotient
+
+variable (α)
 
 end Normality
 
@@ -1881,19 +1898,20 @@ instance [T5Space α] {p : α → Prop} : T5Space { x // p x } :=
 
 -- see Note [lower instance priority]
 /-- A `T₅` space is a `T₄` space. -/
-instance (priority := 100) T5Space.toNormalSpace [T5Space α] : NormalSpace α :=
-  ⟨fun s t hs ht hd => separatedNhds_iff_disjoint.2 <|
-    completely_normal (by rwa [hs.closure_eq]) (by rwa [ht.closure_eq])⟩
-#align t5_space.to_normal_space T5Space.toNormalSpace
+instance (priority := 100) T5Space.toT4Space [T5Space α] : T4Space α where
+  normal s t hs ht hd := separatedNhds_iff_disjoint.2 <|
+    completely_normal (by rwa [hs.closure_eq]) (by rwa [ht.closure_eq])
+#align t5_space.to_normal_space T5Space.toT4Space
 
 open SeparationQuotient
 
-/-- The `SeparationQuotient` of a completely normal space is a T₅ space. We don't have separate
-typeclasses for completely normal spaces (without T₁ assumption) and T₅ spaces, so we use the same
-class for assumption and for conclusion.
+/-- The `SeparationQuotient` of a completely normal R₀ space is a T₅ space.
+We don't have typeclasses for completely normal spaces (without T₁ assumption) and R₀ spaces,
+so we use `T5Space` for assumption and for conclusion.
 
-One can prove this using a homeomorphism between `α` and `SeparationQuotient α`. We give an
-alternative proof that works without assuming that `α` is a T₁ space. -/
+One can prove this using a homeomorphism between `α` and `SeparationQuotient α`.
+We give an alternative proof of the `completely_normal` axiom
+that works without assuming that `α` is a T₁ space. -/
 instance [T5Space α] : T5Space (SeparationQuotient α) where
   completely_normal s t hd₁ hd₂ := by
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
@@ -1916,13 +1934,11 @@ theorem connectedComponent_eq_iInter_clopen [T2Space α] [CompactSpace α] (x : 
     isClosed_iInter fun Z => Z.2.1.2
   rw [isPreconnected_iff_subset_of_fully_disjoint_closed hs]
   intro a b ha hb hab ab_disj
-  haveI := @normalOfCompactT2 α _ _ _
   -- Since our space is normal, we get two larger disjoint open sets containing the disjoint
   -- closed sets. If we can show that our intersection is a subset of any of these we can then
   -- "descend" this to show that it is a subset of either a or b.
   rcases normal_separation ha hb ab_disj with ⟨u, v, hu, hv, hau, hbv, huv⟩
   obtain ⟨Z, H⟩ : ∃ Z : Set α, IsClopen Z ∧ x ∈ Z ∧ Z ⊆ u ∪ v
-
   /- Now we find a clopen set `Z` around `x`, contained in `u ∪ v`. We utilize the fact that
   `X \ u ∪ v` will be compact, so there must be some finite intersection of clopen neighbourhoods of
   `X` disjoint to it, but a finite intersection of clopen sets is clopen so we let this be our

@@ -208,7 +208,7 @@ theorem effectiveEpiFamily_tfae
     let i : ∐ X ≅ finiteCoproduct X :=
       (colimit.isColimit _).coconePointUniqueUpToIso (finiteCoproduct.isColimit _)
     intro b
-    obtain ⟨t,rfl⟩ := e b
+    obtain ⟨t, rfl⟩ := e b
     let q := i.hom t
     refine ⟨q.1,q.2,?_⟩
     have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id]; rfl
@@ -235,11 +235,11 @@ instance precoherent : Precoherent CompHaus.{u} := by
     have := (effectiveEpiFamily_tfae _ (fun a => pullback.fst f (π₁ a))).out 0 2
     rw [this]; clear this
     intro b₂
-    obtain ⟨a,x,h⟩ := h₁ (f b₂)
+    obtain ⟨a, x, h⟩ := h₁ (f b₂)
     refine ⟨a, ⟨⟨b₂, x⟩, h.symm⟩, rfl⟩
   · intro a
     dsimp
-    ext ⟨⟨_,_⟩,h⟩
+    ext ⟨⟨_, _⟩, h⟩
     exact h.symm
 
 end CompHaus

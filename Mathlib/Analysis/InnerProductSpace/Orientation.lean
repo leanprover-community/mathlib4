@@ -175,9 +175,6 @@ section VolumeForm
 
 variable [_i : Fact (finrank ℝ E = n)] (o : Orientation ℝ E (Fin n))
 
--- Porting note: added instance
-instance : IsEmpty (Fin Nat.zero) := by simp only [Nat.zero_eq]; infer_instance
-
 /-- The volume form on an oriented real inner product space, a nonvanishing top-dimensional
 alternating form uniquely defined by compatibility with the orientation and inner product structure.
 -/

@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Finite.Defs
@@ -257,39 +257,35 @@ instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicat
 
 instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) :=
   { Additive.addZeroClass, Additive.addSemigroup with
-    zero := 0
-    add := (· + ·)
     nsmul := @Monoid.npow α h
     nsmul_zero := @Monoid.npow_zero α h
     nsmul_succ := @Monoid.npow_succ α h }
 
 instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :=
   { Multiplicative.mulOneClass, Multiplicative.semigroup with
-    one := 1
-    mul := (· * ·)
     npow := @AddMonoid.nsmul α h
     npow_zero := @AddMonoid.nsmul_zero α h
     npow_succ := @AddMonoid.nsmul_succ α h }
 
 instance Additive.addLeftCancelMonoid [LeftCancelMonoid α] : AddLeftCancelMonoid (Additive α) :=
-  { Additive.addMonoid, Additive.addLeftCancelSemigroup with zero := 0, add := (· + ·) }
+  { Additive.addMonoid, Additive.addLeftCancelSemigroup with }
 
 instance Multiplicative.leftCancelMonoid [AddLeftCancelMonoid α] :
     LeftCancelMonoid (Multiplicative α) :=
-  { Multiplicative.monoid, Multiplicative.leftCancelSemigroup with one := 1, mul := (· * ·) }
+  { Multiplicative.monoid, Multiplicative.leftCancelSemigroup with }
 
 instance Additive.addRightCancelMonoid [RightCancelMonoid α] : AddRightCancelMonoid (Additive α) :=
-  { Additive.addMonoid, Additive.addRightCancelSemigroup with zero := 0, add := (· + ·) }
+  { Additive.addMonoid, Additive.addRightCancelSemigroup with }
 
 instance Multiplicative.rightCancelMonoid [AddRightCancelMonoid α] :
     RightCancelMonoid (Multiplicative α) :=
-  { Multiplicative.monoid, Multiplicative.rightCancelSemigroup with one := 1, mul := (· * ·) }
+  { Multiplicative.monoid, Multiplicative.rightCancelSemigroup with }
 
 instance Additive.addCommMonoid [CommMonoid α] : AddCommMonoid (Additive α) :=
-  { Additive.addMonoid, Additive.addCommSemigroup with zero := 0, add := (· + ·) }
+  { Additive.addMonoid, Additive.addCommSemigroup with }
 
 instance Multiplicative.commMonoid [AddCommMonoid α] : CommMonoid (Multiplicative α) :=
-  { Multiplicative.monoid, Multiplicative.commSemigroup with one := 1, mul := (· * ·) }
+  { Multiplicative.monoid, Multiplicative.commSemigroup with }
 
 instance Additive.neg [Inv α] : Neg (Additive α) :=
   ⟨fun x => ofAdd (toMul x)⁻¹⟩

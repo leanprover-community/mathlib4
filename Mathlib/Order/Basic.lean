@@ -6,6 +6,11 @@ Authors: Jeremy Avigad, Mario Carneiro
 import Mathlib.Init.Order.LinearOrder
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
+import Mathlib.Tactic.Spread
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Classical
+import Mathlib.Tactic.Cases
 
 #align_import order.basic from "leanprover-community/mathlib"@"90df25ded755a2cf9651ea850d1abe429b1e4eb1"
 

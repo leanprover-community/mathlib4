@@ -137,9 +137,9 @@ instance RestrictScalars.isCentralScalar [Module S M] [Module Sᵐᵒᵖ M] [IsC
 of `RestrictScalars R S M`.
 -/
 def RestrictScalars.lsmul [Module S M] : S →ₐ[R] Module.End R (RestrictScalars R S M) :=
-  letI-- We use `RestrictScalars.moduleOrig` in the implementation,
+  -- We use `RestrictScalars.moduleOrig` in the implementation,
   -- but not in the type.
-   : Module S (RestrictScalars R S M) := RestrictScalars.moduleOrig R S M
+  letI : Module S (RestrictScalars R S M) := RestrictScalars.moduleOrig R S M
   Algebra.lsmul R R (RestrictScalars R S M)
 #align restrict_scalars.lsmul RestrictScalars.lsmul
 
