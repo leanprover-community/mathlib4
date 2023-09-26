@@ -85,6 +85,8 @@ protected def map (f : α → β) (m : MeasurableSpace α) : MeasurableSpace β 
   measurableSet_iUnion f hf := by simpa only [preimage_iUnion] using m.measurableSet_iUnion _ hf
 #align measurable_space.map MeasurableSpace.map
 
+lemma map_def {s : Set β} : MeasurableSet[m.map f] s ↔ MeasurableSet[m] (f ⁻¹' s) := Iff.rfl
+
 @[simp]
 theorem map_id : m.map id = m :=
   MeasurableSpace.ext fun _ => Iff.rfl
@@ -185,12 +187,12 @@ theorem le_map_comap : m ≤ (m.comap g).map g :=
 
 end Functors
 
-@[simp] theorem map_const {m} (b : β) : MeasurableSpace.map (fun a : α => b) m = ⊤ :=
-  eq_top_iff.2 $ by rintro s hs; by_cases b ∈ s <;> change MeasurableSet (preimage _ _) <;> simp [*]
+@[simp] theorem map_const {m} (b : β) : MeasurableSpace.map (fun _a : α ↦ b) m = ⊤ :=
+  eq_top_iff.2 $ λ s _ ↦ by by_cases b ∈ s <;> simp [*, map_def] <;> rw [Set.preimage_id'] <;> simp
 #align measurable_space.map_const MeasurableSpace.map_const
 
-@[simp] theorem comap_const {m} (b : β) : MeasurableSpace.comap (fun a : α => b) m = ⊥ :=
-  eq_bot_iff.2 <| by rintro _ ⟨s, -, rfl⟩; by_cases b ∈ s <;> simp [*]
+@[simp] theorem comap_const {m} (b : β) : MeasurableSpace.comap (fun _a : α => b) m = ⊥ :=
+  eq_bot_iff.2 <| by rintro _ ⟨s, -, rfl⟩; by_cases b ∈ s <;> simp [*]; exact measurableSet_empty _
 #align measurable_space.comap_const MeasurableSpace.comap_const
 
 theorem comap_generateFrom {f : α → β} {s : Set (Set β)} :
@@ -1087,12 +1089,12 @@ instance Sigma.instMeasurableSpace {α} {β : α → Type*} [m : ∀ a, Measurab
   ⨅ a, (m a).map (Sigma.mk a)
 #align sigma.measurable_space Sigma.instMeasurableSpace
 
-section Prop
+section prop
 variable [MeasurableSpace α] {p : α → Prop}
 
 @[simp] theorem measurableSet_setOf : MeasurableSet {a | p a} ↔ Measurable p :=
-  ⟨fun h => measurable_to_prop <| by simpa only [preimage_singleton_true], fun h => by
-    simpa using h (measurable_set_singleton True)⟩
+  ⟨fun h ↦ measurable_to_prop <| by simpa only [preimage_singleton_true], fun h => by
+    simpa using h (measurableSet_singleton True)⟩
 #align measurable_set_set_of measurableSet_setOf
 
 @[simp] theorem measurable_mem : Measurable (· ∈ s) ↔ MeasurableSet s := measurableSet_setOf.symm
@@ -1104,7 +1106,7 @@ alias ⟨_, Measurable.setOf⟩ := measurableSet_setOf
 alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
 #align measurable_set.mem MeasurableSet.mem
 
-end Prop
+end prop
 end Constructions
 
 namespace MeasurableSpace
@@ -1113,10 +1115,10 @@ namespace MeasurableSpace
 @[simp] theorem generateFrom_singleton (s : Set α) :
     generateFrom {s} = MeasurableSpace.comap (· ∈ s) ⊤ := by
   classical
-  letI : MeasurableSpace α := generate_from {s}
-  refine' le_antisymm (generate_from_le fun t ht => ⟨{True}, trivial, by simp [ht.symm]⟩) _
+  letI : MeasurableSpace α := generateFrom {s}
+  refine' le_antisymm (generateFrom_le fun t ht => ⟨{True}, trivial, by simp [ht.symm]⟩) _
   rintro _ ⟨u, -, rfl⟩
-  exact (show MeasurableSet s from generate_measurable.basic _ <| mem_singleton s).Mem trivial
+  exact (show MeasurableSet s from GenerateMeasurable.basic _ <| mem_singleton s).mem trivial
 #align measurable_space.generate_from_singleton MeasurableSpace.generateFrom_singleton
 
 end MeasurableSpace
@@ -1381,7 +1383,7 @@ theorem measurableSet_image (e : α ≃ᵐ β) {s : Set α} : MeasurableSet (e '
 #align measurable_equiv.measurable_set_image MeasurableEquiv.measurableSet_image
 
 @[simp] theorem map_eq (e : α ≃ᵐ β) : MeasurableSpace.map e ‹_› = ‹_› :=
-  e.Measurable.le_map.antisymm' fun s => e.measurableSet_preimage.1
+  e.measurable.le_map.antisymm' fun _s ↦ e.measurableSet_preimage.1
 #align measurable_equiv.map_eq MeasurableEquiv.map_eq
 
 /-- A measurable equivalence is a measurable embedding. -/
@@ -1611,10 +1613,10 @@ def sumCompl {s : Set α} [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
 /-- Convert a measurable involutive function `f` to a measurable permutation with
 `toFun = invFun = f`. See also `Function.Involutive.toPerm`. -/
 @[simps toEquiv]
-def ofInvolutive (f : α → α) (hf : Involutive f) (hf' : Measurable f) : α ≃ᵐ α :=
-  { hf.toPerm _ with
-    measurable_to_fun := hf'
-    measurable_inv_fun := hf' }
+def ofInvolutive (f : α → α) (hf : Involutive f) (hf' : Measurable f) : α ≃ᵐ α where
+  toEquiv := hf.toPerm
+  measurable_toFun := hf'
+  measurable_invFun := hf'
 #align measurable_equiv.of_involutive MeasurableEquiv.ofInvolutive
 
 @[simp] theorem ofInvolutive_apply (f : α → α) (hf : Involutive f) (hf' : Measurable f) (a : α) :
@@ -1632,16 +1634,16 @@ namespace MeasurableEmbedding
 variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {g : β → α}
 
 @[simp] theorem comap_eq (hf : MeasurableEmbedding f) : MeasurableSpace.comap f ‹_› = ‹_› :=
-  hf.Measurable.comap_le.antisymm fun s h =>
-    ⟨_, hf.measurableSet_image' h, hf.Injective.preimage_image _⟩
+  hf.measurable.comap_le.antisymm fun _s h ↦
+    ⟨_, hf.measurableSet_image' h, hf.injective.preimage_image _⟩
 #align measurable_embedding.comap_eq MeasurableEmbedding.comap_eq
 
 theorem iff_comap_eq :
     MeasurableEmbedding f ↔
       Injective f ∧ MeasurableSpace.comap f ‹_› = ‹_› ∧ MeasurableSet (range f) :=
-  ⟨fun hf => ⟨hf.Injective, hf.comap_eq, hf.measurableSet_range⟩, fun hf =>
-    { Injective := hf.1
-      Measurable := by rw [← hf.2.1]; exact comap_measurable f
+  ⟨fun hf ↦ ⟨hf.injective, hf.comap_eq, hf.measurableSet_range⟩, fun hf ↦
+    { injective := hf.1
+      measurable := by rw [← hf.2.1]; exact comap_measurable f
       measurableSet_image' := by
         rw [← hf.2.1]
         rintro _ ⟨s, hs, rfl⟩
@@ -1740,14 +1742,14 @@ theorem MeasurableSpace.comap_compl {m' : MeasurableSpace β} [BooleanAlgebra β
     (h : Measurable (compl : β → β)) (f : α → β) :
     MeasurableSpace.comap (fun a => (f a)ᶜ) inferInstance =
       MeasurableSpace.comap f inferInstance := by
-  rw [← MeasurableSpace.comap_comp]
+  rw [←Function.comp_def, ←MeasurableSpace.comap_comp]
   congr
-  exact (MeasurableEquiv.ofInvolutive _ compl_involutive h).MeasurableEmbedding.comap_eq
+  exact (MeasurableEquiv.ofInvolutive _ compl_involutive h).measurableEmbedding.comap_eq
 #align measurable_space.comap_compl MeasurableSpace.comap_compl
 
 @[simp] theorem MeasurableSpace.comap_not (p : α → Prop) :
-    MeasurableSpace.comap (fun a => ¬p a) inferInstance = MeasurableSpace.comap p inferInstance :=
-  MeasurableSpace.comap_compl (fun _ _ => trivial) _
+    MeasurableSpace.comap (fun a ↦ ¬p a) inferInstance = MeasurableSpace.comap p inferInstance :=
+  MeasurableSpace.comap_compl (fun _ _ ↦ measurableSet_top) _
 #align measurable_space.comap_not MeasurableSpace.comap_not
 
 section CountablyGenerated
