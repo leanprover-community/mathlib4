@@ -1495,30 +1495,6 @@ lemma Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
     Integrable f (μ.restrict s) :=
   ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
 
-lemma Integrable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_zero
-    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
-    {f : α → E} (f_intble : Integrable f μ) {s : Set α}
-    (hs : f =ᵐ[Measure.restrict μ sᶜ] 0) {t : Set E} (t_mble : MeasurableSet t) (ht : 0 ∉ t) :
-    (μ (f ⁻¹' t)) = ((μ.restrict s) (f ⁻¹' t)) := by
-  rw [Measure.restrict_apply₀]
-  · simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
-                MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at hs
-    rw [Measure.restrict_apply₀] at hs
-    · apply le_antisymm _ (measure_mono (inter_subset_left _ _))
-      apply (measure_mono (Eq.symm (inter_union_compl (f ⁻¹' t) s)).le).trans
-      apply (measure_union_le _ _).trans
-      have obs : μ ((f ⁻¹' t) ∩ sᶜ) = 0 := by
-        apply le_antisymm _ (zero_le _)
-        rw [← hs]
-        apply measure_mono
-        gcongr
-        intro x hx hfx
-        simp only [mem_preimage, mem_setOf_eq] at hx hfx
-        exact ht (hfx ▸ hx)
-      simp only [obs, add_zero, le_refl]
-    · exact NullMeasurableSet.of_null hs
-  · exact f_intble.restrict.aemeasurable.nullMeasurable t_mble
-
 lemma ae_restrict_eq_zero_iff_ae_eq_zero_of_mem [MeasurableSpace E] [MeasurableSingletonClass E]
     {s : Set α} (f_mble : NullMeasurable f (μ.restrict s)) :
     f =ᵐ[Measure.restrict μ s] 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 := by
@@ -1536,6 +1512,28 @@ lemma ae_restrict_eq_zero_iff_ae_eq_zero_of_mem' {s : Set α} (s_mble : Measurab
   rw [Measure.restrict_apply_eq_zero']
   · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
   · exact s_mble
+
+lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_const
+    {β : Type*} [MeasurableSpace β] {b : β} {f : α → β} {s : Set α}
+    (f_mble : NullMeasurable f (μ.restrict s)) (hs : f =ᵐ[Measure.restrict μ sᶜ] (fun _ ↦ b))
+    {t : Set β} (t_mble : MeasurableSet t) (ht : b ∉ t) :
+    (μ (f ⁻¹' t)) = ((μ.restrict s) (f ⁻¹' t)) := by
+  rw [Measure.restrict_apply₀ (f_mble t_mble)]
+  simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
+             MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at hs
+  rw [Measure.restrict_apply₀] at hs
+  · apply le_antisymm _ (measure_mono (inter_subset_left _ _))
+    apply (measure_mono (Eq.symm (inter_union_compl (f ⁻¹' t) s)).le).trans
+    apply (measure_union_le _ _).trans
+    have obs : μ ((f ⁻¹' t) ∩ sᶜ) = 0 := by
+      apply le_antisymm _ (zero_le _)
+      rw [← hs]
+      apply measure_mono (inter_subset_inter_left _ _)
+      intro x hx hfx
+      simp only [mem_preimage, mem_setOf_eq] at hx hfx
+      exact ht (hfx ▸ hx)
+    simp only [obs, add_zero, le_refl]
+  · exact NullMeasurableSet.of_null hs
 
 end restrict
 
