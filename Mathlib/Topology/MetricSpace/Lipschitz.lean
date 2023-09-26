@@ -620,35 +620,9 @@ protected lemma comp  {f : β → γ} {g : α → β}
   -- g is Lipschitz on t ∋ x, f is Lipschitz on u ∋ g(x)
   rcases hg x with ⟨Kg, t, ht, hgL⟩
   rcases hf (g x) with ⟨Kf, u, hu, hfL⟩
-  -- idea: shrink t to ensure it is mapped to u
-  -- more precisely: restrict g to t' := t ∩ g⁻¹(u); the preimage of u under g':=g∣t.
-  let g' := t.restrict g
-  set t' : Set α := ↑(g' ⁻¹' u) with ht'
-  have h₁ : t' = t ∩ g ⁻¹' u := by
-    rw [ht']
-    ext1 y
-    simp [Lean.Internal.coeM]
-    aesop
-  have h₂ : t' ∈ 𝓝 x := by -- FIXME: surely, there is a nicer proof
-    -- by ht, t contains an open subset U
-    rcases (mem_nhds_iff.mp ht) with ⟨U, hUt, hUopen, hxU⟩
-    -- similarly, u contains an open subset V
-    rcases (mem_nhds_iff.mp hu) with ⟨V, hVt, hVopen, hgxV⟩
-    -- by continuity, g⁻¹(u) contains the open subset g⁻¹(V)
-    have : ContinuousOn g U := (hgL.mono hUt).continuousOn
-    have h : IsOpen (U ∩ (g ⁻¹' V)) := this.preimage_open_of_open hUopen hVopen
-    have : U ∩ (g ⁻¹' V) ⊆ t' := by rw [h₁]; apply inter_subset_inter hUt (preimage_mono hVt)
-    -- now, U ∩ g⁻¹(V) is an open subset contained in t'
-    rw [mem_nhds_iff]
-    use U ∩ (g ⁻¹' V)
-    exact ⟨this, ⟨h, ⟨hxU, hgxV⟩⟩⟩
-  have : g '' t' ⊆ u := by calc g '' t'
-    _ = g '' (t ∩ g ⁻¹' u) := by rw [h₁]
-    _ ⊆ g '' t ∩ g '' (g ⁻¹' u) := by apply image_inter_subset
-    _ ⊆ g '' t ∩ u := by gcongr; apply image_preimage_subset
-    _ ⊆ u := inter_subset_right _ _
-  use Kf * Kg, t'
-  exact ⟨h₂, hfL.comp (hgL.mono coe_subset) (mapsTo'.mpr this)⟩
+  refine ⟨Kf * Kg, t ∩ g⁻¹' u, inter_mem ht (hg.continuous.continuousAt hu), ?_⟩ 
+  exact hfL.comp (hgL.mono (inter_subset_left _ _))
+    ((mapsTo_preimage g u).mono_left (inter_subset_right _ _))
 
 /-- If `f` and `g` are locally Lipschitz, so is the induced map `f × g` to the product type. -/
 protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (hg : LocallyLipschitz g) :
