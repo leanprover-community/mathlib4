@@ -153,7 +153,7 @@ theorem orderOf_eq_card_of_forall_mem_zpowers [Fintype α] {g : α} (hx : ∀ x,
 #align add_order_of_eq_card_of_forall_mem_zmultiples addOrderOf_eq_card_of_forall_mem_zmultiples
 
 @[to_additive exists_nsmul_ne_zero_of_isAddCyclic]
-theorem exists_pow_ne_one_of_isCyclic {G : Type} [Group G] [Fintype G] [G_cyclic : IsCyclic G]
+theorem exists_pow_ne_one_of_isCyclic {G : Type*} [Group G] [Fintype G] [G_cyclic : IsCyclic G]
   {k : ℕ} (k_pos : 0 < k) (k_lt_card_G : k < Fintype.card G) : ∃ a : G, a ^ k ≠ 1 := by
   rcases G_cyclic with ⟨a, ha⟩
   use a
