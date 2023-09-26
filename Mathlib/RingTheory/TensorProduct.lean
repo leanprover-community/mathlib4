@@ -312,8 +312,6 @@ variable [Semiring A] [Algebra R A]
 variable [Semiring B] [Algebra R B]
 variable [Semiring C] [Algebra R C]
 
--- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
--- appears to help performance.
 instance instSemiring : Semiring (A ⊗[R] B) where
   left_distrib a b c := by simp [HMul.hMul, Mul.mul]
   right_distrib a b c := by simp [HMul.hMul, Mul.mul]
@@ -435,6 +433,29 @@ end ext
 
 end Semiring
 
+section CommSemiring
+variable [CommSemiring R]
+variable [CommSemiring A] [Algebra R A]
+variable [CommSemiring B] [Algebra R B]
+
+instance instCommSemiring : CommSemiring (A ⊗[R] B) where
+  mul_comm x y := by
+    refine TensorProduct.induction_on x ?_ ?_ ?_
+    · simp
+    · intro a₁ b₁
+      refine TensorProduct.induction_on y ?_ ?_ ?_
+      · simp
+      · intro a₂ b₂
+        simp [mul_comm]
+      · intro a₂ b₂ ha hb
+        -- porting note: was `simp` not `rw`
+        rw [mul_add, add_mul, ha, hb]
+    · intro x₁ x₂ h₁ h₂
+      -- porting note: was `simp` not `rw`
+      rw [mul_add, add_mul, h₁, h₂]
+
+end CommSemiring
+
 section AddCommGroupWithOne
 variable [CommSemiring R]
 variable [AddCommGroupWithOne A] [Module R A]
@@ -508,20 +529,7 @@ variable [CommRing B] [Algebra R B]
 
 instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
-    mul_comm := fun x y => by
-      refine TensorProduct.induction_on x ?_ ?_ ?_
-      · simp
-      · intro a₁ b₁
-        refine TensorProduct.induction_on y ?_ ?_ ?_
-        · simp
-        · intro a₂ b₂
-          simp [mul_comm]
-        · intro a₂ b₂ ha hb
-          -- porting note: was `simp` not `rw`
-          rw [mul_add, add_mul, ha, hb]
-      · intro x₁ x₂ h₁ h₂
-        -- porting note: was `simp` not `rw`
-        rw [mul_add, add_mul, h₁, h₂] }
+    mul_comm := mul_comm }
 
 section RightAlgebra
 
