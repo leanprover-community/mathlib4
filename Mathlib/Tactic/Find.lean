@@ -281,7 +281,7 @@ def find (index : Index) (args : Arguments) (maxShown := 200) :
       addLine $ m!"Of these, {hits2.size} have a name containing {nameList}."
     unless (pats.isEmpty) do
       addLine $ m!"Of these, {hits4.size} match your patterns."
-    unless (hits7.size ≤ maxShown) do
+    unless (hits6.size ≤ maxShown) do
       addLine $ m!"Of these, only the first {maxShown} are shown."
     return .ok ⟨← summary.get, hits4.size, hits8⟩
 
