@@ -2,21 +2,18 @@
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module algebra.group_power.ring
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Ring.Defs
+import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Nat.Order.Basic
+
+#align_import algebra.group_power.ring from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
 /-!
 # Power operations on monoids with zero, semirings, and rings
@@ -26,7 +23,7 @@ Further lemmas about ordered semirings and rings can be found in `Algebra.GroupP
 
 -/
 
-variable {R S M : Type _}
+variable {R S M : Type*}
 
 section MonoidWithZero
 
@@ -178,7 +175,7 @@ theorem add_sq' (a b : R) : (a + b) ^ 2 = a ^ 2 + b ^ 2 + 2 * a * b := by
   rw [add_sq, add_assoc, add_comm _ (b ^ 2), add_assoc]
 #align add_sq' add_sq'
 
-alias add_sq ← add_pow_two
+alias add_pow_two := add_sq
 #align add_pow_two add_pow_two
 
 end CommSemiring
@@ -202,10 +199,12 @@ theorem neg_pow (a : R) (n : ℕ) : (-a) ^ n = (-1) ^ n * a ^ n :=
   neg_one_mul a ▸ (Commute.neg_one_left a).mul_pow n
 #align neg_pow neg_pow
 
+theorem neg_pow' (a : R) (n : ℕ) : (-a) ^ n = a ^ n * (-1) ^ n :=
+  mul_neg_one a ▸ (Commute.neg_one_right a).mul_pow n
+
 section
 set_option linter.deprecated false
 
-@[simp]
 theorem neg_pow_bit0 (a : R) (n : ℕ) : (-a) ^ bit0 n = a ^ bit0 n := by
   rw [pow_bit0', neg_mul_neg, pow_bit0']
 #align neg_pow_bit0 neg_pow_bit0
@@ -217,7 +216,6 @@ theorem neg_pow_bit1 (a : R) (n : ℕ) : (-a) ^ bit1 n = -a ^ bit1 n := by
 
 end
 
-@[simp]
 theorem neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
 #align neg_sq neg_sq
 
@@ -225,10 +223,10 @@ theorem neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
 theorem neg_one_sq : (-1 : R) ^ 2 = 1 := by simp [neg_sq, one_pow]
 #align neg_one_sq neg_one_sq
 
-alias neg_sq ← neg_pow_two
+alias neg_pow_two := neg_sq
 #align neg_pow_two neg_pow_two
 
-alias neg_one_sq ← neg_one_pow_two
+alias neg_one_pow_two := neg_one_sq
 #align neg_one_pow_two neg_one_pow_two
 
 end HasDistribNeg
@@ -248,7 +246,7 @@ theorem neg_one_pow_mul_eq_zero_iff {n : ℕ} {r : R} : (-1) ^ n * r = 0 ↔ r =
 
 @[simp]
 theorem mul_neg_one_pow_eq_zero_iff {n : ℕ} {r : R} : r * (-1) ^ n = 0 ↔ r = 0 := by
-  rcases neg_one_pow_eq_or R n with h | h  <;> simp [h]
+  rcases neg_one_pow_eq_or R n with h | h <;> simp [h]
 #align mul_neg_one_pow_eq_zero_iff mul_neg_one_pow_eq_zero_iff
 
 variable [NoZeroDivisors R]
@@ -277,14 +275,14 @@ theorem sq_sub_sq (a b : R) : a ^ 2 - b ^ 2 = (a + b) * (a - b) :=
   (Commute.all a b).sq_sub_sq
 #align sq_sub_sq sq_sub_sq
 
-alias sq_sub_sq ← pow_two_sub_pow_two
+alias pow_two_sub_pow_two := sq_sub_sq
 #align pow_two_sub_pow_two pow_two_sub_pow_two
 
 theorem sub_sq (a b : R) : (a - b) ^ 2 = a ^ 2 - 2 * a * b + b ^ 2 := by
   rw [sub_eq_add_neg, add_sq, neg_sq, mul_neg, ← sub_eq_add_neg]
 #align sub_sq sub_sq
 
-alias sub_sq ← sub_pow_two
+alias sub_pow_two := sub_sq
 #align sub_pow_two sub_pow_two
 
 theorem sub_sq' (a b : R) : (a - b) ^ 2 = a ^ 2 + b ^ 2 - 2 * a * b := by

@@ -32,7 +32,7 @@ For inductive types with `n` constructors, the `proxy_equiv%` elaborator creates
 type of the form `C₁ ⊕ (C₂ ⊕ (⋯ ⊕ Cₙ))`. The equivalence then needs to handle `n - 1` levels
 of `Sum` constructors, which is a source of quadratic complexity.
 
-An alternative design could be to generate a `C : Fin n → Type _` function for the proxy types
+An alternative design could be to generate a `C : Fin n → Type*` function for the proxy types
 for each constructor and then use `(i : Fin n) × ULift (C i)` for the total proxy type. However,
 typeclass inference is not good at finding instances for such a type even if there are instances
 for each `C i`. One seems to need to add, for example, an explicit `[∀ i, Fintype (C i)]`
@@ -54,10 +54,10 @@ structure ProxyEquivConfig where
   proxyEquivName : Name
   /-- Returns a proxy type for a constructor and a pattern to use to match against it,
   given a list of fvars for the constructor arguments and pattern names to use for the arguments.
-  The proxy type is expected to be a `Type _`. -/
+  The proxy type is expected to be a `Type*`. -/
   mkCtorProxyType : List (Expr × Name) → TermElabM (Expr × Term)
   /-- Given (constructor name, proxy constructor type, proxy constructor pattern) triples
-  constructed using `mkCtorProxyType`, return (1) the total proxy type (a `Type _`),
+  constructed using `mkCtorProxyType`, return (1) the total proxy type (a `Type*`),
   (2) patterns to use for each constructor, and (3) a proof to use to prove `left_inv` for
   `proxy_type ≃ type` (this proof starts with `intro x`). -/
   mkProxyType : Array (Name × Expr × Term) → TermElabM (Expr × Array Term × TSyntax `tactic)
@@ -70,7 +70,7 @@ of (1) an fvar for this argument and (2) a name to use for this argument in patt
 For example, given `#[(a, x), (b, y)]` with `x : Nat` and `y : Fin x`, then this function
 returns `Sigma (fun x => Fin x)` and `⟨a, b⟩`.
 
-Always returns a `Type _`. Uses `Unit`, `PLift`, and `Sigma`. Avoids using `PSigma` since
+Always returns a `Type*`. Uses `Unit`, `PLift`, and `Sigma`. Avoids using `PSigma` since
 the `Fintype` instances for it go through `Sigma`s anyway.
 
 The `decorateSigma` function is to wrap the `Sigma` a decorator such as `Lex`.

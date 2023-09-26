@@ -2,11 +2,6 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
-
-! This file was ported from Lean 3 source module data.pnat.basic
-! leanprover-community/mathlib commit 172bf2812857f5e56938cc148b7a539f52f84ca9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Nat.Bits
@@ -15,6 +10,8 @@ import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
 
+#align_import data.pnat.basic from "leanprover-community/mathlib"@"172bf2812857f5e56938cc148b7a539f52f84ca9"
+
 /-!
 # The positive natural numbers
 
@@ -22,6 +19,8 @@ This file develops the type `ℕ+` or `PNat`, the subtype of natural numbers tha
 It is defined in `Data.PNat.Defs`, but most of the development is deferred to here so
 that `Data.PNat.Defs` can have very few imports.
 -/
+
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
   LinearOrderedCancelCommMonoid, Add, Mul, Distrib for PNat
@@ -272,13 +271,8 @@ theorem coe_bit1 (a : ℕ+) : ((bit1 a : ℕ+) : ℕ) = bit1 (a : ℕ) :=
 
 end deprecated
 
--- Porting note:
--- mathlib3 statement was
--- `((m ^ n : ℕ+) : ℕ) = (m : ℕ) ^ n`
--- where the left `^ : ℕ+ → ℕ → ℕ+` was `monoid.has_pow`.
--- Atm writing `m ^ n` means automatically `(↑m) ^ n`.
 @[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : ((Pow.pow m n : ℕ+) : ℕ) = (m : ℕ) ^ n :=
+theorem pow_coe (m : ℕ+) (n : ℕ) : (m ^ n : ℕ) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 
@@ -310,7 +304,7 @@ theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n
 #align pnat.exists_eq_succ_of_ne_one PNat.exists_eq_succ_of_ne_one
 
 /-- Strong induction on `ℕ+`, with `n = 1` treated separately. -/
-def caseStrongInductionOn {p : ℕ+ → Sort _} (a : ℕ+) (hz : p 1)
+def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
     (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a := by
   apply strongInductionOn a
   rintro ⟨k, kprop⟩ hk
@@ -324,7 +318,7 @@ def caseStrongInductionOn {p : ℕ+ → Sort _} (a : ℕ+) (hz : p 1)
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
 not only to `Prop`. -/
 @[elab_as_elim]
-def recOn (n : ℕ+) {p : ℕ+ → Sort _} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
+def recOn (n : ℕ+) {p : ℕ+ → Sort*} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
   rcases n with ⟨n, h⟩
   induction' n with n IH
   · exact absurd h (by decide)
@@ -339,10 +333,10 @@ theorem recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
 #align pnat.rec_on_one PNat.recOn_one
 
 @[simp]
-theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort _} (p1 hp) :
+theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
     @PNat.recOn (n + 1) p p1 hp = hp n (@PNat.recOn n p p1 hp) := by
   cases' n with n h
-  cases n <;> [exact absurd h (by decide), rfl]
+  cases n <;> [exact absurd h (by decide); rfl]
 #align pnat.rec_on_succ PNat.recOn_succ
 
 theorem modDivAux_spec :
@@ -389,7 +383,7 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
     · rw [h₁, mul_zero] at hm
       exact (lt_irrefl _ hm).elim
     · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
-        -- Porting note : Specified type of `h₂` explicitely because `rw` could not unify
+        -- Porting note : Specified type of `h₂` explicitly because `rw` could not unify
         -- `succ 0` with `1`.
         Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
       rw [mul_one] at h₂

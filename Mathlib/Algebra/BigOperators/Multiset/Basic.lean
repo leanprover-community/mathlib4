@@ -2,14 +2,11 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.big_operators.multiset.basic
-! leanprover-community/mathlib commit 6c5f73fd6f6cc83122788a80a27cdd54663609f4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.Multiset.Basic
+
+#align_import algebra.big_operators.multiset.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
 
 /-!
 # Sums and products over multisets
@@ -31,7 +28,7 @@ Nov 2022: To speed the Lean 4 port, lemmas requiring extra algebra imports
 -/
 
 
-variable {ι α β γ : Type _}
+variable {ι α β γ : Type*}
 
 namespace Multiset
 
@@ -156,14 +153,14 @@ theorem pow_count [DecidableEq α] (a : α) : a ^ s.count a = (s.filter (Eq a)).
 #align multiset.nsmul_count Multiset.nsmul_count
 
 @[to_additive]
-theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type _} [MonoidHomClass F α β] (f : F) :
+theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type*} [MonoidHomClass F α β] (f : F) :
     (s.map f).prod = f s.prod :=
   Quotient.inductionOn s fun l => by simp only [l.prod_hom f, quot_mk_to_coe, coe_map, coe_prod]
 #align multiset.prod_hom Multiset.prod_hom
 #align multiset.sum_hom Multiset.sum_hom
 
 @[to_additive]
-theorem prod_hom' [CommMonoid β] (s : Multiset ι) {F : Type _} [MonoidHomClass F α β] (f : F)
+theorem prod_hom' [CommMonoid β] (s : Multiset ι) {F : Type*} [MonoidHomClass F α β] (f : F)
     (g : ι → α) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
   convert (s.map g).prod_hom f
   exact (map_map _ _ _).symm
@@ -345,9 +342,9 @@ theorem sum_map_mul_right : sum (s.map fun i => f i * a) = sum (s.map f) * a :=
 
 end NonUnitalNonAssocSemiring
 
-section Semiring
+section NonUnitalSemiring
 
-variable [Semiring α]
+variable [NonUnitalSemiring α]
 
 theorem dvd_sum {a : α} {s : Multiset α} : (∀ x ∈ s, a ∣ x) → a ∣ s.sum :=
   Multiset.induction_on s (fun _ => dvd_zero _) fun x s ih h => by
@@ -355,7 +352,7 @@ theorem dvd_sum {a : α} {s : Multiset α} : (∀ x ∈ s, a ∣ x) → a ∣ s.
     exact dvd_add (h _ (mem_cons_self _ _)) (ih fun y hy => h _ <| mem_cons.2 <| Or.inr hy)
 #align multiset.dvd_sum Multiset.dvd_sum
 
-end Semiring
+end NonUnitalSemiring
 
 /-! ### Order -/
 
@@ -543,7 +540,7 @@ theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)
 end Multiset
 
 @[to_additive]
-theorem map_multiset_prod [CommMonoid α] [CommMonoid β] {F : Type _} [MonoidHomClass F α β] (f : F)
+theorem map_multiset_prod [CommMonoid α] [CommMonoid β] {F : Type*} [MonoidHomClass F α β] (f : F)
     (s : Multiset α) : f s.prod = (s.map f).prod :=
   (s.prod_hom f).symm
 #align map_multiset_prod map_multiset_prod

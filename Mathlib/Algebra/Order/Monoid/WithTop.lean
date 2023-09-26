@@ -2,18 +2,15 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-Ported by: Jon Eugster
-
-! This file was ported from Lean 3 source module algebra.order.monoid.with_top
-! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.CharZero.Defs
+
+#align_import algebra.order.monoid.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
@@ -183,6 +180,28 @@ theorem coe_add_eq_top_iff {y : WithTop α} : ↑x + y = ⊤ ↔ y = ⊤ := by
   induction y using WithTop.recTopCoe <;> simp [← coe_add]
 #align with_top.coe_add_eq_top_iff WithTop.coe_add_eq_top_iff
 
+theorem add_right_cancel_iff [IsRightCancelAdd α] (ha : a ≠ ⊤) : b + a = c + a ↔ b = c := by
+  lift a to α using ha
+  obtain rfl | hb := (eq_or_ne b ⊤)
+  · rw [top_add, eq_comm, WithTop.add_coe_eq_top_iff, eq_comm]
+  lift b to α using hb
+  simp_rw [←WithTop.coe_add, eq_comm, WithTop.add_eq_coe, coe_eq_coe, exists_and_left,
+    exists_eq_left, add_left_inj, exists_eq_right, eq_comm]
+
+theorem add_right_cancel [IsRightCancelAdd α] (ha : a ≠ ⊤) (h : b + a = c + a) : b = c :=
+  (WithTop.add_right_cancel_iff ha).1 h
+
+theorem add_left_cancel_iff [IsLeftCancelAdd α] (ha : a ≠ ⊤) : a + b = a + c ↔ b = c := by
+  lift a to α using ha
+  obtain rfl | hb := (eq_or_ne b ⊤)
+  · rw [add_top, eq_comm, WithTop.coe_add_eq_top_iff, eq_comm]
+  lift b to α using hb
+  simp_rw [←WithTop.coe_add, eq_comm, WithTop.add_eq_coe, eq_comm, coe_eq_coe,
+    exists_and_left, exists_eq_left', add_right_inj, exists_eq_right']
+
+theorem add_left_cancel [IsLeftCancelAdd α] (ha : a ≠ ⊤) (h : a + b = a + c) : b = c :=
+  (WithTop.add_left_cancel_iff ha).1 h
+
 instance covariantClass_add_le [LE α] [CovariantClass α α (· + ·) (· ≤ ·)] :
     CovariantClass (WithTop α) (WithTop α) (· + ·) (· ≤ ·) :=
   ⟨fun a b c h => by
@@ -333,6 +352,10 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) 
       rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one]
   }
 
+instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
+  { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
+      (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective}
+
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
   { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
 
@@ -342,7 +365,7 @@ instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (
       rintro a b h (_ | c); · simp [none_eq_top]
       rcases b with (_ | b); · simp [none_eq_top]
       rcases le_coe_iff.1 h with ⟨a, rfl, _⟩
-      simp only [some_eq_coe, ← coe_add, coe_le_coe] at h⊢
+      simp only [some_eq_coe, ← coe_add, coe_le_coe] at h ⊢
       exact add_le_add_left h c }
 
 instance linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
@@ -418,7 +441,7 @@ theorem zero_lt_coe [OrderedAddCommMonoid α] (a : α) : (0 : WithTop α) < a �
 /-- A version of `WithTop.map` for `OneHom`s. -/
 @[to_additive (attr := simps (config := { fullyApplied := false }))
   "A version of `WithTop.map` for `ZeroHom`s"]
-protected def _root_.OneHom.withTopMap {M N : Type _} [One M] [One N] (f : OneHom M N) :
+protected def _root_.OneHom.withTopMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
   map_one' := by rw [WithTop.map_one, map_one, coe_one]
@@ -428,7 +451,7 @@ protected def _root_.OneHom.withTopMap {M N : Type _} [One M] [One N] (f : OneHo
 
 /-- A version of `WithTop.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def _root_.AddHom.withTopMap {M N : Type _} [Add M] [Add N] (f : AddHom M N) :
+protected def _root_.AddHom.withTopMap {M N : Type*} [Add M] [Add N] (f : AddHom M N) :
     AddHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
   map_add' := WithTop.map_add f
@@ -437,7 +460,7 @@ protected def _root_.AddHom.withTopMap {M N : Type _} [Add M] [Add N] (f : AddHo
 
 /-- A version of `WithTop.map` for `AddMonoidHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def _root_.AddMonoidHom.withTopMap {M N : Type _} [AddZeroClass M] [AddZeroClass N]
+protected def _root_.AddMonoidHom.withTopMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithTop M →+ WithTop N :=
   { ZeroHom.withTopMap f.toZeroHom, AddHom.withTopMap f.toAddHom with toFun := WithTop.map f }
 #align add_monoid_hom.with_top_map AddMonoidHom.withTopMap
@@ -471,6 +494,9 @@ instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
 
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithBot α) :=
   WithTop.addMonoidWithOne
+
+instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
+  WithTop.charZero
 
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
   WithTop.addCommMonoidWithOne
@@ -613,6 +639,18 @@ theorem coe_add_eq_bot_iff : ↑x + b = ⊥ ↔ b = ⊥ :=
   WithTop.coe_add_eq_top_iff
 #align with_bot.coe_add_eq_bot_iff WithBot.coe_add_eq_bot_iff
 
+theorem add_right_cancel_iff [IsRightCancelAdd α] (ha : a ≠ ⊥) : b + a = c + a ↔ b = c :=
+  WithTop.add_right_cancel_iff ha
+
+theorem add_right_cancel [IsRightCancelAdd α] (ha : a ≠ ⊥) (h : b + a = c + a) : b = c :=
+  WithTop.add_right_cancel ha h
+
+theorem add_left_cancel_iff [IsLeftCancelAdd α] (ha : a ≠ ⊥) : a + b = a + c ↔ b = c :=
+  WithTop.add_left_cancel_iff ha
+
+theorem add_left_cancel [IsLeftCancelAdd α] (ha : a ≠ ⊥) (h : a + b = a + c) : b = c :=
+  WithTop.add_left_cancel ha h
+
 -- There is no `WithBot.map_mul_of_mulHom`, since `WithBot` does not have a multiplication.
 @[simp]
 protected theorem map_add {F} [Add β] [AddHomClass F α β] (f : F) (a b : WithBot α) :
@@ -623,7 +661,7 @@ protected theorem map_add {F} [Add β] [AddHomClass F α β] (f : F) (a b : With
 /-- A version of `WithBot.map` for `OneHom`s. -/
 @[to_additive (attr := simps (config := { fullyApplied := false }))
   "A version of `WithBot.map` for `ZeroHom`s"]
-protected def _root_.OneHom.withBotMap {M N : Type _} [One M] [One N] (f : OneHom M N) :
+protected def _root_.OneHom.withBotMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f
   map_one' := by rw [WithBot.map_one, map_one, coe_one]
@@ -634,7 +672,7 @@ protected def _root_.OneHom.withBotMap {M N : Type _} [One M] [One N] (f : OneHo
 
 /-- A version of `WithBot.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def _root_.AddHom.withBotMap {M N : Type _} [Add M] [Add N] (f : AddHom M N) :
+protected def _root_.AddHom.withBotMap {M N : Type*} [Add M] [Add N] (f : AddHom M N) :
     AddHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f
   map_add' := WithBot.map_add f
@@ -643,7 +681,7 @@ protected def _root_.AddHom.withBotMap {M N : Type _} [Add M] [Add N] (f : AddHo
 
 /-- A version of `WithBot.map` for `AddMonoidHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def _root_.AddMonoidHom.withBotMap {M N : Type _} [AddZeroClass M] [AddZeroClass N]
+protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithBot M →+ WithBot N :=
   { ZeroHom.withBotMap f.toZeroHom, AddHom.withBotMap f.toAddHom with toFun := WithBot.map f }
 #align add_monoid_hom.with_bot_map AddMonoidHom.withBotMap

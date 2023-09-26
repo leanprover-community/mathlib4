@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.adjunction.fully_faithful
-! leanprover-community/mathlib commit 9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Yoneda
+
+#align_import category_theory.adjunction.fully_faithful from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
 /-!
 # Adjoints of fully faithful functors
@@ -53,14 +50,12 @@ See
 instance unit_isIso_of_L_fully_faithful [Full L] [Faithful L] : IsIso (Adjunction.unit h) :=
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ (Adjunction.unit h) fun X =>
     @Yoneda.isIso _ _ _ _ ((Adjunction.unit h).app X)
-      ⟨⟨{ app := fun Y f => L.preimage ((h.homEquiv (unop Y) (L.obj X)).symm f),
-          naturality := fun X Y f => by
-            funext x -- porting note: `aesop_cat` is not able to do `funext` automatically
-            aesop_cat },
+      ⟨⟨{ app := fun Y f => L.preimage ((h.homEquiv (unop Y) (L.obj X)).symm f) },
           ⟨by
             ext x
             apply L.map_injective
-            aesop_cat, by
+            aesop_cat,
+           by
             ext x
             dsimp
             simp only [Adjunction.homEquiv_counit, preimage_comp, preimage_map, Category.assoc]
@@ -77,14 +72,12 @@ instance counit_isIso_of_R_fully_faithful [Full R] [Faithful R] : IsIso (Adjunct
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ (Adjunction.counit h) fun X =>
     @isIso_of_op _ _ _ _ _ <|
       @Coyoneda.isIso _ _ _ _ ((Adjunction.counit h).app X).op
-        ⟨⟨{ app := fun Y f => R.preimage ((h.homEquiv (R.obj X) Y) f),
-            naturality := fun X Y f => by
-              funext x
-              aesop_cat },
+        ⟨⟨{ app := fun Y f => R.preimage ((h.homEquiv (R.obj X) Y) f) },
             ⟨by
               ext x
               apply R.map_injective
-              simp, by
+              simp,
+             by
               ext x
               dsimp
               simp only [Adjunction.homEquiv_unit, preimage_comp, preimage_map]
@@ -124,8 +117,8 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_left_R_unit_iso_of_is_iso_counit CategoryTheory.whiskerLeftRUnitIsoOfIsIsoCounit
 
 /-- If the unit is an isomorphism, then the left adjoint is full-/
-noncomputable def lFullOfUnitIsIso [IsIso h.unit] : Full L
-    where preimage {X Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
+noncomputable def lFullOfUnitIsIso [IsIso h.unit] : Full L where
+  preimage {X Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
 set_option linter.uppercaseLean3 false in
 #align category_theory.L_full_of_unit_is_iso CategoryTheory.lFullOfUnitIsIso
 
@@ -138,8 +131,8 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.L_faithful_of_unit_is_iso CategoryTheory.L_faithful_of_unit_isIso
 
 /-- If the counit is an isomorphism, then the right adjoint is full-/
-noncomputable def rFullOfCounitIsIso [IsIso h.counit] : Full R
-    where preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
+noncomputable def rFullOfCounitIsIso [IsIso h.counit] : Full R where
+  preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
 set_option linter.uppercaseLean3 false in
 #align category_theory.R_full_of_counit_is_iso CategoryTheory.rFullOfCounitIsIso
 
@@ -219,9 +212,9 @@ def Adjunction.restrictFullyFaithful (iC : C ⥤ C') (iD : D ⥤ D') {L' : C' �
         simpa [Trans.trans] using (comm1.inv.naturality_assoc f _).symm
       homEquiv_naturality_right := fun {X Y' Y} f g => by
         apply iC.map_injective
-        suffices : R'.map (iD.map g) ≫ comm2.hom.app Y = comm2.hom.app Y' ≫ iC.map (R.map g)
-        . simp [Trans.trans, this]
-        . apply comm2.hom.naturality g }
+        suffices R'.map (iD.map g) ≫ comm2.hom.app Y = comm2.hom.app Y' ≫ iC.map (R.map g) by
+          simp [Trans.trans, this]
+        apply comm2.hom.naturality g }
 #align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
 
 end CategoryTheory

@@ -2,15 +2,11 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.algebra.order.left_right_lim
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.WLOG
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Algebra.Order.LeftRight
+
+#align_import topology.algebra.order.left_right_lim from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Left and right limits
@@ -43,7 +39,7 @@ open Topology
 
 section
 
-variable {α β : Type _} [LinearOrder α] [TopologicalSpace β]
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace β]
 
 /-- Let `f : α → β` be a function from a linear order `α` to a topological space `β`, and
 let `a : α`. The limit strictly to the left of `f` at `a`, denoted with `leftLim f a`, is defined
@@ -82,19 +78,34 @@ theorem leftLim_eq_of_eq_bot [hα : TopologicalSpace α] [h'α : OrderTopology �
   simp [leftLim, ite_eq_left_iff, h]
 #align left_lim_eq_of_eq_bot leftLim_eq_of_eq_bot
 
+theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space β]
+    {f : α → β} {a : α} {y : β} (h : 𝓝[>] a ≠ ⊥) (h' : Tendsto f (𝓝[>] a) (𝓝 y)) :
+    Function.rightLim f a = y :=
+  @leftLim_eq_of_tendsto αᵒᵈ _ _ _ _ _ _ f a y h h'
+#align right_lim_eq_of_tendsto rightLim_eq_of_tendsto
+
+theorem rightLim_eq_of_eq_bot [TopologicalSpace α] [OrderTopology α] (f : α → β) {a : α}
+    (h : 𝓝[>] a = ⊥) : rightLim f a = f a :=
+  @leftLim_eq_of_eq_bot αᵒᵈ _ _ _ _ _  f a h
+
 end
 
 open Function
 
 namespace Monotone
 
-variable {α β : Type _} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
+variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Monotone f) {x y : α}
 
-theorem leftLim_eq_supₛ [TopologicalSpace α] [OrderTopology α] (h : 𝓝[<] x ≠ ⊥) :
-    leftLim f x = supₛ (f '' Iio x) :=
+theorem leftLim_eq_sSup [TopologicalSpace α] [OrderTopology α] (h : 𝓝[<] x ≠ ⊥) :
+    leftLim f x = sSup (f '' Iio x) :=
   leftLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Iio x)
-#align monotone.left_lim_eq_Sup Monotone.leftLim_eq_supₛ
+#align monotone.left_lim_eq_Sup Monotone.leftLim_eq_sSup
+
+theorem rightLim_eq_sInf [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x ≠ ⊥) :
+    rightLim f x = sInf (f '' Ioi x) :=
+  rightLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Ioi x)
+#align right_lim_eq_Inf Monotone.rightLim_eq_sInf
 
 theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   letI : TopologicalSpace α := Preorder.topology α
@@ -102,8 +113,8 @@ theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
   · simpa [leftLim, h'] using hf h
   haveI A : NeBot (𝓝[<] x) := neBot_iff.2 h'
-  rw [leftLim_eq_supₛ hf h']
-  refine' csupₛ_le _ _
+  rw [leftLim_eq_sSup hf h']
+  refine' csSup_le _ _
   · simp only [nonempty_image_iff]
     exact (forall_mem_nonempty_iff_neBot.2 A) _ self_mem_nhdsWithin
   · simp only [mem_image, mem_Iio, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
@@ -117,8 +128,8 @@ theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
   rcases eq_or_ne (𝓝[<] y) ⊥ with (h' | h')
   · rw [leftLim_eq_of_eq_bot _ h']
     exact hf h.le
-  rw [leftLim_eq_supₛ hf h']
-  refine' le_csupₛ ⟨f y, _⟩ (mem_image_of_mem _ h)
+  rw [leftLim_eq_sSup hf h']
+  refine' le_csSup ⟨f y, _⟩ (mem_image_of_mem _ h)
   simp only [upperBounds, mem_image, mem_Iio, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, mem_setOf_eq]
   intro z hz
@@ -168,7 +179,7 @@ variable [TopologicalSpace α] [OrderTopology α]
 theorem tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) := by
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
   · simp [h']
-  rw [leftLim_eq_supₛ hf h']
+  rw [leftLim_eq_sSup hf h']
   exact hf.tendsto_nhdsWithin_Iio x
 #align monotone.tendsto_left_lim Monotone.tendsto_leftLim
 
@@ -288,7 +299,7 @@ theorem countable_not_continuousAt [TopologicalSpace.SecondCountableTopology β]
   refine' compl_subset_compl.1 _
   simp only [compl_union]
   rintro x ⟨hx, h'x⟩
-  simp only [mem_setOf_eq, Classical.not_not, mem_compl_iff] at hx h'x⊢
+  simp only [mem_setOf_eq, Classical.not_not, mem_compl_iff] at hx h'x ⊢
   exact continuousAt_iff_continuous_left'_right'.2 ⟨h'x, hx⟩
 #align monotone.countable_not_continuous_at Monotone.countable_not_continuousAt
 
@@ -296,7 +307,7 @@ end Monotone
 
 namespace Antitone
 
-variable {α β : Type _} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
+variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Antitone f) {x y : α}
 
 theorem le_leftLim (h : x ≤ y) : f y ≤ leftLim f x :=

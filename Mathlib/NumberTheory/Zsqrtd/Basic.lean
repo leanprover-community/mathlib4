@@ -2,16 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module number_theory.zsqrtd.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Star.Unitary
+
+#align_import number_theory.zsqrtd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-! # ℤ[√d]
 
@@ -204,10 +201,7 @@ instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
 instance commRing : CommRing (ℤ√d) := by
   refine
   { Zsqrtd.addGroupWithOne with
-    add := (· + ·)
-    zero := (0 : ℤ√d)
     mul := (· * ·)
-    one := 1
     npow := @npowRec (ℤ√d) ⟨1⟩ ⟨(· * ·)⟩,
     add_comm := ?_
     left_distrib := ?_
@@ -279,7 +273,7 @@ theorem coe_nat_re (n : ℕ) : (n : ℤ√d).re = n :=
 #align zsqrtd.coe_nat_re Zsqrtd.coe_nat_re
 
 @[simp]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℤ√d).re = n :=
+theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).re = n :=
   rfl
 
 @[simp]
@@ -288,7 +282,7 @@ theorem coe_nat_im (n : ℕ) : (n : ℤ√d).im = 0 :=
 #align zsqrtd.coe_nat_im Zsqrtd.coe_nat_im
 
 @[simp]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℤ√d).im = 0 :=
+theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).im = 0 :=
   rfl
 
 theorem coe_nat_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
@@ -360,7 +354,7 @@ protected theorem coe_int_inj {m n : ℤ} (h : (↑m : ℤ√d) = ↑n) : m = n 
 theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
   constructor
   · rintro ⟨x, rfl⟩
-    simp only [add_zero, coe_int_re, MulZeroClass.zero_mul, mul_im, dvd_mul_right, and_self_iff,
+    simp only [add_zero, coe_int_re, zero_mul, mul_im, dvd_mul_right, and_self_iff,
       mul_re, mul_zero, coe_int_im]
   · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
     use ⟨r, i⟩
@@ -380,7 +374,7 @@ theorem coe_int_dvd_coe_int (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
 
 protected theorem eq_of_smul_eq_smul_left {a : ℤ} {b c : ℤ√d} (ha : a ≠ 0) (h : ↑a * b = a * c) :
     b = c := by
-  rw [ext] at h⊢
+  rw [ext] at h ⊢
   apply And.imp _ _ h <;> simpa only [smul_re, smul_im] using mul_left_cancel₀ ha
 #align zsqrtd.eq_of_smul_eq_smul_left Zsqrtd.eq_of_smul_eq_smul_left
 
@@ -564,12 +558,14 @@ theorem norm_eq_mul_conj (n : ℤ√d) : (norm n : ℤ√d) = n * star n := by
 @[simp]
 theorem norm_neg (x : ℤ√d) : (-x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
+  -- See https://github.com/leanprover-community/mathlib4/issues/5026
   Zsqrtd.coe_int_inj <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
 #align zsqrtd.norm_neg Zsqrtd.norm_neg
 
 @[simp]
 theorem norm_conj (x : ℤ√d) : (star x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
+  -- See https://github.com/leanprover-community/mathlib4/issues/5026
   Zsqrtd.coe_int_inj <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
 #align zsqrtd.norm_conj Zsqrtd.norm_conj
 
@@ -951,7 +947,7 @@ instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
     le_antisymm := fun _ _ => Zsqrtd.le_antisymm
     le_total := Zsqrtd.le_total
-    decidable_le := Zsqrtd.decidableLE }
+    decidableLE := Zsqrtd.decidableLE }
 
 protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b = 0 → a = 0 ∨ b = 0
   | ⟨x, y⟩, ⟨z, w⟩, h => by
@@ -1018,7 +1014,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
     exact divides_sq_eq_zero_z ha
   · push_neg at h
     suffices a.re * a.re = 0 by
-      rw [eq_zero_of_mul_self_eq_zero this] at ha⊢
+      rw [eq_zero_of_mul_self_eq_zero this] at ha ⊢
       simpa only [true_and_iff, or_self_right, zero_re, zero_im, eq_self_iff_true, zero_eq_mul,
         mul_zero, mul_eq_zero, h.ne, false_or_iff, or_self_iff] using ha
     apply _root_.le_antisymm _ (mul_self_nonneg _)
@@ -1072,9 +1068,9 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
     have h_inj : Function.Injective ((↑) : ℤ → R) := Int.cast_injective
     suffices lift r a.norm = 0 by
       simp only [coe_int_re, add_zero, lift_apply_apply, coe_int_im, Int.cast_zero,
-        MulZeroClass.zero_mul] at this
+        zero_mul] at this
       rwa [← Int.cast_zero, h_inj.eq_iff, norm_eq_zero hd] at this
-    rw [norm_eq_mul_conj, RingHom.map_mul, ha, MulZeroClass.zero_mul]
+    rw [norm_eq_mul_conj, RingHom.map_mul, ha, zero_mul]
 #align zsqrtd.lift_injective Zsqrtd.lift_injective
 
 /-- An element of `ℤ√d` has norm equal to `1` if and only if it is contained in the submonoid

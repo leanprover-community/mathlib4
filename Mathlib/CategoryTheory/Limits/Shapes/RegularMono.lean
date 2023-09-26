@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.regular_mono
-! leanprover-community/mathlib commit 239d882c4fb58361ee8b3b39fb2091320edef10a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.Lean.Expr.Basic
+
+#align_import category_theory.limits.shapes.regular_mono from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
 
 /-!
 # Definitions and basic properties of regular monomorphisms and epimorphisms.
@@ -52,7 +49,7 @@ class RegularMono (f : X ⟶ Y) where
   /-- Another map from the codomain of `f` to `Z` -/
   right : Y ⟶ Z
   /-- `f` equalizes the two maps -/
-  w : f ≫ left = f ≫ right
+  w : f ≫ left = f ≫ right := by aesop_cat
   /-- `f` is the equalizer of the two maps -/
   isLimit : IsLimit (Fork.ofι f w)
 #align category_theory.regular_mono CategoryTheory.RegularMono
@@ -77,12 +74,11 @@ instance equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
 #align category_theory.equalizer_regular CategoryTheory.equalizerRegular
 
 /-- Every split monomorphism is a regular monomorphism. -/
-instance (priority := 100) RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] : RegularMono f
-    where
+instance (priority := 100) RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] :
+    RegularMono f where
   Z := Y
   left := 𝟙 Y
   right := retraction f ≫ f
-  w := by aesop_cat
   isLimit := isSplitMonoEqualizes f
 #align category_theory.regular_mono.of_is_split_mono CategoryTheory.RegularMono.ofIsSplitMono
 
@@ -111,8 +107,8 @@ def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
   isLimit := by
     apply Fork.IsLimit.mk' _ _
     intro s
-    have l₁ : (Fork.ι s ≫ k) ≫ RegularMono.left = (Fork.ι s ≫ k) ≫ hr.right
-    rw [Category.assoc, s.condition, Category.assoc]
+    have l₁ : (Fork.ι s ≫ k) ≫ RegularMono.left = (Fork.ι s ≫ k) ≫ hr.right := by
+      rw [Category.assoc, s.condition, Category.assoc]
     obtain ⟨l, hl⟩ := Fork.IsLimit.lift' hr.isLimit _ l₁
     obtain ⟨p, _, hp₂⟩ := PullbackCone.IsLimit.lift' t _ _ hl
     refine' ⟨p, hp₂, _⟩
@@ -192,7 +188,7 @@ class RegularEpi (f : X ⟶ Y) where
   /-- Two maps to the domain of `f` -/
   (left right : W ⟶ X)
   /-- `f` coequalizes the two maps -/
-  w : left ≫ f = right ≫ f
+  w : left ≫ f = right ≫ f := by aesop_cat
   /-- `f` is the coequalizer -/
   isColimit : IsColimit (Cofork.ofπ f w)
 #align category_theory.regular_epi CategoryTheory.RegularEpi
@@ -212,7 +208,8 @@ instance coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
   w := coequalizer.condition g h
   isColimit :=
     Cofork.IsColimit.mk _ (fun s => colimit.desc _ s) (by simp) fun s m w => by
-      apply coequalizer.hom_ext; simp [← w]
+      apply coequalizer.hom_ext
+      simp [← w]
 #align category_theory.coequalizer_regular CategoryTheory.coequalizerRegular
 
 /-- Every split epimorphism is a regular epimorphism. -/
@@ -221,7 +218,6 @@ instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : 
   W := X
   left := 𝟙 X
   right := f ≫ section_ f
-  w := by aesop_cat
   isColimit := isSplitEpiCoequalizes f
 #align category_theory.regular_epi.of_split_epi CategoryTheory.RegularEpi.ofSplitEpi
 
@@ -248,8 +244,8 @@ def regularOfIsPushoutSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h 
   isColimit := by
     apply Cofork.IsColimit.mk' _ _
     intro s
-    have l₁ : gr.left ≫ f ≫ s.π = gr.right ≫ f ≫ s.π
-    rw [← Category.assoc, ← Category.assoc, s.condition]
+    have l₁ : gr.left ≫ f ≫ s.π = gr.right ≫ f ≫ s.π := by
+      rw [← Category.assoc, ← Category.assoc, s.condition]
     obtain ⟨l, hl⟩ := Cofork.IsColimit.desc' gr.isColimit (f ≫ Cofork.π s) l₁
     obtain ⟨p, hp₁, _⟩ := PushoutCocone.IsColimit.desc' t _ _ hl.symm
     refine' ⟨p, hp₁, _⟩

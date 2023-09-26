@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib
 import Mathlib.Tactic.LibrarySearch
-import Mathlib.Control.Basic
 
 /-!
 # Saving the `library_search` cache.

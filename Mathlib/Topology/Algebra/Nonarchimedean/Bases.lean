@@ -2,15 +2,12 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.nonarchimedean.bases
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Algebra.Module.Submodule.Pointwise
+
+#align_import topology.algebra.nonarchimedean.bases from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Neighborhood bases for non-archimedean rings and modules
@@ -26,18 +23,18 @@ family as a basis of neighborhoods of zero. In particular the given subgroups be
 (`RingSubgroupsBasis.nonarchimedean`).
 
 A special case of this construction is given by `SubmodulesBasis` where the subgroups are
-sub-modules in a commutative algebra. This important example gives rises to the adic topology
+sub-modules in a commutative algebra. This important example gives rise to the adic topology
 (studied in its own file).
 -/
 
-open Set Filter Function Lattice AddGroupWithZeroNhd
+open Set Filter Function Lattice
 
 open Topology Filter Pointwise
 
 /-- A family of additive subgroups on a ring `A` is a subgroups basis if it satisfies some
 axioms ensuring there is a topology on `A` which is compatible with the ring structure and
 admits this family as a basis of neighborhoods of zero. -/
-structure RingSubgroupsBasis {A ι : Type _} [Ring A] (B : ι → AddSubgroup A) : Prop where
+structure RingSubgroupsBasis {A ι : Type*} [Ring A] (B : ι → AddSubgroup A) : Prop where
   /-- Condition for `B` to be a filter basis on `A`. -/
   inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
   /-- For each set `B` in the submodule basis on `A`, there is another basis element `B'` such
@@ -53,9 +50,9 @@ structure RingSubgroupsBasis {A ι : Type _} [Ring A] (B : ι → AddSubgroup A)
 
 namespace RingSubgroupsBasis
 
-variable {A ι : Type _} [Ring A]
+variable {A ι : Type*} [Ring A]
 
-theorem of_comm {A ι : Type _} [CommRing A] (B : ι → AddSubgroup A)
+theorem of_comm {A ι : Type*} [CommRing A] (B : ι → AddSubgroup A)
     (inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j) (mul : ∀ i, ∃ j, (B j : Set A) * B j ⊆ B i)
     (leftMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (fun y : A => x * y) ⁻¹' B i) :
     RingSubgroupsBasis B :=
@@ -185,10 +182,10 @@ theorem hasBasis_nhds (a : A) :
 /-- Given a subgroups basis, the basis elements as open additive subgroups in the associated
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
-  let _ := hB.topology -- Porting note: failed to synthesize instance `TopologicalSpace A`
+  -- Porting note: failed to synthesize instance `TopologicalSpace A`
+  let _ := hB.topology
   { B i with
     isOpen' := by
-      letI := hB.topology
       rw [isOpen_iff_mem_nhds]
       intro a a_in
       rw [(hB.hasBasis_nhds a).mem_iff]
@@ -208,10 +205,7 @@ theorem nonarchimedean : @NonarchimedeanRing A _ hB.topology := by
 
 end RingSubgroupsBasis
 
-variable {ι R A : Type _} [CommRing R] [CommRing A] [Algebra R A]
-
--- Porting note: failed to synthesize instance `Module R A`
-set_option synthInstance.etaExperiment true
+variable {ι R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 /-- A family of submodules in a commutative `R`-algebra `A` is a submodules basis if it satisfies
 some axioms ensuring there is a topology on `A` which is compatible with the ring structure and
@@ -248,7 +242,7 @@ def topology [Nonempty ι] (hB : SubmodulesRingBasis B) : TopologicalSpace A :=
 
 end SubmodulesRingBasis
 
-variable {M : Type _} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- A family of submodules in an `R`-module `M` is a submodules basis if it satisfies
 some axioms ensuring there is a topology on `M` which is compatible with the module structure and
@@ -299,7 +293,7 @@ def toModuleFilterBasis : ModuleFilterBasis R M where
     rintro x₀ _ ⟨i, rfl⟩
     use B i
     constructor
-    · use  i
+    · use i
     · simp
   smul' := by
     rintro _ ⟨i, rfl⟩
@@ -357,8 +351,8 @@ theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB
 
 library_note "nonarchimedean non instances"/--
 The non archimedean subgroup basis lemmas cannot be instances because some instances
-(such as `measure_theory.ae_eq_fun.add_monoid ` or `topological_add_group.to_has_continuous_add`)
-cause the search for `@topological_add_group β ?m1 ?m2`, i.e. a search for a topological group where
+(such as `MeasureTheory.AEEqFun.instAddMonoid ` or `topological_add_group.to_has_continuous_add`)
+cause the search for `@TopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where
 the topology/group structure are unknown. -/
 
 
@@ -367,7 +361,7 @@ end SubmodulesBasis
 section
 
 /-
-In this section, we check that in a `R`-algebra `A` over a ring equipped with a topology,
+In this section, we check that in an `R`-algebra `A` over a ring equipped with a topology,
 a basis of `R`-submodules which is compatible with the topology on `R` is also a submodule basis
 in the sense of `R`-modules (forgetting about the ring structure on `A`) and those two points of
 view definitionaly gives the same topology on `A`.
@@ -386,14 +380,14 @@ example [Nonempty ι] : hB.topology = (hB.toSubmodulesBasis hsmul).topology :=
 end
 
 /-- Given a ring filter basis on a commutative ring `R`, define a compatibility condition
-on a family of submodules of a `R`-module `M`. This compatibility condition allows to get
+on a family of submodules of an `R`-module `M`. This compatibility condition allows to get
 a topological module structure. -/
 structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → Submodule R M) :
     Prop where
   /-- Condition for `B` to be a filter basis on `M`. -/
   inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
   /-- For any element `m : M` and any set `B i` in the submodule basis on `M`,
-    there is a `U` in the ring filter basis on `R` such that `U ⬝ m` is in `B i`. -/
+    there is a `U` in the ring filter basis on `R` such that `U * m` is in `B i`. -/
   smul : ∀ (m : M) (i : ι), ∃ U ∈ BR, U ⊆ (· • m) ⁻¹' B i
 #align ring_filter_basis.submodules_basis RingFilterBasis.SubmodulesBasis
 

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.semidirect_product
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.Logic.Function.Basic
 import Mathlib.GroupTheory.Subgroup.Basic
+
+#align_import group_theory.semidirect_product from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Semidirect product
@@ -29,14 +26,14 @@ condition `∀ n g, f₁ (φ g n) = f₂ g * f₁ n * f₂ g⁻¹`
 
 ## Notation
 
-This file introduces the global notation `N ⋊[φ] G` for `semidirect_product N G φ`
+This file introduces the global notation `N ⋊[φ] G` for `SemidirectProduct N G φ`
 
 ## Tags
 group, semidirect product
 -/
 
 
-variable (N : Type _) (G : Type _) {H : Type _} [Group N] [Group G] [Group H]
+variable (N : Type*) (G : Type*) {H : Type*} [Group N] [Group G] [Group H]
 
 /-- The semidirect product of groups `N` and `G`, given a map `φ` from `G` to the automorphism
   group of `N`. It the product of sets with the group operation
@@ -69,8 +66,7 @@ variable {φ : G →* MulAut N}
 instance : Mul (SemidirectProduct N G φ) where
   mul a b := ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩
 
-lemma mul_def (a b : SemidirectProduct N G φ) :
-  a * b = ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩ := rfl
+lemma mul_def (a b : SemidirectProduct N G φ) : a * b = ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩ := rfl
 
 @[simp]
 theorem mul_left (a b : N ⋊[φ] G) : (a * b).left = a.left * φ a.right b.left := rfl
@@ -113,7 +109,7 @@ instance : Inhabited (N ⋊[φ] G) := ⟨1⟩
 def inl : N →* N ⋊[φ] G where
   toFun n := ⟨n, 1⟩
   map_one' := rfl
-  map_mul' := by intros ; ext <;>
+  map_mul' := by intros; ext <;>
     simp only [mul_left, map_one, MulAut.one_apply, mul_right, mul_one]
 #align semidirect_product.inl SemidirectProduct.inl
 
@@ -138,7 +134,7 @@ theorem inl_inj {n₁ n₂ : N} : (inl n₁ : N ⋊[φ] G) = inl n₂ ↔ n₁ =
 def inr : G →* N ⋊[φ] G where
   toFun g := ⟨1, g⟩
   map_one' := rfl
-  map_mul' := by intros ; ext <;> simp
+  map_mul' := by intros; ext <;> simp
 #align semidirect_product.inr SemidirectProduct.inr
 
 @[simp]
@@ -186,12 +182,12 @@ theorem rightHom_eq_right : (rightHom : N ⋊[φ] G → G) = right := rfl
 #align semidirect_product.right_hom_eq_right SemidirectProduct.rightHom_eq_right
 
 @[simp]
-theorem rightHom_comp_inl : (rightHom : N ⋊[φ] G →* G).comp inl = 1 := by ext ; simp [rightHom]
+theorem rightHom_comp_inl : (rightHom : N ⋊[φ] G →* G).comp inl = 1 := by ext; simp [rightHom]
 #align semidirect_product.right_hom_comp_inl SemidirectProduct.rightHom_comp_inl
 
 @[simp]
 theorem rightHom_comp_inr : (rightHom : N ⋊[φ] G →* G).comp inr = MonoidHom.id _ := by
-  ext ; simp [rightHom]
+  ext; simp [rightHom]
 #align semidirect_product.right_hom_comp_inr SemidirectProduct.rightHom_comp_inr
 
 @[simp]
@@ -233,7 +229,7 @@ theorem lift_inl (n : N) : lift f₁ f₂ h (inl n) = f₁ n := by simp [lift]
 #align semidirect_product.lift_inl SemidirectProduct.lift_inl
 
 @[simp]
-theorem lift_comp_inl : (lift f₁ f₂ h).comp inl = f₁ := by ext ; simp
+theorem lift_comp_inl : (lift f₁ f₂ h).comp inl = f₁ := by ext; simp
 #align semidirect_product.lift_comp_inl SemidirectProduct.lift_comp_inl
 
 @[simp]
@@ -241,11 +237,11 @@ theorem lift_inr (g : G) : lift f₁ f₂ h (inr g) = f₂ g := by simp [lift]
 #align semidirect_product.lift_inr SemidirectProduct.lift_inr
 
 @[simp]
-theorem lift_comp_inr : (lift f₁ f₂ h).comp inr = f₂ := by ext ; simp
+theorem lift_comp_inr : (lift f₁ f₂ h).comp inr = f₂ := by ext; simp
 #align semidirect_product.lift_comp_inr SemidirectProduct.lift_comp_inr
 
 theorem lift_unique (F : N ⋊[φ] G →* H) :
-    F = lift (F.comp inl) (F.comp inr) fun _ ↦ by ext ; simp [inl_aut] := by
+    F = lift (F.comp inl) (F.comp inr) fun _ ↦ by ext; simp [inl_aut] := by
   rw [FunLike.ext_iff]
   simp only [lift, MonoidHom.comp_apply, MonoidHom.coe_mk, OneHom.coe_mk, ← map_mul,
     inl_left_mul_inr_right, forall_const]
@@ -263,7 +259,7 @@ end lift
 
 section Map
 
-variable {N₁ : Type _} {G₁ : Type _} [Group N₁] [Group G₁] {φ₁ : G₁ →* MulAut N₁}
+variable {N₁ : Type*} {G₁ : Type*} [Group N₁] [Group G₁] {φ₁ : G₁ →* MulAut N₁}
 
 /-- Define a map from `N ⋊[φ] G` to `N₁ ⋊[φ₁] G₁` given maps `N →* N₁` and `G →* G₁` that
   satisfy a commutativity condition `∀ n g, f₁ (φ g n) = φ₁ (f₂ g) (f₁ n)`.  -/

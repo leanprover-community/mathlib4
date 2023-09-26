@@ -2,14 +2,11 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.polynomial.degree.card_pow_degree
-! leanprover-community/mathlib commit 85d9f2189d9489f9983c0d01536575b0233bd305
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
 import Mathlib.Data.Polynomial.FieldDivision
+
+#align_import data.polynomial.degree.card_pow_degree from "leanprover-community/mathlib"@"85d9f2189d9489f9983c0d01536575b0233bd305"
 
 /-!
 # Absolute value on polynomials over a finite field.
@@ -32,7 +29,7 @@ to `q ^ degree p` (where `q ^ degree 0 = 0`) is an absolute value.
 
 namespace Polynomial
 
-variable {Fq : Type _} [Field Fq] [Fintype Fq]
+variable {Fq : Type*} [Field Fq] [Fintype Fq]
 
 open AbsoluteValue
 
@@ -81,9 +78,8 @@ theorem cardPowDegree_apply (p : Fq[X]) :
   rfl
 #align polynomial.card_pow_degree_apply Polynomial.cardPowDegree_apply
 
--- @[simp] -- Porting note: simp can prove this
-theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 :=
-  if_pos rfl
+@[simp, nolint simpNF]
+theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 := rfl
 #align polynomial.card_pow_degree_zero Polynomial.cardPowDegree_zero
 
 @[simp]
@@ -104,8 +100,7 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
       · simp only [hp, hq, degree_zero, Ne.def, bot_lt_iff_ne_bot, degree_eq_bot, pow_pos,
           not_false_iff]
       · simp only [hp, hq, degree_zero, not_lt_bot, (pow_pos _).not_lt]
-      · rw [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_withBot, Nat.cast_withBot,
-          WithBot.coe_lt_coe, pow_lt_pow_iff]
+      · rw [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_lt, pow_lt_pow_iff]
         exact_mod_cast @Fintype.one_lt_card Fq _ _ }
 #align polynomial.card_pow_degree_is_euclidean Polynomial.cardPowDegree_isEuclidean
 

@@ -8,6 +8,8 @@ import Mathlib.Mathport.Rename
 
 /-!  # Helper definitions and instances for `Ordering` -/
 
+set_option autoImplicit true
+
 deriving instance Repr for Ordering
 
 namespace Ordering
@@ -21,9 +23,9 @@ def orElse : Ordering → Ordering → Ordering
 
 /-- The relation corresponding to each `Ordering` constructor (e.g. `.lt.toProp a b` is `a < b`). -/
 def toRel [LT α] : Ordering → α → α → Prop
-| .lt => (· < ·)
-| .eq => Eq
-| .gt => (· > ·)
+  | .lt => (· < ·)
+  | .eq => Eq
+  | .gt => (· > ·)
 
 end Ordering
 

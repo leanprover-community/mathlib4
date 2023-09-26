@@ -2,14 +2,11 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.finite
-! leanprover-community/mathlib commit 3974a774a707e2e06046a14c0eaef4654584fada
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.FinCategory
+
+#align_import category_theory.limits.preserves.finite from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
 
 /-!
 # Preservation of finite (co)limits.
@@ -109,7 +106,7 @@ def compPreservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
 for `Fintype J` -/
-class PreservesFiniteProducts (F : C ⥤  D) where
+class PreservesFiniteProducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesLimitsOfShape (Discrete J) F
 
 /-- A functor is said to preserve finite colimits, if it preserves all colimits of
@@ -183,7 +180,7 @@ def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColi
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
 for `Fintype J` -/
-class PreservesFiniteCoproducts (F : C ⥤  D) where
+class PreservesFiniteCoproducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
 
 end CategoryTheory.Limits

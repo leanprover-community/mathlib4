@@ -53,8 +53,8 @@ example {a : ℕ}
 by simp_rw [h1, h2]
 ```
 -/
-elab s:"simp_rw " rws:rwRuleSeq g:location ? : tactic => do
-  evalTactic (← `(tactic| simp%$s only $g ?))
+elab s:"simp_rw " rws:rwRuleSeq g:(location)? : tactic => do
+  evalTactic (← `(tactic| simp%$s (config := { failIfUnchanged := false }) only $g ?))
   withSimpRWRulesSeq s rws fun symm term => do
     evalTactic (← match term with
     | `(term| $e:term) =>

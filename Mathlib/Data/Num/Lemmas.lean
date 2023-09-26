@@ -2,17 +2,14 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.num.lemmas
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Size
+
+#align_import data.num.lemmas from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # Properties of the binary representation of integers
@@ -33,7 +30,7 @@ attribute [local simp] add_assoc
 
 namespace PosNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp, norm_cast]
 theorem cast_one [One α] [Add α] : ((1 : PosNum) : α) = 1 :=
@@ -203,7 +200,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -327,7 +324,7 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
   | pos a, 0 => to_nat_pos _
   | pos a, pos b => by
     have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]; cases PosNum.cmp a b
-    exacts[id, congr_arg pos, id]
+    exacts [id, congr_arg pos, id]
 #align num.cmp_to_nat Num.cmp_to_nat
 
 @[norm_cast]
@@ -382,7 +379,7 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
      repeat first | rw [add_to_nat] | rw [mul_to_nat] | rw [cast_one] | rw [cast_zero]))
 
 /--
-This tactic tries to prove (in)equalities about `Num`s by transfering them to the `Nat` world and
+This tactic tries to prove (in)equalities about `Num`s by transferring them to the `Nat` world and
 then trying to call `simp`.
 ```lean
 example (n : Num) (m : Num) : n ≤ n + m := by transfer
@@ -412,9 +409,6 @@ instance commSemiring : CommSemiring Num := by
     { Num.addMonoid,
       Num.addMonoidWithOne with
       mul := (· * ·)
-      one := 1
-      add := (· + ·)
-      zero := 0
       npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩, .. } <;>
     try { intros; rfl } <;>
     transfer <;>
@@ -466,9 +460,12 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
       intro a b c
       transfer_rw
       apply mul_lt_mul_of_pos_right
-    decidable_lt := Num.decidableLT
-    decidable_le := Num.decidableLE
-    decidable_eq := instDecidableEqNum
+    decidableLT := Num.decidableLT
+    decidableLE := Num.decidableLE
+    -- This is relying on an automatically generated instance name,
+    -- generated in a `deriving` handler.
+    -- See https://github.com/leanprover/lean4/issues/2343
+    decidableEq := instDecidableEqNum
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 #align num.linear_ordered_semiring Num.linearOrderedSemiring
 
@@ -517,7 +514,7 @@ end Num
 
 namespace PosNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Num
 
@@ -596,8 +593,8 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
      repeat first | rw [add_to_nat] | rw [mul_to_nat] | rw [cast_one] | rw [cast_zero]))
 
 /--
-This tactic tries to prove (in)equalities about `PosNum`s by transfering them to the `Nat` world and
-then trying to call `simp`.
+This tactic tries to prove (in)equalities about `PosNum`s by transferring them to the `Nat` world
+and then trying to call `simp`.
 ```lean
 example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 ```
@@ -614,7 +611,7 @@ instance commMonoid : CommMonoid PosNum := by
     { mul := (· * ·)
       one := (1 : PosNum)
       npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩,.. } <;>
-  try { intros ; rfl } <;>
+  try { intros; rfl } <;>
   transfer
 #align pos_num.comm_monoid PosNum.commMonoid
 
@@ -646,9 +643,9 @@ instance linearOrder : LinearOrder PosNum where
     intro a b
     transfer_rw
     apply le_total
-  decidable_lt := by infer_instance
-  decidable_le := by infer_instance
-  decidable_eq := by infer_instance
+  decidableLT := by infer_instance
+  decidableLE := by infer_instance
+  decidableEq := by infer_instance
 #align pos_num.linear_order PosNum.linearOrder
 
 @[simp]
@@ -711,7 +708,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -834,7 +831,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -897,7 +894,7 @@ theorem bitwise'_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (
   -- Porting note: `change .. with ..` is now `simp only [show .. = .. from rfl]`.
   intros m n
   cases' m with m <;> cases' n with n <;>
-      simp only [show zero = 0 from rfl, show ((0 : Num) : ℕ) = 0 from rfl]
+      try simp only [show zero = 0 from rfl, show ((0 : Num) : ℕ) = 0 from rfl]
   · rw [f00, Nat.bitwise'_zero]; rfl
   · unfold Nat.bitwise'
     rw [f0n, Nat.binaryRec_zero]
@@ -933,63 +930,64 @@ theorem bitwise'_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (
 
 @[simp, norm_cast]
 theorem lor'_to_nat : ∀ m n, (lor m n : ℕ) = Nat.lor' m n := by
-  -- Porting note: An name of an implicit local hypothesis is not available so
+  -- Porting note: A name of an implicit local hypothesis is not available so
   --               `cases_type*` is used.
-  apply bitwise'_to_nat fun x y => pos (PosNum.lor x y) <;> intros <;> cases_type* Bool <;> rfl
+  apply bitwise'_to_nat fun x y => pos (PosNum.lor x y) <;>
+   intros <;> (try cases_type* Bool) <;> rfl
 #align num.lor_to_nat Num.lor'_to_nat
 
 @[simp, norm_cast]
 theorem land'_to_nat : ∀ m n, (land m n : ℕ) = Nat.land' m n := by
-  apply bitwise'_to_nat PosNum.land <;> intros <;> cases_type* Bool <;> rfl
+  apply bitwise'_to_nat PosNum.land <;> intros <;> (try cases_type* Bool) <;> rfl
 #align num.land_to_nat Num.land'_to_nat
 
 @[simp, norm_cast]
 theorem ldiff'_to_nat : ∀ m n, (ldiff m n : ℕ) = Nat.ldiff' m n := by
-  apply bitwise'_to_nat PosNum.ldiff <;> intros <;> cases_type* Bool <;> rfl
+  apply bitwise'_to_nat PosNum.ldiff <;> intros <;> (try cases_type* Bool) <;> rfl
 #align num.ldiff_to_nat Num.ldiff'_to_nat
 
 @[simp, norm_cast]
 theorem lxor'_to_nat : ∀ m n, (lxor m n : ℕ) = Nat.lxor' m n := by
-  apply bitwise'_to_nat PosNum.lxor <;> intros <;> cases_type* Bool <;> rfl
+  apply bitwise'_to_nat PosNum.lxor <;> intros <;> (try cases_type* Bool) <;> rfl
 #align num.lxor_to_nat Num.lxor'_to_nat
 
 @[simp, norm_cast]
-theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = Nat.shiftl m n := by
-  cases m <;> dsimp only [shiftl];
+theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = (m : ℕ) <<< (n : ℕ) := by
+  cases m <;> dsimp only [shiftl]
   · symm
-    apply Nat.zero_shiftl
-  simp; induction' n with n IH; · rfl
-  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftl_succ]; rw [← IH]
+    apply Nat.zero_shiftLeft
+  simp only [cast_pos]
+  induction' n with n IH
+  · rfl
+  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH,
+        Nat.bit0_val, pow_succ, ← mul_assoc, mul_comm]
 #align num.shiftl_to_nat Num.shiftl_to_nat
 
 @[simp, norm_cast]
-theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = Nat.shiftr m n := by
+
+theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = (m : ℕ) >>> (n : ℕ)  := by
   cases' m with m <;> dsimp only [shiftr];
   · symm
-    apply Nat.zero_shiftr
-  induction' n with n IH generalizing m; · cases m <;> rfl
+    apply Nat.zero_shiftRight
+  induction' n with n IH generalizing m
+  · cases m <;> rfl
   cases' m with m m <;> dsimp only [PosNum.shiftr]
-  · rw [Nat.shiftr_eq_div_pow]
+  · rw [Nat.shiftRight_eq_div_pow]
     symm
     apply Nat.div_eq_of_lt
-    exact @Nat.pow_lt_pow_of_lt_right 2 (by decide) 0 (n + 1) (Nat.succ_pos _)
+    simp [@Nat.pow_lt_pow_of_lt_right 2 (by decide) 0 (n + 1) (Nat.succ_pos _)]
   · trans
     apply IH
-    change Nat.shiftr m n = Nat.shiftr (_root_.bit1 m) (n + 1)
-    rw [add_comm n 1, Nat.shiftr_add]
-    apply congr_arg fun x => Nat.shiftr x n
-    -- Porting note: `unfold` is not repeated in Lean4.
-    repeat unfold Nat.shiftr
-    change (m : ℕ) = Nat.div2 (Nat.bit true m)
-    rw [Nat.div2_bit]
+    change Nat.shiftRight m n = Nat.shiftRight (_root_.bit1 m) (n + 1)
+    rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
+    apply congr_arg fun x => Nat.shiftRight x n
+    simp [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val]
   · trans
     apply IH
-    change Nat.shiftr m n = Nat.shiftr (_root_.bit0 m) (n + 1)
-    rw [add_comm n 1, Nat.shiftr_add]
-    apply congr_arg fun x => Nat.shiftr x n
-    repeat unfold Nat.shiftr
-    change (m : ℕ) = Nat.div2 (Nat.bit false m)
-    rw [Nat.div2_bit]
+    change Nat.shiftRight m n = Nat.shiftRight (_root_.bit0 m) (n + 1)
+    rw [add_comm n 1,  @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
+    apply congr_arg fun x => Nat.shiftRight x n
+    simp [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val]
 #align num.shiftr_to_nat Num.shiftr_to_nat
 
 @[simp]
@@ -997,27 +995,25 @@ theorem testBit_to_nat (m n) : testBit m n = Nat.testBit m n := by
   -- Porting note: `unfold` → `dsimp only`
   cases m <;> dsimp only [testBit, Nat.testBit]
   case zero =>
-    change false = Nat.bodd (Nat.shiftr 0 n)
-    rw [Nat.zero_shiftr]
+    change false = Nat.bodd (0 >>> n)
+    rw [Nat.zero_shiftRight]
     rfl
   case pos m =>
     induction' n with n IH generalizing m <;> cases' m with m m <;> dsimp only [PosNum.testBit]
     · rfl
     · exact (Nat.bodd_bit _ _).symm
     · exact (Nat.bodd_bit _ _).symm
-    · change false = Nat.bodd (Nat.shiftr 1 (n + 1))
-      rw [add_comm, Nat.shiftr_add]
-      change false = Nat.bodd (Nat.shiftr 0 n)
-      rw [Nat.zero_shiftr]; rfl
-    · change PosNum.testBit m n = Nat.bodd (Nat.shiftr (Nat.bit true m) (n + 1))
-      rw [add_comm, Nat.shiftr_add]
-      dsimp only [Nat.shiftr]
-      rw [Nat.div2_bit]
+    · change false = Nat.bodd (1 >>> (n + 1))
+      rw [add_comm, Nat.shiftRight_add]
+      change false = Nat.bodd (0 >>> n)
+      rw [Nat.zero_shiftRight]; rfl
+    · change PosNum.testBit m n = Nat.bodd ((Nat.bit true m) >>> (n + 1))
+      rw [add_comm, Nat.shiftRight_add]
+      simp only [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, Nat.div2_bit]
       apply IH
-    · change PosNum.testBit m n = Nat.bodd (Nat.shiftr (Nat.bit false m) (n + 1))
-      rw [add_comm, Nat.shiftr_add]
-      dsimp only [Nat.shiftr]
-      rw [Nat.div2_bit]
+    · change PosNum.testBit m n = Nat.bodd ((Nat.bit false m) >>> (n + 1))
+      rw [add_comm, Nat.shiftRight_add]
+      simp only [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, Nat.div2_bit]
       apply IH
 #align num.test_bit_to_nat Num.testBit_to_nat
 
@@ -1025,7 +1021,7 @@ end Num
 
 namespace ZNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -1174,7 +1170,7 @@ end ZNum
 
 namespace PosNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
   | 1 => rfl
@@ -1222,7 +1218,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp]
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : Num, (sub' m n : α) = m - n
@@ -1314,7 +1310,7 @@ end Num
 
 namespace ZNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp, norm_cast]
 theorem cast_add [AddGroupWithOne α] : ∀ m n, ((m + n : ZNum) : α) = m + n
@@ -1340,8 +1336,8 @@ theorem cast_succ [AddGroupWithOne α] (n) : ((succ n : ZNum) : α) = n + 1 := b
 
 @[simp, norm_cast]
 theorem mul_to_int : ∀ m n, ((m * n : ZNum) : ℤ) = m * n
-  | 0, a => by cases a <;> exact (MulZeroClass.zero_mul _).symm
-  | b, 0 => by cases b <;> exact (MulZeroClass.mul_zero _).symm
+  | 0, a => by cases a <;> exact (zero_mul _).symm
+  | b, 0 => by cases b <;> exact (mul_zero _).symm
   | pos a, pos b => PosNum.cast_mul a b
   | pos a, neg b => show -↑(a * b) = ↑a * -↑b by rw [PosNum.cast_mul, neg_mul_eq_mul_neg]
   | neg a, pos b => show -↑(a * b) = -↑a * ↑b by rw [PosNum.cast_mul, neg_mul_eq_neg_mul]
@@ -1373,13 +1369,11 @@ theorem to_int_inj {m n : ZNum} : (m : ℤ) = n ↔ m = n :=
 theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n) ((n : ℤ) < m) : Prop)
   | 0, 0 => rfl
   | pos a, pos b => by
-    have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]; cases PosNum.cmp a b <;>
-        dsimp <;>
-      [simp, exact congr_arg pos, simp [GT.gt]]
+    have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]
+    cases PosNum.cmp a b <;> dsimp <;> [simp; exact congr_arg pos; simp [GT.gt]]
   | neg a, neg b => by
-    have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]; cases PosNum.cmp b a <;>
-        dsimp <;>
-      [simp, simp (config := { contextual := true }), simp [GT.gt]]
+    have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
+    cases PosNum.cmp b a <;> dsimp <;> [simp; simp (config := { contextual := true }); simp [GT.gt]]
   | pos a, 0 => PosNum.cast_pos _
   | pos a, neg b => lt_trans (neg_lt_zero.2 <| PosNum.cast_pos _) (PosNum.cast_pos _)
   | 0, neg b => neg_lt_zero.2 <| PosNum.cast_pos _
@@ -1428,7 +1422,7 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
      repeat first | rw [cast_add] | rw [mul_to_int] | rw [cast_one] | rw [cast_zero]))
 
 /--
-This tactic tries to prove (in)equalities about `ZNum`s by transfering them to the `Int` world and
+This tactic tries to prove (in)equalities about `ZNum`s by transferring them to the `Int` world and
 then trying to call `simp`.
 ```lean
 example (n : ZNum) (m : ZNum) : n ≤ n + m * m := by
@@ -1459,9 +1453,11 @@ instance linearOrder : LinearOrder ZNum where
     intro a b
     transfer_rw
     apply le_total
-  decidable_eq := instDecidableEqZNum
-  decidable_le := ZNum.decidableLE
-  decidable_lt := ZNum.decidableLT
+  -- This is relying on an automatically generated instance name, generated in a `deriving` handler.
+  -- See https://github.com/leanprover/lean4/issues/2343
+  decidableEq := instDecidableEqZNum
+  decidableLE := ZNum.decidableLE
+  decidableLT := ZNum.decidableLT
 #align znum.linear_order ZNum.linearOrder
 
 instance addCommGroup : AddCommGroup ZNum where
@@ -1501,7 +1497,6 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
     mul_assoc := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
-    one := 1
     one_mul := by transfer
     mul_one := by transfer
     left_distrib := by
@@ -1642,8 +1637,8 @@ namespace Num
 protected theorem div_zero (n : Num) : n / 0 = 0 :=
   show n.div 0 = 0 by
     cases n
-    rfl
-    simp [Num.div]
+    · rfl
+    · simp [Num.div]
 #align num.div_zero Num.div_zero
 
 @[simp, norm_cast]
@@ -1658,8 +1653,8 @@ theorem div_to_nat : ∀ n d, ((n / d : Num) : ℕ) = n / d
 protected theorem mod_zero (n : Num) : n % 0 = n :=
   show n.mod 0 = n by
     cases n
-    rfl
-    simp [Num.mod]
+    · rfl
+    · simp [Num.mod]
 #align num.mod_zero Num.mod_zero
 
 @[simp, norm_cast]
@@ -1678,10 +1673,11 @@ theorem gcd_to_nat_aux :
   | Nat.succ n, 0, b, _ab, _h => (Nat.gcd_zero_left _).symm
   | Nat.succ n, pos a, b, ab, h => by
     simp [gcdAux]
-    rw [Nat.gcd_rec, gcd_to_nat_aux, mod_to_nat]; · rfl
+    rw [Nat.gcd_rec, gcd_to_nat_aux, mod_to_nat]
+    · rfl
     · rw [← le_to_nat, mod_to_nat]
       exact le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))
-    rw [natSize_to_nat, mul_to_nat, Nat.size_le] at h⊢
+    rw [natSize_to_nat, mul_to_nat, Nat.size_le] at h ⊢
     rw [mod_to_nat, mul_comm]
     rw [pow_succ', ← Nat.mod_add_div b (pos a)] at h
     refine' lt_of_mul_lt_mul_right (lt_of_le_of_lt _ h) (Nat.zero_le 2)
@@ -1689,7 +1685,7 @@ theorem gcd_to_nat_aux :
     refine'
       add_le_add_left
         (Nat.mul_le_mul_left _ (le_trans (le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))) _)) _
-    suffices : 1 ≤ _; simpa using Nat.mul_le_mul_left (pos a) this
+    suffices 1 ≤ _ by simpa using Nat.mul_le_mul_left (pos a) this
     rw [Nat.le_div_iff_mul_le a.cast_pos, one_mul]
     exact le_to_nat.2 ab
 #align num.gcd_to_nat_aux Num.gcd_to_nat_aux

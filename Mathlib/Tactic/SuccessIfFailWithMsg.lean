@@ -15,6 +15,8 @@ It's mostly useful in tests, where we want to make sure that tactics fail in cer
 circumstances.
 -/
 
+set_option autoImplicit true
+
 open Lean Elab Meta Tactic Syntax
 
 namespace Mathlib.Tactic
@@ -28,14 +30,14 @@ syntax (name := successIfFailWithMsg) "success_if_fail_with_msg " term:max tacti
 /-- Evaluates `tacs` and succeeds only if `tacs` both fails and throws an error equal (as a string)
 to `msg`. -/
 def successIfFailWithMessage [Monad m] [MonadLiftT IO m] [MonadBacktrack s m] [MonadError m]
-    (msg : String) (tacs : m α) (ref : Option Syntax := none): m Unit := do
+    (msg : String) (tacs : m α) (ref : Option Syntax := none) : m Unit := do
   let s ← saveState
   let err ←
     try _ ← tacs; pure none
     catch err => pure (some (← err.toMessageData.toString))
   restoreState s
   if let some err := err then
-    unless msg == err do
+    unless msg.trim == err.trim do
       if let some ref := ref then
         throwErrorAt ref "tactic '{ref}' failed, but got different error message:\n\n{err}"
       else

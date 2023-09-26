@@ -3,7 +3,9 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Int.Order.Basic
 
+private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
+set_option autoImplicit true
 
 example [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
   linarith
@@ -41,11 +43,11 @@ example (A B : Rat) (h : 0 < A * B) : 0 < A*8*B := by
   linarith
 
 example [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
-  have h : 0 ≤ x := sorry
+  have h : 0 ≤ x := test_sorry
   linarith
 
 example [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
-  have h : 0 ≤ x := sorry
+  have h : 0 ≤ x := test_sorry
   linarith [h]
 
 example [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) :
@@ -67,7 +69,7 @@ example (A B : Rat) (h : 0 < A * B) : 0 < A/8*B := by
 example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
  by linarith
 
-example (x y z : Rat) (h1 : 2*x  < 3*y) (h2 : -4*x + z/2 < 0)
+example (x y z : Rat) (h1 : 2*x < 3*y) (h2 : -4*x + z/2 < 0)
         (h3 : 12*y - z < 0)  : False :=
 by linarith
 
@@ -94,7 +96,7 @@ example (x : Rat) (h : 0 < x) : 0 < x/(2/3) := by linarith
 end cancel_denoms
 
 example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
-  linarith (config := {discharger := do Lean.Elab.Tactic.evalTactic (←`(tactic| ring))})
+  linarith (config := {discharger := do Lean.Elab.Tactic.evalTactic (←`(tactic| ring1))})
 
 example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
   linarith
@@ -430,18 +432,6 @@ variable {E : Type _} [AddGroup E]
 example (f : ℤ → E) (h : 0 = f 0) : 1 ≤ 2 := by nlinarith
 example (a : E) (h : a = a) : 1 ≤ 2  := by nlinarith
 
--- -- test that the apply bug doesn't affect linarith preprocessing
-
--- constant α : Type
--- variable [fact false] -- we work in an inconsistent context below
--- def leα : α → α → Prop := λ a b, ∀ c : α, true
-
--- noncomputable instance : linear_ordered_field α :=
--- by refine_struct { le := leα }; exact (fact.out false).elim
-
--- example (a : α) (ha : a < 2) : a ≤ a :=
--- by linarith
-
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
   p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) :=
 by nlinarith
@@ -455,7 +445,7 @@ axiom abs_nonneg' : ∀ r, 0 ≤ abs r
 example (t : R) (a b : ℚ) (h : a ≤ b) : abs (t^2) * a ≤ abs (t^2) * b :=
 by nlinarith [abs_nonneg' abs (t^2)]
 
-example (t : R)  (a b : ℚ) (h : a ≤ b) : a ≤ abs (t^2) + b :=
+example (t : R) (a b : ℚ) (h : a ≤ b) : a ≤ abs (t^2) + b :=
 by linarith [abs_nonneg' abs (t^2)]
 
 example (t : R) (a b : ℚ) (h : a ≤ b) : abs t * a ≤ abs t * b :=
@@ -474,21 +464,38 @@ lemma works {a b : ℕ} (hab : a ≤ b) (h : b < a) : false := by
 
 end T
 
--- example (a b c : ℚ) (h : a ≠ b) (h3 : b ≠ c) (h2 : a ≥ b) : b ≠ c :=
--- by linarith {split_ne := tt}
+example (a b c : ℚ) (h : a ≠ b) (h3 : b ≠ c) (h2 : a ≥ b) : b ≠ c := by
+  linarith (config := {splitNe := true})
 
--- example (a b c : ℚ) (h : a ≠ b) (h2 : a ≥ b) (h3 : b ≠ c) : a > b :=
--- by linarith {split_ne := tt}
+example (a b c : ℚ) (h : a ≠ b) (h2 : a ≥ b) (h3 : b ≠ c) : a > b := by
+  linarith (config := {splitNe := true})
+
+example (a b : ℕ) (h1 : b ≠ a) (h2 : b ≤ a) : b < a := by
+  linarith (config := {splitNe := true})
+
+example (a b : ℕ) (h1 : b ≠ a) (h2 : ¬a < b) : b < a := by
+  linarith (config := {splitNe := true})
+
+section
+-- Regression test for issue that splitNe didn't see `¬ a = b`
+
+example (a b : Nat) (h1 : a < b + 1) (h2 : a ≠ b) : a < b := by
+  linarith (config := {splitNe := true})
+
+example (a b : Nat) (h1 : a < b + 1) (h2 : ¬ a = b) : a < b := by
+  linarith (config := {splitNe := true})
+
+end
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x ^ 2 := by nlinarith
 
 axiom foo {x : Int} : 1 ≤ x → 1 ≤ x*x
-lemma bar (x y: Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith [foo h.2]
+lemma bar (x y : Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith [foo h.2]
 
 -- -- issue #9822
--- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j:= by linarith
+-- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j := by linarith
 
 example [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
   cases' h with x h
@@ -512,8 +519,8 @@ example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
   linarith
 
 -- simulate the type of MvPolynomial
-def P : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
-instance : LinearOrderedField (P c d) := sorry
+def P : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
+noncomputable instance : LinearOrderedField (P c d) := test_sorry
 
 example (p : P PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
   linarith

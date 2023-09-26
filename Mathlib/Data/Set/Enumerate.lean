@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.set.enumerate
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.SwapVar
+import Mathlib.Tactic.Common
+
+#align_import data.set.enumerate from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Set enumeration
@@ -29,7 +26,7 @@ namespace Set
 section Enumerate
 
 /- porting note : The original used parameters -/
-variable {α : Type _} (sel : Set α → Option α)
+variable {α : Type*} (sel : Set α → Option α)
 
 /-- Given a choice function `sel`, enumerates the elements of a set in the order
 `a 0 = sel s`, `a 1 = sel (s \ {a 0})`, `a 2 = sel (s \ {a 0, a 1})`, ... and stops when

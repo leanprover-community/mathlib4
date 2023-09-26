@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Sébastien Gouëzel, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.uniform_space.uniform_embedding
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.UniformSpace.Separation
 import Mathlib.Topology.DenseEmbedding
+
+#align_import topology.uniform_space.uniform_embedding from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 
 /-!
 # Uniform embeddings of uniform spaces.
@@ -43,7 +40,7 @@ structure UniformInducing (f : α → β) : Prop where
 
 protected lemma UniformInducing.comap_uniformSpace {f : α → β} (hf : UniformInducing f) :
     ‹UniformSpace β›.comap f = ‹UniformSpace α› :=
-  uniformSpace_eq hf.1
+  UniformSpace.ext hf.1
 #align uniform_inducing.comap_uniform_space UniformInducing.comap_uniformSpace
 
 lemma uniformInducing_iff' {f : α → β} :
@@ -73,7 +70,7 @@ theorem UniformInducing.comp {g : β → γ} (hg : UniformInducing g) {f : α �
   ⟨by rw [← hf.1, ← hg.1, comap_comap]; rfl⟩
 #align uniform_inducing.comp UniformInducing.comp
 
-theorem UniformInducing.basis_uniformity {f : α → β} (hf : UniformInducing f) {ι : Sort _}
+theorem UniformInducing.basis_uniformity {f : α → β} (hf : UniformInducing f) {ι : Sort*}
     {p : ι → Prop} {s : ι → Set (β × β)} (H : (𝓤 β).HasBasis p s) :
     (𝓤 α).HasBasis p fun i => Prod.map f f ⁻¹' s i :=
   hf.1 ▸ H.comap _
@@ -106,7 +103,7 @@ theorem UniformInducing.inducing {f : α → β} (h : UniformInducing f) : Induc
   exact inducing_induced f
 #align uniform_inducing.inducing UniformInducing.inducing
 
-theorem UniformInducing.prod {α' : Type _} {β' : Type _} [UniformSpace α'] [UniformSpace β']
+theorem UniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : UniformInducing e₁) (h₂ : UniformInducing e₂) :
     UniformInducing fun p : α × β => (e₁ p.1, e₂ p.2) :=
   ⟨by simp [(· ∘ ·), uniformity_prod, ← h₁.1, ← h₂.1, comap_inf, comap_comap]⟩
@@ -173,7 +170,7 @@ theorem UniformEmbedding.comp {g : β → γ} (hg : UniformEmbedding g) {f : α 
   { hg.toUniformInducing.comp hf.toUniformInducing with inj := hg.inj.comp hf.inj }
 #align uniform_embedding.comp UniformEmbedding.comp
 
-theorem Equiv.uniformEmbedding {α β : Type _} [UniformSpace α] [UniformSpace β] (f : α ≃ β)
+theorem Equiv.uniformEmbedding {α β : Type*} [UniformSpace α] [UniformSpace β] (f : α ≃ β)
     (h₁ : UniformContinuous f) (h₂ : UniformContinuous f.symm) : UniformEmbedding f :=
   uniformEmbedding_iff'.2 ⟨f.injective, h₁, by rwa [← Equiv.prodCongr_apply, ← map_equiv_symm]⟩
 #align equiv.uniform_embedding Equiv.uniformEmbedding
@@ -266,7 +263,7 @@ theorem uniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : Unif
     inj := (de.subtype p).inj }
 #align uniform_embedding_subtype_emb uniformEmbedding_subtypeEmb
 
-theorem UniformEmbedding.prod {α' : Type _} {β' : Type _} [UniformSpace α'] [UniformSpace β']
+theorem UniformEmbedding.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : UniformEmbedding e₁) (h₂ : UniformEmbedding e₂) :
     UniformEmbedding fun p : α × β => (e₁ p.1, e₂ p.2) :=
   { h₁.toUniformInducing.prod h₂.toUniformInducing with inj := h₁.inj.Prod_map h₂.inj }
@@ -343,7 +340,7 @@ theorem completeSpace_extension {m : β → α} (hm : UniformInducing m) (dense 
     let g := (𝓤 α).lift fun s => f.lift' (p s)
     have mp₀ : Monotone p := fun a b h t s ⟨x, xs, xa⟩ => ⟨x, xs, h xa⟩
     have mp₁ : ∀ {s}, Monotone (p s) := fun h x ⟨y, ya, yxs⟩ => ⟨y, h ya, yxs⟩
-    have : f ≤ g := le_infᵢ₂ fun s hs => le_infᵢ₂ fun t ht =>
+    have : f ≤ g := le_iInf₂ fun s hs => le_iInf₂ fun t ht =>
       le_principal_iff.mpr <| mem_of_superset ht fun x hx => ⟨x, hx, refl_mem_uniformity hs⟩
     have : NeBot g := hf.left.mono this
     have : NeBot (comap m g) :=
@@ -367,8 +364,8 @@ theorem completeSpace_extension {m : β → α} (hm : UniformInducing m) (dense 
         have hg₁ : p (preimage Prod.swap s₁) t ∈ g :=
           mem_lift (symm_le_uniformity hs₁) <| @mem_lift' α α f _ t ht
         have hg₂ : p s₂ t ∈ g := mem_lift hs₂ <| @mem_lift' α α f _ t ht
-        have hg : p (Prod.swap ⁻¹' s₁) t ×ˢ p s₂ t ∈ g ×ᶠ g := @prod_mem_prod α α _ _ g g hg₁ hg₂
-        (g ×ᶠ g).sets_of_superset hg fun ⟨a, b⟩ ⟨⟨c₁, c₁t, hc₁⟩, ⟨c₂, c₂t, hc₂⟩⟩ =>
+        have hg : p (Prod.swap ⁻¹' s₁) t ×ˢ p s₂ t ∈ g ×ˢ g := @prod_mem_prod α α _ _ g g hg₁ hg₂
+        (g ×ˢ g).sets_of_superset hg fun ⟨a, b⟩ ⟨⟨c₁, c₁t, hc₁⟩, ⟨c₂, c₂t, hc₂⟩⟩ =>
           have : (c₁, c₂) ∈ t ×ˢ t := ⟨c₁t, c₂t⟩
           comp_s₁ <| prod_mk_mem_compRel hc₁ <| comp_s₂ <| prod_mk_mem_compRel (prod_t this) hc₂⟩
     have : Cauchy (Filter.comap m g) := ‹Cauchy g›.comap' (le_of_eq hm.comap_uniformity) ‹_›
@@ -390,7 +387,7 @@ theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : UniformEmbedd
   rcases totallyBounded_iff_subset.1 (totallyBounded_subset (image_preimage_subset f s) hs) _ ht'
     with ⟨c, cs, hfc, hct⟩
   refine' ⟨f ⁻¹' c, hfc.preimage (hf.inj.injOn _), fun x h => _⟩
-  have := hct (mem_image_of_mem f h); simp at this⊢
+  have := hct (mem_image_of_mem f h); simp at this ⊢
   rcases this with ⟨z, zc, zt⟩
   rcases cs zc with ⟨y, -, rfl⟩
   exact ⟨y, zc, ts zt⟩
@@ -404,7 +401,7 @@ instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace
 
 end
 
-theorem uniformEmbedding_comap {α : Type _} {β : Type _} {f : α → β} [u : UniformSpace β]
+theorem uniformEmbedding_comap {α : Type*} {β : Type*} {f : α → β} [u : UniformSpace β]
     (hf : Function.Injective f) : @UniformEmbedding α β (UniformSpace.comap f u) u f :=
   @UniformEmbedding.mk _ _ (UniformSpace.comap f u) _ _
     (@UniformInducing.mk _ _ (UniformSpace.comap f u) _ _ rfl) hf
@@ -426,7 +423,7 @@ theorem Embedding.to_uniformEmbedding {α β} [TopologicalSpace α] [u : Uniform
 
 section UniformExtension
 
-variable {α : Type _} {β : Type _} {γ : Type _} [UniformSpace α] [UniformSpace β] [UniformSpace γ]
+variable {α : Type*} {β : Type*} {γ : Type*} [UniformSpace α] [UniformSpace β] [UniformSpace γ]
   {e : β → α} (h_e : UniformInducing e) (h_dense : DenseRange e) {f : β → γ}
   (h_f : UniformContinuous f)
 

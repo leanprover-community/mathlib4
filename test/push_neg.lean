@@ -5,8 +5,10 @@ Author: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
 import Mathlib.Tactic.PushNeg
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 
+private axiom test_sorry : ∀ {α}, α
+set_option autoImplicit true
 variable {α β : Type} [LinearOrder β] {p q : Prop} {p' q' : α → Prop}
 
 example : (¬p ∧ ¬q) → ¬(p ∨ q) := by
@@ -21,7 +23,7 @@ example : ¬(p ∧ q) → (p → ¬q) := by
   guard_hyp h : p → ¬q
   exact h
 
-example : (∀(x : α), ¬ p' x) → ¬ ∃(x : α), p' x:= by
+example : (∀(x : α), ¬ p' x) → ¬ ∃(x : α), p' x := by
   intro h
   push_neg
   guard_target = ∀ (x : α), ¬p' x
@@ -100,7 +102,7 @@ example (h : p → ¬ q) : ¬ (p ∧ q) := by
 example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, x = z := by
   push_neg
   guard_target = ∃ x, x < a ∧ ∀ (y : β), y < a → ∃ z, x ≠ z
-  sorry
+  exact test_sorry
 
 example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m ≤ k)) (h₂ : m ≤ n) : m ≤ n := by
   push_neg at h
@@ -112,6 +114,17 @@ example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m < k)) (h₂ : m ≤ 
   guard_hyp h : ∀ k, ¬(m < k)
   exact h₂
 
+example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(s.lt a b → r.lt a b) := by
+  push_neg
+  guard_target = s.lt a b ∧ r.le b a
+  exact test_sorry
+
+example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(r.lt a b → s.lt a b) := by
+  push_neg
+  guard_target = r.lt a b ∧ ¬ s.lt a b
+  exact test_sorry
+
+section use_distrib
 set_option push_neg.use_distrib true
 
 example (h : ¬ p ∨ ¬ q): ¬ (p ∧ q) := by
@@ -119,7 +132,7 @@ example (h : ¬ p ∨ ¬ q): ¬ (p ∧ q) := by
   guard_target = ¬p ∨ ¬q
   exact h
 
-example : p →  ¬ ¬ ¬ ¬ ¬ ¬ p := by
+example : p → ¬ ¬ ¬ ¬ ¬ ¬ p := by
   push_neg
   guard_target = p → p
   exact id
@@ -127,4 +140,10 @@ example : p →  ¬ ¬ ¬ ¬ ¬ ¬ p := by
 example (h : x = 0 ∧ y ≠ 0) : ¬(x = 0 → y = 0) := by
   push_neg
   guard_target = x = 0 ∧ y ≠ 0
+  exact h
+
+end use_distrib
+
+example (a : α) (o : Option α) (h : ¬∀ hs, o.get hs ≠ a) : ∃ hs, o.get hs = a := by
+  push_neg at h
   exact h

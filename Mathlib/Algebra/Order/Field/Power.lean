@@ -2,23 +2,21 @@
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.order.field.power
-! leanprover-community/mathlib commit acb3d204d4ee883eb686f45d486a2a6811a01329
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Parity
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Int.Bitwise
+
+#align_import algebra.order.field.power from "leanprover-community/mathlib"@"acb3d204d4ee883eb686f45d486a2a6811a01329"
 
 /-!
 # Lemmas about powers in ordered fields.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Function Int
 
@@ -202,13 +200,13 @@ theorem Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := by
   cases' hn with k hk; simpa only [hk, two_mul] using zpow_bit1_pos_iff
 #align odd.zpow_pos_iff Odd.zpow_pos_iff
 
-alias Even.zpow_pos_iff ↔ _ Even.zpow_pos
+alias ⟨_, Even.zpow_pos⟩ := Even.zpow_pos_iff
 #align even.zpow_pos Even.zpow_pos
 
-alias Odd.zpow_neg_iff ↔ _ Odd.zpow_neg
+alias ⟨_, Odd.zpow_neg⟩ := Odd.zpow_neg_iff
 #align odd.zpow_neg Odd.zpow_neg
 
-alias Odd.zpow_nonpos_iff ↔ _ Odd.zpow_nonpos
+alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
 #align odd.zpow_nonpos Odd.zpow_nonpos
 
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
@@ -231,7 +229,7 @@ theorem Nat.cast_le_pow_sub_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ (a ^ n 
 #align nat.cast_le_pow_sub_div_sub Nat.cast_le_pow_sub_div_sub
 
 /-- For any `a > 1` and a natural `n` we have `n ≤ a ^ n / (a - 1)`. See also
-`nat.cast_le_pow_sub_div_sub` for a stronger inequality with `a ^ n - 1` in the numerator. -/
+`Nat.cast_le_pow_sub_div_sub` for a stronger inequality with `a ^ n - 1` in the numerator. -/
 theorem Nat.cast_le_pow_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ a ^ n / (a - 1) :=
   (n.cast_le_pow_sub_div_sub H).trans <|
     div_le_div_of_le (sub_nonneg.2 H.le) (sub_le_self _ zero_le_one)

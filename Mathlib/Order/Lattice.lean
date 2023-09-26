@@ -2,16 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.lattice
-! leanprover-community/mathlib commit e4bc74cbaf429d706cb9140902f7ca6c431e75a4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bool.Basic
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Simps.Basic
+import Mathlib.Order.ULift
+import Mathlib.Tactic.GCongr.Core
+
+#align_import order.lattice from "leanprover-community/mathlib"@"e4bc74cbaf429d706cb9140902f7ca6c431e75a4"
 
 /-!
 # (Semi-)lattices
@@ -33,7 +31,7 @@ of `sup` over `inf`, on the left or on the right.
   commutative, associative and idempotent.
 
 * `Lattice`: a type class for lattices
-* `Lattice.mk'`: an alternative constructor for `Lattice` via profs that `⊔` and `⊓` are
+* `Lattice.mk'`: an alternative constructor for `Lattice` via proofs that `⊔` and `⊓` are
   commutative, associative and satisfy a pair of "absorption laws".
 
 * `DistribLattice`: a type class for distributive lattices.
@@ -98,7 +96,7 @@ join-semilattice.
 
 The partial order is defined so that `a ≤ b` unfolds to `a ⊔ b = b`; cf. `sup_eq_right`.
 -/
-def SemilatticeSup.mk' {α : Type _} [Sup α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
+def SemilatticeSup.mk' {α : Type*} [Sup α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
     (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c)) (sup_idem : ∀ a : α, a ⊔ a = a) :
     SemilatticeSup α where
   sup := (· ⊔ ·)
@@ -118,10 +116,10 @@ def SemilatticeSup.mk' {α : Type _} [Sup α] (sup_comm : ∀ a b : α, a ⊔ b 
     rwa [sup_assoc, hbc]
 #align semilattice_sup.mk' SemilatticeSup.mk'
 
-instance (α : Type _) [Inf α] : Sup αᵒᵈ :=
+instance instSupOrderDual (α : Type*) [Inf α] : Sup αᵒᵈ :=
   ⟨((· ⊓ ·) : α → α → α)⟩
 
-instance (α : Type _) [Sup α] : Inf αᵒᵈ :=
+instance instInfOrderDual (α : Type*) [Sup α] : Inf αᵒᵈ :=
   ⟨((· ⊔ ·) : α → α → α)⟩
 
 section SemilatticeSup
@@ -196,10 +194,10 @@ theorem right_eq_sup : b = a ⊔ b ↔ a ≤ b :=
   eq_comm.trans sup_eq_right
 #align right_eq_sup right_eq_sup
 
-alias sup_eq_left ↔ _ sup_of_le_left
+alias ⟨_, sup_of_le_left⟩ := sup_eq_left
 #align sup_of_le_left sup_of_le_left
 
-alias sup_eq_right ↔ le_of_sup_eq sup_of_le_right
+alias ⟨le_of_sup_eq, sup_of_le_right⟩ := sup_eq_right
 #align sup_of_le_right sup_of_le_right
 #align le_of_sup_eq le_of_sup_eq
 
@@ -227,14 +225,17 @@ theorem le_iff_exists_sup : a ≤ b ↔ ∃ c, b = a ⊔ c := by
     exact le_sup_left
 #align le_iff_exists_sup le_iff_exists_sup
 
+@[gcongr]
 theorem sup_le_sup (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊔ c ≤ b ⊔ d :=
   sup_le (le_sup_of_le_left h₁) (le_sup_of_le_right h₂)
 #align sup_le_sup sup_le_sup
 
+@[gcongr]
 theorem sup_le_sup_left (h₁ : a ≤ b) (c) : c ⊔ a ≤ c ⊔ b :=
   sup_le_sup le_rfl h₁
 #align sup_le_sup_left sup_le_sup_left
 
+@[gcongr]
 theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
   sup_le_sup h₁ le_rfl
 #align sup_le_sup_right sup_le_sup_right
@@ -312,7 +313,7 @@ theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
 #align ne.lt_sup_or_lt_sup Ne.lt_sup_or_lt_sup
 
 /-- If `f` is monotone, `g` is antitone, and `f ≤ g`, then for all `a`, `b` we have `f a ≤ g b`. -/
-theorem Monotone.forall_le_of_antitone {β : Type _} [Preorder β] {f g : α → β} (hf : Monotone f)
+theorem Monotone.forall_le_of_antitone {β : Type*} [Preorder β] {f g : α → β} (hf : Monotone f)
     (hg : Antitone g) (h : f ≤ g) (m n : α) : f m ≤ g n :=
   calc
     f m ≤ f (m ⊔ n) := hf le_sup_left
@@ -374,8 +375,8 @@ instance OrderDual.semilatticeInf (α) [SemilatticeSup α] : SemilatticeInf α�
   inf_le_right := @le_sup_right α _
   le_inf := fun _ _ _ hca hcb => @sup_le α _ _ _ _ hca hcb
 
-theorem SemilatticeSup.dual_dual (α : Type _) [H : SemilatticeSup α] :
-  OrderDual.semilatticeSup αᵒᵈ = H :=
+theorem SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
+    OrderDual.semilatticeSup αᵒᵈ = H :=
   SemilatticeSup.ext $ fun _ _ => Iff.rfl
 #align semilattice_sup.dual_dual SemilatticeSup.dual_dual
 
@@ -450,11 +451,11 @@ theorem right_eq_inf : b = a ⊓ b ↔ b ≤ a :=
   eq_comm.trans inf_eq_right
 #align right_eq_inf right_eq_inf
 
-alias inf_eq_left ↔ le_of_inf_eq inf_of_le_left
+alias ⟨le_of_inf_eq, inf_of_le_left⟩ := inf_eq_left
 #align inf_of_le_left inf_of_le_left
 #align le_of_inf_eq le_of_inf_eq
 
-alias inf_eq_right ↔ _ inf_of_le_right
+alias ⟨_, inf_of_le_right⟩ := inf_eq_right
 #align inf_of_le_right inf_of_le_right
 
 attribute [simp] inf_of_le_left inf_of_le_right
@@ -473,14 +474,17 @@ theorem inf_lt_left_or_right (h : a ≠ b) : a ⊓ b < a ∨ a ⊓ b < b :=
   @left_or_right_lt_sup αᵒᵈ _ _ _ h
 #align inf_lt_left_or_right inf_lt_left_or_right
 
+@[gcongr]
 theorem inf_le_inf (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊓ c ≤ b ⊓ d :=
   @sup_le_sup αᵒᵈ _ _ _ _ _ h₁ h₂
 #align inf_le_inf inf_le_inf
 
+@[gcongr]
 theorem inf_le_inf_right (a : α) {b c : α} (h : b ≤ c) : b ⊓ a ≤ c ⊓ a :=
   inf_le_inf h le_rfl
 #align inf_le_inf_right inf_le_inf_right
 
+@[gcongr]
 theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c :=
   inf_le_inf le_rfl h
 #align inf_le_inf_left inf_le_inf_left
@@ -578,8 +582,8 @@ theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
   congr
 #align semilattice_inf.ext SemilatticeInf.ext
 
-theorem SemilatticeInf.dual_dual (α : Type _) [H : SemilatticeInf α] :
-  OrderDual.semilatticeInf αᵒᵈ = H :=
+theorem SemilatticeInf.dual_dual (α : Type*) [H : SemilatticeInf α] :
+    OrderDual.semilatticeInf αᵒᵈ = H :=
   SemilatticeInf.ext $ fun _ _ => Iff.rfl
 #align semilattice_inf.dual_dual SemilatticeInf.dual_dual
 
@@ -595,7 +599,7 @@ meet-semilattice.
 
 The partial order is defined so that `a ≤ b` unfolds to `b ⊓ a = a`; cf. `inf_eq_right`.
 -/
-def SemilatticeInf.mk' {α : Type _} [Inf α] (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
+def SemilatticeInf.mk' {α : Type*} [Inf α] (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
     (inf_assoc : ∀ a b c : α, a ⊓ b ⊓ c = a ⊓ (b ⊓ c)) (inf_idem : ∀ a : α, a ⊓ a = a) :
     SemilatticeInf α := by
   haveI : SemilatticeSup αᵒᵈ := SemilatticeSup.mk' inf_comm inf_assoc inf_idem
@@ -619,7 +623,7 @@ instance OrderDual.lattice (α) [Lattice α] : Lattice αᵒᵈ :=
 if `sup` and `inf` satisfy the lattice absorption laws `sup_inf_self` (`a ⊔ a ⊓ b = a`)
 and `inf_sup_self` (`a ⊓ (a ⊔ b) = a`). -/
 theorem semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
-    {α : Type _} [Sup α] [Inf α]
+    {α : Type*} [Sup α] [Inf α]
     (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a) (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c))
     (sup_idem : ∀ a : α, a ⊔ a = a) (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
     (inf_assoc : ∀ a b c : α, a ⊓ b ⊓ c = a ⊓ (b ⊓ c)) (inf_idem : ∀ a : α, a ⊓ a = a)
@@ -636,7 +640,7 @@ laws relating the two operations has the structure of a lattice.
 
 The partial order is defined so that `a ≤ b` unfolds to `a ⊔ b = b`; cf. `sup_eq_right`.
 -/
-def Lattice.mk' {α : Type _} [Sup α] [Inf α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
+def Lattice.mk' {α : Type*} [Sup α] [Inf α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
     (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c)) (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
     (inf_assoc : ∀ a b c : α, a ⊓ b ⊓ c = a ⊓ (b ⊓ c)) (sup_inf_self : ∀ a b : α, a ⊔ a ⊓ b = a)
     (inf_sup_self : ∀ a b : α, a ⊓ (a ⊔ b) = a) : Lattice α :=
@@ -681,11 +685,11 @@ theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, 
 #align sup_le_inf sup_le_inf
 
 @[simp] lemma inf_eq_sup : a ⊓ b = a ⊔ b ↔ a = b := by rw [←inf_le_sup.ge_iff_eq, sup_le_inf]
+#align inf_eq_sup inf_eq_sup
 @[simp] lemma sup_eq_inf : a ⊔ b = a ⊓ b ↔ a = b := eq_comm.trans inf_eq_sup
+#align sup_eq_inf sup_eq_inf
 @[simp] lemma inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by rw [inf_le_sup.lt_iff_ne, Ne.def, inf_eq_sup]
 #align inf_lt_sup inf_lt_sup
-#align sup_eq_inf sup_eq_inf
-#align inf_eq_sup inf_eq_sup
 
 lemma inf_eq_and_sup_eq_iff : a ⊓ b = c ∧ a ⊔ b = c ↔ a = c ∧ b = c := by
   refine' ⟨fun h ↦ _, _⟩
@@ -775,7 +779,7 @@ theorem inf_sup_left : x ⊓ (y ⊔ z) = x ⊓ y ⊔ x ⊓ z :=
     _ = x ⊓ y ⊔ x ⊓ z := by rw [sup_inf_left]
 #align inf_sup_left inf_sup_left
 
-instance OrderDual.distribLattice (α : Type _) [DistribLattice α] : DistribLattice αᵒᵈ where
+instance OrderDual.distribLattice (α : Type*) [DistribLattice α] : DistribLattice αᵒᵈ where
   __ := inferInstanceAs (Lattice αᵒᵈ)
   le_sup_inf := fun _ _ _ => le_of_eq (@inf_sup_left α).symm
 
@@ -900,19 +904,19 @@ end LinearOrder
 theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [IsTotal α (· ≤ ·)] :
     (· ⊔ ·) = (maxDefault : α → α → α) := by
-  ext (x y)
+  ext x y
   unfold maxDefault
   split_ifs with h'
-  exacts[sup_of_le_right h', sup_of_le_left $ (total_of (· ≤ ·) x y).resolve_left h']
+  exacts [sup_of_le_right h', sup_of_le_left $ (total_of (· ≤ ·) x y).resolve_left h']
 #align sup_eq_max_default sup_eq_maxDefault
 
 theorem inf_eq_minDefault [SemilatticeInf α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [IsTotal α (· ≤ ·)] :
     (· ⊓ ·) = (minDefault : α → α → α) := by
-  ext (x y)
+  ext x y
   unfold minDefault
   split_ifs with h'
-  exacts[inf_of_le_left h', inf_of_le_right $ (total_of (· ≤ ·) x y).resolve_left h']
+  exacts [inf_of_le_left h', inf_of_le_right $ (total_of (· ≤ ·) x y).resolve_left h']
 #align inf_eq_min_default inf_eq_minDefault
 
 /-- A lattice with total order is a linear order.
@@ -923,9 +927,9 @@ def Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
     [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [DecidableRel ((· < ·) : α → α → Prop)] [IsTotal α (· ≤ ·)] : LinearOrder α :=
   { ‹Lattice α› with
-    decidable_le := ‹_›,
-    decidable_eq := ‹_›,
-    decidable_lt := ‹_›,
+    decidableLE := ‹_›,
+    decidableEq := ‹_›,
+    decidableLT := ‹_›,
     le_total := total_of (· ≤ ·),
     max := (· ⊔ ·),
     max_def := by exact congr_fun₂ sup_eq_maxDefault,
@@ -1000,7 +1004,7 @@ end LinearOrder
 
 namespace Pi
 
-variable {ι : Type _} {α' : ι → Type _}
+variable {ι : Type*} {α' : ι → Type*}
 
 instance [∀ i, Sup (α' i)] : Sup (∀ i, α' i) :=
   ⟨fun f g i => f i ⊔ g i⟩
@@ -1047,7 +1051,7 @@ end Pi
 
 namespace Function
 
-variable {ι : Type _} {π : ι → Type _} [DecidableEq ι]
+variable {ι : Type*} {π : ι → Type*} [DecidableEq ι]
 
 -- porting note: Dot notation on `Function.update` broke
 theorem update_sup [∀ i, SemilatticeSup (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
@@ -1212,25 +1216,25 @@ end Antitone
 
 namespace AntitoneOn
 
-/-- Pointwise supremum of two antitone functions is a antitone function. -/
+/-- Pointwise supremum of two antitone functions is an antitone function. -/
 protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : Set α}
     (hf : AntitoneOn f s) (hg : AntitoneOn g s) : AntitoneOn (f ⊔ g) s :=
   fun _ hx _ hy h => sup_le_sup (hf hx hy h) (hg hx hy h)
 #align antitone_on.sup AntitoneOn.sup
 
-/-- Pointwise infimum of two antitone functions is a antitone function. -/
+/-- Pointwise infimum of two antitone functions is an antitone function. -/
 protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} {s : Set α}
     (hf : AntitoneOn f s) (hg : AntitoneOn g s) : AntitoneOn (f ⊓ g) s :=
   (hf.dual.sup hg.dual).dual
 #align antitone_on.inf AntitoneOn.inf
 
-/-- Pointwise maximum of two antitone functions is a antitone function. -/
+/-- Pointwise maximum of two antitone functions is an antitone function. -/
 protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
     (hg : AntitoneOn g s) : AntitoneOn (fun x => max (f x) (g x)) s :=
   hf.sup hg
 #align antitone_on.max AntitoneOn.max
 
-/-- Pointwise minimum of two antitone functions is a antitone function. -/
+/-- Pointwise minimum of two antitone functions is an antitone function. -/
 protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
     (hg : AntitoneOn g s) : AntitoneOn (fun x => min (f x) (g x)) s :=
   hf.inf hg
@@ -1472,6 +1476,26 @@ protected def Function.Injective.distribLattice [Sup α] [Inf α] [DistribLattic
 #align function.injective.distrib_lattice Function.Injective.distribLattice
 
 end lift
+
+namespace ULift
+
+instance [SemilatticeSup α] : SemilatticeSup (ULift.{v} α) :=
+  ULift.down_injective.semilatticeSup _ down_sup
+
+instance [SemilatticeInf α] : SemilatticeInf (ULift.{v} α) :=
+  ULift.down_injective.semilatticeInf _ down_inf
+
+instance [Lattice α] : Lattice (ULift.{v} α) :=
+  ULift.down_injective.lattice _ down_sup down_inf
+
+instance [DistribLattice α] : DistribLattice (ULift.{v} α) :=
+  ULift.down_injective.distribLattice _ down_sup down_inf
+
+instance [LinearOrder α] : LinearOrder (ULift.{v} α) :=
+  LinearOrder.liftWithOrd ULift.down ULift.down_injective down_sup down_inf
+    fun _x _y => (down_compare _ _).symm
+
+end ULift
 
 --To avoid noncomputability poisoning from `Bool.completeBooleanAlgebra`
 instance : DistribLattice Bool :=

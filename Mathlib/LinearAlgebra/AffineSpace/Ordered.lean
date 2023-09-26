@@ -2,17 +2,14 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.ordered
-! leanprover-community/mathlib commit 78261225eb5cedc61c5c74ecb44e5b385d13b733
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Module
 import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
 import Mathlib.LinearAlgebra.AffineSpace.Slope
 import Mathlib.Tactic.FieldSimp
+
+#align_import linear_algebra.affine_space.ordered from "leanprover-community/mathlib"@"78261225eb5cedc61c5c74ecb44e5b385d13b733"
 
 /-!
 # Ordered modules as affine spaces
@@ -35,7 +32,7 @@ affine space, ordered module, slope
 
 open AffineMap
 
-variable {k E PE : Type _}
+variable {k E PE : Type*}
 
 /-!
 ### Monotonicity of `lineMap`
@@ -178,7 +175,7 @@ Given an interval `[a, b]` and a point `c ∈ (a, b)`, `c = lineMap a b r`, ther
 say that the point `(c, f c)` is above/below the segment `[(a, f a), (b, f b)]`:
 
 * compare `f c` to `lineMap (f a) (f b) r`;
-* compare `slope f a c` to `slope `f a b`;
+* compare `slope f a c` to `slope f a b`;
 * compare `slope f c b` to `slope f a b`;
 * compare `slope f a c` to `slope f c b`.
 
@@ -187,7 +184,7 @@ readable, we introduce local notation `c = lineMap a b r`. Then we prove lemmas 
 
 ```
 lemma map_le_lineMap_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
-  f c ≤ lineMap (f a) (f b) r ↔ slope f a c ≤ slope f a b :=
+    f c ≤ lineMap (f a) (f b) r ↔ slope f a c ≤ slope f a b :=
 ```
 
 For each inequality between `f c` and `lineMap (f a) (f b) r` we provide 3 lemmas:

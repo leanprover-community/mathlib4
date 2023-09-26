@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
-
-! This file was ported from Lean 3 source module data.sym.card
-! leanprover-community/mathlib commit 0bd2ea37bcba5769e14866170f251c9bc64e35d7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Fintype.Sum
+
+#align_import data.sym.card from "leanprover-community/mathlib"@"0bd2ea37bcba5769e14866170f251c9bc64e35d7"
 
 /-!
 # Stars and bars
@@ -58,7 +55,7 @@ stars and bars, multichoose
 
 open Finset Fintype Function Sum Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Sym
 
@@ -110,7 +107,7 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
 #align sym.card_sym_fin_eq_multichoose Sym.card_sym_fin_eq_multichoose
 
 /-- For any fintype `α` of cardinality `n`, `card (Sym α k) = multichoose (card α) k`. -/
-theorem card_sym_eq_multichoose (α : Type _) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
+theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
     card (Sym α k) = multichoose (card α) k := by
   rw [← card_sym_fin_eq_multichoose]
   exact card_congr (equivCongr (equivFin α))
@@ -118,7 +115,7 @@ theorem card_sym_eq_multichoose (α : Type _) (k : ℕ) [Fintype α] [Fintype (S
 
 /-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to
 `Nat.choose (card α + k - 1) k`. -/
-theorem card_sym_eq_choose {α : Type _} [Fintype α] (k : ℕ) [Fintype (Sym α k)] :
+theorem card_sym_eq_choose {α : Type*} [Fintype α] (k : ℕ) [Fintype (Sym α k)] :
     card (Sym α k) = (card α + k - 1).choose k := by
   rw [card_sym_eq_multichoose, Nat.multichoose_eq]
 #align sym.card_sym_eq_choose Sym.card_sym_eq_choose
@@ -149,7 +146,7 @@ theorem two_mul_card_image_offDiag (s : Finset α) :
   obtain ⟨a, ⟨ha₁, ha₂, ha⟩, h⟩ := hxy
   replace h := Quotient.eq.1 h
   obtain ⟨hx, hy, hxy⟩ : x ∈ s ∧ y ∈ s ∧ x ≠ y := by
-    cases h <;> refine' ⟨‹_›, ‹_›, _⟩ <;> [exact ha, exact ha.symm]
+    cases h <;> refine' ⟨‹_›, ‹_›, _⟩ <;> [exact ha; exact ha.symm]
   have hxy' : y ≠ x := hxy.symm
   have : (s.offDiag.filter fun z => ⟦z⟧ = ⟦(x, y)⟧) = ({(x, y), (y, x)} : Finset _) := by
     ext ⟨x₁, y₁⟩

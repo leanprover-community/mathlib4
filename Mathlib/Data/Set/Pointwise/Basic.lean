@@ -2,18 +2,16 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
-
-! This file was ported from Lean 3 source module data.set.pointwise.basic
-! leanprover-community/mathlib commit 5e526d18cea33550268dcbbddcb822d5cde40654
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Tactic.ScopedNS
+import Mathlib.Tactic.Common
+
+#align_import data.set.pointwise.basic from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"
 
 /-!
 # Pointwise operations of sets
@@ -70,7 +68,7 @@ nat and int actions.
 
 open Function
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 namespace Set
 
@@ -142,8 +140,8 @@ theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
 
 /-- The singleton operation as a `OneHom`. -/
 @[to_additive "The singleton operation as a `ZeroHom`."]
-noncomputable def singletonOneHom : OneHom α (Set α) :=
-  ⟨singleton, singleton_one⟩
+noncomputable def singletonOneHom : OneHom α (Set α) where
+  toFun := singleton; map_one' := singleton_one
 #align set.singleton_one_hom Set.singletonOneHom
 #align set.singleton_zero_hom Set.singletonZeroHom
 
@@ -176,7 +174,7 @@ open Pointwise
 
 section Inv
 
-variable {ι : Sort _} [Inv α] {s t : Set α} {a : α}
+variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 
 @[to_additive (attr := simp)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
@@ -215,19 +213,19 @@ theorem union_inv : (s ∪ t)⁻¹ = s⁻¹ ∪ t⁻¹ :=
 #align set.union_neg Set.union_neg
 
 @[to_additive (attr := simp)]
-theorem interᵢ_inv (s : ι → Set α) : (⋂ i, s i)⁻¹ = ⋂ i, (s i)⁻¹ :=
-  preimage_interᵢ
-#align set.Inter_inv Set.interᵢ_inv
-#align set.Inter_neg Set.interᵢ_neg
+theorem iInter_inv (s : ι → Set α) : (⋂ i, s i)⁻¹ = ⋂ i, (s i)⁻¹ :=
+  preimage_iInter
+#align set.Inter_inv Set.iInter_inv
+#align set.Inter_neg Set.iInter_neg
 
 @[to_additive (attr := simp)]
-theorem unionᵢ_inv (s : ι → Set α) : (⋃ i, s i)⁻¹ = ⋃ i, (s i)⁻¹ :=
-  preimage_unionᵢ
-#align set.Union_inv Set.unionᵢ_inv
-#align set.Union_neg Set.unionᵢ_neg
+theorem iUnion_inv (s : ι → Set α) : (⋃ i, s i)⁻¹ = ⋃ i, (s i)⁻¹ :=
+  preimage_iUnion
+#align set.Union_inv Set.iUnion_inv
+#align set.Union_neg Set.iUnion_neg
 
 @[to_additive (attr := simp)]
-theorem compl_inv : (sᶜ)⁻¹ = s⁻¹ᶜ :=
+theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
   preimage_compl
 #align set.compl_inv Set.compl_inv
 #align set.compl_neg Set.compl_neg
@@ -289,7 +287,7 @@ theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s�
 #align set.neg_insert Set.neg_insert
 
 @[to_additive]
-theorem inv_range {ι : Sort _} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
+theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
   rw [← image_inv]
   exact (range_comp _ _).symm
 #align set.inv_range Set.inv_range
@@ -314,7 +312,7 @@ open Pointwise
 
 section Mul
 
-variable {ι : Sort _} {κ : ι → Sort _} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
 locale `Pointwise`. -/
@@ -475,81 +473,82 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
 #align set.union_add_inter_subset_union Set.union_add_inter_subset_union
 
 @[to_additive]
-theorem unionᵢ_mul_left_image : (⋃ a ∈ s, (· * ·) a '' t) = s * t :=
-  unionᵢ_image_left _
-#align set.Union_mul_left_image Set.unionᵢ_mul_left_image
-#align set.Union_add_left_image Set.unionᵢ_add_left_image
+theorem iUnion_mul_left_image : ⋃ a ∈ s, (· * ·) a '' t = s * t :=
+  iUnion_image_left _
+#align set.Union_mul_left_image Set.iUnion_mul_left_image
+#align set.Union_add_left_image Set.iUnion_add_left_image
 
 @[to_additive]
-theorem unionᵢ_mul_right_image : (⋃ a ∈ t, (· * a) '' s) = s * t :=
-  unionᵢ_image_right _
-#align set.Union_mul_right_image Set.unionᵢ_mul_right_image
-#align set.Union_add_right_image Set.unionᵢ_add_right_image
+theorem iUnion_mul_right_image : ⋃ a ∈ t, (· * a) '' s = s * t :=
+  iUnion_image_right _
+#align set.Union_mul_right_image Set.iUnion_mul_right_image
+#align set.Union_add_right_image Set.iUnion_add_right_image
 
 @[to_additive]
-theorem unionᵢ_mul (s : ι → Set α) (t : Set α) : (⋃ i, s i) * t = ⋃ i, s i * t :=
-  image2_unionᵢ_left _ _ _
-#align set.Union_mul Set.unionᵢ_mul
-#align set.Union_add Set.unionᵢ_add
+theorem iUnion_mul (s : ι → Set α) (t : Set α) : (⋃ i, s i) * t = ⋃ i, s i * t :=
+  image2_iUnion_left _ _ _
+#align set.Union_mul Set.iUnion_mul
+#align set.Union_add Set.iUnion_add
 
 @[to_additive]
-theorem mul_unionᵢ (s : Set α) (t : ι → Set α) : (s * ⋃ i, t i) = ⋃ i, s * t i :=
-  image2_unionᵢ_right _ _ _
-#align set.mul_Union Set.mul_unionᵢ
-#align set.add_Union Set.add_unionᵢ
+theorem mul_iUnion (s : Set α) (t : ι → Set α) : (s * ⋃ i, t i) = ⋃ i, s * t i :=
+  image2_iUnion_right _ _ _
+#align set.mul_Union Set.mul_iUnion
+#align set.add_Union Set.add_iUnion
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem unionᵢ₂_mul (s : ∀ i, κ i → Set α) (t : Set α) :
+theorem iUnion₂_mul (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋃ (i) (j), s i j) * t = ⋃ (i) (j), s i j * t :=
-  image2_unionᵢ₂_left _ _ _
-#align set.Union₂_mul Set.unionᵢ₂_mul
-#align set.Union₂_add Set.unionᵢ₂_add
+  image2_iUnion₂_left _ _ _
+#align set.Union₂_mul Set.iUnion₂_mul
+#align set.Union₂_add Set.iUnion₂_add
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem mul_unionᵢ₂ (s : Set α) (t : ∀ i, κ i → Set α) :
+theorem mul_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
     (s * ⋃ (i) (j), t i j) = ⋃ (i) (j), s * t i j :=
-  image2_unionᵢ₂_right _ _ _
-#align set.mul_Union₂ Set.mul_unionᵢ₂
-#align set.add_Union₂ Set.add_unionᵢ₂
+  image2_iUnion₂_right _ _ _
+#align set.mul_Union₂ Set.mul_iUnion₂
+#align set.add_Union₂ Set.add_iUnion₂
 
 @[to_additive]
-theorem interᵢ_mul_subset (s : ι → Set α) (t : Set α) : (⋂ i, s i) * t ⊆ ⋂ i, s i * t :=
-  image2_interᵢ_subset_left _ _ _
-#align set.Inter_mul_subset Set.interᵢ_mul_subset
-#align set.Inter_add_subset Set.interᵢ_add_subset
+theorem iInter_mul_subset (s : ι → Set α) (t : Set α) : (⋂ i, s i) * t ⊆ ⋂ i, s i * t :=
+  image2_iInter_subset_left _ _ _
+#align set.Inter_mul_subset Set.iInter_mul_subset
+#align set.Inter_add_subset Set.iInter_add_subset
 
 @[to_additive]
-theorem mul_interᵢ_subset (s : Set α) (t : ι → Set α) : (s * ⋂ i, t i) ⊆ ⋂ i, s * t i :=
-  image2_interᵢ_subset_right _ _ _
-#align set.mul_Inter_subset Set.mul_interᵢ_subset
-#align set.add_Inter_subset Set.add_interᵢ_subset
+theorem mul_iInter_subset (s : Set α) (t : ι → Set α) : (s * ⋂ i, t i) ⊆ ⋂ i, s * t i :=
+  image2_iInter_subset_right _ _ _
+#align set.mul_Inter_subset Set.mul_iInter_subset
+#align set.add_Inter_subset Set.add_iInter_subset
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem interᵢ₂_mul_subset (s : ∀ i, κ i → Set α) (t : Set α) :
+theorem iInter₂_mul_subset (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋂ (i) (j), s i j) * t ⊆ ⋂ (i) (j), s i j * t :=
-  image2_interᵢ₂_subset_left _ _ _
-#align set.Inter₂_mul_subset Set.interᵢ₂_mul_subset
-#align set.Inter₂_add_subset Set.interᵢ₂_add_subset
+  image2_iInter₂_subset_left _ _ _
+#align set.Inter₂_mul_subset Set.iInter₂_mul_subset
+#align set.Inter₂_add_subset Set.iInter₂_add_subset
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem mul_interᵢ₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
+theorem mul_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
     (s * ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s * t i j :=
-  image2_interᵢ₂_subset_right _ _ _
-#align set.mul_Inter₂_subset Set.mul_interᵢ₂_subset
-#align set.add_Inter₂_subset Set.add_interᵢ₂_subset
+  image2_iInter₂_subset_right _ _ _
+#align set.mul_Inter₂_subset Set.mul_iInter₂_subset
+#align set.add_Inter₂_subset Set.add_iInter₂_subset
 
 /-- The singleton operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `AddHom`."]
-noncomputable def singletonMulHom : α →ₙ* Set α :=
-  ⟨singleton, fun _ _ => singleton_mul_singleton.symm⟩
+noncomputable def singletonMulHom : α →ₙ* Set α where
+  toFun := singleton
+  map_mul' _ _ := singleton_mul_singleton.symm
 #align set.singleton_mul_hom Set.singletonMulHom
 #align set.singleton_add_hom Set.singletonAddHom
 
@@ -580,7 +579,7 @@ end Mul
 
 section Div
 
-variable {ι : Sort _} {κ : ι → Sort _} [Div α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable {ι : Sort*} {κ : ι → Sort*} [Div α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise division of sets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
@@ -741,76 +740,76 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
 #align set.union_sub_inter_subset_union Set.union_sub_inter_subset_union
 
 @[to_additive]
-theorem unionᵢ_div_left_image : (⋃ a ∈ s, (· / ·) a '' t) = s / t :=
-  unionᵢ_image_left _
-#align set.Union_div_left_image Set.unionᵢ_div_left_image
-#align set.Union_sub_left_image Set.unionᵢ_sub_left_image
+theorem iUnion_div_left_image : ⋃ a ∈ s, (· / ·) a '' t = s / t :=
+  iUnion_image_left _
+#align set.Union_div_left_image Set.iUnion_div_left_image
+#align set.Union_sub_left_image Set.iUnion_sub_left_image
 
 @[to_additive]
-theorem unionᵢ_div_right_image : (⋃ a ∈ t, (· / a) '' s) = s / t :=
-  unionᵢ_image_right _
-#align set.Union_div_right_image Set.unionᵢ_div_right_image
-#align set.Union_sub_right_image Set.unionᵢ_sub_right_image
+theorem iUnion_div_right_image : ⋃ a ∈ t, (· / a) '' s = s / t :=
+  iUnion_image_right _
+#align set.Union_div_right_image Set.iUnion_div_right_image
+#align set.Union_sub_right_image Set.iUnion_sub_right_image
 
 @[to_additive]
-theorem unionᵢ_div (s : ι → Set α) (t : Set α) : (⋃ i, s i) / t = ⋃ i, s i / t :=
-  image2_unionᵢ_left _ _ _
-#align set.Union_div Set.unionᵢ_div
-#align set.Union_sub Set.unionᵢ_sub
+theorem iUnion_div (s : ι → Set α) (t : Set α) : (⋃ i, s i) / t = ⋃ i, s i / t :=
+  image2_iUnion_left _ _ _
+#align set.Union_div Set.iUnion_div
+#align set.Union_sub Set.iUnion_sub
 
 @[to_additive]
-theorem div_unionᵢ (s : Set α) (t : ι → Set α) : (s / ⋃ i, t i) = ⋃ i, s / t i :=
-  image2_unionᵢ_right _ _ _
-#align set.div_Union Set.div_unionᵢ
-#align set.sub_Union Set.sub_unionᵢ
+theorem div_iUnion (s : Set α) (t : ι → Set α) : (s / ⋃ i, t i) = ⋃ i, s / t i :=
+  image2_iUnion_right _ _ _
+#align set.div_Union Set.div_iUnion
+#align set.sub_Union Set.sub_iUnion
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem unionᵢ₂_div (s : ∀ i, κ i → Set α) (t : Set α) :
+theorem iUnion₂_div (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋃ (i) (j), s i j) / t = ⋃ (i) (j), s i j / t :=
-  image2_unionᵢ₂_left _ _ _
-#align set.Union₂_div Set.unionᵢ₂_div
-#align set.Union₂_sub Set.unionᵢ₂_sub
+  image2_iUnion₂_left _ _ _
+#align set.Union₂_div Set.iUnion₂_div
+#align set.Union₂_sub Set.iUnion₂_sub
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem div_unionᵢ₂ (s : Set α) (t : ∀ i, κ i → Set α) :
+theorem div_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
     (s / ⋃ (i) (j), t i j) = ⋃ (i) (j), s / t i j :=
-  image2_unionᵢ₂_right _ _ _
-#align set.div_Union₂ Set.div_unionᵢ₂
-#align set.sub_Union₂ Set.sub_unionᵢ₂
+  image2_iUnion₂_right _ _ _
+#align set.div_Union₂ Set.div_iUnion₂
+#align set.sub_Union₂ Set.sub_iUnion₂
 
 @[to_additive]
-theorem interᵢ_div_subset (s : ι → Set α) (t : Set α) : (⋂ i, s i) / t ⊆ ⋂ i, s i / t :=
-  image2_interᵢ_subset_left _ _ _
-#align set.Inter_div_subset Set.interᵢ_div_subset
-#align set.Inter_sub_subset Set.interᵢ_sub_subset
+theorem iInter_div_subset (s : ι → Set α) (t : Set α) : (⋂ i, s i) / t ⊆ ⋂ i, s i / t :=
+  image2_iInter_subset_left _ _ _
+#align set.Inter_div_subset Set.iInter_div_subset
+#align set.Inter_sub_subset Set.iInter_sub_subset
 
 @[to_additive]
-theorem div_interᵢ_subset (s : Set α) (t : ι → Set α) : (s / ⋂ i, t i) ⊆ ⋂ i, s / t i :=
-  image2_interᵢ_subset_right _ _ _
-#align set.div_Inter_subset Set.div_interᵢ_subset
-#align set.sub_Inter_subset Set.sub_interᵢ_subset
+theorem div_iInter_subset (s : Set α) (t : ι → Set α) : (s / ⋂ i, t i) ⊆ ⋂ i, s / t i :=
+  image2_iInter_subset_right _ _ _
+#align set.div_Inter_subset Set.div_iInter_subset
+#align set.sub_Inter_subset Set.sub_iInter_subset
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem interᵢ₂_div_subset (s : ∀ i, κ i → Set α) (t : Set α) :
+theorem iInter₂_div_subset (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋂ (i) (j), s i j) / t ⊆ ⋂ (i) (j), s i j / t :=
-  image2_interᵢ₂_subset_left _ _ _
-#align set.Inter₂_div_subset Set.interᵢ₂_div_subset
-#align set.Inter₂_sub_subset Set.interᵢ₂_sub_subset
+  image2_iInter₂_subset_left _ _ _
+#align set.Inter₂_div_subset Set.iInter₂_div_subset
+#align set.Inter₂_sub_subset Set.iInter₂_sub_subset
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem div_interᵢ₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
+theorem div_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
     (s / ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s / t i j :=
-  image2_interᵢ₂_subset_right _ _ _
-#align set.div_Inter₂_subset Set.div_interᵢ₂_subset
-#align set.sub_Inter₂_subset Set.sub_interᵢ₂_subset
+  image2_iInter₂_subset_right _ _ _
+#align set.div_Inter₂_subset Set.div_iInter₂_subset
+#align set.sub_Inter₂_subset Set.sub_iInter₂_subset
 
 end Div
 
@@ -965,7 +964,7 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
 @[to_additive]
 theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m ⊆ s ^ n := by
   -- Porting note: `Nat.le_induction` didn't work as an induction principle in mathlib3, this was
-  -- `refine nat.le_induction ...`
+  -- `refine Nat.le_induction ...`
   induction' n, hn using Nat.le_induction with _ _ ih
   · exact Subset.rfl
   · dsimp only
@@ -1000,7 +999,7 @@ theorem univ_mul_univ : (univ : Set α) * univ = univ :=
 
 --TODO: `to_additive` trips up on the `1 : ℕ` used in the pattern-matching.
 @[simp]
-theorem nsmul_univ {α : Type _} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n • (univ : Set α) = univ
+theorem nsmul_univ {α : Type*} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n • (univ : Set α) = univ
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => one_nsmul _
   | n + 2 => fun _ => by rw [succ_nsmul, nsmul_univ n.succ_ne_zero, univ_add_univ]
@@ -1171,7 +1170,7 @@ theorem not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
 #align set.not_one_mem_div_iff Set.not_one_mem_div_iff
 #align set.not_zero_mem_sub_iff Set.not_zero_mem_sub_iff
 
-alias not_one_mem_div_iff ↔ _ _root_.Disjoint.one_not_mem_div_set
+alias ⟨_, _root_.Disjoint.one_not_mem_div_set⟩ := not_one_mem_div_iff
 #align disjoint.one_not_mem_div_set Disjoint.one_not_mem_div_set
 
 attribute [to_additive] Disjoint.one_not_mem_div_set

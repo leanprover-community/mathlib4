@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
-
-! This file was ported from Lean 3 source module category_theory.bicategory.basic
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.NatIso
+
+#align_import category_theory.bicategory.basic from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Bicategories
@@ -18,7 +15,7 @@ In this file we define typeclass for bicategories.
 A bicategory `B` consists of
 * objects `a : B`,
 * 1-morphisms `f : a ⟶ b` between objects `a b : B`, and
-* 2-morphisms `η : f ⟶ g` beween 1-morphisms `f g : a ⟶ b` between objects `a b : B`.
+* 2-morphisms `η : f ⟶ g` between 1-morphisms `f g : a ⟶ b` between objects `a b : B`.
 
 We use `u`, `v`, and `w` as the universe variables for objects, 1-morphisms, and 2-morphisms,
 respectively.
@@ -26,19 +23,19 @@ respectively.
 A typeclass for bicategories extends `CategoryTheory.CategoryStruct` typeclass. This means that
 we have
 * a composition `f ≫ g : a ⟶ c` for each 1-morphisms `f : a ⟶ b` and `g : b ⟶ c`, and
-* a identity `𝟙 a : a ⟶ a` for each object `a : B`.
+* an identity `𝟙 a : a ⟶ a` for each object `a : B`.
 
 For each object `a b : B`, the collection of 1-morphisms `a ⟶ b` has a category structure. The
 2-morphisms in the bicategory are implemented as the morphisms in this family of categories.
 
-The composition of 1-morphisms is in fact a object part of a functor
+The composition of 1-morphisms is in fact an object part of a functor
 `(a ⟶ b) ⥤ (b ⟶ c) ⥤ (a ⟶ c)`. The definition of bicategories in this file does not
 require this functor directly. Instead, it requires the whiskering functions. For a 1-morphism
 `f : a ⟶ b` and a 2-morphism `η : g ⟶ h` between 1-morphisms `g h : b ⟶ c`, there is a
 2-morphism `whiskerLeft f η : f ≫ g ⟶ f ≫ h`. Similarly, for a 2-morphism `η : f ⟶ g`
 between 1-morphisms `f g : a ⟶ b` and a 1-morphism `f : b ⟶ c`, there is a 2-morphism
 `whiskerRight η h : f ≫ h ⟶ g ≫ h`. These satisfy the exchange law
-`whiskerLeft f θ ≫ whiskerRight η i = whiskerRight η h ≫ whiskerReft g θ`,
+`whiskerLeft f θ ≫ whiskerRight η i = whiskerRight η h ≫ whiskerLeft g θ`,
 which is required as an axiom in the definition here.
 -/
 
@@ -89,7 +86,7 @@ class Bicategory (B : Type u) extends CategoryStruct.{v} B where
         (associator f g h).hom ≫ whiskerLeft f (whiskerLeft g η) ≫ (associator f g h').inv := by
     aesop_cat
   -- axioms for right whiskering:
-  id_whiskerRight : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c),  whiskerRight (𝟙 f) g = 𝟙 (f ≫ g) := by
+  id_whiskerRight : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), whiskerRight (𝟙 f) g = 𝟙 (f ≫ g) := by
     aesop_cat
   comp_whiskerRight :
     ∀ {a b c} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) (i : b ⟶ c),
@@ -229,7 +226,7 @@ instance whiskerLeft_isIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso �
 
 @[simp]
 theorem inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] :
-  inv (f ◁ η) = f ◁ inv η := by
+    inv (f ◁ η) = f ◁ inv η := by
   aesop_cat_nonterminal
   simp only [← whiskerLeft_comp, whiskerLeft_id, IsIso.hom_inv_id]
 #align category_theory.bicategory.inv_whisker_left CategoryTheory.Bicategory.inv_whiskerLeft
@@ -489,6 +486,67 @@ theorem unitors_equal : (λ_ (𝟙 a)).hom = (ρ_ (𝟙 a)).hom := by
 @[simp]
 theorem unitors_inv_equal : (λ_ (𝟙 a)).inv = (ρ_ (𝟙 a)).inv := by simp [Iso.inv_eq_inv]
 #align category_theory.bicategory.unitors_inv_equal CategoryTheory.Bicategory.unitors_inv_equal
+
+section
+
+attribute [local simp] whisker_exchange
+
+/-- Precomposition of a 1-morphism as a functor. -/
+@[simps]
+def precomp (c : B) (f : a ⟶ b) : (b ⟶ c) ⥤ (a ⟶ c) where
+  obj := (f ≫ ·)
+  map := (f ◁ ·)
+
+/-- Precomposition of a 1-morphism as a functor from the category of 1-morphisms `a ⟶ b` into the
+category of functors `(b ⟶ c) ⥤ (a ⟶ c)`. -/
+@[simps]
+def precomposing (a b c : B) : (a ⟶ b) ⥤ (b ⟶ c) ⥤ (a ⟶ c) where
+  obj f := precomp c f
+  map η := ⟨(η ▷ ·), _⟩
+
+/-- Postcomposition of a 1-morphism as a functor. -/
+@[simps]
+def postcomp (a : B) (f : b ⟶ c) : (a ⟶ b) ⥤ (a ⟶ c) where
+  obj := (· ≫ f)
+  map := (· ▷ f)
+
+/-- Postcomposition of a 1-morphism as a functor from the category of 1-morphisms `b ⟶ c` into the
+category of functors `(a ⟶ b) ⥤ (a ⟶ c)`. -/
+@[simps]
+def postcomposing (a b c : B) : (b ⟶ c) ⥤ (a ⟶ b) ⥤ (a ⟶ c) where
+  obj f := postcomp a f
+  map η := ⟨(· ◁ η), _⟩
+
+/-- Left component of the associator as a natural isomorphism. -/
+@[simps!]
+def associatorNatIsoLeft (a : B) (g : b ⟶ c) (h : c ⟶ d) :
+    (postcomposing a ..).obj g ⋙ (postcomposing ..).obj h ≅ (postcomposing ..).obj (g ≫ h) :=
+  NatIso.ofComponents (α_ · g h)
+
+/-- Middle component of the associator as a natural isomorphism. -/
+@[simps!]
+def associatorNatIsoMiddle (f : a ⟶ b) (h : c ⟶ d) :
+    (precomposing ..).obj f ⋙ (postcomposing ..).obj h ≅
+      (postcomposing ..).obj h ⋙ (precomposing ..).obj f :=
+  NatIso.ofComponents (α_ f · h)
+
+/-- Right component of the associator as a natural isomorphism. -/
+@[simps!]
+def associatorNatIsoRight (f : a ⟶ b) (g : b ⟶ c) (d : B) :
+    (precomposing _ _ d).obj (f ≫ g) ≅ (precomposing ..).obj g ⋙ (precomposing ..).obj f :=
+  NatIso.ofComponents (α_ f g ·)
+
+/-- Left unitor as a natural isomorphism. -/
+@[simps!]
+def leftUnitorNatIso (a b : B) : (precomposing _ _ b).obj (𝟙 a) ≅ 𝟭 (a ⟶ b) :=
+  NatIso.ofComponents (λ_ ·)
+
+/-- Right unitor as a natural isomorphism. -/
+@[simps!]
+def rightUnitorNatIso (a b : B) : (postcomposing a _ _).obj (𝟙 b) ≅ 𝟭 (a ⟶ b) :=
+  NatIso.ofComponents (ρ_ ·)
+
+end
 
 end Bicategory
 

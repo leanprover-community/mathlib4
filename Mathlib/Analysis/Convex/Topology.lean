@@ -2,17 +2,14 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.convex.topology
-! leanprover-community/mathlib commit 0e3aacdc98d25e0afe035c452d876d28cbffaa7e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Strict
 import Mathlib.Topology.PathConnected
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import analysis.convex.topology from "leanprover-community/mathlib"@"0e3aacdc98d25e0afe035c452d876d28cbffaa7e"
 
 /-!
 # Topological properties of convex sets
@@ -25,18 +22,17 @@ We prove the following facts:
 * `Set.Finite.isClosed_convexHull` : convex hull of a finite set is closed.
 -/
 
--- Porting note: this does not exist in Lean 4:
---assert_not_exists Norm
+assert_not_exists Norm
 
-open Metric Set Pointwise Convex
+open Metric Bornology Set Pointwise Convex
 
-variable {ι 𝕜 E : Type _}
+variable {ι 𝕜 E : Type*}
 
 theorem Real.convex_iff_isPreconnected {s : Set ℝ} : Convex ℝ s ↔ IsPreconnected s :=
   convex_iff_ordConnected.trans isPreconnected_iff_ordConnected.symm
 #align real.convex_iff_is_preconnected Real.convex_iff_isPreconnected
 
-alias Real.convex_iff_isPreconnected ↔ _ IsPreconnected.convex
+alias ⟨_, IsPreconnected.convex⟩ := Real.convex_iff_isPreconnected
 #align is_preconnected.convex IsPreconnected.convex
 
 /-! ### Standard simplex -/
@@ -47,8 +43,7 @@ section stdSimplex
 variable [Fintype ι]
 
 /-- Every vector in `stdSimplex 𝕜 ι` has `max`-norm at most `1`. -/
-theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0 1 := by
-  intro f hf
+theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0 1 := fun f hf ↦ by
   rw [Metric.mem_closedBall, dist_pi_le_iff zero_le_one]
   intro x
   rw [Pi.zero_apply, Real.dist_0_eq_abs, abs_of_nonneg <| hf.1 x]
@@ -58,14 +53,14 @@ theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0
 variable (ι)
 
 /-- `stdSimplex ℝ ι` is bounded. -/
-theorem bounded_stdSimplex : Metric.Bounded (stdSimplex ℝ ι) :=
-  (Metric.bounded_iff_subset_ball 0).2 ⟨1, stdSimplex_subset_closedBall⟩
+theorem bounded_stdSimplex : IsBounded (stdSimplex ℝ ι) :=
+  (Metric.isBounded_iff_subset_closedBall 0).2 ⟨1, stdSimplex_subset_closedBall⟩
 #align bounded_std_simplex bounded_stdSimplex
 
 /-- `stdSimplex ℝ ι` is closed. -/
 theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
   (stdSimplex_eq_inter ℝ ι).symm ▸
-    IsClosed.inter (isClosed_interᵢ fun i => isClosed_le continuous_const (continuous_apply i))
+    IsClosed.inter (isClosed_iInter fun i => isClosed_le continuous_const (continuous_apply i))
       (isClosed_eq (continuous_finset_sum _ fun x _ => continuous_apply x) continuous_const)
 #align is_closed_std_simplex isClosed_stdSimplex
 
@@ -101,9 +96,8 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜]
 @[simp]
 theorem closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
-  exact
-    (image_closure_of_isCompact (bounded_Ioo _ _).isCompact_closure <|
-        Continuous.continuousOn <| by continuity).symm
+  exact (image_closure_of_isCompact (isBounded_Ioo _ _).isCompact_closure <|
+    Continuous.continuousOn <| by continuity).symm
 #align closure_open_segment closure_openSegment
 
 end PseudoMetricSpace
@@ -260,7 +254,7 @@ protected theorem Convex.strictConvex' {s : Set E} (hs : Convex 𝕜 s)
   by_cases hy' : y ∈ interior s
   · exact hs.openSegment_self_interior_subset_interior hx hy'
   rcases h ⟨hx, hx'⟩ ⟨hy, hy'⟩ hne with ⟨c, hc⟩
-  refine' (openSegment_subset_union x y ⟨c, rfl⟩).trans (insert_subset.2 ⟨hc, union_subset _ _⟩)
+  refine' (openSegment_subset_union x y ⟨c, rfl⟩).trans (insert_subset_iff.2 ⟨hc, union_subset _ _⟩)
   exacts [hs.openSegment_self_interior_subset_interior hx hc,
     hs.openSegment_interior_self_subset_interior hc hy]
 #align convex.strict_convex' Convex.strictConvex'
@@ -339,16 +333,20 @@ theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Conve
   subset_closure.trans <| hs.closure_subset_interior_image_homothety_of_one_lt hx t ht
 #align convex.subset_interior_image_homothety_of_one_lt Convex.subset_interior_image_homothety_of_one_lt
 
+theorem JoinedIn_of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
+    {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
+  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by continuity
+  apply JoinedIn.ofLine A.continuousOn (by simp) (by simp)
+  convert h
+  rw [segment_eq_image ℝ x y]
+
 /-- A nonempty convex set is path connected. -/
 protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne : s.Nonempty) :
     IsPathConnected s := by
   refine' isPathConnected_iff.mpr ⟨hne, _⟩
   intro x x_in y y_in
-  have H := hconv.segment_subset x_in y_in
-  rw [segment_eq_image_lineMap] at H
-  exact
-    JoinedIn.ofLine AffineMap.lineMap_continuous.continuousOn (lineMap_apply_zero _ _)
-      (lineMap_apply_one _ _) H
+  exact JoinedIn_of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
 #align convex.is_path_connected Convex.isPathConnected
 
 /-- A nonempty convex set is connected. -/

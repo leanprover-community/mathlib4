@@ -2,14 +2,11 @@
 Copyright (c) 2020 Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Scott Morrison, Eric Wieser, Oliver Nash
-
-! This file was ported from Lean 3 source module data.matrix.basis
-! leanprover-community/mathlib commit 320df450e9abeb5fc6417971e75acb6ae8bc3794
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.Trace
+
+#align_import data.matrix.basis from "leanprover-community/mathlib"@"320df450e9abeb5fc6417971e75acb6ae8bc3794"
 
 /-!
 # Matrices with a single non-zero element.
@@ -19,9 +16,9 @@ at position `(i, j)`, and zeroes elsewhere.
 -/
 
 
-variable {l m n : Type _}
+variable {l m n : Type*}
 
-variable {R α : Type _}
+variable {R α : Type*}
 
 namespace Matrix
 
@@ -78,7 +75,7 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
     simp [hj']
 #align matrix.matrix_eq_sum_std_basis Matrix.matrix_eq_sum_std_basis
 
--- TODO: tie this up with the `basis` machinery of linear algebra
+-- TODO: tie this up with the `Basis` machinery of linear algebra
 -- this is not completely trivial because we are indexing by two types, instead of one
 -- TODO: add `std_basis_vec`
 theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
@@ -175,36 +172,36 @@ theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
 
 @[simp]
 theorem mul_left_apply_same (b : n) (M : Matrix n n α) :
-    (stdBasisMatrix i j c ⬝ M) i b = c * M j b := by simp [mul_apply, stdBasisMatrix]
+    (stdBasisMatrix i j c * M) i b = c * M j b := by simp [mul_apply, stdBasisMatrix]
 #align matrix.std_basis_matrix.mul_left_apply_same Matrix.StdBasisMatrix.mul_left_apply_same
 
 @[simp]
 theorem mul_right_apply_same (a : n) (M : Matrix n n α) :
-    (M ⬝ stdBasisMatrix i j c) a j = M a i * c := by simp [mul_apply, stdBasisMatrix, mul_comm]
+    (M * stdBasisMatrix i j c) a j = M a i * c := by simp [mul_apply, stdBasisMatrix, mul_comm]
 #align matrix.std_basis_matrix.mul_right_apply_same Matrix.StdBasisMatrix.mul_right_apply_same
 
 @[simp]
 theorem mul_left_apply_of_ne (a b : n) (h : a ≠ i) (M : Matrix n n α) :
-    (stdBasisMatrix i j c ⬝ M) a b = 0 := by simp [mul_apply, h.symm]
+    (stdBasisMatrix i j c * M) a b = 0 := by simp [mul_apply, h.symm]
 #align matrix.std_basis_matrix.mul_left_apply_of_ne Matrix.StdBasisMatrix.mul_left_apply_of_ne
 
 @[simp]
 theorem mul_right_apply_of_ne (a b : n) (hbj : b ≠ j) (M : Matrix n n α) :
-    (M ⬝ stdBasisMatrix i j c) a b = 0 := by simp [mul_apply, hbj.symm]
+    (M * stdBasisMatrix i j c) a b = 0 := by simp [mul_apply, hbj.symm]
 #align matrix.std_basis_matrix.mul_right_apply_of_ne Matrix.StdBasisMatrix.mul_right_apply_of_ne
 
 @[simp]
 theorem mul_same (k : n) (d : α) :
-    stdBasisMatrix i j c ⬝ stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
-  ext (a b)
+    stdBasisMatrix i j c * stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
+  ext a b
   simp only [mul_apply, stdBasisMatrix, boole_mul]
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
 #align matrix.std_basis_matrix.mul_same Matrix.StdBasisMatrix.mul_same
 
 @[simp]
 theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
-    stdBasisMatrix i j c ⬝ stdBasisMatrix k l d = 0 := by
-  ext (a b)
+    stdBasisMatrix i j c * stdBasisMatrix k l d = 0 := by
+  ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix]
   by_cases h₁ : i = a
   -- Porting note: was `simp [h₁, h, h.symm]`

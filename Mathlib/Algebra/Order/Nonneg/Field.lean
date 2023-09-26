@@ -2,16 +2,13 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.order.nonneg.field
-! leanprover-community/mathlib commit b3f4f007a962e3787aa0f3b5c7942a1317f7d88e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Canonical.Defs
 import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Order.Nonneg.Ring
+
+#align_import algebra.order.nonneg.field from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
 /-!
 # Semifield structure on the type of nonnegative elements
@@ -29,7 +26,7 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 
 open Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Nonneg
 

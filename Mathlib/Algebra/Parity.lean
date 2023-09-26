@@ -2,14 +2,11 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.parity
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Data.Nat.Cast.Basic
+
+#align_import algebra.parity from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!  # Squares, even and odd elements
 
@@ -26,7 +23,7 @@ Odd elements are not unified with a multiplicative notion.
 
 ## Future work
 
-* TODO: Try to generalize further the typeclass assumptions on `IsSquare/even`.
+* TODO: Try to generalize further the typeclass assumptions on `IsSquare/Even`.
   For instance, in some cases, there are `Semiring` assumptions that I (DT) am not convinced are
   necessary.
 * TODO: Consider moving the definition and lemmas about `Odd` to a separate file.
@@ -38,7 +35,7 @@ Odd elements are not unified with a multiplicative notion.
 
 open MulOpposite
 
-variable {F α β R : Type _}
+variable {F α β R : Type*}
 
 section Mul
 
@@ -92,7 +89,7 @@ theorem isSquare_iff_exists_sq (m : α) : IsSquare m ↔ ∃ c, m = c ^ 2 := by 
 #align is_square_iff_exists_sq isSquare_iff_exists_sq
 #align even_iff_exists_two_nsmul even_iff_exists_two_nsmul
 
-alias isSquare_iff_exists_sq ↔ IsSquare.exists_sq isSquare_of_exists_sq
+alias ⟨IsSquare.exists_sq, isSquare_of_exists_sq⟩ := isSquare_iff_exists_sq
 #align is_square.exists_sq IsSquare.exists_sq
 #align is_square_of_exists_sq isSquare_of_exists_sq
 
@@ -132,6 +129,7 @@ theorem IsSquare_sq (a : α) : IsSquare (a ^ 2) :=
 
 variable [HasDistribNeg α]
 
+@[simp]
 theorem Even.neg_pow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
   rintro ⟨c, rfl⟩ a
   simp_rw [← two_mul, pow_mul, neg_sq]
@@ -171,7 +169,7 @@ theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
 #align is_square_inv isSquare_inv
 #align even_neg even_neg
 
-alias isSquare_inv ↔ _ IsSquare.inv
+alias ⟨_, IsSquare.inv⟩ := isSquare_inv
 #align is_square.inv IsSquare.inv
 
 attribute [to_additive] IsSquare.inv
@@ -196,7 +194,7 @@ theorem Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow,
 
 end DivisionMonoid
 
-theorem even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even (|a|) ↔ Even a := by
+theorem even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even |a| ↔ Even a := by
   cases abs_choice a
   · have h : abs a = a := by assumption
     simp only [h, even_neg]
@@ -236,7 +234,7 @@ theorem even_iff_exists_bit0 [Add α] {a : α} : Even a ↔ ∃ b, a = bit0 b :=
   Iff.rfl
 #align even_iff_exists_bit0 even_iff_exists_bit0
 
-alias even_iff_exists_bit0 ↔ Even.exists_bit0 _
+alias ⟨Even.exists_bit0, _⟩ := even_iff_exists_bit0
 #align even.exists_bit0 Even.exists_bit0
 
 section Semiring
@@ -250,7 +248,7 @@ theorem even_iff_exists_two_mul (m : α) : Even m ↔ ∃ c, m = 2 * c := by
 theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
 #align even_iff_two_dvd even_iff_two_dvd
 
-alias even_iff_two_dvd ↔ Even.two_dvd _
+alias ⟨Even.two_dvd, _⟩ := even_iff_two_dvd
 #align even.two_dvd Even.two_dvd
 
 theorem Even.trans_dvd (hm : Even m) (hn : m ∣ n) : Even n :=
@@ -312,7 +310,7 @@ theorem odd_iff_exists_bit1 {a : α} : Odd a ↔ ∃ b, a = bit1 b :=
     rfl
 #align odd_iff_exists_bit1 odd_iff_exists_bit1
 
-alias odd_iff_exists_bit1 ↔ Odd.exists_bit1 _
+alias ⟨Odd.exists_bit1, _⟩ := odd_iff_exists_bit1
 #align odd.exists_bit1 Odd.exists_bit1
 
 set_option linter.deprecated false in
@@ -321,7 +319,7 @@ set_option linter.deprecated false in
 #align odd_bit1 odd_bit1
 
 @[simp]
-theorem range_two_mul_add_one (α : Type _) [Semiring α] :
+theorem range_two_mul_add_one (α : Type*) [Semiring α] :
     (Set.range fun x : α => 2 * x + 1) = { a | Odd a } := by
   ext x
   simp [Odd, eq_comm]
@@ -331,6 +329,9 @@ theorem Even.add_odd : Even m → Odd n → Odd (m + n) := by
   rintro ⟨m, rfl⟩ ⟨n, rfl⟩
   exact ⟨m + n, by rw [mul_add, ← two_mul, add_assoc]⟩
 #align even.add_odd Even.add_odd
+
+theorem Even.odd_add : Even m → Odd n → Odd (n + m) :=
+  fun he ho ↦ by simp only [he.add_odd ho, add_comm n m]
 
 theorem Odd.add_even (hm : Odd m) (hn : Even n) : Odd (m + n) := by
   rw [add_comm]
@@ -349,10 +350,21 @@ theorem odd_one : Odd (1 : α) :=
   ⟨0, (zero_add _).symm.trans (congr_arg (· + (1 : α)) (mul_zero _).symm)⟩
 #align odd_one odd_one
 
-@[simp]
+@[simp] lemma Even.add_one (h : Even m) : Odd (m + 1) := h.add_odd odd_one
+
+@[simp] lemma Even.one_add (h : Even m) : Odd (1 + m) := h.odd_add odd_one
+
 theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
   ⟨m, rfl⟩
 #align odd_two_mul_add_one odd_two_mul_add_one
+
+@[simp] lemma odd_add_self_one' : Odd (m + (m + 1)) := by simp [← add_assoc]
+
+@[simp] lemma odd_add_one_self : Odd (m + 1 + m) := by simp [add_comm _ m]
+
+@[simp] lemma odd_add_one_self' : Odd (m + (1 + m)) := by simp [add_comm 1 m]
+
+@[simp] lemma one_add_self_self : Odd (1 + m + m) := by simp [add_comm 1 m]
 
 theorem Odd.map [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
   rintro ⟨m, rfl⟩
@@ -389,6 +401,7 @@ theorem Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
   simp_rw [pow_add, pow_mul, neg_sq, pow_one, mul_neg]
 #align odd.neg_pow Odd.neg_pow
 
+@[simp]
 theorem Odd.neg_one_pow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_pow, one_pow]
 #align odd.neg_one_pow Odd.neg_one_pow
 
@@ -468,19 +481,19 @@ set_option linter.deprecated false
 variable [LinearOrderedRing R] {a : R} {n : ℕ}
 
 theorem Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using pow_bit0_nonneg a k
+  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit0_nonneg a k
 #align even.pow_nonneg Even.pow_nonneg
 
 theorem Even.pow_pos (hn : Even n) (ha : a ≠ 0) : 0 < a ^ n := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using pow_bit0_pos ha k
+  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit0_pos ha k
 #align even.pow_pos Even.pow_pos
 
 theorem Odd.pow_nonpos (hn : Odd n) (ha : a ≤ 0) : a ^ n ≤ 0 := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using pow_bit1_nonpos_iff.mpr ha
+  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit1_nonpos_iff.mpr ha
 #align odd.pow_nonpos Odd.pow_nonpos
 
 theorem Odd.pow_neg (hn : Odd n) (ha : a < 0) : a ^ n < 0 := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using pow_bit1_neg_iff.mpr ha
+  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit1_neg_iff.mpr ha
 #align odd.pow_neg Odd.pow_neg
 
 theorem Odd.pow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
@@ -516,10 +529,7 @@ theorem pow_bit0_abs (a : R) (p : ℕ) : |a| ^ bit0 p = a ^ bit0 p :=
 #align pow_bit0_abs pow_bit0_abs
 
 theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using strictMono_pow_bit1 _
+  cases' hn with k hk; simpa only [hk, two_mul] using strictMono_pow_bit1 _
 #align odd.strict_mono_pow Odd.strictMono_pow
 
 end Powers
-
-/-- Simp attribute for lemmas about `even` -/
-register_simp_attr parity_simps

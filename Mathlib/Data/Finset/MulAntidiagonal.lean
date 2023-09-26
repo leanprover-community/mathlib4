@@ -2,14 +2,11 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.mul_antidiagonal
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.MulAntidiagonal
+
+#align_import data.finset.mul_antidiagonal from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-! # Multiplication antidiagonal as a `Finset`.
 
@@ -22,7 +19,7 @@ namespace Set
 
 open Pointwise
 
-variable {α : Type _} {s t : Set α}
+variable {α : Type*} {s t : Set α}
 
 @[to_additive]
 theorem IsPwo.mul [OrderedCancelCommMonoid α] (hs : s.IsPwo) (ht : t.IsPwo) : IsPwo (s * t) := by
@@ -55,7 +52,7 @@ namespace Finset
 
 open Pointwise
 
-variable {α : Type _}
+variable {α : Type*}
 
 variable [OrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsPwo) (ht : t.IsPwo) (a : α)
 

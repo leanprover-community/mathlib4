@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed.order.upper_lower
-! leanprover-community/mathlib commit 992efbda6f85a5c9074375d3c7cb9764c64d8f72
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Field.Pi
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Topology.Algebra.Order.UpperLower
+
+#align_import analysis.normed.order.upper_lower from "leanprover-community/mathlib"@"992efbda6f85a5c9074375d3c7cb9764c64d8f72"
 
 /-!
 # Upper/lower/order-connected sets in normed groups
@@ -27,7 +24,7 @@ are measurable.
 
 open Function Metric Set
 
-variable {α ι : Type _}
+variable {α ι : Type*}
 
 section MetricSpace
 
@@ -52,16 +49,16 @@ protected theorem IsLowerSet.thickening' (hs : IsLowerSet s) (ε : ℝ) :
 @[to_additive IsUpperSet.cthickening]
 protected theorem IsUpperSet.cthickening' (hs : IsUpperSet s) (ε : ℝ) :
     IsUpperSet (cthickening ε s) := by
-  rw [cthickening_eq_interᵢ_thickening'']
-  exact isUpperSet_interᵢ₂ fun δ _ => hs.thickening' _
+  rw [cthickening_eq_iInter_thickening'']
+  exact isUpperSet_iInter₂ fun δ _ => hs.thickening' _
 #align is_upper_set.cthickening' IsUpperSet.cthickening'
 #align is_upper_set.cthickening IsUpperSet.cthickening
 
 @[to_additive IsLowerSet.cthickening]
 protected theorem IsLowerSet.cthickening' (hs : IsLowerSet s) (ε : ℝ) :
     IsLowerSet (cthickening ε s) := by
-  rw [cthickening_eq_interᵢ_thickening'']
-  exact isLowerSet_interᵢ₂ fun δ _ => hs.thickening' _
+  rw [cthickening_eq_iInter_thickening'']
+  exact isLowerSet_iInter₂ fun δ _ => hs.thickening' _
 #align is_lower_set.cthickening' IsLowerSet.cthickening'
 #align is_lower_set.cthickening IsLowerSet.cthickening
 

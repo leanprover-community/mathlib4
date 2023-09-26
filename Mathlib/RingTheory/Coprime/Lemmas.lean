@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.coprime.lemmas
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Int.GCD
 import Mathlib.RingTheory.Coprime.Basic
+
+#align_import ring_theory.coprime.lemmas from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Additional lemmas about elements of a ring satisfying `IsCoprime`
@@ -33,23 +30,27 @@ section
 
 open Classical
 
-theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.coprime m n :=
-  ⟨fun ⟨a, b, H⟩ ↦
-    Nat.eq_one_of_dvd_one <|
-      Int.coe_nat_dvd.1 <| by
-        rw [Int.ofNat_one, ← H]
-        exact
-          dvd_add (dvd_mul_of_dvd_right (Int.coe_nat_dvd.2 <| Nat.gcd_dvd_left m n) _)
-            (dvd_mul_of_dvd_right (Int.coe_nat_dvd.2 <| Nat.gcd_dvd_right m n) _),
-    fun H ↦
-    ⟨Nat.gcdA m n, Nat.gcdB m n, by
-      rw [mul_comm _ (m : ℤ), mul_comm _ (n : ℤ), ← Nat.gcd_eq_gcd_ab, show _ = _ from H,
-        Int.ofNat_one]⟩⟩
+theorem Int.isCoprime_iff_gcd_eq_one {m n : ℤ} : IsCoprime m n ↔ Int.gcd m n = 1 := by
+  constructor
+  · rintro ⟨a, b, h⟩
+    have : 1 = m * a + n * b := by rwa [mul_comm m, mul_comm n, eq_comm]
+    exact Nat.dvd_one.mp (Int.gcd_dvd_iff.mpr ⟨a, b, this⟩)
+  · rw [← Int.ofNat_inj, IsCoprime, Int.gcd_eq_gcd_ab, mul_comm m, mul_comm n, Nat.cast_one]
+    intro h
+    exact ⟨_, _, h⟩
+
+theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Coprime m n := by
+  rw [Int.isCoprime_iff_gcd_eq_one, Int.coe_nat_gcd]
 #align nat.is_coprime_iff_coprime Nat.isCoprime_iff_coprime
 
-alias Nat.isCoprime_iff_coprime ↔ IsCoprime.nat_coprime Nat.coprime.isCoprime
+alias ⟨IsCoprime.nat_coprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
 #align is_coprime.nat_coprime IsCoprime.nat_coprime
-#align nat.coprime.is_coprime Nat.coprime.isCoprime
+#align nat.coprime.is_coprime Nat.Coprime.isCoprime
+
+theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
+    (h : Nat.Coprime a b) : (a : A) ≠ 0 ∨ (b : A) ≠ 0 :=
+  IsCoprime.ne_zero_or_ne_zero (R := A) <| by
+    simpa only [map_natCast] using IsCoprime.map (Nat.Coprime.isCoprime h) (Int.castRingHom A)
 
 theorem IsCoprime.prod_left : (∀ i ∈ t, IsCoprime (s i) x) → IsCoprime (∏ i in t, s i) x :=
   Finset.induction_on t (fun _ ↦ isCoprime_one_left) fun b t hbt ih H ↦ by
@@ -157,9 +158,8 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
     use fun i ↦ if i = a then u else v * μ i
     have hμ' : (∑ i in t, v * ((μ i * ∏ j in t \ {i}, s j) * s a)) = v * s a := by
       rw [← mul_sum, ← sum_mul, hμ, one_mul]
-    rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat]
-    dsimp
-    rw [if_pos rfl, ← huv, ← hμ', sum_congr rfl]
+    rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat, if_pos rfl,
+      ← huv, ← hμ', sum_congr rfl]
     intro x hx
     rw [mul_assoc, if_neg fun ha : x = a ↦ hat (ha.casesOn hx)]
     rw [mul_assoc]

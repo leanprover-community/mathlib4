@@ -2,14 +2,11 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Scott Morrison
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module combinatorics.quiver.basic
-! leanprover-community/mathlib commit 56adee5b5eef9e734d82272918300fca4f3e7cef
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Opposite
+import Mathlib.Tactic.Cases
+
+#align_import combinatorics.quiver.basic from "leanprover-community/mathlib"@"56adee5b5eef9e734d82272918300fca4f3e7cef"
 
 /-!
 # Quivers
@@ -27,6 +24,8 @@ There's some balance here: it's nice to allow `Prop` to ensure there are no mult
 but it is also results in error-prone universe signatures when constraints require a `Type`.
 -/
 
+set_option autoImplicit true
+
 
 open Opposite
 
@@ -41,7 +40,7 @@ For graphs with no repeated edges, one can use `Quiver.{0} V`, which ensures
 `a ⟶ b : Prop`. For multigraphs, one can use `Quiver.{v+1} V`, which ensures
 `a ⟶ b : Type v`.
 
-Because `Category` will later extend this class, we call the field `hom`.
+Because `Category` will later extend this class, we call the field `Hom`.
 Except when constructing instances, you should rarely see this, and use the `⟶` notation instead.
 -/
 class Quiver (V : Type u) where
@@ -65,7 +64,16 @@ structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{
   map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
 #align prefunctor Prefunctor
 
+attribute [pp_dot] Prefunctor.obj Prefunctor.map
+
 namespace Prefunctor
+
+-- Porting note: added during port.
+-- These lemmas can not be `@[simp]` because after `whnfR` they have a variable on the LHS.
+-- Nevertheless they are sometimes useful when building functors.
+lemma mk_obj [Quiver V] {obj : V → V} {map} {X : V} : (Prefunctor.mk obj map).obj X = obj X := rfl
+lemma mk_map [Quiver V] {obj : V → V} {map} {X Y : V} {f : X ⟶ Y} :
+    (Prefunctor.mk obj map).map f = map f := rfl
 
 @[ext]
 theorem ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F G : Prefunctor V W}
@@ -84,19 +92,19 @@ theorem ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F 
 
 /-- The identity morphism between quivers. -/
 @[simps]
-def id (V : Type _) [Quiver V] : Prefunctor V V where
+def id (V : Type*) [Quiver V] : Prefunctor V V where
   obj := fun X => X
   map f := f
 #align prefunctor.id Prefunctor.id
 #align prefunctor.id_obj Prefunctor.id_obj
 #align prefunctor.id_map Prefunctor.id_map
 
-instance (V : Type _) [Quiver V] : Inhabited (Prefunctor V V) :=
+instance (V : Type*) [Quiver V] : Inhabited (Prefunctor V V) :=
   ⟨id V⟩
 
 /-- Composition of morphisms between quivers. -/
-@[simps]
-def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
+@[simps, pp_dot]
+def comp {U : Type*} [Quiver U] {V : Type*} [Quiver V] {W : Type*} [Quiver W]
     (F : Prefunctor U V) (G : Prefunctor V W) : Prefunctor U W where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
@@ -105,17 +113,17 @@ def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
 #align prefunctor.comp_map Prefunctor.comp_map
 
 @[simp]
-theorem comp_id {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
+theorem comp_id {U V : Type*} [Quiver U] [Quiver V] (F : Prefunctor U V) :
     F.comp (id _) = F := rfl
 #align prefunctor.comp_id Prefunctor.comp_id
 
 @[simp]
-theorem id_comp {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
+theorem id_comp {U V : Type*} [Quiver U] [Quiver V] (F : Prefunctor U V) :
     (id _).comp F = F := rfl
 #align prefunctor.id_comp Prefunctor.id_comp
 
 @[simp]
-theorem comp_assoc {U V W Z : Type _} [Quiver U] [Quiver V] [Quiver W] [Quiver Z]
+theorem comp_assoc {U V W Z : Type*} [Quiver U] [Quiver V] [Quiver W] [Quiver Z]
     (F : Prefunctor U V) (G : Prefunctor V W) (H : Prefunctor W Z) :
     (F.comp G).comp H = F.comp (G.comp H) :=
   rfl
@@ -139,13 +147,13 @@ instance opposite {V} [Quiver V] : Quiver Vᵒᵖ :=
   ⟨fun a b => (unop b ⟶ unop a)ᵒᵖ⟩
 #align quiver.opposite Quiver.opposite
 
-/-- The opposite of an arrow in `V`.
--/
+/-- The opposite of an arrow in `V`. -/
+@[pp_dot]
 def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 #align quiver.hom.op Quiver.Hom.op
 
-/-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`.
--/
+/-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`. -/
+@[pp_dot]
 def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
 #align quiver.hom.unop Quiver.Hom.unop
 

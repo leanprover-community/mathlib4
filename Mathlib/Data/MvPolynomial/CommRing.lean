@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.mv_polynomial.comm_ring
-! leanprover-community/mathlib commit 972aa4234fa56ce119d19506045158a9d76881fd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Variables
+
+#align_import data.mv_polynomial.comm_ring from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Multivariate polynomials over a ring
@@ -24,7 +21,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type*` (indexing the variables)
 
-+ `R : Type _` `[CommRing R]` (the coefficients)
++ `R : Type*` `[CommRing R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
 This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
@@ -40,7 +37,7 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 noncomputable section
 
-open Classical BigOperators Set Function Finsupp AddMonoidAlgebra
+open Set Function Finsupp AddMonoidAlgebra
 
 universe u v
 
@@ -48,7 +45,7 @@ variable {R : Type u} {S : Type v}
 
 namespace MvPolynomial
 
-variable {σ : Type _} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
+variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
 section CommRing
 
@@ -56,7 +53,7 @@ variable [CommRing R]
 
 variable {p q : MvPolynomial σ R}
 
-instance : CommRing (MvPolynomial σ R) :=
+instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
   AddMonoidAlgebra.commRing
 
 variable (σ a a')
@@ -88,7 +85,8 @@ theorem support_neg : (-p).support = p.support :=
   Finsupp.support_neg p
 #align mv_polynomial.support_neg MvPolynomial.support_neg
 
-theorem support_sub (p q : MvPolynomial σ R) : (p - q).support ⊆ p.support ∪ q.support :=
+theorem support_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
+    (p - q).support ⊆ p.support ∪ q.support :=
   Finsupp.support_sub
 #align mv_polynomial.support_sub MvPolynomial.support_sub
 
@@ -100,7 +98,8 @@ theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 #align mv_polynomial.degrees_neg MvPolynomial.degrees_neg
 
-theorem degrees_sub (p q : MvPolynomial σ R) : (p - q).degrees ≤ p.degrees ⊔ q.degrees := by
+theorem degrees_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
+    (p - q).degrees ≤ p.degrees ⊔ q.degrees := by
   simpa only [sub_eq_add_neg] using le_trans (degrees_add p (-q)) (by rw [degrees_neg])
 #align mv_polynomial.degrees_sub MvPolynomial.degrees_sub
 
@@ -112,19 +111,20 @@ section Vars
 theorem vars_neg : (-p).vars = p.vars := by simp [vars, degrees_neg]
 #align mv_polynomial.vars_neg MvPolynomial.vars_neg
 
-theorem vars_sub_subset : (p - q).vars ⊆ p.vars ∪ q.vars := by
+theorem vars_sub_subset [DecidableEq σ] : (p - q).vars ⊆ p.vars ∪ q.vars := by
   convert vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
 #align mv_polynomial.vars_sub_subset MvPolynomial.vars_sub_subset
 
 @[simp]
-theorem vars_sub_of_disjoint (hpq : Disjoint p.vars q.vars) : (p - q).vars = p.vars ∪ q.vars := by
+theorem vars_sub_of_disjoint [DecidableEq σ] (hpq : Disjoint p.vars q.vars) :
+    (p - q).vars = p.vars ∪ q.vars := by
   rw [← vars_neg q] at hpq
   convert vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
 #align mv_polynomial.vars_sub_of_disjoint MvPolynomial.vars_sub_of_disjoint
 
 end Vars
 
-section Eval₂
+section Eval
 
 variable [CommRing S]
 
@@ -135,10 +135,16 @@ theorem eval₂_sub : (p - q).eval₂ f g = p.eval₂ f g - q.eval₂ f g :=
   (eval₂Hom f g).map_sub _ _
 #align mv_polynomial.eval₂_sub MvPolynomial.eval₂_sub
 
+theorem eval_sub (f : σ → R) : eval f (p - q) = eval f p - eval f q :=
+  eval₂_sub _ _ _
+
 @[simp]
 theorem eval₂_neg : (-p).eval₂ f g = -p.eval₂ f g :=
   (eval₂Hom f g).map_neg _
 #align mv_polynomial.eval₂_neg MvPolynomial.eval₂_neg
+
+theorem eval_neg (f : σ → R) : eval f (-p) = -eval f p :=
+  eval₂_neg _ _ _
 
 theorem hom_C (f : MvPolynomial σ ℤ →+* S) (n : ℤ) : f (C n) = (n : S) :=
   eq_intCast (f.comp C) n
@@ -172,7 +178,7 @@ def homEquiv : (MvPolynomial σ ℤ →+* S) ≃ (σ → S) where
   right_inv f := funext fun x => by simp only [coe_eval₂Hom, Function.comp_apply, eval₂_X]
 #align mv_polynomial.hom_equiv MvPolynomial.homEquiv
 
-end Eval₂
+end Eval
 
 section DegreeOf
 
@@ -180,6 +186,7 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
     (hf : ∀ m : σ →₀ ℕ, m ∈ f.support → k ≤ m x → coeff m f = coeff m g)
     (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → coeff m f = coeff m g) :
     degreeOf x (f - g) < k := by
+  classical
   rw [degreeOf_lt_iff h]
   intro m hm
   by_contra' hc

@@ -5,17 +5,18 @@ Authors: Johannes Hölzl, David Renshaw
 -/
 import Lean
 import Mathlib.Lean.Meta
+import Mathlib.Tactic.Basic
 import Mathlib.Tactic.LeftRight
 
 /-!
 # mk_iff_of_inductive_prop
 
-This file defines a tactic `tactic.mk_iff_of_inductive_prop` that generates `iff` rules for
+This file defines a command `mk_iff_of_inductive_prop` that generates `iff` rules for
 inductive `Prop`s. For example, when applied to `List.Chain`, it creates a declaration with
 the following type:
 
 ```lean
-∀ {α : Type _} (R : α → α → Prop) (a : α) (l : List α),
+∀ {α : Type*} (R : α → α → Prop) (a : α) (l : List α),
   Chain R a l ↔ l = [] ∨ ∃(b : α) (l' : List α), R a b ∧ Chain R b l ∧ l = b :: l'
 ```
 
@@ -23,11 +24,13 @@ This tactic can be called using either the `mk_iff_of_inductive_prop` user comma
 the `mk_iff` attribute.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.MkIff
 
 open Lean Meta Elab
 
-/-- `select m n` runs `tactic.right` `m` times, and then `tactic.left` `(n-m)` times.
+/-- `select m n` runs `right` `m` times, and then `left` `(n-m)` times.
 Fails if `n < m`. -/
 private def select (m n : Nat) (goal : MVarId) : MetaM MVarId :=
   match m,n with
@@ -60,15 +63,21 @@ partial def compactRelation :
       let (bs, as_ps', subst) := compactRelation (bs.map i) ((ps₁ ++ ps₂).map (λ⟨a, p⟩ => (a, i p)))
       (none :: bs, as_ps', i ∘ subst)
 
+private def updateLambdaBinderInfoD! (e : Expr) : Expr :=
+  match e with
+  | .lam n domain body _ => .lam n domain body .default
+  | _           => panic! "lambda expected"
+
 /-- Generates an expression of the form `∃(args), inner`. `args` is assumed to be a list of fvars.
 When possible, `p ∧ q` is used instead of `∃(_ : p), q`. -/
 def mkExistsList (args : List Expr) (inner : Expr) : MetaM Expr :=
 args.foldrM (λarg i:Expr => do
     let t ← inferType arg
     let l := (← inferType t).sortLevel!
-    pure $ if arg.occurs i || l != Level.zero
-      then mkApp2 (mkConst `Exists [l] : Expr) t (←(mkLambdaFVars #[arg] i))
-      else mkApp2 (mkConst `And [] : Expr) t i)
+    if arg.occurs i || l != Level.zero
+      then pure (mkApp2 (mkConst `Exists [l] : Expr) t
+        (updateLambdaBinderInfoD! <| ←mkLambdaFVars #[arg] i))
+      else pure <| mkApp2 (mkConst `And [] : Expr) t i)
   inner
 
 /-- `mkOpList op empty [x1, x2, ...]` is defined as `op x1 (op x2 ...)`.
@@ -102,7 +111,7 @@ structure Shape : Type where
     ∀ {α : Type u_1} {R : α → α → Prop} {a : α}, List.Chain R a []`
   ```
   and the first two variables `α` and `R` are "params", while the `a : α` gets
-  eliminated in a `compactRelation`, so `variablesKept = [false].
+  eliminated in a `compactRelation`, so `variablesKept = [false]`.
 
   `List.Chain.cons` has type
   ```lean
@@ -122,7 +131,7 @@ structure Shape : Type where
 while proving the iff theorem, and a proposition representing the constructor.
 -/
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
-  MetaM (Shape × Expr)  :=
+    MetaM (Shape × Expr)  :=
 do let type := (← getConstInfo c).instantiateTypeLevelParams univs
    let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty ↦ do
      pure $ ty.replaceFVars fvars params.toArray
@@ -140,7 +149,7 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
      let (n, r) ← match bs.filterMap id, eqs with
      | [], [] => do
            pure (some 0, (mkConst `True))
-     | bs', []  => do
+     | bs', [] => do
           let t : Expr ← bs'.getLast!.fvarId!.getType
           let l := (←inferType t).sortLevel!
           if l == Level.zero then do
@@ -164,7 +173,7 @@ match n with
     Tactic.evalTactic (←`(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   pure ()
-| n  + 1 => do
+| n + 1 => do
   let (subgoals,_) ← Term.TermElabM.run $ Tactic.run mvar do
     Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
   let [sg1, sg2] := subgoals | throwError "expected two subgoals"
@@ -229,7 +238,7 @@ Example:
 listBoolMerge [false, true, false, true] [0, 1, 2, 3, 4] = [none, (some 0), none, (some 1)]
 ```
 -/
-def listBoolMerge {α : Type _} : List Bool → List α → List (Option α)
+def listBoolMerge {α : Type*} : List Bool → List α → List (Option α)
 | [], _ => []
 | false :: xs, ys => none :: listBoolMerge xs ys
 | true :: xs, y :: ys => some y :: listBoolMerge xs ys
@@ -379,13 +388,13 @@ be just `c = i` for some index `i`.
 For example, `mk_iff_of_inductive_prop` on `List.Chain` produces:
 
 ```lean
-∀ { α : Type _} (R : α → α → Prop) (a : α) (l : List α),
+∀ { α : Type*} (R : α → α → Prop) (a : α) (l : List α),
   Chain R a l ↔ l = [] ∨ ∃(b : α) (l' : List α), R a b ∧ Chain R b l ∧ l = b :: l'
 ```
 
 See also the `mk_iff` user attribute.
 -/
-syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop" ident ident : command
+syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop " ident ppSpace ident : command
 
 elab_rules : command
 | `(command| mk_iff_of_inductive_prop $i:ident $r:ident) =>

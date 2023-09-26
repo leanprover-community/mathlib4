@@ -2,18 +2,16 @@
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module algebra.group_power.lemmas
-! leanprover-community/mathlib commit e655e4ea5c6d02854696f97494997ba4c31be802
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Algebra.Group.Opposite
+
+#align_import algebra.group_power.lemmas from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
 /-!
 # Lemmas about power operations on monoids and groups
@@ -26,7 +24,7 @@ open Int
 
 universe u v w x y z u₁ u₂
 
-variable {α : Type _} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : Type y} {B : Type z}
+variable {α : Type*} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : Type y} {B : Type z}
   {R : Type u₁} {S : Type u₂}
 
 /-!
@@ -128,6 +126,7 @@ theorem smul_pow' [MulDistribMulAction M N] (x : M) (m : N) (n : ℕ) : x • m 
 
 end Monoid
 
+@[simp]
 theorem zsmul_one [AddGroupWithOne A] (n : ℤ) : n • (1 : A) = n := by cases n <;> simp
 #align zsmul_one zsmul_one
 
@@ -501,7 +500,7 @@ theorem WithBot.coe_nsmul [AddMonoid A] (a : A) (n : ℕ) : ↑(n • a) = n •
 #align with_bot.coe_nsmul WithBot.coe_nsmul
 
 theorem nsmul_eq_mul' [NonAssocSemiring R] (a : R) (n : ℕ) : n • a = a * n := by
-  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero],
+  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero];
     rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]]
 #align nsmul_eq_mul' nsmul_eq_mul'ₓ
 -- typeclasses do not match up exactly.
@@ -548,7 +547,7 @@ theorem Int.coe_nat_pow (n m : ℕ) : ((n ^ m : ℕ) : ℤ) = (n : ℤ) ^ m := b
 #align int.coe_nat_pow Int.coe_nat_pow
 
 theorem Int.natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
-  induction' k with k ih <;> [rfl, rw [pow_succ', Int.natAbs_mul, pow_succ', ih]]
+  induction' k with k ih <;> [rfl; rw [pow_succ', Int.natAbs_mul, pow_succ', ih]]
 #align int.nat_abs_pow Int.natAbs_pow
 
 section bit0_bit1
@@ -578,6 +577,14 @@ theorem mul_bit1 [NonAssocRing R] {n r : R} : r * bit1 n = (2 : ℤ) • (r * n)
 #align mul_bit1 mul_bit1
 
 end bit0_bit1
+
+/-- Note this holds in marginally more generality than `Int.cast_mul` -/
+theorem Int.cast_mul_eq_zsmul_cast [AddCommGroupWithOne α] :
+    ∀ m n, ((m * n : ℤ) : α) = m • (n : α) :=
+  fun m =>
+  Int.inductionOn' m 0 (by simp) (fun k _ ih n => by simp [add_mul, add_zsmul, ih]) fun k _ ih n =>
+    by simp [sub_mul, sub_zsmul, ih, ← sub_eq_add_neg]
+#align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
 
 @[simp]
 theorem zsmul_eq_mul [Ring R] (a : R) : ∀ n : ℤ, n • a = n * a
@@ -625,9 +632,9 @@ theorem neg_one_pow_eq_pow_mod_two [Ring R] {n : ℕ} : (-1 : R) ^ n = (-1) ^ (n
   rw [← Nat.mod_add_div n 2, pow_add, pow_mul]; simp [sq]
 #align neg_one_pow_eq_pow_mod_two neg_one_pow_eq_pow_mod_two
 
-section StrictOrderedSemiring
+section OrderedSemiring
 
-variable [StrictOrderedSemiring R] {a : R}
+variable [OrderedSemiring R] {a : R}
 
 /-- Bernoulli's inequality. This version works for semirings but requires
 additional hypotheses `0 ≤ a * a` and `0 ≤ (1 + a) * (1 + a)`. -/
@@ -640,13 +647,13 @@ theorem one_add_mul_le_pow' (Hsq : 0 ≤ a * a) (Hsq' : 0 ≤ (1 + a) * (1 + a))
       add_nonneg (mul_nonneg n.cast_nonneg (mul_nonneg Hsq H)) Hsq
     calc
       1 + (↑(n + 2) : R) * a ≤ 1 + ↑(n + 2) * a + (n * (a * a * (2 + a)) + a * a) :=
-        (le_add_iff_nonneg_right _).2 this
+        le_add_of_nonneg_right this
       _ = (1 + a) * (1 + a) * (1 + n * a) := by {
           simp only [Nat.cast_add, add_mul, mul_add, one_mul, mul_one, ← one_add_one_eq_two,
             Nat.cast_one, add_assoc, add_right_inj]
           simp only [← add_assoc, add_comm _ (↑n * a)]
-          simp only [add_assoc, add_right_inj, (n.cast_commute (_ : R)).left_comm]
-          ac_rfl }
+          simp only [add_assoc, (n.cast_commute (_ : R)).left_comm]
+          simp only [add_comm, add_left_comm] }
       _ ≤ (1 + a) * (1 + a) * (1 + a) ^ n :=
         mul_le_mul_of_nonneg_left (one_add_mul_le_pow' Hsq Hsq' H _) Hsq'
       _ = (1 + a) ^ (n + 2) := by simp only [pow_succ, mul_assoc]
@@ -673,7 +680,7 @@ theorem sq_le (h₀ : 0 ≤ a) (h₁ : a ≤ 1) : a ^ 2 ≤ a :=
   pow_le_of_le_one h₀ h₁ two_ne_zero
 #align sq_le sq_le
 
-end StrictOrderedSemiring
+end OrderedSemiring
 
 section LinearOrderedSemiring
 
@@ -765,7 +772,7 @@ namespace Int
 lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by rw [sq, Int.natAbs_mul_self', sq]
 #align int.nat_abs_sq Int.natAbs_sq
 
-alias natAbs_sq ← natAbs_pow_two
+alias natAbs_pow_two := natAbs_sq
 #align int.nat_abs_pow_two Int.natAbs_pow_two
 
 theorem natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
@@ -774,13 +781,13 @@ theorem natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
   apply Nat.le_mul_self
 #align int.abs_le_self_sq Int.natAbs_le_self_sq
 
-alias natAbs_le_self_sq ← natAbs_le_self_pow_two
+alias natAbs_le_self_pow_two := natAbs_le_self_sq
 
 theorem le_self_sq (b : ℤ) : b ≤ b ^ 2 :=
   le_trans le_natAbs (natAbs_le_self_sq _)
 #align int.le_self_sq Int.le_self_sq
 
-alias le_self_sq ← le_self_pow_two
+alias le_self_pow_two := le_self_sq
 #align int.le_self_pow_two Int.le_self_pow_two
 
 theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) :
@@ -837,7 +844,7 @@ attribute [to_additive existing zmultiplesHom] zpowersHom
 variable {M G A}
 
 theorem powersHom_apply [Monoid M] (x : M) (n : Multiplicative ℕ) :
-    powersHom M x n = x ^ (Multiplicative.toAdd n):=
+    powersHom M x n = x ^ (Multiplicative.toAdd n) :=
   rfl
 #align powers_hom_apply powersHom_apply
 
@@ -914,49 +921,24 @@ theorem AddMonoidHom.apply_int [AddGroup M] (f : ℤ →+ M) (n : ℤ) : f n = n
 /-! `AddMonoidHom.ext_int` is defined in `Data.Int.Cast` -/
 
 variable (M G A)
--- Porting note: `simp` was broken during the port.
 /-- If `M` is commutative, `powersHom` is a multiplicative equivalence. -/
 def powersMulHom [CommMonoid M] : M ≃* (Multiplicative ℕ →* M) :=
-  { powersHom M with map_mul' := fun a b => MonoidHom.ext (by
-      intro n
-      let n' : ℕ := Multiplicative.toAdd n
-      show (a*b) ^ n' = a ^ n' * b ^ n'
-      simp [mul_pow]
-    ) }
+  { powersHom M with map_mul' := fun a b => MonoidHom.ext fun n => by simp [mul_pow] }
 #align powers_mul_hom powersMulHom
 
--- Porting note: `simp` was broken during the port.
 /-- If `M` is commutative, `zpowersHom` is a multiplicative equivalence. -/
 def zpowersMulHom [CommGroup G] : G ≃* (Multiplicative ℤ →* G) :=
-  { zpowersHom G with map_mul' := fun a b => MonoidHom.ext (by
-      intro n
-      let n' : ℤ := Multiplicative.toAdd n
-      show (a*b) ^ n' = a ^ n' * b ^ n'
-      simp [mul_zpow]
-    )
-  -- <| by simp [mul_zpow]
-  }
+  { zpowersHom G with map_mul' := fun a b => MonoidHom.ext fun n => by simp [mul_zpow] }
 #align zpowers_mul_hom zpowersMulHom
 
--- Porting note: `simp` was multiplesHom during the port.
 /-- If `M` is commutative, `multiplesHom` is an additive equivalence. -/
 def multiplesAddHom [AddCommMonoid A] : A ≃+ (ℕ →+ A) :=
-  { multiplesHom A with map_add' := fun a b => AddMonoidHom.ext (by
-      intro n
-      show n • (a+b) = n • a + n • b
-      simp [nsmul_add]
-  ) }
+  { multiplesHom A with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [nsmul_add] }
 #align multiples_add_hom multiplesAddHom
 
 /-- If `M` is commutative, `zmultiplesHom` is an additive equivalence. -/
 def zmultiplesAddHom [AddCommGroup A] : A ≃+ (ℤ →+ A) :=
-  { zmultiplesHom A with map_add' := fun a b => AddMonoidHom.ext (by
-      intro n
-      show n • (a+b) = n • a + n • b
-      simp [zsmul_add]
-  )
-  -- <| by simp [zsmul_add]
-  }
+  { zmultiplesHom A with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [zsmul_add] }
 #align zmultiples_add_hom zmultiplesAddHom
 
 variable {M G A}
@@ -1148,7 +1130,7 @@ theorem cast_int_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b : R) :
 
 @[simp]
 theorem cast_int_mul_left (h : Commute a b) (m : ℤ) :
-   Commute ((m : R) * a) b :=
+    Commute ((m : R) * a) b :=
   SemiconjBy.cast_int_mul_left h m
 #align commute.cast_int_mul_left Commute.cast_int_mul_left
 
@@ -1227,14 +1209,13 @@ namespace Units
 variable [Monoid M]
 
 theorem conj_pow (u : Mˣ) (x : M) (n : ℕ) :
-      ((↑u : M) * x * (↑u⁻¹ : M)) ^ n =
-      (u : M) * x ^ n * (↑u⁻¹ : M) :=
+    ((↑u : M) * x * (↑u⁻¹ : M)) ^ n = (u : M) * x ^ n * (↑u⁻¹ : M) :=
   (divp_eq_iff_mul_eq.2
   ((u.mk_semiconjBy x).pow_right n).eq.symm).symm
 #align units.conj_pow Units.conj_pow
 
 theorem conj_pow' (u : Mˣ) (x : M) (n : ℕ) :
-  ((↑u⁻¹ : M) * x * (u : M)) ^ n = (↑u⁻¹ : M) * x ^ n * (u : M) :=
+    ((↑u⁻¹ : M) * x * (u : M)) ^ n = (↑u⁻¹ : M) * x ^ n * (u : M) :=
   u⁻¹.conj_pow x n
 #align units.conj_pow' Units.conj_pow'
 
