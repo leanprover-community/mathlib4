@@ -55,17 +55,18 @@ variable {m : Type → Type} [Monad m]
 
 /-- Apply a monadic function to the array of values at each node in a `DiscrTree`. -/
 partial def Trie.mapArrays (t : Trie α s) (f : Array α → Array β) : Trie β s :=
-  go t id
+  go (.inl (t, id))
 where
-  go := fun (.node vs cs) k =>
+  go : Trie α s × (Trie β s → Trie β s) ⊕
+     Array (Key s × Trie α s) × Array (Key s × Trie β s) × (Array (Key s × Trie β s) → Trie β s)
+     → Trie β s
+  | .inl (.node vs cs, k) =>
     let vs' := f vs
-    goA cs (.mkEmpty cs.size) (fun cs' => k (.node vs' cs'))
-
-  goA (cs : Array (Key s × Trie α s)) (cs' : Array (Key s × Trie β s))
-       (k : Array (Key s × Trie β s) → Trie β s) : Trie β s :=
+    go (.inr (cs, .mkEmpty cs.size, fun cs' => k (.node vs' cs')))
+  | .inr (cs, cs', k) =>
     if h : cs'.size < cs.size then
       let (key, c) := cs.get ⟨cs'.size, h⟩
-      go c fun c' => goA cs (cs'.push (key, c')) k
+      go (.inl (c, fun c' => go (.inr (cs, cs'.push (key, c'), k))))
     else
       k cs'
 
