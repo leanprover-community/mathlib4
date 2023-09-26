@@ -33,8 +33,8 @@ theorem powersetAux_eq_map_coe {l : List α} : powersetAux l = (sublists l).map 
   induction l
   · case nil => rfl
   · case cons hd tl ih =>
-    have : List.map ofList (List.bind (sublists tl) fun x ↦ [x, hd :: x]) =
-        List.bind (List.map ofList (sublists tl)) fun x ↦ [x, hd ::ₘ x] := by
+    have : List.map ofList (List.bind (sublists tl) fun x => [x, hd :: x]) =
+        List.bind (List.map ofList (sublists tl)) fun x => [x, hd ::ₘ x] := by
       simp [List.bind_map, List.map_bind]
     simp only [powersetAux, List.foldr, bind_eq_bind, sublists_cons, this]
     congr
