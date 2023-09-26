@@ -2,14 +2,6 @@
  "packagesDir": "lake-packages",
  "packages":
  [{"git":
-   {"url": "https://github.com/EdAyers/ProofWidgets4",
-    "subDir?": null,
-    "rev": "44e6673a20fc0449d003983d1e1f472df40f7107",
-    "opts": {},
-    "name": "proofwidgets",
-    "inputRev?": "v0.0.15",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/mhuisi/lean4-cli.git",
     "subDir?": null,
     "rev": "21dac2e9cc7e3cf7da5800814787b833e680b2fd",
@@ -36,8 +28,16 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "524aae5c8000f6e38433ee0ad95bdae3cfa88fee",
+    "rev":  "67855403d60daf181775fa1ec63b04e70bcc3921",
     "opts": {},
     "name": "std",
     "inputRev?": "main",
+    "inherited": false}},
+  {"git":
+   {"url": "https://github.com/EdAyers/ProofWidgets4",
+    "subDir?": null,
+    "rev": "65bba7286e2395f3163fd0277110578f19b8170f",
+    "opts": {},
+    "name": "proofwidgets",
+    "inputRev?": "v0.0.16",
     "inherited": false}}]}

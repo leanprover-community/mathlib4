@@ -56,7 +56,7 @@ We use this to prove several versions of the Borel isomorphism theorem.
 -/
 
 
-open Set Function PolishSpace PiNat TopologicalSpace Metric Filter Topology MeasureTheory
+open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter Topology MeasureTheory
 
 variable {α : Type*} [TopologicalSpace α] {ι : Type*}
 
@@ -600,7 +600,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
   obtain ⟨u, u_anti, u_pos, u_lim⟩ :
     ∃ u : ℕ → ℝ, StrictAnti u ∧ (∀ n : ℕ, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
-  let F : ℕ → Set β := fun n => ⋃ (s : b) (_ : Bounded s.1 ∧ diam s.1 ≤ u n), E s
+  let F : ℕ → Set β := fun n => ⋃ (s : b) (_ : IsBounded s.1 ∧ diam s.1 ≤ u n), E s
   -- it is enough to show that `range f = ⋂ F n`, as the latter set is obviously measurable.
   suffices range f = ⋂ n, F n by
     have E_meas : ∀ s : b, MeasurableSet (E s) := by
@@ -623,11 +623,11 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
       apply hb.mem_nhds_iff.1
       exact ball_mem_nhds _ (half_pos (u_pos n))
     have diam_s : diam s ≤ u n := by
-      apply (diam_mono hs bounded_ball).trans
+      apply (diam_mono hs isBounded_ball).trans
       convert diam_ball (x := y) (half_pos (u_pos n)).le
       ring
     refine' mem_iUnion.2 ⟨⟨s, sb⟩, _⟩
-    refine' mem_iUnion.2 ⟨⟨Metric.Bounded.mono hs bounded_ball, diam_s⟩, _⟩
+    refine' mem_iUnion.2 ⟨⟨isBounded_ball.subset hs, diam_s⟩, _⟩
     apply mem_inter (subset_closure (mem_image_of_mem _ ys))
     refine' mem_iInter.2 fun t => mem_iInter.2 fun ht => ⟨_, _⟩
     · apply hq1
@@ -637,7 +637,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
   -- Now, let us prove the harder inclusion `⋂ F n ⊆ range f`.
   · intro x hx
     -- pick for each `n` a good set `s n` of small diameter for which `x ∈ E (s n)`.
-    have C1 : ∀ n, ∃ (s : b) (_ : Bounded s.1 ∧ diam s.1 ≤ u n), x ∈ E s := fun n => by
+    have C1 : ∀ n, ∃ (s : b) (_ : IsBounded s.1 ∧ diam s.1 ≤ u n), x ∈ E s := fun n => by
       simpa only [mem_iUnion] using mem_iInter.1 hx n
     choose s hs hxs using C1
     have C2 : ∀ n, (s n).1.Nonempty := by
