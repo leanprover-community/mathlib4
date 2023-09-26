@@ -62,7 +62,7 @@ open Set Function PolishSpace PiNat TopologicalSpace Metric Filter Topology Meas
 
 variable (α : Type*)
 
-/-- A standard Borel space is a measurable space arising as the borel sets of some Polish topology.
+/-- A standard Borel space is a measurable space arising as the Borel sets of some Polish topology.
 This is useful in situations where a space has no natural topology or
 the natural topology in a space is non-Polish.
 
@@ -82,7 +82,8 @@ class UpgradedStandardBorel extends MeasurableSpace α, TopologicalSpace α,
 a compatible Polish topology.
 
 Warning: following this with `borelize α` will cause an error. Instead, one can
-rewrite with `eq_borel_upgradeStandardBorel α`. -/
+rewrite with `eq_borel_upgradeStandardBorel α`. 
+TODO: fix the corresponding bug in `borelize`. -/
 noncomputable
 def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
     UpgradedStandardBorel α := by
@@ -524,7 +525,7 @@ variable {X Y β : Type*} [MeasurableSpace X] [StandardBorelSpace X]
 to a topological space with second countable topology, then the preimage of a set `s`
 is measurable if and only if the set is measurable.
 One implication is the definition of measurability, the other one heavily relies on `X` being a
-Polish space. -/
+standard Borel space. -/
 theorem measurableSet_preimage_iff_of_surjective [SecondCountableTopology Y] {f : X → Y}
     (hf : Measurable f) (hsurj : Surjective f) {s : Set Y} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet s := by
@@ -938,7 +939,7 @@ namespace StandardBorelSpace
 
 variable {α : Type*} [MeasurableSpace α] [StandardBorelSpace α]
 
-/-- If `s` is a meaurable set in a standard Borel space, there is a compatible Polish topology
+/-- If `s` is a measurable set in a standard Borel space, there is a compatible Polish topology
 making `s` clopen. -/
 theorem _root_.MeasurableSet.isClopenable' {s : Set α} (hs : MeasurableSet s) :
     ∃ _ : TopologicalSpace α, BorelSpace α ∧ PolishSpace α ∧ IsClosed s ∧ IsOpen s := by
