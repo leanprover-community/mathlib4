@@ -179,7 +179,7 @@ theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣
       rw [← pow_mul, mul_comm, pow_mul, h, one_pow]
 #align finite_field.forall_pow_eq_one_iff FiniteField.forall_pow_eq_one_iff
 
-theorem cast_subgroup_of_units_card_ne_zero {F : Type} [Ring F] [NoZeroDivisors F] [Nontrivial F]
+theorem card_cast_subgroup_card_ne_zero {F : Type} [Ring F] [NoZeroDivisors F] [Nontrivial F]
     (G : Subgroup Fˣ) [Fintype G] : (Fintype.card G : F) ≠ 0 := by
   let n := Fintype.card G
   intro nzero
@@ -262,7 +262,7 @@ theorem sum_subgroup_units {G : Subgroup Kˣ} [Fintype G] [Decidable (G = ⊥)] 
     simp only [ite_true, Subgroup.mem_bot, Fintype.card_ofSubsingleton, Nat.cast_ite, Nat.cast_one,
       Nat.cast_zero, univ_unique, Set.default_coe_singleton, sum_singleton, Units.val_one]
   · simp only [G_bot, ite_false]
-    exact sum_subgroup_units_zero_of_ne_bot K G_bot
+    exact sum_subgroup_units_eq_zero K G_bot
 
 theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     {G : Subgroup Fˣ} [Fintype G] {k : ℕ} (k_pos : 0 < k)
