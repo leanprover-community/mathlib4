@@ -5,8 +5,9 @@ Authors: Kevin Buzzard, Richard Hill
 -/
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.RingTheory.Derivation.Basic
+import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
-
+import Mathlib.Algebra.Algebra.Tower
 /-!
 # Derivations of univariate polynomials
 
@@ -92,40 +93,59 @@ def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
 @[simp] lemma mkDerivationEquiv_symm_apply (D : Derivation R R[X] A) :
     (mkDerivationEquiv R).symm D = D X := rfl
 
+
+end Polynomial
+
+
+open Polynomial
+
+variable {R A M} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M] [Module A M]
+  [Module R M] [IsScalarTower R A M] (a : A) (d : Derivation R A M)
+
+def Polynomial.Module.comp_eval₂ : Module R[X] M :=
+  Module.compHom M <| eval₂RingHom (algebraMap R A) a
+
+instance Polynomial.IsScalarTower_eval₂Module : @IsScalarTower R R[X] M _ (Module.comp_eval₂ a).toSMul _ := by
+  let _ : Module R[X] M := Module.comp_eval₂ a
+  constructor
+  intro r f m
+  change eval₂ _ a (r • f) • m = r • (eval₂ _ a f • m)
+  rw [eval₂_smul, Algebra.algebraMap_eq_smul_one, smul_mul_assoc, one_mul, smul_assoc]
+
+namespace Derivation
+
+def comp_eval₂ : @Derivation R R[X] _ _ _ M _ (Module.comp_eval₂ a) _ := by
+  let a_star := eval₂RingHom (algebraMap R A) a
+  let _ := Module.compHom M a_star
+  have : ∀ f : R[X], ∀ m : M, f • m = f.eval₂ (algebraMap R A) a • m := by tauto
+  exact {
+    toFun           := d ∘ a_star
+    map_add'        := by simp
+    map_smul'       := by
+      intros; dsimp
+      rw [eval₂_smul, Algebra.algebraMap_eq_smul_one, smul_mul_assoc, one_mul, d.map_smul]
+    leibniz'  := by
+        intro f g; dsimp
+        rw [eval₂_mul, d.leibniz, ←this, ←this]
+    map_one_eq_zero' := by simp
+  }
+
+lemma comp_eval₂_def (d : Derivation R A M) (f : R[X]) :
+    d.comp_eval₂ a f = d (f.eval₂ (algebraMap R A) a) := by rfl
+
 /--
-  If `f` is a polynomial over `R`
-  and `d : A → M` is an `R`-derivation
-  then for all `a : A` we have
+  A form of the chain rule: if `f ` is a polynomial over `R`
+  and `d : A → M` is an `R`-derivation then for all `a : A` we have
 
     `d(f(a)) = f.derivative (a) * d a`.
 -/
-theorem Derivation_eval₂ {R A M} [CommSemiring R] [CommSemiring A] [Algebra R A]
-    [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
-    (d : Derivation R A M) (f : R[X]) (a : A) :
+theorem eval₂ (d : Derivation R A M) (f : R[X]) :
     d (f.eval₂ (algebraMap R A) a) = f.derivative.eval₂ (algebraMap R A) a • d a := by
-  --write both sides of the equation as derivations in `f` and apply `derivation_ext`
-  let _ : Module R[X] M := Module.compHom M <| eval₂RingHom (algebraMap R A) a
-  have _ : IsScalarTower R R[X] M := {
-    smul_assoc := fun r f m ↦ by
-      change eval₂ _ a (r • f) • m = r • (eval₂ _ a f • m)
-      rw [eval₂_smul, Algebra.algebraMap_eq_smul_one, smul_mul_assoc, one_mul, smul_assoc]
-  }
-  let LHS : Derivation R R[X] M := {
-    toFun := fun f ↦ d (f.eval₂ (algebraMap R A) a)
-    map_add' := fun f g ↦ by dsimp; rw [eval₂_add, map_add]
-    map_smul' := fun r f ↦ by
-      dsimp;
-      rw [eval₂_smul, Algebra.algebraMap_eq_smul_one, smul_mul_assoc, one_mul, Derivation.map_smul]
-    map_one_eq_zero' := by
-      rw [LinearMap.coe_mk, AddHom.coe_mk, eval₂_one, Derivation.map_one_eq_zero]
-    leibniz' := fun f g ↦ by
-      dsimp; rw [eval₂_mul, Derivation.leibniz]
-      rfl
-  }
-  change LHS f = derivative f • _
+  --write both sides of the equation as derivations in `f` and then check that
+  --they are equal in the case `f = X`.
+  let _ : Module R[X] M := Module.comp_eval₂ a
+  change d.comp_eval₂ a f = derivative f • _
   rw [←mkDerivation_apply]
   congr
-  apply derivation_ext
-  rw [Derivation.mk_coe, LinearMap.coe_mk, AddHom.coe_mk, eval₂_X, mkDerivation_X]
-
-end Polynomial
+  apply derivation_ext; dsimp
+  rw [mkDerivation_X, Derivation.comp_eval₂_def, eval₂_X]

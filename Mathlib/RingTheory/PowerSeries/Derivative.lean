@@ -161,7 +161,7 @@ theorem trunc_D' (f : R⟦X⟧) (n : ℕ) : trunc (n-1) (D R f) = derivative (tr
     rw [succ_sub_one, trunc_D]
 
 theorem D_eval₂ (f : R[X]) (g : R⟦X⟧) :
-    D R (f.eval₂ (C R) g) = (derivative f).eval₂ (C R) g * D R g := Derivation_eval₂ (D R) f g
+    D R (f.eval₂ (C R) g) = (derivative f).eval₂ (C R) g * D R g := (D R).eval₂ g f
 
 /--
 A special case of the "chain rule" for formal power series in one variable:
