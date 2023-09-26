@@ -3,15 +3,17 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.CategoryTheory.Abelian.Injective
 
 #align_import category_theory.abelian.transfer from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
-# Transferring "abelian-ness" across a functor
+# Transferring properties across a functor
 
+## abelian-ness
 If `C` is an additive category, `D` is an abelian category,
 we have `F : C ⥤ D` `G : D ⥤ C` (both preserving zero morphisms),
 `G` is left exact (that is, preserves finite limits),
@@ -19,6 +21,10 @@ and further we have `adj : G ⊣ F` and `i : F ⋙ G ≅ 𝟭 C`,
 then `C` is also abelian.
 
 See <https://stacks.math.columbia.edu/tag/03A3>
+
+## enough-injectives
+If `C, D` are abelian categories with adjoint functors `L ⊣ R` where `L` is a faithful exact
+functor, then `D` having enough injectives implies that `C` has enough injectives as well.
 
 ## Notes
 The hypotheses, following the statement from the Stacks project,
@@ -39,7 +45,7 @@ namespace CategoryTheory
 
 open Limits
 
-universe v u₁ u₂
+universe v v₁ v₂ u₁ u₂
 
 namespace AbelianOfAdjunction
 
@@ -197,5 +203,148 @@ def abelianOfEquivalence {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFi
     [IsEquivalence F] : Abelian C :=
   abelianOfAdjunction F F.inv F.asEquivalence.unitIso.symm F.asEquivalence.symm.toAdjunction
 #align category_theory.abelian_of_equivalence CategoryTheory.abelianOfEquivalence
+
+namespace transfer_enough_injectives
+
+universe v₁ v₂
+
+variable {𝒜: Type u₁} {ℬ : Type u₂} [Category.{v₁} 𝒜] [Category.{v₂} ℬ]
+variable [EnoughInjectives ℬ]
+variable (L : 𝒜 ⥤ ℬ) (R : ℬ ⥤ 𝒜)
+
+/--
+Give a pair of functors
+```
+  --- L -->
+𝒜          ℬ,
+  <-- R ---
+```
+for `A : 𝒜`, pick an injective presentation `L A ⟶ J` which always exists by enough
+injectives of `D`. we pullback `J` across `R`.
+-/
+def adjointObjectOfInjectiveUnder (A : 𝒜) := R.obj <| Injective.under (L.obj A)
+
+variable {L R}
+variable (adj : L ⊣ R)
+
+/-
+If `g : X → R(J)` and `f : X → Y` is mono in `𝓐`, then there is an morphism `L(Y) → J`
+See the diagram below:
+```
+𝓐                             𝓑
+A ---> R(J)                 L(A) -----> J <--------
+      /                                /          |
+     /                                /           |
+    /  g                           by adjunction  |
+   /                                /             |
+  /                                /         by injectivity
+X                              L(X)               |
+|                               |L.map f          |
+v                               v                 |
+Y                              L(Y) ---------------
+```
+-/
+
+/--
+Let `L(A) ⟶ J` be an injective presentation.
+If `g : X → R(J)` and `f : X → Y` is mono in `𝓐`, then there is an morphism `L(Y) → J`:
+* Since `L` preserves finite limits, `L(f)` is mono
+* If `L ⊣ R`, then `g` gives a `L(X) ⟶ J`
+* we then factor `X ⟶ R(J)` into `L(f)` and `L(Y) ⟶ J`
+-/
+def toInjectiveUnder [PreservesFiniteLimits L] {A X Y : 𝒜}
+    (g : X ⟶ adjointObjectOfInjectiveUnder L R A) (f : X ⟶ Y) [Mono f] :
+    L.obj Y ⟶ Injective.under (L.obj A) :=
+  let i1 := (Injective.injective_under (L.obj A)).factors
+  (i1 ((adj.homEquiv X <| Injective.under <| L.obj A).symm g) (L.map f)).choose
+
+lemma toInjectiveUnder_spec [PreservesFiniteLimits L] {A X Y : 𝒜}
+    (g : X ⟶ adjointObjectOfInjectiveUnder L R A) (f : X ⟶ Y) [Mono f] :
+    L.map f ≫ toInjectiveUnder adj g f =
+    (adj.homEquiv X <| Injective.under <| L.obj A).symm g :=
+  let i1 := (Injective.injective_under (L.obj A)).factors
+  (i1 ((adj.homEquiv X <| Injective.under <| L.obj A).symm g) (L.map f)).choose_spec
+
+/--
+Let `L(A) ⟶ J` be an injective presentation.
+If `g : X → R(J)` and `f : X → Y` is mono in `𝓐`, then there is an morphism `L(Y) → J` as in
+`toInjectiveUnder`, then we obtain a map `Y ⟶ R(J)` via adjunction
+-/
+def adjointToInjective [PreservesFiniteLimits L] {A X Y : 𝒜}
+    (g : X ⟶ adjointObjectOfInjectiveUnder L R A) (f : X ⟶ Y) [Mono f] :
+    Y ⟶ adjointObjectOfInjectiveUnder L R A :=
+  adj.homEquiv _ _ <| toInjectiveUnder adj g f
+
+lemma adjointToInjective_spec [PreservesFiniteLimits L] {A X Y : 𝒜}
+    (g : X ⟶ adjointObjectOfInjectiveUnder L R A) (f : X ⟶ Y) [Mono f] :
+    f ≫ adjointToInjective adj g f = g := by
+  have := toInjectiveUnder_spec adj g f
+  rw [← adj.homEquiv_apply_eq] at this
+  rw [← this]
+  simp only [adjointToInjective, toInjectiveUnder, Adjunction.homEquiv_counit, Functor.id_obj, Adjunction.homEquiv_unit,
+    Functor.comp_obj, Functor.map_comp, Adjunction.unit_naturality_assoc, Category.assoc, Adjunction.counit_naturality,
+    Adjunction.left_triangle_components_assoc]
+  generalize_proofs h1 h2
+  congr 4
+  ext
+  rw [h1.choose_spec]
+
+lemma injective_adjointObjectOfInjectiveUnder_of_adj [PreservesFiniteLimits L] (A : 𝒜) :
+    Injective (adjointObjectOfInjectiveUnder L R A) where
+  factors _ _ _ := ⟨_, adjointToInjective_spec adj _ _⟩
+
+variable (L R)
+/--
+Let `L(A) ⟶ J` be an injective presentation of `L(A)`, then `A ⟶ R(J)` is an injective
+presentation of `A`
+-/
+def under (A : 𝒜) : 𝒜 := adjointObjectOfInjectiveUnder L R A
+
+variable {L R}
+/--
+Let `L(A) ⟶ J` be an injective presentation of `L(A)`, then `A ⟶ R(J)` is an injective
+presentation of `A`
+-/
+def toUnder [PreservesFiniteLimits L] (A : 𝒜) :
+    A ⟶ under L R A := adj.homEquiv _ _ <| Injective.ι _
+
+lemma mono_toUnder [Abelian 𝒜] [Abelian ℬ] [PreservesFiniteLimits L] [Faithful L]
+    (A : 𝒜) : Mono (toUnder adj A) := by
+  have eq1 : L.map (toUnder adj A) ≫ (adj.counit.app _) = Injective.ι _
+  ·  simp [toUnder]
+  have m1 : Mono (L.map (toUnder adj A) ≫ (adj.counit.app _))
+  · rw [eq1]
+    exact Injective.ι_mono _
+  have m2 : Mono (L.map (toUnder adj A))
+  · exact mono_of_mono _ (adj.counit.app <| Injective.under _)
+  have eq2 : L.map (kernel.ι (toUnder adj A)) =
+    (PreservesKernel.iso L (toUnder adj A)).hom ≫ kernel.ι (L.map (toUnder adj A))
+  · simp
+  have eq3 : kernel.ι (toUnder adj A) = 0
+  · refine L.zero_of_map_zero _ ?_
+    rw [Abelian.mono_iff_kernel_ι_eq_zero] at m2
+    rw [eq2, m2, comp_zero]
+  rw [Abelian.mono_iff_kernel_ι_eq_zero, eq3]
+
+end transfer_enough_injectives
+
+open transfer_enough_injectives in
+lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
+    [Category.{v₁} C] [Category.{v₂} D] [Abelian C] [Abelian D]
+    {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) [Faithful L] [PreservesFiniteLimits L]
+    [EnoughInjectives D] : EnoughInjectives C where
+  presentation A :=
+    ⟨⟨_, injective_adjointObjectOfInjectiveUnder_of_adj adj _, _, mono_toUnder adj A⟩⟩
+
+-- Implementation note: If we require `C` and `D` to have morphisms at the same universe level,
+-- then it suffices to assume only `abelian C`sine  `abelian D` would be implied by
+-- `abelian_of_adjunction`; but in this implementation, we choose not to impose this restriction on
+-- the universe levels of morphisms, so we need an additional assumption `abelian D`.
+
+/-- An equivalence of categories transfers enough injectiveness. -/
+lemma enough_injectives.of_equivalence {C : Type u₁} {D : Type u₂}
+  [Category.{v₁} C] [Category.{v₂} D] [Abelian C] [Abelian D]
+  (e : C ⥤ D) [IsEquivalence e] [EnoughInjectives D] : EnoughInjectives C :=
+EnoughInjectives.of_adjunction (adj := e.asEquivalence.toAdjunction)
 
 end CategoryTheory
