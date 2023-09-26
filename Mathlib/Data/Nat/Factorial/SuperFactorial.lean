@@ -51,7 +51,7 @@ theorem superFactorial_two : sf 2 = 2 :=
 open BigOperators Finset
 
 @[simp]
-theorem prod_Icc_factorial : ∀ n : ℕ, (∏ x in Icc 1 n, x !) = sf n
+theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x in Icc 1 n, x! = sf n
   | 0 => rfl
   | n + 1 => by
     rw [← Ico_succ_right 1 n.succ, prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n,
