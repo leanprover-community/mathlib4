@@ -301,10 +301,10 @@ theorem edist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f)
   simpa only [ENNReal.coe_pow] using (hf.iterate n) x (f x)
 #align lipschitz_with.edist_iterate_succ_le_geometric LipschitzWith.edist_iterate_succ_le_geometric
 
-protected theorem mul {f g : Function.End α} {Kf Kg} (hf : LipschitzWith Kf f)
+protected theorem mul_end {f g : Function.End α} {Kf Kg} (hf : LipschitzWith Kf f)
     (hg : LipschitzWith Kg g) : LipschitzWith (Kf * Kg) (f * g : Function.End α) :=
   hf.comp hg
-#align lipschitz_with.mul LipschitzWith.mul
+#align lipschitz_with.mul LipschitzWith.mul_end
 
 /-- The product of a list of Lipschitz continuous endomorphisms is a Lipschitz continuous
 endomorphism. -/
@@ -313,16 +313,16 @@ protected theorem list_prod (f : ι → Function.End α) (K : ι → ℝ≥0)
   | [] => by simpa using LipschitzWith.id
   | i::l => by
     simp only [List.map_cons, List.prod_cons]
-    exact (h i).mul (LipschitzWith.list_prod f K h l)
+    exact (h i).mul_end (LipschitzWith.list_prod f K h l)
 #align lipschitz_with.list_prod LipschitzWith.list_prod
 
-protected theorem pow {f : Function.End α} {K} (h : LipschitzWith K f) :
+protected theorem pow_end {f : Function.End α} {K} (h : LipschitzWith K f) :
     ∀ n : ℕ, LipschitzWith (K ^ n) (f ^ n : Function.End α)
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
   | n + 1 => by
     rw [pow_succ, pow_succ]
-    exact h.mul (LipschitzWith.pow h n)
-#align lipschitz_with.pow LipschitzWith.pow
+    exact h.mul_end (LipschitzWith.pow_end h n)
+#align lipschitz_with.pow LipschitzWith.pow_end
 
 end EMetric
 
