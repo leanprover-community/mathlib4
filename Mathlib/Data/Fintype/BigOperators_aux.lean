@@ -210,6 +210,11 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
   let e := (Equiv.Finset.union s t h).symm
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
 
+def piSetUnion {ι} (α : ι → Type*) {s t : Set ι} [DecidablePred (· ∈ s)] (h : Disjoint s t) :
+    ((∀ i : s, α i) × ∀ i : t, α i) ≃ ∀ i : (s ∪ t : Set ι), α i :=
+  let e := (Equiv.Set.union <| Set.disjoint_iff.mp h).symm
+  sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
+
 end Equiv
 
 theorem eval_preimage {ι} [DecidableEq ι] {α : ι → Type _} {i : ι} {s : Set (α i)} :
@@ -258,15 +263,16 @@ theorem pred_update {α} [DecidableEq α] {β : α → Type _} (P : ∀ ⦃a⦄,
 namespace Function
 variable {ι : Sort _} {π : ι → Sort _} {x : ∀ i, π i}
 
-/-- `updateFinset x s y` is the vector `x` with the coordinates in `s` changed to the values of `y`. -/
-def updateFinset (x : ∀ i, π i) (s : Finset ι) [DecidableEq ι] (y : ∀ i : ↥s, π i) (i : ι) :
-    π i :=
+/-- `updateSet x s y` is the vector `x` with the coordinates in `s` changed to the values of `y`.
+This is `Set.piecewise` where the left argument `x` is dependently-typed
+-/
+def updateSet (x : ∀ i, π i) (s : Set ι) [DecidablePred (· ∈ s)]  (y : ∀ i : ↥s, π i) (i : ι) : π i :=
   if hi : i ∈ s then y ⟨i, hi⟩ else x i
 
 /-
-todo: do `updateFinset` this for SetLike, like this:
+todo: do `updateSet` this for SetLike, like this:
 ```
-def updateFinset {𝓢} [SetLike 𝓢 ι] (s : 𝓢) (x : ∀ i, π i) (y : ∀ i : ↥s, π i) (i : ι) : π i :=
+def updateSet {𝓢} [SetLike 𝓢 ι] (s : 𝓢) (x : ∀ i, π i) (y : ∀ i : ↥s, π i) (i : ι) : π i :=
   if hi : i ∈ s then y ⟨i, hi⟩ else x i
 ```
 however, `Finset` is not currently `SetLike`.
@@ -277,41 +283,50 @@ instance : SetLike (Finset ι) ι where
 ```
 -/
 
-open Finset
-variable [DecidableEq ι]
+open Set
+-- variable [DecidablePred (· ∈ s)]
 
-@[simp] theorem updateFinset_empty {y} : updateFinset x ∅ y = x :=
+@[simp] theorem updateSet_empty {y} : updateSet x ∅ y = x :=
   rfl
 
-theorem updateFinset_singleton {i y} :
-    updateFinset x {i} y = Function.update x i (y ⟨i, mem_singleton_self i⟩) := by
+theorem updateSet_singleton [DecidableEq ι] {i y} :
+    updateSet x {i} y = Function.update x i (y ⟨i, mem_singleton i⟩) := by
   congr with j
   by_cases hj : j = i
   · cases hj
-    simp only [dif_pos, Finset.mem_singleton, update_same, updateFinset]
-  · simp [hj, updateFinset]
+    simp only [dif_pos, mem_singleton, update_same, updateSet]
+  · simp [hj, updateSet]
 
-theorem update_eq_updateFinset {i y} :
-    Function.update x i y = updateFinset x {i} (uniqueElim y) := by
+theorem update_eq_updateSet [DecidableEq ι] {i y} :
+    Function.update x i y = updateSet x {i} (uniqueElim y) := by
   congr with j
   by_cases hj : j = i
   · cases hj
-    simp only [dif_pos, Finset.mem_singleton, update_same, updateFinset]
+    simp only [dif_pos, mem_singleton, update_same, updateSet]
     exact uniqueElim_default (α := fun j : ({i} : Finset ι) => π j) y
-  · simp [hj, updateFinset]
+  · simp [hj, updateSet]
 
-theorem updateFinset_updateFinset {s t : Finset ι} (hst : Disjoint s t)
+theorem updateSet_updateSet
+    {s t : Set ι} (hst : Disjoint s t)
+    [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] [DecidablePred (· ∈ s ∪ t)]
     {y : ∀ i : ↥s, π i} {z : ∀ i : ↥t, π i} :
-    updateFinset (updateFinset x s y) t z =
-    updateFinset x (s ∪ t) (Equiv.piFinsetUnion π hst ⟨y, z⟩) := by
-  set e := Equiv.Finset.union s t hst |>.symm
+    updateSet (updateSet x s y) t z =
+    updateSet x (s ∪ t) (Equiv.piSetUnion π hst ⟨y, z⟩) := by
+  set e := Equiv.Set.union (Set.disjoint_iff.mp hst) |>.symm
   congr with i
   by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
-    simp only [updateFinset, his, hit, dif_pos, dif_neg, Finset.mem_union, true_or_iff,
+    simp only [updateSet, his, hit, dif_pos, dif_neg, mem_union, true_or_iff,
       false_or_iff, not_false_iff]
-  · exfalso; exact Finset.disjoint_left.mp hst his hit
+  · exfalso; exact Set.disjoint_left.mp hst his hit
   · exact piCongrLeft_sum_inl (fun b : ↥(s ∪ t) => π b) e y z ⟨i, his⟩ |>.symm
   · exact piCongrLeft_sum_inr (fun b : ↥(s ∪ t) => π b) e y z ⟨i, hit⟩ |>.symm
+
+theorem updateSet_congr {s t : Set ι} (hst : s = t)
+    [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] {y : ∀ i : ↥s, π i} :
+    updateSet x s y = updateSet x t (y ∘' Equiv.Set.ofEq hst.symm) := by
+  subst hst
+  congr!
+
 
 end Function
 end Function

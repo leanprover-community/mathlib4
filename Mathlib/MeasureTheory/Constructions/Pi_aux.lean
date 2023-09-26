@@ -65,6 +65,15 @@ theorem measurePreserving_piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : 
   measurePreserving_piCongrLeft (fun i : ↥(s ∪ t) ↦ μ i) e |>.comp <|
     measurePreserving_sumPiEquivProdPi_symm fun b ↦ μ (e b)
 
+-- theorem measurePreserving_piSetUnion [DecidablePred (· ∈ s)] {s t : Set ι} (h : Disjoint s t)
+--     [∀ i, SigmaFinite (μ i)] :
+--     MeasurePreserving (MeasurableEquiv.piSetUnion α h)
+--       ((Measure.pi fun i : s ↦ μ i).prod (Measure.pi fun i : t ↦ μ i))
+--       (Measure.pi fun i : ↥(s ∪ t) ↦ μ i) :=
+--   let e := (Finset.union s t h).symm
+--   measurePreserving_piCongrLeft (fun i : ↥(s ∪ t) ↦ μ i) e |>.comp <|
+--     measurePreserving_sumPiEquivProdPi_symm fun b ↦ μ (e b)
+
 -- generalizes `measurePreserving_funUnique`
 theorem measurePreserving_piUnique {π : ι → Type _} [Unique ι] [∀ i, MeasurableSpace (π i)]
     (μ : ∀ i, Measure (π i)) :

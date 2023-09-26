@@ -12,7 +12,7 @@ A supplement to the file
 -/
 
 
-open scoped Classical BigOperators
+open scoped BigOperators
 open Filter
 set_option autoImplicit true
 
@@ -113,6 +113,13 @@ variable (α) in
 def MeasurableEquiv.piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : Disjoint s t) :
     ((∀ i : s, α i) × ∀ i : t, α i) ≃ᵐ ∀ i : (s ∪ t : Finset ι), α i :=
   let e := (Finset.union s t h).symm
+  MeasurableEquiv.sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans <|
+    .piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e
+
+variable (α) in
+def MeasurableEquiv.piSetUnion {s t : Set ι} [DecidablePred (· ∈ s)] (h : Disjoint s t) :
+    ((∀ i : s, α i) × ∀ i : t, α i) ≃ᵐ ∀ i : (s ∪ t : Set ι), α i :=
+  let e := (Equiv.Set.union <| Set.disjoint_iff.mp h).symm
   MeasurableEquiv.sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans <|
     .piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e
 
