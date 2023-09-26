@@ -247,15 +247,12 @@ theorem sum_subgroup_units_zero_of_ne_bot {G : Subgroup Kˣ} [Fintype G] (hg : G
   -- thus one of (a - 1) or ∑ G, x is zero
   have hzero : (((a : Kˣ) : K) - 1) = 0 ∨ ∑ x : ↥G, ((x : Kˣ) : K) = 0 := by
     rw [←mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]
-  rcases hzero with h | h
-  · -- If the former, we reach contradiction from a ≠ 1
-    exfalso
-    apply ha
-    ext
-    rw [←sub_eq_zero]
-    exact h
-  · -- If the latter, we are done
-    exact h
+  apply Or.resolve_left hzero
+  contrapose! ha
+  ext
+  rw [←sub_eq_zero]
+  exact ha
+
 
 /-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
 theorem sum_subgroup_units {G : Subgroup Kˣ} [Fintype G] [Decidable (G = ⊥)] :
