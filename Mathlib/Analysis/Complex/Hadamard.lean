@@ -96,7 +96,7 @@ noncomputable def inv_interp_strip (f : ℂ → ℂ) (z : ℂ): ℂ :=
 private noncomputable def F (f : ℂ → ℂ) := fun z ↦ f z • inv_interp_strip f z
 
 /-- Similar to F only 'easier'. Useful for proof steps. -/
-private noncomputable def F' (n: ℕ) (f: ℂ → ℂ) := fun z ↦ F f z • exp ((z^2-1) * (n : ℝ)⁻¹) 
+private noncomputable def F' (n: ℕ) (f: ℂ → ℂ) := fun z ↦ F f z • exp ((z^2-1) * (n : ℝ)⁻¹)
 
 
 -- Small lemma : Sup of abs is nonneg
@@ -370,8 +370,8 @@ lemma edges_le_one (f: ℂ → ℂ) (n : ℕ) (hB : BddAbove ((abs ∘ f) '' (cl
   -- Expterm ≤ 1
   have hexp : abs (exp ((z ^ 2 - 1) * (↑n)⁻¹)) ≤ 1 := by
     rw [abs_exp, ← re_add_im z]
-    simp only [tsub_zero, sub_re, one_re, add_im, add_zero, mul_one, mul_re, 
-      zero_div, zero_mul, ofReal_re, add_re, one_im, nat_cast_im, ofReal_im, I_im, 
+    simp only [tsub_zero, sub_re, one_re, add_im, add_zero, mul_one, mul_re,
+      zero_div, zero_mul, ofReal_re, add_re, one_im, nat_cast_im, ofReal_im, I_im,
       zero_add, inv_im, sq, sub_im, I_re, Real.exp_le_one_iff, mul_im, mul_zero, neg_zero]
     cases' hz with hz0 hz1
     · simp only [hz0]
@@ -385,7 +385,7 @@ lemma edges_le_one (f: ℂ → ℂ) (n : ℕ) (hB : BddAbove ((abs ∘ f) '' (cl
       apply sq_nonneg
     · rw [hz1.out]
       simp only [ofReal_one, cpow_two, nat_cast_re, sq]
-      simp only [mul_re, add_re, one_re, ofReal_re, I_re, mul_zero, ofReal_im, I_im, mul_one, 
+      simp only [mul_re, add_re, one_re, ofReal_re, I_re, mul_zero, ofReal_im, I_im, mul_one,
         sub_self, add_zero, add_im, one_im, mul_im, zero_add, sub_sub_cancel_left, neg_mul,
         Left.neg_nonpos_iff, gt_iff_lt, mul_self_pos, ne_eq]
       simp only [hz1.out, Right.neg_nonpos_iff, one_pow, neg_mul, sub_sub_cancel_left,← sq]
@@ -458,7 +458,7 @@ lemma F_seq_to_F (f : ℂ → ℂ) (z : ℂ) : Tendsto (fun n : ℕ ↦ F' n f z
   have mul_const : Tendsto (fun n : ℕ ↦ (z^2-1) * (n : ℝ)⁻¹) atTop (nhds 0) := by
     simpa only [mul_zero]
       using tendsto_const_nhds.mul (tendsto_algebraMap_inverse_atTop_nhds_0_nat ℂ)
-  
+
   have comp_exp : Tendsto (fun n : ℕ ↦ exp ( (z^2-1) * (n : ℝ)⁻¹)) atTop (nhds 1) := by
     simpa only [exp_zero]
       using  (Continuous.tendsto continuous_exp 0).comp mul_const
