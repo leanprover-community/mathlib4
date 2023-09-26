@@ -42,9 +42,9 @@ variable [AddCommMonoid E] [Module 𝕜 E]
 /-- Every pointed cone is a convex cone. -/
 @[coe]
 def toConvexCone (S : PointedCone 𝕜 E) : ConvexCone 𝕜 E where
-    carrier := S
-    smul_mem' c hc _ hx := S.smul_mem ⟨c, le_of_lt hc⟩ hx
-    add_mem' _ hx _ hy := S.add_mem hx hy
+  carrier := S
+  smul_mem' c hc _ hx := S.smul_mem ⟨c, le_of_lt hc⟩ hx
+  add_mem' _ hx _ hy := S.add_mem hx hy
 
 instance : Coe (PointedCone 𝕜 E) (ConvexCone 𝕜 E) where
   coe := toConvexCone
