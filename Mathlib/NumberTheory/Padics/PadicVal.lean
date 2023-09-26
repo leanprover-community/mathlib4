@@ -439,24 +439,18 @@ theorem min_le_padicValRat_add {q r : ℚ} (hqr : q + r ≠ 0) :
 lemma min_eq_padicValRat_add {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
     (hval : padicValRat p q ≠ padicValRat p r) :
     padicValRat p (q + r) = min (padicValRat p q) (padicValRat p r) := by
-  have Hmin := padicValRat.min_le_padicValRat_add (p := p) (hp := hp) hqr
-  wlog h : padicValRat p q < padicValRat p r generalizing q r with Hgen
-  · push_neg at h; rw [add_comm, min_comm]
-    exact Hgen (by rwa [add_comm]) hr hq hval.symm
-      (by rwa [min_comm, add_comm])
-      (hval.symm.lt_of_le h)
-  · rw [min_eq_left (le_of_lt h)] at Hmin ⊢
-    suffices Hreq : padicValRat p (q + r) ≤ padicValRat p q by linarith
-    suffices Haux : min (padicValRat p (q + r)) (padicValRat p r) ≤ padicValRat p q by
-      rw [min_def] at Haux
-      split_ifs at Haux with Hspl
-      · assumption
-      · linarith
-    calc padicValRat p q = padicValRat p ((q + r) - r) := by congr; simp
-    _ ≥ min (padicValRat p (q + r)) (padicValRat p (-r)) :=
-    ge_iff_le.mp <| le_trans (padicValRat.min_le_padicValRat_add (q := q+r) (r := -r) (by simpa))
-      (by rw [add_neg_cancel_right, add_sub_cancel])
-    _ = min (padicValRat p (q + r)) (padicValRat p r) := by rw [padicValRat.neg]
+  have h1 := min_le_padicValRat_add (p := p) hqr
+  have h2 := min_le_padicValRat_add (p := p) (ne_of_eq_of_ne (add_neg_cancel_right q r) hq)
+  have h3 := min_le_padicValRat_add (p := p) (ne_of_eq_of_ne (add_neg_cancel_right r q) hr)
+  rw [add_neg_cancel_right, padicValRat.neg] at h2 h3
+  rw [add_comm] at h3
+  refine' le_antisymm (le_min _ _) h1
+  · contrapose! h2
+    rw [min_eq_right h2.le] at h3
+    exact lt_min h2 (lt_of_le_of_ne h3 hval)
+  · contrapose! h3
+    rw [min_eq_right h3.le] at h2
+    exact lt_min h3 (lt_of_le_of_ne h2 hval.symm)
 
 lemma add_eq_of_lt {q r : ℚ} (hqr : q + r ≠ 0)
     (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q < padicValRat p r) :
