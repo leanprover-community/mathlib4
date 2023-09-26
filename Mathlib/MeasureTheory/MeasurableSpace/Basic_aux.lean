@@ -92,24 +92,29 @@ theorem MeasurableEquiv.piCongrLeft_eq (f : ι' ≃ ι) :
 
 /-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
 This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
-def MeasurableEquiv.piSum (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (α i)] :
-  ((∀ i, α (.inl i)) × ∀ i', α (.inr i')) ≃ᵐ ∀ i, α i := by
-  refine' { Equiv.piSum α with .. }
+def MeasurableEquiv.sumPiEquivProdPi (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (α i)] :
+   (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') := by
+  refine' { Equiv.sumPiEquivProdPi α with .. }
+  · refine Measurable.prod ?_ ?_ <;>
+      rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
   · rw [measurable_pi_iff]; rintro (i|i)
     exact measurable_pi_iff.1 measurable_fst _
     exact measurable_pi_iff.1 measurable_snd _
-  · refine Measurable.prod ?_ ?_ <;>
-      rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
 
-theorem MeasurableEquiv.piSum_eq (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (α i)] :
-  (MeasurableEquiv.piSum α : _ → _) = Equiv.piSum α := by rfl
+theorem MeasurableEquiv.coe_sumPiEquivProdPi (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (α i)] :
+    (MeasurableEquiv.sumPiEquivProdPi α : _ → _) = Equiv.sumPiEquivProdPi α := by rfl
+
+theorem MeasurableEquiv.coe_sumPiEquivProdPi_symm (α : ι ⊕ ι' → Type _)
+    [∀ i, MeasurableSpace (α i)] :
+    (MeasurableEquiv.sumPiEquivProdPi α |>.symm : _ → _) = (Equiv.sumPiEquivProdPi α).symm := by rfl
 
 -- we really need a linter that warns me if I don't have a `[DecidableEq ι]` argument here.
 variable (α) in
 def MeasurableEquiv.piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : Disjoint s t) :
     ((∀ i : s, α i) × ∀ i : t, α i) ≃ᵐ ∀ i : (s ∪ t : Finset ι), α i :=
-  let e := (finsetUnionEquivSum s t h).symm
-  MeasurableEquiv.piSum (fun b ↦ α (e b)) |>.trans <| .piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e
+  let e := (Finset.union s t h).symm
+  MeasurableEquiv.sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans <|
+    .piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e
 
 end MeasurableOnFamily
 

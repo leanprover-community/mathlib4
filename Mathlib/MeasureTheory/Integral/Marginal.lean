@@ -58,14 +58,14 @@ namespace MeasureTheory
 section Marginal
 
 variable {δ δ' : Type _} {π : δ → Type _} [∀ x, MeasurableSpace (π x)]
-variable {μ : ∀ i, Measure (π i)} [∀ i, SigmaFinite (μ i)]
+variable {μ : ∀ i, Measure (π i)} [∀ i, SigmaFinite (μ i)] [DecidableEq δ]
 variable {s t : Finset δ} {f g : (∀ i, π i) → ℝ≥0∞} {x y : ∀ i, π i} {i : δ}
 
 /-- Integrate `f(x₁,…,xₙ)` over all variables `xᵢ` where `i ∈ s`. Return a function in the
   remaining variables (it will be constant in the `xᵢ` for `i ∈ s`).
   This is the marginal distribution of all variables not in `s`. -/
-def marginal (μ : ∀ i, Measure (π i)) (s : Finset δ) (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
-    ℝ≥0∞ :=
+def marginal (μ : ∀ i, Measure (π i)) (s : Finset δ) (f : (∀ i, π i) → ℝ≥0∞)
+  (x : ∀ i, π i) : ℝ≥0∞ :=
   ∫⁻ y : ∀ i : s, π i, f (updateFinset x s y) ∂Measure.pi fun i : s => μ i
 
 -- Note: this notation is not a binder. This is more convenient since it returns a function.
@@ -98,7 +98,7 @@ theorem marginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
     (∫⋯∫_s, f ∂μ) x = (∫⋯∫_s, f ∂μ) y := by
   dsimp [marginal, updateFinset]; rcongr; exact h _ ‹_›
 
-theorem marginal_update_of_mem [DecidableEq δ] {i : δ} (hi : i ∈ s)
+theorem marginal_update_of_mem {i : δ} (hi : i ∈ s)
     (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) (y : π i) :
     (∫⋯∫_s, f ∂μ) (Function.update x i y) = (∫⋯∫_s, f ∂μ) x := by
   apply marginal_congr
@@ -106,13 +106,13 @@ theorem marginal_update_of_mem [DecidableEq δ] {i : δ} (hi : i ∈ s)
   have : j ≠ i := by rintro rfl; exact hj hi
   apply update_noteq this
 
-theorem marginal_union [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
+theorem marginal_union (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
     (hst : Disjoint s t) : ∫⋯∫_s ∪ t, f ∂μ = ∫⋯∫_s, ∫⋯∫_t, f ∂μ ∂μ := by
   ext1 x
   let e := MeasurableEquiv.piFinsetUnion π hst
   calc (∫⋯∫_s ∪ t, f ∂μ) x
       = ∫⁻ (y : (i : ↥(s ∪ t)) → π i), f (updateFinset x (s ∪ t) y)
-          ∂.pi fun i' : ↥(s ∪ t) ↦ μ i' := by rfl
+          ∂.pi fun i' : ↥(s ∪ t) ↦ μ i' := rfl
     _ = ∫⁻ (y : ((i : s) → π i) × ((j : t) → π j)), f (updateFinset x (s ∪ t) _)
           ∂(Measure.pi fun i : s ↦ μ i).prod (.pi fun j : t ↦ μ j) := by
         rw [measurePreserving_piFinsetUnion μ hst |>.lintegral_map_equiv]
@@ -131,19 +131,20 @@ theorem marginal_union' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {
 
 variable {μ}
 
-theorem marginal_singleton [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
+theorem marginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
     ∫⋯∫_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
   let α : Type _ := ({i} : Finset δ)
   let e := (MeasurableEquiv.piUnique fun j : α ↦ π j).symm
   ext1 x
   calc (∫⋯∫_{i}, f ∂μ) x
       = ∫⁻ (y : π (default : α)), f (updateFinset x {i} (e y)) ∂μ (default : α) := by
-        simp_rw [marginal, ← Measure.map_piUnique_symm, lintegral_map_equiv]
+        simp_rw [marginal, measurePreserving_piUnique (fun j : ({i} : Finset δ) ↦ μ j) |>.symm _
+          |>.lintegral_map_equiv]
     _ = ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by simp [update_eq_updateFinset]
 
 /-- Peel off a single integral from a `marginal` integral at the beginning (compare with
 `marginal_insert'`, which peels off an integral at the end). -/
-theorem marginal_insert [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
+theorem marginal_insert (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
     (hi : i ∉ s) (x : ∀ i, π i) :
     (∫⋯∫_insert i s, f ∂μ) x = ∫⁻ xᵢ, (∫⋯∫_s, f ∂μ) (Function.update x i xᵢ) ∂μ i := by
   rw [Finset.insert_eq, marginal_union μ f hf (Finset.disjoint_singleton_left.mpr hi),
@@ -151,14 +152,14 @@ theorem marginal_insert [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf 
 
 /-- Peel off a single integral from a `marginal` integral at the beginning (compare with
 `marginal_erase'`, which peels off an integral at the end). -/
-theorem marginal_erase [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
+theorem marginal_erase (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
     (hi : i ∈ s) (x : ∀ i, π i) :
     (∫⋯∫_s, f ∂μ) x = ∫⁻ xᵢ, (∫⋯∫_(erase s i), f ∂μ) (Function.update x i xᵢ) ∂μ i := by
   simpa [insert_erase hi] using marginal_insert _ hf (not_mem_erase i s) x
 
 /-- Peel off a single integral from a `marginal` integral at the end (compare with
 `marginal_insert`, which peels off an integral at the beginning). -/
-theorem marginal_insert' [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
+theorem marginal_insert' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
     (hi : i ∉ s) :
     ∫⋯∫_insert i s, f ∂μ = ∫⋯∫_s, (fun x ↦ ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ∂μ := by
   rw [Finset.insert_eq, Finset.union_comm,
@@ -166,7 +167,7 @@ theorem marginal_insert' [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf
 
 /-- Peel off a single integral from a `marginal` integral at the end (compare with
 `marginal_erase`, which peels off an integral at the beginning). -/
-theorem marginal_erase' [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
+theorem marginal_erase' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
     (hi : i ∈ s) :
     ∫⋯∫_s, f ∂μ = ∫⋯∫_(erase s i), (fun x ↦ ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ∂μ := by
   simpa [insert_erase hi] using marginal_insert' _ hf (not_mem_erase i s)
@@ -181,14 +182,14 @@ theorem marginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : ∫
     ∫⋯∫_univ, f ∂μ = fun _ => ∫⁻ x, f x ∂Measure.pi μ := by
   let e : { j // j ∈ Finset.univ } ≃ δ := Equiv.subtypeUnivEquiv mem_univ
   ext1 x
-  simp_rw [marginal, ← Measure.pi_map_left μ e, lintegral_map_equiv, updateFinset]
+  simp_rw [marginal, measurePreserving_piCongrLeft μ e |>.lintegral_map_equiv, updateFinset]
   simp
   rfl
 
 theorem lintegral_eq_marginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} (x : ∀ i, π i) :
     ∫⁻ x, f x ∂Measure.pi μ = (∫⋯∫_univ, f ∂μ) x := by simp
 
-theorem marginal_image [DecidableEq δ] {e : δ' → δ} (he : Injective e) (s : Finset δ')
+theorem marginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s : Finset δ')
     {f : (∀ i, π (e i)) → ℝ≥0∞} (hf : Measurable f) (x : ∀ i, π i) :
       (∫⋯∫_s.image e, f ∘ (· ∘' e) ∂μ) x = (∫⋯∫_s, f ∂μ ∘' e) (x ∘' e) := by
   have h : Measurable ((· ∘' e) : (∀ i, π i) → _) :=
@@ -200,7 +201,7 @@ theorem marginal_image [DecidableEq δ] {e : δ' → δ} (he : Injective e) (s :
       marginal_insert _ hf hi]
     simp_rw [ih, ← update_comp_eq_of_injective' x he]
 
-theorem marginal_update_of_not_mem [DecidableEq δ] {i : δ}
+theorem marginal_update_of_not_mem {i : δ}
     {f : (∀ i, π i) → ℝ≥0∞} (hf : Measurable f) (hi : i ∉ s) (x : ∀ i, π i) (y : π i) :
     (∫⋯∫_s, f ∂μ) (Function.update x i y) = (∫⋯∫_s, f ∘ (Function.update · i y) ∂μ) x := by
   induction s using Finset.induction generalizing x

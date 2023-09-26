@@ -28,12 +28,6 @@ theorem Equiv.finset_image_univ_eq_univ [Fintype α] [Fintype β] [DecidableEq �
 
 variable [CommMonoid β]
 
--- very similar to `equiv.prod_comp_finset` in #16948
-@[to_additive]
-theorem Finset.prod_comp_equiv [DecidableEq α] [DecidableEq γ] {s : Finset α} (f : γ → β) (g : α ≃ γ) :
-    ∏ a in s, f (g a) = ∏ b in s.image g, f b := by
-  simp [Equiv.prod_comp_finset g f rfl]
-
 namespace Function
 
 -- not yet ported
@@ -88,7 +82,7 @@ theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by
   simp_rw [imp_iff_or_not, not_not, ← or_and_left, not_and_self_iff, or_false_iff]
 
 theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
-    h ▸ z = cast (congr_arg P h) z := by induction h; rfl
+    h ▸ z = cast (congr_arg P h) z := ((cast_eq_iff_heq.mpr) <| heq_of_eq_rec_left h rfl).symm
 
 end Logic
 
@@ -126,22 +120,25 @@ open Sum
 /-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
 functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEquivProdArrow`. -/
 @[simps]
-def piSum (π : ι ⊕ ι' → Type _) : ((∀ i, π (inl i)) × ∀ i', π (inr i')) ≃ ∀ i, π i
+def sumPiEquivProdPi (π : ι ⊕ ι' → Type _) : (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i')
     where
-  toFun f := Sum.rec f.1 f.2
-  invFun g := ⟨fun i => g (inl i), fun i' => g (inr i')⟩
-  left_inv f := Prod.ext rfl rfl
-  right_inv g := by ext (i | i) <;> rfl
+  toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
+  invFun g := Sum.rec g.1 g.2
+  left_inv f := by ext (i | i) <;> rfl
+  right_inv g := Prod.ext rfl rfl
 
+/-- The equivalence between a product of two dependent functions types and a single dependent
+function type. Basically a symmetric version of `Equiv.sumPiEquivProdPi`. -/
 @[simps!]
-def piSumRev (π : ι → Type _) (π' : ι' → Type _) :
+def prodPiEquivSumPi (π : ι → Type _) (π' : ι' → Type _) :
     ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i, Sum.elim π π' i :=
-  Equiv.piSum (Sum.elim π π')
+  sumPiEquivProdPi (Sum.elim π π') |>.symm
 
-theorem piSum_preimage_univ_pi (π : ι ⊕ ι' → Type _) (t : ∀ i, Set (π i)) :
-    piSum π  ⁻¹' pi univ t = pi univ (fun i => t (.inl i)) ×ˢ pi univ fun i => t (.inr i) := by
+theorem sumPiEquivProdPi_symm_preimage_univ_pi (π : ι ⊕ ι' → Type _) (t : ∀ i, Set (π i)) :
+    (sumPiEquivProdPi π).symm ⁻¹' univ.pi t =
+    univ.pi (fun i => t (.inl i)) ×ˢ univ.pi fun i => t (.inr i) := by
   ext
-  simp_rw [mem_preimage, mem_prod, mem_univ_pi, piSum_apply]
+  simp_rw [mem_preimage, mem_prod, mem_univ_pi, sumPiEquivProdPi_symm_apply]
   constructor
   · intro h; constructor <;> intro i <;> apply h
   · rintro ⟨h₁, h₂⟩ (i|i) <;> simp <;> apply_assumption
@@ -152,16 +149,15 @@ theorem sum_rec_congr (P : ι ⊕ ι' → Sort _) (f : ∀ i, P (inl i)) (g : �
 
 theorem piCongrLeft_sum_inl (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (i : ι) :
-    piCongrLeft π e (piSum (fun x => π (e x)) (f, g)) (e (inl i)) = f i := by
-  simp_rw [piCongrLeft_apply_eq_cast, piSum_apply, sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)),
-    cast_cast, cast_eq]
+    piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inl i)) = f i := by
+  simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
+    sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)), cast_cast, cast_eq]
 
 theorem piCongrLeft_sum_inr (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (j : ι') :
-    piCongrLeft π e (piSum (fun x => π (e x)) (f, g)) (e (inr j)) = g j := by
-  simp_rw [piCongrLeft_apply_eq_cast, piSum_apply, sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)),
-    cast_cast, cast_eq]
-
+    piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inr j)) = g j := by
+  simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
+    sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)), cast_cast, cast_eq]
 end Equiv
 
 namespace Option
@@ -186,33 +182,35 @@ open Set
 
 variable {α : Type*} [DecidableEq α] {s t : Finset α}
 
+open Finset
+namespace Equiv
 /-- `s ∪ t` (using finset union) is equivalent to `s ∪ t` (using set union) -/
 @[simps!]
-def Equiv.finsetUnion (s t : Finset α) :
+def finsetUnion (s t : Finset α) :
     ((s ∪ t : Finset α) : Set α) ≃ (s ∪ t : Set α) :=
-  subtypeEquivRight <| by simp
+  Equiv.Set.ofEq <| coe_union _ _
 
 /-- The disjoint union of finsets is a sum -/
-def finsetUnionEquivSum (s t : Finset α) (h : Disjoint s t) :
+def Finset.union (s t : Finset α) (h : Disjoint s t) :
     (s ∪ t : Finset α) ≃ s ⊕ t :=
-  (Equiv.finsetUnion s t).trans <| Equiv.Set.union <| by
-    rw [← Finset.coe_inter, ← Finset.coe_empty]
-    exact h.le_bot
+  (Equiv.finsetUnion s t).trans <| Equiv.Set.union (disjoint_coe.mpr h).le_bot
 
-def Equiv.piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h : Disjoint s t) :
+@[simp]
+theorem Finset.union_symm_inl (h : Disjoint s t) (x : s) :
+    (Equiv.Finset.union s t h).symm (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
+  rfl
+
+@[simp]
+theorem Finset.union_symm_inr (h : Disjoint s t) (y : t) :
+    (Equiv.Finset.union s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
+  rfl
+
+def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h : Disjoint s t) :
     ((∀ i : s, α i) × ∀ i : t, α i) ≃ ∀ i : (s ∪ t : Finset ι), α i :=
-  let e := (finsetUnionEquivSum s t h).symm
-  Equiv.piSum (fun b ↦ α (e b)) |>.trans <| .piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e
+  let e := (Equiv.Finset.union s t h).symm
+  sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
 
-@[simp]
-theorem finsetUnionEquivSum_symm_inl (h : Disjoint s t) (x : s) :
-    (finsetUnionEquivSum s t h).symm (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
-  rfl
-
-@[simp]
-theorem finsetUnionEquivSum_symm_inr (h : Disjoint s t) (y : t) :
-    (finsetUnionEquivSum s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
-  rfl
+end Equiv
 
 theorem eval_preimage {ι} [DecidableEq ι] {α : ι → Type _} {i : ι} {s : Set (α i)} :
     eval i ⁻¹' s = pi univ (update (fun i => univ) i s) := by
@@ -221,9 +219,6 @@ theorem eval_preimage {ι} [DecidableEq ι] {α : ι → Type _} {i : ι} {s : S
 
 theorem eval_preimage' {ι} [DecidableEq ι] {α : ι → Type _} {i : ι} {s : Set (α i)} :
     eval i ⁻¹' s = pi {i} (update (fun i => univ) i s) := by ext; simp
-
-theorem mem_pi_univ {ι : Type _} {α : ι → Type _} (t : ∀ i, Set (α i)) (x : ∀ i, α i) :
-    x ∈ pi univ t ↔ ∀ i, x i ∈ t i := by simp
 
 theorem pi_univ_ite {ι} {α : ι → Type _} (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α i)) :
     (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by
@@ -264,7 +259,7 @@ namespace Function
 variable {ι : Sort _} {π : ι → Sort _} {x : ∀ i, π i}
 
 /-- `updateFinset x s y` is the vector `x` with the coordinates in `s` changed to the values of `y`. -/
-def updateFinset (x : ∀ i, π i) (s : Finset ι) [DecidablePred (· ∈ s)] (y : ∀ i : ↥s, π i) (i : ι) :
+def updateFinset (x : ∀ i, π i) (s : Finset ι) [DecidableEq ι] (y : ∀ i : ↥s, π i) (i : ι) :
     π i :=
   if hi : i ∈ s then y ⟨i, hi⟩ else x i
 
@@ -283,10 +278,12 @@ instance : SetLike (Finset ι) ι where
 -/
 
 open Finset
-theorem updateFinset_empty [DecidableEq ι] {y} : updateFinset x ∅ y = x :=
+variable [DecidableEq ι]
+
+@[simp] theorem updateFinset_empty {y} : updateFinset x ∅ y = x :=
   rfl
 
-theorem updateFinset_singleton [DecidableEq ι] {i y} :
+theorem updateFinset_singleton {i y} :
     updateFinset x {i} y = Function.update x i (y ⟨i, mem_singleton_self i⟩) := by
   congr with j
   by_cases hj : j = i
@@ -294,7 +291,7 @@ theorem updateFinset_singleton [DecidableEq ι] {i y} :
     simp only [dif_pos, Finset.mem_singleton, update_same, updateFinset]
   · simp [hj, updateFinset]
 
-theorem update_eq_updateFinset [DecidableEq ι] {i y} :
+theorem update_eq_updateFinset {i y} :
     Function.update x i y = updateFinset x {i} (uniqueElim y) := by
   congr with j
   by_cases hj : j = i
@@ -303,17 +300,18 @@ theorem update_eq_updateFinset [DecidableEq ι] {i y} :
     exact uniqueElim_default (α := fun j : ({i} : Finset ι) => π j) y
   · simp [hj, updateFinset]
 
-theorem updateFinset_updateFinset [DecidableEq ι] {s t : Finset ι} (hst : Disjoint s t) {y z} :
+theorem updateFinset_updateFinset {s t : Finset ι} (hst : Disjoint s t)
+    {y : ∀ i : ↥s, π i} {z : ∀ i : ↥t, π i} :
     updateFinset (updateFinset x s y) t z =
     updateFinset x (s ∪ t) (Equiv.piFinsetUnion π hst ⟨y, z⟩) := by
-  set e₁ := finsetUnionEquivSum s t hst |>.symm
+  set e := Equiv.Finset.union s t hst |>.symm
   congr with i
   by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
     simp only [updateFinset, his, hit, dif_pos, dif_neg, Finset.mem_union, true_or_iff,
       false_or_iff, not_false_iff]
   · exfalso; exact Finset.disjoint_left.mp hst his hit
-  · exact piCongrLeft_sum_inl (fun b : ↥(s ∪ t) => π b) e₁ y z ⟨i, his⟩ |>.symm
-  · exact piCongrLeft_sum_inr (fun b : ↥(s ∪ t) => π b) e₁ y z ⟨i, _⟩ |>.symm
+  · exact piCongrLeft_sum_inl (fun b : ↥(s ∪ t) => π b) e y z ⟨i, his⟩ |>.symm
+  · exact piCongrLeft_sum_inr (fun b : ↥(s ∪ t) => π b) e y z ⟨i, hit⟩ |>.symm
 
 end Function
 end Function
