@@ -53,22 +53,22 @@ partial def getSubexpressionMatches (d : DiscrTree α s) (e : Expr) : MetaM (Arr
 
 variable {m : Type → Type} [Monad m]
 
-/-- Apply a monadic function to the array of values at each node in a `DiscrTree`. -/
+
+/-- A better representaton for lists-of-quadruples -/
+private inductive Ctxt (α β γ δ : Type)
+  | empty : Ctxt α β γ δ
+  | ctxt : α → β → γ → δ → Ctxt α β γ δ → Ctxt α β γ δ
+
+/-- Apply a function to the array of values at each node in a `DiscrTree`. -/
 partial def Trie.mapArrays (t : Trie α s) (f : Array α → Array β) : Trie β s :=
-  go (.inl (t, id))
+  let .node vs0 cs0 := t
+  go Ctxt.empty #[] (f vs0) cs0.toList
 where
-  go : Trie α s × (Trie β s → Trie β s) ⊕
-     Array (Key s × Trie α s) × Array (Key s × Trie β s) × (Array (Key s × Trie β s) → Trie β s)
-     → Trie β s
-  | .inl (.node vs cs, k) =>
-    let vs' := f vs
-    go (.inr (cs, .mkEmpty cs.size, fun cs' => k (.node vs' cs')))
-  | .inr (cs, cs', k) =>
-    if h : cs'.size < cs.size then
-      let (key, c) := cs.get ⟨cs'.size, h⟩
-      go (.inl (c, fun c' => go (.inr (cs, cs'.push (key, c'), k))))
-    else
-      k cs'
+  -- This implementation as a single tail-recursive function is chosen to not blow the
+  -- interpreter stack when the `Trie` is very deep
+  go  | .empty, cs, vs, []                   => .node vs cs
+      | .ctxt cs vs todo k ps, cs', vs', []  => go ps (cs.push (k, .node vs' cs')) vs todo
+      | ps, cs, vs, (k, .node vs' cs')::todo => go (.ctxt cs vs todo k ps) #[] (f vs') cs'.toList
 
 /-- Apply a function to the array of values at each node in a `DiscrTree`. -/
 def mapArrays (d : DiscrTree α s) (f : Array α → Array β) : DiscrTree β s :=
