@@ -118,8 +118,8 @@ def map (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 E) : PointedCone 𝕜 F :=
 
 @[simp, norm_cast]
 theorem toConvexCone_map (S : PointedCone 𝕜 E) (f : E →ₗ[𝕜] F) :
-    (S.map f : ConvexCone 𝕜 F) = (S : ConvexCone 𝕜 E).map f := by
-  aesop
+    (S.map f : ConvexCone 𝕜 F) = (S : ConvexCone 𝕜 E).map f :=
+  rfl
 
 @[simp, norm_cast]
 theorem coe_map (S : PointedCone 𝕜 E) (f : E →ₗ[𝕜] F) : (S.map f : Set F) = f '' S :=
