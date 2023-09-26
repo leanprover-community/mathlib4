@@ -464,6 +464,7 @@ lemma add_lt_of_lt {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
     padicValRat p q < padicValRat p (r₁ + r₂) :=
   lt_of_lt_of_le (lt_min hval₁ hval₂) (padicValRat.min_le_padicValRat_add hqr)
 
+@[simp]
 lemma self_pow_div (r : ℕ) :
     padicValRat p (1 / (p : ℚ) ^ r) = -r := by
   norm_cast; simp only [Nat.cast_pow]

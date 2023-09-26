@@ -21,7 +21,7 @@ open BigOperators
 /-- The nth-harmonic number defined as a finset sum of consecutive reciprocals. -/
 def harmonic : ℕ → ℚ := fun n => ∑ i in Finset.range n, 1 / (i + 1)
 
-lemma harmonic_pos (n : ℕ) (Hn : n ≠ 0) : 0 < harmonic n :=
+lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n :=
   Finset.sum_pos (fun _ _ => div_pos zero_lt_one (by norm_cast; linarith))
   (by rwa [Finset.nonempty_range_iff])
 
@@ -70,7 +70,7 @@ lemma nat_log_not_dvd {n i : ℕ} (Hi₁ : 0 < i) (Hi₂ : i ≠ 2 ^ Nat.log 2 n
     ¬ 2^(Nat.log 2 n) ∣ i := by
   rintro ⟨c,Hc⟩
   have Hle : n < 2 ^ (Nat.log 2 n + 1) := Nat.lt_pow_succ_log_self (by simp) n
-  have Hpow : 2 ^ Nat.log 2 n * 2 = 2 ^(Nat.log 2 n + 1) := by exact rfl
+  have Hpow : 2 ^ Nat.log 2 n * 2 = 2 ^ (Nat.log 2 n + 1) := by rfl
   obtain ⟨k,Hk⟩ := Nat.even_or_odd' c
   by_cases h : k = 0
   · subst h
@@ -118,12 +118,12 @@ lemma two_pow_log_mem_range {n : ℕ} (hn : 2 ≤ n) :
     of n. -/
 theorem harmonic_two_adicValRat {n : ℕ} (Hn : 2 ≤ n) :
     padicValRat 2 (harmonic n) = -Int.log 2 (n : ℚ) := by
-  rw [Int.log_natCast,harmonic_singleton (two_pow_log_mem_range Hn)]
+  rw [Int.log_natCast, harmonic_singleton (two_pow_log_mem_range Hn)]
   simp only [gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel]
   rw [padicValRat.add_eq_of_lt (p := 2) _
       (one_div_ne_zero <| pow_ne_zero _ two_ne_zero) (harmonic_singleton_ne_zero Hn) _]
   apply padicValRat_two_pow_div
-  · have := harmonic_pos n
+  · have := harmonic_pos (n := n)
     rw [harmonic_singleton (two_pow_log_mem_range Hn)] at this
     refine' ne_of_gt _
     simp only [ne_eq, ge_iff_le, gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat,
@@ -148,7 +148,7 @@ theorem harmonic_not_int {n : ℕ} (Hn : 2 ≤ n) :
     ¬(harmonic n).isInt := by
   refine' not_int_of_not_padic_int _
   dsimp [padicNorm]
-  rw [if_neg (ne_of_gt <| harmonic_pos n (by linarith))]
+  rw [if_neg (ne_of_gt <| harmonic_pos (by linarith))]
   refine' one_lt_zpow one_lt_two _ (lt_neg.mp _)
   rw [neg_zero, harmonic_two_adicValRat Hn,Int.log_natCast, Left.neg_neg_iff,
     Nat.cast_pos, Nat.log_pos_iff]
