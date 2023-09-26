@@ -307,25 +307,23 @@ lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f :=
         $ (isOpen_iff_upper_and_DirSupInacc.mp hu).2 (hd₁.image f)
         (directedOn_image.mpr (hd₂.mono (by simp only [Order.Preimage]; apply h.monotone)))
         (h hd₁ hd₂ hd₃) ha⟩
-  · intros hf d d₁ d₂ a d₃
-    rw [IsLUB]
-    constructor
-    · apply Monotone.mem_upperBounds_image (monotone_of_continuous hf) ((isLUB_le_iff d₃).mp le_rfl)
-    · rw [lowerBounds, mem_setOf_eq]
-      intros b hb
-      let u := (Iic b)ᶜ
-      by_contra h
-      have s1 : IsOpen u := by
-        rw [isOpen_compl_iff, ← closure_singleton]
-        exact isClosed_closure
-      have s2 : IsOpen (f⁻¹'  u) := IsOpen.preimage hf s1
-      rw [isOpen_iff_upper_and_DirSupInacc] at s2
-      obtain ⟨c, hcd, hfcb⟩ := s2.2 d₁ d₂ d₃ h
-      simp at hfcb
-      rw [upperBounds] at hb
-      simp at hb
-      have c1: f c ≤ b := hb _ hcd
-      contradiction
+  · exact fun hf _ d₁ d₂ _ d₃ => ⟨
+      Monotone.mem_upperBounds_image (monotone_of_continuous hf) ((isLUB_le_iff d₃).mp le_rfl),
+      by
+        rw [lowerBounds, mem_setOf_eq]
+        intros b hb
+        let u := (Iic b)ᶜ
+        by_contra h
+        have s1 : IsOpen u := by
+          rw [isOpen_compl_iff, ← closure_singleton]
+          exact isClosed_closure
+        have s2 : IsOpen (f⁻¹'  u) := IsOpen.preimage hf s1
+        rw [isOpen_iff_upper_and_DirSupInacc] at s2
+        obtain ⟨c, hcd, hfcb⟩ := s2.2 d₁ d₂ d₃ h
+        simp at hfcb
+        simp [upperBounds] at hb
+        have c1: f c ≤ b := hb _ hcd
+        contradiction⟩
 
 end preorder
 
