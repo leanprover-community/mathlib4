@@ -409,8 +409,7 @@ lemma integral_eq_integral_restrict [MeasurableSpace E] [MeasurableSingletonClas
   refine (set_integral_eq_integral_of_ae_compl_eq_zero ?_).symm
   rwa [ae_restrict_eq_zero_iff_ae_eq_zero_of_mem f_mble] at hs
 
-lemma integral_eq_integral_restrict' [MeasurableSpace E] [MeasurableSingletonClass E]
-    (hs : f =ᵐ[μ.restrict sᶜ] 0) (s_mble : MeasurableSet s):
+lemma integral_eq_integral_restrict' (hs : f =ᵐ[μ.restrict sᶜ] 0) (s_mble : MeasurableSet s):
     ∫ ω, f ω ∂μ = ∫ ω in s, f ω ∂μ := by
   refine (set_integral_eq_integral_of_ae_compl_eq_zero ?_).symm
   rwa [ae_restrict_eq_zero_iff_ae_eq_zero_of_mem' s_mble.compl] at hs
