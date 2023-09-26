@@ -64,8 +64,8 @@ partial def Trie.mapArrays (t : Trie α s) (f : Array α → Array β) : Trie β
   let .node vs0 cs0 := t
   go Ctxt.empty #[] (f vs0) cs0.toList
 where
-  -- This implementation as a single tail-recursive function is chosen to not blow the
-  -- interpreter stack when the `Trie` is very deep
+  /- This implementation as a single tail-recursive function is chosen to not blow the
+     interpreter stack when the `Trie` is very deep -/
   go  | .empty, cs, vs, []                   => .node vs cs
       | .ctxt cs vs todo k ps, cs', vs', []  => go ps (cs.push (k, .node vs' cs')) vs todo
       | ps, cs, vs, (k, .node vs' cs')::todo => go (.ctxt cs vs todo k ps) #[] (f vs') cs'.toList
