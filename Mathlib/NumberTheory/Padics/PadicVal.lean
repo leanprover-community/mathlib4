@@ -463,13 +463,9 @@ lemma lt_add_of_lt {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
   lt_of_lt_of_le (lt_min hval₁ hval₂) (padicValRat.min_le_padicValRat_add hqr)
 
 @[simp]
-lemma self_pow_div (r : ℕ) :
-      padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
-  norm_cast; simp only [Nat.cast_pow]
-  rw [padicValRat.inv, neg_inj, padicValRat.pow,
-    padicValRat.self (Nat.Prime.one_lt hp.elim), mul_one]
-  simp only [ne_eq, Nat.cast_eq_zero]
-  exact Nat.Prime.ne_zero hp.elim
+lemma self_pow_div (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
+  rw [padicValRat.inv, neg_inj, padicValRat.pow (Nat.cast_ne_zero.mpr hp.elim.ne_zero),
+      padicValRat.self hp.elim.one_lt, mul_one]
 
 open BigOperators
 
