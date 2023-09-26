@@ -1197,8 +1197,6 @@ theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
   count_eq_one_of_mem Finset.univ.nodup (Finset.mem_univ _)
 #align multiset.count_univ Multiset.count_univ
 
-/-- If `e` is an equivalence of finite types, then `Multiset.map e` sends the universal finite set
-to the universal finite set. -/
 @[simp]
 theorem map_univ_val_equiv (e : α ≃ β) :
     map e univ.val = univ.val := by
