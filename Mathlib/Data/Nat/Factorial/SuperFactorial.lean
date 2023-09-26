@@ -92,7 +92,7 @@ theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
 
 open Polynomial
 
-theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials{n : ℕ}
+theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials {n : ℕ}
     (v : Fin n → R) (p : Fin n → R[X]) (h_deg : ∀ i, (p i).natDegree = i) :
     Matrix.of (fun i j => ((p j).eval (v i))) =
     (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
