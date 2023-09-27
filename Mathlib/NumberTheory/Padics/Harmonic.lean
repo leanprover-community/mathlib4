@@ -96,8 +96,8 @@ lemma two_pow_log_sub_one_mem_range {n : ℕ} (hn : 2 ≤ n) :
 /-- The 2-adic valuation of the n-th harmonic number is the negative of the logarithm
     of n. -/
 theorem padicValRat_two_harmonic {n : ℕ} (Hn : 2 ≤ n) :
-    padicValRat 2 (harmonic n) = -Int.log 2 (n : ℚ) := by
-  rw [Int.log_natCast, harmonic_singleton (two_pow_log_sub_one_mem_range Hn)]
+    padicValRat 2 (harmonic n) = -Nat.log 2 n := by
+  rw [harmonic_singleton (two_pow_log_sub_one_mem_range Hn)]
   simp only [gt_iff_lt, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_ofNat, sub_add_cancel]
   rw [padicValRat.add_eq_of_lt (p := 2) _
       (one_div_ne_zero <| pow_ne_zero _ two_ne_zero) (harmonic_singleton_ne_zero Hn) _]
@@ -129,6 +129,6 @@ theorem harmonic_not_int {n : ℕ} (Hn : 2 ≤ n) :
   refine' padicNorm.not_int_of_not_padic_int 2 _
   rw [padicNorm.eq_zpow_of_nonzero (harmonic_pos (by linarith)).ne']
   refine' one_lt_zpow one_lt_two _ (lt_neg.mp _)
-  rw [neg_zero, padicValRat_two_harmonic Hn,Int.log_natCast, Left.neg_neg_iff,
+  rw [neg_zero, padicValRat_two_harmonic Hn, Left.neg_neg_iff,
     Nat.cast_pos, Nat.log_pos_iff]
   exact ⟨Hn,one_lt_two⟩
