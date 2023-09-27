@@ -7,12 +7,25 @@ Authors: Antoine Chambetr-Loir
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.TensorProduct
 
-/-! # Right exactness properties of tensor product
-* `TensorProduct.rTensor_exact` says that one can tensor a short exact sequence on the right,
-  and `rTensor.equiv` gives a LinearEquiv.
+/-! # Right-exactness properties of tensor product
 
-* `TensorProduct.lTensor_exact` says that one can tensor a short exact sequence on the left,
-  and `lTensor.equiv` gives a LinearEquiv.
+* `TensorProduct.rTensor.surjective` asserts that one on tensors
+  a surjective map on the right, one still gets a surjective linear map.
+
+* `TensorProduct.lTensor.surjective` asserts that one on tensors
+  a surjective map on the left, one still gets a surjective linear map.
+
+* `TensorProduct.rTensor_exact` says that when one tensors a short exact
+  sequence on the right, one still gets a short exact sequence
+  (right-exactness of `TensorProduct.rTensor`),
+  and `rTensor.equiv` gives the LinearEquiv that follows from this
+  combined with `TensorProduct.rTensor.surjective`.
+
+* `TensorProduct.lTensor_exact` says that when one tensors a short exact
+  sequence on the left, one still gets a short exact sequence
+  (right-exactness of `TensorProduct.rTensor`)
+  and `lTensor.equiv` gives the LinearEquiv that follows from this
+  combined with `TensorProduct.lTensor.surjective`.
 
 * For `N : Submodule R M`, `LinearMap.exact_subtype_mkQ N` says that
   the inclusion of the submodule and the quotient map form an exact pair,
