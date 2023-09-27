@@ -270,10 +270,10 @@ theorem sum_subgroup_pow_eq_zero {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos
   rw [Finset.sum_eq_multiset_sum]
   have h_multiset_map :
     Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k)  =
-      Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k * (a.val : K) ^ k)  := by
+      Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k)  := by
     simp_rw [← mul_pow]
     have as_comp :
-      (fun x : ↥G => (((x : Kˣ) : K) * (a.val : K)) ^ k)
+      (fun x : ↥G => (((x : Kˣ) : K) * ((a : Kˣ) : K)) ^ k)
         = (fun x : ↥G => ((x : Kˣ) : K) ^ k) ∘ fun x : ↥G => x * a := by
       funext x
       simp only [Function.comp_apply, Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul]
@@ -283,10 +283,10 @@ theorem sum_subgroup_pow_eq_zero {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos
     exact Multiset.map_univ_val_equiv (Equiv.mulRight a)
   have h_multiset_map_sum :
     (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k) Finset.univ.val).sum =
-      (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k * (a.val : K) ^ k) Finset.univ.val).sum
+      (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k) Finset.univ.val).sum
   rw [h_multiset_map]
   rw [Multiset.sum_map_mul_right] at h_multiset_map_sum
-  have hzero : ((a.val : K) ^ k - 1 : K)
+  have hzero : (((a : Kˣ) : K) ^ k - 1 : K)
                   * (Multiset.map (fun i : G => (i.val : K) ^ k) Finset.univ.val).sum = 0 := by
     rw [sub_mul, mul_comm, ← h_multiset_map_sum, one_mul, sub_self]
   rw [mul_eq_zero] at hzero
