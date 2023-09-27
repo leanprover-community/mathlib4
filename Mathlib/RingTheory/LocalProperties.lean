@@ -550,7 +550,7 @@ theorem localization_finiteType : RingHom.LocalizationPreserves @RingHom.FiniteT
   rw [fₐ.map_adjoin T] at hy
   have H : Algebra.adjoin R (algebraMap S S' '' T) ≤
       (Algebra.adjoin R' (algebraMap S S' '' T)).restrictScalars R := by
-    rw [Algebra.adjoin_le_iff]; exact Algebra.subset_adjoin
+    rw [Algebra.adjoin_le_iff]; dsimp; exact Algebra.subset_adjoin
   convert (Algebra.adjoin R' (algebraMap S S' '' T)).smul_mem (H hy)
     (IsLocalization.mk' R' (1 : R) ⟨r, hr⟩) using 1
   rw [Algebra.smul_def]
