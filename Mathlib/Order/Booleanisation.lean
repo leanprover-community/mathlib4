@@ -21,7 +21,7 @@ complements.
 * `Booleanisation.liftLatticeHom`: Boolean algebra containing a given generalised Boolean algebra as
   a sublattice.
 
-## Future work
+## Future workl
 
 If mathlib ever acquires `GenBoolAlg`, the category of generalised Boolean algebras, then one could
 show that `Booleanisation` is the free functor from `GenBoolAlg` to `BoolAlg`.
@@ -70,11 +70,11 @@ protected inductive LT : Booleanisation α → Booleanisation α → Prop
   | protected comp {a b} : a < b → Booleanisation.LT (comp b) (comp a)
   | protected sep {a b} : Disjoint a b → Booleanisation.LT (lift a) (comp b)
 
-@[inherit_doc]
+@[inherit_doc Booleanisation.LE]
 instance instLE : LE (Booleanisation α) where
   le := Booleanisation.LE
 
-@[inherit_doc]
+@[inherit_doc Booleanisation.LT]
 instance instLT : LT (Booleanisation α) where
   lt := Booleanisation.LT
 
