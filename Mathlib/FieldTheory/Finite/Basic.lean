@@ -173,6 +173,42 @@ theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
   · simp only [G_bot, ite_false]
     exact sum_subgroup_units_eq_zero G_bot
 
+theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
+    {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos : 0 < k) (k_lt_card_G : k < Fintype.card G) :
+    ∑ x : G, ((x : Kˣ) : K) ^ k = 0 := by
+  nontriviality K
+  have := NoZeroDivisors.to_isDomain K
+  rcases (exists_pow_ne_one_of_isCyclic k_pos k_lt_card_G) with ⟨a, ha⟩
+  rw [Finset.sum_eq_multiset_sum]
+  have h_multiset_map :
+    Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k)  =
+      Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k)  := by
+    simp_rw [← mul_pow]
+    have as_comp :
+      (fun x : ↥G => (((x : Kˣ) : K) * ((a : Kˣ) : K)) ^ k)
+        = (fun x : ↥G => ((x : Kˣ) : K) ^ k) ∘ fun x : ↥G => x * a := by
+      funext x
+      simp only [Function.comp_apply, Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul]
+    rw [as_comp, ← Multiset.map_map]
+    congr
+    rw [eq_comm]
+    exact Multiset.map_univ_val_equiv (Equiv.mulRight a)
+  have h_multiset_map_sum :
+    (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k) Finset.univ.val).sum =
+      (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k) Finset.univ.val).sum
+  rw [h_multiset_map]
+  rw [Multiset.sum_map_mul_right] at h_multiset_map_sum
+  have hzero : (((a : Kˣ) : K) ^ k - 1 : K)
+                  * (Multiset.map (fun i : G => (i.val : K) ^ k) Finset.univ.val).sum = 0 := by
+    rw [sub_mul, mul_comm, ← h_multiset_map_sum, one_mul, sub_self]
+  rw [mul_eq_zero] at hzero
+  rcases hzero with h | h
+  · contrapose! ha
+    ext
+    rw [←sub_eq_zero]
+    simp_rw [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one,
+      Units.val_one, h]
+  · exact h
 
 section
 
@@ -263,40 +299,6 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
         rw [← forall_pow_eq_one_iff, FunLike.ext_iff]
         apply forall_congr'; intro x; simp [Units.ext_iff]
 #align finite_field.sum_pow_units FiniteField.sum_pow_units
-
-theorem sum_subgroup_pow_eq_zero {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos : 0 < k)
-    (k_lt_card_G : k < Fintype.card G) : ∑ x : G, ((x : Kˣ) : K) ^ k = 0 := by
-  rcases (exists_pow_ne_one_of_isCyclic k_pos k_lt_card_G) with ⟨a, ha⟩
-  rw [Finset.sum_eq_multiset_sum]
-  have h_multiset_map :
-    Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k)  =
-      Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k)  := by
-    simp_rw [← mul_pow]
-    have as_comp :
-      (fun x : ↥G => (((x : Kˣ) : K) * ((a : Kˣ) : K)) ^ k)
-        = (fun x : ↥G => ((x : Kˣ) : K) ^ k) ∘ fun x : ↥G => x * a := by
-      funext x
-      simp only [Function.comp_apply, Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul]
-    rw [as_comp, ← Multiset.map_map]
-    congr
-    rw [eq_comm]
-    exact Multiset.map_univ_val_equiv (Equiv.mulRight a)
-  have h_multiset_map_sum :
-    (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k) Finset.univ.val).sum =
-      (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k) Finset.univ.val).sum
-  rw [h_multiset_map]
-  rw [Multiset.sum_map_mul_right] at h_multiset_map_sum
-  have hzero : (((a : Kˣ) : K) ^ k - 1 : K)
-                  * (Multiset.map (fun i : G => (i.val : K) ^ k) Finset.univ.val).sum = 0 := by
-    rw [sub_mul, mul_comm, ← h_multiset_map_sum, one_mul, sub_self]
-  rw [mul_eq_zero] at hzero
-  rcases hzero with h | h
-  · contrapose! ha
-    ext
-    rw [←sub_eq_zero]
-    simp_rw [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one,
-      Units.val_one, h]
-  · exact h
 
 /-- The sum of `x ^ i` as `x` ranges over a finite field of cardinality `q`
 is equal to `0` if `i < q - 1`. -/
