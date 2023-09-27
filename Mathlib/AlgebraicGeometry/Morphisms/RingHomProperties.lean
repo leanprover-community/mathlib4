@@ -222,6 +222,7 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
       ← X.presheaf.map_comp]
     convert this using 1
     dsimp only [Functor.op, unop_op]
+    rotate_left
     rw [Opens.openEmbedding_obj_top]
     congr 1
     exact e'.symm
