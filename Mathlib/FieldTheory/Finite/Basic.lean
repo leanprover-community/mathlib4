@@ -174,7 +174,7 @@ theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
     exact sum_subgroup_units_eq_zero G_bot
 
 theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
-    {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos : 0 < k) (k_lt_card_G : k < Fintype.card G) :
+    {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Fintype.card G) :
     ∑ x : G, ((x : Kˣ) : K) ^ k = 0 := by
   nontriviality K
   have := NoZeroDivisors.to_isDomain K
