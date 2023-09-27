@@ -58,19 +58,23 @@ instance : CoeFun (Mean α) (λ _ => {S // MeasurableSet (α:=α) S} → NNReal)
   coe := Mean.μ
 
 
-variable (G : Type u) [Group G] [MulAction G α] (MulActionMeasurable: ∀ (g: M), Measurable (λ (x:α) => g•x))
-
-lemma translate_measurable {S: Set α} (hS: MeasurableSet S) (g:G) :
-    MeasurableSet ((λ (x:α) => g⁻¹•x) '' S) := by sorry
+variable (G : Type u) [Group G] [MulAction G α] (MulActionMeasurable: ∀ (g: G), Measurable (λ (x:α) => g•x))
 
 
-instance : SMul G (Mean α) := (λ g μ =>
-    Mean.mk (λ S => ⟨(λ (x:α) => g⁻¹•x) '' S, by sorry⟩)
-    (by sorry)
-    (by sorry)
+instance : SMul G (Mean α) := SMul.mk (λ g μ =>
+    Mean.mk (λ S => μ ⟨(λ (x:α) => g•x)⁻¹' S, MulActionMeasurable g S⟩)
+    (by simp only [Set.preimage_univ, μ.norm])
+    (by
+      intro X Y hX hY disjXY
+      simp only [Set.preimage_union]
+      apply μ.fin_add ((λ (x:α) => g•x)⁻¹' X) ((λ (x:α) => g•x)⁻¹' Y) _ _ _
+      apply Disjoint.preimage
+      exact disjXY
+    )
+    )
 
-instance : MulAction G (Mean α) :=
-    MulAction.mk
+--instance : MulAction G (Mean α) :=
+ --   MulAction.mk
 
 
 /--An invariant mean is a mean that is invariant
