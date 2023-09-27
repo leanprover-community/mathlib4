@@ -637,8 +637,8 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
         exact hf
 
 @[simp]
-lemma piecewise_apply_left {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
-    (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
+lemma piecewise_apply_left {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂)
+    (h : C₁ ∪ C₂ = Set.univ) (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
     (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f ⟨x, hx.1⟩ = g ⟨x, hx.2⟩)
     [DecidablePred (· ∈ C₁)] (x : X) (hx : x ∈ C₁) :
     piecewise h₁ h₂ h f g hfg x = f ⟨x, hx⟩ := by
@@ -647,8 +647,8 @@ lemma piecewise_apply_left {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : Is
   rw [dif_pos hx]
 
 @[simp]
-lemma piecewise_apply_right {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
-    (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
+lemma piecewise_apply_right {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂)
+    (h : C₁ ∪ C₂ = Set.univ) (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
     (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f ⟨x, hx.1⟩ = g ⟨x, hx.2⟩)
     [DecidablePred (· ∈ C₁)] (x : X) (hx : x ∈ C₂) :
     piecewise h₁ h₂ h f g hfg x = g ⟨x, hx⟩ := by
