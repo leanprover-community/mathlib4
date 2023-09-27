@@ -276,8 +276,8 @@ instance isScalarTower : IsScalarTower S R p where
 #align sub_mul_action.is_scalar_tower SubMulAction.isScalarTower
 
 instance isScalarTower' {S' : Type*} [SMul S' R] [SMul S' S] [SMul S' M] [IsScalarTower S' R M]
-    [IsScalarTower S' S M] : IsScalarTower S' S p
-    where smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
+    [IsScalarTower S' S M] : IsScalarTower S' S p where
+  smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 #align sub_mul_action.is_scalar_tower' SubMulAction.isScalarTower'
 
 @[simp, norm_cast]
@@ -325,7 +325,7 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
 
 /- -- Previously, the relatively useless :
 lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
-  (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
+    (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
 -/
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :

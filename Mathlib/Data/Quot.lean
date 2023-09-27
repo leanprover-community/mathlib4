@@ -102,7 +102,7 @@ theorem lift_mk (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a
 #align quot.lift_mk Quot.lift_mk
 
 theorem liftOn_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
-  Quot.liftOn (Quot.mk r a) f h = f a :=
+    Quot.liftOn (Quot.mk r a) f h = f a :=
   rfl
 #align quot.lift_on_mk Quot.liftOn_mk
 
@@ -299,15 +299,19 @@ theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
 theorem Quotient.eq [r : Setoid α] {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=
   ⟨Quotient.exact, Quotient.sound⟩
 
-theorem forall_quotient_iff {α : Type*} [r : Setoid α] {p : Quotient r → Prop} :
-    (∀ a : Quotient r, p a) ↔ ∀ a : α, p ⟦a⟧ :=
-  ⟨fun h _ ↦ h _, fun h a ↦ a.induction_on h⟩
-#align forall_quotient_iff forall_quotient_iff
+theorem Quotient.forall {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
+    (∀ a, p a) ↔ ∀ a : α, p ⟦a⟧ :=
+  ⟨fun h _ ↦ h _, fun h a ↦ a.ind h⟩
+#align forall_quotient_iff Quotient.forall
+
+theorem Quotient.exists {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
+    (∃ a, p a) ↔ ∃ a : α, p ⟦a⟧ :=
+  ⟨fun ⟨q, hq⟩ ↦ q.ind (motive := (p · → _)) .intro hq, fun ⟨a, ha⟩ ↦ ⟨⟦a⟧, ha⟩⟩
 
 @[simp]
 theorem Quotient.lift_mk [s : Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
     Quotient.lift f h (Quotient.mk s x) = f x :=
-rfl
+  rfl
 #align quotient.lift_mk Quotient.lift_mk
 
 @[simp]
@@ -342,11 +346,11 @@ theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.
   Quot.exists_rep
 #align surjective_quot_mk surjective_quot_mk
 
-/-- `Quotient.mk` is a surjective function. -/
-theorem surjective_quotient_mk (α : Sort*) [s : Setoid α] :
-    Function.Surjective (Quotient.mk _ : α → Quotient s) :=
+/-- `Quotient.mk'` is a surjective function. -/
+theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
+    Function.Surjective (Quotient.mk' : α → Quotient s) :=
   Quot.exists_rep
-#align surjective_quotient_mk surjective_quotient_mk
+#align surjective_quotient_mk surjective_quotient_mk'
 
 /-- Choose an element of the equivalence class using the axiom of choice.
   Sound but noncomputable. -/
@@ -833,3 +837,16 @@ instance (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
   Quotient.lift₂.decidablePred _ h _ _
 
 end Quotient
+
+@[simp]
+lemma Equivalence.quot_mk_eq_iff {α : Type _} {r : α → α → Prop} (h : Equivalence r) (x y : α) :
+    Quot.mk r x = Quot.mk r y ↔ r x y := by
+  constructor
+  · rw [Quot.eq]
+    intro hxy
+    induction hxy with
+    | rel _ _ H => exact H
+    | refl _ => exact h.refl _
+    | symm _ _ _ H => exact h.symm H
+    | trans _ _ _ _ _ h₁₂ h₂₃ => exact h.trans h₁₂ h₂₃
+  · exact Quot.sound
