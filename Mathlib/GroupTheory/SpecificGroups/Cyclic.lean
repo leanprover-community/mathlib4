@@ -158,7 +158,7 @@ theorem exists_pow_ne_one_of_isCyclic {G : Type*} [Group G] [Fintype G] [G_cycli
   rcases G_cyclic with ⟨a, ha⟩
   use a
   contrapose! k_lt_card_G
-  convert orderOf_le_of_pow_eq_one k_pos k_lt_card_G
+  convert orderOf_le_of_pow_eq_one k_pos.bot_lt k_lt_card_G
   rw [orderOf_eq_card_zpowers, eq_comm, Subgroup.card_eq_iff_eq_top]
   ext x
   simp only [Subgroup.mem_top, implies_true, iff_true]
