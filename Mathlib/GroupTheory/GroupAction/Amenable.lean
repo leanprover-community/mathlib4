@@ -62,7 +62,7 @@ variable (G : Type u) [Monoid G] [MulAction G α] (MulActionMeasurable: ∀ (g: 
 
 
 instance MeanSMul: SMul G (Mean α) := SMul.mk (λ g μ =>
-    Mean.mk (λ S => μ ⟨(λ (x:α) => g•x)⁻¹' S, MulActionMeasurable g S⟩)
+    Mean.mk (λ S => μ ⟨(λ (x:α) => g•x)⁻¹' S, (MulActionMeasurable g S.property)⟩)
     (by simp only [Set.preimage_univ, μ.norm])
     (by
       intro X Y hX hY disjXY
