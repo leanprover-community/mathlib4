@@ -194,7 +194,6 @@ theorem compression_idem (u v : α) (s : Finset α) :
   have h : filter (fun a => compress u v a ∉ 𝓒 u v s) (𝓒 u v s) = ∅ :=
     filter_false_of_mem fun a ha h => h <| compress_mem_compression_of_mem_compression ha
   rw [compression, image_filter]
-  simp_rw [Function.comp]
   rw [h, image_empty, ← h]
   exact filter_union_filter_neg_eq _ (compression u v s)
 #align uv.compression_idem UV.compression_idem
@@ -203,7 +202,6 @@ theorem compression_idem (u v : α) (s : Finset α) :
 theorem card_compression (u v : α) (s : Finset α) : (𝓒 u v s).card = s.card := by
   rw [compression, card_disjoint_union (compress_disjoint _ _), image_filter, card_image_of_injOn,
     ← card_disjoint_union]
-  simp_rw [Function.comp]
   rw [filter_union_filter_neg_eq]
   · rw [disjoint_iff_inter_eq_empty]
     exact filter_inter_filter_neg_eq _ _ _
