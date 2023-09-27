@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Opposites
 import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Tactic.Spread
 
 #align_import algebra.group.opposite from "leanprover-community/mathlib"@"0372d31fb681ef40a687506bc5870fd55ebc8bb9"
 

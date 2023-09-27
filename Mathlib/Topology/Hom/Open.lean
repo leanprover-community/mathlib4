@@ -151,15 +151,16 @@ theorem id_comp (f : α →CO β) : (ContinuousOpenMap.id β).comp f = f :=
   ext fun _ => rfl
 #align continuous_open_map.id_comp ContinuousOpenMap.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : β →CO γ} {f : α →CO β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_open_map.cancel_right ContinuousOpenMap.cancel_right
 
+@[simp]
 theorem cancel_left {g : β →CO γ} {f₁ f₂ : α →CO β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align continuous_open_map.cancel_left ContinuousOpenMap.cancel_left
 
 end ContinuousOpenMap
-

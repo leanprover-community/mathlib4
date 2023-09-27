@@ -16,12 +16,14 @@ This file proves basic results about the sum type `α ⊕ β`.
 
 ## Main declarations
 
-* `Sum.getLeft?`: Retrieves the left content of `x : α ⊕ β` or returns `none` if it's coming from
-  the right.
-* `Sum.getRight?`: Retrieves the right content of `x : α ⊕ β` or returns `none` if it's coming from
-  the left.
 * `Sum.isLeft`: Returns whether `x : α ⊕ β` comes from the left component or not.
 * `Sum.isRight`: Returns whether `x : α ⊕ β` comes from the right component or not.
+* `Sum.getLeft`: Retrieves the left content of a `x : α ⊕ β` that is known to come from the left.
+* `Sum.getRight`: Retrieves the right content of `x : α ⊕ β` that is known to come from the right.
+* `Sum.getLeft?`: Retrieves the left content of `x : α ⊕ β` as an option type or returns `none`
+  if it's coming from the right.
+* `Sum.getRight?`: Retrieves the right content of `x : α ⊕ β` as an option type or returns `none`
+  if it's coming from the left.
 * `Sum.map`: Maps `α ⊕ β` to `γ ⊕ δ` component-wise.
 * `Sum.elim`: Nondependent eliminator/induction principle for `α ⊕ β`.
 * `Sum.swap`: Maps `α ⊕ β` to `β ⊕ α` by swapping components.
@@ -79,18 +81,6 @@ theorem inr_injective : Function.Injective (inr : β → Sum α β) := fun _ _ �
 
 section get
 
-/-- Check if a sum is `inl` and if so, retrieve its contents. -/
-def getLeft? : Sum α β → Option α
-  | inl a => some a
-  | inr _ => none
-#align sum.get_left Sum.getLeft?
-
-/-- Check if a sum is `inr` and if so, retrieve its contents. -/
-def getRight? : Sum α β → Option β
-  | inr b => some b
-  | inl _ => none
-#align sum.get_right Sum.getRight?
-
 /-- Check if a sum is `inl`. -/
 def isLeft : Sum α β → Bool
   | inl _ => true
@@ -103,17 +93,45 @@ def isRight : Sum α β → Bool
   | inr _ => true
 #align sum.is_right Sum.isRight
 
+/-- Retrieve the contents from a sum known to be `inl`.-/
+def getLeft : (ab : Sum α β) → ab.isLeft → α
+  | inl a, _ => a
+
+/-- Retrieve the contents from a sum known to be `inr`.-/
+def getRight : (ab : Sum α β) → ab.isRight → β
+  | inr b, _ => b
+
+/-- Check if a sum is `inl` and if so, retrieve its contents. -/
+def getLeft? : Sum α β → Option α
+  | inl a => some a
+  | inr _ => none
+#align sum.get_left Sum.getLeft?
+
+/-- Check if a sum is `inr` and if so, retrieve its contents. -/
+def getRight? : Sum α β → Option β
+  | inr b => some b
+  | inl _ => none
+#align sum.get_right Sum.getRight?
+
 variable {x y : Sum α β}
+
+@[simp] theorem isLeft_inl (x : α) : (inl x : α ⊕ β).isLeft = true := rfl
+@[simp] theorem isLeft_inr (x : β) : (inr x : α ⊕ β).isLeft = false := rfl
+@[simp] theorem isRight_inl (x : α) : (inl x : α ⊕ β).isRight = false := rfl
+@[simp] theorem isRight_inr (x : β) : (inr x : α ⊕ β).isRight = true := rfl
+
+@[simp] theorem getLeft_inl (x : α) (h : (inl x : α ⊕ β).isLeft) : (inl x).getLeft h = x := rfl
+@[simp] theorem getRight_inr (x : β) (h : (inr x : α ⊕ β).isRight) : (inr x).getRight h = x := rfl
 
 @[simp] theorem getLeft?_inl (x : α) : (inl x : α ⊕ β).getLeft? = some x := rfl
 @[simp] theorem getLeft?_inr (x : β) : (inr x : α ⊕ β).getLeft? = none := rfl
 @[simp] theorem getRight?_inl (x : α) : (inl x : α ⊕ β).getRight? = none := rfl
 @[simp] theorem getRight?_inr (x : β) : (inr x : α ⊕ β).getRight? = some x := rfl
 
-@[simp] theorem isLeft_inl (x : α) : (inl x : α ⊕ β).isLeft = true := rfl
-@[simp] theorem isLeft_inr (x : β) : (inr x : α ⊕ β).isLeft = false := rfl
-@[simp] theorem isRight_inl (x : α) : (inl x : α ⊕ β).isRight = false := rfl
-@[simp] theorem isRight_inr (x : β) : (inr x : α ⊕ β).isRight = true := rfl
+@[simp] theorem inl_getLeft : ∀ (x : α ⊕ β) (h : x.isLeft), inl (x.getLeft h) = x
+  | inl _, _ => rfl
+@[simp] theorem inr_getRight : ∀ (x : α ⊕ β) (h : x.isRight), inr (x.getRight h) = x
+  | inr _, _ => rfl
 
 @[simp] theorem getLeft?_eq_none_iff : x.getLeft? = none ↔ x.isRight := by
   cases x <;> simp only [getLeft?, isRight, eq_self_iff_true]
@@ -123,13 +141,37 @@ variable {x y : Sum α β}
   cases x <;> simp only [getRight?, isLeft, eq_self_iff_true]
 #align sum.get_right_eq_none_iff Sum.getRight?_eq_none_iff
 
-@[simp] lemma getLeft?_eq_some_iff {a : α} : x.getLeft? = a ↔ x = inl a := by
+theorem eq_left_getLeft_of_isLeft : ∀ {x : α ⊕ β} (h : x.isLeft), x = inl (x.getLeft h)
+  | inl _, _ => rfl
+
+theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
+  cases x <;> simp; exact fun c => c.elim
+
+@[simp] theorem getLeft_eq_iff {a : α} (h : x.isLeft) : x.getLeft h = a ↔ x = inl a := by
+  cases x <;> simp at h ⊢
+
+theorem eq_right_getRight_of_isRight : ∀ {x : α ⊕ β} (h : x.isRight), x = inr (x.getRight h)
+  | inr _, _ => rfl
+
+theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
+  cases x <;> simp; exact fun c => c.elim
+
+@[simp] theorem getRight_eq_iff {b : β} (h : x.isRight) : x.getRight h = b ↔ x = inr b := by
+  cases x <;> simp at h ⊢
+
+@[simp] theorem getLeft?_eq_some_iff {a : α} : x.getLeft? = some a ↔ x = inl a := by
   cases x <;> simp only [getLeft?, Option.some.injEq, inl.injEq]
 #align sum.get_left_eq_some_iff Sum.getLeft?_eq_some_iff
 
-@[simp] lemma getRight?_eq_some_iff {b : β} : x.getRight? = b ↔ x = inr b := by
+@[simp] theorem getRight?_eq_some_iff {b : β} : x.getRight? = some b ↔ x = inr b := by
   cases x <;> simp only [getRight?, Option.some.injEq, inr.injEq]
 #align sum.get_right_eq_some_iff Sum.getRight?_eq_some_iff
+
+theorem getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
+x.getLeft h₁ = x.getLeft?.get h₂ := by simp [← getLeft?_eq_some_iff]
+
+theorem getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
+x.getRight h₁ = x.getRight?.get h₂ := by simp [← getRight?_eq_some_iff]
 
 @[simp]
 theorem not_isLeft (x : Sum α β) : not x.isLeft = x.isRight := by cases x <;> rfl
@@ -158,6 +200,12 @@ theorem isLeft_iff : x.isLeft ↔ ∃ y, x = Sum.inl y := by cases x <;> simp
 
 theorem isRight_iff : x.isRight ↔ ∃ y, x = Sum.inr y := by cases x <;> simp
 #align sum.is_right_iff Sum.isRight_iff
+
+@[simp] theorem isSome_getLeft?_iff_isLeft : x.getLeft?.isSome ↔ x.isLeft := by
+rw [isLeft_iff, Option.isSome_iff_exists]; simp
+
+@[simp] theorem isSome_getRight?_iff_isRight : x.getRight?.isSome ↔ x.isRight := by
+rw [isRight_iff, Option.isSome_iff_exists]; simp
 
 end get
 
@@ -535,21 +583,23 @@ theorem Lex.mono_right (hs : ∀ a b, s₁ a b → s₂ a b) (h : Lex r s₁ x y
 #align sum.lex.mono_right Sum.Lex.mono_right
 
 theorem lex_acc_inl {a} (aca : Acc r a) : Acc (Lex r s) (inl a) := by
-  induction' aca with a _ IH
-  constructor
-  intro y h
-  cases' h with a' _ h'
-  exact IH _ h'
+  induction aca with
+  | intro _ _ IH =>
+    constructor
+    intro y h
+    cases h with
+    | inl h' => exact IH _ h'
 #align sum.lex_acc_inl Sum.lex_acc_inl
 
 theorem lex_acc_inr (aca : ∀ a, Acc (Lex r s) (inl a)) {b} (acb : Acc s b) :
     Acc (Lex r s) (inr b) := by
-  induction' acb with b _ IH
-  constructor
-  intro y h
-  cases' h with _ _ _ b' _ h' a
-  · exact IH _ h'
-  · exact aca _
+  induction acb with
+  | intro _ _ IH =>
+    constructor
+    intro y h
+    cases h with
+    | inr h' => exact IH _ h'
+    | sep => exact aca _
 #align sum.lex_acc_inr Sum.lex_acc_inr
 
 theorem lex_wf (ha : WellFounded r) (hb : WellFounded s) : WellFounded (Lex r s) :=

@@ -217,3 +217,7 @@ example {r : α → α → Prop} : Function.Surjective (Quot.mk r) := by exact?
 #guard_msgs in
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
   exact?
+
+-- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/exact.3F.20recent.20regression.3F/near/387691588
+lemma ex' (x : ℕ) (_h₁ : x = 0) (h : 2 * 2 ∣ x) : 2 ∣ x := by
+  exact? says exact dvd_of_mul_left_dvd h

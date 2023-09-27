@@ -357,7 +357,7 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
   by_contra h
   apply hn.ne'
   have h' : ⋃ j, B j = univ := by
-    rw [← (isClosed_iUnion hB).measure_eq_univ_iff_eq (μ := μ)]
+    rw [← (isClosed_iUnion_of_finite hB).measure_eq_univ_iff_eq (μ := μ)]
     refine' le_antisymm (μ.mono (subset_univ _)) _
     simp_rw [measure_iUnion h (fun _ ↦ measurableSet_closedBall), tsum_fintype,
       μ.addHaar_closedBall_center, Finset.sum_const, Finset.card_univ, Nat.card_fintypeIcc,

@@ -3,12 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Order
+import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.Lemmas
-import Mathlib.Data.Int.CharZero
-import Mathlib.Algebra.GroupWithZero.Power
-import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Field.Basic
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -45,7 +42,6 @@ variable [DivisionRing α]
 theorem cast_coe_int (n : ℤ) : ((n : ℚ) : α) = n :=
   (cast_def _).trans <| show (n / (1 : ℕ) : α) = n by rw [Nat.cast_one, div_one]
 #align rat.cast_coe_int Rat.cast_coe_int
-
 
 @[simp, norm_cast]
 theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
@@ -187,230 +183,7 @@ theorem cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num :
   rw [division_def, cast_mul_of_ne_zero md (mt this nn), cast_inv_of_ne_zero nn nd, division_def]
 #align rat.cast_div_of_ne_zero Rat.cast_div_of_ne_zero
 
-@[simp, norm_cast]
-theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
-  | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩ => by
-    refine' ⟨fun h => _, congr_arg _⟩
-    have d₁a : (d₁ : α) ≠ 0 := Nat.cast_ne_zero.2 d₁0
-    have d₂a : (d₂ : α) ≠ 0 := Nat.cast_ne_zero.2 d₂0
-    rw [num_den', num_den'] at h ⊢
-    rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero] at h <;> simp [d₁0, d₂0] at h ⊢
-    rwa [eq_div_iff_mul_eq d₂a, division_def, mul_assoc, (d₁.cast_commute (d₂ : α)).inv_left₀.eq, ←
-      mul_assoc, ← division_def, eq_comm, eq_div_iff_mul_eq d₁a, eq_comm, ← Int.cast_ofNat d₁, ←
-      Int.cast_mul, ← Int.cast_ofNat d₂, ← Int.cast_mul, Int.cast_inj, ← mkRat_eq_iff d₁0 d₂0] at h
-#align rat.cast_inj Rat.cast_inj
-
-theorem cast_injective [CharZero α] : Function.Injective ((↑) : ℚ → α)
-  | _, _ => cast_inj.1
-#align rat.cast_injective Rat.cast_injective
-
-@[simp]
-theorem cast_eq_zero [CharZero α] {n : ℚ} : (n : α) = 0 ↔ n = 0 := by rw [← cast_zero, cast_inj]
-#align rat.cast_eq_zero Rat.cast_eq_zero
-
-theorem cast_ne_zero [CharZero α] {n : ℚ} : (n : α) ≠ 0 ↔ n ≠ 0 :=
-  not_congr cast_eq_zero
-#align rat.cast_ne_zero Rat.cast_ne_zero
-
-@[simp, norm_cast]
-theorem cast_add [CharZero α] (m n) : ((m + n : ℚ) : α) = m + n :=
-  cast_add_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
-#align rat.cast_add Rat.cast_add
-
-@[simp, norm_cast]
-theorem cast_sub [CharZero α] (m n) : ((m - n : ℚ) : α) = m - n :=
-  cast_sub_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
-#align rat.cast_sub Rat.cast_sub
-
-@[simp, norm_cast]
-theorem cast_mul [CharZero α] (m n) : ((m * n : ℚ) : α) = m * n :=
-  cast_mul_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
-#align rat.cast_mul Rat.cast_mul
-
-section
-
-set_option linter.deprecated false
-
-@[simp, norm_cast]
-theorem cast_bit0 [CharZero α] (n : ℚ) : ((bit0 n : ℚ) : α) = (bit0 n : α) :=
-  cast_add _ _
-#align rat.cast_bit0 Rat.cast_bit0
-
-@[simp, norm_cast]
-theorem cast_bit1 [CharZero α] (n : ℚ) : ((bit1 n : ℚ) : α) = (bit1 n : α) := by
-  rw [bit1, cast_add, cast_one, cast_bit0]; rfl
-#align rat.cast_bit1 Rat.cast_bit1
-
-end
-
-variable (α)
-variable [CharZero α]
-
-/-- Coercion `ℚ → α` as a `RingHom`. -/
-def castHom : ℚ →+* α where
-  toFun := (↑)
-  map_one' := cast_one
-  map_mul' := cast_mul
-  map_zero' := cast_zero
-  map_add' := cast_add
-#align rat.cast_hom Rat.castHom
-
-variable {α}
-
-@[simp]
-theorem coe_cast_hom : ⇑(castHom α) = ((↑) : ℚ → α) :=
-  rfl
-#align rat.coe_cast_hom Rat.coe_cast_hom
-
-@[simp, norm_cast]
-theorem cast_inv (n) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ :=
-  map_inv₀ (castHom α) _
-#align rat.cast_inv Rat.cast_inv
-
-@[simp, norm_cast]
-theorem cast_div (m n) : ((m / n : ℚ) : α) = m / n :=
-  map_div₀ (castHom α) _ _
-#align rat.cast_div Rat.cast_div
-
-@[simp, norm_cast]
-theorem cast_zpow (q : ℚ) (n : ℤ) : ((q ^ n : ℚ) : α) = (q : α) ^ n :=
-  map_zpow₀ (castHom α) q n
-#align rat.cast_zpow Rat.cast_zpow
-
-@[norm_cast]
-theorem cast_mk (a b : ℤ) : (a /. b : α) = a / b := by
-  simp only [divInt_eq_div, cast_div, cast_coe_int]
-#align rat.cast_mk Rat.cast_mk
-
-@[simp, norm_cast]
-theorem cast_pow (q) (k : ℕ) : ((q : ℚ) ^ k : α) = (q : α) ^ k :=
-  (castHom α).map_pow q k
-#align rat.cast_pow Rat.cast_pow
-
 end WithDivRing
-
-section LinearOrderedField
-
-variable {K : Type*} [LinearOrderedField K]
-
-theorem cast_pos_of_pos {r : ℚ} (hr : 0 < r) : (0 : K) < r := by
-  rw [Rat.cast_def]
-  exact div_pos (Int.cast_pos.2 <| num_pos_iff_pos.2 hr) (Nat.cast_pos.2 r.pos)
-#align rat.cast_pos_of_pos Rat.cast_pos_of_pos
-
-@[mono]
-theorem cast_strictMono : StrictMono ((↑) : ℚ → K) := fun m n => by
-  simpa only [sub_pos, cast_sub] using @cast_pos_of_pos K _ (n - m)
-#align rat.cast_strict_mono Rat.cast_strictMono
-
-@[mono]
-theorem cast_mono : Monotone ((↑) : ℚ → K) :=
-  cast_strictMono.monotone
-#align rat.cast_mono Rat.cast_mono
-
-/-- Coercion from `ℚ` as an order embedding. -/
-@[simps!]
-def castOrderEmbedding : ℚ ↪o K :=
-  OrderEmbedding.ofStrictMono (↑) cast_strictMono
-#align rat.cast_order_embedding Rat.castOrderEmbedding
-#align rat.cast_order_embedding_apply Rat.castOrderEmbedding_apply
-
-@[simp, norm_cast]
-theorem cast_le {m n : ℚ} : (m : K) ≤ n ↔ m ≤ n :=
-  castOrderEmbedding.le_iff_le
-#align rat.cast_le Rat.cast_le
-
-@[simp, norm_cast]
-theorem cast_lt {m n : ℚ} : (m : K) < n ↔ m < n :=
-  cast_strictMono.lt_iff_lt
-#align rat.cast_lt Rat.cast_lt
-
-@[simp]
-theorem cast_nonneg {n : ℚ} : 0 ≤ (n : K) ↔ 0 ≤ n := by
-      norm_cast
-#align rat.cast_nonneg Rat.cast_nonneg
-
-@[simp]
-theorem cast_nonpos {n : ℚ} : (n : K) ≤ 0 ↔ n ≤ 0 := by
-      norm_cast
-#align rat.cast_nonpos Rat.cast_nonpos
-
-@[simp]
-theorem cast_pos {n : ℚ} : (0 : K) < n ↔ 0 < n := by
-      norm_cast
-#align rat.cast_pos Rat.cast_pos
-
-@[simp]
-theorem cast_lt_zero {n : ℚ} : (n : K) < 0 ↔ n < 0 := by
-      norm_cast
-#align rat.cast_lt_zero Rat.cast_lt_zero
-
-@[simp, norm_cast]
-theorem cast_min {a b : ℚ} : (↑(min a b) : K) = min (a : K) (b : K) :=
-  (@cast_mono K _).map_min
-#align rat.cast_min Rat.cast_min
-
-@[simp, norm_cast]
-theorem cast_max {a b : ℚ} : (↑(max a b) : K) = max (a : K) (b : K) :=
-  (@cast_mono K _).map_max
-#align rat.cast_max Rat.cast_max
-
-
-@[simp, norm_cast]
-theorem cast_abs {q : ℚ} : ((|q| : ℚ) : K) = |(q : K)| := by simp [abs_eq_max_neg]
-#align rat.cast_abs Rat.cast_abs
-
-open Set
-
-@[simp]
-theorem preimage_cast_Icc (a b : ℚ) : (↑) ⁻¹' Icc (a : K) b = Icc a b := by
-  ext x
-  simp
-#align rat.preimage_cast_Icc Rat.preimage_cast_Icc
-
-@[simp]
-theorem preimage_cast_Ico (a b : ℚ) : (↑) ⁻¹' Ico (a : K) b = Ico a b := by
-  ext x
-  simp
-#align rat.preimage_cast_Ico Rat.preimage_cast_Ico
-
-@[simp]
-theorem preimage_cast_Ioc (a b : ℚ) : (↑) ⁻¹' Ioc (a : K) b = Ioc a b := by
-  ext x
-  simp
-#align rat.preimage_cast_Ioc Rat.preimage_cast_Ioc
-
-@[simp]
-theorem preimage_cast_Ioo (a b : ℚ) : (↑) ⁻¹' Ioo (a : K) b = Ioo a b := by
-  ext x
-  simp
-#align rat.preimage_cast_Ioo Rat.preimage_cast_Ioo
-
-@[simp]
-theorem preimage_cast_Ici (a : ℚ) : (↑) ⁻¹' Ici (a : K) = Ici a := by
-  ext x
-  simp
-#align rat.preimage_cast_Ici Rat.preimage_cast_Ici
-
-@[simp]
-theorem preimage_cast_Iic (a : ℚ) : (↑) ⁻¹' Iic (a : K) = Iic a := by
-  ext x
-  simp
-#align rat.preimage_cast_Iic Rat.preimage_cast_Iic
-
-@[simp]
-theorem preimage_cast_Ioi (a : ℚ) : (↑) ⁻¹' Ioi (a : K) = Ioi a := by
-  ext x
-  simp
-#align rat.preimage_cast_Ioi Rat.preimage_cast_Ioi
-
-@[simp]
-theorem preimage_cast_Iio (a : ℚ) : (↑) ⁻¹' Iio (a : K) = Iio a := by
-  ext x
-  simp
-#align rat.preimage_cast_Iio Rat.preimage_cast_Iio
-
-end LinearOrderedField
 
 -- Porting note: statement made more explicit
 @[norm_cast]
@@ -421,11 +194,6 @@ theorem cast_id (n : ℚ) : Rat.cast n = n := rfl
 theorem cast_eq_id : ((↑) : ℚ → ℚ) = id :=
   funext fun _ => rfl
 #align rat.cast_eq_id Rat.cast_eq_id
-
-@[simp]
-theorem cast_hom_rat : castHom ℚ = RingHom.id ℚ :=
-  RingHom.ext cast_id
-#align rat.cast_hom_rat Rat.cast_hom_rat
 
 end Rat
 

@@ -882,8 +882,7 @@ same as ideals of `L` contained in `I`. -/
 instance subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩
-  change x ∈ (⊥ : LieIdeal _ _) at hx
-  rw [LieSubmodule.mem_bot] at hx
+  rw [LieSubmodule.bot_coeSubmodule, Submodule.mem_bot] at hx
   subst hx
   simp only [Submodule.mk_eq_zero, LieSubmodule.mem_bot, LieSubmodule.mem_top]
 #align lie_ideal.subsingleton_of_bot LieIdeal.subsingleton_of_bot
@@ -1040,12 +1039,12 @@ theorem mem_map_of_surjective {y : L'} (h₁ : Function.Surjective f) (h₂ : y 
   rw [← LieSubmodule.mem_coeSubmodule, coe_map_of_surjective h₁, Submodule.mem_map] at h₂
   obtain ⟨x, hx, rfl⟩ := h₂
   use ⟨x, hx⟩
-  rfl
+  rw [LieHom.coe_toLinearMap]
 #align lie_ideal.mem_map_of_surjective LieIdeal.mem_map_of_surjective
 
 theorem bot_of_map_eq_bot {I : LieIdeal R L} (h₁ : Function.Injective f) (h₂ : I.map f = ⊥) :
     I = ⊥ := by
-  rw [← f.ker_eq_bot] at h₁; change comap f ⊥ = ⊥ at h₁
+  rw [← f.ker_eq_bot, LieHom.ker] at h₁
   rw [eq_bot_iff, map_le_iff_le_comap, h₁] at h₂
   rw [eq_bot_iff]; exact h₂
 #align lie_ideal.bot_of_map_eq_bot LieIdeal.bot_of_map_eq_bot

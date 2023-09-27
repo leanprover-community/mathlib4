@@ -43,7 +43,7 @@ instance [∀ i, Star (f i)] [∀ i, TrivialStar (f i)] : TrivialStar (∀ i, f 
 instance [∀ i, InvolutiveStar (f i)] : InvolutiveStar (∀ i, f i)
     where star_involutive _ := funext fun _ => star_star _
 
-instance [∀ i, Semigroup (f i)] [∀ i, StarSemigroup (f i)] : StarSemigroup (∀ i, f i)
+instance [∀ i, Mul (f i)] [∀ i, StarMul (f i)] : StarMul (∀ i, f i)
     where star_mul _ _ := funext fun _ => star_mul _ _
 
 instance [∀ i, AddMonoid (f i)] [∀ i, StarAddMonoid (f i)] : StarAddMonoid (∀ i, f i)

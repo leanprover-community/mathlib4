@@ -252,6 +252,8 @@ def ofInt (α : Expr) : Int → MetaM Expr
   | Int.ofNat n => Expr.ofNat α n
   | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
 
+section recognizers
+
 /--
   Return `some n` if `e` is one of the following
   - A nat literal (numeral)
@@ -275,6 +277,15 @@ def zero? (e : Expr) : Bool :=
   match e.numeral? with
   | some 0 => true
   | _ => false
+
+/-- `Lean.Expr.le? p` take `e : Expr` as input.
+If `e` represents `a ≤ b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
+otherwise, it returns `none`. -/
+@[inline] def le? (p : Expr) : Option (Expr × Expr × Expr) := do
+  let (type, _, lhs, rhs) ← p.app4? ``LE.le
+  return (type, lhs, rhs)
+
+end recognizers
 
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a

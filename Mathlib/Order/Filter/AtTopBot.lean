@@ -132,6 +132,11 @@ theorem atTop_basis [Nonempty α] [SemilatticeSup α] : (@atTop α _).HasBasis (
   hasBasis_iInf_principal (directed_of_sup fun _ _ => Ici_subset_Ici.2)
 #align filter.at_top_basis Filter.atTop_basis
 
+theorem atTop_eq_generate_Ici [SemilatticeSup α] : atTop = generate (range (Ici (α := α))) := by
+  rcases isEmpty_or_nonempty α with hα|hα
+  · simp only [eq_iff_true_of_subsingleton]
+  · simp [(atTop_basis (α := α)).eq_generate, range]
+
 theorem atTop_basis' [SemilatticeSup α] (a : α) : (@atTop α _).HasBasis (fun x => a ≤ x) Ici :=
   ⟨fun _ =>
     (@atTop_basis α ⟨a⟩ _).mem_iff.trans
@@ -410,6 +415,26 @@ theorem tendsto_atBot_mono [Preorder β] {l : Filter α} {f g : α → β} (h : 
     Tendsto g l atBot → Tendsto f l atBot :=
   @tendsto_atTop_mono _ βᵒᵈ _ _ _ _ h
 #align filter.tendsto_at_bot_mono Filter.tendsto_atBot_mono
+
+lemma atTop_eq_generate_of_forall_exists_le [LinearOrder α] {s : Set α} (hs : ∀ x, ∃ y ∈ s, x ≤ y) :
+    (atTop : Filter α) = generate (Ici '' s) := by
+  rw [atTop_eq_generate_Ici]
+  apply le_antisymm
+  · rw [le_generate_iff]
+    rintro - ⟨y, -, rfl⟩
+    exact mem_generate_of_mem ⟨y, rfl⟩
+  · rw [le_generate_iff]
+    rintro - ⟨x, -, -, rfl⟩
+    rcases hs x with ⟨y, ys, hy⟩
+    have A : Ici y ∈ generate (Ici '' s) := mem_generate_of_mem (mem_image_of_mem _ ys)
+    have B : Ici y ⊆ Ici x := Ici_subset_Ici.2 hy
+    exact sets_of_superset (generate (Ici '' s)) A B
+
+lemma atTop_eq_generate_of_not_bddAbove [LinearOrder α] {s : Set α} (hs : ¬ BddAbove s) :
+    (atTop : Filter α) = generate (Ici '' s) := by
+  refine' atTop_eq_generate_of_forall_exists_le fun x ↦ _
+  obtain ⟨y, hy, hy'⟩ := not_bddAbove_iff.mp hs x
+  exact ⟨y, hy, hy'.le⟩
 
 end Filter
 
@@ -1034,6 +1059,12 @@ theorem tendsto_mul_const_atTop_of_pos (hr : 0 < r) :
   simpa only [mul_comm] using tendsto_const_mul_atTop_of_pos hr
 #align filter.tendsto_mul_const_at_top_of_pos Filter.tendsto_mul_const_atTop_of_pos
 
+/-- If `r` is a positive constant, then `x ↦ f x * r` tends to infinity along a filter if and only
+if `f` tends to infinity along the same filter. -/
+lemma tendsto_div_const_atTop_of_pos (hr : 0 < r) :
+  Tendsto (λ x ↦ f x / r) l atTop ↔ Tendsto f l atTop := by
+  simpa only [div_eq_mul_inv] using tendsto_mul_const_atTop_of_pos (inv_pos.2 hr)
+
 /-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to infinity
 if and only if `0 < r. `-/
 theorem tendsto_const_mul_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
@@ -1049,6 +1080,12 @@ theorem tendsto_mul_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atTop ↔ 0 < r := by
   simp only [mul_comm _ r, tendsto_const_mul_atTop_iff_pos h]
 #align filter.tendsto_mul_const_at_top_iff_pos Filter.tendsto_mul_const_atTop_iff_pos
+
+/-- If `f` tends to infinity along a nontrivial filter `l`, then `x ↦ f x * r` tends to infinity
+if and only if `0 < r. `-/
+lemma tendsto_div_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
+  Tendsto (λ x ↦ f x / r) l atTop ↔ 0 < r := by
+  simp only [div_eq_mul_inv, tendsto_mul_const_atTop_iff_pos h, inv_pos]
 
 /-- If a function tends to infinity along a filter, then this function multiplied by a positive
 constant (on the left) also tends to infinity. For a version working in `ℕ` or `ℤ`, use

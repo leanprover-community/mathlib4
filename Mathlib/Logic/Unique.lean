@@ -6,7 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Fin.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Inhabit
 
 #align_import logic.unique from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 

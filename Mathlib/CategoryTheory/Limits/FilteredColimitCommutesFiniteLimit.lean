@@ -320,9 +320,9 @@ instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F)
 instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
     IsIso (colimitLimitToLimitColimitCone F) := by
   have : IsIso (colimitLimitToLimitColimitCone F).Hom := by
-    suffices : IsIso (colimitLimitToLimitColimit (uncurry.obj F) ≫
-      lim.map (whiskerRight (currying.unitIso.app F).inv colim))
-    apply IsIso.comp_isIso
+    suffices IsIso (colimitLimitToLimitColimit (uncurry.obj F) ≫
+        lim.map (whiskerRight (currying.unitIso.app F).inv colim)) by
+      apply IsIso.comp_isIso
     infer_instance
   apply Cones.cone_iso_of_hom_iso
 #align category_theory.limits.colimit_limit_to_limit_colimit_cone_iso CategoryTheory.Limits.colimitLimitToLimitColimitCone_iso

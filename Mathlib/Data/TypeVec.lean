@@ -354,10 +354,8 @@ def typevecCasesCons₃ (n : ℕ) {β : ∀ v v' : TypeVec (n + 1), v ⟹ v' →
 /-- specialized cases distinction for an arrow in the category of 0-length type vectors -/
 def typevecCasesNil₂ {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort*} (f : β nilFun) : ∀ f, β f := by
   intro g
-  have : g = nilFun
+  suffices g = nilFun by rwa [this]
   ext ⟨⟩
-  rw [this]
-  exact f
 #align typevec.typevec_cases_nil₂ TypeVec.typevecCasesNil₂
 
 /-- specialized cases distinction for an arrow in the category of (n+1)-length type vectors -/

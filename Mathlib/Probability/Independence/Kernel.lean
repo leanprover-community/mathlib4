@@ -9,15 +9,15 @@ import Mathlib.Probability.Kernel.Basic
 /-!
 # Independence with respect to a kernel and a measure
 
-A family of sets of sets `π : ι → set (set Ω)` is independent with respect to a kernel
+A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a kernel
 `κ : kernel α Ω` and a measure `μ` on `α` if for any finite set of indices `s = {i_1, ..., i_n}`,
 for any sets `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then for `μ`-almost every `a : α`,
 `κ a (⋂ i in s, f i) = ∏ i in s, κ a (f i)`.
 
 This notion of independence is a generalization of both independence and conditional independence.
 For conditional independence, `κ` is the conditional kernel `ProbabilityTheory.condexpKernel` and
-`μ` is the ambiant measure. For (non-conditional) independence, `κ = kernel.const unit μ` and the
-measure is the Dirac measure on `unit`.
+`μ` is the ambiant measure. For (non-conditional) independence, `κ = kernel.const Unit μ` and the
+measure is the Dirac measure on `Unit`.
 
 The main purpose of this file is to prove only once the properties that hold for both conditional
 and non-conditional independence.
@@ -33,8 +33,8 @@ and non-conditional independence.
 * `ProbabilityTheory.kernel.iIndepFun`: independence of a family of functions (random variables).
   Variant for two functions: `ProbabilityTheory.kernel.IndepFun`.
 
-See the file `Basic.lean` for a more detailed discussion of these definitions in the
-particular case of the usual independence notion.
+See the file `Mathlib/Probability/Kernel/Basic.lean` for a more detailed discussion of these
+definitions in the particular case of the usual independence notion.
 
 ## Main statements
 
@@ -55,7 +55,7 @@ section Definitions
 
 variable {_mα : MeasurableSpace α}
 
-/-- A family of sets of sets `π : ι → set (set Ω)` is independent with respect to a kernel `κ` and
+/-- A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a kernel `κ` and
 a measure `μ` if for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `∀ᵐ a ∂μ, κ a (⋂ i in s, f i) = ∏ i in s, κ a (f i)`.
 It will be used for families of pi_systems. -/
@@ -98,7 +98,7 @@ def IndepSet {_mΩ : MeasurableSpace Ω} (s t : Set Ω) (κ : kernel α Ω)
 /-- A family of functions defined on the same space `Ω` and taking values in possibly different
 spaces, each with a measurable space structure, is independent if the family of measurable space
 structures they generate on `Ω` is independent. For a function `g` with codomain having measurable
-space structure `m`, the generated measurable space structure is `measurable_space.comap g m`. -/
+space structure `m`, the generated measurable space structure is `MeasurableSpace.comap g m`. -/
 def iIndepFun {_mΩ : MeasurableSpace Ω} {β : ι → Type*} (m : ∀ x : ι, MeasurableSpace (β x))
     (f : ∀ x : ι, Ω → β x) (κ : kernel α Ω)
     (μ : Measure α := by volume_tac) : Prop :=

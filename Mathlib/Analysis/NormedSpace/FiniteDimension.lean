@@ -50,7 +50,7 @@ universe u v w x
 noncomputable section
 
 open Set FiniteDimensional TopologicalSpace Filter Asymptotics Classical BigOperators Topology
-  NNReal
+  NNReal Metric
 
 namespace LinearIsometry
 
@@ -359,28 +359,6 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     _ = dist x (Φ x) + dist y (Φ y) := by simp [hxy, dist_comm]
     _ ≤ ε := by linarith [hn x, hn y]
 
-variable (𝕜 E)
-
-theorem FiniteDimensional.complete [FiniteDimensional 𝕜 E] : CompleteSpace E := by
-  set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
-  have : UniformEmbedding e.toLinearEquiv.toEquiv.symm := e.symm.uniformEmbedding
-  exact (completeSpace_congr this).1 (by infer_instance)
-#align finite_dimensional.complete FiniteDimensional.complete
-
-variable {𝕜 E}
-
-/-- A finite-dimensional subspace is complete. -/
-theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
-    IsComplete (s : Set E) :=
-  completeSpace_coe_iff_isComplete.1 (FiniteDimensional.complete 𝕜 s)
-#align submodule.complete_of_finite_dimensional Submodule.complete_of_finiteDimensional
-
-/-- A finite-dimensional subspace is closed. -/
-theorem Submodule.closed_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
-    IsClosed (s : Set E) :=
-  s.complete_of_finiteDimensional.isClosed
-#align submodule.closed_of_finite_dimensional Submodule.closed_of_finiteDimensional
-
 theorem AffineSubspace.closed_of_finiteDimensional {P : Type*} [MetricSpace P]
     [NormedAddTorsor E P] (s : AffineSubspace 𝕜 P) [FiniteDimensional 𝕜 s.direction] :
     IsClosed (s : Set P) :=
@@ -443,7 +421,7 @@ variable (𝕜)
 
 /-- **Riesz's theorem**: if a closed ball with center zero of positive radius is compact in a vector
 space, then the space is finite-dimensional. -/
-theorem finiteDimensional_of_isCompact_closed_ball₀ {r : ℝ} (rpos : 0 < r)
+theorem finiteDimensional_of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
     (h : IsCompact (Metric.closedBall (0 : E) r)) : FiniteDimensional 𝕜 E := by
   by_contra hfin
   obtain ⟨R, f, Rgt, fle, lef⟩ :
@@ -473,16 +451,22 @@ theorem finiteDimensional_of_isCompact_closed_ball₀ {r : ℝ} (rpos : 0 < r)
       apply lef _ _ (ne_of_gt _)
       exact φmono (Nat.lt_succ_self N)
     _ < ‖c‖ := hN (N + 1) (Nat.le_succ N)
-#align finite_dimensional_of_is_compact_closed_ball₀ finiteDimensional_of_isCompact_closed_ball₀
+#align finite_dimensional_of_is_compact_closed_ball₀ finiteDimensional_of_isCompact_closedBall₀
 
 /-- **Riesz's theorem**: if a closed ball of positive radius is compact in a vector space, then the
 space is finite-dimensional. -/
 theorem finiteDimensional_of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : E}
     (h : IsCompact (Metric.closedBall c r)) : FiniteDimensional 𝕜 E := by
-  apply finiteDimensional_of_isCompact_closed_ball₀ 𝕜 rpos
+  apply finiteDimensional_of_isCompact_closedBall₀ 𝕜 rpos
   have : Continuous fun x => -c + x := continuous_const.add continuous_id
   simpa using h.image this
 #align finite_dimensional_of_is_compact_closed_ball finiteDimensional_of_isCompact_closedBall
+
+/-- **Riesz's theorem**: a locally compact normed vector space is finite-dimensional. -/
+theorem finiteDimensional_of_locallyCompactSpace [LocallyCompactSpace E] :
+    FiniteDimensional 𝕜 E := by
+  rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
+  exact finiteDimensional_of_isCompact_closedBall₀ 𝕜 rpos hr
 
 /-- If a function has compact multiplicative support, then either the function is trivial or the
 space is finite-dimensional. -/
@@ -509,36 +493,32 @@ theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [Topologica
 #align has_compact_mul_support.eq_one_or_finite_dimensional HasCompactMulSupport.eq_one_or_finiteDimensional
 #align has_compact_support.eq_zero_or_finite_dimensional HasCompactSupport.eq_zero_or_finiteDimensional
 
+/-- A locally compact normed vector space is proper. -/
+lemma properSpace_of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+    {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [LocallyCompactSpace E] : ProperSpace E := by
+  rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
+  rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
+  have M : ∀ n (x : E), IsCompact (closedBall x (‖c‖^n * r)) := by
+    intro n x
+    let f : E → E := fun y ↦ c^n • y + x
+    have Cf : Continuous f := (continuous_id.const_smul _).add continuous_const
+    have A : closedBall x (‖c‖^n * r) ⊆ f '' (closedBall 0 r) := by
+      rintro y hy
+      refine ⟨(c^n)⁻¹ • (y - x), ?_, ?_⟩
+      · simpa [dist_eq_norm, norm_smul, inv_mul_le_iff (pow_pos (zero_lt_one.trans hc) _)] using hy
+      · have : c^n ≠ 0 := pow_ne_zero _ (norm_pos_iff.1 (zero_lt_one.trans hc))
+        simp [smul_smul, mul_inv_cancel this]
+    exact isCompact_of_isClosed_subset (hr.image Cf) isClosed_ball A
+  refine ⟨fun x s ↦ ?_⟩
+  have L : ∀ᶠ n in (atTop : Filter ℕ), s ≤ ‖c‖^n * r := by
+    have : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
+      Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
+    exact Tendsto.eventually_ge_atTop this s
+  rcases L.exists with ⟨n, hn⟩
+  exact isCompact_of_isClosed_subset (M n x) isClosed_ball (closedBall_subset_closedBall hn)
+
 end Riesz
-
-/-- An injective linear map with finite-dimensional domain is a closed embedding. -/
-theorem LinearEquiv.closedEmbedding_of_injective {f : E →ₗ[𝕜] F} (hf : LinearMap.ker f = ⊥)
-    [FiniteDimensional 𝕜 E] : ClosedEmbedding f :=
-  let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
-  { embedding_subtype_val.comp g.toContinuousLinearEquiv.toHomeomorph.embedding with
-    closed_range := by
-      haveI := f.finiteDimensional_range
-      simpa [LinearMap.range_coe f] using f.range.closed_of_finiteDimensional }
-#align linear_equiv.closed_embedding_of_injective LinearEquiv.closedEmbedding_of_injective
-
-theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensional 𝕜 F]
-    (f : E →L[𝕜] F) (hf : LinearMap.range f = ⊤) :
-    ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
-  let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf
-  ⟨LinearMap.toContinuousLinearMap g, ContinuousLinearMap.ext <| LinearMap.ext_iff.1 hg⟩
-#align continuous_linear_map.exists_right_inverse_of_surjective ContinuousLinearMap.exists_right_inverse_of_surjective
-
-theorem closedEmbedding_smul_left {c : E} (hc : c ≠ 0) : ClosedEmbedding fun x : 𝕜 => x • c :=
-  LinearEquiv.closedEmbedding_of_injective (LinearMap.ker_toSpanSingleton 𝕜 E hc)
-#align closed_embedding_smul_left closedEmbedding_smul_left
-
--- `smul` is a closed map in the first argument.
-theorem isClosedMap_smul_left (c : E) : IsClosedMap fun x : 𝕜 => x • c := by
-  by_cases hc : c = 0
-  · simp_rw [hc, smul_zero]
-    exact isClosedMap_const
-  · exact (closedEmbedding_smul_left hc).isClosedMap
-#align is_closed_map_smul_left isClosedMap_smul_left
 
 open ContinuousLinearMap
 
@@ -583,7 +563,7 @@ theorem continuousOn_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimension
 #align continuous_on_clm_apply continuousOn_clm_apply
 
 theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
-    {f : X → E →L[𝕜] F} : Continuous f ↔ ∀ y, Continuous fun x => f x y := by
+    {f : X → E →L[𝕜] F} : Continuous f ↔ ∀ y, Continuous (f · y) := by
   simp_rw [continuous_iff_continuousOn_univ, continuousOn_clm_apply]
 #align continuous_clm_apply continuous_clm_apply
 
@@ -621,11 +601,8 @@ theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type*} [NormedAddCommGrou
     ∃ y ∈ frontier s, Metric.infDist x sᶜ = dist x y := by
   rcases Metric.exists_mem_closure_infDist_eq_dist (nonempty_compl.2 hs) x with ⟨y, hys, hyd⟩
   rw [closure_compl] at hys
-  refine'
-    ⟨y,
-      ⟨Metric.closedBall_infDist_compl_subset_closure hx <| Metric.mem_closedBall.2 <| ge_of_eq _,
-        hys⟩,
-      hyd⟩
+  refine' ⟨y, ⟨Metric.closedBall_infDist_compl_subset_closure hx <|
+    Metric.mem_closedBall.2 <| ge_of_eq _, hys⟩, hyd⟩
   rwa [dist_comm]
 #align exists_mem_frontier_inf_dist_compl_eq_dist exists_mem_frontier_infDist_compl_eq_dist
 

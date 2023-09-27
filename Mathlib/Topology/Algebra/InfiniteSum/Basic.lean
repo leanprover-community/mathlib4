@@ -1208,14 +1208,6 @@ theorem Summable.prod_factor {f : β × γ → α} (h : Summable f) (b : β) :
   h.comp_injective fun _ _ h => (Prod.ext_iff.1 h).2
 #align summable.prod_factor Summable.prod_factor
 
-section LocInstances
-
--- enable inferring a T3-topological space from a topological group
-attribute [local instance] TopologicalAddGroup.t3Space
-
--- disable getting a T0-space from a T1-space as this causes loops
-attribute [-instance] T1Space.t0Space
-
 theorem tsum_sigma [T0Space α] {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Summable f) :
     ∑' p, f p = ∑' (b) (c), f ⟨b, c⟩ :=
   tsum_sigma' (fun b => ha.sigma_factor b) ha
@@ -1230,8 +1222,6 @@ theorem tsum_comm [T0Space α] {f : β → γ → α} (h : Summable (Function.un
     ∑' (c) (b), f b c = ∑' (b) (c), f b c :=
   tsum_comm' h h.prod_factor h.prod_symm.prod_factor
 #align tsum_comm tsum_comm
-
-end LocInstances
 
 theorem tsum_subtype_add_tsum_subtype_compl [T2Space α] {f : β → α} (hf : Summable f) (s : Set β) :
     ∑' x : s, f x + ∑' x : ↑sᶜ, f x = ∑' x, f x :=

@@ -87,7 +87,7 @@ characterized in terms of the `Tendsto` relation.
 We also introduce predicates `DifferentiableWithinAt 𝕜 f s x` (where `𝕜` is the base field,
 `f` the function to be differentiated, `x` the point at which the derivative is asserted to exist,
 and `s` the set along which the derivative is defined), as well as `DifferentiableAt 𝕜 f x`,
-`Differentiable_on 𝕜 f s` and `Differentiable 𝕜 f` to express the existence of a derivative.
+`DifferentiableOn 𝕜 f s` and `Differentiable 𝕜 f` to express the existence of a derivative.
 
 To be able to compute with derivatives, we write `fderivWithin 𝕜 f s x` and `fderiv 𝕜 f x`
 for some choice of a derivative if it exists, and the zero function otherwise. This choice only

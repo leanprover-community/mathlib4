@@ -35,7 +35,7 @@ We also prove the following facts.
   the instance graph.
 
 * Every `EMetricSpace` is a paracompact space, see instance `EMetricSpace.ParacompactSpace` in
-  `Topology/MetricSpace/EMetricParacompact`.
+  `Topology/EMetricSpace/Paracompact`.
 
 ## TODO
 
@@ -193,7 +193,7 @@ dealing with a covering of the whole space.
 
 In most cases (namely, if `B c r ∪ B c r'` is again a set of the form `B c r''`) it is possible
 to choose `α = X`. This fact is not yet formalized in `mathlib`. -/
-theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [LocallyCompactSpace X]
+theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocallyCompactSpace X]
     [SigmaCompactSpace X] [T2Space X] {ι : X → Type u} {p : ∀ x, ι x → Prop} {B : ∀ x, ι x → Set X}
     {s : Set X} (hs : IsClosed s) (hB : ∀ x ∈ s, (𝓝 x).HasBasis (p x) (B x)) :
     ∃ (α : Type v) (c : α → X) (r : ∀ a, ι (c a)),
@@ -263,7 +263,7 @@ dealing with a covering of a closed set.
 
 In most cases (namely, if `B c r ∪ B c r'` is again a set of the form `B c r''`) it is possible
 to choose `α = X`. This fact is not yet formalized in `mathlib`. -/
-theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis [LocallyCompactSpace X]
+theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis [WeaklyLocallyCompactSpace X]
     [SigmaCompactSpace X] [T2Space X] {ι : X → Type u} {p : ∀ x, ι x → Prop} {B : ∀ x, ι x → Set X}
     (hB : ∀ x, (𝓝 x).HasBasis (p x) (B x)) :
     ∃ (α : Type v) (c : α → X) (r : ∀ a, ι (c a)),
@@ -276,7 +276,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis [LocallyCompactS
 -- See note [lower instance priority]
 /-- A locally compact sigma compact Hausdorff space is paracompact. See also
 `refinement_of_locallyCompact_sigmaCompact_of_nhds_basis` for a more precise statement. -/
-instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [LocallyCompactSpace X]
+instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [WeaklyLocallyCompactSpace X]
     [SigmaCompactSpace X] [T2Space X] : ParacompactSpace X := by
   refine' ⟨fun α s ho hc ↦ _⟩
   choose i hi using iUnion_eq_univ_iff.1 hc

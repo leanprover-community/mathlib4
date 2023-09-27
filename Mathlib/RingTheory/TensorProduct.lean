@@ -60,7 +60,7 @@ variable (r : R) (f g : M →ₗ[R] N)
 
 variable (A)
 
-/-- `base_change A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`. -/
+/-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`. -/
 def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
   AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
 #align linear_map.base_change LinearMap.baseChange
@@ -97,7 +97,7 @@ theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
 
 variable (R A M N)
 
-/-- `base_change` as a linear map. -/
+/-- `baseChange` as a linear map. -/
 @[simps]
 def baseChangeHom : (M →ₗ[R] N) →ₗ[R] A ⊗[R] M →ₗ[A] A ⊗[R] N where
   toFun := baseChange A
@@ -382,8 +382,8 @@ products of algebras.
 See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
-  (ha : f.comp includeLeft = g.comp includeLeft)
-  (hb : (f.restrictScalars R).comp includeRight = (g.restrictScalars R).comp includeRight) :
+    (ha : f.comp includeLeft = g.comp includeLeft)
+    (hb : (f.restrictScalars R).comp includeRight = (g.restrictScalars R).comp includeRight) :
     f = g := by
   apply AlgHom.toLinearMap_injective
   ext a b

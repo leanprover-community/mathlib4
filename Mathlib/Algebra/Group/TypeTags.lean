@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Hom.Group
+import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Finite.Defs
 

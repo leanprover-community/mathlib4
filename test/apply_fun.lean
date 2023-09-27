@@ -120,6 +120,25 @@ example (a b : List α) (P : a = b) : True := by
   apply_fun List.length at P
   trivial
 
+example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 := by
+  apply_fun (· + 1 : ℕ → ℕ) at h -- TODO shouldn't need type ascription here
+  · exact h
+  · exact Monotone.add_const monotone_id 1
+
+example (a b : ℕ) (h : a < b) : a + 1 < b + 1 := by
+  apply_fun (· + 1 : ℕ → ℕ) at h
+  · exact h
+  · exact StrictMono.add_const strictMono_id 1
+
+example (a b : ℕ) (h : a < b) : a + 1 < b + 1 := by
+  apply_fun (· + 1 : ℕ → ℕ) at h using StrictMono.add_const strictMono_id 1
+  · exact h
+
+example (a b : ℕ) (h : a ≠ b) : a + 1 ≠ b + 1 := by
+  apply_fun (· + 1 : ℕ → ℕ) at h
+  · exact h
+  · exact add_left_injective 1
+
 -- TODO
 -- -- monotonicity will be proved by `mono` in the next example
 -- example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 :=
@@ -224,6 +243,11 @@ example (f : α ≃ β) (x y : α) (h : f x = f y) : x = y := by
 example (f : α ≃ β) (x y : α) (h : f x = f y) : (fun s => s) (x = y) := by
   apply_fun f
   exact h
+
+-- check that `apply_fun` uses the function provided to help elaborate the injectivity lemma
+example (x : ℕ) : x = x := by
+  apply_fun (Nat.cast : ℕ → ℚ) using Nat.cast_injective
+  rfl
 
 -- Check that locals are elaborated properly in apply_fun
 example : 1 = 1 := by

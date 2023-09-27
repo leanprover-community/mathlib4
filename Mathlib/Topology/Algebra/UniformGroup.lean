@@ -149,8 +149,7 @@ theorem uniformContinuous_zpow_const (n : ℤ) : UniformContinuous fun x : α =>
 #align uniform_continuous_const_zsmul uniformContinuous_const_zsmul
 
 @[to_additive]
-instance (priority := 10) UniformGroup.to_topologicalGroup : TopologicalGroup α
-    where
+instance (priority := 10) UniformGroup.to_topologicalGroup : TopologicalGroup α where
   continuous_mul := uniformContinuous_mul.continuous
   continuous_inv := uniformContinuous_inv.continuous
 #align uniform_group.to_topological_group UniformGroup.to_topologicalGroup
@@ -244,13 +243,10 @@ theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β 
 @[to_additive]
 theorem uniformGroup_comap {γ : Type*} [Group γ] {u : UniformSpace γ} [UniformGroup γ] {F : Type*}
     [MonoidHomClass F β γ] (f : F) : @UniformGroup β (u.comap f) _ :=
-  -- Porting note: {_} does not find `u.comap f` instance, see `continuousSMul_sInf`
-  @UniformGroup.mk β (_) _ <| by
-    letI : UniformSpace β := u.comap f
-    refine' uniformContinuous_comap' _
+  letI : UniformSpace β := u.comap f
+  ⟨uniformContinuous_comap' <| by
     simp_rw [Function.comp, map_div]
-    change UniformContinuous ((fun p : γ × γ => p.1 / p.2) ∘ Prod.map f f)
-    exact uniformContinuous_div.comp (uniformContinuous_comap.prod_map uniformContinuous_comap)
+    exact uniformContinuous_div.comp (uniformContinuous_comap.prod_map uniformContinuous_comap)⟩
 #align uniform_group_comap uniformGroup_comap
 #align uniform_add_group_comap uniformAddGroup_comap
 
@@ -697,45 +693,6 @@ theorem comm_topologicalGroup_is_uniform : UniformGroup G := by
 #align topological_add_comm_group_is_uniform comm_topologicalAddGroup_is_uniform
 
 open Set
-
-@[to_additive]
-theorem TopologicalGroup.t2Space_iff_one_closed : T2Space G ↔ IsClosed ({1} : Set G) := by
-  haveI : UniformGroup G := comm_topologicalGroup_is_uniform
-  rw [← separated_iff_t2, separatedSpace_iff, ← closure_eq_iff_isClosed]
-  constructor <;> intro h
-  · apply Subset.antisymm
-    · intro x x_in
-      have := group_separationRel x 1
-      rw [div_one] at this
-      rw [← this, h] at x_in
-      -- Porting note: was
-      --change x = 1 at x_in
-      --simp [x_in]
-      rwa [mem_singleton_iff]
-    · exact subset_closure
-  · ext p
-    cases' p with x y
-    rw [group_separationRel x, h, mem_singleton_iff, div_eq_one]
-    rfl
-#align topological_group.t2_space_iff_one_closed TopologicalGroup.t2Space_iff_one_closed
-#align topological_add_group.t2_space_iff_zero_closed TopologicalAddGroup.t2Space_iff_zero_closed
-
-@[to_additive]
-theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U ∈ nhds (1 : G), x ∉ U) :
-    T2Space G := by
-  rw [TopologicalGroup.t2Space_iff_one_closed, ← isOpen_compl_iff, isOpen_iff_mem_nhds]
-  intro x x_not
-  have : x ≠ 1 := mem_compl_singleton_iff.mp x_not
-  rcases H x this with ⟨U, U_in, xU⟩
-  rw [← nhds_one_symm G] at U_in
-  rcases U_in with ⟨W, W_in, UW⟩
-  rw [← nhds_translation_mul_inv]
-  use W, W_in
-  rw [subset_compl_comm]
-  suffices x⁻¹ ∉ W by simpa
-  exact fun h => xU (UW h)
-#align topological_group.t2_space_of_one_sep TopologicalGroup.t2Space_of_one_sep
-#align topological_add_group.t2_space_of_zero_sep TopologicalAddGroup.t2Space_of_zero_sep
 
 end
 
