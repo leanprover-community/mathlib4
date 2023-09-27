@@ -2,7 +2,7 @@ import Mathlib.CategoryTheory.GradedObject.Bifunctor
 
 namespace CategoryTheory
 
-open Category
+open Category Limits
 
 variable {C₁ C₂ C₁₂ C₂₃ C₃ C₄ : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₄] [Category C₁₂] [Category C₂₃]
@@ -484,7 +484,7 @@ variable {X₁ X₂ X₃}
 @[ext]
 lemma mapBifunctorBifunctor₂₃MapObj_ext {j : J} {A : C₄}
     (f g : mapBifunctorMapObj F q X₁ (mapBifunctorMapObj G₂₃ p X₂ X₃) j ⟶ A)
-    (h : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : q ⟨i₁, p ⟨i₂, i₃⟩⟩ = j ),
+    (h : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : q ⟨i₁, p ⟨i₂, i₃⟩⟩ = j),
       ιMapBifunctorBifunctor₂₃MapObj F G₂₃ p q X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f =
         ιMapBifunctorBifunctor₂₃MapObj F G₂₃ p q X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
   rw [← cancel_epi ((mapBifunctorBifunctor₂₃MapObjIso F G₂₃ p q r hr X₁ X₂ X₃).hom j)]
@@ -492,6 +492,19 @@ lemma mapBifunctorBifunctor₂₃MapObj_ext {j : J} {A : C₄}
   ext i₁ i₂ i₃ hi
   simp only [ι_mapBifunctorBifunctor₂₃MapObjIso_hom_assoc]
   apply h
+
+variable (X₁ X₂ X₃)
+
+noncomputable def cofanMapBifunctorBifunctor₂₃MapObj (j : J) :
+    ((((mapTrifunctorFunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).MapObjCandidate r j :=
+  MapObjCandidate.mk _ _ _ (mapBifunctorMapObj F q X₁ (mapBifunctorMapObj G₂₃ p X₂ X₃) j)
+    (fun ⟨i₁, i₂, i₃⟩ hi =>
+      ιMapBifunctorBifunctor₂₃MapObj F G₂₃ p q X₁ X₂ X₃ i₁ i₂ i₃ j (by rw [←hi, hr]))
+
+noncomputable def isColimitCofanMapBifunctorBifunctor₂₃MapObj (j : J) :
+    IsColimit (cofanMapBifunctorBifunctor₂₃MapObj F G₂₃ p q r hr X₁ X₂ X₃ j) := by
+  have := H
+  sorry
 
 end
 
