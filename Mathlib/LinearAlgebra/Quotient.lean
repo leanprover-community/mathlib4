@@ -53,7 +53,7 @@ namespace Quotient
 /-- Map associating to an element of `M` the corresponding element of `M/p`,
 when `p` is a submodule of `M`. -/
 def mk {p : Submodule R M} : M → M ⧸ p :=
-  Quotient.mk''
+  _root_.Quotient.mk _
 #align submodule.quotient.mk Submodule.Quotient.mk
 
 /- porting note: here and throughout elaboration is sped up *tremendously* (in some cases even
@@ -69,6 +69,11 @@ theorem mk'_eq_mk' {p : Submodule R M} (x : M) :
 theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = (mk : M → M ⧸ p) x :=
   rfl
 #align submodule.quotient.mk'_eq_mk Submodule.Quotient.mk''_eq_mk
+
+@[simp]
+theorem mk_eq_mk {p : Submodule R M} (x : M) :
+    (_root_.Quotient.mk _ x : M ⧸ p) = (mk : M → M ⧸ p) x :=
+  rfl
 
 @[simp]
 theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = (mk : M → M ⧸ p) x :=
@@ -87,7 +92,7 @@ instance : Zero (M ⧸ p) where
   -- Use Quotient.mk'' instead of mk here because mk is not reducible.
   -- This would lead to non-defeq diamonds.
   -- See also the same comment at the One instance for Con.
-  zero := Quotient.mk'' 0
+  zero := mk 0
 
 instance : Inhabited (M ⧸ p) :=
   ⟨0⟩

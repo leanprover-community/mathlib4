@@ -255,7 +255,7 @@ def quotientEquiv [Fintype ι] :
     apply Quotient.sound'
     rwa [QuotientAddGroup.leftRel_apply, mem_toAddSubgroup, ← fract_eq_fract]
   · obtain ⟨a, rfl⟩ := fractRestrict_surjective b x
-    exact ⟨Quotient.mk'' a, rfl⟩
+    exact ⟨Quotient.mk _ a, rfl⟩
 
 @[simp]
 theorem quotientEquiv_apply_mk [Fintype ι] (x : E) :
