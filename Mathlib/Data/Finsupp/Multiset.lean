@@ -220,7 +220,7 @@ theorem coe_orderIsoMultiset [DecidableEq ι] : ⇑(@orderIsoMultiset ι _) = to
 
 @[simp]
 theorem coe_orderIsoMultiset_symm [DecidableEq ι] :
-  ⇑(@orderIsoMultiset ι).symm = Multiset.toFinsupp :=
+    ⇑(@orderIsoMultiset ι).symm = Multiset.toFinsupp :=
   rfl
 #align finsupp.coe_order_iso_multiset_symm Finsupp.coe_orderIsoMultiset_symm
 

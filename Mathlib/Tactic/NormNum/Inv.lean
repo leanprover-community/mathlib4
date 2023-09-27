@@ -13,9 +13,9 @@ import Mathlib.Algebra.Field.Basic
 
 set_option autoImplicit true
 
-open Lean Meta Qq
-
 namespace Mathlib.Meta.NormNum
+
+open Lean.Meta Qq
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`. -/
 def inferCharZeroOfRing {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
@@ -52,6 +52,22 @@ exists. -/
 def inferCharZeroOfDivisionRing? {α : Q(Type u)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM (Option Q(CharZero $α)) :=
   return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
+
+theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat b nb →
+    IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
+  | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
+
+/-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
+such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
+@[norm_num mkRat _ _] def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e):= do
+  let .app (.app (.const ``mkRat _) (a : Q(ℤ))) (b : Q(ℕ)) ← whnfR e | failure
+  haveI' : $e =Q mkRat $a $b := ⟨⟩
+  let ra ← derive a
+  let some ⟨_, na, pa⟩ := ra.toInt (q(Int.instRingInt) : Q(Ring Int)) | failure
+  let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
+  let rab ← derive q($na / $nb : Rat)
+  let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.divisionRing)
+  return .isRat' _ q n d q(isRat_mkRat $pa $pb $p)
 
 theorem isNat_ratCast [DivisionRing R] : {q : ℚ} → {n : ℕ} →
     IsNat q n → IsNat (q : R) n
@@ -112,6 +128,8 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
   generalize Nat.succ n = n at *
   use this; simp only [Int.ofNat_eq_coe, Int.cast_neg,
     Int.cast_ofNat, invOf_eq_inv, inv_neg, neg_mul, mul_inv_rev, inv_inv]
+
+open Lean
 
 /-- The `norm_num` extension which identifies expressions of the form `a⁻¹`,
 such that `norm_num` successfully recognises `a`. -/

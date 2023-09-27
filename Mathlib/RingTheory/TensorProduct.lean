@@ -31,9 +31,6 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 -/
 
-
-universe u uS v₁ v₂ v₃ v₄ v₅ v₆
-
 open scoped TensorProduct
 
 open TensorProduct
@@ -140,13 +137,15 @@ namespace Algebra
 
 namespace TensorProduct
 
+universe uR uS uA uB uC uD uE uF
+variable {R : Type uR} {S : Type uS}
+variable {A : Type uA} {B : Type uB} {C : Type uC} {D : Type uD} {E : Type uE} {F : Type uF}
+
 section Semiring
-
-variable {R : Type u} [CommSemiring R]
-
-variable {A : Type v₁} [Semiring A] [Algebra R A]
-
-variable {B : Type v₂} [Semiring B] [Algebra R B]
+variable [CommSemiring R]
+variable [Semiring A] [Algebra R A]
+variable [Semiring B] [Algebra R B]
+variable [Semiring C] [Algebra R C]
 
 /-!
 ### The `R`-algebra structure on `A ⊗[R] B`
@@ -227,6 +226,9 @@ instance : AddMonoidWithOne (A ⊗[R] B) where
 
 theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
 
+theorem natCast_def' (n : ℕ) : (n : A ⊗[R] B) = (1 : A) ⊗ₜ (n : B) := by
+  rw [natCast_def, ←nsmul_one, smul_tmul, nsmul_one]
+
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
 -- providing this instance separately makes some downstream code substantially faster
@@ -268,8 +270,6 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
   map_one' := rfl
   map_mul' := by simp
 #align algebra.tensor_product.include_left_ring_hom Algebra.TensorProduct.includeLeftRingHom
-
-variable {S : Type*}
 
 -- we want `isScalarTower_right` to take priority since it's better for unification elsewhere
 instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
@@ -329,8 +329,6 @@ theorem algebraMap_apply [SMulCommClass R S A] (r : S) :
   rfl
 #align algebra.tensor_product.algebra_map_apply Algebra.TensorProduct.algebraMap_apply
 
-variable {C : Type v₃} [Semiring C] [Algebra R C]
-
 /-- The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 def includeLeft [SMulCommClass R S A] : A →ₐ[S] A ⊗[R] B :=
   { includeLeftRingHom with commutes' := by simp }
@@ -362,10 +360,9 @@ theorem includeRight_apply (b : B) : (includeRight : B →ₐ[R] A ⊗[R] B) b =
   rfl
 #align algebra.tensor_product.include_right_apply Algebra.TensorProduct.includeRight_apply
 
-theorem includeLeftRingHom_comp_algebraMap {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T] :
-    (includeLeftRingHom.comp (algebraMap R S) : R →+* S ⊗[R] T) =
-      includeRight.toRingHom.comp (algebraMap R T) := by
+theorem includeLeftRingHom_comp_algebraMap :
+    (includeLeftRingHom.comp (algebraMap R A) : R →+* A ⊗[R] B) =
+      includeRight.toRingHom.comp (algebraMap R B) := by
   ext
   simp
 #align algebra.tensor_product.include_left_comp_algebra_map Algebra.TensorProduct.includeLeftRingHom_comp_algebraMapₓ
@@ -400,12 +397,9 @@ end ext
 end Semiring
 
 section Ring
-
-variable {R : Type u} [CommRing R]
-
-variable {A : Type v₁} [Ring A] [Algebra R A]
-
-variable {B : Type v₂} [Ring B] [Algebra R B]
+variable [CommRing R]
+variable [Ring A] [Algebra R A]
+variable [Ring B] [Algebra R B]
 
 instance instRing : Ring (A ⊗[R] B) where
   zsmul := SubNegMonoid.zsmul
@@ -419,6 +413,9 @@ instance instRing : Ring (A ⊗[R] B) where
 
 theorem intCast_def (z : ℤ) : (z : A ⊗[R] B) = (z : A) ⊗ₜ (1 : B) := rfl
 
+theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
+  rw [intCast_def, ←zsmul_one, smul_tmul, zsmul_one]
+
 -- verify there are no diamonds
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl
 example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
@@ -426,12 +423,9 @@ example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
 end Ring
 
 section CommRing
-
-variable {R : Type u} [CommRing R]
-
-variable {A : Type v₁} [CommRing A] [Algebra R A]
-
-variable {B : Type v₂} [CommRing B] [Algebra R B]
+variable [CommRing R]
+variable [CommRing A] [Algebra R A]
+variable [CommRing B] [Algebra R B]
 
 instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
@@ -472,32 +466,26 @@ end CommRing
 /-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely rings, by treating both as `ℤ`-algebras.
 -/
-example {A : Type v₁} [Ring A] {B : Type v₂} [Ring B] : Ring (A ⊗[ℤ] B) := by infer_instance
+example [Ring A] [Ring B] : Ring (A ⊗[ℤ] B) := by infer_instance
 
 /-- Verify that typeclass search finds the comm_ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely comm_rings, by treating both as `ℤ`-algebras.
 -/
-example {A : Type v₁} [CommRing A] {B : Type v₂} [CommRing B] : CommRing (A ⊗[ℤ] B) := by
-  infer_instance
+example [CommRing A] [CommRing B] : CommRing (A ⊗[ℤ] B) := by infer_instance
 
 /-!
 We now build the structure maps for the symmetric monoidal category of `R`-algebras.
 -/
 
-
 section Monoidal
 
 section
 
-variable {R : Type u} {S : Type uS} [CommSemiring R] [CommSemiring S] [Algebra R S]
-
-variable {A : Type v₁} [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-
-variable {B : Type v₂} [Semiring B] [Algebra R B]
-
-variable {C : Type v₃} [Semiring C] [Algebra R C] [Algebra S C]
-
-variable {D : Type v₄} [Semiring D] [Algebra R D]
+variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+variable [Semiring B] [Algebra R B]
+variable [Semiring C] [Algebra R C] [Algebra S C]
+variable [Semiring D] [Algebra R D]
 
 /-- Build an algebra morphism from a linear map out of a tensor product,
 and evidence of multiplicativity on pure tensors.
@@ -582,19 +570,13 @@ theorem algEquivOfLinearEquivTripleTensorProduct_apply (f w₁ w₂ x) :
 
 end
 
-variable {R : Type u} {S : Type uS} [CommSemiring R] [CommSemiring S] [Algebra R S]
-
-variable {A : Type v₁} [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-
-variable {B : Type v₂} [Semiring B] [Algebra R B] [Algebra S B] [IsScalarTower R S B]
-
-variable {B' : Type v₅} [Semiring B'] [Algebra R B'] [Algebra S B'] [IsScalarTower R S B']
-
-variable {C : Type v₃} [Semiring C] [Algebra R C]
-
-variable {D : Type v₄} [Semiring D] [Algebra R D]
-
-variable {D' : Type v₆} [Semiring D'] [Algebra R D']
+variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+variable [Semiring B] [Algebra R B] [Algebra S B] [IsScalarTower R S B]
+variable [Semiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
+variable [Semiring D] [Algebra R D]
+variable [Semiring E] [Algebra R E]
+variable [Semiring F] [Algebra R F]
 
 section
 
@@ -716,7 +698,7 @@ theorem map_tmul (f : A →ₐ[S] B) (g : C →ₐ[R] D) (a : A) (c : C) : map f
 theorem map_id : map (.id S A) (.id R C) = .id S _:=
   ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
 
-theorem map_comp (f₂ : B →ₐ[S] B') (f₁ : A →ₐ[S] B) (g₂ : D →ₐ[R] D') (g₁ : C →ₐ[R] D) :
+theorem map_comp (f₂ : B →ₐ[S] C) (f₁ : A →ₐ[S] B) (g₂ : E →ₐ[R] F) (g₁ : D →ₐ[R] E) :
     map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
   ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
 
@@ -773,7 +755,7 @@ theorem congr_symm_apply (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) (x) :
 theorem congr_refl : congr (.refl : A ≃ₐ[S] A) (.refl : C ≃ₐ[R] C) = .refl :=
   AlgEquiv.coe_algHom_injective <| map_id
 
-theorem congr_trans (f₁ : A ≃ₐ[S] B) (f₂ : B ≃ₐ[S] B') (g₁ : C ≃ₐ[R] D) (g₂ : D ≃ₐ[R] D') :
+theorem congr_trans (f₁ : A ≃ₐ[S] B) (f₂ : B ≃ₐ[S] C) (g₁ : D ≃ₐ[R] E) (g₂ : E ≃ₐ[R] F) :
     congr (f₁.trans f₂) (g₁.trans g₂) = (congr f₁ g₁).trans (congr f₂ g₂) :=
   AlgEquiv.coe_algHom_injective <| map_comp f₂.toAlgHom f₁.toAlgHom g₂.toAlgHom g₁.toAlgHom
 
@@ -785,7 +767,7 @@ end Monoidal
 
 section
 
-variable {R A B S : Type*} [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
+variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
 
 variable [Algebra R A] [Algebra R B] [Algebra R S]
 
@@ -861,18 +843,16 @@ end
 
 section
 
-variable {R A A' B S : Type*}
+variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+variable [Semiring B] [Algebra R B]
+variable [CommSemiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
 
-variable [CommSemiring R] [CommSemiring A] [Semiring A'] [Semiring B] [CommSemiring S]
-
-variable [Algebra R A] [Algebra R A'] [Algebra A A'] [IsScalarTower R A A'] [Algebra R B]
-
-variable [Algebra R S] [Algebra A S] [IsScalarTower R A S]
-
-/-- If `A`, `B` are `R`-algebras, `A'` is an `A`-algebra, then the product map of `f : A' →ₐ[A] S`
-and `g : B →ₐ[R] S` is an `A`-algebra homomorphism. -/
+/-- If `A`, `B`, `C` are `R`-algebras, `A` and `C` are also `S`-algebras (forming a tower as
+`·/S/R`), then the product map of `f : A →ₐ[S] C` and `g : B →ₐ[R] C` is an `S`-algebra
+homomorphism. -/
 @[simps!]
-def productLeftAlgHom (f : A' →ₐ[A] S) (g : B →ₐ[R] S) : A' ⊗[R] B →ₐ[A] S :=
+def productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
   { (productMap (f.restrictScalars R) g).toRingHom with
     commutes' := fun r => by
       dsimp
@@ -883,59 +863,59 @@ end
 
 section Basis
 
--- porting note: need to make a universe explicit for some reason in the next declaration
-universe uk uR uM uι
-variable {k : Type uk} [CommRing k] (R : Type uR) [Ring R] [Algebra k R] {M : Type uM}
-  [AddCommMonoid M] [Module k M] {ι : Type uι} (b : Basis ι k M)
+universe uM uι
+variable {M : Type uM} {ι : Type uι}
+variable [CommRing R] [Ring A] [Algebra R A] [AddCommMonoid M] [Module R M] (b : Basis ι R M)
 
+variable (A)
 
-/-- Given a `k`-algebra `R` and a `k`-basis of `M,` this is a `k`-linear isomorphism
-`R ⊗[k] M ≃ (ι →₀ R)` (which is in fact `R`-linear). -/
-noncomputable def basisAux : R ⊗[k] M ≃ₗ[k] ι →₀ R :=
-  _root_.TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique k R PUnit.{uι+1}).symm b.repr ≪≫ₗ
-    (finsuppTensorFinsupp k R k PUnit ι).trans
-      (Finsupp.lcongr (Equiv.uniqueProd ι PUnit) (_root_.TensorProduct.rid k R))
+/-- Given an `R`-algebra `A` and an `R`-basis of `M`, this is an `R`-linear isomorphism
+`A ⊗[R] M ≃ (ι →₀ A)` (which is in fact `A`-linear). -/
+noncomputable def basisAux : A ⊗[R] M ≃ₗ[R] ι →₀ A :=
+  _root_.TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique R A PUnit.{uι+1}).symm b.repr ≪≫ₗ
+    (finsuppTensorFinsupp R A R PUnit ι).trans
+      (Finsupp.lcongr (Equiv.uniqueProd ι PUnit) (_root_.TensorProduct.rid R A))
 #align algebra.tensor_product.basis_aux Algebra.TensorProduct.basisAux
 
-variable {R}
+variable {A}
 
-theorem basisAux_tmul (r : R) (m : M) :
-    basisAux R b (r ⊗ₜ m) = r • Finsupp.mapRange (algebraMap k R) (map_zero _) (b.repr m) := by
+theorem basisAux_tmul (a : A) (m : M) :
+    basisAux A b (a ⊗ₜ m) = a • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) := by
   ext
   simp [basisAux, ← Algebra.commutes, Algebra.smul_def]
 #align algebra.tensor_product.basis_aux_tmul Algebra.TensorProduct.basisAux_tmul
 
-theorem basisAux_map_smul (r : R) (x : R ⊗[k] M) : basisAux R b (r • x) = r • basisAux R b x :=
+theorem basisAux_map_smul (a : A) (x : A ⊗[R] M) : basisAux A b (a • x) = a • basisAux A b x :=
   TensorProduct.induction_on x (by simp)
     (fun x y => by simp only [TensorProduct.smul_tmul', basisAux_tmul, smul_assoc])
     fun x y hx hy => by simp [hx, hy]
 #align algebra.tensor_product.basis_aux_map_smul Algebra.TensorProduct.basisAux_map_smul
 
-variable (R)
+variable (A)
 
-/-- Given a `k`-algebra `R`, this is the `R`-basis of `R ⊗[k] M` induced by a `k`-basis of `M`. -/
-noncomputable def basis : Basis ι R (R ⊗[k] M) where
-  repr := { basisAux R b with map_smul' := basisAux_map_smul b }
+/-- Given a `R`-algebra `A`, this is the `A`-basis of `A ⊗[R] M` induced by a `R`-basis of `M`. -/
+noncomputable def basis : Basis ι A (A ⊗[R] M) where
+  repr := { basisAux A b with map_smul' := basisAux_map_smul b }
 #align algebra.tensor_product.basis Algebra.TensorProduct.basis
 
-variable {R}
+variable {A}
 
 @[simp]
-theorem basis_repr_tmul (r : R) (m : M) :
-    (basis R b).repr (r ⊗ₜ m) = r • Finsupp.mapRange (algebraMap k R) (map_zero _) (b.repr m) :=
-  basisAux_tmul b r m -- porting note: Lean 3 had _ _ _
+theorem basis_repr_tmul (a : A) (m : M) :
+    (basis A b).repr (a ⊗ₜ m) = a • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) :=
+  basisAux_tmul b a m -- porting note: Lean 3 had _ _ _
 #align algebra.tensor_product.basis_repr_tmul Algebra.TensorProduct.basis_repr_tmul
 
-theorem basis_repr_symm_apply (r : R) (i : ι) :
-    (basis R b).repr.symm (Finsupp.single i r) = r ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
+theorem basis_repr_symm_apply (a : A) (i : ι) :
+    (basis A b).repr.symm (Finsupp.single i a) = a ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
   rw [basis, LinearEquiv.coe_symm_mk] -- porting note: `coe_symm_mk` isn't firing in `simp`
   simp [Equiv.uniqueProd_symm_apply, basisAux]
 
 -- Porting note: simpNF linter failed on `basis_repr_symm_apply`
 @[simp]
-theorem basis_repr_symm_apply' (r : R) (i : ι) :
-    r • Algebra.TensorProduct.basis R b i = r ⊗ₜ b i := by
-  simpa using basis_repr_symm_apply b r i
+theorem basis_repr_symm_apply' (a : A) (i : ι) :
+    a • Algebra.TensorProduct.basis A b i = a ⊗ₜ b i := by
+  simpa using basis_repr_symm_apply b a i
 
 end Basis
 

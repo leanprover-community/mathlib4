@@ -470,7 +470,6 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   left; linarith
   right; linarith
 
-set_option maxHeartbeats 300000 in
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.increment`.
 -/
 theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
@@ -491,7 +490,11 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ 
       rw [show (16 : ℝ) = ↑4 ^ 2 by norm_num, pow_right_comm, sq ((4 : ℝ) ^ _), ←
         _root_.div_mul_div_comm, mul_assoc]
       have : 0 < ε := by sz_positivity
-      have UVl := mul_le_mul Ul Vl (by positivity) (by positivity)
+      have UVl := mul_le_mul Ul Vl (by positivity) ?_
+      swap
+      · -- This seems faster than `exact div_nonneg (by positivity) (by positivity)` and *much*
+        -- (tens of seconds) faster than `positivity` on its own.
+        apply div_nonneg <;> positivity
       refine' le_trans _ (mul_le_mul_of_nonneg_right UVl _)
       · norm_num
         nlinarith

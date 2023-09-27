@@ -115,8 +115,8 @@ theorem Orientation.reindex_symm (e : ι ≃ ι') :
 end Reindex
 
 /-- A module is canonically oriented with respect to an empty index type. -/
-instance (priority := 100) IsEmpty.oriented [Nontrivial R] [IsEmpty ι] : Module.Oriented R M ι
-    where positiveOrientation :=
+instance (priority := 100) IsEmpty.oriented [Nontrivial R] [IsEmpty ι] : Module.Oriented R M ι where
+  positiveOrientation :=
     rayOfNeZero R (AlternatingMap.constLinearEquivOfIsEmpty 1) <|
       AlternatingMap.constLinearEquivOfIsEmpty.injective.ne (by exact one_ne_zero)
 #align is_empty.oriented IsEmpty.oriented
