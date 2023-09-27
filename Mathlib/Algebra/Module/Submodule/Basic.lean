@@ -585,7 +585,6 @@ theorem sub_mem_iff_left (hy : y ∈ p) : x - y ∈ p ↔ x ∈ p := by
 theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
 #align submodule.sub_mem_iff_right Submodule.sub_mem_iff_right
-set_option pp.explicit true
 
 instance addCommGroup : AddCommGroup p :=
   { p.toAddSubgroup.toAddCommGroup with
