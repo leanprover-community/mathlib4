@@ -403,38 +403,49 @@ lemma rnDeriv_tilted_left (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
   sorry
 
 -- todo: generalize with this
-theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite' {μ : Measure α} [SigmaFinite μ]
+theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ {μ : Measure α} [SigmaFinite μ]
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
-    (h : ∀ s, MeasurableSet s → μ s < ∞ → (∫⁻ x in s, f x ∂μ) ≤ ∫⁻ x in s, g x ∂μ) : f ≤ᵐ[μ] g := by
-  sorry
+    (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ) :
+    f ≤ᵐ[μ] g := by
+  have h' : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, hf.mk f x ∂μ ≤ ∫⁻ x in s, hg.mk g x ∂μ := by
+    intro s hs hμs
+    specialize h s hs hμs
+    refine (set_lintegral_congr_fun hs ?_).trans_le (h.trans_eq (set_lintegral_congr_fun hs ?_))
+    · filter_upwards [hf.ae_eq_mk] with a ha using fun _ ↦ ha.symm
+    · filter_upwards [hg.ae_eq_mk] with a ha using fun _ ↦ ha
+  filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk,
+    ae_le_of_forall_set_lintegral_le_of_sigmaFinite hf.measurable_mk hg.measurable_mk h']
+    with a haf hag ha
+  rwa [haf, hag]
 
 -- todo: generalize with this
-theorem ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite' {μ : Measure α} [SigmaFinite μ]
+theorem ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ {μ : Measure α} [SigmaFinite μ]
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) : f =ᵐ[μ] g := by
   have A : f ≤ᵐ[μ] g :=
-    ae_le_of_forall_set_lintegral_le_of_sigmaFinite' hf hg fun s hs h's => le_of_eq (h s hs h's)
+    ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ hf hg fun s hs h's => le_of_eq (h s hs h's)
   have B : g ≤ᵐ[μ] f :=
-    ae_le_of_forall_set_lintegral_le_of_sigmaFinite' hg hf fun s hs h's => ge_of_eq (h s hs h's)
+    ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ hg hf fun s hs h's => ge_of_eq (h s hs h's)
   filter_upwards [A, B] with x using le_antisymm
 
 -- todo: generalize with this
-theorem Measure.eq_withDensity_rnDeriv' {μ ν : Measure α} {s : Measure α}
+theorem Measure.eq_withDensity_rnDeriv₀ {μ ν : Measure α} {s : Measure α}
     {f : α → ℝ≥0∞} (hf : AEMeasurable f ν) (hs : s ⟂ₘ ν)
     (hadd : μ = s + ν.withDensity f) :
     ν.withDensity f = ν.withDensity (μ.rnDeriv ν) := by
-  sorry
+  rw [withDensity_congr_ae hf.ae_eq_mk] at hadd ⊢
+  exact Measure.eq_withDensity_rnDeriv hf.measurable_mk hs hadd
 
 -- todo: generalize eq_rnDeriv with this
-theorem Measure.eq_rnDeriv' {μ ν : Measure α} [SigmaFinite ν] {s : Measure α}
+theorem Measure.eq_rnDeriv₀ {μ ν : Measure α} [SigmaFinite ν] {s : Measure α}
     {f : α → ℝ≥0∞} (hf : AEMeasurable f ν) (hs : s ⟂ₘ ν)
     (hadd : μ = s + ν.withDensity f) : f =ᵐ[ν] μ.rnDeriv ν := by
-  refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite' hf
+  refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ hf
     (measurable_rnDeriv μ ν).aemeasurable _
   intro a ha _
   calc
     ∫⁻ x : α in a, f x ∂ν = ν.withDensity f a := (withDensity_apply f ha).symm
-    _ = ν.withDensity (μ.rnDeriv ν) a := by rw [eq_withDensity_rnDeriv' hf hs hadd]
+    _ = ν.withDensity (μ.rnDeriv ν) a := by rw [eq_withDensity_rnDeriv₀ hf hs hadd]
     _ = ∫⁻ x : α in a, μ.rnDeriv ν x ∂ν := withDensity_apply _ ha
 
 lemma aemeasurable_of_aemeasurable_exp {μ : Measure α} {f : α → ℝ}
@@ -465,7 +476,7 @@ lemma rnDeriv_tilted_right_of_absolutelyContinuous (μ ν : Measure α) [SigmaFi
   symm
   refine (absolutelyContinuous_tilted hf).ae_le ?_
   have : IsProbabilityMeasure (ν.tilted f) := isProbabilityMeasure_tilted h_int
-  refine Measure.eq_rnDeriv' ?_ Measure.MutuallySingular.zero_left ?_
+  refine Measure.eq_rnDeriv₀ ?_ Measure.MutuallySingular.zero_left ?_
   · simp only
     refine AEMeasurable.mul ?_ (Measure.measurable_rnDeriv _ _).aemeasurable
     refine ENNReal.measurable_ofReal.comp_aemeasurable ?_
