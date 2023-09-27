@@ -397,7 +397,8 @@ theorem antilipschitzWith_equiv_aux :
     simp only [edist, ← one_div, ENNReal.one_toReal]
     calc
       (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) ≤
-          (∑ _i, edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) ^ p.toReal) ^ (1 / p.toReal) := by
+          (∑ _i : ι, edist (WithLp.equiv p _ x)
+            (WithLp.equiv p _ y) ^ p.toReal) ^ (1 / p.toReal) := by
         refine ENNReal.rpow_le_rpow ?_ nonneg
         refine Finset.sum_le_sum fun i _ => ?_
         apply ENNReal.rpow_le_rpow _ (le_of_lt pos)
