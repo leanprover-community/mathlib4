@@ -183,6 +183,7 @@ theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻�
 
 @[simp] theorem preimage_singleton_true (p : α → Prop) : p ⁻¹' {True} = {a | p a} := by ext; simp
 #align set.preimage_singleton_true Set.preimage_singleton_true
+
 @[simp] theorem preimage_singleton_false (p : α → Prop) : p ⁻¹' {False} = {a | ¬p a} := by ext; simp
 #align set.preimage_singleton_false Set.preimage_singleton_false
 
