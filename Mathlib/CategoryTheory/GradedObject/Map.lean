@@ -40,24 +40,28 @@ section
 
 variable {I J : Type*} (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 
-abbrev HasMap : Prop := ∀ (j : J), HasCoproduct (fun (i : (p ⁻¹' {j})) => X i)
+abbrev mapObjFun (j : J) := (fun (i : (p ⁻¹' {j})) => X i)
+
+variable (j : J)
+
+abbrev HasMap : Prop := ∀ (j : J), HasCoproduct (X.mapObjFun p j)
 
 variable [X.HasMap p] [Y.HasMap p] [Z.HasMap p]
 
-noncomputable def mapObj : GradedObject J C := fun j => ∐ (fun (i : (p ⁻¹' {j})) => X i)
+noncomputable def mapObj : GradedObject J C := fun j => ∐ (X.mapObjFun p j)
 
 noncomputable def ιMapObj (i : I) (j : J) (hij : p i = j) : X i ⟶ X.mapObj p j :=
   Sigma.ι (fun (i' : (p ⁻¹' {j})) => X i') ⟨i, hij⟩
 
-abbrev MapObjCandidate (j : J) := Cofan (fun (i : (p ⁻¹' {j})) => X i)
+abbrev MapObjCofan (j : J) := Cofan (X.mapObjFun p j)
 
 @[simps!]
-def MapObjCandidate.mk (j : J) (pt : C) (ι' : ∀ (i : I) (_ : p i = j), X i ⟶ pt) : MapObjCandidate X p j :=
+def MapObjCofan.mk (j : J) (pt : C) (ι' : ∀ (i : I) (_ : p i = j), X i ⟶ pt) : MapObjCofan X p j :=
   Cofan.mk pt (fun ⟨i, hi⟩ => ι' i hi)
 
 @[simps!]
-noncomputable def coconeMapObj (j : J) : MapObjCandidate X p j :=
-  MapObjCandidate.mk X p j (X.mapObj p j) (fun i hi => X.ιMapObj p i j hi)
+noncomputable def coconeMapObj (j : J) : MapObjCofan X p j :=
+  MapObjCofan.mk X p j (X.mapObj p j) (fun i hi => X.ιMapObj p i j hi)
 
 lemma mapObj_ext {A : C} {j : J} (f g : X.mapObj p j ⟶ A)
     (hfg : ∀ (i : I) (hij : p i = j), X.ιMapObj p i j hij ≫ f = X.ιMapObj p i j hij ≫ g) :
@@ -86,13 +90,13 @@ noncomputable def isColimitCoconeMapObj (j : J) : IsColimit (X.coconeMapObj p j)
     intro i hi
     simpa using hm ⟨i, hi⟩
 
-namespace MapObjCandidate
+namespace MapObjCofan
 
-lemma hasMap (c : ∀ j, MapObjCandidate X p j) (hc : ∀ j, IsColimit (c j)) :
+lemma hasMap (c : ∀ j, MapObjCofan X p j) (hc : ∀ j, IsColimit (c j)) :
     X.HasMap p := fun j => ⟨_, hc j⟩
 
 variable {j X p}
-  (c : MapObjCandidate X p j) (hc : IsColimit c) [X.HasMap p]
+  (c : MapObjCofan X p j) (hc : IsColimit c) [X.HasMap p]
 
 abbrev ι' (i : I) (hi : p i = j) : X i ⟶ c.pt := c.proj ⟨i, hi⟩
 
@@ -109,7 +113,7 @@ lemma ι'_iso_inv (i : I) (hi : p i = j) :
     X.ιMapObj p i j hi ≫ (c.iso hc).inv = c.ι' i hi := by
   apply IsColimit.comp_coconePointUniqueUpToIso_inv
 
-end MapObjCandidate
+end MapObjCofan
 
 variable {X Y}
 

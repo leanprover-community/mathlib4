@@ -33,23 +33,23 @@ noncomputable abbrev tensorObj (X₁ X₂ : GradedObject I C) [HasTensor X₁ X�
     GradedObject I C :=
   mapBifunctorMapObj (curryObj (MonoidalCategory.tensor C)) (fun ⟨i, j⟩ => i + j) X₁ X₂
 
-abbrev TensorCandidate (X₁ X₂ : GradedObject I C) (j : I) :=
-  (((mapBifunctorFunctor (curryObj (MonoidalCategory.tensor C)) I I).obj X₁).obj X₂).MapObjCandidate (fun ⟨i, j⟩ => i + j) j
+abbrev TensorCofan (X₁ X₂ : GradedObject I C) (j : I) :=
+  (((mapBifunctorFunctor (curryObj (MonoidalCategory.tensor C)) I I).obj X₁).obj X₂).MapObjCofan (fun ⟨i, j⟩ => i + j) j
 
 @[simps! pt]
-def TensorCandidate.mk (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
-    (ι : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = j), X₁ i₁ ⊗ X₂ i₂ ⟶ pt) : TensorCandidate X₁ X₂ j :=
-  MapObjCandidate.mk _ _ _ pt (fun ⟨i₁, i₂⟩ h => ι i₁ i₂ h)
+def TensorCofan.mk (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
+    (ι : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = j), X₁ i₁ ⊗ X₂ i₂ ⟶ pt) : TensorCofan X₁ X₂ j :=
+  MapObjCofan.mk _ _ _ pt (fun ⟨i₁, i₂⟩ h => ι i₁ i₂ h)
 
 @[simp]
-lemma TensorCandidate.mk_ι' (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
+lemma TensorCofan.mk_ι' (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
     (ι : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = j), X₁ i₁ ⊗ X₂ i₂ ⟶ pt) (i₁ i₂ : I) (h : i₁ + i₂ = j) :
-    (TensorCandidate.mk X₁ X₂ j pt ι).ι' ⟨i₁, i₂⟩ h = ι i₁ i₂ h := rfl
+    (TensorCofan.mk X₁ X₂ j pt ι).ι' ⟨i₁, i₂⟩ h = ι i₁ i₂ h := rfl
 
-lemma TensorCandidate.hasTensor (X₁ X₂ : GradedObject I C)
-    (c : ∀ i, TensorCandidate X₁ X₂ i) (hc : ∀ i, IsColimit (c i)) :
+lemma TensorCofan.hasTensor (X₁ X₂ : GradedObject I C)
+    (c : ∀ i, TensorCofan X₁ X₂ i) (hc : ∀ i, IsColimit (c i)) :
     HasTensor X₁ X₂ :=
-  MapObjCandidate.hasMap _ _ c hc
+  MapObjCofan.hasMap _ _ c hc
 
 section
 
@@ -296,8 +296,8 @@ def tensorIsInitial (X₁ X₂ : C) (hX₂ : IsInitial X₂) : IsInitial (X₁ �
 variable (X : GradedObject I C)
 
 @[simps! pt]
-noncomputable def unitTensorCandidate (i : I) : TensorCandidate tensorUnit X i :=
-  TensorCandidate.mk _ _ _ (X i) (fun a b h =>
+noncomputable def unitTensorCofan (i : I) : TensorCofan tensorUnit X i :=
+  TensorCofan.mk _ _ _ (X i) (fun a b h =>
     if ha : a = 0
       then
         ((tensorUnit₀' C a ha).hom ⊗ 𝟙 (X b) : tensorUnit a ⊗ X b ⟶ 𝟙_ C ⊗ X b) ≫
@@ -307,14 +307,14 @@ noncomputable def unitTensorCandidate (i : I) : TensorCandidate tensorUnit X i :
       else IsInitial.to (isInitialTensor _ _ (isInitialTensorUnitApply _ _ ha)) _)
 
 @[simp]
-lemma unitTensorCandidate_ι₀ (i : I) :
-    (unitTensorCandidate X i).ι' ⟨0, i⟩ (zero_add i) =
+lemma unitTensorCofan_ι₀ (i : I) :
+    (unitTensorCofan X i).ι' ⟨0, i⟩ (zero_add i) =
       ((tensorUnit₀ I C).hom ⊗ (𝟙 (X i))) ≫ (λ_ (X i)).hom := by
-  dsimp [unitTensorCandidate]
+  dsimp [unitTensorCofan]
   rw [dif_pos rfl]
   simp
 
-noncomputable def isColimitUnitTensorCandidate (i : I) : IsColimit (unitTensorCandidate X i) :=
+noncomputable def isColimitUnitTensorCofan (i : I) : IsColimit (unitTensorCofan X i) :=
   mkCofanColimit _
     (fun s => (leftUnitor (X i)).inv ≫
       ((tensorUnit₀ I C).inv ⊗ 𝟙 (X i)) ≫ s.proj ⟨⟨0, i⟩, zero_add i⟩)
@@ -332,11 +332,11 @@ noncomputable def isColimitUnitTensorCandidate (i : I) : IsColimit (unitTensorCa
       simp)
 
 instance : HasTensor tensorUnit X :=
-  TensorCandidate.hasTensor _ _ _ (fun i => isColimitUnitTensorCandidate X i)
+  TensorCofan.hasTensor _ _ _ (fun i => isColimitUnitTensorCofan X i)
 
 noncomputable def leftUnitor :
     tensorObj tensorUnit X ≅ X := isoMk _ _
-      (fun i => ((unitTensorCandidate X i).iso (isColimitUnitTensorCandidate X i)).symm)
+      (fun i => ((unitTensorCofan X i).iso (isColimitUnitTensorCofan X i)).symm)
 
 lemma leftUnitor_inv_apply (i : I) :
     (leftUnitor X).inv i =
@@ -367,8 +367,8 @@ lemma ιTensorObj_leftUnitor_hom (X : GradedObject I C) (i : I) :
     id_comp, id_comp]
 
 @[simps! pt]
-noncomputable def tensorUnitCandidate (i : I) : TensorCandidate X tensorUnit i :=
-  TensorCandidate.mk _ _ _ (X i) (fun a b h =>
+noncomputable def tensorUnitCofan (i : I) : TensorCofan X tensorUnit i :=
+  TensorCofan.mk _ _ _ (X i) (fun a b h =>
     if hb : b = 0
       then
         (𝟙 (X a) ⊗ (tensorUnit₀' C b hb).hom) ≫ (rightUnitor (X a)).hom ≫ eqToHom (by
@@ -377,14 +377,14 @@ noncomputable def tensorUnitCandidate (i : I) : TensorCandidate X tensorUnit i :
       else IsInitial.to (tensorIsInitial _ _ (isInitialTensorUnitApply _ _ hb)) _)
 
 @[simp]
-lemma tensorUnitCandidate_ι₀ (i : I) :
-    (tensorUnitCandidate X i).ι' ⟨i, 0⟩ (add_zero i) =
+lemma tensorUnitCofan_ι₀ (i : I) :
+    (tensorUnitCofan X i).ι' ⟨i, 0⟩ (add_zero i) =
       (𝟙 (X i) ⊗ (tensorUnit₀ I C).hom) ≫ (rightUnitor (X i)).hom := by
-  dsimp [tensorUnitCandidate]
+  dsimp [tensorUnitCofan]
   rw [dif_pos rfl]
   simp
 
-noncomputable def isColimitTensorUnitCandidate (i : I) : IsColimit (tensorUnitCandidate X i) :=
+noncomputable def isColimitTensorUnitCofan (i : I) : IsColimit (tensorUnitCofan X i) :=
   mkCofanColimit _
     (fun s => (rightUnitor (X i)).inv ≫
       (𝟙 (X i) ⊗ (tensorUnit₀ I C).inv) ≫ s.proj ⟨⟨i, 0⟩, add_zero i⟩)
@@ -402,11 +402,11 @@ noncomputable def isColimitTensorUnitCandidate (i : I) : IsColimit (tensorUnitCa
       simp)
 
 instance : HasTensor X tensorUnit :=
-  TensorCandidate.hasTensor _ _ _ (fun i => isColimitTensorUnitCandidate X i)
+  TensorCofan.hasTensor _ _ _ (fun i => isColimitTensorUnitCofan X i)
 
 noncomputable def rightUnitor :
     tensorObj X tensorUnit ≅ X := isoMk _ _
-      (fun i => ((tensorUnitCandidate X i).iso (isColimitTensorUnitCandidate X i)).symm)
+      (fun i => ((tensorUnitCofan X i).iso (isColimitTensorUnitCofan X i)).symm)
 
 lemma rightUnitor_inv_apply (i : I) :
     (rightUnitor X).inv i =
