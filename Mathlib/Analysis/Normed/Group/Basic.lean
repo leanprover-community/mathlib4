@@ -862,6 +862,11 @@ theorem IsCompact.exists_bound_of_continuousOn' [TopologicalSpace α] {s : Set �
 #align is_compact.exists_bound_of_continuous_on IsCompact.exists_bound_of_continuousOn
 
 @[to_additive]
+theorem HasCompactMulSupport.exists_bound_of_continuous [TopologicalSpace α]
+    {f : α → E} (hf : HasCompactMulSupport f) (h'f : Continuous f) : ∃ C, ∀ x, ‖f x‖ ≤ C := by
+  simpa using (hf.isCompact_range h'f).bounded.exists_norm_le'
+
+@[to_additive]
 theorem MonoidHomClass.isometry_iff_norm [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     Isometry f ↔ ∀ x, ‖f x‖ = ‖x‖ := by
   simp only [isometry_iff_dist_eq, dist_eq_norm_div, ← map_div]

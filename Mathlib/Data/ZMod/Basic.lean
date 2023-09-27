@@ -144,7 +144,7 @@ variable [AddGroupWithOne R]
 
 /-- Cast an integer modulo `n` to another semiring.
 This function is a morphism if the characteristic of `R` divides `n`.
-See `ZMod.cast_hom` for a bundled version. -/
+See `ZMod.castHom` for a bundled version. -/
 @[coe] def cast : ∀ {n : ℕ}, ZMod n → R
   | 0 => Int.cast
   | _ + 1 => fun i => i.val
@@ -1160,6 +1160,10 @@ theorem ringHom_eq_of_ker_eq [CommRing R] (f g : R →+* ZMod n)
   rw [Subtype.coe_mk] at this
   rw [← this, RingHom.ext_zmod (f.liftOfRightInverse _ _ ⟨g, _⟩) _, RingHom.id_comp]
 #align zmod.ring_hom_eq_of_ker_eq ZMod.ringHom_eq_of_ker_eq
+
+@[simp]
+lemma castHom_self {n : ℕ} : ZMod.castHom dvd_rfl (ZMod n) = RingHom.id (ZMod n) :=
+  RingHom.ext_zmod (ZMod.castHom dvd_rfl (ZMod n)) (RingHom.id (ZMod n))
 
 section lift
 
