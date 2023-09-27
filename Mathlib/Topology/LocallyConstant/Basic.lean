@@ -645,9 +645,9 @@ noncomputable def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
     LocallyConstant C₀ Z :=
   letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   piecewise (h₁.preimage continuous_subtype_val) (h₂.preimage continuous_subtype_val)
-    (by simpa [Set.eq_univ_iff_forall] using h₀)
-    (f₁.comap (Set.restrictPreimage C₁ ((↑) : C₀ → X)))
-    (f₂.comap (Set.restrictPreimage C₂ ((↑) : C₀ → X))) <| by
+    (by simpa [eq_univ_iff_forall] using h₀)
+    (f₁.comap (restrictPreimage C₁ ((↑) : C₀ → X)))
+    (f₂.comap (restrictPreimage C₂ ((↑) : C₀ → X))) <| by
       rintro ⟨x, hx₀⟩ ⟨hx₁ : x ∈ C₁, hx₂ : x ∈ C₂⟩
       simp_rw [coe_comap_apply _ _ continuous_subtype_val.restrictPreimage]
       exact hf x ⟨hx₁, hx₂⟩
@@ -674,6 +674,7 @@ lemma piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
   split_ifs with h
   · exact hf x.val ⟨h, hx⟩
   · rfl
+
 end Piecewise
 
 end LocallyConstant
