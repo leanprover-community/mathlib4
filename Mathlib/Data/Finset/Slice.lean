@@ -37,7 +37,7 @@ variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 namespace Set
 
-variable {A B : Set (Finset α)} {r : ℕ}
+variable {A B : Set (Finset α)} {s : Finset α} {r : ℕ}
 
 /-! ### Families of `r`-sets -/
 
