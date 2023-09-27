@@ -57,8 +57,8 @@ theorem lintegral_of_real_lt_top (f : X →ᵇ ℝ) :
     (∫⁻ x, ENNReal.ofReal (f x) ∂μ) < ∞ := lintegral_lt_top_of_nnreal _ f.nnrealPart
 #align measure_theory.finite_measure.lintegral_lt_top_of_bounded_continuous_to_real BoundedContinuousFunction.lintegral_of_real_lt_top
 
-theorem toReal_lintegral_coe_eq_integral (f : X →ᵇ ℝ≥0)
-    (μ : Measure X) : (∫⁻ x, (f x : ℝ≥0∞) ∂μ).toReal = ∫ x, (f x : ℝ) ∂μ := by
+theorem toReal_lintegral_coe_eq_integral (f : X →ᵇ ℝ≥0) (μ : Measure X) :
+    (∫⁻ x, (f x : ℝ≥0∞) ∂μ).toReal = ∫ x, (f x : ℝ) ∂μ := by
   rw [integral_eq_lintegral_of_nonneg_ae _ (by simpa [Function.comp_apply] using
         (NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable)]
   · simp only [ENNReal.ofReal_coe_nnreal]
