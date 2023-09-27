@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
@@ -317,5 +318,59 @@ theorem lxor'_trichotomy {a b c : ℕ} (h : a ≠ lxor' b c) :
 theorem lt_lxor'_cases {a b c : ℕ} (h : a < lxor' b c) : lxor' a c < b ∨ lxor' a b < c :=
   (or_iff_right fun h' => (h.asymm h').elim).1 <| lxor'_trichotomy h.ne
 #align nat.lt_lxor_cases Nat.lt_lxor'_cases
+
+lemma div2_succ_succ (x) :
+    div2 (x + 2) = (div2 x) + 1 := by
+  simp only [div2_succ, bodd_succ, Bool.cond_not]
+  cases bodd x <;> simp only [cond_false, cond_true]
+
+lemma div2_eq_zero {x : ℕ} :
+    div2 x = 0 → x = 0 ∨ x = 1 := by
+  intro h
+  rcases x with ⟨⟩ | ⟨⟩ | x
+  next => apply Or.inl rfl
+  next => apply Or.inr rfl
+  next =>
+    rw[div2_succ_succ] at h
+    contradiction
+
+lemma bitwise'_bit' {f : Bool → Bool → Bool} (a m b n)
+    (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
+    bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
+  unfold bitwise'
+  rw [binaryRec_eq', binaryRec_eq']
+  · apply Or.inr hbn
+  · apply Or.inr ham
+
+lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
+  funext x y
+  have ⟨k, hk⟩ : ∃ k, k = x+y := by use x+y
+  induction' k using Nat.strongInductionOn with k ih generalizing x y
+  by_cases h1 : x = 0 <;> by_cases h2 : y = 0
+  · unfold bitwise
+    simp [h1, h2]
+  · unfold bitwise bitwise'; simp[h1]; aesop
+  · unfold bitwise bitwise' binaryRec
+    simp only [h1, h2, if_true, if_false, dite_false]
+    split_ifs with hx <;>
+    simp [hx, bit_decomp]
+  · unfold bitwise
+    rw [mod_two_of_bodd, mod_two_of_bodd, if_neg h1, if_neg h2]
+    conv_rhs => rw [← bit_decomp x, ← bit_decomp y]
+    rw [bitwise'_bit']
+    · cases' hx: bodd x
+      <;> cases' hy: bodd y
+      <;> ring_nf
+      <;> rw [ih (div2 x + div2 y)
+              (by rw [hk, div2_val, div2_val]
+                  simp[add_lt_add (bitwise_rec_lemma h1) (bitwise_rec_lemma h2)])
+              (x/2) (y/2) (by simp[div2_val])]
+      <;> simp [h1, h2, hx, hy, bit_val, div2_val, mul_comm, add_comm]
+      <;> aesop
+    all_goals
+      intro h
+      rcases div2_eq_zero h with ⟨⟩|⟨⟨⟩⟩;
+      · contradiction
+      · rfl
 
 end Nat
