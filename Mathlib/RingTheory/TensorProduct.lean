@@ -228,9 +228,14 @@ theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
   rfl
 #align algebra.tensor_product.tmul_mul_tmul Algebra.TensorProduct.tmul_mul_tmul
 
-theorem _root_.Commute.tmul {a₁ a₂ : A} {b₁ b₂ : B} (ha : Commute a₁ a₂) (hb : Commute b₁ b₂) :
-    Commute (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂) :=
+theorem _root_.SemiconjBy.tmul {a₁ a₂ a₃ : A} {b₁ b₂ b₃ : B}
+    (ha : SemiconjBy a₁ a₂ a₃) (hb : SemiconjBy b₁ b₂ b₃) :
+    SemiconjBy (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂) (a₃ ⊗ₜ[R] b₃) :=
   congr_arg₂ (· ⊗ₜ[R] ·) ha.eq hb.eq
+
+nonrec theorem _root_.Commute.tmul {a₁ a₂ : A} {b₁ b₂ : B} (ha : Commute a₁ a₂) (hb : Commute b₁ b₂) :
+    Commute (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂) :=
+  ha.tmul hb
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (A ⊗[R] B) where
   left_distrib a b c := by simp [HMul.hMul, Mul.mul]
