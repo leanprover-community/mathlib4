@@ -57,19 +57,19 @@ noncomputable irreducible_def mulAux1 :
   · exact DirectSum.gMulLHom R _
   · exact DirectSum.gMulLHom R _
 
-open DirectSum (of)
+open DirectSum (lof)
 open GradedMonoid (GMul)
 
+set_option maxHeartbeats 400000 in
 @[simp]
-theorem mulAux1_of_tmul_of_tmul (i₁ j₁ i₂ j₂ : ℤ₂)
+theorem mulAux1_lof_tmul_lof_tmul (i₁ j₁ i₂ j₂ : ℤ₂)
     (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
-    mulAux1 R 𝒜 ℬ (of _ (i₁, j₁) (a₁ ⊗ₜ b₁)) (of _ (i₂, j₂) (a₂ ⊗ₜ b₂)) =
+    mulAux1 R 𝒜 ℬ (lof R _ 𝒜ℬ (i₁, j₁) (a₁ ⊗ₜ b₁)) (lof R _ 𝒜ℬ (i₂, j₂) (a₂ ⊗ₜ b₂)) =
       (-1 : ℤˣ)^(j₁ * i₂)
-        • of 𝒜ℬ (_, _) (GMul.mul a₁ a₂ ⊗ₜ GMul.mul b₁ b₂) := by
+        • lof R _ 𝒜ℬ (_, _) (GMul.mul a₁ a₂ ⊗ₜ GMul.mul b₁ b₂) := by
   rw [mulAux1]
   dsimp
-  erw [TensorProduct.directSum_lof_tmul_lof]
-  simp [DirectSum.lof_eq_of]
+  simp
 
 set_option maxHeartbeats 4000000
 variable (R) in
@@ -82,22 +82,29 @@ noncomputable irreducible_def mulAux :
   let e' := e.symm.toLinearMap
   refine e' ∘ₗ ?_
   refine ?_ ∘ₗ TensorProduct.map e.toLinearMap e.toLinearMap
+  refine TensorProduct.lift ?_
   exact mulAux1 R 𝒜 ℬ
 
 theorem mulAux_of_tmul_of (i₁ j₁ i₂ j₂ : ℤ₂)
     (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
-    mulAux R (of _ i₁ a₁ ⊗ₜ of _ j₁ b₁) (of _ i₂ a₂ ⊗ₜ of _ j₂ b₂) =
+    mulAux R 𝒜 ℬ (lof R _ 𝒜 i₁ a₁ ⊗ₜ lof R _ ℬ j₁ b₁) (lof R _ 𝒜 i₂ a₂ ⊗ₜ lof R _ ℬ j₂ b₂) =
       (-1 : ℤˣ)^(j₁ * i₂)
-        • (of _ _ (GMul.mul a₁ a₂) ⊗ₜ of _ _ (GMul.mul b₁ b₂)) := by
-  simp [mulAux]
+        • (lof R _ 𝒜 _ (GMul.mul a₁ a₂) ⊗ₜ lof R _ ℬ _ (GMul.mul b₁ b₂)) := by
+  rw [mulAux]
+  dsimp?
+  -- dsimp
+  -- rw [TensorProduct.directSum_lof_tmul_lof, TensorProduct.directSum_lof_tmul_lof,
+  --   mulAux1_lof_tmul_lof_tmul, ←LinearEquiv.coe_toLinearMap, map_smul_of_tower]
   sorry
-
+#exit
 theorem mulAux_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
-    mulAux R 1 x = x := sorry
+    mulAux R 𝒜 ℬ 1 x = x := by
+  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 
 theorem one_mulAux (x : ⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
-    mulAux R x 1 = x := sorry
-
+    mulAux R 𝒜 ℬ x 1 = x := by
+  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
+#exit
 theorem mulAux_assoc (x y z : ⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     mulAux R (mulAux R x y) z = mulAux R x (mulAux R y z) := by
   let mA := mulAux R (𝒜 := 𝒜) (ℬ := ℬ)
