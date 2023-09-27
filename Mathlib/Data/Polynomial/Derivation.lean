@@ -99,39 +99,55 @@ end Polynomial
 
 open Polynomial
 
-variable {R A M} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M] [Module A M]
-  [Module R M] [IsScalarTower R A M] (a : A) (d : Derivation R A M)
+section eval₂
 
-def Polynomial.Module.comp_eval₂ : Module R[X] M :=
+variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M] [Module A M]
+  [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
+
+lemma eval₂_smul' (r : R) (f : R[X]) :
+    (r • f).eval₂ (algebraMap R A) a = r • f.eval₂ (algebraMap R A) a := by
+  rw [eval₂_smul, Algebra.smul_def]
+
+/--
+Suppose `A` is an `R`-algebra.
+For an `A`-module `M` and an element `a:A`, `eval₂PullbackModule M a`
+is the `R[X]`-module, where the action of `X` if given by multiplication by `a`.
+More generally, the action of `f : R[X]` is given by `f • m = f(a) • m`.
+-/
+def eval₂PullbackModule (M: Type*)  (_ : A) := M
+instance : AddCommMonoid <| eval₂PullbackModule M a := by assumption
+instance : Module A <| eval₂PullbackModule M a := by assumption
+instance : Module R <| eval₂PullbackModule M a := by assumption
+instance : IsScalarTower R A <| eval₂PullbackModule M a := by assumption
+instance : Module R[X] <| eval₂PullbackModule M a :=
   Module.compHom M <| eval₂RingHom (algebraMap R A) a
-
-instance Polynomial.IsScalarTower_eval₂Module : @IsScalarTower R R[X] M _ (Module.comp_eval₂ a).toSMul _ := by
-  let _ : Module R[X] M := Module.comp_eval₂ a
-  constructor
-  intro r f m
-  change eval₂ _ a (r • f) • m = r • (eval₂ _ a f • m)
-  rw [eval₂_smul, Algebra.algebraMap_eq_smul_one, smul_mul_assoc, one_mul, smul_assoc]
+lemma eval₂PullbackModule_smul_eq (f : R[X]) (a : A) (m : eval₂PullbackModule M a) :
+    f • m = (eval₂ (algebraMap R A) a f) • m := by rfl
+instance : IsScalarTower R R[X] <| eval₂PullbackModule M a where
+  smul_assoc r f m := by
+    rw [eval₂PullbackModule_smul_eq, eval₂PullbackModule_smul_eq, eval₂_smul', smul_assoc]
+lemma eval₂PullbackModule_def : eval₂PullbackModule M a = M := rfl
 
 namespace Derivation
 
-def comp_eval₂ : @Derivation R R[X] _ _ _ M _ (Module.comp_eval₂ a) _ := by
-  let a_star := eval₂RingHom (algebraMap R A) a
-  let _ := Module.compHom M a_star
-  have : ∀ f : R[X], ∀ m : M, f • m = f.eval₂ (algebraMap R A) a • m := by tauto
-  exact {
-    toFun           := d ∘ a_star
-    map_add'        := by simp
-    map_smul'       := by
-      intros; dsimp
-      rw [eval₂_smul, Algebra.algebraMap_eq_smul_one, smul_mul_assoc, one_mul, d.map_smul]
-    leibniz'  := by
-        intro f g; dsimp
-        rw [eval₂_mul, d.leibniz, ←this, ←this]
+def comp_eval₂ : Derivation R R[X] <| eval₂PullbackModule M a where
+    toFun            := d ∘ (eval₂RingHom (algebraMap R A) a)
+    map_add'         := by simp
+    map_smul' _ _    := by dsimp; rw [eval₂_smul', d.map_smul]
+    leibniz' _ _     := by
+        dsimp
+        rw [eval₂_mul, d.leibniz, eval₂PullbackModule_smul_eq, eval₂PullbackModule_smul_eq]
     map_one_eq_zero' := by simp
-  }
 
 lemma comp_eval₂_def (d : Derivation R A M) (f : R[X]) :
     d.comp_eval₂ a f = d (f.eval₂ (algebraMap R A) a) := by rfl
+
+lemma comp_eval₂_eq (d : Derivation R A <| eval₂PullbackModule M a) (f : R[X]) :
+    d.comp_eval₂ a f = f.derivative.eval₂ (algebraMap R A) a • d a := by
+  rw [←eval₂PullbackModule_smul_eq, ←mkDerivation_apply]
+  congr
+  apply derivation_ext
+  rw [comp_eval₂_def, eval₂_X, mkDerivation_X (R := R)]
 
 /--
   A form of the chain rule: if `f ` is a polynomial over `R`
@@ -140,12 +156,8 @@ lemma comp_eval₂_def (d : Derivation R A M) (f : R[X]) :
     `d(f(a)) = f.derivative (a) * d a`.
 -/
 theorem eval₂ (d : Derivation R A M) (f : R[X]) :
-    d (f.eval₂ (algebraMap R A) a) = f.derivative.eval₂ (algebraMap R A) a • d a := by
-  --write both sides of the equation as derivations in `f` and then check that
-  --they are equal in the case `f = X`.
-  let _ : Module R[X] M := Module.comp_eval₂ a
-  change d.comp_eval₂ a f = derivative f • _
-  rw [←mkDerivation_apply]
-  congr
-  apply derivation_ext; dsimp
-  rw [mkDerivation_X, Derivation.comp_eval₂_def, eval₂_X]
+    d (f.eval₂ (algebraMap R A) a) = f.derivative.eval₂ (algebraMap R A) a • d a :=
+  comp_eval₂_eq a d f
+
+end Derivation
+end eval₂
