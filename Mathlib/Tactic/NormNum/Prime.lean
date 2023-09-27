@@ -184,15 +184,14 @@ theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime
 /-- The `norm_num` extension which identifies expressions of the form `Nat.Prime n`. -/
 @[norm_num Nat.Prime _] def evalNatPrime : NormNumExt where eval {u α} e := do
   let .app (.const `Nat.Prime _) (n : Q(ℕ)) ← whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
-  let ⟨nn, pn⟩ ← deriveNat n sℕ
+  let ⟨nn, pn⟩ ← deriveNat n _
   let n' := nn.natLit!
   -- note: if `n` is not prime, we don't have to verify the calculation of `n.minFac`, we just have
   -- to compute it, which is a lot quicker
   let rec core : MetaM (Result q(Nat.Prime $n)) := do
     match n' with
-    | 0 => let pn : Q(IsNat $n 0) := pn; return .isFalse q(isNat_prime_0 $pn)
-    | 1 => let pn : Q(IsNat $n 1) := pn; return .isFalse q(isNat_prime_1 $pn)
+    | 0 => haveI' : $nn =Q 0 := ⟨⟩; return .isFalse q(isNat_prime_0 $pn)
+    | 1 => haveI' : $nn =Q 1 := ⟨⟩; return .isFalse q(isNat_prime_1 $pn)
     | _ =>
       let d := n'.minFac
       if d < n' then
@@ -200,7 +199,7 @@ theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime
         return .isFalse q(isNat_not_prime $pn $prf)
       let r : Q(Nat.ble 2 $nn = true) := (q(Eq.refl true) : Expr)
       let .isNat _ _lit (p2n : Q(IsNat (minFac $nn) $nn)) ←
-        evalMinFac.core nn nn q(.raw_refl _) nn.natLit! | failure
+        evalMinFac.core nn _ nn q(.raw_refl _) nn.natLit! | failure
       return .isTrue q(isNat_prime_2 $pn $r $p2n)
   core
 

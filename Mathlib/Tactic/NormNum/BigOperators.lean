@@ -105,51 +105,44 @@ lemma List.range_succ_eq_map' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : n
     List.range n = 0 :: List.map Nat.succ (List.range n') := by
   rw [pn.out, Nat.cast_id, pn', List.range_succ_eq_map]
 
+set_option linter.unusedVariables false in
 /-- Either show the expression `s : Q(List α)` is Nil, or remove one element from it.
 
 Fails if we cannot determine which of the alternatives apply to the expression.
 -/
-partial def List.proveNilOrCons {α : Q(Type u)} :
-  (s : Q(List $α)) → MetaM (List.ProveNilOrConsResult s) :=
-  fun s =>
+partial def List.proveNilOrCons {α : Q(Type u)} (s : Q(List $α)) :
+    MetaM (List.ProveNilOrConsResult s) :=
   s.withApp fun e a =>
   match (e, e.constName, a) with
-  | (_, `EmptyCollection.EmptyCollection, _) => pure (.nil (q(rfl) : Q((∅ : List $α) = [])))
-  | (_, `List.nil, _) => pure (.nil (q(rfl) : Q(([] : List $α) = [])))
-  | (_, `List.cons, #[_, a, s']) => pure (.cons a s' (q(rfl) : Q($s = $s)))
-  | (_, `List.range, #[(n : Q(ℕ))]) => do
-    let instAMO_nat : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
-    let ⟨nn, pn⟩ ← NormNum.deriveNat n
+  | (_, ``EmptyCollection.emptyCollection, _) => haveI : $s =Q {} := ⟨⟩; pure (.nil q(.refl []))
+  | (_, ``List.nil, _) => haveI : $s =Q [] := ⟨⟩; pure (.nil q(rfl))
+  | (_, ``List.cons, #[_, (a : Q($α)), (s' : Q(List $α))]) =>
+    haveI : $s =Q $a :: $s' := ⟨⟩; pure (.cons a s' q(rfl))
+  | (_, ``List.range, #[(n : Q(ℕ))]) =>
+    have s : Q(List ℕ) := s; .uncheckedCast _ _ <$> show MetaM (ProveNilOrConsResult s) from do
+    let ⟨nn, pn⟩ ← NormNum.deriveNat n _
+    haveI' : $s =Q .range $n := ⟨⟩
     let nnL := nn.natLit!
     if nnL = 0 then
-      let pn : Q(@NormNum.IsNat _ _ $n 0) := pn
-      return .nil (q(List.range_zero' $pn) : Q(List.range $n = []))
+      haveI' : $nn =Q 0 := ⟨⟩
+      return .nil q(List.range_zero' $pn)
     else
       have n' : Q(ℕ) := mkRawNatLit (nnL - 1)
-      let pn' : Q($nn = Nat.succ $n') := (q(Eq.refl $nn) : Expr)
-      return (List.ProveNilOrConsResult.cons
-        q(0)
-        q(List.map Nat.succ (List.range $n'))
-        q(List.range_succ_eq_map' $pn $pn')).uncheckedCast (q(List.range ($n)) : Q(List ℕ)) s
-  | (_, `List.finRange, #[(n : Q(ℕ))]) => do
-    match ← Nat.unifyZeroOrSucc n with -- We want definitional equality on `n`.
-    | .zero _pf => do
-      pure (.nil (q(List.finRange_zero) : Q(List.finRange 0 = [])))
-    | .succ n' _pf => pure <| ((List.ProveNilOrConsResult.cons
-        q(0 : Fin (Nat.succ $n'))
-        (q(List.map Fin.succ (List.finRange $n')))
-        (q(List.finRange_succ_eq_map $n'))).uncheckedCast
-          (q(List.finRange (Nat.succ $n')) : Q(List (Fin (Nat.succ $n'))))
-          s)
-  | (.const `List.map [v, _], _, #[β, _, f, xxs]) => do
-    have β : Q(Type v) := β
-    have f : Q($β → $α) := f
-    have xxs : Q(List $β) := xxs
-    match ← List.proveNilOrCons xxs with
-    | .nil pf => pure <| (.nil
-      (q($pf ▸ List.map_nil) : Q(List.map $f $xxs = [])))
-    | .cons x xs pf => pure <| (.cons q($f $x) q(List.map $f $xs)
-      (q($pf ▸ List.map_cons $f $x $xs) : Q(List.map $f $xxs = $f $x :: List.map $f $xs)))
+      have : $nn =Q .succ $n' := ⟨⟩
+      return .cons _ _ q(List.range_succ_eq_map' $pn (.refl $nn))
+  | (_, ``List.finRange, #[(n : Q(ℕ))]) =>
+    have s : Q(List (Fin $n)) := s
+    .uncheckedCast _ _ <$> show MetaM (ProveNilOrConsResult s) from do
+    haveI' : $s =Q .finRange $n := ⟨⟩
+    return match ← Nat.unifyZeroOrSucc n with -- We want definitional equality on `n`.
+    | .zero _pf => .nil q(List.finRange_zero)
+    | .succ n' _pf => .cons _ _ q(List.finRange_succ_eq_map $n')
+  | (.const ``List.map [v, _], _, #[(β : Q(Type v)), _, (f : Q($β → $α)), (xxs : Q(List $β))]) => do
+    haveI' : $s =Q ($xxs).map $f := ⟨⟩
+    return match ← List.proveNilOrCons xxs with
+    | .nil pf => .nil q(($pf ▸ List.map_nil : List.map _ _ = _))
+    | .cons x xs pf => .cons q($f $x) q(($xs).map $f)
+      q(($pf ▸ List.map_cons $f $x $xs : List.map _ _ = _))
   | (_, fn, args) =>
     throwError "List.proveNilOrCons: unsupported List expression {s} ({fn}, {args})"
 
@@ -194,33 +187,31 @@ lemma Multiset.range_succ' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn =
 
 Fails if we cannot determine which of the alternatives apply to the expression.
 -/
-partial def Multiset.proveZeroOrCons {α : Q(Type u)} :
-  (s : Q(Multiset $α)) → MetaM (Multiset.ProveZeroOrConsResult s) :=
-  fun s =>
-  match Expr.getAppFnArgs s with
-  | (`EmptyCollection.EmptyCollection, _) => pure (.zero (q(rfl) : Q((∅ : Multiset $α) = 0)))
-  | (`Zero.zero, _) => pure (.zero (q(rfl) : Q((0 : Multiset $α) = 0)))
-  | (`Multiset.cons, #[_, a, s']) => pure (.cons a s' (q(rfl) : Q($s = $s)))
-  | (`Multiset.ofList, #[_, (val : Q(List $α))]) => do
-    match ← List.proveNilOrCons val with
-    | .nil pf => pure <| .zero (q($pf ▸ Multiset.coe_nil) : Q(($val : Multiset $α) = 0))
-    | .cons a s' pf => do
-      return (.cons a q($s')
-        (q($pf ▸ Multiset.cons_coe $a $s') : Q(↑$val = Multiset.cons $a $s')))
-  | (`Multiset.range, #[(n : Q(ℕ))]) => do
-    let instAMO_nat : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
-    let ⟨nn, pn⟩ ← NormNum.deriveNat n
+partial def Multiset.proveZeroOrCons {α : Q(Type u)} (s : Q(Multiset $α)) :
+    MetaM (Multiset.ProveZeroOrConsResult s) :=
+  match s.getAppFnArgs with
+  | (``EmptyCollection.emptyCollection, _) => haveI : $s =Q {} := ⟨⟩; pure (.zero q(rfl))
+  | (``Zero.zero, _) => haveI : $s =Q 0 := ⟨⟩; pure (.zero q(rfl))
+  | (``Multiset.cons, #[_, (a : Q($α)), (s' : Q(Multiset $α))]) =>
+    haveI : $s =Q .cons $a $s' := ⟨⟩
+    pure (.cons a s' q(rfl))
+  | (``Multiset.ofList, #[_, (val : Q(List $α))]) => do
+    haveI : $s =Q .ofList $val := ⟨⟩
+    return match ← List.proveNilOrCons val with
+    | .nil pf => .zero q($pf ▸ Multiset.coe_nil : Multiset.ofList _ = _)
+    | .cons a s' pf => .cons a q($s') q($pf ▸ Multiset.cons_coe $a $s' : Multiset.ofList _ = _)
+  | (``Multiset.range, #[(n : Q(ℕ))]) => do
+    have s : Q(Multiset ℕ) := s; .uncheckedCast _ _ <$> show MetaM (ProveZeroOrConsResult s) from do
+    let ⟨nn, pn⟩ ← NormNum.deriveNat n _
+    haveI' : $s =Q .range $n := ⟨⟩
     let nnL := nn.natLit!
     if nnL = 0 then
-      let pn : Q(@NormNum.IsNat _ _ $n 0) := pn
-      return .zero (q(Multiset.range_zero' $pn) : Q(Multiset.range $n = 0))
+      haveI' : $nn =Q 0 := ⟨⟩
+      return .zero q(Multiset.range_zero' $pn)
     else
       have n' : Q(ℕ) := mkRawNatLit (nnL - 1)
-      let pn' : Q($nn = Nat.succ $n') := (q(Eq.refl $nn) : Expr)
-      return (Multiset.ProveZeroOrConsResult.cons
-        n'
-        q(Multiset.range $n')
-        q(Multiset.range_succ' $pn $pn')).uncheckedCast (q(Multiset.range ($n)) : Q(Multiset ℕ)) s
+      haveI' : $nn =Q ($n').succ := ⟨⟩
+      return .cons _ _ q(Multiset.range_succ' $pn rfl)
   | (fn, args) =>
     throwError "Multiset.proveZeroOrCons: unsupported multiset expression {s} ({fn}, {args})"
 
@@ -270,13 +261,14 @@ lemma Finset.univ_eq_elems {α : Type _} [Fintype α] (elems : Finset α)
 
 Fails if we cannot determine which of the alternatives apply to the expression.
 -/
-partial def Finset.proveEmptyOrCons {α : Q(Type u)} :
-  (s : Q(Finset $α)) → MetaM (Finset.ProveEmptyOrConsResult s) :=
-  fun s =>
-  match Expr.getAppFnArgs s with
-  | (`EmptyCollection.emptyCollection, _) => pure (.empty (q(rfl) : Q($s = $s)))
-  | (`Finset.cons, #[_, a, s', h]) => pure (.cons a s' h (q(rfl) : Q($s = $s)))
-  | (`Finset.mk, #[_, (val : Q(Multiset $α)), (nd : Q(Multiset.Nodup $val))]) => do
+partial def Finset.proveEmptyOrCons {α : Q(Type u)} (s : Q(Finset $α)) :
+    MetaM (ProveEmptyOrConsResult s) :=
+  match s.getAppFnArgs with
+  | (``EmptyCollection.emptyCollection, _) => haveI : $s =Q {} := ⟨⟩; pure (.empty q(rfl))
+  | (``Finset.cons, #[_, (a : Q($α)), (s' : Q(Finset $α)), (h : Q(¬ $a ∈ $s'))]) =>
+    haveI : $s =Q .cons $a $s' $h := ⟨⟩
+    pure (.cons a s' h q(.refl $s))
+  | (``Finset.mk, #[_, (val : Q(Multiset $α)), (nd : Q(Multiset.Nodup $val))]) => do
     match ← Multiset.proveZeroOrCons val with
     | .zero pf => pure <| .empty (q($pf ▸ Finset.mk_zero) : Q(Finset.mk $val $nd = ∅))
     | .cons a s' pf => do
@@ -285,29 +277,24 @@ partial def Finset.proveEmptyOrCons {α : Q(Type u)} :
       let h' : Q($a ∉ $s') := q((Multiset.nodup_cons.mp $h).1)
       return (.cons a q(Finset.mk $s' $nd') h'
         (q($pf ▸ Finset.mk_cons $h) : Q(Finset.mk $val $nd = Finset.cons $a ⟨$s', $nd'⟩ $h')))
-  | (`Finset.range, #[(n : Q(ℕ))]) => do
-    let instAMO_nat : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
-    let ⟨nn, pn⟩ ← NormNum.deriveNat n
+  | (``Finset.range, #[(n : Q(ℕ))]) =>
+    have s : Q(Finset ℕ) := s; .uncheckedCast _ _ <$> show MetaM (ProveEmptyOrConsResult s) from do
+    let ⟨nn, pn⟩ ← NormNum.deriveNat n _
+    haveI' : $s =Q .range $n := ⟨⟩
     let nnL := nn.natLit!
     if nnL = 0 then
-      let pn : Q(@NormNum.IsNat _ _ $n 0) := pn
-      return .empty (q(Finset.range_zero' $pn) : Q(Finset.range $n = {}))
+      haveI : $nn =Q 0 := ⟨⟩
+      return .empty q(Finset.range_zero' $pn)
     else
       have n' : Q(ℕ) := mkRawNatLit (nnL - 1)
-      let pn' : Q($nn = Nat.succ $n') := (q(Eq.refl $nn) : Expr)
-      return (Finset.ProveEmptyOrConsResult.cons
-        n'
-        (q(Finset.range $n'))
-        (q(@Finset.not_mem_range_self $n'))
-        (q(Finset.range_succ' $pn $pn'))).uncheckedCast
-          (q(Finset.range $n) : Q(Finset ℕ))
-          s
-  | (`Finset.univ, #[_, instFT]) => do
-    match Expr.getAppFnArgs (← whnfI instFT) with
-    | (`Fintype.mk, #[_, (elems : Q(Finset $α)), (complete : Q(∀ x : $α, x ∈ $elems))]) => do
-      have _instFT : Q(Fintype $α) := instFT
+      haveI' : $nn =Q ($n').succ := ⟨⟩
+      return .cons n' _ _ q(Finset.range_succ' $pn (.refl $nn))
+  | (``Finset.univ, #[_, (instFT : Q(Fintype $α))]) => do
+    haveI' : $s =Q .univ := ⟨⟩
+    match (← whnfI instFT).getAppFnArgs with
+    | (``Fintype.mk, #[_, (elems : Q(Finset $α)), (complete : Q(∀ x : $α, x ∈ $elems))]) => do
       let res ← Finset.proveEmptyOrCons elems
-      pure <| res.eq_trans (q(Finset.univ_eq_elems $elems $complete) : Q(Finset.univ = $elems))
+      pure <| res.eq_trans q(Finset.univ_eq_elems $elems $complete)
     | e =>
       throwError "Finset.proveEmptyOrCons: could not determine elements of Fintype instance {e}"
   | (fn, args) =>
@@ -374,7 +361,7 @@ partial def evalFinsetProd : NormNumExt where eval {u β} e := do
   have α : Q(Type v) := α
   have s : Q(Finset $α) := s
   have f : Q($α → $β) := f
-  let instCS ← synthInstanceQ (q(CommSemiring $β) : Q(Type u)) <|>
+  let instCS : Q(CommSemiring $β) ← synthInstanceQ q(CommSemiring $β) <|>
     throwError "not a commutative semiring: {β}"
   let instS : Q(Semiring $β) := q(CommSemiring.toSemiring)
   -- Have to construct this expression manually, `q(1)` doesn't parse correctly:
@@ -384,7 +371,7 @@ partial def evalFinsetProd : NormNumExt where eval {u β} e := do
 
   evalFinsetBigop q(Finset.prod) f res_empty (fun {a s' h} res_fa res_prod_s' ↦ do
       let fa : Q($β) := Expr.app f a
-      let res : Result _ ← evalMul.core q($fa * Finset.prod $s' $f) q((· * ·)) _ _ instS res_fa
+      let res ← evalMul.core q($fa * Finset.prod $s' $f) q(HMul.hMul) _ _ instS res_fa
         res_prod_s'
       let eq : Q(Finset.prod (Finset.cons $a $s' $h) $f = $fa * Finset.prod $s' $f) :=
         q(Finset.prod_cons $h)
@@ -403,15 +390,15 @@ partial def evalFinsetSum : NormNumExt where eval {u β} e := do
   have α : Q(Type v) := α
   have s : Q(Finset $α) := s
   have f : Q($α → $β) := f
-  let instCS ← synthInstanceQ (q(CommSemiring $β) : Q(Type u)) <|>
+  let instCS : Q(CommSemiring $β) ← synthInstanceQ q(CommSemiring $β) <|>
     throwError "not a commutative semiring: {β}"
-  let n : Q(ℕ) := q(0)
+  let n : Q(ℕ) := mkRawNatLit 0
   let pf : Q(IsNat (Finset.sum ∅ $f) $n) := q(@Finset.sum_empty $β $α $instCS $f)
   let res_empty := Result.isNat _ n pf
 
   evalFinsetBigop q(Finset.sum) f res_empty (fun {a s' h} res_fa res_sum_s' ↦ do
       let fa : Q($β) := Expr.app f a
-      let res : Result _ ← evalAdd.core q($fa + Finset.sum $s' $f) q((· + ·)) _ _ res_fa res_sum_s'
+      let res ← evalAdd.core q($fa + Finset.sum $s' $f) q(HAdd.hAdd) _ _ res_fa res_sum_s'
       let eq : Q(Finset.sum (Finset.cons $a $s' $h) $f = $fa + Finset.sum $s' $f) :=
         q(Finset.sum_cons $h)
       pure <| res.eq_trans eq)

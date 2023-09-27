@@ -596,8 +596,7 @@ theorem isNat_not_lucasLehmerTest : {p np : ℕ} →
 @[norm_num LucasLehmer.LucasLehmerTest (_ : ℕ)]
 def evalLucasLehmerTest : NormNumExt where eval {u α} e := do
   let .app _ (p : Q(ℕ)) ← Meta.whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
-  let ⟨ep, hp⟩ ← deriveNat p
+  let ⟨ep, hp⟩ ← deriveNat p _
   let np := ep.natLit!
   unless 1 < np do
     failure

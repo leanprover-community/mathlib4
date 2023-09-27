@@ -30,8 +30,6 @@ lemma ne_of_ne_of_eq' (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ 
 
 namespace Mathlib.Meta.Positivity
 
-instance : Repr (QQ α) := inferInstanceAs (Repr Expr)
-
 variable {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α))
 
 /-- The result of `positivity` running on an expression `e` of type `α`. -/

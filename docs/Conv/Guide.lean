@@ -8,7 +8,7 @@ Authors: Kyle Miller
 
 This is a curated guide to point you toward how `conv` mode works and what tactics are available.
 It is not meant to be comprehesive, but rather a "cheat sheet." See also the
-[`conv` introduction](https://leanprover-community.github.io/mathlib4_docs/Docs/Conv/Introduction.html).
+[`conv` introduction](https://leanprover-community.github.io/mathlib4_docs/docs/Conv/Introduction.html).
 
 ## Syntax
 
@@ -143,7 +143,7 @@ in Lean 4 core.
   * `enter [i]` (where `i` is a natural number) is equivalent to `arg i`.
   * `enter [@i]` is equivalent to `arg @i`.
   * `enter [x]` (where `x` is an identifier) is equivalent to `ext x`.
-  * `enter [a,b,c,...]` is `enter [a]; enter[b]; enter[c]; enter [...]`.
+  * `enter [a,b,c,...]` is `enter [a]; enter [b]; enter [c]; enter [...]`.
 
 * `pattern` is for navigating into subexpressions that match a given pattern
   * `pattern pat` traverses to the first subterm of the target that matches `pat`.
@@ -185,7 +185,7 @@ in Lean 4 core.
   than the congruence lemma that the `congr` tactic might generate. (Mathlib)
 
 * `slice i j` (for category theory) reassociates a composition of morphisms to focus on
-  the composition of morphisms `i` through `j`.
+  the composition of morphisms `i` through `j`. (Mathlib)
 
 ### Reductions
 
