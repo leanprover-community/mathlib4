@@ -141,16 +141,40 @@ universe uR uS uA uB uC uD uE uF
 variable {R : Type uR} {S : Type uS}
 variable {A : Type uA} {B : Type uB} {C : Type uC} {D : Type uD} {E : Type uE} {F : Type uF}
 
-section Semiring
-variable [CommSemiring R]
-variable [Semiring A] [Algebra R A]
-variable [Semiring B] [Algebra R B]
-variable [Semiring C] [Algebra R C]
-
 /-!
 ### The `R`-algebra structure on `A ⊗[R] B`
 -/
 
+section AddCommMonoidWithOne
+
+variable [CommSemiring R]
+variable [AddCommMonoidWithOne A] [Module R A]
+variable [AddCommMonoidWithOne B] [Module R B]
+
+instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
+
+theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
+  rfl
+#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
+
+instance instAddCommMonoidWithOne : AddCommMonoidWithOne (A ⊗[R] B) where
+  natCast n := n ⊗ₜ 1
+  natCast_zero := by simp
+  natCast_succ n := by simp [add_tmul, one_def]
+  add_comm := add_comm
+
+theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
+
+theorem natCast_def' (n : ℕ) : (n : A ⊗[R] B) = (1 : A) ⊗ₜ (n : B) := by
+  rw [natCast_def, ←nsmul_one, smul_tmul, nsmul_one]
+
+end AddCommMonoidWithOne
+
+section NonUnitalNonAssocSemiring
+
+variable [CommSemiring R]
+variable [NonUnitalNonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+variable [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 /-- (Implementation detail)
 The multiplication map on `A ⊗[R] B`,
@@ -194,43 +218,6 @@ theorem mul_apply (a₁ a₂ : A) (b₁ b₂ : B) :
   rfl
 #align algebra.tensor_product.mul_apply Algebra.TensorProduct.mul_apply
 
-#noalign algebra.tensor_product.mul_assoc'
-
-protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
-  -- restate as an equality of morphisms so that we can use `ext`
-  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    exact FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this x) y) z
-  ext xa xb ya yb za zb
-  exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
-#align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
-
-protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
-#align algebra.tensor_product.one_mul Algebra.TensorProduct.one_mul
-
-protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
-#align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
-
-instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
-
-theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
-  rfl
-#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
-
-instance : AddMonoidWithOne (A ⊗[R] B) where
-  natCast n := n ⊗ₜ 1
-  natCast_zero := by simp
-  natCast_succ n := by simp [add_tmul, one_def]
-
-theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
-
-theorem natCast_def' (n : ℕ) : (n : A ⊗[R] B) = (1 : A) ⊗ₜ (n : B) := by
-  rw [natCast_def, ←nsmul_one, smul_tmul, nsmul_one]
-
-instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
-
 -- providing this instance separately makes some downstream code substantially faster
 instance instMul : Mul (A ⊗[R] B) where
   mul a b := mul a b
@@ -241,35 +228,11 @@ theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
   rfl
 #align algebra.tensor_product.tmul_mul_tmul Algebra.TensorProduct.tmul_mul_tmul
 
--- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
--- appears to help performance.
-instance instSemiring : Semiring (A ⊗[R] B) where
+instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (A ⊗[R] B) where
   left_distrib a b c := by simp [HMul.hMul, Mul.mul]
   right_distrib a b c := by simp [HMul.hMul, Mul.mul]
   zero_mul a := by simp [HMul.hMul, Mul.mul]
   mul_zero a := by simp [HMul.hMul, Mul.mul]
-  mul_assoc := Algebra.TensorProduct.mul_assoc
-  one_mul := Algebra.TensorProduct.one_mul
-  mul_one := Algebra.TensorProduct.mul_one
-  natCast_zero := AddMonoidWithOne.natCast_zero
-  natCast_succ := AddMonoidWithOne.natCast_succ
-
-@[simp]
-theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[R] (b ^ k) := by
-  induction' k with k ih
-  · simp [one_def]
-  · simp [pow_succ, ih]
-#align algebra.tensor_product.tmul_pow Algebra.TensorProduct.tmul_pow
-
-/-- The ring morphism `A →+* A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
-@[simps]
-def includeLeftRingHom : A →+* A ⊗[R] B where
-  toFun a := a ⊗ₜ 1
-  map_zero' := by simp
-  map_add' := by simp [add_tmul]
-  map_one' := rfl
-  map_mul' := by simp
-#align algebra.tensor_product.include_left_ring_hom Algebra.TensorProduct.includeLeftRingHom
 
 -- we want `isScalarTower_right` to take priority since it's better for unification elsewhere
 instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
@@ -302,6 +265,83 @@ instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
       | add x y hx hy => simp [smul_add, add_mul _, *]
     | add x y hx hy => simp [smul_add, mul_add _, *]
 #align algebra.tensor_product.smul_comm_class_right Algebra.TensorProduct.sMulCommClass_right
+
+end NonUnitalNonAssocSemiring
+
+section NonAssocSemiring
+
+variable [CommSemiring R]
+variable [NonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+variable [NonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
+
+protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
+  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
+#align algebra.tensor_product.one_mul Algebra.TensorProduct.one_mul
+
+protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
+  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
+#align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
+
+instance instNonAssocSemiring : NonAssocSemiring (A ⊗[R] B) where
+  one_mul := Algebra.TensorProduct.one_mul
+  mul_one := Algebra.TensorProduct.mul_one
+  toNonUnitalNonAssocSemiring := instNonUnitalNonAssocSemiring
+  __ := instAddCommMonoidWithOne
+
+end NonAssocSemiring
+
+section NonUnitalSemiring
+variable [CommSemiring R]
+variable [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+variable [NonUnitalSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
+
+protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
+  -- restate as an equality of morphisms so that we can use `ext`
+  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
+      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
+    exact FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this x) y) z
+  ext xa xb ya yb za zb
+  exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
+#align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
+
+instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
+  mul_assoc := Algebra.TensorProduct.mul_assoc
+
+end NonUnitalSemiring
+
+section Semiring
+variable [CommSemiring R]
+variable [Semiring A] [Algebra R A]
+variable [Semiring B] [Algebra R B]
+variable [Semiring C] [Algebra R C]
+
+instance instSemiring : Semiring (A ⊗[R] B) where
+  left_distrib a b c := by simp [HMul.hMul, Mul.mul]
+  right_distrib a b c := by simp [HMul.hMul, Mul.mul]
+  zero_mul a := by simp [HMul.hMul, Mul.mul]
+  mul_zero a := by simp [HMul.hMul, Mul.mul]
+  mul_assoc := Algebra.TensorProduct.mul_assoc
+  one_mul := Algebra.TensorProduct.one_mul
+  mul_one := Algebra.TensorProduct.mul_one
+  natCast_zero := AddMonoidWithOne.natCast_zero
+  natCast_succ := AddMonoidWithOne.natCast_succ
+
+@[simp]
+theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[R] (b ^ k) := by
+  induction' k with k ih
+  · simp [one_def]
+  · simp [pow_succ, ih]
+#align algebra.tensor_product.tmul_pow Algebra.TensorProduct.tmul_pow
+
+/-- The ring morphism `A →+* A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
+@[simps]
+def includeLeftRingHom : A →+* A ⊗[R] B where
+  toFun a := a ⊗ₜ 1
+  map_zero' := by simp
+  map_add' := by simp [add_tmul]
+  map_one' := rfl
+  map_mul' := by simp
+#align algebra.tensor_product.include_left_ring_hom Algebra.TensorProduct.includeLeftRingHom
 
 variable [CommSemiring S] [Algebra S A]
 
@@ -396,22 +436,65 @@ end ext
 
 end Semiring
 
+section AddCommGroupWithOne
+variable [CommSemiring R]
+variable [AddCommGroupWithOne A] [Module R A]
+variable [AddCommGroupWithOne B] [Module R B]
+
+instance instAddCommGroupWithOne : AddCommGroupWithOne (A ⊗[R] B) where
+  toAddCommGroup := TensorProduct.addCommGroup
+  __ := instAddCommMonoidWithOne
+  intCast z := z ⊗ₜ (1 : B)
+  intCast_ofNat n := by simp [natCast_def]
+  intCast_negSucc n := by simp [natCast_def, add_tmul, neg_tmul, one_def]
+
+theorem intCast_def (z : ℤ) : (z : A ⊗[R] B) = (z : A) ⊗ₜ (1 : B) := rfl
+
+end AddCommGroupWithOne
+
+section NonUnitalNonAssocRing
+variable [CommRing R]
+variable [NonUnitalNonAssocRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+variable [NonUnitalNonAssocRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
+
+instance instNonUnitalNonAssocRing : NonUnitalNonAssocRing (A ⊗[R] B) where
+  toAddCommGroup := TensorProduct.addCommGroup
+  __ := instNonUnitalNonAssocSemiring
+
+end NonUnitalNonAssocRing
+
+section NonAssocRing
+variable [CommRing R]
+variable [NonAssocRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+variable [NonAssocRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
+
+instance instNonAssocRing : NonAssocRing (A ⊗[R] B) where
+  toAddCommGroup := TensorProduct.addCommGroup
+  __ := instNonAssocSemiring
+  __ := instAddCommGroupWithOne
+
+end NonAssocRing
+
+section NonUnitalRing
+variable [CommRing R]
+variable [NonUnitalRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+variable [NonUnitalRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
+
+instance instNonUnitalRing : NonUnitalRing (A ⊗[R] B) where
+  toAddCommGroup := TensorProduct.addCommGroup
+  __ := instNonUnitalSemiring
+
+end NonUnitalRing
+
 section Ring
 variable [CommRing R]
 variable [Ring A] [Algebra R A]
 variable [Ring B] [Algebra R B]
 
 instance instRing : Ring (A ⊗[R] B) where
-  zsmul := SubNegMonoid.zsmul
-  zsmul_zero' := SubNegMonoid.zsmul_zero'
-  zsmul_succ' := SubNegMonoid.zsmul_succ'
-  zsmul_neg' := SubNegMonoid.zsmul_neg'
-  intCast z := z ⊗ₜ (1 : B)
-  intCast_ofNat n := by simp [natCast_def]
-  intCast_negSucc n := by simp [natCast_def, add_tmul, neg_tmul, one_def]
-  add_left_neg := add_left_neg
-
-theorem intCast_def (z : ℤ) : (z : A ⊗[R] B) = (z : A) ⊗ₜ (1 : B) := rfl
+  toSemiring := instSemiring
+  __ := TensorProduct.addCommGroup
+  __ := instNonAssocRing
 
 theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
   rw [intCast_def, ←zsmul_one, smul_tmul, zsmul_one]
