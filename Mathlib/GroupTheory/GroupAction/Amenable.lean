@@ -83,10 +83,10 @@ structure InvariantMean extends Mean α where
 
 /-- A monoid action is amenable if there exists an invariant mean for it-/
 def amenable : Prop :=
-  Nonempty (InvariantMean G α)
+  Nonempty (InvariantMean α G)
 
 
 /-- For amenable actions, we can pick an invariant mean -/
-noncomputable def invmean_of_amenable (h: amenable G α) :
-    InvariantMean G α :=
+noncomputable def invmean_of_amenable (h: amenable α G) :
+    InvariantMean α G :=
   Classical.choice h
