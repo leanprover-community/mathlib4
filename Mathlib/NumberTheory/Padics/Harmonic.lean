@@ -30,17 +30,10 @@ lemma harmonic_singleton {n c : ℕ} (hc : c ∈ Finset.range n) :
   dsimp [harmonic]
   rwa [add_comm, Finset.sum_eq_sum_diff_singleton_add (i := c)]
 
-lemma finset_range_sdiff_singleton_nonempty {c n : ℕ} (hn : 2 ≤ n) :
-    Finset.Nonempty (Finset.range n \ {c}) := by
-  rw [Finset.sdiff_nonempty, Finset.subset_singleton_iff, Finset.range_eq_empty_iff, not_or]
-  refine' ⟨ne_of_gt <| lt_of_lt_of_le zero_lt_two hn, fun Hnot => _⟩
-  have : n = 1 := by rw [← Finset.card_range n, ← Finset.card_singleton c, Hnot]
-  simp only [this] at hn
-
 lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 2 ≤ n) :
     ∑ x in Finset.range n \ {c}, 1 / (x + 1 : ℚ) ≠ 0 := by
   refine' ne_of_gt <| Finset.sum_pos (fun i _ => div_pos zero_lt_one _)
-    (finset_range_sdiff_singleton_nonempty hn)
+    (Finset.sdiff_singleton_nonempty_of_nontrivial <| Finset.range_nontrivial hn)
   norm_cast; simp only [add_pos_iff, or_true]
 
 lemma padicValRat_two_pow_div (r : ℕ) : padicValRat 2 (1 / 2 ^ r) = -r := by
