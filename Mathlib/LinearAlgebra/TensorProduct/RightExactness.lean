@@ -56,12 +56,10 @@ open TensorProduct LinearMap
 
 section Semiring
 
-variable {R : Type*} [CommSemiring R]
-variable {M N P P' Q: Type*}
-  [AddCommMonoid M] [AddCommMonoid N] [AddCommGroup P] [AddCommMonoid P'] [AddCommMonoid Q]
-  [Module R M] [Module R N] [Module R P] [Module R P'] [Module R Q]
-
-variable {f : M →ₗ[R] N} (g : N →ₗ[R] P)
+variable {R : Type*} [CommSemiring R] {M N P Q: Type*}
+    [AddCommMonoid M] [AddCommMonoid N] [AddCommGroup P] [AddCommMonoid Q]
+    [Module R M] [Module R N] [Module R P] [Module R Q]
+    {f : M →ₗ[R] N} (g : N →ₗ[R] P)
 
 lemma le_comap_range_lTensor (q : Q) :
     LinearMap.range g ≤ (LinearMap.range (lTensor Q g)).comap (TensorProduct.mk R Q P q) := by
@@ -106,10 +104,9 @@ theorem rTensor.surjective (hg : Function.Surjective g) :
 
 end Semiring
 
-variable {R : Type*} [CommRing R]
-variable {M N P P' : Type*}
-  [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
-  [Module R M] [Module R N] [Module R P]
+variable {R M N P : Type*} [CommRing R]
+    [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
+    [Module R M] [Module R N] [Module R P]
 
 open Function LinearMap
 
@@ -126,11 +123,8 @@ lemma LinearMap.exact_subtype_ker_map (g : N →ₗ[R] P) :
   exact_iff.mpr <| (Submodule.range_subtype _).symm
 
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
-
-variable (Q : Type*) [AddCommGroup Q] [Module R Q]
-
-variable (hfg : Exact f g) (hg : Function.Surjective g)
-
+    (Q : Type*) [AddCommGroup Q] [Module R Q]
+    (hfg : Exact f g) (hg : Function.Surjective g)
 
 /-- The direct map in `lTensor.equiv` -/
 def lTensor.toFun :
@@ -343,9 +337,8 @@ lemma rTensor_mkQ (N : Submodule R M) :
 variable {M' N' P' : Type*}
     [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
     [Module R M'] [Module R N'] [Module R P']
-variable {f' : M' →ₗ[R] N'} {g' : N' →ₗ[R] P'}
-
-variable  (hfg' : Exact f' g') (hg' : Function.Surjective g')
+    {f' : M' →ₗ[R] N'} {g' : N' →ₗ[R] P'}
+    (hfg' : Exact f' g') (hg' : Function.Surjective g')
 
 theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g g') := by
   rw [← lTensor_comp_rTensor, coe_comp]
