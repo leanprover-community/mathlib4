@@ -107,7 +107,8 @@ theorem padicValRat_two_harmonic {n : ℕ} (Hn : 2 ≤ n) :
       sub_add_cancel, Finset.mem_range, not_lt, Finset.singleton_subset_iff] at this
     exact this (by linarith)
   · have := padicValRat.lt_sum_of_lt (p := 2) (j := 2 ^ Nat.log 2 n - 1)
-      (finset_range_sdiff_singleton_nonempty Hn) (F := fun n => 1 / ((n + 1) : ℚ))
+      (Finset.sdiff_singleton_nonempty_of_nontrivial <| Finset.range_nontrivial Hn)
+      (F := fun n => 1 / ((n + 1) : ℚ))
       (S := Finset.range n \ {2 ^ Nat.log 2 n - 1})
     simp only [Finset.mem_range, Finset.mem_sdiff, Finset.mem_singleton,
       Finset.singleton_subset_iff, pow_pos, Nat.cast_pred, Nat.cast_pow,
