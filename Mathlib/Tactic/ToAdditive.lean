@@ -1097,7 +1097,7 @@ This is useful for lemmas about `Pow` to generate both lemmas about `SMul` and `
 ```
 @[to_additive (attr := to_additive VAdd_lemma, simp) SMul_lemma]
 lemma Pow_lemma ...
-    ```
+```
 In the above example, the `simp` is added to all 3 lemmas. All other options to `to_additive`
 (like the generated name or `(reorder := ...)`) are not passed down,
 and can be given manually to each individual `to_additive` call.
