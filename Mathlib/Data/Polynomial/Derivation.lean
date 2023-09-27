@@ -16,7 +16,6 @@ We also provide a constructor `Polynomial.mkDerivation` that
 builds a derivation from its value on `X`, and a linear equivalence
 `Polynomial.mkDerivationEquiv` between `A` and `Derivation (Polynomial R) A`.
 -/
-
 noncomputable section
 
 namespace Polynomial
@@ -101,8 +100,9 @@ open Polynomial
 
 section eval₂
 
-variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M] [Module A M]
-  [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
+universe u
+variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
+  [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
 
 lemma eval₂_smul' (r : R) (f : R[X]) :
     (r • f).eval₂ (algebraMap R A) a = r • f.eval₂ (algebraMap R A) a := by
@@ -110,17 +110,17 @@ lemma eval₂_smul' (r : R) (f : R[X]) :
 
 /--
 Suppose `A` is an `R`-algebra.
-For an `A`-module `M` and an element `a:A`, `eval₂PullbackModule M a`
+For an `A`-module `M` and an element `a : A`, `eval₂PullbackModule M a`
 is the `R[X]`-module, where the action of `X` if given by multiplication by `a`.
 More generally, the action of `f : R[X]` is given by `f • m = f(a) • m`.
 -/
-def eval₂PullbackModule (M: Type*)  (_ : A) := M
+def eval₂PullbackModule (M: Type u) : A → Type u := fun _ ↦ M
 instance : AddCommMonoid <| eval₂PullbackModule M a := by assumption
+instance : Module R[X] <| eval₂PullbackModule M a :=
+  Module.compHom M <| eval₂RingHom (algebraMap R A) a
 instance : Module A <| eval₂PullbackModule M a := by assumption
 instance : Module R <| eval₂PullbackModule M a := by assumption
 instance : IsScalarTower R A <| eval₂PullbackModule M a := by assumption
-instance : Module R[X] <| eval₂PullbackModule M a :=
-  Module.compHom M <| eval₂RingHom (algebraMap R A) a
 lemma eval₂PullbackModule_smul_eq (f : R[X]) (a : A) (m : eval₂PullbackModule M a) :
     f • m = (eval₂ (algebraMap R A) a f) • m := by rfl
 instance : IsScalarTower R R[X] <| eval₂PullbackModule M a where
@@ -130,6 +130,13 @@ lemma eval₂PullbackModule_def : eval₂PullbackModule M a = M := rfl
 
 namespace Derivation
 
+/--
+For a derivation `d : A → M` and an element `a : A`, `d.comp_eval₂ a` is the
+derivation `R[X] → M` which takes a polynomial `f` to `d (f a)`.
+
+Here `M` is regarded as an `R[X]`-module, with the action of `f` defined
+by `f • m = f(a) • m`.
+-/
 def comp_eval₂ : Derivation R R[X] <| eval₂PullbackModule M a where
     toFun            := d ∘ (eval₂RingHom (algebraMap R A) a)
     map_add'         := by simp
@@ -150,7 +157,7 @@ lemma comp_eval₂_eq (d : Derivation R A <| eval₂PullbackModule M a) (f : R[X
   rw [comp_eval₂_def, eval₂_X, mkDerivation_X (R := R)]
 
 /--
-  A form of the chain rule: if `f ` is a polynomial over `R`
+  A form of the chain rule: if `f` is a polynomial over `R`
   and `d : A → M` is an `R`-derivation then for all `a : A` we have
 
     `d(f(a)) = f.derivative (a) * d a`.
