@@ -1330,6 +1330,12 @@ theorem coe_lowerClosure (s : Set α) : ↑(lowerClosure s) = ⋃ a ∈ s, Iic a
   simp
 #align coe_lower_closure coe_lowerClosure
 
+instance instDecidablePredMemUpperClosure [DecidablePred (∃ a ∈ s, a ≤ ·)] :
+    DecidablePred (· ∈ upperClosure (s : Set α)) := ‹DecidablePred _›
+
+instance instDecidablePredMemLowerClosure [DecidablePred (∃ a ∈ s, · ≤ a)] :
+    DecidablePred (· ∈ lowerClosure (s : Set α)) := ‹DecidablePred _›
+
 theorem subset_upperClosure : s ⊆ upperClosure s := fun x hx => ⟨x, hx, le_rfl⟩
 #align subset_upper_closure subset_upperClosure
 

@@ -32,18 +32,6 @@ We define the following notation in locale `FinsetFamily`:
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
 
--- TODO: Is there a better spot for those two instances?
-namespace Finset
-variable {α : Type*} [Preorder α] [@DecidableRel α (· ≤ ·)] {s : Finset α}
-
-instance decidablePredMemUpperClosure : DecidablePred (· ∈ upperClosure (s : Set α)) :=
-  fun _ ↦ decidableExistsAndFinset
-
-instance decidablePredMemLowerClosure : DecidablePred (· ∈ lowerClosure (s : Set α)) :=
-  fun _ ↦ decidableExistsAndFinset
-
-end Finset
-
 open Function
 
 open SetFamily
@@ -195,7 +183,7 @@ lemma map_sups (f : F) (hf) (s t : Finset α) :
     map ⟨f, hf⟩ (s ⊻ t) = map ⟨f, hf⟩ s ⊻ map ⟨f, hf⟩ t := by
   simpa [map_eq_image] using image_sups f s t
 
-lemma subset_sups_self : s ⊆ s ⊻ s := λ _a ha ↦ mem_sups.2 ⟨_, ha, _, ha, sup_idem⟩
+lemma subset_sups_self : s ⊆ s ⊻ s := fun _a ha ↦ mem_sups.2 ⟨_, ha, _, ha, sup_idem⟩
 lemma sups_self_subset : s ⊻ s ⊆ s ↔ SupClosed (s : Set α) := sups_subset_iff
 @[simp] lemma sups_self : s ⊻ s = s ↔ SupClosed (s : Set α) := by simp [←coe_inj]
 
@@ -383,7 +371,7 @@ lemma map_infs (f : F) (hf) (s t : Finset α) :
     map ⟨f, hf⟩ (s ⊼ t) = map ⟨f, hf⟩ s ⊼ map ⟨f, hf⟩ t := by
   simpa [map_eq_image] using image_infs f s t
 
-lemma subset_infs_self : s ⊆ s ⊼ s := λ _a ha ↦ mem_infs.2 ⟨_, ha, _, ha, inf_idem⟩
+lemma subset_infs_self : s ⊆ s ⊼ s := fun _a ha ↦ mem_infs.2 ⟨_, ha, _, ha, inf_idem⟩
 lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed (s : Set α) := infs_subset_iff
 @[simp] lemma infs_self : s ⊼ s = s ↔ InfClosed (s : Set α) := by simp [←coe_inj]
 
@@ -433,7 +421,7 @@ open FinsetFamily
 @[simp] lemma powerset_union (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
   ext u
   simp only [mem_sups, mem_powerset, le_eq_subset, sup_eq_union]
-  refine' ⟨λ h ↦ ⟨_, inter_subset_left _ u, _, inter_subset_left _ u, _⟩, _⟩
+  refine ⟨fun h ↦ ⟨_, inter_subset_left _ u, _, inter_subset_left _ u, ?_⟩, ?_⟩
   · rwa [←inter_distrib_right, inter_eq_right_iff_subset]
   · rintro ⟨v, hv, w, hw, rfl⟩
     exact union_subset_union hv hw
@@ -441,7 +429,7 @@ open FinsetFamily
 @[simp] lemma powerset_inter (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
   ext u
   simp only [mem_infs, mem_powerset, le_eq_subset, inf_eq_inter]
-  refine' ⟨λ h ↦ ⟨_, inter_subset_left _ u, _, inter_subset_left _ u, _⟩, _⟩
+  refine ⟨fun h ↦ ⟨_, inter_subset_left _ u, _, inter_subset_left _ u, ?_⟩, ?_⟩
   · rwa [←inter_inter_distrib_right, inter_eq_right_iff_subset]
   · rintro ⟨v, hv, w, hw, rfl⟩
     exact inter_subset_inter hv hw
