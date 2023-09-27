@@ -40,6 +40,7 @@ lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicVa
   rw [← add_one_le_iff, pow_succ] at h2
   refine' not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 _) pow_padicValNat_dvd
   exact pow_succ_padicValNat_not_dvd n.succ_ne_zero ∘ dvd_of_eq
+
 lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) :
     max (log 2 n) (padicValNat 2 (n + 1)) = log 2 (n + 1) := by
   apply le_antisymm (max_le (le_log_of_pow_le one_lt_two (pow_log_le_add_one 2 n))
