@@ -822,7 +822,7 @@ theorem map_sup_comap_of_surjective (p q : Submodule R₂ M₂) :
 #align submodule.map_sup_comap_of_surjective Submodule.map_sup_comap_of_surjective
 
 @[simp]
-theorem map_iSup_comap_of_sujective {ι : Sort*} (S : ι → Submodule R₂ M₂) :
+theorem map_iSup_comap_of_surjective {ι : Sort*} (S : ι → Submodule R₂ M₂) :
     (⨆ i, (S i).comap f).map f = iSup S :=
   (giMapComap hf).l_iSup_u _
 #align submodule.map_supr_comap_of_sujective Submodule.map_iSup_comap_of_surjective
