@@ -200,7 +200,6 @@ theorem affineLocally_respectsIso (h : RingHom.RespectsIso @P) : (affineLocally 
   targetAffineLocally_respectsIso (sourceAffineLocally_respectsIso h)
 #align algebraic_geometry.affine_locally_respects_iso AlgebraicGeometry.affineLocally_respectsIso
 
-set_option maxHeartbeats 400000 in
 theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Scheme} (f : X ⟶ Y) :
     affineLocally (@P) f ↔
     ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ (Opens.map f.1.base).obj U.1),
@@ -221,9 +220,9 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
     erw [← X.presheaf.map_comp] at this
     rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc,
       ← X.presheaf.map_comp]
+    rotate_left
     convert this using 1
     dsimp only [Functor.op, unop_op]
-    rotate_left
     rw [Opens.openEmbedding_obj_top]
     congr 1
     exact e'.symm
