@@ -58,10 +58,10 @@ instance : CoeFun (Mean α) (λ _ => {S // MeasurableSet (α:=α) S} → NNReal)
   coe := Mean.μ
 
 
-variable (G : Type u) [Group G] [MulAction G α] (MulActionMeasurable: ∀ (g: G), Measurable (λ (x:α) => g•x))
+variable (G : Type u) [Monoid G] [MulAction G α] (MulActionMeasurable: ∀ (g: G), Measurable (λ (x:α) => g•x))
 
 
-instance : SMul G (Mean α) := SMul.mk (λ g μ =>
+instance MeanSMul: SMul G (Mean α) := SMul.mk (λ g μ =>
     Mean.mk (λ S => μ ⟨(λ (x:α) => g•x)⁻¹' S, MulActionMeasurable g S⟩)
     (by simp only [Set.preimage_univ, μ.norm])
     (by
@@ -73,16 +73,12 @@ instance : SMul G (Mean α) := SMul.mk (λ g μ =>
     )
     )
 
---instance : MulAction G (Mean α) :=
- --   MulAction.mk
-
 
 /--An invariant mean is a mean that is invariant
 under translation with the monoid action-/
 structure InvariantMean extends Mean α where
   /-- invariance of the mean -/
-  invariance: ∀ (A: Set α), (hA: MeasurableSet A) →
-      ∀ (g: G), μ ((λ (x:α) => g•x) '' A) = μ ⟨A, hA⟩
+  invariance: ∀ (g: G), g • toMean = toMean
 
 
 /-- A monoid action is amenable if there exists an invariant mean for it-/
