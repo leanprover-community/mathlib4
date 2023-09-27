@@ -1024,7 +1024,7 @@ theorem rTensor_tmul (m : M) (n : N) : f.rTensor M (n ⊗ₜ m) = f n ⊗ₜ m :
   rfl
 #align linear_map.rtensor_tmul LinearMap.rTensor_tmul
 
-lemma comm_comp_rTensor_comp_comm_eq {g : N →ₗ[R] P} :
+lemma comm_comp_rTensor_comp_comm_eq (g : N →ₗ[R] P) :
     TensorProduct.comm R P Q ∘ₗ rTensor Q g ∘ₗ TensorProduct.comm R Q N =
       lTensor Q g :=
   TensorProduct.ext rfl
