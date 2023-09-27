@@ -1029,7 +1029,7 @@ lemma comm_comp_rTensor_comp_comm_eq (g : N →ₗ[R] P) :
       lTensor Q g :=
   TensorProduct.ext rfl
 
-lemma comm_comp_lTensor_comp_comm_eq {g : N →ₗ[R] P} :
+lemma comm_comp_lTensor_comp_comm_eq (g : N →ₗ[R] P) :
     TensorProduct.comm R Q P ∘ₗ lTensor Q g ∘ₗ TensorProduct.comm R N Q =
       rTensor Q g :=
   TensorProduct.ext rfl
