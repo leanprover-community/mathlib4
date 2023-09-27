@@ -144,7 +144,7 @@ lemma ofHoms_v_comp_d (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p q q' : ℤ) (hpq 
   rw [ofHoms_v]
 
 @[simp]
-lemma d_comp_ofHoms_v (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p' p q  : ℤ) (hpq : p + 0 = q) :
+lemma d_comp_ofHoms_v (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p' p q : ℤ) (hpq : p + 0 = q) :
     F.d p' p ≫ (ofHoms ψ).v p q hpq = F.d p' q ≫ ψ q := by
   rw [add_zero] at hpq
   subst hpq
@@ -171,7 +171,7 @@ lemma ofHom_v_comp_d (φ : F ⟶ G) (p q q' : ℤ) (hpq : p + 0 = q) :
 by simp only [ofHom, ofHoms_v_comp_d]
 
 @[simp]
-lemma d_comp_ofHom_v (φ : F ⟶ G) (p' p q  : ℤ) (hpq : p + 0 = q) :
+lemma d_comp_ofHom_v (φ : F ⟶ G) (p' p q : ℤ) (hpq : p + 0 = q) :
     F.d p' p ≫ (ofHom φ).v p q hpq = F.d p' q ≫ φ.f q := by
   simp only [ofHom, d_comp_ofHoms_v]
 
