@@ -699,4 +699,3 @@ theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
 end ExactSequence
 
 end KaehlerDifferential
-
