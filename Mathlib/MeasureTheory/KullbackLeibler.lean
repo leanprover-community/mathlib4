@@ -402,9 +402,56 @@ lemma rnDeriv_tilted_left (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
       =ᵐ[ν] fun x ↦ exp (f x - Λ μ f) * (μ.rnDeriv ν x).toReal := by
   sorry
 
+-- todo: generalize with this
+theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite' {μ : Measure α} [SigmaFinite μ]
+    {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
+    (h : ∀ s, MeasurableSet s → μ s < ∞ → (∫⁻ x in s, f x ∂μ) ≤ ∫⁻ x in s, g x ∂μ) : f ≤ᵐ[μ] g := by
+  sorry
+
+-- todo: generalize with this
+theorem ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite' {μ : Measure α} [SigmaFinite μ]
+    {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
+    (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) : f =ᵐ[μ] g := by
+  have A : f ≤ᵐ[μ] g :=
+    ae_le_of_forall_set_lintegral_le_of_sigmaFinite' hf hg fun s hs h's => le_of_eq (h s hs h's)
+  have B : g ≤ᵐ[μ] f :=
+    ae_le_of_forall_set_lintegral_le_of_sigmaFinite' hg hf fun s hs h's => ge_of_eq (h s hs h's)
+  filter_upwards [A, B] with x using le_antisymm
+
+-- todo: generalize with this
+theorem Measure.eq_withDensity_rnDeriv' {μ ν : Measure α} {s : Measure α}
+    {f : α → ℝ≥0∞} (hf : AEMeasurable f ν) (hs : s ⟂ₘ ν)
+    (hadd : μ = s + ν.withDensity f) :
+    ν.withDensity f = ν.withDensity (μ.rnDeriv ν) := by
+  sorry
+
+-- todo: generalize eq_rnDeriv with this
+theorem Measure.eq_rnDeriv' {μ ν : Measure α} [SigmaFinite ν] {s : Measure α}
+    {f : α → ℝ≥0∞} (hf : AEMeasurable f ν) (hs : s ⟂ₘ ν)
+    (hadd : μ = s + ν.withDensity f) : f =ᵐ[ν] μ.rnDeriv ν := by
+  refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite' hf
+    (measurable_rnDeriv μ ν).aemeasurable _
+  intro a ha _
+  calc
+    ∫⁻ x : α in a, f x ∂ν = ν.withDensity f a := (withDensity_apply f ha).symm
+    _ = ν.withDensity (μ.rnDeriv ν) a := by rw [eq_withDensity_rnDeriv' hf hs hadd]
+    _ = ∫⁻ x : α in a, μ.rnDeriv ν x ∂ν := withDensity_apply _ ha
+
+lemma aemeasurable_of_aemeasurable_exp {μ : Measure α} {f : α → ℝ}
+    (hf : AEMeasurable (fun x ↦ exp (f x)) μ) :
+    AEMeasurable f μ := by
+  have : f = fun x ↦ log (exp (f x)) := by ext; rw [log_exp]
+  rw [this]
+  exact measurable_log.comp_aemeasurable hf
+
+lemma AEMeasurable.of_absolutelyContinuous {β : Type*} {_ : MeasurableSpace β}
+    {μ ν : Measure α} {f : α → β} (hf : AEMeasurable f ν) (hμν : μ ≪ ν) :
+    AEMeasurable f μ :=
+  ⟨hf.mk f, hf.measurable_mk, hμν.ae_le hf.ae_eq_mk⟩
+
 lemma rnDeriv_tilted_right_of_absolutelyContinuous (μ ν : Measure α) [SigmaFinite μ]
     [IsProbabilityMeasure ν] (hμν : μ ≪ ν)
-    {f : α → ℝ} (hf : Measurable f) (h_int : Integrable (fun x ↦ exp (f x)) ν) :
+    {f : α → ℝ} (hf : AEMeasurable f ν) (h_int : Integrable (fun x ↦ exp (f x)) ν) :
     (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal)
       =ᵐ[ν] fun x ↦ exp (- f x + Λ ν f) * (μ.rnDeriv ν x).toReal := by
   suffices μ.rnDeriv (ν.tilted f)
@@ -416,29 +463,32 @@ lemma rnDeriv_tilted_right_of_absolutelyContinuous (μ ν : Measure α) [SigmaFi
     filter_upwards [this] with x hx
     rw [hx]
   symm
-  refine (absolutelyContinuous_tilted hf.aemeasurable).ae_le ?_
+  refine (absolutelyContinuous_tilted hf).ae_le ?_
   have : IsProbabilityMeasure (ν.tilted f) := isProbabilityMeasure_tilted h_int
-  refine Measure.eq_rnDeriv ?_ Measure.MutuallySingular.zero_left ?_
+  refine Measure.eq_rnDeriv' ?_ Measure.MutuallySingular.zero_left ?_
   · simp only
-    exact (hf.neg.add measurable_const).exp.ennreal_ofReal.mul (Measure.measurable_rnDeriv _ _)
+    refine AEMeasurable.mul ?_ (Measure.measurable_rnDeriv _ _).aemeasurable
+    refine ENNReal.measurable_ofReal.comp_aemeasurable ?_
+    refine measurable_exp.comp_aemeasurable ((AEMeasurable.neg ?_).add aemeasurable_const)
+    exact AEMeasurable.of_absolutelyContinuous hf tilted_absolutelyContinuous
   · ext1 s hs
     conv_lhs => rw [← Measure.withDensity_rnDeriv_eq _ _ hμν]
     rw [zero_add]
     simp only [Measure.add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply]
-    rw [withDensity_apply _ hs, withDensity_apply _ hs, set_lintegral_tilted hf.aemeasurable _ hs]
+    rw [withDensity_apply _ hs, withDensity_apply _ hs, set_lintegral_tilted hf _ hs]
     simp_rw [← mul_assoc, ← ENNReal.ofReal_mul (exp_pos _).le, ← exp_add]
     congr with x
     simp only [sub_add_add_cancel, add_right_neg, exp_zero, ENNReal.ofReal_one, one_mul]
 
 lemma rnDeriv_tilted_right (μ ν : Measure α) [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
-    {f : α → ℝ} (hf : Measurable f) (h_int : Integrable (fun x ↦ exp (f x)) ν) :
+    {f : α → ℝ} (hf : AEMeasurable f ν) (h_int : Integrable (fun x ↦ exp (f x)) ν) :
     (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal)
       =ᵐ[ν] fun x ↦ exp (- f x + Λ ν f) * (μ.rnDeriv ν x).toReal := by
   have : IsProbabilityMeasure (ν.tilted f) := isProbabilityMeasure_tilted h_int
   let μ' := ν.withDensity (μ.rnDeriv ν)
   have h₁ : μ.rnDeriv (ν.tilted f) =ᵐ[ν] μ'.rnDeriv (ν.tilted f) := by
     conv_lhs => rw [μ.haveLebesgueDecomposition_add ν]
-    have hν_ac : ν ≪ ν.tilted f := absolutelyContinuous_tilted hf.aemeasurable
+    have hν_ac : ν ≪ ν.tilted f := absolutelyContinuous_tilted hf
     have h_add : (μ.singularPart ν + ν.withDensity (μ.rnDeriv ν)).rnDeriv (ν.tilted f)
         =ᵐ[ν] (μ.singularPart ν).rnDeriv (ν.tilted f) + _ :=
       hν_ac.ae_le (rnDeriv_add (μ.singularPart ν) μ' (ν.tilted f))
@@ -551,15 +601,8 @@ lemma integral_LLR_nonneg
 
 end definition
 
-lemma aemeasurable_of_aemeasurable_exp {μ : Measure α} {f : α → ℝ}
-    (hf : AEMeasurable (fun x ↦ exp (f x)) μ) :
-    AEMeasurable f μ := by
-  have : f = fun x ↦ log (exp (f x)) := by ext; rw [log_exp]
-  rw [this]
-  exact measurable_log.comp_aemeasurable hf
-
 lemma LLR_tilted_ae_eq {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
-    (hμν : μ ≪ ν) {f : α → ℝ} (hf : Measurable f) (h_int : Integrable (fun x ↦ exp (f x)) ν) :
+    (hμν : μ ≪ ν) {f : α → ℝ} (hf : AEMeasurable f ν) (h_int : Integrable (fun x ↦ exp (f x)) ν) :
     (LLR μ (ν.tilted f)) =ᵐ[μ] fun x ↦ - f x + Λ ν f + LLR μ ν x := by
   filter_upwards [hμν.ae_le (rnDeriv_tilted_right μ ν hf h_int), Measure.rnDeriv_pos hμν,
     hμν.ae_le (Measure.rnDeriv_lt_top μ ν)] with x hx hx_pos hx_lt_top
@@ -570,7 +613,7 @@ lemma LLR_tilted_ae_eq {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabi
 
 lemma integrable_LLR_tilted
     {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
-    (hμν : μ ≪ ν) {f : α → ℝ} (hf : Measurable f) (hfμ : Integrable f μ)
+    (hμν : μ ≪ ν) {f : α → ℝ} (hf : AEMeasurable f ν) (hfμ : Integrable f μ)
     (hfν : Integrable (fun x ↦ exp (f x)) ν)
     (h_int : Integrable (LLR μ ν) μ) :
     Integrable (LLR μ (ν.tilted f)) μ := by
@@ -585,12 +628,7 @@ lemma todo_aux {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeas
     = ∫ x, LLR μ ν x ∂μ - ∫ x, - f x + Λ ν f + LLR μ ν x ∂μ := by
         refine congr_arg₂ _ rfl ?_
         refine integral_congr_ae (LLR_tilted_ae_eq hμν ?_ hfν)
-        -- generalize `LLR_tilted_ae_eq, rnDeriv_tilted_right` to require only AEMeasurable
-        -- do the same in `Measure.rnDeriv_withDensity`
-        suffices AEMeasurable f μ by sorry
-        refine aemeasurable_of_aemeasurable_exp ?_
-        refine AEStronglyMeasurable.aemeasurable ?_
-        exact ⟨hfν.1.mk, hfν.1.stronglyMeasurable_mk, hμν.ae_le hfν.1.ae_eq_mk⟩
+        exact aemeasurable_of_aemeasurable_exp hfν.1.aemeasurable
   _ = ∫ x, LLR μ ν x ∂μ - (- ∫ x, f x ∂μ + Λ ν f + ∫ x, LLR μ ν x ∂μ) := by
         congr
         rw [← integral_neg, integral_add ?_ h_int]
@@ -608,8 +646,8 @@ lemma some_le {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasu
   rw [← todo_aux hμν hfμ hf h_int]
   simp only [hf, ciSup_unique, tsub_le_iff_right, le_add_iff_nonneg_right]
   have : IsProbabilityMeasure (Measure.tilted ν f) := isProbabilityMeasure_tilted hf
-  have hf_m : Measurable f := sorry
-  have h_ac : ν ≪ ν.tilted f := absolutelyContinuous_tilted hf_m.aemeasurable
+  have hf_m : AEMeasurable f ν := aemeasurable_of_aemeasurable_exp hf.1.aemeasurable
+  have h_ac : ν ≪ ν.tilted f := absolutelyContinuous_tilted hf_m
   refine integral_LLR_nonneg (hμν.trans h_ac) ?_
   exact integrable_LLR_tilted hμν hf_m hfμ hf h_int
 
