@@ -403,6 +403,11 @@ theorem log_rpow {x : ℝ} (hx : 0 < x) (y : ℝ) : log (x ^ y) = y * log x := b
   rw [exp_log (rpow_pos_of_pos hx y), ← exp_log hx, mul_comm, rpow_def_of_pos (exp_pos (log x)) y]
 #align real.log_rpow Real.log_rpow
 
+theorem mul_log_eq_log_iff {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) :
+    y * log x = log z ↔ x ^ y = z :=
+  ⟨fun h ↦ log_injOn_pos (rpow_pos_of_pos hx _) hz <| log_rpow hx _ |>.trans h,
+  by rintro rfl; rw [log_rpow hx]⟩
+
 /-! Note: lemmas about `(∏ i in s, f i ^ r)` such as `Real.finset_prod_rpow` are proved
 in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
@@ -420,12 +425,20 @@ theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z :
     exact mul_lt_mul_of_pos_right (log_lt_log hx hxy) hz
 #align real.rpow_lt_rpow Real.rpow_lt_rpow
 
+theorem strictMonoOn_rpow_Ici_of_exponent_pos {r : ℝ} (hr : 0 < r) :
+    StrictMonoOn (fun (x : ℝ) => x ^ r) (Set.Ici 0) :=
+  fun _ ha _ _ hab => rpow_lt_rpow ha hab hr
+
 @[gcongr]
 theorem rpow_le_rpow {x y z : ℝ} (h : 0 ≤ x) (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z := by
   rcases eq_or_lt_of_le h₁ with (rfl | h₁'); · rfl
   rcases eq_or_lt_of_le h₂ with (rfl | h₂'); · simp
   exact le_of_lt (rpow_lt_rpow h h₁' h₂')
 #align real.rpow_le_rpow Real.rpow_le_rpow
+
+theorem monotoneOn_rpow_Ici_of_exponent_nonneg {r : ℝ} (hr : 0 ≤ r) :
+    MonotoneOn (fun (x : ℝ) => x ^ r) (Set.Ici 0) :=
+  fun _ ha _ _ hab => rpow_le_rpow ha hab hr
 
 theorem rpow_lt_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
   ⟨lt_imp_lt_of_le_imp_le fun h => rpow_le_rpow hy h (le_of_lt hz), fun h => rpow_lt_rpow hx h hz⟩
@@ -487,6 +500,10 @@ theorem rpow_lt_rpow_of_exponent_neg {x y z : ℝ} (hy : 0 < y) (hxy : y < x) (h
       inv_lt_inv (rpow_pos_of_pos hx _) (rpow_pos_of_pos hy _)]
   exact Real.rpow_lt_rpow (by positivity) hxy <| neg_pos_of_neg hz
 
+theorem strictAntiOn_rpow_Ioi_of_exponent_neg {r : ℝ} (hr : r < 0) :
+    StrictAntiOn (fun (x:ℝ) => x ^ r) (Set.Ioi 0) :=
+  fun _ ha _ _ hab => rpow_lt_rpow_of_exponent_neg ha hab hr
+
 theorem rpow_le_rpow_of_exponent_nonpos {x y : ℝ} (hy : 0 < y) (hxy : y ≤ x) (hz : z ≤ 0) :
     x ^ z ≤ y ^ z := by
   rcases ne_or_eq z 0 with hz_zero | rfl
@@ -497,6 +514,10 @@ theorem rpow_le_rpow_of_exponent_nonpos {x y : ℝ} (hy : 0 < y) (hxy : y ≤ x)
         (Ne.lt_of_le hz_zero hz)
     case inr => simp
   case inr => simp
+
+theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
+    AntitoneOn (fun (x:ℝ) => x ^ r) (Set.Ioi 0) :=
+  fun _ ha _ _ hab => rpow_le_rpow_of_exponent_nonpos ha hab hr
 
 @[simp]
 theorem rpow_le_rpow_left_iff (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
@@ -698,8 +719,7 @@ theorem sqrt_eq_rpow (x : ℝ) : sqrt x = x ^ (1 / (2 : ℝ)) := by
   · rw [← mul_self_inj_of_nonneg (sqrt_nonneg _) (rpow_nonneg_of_nonneg h _), mul_self_sqrt h, ← sq,
       ← rpow_nat_cast, ← rpow_mul h]
     norm_num
-  · have : 1 / (2 : ℝ) * π = π / (2 : ℝ)
-    ring
+  · have : 1 / (2 : ℝ) * π = π / (2 : ℝ) := by ring
     rw [sqrt_eq_zero_of_nonpos h.le, rpow_def_of_neg h, this, cos_pi_div_two, mul_zero]
 #align real.sqrt_eq_rpow Real.sqrt_eq_rpow
 

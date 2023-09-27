@@ -25,15 +25,19 @@ import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
+import Mathlib.Tactic.Clean
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Constructor
+import Mathlib.Tactic.Congrm
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.DefEqTransformations
+import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -69,7 +73,6 @@ import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
-import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.RunCmd
@@ -126,8 +129,6 @@ open Lean Parser.Tactic
 
 /- B -/ syntax (name := cc) "cc" : tactic
 
-/- M -/ syntax (name := unfoldProjs) "unfold_projs" (config)? (location)? : tactic
-
 /- S -/ syntax (name := rsimp) "rsimp" : tactic
 /- S -/ syntax (name := compVal) "comp_val" : tactic
 /- S -/ syntax (name := async) "async " tacticSeq : tactic
@@ -139,7 +140,6 @@ open Lean Parser.Tactic
 /- E -/ syntax (name := unfoldWf) "unfold_wf" : tactic
 /- M -/ syntax (name := unfoldAux) "unfold_aux" : tactic
 /- S -/ syntax (name := «continue») "continue " tacticSeq : tactic
-/- M -/ syntax (name := clean) "clean " term : tactic
 /- B -/ syntax (name := refineStruct) "refine_struct " term : tactic
 /- M -/ syntax (name := matchHyp) "match_hyp " ("(" &"m" " := " term ") ")? ident " : " term :
   tactic
@@ -153,8 +153,6 @@ open Lean Parser.Tactic
   (" with " binderIdent)? : tactic
 /- S -/ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")?
   term:51 " = " ident (" with " binderIdent)? : tactic
-/- S -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
-  (" with" (ppSpace colGt ident)*)? : tactic
 /- S -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
   (" with" (ppSpace colGt ident)*)? : tactic
 /- S -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
@@ -162,8 +160,6 @@ open Lean Parser.Tactic
 /- S -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
 
 /- S -/ syntax (name := hint) "hint" : tactic
-
-/- M -/ syntax (name := congrM) "congrm " term : tactic
 
 /- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
 /- S -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic

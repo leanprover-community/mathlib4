@@ -56,20 +56,14 @@ variable [CommMonoidWithZero α]
 
 open Associates Nat
 
-theorem of_wfDvdMonoid_associates (h : WfDvdMonoid (Associates α)) : WfDvdMonoid α :=
-  ⟨by
-    refine' (Surjective.wellFounded_iff mk_surjective _).2 wellFounded_dvdNotUnit
-    intros
-    rw [mk_dvdNotUnit_mk_iff]⟩
+theorem of_wfDvdMonoid_associates (_ : WfDvdMonoid (Associates α)) : WfDvdMonoid α :=
+  ⟨(mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).2 wellFounded_dvdNotUnit⟩
 #align wf_dvd_monoid.of_wf_dvd_monoid_associates WfDvdMonoid.of_wfDvdMonoid_associates
 
 variable [WfDvdMonoid α]
 
 instance wfDvdMonoid_associates : WfDvdMonoid (Associates α) :=
-  ⟨by
-    refine' (Surjective.wellFounded_iff mk_surjective _).1 wellFounded_dvdNotUnit
-    intros
-    rw [mk_dvdNotUnit_mk_iff]⟩
+  ⟨(mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).1 wellFounded_dvdNotUnit⟩
 #align wf_dvd_monoid.wf_dvd_monoid_associates WfDvdMonoid.wfDvdMonoid_associates
 
 theorem wellFounded_associates : WellFounded ((· < ·) : Associates α → Associates α → Prop) :=

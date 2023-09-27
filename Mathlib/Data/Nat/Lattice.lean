@@ -135,10 +135,10 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
       trivial
     csSup_of_not_bddAbove := by
       intro s hs
-      simp only [mem_univ, forall_true_left, sSup]
-      rw [dif_neg, dif_neg]
-      · simp only [not_exists, not_forall, not_le]
-        exact fun n ↦ ⟨n+1, lt.base n⟩
+      simp only [mem_univ, forall_true_left, sSup,
+        mem_empty_iff_false, IsEmpty.forall_iff, forall_const, exists_const, dite_true]
+      rw [dif_neg]
+      · exact le_antisymm (zero_le _) (find_le trivial)
       · exact hs
     csInf_of_not_bddBelow := fun s hs ↦ by simp at hs }
 

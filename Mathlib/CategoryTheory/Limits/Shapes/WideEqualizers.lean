@@ -511,7 +511,7 @@ theorem Cotrident.ofCocone_ι {F : WalkingParallelFamily J ⥤ C} (t : Cocone F)
 @[simps]
 def Trident.mkHom [Nonempty J] {s t : Trident f} (k : s.pt ⟶ t.pt)
     (w : k ≫ t.ι = s.ι := by aesop_cat) : s ⟶ t where
-  Hom := k
+  hom := k
   w := by
     rintro ⟨_ | _⟩
     · exact w
@@ -534,7 +534,7 @@ def Trident.ext [Nonempty J] {s t : Trident f} (i : s.pt ≅ t.pt)
 @[simps]
 def Cotrident.mkHom [Nonempty J] {s t : Cotrident f} (k : s.pt ⟶ t.pt)
     (w : s.π ≫ k = t.π := by aesop_cat) : s ⟶ t where
-  Hom := k
+  hom := k
   w := by
     rintro ⟨_ | _⟩
     · simpa using f (Classical.arbitrary J) ≫= w

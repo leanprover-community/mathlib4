@@ -135,8 +135,31 @@ structure SimpleGraph (V : Type u) where
 #align simple_graph SimpleGraph
 -- porting note: changed `obviously` to `aesop` in the `structure`
 
-noncomputable instance {V : Type u} [Fintype V] : Fintype (SimpleGraph V) := by
-  classical exact Fintype.ofInjective SimpleGraph.Adj SimpleGraph.ext
+/-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
+@[simps]
+def SimpleGraph.mk' {V : Type u} :
+    {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where
+  toFun x := ⟨fun v w ↦ x.1 v w, fun v w ↦ by simp [x.2.1], fun v ↦ by simp [x.2.2]⟩
+  inj' := by
+    rintro ⟨adj, _⟩ ⟨adj', _⟩
+    simp only [mk.injEq, Subtype.mk.injEq]
+    intro h
+    funext v w
+    simpa [Bool.coe_bool_iff] using congr_fun₂ h v w
+
+/-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
+and filtering on whether they are symmetric and irreflexive. -/
+instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) where
+  elems := Finset.univ.map SimpleGraph.mk'
+  complete := by
+    classical
+    rintro ⟨Adj, hs, hi⟩
+    simp only [mem_map, mem_univ, true_and, Subtype.exists, Bool.not_eq_true]
+    refine ⟨fun v w ↦ Adj v w, ⟨?_, ?_⟩, ?_⟩
+    · simp [hs.iff]
+    · intro v; simp [hi v]
+    · ext
+      simp
 
 /-- Construct the simple graph induced by the given relation. It
 symmetrizes the relation and makes it irreflexive. -/
@@ -168,21 +191,12 @@ def emptyGraph (V : Type u) : SimpleGraph V where Adj _ _ := False
 
 /-- Two vertices are adjacent in the complete bipartite graph on two vertex types
 if and only if they are not from the same side.
-Bipartite graphs in general may be regarded as being subgraphs of one of these.
-
-TODO also introduce complete multi-partite graphs, where the vertex type is a sigma type of an
-indexed family of vertex types
--/
+Any bipartite graph may be regarded as a subgraph of one of these. -/
 @[simps]
-def completeBipartiteGraph (V W : Type*) : SimpleGraph (Sum V W)
-    where
+def completeBipartiteGraph (V W : Type*) : SimpleGraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
-  symm := by
-    intro v w
-    cases v <;> cases w <;> simp
-  loopless := by
-    intro v
-    cases v <;> simp
+  symm v w := by cases v <;> cases w <;> simp
+  loopless v := by cases v <;> simp
 #align complete_bipartite_graph completeBipartiteGraph
 
 namespace SimpleGraph
@@ -1306,6 +1320,12 @@ lemma le_comap_of_subsingleton (f : V → W) [Subsingleton V] : G ≤ G'.comap f
 lemma map_le_of_subsingleton (f : V ↪ W) [Subsingleton V] : G.map f ≤ G' := by
   rw [map_le_iff_le_comap]; apply le_comap_of_subsingleton
 
+/-- Given a family of vertex types indexed by `ι`, pulling back from `⊤ : SimpleGraph ι`
+yields the complete multipartite graph on the family.
+Two vertices are adjacent if and only if their indices are not equal. -/
+abbrev completeMultipartiteGraph {ι : Type*} (V : ι → Type*) : SimpleGraph (Σ i, V i) :=
+  SimpleGraph.comap Sigma.fst ⊤
+
 /-! ## Induced graphs -/
 
 /- Given a set `s` of vertices, we can restrict a graph to those vertices by restricting its
@@ -1827,7 +1847,7 @@ protected def comap (f : V ↪ W) (G : SimpleGraph W) : G.comap f ↪g G :=
 
 @[simp]
 theorem comap_apply (f : V ↪ W) (G : SimpleGraph W) (v : V) :
-  SimpleGraph.Embedding.comap f G v = f v := rfl
+    SimpleGraph.Embedding.comap f G v = f v := rfl
 #align simple_graph.embedding.comap_apply SimpleGraph.Embedding.comap_apply
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
@@ -1839,7 +1859,7 @@ protected def map (f : V ↪ W) (G : SimpleGraph V) : G ↪g G.map f :=
 
 @[simp]
 theorem map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) :
-  SimpleGraph.Embedding.map f G v = f v := rfl
+    SimpleGraph.Embedding.map f G v = f v := rfl
 #align simple_graph.embedding.map_apply SimpleGraph.Embedding.map_apply
 
 /-- Induced graphs embed in the original graph.
@@ -2009,12 +2029,12 @@ protected def comap (f : V ≃ W) (G : SimpleGraph W) : G.comap f.toEmbedding �
 
 @[simp]
 lemma comap_apply (f : V ≃ W) (G : SimpleGraph W) (v : V) :
-  SimpleGraph.Iso.comap f G v = f v := rfl
+    SimpleGraph.Iso.comap f G v = f v := rfl
 #align simple_graph.iso.comap_apply SimpleGraph.Iso.comap_apply
 
 @[simp]
 lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
-  (SimpleGraph.Iso.comap f G).symm w = f.symm w := rfl
+    (SimpleGraph.Iso.comap f G).symm w = f.symm w := rfl
 #align simple_graph.iso.comap_symm_apply SimpleGraph.Iso.comap_symm_apply
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
@@ -2026,12 +2046,12 @@ protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding
 
 @[simp]
 lemma map_apply (f : V ≃ W) (G : SimpleGraph V) (v : V) :
-  SimpleGraph.Iso.map f G v = f v := rfl
+    SimpleGraph.Iso.map f G v = f v := rfl
 #align simple_graph.iso.map_apply SimpleGraph.Iso.map_apply
 
 @[simp]
 lemma map_symm_apply (f : V ≃ W) (G : SimpleGraph V) (w : W) :
-  (SimpleGraph.Iso.map f G).symm w = f.symm w := rfl
+    (SimpleGraph.Iso.map f G).symm w = f.symm w := rfl
 #align simple_graph.iso.map_symm_apply SimpleGraph.Iso.map_symm_apply
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/

@@ -327,7 +327,7 @@ theorem cprankMax_nil [Monoid α] [AddMonoid α] (x : Holor α nil) : CPRankMax 
 #align holor.cprank_max_nil Holor.cprankMax_nil
 
 theorem cprankMax_1 [Monoid α] [AddMonoid α] {x : Holor α ds} (h : CPRankMax1 x) :
-  CPRankMax 1 x := by
+    CPRankMax 1 x := by
   have h' := CPRankMax.succ 0 x 0 h CPRankMax.zero
   rwa [zero_add, add_zero] at h'
 #align holor.cprank_max_1 Holor.cprankMax_1

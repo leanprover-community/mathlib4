@@ -1,6 +1,7 @@
 -- tests for byContra' tactic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Rename
+import Mathlib.Tactic.Set
 import Mathlib.Data.Nat.Basic
 
 set_option autoImplicit true

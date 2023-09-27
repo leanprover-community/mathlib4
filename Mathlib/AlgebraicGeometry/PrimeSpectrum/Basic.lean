@@ -20,15 +20,15 @@ The prime spectrum of a commutative ring is the type of all prime ideals.
 It is naturally endowed with a topology: the Zariski topology.
 
 (It is also naturally endowed with a sheaf of rings,
-which is constructed in `algebraic_geometry.structure_sheaf`.)
+which is constructed in `AlgebraicGeometry.StructureSheaf`.)
 
 ## Main definitions
 
 * `PrimeSpectrum R`: The prime spectrum of a commutative ring `R`,
   i.e., the set of all prime ideals of `R`.
-* `zero_locus s`: The zero locus of a subset `s` of `R`
+* `zeroLocus s`: The zero locus of a subset `s` of `R`
   is the subset of `PrimeSpectrum R` consisting of all prime ideals that contain `s`.
-* `vanishing_ideal t`: The vanishing ideal of a subset `t` of `PrimeSpectrum R`
+* `vanishingIdeal t`: The vanishing ideal of a subset `t` of `PrimeSpectrum R`
   is the intersection of points in `t` (viewed as prime ideals).
 
 ## Conventions
@@ -55,7 +55,7 @@ variable (R : Type u) (S : Type v) [CommRing R] [CommRing S]
 /-- The prime spectrum of a commutative ring `R` is the type of all prime ideals of `R`.
 
 It is naturally endowed with a topology (the Zariski topology),
-and a sheaf of commutative rings (see `algebraic_geometry.structure_sheaf`).
+and a sheaf of commutative rings (see `AlgebraicGeometry.StructureSheaf`).
 It is a fundamental building block in algebraic geometry. -/
 @[ext]
 structure PrimeSpectrum where
@@ -74,9 +74,9 @@ instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
   ⟨⟨I, hI.isPrime⟩⟩
 
 /-- The prime spectrum of the zero ring is empty. -/
-theorem pUnit (x : PrimeSpectrum PUnit) : False :=
+theorem punit (x : PrimeSpectrum PUnit) : False :=
   x.1.ne_top_iff_one.1 x.2.1 <| Eq.substr (Subsingleton.elim 1 (0 : PUnit)) x.1.zero_mem
-#align prime_spectrum.punit PrimeSpectrum.pUnit
+#align prime_spectrum.punit PrimeSpectrum.punit
 
 variable (R S)
 
@@ -127,7 +127,7 @@ of the ring that contain the set `s`.
 
 An element `f` of `R` can be thought of as a dependent function on the prime spectrum of `R`.
 At a point `x` (a prime ideal) the function (i.e., element) `f` takes values in the quotient ring
-`R` modulo the prime ideal `x`. In this manner, `zero_locus s` is exactly the subset of
+`R` modulo the prime ideal `x`. In this manner, `zeroLocus s` is exactly the subset of
 `PrimeSpectrum R` where all "functions" in `s` vanish simultaneously.
 -/
 def zeroLocus (s : Set R) : Set (PrimeSpectrum R) :=
@@ -150,7 +150,7 @@ the intersection of all the prime ideals in the set `t`.
 
 An element `f` of `R` can be thought of as a dependent function on the prime spectrum of `R`.
 At a point `x` (a prime ideal) the function (i.e., element) `f` takes values in the quotient ring
-`R` modulo the prime ideal `x`. In this manner, `vanishing_ideal t` is exactly the ideal of `R`
+`R` modulo the prime ideal `x`. In this manner, `vanishingIdeal t` is exactly the ideal of `R`
 consisting of all "functions" that vanish on all of `t`.
 -/
 def vanishingIdeal (t : Set (PrimeSpectrum R)) : Ideal R :=
@@ -185,14 +185,14 @@ section Gc
 
 variable (R)
 
-/-- `zero_locus` and `vanishing_ideal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
 theorem gc :
     @GaloisConnection (Ideal R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun I => zeroLocus I) fun t =>
       vanishingIdeal t :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 #align prime_spectrum.gc PrimeSpectrum.gc
 
-/-- `zero_locus` and `vanishing_ideal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun s => zeroLocus s) fun t =>
       vanishingIdeal t := by
@@ -402,13 +402,15 @@ theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
 of the topology: they are exactly those sets that are the zero locus of a subset of the ring. -/
 instance zariskiTopology : TopologicalSpace (PrimeSpectrum R) :=
   TopologicalSpace.ofClosed (Set.range PrimeSpectrum.zeroLocus) ⟨Set.univ, by simp⟩
-    (by intro Zs h
-        rw [Set.sInter_eq_iInter]
-        choose f hf using fun i : Zs => h i.prop
-        simp only [← hf]
-        exact ⟨_, zeroLocus_iUnion _⟩)
-    (by rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩
-        exact ⟨_, (union_zeroLocus s t).symm⟩)
+    (by
+      intro Zs h
+      rw [Set.sInter_eq_iInter]
+      choose f hf using fun i : Zs => h i.prop
+      simp only [← hf]
+      exact ⟨_, zeroLocus_iUnion _⟩)
+    (by
+      rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩
+      exact ⟨_, (union_zeroLocus s t).symm⟩)
 #align prime_spectrum.zariski_topology PrimeSpectrum.zariskiTopology
 
 theorem isOpen_iff (U : Set (PrimeSpectrum R)) : IsOpen U ↔ ∃ s, Uᶜ = zeroLocus s := by
@@ -519,7 +521,6 @@ theorem t1Space_iff_isField [IsDomain R] : T1Space (PrimeSpectrum R) ↔ IsField
     · exact absurd h (Ring.not_isField_iff_exists_prime.2 ⟨x.asIdeal, ⟨hx, x.2⟩⟩)
 #align prime_spectrum.t1_space_iff_is_field PrimeSpectrum.t1Space_iff_isField
 
--- mathport name: «exprZ( )»
 local notation "Z(" a ")" => zeroLocus (a : Set R)
 
 theorem isIrreducible_zeroLocus_iff_of_radical (I : Ideal R) (hI : I.IsRadical) :
@@ -576,8 +577,7 @@ theorem preimage_comap_zeroLocus_aux (f : R →+* S) (s : Set R) :
         zeroLocus s =
       zeroLocus (f '' s) := by
   ext x
-  simp only [mem_zeroLocus, Set.image_subset_iff]
-  rfl
+  simp only [mem_zeroLocus, Set.image_subset_iff, Set.mem_preimage, mem_zeroLocus, Ideal.coe_comap]
 #align prime_spectrum.preimage_comap_zero_locus_aux PrimeSpectrum.preimage_comap_zeroLocus_aux
 
 /-- The function between prime spectra of commutative rings induced by a ring homomorphism.
@@ -697,20 +697,19 @@ section SpecOfSurjective
 
 open Function RingHom
 
-theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) :=
-  {
-    induced := by
-      simp_rw [TopologicalSpace.ext_iff, ← isClosed_compl_iff,
-        ← @isClosed_compl_iff (PrimeSpectrum S)
-          ((TopologicalSpace.induced (comap f) zariskiTopology)), isClosed_induced_iff,
-        isClosed_iff_zeroLocus]
-      refine' fun s =>
-        ⟨fun ⟨F, hF⟩ =>
-          ⟨zeroLocus (f ⁻¹' F), ⟨f ⁻¹' F, rfl⟩, by
-            rw [preimage_comap_zeroLocus, Function.Surjective.image_preimage hf, hF]⟩,
-          _⟩
-      rintro ⟨-, ⟨F, rfl⟩, hF⟩
-      exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩ }
+theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) where
+  induced := by
+    simp_rw [TopologicalSpace.ext_iff, ← isClosed_compl_iff,
+      ← @isClosed_compl_iff (PrimeSpectrum S)
+        ((TopologicalSpace.induced (comap f) zariskiTopology)), isClosed_induced_iff,
+      isClosed_iff_zeroLocus]
+    refine' fun s =>
+      ⟨fun ⟨F, hF⟩ =>
+        ⟨zeroLocus (f ⁻¹' F), ⟨f ⁻¹' F, rfl⟩, by
+          rw [preimage_comap_zeroLocus, Function.Surjective.image_preimage hf, hF]⟩,
+        _⟩
+    rintro ⟨-, ⟨F, rfl⟩, hF⟩
+    exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩
 #align prime_spectrum.comap_inducing_of_surjective PrimeSpectrum.comap_inducing_of_surjective
 
 theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
@@ -724,8 +723,7 @@ theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal 
     · obtain ⟨x', rfl⟩ := hf x
       exact Ideal.mem_map_of_mem f (h_I_p hx)
     · ext x
-      change f x ∈ p.asIdeal.map f ↔ _
-      rw [Ideal.mem_map_iff_of_surjective f hf]
+      rw [comap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective f hf]
       refine' ⟨_, fun hx => ⟨x, hx, rfl⟩⟩
       rintro ⟨x', hx', heq⟩
       rw [← sub_sub_cancel x' x]
@@ -758,7 +756,7 @@ end Comap
 
 section BasicOpen
 
-/-- `basic_open r` is the open subset containing all prime ideals not containing `r`. -/
+/-- `basicOpen r` is the open subset containing all prime ideals not containing `r`. -/
 def basicOpen (r : R) : TopologicalSpace.Opens (PrimeSpectrum R) where
   carrier := { x | r ∉ x.asIdeal }
   is_open' := ⟨{r}, Set.ext fun _ => Set.singleton_subset_iff.trans <| Classical.not_not.symm⟩
@@ -849,7 +847,7 @@ theorem isCompact_basicOpen (f : R) : IsCompact (basicOpen f : Set (PrimeSpectru
       exact subset_vanishingIdeal_zeroLocus {f} (Set.mem_singleton f)
     rcases Submodule.exists_finset_of_mem_iSup I hn with ⟨s, hs⟩
     use s
-    -- Using simp_rw here, because `hI` and `zero_locus_supr` need to be applied underneath binders
+    -- Using simp_rw here, because `hI` and `zeroLocus_iSup` need to be applied underneath binders
     simp_rw [basicOpen_eq_zeroLocus_compl f, Set.inter_comm (zeroLocus {f})ᶜ, ← Set.diff_eq,
       Set.diff_eq_empty]
     rw [show (Set.iInter fun i => Set.iInter fun (_ : i ∈ s) => Z i) =
@@ -898,8 +896,7 @@ end BasicOpen
 instance compactSpace : CompactSpace (PrimeSpectrum R) :=
   { isCompact_univ := by
       convert isCompact_basicOpen (1 : R)
-      rw [basicOpen_one]
-      rfl }
+      rw [basicOpen_one, TopologicalSpace.Opens.coe_top] }
 
 section Order
 
