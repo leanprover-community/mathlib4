@@ -616,7 +616,7 @@ TODO: Generalise this construction to `ContinuousMap`. -/
 def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
     (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
     (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f ⟨x, hx.1⟩ = g ⟨x, hx.2⟩)
-    [∀ j, Decidable (j ∈ C₁)] : LocallyConstant X Z where
+    [DecidablePred (· ∈ C₁)] : LocallyConstant X Z where
   toFun i := if hi : i ∈ C₁ then f ⟨i, hi⟩ else g ⟨i, (Set.compl_subset_iff_union.mpr h) hi⟩
   isLocallyConstant := by
     let dZ : TopologicalSpace Z := ⊥
@@ -635,6 +635,28 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
         exact fun hx ↦ hfg x ⟨hx, x.prop⟩
       · simp only [cond_true, restrict_dite, Subtype.coe_eta]
         exact hf
+
+@[simp]
+lemma piecewise_apply_left {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
+    (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
+    (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f ⟨x, hx.1⟩ = g ⟨x, hx.2⟩)
+    [DecidablePred (· ∈ C₁)] (x : X) (hx : x ∈ C₁) :
+    piecewise h₁ h₂ h f g hfg x = f ⟨x, hx⟩ := by
+  simp only [piecewise, Set.mem_preimage, continuous_subtype_val.restrictPreimage,
+    coe_comap, Function.comp_apply, coe_mk]
+  rw [dif_pos hx]
+
+@[simp]
+lemma piecewise_apply_right {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
+    (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
+    (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f ⟨x, hx.1⟩ = g ⟨x, hx.2⟩)
+    [DecidablePred (· ∈ C₁)] (x : X) (hx : x ∈ C₂) :
+    piecewise h₁ h₂ h f g hfg x = g ⟨x, hx⟩ := by
+  simp only [piecewise, Set.mem_preimage, continuous_subtype_val.restrictPreimage,
+    coe_comap, Function.comp_apply, coe_mk]
+  split_ifs with h
+  · exact hfg x ⟨h, hx⟩
+  · rfl
 
 /-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset.
 
@@ -658,9 +680,9 @@ lemma piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩)
     (x : C₀) (hx : x.val ∈ C₁) :
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₁ ⟨x.val, hx⟩ := by
-  simp only [piecewise', piecewise, Set.mem_preimage, continuous_subtype_val.restrictPreimage,
-    coe_comap, Function.comp_apply, coe_mk]
-  rw [dif_pos hx]
+  letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
+  rw [piecewise', piecewise_apply_left (f := (f₁.comap (restrictPreimage C₁ ((↑) : C₀ → X))))
+    (hx := hx), coe_comap (hf := continuous_subtype_val.restrictPreimage)]
   rfl
 
 @[simp]
@@ -669,11 +691,10 @@ lemma piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩)
     (x : C₀) (hx : x.val ∈ C₂) :
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₂ ⟨x.val, hx⟩ := by
-  simp only [piecewise', piecewise, Set.mem_preimage, continuous_subtype_val.restrictPreimage,
-    coe_comap, Function.comp_apply, coe_mk]
-  split_ifs with h
-  · exact hf x.val ⟨h, hx⟩
-  · rfl
+  letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
+  rw [piecewise', piecewise_apply_right (f := (f₁.comap (restrictPreimage C₁ ((↑) : C₀ → X))))
+    (hx := hx), coe_comap (hf := continuous_subtype_val.restrictPreimage)]
+  rfl
 
 end Piecewise
 
