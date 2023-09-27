@@ -2325,7 +2325,7 @@ theorem sdiff_singleton_eq_self (ha : a ∉ s) : s \ {a} = s :=
   sdiff_eq_self_iff_disjoint.2 <| by simp [ha]
 #align finset.sdiff_singleton_eq_self Finset.sdiff_singleton_eq_self
 
-theorem sdiff_singleton_nonempty_of_nontrivial {c : α} {s : Finset α} (hS : s.Nontrivial) :
+theorem Nontrivial.sdiff_singleton_nonempty {c : α} {s : Finset α} (hS : s.Nontrivial) :
     (s \ {c}).Nonempty := by
   rw [Finset.sdiff_nonempty, Finset.subset_singleton_iff]
   push_neg
