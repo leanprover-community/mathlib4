@@ -168,10 +168,10 @@ theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = 
 #align sum.get_right_eq_some_iff Sum.getRight?_eq_some_iff
 
 theorem getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
-x.getLeft h₁ = x.getLeft?.get h₂ := by simp [← getLeft?_eq_some_iff]
+    x.getLeft h₁ = x.getLeft?.get h₂ := by simp [← getLeft?_eq_some_iff]
 
 theorem getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
-x.getRight h₁ = x.getRight?.get h₂ := by simp [← getRight?_eq_some_iff]
+    x.getRight h₁ = x.getRight?.get h₂ := by simp [← getRight?_eq_some_iff]
 
 @[simp]
 theorem not_isLeft (x : Sum α β) : not x.isLeft = x.isRight := by cases x <;> rfl

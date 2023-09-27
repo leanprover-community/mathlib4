@@ -1302,7 +1302,7 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace α] {S : Se
 
 /-- A σ-compact space is a space that is the union of a countable collection of compact subspaces.
   Note that a locally compact separable T₂ space need not be σ-compact.
-  The sequence can be extracted using `topological_space.compact_covering`. -/
+  The sequence can be extracted using `compactCovering`. -/
 class SigmaCompactSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- In a σ-compact space, there exists (by definition) a countable collection of compact subspaces
   that cover the entire space. -/

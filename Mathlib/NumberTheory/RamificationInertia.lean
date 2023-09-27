@@ -454,7 +454,7 @@ local notation "e" => ramificationIdx f p P
 /-- `R / p` has a canonical map to `S / (P ^ e)`, where `e` is the ramification index
 of `P` over `p`. -/
 noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R ⧸ p) (S ⧸ P ^ e) :=
-  Quotient.algebraQuotientOfLeComap (Ideal.map_le_iff_le_comap.mp le_pow_ramificationIdx)
+  Quotient.algebraQuotientOfLEComap (Ideal.map_le_iff_le_comap.mp le_pow_ramificationIdx)
 #align ideal.quotient.algebra_quotient_pow_ramification_idx Ideal.Quotient.algebraQuotientPowRamificationIdx
 
 @[simp]
@@ -469,7 +469,7 @@ variable [hfp : NeZero (ramificationIdx f p P)]
 This can't be an instance since the map `f : R → S` is generally not inferrable.
 -/
 def Quotient.algebraQuotientOfRamificationIdxNeZero : Algebra (R ⧸ p) (S ⧸ P) :=
-  Quotient.algebraQuotientOfLeComap (le_comap_of_ramificationIdx_ne_zero hfp.out)
+  Quotient.algebraQuotientOfLEComap (le_comap_of_ramificationIdx_ne_zero hfp.out)
 #align ideal.quotient.algebra_quotient_of_ramification_idx_ne_zero Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero
 
 set_option synthInstance.checkSynthOrder false -- Porting note: this is okay by the remark below

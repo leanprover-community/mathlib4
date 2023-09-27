@@ -507,6 +507,11 @@ theorem pow_le_pow_iff (h : 1 < a) : a ^ n ≤ a ^ m ↔ n ≤ m :=
   (pow_strictMono_right h).le_iff_le
 #align pow_le_pow_iff pow_le_pow_iff
 
+theorem self_lt_pow (h : 1 < a) (h2 : 1 < m) : a < a ^ m := by
+  calc
+    a = a ^ 1 := (pow_one _).symm
+    _ < a ^ m := pow_lt_pow h h2
+
 theorem strictAnti_pow (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti fun n : ℕ => a ^ n :=
   strictAnti_nat_of_succ_lt fun n => by
     simpa only [pow_succ, one_mul] using mul_lt_mul h₁ le_rfl (pow_pos h₀ n) zero_le_one

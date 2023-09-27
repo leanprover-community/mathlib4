@@ -733,6 +733,17 @@ theorem isHaarMeasure_eq_smul_isHaarMeasure [LocallyCompactSpace G] (μ ν : Mea
 #align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.Measure.isHaarMeasure_eq_smul_isHaarMeasure
 #align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.Measure.isAddHaarMeasure_eq_smul_isAddHaarMeasure
 
+/-- An invariant measure is absolutely continuous with respect to a Haar measure. -/
+@[to_additive
+"An invariant measure is absolutely continuous with respect to an additive Haar measure. "]
+theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G] (μ ν : Measure G)
+    [SigmaFinite μ] [IsMulLeftInvariant μ] [IsHaarMeasure ν] : μ ≪ ν := by
+  have K : PositiveCompacts G := Classical.arbitrary _
+  obtain ⟨c, -, -, h⟩ : ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ∞ ∧ haarMeasure K = c • ν :=
+    isHaarMeasure_eq_smul_isHaarMeasure _ _
+  rw [haarMeasure_unique μ K, h, smul_smul]
+  exact AbsolutelyContinuous.smul (Eq.absolutelyContinuous rfl) _
+
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 90) regular_of_isHaarMeasure [LocallyCompactSpace G] (μ : Measure G)

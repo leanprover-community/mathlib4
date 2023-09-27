@@ -32,7 +32,7 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 -/
 
 
-universe u uS v₁ v₂ v₃ v₄
+universe u uS v₁ v₂ v₃ v₄ v₅ v₆
 
 open scoped TensorProduct
 
@@ -588,9 +588,13 @@ variable {A : Type v₁} [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower
 
 variable {B : Type v₂} [Semiring B] [Algebra R B] [Algebra S B] [IsScalarTower R S B]
 
+variable {B' : Type v₅} [Semiring B'] [Algebra R B'] [Algebra S B'] [IsScalarTower R S B']
+
 variable {C : Type v₃} [Semiring C] [Algebra R C]
 
 variable {D : Type v₄} [Semiring D] [Algebra R D]
+
+variable {D' : Type v₆} [Semiring D'] [Algebra R D']
 
 section
 
@@ -709,6 +713,14 @@ theorem map_tmul (f : A →ₐ[S] B) (g : C →ₐ[R] D) (a : A) (c : C) : map f
 #align algebra.tensor_product.map_tmul Algebra.TensorProduct.map_tmul
 
 @[simp]
+theorem map_id : map (.id S A) (.id R C) = .id S _:=
+  ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
+
+theorem map_comp (f₂ : B →ₐ[S] B') (f₁ : A →ₐ[S] B) (g₂ : D →ₐ[R] D') (g₁ : C →ₐ[R] D) :
+    map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
+  ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
+
+@[simp]
 theorem map_comp_includeLeft (f : A →ₐ[S] B) (g : C →ₐ[R] D) :
     (map f g).comp includeLeft = includeLeft.comp f :=
   AlgHom.ext <| by simp
@@ -756,6 +768,16 @@ theorem congr_symm_apply (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) (x) :
     (congr f g).symm x = (map (f.symm : B →ₐ[S] A) (g.symm : D →ₐ[R] C)) x :=
   rfl
 #align algebra.tensor_product.congr_symm_apply Algebra.TensorProduct.congr_symm_apply
+
+@[simp]
+theorem congr_refl : congr (.refl : A ≃ₐ[S] A) (.refl : C ≃ₐ[R] C) = .refl :=
+  AlgEquiv.coe_algHom_injective <| map_id
+
+theorem congr_trans (f₁ : A ≃ₐ[S] B) (f₂ : B ≃ₐ[S] B') (g₁ : C ≃ₐ[R] D) (g₂ : D ≃ₐ[R] D') :
+    congr (f₁.trans f₂) (g₁.trans g₂) = (congr f₁ g₁).trans (congr f₂ g₂) :=
+  AlgEquiv.coe_algHom_injective <| map_comp f₂.toAlgHom f₁.toAlgHom g₂.toAlgHom g₁.toAlgHom
+
+theorem congr_symm (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) : congr f.symm g.symm = (congr f g).symm := rfl
 
 end
 

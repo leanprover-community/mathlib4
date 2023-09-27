@@ -544,7 +544,6 @@ instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace 
     [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
   -- porting note: 1st and 3rd `haveI`s were not needed in Lean 3
   haveI := Subgroup.t3_quotient_of_isClosed N
-  haveI := @PolishSpace.secondCountableTopology G
   haveI := QuotientGroup.secondCountableTopology (Γ := N)
   Quotient.borelSpace
 #align quotient_group.borel_space QuotientGroup.borelSpace
@@ -845,27 +844,7 @@ end MeasureTheory
 
 /-! ### The Borel Isomorphism Theorem -/
 
--- Porting note: Move to topology/metric_space/polish when porting.
-instance (priority := 50) polish_of_countable [h : Countable α] [DiscreteTopology α] :
-    PolishSpace α := by
-  obtain ⟨f, hf⟩ := h.exists_injective_nat
-  have : ClosedEmbedding f := by
-    apply closedEmbedding_of_continuous_injective_closed continuous_of_discreteTopology hf
-    exact fun t _ => isClosed_discrete _
-  exact this.polishSpace
-#align polish_of_countable polish_of_countable
-
 namespace PolishSpace
-
-/- Porting note: This is to avoid a loop in TC inference. When ported to Lean 4, this will not
-be necessary, and `secondCountable_of_polish` should probably
-just be added as an instance soon after the definition of `PolishSpace`.-/
-private theorem secondCountable_of_polish [h : PolishSpace α] : SecondCountableTopology α :=
-  h.secondCountableTopology
-
-attribute [-instance] polishSpace_of_complete_second_countable
-
-attribute [local instance] secondCountable_of_polish
 
 variable {β : Type*} [TopologicalSpace β] [PolishSpace α] [PolishSpace β]
 
@@ -906,11 +885,6 @@ noncomputable def Equiv.measurableEquiv (e : α ≃ β) : α ≃ᵐ β := by
 end PolishSpace
 
 namespace MeasureTheory
-
--- Porting note: todo after the port: move to topology/metric_space/polish
-instance instPolishSpaceUniv [PolishSpace α] : PolishSpace (univ : Set α) :=
-  isClosed_univ.polishSpace
-#align measure_theory.set.univ.polish_space MeasureTheory.instPolishSpaceUniv
 
 variable (α)
 variable [MeasurableSpace α] [PolishSpace α] [BorelSpace α]

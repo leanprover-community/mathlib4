@@ -898,7 +898,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
       ⟨s, le_antisymm (Ideal.span_le.2 fun x hx =>
           have : x ∈ I.degreeLE N := hs ▸ Submodule.subset_span hx
           this.2) <| by
-        have : Submodule.span R[X] ↑s = Ideal.span ↑s := by rfl
+        have : Submodule.span R[X] ↑s = Ideal.span ↑s := rfl
         rw [this]
         intro p hp
         generalize hn : p.natDegree = k

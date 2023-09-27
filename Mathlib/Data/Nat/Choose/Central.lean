@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Thomas Browning
 -/
 import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 
 #align_import data.nat.choose.central from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"

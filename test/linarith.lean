@@ -95,7 +95,7 @@ example (x : Rat) (h : 0 < x) : 0 < x/(2/3) := by linarith
 end cancel_denoms
 
 example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
-  linarith (config := {discharger := do Lean.Elab.Tactic.evalTactic (←`(tactic| ring))})
+  linarith (config := {discharger := do Lean.Elab.Tactic.evalTactic (←`(tactic| ring1))})
 
 example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
   linarith

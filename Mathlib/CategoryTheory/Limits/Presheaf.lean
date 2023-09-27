@@ -85,7 +85,7 @@ def restrictedYonedaYoneda : restrictedYoneda (yoneda : C ⥤ Cᵒᵖ ⥤ Type u
         dsimp
         have : x.app X (CategoryStruct.id (Opposite.unop X)) =
             (x.app X (𝟙 (Opposite.unop X)))
-              := by rfl
+              := rfl
         rw [this]
         rw [← FunctorToTypes.naturality _ _ x f (𝟙 _)]
         simp only [id_comp, Functor.op_obj, Opposite.unop_op, yoneda_obj_map, comp_id]

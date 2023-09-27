@@ -1144,7 +1144,7 @@ def morphismRestrictStalkMap {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (x) :
       CategoryTheory.Iso.trans_hom]
     erw [PresheafedSpace.restrictStalkIso_hom_eq_germ_assoc]
     erw [PresheafedSpace.stalkMap_germ_assoc _ V ⟨_, hxV⟩]
-    rw [TopCat.Presheaf.germ_stalk_specializes'_assoc]
+    rw [TopCat.Presheaf.germ_stalkSpecializes'_assoc]
     -- Porting note : explicit variables and proofs were not necessary
     erw [PresheafedSpace.stalkMap_germ _ (U.openEmbedding.isOpenMap.functor.obj V)
       ⟨x.1, ⟨⟨f.1.base x.1, x.2⟩, _, rfl⟩⟩]
@@ -1158,8 +1158,8 @@ def morphismRestrictStalkMap {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (x) :
 
 instance {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) [IsOpenImmersion f] :
     IsOpenImmersion (f ∣_ U) := by
-      delta morphismRestrict
-      refine PresheafedSpace.IsOpenImmersion.comp _ _
+  delta morphismRestrict
+  refine PresheafedSpace.IsOpenImmersion.comp _ _
 
 end MorphismRestrict
 

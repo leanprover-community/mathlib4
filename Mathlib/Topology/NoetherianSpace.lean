@@ -222,7 +222,7 @@ theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
 /-- [Stacks: Lemma 0052 (3)](https://stacks.math.columbia.edu/tag/0052) -/
 theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [NoetherianSpace α]
     (Z : Set α) (H : Z ∈ irreducibleComponents α) :
-    ∃ (o : Set α) (_ : IsOpen o) (_ : o ≠ ∅), o ≤ Z := by
+    ∃ o : Set α, IsOpen o ∧ o ≠ ∅ ∧ o ≤ Z := by
   classical
 
   let ι : Set (Set α) := irreducibleComponents α \ {Z}
@@ -263,6 +263,5 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
 
   refine ⟨U, hU1 ▸ isOpen_compl_iff.mpr ?_, hU0, sdiff_le⟩
   exact isClosed_iUnion_of_finite λ i ↦ isClosed_of_mem_irreducibleComponents i.1 i.2.1
-
 
 end TopologicalSpace
