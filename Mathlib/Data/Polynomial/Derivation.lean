@@ -96,40 +96,36 @@ end CommSemiring
 
 section PullbackModule
 
-variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
-  [Module A M] [Module R M] [IsScalarTower R A M] (a : A)
-
-lemma eval₂_algebraMap_smul (r : R) (f : R[X]) :
-    (r • f).eval₂ (algebraMap R A) a = r • f.eval₂ (algebraMap R A) a := by
+lemma eval₂_algebraMap_smul {R A} [CommSemiring R] [CommSemiring A] [Algebra R A] (r : R) (f : R[X])
+    (a : A) : (r • f).eval₂ (algebraMap R A) a = r • f.eval₂ (algebraMap R A) a := by
   rw [eval₂_smul, Algebra.smul_def]
 
 /--
 Suppose `A` is an `R`-algebra.
-For an `A`-module `M` and an element `a : A`, `eval₂PullbackModule M a`
-is the `R[X]`-module, where the action of `X` if given by multiplication by `a`.
+For an `A`-module `M` and an element `a : A`, `eval₂PullbackModule R M a`
+is the `R[X]`-module with carrier `M`, where the action of `X` if given by multiplication by `a`.
 More generally, the action of `f : R[X]` is given by `f • m = f(a) • m`.
 -/
-def eval₂PullbackModule (M: Type*) := Function.const A M
-
-instance : AddCommMonoid <| eval₂PullbackModule M a := by assumption
-
-instance : Module R[X] <| eval₂PullbackModule M a :=
+def eval₂PullbackModule (R M: Type*) {A} [CommSemiring R] [CommSemiring A] [Algebra R A]
+    [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] := Function.const A M
+variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
+    [Module A M] [Module R M] [IsScalarTower R A M] (a : A)
+instance : AddCommMonoid <| eval₂PullbackModule R M a := by assumption
+instance : Module R[X] <| eval₂PullbackModule R M a :=
   Module.compHom M <| eval₂RingHom (algebraMap R A) a
+instance : Module A <| eval₂PullbackModule R M a := by assumption
+instance : Module R <| eval₂PullbackModule R M a := by assumption
+instance : IsScalarTower R A <| eval₂PullbackModule R M a := by assumption
 
-instance : Module A <| eval₂PullbackModule M a := by assumption
-
-instance : Module R <| eval₂PullbackModule M a := by assumption
-
-instance : IsScalarTower R A <| eval₂PullbackModule M a := by assumption
-
-lemma eval₂PullbackModule_smul_eq (f : R[X]) (a : A) (m : eval₂PullbackModule M a) :
+lemma eval₂PullbackModule_smul_def (f : R[X]) (a : A) (m : eval₂PullbackModule R M a) :
     f • m = (eval₂ (algebraMap R A) a f) • m := by rfl
 
-instance : IsScalarTower R R[X] <| eval₂PullbackModule M a where
+instance : IsScalarTower R R[X] <| eval₂PullbackModule R M a where
   smul_assoc r f m := by
-    rw [eval₂PullbackModule_smul_eq, eval₂PullbackModule_smul_eq, eval₂_algebraMap_smul, smul_assoc]
+    rw [eval₂PullbackModule_smul_def, eval₂PullbackModule_smul_def, eval₂_algebraMap_smul,
+      smul_assoc]
 
-lemma eval₂PullbackModule_def : eval₂PullbackModule M a = M := rfl
+lemma eval₂PullbackModule_def : eval₂PullbackModule R M a = M := rfl
 
 end PullbackModule
 end Polynomial
@@ -146,13 +142,12 @@ derivation `R[X] → M` which takes a polynomial `f` to `d (f a)`.
 Here `M` is regarded as an `R[X]`-module, with the action of `f` defined
 by `f • m = f(a) • m`.
 -/
-def comp_eval₂ : Derivation R R[X] <| eval₂PullbackModule M a where
+def comp_eval₂ : Derivation R R[X] <| eval₂PullbackModule R M a where
   toFun            := d ∘ (eval₂RingHom (algebraMap R A) a)
-  map_add' _ _     := by
-    rw [coe_eval₂RingHom, comp_apply, comp_apply, comp_apply, eval₂_add, map_add]
+  map_add' _ _     := by dsimp; rw [eval₂_add, map_add]
   map_smul' _ _    := by dsimp; rw [eval₂_algebraMap_smul, d.map_smul]
   leibniz' _ _     := by
-    dsimp; rw [eval₂_mul, d.leibniz, eval₂PullbackModule_smul_eq, eval₂PullbackModule_smul_eq]
+    dsimp; rw [eval₂_mul, d.leibniz, eval₂PullbackModule_smul_def, eval₂PullbackModule_smul_def]
   map_one_eq_zero' := by
     rw [LinearMap.coe_mk, AddHom.coe_mk, comp_apply, coe_eval₂RingHom, eval₂_one, map_one_eq_zero]
 
@@ -169,9 +164,9 @@ lemma comp_eval₂_def (d : Derivation R A M) (f : R[X]) :
   given by `a • _`. For a statement involving only the `A`-module `M`,
   use `comp_eval₂_eq` instead.
 -/
-lemma comp_eval₂_eq' (d : Derivation R A <| eval₂PullbackModule M a) (f : R[X]) :
+lemma comp_eval₂_eq' (d : Derivation R A <| eval₂PullbackModule R M a) (f : R[X]) :
     d.comp_eval₂ a f = f.derivative.eval₂ (algebraMap R A) a • d a := by
-  rw [←eval₂PullbackModule_smul_eq, ←mkDerivation_apply]
+  rw [←eval₂PullbackModule_smul_def, ←mkDerivation_apply]
   congr
   apply derivation_ext
   rw [comp_eval₂_def, eval₂_X, mkDerivation_X (R := R)]
