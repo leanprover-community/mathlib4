@@ -1830,6 +1830,7 @@ variable [CompactSpace α] [IsFiniteMeasure μ]
 
 variable (𝕜 : Type*) (p μ) [Fact (1 ≤ p)]
 
+set_option maxHeartbeats 0 in
 /-- The bounded linear map of considering a continuous function on a compact finite-measure
 space `α` as an element of `Lp`.  By definition, the norm on `C(α, E)` is the sup-norm, transferred
 from the space `α →ᵇ E` of bounded continuous functions, so this construction is just a matter of
