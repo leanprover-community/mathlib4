@@ -338,7 +338,7 @@ lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
     ⟨⟨_, injective_adjointObjectOfInjectiveUnder_of_adj adj _, _, mono_toUnder adj A⟩⟩
 
 -- Implementation note: If we require `C` and `D` to have morphisms at the same universe level,
--- then it suffices to assume only `abelian C`sine  `abelian D` would be implied by
+-- then it suffices to assume only `abelian C`, since `abelian D` would be implied by
 -- `abelian_of_adjunction`; but in this implementation, we choose not to impose this restriction on
 -- the universe levels of morphisms, so we need an additional assumption `abelian D`.
 
