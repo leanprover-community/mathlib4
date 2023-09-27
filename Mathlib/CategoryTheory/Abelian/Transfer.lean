@@ -303,7 +303,7 @@ variable {L R}
 Let `L(A) ⟶ J` be an injective presentation of `L(A)`, then `A ⟶ R(J)` is an injective
 presentation of `A`
 -/
-def toUnder [PreservesFiniteLimits L] (A : 𝒜) :
+def toUnder (A : 𝒜) :
     A ⟶ under L R A := adj.homEquiv _ _ <| Injective.ι _
 
 lemma mono_toUnder [Abelian 𝒜] [Abelian ℬ] [PreservesFiniteLimits L] [Faithful L]
