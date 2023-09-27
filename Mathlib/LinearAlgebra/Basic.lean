@@ -173,11 +173,6 @@ theorem map_sum {ι : Type*} {t : Finset ι} {g : ι → M} : f (∑ i in t, g i
   f.toAddMonoidHom.map_sum _ _
 #align linear_map.map_sum LinearMap.map_sum
 
-theorem comp_assoc (h : M₃ →ₛₗ[σ₃₄] M₄) :
-    ((h.comp g : M₂ →ₛₗ[σ₂₄] M₄).comp f : M →ₛₗ[σ₁₄] M₄) = h.comp (g.comp f : M →ₛₗ[σ₁₃] M₃) :=
-  rfl
-#align linear_map.comp_assoc LinearMap.comp_assoc
-
 
 /-- The restriction of a linear map `f : M → M₂` to a submodule `p ⊆ M` gives a linear map
 `p → M₂`. -/
@@ -314,25 +309,6 @@ theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂]
              map_add' := fun _ _ => rfl }) _ _
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
 
-theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
-#align linear_map.coe_pow LinearMap.coe_pow
-
-theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := congr_fun (coe_pow f n) m
-#align linear_map.pow_apply LinearMap.pow_apply
-
-theorem pow_map_zero_of_le {f : Module.End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
-    (hm : (f ^ k) m = 0) : (f ^ l) m = 0 := by
-  rw [← tsub_add_cancel_of_le hk, pow_add, mul_apply, hm, map_zero]
-#align linear_map.pow_map_zero_of_le LinearMap.pow_map_zero_of_le
-
-theorem commute_pow_left_of_commute {f : M →ₛₗ[σ₁₂] M₂} {g : Module.End R M} {g₂ : Module.End R₂ M₂}
-    (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
-  induction' k with k ih
-  · simp only [Nat.zero_eq, pow_zero, one_eq_id, id_comp, comp_id]
-  · rw [pow_succ, pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih, ← LinearMap.comp_assoc,
-      h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
-#align linear_map.commute_pow_left_of_commute LinearMap.commute_pow_left_of_commute
-
 theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End R N}
     {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ} (hG : G ^ k = 0) :
     g ^ k = 0 := by
@@ -342,50 +318,9 @@ theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End
   simpa using hg
 #align linear_map.submodule_pow_eq_zero_of_pow_eq_zero LinearMap.submodule_pow_eq_zero_of_pow_eq_zero
 
-@[simp]
-theorem id_pow (n : ℕ) : (id : M →ₗ[R] M) ^ n = id :=
-  one_pow n
-#align linear_map.id_pow LinearMap.id_pow
-
 section
 
 variable {f' : M →ₗ[R] M}
-
-theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = comp (f' ^ n) f' := by rw [pow_succ', mul_eq_comp]
-#align linear_map.iterate_succ LinearMap.iterate_succ
-
-theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
-  | 0 => surjective_id
-  | n + 1 => by
-    rw [iterate_succ]
-    exact (iterate_surjective h n).comp h
-#align linear_map.iterate_surjective LinearMap.iterate_surjective
-
-theorem iterate_injective (h : Injective f') : ∀ n : ℕ, Injective (f' ^ n)
-  | 0 => injective_id
-  | n + 1 => by
-    rw [iterate_succ]
-    exact (iterate_injective h n).comp h
-#align linear_map.iterate_injective LinearMap.iterate_injective
-
-theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
-  | 0 => bijective_id
-  | n + 1 => by
-    rw [iterate_succ]
-    exact (iterate_bijective h n).comp h
-#align linear_map.iterate_bijective LinearMap.iterate_bijective
-
-theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
-    Injective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), iterate_succ, coe_comp] at h
-  exact h.of_comp
-#align linear_map.injective_of_iterate_injective LinearMap.injective_of_iterate_injective
-
-theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
-    Surjective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), pow_succ, coe_mul] at h
-  exact Surjective.of_comp h
-#align linear_map.surjective_of_iterate_surjective LinearMap.surjective_of_iterate_surjective
 
 theorem pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p) (x : M)
     (hx : x ∈ p) : (f' ^ n) x ∈ p := by
@@ -408,7 +343,7 @@ end
 of the canonical basis. -/
 theorem pi_apply_eq_sum_univ [Fintype ι] [DecidableEq ι] (f : (ι → R) →ₗ[R] M) (x : ι → R) :
     f x = ∑ i, x i • f fun j => if i = j then 1 else 0 := by
-  conv_lhs => rw [pi_eq_sum_univ x, f.map_sum]
+  conv_lhs => rw [pi_eq_sum_univ x, map_sum]
   refine Finset.sum_congr rfl (fun _ _ => ?_)
   rw [map_smul]
 #align linear_map.pi_apply_eq_sum_univ LinearMap.pi_apply_eq_sum_univ
@@ -1081,11 +1016,7 @@ section Finsupp
 
 variable {γ : Type*} [Zero γ]
 
-@[simp]
-theorem map_finsupp_sum (f : M →ₛₗ[σ₁₂] M₂) {t : ι →₀ γ} {g : ι → γ → M} :
-    f (t.sum g) = t.sum fun i d => f (g i d) :=
-  f.map_sum
-#align linear_map.map_finsupp_sum LinearMap.map_finsupp_sum
+#align linear_map.map_finsupp_sum map_finsupp_sumₓ
 
 theorem coe_finsupp_sum (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) :
     ⇑(t.sum g) = t.sum fun i d => g i d := rfl
@@ -1882,23 +1813,7 @@ end
 
 section Finsupp
 
-variable {γ : Type*}
-
-variable [Semiring R] [Semiring R₂]
-
-variable [AddCommMonoid M] [AddCommMonoid M₂]
-
-variable [Module R M] [Module R₂ M₂] [Zero γ]
-
-variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
-
-variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
-
-@[simp]
-theorem map_finsupp_sum (f : M ≃ₛₗ[τ₁₂] M₂) {t : ι →₀ γ} {g : ι → γ → M} :
-    f (t.sum g) = t.sum fun i d => f (g i d) :=
-  f.map_sum _
-#align linear_equiv.map_finsupp_sum LinearEquiv.map_finsupp_sum
+#align linear_equiv.map_finsupp_sum map_finsupp_sumₓ
 
 end Finsupp
 

@@ -72,7 +72,7 @@ theorem chain_iff_forall₂ :
   | a, [] => by simp
   | a, b :: l => by
     by_cases h : l = [] <;>
-    simp [@chain_iff_forall₂ b l, *]
+    simp [@chain_iff_forall₂ b l, dropLast, *]
 #align list.chain_iff_forall₂ List.chain_iff_forall₂
 
 theorem chain_append_singleton_iff_forall₂ : Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) :=

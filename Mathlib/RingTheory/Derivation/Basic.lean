@@ -126,8 +126,9 @@ theorem leibniz : D (a * b) = a • D b + b • D a :=
   D.leibniz' _ _
 #align derivation.leibniz Derivation.leibniz
 
-theorem map_sum {ι : Type*} (s : Finset ι) (f : ι → A) : D (∑ i in s, f i) = ∑ i in s, D (f i) :=
-  D.toLinearMap.map_sum
+nonrec theorem map_sum {ι : Type*} (s : Finset ι) (f : ι → A) :
+    D (∑ i in s, f i) = ∑ i in s, D (f i) :=
+  map_sum D _ _
 #align derivation.map_sum Derivation.map_sum
 
 @[simp]

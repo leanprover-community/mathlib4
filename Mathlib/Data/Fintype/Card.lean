@@ -289,6 +289,16 @@ theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
   Finset.card_univ_diff s
 #align finset.card_compl Finset.card_compl
 
+@[simp]
+theorem card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
+    s.card + sᶜ.card = Fintype.card α := by
+  rw [Finset.card_compl, ← Nat.add_sub_assoc (card_le_univ s), Nat.add_sub_cancel_left]
+
+@[simp]
+theorem card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
+    sᶜ.card + s.card = Fintype.card α := by
+  rw [add_comm, card_add_card_compl]
+
 theorem Fintype.card_compl_set [Fintype α] (s : Set α) [Fintype s] [Fintype (↥sᶜ : Sort _)] :
     Fintype.card (↥sᶜ : Sort _) = Fintype.card α - Fintype.card s := by
   classical rw [← Set.toFinset_card, ← Set.toFinset_card, ← Finset.card_compl, Set.toFinset_compl]
@@ -321,7 +331,7 @@ theorem fin_injective : Function.Injective Fin := fun m n h =>
 
 /-- A reversed version of `Fin.cast_eq_cast` that is easier to rewrite with. -/
 theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
-    _root_.cast h = ⇑(Fin.castIso <| fin_injective h) := by
+    _root_.cast h = Fin.cast (fin_injective h) := by
   cases fin_injective h
   rfl
 #align fin.cast_eq_cast' Fin.cast_eq_cast'
