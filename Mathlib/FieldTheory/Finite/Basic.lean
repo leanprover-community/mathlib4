@@ -160,8 +160,7 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   apply Or.resolve_left hzero
   contrapose! ha
   ext
-  rw [←sub_eq_zero]
-  exact ha
+  rwa [←sub_eq_zero]
 
 /-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
 theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
