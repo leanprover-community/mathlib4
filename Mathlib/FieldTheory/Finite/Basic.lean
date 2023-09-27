@@ -137,6 +137,34 @@ theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial 
     apply pprime.one_lt.ne
     rw [← hu, h, orderOf_one]
 
+/-- The sum of a nontrivial subgroup of the units of a field is zero. -/
+theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
+    {G : Subgroup Kˣ} [Fintype G] (hg : G ≠ ⊥) :
+    ∑ x : G, (x.val : K) = 0 := by
+  rw [Subgroup.ne_bot_iff_exists_ne_one] at hg
+  rcases hg with ⟨a, ha⟩
+  -- The action of a on G as an embedding
+  let a_mul_emb : G ↪ G := mulLeftEmbedding a -- TODO factor this? In library?
+  -- ... and leaves G unchanged
+  have h_unchanged : Finset.univ.map a_mul_emb = Finset.univ := by simp
+  -- Therefore the sum of x over a G is the sum of a x over G
+  have h_sum_map := Finset.univ.sum_map a_mul_emb fun x => ((x : Kˣ) : K)
+  -- ... and the former is the sum of x over G.
+  -- By algebraic manipulation, we have Σ G, x = ∑ G, a x = a ∑ G, x
+  -- rw [h_unchanged, Function.Embedding.coeFn_mk] at h_sum_map
+  simp only [h_unchanged, Function.Embedding.coeFn_mk, Function.Embedding.toFun_eq_coe,
+    mulLeftEmbedding_apply, Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul,
+    ← Finset.mul_sum] at h_sum_map
+  -- thus one of (a - 1) or ∑ G, x is zero
+  have hzero : (((a : Kˣ) : K) - 1) = 0 ∨ ∑ x : ↥G, ((x : Kˣ) : K) = 0 := by
+    rw [←mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]
+  apply Or.resolve_left hzero
+  contrapose! ha
+  ext
+  rw [←sub_eq_zero]
+  exact ha
+
+
 section
 
 variable [GroupWithZero K] [Fintype K]
@@ -226,33 +254,6 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
         rw [← forall_pow_eq_one_iff, FunLike.ext_iff]
         apply forall_congr'; intro x; simp [Units.ext_iff]
 #align finite_field.sum_pow_units FiniteField.sum_pow_units
-
-/-- The sum of a nontrivial subgroup of the units of a field is zero. -/
-theorem sum_subgroup_units_eq_zero {G : Subgroup Kˣ} [Fintype G] (hg : G ≠ ⊥) :
-    ∑ x : G, (x.val : K) = 0 := by
-  rw [Subgroup.ne_bot_iff_exists_ne_one] at hg
-  rcases hg with ⟨a, ha⟩
-  -- The action of a on G as an embedding
-  let a_mul_emb : G ↪ G := mulLeftEmbedding a -- TODO factor this? In library?
-  -- ... and leaves G unchanged
-  have h_unchanged : Finset.univ.map a_mul_emb = Finset.univ := by simp
-  -- Therefore the sum of x over a G is the sum of a x over G
-  have h_sum_map := Finset.univ.sum_map a_mul_emb fun x => ((x : Kˣ) : K)
-  -- ... and the former is the sum of x over G.
-  -- By algebraic manipulation, we have Σ G, x = ∑ G, a x = a ∑ G, x
-  -- rw [h_unchanged, Function.Embedding.coeFn_mk] at h_sum_map
-  simp only [h_unchanged, Function.Embedding.coeFn_mk, Function.Embedding.toFun_eq_coe,
-    mulLeftEmbedding_apply, Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul,
-    ← Finset.mul_sum] at h_sum_map
-  -- thus one of (a - 1) or ∑ G, x is zero
-  have hzero : (((a : Kˣ) : K) - 1) = 0 ∨ ∑ x : ↥G, ((x : Kˣ) : K) = 0 := by
-    rw [←mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]
-  apply Or.resolve_left hzero
-  contrapose! ha
-  ext
-  rw [←sub_eq_zero]
-  exact ha
-
 
 /-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
 theorem sum_subgroup_units {G : Subgroup Kˣ} [Fintype G] [Decidable (G = ⊥)] :
