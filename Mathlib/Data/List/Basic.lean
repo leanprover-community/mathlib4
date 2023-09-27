@@ -445,7 +445,7 @@ theorem replicate_add (m n) (a : α) : replicate (m + n) a = replicate m a ++ re
 #align list.replicate_add List.replicate_add
 
 theorem replicate_succ' (n) (a : α) : replicate (n + 1) a = replicate n a ++ [a] :=
-  Eq.symm (replicate_append n 1 a)
+  replicate_add n 1 a
 #align list.replicate_succ' List.replicate_succ'
 
 theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h =>

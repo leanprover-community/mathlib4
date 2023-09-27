@@ -75,7 +75,7 @@ def countedSequence (p q : ℕ) : Set (List ℤ) :=
 /-- An alternative definition of `countedSequence` that uses `List.Perm`. -/
 theorem mem_countedSequence_iff_perm {p q l} :
     l ∈ countedSequence p q ↔ l ~ List.replicate p (1 : ℤ) ++ List.replicate q (-1) := by
-  rw [List.perm_replicate_replicate_append]
+  rw [List.perm_replicate_append_replicate]
   · simp only [countedSequence, List.subset_def, mem_setOf_eq, List.mem_cons (b := (1 : ℤ)),
       List.mem_singleton]
   · norm_num1

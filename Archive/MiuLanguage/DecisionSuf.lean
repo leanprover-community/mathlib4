@@ -209,7 +209,7 @@ theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
   rw [append_assoc, replicate_append _ _] at hw₃
   cases' add_mod2 ((2 ^ m - c) / 3) with t ht
   rw [ht] at hw₃
-  exact der_of_der_replicate_append_U_even hw₃
+  exact der_of_der_append_replicate_U_even hw₃
 set_option linter.uppercaseLean3 false in
 #align miu.der_replicate_I_of_mod3 Miu.der_replicate_I_of_mod3
 
