@@ -74,9 +74,8 @@ noncomputable def ofBaseChange (Q : QuadraticForm R V) :
       show (z₁ * z₂) • ofBaseChangeAux A Q (b₁ * b₂)
         = z₁ • ofBaseChangeAux A Q b₁ * z₂ • ofBaseChangeAux A Q b₂
       by rw [map_mul, smul_mul_smul])
-    (fun r =>
-      show r • ofBaseChangeAux A Q 1 = algebraMap A (CliffordAlgebra (Q.baseChange A)) r
-      by rw [map_one, Algebra.algebraMap_eq_smul_one])
+    (show (1 : A) • ofBaseChangeAux A Q 1 = 1
+      by rw [map_one, one_smul])
 
 @[simp] theorem ofBaseChange_tmul_ι (Q : QuadraticForm R V) (z : A) (v : V) :
     ofBaseChange A Q (z ⊗ₜ ι Q v) = ι (Q.baseChange A) (z ⊗ₜ v) := by
