@@ -28,6 +28,7 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
   * `Algebra.TensorProduct.rid : A ⊗[R] R ≃ₐ[S] A` (usually used with `S = R` or `S = A`)
   * `Algebra.TensorProduct.comm : A ⊗[R] B ≃ₐ[R] B ⊗[R] A`
   * `Algebra.TensorProduct.assoc : ((A ⊗[R] B) ⊗[R] C) ≃ₐ[R] (A ⊗[R] (B ⊗[R] C))`
+- `Algebra.TensorProduct.liftEquiv`: a universal property for the tensor product of algebras.
 
 -/
 
@@ -694,8 +695,11 @@ theorem lift_includeLeft_includeRight :
       .id S (A ⊗[R] B) := by
   ext <;> simp
 
-/-- The universal property of the tensor product of algebras; `Algebra.TensorProduct.lift`
-as an equivalence. -/
+/-- The universal property of the tensor product of algebras.
+
+Pairs of algebra morphisms that commute are equivalent to algebra morphisms from the tensor product.
+
+This is `Algebra.TensorProduct.lift` as an equivalence. -/
 @[simps]
 def liftEquiv [IsScalarTower R S A] [IsScalarTower R S C] :
     {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg.1 x) (fg.2 y)}
