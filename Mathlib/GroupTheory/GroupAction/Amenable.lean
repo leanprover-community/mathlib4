@@ -44,8 +44,11 @@ variable (M : Type u) (α : Type v) [Monoid M] [MulAction M α]
 - assigns the value 1 to the full set α, and
 - is finitely additive under disjoint unions -/
 structure Mean where
+  /-- function giving the measure of subset-/
   μ : Set α  → ENNReal
+  /-- μ should be normalised  -/
   norm : μ Set.univ = 1
+  /-- μ has to be finitely additive -/
   fin_add : ∀ (X Y : Set α), Disjoint X Y
             → μ (X ∪ Y) = μ X + μ Y
 
@@ -57,6 +60,7 @@ instance : CoeFun (Mean α) (λ _ => Set α → ENNReal) where
 /--An invariant mean is a mean that is invariant
 under translation with the monoid action-/
 structure InvariantMean extends Mean α where
+  /-- invariance of the mean -/
   invariance: ∀ (A: Set α), ∀ (g: M),
       μ ((λ (x:α) => g•x) '' A) = μ A
 
