@@ -59,7 +59,7 @@ private theorem der_cons_replicate (n : ℕ) : Derivable (M :: replicate (2 ^ n)
   · -- base case
     constructor
   · -- inductive step
-    rw [succ_eq_add_one, pow_add, pow_one 2, mul_two, ←replicate_append]
+    rw [succ_eq_add_one, pow_add, pow_one 2, mul_two, replicate_add]
     exact Derivable.r2 hk
 
 /-!
@@ -90,7 +90,7 @@ theorem der_of_der_replicate_append_U_even {z : Miustr} {m : ℕ}
   · revert h
     rw [replicate, append_nil]; exact id
   · apply hk
-    simp only [succ_mul, ←replicate_append] at h
+    simp only [succ_mul, replicate_add] at h
     rw [← append_nil ↑(z ++ ↑(replicate (k * 2) U))]
     apply Derivable.r4
     rwa [append_nil, append_assoc]
@@ -119,7 +119,7 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
     specialize ha (U :: xs)
     intro h₂
     -- We massage the goal into a form amenable to the application of `ha`.
-    rw [succ_eq_add_one, ← replicate_append, ← append_assoc, ← cons_append, replicate_one,
+    rw [succ_eq_add_one, replicate_add, ← append_assoc, ← cons_append, replicate_one,
       append_assoc, singleton_append]
     apply ha
     apply Derivable.r3
