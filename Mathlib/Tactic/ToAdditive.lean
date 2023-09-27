@@ -286,13 +286,13 @@ open Lean.Expr.FindImpl in
   Note that this function is still called many times by `applyReplacementFun`
   and we're not remembering the cache between these calls. -/
 unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
-  let rec visit (e : Expr) (inApp := false) : OptionT FindM Unit := do
+  (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
+  let rec visit (e : Expr) (inApp := false) : OptionT FindM Name := do
     if e.isConst then
       if inApp || (findTranslation? e.constName).isSome then
         failure
       else
-        return
+        return e.constName
     checkVisited e
     match e with
     | x@(.app e a)       =>
@@ -310,10 +310,10 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
     | .mdata _ b         => visit b
     | .proj _ _ b        => visit b
     | _                  => failure
-  Option.isNone <| Id.run <| (visit e).run' mkPtrSet
+  Id.run <| (visit e).run' mkPtrSet
 
 /--
-`additiveTest e` tests whether the expression `e` contains no constant
+`additiveTest e` tests whether the expression `e` contains a constant
 `nm` that is not applied to any arguments, and such that `translations.find?[nm] = none`.
 This is used in `@[to_additive]` for deciding which subexpressions to transform: we only transform
 constants if `additiveTest` applied to their first argument returns `true`.
@@ -322,7 +322,7 @@ e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`.
 -/
 def additiveTest (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
+  (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
   unsafe additiveTestUnsafe findTranslation? ignore e
 
 /-- Swap the first two elements of a list -/
@@ -387,25 +387,28 @@ where /-- Implementation of `applyReplacementFun`. -/
           /- Test if the head should not be replaced. -/
           let relevantArgId := relevantArg nm
           let gfAdditive :=
-            if relevantArgId < gAllArgs.size && gf.isConst &&
-              not (additiveTest findTranslation? ignore gAllArgs[relevantArgId]!) then Id.run <| do
-              if trace then
-                dbg_trace
-                  s!"{gAllArgs[relevantArgId]!} contains a fixed type, so {nm} is not changed"
-              gf
+            if relevantArgId < gAllArgs.size && gf.isConst then
+              if let some fxd := additiveTest findTranslation? ignore gAllArgs[relevantArgId]! then
+                Id.run <| do
+                  if trace then
+                    dbg_trace s!"The application of {nm} contains the fixed type {fxd
+                      }, so it is not changed"
+                  gf
+              else
+                r gf
             else
               r gf
           /- Test if arguments should be reordered. -/
           let reorder := reorderFn nm
           if !reorder.isEmpty && relevantArgId < gAllArgs.size &&
-            additiveTest findTranslation? ignore gAllArgs[relevantArgId]! then
+            (additiveTest findTranslation? ignore gAllArgs[relevantArgId]!).isNone then
             gAllArgs := gAllArgs.permute! reorder
             if trace then
               dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
           /- Do not replace numerals in specific types. -/
           let firstArg := gAllArgs[0]!
           if let some changedArgNrs := changeNumeral? nm then
-            if additiveTest findTranslation? ignore firstArg then
+            if additiveTest findTranslation? ignore firstArg |>.isNone then
               if trace then
                 dbg_trace s!"applyReplacementFun: We change the numerals in this expression. {
                   ""}However, we will still recurse into all the non-numeral arguments."
