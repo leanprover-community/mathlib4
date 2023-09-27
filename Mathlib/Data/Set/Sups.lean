@@ -178,7 +178,7 @@ lemma sups_self_subset : s ⊻ s ⊆ s ↔ SupClosed s := sups_subset_iff
 @[simp] lemma sups_self : s ⊻ s = s ↔ SupClosed s :=
   subset_sups_self.le.le_iff_eq.symm.trans sups_self_subset
 
-lemma sep_sups_le [@DecidableRel α (· ≤ ·)] (s t : Set α) (a : α) :
+lemma sep_sups_le (s t : Set α) (a : α) :
     {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by ext; aesop
 
 variable (s t u)
@@ -345,7 +345,7 @@ lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed s := infs_subset_iff
 @[simp] lemma infs_self : s ⊼ s = s ↔ InfClosed s :=
   subset_infs_self.le.le_iff_eq.symm.trans infs_self_subset
 
-lemma sep_infs_le [@DecidableRel α (· ≤ ·)] (s t : Set α) (a : α) :
+lemma sep_infs_le (s t : Set α) (a : α) :
     {b ∈ s ⊼ t | a ≤ b} = {b ∈ s | a ≤ b} ⊼ {b ∈ t | a ≤ b} := by ext; aesop
 
 variable (s t u)
