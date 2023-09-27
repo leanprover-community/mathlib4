@@ -211,6 +211,7 @@ noncomputable def ε : ∀ {n : ℕ}, Q n → V n →ₗ[ℝ] ℝ
 
 variable {n : ℕ}
 
+set_option synthInstance.maxHeartbeats 10000 in
 theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   induction' n with n IH
   · rw [show p = q from Subsingleton.elim (α := Q 0) p q]
@@ -221,7 +222,12 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
     all_goals
       repeat rw [Bool.cond_true]
       repeat rw [Bool.cond_false]
-      simp only [LinearMap.fst_apply, LinearMap.snd_apply, LinearMap.comp_apply, IH, V]
+      simp only [V]
+      rw [LinearMap.comp_apply]
+      try rw [LinearMap.fst_apply]
+      try rw [LinearMap.snd_apply]
+      dsimp
+      try rw [IH]
       congr 1; rw [Q.succ_n_eq]; simp [hp, hq]
 #align sensitivity.duality Sensitivity.duality
 
@@ -322,6 +328,15 @@ theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 
     all_goals
       repeat rw [Bool.cond_true]
       repeat rw [Bool.cond_false]
+      rw [LinearMap.comp_apply]
+      try rw [LinearMap.fst_apply]
+      try rw [LinearMap.snd_apply]
+      try rw [LinearMap.coprod_apply]
+      try rw [LinearMap.coprod_apply]
+      try rw [LinearMap.id_apply]
+      try rw [LinearMap.id_apply]
+      dsimp
+      try rw [map_zero]
       simp [hp, hq, IH, duality, abs_of_nonneg ite_nonneg, Q.adj_iff_proj_eq,
         Q.adj_iff_proj_adj]
 #align sensitivity.f_matrix Sensitivity.f_matrix
