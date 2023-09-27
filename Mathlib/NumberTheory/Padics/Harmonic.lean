@@ -35,7 +35,7 @@ lemma harmonic_singleton {n c : ℕ} (hc : c ∈ Finset.range n) :
 lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 2 ≤ n) :
     ∑ x in Finset.range n \ {c}, 1 / (x + 1 : ℚ) ≠ 0 := by
   refine' ne_of_gt <| Finset.sum_pos (fun i _ => div_pos zero_lt_one _)
-    (Finset.Nontrivial.sdiff_singleton_nonempty <| Finset.range_nontrivial hn)
+    (Finset.range_nontrivial hn).sdiff_singleton_nonempty
   norm_cast; simp only [add_pos_iff, or_true]
 
 lemma padicValRat_two_pow_div (r : ℕ) : padicValRat 2 (1 / 2 ^ r) = -r := by
@@ -109,7 +109,7 @@ theorem padicValRat_two_harmonic {n : ℕ} (Hn : 2 ≤ n) :
       sub_add_cancel, Finset.mem_range, not_lt, Finset.singleton_subset_iff] at this
     exact this (by linarith)
   · have := padicValRat.lt_sum_of_lt (p := 2) (j := 2 ^ Nat.log 2 n - 1)
-      (Finset.Nontrivial.sdiff_singleton_nonempty <| Finset.range_nontrivial Hn)
+      (Finset.range_nontrivial Hn).sdiff_singleton_nonempty
       (F := fun n => 1 / ((n + 1) : ℚ))
       (S := Finset.range n \ {2 ^ Nat.log 2 n - 1})
     simp only [Finset.mem_range, Finset.mem_sdiff, Finset.mem_singleton,
