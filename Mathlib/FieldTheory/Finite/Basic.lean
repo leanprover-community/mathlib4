@@ -151,7 +151,6 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   have h_sum_map := Finset.univ.sum_map a_mul_emb fun x => ((x : Kˣ) : K)
   -- ... and the former is the sum of x over G.
   -- By algebraic manipulation, we have Σ G, x = ∑ G, a x = a ∑ G, x
-  -- rw [h_unchanged, Function.Embedding.coeFn_mk] at h_sum_map
   simp only [h_unchanged, Function.Embedding.coeFn_mk, Function.Embedding.toFun_eq_coe,
     mulLeftEmbedding_apply, Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul,
     ← Finset.mul_sum] at h_sum_map
