@@ -7,6 +7,7 @@ Authors: Adam Topaz
 import Mathlib.Condensed.Basic
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.CategoryTheory.Limits.Presheaf
+import Mathlib.Topology.Category.TopCat.Limits.Coproducts
 
 universe u
 
@@ -19,11 +20,18 @@ def TopCat.condensedVal (X : TopCat.{u}) :
 lemma TopCat.isSheaf_condensedVal (X : TopCat.{u}) :
     Presheaf.IsSheaf (coherentTopology _) X.condensedVal := by
   rw [isSheaf_iff_isSheaf_of_type, isSheaf_coherent]
-  intro B α _ X π hπ
-  have := (CompHaus.effectiveEpiFamily_tfae X π).out 0 2
+  intro B α _ Y π hπ
+  have := (CompHaus.effectiveEpiFamily_tfae Y π).out 0 2
   rw [this] at hπ ; clear this
+  intro x hx
+  let YY : CompHaus := CompHaus.finiteCoproduct Y
+  let ππ : YY ⟶ B := CompHaus.finiteCoproduct.desc _ π
+  have hππ : Function.Surjective ππ := sorry
+  let q : QuotientMap ππ := .of_surjective_continuous hππ ππ.continuous
+  let x' : (a : α) → (Y a).toTop ⟶ X := fun a => (x (π a) sorry).down
+  let t : YY.toTop ⟶ X := TopCat.coproduct.desc _ <| x'
+  -- Now we need to descend along ππ using q.
   sorry
-
 
 def TopCat.condensed (X : TopCat.{u}) : Condensed.{u} (Type (u+1)) where
   val := X.condensedVal
