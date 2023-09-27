@@ -65,4 +65,8 @@ theorem toNat_extractLsb {i j} {x : BitVec w} :
     (extractLsb i j x).toNat = x.toNat / 2 ^ j % (2 ^ (i - j + 1)) := by
   simp [extractLsb, extractLsb', shiftRight_eq_div_pow]
 
+/-- If two bitvectors agree on each bit, they are equal -/
+theorem extLsb {x y : BitVec w} (h : ∀ i, x.getLsb i = y.getLsb i) : x = y := by
+  sorry
+
 end Std.BitVec

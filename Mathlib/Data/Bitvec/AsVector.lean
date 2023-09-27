@@ -1,5 +1,6 @@
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Vector
+import Mathlib.Data.Vector.Snoc
 
 #check Vector.mapAccumr
 
@@ -131,7 +132,7 @@ theorem negOne_asVector :
 theorem one_asVector :
     (1 : BitVec n).asVector = match n with
       | 0 => sorry
-      | n+1 => Vector.snoc (.zero n) true := by
+      | n+1 => Vector.snoc (Vector.replicate n false) true := by
   sorry
 
 /-!
