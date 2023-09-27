@@ -293,7 +293,7 @@ section Aux
 
 In this section, we put the `L^p` edistance on `WithLp p (α × β)`, and we check that the uniformity
 coming from this edistance coincides with the product uniformity, by showing that the canonical
-map to the Pi type (with the `L^∞` distance) is a uniform embedding, as it is both Lipschitz and
+map to the Prod type (with the `L^∞` distance) is a uniform embedding, as it is both Lipschitz and
 antiLipschitz.
 
 We only register this emetric space structure as a temporary instance, as the true instance (to be
@@ -477,7 +477,7 @@ theorem prod_continuous_equiv_symm : Continuous (WithLp.equiv p (α × β)).symm
 variable [T0Space α] [T0Space β]
 
 instance instProdT0Space : T0Space (WithLp p (α × β)) :=
-  instT0SpaceProdInstTopologicalSpaceProd
+  Prod.instT0Space
 
 end TopologicalSpace
 
@@ -587,11 +587,7 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
     rcases p.dichotomy with (rfl | h)
     · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm]
       rfl
-    · have : p ≠ ∞ := by
-        intro hp
-        rw [hp, ENNReal.top_toReal] at h
-        linarith
-      simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
+    · simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
         prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
       rfl
 
@@ -634,6 +630,36 @@ theorem prod_nnnorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
 theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst‖₊ ⊔  ‖f.snd‖₊ := by
   ext
   norm_cast
+
+theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ = sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
+  rw [prod_norm_eq_of_nat 2 (by norm_cast) _, Real.sqrt_eq_rpow]
+  norm_cast
+
+theorem prod_nnnorm_eq_of_L2 (x : WithLp 2 (α × β)) :
+    ‖x‖₊ = NNReal.sqrt (‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2) :=
+  NNReal.eq <| by
+    push_cast
+    exact prod_norm_eq_of_L2 x
+
+theorem prod_norm_sq_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ ^ 2 = ‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2 := by
+  suffices ‖x‖₊ ^ 2 = ‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2 by
+    simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
+  rw [prod_nnnorm_eq_of_L2, NNReal.sq_sqrt]
+
+theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
+    dist x y = (dist x.fst y.fst ^ 2 + dist x.snd y.snd ^ 2).sqrt := by
+  simp_rw [dist_eq_norm, prod_norm_eq_of_L2]
+  rfl
+
+theorem prod_nndist_eq_of_L2 (x y : WithLp 2 (α × β)) :
+    nndist x y = NNReal.sqrt (nndist x.fst y.fst ^ 2 + nndist x.snd y.snd ^ 2) :=
+  NNReal.eq <| by
+    push_cast
+    exact prod_dist_eq_of_L2 _ _
+
+theorem prod_edist_eq_of_L2 (x y : WithLp 2 (α × β)) :
+    edist x y = (edist x.fst y.fst ^ 2 + edist x.snd y.snd ^ 2) ^ (1 / 2 : ℝ) := by
+  simp [prod_edist_eq_add]
 
 end norm_of
 
