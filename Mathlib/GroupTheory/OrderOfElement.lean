@@ -924,10 +924,10 @@ theorem orderOf_eq_card_zpowers : orderOf x = Fintype.card (zpowers x) :=
 #align add_order_eq_card_zmultiples addOrderOf_eq_card_zmultiples
 
 @[to_additive card_zmultiples_le]
-theorem card_zpowers_le (a : G) (k : ℕ) (k_pos : 0 < k)
+theorem card_zpowers_le (a : G) (k : ℕ) (k_pos : k ≠ 0)
     (ha : a ^ k = 1) : Fintype.card (Subgroup.zpowers a) ≤ k := by
   rw [← orderOf_eq_card_zpowers]
-  apply orderOf_le_of_pow_eq_one k_pos ha
+  apply orderOf_le_of_pow_eq_one k_pos.bot_lt ha
 
 open QuotientGroup
 
