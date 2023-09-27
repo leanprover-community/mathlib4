@@ -45,34 +45,33 @@ variable (α : Type v) [MeasurableSpace α]
 - is finitely additive under disjoint unions -/
 structure Mean where
   /-- function giving the measure of a measurable subset-/
-  μ : {S // MeasurableSet (α:=α) S} → NNReal
+  μ : {S // MeasurableSet (α := α) S} → NNReal
   /-- μ should be normalised  -/
   norm : μ ⟨Set.univ, MeasurableSet.univ⟩ = 1
   /-- μ has to be finitely additive -/
   fin_add : ∀ (X Y : Set α),
-      (hX: MeasurableSet X) → (hY: MeasurableSet Y) → Disjoint X Y
+      (hX : MeasurableSet X) → (hY: MeasurableSet Y) → Disjoint X Y
       → μ (⟨X ∪ Y, MeasurableSet.union hX hY⟩) = μ ⟨X, hX⟩ + μ ⟨Y, hY⟩
 
 @[coe]
-instance : CoeFun (Mean α) (λ _ => {S // MeasurableSet (α:=α) S} → NNReal) where
+instance : CoeFun (Mean α) (λ _ => {S // MeasurableSet (α := α) S} → NNReal) where
   coe := Mean.μ
 
 
-variable (G : Type u) [Monoid G] [MulAction G α] (MulActionMeasurable: ∀ (g: G), Measurable (λ (x:α) => g•x))
+variable (G : Type u) [Monoid G] [MulAction G α]
+  [MulActionMeasurable : Fact (∀ (g : G), Measurable (λ (x : α) => g • x))]
 
-
-instance MeanSMul: SMul G (Mean α) := SMul.mk (λ g μ =>
-    Mean.mk (λ S => μ ⟨(λ (x:α) => g•x)⁻¹' S, (MulActionMeasurable g S.property)⟩)
-    (by simp only [Set.preimage_univ, μ.norm])
-    (by
+instance MeanSMul : SMul G (Mean α) where
+  smul g μ := {
+    μ := λ S => μ ⟨(λ (x : α) => g • x)⁻¹' S, (MulActionMeasurable.out g S.property)⟩
+    norm := by simp only [Set.preimage_univ, μ.norm]
+    fin_add := by
       intro X Y hX hY disjXY
       simp only [Set.preimage_union]
       apply μ.fin_add ((λ (x:α) => g•x)⁻¹' X) ((λ (x:α) => g•x)⁻¹' Y) _ _ _
       apply Disjoint.preimage
       exact disjXY
-    )
-    )
-
+  }
 
 /--An invariant mean is a mean that is invariant
 under translation with the monoid action-/
