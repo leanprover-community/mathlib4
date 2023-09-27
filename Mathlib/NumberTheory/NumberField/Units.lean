@@ -135,7 +135,7 @@ instance [NumberField K] : Finite (torsion K) := inferInstance
 /-- The torsion subgroup is cylic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
-/-- The order of the torsion subgroup as positive integer. -/
+/-- The order of the torsion subgroup as a positive integer. -/
 def torsionOrder [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype.card_pos⟩
 
 /-- If `k` does not divide `torsionOrder` then there are no nontrivial roots of unity of
@@ -510,9 +510,8 @@ def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (tor
     (QuotientAddGroup.quotientKerEquivOfSurjective
       (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))) (fun x => ?_))
   · ext
-    rw [AddMonoidHom.mem_ker, AddMonoidHom.mem_ker, logEmbedding_eq_zero_iff,
-      MonoidHom.toAdditive_apply_apply, ofMul_eq_zero, QuotientGroup.mk'_apply,
-      QuotientGroup.eq_one_iff]
+    rw [MonoidHom.coe_toAdditive_ker, QuotientGroup.ker_mk', AddMonoidHom.mem_ker,
+      logEmbedding_eq_zero_iff]
     rfl
   · refine ⟨Additive.ofMul x.out', ?_⟩
     simp only [MonoidHom.toAdditive_apply_apply, toMul_ofMul, QuotientGroup.mk'_apply,
@@ -524,6 +523,19 @@ instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
 
 instance : Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Module.Finite.equiv (unitLatticeEquiv K)
+
+instance : Module.Finite ℤ (Additive (𝓞 K)ˣ) := by
+  rw [Module.finite_def]
+  refine Submodule.fg_of_fg_map_of_fg_inf_ker
+    (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))).toIntLinearMap ?_ ?_
+  · rw [Submodule.map_top, LinearMap.range_eq_top.mpr
+      (by exact QuotientGroup.mk'_surjective (torsion K)), ← Module.finite_def]
+    infer_instance
+  · rw [inf_of_le_right le_top, AddMonoidHom.coe_toIntLinearMap_ker, MonoidHom.coe_toAdditive_ker,
+      QuotientGroup.ker_mk', Submodule.fg_iff_add_subgroup_fg,
+      AddSubgroup.toIntSubmodule_toAddSubgroup, ← AddGroup.fg_iff_addSubgroup_fg]
+    have : Finite (Subgroup.toAddSubgroup (torsion K)) := (inferInstance : Finite (torsion K))
+    exact AddGroup.fg_of_finite
 
 theorem rank_modTorsion :
     FiniteDimensional.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by

@@ -2715,6 +2715,14 @@ theorem subgroupOf_range_eq_of_le {G₁ G₂ : Type*} [Group G₁] [Group G₂] 
 #align monoid_hom.subgroup_of_range_eq_of_le MonoidHom.subgroupOf_range_eq_of_le
 #align add_monoid_hom.add_subgroup_of_range_eq_of_le AddMonoidHom.addSubgroupOf_range_eq_of_le
 
+@[simp]
+theorem coe_toAdditive_range (f : G →* G') :
+    (MonoidHom.toAdditive f).range = Subgroup.toAddSubgroup f.range := rfl
+
+@[simp]
+theorem coe_toMultiplicative_range {A A' : Type*} [AddGroup A] [AddGroup A'] (f : A →+ A') :
+    (AddMonoidHom.toMultiplicative f).range = AddSubgroup.toSubgroup f.range := rfl
+
 /-- Computable alternative to `MonoidHom.ofInjective`. -/
 @[to_additive "Computable alternative to `AddMonoidHom.ofInjective`."]
 def ofLeftInverse {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) : G ≃* f.range :=
@@ -2910,6 +2918,14 @@ lemma ker_fst : ker (fst G G') = .prod ⊥ ⊤ := SetLike.ext fun _ => (and_true
 
 @[to_additive (attr := simp)]
 lemma ker_snd : ker (snd G G') = .prod ⊤ ⊥ := SetLike.ext fun _ => (true_and_iff _).symm
+
+@[simp]
+theorem coe_toAdditive_ker (f : G →* G') :
+    (MonoidHom.toAdditive f).ker = Subgroup.toAddSubgroup f.ker := rfl
+
+@[simp]
+theorem coe_toMultiplicative_ker {A A' : Type*} [AddGroup A] [AddGroup A'] (f : A →+ A') :
+    (AddMonoidHom.toMultiplicative f).ker = AddSubgroup.toSubgroup f.ker := rfl
 
 end Ker
 
