@@ -214,3 +214,11 @@ elab s:"#assert_match " name_s:ident concl:(turnstyle)? query:term : command => 
 #assert_match List.map |- (?a -> ?b) -> List ?a -> List ?b
 
 end ListMapTest
+
+/-- error: Name pattern is too general -/
+#guard_msgs in
+#find ""
+
+/-- error: Name pattern is too general -/
+#guard_msgs in
+#find "."

@@ -323,6 +323,8 @@ def parseFindFilters (args : TSyntax ``find_filters) : TermElabM Arguments :=
           terms := terms.push (true, t)
         | `(find_filter| $ss:str) => do
           let str := Lean.TSyntax.getString ss
+          if str = "" || str = "." then
+            throwErrorAt ss "Name pattern is too general"
           namePats := namePats.push str
         | `(find_filter| $i:ident) => do
           let n := Lean.TSyntax.getId i
