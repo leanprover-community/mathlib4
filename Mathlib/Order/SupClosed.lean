@@ -54,7 +54,7 @@ supClosed_sInter $ forall_range_iff.2 hf
 lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
 λ _a ha _b hb ↦ ⟨_, hs ha hb, le_sup_left, le_sup_right⟩
 
-lemma IsUpperSet.supClosed (hs : IsUpperSet s) :  SupClosed s := λ _a _ _b ↦ hs le_sup_right
+lemma IsUpperSet.supClosed (hs : IsUpperSet s) : SupClosed s := fun _a _ _b ↦ hs le_sup_right
 
 end Set
 
