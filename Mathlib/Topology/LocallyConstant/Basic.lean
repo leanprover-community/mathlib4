@@ -674,6 +674,7 @@ lemma piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
   split_ifs with h
   · exact hf x.val ⟨h, hx⟩
   · rfl
+
 end Piecewise
 
 end LocallyConstant
