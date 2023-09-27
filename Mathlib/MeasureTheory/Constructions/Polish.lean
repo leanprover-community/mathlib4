@@ -144,9 +144,11 @@ end StandardBorelSpace
 
 end section
 
-variable [TopologicalSpace α] {ι : Type*}
+variable {ι : Type*}
 
 namespace MeasureTheory
+
+variable [TopologicalSpace α]
 
 /-! ### Analytic sets -/
 
@@ -948,7 +950,7 @@ end MeasureTheory
 
 namespace StandardBorelSpace
 
-variable {α : Type*} [MeasurableSpace α] [StandardBorelSpace α]
+variable [MeasurableSpace α] [StandardBorelSpace α]
 
 /-- If `s` is a measurable set in a standard Borel space, there is a compatible Polish topology
 making `s` clopen. -/
@@ -974,7 +976,7 @@ end StandardBorelSpace
 
 namespace PolishSpace
 
-variable {α β : Type*}
+variable {β : Type*}
 
 variable [MeasurableSpace α] [MeasurableSpace β] [StandardBorelSpace α] [StandardBorelSpace β]
 
