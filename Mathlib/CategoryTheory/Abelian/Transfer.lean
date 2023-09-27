@@ -326,8 +326,10 @@ lemma mono_toUnder [Abelian 𝒜] [Abelian ℬ] [PreservesFiniteLimits L] [Faith
 
 end transfer_enough_injectives
 
-/-- https://ncatlab.org/nlab/show/injective+object#preservation_of_injective_objects-/
 open transfer_enough_injectives in
+/--
+[Lemma 3.8](https://ncatlab.org/nlab/show/injective+object#preservation_of_injective_objects)
+-/
 lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
     [Category.{v₁} C] [Category.{v₂} D] [Abelian C] [Abelian D]
     {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) [Faithful L] [PreservesFiniteLimits L]
