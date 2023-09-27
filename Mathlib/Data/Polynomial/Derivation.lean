@@ -107,15 +107,15 @@ is the `R[X]`-module with carrier `M`, where the action of `X` if given by multi
 More generally, the action of `f : R[X]` is given by `f • m = f(a) • m`.
 -/
 def eval₂PullbackModule (R M: Type*) {A} [CommSemiring R] [CommSemiring A] [Algebra R A]
-    [AddCommMonoid M] [Module A M] [Module R M] := Function.const A M
+    [AddCommMonoid M] [Module A M] := Function.const A M
 variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
-    [Module A M] [Module R M] (a : A)
+    [Module A M] [Module R M] [IsScalarTower R A M] (a : A)
 instance : AddCommMonoid <| eval₂PullbackModule R M a := by assumption
 instance : Module R[X] <| eval₂PullbackModule R M a :=
   Module.compHom M <| eval₂RingHom (algebraMap R A) a
 instance : Module A <| eval₂PullbackModule R M a := by assumption
 instance : Module R <| eval₂PullbackModule R M a := by assumption
-instance [IsScalarTower R A M] : IsScalarTower R A <| eval₂PullbackModule R M a := by assumption
+instance : IsScalarTower R A <| eval₂PullbackModule R M a := by assumption
 
 lemma eval₂PullbackModule_smul_def (f : R[X]) (a : A) (m : eval₂PullbackModule R M a) :
     f • m = (eval₂ (algebraMap R A) a f) • m := by rfl
