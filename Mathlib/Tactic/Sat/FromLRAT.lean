@@ -151,9 +151,6 @@ def Valuation.mk : List Prop → Valuation
   | a::_, 0 => a
   | _::as, n+1 => mk as n
 
--- TODO: Can we do something better?
-attribute [local simp] List.reverseAux
-
 /-- The fundamental relationship between `mk` and `implies`:
 `(mk ps).implies p ps 0` is equivalent to `p`. -/
 theorem Valuation.mk_implies {as ps} (as₁) : as = List.reverseAux as₁ ps →
