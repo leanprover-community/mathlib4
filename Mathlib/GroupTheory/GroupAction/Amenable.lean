@@ -11,7 +11,7 @@ import Mathlib.Data.Real.ENNReal
 # Amenable Monoid Actions
 
 In this file, we define amenability of a monoid action.
-A monoid action is amenable if it admits a invariant mean.
+A monoid action is amenable if it admits an invariant mean.
 A mean is like a probability measure, demanding
 only finite additivity instead of σ-additivity.
 
