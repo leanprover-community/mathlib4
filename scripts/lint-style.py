@@ -336,7 +336,9 @@ fix = "--fix" in sys.argv
 argv = (arg for arg in sys.argv[1:] if arg != "--fix")
 
 for filename in argv:
-    lint(Path(filename), fix=fix)
+    file = Path(filename)
+    if file.exists():
+        lint(file, fix=fix)
 
 if new_exceptions:
     exit(1)
