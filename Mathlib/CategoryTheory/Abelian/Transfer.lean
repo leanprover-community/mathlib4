@@ -206,8 +206,6 @@ def abelianOfEquivalence {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFi
 
 namespace transfer_enough_injectives
 
-universe v₁ v₂
-
 variable {𝒜: Type u₁} {ℬ : Type u₂} [Category.{v₁} 𝒜] [Category.{v₂} ℬ]
 variable [EnoughInjectives ℬ]
 variable (L : 𝒜 ⥤ ℬ) (R : ℬ ⥤ 𝒜)
@@ -342,7 +340,7 @@ lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
 -- the universe levels of morphisms, so we need an additional assumption `abelian D`.
 
 /-- An equivalence of categories transfers enough injectiveness. -/
-lemma enough_injectives.of_equivalence {C : Type u₁} {D : Type u₂}
+lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
   [Category.{v₁} C] [Category.{v₂} D] [Abelian C] [Abelian D]
   (e : C ⥤ D) [IsEquivalence e] [EnoughInjectives D] : EnoughInjectives C :=
 EnoughInjectives.of_adjunction (adj := e.asEquivalence.toAdjunction)
