@@ -23,7 +23,7 @@ the uniform distance.
 
 noncomputable section
 
-open Topology Classical NNReal uniformity UniformConvergence
+open Topology Bornology Classical NNReal uniformity UniformConvergence
 
 open Set Filter Metric Function
 
@@ -113,13 +113,13 @@ theorem ext (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align bounded_continuous_function.ext BoundedContinuousFunction.ext
 
-theorem bounded_range (f : α →ᵇ β) : Bounded (range f) :=
-  bounded_range_iff.2 f.bounded
-#align bounded_continuous_function.bounded_range BoundedContinuousFunction.bounded_range
+theorem isBounded_range (f : α →ᵇ β) : IsBounded (range f) :=
+  isBounded_range_iff.2 f.bounded
+#align bounded_continuous_function.bounded_range BoundedContinuousFunction.isBounded_range
 
-theorem bounded_image (f : α →ᵇ β) (s : Set α) : Bounded (f '' s) :=
-  f.bounded_range.mono <| image_subset_range _ _
-#align bounded_continuous_function.bounded_image BoundedContinuousFunction.bounded_image
+theorem isBounded_image (f : α →ᵇ β) (s : Set α) : IsBounded (f '' s) :=
+  f.isBounded_range.subset <| image_subset_range _ _
+#align bounded_continuous_function.bounded_image BoundedContinuousFunction.isBounded_image
 
 theorem eq_of_empty [h : IsEmpty α] (f g : α →ᵇ β) : f = g :=
   ext <| h.elim
@@ -136,7 +136,7 @@ theorem mkOfBound_coe {f} {C} {h} : (mkOfBound f C h : α → β) = (f : α → 
 
 /-- A continuous function on a compact space is automatically a bounded continuous function. -/
 def mkOfCompact [CompactSpace α] (f : C(α, β)) : α →ᵇ β :=
-  ⟨f, bounded_range_iff.1 (isCompact_range f.continuous).bounded⟩
+  ⟨f, isBounded_range_iff.1 (isCompact_range f.continuous).isBounded⟩
 #align bounded_continuous_function.mk_of_compact BoundedContinuousFunction.mkOfCompact
 
 @[simp]
@@ -159,8 +159,8 @@ theorem dist_eq : dist f g = sInf { C | 0 ≤ C ∧ ∀ x : α, dist (f x) (g x)
 #align bounded_continuous_function.dist_eq BoundedContinuousFunction.dist_eq
 
 theorem dist_set_exists : ∃ C, 0 ≤ C ∧ ∀ x : α, dist (f x) (g x) ≤ C := by
-  rcases f.bounded_range.union g.bounded_range with ⟨C, hC⟩
-  refine' ⟨max 0 C, le_max_left _ _, fun x => (hC _ _ _ _).trans (le_max_right _ _)⟩
+  rcases isBounded_iff.1 (f.isBounded_range.union g.isBounded_range) with ⟨C, hC⟩
+  refine' ⟨max 0 C, le_max_left _ _, fun x => (hC _ _).trans (le_max_right _ _)⟩
     <;> [left; right]
     <;> apply mem_range_self
 #align bounded_continuous_function.dist_set_exists BoundedContinuousFunction.dist_set_exists
@@ -454,8 +454,8 @@ nonrec def extend (f : α ↪ δ) (g : α →ᵇ β) (h : δ →ᵇ β) : δ →
   toFun := extend f g h
   continuous_toFun := continuous_of_discreteTopology
   map_bounded' := by
-    rw [← bounded_range_iff, range_extend f.injective, Metric.bounded_union]
-    exact ⟨g.bounded_range, h.bounded_image _⟩
+    rw [← isBounded_range_iff, range_extend f.injective]
+    exact g.isBounded_range.union (h.isBounded_image _)
 #align bounded_continuous_function.extend BoundedContinuousFunction.extend
 
 @[simp]
@@ -587,7 +587,7 @@ theorem arzela_ascoli₂ (s : Set β) (hs : IsCompact s) (A : Set (α →ᵇ β)
   using compactness there and then lifting everything to the original space. -/
   have M : LipschitzWith 1 (↑) := LipschitzWith.subtype_val s
   let F : (α →ᵇ s) → α →ᵇ β := comp (↑) M
-  refine' isCompact_of_isClosed_subset ((_ : IsCompact (F ⁻¹' A)).image (continuous_comp M)) closed
+  refine' IsCompact.of_isClosed_subset ((_ : IsCompact (F ⁻¹' A)).image (continuous_comp M)) closed
       fun f hf => _
   · haveI : CompactSpace s := isCompact_iff_compactSpace.1 hs
     refine' arzela_ascoli₁ _ (continuous_iff_isClosed.1 (continuous_comp M) _ closed) _
@@ -922,7 +922,7 @@ theorem norm_normComp : ‖f.normComp‖ = ‖f‖ := by
 #align bounded_continuous_function.norm_norm_comp BoundedContinuousFunction.norm_normComp
 
 theorem bddAbove_range_norm_comp : BddAbove <| Set.range <| norm ∘ f :=
-  (Real.bounded_iff_bddBelow_bddAbove.mp <| @bounded_range _ _ _ _ f.normComp).2
+  (Real.isBounded_iff_bddBelow_bddAbove.mp <| @isBounded_range _ _ _ _ f.normComp).2
 #align bounded_continuous_function.bdd_above_range_norm_comp BoundedContinuousFunction.bddAbove_range_norm_comp
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ := by

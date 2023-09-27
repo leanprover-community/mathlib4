@@ -249,7 +249,7 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G
               rw [← a, Functor.map_comp, Category.assoc, ← Functor.comp_map, c.w] at z
               rw [z]
             · rw [← Functor.map_comp_assoc] } }
-  map f := { Hom := f.Hom }
+  map f := { hom := f.hom }
 #align category_theory.functor.final.extend_cocone CategoryTheory.Functor.Final.extendCocone
 
 @[simp]
@@ -539,7 +539,7 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G
               rw [← a, Functor.map_comp, ← Functor.comp_map, ← Category.assoc, ← Category.assoc,
                 c.w, z, Category.assoc]
             · rw [← Functor.map_comp] } }
-  map f := { Hom := f.Hom }
+  map f := { hom := f.hom }
 #align category_theory.functor.initial.extend_cone CategoryTheory.Functor.Initial.extendCone
 
 @[simp]
@@ -860,7 +860,7 @@ This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which st
 adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
 -/
 theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
-  IsCofilteredOrEmpty D :=
+    IsCofilteredOrEmpty D :=
   have : IsFilteredOrEmpty Dᵒᵖ := IsFilteredOrEmpty.of_final F.op
   isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
 
