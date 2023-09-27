@@ -43,6 +43,9 @@ variable [AddMonoid ι] [GSemiring A]
 
 section
 
+instance : SMul R (GradedMonoid A) where
+  smul r g := GradedMonoid.mk g.1 (r • g.2)
+
 /-- A graded version of `Algebra`. An instance of `DirectSum.GAlgebra R A` endows `(⨁ i, A i)`
 with an `R`-algebra structure. -/
 class GAlgebra where
@@ -50,13 +53,24 @@ class GAlgebra where
   map_one : toFun 1 = GradedMonoid.GOne.one
   map_mul :
     ∀ r s, GradedMonoid.mk _ (toFun (r * s)) = ⟨_, GradedMonoid.GMul.mul (toFun r) (toFun s)⟩
-  commutes : ∀ r x, GradedMonoid.mk _ (toFun r) * x = x * ⟨_, toFun r⟩
-  smul_def : ∀ (r) (x : GradedMonoid A), GradedMonoid.mk x.1 (r • x.2) = ⟨_, toFun r⟩ * x
+  commutes : ∀ r x, GradedMonoid.mk _ (toFun r) * x = x * GradedMonoid.mk _ (toFun r)
+  smul_def : ∀ (r) (x : GradedMonoid A), r • x = GradedMonoid.mk _ (toFun r) * x
 #align direct_sum.galgebra DirectSum.GAlgebra
 
 end
 
 variable [Semiring B] [GAlgebra R A] [Algebra R B]
+#check mul_smul_comm
+
+instance : SMulCommClass R (GradedMonoid A) (GradedMonoid A) where
+  smul_comm s x y := by
+    dsimp
+    rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
+
+instance : IsScalarTower R (GradedMonoid A) (GradedMonoid A) where
+  smul_assoc s x y := by
+    dsimp
+    rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
 
 instance : Algebra R (⨁ i, A i) where
   toFun := (DirectSum.of A 0).comp GAlgebra.toFun
@@ -122,6 +136,18 @@ theorem algHom_ext' ⦃f g : (⨁ i, A i) →ₐ[R] B⦄
 theorem algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
   algHom_ext' R A fun i => LinearMap.ext <| h i
 #align direct_sum.alg_hom_ext DirectSum.algHom_ext
+
+/-- The piecewise multiplication from the `Mul` instance, as a bundled linear homomorphism. -/
+@[simps]
+def gMulLHom {i j} : A i →ₗ[R] A j →ₗ[R] A (i + j) where
+  toFun a :=
+    { toFun := fun b => GradedMonoid.GMul.mul a b
+      map_smul' := fun r x => by
+        injection (smul_comm r (GradedMonoid.mk _ a) (GradedMonoid.mk _ x)).symm
+      map_add' := GNonUnitalNonAssocSemiring.mul_add _ }
+  map_smul' r x := LinearMap.ext fun y => by
+    injection smul_assoc r (GradedMonoid.mk _ x) (GradedMonoid.mk _ y)
+  map_add' _ _ := LinearMap.ext fun _ => GNonUnitalNonAssocSemiring.add_mul _ _ _
 
 end DirectSum
 
