@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, David Renshaw
 -/
 import Lean
-import Mathlib.Init.Logic
 import Mathlib.Tactic.Core
 
 /-!
@@ -64,6 +63,7 @@ private def discharge? (e : Expr) : SimpM (Option Expr) := do
 -/
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
+  let ctx := { ctx with config := { ctx.config with failIfUnchanged := false } }
   let _ ← simpLocation ctx discharge? loc
   pure ()
 

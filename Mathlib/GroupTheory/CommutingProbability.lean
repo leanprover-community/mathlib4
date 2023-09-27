@@ -8,6 +8,10 @@ import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.Index
+import Mathlib.GroupTheory.SpecificGroups.Dihedral
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Qify
 
 #align_import group_theory.commuting_probability from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -135,3 +139,89 @@ theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ �
     (le_trans (ge_of_eq (commProb_eq_one_iff.mpr (Abelianization.commGroup G).mul_comm))
       (commutator G).commProb_quotient_le)
 #align inv_card_commutator_le_comm_prob inv_card_commutator_le_commProb
+
+-- Construction of group with commuting probability 1/n
+namespace DihedralGroup
+
+lemma commProb_odd {n : ℕ} (hn : Odd n) :
+    commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
+  rw [commProb_def', DihedralGroup.card_conjClasses_odd hn, nat_card]
+  qify [show 2 ∣ n + 3 by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, Nat.odd_iff.mp hn]; rfl]
+  rw [div_div, ← mul_assoc]
+  congr
+
+private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
+  Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
+
+private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
+  | 0 | 1 | 2 | 3 => by decide
+  | n + 4 => by intros; linarith [n.add_div_right four_pos, n.div_le_self 4]
+
+/-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
+def reciprocalFactors (n : ℕ) : List ℕ :=
+  if h0 : n = 0 then [0]
+  else if h1 : n = 1 then []
+  else if Even n then
+    3 :: reciprocalFactors (n / 2)
+  else
+    n % 4 * n :: reciprocalFactors (n / 4 + 1)
+decreasing_by
+  simp_wf
+  first | exact div_two_lt h0 | exact div_four_lt h0 h1
+
+@[simp] lemma reciprocalFactors_zero : reciprocalFactors 0 = [0] := rfl
+
+@[simp] lemma reciprocalFactors_one : reciprocalFactors 1 = [] := rfl
+
+lemma reciprocalFactors_even {n : ℕ} (h0 : n ≠ 0) (h2 : Even n) :
+    reciprocalFactors n = 3 :: reciprocalFactors (n / 2) := by
+  have h1 : n ≠ 1
+  · rintro rfl
+    norm_num at h2
+  rw [reciprocalFactors, dif_neg h0, dif_neg h1, if_pos h2]
+
+lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
+    reciprocalFactors n = n % 4 * n :: reciprocalFactors (n / 4 + 1) := by
+  have h0 : n ≠ 0
+  · rintro rfl
+    norm_num at h2
+  rw [reciprocalFactors, dif_neg h0, dif_neg h1, if_neg (Nat.odd_iff_not_even.mp h2)]
+
+/-- A finite product of Dihedral groups. -/
+abbrev Product (l : List ℕ) : Type :=
+  ∀ i : Fin l.length, DihedralGroup l[i]
+
+lemma commProb_nil : commProb (Product []) = 1 := by
+  simp [Product, commProb_pi]
+
+lemma commProb_cons (n : ℕ) (l : List ℕ) :
+    commProb (Product (n :: l)) = commProb (DihedralGroup n) * commProb (Product l) := by
+  simp [Product, commProb_pi, Fin.prod_univ_succ]
+
+/-- Construction of a group with commuting probability `1 / n`. -/
+theorem commProb_reciprocal (n : ℕ) :
+    commProb (Product (reciprocalFactors n)) = 1 / n := by
+  by_cases h0 : n = 0
+  · rw [h0, reciprocalFactors_zero, commProb_cons, commProb_nil, mul_one, Nat.cast_zero, div_zero]
+    apply commProb_eq_zero_of_infinite
+  by_cases h1 : n = 1
+  · rw [h1, reciprocalFactors_one, commProb_nil, Nat.cast_one, div_one]
+  rcases Nat.even_or_odd n with h2 | h2
+  · have := div_two_lt h0
+    rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
+        commProb_odd (by norm_num)]
+    field_simp [h0, h2.two_dvd]
+    norm_num
+  · have := div_four_lt h0 h1
+    rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
+    have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.odd_iff.mp h2)
+    have hn : Odd (n % 4) := by rcases key with h | h <;> rw [h] <;> norm_num
+    rw [commProb_odd (hn.mul h2), div_mul_div_comm, mul_one, div_eq_div_iff, one_mul] <;> norm_cast
+    · have h0 : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
+      have h1 := (Nat.div_add_mod n 4).symm
+      zify at h0 h1 ⊢
+      linear_combination (h0 + h1 * (n % 4)) * n
+    · have := hn.pos.ne'
+      positivity
+
+end DihedralGroup

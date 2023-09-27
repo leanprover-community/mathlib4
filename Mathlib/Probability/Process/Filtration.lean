@@ -67,7 +67,7 @@ protected theorem le (f : Filtration ι m) (i : ι) : f i ≤ m :=
 
 @[ext]
 protected theorem ext {f g : Filtration ι m} (h : (f : ι → MeasurableSpace Ω) = g) : f = g := by
-  cases f; cases g; simp only; congr
+  cases f; cases g; congr
 #align measure_theory.filtration.ext MeasureTheory.Filtration.ext
 
 variable (ι)

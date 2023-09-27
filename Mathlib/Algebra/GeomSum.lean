@@ -86,7 +86,6 @@ theorem op_geom_sum (x : α) (n : ℕ) : op (∑ i in range n, x ^ i) = ∑ i in
 @[simp]
 theorem op_geom_sum₂ (x y : α) (n : ℕ) : ∑ i in range n, op y ^ (n - 1 - i) * op x ^ i =
     ∑ i in range n, op y ^ i * op x ^ (n - 1 - i):= by
-  simp only [op_sum, op_mul, op_pow]
   rw [← sum_range_reflect]
   refine' sum_congr rfl fun j j_in => _
   rw [mem_range, Nat.lt_iff_add_one_le] at j_in
@@ -190,9 +189,23 @@ theorem geom_sum₂_mul [CommRing α] (x y : α) (n : ℕ) :
   (Commute.all x y).geom_sum₂_mul n
 #align geom_sum₂_mul geom_sum₂_mul
 
+theorem Commute.sub_dvd_pow_sub_pow [Ring α] {x y : α} (h : Commute x y) (n : ℕ) :
+    x - y ∣ x ^ n - y ^ n :=
+  Dvd.intro _ $ h.mul_geom_sum₂ _
+
 theorem sub_dvd_pow_sub_pow [CommRing α] (x y : α) (n : ℕ) : x - y ∣ x ^ n - y ^ n :=
-  Dvd.intro_left _ (geom_sum₂_mul x y n)
+  (Commute.all x y).sub_dvd_pow_sub_pow n
 #align sub_dvd_pow_sub_pow sub_dvd_pow_sub_pow
+
+theorem one_sub_dvd_one_sub_pow [Ring α] (x : α) (n : ℕ) :
+    1 - x ∣ 1 - x ^ n := by
+  conv_rhs => rw [← one_pow n]
+  exact (Commute.one_left x).sub_dvd_pow_sub_pow n
+
+theorem sub_one_dvd_pow_sub_one [Ring α] (x : α) (n : ℕ) :
+    x - 1 ∣ x ^ n - 1 := by
+  conv_rhs => rw [← one_pow n]
+  exact (Commute.one_right x).sub_dvd_pow_sub_pow n
 
 theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
   cases' le_or_lt y x with h h
@@ -319,7 +332,6 @@ protected theorem Commute.geom_sum₂_Ico_mul [Ring α] {x y : α} (h : Commute 
   have : (∑ k in Ico m n, MulOpposite.op y ^ (n - 1 - k) * MulOpposite.op x ^ k) =
       ∑ k in Ico m n, MulOpposite.op x ^ k * MulOpposite.op y ^ (n - 1 - k) := by
     refine' sum_congr rfl fun k _ => _
-    simp only [ge_iff_le, tsub_le_iff_right]
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]

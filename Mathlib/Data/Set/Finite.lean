@@ -7,7 +7,7 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Finite.Basic
 
-#align_import data.set.finite from "leanprover-community/mathlib"@"7fdd4f3746cb059edfdb5d52cba98f66fce418c0"
+#align_import data.set.finite from "leanprover-community/mathlib"@"ffde2d8a6e689149e44fd95fa862c23a57f8c780"
 
 /-!
 # Finite sets
@@ -71,7 +71,7 @@ theorem finite_def {s : Set α} : s.Finite ↔ Nonempty (Fintype s) :=
   ⟨fun ⟨h⟩ => ⟨h⟩, fun ⟨h⟩ => ⟨h⟩⟩
 #align set.finite_def Set.finite_def
 
-alias finite_def ↔ Finite.nonempty_fintype _
+alias ⟨Finite.nonempty_fintype, _⟩ := finite_def
 #align set.finite.nonempty_fintype Set.Finite.nonempty_fintype
 
 theorem finite_coe_iff {s : Set α} : Finite s ↔ s.Finite := by
@@ -148,7 +148,7 @@ theorem not_infinite {s : Set α} : ¬s.Infinite ↔ s.Finite :=
   not_not
 #align set.not_infinite Set.not_infinite
 
-alias not_infinite ↔ _ Finite.not_infinite
+alias ⟨_, Finite.not_infinite⟩ := not_infinite
 #align set.finite.not_infinite Set.Finite.not_infinite
 
 attribute [simp] Finite.not_infinite
@@ -224,10 +224,10 @@ protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s 
   simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
 #align set.finite.to_finset_ssubset_to_finset Set.Finite.toFinset_ssubset_toFinset
 
-alias Finite.toFinset_subset_toFinset ↔ _ toFinset_mono
+alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
 #align set.finite.to_finset_mono Set.Finite.toFinset_mono
 
-alias Finite.toFinset_ssubset_toFinset ↔ _ toFinset_strictMono
+alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
 #align set.finite.to_finset_strict_mono Set.Finite.toFinset_strictMono
 
 -- Porting note: attribute [protected] doesn't work
@@ -727,7 +727,7 @@ theorem finite_univ_iff : (@univ α).Finite ↔ Finite α :=
   finite_coe_iff.symm.trans (Equiv.Set.univ α).finite_iff
 #align set.finite_univ_iff Set.finite_univ_iff
 
-alias finite_univ_iff ↔ _root_.Finite.of_finite_univ _
+alias ⟨_root_.Finite.of_finite_univ, _⟩ := finite_univ_iff
 #align finite.of_finite_univ Finite.of_finite_univ
 
 theorem Finite.union {s t : Set α} (hs : s.Finite) (ht : t.Finite) : (s ∪ t).Finite := by
@@ -1291,7 +1291,7 @@ theorem infinite_coe_iff {s : Set α} : Infinite s ↔ s.Infinite :=
 #align set.infinite_coe_iff Set.infinite_coe_iff
 
 -- porting note: something weird happened here
-alias infinite_coe_iff ↔ _ Infinite.to_subtype
+alias ⟨_, Infinite.to_subtype⟩ := infinite_coe_iff
 #align set.infinite.to_subtype Set.Infinite.to_subtype
 
 /-- Embedding of `ℕ` into an infinite set. -/
@@ -1334,7 +1334,7 @@ theorem infinite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) :
   not_congr <| finite_image_iff hi
 #align set.infinite_image_iff Set.infinite_image_iff
 
-alias infinite_image_iff ↔ _ Infinite.image
+alias ⟨_, Infinite.image⟩ := infinite_image_iff
 #align set.infinite.image Set.Infinite.image
 
 -- Porting note: attribute [protected] doesn't work
@@ -1597,7 +1597,7 @@ theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α)
   is finite rather than `s` itself. -/
 theorem Finite.exists_maximal_wrt' [PartialOrder β] (f : α → β) (s : Set α) (h : (f '' s).Finite)
     (hs : s.Nonempty) : (∃ a ∈ s, ∀ (a' : α), a' ∈ s → f a ≤ f a' → f a = f a') := by
-  obtain ⟨_, ⟨a, ha,rfl⟩, hmax⟩ := Finite.exists_maximal_wrt id (f '' s) h (hs.image f)
+  obtain ⟨_, ⟨a, ha, rfl⟩, hmax⟩ := Finite.exists_maximal_wrt id (f '' s) h (hs.image f)
   exact ⟨a, ha, fun a' ha' hf ↦ hmax _ (mem_image_of_mem f ha') hf⟩
 
 theorem Finite.exists_minimal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : s.Finite)
@@ -1612,7 +1612,7 @@ lemma Finite.exists_minimal_wrt' [PartialOrder β] (f : α → β) (s : Set α) 
 
 section
 
-variable [SemilatticeSup α] [Nonempty α] {s : Set α}
+variable [Preorder α] [IsDirected α (· ≤ ·)] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded above.-/
 protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
@@ -1634,23 +1634,20 @@ end
 
 section
 
-variable [SemilatticeInf α] [Nonempty α] {s : Set α}
+variable [Preorder α] [IsDirected α (· ≥ ·)] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded below.-/
 protected theorem Finite.bddBelow (hs : s.Finite) : BddBelow s :=
-  @Finite.bddAbove αᵒᵈ _ _ _ hs
+  @Finite.bddAbove αᵒᵈ _ _ _ _ hs
 #align set.finite.bdd_below Set.Finite.bddBelow
 
 /-- A finite union of sets which are all bounded below is still bounded below.-/
 theorem Finite.bddBelow_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddBelow (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddBelow (S i) :=
-  @Finite.bddAbove_biUnion αᵒᵈ _ _ _ _ _ H
+  @Finite.bddAbove_biUnion αᵒᵈ _ _ _ _ _ _ H
 #align set.finite.bdd_below_bUnion Set.Finite.bddBelow_biUnion
 
-theorem infinite_of_not_bddBelow : ¬BddBelow s → s.Infinite := by
-  contrapose!
-  rw [not_infinite]
-  exact Finite.bddBelow
+theorem infinite_of_not_bddBelow : ¬BddBelow s → s.Infinite := mt Finite.bddBelow
 #align set.infinite_of_not_bdd_below Set.infinite_of_not_bddBelow
 
 end

@@ -6,6 +6,7 @@ Authors: Arthur Paulino
 
 import Cache.IO
 import Lean.Elab.ParseImportsFast
+import Lake.Build.Trace
 
 namespace Cache.Hashing
 
@@ -52,7 +53,7 @@ def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
 /-- Computes a canonical hash of a file's contents. -/
 def hashFileContents (contents : String) : UInt64 :=
   -- revert potential file transformation by git's `autocrlf`
-  let contents := contents.replace "\r\n" "\n"
+  let contents := Lake.crlf2lf contents
   hash contents
 
 /--
@@ -103,10 +104,11 @@ partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
         depsMap := stt.depsMap.insert filePath fileImports })
 
 /-- Files to start hashing from. -/
-def roots : Array FilePath := #["Mathlib.lean", "MathlibExtras.lean"]
+def roots : Array FilePath :=
+  #["Mathlib.lean", "MathlibExtras.lean"]
 
 /-- Main API to retrieve the hashes of the Lean files -/
-def getHashMemo : IO HashMemo :=
-  return (← StateT.run (roots.mapM getFileHash) { rootHash := ← getRootHash }).2
+def getHashMemo (extraRoots : Array FilePath) : IO HashMemo :=
+  return (← StateT.run ((roots ++ extraRoots).mapM getFileHash) { rootHash := ← getRootHash }).2
 
 end Cache.Hashing

@@ -144,7 +144,6 @@ def Cofix.dest {α : TypeVec n} : Cofix F α → F (α.append1 (Cofix F α)) :=
         intro x y h
         exact ⟨r, pr, h⟩
       rw [← Quot.factor_mk_eq _ _ this]
-      dsimp
       conv =>
         lhs
         rw [appendFun_comp_id, comp_map, ← abs_map, pr rxy, abs_map, ← comp_map,
@@ -223,7 +222,7 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
   intro rxy
   apply Quot.sound
   let r' := fun x y => r (Quot.mk _ x) (Quot.mk _ y)
-  have hr' : r' = fun x y => r (Quot.mk _ x) (Quot.mk _ y) := by rfl
+  have hr' : r' = fun x y => r (Quot.mk _ x) (Quot.mk _ y) := rfl
   have : IsPrecongr r' := by
     intro a b r'ab
     have h₀ :
@@ -415,7 +414,6 @@ theorem liftR_map_last [lawful: LawfulMvFunctor F]
         apply ih
     simp only [lastFun_from_append1_drop_last, lastFun_toSubtype, lastFun_appendFun,
       lastFun_subtypeVal, comp.left_id, lastFun_comp, lastFun_prod]
-    dsimp
     ext1
     rfl
   liftR_map _ _ _ _ (toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b) hh

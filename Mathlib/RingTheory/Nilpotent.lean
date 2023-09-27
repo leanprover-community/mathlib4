@@ -8,6 +8,7 @@ import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.GroupTheory.Submonoid.ZeroDivisors
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.GeomSum
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 #align_import ring_theory.nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
@@ -29,7 +30,7 @@ universe u v
 
 open BigOperators
 
-variable {R S : Type u} {x y : R}
+variable {R S : Type*} {x y : R}
 
 /-- An element is said to be nilpotent if some natural-number-power of it equals zero.
 
@@ -51,8 +52,20 @@ theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : 
 theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   obtain ⟨n, hn⟩ := h
   use n
-  rw [neg_pow, hn, MulZeroClass.mul_zero]
+  rw [neg_pow, hn, mul_zero]
 #align is_nilpotent.neg IsNilpotent.neg
+
+lemma IsNilpotent.pow {n : ℕ} {S : Type*} [MonoidWithZero S] {x : S}
+    (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) := by
+  obtain ⟨N,hN⟩ := hx
+  use N
+  rw [←pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
+
+lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
+    (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by
+  cases n with
+  | zero => contradiction
+  | succ => exact IsNilpotent.pow hx
 
 @[simp]
 theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
@@ -167,10 +180,10 @@ theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent 
   rw [h_comm.add_pow']
   apply Finset.sum_eq_zero
   rintro ⟨i, j⟩ hij
-  suffices x ^ i * y ^ j = 0 by simp only [this, nsmul_eq_mul, MulZeroClass.mul_zero]
+  suffices x ^ i * y ^ j = 0 by simp only [this, nsmul_eq_mul, mul_zero]
   cases' Nat.le_or_le_of_add_eq_add_pred (Finset.Nat.mem_antidiagonal.mp hij) with hi hj
-  · rw [pow_eq_zero_of_le hi hn, MulZeroClass.zero_mul]
-  · rw [pow_eq_zero_of_le hj hm, MulZeroClass.mul_zero]
+  · rw [pow_eq_zero_of_le hi hn, zero_mul]
+  · rw [pow_eq_zero_of_le hj hm, mul_zero]
 #align commute.is_nilpotent_add Commute.isNilpotent_add
 
 protected lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
@@ -188,7 +201,7 @@ protected lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
 theorem isNilpotent_mul_left (h : IsNilpotent x) : IsNilpotent (x * y) := by
   obtain ⟨n, hn⟩ := h
   use n
-  rw [h_comm.mul_pow, hn, MulZeroClass.zero_mul]
+  rw [h_comm.mul_pow, hn, zero_mul]
 #align commute.is_nilpotent_mul_left Commute.isNilpotent_mul_left
 
 protected lemma isNilpotent_mul_left_iff (hy : y ∈ nonZeroDivisorsLeft R) :
@@ -283,6 +296,16 @@ theorem isNilpotent_mulRight_iff (a : A) : IsNilpotent (mulRight R a) ↔ IsNilp
       simp only [mulRight_eq_zero_iff, pow_mulRight] at hn ⊢ <;>
     exact hn
 #align linear_map.is_nilpotent_mul_right_iff LinearMap.isNilpotent_mulRight_iff
+
+variable {R}
+variable {ι M : Type*} [Fintype ι] [DecidableEq ι] [AddCommMonoid M] [Module R M]
+
+@[simp]
+lemma isNilpotent_toMatrix_iff (b : Basis ι R M) (f : M →ₗ[R] M) :
+    IsNilpotent (toMatrix b b f) ↔ IsNilpotent f := by
+  refine' exists_congr fun k ↦ _
+  rw [toMatrix_pow]
+  exact (toMatrix b b).map_eq_zero_iff
 
 end LinearMap
 

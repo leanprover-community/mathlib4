@@ -84,7 +84,7 @@ theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
 
 @[simp]
 theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε]) :=
-  ext (MulZeroClass.mul_zero r).symm (mul_one r).symm
+  ext (mul_zero r).symm (mul_one r).symm
 #align dual_number.inr_eq_smul_eps DualNumber.inr_eq_smul_eps
 
 /-- For two algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
