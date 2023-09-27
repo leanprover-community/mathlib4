@@ -221,7 +221,7 @@ theorem sum_mapRange_index.linearMap [∀ (i : ι) (x : β₁ i), Decidable (x �
     {l : Π₀ i, β₁ i} :
     -- Porting note: Needed to add (M := ...) below
     (DFinsupp.lsum ℕ (M := β₂)) h (mapRange.linearMap f l)
-      = (DFinsupp.lsum ℕ (M := β₁)) (fun i => (h i).comp (f i)) l  := by
+      = (DFinsupp.lsum ℕ (M := β₁)) (fun i => (h i).comp (f i)) l := by
   simpa [DFinsupp.sumAddHom_apply] using sum_mapRange_index fun i => by simp
 #align dfinsupp.sum_map_range_index.linear_map DFinsupp.sum_mapRange_index.linearMap
 

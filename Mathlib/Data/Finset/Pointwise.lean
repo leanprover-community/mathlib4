@@ -854,7 +854,7 @@ section Monoid
 variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n  := by
+theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   change ↑(npowRec n s) = (s: Set α) ^ n
   induction' n with n ih
   · rw [npowRec, pow_zero, coe_one]
