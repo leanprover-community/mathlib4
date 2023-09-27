@@ -344,11 +344,11 @@ theorem coe_mem (x : p) : (x : M) ∈ p :=
 variable (p)
 
 instance addCommMonoid : AddCommMonoid p :=
-  { p.toAddSubmonoid.toAddCommMonoid with }
+  p.toAddSubmonoid.toAddCommMonoid
 #align submodule.add_comm_monoid Submodule.addCommMonoid
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
-  { (show MulAction S p from p.toSubMulAction.mulAction') with
+  { toMulAction := p.toSubMulAction.mulAction'
     smul_zero := fun a => by ext; simp
     zero_smul := fun a => by ext; simp
     add_smul := fun a b x => by ext; simp [add_smul]
@@ -585,9 +585,11 @@ theorem sub_mem_iff_left (hy : y ∈ p) : x - y ∈ p ↔ x ∈ p := by
 theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
 #align submodule.sub_mem_iff_right Submodule.sub_mem_iff_right
+set_option pp.explicit true
 
 instance addCommGroup : AddCommGroup p :=
-  { p.toAddSubgroup.toAddCommGroup with }
+  { p.toAddSubgroup.toAddCommGroup with
+    toAddMonoid := p.addCommMonoid.toAddMonoid }
 #align submodule.add_comm_group Submodule.addCommGroup
 
 end AddCommGroup
