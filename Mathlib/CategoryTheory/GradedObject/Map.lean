@@ -161,10 +161,9 @@ noncomputable def mapIso : X.mapObj p ≅ Y.mapObj p where
 
 variable (C)
 
-abbrev HasMapFunctor := ∀ (j : J), HasColimitsOfShape (Discrete (p ⁻¹' {j})) C
-
 @[simps]
-noncomputable def map [HasMapFunctor C p] : GradedObject I C ⥤ GradedObject J C where
+noncomputable def map [∀ (j : J), HasColimitsOfShape (Discrete (p ⁻¹' {j})) C] :
+    GradedObject I C ⥤ GradedObject J C where
   obj X := X.mapObj p
   map φ := mapMap φ p
 
@@ -230,13 +229,6 @@ lemma mapObjMapObjIso_inv (k : K) :
     (mapObjMapObjIso X p q r hpqr).inv k =
       descMapObj _ _ (fun i hi => X.ιMapObj p i (p i) rfl ≫
         (X.mapObj p).ιMapObj q (p i) k (by rw [← hi, hpqr])) := rfl
-
-/-@[simps]
-noncomputable def mapObjMapObjIso : (X.mapObj p).mapObj q ≅ X.mapObj r where
-  hom k := descMapObj _ _ (fun j hj => descMapObj _ _
-    (fun i hi => X.ιMapObj r i k (by rw [hpqr, hi, hj])))
-  inv k := descMapObj _ _
-    (fun i hi => X.ιMapObj p i (p i) rfl ≫ (X.mapObj p).ιMapObj q (p i) k (by rw [← hi, hpqr]))-/
 
 end
 
