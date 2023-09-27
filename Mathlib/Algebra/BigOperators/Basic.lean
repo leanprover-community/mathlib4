@@ -806,6 +806,13 @@ theorem prod_eq_single {s : Finset α} {f : α → β} (a : α) (h₀ : ∀ b �
 #align finset.sum_eq_single Finset.sum_eq_single
 
 @[to_additive]
+lemma prod_univ_eq_single [Fintype α] {f : α → β} (a : α)
+    (h : ∀ b,  b ≠ a → f b = 1) : ∏ x, f x = f a := by
+  rw [Finset.prod_eq_single]
+  · tauto
+  · exact λ ha ↦ (ha <| Finset.mem_univ a).elim
+
+@[to_additive]
 theorem prod_eq_mul_of_mem {s : Finset α} {f : α → β} (a b : α) (ha : a ∈ s) (hb : b ∈ s)
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : ∏ x in s, f x = f a * f b := by
   haveI := Classical.decEq α; let s' := ({a, b} : Finset α)
