@@ -19,15 +19,17 @@ https://kconrad.math.uconn.edu/blurbs/gradnumthy/padicharmonicsum.pdf
 open BigOperators
 
 /-- The nth-harmonic number defined as a finset sum of consecutive reciprocals. -/
-def harmonic : ℕ → ℚ := fun n => ∑ i in Finset.range n, 1 / (i + 1)
+def harmonic : ℕ → ℚ := fun n => ∑ i in Finset.range n, (↑(i + 1))⁻¹
 
 lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n :=
-  Finset.sum_pos (fun _ _ => div_pos zero_lt_one (by norm_cast; linarith))
+  Finset.sum_pos (fun _ _ => inv_pos.mpr (by norm_cast; linarith))
   (by rwa [Finset.nonempty_range_iff])
 
 lemma harmonic_singleton {n c : ℕ} (hc : c ∈ Finset.range n) :
     harmonic n = 1 / (c + 1) + ∑ x in Finset.range n \ {c}, 1 / ((x : ℚ) + 1) := by
   dsimp [harmonic]
+  simp only [Nat.cast_add, Nat.cast_one, one_div, Finset.mem_range, not_lt,
+    Finset.singleton_subset_iff]
   rwa [add_comm, Finset.sum_eq_sum_diff_singleton_add (i := c)]
 
 lemma harmonic_singleton_ne_zero {c n : ℕ} (hn : 2 ≤ n) :
