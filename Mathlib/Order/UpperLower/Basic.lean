@@ -537,7 +537,7 @@ theorem coe_subset_coe : (s : Set α) ⊆ t ↔ t ≤ s :=
   Iff.rfl
 #align upper_set.coe_subset_coe UpperSet.coe_subset_coe
 
-@[simp, norm_cast] lemma coe_ssubset_coe : (s : Set α) ⊂ t ↔ t < s := Iff.rfl
+@[simp 1100, norm_cast] lemma coe_ssubset_coe : (s : Set α) ⊂ t ↔ t < s := Iff.rfl
 
 @[simp, norm_cast]
 theorem coe_top : ((⊤ : UpperSet α) : Set α) = ∅ :=
@@ -686,10 +686,10 @@ instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
 instance : Inhabited (LowerSet α) :=
   ⟨⊥⟩
 
-@[simp, norm_cast] lemma coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t := Iff.rfl
+@[norm_cast] lemma coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t := Iff.rfl
 #align lower_set.coe_subset_coe LowerSet.coe_subset_coe
 
-@[simp, norm_cast] lemma coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t := Iff.rfl
+@[norm_cast] lemma coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t := Iff.rfl
 
 @[simp, norm_cast]
 theorem coe_top : ((⊤ : LowerSet α) : Set α) = univ :=
