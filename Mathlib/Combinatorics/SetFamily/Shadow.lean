@@ -277,22 +277,16 @@ theorem mem_upShadow_iff_exists_mem_card_add :
 
 @[simp] lemma shadow_compls : ∂ 𝒜ᶜˢ = (∂⁺ 𝒜)ᶜˢ := by
   ext s
-  simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff]
-  constructor
-  · rintro ⟨_, ⟨s, hs, rfl⟩, a, ha, rfl⟩
-    exact ⟨insert a s, ⟨s, hs, a, mem_compl.1 ha, rfl⟩, compl_insert⟩
-  · rintro ⟨_, ⟨s, hs, a, ha, rfl⟩, rfl⟩
-    exact ⟨sᶜ, ⟨s, hs, rfl⟩, a, mem_compl.2 ha, compl_insert.symm⟩
-#align finset.up_shadow_image_compl Finset.upShadow_image_compl
+  simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff, mem_compls]
+  refine (compl_involutive.toPerm _).exists_congr_left.trans ?_
+  simp [←compl_involutive.eq_iff]
+#align finset.up_shadow_image_compl Finset.shadow_compls
 
 @[simp] lemma upShadow_compls : ∂⁺ 𝒜ᶜˢ = (∂ 𝒜)ᶜˢ := by
   ext s
-  simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff]
-  constructor
-  · rintro ⟨_, ⟨s, hs, rfl⟩, a, ha, rfl⟩
-    exact ⟨s.erase a, ⟨s, hs, a, not_mem_compl.1 ha, rfl⟩, compl_erase⟩
-  · rintro ⟨_, ⟨s, hs, a, ha, rfl⟩, rfl⟩
-    exact ⟨sᶜ, ⟨s, hs, rfl⟩, a, not_mem_compl.2 ha, compl_erase.symm⟩
+  simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff, mem_compls]
+  refine (compl_involutive.toPerm _).exists_congr_left.trans ?_
+  simp [←compl_involutive.eq_iff]
 #align finset.shadow_image_compl Finset.upShadow_compls
 
 end UpShadow
