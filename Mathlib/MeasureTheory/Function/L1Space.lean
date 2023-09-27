@@ -1517,7 +1517,7 @@ lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_e
     {β : Type*} [MeasurableSpace β] {b : β} {f : α → β} {s : Set α}
     (f_mble : NullMeasurable f (μ.restrict s)) (hs : f =ᵐ[Measure.restrict μ sᶜ] (fun _ ↦ b))
     {t : Set β} (t_mble : MeasurableSet t) (ht : b ∉ t) :
-    (μ (f ⁻¹' t)) = ((μ.restrict s) (f ⁻¹' t)) := by
+    μ (f ⁻¹' t) = μ.restrict s (f ⁻¹' t) := by
   rw [Measure.restrict_apply₀ (f_mble t_mble)]
   simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
              MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at hs
