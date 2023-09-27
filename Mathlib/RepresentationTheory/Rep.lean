@@ -290,7 +290,8 @@ noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G �
       Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
       zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul] -/
     simp only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply]
-    erw [Finsupp.lift_apply, Finsupp.lift_apply, Representation.ofMulAction_single (G := G)]
+    erw [Finsupp.lift_apply, LinearMap.comp_apply,
+      Finsupp.lift_apply, Representation.ofMulAction_single (G := G)]
     simp only [Finsupp.sum_single_index, zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul, of_ρ]
     rfl
 set_option linter.uppercaseLean3 false in
