@@ -171,6 +171,6 @@ theorem matrixEquivTensor_apply_std_basis (i j : n) (x : A) :
 
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
-    (matrixEquivTensor R A n).symm (a ⊗ₜ M) = M.map fun x => a * algebraMap R A x := by
+    (matrixEquivTensor R A n).symm (a ⊗ₜ M) = M.map fun x => a * algebraMap R A x :=
   rfl
 #align matrix_equiv_tensor_apply_symm matrixEquivTensor_apply_symm
