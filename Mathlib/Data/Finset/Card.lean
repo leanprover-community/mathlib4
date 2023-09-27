@@ -130,10 +130,21 @@ theorem card_doubleton (h : a ≠ b) : ({a, b} : Finset α).card = 2 := by
   rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
 #align finset.card_doubleton Finset.card_doubleton
 
+/-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
 theorem card_erase_of_mem : a ∈ s → (s.erase a).card = s.card - 1 :=
   Multiset.card_erase_of_mem
 #align finset.card_erase_of_mem Finset.card_erase_of_mem
+
+/-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$.
+  This result is casted to any additive group with 1,
+  so that we don't have to work with `ℕ`-subtraction. -/
+@[simp]
+theorem cast_card_erase_of_mem {R} [AddGroupWithOne R] {s : Finset α} (hs : a ∈ s) :
+    ((s.erase a).card : R) = s.card - 1 := by
+  rw [card_erase_of_mem hs, Nat.cast_sub, Nat.cast_one]
+  rw [Nat.add_one_le_iff, Finset.card_pos]
+  exact ⟨a, hs⟩
 
 @[simp]
 theorem card_erase_add_one : a ∈ s → (s.erase a).card + 1 = s.card :=
