@@ -1544,7 +1544,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
   · refine' ⟨Γ'.bit0 :: l₁, [Γ'.bit1], some Γ'.cons, rfl, TransGen.head rfl (TransGen.single _)⟩
     simp [trPosNum]
   · obtain ⟨l₁', l₂', s', e, h⟩ := IH (Γ'.bit0 :: l₁)
-    refine' ⟨l₁', l₂', s', e, TransGen.head _ h⟩
+    refine ⟨l₁', l₂', s', e, TransGen.head ?_ h⟩
     simp [PosNum.succ, trPosNum]
     rfl
   · refine' ⟨l₁, _, some Γ'.bit0, rfl, TransGen.single _⟩
