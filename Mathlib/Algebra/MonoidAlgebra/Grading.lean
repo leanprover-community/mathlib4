@@ -153,6 +153,7 @@ theorem decomposeAux_single (m : M) (r : R) :
   rfl
 #align add_monoid_algebra.decompose_aux_single AddMonoidAlgebra.decomposeAux_single
 
+set_option synthInstance.maxHeartbeats 100000 in
 theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
     decomposeAux f ↑x = DirectSum.of (fun i => gradeBy R f i) i x := by
   obtain ⟨x, hx⟩ := x
