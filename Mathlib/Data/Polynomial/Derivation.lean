@@ -114,7 +114,7 @@ For an `A`-module `M` and an element `a : A`, `eval₂PullbackModule M a`
 is the `R[X]`-module, where the action of `X` if given by multiplication by `a`.
 More generally, the action of `f : R[X]` is given by `f • m = f(a) • m`.
 -/
-def eval₂PullbackModule (M: Type u) : A → Type u := fun _ ↦ M
+def eval₂PullbackModule (M: Type u) := Function.const A M
 instance : AddCommMonoid <| eval₂PullbackModule M a := by assumption
 instance : Module R[X] <| eval₂PullbackModule M a :=
   Module.compHom M <| eval₂RingHom (algebraMap R A) a
