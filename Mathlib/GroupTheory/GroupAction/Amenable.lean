@@ -45,7 +45,7 @@ variable (M : Type u) (α : Type v) [Monoid M] [MulAction M α]
 - is finitely additive under disjoint unions -/
 structure Mean where
   /-- function giving the measure of subset-/
-  μ : Set α → ENNReal
+  μ : Set α → NNReal
   /-- μ should be normalised  -/
   norm : μ Set.univ = 1
   /-- μ has to be finitely additive -/
@@ -53,7 +53,7 @@ structure Mean where
             → μ (X ∪ Y) = μ X + μ Y
 
 @[coe]
-instance : CoeFun (Mean α) (λ _ => Set α → ENNReal) where
+instance : CoeFun (Mean α) (λ _ => Set α → NNReal) where
   coe := Mean.μ
 
 
