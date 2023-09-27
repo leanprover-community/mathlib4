@@ -306,7 +306,7 @@ theorem toTopologicalSpace_injective :
 
 @[ext]
 theorem ext {f g : RingTopology α} (h : f.IsOpen = g.IsOpen) : f = g :=
-  toTopologicalSpace_injective <| topologicalSpace_eq h
+  toTopologicalSpace_injective <| TopologicalSpace.ext h
 #align ring_topology.ext' RingTopology.ext
 
 /-- The ordering on ring topologies on the ring `α`.

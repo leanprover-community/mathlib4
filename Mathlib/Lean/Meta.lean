@@ -7,7 +7,7 @@ import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 import Std.Data.Option.Basic
-import Std.Data.List.Basic
+import Std.Data.List.Count
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
@@ -103,7 +103,7 @@ Check if a goal is "independent" of a list of other goals.
 We say a goal is independent of other goals if assigning a value to it
 can not change the solvability of the other goals.
 
-This function only calculates an approximation of this condition
+This function only calculates a conservative approximation of this condition.
 -/
 def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
   let t ← instantiateMVars (← g.getType)
@@ -120,8 +120,72 @@ def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
     return true
   -- Finally, we check if the goal `g` appears in the type of any of the goals `L`.
   L.allM fun g' => do
-    let t' ← instantiateMVars (← g'.getType)
-    pure <| !(← exprDependsOn' t' (.mvar g))
+    let mvars ← Meta.getMVars (← g'.getType)
+    pure <| !(mvars.contains g)
+
+/--
+Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
+If successful, returns the new goal, and otherwise returns the original `MVarId`.
+
+This may be regarded as being a special case of `Lean.MVarId.liftReflToEq`, specifically for `Iff`.
+-/
+def iffOfEq (mvarId : MVarId) : MetaM MVarId := do
+  let res ← observing? do
+    let [mvarId] ← mvarId.apply (mkConst ``iff_of_eq []) | failure
+    return mvarId
+  return res.getD mvarId
+
+/--
+Try to convert an `Eq` into an `Iff` by applying `propext`.
+If successful, then returns then new goal, otherwise returns the original `MVarId`.
+-/
+def propext (mvarId : MVarId) : MetaM MVarId := do
+  let res ← observing? do
+    -- Avoid applying `propext` if the target is not an equality of `Prop`s.
+    -- We don't want a unification specializing `Sort*` to `Prop`.
+    let tgt ← withReducible mvarId.getType'
+    let some (ty, _, _) := tgt.eq? | failure
+    guard ty.isProp
+    let [mvarId] ← mvarId.apply (mkConst ``propext []) | failure
+    return mvarId
+  return res.getD mvarId
+
+/--
+Try to close the goal with using `proof_irrel_heq`. Returns whether or not it succeeds.
+
+We need to be somewhat careful not to assign metavariables while doing this, otherwise we might
+specialize `Sort _` to `Prop`.
+-/
+def proofIrrelHeq (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `proofIrrelHeq
+      let tgt ← withReducible mvarId.getType'
+      let some (_, lhs, _, rhs) := tgt.heq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
+      let pf ← mkAppM ``proof_irrel_heq #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
+
+/--
+Try to close the goal using `Subsingleton.elim`. Returns whether or not it succeeds.
+
+We are careful to apply `Subsingleton.elim` in a way that does not assign any metavariables.
+This is to prevent the `Subsingleton Prop` instance from being used as justification to specialize
+`Sort _` to `Prop`.
+-/
+def subsingletonElim (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `subsingletonElim
+      let tgt ← withReducible mvarId.getType'
+      let some (_, lhs, rhs) := tgt.eq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
+      let pf ← mkAppM ``Subsingleton.elim #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
 
 end Lean.MVarId
 
@@ -137,7 +201,7 @@ def getLocalHyps [Monad m] [MonadLCtx m] : m (Array Expr) := do
 /-- Count how many local hypotheses appear in an expression. -/
 def countLocalHypsUsed [Monad m] [MonadLCtx m] [MonadMCtx m] (e : Expr) : m Nat := do
   let e' ← instantiateMVars e
-  return (← getLocalHyps).toList.countp fun h => h.occurs e'
+  return (← getLocalHyps).toList.countP fun h => h.occurs e'
 
 /--
 Given a monadic function `F` that takes a type and a term of that type and produces a new term,

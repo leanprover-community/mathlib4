@@ -72,7 +72,7 @@ theorem chain_iff_forall₂ :
   | a, [] => by simp
   | a, b :: l => by
     by_cases h : l = [] <;>
-    simp [@chain_iff_forall₂ b l, *]
+    simp [@chain_iff_forall₂ b l, dropLast, *]
 #align list.chain_iff_forall₂ List.chain_iff_forall₂
 
 theorem chain_append_singleton_iff_forall₂ : Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) :=
@@ -469,8 +469,8 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
     /- Bundle l with a proof that it is r-decreasing to form l' -/
     have hl' := (List.chain'_cons'.1 hl).2
     let l' : List.chains r := ⟨l, hl'⟩
-    have : Acc (List.lex_chains r) l'
-    · cases' l with b l
+    have : Acc (List.lex_chains r) l' := by
+      cases' l with b l
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       /- l' is accessible by induction hypothesis -/
       · apply ih b (List.chain'_cons.1 hl).1

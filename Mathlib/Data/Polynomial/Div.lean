@@ -75,9 +75,8 @@ theorem multiplicity_finite_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < deg
     have hpnr0 : leadingCoeff (p ^ (natDegree q + 1)) * leadingCoeff r ≠ 0 := by
       simp only [leadingCoeff_pow' hpn0', leadingCoeff_eq_zero, hpn1, one_pow, one_mul, Ne.def,
           hr0]
-    have hnp : 0 < natDegree p := by
-      rw [← WithBot.coe_lt_coe, ← Nat.cast_withBot, ← Nat.cast_withBot,
-        ← degree_eq_natDegree hp0]; exact hp
+    have hnp : 0 < natDegree p := Nat.cast_lt.1 <| by
+      rw [← degree_eq_natDegree hp0]; exact hp
     have := congr_arg natDegree hr
     rw [natDegree_mul' hpnr0, natDegree_pow' hpn0', add_mul, add_assoc] at this
     exact
@@ -98,9 +97,8 @@ theorem div_wf_lemma (h : degree q ≤ degree p ∧ p ≠ 0) (hq : Monic q) :
   have hp : leadingCoeff p ≠ 0 := mt leadingCoeff_eq_zero.1 h.2
   have hq0 : q ≠ 0 := hq.ne_zero_of_polynomial_ne h.2
   have hlt : natDegree q ≤ natDegree p :=
-    WithBot.coe_le_coe.1
-      (by rw [← Nat.cast_withBot, ← Nat.cast_withBot, ← degree_eq_natDegree h.2,
-        ← degree_eq_natDegree hq0]; exact h.1)
+    Nat.cast_le.1
+      (by rw [← degree_eq_natDegree h.2, ← degree_eq_natDegree hq0]; exact h.1)
   degree_sub_lt
     (by
       rw [hq.degree_mul, degree_C_mul_X_pow _ hp, degree_eq_natDegree h.2,
@@ -166,6 +164,15 @@ theorem degree_modByMonic_lt [Nontrivial R] :
   termination_by degree_modByMonic_lt p q hq => p
 #align polynomial.degree_mod_by_monic_lt Polynomial.degree_modByMonic_lt
 
+theorem natDegree_modByMonic_lt (p : R[X]) {q : R[X]} (hmq : Monic q) (hq : q ≠ 1) :
+    natDegree (p %ₘ q) < q.natDegree := by
+  by_cases hpq : p %ₘ q = 0
+  · rw [hpq, natDegree_zero, Nat.pos_iff_ne_zero]
+    contrapose! hq
+    exact eq_one_of_monic_natDegree_zero hmq hq
+  · haveI := Nontrivial.of_polynomial_ne hpq
+    exact natDegree_lt_natDegree hpq (degree_modByMonic_lt p hmq)
+
 @[simp]
 theorem zero_modByMonic (p : R[X]) : 0 %ₘ p = 0 := by
   unfold modByMonic divModByMonicAux
@@ -219,11 +226,18 @@ theorem degree_modByMonic_le (p : R[X]) {q : R[X]} (hq : Monic q) : degree (p %�
   exact (degree_modByMonic_lt _ hq).le
 #align polynomial.degree_mod_by_monic_le Polynomial.degree_modByMonic_le
 
+theorem natDegree_modByMonic_le (p : Polynomial R) {g : Polynomial R} (hg : g.Monic) :
+    natDegree (p %ₘ g) ≤ g.natDegree :=
+natDegree_le_natDegree (degree_modByMonic_le p hg)
+
 end Ring
 
 section CommRing
 
 variable [CommRing R] {p q : R[X]}
+
+theorem X_dvd_sub_C : X ∣ p - C (p.coeff 0) := by
+  simp [X_dvd_iff, coeff_C]
 
 theorem modByMonic_eq_sub_mul_div :
     ∀ (p : R[X]) {q : R[X]} (_hq : Monic q), p %ₘ q = p - q * (p /ₘ q)
@@ -270,7 +284,7 @@ theorem degree_add_divByMonic (hq : Monic q) (h : degree q ≤ degree p) :
       degree (p %ₘ q) < degree q := degree_modByMonic_lt _ hq
       _ ≤ _ := by
         rw [degree_mul' hlc, degree_eq_natDegree hq.ne_zero, degree_eq_natDegree hdiv0, ←
-            Nat.cast_add, Nat.cast_withBot, Nat.cast_withBot, WithBot.coe_le_coe]
+            Nat.cast_add, Nat.cast_le]
         exact Nat.le_add_right _ _
   calc
     degree q + degree (p /ₘ q) = degree (q * (p /ₘ q)) := Eq.symm (degree_mul' hlc)
@@ -304,9 +318,9 @@ theorem degree_divByMonic_lt (p : R[X]) {q : R[X]} (hq : Monic q) (hp0 : p ≠ 0
     rw [← degree_add_divByMonic hq (not_lt.1 hpq), degree_eq_natDegree hq.ne_zero,
       degree_eq_natDegree (mt (divByMonic_eq_zero_iff hq).1 hpq)]
     exact
-      WithBot.coe_lt_coe.2
-        (Nat.lt_add_of_pos_left (WithBot.coe_lt_coe.1 <|
-          by simpa [Nat.cast_withBot, degree_eq_natDegree hq.ne_zero] using h0q))
+      Nat.cast_lt.2
+        (Nat.lt_add_of_pos_left (Nat.cast_lt.1 <|
+          by simpa [degree_eq_natDegree hq.ne_zero] using h0q))
 #align polynomial.degree_div_by_monic_lt Polynomial.degree_divByMonic_lt
 
 theorem natDegree_divByMonic {R : Type u} [CommRing R] (f : R[X]) {g : R[X]} (hg : g.Monic) :
@@ -325,8 +339,7 @@ theorem natDegree_divByMonic {R : Type u} [CommRing R] (f : R[X]) {g : R[X]} (hg
     apply hfg
     rw [hf, zero_divByMonic]
   rw [degree_eq_natDegree hf, degree_eq_natDegree hg.ne_zero, degree_eq_natDegree hfg,
-    Nat.cast_withBot, Nat.cast_withBot, Nat.cast_withBot,
-    ← WithBot.coe_add, WithBot.coe_eq_coe] at this
+    ← Nat.cast_add, Nat.cast_inj] at this
   rw [← this, add_tsub_cancel_left]
 #align polynomial.nat_degree_div_by_monic Polynomial.natDegree_divByMonic
 

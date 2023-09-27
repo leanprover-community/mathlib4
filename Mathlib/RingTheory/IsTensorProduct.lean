@@ -275,7 +275,6 @@ theorem IsBaseChange.of_lift_unique
   let f'' : S ⊗[R] M →ₗ[S] N := by
     refine'
       { f' with
-        toFun := f'
         map_smul' := fun s x =>
           TensorProduct.induction_on x _ (fun s' y => smul_assoc s s' _) fun x y hx hy => _ }
     · dsimp; rw [map_zero, smul_zero, map_zero, smul_zero]
@@ -382,6 +381,7 @@ class Algebra.IsPushout : Prop where
 
 variable {R S R' S'}
 
+@[symm]
 theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPushout R R' S S' := by
   let _ := (Algebra.TensorProduct.includeRight : R' →ₐ[R] S ⊗ R').toRingHom.toAlgebra
   let e : R' ⊗[R] S ≃ₗ[R'] S' := by

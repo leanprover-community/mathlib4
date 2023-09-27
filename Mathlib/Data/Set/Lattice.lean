@@ -1159,6 +1159,19 @@ theorem sInter_eq_univ {S : Set (Set α)} : ⋂₀ S = univ ↔ ∀ s ∈ S, s =
   sInf_eq_top
 #align set.sInter_eq_univ Set.sInter_eq_univ
 
+theorem subset_powerset_iff {s : Set (Set α)} {t : Set α} : s ⊆ 𝒫 t ↔ ⋃₀ s ⊆ t :=
+  sUnion_subset_iff.symm
+
+/-- `⋃₀` and `𝒫` form a Galois connection. -/
+theorem sUnion_powerset_gc :
+    GaloisConnection (⋃₀ · : Set (Set α) → Set α) (𝒫 · : Set α → Set (Set α)) :=
+  gc_sSup_Iic
+
+/-- `⋃₀` and `𝒫` form a Galois insertion. -/
+def sUnion_powerset_gi :
+    GaloisInsertion (⋃₀ · : Set (Set α) → Set α) (𝒫 · : Set α → Set (Set α)) :=
+  gi_sSup_Iic
+
 /-- If all sets in a collection are either `∅` or `Set.univ`, then so is their union. -/
 theorem sUnion_mem_empty_univ {S : Set (Set α)} (h : S ⊆ {∅, univ}) :
     ⋃₀ S ∈ ({∅, univ} : Set (Set α)) := by
@@ -1344,7 +1357,7 @@ theorem Sigma.univ (X : α → Type*) : (Set.univ : Set (Σa, X a)) = ⋃ a, ran
     iff_of_true trivial ⟨range (Sigma.mk x.1), Set.mem_range_self _, x.2, Sigma.eta x⟩
 #align set.sigma.univ Set.Sigma.univ
 
-alias sUnion_subset_sUnion ← sUnion_mono
+alias sUnion_mono := sUnion_subset_sUnion
 #align set.sUnion_mono Set.sUnion_mono
 
 theorem iUnion_subset_iUnion_const {s : Set α} (h : ι → ι₂) : ⋃ _ : ι, s ⊆ ⋃ _ : ι₂, s :=
@@ -2168,8 +2181,17 @@ end Disjoint
 
 /-! ### Intervals -/
 
-
 namespace Set
+
+lemma nonempty_iInter_Iic_iff [Preorder α] {f : ι → α} :
+    (⋂ i, Iic (f i)).Nonempty ↔ BddBelow (range f) := by
+  have : (⋂ (i : ι), Iic (f i)) = lowerBounds (range f) := by
+    ext c; simp [lowerBounds]
+  simp [this, BddBelow]
+
+lemma nonempty_iInter_Ici_iff [Preorder α] {f : ι → α} :
+    (⋂ i, Ici (f i)).Nonempty ↔ BddAbove (range f) :=
+  nonempty_iInter_Iic_iff (α := αᵒᵈ)
 
 variable [CompleteLattice α]
 

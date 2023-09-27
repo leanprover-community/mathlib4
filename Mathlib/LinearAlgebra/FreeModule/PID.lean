@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Finiteness
 
@@ -209,7 +210,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   have mk_y' : (⟨y', y'M⟩ : M) = ∑ i, c i • b'M i :=
     Subtype.ext
       (show y' = M.subtype _ by
-        simp only [LinearMap.map_sum, LinearMap.map_smul]
+        simp only [map_sum, map_smul]
         rfl)
   have a_smul_y' : a • y' = y := by
     refine Subtype.mk_eq_mk.mp (show (a • ⟨y', y'M⟩ : M) = ⟨y, N_le_M yN⟩ from ?_)
@@ -439,6 +440,62 @@ structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type*) (n : ℕ) where
   /-- The SNF relation between the vectors of the bases. -/
   snf : ∀ i, (bN i : M) = a i • bM (f i)
 #align basis.smith_normal_form Basis.SmithNormalForm
+
+namespace Basis.SmithNormalForm
+
+variable {n : ℕ} {N : Submodule R M} (snf : Basis.SmithNormalForm N ι n) (m : N)
+
+lemma repr_eq_zero_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
+    snf.bM.repr m i = 0 := by
+  obtain ⟨m, hm⟩ := m
+  obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
+  replace hi : ∀ j, snf.f j ≠ i := by simpa using hi
+  simp [Finsupp.single_apply, hi, snf.snf, map_finsupp_sum]
+
+lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
+    N ≤ LinearMap.ker (snf.bM.coord i) :=
+  fun m hm ↦ snf.repr_eq_zero_of_nmem_range ⟨m, hm⟩ hi
+
+@[simp] lemma repr_apply_embedding_eq_repr_smul {i : Fin n} :
+    snf.bM.repr m (snf.f i) = snf.bN.repr (snf.a i • m) i := by
+  obtain ⟨m, hm⟩ := m
+  obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
+  replace hm : (⟨Finsupp.sum c fun i t ↦ t • (↑(snf.bN i) : M), hm⟩ : N) =
+      Finsupp.sum c fun i t ↦ t • ⟨snf.bN i, (snf.bN i).2⟩ := by
+    ext; change _ = N.subtype _; simp [map_finsupp_sum]
+  classical
+  simp_rw [hm, map_smul, map_finsupp_sum, map_smul, Subtype.coe_eta, repr_self,
+    Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.sum_single, Finsupp.smul_apply, snf.snf,
+    map_smul, repr_self, Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.sum_apply,
+    Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Finsupp.sum_ite_eq',
+    Finsupp.mem_support_iff, ite_not, mul_comm, ite_eq_right_iff]
+  exact fun a ↦ (mul_eq_zero_of_right _ a).symm
+
+@[simp] lemma repr_comp_embedding_eq_smul :
+    snf.bM.repr m ∘ snf.f = snf.a • (snf.bN.repr m : Fin n → R) := by
+  ext i
+  simp [Pi.smul_apply (snf.a i)]
+
+@[simp] lemma coord_apply_embedding_eq_smul_coord {i : Fin n} :
+    snf.bM.coord (snf.f i) ∘ₗ N.subtype = snf.a i • snf.bN.coord i := by
+  ext m
+  simp [Pi.smul_apply (snf.a i)]
+
+/-- Given a Smith-normal-form pair of bases for `N ⊆ M`, and a linear endomorphism `f` of `M`
+that preserves `N`, the diagonal of the matrix of the restriction `f` to `N` does not depend on
+which of the two bases for `N` is used. -/
+@[simp]
+lemma toMatrix_restrict_eq_toMatrix [Fintype ι] [DecidableEq ι]
+    (f : M →ₗ[R] M) (hf : ∀ x, f x ∈ N) (hf' : ∀ x ∈ N, f x ∈ N := fun x _ ↦ hf x) {i : Fin n} :
+    LinearMap.toMatrix snf.bN snf.bN (LinearMap.restrict f hf') i i =
+    LinearMap.toMatrix snf.bM snf.bM f (snf.f i) (snf.f i) := by
+  rw [LinearMap.toMatrix_apply, LinearMap.toMatrix_apply,
+    snf.repr_apply_embedding_eq_repr_smul ⟨_, (hf _)⟩]
+  congr
+  ext
+  simp [snf.snf]
+
+end Basis.SmithNormalForm
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix

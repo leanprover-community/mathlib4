@@ -1227,7 +1227,7 @@ theorem fastGrowingε₀_one : fastGrowingε₀ 1 = 2 := by
 #align onote.fast_growing_ε₀_one ONote.fastGrowingε₀_one
 
 theorem fastGrowingε₀_two : fastGrowingε₀ 2 = 2048 := by
-  simp [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl, @fastGrowing_limit (oadd 1 1 0) _ rfl,
+  norm_num [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl, @fastGrowing_limit (oadd 1 1 0) _ rfl,
     show oadd 0 (2 : Nat).succPNat 0 = 3 from rfl, @fastGrowing_succ 3 2 rfl]
 #align onote.fast_growing_ε₀_two ONote.fastGrowingε₀_two
 

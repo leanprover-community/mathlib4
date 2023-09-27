@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.Polynomial.Reverse
+import Mathlib.Data.Polynomial.Inductions
 import Mathlib.RingTheory.Localization.Basic
 
 #align_import data.polynomial.laurent from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
@@ -55,7 +57,7 @@ Lots is missing!
 --  ```
 --  def trunc : R[T;T⁻¹] →[R] R[X] :=
 --  begin
---    refine (_ : AddMonoidAlgebra R ℕ →[R] R[X]).comp _,
+--    refine (_ : R[ℕ] →[R] R[X]).comp _,
 --    { exact ⟨(toFinsuppIso R).symm, by simp⟩ },
 --    { refine ⟨λ r, comapDomain _ r (Set.injOn_of_injective (λ a b ab, Int.ofNat.inj ab) _), _⟩,
 --      exact λ r f, comapDomain_smul _ _ _ }
@@ -71,9 +73,7 @@ Lots is missing!
 -/
 
 
-open Polynomial BigOperators
-
-open Polynomial AddMonoidAlgebra Finsupp
+open Polynomial BigOperators Function AddMonoidAlgebra Finsupp
 
 noncomputable section
 
@@ -86,7 +86,10 @@ abbrev LaurentPolynomial (R : Type*) [Semiring R] :=
   AddMonoidAlgebra R ℤ
 #align laurent_polynomial LaurentPolynomial
 
-local notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
+@[nolint docBlame]
+scoped[LaurentPolynomial] notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
+
+open LaurentPolynomial
 
 -- Porting note: `ext` no longer applies `Finsupp.ext` automatically
 @[ext]
@@ -113,7 +116,10 @@ def Polynomial.toLaurentAlg [CommSemiring R] : R[X] →ₐ[R] R[T;T⁻¹] := by
   exact mapDomainAlgHom R R Int.ofNatHom
 #align polynomial.to_laurent_alg Polynomial.toLaurentAlg
 
-@[simp]
+@[simp] lemma Polynomial.coe_toLaurentAlg [CommSemiring R] :
+    (toLaurentAlg : R[X] → R[T;T⁻¹]) = toLaurent :=
+  rfl
+
 theorem Polynomial.toLaurentAlg_apply [CommSemiring R] (f : R[X]) : toLaurentAlg f = toLaurent f :=
   rfl
 #align polynomial.to_laurent_alg_apply Polynomial.toLaurentAlg_apply
@@ -156,6 +162,9 @@ theorem single_eq_C (r : R) : Finsupp.single 0 r = C r := rfl
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.single_eq_C LaurentPolynomial.single_eq_C
 
+@[simp] lemma C_apply (t : R) (n : ℤ) : C t n = if n = 0 then t else 0 := by
+  rw [← single_eq_C, Finsupp.single_apply]; aesop
+
 /-- The function `n ↦ T ^ n`, implemented as a sequence `ℤ → R[T;T⁻¹]`.
 
 Using directly `T ^ n` does not work, since we want the exponents to be of Type `ℤ` and there
@@ -165,6 +174,9 @@ def T (n : ℤ) : R[T;T⁻¹] :=
   Finsupp.single n 1
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T LaurentPolynomial.T
+
+@[simp] lemma T_apply (m n : ℤ) : (T n : R[T;T⁻¹]) m = if n = m then 1 else 0 :=
+  Finsupp.single_apply
 
 @[simp]
 theorem T_zero : (T 0 : R[T;T⁻¹]) = 1 :=
@@ -219,6 +231,10 @@ theorem _root_.Polynomial.toLaurent_C (r : R) : toLaurent (Polynomial.C r) = C r
   simp only [Int.ofNat_zero, T_zero, mul_one]
 set_option linter.uppercaseLean3 false in
 #align polynomial.to_laurent_C Polynomial.toLaurent_C
+
+@[simp]
+theorem _root_.Polynomial.toLaurent_comp_C : toLaurent (R := R) ∘ Polynomial.C = C :=
+  funext Polynomial.toLaurent_C
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_X : (toLaurent Polynomial.X : R[T;T⁻¹]) = T 1 := by
@@ -563,7 +579,7 @@ instance : Module R[X] R[T;T⁻¹] :=
   Module.compHom _ Polynomial.toLaurent
 
 instance (R : Type*) [Semiring R] : IsScalarTower R[X] R[X] R[T;T⁻¹] where
-  smul_assoc x y z := by simp only [(· • ·), SMul.smul, SMul.comp.smul, map_mul, mul_assoc]
+  smul_assoc x y z := by dsimp; simp_rw [MulAction.mul_smul]
 
 end Semiring
 
@@ -609,5 +625,35 @@ theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T
 #align laurent_polynomial.is_localization LaurentPolynomial.isLocalization
 
 end CommSemiring
+
+section Inversion
+
+variable {R : Type*} [CommSemiring R]
+
+/-- The map which substitutes `T ↦ T⁻¹` into a Laurent polynomial. -/
+def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.domCongr R R <| AddEquiv.neg _
+
+@[simp] lemma invert_T (n : ℤ) : invert (T n : R[T;T⁻¹]) = T (-n) :=
+  AddMonoidAlgebra.domCongr_single _ _ _ _ _
+
+@[simp] lemma invert_apply (f : R[T;T⁻¹]) (n : ℤ) : invert f n = f (-n) := rfl
+
+@[simp] lemma invert_comp_C : invert ∘ (@C R _) = C := by ext; simp
+
+@[simp] lemma invert_C (t : R) : invert (C t) = C t := by ext; simp
+
+lemma involutive_invert : Involutive (invert (R := R)) := fun _ ↦ by ext; simp
+
+@[simp] lemma invert_symm : (invert (R := R)).symm = invert := rfl
+
+lemma toLaurent_reverse (p : R[X]) :
+    toLaurent p.reverse = invert (toLaurent p) * (T p.natDegree) := by
+  nontriviality R
+  induction' p using Polynomial.recOnHorner with p t _ _ ih p hp ih
+  · simp
+  · simp [add_mul, ← ih]
+  · simpa [natDegree_mul_X hp]
+
+end Inversion
 
 end LaurentPolynomial

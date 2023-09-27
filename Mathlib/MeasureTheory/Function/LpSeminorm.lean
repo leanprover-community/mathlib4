@@ -251,6 +251,31 @@ theorem snorm_measure_zero {f : α → F} : snorm f p (0 : Measure α) = 0 := by
 
 end Zero
 
+section Neg
+
+@[simp]
+theorem snorm'_neg {f : α → F} : snorm' (-f) q μ = snorm' f q μ := by simp [snorm']
+#align measure_theory.snorm'_neg MeasureTheory.snorm'_neg
+
+@[simp]
+theorem snorm_neg {f : α → F} : snorm (-f) p μ = snorm f p μ := by
+  by_cases h0 : p = 0
+  · simp [h0]
+  by_cases h_top : p = ∞
+  · simp [h_top, snormEssSup]
+  simp [snorm_eq_snorm' h0 h_top]
+#align measure_theory.snorm_neg MeasureTheory.snorm_neg
+
+theorem Memℒp.neg {f : α → E} (hf : Memℒp f p μ) : Memℒp (-f) p μ :=
+  ⟨AEStronglyMeasurable.neg hf.1, by simp [hf.right]⟩
+#align measure_theory.mem_ℒp.neg MeasureTheory.Memℒp.neg
+
+theorem memℒp_neg_iff {f : α → E} : Memℒp (-f) p μ ↔ Memℒp f p μ :=
+  ⟨fun h => neg_neg f ▸ h.neg, Memℒp.neg⟩
+#align measure_theory.mem_ℒp_neg_iff MeasureTheory.memℒp_neg_iff
+
+end Neg
+
 section Const
 
 theorem snorm'_const (c : F) (hq_pos : 0 < q) :
@@ -463,6 +488,11 @@ theorem snorm_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ,
   snorm_congr_nnnorm_ae <| hfg.mono fun _x hx => NNReal.eq hx
 #align measure_theory.snorm_congr_norm_ae MeasureTheory.snorm_congr_norm_ae
 
+theorem snorm_indicator_sub_indicator (s t : Set α) (f : α → E) :
+    snorm (s.indicator f - t.indicator f) p μ = snorm ((s ∆ t).indicator f) p μ :=
+  snorm_congr_norm_ae <| ae_of_all _ fun x ↦ by
+    simp only [Pi.sub_apply, Set.apply_indicator_symmDiff norm_neg]
+
 @[simp]
 theorem snorm'_norm {f : α → F} : snorm' (fun a => ‖f a‖) q μ = snorm' f q μ := by simp [snorm']
 #align measure_theory.snorm'_norm MeasureTheory.snorm'_norm
@@ -533,7 +563,7 @@ theorem Memℒp.of_le {f : α → E} {g : α → F} (hg : Memℒp g p μ) (hf : 
   ⟨hf, (snorm_mono_ae hfg).trans_lt hg.snorm_lt_top⟩
 #align measure_theory.mem_ℒp.of_le MeasureTheory.Memℒp.of_le
 
-alias Memℒp.of_le ← Memℒp.mono
+alias Memℒp.mono := Memℒp.of_le
 #align measure_theory.mem_ℒp.mono MeasureTheory.Memℒp.mono
 
 theorem Memℒp.mono' {f : α → E} {g : α → ℝ} (hg : Memℒp g p μ) (hf : AEStronglyMeasurable f μ)
@@ -851,21 +881,8 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
 variable {μ E}
 
 theorem snorm_sub_le' {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (p : ℝ≥0∞) : snorm (f - g) p μ ≤ LpAddConst p * (snorm f p μ + snorm g p μ) :=
-  calc
-    snorm (f - g) p μ = snorm (f + -g) p μ := by rw [sub_eq_add_neg]
-    -- We cannot use snorm_add_le on f and (-g) because we don't have `AEMeasurable (-g) μ`, since
-    -- we don't suppose `[BorelSpace E]`.
-    _ = snorm (fun x => ‖f x + -g x‖) p μ :=
-      (snorm_norm (f + -g)).symm
-    _ ≤ snorm (fun x => ‖f x‖ + ‖-g x‖) p μ := by
-      refine' snorm_mono_real fun x => _
-      rw [norm_norm]
-      exact norm_add_le _ _
-    _ = snorm (fun x => ‖f x‖ + ‖g x‖) p μ := by simp_rw [norm_neg]
-    _ ≤ LpAddConst p * (snorm (fun x => ‖f x‖) p μ + snorm (fun x => ‖g x‖) p μ) :=
-      (snorm_add_le' hf.norm hg.norm p)
-    _ = LpAddConst p * (snorm f p μ + snorm g p μ) := by rw [← snorm_norm f, ← snorm_norm g]
+    (p : ℝ≥0∞) : snorm (f - g) p μ ≤ LpAddConst p * (snorm f p μ + snorm g p μ) := by
+  simpa only [sub_eq_add_neg, snorm_neg] using snorm_add_le' hf hg.neg p
 #align measure_theory.snorm_sub_le' MeasureTheory.snorm_sub_le'
 
 theorem snorm_sub_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
@@ -1021,27 +1038,6 @@ theorem memℒp_of_memℒp_trim (hm : m ≤ m0) {f : α → E} (hf : Memℒp f p
 #align measure_theory.mem_ℒp_of_mem_ℒp_trim MeasureTheory.memℒp_of_memℒp_trim
 
 end Trim
-
-@[simp]
-theorem snorm'_neg {f : α → F} : snorm' (-f) q μ = snorm' f q μ := by simp [snorm']
-#align measure_theory.snorm'_neg MeasureTheory.snorm'_neg
-
-@[simp]
-theorem snorm_neg {f : α → F} : snorm (-f) p μ = snorm f p μ := by
-  by_cases h0 : p = 0
-  · simp [h0]
-  by_cases h_top : p = ∞
-  · simp [h_top, snormEssSup]
-  simp [snorm_eq_snorm' h0 h_top]
-#align measure_theory.snorm_neg MeasureTheory.snorm_neg
-
-theorem Memℒp.neg {f : α → E} (hf : Memℒp f p μ) : Memℒp (-f) p μ :=
-  ⟨AEStronglyMeasurable.neg hf.1, by simp [hf.right]⟩
-#align measure_theory.mem_ℒp.neg MeasureTheory.Memℒp.neg
-
-theorem memℒp_neg_iff {f : α → E} : Memℒp (-f) p μ ↔ Memℒp f p μ :=
-  ⟨fun h => neg_neg f ▸ h.neg, Memℒp.neg⟩
-#align measure_theory.mem_ℒp_neg_iff MeasureTheory.memℒp_neg_iff
 
 theorem snorm'_le_snorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq : p ≤ q) {f : α → E}
     (hf : AEStronglyMeasurable f μ) :

@@ -234,14 +234,17 @@ set_option linter.uppercaseLean3 false in
 As an example, we now have everything we need to check the sheaf condition
 for a presheaf of commutative rings, merely by checking the sheaf condition
 for the underlying sheaf of types.
-```
-import algebra.category.Ring.limits
-example (X : Top) (F : presheaf CommRing X) (h : presheaf.is_sheaf (F ⋙ (forget CommRing))) :
-  F.is_sheaf :=
-(is_sheaf_iff_is_sheaf_comp (forget CommRing) F).mpr h
+```lean
+example (X : TopCat) (F : Presheaf CommRingCat X)
+    (h : Presheaf.IsSheaf (F ⋙ (forget CommRingCat))) :
+    F.IsSheaf :=
+(isSheaf_iff_isSheaf_comp (forget CommRingCat) F).mpr h
 ```
 -/
-
+example (X : TopCat) (F : Presheaf CommRingCat X)
+    (h : Presheaf.IsSheaf (F ⋙ (forget CommRingCat))) :
+    F.IsSheaf :=
+(isSheaf_iff_isSheaf_comp (forget CommRingCat) F).mpr h
 
 end Presheaf
 
