@@ -8,7 +8,7 @@ variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃
 namespace GradedObject
 
 @[simps]
-def mapBifunctorFunctor (I J : Type*) :
+def mapBifunctor (I J : Type*) :
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃ where
   obj X :=
     { obj := fun Y ij => (F.obj (X ij.1)).obj (Y ij.2)
@@ -22,35 +22,35 @@ variable {I J K : Type*} (p : I × J → K)
 
 @[simp]
 noncomputable def mapBifunctorMapObj (X : GradedObject I C₁) (Y : GradedObject J C₂)
-  [HasMap (((mapBifunctorFunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
-    (((mapBifunctorFunctor F I J).obj X).obj Y).mapObj p
+  [HasMap (((mapBifunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
+    (((mapBifunctor F I J).obj X).obj Y).mapObj p
 
 noncomputable def ιMapBifunctorMapObj (p : I × J → K) (X : GradedObject I C₁) (Y : GradedObject J C₂)
-    [HasMap (((mapBifunctorFunctor F I J).obj X).obj Y) p]
+    [HasMap (((mapBifunctor F I J).obj X).obj Y) p]
     (i : I) (j : J) (k : K) (h : p ⟨i, j⟩ = k) :
     (F.obj (X i)).obj (Y j) ⟶ mapBifunctorMapObj F p X Y k :=
-  (((mapBifunctorFunctor F I J).obj X).obj Y).ιMapObj p ⟨i, j⟩ k h
+  (((mapBifunctor F I J).obj X).obj Y).ιMapObj p ⟨i, j⟩ k h
 
 @[simp]
 noncomputable def mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂)
     {Y₁ Y₂ : GradedObject J C₂} (g : Y₁ ⟶ Y₂)
-    [HasMap (((mapBifunctorFunctor F I J).obj X₁).obj Y₁) p]
-    [HasMap (((mapBifunctorFunctor F I J).obj X₂).obj Y₂) p] :
+    [HasMap (((mapBifunctor F I J).obj X₁).obj Y₁) p]
+    [HasMap (((mapBifunctor F I J).obj X₂).obj Y₂) p] :
     mapBifunctorMapObj F p X₁ Y₁ ⟶ mapBifunctorMapObj F p X₂ Y₂ :=
-  GradedObject.mapMap (((mapBifunctorFunctor F I J).map f).app Y₁ ≫ ((mapBifunctorFunctor F I J).obj X₂).map g) p
+  GradedObject.mapMap (((mapBifunctor F I J).map f).app Y₁ ≫ ((mapBifunctor F I J).obj X₂).map g) p
 
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂)
     {Y₁ Y₂ : GradedObject J C₂} (g : Y₁ ⟶ Y₂)
-    [HasMap (((mapBifunctorFunctor F I J).obj X₁).obj Y₁) p]
-    [HasMap (((mapBifunctorFunctor F I J).obj X₂).obj Y₂) p]
+    [HasMap (((mapBifunctor F I J).obj X₁).obj Y₁) p]
+    [HasMap (((mapBifunctor F I J).obj X₂).obj Y₂) p]
     (i : I) (j : J) (k : K) (h : p ⟨i, j⟩ = k) :
     ιMapBifunctorMapObj F p X₁ Y₁ i j k h ≫ mapBifunctorMapMap F p f g k =
       (F.map (f i)).app (Y₁ j) ≫ (F.obj (X₂ i)).map (g j) ≫ ιMapBifunctorMapObj F p X₂ Y₂ i j k h := by
   simp [ιMapBifunctorMapObj, mapBifunctorMapMap]
 
 @[simps]
-noncomputable def mapBifunctorMapFunctor [∀ X Y, HasMap (((mapBifunctorFunctor F I J).obj X).obj Y) p] :
+noncomputable def mapBifunctorMap [∀ X Y, HasMap (((mapBifunctor F I J).obj X).obj Y) p] :
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃ where
   obj X :=
     { obj := fun Y => mapBifunctorMapObj F p X Y

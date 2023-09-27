@@ -26,7 +26,7 @@ end MonoidalCategory
 namespace GradedObject
 
 abbrev HasTensor (X₁ X₂ : GradedObject I C) : Prop :=
-  HasMap (((mapBifunctorFunctor (curryObj (MonoidalCategory.tensor C)) I I).obj X₁).obj X₂)
+  HasMap (((mapBifunctor (curryObj (MonoidalCategory.tensor C)) I I).obj X₁).obj X₂)
     (fun ⟨i, j⟩  => i + j)
 
 noncomputable abbrev tensorObj (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂] :
@@ -34,7 +34,7 @@ noncomputable abbrev tensorObj (X₁ X₂ : GradedObject I C) [HasTensor X₁ X�
   mapBifunctorMapObj (curryObj (MonoidalCategory.tensor C)) (fun ⟨i, j⟩ => i + j) X₁ X₂
 
 abbrev TensorCofan (X₁ X₂ : GradedObject I C) (j : I) :=
-  (((mapBifunctorFunctor (curryObj (MonoidalCategory.tensor C)) I I).obj X₁).obj X₂).CofanMapObjFun (fun ⟨i, j⟩ => i + j) j
+  (((mapBifunctor (curryObj (MonoidalCategory.tensor C)) I I).obj X₁).obj X₂).CofanMapObjFun (fun ⟨i, j⟩ => i + j) j
 
 @[simps! pt]
 def TensorCofan.mk (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
@@ -42,7 +42,7 @@ def TensorCofan.mk (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
   CofanMapObjFun.mk _ _ _ pt (fun ⟨i₁, i₂⟩ h => ι i₁ i₂ h)
 
 @[simp]
-lemma TensorCofan.mk_ι' (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
+lemma TensorCofan.mk_inj (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
     (ι : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = j), X₁ i₁ ⊗ X₂ i₂ ⟶ pt) (i₁ i₂ : I) (h : i₁ + i₂ = j) :
     (TensorCofan.mk X₁ X₂ j pt ι).proj ⟨⟨i₁, i₂⟩, h⟩ = ι i₁ i₂ h := rfl
 
@@ -211,7 +211,7 @@ lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X
 variable (X₁ X₂ X₃)
 
 abbrev HasLeftTensor₃ObjExt (Z : C) (j : I) := PreservesColimit
-  (Discrete.functor fun (i : { i : (I × I × I) | i.1 + i.2.1 + i.2.2 = j }) ↦ (((mapTrifunctorFunctor (bifunctorComp₂₃ (curryObj (tensor C)) (curryObj (tensor C))) I I I).obj X₁).obj X₂).obj X₃ i)
+  (Discrete.functor fun (i : { i : (I × I × I) | i.1 + i.2.1 + i.2.2 = j }) ↦ (((mapTrifunctor (bifunctorComp₂₃ (curryObj (tensor C)) (curryObj (tensor C))) I I I).obj X₁).obj X₂).obj X₃ i)
    ((curryObj (tensor C)).obj Z)
 
 variable {X₁ X₂ X₃}
