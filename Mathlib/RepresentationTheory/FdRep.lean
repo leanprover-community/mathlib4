@@ -120,6 +120,7 @@ open FiniteDimensional
 
 open scoped Classical
 
+set_option synthInstance.maxHeartbeats 0 in
 -- We need to provide this instance explicitely as otherwise `finrank_hom_simple_simple` gives a
 -- deterministic timeout.
 instance : HasKernels (FdRep k G) := by infer_instance
