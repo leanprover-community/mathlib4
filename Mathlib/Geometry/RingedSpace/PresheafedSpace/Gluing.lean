@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Topology.Gluing
-import Mathlib.AlgebraicGeometry.OpenImmersion.Basic
-import Mathlib.AlgebraicGeometry.LocallyRingedSpace.HasColimits
+import Mathlib.Geometry.RingedSpace.OpenImmersion
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
 
 #align_import algebraic_geometry.presheafed_space.gluing from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 

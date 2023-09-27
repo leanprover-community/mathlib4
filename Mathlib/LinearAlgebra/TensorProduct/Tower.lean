@@ -418,7 +418,7 @@ section tensorTensorTensorComm
 
 /-- Heterobasic version of `tensorTensorTensorComm`. -/
 def tensorTensorTensorComm :
-  (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
+    (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
 (assoc R A A (M ⊗[R] N) P Q).symm
   ≪≫ₗ congr (rightComm R A M P N).symm (1 : Q ≃ₗ[R] Q)
   ≪≫ₗ assoc R _ _ (M ⊗[A] P) N Q

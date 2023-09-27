@@ -140,6 +140,12 @@ theorem bounds_bddBelow {f : E →SL[σ₁₂] F} : BddBelow { c | 0 ≤ c ∧ �
   ⟨0, fun _ ⟨hn, _⟩ => hn⟩
 #align continuous_linear_map.bounds_bdd_below ContinuousLinearMap.bounds_bddBelow
 
+theorem isLeast_op_norm [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
+    IsLeast {c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖} ‖f‖ := by
+  refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
+  simp only [setOf_and, setOf_forall]
+  refine isClosed_Ici.inter <| isClosed_iInter fun _ ↦ isClosed_le ?_ ?_ <;> continuity
+
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
 theorem op_norm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ x, ‖f x‖ ≤ M * ‖x‖) :
     ‖f‖ ≤ M :=
@@ -170,24 +176,28 @@ theorem op_norm_eq_of_bounds {φ : E →SL[σ₁₂] F} {M : ℝ} (M_nonneg : 0 
 theorem op_norm_neg (f : E →SL[σ₁₂] F) : ‖-f‖ = ‖f‖ := by simp only [norm_def, neg_apply, norm_neg]
 #align continuous_linear_map.op_norm_neg ContinuousLinearMap.op_norm_neg
 
+theorem op_norm_nonneg (f : E →SL[σ₁₂] F) : 0 ≤ ‖f‖ :=
+  Real.sInf_nonneg _ fun _ ↦ And.left
+#align continuous_linear_map.op_norm_nonneg ContinuousLinearMap.op_norm_nonneg
+
+/-- The norm of the `0` operator is `0`. -/
+theorem op_norm_zero : ‖(0 : E →SL[σ₁₂] F)‖ = 0 :=
+  le_antisymm (op_norm_le_bound _ le_rfl fun _ ↦ by simp) (op_norm_nonneg _)
+#align continuous_linear_map.op_norm_zero ContinuousLinearMap.op_norm_zero
+
+/-- The norm of the identity is at most `1`. It is in fact `1`, except when the space is trivial
+where it is `0`. It means that one can not do better than an inequality in general. -/
+theorem norm_id_le : ‖id 𝕜 E‖ ≤ 1 :=
+  op_norm_le_bound _ zero_le_one fun x => by simp
+#align continuous_linear_map.norm_id_le ContinuousLinearMap.norm_id_le
+
 section
 
 variable [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₃] (f g : E →SL[σ₁₂] F) (h : F →SL[σ₂₃] G)
   (x : E)
 
-theorem op_norm_nonneg : 0 ≤ ‖f‖ :=
-  le_csInf bounds_nonempty fun _ ⟨hx, _⟩ => hx
-#align continuous_linear_map.op_norm_nonneg ContinuousLinearMap.op_norm_nonneg
-
 /-- The fundamental property of the operator norm: `‖f x‖ ≤ ‖f‖ * ‖x‖`. -/
-theorem le_op_norm : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
-  obtain ⟨C, _, hC⟩ := f.bound
-  replace hC := hC x
-  by_cases h : ‖x‖ = 0
-  · rwa [h, mul_zero] at hC ⊢
-  have hlt : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) (Ne.symm h)
-  exact (div_le_iff hlt).mp
-    (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff hlt).mpr <| by apply hc)
+theorem le_op_norm : ‖f x‖ ≤ ‖f‖ * ‖x‖ := (isLeast_op_norm f).1.2 x
 #align continuous_linear_map.le_op_norm ContinuousLinearMap.le_op_norm
 
 theorem dist_le_op_norm (x y : E) : dist (f x) (f y) ≤ ‖f‖ * dist x y := by
@@ -264,19 +274,6 @@ theorem op_norm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
   (f + g).op_norm_le_bound (add_nonneg f.op_norm_nonneg g.op_norm_nonneg) fun x =>
     (norm_add_le_of_le (f.le_op_norm x) (g.le_op_norm x)).trans_eq (add_mul _ _ _).symm
 #align continuous_linear_map.op_norm_add_le ContinuousLinearMap.op_norm_add_le
-
-/-- The norm of the `0` operator is `0`. -/
-theorem op_norm_zero : ‖(0 : E →SL[σ₁₂] F)‖ = 0 :=
-  le_antisymm (csInf_le bounds_bddBelow ⟨le_rfl, fun _ => le_of_eq (by
-    rw [zero_mul]
-    exact norm_zero)⟩) (op_norm_nonneg _)
-#align continuous_linear_map.op_norm_zero ContinuousLinearMap.op_norm_zero
-
-/-- The norm of the identity is at most `1`. It is in fact `1`, except when the space is trivial
-where it is `0`. It means that one can not do better than an inequality in general. -/
-theorem norm_id_le : ‖id 𝕜 E‖ ≤ 1 :=
-  op_norm_le_bound _ zero_le_one fun x => by simp
-#align continuous_linear_map.norm_id_le ContinuousLinearMap.norm_id_le
 
 /-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
 (Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
@@ -430,6 +427,12 @@ theorem op_nnnorm_eq_of_bounds {φ : E →SL[σ₁₂] F} (M : ℝ≥0) (h_above
     (h_below : ∀ N, (∀ x, ‖φ x‖₊ ≤ N * ‖x‖₊) → M ≤ N) : ‖φ‖₊ = M :=
   Subtype.ext <| op_norm_eq_of_bounds (zero_le M) h_above <| Subtype.forall'.mpr h_below
 #align continuous_linear_map.op_nnnorm_eq_of_bounds ContinuousLinearMap.op_nnnorm_eq_of_bounds
+
+theorem op_nnnorm_le_iff {f : E →SL[σ₁₂] F} {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊ :=
+  op_norm_le_iff C.2
+
+theorem isLeast_op_nnnorm : IsLeast {C : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊} ‖f‖₊ := by
+  simpa only [← op_nnnorm_le_iff] using isLeast_Ici
 
 instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=

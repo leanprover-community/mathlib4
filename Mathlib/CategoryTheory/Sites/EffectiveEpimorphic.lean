@@ -100,8 +100,8 @@ attribute [nolint docBlame] EffectiveEpi.effectiveEpi
 
 /-- Some chosen `EffectiveEpiStruct` associated to an effective epi. -/
 noncomputable
-def EffectiveEpi.getStruct {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] :
-  EffectiveEpiStruct f := EffectiveEpi.effectiveEpi.some
+def EffectiveEpi.getStruct {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : EffectiveEpiStruct f :=
+  EffectiveEpi.effectiveEpi.some
 
 /-- Descend along an effective epi. -/
 noncomputable
