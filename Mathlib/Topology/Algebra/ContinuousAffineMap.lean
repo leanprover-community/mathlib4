@@ -2,15 +2,12 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module topology.algebra.continuous_affine_map
-! leanprover-community/mathlib commit bd1fc183335ea95a9519a1630bcf901fe9326d83
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import topology.algebra.continuous_affine_map from "leanprover-community/mathlib"@"bd1fc183335ea95a9519a1630bcf901fe9326d83"
 
 /-!
 # Continuous affine maps.

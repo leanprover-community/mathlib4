@@ -2,13 +2,10 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module imo.imo2005_q4
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Finite.Basic
+
+#align_import imo.imo2005_q4 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2005 Q4

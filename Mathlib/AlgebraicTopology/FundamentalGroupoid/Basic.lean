@@ -2,16 +2,13 @@
 Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
-
-! This file was ported from Lean 3 source module algebraic_topology.fundamental_groupoid.basic
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Homotopy.Path
+
+#align_import algebraic_topology.fundamental_groupoid.basic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 # Fundamental groupoid of a space

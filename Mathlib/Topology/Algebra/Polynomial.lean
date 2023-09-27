@@ -2,17 +2,14 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module topology.algebra.polynomial
-! leanprover-community/mathlib commit 565eb991e264d0db702722b4bde52ee5173c9950
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Inductions
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.Analysis.Normed.Field.Basic
+
+#align_import topology.algebra.polynomial from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
 
 /-!
 # Polynomials and limits

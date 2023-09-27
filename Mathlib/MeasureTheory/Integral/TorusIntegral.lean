@@ -2,14 +2,11 @@
 Copyright (c) 2022 Cuma Kökmen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Cuma Kökmen, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.integral.torus_integral
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Integral.CircleIntegral
+
+#align_import measure_theory.integral.torus_integral from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Integral over a torus in `ℂⁿ`
@@ -74,7 +71,7 @@ local macro:arg t:term:max noWs "ⁿ⁺¹" : term => `(Fin (n + 1) → $t)
 local macro:arg t:term:max noWs "ⁿ" : term => `(Fin n → $t)
 local macro:arg t:term:max noWs "⁰" : term => `(Fin 0 → $t)
 local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-!
 ### `torusMap`, a parametrization of a torus

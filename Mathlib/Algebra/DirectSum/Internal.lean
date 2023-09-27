@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
-
-! This file was ported from Lean 3 source module algebra.direct_sum.internal
-! leanprover-community/mathlib commit 9936c3dfc04e5876f4368aeb2e60f8d8358d095a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.DirectSum.Algebra
+
+#align_import algebra.direct_sum.internal from "leanprover-community/mathlib"@"9936c3dfc04e5876f4368aeb2e60f8d8358d095a"
 
 /-!
 # Internally graded rings and algebras
@@ -145,7 +142,7 @@ variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
 
 /-- The canonical ring isomorphism between `⨁ i, A i` and `R`-/
 def coeRingHom [AddMonoid ι] [SetLike.GradedMonoid A] : (⨁ i, A i) →+* R :=
-  DirectSum.toSemiring (fun i => AddSubmonoidClass.Subtype (A i)) rfl fun _ _ => rfl
+  DirectSum.toSemiring (fun i => AddSubmonoidClass.subtype (A i)) rfl fun _ _ => rfl
 #align direct_sum.coe_ring_hom DirectSum.coeRingHom
 
 /-- The canonical ring isomorphism between `⨁ i, A i` and `R`-/

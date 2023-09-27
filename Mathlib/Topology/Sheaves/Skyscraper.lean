@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
-
-! This file was ported from Lean 3 source module topology.sheaves.skyscraper
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.PUnit
 import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.Topology.Sheaves.Functors
+
+#align_import topology.sheaves.skyscraper from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Skyscraper (pre)sheaves
@@ -35,8 +32,6 @@ of `p₀`, i.e. if `p₀ ⤳ x` then `𝓕ₓ ≅ A` and if `¬ p₀ ⤳ x` then
 
 TODO: generalize universe level when calculating stalks, after generalizing universe level of stalk.
 -/
-
-set_option autoImplicit false -- **TODO** delete this later
 
 noncomputable section
 
@@ -96,7 +91,7 @@ def SkyscraperPresheafFunctor.map' {a b : C} (f : a ⟶ b) :
     · apply ((if_neg hV).symm.ndrec terminalIsTerminal).hom_ext
 #align skyscraper_presheaf_functor.map' SkyscraperPresheafFunctor.map'
 
-theorem SkyscraperPresheafFunctor.map'_id {a : C} : 
+theorem SkyscraperPresheafFunctor.map'_id {a : C} :
     SkyscraperPresheafFunctor.map' p₀ (𝟙 a) = 𝟙 _ := by
   -- Porting note : `ext1` doesn't work here,
   -- see https://github.com/leanprover-community/mathlib4/issues/5229
@@ -232,7 +227,7 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
   classical exact
     (Presheaf.isSheaf_iso_iff (eqToIso <| skyscraperPresheaf_eq_pushforward p₀ A)).mpr <|
       (Sheaf.pushforward_sheaf_of_sheaf _
-        (Presheaf.isSheaf_on_pUnit_of_isTerminal _ (by
+        (Presheaf.isSheaf_on_punit_of_isTerminal _ (by
           dsimp [skyscraperPresheaf]
           rw [if_neg]
           · exact terminalIsTerminal

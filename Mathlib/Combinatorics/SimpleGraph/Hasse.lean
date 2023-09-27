@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.hasse
-! leanprover-community/mathlib commit 8a38a697305292b37a61650e2c3bd3502d98c805
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Prod
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Order.SuccPred.Relation
+
+#align_import combinatorics.simple_graph.hasse from "leanprover-community/mathlib"@"8a38a697305292b37a61650e2c3bd3502d98c805"
 
 /-!
 # The Hasse diagram as a graph

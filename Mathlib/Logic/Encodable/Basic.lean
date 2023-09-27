@@ -2,11 +2,6 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.encodable.basic
-! leanprover-community/mathlib commit 7c523cb78f4153682c2929e3006c863bfef463d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Data.PNat.Basic
@@ -14,6 +9,8 @@ import Mathlib.Order.Directed
 import Mathlib.Data.Countable.Defs
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Fin.Basic
+
+#align_import logic.encodable.basic from "leanprover-community/mathlib"@"7c523cb78f4153682c2929e3006c863bfef463d0"
 
 /-!
 # Encodable types

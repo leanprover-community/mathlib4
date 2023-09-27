@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.monoid_algebra.to_direct_sum
-! leanprover-community/mathlib commit c0a51cf2de54089d69301befc4c73bbc2f5c7342
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.ToDFinsupp
+
+#align_import algebra.monoid_algebra.to_direct_sum from "leanprover-community/mathlib"@"c0a51cf2de54089d69301befc4c73bbc2f5c7342"
 
 /-!
 # Conversion between `AddMonoidAlgebra` and homogenous `DirectSum`

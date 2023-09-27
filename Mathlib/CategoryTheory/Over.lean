@@ -2,16 +2,13 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.over
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.EpiMono
+
+#align_import category_theory.over from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
 /-!
 # Over and under categories
@@ -206,6 +203,10 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
     repeat (ext; simp)
 #align category_theory.over.forget_reflects_iso CategoryTheory.Over.forget_reflects_iso
+
+/-- The identity over `X` is terminal. -/
+def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
+  CostructuredArrow.mkIdTerminal
 
 instance forget_faithful : Faithful (forget X) where
 #align category_theory.over.forget_faithful CategoryTheory.Over.forget_faithful
@@ -458,6 +459,10 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
     repeat (ext; simp)
 #align category_theory.under.forget_reflects_iso CategoryTheory.Under.forget_reflects_iso
+
+/-- The identity under `X` is initial. -/
+def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
+  StructuredArrow.mkIdInitial
 
 instance forget_faithful : Faithful (forget X) where
 #align category_theory.under.forget_faithful CategoryTheory.Under.forget_faithful

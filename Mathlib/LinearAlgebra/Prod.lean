@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.prod
-! leanprover-community/mathlib commit cd391184c85986113f8c00844cfe6dda1d34be3d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Span
 import Mathlib.Order.PartialSups
 import Mathlib.Algebra.Algebra.Prod
+
+#align_import linear_algebra.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
 /-! ### Products of modules
 

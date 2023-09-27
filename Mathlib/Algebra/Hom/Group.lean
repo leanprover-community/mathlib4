@@ -3,18 +3,14 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
-Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module algebra.hom.group
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.CCLemmas
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.FunLike.Basic
+
+#align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Monoid and group homomorphisms
@@ -1375,27 +1371,18 @@ end AddMonoid
 end End
 
 /-- `1` is the homomorphism sending all elements to `1`. -/
-@[to_additive]
+@[to_additive "`0` is the homomorphism sending all elements to `0`."]
 instance [One M] [One N] : One (OneHom M N) := ⟨⟨fun _ => 1, rfl⟩⟩
 
 /-- `1` is the multiplicative homomorphism sending all elements to `1`. -/
-@[to_additive]
+@[to_additive "`0` is the additive homomorphism sending all elements to `0`"]
 instance [Mul M] [MulOneClass N] : One (M →ₙ* N) :=
   ⟨⟨fun _ => 1, fun _ _ => (one_mul 1).symm⟩⟩
 
 /-- `1` is the monoid homomorphism sending all elements to `1`. -/
-@[to_additive]
+@[to_additive "`0` is the additive monoid homomorphism sending all elements to `0`."]
 instance [MulOneClass M] [MulOneClass N] : One (M →* N) :=
   ⟨⟨⟨fun _ => 1, rfl⟩, fun _ _ => (one_mul 1).symm⟩⟩
-
-/-- `0` is the homomorphism sending all elements to `0`. -/
-add_decl_doc instZeroZeroHom
-
-/-- `0` is the additive homomorphism sending all elements to `0`. -/
-add_decl_doc instZeroAddHomToAdd
-
-/-- `0` is the additive monoid homomorphism sending all elements to `0`. -/
-add_decl_doc instZeroAddMonoidHom
 
 @[to_additive (attr := simp)]
 theorem OneHom.one_apply [One M] [One N] (x : M) : (1 : OneHom M N) x = 1 := rfl
@@ -1423,18 +1410,11 @@ theorem OneHom.comp_one [One M] [One N] [One P] (f : OneHom N P) : f.comp (1 : O
 @[to_additive]
 instance [One M] [One N] : Inhabited (OneHom M N) := ⟨1⟩
 
-attribute [nolint docBlame] instInhabitedOneHom
-attribute [nolint docBlame] instInhabitedZeroHom
-
 @[to_additive]
 instance [Mul M] [MulOneClass N] : Inhabited (M →ₙ* N) := ⟨1⟩
 
 @[to_additive]
 instance [MulOneClass M] [MulOneClass N] : Inhabited (M →* N) := ⟨1⟩
-
-attribute [nolint docBlame] instInhabitedAddHomToAdd
-attribute [nolint docBlame] instInhabitedMonoidHom
-attribute [nolint docBlame] instInhabitedAddMonoidHom
 
 -- unlike the other homs, `MonoidWithZeroHom` does not have a `1` or `0`
 instance [MulZeroOneClass M] : Inhabited (M →*₀ M) := ⟨MonoidWithZeroHom.id M⟩
@@ -1443,7 +1423,8 @@ namespace MulHom
 
 /-- Given two mul morphisms `f`, `g` to a commutative semigroup, `f * g` is the mul morphism
 sending `x` to `f x * g x`. -/
-@[to_additive]
+@[to_additive "Given two additive morphisms `f`, `g` to an additive commutative semigroup,
+`f + g` is the additive morphism sending `x` to `f x + g x`."]
 instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
@@ -1451,10 +1432,6 @@ instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
         intros
         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
-
-/-- Given two additive morphisms `f`, `g` to an additive commutative semigroup, `f + g` is the
-additive morphism sending `x` to `f x + g x`. -/
-add_decl_doc AddHom.instAddAddHomToAddToAddSemigroup
 
 @[to_additive (attr := simp)]
 theorem mul_apply {M N} [Mul M] [CommSemigroup N] (f g : M →ₙ* N) (x : M) :
@@ -1642,13 +1619,10 @@ theorem coe_of_map_div {H : Type _} [Group H] (f : G → H) (hf : ∀ x y, f (x 
 
 /-- If `f` is a monoid homomorphism to a commutative group, then `f⁻¹` is the homomorphism sending
 `x` to `(f x)⁻¹`. -/
-@[to_additive]
+@[to_additive "If `f` is an additive monoid homomorphism to an additive commutative group,
+then `-f` is the homomorphism sending `x` to `-(f x)`."]
 instance {M G} [MulOneClass M] [CommGroup G] : Inv (M →* G) :=
   ⟨fun f => (mk' fun g => (f g)⁻¹) fun a b => by rw [← mul_inv, f.map_mul]⟩
-
-/-- If `f` is an additive monoid homomorphism to an additive commutative group, then `-f` is the
-homomorphism sending `x` to `-(f x)`. -/
-add_decl_doc AddMonoidHom.instNegAddMonoidHomToAddZeroClassToAddMonoidToSubNegAddMonoidToAddGroup
 
 @[to_additive (attr := simp)]
 theorem inv_apply {M G} [MulOneClass M] [CommGroup G] (f : M →* G) (x : M) :
@@ -1674,14 +1648,11 @@ theorem comp_inv {M A B} [MulOneClass M] [CommGroup A] [CommGroup B]
 
 /-- If `f` and `g` are monoid homomorphisms to a commutative group, then `f / g` is the homomorphism
 sending `x` to `(f x) / (g x)`. -/
-@[to_additive]
+@[to_additive "If `f` and `g` are monoid homomorphisms to an additive commutative group,
+then `f - g` is the homomorphism sending `x` to `(f x) - (g x)`."]
 instance {M G} [MulOneClass M] [CommGroup G] : Div (M →* G) :=
   ⟨fun f g => (mk' fun x => f x / g x) fun a b => by
     simp [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm]⟩
-
-/-- If `f` and `g` are monoid homomorphisms to an additive commutative group, then `f - g`
-is the homomorphism sending `x` to `(f x) - (g x)`. -/
-add_decl_doc AddMonoidHom.instSubAddMonoidHomToAddZeroClassToAddMonoidToSubNegAddMonoidToAddGroup
 
 @[to_additive (attr := simp)]
 theorem div_apply {M G} [MulOneClass M] [CommGroup G] (f g : M →* G) (x : M) :

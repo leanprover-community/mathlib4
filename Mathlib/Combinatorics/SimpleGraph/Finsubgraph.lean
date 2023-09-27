@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joanna Choules. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joanna Choules
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.finsubgraph
-! leanprover-community/mathlib commit c6ef6387ede9983aee397d442974e61f89dfd87b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
+
+#align_import combinatorics.simple_graph.finsubgraph from "leanprover-community/mathlib"@"c6ef6387ede9983aee397d442974e61f89dfd87b"
 
 /-!
 # Homomorphisms from finite subgraphs

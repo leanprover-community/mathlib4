@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module field_theory.splitting_field.is_splitting_field
-! leanprover-community/mathlib commit 9fb8964792b4237dac6200193a0d533f1b3f7423
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.IntermediateField
 import Mathlib.RingTheory.Adjoin.Field
+
+#align_import field_theory.splitting_field.is_splitting_field from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
 
 /-!
 # Splitting fields

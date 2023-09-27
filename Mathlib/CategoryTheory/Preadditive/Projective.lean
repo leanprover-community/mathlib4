@@ -2,16 +2,13 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.projective
-! leanprover-community/mathlib commit 3974a774a707e2e06046a14c0eaef4654584fada
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Exact
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+
+#align_import category_theory.preadditive.projective from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
 
 /-!
 # Projective objects and categories with enough projectives

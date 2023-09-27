@@ -2,13 +2,10 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.order.monotone_convergence
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Basic
+
+#align_import topology.algebra.order.monotone_convergence from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Bounded monotone sequences converge
@@ -182,8 +179,9 @@ end iInf
 
 end
 
-instance supConvergenceClassProd [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
-  [SupConvergenceClass α] [SupConvergenceClass β] : SupConvergenceClass (α × β) := by
+instance Prod.supConvergenceClass
+    [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
+    [SupConvergenceClass α] [SupConvergenceClass β] : SupConvergenceClass (α × β) := by
   constructor
   rintro ⟨a, b⟩ s h
   rw [isLUB_prod, ← range_restrict, ← range_restrict] at h
@@ -212,15 +210,15 @@ instance Pi.infConvergenceClass
     [∀ i, InfConvergenceClass (α i)] : InfConvergenceClass (∀ i, α i) :=
   show InfConvergenceClass (∀ i, (α i)ᵒᵈ)ᵒᵈ from OrderDual.infConvergenceClass
 
-instance Pi.Sup_convergence_class' {ι : Type _} [Preorder α] [TopologicalSpace α]
+instance Pi.supConvergenceClass' {ι : Type _} [Preorder α] [TopologicalSpace α]
     [SupConvergenceClass α] : SupConvergenceClass (ι → α) :=
   supConvergenceClass
-#align pi.Sup_convergence_class' Pi.Sup_convergence_class'
+#align pi.Sup_convergence_class' Pi.supConvergenceClass'
 
-instance Pi.Inf_convergence_class' {ι : Type _} [Preorder α] [TopologicalSpace α]
+instance Pi.infConvergenceClass' {ι : Type _} [Preorder α] [TopologicalSpace α]
     [InfConvergenceClass α] : InfConvergenceClass (ι → α) :=
   Pi.infConvergenceClass
-#align pi.Inf_convergence_class' Pi.Inf_convergence_class'
+#align pi.Inf_convergence_class' Pi.infConvergenceClass'
 
 theorem tendsto_of_monotone {ι α : Type _} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :
@@ -248,7 +246,6 @@ for the range of `f`.
 Related theorems above (`IsLUB.isLUB_of_tendsto`, `IsGLB.isGLB_of_tendsto` etc) cover the case
 when `f x` tends to `a` as `x` tends to some point `b` in the domain. -/
 
-set_option autoImplicit false
 theorem Monotone.ge_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
     [SemilatticeSup β] {f : β → α} {a : α} (hf : Monotone f) (ha : Tendsto f atTop (𝓝 a)) (b : β) :
     f b ≤ a :=

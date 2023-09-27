@@ -66,9 +66,9 @@ def mkExistsList (args : List Expr) (inner : Expr) : MetaM Expr :=
 args.foldrM (λarg i:Expr => do
     let t ← inferType arg
     let l := (← inferType t).sortLevel!
-    pure $ if arg.occurs i || l != Level.zero
-      then mkApp2 (mkConst `Exists [l] : Expr) t (←(mkLambdaFVars #[arg] i))
-      else mkApp2 (mkConst `And [] : Expr) t i)
+    if arg.occurs i || l != Level.zero
+      then pure <| mkApp2 (mkConst `Exists [l] : Expr) t (←(mkLambdaFVars #[arg] i))
+      else pure <| mkApp2 (mkConst `And [] : Expr) t i)
   inner
 
 /-- `mkOpList op empty [x1, x2, ...]` is defined as `op x1 (op x2 ...)`.

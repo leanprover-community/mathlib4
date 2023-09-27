@@ -2,15 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.order.group.order_iso
-! leanprover-community/mathlib commit 6632ca2081e55ff5cf228ca63011979a0efb495b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
+
+#align_import algebra.order.group.order_iso from "leanprover-community/mathlib"@"6632ca2081e55ff5cf228ca63011979a0efb495b"
 
 /-!
 # Inverse and multiplication as order isomorphisms in ordered groups

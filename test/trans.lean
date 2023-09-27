@@ -27,7 +27,7 @@ example (a b c : Nat) : a = b → b = c → a = c := by
   assumption
   assumption
 
-example : @Trans Nat Nat Nat (. ≤ .) (. ≤ .) (. ≤ .) := inferInstance
+example : @Trans Nat Nat Nat (· ≤ ·) (· ≤ ·) (· ≤ ·) := inferInstance
 
 example (a b c : Nat) : a ≤ b → b ≤ c → a ≤ c := by
   intros h₁ h₂

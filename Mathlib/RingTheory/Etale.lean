@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.etale
-! leanprover-community/mathlib commit 73f96237417835f148a1f7bc1ff55f67119b7166
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.Kaehler
+
+#align_import ring_theory.etale from "leanprover-community/mathlib"@"73f96237417835f148a1f7bc1ff55f67119b7166"
 
 /-!
 
@@ -443,19 +440,9 @@ instance FormallyUnramified.base_change [FormallyUnramified R A] :
   intro C _ _ I hI f₁ f₂ e
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
-  apply AlgHom.restrictScalars_injective R
-  apply TensorProduct.ext
-  intro b a
-  have : b ⊗ₜ[R] a = b • (1 : B) ⊗ₜ a := by rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
-  rw [this, AlgHom.restrictScalars_apply, AlgHom.restrictScalars_apply, map_smul, map_smul]
-  congr 1
-  change
-    ((f₁.restrictScalars R).comp TensorProduct.includeRight) a =
-      ((f₂.restrictScalars R).comp TensorProduct.includeRight) a
-  congr 1
-  refine' FormallyUnramified.ext I ⟨2, hI⟩ _
-  intro x
-  exact AlgHom.congr_fun e (1 ⊗ₜ x)
+  ext : 1
+  · exact Subsingleton.elim _ _
+  · exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
 #align algebra.formally_unramified.base_change Algebra.FormallyUnramified.base_change
 
 instance FormallySmooth.base_change [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
@@ -466,7 +453,7 @@ instance FormallySmooth.base_change [FormallySmooth R A] : FormallySmooth B (B �
   refine' ⟨TensorProduct.productLeftAlgHom (Algebra.ofId B C) _, _⟩
   · exact FormallySmooth.lift I ⟨2, hI⟩ ((f.restrictScalars R).comp TensorProduct.includeRight)
   · apply AlgHom.restrictScalars_injective R
-    apply TensorProduct.ext
+    apply TensorProduct.ext'
     intro b a
     suffices algebraMap B _ b * f (1 ⊗ₜ[R] a) = f (b ⊗ₜ[R] a) by simpa [Algebra.ofId_apply]
     rw [← Algebra.smul_def, ← map_smul, TensorProduct.smul_tmul', smul_eq_mul, mul_one]

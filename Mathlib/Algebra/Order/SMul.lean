@@ -2,11 +2,6 @@
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module algebra.order.smul
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Positivity
+
+#align_import algebra.order.smul from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Ordered scalar product
@@ -60,18 +57,19 @@ variable {ι 𝕜 R M N : Type _}
 
 namespace OrderDual
 
-instance [Zero R] [AddZeroClass M] [SMulWithZero R M] : SMulWithZero R Mᵒᵈ :=
+instance instSMulWithZeroOrderDual [Zero R] [AddZeroClass M] [SMulWithZero R M] :
+    SMulWithZero R Mᵒᵈ :=
   { instSMulOrderDual with
     zero_smul := fun m => OrderDual.rec (zero_smul _) m
     smul_zero := fun r => OrderDual.rec (@smul_zero R M _ _) r }
 
-instance [Monoid R] [MulAction R M] : MulAction R Mᵒᵈ :=
+instance instMulActionOrderDual [Monoid R] [MulAction R M] : MulAction R Mᵒᵈ :=
   { instSMulOrderDual with
     one_smul := fun m => OrderDual.rec (one_smul _) m
     mul_smul := fun r => OrderDual.rec (@mul_smul R M _ _) r }
 
 instance [MonoidWithZero R] [AddMonoid M] [MulActionWithZero R M] : MulActionWithZero R Mᵒᵈ :=
-  { instMulActionOrderDual , instSMulWithZeroOrderDualInstZeroOrderDualToZero with }
+  { instMulActionOrderDual, instSMulWithZeroOrderDual with }
 
 instance [MonoidWithZero R] [AddMonoid M] [DistribMulAction R M] : DistribMulAction R Mᵒᵈ where
   smul_add _ a := OrderDual.rec (fun _ b => OrderDual.rec (smul_add _ _) b) a

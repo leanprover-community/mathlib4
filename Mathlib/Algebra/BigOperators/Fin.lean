@@ -2,16 +2,13 @@
 Copyright (c) 2020 Yury Kudryashov, Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.big_operators.fin
-! leanprover-community/mathlib commit cc5dd6244981976cc9da7afc4eee5682b037a013
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.List.FinRange
 import Mathlib.Logic.Equiv.Fin
+
+#align_import algebra.big_operators.fin from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
 
 /-!
 # Big operators and `Fin`
@@ -312,7 +309,7 @@ end Fin
 /-- Equivalence between `Fin n → Fin m` and `Fin (m ^ n)`. -/
 @[simps!]
 def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
-  Equiv.ofRightInverseOfCardLe (le_of_eq <| by simp_rw [Fintype.card_fun, Fintype.card_fin])
+  Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_fun, Fintype.card_fin])
     (fun f => ⟨∑ i, f i * m ^ (i : ℕ), by
       induction' n with n ih
       · simp
@@ -356,12 +353,12 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
     (finFunctionFinEquiv (Pi.single i j) : ℕ) = j * m ^ (i : ℕ) := by
   rw [finFunctionFinEquiv_apply, Fintype.sum_eq_single i, Pi.single_eq_same]
   rintro x hx
-  rw [Pi.single_eq_of_ne hx, Fin.val_zero, MulZeroClass.zero_mul]
+  rw [Pi.single_eq_of_ne hx, Fin.val_zero', MulZeroClass.zero_mul]
 #align fin_function_fin_equiv_single finFunctionFinEquiv_single
 
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
-  Equiv.ofRightInverseOfCardLe (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
+  Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
     (fun f => ⟨∑ i, f i * ∏ j, n (Fin.castLE i.is_lt.le j), by
       induction' m with m ih
       · simp
@@ -440,7 +437,7 @@ theorem finPiFinEquiv_single {m : ℕ} {n : Fin m → ℕ} [∀ i, NeZero (n i)]
       j * ∏ j, n (Fin.castLE i.is_lt.le j) := by
   rw [finPiFinEquiv_apply, Fintype.sum_eq_single i, Pi.single_eq_same]
   rintro x hx
-  rw [Pi.single_eq_of_ne hx, Fin.val_zero, MulZeroClass.zero_mul]
+  rw [Pi.single_eq_of_ne hx, Fin.val_zero', MulZeroClass.zero_mul]
 #align fin_pi_fin_equiv_single finPiFinEquiv_single
 
 namespace List

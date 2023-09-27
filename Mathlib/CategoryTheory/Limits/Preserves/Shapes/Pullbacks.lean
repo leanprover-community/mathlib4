@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.shapes.pullbacks
-! leanprover-community/mathlib commit f11e306adb9f2a393539d2bb4293bf1b42caa7ac
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.limits.preserves.shapes.pullbacks from "leanprover-community/mathlib"@"f11e306adb9f2a393539d2bb4293bf1b42caa7ac"
 
 /-!
 # Preserving pullbacks

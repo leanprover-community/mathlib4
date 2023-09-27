@@ -3,13 +3,10 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Isometries of emetric and metric spaces
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.isometry
-! leanprover-community/mathlib commit b1859b6d4636fdbb78c5d5cefd24530653cfd3eb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Antilipschitz
+
+#align_import topology.metric_space.isometry from "leanprover-community/mathlib"@"b1859b6d4636fdbb78c5d5cefd24530653cfd3eb"
 
 /-!
 # Isometries

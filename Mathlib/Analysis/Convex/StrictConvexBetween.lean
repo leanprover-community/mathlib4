@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module analysis.convex.strict_convex_between
-! leanprover-community/mathlib commit e1730698f86560a342271c0471e4cb72d021aabf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.StrictConvexSpace
+
+#align_import analysis.convex.strict_convex_between from "leanprover-community/mathlib"@"e1730698f86560a342271c0471e4cb72d021aabf"
 
 /-!
 # Betweenness in affine spaces for strictly convex spaces

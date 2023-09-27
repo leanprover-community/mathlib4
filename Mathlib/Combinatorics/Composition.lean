@@ -2,15 +2,12 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module combinatorics.composition
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
+
+#align_import combinatorics.composition from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Compositions
@@ -862,8 +859,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
         rwa [h₂]
     · intro h
       apply Or.inr
-      use i
-      exact ⟨h, rfl⟩
+      use i, h
 #align composition_as_set_equiv compositionAsSetEquiv
 
 instance compositionAsSetFintype (n : ℕ) : Fintype (CompositionAsSet n) :=

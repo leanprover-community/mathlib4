@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.triv_sq_zero_ext
-! leanprover-community/mathlib commit ce7e9d53d4bbc38065db3b595cd5bd73c323bc1d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.LinearAlgebra.Prod
+
+#align_import algebra.triv_sq_zero_ext from "leanprover-community/mathlib"@"ce7e9d53d4bbc38065db3b595cd5bd73c323bc1d"
 
 /-!
 # Trivial Square-Zero Extension
@@ -186,37 +183,37 @@ instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
   instInhabitedProd
 
 instance zero [Zero R] [Zero M] : Zero (tsze R M) :=
-  Prod.instZeroSum
+  Prod.instZero
 
 instance add [Add R] [Add M] : Add (tsze R M) :=
-  Prod.instAddSum
+  Prod.instAdd
 
 instance sub [Sub R] [Sub M] : Sub (tsze R M) :=
-  Prod.instSubSum
+  Prod.instSub
 
 instance neg [Neg R] [Neg M] : Neg (tsze R M) :=
-  Prod.instNegSum
+  Prod.instNeg
 
 instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) :=
-  Prod.instAddSemigroupSum
+  Prod.instAddSemigroup
 
 instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
-  Prod.instAddZeroClassSum
+  Prod.instAddZeroClass
 
 instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
-  Prod.instAddMonoidSum
+  Prod.instAddMonoid
 
 instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) :=
-  Prod.instAddGroupSum
+  Prod.instAddGroup
 
 instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
-  Prod.instAddCommSemigroupSum
+  Prod.instAddCommSemigroup
 
 instance addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze R M) :=
-  Prod.instAddCommMonoidSum
+  Prod.instAddCommMonoid
 
 instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
-  Prod.instAddCommGroupSum
+  Prod.instAddCommGroup
 
 instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
   Prod.smul
@@ -242,7 +239,7 @@ instance distribMulAction [Monoid S] [AddMonoid R] [AddMonoid M]
 
 instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
     Module S (tsze R M) :=
-  Prod.module
+  Prod.instModule
 
 @[simp]
 theorem fst_zero [Zero R] [Zero M] : (0 : tsze R M).fst = 0 :=

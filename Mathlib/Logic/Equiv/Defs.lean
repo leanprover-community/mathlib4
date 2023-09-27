@@ -2,16 +2,13 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.equiv.defs
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Logic.Unique
+
+#align_import logic.equiv.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Equivalence between types
@@ -490,7 +487,7 @@ def propEquivPUnit {p : Prop} (h : p) : p ≃ PUnit.{0} := @equivPUnit p <| uniq
 /-- `ULift α` is equivalent to `α`. -/
 @[simps (config := { fullyApplied := false }) apply]
 protected def ulift {α : Type v} : ULift.{u} α ≃ α :=
-  ⟨ULift.down, ULift.up, ULift.up_down, fun _ => rfl⟩
+  ⟨ULift.down, ULift.up, ULift.up_down, ULift.down_up.{v, u}⟩
 #align equiv.ulift Equiv.ulift
 #align equiv.ulift_apply Equiv.ulift_apply
 

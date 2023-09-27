@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Ring.colimits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+
+#align_import algebra.category.Ring.colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of commutative rings has all colimits.
@@ -143,45 +140,23 @@ def ColimitType : Type v :=
   Quotient (colimitSetoid F)
 #align CommRing.colimits.colimit_type CommRingCat.Colimits.ColimitType
 
+instance ColimitType.AddGroup : AddGroup (ColimitType F) where
+  zero := Quotient.mk _ zero
+  neg := Quotient.map neg Relation.neg_1
+  add := Quotient.map₂ add <| fun x x' rx y y' ry =>
+    Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
+  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
+  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+    Quotient.sound <| Relation.add_assoc _ _ _
+
 -- Porting note : failed to derive `Inhabited` instance
 instance InhabitedColimitType : Inhabited <| ColimitType F where
-  default := Quot.mk _ zero
-
-instance ColimitType.AddGroup : AddGroup (ColimitType F) where
-  zero := Quot.mk _ zero
-  neg := by
-    fapply @Quot.lift
-    · intro x
-      exact Quot.mk _ (neg x)
-    · intro x x' r
-      apply Quot.sound
-      exact Relation.neg_1 _ _ r
-  add := by
-    fapply @Quot.lift _ _ (ColimitType F → ColimitType F)
-    · intro x
-      fapply @Quot.lift
-      · intro y
-        exact Quot.mk _ (add x y)
-      · intro y y' r
-        apply Quot.sound
-        exact Relation.add_2 _ _ _ r
-    · intro x x' r
-      funext y
-      refine Quot.inductionOn y ?_
-      exact fun _ => Quot.sound (Relation.add_1 _ _ _ r)
-  zero_add x := Quot.inductionOn x fun _ => Quot.sound (Relation.zero_add _)
-  add_zero x := Quot.inductionOn x fun _ => Quot.sound (Relation.add_zero _)
-  add_left_neg := Quot.ind fun x => by
-    simp only [(. + .)]
-    exact Quot.sound (Relation.add_left_neg x)
-  add_assoc x y z := by
-    refine Quot.induction_on₃ x y z (fun a b c => ?_)
-    simp only [(. + .)]
-    apply Quot.sound
-    apply Relation.add_assoc
+  default := 0
 
 instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
-  { ColimitType.AddGroup F with one := Quot.mk _ one }
+  { ColimitType.AddGroup F with one := Quotient.mk _ one }
 
 instance : CommRing (ColimitType.{v} F) :=
   { ColimitType.AddGroupWithOne F with
@@ -190,19 +165,16 @@ instance : CommRing (ColimitType.{v} F) :=
     mul_one := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_one _
     add_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.add_comm _ _
     mul_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.mul_comm _ _
-    add_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-      simp only [(. + .), Add.add]
-      exact Quot.sound (Relation.add_assoc _ _ _)
     mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-      simp only [(. * .)]
+      simp only [(· * ·)]
       exact Quot.sound (Relation.mul_assoc _ _ _)
     mul_zero := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_zero _
     zero_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.zero_mul _
     left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-      simp only [(. + .), (. * .), Add.add]
+      simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.left_distrib _ _ _)
     right_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-      simp only [(. + .), (. * .), Add.add]
+      simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.right_distrib _ _ _) }
 
 @[simp]
@@ -335,7 +307,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   map_zero' := rfl
   map_add' x y := by
     refine Quot.induction_on₂ x y fun a b => ?_
-    dsimp [descFun, (. + .)]
+    dsimp [descFun, (· + ·)]
     rw [←quot_add]
     rfl
   map_mul' x y := by exact Quot.induction_on₂ x y fun a b => rfl

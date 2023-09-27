@@ -44,12 +44,16 @@ Which will download the cache for:
 * Every Lean file inside 'Mathlib/Data/'
 * Everything that's needed for the above"
 
-open System (FilePath) in
+open Lean System in
 /-- Note that this normalizes the path strings, which is needed when running from a unix shell
 (which uses `/` in paths) on windows (which uses `\` in paths) as otherwise our filename keys won't
 match. -/
 def toPaths (args : List String) : List FilePath :=
-  args.map (FilePath.mk · |>.normalize)
+  args.map fun arg =>
+    if arg.endsWith ".lean" then
+      FilePath.mk arg |>.normalize
+    else
+      mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
 
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "commit", "commit!"]

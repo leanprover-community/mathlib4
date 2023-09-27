@@ -2,16 +2,13 @@
 Copyright (c) 2022 Sebastian Monnet. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Monnet
-
-! This file was ported from Lean 3 source module field_theory.krull_topology
-! leanprover-community/mathlib commit 039a089d2a4b93c761b234f3e5f5aeb752bac60f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Galois
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Tactic.ByContra
+
+#align_import field_theory.krull_topology from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
 /-!
 # Krull topology

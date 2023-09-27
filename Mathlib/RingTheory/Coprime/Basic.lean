@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.coprime.basic
-! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Ring
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.GroupPower.Ring
+
+#align_import ring_theory.coprime.basic from "leanprover-community/mathlib"@"a95b16cbade0f938fc24abd05412bde1e84bab9b"
 
 /-!
 # Coprime elements of a ring
@@ -78,6 +75,11 @@ theorem IsCoprime.ne_zero [Nontrivial R] {p : Fin 2 → R} (h : IsCoprime (p 0) 
   rintro rfl
   exact not_isCoprime_zero_zero h
 #align is_coprime.ne_zero IsCoprime.ne_zero
+
+theorem IsCoprime.ne_zero_or_ne_zero [Nontrivial R] (h : IsCoprime x y) : x ≠ 0 ∨ y ≠ 0 := by
+  apply not_or_of_imp
+  rintro rfl rfl
+  exact not_isCoprime_zero_zero h
 
 theorem isCoprime_one_left : IsCoprime 1 x :=
   ⟨1, 0, by rw [one_mul, zero_mul, add_zero]⟩

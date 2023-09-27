@@ -2,15 +2,12 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module linear_algebra.finsupp
-! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Encodable
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Span
+
+#align_import linear_algebra.finsupp from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
 /-!
 # Properties of the module `α →₀ M`
@@ -49,7 +46,7 @@ function with finite support, module, linear algebra
 noncomputable section
 
 open Set LinearMap Submodule
-open Classical BigOperators
+open BigOperators
 
 namespace Finsupp
 
@@ -183,16 +180,17 @@ theorem span_single_image (s : Set M) (a : α) :
 variable (M R)
 
 /-- `Finsupp.supported M R s` is the `R`-submodule of all `p : α →₀ M` such that `p.support ⊆ s`. -/
-def supported (s : Set α) : Submodule R (α →₀ M) := by
-  refine' ⟨⟨⟨{ p | ↑p.support ⊆ s }, _⟩, _⟩, _⟩
-  · intro p q hp hq
+def supported (s : Set α) : Submodule R (α →₀ M) where
+  carrier := { p | ↑p.support ⊆ s }
+  add_mem' {p q} hp hq := by
+    classical
     refine' Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) _) (union_subset hp hq)
     rw [Finset.coe_union]
-  · simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
+  zero_mem' := by
+    simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
     intro h ha
     exact (ha rfl).elim
-  · intro a p hp
-    refine' Subset.trans (Finset.coe_subset.2 support_smul) hp
+  smul_mem' a p hp := Subset.trans (Finset.coe_subset.2 support_smul) hp
 #align finsupp.supported Finsupp.supported
 
 variable {M}
@@ -465,15 +463,17 @@ theorem lmapDomain_comp (f : α → α') (g : α' → α'') :
 #align finsupp.lmap_domain_comp Finsupp.lmapDomain_comp
 
 theorem supported_comap_lmapDomain (f : α → α') (s : Set α') :
-    supported M R (f ⁻¹' s) ≤ (supported M R s).comap (lmapDomain M R f) :=
-  fun l (hl : (l.support : Set α) ⊆ f ⁻¹' s) =>
-  show ↑(mapDomain f l).support ⊆ s by
-    rw [← Set.image_subset_iff, ← Finset.coe_image] at hl
-    exact Set.Subset.trans mapDomain_support hl
+    supported M R (f ⁻¹' s) ≤ (supported M R s).comap (lmapDomain M R f) := by
+  classical
+  intro l (hl : (l.support : Set α) ⊆ f ⁻¹' s)
+  show ↑(mapDomain f l).support ⊆ s
+  rw [← Set.image_subset_iff, ← Finset.coe_image] at hl
+  exact Set.Subset.trans mapDomain_support hl
 #align finsupp.supported_comap_lmap_domain Finsupp.supported_comap_lmapDomain
 
 theorem lmapDomain_supported [Nonempty α] (f : α → α') (s : Set α) :
     (supported M R s).map (lmapDomain M R f) = supported M R (f '' s) := by
+  classical
   inhabit α
   refine
     le_antisymm
@@ -533,8 +533,8 @@ end LComapDomain
 
 section Total
 
-variable (α) {α' : Type _} (M) {M' : Type _} (R) [Semiring R] [AddCommMonoid M'] [AddCommMonoid M]
-  [Module R M'] [Module R M] (v : α → M) {v' : α' → M'}
+variable (α) (M) (R)
+variable {α' : Type _} {M' : Type _} [AddCommMonoid M'] [Module R M'] (v : α → M) {v' : α' → M'}
 
 /-- Interprets (l : α →₀ R) as linear combination of the elements in the family (v : α → M) and
     evaluates this linear combination. -/
@@ -705,6 +705,7 @@ theorem total_option (v : Option α → M) (f : Option α →₀ R) :
 theorem total_total {α β : Type _} (A : α → M) (B : β → α →₀ R) (f : β →₀ R) :
     Finsupp.total α M R A (Finsupp.total β (α →₀ R) R B f) =
       Finsupp.total β M R (fun b => Finsupp.total α M R A (B b)) f := by
+  classical
   simp only [total_apply]
   apply induction_linear f
   · simp only [sum_zero_index]
@@ -754,6 +755,7 @@ theorem total_comapDomain (f : α → α') (l : α' →₀ R) (hf : Set.InjOn f 
 
 theorem total_onFinset {s : Finset α} {f : α → R} (g : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) :
     Finsupp.total α M R g (Finsupp.onFinset s f hf) = Finset.sum s fun x : α => f x • g x := by
+  classical
   simp only [Finsupp.total_apply, Finsupp.sum, Finsupp.onFinset_apply, Finsupp.support_onFinset]
   rw [Finset.sum_filter_of_ne]
   intro x _ h
@@ -1028,6 +1030,14 @@ theorem finsuppProdLEquiv_symm_apply {α β R M : Type _} [Semiring R] [AddCommM
 
 end Prod
 
+/-- If `R` is countable, then any `R`-submodule spanned by a countable family of vectors is
+countable. -/
+instance {ι : Type _} [Countable R] [Countable ι] (v : ι → M) :
+    Countable (Submodule.span R (Set.range v)) := by
+  refine Set.countable_coe_iff.mpr (Set.Countable.mono ?_ (Set.countable_range
+      (fun c : (ι →₀ R) => c.sum fun i _ => (c i) • v i)))
+  exact fun _ h => Finsupp.mem_span_range_iff_exists_finsupp.mp (SetLike.mem_coe.mp h)
+
 end Finsupp
 
 section Fintype
@@ -1060,7 +1070,7 @@ theorem Fintype.total_apply (f) : Fintype.total R S v f = ∑ i, f i • v i :=
 #align fintype.total_apply Fintype.total_apply
 
 @[simp]
-theorem Fintype.total_apply_single (i : α) (r : R) :
+theorem Fintype.total_apply_single [DecidableEq α] (i : α) (r : R) :
     Fintype.total R S v (Pi.single i r) = r • v i := by
   simp_rw [Fintype.total_apply, Pi.single_apply, ite_smul, zero_smul]
   rw [Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
@@ -1247,6 +1257,7 @@ def splittingOfFunOnFintypeSurjective [Fintype α] (f : M →ₗ[R] α → R) (s
 
 theorem splittingOfFunOnFintypeSurjective_splits [Fintype α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : f.comp (splittingOfFunOnFintypeSurjective f s) = LinearMap.id := by
+  classical
   -- Porting note: `ext` can't find appropriate theorems.
   refine pi_ext' fun x => ext_ring <| funext fun y => ?_
   dsimp [splittingOfFunOnFintypeSurjective]

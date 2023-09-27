@@ -2,15 +2,12 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.linear_pmap
-! leanprover-community/mathlib commit 8b981918a93bc45a8600de608cde7944a80d92b9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Topology.Algebra.Module.LinearPMap
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import analysis.inner_product_space.linear_pmap from "leanprover-community/mathlib"@"8b981918a93bc45a8600de608cde7944a80d92b9"
 
 /-!
 
@@ -246,3 +243,36 @@ theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
 #align continuous_linear_map.to_pmap_adjoint_eq_adjoint_to_pmap_of_dense ContinuousLinearMap.toPMap_adjoint_eq_adjoint_toPMap_of_dense
 
 end ContinuousLinearMap
+
+section Star
+
+namespace LinearPMap
+
+variable [CompleteSpace E]
+
+instance instStar : Star (E →ₗ.[𝕜] E) where
+  star := fun A ↦ A.adjoint
+
+variable {A : E →ₗ.[𝕜] E}
+
+theorem isSelfAdjoint_def : IsSelfAdjoint A ↔ A† = A := Iff.rfl
+
+/-- Every self-adjoint `LinearPMap` has dense domain.
+
+This is not true by definition since we define the adjoint without the assumption that the
+domain is dense, but the choice of the junk value implies that a `LinearPMap` cannot be self-adjoint
+if it does not have dense domain. -/
+theorem _root_.IsSelfAdjoint.dense_domain (hA : IsSelfAdjoint A) : Dense (A.domain : Set E) := by
+  by_contra h
+  rw [isSelfAdjoint_def] at hA
+  have h' : A.domain = ⊤ := by
+    rw [← hA, Submodule.eq_top_iff']
+    intro x
+    rw [mem_adjoint_domain_iff, ← hA]
+    refine (innerSL 𝕜 x).cont.comp ?_
+    simp [adjoint, h, continuous_const]
+  simp [h'] at h
+
+end LinearPMap
+
+end Star

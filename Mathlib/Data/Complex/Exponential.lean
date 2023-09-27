@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
-
-! This file was ported from Lean 3 source module data.complex.exponential
-! leanprover-community/mathlib commit a8b2226cfb0a79f5986492053fc49b1a0c6aeffb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Nat.Choose.Sum
+
+#align_import data.complex.exponential from "leanprover-community/mathlib"@"a8b2226cfb0a79f5986492053fc49b1a0c6aeffb"
 
 /-!
 # Exponential, trigonometric and hyperbolic trigonometric functions

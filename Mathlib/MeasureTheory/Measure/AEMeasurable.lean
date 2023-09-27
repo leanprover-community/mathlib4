@@ -2,13 +2,10 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.measure.ae_measurable
-! leanprover-community/mathlib commit 3310acfa9787aa171db6d4cba3945f6f275fe9f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+
+#align_import measure_theory.measure.ae_measurable from "leanprover-community/mathlib"@"3310acfa9787aa171db6d4cba3945f6f275fe9f2"
 
 /-!
 # Almost everywhere measurable functions
@@ -347,11 +344,21 @@ theorem aemeasurable_indicator_iff {s} (hs : MeasurableSet s) :
     exact ae_of_ae_restrict_of_ae_restrict_compl _ A B
 #align ae_measurable_indicator_iff aemeasurable_indicator_iff
 
+theorem aemeasurable_indicator_iff₀ {s} (hs : NullMeasurableSet s μ) :
+    AEMeasurable (indicator s f) μ ↔ AEMeasurable f (μ.restrict s) := by
+  rcases hs with ⟨t, ht, hst⟩
+  rw [← aemeasurable_congr (indicator_ae_eq_of_ae_eq_set hst.symm), aemeasurable_indicator_iff ht,
+      restrict_congr_set hst]
+
 @[measurability]
 theorem AEMeasurable.indicator (hfm : AEMeasurable f μ) {s} (hs : MeasurableSet s) :
     AEMeasurable (s.indicator f) μ :=
   (aemeasurable_indicator_iff hs).mpr hfm.restrict
 #align ae_measurable.indicator AEMeasurable.indicator
+
+theorem AEMeasurable.indicator₀ (hfm : AEMeasurable f μ) {s} (hs : NullMeasurableSet s μ) :
+    AEMeasurable (s.indicator f) μ :=
+  (aemeasurable_indicator_iff₀ hs).mpr hfm.restrict
 
 theorem MeasureTheory.Measure.restrict_map_of_aemeasurable {f : α → δ} (hf : AEMeasurable f μ)
     {s : Set δ} (hs : MeasurableSet s) : (μ.map f).restrict s = (μ.restrict <| f ⁻¹' s).map f :=

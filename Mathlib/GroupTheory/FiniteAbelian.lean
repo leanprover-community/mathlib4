@@ -2,14 +2,11 @@
 Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
-
-! This file was ported from Lean 3 source module group_theory.finite_abelian
-! leanprover-community/mathlib commit 879155bff5af618b9062cbb2915347dafd749ad6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.PID
 import Mathlib.Data.ZMod.Quotient
+
+#align_import group_theory.finite_abelian from "leanprover-community/mathlib"@"879155bff5af618b9062cbb2915347dafd749ad6"
 
 /-!
 # Structure of finite(ly generated) abelian groups

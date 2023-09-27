@@ -2,14 +2,11 @@
 Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
-
-! This file was ported from Lean 3 source module ring_theory.mv_polynomial.weighted_homogeneous
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Data.MvPolynomial.Variables
+
+#align_import ring_theory.mv_polynomial.weighted_homogeneous from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Weighted homogeneous polynomials
@@ -179,6 +176,7 @@ variable {R}
 theorem weightedHomogeneousSubmodule_mul (w : σ → M) (m n : M) :
     weightedHomogeneousSubmodule R w m * weightedHomogeneousSubmodule R w n ≤
       weightedHomogeneousSubmodule R w (m + n) := by
+  classical
   rw [Submodule.mul_le]
   intro φ hφ ψ hψ c hc
   rw [coeff_mul] at hc

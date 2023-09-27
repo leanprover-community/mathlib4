@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.fin.tuple.reflection
-! leanprover-community/mathlib commit d95bef0d215ea58c0fd7bbc4b151bf3fe952c095
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Algebra.BigOperators.Fin
+
+#align_import data.fin.tuple.reflection from "leanprover-community/mathlib"@"d95bef0d215ea58c0fd7bbc4b151bf3fe952c095"
 
 /-!
 # Lemmas for tuples `Fin m → α`

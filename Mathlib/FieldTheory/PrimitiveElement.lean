@@ -2,16 +2,13 @@
 Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module field_theory.primitive_element
-! leanprover-community/mathlib commit df76f43357840485b9d04ed5dee5ab115d420e87
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
+
+#align_import field_theory.primitive_element from "leanprover-community/mathlib"@"df76f43357840485b9d04ed5dee5ab115d420e87"
 
 /-!
 # Primitive Element Theorem
@@ -197,7 +194,7 @@ theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
       intro K β hK
       cases' hK with α hK
       rw [← hK, adjoin_simple_adjoin_simple]
-      haveI : Infinite F := is_empty_fintype.mp F_inf
+      haveI : Infinite F := isEmpty_fintype.mp F_inf
       cases' primitive_element_inf_aux F α β with γ hγ
       exact ⟨γ, hγ.symm⟩
     exact induction_on_adjoin P base ih ⊤

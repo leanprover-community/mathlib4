@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.quaternion_basis
-! leanprover-community/mathlib commit 3aa5b8a9ed7a7cabd36e6e1d022c9858ab8a8c2d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Quaternion
 import Mathlib.Tactic.Ring
+
+#align_import algebra.quaternion_basis from "leanprover-community/mathlib"@"3aa5b8a9ed7a7cabd36e6e1d022c9858ab8a8c2d"
 
 /-!
 # Basis on a quaternion-like algebra

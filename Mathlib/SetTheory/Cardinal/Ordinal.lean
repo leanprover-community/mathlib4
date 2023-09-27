@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
-
-! This file was ported from Lean 3 source module set_theory.cardinal.ordinal
-! leanprover-community/mathlib commit 7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Order.Bounded
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.Linarith
+
+#align_import set_theory.cardinal.ordinal from "leanprover-community/mathlib"@"7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f"
 
 /-!
 # Cardinals and ordinals
@@ -1093,7 +1090,8 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     refine' le_trans (mk_preimage_of_injective _ _ fun x y => Sum.inl.inj) _
     apply mk_range_le
   rintro ⟨s, ⟨g⟩⟩
-  use fun y => if h : ∃ x : s, g x = y then Sum.inl (Classical.choose h).val else Sum.inr ⟨⟩
+  use fun y => if h : ∃ x : s, g x = y then Sum.inl (Classical.choose h).val
+               else Sum.inr (ULift.up 0)
   apply Subtype.eq; ext x
   constructor
   · rintro ⟨y, h⟩

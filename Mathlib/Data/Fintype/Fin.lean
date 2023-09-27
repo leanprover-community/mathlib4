@@ -2,13 +2,10 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.fintype.fin
-! leanprover-community/mathlib commit 759575657f189ccb424b990164c8b1fa9f55cdfe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Interval
+
+#align_import data.fintype.fin from "leanprover-community/mathlib"@"759575657f189ccb424b990164c8b1fa9f55cdfe"
 
 /-!
 # The structure of `Fintype (Fin n)`

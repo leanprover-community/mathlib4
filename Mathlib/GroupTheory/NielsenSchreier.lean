@@ -2,16 +2,13 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module group_theory.nielsen_schreier
-! leanprover-community/mathlib commit 1bda4fc53de6ade5ab9da36f2192e24e2084a2ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Action
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.GroupTheory.IsFreeGroup
+
+#align_import group_theory.nielsen_schreier from "leanprover-community/mathlib"@"1bda4fc53de6ade5ab9da36f2192e24e2084a2ce"
 
 /-!
 # The Nielsen-Schreier theorem

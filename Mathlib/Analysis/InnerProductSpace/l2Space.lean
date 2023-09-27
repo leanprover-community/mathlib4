@@ -2,15 +2,12 @@
 Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.l2_space
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.NormedSpace.lpSpace
 import Mathlib.Analysis.InnerProductSpace.PiL2
+
+#align_import analysis.inner_product_space.l2_space from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Hilbert sum of a family of inner product spaces
@@ -91,8 +88,7 @@ open scoped BigOperators NNReal ENNReal Classical ComplexConjugate Topology
 
 noncomputable section
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
--- porting note: see lean4#2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 variable {ι : Type _}
 

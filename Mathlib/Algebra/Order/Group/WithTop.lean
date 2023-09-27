@@ -2,14 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.group.with_top
-! leanprover-community/mathlib commit f178c0e25af359f6cbc72a96a243efd3b12423a3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Monoid.WithTop
+
+#align_import algebra.order.group.with_top from "leanprover-community/mathlib"@"f178c0e25af359f6cbc72a96a243efd3b12423a3"
 
 /-!
 # Adjoining a top element to a `LinearOrderedAddCommGroupWithTop`.

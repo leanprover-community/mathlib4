@@ -2,11 +2,6 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.projection
-! leanprover-community/mathlib commit 0b7c740e25651db0ba63648fbae9f9d6f941e31b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
@@ -14,6 +9,8 @@ import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.NormedSpace.IsROrC
 import Mathlib.Data.IsROrC.Lemmas
 import Mathlib.Algebra.DirectSum.Decomposition
+
+#align_import analysis.inner_product_space.projection from "leanprover-community/mathlib"@"0b7c740e25651db0ba63648fbae9f9d6f941e31b"
 
 /-!
 # The orthogonal projection
@@ -30,7 +27,7 @@ each `u : E`, the point `reflection K u` to satisfy
 Basic API for `orthogonalProjection` and `reflection` is developed.
 
 Next, the orthogonal projection is used to prove a series of more subtle lemmas about the
-the orthogonal complement of complete subspaces of `E` (the orthogonal complement itself was
+orthogonal complement of complete subspaces of `E` (the orthogonal complement itself was
 defined in `Analysis.InnerProductSpace.Orthogonal`); the lemma
 `Submodule.sup_orthogonal_of_completeSpace`, stating that for a complete subspace `K` of `E` we have
 `K ⊔ Kᗮ = ⊤`, is a typical example.
@@ -746,6 +743,10 @@ theorem reflection_orthogonal : reflection Kᗮ = .trans (reflection K) (.neg _)
   ext; apply reflection_orthogonal_apply
 
 variable {K}
+
+theorem reflection_singleton_apply (u v : E) :
+    reflection (𝕜 ∙ u) v = 2 • (⟪u, v⟫ / ((‖u‖ : 𝕜) ^ 2)) • u - v := by
+  rw [reflection_apply, orthogonalProjection_singleton, ofReal_pow]
 
 /-- A point is its own reflection if and only if it is in the subspace. -/
 theorem reflection_eq_self_iff (x : E) : reflection K x = x ↔ x ∈ K := by

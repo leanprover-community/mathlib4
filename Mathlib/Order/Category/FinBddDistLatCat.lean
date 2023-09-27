@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.FinBddDistLat
-! leanprover-community/mathlib commit 937b1c59c58710ef8ed91f8727ef402d49d621a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Category.BddDistLatCat
 import Mathlib.Order.Category.FinPartOrd
+
+#align_import order.category.FinBddDistLat from "leanprover-community/mathlib"@"937b1c59c58710ef8ed91f8727ef402d49d621a2"
 
 /-!
 # The category of finite bounded distributive lattices

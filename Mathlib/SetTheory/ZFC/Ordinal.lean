@@ -2,13 +2,10 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.zfc.ordinal
-! leanprover-community/mathlib commit 98bbc3526516bca903bff09ea10c4206bf079e6b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.ZFC.Basic
+
+#align_import set_theory.zfc.ordinal from "leanprover-community/mathlib"@"98bbc3526516bca903bff09ea10c4206bf079e6b"
 
 /-!
 # Von Neumann ordinals

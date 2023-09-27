@@ -2,17 +2,14 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.num.lemmas
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Size
+
+#align_import data.num.lemmas from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # Properties of the binary representation of integers
@@ -468,6 +465,9 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
       apply mul_lt_mul_of_pos_right
     decidableLT := Num.decidableLT
     decidableLE := Num.decidableLE
+    -- This is relying on an automatically generated instance name,
+    -- generated in a `deriving` handler.
+    -- See https://github.com/leanprover/lean4/issues/2343
     decidableEq := instDecidableEqNum
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 #align num.linear_ordered_semiring Num.linearOrderedSemiring
@@ -1461,6 +1461,8 @@ instance linearOrder : LinearOrder ZNum where
     intro a b
     transfer_rw
     apply le_total
+  -- This is relying on an automatically generated instance name, generated in a `deriving` handler.
+  -- See https://github.com/leanprover/lean4/issues/2343
   decidableEq := instDecidableEqZNum
   decidableLE := ZNum.decidableLE
   decidableLT := ZNum.decidableLT

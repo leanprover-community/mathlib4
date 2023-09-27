@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.category.Top.opens
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.category.Top.opens from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
 /-!
 # The category of open sets in a topological space.

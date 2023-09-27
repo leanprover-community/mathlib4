@@ -2,15 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.array
-! leanprover-community/mathlib commit 78314d08d707a6338079f00094bbdb90bf11fc41
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Logic.Equiv.Array
+
+#align_import data.fintype.array from "leanprover-community/mathlib"@"78314d08d707a6338079f00094bbdb90bf11fc41"
 
 /-!
 # `align` information for `Fintype` declarations around mathlib3's `array` (now `Vector`)

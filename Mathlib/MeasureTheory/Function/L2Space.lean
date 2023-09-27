@@ -2,15 +2,12 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.l2_space
-! leanprover-community/mathlib commit 83a66c8775fa14ee5180c85cab98e970956401ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.IsROrC.Lemmas
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 import Mathlib.MeasureTheory.Integral.SetIntegral
+
+#align_import measure_theory.function.l2_space from "leanprover-community/mathlib"@"83a66c8775fa14ee5180c85cab98e970956401ad"
 
 /-! # `L^2` space
 
@@ -28,7 +25,7 @@ is also an inner product space, with inner product defined as `inner f g = ∫ a
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 set_option linter.uppercaseLean3 false
 

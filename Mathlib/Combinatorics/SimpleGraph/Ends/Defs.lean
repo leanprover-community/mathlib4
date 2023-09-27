@@ -2,15 +2,12 @@
 Copyright (c) 2022 Anand Rao, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anand Rao, Rémi Bottinelli
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.ends.defs
-! leanprover-community/mathlib commit b99e2d58a5e6861833fa8de11e51a81144258db4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
-import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.Finite.Set
+
+#align_import combinatorics.simple_graph.ends.defs from "leanprover-community/mathlib"@"b99e2d58a5e6861833fa8de11e51a81144258db4"
 
 /-!
 # Ends
@@ -79,6 +76,12 @@ theorem componentComplMk_eq_of_adj (G : SimpleGraph V) {v w : V} (vK : v ∉ K) 
   apply Adj.reachable
   exact a
 #align simple_graph.component_compl_mk_eq_of_adj SimpleGraph.componentComplMk_eq_of_adj
+
+/-- In an infinite graph, the set of components out of a finite set is nonempty. -/
+instance componentCompl_nonempty_of_infinite (G : SimpleGraph V) [Infinite V] (K : Finset V) :
+    Nonempty (G.ComponentCompl K) :=
+  let ⟨_, kK⟩ := K.finite_toSet.infinite_compl.nonempty
+  ⟨componentComplMk _ kK⟩
 
 namespace ComponentCompl
 
@@ -244,6 +247,35 @@ theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
 #align simple_graph.component_compl.infinite_iff_in_all_ranges SimpleGraph.ComponentCompl.infinite_iff_in_all_ranges
 
 end ComponentCompl
+
+/- For a locally finite preconnected graph, the number of components outside of any finite set
+is finite. -/
+instance componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K : Finset V) :
+    Finite (G.ComponentCompl K) := by
+  classical
+  rcases K.eq_empty_or_nonempty with rfl | h
+  -- If K is empty, then removing K doesn't change the graph, which is connected, hence has a
+  -- single connected component
+  · dsimp [ComponentCompl]
+    rw [Finset.coe_empty, Set.compl_empty]
+    have := Gpc.out.subsingleton_connectedComponent
+    exact Finite.of_equiv _ (induceUnivIso G).connectedComponentEquiv.symm
+  -- Otherwise, we consider the function `touch` mapping a connected component to one of its
+  -- vertices adjacent to `K`.
+  · let touch (C : G.ComponentCompl K) : {v : V | ∃ k : V, k ∈ K ∧ G.Adj k v} :=
+      let p := C.exists_adj_boundary_pair Gpc.out h
+      ⟨p.choose.1, p.choose.2, p.choose_spec.2.1, p.choose_spec.2.2.symm⟩
+    -- `touch` is injective
+    have touch_inj : touch.Injective := fun C D h' => ComponentCompl.pairwise_disjoint.eq
+      (Set.not_disjoint_iff.mpr ⟨touch C, (C.exists_adj_boundary_pair Gpc.out h).choose_spec.1,
+                                 h'.symm ▸ (D.exists_adj_boundary_pair Gpc.out h).choose_spec.1⟩)
+    -- `touch` has finite range
+    have : Finite (Set.range touch) := by
+      refine @Subtype.finite _ (Set.Finite.to_subtype ?_) _
+      apply Set.Finite.ofFinset (K.biUnion (fun v => G.neighborFinset v))
+      simp only [Finset.mem_biUnion, mem_neighborFinset, Set.mem_setOf_eq, implies_true]
+    -- hence `touch` has a finite domain
+    apply Finite.of_injective_finite_range touch_inj
 
 section Ends
 

@@ -2,17 +2,14 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
-
-! This file was ported from Lean 3 source module group_theory.group_action.defs
-! leanprover-community/mathlib commit dad7ecf9a1feae63e6e49f07619b7087403fb8d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
+
+#align_import group_theory.group_action.defs from "leanprover-community/mathlib"@"dad7ecf9a1feae63e6e49f07619b7087403fb8d4"
 
 /-!
 # Definitions of group actions
@@ -732,7 +729,6 @@ See note [reducible non-instances]. -/
 protected def ZeroHom.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom A B)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
-  smul := (· • ·)
   -- Porting note: `simp` no longer works here.
   smul_zero c := by rw [← map_zero f, ← smul, smul_zero]
 #align zero_hom.smul_zero_class ZeroHom.smulZeroClass

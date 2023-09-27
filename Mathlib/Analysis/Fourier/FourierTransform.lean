@@ -2,15 +2,12 @@
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.fourier.fourier_transform
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.MeasureTheory.Group.Integration
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+#align_import analysis.fourier.fourier_transform from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # The Fourier transform

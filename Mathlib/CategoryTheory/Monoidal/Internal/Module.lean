@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.internal.Module
-! leanprover-community/mathlib commit 74403a3b2551b0970855e14ef5e8fd0d6af1bfc2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.CategoryTheory.Monoidal.Mon_
+
+#align_import category_theory.monoidal.internal.Module from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
 
 /-!
 # `Mon_ (Module R) ≌ Algebra R`
@@ -171,7 +168,7 @@ end MonModuleEquivalenceAlgebra
 
 open MonModuleEquivalenceAlgebra
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 500000 in
 /-- The category of internal monoid objects in `Module R`
 is equivalent to the category of "native" bundled `R`-algebras.
 -/

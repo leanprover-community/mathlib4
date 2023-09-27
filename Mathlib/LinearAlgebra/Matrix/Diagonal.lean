@@ -2,14 +2,11 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.diagonal
-! leanprover-community/mathlib commit b1c23399f01266afe392a0d8f71f599a0dad4f7b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.FreeModule.Rank
+
+#align_import linear_algebra.matrix.diagonal from "leanprover-community/mathlib"@"b1c23399f01266afe392a0d8f71f599a0dad4f7b"
 
 /-!
 # Diagonal matrices
@@ -79,21 +76,25 @@ theorem range_diagonal [DecidableEq m] (w : m → K) :
 
 end Semifield
 
+end Matrix
+
+namespace LinearMap
+
 section Field
 
 variable {m n : Type _} [Fintype m] [Fintype n] {K : Type u} [Field K]
 
 theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
-    rank (toLin' (diagonal w)) = Fintype.card { i // w i ≠ 0 } := by
+    LinearMap.rank (toLin' (diagonal w)) = Fintype.card { i // w i ≠ 0 } := by
   have hu : univ ⊆ { i : m | w i = 0 }ᶜ ∪ { i : m | w i = 0 } := by rw [Set.compl_union_self]
   have hd : Disjoint { i : m | w i ≠ 0 } { i : m | w i = 0 } := disjoint_compl_left
   have B₁ := iSup_range_stdBasis_eq_iInf_ker_proj K (fun _ : m => K) hd hu (Set.toFinite _)
   have B₂ := iInfKerProjEquiv K (fun _ ↦ K) hd hu
-  rw [rank, range_diagonal, B₁, ← @rank_fun' K]
+  rw [LinearMap.rank, range_diagonal, B₁, ← @rank_fun' K]
   apply LinearEquiv.rank_eq
   apply B₂
-#align matrix.rank_diagonal Matrix.rank_diagonal
+#align matrix.rank_diagonal LinearMap.rank_diagonal
 
 end Field
 
-end Matrix
+end LinearMap

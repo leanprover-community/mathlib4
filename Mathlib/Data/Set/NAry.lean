@@ -2,13 +2,10 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module data.set.n_ary
-! leanprover-community/mathlib commit 5e526d18cea33550268dcbbddcb822d5cde40654
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Prod
+
+#align_import data.set.n_ary from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"
 
 /-!
 # N-ary images of sets

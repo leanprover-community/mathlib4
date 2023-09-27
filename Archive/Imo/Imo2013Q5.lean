@@ -2,17 +2,14 @@
 Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
-
-! This file was ported from Lean 3 source module imo.imo2013_q5
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.LinearCombination
+
+#align_import imo.imo2013_q5 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2013 Q5
@@ -35,7 +32,7 @@ https://www.imo-official.org/problems/IMO2013SL.pdf
 
 open scoped BigOperators
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace Imo2013Q5
 

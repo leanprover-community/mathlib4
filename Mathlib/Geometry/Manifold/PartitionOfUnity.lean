@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module geometry.manifold.partition_of_unity
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.Algebra.Structures
 import Mathlib.Geometry.Manifold.BumpFunction
 import Mathlib.Topology.MetricSpace.PartitionOfUnity
 import Mathlib.Topology.ShrinkingLemma
+
+#align_import geometry.manifold.partition_of_unity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Smooth partition of unity
@@ -113,7 +110,7 @@ structure SmoothBumpCovering (s : Set M := univ) where
   eventuallyEq_one' : ∀ x ∈ s, ∃ i, toFun i =ᶠ[𝓝 x] 1
 #align smooth_bump_covering SmoothBumpCovering
 
-/-- We say that that a collection of functions form a smooth partition of unity on a set `s` if
+/-- We say that a collection of functions form a smooth partition of unity on a set `s` if
 
 * all functions are infinitely smooth and nonnegative;
 * the family `λ i, support (f i)` is locally finite;
@@ -593,4 +590,3 @@ theorem Metric.exists_smooth_forall_closedBall_subset {M} [MetricSpace M] [Chart
   rw [← Metric.emetric_closedBall (hδ0 _).le]
   exact hδ i x hx
 #align metric.exists_smooth_forall_closed_ball_subset Metric.exists_smooth_forall_closedBall_subset
-

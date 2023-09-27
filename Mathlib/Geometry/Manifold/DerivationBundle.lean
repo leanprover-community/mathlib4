@@ -2,14 +2,11 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module geometry.manifold.derivation_bundle
-! leanprover-community/mathlib commit 86c29aefdba50b3f33e86e52e3b2f51a0d8f0282
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 import Mathlib.RingTheory.Derivation.Basic
+
+#align_import geometry.manifold.derivation_bundle from "leanprover-community/mathlib"@"86c29aefdba50b3f33e86e52e3b2f51a0d8f0282"
 
 /-!
 

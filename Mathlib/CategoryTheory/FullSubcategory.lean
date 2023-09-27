@@ -2,13 +2,10 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Reid Barton
-
-! This file was ported from Lean 3 source module category_theory.full_subcategory
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.FullyFaithful
+
+#align_import category_theory.full_subcategory from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
 /-!
 # Induced categories and full subcategories
@@ -178,13 +175,16 @@ def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) : C ⥤ FullSub
 #align category_theory.full_subcategory.lift_obj_obj CategoryTheory.FullSubcategory.lift_obj_obj
 #align category_theory.full_subcategory.lift_map CategoryTheory.FullSubcategory.lift_map
 
+@[simp]
+theorem FullSubcategory.lift_comp_inclusion_eq (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
+    FullSubcategory.lift P F hF ⋙ fullSubcategoryInclusion P = F :=
+  rfl
+
 /-- Composing the lift of a functor through a full subcategory with the inclusion yields the
-    original functor. Unfortunately, this is not true by definition, so we only get a natural
-    isomorphism, but it is pointwise definitionally true, see
-    `fullSubcategoryInclusion_obj_lift_obj` and `fullSubcategoryInclusion_map_lift_map`. -/
+    original functor. This is actually true definitionally. -/
 def FullSubcategory.lift_comp_inclusion (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
     FullSubcategory.lift P F hF ⋙ fullSubcategoryInclusion P ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  Iso.refl _
 #align category_theory.full_subcategory.lift_comp_inclusion CategoryTheory.FullSubcategory.lift_comp_inclusion
 
 @[simp]
@@ -193,6 +193,7 @@ theorem fullSubcategoryInclusion_obj_lift_obj (F : C ⥤ D) (hF : ∀ X, P (F.ob
   rfl
 #align category_theory.full_subcategory.inclusion_obj_lift_obj CategoryTheory.fullSubcategoryInclusion_obj_lift_obj
 
+@[simp]
 theorem fullSubcategoryInclusion_map_lift_map (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) {X Y : C}
     (f : X ⟶ Y) :
     (fullSubcategoryInclusion P).map ((FullSubcategory.lift P F hF).map f) = F.map f :=

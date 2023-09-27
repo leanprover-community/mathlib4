@@ -2,16 +2,13 @@
 Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
-
-! This file was ported from Lean 3 source module algebra.category.Mon.adjunctions
-! leanprover-community/mathlib commit 4bcba0da3d97399ce99260794213e69ccdf886ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.SemigroupCat.Basic
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.FreeMonoid.Basic
+
+#align_import algebra.category.Mon.adjunctions from "leanprover-community/mathlib"@"4bcba0da3d97399ce99260794213e69ccdf886ee"
 
 /-!
 # Adjunctions regarding the category of monoids

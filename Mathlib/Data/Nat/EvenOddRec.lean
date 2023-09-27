@@ -2,14 +2,11 @@
 Copyright (c) 2022 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
-
-! This file was ported from Lean 3 source module data.nat.even_odd_rec
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Bitwise
+
+#align_import data.nat.even_odd_rec from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 /-! # A recursion principle based on even and odd numbers. -/
 
 -- porting note: TODO:

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.decomposition
-! leanprover-community/mathlib commit 9af20344b24ef1801b599d296aaed8b9fffdc360
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.PInfty
+
+#align_import algebraic_topology.dold_kan.decomposition from "leanprover-community/mathlib"@"9af20344b24ef1801b599d296aaed8b9fffdc360"
 
 /-!
 

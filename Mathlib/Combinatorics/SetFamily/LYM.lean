@@ -2,17 +2,14 @@
 Copyright (c) 2022 Bhavik Mehta, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.set_family.lym
-! leanprover-community/mathlib commit 861a26926586cd46ff80264d121cdb6fa0e35cc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.SetFamily.Shadow
 import Mathlib.Data.Rat.Order
+
+#align_import combinatorics.set_family.lym from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
 
 /-!
 # Lubell-Yamamoto-Meshalkin inequality and Sperner's theorem
@@ -66,7 +63,7 @@ variable [DecidableEq α] [Fintype α]
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     𝒜.card * r ≤ (∂ 𝒜).card * (Fintype.card α - r + 1) := by
-  let i : DecidableRel ((. ⊆ .) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
+  let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
   refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
     refine' card_le_of_subset _

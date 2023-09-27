@@ -2,7 +2,6 @@
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-Ported by: Yury Kudryashov, Frédéric Dupuis
 -/
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.PermuteGoals
@@ -21,7 +20,7 @@ lift, tactic
 
 /-- A class specifying that you can lift elements from `α` to `β` assuming `cond` is true.
   Used by the tactic `lift`. -/
-class CanLift (α β : Sort _) (coe : outParam <| β → α) (cond : outParam <| α → Prop) where
+class CanLift (α β : Sort _) (coe : outParam <| β → α) (cond : outParam <| α → Prop) : Prop where
   /-- An element of `α` that satisfies `cond` belongs to the range of `coe`. -/
   prf : ∀ x : α, cond x → ∃ y : β, coe y = x
 #align can_lift CanLift

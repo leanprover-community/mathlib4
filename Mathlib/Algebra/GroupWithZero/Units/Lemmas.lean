@@ -2,16 +2,13 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.group_with_zero.units.lemmas
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Hom.Units
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+
+#align_import algebra.group_with_zero.units.lemmas from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Further lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.

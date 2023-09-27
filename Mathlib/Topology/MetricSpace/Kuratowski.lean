@@ -2,14 +2,11 @@
 Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.kuratowski
-! leanprover-community/mathlib commit 95d4f6586d313c8c28e00f36621d2a6a66893aa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.lpSpace
 import Mathlib.Topology.Sets.Compacts
+
+#align_import topology.metric_space.kuratowski from "leanprover-community/mathlib"@"95d4f6586d313c8c28e00f36621d2a6a66893aa6"
 
 /-!
 # The Kuratowski embedding

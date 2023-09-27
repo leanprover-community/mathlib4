@@ -2,11 +2,6 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
-
-! This file was ported from Lean 3 source module data.pnat.basic
-! leanprover-community/mathlib commit 172bf2812857f5e56938cc148b7a539f52f84ca9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Nat.Bits
@@ -14,6 +9,8 @@ import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
+
+#align_import data.pnat.basic from "leanprover-community/mathlib"@"172bf2812857f5e56938cc148b7a539f52f84ca9"
 
 /-!
 # The positive natural numbers
@@ -23,7 +20,7 @@ It is defined in `Data.PNat.Defs`, but most of the development is deferred to he
 that `Data.PNat.Defs` can have very few imports.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
   LinearOrderedCancelCommMonoid, Add, Mul, Distrib for PNat

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.engel
-! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Normalizer
+
+#align_import algebra.lie.engel from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
 
 /-!
 # Engel's theorem
@@ -26,7 +23,7 @@ Engel's theorem is true for any coefficients (i.e., it is really a theorem about
 we work with coefficients in any commutative ring `R` throughout.
 
 On the other hand, Engel's theorem is not true for infinite-dimensional Lie algebras and so a
-finite-dimensionality assumption is required. We prove the theorem subject to the the assumption
+finite-dimensionality assumption is required. We prove the theorem subject to the assumption
 that the Lie algebra is Noetherian as an `R`-module, though actually we only need the slightly
 weaker property that the relation `>` is well-founded on the complete lattice of Lie subalgebras.
 

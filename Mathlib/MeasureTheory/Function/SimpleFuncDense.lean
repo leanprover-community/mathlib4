@@ -2,13 +2,10 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
-
-! This file was ported from Lean 3 source module measure_theory.function.simple_func_dense
-! leanprover-community/mathlib commit 7317149f12f55affbc900fc873d0d422485122b9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.SimpleFunc
+
+#align_import measure_theory.function.simple_func_dense from "leanprover-community/mathlib"@"7317149f12f55affbc900fc873d0d422485122b9"
 
 /-!
 # Density of simple functions

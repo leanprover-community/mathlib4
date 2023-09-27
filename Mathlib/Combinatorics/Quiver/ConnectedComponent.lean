@@ -2,16 +2,12 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module combinatorics.quiver.connected_component
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Symmetric
+
+#align_import combinatorics.quiver.connected_component from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
 /-!
 ## Weakly connected components
@@ -70,7 +66,7 @@ variable {V}
 -- Without the explicit universe level in `Quiver.{v+1}` Lean comes up with
 -- `Quiver.{max u_2 u_3 + 1}`. This causes problems elsewhere, so we write `Quiver.{v+1}`.
 /-- A wide subquiver `H` of `Symmetrify V` determines a wide subquiver of `V`, containing an
-    an arrow `e` if either `e` or its reversal is in `H`. -/
+    arrow `e` if either `e` or its reversal is in `H`. -/
 def wideSubquiverSymmetrify (H : WideSubquiver (Symmetrify V)) : WideSubquiver V :=
   fun _ _ ↦ { e | H _ _ (Sum.inl e) ∨ H _ _ (Sum.inr e) }
 #align quiver.wide_subquiver_symmetrify Quiver.wideSubquiverSymmetrify

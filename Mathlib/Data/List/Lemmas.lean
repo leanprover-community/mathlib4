@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.list.lemmas
-! leanprover-community/mathlib commit 2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
+
+#align_import data.list.lemmas from "leanprover-community/mathlib"@"2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4"
 
 /-! # Some lemmas about lists involving sets
 

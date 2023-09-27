@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.zpow
-! leanprover-community/mathlib commit 03fda9112aa6708947da13944a19310684bfdfcb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+
+#align_import linear_algebra.matrix.zpow from "leanprover-community/mathlib"@"03fda9112aa6708947da13944a19310684bfdfcb"
 
 /-!
 # Integer powers of square matrices

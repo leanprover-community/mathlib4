@@ -2,11 +2,6 @@
 Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
-
-! This file was ported from Lean 3 source module combinatorics.catalan
-! leanprover-community/mathlib commit 26b40791e4a5772a4e53d0e28e4df092119dc7da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
@@ -15,6 +10,8 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Tree
 import Mathlib.Tactic.FieldSimp
+
+#align_import combinatorics.catalan from "leanprover-community/mathlib"@"26b40791e4a5772a4e53d0e28e4df092119dc7da"
 
 /-!
 # Catalan numbers

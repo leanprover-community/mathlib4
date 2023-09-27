@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.normed_space.linear_isometry
-! leanprover-community/mathlib commit 4601791ea62fea875b488dafc4e6dede19e8363f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Basis
+
+#align_import analysis.normed_space.linear_isometry from "leanprover-community/mathlib"@"4601791ea62fea875b488dafc4e6dede19e8363f"
 
 /-!
 # (Semi-)linear isometries
@@ -441,6 +438,9 @@ theorem one_def : (1 : E →ₗᵢ[R] E) = id :=
 theorem mul_def (f g : E →ₗᵢ[R] E) : (f * g : E →ₗᵢ[R] E) = f.comp g :=
   rfl
 #align linear_isometry.mul_def LinearIsometry.mul_def
+
+theorem coe_pow (f : E →ₗᵢ[R] E) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+  hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
 end LinearIsometry
 

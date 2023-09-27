@@ -2,13 +2,10 @@
 Copyright (c) 2023 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
-
-! This file was ported from Lean 3 source module topology.metric_space.cantor_scheme
-! leanprover-community/mathlib commit 49b7f94aab3a3bdca1f9f34c5d818afb253b3993
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.PiNat
+
+#align_import topology.metric_space.cantor_scheme from "leanprover-community/mathlib"@"49b7f94aab3a3bdca1f9f34c5d818afb253b3993"
 
 /-!
 # (Topological) Schemes and their induced maps

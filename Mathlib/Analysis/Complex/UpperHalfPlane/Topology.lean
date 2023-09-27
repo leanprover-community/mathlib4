@@ -2,11 +2,6 @@
 Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.complex.upper_half_plane.topology
-! leanprover-community/mathlib commit 57f9349f2fe19d2de7207e99b0341808d977cdcf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.Analysis.Convex.Contractible
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Convex.Complex
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Topology.Homotopy.Contractible
+
+#align_import analysis.complex.upper_half_plane.topology from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
 
 /-!
 # Topology on the upper half plane

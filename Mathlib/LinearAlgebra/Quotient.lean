@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.quotient
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.LinearAlgebra.Span
+
+#align_import linear_algebra.quotient from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-!
 # Quotients by submodules
@@ -32,7 +29,7 @@ open LinearMap QuotientAddGroup
 
 /-- The equivalence relation associated to a submodule `p`, defined by `x ≈ y` iff `-x + y ∈ p`.
 
-Note this is equivalent to `y - x ∈ p`, but defined this way to be be defeq to the `AddSubgroup`
+Note this is equivalent to `y - x ∈ p`, but defined this way to be defeq to the `AddSubgroup`
 version, where commutativity can't be assumed. -/
 def quotientRel : Setoid M :=
   QuotientAddGroup.leftRel p.toAddSubgroup
@@ -127,17 +124,17 @@ section SMul
 
 variable {S : Type _} [SMul S R] [SMul S M] [IsScalarTower S R M] (P : Submodule R M)
 
-instance hasSmul' : SMul S (M ⧸ P) :=
+instance instSMul' : SMul S (M ⧸ P) :=
   ⟨fun a =>
     Quotient.map' ((· • ·) a) fun x y h =>
       leftRel_apply.mpr <| by simpa using Submodule.smul_mem P (a • (1 : R)) (leftRel_apply.mp h)⟩
-#align submodule.quotient.has_smul' Submodule.Quotient.hasSmul'
+#align submodule.quotient.has_smul' Submodule.Quotient.instSMul'
 
 -- porting note: should this be marked as a `@[default_instance]`?
 /-- Shortcut to help the elaborator in the common case. -/
-instance hasSmul : SMul R (M ⧸ P) :=
-  Quotient.hasSmul' P
-#align submodule.quotient.has_smul Submodule.Quotient.hasSmul
+instance instSMul : SMul R (M ⧸ P) :=
+  Quotient.instSMul' P
+#align submodule.quotient.has_smul Submodule.Quotient.instSMul
 
 @[simp]
 theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
@@ -185,16 +182,16 @@ instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
   Quotient.smulZeroClass' P
 #align submodule.quotient.smul_zero_class Submodule.Quotient.smulZeroClass
 
-instance distribSmul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
+instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
     DistribSMul S (M ⧸ P) :=
   Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
     (surjective_quot_mk _) (Submodule.Quotient.mk_smul P)
-#align submodule.quotient.distrib_smul' Submodule.Quotient.distribSmul'
+#align submodule.quotient.distrib_smul' Submodule.Quotient.distribSMul'
 
 -- porting note: should this be marked as a `@[default_instance]`?
-instance distribSmul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
-  Quotient.distribSmul' P
-#align submodule.quotient.distrib_smul Submodule.Quotient.distribSmul
+instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
+  Quotient.distribSMul' P
+#align submodule.quotient.distrib_smul Submodule.Quotient.distribSMul
 
 instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : DistribMulAction S (M ⧸ P) :=
@@ -225,9 +222,7 @@ where `P : Submodule R M`.
 -/
 def restrictScalarsEquiv [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) : (M ⧸ P.restrictScalars S) ≃ₗ[S] M ⧸ P :=
-  {
-    Quotient.congrRight fun _ _ =>
-      Iff.rfl with
+  { Quotient.congrRight fun _ _ => Iff.rfl with
     map_add' := fun x y => Quotient.inductionOn₂' x y fun _x' _y' => rfl
     map_smul' := fun _c x => Quotient.inductionOn' x fun _x' => rfl }
 #align submodule.quotient.restrict_scalars_equiv Submodule.Quotient.restrictScalarsEquiv
@@ -266,8 +261,7 @@ instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R 
     sub_eq_zero.mp <| (Submodule.Quotient.eq ⊥).mp h
 #align submodule.quotient_bot.infinite Submodule.QuotientBot.infinite
 
-instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M))
-    where
+instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
   default := 0
   uniq x := Quotient.inductionOn' x fun _x => (Submodule.Quotient.eq ⊤).mpr Submodule.mem_top
 #align submodule.quotient_top.unique Submodule.QuotientTop.unique
@@ -289,9 +283,8 @@ theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ :=
 #align submodule.subsingleton_quotient_iff_eq_top Submodule.subsingleton_quotient_iff_eq_top
 
 theorem unique_quotient_iff_eq_top : Nonempty (Unique (M ⧸ p)) ↔ p = ⊤ :=
-  ⟨fun ⟨h⟩ => subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h), by
-    rintro rfl
-    exact ⟨QuotientTop.unique⟩⟩
+  ⟨fun ⟨h⟩ => subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h),
+    by rintro rfl; exact ⟨QuotientTop.unique⟩⟩
 #align submodule.unique_quotient_iff_eq_top Submodule.unique_quotient_iff_eq_top
 
 variable (p)
@@ -483,8 +476,7 @@ theorem ker_liftQ_eq_bot (f : M →ₛₗ[τ₁₂] M₂) (h) (h' : ker f ≤ p)
 
 /-- The correspondence theorem for modules: there is an order isomorphism between submodules of the
 quotient of `M` by `p`, and submodules of `M` larger than `p`. -/
-def comapMkQRelIso : Submodule R (M ⧸ p) ≃o { p' : Submodule R M // p ≤ p' }
-    where
+def comapMkQRelIso : Submodule R (M ⧸ p) ≃o { p' : Submodule R M // p ≤ p' } where
   toFun p' := ⟨comap p.mkQ p', le_comap_mkQ p _⟩
   invFun q := map p.mkQ q
   left_inv p' := map_comap_eq_self <| by simp
@@ -525,11 +517,7 @@ and `f : M ≃ₗ N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`.
 @[simps]
 def Quotient.equiv {N : Type _} [AddCommGroup N] [Module R N] (P : Submodule R M)
     (Q : Submodule R N) (f : M ≃ₗ[R] N) (hf : P.map f = Q) : (M ⧸ P) ≃ₗ[R] N ⧸ Q :=
-  {
-    P.mapQ Q (f : M →ₗ[R] N) fun x hx =>
-      hf ▸
-        Submodule.mem_map_of_mem
-          hx with
+  { P.mapQ Q (f : M →ₗ[R] N) fun x hx => hf ▸ Submodule.mem_map_of_mem hx with
     toFun := P.mapQ Q (f : M →ₗ[R] N) fun x hx => hf ▸ Submodule.mem_map_of_mem hx
     invFun :=
       Q.mapQ P (f.symm : N →ₗ[R] M) fun x hx => by

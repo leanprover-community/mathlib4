@@ -2,14 +2,11 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.integrally_closed
-! leanprover-community/mathlib commit d35b4ff446f1421bd551fafa4b8efd98ac3ac408
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.IntegralClosure
 import Mathlib.RingTheory.Localization.Integral
+
+#align_import ring_theory.integrally_closed from "leanprover-community/mathlib"@"d35b4ff446f1421bd551fafa4b8efd98ac3ac408"
 
 /-!
 # Integrally closed rings

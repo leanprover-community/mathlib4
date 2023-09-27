@@ -2,15 +2,12 @@
 Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.big_operators.norm_num
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.List.FinRange
+
+#align_import algebra.big_operators.norm_num from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # `norm_num` plugin for big operators

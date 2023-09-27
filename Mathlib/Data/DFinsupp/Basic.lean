@@ -2,11 +2,6 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
-
-! This file was ported from Lean 3 source module data.dfinsupp.basic
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.BigOperators.Basic
@@ -14,6 +9,8 @@ import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.Data.Finset.Preimage
+
+#align_import data.dfinsupp.basic from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 # Dependent functions with finite support
@@ -1448,7 +1445,7 @@ def equivCongrLeft [∀ i, Zero (β i)] (h : ι ≃ κ) : (Π₀ i, β i) ≃ Π
 #align dfinsupp.equiv_congr_left DFinsupp.equivCongrLeft
 #align dfinsupp.equiv_congr_left_apply DFinsupp.equivCongrLeft_apply
 
-section Curry
+section SigmaCurry
 
 variable {α : ι → Type _} {δ : ∀ i, α i → Type v}
 
@@ -1473,66 +1470,49 @@ instance distribMulAction₂ [Monoid γ] [∀ i j, AddMonoid (δ i j)]
   @DFinsupp.distribMulAction ι _ (fun i => Π₀ j, δ i j) _ _ _
 #align dfinsupp.distrib_mul_action₂ DFinsupp.distribMulAction₂
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The natural map between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.  -/
-noncomputable def sigmaCurry [∀ i j, Zero (δ i j)] (f : Π₀ i : Σi, _, δ i.1 i.2) :
-    Π₀ (i) (j), δ i j := by
-  classical!
-  exact mk (f.support.image fun i => i.1) fun i =>
-    mk (f.support.preimage (⟨i, ·⟩) $ sigma_mk_injective.injOn _) fun j => f ⟨i, j⟩
-#align dfinsupp.sigma_curry DFinsupp.sigmaCurry
+def sigmaCurry [∀ i j, Zero (δ i j)] (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
+    Π₀ (i) (j), δ i j where
+  toFun := fun i ↦
+  { toFun := fun j ↦ f ⟨i, j⟩,
+    support' := f.support'.map (fun ⟨m, hm⟩ ↦
+      ⟨m.filterMap (fun ⟨i', j'⟩ ↦ if h : i' = i then some $ h.rec j' else none),
+        fun j ↦ (hm ⟨i, j⟩).imp_left (fun h ↦ (m.mem_filterMap _).mpr ⟨⟨i, j⟩, h, dif_pos rfl⟩)⟩) }
+  support' := f.support'.map (fun ⟨m, hm⟩ ↦
+    ⟨m.map Sigma.fst, fun i ↦ Decidable.or_iff_not_imp_left.mpr (fun h ↦ DFinsupp.ext
+      (fun j ↦ (hm ⟨i, j⟩).resolve_left (fun H ↦ (Multiset.mem_map.not.mp h) ⟨⟨i, j⟩, H, rfl⟩)))⟩)
 
 @[simp]
-theorem sigmaCurry_apply [∀ i j, Zero (δ i j)] (f : Π₀ i : Σi, _, δ i.1 i.2) (i : ι) (j : α i) :
-    sigmaCurry f i j = f ⟨i, j⟩ := by
-  classical! -- Porting note: added
-  dsimp only [sigmaCurry]; by_cases h : f ⟨i, j⟩ = 0
-  · rw [h]
-    rw [mk_apply (dec := fun a b ↦ Classical.propDecidable (a = b))]
-    split_ifs
-    · rw [mk_apply (dec := fun a b ↦ Classical.propDecidable (a = b))]
-      split_ifs
-      · exact h
-      · rfl
-    · rfl
-  · rw [mk_of_mem (dec := fun a b ↦ Classical.propDecidable (a = b)) ?h₁,
-        mk_of_mem (dec := fun a b ↦ Classical.propDecidable (a = b))]
-    case h₁ =>
-      rw [@mem_image _ _ (fun a b ↦ Classical.propDecidable (a = b))]
-      refine' ⟨⟨i, j⟩, _, rfl⟩
-      convert (mem_support_toFun f _).2 h
-    · rw [mem_preimage]
-      convert (mem_support_toFun f _).2 h
+theorem sigmaCurry_apply [∀ i j, Zero (δ i j)] (f : Π₀ (i : Σ _, _), δ i.1 i.2) (i : ι) (j : α i) :
+    sigmaCurry f i j = f ⟨i, j⟩ :=
+  rfl
 #align dfinsupp.sigma_curry_apply DFinsupp.sigmaCurry_apply
 
 @[simp]
-theorem sigmaCurry_zero [∀ i j, Zero (δ i j)] : sigmaCurry (0 : Π₀ i : Σi, _, δ i.1 i.2) = 0 := by
-  ext i j
-  rw [sigmaCurry_apply]
+theorem sigmaCurry_zero [∀ i j, Zero (δ i j)] :
+    sigmaCurry (0 : Π₀ (i : Σ _, _), δ i.1 i.2) = 0 :=
   rfl
 #align dfinsupp.sigma_curry_zero DFinsupp.sigmaCurry_zero
 
 @[simp]
-theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ i : Σi, α i, δ i.1 i.2) :
-    @sigmaCurry _ _ δ _ (f + g) = @sigmaCurry _ _ δ _ f + @sigmaCurry ι α δ _ g := by
-  ext i j
-  rw [@add_apply _ (fun i => Π₀ j, δ i j) _ (sigmaCurry _), add_apply, sigmaCurry_apply,
-    sigmaCurry_apply, sigmaCurry_apply, add_apply]
+theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i : Σ _, _), δ i.1 i.2) :
+    sigmaCurry (f + g) = sigmaCurry f + sigmaCurry g := by
+  ext (i j)
+  rfl
 #align dfinsupp.sigma_curry_add DFinsupp.sigmaCurry_add
 
 @[simp]
 theorem sigmaCurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)] [∀ i j, DistribMulAction γ (δ i j)]
-    (r : γ) (f : Π₀ i : Σi, α i, δ i.1 i.2) :
-    @sigmaCurry _ _ δ _ (r • f) = r • @sigmaCurry _ _ δ _ f := by
-  ext i j
-  rw [@smul_apply _ _ (fun i => Π₀ j, δ i j) _ _ _ _ (sigmaCurry _), smul_apply, sigmaCurry_apply,
-    sigmaCurry_apply, smul_apply]
+    (r : γ) (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
+    sigmaCurry (r • f) = r • sigmaCurry f := by
+  ext (i j)
+  rfl
 #align dfinsupp.sigma_curry_smul DFinsupp.sigmaCurry_smul
 
 @[simp]
 theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
-    (ij : Σi, α i) (x : δ ij.1 ij.2) :
-    @sigmaCurry _ _ _ _ (single ij x) = single ij.1 (single ij.2 x : Π₀ j, δ ij.1 j) := by
+    (ij : Σ i, α i) (x : δ ij.1 ij.2) :
+    sigmaCurry (single ij x) = single ij.1 (single ij.2 x : Π₀ j, δ ij.1 j) := by
   obtain ⟨i, j⟩ := ij
   ext i' j'
   dsimp only
@@ -1624,7 +1604,7 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)]
 /-- The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
 
 This is the dfinsupp version of `Equiv.piCurry`. -/
-noncomputable def sigmaCurryEquiv [∀ i j, Zero (δ i j)]
+def sigmaCurryEquiv [∀ i j, Zero (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)] :
     (Π₀ i : Σi, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j
     where
@@ -1638,7 +1618,7 @@ noncomputable def sigmaCurryEquiv [∀ i j, Zero (δ i j)]
     rw [sigmaCurry_apply, sigmaUncurry_apply]
 #align dfinsupp.sigma_curry_equiv DFinsupp.sigmaCurryEquiv
 
-end Curry
+end SigmaCurry
 
 variable {α : Option ι → Type v}
 

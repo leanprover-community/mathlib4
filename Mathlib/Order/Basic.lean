@@ -2,14 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module order.basic
-! leanprover-community/mathlib commit 90df25ded755a2cf9651ea850d1abe429b1e4eb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
+
+#align_import order.basic from "leanprover-community/mathlib"@"90df25ded755a2cf9651ea850d1abe429b1e4eb1"
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -243,6 +240,18 @@ theorem not_gt (h : x = y) : ¬y < x :=
 #align eq.not_gt Eq.not_gt
 
 end Eq
+
+
+section
+
+variable [Preorder α] {a b : α}
+
+@[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
+
+-- Making this a @[simp] lemma causes confluences problems downstream.
+lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
+
+end
 
 namespace LE.le
 
@@ -707,16 +716,16 @@ instance (α : Type _) [LE α] : LE αᵒᵈ :=
 instance (α : Type _) [LT α] : LT αᵒᵈ :=
   ⟨fun x y : α ↦ y < x⟩
 
-instance preorder (α : Type _) [Preorder α] : Preorder αᵒᵈ where
+instance instPreorder (α : Type _) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
   lt_iff_le_not_le := fun _ _ ↦ lt_iff_le_not_le
 
-instance partialOrder (α : Type _) [PartialOrder α] : PartialOrder αᵒᵈ where
+instance instPartialOrder (α : Type _) [PartialOrder α] : PartialOrder αᵒᵈ where
   __ := inferInstanceAs (Preorder αᵒᵈ)
   le_antisymm := fun a b hab hba ↦ @le_antisymm α _ a b hba hab
 
-instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
+instance instLinearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
   le_total     := λ a b : α => le_total b a
   max := fun a b ↦ (min a b : α)
@@ -725,22 +734,23 @@ instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
   decidableLE := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
   decidableLT := (inferInstance : DecidableRel (λ a b : α => b < a))
-#align order_dual.linear_order OrderDual.linearOrder
+#align order_dual.linear_order OrderDual.instLinearOrder
 
-instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
+instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 
-
-theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : OrderDual.preorder αᵒᵈ = H :=
+theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : OrderDual.instPreorder αᵒᵈ = H :=
   Preorder.ext fun _ _ ↦ Iff.rfl
 #align order_dual.preorder.dual_dual OrderDual.Preorder.dual_dual
 
-theorem partialOrder.dual_dual (α : Type _) [H : PartialOrder α] : OrderDual.partialOrder αᵒᵈ = H :=
+theorem instPartialOrder.dual_dual (α : Type _) [H : PartialOrder α] :
+    OrderDual.instPartialOrder αᵒᵈ = H :=
   PartialOrder.ext fun _ _ ↦ Iff.rfl
-#align order_dual.partial_order.dual_dual OrderDual.partialOrder.dual_dual
+#align order_dual.partial_order.dual_dual OrderDual.instPartialOrder.dual_dual
 
-theorem linearOrder.dual_dual (α : Type _) [H : LinearOrder α] : OrderDual.linearOrder αᵒᵈ = H :=
+theorem instLinearOrder.dual_dual (α : Type _) [H : LinearOrder α] :
+    OrderDual.instLinearOrder αᵒᵈ = H :=
   LinearOrder.ext fun _ _ ↦ Iff.rfl
-#align order_dual.linear_order.dual_dual OrderDual.linearOrder.dual_dual
+#align order_dual.linear_order.dual_dual OrderDual.instLinearOrder.dual_dual
 
 end OrderDual
 
@@ -1257,7 +1267,8 @@ end Preorder
 /-- The pointwise partial order on a product.
     (The lexicographic ordering is defined in `Order.Lexicographic`, and the instances are
     available via the type synonym `α ×ₗ β = α × β`.) -/
-instance (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] : PartialOrder (α × β) where
+instance instPartialOrder (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] :
+    PartialOrder (α × β) where
   __ := inferInstanceAs (Preorder (α × β))
   le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext (hac.antisymm hca) (hbd.antisymm hdb)
 

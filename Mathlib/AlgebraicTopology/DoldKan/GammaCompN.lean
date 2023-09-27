@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.gamma_comp_n
-! leanprover-community/mathlib commit 5f68029a863bdf76029fa0f7a519e6163c14152e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
 import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
+
+#align_import algebraic_topology.dold_kan.gamma_comp_n from "leanprover-community/mathlib"@"5f68029a863bdf76029fa0f7a519e6163c14152e"
 
 /-! The counit isomorphism of the Dold-Kan equivalence
 

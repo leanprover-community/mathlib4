@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module data.mv_polynomial.counit
-! leanprover-community/mathlib commit abb3121f210743a930dea73cd766d988079bdf8b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Basic
+
+#align_import data.mv_polynomial.counit from "leanprover-community/mathlib"@"abb3121f210743a930dea73cd766d988079bdf8b"
 
 /-!
 ## Counit morphisms for multivariate polynomials

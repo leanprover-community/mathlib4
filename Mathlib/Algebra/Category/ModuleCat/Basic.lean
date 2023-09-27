@@ -2,11 +2,6 @@
 Copyright (c) 2019 Robert A. Spencer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert A. Spencer, Markus Himmel
-
-! This file was ported from Lean 3 source module algebra.category.Module.basic
-! leanprover-community/mathlib commit 829895f162a1f29d0133f4b3538f4cd1fb5bffd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Linear.Basic
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Elementwise
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+#align_import algebra.category.Module.basic from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
 /-!
 # The category of `R`-modules
@@ -382,6 +379,3 @@ theorem Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
 end
 
 end ModuleCat
-
-instance (M : Type u) [AddCommGroup M] [Module R M] : CoeOut (Submodule R M) (ModuleCat R) :=
-  ⟨fun N => ModuleCat.of R N⟩

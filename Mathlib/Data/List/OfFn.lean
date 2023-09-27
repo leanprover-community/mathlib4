@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.of_fn
-! leanprover-community/mathlib commit bf27744463e9620ca4e4ebe951fe83530ae6949b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Join
 import Mathlib.Data.List.Pairwise
+
+#align_import data.list.of_fn from "leanprover-community/mathlib"@"bf27744463e9620ca4e4ebe951fe83530ae6949b"
 
 /-!
 # Lists from functions
@@ -151,7 +148,7 @@ theorem ofFn_add {m n} (f : Fin (m + n) → α) :
     List.ofFn f =
       (List.ofFn fun i => f (Fin.castAdd n i)) ++ List.ofFn fun j => f (Fin.natAdd m j) := by
   induction' n with n IH
-  · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.castIso_refl]
+  · rw [ofFn_zero, append_nil, Fin.castAdd_zero]
     rfl
   · rw [ofFn_succ', ofFn_succ', IH, append_concat]
     rfl

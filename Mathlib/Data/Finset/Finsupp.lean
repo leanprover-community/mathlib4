@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.finsupp
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Data.Fintype.BigOperators
+
+#align_import data.finset.finsupp from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Finitely supported product of finsets

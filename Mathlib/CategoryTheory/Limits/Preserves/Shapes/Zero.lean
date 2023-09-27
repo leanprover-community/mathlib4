@@ -2,14 +2,11 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.shapes.zero
-! leanprover-community/mathlib commit bbe25d4d92565a5fd773e52e041a90387eee3c93
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+
+#align_import category_theory.limits.preserves.shapes.zero from "leanprover-community/mathlib"@"bbe25d4d92565a5fd773e52e041a90387eee3c93"
 
 /-!
 # Preservation of zero objects and zero morphisms
@@ -103,6 +100,9 @@ instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F]
       F.map (0 : X ⟶ Y) = F.map (0 ≫ F.preimage (0 : F.obj Y ⟶ F.obj Y)) := by rw [zero_comp]
       _ = 0 := by rw [F.map_comp, F.image_preimage, comp_zero]
 #align category_theory.functor.preserves_zero_morphisms_of_full CategoryTheory.Functor.preservesZeroMorphisms_of_full
+
+instance preservesZeroMorphisms_evaluation_obj (j : D) :
+    PreservesZeroMorphisms ((evaluation D C).obj j) where
 
 end ZeroMorphisms
 

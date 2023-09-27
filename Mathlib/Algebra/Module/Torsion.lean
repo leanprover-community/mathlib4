@@ -2,11 +2,6 @@
 Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
-
-! This file was ported from Lean 3 source module algebra.module.torsion
-! leanprover-community/mathlib commit cdc34484a07418af43daf8198beaf5c00324bca8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Module.BigOperators
@@ -14,6 +9,8 @@ import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.GroupTheory.Torsion
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Finiteness
+
+#align_import algebra.module.torsion from "leanprover-community/mathlib"@"cdc34484a07418af43daf8198beaf5c00324bca8"
 
 /-!
 # Torsion submodules

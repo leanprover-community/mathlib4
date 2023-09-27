@@ -2,15 +2,12 @@
 Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module order.ideal
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Order.UpperLower.Basic
+
+#align_import order.ideal from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma
@@ -146,7 +143,7 @@ theorem mem_compl_of_ge {x y : P} : x ≤ y → x ∈ (I : Set P)ᶜ → y ∈ (
 #align order.ideal.mem_compl_of_ge Order.Ideal.mem_compl_of_ge
 
 /-- The partial ordering by subset inclusion, inherited from `Set P`. -/
-instance : PartialOrder (Ideal P) :=
+instance instPartialOrderIdeal : PartialOrder (Ideal P) :=
   PartialOrder.lift SetLike.coe SetLike.coe_injective
 
 -- @[simp] -- Porting note: simp can prove this

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module linear_algebra.free_module.finite.rank
-! leanprover-community/mathlib commit e95e4f92c8f8da3c7f693c3ec948bcf9b6683f51
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Finrank
 import Mathlib.LinearAlgebra.FreeModule.Rank
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+
+#align_import linear_algebra.free_module.finite.rank from "leanprover-community/mathlib"@"e95e4f92c8f8da3c7f693c3ec948bcf9b6683f51"
 
 /-!
 
@@ -86,10 +83,7 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N] [Module.Finite R N]
 
 /-- The finrank of a free module `M` over `R` is the cardinality of `ChooseBasisIndex R M`. -/
 theorem finrank_eq_card_chooseBasisIndex :
-    finrank R M =
-      @card (ChooseBasisIndex R M)
-        (@ChooseBasisIndex.fintype R M _ _ _ _ (nontrivial_of_invariantBasisNumber R) _) := by
-  letI := nontrivial_of_invariantBasisNumber R
+    finrank R M = card (ChooseBasisIndex R M) := by
   simp [finrank, rank_eq_card_chooseBasisIndex]
 #align finite_dimensional.finrank_eq_card_choose_basis_index FiniteDimensional.finrank_eq_card_chooseBasisIndex
 

@@ -2,17 +2,14 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Jujian Zhang
-
-! This file was ported from Lean 3 source module topology.sheaves.abelian
-! leanprover-community/mathlib commit ac3ae212f394f508df43e37aa093722fa9b65d31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Transfer
 import Mathlib.CategoryTheory.Sites.LeftExact
+
+#align_import topology.sheaves.abelian from "leanprover-community/mathlib"@"ac3ae212f394f508df43e37aa093722fa9b65d31"
 
 /-!
 # Category of sheaves is abelian

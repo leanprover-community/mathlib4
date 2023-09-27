@@ -2,13 +2,10 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module geometry.manifold.algebra.lie_group
-! leanprover-community/mathlib commit f9ec187127cc5b381dfcf5f4a22dacca4c20b63d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.Algebra.Monoid
+
+#align_import geometry.manifold.algebra.lie_group from "leanprover-community/mathlib"@"f9ec187127cc5b381dfcf5f4a22dacca4c20b63d"
 
 /-!
 # Lie groups
@@ -51,6 +48,7 @@ the addition and negation operations are smooth. -/
 class LieAddGroup {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H]
     {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type _)
     [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] extends SmoothAdd I G : Prop where
+  /-- Negation is smooth in an additive Lie group. -/
   smooth_neg : Smooth I I fun a : G => -a
 #align lie_add_group LieAddGroup
 
@@ -61,6 +59,7 @@ the multiplication and inverse operations are smooth. -/
 class LieGroup {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H]
     {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type _)
     [Group G] [TopologicalSpace G] [ChartedSpace H G] extends SmoothMul I G : Prop where
+  /-- Inversion is smooth in a Lie group. -/
   smooth_inv : Smooth I I fun a : G => a⁻¹
 #align lie_group LieGroup
 
@@ -229,3 +228,118 @@ instance normedSpaceLieAddGroup {𝕜 : Type _} [NontriviallyNormedField 𝕜] {
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : LieAddGroup 𝓘(𝕜, E) E where
   smooth_neg := contDiff_neg.contMDiff
 #align normed_space_lie_add_group normedSpaceLieAddGroup
+
+section HasSmoothInv
+
+-- See note [Design choices about smooth algebraic structures]
+/-- A smooth manifold with `0` and `Inv` such that `fun x ↦ x⁻¹` is smooth at all nonzero points.
+Any complete normed (semi)field has this property. -/
+class SmoothInv₀ {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H]
+    {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type _)
+    [Inv G] [Zero G] [TopologicalSpace G] [ChartedSpace H G] : Prop where
+  /-- Inversion is smooth away from `0`. -/
+  smoothAt_inv₀ : ∀ ⦃x : G⦄, x ≠ 0 → SmoothAt I I (fun y ↦ y⁻¹) x
+
+instance {𝕜 : Type _} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] : SmoothInv₀ 𝓘(𝕜) 𝕜 :=
+  { smoothAt_inv₀ := by
+      intro x hx
+      change ContMDiffAt 𝓘(𝕜) 𝓘(𝕜) ⊤ Inv.inv x
+      rw [contMDiffAt_iff_contDiffAt]
+      exact contDiffAt_inv 𝕜 hx }
+
+variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H] {E : Type _}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) {G : Type _}
+  [TopologicalSpace G] [ChartedSpace H G] [Inv G] [Zero G] [SmoothInv₀ I G] {E' : Type _}
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M : Type _} [TopologicalSpace M] [ChartedSpace H' M]
+  {n : ℕ∞} {f g : M → G}
+
+theorem smoothAt_inv₀ {x : G} (hx : x ≠ 0) : SmoothAt I I (fun y ↦ y⁻¹) x :=
+  SmoothInv₀.smoothAt_inv₀ hx
+
+/-- In a manifold with smooth inverse away from `0`, the inverse is continuous away from `0`.
+This is not an instance for technical reasons, see
+note [Design choices about smooth algebraic structures]. -/
+theorem hasContinuousInv₀_of_hasSmoothInv₀ : HasContinuousInv₀ G :=
+  { continuousAt_inv₀ := fun _ hx ↦ (smoothAt_inv₀ I hx).continuousAt }
+
+theorem SmoothOn_inv₀ : SmoothOn I I (Inv.inv : G → G) {0}ᶜ := fun _x hx =>
+  (smoothAt_inv₀ I hx).smoothWithinAt
+
+variable {I}
+
+theorem ContMDiffWithinAt.inv₀ (hf : ContMDiffWithinAt I' I n f s a) (ha : f a ≠ 0) :
+    ContMDiffWithinAt I' I n (fun x => (f x)⁻¹) s a :=
+  (smoothAt_inv₀ I ha).contMDiffAt.comp_contMDiffWithinAt a hf
+
+theorem ContMDiffAt.inv₀ (hf : ContMDiffAt I' I n f a) (ha : f a ≠ 0) :
+    ContMDiffAt I' I n (fun x ↦ (f x)⁻¹) a :=
+  (smoothAt_inv₀ I ha).contMDiffAt.comp a hf
+
+theorem ContMDiff.inv₀ (hf : ContMDiff I' I n f) (h0 : ∀ x, f x ≠ 0) :
+    ContMDiff I' I n (fun x ↦ (f x)⁻¹) :=
+  fun x ↦ ContMDiffAt.inv₀ (hf x) (h0 x)
+
+theorem ContMDiffOn.inv₀ (hf : ContMDiffOn I' I n f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
+    ContMDiffOn I' I n (fun x => (f x)⁻¹) s :=
+  fun x hx ↦ ContMDiffWithinAt.inv₀ (hf x hx) (h0 x hx)
+
+theorem SmoothWithinAt.inv₀ (hf : SmoothWithinAt I' I f s a) (ha : f a ≠ 0) :
+    SmoothWithinAt I' I (fun x => (f x)⁻¹) s a :=
+  ContMDiffWithinAt.inv₀ hf ha
+
+theorem SmoothAt.inv₀ (hf : SmoothAt I' I f a) (ha : f a ≠ 0) :
+    SmoothAt I' I (fun x => (f x)⁻¹) a :=
+  ContMDiffAt.inv₀ hf ha
+
+theorem Smooth.inv₀ (hf : Smooth I' I f) (h0 : ∀ x, f x ≠ 0) : Smooth I' I fun x => (f x)⁻¹ :=
+  ContMDiff.inv₀ hf h0
+
+theorem SmoothOn.inv₀ (hf : SmoothOn I' I f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
+    SmoothOn I' I (fun x => (f x)⁻¹) s :=
+  ContMDiffOn.inv₀ hf h0
+
+end HasSmoothInv
+
+section Div
+
+variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H] {E : Type _}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type _}
+  [TopologicalSpace G] [ChartedSpace H G] [GroupWithZero G] [SmoothInv₀ I G] [SmoothMul I G]
+  {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M : Type _} [TopologicalSpace M] [ChartedSpace H' M]
+  {f g : M → G}
+
+theorem ContMDiffWithinAt.div₀
+    (hf : ContMDiffWithinAt I' I n f s a) (hg : ContMDiffWithinAt I' I n g s a) (h₀ : g a ≠ 0) :
+    ContMDiffWithinAt I' I n (f / g) s a := by
+  simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+
+theorem ContMDiffOn.div₀ (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g s)
+    (h₀ : ∀ x ∈ s, g x ≠ 0) : ContMDiffOn I' I n (f / g) s := by
+  simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+
+theorem ContMDiffAt.div₀ (hf : ContMDiffAt I' I n f a) (hg : ContMDiffAt I' I n g a)
+    (h₀ : g a ≠ 0) : ContMDiffAt I' I n (f / g) a := by
+  simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+
+theorem ContMDiff.div₀ (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) (h₀ : ∀ x, g x ≠ 0) :
+    ContMDiff I' I n (f / g) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+
+theorem SmoothWithinAt.div₀ (hf : SmoothWithinAt I' I f s a)
+    (hg : SmoothWithinAt I' I g s a) (h₀ : g a ≠ 0) : SmoothWithinAt I' I (f / g) s a :=
+  ContMDiffWithinAt.div₀ hf hg h₀
+
+theorem SmoothOn.div₀ (hf : SmoothOn I' I f s) (hg : SmoothOn I' I g s) (h₀ : ∀ x ∈ s, g x ≠ 0) :
+    SmoothOn I' I (f / g) s :=
+  ContMDiffOn.div₀ hf hg h₀
+
+theorem SmoothAt.div₀ (hf : SmoothAt I' I f a) (hg : SmoothAt I' I g a) (h₀ : g a ≠ 0) :
+    SmoothAt I' I (f / g) a :=
+  ContMDiffAt.div₀ hf hg h₀
+
+theorem Smooth.div₀ (hf : Smooth I' I f) (hg : Smooth I' I g) (h₀ : ∀ x, g x ≠ 0) :
+    Smooth I' I (f / g) :=
+  ContMDiff.div₀ hf hg h₀
+
+end Div

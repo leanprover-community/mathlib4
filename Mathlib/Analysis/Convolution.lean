@@ -2,11 +2,6 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module analysis.convolution
-! leanprover-community/mathlib commit 8905e5ed90859939681a725b00f6063e65096d95
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Analysis.Calculus.ParametricIntegral
@@ -15,6 +10,8 @@ import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Group.Integration
 import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
+
+#align_import analysis.convolution from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 
 /-!
 # Convolution of functions

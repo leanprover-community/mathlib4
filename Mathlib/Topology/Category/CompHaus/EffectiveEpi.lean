@@ -5,7 +5,7 @@ Authors: Adam Topaz
 -/
 
 import Mathlib.CategoryTheory.Sites.Coherent
-import Mathlib.Topology.Category.CompHaus.ExplicitLimits
+import Mathlib.Topology.Category.CompHaus.Limits
 
 /-!
 

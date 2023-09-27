@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.group.order_synonym
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Synonym
+
+#align_import algebra.group.order_synonym from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 
 /-!
 # Group structure on the order type synonyms
@@ -38,7 +35,7 @@ instance [h : Inv α] : Inv αᵒᵈ := h
 instance [h : Div α] : Div αᵒᵈ := h
 
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMulOrderDual]
-instance [h : Pow α β] : Pow αᵒᵈ β := h
+instance instPowOrderDual [h : Pow α β] : Pow αᵒᵈ β := h
 #align order_dual.has_pow instPowOrderDual
 #align order_dual.has_smul instSMulOrderDual
 
@@ -66,7 +63,7 @@ instance [h : MulOneClass α] : MulOneClass αᵒᵈ := h
 instance [h : Monoid α] : Monoid αᵒᵈ := h
 
 @[to_additive]
-instance [h : CommMonoid α] : CommMonoid αᵒᵈ := h
+instance instCommMonoidOrderDual [h : CommMonoid α] : CommMonoid αᵒᵈ := h
 
 @[to_additive]
 instance [h : LeftCancelMonoid α] : LeftCancelMonoid αᵒᵈ := h
@@ -78,7 +75,7 @@ instance [h : RightCancelMonoid α] : RightCancelMonoid αᵒᵈ := h
 instance [h : CancelMonoid α] : CancelMonoid αᵒᵈ := h
 
 @[to_additive]
-instance [h : CancelCommMonoid α] : CancelCommMonoid αᵒᵈ := h
+instance instCancelCommMonoidOrderDual [h : CancelCommMonoid α] : CancelCommMonoid αᵒᵈ := h
 
 @[to_additive]
 instance [h : InvolutiveInv α] : InvolutiveInv αᵒᵈ := h
@@ -93,7 +90,7 @@ instance [h : DivisionMonoid α] : DivisionMonoid αᵒᵈ := h
 instance [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ := h
 
 @[to_additive]
-instance [h : Group α] : Group αᵒᵈ := h
+instance instGroupOrderDual [h : Group α] : Group αᵒᵈ := h
 #align order_dual.group instGroupOrderDual
 #align order_dual.add_group instAddGroupOrderDual
 
@@ -180,7 +177,7 @@ instance [h : Inv α] : Inv (Lex α) := h
 instance [h : Div α] : Div (Lex α) := h
 
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMulLex]
-instance [h : Pow α β] : Pow (Lex α) β := h
+instance instPowLex [h : Pow α β] : Pow (Lex α) β := h
 #align lex.has_pow instPowLex
 #align lex.has_smul instSMulLex
 

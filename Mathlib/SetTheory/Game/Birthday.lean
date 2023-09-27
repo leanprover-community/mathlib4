@@ -2,14 +2,11 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.game.birthday
-! leanprover-community/mathlib commit a347076985674932c0e91da09b9961ed0a79508c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Game.Ordinal
 import Mathlib.SetTheory.Ordinal.NaturalOps
+
+#align_import set_theory.game.birthday from "leanprover-community/mathlib"@"a347076985674932c0e91da09b9961ed0a79508c"
 
 /-!
 # Birthdays of games

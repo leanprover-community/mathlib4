@@ -2,15 +2,12 @@
 Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.schreier
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.Transfer
+
+#align_import group_theory.schreier from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
 
 /-!
 # Schreier's Lemma

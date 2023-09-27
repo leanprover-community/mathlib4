@@ -2,16 +2,13 @@
 Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
-
-! This file was ported from Lean 3 source module algebraic_topology.fundamental_groupoid.product
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 import Mathlib.Topology.Category.TopCat.Limits.Products
 import Mathlib.Topology.Homotopy.Product
+
+#align_import algebraic_topology.fundamental_groupoid.product from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # Fundamental groupoid preserves products

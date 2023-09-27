@@ -2,15 +2,12 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.perm.subgroup
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Data.Fintype.Perm
 import Mathlib.GroupTheory.Subgroup.Finite
+
+#align_import group_theory.perm.subgroup from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Lemmas about subgroups within the permutations (self-equivalences) of a type `α`

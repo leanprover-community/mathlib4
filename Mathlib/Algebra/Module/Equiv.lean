@@ -3,13 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module algebra.module.equiv
-! leanprover-community/mathlib commit ea94d7cd54ad9ca6b7710032868abb7c6a104c9c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.LinearMap
+
+#align_import algebra.module.equiv from "leanprover-community/mathlib"@"ea94d7cd54ad9ca6b7710032868abb7c6a104c9c"
 
 /-!
 # (Semi)linear equivalences
@@ -637,6 +634,18 @@ theorem restrictScalars_inj (f g : M ≃ₗ[S] M₂) :
 #align linear_equiv.restrict_scalars_inj LinearEquiv.restrictScalars_inj
 
 end RestrictScalars
+
+theorem _root_.Module.End_isUnit_iff [Module R M] (f : Module.End R M) :
+    IsUnit f ↔ Function.Bijective f :=
+  ⟨fun h =>
+    Function.bijective_iff_has_inverse.mpr <|
+      ⟨h.unit.inv,
+        ⟨Module.End_isUnit_inv_apply_apply_of_isUnit h,
+        Module.End_isUnit_apply_inv_apply_of_isUnit h⟩⟩,
+    fun H =>
+    let e : M ≃ₗ[R] M := { f, Equiv.ofBijective f H with }
+    ⟨⟨_, e.symm, LinearMap.ext e.right_inv, LinearMap.ext e.left_inv⟩, rfl⟩⟩
+#align module.End_is_unit_iff Module.End_isUnit_iff
 
 section Automorphisms
 

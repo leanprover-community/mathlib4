@@ -2,13 +2,10 @@
 Copyright (c) 2021 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Yaël Dillies
-
-! This file was ported from Lean 3 source module computability.epsilon_NFA
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.NFA
+
+#align_import computability.epsilon_NFA from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
 /-!
 # Epsilon Nondeterministic Finite Automata

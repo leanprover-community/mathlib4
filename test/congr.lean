@@ -74,10 +74,30 @@ example (s t : Set α) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
   guard_target = s = t
   sorry
 
+/-- `Subtype s = Subtype t` is plausible -/
+example (s t : Set α) (f : Subtype s → α) (g : Subtype t → α) :
+    Set.image f Set.univ = Set.image g Set.univ := by
+  congr!
+  · guard_target = s = t
+    sorry
+  · guard_target = HEq f g
+    sorry
+
+/-- `ι = κ` is not plausible -/
+example (f : ι → α) (g : κ → α) :
+    Set.image f Set.univ = Set.image g Set.univ := by
+  congr!
+  guard_target = Set.image f Set.univ = Set.image g Set.univ
+  congr! (config := {typeEqs := true})
+  · guard_target = ι = κ
+    sorry
+  · guard_target = HEq f g
+    sorry
+
 /-- Generating type equalities is not OK if they're not likely to be the same type. -/
 example (s : Set α) (t : Set β) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
   congr!
-  guard_target = (ℕ × Subtype s) = (ℕ × Subtype t)
+  guard_target = Subtype s = Subtype t
   sorry
 
 /-- Congruence here is OK since `Fin m = Fin n` is plausible to prove. -/
@@ -110,7 +130,15 @@ example (α β) [inst1 : Add α] [inst2 : Add β] (x : α) (y : β) : HEq (x + x
 example (prime : Nat → Prop) (n : Nat) :
     prime (2 * n + 1) = prime (n + n + 1) := by
   congr!
-  · guard_target = (HMul.hMul : Nat → Nat → Nat) = HAdd.hAdd
+  · guard_target =ₛ (HMul.hMul : Nat → Nat → Nat) = HAdd.hAdd
+    sorry
+  · guard_target = 2 = n
+    sorry
+
+example (prime : Nat → Prop) (n : Nat) :
+    prime (2 * n + 1) = prime (n + n + 1) := by
+  congr! (config := {etaExpand := true})
+  · guard_target =ₛ (fun (x y : Nat) => x * y) = (fun (x y : Nat) => x + y)
     sorry
   · guard_target = 2 = n
     sorry
@@ -230,11 +258,13 @@ example (Fintype : Type → Type)
   guard_target = HEq inst inst'
   sorry
 
+/- Here, `Fintype` is a subsingleton class so the `HEq` reduces to `Fintype α = Fintype β`.
+Since these are explicit type arguments with no forward dependencies, this reduces to `α = β`.
+Generating a type equality seems like the right thing to do in this context.
+Usually `HEq inst inst'` wouldn't be generated as a subgoal with the default `typeEqs := false`. -/
 example (Fintype : Type → Type) [∀ γ, Subsingleton (Fintype γ)]
     (α β : Type) (inst : Fintype α) (inst' : Fintype β) : HEq inst inst' := by
   congr!
-  guard_target = Fintype α = Fintype β
-  congr! (config := { typeEqs := true })
   guard_target = α = β
   sorry
 
@@ -265,3 +295,12 @@ example : { f : Nat → Nat // f = id } :=
 -- Regression test. From fixing a "declaration has metavariables" bug
 example (h : z = y) : (x = y ∨ x = z) → x = y := by
   congr! with (rfl|rfl)
+
+example {α} [AddCommMonoid α] [PartialOrder α] {a b c d e f g : α} :
+    (a + b) + (c + d) + (e + f) + g ≤ a + d + e + f + c + g + b := by
+  ac_change a + d + e + f + c + g + b ≤ _; rfl
+
+example {α} [AddCommMonoid α] [PartialOrder α] {a b c d e f g : α} :
+    (a + b) + (c + d) + (e + f) + g ≤ a + d + e + f + c + b + g := by
+  ac_change a + d + e + f + c + g + b ≤ a + d + e + f + c + g + b
+  rfl

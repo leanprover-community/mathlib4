@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.coprime.lemmas
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Int.GCD
 import Mathlib.RingTheory.Coprime.Basic
+
+#align_import ring_theory.coprime.lemmas from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Additional lemmas about elements of a ring satisfying `IsCoprime`
@@ -49,6 +46,11 @@ theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.co
 alias Nat.isCoprime_iff_coprime ↔ IsCoprime.nat_coprime Nat.coprime.isCoprime
 #align is_coprime.nat_coprime IsCoprime.nat_coprime
 #align nat.coprime.is_coprime Nat.coprime.isCoprime
+
+theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
+    (h : Nat.coprime a b) : (a : A) ≠ 0 ∨ (b : A) ≠ 0 :=
+  IsCoprime.ne_zero_or_ne_zero (R := A) <| by
+    simpa only [map_natCast] using IsCoprime.map (Nat.coprime.isCoprime h) (Int.castRingHom A)
 
 theorem IsCoprime.prod_left : (∀ i ∈ t, IsCoprime (s i) x) → IsCoprime (∏ i in t, s i) x :=
   Finset.induction_on t (fun _ ↦ isCoprime_one_left) fun b t hbt ih H ↦ by

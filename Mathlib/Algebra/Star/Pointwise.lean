@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module algebra.star.pointwise
-! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Pointwise.Basic
+
+#align_import algebra.star.pointwise from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
 /-!
 # Pointwise star operation on sets

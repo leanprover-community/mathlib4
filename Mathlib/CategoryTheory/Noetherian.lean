@@ -2,15 +2,12 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.noetherian
-! leanprover-community/mathlib commit 7c4c90f422a4a4477e4d8bc4dc9f1e634e6b2349
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.Simple
+
+#align_import category_theory.noetherian from "leanprover-community/mathlib"@"7c4c90f422a4a4477e4d8bc4dc9f1e634e6b2349"
 
 /-!
 # Artinian and noetherian categories
@@ -63,14 +60,14 @@ lemma ArtinianObject.subobject_lt_wellFounded (X : C) [ArtinianObject X] :
 variable (C)
 
 /-- A category is noetherian if it is essentially small and all objects are noetherian. -/
-class Noetherian extends EssentiallySmall C where
+class Noetherian extends EssentiallySmall C : Prop where
   noetherianObject : ∀ X : C, NoetherianObject X
 #align category_theory.noetherian CategoryTheory.Noetherian
 
 attribute [instance] Noetherian.noetherianObject
 
 /-- A category is artinian if it is essentially small and all objects are artinian. -/
-class Artinian extends EssentiallySmall C where
+class Artinian extends EssentiallySmall C : Prop where
   artinianObject : ∀ X : C, ArtinianObject X
 #align category_theory.artinian CategoryTheory.Artinian
 

@@ -2,11 +2,6 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module dynamics.periodic_pts
-! leanprover-community/mathlib commit d07245fd37786daa997af4f1a73a49fa3b748408
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Data.List.Cycle
@@ -14,6 +9,8 @@ import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Nat.Prime
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.GroupAction.Group
+
+#align_import dynamics.periodic_pts from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 
 /-!
 # Periodic points

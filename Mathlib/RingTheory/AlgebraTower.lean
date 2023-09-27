@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.algebra_tower
-! leanprover-community/mathlib commit 94825b2b0b982306be14d891c4f063a1eca4f370
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Basis
+
+#align_import ring_theory.algebra_tower from "leanprover-community/mathlib"@"94825b2b0b982306be14d891c4f063a1eca4f370"
 
 /-!
 # Towers of algebras

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.submonoid.centralizer
-! leanprover-community/mathlib commit cc67cd75b4e54191e13c2e8d722289a89e67e4fa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 import Mathlib.GroupTheory.Submonoid.Center
+
+#align_import group_theory.submonoid.centralizer from "leanprover-community/mathlib"@"cc67cd75b4e54191e13c2e8d722289a89e67e4fa"
 
 /-!
 # Centralizers of magmas and monoids

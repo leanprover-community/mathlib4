@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot
-
-! This file was ported from Lean 3 source module data.set.intervals.proj_Icc
-! leanprover-community/mathlib commit 4e24c4bfcff371c71f7ba22050308aa17815626c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Intervals.OrdConnected
+
+#align_import data.set.intervals.proj_Icc from "leanprover-community/mathlib"@"4e24c4bfcff371c71f7ba22050308aa17815626c"
 
 /-!
 # Projection of a line onto a closed interval

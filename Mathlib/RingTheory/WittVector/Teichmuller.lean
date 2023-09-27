@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.teichmuller
-! leanprover-community/mathlib commit c0a51cf2de54089d69301befc4c73bbc2f5c7342
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Basic
+
+#align_import ring_theory.witt_vector.teichmuller from "leanprover-community/mathlib"@"c0a51cf2de54089d69301befc4c73bbc2f5c7342"
 
 /-!
 # Teichmüller lifts

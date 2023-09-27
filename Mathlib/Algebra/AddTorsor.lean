@@ -2,13 +2,10 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.add_torsor
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Pointwise.SMul
+
+#align_import algebra.add_torsor from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Torsors of additive group actions
@@ -283,7 +280,7 @@ namespace Prod
 
 variable {G : Type _} [AddGroup G] [AddGroup G'] [AddTorsor G P] [AddTorsor G' P']
 
-instance : AddTorsor (G × G') (P × P') where
+instance instAddTorsor : AddTorsor (G × G') (P × P') where
   vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)
   zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
   add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)
@@ -343,7 +340,7 @@ variable {I : Type u} {fg : I → Type v} [∀ i, AddGroup (fg i)] {fp : I → T
 open AddAction AddTorsor
 
 /-- A product of `AddTorsor`s is an `AddTorsor`. -/
-instance [T : ∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
+instance instAddTorsor [T : ∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
   vadd g p i := g i +ᵥ p i
   zero_vadd p := funext fun i => zero_vadd (fg i) (p i)
   add_vadd g₁ g₂ p := funext fun i => add_vadd (g₁ i) (g₂ i) (p i)

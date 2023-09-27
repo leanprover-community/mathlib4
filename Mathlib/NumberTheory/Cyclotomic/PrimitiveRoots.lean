@@ -2,11 +2,6 @@
 Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Best, Riccardo Brasca, Eric Rodriguez
-
-! This file was ported from Lean 3 source module number_theory.cyclotomic.primitive_roots
-! leanprover-community/mathlib commit 5bfbcca0a7ffdd21cf1682e59106d6c942434a32
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PNat.Prime
 import Mathlib.Algebra.IsPrimePow
@@ -15,6 +10,8 @@ import Mathlib.RingTheory.Adjoin.PowerBasis
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 import Mathlib.RingTheory.Norm
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+
+#align_import number_theory.cyclotomic.primitive_roots from "leanprover-community/mathlib"@"5bfbcca0a7ffdd21cf1682e59106d6c942434a32"
 
 /-!
 # Primitive roots in cyclotomic fields
@@ -74,7 +71,7 @@ variable {p n : ℕ+} (A : Type w) (B : Type z) (K : Type u) {L : Type v} (C : T
 
 variable [CommRing A] [CommRing B] [Algebra A B] [IsCyclotomicExtension {n} A B]
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 section Zeta
 
 namespace IsCyclotomicExtension

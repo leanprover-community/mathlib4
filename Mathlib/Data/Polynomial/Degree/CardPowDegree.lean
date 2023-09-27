@@ -2,14 +2,11 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.polynomial.degree.card_pow_degree
-! leanprover-community/mathlib commit 85d9f2189d9489f9983c0d01536575b0233bd305
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
 import Mathlib.Data.Polynomial.FieldDivision
+
+#align_import data.polynomial.degree.card_pow_degree from "leanprover-community/mathlib"@"85d9f2189d9489f9983c0d01536575b0233bd305"
 
 /-!
 # Absolute value on polynomials over a finite field.

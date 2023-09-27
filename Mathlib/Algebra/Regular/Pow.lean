@@ -2,14 +2,11 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.regular.pow
-! leanprover-community/mathlib commit 46a64b5b4268c594af770c44d9e502afc6a515cb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Regular.Basic
+
+#align_import algebra.regular.pow from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
 /-!
 # Regular elements

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.uniform_space.pi
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.UniformSpace.Separation
+
+#align_import topology.uniform_space.pi from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
 /-!
 # Indexed product of uniform spaces

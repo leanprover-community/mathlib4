@@ -2,14 +2,11 @@
 Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module algebra.symmetrized
-! leanprover-community/mathlib commit 933547832736be61a5de6576e22db351c6c2fbfd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Jordan.Basic
 import Mathlib.Algebra.Module.Basic
+
+#align_import algebra.symmetrized from "leanprover-community/mathlib"@"933547832736be61a5de6576e22db351c6c2fbfd"
 
 /-!
 # Symmetrized algebra

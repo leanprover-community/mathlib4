@@ -2,11 +2,6 @@
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module algebra.group_power.order
-! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.WithZero
@@ -14,6 +9,8 @@ import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Basic
+
+#align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
 /-!
 # Lemmas about the interaction of power operations with order

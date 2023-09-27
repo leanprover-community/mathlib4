@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.convex.contractible
-! leanprover-community/mathlib commit 3339976e2bcae9f1c81e620836d1eb736e3c4700
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Star
 import Mathlib.Topology.Homotopy.Contractible
+
+#align_import analysis.convex.contractible from "leanprover-community/mathlib"@"3339976e2bcae9f1c81e620836d1eb736e3c4700"
 
 /-!
 # A convex set is contractible

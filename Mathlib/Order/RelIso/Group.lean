@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module order.rel_iso.group
-! leanprover-community/mathlib commit 62a5626868683c104774de8d85b9855234ac807c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.RelIso.Basic
+
+#align_import order.rel_iso.group from "leanprover-community/mathlib"@"62a5626868683c104774de8d85b9855234ac807c"
 
 /-!
 # Relation isomorphisms form a group

@@ -2,14 +2,11 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.normed_space.dual_number
-! leanprover-community/mathlib commit 806c0bb86f6128cfa2f702285727518eb5244390
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DualNumber
 import Mathlib.Analysis.NormedSpace.TrivSqZeroExt
+
+#align_import analysis.normed_space.dual_number from "leanprover-community/mathlib"@"806c0bb86f6128cfa2f702285727518eb5244390"
 
 /-!
 # Results on `DualNumber R` related to the norm

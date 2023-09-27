@@ -2,7 +2,6 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Mathlib.Control.Basic
 import Mathlib.Data.HashMap
@@ -232,8 +231,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
   let preprocessors :=
     (if cfg.splitHypotheses then [Linarith.splitConjunctions.globalize.branching] else []) ++
     cfg.preprocessors.getD defaultPreprocessors
-  -- TODO restore when the `removeNe` preprocessor is implemented
-  -- let preprocessors := if cfg.splitNe then Linarith.removeNe::preprocessors else preprocessors
+  let preprocessors := if cfg.splitNe then Linarith.removeNe::preprocessors else preprocessors
   let branches ← preprocess preprocessors g hyps
   for (g, es) in branches do
     let r ← singleProcess g es

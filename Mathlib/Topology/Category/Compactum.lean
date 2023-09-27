@@ -2,11 +2,6 @@
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module topology.category.Compactum
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monad.Types
 import Mathlib.CategoryTheory.Monad.Limits
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Equivalence
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Data.Set.Constructions
+
+#align_import topology.category.Compactum from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 

@@ -2,13 +2,10 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.algebra.pi
-! leanprover-community/mathlib commit b16045e4bf61c6fd619a1a68854ab3d605dcd017
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Equiv
+
+#align_import algebra.algebra.pi from "leanprover-community/mathlib"@"b16045e4bf61c6fd619a1a68854ab3d605dcd017"
 
 /-!
 # The R-algebra structure on families of R-algebras

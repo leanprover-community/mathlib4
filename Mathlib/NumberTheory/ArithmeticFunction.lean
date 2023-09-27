@@ -2,11 +2,6 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module number_theory.arithmetic_function
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Module.BigOperators
@@ -15,6 +10,8 @@ import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Algebra.Invertible
 import Mathlib.Data.Nat.Factorization.Basic
+
+#align_import number_theory.arithmetic_function from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Arithmetic Functions and Dirichlet Convolution
@@ -574,6 +571,26 @@ theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
 
 end Pmul
 
+section Pdiv
+
+/-- This is the pointwise division of `ArithmeticFunction`s. -/
+def pdiv [GroupWithZero R] (f g : ArithmeticFunction R) : ArithmeticFunction R :=
+  ⟨fun n => f n / g n, by simp only [map_zero, ne_eq, not_true, div_zero]⟩
+
+@[simp]
+theorem pdiv_apply [GroupWithZero R] (f g : ArithmeticFunction R) (n : ℕ) :
+    pdiv f g n = f n / g n := rfl
+
+/-- This result only holds for `DivisionSemiring`s instead of `GroupWithZero`s because zeta takes
+values in ℕ, and hence the coersion requires an `AddMonoidWithOne`. TODO: Generalise zeta -/
+@[simp]
+theorem pdiv_zeta [DivisionSemiring R] (f : ArithmeticFunction R) :
+    pdiv f zeta = f := by
+  ext n
+  cases n <;> simp [succ_ne_zero]
+
+end Pdiv
+
 /-- Multiplicative functions -/
 def IsMultiplicative [MonoidWithZero R] (f : ArithmeticFunction R) : Prop :=
   f 1 = 1 ∧ ∀ {m n : ℕ}, m.coprime n → f (m * n) = f m * f n
@@ -693,6 +710,13 @@ theorem pmul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicat
     simp only [pmul_apply, hf.map_mul_of_coprime cop, hg.map_mul_of_coprime cop]
     ring⟩
 #align nat.arithmetic_function.is_multiplicative.pmul Nat.ArithmeticFunction.IsMultiplicative.pmul
+
+theorem pdiv [CommGroupWithZero R] {f g : ArithmeticFunction R} (hf : IsMultiplicative f)
+  (hg : IsMultiplicative g) : IsMultiplicative (pdiv f g) :=
+  ⟨ by simp [hf, hg], fun {m n} cop => by
+    simp only [pdiv_apply, map_mul_of_coprime hf cop, map_mul_of_coprime hg cop,
+      div_eq_mul_inv, mul_inv]
+    apply mul_mul_mul_comm ⟩
 
 /-- For any multiplicative function `f` and any `n > 0`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/

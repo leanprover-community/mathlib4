@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.constructions.borel_space.basic
-! leanprover-community/mathlib commit 9f55d0d4363ae59948c33864cbc52e0b12e0e8ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
@@ -19,6 +14,8 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Semicontinuous
+
+#align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
 /-!
 # Borel (measurable) space
@@ -1112,10 +1109,8 @@ private theorem AEMeasurable.is_lub_of_nonempty {ι} (hι : Nonempty ι) {μ : M
 theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsLUB { a | ∃ i, f i b = a } (g b)) :
     AEMeasurable g μ := by
-  by_cases hμ : μ = 0
-  · rw [hμ]
-    exact aemeasurable_zero_measure
-  have : μ.ae.NeBot := by simpa [neBot_iff]
+  rcases eq_zero_or_neZero μ with rfl | hμ
+  · exact aemeasurable_zero_measure
   by_cases hι : Nonempty ι
   · exact AEMeasurable.is_lub_of_nonempty hι hf hg
   suffices ∃ x, g =ᵐ[μ] fun _ => g x by
@@ -1580,44 +1575,7 @@ theorem Measurable.nndist {f g : β → α} (hf : Measurable f) (hg : Measurable
 
 end
 
-/-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
-thickenings converges to the measure of its closure as `r` tends to `0`. -/
-theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
-    (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) :
-    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ (closure s))) := by
-  have A : Tendsto (fun r => μ (cthickening r s)) (𝓝[Ioi 0] 0) (𝓝 (μ (closure s))) := by
-    rw [closure_eq_iInter_cthickening]
-    exact
-      tendsto_measure_biInter_gt (fun r _ => isClosed_cthickening.measurableSet)
-        (fun i j _ ij => cthickening_mono ij _) hs
-  have B : Tendsto (fun r => μ (cthickening r s)) (𝓝[Iic 0] 0) (𝓝 (μ (closure s))) := by
-    apply Tendsto.congr' _ tendsto_const_nhds
-    filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
-    rw [cthickening_of_nonpos hr]
-  convert B.sup A
-  exact (nhds_left_sup_nhds_right' 0).symm
-#align tendsto_measure_cthickening tendsto_measure_cthickening
-
-/-- If a closed set has a closed thickening with finite measure, then the measure of its `r`-closed
-thickenings converges to its measure as `r` tends to `0`. -/
-theorem tendsto_measure_cthickening_of_isClosed {μ : Measure α} {s : Set α}
-    (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) (h's : IsClosed s) :
-    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ s)) := by
-  convert tendsto_measure_cthickening hs
-  exact h's.closure_eq.symm
-#align tendsto_measure_cthickening_of_is_closed tendsto_measure_cthickening_of_isClosed
-
 end PseudoMetricSpace
-
-/-- Given a compact set in a proper space, the measure of its `r`-closed thickenings converges to
-its measure as `r` tends to `0`. -/
-theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpace α]
-    [OpensMeasurableSpace α] [ProperSpace α] {μ : Measure α} [IsFiniteMeasureOnCompacts μ]
-    {s : Set α} (hs : IsCompact s) :
-    Tendsto (fun r => μ (Metric.cthickening r s)) (𝓝 0) (𝓝 (μ s)) :=
-  tendsto_measure_cthickening_of_isClosed ⟨1, zero_lt_one, hs.bounded.cthickening.measure_lt_top.ne⟩
-    hs.isClosed
-#align tendsto_measure_cthickening_of_is_compact tendsto_measure_cthickening_of_isCompact
 
 section PseudoEMetricSpace
 
@@ -1653,6 +1611,52 @@ theorem Measurable.infEdist {f : β → α} (hf : Measurable f) {s : Set α} :
   measurable_infEdist.comp hf
 #align measurable.inf_edist Measurable.infEdist
 
+open Metric EMetric
+
+/-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
+thickenings converges to the measure of its closure as `r` tends to `0`. -/
+theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
+    (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) :
+    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ (closure s))) := by
+  have A : Tendsto (fun r => μ (cthickening r s)) (𝓝[Ioi 0] 0) (𝓝 (μ (closure s))) := by
+    rw [closure_eq_iInter_cthickening]
+    exact
+      tendsto_measure_biInter_gt (fun r _ => isClosed_cthickening.measurableSet)
+        (fun i j _ ij => cthickening_mono ij _) hs
+  have B : Tendsto (fun r => μ (cthickening r s)) (𝓝[Iic 0] 0) (𝓝 (μ (closure s))) := by
+    apply Tendsto.congr' _ tendsto_const_nhds
+    filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
+    rw [cthickening_of_nonpos hr]
+  convert B.sup A
+  exact (nhds_left_sup_nhds_right' 0).symm
+#align tendsto_measure_cthickening tendsto_measure_cthickening
+
+/-- If a closed set has a closed thickening with finite measure, then the measure of its closed
+`r`-thickenings converge to its measure as `r` tends to `0`. -/
+theorem tendsto_measure_cthickening_of_isClosed {μ : Measure α} {s : Set α}
+    (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) (h's : IsClosed s) :
+    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ s)) := by
+  convert tendsto_measure_cthickening hs
+  exact h's.closure_eq.symm
+#align tendsto_measure_cthickening_of_is_closed tendsto_measure_cthickening_of_isClosed
+
+/-- If a set has a thickening with finite measure, then the measures of its `r`-thickenings
+converge to the measure of its closure as `r > 0` tends to `0`. -/
+theorem tendsto_measure_thickening {μ : Measure α} {s : Set α}
+    (hs : ∃ R > 0, μ (thickening R s) ≠ ∞) :
+    Tendsto (fun r => μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ (closure s))) := by
+  rw [closure_eq_iInter_thickening]
+  exact tendsto_measure_biInter_gt (fun r _ => isOpen_thickening.measurableSet)
+      (fun i j _ ij => thickening_mono ij _) hs
+
+/-- If a closed set has a thickening with finite measure, then the measure of its
+`r`-thickenings converge to its measure as `r > 0` tends to `0`. -/
+theorem tendsto_measure_thickening_of_isClosed {μ : Measure α} {s : Set α}
+    (hs : ∃ R > 0, μ (thickening R s) ≠ ∞) (h's : IsClosed s) :
+    Tendsto (fun r => μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ s)) := by
+  convert tendsto_measure_thickening hs
+  exact h's.closure_eq.symm
+
 variable [SecondCountableTopology α]
 
 @[measurability]
@@ -1673,6 +1677,16 @@ theorem AEMeasurable.edist {f g : β → α} {μ : Measure β} (hf : AEMeasurabl
 #align ae_measurable.edist AEMeasurable.edist
 
 end PseudoEMetricSpace
+
+/-- Given a compact set in a proper space, the measure of its `r`-closed thickenings converges to
+its measure as `r` tends to `0`. -/
+theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpace α]
+    [OpensMeasurableSpace α] [ProperSpace α] {μ : Measure α} [IsFiniteMeasureOnCompacts μ]
+    {s : Set α} (hs : IsCompact s) :
+    Tendsto (fun r => μ (Metric.cthickening r s)) (𝓝 0) (𝓝 (μ s)) :=
+  tendsto_measure_cthickening_of_isClosed ⟨1, zero_lt_one, hs.bounded.cthickening.measure_lt_top.ne⟩
+    hs.isClosed
+#align tendsto_measure_cthickening_of_is_compact tendsto_measure_cthickening_of_isCompact
 
 namespace Real
 

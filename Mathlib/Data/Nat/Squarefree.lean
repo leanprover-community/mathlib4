@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module data.nat.squarefree
-! leanprover-community/mathlib commit 3c1368cac4abd5a5cbe44317ba7e87379d51ed88
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Squarefree
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.RingTheory.Int.Basic
+
+#align_import data.nat.squarefree from "leanprover-community/mathlib"@"3c1368cac4abd5a5cbe44317ba7e87379d51ed88"
 
 /-!
 # Lemmas about squarefreeness of natural numbers
@@ -249,12 +246,8 @@ theorem squarefree_iff_minSqFac {n : ℕ} : Squarefree n ↔ n.minSqFac = none :
 instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
   decidable_of_iff' _ squarefree_iff_minSqFac
 
---Porting note: norm_num now cannot close the first subgoal
 theorem squarefree_two : Squarefree 2 := by
-  rw [squarefree_iff_nodup_factors]
-  · rw [Nat.factors_prime prime_two]
-    exact List.nodup_singleton 2
-  · norm_num
+  rw [squarefree_iff_nodup_factors] <;> norm_num
 #align nat.squarefree_two Nat.squarefree_two
 
 theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :

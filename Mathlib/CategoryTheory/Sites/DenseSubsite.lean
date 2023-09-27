@@ -2,15 +2,12 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.sites.dense_subsite
-! leanprover-community/mathlib commit 1d650c2e131f500f3c17f33b4d19d2ea15987f2c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+
+#align_import category_theory.sites.dense_subsite from "leanprover-community/mathlib"@"1d650c2e131f500f3c17f33b4d19d2ea15987f2c"
 /-!
 # Dense subsites
 
@@ -545,5 +542,22 @@ noncomputable def sheafEquivOfCoverPreservingCoverLifting : Sheaf J A ≌ Sheaf 
       functor_unitIso_comp := fun ℱ => by convert α.left_triangle_components }
 set_option linter.uppercaseLean3 false in
 #align category_theory.cover_dense.Sheaf_equiv_of_cover_preserving_cover_lifting CategoryTheory.CoverDense.sheafEquivOfCoverPreservingCoverLifting
+
+variable
+  [ConcreteCategory.{max v u} A]
+  [Limits.PreservesLimits (forget A)]
+  [ReflectsIsomorphisms (forget A)]
+  [∀ (X : C), Limits.PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget A)]
+  [∀ (X : C), Limits.HasColimitsOfShape (J.Cover X)ᵒᵖ A]
+  [∀ (X : D), Limits.PreservesColimitsOfShape (K.Cover X)ᵒᵖ (forget A)]
+  [∀ (X : D), Limits.HasColimitsOfShape (K.Cover X)ᵒᵖ A]
+
+/-- The natural isomorphism exhibiting the compatibility of
+`sheafEquivOfCoverPreservingCoverLifting` with sheafification. -/
+noncomputable
+abbrev sheafEquivOfCoverPreservingCoverLiftingSheafificationCompatibility :
+  (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf _ _ ≅
+  presheafToSheaf _ _ ⋙ (sheafEquivOfCoverPreservingCoverLifting Hd Hp Hl).inverse :=
+Sites.pullbackSheafificationCompatibility _ _ Hl _
 
 end CategoryTheory.CoverDense

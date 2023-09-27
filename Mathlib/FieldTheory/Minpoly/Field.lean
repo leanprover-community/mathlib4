@@ -2,15 +2,12 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
-
-! This file was ported from Lean 3 source module field_theory.minpoly.field
-! leanprover-community/mathlib commit cbdf7b565832144d024caa5a550117c6df0204a5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.FieldDivision
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.RingTheory.Algebraic
+
+#align_import field_theory.minpoly.field from "leanprover-community/mathlib"@"cbdf7b565832144d024caa5a550117c6df0204a5"
 
 /-!
 # Minimal polynomials on an algebra over a field
@@ -45,9 +42,9 @@ theorem degree_le_of_ne_zero {p : A[X]} (pnz : p ≠ 0) (hp : Polynomial.aeval x
     _ = degree p := degree_mul_leadingCoeff_inv p pnz
 #align minpoly.degree_le_of_ne_zero minpoly.degree_le_of_ne_zero
 
-theorem ne_zero_of_finite_field_extension (e : B) [FiniteDimensional A B] : minpoly A e ≠ 0 :=
-  minpoly.ne_zero <| isIntegral_of_noetherian (IsNoetherian.iff_fg.2 inferInstance) _
-#align minpoly.ne_zero_of_finite_field_extension minpoly.ne_zero_of_finite_field_extension
+theorem ne_zero_of_finite (e : B) [FiniteDimensional A B] : minpoly A e ≠ 0 :=
+  minpoly.ne_zero <| isIntegral_of_finite _ _
+#align minpoly.ne_zero_of_finite_field_extension minpoly.ne_zero_of_finite
 
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
 if there is another monic polynomial of minimal degree that has `x` as a root, then this polynomial
@@ -181,7 +178,7 @@ def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
     (x : range (FiniteDimensional.finBasis F E : _ → E)) :
     { l : K // l ∈ (((minpoly F x.1).map (algebraMap F K)).roots : Multiset K) } :=
   ⟨φ x, by
-    rw [mem_roots_map (minpoly.ne_zero_of_finite_field_extension F x.val),
+    rw [mem_roots_map (minpoly.ne_zero_of_finite F x.val),
       ← aeval_def, aeval_algHom_apply, minpoly.aeval, map_zero]⟩
 #align minpoly.roots_of_min_poly_pi_type minpoly.rootsOfMinPolyPiType
 

@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
-
-! This file was ported from Lean 3 source module ring_theory.ore_localization.basic
-! leanprover-community/mathlib commit 861a26926586cd46ff80264d121cdb6fa0e35cc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.Tactic.NoncommRing
+
+#align_import ring_theory.ore_localization.basic from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
 
 /-!
 
@@ -249,7 +246,7 @@ protected def mul : R[S⁻¹] → R[S⁻¹] → R[S⁻¹] :=
     apply OreLocalization.expand
 #align ore_localization.mul OreLocalization.mul
 
-instance : Mul R[S⁻¹] :=
+instance instMulOreLocalization : Mul R[S⁻¹] :=
   ⟨OreLocalization.mul⟩
 
 theorem oreDiv_mul_oreDiv {r₁ r₂ : R} {s₁ s₂ : S} :
@@ -271,7 +268,7 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
   ⟨oreNum r₂ s₁, oreDenom r₂ s₁, ore_eq r₂ s₁, oreDiv_mul_oreDiv⟩
 #align ore_localization.ore_div_mul_char' OreLocalization.oreDivMulChar'
 
-instance : One R[S⁻¹] :=
+instance instOneOreLocalization : One R[S⁻¹] :=
   ⟨1 /ₒ 1⟩
 
 protected theorem one_def : (1 : R[S⁻¹]) = 1 /ₒ 1 :=
@@ -319,7 +316,7 @@ protected theorem mul_assoc (x y z : R[S⁻¹]) : x * y * z = x * (y * z) := by
   rw [mul_assoc, hc, ← mul_assoc (b := ra), ← ha, mul_assoc]
 #align ore_localization.mul_assoc OreLocalization.mul_assoc
 
-instance : Monoid R[S⁻¹] :=
+instance instMonoidOreLocalization : Monoid R[S⁻¹] :=
   { OreLocalization.instMulOreLocalization,
     OreLocalization.instOneOreLocalization with
     one_mul := OreLocalization.one_mul
@@ -598,7 +595,7 @@ private def add : R[S⁻¹] → R[S⁻¹] → R[S⁻¹] := fun x =>
       -- Porting note: `Quotient.mk'` required
       simp [(· /ₒ ·), Quotient.mk', Quotient.sound hyz])
 
-instance : Add R[S⁻¹] :=
+instance instAddOreLocalization : Add R[S⁻¹] :=
   ⟨add⟩
 
 theorem oreDiv_add_oreDiv {r r' : R} {s s' : S} :
@@ -682,8 +679,8 @@ protected theorem add_comm (x y : R[S⁻¹]) : x + y = y + x := by
   change add' _ _ (_ /ₒ _) = _; apply add'_comm
 #align ore_localization.add_comm OreLocalization.add_comm
 
-instance : AddCommMonoid R[S⁻¹] :=
-  { OreLocalization.instAddOreLocalizationToMonoidToMonoidWithZero with
+instance instAddCommMonoidOreLocalization : AddCommMonoid R[S⁻¹] :=
+  { OreLocalization.instAddOreLocalization with
     add_comm := OreLocalization.add_comm
     add_assoc := OreLocalization.add_assoc
     zero := zero
@@ -742,8 +739,8 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z := by
   repeat' rw [oreDiv_mul_oreDiv]; simp only [add_mul, add_oreDiv]
 #align ore_localization.right_distrib OreLocalization.right_distrib
 
-instance : Semiring R[S⁻¹] :=
-  { OreLocalization.instAddCommMonoidOreLocalizationToMonoidToMonoidWithZero,
+instance instSemiringOreLocalization : Semiring R[S⁻¹] :=
+  { OreLocalization.instAddCommMonoidOreLocalization,
     OreLocalization.instMonoidOreLocalization with
     zero_mul := OreLocalization.zero_mul
     mul_zero := OreLocalization.mul_zero
@@ -840,7 +837,7 @@ protected def neg : R[S⁻¹] → R[S⁻¹] :=
     rw [neg_mul_eq_neg_mul, ← OreLocalization.expand]
 #align ore_localization.neg OreLocalization.neg
 
-instance : Neg R[S⁻¹] :=
+instance instNegOreLocalization : Neg R[S⁻¹] :=
   ⟨OreLocalization.neg⟩
 
 @[simp]
@@ -853,8 +850,8 @@ protected theorem add_left_neg (x : R[S⁻¹]) : -x + x = 0 := by
 #align ore_localization.add_left_neg OreLocalization.add_left_neg
 
 instance ring : Ring R[S⁻¹] :=
-  { OreLocalization.instSemiringOreLocalizationToMonoidToMonoidWithZero,
-    OreLocalization.instNegOreLocalizationToMonoidToMonoidWithZeroToSemiring with
+  { OreLocalization.instSemiringOreLocalization,
+    OreLocalization.instNegOreLocalization with
     add_left_neg := OreLocalization.add_left_neg }
 
 open nonZeroDivisors

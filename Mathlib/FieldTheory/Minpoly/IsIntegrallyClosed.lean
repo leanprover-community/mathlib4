@@ -2,15 +2,12 @@
 Copyright (c) 2019 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
-
-! This file was ported from Lean 3 source module field_theory.minpoly.is_integrally_closed
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.Polynomial.GaussLemma
+
+#align_import field_theory.minpoly.is_integrally_closed from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Minimal polynomials over a GCD monoid

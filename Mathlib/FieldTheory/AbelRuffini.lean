@@ -2,15 +2,12 @@
 Copyright (c) 2020 Thomas Browning and Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module field_theory.abel_ruffini
-! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Solvable
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.RingTheory.RootsOfUnity.Basic
+
+#align_import field_theory.abel_ruffini from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
 /-!
 # The Abel-Ruffini Theorem
@@ -31,7 +28,7 @@ that is solvable by radicals has a solvable Galois group.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open scoped Classical Polynomial
 

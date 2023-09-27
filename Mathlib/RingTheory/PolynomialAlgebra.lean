@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module ring_theory.polynomial_algebra
-! leanprover-community/mathlib commit 565eb991e264d0db702722b4bde52ee5173c9950
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.MatrixAlgebra
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.DMatrix
+
+#align_import ring_theory.polynomial_algebra from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
 
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
@@ -147,7 +144,7 @@ theorem invFun_add {p q} : invFun R A (p + q) = invFun R A p + invFun R A q := b
 #align poly_equiv_tensor.inv_fun_add PolyEquivTensor.invFun_add
 
 theorem invFun_monomial (n : ℕ) (a : A) :
-    invFun R A (monomial n a) = includeLeft a * (1 : A) ⊗ₜ[R] (X : R[X]) ^ n :=
+    invFun R A (monomial n a) = (a ⊗ₜ[R] 1) * 1 ⊗ₜ[R] X ^ n :=
   eval₂_monomial _ _
 #align poly_equiv_tensor.inv_fun_monomial PolyEquivTensor.invFun_monomial
 
@@ -172,7 +169,7 @@ theorem right_inv (x : A[X]) : (toFunAlgHom R A) (invFun R A x) = x := by
   · intro p q hp hq
     simp only [invFun_add, AlgHom.map_add, hp, hq]
   · intro n a
-    rw [invFun_monomial, Algebra.TensorProduct.includeLeft_apply, Algebra.TensorProduct.tmul_pow,
+    rw [invFun_monomial, Algebra.TensorProduct.tmul_pow,
         one_pow, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul, toFunAlgHom_apply_tmul,
         X_pow_eq_monomial, sum_monomial_index] <;>
       simp

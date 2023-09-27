@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.mv_polynomial.basic
-! leanprover-community/mathlib commit c8734e8953e4b439147bd6f75c2163f6d27cdce6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Order.SymmDiff
 import Mathlib.RingTheory.Adjoin.Basic
+
+#align_import data.mv_polynomial.basic from "leanprover-community/mathlib"@"c8734e8953e4b439147bd6f75c2163f6d27cdce6"
 
 /-!
 # Multivariate polynomials
@@ -701,7 +698,7 @@ theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : coeff m (C a * p) = a 
   simp
 #align mv_polynomial.coeff_C_mul MvPolynomial.coeff_C_mul
 
-theorem coeff_mul (p q : MvPolynomial σ R) (n : σ →₀ ℕ) :
+theorem coeff_mul [DecidableEq σ] (p q : MvPolynomial σ R) (n : σ →₀ ℕ) :
     coeff n (p * q) = ∑ x in antidiagonal n, coeff x.1 p * coeff x.2 q :=
   AddMonoidAlgebra.mul_apply_antidiagonal p q _ _ mem_antidiagonal
 #align mv_polynomial.coeff_mul MvPolynomial.coeff_mul
@@ -859,7 +856,7 @@ def constantCoeff : MvPolynomial σ R →+* R
     where
   toFun := coeff 0
   map_one' := by simp [AddMonoidAlgebra.one_def]
-  map_mul' := by simp [coeff_mul, Finsupp.support_single_ne_zero]
+  map_mul' := by classical simp [coeff_mul, Finsupp.support_single_ne_zero]
   map_zero' := coeff_zero _
   map_add' := coeff_add _
 #align mv_polynomial.constant_coeff MvPolynomial.constantCoeff

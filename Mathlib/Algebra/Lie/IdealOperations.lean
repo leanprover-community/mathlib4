@@ -2,13 +2,10 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.ideal_operations
-! leanprover-community/mathlib commit 8983bec7cdf6cb2dd1f21315c8a34ab00d7b2f6d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Submodule
+
+#align_import algebra.lie.ideal_operations from "leanprover-community/mathlib"@"8983bec7cdf6cb2dd1f21315c8a34ab00d7b2f6d"
 
 /-!
 # Ideal operations for Lie algebras

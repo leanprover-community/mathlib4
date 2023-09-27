@@ -2,13 +2,10 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.monoid_algebra.support
-! leanprover-community/mathlib commit 16749fc4661828cba18cd0f4e3c5eb66a8e80598
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
+
+#align_import algebra.monoid_algebra.support from "leanprover-community/mathlib"@"16749fc4661828cba18cd0f4e3c5eb66a8e80598"
 
 /-!
 #  Lemmas about the support of a finitely supported function

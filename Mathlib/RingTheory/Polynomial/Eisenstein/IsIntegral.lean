@@ -2,16 +2,13 @@
 Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.eisenstein.is_integral
-! leanprover-community/mathlib commit 5bfbcca0a7ffdd21cf1682e59106d6c942434a32
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.RingTheory.Norm
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+
+#align_import ring_theory.polynomial.eisenstein.is_integral from "leanprover-community/mathlib"@"5bfbcca0a7ffdd21cf1682e59106d6c942434a32"
 
 /-!
 # Eisenstein polynomials

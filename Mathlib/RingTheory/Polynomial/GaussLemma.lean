@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.gauss_lemma
-! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Localization.Integral
 import Mathlib.RingTheory.IntegrallyClosed
+
+#align_import ring_theory.polynomial.gauss_lemma from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
 /-!
 # Gauss's Lemma
@@ -100,8 +97,7 @@ theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]}
       (integralClosure.mem_lifts_of_monic_of_dvd_map K hf (monic_mul_leadingCoeff_inv g_ne_0)
         g_mul_dvd)
   refine' ⟨map algeq.toAlgHom.toRingHom _, _⟩
-  · -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5072): was `use`
-    exact Classical.choose H
+  · use! Classical.choose H
   · rw [map_map, this]
     exact Classical.choose_spec H
 set_option linter.uppercaseLean3 false in

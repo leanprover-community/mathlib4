@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.star.chsh
-! leanprover-community/mathlib commit 31c24aa72e7b3e5ed97a8412470e904f82b81004
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Real.Sqrt
+
+#align_import algebra.star.chsh from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
 /-!
 # The Clauser-Horne-Shimony-Holt inequality and Tsirelson's inequality.
@@ -85,7 +82,7 @@ The physical interpretation is that `A₀` and `A₁` are a pair of boolean obse
 are spacelike separated from another pair `B₀` and `B₁` of boolean observables.
 -/
 --@[nolint has_nonempty_instance] Porting note: linter does not exist
-structure IsCHSHTuple {R} [Monoid R] [StarSemigroup R] (A₀ A₁ B₀ B₁ : R) where
+structure IsCHSHTuple {R} [Monoid R] [StarSemigroup R] (A₀ A₁ B₀ B₁ : R) : Prop where
   A₀_inv : A₀ ^ 2 = 1
   A₁_inv : A₁ ^ 2 = 1
   B₀_inv : B₀ ^ 2 = 1

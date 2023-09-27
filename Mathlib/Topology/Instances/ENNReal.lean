@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.instances.ennreal
-! leanprover-community/mathlib commit ec4b2eeb50364487f80421c0b4c41328a611f30d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
@@ -14,6 +9,8 @@ import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Algebra.Order.T5
 import Mathlib.Topology.MetricSpace.Lipschitz
+
+#align_import topology.instances.ennreal from "leanprover-community/mathlib"@"ec4b2eeb50364487f80421c0b4c41328a611f30d"
 
 /-!
 # Topology on extended non-negative reals
@@ -1120,6 +1117,12 @@ theorem summable_of_le {f g : β → ℝ≥0} (hgf : ∀ b, g b ≤ f b) : Summa
     hp.summable
 #align nnreal.summable_of_le NNReal.summable_of_le
 
+/-- Summable non-negative functions have countable support -/
+theorem _root_.Summable.countable_support_nnreal (f : α → ℝ≥0) (h : Summable f) :
+    f.support.Countable := by
+  rw [← NNReal.summable_coe] at h
+  simpa [support] using h.countable_support
+
 /-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
 the sequence of partial sum converges to `r`. -/
 theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0} {r : ℝ≥0} :
@@ -1304,6 +1307,12 @@ theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n =>
   refine' summable_of_nonneg_of_le (fun n => NNReal.coe_nonneg _) (fun n => _) hf.abs
   simp only [le_abs_self, Real.coe_toNNReal', max_le_iff, abs_nonneg, and_self_iff]
 #align summable.to_nnreal Summable.toNNReal
+
+/-- Finitely summable non-negative functions have countable support -/
+theorem _root_.Summable.countable_support_ennreal {f : α → ℝ≥0∞} (h : ∑' (i : α), f i ≠ ⊤) :
+    f.support.Countable := by
+  lift f to α → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top h
+  simpa [support] using (ENNReal.tsum_coe_ne_top_iff_summable.1 h).countable_support_nnreal
 
 /-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
 the sequence of partial sum converges to `r`. -/

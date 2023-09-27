@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury G. Kudryashov, Patrick Massot
-
-! This file was ported from Lean 3 source module analysis.specific_limits.basic
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Algebra.Algebra
+
+#align_import analysis.specific_limits.basic from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # A collection of specific limit computations
@@ -55,6 +52,17 @@ theorem tendsto_one_div_add_atTop_nhds_0_nat :
   suffices Tendsto (fun n : ℕ => 1 / (↑(n + 1) : ℝ)) atTop (𝓝 0) by simpa
   (tendsto_add_atTop_iff_nat 1).2 (_root_.tendsto_const_div_atTop_nhds_0_nat 1)
 #align tendsto_one_div_add_at_top_nhds_0_nat tendsto_one_div_add_atTop_nhds_0_nat
+
+theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_0_nat (𝕜 : Type _) [Semiring 𝕜] [Algebra ℝ≥0 𝕜]
+    [TopologicalSpace 𝕜] [TopologicalSemiring 𝕜] [ContinuousSMul ℝ≥0 𝕜] :
+    Tendsto (algebraMap ℝ≥0 𝕜 ∘ fun n : ℕ => (n : ℝ≥0)⁻¹) atTop (nhds 0) := by
+  convert (continuous_algebraMap ℝ≥0 𝕜).continuousAt.tendsto.comp tendsto_inverse_atTop_nhds_0_nat
+  rw [map_zero]
+
+theorem tendsto_algebraMap_inverse_atTop_nhds_0_nat (𝕜 : Type _) [Semiring 𝕜] [Algebra ℝ 𝕜]
+    [TopologicalSpace 𝕜] [TopologicalSemiring 𝕜] [ContinuousSMul ℝ 𝕜] :
+    Tendsto (algebraMap ℝ 𝕜 ∘ fun n : ℕ => (n : ℝ)⁻¹) atTop (nhds 0) :=
+  NNReal.tendsto_algebraMap_inverse_atTop_nhds_0_nat 𝕜
 
 /-- The limit of `n / (n + x)` is 1, for any constant `x` (valid in `ℝ` or any topological division
 algebra over `ℝ`, e.g., `ℂ`).

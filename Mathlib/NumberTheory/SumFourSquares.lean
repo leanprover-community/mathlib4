@@ -2,17 +2,14 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module number_theory.sum_four_squares
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Data.ZMod.Basic
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Data.Int.Parity
 import Mathlib.Data.Fintype.BigOperators
+
+#align_import number_theory.sum_four_squares from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
 /-!
 # Lagrange's four square theorem
@@ -30,7 +27,7 @@ open Finset Polynomial FiniteField Equiv
 
 open scoped BigOperators
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- **Euler's four-square identity**. -/
 theorem euler_four_squares {R : Type _} [CommRing R] (a b c d x y z w : R) :

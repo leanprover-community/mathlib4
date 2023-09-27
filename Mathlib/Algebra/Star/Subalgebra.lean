@@ -2,11 +2,6 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Jireh Loreaux
-
-! This file was ported from Lean 3 source module algebra.star.subalgebra
-! leanprover-community/mathlib commit 160ef3e338a2a4f21a280e4c152d4016156e516d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.StarAlgHom
@@ -14,6 +9,8 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Module
 import Mathlib.RingTheory.Adjoin.Basic
+
+#align_import algebra.star.subalgebra from "leanprover-community/mathlib"@"160ef3e338a2a4f21a280e4c152d4016156e516d"
 
 /-!
 # Star subalgebras
@@ -385,13 +382,16 @@ variable {R}
 /-- The `StarSubalgebra` obtained from `S : Subalgebra R A` by taking the smallest subalgebra
 containing both `S` and `star S`. -/
 @[simps!]
-def starClosure (S : Subalgebra R A) : StarSubalgebra R A :=
-  { S ⊔ star S with
-    star_mem' := fun {a} ha => by
-      simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
-      rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
-      simpa using ha }
+def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
+  toSubalgebra := S ⊔ star S
+  star_mem' := fun {a} ha => by
+    simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
+    rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
+    simpa using ha
 #align subalgebra.star_closure Subalgebra.starClosure
+
+theorem starClosure_toSubalgebra (S : Subalgebra R A) : S.starClosure.toSubalgebra = S ⊔ star S :=
+  rfl
 
 theorem starClosure_le {S₁ : Subalgebra R A} {S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂.toSubalgebra) :
     S₁.starClosure ≤ S₂ :=

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.subgroup.pointwise
-! leanprover-community/mathlib commit e655e4ea5c6d02854696f97494997ba4c31be802
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.MulOpposite
 import Mathlib.GroupTheory.Submonoid.Pointwise
 import Mathlib.GroupTheory.GroupAction.ConjAct
+
+#align_import group_theory.subgroup.pointwise from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
 
 /-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 

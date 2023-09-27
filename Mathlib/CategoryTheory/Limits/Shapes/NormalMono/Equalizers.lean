@@ -2,14 +2,11 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.normal_mono.equalizers
-! leanprover-community/mathlib commit 3a061790136d13594ec10c7c90d202335ac5d854
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+#align_import category_theory.limits.shapes.normal_mono.equalizers from "leanprover-community/mathlib"@"3a061790136d13594ec10c7c90d202335ac5d854"
 
 /-!
 # Normal mono categories with finite products and kernels have all equalizers.

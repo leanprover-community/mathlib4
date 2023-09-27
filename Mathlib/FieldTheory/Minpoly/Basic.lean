@@ -2,13 +2,10 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johan Commelin
-
-! This file was ported from Lean 3 source module field_theory.minpoly.basic
-! leanprover-community/mathlib commit df0098f0db291900600f32070f6abb3e178be2ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.IntegralClosure
+
+#align_import field_theory.minpoly.basic from "leanprover-community/mathlib"@"df0098f0db291900600f32070f6abb3e178be2ba"
 
 /-!
 # Minimal polynomials

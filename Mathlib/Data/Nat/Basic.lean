@@ -2,15 +2,12 @@
 Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.basic
-! leanprover-community/mathlib commit bd835ef554f37ef9b804f0903089211f89cb370b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Ring.Defs
+
+#align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
 /-!
 # Basic operations on the natural numbers
@@ -237,8 +234,6 @@ theorem of_le_succ {n m : ℕ} (H : n ≤ m.succ) : n ≤ m ∨ n = m.succ :=
   H.lt_or_eq_dec.imp le_of_lt_succ id
 #align nat.of_le_succ Nat.of_le_succ
 
-theorem succ_lt_succ_iff {m n : ℕ} : succ m < succ n ↔ m < n :=
-  ⟨lt_of_succ_lt_succ, succ_lt_succ⟩
 #align nat.succ_lt_succ_iff Nat.succ_lt_succ_iff
 
 theorem div_le_iff_le_mul_add_pred {m n k : ℕ} (n0 : 0 < n) : m / n ≤ k ↔ m ≤ n * k + (n - 1) := by

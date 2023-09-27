@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Util.Imports
+import Mathlib.Lean.Data.NameMap
 import Mathlib.Lean.IO.Process
+import Mathlib.Lean.Name
 import Cli
 
 /-!
@@ -47,20 +49,41 @@ instance : ParseableType Name where
     else
       String.toName s
 
-open IO.FS IO.Process in
+open IO.FS IO.Process Name in
 /-- Implementation of the import graph command line program. -/
 def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
   let to := match args.flag? "to" with
   | some to => to.as! Name
   | none => `Mathlib -- autodetect the main module from the `lakefile.lean`?
   let from? := match args.flag? "from" with
-  | some to => some <| to.as! Name
+  | some fr => some <| fr.as! Name
   | none => none
   searchPathRef.set compileTimeSearchPath
   let dotFile ← unsafe withImportModules [{module := to}] {} (trustLevel := 1024) fun env => do
     let mut graph := env.importGraph
     if let .some f := from? then
       graph := graph.dependenciesOf (NameSet.empty.insert f)
+    if ¬(args.hasFlag "include-deps") then
+      let p := getModule to
+      graph := graph.filterMap (fun n i =>
+        if p.isPrefixOf n then (i.filter (isPrefixOf p)) else none)
+    if args.hasFlag "exclude-meta" then
+      let filterMeta : Name → Bool := fun n => (
+        isPrefixOf `Mathlib.Tactic n ∨
+        isPrefixOf `Mathlib.Lean n ∨
+        isPrefixOf `Mathlib.Util n)
+      -- create a list of all files imported by any of the filtered files
+      -- and remove all imports starting with `Mathlib` to avoid loops
+      let mut tacticImports := graph.toList.bind
+        (fun ⟨n, i⟩ => if filterMeta n then i.toList else [])
+        |>.eraseDup |>.filter (not <| isPrefixOf `Mathlib ·) |>.toArray
+      -- iterate over the graph, removing all filtered nodes and
+      -- replace any filtered import with `«Mathlib.Tactics»`
+      graph := graph.filterMap (fun n i => if filterMeta n then none else some <|
+        (i.map (fun name => if filterMeta name then `«Mathlib.Tactics» else name)
+          |>.toList.eraseDup.toArray))
+      -- add the new node `«Mathlib.Tactics»`
+      graph := graph.insert `«Mathlib.Tactics» tacticImports
     if args.hasFlag "reduce" then
       graph := graph.transitiveReduction
     return asDotGraph graph
@@ -83,6 +106,8 @@ def graph : Cmd := `[Cli|
     reduce;         "Remove transitively redundant edges."
     to : Name;      "Only show the upstream imports of the specified module."
     "from" : Name;  "Only show the downstream dependencies of the specified module."
+    "exclude-meta"; "Exclude any files starting with `Mathlib.[Tactic|Lean|Util]`."
+    "include-deps"; "Include used files from other projects (e.g. lake packages)"
 
   ARGS:
     ...outputs : String;  "Filename(s) for the output. " ++

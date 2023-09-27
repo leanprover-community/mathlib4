@@ -2,17 +2,14 @@
 Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module category_theory.action
-! leanprover-community/mathlib commit aa812bd12a4dbbd2c129b38205f222df282df26d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.SemidirectProduct
+
+#align_import category_theory.action from "leanprover-community/mathlib"@"aa812bd12a4dbbd2c129b38205f222df282df26d"
 
 /-!
 # Actions as functors and as categories

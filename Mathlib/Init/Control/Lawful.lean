@@ -2,15 +2,12 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
-
-! This file was ported from Lean 3 source module init.control.lawful
-! leanprover-community/lean commit 9af482290ef68e8aaa5ead01aa7b09b7be7019fd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Basic
+
+#align_import init.control.lawful from "leanprover-community/lean"@"9af482290ef68e8aaa5ead01aa7b09b7be7019fd"
 
 /-! ## Functor Laws, applicative laws, and monad Laws -/
 

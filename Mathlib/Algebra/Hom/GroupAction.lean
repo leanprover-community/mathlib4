@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.hom.group_action
-! leanprover-community/mathlib commit e7bab9a85e92cf46c02cb4725a7be2f04691e3a7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Module.Basic
+
+#align_import algebra.hom.group_action from "leanprover-community/mathlib"@"e7bab9a85e92cf46c02cb4725a7be2f04691e3a7"
 
 /-!
 # Equivariant homomorphisms
@@ -92,11 +89,12 @@ attribute [simp] map_smul
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
 #noalign mul_action_hom.has_coe_to_fun
 
-instance : SMulHomClass (X →[M'] Y) M' X Y
-    where
+instance : SMulHomClass (X →[M'] Y) M' X Y where
   coe := MulActionHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
   map_smul := MulActionHom.map_smul'
+
+initialize_simps_projections MulActionHom (toFun → apply)
 
 namespace MulActionHom
 
@@ -176,15 +174,14 @@ variable {A B}
 /-- The inverse of a bijective equivariant map is equivariant. -/
 @[simps]
 def inverse (f : A →[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
-    (h₂ : Function.RightInverse g f) : B →[M] A
-    where
+    (h₂ : Function.RightInverse g f) : B →[M] A where
   toFun := g
   map_smul' m x :=
     calc
       g (m • x) = g (m • f (g x)) := by rw [h₂]
       _ = g (f (m • g x)) := by rw [f.map_smul]
       _ = m • g x := by rw [h₁]
-#align mul_action_hom.inverse_to_fun MulActionHom.inverse_toFun
+#align mul_action_hom.inverse_to_fun MulActionHom.inverse_apply
 #align mul_action_hom.inverse MulActionHom.inverse
 
 end MulActionHom
@@ -245,8 +242,7 @@ Coercion is already handled by all the HomClass constructions I believe -/
 #noalign distrib_mul_action_hom.has_coe'
 #noalign distrib_mul_action_hom.has_coe_to_fun
 
-instance : DistribMulActionHomClass (A →+[M] B) M A B
-    where
+instance : DistribMulActionHomClass (A →+[M] B) M A B where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
@@ -254,6 +250,8 @@ instance : DistribMulActionHomClass (A →+[M] B) M A B
   map_smul m := m.map_smul'
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
+
+initialize_simps_projections DistribMulActionHom (toFun → apply)
 
 variable {M A B}
 /- porting note: inserted following def & instance for consistent coercion behaviour,
@@ -476,8 +474,7 @@ Coercion is already handled by all the HomClass constructions I believe -/
 #noalign mul_semiring_action_hom.has_coe'
 #noalign mul_semiring_action_hom.has_coe_to_fun
 
-instance : MulSemiringActionHomClass (R →+*[M] S) M R S
-    where
+instance : MulSemiringActionHomClass (R →+*[M] S) M R S where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
@@ -487,6 +484,8 @@ instance : MulSemiringActionHomClass (R →+*[M] S) M R S
   map_add m := m.map_add'
   map_one := MulSemiringActionHom.map_one'
   map_mul := MulSemiringActionHom.map_mul'
+
+initialize_simps_projections MulSemiringActionHom (toFun → apply)
 
 variable {M R S}
 

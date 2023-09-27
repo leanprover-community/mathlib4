@@ -2,13 +2,10 @@
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
-
-! This file was ported from Lean 3 source module init.algebra.functions
-! leanprover-community/lean commit c2bcdbcbe741ed37c361a30d38e179182b989f76
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Algebra.Order
+
+#align_import init.algebra.functions from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 
 universe u
 

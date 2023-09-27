@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
-
-! This file was ported from Lean 3 source module category_theory.bicategory.coherence_tactic
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Bicategory.Coherence
+
+#align_import category_theory.bicategory.coherence_tactic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 # A `coherence` tactic for bicategories, and `⊗≫` (composition up to associators)
@@ -296,10 +293,10 @@ syntax (name := whisker_simps) "whisker_simps" : tactic
 elab_rules : tactic
 | `(tactic| whisker_simps) => do
   evalTactic (← `(tactic|
-    simp only [Category.assoc, Bicategory.comp_whisker_left, Bicategory.id_whisker_left,
-      Bicategory.whisker_right_comp, Bicategory.whisker_right_id,
-      Bicategory.whisker_left_comp, Bicategory.whisker_left_id,
-      Bicategory.comp_whisker_right, Bicategory.id_whisker_right, Bicategory.whisker_assoc]
+    simp only [Category.assoc, Bicategory.comp_whiskerLeft, Bicategory.id_whiskerLeft,
+      Bicategory.whiskerRight_comp, Bicategory.whiskerRight_id,
+      Bicategory.whiskerLeft_comp, Bicategory.whiskerLeft_id,
+      Bicategory.comp_whiskerRight, Bicategory.id_whiskerRight, Bicategory.whisker_assoc]
     ))
 
 -- We have unused typeclass arguments here.

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.direct_sum.module
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.LinearAlgebra.DFinsupp
+
+#align_import algebra.direct_sum.module from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 # Direct sum of modules
@@ -254,8 +251,8 @@ variable {α : ι → Type _} {δ : ∀ i, α i → Type w}
 variable [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
-noncomputable def sigmaLcurry : (⨁ i : Σi, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
-  { sigmaCurry with map_smul' := fun r ↦ by convert @DFinsupp.sigmaCurry_smul _ _ _ δ _ _ _ r }
+def sigmaLcurry : (⨁ i : Σi, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
+  { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
 #align direct_sum.sigma_lcurry DirectSum.sigmaLcurry
 
 @[simp]
@@ -278,7 +275,7 @@ theorem sigmaLuncurry_apply [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (�
 #align direct_sum.sigma_luncurry_apply DirectSum.sigmaLuncurry_apply
 
 /-- `curryEquiv` as a linear equiv. -/
-noncomputable def sigmaLcurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
+def sigmaLcurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
     (⨁ i : Σ_, _, δ i.1 i.2) ≃ₗ[R] ⨁ (i) (j), δ i j :=
   { sigmaCurryEquiv, sigmaLcurry R with }
 #align direct_sum.sigma_lcurry_equiv DirectSum.sigmaLcurryEquiv

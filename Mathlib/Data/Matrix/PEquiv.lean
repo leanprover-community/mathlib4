@@ -2,14 +2,11 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.matrix.pequiv
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.PEquiv
+
+#align_import data.matrix.pequiv from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
 /-!
 # partial equivalences for matrices

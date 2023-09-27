@@ -2,16 +2,13 @@
 Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
-
-! This file was ported from Lean 3 source module topology.sheaves.sheaf_condition.unique_gluing
-! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.Forget
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Topology.Sheaves.Sheaf
 import Mathlib.CategoryTheory.Types
+
+#align_import topology.sheaves.sheaf_condition.unique_gluing from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
 /-!
 # The sheaf condition in terms of unique gluings

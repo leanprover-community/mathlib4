@@ -2,16 +2,13 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Riccardo Brasca
-
-! This file was ported from Lean 3 source module analysis.normed.group.quotient
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+#align_import analysis.normed.group.quotient from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # Quotients of seminormed groups
@@ -80,7 +77,7 @@ Mathematically there is something to prove. The main point is proved in the auxi
 `quotient_nhd_basis` that has no use beyond this verification and states that zero in the quotient
 admits as basis of neighborhoods in the quotient topology the sets `{x | ‖x‖ < ε}` for positive `ε`.
 
-Once this mathematical point it settled, we have two topologies that are propositionally equal. This
+Once this mathematical point is settled, we have two topologies that are propositionally equal. This
 is not good enough for the type class system. As usual we ensure *definitional* equality
 using forgetful inheritance, see Note [forgetful inheritance]. A (semi)-normed group structure
 includes a uniform space structure which includes a topological space structure, together

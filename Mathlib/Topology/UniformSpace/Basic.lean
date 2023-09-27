@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.uniform_space.basic
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.NhdsSet
+
+#align_import topology.uniform_space.basic from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 
 /-!
 # Uniform spaces
@@ -1400,12 +1397,10 @@ theorem uniformContinuous_sInf_dom {f : α → β} {u₁ : Set (UniformSpace α)
   exact tendsto_iInf' ⟨u, h₁⟩ hf
 #align uniform_continuous_Inf_dom uniformContinuous_sInf_dom
 
--- porting note: todo: replace with an `iff`
-theorem uniformContinuous_sInf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ : Set (UniformSpace β)}
-    (h : ∀ u ∈ u₂, UniformContinuous[u₁, u] f) : UniformContinuous[u₁, sInf u₂] f := by
+theorem uniformContinuous_sInf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ : Set (UniformSpace β)} :
+    UniformContinuous[u₁, sInf u₂] f ↔ ∀ u ∈ u₂, UniformContinuous[u₁, u] f := by
   delta UniformContinuous
-  rw [sInf_eq_iInf', iInf_uniformity]
-  exact tendsto_iInf.mpr fun ⟨u, hu⟩ => h u hu
+  rw [sInf_eq_iInf', iInf_uniformity, tendsto_iInf, SetCoe.forall]
 #align uniform_continuous_Inf_rng uniformContinuous_sInf_rng
 
 theorem uniformContinuous_iInf_dom {f : α → β} {u₁ : ι → UniformSpace α} {u₂ : UniformSpace β}
@@ -1415,10 +1410,10 @@ theorem uniformContinuous_iInf_dom {f : α → β} {u₁ : ι → UniformSpace �
   exact tendsto_iInf' i hf
 #align uniform_continuous_infi_dom uniformContinuous_iInf_dom
 
-theorem uniformContinuous_iInf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ : ι → UniformSpace β}
-    (h : ∀ i, UniformContinuous[u₁, u₂ i] f) : UniformContinuous[u₁, iInf u₂] f := by
+theorem uniformContinuous_iInf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ : ι → UniformSpace β} :
+    UniformContinuous[u₁, iInf u₂] f ↔ ∀ i, UniformContinuous[u₁, u₂ i] f := by
   delta UniformContinuous
-  rwa [iInf_uniformity, tendsto_iInf]
+  rw [iInf_uniformity, tendsto_iInf]
 #align uniform_continuous_infi_rng uniformContinuous_iInf_rng
 
 end UniformContinuousInfi
@@ -1468,7 +1463,7 @@ theorem uniformity_multiplicative : 𝓤 (Multiplicative α) = (𝓤 α).map (Pr
 
 end
 
-instance {p : α → Prop} [t : UniformSpace α] : UniformSpace (Subtype p) :=
+instance instUniformSpaceSubtype {p : α → Prop} [t : UniformSpace α] : UniformSpace (Subtype p) :=
   UniformSpace.comap Subtype.val t
 
 theorem uniformity_subtype {p : α → Prop} [UniformSpace α] :
@@ -1556,7 +1551,7 @@ section Prod
 
 /- a similar product space is possible on the function space (uniformity of pointwise convergence),
   but we want to have the uniformity of uniform convergence on function spaces -/
-instance [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
+instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
   u₁.comap Prod.fst ⊓ u₂.comap Prod.snd
 
 -- check the above produces no diamond

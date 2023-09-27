@@ -2,17 +2,14 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.int.basic
-! leanprover-community/mathlib commit 00d163e35035c3577c1c79fa53b68de17781ffc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Logic.Nontrivial
+
+#align_import data.int.basic from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
 
 /-!
 # Basic operations on the integers
@@ -26,9 +23,9 @@ open Nat
 
 namespace Int
 
-instance : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
-instance : CommRing ℤ where
+instance instCommRingInt : CommRing ℤ where
   zero_mul := Int.zero_mul
   mul_zero := Int.mul_zero
   mul_comm := Int.mul_comm
@@ -101,7 +98,7 @@ instance : AddCommSemigroup ℤ := by infer_instance
 instance : AddSemigroup ℤ     := by infer_instance
 instance : CommSemiring ℤ     := by infer_instance
 instance : Semiring ℤ         := by infer_instance
-instance : Ring ℤ             := by infer_instance
+instance instRingInt : Ring ℤ             := by infer_instance
 instance : Distrib ℤ          := by infer_instance
 
 #align int.neg_succ_not_nonneg Int.negSucc_not_nonneg

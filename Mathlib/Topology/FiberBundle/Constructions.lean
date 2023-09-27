@@ -2,13 +2,10 @@
 Copyright © 2022 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Floris van Doorn
-
-! This file was ported from Lean 3 source module topology.fiber_bundle.constructions
-! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.FiberBundle.Basic
+
+#align_import topology.fiber_bundle.constructions from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-!
 # Standard constructions on fiber bundles

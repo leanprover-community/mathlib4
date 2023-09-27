@@ -2,21 +2,19 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.essentially_small
-! leanprover-community/mathlib commit f7707875544ef1f81b32cb68c79e0e24e45a0e76
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Small.Basic
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.Skeletal
 
+#align_import category_theory.essentially_small from "leanprover-community/mathlib"@"f7707875544ef1f81b32cb68c79e0e24e45a0e76"
+
 /-!
 # Essentially small categories.
 
 A category given by `(C : Type u) [Category.{v} C]` is `w`-essentially small
-if there exists a `SmallModel C : Type w` equipped with `[SmallCategory (SmallModel C)]`.
+if there exists a `SmallModel C : Type w` equipped with `[SmallCategory (SmallModel C)]` and an
+equivalence `C ≌ SmallModel C`.
 
 A category is `w`-locally small if every hom type is `w`-small.
 

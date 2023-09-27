@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.additive.salem_spencer
-! leanprover-community/mathlib commit acf5258c81d0bc7cb254ed026c1352e685df306c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Freiman
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Convex.StrictConvexSpace
+
+#align_import combinatorics.additive.salem_spencer from "leanprover-community/mathlib"@"acf5258c81d0bc7cb254ed026c1352e685df306c"
 
 /-!
 # Salem-Spencer sets and Roth numbers

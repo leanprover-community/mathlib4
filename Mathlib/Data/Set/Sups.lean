@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.set.sups
-! leanprover-community/mathlib commit 20715f4ac6819ef2453d9e5106ecd086a5dc2a5e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.NAry
 import Mathlib.Order.UpperLower.Basic
+
+#align_import data.set.sups from "leanprover-community/mathlib"@"20715f4ac6819ef2453d9e5106ecd086a5dc2a5e"
 
 /-!
 # Set family operations

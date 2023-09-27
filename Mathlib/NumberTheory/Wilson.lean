@@ -2,13 +2,10 @@
 Copyright (c) 2022 John Nicol. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Nicol
-
-! This file was ported from Lean 3 source module number_theory.wilson
-! leanprover-community/mathlib commit c471da714c044131b90c133701e51b877c246677
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Finite.Basic
+
+#align_import number_theory.wilson from "leanprover-community/mathlib"@"c471da714c044131b90c133701e51b877c246677"
 
 /-!
 # Wilson's theorem.

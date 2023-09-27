@@ -2,14 +2,11 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.normed.mul_action
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Analysis.Normed.Field.Basic
+
+#align_import analysis.normed.mul_action from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
 /-!
 # Lemmas for `BoundedSMul` over normed additive groups

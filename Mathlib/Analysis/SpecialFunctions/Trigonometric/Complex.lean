@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.complex
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+
+#align_import analysis.special_functions.trigonometric.complex from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
 /-!
 # Complex trigonometric functions
@@ -124,8 +121,7 @@ theorem tan_add' {x y : ℂ}
   tan_add (Or.inl h)
 #align complex.tan_add' Complex.tan_add'
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
--- porting note: lean4#2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 theorem tan_two_mul {z : ℂ} : tan (2 * z) = (2 : ℂ) * tan z / ((1 : ℂ) - tan z ^ 2) := by
   by_cases h : ∀ k : ℤ, z ≠ (2 * k + 1) * π / 2

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module number_theory.liouville.residual
-! leanprover-community/mathlib commit 32b08ef840dd25ca2e47e035c5da03ce16d2dc3c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Liouville.Basic
 import Mathlib.Topology.MetricSpace.Baire
 import Mathlib.Topology.Instances.Irrational
+
+#align_import number_theory.liouville.residual from "leanprover-community/mathlib"@"32b08ef840dd25ca2e47e035c5da03ce16d2dc3c"
 
 /-!
 # Density of Liouville numbers

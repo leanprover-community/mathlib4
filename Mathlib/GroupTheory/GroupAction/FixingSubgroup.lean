@@ -2,20 +2,17 @@
 Copyright (c) 2022 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
-
-! This file was ported from Lean 3 source module group_theory.group_action.fixing_subgroup
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.GroupAction.Basic
+
+#align_import group_theory.group_action.fixing_subgroup from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 
 # Fixing submonoid, fixing subgroup of an action
 
-In the presence of of an action of a monoid or a group,
+In the presence of an action of a monoid or a group,
 this file defines the fixing submonoid or the fixing subgroup,
 and relates it to the set of fixed points via a Galois connection.
 

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.schur_zassenhaus
-! leanprover-community/mathlib commit d57133e49cf06508700ef69030cd099917e0f0de
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Sylow
 import Mathlib.GroupTheory.Transfer
+
+#align_import group_theory.schur_zassenhaus from "leanprover-community/mathlib"@"d57133e49cf06508700ef69030cd099917e0f0de"
 
 /-!
 # The Schur-Zassenhaus Theorem

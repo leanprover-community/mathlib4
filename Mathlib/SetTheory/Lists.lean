@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.lists
-! leanprover-community/mathlib commit 497d1e06409995dd8ec95301fa8d8f3480187f4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
+
+#align_import set_theory.lists from "leanprover-community/mathlib"@"497d1e06409995dd8ec95301fa8d8f3480187f4c"
 
 /-!
 # A computable model of ZFA without infinity
@@ -353,7 +350,7 @@ theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l�
       exact IH _ h₁ h₂ h₃
 #align lists.equiv.trans Lists.Equiv.trans
 
-instance : Setoid (Lists α) :=
+instance instSetoidLists : Setoid (Lists α) :=
   ⟨(· ~ ·), Equiv.refl, @Equiv.symm _, @Equiv.trans _⟩
 
 section Decidable

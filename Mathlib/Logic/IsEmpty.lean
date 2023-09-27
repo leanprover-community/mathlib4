@@ -2,13 +2,10 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module logic.is_empty
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Basic
+
+#align_import logic.is_empty from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Types that are empty
@@ -28,10 +25,10 @@ class IsEmpty (α : Sort _) : Prop where
   protected false : α → False
 #align is_empty IsEmpty
 
-instance : IsEmpty Empty :=
+instance instIsEmptyEmpty : IsEmpty Empty :=
   ⟨Empty.elim⟩
 
-instance : IsEmpty PEmpty :=
+instance instIsEmptyPEmpty : IsEmpty PEmpty :=
   ⟨PEmpty.elim⟩
 
 instance : IsEmpty False :=
@@ -62,7 +59,7 @@ instance Prod.isEmpty_right {α β} [IsEmpty β] : IsEmpty (α × β) :=
 instance [IsEmpty α] [IsEmpty β] : IsEmpty (PSum α β) :=
   ⟨fun x ↦ PSum.rec IsEmpty.false IsEmpty.false x⟩
 
-instance {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (Sum α β) :=
+instance instIsEmptySum {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (Sum α β) :=
   ⟨fun x ↦ Sum.rec IsEmpty.false IsEmpty.false x⟩
 
 /-- subtypes of an empty type are empty -/

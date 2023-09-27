@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.sum.order
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Basic
+
+#align_import data.sum.order from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
 
 /-!
 # Orders on a sum type
@@ -114,10 +111,10 @@ end Lex
 
 section Disjoint
 
-instance [LE α] [LE β] : LE (Sum α β) :=
+instance instLESum [LE α] [LE β] : LE (Sum α β) :=
   ⟨LiftRel (· ≤ ·) (· ≤ ·)⟩
 
-instance [LT α] [LT β] : LT (Sum α β) :=
+instance instLTSum [LT α] [LT β] : LT (Sum α β) :=
   ⟨LiftRel (· < ·) (· < ·)⟩
 
 theorem le_def [LE α] [LE β] {a b : Sum α β} : a ≤ b ↔ LiftRel (· ≤ ·) (· ≤ ·) a b :=
@@ -172,7 +169,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β]
 
-instance : Preorder (Sum α β) :=
+instance instPreorderSum : Preorder (Sum α β) :=
   { instLESum, instLTSum with
     le_refl := fun x => LiftRel.refl _ _ _,
     le_trans := fun _ _ _ => LiftRel.trans _ _,

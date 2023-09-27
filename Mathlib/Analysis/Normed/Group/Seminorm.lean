@@ -2,15 +2,12 @@
 Copyright (c) 2022 María Inés de Frutos-Fernández, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed.group.seminorm
-! leanprover-community/mathlib commit 09079525fd01b3dda35e96adaa08d2f943e1648c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Positivity
 import Mathlib.Data.Real.NNReal
 import Mathlib.Tactic.GCongr
+
+#align_import analysis.normed.group.seminorm from "leanprover-community/mathlib"@"09079525fd01b3dda35e96adaa08d2f943e1648c"
 
 /-!
 # Group seminorms
@@ -247,7 +244,7 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
 variable (p q) (f : F →* E)
 
 @[to_additive]
-instance : Zero (GroupSeminorm E) :=
+instance instZeroGroupSeminorm : Zero (GroupSeminorm E) :=
   ⟨{  toFun := 0
       map_one' := Pi.zero_apply _
       mul_le' := fun _ _ => (zero_add _).ge

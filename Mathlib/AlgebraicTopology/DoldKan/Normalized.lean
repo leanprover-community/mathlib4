@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.normalized
-! leanprover-community/mathlib commit d1d69e99ed34c95266668af4e288fc1c598b9a7f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.FunctorN
+
+#align_import algebraic_topology.dold_kan.normalized from "leanprover-community/mathlib"@"d1d69e99ed34c95266668af4e288fc1c598b9a7f"
 
 /-!
 

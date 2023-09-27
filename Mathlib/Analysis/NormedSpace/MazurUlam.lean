@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.mazur_ulam
-! leanprover-community/mathlib commit 78261225eb5cedc61c5c74ecb44e5b385d13b733
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Analysis.NormedSpace.AffineIsometry
+
+#align_import analysis.normed_space.mazur_ulam from "leanprover-community/mathlib"@"78261225eb5cedc61c5c74ecb44e5b385d13b733"
 
 /-!
 # Mazur-Ulam Theorem

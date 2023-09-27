@@ -3,14 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mitchell Rowett, Scott Morrison, Johan Commelin, Mario Carneiro,
   Michael Howes
-
-! This file was ported from Lean 3 source module deprecated.subgroup
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Deprecated.Submonoid
+
+#align_import deprecated.subgroup from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 # Unbundled subgroups (deprecated)
@@ -328,7 +325,7 @@ namespace IsGroupHom
 open IsSubmonoid IsSubgroup
 
 /-- `ker f : Set G` is the underlying subset of the kernel of a map `G → H`. -/
-@[to_additive "`ker f : set A` is the underlying subset of the kernel of a map `A → B`"]
+@[to_additive "`ker f : Set A` is the underlying subset of the kernel of a map `A → B`"]
 def ker [Group H] (f : G → H) : Set G :=
   preimage f (trivial H)
 #align is_group_hom.ker IsGroupHom.ker
@@ -577,7 +574,7 @@ theorem exists_list_of_mem_closure {s : Set G} {a : G} (h : a ∈ closure s) :
     (fun {x} _ ⟨L, HL1, HL2⟩ =>
       ⟨L.reverse.map Inv.inv, fun x hx =>
         let ⟨y, hy1, hy2⟩ := List.exists_of_mem_map hx
-        hy2 ▸ Or.imp id (by rw [inv_inv]; exact id) (HL1 _ <| List.mem_reverse'.1 hy1).symm,
+        hy2 ▸ Or.imp id (by rw [inv_inv]; exact id) (HL1 _ <| List.mem_reverse.1 hy1).symm,
         HL2 ▸
           List.recOn L inv_one.symm fun hd tl ih => by
             rw [List.reverse_cons, List.map_append, List.prod_append, ih, List.map_singleton,
@@ -748,7 +745,7 @@ theorem normalClosure_mono {s t : Set G} : s ⊆ t → normalClosure s ⊆ norma
 end Group
 
 /-- Create a bundled subgroup from a set `s` and `[IsSubgroup s]`. -/
-@[to_additive "Create a bundled additive subgroup from a set `s` and `[is_add_subgroup s]`."]
+@[to_additive "Create a bundled additive subgroup from a set `s` and `[IsAddSubgroup s]`."]
 def Subgroup.of [Group G] {s : Set G} (h : IsSubgroup s) : Subgroup G
     where
   carrier := s

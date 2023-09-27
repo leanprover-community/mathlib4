@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module category_theory.category.Twop
-! leanprover-community/mathlib commit c8ab806ef73c20cab1d87b5157e43a82c205f28e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.Data.TwoPointing
+
+#align_import category_theory.category.Twop from "leanprover-community/mathlib"@"c8ab806ef73c20cab1d87b5157e43a82c205f28e"
 
 /-!
 # The category of two-pointed types

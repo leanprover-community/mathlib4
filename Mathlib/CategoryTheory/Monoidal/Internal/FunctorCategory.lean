@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.internal.functor_category
-! leanprover-community/mathlib commit f153a85a8dc0a96ce9133fed69e34df72f7f191f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.CommMon_
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+
+#align_import category_theory.monoidal.internal.functor_category from "leanprover-community/mathlib"@"f153a85a8dc0a96ce9133fed69e34df72f7f191f"
 
 /-!
 # `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`

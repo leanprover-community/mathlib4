@@ -2,14 +2,11 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
-
-! This file was ported from Lean 3 source module probability.martingale.basic
-! leanprover-community/mathlib commit ba074af83b6cf54c3104e59402b39410ddbd6dca
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Process.Stopping
+
+#align_import probability.martingale.basic from "leanprover-community/mathlib"@"ba074af83b6cf54c3104e59402b39410ddbd6dca"
 
 /-!
 # Martingales

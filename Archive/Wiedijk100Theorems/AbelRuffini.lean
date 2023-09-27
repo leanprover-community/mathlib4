@@ -2,16 +2,13 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.abel_ruffini
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Calculus.LocalExtr
+import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.EisensteinCriterion
+
+#align_import wiedijk_100_theorems.abel_ruffini from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Construction of an algebraic number that is not solvable by radicals.
@@ -34,7 +31,7 @@ namespace AbelRuffini
 
 set_option linter.uppercaseLean3 false
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Function Polynomial Polynomial.Gal Ideal
 

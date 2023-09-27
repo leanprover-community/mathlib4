@@ -2,16 +2,13 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.congruence
-! leanprover-community/mathlib commit 2f39bcbc98f8255490f8d4562762c9467694c809
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.GroupTheory.Congruence
+
+#align_import ring_theory.congruence from "leanprover-community/mathlib"@"2f39bcbc98f8255490f8d4562762c9467694c809"
 
 /-!
 # Congruence relations on rings

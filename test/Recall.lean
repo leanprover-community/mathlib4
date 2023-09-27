@@ -48,7 +48,7 @@ recall id (x : α) : α := x
 
 /--
 error: type mismatch
-  id
+  @id
 has type
   {α : Sort u_1} → α → α → ℕ : Type u_1
 but is expected to have type
@@ -78,6 +78,10 @@ recall Nat.add_comm (n m : Nat) : n + m = m + n
 
 -- Caveat: the binder kinds are not checked
 recall Nat.add_comm {n m : Nat} : n + m = m + n
+
+-- https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/recall.20command/near/376648750
+recall add_assoc {G : Type _} [AddSemigroup G] (a b c : G) : a + b + c = a + (b + c)
+recall add_assoc
 
 /-- error: unknown constant 'nonexistent' -/
 #guard_msgs in recall nonexistent

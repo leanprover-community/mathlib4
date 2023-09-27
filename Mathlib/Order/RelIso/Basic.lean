@@ -2,15 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module order.rel_iso.basic
-! leanprover-community/mathlib commit f29120f82f6e24a6f6579896dfa2de6769fec962
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Order.RelClasses
+
+#align_import order.rel_iso.basic from "leanprover-community/mathlib"@"f29120f82f6e24a6f6579896dfa2de6769fec962"
 
 /-!
 # Relation homomorphisms, embeddings, isomorphisms

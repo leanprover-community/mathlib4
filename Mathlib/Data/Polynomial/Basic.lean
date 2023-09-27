@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.basic
-! leanprover-community/mathlib commit 949dc57e616a621462062668c9f39e4e17b64b69
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finset.Sort
+
+#align_import data.polynomial.basic from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 
 /-!
 # Theory of univariate polynomials
@@ -395,6 +392,8 @@ def support : R[X] → Finset ℕ
 theorem support_ofFinsupp (p) : support (⟨p⟩ : R[X]) = p.support := by rw [support]
 #align polynomial.support_of_finsupp Polynomial.support_ofFinsupp
 
+theorem support_toFinsupp (p : R[X]) : p.toFinsupp.support = p.support := by rw [support]
+
 @[simp]
 theorem support_zero : (0 : R[X]).support = ∅ :=
   rfl
@@ -729,6 +728,10 @@ theorem coeff_C_zero : coeff (C a) 0 = a :=
 
 theorem coeff_C_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, if_neg h]
 #align polynomial.coeff_C_ne_zero Polynomial.coeff_C_ne_zero
+
+@[simp]
+theorem coeff_nat_cast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
+  simp only [← C_eq_nat_cast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
 theorem C_mul_X_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
   | 0 => mul_one _

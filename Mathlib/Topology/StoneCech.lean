@@ -2,14 +2,11 @@
 Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
-
-! This file was ported from Lean 3 source module topology.stone_cech
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Topology.DenseEmbedding
+
+#align_import topology.stone_cech from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-! # Stone-Čech compactification
 
@@ -103,6 +100,12 @@ instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   let Z := { F : Ultrafilter α | s ∈ F }
   have hZ : IsClopen Z := ⟨ultrafilter_isOpen_basic s, ultrafilter_isClosed_basic s⟩
   exact hB ⟨Z, hZ, hs⟩
+
+@[simp] theorem Ultrafilter.tendsto_pure_self (b : Ultrafilter α) : Tendsto pure b (𝓝 b) := by
+  rw [Tendsto, ← coe_map, ultrafilter_converges_iff]
+  ext s
+  change s ∈ b ↔ {t | s ∈ t} ∈ map pure b
+  simp_rw [mem_map, preimage_setOf_eq, mem_pure, setOf_mem_eq]
 
 theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) ≤ b := by
   rw [TopologicalSpace.nhds_generateFrom]

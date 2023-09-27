@@ -2,14 +2,11 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.direct_sum.basic
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.DFinsupp.Basic
 import Mathlib.GroupTheory.Submonoid.Operations
+
+#align_import algebra.direct_sum.basic from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Direct sum
@@ -49,6 +46,9 @@ instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
 -- Porting note: Added addCommMonoid instance manually
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
+
+instance [∀ i, AddCommMonoid (β i)] : FunLike (DirectSum ι β) _ fun i : ι => β i :=
+  inferInstanceAs (FunLike (Π₀ i, β i) _ _)
 
 instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i :=
   inferInstanceAs (CoeFun (Π₀ i, β i) fun _ => ∀ i : ι, β i)
@@ -316,17 +316,17 @@ section Sigma
 variable {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
 
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`.-/
-noncomputable def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j
+def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j
     where
-  toFun := @DFinsupp.sigmaCurry _ _ δ _
+  toFun := DFinsupp.sigmaCurry (δ := δ)
   map_zero' := DFinsupp.sigmaCurry_zero
-  map_add' f g := @DFinsupp.sigmaCurry_add _ _ δ _ f g
+  map_add' f g := DFinsupp.sigmaCurry_add f g
 #align direct_sum.sigma_curry DirectSum.sigmaCurry
 
 @[simp]
 theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) :
     sigmaCurry f i j = f ⟨i, j⟩ :=
-  @DFinsupp.sigmaCurry_apply _ _ δ _ _ i j
+  DFinsupp.sigmaCurry_apply (δ := δ) _ i j
 #align direct_sum.sigma_curry_apply DirectSum.sigmaCurry_apply
 
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
@@ -346,7 +346,7 @@ theorem sigmaUncurry_apply [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ
 #align direct_sum.sigma_uncurry_apply DirectSum.sigmaUncurry_apply
 
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`.-/
-noncomputable def sigmaCurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
+def sigmaCurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
     (⨁ i : Σ _i, _, δ i.1 i.2) ≃+ ⨁ (i) (j), δ i j :=
   { sigmaCurry, DFinsupp.sigmaCurryEquiv with }
 #align direct_sum.sigma_curry_equiv DirectSum.sigmaCurryEquiv
@@ -359,7 +359,7 @@ indexed by `ι`.
 When `S = Submodule _ M`, this is available as a `LinearMap`, `DirectSum.coe_linearMap`. -/
 protected def coeAddMonoidHom {M S : Type _} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) : (⨁ i, A i) →+ M :=
-  toAddMonoid fun i => AddSubmonoidClass.Subtype (A i)
+  toAddMonoid fun i => AddSubmonoidClass.subtype (A i)
 #align direct_sum.coe_add_monoid_hom DirectSum.coeAddMonoidHom
 
 @[simp]

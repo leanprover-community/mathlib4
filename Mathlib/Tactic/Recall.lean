@@ -39,33 +39,35 @@ open private elabHeaders from Lean.Elab.MutualDef
 
 elab_rules : command
   | `(recall $id $sig:optDeclSig $[$val?]?) => withoutModifyingEnv do
-    let some info := (← getEnv).find? id.getId
-      | throwError "unknown constant '{id}'"
-    runTermElabM fun _ => discard <| addTermInfo id (mkConst id.getId)
-    let id' := mkIdentFrom id (← mkAuxName id.getId 1)
+    let declName := id.getId
+    let some info := (← getEnv).find? declName
+      | throwError "unknown constant '{declName}'"
+    let declConst : Expr := mkConst declName <| info.levelParams.map Level.param
+    discard <| liftTermElabM <| addTermInfo id declConst
+    let newId := mkIdentFrom id (← mkAuxName declName 1)
     if let some val := val? then
       let some infoVal := info.value?
-        | throwErrorAt val "constant '{id}' has no defined value"
-      elabCommand <| ← `(noncomputable def $id':declId $sig:optDeclSig $val)
-      let some newInfo := (← getEnv).find? id'.getId | return -- def already threw
-      runTermElabM fun _ => do
+        | throwErrorAt val "constant '{declName}' has no defined value"
+      elabCommand <| ← `(noncomputable def $newId $sig:optDeclSig $val)
+      let some newInfo := (← getEnv).find? newId.getId | return -- def already threw
+      liftTermElabM do
         let mvs ← newInfo.levelParams.mapM fun _ => mkFreshLevelMVar
         let newType := newInfo.type.instantiateLevelParams newInfo.levelParams mvs
         unless (← isDefEq info.type newType) do
-          throwTypeMismatchError none info.type newInfo.type (mkConst id.getId)
+          throwTypeMismatchError none info.type newInfo.type declConst
         let newVal := newInfo.value?.get!.instantiateLevelParams newInfo.levelParams mvs
         unless (← isDefEq infoVal newVal) do
           let err :=
-            m!"value mismatch{indentD id.getId}\nhas value{indentExpr newVal}\n" ++
+            m!"value mismatch{indentExpr declConst}\nhas value{indentExpr newVal}\n" ++
             m!"but is expected to have value{indentExpr infoVal}"
           throwErrorAt val err
     else
       let (binders, type?) := expandOptDeclSig sig
       let views := #[{
-        declId := id', binders, type?, value := .missing,
+        declId := newId, binders, type?, value := .missing,
         ref := ← getRef, kind := default, modifiers := {}
       : DefView}]
-      runTermElabM fun _ => do
+      liftTermElabM do
         let elabView := (← elabHeaders views)[0]!
         unless (← isDefEq info.type elabView.type) do
-          throwTypeMismatchError none info.type elabView.type (mkConst id.getId)
+          throwTypeMismatchError none info.type elabView.type declConst

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.idempotents.functor_extension
-! leanprover-community/mathlib commit 5f68029a863bdf76029fa0f7a519e6163c14152e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Idempotents.Karoubi
+
+#align_import category_theory.idempotents.functor_extension from "leanprover-community/mathlib"@"5f68029a863bdf76029fa0f7a519e6163c14152e"
 
 /-!
 # Extension of functors to the idempotent completion

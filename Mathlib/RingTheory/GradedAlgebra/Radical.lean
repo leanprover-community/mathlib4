@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.graded_algebra.radical
-! leanprover-community/mathlib commit f1944b30c97c5eb626e498307dec8b022a05bd0a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
+
+#align_import ring_theory.graded_algebra.radical from "leanprover-community/mathlib"@"f1944b30c97c5eb626e498307dec8b022a05bd0a"
 
 /-!
 
@@ -23,15 +20,15 @@ This file contains a proof that the radical of any homogeneous ideal is a homoge
   `I.homogeneous_core 𝒜` (i.e. the largest homogeneous ideal contained in `I`) is also prime.
 * `Ideal.IsHomogeneous.radical`: for any `I : Ideal A`, if `I` is homogeneous, then the
   radical of `I` is homogeneous as well.
-* `HomogeneousIdeal.radical`: for any `I : HomogeneousIdeal 𝒜`, `I.radical` is the the
-  radical of `I` as a `HomogeneousIdeal 𝒜`
+* `HomogeneousIdeal.radical`: for any `I : HomogeneousIdeal 𝒜`, `I.radical` is the
+  radical of `I` as a `HomogeneousIdeal 𝒜`.
 
 ## Implementation details
 
 Throughout this file, the indexing type `ι` of grading is assumed to be a
 `LinearOrderedCancelAddCommMonoid`. This might be stronger than necessary but cancelling
 property is strictly necessary; for a counterexample of how `Ideal.IsHomogeneous.isPrime_iff`
-fails for a non-cancellative set see `counterexample/homogeneous_prime_not_prime.lean`.
+fails for a non-cancellative set see `Counterexamples/HomogeneousPrimeNotPrime.lean`.
 
 ## Tags
 
@@ -51,7 +48,7 @@ variable [LinearOrderedCancelAddCommMonoid ι]
 
 variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
 
-set_option maxHeartbeats 300000 in -- Porting note: This proof needs a long time to elaborate
+-- Porting note: This proof needs a long time to elaborate
 theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI : I.IsHomogeneous 𝒜)
     (I_ne_top : I ≠ ⊤)
     (homogeneous_mem_or_mem :

@@ -2,11 +2,6 @@
 Copyright (c) 2020 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.perm.cycle.type
-! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Combinatorics.Partition
@@ -14,6 +9,8 @@ import Mathlib.Data.List.Rotate
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.NormNum.GCD
+
+#align_import group_theory.perm.cycle.type from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
 
 /-!
 # Cycle Types

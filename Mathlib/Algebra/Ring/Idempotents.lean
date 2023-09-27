@@ -2,15 +2,12 @@
 Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module algebra.ring.idempotents
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Defs
+
+#align_import algebra.ring.idempotents from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
 /-!
 # Idempotents

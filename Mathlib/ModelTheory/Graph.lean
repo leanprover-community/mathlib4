@@ -2,14 +2,11 @@
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.graph
-! leanprover-community/mathlib commit e56b8fea84d60fe434632b9d3b829ee685fb0c8f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.ModelTheory.Satisfiability
 import Mathlib.Combinatorics.SimpleGraph.Basic
+
+#align_import model_theory.graph from "leanprover-community/mathlib"@"e56b8fea84d60fe434632b9d3b829ee685fb0c8f"
 
 /-!
 # First-Ordered Structures in Graph Theory

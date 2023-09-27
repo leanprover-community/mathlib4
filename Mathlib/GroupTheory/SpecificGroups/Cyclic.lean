@@ -2,11 +2,6 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module group_theory.specific_groups.cyclic
-! leanprover-community/mathlib commit 0f6670b8af2dff699de1c0b4b49039b31bc13c46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Nat.Totient
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.Group
 import Mathlib.GroupTheory.Exponent
+
+#align_import group_theory.specific_groups.cyclic from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 
 /-!
 # Cyclic groups

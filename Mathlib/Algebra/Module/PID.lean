@@ -2,16 +2,13 @@
 Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
-
-! This file was ported from Lean 3 source module algebra.module.pid
-! leanprover-community/mathlib commit cdc34484a07418af43daf8198beaf5c00324bca8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.DedekindDomain
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Category.ModuleCat.Biproducts
+
+#align_import algebra.module.pid from "leanprover-community/mathlib"@"cdc34484a07418af43daf8198beaf5c00324bca8"
 
 /-!
 # Structure of finitely generated modules over a PID
@@ -28,7 +25,7 @@ import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
 * `R` is a PID and `M` is a (finitely generated for main statements) `R`-module, with additional
   torsion hypotheses in the intermediate lemmas.
-* `N` is a `R`-module lying over a higher type universe than `R`. This assumption is needed on the
+* `N` is an `R`-module lying over a higher type universe than `R`. This assumption is needed on the
   final statement for technical reasons.
 * `p` is an irreducible element of `R` or a tuple of these.
 

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.group.unique_prods
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Preimage
+
+#align_import algebra.group.unique_prods from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Unique products and related notions
@@ -21,7 +18,7 @@ introduce the analogous "additive" companion, `UniqueSums` and link the two so t
 converts `UniqueProds` into `UniqueSums`.
 
 Here you can see several examples of Types that have `UniqueSums/Prods`
-(`infer_instance` uses `covariants.to_uniqueProds` and `covariants.to_uniqueSums`).
+(`infer_instance` uses `Covariants.to_uniqueProds` and `Covariants.to_uniqueSums`).
 ```lean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.PNat.Basic
@@ -205,19 +202,6 @@ instance {M} [Mul M] [UniqueProds M] : UniqueSums (Additive M) where
     exact ⟨ofMul a0, hA0, ofMul b0, hB0, fun a b aA bB H ↦ J aA bB H⟩
 
 end Additive
-
-@[to_additive]
-theorem eq_and_eq_of_le_of_le_of_mul_le {A} [Mul A] [LinearOrder A]
-    [CovariantClass A A (· * ·) (· ≤ ·)] [CovariantClass A A (Function.swap (· * ·)) (· < ·)]
-    [ContravariantClass A A (· * ·) (· ≤ ·)] {a b a0 b0 : A} (ha : a0 ≤ a) (hb : b0 ≤ b)
-    (ab : a * b ≤ a0 * b0) : a = a0 ∧ b = b0 := by
-  haveI := Mul.to_covariantClass_right A
-  have ha' : ¬a0 * b0 < a * b → ¬a0 < a := mt fun h ↦ mul_lt_mul_of_lt_of_le h hb
-  have hb' : ¬a0 * b0 < a * b → ¬b0 < b := mt fun h ↦ mul_lt_mul_of_le_of_lt ha h
-  push_neg at ha' hb'
-  exact ⟨ha.antisymm' (ha' ab), hb.antisymm' (hb' ab)⟩
-#align eq_and_eq_of_le_of_le_of_mul_le eq_and_eq_of_le_of_le_of_mul_le
-#align eq_and_eq_of_le_of_le_of_add_le eq_and_eq_of_le_of_le_of_add_le
 
 -- see Note [lower instance priority]
 /-- This instance asserts that if `A` has a multiplication, a linear order, and multiplication

@@ -2,15 +2,12 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Felix Weilacher
-
-! This file was ported from Lean 3 source module measure_theory.constructions.polish
-! leanprover-community/mathlib commit 9f55d0d4363ae59948c33864cbc52e0b12e0e8ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Cardinality
 import Mathlib.Topology.Perfect
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+
+#align_import measure_theory.constructions.polish from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
 /-!
 # The Borel sigma-algebra on Polish spaces
