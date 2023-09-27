@@ -607,7 +607,7 @@ theorem SpanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (SpanFinBasis 
   use Finsupp.onFinset (Finset.univ) f.toFun (fun _ _ ↦ Finset.mem_univ _)
   ext x
   change LocallyConstant.evalₗ ℤ x _ = _
-  simp only [zsmul_eq_mul, LinearMap.map_finsupp_sum, LocallyConstant.evalₗ_apply,
+  simp only [zsmul_eq_mul, map_finsupp_sum, LocallyConstant.evalₗ_apply,
     LocallyConstant.coe_mul, Pi.mul_apply, SpanFinBasis, LocallyConstant.coe_mk, mul_ite, mul_one,
     mul_zero, Finsupp.sum_ite_eq, Finsupp.mem_support_iff, ne_eq, ite_not]
   split_ifs with h <;> [exact h.symm; rfl]
@@ -1802,7 +1802,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   have : (Linear_CC' C hsC ho) (l.val.eval C) = (Linear_CC' C hsC ho)
     (Finsupp.sum m fun i a ↦ a • ((term I ho :: i.1).map (e C)).prod)
   · rw [← hmsum]
-    simp only [LinearMap.map_finsupp_sum]
+    simp only [map_finsupp_sum]
     apply Finsupp.sum_congr
     intro q hq
     rw [LinearMap.map_smul]
