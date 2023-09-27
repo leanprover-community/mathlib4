@@ -139,7 +139,6 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       exact ⟨R, fun x => hR (mem_range_self _)⟩
     choose R hR using this
     let M := max (((Finset.range (n + 1)).image R).max' (by simp)) 1
-    have M_pos : 0 < M := zero_lt_one.trans_le (le_max_right _ _)
     have δnpos : 0 < δ n := δpos n
     have IR : ∀ i ≤ n, R i ≤ M := by
       intro i hi
@@ -157,7 +156,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       _ = M⁻¹ * δ n * ‖iteratedFDeriv ℝ i (g n) x‖ := by
         rw [norm_smul, Real.norm_of_nonneg]; positivity
       _ ≤ M⁻¹ * δ n * M := (mul_le_mul_of_nonneg_left ((hR i x).trans (IR i hi)) (by positivity))
-      _ = δ n := by field_simp [M_pos.ne']
+      _ = δ n := by field_simp
   choose r rpos hr using this
   have S : ∀ x, Summable fun n => (r n • g n) x := by
     intro x
@@ -173,7 +172,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
         intro n
         contrapose! hx
         exact g_s n hx
-      simp only [this, MulZeroClass.mul_zero, tsum_zero]
+      simp only [this, mul_zero, tsum_zero]
     · intro x hx
       obtain ⟨n, hn⟩ : ∃ n, x ∈ support (g n); exact s_g x hx
       have I : 0 < r n * g n x := mul_pos (rpos n) (lt_of_le_of_ne (g_nonneg n x) (Ne.symm hn))
@@ -237,7 +236,6 @@ theorem u_exists :
     · have I1 : x ∉ support f := by rwa [f_support]
       have I2 : -x ∉ support f := by
         rw [f_support]
-        simp only at hx
         simpa using hx
       simp only [mem_support, Classical.not_not] at I1 I2
       simp only [I1, I2, add_zero, zero_div]
@@ -329,7 +327,7 @@ variable (E)
 theorem w_integral {D : ℝ} (Dpos : 0 < D) : ∫ x : E, w D x ∂μ = 1 := by
   simp_rw [w, integral_smul]
   rw [integral_comp_inv_smul_of_nonneg μ (u : E → ℝ) Dpos.le, abs_of_nonneg Dpos.le, mul_comm]
-  field_simp [Dpos.ne', (u_int_pos E).ne']
+  field_simp [(u_int_pos E).ne']
 #align exists_cont_diff_bump_base.W_integral ExistsContDiffBumpBase.w_integral
 
 theorem w_support {D : ℝ} (Dpos : 0 < D) : support (w D : E → ℝ) = ball 0 D := by
@@ -400,7 +398,7 @@ theorem y_eq_zero_of_not_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ b
   have Bx : φ x = 0 := B _ (mem_ball_self Dpos)
   have B' : ∀ y, y ∈ ball x D → φ y = φ x := by rw [Bx]; exact B
   rw [convolution_eq_right' _ (le_of_eq (w_support E Dpos)) B']
-  simp only [lsmul_apply, Algebra.id.smul_eq_mul, Bx, MulZeroClass.mul_zero, integral_const]
+  simp only [lsmul_apply, Algebra.id.smul_eq_mul, Bx, mul_zero, integral_const]
 #align exists_cont_diff_bump_base.Y_eq_zero_of_not_mem_ball ExistsContDiffBumpBase.y_eq_zero_of_not_mem_ball
 
 theorem y_nonneg (D : ℝ) (x : E) : 0 ≤ y D x :=
@@ -459,7 +457,6 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
         apply closedBall_subset_closedBall' _ (ball_subset_closedBall hy)
         rw [← one_smul ℝ x, dist_eq_norm, hz, ← sub_smul, one_smul, norm_smul, ID]
         simp only [B.ne', div_le_iff B, field_simps]
-        simp only [mem_ball_zero_iff] at hx
         nlinarith only [hx, D_lt_one]
     apply lt_of_lt_of_le _ (measure_mono C)
     apply measure_ball_pos
@@ -559,7 +556,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         calc
           2 / (R + 1) * ‖x‖ ≤ 2 / (R + 1) * 1 :=
             mul_le_mul_of_nonneg_left hx (div_nonneg zero_le_two A.le)
-          _ = 1 - (R - 1) / (R + 1) := by field_simp [A.ne']; ring
+          _ = 1 - (R - 1) / (R + 1) := by field_simp; ring
       support := fun R hR => by
         have A : 0 < (R + 1) / 2 := by linarith
         have A' : 0 < R + 1 := by linarith
@@ -567,8 +564,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         simp only [hR, if_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
         refine' congr (congr_arg ball (Eq.refl 0)) _
-        field_simp [A'.ne']
-        ring }
+        field_simp; ring }
 
 end ExistsContDiffBumpBase
 

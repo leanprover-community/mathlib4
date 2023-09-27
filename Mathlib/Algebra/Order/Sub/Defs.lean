@@ -247,7 +247,7 @@ variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 theorem tsub_nonpos : a - b ≤ 0 ↔ a ≤ b := by rw [tsub_le_iff_left, add_zero]
 #align tsub_nonpos tsub_nonpos
 
-alias tsub_nonpos ↔ _ tsub_nonpos_of_le
+alias ⟨_, tsub_nonpos_of_le⟩ := tsub_nonpos
 #align tsub_nonpos_of_le tsub_nonpos_of_le
 
 end Preorder

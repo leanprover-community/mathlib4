@@ -226,7 +226,7 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add,
       diagonalSucc_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
-      MulZeroClass.zero_mul, single_zero] -/
+      zero_mul, single_zero] -/
   · rw [TensorProduct.tmul_zero, map_zero, map_zero]
   · intro _ _ _ _ _ hx
     rw [TensorProduct.tmul_add, map_add, map_add, hx]
@@ -243,7 +243,7 @@ theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
-      TensorProduct.add_tmul, Finsupp.sum_single_index, MulZeroClass.zero_mul, single_zero] -/
+      TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero] -/
   · rw [TensorProduct.zero_tmul, map_zero, map_zero]
   · intro _ _ _ _ _ hx
     rw [TensorProduct.add_tmul, map_add, map_add, hx]
@@ -425,7 +425,6 @@ def cechNerveTerminalFromIso :
   NatIso.ofComponents (fun n => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
     refine' IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => _
     dsimp only [cechNerveTerminalFrom, Pi.lift]
-    dsimp
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
     exact (limit.isoLimitCone_hom_π _ _).symm
 #align classifying_space_universal_cover.cech_nerve_terminal_from_iso classifyingSpaceUniversalCover.cechNerveTerminalFromIso

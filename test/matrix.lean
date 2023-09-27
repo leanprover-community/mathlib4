@@ -91,7 +91,7 @@ example {a a' b b' c c' d d' : β} :
 by simp
 
 example {a a' b b' c c' d d' : α} :
-  !![a, b; c, d] ⬝ !![a', b'; c', d'] =
+  !![a, b; c, d] * !![a', b'; c', d'] =
     !![a * a' + b * c', a * b' + b * d'; c * a' + d * c', c * b' + d * d'] :=
 by simp
 

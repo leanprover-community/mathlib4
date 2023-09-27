@@ -67,6 +67,21 @@ theorem eq_of_degrees_lt_of_eval_finset_eq (degree_f_lt : f.degree < s.card)
   rw [← mem_degreeLT]; exact Submodule.sub_mem _ degree_f_lt degree_g_lt
 #align polynomial.eq_of_degrees_lt_of_eval_finset_eq Polynomial.eq_of_degrees_lt_of_eval_finset_eq
 
+/--
+Two polynomials, with the same degree and leading coefficient, which have the same evaluation
+on a set of distinct values with cardinality equal to the degree, are equal.
+-/
+theorem eq_of_degree_le_of_eval_finset_eq
+    (h_deg_le : f.degree ≤ s.card)
+    (h_deg_eq : f.degree = g.degree)
+    (hlc : f.leadingCoeff = g.leadingCoeff)
+    (h_eval : ∀ x ∈ s, f.eval x = g.eval x) :
+    f = g := by
+  rcases eq_or_ne f 0 with rfl | hf
+  · rwa [degree_zero, eq_comm, degree_eq_bot, eq_comm] at h_deg_eq
+  · exact eq_of_degree_sub_lt_of_eval_finset_eq s
+      (lt_of_lt_of_le (degree_sub_lt h_deg_eq hf hlc) h_deg_le) h_eval
+
 end Finset
 
 section Indexed
@@ -101,6 +116,17 @@ theorem eq_of_degrees_lt_of_eval_index_eq (hvs : Set.InjOn v s) (degree_f_lt : f
   exact Submodule.sub_mem _ degree_f_lt degree_g_lt
 #align polynomial.eq_of_degrees_lt_of_eval_index_eq Polynomial.eq_of_degrees_lt_of_eval_index_eq
 
+theorem eq_of_degree_le_of_eval_index_eq (hvs : Set.InjOn v s)
+    (h_deg_le : f.degree ≤ s.card)
+    (h_deg_eq : f.degree = g.degree)
+    (hlc : f.leadingCoeff = g.leadingCoeff)
+    (h_eval : ∀ i ∈ s, f.eval (v i) = g.eval (v i)) : f = g := by
+  rcases eq_or_ne f 0 with rfl | hf
+  · rwa [degree_zero, eq_comm, degree_eq_bot, eq_comm] at h_deg_eq
+  · exact eq_of_degree_sub_lt_of_eval_index_eq s hvs
+      (lt_of_lt_of_le (degree_sub_lt h_deg_eq hf hlc) h_deg_le)
+      h_eval
+
 end Indexed
 
 end Polynomial
@@ -127,7 +153,7 @@ def basisDivisor (x y : F) : F[X] :=
 #align lagrange.basis_divisor Lagrange.basisDivisor
 
 theorem basisDivisor_self : basisDivisor x x = 0 := by
-  simp only [basisDivisor, sub_self, inv_zero, map_zero, MulZeroClass.zero_mul]
+  simp only [basisDivisor, sub_self, inv_zero, map_zero, zero_mul]
 #align lagrange.basis_divisor_self Lagrange.basisDivisor_self
 
 theorem basisDivisor_inj (hxy : basisDivisor x y = 0) : x = y := by
@@ -165,7 +191,7 @@ theorem natDegree_basisDivisor_of_ne (hxy : x ≠ y) : (basisDivisor x y).natDeg
 
 @[simp]
 theorem eval_basisDivisor_right : eval y (basisDivisor x y) = 0 := by
-  simp only [basisDivisor, eval_mul, eval_C, eval_sub, eval_X, sub_self, MulZeroClass.mul_zero]
+  simp only [basisDivisor, eval_mul, eval_C, eval_sub, eval_X, sub_self, mul_zero]
 #align lagrange.eval_basis_divisor_right Lagrange.eval_basisDivisor_right
 
 theorem eval_basisDivisor_left_of_ne (hxy : x ≠ y) : eval x (basisDivisor x y) = 1 := by
@@ -322,7 +348,7 @@ theorem eval_interpolate_at_node (hvs : Set.InjOn v s) (hi : i ∈ s) :
   rw [interpolate_apply, eval_finset_sum, ← add_sum_erase _ _ hi]
   simp_rw [eval_mul, eval_C, eval_basis_self hvs hi, mul_one, add_right_eq_self]
   refine' sum_eq_zero fun j H => _
-  rw [eval_basis_of_ne (mem_erase.mp H).1 hi, MulZeroClass.mul_zero]
+  rw [eval_basis_of_ne (mem_erase.mp H).1 hi, mul_zero]
 #align lagrange.eval_interpolate_at_node Lagrange.eval_interpolate_at_node
 
 theorem degree_interpolate_le (hvs : Set.InjOn v s) :
@@ -440,7 +466,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
         mul_one, add_right_eq_self]
       refine' sum_eq_zero fun j hj => _
       rcases mem_erase.mp hj with ⟨hij, _⟩
-      rw [eval_basis_of_ne hij hi', MulZeroClass.mul_zero]
+      rw [eval_basis_of_ne hij hi', mul_zero]
     · have H : (∑ j in s, eval (v i) (Lagrange.basis s v j)) = 1 := by
         rw [← eval_finset_sum, sum_basis (hvt.mono hst) hs, eval_one]
       rw [← mul_one (r i), ← H, mul_sum]
@@ -494,9 +520,13 @@ theorem nodal_empty : nodal ∅ v = 1 := by
   rfl
 #align lagrange.nodal_empty Lagrange.nodal_empty
 
+@[simp]
 theorem degree_nodal : (nodal s v).degree = s.card := by
   simp_rw [nodal, degree_prod, degree_X_sub_C, sum_const, Nat.smul_one_eq_coe]
 #align lagrange.degree_nodal Lagrange.degree_nodal
+
+theorem nodal_monic : (nodal s v).Monic :=
+  monic_prod_of_monic s (fun i ↦ X - C (v i)) fun i _ ↦ monic_X_sub_C (v i)
 
 theorem eval_nodal {x : F} : (nodal s v).eval x = ∏ i in s, (x - v i) := by
   simp_rw [nodal, eval_prod, eval_sub, eval_X, eval_C]
@@ -514,7 +544,7 @@ theorem eval_nodal_not_at_node (hx : ∀ i ∈ s, x ≠ v i) : eval x (nodal s v
 
 theorem nodal_eq_mul_nodal_erase [DecidableEq ι] (hi : i ∈ s) :
     nodal s v = (X - C (v i)) * nodal (s.erase i) v := by
-    simp_rw [nodal, mul_prod_erase _ _ hi, Finset.mul_prod_erase _ (fun x => X - C (v x)) hi]
+    simp_rw [nodal, Finset.mul_prod_erase _ (fun x => X - C (v x)) hi]
 #align lagrange.nodal_eq_mul_nodal_erase Lagrange.nodal_eq_mul_nodal_erase
 
 theorem X_sub_C_dvd_nodal (v : ι → F) (hi : i ∈ s) : X - C (v i) ∣ nodal s v :=
@@ -619,6 +649,23 @@ theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
     eval_interpolate_not_at_node r hx, eval_interpolate_not_at_node 1 hx]
   simp only [mul_div_mul_left _ _ (eval_nodal_not_at_node hx), Pi.one_apply, mul_one]
 #align lagrange.eval_interpolate_not_at_node' Lagrange.eval_interpolate_not_at_node'
+
+/-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/
+@[simp] theorem nodal_subgroup_eq_X_pow_card_sub_one (G : Subgroup Fˣ) [Fintype G] :
+  nodal (G : Set Fˣ).toFinset ((↑) : Fˣ → F) = X ^ (Fintype.card G) - 1 := by
+  have h : degree (1 : F[X]) < degree ((X : F[X]) ^ Fintype.card G) := by simp [Fintype.card_pos]
+  apply eq_of_degree_le_of_eval_index_eq (v := ((↑) : Fˣ → F)) (G : Set Fˣ).toFinset
+  · exact Set.injOn_of_injective Units.ext _
+  · simp
+  · rw [degree_sub_eq_left_of_degree_lt h, degree_nodal, Set.toFinset_card, degree_pow, degree_X,
+      nsmul_eq_mul, mul_one, Nat.cast_inj]
+    exact rfl
+  · rw [nodal_monic, leadingCoeff_sub_of_degree_lt h, monic_X_pow]
+  · intros i hi
+    rw [eval_nodal_at_node hi]
+    replace hi : i ∈ G := by simpa using hi
+    obtain ⟨g, rfl⟩ : ∃ g : G, g.val = i := ⟨⟨i, hi⟩, rfl⟩
+    simp [← Units.val_pow_eq_pow_val, ← Subgroup.coe_pow G]
 
 end Nodal
 

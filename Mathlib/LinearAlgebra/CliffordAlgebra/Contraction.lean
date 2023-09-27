@@ -114,8 +114,8 @@ def contractRight : CliffordAlgebra Q →ₗ[R] Module.Dual R M →ₗ[R] Cliffo
 #align clifford_algebra.contract_right CliffordAlgebra.contractRight
 
 theorem contractRight_eq (x : CliffordAlgebra Q) :
-    contractRight (Q := Q) x d = reverse (Q := Q)
-    (contractLeft (R := R) (M := M) d <| reverse (Q := Q) x) :=
+    contractRight (Q := Q) x d = reverse
+    (contractLeft (R := R) (M := M) d <| reverse x) :=
   rfl
 #align clifford_algebra.contract_right_eq CliffordAlgebra.contractRight_eq
 
@@ -168,7 +168,7 @@ variable (Q)
 theorem contractLeft_ι (x : M) : d⌋ι Q x = algebraMap R _ (d x) := by
 -- Porting note: Lean cannot figure out anymore the third argument
   refine (foldr'_ι _ _ ?_ _ _).trans <| by
-    simp_rw [contractLeftAux_apply_apply, MulZeroClass.mul_zero, sub_zero,
+    simp_rw [contractLeftAux_apply_apply, mul_zero, sub_zero,
       Algebra.algebraMap_eq_smul_one]
   exact fun m x fx ↦ contractLeftAux_contractLeftAux Q d m x fx
 #align clifford_algebra.contract_left_ι CliffordAlgebra.contractLeft_ι
@@ -208,7 +208,7 @@ theorem contractLeft_contractLeft (x : CliffordAlgebra Q) : d⌋(d⌋x) = 0 := b
   · simp_rw [contractLeft_algebraMap, map_zero]
   · rw [map_add, map_add, hx, hy, add_zero]
   · rw [contractLeft_ι_mul, map_sub, contractLeft_ι_mul, hx, LinearMap.map_smul,
-      MulZeroClass.mul_zero, sub_zero, sub_self]
+      mul_zero, sub_zero, sub_self]
 #align clifford_algebra.contract_left_contract_left CliffordAlgebra.contractLeft_contractLeft
 
 /-- This is [grinberg_clifford_2016][] Theorem 13 -/

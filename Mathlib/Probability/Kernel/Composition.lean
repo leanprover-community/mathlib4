@@ -93,7 +93,7 @@ noncomputable def compProdFun (κ : kernel α β) (η : kernel (α × β) γ) (a
 theorem compProdFun_empty (κ : kernel α β) (η : kernel (α × β) γ) (a : α) :
     compProdFun κ η a ∅ = 0 := by
   simp only [compProdFun, Set.mem_empty_iff_false, Set.setOf_false, measure_empty,
-    MeasureTheory.lintegral_const, MulZeroClass.zero_mul]
+    MeasureTheory.lintegral_const, zero_mul]
 #align probability_theory.kernel.comp_prod_fun_empty ProbabilityTheory.kernel.compProdFun_empty
 
 theorem compProdFun_iUnion (κ : kernel α β) (η : kernel (α × β) γ) [IsSFiniteKernel η] (a : α)

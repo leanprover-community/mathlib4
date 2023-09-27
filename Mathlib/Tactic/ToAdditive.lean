@@ -96,7 +96,7 @@ Id.run do
   if (s.get i₁).isUpper then
     if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
       if let some (pref, newS) := strs.findSome?
-        fun x ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
+        fun x : String ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
     if !(s.get i₀).isUpper then
       return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
@@ -798,6 +798,8 @@ def fixAbbreviation : List String → List String
   | "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
   | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
   | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
+  | "unique" :: "Prods" :: s          => "uniqueSums" :: fixAbbreviation s
+  | "Unique" :: "Prods" :: s          => "UniqueSums" :: fixAbbreviation s
   | "order" :: "Of" :: s              => "addOrderOf" :: fixAbbreviation s
   | "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
   | "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s

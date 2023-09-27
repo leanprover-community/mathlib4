@@ -35,7 +35,7 @@ Recall that a Cartan matrix is a square matrix of integers `A` such that:
  * For diagonal values we have: `A i i = 2`.
  * For off-diagonal values (`i ≠ j`) we have: `A i j ∈ {-3, -2, -1, 0}`.
  * `A i j = 0 ↔ A j i = 0`.
- * There exists a diagonal matrix `D` over ℝ such that `D ⬝ A ⬝ D⁻¹` is symmetric positive definite.
+ * There exists a diagonal matrix `D` over ℝ such that `D * A * D⁻¹` is symmetric positive definite.
 
 ## Alternative construction
 

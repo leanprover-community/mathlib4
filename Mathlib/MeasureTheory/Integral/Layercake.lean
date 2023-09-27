@@ -114,10 +114,10 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
         simp only [mem_Ioc, not_and, not_le] at h
         by_cases h' : 0 < s
         · simp only [h_copy, h h', indicator_of_not_mem, not_false_iff, mem_Ici, not_le,
-            MulZeroClass.mul_zero]
+            mul_zero]
         · have : s ∉ Ioi (0 : ℝ) := h'
-          simp only [this, h', indicator_of_not_mem, not_false_iff, MulZeroClass.mul_zero,
-            MulZeroClass.zero_mul, mem_Ioc, false_and_iff]
+          simp only [this, h', indicator_of_not_mem, not_false_iff, mul_zero,
+            zero_mul, mem_Ioc, false_and_iff]
     simp_rw [aux₁]
     rw [lintegral_const_mul']
     swap;

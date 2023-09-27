@@ -145,27 +145,27 @@ section Mul
 
 @[simp]
 theorem trace_transpose_mul [AddCommMonoid R] [Mul R] (A : Matrix m n R) (B : Matrix n m R) :
-    trace (Aᵀ ⬝ Bᵀ) = trace (A ⬝ B) :=
+    trace (Aᵀ * Bᵀ) = trace (A * B) :=
   Finset.sum_comm
 #align matrix.trace_transpose_mul Matrix.trace_transpose_mul
 
 theorem trace_mul_comm [AddCommMonoid R] [CommSemigroup R] (A : Matrix m n R) (B : Matrix n m R) :
-    trace (A ⬝ B) = trace (B ⬝ A) := by rw [← trace_transpose, ← trace_transpose_mul, transpose_mul]
+    trace (A * B) = trace (B * A) := by rw [← trace_transpose, ← trace_transpose_mul, transpose_mul]
 #align matrix.trace_mul_comm Matrix.trace_mul_comm
 
 theorem trace_mul_cycle [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
-    (C : Matrix p m R) : trace (A ⬝ B ⬝ C) = trace (C ⬝ A ⬝ B) := by
+    (C : Matrix p m R) : trace (A * B * C) = trace (C * A * B) := by
   rw [trace_mul_comm, Matrix.mul_assoc]
 #align matrix.trace_mul_cycle Matrix.trace_mul_cycle
 
 theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
-    (C : Matrix p m R) : trace (A ⬝ (B ⬝ C)) = trace (C ⬝ (A ⬝ B)) := by
+    (C : Matrix p m R) : trace (A * (B * C)) = trace (C * (A * B)) := by
   rw [← Matrix.mul_assoc, trace_mul_comm]
 #align matrix.trace_mul_cycle' Matrix.trace_mul_cycle'
 
 @[simp]
 theorem trace_col_mul_row [NonUnitalNonAssocSemiring R] (a b : n → R) :
-    trace (col a ⬝ row b) = dotProduct a b := by
+    trace (col a * row b) = dotProduct a b := by
   apply Finset.sum_congr rfl
   simp [mul_apply]
 #align matrix.trace_col_mul_row Matrix.trace_col_mul_row

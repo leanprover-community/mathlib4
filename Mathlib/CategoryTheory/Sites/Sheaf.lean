@@ -615,12 +615,11 @@ def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
       · refine' limit.hom_ext (fun j => _)
         dsimp [Equalizer.Presieve.firstMap, firstMap]
         simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
-        dsimp [Equalizer.Presieve.firstMap, firstMap]
-        erw [piComparison_comp_π_assoc]
+        rw [piComparison_comp_π_assoc]
       · refine' limit.hom_ext (fun j => _)
         dsimp [Equalizer.Presieve.secondMap, secondMap]
         simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
-        erw [piComparison_comp_π_assoc]
+        rw [piComparison_comp_π_assoc]
       · dsimp
         simp
   · refine' Fork.ext (Iso.refl _) _

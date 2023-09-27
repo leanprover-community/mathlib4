@@ -139,7 +139,7 @@ theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Counta
   cases nonempty_encodable β
   cases isEmpty_or_nonempty β
   · -- Porting note: the next `simp only` doesn't do anything, so added a workaround below.
-    simp only [WithTop.iInf_empty, lintegral_const]
+    -- simp only [WithTop.iInf_empty, lintegral_const]
     conv =>
       lhs
       congr
@@ -168,16 +168,6 @@ theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Counta
       · exact iInf_le_of_le (Encodable.encode b + 1) (lintegral_mono <| h_directed.sequence_le b)
       · exact iInf_le (fun b => ∫⁻ a, f b a ∂μ) _
 #align lintegral_infi_directed_of_measurable lintegral_iInf_directed_of_measurable
-
--- todo: move to measure_theory/pi_system
-theorem isPiSystem_Iic [SemilatticeInf α] : @IsPiSystem α (range Iic) := by
-  rintro s ⟨us, rfl⟩ t ⟨ut, rfl⟩ _; rw [Iic_inter_Iic]; exact ⟨us ⊓ ut, rfl⟩
-#align is_pi_system_Iic isPiSystem_Iic
-
--- todo: move to measure_theory/pi_system
-theorem isPiSystem_Ici [SemilatticeSup α] : @IsPiSystem α (range Ici) := by
-  rintro s ⟨us, rfl⟩ t ⟨ut, rfl⟩ _; rw [Ici_inter_Ici]; exact ⟨us ⊔ ut, rfl⟩
-#align is_pi_system_Ici isPiSystem_Ici
 
 end AuxLemmasToBeMoved
 
@@ -911,13 +901,12 @@ theorem set_lintegral_condCdf (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x
       (measurable_condCdf ρ q).ennreal_ofReal]
   rotate_left
   · intro b
-    simp_rw [h_coe]
     rw [set_lintegral_condCdf_rat ρ _ hs]
     exact measure_ne_top ρ _
   · refine' Monotone.directed_ge fun i j hij a => ENNReal.ofReal_le_ofReal ((condCdf ρ a).mono _)
     rw [h_coe, h_coe]
     exact_mod_cast hij
-  simp_rw [h_coe, set_lintegral_condCdf_rat ρ _ hs]
+  simp_rw [set_lintegral_condCdf_rat ρ _ hs]
   rw [← measure_iInter_eq_iInf]
   · rw [← prod_iInter]
     congr with y

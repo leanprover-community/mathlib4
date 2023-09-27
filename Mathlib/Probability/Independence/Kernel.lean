@@ -139,7 +139,7 @@ theorem indep_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
   rw [Set.mem_setOf_eq, MeasurableSpace.measurableSet_bot_iff] at ht
   refine Filter.eventually_of_forall (fun a ↦ ?_)
   cases' ht with ht ht
-  · rw [ht, Set.inter_empty, measure_empty, MulZeroClass.mul_zero]
+  · rw [ht, Set.inter_empty, measure_empty, mul_zero]
   · rw [ht, Set.inter_univ, measure_univ, mul_one]
 
 theorem indep_bot_left (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}

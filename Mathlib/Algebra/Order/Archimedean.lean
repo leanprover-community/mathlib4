@@ -293,6 +293,12 @@ theorem le_of_forall_lt_rat_imp_le (h : ∀ q : ℚ, y < q → x ≤ q) : x ≤ 
     hx.not_le <| h _ hy
 #align le_of_forall_lt_rat_imp_le le_of_forall_lt_rat_imp_le
 
+theorem le_iff_forall_rat_lt_imp_le : x ≤ y ↔ ∀ q : ℚ, (q : α) < x → (q : α) ≤ y :=
+  ⟨fun hxy _ hqx ↦ hqx.le.trans hxy, le_of_forall_rat_lt_imp_le⟩
+
+theorem le_iff_forall_lt_rat_imp_le : x ≤ y ↔ ∀ q : ℚ, y < q → x ≤ q :=
+  ⟨fun hxy _ hqx ↦ hxy.trans hqx.le, le_of_forall_lt_rat_imp_le⟩
+
 theorem eq_of_forall_rat_lt_iff_lt (h : ∀ q : ℚ, (q : α) < x ↔ (q : α) < y) : x = y :=
   (le_of_forall_rat_lt_imp_le fun q hq => ((h q).1 hq).le).antisymm <|
     le_of_forall_rat_lt_imp_le fun q hq => ((h q).2 hq).le

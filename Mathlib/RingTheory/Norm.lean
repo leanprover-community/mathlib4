@@ -285,7 +285,7 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
     ← Finset.univ_sigma_univ, Finset.prod_sigma, ← Finset.prod_pow]
   refine Finset.prod_congr rfl fun σ _ => ?_
   · letI : Algebra L E := σ.toRingHom.toAlgebra
-    simp_rw [Finset.prod_const, Finset.card_univ]
+    simp_rw [Finset.prod_const]
     congr
     exact AlgHom.card L F E
   · intro σ

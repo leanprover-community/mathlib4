@@ -232,8 +232,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     have hs : s.Nonempty := ⟨x, hx⟩
     refine' natDegree_eq_of_degree_eq_some _
     rw [degree_sum_eq_of_disjoint]
-    · dsimp
-      rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs,
+    · rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs,
         Nat.cast_withBot, Finset.coe_sup' hs, ←
         Finset.sup'_eq_sup hs]
       refine' le_antisymm _ _

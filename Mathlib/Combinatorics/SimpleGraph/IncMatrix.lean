@@ -123,7 +123,7 @@ theorem sum_incMatrix_apply [DecidableEq α] [DecidableRel G.Adj] :
 #align simple_graph.sum_inc_matrix_apply SimpleGraph.sum_incMatrix_apply
 
 theorem incMatrix_mul_transpose_diag [DecidableEq α] [DecidableRel G.Adj] :
-    (G.incMatrix R ⬝ (G.incMatrix R)ᵀ) a a = G.degree a := by
+    (G.incMatrix R * (G.incMatrix R)ᵀ) a a = G.degree a := by
   rw [← sum_incMatrix_apply]
   simp only [mul_apply, incMatrix_apply', transpose_apply, mul_ite, mul_one, mul_zero]
   simp_all only [ite_true, sum_boole]
@@ -148,7 +148,7 @@ theorem sum_incMatrix_apply_of_not_mem_edgeSet (h : e ∉ G.edgeSet) :
 #align simple_graph.sum_inc_matrix_apply_of_not_mem_edge_set SimpleGraph.sum_incMatrix_apply_of_not_mem_edgeSet
 
 theorem incMatrix_transpose_mul_diag [DecidableRel G.Adj] :
-    ((G.incMatrix R)ᵀ ⬝ G.incMatrix R) e e = if e ∈ G.edgeSet then 2 else 0 := by
+    ((G.incMatrix R)ᵀ * G.incMatrix R) e e = if e ∈ G.edgeSet then 2 else 0 := by
   classical
     simp only [Matrix.mul_apply, incMatrix_apply', transpose_apply, ← ite_and_mul_zero, one_mul,
       sum_boole, and_self_iff]
@@ -174,7 +174,7 @@ section Semiring
 variable [Fintype (Sym2 α)] [Semiring R] {a b : α} {e : Sym2 α}
 
 theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
-    (G.incMatrix R ⬝ (G.incMatrix R)ᵀ) a b = (1 : R) := by
+    (G.incMatrix R * (G.incMatrix R)ᵀ) a b = (1 : R) := by
   classical
     simp_rw [Matrix.mul_apply, Matrix.transpose_apply, incMatrix_apply_mul_incMatrix_apply,
       Set.indicator_apply, Pi.one_apply, sum_boole]
@@ -185,7 +185,7 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
 #align simple_graph.inc_matrix_mul_transpose_apply_of_adj SimpleGraph.incMatrix_mul_transpose_apply_of_adj
 
 theorem incMatrix_mul_transpose [Fintype α] [DecidableEq α] [DecidableRel G.Adj] :
-    G.incMatrix R ⬝ (G.incMatrix R)ᵀ = fun a b =>
+    G.incMatrix R * (G.incMatrix R)ᵀ = fun a b =>
       if a = b then (G.degree a : R) else if G.Adj a b then 1 else 0 := by
   ext a b
   split_ifs with h h'

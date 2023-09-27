@@ -237,7 +237,6 @@ def solvableByRad : IntermediateField F E where
     change IsSolvableByRad F 0
     convert IsSolvableByRad.base (E := E) (0 : F); rw [RingHom.map_zero]
   add_mem' := by apply IsSolvableByRad.add
-  neg_mem' := IsSolvableByRad.neg
   one_mem' := by
     change IsSolvableByRad F 1
     convert IsSolvableByRad.base (E := E) (1 : F); rw [RingHom.map_one]

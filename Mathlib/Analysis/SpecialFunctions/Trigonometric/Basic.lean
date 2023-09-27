@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.Tactic.Positivity.Core
 
 #align_import analysis.special_functions.trigonometric.basic from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
@@ -162,6 +163,17 @@ theorem pi_le_four : π ≤ 4 :=
 theorem pi_pos : 0 < π :=
   lt_of_lt_of_le (by norm_num) two_le_pi
 #align real.pi_pos Real.pi_pos
+
+namespace Mathlib.Meta.Positivity
+open Lean.Meta Qq
+
+/-- Extension for the `positivity` tactic: `π` is always positive. -/
+@[positivity π]
+def evalExp : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ _ := do
+  pure (.positive (q(Real.pi_pos) : Lean.Expr))
+
+end Mathlib.Meta.Positivity
+
 
 theorem pi_ne_zero : π ≠ 0 :=
   ne_of_gt pi_pos
@@ -520,7 +532,7 @@ theorem sin_ne_zero_iff {x : ℝ} : sin x ≠ 0 ↔ ∀ n : ℤ, (n : ℝ) * π 
 
 theorem sin_eq_zero_iff_cos_eq {x : ℝ} : sin x = 0 ↔ cos x = 1 ∨ cos x = -1 := by
   rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq x, sq, sq, ← sub_eq_iff_eq_add, sub_self]
-  exact ⟨fun h => by rw [h, MulZeroClass.mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
+  exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
 #align real.sin_eq_zero_iff_cos_eq Real.sin_eq_zero_iff_cos_eq
 
 theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * π) = x :=
@@ -1098,7 +1110,7 @@ open Real
 
 theorem sin_eq_zero_iff_cos_eq {z : ℂ} : sin z = 0 ↔ cos z = 1 ∨ cos z = -1 := by
   rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, ← sub_eq_iff_eq_add, sub_self]
-  exact ⟨fun h => by rw [h, MulZeroClass.mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
+  exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
 #align complex.sin_eq_zero_iff_cos_eq Complex.sin_eq_zero_iff_cos_eq
 
 @[simp]

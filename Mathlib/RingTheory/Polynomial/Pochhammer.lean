@@ -119,7 +119,6 @@ theorem pochhammer_succ_comp_X_add_one (n : ℕ) :
       pochhammer ℕ (n + 1) + (n + 1) * (pochhammer ℕ n).comp (X + 1)
     by simpa [map_comp] using congr_arg (Polynomial.map (Nat.castRingHom S)) this
   nth_rw 2 [pochhammer_succ_left]
-  simp only
   rw [← add_mul, pochhammer_succ_right ℕ n, mul_comp, mul_comm, add_comp, X_comp, nat_cast_comp,
     add_comm, ← add_assoc]
   ring

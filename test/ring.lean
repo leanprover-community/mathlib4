@@ -1,6 +1,8 @@
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
+set_option autoImplicit true
+
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real

@@ -74,7 +74,7 @@ The uniform space axioms ask the filter `𝓤 X` to satisfy the following:
 These three axioms are stated more abstractly in the definition below, in terms of
 operations on filters, without directly manipulating entourages.
 
-## Main definitions
+## Main definitions
 
 * `UniformSpace X` is a uniform space structure on a type `X`
 * `UniformContinuous f` is a predicate saying a function `f : α → β` between uniform spaces
@@ -288,10 +288,10 @@ def UniformSpace.Core.toTopologicalSpace {α : Type u} (u : UniformSpace.Core α
     filter_upwards [hs t ts x xt] with p ph h using⟨t, ts, ph h⟩
 #align uniform_space.core.to_topological_space UniformSpace.Core.toTopologicalSpace
 
-theorem UniformSpace.core_eq :
+theorem UniformSpace.Core.ext :
     ∀ {u₁ u₂ : UniformSpace.Core α}, u₁.uniformity = u₂.uniformity → u₁ = u₂
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
-#align uniform_space.core_eq UniformSpace.core_eq
+#align uniform_space.core_eq UniformSpace.Core.ext
 
 -- the topological structure is embedded in the uniform structure
 -- to avoid instance diamond issues. See Note [forgetful inheritance].
@@ -338,7 +338,7 @@ def UniformSpace.ofCoreEq {α : Type u} (u : UniformSpace.Core α) (t : Topologi
 
 theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
     u.toCore.toTopologicalSpace = u.toTopologicalSpace :=
-  topologicalSpace_eq <| funext fun s => propext (UniformSpace.isOpen_uniformity s).symm
+  TopologicalSpace.ext <| funext fun s => propext (UniformSpace.isOpen_uniformity s).symm
 #align uniform_space.to_core_to_topological_space UniformSpace.toCore_toTopologicalSpace
 
 -- porting note: todo: use this as the main definition?
@@ -358,19 +358,23 @@ def uniformity (α : Type u) [UniformSpace α] : Filter (α × α) :=
 #align uniformity uniformity
 
 /-- Notation for the uniformity filter with respect to a non-standard `UniformSpace` instance. -/
-scoped[Topology] notation "𝓤[" u "]" => @uniformity _ u
+scoped[Uniformity] notation "𝓤[" u "]" => @uniformity _ u
 
 @[ext]
-theorem uniformSpace_eq : ∀ {u₁ u₂ : UniformSpace α}, 𝓤[u₁] = 𝓤[u₂] → u₁ = u₂
+protected theorem UniformSpace.ext : ∀ {u₁ u₂ : UniformSpace α}, 𝓤[u₁] = 𝓤[u₂] → u₁ = u₂
   | .mk' t₁ u₁ o₁, .mk' t₂ u₂ o₂, h => by
-    obtain rfl : u₁ = u₂ := UniformSpace.core_eq h
-    obtain rfl : t₁ = t₂ := topologicalSpace_eq <| funext fun s => by rw [o₁, o₂]
+    obtain rfl : u₁ = u₂ := UniformSpace.Core.ext h
+    obtain rfl : t₁ = t₂ := TopologicalSpace.ext <| funext fun s => by rw [o₁, o₂]
     rfl
-#align uniform_space_eq uniformSpace_eq
+#align uniform_space_eq UniformSpace.ext
+
+protected theorem UniformSpace.ext_iff {u₁ u₂ : UniformSpace α} :
+    u₁ = u₂ ↔ ∀ s, s ∈ 𝓤[u₁] ↔ s ∈ 𝓤[u₂] :=
+  ⟨fun h _ => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
 
 theorem UniformSpace.ofCoreEq_toCore (u : UniformSpace α) (t : TopologicalSpace α)
     (h : t = u.toCore.toTopologicalSpace) : UniformSpace.ofCoreEq u.toCore t h = u :=
-  uniformSpace_eq rfl
+  UniformSpace.ext rfl
 #align uniform_space.of_core_eq_to_core UniformSpace.ofCoreEq_toCore
 
 /-- Replace topology in a `UniformSpace` instance with a propositionally (but possibly not
@@ -607,7 +611,7 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
 #align comp_comp_symm_mem_uniformity_sets comp_comp_symm_mem_uniformity_sets
 
 /-!
-### Balls in uniform spaces
+### Balls in uniform spaces
 -/
 
 /-- The ball around `(x : β)` with respect to `(V : Set (β × β))`. Intended to be
@@ -1092,7 +1096,7 @@ def UniformContinuous [UniformSpace β] (f : α → β) :=
 #align uniform_continuous UniformContinuous
 
 /-- Notation for uniform continuity with respect to non-standard `UniformSpace` instances. -/
-scoped[Topology] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformContinuous _ _ u₁ u₂
+scoped[Uniformity] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformContinuous _ _ u₁ u₂
 
 /-- A function `f : α → β` is *uniformly continuous* on `s : Set α` if `(f x, f y)` tends to
 the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`.
@@ -1159,7 +1163,7 @@ open uniformity
 section Constructions
 
 instance : PartialOrder (UniformSpace α) :=
-  PartialOrder.lift (fun u => 𝓤[u]) fun _ _ => uniformSpace_eq
+  PartialOrder.lift (fun u => 𝓤[u]) fun _ _ => UniformSpace.ext
 
 instance : InfSet (UniformSpace α) :=
   ⟨fun s =>
@@ -1282,7 +1286,7 @@ theorem UniformSpace.comap_comap {α β γ} {uγ : UniformSpace γ} {f : α → 
 
 theorem UniformSpace.comap_inf {α γ} {u₁ u₂ : UniformSpace γ} {f : α → γ} :
     (u₁ ⊓ u₂).comap f = u₁.comap f ⊓ u₂.comap f :=
-  uniformSpace_eq Filter.comap_inf
+  UniformSpace.ext Filter.comap_inf
 #align uniform_space.comap_inf UniformSpace.comap_inf
 
 theorem UniformSpace.comap_iInf {ι α γ} {u : ι → UniformSpace γ} {f : α → γ} :
@@ -1424,7 +1428,7 @@ end UniformContinuousInfi
 /-- A uniform space with the discrete uniformity has the discrete topology. -/
 theorem discreteTopology_of_discrete_uniformity [hα : UniformSpace α] (h : uniformity α = 𝓟 idRel) :
     DiscreteTopology α :=
-  ⟨(uniformSpace_eq h.symm : ⊥ = hα) ▸ rfl⟩
+  ⟨(UniformSpace.ext h.symm : ⊥ = hα) ▸ rfl⟩
 #align discrete_topology_of_discrete_uniformity discreteTopology_of_discrete_uniformity
 
 instance : UniformSpace Empty := ⊥

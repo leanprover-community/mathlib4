@@ -37,7 +37,7 @@ theorem map_eq_C_mul_X_pow_of_forall_coeff_mem {f : R[X]} {P : Ideal R}
     · simp [hf0]
     rcases lt_trichotomy (n : WithBot ℕ) (degree f) with (h | h | h)
     · erw [coeff_map, eq_zero_iff_mem.2 (hfP n h), coeff_C_mul, coeff_X_pow, if_neg,
-        MulZeroClass.mul_zero]
+        mul_zero]
       rintro rfl
       exact not_lt_of_ge degree_le_natDegree h
     · have : natDegree f = n := natDegree_eq_of_degree_eq_some h.symm
@@ -67,7 +67,7 @@ theorem eval_zero_mem_ideal_of_eq_mul_X_pow {n : ℕ} {P : Ideal R} {q : R[X]}
   rw [← coeff_zero_eq_eval_zero, ← eq_zero_iff_mem, ← coeff_map, hq,
   --Porting note: why is this lemma required twice?
     coeff_zero_eq_eval_zero, coeff_zero_eq_eval_zero,
-    eval_mul, eval_pow, eval_X, zero_pow hn0, MulZeroClass.mul_zero]
+    eval_mul, eval_pow, eval_X, zero_pow hn0, mul_zero]
 set_option linter.uppercaseLean3 false in
 #align polynomial.eisenstein_criterion_aux.eval_zero_mem_ideal_of_eq_mul_X_pow Polynomial.EisensteinCriterionAux.eval_zero_mem_ideal_of_eq_mul_X_pow
 
@@ -112,9 +112,9 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
           (eval_zero_mem_ideal_of_eq_mul_X_pow hq hn0)
     have hpql0 : (mk P) (p * q).leadingCoeff ≠ 0 := by rwa [Ne.def, eq_zero_iff_mem]
     have hp0 : p ≠ 0 := fun h => by
-      simp_all only [MulZeroClass.zero_mul, eq_self_iff_true, not_true, Ne.def]
+      simp_all only [zero_mul, eq_self_iff_true, not_true, Ne.def]
     have hq0 : q ≠ 0 := fun h => by
-      simp_all only [eq_self_iff_true, not_true, Ne.def, MulZeroClass.mul_zero]
+      simp_all only [eq_self_iff_true, not_true, Ne.def, mul_zero]
     have hbc0 : degree b = 0 ∧ degree c = 0 := by
       apply_fun degree at hbc
       rwa [degree_C hpql0, degree_mul, eq_comm, Nat.WithBot.add_eq_zero_iff] at hbc

@@ -65,7 +65,7 @@ def toFunAlgHom : A ⊗[R] Matrix n n R →ₐ[R] Matrix n n A :=
   algHomOfLinearMapTensorProduct (toFunLinear R A n)
     (by
       intros
-      simp_rw [toFunLinear, lift.tmul, toFunBilinear_apply, mul_eq_mul, Matrix.map_mul]
+      simp_rw [toFunLinear, lift.tmul, toFunBilinear_apply, Matrix.map_mul]
       ext
       dsimp
       simp_rw [Matrix.mul_apply, Matrix.smul_apply, Matrix.map_apply, smul_eq_mul, Finset.mul_sum,

@@ -517,7 +517,7 @@ section TacticInterlude
 -- porting note: reimplemented the `frac_tac` and `smul_tac` as close to the originals as I could
 /-- Solve equations for `RatFunc K` by working in `FractionRing K[X]`. -/
 macro "frac_tac" : tactic => `(tactic| repeat (rintro (⟨⟩ : RatFunc _)) <;>
-  simp only [← ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_sub,
+  try simp only [← ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_sub,
     ← ofFractionRing_neg, ← ofFractionRing_one, ← ofFractionRing_mul, ← ofFractionRing_div,
     ← ofFractionRing_inv,
     add_assoc, zero_add, add_zero, mul_assoc, mul_zero, mul_one, mul_add, inv_zero,
@@ -1374,7 +1374,7 @@ theorem num_mul_denom_add_denom_mul_num_ne_zero {x y : RatFunc K} (hxy : x + y �
     x.num * y.denom + x.denom * y.num ≠ 0 := by
   intro h_zero
   have h := num_denom_add x y
-  rw [h_zero, MulZeroClass.zero_mul] at h
+  rw [h_zero, zero_mul] at h
   exact (mul_ne_zero (num_ne_zero hxy) (mul_ne_zero x.denom_ne_zero y.denom_ne_zero)) h
 #align ratfunc.num_mul_denom_add_denom_mul_num_ne_zero RatFunc.num_mul_denom_add_denom_mul_num_ne_zero
 

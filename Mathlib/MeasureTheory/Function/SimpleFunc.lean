@@ -1070,7 +1070,7 @@ theorem restrict_lintegral (f : α →ₛ ℝ≥0∞) {s : Set α} (hs : Measura
     _ = ∑ r in f.range, r * μ (f ⁻¹' {r} ∩ s) :=
       Finset.sum_congr rfl <|
         forall_range_iff.2 fun b =>
-          if hb : f b = 0 then by simp only [hb, MulZeroClass.zero_mul]
+          if hb : f b = 0 then by simp only [hb, zero_mul]
           else by rw [restrict_preimage_singleton _ hs hb, inter_comm]
 #align measure_theory.simple_func.restrict_lintegral MeasureTheory.SimpleFunc.restrict_lintegral
 
@@ -1239,7 +1239,7 @@ protected theorem add {β} [AddMonoid β] {f g : α →ₛ β} (hf : f.FinMeasSu
 protected theorem mul {β} [MonoidWithZero β] {f g : α →ₛ β} (hf : f.FinMeasSupp μ)
     (hg : g.FinMeasSupp μ) : (f * g).FinMeasSupp μ := by
   rw [mul_eq_map₂]
-  exact hf.map₂ hg (MulZeroClass.zero_mul 0)
+  exact hf.map₂ hg (zero_mul 0)
 #align measure_theory.simple_func.fin_meas_supp.mul MeasureTheory.SimpleFunc.FinMeasSupp.mul
 
 theorem lintegral_lt_top {f : α →ₛ ℝ≥0∞} (hm : f.FinMeasSupp μ) (hf : ∀ᵐ a ∂μ, f a ≠ ∞) :
@@ -1250,7 +1250,7 @@ theorem lintegral_lt_top {f : α →ₛ ℝ≥0∞} (hm : f.FinMeasSupp μ) (hf 
     simp [Set.preimage, hf]
   · by_cases ha0 : a = 0
     · subst a
-      rwa [MulZeroClass.zero_mul]
+      rwa [zero_mul]
     · exact mul_ne_top ha (finMeasSupp_iff.1 hm _ ha0).ne
 #align measure_theory.simple_func.fin_meas_supp.lintegral_lt_top MeasureTheory.SimpleFunc.FinMeasSupp.lintegral_lt_top
 

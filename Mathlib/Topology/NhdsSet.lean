@@ -80,13 +80,21 @@ theorem principal_le_nhdsSet : 𝓟 s ≤ 𝓝ˢ s := fun _s hs =>
   (subset_interior_iff_mem_nhdsSet.mpr hs).trans interior_subset
 #align principal_le_nhds_set principal_le_nhdsSet
 
+theorem subset_of_mem_nhdsSet (h : t ∈ 𝓝ˢ s) : s ⊆ t := principal_le_nhdsSet h
+
+theorem Filter.Eventually.self_of_nhdsSet {p : α → Prop} (h : ∀ᶠ x in 𝓝ˢ s, p x) : ∀ x ∈ s, p x :=
+  principal_le_nhdsSet h
+
+nonrec theorem Filter.EventuallyEq.self_of_nhdsSet {f g : α → β} (h : f =ᶠ[𝓝ˢ s] g) : EqOn f g s :=
+  h.self_of_nhdsSet
+
 @[simp]
 theorem nhdsSet_eq_principal_iff : 𝓝ˢ s = 𝓟 s ↔ IsOpen s := by
   rw [← principal_le_nhdsSet.le_iff_eq, le_principal_iff, mem_nhdsSet_iff_forall,
     isOpen_iff_mem_nhds]
 #align nhds_set_eq_principal_iff nhdsSet_eq_principal_iff
 
-alias nhdsSet_eq_principal_iff ↔ _ IsOpen.nhdsSet_eq
+alias ⟨_, IsOpen.nhdsSet_eq⟩ := nhdsSet_eq_principal_iff
 #align is_open.nhds_set_eq IsOpen.nhdsSet_eq
 
 @[simp]
@@ -95,9 +103,7 @@ theorem nhdsSet_interior : 𝓝ˢ (interior s) = 𝓟 (interior s) :=
 #align nhds_set_interior nhdsSet_interior
 
 @[simp]
-theorem nhdsSet_singleton : 𝓝ˢ {x} = 𝓝 x := by
-  ext
-  rw [← subset_interior_iff_mem_nhdsSet, ← mem_interior_iff_mem_nhds, singleton_subset_iff]
+theorem nhdsSet_singleton : 𝓝ˢ {x} = 𝓝 x := by simp [nhdsSet]
 #align nhds_set_singleton nhdsSet_singleton
 
 theorem mem_nhdsSet_interior : s ∈ 𝓝ˢ (interior s) :=

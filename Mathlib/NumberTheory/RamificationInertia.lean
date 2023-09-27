@@ -339,7 +339,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
   have d_smul : ∀ i, A.det • a i = 0 := by
     intro i
     calc
-      A.det • a i = ∑ j, (B ⬝ A) i j • a j := ?_
+      A.det • a i = ∑ j, (B * A) i j • a j := ?_
       _ = ∑ k, B i k • ∑ j, A k j • a j := ?_
       _ = 0 := Finset.sum_eq_zero fun k _ => ?_
     · simp only [Matrix.adjugate_mul, Matrix.smul_apply, Matrix.one_apply, smul_eq_mul, ite_true,
@@ -679,7 +679,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDomain S] [IsDedekindDomain S] (hP0
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP
   simp only [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe,
-    MulZeroClass.mul_zero]
+    mul_zero]
 #align ideal.finrank_prime_pow_ramification_idx Ideal.finrank_prime_pow_ramificationIdx
 
 end FactLeComap

@@ -464,7 +464,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
   · intro h
     obtain ⟨r, hr, rfl⟩ := h.exists_nonneg_left hx
     simp only [inner_smul_right, real_inner_self_eq_norm_sq, LinearMap.map_smulₛₗ,
-      areaForm_apply_self, Algebra.id.smul_eq_mul, MulZeroClass.mul_zero, eq_self_iff_true,
+      areaForm_apply_self, Algebra.id.smul_eq_mul, mul_zero, eq_self_iff_true,
       and_true_iff]
     positivity
 #align orientation.nonneg_inner_and_area_form_eq_zero_iff_same_ray Orientation.nonneg_inner_and_areaForm_eq_zero_iff_sameRay

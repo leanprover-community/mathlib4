@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Jalex Stark
 -/
 import Mathlib.Data.Polynomial.Expand
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+import Mathlib.Data.Polynomial.Laurent
 
 #align_import linear_algebra.matrix.charpoly.coeff from "leanprover-community/mathlib"@"9745b093210e9dac443af24da9dba0f9e2b6c912"
 
@@ -22,6 +23,7 @@ We give methods for computing coefficients of the characteristic polynomial.
 - `Matrix.trace_eq_neg_charpoly_coeff` proves that the trace is the negative of the (d-1)th
   coefficient of the characteristic polynomial, where d is the dimension of the matrix.
   For a nonzero ring, this is the second-highest coefficient.
+- `Matrix.reverse_charpoly` characterises the reverse of the characteristic polynomial.
 
 -/
 
@@ -166,7 +168,7 @@ theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
     simp only [sum_apply]
     dsimp
   · simp_rw [← RingHom.map_pow, ← (scalar.commute _ _).eq]
-    simp only [coe_scalar, Matrix.one_mul, RingHom.id_apply, Pi.smul_apply, smul_eq_mul, mul_eq_mul,
+    simp only [coe_scalar, Matrix.one_mul, RingHom.id_apply, Pi.smul_apply, smul_eq_mul,
       Algebra.smul_mul_assoc]
     -- porting note: the `have` was present and unused also in the original
     --have h : ∀ x : ℕ, (fun (e : ℕ) (a : R) => r ^ e * a) x 0 = 0 := by simp
@@ -175,7 +177,7 @@ theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
     apply (Finset.sum_subset (support_subset_support_matPolyEquiv _ _ _) _).symm
     intro n _hn h'n
     rw [not_mem_support_iff] at h'n
-    simp only [h'n, MulZeroClass.zero_mul]
+    simp only [h'n, zero_mul]
     simp only [mul_zero]  -- porting note: added
 #align matrix.mat_poly_equiv_eval Matrix.matPolyEquiv_eval
 
@@ -259,3 +261,35 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
 #align coeff_charpoly_mem_ideal_pow coeff_charpoly_mem_ideal_pow
 
 end Ideal
+
+section reverse
+
+open Polynomial
+open LaurentPolynomial hiding C
+
+/-- The right hand side of the equality in this lemma statement is sometimes called the
+"characteristic power series" of a matrix.
+
+It has some advantages over the characteristic polynomial, including the fact that it can be
+extended to infinite dimensions (for appropriate operators). -/
+lemma Matrix.reverse_charpoly (M : Matrix n n R) :
+    M.charpoly.reverse = det (1 - (X : R[X]) • C.mapMatrix M) := by
+  nontriviality R
+  let t : R[T;T⁻¹] := T 1
+  let t_inv : R[T;T⁻¹] := T (-1)
+  let p : R[T;T⁻¹] := det (scalar n t - LaurentPolynomial.C.mapMatrix M)
+  let q : R[T;T⁻¹] := det (1 - scalar n t * LaurentPolynomial.C.mapMatrix M)
+  have ht : t_inv * t = 1 := by rw [← T_add, add_left_neg, T_zero]
+  have hp : toLaurentAlg M.charpoly = p := by
+    simp [charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
+  have hq : toLaurentAlg (det (1 - (X : R[X]) • C.mapMatrix M)) = q := by
+    simp [AlgHom.map_det, map_sub, map_smul']
+  suffices : t_inv ^ Fintype.card n * p = invert q
+  · apply toLaurent_injective
+    rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
+      invert.map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
+      ← mul_one (Fintype.card n : ℤ), ← T_pow, invert.map_pow, invert_T, mul_comm]
+  rw [← det_smul, smul_sub, coe_scalar, ← smul_assoc, smul_eq_mul, ht, one_smul, invert.map_det]
+  simp [map_smul']
+
+end reverse

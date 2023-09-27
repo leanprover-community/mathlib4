@@ -433,7 +433,7 @@ theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ 
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `biproduct.whisker_equiv` below.
+-- They are used by `simp` in `biproduct.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
 theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ biproduct.ι f j' = biproduct.ι f j := by
@@ -442,7 +442,7 @@ theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w :
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `biproduct.whisker_equiv` below.
+-- They are used by `simp` in `biproduct.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
 theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     biproduct.π f j ≫ eqToHom (by simp [w]) = biproduct.π f j' := by
@@ -593,16 +593,16 @@ Unfortunately there are two natural ways to define each direction of this isomor
 We give the alternative definitions as lemmas below.
 -/
 @[simps]
-def biproduct.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+def biproduct.whiskerEquiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
     [HasBiproduct f] [HasBiproduct g] : ⨁ f ≅ ⨁ g where
   hom := biproduct.desc fun j => (w j).inv ≫ biproduct.ι g (e j)
   inv := biproduct.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ biproduct.ι f _
 
-lemma biproduct.whisker_equiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
+lemma biproduct.whiskerEquiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
     (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
-    (biproduct.whisker_equiv e w).hom =
+    (biproduct.whiskerEquiv e w).hom =
       biproduct.lift fun k => biproduct.π f (e.symm k) ≫ (w _).inv ≫ eqToHom (by simp) := by
-  simp only [whisker_equiv_hom]
+  simp only [whiskerEquiv_hom]
   ext k j
   by_cases h : k = e j
   · subst h
@@ -614,11 +614,11 @@ lemma biproduct.whisker_equiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃
       simp at h
     · exact Ne.symm h
 
-lemma biproduct.whisker_equiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
+lemma biproduct.whiskerEquiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
     (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
-    (biproduct.whisker_equiv e w).inv =
+    (biproduct.whiskerEquiv e w).inv =
       biproduct.lift fun j => biproduct.π g (e j) ≫ (w j).hom := by
-  simp only [whisker_equiv_inv]
+  simp only [whiskerEquiv_inv]
   ext j k
   by_cases h : k = e j
   · subst h

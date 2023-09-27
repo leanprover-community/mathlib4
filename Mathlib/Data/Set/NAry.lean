@@ -176,6 +176,11 @@ theorem image2_eq_empty_iff : image2 f s t = ∅ ↔ s = ∅ ∨ t = ∅ := by
   simp [not_nonempty_iff_eq_empty]
 #align set.image2_eq_empty_iff Set.image2_eq_empty_iff
 
+theorem Subsingleton.image2 (hs : s.Subsingleton) (ht : t.Subsingleton) (f : α → β → γ) :
+    (image2 f s t).Subsingleton := by
+  rw [← image_prod]
+  apply (hs.prod ht).image
+
 theorem image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ image2 f s' t := by
   rintro _ ⟨a, b, ⟨h1a, h2a⟩, hb, rfl⟩
   constructor <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩

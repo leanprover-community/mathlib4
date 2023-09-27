@@ -199,6 +199,9 @@ theorem div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
   rw [div_mul_eq_mul_div, one_mul, div_mul_right _ h]
 #align div_helper div_helper
 
+theorem div_div_div_cancel_left' (a b : G₀) (hc : c ≠ 0) : c / a / (c / b) = b / a := by
+  rw [div_div_div_eq, mul_comm, mul_div_mul_right _ _ hc]
+
 end CommGroupWithZero
 
 section MonoidWithZero

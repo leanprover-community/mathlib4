@@ -270,8 +270,8 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
     rw [WellFounded.fixFEq] at h₂
     simp at h₂
     cases' h₂ with h₂ h₃
-    split at h₃ <;> simp at h₃
-    next e => subst b; refine' Or.inl ⟨h₂, e⟩
+    split at h₃
+    next e => simp at h₃; subst b; refine' Or.inl ⟨h₂, e⟩
     next e => exact Or.inr ⟨_, ⟨_, e⟩, Part.mem_assert _ h₃⟩,
    fun h => by
     simp [fix]

@@ -168,6 +168,9 @@ theorem reflect_monomial (N n : ℕ) : reflect N ((X : R[X]) ^ n) = X ^ revAt N 
   rw [← one_mul (X ^ n), ← one_mul (X ^ revAt N n), ← C_1, reflect_C_mul_X_pow]
 #align polynomial.reflect_monomial Polynomial.reflect_monomial
 
+@[simp] lemma reflect_one_X : reflect 1 (X : R[X]) = 1 := by
+  simpa using reflect_monomial 1 1 (R := R)
+
 theorem reflect_mul_induction (cf cg : ℕ) :
     ∀ N O : ℕ,
       ∀ f g : R[X],
@@ -343,6 +346,34 @@ theorem coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
   · rw [revAt_le]
     exact Nat.succ_le_iff.2 (pos_iff_ne_zero.2 hf)
 #align polynomial.coeff_one_reverse Polynomial.coeff_one_reverse
+
+@[simp] lemma reverse_C (t : R) :
+    reverse (C t) = C t := by
+  simp [reverse]
+
+@[simp] lemma reverse_mul_X (p : R[X]) : reverse (p * X) = reverse p := by
+  nontriviality R
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp
+  · simp [reverse, hp]
+
+@[simp] lemma reverse_X_mul (p : R[X]) : reverse (X * p) = reverse p := by
+  rw [commute_X p, reverse_mul_X]
+
+@[simp] lemma reverse_mul_X_pow (p : R[X]) (n : ℕ) : reverse (p * X ^ n) = reverse p := by
+  induction' n with n ih; simp
+  rw [pow_succ', ← mul_assoc, reverse_mul_X, ih]
+
+@[simp] lemma reverse_X_pow_mul (p : R[X]) (n : ℕ) : reverse (X ^ n * p) = reverse p := by
+  rw [commute_X_pow p, reverse_mul_X_pow]
+
+@[simp] lemma reverse_add_C (p : R[X]) (t : R) :
+    reverse (p + C t) = reverse p + C t * X ^ p.natDegree := by
+  simp [reverse]
+
+@[simp] lemma reverse_C_add (p : R[X]) (t : R) :
+    reverse (C t + p) = C t * X ^ p.natDegree + reverse p := by
+  rw [add_comm, reverse_add_C, add_comm]
 
 section Eval₂
 

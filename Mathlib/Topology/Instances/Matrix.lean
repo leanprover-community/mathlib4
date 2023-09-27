@@ -125,7 +125,7 @@ theorem Continuous.matrix_dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [Cont
 @[continuity]
 theorem Continuous.matrix_mul [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R]
     [ContinuousMul R] {A : X → Matrix m n R} {B : X → Matrix n p R} (hA : Continuous A)
-    (hB : Continuous B) : Continuous fun x => (A x).mul (B x) :=
+    (hB : Continuous B) : Continuous fun x => A x * B x :=
   continuous_matrix fun _ _ =>
     continuous_finset_sum _ fun _ _ => (hA.matrix_elem _ _).mul (hB.matrix_elem _ _)
 #align continuous.matrix_mul Continuous.matrix_mul

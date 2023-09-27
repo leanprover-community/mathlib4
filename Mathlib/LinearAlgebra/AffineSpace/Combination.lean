@@ -43,9 +43,6 @@ These definitions are for sums over a `Finset`; versions for a
 
 -/
 
-set_option autoImplicit true
-
-
 
 noncomputable section
 
@@ -988,7 +985,7 @@ end Finset
 
 section AffineSpace'
 
-variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- A `weightedVSub` with sum of weights 0 is in the `vectorSpan` of
 an indexed family. -/

@@ -43,7 +43,7 @@ theorem to_countable (s : Set α) [Countable s] : s.Countable :=
 #align set.to_countable Set.to_countable
 
 /-- Restate `Set.Countable` as a `Countable` instance. -/
-alias countable_coe_iff ↔ _root_.Countable.to_set Countable.to_subtype
+alias ⟨_root_.Countable.to_set, Countable.to_subtype⟩ := countable_coe_iff
 #align countable.to_set Countable.to_set
 #align set.countable.to_subtype Set.Countable.to_subtype
 
@@ -106,7 +106,7 @@ protected theorem countable_iff_exists_surjective {s : Set α} (hs : s.Nonempty)
   countable_coe_iff.symm.trans <| @countable_iff_exists_surjective s hs.to_subtype
 #align set.countable_iff_exists_surjective Set.countable_iff_exists_surjective
 
-alias Set.countable_iff_exists_surjective ↔ Countable.exists_surjective _
+alias ⟨Countable.exists_surjective, _⟩ := Set.countable_iff_exists_surjective
 #align set.countable.exists_surjective Set.Countable.exists_surjective
 
 theorem countable_univ [Countable α] : (univ : Set α).Countable :=
@@ -205,10 +205,10 @@ theorem Countable.sUnion_iff {s : Set (Set α)} (hs : s.Countable) :
     (⋃₀ s).Countable ↔ ∀ a ∈ s, (a : _).Countable := by rw [sUnion_eq_biUnion, hs.biUnion_iff]
 #align set.countable.sUnion_iff Set.Countable.sUnion_iff
 
-alias Countable.biUnion_iff ↔ _ Countable.biUnion
+alias ⟨_, Countable.biUnion⟩ := Countable.biUnion_iff
 #align set.countable.bUnion Set.Countable.biUnion
 
-alias Countable.sUnion_iff ↔ _ Countable.sUnion
+alias ⟨_, Countable.sUnion⟩ := Countable.sUnion_iff
 #align set.countable.sUnion Set.Countable.sUnion
 
 @[simp]

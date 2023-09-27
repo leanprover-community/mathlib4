@@ -375,13 +375,13 @@ theorem shiftr_neg (m n : ℤ) : shiftr m (-n) = shiftl m n := by rw [← shiftl
 
 -- Porting note: what's the correct new name?
 @[simp]
-theorem shiftl_coe_nat (m n : ℕ) : shiftl m n = Nat.shiftl m n :=
-  rfl
+theorem shiftl_coe_nat (m n : ℕ) : shiftl m n = m <<< n :=
+  by simp [shiftl]
 #align int.shiftl_coe_nat Int.shiftl_coe_nat
 
 -- Porting note: what's the correct new name?
 @[simp]
-theorem shiftr_coe_nat (m n : ℕ) : shiftr m n = Nat.shiftr m n := by cases n <;> rfl
+theorem shiftr_coe_nat (m n : ℕ) : shiftr m n = m >>> n := by cases n <;> rfl
 #align int.shiftr_coe_nat Int.shiftr_coe_nat
 
 @[simp]
@@ -390,14 +390,14 @@ theorem shiftl_negSucc (m n : ℕ) : shiftl -[m+1] n = -[Nat.shiftl' true m n+1]
 #align int.shiftl_neg_succ Int.shiftl_negSucc
 
 @[simp]
-theorem shiftr_negSucc (m n : ℕ) : shiftr -[m+1] n = -[Nat.shiftr m n+1] := by cases n <;> rfl
+theorem shiftr_negSucc (m n : ℕ) : shiftr -[m+1] n = -[m >>> n+1] := by cases n <;> rfl
 #align int.shiftr_neg_succ Int.shiftr_negSucc
 
 theorem shiftr_add : ∀ (m : ℤ) (n k : ℕ), shiftr m (n + k) = shiftr (shiftr m n) k
   | (m : ℕ), n, k => by
-    rw [shiftr_coe_nat, shiftr_coe_nat, ← Int.ofNat_add, shiftr_coe_nat, Nat.shiftr_add]
+    rw [shiftr_coe_nat, shiftr_coe_nat, ← Int.ofNat_add, shiftr_coe_nat, Nat.shiftRight_add]
   | -[m+1], n, k => by
-    rw [shiftr_negSucc, shiftr_negSucc, ← Int.ofNat_add, shiftr_negSucc, Nat.shiftr_add]
+    rw [shiftr_negSucc, shiftr_negSucc, ← Int.ofNat_add, shiftr_negSucc, Nat.shiftRight_add]
 #align int.shiftr_add Int.shiftr_add
 
 /-! ### bitwise ops -/
@@ -405,22 +405,25 @@ theorem shiftr_add : ∀ (m : ℤ) (n k : ℕ), shiftr m (n + k) = shiftr (shift
 attribute [local simp] Int.zero_div
 
 theorem shiftl_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), shiftl m (n + k) = shiftl (shiftl m n) k
-  | (m : ℕ), n, (k : ℕ) => congr_arg ofNat (Nat.shiftl_add _ _ _)
+  | (m : ℕ), n, (k : ℕ) =>
+    congr_arg ofNat (by simp [Nat.pow_add, mul_assoc])
   | -[m+1], n, (k : ℕ) => congr_arg negSucc (Nat.shiftl'_add _ _ _ _)
   | (m : ℕ), n, -[k+1] =>
-    subNatNat_elim n k.succ (fun n k i => shiftl (↑m) i = Nat.shiftr (Nat.shiftl m n) k)
+    subNatNat_elim n k.succ (fun n k i => shiftl (↑m) i = (Nat.shiftl' false m n) >>> k)
       (fun (i n : ℕ) =>
-        by dsimp; rw [← Nat.shiftl_sub, add_tsub_cancel_left]; apply Nat.le_add_right)
+        by dsimp; simp [- Nat.shiftLeft_eq, ← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
       fun i n =>
-        by dsimp; rw [add_assoc, Nat.shiftr_add, ← Nat.shiftl_sub, tsub_self] <;> rfl
+        by dsimp; simp [- Nat.shiftLeft_eq, Nat.shiftLeft_zero, Nat.shiftRight_add,
+                        ← Nat.shiftLeft_sub, shiftl]
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ
-      (fun n k i => shiftl -[m+1] i = -[Nat.shiftr (Nat.shiftl' true m n) k+1])
+      (fun n k i => shiftl -[m+1] i = -[(Nat.shiftl' true m n) >>> k+1])
       (fun i n =>
         congr_arg negSucc <| by
           rw [← Nat.shiftl'_sub, add_tsub_cancel_left]; apply Nat.le_add_right)
       fun i n =>
-      congr_arg negSucc <| by rw [add_assoc, Nat.shiftr_add, ← Nat.shiftl'_sub, tsub_self] <;> rfl
+      congr_arg negSucc <| by rw [add_assoc, Nat.shiftRight_add, ← Nat.shiftl'_sub, tsub_self]
+      <;> rfl
 #align int.shiftl_add Int.shiftl_add
 
 theorem shiftl_sub (m : ℤ) (n : ℕ) (k : ℤ) : shiftl m (n - k) = shiftr (shiftl m n) k :=
@@ -428,25 +431,25 @@ theorem shiftl_sub (m : ℤ) (n : ℕ) (k : ℤ) : shiftl m (n - k) = shiftr (sh
 #align int.shiftl_sub Int.shiftl_sub
 
 theorem shiftl_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), shiftl m n = m * ↑(2 ^ n)
-  | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (Nat.shiftl_eq_mul_pow _ _)
+  | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp)
   | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftl'_tt_eq_mul_pow _ _)
 #align int.shiftl_eq_mul_pow Int.shiftl_eq_mul_pow
 
 theorem shiftr_eq_div_pow : ∀ (m : ℤ) (n : ℕ), shiftr m n = m / ↑(2 ^ n)
-  | (m : ℕ), n => by rw [shiftr_coe_nat, Nat.shiftr_eq_div_pow _ _]; simp
+  | (m : ℕ), n => by rw [shiftr_coe_nat, Nat.shiftRight_eq_div_pow _ _]; simp
   | -[m+1], n => by
-    rw [shiftr_negSucc, negSucc_ediv, Nat.shiftr_eq_div_pow]; rfl
+    rw [shiftr_negSucc, negSucc_ediv, Nat.shiftRight_eq_div_pow]; rfl
     exact ofNat_lt_ofNat_of_lt (pow_pos (by decide) _)
 #align int.shiftr_eq_div_pow Int.shiftr_eq_div_pow
 
 theorem one_shiftl (n : ℕ) : shiftl 1 n = (2 ^ n : ℕ) :=
-  congr_arg ((↑) : ℕ → ℤ) (Nat.one_shiftl _)
+  congr_arg ((↑) : ℕ → ℤ) (by simp)
 #align int.one_shiftl Int.one_shiftl
 
 @[simp]
 theorem zero_shiftl : ∀ n : ℤ, shiftl 0 n = 0
-  | (n : ℕ) => congr_arg ((↑) : ℕ → ℤ) (Nat.zero_shiftl _)
-  | -[_+1] => congr_arg ((↑) : ℕ → ℤ) (Nat.zero_shiftr _)
+  | (n : ℕ) => congr_arg ((↑) : ℕ → ℤ) (by simp)
+  | -[_+1] => congr_arg ((↑) : ℕ → ℤ) (by simp)
 #align int.zero_shiftl Int.zero_shiftl
 
 @[simp]

@@ -148,7 +148,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   have : natDegree r ≤ 0 := by
     have hr0 : r ≠ 0 := by
       rintro rfl
-      exact ne_zero hx (MulZeroClass.mul_zero p ▸ hr)
+      exact ne_zero hx (mul_zero p ▸ hr)
     apply_fun natDegree at hr
     rw [hm.natDegree_mul' hr0] at hr
     apply Nat.le_of_add_le_add_left

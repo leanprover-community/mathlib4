@@ -156,6 +156,9 @@ in Lean 4 core.
 
 * `change t` changes the expression to `t` if the expression and `t` are definitionally equal.
 
+* `equals t => tacticSeq` changes the current expression, say `e`, to `t`, and asks you to prove
+   the equality `e = t`. (Std4)
+
 * `rw [thms...]` rewrites the expression using the given theorems. The syntax is similar to `rw`.
 
 * `erw [thms...]` rewrites the expression using the given theorems. The syntax is similar to `erw`.

@@ -1167,7 +1167,7 @@ theorem not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
 #align set.not_one_mem_div_iff Set.not_one_mem_div_iff
 #align set.not_zero_mem_sub_iff Set.not_zero_mem_sub_iff
 
-alias not_one_mem_div_iff ↔ _ _root_.Disjoint.one_not_mem_div_set
+alias ⟨_, _root_.Disjoint.one_not_mem_div_set⟩ := not_one_mem_div_iff
 #align disjoint.one_not_mem_div_set Disjoint.one_not_mem_div_set
 
 attribute [to_additive] Disjoint.one_not_mem_div_set

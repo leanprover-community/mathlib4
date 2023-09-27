@@ -544,7 +544,6 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
       map_smul' := fun (r : R) (s : S) => ?_}
     · ext
       dsimp
-      simp only [LinearMap.coe_mk, LinearMap.add_apply]
       rw [← add_smul]
     · ext x
       apply mul_smul (f r) s (g x)

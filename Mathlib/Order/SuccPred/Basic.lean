@@ -236,7 +236,7 @@ theorem lt_succ_iff_not_isMax : a < succ a ↔ ¬IsMax a :=
   ⟨not_isMax_of_lt, fun ha => (le_succ a).lt_of_not_le fun h => ha <| max_of_succ_le h⟩
 #align order.lt_succ_iff_not_is_max Order.lt_succ_iff_not_isMax
 
-alias lt_succ_iff_not_isMax ↔ _ lt_succ_of_not_isMax
+alias ⟨_, lt_succ_of_not_isMax⟩ := lt_succ_iff_not_isMax
 #align order.lt_succ_of_not_is_max Order.lt_succ_of_not_isMax
 
 theorem wcovby_succ (a : α) : a ⩿ succ a :=
@@ -345,10 +345,10 @@ theorem succ_le_succ_iff : succ a ≤ succ b ↔ a ≤ b := by simp
 theorem succ_lt_succ_iff : succ a < succ b ↔ a < b := by simp
 #align order.succ_lt_succ_iff Order.succ_lt_succ_iff
 
-alias succ_le_succ_iff ↔ le_of_succ_le_succ _
+alias ⟨le_of_succ_le_succ, _⟩ := succ_le_succ_iff
 #align order.le_of_succ_le_succ Order.le_of_succ_le_succ
 
-alias succ_lt_succ_iff ↔ lt_of_succ_lt_succ succ_lt_succ
+alias ⟨lt_of_succ_lt_succ, succ_lt_succ⟩ := succ_lt_succ_iff
 #align order.lt_of_succ_lt_succ Order.lt_of_succ_lt_succ
 #align order.succ_lt_succ Order.succ_lt_succ
 
@@ -402,7 +402,7 @@ theorem succ_eq_iff_isMax : succ a = a ↔ IsMax a :=
   ⟨fun h => max_of_succ_le h.le, fun h => h.eq_of_ge <| le_succ _⟩
 #align order.succ_eq_iff_is_max Order.succ_eq_iff_isMax
 
-alias succ_eq_iff_isMax ↔ _ _root_.IsMax.succ_eq
+alias ⟨_, _root_.IsMax.succ_eq⟩ := succ_eq_iff_isMax
 #align is_max.succ_eq IsMax.succ_eq
 
 theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
@@ -484,7 +484,7 @@ theorem succ_ne_succ_iff : succ a ≠ succ b ↔ a ≠ b :=
   succ_injective.ne_iff
 #align order.succ_ne_succ_iff Order.succ_ne_succ_iff
 
-alias succ_ne_succ_iff ↔ _ succ_ne_succ
+alias ⟨_, succ_ne_succ⟩ := succ_ne_succ_iff
 #align order.succ_ne_succ Order.succ_ne_succ
 
 theorem lt_succ_iff_eq_or_lt : a < succ b ↔ a = b ∨ a < b :=
@@ -619,7 +619,7 @@ theorem pred_lt_iff_not_isMin : pred a < a ↔ ¬IsMin a :=
   ⟨not_isMin_of_lt, fun ha => (pred_le a).lt_of_not_le fun h => ha <| min_of_le_pred h⟩
 #align order.pred_lt_iff_not_is_min Order.pred_lt_iff_not_isMin
 
-alias pred_lt_iff_not_isMin ↔ _ pred_lt_of_not_isMin
+alias ⟨_, pred_lt_of_not_isMin⟩ := pred_lt_iff_not_isMin
 #align order.pred_lt_of_not_is_min Order.pred_lt_of_not_isMin
 
 theorem pred_wcovby (a : α) : pred a ⩿ a :=
@@ -709,10 +709,10 @@ theorem pred_le_pred_iff : pred a ≤ pred b ↔ a ≤ b := by simp
 theorem pred_lt_pred_iff : pred a < pred b ↔ a < b := by simp
 #align order.pred_lt_pred_iff Order.pred_lt_pred_iff
 
-alias pred_le_pred_iff ↔ le_of_pred_le_pred _
+alias ⟨le_of_pred_le_pred, _⟩ := pred_le_pred_iff
 #align order.le_of_pred_le_pred Order.le_of_pred_le_pred
 
-alias pred_lt_pred_iff ↔ lt_of_pred_lt_pred pred_lt_pred
+alias ⟨lt_of_pred_lt_pred, pred_lt_pred⟩ := pred_lt_pred_iff
 #align order.lt_of_pred_lt_pred Order.lt_of_pred_lt_pred
 #align order.pred_lt_pred Order.pred_lt_pred
 
@@ -766,7 +766,7 @@ theorem pred_eq_iff_isMin : pred a = a ↔ IsMin a :=
   ⟨fun h => min_of_le_pred h.ge, fun h => h.eq_of_le <| pred_le _⟩
 #align order.pred_eq_iff_is_min Order.pred_eq_iff_isMin
 
-alias pred_eq_iff_isMin ↔ _ _root_.IsMin.pred_eq
+alias ⟨_, _root_.IsMin.pred_eq⟩ := pred_eq_iff_isMin
 #align is_min.pred_eq IsMin.pred_eq
 
 theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = pred a := by
@@ -831,7 +831,7 @@ theorem pred_ne_pred_iff : pred a ≠ pred b ↔ a ≠ b :=
   pred_injective.ne_iff
 #align order.pred_ne_pred_iff Order.pred_ne_pred_iff
 
-alias pred_ne_pred_iff ↔ _ pred_ne_pred
+alias ⟨_, pred_ne_pred⟩ := pred_ne_pred_iff
 #align order.pred_ne_pred Order.pred_ne_pred
 
 theorem pred_lt_iff_eq_or_lt : pred a < b ↔ a = b ∨ a < b :=

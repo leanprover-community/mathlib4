@@ -170,13 +170,13 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
           I * ⟪T (x - (I : 𝕜) • y), x - (I : 𝕜) • y⟫) /
         4 := by
   rcases@I_mul_I_ax 𝕜 _ with (h | h)
-  · simp_rw [h, MulZeroClass.zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
+  · simp_rw [h, zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
       inner_add_right, inner_sub_left, inner_sub_right, hT x, ← inner_conj_symm x (T y)]
     suffices (re ⟪T y, x⟫ : 𝕜) = ⟪T y, x⟫ by
       rw [conj_eq_iff_re.mpr this]
       ring
     · rw [← re_add_im ⟪T y, x⟫]
-      simp_rw [h, MulZeroClass.mul_zero, add_zero]
+      simp_rw [h, mul_zero, add_zero]
       norm_cast
   · simp_rw [map_add, map_sub, inner_add_left, inner_add_right, inner_sub_left, inner_sub_right,
       LinearMap.map_smul, inner_smul_left, inner_smul_right, IsROrC.conj_I, mul_add, mul_sub,

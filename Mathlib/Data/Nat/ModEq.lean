@@ -90,7 +90,7 @@ theorem modEq_iff_dvd : a ≡ b [MOD n] ↔ (n : ℤ) ∣ b - a := by
     Int.emod_eq_emod_iff_emod_sub_eq_zero, Int.dvd_iff_emod_eq_zero]
 #align nat.modeq_iff_dvd Nat.modEq_iff_dvd
 
-alias modEq_iff_dvd ↔ ModEq.dvd modEq_of_dvd
+alias ⟨ModEq.dvd, modEq_of_dvd⟩ := modEq_iff_dvd
 #align nat.modeq.dvd Nat.ModEq.dvd
 #align nat.modeq_of_dvd Nat.modEq_of_dvd
 

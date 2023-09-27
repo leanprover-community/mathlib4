@@ -853,7 +853,7 @@ def getSimpContext (args : Syntax) (simpOnly := false) :
     TacticM Simp.Context := do
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
-  let mut { ctx, starArg } ← elabSimpArgs args (eraseLocal := false) (kind := .simp)
+  let mut { ctx, starArg } ← elabSimpArgs args[0] (eraseLocal := false) (kind := .simp)
     { simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
   unless starArg do return ctx
   let mut simpTheorems := ctx.simpTheorems

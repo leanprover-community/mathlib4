@@ -194,10 +194,10 @@ theorem right_eq_sup : b = a ⊔ b ↔ a ≤ b :=
   eq_comm.trans sup_eq_right
 #align right_eq_sup right_eq_sup
 
-alias sup_eq_left ↔ _ sup_of_le_left
+alias ⟨_, sup_of_le_left⟩ := sup_eq_left
 #align sup_of_le_left sup_of_le_left
 
-alias sup_eq_right ↔ le_of_sup_eq sup_of_le_right
+alias ⟨le_of_sup_eq, sup_of_le_right⟩ := sup_eq_right
 #align sup_of_le_right sup_of_le_right
 #align le_of_sup_eq le_of_sup_eq
 
@@ -451,11 +451,11 @@ theorem right_eq_inf : b = a ⊓ b ↔ b ≤ a :=
   eq_comm.trans inf_eq_right
 #align right_eq_inf right_eq_inf
 
-alias inf_eq_left ↔ le_of_inf_eq inf_of_le_left
+alias ⟨le_of_inf_eq, inf_of_le_left⟩ := inf_eq_left
 #align inf_of_le_left inf_of_le_left
 #align le_of_inf_eq le_of_inf_eq
 
-alias inf_eq_right ↔ _ inf_of_le_right
+alias ⟨_, inf_of_le_right⟩ := inf_eq_right
 #align inf_of_le_right inf_of_le_right
 
 attribute [simp] inf_of_le_left inf_of_le_right

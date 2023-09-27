@@ -287,7 +287,7 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T]
     rw [map_zero]
     apply hx
     rw [← (map_units S s).mul_left_inj, mul_assoc, e, ← map_mul, hz, map_zero,
-      MulZeroClass.zero_mul]
+      zero_mul]
 #align is_fraction_ring.is_fraction_ring_of_is_localization IsFractionRing.isFractionRing_of_isLocalization
 
 theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) [CommRing S]

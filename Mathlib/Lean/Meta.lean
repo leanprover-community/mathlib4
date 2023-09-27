@@ -7,7 +7,7 @@ import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 import Std.Data.Option.Basic
-import Std.Data.List.Basic
+import Std.Data.List.Count
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
@@ -137,7 +137,7 @@ def getLocalHyps [Monad m] [MonadLCtx m] : m (Array Expr) := do
 /-- Count how many local hypotheses appear in an expression. -/
 def countLocalHypsUsed [Monad m] [MonadLCtx m] [MonadMCtx m] (e : Expr) : m Nat := do
   let e' ← instantiateMVars e
-  return (← getLocalHyps).toList.countp fun h => h.occurs e'
+  return (← getLocalHyps).toList.countP fun h => h.occurs e'
 
 /--
 Given a monadic function `F` that takes a type and a term of that type and produces a new term,

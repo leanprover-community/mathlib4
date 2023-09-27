@@ -6,6 +6,7 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Tactic.RestateAxiom
+import Mathlib.Tactic.PPWithUniv
 
 #align_import category_theory.category.basic from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
@@ -91,6 +92,7 @@ namespace CategoryTheory
 
 /-- A preliminary structure on the way to defining a category,
 containing the data, but none of the axioms. -/
+@[pp_with_univ]
 class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v + 1) where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
@@ -149,6 +151,7 @@ specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallC
 
 See <https://stacks.math.columbia.edu/tag/0014>.
 -/
+@[pp_with_univ]
 class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop_cat

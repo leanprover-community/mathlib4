@@ -194,7 +194,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
 -- Porting note: `heval` added since now Lean wants the proof explicitly in several places.
   have heval : eval₂ (algebraMap F D) (AdjoinRoot.root q) (minpoly F x) = 0 := by
     rw [algebraMap_eq F E D, ← eval₂_map, hr, AdjoinRoot.algebraMap_eq, eval₂_mul,
-      AdjoinRoot.eval₂_root, MulZeroClass.zero_mul]
+      AdjoinRoot.eval₂_root, zero_mul]
   letI : Algebra C D :=
     RingHom.toAlgebra (AdjoinRoot.lift (algebraMap F D) (AdjoinRoot.root q) heval)
   letI : Algebra C E := RingHom.toAlgebra (AdjoinRoot.lift (algebraMap F E) x (minpoly.aeval F x))

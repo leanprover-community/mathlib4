@@ -557,6 +557,7 @@ def Resp.Equiv {n} (a b : Resp n) : Prop :=
   Arity.Equiv a.1 b.1
 #align pSet.resp.equiv PSet.Resp.Equiv
 
+@[refl]
 protected theorem Resp.Equiv.refl {n} (a : Resp n) : Resp.Equiv a a :=
   a.2
 #align pSet.resp.equiv.refl PSet.Resp.Equiv.refl
@@ -568,10 +569,12 @@ protected theorem Resp.Equiv.euc :
     @Resp.Equiv.euc n (a.f x) (b.f y) (c.f y) (hab _ _ h) (hcb _ _ <| PSet.Equiv.refl y)
 #align pSet.resp.equiv.euc PSet.Resp.Equiv.euc
 
+@[symm]
 protected theorem Resp.Equiv.symm {n} {a b : Resp n} : Resp.Equiv a b → Resp.Equiv b a :=
   (Resp.Equiv.refl b).euc
 #align pSet.resp.equiv.symm PSet.Resp.Equiv.symm
 
+@[trans]
 protected theorem Resp.Equiv.trans {n} {x y z : Resp n} (h1 : Resp.Equiv x y)
     (h2 : Resp.Equiv y z) : Resp.Equiv x z :=
   h1.euc h2.symm
@@ -1417,7 +1420,7 @@ theorem hereditarily_iff : Hereditarily p x ↔ p x ∧ ∀ y ∈ x, Hereditaril
   rw [← Hereditarily]
 #align Set.hereditarily_iff ZFSet.hereditarily_iff
 
-alias hereditarily_iff ↔ Hereditarily.def _
+alias ⟨Hereditarily.def, _⟩ := hereditarily_iff
 #align Set.hereditarily.def ZFSet.Hereditarily.def
 
 theorem Hereditarily.self (h : x.Hereditarily p) : p x :=

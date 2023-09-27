@@ -122,7 +122,7 @@ theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
   (h.trans_le le_top).ne
 #align ne_top_of_lt ne_top_of_lt
 
-alias ne_top_of_lt ← LT.lt.ne_top
+alias LT.lt.ne_top := ne_top_of_lt
 
 end Preorder
 
@@ -146,10 +146,10 @@ theorem not_isTop_iff_ne_top : ¬IsTop a ↔ a ≠ ⊤ :=
   isTop_iff_eq_top.not
 #align not_is_top_iff_ne_top not_isTop_iff_ne_top
 
-alias isMax_iff_eq_top ↔ IsMax.eq_top _
+alias ⟨IsMax.eq_top, _⟩ := isMax_iff_eq_top
 #align is_max.eq_top IsMax.eq_top
 
-alias isTop_iff_eq_top ↔ IsTop.eq_top _
+alias ⟨IsTop.eq_top, _⟩ := isTop_iff_eq_top
 #align is_top.eq_top IsTop.eq_top
 
 @[simp]
@@ -328,7 +328,7 @@ theorem ne_bot_of_gt (h : a < b) : b ≠ ⊥ :=
   (bot_le.trans_lt h).ne'
 #align ne_bot_of_gt ne_bot_of_gt
 
-alias ne_bot_of_gt ← LT.lt.ne_bot
+alias LT.lt.ne_bot := ne_bot_of_gt
 
 end Preorder
 
@@ -352,10 +352,10 @@ theorem not_isBot_iff_ne_bot : ¬IsBot a ↔ a ≠ ⊥ :=
   isBot_iff_eq_bot.not
 #align not_is_bot_iff_ne_bot not_isBot_iff_ne_bot
 
-alias isMin_iff_eq_bot ↔ IsMin.eq_bot _
+alias ⟨IsMin.eq_bot, _⟩ := isMin_iff_eq_bot
 #align is_min.eq_bot IsMin.eq_bot
 
-alias isBot_iff_eq_bot ↔ IsBot.eq_bot _
+alias ⟨IsBot.eq_bot, _⟩ := isBot_iff_eq_bot
 #align is_bot.eq_bot IsBot.eq_bot
 
 @[simp]
@@ -623,10 +623,9 @@ section SemilatticeInf
 
 variable [SemilatticeInf α]
 
--- Porting note: was `hP.dual_left`
 theorem exists_le_and_iff_exists {P : α → Prop} {x₀ : α} (hP : Antitone P) :
     (∃ x, x ≤ x₀ ∧ P x) ↔ ∃ x, P x :=
-  exists_ge_and_iff_exists <| Antitone.dual_left hP
+  exists_ge_and_iff_exists <| hP.dual_left
 #align exists_le_and_iff_exists exists_le_and_iff_exists
 
 end SemilatticeInf

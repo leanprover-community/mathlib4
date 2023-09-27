@@ -2076,6 +2076,22 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 #align subgroup.center_to_submonoid Subgroup.center_toSubmonoid
 #align add_subgroup.center_to_add_submonoid AddSubgroup.center_toAddSubmonoid
 
+/-- For a group with zero, the center of the units is the same as the units of the center. -/
+@[simps! apply_val_coe symm_apply_coe_val]
+def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
+    Subgroup.center (G₀ˣ) ≃* (Submonoid.center G₀)ˣ where
+  toFun := MonoidHom.toHomUnits <|
+    { toFun := fun u ↦ ⟨(u : G₀ˣ), fun r ↦ by
+        rcases eq_or_ne r 0 with (rfl | hr)
+        · rw [mul_zero, zero_mul]
+        exact congrArg Units.val <| u.2 <| Units.mk0 r hr⟩
+      map_one' := rfl
+      map_mul' := fun _ _ ↦ rfl }
+  invFun u := unitsCenterToCenterUnits G₀ u
+  left_inv _ := by ext; rfl
+  right_inv _ := by ext; rfl
+  map_mul' := map_mul _
+
 variable {G}
 
 @[to_additive]
@@ -2887,6 +2903,12 @@ instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=
 #align monoid_hom.normal_ker MonoidHom.normal_ker
 #align add_monoid_hom.normal_ker AddMonoidHom.normal_ker
 
+@[to_additive (attr := simp)]
+lemma ker_fst : ker (fst G G') = .prod ⊥ ⊤ := SetLike.ext fun _ => (and_true_iff _).symm
+
+@[to_additive (attr := simp)]
+lemma ker_snd : ker (snd G G') = .prod ⊤ ⊥ := SetLike.ext fun _ => (true_and_iff _).symm
+
 end Ker
 
 section EqLocus
@@ -3622,7 +3644,7 @@ theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgr
 @[to_additive "Elements of disjoint, normal subgroups commute."]
 theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Normal) (hH₂ : H₂.Normal)
     -- Porting note: Goal was `Commute x y`. Removed ambiguity.
-    (hdis : Disjoint H₁ H₂) (x y : G) (hx : x ∈ H₁) (hy : y ∈ H₂) : _root_.Commute x y := by
+    (hdis : Disjoint H₁ H₂) (x y : G) (hx : x ∈ H₁) (hy : y ∈ H₂) : Commute x y := by
   suffices x * y * x⁻¹ * y⁻¹ = 1 by
     show x * y = y * x
     · rw [mul_assoc, mul_eq_one_iff_eq_inv] at this

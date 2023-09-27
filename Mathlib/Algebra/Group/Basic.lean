@@ -814,10 +814,10 @@ theorem div_eq_one : a / b = 1 ↔ a = b :=
 #align div_eq_one div_eq_one
 #align sub_eq_zero sub_eq_zero
 
-alias div_eq_one ↔ _ div_eq_one_of_eq
+alias ⟨_, div_eq_one_of_eq⟩ := div_eq_one
 #align div_eq_one_of_eq div_eq_one_of_eq
 
-alias sub_eq_zero ↔ _ sub_eq_zero_of_eq
+alias ⟨_, sub_eq_zero_of_eq⟩ := sub_eq_zero
 #align sub_eq_zero_of_eq sub_eq_zero_of_eq
 
 @[to_additive]

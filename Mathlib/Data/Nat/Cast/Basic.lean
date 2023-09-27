@@ -198,7 +198,7 @@ theorem coe_nat_dvd [Semiring α] {m n : ℕ} (h : m ∣ n) : (m : α) ∣ (n : 
   map_dvd (Nat.castRingHom α) h
 #align nat.coe_nat_dvd Nat.coe_nat_dvd
 
-alias coe_nat_dvd ← _root_.Dvd.dvd.natCast
+alias _root_.Dvd.dvd.natCast := coe_nat_dvd
 
 end Nat
 

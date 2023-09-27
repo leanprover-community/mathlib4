@@ -324,7 +324,7 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   · simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
       eq_self_iff_true]
   · intro i _hi hi0
-    simp only [onePoly, if_neg hi0, zero_pow (pow_pos hp.1.pos _), MulZeroClass.mul_zero,
+    simp only [onePoly, if_neg hi0, zero_pow (pow_pos hp.1.pos _), mul_zero,
       AlgHom.map_pow, bind₁_X_right, AlgHom.map_mul]
   · rw [Finset.mem_range]
     -- porting note: was `decide`
@@ -449,7 +449,7 @@ end IsPoly₂
 attribute [ghost_simps] AlgHom.map_zero AlgHom.map_one AlgHom.map_add AlgHom.map_mul AlgHom.map_sub
   AlgHom.map_neg AlgHom.id_apply map_natCast RingHom.map_zero RingHom.map_one RingHom.map_mul
   RingHom.map_add RingHom.map_sub RingHom.map_neg RingHom.id_apply mul_add add_mul add_zero zero_add
-  mul_one one_mul MulZeroClass.mul_zero MulZeroClass.zero_mul Nat.succ_ne_zero add_tsub_cancel_right
+  mul_one one_mul mul_zero zero_mul Nat.succ_ne_zero add_tsub_cancel_right
   Nat.succ_eq_add_one if_true eq_self_iff_true if_false forall_true_iff forall₂_true_iff
   forall₃_true_iff
 

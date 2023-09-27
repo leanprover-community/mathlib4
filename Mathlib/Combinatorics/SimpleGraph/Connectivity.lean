@@ -1644,7 +1644,7 @@ theorem map_isTrail_iff_of_injective (hinj : Function.Injective f) :
     rw [← Sym2.map_pair_eq, edges_map, ← List.mem_map_of_injective (Sym2.map.injective hinj)]
 #align simple_graph.walk.map_is_trail_iff_of_injective SimpleGraph.Walk.map_isTrail_iff_of_injective
 
-alias map_isTrail_iff_of_injective ↔ _ map_isTrail_of_injective
+alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
 #align simple_graph.walk.map_is_trail_of_injective SimpleGraph.Walk.map_isTrail_of_injective
 
 theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
@@ -1653,7 +1653,7 @@ theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective
     support_map, ← List.map_tail, List.nodup_map_iff hinj]
 #align simple_graph.walk.map_is_cycle_iff_of_injective SimpleGraph.Walk.map_isCycle_iff_of_injective
 
-alias map_isCycle_iff_of_injective ↔ _ map_isCycle_of_injective
+alias ⟨_, map_isCycle_of_injective⟩ := map_isCycle_iff_of_injective
 #align simple_graph.walk.map_is_cycle_of_injective SimpleGraph.Walk.map_isCycle_of_injective
 
 variable (p f)
@@ -1689,7 +1689,7 @@ theorem mapLe_isTrail {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Wal
   map_isTrail_iff_of_injective Function.injective_id
 #align simple_graph.walk.map_le_is_trail SimpleGraph.Walk.mapLe_isTrail
 
-alias mapLe_isTrail ↔ IsTrail.of_mapLe IsTrail.mapLe
+alias ⟨IsTrail.of_mapLe, IsTrail.mapLe⟩ := mapLe_isTrail
 #align simple_graph.walk.is_trail.of_map_le SimpleGraph.Walk.IsTrail.of_mapLe
 #align simple_graph.walk.is_trail.map_le SimpleGraph.Walk.IsTrail.mapLe
 
@@ -1699,7 +1699,7 @@ theorem mapLe_isPath {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk
   map_isPath_iff_of_injective Function.injective_id
 #align simple_graph.walk.map_le_is_path SimpleGraph.Walk.mapLe_isPath
 
-alias mapLe_isPath ↔ IsPath.of_mapLe IsPath.mapLe
+alias ⟨IsPath.of_mapLe, IsPath.mapLe⟩ := mapLe_isPath
 #align simple_graph.walk.is_path.of_map_le SimpleGraph.Walk.IsPath.of_mapLe
 #align simple_graph.walk.is_path.map_le SimpleGraph.Walk.IsPath.mapLe
 
@@ -1709,7 +1709,7 @@ theorem mapLe_isCycle {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk 
   map_isCycle_iff_of_injective Function.injective_id
 #align simple_graph.walk.map_le_is_cycle SimpleGraph.Walk.mapLe_isCycle
 
-alias mapLe_isCycle ↔ IsCycle.of_mapLe IsCycle.mapLe
+alias ⟨IsCycle.of_mapLe, IsCycle.mapLe⟩ := mapLe_isCycle
 #align simple_graph.walk.is_cycle.of_map_le SimpleGraph.Walk.IsCycle.of_mapLe
 #align simple_graph.walk.is_cycle.map_le SimpleGraph.Walk.IsCycle.mapLe
 
@@ -2422,6 +2422,17 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
 
 variable (G) [DecidableEq V]
 
+/-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
+Note that `u` and `v` may be the same. -/
+@[simps]
+def walkLengthTwoEquivCommonNeighbors (u v : V) :
+    {p : G.Walk u v // p.length = 2} ≃ G.commonNeighbors u v where
+  toFun p := ⟨p.val.getVert 1, match p with
+    | ⟨.cons _ (.cons _ .nil), hp⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
+  invFun w := ⟨w.prop.1.toWalk.concat w.prop.2.symm, rfl⟩
+  left_inv | ⟨.cons _ (.cons _ .nil), hp⟩ => by rfl
+  right_inv _ := rfl
+
 section LocallyFinite
 
 variable [LocallyFinite G]
@@ -2473,6 +2484,9 @@ instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.
   Fintype.ofFinset (G.finsetWalkLength n u v) fun p => by
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
 #align simple_graph.fintype_set_walk_length SimpleGraph.fintypeSetWalkLength
+
+instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length = n} :=
+  fintypeSetWalkLength G u v n
 
 theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
     {p : G.Walk u v | p.length = n}.toFinset = G.finsetWalkLength n u v := by

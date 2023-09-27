@@ -148,7 +148,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
       rw [this]
       apply tsub_lt_self hn.bot_lt
       contrapose! h₂
-      rw [Nat.eq_zero_of_le_zero h₂, MulZeroClass.zero_mul]
+      rw [Nat.eq_zero_of_le_zero h₂, zero_mul]
       exact zero_le _
     rw [← Int.natAbs_neg, neg_sub, Int.natAbs_eq_iff]
     exact Or.inl (Int.ofNat_sub h.le).symm

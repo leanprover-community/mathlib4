@@ -3,6 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Bicones
@@ -50,43 +51,6 @@ open CategoryTheory.Limits
 open Opposite
 
 namespace CategoryTheory
-
-namespace StructuredArrowCone
-
-open StructuredArrow
-
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
-
-variable {J : Type w} [SmallCategory J]
-
-variable {K : J ⥤ C} (F : C ⥤ D) (c : Cone K)
-
-/-- Given a cone `c : cone K` and a map `f : X ⟶ c.X`, we can construct a cone of structured
-arrows over `X` with `f` as the cone point. This is the underlying diagram.
--/
-@[simps]
-def toDiagram : J ⥤ StructuredArrow c.pt K where
-  obj j := StructuredArrow.mk (c.π.app j)
-  map g := StructuredArrow.homMk g
-#align category_theory.structured_arrow_cone.to_diagram CategoryTheory.StructuredArrowCone.toDiagram
-
-/-- Given a diagram of `structured_arrow X F`s, we may obtain a cone with cone point `X`. -/
-@[simps!]
-def diagramToCone {X : D} (G : J ⥤ StructuredArrow X F) : Cone (G ⋙ proj X F ⋙ F) where
-  π := { app := fun j => (G.obj j).hom }
-#align category_theory.structured_arrow_cone.diagram_to_cone CategoryTheory.StructuredArrowCone.diagramToCone
-
-/-- Given a cone `c : cone K` and a map `f : X ⟶ F.obj c.X`, we can construct a cone of structured
-arrows over `X` with `f` as the cone point.
--/
-@[simps]
-def toCone {X : D} (f : X ⟶ F.obj c.pt) :
-    Cone (toDiagram (F.mapCone c) ⋙ map f ⋙ pre _ K F) where
-  pt := mk f
-  π := { app := fun j => homMk (c.π.app j) rfl }
-#align category_theory.structured_arrow_cone.to_cone CategoryTheory.StructuredArrowCone.toCone
-
-end StructuredArrowCone
 
 section RepresentablyFlat
 
@@ -197,8 +161,6 @@ namespace PreservesFiniteLimitsOfFlat
 
 open StructuredArrow
 
-open StructuredArrowCone
-
 variable {J : Type v₁} [SmallCategory J] [FinCategory J] {K : J ⥤ C}
 
 variable (F : C ⥤ D) [RepresentablyFlat F] {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
@@ -208,12 +170,13 @@ Given a limit cone `c : cone K` and a cone `s : cone (K ⋙ F)` with `F` represe
 `s` can factor through `F.map_cone c`.
 -/
 noncomputable def lift : s.pt ⟶ F.obj c.pt :=
-  let s' := IsCofiltered.cone (toDiagram s ⋙ StructuredArrow.pre _ K F)
+  let s' := IsCofiltered.cone (s.toStructuredArrow ⋙ StructuredArrow.pre _ K F)
   s'.pt.hom ≫
     (F.map <|
       hc.lift <|
         (Cones.postcompose
-              ({ app := fun X => 𝟙 _ } : (toDiagram s ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
+              ({ app := fun X => 𝟙 _ } :
+                (s.toStructuredArrow ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
 #align category_theory.preserves_finite_limits_of_flat.lift CategoryTheory.PreservesFiniteLimitsOfFlat.lift
 
@@ -227,7 +190,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
   -- We can make two cones over the diagram of `s` via `f₁` and `f₂`.
-  let α₁ : toDiagram (F.mapCone c) ⋙ map f₁ ⟶ toDiagram s :=
+  let α₁ : (F.mapCone c).toStructuredArrow ⋙ map f₁ ⟶ s.toStructuredArrow :=
     { app := fun X => eqToHom (by simp [← h₁])
       naturality := fun j₁ j₂ φ => by
         ext
@@ -236,24 +199,25 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
         -- Asked here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20not.20using.20a.20simp.20lemma/near/353943416
         -- I'm now doing `simp, rw [Comma.eqToHom_right, Comma.eqToHom_right], simp` but
         -- I squeezed the first `simp`.
-        simp only [Functor.mapCone_pt, Functor.comp_obj, toDiagram_obj,
-          Functor.mapCone_π_app, map_mk, mk_right, Functor.comp_map, toDiagram_map, comp_right,
-          map_map_right, homMk_right]
+        simp only [Functor.mapCone_pt, Functor.comp_obj, Cone.toStructuredArrow_obj,
+          Functor.mapCone_π_app, map_mk, mk_right, Functor.comp_map, Cone.toStructuredArrow_map,
+          comp_right, map_map_right, homMk_right]
         rw [Comma.eqToHom_right, Comma.eqToHom_right] -- this is a `simp` lemma
         simp }
-  let α₂ : toDiagram (F.mapCone c) ⋙ map f₂ ⟶ toDiagram s :=
+  let α₂ : (F.mapCone c).toStructuredArrow ⋙ map f₂ ⟶ s.toStructuredArrow :=
     { app := fun X => eqToHom (by simp [← h₂])
       naturality := fun _ _ _ => by
         ext
         -- porting note: see comments above. `simp` should close this goal (and did in Lean 3)
-        simp only [Functor.mapCone_pt, Functor.comp_obj, toDiagram_obj, Functor.mapCone_π_app,
-          map_mk, mk_right, Functor.comp_map, toDiagram_map, comp_right, map_map_right, homMk_right]
+        simp only [Functor.mapCone_pt, Functor.comp_obj, Cone.toStructuredArrow_obj,
+          Functor.mapCone_π_app, map_mk, mk_right, Functor.comp_map, Cone.toStructuredArrow_map,
+          comp_right, map_map_right, homMk_right]
         rw [Comma.eqToHom_right, Comma.eqToHom_right] -- this is a `simp` lemma
         simp }
-  let c₁ : Cone (toDiagram s ⋙ pre s.pt K F) :=
-    (Cones.postcompose (whiskerRight α₁ (pre s.pt K F) : _)).obj (toCone F c f₁)
-  let c₂ : Cone (toDiagram s ⋙ pre s.pt K F) :=
-    (Cones.postcompose (whiskerRight α₂ (pre s.pt K F) : _)).obj (toCone F c f₂)
+  let c₁ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
+    (Cones.postcompose (whiskerRight α₁ (pre s.pt K F) : _)).obj (c.toStructuredArrowCone F f₁)
+  let c₂ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
+    (Cones.postcompose (whiskerRight α₂ (pre s.pt K F) : _)).obj (c.toStructuredArrowCone F f₂)
   -- The two cones can then be combined and we may obtain a cone over the two cones since
   -- `StructuredArrow s.pt F` is cofiltered.
   let c₀ := IsCofiltered.cone (biconeMk _ c₁ c₂)

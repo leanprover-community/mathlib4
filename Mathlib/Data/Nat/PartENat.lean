@@ -149,18 +149,12 @@ protected theorem casesOn {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → 
   exact PartENat.casesOn'
 #align part_enat.cases_on PartENat.casesOn
 
--- Porting note : The last instance in this file (`LinearOrderedAddCommMonoidWithTop`)
--- causes the linter to complain here because with that instance `simp` could
--- proof `top_add`. Therefore the linter has been silenced here.
-@[nolint simpNF, simp]
+-- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
 theorem top_add (x : PartENat) : ⊤ + x = ⊤ :=
   Part.ext' (false_and_iff _) fun h => h.left.elim
 #align part_enat.top_add PartENat.top_add
 
--- Porting note : The last instance in this file (`LinearOrderedAddCommMonoidWithTop`)
--- causes the linter to complain here because with that instance `simp` could
--- proof `add_top`. Therefore the linter has been silenced here.@[nolint simpNF, simp]
-@[nolint simpNF, simp]
+-- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
 theorem add_top (x : PartENat) : x + ⊤ = ⊤ := by rw [add_comm, top_add]
 #align part_enat.add_top PartENat.add_top
 
@@ -428,7 +422,7 @@ noncomputable instance lattice : Lattice PartENat :=
 noncomputable instance orderedAddCommMonoid : OrderedAddCommMonoid PartENat :=
   { PartENat.linearOrder, PartENat.addCommMonoid with
     add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
-      PartENat.casesOn c (by simp) fun c =>
+      PartENat.casesOn c (by simp [top_add]) fun c =>
         ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
           simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
 
@@ -529,7 +523,7 @@ lemma lt_coe_succ_iff_le {x : PartENat} {n : ℕ} (hx : x ≠ ⊤) : x < n.succ 
 theorem add_eq_top_iff {a b : PartENat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
   refine PartENat.casesOn a ?_ ?_
   <;> refine PartENat.casesOn b ?_ ?_
-  <;> simp
+  <;> simp [top_add, add_top]
   simp only [←Nat.cast_add, PartENat.natCast_ne_top, forall_const]
 #align part_enat.add_eq_top_iff PartENat.add_eq_top_iff
 
@@ -537,7 +531,7 @@ protected theorem add_right_cancel_iff {a b c : PartENat} (hc : c ≠ ⊤) : a +
   rcases ne_top_iff.1 hc with ⟨c, rfl⟩
   refine PartENat.casesOn a ?_ ?_
   <;> refine PartENat.casesOn b ?_ ?_
-  <;> simp [add_eq_top_iff, natCast_ne_top, @eq_comm _ (⊤ : PartENat)]
+  <;> simp [add_eq_top_iff, natCast_ne_top, @eq_comm _ (⊤ : PartENat), top_add]
   simp only [←Nat.cast_add, add_left_cancel_iff, PartENat.natCast_inj, add_comm, forall_const]
 #align part_enat.add_right_cancel_iff PartENat.add_right_cancel_iff
 

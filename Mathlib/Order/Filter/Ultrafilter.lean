@@ -128,7 +128,7 @@ theorem frequently_iff_eventually : (∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, p x 
   compl_not_mem_iff
 #align ultrafilter.frequently_iff_eventually Ultrafilter.frequently_iff_eventually
 
-alias frequently_iff_eventually ↔ _root_.Filter.Frequently.eventually _
+alias ⟨_root_.Filter.Frequently.eventually, _⟩ := frequently_iff_eventually
 #align filter.frequently.eventually Filter.Frequently.eventually
 
 theorem compl_mem_iff_not_mem : sᶜ ∈ f ↔ s ∉ f := by rw [← compl_not_mem_iff, compl_compl]
@@ -371,7 +371,7 @@ theorem exists_le (f : Filter α) [h : NeBot f] : ∃ u : Ultrafilter α, ↑u �
   ⟨ofAtom u hu, huf⟩
 #align ultrafilter.exists_le Ultrafilter.exists_le
 
-alias exists_le ← _root_.Filter.exists_ultrafilter_le
+alias _root_.Filter.exists_ultrafilter_le := exists_le
 #align filter.exists_ultrafilter_le Filter.exists_ultrafilter_le
 
 /-- Construct an ultrafilter extending a given filter.
@@ -489,14 +489,14 @@ theorem nmem_hyperfilter_of_finite {s : Set α} (hf : s.Finite) : s ∉ hyperfil
   compl_not_mem hy <| hyperfilter_le_cofinite hf.compl_mem_cofinite
 #align filter.nmem_hyperfilter_of_finite Filter.nmem_hyperfilter_of_finite
 
-alias nmem_hyperfilter_of_finite ← _root_.Set.Finite.nmem_hyperfilter
+alias _root_.Set.Finite.nmem_hyperfilter := nmem_hyperfilter_of_finite
 #align set.finite.nmem_hyperfilter Set.Finite.nmem_hyperfilter
 
 theorem compl_mem_hyperfilter_of_finite {s : Set α} (hf : Set.Finite s) : sᶜ ∈ hyperfilter α :=
   compl_mem_iff_not_mem.2 hf.nmem_hyperfilter
 #align filter.compl_mem_hyperfilter_of_finite Filter.compl_mem_hyperfilter_of_finite
 
-alias compl_mem_hyperfilter_of_finite ← _root_.Set.Finite.compl_mem_hyperfilter
+alias _root_.Set.Finite.compl_mem_hyperfilter := compl_mem_hyperfilter_of_finite
 #align set.finite.compl_mem_hyperfilter Set.Finite.compl_mem_hyperfilter
 
 theorem mem_hyperfilter_of_finite_compl {s : Set α} (hf : Set.Finite sᶜ) : s ∈ hyperfilter α :=

@@ -187,6 +187,7 @@ instance Balanced.dec : DecidablePred (@Balanced α)
     infer_instance
 #align ordnode.balanced.dec Ordnode.Balanced.dec
 
+@[symm]
 theorem BalancedSz.symm {l r : ℕ} : BalancedSz l r → BalancedSz r l :=
   Or.imp (by rw [add_comm]; exact id) And.symm
 #align ordnode.balanced_sz.symm Ordnode.BalancedSz.symm
@@ -1193,7 +1194,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
       · rw [Nat.succ_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
     rcases hm.3.1.resolve_left mm with ⟨mm₁, mm₂⟩
     cases' Nat.eq_zero_or_pos (size ml) with ml0 ml0
-    · rw [ml0, MulZeroClass.mul_zero, le_zero_iff] at mm₂
+    · rw [ml0, mul_zero, le_zero_iff] at mm₂
       rw [ml0, mm₂] at mm; cases mm (by decide)
     have : 2 * size l ≤ size ml + size mr + 1 := by
       have := Nat.mul_le_mul_left ratio lr₁

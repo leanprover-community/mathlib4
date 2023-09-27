@@ -664,7 +664,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     -- the points `y n` are nearby, and therefore they form a Cauchy sequence.
     have cauchy_y : CauchySeq y := by
       have : Tendsto (fun n => 2 * u n) atTop (𝓝 0) := by
-        simpa only [MulZeroClass.mul_zero] using u_lim.const_mul 2
+        simpa only [mul_zero] using u_lim.const_mul 2
       refine cauchySeq_of_le_tendsto_0' (fun n => 2 * u n) (fun m n hmn => ?_) this
       rcases I m n with ⟨z, zsm, zsn⟩
       calc

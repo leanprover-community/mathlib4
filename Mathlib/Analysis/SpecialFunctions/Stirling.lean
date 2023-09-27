@@ -55,7 +55,7 @@ noncomputable def stirlingSeq (n : ℕ) : ℝ :=
 
 @[simp]
 theorem stirlingSeq_zero : stirlingSeq 0 = 0 := by
-  rw [stirlingSeq, cast_zero, MulZeroClass.mul_zero, Real.sqrt_zero, MulZeroClass.zero_mul,
+  rw [stirlingSeq, cast_zero, mul_zero, Real.sqrt_zero, zero_mul,
     div_zero]
 #align stirling.stirling_seq_zero Stirling.stirlingSeq_zero
 
@@ -90,8 +90,6 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
   · ext k
     rw [← pow_mul, pow_add]
     push_cast
-    have : 2 * (k : ℝ) + 1 ≠ 0 := by norm_cast; exact succ_ne_zero (2 * k)
-    have : 2 * ((m : ℝ) + 1) + 1 ≠ 0 := by norm_cast; exact succ_ne_zero (2 * m.succ)
     field_simp
     ring
   · have h : ∀ (x : ℝ) (_ : x ≠ 0), 1 + x⁻¹ = (x + 1) / x := by
@@ -235,13 +233,7 @@ theorem stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq (n : ℕ) (hn : n ≠ 0)
   simp_rw [div_pow, mul_pow]
   rw [sq_sqrt, sq_sqrt]
   any_goals positivity
-  have : (n : ℝ) ≠ 0 := cast_ne_zero.mpr hn
-  have : exp 1 ≠ 0 := exp_ne_zero 1
-  have : ((2 * n)! : ℝ) ≠ 0 := cast_ne_zero.mpr (factorial_ne_zero (2 * n))
-  have : 2 * (n : ℝ) + 1 ≠ 0 := by norm_cast; exact succ_ne_zero (2 * n)
-  field_simp
-  simp only [mul_pow, mul_comm 2 n, mul_comm 4 n, pow_mul]
-  ring
+  field_simp; ring
 #align stirling.stirling_seq_pow_four_div_stirling_seq_pow_two_eq Stirling.stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq
 
 /-- Suppose the sequence `stirlingSeq` (defined above) has the limit `a ≠ 0`.

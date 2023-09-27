@@ -287,13 +287,13 @@ theorem isSupClosedCompact_iff_wellFounded :
   (wellFounded_characterisations α).out 2 0
 #align complete_lattice.is_sup_closed_compact_iff_well_founded CompleteLattice.isSupClosedCompact_iff_wellFounded
 
-alias wellFounded_iff_isSupFiniteCompact ↔ _ IsSupFiniteCompact.wellFounded
+alias ⟨_, IsSupFiniteCompact.wellFounded⟩ := wellFounded_iff_isSupFiniteCompact
 #align complete_lattice.is_Sup_finite_compact.well_founded CompleteLattice.IsSupFiniteCompact.wellFounded
 
-alias isSupFiniteCompact_iff_isSupClosedCompact ↔ _ IsSupClosedCompact.isSupFiniteCompact
+alias ⟨_, IsSupClosedCompact.isSupFiniteCompact⟩ := isSupFiniteCompact_iff_isSupClosedCompact
 #align complete_lattice.is_sup_closed_compact.is_Sup_finite_compact CompleteLattice.IsSupClosedCompact.isSupFiniteCompact
 
-alias isSupClosedCompact_iff_wellFounded ↔ _ _root_.WellFounded.isSupClosedCompact
+alias ⟨_, _root_.WellFounded.isSupClosedCompact⟩ := isSupClosedCompact_iff_wellFounded
 #align well_founded.is_sup_closed_compact WellFounded.isSupClosedCompact
 
 variable {α}

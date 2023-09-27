@@ -598,24 +598,34 @@ theorem prod_dvd_prod_of_subset_of_dvd [AddCommMonoid M] [CommMonoid N] {f1 f2 :
     exact h2
 #align finsupp.prod_dvd_prod_of_subset_of_dvd Finsupp.prod_dvd_prod_of_subset_of_dvd
 
-lemma indicator_eq_sum_single [AddCommMonoid M] (s : Finset α) (f : ∀ a ∈ s, M) :
+lemma indicator_eq_sum_attach_single [AddCommMonoid M] {s : Finset α} (f : ∀ a ∈ s, M) :
     indicator s f = ∑ x in s.attach, single ↑x (f x x.2) := by
   rw [← sum_single (indicator s f), sum, sum_subset (support_indicator_subset _ _), ← sum_attach]
   · refine' Finset.sum_congr rfl (fun _ _ => _)
     rw [indicator_of_mem]
   · intro i _ hi
     rw [not_mem_support_iff.mp hi, single_zero]
-#align finsupp.indicator_eq_sum_single Finsupp.indicator_eq_sum_single
+#align finsupp.indicator_eq_sum_single Finsupp.indicator_eq_sum_attach_single
+
+lemma indicator_eq_sum_single [AddCommMonoid M] (s : Finset α) (f : α → M) :
+    indicator s (fun x _ ↦ f x) = ∑ x in s, single x (f x) :=
+  (indicator_eq_sum_attach_single _).trans <| sum_attach (f := fun x ↦ single x (f x))
 
 @[to_additive (attr := simp)]
-lemma prod_indicator_index [Zero M] [CommMonoid N]
+lemma prod_indicator_index_eq_prod_attach [Zero M] [CommMonoid N]
     {s : Finset α} (f : ∀ a ∈ s, M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
     (indicator s f).prod h = ∏ x in s.attach, h ↑x (f x x.2) := by
   rw [prod_of_support_subset _ (support_indicator_subset _ _) h h_zero, ← prod_attach]
   refine' Finset.prod_congr rfl (fun _ _ => _)
   rw [indicator_of_mem]
-#align finsupp.prod_indicator_index Finsupp.prod_indicator_index
-#align finsupp.sum_indicator_index Finsupp.sum_indicator_index
+#align finsupp.prod_indicator_index Finsupp.prod_indicator_index_eq_prod_attach
+#align finsupp.sum_indicator_index Finsupp.sum_indicator_index_eq_sum_attach
+
+@[to_additive (attr := simp)]
+lemma prod_indicator_index [Zero M] [CommMonoid N]
+    {s : Finset α} (f : α → M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
+    (indicator s (fun x _ ↦ f x)).prod h = ∏ x in s, h x (f x) :=
+  (prod_indicator_index_eq_prod_attach _ h_zero).trans <| prod_attach (f := fun x ↦ h x (f x))
 
 end Finsupp
 

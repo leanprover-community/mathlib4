@@ -98,14 +98,14 @@ variable [Semiring R] [Semiring A] [Module R A]
 
 theorem reindexLinearEquiv_mul [Fintype n] [Fintype n'] (eₘ : m ≃ m') (eₙ : n ≃ n') (eₒ : o ≃ o')
     (M : Matrix m n A) (N : Matrix n o A) :
-    reindexLinearEquiv R A eₘ eₙ M ⬝ reindexLinearEquiv R A eₙ eₒ N =
-      reindexLinearEquiv R A eₘ eₒ (M ⬝ N) :=
+    reindexLinearEquiv R A eₘ eₙ M * reindexLinearEquiv R A eₙ eₒ N =
+      reindexLinearEquiv R A eₘ eₒ (M * N) :=
   submatrix_mul_equiv M N _ _ _
 #align matrix.reindex_linear_equiv_mul Matrix.reindexLinearEquiv_mul
 
 theorem mul_reindexLinearEquiv_one [Fintype n] [DecidableEq o] (e₁ : o ≃ n) (e₂ : o ≃ n')
     (M : Matrix m n A) :
-    M.mul (reindexLinearEquiv R A e₁ e₂ 1) =
+    M * (reindexLinearEquiv R A e₁ e₂ 1) =
       reindexLinearEquiv R A (Equiv.refl m) (e₁.symm.trans e₂) M :=
   haveI := Fintype.ofEquiv _ e₁.symm
   mul_submatrix_one _ _ _
@@ -145,7 +145,7 @@ theorem reindexAlgEquiv_refl : reindexAlgEquiv R (Equiv.refl m) = AlgEquiv.refl 
 #align matrix.reindex_alg_equiv_refl Matrix.reindexAlgEquiv_refl
 
 theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m R) (N : Matrix m m R) :
-    reindexAlgEquiv R e (M ⬝ N) = reindexAlgEquiv R e M ⬝ reindexAlgEquiv R e N :=
+    reindexAlgEquiv R e (M * N) = reindexAlgEquiv R e M * reindexAlgEquiv R e N :=
   (reindexAlgEquiv R e).map_mul M N
 #align matrix.reindex_alg_equiv_mul Matrix.reindexAlgEquiv_mul
 

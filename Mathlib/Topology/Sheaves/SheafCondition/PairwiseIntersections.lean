@@ -128,8 +128,7 @@ of all opens contained in some `U i`.
 instance : Functor.Final (pairwiseToOpensLeCover U) :=
   ⟨fun V =>
     isConnected_of_zigzag fun A B => by
-      rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩ <;>
-        dsimp at *
+      rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩
       · refine'
           ⟨[{   left := ⟨⟨⟩⟩
                 right := pair i i'

@@ -1157,6 +1157,18 @@ theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 
     simp [hv]
 #align finrank_span_singleton finrank_span_singleton
 
+/-- In a one-dimensional space, any vector is a multiple of any nonzero vector -/
+lemma exists_smul_eq_of_finrank_eq_one
+    (h : finrank K V = 1) {x : V} (hx : x ≠ 0) (y : V) :
+    ∃ (c : K), c • x = y := by
+  have : Submodule.span K {x} = ⊤ := by
+    have : FiniteDimensional K V := finiteDimensional_of_finrank (zero_lt_one.trans_le h.symm.le)
+    apply eq_top_of_finrank_eq
+    rw [h]
+    exact finrank_span_singleton hx
+  have : y ∈ Submodule.span K {x} := by rw [this]; trivial
+  exact mem_span_singleton.1 this
+
 theorem Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
     s.finrank K ≤ t.finrank K :=
   Submodule.finrank_mono (span_mono h)
@@ -1369,8 +1381,8 @@ theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
   Iff.rfl
 #align subalgebra.finite_dimensional_to_submodule Subalgebra.finiteDimensional_toSubmodule
 
-alias Subalgebra.finiteDimensional_toSubmodule ↔
-  FiniteDimensional.of_subalgebra_toSubmodule FiniteDimensional.subalgebra_toSubmodule
+alias ⟨FiniteDimensional.of_subalgebra_toSubmodule, FiniteDimensional.subalgebra_toSubmodule⟩ :=
+  Subalgebra.finiteDimensional_toSubmodule
 #align finite_dimensional.of_subalgebra_to_submodule FiniteDimensional.of_subalgebra_toSubmodule
 #align finite_dimensional.subalgebra_to_submodule FiniteDimensional.subalgebra_toSubmodule
 
@@ -1430,10 +1442,10 @@ theorem Subalgebra.bot_eq_top_iff_finrank_eq_one [Nontrivial E] :
     Subalgebra.finrank_eq_one_iff, eq_comm]
 #align subalgebra.bot_eq_top_iff_finrank_eq_one Subalgebra.bot_eq_top_iff_finrank_eq_one
 
-alias Subalgebra.bot_eq_top_iff_rank_eq_one ↔ _ Subalgebra.bot_eq_top_of_rank_eq_one
+alias ⟨_, Subalgebra.bot_eq_top_of_rank_eq_one⟩ := Subalgebra.bot_eq_top_iff_rank_eq_one
 #align subalgebra.bot_eq_top_of_rank_eq_one Subalgebra.bot_eq_top_of_rank_eq_one
 
-alias Subalgebra.bot_eq_top_iff_finrank_eq_one ↔ _ Subalgebra.bot_eq_top_of_finrank_eq_one
+alias ⟨_, Subalgebra.bot_eq_top_of_finrank_eq_one⟩ := Subalgebra.bot_eq_top_iff_finrank_eq_one
 #align subalgebra.bot_eq_top_of_finrank_eq_one Subalgebra.bot_eq_top_of_finrank_eq_one
 
 attribute [simp] Subalgebra.bot_eq_top_of_finrank_eq_one Subalgebra.bot_eq_top_of_rank_eq_one

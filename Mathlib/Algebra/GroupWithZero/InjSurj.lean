@@ -22,7 +22,7 @@ section MulZeroClass
 
 variable [MulZeroClass M₀] {a b : M₀}
 
-/-- Pullback a `MulZeroClass` instance along an injective function.
+/-- Pull back a `MulZeroClass` instance along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀' → M₀) (hf : Injective f)
@@ -33,7 +33,7 @@ protected def Function.Injective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀
   mul_zero a := hf <| by simp only [mul, zero, mul_zero]
 #align function.injective.mul_zero_class Function.Injective.mulZeroClass
 
-/-- Pushforward a `MulZeroClass` instance along a surjective function.
+/-- Push forward a `MulZeroClass` instance along a surjective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Surjective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀ → M₀')
@@ -49,15 +49,30 @@ end MulZeroClass
 
 section NoZeroDivisors
 
-/-- Pushforward a `NoZeroDivisors` instance along an injective function. -/
-protected theorem Function.Injective.noZeroDivisors [Mul M₀] [Zero M₀] [Mul M₀'] [Zero M₀']
-    [NoZeroDivisors M₀'] (f : M₀ → M₀') (hf : Injective f) (zero : f 0 = 0)
-    (mul : ∀ x y, f (x * y) = f x * f y) : NoZeroDivisors M₀ :=
+variable [Mul M₀] [Zero M₀] [Mul M₀'] [Zero M₀']
+  (f : M₀ → M₀') (hf : Injective f) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y)
+
+/-- Pull back a `NoZeroDivisors` instance along an injective function. -/
+protected theorem Function.Injective.noZeroDivisors [NoZeroDivisors M₀'] : NoZeroDivisors M₀ :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := fun H =>
       have : f _ * f _ = 0 := by rw [← mul, H, zero]
       (eq_zero_or_eq_zero_of_mul_eq_zero this).imp
         (fun H => hf <| by rwa [zero]) fun H => hf <| by rwa [zero] }
 #align function.injective.no_zero_divisors Function.Injective.noZeroDivisors
+
+protected theorem Function.Injective.isLeftCancelMulZero
+    [IsLeftCancelMulZero M₀'] : IsLeftCancelMulZero M₀ :=
+  { mul_left_cancel_of_ne_zero := fun Hne He => by
+      have := congr_arg f He
+      rw [mul, mul] at this
+      exact hf (mul_left_cancel₀ (fun Hfa => Hne <| hf <| by rw [Hfa, zero]) this) }
+
+protected theorem Function.Injective.isRightCancelMulZero
+    [IsRightCancelMulZero M₀'] : IsRightCancelMulZero M₀ :=
+  { mul_right_cancel_of_ne_zero := fun Hne He => by
+      have := congr_arg f He
+      rw [mul, mul] at this
+      exact hf (mul_right_cancel₀ (fun Hfa => Hne <| hf <| by rw [Hfa, zero]) this) }
 
 end NoZeroDivisors
 
@@ -65,7 +80,7 @@ section MulZeroOneClass
 
 variable [MulZeroOneClass M₀]
 
-/-- Pullback a `MulZeroOneClass` instance along an injective function.
+/-- Pull back a `MulZeroOneClass` instance along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.mulZeroOneClass [Mul M₀'] [Zero M₀'] [One M₀'] (f : M₀' → M₀)
@@ -74,7 +89,7 @@ protected def Function.Injective.mulZeroOneClass [Mul M₀'] [Zero M₀'] [One M
   { hf.mulZeroClass f zero mul, hf.mulOneClass f one mul with }
 #align function.injective.mul_zero_one_class Function.Injective.mulZeroOneClass
 
-/-- Pushforward a `MulZeroOneClass` instance along a surjective function.
+/-- Push forward a `MulZeroOneClass` instance along a surjective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Surjective.mulZeroOneClass [Mul M₀'] [Zero M₀'] [One M₀'] (f : M₀ → M₀')
@@ -87,7 +102,7 @@ end MulZeroOneClass
 
 section SemigroupWithZero
 
-/-- Pullback a `SemigroupWithZero` along an injective function.
+/-- Pull back a `SemigroupWithZero` along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.semigroupWithZero [Zero M₀'] [Mul M₀'] [SemigroupWithZero M₀]
@@ -96,7 +111,7 @@ protected def Function.Injective.semigroupWithZero [Zero M₀'] [Mul M₀'] [Sem
   { hf.mulZeroClass f zero mul, ‹Zero M₀'›, hf.semigroup f mul with }
 #align function.injective.semigroup_with_zero Function.Injective.semigroupWithZero
 
-/-- Pushforward a `SemigroupWithZero` along a surjective function.
+/-- Push forward a `SemigroupWithZero` along a surjective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Surjective.semigroupWithZero [SemigroupWithZero M₀] [Zero M₀'] [Mul M₀']
@@ -109,7 +124,7 @@ end SemigroupWithZero
 
 section MonoidWithZero
 
-/-- Pullback a `MonoidWithZero` along an injective function.
+/-- Pull back a `MonoidWithZero` along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.monoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
@@ -119,7 +134,7 @@ protected def Function.Injective.monoidWithZero [Zero M₀'] [Mul M₀'] [One M�
   { hf.monoid f one mul npow, hf.mulZeroClass f zero mul with }
 #align function.injective.monoid_with_zero Function.Injective.monoidWithZero
 
-/-- Pushforward a `MonoidWithZero` along a surjective function.
+/-- Push forward a `MonoidWithZero` along a surjective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Surjective.monoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
@@ -129,7 +144,7 @@ protected def Function.Surjective.monoidWithZero [Zero M₀'] [Mul M₀'] [One M
   { hf.monoid f one mul npow, hf.mulZeroClass f zero mul with }
 #align function.surjective.monoid_with_zero Function.Surjective.monoidWithZero
 
-/-- Pullback a `CommMonoidWithZero` along an injective function.
+/-- Pull back a `CommMonoidWithZero` along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.commMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
@@ -139,7 +154,7 @@ protected def Function.Injective.commMonoidWithZero [Zero M₀'] [Mul M₀'] [On
   { hf.commMonoid f one mul npow, hf.mulZeroClass f zero mul with }
 #align function.injective.comm_monoid_with_zero Function.Injective.commMonoidWithZero
 
-/-- Pushforward a `CommMonoidWithZero` along a surjective function.
+/-- Push forward a `CommMonoidWithZero` along a surjective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Surjective.commMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
@@ -155,7 +170,7 @@ section CancelMonoidWithZero
 
 variable [CancelMonoidWithZero M₀] {a b c : M₀}
 
-/-- Pullback a `CancelMonoidWithZero` along an injective function.
+/-- Pull back a `CancelMonoidWithZero` along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.cancelMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
@@ -175,7 +190,7 @@ section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero M₀] {a b c : M₀}
 
-/-- Pullback a `CancelCommMonoidWithZero` along an injective function.
+/-- Pull back a `CancelCommMonoidWithZero` along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.cancelCommMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
@@ -191,7 +206,7 @@ section GroupWithZero
 
 variable [GroupWithZero G₀] {a b c g h x : G₀}
 
-/-- Pullback a `GroupWithZero` along an injective function.
+/-- Pull back a `GroupWithZero` along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀'] [Div G₀']
@@ -207,7 +222,7 @@ protected def Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One G�
       erw [one, mul, inv, mul_inv_cancel ((hf.ne_iff' zero).2 hx)] }
 #align function.injective.group_with_zero Function.Injective.groupWithZero
 
-/-- Pushforward a `GroupWithZero` along a surjective function.
+/-- Push forward a `GroupWithZero` along a surjective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀'] [Div G₀']
@@ -229,7 +244,7 @@ section CommGroupWithZero
 
 variable [CommGroupWithZero G₀] {a b c d : G₀}
 
-/-- Pullback a `CommGroupWithZero` along an injective function.
+/-- Pull back a `CommGroupWithZero` along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
@@ -240,7 +255,7 @@ protected def Function.Injective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One
   { hf.groupWithZero f zero one mul inv div npow zpow, hf.commSemigroup f mul with }
 #align function.injective.comm_group_with_zero Function.Injective.commGroupWithZero
 
-/-- Pushforward a `CommGroupWithZero` along a surjective function.
+/-- Push forward a `CommGroupWithZero` along a surjective function.
 See note [reducible non-instances]. -/
 protected def Function.Surjective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
     [Div G₀'] [Pow G₀' ℕ] [Pow G₀' ℤ] (h01 : (0 : G₀') ≠ 1) (f : G₀ → G₀') (hf : Surjective f)

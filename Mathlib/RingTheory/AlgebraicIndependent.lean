@@ -194,7 +194,7 @@ theorem algebraicIndependent_subtype_range {ι} {f : ι → A} (hf : Injective f
   Iff.symm <| algebraicIndependent_equiv' (Equiv.ofInjective f hf) rfl
 #align algebraic_independent_subtype_range algebraicIndependent_subtype_range
 
-alias algebraicIndependent_subtype_range ↔ AlgebraicIndependent.of_subtype_range _
+alias ⟨AlgebraicIndependent.of_subtype_range, _⟩ := algebraicIndependent_subtype_range
 #align algebraic_independent.of_subtype_range AlgebraicIndependent.of_subtype_range
 
 theorem algebraicIndependent_image {ι} {s : Set ι} {f : ι → A} (hf : Set.InjOn f s) :

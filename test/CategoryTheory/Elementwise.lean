@@ -2,6 +2,8 @@ import Std.Tactic.GuardExpr
 import Mathlib.Tactic.CategoryTheory.Elementwise
 --import Mathlib.Algebra.Category.Mon.Basic
 
+set_option autoImplicit true
+
 namespace ElementwiseTest
 open CategoryTheory
 

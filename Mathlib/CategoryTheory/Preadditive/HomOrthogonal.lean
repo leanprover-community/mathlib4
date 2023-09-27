@@ -100,7 +100,6 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
   right_inv z := by
     ext i ⟨j, w⟩ ⟨k, ⟨⟩⟩
     simp only [eqToHom_refl, biproduct.matrix_components, Category.id_comp]
-    simp only [Set.mem_preimage, Set.mem_singleton_iff]
     split_ifs with h
     · simp
     · exfalso
@@ -146,7 +145,7 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintype α] [Fintype β]
     [Fintype γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b))
     (w : (⨁ fun b => s (g b)) ⟶ ⨁ fun c => s (h c)) (i : ι) :
-    o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i ⬝ o.matrixDecomposition z i := by
+    o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i * o.matrixDecomposition z i := by
   ext ⟨c, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
   simp only [Matrix.mul_apply, Limits.biproduct.components,

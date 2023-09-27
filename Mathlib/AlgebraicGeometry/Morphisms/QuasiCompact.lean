@@ -341,7 +341,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
       (hn i)
   dsimp at hn
   simp only [← map_mul, ← map_pow] at hn
-  rwa [MulZeroClass.mul_zero, ← mul_assoc, ← pow_add, tsub_add_cancel_of_le] at hn
+  rwa [mul_zero, ← mul_assoc, ← pow_add, tsub_add_cancel_of_le] at hn
   apply Finset.le_sup (Finset.mem_univ i)
 #align algebraic_geometry.exists_pow_mul_eq_zero_of_res_basic_open_eq_zero_of_is_compact AlgebraicGeometry.exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact
 

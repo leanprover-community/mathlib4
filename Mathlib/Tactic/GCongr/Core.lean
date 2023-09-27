@@ -349,29 +349,23 @@ partial def _root_.Lean.MVarId.gcongr
 
 open Elab Tactic
 
--- TODO remove this after https://github.com/leanprover/std4/pull/137 is merged
-def _root_.Lean.MVarId.exact (e : Expr) (g : MVarId) : MetaM Unit := do
-  let .true ← isDefEq (← g.getType) (← inferType e) | failure
-  g.checkNotAssigned `myExact
-  g.assign e
-
 /-- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive. -/
 @[gcongr_forward] def exactRefl : ForwardExt where
   eval h goal := do
     let m ← mkFreshExprMVar none
-    goal.exact (← mkAppOptM ``Eq.subst #[h, m])
+    goal.assignIfDefeq (← mkAppOptM ``Eq.subst #[h, m])
     goal.rfl
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
 @[gcongr_forward] def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.exact (← mkAppM ``le_of_lt #[h])
+  eval h goal := do goal.assignIfDefeq (← mkAppM ``le_of_lt #[h])
 
 /-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
 @[gcongr_forward] def symmExact : ForwardExt where
-  eval h goal := do (← goal.symm).exact h
+  eval h goal := do (← goal.symm).assignIfDefeq h
 
 @[gcongr_forward] def exact : ForwardExt where
-  eval := MVarId.exact
+  eval e m := m.assignIfDefeq e
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from

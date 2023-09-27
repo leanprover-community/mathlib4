@@ -246,7 +246,7 @@ theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).
       rw [mem_preimage, ← map_comp_apply, h₄, ← Category.assoc, map_comp_apply, h₃,
         ← map_comp_apply]
       apply mem_iInter.1 hx
-    · simp_rw [toPreimages_map, MapsTo.val_restrict_apply, Subtype.coe_mk]
+    · simp_rw [toPreimages_map, MapsTo.val_restrict_apply]
       rw [← Category.assoc, map_comp_apply, h₃, map_comp_apply]
 #align category_theory.functor.is_mittag_leffler.to_preimages CategoryTheory.Functor.IsMittagLeffler.toPreimages
 

@@ -160,7 +160,7 @@ theorem arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw' : ∑ 
     ∑ i in s, w i * z i = ∑ i in s, w i * x := by
       refine' sum_congr rfl fun i hi => _
       cases' eq_or_ne (w i) 0 with hwi hwi
-      · rw [hwi, MulZeroClass.zero_mul, MulZeroClass.zero_mul]
+      · rw [hwi, zero_mul, zero_mul]
       · rw [hx i hi hwi]
     _ = x := by rw [← sum_mul, hw', one_mul]
 #align real.arith_mean_weighted_of_constant Real.arith_mean_weighted_of_constant
@@ -335,7 +335,7 @@ private theorem inner_le_Lp_mul_Lp_of_norm_le_one (f g : ι → ℝ≥0) {p q : 
 private theorem inner_le_Lp_mul_Lp_of_norm_eq_zero (f g : ι → ℝ≥0) {p q : ℝ}
     (hpq : p.IsConjugateExponent q) (hf : ∑ i in s, f i ^ p = 0) :
     ∑ i in s, f i * g i ≤ (∑ i in s, f i ^ p) ^ (1 / p) * (∑ i in s, g i ^ q) ^ (1 / q) := by
-  simp only [hf, hpq.ne_zero, one_div, sum_eq_zero_iff, zero_rpow, MulZeroClass.zero_mul,
+  simp only [hf, hpq.ne_zero, one_div, sum_eq_zero_iff, zero_rpow, zero_mul,
     inv_eq_zero, Ne.def, not_false_iff, le_zero_iff, mul_eq_zero]
   intro i his
   left
