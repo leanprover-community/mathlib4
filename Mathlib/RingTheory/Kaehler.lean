@@ -537,7 +537,9 @@ theorem KaehlerDifferential.derivationQuotKerTotal_lift_comp_total :
   apply Finsupp.lhom_ext
   intro a b
   conv_rhs => rw [← Finsupp.smul_single_one a b, LinearMap.map_smul]
-  simp [KaehlerDifferential.derivationQuotKerTotal_apply]
+  simp
+  rw [KaehlerDifferential.derivationQuotKerTotal_apply]
+  rfl
 #align kaehler_differential.derivation_quot_ker_total_lift_comp_total KaehlerDifferential.derivationQuotKerTotal_lift_comp_total
 
 theorem KaehlerDifferential.kerTotal_eq :
@@ -699,4 +701,3 @@ theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
 end ExactSequence
 
 end KaehlerDifferential
-
