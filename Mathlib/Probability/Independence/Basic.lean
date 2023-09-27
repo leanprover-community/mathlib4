@@ -568,7 +568,8 @@ set_option linter.uppercaseLean3 false in
 
 theorem iIndepSets_singleton_iff {s : ι → Set Ω} :
     iIndepSets (fun i ↦ {s i}) μ ↔ ∀ t, μ (⋂ i ∈ t, s i) = ∏ i in t, μ (s i) :=
-  (iIndepSets_iff _ _).trans $ forall_congr' fun t ↦ ⟨fun h ↦ h fun _ _ ↦ mem_singleton _, fun h f hf ↦ by
+  (iIndepSets_iff _ _).trans $ forall_congr' fun t ↦ ⟨fun h ↦ h fun _ _ ↦ mem_singleton _,
+    fun h f hf ↦ by
       refine' Eq.trans _ (h.trans $ Finset.prod_congr rfl fun i hi ↦ congr_arg _ $ (hf i hi).symm)
       rw [iInter₂_congr hf]⟩
 set_option linter.uppercaseLean3 false in
