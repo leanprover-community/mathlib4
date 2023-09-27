@@ -106,10 +106,10 @@ lemma norm_integral_le_norm [IsProbabilityMeasure μ] (f : X →ᵇ E) :
   convert f.norm_integral_le_mul_norm μ
   simp only [measure_univ, ENNReal.one_toReal, one_mul]
 
-lemma bounded_range_integral
+lemma isBounded_range_integral
     {ι : Type*} (μs : ι → Measure X) [∀ i, IsProbabilityMeasure (μs i)] (f : X →ᵇ E) :
-    Metric.Bounded (Set.range (fun i ↦ ∫ x, (f x) ∂ (μs i))) := by
-  apply bounded_iff_forall_norm_le.mpr ⟨‖f‖, fun v hv ↦ ?_⟩
+    Bornology.IsBounded (Set.range (fun i ↦ ∫ x, (f x) ∂ (μs i))) := by
+  apply isBounded_iff_forall_norm_le.mpr ⟨‖f‖, fun v hv ↦ ?_⟩
   obtain ⟨i, hi⟩ := hv
   rw [← hi]
   apply f.norm_integral_le_norm (μs i)
