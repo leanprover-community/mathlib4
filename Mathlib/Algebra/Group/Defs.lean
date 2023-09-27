@@ -1190,19 +1190,24 @@ theorem Group.toDivInvMonoid_injective {G : Type*} :
 #align add_group.to_sub_neg_add_monoid_injective AddGroup.toSubNegAddMonoid_injective
 
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
-class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
+class AddCommGroup (G : Type u) extends AddCommMonoid G, AddGroup G
 #align add_comm_group AddCommGroup
 
 /-- A commutative group is a group with commutative `(*)`. -/
 @[to_additive]
-class CommGroup (G : Type u) extends Group G, CommMonoid G
+class CommGroup (G : Type u) extends CommMonoid G, Group G
 #align comm_group CommGroup
 
-attribute [to_additive existing] CommGroup.toCommMonoid
+attribute [to_additive existing] CommGroup.toGroup
 
 @[to_additive]
 theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by
-  rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
+  rintro @⟨@⟨⟩, _⟩ @⟨@⟨⟩, _⟩
+  simp [toGroup]
+  intro H
+  injection H with H
+  injection H with H
+  simp_all
 #align comm_group.to_group_injective CommGroup.toGroup_injective
 #align add_comm_group.to_add_group_injective AddCommGroup.toAddGroup_injective
 
