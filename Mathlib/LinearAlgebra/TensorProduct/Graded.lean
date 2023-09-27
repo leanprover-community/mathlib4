@@ -43,8 +43,8 @@ lemma z₂pow_add (s : ℤˣ) (x y : ZMod 2) : s ^ (x + y) = s ^ x * s ^ y := by
 
 local notation "𝒜ℬ" => (fun i : ℤ₂ × ℤ₂ => 𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i))
 -- #exit
-variable (R) {𝒜} {ℬ} in
-noncomputable irreducible_def mulAux :
+variable (R) in
+noncomputable irreducible_def mulAux1 :
     (DirectSum _ 𝒜ℬ) →ₗ[R] (DirectSum _ 𝒜ℬ) →ₗ[R] (DirectSum _ 𝒜ℬ) := by
   refine TensorProduct.curry ?_
   refine ?_ ∘ₗ (TensorProduct.directSum R 𝒜ℬ 𝒜ℬ).toLinearMap
@@ -60,24 +60,45 @@ noncomputable irreducible_def mulAux :
 open DirectSum (of)
 open GradedMonoid (GMul)
 
-
-theorem mulAux_of_tmul_of_tmul (i₁ j₁ i₂ j₂ : ℤ₂)
+@[simp]
+theorem mulAux1_of_tmul_of_tmul (i₁ j₁ i₂ j₂ : ℤ₂)
     (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
-    mulAux R (of _ (i₁, j₁) (a₁ ⊗ₜ b₁)) (of _ (i₂, j₂) (a₂ ⊗ₜ b₂)) =
+    mulAux1 R 𝒜 ℬ (of _ (i₁, j₁) (a₁ ⊗ₜ b₁)) (of _ (i₂, j₂) (a₂ ⊗ₜ b₂)) =
       (-1 : ℤˣ)^(j₁ * i₂)
         • of 𝒜ℬ (_, _) (GMul.mul a₁ a₂ ⊗ₜ GMul.mul b₁ b₂) := by
-  rw [mulAux]
+  rw [mulAux1]
   dsimp
   erw [TensorProduct.directSum_lof_tmul_lof]
   simp [DirectSum.lof_eq_of]
 
-theorem mulAux_one (x : ⨁ i : ℤ₂ × ℤ₂, 𝒜 i.1 ⊗[R] ℬ i.2) :
+set_option maxHeartbeats 4000000
+variable (R) in
+noncomputable irreducible_def mulAux :
+    letI AB := (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)
+    letI : Module R AB := TensorProduct.leftModule
+    AB →ₗ[R] AB →ₗ[R] AB := by
+  refine TensorProduct.curry ?_
+  let e := TensorProduct.directSum R 𝒜 ℬ
+  let e' := e.symm.toLinearMap
+  refine e' ∘ₗ ?_
+  refine ?_ ∘ₗ TensorProduct.map e.toLinearMap e.toLinearMap
+  exact mulAux1 R 𝒜 ℬ
+
+theorem mulAux_of_tmul_of (i₁ j₁ i₂ j₂ : ℤ₂)
+    (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
+    mulAux R (of _ i₁ a₁ ⊗ₜ of _ j₁ b₁) (of _ i₂ a₂ ⊗ₜ of _ j₂ b₂) =
+      (-1 : ℤˣ)^(j₁ * i₂)
+        • (of _ _ (GMul.mul a₁ a₂) ⊗ₜ of _ _ (GMul.mul b₁ b₂)) := by
+  simp [mulAux]
+  sorry
+
+theorem mulAux_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     mulAux R 1 x = x := sorry
 
-theorem one_mulAux (x : ⨁ i : ℤ₂ × ℤ₂, 𝒜 i.1 ⊗[R] ℬ i.2) :
+theorem one_mulAux (x : ⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     mulAux R x 1 = x := sorry
 
-theorem mulAux_assoc (x y z : ⨁ i : ℤ₂ × ℤ₂, 𝒜 i.1 ⊗[R] ℬ i.2) :
+theorem mulAux_assoc (x y z : ⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     mulAux R (mulAux R x y) z = mulAux R x (mulAux R y z) := by
   let mA := mulAux R (𝒜 := 𝒜) (ℬ := ℬ)
     -- restate as an equality of morphisms so that we can use `ext`
