@@ -403,16 +403,15 @@ theorem set_integral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s →
   set_integral_eq_integral_of_ae_compl_eq_zero (eventually_of_forall h)
 #align measure_theory.set_integral_eq_integral_of_forall_compl_eq_zero MeasureTheory.set_integral_eq_integral_of_forall_compl_eq_zero
 
-lemma integral_eq_integral_restrict [MeasurableSpace E] [MeasurableSingletonClass E]
-    (hs : f =ᵐ[μ.restrict sᶜ] 0) (f_mble : NullMeasurable f (μ.restrict sᶜ)):
-    ∫ ω, f ω ∂μ = ∫ ω in s, f ω ∂μ := by
-  refine (set_integral_eq_integral_of_ae_compl_eq_zero ?_).symm
+/-- If a function equals zero almost everywhere w.r.t. restriction of the measure to `sᶜ`, then its
+integral on `s` coincides with its integral on the whole space. -/
+lemma set_integral_eq_integral_of_ae_restrict_eq_zero
+    [MeasurableSpace E] [MeasurableSingletonClass E] (hs : f =ᵐ[μ.restrict sᶜ] 0) :
+    ∫ ω in s, f ω ∂μ = ∫ ω, f ω ∂μ := by
+  refine set_integral_eq_integral_of_ae_compl_eq_zero ?_
+  have f_mble : NullMeasurable f (μ.restrict sᶜ) :=
+    NullMeasurable.congr measurable_const.nullMeasurable hs.symm
   rwa [ae_restrict_eq_zero_iff_ae_eq_zero_of_mem f_mble] at hs
-
-lemma integral_eq_integral_restrict' (hs : f =ᵐ[μ.restrict sᶜ] 0) (s_mble : MeasurableSet s):
-    ∫ ω, f ω ∂μ = ∫ ω in s, f ω ∂μ := by
-  refine (set_integral_eq_integral_of_ae_compl_eq_zero ?_).symm
-  rwa [ae_restrict_eq_zero_iff_ae_eq_zero_of_mem' s_mble.compl] at hs
 
 theorem set_integral_neg_eq_set_integral_nonpos [LinearOrder E] {f : α → E}
     (hf : AEStronglyMeasurable f μ) :

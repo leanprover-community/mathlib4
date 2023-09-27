@@ -405,20 +405,18 @@ theorem Integrable.integral_eq_integral_meas_lt
   have f_nn' : 0 ≤ᵐ[μ.restrict s] f := ae_restrict_of_ae f_nn
   have f_intble' : Integrable f (μ.restrict s) := f_intble.restrict
   have f_aemble' : AEMeasurable f (μ.restrict s) := f_intble.aemeasurable.restrict
-  have obs : ∫ ω, f ω ∂μ = ∫ ω, f ω ∂(μ.restrict s) :=
-    integral_eq_integral_restrict f_ae_zero_outside f_intble.aemeasurable.restrict.nullMeasurable
-  rw [obs]
-  have obs' : ∀ t ∈ Ioi (0 : ℝ), (μ {a : α | t < f a}) = ((μ.restrict s) {a : α | t < f a}) := by
+  rw [(set_integral_eq_integral_of_ae_restrict_eq_zero f_ae_zero_outside).symm]
+  have obs : ∀ t ∈ Ioi (0 : ℝ), (μ {a : α | t < f a}) = ((μ.restrict s) {a : α | t < f a}) := by
     intro t ht
-    convert f_intble.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_zero
-            f_ae_zero_outside (measurableSet_Ioi) ?_
+    convert NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_const
+              f_intble.restrict.aemeasurable.nullMeasurable f_ae_zero_outside measurableSet_Ioi ?_
     simp only [mem_Ioi, not_lt] at ht ⊢
     exact ht.le
-  have obs'' := @set_integral_congr ℝ ℝ _ _ (fun t ↦ ENNReal.toReal (μ {a : α | t < f a}))
+  have obs' := @set_integral_congr ℝ ℝ _ _ (fun t ↦ ENNReal.toReal (μ {a : α | t < f a}))
           (fun t ↦ ENNReal.toReal ((μ.restrict s) {a : α | t < f a})) _ (volume : Measure ℝ) _
           (measurableSet_Ioi (a := (0 : ℝ)))
-          (fun x x_in_Ioi ↦ congrArg ENNReal.toReal (obs' x x_in_Ioi))
-  rw [obs'']
+          (fun x x_in_Ioi ↦ congrArg ENNReal.toReal (obs x x_in_Ioi))
+  rw [obs']
   have key := lintegral_eq_lintegral_meas_lt (μ.restrict s) f_nn' f_aemble'
   have lhs_finite : ∫⁻ (ω : α), ENNReal.ofReal (f ω) ∂(μ.restrict s) < ∞ :=
     Integrable.lintegral_lt_top f_intble'
