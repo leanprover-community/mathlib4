@@ -15,7 +15,7 @@ import Mathlib.Algebra.Algebra.Basic
 
 namespace ZMod
 
-variable (R : Type _) [Ring R]
+variable (R : Type*) [Ring R]
 
 instance (p : ℕ) : Subsingleton (Algebra (ZMod p) R) :=
   ⟨fun _ _ => Algebra.algebra_ext _ _ <| RingHom.congr_fun <| Subsingleton.elim _ _⟩

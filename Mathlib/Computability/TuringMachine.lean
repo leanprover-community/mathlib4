@@ -425,12 +425,12 @@ theorem ListBlank.nth_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMa
 #align turing.list_blank.nth_map Turing.ListBlank.nth_map
 
 /-- The `i`-th projection as a pointed map. -/
-def proj {ι : Type _} {Γ : ι → Type _} [∀ i, Inhabited (Γ i)] (i : ι) :
+def proj {ι : Type*} {Γ : ι → Type*} [∀ i, Inhabited (Γ i)] (i : ι) :
     PointedMap (∀ i, Γ i) (Γ i) :=
   ⟨fun a ↦ a i, rfl⟩
 #align turing.proj Turing.proj
 
-theorem proj_map_nth {ι : Type _} {Γ : ι → Type _} [∀ i, Inhabited (Γ i)] (i : ι) (L n) :
+theorem proj_map_nth {ι : Type*} {Γ : ι → Type*} [∀ i, Inhabited (Γ i)] (i : ι) (L n) :
     (ListBlank.map (@proj ι Γ _ i) L).nth n = L.nth n i := by
   rw [ListBlank.nth_map]; rfl
 #align turing.proj_map_nth Turing.proj_map_nth
@@ -494,7 +494,7 @@ theorem ListBlank.cons_bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l 
 current position of the head), together with two `ListBlank`s denoting the portions of the tape
 going off to the left and right. When the Turing machine moves right, an element is pulled from the
 right side and becomes the new head, while the head element is consed onto the left side. -/
-structure Tape (Γ : Type _) [Inhabited Γ] where
+structure Tape (Γ : Type*) [Inhabited Γ] where
   head : Γ
   left : ListBlank Γ
   right : ListBlank Γ
@@ -821,7 +821,7 @@ which is either terminal (meaning `a = b`) or where the next point also satisfie
 holds of any point where `eval f a` evaluates to `b`. This formalizes the notion that if
 `eval f a` evaluates to `b` then it reaches terminal state `b` in finitely many steps. -/
 @[elab_as_elim]
-def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort _} {a : σ}
+def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort*} {a : σ}
     (h : b ∈ eval f a) (H : ∀ a, b ∈ eval f a → (∀ a', f a = some a' → C a') → C a) : C a :=
   PFun.fixInduction h fun a' ha' h' ↦
     H _ ha' fun b' e ↦ h' _ <| Part.mem_some_iff.2 <| by rw [e]; rfl
@@ -1015,10 +1015,10 @@ set_option linter.uppercaseLean3 false
 
 section
 
-variable (Γ : Type _) [Inhabited Γ]
+variable (Γ : Type*) [Inhabited Γ]
 
 -- type of tape symbols
-variable (Λ : Type _) [Inhabited Λ]
+variable (Λ : Type*) [Inhabited Λ]
 
 -- type of "labels" or TM states
 /-- A Turing machine "statement" is just a command to either move
@@ -1122,13 +1122,13 @@ end
 
 section
 
-variable {Γ : Type _} [Inhabited Γ]
+variable {Γ : Type*} [Inhabited Γ]
 
-variable {Γ' : Type _} [Inhabited Γ']
+variable {Γ' : Type*} [Inhabited Γ']
 
-variable {Λ : Type _} [Inhabited Λ]
+variable {Λ : Type*} [Inhabited Λ]
 
-variable {Λ' : Type _} [Inhabited Λ']
+variable {Λ' : Type*} [Inhabited Λ']
 
 /-- Map a TM statement across a function. This does nothing to move statements and maps the write
 values. -/
@@ -1223,13 +1223,13 @@ set_option linter.uppercaseLean3 false
 
 section
 
-variable (Γ : Type _) [Inhabited Γ]
+variable (Γ : Type*) [Inhabited Γ]
 
 -- Type of tape symbols
-variable (Λ : Type _)
+variable (Λ : Type*)
 
 -- Type of function labels
-variable (σ : Type _)
+variable (σ : Type*)
 
 -- Type of variable settings
 /-- The TM1 model is a simplification and extension of TM0
@@ -1437,11 +1437,11 @@ set_option linter.uppercaseLean3 false
 
 section
 
-variable {Γ : Type _} [Inhabited Γ]
+variable {Γ : Type*} [Inhabited Γ]
 
-variable {Λ : Type _} [Inhabited Λ]
+variable {Λ : Type*} [Inhabited Λ]
 
-variable {σ : Type _} [Inhabited σ]
+variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => TM1.Stmt Γ Λ σ
 
@@ -1614,7 +1614,7 @@ open TM1
 
 section
 
-variable {Γ : Type _} [Inhabited Γ]
+variable {Γ : Type*} [Inhabited Γ]
 
 theorem exists_enc_dec [Fintype Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ),
     enc default = Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
@@ -1630,9 +1630,9 @@ theorem exists_enc_dec [Fintype Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n)
     exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
 #align turing.TM1to1.exists_enc_dec Turing.TM1to1.exists_enc_dec
 
-variable {Λ : Type _} [Inhabited Λ]
+variable {Λ : Type*} [Inhabited Λ]
 
-variable {σ : Type _} [Inhabited σ]
+variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => Stmt Γ Λ σ
 
@@ -1979,9 +1979,9 @@ set_option linter.uppercaseLean3 false
 
 section
 
-variable {Γ : Type _} [Inhabited Γ]
+variable {Γ : Type*} [Inhabited Γ]
 
-variable {Λ : Type _} [Inhabited Λ]
+variable {Λ : Type*} [Inhabited Λ]
 
 /-- The machine states for a TM1 emulating a TM0 machine. States of the TM0 machine are embedded
 as `normal q` states, but the actual operation is split into two parts, a jump to `act s q`
@@ -2085,16 +2085,16 @@ set_option linter.uppercaseLean3 false
 
 section
 
-variable {K : Type _} [DecidableEq K]
+variable {K : Type*} [DecidableEq K]
 
 -- Index type of stacks
-variable (Γ : K → Type _)
+variable (Γ : K → Type*)
 
 -- Type of stack elements
-variable (Λ : Type _)
+variable (Λ : Type*)
 
 -- Type of function labels
-variable (σ : Type _)
+variable (σ : Type*)
 
 -- Type of variable settings
 /-- The TM2 model removes the tape entirely from the TM1 model,
@@ -2323,7 +2323,7 @@ namespace TM2to1
 set_option linter.uppercaseLean3 false
 
 -- A displaced lemma proved in unnecessary generality
-theorem stk_nth_val {K : Type _} {Γ : K → Type _} {L : ListBlank (∀ k, Option (Γ k))} {k S} (n)
+theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option (Γ k))} {k S} (n)
     (hL : ListBlank.map (proj k) L = ListBlank.mk (List.map some S).reverse) :
     L.nth n k = S.reverse.get? n := by
   rw [← proj_map_nth, hL, ← List.map_reverse, ListBlank.nth_mk, List.getI_eq_iget_get?,
@@ -2333,13 +2333,13 @@ theorem stk_nth_val {K : Type _} {Γ : K → Type _} {L : ListBlank (∀ k, Opti
 
 section
 
-variable {K : Type _} [DecidableEq K]
+variable {K : Type*} [DecidableEq K]
 
-variable {Γ : K → Type _}
+variable {Γ : K → Type*}
 
-variable {Λ : Type _} [Inhabited Λ]
+variable {Λ : Type*} [Inhabited Λ]
 
-variable {σ : Type _} [Inhabited σ]
+variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₂" => TM2.Stmt Γ Λ σ
 

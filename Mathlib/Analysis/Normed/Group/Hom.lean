@@ -32,7 +32,7 @@ open NNReal BigOperators
 
 -- TODO: migrate to the new morphism / morphism_class style
 /-- A morphism of seminormed abelian groups is a bounded group homomorphism. -/
-structure NormedAddGroupHom (V W : Type _) [SeminormedAddCommGroup V]
+structure NormedAddGroupHom (V W : Type*) [SeminormedAddCommGroup V]
   [SeminormedAddCommGroup W] where
   /-- The function underlying a `NormedAddGroupHom` -/
   toFun : V → W
@@ -44,7 +44,7 @@ structure NormedAddGroupHom (V W : Type _) [SeminormedAddCommGroup V]
 
 namespace AddMonoidHom
 
-variable {V W : Type _} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
+variable {V W : Type*} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
   {f g : NormedAddGroupHom V W}
 
 /-- Associate to a group homomorphism a bounded group homomorphism under a norm control condition.
@@ -64,7 +64,7 @@ def mkNormedAddGroupHom' (f : V →+ W) (C : ℝ≥0) (hC : ∀ x, ‖f x‖₊ 
 
 end AddMonoidHom
 
-theorem exists_pos_bound_of_bound {V W : Type _} [SeminormedAddCommGroup V]
+theorem exists_pos_bound_of_bound {V W : Type*} [SeminormedAddCommGroup V]
     [SeminormedAddCommGroup W] {f : V → W} (M : ℝ) (h : ∀ x, ‖f x‖ ≤ M * ‖x‖) :
     ∃ N, 0 < N ∧ ∀ x, ‖f x‖ ≤ N * ‖x‖ :=
   ⟨max M 1, lt_of_lt_of_le zero_lt_one (le_max_right _ _), fun x =>
@@ -76,7 +76,7 @@ theorem exists_pos_bound_of_bound {V W : Type _} [SeminormedAddCommGroup V]
 
 namespace NormedAddGroupHom
 
-variable {V V₁ V₂ V₃ : Type _} [SeminormedAddCommGroup V] [SeminormedAddCommGroup V₁]
+variable {V V₁ V₂ V₃ : Type*} [SeminormedAddCommGroup V] [SeminormedAddCommGroup V₁]
   [SeminormedAddCommGroup V₂] [SeminormedAddCommGroup V₃]
 
 variable {f g : NormedAddGroupHom V₁ V₂}
@@ -382,7 +382,7 @@ theorem opNorm_zero : ‖(0 : NormedAddGroupHom V₁ V₂)‖ = 0 :=
 #align normed_add_group_hom.op_norm_zero NormedAddGroupHom.opNorm_zero
 
 /-- For normed groups, an operator is zero iff its norm vanishes. -/
-theorem opNorm_zero_iff {V₁ V₂ : Type _} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂]
+theorem opNorm_zero_iff {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂]
     {f : NormedAddGroupHom V₁ V₂} : ‖f‖ = 0 ↔ f = 0 :=
   Iff.intro
     (fun hn =>
@@ -435,7 +435,7 @@ theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V�
 #align normed_add_group_hom.norm_id_of_nontrivial_seminorm NormedAddGroupHom.norm_id_of_nontrivial_seminorm
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
-theorem norm_id {V : Type _} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ = 1 := by
+theorem norm_id {V : Type*} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ = 1 := by
   refine' norm_id_of_nontrivial_seminorm V _
   obtain ⟨x, hx⟩ := exists_ne (0 : V)
   exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
@@ -494,7 +494,7 @@ theorem sub_apply (f g : NormedAddGroupHom V₁ V₂) (v : V₁) :
 
 section SMul
 
-variable {R R' : Type _} [MonoidWithZero R] [DistribMulAction R V₂] [PseudoMetricSpace R]
+variable {R R' : Type*} [MonoidWithZero R] [DistribMulAction R V₂] [PseudoMetricSpace R]
   [BoundedSMul R V₂] [MonoidWithZero R'] [DistribMulAction R' V₂] [PseudoMetricSpace R']
   [BoundedSMul R' V₂]
 
@@ -598,7 +598,7 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V�
 
 /-- Normed group homomorphisms themselves form a normed group with respect to
     the operator norm. -/
-instance toNormedAddCommGroup {V₁ V₂ : Type _} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] :
+instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] :
     NormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupNorm.toNormedAddCommGroup
     { toFun := opNorm
@@ -617,23 +617,23 @@ def coeAddHom : NormedAddGroupHom V₁ V₂ →+ V₁ → V₂ where
 #align normed_add_group_hom.coe_fn_add_hom NormedAddGroupHom.coeAddHom
 
 @[simp]
-theorem coe_sum {ι : Type _} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) :
+theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) :
     ⇑(∑ i in s, f i) = ∑ i in s, (f i : V₁ → V₂) :=
   (coeAddHom : _ →+ V₁ → V₂).map_sum f s
 #align normed_add_group_hom.coe_sum NormedAddGroupHom.coe_sum
 
-theorem sum_apply {ι : Type _} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) (v : V₁) :
+theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) (v : V₁) :
     (∑ i in s, f i) v = ∑ i in s, f i v := by simp only [coe_sum, Finset.sum_apply]
 #align normed_add_group_hom.sum_apply NormedAddGroupHom.sum_apply
 
 /-! ### Module structure on normed group homs -/
 
 
-instance distribMulAction {R : Type _} [MonoidWithZero R] [DistribMulAction R V₂]
+instance distribMulAction {R : Type*} [MonoidWithZero R] [DistribMulAction R V₂]
     [PseudoMetricSpace R] [BoundedSMul R V₂] : DistribMulAction R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.distribMulAction coeAddHom coe_injective coe_smul
 
-instance module {R : Type _} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [BoundedSMul R V₂] :
+instance module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [BoundedSMul R V₂] :
     Module R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.module _ coeAddHom coe_injective coe_smul
 
@@ -695,7 +695,7 @@ theorem zero_comp (f : NormedAddGroupHom V₁ V₂) : (0 : NormedAddGroupHom V�
   rfl
 #align normed_add_group_hom.zero_comp NormedAddGroupHom.zero_comp
 
-theorem comp_assoc {V₄ : Type _} [SeminormedAddCommGroup V₄] (h : NormedAddGroupHom V₃ V₄)
+theorem comp_assoc {V₄ : Type*} [SeminormedAddCommGroup V₄] (h : NormedAddGroupHom V₃ V₄)
     (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁ V₂) :
     (h.comp g).comp f = h.comp (g.comp f) := by
   ext
@@ -711,7 +711,7 @@ end NormedAddGroupHom
 
 namespace NormedAddGroupHom
 
-variable {V W V₁ V₂ V₃ : Type _} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
+variable {V W V₁ V₂ V₃ : Type*} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
   [SeminormedAddCommGroup V₁] [SeminormedAddCommGroup V₂] [SeminormedAddCommGroup V₃]
 
 /-- The inclusion of an `AddSubgroup`, as bounded group homomorphism. -/
@@ -768,7 +768,7 @@ theorem coe_ker : (f.ker : Set V₁) = (f : V₁ → V₂) ⁻¹' {0} :=
   rfl
 #align normed_add_group_hom.coe_ker NormedAddGroupHom.coe_ker
 
-theorem isClosed_ker {V₂ : Type _} [NormedAddCommGroup V₂] (f : NormedAddGroupHom V₁ V₂) :
+theorem isClosed_ker {V₂ : Type*} [NormedAddCommGroup V₂] (f : NormedAddGroupHom V₁ V₂) :
     IsClosed (f.ker : Set V₁) :=
   f.coe_ker ▸ IsClosed.preimage f.continuous (T1Space.t1 0)
 #align normed_add_group_hom.is_closed_ker NormedAddGroupHom.isClosed_ker
@@ -867,7 +867,7 @@ theorem normNoninc_of_isometry (hf : Isometry f) : f.NormNoninc := fun v =>
 
 end Isometry
 
-variable {W₁ W₂ W₃ : Type _} [SeminormedAddCommGroup W₁] [SeminormedAddCommGroup W₂]
+variable {W₁ W₂ W₃ : Type*} [SeminormedAddCommGroup W₁] [SeminormedAddCommGroup W₂]
   [SeminormedAddCommGroup W₃]
 
 variable (f) (g : NormedAddGroupHom V W)

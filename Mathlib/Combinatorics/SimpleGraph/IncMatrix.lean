@@ -49,7 +49,7 @@ open BigOperators Matrix
 
 namespace SimpleGraph
 
-variable (R : Type _) {α : Type _} (G : SimpleGraph α)
+variable (R : Type*) {α : Type*} (G : SimpleGraph α)
 
 /-- `G.incMatrix R` is the `α × Sym2 α` matrix whose `(a, e)`-entry is `1` if `e` is incident to
 `a` and `0` otherwise. -/

@@ -151,12 +151,12 @@ theorem digits_add (b : ℕ) (h : 1 < b) (x y : ℕ) (hxb : x < b) (hxy : x ≠ 
 /-- `ofDigits b L` takes a list `L` of natural numbers, and interprets them
 as a number in semiring, as the little-endian digits in base `b`.
 -/
-def ofDigits {α : Type _} [Semiring α] (b : α) : List ℕ → α
+def ofDigits {α : Type*} [Semiring α] (b : α) : List ℕ → α
   | [] => 0
   | h :: t => h + b * ofDigits b t
 #align nat.of_digits Nat.ofDigits
 
-theorem ofDigits_eq_foldr {α : Type _} [Semiring α] (b : α) (L : List ℕ) :
+theorem ofDigits_eq_foldr {α : Type*} [Semiring α] (b : α) (L : List ℕ) :
     ofDigits b L = List.foldr (fun x y => ↑x + b * y) 0 L := by
   induction' L with d L ih
   · rfl
@@ -189,7 +189,7 @@ theorem ofDigits_singleton {b n : ℕ} : ofDigits b [n] = n := by simp [ofDigits
 #align nat.of_digits_singleton Nat.ofDigits_singleton
 
 @[simp]
-theorem ofDigits_one_cons {α : Type _} [Semiring α] (h : ℕ) (L : List ℕ) :
+theorem ofDigits_one_cons {α : Type*} [Semiring α] (h : ℕ) (L : List ℕ) :
     ofDigits (1 : α) (h :: L) = h + ofDigits 1 L := by simp [ofDigits]
 #align nat.of_digits_one_cons Nat.ofDigits_one_cons
 
@@ -202,7 +202,7 @@ theorem ofDigits_append {b : ℕ} {l1 l2 : List ℕ} :
 #align nat.of_digits_append Nat.ofDigits_append
 
 @[norm_cast]
-theorem coe_ofDigits (α : Type _) [Semiring α] (b : ℕ) (L : List ℕ) :
+theorem coe_ofDigits (α : Type*) [Semiring α] (b : ℕ) (L : List ℕ) :
     ((ofDigits b L : ℕ) : α) = ofDigits (b : α) L := by
   induction' L with d L ih
   · simp [ofDigits]
@@ -484,6 +484,35 @@ theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
   exact base_pow_length_digits_le' b m
 #align nat.base_pow_length_digits_le Nat.base_pow_length_digits_le
 
+/-- Interpreting as a base `p` number and dividing by `p` is the same as interpreting the tail.
+-/
+lemma ofDigits_div_eq_ofDigits_tail (hpos : 0 < p) (digits : List ℕ)
+    (w₁ : ∀ l ∈ digits, l < p) : ofDigits p digits / p = ofDigits p digits.tail := by
+  induction' digits with hd tl
+  · simp [ofDigits]
+  · refine' Eq.trans (add_mul_div_left hd _ hpos) _
+    rw [Nat.div_eq_zero <| w₁ _ <| List.mem_cons_self _ _, zero_add]
+    rfl
+
+/-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
+-/
+lemma ofDigits_div_pow_eq_ofDigits_drop
+    (i : ℕ) (hpos : 0 < p) (digits : List ℕ) (w₁ : ∀ l ∈ digits, l < p) :
+    ofDigits p digits / p ^ i = ofDigits p (digits.drop i) := by
+  induction' i with i hi
+  · simp
+  · rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi, ofDigits_div_eq_ofDigits_tail hpos
+      (List.drop i digits) <| fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
+      List.drop_drop, add_comm]
+
+/-- Dividing `n` by `p^i` is like truncating the first `i` digits of `n` in base `p`.
+-/
+lemma self_div_pow_eq_ofDigits_drop (i n : ℕ) (h : 2 ≤ p):
+    n / p ^ i = ofDigits p ((p.digits n).drop i) := by
+  convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
+    (fun l hl ↦ digits_lt_base h hl)
+  exact (ofDigits_digits p n).symm
+
 /-! ### Binary -/
 
 
@@ -503,7 +532,7 @@ theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1
 
 
 -- This is really a theorem about polynomials.
-theorem dvd_ofDigits_sub_ofDigits {α : Type _} [CommRing α] {a b k : α} (h : k ∣ a - b)
+theorem dvd_ofDigits_sub_ofDigits {α : Type*} [CommRing α] {a b k : α} (h : k ∣ a - b)
     (L : List ℕ) : k ∣ ofDigits a L - ofDigits b L := by
   induction' L with d L ih
   · change k ∣ 0 - 0

@@ -29,7 +29,7 @@ squarefree, multiplicity
 -/
 
 
-variable {R : Type _}
+variable {R : Type*}
 
 /-- An element of a monoid is squarefree if the only squares that
   divide it are the squares of units. -/
@@ -87,7 +87,7 @@ theorem Squarefree.squarefree_of_dvd [CommMonoid R] {x y : R} (hdvd : x ∣ y) (
 
 section SquarefreeGcdOfSquarefree
 
-variable {α : Type _} [CancelCommMonoidWithZero α] [GCDMonoid α]
+variable {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α]
 
 theorem Squarefree.gcd_right (a : α) {b : α} (hb : Squarefree b) : Squarefree (gcd a b) :=
   hb.squarefree_of_dvd (gcd_dvd_right _ _)

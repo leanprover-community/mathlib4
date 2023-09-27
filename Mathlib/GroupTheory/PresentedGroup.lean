@@ -28,7 +28,7 @@ generators, relations, group presentations
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Given a set of relations, `rels`, over a type `α`, `PresentedGroup` constructs the group with
 generators `x : α` and relations `rels` as a quotient of `FreeGroup α`. -/
@@ -54,7 +54,7 @@ Presented groups satisfy a universal property. If `G` is a group and `f : α →
 the images of `f` satisfy all the given relations, then `f` extends uniquely to a group homomorphism
 from `PresentedGroup rels` to `G`.
 -/
-variable {G : Type _} [Group G] {f : α → G} {rels : Set (FreeGroup α)}
+variable {G : Type*} [Group G] {f : α → G} {rels : Set (FreeGroup α)}
 
 -- mathport name: exprF
 local notation "F" => FreeGroup.lift f

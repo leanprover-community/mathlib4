@@ -14,7 +14,7 @@ import Mathlib.Algebra.Order.Monoid.OrderDual
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[to_additive]
 instance OrderDual.orderedCommGroup [OrderedCommGroup α] : OrderedCommGroup αᵒᵈ :=

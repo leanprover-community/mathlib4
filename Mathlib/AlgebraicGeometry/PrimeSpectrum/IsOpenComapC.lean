@@ -23,7 +23,7 @@ namespace AlgebraicGeometry
 
 namespace Polynomial
 
-variable {R : Type _} [CommRing R] {f : R[X]}
+variable {R : Type*} [CommRing R] {f : R[X]}
 
 set_option linter.uppercaseLean3 false
 

@@ -20,7 +20,7 @@ open Finset Fintype
 
 open BigOperators
 
-variable {ι : Type _} {α : ι → Type _} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (α i)]
+variable {ι : Type*} {α : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (α i)]
 
 namespace Pi
 section PartialOrder

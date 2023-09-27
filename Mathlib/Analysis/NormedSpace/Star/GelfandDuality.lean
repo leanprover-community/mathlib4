@@ -65,7 +65,7 @@ section ComplexBanachAlgebra
 
 open Ideal
 
-variable {A : Type _} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A] (I : Ideal A)
+variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A] (I : Ideal A)
   [Ideal.IsMaximal I]
 
 /-- Every maximal ideal in a commutative complex Banach algebra gives rise to a character on that
@@ -128,7 +128,7 @@ end ComplexBanachAlgebra
 
 section ComplexCstarAlgebra
 
-variable {A : Type _} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
+variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
 
 variable [StarRing A] [CstarRing A] [StarModule ℂ A]
 
@@ -206,7 +206,7 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable {A B C : Type _}
+variable {A B C : Type*}
 
 variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
 

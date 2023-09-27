@@ -32,7 +32,7 @@ noncomputable section
 
 open scoped ENNReal BigOperators Classical BoxIntegral
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 namespace BoxIntegral
 
@@ -140,11 +140,11 @@ namespace BoxAdditiveMap
 
 /-- Box-additive map sending each box `I` to the continuous linear endomorphism
 `x ↦ (volume I).toReal • x`. -/
-protected def volume {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] : ι →ᵇᵃ E →L[ℝ] E :=
+protected def volume {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] : ι →ᵇᵃ E →L[ℝ] E :=
   (volume : Measure (ι → ℝ)).toBoxAdditive.toSMul
 #align box_integral.box_additive_map.volume BoxIntegral.BoxAdditiveMap.volume
 
-theorem volume_apply {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] (I : Box ι) (x : E) :
+theorem volume_apply {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (I : Box ι) (x : E) :
     BoxAdditiveMap.volume I x = (∏ j, (I.upper j - I.lower j)) • x := by
   rw [BoxAdditiveMap.volume, toSMul_apply]
   exact congr_arg₂ (· • ·) I.volume_apply rfl

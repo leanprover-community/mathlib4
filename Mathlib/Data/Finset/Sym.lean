@@ -32,7 +32,7 @@ This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `F
 
 namespace Finset
 
-variable {α : Type _} [DecidableEq α] {s t : Finset α} {a b : α}
+variable {α : Type*} [DecidableEq α] {s t : Finset α} {a b : α}
 
 theorem isDiag_mk'_of_mem_diag {a : α × α} (h : a ∈ s.diag) : Sym2.IsDiag ⟦a⟧ :=
   (Sym2.isDiag_iff_proj_eq _).2 (mem_diag.1 h).2

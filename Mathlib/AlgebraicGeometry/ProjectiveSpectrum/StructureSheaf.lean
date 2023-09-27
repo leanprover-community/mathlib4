@@ -56,7 +56,7 @@ open scoped DirectSum BigOperators Pointwise
 
 open DirectSum SetLike Localization TopCat TopologicalSpace CategoryTheory Opposite
 
-variable {R A : Type _}
+variable {R A : Type*}
 
 variable [CommRing R] [CommRing A] [Algebra R A]
 

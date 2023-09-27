@@ -30,7 +30,7 @@ order...
 
 Maximal elements don't have a sensible successor. Thus the naïve typeclass
 ```lean
-class NaiveSuccOrder (α : Type _) [Preorder α] :=
+class NaiveSuccOrder (α : Type*) [Preorder α] :=
   (succ : α → α)
   (succ_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
   (lt_succ_iff : ∀ {a b}, a < succ b ↔ a ≤ b)
@@ -47,7 +47,7 @@ combination of `SuccOrder α` and `NoMaxOrder α`.
 
 Is `GaloisConnection pred succ` always true? If not, we should introduce
 ```lean
-class SuccPredOrder (α : Type _) [Preorder α] extends SuccOrder α, PredOrder α :=
+class SuccPredOrder (α : Type*) [Preorder α] extends SuccOrder α, PredOrder α :=
   (pred_succ_gc : GaloisConnection (pred : α → α) succ)
 ```
 `Covby` should help here.
@@ -56,11 +56,11 @@ class SuccPredOrder (α : Type _) [Preorder α] extends SuccOrder α, PredOrder 
 
 open Function OrderDual Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Order equipped with a sensible successor function. -/
 @[ext]
-class SuccOrder (α : Type _) [Preorder α] where
+class SuccOrder (α : Type*) [Preorder α] where
   /--Successor function-/
   succ : α → α
   /--Proof of basic ordering with respect to `succ`-/
@@ -77,7 +77,7 @@ class SuccOrder (α : Type _) [Preorder α] where
 
 /-- Order equipped with a sensible predecessor function. -/
 @[ext]
-class PredOrder (α : Type _) [Preorder α] where
+class PredOrder (α : Type*) [Preorder α] where
   /--Predecessor function-/
   pred : α → α
   /--Proof of basic ordering with respect to `pred`-/
@@ -1342,14 +1342,14 @@ end WithBot
 
 /-- A `SuccOrder` is succ-archimedean if one can go from any two comparable elements by iterating
 `succ` -/
-class IsSuccArchimedean (α : Type _) [Preorder α] [SuccOrder α] : Prop where
+class IsSuccArchimedean (α : Type*) [Preorder α] [SuccOrder α] : Prop where
   /-- If `a ≤ b` then one can get to `a` from `b` by iterating `succ` -/
   exists_succ_iterate_of_le {a b : α} (h : a ≤ b) : ∃ n, succ^[n] a = b
 #align is_succ_archimedean IsSuccArchimedean
 
 /-- A `PredOrder` is pred-archimedean if one can go from any two comparable elements by iterating
 `pred` -/
-class IsPredArchimedean (α : Type _) [Preorder α] [PredOrder α] : Prop where
+class IsPredArchimedean (α : Type*) [Preorder α] [PredOrder α] : Prop where
   /-- If `a ≤ b` then one can get to `b` from `a` by iterating `pred` -/
   exists_pred_iterate_of_le {a b : α} (h : a ≤ b) : ∃ n, pred^[n] b = a
 #align is_pred_archimedean IsPredArchimedean
@@ -1511,3 +1511,14 @@ theorem Pred.rec_top (p : α → Prop) (htop : p ⊤) (hpred : ∀ a, p a → p 
 #align pred.rec_top Pred.rec_top
 
 end OrderTop
+
+lemma SuccOrder.forall_ne_bot_iff
+    [Nontrivial α] [PartialOrder α] [OrderBot α] [SuccOrder α] [IsSuccArchimedean α]
+    (P : α → Prop) :
+    (∀ i, i ≠ ⊥ → P i) ↔ (∀ i, P (SuccOrder.succ i)) := by
+  refine' ⟨fun h i ↦ h _ (Order.succ_ne_bot i), fun h i hi ↦ _⟩
+  obtain ⟨j, rfl⟩ := exists_succ_iterate_of_le (bot_le : ⊥ ≤ i)
+  have hj : 0 < j := by apply Nat.pos_of_ne_zero; contrapose! hi; simp [hi]
+  rw [← Nat.succ_pred_eq_of_pos hj]
+  simp only [Function.iterate_succ', Function.comp_apply]
+  apply h

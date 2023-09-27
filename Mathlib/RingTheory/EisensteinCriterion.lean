@@ -20,7 +20,7 @@ a polynomial over an integral domain.
 
 open Polynomial Ideal.Quotient
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 namespace Polynomial
 

@@ -577,7 +577,7 @@ theorem nextCoeff_of_pos_natDegree (p : R[X]) (hp : 0 < p.natDegree) :
   simpa
 #align polynomial.next_coeff_of_pos_nat_degree Polynomial.nextCoeff_of_pos_natDegree
 
-variable {p q : R[X]} {ι : Type _}
+variable {p q : R[X]} {ι : Type*}
 
 theorem coeff_natDegree_eq_zero_of_degree_lt (h : degree p < degree q) :
     coeff p (natDegree q) = 0 :=
@@ -852,7 +852,7 @@ theorem monic_one : Monic (1 : R[X]) :=
   leadingCoeff_C _
 #align polynomial.monic_one Polynomial.monic_one
 
-theorem Monic.ne_zero {R : Type _} [Semiring R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :
+theorem Monic.ne_zero {R : Type*} [Semiring R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :
     p ≠ 0 := by
   rintro rfl
   simp [Monic] at hp
@@ -1286,7 +1286,7 @@ theorem natDegree_X_pow (n : ℕ) : natDegree ((X : R[X]) ^ n) = n :=
 #align polynomial.nat_degree_X_pow Polynomial.natDegree_X_pow
 
 --  This lemma explicitly does not require the `Nontrivial R` assumption.
-theorem natDegree_X_pow_le {R : Type _} [Semiring R] (n : ℕ) : (X ^ n : R[X]).natDegree ≤ n := by
+theorem natDegree_X_pow_le {R : Type*} [Semiring R] (n : ℕ) : (X ^ n : R[X]).natDegree ≤ n := by
   nontriviality R
   rw [Polynomial.natDegree_X_pow]
 #align polynomial.nat_degree_X_pow_le Polynomial.natDegree_X_pow_le
@@ -1420,7 +1420,7 @@ theorem X_add_C_ne_zero (r : R) : X + C r ≠ 0 :=
   pow_one (X : R[X]) ▸ X_pow_add_C_ne_zero zero_lt_one r
 #align polynomial.X_add_C_ne_zero Polynomial.X_add_C_ne_zero
 
-theorem zero_nmem_multiset_map_X_add_C {α : Type _} (m : Multiset α) (f : α → R) :
+theorem zero_nmem_multiset_map_X_add_C {α : Type*} (m : Multiset α) (f : α → R) :
     (0 : R[X]) ∉ m.map fun a => X + C (f a) := fun mem =>
   let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_add_C_ne_zero _ ha
@@ -1519,7 +1519,7 @@ theorem X_sub_C_ne_zero (r : R) : X - C r ≠ 0 :=
   pow_one (X : R[X]) ▸ X_pow_sub_C_ne_zero zero_lt_one r
 #align polynomial.X_sub_C_ne_zero Polynomial.X_sub_C_ne_zero
 
-theorem zero_nmem_multiset_map_X_sub_C {α : Type _} (m : Multiset α) (f : α → R) :
+theorem zero_nmem_multiset_map_X_sub_C {α : Type*} (m : Multiset α) (f : α → R) :
     (0 : R[X]) ∉ m.map fun a => X - C (f a) := fun mem =>
   let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_sub_C_ne_zero _ ha

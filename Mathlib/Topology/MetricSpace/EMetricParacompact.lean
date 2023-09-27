@@ -28,7 +28,7 @@ Generalize to `PseudoMetrizableSpace`s.
 metric space, paracompact space, normal space
 -/
 
-variable {α : Type _}
+variable {α : Type*}
 
 open ENNReal Topology Set
 

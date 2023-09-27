@@ -36,17 +36,17 @@ namespace LinearMap
 section Semiring
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {R : Type _} [Semiring R] {S : Type _} [Semiring S]
+variable {R : Type*} [Semiring R] {S : Type*} [Semiring S]
 
-variable {R₂ : Type _} [Semiring R₂] {S₂ : Type _} [Semiring S₂]
+variable {R₂ : Type*} [Semiring R₂] {S₂ : Type*} [Semiring S₂]
 
-variable {M : Type _} {N : Type _} {P : Type _}
+variable {M : Type*} {N : Type*} {P : Type*}
 
-variable {M₂ : Type _} {N₂ : Type _} {P₂ : Type _}
+variable {M₂ : Type*} {N₂ : Type*} {P₂ : Type*}
 
-variable {Nₗ : Type _} {Pₗ : Type _}
+variable {Nₗ : Type*} {Pₗ : Type*}
 
-variable {M' : Type _} {N' : Type _} {P' : Type _}
+variable {M' : Type*} {N' : Type*} {P' : Type*}
 
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 
@@ -176,7 +176,7 @@ theorem map_smulₛₗ₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (r
   (flip f y).map_smulₛₗ _ _
 #align linear_map.map_smulₛₗ₂ LinearMap.map_smulₛₗ₂
 
-theorem map_sum₂ {ι : Type _} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (t : Finset ι) (x : ι → M) (y) :
+theorem map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (t : Finset ι) (x : ι → M) (y) :
     f (∑ i in t, x i) y = ∑ i in t, f (x i) y :=
   (flip f y).map_sum
 #align linear_map.map_sum₂ LinearMap.map_sum₂
@@ -208,13 +208,13 @@ end Semiring
 
 section CommSemiring
 
-variable {R : Type _} [CommSemiring R] {R₂ : Type _} [CommSemiring R₂]
+variable {R : Type*} [CommSemiring R] {R₂ : Type*} [CommSemiring R₂]
 
-variable {R₃ : Type _} [CommSemiring R₃] {R₄ : Type _} [CommSemiring R₄]
+variable {R₃ : Type*} [CommSemiring R₃] {R₄ : Type*} [CommSemiring R₄]
 
-variable {M : Type _} {N : Type _} {P : Type _} {Q : Type _}
+variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 
-variable {Mₗ : Type _} {Nₗ : Type _} {Pₗ : Type _} {Qₗ Qₗ' : Type _}
+variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
 
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 
@@ -399,9 +399,9 @@ end CommSemiring
 
 section CommRing
 
-variable {R R₂ S S₂ M N P : Type _}
+variable {R R₂ S S₂ M N P : Type*}
 
-variable {Mₗ Nₗ Pₗ : Type _}
+variable {Mₗ Nₗ Pₗ : Type*}
 
 variable [CommRing R] [CommRing S] [CommRing R₂] [CommRing S₂]
 

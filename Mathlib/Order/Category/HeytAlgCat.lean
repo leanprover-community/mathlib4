@@ -27,19 +27,19 @@ def HeytAlgCat :=
 
 namespace HeytAlgCat
 
-instance : CoeSort HeytAlgCat (Type _) :=
+instance : CoeSort HeytAlgCat (Type*) :=
   Bundled.coeSort
 
 instance (X : HeytAlgCat) : HeytingAlgebra X :=
   X.str
 
 /-- Construct a bundled `HeytAlgCat` from a `HeytingAlgebra`. -/
-def of (α : Type _) [HeytingAlgebra α] : HeytAlgCat :=
+def of (α : Type*) [HeytingAlgebra α] : HeytAlgCat :=
   Bundled.of α
 #align HeytAlg.of HeytAlgCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [HeytingAlgebra α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [HeytingAlgebra α] : ↥(of α) = α :=
   rfl
 #align HeytAlg.coe_of HeytAlgCat.coe_of
 

@@ -64,7 +64,7 @@ noncomputable section
 
 open scoped BigOperators Nat
 
-variable {𝕜 𝕜' D E F G : Type _}
+variable {𝕜 𝕜' D E F G : Type*}
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 

@@ -76,7 +76,7 @@ instance funLike : FunLike (MulChar R R') R (fun _ => R') :=
     fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr_fun h _)⟩
 
 /-- This is the corresponding extension of `MonoidHomClass`. -/
-class MulCharClass (F : Type _) (R R' : outParam <| Type _) [CommMonoid R]
+class MulCharClass (F : Type*) (R R' : outParam <| Type*) [CommMonoid R]
   [CommMonoidWithZero R'] extends MonoidHomClass F R R' where
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
 #align mul_char_class MulCharClass

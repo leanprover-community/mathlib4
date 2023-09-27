@@ -23,7 +23,7 @@ we do not have a `posreal` type.
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open scoped NNReal ENNReal Uniformity Topology
 open Set Filter Bornology
@@ -101,7 +101,7 @@ protected def k (_hf : AntilipschitzWith K f) : ℝ≥0 := K
 set_option linter.uppercaseLean3 false in
 #align antilipschitz_with.K AntilipschitzWith.k
 
-protected theorem injective {α : Type _} {β : Type _} [EMetricSpace α] [PseudoEMetricSpace β]
+protected theorem injective {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
     {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) : Function.Injective f := fun x y h => by
   simpa only [h, edist_self, mul_zero, edist_le_zero] using hf x y
 #align antilipschitz_with.injective AntilipschitzWith.injective
@@ -174,7 +174,7 @@ protected theorem uniformInducing (hf : AntilipschitzWith K f) (hfc : UniformCon
   ⟨le_antisymm hf.comap_uniformity_le hfc.le_comap⟩
 #align antilipschitz_with.uniform_inducing AntilipschitzWith.uniformInducing
 
-protected theorem uniformEmbedding {α : Type _} {β : Type _} [EMetricSpace α] [PseudoEMetricSpace β]
+protected theorem uniformEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
     {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     UniformEmbedding f :=
   ⟨hf.uniformInducing hfc, hf.injective⟩
@@ -185,13 +185,13 @@ theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
   (hf.uniformInducing hfc).isComplete_range
 #align antilipschitz_with.is_complete_range AntilipschitzWith.isComplete_range
 
-theorem isClosed_range {α β : Type _} [PseudoEMetricSpace α] [EMetricSpace β] [CompleteSpace α]
+theorem isClosed_range {α β : Type*} [PseudoEMetricSpace α] [EMetricSpace β] [CompleteSpace α]
     {f : α → β} {K : ℝ≥0} (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     IsClosed (range f) :=
   (hf.isComplete_range hfc).isClosed
 #align antilipschitz_with.is_closed_range AntilipschitzWith.isClosed_range
 
-theorem closedEmbedding {α : Type _} {β : Type _} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
+theorem closedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
     {f : α → β} [CompleteSpace α] (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     ClosedEmbedding f :=
   { (hf.uniformEmbedding hfc).embedding with closed_range := hf.isClosed_range hfc }
@@ -234,7 +234,7 @@ theorem tendsto_cobounded (hf : AntilipschitzWith K f) : Tendsto f (cobounded α
 #align antilipschitz_with.tendsto_cobounded AntilipschitzWith.tendsto_cobounded
 
 /-- The image of a proper space under an expanding onto map is proper. -/
-protected theorem properSpace {α : Type _} [MetricSpace α] {K : ℝ≥0} {f : α → β} [ProperSpace α]
+protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : α → β} [ProperSpace α]
     (hK : AntilipschitzWith K f) (f_cont : Continuous f) (hf : Function.Surjective f) :
     ProperSpace β := by
   refine ⟨fun x₀ r => ?_⟩

@@ -27,7 +27,7 @@ open BigOperators
 
 namespace Function
 
-variable {α β A B M N P R S G M₀ G₀ : Type _} {ι : Sort _}
+variable {α β A B M N P R S G M₀ G₀ : Type*} {ι : Sort*}
 
 section One
 
@@ -448,7 +448,7 @@ namespace Set
 
 open Function
 
-variable {α β M : Type _} [One M] {f : α → M}
+variable {α β M : Type*} [One M] {f : α → M}
 
 @[to_additive]
 theorem image_inter_mulSupport_eq {s : Set β} {g : β → α} :
@@ -461,7 +461,7 @@ end Set
 
 namespace Pi
 
-variable {A : Type _} {B : Type _} [DecidableEq A] [One B] {a : A} {b : B}
+variable {A : Type*} {B : Type*} [DecidableEq A] [One B] {a : A} {b : B}
 
 open Function
 

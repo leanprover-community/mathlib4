@@ -35,7 +35,7 @@ open scoped BigOperators
 
 section EuclideanDomain
 
-variable {R S : Type _} (K L : Type _) [EuclideanDomain R] [CommRing S] [IsDomain S]
+variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
 
 variable [Field K] [Field L]
 
@@ -51,7 +51,7 @@ variable [ist : IsScalarTower R S L] [iic : IsIntegralClosure S R L]
 
 variable (abv : AbsoluteValue R ℤ)
 
-variable {ι : Type _} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
+variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
 such that for every `R`-integral element `a : S` with coordinates `≤ y`,
@@ -108,7 +108,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
 
 /-- If the `R`-integral element `a : S` has coordinates `< y` with respect to some basis `b`,
 its norm is strictly less than `normBound abv b * y ^ dim S`. -/
-theorem norm_lt {T : Type _} [LinearOrderedRing T] (a : S) {y : T}
+theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
     (hy : ∀ k, (abv (bS.repr a k) : T) < y) :
     (abv (Algebra.norm R a) : T) < normBound abv bS * y ^ Fintype.card ι := by
   obtain ⟨i⟩ := bS.index_nonempty

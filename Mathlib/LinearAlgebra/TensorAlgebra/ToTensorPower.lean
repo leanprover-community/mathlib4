@@ -18,7 +18,7 @@ In this file we show that `TensorAlgebra R M` is isomorphic to a direct sum of t
 
 open scoped DirectSum TensorProduct
 
-variable {R M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 namespace TensorPower
 

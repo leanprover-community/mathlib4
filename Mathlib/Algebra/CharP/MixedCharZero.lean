@@ -56,7 +56,7 @@ equivalent conditions.
 - Relate mixed characteristic in a local ring to p-adic numbers [NumberTheory.PAdics].
 -/
 
-variable (R : Type _) [CommRing R]
+variable (R : Type*) [CommRing R]
 
 /-!
 ### Mixed characteristic

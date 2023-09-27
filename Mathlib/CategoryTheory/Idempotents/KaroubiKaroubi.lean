@@ -26,7 +26,7 @@ namespace Idempotents
 
 namespace KaroubiKaroubi
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
 -- porting note: added to ease automation
 @[reassoc (attr := simp)]

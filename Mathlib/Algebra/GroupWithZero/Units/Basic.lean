@@ -18,7 +18,7 @@ We also define `Ring.inverse`, a globally defined function on any ring
 -/
 
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type _}
+variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 
 variable [MonoidWithZero M₀]
 
@@ -327,7 +327,7 @@ section NoncomputableDefs
 
 open Classical
 
-variable {M : Type _} [Nontrivial M]
+variable {M : Type*} [Nontrivial M]
 
 /-- Constructs a `GroupWithZero` structure on a `MonoidWithZero`
   consisting only of units and 0. -/

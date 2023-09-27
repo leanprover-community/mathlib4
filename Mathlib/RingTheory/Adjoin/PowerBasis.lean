@@ -17,7 +17,7 @@ where `x` is an integral element over `R`.
 -/
 
 
-variable {K S : Type _} [Field K] [CommRing S] [Algebra K S]
+variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
 
 namespace Algebra
 
@@ -89,9 +89,9 @@ open Polynomial
 
 open Polynomial
 
-variable {R : Type _} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
+variable {R : Type*} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
 
-variable {A : Type _} [CommRing A] [Algebra R A] [Algebra S A]
+variable {A : Type*} [CommRing A] [Algebra R A] [Algebra S A]
 
 variable [IsScalarTower R S A] {B : PowerBasis S A} (hB : IsIntegral R B.gen)
 

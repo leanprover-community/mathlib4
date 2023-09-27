@@ -28,12 +28,12 @@ open Filter Finset
 local notation "d" => dist
 
 @[simp]
-theorem pos_div_pow_pos {α : Type _} [LinearOrderedSemifield α] {a b : α} (ha : 0 < a) (hb : 0 < b)
+theorem pos_div_pow_pos {α : Type*} [LinearOrderedSemifield α] {a b : α} (ha : 0 < a) (hb : 0 < b)
     (k : ℕ) : 0 < a / b ^ k :=
   div_pos ha (pow_pos hb k)
 #align pos_div_pow_pos pos_div_pow_pos
 
-theorem hofer {X : Type _} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (ε_pos : 0 < ε)
+theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (ε_pos : 0 < ε)
     {ϕ : X → ℝ} (cont : Continuous ϕ) (nonneg : ∀ y, 0 ≤ ϕ y) : ∃ ε' > 0, ∃ x' : X,
     ε' ≤ ε ∧ d x' x ≤ 2 * ε ∧ ε * ϕ x ≤ ε' * ϕ x' ∧ ∀ y, d x' y ≤ ε' → ϕ y ≤ 2 * ϕ x' := by
   by_contra H

@@ -83,7 +83,7 @@ open DirectSum SetLike.GradedMonoid Localization
 
 open Finset hiding mk_zero
 
-variable {R A : Type _}
+variable {R A : Type*}
 
 variable [CommRing R] [CommRing A] [Algebra R A]
 

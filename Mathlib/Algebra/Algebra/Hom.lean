@@ -45,8 +45,8 @@ notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`.  -/
-class AlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _))
-  (B : outParam (Type _)) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+class AlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
+  (B : outParam (Type*)) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
   [Algebra R B] extends RingHomClass F A B where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_hom_class AlgHomClass
@@ -59,7 +59,7 @@ class AlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _))
 
 namespace AlgHomClass
 
-variable {R : Type _} {A : Type _} {B : Type _} [CommSemiring R] [Semiring A] [Semiring B]
+variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B]
 
 -- see Note [lower instance priority]
@@ -73,12 +73,12 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def toAlgHom {F : Type _} [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
+def toAlgHom {F : Type*} [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
   { (f : A →+* B) with
       toFun := f
       commutes' := AlgHomClass.commutes f }
 
-instance coeTC {F : Type _} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
+instance coeTC {F : Type*} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
 #align alg_hom_class.alg_hom.has_coe_t AlgHomClass.coeTC
 
@@ -118,7 +118,7 @@ def Simps.apply {R α β : Type _} [CommSemiring R]
 initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type _} [AlgHomClass F R A B] (f : F) : ⇑(f : A →ₐ[R] B) = f :=
+protected theorem coe_coe {F : Type*} [AlgHomClass F R A B] (f : F) : ⇑(f : A →ₐ[R] B) = f :=
   rfl
 #align alg_hom.coe_coe AlgHom.coe_coe
 
@@ -264,12 +264,12 @@ protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
   map_smul _ _ _
 #align alg_hom.map_smul AlgHom.map_smul
 
-protected theorem map_sum {ι : Type _} (f : ι → A) (s : Finset ι) :
+protected theorem map_sum {ι : Type*} (f : ι → A) (s : Finset ι) :
     φ (∑ x in s, f x) = ∑ x in s, φ (f x) :=
   map_sum _ _ _
 #align alg_hom.map_sum AlgHom.map_sum
 
-protected theorem map_finsupp_sum {α : Type _} [Zero α] {ι : Type _} (f : ι →₀ α) (g : ι → α → A) :
+protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
     φ (f.sum g) = f.sum fun i a => φ (g i a) :=
   map_finsupp_sum _ _ _
 #align alg_hom.map_finsupp_sum AlgHom.map_finsupp_sum
@@ -460,12 +460,12 @@ protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).pr
   map_multiset_prod _ _
 #align alg_hom.map_multiset_prod AlgHom.map_multiset_prod
 
-protected theorem map_prod {ι : Type _} (f : ι → A) (s : Finset ι) :
+protected theorem map_prod {ι : Type*} (f : ι → A) (s : Finset ι) :
     φ (∏ x in s, f x) = ∏ x in s, φ (f x) :=
   map_prod _ _ _
 #align alg_hom.map_prod AlgHom.map_prod
 
-protected theorem map_finsupp_prod {α : Type _} [Zero α] {ι : Type _} (f : ι →₀ α) (g : ι → α → A) :
+protected theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
     φ (f.prod g) = f.prod fun i a => φ (g i a) :=
   map_finsupp_prod _ _ _
 #align alg_hom.map_finsupp_prod AlgHom.map_finsupp_prod
@@ -492,7 +492,7 @@ end AlgHom
 
 namespace RingHom
 
-variable {R S : Type _}
+variable {R S : Type*}
 
 /-- Reinterpret a `RingHom` as an `ℕ`-algebra homomorphism. -/
 def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
@@ -522,7 +522,7 @@ end RingHom
 
 section
 
-variable {R S : Type _}
+variable {R S : Type*}
 
 @[simp]
 theorem AlgHom.toRingHom_toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S]
@@ -563,7 +563,7 @@ end Algebra
 
 namespace MulSemiringAction
 
-variable {M G : Type _} (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 

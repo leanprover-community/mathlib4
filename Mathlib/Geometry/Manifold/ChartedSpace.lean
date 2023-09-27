@@ -52,7 +52,7 @@ under composition and inverse, to which the change of coordinates should belong.
   the groupoid `G`. We avoid the word diffeomorphism, keeping it for the smooth category.
 
 As a basic example, we give the instance
-`instance chartedSpaceSelf (H : Type _) [TopologicalSpace H] : ChartedSpace H H`
+`instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H`
 saying that a topological space is a charted space over itself, with the identity as unique chart.
 This charted space structure is compatible with any groupoid.
 
@@ -116,7 +116,7 @@ open Classical Topology Filter
 
 universe u
 
-variable {H : Type u} {H' : Type _} {M : Type _} {M' : Type _} {M'' : Type _}
+variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
 
 /- Notational shortcut for the composition of local homeomorphisms and local equivs, i.e.,
 `LocalHomeomorph.trans` and `LocalEquiv.trans`.
@@ -289,7 +289,7 @@ instance (H : Type u) [TopologicalSpace H] : Inhabited (StructureGroupoid H) :=
 and its inverse have some property. If this property is stable under composition,
 one gets a groupoid. `Pregroupoid` bundles the properties needed for this construction, with the
 groupoid of smooth functions with smooth inverses as an application. -/
-structure Pregroupoid (H : Type _) [TopologicalSpace H] where
+structure Pregroupoid (H : Type*) [TopologicalSpace H] where
   property : (H → H) → Set H → Prop
   comp : ∀ {f g u v}, property f u → property g v →
     IsOpen u → IsOpen v → IsOpen (u ∩ f ⁻¹' v) → property (g ∘ f) (u ∩ f ⁻¹' v)
@@ -361,7 +361,7 @@ theorem mem_pregroupoid_of_eq_on_source (PG : Pregroupoid H) {e e' : LocalHomeom
 
 /-- The pregroupoid of all local maps on a topological space `H`. -/
 @[reducible]
-def continuousPregroupoid (H : Type _) [TopologicalSpace H] : Pregroupoid H where
+def continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
   property _ _ := True
   comp _ _ _ _ _ := trivial
   id_mem := trivial
@@ -369,11 +369,11 @@ def continuousPregroupoid (H : Type _) [TopologicalSpace H] : Pregroupoid H wher
   congr _ _ _ := trivial
 #align continuous_pregroupoid continuousPregroupoid
 
-instance (H : Type _) [TopologicalSpace H] : Inhabited (Pregroupoid H) :=
+instance (H : Type*) [TopologicalSpace H] : Inhabited (Pregroupoid H) :=
   ⟨continuousPregroupoid H⟩
 
 /-- The groupoid of all local homeomorphisms on a topological space `H`. -/
-def continuousGroupoid (H : Type _) [TopologicalSpace H] : StructureGroupoid H :=
+def continuousGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H :=
   Pregroupoid.groupoid (continuousPregroupoid H)
 #align continuous_groupoid continuousGroupoid
 
@@ -485,35 +485,35 @@ given topological space. For instance, a complex manifold (modelled over `ℂ^n`
 sometimes as a real manifold over `ℝ^(2n)`.
 -/
 @[ext]
-class ChartedSpace (H : Type _) [TopologicalSpace H] (M : Type _) [TopologicalSpace M] where
+class ChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M] where
   protected atlas : Set (LocalHomeomorph M H)
   protected chartAt : M → LocalHomeomorph M H
   protected mem_chart_source : ∀ x, x ∈ (chartAt x).source
   protected chart_mem_atlas : ∀ x, chartAt x ∈ atlas
 #align charted_space ChartedSpace
 
-abbrev atlas (H : Type _) [TopologicalSpace H] (M : Type _) [TopologicalSpace M]
+abbrev atlas (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
     [ChartedSpace H M] : Set (LocalHomeomorph M H) :=
   ChartedSpace.atlas
 
-abbrev chartAt (H : Type _) [TopologicalSpace H] {M : Type _} [TopologicalSpace M]
+abbrev chartAt (H : Type*) [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
     [ChartedSpace H M] (x : M) : LocalHomeomorph M H :=
   ChartedSpace.chartAt x
 
 @[simp, mfld_simps]
-lemma mem_chart_source (H : Type _) {M : Type _} [TopologicalSpace H] [TopologicalSpace M]
+lemma mem_chart_source (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
     [ChartedSpace H M] (x : M) : x ∈ (chartAt H x).source :=
   ChartedSpace.mem_chart_source x
 
 @[simp, mfld_simps]
-lemma chart_mem_atlas (H : Type _) {M : Type _} [TopologicalSpace H] [TopologicalSpace M]
+lemma chart_mem_atlas (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
     [ChartedSpace H M] (x : M) : chartAt H x ∈ atlas H M :=
   ChartedSpace.chart_mem_atlas x
 
 section ChartedSpace
 
 /-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
-instance chartedSpaceSelf (H : Type _) [TopologicalSpace H] : ChartedSpace H H where
+instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
   atlas := {LocalHomeomorph.refl H}
   chartAt _ := LocalHomeomorph.refl H
   mem_chart_source x := mem_univ x
@@ -523,13 +523,13 @@ instance chartedSpaceSelf (H : Type _) [TopologicalSpace H] : ChartedSpace H H w
 /-- In the trivial `ChartedSpace` structure of a space modelled over itself through the identity,
 the atlas members are just the identity. -/
 @[simp, mfld_simps]
-theorem chartedSpaceSelf_atlas {H : Type _} [TopologicalSpace H] {e : LocalHomeomorph H H} :
+theorem chartedSpaceSelf_atlas {H : Type*} [TopologicalSpace H] {e : LocalHomeomorph H H} :
     e ∈ atlas H H ↔ e = LocalHomeomorph.refl H :=
   Iff.rfl
 #align charted_space_self_atlas chartedSpaceSelf_atlas
 
 /-- In the model space, `chartAt` is always the identity. -/
-theorem chartAt_self_eq {H : Type _} [TopologicalSpace H] {x : H} :
+theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
     chartAt H x = LocalHomeomorph.refl H := rfl
 #align chart_at_self_eq chartAt_self_eq
 
@@ -625,8 +625,8 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
 
 /-- If `M` is modelled on `H'` and `H'` is itself modelled on `H`, then we can consider `M` as being
 modelled on `H`. -/
-def ChartedSpace.comp (H : Type _) [TopologicalSpace H] (H' : Type _) [TopologicalSpace H']
-    (M : Type _) [TopologicalSpace M] [ChartedSpace H H'] [ChartedSpace H' M] :
+def ChartedSpace.comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H']
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H H'] [ChartedSpace H' M] :
     ChartedSpace H M where
   atlas := image2 LocalHomeomorph.trans (atlas H' M) (atlas H H')
   chartAt p := (chartAt H' p).trans (chartAt H (chartAt H' p p))
@@ -634,8 +634,8 @@ def ChartedSpace.comp (H : Type _) [TopologicalSpace H] (H' : Type _) [Topologic
   chart_mem_atlas p := ⟨chartAt _ p, chartAt _ _, chart_mem_atlas _ p, chart_mem_atlas _ _, rfl⟩
 #align charted_space.comp ChartedSpace.comp
 
-theorem chartAt_comp (H : Type _) [TopologicalSpace H] (H' : Type _) [TopologicalSpace H']
-    {M : Type _} [TopologicalSpace M] [ChartedSpace H H'] [ChartedSpace H' M] (x : M) :
+theorem chartAt_comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H']
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H H'] [ChartedSpace H' M] (x : M) :
     (letI := ChartedSpace.comp H H' M; chartAt H x) = chartAt H' x ≫ₕ chartAt H (chartAt H' x x) :=
   rfl
 
@@ -644,7 +644,7 @@ end
 library_note "Manifold type tags" /-- For technical reasons we introduce two type tags:
 
 * `ModelProd H H'` is the same as `H × H'`;
-* `ModelPi H` is the same as `∀ i, H i`, where `H : ι → Type _` and `ι` is a finite type.
+* `ModelPi H` is the same as `∀ i, H i`, where `H : ι → Type*` and `ι` is a finite type.
 
 In both cases the reason is the same, so we explain it only in the case of the product. A charted
 space `M` with model `H` is a set of local charts from `M` to `H` covering the space. Every space is
@@ -659,13 +659,13 @@ solves this problem. -/
 
 /-- Same thing as `H × H'`. We introduce it for technical reasons,
 see note [Manifold type tags]. -/
-def ModelProd (H : Type _) (H' : Type _) :=
+def ModelProd (H : Type*) (H' : Type*) :=
   H × H'
 #align model_prod ModelProd
 
 /-- Same thing as `∀ i, H i`. We introduce it for technical reasons,
 see note [Manifold type tags]. -/
-def ModelPi {ι : Type _} (H : ι → Type _) :=
+def ModelPi {ι : Type*} (H : ι → Type*) :=
   ∀ i, H i
 #align model_pi ModelPi
 
@@ -677,14 +677,14 @@ instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd 
   instInhabitedProd
 #align model_prod_inhabited modelProdInhabited
 
-instance (H : Type _) [TopologicalSpace H] (H' : Type _) [TopologicalSpace H'] :
+instance (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
     TopologicalSpace (ModelProd H H') :=
   instTopologicalSpaceProd
 
 -- Porting note: simpNF false positive
 -- Next lemma shows up often when dealing with derivatives, register it as simp.
 @[simp, mfld_simps, nolint simpNF]
-theorem modelProd_range_prod_id {H : Type _} {H' : Type _} {α : Type _} (f : H → α) :
+theorem modelProd_range_prod_id {H : Type*} {H' : Type*} {α : Type*} (f : H → α) :
     (range fun p : ModelProd H H' ↦ (f p.1, p.2)) = range f ×ˢ (univ : Set H') := by
   rw [prod_range_univ_eq]
   rfl
@@ -694,7 +694,7 @@ end
 
 section
 
-variable {ι : Type _} {Hi : ι → Type _}
+variable {ι : Type*} {Hi : ι → Type*}
 
 -- Porting note: Old proof was `Pi.inhabited _`.
 instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
@@ -708,8 +708,8 @@ end
 
 /-- The product of two charted spaces is naturally a charted space, with the canonical
 construction of the atlas of product maps. -/
-instance prodChartedSpace (H : Type _) [TopologicalSpace H] (M : Type _) [TopologicalSpace M]
-    [ChartedSpace H M] (H' : Type _) [TopologicalSpace H'] (M' : Type _) [TopologicalSpace M']
+instance prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
+    [ChartedSpace H M] (H' : Type*) [TopologicalSpace H'] (M' : Type*) [TopologicalSpace M']
     [ChartedSpace H' M'] : ChartedSpace (ModelProd H H') (M × M') where
   atlas := image2 LocalHomeomorph.prod (atlas H M) (atlas H' M')
   chartAt x := (chartAt H x.1).prod (chartAt H' x.2)
@@ -744,8 +744,8 @@ end prodChartedSpace
 
 /-- The product of a finite family of charted spaces is naturally a charted space, with the
 canonical construction of the atlas of finite product maps. -/
-instance piChartedSpace {ι : Type _} [Fintype ι] (H : ι → Type _) [∀ i, TopologicalSpace (H i)]
-    (M : ι → Type _) [∀ i, TopologicalSpace (M i)] [∀ i, ChartedSpace (H i) (M i)] :
+instance piChartedSpace {ι : Type*} [Fintype ι] (H : ι → Type*) [∀ i, TopologicalSpace (H i)]
+    (M : ι → Type*) [∀ i, TopologicalSpace (M i)] [∀ i, ChartedSpace (H i) (M i)] :
     ChartedSpace (ModelPi H) (∀ i, M i) where
   atlas := LocalHomeomorph.pi '' Set.pi univ fun _ ↦ atlas (H _) (M _)
   chartAt f := LocalHomeomorph.pi fun i ↦ chartAt (H i) (f i)
@@ -754,8 +754,8 @@ instance piChartedSpace {ι : Type _} [Fintype ι] (H : ι → Type _) [∀ i, T
 #align pi_charted_space piChartedSpace
 
 @[simp, mfld_simps]
-theorem piChartedSpace_chartAt {ι : Type _} [Fintype ι] (H : ι → Type _)
-    [∀ i, TopologicalSpace (H i)] (M : ι → Type _) [∀ i, TopologicalSpace (M i)]
+theorem piChartedSpace_chartAt {ι : Type*} [Fintype ι] (H : ι → Type*)
+    [∀ i, TopologicalSpace (H i)] (M : ι → Type*) [∀ i, TopologicalSpace (M i)]
     [∀ i, ChartedSpace (H i) (M i)] (f : ∀ i, M i) :
     chartAt (H := ModelPi H) f = LocalHomeomorph.pi fun i ↦ chartAt (H i) (f i) :=
   rfl
@@ -771,7 +771,7 @@ have a topological structure, where the topology would come from the charts. For
 charts that are only local equivs, and continuity properties for their composition.
 This is formalised in `ChartedSpaceCore`. -/
 -- @[nolint has_nonempty_instance]  -- Porting note: commented out
-structure ChartedSpaceCore (H : Type _) [TopologicalSpace H] (M : Type _) where
+structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   atlas : Set (LocalEquiv M H)
   chartAt : M → LocalEquiv M H
   mem_chart_source : ∀ x, x ∈ (chartAt x).source
@@ -864,7 +864,7 @@ variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 
 /-- A charted space has an atlas in a groupoid `G` if the change of coordinates belong to the
 groupoid. -/
-class HasGroupoid {H : Type _} [TopologicalSpace H] (M : Type _) [TopologicalSpace M]
+class HasGroupoid {H : Type*} [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
     [ChartedSpace H M] (G : StructureGroupoid H) : Prop where
   compatible : ∀ {e e' : LocalHomeomorph M H}, e ∈ atlas H M → e' ∈ atlas H M → e.symm ≫ₕ e' ∈ G
 #align has_groupoid HasGroupoid
@@ -872,8 +872,8 @@ class HasGroupoid {H : Type _} [TopologicalSpace H] (M : Type _) [TopologicalSpa
 /-- Reformulate in the `StructureGroupoid` namespace the compatibility condition of charts in a
 charted space admitting a structure groupoid, to make it more easily accessible with dot
 notation. -/
-theorem StructureGroupoid.compatible {H : Type _} [TopologicalSpace H] (G : StructureGroupoid H)
-    {M : Type _} [TopologicalSpace M] [ChartedSpace H M] [HasGroupoid M G]
+theorem StructureGroupoid.compatible {H : Type*} [TopologicalSpace H] (G : StructureGroupoid H)
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [HasGroupoid M G]
     {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) : e.symm ≫ₕ e' ∈ G :=
   HasGroupoid.compatible he he'
 #align structure_groupoid.compatible StructureGroupoid.compatible
@@ -890,7 +890,7 @@ theorem hasGroupoid_of_pregroupoid (PG : Pregroupoid H) (h : ∀ {e e' : LocalHo
 #align has_groupoid_of_pregroupoid hasGroupoid_of_pregroupoid
 
 /-- The trivial charted space structure on the model space is compatible with any groupoid. -/
-instance hasGroupoid_model_space (H : Type _) [TopologicalSpace H] (G : StructureGroupoid H) :
+instance hasGroupoid_model_space (H : Type*) [TopologicalSpace H] (G : StructureGroupoid H) :
     HasGroupoid H G where
   compatible {e e'} he he' := by
     rw [chartedSpaceSelf_atlas] at he he'
@@ -978,7 +978,7 @@ end MaximalAtlas
 
 section Singleton
 
-variable {α : Type _} [TopologicalSpace α]
+variable {α : Type*} [TopologicalSpace α]
 
 namespace LocalHomeomorph
 
@@ -1108,7 +1108,7 @@ end TopologicalSpace.Opens
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
 -- @[nolint has_nonempty_instance]  -- Porting note: commented out
-structure Structomorph (G : StructureGroupoid H) (M : Type _) (M' : Type _) [TopologicalSpace M]
+structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where
   mem_groupoid : ∀ c : LocalHomeomorph M H, ∀ c' : LocalHomeomorph M' H, c ∈ atlas H M →
     c' ∈ atlas H M' → c.symm ≫ₕ toHomeomorph.toLocalHomeomorph ≫ₕ c' ∈ G
@@ -1118,7 +1118,7 @@ variable [TopologicalSpace M'] [TopologicalSpace M''] {G : StructureGroupoid H} 
   [ChartedSpace H M'']
 
 /-- The identity is a diffeomorphism of any charted space, for any groupoid. -/
-def Structomorph.refl (M : Type _) [TopologicalSpace M] [ChartedSpace H M] [HasGroupoid M G] :
+def Structomorph.refl (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [HasGroupoid M G] :
     Structomorph G M M :=
   { Homeomorph.refl M with
     mem_groupoid := fun c c' hc hc' ↦ by

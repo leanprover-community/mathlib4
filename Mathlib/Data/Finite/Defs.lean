@@ -34,7 +34,7 @@ instead.
 ## Implementation notes
 
 The definition of `Finite α` is not just `Nonempty (Fintype α)` since `Fintype` requires
-that `α : Type _`, and the definition in this module allows for `α : Sort*`. This means
+that `α : Type*`, and the definition in this module allows for `α : Sort*`. This means
 we can write the instance `Finite.prop`.
 
 ## Tags
@@ -47,7 +47,7 @@ universe u v
 
 open Function
 
-variable {α β : Sort _}
+variable {α β : Sort*}
 
 /-- A type is `Finite` if it is in bijective correspondence to some
 `Fin n`.
@@ -55,19 +55,19 @@ variable {α β : Sort _}
 While this could be defined as `Nonempty (Fintype α)`, it is defined
 in this way to allow there to be `Finite` instances for propositions.
 -/
-class inductive Finite (α : Sort _) : Prop
+class inductive Finite (α : Sort*) : Prop
   | intro {n : ℕ} : α ≃ Fin n → Finite _
 #align finite Finite
 
-theorem finite_iff_exists_equiv_fin {α : Sort _} : Finite α ↔ ∃ n, Nonempty (α ≃ Fin n) :=
+theorem finite_iff_exists_equiv_fin {α : Sort*} : Finite α ↔ ∃ n, Nonempty (α ≃ Fin n) :=
   ⟨fun ⟨e⟩ => ⟨_, ⟨e⟩⟩, fun ⟨_, ⟨e⟩⟩ => ⟨e⟩⟩
 #align finite_iff_exists_equiv_fin finite_iff_exists_equiv_fin
 
-theorem Finite.exists_equiv_fin (α : Sort _) [h : Finite α] : ∃ n : ℕ, Nonempty (α ≃ Fin n) :=
+theorem Finite.exists_equiv_fin (α : Sort*) [h : Finite α] : ∃ n : ℕ, Nonempty (α ≃ Fin n) :=
   finite_iff_exists_equiv_fin.mp h
 #align finite.exists_equiv_fin Finite.exists_equiv_fin
 
-theorem Finite.of_equiv (α : Sort _) [h : Finite α] (f : α ≃ β) : Finite β := by
+theorem Finite.of_equiv (α : Sort*) [h : Finite α] (f : α ≃ β) : Finite β := by
   cases' h with n e
   exact Finite.intro (f.symm.trans e)
 #align finite.of_equiv Finite.of_equiv
@@ -92,7 +92,7 @@ instance {α : Type v} [Finite α] : Finite (ULift.{u} α) :=
 
 /-- A type is said to be infinite if it is not finite. Note that `Infinite α` is equivalent to
 `IsEmpty (Fintype α)` or `IsEmpty (Finite α)`. -/
-class Infinite (α : Sort _) : Prop where
+class Infinite (α : Sort*) : Prop where
   /-- assertion that `α` is `¬Finite`-/
   not_finite : ¬Finite α
 #align infinite Infinite
@@ -117,12 +117,12 @@ instance [Infinite α] : Infinite (PLift α) :=
 instance {α : Type v} [Infinite α] : Infinite (ULift.{u} α) :=
   Equiv.ulift.infinite_iff.2 ‹_›
 
-theorem finite_or_infinite (α : Sort _) : Finite α ∨ Infinite α :=
+theorem finite_or_infinite (α : Sort*) : Finite α ∨ Infinite α :=
   or_iff_not_imp_left.2 not_finite_iff_infinite.1
 #align finite_or_infinite finite_or_infinite
 
 /-- `Infinite α` is not `Finite`-/
-theorem not_finite (α : Sort _) [Infinite α] [Finite α] : False :=
+theorem not_finite (α : Sort*) [Infinite α] [Finite α] : False :=
   @Infinite.not_finite α ‹_› ‹_›
 #align not_finite not_finite
 

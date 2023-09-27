@@ -37,7 +37,7 @@ noncomputable section
 
 namespace AddMonoidAlgebra
 
-variable {M : Type _} {ι : Type _} {R : Type _} [DecidableEq M]
+variable {M : Type*} {ι : Type*} {R : Type*} [DecidableEq M]
 
 section
 

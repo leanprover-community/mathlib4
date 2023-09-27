@@ -29,7 +29,7 @@ open BigOperators
 
 open Fintype
 
-variable (M : Type _) [Mul M]
+variable (M : Type*) [Mul M]
 
 /-- The commuting probability of a finite type with a multiplication operation. -/
 def commProb : ℚ :=
@@ -41,14 +41,14 @@ theorem commProb_def :
   rfl
 #align comm_prob_def commProb_def
 
-theorem commProb_prod (M' : Type _) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
+theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
   simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ←Nat.cast_mul,
     ←Nat.card_prod, Commute, SemiconjBy, Prod.ext_iff]
   congr 2
   exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
     fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
 
-theorem commProb_pi (i : α → Type _) [Fintype α] [∀ a, Mul (i a)] :
+theorem commProb_pi (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
     commProb (∀ a, i a) = ∏ a, commProb (i a) := by
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ←Nat.cast_prod,
     ←Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
@@ -90,7 +90,7 @@ theorem commProb_eq_one_iff [h : Nonempty M] :
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
 #align comm_prob_eq_one_iff commProb_eq_one_iff
 
-variable (G : Type _) [Group G]
+variable (G : Type*) [Group G]
 
 theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
   rw [commProb, card_comm_eq_card_conjClasses_mul_card, Nat.cast_mul, sq]

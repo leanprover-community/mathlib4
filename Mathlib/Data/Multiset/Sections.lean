@@ -14,7 +14,7 @@ import Mathlib.Data.Multiset.Bind
 
 namespace Multiset
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Sections
 

@@ -76,7 +76,7 @@ open scoped ENNReal NNReal
 
 open MeasureTheory MeasureTheory.Measure
 
-variable {α : Type _} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] (μ : Measure α)
+variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] (μ : Measure α)
   [WeaklyRegular μ]
 
 namespace MeasureTheory

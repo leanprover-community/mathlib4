@@ -192,7 +192,7 @@ end
 
 section
 
-variable {E : Type _} [Category E] {F G : C ⥤ D} (H : D ⥤ E) [Full H] [Faithful H]
+variable {E : Type*} [Category E] {F G : C ⥤ D} (H : D ⥤ E) [Full H] [Faithful H]
 
 /-- We can construct a natural transformation between functors by constructing a
 natural transformation between those functors composed with a fully faithful functor. -/

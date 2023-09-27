@@ -44,7 +44,7 @@ TODO: generalize `Nat.le_of_le_of_sub_le_sub_right`, `Nat.sub_le_sub_right_iff`,
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- `OrderedSub α` means that `α` has a subtraction characterized by `a - b ≤ c ↔ a ≤ c + b`.
 In other words, `a - b` is the least `c` such that `a ≤ b + c`.
@@ -52,7 +52,7 @@ In other words, `a - b` is the least `c` such that `a ≤ b + c`.
 This is satisfied both by the subtraction in additive ordered groups and by truncated subtraction
 in canonically ordered monoids on many specific types.
 -/
-class OrderedSub (α : Type _) [LE α] [Add α] [Sub α] : Prop where
+class OrderedSub (α : Type*) [LE α] [Add α] [Sub α] : Prop where
   /-- `a - b` provides a lower bound on `c` such that `a ≤ c + b`. -/
   tsub_le_iff_right : ∀ a b c : α, a - b ≤ c ↔ a ≤ c + b
 #align has_ordered_sub OrderedSub

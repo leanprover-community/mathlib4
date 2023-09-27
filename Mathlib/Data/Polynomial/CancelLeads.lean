@@ -28,7 +28,7 @@ noncomputable section
 
 open Polynomial
 
-variable {R : Type _}
+variable {R : Type*}
 
 section Ring
 

@@ -27,7 +27,7 @@ ultraproduct, Los's theorem
 
 universe u v
 
-variable {α : Type _} (M : α → Type _) (u : Ultrafilter α)
+variable {α : Type*} (M : α → Type*) (u : Ultrafilter α)
 
 open FirstOrder Filter
 
@@ -80,7 +80,7 @@ theorem funMap_cast {n : ℕ} (f : L.Functions n) (x : Fin n → ∀ a, M a) :
   apply funMap_quotient_mk'
 #align first_order.language.ultraproduct.fun_map_cast FirstOrder.Language.Ultraproduct.funMap_cast
 
-theorem term_realize_cast {β : Type _} (x : β → ∀ a, M a) (t : L.Term β) :
+theorem term_realize_cast {β : Type*} (x : β → ∀ a, M a) (t : L.Term β) :
     (t.realize fun i => (x i : (u : Filter α).Product M)) =
       (fun a => t.realize fun i => x i a : (u : Filter α).Product M) := by
   convert @Term.realize_quotient_mk' L _ ((u : Filter α).productSetoid M)
@@ -96,7 +96,7 @@ theorem term_realize_cast {β : Type _} (x : β → ∀ a, M a) (t : L.Term β) 
 
 variable [∀ a : α, Nonempty (M a)]
 
-theorem boundedFormula_realize_cast {β : Type _} {n : ℕ} (φ : L.BoundedFormula β n)
+theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormula β n)
     (x : β → ∀ a, M a) (v : Fin n → ∀ a, M a) :
     (φ.Realize (fun i : β => (x i : (u : Filter α).Product M))
         (fun i => (v i : (u : Filter α).Product M))) ↔
@@ -147,7 +147,7 @@ theorem boundedFormula_realize_cast {β : Type _} {n : ℕ} (φ : L.BoundedFormu
       exact Filter.mem_of_superset h fun a ha => ha (m a)
 #align first_order.language.ultraproduct.bounded_formula_realize_cast FirstOrder.Language.Ultraproduct.boundedFormula_realize_cast
 
-theorem realize_formula_cast {β : Type _} (φ : L.Formula β) (x : β → ∀ a, M a) :
+theorem realize_formula_cast {β : Type*} (φ : L.Formula β) (x : β → ∀ a, M a) :
     (φ.Realize fun i => (x i : (u : Filter α).Product M)) ↔
       ∀ᶠ a : α in u, φ.Realize fun i => x i a := by
   simp_rw [Formula.Realize, ← boundedFormula_realize_cast φ x, iff_eq_eq]

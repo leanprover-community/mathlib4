@@ -28,7 +28,7 @@ open CategoryTheory Limits HomologicalComplex
 
 variable {R : Type v} [Ring R]
 
-variable {ι : Type _} {c : ComplexShape ι} {C D : HomologicalComplex (ModuleCat.{u} R) c}
+variable {ι : Type*} {c : ComplexShape ι} {C D : HomologicalComplex (ModuleCat.{u} R) c}
 
 namespace ModuleCat
 

@@ -41,18 +41,18 @@ structure SemilatInfCat : Type (u + 1) where
 
 namespace SemilatSupCat
 
-instance : CoeSort SemilatSupCat (Type _) :=
+instance : CoeSort SemilatSupCat (Type*) :=
   ⟨SemilatSupCat.X⟩
 
 attribute [instance] isSemilatticeSup isOrderBot
 
 /-- Construct a bundled `SemilatSupCat` from a `SemilatticeSup`. -/
-def of (α : Type _) [SemilatticeSup α] [OrderBot α] : SemilatSupCat :=
+def of (α : Type*) [SemilatticeSup α] [OrderBot α] : SemilatSupCat :=
   ⟨α⟩
 #align SemilatSup.of SemilatSupCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [SemilatticeSup α] [OrderBot α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [SemilatticeSup α] [OrderBot α] : ↥(of α) = α :=
   rfl
 #align SemilatSup.coe_of SemilatSupCat.coe_of
 
@@ -96,18 +96,18 @@ end SemilatSupCat
 
 namespace SemilatInfCat
 
-instance : CoeSort SemilatInfCat (Type _) :=
+instance : CoeSort SemilatInfCat (Type*) :=
   ⟨SemilatInfCat.X⟩
 
 attribute [instance] isSemilatticeInf isOrderTop
 
 /-- Construct a bundled `SemilatInfCat` from a `SemilatticeInf`. -/
-def of (α : Type _) [SemilatticeInf α] [OrderTop α] : SemilatInfCat :=
+def of (α : Type*) [SemilatticeInf α] [OrderTop α] : SemilatInfCat :=
   ⟨α⟩
 #align SemilatInf.of SemilatInfCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [SemilatticeInf α] [OrderTop α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [SemilatticeInf α] [OrderTop α] : ↥(of α) = α :=
   rfl
 #align SemilatInf.coe_of SemilatInfCat.coe_of
 

@@ -38,21 +38,21 @@ universe u v
 variable {α : Type u} {β : Type v}
 
 /-- Predicate for maps which preserve an addition. -/
-structure IsAddHom {α β : Type _} [Add α] [Add β] (f : α → β) : Prop where
+structure IsAddHom {α β : Type*} [Add α] [Add β] (f : α → β) : Prop where
   /-- The proposition that `f` preserves addition. -/
   map_add : ∀ x y, f (x + y) = f x + f y
 #align is_add_hom IsAddHom
 
 /-- Predicate for maps which preserve a multiplication. -/
 @[to_additive]
-structure IsMulHom {α β : Type _} [Mul α] [Mul β] (f : α → β) : Prop where
+structure IsMulHom {α β : Type*} [Mul α] [Mul β] (f : α → β) : Prop where
   /-- The proposition that `f` preserves multiplication. -/
   map_mul : ∀ x y, f (x * y) = f x * f y
 #align is_mul_hom IsMulHom
 
 namespace IsMulHom
 
-variable [Mul α] [Mul β] {γ : Type _} [Mul γ]
+variable [Mul α] [Mul β] {γ : Type*} [Mul γ]
 
 /-- The identity map preserves multiplication. -/
 @[to_additive "The identity map preserves addition"]
@@ -109,7 +109,7 @@ structure IsMonoidHom [MulOneClass α] [MulOneClass β] (f : α → β) extends 
 
 namespace MonoidHom
 
-variable {M : Type _} {N : Type _} {mM : MulOneClass M} {mN : MulOneClass N}
+variable {M : Type*} {N : Type*} {mM : MulOneClass M} {mN : MulOneClass N}
 
 /-- Interpret a map `f : M → N` as a homomorphism `M →* N`. -/
 @[to_additive "Interpret a map `f : M → N` as a homomorphism `M →+ N`."]
@@ -138,7 +138,7 @@ end MonoidHom
 
 namespace MulEquiv
 
-variable {M : Type _} {N : Type _} [MulOneClass M] [MulOneClass N]
+variable {M : Type*} {N : Type*} [MulOneClass M] [MulOneClass N]
 
 /-- A multiplicative isomorphism preserves multiplication (deprecated). -/
 @[to_additive "An additive isomorphism preserves addition (deprecated)."]
@@ -223,14 +223,14 @@ end IsMonoidHom
 namespace IsAddMonoidHom
 
 /-- Left multiplication in a ring is an additive monoid morphism. -/
-theorem isAddMonoidHom_mul_left {γ : Type _} [NonUnitalNonAssocSemiring γ] (x : γ) :
+theorem isAddMonoidHom_mul_left {γ : Type*} [NonUnitalNonAssocSemiring γ] (x : γ) :
     IsAddMonoidHom fun y : γ => x * y :=
   { map_zero := mul_zero x
     map_add := fun y z => mul_add x y z }
 #align is_add_monoid_hom.is_add_monoid_hom_mul_left IsAddMonoidHom.isAddMonoidHom_mul_left
 
 /-- Right multiplication in a ring is an additive monoid morphism. -/
-theorem isAddMonoidHom_mul_right {γ : Type _} [NonUnitalNonAssocSemiring γ] (x : γ) :
+theorem isAddMonoidHom_mul_right {γ : Type*} [NonUnitalNonAssocSemiring γ] (x : γ) :
     IsAddMonoidHom fun y : γ => y * x :=
   { map_zero := zero_mul x
     map_add := fun y z => add_mul y z x }
@@ -248,14 +248,14 @@ structure IsGroupHom [Group α] [Group β] (f : α → β) extends IsMulHom f : 
 #align is_group_hom IsGroupHom
 
 @[to_additive]
-theorem MonoidHom.isGroupHom {G H : Type _} {_ : Group G} {_ : Group H} (f : G →* H) :
+theorem MonoidHom.isGroupHom {G H : Type*} {_ : Group G} {_ : Group H} (f : G →* H) :
     IsGroupHom (f : G → H) :=
   { map_mul := f.map_mul }
 #align monoid_hom.is_group_hom MonoidHom.isGroupHom
 #align add_monoid_hom.is_add_group_hom AddMonoidHom.isAddGroupHom
 
 @[to_additive]
-theorem MulEquiv.isGroupHom {G H : Type _} {_ : Group G} {_ : Group H} (h : G ≃* H) :
+theorem MulEquiv.isGroupHom {G H : Type*} {_ : Group G} {_ : Group H} (h : G ≃* H) :
     IsGroupHom h :=
   { map_mul := h.map_mul }
 #align mul_equiv.is_group_hom MulEquiv.isGroupHom
@@ -362,7 +362,7 @@ Nevertheless these are harmless, and helpful for stripping out dependencies on `
 -/
 
 
-variable {R : Type _} {S : Type _}
+variable {R : Type*} {S : Type*}
 
 section
 
@@ -409,7 +409,7 @@ theorem IsAddGroupHom.sub {α β} [AddGroup α] [AddCommGroup β] {f g : α → 
 
 namespace Units
 
-variable {M : Type _} {N : Type _} [Monoid M] [Monoid N]
+variable {M : Type*} {N : Type*} [Monoid M] [Monoid N]
 
 /-- The group homomorphism on units induced by a multiplicative morphism. -/
 @[reducible]
@@ -430,7 +430,7 @@ end Units
 
 namespace IsUnit
 
-variable {M : Type _} {N : Type _} [Monoid M] [Monoid N] {x : M}
+variable {M : Type*} {N : Type*} [Monoid M] [Monoid N] {x : M}
 
 theorem map' {f : M → N} (hf : IsMonoidHom f) {x : M} (h : IsUnit x) : IsUnit (f x) :=
   h.map (MonoidHom.of hf)

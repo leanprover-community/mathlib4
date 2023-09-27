@@ -68,7 +68,7 @@ in more details below in the paragraph on associativity.
 
 noncomputable section
 
-variable {𝕜 : Type _} {E F G H : Type _}
+variable {𝕜 : Type*} {E F G H : Type*}
 
 open Filter List
 
@@ -649,7 +649,7 @@ and `comp_partial_sum_target m M N`, yielding equal sums for functions that corr
 other under the bijection. As `comp_change_of_variables m M N` is a dependent function, stating
 that it is a bijection is not directly possible, but the consequence on sums can be stated
 more easily. -/
-theorem compChangeOfVariables_sum {α : Type _} [AddCommMonoid α] (m M N : ℕ)
+theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
     (f : (Σ n : ℕ, Fin n → ℕ) → α) (g : (Σ n, Composition n) → α)
     (h : ∀ (e) (he : e ∈ compPartialSumSource m M N), f e = g (compChangeOfVariables m M N e he)) :
     ∑ e in compPartialSumSource m M N, f e = ∑ e in compPartialSumTarget m M N, g e := by

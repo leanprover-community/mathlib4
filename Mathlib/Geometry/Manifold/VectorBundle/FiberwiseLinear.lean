@@ -22,7 +22,7 @@ open scoped Manifold Topology
 /-! ### The groupoid of smooth, fiberwise-linear maps -/
 
 
-variable {𝕜 B F : Type _} [TopologicalSpace B]
+variable {𝕜 B F : Type*} [TopologicalSpace B]
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
@@ -97,7 +97,7 @@ theorem target_trans_localHomeomorph (hU : IsOpen U)
 
 end FiberwiseLinear
 
-variable {EB : Type _} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type _}
+variable {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*}
   [TopologicalSpace HB] [ChartedSpace HB B] {IB : ModelWithCorners 𝕜 EB HB}
 
 /-- Let `e` be a local homeomorphism of `B × F`.  Suppose that at every point `p` in the source of

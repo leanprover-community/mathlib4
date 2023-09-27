@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Basic
 import Mathlib.Init.Set
+import Mathlib.Tactic.Basic
 import Std.Tactic.Lint
 
 #align_import control.functor from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
@@ -73,7 +74,7 @@ namespace Functor
 `α` has a monoid structure, `Const α` has an `Applicative` instance.
 (If `α` has an additive monoid structure, see `Functor.AddConst`.) -/
 @[nolint unusedArguments]
-def Const (α : Type _) (_β : Type _) :=
+def Const (α : Type*) (_β : Type*) :=
   α
 #align functor.const Functor.Const
 
@@ -85,7 +86,7 @@ def Const.mk {α β} (x : α) : Const α β :=
 #align functor.const.mk Functor.Const.mk
 
 /-- `Const.mk'` is `Const.mk` but specialized to map `α` to
-`Const α PUnit`, where `PUnit` is the terminal object in `Type _`. -/
+`Const α PUnit`, where `PUnit` is the terminal object in `Type*`. -/
 def Const.mk' {α} (x : α) : Const α PUnit :=
   x
 #align functor.const.mk' Functor.Const.mk'
@@ -120,7 +121,7 @@ end Const
 every type to `α`. When `α` has an additive monoid structure,
 `AddConst α` has an `Applicative` instance. (If `α` has a
 multiplicative monoid structure, see `Functor.Const`.) -/
-def AddConst (α : Type _) :=
+def AddConst (α : Type*) :=
   Const α
 #align functor.add_const Functor.AddConst
 

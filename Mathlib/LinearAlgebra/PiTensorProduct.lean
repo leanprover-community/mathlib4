@@ -12,14 +12,14 @@ import Mathlib.Tactic.LibrarySearch
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
 
-We define the tensor product of an indexed family `s : ι → Type _` of modules over commutative
+We define the tensor product of an indexed family `s : ι → Type*` of modules over commutative
 semirings. We denote this space by `⨂[R] i, s i` and define it as `FreeAddMonoid (R × ∀ i, s i)`
 quotiented by the appropriate equivalence relation. The treatment follows very closely that of the
 binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 
 ## Main definitions
 
-* `PiTensorProduct R s` with `R` a commutative semiring and `s : ι → Type _` is the tensor product
+* `PiTensorProduct R s` with `R` a commutative semiring and `s : ι → Type*` is the tensor product
   of all the `s i`'s. This is denoted by `⨂[R] i, s i`.
 * `tprod R f` with `f : ∀ i, s i` is the tensor product of the vectors `f i` over all `i : ι`.
   This is bundled as a multilinear map from `∀ i, s i` to `⨂[R] i, s i`.
@@ -67,19 +67,19 @@ open Function
 
 section Semiring
 
-variable {ι ι₂ ι₃ : Type _}
+variable {ι ι₂ ι₃ : Type*}
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
-variable {R₁ R₂ : Type _}
+variable {R₁ R₂ : Type*}
 
-variable {s : ι → Type _} [∀ i, AddCommMonoid (s i)] [∀ i, Module R (s i)]
+variable {s : ι → Type*} [∀ i, AddCommMonoid (s i)] [∀ i, Module R (s i)]
 
-variable {M : Type _} [AddCommMonoid M] [Module R M]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
 
-variable {E : Type _} [AddCommMonoid E] [Module R E]
+variable {E : Type*} [AddCommMonoid E] [Module R E]
 
-variable {F : Type _} [AddCommMonoid F]
+variable {F : Type*} [AddCommMonoid F]
 
 namespace PiTensorProduct
 
@@ -104,7 +104,7 @@ end PiTensorProduct
 
 variable (R) (s)
 
-/-- `PiTensorProduct R s` with `R` a commutative semiring and `s : ι → Type _` is the tensor
+/-- `PiTensorProduct R s` with `R` a commutative semiring and `s : ι → Type*` is the tensor
   product of all the `s i`'s. This is denoted by `⨂[R] i, s i`. -/
 def PiTensorProduct : Type _ :=
   (addConGen (PiTensorProduct.Eqv R s)).Quotient
@@ -112,7 +112,7 @@ def PiTensorProduct : Type _ :=
 
 variable {R}
 
--- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type _`.
+-- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type*`.
 --scoped[TensorProduct] -- Porting note: `scoped` caused an error, so I commented it out.
 /-- notation for tensor product over some indexed type -/
 notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
@@ -660,9 +660,9 @@ open PiTensorProduct
 
 open TensorProduct
 
-variable {ι : Type _} {R : Type _} [CommRing R]
+variable {ι : Type*} {R : Type*} [CommRing R]
 
-variable {s : ι → Type _} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
+variable {s : ι → Type*} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
 
 /- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise
 this is false in the case where `ι` is empty. -/

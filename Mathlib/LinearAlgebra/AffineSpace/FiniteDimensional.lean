@@ -28,9 +28,9 @@ open BigOperators Affine
 
 section AffineSpace'
 
-variable (k : Type _) {V : Type _} {P : Type _}
+variable (k : Type*) {V : Type*} {P : Type*}
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 open AffineSubspace FiniteDimensional Module
 
@@ -676,7 +676,7 @@ end AffineSpace'
 
 section DivisionRing
 
-variable {k : Type _} {V : Type _} {P : Type _}
+variable {k : Type*} {V : Type*} {P : Type*}
 
 open AffineSubspace FiniteDimensional Module
 

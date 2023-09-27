@@ -55,12 +55,12 @@ open Filter
 
 /-- `f` has superpolynomial decay in parameter `k` along filter `l` if
   `k ^ n * f` tends to zero at `l` for all naturals `n` -/
-def SuperpolynomialDecay {α β : Type _} [TopologicalSpace β] [CommSemiring β] (l : Filter α)
+def SuperpolynomialDecay {α β : Type*} [TopologicalSpace β] [CommSemiring β] (l : Filter α)
     (k : α → β) (f : α → β) :=
   ∀ n : ℕ, Tendsto (fun a : α => k a ^ n * f a) l (𝓝 0)
 #align asymptotics.superpolynomial_decay Asymptotics.SuperpolynomialDecay
 
-variable {α β : Type _} {l : Filter α} {k : α → β} {f g g' : α → β}
+variable {α β : Type*} {l : Filter α} {k : α → β} {f g g' : α → β}
 
 section CommSemiring
 

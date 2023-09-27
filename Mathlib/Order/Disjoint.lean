@@ -24,7 +24,7 @@ This file defines `Disjoint`, `Codisjoint`, and the `IsCompl` predicate.
 
 open Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Disjoint
 
@@ -577,7 +577,7 @@ end IsCompl
 
 namespace Prod
 
-variable {β : Type _} [PartialOrder α] [PartialOrder β]
+variable {β : Type*} [PartialOrder α] [PartialOrder β]
 
 protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     Disjoint x y ↔ Disjoint x.1 y.1 ∧ Disjoint x.2 y.2 := by
@@ -698,7 +698,7 @@ end ComplementedLattice
 -- TODO: Define as a sublattice?
 /-- The sublattice of complemented elements. -/
 @[reducible]
-def Complementeds (α : Type _) [Lattice α] [BoundedOrder α] : Type _ := {a : α // IsComplemented a}
+def Complementeds (α : Type*) [Lattice α] [BoundedOrder α] : Type _ := {a : α // IsComplemented a}
 #align complementeds Complementeds
 
 namespace Complementeds

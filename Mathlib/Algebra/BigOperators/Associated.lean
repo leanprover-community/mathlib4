@@ -17,7 +17,7 @@ and products of multisets, finsets, and finsupps.
 -/
 
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 -- the same local notation used in `Algebra.Associated`
 local infixl:50 " ~ᵤ " => Associated
@@ -173,7 +173,7 @@ open Finset Finsupp
 
 section CommMonoidWithZero
 
-variable {M : Type _} [CommMonoidWithZero M]
+variable {M : Type*} [CommMonoidWithZero M]
 
 theorem Prime.dvd_finset_prod_iff {S : Finset α} {p : M} (pp : Prime p) (g : α → M) :
     p ∣ S.prod g ↔ ∃ a ∈ S, p ∣ g a :=

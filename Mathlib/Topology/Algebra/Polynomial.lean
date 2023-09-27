@@ -43,7 +43,7 @@ open Polynomial
 
 section TopologicalSemiring
 
-variable {R S : Type _} [Semiring R] [TopologicalSpace R] [TopologicalSemiring R] (p : R[X])
+variable {R S : Type*} [Semiring R] [TopologicalSpace R] [TopologicalSemiring R] (p : R[X])
 
 @[continuity]
 protected theorem continuous_eval₂ [Semiring S] (p : S[X]) (f : S →+* R) :
@@ -73,7 +73,7 @@ end TopologicalSemiring
 
 section TopologicalAlgebra
 
-variable {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
   [TopologicalSemiring A] (p : R[X])
 
 @[continuity]
@@ -96,7 +96,7 @@ protected theorem continuousOn_aeval {s} : ContinuousOn (fun x : A => aeval x p)
 
 end TopologicalAlgebra
 
-theorem tendsto_abv_eval₂_atTop {R S k α : Type _} [Semiring R] [Ring S] [LinearOrderedField k]
+theorem tendsto_abv_eval₂_atTop {R S k α : Type*} [Semiring R] [Ring S] [LinearOrderedField k]
     (f : R →+* S) (abv : S → k) [IsAbsoluteValue abv] (p : R[X]) (hd : 0 < degree p)
     (hf : f p.leadingCoeff ≠ 0) {l : Filter α} {z : α → S} (hz : Tendsto (abv ∘ z) l atTop) :
     Tendsto (fun x => abv (p.eval₂ f (z x))) l atTop := by
@@ -114,21 +114,21 @@ theorem tendsto_abv_eval₂_atTop {R S k α : Type _} [Semiring R] [Ring S] [Lin
     simpa using ihp hf
 #align polynomial.tendsto_abv_eval₂_at_top Polynomial.tendsto_abv_eval₂_atTop
 
-theorem tendsto_abv_atTop {R k α : Type _} [Ring R] [LinearOrderedField k] (abv : R → k)
+theorem tendsto_abv_atTop {R k α : Type*} [Ring R] [LinearOrderedField k] (abv : R → k)
     [IsAbsoluteValue abv] (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α → R}
     (hz : Tendsto (abv ∘ z) l atTop) : Tendsto (fun x => abv (p.eval (z x))) l atTop := by
   apply tendsto_abv_eval₂_atTop _ _ _ h _ hz
   exact (mt leadingCoeff_eq_zero.1 (ne_zero_of_degree_gt h))
 #align polynomial.tendsto_abv_at_top Polynomial.tendsto_abv_atTop
 
-theorem tendsto_abv_aeval_atTop {R A k α : Type _} [CommSemiring R] [Ring A] [Algebra R A]
+theorem tendsto_abv_aeval_atTop {R A k α : Type*} [CommSemiring R] [Ring A] [Algebra R A]
     [LinearOrderedField k] (abv : A → k) [IsAbsoluteValue abv] (p : R[X]) (hd : 0 < degree p)
     (h₀ : algebraMap R A p.leadingCoeff ≠ 0) {l : Filter α} {z : α → A}
     (hz : Tendsto (abv ∘ z) l atTop) : Tendsto (fun x => abv (aeval (z x) p)) l atTop :=
   tendsto_abv_eval₂_atTop _ abv p hd h₀ hz
 #align polynomial.tendsto_abv_aeval_at_top Polynomial.tendsto_abv_aeval_atTop
 
-variable {α R : Type _} [NormedRing R] [IsAbsoluteValue (norm : R → ℝ)]
+variable {α R : Type*} [NormedRing R] [IsAbsoluteValue (norm : R → ℝ)]
 
 theorem tendsto_norm_atTop (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α → R}
     (hz : Tendsto (fun x => ‖z x‖) l atTop) : Tendsto (fun x => ‖p.eval (z x)‖) l atTop :=
@@ -146,7 +146,7 @@ section Roots
 
 open Polynomial NNReal
 
-variable {F K : Type _} [CommRing F] [NormedField K]
+variable {F K : Type*} [CommRing F] [NormedField K]
 
 open Multiset
 

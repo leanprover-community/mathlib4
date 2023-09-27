@@ -33,7 +33,7 @@ open Polynomial
 
 section Semiring
 
-variable {R : Type _} [Semiring R] (p q : R[X])
+variable {R : Type*} [Semiring R] (p q : R[X])
 
 /-- mirror of a polynomial: reverses the coefficients while preserving `Polynomial.natDegree` -/
 noncomputable def mirror :=
@@ -188,7 +188,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type _} [Ring R] (p q : R[X])
+variable {R : Type*} [Ring R] (p q : R[X])
 
 theorem mirror_neg : (-p).mirror = -p.mirror := by
   rw [mirror, mirror, reverse_neg, natTrailingDegree_neg, neg_mul_eq_neg_mul]
@@ -214,7 +214,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type _} [CommRing R] [NoZeroDivisors R] {f : R[X]}
+variable {R : Type*} [CommRing R] [NoZeroDivisors R] {f : R[X]}
 
 theorem irreducible_of_mirror (h1 : ¬IsUnit f)
     (h2 : ∀ k, f * f.mirror = k * k.mirror → k = f ∨ k = -f ∨ k = f.mirror ∨ k = -f.mirror)

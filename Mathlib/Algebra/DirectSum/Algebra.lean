@@ -132,7 +132,7 @@ end DirectSum
 
 -/
 @[simps]
-instance Algebra.directSumGAlgebra {R A : Type _} [DecidableEq ι] [AddMonoid ι] [CommSemiring R]
+instance Algebra.directSumGAlgebra {R A : Type*} [DecidableEq ι] [AddMonoid ι] [CommSemiring R]
     [Semiring A] [Algebra R A] : DirectSum.GAlgebra R fun _ : ι => A where
   toFun := (algebraMap R A).toAddMonoidHom
   map_one := (algebraMap R A).map_one

@@ -34,7 +34,7 @@ Both hold for all (non-minimal) elements in a linear order.
 
 open Finset OrderDual
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 /-! ### Irreducible and prime elements -/
 

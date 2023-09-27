@@ -20,7 +20,7 @@ open Set Filter Bornology Function
 
 open Filter
 
-variable {α β ι : Type _} {π : ι → Type _} [Fintype ι] [Bornology α] [Bornology β]
+variable {α β ι : Type*} {π : ι → Type*} [Fintype ι] [Bornology α] [Bornology β]
   [∀ i, Bornology (π i)]
 
 instance Prod.instBornology : Bornology (α × β) where
@@ -36,7 +36,7 @@ instance Pi.instBornology : Bornology (∀ i, π i) where
 
 /-- Inverse image of a bornology. -/
 @[reducible]
-def Bornology.induced {α β : Type _} [Bornology β] (f : α → β) : Bornology α
+def Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology α
     where
   cobounded' := comap f (cobounded β)
   le_cofinite' := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
@@ -128,7 +128,7 @@ theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, I
 -/
 
 
-theorem isBounded_induced {α β : Type _} [Bornology β] {f : α → β} {s : Set α} :
+theorem isBounded_induced {α β : Type*} [Bornology β] {f : α → β} {s : Set α} :
     @IsBounded α (Bornology.induced f) s ↔ IsBounded (f '' s) :=
   compl_mem_comap
 #align bornology.is_bounded_induced Bornology.isBounded_induced
@@ -153,7 +153,7 @@ instance [BoundedSpace α] [BoundedSpace β] : BoundedSpace (α × β) := by
 instance [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := by
   simp [← cobounded_eq_bot_iff, cobounded_pi]
 
-theorem boundedSpace_induced_iff {α β : Type _} [Bornology β] {f : α → β} :
+theorem boundedSpace_induced_iff {α β : Type*} [Bornology β] {f : α → β} :
     @BoundedSpace α (Bornology.induced f) ↔ IsBounded (range f) := by
   rw [← @isBounded_univ _ (Bornology.induced f), isBounded_induced, image_univ]
 -- porting note: had to explicitly provided the bornology to `isBounded_univ`.

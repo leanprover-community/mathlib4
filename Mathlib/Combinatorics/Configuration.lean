@@ -39,7 +39,7 @@ open BigOperators
 
 namespace Configuration
 
-variable (P L : Type _) [Membership P L]
+variable (P L : Type*) [Membership P L]
 
 /-- A type synonym. -/
 def Dual :=

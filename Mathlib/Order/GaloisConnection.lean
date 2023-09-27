@@ -52,7 +52,7 @@ open Function OrderDual Set
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → Sort _} {a a₁ a₂ : α}
+variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → Sort*} {a a₁ a₂ : α}
   {b b₁ b₂ : β}
 
 /-- A Galois connection is a pair of functions `l` and `u` satisfying
@@ -348,8 +348,8 @@ protected theorem compl [BooleanAlgebra α] [BooleanAlgebra β] {l : α → β} 
 
 end Constructions
 
-theorem l_comm_of_u_comm {X : Type _} [Preorder X] {Y : Type _} [Preorder Y] {Z : Type _}
-    [Preorder Z] {W : Type _} [PartialOrder W] {lYX : X → Y} {uXY : Y → X}
+theorem l_comm_of_u_comm {X : Type*} [Preorder X] {Y : Type*} [Preorder Y] {Z : Type*}
+    [Preorder Z] {W : Type*} [PartialOrder W] {lYX : X → Y} {uXY : Y → X}
     (hXY : GaloisConnection lYX uXY) {lWZ : Z → W} {uZW : W → Z} (hZW : GaloisConnection lWZ uZW)
     {lWY : Y → W} {uYW : W → Y} (hWY : GaloisConnection lWY uYW) {lZX : X → Z} {uXZ : Z → X}
     (hXZ : GaloisConnection lZX uXZ) (h : ∀ w, uXZ (uZW w) = uXY (uYW w)) {x : X} :
@@ -357,8 +357,8 @@ theorem l_comm_of_u_comm {X : Type _} [Preorder X] {Y : Type _} [Preorder Y] {Z 
   (hXZ.compose hZW).l_unique (hXY.compose hWY) h
 #align galois_connection.l_comm_of_u_comm GaloisConnection.l_comm_of_u_comm
 
-theorem u_comm_of_l_comm {X : Type _} [PartialOrder X] {Y : Type _} [Preorder Y] {Z : Type _}
-    [Preorder Z] {W : Type _} [Preorder W] {lYX : X → Y} {uXY : Y → X}
+theorem u_comm_of_l_comm {X : Type*} [PartialOrder X] {Y : Type*} [Preorder Y] {Z : Type*}
+    [Preorder Z] {W : Type*} [Preorder W] {lYX : X → Y} {uXY : Y → X}
     (hXY : GaloisConnection lYX uXY) {lWZ : Z → W} {uZW : W → Z} (hZW : GaloisConnection lWZ uZW)
     {lWY : Y → W} {uYW : W → Y} (hWY : GaloisConnection lWY uYW) {lZX : X → Z} {uXZ : Z → X}
     (hXZ : GaloisConnection lZX uXZ) (h : ∀ x, lWZ (lZX x) = lWY (lYX x)) {w : W} :
@@ -366,8 +366,8 @@ theorem u_comm_of_l_comm {X : Type _} [PartialOrder X] {Y : Type _} [Preorder Y]
   (hXZ.compose hZW).u_unique (hXY.compose hWY) h
 #align galois_connection.u_comm_of_l_comm GaloisConnection.u_comm_of_l_comm
 
-theorem l_comm_iff_u_comm {X : Type _} [PartialOrder X] {Y : Type _} [Preorder Y] {Z : Type _}
-    [Preorder Z] {W : Type _} [PartialOrder W] {lYX : X → Y} {uXY : Y → X}
+theorem l_comm_iff_u_comm {X : Type*} [PartialOrder X] {Y : Type*} [Preorder Y] {Z : Type*}
+    [Preorder Z] {W : Type*} [PartialOrder W] {lYX : X → Y} {uXY : Y → X}
     (hXY : GaloisConnection lYX uXY) {lWZ : Z → W} {uZW : W → Z} (hZW : GaloisConnection lWZ uZW)
     {lWY : Y → W} {uYW : W → Y} (hWY : GaloisConnection lWY uYW) {lZX : X → Z} {uXZ : Z → X}
     (hXZ : GaloisConnection lZX uXZ) :
@@ -466,7 +466,7 @@ end Nat
 /-- A Galois insertion is a Galois connection where `l ∘ u = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual
 to `GaloisCoinsertion` -/
-structure GaloisInsertion {α β : Type _} [Preorder α] [Preorder β] (l : α → β) (u : β → α) where
+structure GaloisInsertion {α β : Type*} [Preorder α] [Preorder β] (l : α → β) (u : β → α) where
   /-- A contructive choice function for images of `l`. -/
   choice : ∀ x : α, u (l x) ≤ x → β
   /-- The Galois connection associated to a Galois insertion. -/
@@ -478,7 +478,7 @@ structure GaloisInsertion {α β : Type _} [Preorder α] [Preorder β] (l : α �
 #align galois_insertion GaloisInsertion
 
 /-- A constructor for a Galois insertion with the trivial `choice` function. -/
-def GaloisInsertion.monotoneIntro {α β : Type _} [Preorder α] [Preorder β] {l : α → β} {u : β → α}
+def GaloisInsertion.monotoneIntro {α β : Type*} [Preorder α] [Preorder β] {l : α → β} {u : β → α}
     (hu : Monotone u) (hl : Monotone l) (hul : ∀ a, a ≤ u (l a)) (hlu : ∀ b, l (u b) = b) :
     GaloisInsertion l u where
   choice x _ := l x
@@ -497,7 +497,7 @@ protected def OrderIso.toGaloisInsertion [Preorder α] [Preorder β] (oi : α �
 #align order_iso.to_galois_insertion OrderIso.toGaloisInsertion
 
 /-- Make a `GaloisInsertion l u` from a `GaloisConnection l u` such that `∀ b, b ≤ l (u b)` -/
-def GaloisConnection.toGaloisInsertion {α β : Type _} [Preorder α] [Preorder β] {l : α → β}
+def GaloisConnection.toGaloisInsertion {α β : Type*} [Preorder α] [Preorder β] {l : α → β}
     {u : β → α} (gc : GaloisConnection l u) (h : ∀ b, b ≤ l (u b)) : GaloisInsertion l u :=
   { choice := fun x _ => l x
     gc
@@ -506,7 +506,7 @@ def GaloisConnection.toGaloisInsertion {α β : Type _} [Preorder α] [Preorder 
 #align galois_connection.to_galois_insertion GaloisConnection.toGaloisInsertion
 
 /-- Lift the bottom along a Galois connection -/
-def GaloisConnection.liftOrderBot {α β : Type _} [Preorder α] [OrderBot α] [PartialOrder β]
+def GaloisConnection.liftOrderBot {α β : Type*} [Preorder α] [OrderBot α] [PartialOrder β]
     {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
     OrderBot β where
   bot := l ⊥
@@ -756,7 +756,7 @@ def GaloisCoinsertion.monotoneIntro [Preorder α] [Preorder β] {l : α → β} 
 #align galois_coinsertion.monotone_intro GaloisCoinsertion.monotoneIntro
 
 /-- Make a `GaloisCoinsertion l u` from a `GaloisConnection l u` such that `∀ b, b ≤ l (u b)` -/
-def GaloisConnection.toGaloisCoinsertion {α β : Type _} [Preorder α] [Preorder β] {l : α → β}
+def GaloisConnection.toGaloisCoinsertion {α β : Type*} [Preorder α] [Preorder β] {l : α → β}
     {u : β → α} (gc : GaloisConnection l u) (h : ∀ a, u (l a) ≤ a) : GaloisCoinsertion l u :=
   { choice := fun x _ => u x
     gc
@@ -765,7 +765,7 @@ def GaloisConnection.toGaloisCoinsertion {α β : Type _} [Preorder α] [Preorde
 #align galois_connection.to_galois_coinsertion GaloisConnection.toGaloisCoinsertion
 
 /-- Lift the top along a Galois connection -/
-def GaloisConnection.liftOrderTop {α β : Type _} [PartialOrder α] [Preorder β] [OrderTop β]
+def GaloisConnection.liftOrderTop {α β : Type*} [PartialOrder α] [Preorder β] [OrderTop β]
     {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
     OrderTop α where
   top := u ⊤

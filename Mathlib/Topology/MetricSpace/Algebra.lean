@@ -30,7 +30,7 @@ open NNReal
 
 noncomputable section
 
-variable (α β : Type _) [PseudoMetricSpace α] [PseudoMetricSpace β]
+variable (α β : Type*) [PseudoMetricSpace α] [PseudoMetricSpace β]
 
 section LipschitzMul
 

@@ -57,7 +57,7 @@ filter multiplication, filter addition, pointwise addition, pointwise multiplica
 
 open Function Set Filter Pointwise
 
-variable {F α β γ δ ε : Type _}
+variable {F α β γ δ ε : Type*}
 
 namespace Filter
 

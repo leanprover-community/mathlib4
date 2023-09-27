@@ -32,7 +32,7 @@ This file also provides some lemmas that need `Algebra.Module.Basic` imported to
 
 section SmulLemmas
 
-variable {R M : Type _}
+variable {R M : Type*}
 
 @[simp]
 theorem star_nat_cast_smul [Semiring R] [AddCommMonoid M] [Module R M] [StarAddMonoid M] (n : ℕ)
@@ -65,7 +65,7 @@ theorem star_rat_cast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarA
 #align star_rat_cast_smul star_rat_cast_smul
 
 @[simp]
-theorem star_rat_smul {R : Type _} [AddCommGroup R] [StarAddMonoid R] [Module ℚ R] (x : R) (n : ℚ) :
+theorem star_rat_smul {R : Type*} [AddCommGroup R] [StarAddMonoid R] [Module ℚ R] (x : R) (n : ℚ) :
     star (n • x) = n • star x :=
   map_rat_smul (starAddEquiv : R ≃+ R) _ _
 #align star_rat_smul star_rat_smul
@@ -75,14 +75,14 @@ end SmulLemmas
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
 @[simps]
-def starLinearEquiv (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [AddCommMonoid A]
+def starLinearEquiv (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [AddCommMonoid A]
     [StarAddMonoid A] [Module R A] [StarModule R A] : A ≃ₗ⋆[R] A :=
   { starAddEquiv with
     toFun := star
     map_smul' := star_smul }
 #align star_linear_equiv starLinearEquiv
 
-variable (R : Type _) (A : Type _) [Semiring R] [StarSemigroup R] [TrivialStar R] [AddCommGroup A]
+variable (R : Type*) (A : Type*) [Semiring R] [StarSemigroup R] [TrivialStar R] [AddCommGroup A]
   [Module R A] [StarAddMonoid A] [StarModule R A]
 
 /-- The self-adjoint elements of a star module, as a submodule. -/
@@ -183,7 +183,7 @@ def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A
 #align star_module.decompose_prod_adjoint StarModule.decomposeProdAdjoint
 
 @[simp]
-theorem algebraMap_star_comm {R A : Type _} [CommSemiring R] [StarRing R] [Semiring A]
+theorem algebraMap_star_comm {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A]
     [StarSemigroup A] [Algebra R A] [StarModule R A] (r : R) :
     algebraMap R A (star r) = star (algebraMap R A r) := by
   simp only [Algebra.algebraMap_eq_smul_one, star_smul, star_one]

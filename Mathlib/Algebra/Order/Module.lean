@@ -24,7 +24,7 @@ ordered module, ordered scalar, ordered smul, ordered action, ordered vector spa
 
 open Pointwise
 
-variable {k M N : Type _}
+variable {k M N : Type*}
 
 instance instModuleOrderDual [Semiring k] [OrderedAddCommMonoid M] [Module k M] : Module k Mᵒᵈ
     where

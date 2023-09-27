@@ -39,7 +39,7 @@ Eulerian trails
 
 namespace SimpleGraph
 
-variable {V : Type _} {G : SimpleGraph V}
+variable {V : Type*} {G : SimpleGraph V}
 
 namespace Walk
 

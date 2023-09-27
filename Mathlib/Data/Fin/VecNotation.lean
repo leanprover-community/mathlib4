@@ -108,7 +108,7 @@ instance _root_.PiFin.hasRepr [Repr α] : Repr (Fin n → α) where
 
 end MatrixNotation
 
-variable {m n o : ℕ} {m' n' o' : Type _}
+variable {m n o : ℕ} {m' n' o' : Type*}
 
 theorem empty_eq (v : Fin 0 → α) : v = ![] :=
   Subsingleton.elim _ _
@@ -153,7 +153,7 @@ theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
 #align matrix.tail_cons Matrix.tail_cons
 
 @[simp]
-theorem empty_val' {n' : Type _} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
+theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _
 #align matrix.empty_val' Matrix.empty_val'
 
@@ -258,11 +258,11 @@ which provides control of definitional equality for the vector length.
 This turns out to be helpful when providing simp lemmas to reduce `![a, b, c] n`, and also means
 that `vecAppend ho u v 0` is valid. `Fin.append u v 0` is not valid in this case because there is
 no `Zero (Fin (m + n))` instance. -/
-def vecAppend {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) : Fin o → α :=
+def vecAppend {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) : Fin o → α :=
   Fin.append u v ∘ Fin.castIso ho
 #align matrix.vec_append Matrix.vecAppend
 
-theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
+theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
     vecAppend ho u v = fun i : Fin o =>
       if h : (i : ℕ) < m then u ⟨i, h⟩
       else v ⟨(i : ℕ) - m, (tsub_lt_iff_left (le_of_not_lt h)).2 (ho ▸ i.2)⟩ := by
@@ -277,7 +277,7 @@ theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m →
 -- Could become one again with change to `Nat.ble`:
 -- https://github.com/leanprover-community/mathlib4/pull/1741/files/#r1083902351
 @[simp]
-theorem vecAppend_apply_zero {α : Type _} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
+theorem vecAppend_apply_zero {α : Type*} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
     (v : Fin n → α) : vecAppend ho u v 0 = u 0 :=
   dif_pos _
 #align matrix.vec_append_apply_zero Matrix.vecAppend_apply_zero
@@ -429,7 +429,7 @@ end Val
 
 section Smul
 
-variable {M : Type _} [SMul M α]
+variable {M : Type*} [SMul M α]
 
 @[simp]
 theorem smul_empty (x : M) (v : Fin 0 → α) : x • v = ![] :=

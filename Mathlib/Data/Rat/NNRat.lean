@@ -47,7 +47,7 @@ scoped[NNRat] notation "ℚ≥0" => NNRat
 
 namespace NNRat
 
-variable {α : Type _} {p q : ℚ≥0}
+variable {α : Type*} {p q : ℚ≥0}
 
 instance : Coe ℚ≥0 ℚ :=
   ⟨Subtype.val⟩
@@ -487,7 +487,7 @@ theorem num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
 #align nnrat.num_div_denom NNRat.num_div_den
 
 /-- A recursor for nonnegative rationals in terms of numerators and denominators. -/
-protected def rec {α : ℚ≥0 → Sort _} (h : ∀ m n : ℕ, α (m / n)) (q : ℚ≥0) : α q := by
+protected def rec {α : ℚ≥0 → Sort*} (h : ∀ m n : ℕ, α (m / n)) (q : ℚ≥0) : α q := by
   rw [← num_div_den q]
   apply h
 #align nnrat.rec NNRat.rec

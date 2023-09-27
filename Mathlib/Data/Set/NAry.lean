@@ -26,7 +26,7 @@ and `Set.image2` already fulfills this task.
 open Function
 
 namespace Set
-variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type _} {f f' : α → β → γ} {g g' : α → β → γ → δ}
+variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*} {f f' : α → β → γ} {g g' : α → β → γ → δ}
 variable {s s' : Set α} {t t' : Set β} {u u' : Set γ} {v : Set δ} {a a' : α} {b b' : β} {c c' : γ}
   {d d' : δ}
 

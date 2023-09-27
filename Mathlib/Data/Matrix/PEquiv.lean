@@ -41,16 +41,11 @@ open Matrix
 
 universe u v
 
-variable {k l m n : Type _}
+variable {k l m n : Type*}
 
 variable {α : Type v}
 
 open Matrix
-
--- Porting note: added. Porting TODO: remove after std4#112 is merged
-local instance [DecidableEq n] (j : n) (o : Option n) : Decidable (j ∈ o) :=
-  haveI : Decidable (o = some j) := inferInstance
-  this
 
 /-- `toMatrix` returns a matrix containing ones and zeros. `f.toMatrix i j` is `1` if
   `f i = some j` and `0` otherwise -/
@@ -105,7 +100,7 @@ theorem toPEquiv_mul_matrix [Fintype m] [DecidableEq m] [Semiring α] (f : m ≃
   rw [mul_matrix_apply, Equiv.toPEquiv_apply]
 #align pequiv.to_pequiv_mul_matrix PEquiv.toPEquiv_mul_matrix
 
-theorem mul_toPEquiv_toMatrix {m n α : Type _} [Fintype n] [DecidableEq n] [Semiring α] (f : n ≃ n)
+theorem mul_toPEquiv_toMatrix {m n α : Type*} [Fintype n] [DecidableEq n] [Semiring α] (f : n ≃ n)
     (M : Matrix m n α) : M ⬝ f.toPEquiv.toMatrix = M.submatrix id f.symm :=
   Matrix.ext fun i j => by
     rw [PEquiv.matrix_mul_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,

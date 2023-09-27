@@ -32,7 +32,7 @@ on `Set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 
 open Function Order Set
 
-variable {α β γ ι ι' : Type _} {r p q : α → α → Prop}
+variable {α β γ ι ι' : Type*} {r p q : α → α → Prop}
 
 section Pairwise
 
@@ -368,7 +368,7 @@ theorem PairwiseDisjoint.prod {f : ι → Set α} {g : ι' → Set β} (hs : s.P
     hij <| Prod.ext (hs.elim_set hi hj _ hai haj) <| ht.elim_set hi' hj' _ hbi hbj
 #align set.pairwise_disjoint.prod Set.PairwiseDisjoint.prod
 
-theorem pairwiseDisjoint_pi {ι' α : ι → Type _} {s : ∀ i, Set (ι' i)} {f : ∀ i, ι' i → Set (α i)}
+theorem pairwiseDisjoint_pi {ι' α : ι → Type*} {s : ∀ i, Set (ι' i)} {f : ∀ i, ι' i → Set (α i)}
     (hs : ∀ i, (s i).PairwiseDisjoint (f i)) :
     ((univ : Set ι).pi s).PairwiseDisjoint fun I => (univ : Set ι).pi fun i => f _ (I i) :=
   fun _ hI _ hJ hIJ =>

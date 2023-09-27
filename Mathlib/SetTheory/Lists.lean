@@ -41,7 +41,7 @@ This calls for a two-steps definition of ZFA lists:
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Prelists, helper type to define `Lists`. `Lists' α false` are the "atoms", a copy of `α`.
 `Lists' α true` are the "proper" ZFA prelists, inductively defined from the empty ZFA prelist and
@@ -59,7 +59,7 @@ compile_inductive% Lists'
 /-- Hereditarily finite list, aka ZFA list. A ZFA list is either an "atom" (`b = false`),
 corresponding to an element of `α`, or a "proper" ZFA list, inductively defined from the empty ZFA
 list and from appending a ZFA list to a proper ZFA list. -/
-def Lists (α : Type _) :=
+def Lists (α : Type*) :=
   Σb, Lists' α b
 #align lists Lists
 
@@ -260,7 +260,7 @@ instance [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_ins
 instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
 
 /-- A recursion principle for pairs of ZFA lists and proper ZFA prelists. -/
-def inductionMut (C : Lists α → Sort _) (D : Lists' α true → Sort _)
+def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
     (C0 : ∀ a, C (atom a)) (C1 : ∀ l, D l → C (of' l))
     (D0 : D Lists'.nil) (D1 : ∀ a l, C a → D l → D (Lists'.cons a l)) :
     PProd (∀ l, C l) (∀ l, D l) := by
@@ -458,7 +458,7 @@ theorem Subset.trans {l₁ l₂ l₃ : Lists' α true} (h₁ : l₁ ⊆ l₂) (h
 end Lists'
 
 /-- `Finsets` are defined via equivalence classes of `Lists` -/
-def Finsets (α : Type _) :=
+def Finsets (α : Type*) :=
   Quotient (@Lists.instSetoidLists α)
 #align finsets Finsets
 

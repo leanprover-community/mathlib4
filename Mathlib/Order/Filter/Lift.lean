@@ -16,7 +16,7 @@ open Set Classical Filter Function
 
 namespace Filter
 
-variable {α β γ : Type _} {ι : Sort _}
+variable {α β γ : Type*} {ι : Sort*}
 
 section lift
 
@@ -42,7 +42,7 @@ This basis is parametrized by `i : ι` and `x : β i`, so in order to formulate 
 `Filter.HasBasis` one has to use `Σ i, β i` as the index type, see `Filter.HasBasis.lift`.
 This lemma states the corresponding `mem_iff` statement without using a sigma type. -/
 theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α}
-    (hf : f.HasBasis p s) {β : ι → Type _} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ}
+    (hf : f.HasBasis p s) {β : ι → Type*} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ}
     {g : Set α → Filter γ} (hg : ∀ i, (g <| s i).HasBasis (pg i) (sg i)) (gm : Monotone g)
     {s : Set γ} : s ∈ f.lift g ↔ ∃ i, p i ∧ ∃ x, pg i x ∧ sg i x ⊆ s := by
   refine' (mem_biInf_of_directed _ ⟨univ, univ_sets _⟩).trans _
@@ -61,7 +61,7 @@ This basis is parametrized by `i : ι` and `x : β i`, so in order to formulate 
 `has_basis` one has to use `Σ i, β i` as the index type. See also `Filter.HasBasis.mem_lift_iff`
 for the corresponding `mem_iff` statement formulated without using a sigma type. -/
 theorem HasBasis.lift {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α} (hf : f.HasBasis p s)
-    {β : ι → Type _} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ} {g : Set α → Filter γ}
+    {β : ι → Type*} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ} {g : Set α → Filter γ}
     (hg : ∀ i, (g (s i)).HasBasis (pg i) (sg i)) (gm : Monotone g) :
     (f.lift g).HasBasis (fun i : Σi, β i => p i.1 ∧ pg i.1 i.2) fun i : Σi, β i => sg i.1 i.2 := by
   refine' ⟨fun t => (hf.mem_lift_iff hg gm).trans _⟩
@@ -435,7 +435,7 @@ theorem tendsto_prod_self_iff {f : α × α → β} {x : Filter α} {y : Filter 
   simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
 #align filter.tendsto_prod_self_iff Filter.tendsto_prod_self_iff
 
-variable {α₁ : Type _} {α₂ : Type _} {β₁ : Type _} {β₂ : Type _}
+variable {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ : Type*}
 
 theorem prod_lift_lift {f₁ : Filter α₁} {f₂ : Filter α₂} {g₁ : Set α₁ → Filter β₁}
     {g₂ : Set α₂ → Filter β₂} (hg₁ : Monotone g₁) (hg₂ : Monotone g₂) :

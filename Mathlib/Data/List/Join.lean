@@ -15,7 +15,7 @@ in `Init.Data.List.Basic`.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace List
 

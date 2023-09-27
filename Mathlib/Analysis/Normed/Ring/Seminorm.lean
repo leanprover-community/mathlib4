@@ -40,11 +40,11 @@ ring_seminorm, ring_norm
 
 open NNReal
 
-variable {F R S : Type _} (x y : R) (r : ℝ)
+variable {F R S : Type*} (x y : R) (r : ℝ)
 
 /-- A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes nonnegative
   values, is subadditive and submultiplicative and such that `f (-x) = f x` for all `x ∈ R`. -/
-structure RingSeminorm (R : Type _) [NonUnitalNonAssocRing R] extends AddGroupSeminorm R where
+structure RingSeminorm (R : Type*) [NonUnitalNonAssocRing R] extends AddGroupSeminorm R where
   /-- The property of a `RingSeminorm` that for all `x` and `y` in the ring, the norm of `x * y` is
     less than the norm of `x` times the norm of `y`. -/
   mul_le' : ∀ x y : R, toFun (x * y) ≤ toFun x * toFun y
@@ -52,19 +52,19 @@ structure RingSeminorm (R : Type _) [NonUnitalNonAssocRing R] extends AddGroupSe
 
 /-- A function `f : R → ℝ` is a norm on a (nonunital) ring if it is a seminorm and `f x = 0`
   implies `x = 0`. -/
-structure RingNorm (R : Type _) [NonUnitalNonAssocRing R] extends RingSeminorm R, AddGroupNorm R
+structure RingNorm (R : Type*) [NonUnitalNonAssocRing R] extends RingSeminorm R, AddGroupNorm R
 #align ring_norm RingNorm
 
 /-- A multiplicative seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero and
 multiplication, takes nonnegative values, is subadditive and such that `f (-x) = f x` for all `x`.
 -/
-structure MulRingSeminorm (R : Type _) [NonAssocRing R] extends AddGroupSeminorm R,
+structure MulRingSeminorm (R : Type*) [NonAssocRing R] extends AddGroupSeminorm R,
   MonoidWithZeroHom R ℝ
 #align mul_ring_seminorm MulRingSeminorm
 
 /-- A multiplicative norm on a ring `R` is a multiplicative ring seminorm such that `f x = 0`
 implies `x = 0`. -/
-structure MulRingNorm (R : Type _) [NonAssocRing R] extends MulRingSeminorm R, AddGroupNorm R
+structure MulRingNorm (R : Type*) [NonAssocRing R] extends MulRingSeminorm R, AddGroupNorm R
 #align mul_ring_norm MulRingNorm
 
 attribute [nolint docBlame]
@@ -166,7 +166,7 @@ end Ring
 end RingSeminorm
 
 /-- The norm of a `NonUnitalSeminormedRing` as a `RingSeminorm`. -/
-def normRingSeminorm (R : Type _) [NonUnitalSeminormedRing R] : RingSeminorm R :=
+def normRingSeminorm (R : Type*) [NonUnitalSeminormedRing R] : RingSeminorm R :=
   { normAddGroupSeminorm R with
     toFun := norm
     mul_le' := norm_mul_le }
@@ -333,7 +333,7 @@ instance : Inhabited (MulRingNorm R) :=
 end MulRingNorm
 
 /-- A nonzero ring seminorm on a field `K` is a ring norm. -/
-def RingSeminorm.toRingNorm {K : Type _} [Field K] (f : RingSeminorm K) (hnt : f ≠ 0) :
+def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f ≠ 0) :
     RingNorm K :=
   { f with
     eq_zero_of_map_eq_zero' := fun x hx => by
@@ -352,6 +352,6 @@ def RingSeminorm.toRingNorm {K : Type _} [Field K] (f : RingSeminorm K) (hnt : f
 
 /-- The norm of a `NonUnitalNormedRing` as a `RingNorm`. -/
 @[simps!]
-def normRingNorm (R : Type _) [NonUnitalNormedRing R] : RingNorm R :=
+def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
   { normAddGroupNorm R, normRingSeminorm R with }
 #align norm_ring_norm normRingNorm

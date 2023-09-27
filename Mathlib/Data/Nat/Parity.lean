@@ -290,7 +290,7 @@ namespace Function
 
 namespace Involutive
 
-variable {α : Type _} {f : α → α} {n : ℕ}
+variable {α : Type*} {f : α → α} {n : ℕ}
 
 set_option linter.deprecated false in
 section
@@ -331,7 +331,7 @@ end Involutive
 
 end Function
 
-variable {R : Type _} [Monoid R] [HasDistribNeg R] {n : ℕ}
+variable {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ}
 
 theorem neg_one_pow_eq_one_iff_even (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n :=
   ⟨fun h' => of_not_not fun hn => h <| (Odd.neg_one_pow <| odd_iff_not_even.mpr hn).symm.trans h',

@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Monoidal.Category
 
 namespace CategoryTheory
 
-variable {C : Type _} [Bicategory C]
+variable {C : Type*} [Bicategory C]
 
 /-- The endomorphisms of an object in a bicategory can be considered as a monoidal category. -/
 def EndMonoidal (X : C) :=

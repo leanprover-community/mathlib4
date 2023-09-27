@@ -31,7 +31,7 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 
 open Classical Set
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! ### Chains -/
 
@@ -291,7 +291,7 @@ end Chain
 
 
 /-- The type of flags, aka maximal chains, of an order. -/
-structure Flag (α : Type _) [LE α] where
+structure Flag (α : Type*) [LE α] where
   /-- The `carrier` of a flag is the underlying set. -/
   carrier : Set α
   /-- By definition, a flag is a chain -/

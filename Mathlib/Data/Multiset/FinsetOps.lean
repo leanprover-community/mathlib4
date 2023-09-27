@@ -19,7 +19,7 @@ namespace Multiset
 
 open List
 
-variable {α : Type _} [DecidableEq α] {s : Multiset α}
+variable {α : Type*} [DecidableEq α] {s : Multiset α}
 
 /-! ### finset insert -/
 

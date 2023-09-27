@@ -38,7 +38,7 @@ variable (V : Type u) [Category.{v} V] [HasZeroMorphisms V] [HasZeroObject V]
 
 namespace HomologicalComplex
 
-variable {ι : Type _} [DecidableEq ι] (c : ComplexShape ι)
+variable {ι : Type*} [DecidableEq ι] (c : ComplexShape ι)
 
 /-- The functor `V ⥤ HomologicalComplex V c` creating a chain complex supported in a single degree.
 

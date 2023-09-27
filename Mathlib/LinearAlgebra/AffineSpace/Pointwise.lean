@@ -21,9 +21,9 @@ open Set
 
 namespace AffineSubspace
 
-variable {k : Type _} [Ring k]
+variable {k : Type*} [Ring k]
 
-variable {V P V₁ P₁ V₂ P₂ : Type _}
+variable {V P V₁ P₁ V₂ P₂ : Type*}
 
 variable [AddCommGroup V] [Module k V] [AffineSpace V P]
 

@@ -37,7 +37,7 @@ noncomputable section
 
 open Topology TopologicalSpace Filter Encodable Set
 
-variable {α β γ ι : Type _}
+variable {α β γ ι : Type*}
 
 set_option linter.uppercaseLean3 false
 
@@ -70,13 +70,13 @@ theorem isGδ_biInter_of_open {I : Set ι} (hI : I.Countable) {f : ι → Set α
   ⟨f '' I, by rwa [ball_image_iff], hI.image _, by rw [sInter_image]⟩
 #align is_Gδ_bInter_of_open isGδ_biInter_of_open
 
--- porting note: TODO: generalize to `Sort _` + `Countable _`
+-- porting note: TODO: generalize to `Sort*` + `Countable _`
 theorem isGδ_iInter_of_open [Encodable ι] {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
   ⟨range f, by rwa [forall_range_iff], countable_range _, by rw [sInter_range]⟩
 #align is_Gδ_Inter_of_open isGδ_iInter_of_open
 
--- porting note: TODO: generalize to `Sort _` + `Countable _`
+-- porting note: TODO: generalize to `Sort*` + `Countable _`
 /-- The intersection of an encodable family of Gδ sets is a Gδ set. -/
 theorem isGδ_iInter [Encodable ι] {s : ι → Set α} (hs : ∀ i, IsGδ (s i)) : IsGδ (⋂ i, s i) := by
   choose T hTo hTc hTs using hs
@@ -194,7 +194,7 @@ section residual
 variable [TopologicalSpace α]
 
 /-- A set `s` is called *residual* if it includes a countable intersection of dense open sets. -/
-def residual (α : Type _) [TopologicalSpace α] : Filter α :=
+def residual (α : Type*) [TopologicalSpace α] : Filter α :=
   Filter.countableGenerate { t | IsOpen t ∧ Dense t }
 #align residual residual
 

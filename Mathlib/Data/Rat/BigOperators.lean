@@ -13,7 +13,7 @@ import Mathlib.Algebra.BigOperators.Basic
 
 open BigOperators
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 namespace Rat
 

@@ -89,7 +89,7 @@ attribute [coe] AddUnits.val
 section HasElem
 
 @[to_additive]
-theorem unique_one {α : Type _} [Unique α] [One α] : default = (1 : α) :=
+theorem unique_one {α : Type*} [Unique α] [One α] : default = (1 : α) :=
   Unique.default_eq 1
 #align unique_has_one unique_one
 #align unique_has_zero unique_zero
@@ -395,7 +395,7 @@ theorem inv_unique {u₁ u₂ : αˣ} (h : (↑u₁ : α) = ↑u₂) : (↑u₁�
 #align add_units.neg_unique AddUnits.neg_unique
 
 @[to_additive (attr := simp)]
-theorem val_inv_eq_inv_val {M : Type _} [DivisionMonoid M] (u : Units M) : ↑u⁻¹ = (u⁻¹ : M) :=
+theorem val_inv_eq_inv_val {M : Type*} [DivisionMonoid M] (u : Units M) : ↑u⁻¹ = (u⁻¹ : M) :=
   Eq.symm <| inv_eq_of_mul_eq_one_right u.mul_inv
 #align units.coe_inv Units.val_inv_eq_inv_val
 
@@ -572,7 +572,7 @@ end CommMonoid
 
 section IsUnit
 
-variable {M : Type _} {N : Type _}
+variable {M : Type*} {N : Type*}
 
 /-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where
@@ -669,7 +669,7 @@ theorem Units.isUnit_mul_units [Monoid M] (a : M) (u : Mˣ) : IsUnit (a * u) ↔
 /-- Multiplication by a `u : Mˣ` on the left doesn't affect `IsUnit`. -/
 @[to_additive (attr := simp)
 "Addition of a `u : AddUnits M` on the left doesn't affect `IsAddUnit`."]
-theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) :
+theorem Units.isUnit_units_mul {M : Type*} [Monoid M] (u : Mˣ) (a : M) :
     IsUnit (↑u * a) ↔ IsUnit a :=
   Iff.intro
     (fun ⟨v, hv⟩ => by
@@ -814,7 +814,7 @@ end IsUnit
 -- section
 section NoncomputableDefs
 
-variable {M : Type _}
+variable {M : Type*}
 
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=

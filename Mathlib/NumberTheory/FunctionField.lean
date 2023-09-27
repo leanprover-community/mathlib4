@@ -59,7 +59,7 @@ abbrev FunctionField [Algebra (RatFunc Fq) F] : Prop :=
 
 -- Porting note: Removed `protected`
 /-- `F` is a function field over `Fq` iff it is a finite extension of `Fq(t)`. -/
-theorem functionField_iff (Fqt : Type _) [Field Fqt] [Algebra Fq[X] Fqt]
+theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     [IsFractionRing Fq[X] Fqt] [Algebra (RatFunc Fq) F] [Algebra Fqt F] [Algebra Fq[X] F]
     [IsScalarTower Fq[X] Fqt F] [IsScalarTower Fq[X] (RatFunc Fq) F] :
     FunctionField Fq F ↔ FiniteDimensional Fqt F := by

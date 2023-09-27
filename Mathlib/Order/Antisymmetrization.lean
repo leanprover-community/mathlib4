@@ -29,7 +29,7 @@ such that `a ≤ b` and `b ≤ a`.
 
 open Function OrderDual
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section Relation
 

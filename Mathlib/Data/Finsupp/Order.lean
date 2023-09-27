@@ -30,7 +30,7 @@ open BigOperators
 
 open Finset
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 namespace Finsupp
 

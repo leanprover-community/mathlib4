@@ -135,16 +135,16 @@ namespace ShrinkHoms
 
 section
 
-variable {C' : Type _}
+variable {C' : Type*}
 
 -- a fresh variable with no category instance attached
 /-- Help the typechecker by explicitly translating from `C` to `ShrinkHoms C`. -/
-def toShrinkHoms {C' : Type _} (X : C') : ShrinkHoms C' :=
+def toShrinkHoms {C' : Type*} (X : C') : ShrinkHoms C' :=
   X
 #align category_theory.shrink_homs.to_shrink_homs CategoryTheory.ShrinkHoms.toShrinkHoms
 
 /-- Help the typechecker by explicitly translating from `ShrinkHoms C` to `C`. -/
-def fromShrinkHoms {C' : Type _} (X : ShrinkHoms C') : C' :=
+def fromShrinkHoms {C' : Type*} (X : ShrinkHoms C') : C' :=
   X
 #align category_theory.shrink_homs.from_shrink_homs CategoryTheory.ShrinkHoms.fromShrinkHoms
 

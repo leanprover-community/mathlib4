@@ -27,9 +27,9 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type _} [CommRing R] (M : Submonoid R) {S : Type _} [CommRing S]
+variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
 
-variable [Algebra R S] {P : Type _} [CommRing P]
+variable [Algebra R S] {P : Type*} [CommRing P]
 
 open BigOperators Polynomial
 
@@ -103,7 +103,7 @@ theorem integerNormalization_map_to_map (p : S[X]) :
       exact hb i⟩
 #align is_localization.integer_normalization_map_to_map IsLocalization.integerNormalization_map_to_map
 
-variable {R' : Type _} [CommRing R']
+variable {R' : Type*} [CommRing R']
 
 theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'}
     (hx : eval₂ g x p = 0) : eval₂ (g.comp (algebraMap R S)) x (integerNormalization M p) = 0 :=
@@ -125,7 +125,7 @@ namespace IsFractionRing
 
 open IsLocalization
 
-variable {A K C : Type _} [CommRing A] [IsDomain A] [Field K] [Algebra A K] [IsFractionRing A K]
+variable {A K C : Type*} [CommRing A] [IsDomain A] [Field K] [Algebra A K] [IsFractionRing A K]
 
 variable [CommRing C]
 
@@ -177,7 +177,7 @@ open IsLocalization
 
 section IsIntegral
 
-variable {Rₘ Sₘ : Type _} [CommRing Rₘ] [CommRing Sₘ]
+variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
 
 variable [Algebra R Rₘ] [IsLocalization M Rₘ]
 
@@ -187,9 +187,9 @@ variable {M}
 
 open Polynomial
 
-theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type _} [CommRing R] [CommRing S]
+theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) (x : S) (p : R[X]) (hf : p.eval₂ f x = 0) (M : Submonoid R)
-    (hM : p.leadingCoeff ∈ M) {Rₘ Sₘ : Type _} [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ]
+    (hM : p.leadingCoeff ∈ M) {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ]
     [IsLocalization M Rₘ] [Algebra S Sₘ] [IsLocalization (M.map f : Submonoid S) Sₘ] :
     (map Sₘ f M.le_comap_map : Rₘ →+* _).IsIntegralElem (algebraMap S Sₘ x) := by
   by_cases triv : (1 : Rₘ) = 0
@@ -246,7 +246,7 @@ theorem isIntegral_localization (H : Algebra.IsIntegral R S) :
     exact hx.symm ▸ is_integral_localization_at_leadingCoeff p hp.2 (hp.1.symm ▸ M.one_mem)
 #align is_integral_localization isIntegral_localization
 
-theorem isIntegral_localization' {R S : Type _} [CommRing R] [CommRing S] {f : R →+* S}
+theorem isIntegral_localization' {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S}
     (hf : f.IsIntegral) (M : Submonoid R) :
     (map (Localization (M.map (f : R →* S))) f
           (M.le_comap_map : _ ≤ Submonoid.comap (f : R →* S) _) :
@@ -304,14 +304,14 @@ theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [
 
 end IsIntegral
 
-variable {A K : Type _} [CommRing A] [IsDomain A]
+variable {A K : Type*} [CommRing A] [IsDomain A]
 
 namespace IsIntegralClosure
 
 variable (A)
-variable {L : Type _} [Field K] [Field L] [Algebra A K] [Algebra A L] [IsFractionRing A K]
+variable {L : Type*} [Field K] [Field L] [Algebra A K] [Algebra A L] [IsFractionRing A K]
 
-variable (C : Type _) [CommRing C] [IsDomain C] [Algebra C L] [IsIntegralClosure C A L]
+variable (C : Type*) [CommRing C] [IsDomain C] [Algebra C L] [IsIntegralClosure C A L]
 
 variable [Algebra A C] [IsScalarTower A C L]
 
@@ -356,7 +356,7 @@ end IsIntegralClosure
 
 namespace integralClosure
 
-variable {L : Type _} [Field K] [Field L] [Algebra A K] [IsFractionRing A K]
+variable {L : Type*} [Field K] [Field L] [Algebra A K] [IsFractionRing A K]
 
 open Algebra
 
@@ -431,7 +431,7 @@ variable {S K}
 
 /-- If the `S`-multiples of `a` are contained in some `R`-span, then `Frac(S)`-multiples of `a`
 are contained in the equivalent `Frac(R)`-span. -/
-theorem ideal_span_singleton_map_subset {L : Type _} [IsDomain R] [IsDomain S] [Field K] [Field L]
+theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [Field K] [Field L]
     [Algebra R K] [Algebra R L] [Algebra S L] [IsIntegralClosure S R L] [IsFractionRing S L]
     [Algebra K L] [IsScalarTower R S L] [IsScalarTower R K L] {a : S} {b : Set S}
     (alg : Algebra.IsAlgebraic R L) (inj : Function.Injective (algebraMap R L))

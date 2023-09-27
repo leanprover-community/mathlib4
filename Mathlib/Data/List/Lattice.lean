@@ -33,7 +33,7 @@ open Nat
 
 namespace List
 
-variable {α : Type _} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
+variable {α : Type*} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
 
 /-! ### `Disjoint` -/
 

@@ -16,7 +16,7 @@ with `Multiset.toDFinsupp` the reverse equivalence.
 
 open Function
 
-variable {α : Type _} {β : α → Type _}
+variable {α : Type*} {β : α → Type*}
 
 namespace DFinsupp
 

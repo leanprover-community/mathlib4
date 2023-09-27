@@ -11,7 +11,7 @@ import Mathlib.Algebra.BigOperators.Multiset.Basic
 /-! # Lemmas about `Multiset.sum` and `Multiset.prod` requiring extra algebra imports -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Multiset
 

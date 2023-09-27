@@ -28,7 +28,7 @@ This file defines notions of two points being on the same or opposite sides of a
 -/
 
 
-variable {R V V' P P' : Type _}
+variable {R V V' P P' : Type*}
 
 open AffineEquiv AffineMap
 

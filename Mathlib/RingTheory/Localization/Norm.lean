@@ -29,9 +29,9 @@ field norm, algebra norm, localization
 
 open scoped nonZeroDivisors
 
-variable (R : Type _) {S : Type _} [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-variable {Rₘ Sₘ : Type _} [CommRing Rₘ] [Algebra R Rₘ] [CommRing Sₘ] [Algebra S Sₘ]
+variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [Algebra R Rₘ] [CommRing Sₘ] [Algebra S Sₘ]
 
 variable (M : Submonoid R)
 

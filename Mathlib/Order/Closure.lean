@@ -53,7 +53,7 @@ universe u
 /-! ### Closure operator -/
 
 
-variable (α : Type _) {ι : Sort _} {κ : ι → Sort _}
+variable (α : Type*) {ι : Sort*} {κ : ι → Sort*}
 
 /-- A closure operator on the preorder `α` is a monotone function which is extensive (every `x`
 is less than its closure) and idempotent. -/
@@ -292,7 +292,7 @@ end ClosureOperator
 /-! ### Lower adjoint -/
 
 
-variable {α} {β : Type _}
+variable {α} {β : Type*}
 
 /-- A lower adjoint of `u` on the preorder `α` is a function `l` such that `l` and `u` form a Galois
 connection. It allows us to define closure operators whose output does not match the input. In

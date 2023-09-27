@@ -38,7 +38,7 @@ open IsROrC
 
 open ComplexConjugate
 
-variable {𝕜 E E' F G : Type _} [IsROrC 𝕜]
+variable {𝕜 E E' F G : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -139,7 +139,7 @@ theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) 
 
 section Complex
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 /-- A linear operator on a complex inner product space is symmetric precisely when
 `⟪T v, v⟫_ℂ` is real for all v.-/

@@ -109,7 +109,7 @@ instance coeTC : CoeTC α (WithOne α) :=
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
 @[to_additive (attr := elab_as_elim)
   "Recursor for `WithZero` using the preferred forms `0` and `↑a`."]
-def recOneCoe {C : WithOne α → Sort _} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
+def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
   | Option.none => h₁
   | Option.some x => h₂ x
 #align with_one.rec_one_coe WithOne.recOneCoe

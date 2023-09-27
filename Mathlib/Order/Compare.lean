@@ -23,7 +23,7 @@ This file provides basic results about orderings and comparison in linear orders
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- Like `cmp`, but uses a `≤` on the type instead of `<`. Given two elements `x` and `y`, returns a
 three-way comparison result `Ordering`. -/
@@ -241,7 +241,7 @@ theorem cmp_eq_gt_iff : cmp x y = Ordering.gt ↔ y < x :=
 theorem cmp_self_eq_eq : cmp x x = Ordering.eq := by rw [cmp_eq_eq_iff]
 #align cmp_self_eq_eq cmp_self_eq_eq
 
-variable {x y} {β : Type _} [LinearOrder β] {x' y' : β}
+variable {x y} {β : Type*} [LinearOrder β] {x' y' : β}
 
 theorem cmp_eq_cmp_symm : cmp x y = cmp x' y' ↔ cmp y x = cmp y' x' :=
   ⟨fun h => by rwa [← cmp_swap x', ← cmp_swap, swap_inj],

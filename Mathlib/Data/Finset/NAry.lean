@@ -26,7 +26,7 @@ and `Set.image2` already fulfills this task.
 
 open Function Set
 
-variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type _}
+variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*}
 
 namespace Finset
 
@@ -365,7 +365,7 @@ theorem image₂_right [DecidableEq β] (h : s.Nonempty) : image₂ (fun _ y => 
     exact image2_right h
 #align finset.image₂_right Finset.image₂_right
 
-theorem image₂_assoc {γ : Type _} {u : Finset γ} {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε}
+theorem image₂_assoc {γ : Type*} {u : Finset γ} {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε}
     {g' : β → γ → ε'} (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c)) :
     image₂ f (image₂ g s t) u = image₂ f' s (image₂ g' t u) :=
   coe_injective <| by
@@ -377,7 +377,7 @@ theorem image₂_comm {g : β → α → γ} (h_comm : ∀ a b, f a b = g b a) :
   (image₂_swap _ _ _).trans <| by simp_rw [h_comm]
 #align finset.image₂_comm Finset.image₂_comm
 
-theorem image₂_left_comm {γ : Type _} {u : Finset γ} {f : α → δ → ε} {g : β → γ → δ}
+theorem image₂_left_comm {γ : Type*} {u : Finset γ} {f : α → δ → ε} {g : β → γ → δ}
     {f' : α → γ → δ'} {g' : β → δ' → ε} (h_left_comm : ∀ a b c, f a (g b c) = g' b (f' a c)) :
     image₂ f s (image₂ g t u) = image₂ g' t (image₂ f' s u) :=
   coe_injective <| by
@@ -385,7 +385,7 @@ theorem image₂_left_comm {γ : Type _} {u : Finset γ} {f : α → δ → ε} 
     exact image2_left_comm h_left_comm
 #align finset.image₂_left_comm Finset.image₂_left_comm
 
-theorem image₂_right_comm {γ : Type _} {u : Finset γ} {f : δ → γ → ε} {g : α → β → δ}
+theorem image₂_right_comm {γ : Type*} {u : Finset γ} {f : δ → γ → ε} {g : α → β → δ}
     {f' : α → γ → δ'} {g' : δ' → β → ε} (h_right_comm : ∀ a b c, f (g a b) c = g' (f' a c) b) :
     image₂ f (image₂ g s t) u = image₂ g' (image₂ f' s u) t :=
   coe_injective <| by
@@ -393,7 +393,7 @@ theorem image₂_right_comm {γ : Type _} {u : Finset γ} {f : δ → γ → ε}
     exact image2_right_comm h_right_comm
 #align finset.image₂_right_comm Finset.image₂_right_comm
 
-theorem image₂_image₂_image₂_comm {γ δ : Type _} {u : Finset γ} {v : Finset δ} [DecidableEq ζ]
+theorem image₂_image₂_image₂_comm {γ δ : Type*} {u : Finset γ} {v : Finset δ} [DecidableEq ζ]
     [DecidableEq ζ'] [DecidableEq ν] {f : ε → ζ → ν} {g : α → β → ε} {h : γ → δ → ζ}
     {f' : ε' → ζ' → ν} {g' : α → γ → ε'} {h' : β → δ → ζ'}
     (h_comm : ∀ a b c d, f (g a b) (h c d) = f' (g' a c) (h' b d)) :
@@ -444,7 +444,7 @@ theorem image_image₂_right_comm {f : α → β' → γ} {g : β → β'} {f' :
 #align finset.image_image₂_right_comm Finset.image_image₂_right_comm
 
 /-- The other direction does not hold because of the `s`-`s` cross terms on the RHS. -/
-theorem image₂_distrib_subset_left {γ : Type _} {u : Finset γ} {f : α → δ → ε} {g : β → γ → δ}
+theorem image₂_distrib_subset_left {γ : Type*} {u : Finset γ} {f : α → δ → ε} {g : β → γ → δ}
     {f₁ : α → β → β'} {f₂ : α → γ → γ'} {g' : β' → γ' → ε}
     (h_distrib : ∀ a b c, f a (g b c) = g' (f₁ a b) (f₂ a c)) :
     image₂ f s (image₂ g t u) ⊆ image₂ g' (image₂ f₁ s t) (image₂ f₂ s u) :=
@@ -454,7 +454,7 @@ theorem image₂_distrib_subset_left {γ : Type _} {u : Finset γ} {f : α → �
 #align finset.image₂_distrib_subset_left Finset.image₂_distrib_subset_left
 
 /-- The other direction does not hold because of the `u`-`u` cross terms on the RHS. -/
-theorem image₂_distrib_subset_right {γ : Type _} {u : Finset γ} {f : δ → γ → ε} {g : α → β → δ}
+theorem image₂_distrib_subset_right {γ : Type*} {u : Finset γ} {f : δ → γ → ε} {g : α → β → δ}
     {f₁ : α → γ → α'} {f₂ : β → γ → β'} {g' : α' → β' → ε}
     (h_distrib : ∀ a b c, f (g a b) c = g' (f₁ a c) (f₂ b c)) :
     image₂ f (image₂ g s t) u ⊆ image₂ g' (image₂ f₁ s u) (image₂ f₂ t u) :=

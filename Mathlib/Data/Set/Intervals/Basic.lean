@@ -32,7 +32,7 @@ open Function
 
 open OrderDual (toDual ofDual)
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 
@@ -772,7 +772,7 @@ lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
     (le_implies_le_of_le_of_le hxb hay hba) (le_implies_le_of_le_of_le hyb hax hba)
 #align set.subsingleton_Icc_of_ge Set.subsingleton_Icc_of_ge
 
-@[simp] lemma subsingleton_Icc_iff {α : Type _} [LinearOrder α] {a b : α} :
+@[simp] lemma subsingleton_Icc_iff {α : Type*} [LinearOrder α] {a b : α} :
     Set.Subsingleton (Icc a b) ↔ b ≤ a := by
   refine' ⟨fun h ↦ _, subsingleton_Icc_of_ge⟩
   contrapose! h

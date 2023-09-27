@@ -30,13 +30,13 @@ is computable and universe-polymorphic.
 
 open Function Multiset
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 namespace Finset
 
 section Sigma
 
-variable {α : ι → Type _} {β : Type _} (s s₁ s₂ : Finset ι) (t t₁ t₂ : ∀ i, Finset (α i))
+variable {α : ι → Type*} {β : Type*} (s s₁ s₂ : Finset ι) (t t₁ t₂ : ∀ i, Finset (α i))
 
 /-- `s.sigma t` is the finset of dependent pairs `⟨i, a⟩` such that `i ∈ s` and `a ∈ t i`. -/
 protected def sigma : Finset (Σi, α i) :=
@@ -113,7 +113,7 @@ end Sigma
 
 section SigmaLift
 
-variable {α β γ : ι → Type _} [DecidableEq ι]
+variable {α β γ : ι → Type*} [DecidableEq ι]
 
 /-- Lifts maps `α i → β i → Finset (γ i)` to a map `Σ i, α i → Σ i, β i → Finset (Σ i, γ i)`. -/
 def sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β) :

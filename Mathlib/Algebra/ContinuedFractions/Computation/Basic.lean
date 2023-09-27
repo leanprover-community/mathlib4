@@ -65,7 +65,7 @@ numerics, number theory, approximations, fractions
 namespace GeneralizedContinuedFraction
 
 -- Fix a carrier `K`.
-variable (K : Type _)
+variable (K : Type*)
 
 /-- We collect an integer part `b = ⌊v⌋` and fractional part `fr = v - ⌊v⌋` of a value `v` in a pair
 `⟨b, fr⟩`.
@@ -92,7 +92,7 @@ instance inhabited [Inhabited K] : Inhabited (IntFractPair K) :=
 
 /-- Maps a function `f` on the fractional components of a given pair.
 -/
-def mapFr {β : Type _} (f : K → β) (gp : IntFractPair K) : IntFractPair β :=
+def mapFr {β : Type*} (f : K → β) (gp : IntFractPair K) : IntFractPair β :=
   ⟨gp.b, f gp.fr⟩
 set_option linter.uppercaseLean3 false in
 #align generalized_continued_fraction.int_fract_pair.mapFr GeneralizedContinuedFraction.IntFractPair.mapFr
@@ -103,7 +103,7 @@ section coe
 
 
 -- Fix another type `β` which we will convert to.
-variable {β : Type _} [Coe K β]
+variable {β : Type*} [Coe K β]
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The coercion between integer-fraction pairs happens componentwise. -/

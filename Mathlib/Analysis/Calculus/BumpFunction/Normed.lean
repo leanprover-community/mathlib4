@@ -23,7 +23,7 @@ open scoped Topology
 
 namespace ContDiffBump
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [HasContDiffBump E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HasContDiffBump E]
   [MeasurableSpace E] {c : E} (f : ContDiffBump c) {x : E} {n : ℕ∞} {μ : Measure E}
 
 /-- A bump function normed so that `∫ x, f.normed μ x ∂μ = 1`. -/

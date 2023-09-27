@@ -118,19 +118,19 @@ theorem toNat_top : toNat ⊤ = 0 :=
 --Porting note: new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
-def recTopCoe {C : ℕ∞ → Sort _} (h₁ : C ⊤) (h₂ : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
+def recTopCoe {C : ℕ∞ → Sort*} (h₁ : C ⊤) (h₂ : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
 | none => h₁
 | Option.some a => h₂ a
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
-theorem recTopCoe_top {C : ℕ∞ → Sort _} (d : C ⊤) (f : ∀ a : ℕ, C a) :
+theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) :
     @recTopCoe C d f ⊤ = d :=
   rfl
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
-theorem recTopCoe_coe {C : ℕ∞ → Sort _} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
+theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
     @recTopCoe C d f ↑x = f x :=
   rfl
 

@@ -28,13 +28,13 @@ universe u v
 open CategoryTheory CategoryTheory.Limits
 
 /-- A typeclass for nonempty finite linear orders. -/
-class NonemptyFinLinOrd (α : Type _) extends Fintype α, LinearOrder α where
+class NonemptyFinLinOrd (α : Type*) extends Fintype α, LinearOrder α where
   Nonempty : Nonempty α := by infer_instance
 #align nonempty_fin_lin_ord NonemptyFinLinOrd
 
 attribute [instance] NonemptyFinLinOrd.Nonempty
 
-instance (priority := 100) NonemptyFinLinOrd.toBoundedOrder (α : Type _) [NonemptyFinLinOrd α] :
+instance (priority := 100) NonemptyFinLinOrd.toBoundedOrder (α : Type*) [NonemptyFinLinOrd α] :
     BoundedOrder α :=
   Fintype.toBoundedOrder α
 #align nonempty_fin_lin_ord.to_bounded_order NonemptyFinLinOrd.toBoundedOrder
@@ -50,7 +50,7 @@ instance ULift.nonemptyFinLinOrd (α : Type u) [NonemptyFinLinOrd α] :
   { LinearOrder.lift' Equiv.ulift (Equiv.injective _) with }
 #align ulift.nonempty_fin_lin_ord ULift.nonemptyFinLinOrd
 
-instance (α : Type _) [NonemptyFinLinOrd α] : NonemptyFinLinOrd αᵒᵈ :=
+instance (α : Type*) [NonemptyFinLinOrd α] : NonemptyFinLinOrd αᵒᵈ :=
   { OrderDual.fintype α with }
 
 /-- The category of nonempty finite linear orders. -/
@@ -70,17 +70,17 @@ deriving instance LargeCategory for NonemptyFinLinOrdCat
 instance : ConcreteCategory NonemptyFinLinOrdCat :=
   BundledHom.concreteCategory _
 
-instance : CoeSort NonemptyFinLinOrdCat (Type _) :=
+instance : CoeSort NonemptyFinLinOrdCat (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled `NonemptyFinLinOrdCat` from the underlying type and typeclass. -/
-def of (α : Type _) [NonemptyFinLinOrd α] : NonemptyFinLinOrdCat :=
+def of (α : Type*) [NonemptyFinLinOrd α] : NonemptyFinLinOrdCat :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.of NonemptyFinLinOrdCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [NonemptyFinLinOrd α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [NonemptyFinLinOrd α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.coe_of NonemptyFinLinOrdCat.coe_of

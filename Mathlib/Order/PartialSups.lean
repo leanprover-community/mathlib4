@@ -36,7 +36,7 @@ Necessary for the TODO in the module docstring of `Order.disjointed`.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section SemilatticeSup
 

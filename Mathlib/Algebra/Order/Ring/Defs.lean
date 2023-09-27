@@ -112,7 +112,7 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type _}
+variable {α : Type u} {β : Type*}
 
 /-! Note that `OrderDual` does not satisfy any of the ordered ring typeclasses due to the
 `zero_le_one` field. -/
@@ -185,7 +185,7 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
 
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedCommRing (α : Type _) extends StrictOrderedRing α, CommRing α
+class StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
 #align strict_ordered_comm_ring StrictOrderedCommRing
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
@@ -199,7 +199,7 @@ class LinearOrderedSemiring (α : Type u) extends StrictOrderedSemiring α,
 
 /-- A `LinearOrderedCommSemiring` is a nontrivial commutative semiring with a linear order such
 that addition is monotone and multiplication by a positive number is strictly monotone. -/
-class LinearOrderedCommSemiring (α : Type _) extends StrictOrderedCommSemiring α,
+class LinearOrderedCommSemiring (α : Type*) extends StrictOrderedCommSemiring α,
   LinearOrderedSemiring α
 #align linear_ordered_comm_semiring LinearOrderedCommSemiring
 

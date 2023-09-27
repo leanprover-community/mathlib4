@@ -33,7 +33,7 @@ open Finset Nat
 
 open BigOperators
 
-variable {α : Type _} {ι : Sort _} {κ : ι → Sort _}
+variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 namespace Set
 

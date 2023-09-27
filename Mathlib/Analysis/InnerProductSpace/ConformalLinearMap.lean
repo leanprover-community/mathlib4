@@ -15,7 +15,7 @@ In an inner product space, a map is conformal iff it preserves inner products up
 -/
 
 
-variable {E F : Type _}
+variable {E F : Type*}
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 

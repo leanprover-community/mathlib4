@@ -30,7 +30,7 @@ namespace Pmf
 
 noncomputable section
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Classical BigOperators NNReal ENNReal
 

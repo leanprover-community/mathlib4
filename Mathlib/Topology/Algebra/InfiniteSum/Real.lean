@@ -17,7 +17,7 @@ This file provides lemmas about Cauchy sequences in terms of infinite sums.
 
 open Filter Finset BigOperators NNReal Topology
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/

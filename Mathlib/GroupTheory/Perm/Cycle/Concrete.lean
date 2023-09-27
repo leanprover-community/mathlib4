@@ -13,7 +13,7 @@ import Mathlib.GroupTheory.Perm.List
 
 # Properties of cyclic permutations constructed from lists/cycles
 
-In the following, `{α : Type _} [Fintype α] [DecidableEq α]`.
+In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.
 
 ## Main definitions
 
@@ -49,7 +49,7 @@ to show it takes a long time. TODO: is this because computing the cycle factors 
 
 open Equiv Equiv.Perm List
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace List
 
@@ -189,7 +189,7 @@ nonrec theorem formPerm_reverse (s : Cycle α) (h : Nodup s) :
   simpa using formPerm_reverse _ h
 #align cycle.form_perm_reverse Cycle.formPerm_reverse
 
-nonrec theorem formPerm_eq_formPerm_iff {α : Type _} [DecidableEq α] {s s' : Cycle α} {hs : s.Nodup}
+nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cycle α} {hs : s.Nodup}
     {hs' : s'.Nodup} :
     s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton := by
   rw [Cycle.length_subsingleton_iff, Cycle.length_subsingleton_iff]

@@ -32,15 +32,15 @@ We define the following notation in locale `set_family`:
 
 open Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Notation typeclass for pointwise supremum `⊻`. -/
-class HasSups (α : Type _) where
+class HasSups (α : Type*) where
   sups : α → α → α
 #align has_sups HasSups
 
 /-- Notation typeclass for pointwise infimum `⊼`. -/
-class HasInfs (α : Type _) where
+class HasInfs (α : Type*) where
   infs : α → α → α
 #align has_infs HasInfs
 

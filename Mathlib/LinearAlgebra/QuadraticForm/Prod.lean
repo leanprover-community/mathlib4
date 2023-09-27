@@ -34,7 +34,7 @@ forms specifically.
 
 universe u v w
 
-variable {ι : Type _} {R : Type _} {M₁ M₂ N₁ N₂ : Type _} {Mᵢ Nᵢ : ι → Type _}
+variable {ι : Type*} {R : Type*} {M₁ M₂ N₁ N₂ : Type*} {Mᵢ Nᵢ : ι → Type*}
 
 variable [Semiring R]
 

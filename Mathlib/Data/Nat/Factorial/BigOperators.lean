@@ -24,7 +24,7 @@ open BigOperators
 
 namespace Nat
 
-variable {α : Type _} (s : Finset α) (f : α → ℕ)
+variable {α : Type*} (s : Finset α) (f : α → ℕ)
 
 theorem prod_factorial_pos : 0 < ∏ i in s, (f i)! :=
   Finset.prod_pos fun i _ => factorial_pos (f i)

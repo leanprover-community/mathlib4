@@ -26,7 +26,7 @@ unitary
 /-- In a *-monoid, `unitary R` is the submonoid consisting of all the elements `U` of
 `R` such that `star U * U = 1` and `U * star U = 1`.
 -/
-def unitary (R : Type _) [Monoid R] [StarSemigroup R] : Submonoid R where
+def unitary (R : Type*) [Monoid R] [StarSemigroup R] : Submonoid R where
   carrier := { U | star U * U = 1 ∧ U * star U = 1 }
   one_mem' := by simp only [mul_one, and_self_iff, Set.mem_setOf_eq, star_one]
   mul_mem' := @fun U B ⟨hA₁, hA₂⟩ ⟨hB₁, hB₂⟩ => by
@@ -41,7 +41,7 @@ def unitary (R : Type _) [Monoid R] [StarSemigroup R] : Submonoid R where
         _ = 1 := by rw [hB₂, mul_one, hA₂]
 #align unitary unitary
 
-variable {R : Type _}
+variable {R : Type*}
 
 namespace unitary
 

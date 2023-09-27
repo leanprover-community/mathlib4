@@ -57,7 +57,7 @@ upper set topology, lower set topology, preorder, Alexandrov
 -/
 
 
-variable (α β : Type _)
+variable (α β : Type*)
 
 section preorder
 
@@ -123,7 +123,7 @@ theorem ofUpperSet_inj {a b : WithUpperSetTopology α} : ofUpperSet a = ofUpperS
   Iff.rfl
 
 /-- A recursor for `WithUpperSetTopology`. Use as `induction x using WithUpperSetTopology.rec`. -/
-protected def rec {β : WithUpperSetTopology α → Sort _} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
+protected def rec {β : WithUpperSetTopology α → Sort*} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
   fun a => h (ofUpperSet a)
 
 instance [Nonempty α] : Nonempty (WithUpperSetTopology α) := ‹Nonempty α›
@@ -181,7 +181,7 @@ theorem ofLowerSet_inj {a b : WithLowerSetTopology α} : ofLowerSet a = ofLowerS
   Iff.rfl
 
 /-- A recursor for `WithLowerSetTopology`. Use as `induction x using WithLowerSetTopology.rec`. -/
-protected def rec {β : WithLowerSetTopology α → Sort _} (h : ∀ a, β (toLowerSet a)) : ∀ a, β a :=
+protected def rec {β : WithLowerSetTopology α → Sort*} (h : ∀ a, β (toLowerSet a)) : ∀ a, β a :=
   fun a => h (ofLowerSet a)
 
 instance [Nonempty α] : Nonempty (WithLowerSetTopology α) := ‹Nonempty α›
@@ -224,7 +224,7 @@ def UpperLowerSet_toOrderDualHomeomorph [Preorder α] :
 The upper set topology is the topology where the open sets are the upper sets. In general the upper
 set topology does not coincide with the upper topology.
 -/
-class UpperSetTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : Prop where
+class UpperSetTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_upperSetTopology : t = upperSetTopology' α
 
 instance [Preorder α] : UpperSetTopology (WithUpperSetTopology α) := ⟨rfl⟩
@@ -239,7 +239,7 @@ instance [Preorder α] : @UpperSetTopology α (upperSetTopology' α) _ := by
 The lower set topology is the topology where the open sets are the lower sets. In general the lower
 set topology does not coincide with the lower topology.
 -/
-class LowerSetTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : Prop where
+class LowerSetTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_lowerSetTopology : t = lowerSetTopology' α
 
 instance [Preorder α] : LowerSetTopology (WithLowerSetTopology α) := ⟨rfl⟩

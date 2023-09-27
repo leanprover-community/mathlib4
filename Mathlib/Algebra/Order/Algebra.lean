@@ -32,7 +32,7 @@ ordered algebra
 
 section OrderedAlgebra
 
-variable {R A : Type _} {a b : A} {r : R}
+variable {R A : Type*} {a b : A} {r : R}
 
 
 

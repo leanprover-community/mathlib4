@@ -36,12 +36,12 @@ variable [Ring k] [Module k V] (b : AffineBasis ι k P)
 rows are the barycentric coordinates of `q` with respect to `p`.
 
 It is an affine equivalent of `Basis.toMatrix`. -/
-noncomputable def toMatrix {ι' : Type _} (q : ι' → P) : Matrix ι' ι k :=
+noncomputable def toMatrix {ι' : Type*} (q : ι' → P) : Matrix ι' ι k :=
   fun i j => b.coord j (q i)
 #align affine_basis.to_matrix AffineBasis.toMatrix
 
 @[simp]
-theorem toMatrix_apply {ι' : Type _} (q : ι' → P) (i : ι') (j : ι) :
+theorem toMatrix_apply {ι' : Type*} (q : ι' → P) (i : ι') (j : ι) :
     b.toMatrix q i j = b.coord j (q i) := rfl
 #align affine_basis.to_matrix_apply AffineBasis.toMatrix_apply
 
@@ -51,9 +51,9 @@ theorem toMatrix_self [DecidableEq ι] : b.toMatrix b = (1 : Matrix ι ι k) := 
   rw [toMatrix_apply, coord_apply, Matrix.one_eq_pi_single, Pi.single_apply]
 #align affine_basis.to_matrix_self AffineBasis.toMatrix_self
 
-variable {ι' : Type _} [Fintype ι'] [Fintype ι] (b₂ : AffineBasis ι k P)
+variable {ι' : Type*} [Fintype ι'] [Fintype ι] (b₂ : AffineBasis ι k P)
 
-theorem toMatrix_row_sum_one {ι' : Type _} (q : ι' → P) (i : ι') : ∑ j, b.toMatrix q i j = 1 := by
+theorem toMatrix_row_sum_one {ι' : Type*} (q : ι' → P) (i : ι') : ∑ j, b.toMatrix q i j = 1 := by
   simp
 #align affine_basis.to_matrix_row_sum_one AffineBasis.toMatrix_row_sum_one
 

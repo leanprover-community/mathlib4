@@ -29,7 +29,7 @@ open TopologicalSpace MeasureTheory LatticeOrderedCommGroup
 
 open scoped ENNReal
 
-variable {α E : Type _} {m : MeasurableSpace α} {μ : Measure α} {p : ℝ≥0∞}
+variable {α E : Type*} {m : MeasurableSpace α} {μ : Measure α} {p : ℝ≥0∞}
 
 namespace MeasureTheory
 

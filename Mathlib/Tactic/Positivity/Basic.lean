@@ -370,7 +370,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
     | .none => pure .none
 
-private theorem abs_pos_of_ne_zero {α : Type _} [AddGroup α] [LinearOrder α]
+private theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
  [CovariantClass α α (·+·) (·≤·)] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
 
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/

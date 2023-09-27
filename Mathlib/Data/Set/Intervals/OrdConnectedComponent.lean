@@ -21,7 +21,7 @@ open Interval Function OrderDual
 
 namespace Set
 
-variable {α : Type _} [LinearOrder α] {s t : Set α} {x y z : α}
+variable {α : Type*} [LinearOrder α] {s t : Set α} {x y z : α}
 
 /-- Order-connected component of a point `x` in a set `s`. It is defined as the set of `y` such that
 `Set.uIcc x y ⊆ s`. Note that it is empty if and only if `x ∉ s`. -/

@@ -66,7 +66,7 @@ noncomputable def encard (s : Set α) := PartENat.withTopEquiv (PartENat.card s)
 @[simp] theorem encard_univ_coe (s : Set α) : encard (univ : Set s) = encard s := by
   rw [encard, encard, PartENat.card_congr (Equiv.Set.univ ↑s)]
 
-theorem encard_univ (α : Type _) :
+theorem encard_univ (α : Type*) :
     encard (univ : Set α) = PartENat.withTopEquiv (PartENat.card α) := by
   rw [encard, PartENat.card_congr (Equiv.Set.univ α)]
 
@@ -152,7 +152,7 @@ section Lattice
 theorem encard_le_of_subset (h : s ⊆ t) : s.encard ≤ t.encard := by
   rw [←union_diff_cancel h, encard_union_eq disjoint_sdiff_right]; exact le_self_add
 
-theorem encard_mono {α : Type _} : Monotone (encard : Set α → ℕ∞) :=
+theorem encard_mono {α : Type*} : Monotone (encard : Set α → ℕ∞) :=
   fun _ _ ↦ encard_le_of_subset
 
 theorem encard_diff_add_encard_of_subset (h : s ⊆ t) : (t \ s).encard + s.encard = t.encard := by
@@ -521,7 +521,7 @@ theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ n
   rw [ncard_eq_toFinset_card _, Finset.finite_toSet_toFinset]
 #align set.ncard_coe_finset Set.ncard_coe_Finset
 
-theorem ncard_univ (α : Type _) : (univ : Set α).ncard = Nat.card α := by
+theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := by
   cases' finite_or_infinite α with h h
   · have hft := Fintype.ofFinite α
     rw [ncard_eq_toFinset_card, Finite.toFinset_univ, Finset.card_univ, Nat.card_eq_fintype_card]
@@ -529,7 +529,7 @@ theorem ncard_univ (α : Type _) : (univ : Set α).ncard = Nat.card α := by
   exact infinite_univ
 #align set.ncard_univ Set.ncard_univ
 
-@[simp] theorem ncard_empty (α : Type _) : (∅ : Set α).ncard = 0 := by
+@[simp] theorem ncard_empty (α : Type*) : (∅ : Set α).ncard = 0 := by
   rw [ncard_eq_zero]
 #align set.ncard_empty Set.ncard_empty
 

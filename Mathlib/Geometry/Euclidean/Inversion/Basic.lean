@@ -27,7 +27,7 @@ noncomputable section
 open Metric Function AffineMap Set AffineSubspace
 open scoped Topology
 
-variable {V P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 namespace EuclideanGeometry
@@ -210,7 +210,7 @@ protected theorem Filter.Tendsto.inversion {l : Filter α} {fc fx : α → P} {f
     Tendsto (fun a ↦ inversion (fc a) (fR a) (fx a)) l (𝓝 (inversion c R x)) :=
   (((hR.div (hx.dist hc) <| dist_ne_zero.2 hne).pow 2).smul (hx.vsub hc)).vadd hc
 
-variable {X : Type _} [TopologicalSpace X] {c x : X → P} {R : X → ℝ} {a₀ : X} {s : Set X}
+variable {X : Type*} [TopologicalSpace X] {c x : X → P} {R : X → ℝ} {a₀ : X} {s : Set X}
 
 protected nonrec theorem ContinuousWithinAt.inversion (hc : ContinuousWithinAt c s a₀)
     (hR : ContinuousWithinAt R s a₀) (hx : ContinuousWithinAt x s a₀) (hne : x a₀ ≠ c a₀) :

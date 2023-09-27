@@ -152,21 +152,21 @@ def wpMk {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath 
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp_mk MvPFunctor.wpMk
 
-def wpRec {α : TypeVec n} {C : Type _}
+def wpRec {α : TypeVec n} {C : Type*}
     (g : ∀ (a : P.A) (f : P.last.B a → P.last.W), P.WPath ⟨a, f⟩ ⟹ α → (P.last.B a → C) → C) :
     ∀ (x : P.last.W) (_ : P.WPath x ⟹ α), C
   | ⟨a, f⟩, f' => g a f f' fun i => wpRec g (f i) (P.wPathDestRight f' i)
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp_rec MvPFunctor.wpRec
 
-theorem wpRec_eq {α : TypeVec n} {C : Type _}
+theorem wpRec_eq {α : TypeVec n} {C : Type*}
     (g : ∀ (a : P.A) (f : P.last.B a → P.last.W), P.WPath ⟨a, f⟩ ⟹ α → (P.last.B a → C) → C)
     (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α) :
     P.wpRec g ⟨a, f⟩ f' = g a f f' fun i => P.wpRec g (f i) (P.wPathDestRight f' i) := rfl
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp_rec_eq MvPFunctor.wpRec_eq
 
--- Note: we could replace Prop by Type _ and obtain a dependent recursor
+-- Note: we could replace Prop by Type* and obtain a dependent recursor
 theorem wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Prop}
     (ih : ∀ (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α),
         (∀ i : P.last.B a, C (f i) (P.wPathDestRight f' i)) → C ⟨a, f⟩ f') :
@@ -192,7 +192,7 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_mk MvPFunctor.wMk
 
 /-- Recursor for `W` -/
-def wRec {α : TypeVec n} {C : Type _}
+def wRec {α : TypeVec n} {C : Type*}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.last.B a → P.W α) → (P.last.B a → C) → C) : P.W α → C
   | ⟨a, f'⟩ =>
     let g' (a : P.A) (f : P.last.B a → P.last.W) (h : P.WPath ⟨a, f⟩ ⟹ α)
@@ -203,7 +203,7 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_rec MvPFunctor.wRec
 
 /-- Defining equation for the recursor of `W` -/
-theorem wRec_eq {α : TypeVec n} {C : Type _}
+theorem wRec_eq {α : TypeVec n} {C : Type*}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.last.B a → P.W α) → (P.last.B a → C) → C) (a : P.A)
     (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
     P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := by

@@ -22,7 +22,7 @@ We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 
 universe u v
 
-variable {α : Type u} {β : Type _} {x y : ULift.{v} α}
+variable {α : Type u} {β : Type*} {x y : ULift.{v} α}
 
 namespace ULift
 

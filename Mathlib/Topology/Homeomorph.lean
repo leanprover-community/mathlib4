@@ -32,11 +32,11 @@ open Set Filter
 
 open Topology
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Homeomorphism between `α` and `β`, also called topological isomorphism -/
-structure Homeomorph (α : Type _) (β : Type _) [TopologicalSpace α] [TopologicalSpace β]
+structure Homeomorph (α : Type*) (β : Type*) [TopologicalSpace α] [TopologicalSpace β]
     extends α ≃ β where
   /-- The forward map of a homeomorphism is a continuous function. -/
   continuous_toFun : Continuous toFun := by continuity
@@ -103,7 +103,7 @@ theorem ext {h h' : α ≃ₜ β} (H : ∀ x, h x = h' x) : h = h' :=
 
 /-- Identity map as a homeomorphism. -/
 @[simps! (config := { fullyApplied := false }) apply]
-protected def refl (α : Type _) [TopologicalSpace α] : α ≃ₜ α where
+protected def refl (α : Type*) [TopologicalSpace α] : α ≃ₜ α where
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
   toEquiv := Equiv.refl α
@@ -568,7 +568,7 @@ end
 
 /-- If each `β₁ i` is homeomorphic to `β₂ i`, then `Π i, β₁ i` is homeomorphic to `Π i, β₂ i`. -/
 @[simps! apply toEquiv]
-def piCongrRight {ι : Type _} {β₁ β₂ : ι → Type _} [∀ i, TopologicalSpace (β₁ i)]
+def piCongrRight {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, TopologicalSpace (β₁ i)]
     [∀ i, TopologicalSpace (β₂ i)] (F : ∀ i, β₁ i ≃ₜ β₂ i) : (∀ i, β₁ i) ≃ₜ ∀ i, β₂ i where
   continuous_toFun := continuous_pi fun i => (F i).continuous.comp <| continuous_apply i
   continuous_invFun := continuous_pi fun i => (F i).symm.continuous.comp <| continuous_apply i
@@ -576,7 +576,7 @@ def piCongrRight {ι : Type _} {β₁ β₂ : ι → Type _} [∀ i, Topological
 #align homeomorph.Pi_congr_right Homeomorph.piCongrRight
 
 @[simp]
-theorem piCongrRight_symm {ι : Type _} {β₁ β₂ : ι → Type _} [∀ i, TopologicalSpace (β₁ i)]
+theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, TopologicalSpace (β₁ i)]
     [∀ i, TopologicalSpace (β₂ i)] (F : ∀ i, β₁ i ≃ₜ β₂ i) :
     (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
   rfl
@@ -606,7 +606,7 @@ def prodSumDistrib : α × Sum β γ ≃ₜ Sum (α × β) (α × γ) :=
   (prodComm _ _).trans <| sumProdDistrib.trans <| sumCongr (prodComm _ _) (prodComm _ _)
 #align homeomorph.prod_sum_distrib Homeomorph.prodSumDistrib
 
-variable {ι : Type _} {σ : ι → Type _} [∀ i, TopologicalSpace (σ i)]
+variable {ι : Type*} {σ : ι → Type*} [∀ i, TopologicalSpace (σ i)]
 
 /-- `(Σ i, σ i) × β` is homeomorphic to `Σ i, (σ i × β)`. -/
 def sigmaProdDistrib : (Σi, σ i) × β ≃ₜ Σi, σ i × β :=
@@ -620,7 +620,7 @@ end Distrib
 
 /-- If `ι` has a unique element, then `ι → α` is homeomorphic to `α`. -/
 @[simps! (config := { fullyApplied := false })]
-def funUnique (ι α : Type _) [Unique ι] [TopologicalSpace α] : (ι → α) ≃ₜ α where
+def funUnique (ι α : Type*) [Unique ι] [TopologicalSpace α] : (ι → α) ≃ₜ α where
   toEquiv := Equiv.funUnique ι α
   continuous_toFun := continuous_apply _
   continuous_invFun := continuous_pi fun _ => continuous_id
@@ -652,7 +652,7 @@ def image (e : α ≃ₜ β) (s : Set α) : s ≃ₜ e '' s where
 
 /-- `Set.univ α` is homeomorphic to `α`. -/
 @[simps! (config := { fullyApplied := false })]
-def Set.univ (α : Type _) [TopologicalSpace α] : (univ : Set α) ≃ₜ α where
+def Set.univ (α : Type*) [TopologicalSpace α] : (univ : Set α) ≃ₜ α where
   toEquiv := Equiv.Set.univ α
   continuous_toFun := continuous_subtype_val
   continuous_invFun := continuous_id.subtype_mk _
@@ -670,12 +670,12 @@ def Set.prod (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ₜ s × t where
 
 section
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-- The topological space `Π i, β i` can be split as a product by separating the indices in ι
   depending on whether they satisfy a predicate p or not.-/
 @[simps!]
-def piEquivPiSubtypeProd (p : ι → Prop) (β : ι → Type _) [∀ i, TopologicalSpace (β i)]
+def piEquivPiSubtypeProd (p : ι → Prop) (β : ι → Type*) [∀ i, TopologicalSpace (β i)]
     [DecidablePred p] : (∀ i, β i) ≃ₜ (∀ i : { x // p x }, β i) × ∀ i : { x // ¬p x }, β i
     where
   toEquiv := Equiv.piEquivPiSubtypeProd p β
@@ -692,7 +692,7 @@ variable [DecidableEq ι] (i : ι)
 /-- A product of topological spaces can be split as the binary product of one of the spaces and
   the product of all the remaining spaces. -/
 @[simps!]
-def piSplitAt (β : ι → Type _) [∀ j, TopologicalSpace (β j)] :
+def piSplitAt (β : ι → Type*) [∀ j, TopologicalSpace (β j)] :
     (∀ j, β j) ≃ₜ β i × ∀ j : { j // j ≠ i }, β j
     where
   toEquiv := Equiv.piSplitAt i β

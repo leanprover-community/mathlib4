@@ -21,7 +21,7 @@ When you update this file, you can also try to make a corresponding update in
 -/
 
 
-variable (R A B : Type _) {σ : Type _}
+variable (R A B : Type*) {σ : Type*}
 
 namespace MvPolynomial
 

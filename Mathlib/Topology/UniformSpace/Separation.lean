@@ -105,7 +105,7 @@ theorem separated_equiv : Equivalence fun x y => (x, y) ∈ 𝓢 α :=
     h_ts <| show (x, z) ∈ compRel t t from ⟨y, hxy t ht, hyz t ht⟩⟩
 #align separated_equiv separated_equiv
 
-theorem Filter.HasBasis.mem_separationRel {ι : Sort _} {p : ι → Prop} {s : ι → Set (α × α)}
+theorem Filter.HasBasis.mem_separationRel {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
     (h : (𝓤 α).HasBasis p s) {a : α × α} : a ∈ 𝓢 α ↔ ∀ i, p i → a ∈ s i :=
   h.forall_mem_mem
 #align filter.has_basis.mem_separation_rel Filter.HasBasis.mem_separationRel
@@ -141,18 +141,18 @@ theorem separated_def' {α : Type u} [UniformSpace α] :
   separated_def.trans <| forall₂_congr fun x y => by rw [← not_imp_not]; simp [not_forall]
 #align separated_def' separated_def'
 
-theorem eq_of_uniformity {α : Type _} [UniformSpace α] [SeparatedSpace α] {x y : α}
+theorem eq_of_uniformity {α : Type*} [UniformSpace α] [SeparatedSpace α] {x y : α}
     (h : ∀ {V}, V ∈ 𝓤 α → (x, y) ∈ V) : x = y :=
   separated_def.mp ‹SeparatedSpace α› x y fun _ => h
 #align eq_of_uniformity eq_of_uniformity
 
-theorem eq_of_uniformity_basis {α : Type _} [UniformSpace α] [SeparatedSpace α] {ι : Type _}
+theorem eq_of_uniformity_basis {α : Type*} [UniformSpace α] [SeparatedSpace α] {ι : Type*}
     {p : ι → Prop} {s : ι → Set (α × α)} (hs : (𝓤 α).HasBasis p s) {x y : α}
     (h : ∀ {i}, p i → (x, y) ∈ s i) : x = y :=
   eq_of_uniformity fun V_in => let ⟨_, hi, H⟩ := hs.mem_iff.mp V_in; H (h hi)
 #align eq_of_uniformity_basis eq_of_uniformity_basis
 
-theorem eq_of_forall_symmetric {α : Type _} [UniformSpace α] [SeparatedSpace α] {x y : α}
+theorem eq_of_forall_symmetric {α : Type*} [UniformSpace α] [SeparatedSpace α] {x y : α}
     (h : ∀ {V}, V ∈ 𝓤 α → SymmetricRel V → (x, y) ∈ V) : x = y :=
   eq_of_uniformity_basis hasBasis_symmetric (by simpa [and_imp])
 #align eq_of_forall_symmetric eq_of_forall_symmetric
@@ -163,7 +163,7 @@ theorem eq_of_clusterPt_uniformity [SeparatedSpace α] {x y : α} (h : ClusterPt
     isClosed_iff_clusterPt.1 hVc _ <| h.mono <| le_principal_iff.2 hV
 #align eq_of_cluster_pt_uniformity eq_of_clusterPt_uniformity
 
-theorem idRel_sub_separationRel (α : Type _) [UniformSpace α] : idRel ⊆ 𝓢 α := by
+theorem idRel_sub_separationRel (α : Type*) [UniformSpace α] : idRel ⊆ 𝓢 α := by
   unfold separationRel
   rw [idRel_subset]
   intro x
@@ -181,7 +181,7 @@ theorem separationRel_comap {f : α → β}
   rfl
 #align separation_rel_comap separationRel_comap
 
-protected theorem Filter.HasBasis.separationRel {ι : Sort _} {p : ι → Prop} {s : ι → Set (α × α)}
+protected theorem Filter.HasBasis.separationRel {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
     (h : HasBasis (𝓤 α) p s) : 𝓢 α = ⋂ (i) (_ : p i), s i := by
   unfold separationRel
   rw [h.sInter_sets]
@@ -348,7 +348,7 @@ theorem eq_of_separated_of_uniformContinuous [SeparatedSpace β] {f : α → β}
 #align uniform_space.eq_of_separated_of_uniform_continuous UniformSpace.eq_of_separated_of_uniformContinuous
 
 /-- The maximal separated quotient of a uniform space `α`. -/
-def SeparationQuotient (α : Type _) [UniformSpace α] :=
+def SeparationQuotient (α : Type*) [UniformSpace α] :=
   Quotient (separationSetoid α)
 #align uniform_space.separation_quotient UniformSpace.SeparationQuotient
 

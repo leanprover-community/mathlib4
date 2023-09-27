@@ -56,7 +56,7 @@ the literature and turn the order around?
 
 open BigOperators Finset Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A finite partition of `a : α` is a pairwise disjoint finite set of elements whose supremum is
 `a`. We forbid `⊥` as a part. -/

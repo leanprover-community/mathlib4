@@ -32,7 +32,7 @@ namespace Tuple
 /-- *Bubble sort induction*: Prove that the sorted version of `f` has some property `P`
 if `f` satsifies `P` and `P` is preserved on permutations of `f` when swapping two
 antitone values. -/
-theorem bubble_sort_induction' {n : ℕ} {α : Type _} [LinearOrder α] {f : Fin n → α}
+theorem bubble_sort_induction' {n : ℕ} {α : Type*} [LinearOrder α] {f : Fin n → α}
     {P : (Fin n → α) → Prop} (hf : P f)
     (h : ∀ (σ : Equiv.Perm (Fin n)) (i j : Fin n),
       i < j → (f ∘ σ) j < (f ∘ σ) i → P (f ∘ σ) → P (f ∘ σ ∘ Equiv.swap i j)) :
@@ -47,7 +47,7 @@ theorem bubble_sort_induction' {n : ℕ} {α : Type _} [LinearOrder α] {f : Fin
 
 /-- *Bubble sort induction*: Prove that the sorted version of `f` has some property `P`
 if `f` satsifies `P` and `P` is preserved when swapping two antitone values. -/
-theorem bubble_sort_induction {n : ℕ} {α : Type _} [LinearOrder α] {f : Fin n → α}
+theorem bubble_sort_induction {n : ℕ} {α : Type*} [LinearOrder α] {f : Fin n → α}
     {P : (Fin n → α) → Prop} (hf : P f)
     (h : ∀ (g : Fin n → α) (i j : Fin n), i < j → g j < g i → P g → P (g ∘ Equiv.swap i j)) :
     P (f ∘ sort f) :=

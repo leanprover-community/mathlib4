@@ -24,7 +24,7 @@ boundary.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Coheyting
 

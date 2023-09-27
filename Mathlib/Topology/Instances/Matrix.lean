@@ -35,7 +35,7 @@ This file is a place to collect topological results about matrices.
 
 open Matrix
 
-variable {X α l m n p S R : Type _} {m' n' : l → Type _}
+variable {X α l m n p S R : Type*} {m' n' : l → Type*}
 
 instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
   Pi.topologicalSpace

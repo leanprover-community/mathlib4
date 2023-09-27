@@ -25,7 +25,7 @@ namespace Submonoid
 
 section
 
-variable (M : Type _) [Monoid M]
+variable (M : Type*) [Monoid M]
 
 /-- The center of a monoid `M` is the set of elements that commute with everything in `M` -/
 @[to_additive
@@ -86,7 +86,7 @@ end
 
 section
 
-variable (M : Type _) [CommMonoid M]
+variable (M : Type*) [CommMonoid M]
 
 @[simp]
 theorem center_eq_top : center M = ⊤ :=

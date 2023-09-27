@@ -30,7 +30,7 @@ structure BddOrdCat where
 
 namespace BddOrdCat
 
-instance : CoeSort BddOrdCat (Type _) :=
+instance : CoeSort BddOrdCat (Type*) :=
   InducedCategory.hasCoeToSort toPartOrd
 
 instance (X : BddOrdCat) : PartialOrder X :=
@@ -39,13 +39,13 @@ instance (X : BddOrdCat) : PartialOrder X :=
 attribute [instance] BddOrdCat.isBoundedOrder
 
 /-- Construct a bundled `BddOrdCat` from a `Fintype` `PartialOrder`. -/
-def of (α : Type _) [PartialOrder α] [BoundedOrder α] : BddOrdCat :=
+def of (α : Type*) [PartialOrder α] [BoundedOrder α] : BddOrdCat :=
   -- Porting note: was ⟨⟨α⟩⟩, see https://github.com/leanprover-community/mathlib4/issues/4998
   ⟨{ α := α }⟩
 #align BddOrd.of BddOrdCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [PartialOrder α] [BoundedOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [PartialOrder α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddOrd.coe_of BddOrdCat.coe_of
 
