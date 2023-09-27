@@ -144,7 +144,7 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   rw [Subgroup.ne_bot_iff_exists_ne_one] at hg
   rcases hg with ⟨a, ha⟩
   -- The action of a on G as an embedding
-  let a_mul_emb : G ↪ G := mulLeftEmbedding a -- TODO factor this? In library?
+  let a_mul_emb : G ↪ G := mulLeftEmbedding a
   -- ... and leaves G unchanged
   have h_unchanged : Finset.univ.map a_mul_emb = Finset.univ := by simp
   -- Therefore the sum of x over a G is the sum of a x over G
