@@ -148,10 +148,16 @@ private theorem aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulR
     ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.add_apply, Pi.smul_apply,
     ContinuousLinearMap.coe_smul']
 
+set_option synthInstance.maxHeartbeats 0 in
 nonrec theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
     (h0 : 0 < (f x).re ∨ (f x).im ≠ 0) : HasStrictDerivAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') x := by
-  simpa using (hf.cpow hg h0).hasStrictDerivAt
+  have := (hf.cpow hg h0).hasStrictDerivAt
+  simp at this
+  rw [ContinuousLinearMap.smul_apply, ContinuousLinearMap.smul_apply,
+    ContinuousLinearMap.smulRight_apply,
+    ContinuousLinearMap.smulRight_apply] at this
+  simpa using this
 #align has_strict_deriv_at.cpow HasStrictDerivAt.cpow
 
 theorem HasStrictDerivAt.const_cpow (hf : HasStrictDerivAt f f' x) (h : c ≠ 0 ∨ f x ≠ 0) :
