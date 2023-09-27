@@ -164,6 +164,17 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   rw [←sub_eq_zero]
   exact ha
 
+/-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
+theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
+    {G : Subgroup Kˣ} [Fintype G] [Decidable (G = ⊥)] :
+    ∑ x : G, (x.val : K) = if G = ⊥ then 1 else 0 := by
+  by_cases G_bot : G = ⊥
+  · subst G_bot
+    simp only [ite_true, Subgroup.mem_bot, Fintype.card_ofSubsingleton, Nat.cast_ite, Nat.cast_one,
+      Nat.cast_zero, univ_unique, Set.default_coe_singleton, sum_singleton, Units.val_one]
+  · simp only [G_bot, ite_false]
+    exact sum_subgroup_units_eq_zero G_bot
+
 
 section
 
@@ -254,16 +265,6 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
         rw [← forall_pow_eq_one_iff, FunLike.ext_iff]
         apply forall_congr'; intro x; simp [Units.ext_iff]
 #align finite_field.sum_pow_units FiniteField.sum_pow_units
-
-/-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
-theorem sum_subgroup_units {G : Subgroup Kˣ} [Fintype G] [Decidable (G = ⊥)] :
-    ∑ x : G, (x.val : K) = if G = ⊥ then 1 else 0 := by
-  by_cases G_bot : G = ⊥
-  · subst G_bot
-    simp only [ite_true, Subgroup.mem_bot, Fintype.card_ofSubsingleton, Nat.cast_ite, Nat.cast_one,
-      Nat.cast_zero, univ_unique, Set.default_coe_singleton, sum_singleton, Units.val_one]
-  · simp only [G_bot, ite_false]
-    exact sum_subgroup_units_eq_zero K G_bot
 
 theorem sum_subgroup_pow_eq_zero {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos : 0 < k)
     (k_lt_card_G : k < Fintype.card G) : ∑ x : G, ((x : Kˣ) : K) ^ k = 0 := by
