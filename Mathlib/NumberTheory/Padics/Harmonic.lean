@@ -124,11 +124,8 @@ theorem padicValRat_two_harmonic {n : ℕ} (Hn : 2 ≤ n) :
       simp only [add_tsub_cancel_right]
 
 /-- The n-th harmonic number is not an integer for n ≥ 2. -/
-theorem harmonic_not_int {n : ℕ} (Hn : 2 ≤ n) :
-    ¬(harmonic n).isInt := by
-  refine' padicNorm.not_int_of_not_padic_int 2 _
-  rw [padicNorm.eq_zpow_of_nonzero (harmonic_pos (by linarith)).ne']
-  refine' one_lt_zpow one_lt_two _ (lt_neg.mp _)
-  rw [neg_zero, padicValRat_two_harmonic Hn, Left.neg_neg_iff,
-    Nat.cast_pos, Nat.log_pos_iff]
-  exact ⟨Hn,one_lt_two⟩
+theorem harmonic_not_int {n : ℕ} (h : 2 ≤ n) : ¬ (harmonic n).isInt := by
+  apply padicNorm.not_int_of_not_padic_int 2
+  rw [padicNorm.eq_zpow_of_nonzero (harmonic_pos (ne_zero_of_lt h)).ne',
+      padicValRat_two_harmonic h, neg_neg, zpow_coe_nat]
+  exact one_lt_pow one_lt_two (Nat.log_pos one_lt_two h).ne'
