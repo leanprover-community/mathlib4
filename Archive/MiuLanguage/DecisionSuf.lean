@@ -84,7 +84,7 @@ an even number of `U`s and `z` is any `Miustr`.
 Any number of successive occurrences of `"UU"` can be removed from the end of a `Derivable` `Miustr`
 to produce another `Derivable` `Miustr`.
 -/
-theorem der_of_der_replicate_append_U_even {z : Miustr} {m : ℕ}
+theorem der_of_der_append_replicate_U_even {z : Miustr} {m : ℕ}
     (h : Derivable (z ++ ↑(replicate (m * 2) U))) : Derivable z := by
   induction' m with k hk
   · revert h
@@ -95,7 +95,7 @@ theorem der_of_der_replicate_append_U_even {z : Miustr} {m : ℕ}
     apply Derivable.r4
     rwa [append_nil, append_assoc]
 set_option linter.uppercaseLean3 false in
-#align miu.der_of_der_replicate_append_U_even Miu.der_of_der_replicate_append_U_even
+#align miu.der_of_der_append_replicate_U_even Miu.der_of_der_append_replicate_U_even
 
 /-!
 In fine-tuning my application of `simp`, I issued the following commend to determine which lemmas
@@ -119,8 +119,8 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
     specialize ha (U :: xs)
     intro h₂
     -- We massage the goal into a form amenable to the application of `ha`.
-    rw [succ_eq_add_one, replicate_add, ← append_assoc, ← cons_append, replicate_one,
-      append_assoc, singleton_append]
+    rw [succ_eq_add_one, replicate_add, ← append_assoc, ← cons_append, replicate_one, append_assoc,
+      singleton_append]
     apply ha
     apply Derivable.r3
     change Derivable (↑(M :: replicate (c + 3 * a) I) ++ ↑(replicate 3 I) ++ xs)
