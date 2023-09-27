@@ -178,7 +178,7 @@ theorem map_smulₛₗ₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (r
 
 theorem map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (t : Finset ι) (x : ι → M) (y) :
     f (∑ i in t, x i) y = ∑ i in t, f (x i) y :=
-  (flip f y).map_sum
+  _root_.map_sum (flip f y) _ _
 #align linear_map.map_sum₂ LinearMap.map_sum₂
 
 /-- Restricting a bilinear map in the second entry -/

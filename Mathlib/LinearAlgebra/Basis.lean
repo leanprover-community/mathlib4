@@ -276,14 +276,14 @@ variable {M₁ : Type*} [AddCommMonoid M₁] [Module R₁ M₁]
 theorem ext {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.total_repr x, Finsupp.total_apply, Finsupp.sum]
-  simp only [LinearMap.map_sum, LinearMap.map_smulₛₗ, h]
+  simp only [map_sum, LinearMap.map_smulₛₗ, h]
 #align basis.ext Basis.ext
 
 /-- Two linear equivs are equal if they are equal on basis vectors. -/
 theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.total_repr x, Finsupp.total_apply, Finsupp.sum]
-  simp only [LinearEquiv.map_sum, LinearEquiv.map_smulₛₗ, h]
+  simp only [map_sum, LinearEquiv.map_smulₛₗ, h]
 #align basis.ext' Basis.ext'
 
 /-- Two elements are equal iff their coordinates are equal. -/
@@ -1065,7 +1065,7 @@ theorem equiv'_symm_apply (f : M → M') (g : M' → M) (hf hg hgf hfg) (i : ι'
 theorem sum_repr_mul_repr {ι'} [Fintype ι'] (b' : Basis ι' R M) (x : M) (i : ι) :
     (∑ j : ι', b.repr (b' j) i * b'.repr x j) = b.repr x i := by
   conv_rhs => rw [← b'.sum_repr x]
-  simp_rw [LinearEquiv.map_sum, LinearEquiv.map_smul, Finset.sum_apply']
+  simp_rw [map_sum, map_smul, Finset.sum_apply']
   refine' Finset.sum_congr rfl fun j _ => _
   rw [Finsupp.smul_apply, smul_eq_mul, mul_comm]
 #align basis.sum_repr_mul_repr Basis.sum_repr_mul_repr

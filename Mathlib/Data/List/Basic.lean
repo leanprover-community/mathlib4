@@ -2132,17 +2132,8 @@ theorem drop_length_cons {l : List α} (h : l ≠ []) (a : α) :
     exact ih h₁ y
 #align list.drop_length_cons List.drop_length_cons
 
-/-- Dropping the elements up to `n` in `l₁ ++ l₂` is the same as dropping the elements up to `n`
-in `l₁`, dropping the elements up to `n - l₁.length` in `l₂`, and appending them. -/
-theorem drop_append_eq_append_drop {l₁ l₂ : List α} {n : ℕ} :
-    drop n (l₁ ++ l₂) = drop n l₁ ++ drop (n - l₁.length) l₂ := by
-  induction l₁ generalizing n; · simp
-  cases n <;> simp [*]
 #align list.drop_append_eq_append_drop List.drop_append_eq_append_drop
 
-theorem drop_append_of_le_length {l₁ l₂ : List α} {n : ℕ} (h : n ≤ l₁.length) :
-    (l₁ ++ l₂).drop n = l₁.drop n ++ l₂ := by
-  simp [drop_append_eq_append_drop, tsub_eq_zero_iff_le.mpr h]
 #align list.drop_append_of_le_length List.drop_append_of_le_length
 
 /-- Dropping the elements up to `l₁.length + i` in `l₁ + l₂` is the same as dropping the elements

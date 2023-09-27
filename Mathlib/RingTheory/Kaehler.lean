@@ -388,7 +388,7 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
     exact e₁.symm.trans (e.trans e₂)
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
-set_option maxHeartbeats 700000 in
+set_option maxHeartbeats 900000 in
 -- Porting note: extra heartbeats are needed to infer the instance
 -- Module S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }
 set_option synthInstance.maxHeartbeats 200000 in
@@ -413,8 +413,8 @@ def KaehlerDifferential.endEquivAuxEquiv :
 #align kaehler_differential.End_equiv_aux_equiv KaehlerDifferential.endEquivAuxEquiv
 
 
-set_option maxHeartbeats 1200000 in
-set_option synthInstance.maxHeartbeats 900000 in
+set_option maxHeartbeats 1800000 in
+set_option synthInstance.maxHeartbeats 1400000 in
 /--
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.

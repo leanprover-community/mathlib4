@@ -29,7 +29,7 @@ open CategoryTheory.Limits
 -- You should pretend for now that this file was automatically generated.
 -- It follows the same template as colimits in Mon.
 /-
-`#print comm_ring` used to say:
+`#print comm_ring` in Lean 3 used to say:
 
 structure comm_ring : Type u → Type u
 fields:

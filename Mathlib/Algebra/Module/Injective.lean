@@ -186,9 +186,6 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
     is_extension := fun m => by
       refine' Eq.trans (hnonempty.some.is_extension m) _
-      · -- porting note: this subgoal didn't exist before the reenableeta branch
-        intros c hchain _
-        exact (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
       symm
       generalize_proofs _ h1
       exact

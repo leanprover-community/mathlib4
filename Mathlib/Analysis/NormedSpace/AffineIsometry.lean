@@ -877,7 +877,7 @@ namespace AffineSubspace
 /-- An affine subspace is isomorphic to its image under an injective affine map.
 This is the affine version of `Submodule.equivMapOfInjective`.
 -/
-@[simps]
+@[simps!]
 noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E] (φ : P₁ →ᵃ[𝕜] P₂)
     (hφ : Function.Injective φ) : E ≃ᵃ[𝕜] E.map φ :=
   { Equiv.Set.image _ (E : Set P₁) hφ with
@@ -886,6 +886,8 @@ noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E
         (LinearEquiv.ofEq _ _ (AffineSubspace.map_direction _ _).symm)
     map_vadd' := fun p v => Subtype.ext <| φ.map_vadd p v }
 #align affine_subspace.equiv_map_of_injective AffineSubspace.equivMapOfInjective
+
+attribute [nolint simpNF] AffineSubspace.equivMapOfInjective_invFun_coe
 
 /-- Restricts an affine isometry to an affine isometry equivalence between a nonempty affine
 subspace `E` and its image.
@@ -915,5 +917,8 @@ theorem isometryEquivMap.toAffineMap_eq (φ : P₁ →ᵃⁱ[𝕜] P₂) (E : Af
     (E.isometryEquivMap φ).toAffineMap = E.equivMapOfInjective φ.toAffineMap φ.injective :=
   rfl
 #align affine_subspace.isometry_equiv_map.to_affine_map_eq AffineSubspace.isometryEquivMap.toAffineMap_eq
+
+-- attribute [nolint simpNF] linear_equivMapOfInjective_symm_apply_coe
+  -- equivMapOfInjective_invFun_coe
 
 end AffineSubspace

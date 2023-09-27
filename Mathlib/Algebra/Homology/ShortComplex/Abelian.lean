@@ -177,6 +177,8 @@ noncomputable def HomologyData.ofAbelian : S.HomologyData where
   right := RightHomologyData.ofAbelian S
   iso := Abelian.coimageIsoImage (kernel.ι S.g ≫ cokernel.π S.f)
 
-instance : S.HasHomology := ⟨⟨HomologyData.ofAbelian S⟩⟩
+instance _root_.CategoryTheory.categoryWithHomology_of_abelian :
+    CategoryWithHomology C where
+  hasHomology S := HasHomology.mk' (HomologyData.ofAbelian S)
 
 end ShortComplex

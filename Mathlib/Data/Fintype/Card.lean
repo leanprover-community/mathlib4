@@ -321,7 +321,7 @@ theorem fin_injective : Function.Injective Fin := fun m n h =>
 
 /-- A reversed version of `Fin.cast_eq_cast` that is easier to rewrite with. -/
 theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
-    _root_.cast h = ⇑(Fin.castIso <| fin_injective h) := by
+    _root_.cast h = Fin.cast (fin_injective h) := by
   cases fin_injective h
   rfl
 #align fin.cast_eq_cast' Fin.cast_eq_cast'

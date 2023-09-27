@@ -500,7 +500,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
   -- `f y - f x` is well approximated by `f' x (y - x)`.
   have B₂ : ∀ᶠ r in 𝓝[>] (0 : ℝ), {x} + r • closedBall z ε ⊆ ball x ρ := by
     apply nhdsWithin_le_nhds
-    exact eventually_singleton_add_smul_subset bounded_closedBall (ball_mem_nhds x ρpos)
+    exact eventually_singleton_add_smul_subset isBounded_closedBall (ball_mem_nhds x ρpos)
   -- fix a small positive `r` satisfying the above properties, as well as a corresponding `y`.
   obtain ⟨r, ⟨y, ⟨ys, hy⟩⟩, rρ, rpos⟩ :
     ∃ r : ℝ,
@@ -1223,8 +1223,9 @@ theorem det_one_smulRight {𝕜 : Type*} [NormedField 𝕜] (v : 𝕜) :
     ((1 : 𝕜 →L[𝕜] 𝕜).smulRight v).det = v := by
   have : (1 : 𝕜 →L[𝕜] 𝕜).smulRight v = v • (1 : 𝕜 →L[𝕜] 𝕜) := by
     ext1
-    simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply,
-      Algebra.id.smul_eq_mul, one_mul, ContinuousLinearMap.coe_smul', Pi.smul_apply, mul_one]
+    dsimp
+    rw [Pi.smul_apply]
+    simp
   rw [this, ContinuousLinearMap.det, ContinuousLinearMap.coe_smul]
   rw [show ((1 : 𝕜 →L[𝕜] 𝕜) : 𝕜 →ₗ[𝕜] 𝕜) = LinearMap.id from rfl]
   rw [LinearMap.det_smul, FiniteDimensional.finrank_self, LinearMap.det_id, pow_one, mul_one]
