@@ -47,5 +47,5 @@ lemma zero_lt_one' : (0 : α) < 1 := zero_lt_one
 
 end
 
-alias zero_lt_one ← one_pos
+alias one_pos := zero_lt_one
 #align one_pos one_pos

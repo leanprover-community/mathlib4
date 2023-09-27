@@ -96,7 +96,7 @@ Id.run do
   if (s.get i₁).isUpper then
     if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
       if let some (pref, newS) := strs.findSome?
-        fun x ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
+        fun x : String ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
     if !(s.get i₀).isUpper then
       return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
@@ -478,8 +478,7 @@ def reorderLambda (src : Expr) (reorder : List (List Nat) := []) : MetaM Expr :=
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
 def updateDecl
-  (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := [])
-  : MetaM ConstantInfo := do
+  (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) : MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.join then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
@@ -798,6 +797,8 @@ def fixAbbreviation : List String → List String
   | "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
   | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
   | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
+  | "unique" :: "Prods" :: s          => "uniqueSums" :: fixAbbreviation s
+  | "Unique" :: "Prods" :: s          => "UniqueSums" :: fixAbbreviation s
   | "order" :: "Of" :: s              => "addOrderOf" :: fixAbbreviation s
   | "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
   | "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
@@ -910,8 +911,8 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         ""}calling @[{thisAttr}]. The preferred method is to use {
         ""}`@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both {
         src} and the target declaration {tgt}."
-    warnAttr stx Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
-      thisAttr `ext src tgt
+    warnAttr stx Std.Tactic.Ext.extExtension
+      (fun b n => (b.tree.elements.any fun t => t.declName = n)) thisAttr `ext src tgt
     warnAttr stx Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src tgt
     warnAttr stx Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src tgt
     warnAttr stx Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src tgt

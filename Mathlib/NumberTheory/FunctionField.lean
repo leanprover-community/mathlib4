@@ -169,9 +169,9 @@ theorem InftyValuation.map_mul' (x y : RatFunc Fq) :
     inftyValuationDef Fq (x * y) = inftyValuationDef Fq x * inftyValuationDef Fq y := by
   rw [inftyValuationDef, inftyValuationDef, inftyValuationDef]
   by_cases hx : x = 0
-  · rw [hx, MulZeroClass.zero_mul, if_pos (Eq.refl _), MulZeroClass.zero_mul]
+  · rw [hx, zero_mul, if_pos (Eq.refl _), zero_mul]
   · by_cases hy : y = 0
-    · rw [hy, MulZeroClass.mul_zero, if_pos (Eq.refl _), MulZeroClass.mul_zero]
+    · rw [hy, mul_zero, if_pos (Eq.refl _), mul_zero]
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithZero.coe_mul, WithZero.coe_inj,
         ← ofAdd_add, RatFunc.intDegree_mul hx hy]
 #align function_field.infty_valuation.map_mul' FunctionField.InftyValuation.map_mul'

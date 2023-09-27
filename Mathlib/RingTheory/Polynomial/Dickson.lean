@@ -108,7 +108,7 @@ theorem dickson_two_zero : ∀ n : ℕ, dickson 2 (0 : R) n = X ^ n
     norm_num
   | 1 => by simp only [dickson_one, pow_one]
   | n + 2 => by
-    simp only [dickson_add_two, C_0, MulZeroClass.zero_mul, sub_zero]
+    simp only [dickson_add_two, C_0, zero_mul, sub_zero]
     rw [dickson_two_zero (n + 1), pow_add X (n + 1) 1, mul_comm, pow_one]
 #align polynomial.dickson_two_zero Polynomial.dickson_two_zero
 
@@ -241,7 +241,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         intro H
         have : φ.eval 0 = 0 := by rw [H, eval_zero]
         simpa [eval_X, eval_one, eval_pow, eval_sub, sub_zero, eval_add, eval_mul,
-          MulZeroClass.mul_zero, sq, zero_add, one_ne_zero]
+          mul_zero, sq, zero_add, one_ne_zero]
       classical
         convert(φ.roots ∪ {0}).toFinset.finite_toSet using 1
         ext1 y

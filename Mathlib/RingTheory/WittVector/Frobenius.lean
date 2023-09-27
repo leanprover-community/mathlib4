@@ -116,7 +116,7 @@ def frobeniusPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 Our next goal is to prove
 ```
 lemma map_frobeniusPoly (n : ℕ) :
-  MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n
+    MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n
 ```
 This lemma has a rather long proof, but it mostly boils down to applying induction,
 and then using the following two key facts at the right point.
@@ -199,7 +199,7 @@ theorem map_frobeniusPoly (n : ℕ) :
 theorem frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by
   rw [frobeniusPoly, RingHom.map_add, RingHom.map_pow, RingHom.map_mul, map_X, map_C]
-  simp only [Int.cast_ofNat, add_zero, eq_intCast, ZMod.nat_cast_self, MulZeroClass.zero_mul, C_0]
+  simp only [Int.cast_ofNat, add_zero, eq_intCast, ZMod.nat_cast_self, zero_mul, C_0]
 #align witt_vector.frobenius_poly_zmod WittVector.frobeniusPoly_zmod
 
 @[simp]

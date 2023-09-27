@@ -255,7 +255,7 @@ theorem summable_abs_iff [LinearOrderedAddCommGroup α] [UniformSpace α] [Unifo
   _ ↔ Summable f := by simp only [summable_neg_iff, summable_subtype_and_compl]
 #align summable_abs_iff summable_abs_iff
 
-alias summable_abs_iff ↔ Summable.of_abs Summable.abs
+alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
 #align summable.of_abs Summable.of_abs
 #align summable.abs Summable.abs
 

@@ -3,12 +3,13 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Algebra.Group.Opposite
 
 #align_import algebra.group_power.lemmas from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
@@ -771,7 +772,7 @@ namespace Int
 lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by rw [sq, Int.natAbs_mul_self', sq]
 #align int.nat_abs_sq Int.natAbs_sq
 
-alias natAbs_sq ← natAbs_pow_two
+alias natAbs_pow_two := natAbs_sq
 #align int.nat_abs_pow_two Int.natAbs_pow_two
 
 theorem natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
@@ -780,13 +781,13 @@ theorem natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
   apply Nat.le_mul_self
 #align int.abs_le_self_sq Int.natAbs_le_self_sq
 
-alias natAbs_le_self_sq ← natAbs_le_self_pow_two
+alias natAbs_le_self_pow_two := natAbs_le_self_sq
 
 theorem le_self_sq (b : ℤ) : b ≤ b ^ 2 :=
   le_trans le_natAbs (natAbs_le_self_sq _)
 #align int.le_self_sq Int.le_self_sq
 
-alias le_self_sq ← le_self_pow_two
+alias le_self_pow_two := le_self_sq
 #align int.le_self_pow_two Int.le_self_pow_two
 
 theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) :
@@ -1129,7 +1130,7 @@ theorem cast_int_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b : R) :
 
 @[simp]
 theorem cast_int_mul_left (h : Commute a b) (m : ℤ) :
-   Commute ((m : R) * a) b :=
+    Commute ((m : R) * a) b :=
   SemiconjBy.cast_int_mul_left h m
 #align commute.cast_int_mul_left Commute.cast_int_mul_left
 
@@ -1208,14 +1209,13 @@ namespace Units
 variable [Monoid M]
 
 theorem conj_pow (u : Mˣ) (x : M) (n : ℕ) :
-      ((↑u : M) * x * (↑u⁻¹ : M)) ^ n =
-      (u : M) * x ^ n * (↑u⁻¹ : M) :=
+    ((↑u : M) * x * (↑u⁻¹ : M)) ^ n = (u : M) * x ^ n * (↑u⁻¹ : M) :=
   (divp_eq_iff_mul_eq.2
   ((u.mk_semiconjBy x).pow_right n).eq.symm).symm
 #align units.conj_pow Units.conj_pow
 
 theorem conj_pow' (u : Mˣ) (x : M) (n : ℕ) :
-  ((↑u⁻¹ : M) * x * (u : M)) ^ n = (↑u⁻¹ : M) * x ^ n * (u : M) :=
+    ((↑u⁻¹ : M) * x * (u : M)) ^ n = (↑u⁻¹ : M) * x ^ n * (u : M) :=
   u⁻¹.conj_pow x n
 #align units.conj_pow' Units.conj_pow'
 

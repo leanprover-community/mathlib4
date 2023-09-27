@@ -63,12 +63,12 @@ theorem vandermonde_succ {n : ℕ} (v : Fin n.succ → R) :
 #align matrix.vandermonde_succ Matrix.vandermonde_succ
 
 theorem vandermonde_mul_vandermonde_transpose {n : ℕ} (v w : Fin n → R) (i j) :
-    (vandermonde v ⬝ (vandermonde w)ᵀ) i j = ∑ k : Fin n, (v i * w j) ^ (k : ℕ) := by
+    (vandermonde v * (vandermonde w)ᵀ) i j = ∑ k : Fin n, (v i * w j) ^ (k : ℕ) := by
   simp only [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, mul_pow]
 #align matrix.vandermonde_mul_vandermonde_transpose Matrix.vandermonde_mul_vandermonde_transpose
 
 theorem vandermonde_transpose_mul_vandermonde {n : ℕ} (v : Fin n → R) (i j) :
-    ((vandermonde v)ᵀ ⬝ vandermonde v) i j = ∑ k : Fin n, v k ^ (i + j : ℕ) := by
+    ((vandermonde v)ᵀ * vandermonde v) i j = ∑ k : Fin n, v k ^ (i + j : ℕ) := by
   simp only [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, pow_add]
 #align matrix.vandermonde_transpose_mul_vandermonde Matrix.vandermonde_transpose_mul_vandermonde
 
@@ -91,7 +91,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
               (Fin.succAbove 0 i)) := by
       simp_rw [det_succ_column_zero, Fin.sum_univ_succ, of_apply, Matrix.cons_val_zero, submatrix,
         of_apply, Matrix.cons_val_succ, Fin.val_zero, pow_zero, one_mul, sub_self,
-        MulZeroClass.mul_zero, MulZeroClass.zero_mul, Finset.sum_const_zero, add_zero]
+        mul_zero, zero_mul, Finset.sum_const_zero, add_zero]
     _ =
         det
           (of fun i j : Fin n =>
@@ -153,6 +153,17 @@ theorem det_vandermonde_ne_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
   unfold Function.Injective
   simp only [det_vandermonde_eq_zero_iff, Ne.def, not_exists, not_and, Classical.not_not]
 #align matrix.det_vandermonde_ne_zero_iff Matrix.det_vandermonde_ne_zero_iff
+
+@[simp]
+theorem det_vandermonde_add {n : ℕ} (v : Fin n → R) (a : R) :
+    (Matrix.vandermonde fun i ↦ v i + a).det = (Matrix.vandermonde v).det := by
+  simp [Matrix.det_vandermonde]
+
+@[simp]
+theorem det_vandermonde_sub {n : ℕ} (v : Fin n → R) (a : R) :
+    (Matrix.vandermonde fun i ↦ v i - a).det = (Matrix.vandermonde v).det := by
+  rw [← det_vandermonde_add v (- a)]
+  simp only [← sub_eq_add_neg]
 
 theorem eq_zero_of_forall_index_sum_pow_mul_eq_zero {R : Type*} [CommRing R] [IsDomain R] {n : ℕ}
     {f v : Fin n → R} (hf : Function.Injective f)

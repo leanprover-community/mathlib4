@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Hom.Units
+import Mathlib.Algebra.Hom.Group.Basic
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 
@@ -199,6 +200,9 @@ theorem div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
   rw [div_mul_eq_mul_div, one_mul, div_mul_right _ h]
 #align div_helper div_helper
 
+theorem div_div_div_cancel_left' (a b : G₀) (hc : c ≠ 0) : c / a / (c / b) = b / a := by
+  rw [div_div_div_eq, mul_comm, mul_div_mul_right _ _ hc]
+
 end CommGroupWithZero
 
 section MonoidWithZero
@@ -284,3 +288,11 @@ theorem smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) 
 #align units.smul_mk0 Units.smul_mk0
 
 end Units
+
+/-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
+`n : ℤ`, to `(f x)^n`. -/
+@[simp]
+theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀']
+    [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
+  map_zpow' f (map_inv₀ f) x n
+#align map_zpow₀ map_zpow₀

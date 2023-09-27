@@ -115,12 +115,8 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
 theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
   have h' : (n : ℝ) ≠ 0 := ne_of_gt h
-  -- Porting note: fails with `unknown identifier 'h''`
-  -- apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
-  -- apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
-  have h'' := GroupWithZero.mul_right_injective h'
-  apply h''
-  apply h''
+  apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
+  apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
   dsimp
   conv_lhs => simp only [Finset.sum_mul, z]
   conv_rhs => rw [div_mul_cancel _ h']

@@ -471,7 +471,7 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
   refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _
   · rw [zero_smul]; exact carrier.zero_mem f_deg hm _
   · rintro n ⟨a, ha⟩ i
-    simp_rw [Subtype.coe_mk, proj_apply, smul_eq_mul, coe_decompose_mul_of_left_mem 𝒜 i ha]
+    simp_rw [proj_apply, smul_eq_mul, coe_decompose_mul_of_left_mem 𝒜 i ha]
     -- Porting note: having trouble with Mul instance
     let product : A⁰_ f :=
       Mul.mul (Quotient.mk'' ⟨_, ⟨a ^ m, pow_mem_graded m ha⟩, ⟨_, ?_⟩, ⟨n, rfl⟩⟩ : A⁰_ f)
@@ -481,8 +481,8 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
       · dsimp
         erw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
           HomogeneousLocalization.mul_val, HomogeneousLocalization.val_mk'',
-          HomogeneousLocalization.val_mk'', Subtype.coe_mk]
-        simp_rw [mul_pow, Subtype.coe_mk]; rw [Localization.mk_mul]
+          HomogeneousLocalization.val_mk'']
+        simp_rw [mul_pow]; rw [Localization.mk_mul]
         congr; erw [← pow_add, Nat.add_sub_of_le h]
         · rw [(_ : m • n = _)]; mem_tac; simp only [smul_eq_mul, mul_comm]
         · rw [(_ : m • (i - n) = _)]; mem_tac; simp only [smul_eq_mul, mul_comm]
@@ -543,7 +543,7 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
       rw [← and_forall_ne nx, and_iff_left, ← and_forall_ne ny, and_iff_left]
       · apply q.2.mem_or_mem; convert hxy (nx + ny) using 1
         dsimp
-        simp_rw [proj_apply, decompose_of_mem_same 𝒜 hnx, decompose_of_mem_same 𝒜 hny,
+        simp_rw [decompose_of_mem_same 𝒜 hnx, decompose_of_mem_same 𝒜 hny,
           decompose_of_mem_same 𝒜 (SetLike.GradedMonoid.toGradedMul.mul_mem hnx hny),
           mul_pow, pow_add]
         simp only [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
@@ -552,7 +552,7 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
       all_goals
         intro n hn; convert q.1.zero_mem using 1
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
-          HomogeneousLocalization.zero_val]; simp_rw [proj_apply, Subtype.coe_mk]
+          HomogeneousLocalization.zero_val]; simp_rw [proj_apply]
         convert mk_zero (S := Submonoid.powers f) _
         rw [decompose_of_mem_ne 𝒜 _ hn.symm, zero_pow hm]
         · first | exact hnx | exact hny

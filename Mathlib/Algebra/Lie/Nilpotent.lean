@@ -244,20 +244,13 @@ theorem isNilpotent_toEndomorphism_of_isNilpotent₂ [IsNilpotent R L M] (x y : 
   rw [LinearMap.pow_apply, LinearMap.zero_apply, ← LieSubmodule.mem_bot (R := R) (L := L), ← hM]
   exact iterate_toEndomorphism_mem_lowerCentralSeries₂ R L M x y m k
 
-/-- For a nilpotent Lie module, the weight space of the 0 weight is the whole module.
-
-This result will be used downstream to show that weight spaces are Lie submodules, at which time
-it will be possible to state it in the language of weight spaces. -/
-theorem iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent [IsNilpotent R L M] :
-    ⨅ x : L, (toEndomorphism R L M x).maximalGeneralizedEigenspace 0 = ⊤ := by
+@[simp] lemma maxGenEigenSpace_toEndomorphism_eq_top [IsNilpotent R L M] (x : L) :
+    ((toEndomorphism R L M x).maximalGeneralizedEigenspace 0) = ⊤ := by
   ext m
-  simp only [Module.End.mem_maximalGeneralizedEigenspace, Submodule.mem_top, sub_zero, iff_true_iff,
-    zero_smul, Submodule.mem_iInf]
-  intro x
+  simp only [Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero, Submodule.mem_top,
+    iff_true]
   obtain ⟨k, hk⟩ := exists_forall_pow_toEndomorphism_eq_zero R L M
-  use k; rw [hk]
-  exact LinearMap.zero_apply m
-#align lie_module.infi_max_gen_zero_eigenspace_eq_top_of_nilpotent LieModule.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent
+  exact ⟨k, by simp [hk x]⟩
 
 /-- If the quotient of a Lie module `M` by a Lie submodule on which the Lie algebra acts trivially
 is nilpotent then `M` is nilpotent.
@@ -559,12 +552,6 @@ theorem LieAlgebra.nilpotent_ad_of_nilpotent_algebra [IsNilpotent R L] :
     ∃ k : ℕ, ∀ x : L, ad R L x ^ k = 0 :=
   LieModule.exists_forall_pow_toEndomorphism_eq_zero R L L
 #align lie_algebra.nilpotent_ad_of_nilpotent_algebra LieAlgebra.nilpotent_ad_of_nilpotent_algebra
-
-/-- See also `LieAlgebra.zero_rootSpace_eq_top_of_nilpotent`. -/
-theorem LieAlgebra.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent [IsNilpotent R L] :
-    ⨅ x : L, (ad R L x).maximalGeneralizedEigenspace 0 = ⊤ :=
-  LieModule.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent R L L
-#align lie_algebra.infi_max_gen_zero_eigenspace_eq_top_of_nilpotent LieAlgebra.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent
 
 -- TODO Generalise the below to Lie modules if / when we define morphisms, equivs of Lie modules
 -- covering a Lie algebra morphism of (possibly different) Lie algebras.

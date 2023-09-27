@@ -175,7 +175,6 @@ theorem dim_le_natDegree_of_root (pb : PowerBasis A S) {p : A[X]} (ne_zero : p �
   refine' Fintype.sum_eq_zero _ fun i => _
   simp_rw [aeval_eq_sum_range' hlt, Finset.sum_range, ← pb.basis_eq_pow] at root
   have := Fintype.linearIndependent_iff.1 pb.basis.linearIndependent _ root
-  dsimp only at this
   rw [this, monomial_zero_right]
 #align power_basis.dim_le_nat_degree_of_root PowerBasis.dim_le_natDegree_of_root
 
@@ -257,7 +256,7 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
     rw [← pb.natDegree_minpoly]
     apply natDegree_lt_natDegree hf
     exact degree_modByMonic_lt _ (minpoly.monic pb.isIntegral_gen)
-  rw [aeval_eq_sum_range' this, aeval_eq_sum_range' this, LinearMap.map_sum]
+  rw [aeval_eq_sum_range' this, aeval_eq_sum_range' this, map_sum]
   refine' Finset.sum_congr rfl fun i (hi : i ∈ Finset.range pb.dim) => _
   rw [Finset.mem_range] at hi
   rw [LinearMap.map_smul]
@@ -329,7 +328,7 @@ noncomputable def liftEquiv (pb : PowerBasis A S) :
 polynomial of `pb.gen` correspond to maps sending `pb.gen` to that root. -/
 @[simps! (config := { fullyApplied := false })]
 noncomputable def liftEquiv' (pb : PowerBasis A S) :
-    (S →ₐ[A] B) ≃ { y : B // y ∈ ((minpoly A pb.gen).map (algebraMap A B)).roots } :=
+    (S →ₐ[A] B) ≃ { y : B // y ∈ (minpoly A pb.gen).aroots B } :=
   pb.liftEquiv.trans ((Equiv.refl _).subtypeEquiv fun x => by
     rw [Equiv.refl_apply, mem_roots_iff_aeval_eq_zero]
     · simp
@@ -449,7 +448,7 @@ theorem IsIntegral.mem_span_pow [Nontrivial R] {x y : S} (hx : IsIntegral R x)
   have := minpoly.monic hx
   refine' ⟨f %ₘ minpoly R x, (degree_modByMonic_lt _ this).trans_le degree_le_natDegree, _⟩
   conv_lhs => rw [← modByMonic_add_div f this]
-  simp only [add_zero, MulZeroClass.zero_mul, minpoly.aeval, aeval_add, AlgHom.map_mul]
+  simp only [add_zero, zero_mul, minpoly.aeval, aeval_add, AlgHom.map_mul]
 #align is_integral.mem_span_pow IsIntegral.mem_span_pow
 
 namespace PowerBasis

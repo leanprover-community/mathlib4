@@ -172,27 +172,27 @@ theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
 
 @[simp]
 theorem mul_left_apply_same (b : n) (M : Matrix n n α) :
-    (stdBasisMatrix i j c ⬝ M) i b = c * M j b := by simp [mul_apply, stdBasisMatrix]
+    (stdBasisMatrix i j c * M) i b = c * M j b := by simp [mul_apply, stdBasisMatrix]
 #align matrix.std_basis_matrix.mul_left_apply_same Matrix.StdBasisMatrix.mul_left_apply_same
 
 @[simp]
 theorem mul_right_apply_same (a : n) (M : Matrix n n α) :
-    (M ⬝ stdBasisMatrix i j c) a j = M a i * c := by simp [mul_apply, stdBasisMatrix, mul_comm]
+    (M * stdBasisMatrix i j c) a j = M a i * c := by simp [mul_apply, stdBasisMatrix, mul_comm]
 #align matrix.std_basis_matrix.mul_right_apply_same Matrix.StdBasisMatrix.mul_right_apply_same
 
 @[simp]
 theorem mul_left_apply_of_ne (a b : n) (h : a ≠ i) (M : Matrix n n α) :
-    (stdBasisMatrix i j c ⬝ M) a b = 0 := by simp [mul_apply, h.symm]
+    (stdBasisMatrix i j c * M) a b = 0 := by simp [mul_apply, h.symm]
 #align matrix.std_basis_matrix.mul_left_apply_of_ne Matrix.StdBasisMatrix.mul_left_apply_of_ne
 
 @[simp]
 theorem mul_right_apply_of_ne (a b : n) (hbj : b ≠ j) (M : Matrix n n α) :
-    (M ⬝ stdBasisMatrix i j c) a b = 0 := by simp [mul_apply, hbj.symm]
+    (M * stdBasisMatrix i j c) a b = 0 := by simp [mul_apply, hbj.symm]
 #align matrix.std_basis_matrix.mul_right_apply_of_ne Matrix.StdBasisMatrix.mul_right_apply_of_ne
 
 @[simp]
 theorem mul_same (k : n) (d : α) :
-    stdBasisMatrix i j c ⬝ stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
+    stdBasisMatrix i j c * stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
   ext a b
   simp only [mul_apply, stdBasisMatrix, boole_mul]
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
@@ -200,7 +200,7 @@ theorem mul_same (k : n) (d : α) :
 
 @[simp]
 theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
-    stdBasisMatrix i j c ⬝ stdBasisMatrix k l d = 0 := by
+    stdBasisMatrix i j c * stdBasisMatrix k l d = 0 := by
   ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix]
   by_cases h₁ : i = a

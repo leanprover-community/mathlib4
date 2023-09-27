@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Bool.Basic
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.ULift
 import Mathlib.Tactic.GCongr.Core
@@ -194,10 +194,10 @@ theorem right_eq_sup : b = a ⊔ b ↔ a ≤ b :=
   eq_comm.trans sup_eq_right
 #align right_eq_sup right_eq_sup
 
-alias sup_eq_left ↔ _ sup_of_le_left
+alias ⟨_, sup_of_le_left⟩ := sup_eq_left
 #align sup_of_le_left sup_of_le_left
 
-alias sup_eq_right ↔ le_of_sup_eq sup_of_le_right
+alias ⟨le_of_sup_eq, sup_of_le_right⟩ := sup_eq_right
 #align sup_of_le_right sup_of_le_right
 #align le_of_sup_eq le_of_sup_eq
 
@@ -376,7 +376,7 @@ instance OrderDual.semilatticeInf (α) [SemilatticeSup α] : SemilatticeInf α�
   le_inf := fun _ _ _ hca hcb => @sup_le α _ _ _ _ hca hcb
 
 theorem SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
-  OrderDual.semilatticeSup αᵒᵈ = H :=
+    OrderDual.semilatticeSup αᵒᵈ = H :=
   SemilatticeSup.ext $ fun _ _ => Iff.rfl
 #align semilattice_sup.dual_dual SemilatticeSup.dual_dual
 
@@ -451,11 +451,11 @@ theorem right_eq_inf : b = a ⊓ b ↔ b ≤ a :=
   eq_comm.trans inf_eq_right
 #align right_eq_inf right_eq_inf
 
-alias inf_eq_left ↔ le_of_inf_eq inf_of_le_left
+alias ⟨le_of_inf_eq, inf_of_le_left⟩ := inf_eq_left
 #align inf_of_le_left inf_of_le_left
 #align le_of_inf_eq le_of_inf_eq
 
-alias inf_eq_right ↔ _ inf_of_le_right
+alias ⟨_, inf_of_le_right⟩ := inf_eq_right
 #align inf_of_le_right inf_of_le_right
 
 attribute [simp] inf_of_le_left inf_of_le_right
@@ -583,7 +583,7 @@ theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
 #align semilattice_inf.ext SemilatticeInf.ext
 
 theorem SemilatticeInf.dual_dual (α : Type*) [H : SemilatticeInf α] :
-  OrderDual.semilatticeInf αᵒᵈ = H :=
+    OrderDual.semilatticeInf αᵒᵈ = H :=
   SemilatticeInf.ext $ fun _ _ => Iff.rfl
 #align semilattice_inf.dual_dual SemilatticeInf.dual_dual
 

@@ -47,7 +47,6 @@ variable (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra 
 /-- `S : IntermediateField K L` is a subset of `L` such that there is a field
 tower `L / S / K`. -/
 structure IntermediateField extends Subalgebra K L where
-  neg_mem' : ∀ x ∈ carrier, -x ∈ carrier
   inv_mem' : ∀ x ∈ carrier, x⁻¹ ∈ carrier
 #align intermediate_field IntermediateField
 
@@ -59,22 +58,26 @@ variable (S : IntermediateField K L)
 
 namespace IntermediateField
 
-/-- Reinterpret an `IntermediateField` as a `Subfield`. -/
-def toSubfield : Subfield L :=
-  { S.toSubalgebra with
-    neg_mem' := S.neg_mem' _,
-    inv_mem' := S.inv_mem' }
-#align intermediate_field.to_subfield IntermediateField.toSubfield
-
 instance : SetLike (IntermediateField K L) L :=
   ⟨fun S => S.toSubalgebra.carrier, by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp ⟩
 
+protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
+  show -x ∈S.toSubalgebra; simpa
+#align intermediate_field.neg_mem IntermediateField.neg_mem
+
+/-- Reinterpret an `IntermediateField` as a `Subfield`. -/
+def toSubfield : Subfield L :=
+  { S.toSubalgebra with
+    neg_mem' := S.neg_mem,
+    inv_mem' := S.inv_mem' }
+#align intermediate_field.to_subfield IntermediateField.toSubfield
+
 instance : SubfieldClass (IntermediateField K L) L where
   add_mem {s} := s.add_mem'
   zero_mem {s} := s.zero_mem'
-  neg_mem {s} := s.neg_mem' _
+  neg_mem {s} := s.neg_mem
   mul_mem {s} := s.mul_mem'
   one_mem {s} := s.one_mem'
   inv_mem {s} := s.inv_mem' _
@@ -101,8 +104,8 @@ theorem coe_toSubfield : (S.toSubfield : Set L) = S :=
 #align intermediate_field.coe_to_subfield IntermediateField.coe_toSubfield
 
 @[simp]
-theorem mem_mk (s : Subsemiring L) (hK : ∀ x, algebraMap K L x ∈ s) (hn hi) (x : L) :
-    x ∈ IntermediateField.mk (Subalgebra.mk s hK) hn hi ↔ x ∈ s :=
+theorem mem_mk (s : Subsemiring L) (hK : ∀ x, algebraMap K L x ∈ s) (hi) (x : L) :
+    x ∈ IntermediateField.mk (Subalgebra.mk s hK) hi ↔ x ∈ s :=
   Iff.rfl
 #align intermediate_field.mem_mk IntermediateField.mem_mkₓ
 
@@ -121,9 +124,6 @@ definitional equalities. -/
 protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) : IntermediateField K L
     where
   toSubalgebra := S.toSubalgebra.copy s (hs : s = S.toSubalgebra.carrier)
-  neg_mem' :=
-    have hs' : (S.toSubalgebra.copy s hs).carrier = S.toSubalgebra.carrier := hs
-    hs'.symm ▸ S.neg_mem'
   inv_mem' :=
     have hs' : (S.toSubalgebra.copy s hs).carrier = S.toSubalgebra.carrier := hs
     hs'.symm ▸ S.inv_mem'
@@ -183,11 +183,6 @@ protected theorem add_mem {x y : L} : x ∈ S → y ∈ S → x + y ∈ S :=
 protected theorem sub_mem {x y : L} : x ∈ S → y ∈ S → x - y ∈ S :=
   sub_mem
 #align intermediate_field.sub_mem IntermediateField.sub_mem
-
-/-- An intermediate field is closed under negation. -/
-protected theorem neg_mem {x : L} : x ∈ S → -x ∈ S :=
-  neg_mem
-#align intermediate_field.neg_mem IntermediateField.neg_mem
 
 /-- An intermediate field is closed under inverses. -/
 protected theorem inv_mem {x : L} : x ∈ S → x⁻¹ ∈ S :=
@@ -284,7 +279,6 @@ end IntermediateField
 def Subalgebra.toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x ∈ S, x⁻¹ ∈ S) :
     IntermediateField K L :=
   { S with
-    neg_mem' := fun _ => S.neg_mem
     inv_mem' := inv_mem }
 #align subalgebra.to_intermediate_field Subalgebra.toIntermediateField
 
@@ -332,8 +326,7 @@ theorem toIntermediateField'_toSubalgebra (S : IntermediateField K L) :
 def Subfield.toIntermediateField (S : Subfield L) (algebra_map_mem : ∀ x, algebraMap K L x ∈ S) :
     IntermediateField K L :=
   { S with
-    algebraMap_mem' := algebra_map_mem
-    neg_mem' := fun _ => S.neg_mem' }
+    algebraMap_mem' := algebra_map_mem }
 #align subfield.to_intermediate_field Subfield.toIntermediateField
 
 namespace IntermediateField
@@ -416,8 +409,7 @@ def map (f : L →ₐ[K] L') (S : IntermediateField K L) : IntermediateField K L
       f with
     inv_mem' := by
       rintro _ ⟨x, hx, rfl⟩
-      exact ⟨x⁻¹, S.inv_mem hx, map_inv₀ f x⟩
-    neg_mem' := fun x hx => (S.toSubalgebra.map f).neg_mem hx }
+      exact ⟨x⁻¹, S.inv_mem hx, map_inv₀ f x⟩ }
 #align intermediate_field.map IntermediateField.map
 
 @[simp]
@@ -430,6 +422,10 @@ theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L�
     (E.map f).map g = E.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 #align intermediate_field.map_map IntermediateField.map_map
+
+theorem map_mono (f : L →ₐ[K] L') {S T : IntermediateField K L} (h : S ≤ T) :
+    S.map f ≤ T.map f :=
+  SetLike.coe_mono (Set.image_subset f h)
 
 /-- Given an equivalence `e : L ≃ₐ[K] L'` of `K`-field extensions and an intermediate
 field `E` of `L/K`, `intermediate_field_equiv_map e E` is the induced equivalence
@@ -461,8 +457,7 @@ variable (f : L →ₐ[K] L')
 /-- The range of an algebra homomorphism, as an intermediate field. -/
 @[simps toSubalgebra]
 def fieldRange : IntermediateField K L' :=
-  { f.range, (f : L →+* L').fieldRange with
-    neg_mem' := fun _ => (f : L →+* L').fieldRange.neg_mem' }
+  { f.range, (f : L →+* L').fieldRange with }
 #align alg_hom.field_range AlgHom.fieldRange
 
 @[simp]
@@ -622,8 +617,7 @@ variable [Algebra L' L] [IsScalarTower K L' L]
 `L`, reinterpret `E` as a `K`-intermediate field of `L`. -/
 def restrictScalars (E : IntermediateField L' L) : IntermediateField K L :=
   { E.toSubfield, E.toSubalgebra.restrictScalars K with
-    carrier := E.carrier,
-    neg_mem' := fun _ => E.neg_mem, }
+    carrier := E.carrier }
 #align intermediate_field.restrict_scalars IntermediateField.restrictScalars
 
 @[simp]
@@ -674,15 +668,11 @@ instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L
   right K F L
 #align intermediate_field.finite_dimensional_right IntermediateField.finiteDimensional_right
 
---Porting note: increased heartbeats
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem rank_eq_rank_subalgebra : Module.rank K F.toSubalgebra = Module.rank K F :=
   rfl
 #align intermediate_field.rank_eq_rank_subalgebra IntermediateField.rank_eq_rank_subalgebra
 
---Porting note: increased heartbeats
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :=
   rfl
@@ -731,10 +721,8 @@ theorem isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) := by
   rw [← isAlgebraic_iff_isIntegral, isAlgebraic_iff, isAlgebraic_iff_isIntegral]
 #align intermediate_field.is_integral_iff IntermediateField.isIntegral_iff
 
-theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) := by
-  by_cases hx : IsIntegral K x
-  · exact minpoly.eq_of_algebraMap_eq (algebraMap S L).injective hx rfl
-  · exact (minpoly.eq_zero hx).trans (minpoly.eq_zero (mt isIntegral_iff.mpr hx)).symm
+theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) :=
+  (minpoly.algebraMap_eq (algebraMap S L).injective x).symm
 #align intermediate_field.minpoly_eq IntermediateField.minpoly_eq
 
 end IntermediateField
