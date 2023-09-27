@@ -258,7 +258,7 @@ theorem le_compProd_apply (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel 
 #align probability_theory.kernel.le_comp_prod_apply ProbabilityTheory.kernel.le_compProd_apply
 
 @[simp]
-lemma compProd_zero_left (κ : kernel (α × β) γ)  :
+lemma compProd_zero_left (κ : kernel (α × β) γ) :
     (0 : kernel α β) ⊗ₖ κ = 0 := by
   by_cases h : IsSFiniteKernel κ
   · ext a s hs
