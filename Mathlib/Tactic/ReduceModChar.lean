@@ -38,9 +38,7 @@ open Lean.Elab
 open Tactic
 open Qq
 
-namespace Mathlib.Meta.NormNum
-
-end Mathlib.Meta.NormNum
+set_option autoImplicit true
 
 namespace Tactic
 
