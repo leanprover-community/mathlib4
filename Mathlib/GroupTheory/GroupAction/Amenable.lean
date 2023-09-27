@@ -5,6 +5,7 @@ Authors: Matthias Uschold
 -/
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Data.Real.ENNReal
+import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
 
 /-!
@@ -37,40 +38,55 @@ and more information on amenable actions.
 -/
 
 universe u v
-variable (M : Type u) (α : Type v) [Monoid M] [MulAction M α]
-
+variable (α : Type v) [MeasurableSpace α]
 
 /--A mean is a function from the power set of α to ENNReal that
 - assigns the value 1 to the full set α, and
 - is finitely additive under disjoint unions -/
 structure Mean where
-  /-- function giving the measure of subset-/
-  μ : Set α → NNReal
+  /-- function giving the measure of a measurable subset-/
+  μ : {S // MeasurableSet (α:=α) S} → NNReal
   /-- μ should be normalised  -/
-  norm : μ Set.univ = 1
+  norm : μ ⟨Set.univ, MeasurableSet.univ⟩ = 1
   /-- μ has to be finitely additive -/
-  fin_add : ∀ (X Y : Set α), Disjoint X Y
-            → μ (X ∪ Y) = μ X + μ Y
+  fin_add : ∀ (X Y : Set α),
+      (hX: MeasurableSet X) → (hY: MeasurableSet Y) → Disjoint X Y
+      → μ (⟨X ∪ Y, MeasurableSet.union hX hY⟩) = μ ⟨X, hX⟩ + μ ⟨Y, hY⟩
 
 @[coe]
-instance : CoeFun (Mean α) (λ _ => Set α → NNReal) where
+instance : CoeFun (Mean α) (λ _ => {S // MeasurableSet (α:=α) S} → NNReal) where
   coe := Mean.μ
+
+
+variable (G : Type u) [Group G] [MulAction G α] (MulActionMeasurable: ∀ (g: M), Measurable (λ (x:α) => g•x))
+
+lemma translate_measurable {S: Set α} (hS: MeasurableSet S) (g:G) :
+    MeasurableSet ((λ (x:α) => g⁻¹•x) '' S) := by sorry
+
+
+instance : SMul G (Mean α) := (λ g μ =>
+    Mean.mk (λ S => ⟨(λ (x:α) => g⁻¹•x) '' S, by sorry⟩)
+    (by sorry)
+    (by sorry)
+
+instance : MulAction G (Mean α) :=
+    MulAction.mk
 
 
 /--An invariant mean is a mean that is invariant
 under translation with the monoid action-/
 structure InvariantMean extends Mean α where
   /-- invariance of the mean -/
-  invariance: ∀ (A: Set α), ∀ (g: M),
-      μ ((λ (x:α) => g•x) '' A) = μ A
+  invariance: ∀ (A: Set α), (hA: MeasurableSet A) →
+      ∀ (g: G), μ ((λ (x:α) => g•x) '' A) = μ ⟨A, hA⟩
 
 
 /-- A monoid action is amenable if there exists an invariant mean for it-/
 def amenable : Prop :=
-  Nonempty (InvariantMean M α)
+  Nonempty (InvariantMean G α)
 
 
 /-- For amenable actions, we can pick an invariant mean -/
-noncomputable def invmean_of_amenable (h: amenable M α) :
-    InvariantMean M α :=
+noncomputable def invmean_of_amenable (h: amenable G α) :
+    InvariantMean G α :=
   Classical.choice h
