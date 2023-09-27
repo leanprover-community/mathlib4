@@ -220,8 +220,8 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
     erw [← X.presheaf.map_comp] at this
     rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc,
       ← X.presheaf.map_comp]
-    rotate_left
     convert this using 1
+    rotate_left
     dsimp only [Functor.op, unop_op]
     rw [Opens.openEmbedding_obj_top]
     congr 1
