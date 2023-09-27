@@ -750,7 +750,7 @@ theorem map_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (m : M) (n : N) : map f
   rfl
 #align tensor_product.map_tmul TensorProduct.map_tmul
 
-lemma map_comp_comm_eq {f : M →ₗ[R] P} {g : N →ₗ[R] Q} :
+lemma map_comp_comm_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     map f g ∘ₗ TensorProduct.comm R N M =
       TensorProduct.comm R Q P ∘ₗ map g f :=
   ext rfl
