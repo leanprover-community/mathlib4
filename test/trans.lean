@@ -15,14 +15,13 @@ protected def Set.Mem (a : α) (s : Set α) : Prop :=
 instance : Membership α (Set α) :=
   ⟨Set.Mem⟩
 
-def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop :=
+-- This is not the order currently used in Mathlib,
+-- although there is a plan to change it: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Reordering.20arguments.20of.20.60Set.2EEqOn.60/near/390467581
+def EqOn (s : Set α) (f₁ f₂ : α → β) : Prop :=
   ∀ ⦃x⦄, x ∈ s → f₁ x = f₂ x
 
--- Doesn't like that `s` comes last. Possible solutions:
--- 1. Reorder the arguments of `EqOn`.
--- 2. Make `trans` more flexible.
 @[trans]
-theorem EqOn.trans (h₁ : EqOn f₁ f₂ s) (h₂ : EqOn f₂ f₃ s) : EqOn f₁ f₃ s := fun _ hx =>
+theorem EqOn.trans (h₁ : EqOn s f₁ f₂) (h₂ : EqOn s f₂ f₃) : EqOn s f₁ f₃ := fun _ hx =>
   (h₁ hx).trans (h₂ hx)
 
 end EqOn
