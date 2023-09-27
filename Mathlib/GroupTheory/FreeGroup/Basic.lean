@@ -828,7 +828,7 @@ theorem map.of {x} : map f (of x) = of (f x) :=
 @[to_additive]
 theorem map.unique (g : FreeGroup α →* FreeGroup β)
     (hg : ∀ x, g (FreeGroup.of x) = FreeGroup.of (f x)) :
-  ∀ {x}, g x = map f x := by
+    ∀ {x}, g x = map f x := by
   rintro ⟨L⟩
   exact List.recOn L g.map_one fun ⟨x, b⟩ t (ih : g (FreeGroup.mk t) = map f (FreeGroup.mk t)) =>
     Bool.recOn b

@@ -46,8 +46,8 @@ equal at `x⁻¹`. -/
   additive unit `x`, then they are equal at `-x`."]
 theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [MonoidHomClass F G N]
     {x : G} (hx : IsUnit x) (f g : F) (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
-left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
-  (h.symm ▸ map_mul_eq_one g (hx.mul_inv_cancel))
+  left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
+    (h.symm ▸ map_mul_eq_one g (hx.mul_inv_cancel))
 #align is_unit.eq_on_inv IsUnit.eq_on_inv
 #align is_add_unit.eq_on_neg IsAddUnit.eq_on_neg
 
@@ -223,8 +223,8 @@ theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x)
 
 @[to_additive]
 theorem of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x : M} (g : G)
-    (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x :=
-  by simpa only [hfg x] using h.map g
+    (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x := by
+  simpa only [hfg x] using h.map g
 #align is_unit.of_left_inverse IsUnit.of_leftInverse
 #align is_add_unit.of_left_inverse IsAddUnit.of_leftInverse
 
