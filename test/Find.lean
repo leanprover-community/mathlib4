@@ -222,3 +222,12 @@ end ListMapTest
 /-- error: Name pattern is too general -/
 #guard_msgs in
 #find "."
+
+/--
+info: Found 2 definitions whose name contains "uniquenameforThisTest".
+Of these, 2 have a name containing "uniquenameforThisTest".
+• uniquenameforthistest
+• uniquenameforthistest_eq_true
+-/
+#guard_msgs in
+#find "uniquenameforThisTest" -- checks for case-insensitivity

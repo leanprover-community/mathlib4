@@ -129,7 +129,7 @@ deriving Nonempty
 /-- Insert a `Name` into a `SuffixTrie` -/
 def SuffixTrie.insert (t : SuffixTrie) (n : Lean.Name) : SuffixTrie := Id.run $ do
   let mut t := t
-  let s := n.toString
+  let s := n.toString.toLower
   for i in List.range (s.length - 1) do -- -1 to not consider the empty suffix
     let suf := s.drop i
     t := t.upsert suf fun ns? => ns? |>.getD #[] |>.push n
@@ -144,7 +144,8 @@ def SuffixTrie.addDecl (name : Lean.Name) (_ : ConstantInfo) (t : SuffixTrie) :
   return t.insert name
 
 /-- Search the suffix trie, returning an empty array if nothing matches -/
-def SuffixTrie.find (t : SuffixTrie) (s : String) : Array Name := Array.flatten (t.findPrefix s)
+def SuffixTrie.find (t : SuffixTrie) (s : String) : Array Name :=
+  Array.flatten (t.findPrefix s.toLower)
 
 /-- The index used by `#find`: A declaration cache with a `NameRel` mapping names to the name
 of constants they are mentinend in, and a declaration cache storing a suffix trie. -/
@@ -234,7 +235,7 @@ def find (index : Index) (args : Arguments) (maxShown := 200) :
         pure (hits.toArray, indexSummary)
 
     -- Filter by name patterns
-    let nameMatchers := args.namePats.map String.Matcher.ofString
+    let nameMatchers := args.namePats.map (String.Matcher.ofString ·.toLower)
     let hits2 := indexHits.filter fun n => nameMatchers.all fun m =>
       m.find? n.toString |>.isSome
 
@@ -383,6 +384,7 @@ combined in a single query, comma-separated.
    #find "differ"
    ```
    finds all lemmas that have `"differ"` somewhere in their lemma _name_.
+   This check is case-insensitive.
 
 3. By subexpression:
    ```lean
