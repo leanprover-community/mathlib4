@@ -233,7 +233,8 @@ theorem _root_.SemiconjBy.tmul {a₁ a₂ a₃ : A} {b₁ b₂ b₃ : B}
     SemiconjBy (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂) (a₃ ⊗ₜ[R] b₃) :=
   congr_arg₂ (· ⊗ₜ[R] ·) ha.eq hb.eq
 
-nonrec theorem _root_.Commute.tmul {a₁ a₂ : A} {b₁ b₂ : B} (ha : Commute a₁ a₂) (hb : Commute b₁ b₂) :
+nonrec theorem _root_.Commute.tmul {a₁ a₂ : A} {b₁ b₂ : B}
+    (ha : Commute a₁ a₂) (hb : Commute b₁ b₂) :
     Commute (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂) :=
   ha.tmul hb
 
