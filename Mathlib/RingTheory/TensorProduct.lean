@@ -165,6 +165,9 @@ instance instAddCommMonoidWithOne : AddCommMonoidWithOne (A ⊗[R] B) where
 
 theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
 
+theorem natCast_def' (n : ℕ) : (n : A ⊗[R] B) = (1 : A) ⊗ₜ (n : B) := by
+  rw [natCast_def, ←nsmul_one, smul_tmul, nsmul_one]
+
 end AddCommMonoidWithOne
 
 section NonUnitalNonAssocSemiring
@@ -492,6 +495,9 @@ instance instRing : Ring (A ⊗[R] B) where
   toSemiring := instSemiring
   __ := TensorProduct.addCommGroup
   __ := instNonAssocRing
+
+theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
+  rw [intCast_def, ←zsmul_one, smul_tmul, zsmul_one]
 
 -- verify there are no diamonds
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl

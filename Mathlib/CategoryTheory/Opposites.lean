@@ -105,25 +105,25 @@ variable (C)
 
 /-- The functor from the double-opposite of a category to the underlying category. -/
 @[simps]
-def opOp : Cᵒᵖᵒᵖ ⥤ C where
+def unopUnop : Cᵒᵖᵒᵖ ⥤ C where
   obj X := unop (unop X)
   map f := f.unop.unop
-#align category_theory.op_op CategoryTheory.opOp
+#align category_theory.op_op CategoryTheory.unopUnop
 
 /-- The functor from a category to its double-opposite.  -/
 @[simps]
-def unopUnop : C ⥤ Cᵒᵖᵒᵖ where
+def opOp : C ⥤ Cᵒᵖᵒᵖ where
   obj X := op (op X)
   map f := f.op.op
-#align category_theory.unop_unop CategoryTheory.unopUnop
+#align category_theory.unop_unop CategoryTheory.opOp
 
 /-- The double opposite category is equivalent to the original. -/
 @[simps]
 def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
-  functor := opOp C
-  inverse := unopUnop C
+  functor := unopUnop C
+  inverse := opOp C
   unitIso := Iso.refl (𝟭 Cᵒᵖᵒᵖ)
-  counitIso := Iso.refl (unopUnop C ⋙ opOp C)
+  counitIso := Iso.refl (opOp C ⋙ unopUnop C)
 #align category_theory.op_op_equivalence CategoryTheory.opOpEquivalence
 
 end
