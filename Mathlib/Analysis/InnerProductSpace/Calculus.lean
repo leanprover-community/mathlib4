@@ -245,16 +245,16 @@ theorem DifferentiableAt.norm (hf : DifferentiableAt ℝ f x) (h0 : f x ≠ 0) :
   ((contDiffAt_norm 𝕜 h0).differentiableAt le_rfl).comp x hf
 #align differentiable_at.norm DifferentiableAt.norm
 
-theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (fun x : ℝ ↦ abs x) 0 := by {
-  rewrite [DifferentiableAt]
+theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (fun x : ℝ ↦ abs x) 0 := by
+  rw [DifferentiableAt]
   push_neg
   intro f
   simp [HasFDerivAt, HasFDerivAtFilter, Asymptotics.isLittleO_iff]
   use 2⁻¹
   norm_num
-  rewrite [Filter.frequently_iff]
+  rw [Filter.frequently_iff]
   intro U hU
-  obtain ⟨ε, hε⟩ : ∃ ε ∈ U, ε ≠ 0 ∧ f ε ≤ 0 := by {
+  obtain ⟨ε, hε⟩ : ∃ ε ∈ U, ε ≠ 0 ∧ f ε ≤ 0 := by
     obtain ⟨a, b, hab0, habU⟩ := mem_nhds_iff_exists_Ioo_subset.mp hU
     obtain ⟨ha0, hb0⟩ := Set.mem_Ioo.mp hab0
     obtain ⟨a', ha'⟩ := Set.nonempty_Ioo.mpr ha0
@@ -262,22 +262,20 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (fun x : ℝ ↦
     by_cases hf1 : f 1 ≥ 0
     · use a', habU (Set.Ioo_subset_Ioo_right (le_of_lt hb0) ha'),
         ne_of_lt (Set.mem_Ioo.mp ha').right
-      rewrite [← mul_one a', ← smul_eq_mul, ContinuousLinearMap.map_smul, @smul_eq_mul _ _ _ (f 1),
+      rw [← mul_one a', ← smul_eq_mul, ContinuousLinearMap.map_smul, @smul_eq_mul _ _ _ (f 1),
         ← mul_zero a', mul_le_mul_left_of_neg (Set.mem_Ioo.mp ha').right]
       exact hf1
     · use b', habU (Set.Ioo_subset_Ioo_left (le_of_lt ha0) hb'), ne_of_gt (Set.mem_Ioo.mp hb').left
       push_neg at hf1
-      rewrite [← mul_one b', ← smul_eq_mul, ContinuousLinearMap.map_smul, @smul_eq_mul _ _ _ (f 1),
+      rw [← mul_one b', ← smul_eq_mul, ContinuousLinearMap.map_smul, @smul_eq_mul _ _ _ (f 1),
         ← mul_zero b', mul_le_mul_left (Set.mem_Ioo.mp hb').left]
       exact le_of_lt hf1
-  }
   use ε, hε.left
-  rewrite [lt_abs]
+  rw [lt_abs]
   left
-  rewrite [lt_sub_comm, ← one_mul |ε|, ← mul_assoc, ← sub_mul]
+  rw [lt_sub_comm, ← one_mul |ε|, ← mul_assoc, ← sub_mul]
   norm_num
   simp [lt_of_le_of_lt hε.right.right, hε.right.left]
-}
 
 theorem DifferentiableAt.dist (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
     (hne : f x ≠ g x) : DifferentiableAt ℝ (fun y => dist (f y) (g y)) x := by
