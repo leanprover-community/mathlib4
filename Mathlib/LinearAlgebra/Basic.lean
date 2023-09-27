@@ -881,12 +881,8 @@ theorem comap_inf_map_of_injective (p q : Submodule R M) : (p.map f ⊓ q.map f)
   (gciMapComap hf).u_inf_l _ _
 #align submodule.comap_inf_map_of_injective Submodule.comap_inf_map_of_injective
 
-<<<<<<< HEAD
 @[simp]
-theorem comap_iInf_map_of_injective {ι : Sort _} (S : ι → Submodule R M) :
-=======
 theorem comap_iInf_map_of_injective {ι : Sort*} (S : ι → Submodule R M) :
->>>>>>> origin/master
     (⨅ i, (S i).map f).comap f = iInf S :=
   (gciMapComap hf).u_iInf_l _
 #align submodule.comap_infi_map_of_injective Submodule.comap_iInf_map_of_injective
@@ -896,12 +892,8 @@ theorem comap_sup_map_of_injective (p q : Submodule R M) : (p.map f ⊔ q.map f)
   (gciMapComap hf).u_sup_l _ _
 #align submodule.comap_sup_map_of_injective Submodule.comap_sup_map_of_injective
 
-<<<<<<< HEAD
 @[simp]
-theorem comap_iSup_map_of_injective {ι : Sort _} (S : ι → Submodule R M) :
-=======
 theorem comap_iSup_map_of_injective {ι : Sort*} (S : ι → Submodule R M) :
->>>>>>> origin/master
     (⨆ i, (S i).map f).comap f = iSup S :=
   (gciMapComap hf).u_iSup_l _
 #align submodule.comap_supr_map_of_injective Submodule.comap_iSup_map_of_injective
