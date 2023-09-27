@@ -730,7 +730,7 @@ theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
   simp only [← Submodule.map_top, ← span_tmul_eq_top, Submodule.map_span, Set.mem_image,
     Set.mem_setOf_eq]
-  congr ; ext t
+  congr; ext t
   constructor
   · rintro ⟨_, ⟨⟨m, n, rfl⟩, rfl⟩⟩
     use m, n

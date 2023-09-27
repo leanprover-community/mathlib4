@@ -394,7 +394,7 @@ variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 
 -- Porting note: mem_iSup_finset_iff_exists_sum now requires DecidableEq ι
 theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
-    (⨆ i ∈ S, torsionBySet R M <| p i) = torsionBySet R M ↑(⨅ i ∈ S, p i) := by
+    ⨆ i ∈ S, torsionBySet R M (p i) = torsionBySet R M ↑(⨅ i ∈ S, p i) := by
   cases' S.eq_empty_or_nonempty with h h
   · simp only [h]
     -- Porting note: converts were not cooperating
@@ -412,7 +412,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
       (mem_iSup_finset_iff_exists_sum _ _).mp
         ((Ideal.eq_top_iff_one _).mp <| (Ideal.iSup_iInf_eq_top_iff_pairwise h _).mpr hp)
     refine' ⟨fun i => ⟨(μ i : R) • x, _⟩, _⟩
-    · rw [mem_torsionBySet_iff] at hx⊢
+    · rw [mem_torsionBySet_iff] at hx ⊢
       rintro ⟨a, ha⟩
       rw [smul_smul]
       suffices : a * μ i ∈ ⨅ i ∈ S, p i
@@ -446,7 +446,7 @@ theorem supIndep_torsionBySet_ideal [DecidableEq ι] : S.SupIndep fun i => torsi
 variable {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
 
 theorem iSup_torsionBy_eq_torsionBy_prod [DecidableEq ι] :
-    (⨆ i ∈ S, torsionBy R M <| q i) = torsionBy R M (∏ i in S, q i) := by
+    ⨆ i ∈ S, torsionBy R M (q i) = torsionBy R M (∏ i in S, q i) := by
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf, ←
     iSup_torsionBySet_ideal_eq_torsionBySet_iInf]

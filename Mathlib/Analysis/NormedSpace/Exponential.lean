@@ -121,7 +121,7 @@ theorem expSeries_apply_zero (n : ℕ) :
 #align exp_series_apply_zero expSeries_apply_zero
 
 @[simp]
-theorem exp_zero [T2Space 𝔸] : exp 𝕂 (0 : 𝔸) = 1 := by
+theorem exp_zero : exp 𝕂 (0 : 𝔸) = 1 := by
   simp_rw [exp_eq_tsum, ← expSeries_apply_eq, expSeries_apply_zero, tsum_pi_single]
 #align exp_zero exp_zero
 
@@ -255,7 +255,7 @@ theorem continuousOn_exp : ContinuousOn (exp 𝕂 : 𝔸 → 𝔸) (EMetric.ball
 theorem analyticAt_exp_of_mem_ball (x : 𝔸) (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     AnalyticAt 𝕂 (exp 𝕂) x := by
   by_cases h : (expSeries 𝕂 𝔸).radius = 0
-  · rw [h] at hx ; exact (ENNReal.not_lt_zero hx).elim
+  · rw [h] at hx; exact (ENNReal.not_lt_zero hx).elim
   · have h := pos_iff_ne_zero.mpr h
     exact (hasFPowerSeriesOnBall_exp_of_radius_pos h).analyticAt_of_mem hx
 #align analytic_at_exp_of_mem_ball analyticAt_exp_of_mem_ball

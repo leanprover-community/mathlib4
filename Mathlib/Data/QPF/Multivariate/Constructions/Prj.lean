@@ -62,7 +62,7 @@ instance Prj.mvqpf : MvQPF (Prj i) where
   abs := @Prj.abs _ i
   repr := @Prj.repr _ i
   abs_repr := by intros; rfl
-  abs_map := by intros α β f P ; cases P ; rfl
+  abs_map := by intros α β f P; cases P; rfl
 #align mvqpf.prj.mvqpf MvQPF.Prj.mvqpf
 
 end MvQPF

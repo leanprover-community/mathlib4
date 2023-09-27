@@ -99,7 +99,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     rw [card_insert_of_not_mem, hR₃, if_neg ha, tsub_add_cancel_of_le]
     · exact hab.resolve_left ha
     · intro H; exact ht.ne_empty (le_sdiff_iff.1 <| R.le <| filter_subset _ _ H)
-  push_neg  at h
+  push_neg at h
   obtain ⟨u, hu₁, hu₂⟩ := h
   obtain ⟨t, htu, htn⟩ := exists_smaller_set _ _ (hn₁.trans hu₂)
   have ht : t.Nonempty := by rwa [← card_pos, htn]

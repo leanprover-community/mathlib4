@@ -20,7 +20,7 @@ Defines a category, as a type class parametrised by the type of objects.
 
 ## Notations
 
-Introduces notations
+Introduces notations in the `CategoryTheory` scope
 * `X ⟶ Y` for the morphism spaces (type as `\hom`),
 * `𝟙 X` for the identity morphism on `X` (type as `\b1`),
 * `f ≫ g` for composition in the 'arrows' convention (type as `\gg`).
@@ -105,10 +105,10 @@ class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v +
 initialize_simps_projections CategoryStruct (-toQuiver_Hom)
 
 /-- Notation for the identity morphism in a category. -/
-notation "𝟙" => CategoryStruct.id  -- type as \b1
+scoped notation "𝟙" => CategoryStruct.id  -- type as \b1
 
 /-- Notation for composition of morphisms in a category. -/
-infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
+scoped infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
 /--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
@@ -199,13 +199,13 @@ theorem whisker_eq (f : X ⟶ Y) {g h : Y ⟶ Z} (w : g = h) : f ≫ g = f ≫ h
 Notation for whiskering an equation by a morphism (on the right).
 If `f g : X ⟶ Y` and `w : f = g` and `h : Y ⟶ Z`, then `w =≫ h : f ≫ h = g ≫ h`.
 -/
-infixr:80 " =≫ " => eq_whisker
+scoped infixr:80 " =≫ " => eq_whisker
 
 /--
 Notation for whiskering an equation by a morphism (on the left).
 If `g h : Y ⟶ Z` and `w : g = h` and `h : X ⟶ Y`, then `f ≫= w : f ≫ g = f ≫ h`.
 -/
-infixr:80 " ≫= " => whisker_eq
+scoped infixr:80 " ≫= " => whisker_eq
 
 theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
     f = g := by

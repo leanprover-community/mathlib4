@@ -292,7 +292,7 @@ theorem isSymmetric {A : E →L[𝕜] E} (hA : IsSelfAdjoint A) : (A : E →ₗ[
 /-- Conjugating preserves self-adjointness. -/
 theorem conj_adjoint {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : E →L[𝕜] F) :
     IsSelfAdjoint (S ∘L T ∘L ContinuousLinearMap.adjoint S) := by
-  rw [isSelfAdjoint_iff'] at hT⊢
+  rw [isSelfAdjoint_iff'] at hT ⊢
   simp only [hT, adjoint_comp, adjoint_adjoint]
   exact ContinuousLinearMap.comp_assoc _ _ _
 #align is_self_adjoint.conj_adjoint IsSelfAdjoint.conj_adjoint
@@ -300,7 +300,7 @@ theorem conj_adjoint {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : E →L[�
 /-- Conjugating preserves self-adjointness. -/
 theorem adjoint_conj {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : F →L[𝕜] E) :
     IsSelfAdjoint (ContinuousLinearMap.adjoint S ∘L T ∘L S) := by
-  rw [isSelfAdjoint_iff'] at hT⊢
+  rw [isSelfAdjoint_iff'] at hT ⊢
   simp only [hT, adjoint_comp, adjoint_adjoint]
   exact ContinuousLinearMap.comp_assoc _ _ _
 #align is_self_adjoint.adjoint_conj IsSelfAdjoint.adjoint_conj

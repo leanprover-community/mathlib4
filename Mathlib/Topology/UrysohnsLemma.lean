@@ -134,7 +134,7 @@ theorem subset_right_C (c : CU X) : c.C ⊆ c.right.C :=
 /-- `n`-th approximation to a continuous function `f : X → ℝ` such that `f = 0` on `c.C` and `f = 1`
 outside of `c.U`. -/
 noncomputable def approx : ℕ → CU X → X → ℝ
-  | 0, c, x => indicator (c.Uᶜ) 1 x
+  | 0, c, x => indicator c.Uᶜ 1 x
   | n + 1, c, x => midpoint ℝ (approx n c.left x) (approx n c.right x)
 #align urysohns.CU.approx Urysohns.CU.approx
 

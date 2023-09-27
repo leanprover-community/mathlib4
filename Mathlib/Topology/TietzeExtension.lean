@@ -108,7 +108,7 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
   /- For the proof, we iterate `tietze_extension_step`. Each time we apply it to the difference
     between the previous approximation and `f`. -/
   choose F hF_norm hF_dist using fun f : X →ᵇ ℝ => tietze_extension_step f e he
-  set g : ℕ → Y →ᵇ ℝ := fun n => ((fun g => g + F (f - g.compContinuous e))^[n]) 0
+  set g : ℕ → Y →ᵇ ℝ := fun n => (fun g => g + F (f - g.compContinuous e))^[n] 0
   have g0 : g 0 = 0 := rfl
   have g_succ : ∀ n, g (n + 1) = g n + F (f - (g n).compContinuous e) := fun n =>
     Function.iterate_succ_apply' _ _ _

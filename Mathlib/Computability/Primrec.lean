@@ -604,7 +604,7 @@ theorem nat_casesOn₁ {f : ℕ → α} (a : α) (hf : Primrec f) :
 #align primrec.nat_cases₁ Primrec.nat_casesOn₁
 
 theorem nat_iterate {f : α → ℕ} {g : α → β} {h : α → β → β} (hf : Primrec f) (hg : Primrec g)
-    (hh : Primrec₂ h) : Primrec fun a => (h a^[f a]) (g a) :=
+    (hh : Primrec₂ h) : Primrec fun a => (h a)^[f a] (g a) :=
   (nat_rec' hf hg (hh.comp₂ Primrec₂.left <| snd.comp₂ Primrec₂.right)).of_eq fun a => by
     induction f a <;> simp [*, -Function.iterate_succ, Function.iterate_succ']
 #align primrec.nat_iterate Primrec.nat_iterate
@@ -900,7 +900,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
     to₂ <|
     pair (hh.comp (fst.comp fst) <| pair ((fst.comp snd).comp fst) (fst.comp snd))
       (snd.comp snd)
-  let F := fun (a : α) (n : ℕ) => (G a^[n]) (g a, f a)
+  let F := fun (a : α) (n : ℕ) => (G a)^[n] (g a, f a)
   have hF : Primrec fun a => (F a (encode (f a))).1 :=
     (fst.comp <|
       nat_iterate (encode_iff.2 hf) (pair hg hf) <|
@@ -1499,7 +1499,7 @@ theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
     have x1 : @Primrec' 3 fun v => v.head.succ := succ.comp₁ _ head
     have y1 : @Primrec' 3 fun v => v.tail.head.succ := succ.comp₁ _ (tail head)
     exact if_lt x1 (mul.comp₂ _ y1 y1) (tail head) y1
-  introv ; symm
+  introv; symm
   induction' n with n IH; · simp
   dsimp; rw [IH]; split_ifs with h
   · exact le_antisymm (Nat.sqrt_le_sqrt (Nat.le_succ _)) (Nat.lt_succ_iff.1 <| Nat.sqrt_lt.2 h)

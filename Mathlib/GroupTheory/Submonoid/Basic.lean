@@ -554,7 +554,7 @@ theorem mem_iSup {ι : Sort _} (p : ι → Submonoid M) {m : M} :
 
 @[to_additive]
 theorem iSup_eq_closure {ι : Sort _} (p : ι → Submonoid M) :
-    (⨆ i, p i) = Submonoid.closure (⋃ i, (p i : Set M)) := by
+    ⨆ i, p i = Submonoid.closure (⋃ i, (p i : Set M)) := by
   simp_rw [Submonoid.closure_iUnion, Submonoid.closure_eq]
 #align submonoid.supr_eq_closure Submonoid.iSup_eq_closure
 #align add_submonoid.supr_eq_closure AddSubmonoid.iSup_eq_closure

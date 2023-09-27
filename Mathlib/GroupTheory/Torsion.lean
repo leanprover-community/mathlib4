@@ -251,8 +251,7 @@ theorem primaryComponent.disjoint {p' : ℕ} [hp' : Fact p'.Prime] (hne : p ≠ 
   Submonoid.disjoint_def.mpr <| by
     rintro g ⟨_ | n, hn⟩ ⟨n', hn'⟩
     · rwa [pow_zero, orderOf_eq_one_iff] at hn
-    ·
-      exact
+    · exact
         absurd (eq_of_prime_pow_eq hp.out.prime hp'.out.prime n.succ_pos (hn.symm.trans hn')) hne
 #align comm_monoid.primary_component.disjoint CommMonoid.primaryComponent.disjoint
 #align add_comm_monoid.primary_component.disjoint AddCommMonoid.primaryComponent.disjoint

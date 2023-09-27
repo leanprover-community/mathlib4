@@ -133,7 +133,7 @@ theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fu
   suffices e ∘ f ∘ e.symm = fun y => n • y by
     rw [← he.ergodic_conjugate_iff, this]; exact ergodic_zsmul h
   replace h : n - 1 ≠ 0
-  · rw [← abs_one] at h ; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
+  · rw [← abs_one] at h; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
   have hnx : n • DivisibleBy.div x (n - 1) = x + DivisibleBy.div x (n - 1) := by
     conv_rhs => congr; rw [← DivisibleBy.div_cancel x h]
     rw [sub_smul, one_smul, sub_add_cancel]

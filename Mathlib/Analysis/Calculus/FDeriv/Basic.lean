@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module analysis.calculus.fderiv.basic
-! leanprover-community/mathlib commit 3a69562db5a458db8322b190ec8d9a8bbd8a5b14
+! leanprover-community/mathlib commit 41bef4ae1254365bc190aee63b947674d2977f01
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -763,8 +763,7 @@ set_option linter.uppercaseLean3 false in
 theorem HasFDerivAtFilter.isBigO_sub_rev (hf : HasFDerivAtFilter f f' x L) {C}
     (hf' : AntilipschitzWith C f') : (fun x' => x' - x) =O[L] fun x' => f x' - f x :=
   have : (fun x' => x' - x) =O[L] fun x' => f' (x' - x) :=
-    isBigO_iff.2
-      ⟨C, eventually_of_forall fun _ => AddMonoidHomClass.bound_of_antilipschitz f' hf' _⟩
+    isBigO_iff.2 ⟨C, eventually_of_forall fun _ => ZeroHomClass.bound_of_antilipschitz f' hf' _⟩
   (this.trans (hf.trans_isBigO this).right_isBigO_add).congr (fun _ => rfl) fun _ =>
     sub_add_cancel _ _
 set_option linter.uppercaseLean3 false in
@@ -1029,6 +1028,7 @@ theorem differentiableOn_id : DifferentiableOn 𝕜 id s :=
   differentiable_id.differentiableOn
 #align differentiable_on_id differentiableOn_id
 
+@[simp]
 theorem fderiv_id : fderiv 𝕜 id x = id 𝕜 E :=
   HasFDerivAt.fderiv (hasFDerivAt_id x)
 #align fderiv_id fderiv_id

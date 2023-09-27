@@ -168,17 +168,6 @@ theorem continuous_eval : Continuous fun p : C(α, β) × α => p.1 p.2 :=
   continuous_eval.comp ((isometryEquivBoundedOfCompact α β).continuous.prod_map continuous_id)
 #align continuous_map.continuous_eval ContinuousMap.continuous_eval
 
-/-- See also `ContinuousMap.continuous_eval_const'`. -/
-@[continuity]
-theorem continuous_eval_const (x : α) : Continuous fun f : C(α, β) => f x :=
-  continuous_eval.comp (continuous_id.prod_mk continuous_const)
-#align continuous_map.continuous_eval_const ContinuousMap.continuous_eval_const
-
-/-- See also `ContinuousMap.continuous_coe'`. -/
-theorem continuous_coe : @Continuous C(α, β) (α → β) _ _ (↑) :=
-  continuous_pi continuous_eval_const
-#align continuous_map.continuous_coe ContinuousMap.continuous_coe
-
 -- TODO at some point we will need lemmas characterising this norm!
 -- At the moment the only way to reason about it is to transfer `f : C(α,E)` back to `α →ᵇ E`.
 instance : Norm C(α, E) where norm x := dist x 0
@@ -457,7 +446,7 @@ def compRightContinuousMap {X Y : Type _} (T : Type _) [TopologicalSpace X] [Com
     refine' Metric.continuous_iff.mpr _
     intro g ε ε_pos
     refine' ⟨ε, ε_pos, fun g' h => _⟩
-    rw [ContinuousMap.dist_lt_iff ε_pos] at h⊢
+    rw [ContinuousMap.dist_lt_iff ε_pos] at h ⊢
     exact fun x => h (f x)
 #align continuous_map.comp_right_continuous_map ContinuousMap.compRightContinuousMap
 

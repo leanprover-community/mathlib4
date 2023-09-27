@@ -99,7 +99,7 @@ theorem proj_stdBasis_ne (i j : ι) (h : i ≠ j) : (proj i).comp (stdBasis R φ
 #align linear_map.proj_std_basis_ne LinearMap.proj_stdBasis_ne
 
 theorem iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
-    (⨆ i ∈ I, range (stdBasis R φ i)) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
+    ⨆ i ∈ I, range (stdBasis R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine' iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 _
   simp only [←ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
   rintro b - j hj
@@ -109,7 +109,7 @@ theorem iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
 #align linear_map.supr_range_std_basis_le_infi_ker_proj LinearMap.iSup_range_stdBasis_le_iInf_ker_proj
 
 theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : Set.univ ⊆ ↑I ∪ J) :
-    (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i)) ≤ ⨆ i ∈ I, range (stdBasis R φ i) :=
+    ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) ≤ ⨆ i ∈ I, range (stdBasis R φ i) :=
   SetLike.le_def.2
     (by
       intro b hb
@@ -127,14 +127,14 @@ theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : 
 
 theorem iSup_range_stdBasis_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) (hI : Set.Finite I) :
-    (⨆ i ∈ I, range (stdBasis R φ i)) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
+    ⨆ i ∈ I, range (stdBasis R φ i) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine' le_antisymm (iSup_range_stdBasis_le_iInf_ker_proj _ _ _ _ hd) _
   have : Set.univ ⊆ ↑hI.toFinset ∪ J := by rwa [hI.coe_toFinset]
   refine' le_trans (iInf_ker_proj_le_iSup_range_stdBasis R φ this) (iSup_mono fun i => _)
   rw [Set.Finite.mem_toFinset]
 #align linear_map.supr_range_std_basis_eq_infi_ker_proj LinearMap.iSup_range_stdBasis_eq_iInf_ker_proj
 
-theorem iSup_range_stdBasis [Finite ι] : (⨆ i, range (stdBasis R φ i)) = ⊤ := by
+theorem iSup_range_stdBasis [Finite ι] : ⨆ i, range (stdBasis R φ i) = ⊤ := by
   cases nonempty_fintype ι
   convert top_unique (iInf_emptyset.ge.trans <| iInf_ker_proj_le_iSup_range_stdBasis R φ _)
   · rename_i i
@@ -198,7 +198,7 @@ theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i,
       rw [@iSup_singleton _ _ _ fun i => LinearMap.range (stdBasis R (Ms) i)]
       apply h₀
     have h₂ :
-      (⨆ j ∈ J, span R (range fun i : ιs j => stdBasis R Ms j (v j i))) ≤
+      ⨆ j ∈ J, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
         ⨆ j ∈ J, LinearMap.range (stdBasis R (fun j : η => Ms j) j) :=
       iSup₂_mono fun i _ => h₀ i
     have h₃ : Disjoint (fun i : η => i ∈ ({j} : Set _)) J := by

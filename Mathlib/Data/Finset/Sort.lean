@@ -147,7 +147,7 @@ is the increasing bijection between `Fin k` and `s` as an `OrderIso`. Here, `h` 
 the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s` to avoid
 casting issues in further uses of this function. -/
 def orderIsoOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ≃o s :=
-  OrderIso.trans (Fin.cast ((length_sort (α := α) (· ≤ ·)).trans h).symm) <|
+  OrderIso.trans (Fin.castIso ((length_sort (α := α) (· ≤ ·)).trans h).symm) <|
     (s.sort_sorted_lt.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
 #align finset.order_iso_of_fin Finset.orderIsoOfFin
 
@@ -245,7 +245,7 @@ theorem orderEmbOfFin_eq_orderEmbOfFin_iff {k l : ℕ} {s : Finset α} {i : Fin 
 is an order embedding from `Fin k` to `α` whose image is contained in `s`. Specifically, it maps
 `Fin k` to an initial segment of `s`. -/
 def orderEmbOfCardLe (s : Finset α) {k : ℕ} (h : k ≤ s.card) : Fin k ↪o α :=
-  (Fin.castLE h).trans (s.orderEmbOfFin rfl)
+  (Fin.castLEEmb h).trans (s.orderEmbOfFin rfl)
 #align finset.order_emb_of_card_le Finset.orderEmbOfCardLe
 
 theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :

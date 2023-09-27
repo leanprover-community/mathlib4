@@ -285,7 +285,7 @@ section BooleanAlgebra
 variable [BooleanAlgebra α] [BooleanAlgebra β] [BoundedLatticeHomClass F α β] (f : F)
 
 /-- Special case of `map_compl` for boolean algebras. -/
-theorem map_compl' (a : α) : f (aᶜ) = f aᶜ :=
+theorem map_compl' (a : α) : f aᶜ = (f a)ᶜ :=
   (isCompl_compl.map _).compl_eq.symm
 #align map_compl' map_compl'
 

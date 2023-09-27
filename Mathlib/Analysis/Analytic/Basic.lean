@@ -1002,7 +1002,7 @@ theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {
 /-- A one-dimensional formal multilinear series representing the zero function is zero. -/
 theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x : 𝕜}
     (h : HasFPowerSeriesAt 0 p x) : p = 0 := by
-  -- porting note: `funext ; ext` was `ext (n x)`
+  -- porting note: `funext; ext` was `ext (n x)`
   funext n
   ext x
   rw [← mkPiField_apply_one_eq_self (p n)]
@@ -1177,7 +1177,7 @@ def changeOriginIndexEquiv :
   invFun s :=
     ⟨s.1 - s.2.card, s.2.card,
       ⟨s.2.map
-          (Fin.cast <| (tsub_add_cancel_of_le <| card_finset_fin_le s.2).symm).toEquiv.toEmbedding,
+        (Fin.castIso <| (tsub_add_cancel_of_le <| card_finset_fin_le s.2).symm).toEquiv.toEmbedding,
         Finset.card_map _⟩⟩
   left_inv := by
     rintro ⟨k, l, ⟨s : Finset (Fin <| k + l), hs : s.card = l⟩⟩
@@ -1185,15 +1185,15 @@ def changeOriginIndexEquiv :
     -- Lean can't automatically generalize `k' = k + l - s.card`, `l' = s.card`, so we explicitly
     -- formulate the generalized goal
     suffices ∀ k' l', k' = k → l' = l → ∀ (hkl : k + l = k' + l') (hs'),
-        (⟨k', l', ⟨Finset.map (Fin.cast hkl).toEquiv.toEmbedding s, hs'⟩⟩ :
+        (⟨k', l', ⟨Finset.map (Fin.castIso hkl).toEquiv.toEmbedding s, hs'⟩⟩ :
           Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) = ⟨k, l, ⟨s, hs⟩⟩ by
       apply this <;> simp only [hs, add_tsub_cancel_right]
     rintro _ _ rfl rfl hkl hs'
-    simp only [Equiv.refl_toEmbedding, Fin.cast_refl, Finset.map_refl, eq_self_iff_true,
+    simp only [Equiv.refl_toEmbedding, Fin.castIso_refl, Finset.map_refl, eq_self_iff_true,
       OrderIso.refl_toEquiv, and_self_iff, heq_iff_eq]
   right_inv := by
     rintro ⟨n, s⟩
-    simp [tsub_add_cancel_of_le (card_finset_fin_le s), Fin.cast_to_equiv]
+    simp [tsub_add_cancel_of_le (card_finset_fin_le s), Fin.castIso_to_equiv]
 #align formal_multilinear_series.change_origin_index_equiv FormalMultilinearSeries.changeOriginIndexEquiv
 
 theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ≥0∞) < p.radius) :
@@ -1320,7 +1320,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     changeOriginIndexEquiv_symm_apply_snd_fst, changeOriginIndexEquiv_symm_apply_snd_snd_coe]
   rw [ContinuousMultilinearMap.curryFinFinset_apply_const]
   have : ∀ (m) (hm : n = m), p n (s.piecewise (fun _ => x) fun _ => y) =
-      p m ((s.map (Fin.cast hm).toEquiv.toEmbedding).piecewise (fun _ => x) fun _ => y) := by
+      p m ((s.map (Fin.castIso hm).toEquiv.toEmbedding).piecewise (fun _ => x) fun _ => y) := by
     rintro m rfl
     simp [Finset.piecewise]
   apply this
@@ -1379,6 +1379,16 @@ theorem isOpen_analyticAt : IsOpen { x | AnalyticAt 𝕜 f x } := by
   exact mem_of_superset (EMetric.ball_mem_nhds _ hr.r_pos) fun y hy => hr.analyticAt_of_mem hy
 #align is_open_analytic_at isOpen_analyticAt
 
+variable {𝕜}
+
+theorem AnalyticAt.eventually_analyticAt {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
+    ∀ᶠ y in 𝓝 x, AnalyticAt 𝕜 f y :=
+(isOpen_analyticAt 𝕜 f).mem_nhds h
+
+theorem AnalyticAt.exists_mem_nhds_analyticOn {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
+    ∃ s ∈ 𝓝 x, AnalyticOn 𝕜 f s :=
+h.eventually_analyticAt.exists_mem
+
 end
 
 section
@@ -1409,7 +1419,7 @@ theorem hasFPowerSeriesAt_iff :
     simp only [ENNReal.coe_pos]
     exact zero_lt_iff.mpr (nnnorm_ne_zero_iff.mpr (norm_pos_iff.mp z_pos))
   · simp only [EMetric.mem_ball, lt_inf_iff, edist_lt_coe, apply_eq_pow_smul_coeff, and_imp,
-      dist_zero_right] at h⊢
+      dist_zero_right] at h ⊢
     refine' fun {y} _ hyr => h _
     simpa [nndist_eq_nnnorm, Real.lt_toNNReal_iff_coe_lt] using hyr
 #align has_fpower_series_at_iff hasFPowerSeriesAt_iff

@@ -367,7 +367,7 @@ theorem measurableSpace_le' [IsCountablyGenerated (atTop : Filter ι)] [(atTop :
     (hτ : IsStoppingTime f τ) : hτ.measurableSpace ≤ m := by
   intro s hs
   change ∀ i, MeasurableSet[f i] (s ∩ {ω | τ ω ≤ i}) at hs
-  obtain ⟨seq : ℕ → ι, h_seq_tendsto⟩ := atTop.exists_seq_tendsto
+  obtain ⟨seq : ℕ → ι, h_seq_tendsto⟩ := (atTop : Filter ι).exists_seq_tendsto
   rw [(_ : s = ⋃ n, s ∩ {ω | τ ω ≤ seq n})]
   · exact MeasurableSet.iUnion fun i => f.le (seq i) _ (hs (seq i))
   · ext ω; constructor <;> rw [Set.mem_iUnion]
@@ -704,7 +704,7 @@ theorem measurableSet_stopping_time_le [TopologicalSpace ι] [SecondCountableTop
     [OrderTopology ι] [MeasurableSpace ι] [BorelSpace ι] (hτ : IsStoppingTime f τ)
     (hπ : IsStoppingTime f π) : MeasurableSet[hπ.measurableSpace] {ω | τ ω ≤ π ω} := by
   suffices MeasurableSet[(hτ.min hπ).measurableSpace] {ω : Ω | τ ω ≤ π ω} by
-    rw [measurableSet_min_iff hτ hπ] at this ; exact this.2
+    rw [measurableSet_min_iff hτ hπ] at this; exact this.2
   rw [← Set.univ_inter {ω : Ω | τ ω ≤ π ω}, ← hτ.measurableSet_inter_le_iff hπ, Set.univ_inter]
   exact measurableSet_le_stopping_time hτ hπ
 #align measure_theory.is_stopping_time.measurable_set_stopping_time_le MeasureTheory.IsStoppingTime.measurableSet_stopping_time_le

@@ -452,7 +452,7 @@ noncomputable instance : MulAction F (leftTransversals (H : Set G)) where
       · exact smul_inv_smul f g ▸ QuotientAction.inv_mul_mem f ht1
       · rintro ⟨-, t', ht', rfl⟩ h
         replace h := QuotientAction.inv_mul_mem f⁻¹ h
-        simp only [Subtype.ext_iff, Subtype.coe_mk, smul_left_cancel_iff, inv_smul_smul] at h⊢
+        simp only [Subtype.ext_iff, Subtype.coe_mk, smul_left_cancel_iff, inv_smul_smul] at h ⊢
         exact Subtype.ext_iff.mp (ht2 ⟨t', ht'⟩ h)⟩
   one_smul T := Subtype.ext (one_smul F (T : Set G))
   mul_smul f₁ f₂ T := Subtype.ext (mul_smul f₁ f₂ (T : Set G))

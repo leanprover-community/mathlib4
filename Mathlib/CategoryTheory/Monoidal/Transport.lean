@@ -135,8 +135,8 @@ def transport (e : C ≌ D) : MonoidalCategory.{v₂} D where
     slice_lhs 1 2 => rw [tensor_id_comp_id_tensor]
     conv_rhs =>
       congr
-      . skip
-      . rw [← id_tensor_comp_tensor_id, id_tensor_comp]
+      · skip
+      · rw [← id_tensor_comp_tensor_id, id_tensor_comp]
     simp only [Category.assoc]
     slice_rhs 1 2 =>
       rw [← id_tensor_comp, Iso.hom_inv_id_app]

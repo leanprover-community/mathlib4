@@ -85,7 +85,7 @@ def Simps.apply (f : AbsoluteValue R S) : R → S :=
 
 initialize_simps_projections AbsoluteValue (toMulHom_toFun → apply)
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
 directly. -/
 instance : CoeFun (AbsoluteValue R S) fun _ => R → S :=
   FunLike.hasCoeToFun
@@ -260,6 +260,8 @@ protected def abs : AbsoluteValue S S where
   add_le' := abs_add
   map_mul' := abs_mul
 #align absolute_value.abs AbsoluteValue.abs
+#align absolute_value.abs_apply AbsoluteValue.abs_apply
+#align absolute_value.abs_to_mul_hom_apply AbsoluteValue.abs_apply
 
 instance : Inhabited (AbsoluteValue S S) :=
   ⟨AbsoluteValue.abs⟩
@@ -342,6 +344,8 @@ def toAbsoluteValue : AbsoluteValue R S where
   nonneg' := abv_nonneg'
   map_mul' := abv_mul'
 #align is_absolute_value.to_absolute_value IsAbsoluteValue.toAbsoluteValue
+#align is_absolute_value.to_absolute_value_apply IsAbsoluteValue.toAbsoluteValue_apply
+#align is_absolute_value.to_absolute_value_to_mul_hom_apply IsAbsoluteValue.toAbsoluteValue_apply
 
 theorem abv_zero : abv 0 = 0 :=
   (toAbsoluteValue abv).map_zero

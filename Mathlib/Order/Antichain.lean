@@ -35,13 +35,13 @@ section General
 
 variable {α β : Type _} {r r₁ r₂ : α → α → Prop} {r' : β → β → Prop} {s t : Set α} {a b : α}
 
-protected theorem Symmetric.compl (h : Symmetric r) : Symmetric (rᶜ) := fun _ _ hr hr' =>
+protected theorem Symmetric.compl (h : Symmetric r) : Symmetric rᶜ := fun _ _ hr hr' =>
   hr <| h hr'
 #align symmetric.compl Symmetric.compl
 
 /-- An antichain is a set such that no two distinct elements are related. -/
 def IsAntichain (r : α → α → Prop) (s : Set α) : Prop :=
-  s.Pairwise (rᶜ)
+  s.Pairwise rᶜ
 #align is_antichain IsAntichain
 
 namespace IsAntichain

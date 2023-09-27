@@ -50,7 +50,7 @@ instance (priority := 100) : Quiver.IsThin C := fun X Y =>
   ⟨fun r s => by
     classical
       by_contra r_ne_s
-      have z : (2 : Cardinal) ≤ (#X ⟶ Y) := by
+      have z : (2 : Cardinal) ≤ #(X ⟶ Y) := by
         rw [Cardinal.two_le_iff]
         exact ⟨_, _, r_ne_s⟩
       let md := ΣZ W : C, Z ⟶ W
@@ -58,7 +58,7 @@ instance (priority := 100) : Quiver.IsThin C := fun X Y =>
       apply not_le_of_lt (Cardinal.cantor α)
       let yp : C := ∏ fun _ : md => Y
       refine' _root_.trans _ _
-      · exact #X ⟶ yp
+      · exact #(X ⟶ yp)
       · apply le_trans (Cardinal.power_le_power_right z)
         rw [Cardinal.power_def]
         apply le_of_eq

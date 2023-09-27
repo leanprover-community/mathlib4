@@ -158,8 +158,8 @@ def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
       map := by
         intros X Y
         rintro (f | ⟨g, hg⟩)
-        . exact G.map f
-        . haveI := hG g hg
+        · exact G.map f
+        · haveI := hG g hg
           exact inv (G.map g) }
 #align category_theory.localization.construction.lift_to_path_category CategoryTheory.Localization.Construction.liftToPathCategory
 
@@ -171,8 +171,8 @@ def lift : W.Localization ⥤ D :=
       rintro ⟨X⟩ ⟨Y⟩ f₁ f₂ r
       --Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
       rcases r with (_|_|⟨f,hf⟩|⟨f,hf⟩)
-      . aesop_cat
-      . aesop_cat
+      · aesop_cat
+      · aesop_cat
       all_goals
         dsimp
         haveI := hG f hf
@@ -237,7 +237,7 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
   funext X Y f
   ext
   constructor
-  . intro
+  · intro
     apply MorphismProperty.top_apply
   · intro
     let G : _ ⥤ W.Localization := Quotient.functor _
@@ -249,12 +249,12 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
     intros X₁ X₂ p
     induction' p with X₂ X₃ p g hp
     · simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
-    . let p' : X₁ ⟶X₂ := p
+    · let p' : X₁ ⟶X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
       refine' hP₃ _ _ hp _
       rcases g with (g | ⟨g, hg⟩)
-      . apply hP₁
-      . apply hP₂
+      · apply hP₁
+      · apply hP₂
 #align category_theory.localization.construction.morphism_property_is_top CategoryTheory.Localization.Construction.morphismProperty_is_top
 
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all

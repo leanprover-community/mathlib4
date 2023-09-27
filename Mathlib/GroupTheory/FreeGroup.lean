@@ -201,13 +201,13 @@ theorem Step.diamond_aux :
     ∀ {L₁ L₂ L₃ L₄ : List (α × Bool)} {x1 b1 x2 b2},
       L₁ ++ (x1, b1) :: (x1, !b1) :: L₂ = L₃ ++ (x2, b2) :: (x2, !b2) :: L₄ →
         L₁ ++ L₂ = L₃ ++ L₄ ∨ ∃ L₅, Red.Step (L₁ ++ L₂) L₅ ∧ Red.Step (L₃ ++ L₄) L₅
-  | [], _, [], _, _, _, _, _, H => by injections ; subst_vars ; simp
-  | [], _, [(x3, b3)], _, _, _, _, _, H => by injections ; subst_vars ; simp
-  | [(x3, b3)], _, [], _, _, _, _, _, H => by injections ; subst_vars ; simp
+  | [], _, [], _, _, _, _, _, H => by injections; subst_vars; simp
+  | [], _, [(x3, b3)], _, _, _, _, _, H => by injections; subst_vars; simp
+  | [(x3, b3)], _, [], _, _, _, _, _, H => by injections; subst_vars; simp
   | [], _, (x3, b3) :: (x4, b4) :: tl, _, _, _, _, _, H => by
-    injections ; subst_vars ; simp ; right ; exact ⟨_, Red.Step.not, Red.Step.cons_not⟩
+    injections; subst_vars; simp; right; exact ⟨_, Red.Step.not, Red.Step.cons_not⟩
   | (x3, b3) :: (x4, b4) :: tl, _, [], _, _, _, _, _, H => by
-    injections ; subst_vars ; simp ; right ; exact ⟨_, Red.Step.cons_not, Red.Step.not⟩
+    injections; subst_vars; simp; right; exact ⟨_, Red.Step.cons_not, Red.Step.not⟩
   | (x3, b3) :: tl, _, (x4, b4) :: tl2, _, _, _, _, _, H =>
     let ⟨H1, H2⟩ := List.cons.inj H
     match Step.diamond_aux H2 with
@@ -673,7 +673,7 @@ theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
 @[to_additive "The canonical map from the type to the additive free group is an injection."]
 theorem of_injective : Function.Injective (@of α) := fun _ _ H => by
   let ⟨L₁, hx, hy⟩ := Red.exact.1 H
-  simp [Red.singleton_iff] at hx hy ; aesop
+  simp [Red.singleton_iff] at hx hy; aesop
 #align free_group.of_injective FreeGroup.of_injective
 #align free_add_group.of_injective FreeAddGroup.of_injective
 
@@ -765,8 +765,8 @@ theorem lift.range_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range
   rintro _ ⟨⟨L⟩, rfl⟩;
     exact
       List.recOn L s.one_mem fun ⟨x, b⟩ tl ih =>
-        Bool.recOn b (by simp at ih⊢; exact s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
-          (by simp at ih⊢; exact s.mul_mem (H ⟨x, rfl⟩) ih)
+        Bool.recOn b (by simp at ih ⊢; exact s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
+          (by simp at ih ⊢; exact s.mul_mem (H ⟨x, rfl⟩) ih)
 #align free_group.lift.range_le FreeGroup.lift.range_le
 #align free_add_group.lift.range_le FreeAddGroup.lift.range_le
 
@@ -791,7 +791,7 @@ variable {β : Type v} (f : α → β) {x y : FreeGroup α}
   the additive free group over `α` to the additive free group over `β`."]
 def map : FreeGroup α →* FreeGroup β :=
   MonoidHom.mk'
-    (Quot.map (List.map fun x => (f x.1, x.2)) fun L₁ L₂ H => by cases H ; simp)
+    (Quot.map (List.map fun x => (f x.1, x.2)) fun L₁ L₂ H => by cases H; simp)
     (by rintro ⟨L₁⟩ ⟨L₂⟩; simp)
 #align free_group.map FreeGroup.map
 #align free_add_group.map FreeAddGroup.map
@@ -998,7 +998,7 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
     exact List.recOn L
      (by rfl)
      (fun ⟨⟨⟩, b⟩ tl ih => by
-        cases b <;> simp [zpow_add] at ih⊢ <;> rw [ih] <;> rfl)
+        cases b <;> simp [zpow_add] at ih ⊢ <;> rw [ih] <;> rfl)
   right_inv x :=
     Int.induction_on x (by simp)
       (fun i ih => by

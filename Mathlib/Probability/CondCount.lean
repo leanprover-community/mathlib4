@@ -164,7 +164,7 @@ theorem condCount_union (hs : s.Finite) (htu : Disjoint t u) :
 #align probability_theory.cond_count_union ProbabilityTheory.condCount_union
 
 theorem condCount_compl (t : Set Ω) (hs : s.Finite) (hs' : s.Nonempty) :
-    condCount s t + condCount s (tᶜ) = 1 := by
+    condCount s t + condCount s tᶜ = 1 := by
   rw [← condCount_union hs disjoint_compl_right, Set.union_compl_self,
     (condCount_isProbabilityMeasure hs hs').measure_univ]
 #align probability_theory.cond_count_compl ProbabilityTheory.condCount_compl
@@ -193,7 +193,7 @@ theorem condCount_disjoint_union (hs : s.Finite) (ht : t.Finite) (hst : Disjoint
 
 /-- A version of the law of total probability for counting probabilities. -/
 theorem condCount_add_compl_eq (u t : Set Ω) (hs : s.Finite) :
-    condCount (s ∩ u) t * condCount s u + condCount (s ∩ uᶜ) t * condCount s (uᶜ) =
+    condCount (s ∩ u) t * condCount s u + condCount (s ∩ uᶜ) t * condCount s uᶜ =
       condCount s t := by
   -- Porting note: The original proof used `conv_rhs`. However, that tactic timed out.
   have : condCount s t = (condCount (s ∩ u) t * condCount (s ∩ u ∪ s ∩ uᶜ) (s ∩ u) +

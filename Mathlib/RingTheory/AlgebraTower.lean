@@ -25,7 +25,7 @@ In `FieldTheory/Tower.lean` we use this to prove the tower law for finite extens
 that if `R` and `S` are both fields, then `[A:R] = [A:S] [S:A]`.
 
 In this file we prepare the main lemma:
-if `{bi | i ∈ I}` is an `R`-basis of `S` and `{cj | j ∈ J}` is a `S`-basis
+if `{bi | i ∈ I}` is an `R`-basis of `S` and `{cj | j ∈ J}` is an `S`-basis
 of `A`, then `{bi cj | i ∈ I, j ∈ J}` is an `R`-basis of `A`. This statement does not require the
 base rings to be a field, so we also generalize the lemma to rings in this file.
 -/
@@ -121,7 +121,7 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
     LinearIndependent R fun p : ι × ι' => b p.1 • c p.2 := by
   rw [linearIndependent_iff'] at hb hc; rw [linearIndependent_iff'']; rintro s g hg hsg ⟨i, k⟩
   by_cases hik : (i, k) ∈ s
-  · have h1 : (∑ i in s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2) = 0 := by
+  · have h1 : ∑ i in s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2 = 0 := by
       rw [← hsg]
       exact
         (Finset.sum_subset Finset.subset_product fun p _ hp =>

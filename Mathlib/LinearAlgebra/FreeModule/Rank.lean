@@ -39,25 +39,25 @@ open Module.Free
 
 @[simp]
 theorem rank_finsupp (ι : Type w) :
-    Module.rank R (ι →₀ M) = Cardinal.lift.{v} (#ι) * Cardinal.lift.{w} (Module.rank R M) := by
+    Module.rank R (ι →₀ M) = Cardinal.lift.{v} #ι * Cardinal.lift.{w} (Module.rank R M) := by
   obtain ⟨⟨_, bs⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   rw [← bs.mk_eq_rank'', ← (Finsupp.basis fun _ : ι => bs).mk_eq_rank'', Cardinal.mk_sigma,
     Cardinal.sum_const]
 #align rank_finsupp rank_finsupp
 
-theorem rank_finsupp' (ι : Type v) : Module.rank R (ι →₀ M) = (#ι) * Module.rank R M := by
+theorem rank_finsupp' (ι : Type v) : Module.rank R (ι →₀ M) = #ι * Module.rank R M := by
   simp [rank_finsupp]
 #align rank_finsupp' rank_finsupp'
 
-/-- The rank of `(ι →₀ R)` is `(# ι).lift`. -/
+/-- The rank of `(ι →₀ R)` is `(#ι).lift`. -/
 -- Porting note, this should not be `@[simp]`, as simp can prove it.
 -- @[simp]
-theorem rank_finsupp_self (ι : Type w) : Module.rank R (ι →₀ R) = Cardinal.lift.{u} (#ι) := by
+theorem rank_finsupp_self (ι : Type w) : Module.rank R (ι →₀ R) = Cardinal.lift.{u} #ι := by
   simp [rank_finsupp]
 #align rank_finsupp_self rank_finsupp_self
 
 /-- If `R` and `ι` lie in the same universe, the rank of `(ι →₀ R)` is `# ι`. -/
-theorem rank_finsupp_self' {ι : Type u} : Module.rank R (ι →₀ R) = (#ι) := by simp
+theorem rank_finsupp_self' {ι : Type u} : Module.rank R (ι →₀ R) = #ι := by simp
 #align rank_finsupp_self' rank_finsupp_self'
 
 /-- The rank of the direct sum is the sum of the ranks. -/
@@ -66,15 +66,15 @@ theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommGro
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] :
     Module.rank R (⨁ i, M i) = Cardinal.sum fun i => Module.rank R (M i) := by
   let B i := chooseBasis R (M i)
-  let b : Basis _ R (⨁ i, M i) := Dfinsupp.basis fun i => B i
+  let b : Basis _ R (⨁ i, M i) := DFinsupp.basis fun i => B i
   simp [← b.mk_eq_rank'', fun i => (B i).mk_eq_rank'']
 #align rank_direct_sum rank_directSum
 
-/-- If `m` and `n` are `Fintype`, the rank of `m × n` matrices is `(# m).lift * (# n).lift`. -/
+/-- If `m` and `n` are `Fintype`, the rank of `m × n` matrices is `(#m).lift * (#n).lift`. -/
 @[simp]
 theorem rank_matrix (m : Type v) (n : Type w) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) =
-      Cardinal.lift.{max v w u, v} (#m) * Cardinal.lift.{max v w u, w} (#n) := by
+      Cardinal.lift.{max v w u, v} #m * Cardinal.lift.{max v w u, w} #n := by
   cases nonempty_fintype m
   cases nonempty_fintype n
   have h := (Matrix.stdBasis R m n).mk_eq_rank
@@ -83,10 +83,10 @@ theorem rank_matrix (m : Type v) (n : Type w) [Finite m] [Finite n] :
 #align rank_matrix rank_matrix
 
 /-- If `m` and `n` are `Fintype` that lie in the same universe, the rank of `m × n` matrices is
-  `(# n * # m).lift`. -/
+  `(#n * #m).lift`. -/
 @[simp high]
 theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
-    Module.rank R (Matrix m n R) = Cardinal.lift.{u} ((#m) * (#n)) := by
+    Module.rank R (Matrix m n R) = Cardinal.lift.{u} (#m * #n) := by
   rw [rank_matrix, lift_mul, lift_umax.{v, u}]
 #align rank_matrix' rank_matrix'
 
@@ -94,7 +94,7 @@ theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
   is `# m * # n`. -/
 -- @[simp] -- Porting note: simp can prove this
 theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
-    Module.rank R (Matrix m n R) = (#m) * (#n) := by simp
+    Module.rank R (Matrix m n R) = #m * #n := by simp
 #align rank_matrix'' rank_matrix''
 
 end Ring

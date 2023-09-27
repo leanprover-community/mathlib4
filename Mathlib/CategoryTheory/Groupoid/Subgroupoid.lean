@@ -538,7 +538,7 @@ theorem mem_map_objs_iff (hφ : Function.Injective φ.obj) (d : D) :
   dsimp [objs, map]
   constructor
   · rintro ⟨f, hf⟩
-    change Map.Arrows φ hφ S d d f at hf ; rw [Map.arrows_iff] at hf
+    change Map.Arrows φ hφ S d d f at hf; rw [Map.arrows_iff] at hf
     obtain ⟨c, d, g, ec, ed, eg, gS, eg⟩ := hf
     exact ⟨c, ⟨mem_objs_of_src S eg, ec⟩⟩
   · rintro ⟨c, ⟨γ, γS⟩, rfl⟩
@@ -592,7 +592,7 @@ theorem isNormal_map (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) 
       change Map.Arrows φ hφ S (φ.obj c') (φ.obj c') _
       simp only [eqToHom_refl, Category.comp_id, Category.id_comp, inv_eq_inv]
       suffices Map.Arrows φ hφ S (φ.obj c') (φ.obj c') (φ.map <| Groupoid.inv f ≫ γ ≫ f) by
-        simp only [inv_eq_inv, Functor.map_comp, Functor.map_inv] at this ; exact this
+        simp only [inv_eq_inv, Functor.map_comp, Functor.map_inv] at this; exact this
       · constructor; apply Sn.conj f γS }
 #align category_theory.subgroupoid.is_normal_map CategoryTheory.Subgroupoid.isNormal_map
 

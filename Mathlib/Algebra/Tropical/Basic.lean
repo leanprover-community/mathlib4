@@ -159,7 +159,7 @@ theorem surjective_untrop : Function.Surjective (untrop : Tropical R → R) :=
 instance [Inhabited R] : Inhabited (Tropical R) :=
   ⟨trop default⟩
 
-/-- Recursing on a `x' : Tropical R` is the same as recursing on an `x : R` reinterpreted
+/-- Recursing on an `x' : Tropical R` is the same as recursing on an `x : R` reinterpreted
 as a term of `Tropical R` via `trop x`. -/
 @[simp]
 def tropRec {F : Tropical R → Sort v} (h : ∀ X, F (trop X)) : ∀ X, F X := fun X => h (untrop X)

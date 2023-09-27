@@ -207,7 +207,7 @@ theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
             apply dvd_zero
           replace hy := ((dvd_gcd_iff x x _).2 ⟨dvd_rfl, hy⟩).trans gcd_pow_right_dvd_pow_gcd
           obtain ⟨z, hz⟩ := gcd_dvd_left x y
-          nth_rw 1 [hz] at hy⊢
+          nth_rw 1 [hz] at hy ⊢
           rw [pow_two, mul_dvd_mul_iff_left h] at hy
           obtain ⟨w, hw⟩ := hy
           exact (hx z ⟨w, by rwa [mul_right_comm, ← hw]⟩).mul_right_dvd.2 dvd_rfl)

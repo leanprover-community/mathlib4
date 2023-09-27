@@ -82,7 +82,7 @@ theorem exists_ord_compl_eq_one_iff_isPrimePow {n : ℕ} (hn : n ≠ 1) :
   refine' ⟨fun h => IsPrimePow.exists_ord_compl_eq_one h, fun h => _⟩
   rcases h with ⟨p, pp, h⟩
   rw [isPrimePow_nat_iff]
-  rw [← Nat.eq_of_dvd_of_div_eq_one (Nat.ord_proj_dvd n p) h] at hn⊢
+  rw [← Nat.eq_of_dvd_of_div_eq_one (Nat.ord_proj_dvd n p) h] at hn ⊢
   refine' ⟨p, n.factorization p, pp, _, by simp⟩
   contrapose! hn
   simp [le_zero_iff.1 hn]

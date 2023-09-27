@@ -544,17 +544,17 @@ theorem Finsupp.inner_sum {ι : Type _} (l : ι →₀ 𝕜) (v : ι → E) (x :
   simp only [inner_smul_right, Finsupp.sum, smul_eq_mul]
 #align finsupp.inner_sum Finsupp.inner_sum
 
-theorem Dfinsupp.sum_inner {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
+theorem DFinsupp.sum_inner {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪l.sum f, x⟫ = l.sum fun i a => ⟪f i a, x⟫ := by
-  simp (config := { contextual := true }) only [Dfinsupp.sum, _root_.sum_inner, smul_eq_mul]
-#align dfinsupp.sum_inner Dfinsupp.sum_inner
+  simp (config := { contextual := true }) only [DFinsupp.sum, _root_.sum_inner, smul_eq_mul]
+#align dfinsupp.sum_inner DFinsupp.sum_inner
 
-theorem Dfinsupp.inner_sum {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
+theorem DFinsupp.inner_sum {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a => ⟪x, f i a⟫ := by
-  simp (config := { contextual := true }) only [Dfinsupp.sum, _root_.inner_sum, smul_eq_mul]
-#align dfinsupp.inner_sum Dfinsupp.inner_sum
+  simp (config := { contextual := true }) only [DFinsupp.sum, _root_.inner_sum, smul_eq_mul]
+#align dfinsupp.inner_sum DFinsupp.inner_sum
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
@@ -1572,7 +1572,7 @@ theorem abs_real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : F
 itself, divided by the product of their norms, has value 1. -/
 theorem real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul {x : F} {r : ℝ} (hx : x ≠ 0)
     (hr : 0 < r) : ⟪x, r • x⟫_ℝ / (‖x‖ * ‖r • x‖) = 1 := by
-  rw [real_inner_smul_self_right, norm_smul, Real.norm_eq_abs, ← mul_assoc ‖x‖, mul_comm _ (|r|),
+  rw [real_inner_smul_self_right, norm_smul, Real.norm_eq_abs, ← mul_assoc ‖x‖, mul_comm _ |r|,
     mul_assoc, abs_of_nonneg hr.le, div_self]
   exact mul_ne_zero hr.ne' (mul_self_ne_zero.2 (norm_ne_zero_iff.2 hx))
 #align real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul
@@ -1581,7 +1581,7 @@ theorem real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul {x : F} {r : �
 itself, divided by the product of their norms, has value -1. -/
 theorem real_inner_div_norm_mul_norm_eq_neg_one_of_ne_zero_of_neg_mul {x : F} {r : ℝ} (hx : x ≠ 0)
     (hr : r < 0) : ⟪x, r • x⟫_ℝ / (‖x‖ * ‖r • x‖) = -1 := by
-  rw [real_inner_smul_self_right, norm_smul, Real.norm_eq_abs, ← mul_assoc ‖x‖, mul_comm _ (|r|),
+  rw [real_inner_smul_self_right, norm_smul, Real.norm_eq_abs, ← mul_assoc ‖x‖, mul_comm _ |r|,
     mul_assoc, abs_of_neg hr, neg_mul, div_neg_eq_neg_div, div_self]
   exact mul_ne_zero hr.ne (mul_self_ne_zero.2 (norm_ne_zero_iff.2 hx))
 #align real_inner_div_norm_mul_norm_eq_neg_one_of_ne_zero_of_neg_mul real_inner_div_norm_mul_norm_eq_neg_one_of_ne_zero_of_neg_mul
@@ -1732,8 +1732,8 @@ theorem inner_lt_one_iff_real_of_norm_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖
 /-- The inner product of two weighted sums, where the weights in each
 sum add to 0, in terms of the norms of pairwise differences. -/
 theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type _} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ}
-    (v₁ : ι₁ → F) (h₁ : (∑ i in s₁, w₁ i) = 0) {ι₂ : Type _} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ}
-    (v₂ : ι₂ → F) (h₂ : (∑ i in s₂, w₂ i) = 0) :
+    (v₁ : ι₁ → F) (h₁ : ∑ i in s₁, w₁ i = 0) {ι₂ : Type _} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ}
+    (v₂ : ι₂ → F) (h₂ : ∑ i in s₂, w₂ i = 0) :
     ⟪∑ i₁ in s₁, w₁ i₁ • v₁ i₁, ∑ i₂ in s₂, w₂ i₂ • v₂ i₂⟫_ℝ =
       (-∑ i₁ in s₁, ∑ i₂ in s₂, w₁ i₁ * w₂ i₂ * (‖v₁ i₁ - v₂ i₂‖ * ‖v₁ i₁ - v₂ i₂‖)) / 2 := by
   simp_rw [sum_inner, inner_sum, real_inner_smul_left, real_inner_smul_right,
@@ -1878,7 +1878,7 @@ variable {ι : Type _} (x : E) {v : ι → E}
 
 /-- Bessel's inequality for finite sums. -/
 theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜 v) :
-    (∑ i in s, ‖⟪v i, x⟫‖ ^ 2) ≤ ‖x‖ ^ 2 := by
+    ∑ i in s, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
   have h₂ :
     (∑ i in s, ∑ j in s, ⟪v i, x⟫ * ⟪x, v j⟫ * ⟪v j, v i⟫) = (∑ k in s, ⟪v k, x⟫ * ⟪x, v k⟫ : 𝕜) :=
     by classical exact hv.inner_left_right_finset
@@ -1900,7 +1900,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
 
 /-- Bessel's inequality. -/
 theorem Orthonormal.tsum_inner_products_le (hv : Orthonormal 𝕜 v) :
-    (∑' i, ‖⟪v i, x⟫‖ ^ 2) ≤ ‖x‖ ^ 2 := by
+    ∑' i, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
   refine' tsum_le_of_sum_le' _ fun s => hv.sum_inner_products_le x
   simp only [norm_nonneg, pow_nonneg]
 #align orthonormal.tsum_inner_products_le Orthonormal.tsum_inner_products_le
@@ -2013,12 +2013,12 @@ theorem OrthogonalFamily.inner_right_dfinsupp (l : ⨁ i, G i) (i : ι) (v : G i
     ⟪V i v, l.sum fun j => V j⟫ = ⟪v, l i⟫ :=
   calc
     ⟪V i v, l.sum fun j => V j⟫ = l.sum fun j => fun w => ⟪V i v, V j w⟫ :=
-      Dfinsupp.inner_sum (fun j => V j) l (V i v)
+      DFinsupp.inner_sum (fun j => V j) l (V i v)
     _ = l.sum fun j => fun w => ite (i = j) ⟪V i v, V j w⟫ 0 :=
       (congr_arg l.sum <| funext fun j => funext <| hV.eq_ite v)
     _ = ⟪v, l i⟫ := by
-      simp only [Dfinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
-        Dfinsupp.mem_support_toFun]
+      simp only [DFinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
+        DFinsupp.mem_support_toFun]
       split_ifs with h
       · simp only [LinearIsometry.inner_map_map]
       · simp only [of_not_not h, inner_zero_right]
@@ -2136,13 +2136,13 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       refine' (abs_lt_of_sq_lt_sq' _ (le_of_lt hε)).2
       have has : a ≤ s₁ ⊓ s₂ := le_inf hs₁ hs₂
       rw [hV.norm_sq_diff_sum]
-      have Hs₁ : (∑ x : ι in s₁ \ s₂, ‖f x‖ ^ 2) < ε ^ 2 / 2 := by
+      have Hs₁ : ∑ x : ι in s₁ \ s₂, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
         convert H _ hs₁ _ has
         have : s₁ ⊓ s₂ ⊆ s₁ := Finset.inter_subset_left _ _
         rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
         · simp
         · exact fun i => sq_nonneg _
-      have Hs₂ : (∑ x : ι in s₂ \ s₁, ‖f x‖ ^ 2) < ε ^ 2 / 2 := by
+      have Hs₂ : ∑ x : ι in s₂ \ s₁, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
         convert H _ hs₂ _ has
         have : s₁ ⊓ s₂ ⊆ s₂ := Finset.inter_subset_right _ _
         rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
@@ -2166,8 +2166,8 @@ theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
   ext i
   suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using this
   calc
-    ⟪(v i : E), v i⟫ = ⟪(v i : E), Dfinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
-      simpa only [Dfinsupp.sumAddHom_apply, Dfinsupp.lsum_apply_apply] using
+    ⟪(v i : E), v i⟫ = ⟪(v i : E), DFinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
+      simpa only [DFinsupp.sumAddHom_apply, DFinsupp.lsum_apply_apply] using
         (hV.inner_right_dfinsupp v i (v i)).symm
     _ = 0 := by simp only [hv, inner_zero_right]
 #align orthogonal_family.independent OrthogonalFamily.independent

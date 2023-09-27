@@ -64,8 +64,8 @@ def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat.{v} where
           map_zero' := Limits.zero_comp
           map_add' := fun g g' => add_comp _ _ _ _ _ _ }
       naturality := fun X X' g => AddCommGroupCat.ext fun x => Category.assoc _ _ _ }
-  map_id _ := by ext ; dsimp ; simp
-  map_comp f g := by ext ; dsimp ; simp
+  map_id _ := by ext; dsimp; simp
+  map_comp f g := by ext; dsimp; simp
 #align category_theory.preadditive_yoneda CategoryTheory.preadditiveYoneda
 
 /-- The Yoneda embedding for preadditive categories sends an object `X` to the copresheaf sending an
@@ -94,8 +94,8 @@ def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat.{v} where
           map_add' := fun g g' => comp_add _ _ _ _ _ _ }
       naturality := fun Y Y' g =>
         AddCommGroupCat.ext fun x => Eq.symm <| Category.assoc _ _ _ }
-  map_id _ := by ext ; dsimp ; simp
-  map_comp f g := by ext ; dsimp ; simp
+  map_id _ := by ext; dsimp; simp
+  map_comp f g := by ext; dsimp; simp
 #align category_theory.preadditive_coyoneda CategoryTheory.preadditiveCoyoneda
 
 instance additive_yonedaObj (X : C) : Functor.Additive (preadditiveYonedaObj X) where

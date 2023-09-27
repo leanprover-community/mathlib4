@@ -228,7 +228,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
     (hn : ¬∀ n : ℕ, ¬s ≤[i \ ⋃ l < n, restrictNonposSeq s i l] 0) :
     ∃ j : Set α, MeasurableSet j ∧ j ⊆ i ∧ s ≤[j] 0 ∧ s j < 0 := by
   by_cases s ≤[i] 0; · exact ⟨i, hi₁, Set.Subset.refl _, h, hi₂⟩
-  push_neg  at hn
+  push_neg at hn
   set k := Nat.find hn
   have hk₂ : s ≤[i \ ⋃ l < k, restrictNonposSeq s i l] 0 := Nat.find_spec hn
   have hmeas : MeasurableSet (⋃ (l : ℕ) (_ : l < k), restrictNonposSeq s i l) :=
@@ -254,7 +254,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
     · convert le_of_eq s.empty.symm
       ext; simp only [exists_prop, Set.mem_empty_iff_false, Set.mem_iUnion, not_and, iff_false_iff]
       exact fun h' => False.elim (h h')
-  · intro ; exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
+  · intro; exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
   · intro a b hab
     refine' Set.disjoint_iUnion_left.mpr fun _ => _
     refine' Set.disjoint_iUnion_right.mpr fun _ => _
@@ -307,7 +307,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     hi₁.diff (MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _)
   refine' ⟨A, A_meas, Set.diff_subset _ _, _, h₂.trans_lt hi⟩
   by_contra hnn
-  rw [restrict_le_restrict_iff _ _ A_meas] at hnn; push_neg  at hnn
+  rw [restrict_le_restrict_iff _ _ A_meas] at hnn; push_neg at hnn
   obtain ⟨E, hE₁, hE₂, hE₃⟩ := hnn
   have : ∃ k, 1 ≤ bdd k ∧ 1 / (bdd k : ℝ) < s E := by
     rw [tendsto_atTop_atTop] at h₄

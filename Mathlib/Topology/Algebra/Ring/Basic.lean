@@ -152,13 +152,15 @@ instance [NonUnitalNonAssocRing α] [NonUnitalNonAssocRing β] [TopologicalRing 
 
 end
 
-instance {β : Type _} {C : β → Type _} [∀ b, TopologicalSpace (C b)]
+instance Pi.instTopologicalSemiring {β : Type _} {C : β → Type _} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocSemiring (C b)] [∀ b, TopologicalSemiring (C b)] :
     TopologicalSemiring (∀ b, C b) where
+#align pi.topological_semiring Pi.instTopologicalSemiring
 
-instance {β : Type _} {C : β → Type _} [∀ b, TopologicalSpace (C b)]
+instance Pi.instTopologicalRing {β : Type _} {C : β → Type _} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocRing (C b)] [∀ b, TopologicalRing (C b)] :
     TopologicalRing (∀ b, C b) := ⟨⟩
+#align pi.topological_ring Pi.instTopologicalRing
 
 section MulOpposite
 

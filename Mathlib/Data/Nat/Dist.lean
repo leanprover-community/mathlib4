@@ -118,7 +118,7 @@ theorem dist_succ_succ {i j : Nat} : dist (succ i) (succ j) = dist i j := by
 #align nat.dist_succ_succ Nat.dist_succ_succ
 
 theorem dist_pos_of_ne {i j : Nat} : i ≠ j → 0 < dist i j := fun hne =>
-  Nat.lt_by_cases
+  Nat.ltByCases
     (fun h : i < j => by rw [dist_eq_sub_of_le (le_of_lt h)]; apply tsub_pos_of_lt h)
     (fun h : i = j => by contradiction) fun h : i > j => by
     rw [dist_eq_sub_of_le_right (le_of_lt h)]; apply tsub_pos_of_lt h

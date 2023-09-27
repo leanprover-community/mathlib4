@@ -272,7 +272,7 @@ theorem Perm.pmap {p : α → Prop} (f : ∀ a, p a → β) {l₁ l₂ : List α
 #align list.perm.pmap List.Perm.pmap
 
 theorem Perm.filter (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
-    filter p l₁ ~ filter p l₂ := by rw [← filterMap_eq_filter] ; apply s.filterMap _
+    filter p l₁ ~ filter p l₂ := by rw [← filterMap_eq_filter]; apply s.filterMap _
 #align list.perm.filter List.Perm.filter
 
 theorem filter_append_perm (p : α → Bool) (l : List α) :
@@ -471,7 +471,7 @@ theorem Sublist.exists_perm_append : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ →
 
 theorem Perm.countp_eq (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
     countp p l₁ = countp p l₂ := by
-  rw [countp_eq_length_filter, countp_eq_length_filter] ; exact (s.filter _).length_eq
+  rw [countp_eq_length_filter, countp_eq_length_filter]; exact (s.filter _).length_eq
 #align list.perm.countp_eq List.Perm.countp_eq
 
 theorem Subperm.countp_le (p : α → Bool) {l₁ l₂ : List α} :
@@ -524,8 +524,8 @@ theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} (rcomm : Righ
 
 theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : LeftCommutative f) (p : l₁ ~ l₂) :
     ∀ b, foldr f b l₁ = foldr f b l₂ :=
-  perm_induction_on p (fun b => rfl) (fun x t₁ t₂ _p r b => by simp ; rw [r b])
-    (fun x y t₁ t₂ _p r b => by simp ; rw [lcomm, r b]) fun t₁ t₂ t₃ _p₁ _p₂ r₁ r₂ a =>
+  perm_induction_on p (fun b => rfl) (fun x t₁ t₂ _p r b => by simp; rw [r b])
+    (fun x y t₁ t₂ _p r b => by simp; rw [lcomm, r b]) fun t₁ t₂ t₃ _p₁ _p₂ r₁ r₂ a =>
     Eq.trans (r₁ a) (r₂ a)
 #align list.perm.foldr_eq List.Perm.foldr_eq
 
@@ -567,10 +567,10 @@ theorem Perm.prod_eq' [M : Monoid α] {l₁ l₂ : List α} (h : l₁ ~ l₂) (h
     l₁.prod = l₂.prod := by
   refine h.foldl_eq' ?_ _
   apply Pairwise.forall_of_forall
-  . intro x y h z
+  · intro x y h z
     exact (h z).symm
-  . intros; rfl
-  . apply hc.imp
+  · intros; rfl
+  · apply hc.imp
     intro a b h z
     rw [mul_assoc z, mul_assoc z, h]
 #align list.perm.prod_eq' List.Perm.prod_eq'
@@ -774,7 +774,7 @@ theorem Perm.erase (a : α) {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁.erase
     Perm.cons_inv <| (perm_cons_erase h₁).symm.trans <| p.trans (perm_cons_erase h₂)
   else by
     have h₂ : a ∉ l₂ := mt p.mem_iff.2 h₁
-    rw [erase_of_not_mem h₁, erase_of_not_mem h₂] ; exact p
+    rw [erase_of_not_mem h₁, erase_of_not_mem h₂]; exact p
 #align list.perm.erase List.Perm.erase
 
 theorem subperm_cons_erase (a : α) (l : List α) : l <+~ a :: l.erase a := by
@@ -935,7 +935,7 @@ theorem subperm_singleton_iff {α} {l : List α} {a : α} : [a] <+~ l ↔ a ∈ 
 
 theorem Subperm.cons_left {l₁ l₂ : List α} (h : l₁ <+~ l₂) (x : α) (hx : count x l₁ < count x l₂) :
     x :: l₁ <+~ l₂ := by
-  rw [subperm_ext_iff] at h⊢
+  rw [subperm_ext_iff] at h ⊢
   intro y hy
   by_cases hy' : y = x
   · subst x
@@ -1190,8 +1190,8 @@ theorem Perm.dropSlice_inter {α} [DecidableEq α] {xs ys : List α} (n m : ℕ)
   have : n ≤ n + m := Nat.le_add_right _ _
   have h₂ := h.nodup_iff.2 h'
   apply Perm.trans _ (Perm.inter_append _).symm
-  . exact Perm.append (Perm.take_inter _ h h') (Perm.drop_inter _ h h')
-  . exact disjoint_take_drop h₂ this
+  · exact Perm.append (Perm.take_inter _ h h') (Perm.drop_inter _ h h')
+  · exact disjoint_take_drop h₂ this
 #align list.perm.slice_inter List.Perm.dropSlice_inter
 
 -- enumerating permutations
@@ -1426,11 +1426,9 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
     rw [length_insertNth _ _ hk.le, length_insertNth _ _ (Nat.succ_le_of_lt hk)]
   refine' ext_nthLe hl fun n hn hn' => _
   rcases lt_trichotomy n k with (H | rfl | H)
-  ·
-    rw [nthLe_insertNth_of_lt _ _ _ _ H (H.trans hk),
+  · rw [nthLe_insertNth_of_lt _ _ _ _ H (H.trans hk),
       nthLe_insertNth_of_lt _ _ _ _ (H.trans (Nat.lt_succ_self _))]
-  ·
-    rw [nthLe_insertNth_self _ _ _ hk.le, nthLe_insertNth_of_lt _ _ _ _ (Nat.lt_succ_self _) hk,
+  · rw [nthLe_insertNth_self _ _ _ hk.le, nthLe_insertNth_of_lt _ _ _ _ (Nat.lt_succ_self _) hk,
       hk']
   · rcases(Nat.succ_le_of_lt H).eq_or_lt with (rfl | H')
     · rw [nthLe_insertNth_self _ _ _ (Nat.succ_le_of_lt hk)]

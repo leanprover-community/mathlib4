@@ -21,7 +21,7 @@ the main conditional expectation file.
 
 ## Main result
 
-* `MeasureTheory.condexp_indep_eq`: If `m₁, m₂` are independent σ-algebras and `f` is a
+* `MeasureTheory.condexp_indep_eq`: If `m₁, m₂` are independent σ-algebras and `f` is an
   `m₁`-measurable function, then `𝔼[f | m₂] = 𝔼[f]` almost everywhere.
 
 -/

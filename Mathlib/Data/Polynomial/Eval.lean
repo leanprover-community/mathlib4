@@ -557,7 +557,7 @@ theorem nat_cast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_nat_c
 
 --Porting note: new theorem
 @[simp]
-theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : R[X]).comp p = n :=
+theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : R[X]).comp p = n :=
   nat_cast_comp
 
 @[simp]
@@ -763,7 +763,8 @@ protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
 
 --Porting note: new theorem
 @[simp]
-protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : R[X]).map f = OfNat.ofNat n :=
+protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n) : R[X]).map f = OfNat.ofNat n :=
   show (n : R[X]).map f = n by rw [Polynomial.map_nat_cast]
 
 set_option linter.deprecated false in
@@ -1036,7 +1037,7 @@ theorem eval₂_comp {x : S} : eval₂ f x (p.comp q) = eval₂ f (eval₂ f x q
 
 @[simp]
 theorem iterate_comp_eval₂ (k : ℕ) (t : S) :
-    eval₂ f t ((p.comp^[k]) q) = ((fun x => eval₂ f x p)^[k]) (eval₂ f t q) := by
+    eval₂ f t (p.comp^[k] q) = (fun x => eval₂ f x p)^[k] (eval₂ f t q) := by
   induction' k with k IH
   · simp
   · rw [Function.iterate_succ_apply', Function.iterate_succ_apply', eval₂_comp, IH]
@@ -1084,7 +1085,7 @@ theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by
 
 @[simp]
 theorem iterate_comp_eval :
-    ∀ (k : ℕ) (t : R), ((p.comp^[k]) q).eval t = ((fun x => p.eval x)^[k]) (q.eval t) :=
+    ∀ (k : ℕ) (t : R), (p.comp^[k] q).eval t = (fun x => p.eval x)^[k] (q.eval t) :=
   iterate_comp_eval₂ _
 #align polynomial.iterate_comp_eval Polynomial.iterate_comp_eval
 

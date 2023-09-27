@@ -6,6 +6,8 @@ Authors: Ian Benway.
 
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.Basic
+import Mathlib.Util.SleepHeartbeats
+import Qq
 
 example (x : Nat) (h : x = x) : x = x := by
   set! p := h
@@ -34,4 +36,16 @@ example (x : Nat) (h : x - x = 0) : x = x := by
 
 example : True := by
   set g : Nat → Int := (fun ε => ε) with h
+  trivial
+
+-- simulate a slow to elaborate term
+open Qq in
+elab "test" : term => do
+  sleepAtLeastHeartbeats (1000 * 1000)
+  return q((1 : Nat))
+
+-- this will timeout if test is elaborated multiple times
+set_option maxHeartbeats 3000 in
+example {a b c d e f g h : Nat} : 1 = 1 := by
+  set a : Nat := test with h
   trivial

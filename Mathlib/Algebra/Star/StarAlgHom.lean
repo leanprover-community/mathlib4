@@ -175,6 +175,12 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅) :
   rfl
 #align non_unital_star_alg_hom.coe_mk NonUnitalStarAlgHom.coe_mkₓ
 
+-- this is probably the more useful lemma for Lean 4 and should likely replace `coe_mk` above
+@[simp]
+theorem coe_mk' (f : A →ₙₐ[R] B) (h) :
+    ((⟨f, h⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
+  rfl
+
 -- porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
 @[simp]
 theorem mk_coe (f : A →⋆ₙₐ[R] B) (h₁ h₂ h₃ h₄ h₅) :
@@ -409,6 +415,12 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅ h₆) :
     ((⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) : A → B) = f :=
   rfl
 #align star_alg_hom.coe_mk StarAlgHom.coe_mkₓ
+
+-- this is probably the more useful lemma for Lean 4 and should likely replace `coe_mk` above
+@[simp]
+theorem coe_mk' (f : A →ₐ[R] B) (h) :
+    ((⟨f, h⟩ : A →⋆ₐ[R] B) : A → B) = f :=
+  rfl
 
 -- porting note: doesn't align with Mathlib 3 because `StarAlgHom.mk` has a new signature
 @[simp]

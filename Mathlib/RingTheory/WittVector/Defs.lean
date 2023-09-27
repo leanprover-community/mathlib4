@@ -14,13 +14,13 @@ import Mathlib.RingTheory.WittVector.StructurePolynomial
 # Witt vectors
 
 In this file we define the type of `p`-typical Witt vectors and ring operations on it.
-The ring axioms are verified in `ring_theory/witt_vector/basic.lean`.
+The ring axioms are verified in `RingTheory.WittVector.Basic`.
 
 For a fixed commutative ring `R` and prime `p`,
 a Witt vector `x : 𝕎 R` is an infinite sequence `ℕ → R` of elements of `R`.
 However, the ring operations `+` and `*` are not defined in the obvious component-wise way.
 Instead, these operations are defined via certain polynomials
-using the machinery in `structure_polynomial.lean`.
+using the machinery in `StructurePolynomial.lean`.
 The `n`th value of the sum of two Witt vectors can depend on the `0`-th through `n`th values
 of the summands. This effectively simulates a “carrying” operation.
 

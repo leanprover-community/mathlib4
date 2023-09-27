@@ -29,11 +29,12 @@ In this file we prove several versions of the Schwarz lemma.
   to itself and the center of this disk to itself, then the absolute value of the derivative of `f`
   at the center of this disk is at most `1`;
 
-* `complex.dist_le_dist_of_maps_to_ball`: if `f : ℂ → ℂ` sends an open disk to itself and the center
-  `c` of this disk to itself, then for any point `z` of this disk we have `dist (f z) c ≤ dist z c`;
+* `Complex.dist_le_dist_of_mapsTo_ball_self`: if `f : ℂ → ℂ` sends an open disk to itself and the
+  center `c` of this disk to itself, then for any point `z` of this disk we have
+  `dist (f z) c ≤ dist z c`;
 
-* `complex.abs_le_abs_of_maps_to_ball`: if `f : ℂ → ℂ` sends an open disk with center `0` to itself,
-  then for any point `z` of this disk we have `abs (f z) ≤ abs z`.
+* `Complex.abs_le_abs_of_mapsTo_ball_self`: if `f : ℂ → ℂ` sends an open disk with center `0` to
+  itself, then for any point `z` of this disk we have `abs (f z) ≤ abs z`.
 
 ## Implementation notes
 
@@ -71,7 +72,7 @@ theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁)
   suffices ∀ᶠ r in 𝓝[<] R₁, ‖dslope f c z‖ ≤ R₂ / r by
     refine' ge_of_tendsto _ this
     exact (tendsto_const_nhds.div tendsto_id hR₁.ne').mono_left nhdsWithin_le_nhds
-  rw [mem_ball] at hz 
+  rw [mem_ball] at hz
   filter_upwards [Ioo_mem_nhdsWithin_Iio ⟨hz, le_rfl⟩] with r hr
   have hr₀ : 0 < r := dist_nonneg.trans_lt hr.1
   replace hd : DiffContOnCl ℂ (dslope f c) (ball c r)
@@ -110,7 +111,7 @@ theorem norm_dslope_le_div_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R
       simpa only [hg', NNReal.coe_one, one_mul] using g.lipschitz.mapsTo_ball hg₀ (f c) R₂
 #align complex.norm_dslope_le_div_of_maps_to_ball Complex.norm_dslope_le_div_of_mapsTo_ball
 
-/-- Equality case in the **Schwarz Lemma**: in the setup of `norm_dslope_le_div_of_maps_to_ball`, if
+/-- Equality case in the **Schwarz Lemma**: in the setup of `norm_dslope_le_div_of_mapsTo_ball`, if
 `‖dslope f c z₀‖ = R₂ / R₁` holds at a point in the ball then the map `f` is affine. -/
 theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div [CompleteSpace E] [StrictConvexSpace ℝ E]
     (hd : DifferentiableOn ℂ f (ball c R₁)) (h_maps : Set.MapsTo f (ball c R₁) (ball (f c) R₂))

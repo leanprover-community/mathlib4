@@ -105,7 +105,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
         mk (span {s})
             (∑ x : ℕ in Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
           mk (span {s}) (∑ x : ℕ in Finset.range p, a ^ (x + (p - 1 - x))) := by
-      ring
+      ring_nf
       simp only [← pow_add, map_add, Finset.sum_add_distrib, ← map_sum]
       congr
       simp [pow_add a, mul_assoc]
@@ -145,7 +145,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       norm_cast
       simp only [Nat.cast_mul, _root_.map_mul,
           Nat.mul_div_assoc p (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
-      ring
+      ring_nf
       rw [mul_assoc, mul_assoc]
       refine' mul_eq_zero_of_left _ _
       refine' Ideal.Quotient.eq_zero_iff_mem.mpr _

@@ -343,8 +343,8 @@ theorem ofOption_dom {α} : ∀ o : Option α, (ofOption o).Dom ↔ o.isSome
 theorem ofOption_eq_get {α} (o : Option α) : ofOption o = ⟨_, @Option.get _ o⟩ :=
   Part.ext' (ofOption_dom o) fun h₁ h₂ => by
     cases o
-    . simp at h₂
-    . rfl
+    · simp at h₂
+    · rfl
 #align part.of_option_eq_get Part.ofOption_eq_get
 
 instance : Coe (Option α) (Part α) :=
@@ -542,10 +542,9 @@ theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ 
 theorem bind_assoc {γ} (f : Part α) (g : α → Part β) (k : β → Part γ) :
     (f.bind g).bind k = f.bind fun x => (g x).bind k :=
   ext fun a => by
-    simp;
-      exact
-        ⟨fun ⟨_, ⟨_, h₁, h₂⟩, h₃⟩ => ⟨_, h₁, _, h₂, h₃⟩, fun ⟨_, h₁, _, h₂, h₃⟩ =>
-          ⟨_, ⟨_, h₁, h₂⟩, h₃⟩⟩
+    simp
+    exact ⟨fun ⟨_, ⟨_, h₁, h₂⟩, h₃⟩ => ⟨_, h₁, _, h₂, h₃⟩,
+           fun ⟨_, h₁, _, h₂, h₃⟩ => ⟨_, ⟨_, h₁, h₂⟩, h₃⟩⟩
 #align part.bind_assoc Part.bind_assoc
 
 @[simp]

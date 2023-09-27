@@ -43,6 +43,7 @@ instance (X : Type v₁) : IsLeftAdjoint (Types.binaryProductFunctor.obj X) wher
       { unit := { app := fun Z (z : Z) x => ⟨x, z⟩ }
         counit := { app := fun Z xf => xf.2 xf.1 } }
 
+-- Porting note: this instance should be moved to a higher file.
 instance : HasFiniteProducts (Type v₁) :=
   hasFiniteProducts_of_hasProducts.{v₁} _
 

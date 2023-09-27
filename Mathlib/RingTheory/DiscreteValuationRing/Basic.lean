@@ -217,7 +217,7 @@ theorem toUniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
       rw [mul_assoc, mul_left_comm, IsUnit.dvd_mul_left _ _ _ (Units.isUnit _)] at h
       rw [IsUnit.dvd_mul_right (Units.isUnit _)]
       by_cases hm : m = 0
-      · simp only [hm, one_mul, pow_zero] at h⊢
+      · simp only [hm, one_mul, pow_zero] at h ⊢
         right
         exact h
       left
@@ -237,7 +237,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
   cases' WfDvdMonoid.exists_factors x hx with fx hfx
   refine' ⟨Multiset.card fx, _⟩
   have H := hfx.2
-  rw [← Associates.mk_eq_mk_iff_associated] at H⊢
+  rw [← Associates.mk_eq_mk_iff_associated] at H ⊢
   rw [← H, ← Associates.prod_mk, Associates.mk_pow, ← Multiset.prod_replicate]
   congr 1
   symm
@@ -331,7 +331,7 @@ theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irred
   cases' WfDvdMonoid.exists_factors x hx with fx hfx
   use Multiset.card fx
   have H := hfx.2
-  rw [← Associates.mk_eq_mk_iff_associated] at H⊢
+  rw [← Associates.mk_eq_mk_iff_associated] at H ⊢
   rw [← H, ← Associates.prod_mk, Associates.mk_pow, ← Multiset.prod_replicate]
   congr 1
   rw [Multiset.eq_replicate]

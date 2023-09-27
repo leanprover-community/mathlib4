@@ -338,7 +338,7 @@ section Zero
 variable [Zero α] [Zero β]
 
 /-- `Matrix.blockDiagonal M` turns a homogenously-indexed collection of matrices
-`M : o → Matrix m n α'` into a `m × o`-by-`n × o` block matrix which has the entries of `M` along
+`M : o → Matrix m n α'` into an `m × o`-by-`n × o` block matrix which has the entries of `M` along
 the diagonal and zero elsewhere.
 
 See also `Matrix.blockDiagonal'` if the matrices may not have the same size everywhere.

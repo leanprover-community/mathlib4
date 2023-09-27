@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.real.ennreal
-! leanprover-community/mathlib commit ccdbfb6e5614667af5aa3ab2d50885e0ef44a46f
+! leanprover-community/mathlib commit c14c8fcde993801fca8946b0d80131a1a81d1520
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -132,6 +132,10 @@ noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
     mul_le_mul_left := fun _ _ => mul_le_mul_left'
     zero_le_one := zero_le 1 }
 
+noncomputable instance : Unique (AddUnits ℝ≥0∞) where
+  default := 0
+  uniq a := AddUnits.ext <| le_zero_iff.1 <| by rw [← a.add_neg]; exact le_self_add
+
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
 
 /-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
@@ -157,11 +161,11 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 some (· ≠ ∞) := WithTop.canLi
 theorem range_coe' : range some = Iio ∞ := WithTop.range_coe
 theorem range_coe : range some = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
 
-/-- `to_nnreal x` returns `x` if it is real, otherwise 0. -/
+/-- `toNNReal x` returns `x` if it is real, otherwise 0. -/
 protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 #align ennreal.to_nnreal ENNReal.toNNReal
 
-/-- `to_real x` returns `x` if it is real, `0` otherwise. -/
+/-- `toReal x` returns `x` if it is real, `0` otherwise. -/
 protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 #align ennreal.to_real ENNReal.toReal
 
@@ -384,7 +388,8 @@ theorem coe_mul : ↑(r * p) = (r : ℝ≥0∞) * p :=
 #noalign ennreal.coe_bit1
 
 @[simp, norm_cast] -- porting note: new
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ≥0) : ℝ≥0∞) = OfNat.ofNat n := rfl
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n) : ℝ≥0) : ℝ≥0∞) = OfNat.ofNat n := rfl
 
 -- porting note: todo: add lemmas about `OfNat.ofNat` and `<`/`≤`
 
@@ -442,30 +447,30 @@ def neTopEquivNNReal : { a | a ≠ ∞ } ≃ ℝ≥0 where
   right_inv _ := toNNReal_coe
 #align ennreal.ne_top_equiv_nnreal ENNReal.neTopEquivNNReal
 
-theorem cinfi_ne_top [InfSet α] (f : ℝ≥0∞ → α) : (⨅ x : { x // x ≠ ∞ }, f x) = ⨅ x : ℝ≥0, f x :=
+theorem cinfi_ne_top [InfSet α] (f : ℝ≥0∞ → α) : ⨅ x : { x // x ≠ ∞ }, f x = ⨅ x : ℝ≥0, f x :=
   Eq.symm <| neTopEquivNNReal.symm.surjective.iInf_congr _ fun _ => rfl
 #align ennreal.cinfi_ne_top ENNReal.cinfi_ne_top
 
 theorem iInf_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
-    (⨅ (x) (_ : x ≠ ∞), f x) = ⨅ x : ℝ≥0, f x := by rw [iInf_subtype', cinfi_ne_top]
+    ⨅ (x) (_ : x ≠ ∞), f x = ⨅ x : ℝ≥0, f x := by rw [iInf_subtype', cinfi_ne_top]
 #align ennreal.infi_ne_top ENNReal.iInf_ne_top
 
-theorem csupr_ne_top [SupSet α] (f : ℝ≥0∞ → α) : (⨆ x : { x // x ≠ ∞ }, f x) = ⨆ x : ℝ≥0, f x :=
+theorem csupr_ne_top [SupSet α] (f : ℝ≥0∞ → α) : ⨆ x : { x // x ≠ ∞ }, f x = ⨆ x : ℝ≥0, f x :=
   @cinfi_ne_top αᵒᵈ _ _
 #align ennreal.csupr_ne_top ENNReal.csupr_ne_top
 
 theorem iSup_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
-    (⨆ (x) (_ : x ≠ ∞), f x) = ⨆ x : ℝ≥0, f x :=
+    ⨆ (x) (_ : x ≠ ∞), f x = ⨆ x : ℝ≥0, f x :=
   @iInf_ne_top αᵒᵈ _ _
 #align ennreal.supr_ne_top ENNReal.iSup_ne_top
 
 theorem iInf_ennreal {α : Type _} [CompleteLattice α] {f : ℝ≥0∞ → α} :
-    (⨅ n, f n) = (⨅ n : ℝ≥0, f n) ⊓ f ∞ :=
+    ⨅ n, f n = (⨅ n : ℝ≥0, f n) ⊓ f ∞ :=
   (iInf_option f).trans inf_comm
 #align ennreal.infi_ennreal ENNReal.iInf_ennreal
 
 theorem iSup_ennreal {α : Type _} [CompleteLattice α] {f : ℝ≥0∞ → α} :
-    (⨆ n, f n) = (⨆ n : ℝ≥0, f n) ⊔ f ∞ :=
+    ⨆ n, f n = (⨆ n : ℝ≥0, f n) ⊔ f ∞ :=
   @iInf_ennreal αᵒᵈ _ _
 #align ennreal.supr_ennreal ENNReal.iSup_ennreal
 
@@ -699,7 +704,7 @@ theorem coe_nat (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
 #align ennreal.of_real_coe_nat ENNReal.ofReal_coe_nat
 
 @[simp] theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ENNReal.ofReal (OfNat.ofNat n) = OfNat.ofNat n :=
+    ENNReal.ofReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   ofReal_coe_nat n
 
 @[simp] theorem nat_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.nat_ne_top n
@@ -722,7 +727,7 @@ theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
 #align ennreal.to_real_nat ENNReal.toReal_nat
 
 @[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ENNReal.toReal (OfNat.ofNat n) = OfNat.ofNat n :=
+    ENNReal.toReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   toReal_nat n
 
 theorem le_coe_iff : a ≤ ↑r ↔ ∃ p : ℝ≥0, a = p ∧ p ≤ r := WithTop.le_coe_iff
@@ -873,45 +878,45 @@ protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, 
 #align ennreal.exists_nat_gt ENNReal.exists_nat_gt
 
 @[simp]
-theorem iUnion_Iio_coe_nat : (⋃ n : ℕ, Iio (n : ℝ≥0∞)) = {∞}ᶜ := by
+theorem iUnion_Iio_coe_nat : ⋃ n : ℕ, Iio (n : ℝ≥0∞) = {∞}ᶜ := by
   ext x
   rw [mem_iUnion]
   exact ⟨fun ⟨n, hn⟩ => ne_top_of_lt hn, ENNReal.exists_nat_gt⟩
 #align ennreal.Union_Iio_coe_nat ENNReal.iUnion_Iio_coe_nat
 
 @[simp]
-theorem iUnion_Iic_coe_nat : (⋃ n : ℕ, Iic (n : ℝ≥0∞)) = {∞}ᶜ :=
+theorem iUnion_Iic_coe_nat : ⋃ n : ℕ, Iic (n : ℝ≥0∞) = {∞}ᶜ :=
   Subset.antisymm (iUnion_subset fun n _x hx => ne_top_of_le_ne_top (nat_ne_top n) hx) <|
     iUnion_Iio_coe_nat ▸ iUnion_mono fun _ => Iio_subset_Iic_self
 #align ennreal.Union_Iic_coe_nat ENNReal.iUnion_Iic_coe_nat
 
 @[simp]
-theorem iUnion_Ioc_coe_nat : (⋃ n : ℕ, Ioc a n) = Ioi a \ {∞} := by
+theorem iUnion_Ioc_coe_nat : ⋃ n : ℕ, Ioc a n = Ioi a \ {∞} := by
   simp only [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, diff_eq]
 #align ennreal.Union_Ioc_coe_nat ENNReal.iUnion_Ioc_coe_nat
 
 @[simp]
-theorem iUnion_Ioo_coe_nat : (⋃ n : ℕ, Ioo a n) = Ioi a \ {∞} := by
+theorem iUnion_Ioo_coe_nat : ⋃ n : ℕ, Ioo a n = Ioi a \ {∞} := by
   simp only [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, diff_eq]
 #align ennreal.Union_Ioo_coe_nat ENNReal.iUnion_Ioo_coe_nat
 
 @[simp]
-theorem iUnion_Icc_coe_nat : (⋃ n : ℕ, Icc a n) = Ici a \ {∞} := by
+theorem iUnion_Icc_coe_nat : ⋃ n : ℕ, Icc a n = Ici a \ {∞} := by
   simp only [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, diff_eq]
 #align ennreal.Union_Icc_coe_nat ENNReal.iUnion_Icc_coe_nat
 
 @[simp]
-theorem iUnion_Ico_coe_nat : (⋃ n : ℕ, Ico a n) = Ici a \ {∞} := by
+theorem iUnion_Ico_coe_nat : ⋃ n : ℕ, Ico a n = Ici a \ {∞} := by
   simp only [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, diff_eq]
 #align ennreal.Union_Ico_coe_nat ENNReal.iUnion_Ico_coe_nat
 
 @[simp]
-theorem iInter_Ici_coe_nat : (⋂ n : ℕ, Ici (n : ℝ≥0∞)) = {∞} := by
+theorem iInter_Ici_coe_nat : ⋂ n : ℕ, Ici (n : ℝ≥0∞) = {∞} := by
   simp only [← compl_Iio, ← compl_iUnion, iUnion_Iio_coe_nat, compl_compl]
 #align ennreal.Inter_Ici_coe_nat ENNReal.iInter_Ici_coe_nat
 
 @[simp]
-theorem iInter_Ioi_coe_nat : (⋂ n : ℕ, Ioi (n : ℝ≥0∞)) = {∞} := by
+theorem iInter_Ioi_coe_nat : ⋂ n : ℕ, Ioi (n : ℝ≥0∞) = {∞} := by
   simp only [← compl_Iic, ← compl_iUnion, iUnion_Iic_coe_nat, compl_compl]
 #align ennreal.Inter_Ioi_coe_nat ENNReal.iInter_Ioi_coe_nat
 
@@ -1229,26 +1234,26 @@ section Sum
 open Finset
 
 /-- A product of finite numbers is still finite -/
-theorem prod_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : (∏ a in s, f a) < ∞ :=
+theorem prod_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : ∏ a in s, f a < ∞ :=
   WithTop.prod_lt_top h
 #align ennreal.prod_lt_top ENNReal.prod_lt_top
 
 /-- A sum of finite numbers is still finite -/
-theorem sum_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : (∑ a in s, f a) < ∞ :=
+theorem sum_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : ∑ a in s, f a < ∞ :=
   WithTop.sum_lt_top h
 #align ennreal.sum_lt_top ENNReal.sum_lt_top
 
 /-- A sum of finite numbers is still finite -/
-theorem sum_lt_top_iff {s : Finset α} {f : α → ℝ≥0∞} : (∑ a in s, f a) < ∞ ↔ ∀ a ∈ s, f a < ∞ :=
+theorem sum_lt_top_iff {s : Finset α} {f : α → ℝ≥0∞} : ∑ a in s, f a < ∞ ↔ ∀ a ∈ s, f a < ∞ :=
   WithTop.sum_lt_top_iff
 #align ennreal.sum_lt_top_iff ENNReal.sum_lt_top_iff
 
 /-- A sum of numbers is infinite iff one of them is infinite -/
-theorem sum_eq_top_iff {s : Finset α} {f : α → ℝ≥0∞} : (∑ x in s, f x) = ∞ ↔ ∃ a ∈ s, f a = ∞ :=
+theorem sum_eq_top_iff {s : Finset α} {f : α → ℝ≥0∞} : ∑ x in s, f x = ∞ ↔ ∃ a ∈ s, f a = ∞ :=
   WithTop.sum_eq_top_iff
 #align ennreal.sum_eq_top_iff ENNReal.sum_eq_top_iff
 
-theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : (∑ x in s, f x) ≠ ∞) {a : α}
+theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∑ x in s, f x ≠ ∞) {a : α}
     (ha : a ∈ s) : f a < ∞ :=
   sum_lt_top_iff.1 h.lt_top a ha
 #align ennreal.lt_top_of_sum_ne_top ENNReal.lt_top_of_sum_ne_top
@@ -1277,7 +1282,7 @@ theorem ofReal_sum_of_nonneg {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈
 #align ennreal.of_real_sum_of_nonneg ENNReal.ofReal_sum_of_nonneg
 
 theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
-    (Hlt : ∀ i ∈ s, f i < g i) : (∑ i in s, f i) < ∑ i in s, g i := by
+    (Hlt : ∀ i ∈ s, f i < g i) : ∑ i in s, f i < ∑ i in s, g i := by
   induction' hs using Finset.Nonempty.cons_induction with a a s as _ IH
   · simp [Hlt _ (Finset.mem_singleton_self _)]
   · simp only [as, Finset.sum_cons, not_false_iff]
@@ -1287,7 +1292,7 @@ theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → �
 #align ennreal.sum_lt_sum_of_nonempty ENNReal.sum_lt_sum_of_nonempty
 
 theorem exists_le_of_sum_le {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
-    (Hle : (∑ i in s, f i) ≤ ∑ i in s, g i) : ∃ i ∈ s, f i ≤ g i := by
+    (Hle : ∑ i in s, f i ≤ ∑ i in s, g i) : ∃ i ∈ s, f i ≤ g i := by
   contrapose! Hle
   apply ENNReal.sum_lt_sum_of_nonempty hs Hle
 #align ennreal.exists_le_of_sum_le ENNReal.exists_le_of_sum_le
@@ -1412,6 +1417,15 @@ protected theorem mul_div_cancel' (h0 : a ≠ 0) (hI : a ≠ ∞) : a * (b / a) 
   rw [mul_comm, ENNReal.div_mul_cancel h0 hI]
 #align ennreal.mul_div_cancel' ENNReal.mul_div_cancel'
 
+-- porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
+protected theorem mul_comm_div : a / b * c = a * (c / b) := by
+  simp only [div_eq_mul_inv, mul_right_comm, ←mul_assoc]
+#align ennreal.mul_comm_div ENNReal.mul_comm_div
+
+protected theorem mul_div_right_comm : a * b / c = a / c * b := by
+  simp only [div_eq_mul_inv, mul_right_comm]
+#align ennreal.mul_div_right_comm ENNReal.mul_div_right_comm
+
 instance : InvolutiveInv ℝ≥0∞ where
   inv_inv a := by
     by_cases a = 0 <;> cases a <;> simp_all [none_eq_top, some_eq_coe, -coe_inv, (coe_inv _).symm]
@@ -1438,6 +1452,10 @@ protected theorem inv_eq_zero : a⁻¹ = 0 ↔ a = ∞ :=
 
 protected theorem inv_ne_zero : a⁻¹ ≠ 0 ↔ a ≠ ∞ := by simp
 #align ennreal.inv_ne_zero ENNReal.inv_ne_zero
+
+protected theorem div_pos (ha : a ≠ 0) (hb : b ≠ ∞) : 0 < a / b :=
+  ENNReal.mul_pos ha <| ENNReal.inv_ne_zero.2 hb
+#align ennreal.div_pos ENNReal.div_pos
 
 protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : a ≠ ∞ ∨ b ≠ 0) :
     (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
@@ -2438,17 +2456,17 @@ theorem add_iInf {a : ℝ≥0∞} : a + iInf f = ⨅ b, a + f b := by
 #align ennreal.add_infi ENNReal.add_iInf
 
 theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + iInf g = ⨅ a, f a + g a :=
-  suffices (⨅ a, f a + g a) ≤ iInf f + iInf g from
+  suffices ⨅ a, f a + g a ≤ iInf f + iInf g from
     le_antisymm (le_iInf fun a => add_le_add (iInf_le _ _) (iInf_le _ _)) this
   calc
-    (⨅ a, f a + g a) ≤ ⨅ (a) (a'), f a + g a' :=
+    ⨅ a, f a + g a ≤ ⨅ (a) (a'), f a + g a' :=
       le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h
     _ = iInf f + iInf g := by simp_rw [iInf_add, add_iInf]
 #align ennreal.infi_add_infi ENNReal.iInf_add_iInf
 
 theorem iInf_sum {f : ι → α → ℝ≥0∞} {s : Finset α} [Nonempty ι]
     (h : ∀ (t : Finset α) (i j : ι), ∃ k, ∀ a ∈ t, f k a ≤ f i a ∧ f k a ≤ f j a) :
-    (⨅ i, ∑ a in s, f i a) = ∑ a in s, ⨅ i, f i a := by
+    ⨅ i, ∑ a in s, f i a = ∑ a in s, ⨅ i, f i a := by
   induction' s using Finset.cons_induction_on with a s ha ih
   · simp only [Finset.sum_empty, ciInf_const]
   · simp only [Finset.sum_cons, ← ih]
@@ -2495,19 +2513,19 @@ end iInf
 section iSup
 
 @[simp]
-theorem iSup_eq_zero {ι : Sort _} {f : ι → ℝ≥0∞} : (⨆ i, f i) = 0 ↔ ∀ i, f i = 0 :=
+theorem iSup_eq_zero {ι : Sort _} {f : ι → ℝ≥0∞} : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 :=
   iSup_eq_bot
 #align ennreal.supr_eq_zero ENNReal.iSup_eq_zero
 
 @[simp]
-theorem iSup_zero_eq_zero {ι : Sort _} : (⨆ _ : ι, (0 : ℝ≥0∞)) = 0 := by simp
+theorem iSup_zero_eq_zero {ι : Sort _} : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
 #align ennreal.supr_zero_eq_zero ENNReal.iSup_zero_eq_zero
 
 theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
   sup_eq_bot_iff
 #align ennreal.sup_eq_zero ENNReal.sup_eq_zero
 
-theorem iSup_coe_nat : (⨆ n : ℕ, (n : ℝ≥0∞)) = ∞ :=
+theorem iSup_coe_nat : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
   (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 #align ennreal.supr_coe_nat ENNReal.iSup_coe_nat
 

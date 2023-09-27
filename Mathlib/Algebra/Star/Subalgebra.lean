@@ -775,7 +775,7 @@ theorem ext_adjoin_singleton {a : A} [StarAlgHomClass F R (adjoin R ({a} : Set A
       h
 #align star_alg_hom.ext_adjoin_singleton StarAlgHom.ext_adjoin_singleton
 
-/-- Range of an `StarAlgHom` as a star subalgebra. -/
+/-- Range of a `StarAlgHom` as a star subalgebra. -/
 protected def range
     (φ : A →⋆ₐ[R] B) : StarSubalgebra R B where
   toSubalgebra := φ.toAlgHom.range

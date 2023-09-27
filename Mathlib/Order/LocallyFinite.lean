@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.locally_finite
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
+! leanprover-community/mathlib commit 1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -629,20 +629,16 @@ section Preorder
 
 variable [Preorder α] [LocallyFiniteOrder α] (a b : α)
 
-instance fintypeIcc : Fintype (Icc a b) :=
-  Fintype.ofFinset (Finset.Icc a b) fun x => by rw [Finset.mem_Icc, mem_Icc]
+instance fintypeIcc : Fintype (Icc a b) := Fintype.ofFinset (Finset.Icc a b) fun _ => Finset.mem_Icc
 #align set.fintype_Icc Set.fintypeIcc
 
-instance fintypeIco : Fintype (Ico a b) :=
-  Fintype.ofFinset (Finset.Ico a b) fun x => by rw [Finset.mem_Ico, mem_Ico]
+instance fintypeIco : Fintype (Ico a b) := Fintype.ofFinset (Finset.Ico a b) fun _ => Finset.mem_Ico
 #align set.fintype_Ico Set.fintypeIco
 
-instance fintypeIoc : Fintype (Ioc a b) :=
-  Fintype.ofFinset (Finset.Ioc a b) fun x => by rw [Finset.mem_Ioc, mem_Ioc]
+instance fintypeIoc : Fintype (Ioc a b) := Fintype.ofFinset (Finset.Ioc a b) fun _ => Finset.mem_Ioc
 #align set.fintype_Ioc Set.fintypeIoc
 
-instance fintypeIoo : Fintype (Ioo a b) :=
-  Fintype.ofFinset (Finset.Ioo a b) fun x => by rw [Finset.mem_Ioo, mem_Ioo]
+instance fintypeIoo : Fintype (Ioo a b) := Fintype.ofFinset (Finset.Ioo a b) fun _ => Finset.mem_Ioo
 #align set.fintype_Ioo Set.fintypeIoo
 
 theorem finite_Icc : (Icc a b).Finite :=
@@ -667,12 +663,10 @@ section OrderTop
 
 variable [Preorder α] [LocallyFiniteOrderTop α] (a : α)
 
-instance fintypeIci : Fintype (Ici a) :=
-  Fintype.ofFinset (Finset.Ici a) fun x => by rw [Finset.mem_Ici, mem_Ici]
+instance fintypeIci : Fintype (Ici a) := Fintype.ofFinset (Finset.Ici a) fun _ => Finset.mem_Ici
 #align set.fintype_Ici Set.fintypeIci
 
-instance fintypeIoi : Fintype (Ioi a) :=
-  Fintype.ofFinset (Finset.Ioi a) fun x => by rw [Finset.mem_Ioi, mem_Ioi]
+instance fintypeIoi : Fintype (Ioi a) := Fintype.ofFinset (Finset.Ioi a) fun _ => Finset.mem_Ioi
 #align set.fintype_Ioi Set.fintypeIoi
 
 theorem finite_Ici : (Ici a).Finite :=
@@ -689,12 +683,10 @@ section OrderBot
 
 variable [Preorder α] [LocallyFiniteOrderBot α] (b : α)
 
-instance fintypeIic : Fintype (Iic b) :=
-  Fintype.ofFinset (Finset.Iic b) fun x => by rw [Finset.mem_Iic, mem_Iic]
+instance fintypeIic : Fintype (Iic b) := Fintype.ofFinset (Finset.Iic b) fun _ => Finset.mem_Iic
 #align set.fintype_Iic Set.fintypeIic
 
-instance fintypeIio : Fintype (Iio b) :=
-  Fintype.ofFinset (Finset.Iio b) fun x => by rw [Finset.mem_Iio, mem_Iio]
+instance fintypeIio : Fintype (Iio b) := Fintype.ofFinset (Finset.Iio b) fun _ => Finset.mem_Iio
 #align set.fintype_Iio Set.fintypeIio
 
 theorem finite_Iic : (Iic b).Finite :=
@@ -706,6 +698,19 @@ theorem finite_Iio : (Iio b).Finite :=
 #align set.finite_Iio Set.finite_Iio
 
 end OrderBot
+
+section Lattice
+variable [Lattice α] [LocallyFiniteOrder α] (a b : α)
+
+instance fintypeUIcc : Fintype (uIcc a b) :=
+  Fintype.ofFinset (Finset.uIcc a b) fun _ => Finset.mem_uIcc
+#align set.fintype_uIcc Set.fintypeUIcc
+
+@[simp]
+theorem finite_interval : (uIcc a b).Finite := (uIcc _ _).toFinite
+#align set.finite_interval Set.finite_interval
+
+end Lattice
 
 end Set
 
@@ -1365,3 +1370,26 @@ theorem map_subtype_embedding_Iio : (Iio a).map (Embedding.subtype p) = (Iio a :
 end LocallyFiniteOrderBot
 
 end Finset
+
+section Finite
+
+variable {α : Type _} {s : Set α}
+
+theorem Set.finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α]:
+    s.Finite ↔ BddAbove s :=
+  ⟨fun h ↦ ⟨h.toFinset.sup id, fun x hx ↦ Finset.le_sup (f := id) (by simpa)⟩,
+    fun ⟨m, hm⟩ ↦ (Set.finite_Icc ⊥ m).subset (fun x hx ↦ ⟨bot_le, hm hx⟩)⟩
+
+theorem Set.finite_iff_bddBelow [SemilatticeInf α] [LocallyFiniteOrder α] [OrderTop α] :
+    s.Finite ↔ BddBelow s :=
+  finite_iff_bddAbove (α := αᵒᵈ)
+
+theorem Set.finite_iff_bddBelow_bddAbove [Nonempty α] [Lattice α] [LocallyFiniteOrder α] :
+    s.Finite ↔ BddBelow s ∧ BddAbove s := by
+  obtain (rfl | hs) := s.eq_empty_or_nonempty
+  · simp only [Set.finite_empty, bddBelow_empty, bddAbove_empty, and_self]
+  exact ⟨fun h ↦ ⟨⟨h.toFinset.inf' (by simpa) id, fun x hx ↦ Finset.inf'_le id (by simpa)⟩,
+    ⟨h.toFinset.sup' (by simpa) id, fun x hx ↦ Finset.le_sup' id (by simpa)⟩⟩,
+    fun ⟨⟨a,ha⟩,⟨b,hb⟩⟩ ↦ (Set.finite_Icc a b).subset (fun x hx ↦ ⟨ha hx,hb hx⟩ )⟩
+
+end Finite

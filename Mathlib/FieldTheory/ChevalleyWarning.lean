@@ -56,10 +56,10 @@ variable {K σ ι : Type _} [Fintype K] [Field K] [Fintype σ] [DecidableEq σ]
 local notation "q" => Fintype.card K
 
 theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
-    (h : f.totalDegree < (q - 1) * Fintype.card σ) : (∑ x, eval x f) = 0 := by
+    (h : f.totalDegree < (q - 1) * Fintype.card σ) : ∑ x, eval x f = 0 := by
   haveI : DecidableEq K := Classical.decEq K
   calc
-    (∑ x, eval x f) = ∑ x : σ → K, ∑ d in f.support, f.coeff d * ∏ i, x i ^ d i := by
+    ∑ x, eval x f = ∑ x : σ → K, ∑ d in f.support, f.coeff d * ∏ i, x i ^ d i := by
       simp only [eval_eq']
     _ = ∑ d in f.support, ∑ x : σ → K, f.coeff d * ∏ i, x i ^ d i := sum_comm
     _ = 0 := sum_eq_zero ?_
@@ -139,7 +139,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
       apply Finset.prod_eq_zero hi
       rw [pow_card_sub_one_eq_one (eval x (f i)) hx, sub_self]
   -- In particular, we can now show:
-  have key : (∑ x, eval x F) = Fintype.card { x : σ → K // ∀ i ∈ s, eval x (f i) = 0 }
+  have key : ∑ x, eval x F = Fintype.card { x : σ → K // ∀ i ∈ s, eval x (f i) = 0 }
   rw [Fintype.card_of_subtype S hS, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one, ←
     Fintype.sum_extend_by_zero S, sum_congr rfl fun x _ => hF x]
   -- With these preparations under our belt, we will approach the main goal.

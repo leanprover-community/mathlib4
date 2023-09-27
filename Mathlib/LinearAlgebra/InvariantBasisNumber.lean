@@ -103,7 +103,7 @@ theorem strongRankCondition_iff_succ :
   · by_contra H
     exact
       h m (f.comp (Function.ExtendByZero.linearMap R (Fin.castLE (not_le.1 H))))
-        (hf.comp (Function.extend_injective (RelEmbedding.injective _) _))
+        (hf.comp (Function.extend_injective (Fin.strictMono_castLE _).injective _))
 #align strong_rank_condition_iff_succ strongRankCondition_iff_succ
 
 theorem card_le_of_injective [StrongRankCondition R] {α β : Type _} [Fintype α] [Fintype β]

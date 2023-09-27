@@ -175,6 +175,10 @@ theorem Inducing.isOpen_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     IsOpen s ↔ ∃ t, IsOpen t ∧ f ⁻¹' t = s := by rw [hf.induced, isOpen_induced_iff]
 #align inducing.is_open_iff Inducing.isOpen_iff
 
+theorem Inducing.setOf_isOpen {f : α → β} (hf : Inducing f) :
+    {s : Set α | IsOpen s} = preimage f '' {t | IsOpen t} :=
+  Set.ext fun _ ↦ hf.isOpen_iff
+
 theorem Inducing.dense_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     Dense s ↔ ∀ x, f x ∈ closure (f '' s) := by
   simp only [Dense, hf.closure_eq_preimage_closure_image, mem_preimage]

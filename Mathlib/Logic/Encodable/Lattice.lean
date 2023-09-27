@@ -30,12 +30,12 @@ namespace Encodable
 variable {α : Type _} {β : Type _} [Encodable β]
 
 theorem iSup_decode₂ [CompleteLattice α] (f : β → α) :
-    (⨆ (i : ℕ) (b ∈ decode₂ β i), f b) = (⨆ b, f b) := by
+    ⨆ (i : ℕ) (b ∈ decode₂ β i), f b = (⨆ b, f b) := by
   rw [iSup_comm]
   simp only [mem_decode₂, iSup_iSup_eq_right]
 #align encodable.supr_decode₂ Encodable.iSup_decode₂
 
-theorem iUnion_decode₂ (f : β → Set α) : (⋃ (i : ℕ) (b ∈ decode₂ β i), f b) = ⋃ b, f b :=
+theorem iUnion_decode₂ (f : β → Set α) : ⋃ (i : ℕ) (b ∈ decode₂ β i), f b = ⋃ b, f b :=
   iSup_decode₂ f
 #align encodable.Union_decode₂ Encodable.iUnion_decode₂
 

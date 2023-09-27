@@ -136,14 +136,14 @@ def liftOn₂ {γ} (s₁ s₂ : Finmap β) (f : AList β → AList β → γ)
 @[simp]
 theorem liftOn₂_toFinmap {γ} (s₁ s₂ : AList β) (f : AList β → AList β → γ) (H) :
     liftOn₂ ⟦s₁⟧ ⟦s₂⟧ f H = f s₁ s₂ :=
-      by cases s₁ ; cases s₂ ; rfl
+      by cases s₁; cases s₂; rfl
 #align finmap.lift_on₂_to_finmap Finmap.liftOn₂_toFinmap
 
 /-! ### Induction -/
 
 @[elab_as_elim]
 theorem induction_on {C : Finmap β → Prop} (s : Finmap β) (H : ∀ a : AList β, C ⟦a⟧) : C s := by
-  rcases s with ⟨⟨a⟩, h⟩ ; exact H ⟨a, h⟩
+  rcases s with ⟨⟨a⟩, h⟩; exact H ⟨a, h⟩
 #align finmap.induction_on Finmap.induction_on
 
 @[elab_as_elim]
@@ -248,7 +248,7 @@ theorem keys_singleton (a : α) (b : β a) : (singleton a b).keys = {a} :=
 
 @[simp]
 theorem mem_singleton (x y : α) (b : β y) : x ∈ singleton y b ↔ x = y := by
-  simp only [singleton] ; erw [mem_cons, mem_nil_iff, or_false_iff]
+  simp only [singleton]; erw [mem_cons, mem_nil_iff, or_false_iff]
 #align finmap.mem_singleton Finmap.mem_singleton
 
 section

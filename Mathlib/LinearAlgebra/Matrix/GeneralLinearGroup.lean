@@ -75,6 +75,7 @@ def det : GL n R →* Rˣ where
   map_one' := Units.ext det_one
   map_mul' A B := Units.ext <| det_mul _ _
 #align matrix.general_linear_group.det Matrix.GeneralLinearGroup.det
+#align matrix.general_linear_group.coe_det_apply Matrix.GeneralLinearGroup.det_apply_val
 
 /-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent-/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=

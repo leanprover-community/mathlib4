@@ -522,8 +522,8 @@ def ringCatIsoToRingEquiv {X Y : RingCat} (i : X ≅ Y) : X ≃+* Y
   -- Porting note: All these proofs were much easier in lean3.
   left_inv := fun x => show (i.hom ≫ i.inv) x = x by rw [i.hom_inv_id]; rfl
   right_inv := fun x => show (i.inv ≫ i.hom) x = x by rw [i.inv_hom_id]; rfl
-  map_add' := fun x y => let ii : X →+* Y := i.hom ; ii.map_add x y
-  map_mul' := fun x y => let ii : X →+* Y := i.hom ; ii.map_mul x y
+  map_add' := fun x y => let ii : X →+* Y := i.hom; ii.map_add x y
+  map_mul' := fun x y => let ii : X →+* Y := i.hom; ii.map_mul x y
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.Ring_iso_to_ring_equiv CategoryTheory.Iso.ringCatIsoToRingEquiv
 
@@ -535,8 +535,8 @@ def commRingCatIsoToRingEquiv {X Y : CommRingCat} (i : X ≅ Y) : X ≃+* Y
   -- Porting note: All these proofs were much easier in lean3.
   left_inv := fun x => show (i.hom ≫ i.inv) x = x by rw [i.hom_inv_id]; rfl
   right_inv := fun x => show (i.inv ≫ i.hom) x = x by rw [i.inv_hom_id]; rfl
-  map_add' := fun x y => let ii : X →+* Y := i.hom ; ii.map_add x y
-  map_mul' := fun x y => let ii : X →+* Y := i.hom ; ii.map_mul x y
+  map_add' := fun x y => let ii : X →+* Y := i.hom; ii.map_add x y
+  map_mul' := fun x y => let ii : X →+* Y := i.hom; ii.map_mul x y
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv CategoryTheory.Iso.commRingCatIsoToRingEquiv
 

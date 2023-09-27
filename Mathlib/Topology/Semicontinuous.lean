@@ -327,7 +327,7 @@ theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α �
 
 theorem ContinuousAt.comp_lowerSemicontinuousAt {g : γ → δ} {f : α → γ} (hg : ContinuousAt g (f x))
     (hf : LowerSemicontinuousAt f x) (gmon : Monotone g) : LowerSemicontinuousAt (g ∘ f) x := by
-  simp only [← lowerSemicontinuousWithinAt_univ_iff] at hf⊢
+  simp only [← lowerSemicontinuousWithinAt_univ_iff] at hf ⊢
   exact hg.comp_lowerSemicontinuousWithinAt hf gmon
 #align continuous_at.comp_lower_semicontinuous_at ContinuousAt.comp_lowerSemicontinuousAt
 

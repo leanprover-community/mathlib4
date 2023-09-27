@@ -140,7 +140,7 @@ theorem antitone_lowerCentralSeries : Antitone <| lowerCentralSeries R L M := by
 theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries R L M 1 = ⊥ := by
   constructor <;> intro h
   · erw [eq_bot_iff, LieSubmodule.lieSpan_le]; rintro m ⟨x, n, hn⟩; rw [← hn, h.trivial]; simp
-  · rw [LieSubmodule.eq_bot_iff] at h ; apply IsTrivial.mk; intro x m; apply h
+  · rw [LieSubmodule.eq_bot_iff] at h; apply IsTrivial.mk; intro x m; apply h
     apply LieSubmodule.subset_lieSpan
     -- Porting note: was `use x, m; rfl`
     simp only [LieSubmodule.top_coe, Subtype.exists, LieSubmodule.mem_top, exists_prop, true_and,
@@ -149,7 +149,7 @@ theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries 
 #align lie_module.trivial_iff_lower_central_eq_bot LieModule.trivial_iff_lower_central_eq_bot
 
 theorem iterate_toEndomorphism_mem_lowerCentralSeries (x : L) (m : M) (k : ℕ) :
-    (toEndomorphism R L M x^[k]) m ∈ lowerCentralSeries R L M k := by
+    (toEndomorphism R L M x)^[k] m ∈ lowerCentralSeries R L M k := by
   induction' k with k ih
   · simp only [Nat.zero_eq, Function.iterate_zero, lowerCentralSeries_zero, LieSubmodule.mem_top]
   · simp only [lowerCentralSeries_succ, Function.comp_apply, Function.iterate_succ',
@@ -222,7 +222,7 @@ theorem nilpotent_endo_of_nilpotent_module [hM : IsNilpotent R L M] :
 This result will be used downstream to show that weight spaces are Lie submodules, at which time
 it will be possible to state it in the language of weight spaces. -/
 theorem iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent [IsNilpotent R L M] :
-    (⨅ x : L, (toEndomorphism R L M x).maximalGeneralizedEigenspace 0) = ⊤ := by
+    ⨅ x : L, (toEndomorphism R L M x).maximalGeneralizedEigenspace 0 = ⊤ := by
   ext m
   simp only [Module.End.mem_maximalGeneralizedEigenspace, Submodule.mem_top, sub_zero, iff_true_iff,
     zero_smul, Submodule.mem_iInf]
@@ -535,7 +535,7 @@ theorem LieAlgebra.nilpotent_ad_of_nilpotent_algebra [IsNilpotent R L] :
 
 /-- See also `LieAlgebra.zero_rootSpace_eq_top_of_nilpotent`. -/
 theorem LieAlgebra.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent [IsNilpotent R L] :
-    (⨅ x : L, (ad R L x).maximalGeneralizedEigenspace 0) = ⊤ :=
+    ⨅ x : L, (ad R L x).maximalGeneralizedEigenspace 0 = ⊤ :=
   LieModule.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent R L L
 #align lie_algebra.infi_max_gen_zero_eigenspace_eq_top_of_nilpotent LieAlgebra.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent
 
@@ -681,7 +681,7 @@ lower central series of `M` as an `I`-module. The advantage of using this defini
 
 See also `LieIdeal.coe_lcs_eq`. -/
 def lcs : LieSubmodule R L M :=
-  ((fun N => ⁅I, N⁆)^[k]) ⊤
+  (fun N => ⁅I, N⁆)^[k] ⊤
 #align lie_ideal.lcs LieIdeal.lcs
 
 @[simp]

@@ -60,12 +60,21 @@ variable (X : SimplicialObject C)
 
 /-- The normalized Moore complex in degree `n`, as a subobject of `X n`.
 -/
-@[simp]
 def objX : ∀ n : ℕ, Subobject (X.obj (op (SimplexCategory.mk n)))
   | 0 => ⊤
   | n + 1 => Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ)
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex.obj_X AlgebraicTopology.NormalizedMooreComplex.objX
+
+theorem objX_zero : objX X 0 = ⊤ :=
+  rfl
+
+theorem objX_add_one (n) :
+    objX X (n + 1) = Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ) :=
+  rfl
+
+attribute [eqns objX_zero objX_add_one] objX
+attribute [simp] objX
 
 /-- The differentials in the normalized Moore complex.
 -/
@@ -95,11 +104,11 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- It's a pity we need to do a case split here;
     -- after the first erw the proofs are almost identical
   rcases n with _ | n <;> dsimp [objD]
-  . erw [Subobject.factorThru_arrow_assoc, Category.assoc,
+  · erw [Subobject.factorThru_arrow_assoc, Category.assoc,
       ← X.δ_comp_δ_assoc (Fin.zero_le (0 : Fin 2)),
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ (0 : Fin 2) (by simp)),
       Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]
-  . erw [factorThru_right, factorThru_eq_zero, factorThru_arrow_assoc, Category.assoc,
+  · erw [factorThru_right, factorThru_eq_zero, factorThru_arrow_assoc, Category.assoc,
       ← X.δ_comp_δ (Fin.zero_le (0 : Fin (n + 3))),
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ (0 : Fin (n + 3)) (by simp)),
       Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]
@@ -153,8 +162,9 @@ which maps each of these intersections of kernels to the next.
 def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
-  map_id X := by ext (_ | _) <;> aesop_cat
-  map_comp f g := by ext (_ | _) <;> apply Subobject.eq_of_comp_arrow_eq <;> aesop_cat
+  -- Porting note: Why `aesop_cat` can't do `dsimp` steps?
+  map_id X := by ext (_ | _) <;> dsimp <;> aesop_cat
+  map_comp f g := by ext (_ | _) <;> apply Subobject.eq_of_comp_arrow_eq <;> dsimp <;> aesop_cat
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex AlgebraicTopology.normalizedMooreComplex
 

@@ -8,7 +8,6 @@ Authors: Sébastien Gouëzel, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.NormedSpace.Basic
 
@@ -112,14 +111,11 @@ theorem smul_closedBall' {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) :
   simp only [← ball_union_sphere, Set.smul_set_union, _root_.smul_ball hc, smul_sphere' hc]
 #align smul_closed_ball' smul_closedBall'
 
-theorem Metric.Bounded.smul {s : Set E} (hs : Bounded s) (c : 𝕜) : Bounded (c • s) := by
-  obtain ⟨R, hR⟩ : ∃ R : ℝ, ∀ x ∈ s, ‖x‖ ≤ R := hs.exists_norm_le
-  refine' bounded_iff_forall_norm_le.2 ⟨‖c‖ * R, fun z hz => _⟩
-  obtain ⟨y, ys, rfl⟩ : ∃ y : E, y ∈ s ∧ c • y = z := mem_smul_set.1 hz
-  calc
-    ‖c • y‖ = ‖c‖ * ‖y‖ := norm_smul _ _
-    _ ≤ ‖c‖ * R := mul_le_mul_of_nonneg_left (hR y ys) (norm_nonneg _)
-#align metric.bounded.smul Metric.Bounded.smul
+/-- Image of a bounded set in a normed space under scalar multiplication by a constant is
+bounded. See also `Metric.Bounded.smul` for a similar lemma about an isometric action. -/
+theorem Metric.Bounded.smul₀ {s : Set E} (hs : Bounded s) (c : 𝕜) : Bounded (c • s) :=
+  (lipschitzWith_smul c).bounded_image hs
+#align metric.bounded.smul Metric.Bounded.smul₀
 
 /-- If `s` is a bounded set, then for small enough `r`, the set `{x} + r • s` is contained in any
 fixed neighborhood of `x`. -/

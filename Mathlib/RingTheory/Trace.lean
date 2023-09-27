@@ -428,7 +428,7 @@ variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
 
 open Finset
 
-/-- Given an `A`-algebra `B` and `b`, an `κ`-indexed family of elements of `B`, we define
+/-- Given an `A`-algebra `B` and `b`, a `κ`-indexed family of elements of `B`, we define
 `traceMatrix A b` as the matrix whose `(i j)`-th element is the trace of `b i * b j`. -/
 noncomputable def traceMatrix (b : κ → B) : Matrix κ κ A :=
   of fun i j => traceForm A B (b i) (b j)

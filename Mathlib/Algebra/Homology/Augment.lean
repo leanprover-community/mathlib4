@@ -25,7 +25,7 @@ variable {V : Type u} [Category.{v} V]
 
 namespace ChainComplex
 
-/-- The truncation of a `ℕ`-indexed chain complex,
+/-- The truncation of an `ℕ`-indexed chain complex,
 deleting the object at `0` and shifting everything else down.
 -/
 @[simps]
@@ -204,7 +204,7 @@ end ChainComplex
 
 namespace CochainComplex
 
-/-- The truncation of a `ℕ`-indexed cochain complex,
+/-- The truncation of an `ℕ`-indexed cochain complex,
 deleting the object at `0` and shifting everything else down.
 -/
 @[simps]

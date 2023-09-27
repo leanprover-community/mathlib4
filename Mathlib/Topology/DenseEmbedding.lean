@@ -85,7 +85,7 @@ theorem dense_image (di : DenseInducing i) {s : Set α} : Dense (i '' s) ↔ Den
 
 /-- If `i : α → β` is a dense embedding with dense complement of the range, then any compact set in
 `α` has empty interior. -/
-theorem interior_compact_eq_empty [T2Space β] (di : DenseInducing i) (hd : Dense (range iᶜ))
+theorem interior_compact_eq_empty [T2Space β] (di : DenseInducing i) (hd : Dense (range i)ᶜ)
     {s : Set α} (hs : IsCompact s) : interior s = ∅ := by
   refine' eq_empty_iff_forall_not_mem.2 fun x hx => _
   rw [mem_interior_iff_mem_nhds] at hx
@@ -370,7 +370,7 @@ end
 theorem Filter.HasBasis.hasBasis_of_denseInducing [TopologicalSpace α] [TopologicalSpace β]
     [T3Space β] {ι : Type _} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
     {f : α → β} (hf : DenseInducing f) : (𝓝 (f x)).HasBasis p fun i => closure <| f '' s i := by
-  rw [Filter.hasBasis_iff] at h⊢
+  rw [Filter.hasBasis_iff] at h ⊢
   intro T
   refine' ⟨fun hT => _, fun hT => _⟩
   · obtain ⟨T', hT₁, hT₂, hT₃⟩ := exists_mem_nhds_isClosed_subset hT

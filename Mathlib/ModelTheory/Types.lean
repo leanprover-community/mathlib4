@@ -104,7 +104,7 @@ theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈
       simp only [model_iff, mem_insert_iff, mem_singleton_iff, forall_eq_or_imp, forall_eq] at h
       exact h.2 h.1
     refine' h (p.isMaximal.1.mono _)
-    rw [insert_subset, singleton_subset_iff]
+    rw [insert_subset_iff, singleton_subset_iff]
     exact ⟨ht, hf⟩, (p.mem_or_not_mem φ).resolve_left⟩
 #align first_order.language.Theory.complete_type.not_mem_iff FirstOrder.Language.Theory.CompleteType.not_mem_iff
 
@@ -158,8 +158,8 @@ instance instNonempty : Nonempty (CompleteType (∅ : L.Theory) α) :=
 #align first_order.language.Theory.complete_type.nonempty FirstOrder.Language.Theory.CompleteType.instNonempty
 
 theorem iInter_setOf_subset {ι : Type _} (S : ι → L[[α]].Theory) :
-    (⋂ i : ι, { p : T.CompleteType α | S i ⊆ p }) =
-      { p : T.CompleteType α | (⋃ i : ι, S i) ⊆ p } := by
+    ⋂ i : ι, { p : T.CompleteType α | S i ⊆ p } =
+      { p : T.CompleteType α | ⋃ i : ι, S i ⊆ p } := by
   ext
   simp only [mem_iInter, mem_setOf_eq, iUnion_subset_iff]
 #align first_order.language.Theory.complete_type.Inter_set_of_subset FirstOrder.Language.Theory.CompleteType.iInter_setOf_subset

@@ -569,7 +569,7 @@ theorem compl_sup_eq_top : xᶜ ⊔ x = ⊤ :=
   sup_comm.trans sup_compl_eq_top
 #align compl_sup_eq_top compl_sup_eq_top
 
-theorem isCompl_compl : IsCompl x (xᶜ) :=
+theorem isCompl_compl : IsCompl x xᶜ :=
   IsCompl.of_eq inf_compl_eq_bot' sup_compl_eq_top
 #align is_compl_compl isCompl_compl
 
@@ -696,11 +696,16 @@ theorem compl_le_iff_compl_le : xᶜ ≤ y ↔ yᶜ ≤ x :=
   ⟨compl_le_of_compl_le, compl_le_of_compl_le⟩
 #align compl_le_iff_compl_le compl_le_iff_compl_le
 
+@[simp] theorem compl_le_self : xᶜ ≤ x ↔ x = ⊤ := by simpa using le_compl_self (a := xᶜ)
+
+@[simp] theorem compl_lt_self [Nontrivial α] : xᶜ < x ↔ x = ⊤ := by
+  simpa using lt_compl_self (a := xᶜ)
+
 @[simp]
 theorem sdiff_compl : x \ yᶜ = x ⊓ y := by rw [sdiff_eq, compl_compl]
 #align sdiff_compl sdiff_compl
 
-instance : BooleanAlgebra αᵒᵈ :=
+instance OrderDual.booleanAlgebra (α) [BooleanAlgebra α] : BooleanAlgebra αᵒᵈ :=
   { OrderDual.distribLattice α, OrderDual.boundedOrder α with
     compl := fun a => toDual (ofDual aᶜ),
     sdiff :=
@@ -732,11 +737,11 @@ theorem compl_himp_compl : xᶜ ⇨ yᶜ = y ⇨ x :=
   @compl_sdiff_compl αᵒᵈ _ _ _
 #align compl_himp_compl compl_himp_compl
 
-theorem disjoint_compl_left_iff : Disjoint (xᶜ) y ↔ y ≤ x := by
+theorem disjoint_compl_left_iff : Disjoint xᶜ y ↔ y ≤ x := by
   rw [← le_compl_iff_disjoint_left, compl_compl]
 #align disjoint_compl_left_iff disjoint_compl_left_iff
 
-theorem disjoint_compl_right_iff : Disjoint x (yᶜ) ↔ x ≤ y := by
+theorem disjoint_compl_right_iff : Disjoint x yᶜ ↔ x ≤ y := by
   rw [← le_compl_iff_disjoint_right, compl_compl]
 #align disjoint_compl_right_iff disjoint_compl_right_iff
 
@@ -761,6 +766,15 @@ instance Prop.booleanAlgebra : BooleanAlgebra Prop :=
     inf_compl_le_bot := fun p ⟨Hp, Hpc⟩ => Hpc Hp,
     top_le_sup_compl := fun p _ => Classical.em p }
 #align Prop.boolean_algebra Prop.booleanAlgebra
+
+instance Prod.booleanAlgebra (α β) [BooleanAlgebra α] [BooleanAlgebra β] :
+    BooleanAlgebra (α × β) where
+  __ := Prod.heytingAlgebra
+  __ := Prod.distribLattice α β
+  himp_eq x y := by ext <;> simp [himp_eq]
+  sdiff_eq x y := by ext <;> simp [sdiff_eq]
+  inf_compl_le_bot x := by constructor <;> simp
+  top_le_sup_compl x := by constructor <;> simp
 
 instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlgebra (α i)] :
     BooleanAlgebra (∀ i, α i) :=
@@ -823,7 +837,7 @@ protected def Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bo
 protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot α] [HasCompl α]
     [SDiff α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
-    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f (aᶜ) = f aᶜ)
+    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) : BooleanAlgebra α :=
   { hf.generalizedBooleanAlgebra f map_sup map_inf map_bot map_sdiff with
     compl := compl,
@@ -841,11 +855,7 @@ protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot 
 
 end lift
 
--- Porting note: when `refine_struct` is ported this can be by:
--- refine_struct { PUnit.biheytingAlgebra with } <;>
---   intros <;> first |trivial|exact Subsingleton.elim _ _
-instance PUnit.booleanAlgebra : BooleanAlgebra PUnit :=
+instance PUnit.booleanAlgebra : BooleanAlgebra PUnit := by
+  refine'
   { PUnit.biheytingAlgebra with
-    le_sup_inf := by intros; trivial
-    inf_compl_le_bot := by intros; trivial
-    top_le_sup_compl := by intros; trivial }
+    .. } <;> (intros; trivial)

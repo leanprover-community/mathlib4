@@ -160,7 +160,7 @@ theorem unit_leftAdjointUniq_hom {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G)
 @[reassoc (attr := simp)]
 theorem unit_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (x : C) : adj1.unit.app x ≫ G.map ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x :=
-  by rw [← unit_leftAdjointUniq_hom adj1 adj2] ; rfl
+  by rw [← unit_leftAdjointUniq_hom adj1 adj2]; rfl
 #align category_theory.adjunction.unit_left_adjoint_uniq_hom_app CategoryTheory.Adjunction.unit_leftAdjointUniq_hom_app
 
 @[reassoc (attr := simp)]

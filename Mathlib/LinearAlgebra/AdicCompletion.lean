@@ -309,7 +309,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
     apply IsHausdorff.haus (toIsHausdorff : IsHausdorff I R)
     intro n
     specialize hL n
-    rw [SModEq.sub_mem, Algebra.id.smul_eq_mul, Ideal.mul_top] at hL⊢
+    rw [SModEq.sub_mem, Algebra.id.smul_eq_mul, Ideal.mul_top] at hL ⊢
     rw [sub_zero]
     suffices (1 - x * y) * f n - 1 ∈ I ^ n by
       convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1

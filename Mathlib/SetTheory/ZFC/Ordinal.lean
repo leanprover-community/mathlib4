@@ -61,7 +61,7 @@ alias isTransitive_iff_mem_trans ↔ IsTransitive.mem_trans _
 
 protected theorem IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∩ y).IsTransitive := fun z hz w hw => by
-  rw [mem_inter] at hz⊢
+  rw [mem_inter] at hz ⊢
   exact ⟨hx.mem_trans hw hz.1, hy.mem_trans hw hz.2⟩
 #align Set.is_transitive.inter ZFSet.IsTransitive.inter
 
@@ -89,7 +89,7 @@ protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive)
 
 protected theorem IsTransitive.powerset (h : x.IsTransitive) : (powerset x).IsTransitive :=
   fun y hy z hz => by
-  rw [mem_powerset] at hy⊢
+  rw [mem_powerset] at hy ⊢
   exact h.subset_of_mem (hy hz)
 #align Set.is_transitive.powerset ZFSet.IsTransitive.powerset
 

@@ -59,7 +59,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
       have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
         refine' List.Forall₂.flip _
         replace hv := hv.flip
-        simp only [List.forall₂_and_left, flip] at hv⊢
+        simp only [List.forall₂_and_left, flip] at hv ⊢
         exact ⟨hv.1, hu.flip⟩
       refine' mem_of_superset _ hvs
       exact mem_traverse _ _ (this.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha)
@@ -93,7 +93,7 @@ theorem tendsto_cons_iff {β : Type _} {f : List α → β} {b : Filter β} {a :
     simp only [nhds_cons, Filter.prod_eq, (Filter.map_def _ _).symm,
       (Filter.seq_eq_filter_seq _ _).symm]
     simp [-Filter.map_def, (· ∘ ·), functor_norm]
-  rw [this, Filter.tendsto_map'_iff] ; dsimp; rfl
+  rw [this, Filter.tendsto_map'_iff]; dsimp; rfl
 #align list.tendsto_cons_iff List.tendsto_cons_iff
 
 theorem continuous_cons : Continuous fun x : α × List α => (x.1::x.2 : List α) :=

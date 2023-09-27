@@ -240,7 +240,7 @@ theorem coe_lift₂_symm_apply (F : Sym2 α → Sym2 β → γ) (a₁ a₂ : α)
 def map (f : α → β) : Sym2 α → Sym2 β :=
   Quotient.map (Prod.map f f)
     (by
-      intro _ _ h;
+      intro _ _ h
       cases h
       · constructor
       apply Rel.swap)
@@ -590,12 +590,12 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
         rintro ⟨x, hx⟩ ⟨y, hy⟩ h
         cases' x with _ x; · simp at hx
         cases' x with _ x; · simp at hx
-        cases' x with _ x; swap;
+        cases' x with _ x; swap
         · exfalso
           simp at hx
         cases' y with _ y; · simp at hy
         cases' y with _ y; · simp at hy
-        cases' y with _ y; swap;
+        cases' y with _ y; swap
         · exfalso
           simp at hy
         rcases perm_card_two_iff.mp h with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
@@ -724,7 +724,7 @@ theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb 
 
 theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a :=
   by classical
-    rw [other_eq_other'] at hb⊢
+    rw [other_eq_other'] at hb ⊢
     convert other_invol' ha hb using 2
     apply other_eq_other'
 #align sym2.other_invol Sym2.other_invol

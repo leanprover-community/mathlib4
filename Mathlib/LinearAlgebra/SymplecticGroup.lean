@@ -138,7 +138,7 @@ end SymplecticJ
 variable {A : Matrix (Sum l l) (Sum l l) R}
 
 theorem neg_mem (h : A ∈ symplecticGroup l R) : -A ∈ symplecticGroup l R := by
-  rw [mem_iff] at h⊢
+  rw [mem_iff] at h ⊢
   simp [h]
 #align symplectic_group.neg_mem SymplecticGroup.neg_mem
 
@@ -155,7 +155,7 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
 #align symplectic_group.symplectic_det SymplecticGroup.symplectic_det
 
 theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
-  rw [mem_iff] at hA⊢
+  rw [mem_iff] at hA ⊢
   rw [transpose_transpose]
   have huA := symplectic_det hA
   have huAT : IsUnit Aᵀ.det := by

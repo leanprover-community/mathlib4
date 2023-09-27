@@ -28,7 +28,7 @@ namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
 
-/-- A category has finite products if there is a chosen limit for every diagram
+/-- A category has finite products if there exists a limit for every diagram
 with shape `Discrete J`, where we have `[Finite J]`.
 
 We require this condition only for `J = Fin n` in the definition, then deduce a version for any
@@ -62,7 +62,7 @@ theorem hasFiniteProducts_of_hasProducts [HasProducts.{w} C] : HasFiniteProducts
   ⟨fun _ => hasLimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift.{w})⟩
 #align category_theory.limits.has_finite_products_of_has_products CategoryTheory.Limits.hasFiniteProducts_of_hasProducts
 
-/-- A category has finite coproducts if there is a chosen colimit for every diagram
+/-- A category has finite coproducts if there exists a colimit for every diagram
 with shape `Discrete J`, where we have `[Fintype J]`.
 
 We require this condition only for `J = Fin n` in the definition, then deduce a version for any

@@ -72,7 +72,7 @@ instance limitMonoid (F : J ⥤ MonCatMax.{u,v}) :
 
 /-- `limit.π (F ⋙ forget MonCat) j` as a `MonoidHom`. -/
 @[to_additive "`limit.π (F ⋙ forget AddMonCat) j` as an `AddMonoidHom`."]
-def limitπMonoidHom (F : J ⥤ MonCatMax.{u, v}) (j : J) :
+noncomputable def limitπMonoidHom (F : J ⥤ MonCatMax.{u, v}) (j : J) :
   (Types.limitCone.{v, u} (F ⋙ forget MonCatMax.{u, v})).pt →*
     ((F ⋙ forget MonCat.{max v u}).obj j) :=
   { toFun := (Types.limitCone.{v, u} (F ⋙ forget MonCatMax.{u, v})).π.app j,
@@ -90,7 +90,7 @@ namespace HasLimits
 (Internal use only; use the limits API.)
 -/
 @[to_additive "(Internal use only; use the limits API.)"]
-def limitCone (F : J ⥤ MonCatMax.{u,v}) : Cone F :=
+noncomputable def limitCone (F : J ⥤ MonCatMax.{u,v}) : Cone F :=
   { pt := MonCat.of (Types.limitCone (F ⋙ forget _)).pt
     π :=
     { app := limitπMonoidHom F
@@ -104,7 +104,7 @@ def limitCone (F : J ⥤ MonCatMax.{u,v}) : Cone F :=
 (Internal use only; use the limits API.)
 -/
 @[to_additive "(Internal use only; use the limits API.)"]
-def limitConeIsLimit (F : J ⥤ MonCatMax.{u,v}) : IsLimit (limitCone F) := by
+noncomputable def limitConeIsLimit (F : J ⥤ MonCatMax.{u,v}) : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget MonCatMax) (Types.limitConeIsLimit.{v,u} _)
     (fun s => ⟨⟨_, ?_⟩, ?_⟩) (fun s => rfl) <;>
   aesop_cat
@@ -137,7 +137,8 @@ instance hasLimits : HasLimits MonCat.{u} :=
 This means the underlying type of a limit can be computed as a limit in the category of types. -/
 @[to_additive "The forgetful functor from additive monoids to types preserves all limits.\n\n
 This means the underlying type of a limit can be computed as a limit in the category of types."]
-instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize.{v} (forget MonCatMax.{u,v}) where
+noncomputable instance forgetPreservesLimitsOfSize :
+    PreservesLimitsOfSize.{v} (forget MonCatMax.{u,v}) where
   preservesLimitsOfShape {_} _ :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
@@ -146,7 +147,7 @@ instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize.{v} (forget MonCatM
 #align AddMon.forget_preserves_limits_of_size AddMonCat.forgetPreservesLimitsOfSize
 
 @[to_additive]
-instance forgetPreservesLimits : PreservesLimits (forget MonCat.{u}) :=
+noncomputable instance forgetPreservesLimits : PreservesLimits (forget MonCat.{u}) :=
   MonCat.forgetPreservesLimitsOfSize.{u, u}
 #align Mon.forget_preserves_limits MonCat.forgetPreservesLimits
 #align AddMon.forget_preserves_limits AddMonCat.forgetPreservesLimits

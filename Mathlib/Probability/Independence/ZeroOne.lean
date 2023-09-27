@@ -104,7 +104,7 @@ theorem indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf
     exact indep_iSup_directed_limsup h_le h_indep hf hns hnsp
   rw [iSup_comm]
   refine' iSup_congr fun n => _
-  have h : (⨆ (i : α) (_ : n ∈ ns i), s n) = ⨆ _ : ∃ i, n ∈ ns i, s n := by rw [iSup_exists]
+  have h : ⨆ (i : α) (_ : n ∈ ns i), s n = ⨆ _ : ∃ i, n ∈ ns i, s n := by rw [iSup_exists]
   haveI : Nonempty (∃ i : α, n ∈ ns i) := ⟨hns_univ n⟩
   rw [h, iSup_const]
 #align probability_theory.indep_supr_limsup ProbabilityTheory.indep_iSup_limsup

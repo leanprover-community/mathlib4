@@ -336,7 +336,7 @@ theorem powersetLen_map {β : Type _} (f : α ↪ β) (n : ℕ) (s : Finset α) 
   ext <| fun t => by
     simp only [card_map, mem_powersetLen, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
     constructor
-    . classical
+    · classical
       intro h
       have : map f (filter (fun x => (f x ∈ t)) s) = t := by
         ext x
@@ -345,7 +345,7 @@ theorem powersetLen_map {β : Type _} (f : α ↪ β) (n : ℕ) (s : Finset α) 
           fun hx => let ⟨y, hy⟩ := mem_map.1 (h.1 hx); ⟨y, ⟨hy.1, hy.2 ▸ hx⟩, hy.2⟩⟩
       refine' ⟨_, _, this⟩
       rw [← card_map f, this, h.2]; simp
-    . rintro ⟨a, ⟨has, rfl⟩, rfl⟩
+    · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
       dsimp [RelEmbedding.coe_toEmbedding]
       --Porting note: Why is `rw` required here and not `simp`?
       rw [mapEmbedding_apply]

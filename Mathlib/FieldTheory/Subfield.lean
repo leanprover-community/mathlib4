@@ -122,7 +122,7 @@ variable (S)
 /-- A subfield inherits a field structure -/
 instance (priority := 75) toField (s : S) : Field s :=
   Subtype.coe_injective.field ((↑) : s → K)
-    (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ ; rfl)
+    (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _; rfl)
     (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
     (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
     (by intros _; rfl) (by intros _; rfl) (by intros _; rfl)

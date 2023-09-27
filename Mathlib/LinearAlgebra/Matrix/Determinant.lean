@@ -91,7 +91,7 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
   · simp
 #align matrix.det_diagonal Matrix.det_diagonal
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem det_zero (_ : Nonempty n) : det (0 : Matrix n n R) = 0 :=
   (detRowAlternating : AlternatingMap R (n → R) R n).map_zero
 #align matrix.det_zero Matrix.det_zero
@@ -138,7 +138,7 @@ theorem det_mul_aux {M N : Matrix n n R} {p : n → n} (H : ¬Bijective p) :
     (∑ σ : Perm n, ε σ * ∏ x, M (σ x) (p x) * N (p x) x) = 0 := by
   obtain ⟨i, j, hpij, hij⟩ : ∃ i j, p i = p j ∧ i ≠ j := by
     rw [← Finite.injective_iff_bijective, Injective] at H
-    push_neg  at H
+    push_neg at H
     exact H
   exact
     sum_involution (fun σ _ => σ * Equiv.swap i j)
@@ -716,8 +716,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
   rw [Matrix.det_apply, Finset.univ_perm_fin_succ, ← Finset.univ_product_univ]
   simp only [Finset.sum_map, Equiv.toEmbedding_apply, Finset.sum_product, Matrix.submatrix]
   refine' Finset.sum_congr rfl fun i _ => Fin.cases _ (fun i => _) i
-  ·
-    simp only [Fin.prod_univ_succ, Matrix.det_apply, Finset.mul_sum,
+  · simp only [Fin.prod_univ_succ, Matrix.det_apply, Finset.mul_sum,
       Equiv.Perm.decomposeFin_symm_apply_zero, Fin.val_zero, one_mul,
       Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, if_true, id.def, eq_self_iff_true,
       Equiv.Perm.decomposeFin_symm_apply_succ, Fin.succAbove_zero, Equiv.coe_refl, pow_zero,

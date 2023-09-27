@@ -1552,19 +1552,29 @@ end AntitoneMonotone
 
 end Image2
 
-theorem IsGLB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
-    {s : Set α} {x : α} (hx : IsGLB (f '' s) (f x)) : IsGLB s x :=
-  ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
-    hf.1 <| hx.2 <| Monotone.mem_lowerBounds_image (fun _ _ => hf.2) hy⟩
-#align is_glb.of_image IsGLB.of_image
+section Pi
 
-theorem IsLUB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
-    {s : Set α} {x : α} (hx : IsLUB (f '' s) (f x)) : IsLUB s x :=
-  ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
-    hf.1 <| hx.2 <| Monotone.mem_upperBounds_image (fun _ _ => hf.2) hy⟩
-#align is_lub.of_image IsLUB.of_image
+variable {π : α → Type _} [∀ a, Preorder (π a)]
 
-theorem isLUB_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a, π a)} {f : ∀ a, π a} :
+lemma bddAbove_pi {s : Set (∀ a, π a)} :
+    BddAbove s ↔ ∀ a, BddAbove (Function.eval a '' s) :=
+  ⟨fun ⟨f, hf⟩ a ↦ ⟨f a, ball_image_of_ball fun _ hg ↦ hf hg a⟩,
+    fun h ↦ ⟨fun a ↦ (h a).some, fun _ hg a ↦ (h a).some_mem <| mem_image_of_mem _ hg⟩⟩
+
+lemma bddBelow_pi {s : Set (∀ a, π a)} :
+    BddBelow s ↔ ∀ a, BddBelow (Function.eval a '' s) :=
+  bddAbove_pi (π := fun a ↦ (π a)ᵒᵈ)
+
+lemma bddAbove_range_pi {F : ι → ∀ a, π a} :
+    BddAbove (range F) ↔ ∀ a, BddAbove (range fun i ↦ F i a) := by
+  simp only [bddAbove_pi, ←range_comp]
+  rfl
+
+lemma bddBelow_range_pi {F : ι → ∀ a, π a} :
+    BddBelow (range F) ↔ ∀ a, BddBelow (range fun i ↦ F i a) :=
+  bddAbove_range_pi (π := fun a ↦ (π a)ᵒᵈ)
+
+theorem isLUB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     IsLUB s f ↔ ∀ a, IsLUB (Function.eval a '' s) (f a) := by
   classical
     refine'
@@ -1576,10 +1586,24 @@ theorem isLUB_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a, 
     · exact fun g hg a => (H a).2 ((Function.monotone_eval a).mem_upperBounds_image hg)
 #align is_lub_pi isLUB_pi
 
-theorem isGLB_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a, π a)} {f : ∀ a, π a} :
+theorem isGLB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     IsGLB s f ↔ ∀ a, IsGLB (Function.eval a '' s) (f a) :=
   @isLUB_pi α (fun a => (π a)ᵒᵈ) _ s f
 #align is_glb_pi isGLB_pi
+
+end Pi
+
+theorem IsGLB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
+    {s : Set α} {x : α} (hx : IsGLB (f '' s) (f x)) : IsGLB s x :=
+  ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
+    hf.1 <| hx.2 <| Monotone.mem_lowerBounds_image (fun _ _ => hf.2) hy⟩
+#align is_glb.of_image IsGLB.of_image
+
+theorem IsLUB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
+    {s : Set α} {x : α} (hx : IsLUB (f '' s) (f x)) : IsLUB s x :=
+  ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
+    hf.1 <| hx.2 <| Monotone.mem_upperBounds_image (fun _ _ => hf.2) hy⟩
+#align is_lub.of_image IsLUB.of_image
 
 theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
@@ -1593,8 +1617,7 @@ theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × �
   · suffices h : (p.1, a) ∈ upperBounds s from (H.2 h).2
     exact fun q hq => ⟨(H.1 hq).1, ha <| mem_image_of_mem _ hq⟩
   · exact fun q hq => ⟨H.1.1 <| mem_image_of_mem _ hq, H.2.1 <| mem_image_of_mem _ hq⟩
-  ·
-    exact fun q hq =>
+  · exact fun q hq =>
       ⟨H.1.2 <| monotone_fst.mem_upperBounds_image hq,
         H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
 #align is_lub_prod isLUB_prod

@@ -507,7 +507,7 @@ theorem subgroup_eq_top_of_swap_mem [DecidableEq α] {H : Subgroup (Perm α)}
   have hσ3 : (σ : Perm α).support = ⊤ :=
     Finset.eq_univ_of_card (σ : Perm α).support (hσ2.orderOf.symm.trans hσ1)
   have hσ4 : Subgroup.closure {↑σ, τ} = ⊤ := closure_prime_cycle_swap h0 hσ2 hσ3 h3
-  rw [eq_top_iff, ← hσ4, Subgroup.closure_le, Set.insert_subset, Set.singleton_subset_iff]
+  rw [eq_top_iff, ← hσ4, Subgroup.closure_le, Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨Subtype.mem σ, h2⟩
 #align equiv.perm.subgroup_eq_top_of_swap_mem Equiv.Perm.subgroup_eq_top_of_swap_mem
 

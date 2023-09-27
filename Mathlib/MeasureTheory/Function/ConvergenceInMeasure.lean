@@ -292,7 +292,7 @@ theorem tendstoInMeasure_of_tendsto_snorm_of_stronglyMeasurable (hp_ne_zero : p 
     (Tendsto.ennrpow_const p.toReal hfg) (Or.inr <| @ENNReal.ofReal_ne_top (1 / ε ^ p.toReal))
   simp only [MulZeroClass.mul_zero,
     ENNReal.zero_rpow_of_pos (ENNReal.toReal_pos hp_ne_zero hp_ne_top)] at hfg
-  rw [ENNReal.tendsto_nhds_zero] at hfg⊢
+  rw [ENNReal.tendsto_nhds_zero] at hfg ⊢
   intro δ hδ
   refine' (hfg δ hδ).mono fun n hn => _
   refine' le_trans _ hn
@@ -328,7 +328,7 @@ theorem tendstoInMeasure_of_tendsto_snorm_top {E} [NormedAddCommGroup E] {f : ι
     TendstoInMeasure μ f l g := by
   intro δ hδ
   simp only [snorm_exponent_top, snormEssSup] at hfg
-  rw [ENNReal.tendsto_nhds_zero] at hfg⊢
+  rw [ENNReal.tendsto_nhds_zero] at hfg ⊢
   intro ε hε
   specialize hfg (ENNReal.ofReal δ / 2)
       (ENNReal.div_pos_iff.2 ⟨(ENNReal.ofReal_pos.2 hδ).ne.symm, ENNReal.two_ne_top⟩)

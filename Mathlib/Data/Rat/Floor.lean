@@ -36,8 +36,8 @@ variable {α : Type _} [LinearOrderedField α] [FloorRing α]
 protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
   rw [Rat.floor]
   split
-  . next h => simp [h]
-  . next => rfl
+  · next h => simp [h]
+  · next => rfl
 
 protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
   | ⟨n, d, h, c⟩ => by

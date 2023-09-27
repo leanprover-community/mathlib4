@@ -104,7 +104,7 @@ protected theorem trans {ρ : Measure δ} {h : δ → γ} (h₁ : IdentDistrib f
 protected theorem comp_of_aemeasurable {u : γ → δ} (h : IdentDistrib f g μ ν)
     (hu : AEMeasurable u (Measure.map f μ)) : IdentDistrib (u ∘ f) (u ∘ g) μ ν :=
   { aemeasurable_fst := hu.comp_aemeasurable h.aemeasurable_fst
-    aemeasurable_snd := by rw [h.map_eq] at hu ; exact hu.comp_aemeasurable h.aemeasurable_snd
+    aemeasurable_snd := by rw [h.map_eq] at hu; exact hu.comp_aemeasurable h.aemeasurable_snd
     map_eq := by
       rw [← AEMeasurable.map_map_of_aemeasurable hu h.aemeasurable_fst, ←
         AEMeasurable.map_map_of_aemeasurable _ h.aemeasurable_snd, h.map_eq]
@@ -181,7 +181,7 @@ theorem lintegral_eq {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (h : IdentD
     lintegral_map' aemeasurable_id h.aemeasurable_snd, h.map_eq]
 #align probability_theory.ident_distrib.lintegral_eq ProbabilityTheory.IdentDistrib.lintegral_eq
 
-theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [CompleteSpace γ] [BorelSpace γ]
+theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
     (h : IdentDistrib f g μ ν) : ∫ x, f x ∂μ = ∫ x, g x ∂ν := by
   by_cases hf : AEStronglyMeasurable f μ
   · have A : AEStronglyMeasurable id (Measure.map f μ) := by

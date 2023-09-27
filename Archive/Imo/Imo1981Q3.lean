@@ -74,7 +74,6 @@ theorem reduction {m n : ℤ} (h1 : ProblemPredicate N m n) (h2 : 1 < n) :
   obtain (rfl : m = n) | (h3 : m < n) := h1.m_le_n.eq_or_lt
   · have h4 : m = 1 := h1.eq_imp_1
     exact absurd h4.symm h2.ne
-  -- Porting note: Original proof used `refine_struct { n_range := h1.m_range .. }`
   exact
     { n_range := h1.m_range
       m_range := by
@@ -181,7 +180,7 @@ variable {M : ℕ} (HM : M = fib K ^ 2 + fib (K + 1) ^ 2)
 theorem k_bound {m n : ℤ} (h1 : ProblemPredicate N m n) : m ^ 2 + n ^ 2 ≤ M := by
   have h2 : 0 ≤ m := h1.m_range.left.le
   have h3 : 0 ≤ n := h1.n_range.left.le
-  rw [← natAbs_of_nonneg h2, ← natAbs_of_nonneg h3] at h1 ; clear h2 h3
+  rw [← natAbs_of_nonneg h2, ← natAbs_of_nonneg h3] at h1; clear h2 h3
   obtain ⟨h4 : m.natAbs ≤ fib K, h5 : n.natAbs ≤ fib (K + 1)⟩ := m_n_bounds HK h1
   have h6 : m ^ 2 ≤ (fib K : ℤ) ^ 2 := Int.natAbs_le_iff_sq_le.mp h4
   have h7 : n ^ 2 ≤ (fib (K + 1) : ℤ) ^ 2 := Int.natAbs_le_iff_sq_le.mp h5

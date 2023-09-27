@@ -285,7 +285,7 @@ a box `I` into subboxes. Let `Js` be one of them. If `J` and `Js` have nonempty 
 theorem not_disjoint_imp_le_of_subset_of_mem_splitMany {I J Js : Box ι} {s : Finset (ι × ℝ)}
     (H : ∀ i, {(i, J.lower i), (i, J.upper i)} ⊆ s) (HJs : Js ∈ splitMany I s)
     (Hn : ¬Disjoint (J : WithBot (Box ι)) Js) : Js ≤ J := by
-  simp only [Finset.insert_subset, Finset.singleton_subset_iff] at H
+  simp only [Finset.insert_subset_iff, Finset.singleton_subset_iff] at H
   rcases Box.not_disjoint_coe_iff_nonempty_inter.mp Hn with ⟨x, hx, hxs⟩
   refine' fun y hy i => ⟨_, _⟩
   · rcases splitMany_le_split I (H i).1 HJs with ⟨Jl, Hmem : Jl ∈ split I i (J.lower i), Hle⟩

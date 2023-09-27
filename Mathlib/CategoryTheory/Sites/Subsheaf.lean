@@ -188,7 +188,7 @@ def Subpresheaf.sheafify : Subpresheaf F where
     rintro U V i s hs
     refine' J.superset_covering _ (J.pullback_stable i.unop hs)
     intro _ _ h
-    dsimp at h⊢
+    dsimp at h ⊢
     rwa [← FunctorToTypes.map_comp_apply]
 #align category_theory.grothendieck_topology.subpresheaf.sheafify CategoryTheory.GrothendieckTopology.Subpresheaf.sheafify
 
@@ -445,7 +445,7 @@ instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (toImageSheaf f) := by
   have E : (toImageSheaf f).val.app (op V) y = (imageSheaf f).val.map i.op ⟨s, hx⟩ :=
     Subtype.ext e'
   have := congr_arg (fun f : F ⟶ G' => (Sheaf.Hom.val f).app _ y) e
-  dsimp at this⊢
+  dsimp at this ⊢
   convert this <;> exact E.symm
 
 /-- The mono factorization given by `image_sheaf` for a morphism. -/

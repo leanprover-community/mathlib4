@@ -184,7 +184,7 @@ theorem sym_singleton (a : α) (n : ℕ) : ({a} : Finset α).sym n = {Sym.replic
 #align finset.sym_singleton Finset.sym_singleton
 
 theorem eq_empty_of_sym_eq_empty (h : s.sym n = ∅) : s = ∅ := by
-  rw [← not_nonempty_iff_eq_empty] at h⊢
+  rw [← not_nonempty_iff_eq_empty] at h ⊢
   exact fun hs ↦ h (hs.sym _)
 #align finset.eq_empty_of_sym_eq_empty Finset.eq_empty_of_sym_eq_empty
 

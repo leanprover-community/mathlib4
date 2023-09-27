@@ -138,7 +138,7 @@ theorem map_zero_apply (x : α) : ϕ 0 x = x := ϕ.map_zero' x
 /-- Iterations of a continuous function from a topological space `α`
     to itself defines a semiflow by `ℕ` on `α`. -/
 def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
-  toFun n x := (g^[n]) x
+  toFun n x := g^[n] x
   cont' := continuous_uncurry_of_discreteTopology_left (Continuous.iterate h)
   map_add' := iterate_add_apply _
   map_zero' _x := rfl

@@ -71,3 +71,10 @@ example {x y : ℕ} : True := by
     guard_hyp h : x ≤ y
     guard_target =ₛ True
     trivial
+
+-- Handle ldecls properly:
+example (x y : ℕ) : True := by
+  let z := 0
+  wlog hxy' : z ≤ y with H
+  · trivial
+  · trivial

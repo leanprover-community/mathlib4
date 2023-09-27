@@ -359,7 +359,8 @@ protected theorem coe_nat_cast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
 #align nnreal.coe_nat_cast NNReal.coe_nat_cast
 
 @[simp, norm_cast]
-protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ≥0) : ℝ) = OfNat.ofNat n :=
+protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n : ℝ≥0) : ℝ) = OfNat.ofNat n :=
   rfl
 
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance
@@ -407,7 +408,7 @@ theorem toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
 
 @[simp]
 theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-  Real.toNNReal (OfNat.ofNat n) = OfNat.ofNat n :=
+    Real.toNNReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   toNNReal_coe_nat n
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
@@ -934,18 +935,18 @@ nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupS
   exact sSup_of_not_bddAbove hs
 #align nnreal.Sup_of_not_bdd_above NNReal.sSup_of_not_bddAbove
 
-theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : (⨆ i, f i) = 0 :=
+theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=
   sSup_of_not_bddAbove hf
 #align nnreal.supr_of_not_bdd_above NNReal.iSup_of_not_bddAbove
 
-theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨆ i, f i) = 0 := ciSup_of_empty f
+theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_of_empty f
 
-theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨅ i, f i) = 0 := by
+theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
   rw [iInf_of_empty', sInf_empty]
 #align nnreal.infi_empty NNReal.iInf_empty
 
 @[simp]
-theorem iInf_const_zero {α : Sort _} : (⨅ _ : α, (0 : ℝ≥0)) = 0 := by
+theorem iInf_const_zero {α : Sort _} : ⨅ _ : α, (0 : ℝ≥0) = 0 := by
   rw [← NNReal.coe_eq, coe_iInf]
   exact Real.ciInf_const_zero
 #align nnreal.infi_const_zero NNReal.iInf_const_zero

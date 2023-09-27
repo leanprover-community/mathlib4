@@ -70,7 +70,7 @@ theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
   ring
 #align complex.circle_transform_deriv_eq Complex.circleTransformDeriv_eq
 
-theorem integral_circleTransform [CompleteSpace E] (f : ℂ → E) :
+theorem integral_circleTransform (f : ℂ → E) :
     (∫ θ : ℝ in (0)..2 * π, circleTransform R z w f θ) =
       (2 * ↑π * I)⁻¹ • ∮ z in C(z, R), (z - w)⁻¹ • f z := by
   simp_rw [circleTransform, circleIntegral, deriv_circleMap, circleMap]

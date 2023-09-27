@@ -204,7 +204,7 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
     · exact Ideal.Quotient.mk_surjective
 #align quot_adjoin_equiv_quot_map quotAdjoinEquivQuotMap
 
--- Porting note: on-line linter fails with `failed to synthesize` instance 
+-- Porting note: on-line linter fails with `failed to synthesize` instance
 -- but #lint does not report any problem
 @[simp, nolint simpNF]
 theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
@@ -238,7 +238,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
   let f : S ⧸ map (algebraMap R S) I ≃+*
     (R ⧸ I)[X] ⧸ span {Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)} := by
     refine (quotAdjoinEquivQuotMap hx ?_).symm.trans
-      (((minpoly.Algebra.adjoin.powerBasis'
+      (((Algebra.adjoin.powerBasis'
         hx').quotientEquivQuotientMinpolyMap I).toRingEquiv.trans (quotEquivOfEq ?_))
     · exact NoZeroSMulDivisors.algebraMap_injective (Algebra.adjoin R {x}) S
     · rw [Algebra.adjoin.powerBasis'_minpoly_gen hx']

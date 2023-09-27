@@ -467,8 +467,8 @@ theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : Is
     (H x hx).ne_top (eq_top_iff.mpr (e.symm.trans_le (sInf_le hx))),
     fun e =>
     or_iff_not_imp_left.mpr fun hx => by
-      rw [Ideal.mem_sInf] at hx e⊢
-      push_neg  at hx
+      rw [Ideal.mem_sInf] at hx e ⊢
+      push_neg at hx
       obtain ⟨I, hI, hI'⟩ := hx
       intro J hJ
       cases' hs'.total hI hJ with h h
@@ -744,7 +744,7 @@ theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
     ∃ (x : R) (_hx : x ≠ (0 : R)), ¬IsUnit x := by
   have : ¬_ := fun h => hf ⟨exists_pair_ne R, mul_comm, h⟩
   simp_rw [isUnit_iff_exists_inv]
-  push_neg  at this⊢
+  push_neg at this ⊢
   obtain ⟨x, hx, not_unit⟩ := this
   exact ⟨x, hx, not_unit⟩
 #align ring.exists_not_is_unit_of_not_is_field Ring.exists_not_isUnit_of_not_isField
@@ -780,8 +780,7 @@ division (semi)ring.
 This result actually holds for all division semirings, but we lack the predicate to state it. -/
 theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) := by
   cases subsingleton_or_nontrivial R
-  ·
-    exact
+  · exact
       ⟨fun h => (not_isField_of_subsingleton _ h).elim, fun h =>
         (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
   rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top, ← not_iff_not]

@@ -51,9 +51,9 @@ instance decidableLELE (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
   -- `Decidable (∀ (r : ℤ), r ∈ range m (n + 1) → P r)`
     apply decidable_of_iff (∀ r ∈ range m (n + 1), P r)
     apply Iff.intro <;> intros h _ _
-    . intro _; apply h
+    · intro _; apply h
       simp_all only [mem_range_iff, and_imp, lt_add_one_iff]
-    . simp_all only [mem_range_iff, and_imp, lt_add_one_iff]
+    · simp_all only [mem_range_iff, and_imp, lt_add_one_iff]
 #align int.decidable_le_le Int.decidableLELE
 
 instance decidableLTLT (P : Int → Prop) [DecidablePred P] (m n : ℤ) :

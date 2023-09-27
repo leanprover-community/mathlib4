@@ -69,6 +69,7 @@ set_option linter.uppercaseLean3 false in
 deriving instance LargeCategory for MonCat
 attribute [to_additive instAddMonCatLargeCategory] instMonCatLargeCategory
 
+-- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
 @[to_additive]
 instance concreteCategory : ConcreteCategory MonCat :=
   BundledHom.concreteCategory _
@@ -189,6 +190,7 @@ instance : BundledHom.ParentProjection @CommMonoid.toMonoid := ⟨⟩
 deriving instance LargeCategory for CommMonCat
 attribute [to_additive instAddCommMonCatLargeCategory] instCommMonCatLargeCategory
 
+-- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
 @[to_additive]
 instance concreteCategory : ConcreteCategory CommMonCat := by
   dsimp only [CommMonCat]

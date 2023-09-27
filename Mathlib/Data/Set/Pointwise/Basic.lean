@@ -226,7 +226,7 @@ theorem iUnion_inv (s : ι → Set α) : (⋃ i, s i)⁻¹ = ⋃ i, (s i)⁻¹ :
 #align set.Union_neg Set.iUnion_neg
 
 @[to_additive (attr := simp)]
-theorem compl_inv : (sᶜ)⁻¹ = s⁻¹ᶜ :=
+theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
   preimage_compl
 #align set.compl_inv Set.compl_inv
 #align set.compl_neg Set.compl_neg
@@ -474,13 +474,13 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
 #align set.union_add_inter_subset_union Set.union_add_inter_subset_union
 
 @[to_additive]
-theorem iUnion_mul_left_image : (⋃ a ∈ s, (· * ·) a '' t) = s * t :=
+theorem iUnion_mul_left_image : ⋃ a ∈ s, (· * ·) a '' t = s * t :=
   iUnion_image_left _
 #align set.Union_mul_left_image Set.iUnion_mul_left_image
 #align set.Union_add_left_image Set.iUnion_add_left_image
 
 @[to_additive]
-theorem iUnion_mul_right_image : (⋃ a ∈ t, (· * a) '' s) = s * t :=
+theorem iUnion_mul_right_image : ⋃ a ∈ t, (· * a) '' s = s * t :=
   iUnion_image_right _
 #align set.Union_mul_right_image Set.iUnion_mul_right_image
 #align set.Union_add_right_image Set.iUnion_add_right_image
@@ -740,13 +740,13 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
 #align set.union_sub_inter_subset_union Set.union_sub_inter_subset_union
 
 @[to_additive]
-theorem iUnion_div_left_image : (⋃ a ∈ s, (· / ·) a '' t) = s / t :=
+theorem iUnion_div_left_image : ⋃ a ∈ s, (· / ·) a '' t = s / t :=
   iUnion_image_left _
 #align set.Union_div_left_image Set.iUnion_div_left_image
 #align set.Union_sub_left_image Set.iUnion_sub_left_image
 
 @[to_additive]
-theorem iUnion_div_right_image : (⋃ a ∈ t, (· / a) '' s) = s / t :=
+theorem iUnion_div_right_image : ⋃ a ∈ t, (· / a) '' s = s / t :=
   iUnion_image_right _
 #align set.Union_div_right_image Set.iUnion_div_right_image
 #align set.Union_sub_right_image Set.iUnion_sub_right_image

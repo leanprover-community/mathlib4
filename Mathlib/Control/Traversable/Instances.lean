@@ -14,9 +14,9 @@ import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Functor
 
 /-!
-# IsLawfulTraversable instances
+# LawfulTraversable instances
 
-This file provides instances of `IsLawfulTraversable` for types from the core library: `Option`,
+This file provides instances of `LawfulTraversable` for types from the core library: `Option`,
 `List` and `Sum`.
 -/
 
@@ -58,7 +58,7 @@ theorem Option.naturality {α β} (f : α → F β) (x : Option α) :
 
 end Option
 
-instance : IsLawfulTraversable Option :=
+instance : LawfulTraversable Option :=
   { show LawfulMonad Option from inferInstance with
     id_traverse := Option.id_traverse
     comp_traverse := Option.comp_traverse
@@ -100,7 +100,7 @@ protected theorem naturality {α β} (f : α → F β) (x : List α) :
     ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure]
 #align list.naturality List.naturality
 
-instance : IsLawfulTraversable.{u} List :=
+instance : LawfulTraversable.{u} List :=
   { show LawfulMonad List from inferInstance with
     id_traverse := List.id_traverse
     comp_traverse := List.comp_traverse
@@ -195,7 +195,7 @@ protected theorem naturality {α β} (f : α → F β) (x : σ ⊕ α) :
 
 end Traverse
 
-instance {σ : Type u} : IsLawfulTraversable.{u} (Sum σ) :=
+instance {σ : Type u} : LawfulTraversable.{u} (Sum σ) :=
   { show LawfulMonad (Sum σ) from inferInstance with
     id_traverse := Sum.id_traverse
     comp_traverse := Sum.comp_traverse

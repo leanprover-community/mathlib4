@@ -55,7 +55,7 @@ theorem withDensity_rnDeriv_eq (μ ν : Measure α) [HaveLebesgueDecomposition �
       rw [Measure.coe_zero, Pi.zero_apply, ← this]
       exact measure_mono (Set.subset_univ _)
     rw [← measure_add_measure_compl hE₁, hE₂, zero_add]
-    have : (singularPart μ ν + ν.withDensity (rnDeriv μ ν)) (Eᶜ) = μ (Eᶜ) := by rw [← hadd]
+    have : (singularPart μ ν + ν.withDensity (rnDeriv μ ν)) Eᶜ = μ Eᶜ := by rw [← hadd]
     rw [Measure.coe_add, Pi.add_apply, h hE₃] at this
     exact (add_eq_zero_iff.1 this).1
   rw [this, zero_add] at hadd

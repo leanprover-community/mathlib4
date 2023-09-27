@@ -142,11 +142,11 @@ def permsOfFinset (s : Finset α) : Finset (Perm α) :=
 
 theorem mem_perms_of_finset_iff :
     ∀ {s : Finset α} {f : Perm α}, f ∈ permsOfFinset s ↔ ∀ {x}, f x ≠ x → x ∈ s := by
-  rintro ⟨⟨l⟩, hs⟩ f ; exact mem_permsOfList_iff
+  rintro ⟨⟨l⟩, hs⟩ f; exact mem_permsOfList_iff
 #align mem_perms_of_finset_iff mem_perms_of_finset_iff
 
 theorem card_perms_of_finset : ∀ s : Finset α, (permsOfFinset s).card = s.card ! := by
-  rintro ⟨⟨l⟩, hs⟩ ; exact length_permsOfList l
+  rintro ⟨⟨l⟩, hs⟩; exact length_permsOfList l
 #align card_perms_of_finset card_perms_of_finset
 
 /-- The collection of permutations of a fintype is a fintype. -/

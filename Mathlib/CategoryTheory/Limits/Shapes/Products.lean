@@ -140,10 +140,10 @@ abbrev sigmaObj (f : β → C) [HasCoproduct f] :=
 #align category_theory.limits.sigma_obj CategoryTheory.Limits.sigmaObj
 
 /-- notation for categorical products -/
-notation "∏ " f:20 => piObj f
+notation "∏ " f:60 => piObj f
 
 /-- notation for categorical coproducts -/
-notation "∐ " f:20 => sigmaObj f
+notation "∐ " f:60 => sigmaObj f
 
 /-- The `b`-th projection from the pi object over `f` has the form `∏ f ⟶ f b`. -/
 abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ f ⟶ f b :=
@@ -258,7 +258,7 @@ theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (
 /-- The comparison morphism for the coproduct of `f`. This is an iso iff `G` preserves the coproduct
 of `f`, see `PreservesCoproduct.ofIsoComparison`. -/
 def sigmaComparison [HasCoproduct f] [HasCoproduct fun b => G.obj (f b)] :
-    (∐ fun b => G.obj (f b)) ⟶ G.obj (∐ f) :=
+    ∐ (fun b => G.obj (f b)) ⟶ G.obj (∐ f) :=
   Sigma.desc fun b => G.map (Sigma.ι f b)
 #align category_theory.limits.sigma_comparison CategoryTheory.Limits.sigmaComparison
 
@@ -345,7 +345,7 @@ instance (priority := 100) hasProduct_unique : HasProduct f :=
   HasLimit.mk (limitConeOfUnique f)
 #align category_theory.limits.has_product_unique CategoryTheory.Limits.hasProduct_unique
 
-/-- A product over a index type with exactly one term is just the object over that term. -/
+/-- A product over an index type with exactly one term is just the object over that term. -/
 @[simps!]
 def productUniqueIso : ∏ f ≅ f default :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitConeOfUnique f).isLimit

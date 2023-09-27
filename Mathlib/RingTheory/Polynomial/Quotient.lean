@@ -66,6 +66,14 @@ noncomputable def quotientSpanCXSubCAlgEquiv (x y : R) :
           simp only [Ideal.map_span, Set.image_singleton]; congr 2; exact eval_C
 #align polynomial.quotient_span_C_X_sub_C_alg_equiv Polynomial.quotientSpanCXSubCAlgEquiv
 
+set_option maxHeartbeats 250000 in
+/-- For a commutative ring $R$, evaluating a polynomial at elements $y(X) \in R[X]$ and $x \in R$
+induces an isomorphism of $R$-algebras $R[X, Y] / \langle X - x, Y - y(X) \rangle \cong R$. -/
+noncomputable def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
+    @AlgEquiv R (R[X][X] ⧸ (Ideal.span {C (X - C x), X - C y} : Ideal <| R[X][X])) R _ _ _
+      (Ideal.Quotient.algebra R) _ :=
+((quotientSpanCXSubCAlgEquiv (X - C x) y).restrictScalars R).trans <| quotientSpanXSubCAlgEquiv x
+
 end Polynomial
 
 namespace Ideal
@@ -129,7 +137,7 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
     · -- Porting note: was `simp_intro p q hp hq`
       intros p q hp hq
       simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, map_add, Quotient.lift_mk,
-        coe_eval₂RingHom] at hp hq⊢
+        coe_eval₂RingHom] at hp hq ⊢
       rw [hp, hq]
     · intro n a
       simp only [← smul_X_eq_monomial, ← C_mul' a (X ^ n), Quotient.lift_mk,

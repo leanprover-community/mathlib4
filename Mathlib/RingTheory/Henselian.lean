@@ -74,7 +74,7 @@ theorem isLocalRingHom_of_le_jacobson_bot {R : Type _} [CommRing R] (I : Ideal R
     obtain ⟨b, hb⟩ := h
     obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective b
     use Ideal.Quotient.mk _ b
-    rw [← (Ideal.Quotient.mk _).map_one, ← (Ideal.Quotient.mk _).map_mul, Ideal.Quotient.eq] at hb⊢
+    rw [← (Ideal.Quotient.mk _).map_one, ← (Ideal.Quotient.mk _).map_mul, Ideal.Quotient.eq] at hb ⊢
     exact h hb
   obtain ⟨⟨x, y, h1, h2⟩, rfl : x = _⟩ := this
   obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y
@@ -201,7 +201,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type _) [CommRing R
         refine' ih.add _
         rw [SModEq.zero, Ideal.neg_mem_iff]
         refine' I.mul_mem_right _ _
-        rw [← SModEq.zero] at h₁⊢
+        rw [← SModEq.zero] at h₁ ⊢
         exact (ih.eval f).trans h₁
       have hf'c : ∀ n, IsUnit (f'.eval (c n)) := by
         intro n
@@ -255,7 +255,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type _) [CommRing R
         suffices ∀ n, f.eval a ≡ 0 [SMOD (I ^ n • ⊤ : Ideal R)] by exact IsHausdorff.haus' _ this
         intro n
         specialize ha n
-        rw [← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one] at ha⊢
+        rw [← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one] at ha ⊢
         refine' (ha.symm.eval f).trans _
         rw [SModEq.zero]
         exact Ideal.pow_le_pow le_self_add (hfcI _)

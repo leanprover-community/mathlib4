@@ -133,7 +133,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
   rw [coe_insert] at hs ⊢
   rw [linearIndependent_insert (mt mem_coe.1 has)] at hs
   rw [linearIndependent_insert' (mt mem_coe.1 has)]; refine' ⟨ih hs.1, fun ha => _⟩
-  rw [Finsupp.mem_span_image_iff_total] at ha ; rcases ha with ⟨l, hl, hla⟩
+  rw [Finsupp.mem_span_image_iff_total] at ha; rcases ha with ⟨l, hl, hla⟩
   rw [Finsupp.total_apply_of_mem_supported F hl] at hla
   suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
     replace hla := (sum_apply _ _ fun i => l i • toFun G F i).symm.trans (congr_fun hla 1)

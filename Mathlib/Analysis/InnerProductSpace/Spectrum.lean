@@ -33,7 +33,7 @@ Letting `T` be a self-adjoint operator on a finite-dimensional inner product spa
 * The definition `LinearMap.IsSymmetric.eigenvectorBasis` provides an orthonormal basis for `E`
   consisting of eigenvectors of `T`, with `LinearMap.IsSymmetric.eigenvalues` giving the
   corresponding list of eigenvalues, as real numbers.  The definition
-  `linear_map.is_symmetric.eigenvector_basis` gives the associated linear isometry equivalence
+  `LinearMap.IsSymmetric.eigenvectorBasis` gives the associated linear isometry equivalence
   from `E` to Euclidean space, and the theorem
   `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply` states that, when `T` is
   transferred via this equivalence to an operator on Euclidean space, it acts diagonally.

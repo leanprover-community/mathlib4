@@ -258,7 +258,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       norm_cast
   specialize this (of p) hps
   rw [lift_of] at this
-  split_ifs  at this with h
+  split_ifs at this with h
   · exact h
   exfalso
   apply Ne.symm Int.zero_ne_one

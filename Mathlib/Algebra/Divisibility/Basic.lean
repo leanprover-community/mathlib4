@@ -59,6 +59,11 @@ theorem exists_eq_mul_right_of_dvd (h : a ∣ b) : ∃ c, b = a * c :=
   h
 #align exists_eq_mul_right_of_dvd exists_eq_mul_right_of_dvd
 
+theorem dvd_def : a ∣ b ↔ ∃ c, b = a * c :=
+  Iff.rfl
+
+alias dvd_def ← dvd_iff_exists_eq_mul_right
+
 theorem Dvd.elim {P : Prop} {a b : α} (H₁ : a ∣ b) (H₂ : ∀ c, b = a * c → P) : P :=
   Exists.elim H₁ H₂
 #align dvd.elim Dvd.elim

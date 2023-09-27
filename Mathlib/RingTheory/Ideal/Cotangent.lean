@@ -42,7 +42,7 @@ def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
 
 instance : AddCommGroup I.Cotangent := by delta Cotangent; infer_instance
 
-instance CotangentModule : Module (R ⧸ I) I.Cotangent := by delta Cotangent; infer_instance
+instance cotangentModule : Module (R ⧸ I) I.Cotangent := by delta Cotangent; infer_instance
 
 instance : Inhabited I.Cotangent := ⟨0⟩
 
@@ -50,13 +50,14 @@ instance Cotangent.moduleOfTower : Module S I.Cotangent :=
   Submodule.Quotient.module' _
 #align ideal.cotangent.module_of_tower Ideal.Cotangent.moduleOfTower
 
-instance : IsScalarTower S S' I.Cotangent := by
+instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent := by
   delta Cotangent
   constructor
   intro s s' x
   rw [← @IsScalarTower.algebraMap_smul S' R, ← @IsScalarTower.algebraMap_smul S' R, ← smul_assoc, ←
     IsScalarTower.toAlgHom_apply S S' R, map_smul]
   rfl
+#align ideal.cotangent.is_scalar_tower Ideal.Cotangent.isScalarTower
 
 instance [IsNoetherian R I] : IsNoetherian R I.Cotangent := by delta Cotangent; infer_instance
 
@@ -148,8 +149,7 @@ noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal :
   refine
   { LinearMap.codRestrict (I.cotangentIdeal.restrictScalars R) I.cotangentToQuotientSquare
       fun x => by { rw [← to_quotient_square_range]; exact LinearMap.mem_range_self _ _ },
-    Equiv.ofBijective _ ⟨?_, ?_⟩ with
-  }
+    Equiv.ofBijective _ ⟨?_, ?_⟩ with }
   · rintro x y e
     replace e := congr_arg Subtype.val e
     obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
@@ -181,18 +181,18 @@ variable {A B : Type _} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B := by
   refine { Ideal.Quotient.lift (RingHom.ker f.toRingHom ^ 2) f.toRingHom ?_ with commutes' := ?_ }
   · intro a ha; exact Ideal.pow_le_self two_ne_zero ha
-  · intro r;
+  · intro r
     rw [IsScalarTower.algebraMap_apply R A, RingHom.toFun_eq_coe, Ideal.Quotient.algebraMap_eq,
       Ideal.Quotient.lift_mk]
     exact f.map_algebraMap r
 #align alg_hom.ker_square_lift AlgHom.kerSquareLift
 
-theorem _root_.AlgHom.ker_ker_sqare_lift (f : A →ₐ[R] B) :
+theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
     RingHom.ker f.kerSquareLift.toRingHom = f.toRingHom.ker.cotangentIdeal := by
   apply le_antisymm
   · intro x hx; obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x; exact ⟨x, hx, rfl⟩
   · rintro _ ⟨x, hx, rfl⟩; exact hx
-#align alg_hom.ker_ker_sqare_lift AlgHom.ker_ker_sqare_lift
+#align alg_hom.ker_ker_sqare_lift AlgHom.ker_kerSquareLift
 
 /-- The quotient ring of `I ⧸ I ^ 2` is `R ⧸ I`. -/
 def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
@@ -212,7 +212,7 @@ variable (R : Type _) [CommRing R] [LocalRing R]
 def CotangentSpace : Type _ := (maximalIdeal R).Cotangent
 #align local_ring.cotangent_space LocalRing.CotangentSpace
 
-instance : Module (ResidueField R) (CotangentSpace R) := Ideal.CotangentModule _
+instance : Module (ResidueField R) (CotangentSpace R) := Ideal.cotangentModule _
 
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
   Module.IsTorsionBySet.isScalarTower _

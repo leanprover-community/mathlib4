@@ -210,8 +210,8 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
     (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
   have A : ∀ n : ℕ, P n := fun n => Nat.recOn n h0 hsuc
   cases a
-  . exact htop A
-  . exact A _
+  · exact htop A
+  · exact A _
 #align enat.nat_induction ENat.nat_induction
 
 end ENat

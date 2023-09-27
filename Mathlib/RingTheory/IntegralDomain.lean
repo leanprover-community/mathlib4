@@ -75,7 +75,7 @@ nonrec
 theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type _} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Unique Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
     (h : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → IsCoprime (f i) (f j))
-    (hprod : (∏ i in s, f i) = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
+    (hprod : ∏ i in s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
   classical
     intro i hi
     rw [← insert_erase hi, prod_insert (not_mem_erase i s)] at hprod
@@ -160,8 +160,8 @@ variable (S : Subgroup Rˣ) [Finite S]
 instance subgroup_units_cyclic : IsCyclic S := by
   -- porting note: the original proof used a `coe`, but I was not able to get it to work.
   apply isCyclic_of_subgroup_isDomain (R := R) (G := S) _ _
-  . exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
-  . exact Units.ext.comp Subtype.val_injective
+  · exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
+  · exact Units.ext.comp Subtype.val_injective
 #align subgroup_units_cyclic subgroup_units_cyclic
 
 end
@@ -218,7 +218,7 @@ theorem card_fiber_eq_of_mem_range {H : Type _} [Group H] [DecidableEq H] (f : G
 
 /-- In an integral domain, a sum indexed by a nontrivial homomorphism from a finite group is zero.
 -/
-theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : (∑ g : G, f g) = 0 := by
+theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0 := by
   classical
     obtain ⟨x, hx⟩ :
       ∃ x : MonoidHom.range f.toHomUnits,
@@ -236,7 +236,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : (∑ g : G, f g) =
     exact fun h => hx1 (Subtype.eq (Units.ext (sub_eq_zero.1 h)))
     let c := (univ.filter fun g => f.toHomUnits g = 1).card
     calc
-      (∑ g : G, f g) = ∑ g : G, (f.toHomUnits g : R) := rfl
+      ∑ g : G, f g = ∑ g : G, (f.toHomUnits g : R) := rfl
       _ = ∑ u : Rˣ in univ.image f.toHomUnits,
             (univ.filter fun g => f.toHomUnits g = u).card • (u : R) :=
         (sum_comp ((↑) : Rˣ → R) f.toHomUnits)
@@ -282,7 +282,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : (∑ g : G, f g) =
 unless the homomorphism is trivial, in which case the sum is equal to the cardinality of the group.
 -/
 theorem sum_hom_units (f : G →* R) [Decidable (f = 1)] :
-    (∑ g : G, f g) = if f = 1 then Fintype.card G else 0 := by
+    ∑ g : G, f g = if f = 1 then Fintype.card G else 0 := by
   split_ifs with h
   · simp [h, card_univ]
   · rw [cast_zero] -- porting note: added

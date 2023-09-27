@@ -225,7 +225,7 @@ instance : SplitEpiCategory NonemptyFinLinOrdCat.{u} :=
     · intro a b
       contrapose
       intro h
-      simp only [not_le] at h⊢
+      simp only [not_le] at h ⊢
       suffices b ≤ a by
         apply lt_of_le_of_ne this
         rintro rfl

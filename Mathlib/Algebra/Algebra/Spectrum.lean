@@ -70,7 +70,7 @@ algebra `A`.
 
 The spectrum is simply the complement of the resolvent set.  -/
 def spectrum (a : A) : Set R :=
-  resolventSet R aᶜ
+  (resolventSet R a)ᶜ
 #align spectrum spectrum
 
 variable {R}

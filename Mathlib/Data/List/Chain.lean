@@ -131,7 +131,7 @@ theorem chain_iff_pairwise [IsTrans α R] {a : α} {l : List α} : Chain R a l �
 
 protected theorem Chain.sublist [IsTrans α R] (hl : l₂.Chain R a) (h : l₁ <+ l₂) :
     l₁.Chain R a := by
-  rw [chain_iff_pairwise] at hl⊢
+  rw [chain_iff_pairwise] at hl ⊢
   exact hl.sublist (h.cons_cons a)
 #align list.chain.sublist List.Chain.sublist
 
@@ -155,7 +155,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
       intro i w
       cases' i with i
       · apply h0
-      . exact h i (lt_pred_iff.2 <| by simpa using w)
+      · exact h i (lt_pred_iff.2 <| by simpa using w)
     rintro ⟨h0, h⟩; constructor
     · apply h0
       simp
@@ -250,7 +250,7 @@ theorem chain'_iff_pairwise [IsTrans α R] : ∀ {l : List α}, Chain' R l ↔ P
 #align list.chain'_iff_pairwise List.chain'_iff_pairwise
 
 protected theorem Chain'.sublist [IsTrans α R] (hl : l₂.Chain' R) (h : l₁ <+ l₂) : l₁.Chain' R := by
-  rw [chain'_iff_pairwise] at hl⊢
+  rw [chain'_iff_pairwise] at hl ⊢
   exact hl.sublist h
 #align list.chain'.sublist List.Chain'.sublist
 

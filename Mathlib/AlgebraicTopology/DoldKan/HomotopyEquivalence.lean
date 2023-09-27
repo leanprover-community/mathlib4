@@ -71,7 +71,7 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
   zero i j hij := Homotopy.zero _ i j hij
   comm n := by
     rcases n with _|n
-    . simpa only [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex,
+    · simpa only [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex,
         PInfty_f, Nat.zero_eq, P_f_0_eq, zero_add] using (homotopyPToId X 2).comm 0
     · -- Porting note: this branch had been:
       -- simpa only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,

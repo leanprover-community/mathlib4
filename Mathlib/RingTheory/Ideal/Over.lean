@@ -69,8 +69,8 @@ theorem exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem {r : S}
     rw [eval₂_mul, eval₂_X] at hp
     obtain ⟨i, hi, mem⟩ := ih p_nonzero (r_non_zero_divisor hp)
     refine' ⟨i + 1, _, _⟩
-    . simp [hi, mem]
-    . simpa [hi] using mem
+    · simp [hi, mem]
+    · simpa [hi] using mem
 #align ideal.exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem Ideal.exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem
 
 /-- Let `P` be an ideal in `R[x]`.  The map
@@ -99,7 +99,7 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
 R[x] / P → (R / (P ∩ R))[x] / (P / (P ∩ R))
 ```
 commutes.  It is used, for instance, in the proof of `quotient_mk_comp_C_is_integral_of_jacobson`,
-in the file `ring_theory/jacobson`.
+in the file `RingTheory.Jacobson`.
 -/
 theorem quotient_mk_maps_eq (P : Ideal R[X]) :
     ((Quotient.mk (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)).comp C).comp
@@ -299,10 +299,10 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal (hRS : Algebra.IsIntegral R S
       algebraMap_quotient_injective (by rwa [← Quotient.maximal_ideal_iff_isField_quotient])
 #align ideal.is_maximal_comap_of_is_integral_of_is_maximal Ideal.isMaximal_comap_of_isIntegral_of_isMaximal
 
-theorem isMaximal_comap_of_isIntegral_of_is_maximal' {R S : Type _} [CommRing R] [CommRing S]
+theorem isMaximal_comap_of_isIntegral_of_isMaximal' {R S : Type _} [CommRing R] [CommRing S]
     (f : R →+* S) (hf : f.IsIntegral) (I : Ideal S) (hI : I.IsMaximal) : IsMaximal (I.comap f) :=
   @isMaximal_comap_of_isIntegral_of_isMaximal R _ S _ f.toAlgebra hf I hI
-#align ideal.is_maximal_comap_of_is_integral_of_is_maximal' Ideal.isMaximal_comap_of_isIntegral_of_is_maximal'
+#align ideal.is_maximal_comap_of_is_integral_of_is_maximal' Ideal.isMaximal_comap_of_isIntegral_of_isMaximal'
 
 section IsIntegralClosure
 

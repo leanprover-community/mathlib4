@@ -130,6 +130,8 @@ end CategoryTheory
 
 section
 
+open CategoryTheory
+
 variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
 /-- A monotone function between preorders induces a functor between the associated categories.

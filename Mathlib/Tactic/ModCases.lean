@@ -88,7 +88,7 @@ elab_rules : tactic
     let e : Q(ℤ) ← Tactic.elabTermEnsuringType e q(ℤ)
     let h := h.getD (← `(binderIdent| _))
     have lit : Q(ℕ) := mkRawNatLit n
-    let p₁ : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
+    let p₁ : Nat.ble 1 $lit =Q true := ⟨⟩
     let (p₂, gs) ← proveOnModCases lit e (mkRawNatLit 0) p
     let gs ← gs.mapM fun g => do
       let (fvar, g) ← match h with

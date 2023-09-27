@@ -177,7 +177,7 @@ theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
   rintro a ha x ⟨y, hy, rfl⟩
   obtain rfl | h := eq_or_ne a 0
   · simp_rw [zero_smul, h0]
-  rw [mem_balancedCoreAux_iff] at hy⊢
+  rw [mem_balancedCoreAux_iff] at hy ⊢
   intro r hr
   have h'' : 1 ≤ ‖a⁻¹ • r‖ := by
     rw [norm_smul, norm_inv]

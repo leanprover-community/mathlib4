@@ -49,7 +49,7 @@ def ProblemPredicate (n : ℕ) : Prop :=
   7 ∣ 2 ^ n - 1
 #align imo1964_q1.problem_predicate Imo1964Q1.ProblemPredicate
 
-theorem imo1964_q1a (n : ℕ) (hn : 0 < n) : ProblemPredicate n ↔ 3 ∣ n := by
+theorem imo1964_q1a (n : ℕ) (_ : 0 < n) : ProblemPredicate n ↔ 3 ∣ n := by
   let t := n % 3
   have : t < 3 := Nat.mod_lt _ (by decide)
   calc 7 ∣ 2 ^ n - 1 ↔ 2 ^ n ≡ 1 [MOD 7] := by

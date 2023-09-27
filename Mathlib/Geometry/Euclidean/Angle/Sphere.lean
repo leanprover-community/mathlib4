@@ -113,7 +113,7 @@ theorem Cospherical.two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
     (h : Cospherical ({p₁, p₂, p₃, p₄} : Set P)) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₄ : p₂ ≠ p₄)
     (hp₃p₁ : p₃ ≠ p₁) (hp₃p₄ : p₃ ≠ p₄) : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄ := by
   obtain ⟨s, hs⟩ := cospherical_iff_exists_sphere.1 h
-  simp_rw [Set.insert_subset, Set.singleton_subset_iff, Sphere.mem_coe] at hs
+  simp_rw [Set.insert_subset_iff, Set.singleton_subset_iff, Sphere.mem_coe] at hs
   exact Sphere.two_zsmul_oangle_eq hs.1 hs.2.1 hs.2.2.1 hs.2.2.2 hp₂p₁ hp₂p₄ hp₃p₁ hp₃p₄
 #align euclidean_geometry.cospherical.two_zsmul_oangle_eq EuclideanGeometry.Cospherical.two_zsmul_oangle_eq
 
@@ -374,7 +374,7 @@ theorem cospherical_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄
   let t₂ : Affine.Triangle ℝ P := ⟨![p₁, p₃, p₄], affineIndependent_iff_not_collinear_set.2 hn'⟩
   rw [cospherical_iff_exists_sphere]
   refine' ⟨t₂.circumsphere, _⟩
-  simp_rw [Set.insert_subset, Set.singleton_subset_iff]
+  simp_rw [Set.insert_subset_iff, Set.singleton_subset_iff]
   refine' ⟨t₂.mem_circumsphere 0, _, t₂.mem_circumsphere 1, t₂.mem_circumsphere 2⟩
   rw [Affine.Triangle.circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq
     (by decide : (0 : Fin 3) ≠ 1) (by decide : (0 : Fin 3) ≠ 2) (by decide)
@@ -404,7 +404,7 @@ theorem cospherical_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P
       let t : Affine.Triangle ℝ P := ⟨![p₂, p₃, p₄], affineIndependent_iff_not_collinear_set.2 hl⟩
       rw [cospherical_iff_exists_sphere]
       refine' ⟨t.circumsphere, _⟩
-      simp_rw [Set.insert_subset, Set.singleton_subset_iff]
+      simp_rw [Set.insert_subset_iff, Set.singleton_subset_iff]
       exact ⟨t.mem_circumsphere 0, t.mem_circumsphere 1, t.mem_circumsphere 2⟩
     have hc' : Collinear ℝ ({p₁, p₃, p₄} : Set P) := by
       rwa [← collinear_iff_of_two_zsmul_oangle_eq h]

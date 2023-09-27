@@ -124,7 +124,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type _} [Comm
     simp_rw [Finset.mem_erase, hf.mem_toFinset]
     rintro M hM M' ⟨hne, hM'⟩
     exact Ideal.IsMaximal.coprime_of_ne hM hM' hne.symm
-  have nle : ∀ M ∈ s, ¬(⨅ M' ∈ s.erase M, M') ≤ M := fun M hM =>
+  have nle : ∀ M ∈ s, ¬⨅ M' ∈ s.erase M, M' ≤ M := fun M hM =>
     left_lt_sup.1
       ((hf.mem_toFinset.1 hM).ne_top.lt_top.trans_eq (Ideal.sup_iInf_eq_top <| coprime M hM).symm)
   have : ∀ M ∈ s, ∃ a ∈ I, ∃ b ∈ I', a * b ∉ IsLocalization.coeSubmodule A M := by
