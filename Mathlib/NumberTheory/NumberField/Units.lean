@@ -522,7 +522,7 @@ def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (tor
 instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   (instModuleFree_unitLattice K).of_equiv' (unitLatticeEquiv K)
 
-instance :  Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
+instance : Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Module.Finite.equiv (unitLatticeEquiv K)
 
 theorem rank_modTorsion :
