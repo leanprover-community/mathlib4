@@ -194,21 +194,3 @@ theorem prod_zero_iff_exists_zero [NoZeroDivisors M₁] [Nontrivial M₁] {s : M
 #align prod_zero_iff_exists_zero prod_zero_iff_exists_zero
 
 end nonZeroDivisors
-
-section nonZeroSMulDivisors
-
-open nonZeroSMulDivisors nonZeroDivisors
-
-variable (R M : Type*) [MonoidWithZero R] [Zero M] [MulAction R M]
-
-lemma mem_nonZeroSMulDivisors_iff (x : R) : x ∈ R⁰[M] ↔ ∀ (m : M), x • m = 0 → m = 0 := Iff.rfl
-
-@[simp, nolint simpNF]
-lemma Submonoid.unop_mulOpposite_nonZeroSmulDivisors_over_itself_eq_nonZeroDivisors :
-    (Rᵐᵒᵖ ⁰[R]).unop = R⁰ := rfl
-
-@[simp, nolint simpNF]
-lemma Submonoid.mulOpposite_nonZeroSmulDivisors_over_itself_eq_op_nonZeroDivisors :
-    Rᵐᵒᵖ ⁰[R] = R⁰.op := rfl
-
-end nonZeroSMulDivisors
