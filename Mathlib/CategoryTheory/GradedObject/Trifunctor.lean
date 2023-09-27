@@ -235,8 +235,6 @@ variable (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ :
 
 variable [H : HasGoodBifunctor₁₂BifunctorObj F₁₂ G p q r hr X₁ X₂ X₃]
 
-attribute [local ext] mapObj_ext
-
 noncomputable def mapBifunctor₁₂BifunctorMapObjIso₁ :
     have := H.hasMap₂
     have := H.hasMap₃
@@ -496,8 +494,8 @@ lemma mapBifunctorBifunctor₂₃MapObj_ext {j : J} {A : C₄}
 variable (X₁ X₂ X₃)
 
 noncomputable def cofanMapBifunctorBifunctor₂₃MapObj (j : J) :
-    ((((mapTrifunctorFunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).MapObjCofan r j :=
-  MapObjCofan.mk _ _ _ (mapBifunctorMapObj F q X₁ (mapBifunctorMapObj G₂₃ p X₂ X₃) j)
+    ((((mapTrifunctorFunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).CofanMapObjFun r j :=
+  CofanMapObjFun.mk _ _ _ (mapBifunctorMapObj F q X₁ (mapBifunctorMapObj G₂₃ p X₂ X₃) j)
     (fun ⟨i₁, i₂, i₃⟩ hi =>
       ιMapBifunctorBifunctor₂₃MapObj F G₂₃ p q X₁ X₂ X₃ i₁ i₂ i₃ j (by rw [←hi, hr]))
 

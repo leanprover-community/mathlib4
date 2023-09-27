@@ -34,22 +34,22 @@ noncomputable abbrev tensorObj (X₁ X₂ : GradedObject I C) [HasTensor X₁ X�
   mapBifunctorMapObj (curryObj (MonoidalCategory.tensor C)) (fun ⟨i, j⟩ => i + j) X₁ X₂
 
 abbrev TensorCofan (X₁ X₂ : GradedObject I C) (j : I) :=
-  (((mapBifunctorFunctor (curryObj (MonoidalCategory.tensor C)) I I).obj X₁).obj X₂).MapObjCofan (fun ⟨i, j⟩ => i + j) j
+  (((mapBifunctorFunctor (curryObj (MonoidalCategory.tensor C)) I I).obj X₁).obj X₂).CofanMapObjFun (fun ⟨i, j⟩ => i + j) j
 
 @[simps! pt]
 def TensorCofan.mk (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
     (ι : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = j), X₁ i₁ ⊗ X₂ i₂ ⟶ pt) : TensorCofan X₁ X₂ j :=
-  MapObjCofan.mk _ _ _ pt (fun ⟨i₁, i₂⟩ h => ι i₁ i₂ h)
+  CofanMapObjFun.mk _ _ _ pt (fun ⟨i₁, i₂⟩ h => ι i₁ i₂ h)
 
 @[simp]
 lemma TensorCofan.mk_ι' (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
     (ι : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = j), X₁ i₁ ⊗ X₂ i₂ ⟶ pt) (i₁ i₂ : I) (h : i₁ + i₂ = j) :
-    (TensorCofan.mk X₁ X₂ j pt ι).ι' ⟨i₁, i₂⟩ h = ι i₁ i₂ h := rfl
+    (TensorCofan.mk X₁ X₂ j pt ι).proj ⟨⟨i₁, i₂⟩, h⟩ = ι i₁ i₂ h := rfl
 
 lemma TensorCofan.hasTensor (X₁ X₂ : GradedObject I C)
     (c : ∀ i, TensorCofan X₁ X₂ i) (hc : ∀ i, IsColimit (c i)) :
     HasTensor X₁ X₂ :=
-  MapObjCofan.hasMap _ _ c hc
+  CofanMapObjFun.hasMap _ _ c hc
 
 section
 
@@ -308,7 +308,7 @@ noncomputable def unitTensorCofan (i : I) : TensorCofan tensorUnit X i :=
 
 @[simp]
 lemma unitTensorCofan_ι₀ (i : I) :
-    (unitTensorCofan X i).ι' ⟨0, i⟩ (zero_add i) =
+    (unitTensorCofan X i).proj ⟨⟨0, i⟩, zero_add i⟩ =
       ((tensorUnit₀ I C).hom ⊗ (𝟙 (X i))) ≫ (λ_ (X i)).hom := by
   dsimp [unitTensorCofan]
   rw [dif_pos rfl]
@@ -378,7 +378,7 @@ noncomputable def tensorUnitCofan (i : I) : TensorCofan X tensorUnit i :=
 
 @[simp]
 lemma tensorUnitCofan_ι₀ (i : I) :
-    (tensorUnitCofan X i).ι' ⟨i, 0⟩ (add_zero i) =
+    (tensorUnitCofan X i).proj ⟨⟨i, 0⟩, add_zero i⟩ =
       (𝟙 (X i) ⊗ (tensorUnit₀ I C).hom) ≫ (rightUnitor (X i)).hom := by
   dsimp [tensorUnitCofan]
   rw [dif_pos rfl]
