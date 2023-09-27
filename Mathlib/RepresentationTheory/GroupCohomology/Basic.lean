@@ -172,7 +172,7 @@ variable [Group G] (n) (A : Rep k G)
 
 open InhomogeneousCochains
 
-set_option maxHeartbeats 2400000 in
+set_option maxHeartbeats 3000000 in
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 which calculates the group cohomology of `A`. -/
