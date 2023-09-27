@@ -20,6 +20,8 @@ the present file is about their interaction.
 For the definitions of semirings and rings see `Algebra.Ring.Defs`.
 -/
 
+set_option autoImplicit true
+
 open Function
 
 namespace AddHom

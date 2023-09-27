@@ -48,6 +48,8 @@ which are lattices with only two elements, and related ideas.
 
 -/
 
+set_option autoImplicit true
+
 
 variable {α β : Type*}
 

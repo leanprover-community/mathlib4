@@ -29,6 +29,8 @@ symmetric powers
 
 -/
 
+set_option autoImplicit true
+
 
 open Function
 

@@ -29,6 +29,7 @@ set, sets, image, preimage, pre-image, range
 
 -/
 
+set_option autoImplicit true
 
 universe u v
 

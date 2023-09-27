@@ -6,6 +6,8 @@ Authors: Arthur Paulino
 import Lean.Data.Json.Parser
 import Cache.Hashing
 
+set_option autoImplicit true
+
 namespace Cache.Requests
 
 /-- Azure blob URL -/

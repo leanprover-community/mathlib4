@@ -116,6 +116,8 @@ derivative, differentiable, Fréchet, calculus
 
 -/
 
+set_option autoImplicit true
+
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
 open Topology Classical NNReal Filter Asymptotics ENNReal

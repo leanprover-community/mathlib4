@@ -20,6 +20,8 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
   instance.
 -/
 
+set_option autoImplicit true
+
 
 variable {γ : α → Type*}
 

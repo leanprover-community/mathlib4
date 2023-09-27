@@ -25,6 +25,8 @@ In this file we define several notions of finiteness that are common in commutat
 
 -/
 
+set_option autoImplicit true
+
 open Function (Surjective)
 
 open BigOperators Polynomial

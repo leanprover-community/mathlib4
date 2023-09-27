@@ -28,6 +28,7 @@ number `n` such that `x ≤ n • y`.
 * `ℕ`, `ℤ`, and `ℚ` are archimedean.
 -/
 
+set_option autoImplicit true
 
 open Int Set
 

@@ -20,6 +20,9 @@ which allow for plugging in new positivity functionality around a positivity-bas
 The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivity.Basic`
 and elsewhere.
 -/
+
+set_option autoImplicit true
+
 open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
 

@@ -43,7 +43,6 @@ See the implementation notes for remarks about non-associative and non-unital al
   * `algebraNat`
   * `algebraInt`
   * `algebraRat`
-  * `mul_opposite.algebra`
   * `module.End.algebra`
 
 ## Implementation notes
@@ -594,25 +593,6 @@ end Algebra
 
 open scoped Algebra
 
-namespace MulOpposite
-
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-
-instance instAlgebraMulOpposite : Algebra R Aᵐᵒᵖ where
-  toRingHom := (algebraMap R A).toOpposite fun x y => Algebra.commutes _ _
-  smul_def' c x := unop_injective <| by
-    simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul, op_mul,
-      Algebra.smul_def, Algebra.commutes, op_unop, unop_op]
-  commutes' r := MulOpposite.rec' fun x => by
-    simp only [RingHom.toOpposite_apply, Function.comp_apply, ← op_mul, Algebra.commutes]
-
-@[simp]
-theorem algebraMap_apply (c : R) : algebraMap R Aᵐᵒᵖ c = op (algebraMap R A c) :=
-  rfl
-#align mul_opposite.algebra_map_apply MulOpposite.algebraMap_apply
-
-end MulOpposite
-
 namespace Module
 
 variable (R : Type u) (S : Type v) (M : Type w)
@@ -940,10 +920,3 @@ end Module
 example {R A} [CommSemiring R] [Semiring A] [Module R A] [SMulCommClass R A A]
     [IsScalarTower R A A] : Algebra R A :=
   Algebra.ofModule smul_mul_assoc mul_smul_comm
-
--- porting note: disable `dupNamespace` linter for aux lemmas
-open Lean in
-run_cmd do
-  for i in List.range 12 do
-    Elab.Command.elabCommand (← `(attribute [nolint dupNamespace]
-      $(mkCIdent (.num `Mathlib.Algebra.Algebra.Basic._auxLemma (i + 1)))))

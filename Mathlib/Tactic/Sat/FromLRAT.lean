@@ -39,6 +39,8 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 
+set_option autoImplicit true
+
 open Lean hiding Literal HashMap
 open Std
 

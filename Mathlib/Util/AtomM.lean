@@ -15,6 +15,8 @@ This monad is used by tactics like `ring` and `abel` to keep uninterpreted atoms
 order, and also to allow unifying atoms up to a specified transparency mode.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic
 open Lean Meta
 

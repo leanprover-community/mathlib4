@@ -25,6 +25,8 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
    value
 -/
 
+set_option autoImplicit true
+
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
 the maps that preserve `*`, are nonnegative, positive definite and satisfy the triangle equality. -/

@@ -251,12 +251,13 @@ Can't be an instance since `A`, `K` or `L` can't be inferred. See also the insta
 `integralClosure.isDedekindDomain_fractionRing` where `K := FractionRing A`
 and `C := integralClosure A L`.
 -/
-theorem IsIntegralClosure.isDedekindDomain [h : IsDedekindDomain A] : IsDedekindDomain C :=
-  haveI : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension A K L C
-  ⟨IsIntegralClosure.isNoetherianRing A K L C, h.dimensionLEOne.isIntegralClosure L _,
+theorem IsIntegralClosure.isDedekindDomain [IsDedekindDomain A] : IsDedekindDomain C :=
+  have : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension A K L C
+  { IsIntegralClosure.isNoetherianRing A K L C,
+    Ring.DimensionLEOne.isIntegralClosure A L C,
     (isIntegrallyClosed_iff L).mpr fun {x} hx =>
       ⟨IsIntegralClosure.mk' C x (isIntegral_trans (IsIntegralClosure.isIntegral_algebra A L) _ hx),
-        IsIntegralClosure.algebraMap_mk' _ _ _⟩⟩
+        IsIntegralClosure.algebraMap_mk' _ _ _⟩ with : IsDedekindDomain C }
 #align is_integral_closure.is_dedekind_domain IsIntegralClosure.isDedekindDomain
 
 /- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a Dedekind domain,

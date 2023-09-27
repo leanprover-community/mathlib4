@@ -32,6 +32,8 @@ This closely follows the implementation of the `@[reassoc]` attribute, due to Si
 reimplemented by Scott Morrison in Lean 4.
 -/
 
+set_option autoImplicit true
+
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 

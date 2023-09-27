@@ -77,6 +77,8 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic
 namespace Ring
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM

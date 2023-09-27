@@ -44,7 +44,7 @@ instance algebraObj (F : J ⥤ AlgebraCatMax.{v, w} R) (j) :
   inferInstanceAs <| Algebra R (F.obj j)
 #align Algebra.algebra_obj AlgebraCat.algebraObj
 
-/-- The flat sections of a functor into `Algebra R` form a submodule of all sections.
+/-- The flat sections of a functor into `AlgebraCat R` form a submodule of all sections.
 -/
 def sectionsSubalgebra (F : J ⥤ AlgebraCatMax.{v, w} R) : Subalgebra R (∀ j, F.obj j) :=
   { SemiRingCat.sectionsSubsemiring
@@ -62,7 +62,7 @@ instance limitAlgebra (F : J ⥤ AlgebraCatMax.{v, w} R) :
   inferInstanceAs <| Algebra R (sectionsSubalgebra F)
 #align Algebra.limit_algebra AlgebraCat.limitAlgebra
 
-/-- `limit.π (F ⋙ forget (Algebra R)) j` as a `alg_hom`. -/
+/-- `limit.π (F ⋙ forget (AlgebraCat R)) j` as a `AlgHom`. -/
 def limitπAlgHom (F : J ⥤ AlgebraCatMax.{v, w} R) (j) :
     (Types.limitCone (F ⋙ forget (AlgebraCat R))).pt →ₐ[R]
       (F ⋙ forget (AlgebraCatMax.{v, w} R)).obj j :=
@@ -73,10 +73,10 @@ def limitπAlgHom (F : J ⥤ AlgebraCatMax.{v, w} R) (j) :
 
 namespace HasLimits
 
--- The next two definitions are used in the construction of `has_limits (Algebra R)`.
+-- The next two definitions are used in the construction of `HasLimits (AlgebraCat R)`.
 -- After that, the limits should be constructed using the generic limits API,
--- e.g. `limit F`, `limit.cone F`, and `limit.is_limit F`.
-/-- Construction of a limit cone in `Algebra R`.
+-- e.g. `limit F`, `limit.cone F`, and `limit.isLimit F`.
+/-- Construction of a limit cone in `AlgebraCat R`.
 (Internal use only; use the limits API.)
 -/
 def limitCone (F : J ⥤ AlgebraCatMax.{v, w} R) : Cone F where
@@ -87,7 +87,7 @@ def limitCone (F : J ⥤ AlgebraCatMax.{v, w} R) : Cone F where
         AlgHom.coe_fn_injective ((Types.limitCone (F ⋙ forget _)).π.naturality f) }
 #align Algebra.has_limits.limit_cone AlgebraCat.HasLimits.limitCone
 
-/-- Witness that the limit cone in `Algebra R` is a limit cone.
+/-- Witness that the limit cone in `AlgebraCat R` is a limit cone.
 (Internal use only; use the limits API.)
 -/
 def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v, w} F) := by

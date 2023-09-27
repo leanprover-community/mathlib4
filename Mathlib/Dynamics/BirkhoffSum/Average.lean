@@ -23,6 +23,8 @@ see `birkhoffAverage_congr_ring`.
 
 -/
 
+set_option autoImplicit true
+
 section birkhoffAverage
 
 variable (R : Type*) {α M : Type*} [DivisionSemiring R] [AddCommMonoid M] [Module R M]

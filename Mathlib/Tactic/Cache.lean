@@ -41,6 +41,8 @@ This kind of cache can be used e.g.
 to populate discrimination trees.
 -/
 
+set_option autoImplicit true
+
 open Lean Meta
 
 namespace Mathlib.Tactic

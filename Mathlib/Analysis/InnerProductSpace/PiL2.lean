@@ -158,7 +158,7 @@ instance EuclideanSpace.instInnerProductSpace : InnerProductSpace 𝕜 (Euclidea
 @[simp]
 theorem finrank_euclideanSpace :
     FiniteDimensional.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
-  simp [EuclideanSpace, PiLp]
+  simp [EuclideanSpace, PiLp, WithLp]
 #align finrank_euclidean_space finrank_euclideanSpace
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
@@ -212,17 +212,14 @@ end
 
 variable (ι 𝕜)
 
--- TODO : This should be generalized to `PiLp` with finite dimensional factors.
-/-- `PiLp.linearEquiv` upgraded to a continuous linear map between `EuclideanSpace 𝕜 ι`
-and `ι → 𝕜`. -/
-@[simps! toLinearEquiv_apply apply toLinearEquiv_symm_apply symm_apply]
-def EuclideanSpace.equiv : EuclideanSpace 𝕜 ι ≃L[𝕜] ι → 𝕜 :=
-  (PiLp.linearEquiv 2 𝕜 fun _ : ι => 𝕜).toContinuousLinearEquiv
+/-- A shorthand for `PiLp.continuousLinearEquiv`. -/
+abbrev EuclideanSpace.equiv : EuclideanSpace 𝕜 ι ≃L[𝕜] ι → 𝕜 :=
+  PiLp.continuousLinearEquiv 2 𝕜 _
 #align euclidean_space.equiv EuclideanSpace.equiv
-#align euclidean_space.equiv_to_linear_equiv_apply EuclideanSpace.equiv_toLinearEquiv_apply
-#align euclidean_space.equiv_apply EuclideanSpace.equiv_apply
-#align euclidean_space.equiv_to_linear_equiv_symm_apply EuclideanSpace.equiv_toLinearEquiv_symm_apply
-#align euclidean_space.equiv_symm_apply EuclideanSpace.equiv_symm_apply
+#noalign euclidean_space.equiv_to_linear_equiv_apply
+#noalign euclidean_space.equiv_apply
+#noalign euclidean_space.equiv_to_linear_equiv_symm_apply
+#noalign euclidean_space.equiv_symm_apply
 
 variable {ι 𝕜}
 
@@ -361,7 +358,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
         rw [this, Pi.single_smul]
         replace h := congr_fun h i
         simp only [LinearEquiv.comp_coe, SMulHomClass.map_smul, LinearEquiv.coe_coe,
-          LinearEquiv.trans_apply, PiLp.linearEquiv_symm_apply, PiLp.equiv_symm_single,
+          LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, PiLp.equiv_symm_single,
           LinearIsometryEquiv.coe_toLinearEquiv] at h ⊢
         rw [h]
 

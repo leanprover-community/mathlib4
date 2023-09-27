@@ -43,6 +43,8 @@ These definitions are for sums over a `Finset`; versions for a
 
 -/
 
+set_option autoImplicit true
+
 
 
 noncomputable section

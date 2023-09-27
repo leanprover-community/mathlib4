@@ -13,6 +13,8 @@ is eventually equal to a constant along a filter `l`. We also prove some basic p
 functions.
 -/
 
+set_option autoImplicit true
+
 open Set
 
 namespace Filter

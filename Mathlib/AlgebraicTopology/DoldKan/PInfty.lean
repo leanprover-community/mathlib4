@@ -18,7 +18,8 @@ to the limit the projections `P q` defined in `Projections.lean`. This
 projection is a critical tool in this formalisation of the Dold-Kan correspondence,
 because in the case of abelian categories, `PInfty` corresponds to the
 projection on the normalized Moore subcomplex, with kernel the degenerate subcomplex.
-(See `Equivalence.lean` for the general strategy of proof.)
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 

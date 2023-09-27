@@ -24,6 +24,8 @@ Preferentially, the homomorphism is written as the coercion `Nat.cast`.
 * `Nat.cast`: Canonical homomorphism `ℕ → R`.
 -/
 
+set_option autoImplicit true
+
 /-- The numeral `((0+1)+⋯)+1`. -/
 protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
   | 0 => 0

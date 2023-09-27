@@ -21,6 +21,8 @@ This file defines bundled isomorphisms of `R`-algebras.
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
 
+set_option autoImplicit true
+
 
 open BigOperators
 

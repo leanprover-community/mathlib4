@@ -11,7 +11,7 @@ import Mathlib.LinearAlgebra.FreeModule.Determinant
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.LocalProperties
-import Mathlib.RingTheory.Localization.Norm
+import Mathlib.RingTheory.Localization.NormTrace
 
 #align_import ring_theory.ideal.norm from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 

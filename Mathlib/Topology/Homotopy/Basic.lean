@@ -54,6 +54,8 @@ and for `ContinuousMap.homotopic` and `ContinuousMap.homotopic_rel`, we also def
 - [HOL-Analysis formalisation](https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Homotopy.html)
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

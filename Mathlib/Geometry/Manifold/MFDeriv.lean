@@ -93,6 +93,8 @@ the space of equivalence classes of smooth curves in the manifold.
 Derivative, manifold
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
@@ -113,7 +115,6 @@ this specific chart.
 
 We use the names `MDifferentiable` and `mfderiv`, where the prefix letter `m` means "manifold".
 -/
-
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}

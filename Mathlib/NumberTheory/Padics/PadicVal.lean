@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.Data.Nat.Digits
 import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Tactic.IntervalCases
@@ -37,6 +38,9 @@ by taking `[Fact p.Prime]` as a type class argument.
 quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
 greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in the
 language of prime multiplicity.
+
+* `sub_one_mul_padicValNat_factorial_eq_sub_sum_digits`: Legendre's Theorem.  Taking (`p - 1`) times
+the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits of `n`.
 
 * `padicValNat_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
 of carries when `k` and `n - k` are added in base `p`. This sum is expressed over the finset
@@ -551,7 +555,7 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
 #align range_pow_padic_val_nat_subset_divisors' range_pow_padicValNat_subset_divisors'
 
 /-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
-theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) [hp : Fact p.Prime]:
+theorem padicValNat_factorial_mul (n : ℕ) [hp : Fact p.Prime]:
     padicValNat p (p * n) ! = padicValNat p n ! + n := by
   refine' PartENat.natCast_inj.mp _
   rw [padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos (p * n), Nat.cast_add,
@@ -560,11 +564,11 @@ theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) [hp : Fact p.Prime]:
 
 /-- The `p`-adic valuation of `m` equals zero if it is between `p * k` and `p * (k + 1)` for
 some `k`. -/
-theorem padicValNat_eq_zero_of_mem_Ioo {m p k : ℕ}
+theorem padicValNat_eq_zero_of_mem_Ioo {m k : ℕ}
     (hm : m ∈ Set.Ioo (p * k) (p * (k + 1))) : padicValNat p m = 0 :=
   padicValNat.eq_zero_of_not_dvd <| not_dvd_of_between_consec_multiples hm.1 hm.2
 
-theorem padicValNat_factorial_mul_add {p n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
+theorem padicValNat_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
     padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
   induction' n with n hn
   · rw [zero_eq, add_zero]
@@ -575,7 +579,7 @@ theorem padicValNat_factorial_mul_add {p n : ℕ} (m : ℕ) [hp : Fact p.Prime] 
 
 /-- The `p`-adic valuation of `n!` is equal to the `p`-adic valuation of the factorial of the
 largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
-@[simp] theorem padicValNat_mul_div_factorial {p : ℕ} (n : ℕ) [hp : Fact p.Prime] :
+@[simp] theorem padicValNat_mul_div_factorial (n : ℕ) [hp : Fact p.Prime] :
     padicValNat p (p * (n / p))! = padicValNat p n ! := by
   nth_rw 2 [← div_add_mod n p]
   exact (padicValNat_factorial_mul_add (n / p) <| mod_lt n <|Prime.pos hp.out).symm
@@ -584,17 +588,26 @@ largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
 
 The `p`-adic valuation of `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
 over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
-theorem padicValNat_factorial {p n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b) :
+theorem padicValNat_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b) :
     padicValNat p (n !) = ∑ i in Finset.Ico 1 b, n / p ^ i :=
   PartENat.natCast_inj.mp ((padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos _) ▸
       Prime.multiplicity_factorial hp.out hnb)
+
+/-- **Legendre's Theorem**
+
+Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits
+of `n`. -/
+theorem sub_one_mul_padicValNat_factorial_eq_sub_sum_digits [hp : Fact p.Prime] (n : ℕ):
+    (p - 1) * padicValNat p (n !) = n - (p.digits n).sum := by
+  rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n), ← Finset.sum_Ico_add' _ 0 _ 1,
+    Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
 /-- **Kummer's Theorem**
 
 The `p`-adic valuation of `n.choose k` is the number of carries when `k` and `n - k` are added
 in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
 `log p n`. -/
-theorem padicValNat_choose {p n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
+theorem padicValNat_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
     padicValNat p (choose n k) =
     ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
   PartENat.natCast_inj.mp <| (padicValNat_def' (Nat.Prime.ne_one hp.out) <| choose_pos hkn) ▸

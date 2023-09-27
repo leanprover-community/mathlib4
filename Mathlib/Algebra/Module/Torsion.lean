@@ -61,6 +61,8 @@ import Mathlib.RingTheory.Finiteness
 Torsion, submodule, module, quotient
 -/
 
+set_option autoImplicit true
+
 
 namespace Ideal
 

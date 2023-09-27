@@ -15,6 +15,8 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
 
+set_option autoImplicit true
+
 #align opt_param_eq optParam_eq
 
 /- Implication -/

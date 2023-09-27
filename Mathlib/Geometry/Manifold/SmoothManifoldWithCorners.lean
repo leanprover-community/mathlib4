@@ -66,10 +66,10 @@ The right invocation does not focus on one specific construction, but on all con
 the right properties, like
 
   `variables {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  {I : ModelWithCorners ℝ E E} [I.boundaryless]
+  {I : ModelWithCorners ℝ E E} [I.Boundaryless]
   {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [SmoothManifoldWithCorners I M]`
 
-Here, `I.boundaryless` is a typeclass property ensuring that there is no boundary (this is for
+Here, `I.Boundaryless` is a typeclass property ensuring that there is no boundary (this is for
 instance the case for `modelWithCornersSelf`, or products of these). Note that one could consider
 as a natural assumption to only use the trivial model with corners `modelWithCornersSelf ℝ E`,
 but again in product manifolds the natural model with corners will not be this one but the product
@@ -105,11 +105,13 @@ get lighter notations later on, but it did not turn out right, as on `E × F` th
 model with corners, the trivial (identity) one, and the product one, and they are not defeq and one
 needs to indicate to Lean which one we want to use.
 This means that when talking on objects on manifolds one will most often need to specify the model
-with corners one is using. For instance, the tangent bundle will be `tangent_bundle I M` and the
-derivative will be `mfderiv I I' f`, instead of the more natural notations `tangent_bundle 𝕜 M` and
+with corners one is using. For instance, the tangent bundle will be `TangentBundle I M` and the
+derivative will be `mfderiv I I' f`, instead of the more natural notations `TangentBundle 𝕜 M` and
 `mfderiv 𝕜 f` (the field has to be explicit anyway, as some manifolds could be considered both as
 real and complex manifolds).
 -/
+
+set_option autoImplicit true
 
 
 noncomputable section
@@ -120,7 +122,6 @@ open Set Filter Function
 
 open scoped Manifold Filter Topology
 
--- mathport name: with_top.nat.top
 scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 
 /-! ### Models with corners. -/
@@ -152,10 +153,7 @@ def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type
   continuous_invFun := continuous_id
 #align model_with_corners_self modelWithCornersSelf
 
--- mathport name: model_with_corners_self
 scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
-
--- mathport name: model_with_corners_self.self
 scoped[Manifold] notation "𝓘(" 𝕜 ")" => modelWithCornersSelf 𝕜 𝕜
 
 section
@@ -340,8 +338,8 @@ theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H �
   refine' ⟨fun h => _, fun h => _⟩
   · have := h.comp I.continuousWithinAt (mapsTo_preimage _ _)
     simp_rw [preimage_inter, preimage_preimage, I.left_inv, preimage_id', preimage_range,
-      inter_univ] at this 
-    rwa [Function.comp.assoc, I.symm_comp_self] at this 
+      inter_univ] at this
+    rwa [Function.comp.assoc, I.symm_comp_self] at this
   · rw [← I.left_inv x] at h; exact h.comp I.continuousWithinAt_symm (inter_subset_left _ _)
 #align model_with_corners.symm_continuous_within_at_comp_right_iff ModelWithCorners.symm_continuousWithinAt_comp_right_iff
 
@@ -555,7 +553,7 @@ def contDiffGroupoid : StructureGroupoid H :=
           rw [preimage_inter, inter_assoc, inter_assoc]
           congr 1
           rw [inter_comm]
-        rw [this] at hv 
+        rw [this] at hv
         exact ⟨I.symm ⁻¹' v, v_open.preimage I.continuous_symm, by simpa, hv⟩
       congr := fun {f g u} _ fg hf => by
         apply hf.congr
@@ -623,14 +621,14 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
     (he' : e' ∈ contDiffGroupoid ⊤ I') : e.prod e' ∈ contDiffGroupoid ⊤ (I.prod I') := by
   cases' he with he he_symm
   cases' he' with he' he'_symm
-  simp only at he he_symm he' he'_symm 
+  simp only at he he_symm he' he'_symm
   constructor <;> simp only [LocalEquiv.prod_source, LocalHomeomorph.prod_toLocalEquiv]
   · have h3 := ContDiffOn.prod_map he he'
-    rw [← I.image_eq, ← I'.image_eq, Set.prod_image_image_eq] at h3 
+    rw [← I.image_eq, ← I'.image_eq, Set.prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
     exact h3
   · have h3 := ContDiffOn.prod_map he_symm he'_symm
-    rw [← I.image_eq, ← I'.image_eq, Set.prod_image_image_eq] at h3 
+    rw [← I.image_eq, ← I'.image_eq, Set.prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
     exact h3
 #align cont_diff_groupoid_prod contDiffGroupoid_prod
@@ -688,7 +686,7 @@ end SmoothManifoldWithCorners
 
 namespace SmoothManifoldWithCorners
 
-/- We restate in the namespace `smooth_manifolds_with_corners` some lemmas that hold for general
+/- We restate in the namespace `SmoothManifoldWithCorners` some lemmas that hold for general
 charted space with a structure groupoid, avoiding the need to specify the groupoid
 `contDiffGroupoid ∞ I` explicitly. -/
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -881,8 +879,8 @@ theorem continuousOn_extend_symm : ContinuousOn (f.extend I).symm (f.extend I).t
 theorem extend_symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {g : M → X}
     {s : Set M} {x : M} :
     ContinuousWithinAt (g ∘ (f.extend I).symm) ((f.extend I).symm ⁻¹' s ∩ range I) (f.extend I x) ↔
-      ContinuousWithinAt (g ∘ f.symm) (f.symm ⁻¹' s) (f x) :=
-  by rw [← I.symm_continuousWithinAt_comp_right_iff]; rfl
+      ContinuousWithinAt (g ∘ f.symm) (f.symm ⁻¹' s) (f x) := by
+  rw [← I.symm_continuousWithinAt_comp_right_iff]; rfl
 #align local_homeomorph.extend_symm_continuous_within_at_comp_right_iff LocalHomeomorph.extend_symm_continuousWithinAt_comp_right_iff
 
 theorem isOpen_extend_preimage' {s : Set E} (hs : IsOpen s) :
@@ -970,7 +968,7 @@ theorem continuousOn_writtenInExtend_iff {f' : LocalHomeomorph M' H'} {g : M →
 in the source is a neighborhood of the preimage, within a set. -/
 theorem extend_preimage_mem_nhdsWithin {x : M} (h : x ∈ f.source) (ht : t ∈ 𝓝[s] x) :
     (f.extend I).symm ⁻¹' t ∈ 𝓝[(f.extend I).symm ⁻¹' s ∩ range I] f.extend I x := by
-  rwa [← map_extend_symm_nhdsWithin f I h, mem_map] at ht 
+  rwa [← map_extend_symm_nhdsWithin f I h, mem_map] at ht
 #align local_homeomorph.extend_preimage_mem_nhds_within LocalHomeomorph.extend_preimage_mem_nhdsWithin
 
 theorem extend_preimage_mem_nhds {x : M} (h : x ∈ f.source) (ht : t ∈ 𝓝 x) :
@@ -1268,7 +1266,7 @@ in the source is a neighborhood of the preimage, within a set. -/
 theorem extChartAt_preimage_mem_nhdsWithin' {x' : M} (h : x' ∈ (extChartAt I x).source)
     (ht : t ∈ 𝓝[s] x') :
     (extChartAt I x).symm ⁻¹' t ∈ 𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x' := by
-  rwa [← map_extChartAt_symm_nhdsWithin' I x h, mem_map] at ht 
+  rwa [← map_extChartAt_symm_nhdsWithin' I x h, mem_map] at ht
 #align ext_chart_at_preimage_mem_nhds_within' extChartAt_preimage_mem_nhdsWithin'
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of the
@@ -1402,4 +1400,3 @@ theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
   simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts
-

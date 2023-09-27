@@ -319,6 +319,7 @@ theorem map_map (S : NonUnitalStarSubalgebra R A) (g : B →⋆ₙₐ[R] C) (f :
     (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
+@[simp]
 theorem mem_map {S : NonUnitalStarSubalgebra R A} {f : F} {y : B} :
     y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
   NonUnitalSubalgebra.mem_map

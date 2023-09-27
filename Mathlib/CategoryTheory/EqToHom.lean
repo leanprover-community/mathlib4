@@ -26,6 +26,8 @@ This file introduces various `simp` lemmas which in favourable circumstances
 result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 -/
 
+set_option autoImplicit true
+
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

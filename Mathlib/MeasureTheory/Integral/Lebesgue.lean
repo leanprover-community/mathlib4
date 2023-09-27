@@ -29,6 +29,7 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 
 -/
 
+set_option autoImplicit true
 
 noncomputable section
 
@@ -753,9 +754,13 @@ theorem lintegral_indicator₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMe
     Measure.restrict_congr_set hs.toMeasurable_ae_eq]
 #align measure_theory.lintegral_indicator₀ MeasureTheory.lintegral_indicator₀
 
-theorem lintegral_indicator_const {s : Set α} (hs : MeasurableSet s) (c : ℝ≥0∞) :
+theorem lintegral_indicator_const₀ {s : Set α} (hs : NullMeasurableSet s μ) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) a ∂μ = c * μ s := by
-  rw [lintegral_indicator _ hs, set_lintegral_const]
+  rw [lintegral_indicator₀ _ hs, set_lintegral_const]
+
+theorem lintegral_indicator_const {s : Set α} (hs : MeasurableSet s) (c : ℝ≥0∞) :
+    ∫⁻ a, s.indicator (fun _ => c) a ∂μ = c * μ s :=
+  lintegral_indicator_const₀ hs.nullMeasurableSet c
 #align measure_theory.lintegral_indicator_const MeasureTheory.lintegral_indicator_const
 
 theorem set_lintegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : ℝ≥0∞) :

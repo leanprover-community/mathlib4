@@ -15,6 +15,8 @@ elements of a list satisfying a predicate and equal to a given element respectiv
 definitions can be found in `Std.Data.List.Basic`.
 -/
 
+set_option autoImplicit true
+
 
 open Nat
 

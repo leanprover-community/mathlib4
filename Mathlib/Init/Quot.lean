@@ -10,6 +10,9 @@ import Mathlib.Mathport.Rename
 
 Some induction principles tagged with `elab_as_elim`, since the attribute is missing in core.
 -/
+
+set_option autoImplicit true
+
 #align quotient.induction_on Quotient.inductionOn
 #align quot.induction_on Quot.inductionOn
 

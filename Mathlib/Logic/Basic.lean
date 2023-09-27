@@ -24,6 +24,8 @@ Theorems that require decidability hypotheses are in the namespace `Decidable`.
 Classical versions are in the namespace `Classical`.
 -/
 
+set_option autoImplicit true
+
 open Function
 attribute [local instance 10] Classical.propDecidable
 

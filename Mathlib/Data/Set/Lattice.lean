@@ -53,6 +53,8 @@ In lemma names,
 * `⋂₀`: `Set.sInter`
 -/
 
+set_option autoImplicit true
+
 
 open Function Tactic Set
 

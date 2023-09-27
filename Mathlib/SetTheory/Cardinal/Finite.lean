@@ -19,6 +19,8 @@ import Mathlib.SetTheory.Cardinal.Basic
   (using `Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
+set_option autoImplicit true
+
 
 open Cardinal
 

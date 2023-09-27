@@ -346,7 +346,7 @@ theorem dimensionLEOne : DimensionLEOne A := ⟨by
 /-- Showing one side of the equivalence between the definitions
 `IsDedekindDomainInv` and `IsDedekindDomain` of Dedekind domains. -/
 theorem isDedekindDomain : IsDedekindDomain A :=
-  ⟨h.isNoetherianRing, h.dimensionLEOne, h.integrallyClosed⟩
+  { h.isNoetherianRing, h.dimensionLEOne, h.integrallyClosed with }
 #align is_dedekind_domain_inv.is_dedekind_domain IsDedekindDomainInv.isDedekindDomain
 
 end IsDedekindDomainInv
@@ -668,7 +668,7 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
 instance : WfDvdMonoid (Ideal A) where
   wellFounded_dvdNotUnit := by
     have : WellFounded ((· > ·) : Ideal A → Ideal A → Prop) :=
-      isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindDomain.isNoetherianRing)
+      isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindDomain.toIsNoetherian)
     convert this
     ext
     rw [Ideal.dvdNotUnit_iff_lt]
