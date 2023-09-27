@@ -197,7 +197,7 @@ lemma lTensor.inverse_comp_lTensor :
   (computably, given a right inverse) -/
 def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) := {
-  lTensor.toFun Q hfg with
+  toLinearMap := lTensor.toFun Q hfg
   invFun    := lTensor.inverse_of_rightInverse Q hfg hgh
   left_inv  := fun y ↦ by
     simp only [lTensor.toFun, AddHom.toFun_eq_coe, coe_toAddHom]
@@ -301,13 +301,13 @@ lemma rTensor.inverse_comp_rTensor :
   (computably, given a right inverse) -/
 def rTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((N ⊗[R] Q) ⧸ (range (rTensor Q f))) ≃ₗ[R] (P ⊗[R] Q) := {
-  rTensor.toFun Q hfg with
-  invFun    := rTensor.inverse_of_rightInverse Q hfg hgh
-  left_inv  := fun y ↦ by
+  toLinearMap := rTensor.toFun Q hfg
+  invFun      := rTensor.inverse_of_rightInverse Q hfg hgh
+  left_inv    := fun y ↦ by
     simp only [rTensor.toFun, AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := Submodule.mkQ_surjective _ y
     simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, rTensor.inverse_of_rightInverse_apply]
-  right_inv := fun z ↦ by
+  right_inv   := fun z ↦ by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := rTensor.surjective Q hgh.surjective z
     rw [rTensor.inverse_of_rightInverse_apply]
