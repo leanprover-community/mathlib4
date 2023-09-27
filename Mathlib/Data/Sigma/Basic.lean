@@ -26,7 +26,7 @@ exactly two elements (see `Equiv.sumEquivSigmaBool`).
 `Σ x, A x` is notation for `Sigma A` (note that this is `\Sigma`, not the sum operator `∑`).
 `Σ x y z ..., A x y z ...` is notation for `Σ x, Σ y, Σ z, ..., A x y z ...`. Here we have
 `α : Type _`, `β : α → Type _`, `γ : Π a : α, β a → Type _`, ...,
-`A : Π (a : α) (b : β a) (c : γ a b) ..., Type _`  with `x : α` `y : β x`, `z : γ x y`, ...
+`A : Π (a : α) (b : β a) (c : γ a b) ..., Type _` with `x : α` `y : β x`, `z : γ x y`, ...
 
 ## Notes
 

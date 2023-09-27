@@ -366,7 +366,7 @@ theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
     · exact ⟨0, by simp, 0, by simp⟩
     · rintro _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
       exact ⟨_, add_mem hy₁ hy₂, _, add_mem hz₁ hz₂, by
-        rw [add_assoc, add_assoc, ← add_assoc y₂,  ← add_assoc z₁, add_comm y₂]⟩
+        rw [add_assoc, add_assoc, ← add_assoc y₂, ← add_assoc z₁, add_comm y₂]⟩
     · rintro a _ ⟨y, hy, z, hz, rfl⟩
       exact ⟨_, smul_mem _ a hy, _, smul_mem _ a hz, by simp [smul_add]⟩, by
     rintro ⟨y, hy, z, hz, rfl⟩

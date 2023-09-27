@@ -112,7 +112,7 @@ theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C := by
   refine' ⟨fun n => ⟨fun K => _⟩⟩
   letI := hasProduct_fin n fun n => K.obj ⟨n⟩
   let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
-  apply @hasLimitOfIso  _ _ _ _ _ _ this that
+  apply @hasLimitOfIso _ _ _ _ _ _ this that
 #align category_theory.has_finite_products_of_has_binary_and_terminal CategoryTheory.hasFiniteProducts_of_has_binary_and_terminal
 
 end

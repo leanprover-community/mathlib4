@@ -50,7 +50,7 @@ Except in situations where you want to provide a particular injective resolution
 you will not typically need to use this bundled object, and will instead use
 * `injectiveResolution Z`: the `ℕ`-indexed cochain complex
   (equipped with `injective` and `exact` instances)
-* `InjectiveResolution.ι Z`: the cochain map from  `(single C _ 0).obj Z` to
+* `InjectiveResolution.ι Z`: the cochain map from `(single C _ 0).obj Z` to
   `InjectiveResolution Z` (all the components are equipped with `Mono` instances,
   and when the category is `Abelian` we will show `ι` is a quasi-iso).
 -/

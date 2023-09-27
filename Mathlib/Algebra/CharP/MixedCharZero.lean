@@ -191,7 +191,7 @@ theorem PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (
   -- But `n` generates the ideal, so its image is clearly zero.
   rw [← map_natCast (Ideal.Quotient.mk _), Nat.cast_zero, Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.subset_span (Set.mem_singleton _)
-#align equal_char_zero.pnat_coe_is_unit  EqualCharZero.PNat.isUnit_natCast
+#align equal_char_zero.pnat_coe_is_unit EqualCharZero.PNat.isUnit_natCast
 
 @[coe]
 noncomputable def pnatCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : ℕ+ → Rˣ :=

@@ -78,7 +78,7 @@ example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y := b
   fail_if_success solve_by_elim (config := {symm := false})
   solve_by_elim
 
-example (P : True → False) : 3 = 7 :=  by
+example (P : True → False) : 3 = 7 := by
   fail_if_success solve_by_elim (config := {exfalso := false})
   solve_by_elim
 

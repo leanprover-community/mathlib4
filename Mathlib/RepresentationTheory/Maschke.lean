@@ -20,7 +20,7 @@ in the formulation that every submodule of a `k[G]` module has a complement,
 when `k` is a field with `Invertible (Fintype.card G : k)`.
 
 We do the core computation in greater generality.
-For any `[CommRing k]` in which  `[Invertible (Fintype.card G : k)]`,
+For any `[CommRing k]` in which `[Invertible (Fintype.card G : k)]`,
 and a `k[G]`-linear map `i : V → W` which admits a `k`-linear retraction `π`,
 we produce a `k[G]`-linear retraction by
 taking the average over `G` of the conjugates of `π`.

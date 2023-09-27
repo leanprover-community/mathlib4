@@ -133,7 +133,7 @@ def parallelFamily : WalkingParallelFamily J ⥤ C where
     | _, _, Hom.id _ => 𝟙 _
     | _, _, line j => f j
   map_comp := by
-    rintro _ _ _  ⟨⟩ ⟨⟩ <;>
+    rintro _ _ _ ⟨⟩ ⟨⟩ <;>
       · aesop_cat
 #align category_theory.limits.parallel_family CategoryTheory.Limits.parallelFamily
 

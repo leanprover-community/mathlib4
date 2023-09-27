@@ -144,7 +144,7 @@ example {α : Type _} [CommRing α] {a b c d : α} :
   /-
   Try this: simp only [det_succ_row_zero, Fin.sum_univ_succ, neg_mul, mul_one,
   Fin.default_eq_zero, Fin.coe_zero, one_mul, cons_val_one, Fin.coe_succ, univ_unique,
-  submatrix_apply, pow_one, Fin.zero_succ_above, Fin.succ_succ_above_zero,  finset.sum_singleton,
+  submatrix_apply, pow_one, Fin.zero_succ_above, Fin.succ_succ_above_zero, finset.sum_singleton,
   cons_val_zero, cons_val_succ, det_fin_zero, pow_zero]
   -/
   ring

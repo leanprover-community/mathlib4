@@ -486,7 +486,7 @@ theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Fin
   | @insert i s _hi ih =>
     intro c hs k hk A_eq
     have hAi : A i = B i + c i • B k := funext (A_eq i)
-    rw [@ih (updateRow  B i (A i)) (Function.update c i 0), hAi, det_updateRow_add_smul_self]
+    rw [@ih (updateRow B i (A i)) (Function.update c i 0), hAi, det_updateRow_add_smul_self]
     · exact mt (fun h => show k ∈ insert i s from h ▸ Finset.mem_insert_self _ _) hk
     · intro i' hi'
       rw [Function.update_apply]

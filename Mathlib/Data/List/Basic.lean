@@ -3567,7 +3567,7 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
 #align list.filter_filter List.filter_filter
 
 @[simp]
-theorem filter_true  (l : List α) :
+theorem filter_true (l : List α) :
     filter (fun _ => true) l = l := by induction l <;> simp [*, filter]
 #align list.filter_true List.filter_true
 

@@ -267,7 +267,7 @@ theorem pos_eq_neg_inv (a : α) : a⁺ = a⁻¹⁻ := by rw [neg_eq_pos_inv, inv
 #align lattice_ordered_comm_group.pos_eq_neg_inv LatticeOrderedCommGroup.pos_eq_neg_inv
 #align lattice_ordered_comm_group.pos_eq_neg_neg LatticeOrderedCommGroup.pos_eq_neg_neg
 
--- We use this in Bourbaki A.VI.12  Prop 9 a)
+-- We use this in Bourbaki A.VI.12 Prop 9 a)
 -- c + (a ⊓ b) = (c + a) ⊓ (c + b)
 @[to_additive]
 theorem mul_inf_eq_mul_inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
@@ -281,7 +281,7 @@ theorem mul_inf_eq_mul_inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b
 #align lattice_ordered_comm_group.mul_inf_eq_mul_inf_mul LatticeOrderedCommGroup.mul_inf_eq_mul_inf_mul
 #align lattice_ordered_comm_group.add_inf_eq_add_inf_add LatticeOrderedCommGroup.add_inf_eq_add_inf_add
 
--- Bourbaki A.VI.12  Prop 9 a)
+-- Bourbaki A.VI.12 Prop 9 a)
 -- a = a⁺ - a⁻
 @[to_additive (attr := simp)]
 theorem pos_div_neg [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : a⁺ / a⁻ = a := by
@@ -292,7 +292,7 @@ theorem pos_div_neg [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : a⁺
 #align lattice_ordered_comm_group.pos_div_neg LatticeOrderedCommGroup.pos_div_neg
 #align lattice_ordered_comm_group.pos_sub_neg LatticeOrderedCommGroup.pos_sub_neg
 
--- Bourbaki A.VI.12  Prop 9 a)
+-- Bourbaki A.VI.12 Prop 9 a)
 -- a⁺ ⊓ a⁻ = 0 (`a⁺` and `a⁻` are co-prime, and, since they are positive, disjoint)
 @[to_additive]
 theorem pos_inf_neg_eq_one [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : a⁺ ⊓ a⁻ = 1 := by

@@ -283,7 +283,7 @@ class HasCoequalizerOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], HasCoequalizer f g
 
 -- Porting note: cannot find synth order
--- instance {A B} (f g : A ⟶  B) [G.IsSplitPair f g] [HasCoequalizerOfIsSplitPair G] :
+-- instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [HasCoequalizerOfIsSplitPair G] :
 --     HasCoequalizer f g := HasCoequalizerOfIsSplitPair.out f g
 
 instance [HasCoequalizerOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
@@ -296,7 +296,7 @@ instance [HasCoequalizerOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdj
 class PreservesColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], PreservesColimit (parallelPair f g) G
 
-instance {A B} (f g : A ⟶  B) [G.IsSplitPair f g] [PreservesColimitOfIsSplitPair G] :
+instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [PreservesColimitOfIsSplitPair G] :
     PreservesColimit (parallelPair f g) G := PreservesColimitOfIsSplitPair.out f g
 
 instance [PreservesColimitOfIsSplitPair G] : ∀ (A: Algebra (toMonad (ofRightAdjoint G))),
@@ -309,7 +309,7 @@ instance [PreservesColimitOfIsSplitPair G] : ∀ (A: Algebra (toMonad (ofRightAd
 class ReflectsColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], ReflectsColimit (parallelPair f g) G
 
-instance {A B} (f g : A ⟶  B) [G.IsSplitPair f g] [ReflectsColimitOfIsSplitPair G] :
+instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [ReflectsColimitOfIsSplitPair G] :
     ReflectsColimit (parallelPair f g) G := ReflectsColimitOfIsSplitPair.out f g
 
 instance [ReflectsColimitOfIsSplitPair G] : ∀ (A: Algebra (toMonad (ofRightAdjoint G))),
@@ -359,7 +359,7 @@ set_option linter.uppercaseLean3 false in
 class CreatesColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], CreatesColimit (parallelPair f g) G
 
-instance {A B} (f g : A ⟶  B) [G.IsSplitPair f g] [CreatesColimitOfIsSplitPair G] :
+instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [CreatesColimitOfIsSplitPair G] :
     CreatesColimit (parallelPair f g) G := CreatesColimitOfIsSplitPair.out f g
 
 instance [CreatesColimitOfIsSplitPair G] : ∀ (A: Algebra (toMonad (ofRightAdjoint G))),
@@ -419,7 +419,7 @@ local notation3 "adj" => Adjunction.ofRightAdjoint G
 class PreservesColimitOfIsReflexivePair (G : C ⥤ D) where
   out : ∀ ⦃A B⦄ (f g : A ⟶ B) [IsReflexivePair f g], PreservesColimit (parallelPair f g) G
 
-instance {A B} (f g : A ⟶  B) [IsReflexivePair f g] [PreservesColimitOfIsReflexivePair G] :
+instance {A B} (f g : A ⟶ B) [IsReflexivePair f g] [PreservesColimitOfIsReflexivePair G] :
   PreservesColimit (parallelPair f g) G := PreservesColimitOfIsReflexivePair.out f g
 
 instance [PreservesColimitOfIsReflexivePair G] : ∀ X : Algebra (toMonad (ofRightAdjoint G)),

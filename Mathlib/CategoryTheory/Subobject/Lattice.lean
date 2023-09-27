@@ -651,7 +651,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
     aesop_cat
 #align category_theory.subobject.Inf_le CategoryTheory.Subobject.sInf_le
 
-theorem le_sInf  {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
+theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
     f ≤ sInf s := by
   fapply le_of_comm
   · exact Limits.limit.lift _ (leInfCone s f k) ≫ (underlyingIso _).inv

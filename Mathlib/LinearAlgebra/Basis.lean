@@ -627,7 +627,7 @@ theorem constr_def (f : ι → M') :
 #align basis.constr_def Basis.constr_def
 
 theorem constr_apply (f : ι → M') (x : M) :
-    constr (M' := M') b S f x  = (b.repr x).sum fun b a => a • f b := by
+    constr (M' := M') b S f x = (b.repr x).sum fun b a => a • f b := by
   simp only [constr_def, LinearMap.comp_apply, Finsupp.lmapDomain_apply, Finsupp.total_apply]
   rw [Finsupp.sum_mapDomain_index] <;> simp [add_smul]
 #align basis.constr_apply Basis.constr_apply

@@ -82,6 +82,12 @@ instance mulOneClass [∀ i, MulOneClass <| f i] : MulOneClass (∀ i : I, f i) 
 #align pi.add_zero_class Pi.addZeroClass
 
 @[to_additive]
+instance invOneClass [∀ i, InvOneClass <| f i] : InvOneClass (∀ i : I, f i) :=
+  { one := (1 : ∀ i, f i)
+    inv := (· ⁻¹)
+    inv_one := by intros; ext; exact inv_one }
+
+@[to_additive]
 instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
   { semigroup, mulOneClass with
     npow := fun n x i => x i ^ n
@@ -117,6 +123,11 @@ instance divInvMonoid [∀ i, DivInvMonoid <| f i] : DivInvMonoid (∀ i : I, f 
     zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
     zpow_neg' := by intros; ext; exact DivInvMonoid.zpow_neg' _ _
   }
+
+@[to_additive Pi.subNegZeroMonoid]
+instance divInvOneMonoid [∀ i, DivInvOneMonoid <| f i] : DivInvOneMonoid (∀ i : I, f i) :=
+  { divInvMonoid with
+    inv_one := by ext; exact inv_one }
 
 @[to_additive]
 instance involutiveInv [∀ i, InvolutiveInv <| f i] : InvolutiveInv (∀ i, f i) :=

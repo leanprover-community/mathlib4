@@ -127,7 +127,7 @@ open Opposite HasZeroMorphisms
 instance hasZeroMorphismsOpposite [HasZeroMorphisms C] : HasZeroMorphisms Cᵒᵖ where
   Zero X Y := ⟨(0 : unop Y ⟶ unop X).op⟩
   comp_zero f Z := congr_arg Quiver.Hom.op (HasZeroMorphisms.zero_comp (unop Z) f.unop)
-  zero_comp X {Y Z} (f : Y ⟶  Z) :=
+  zero_comp X {Y Z} (f : Y ⟶ Z) :=
     congrArg Quiver.Hom.op (HasZeroMorphisms.comp_zero f.unop (unop X))
 #align category_theory.limits.has_zero_morphisms_opposite CategoryTheory.Limits.hasZeroMorphismsOpposite
 
@@ -189,7 +189,7 @@ theorem iff_id_eq_zero (X : C) : IsZero X ↔ 𝟙 X = 0 :=
     ⟨fun Y => ⟨⟨⟨0⟩, fun f => by
         rw [← id_comp f, ← id_comp (0: X ⟶ Y), h, zero_comp, zero_comp]; simp only⟩⟩,
     fun Y => ⟨⟨⟨0⟩, fun f => by
-        rw [← comp_id f, ← comp_id (0 : Y ⟶  X), h, comp_zero, comp_zero]; simp only ⟩⟩⟩⟩
+        rw [← comp_id f, ← comp_id (0 : Y ⟶ X), h, comp_zero, comp_zero]; simp only ⟩⟩⟩⟩
 #align category_theory.limits.is_zero.iff_id_eq_zero CategoryTheory.Limits.IsZero.iff_id_eq_zero
 
 theorem of_mono_zero (X Y : C) [Mono (0 : X ⟶ Y)] : IsZero X :=
@@ -283,12 +283,12 @@ open ZeroObject
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
   Zero X Y := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by
-    change ( (default : X ⟶  0)  ≫ default) ≫ f = (default : X ⟶  0) ≫ default
+    change ((default : X ⟶ 0) ≫ default) ≫ f = (default : X ⟶ 0) ≫ default
     rw [Category.assoc]
     congr
     simp only [eq_iff_true_of_subsingleton]
   comp_zero {X Y} f Z := by
-    change f ≫ (default : Y ⟶  0)  ≫ default = (default : X ⟶  0) ≫ default
+    change f ≫ (default : Y ⟶ 0) ≫ default = (default : X ⟶ 0) ≫ default
     rw [← Category.assoc]
     congr
     simp only [eq_iff_true_of_subsingleton]
@@ -368,7 +368,7 @@ variable [HasZeroObject C] [HasZeroMorphisms C]
 open ZeroObject
 
 @[simp]
-theorem id_zero : 𝟙 (0 : C) = (0 : (0 : C) ⟶  0) := by apply HasZeroObject.from_zero_ext
+theorem id_zero : 𝟙 (0 : C) = (0 : (0 : C) ⟶ 0) := by apply HasZeroObject.from_zero_ext
 #align category_theory.limits.id_zero CategoryTheory.Limits.id_zero
 
 -- This can't be a `simp` lemma because the left hand side would be a metavariable.
@@ -581,7 +581,7 @@ open ZeroObject
 /-- The zero morphism has a `MonoFactorisation` through the zero object.
 -/
 @[simps]
-def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y)  where
+def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y) where
   I := 0
   m := 0
   e := 0

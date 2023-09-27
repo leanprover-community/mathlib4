@@ -47,7 +47,7 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
   induction' n with n ih
   · rw [pow_zero] at h
     -- In mathlib, we proceed by two `have` statements:
-    -- have := isUnit_of_dvd_one  h
+    -- have := isUnit_of_dvd_one h
     -- have := not_unit hp
     -- `propose!` successfully guesses them both:
     have?! using h

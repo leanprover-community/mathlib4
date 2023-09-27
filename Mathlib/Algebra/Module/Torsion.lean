@@ -196,7 +196,7 @@ def torsion' (S : Type w) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S
     smul_mem' := fun a x ⟨b, h⟩ => ⟨b, by rw [smul_comm, h, smul_zero]⟩}
 #align submodule.torsion' Submodule.torsion'
 
-/-- The torsion submodule, containing all elements `x` of `M` such that  `a • x = 0` for some
+/-- The torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
   non-zero-divisor `a` in `R`. -/
 @[reducible]
 def torsion :=

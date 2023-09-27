@@ -17,7 +17,7 @@ import Mathlib.Tactic.Core
 
 This files defines equivalences between subsets of given types.
 An element `e` of `LocalEquiv α β` is made of two maps `e.toFun` and `e.invFun` respectively
-from α to β and from  β to α (just like equivs), which are inverse to each other on the subsets
+from α to β and from β to α (just like equivs), which are inverse to each other on the subsets
 `e.source` and `e.target` of respectively α and β.
 
 They are designed in particular to define charts on manifolds.

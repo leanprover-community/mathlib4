@@ -21,7 +21,7 @@ example (f : F) : f.v.val = [] := by
 structure Cat :=
   (O : Type)
   (H : O → O → Type)
-  (i : (o : O) →  H o o)
+  (i : (o : O) → H o o)
   (c : {X Y Z : O} → (f : H X Y) → (g : H Y Z) → H X Z)
   (li : ∀ {X Y : O} (f : H X Y), c (i X) f = f)
   (ri : ∀ {X Y : O} (f : H X Y), c f (i Y) = f)

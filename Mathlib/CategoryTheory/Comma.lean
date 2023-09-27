@@ -22,11 +22,11 @@ with a common codomain. Specifically, for functors `L : A ⥤ T` and `R : B ⥤ 
 `hom' : L.obj left' ⟶ R.obj right'` is a commutative square
 
 ```
-L.obj left   ⟶   L.obj left'
+L.obj left  ⟶  L.obj left'
       |               |
   hom |               | hom'
       ↓               ↓
-R.obj right  ⟶   R.obj right',
+R.obj right ⟶  R.obj right',
 ```
 
 where the top and bottom morphism come from morphisms `left ⟶ left'` and `right ⟶ right'`,

@@ -194,7 +194,7 @@ theorem Periodic.const_sub [AddCommGroup α] (h : Periodic f c) (a : α) :
 #align function.periodic.const_sub Function.Periodic.const_sub
 
 theorem Periodic.sub_const [AddCommGroup α] (h : Periodic f c) (a : α) :
-    Periodic (fun x => f (x - a)) c :=  by
+    Periodic (fun x => f (x - a)) c := by
   simpa only [sub_eq_add_neg] using h.add_const (-a)
 #align function.periodic.sub_const Function.Periodic.sub_const
 

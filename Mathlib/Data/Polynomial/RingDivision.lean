@@ -365,7 +365,7 @@ variable [CommRing R]
 inferred type and synthesized type for `DecidableRel` when using `Nat.le_find_iff` from
 `Mathlib.Data.Polynomial.Div` After some discussion on [Zulip]
 (https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/decidability.20leakage)
-introduced  `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the issue
+introduced `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the issue
 -/
 /-- The multiplicity of `a` as root of a nonzero polynomial `p` is at least `n` iff
   `(X - a) ^ n` divides `p`. -/
@@ -1220,7 +1220,7 @@ theorem count_map_roots_of_injective [IsDomain A] [DecidableEq B] (p : A[X]) {f 
   · exact count_map_roots ((Polynomial.map_ne_zero_iff hf).mpr hp0) b
 #align polynomial.count_map_roots_of_injective Polynomial.count_map_roots_of_injective
 
-theorem map_roots_le [IsDomain A] [IsDomain B]  {p : A[X]} {f : A →+* B} (h : p.map f ≠ 0) :
+theorem map_roots_le [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (h : p.map f ≠ 0) :
     p.roots.map f ≤ (p.map f).roots := by
   classical
   exact Multiset.le_iff_count.2 fun b => by

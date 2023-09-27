@@ -202,7 +202,7 @@ theorem casesOn_of_mul {C : FreeMonoid α → Sort _} (x : α) (xs : FreeMonoid 
 @[to_additive (attr := ext)]
 theorem hom_eq ⦃f g : FreeMonoid α →* M⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
   MonoidHom.ext fun l ↦ recOn l (f.map_one.trans g.map_one.symm)
-    (fun x xs hxs ↦ by  simp only [h, hxs, MonoidHom.map_mul])
+    (fun x xs hxs ↦ by simp only [h, hxs, MonoidHom.map_mul])
 #align free_monoid.hom_eq FreeMonoid.hom_eq
 #align free_add_monoid.hom_eq FreeAddMonoid.hom_eq
 
@@ -211,14 +211,14 @@ The purpose is to make `FreeMonoid.lift_eval_of` true by `rfl`. -/
 @[to_additive "A variant of `List.sum` that has `[x].sum = x` true definitionally.
 The purpose is to make `FreeAddMonoid.lift_eval_of` true by `rfl`."]
 def prodAux {M} [Monoid M] : List M → M
-  | []  => 1
+  | [] => 1
   | (x :: xs) => List.foldl (· * ·) x xs
 #align free_monoid.prod_aux FreeMonoid.prodAux
 #align free_add_monoid.sum_aux FreeAddMonoid.sumAux
 
 @[to_additive]
 lemma prodAux_eq : ∀ l : List M, FreeMonoid.prodAux l = l.prod
-  | []  => rfl
+  | [] => rfl
   | (_ :: xs) => congr_arg (fun x => List.foldl (· * ·) x xs) (one_mul _).symm
 #align free_monoid.prod_aux_eq FreeMonoid.prodAux_eq
 #align free_add_monoid.sum_aux_eq FreeAddMonoid.sumAux_eq

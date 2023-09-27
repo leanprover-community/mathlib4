@@ -186,7 +186,7 @@ def inducedMap (x : α) : β :=
 
 variable [Archimedean α]
 
-theorem inducedMap_mono : Monotone (inducedMap α β) := fun _ _  h =>
+theorem inducedMap_mono : Monotone (inducedMap α β) := fun _ _ h =>
   csSup_le_csSup (cutMap_bddAbove β _) (cutMap_nonempty β _) (cutMap_mono β h)
 #align linear_ordered_field.induced_map_mono LinearOrderedField.inducedMap_mono
 

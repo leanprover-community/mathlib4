@@ -185,7 +185,7 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort 
 
 -- porting note: added to ease the proof of `uncurry`
 lemma cases' ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b') :
-    ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b)  (hg : a = g⁻¹ • b),
+    ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b) (hg : a = g⁻¹ • b),
       f = eqToHom (by rw [ha, hg]) ≫ homOfPair b g ≫ eqToHom (by rw [hb]) := by
   revert a' b' f
   exact ActionCategory.cases (fun t g => ⟨g⁻¹ • t, t, g, rfl, rfl, rfl, by simp⟩)

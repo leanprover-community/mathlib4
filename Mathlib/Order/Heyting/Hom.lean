@@ -131,7 +131,7 @@ instance (priority := 100) BiheytingHomClass.toHeytingHomClass [BiheytingAlgebra
 
 -- See note [lower instance priority]
 instance (priority := 100) BiheytingHomClass.toCoheytingHomClass [BiheytingAlgebra α]
-    { _ : BiheytingAlgebra β}  [BiheytingHomClass F α β] : CoheytingHomClass F α β :=
+    { _ : BiheytingAlgebra β} [BiheytingHomClass F α β] : CoheytingHomClass F α β :=
   { ‹BiheytingHomClass F α β› with
     map_top := fun f => by rw [← @himp_self α _ ⊥, ← himp_self, map_himp] }
 #align biheyting_hom_class.to_coheyting_hom_class BiheytingHomClass.toCoheytingHomClass

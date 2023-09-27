@@ -278,7 +278,7 @@ def toFun (x : Proj.T| pbo f) : Spec.T A⁰_ f :=
 
 /-
 The preimage of basic open set `D(a/f^n)` in `Spec A⁰_f` under the forward map from `Proj A` to
-`Spec A⁰_f` is the basic open set `D(a) ∩ D(f)` in  `Proj A`. This lemma is used to prove that the
+`Spec A⁰_f` is the basic open set `D(a) ∩ D(f)` in `Proj A`. This lemma is used to prove that the
 forward map is continuous.
 -/
 theorem preimage_eq (a b : A) (k : ℕ) (a_mem : a ∈ 𝒜 k) (b_mem1 : b ∈ 𝒜 k)
@@ -572,4 +572,3 @@ end FromSpec
 end ProjIsoSpecTopComponent
 
 end AlgebraicGeometry
-

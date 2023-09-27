@@ -84,7 +84,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 section LinearOrder
 variable [LinearOrder R] {a b c : R}
 
-private lemma le_min_of_lt_of_le  (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
+private lemma le_min_of_lt_of_le (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
 private lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
 private lemma min_ne (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c :=
 by rw [min_def]; split_ifs <;> assumption

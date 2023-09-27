@@ -123,7 +123,7 @@ theorem ker_quotient_lift {S : Type v} [CommRing S] {I : Ideal R} (f : R →+* S
     rw [← hy, mem_map_iff_of_surjective (Quotient.mk I) Quotient.mk_surjective]
     exact ⟨y, hx, rfl⟩
   · intro hx
-    rw [mem_map_iff_of_surjective (Quotient.mk I)  Quotient.mk_surjective] at hx
+    rw [mem_map_iff_of_surjective (Quotient.mk I) Quotient.mk_surjective] at hx
     obtain ⟨y, hy⟩ := hx
     rw [RingHom.mem_ker, ← hy.right, Ideal.Quotient.lift_mk]
     exact hy.left

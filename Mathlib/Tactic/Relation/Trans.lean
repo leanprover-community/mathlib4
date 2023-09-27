@@ -68,7 +68,7 @@ def getExplicitFuncArg? (e : Expr) : MetaM (Option <| Expr × Expr) := do
 
 /-- solving `tgt ← mkAppM' rel #[x, z]` given `tgt = f z` -/
 def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
-  match f  with
+  match f with
   | Expr.app rel x => do
     let check: Bool ← do
       try
@@ -146,7 +146,7 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   let t'? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
   let s ← saveState
   for lem in (← (transExt.getState (← getEnv)).getUnify rel).push
-      ``HEq.trans |>.push ``HEq.trans  do
+      ``HEq.trans |>.push ``HEq.trans do
     try
       liftMetaTactic fun g ↦ do
         trace[Tactic.trans]"trying lemma {lem}"

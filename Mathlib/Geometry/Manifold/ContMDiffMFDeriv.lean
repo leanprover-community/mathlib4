@@ -204,7 +204,7 @@ theorem ContMDiffAt.mfderiv_const {x₀ : M} {f : M → M'} (hf : ContMDiffAt I 
 We have to assume that `f` is `C^(n+1)` at `(x₀, g(x₀))` and `g` is `C^n` at `x₀`.
 We have to insert a coordinate change from `x₀` to `g₁(x)` to make the derivative sensible.
 
-This is  similar to `ContMDiffAt.mfderiv`, but where the continuous linear map is applied to a
+This is similar to `ContMDiffAt.mfderiv`, but where the continuous linear map is applied to a
 (variable) vector.
 -/
 theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M) (g₁ : N' → N) (g₂ : N' → E)

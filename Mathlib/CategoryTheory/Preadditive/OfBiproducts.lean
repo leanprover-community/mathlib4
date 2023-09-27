@@ -77,7 +77,7 @@ theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
     ext
     · aesop_cat
     · simp only [biprod.inr_desc, BinaryBicone.inr_snd_assoc]
-  have h₁ : ∀ f : X ⟶ Y,  biprod.desc f (0 : X ⟶ Y) = biprod.fst ≫ f := by
+  have h₁ : ∀ f : X ⟶ Y, biprod.desc f (0 : X ⟶ Y) = biprod.fst ≫ f := by
     intro f
     ext
     · aesop_cat

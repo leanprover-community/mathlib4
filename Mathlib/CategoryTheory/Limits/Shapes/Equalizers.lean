@@ -406,7 +406,7 @@ theorem Fork.equalizer_ext (s : Fork f g) {W : C} {k l : W ⟶ s.pt} (h : k ≫ 
     ∀ j : WalkingParallelPair, k ≫ s.π.app j = l ≫ s.π.app j
   | zero => h
   | one => by
-    have : k ≫ ι s ≫ f = l ≫ ι s ≫  f := by
+    have : k ≫ ι s ≫ f = l ≫ ι s ≫ f := by
       simp only [← Category.assoc]; exact congrArg (· ≫ f) h
     rw [s.app_one_eq_ι_comp_left, this]
 #align category_theory.limits.fork.equalizer_ext CategoryTheory.Limits.Fork.equalizer_ext

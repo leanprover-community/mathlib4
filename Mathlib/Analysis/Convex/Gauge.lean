@@ -389,7 +389,7 @@ section IsROrC
 
 variable [IsROrC 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
-/-- `gauge s` as a seminorm when `s` is  balanced, convex and absorbent. -/
+/-- `gauge s` as a seminorm when `s` is balanced, convex and absorbent. -/
 @[simps!]
 def gaugeSeminorm (hs₀ : Balanced 𝕜 s) (hs₁ : Convex ℝ s) (hs₂ : Absorbent ℝ s) : Seminorm 𝕜 E :=
   Seminorm.of (gauge s) (gauge_add_le hs₁ hs₂) (gauge_smul hs₀)

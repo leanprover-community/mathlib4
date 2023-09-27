@@ -222,7 +222,7 @@ theorem nonUniforms_bot (hε : 0 < ε) : (⊥ : Finpartition A).nonUniforms G ε
   rintro ⟨u, v⟩
   simp only [Finpartition.mk_mem_nonUniforms_iff, Finpartition.parts_bot, mem_map, not_and,
     Classical.not_not, exists_imp]; dsimp
-  rintro x ⟨_,xu⟩  y ⟨_,yv⟩ _
+  rintro x ⟨_,xu⟩ y ⟨_,yv⟩ _
   rw [←xu, ←yv]
   exact G.isUniform_singleton hε
 #align finpartition.non_uniforms_bot Finpartition.nonUniforms_bot

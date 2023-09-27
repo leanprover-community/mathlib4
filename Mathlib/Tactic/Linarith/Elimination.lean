@@ -328,7 +328,7 @@ def mkLinarithData (hyps : List Comp) (maxVar : ℕ) : LinarithData :=
 `produceCertificate hyps vars` tries to derive a contradiction from the comparisons in `hyps`
 by eliminating all variables ≤ `maxVar`.
 If successful, it returns a map `coeff : ℕ → ℕ` as a certificate.
-This map represents that we can find a contradiction by taking the sum  `∑ (coeff i) * hyps[i]`.
+This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
 -/
 def FourierMotzkin.produceCertificate : CertificateOracle :=
   fun hyps maxVar => match ExceptT.run

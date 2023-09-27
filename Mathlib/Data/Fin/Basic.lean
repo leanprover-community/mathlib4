@@ -25,7 +25,7 @@ This file expands on the development in the core library.
 ### Induction principles
 
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
-* `Fin.succRec` : Define `C n i` by induction on  `i : Fin n` interpreted
+* `Fin.succRec` : Define `C n i` by induction on `i : Fin n` interpreted
   as `(0 : Fin (n - i)).succ.succ…`. This function has two arguments: `H0 n` defines
   `0`-th element `C (n+1) 0` of an `(n+1)`-tuple, and `Hs n i` defines `(i+1)`-st element
   of `(n+1)`-tuple based on `n`, `i`, and `i`-th element of `n`-tuple.

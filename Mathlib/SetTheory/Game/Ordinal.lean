@@ -201,7 +201,7 @@ theorem toPGame_add : ∀ a b : Ordinal.{u}, a.toPGame + b.toPGame ≈ (a ♯ b)
       · exact nadd_lt_nadd_left wf _
     · rw [toPGame_moveLeft']
       rcases lt_nadd_iff.1 (toLeftMovesToPGame_symm_lt i) with (⟨c, hc, hc'⟩ | ⟨c, hc, hc'⟩) <;>
-      rw [← toPGame_le_iff, ← le_congr_right (toPGame_add _ _)] at hc'  <;>
+      rw [← toPGame_le_iff, ← le_congr_right (toPGame_add _ _)] at hc' <;>
       apply lf_of_le_of_lf hc'
       · apply add_lf_add_right
         rwa [toPGame_lf_iff]

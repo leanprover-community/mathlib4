@@ -1210,7 +1210,7 @@ instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) := instDecidabl
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] :
     @DecidableRel (WithTop α) (· ≤ ·) := fun _ _ =>
-  decidable_of_decidable_of_iff  toDual_le_toDual_iff
+  decidable_of_decidable_of_iff toDual_le_toDual_iff
 #align with_top.decidable_le WithTop.decidableLE
 
 instance decidableLT [LT α] [@DecidableRel α (· < ·)] :

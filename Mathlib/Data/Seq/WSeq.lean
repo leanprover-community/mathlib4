@@ -1720,7 +1720,7 @@ theorem join_append (S T : WSeq (WSeq α)) : join (append S T) ~ʷ append (join 
       _ _ _
       (let ⟨s, S, T, h1, h2⟩ := h
       ⟨s, S, T, congr_arg destruct h1, congr_arg destruct h2⟩)
-  rintro c1 c2  ⟨s, S, T, rfl, rfl⟩
+  rintro c1 c2 ⟨s, S, T, rfl, rfl⟩
   induction' s using WSeq.recOn with a s s <;> simp
   · induction' S using WSeq.recOn with s S S <;> simp
     · induction' T using WSeq.recOn with s T T <;> simp

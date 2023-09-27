@@ -209,7 +209,7 @@ class HeytingAlgebra (α : Type _) extends GeneralizedHeytingAlgebra α, Bot α,
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 #align heyting_algebra HeytingAlgebra
 
-/-- A co-Heyting algebra is a bounded  lattice with an additional binary difference operation `\`
+/-- A co-Heyting algebra is a bounded lattice with an additional binary difference operation `\`
 such that `\ a` is right adjoint to `⊔ a`. -/
 class CoheytingAlgebra (α : Type _) extends GeneralizedCoheytingAlgebra α, Top α, HNot α where
   /-- `⊤` is a greatest element -/

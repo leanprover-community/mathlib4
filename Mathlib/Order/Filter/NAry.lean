@@ -279,7 +279,7 @@ theorem map₂_map_right (m : α → γ → δ) (n : β → γ) :
 @[simp]
 theorem map₂_curry (m : α × β → γ) (f : Filter α) (g : Filter β) :
     map₂ (curry m) f g = (f ×ˢ g).map m :=
-  (map_prod_eq_map₂' _  _ _).symm
+  (map_prod_eq_map₂' _ _ _).symm
 #align filter.map₂_curry Filter.map₂_curry
 
 @[simp]

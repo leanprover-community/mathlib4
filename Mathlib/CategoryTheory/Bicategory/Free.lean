@@ -74,7 +74,7 @@ inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Typ
   | vcomp {a b} {f g h : a ⟶ b} (η : Hom₂ f g) (θ : Hom₂ g h) : Hom₂ f h
   | whisker_left {a b c} (f : a ⟶ b) {g h : b ⟶ c} (η : Hom₂ g h) :
       Hom₂ (f ≫ g) (f ≫ h)-- `η` cannot be earlier than `h` since it is a recursive argument.
-  | whisker_right {a b c} {f g : a ⟶ b} (h : b ⟶  c) (η : Hom₂ f g) : Hom₂ (f.comp h) (g.comp h)
+  | whisker_right {a b c} {f g : a ⟶ b} (h : b ⟶ c) (η : Hom₂ f g) : Hom₂ (f.comp h) (g.comp h)
   | associator {a b c d} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
       Hom₂ ((f ≫ g) ≫ h) (f ≫ (g ≫ h))
   | associator_inv {a b c d} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :

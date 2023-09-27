@@ -113,7 +113,7 @@ def encodeMultiset (s : Multiset α) : ℕ :=
 
 /-- Explicit decoding function for `Multiset α` -/
 def decodeMultiset (n : ℕ) : Option (Multiset α) :=
-  ((↑) : List α →  Multiset α) <$> decode (α := List α) n
+  ((↑) : List α → Multiset α) <$> decode (α := List α) n
 #align encodable.decode_multiset Encodable.decodeMultiset
 
 /-- If `α` is encodable, then so is `Multiset α`. -/

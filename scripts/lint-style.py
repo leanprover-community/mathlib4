@@ -165,6 +165,8 @@ def import_only_check(lines, path):
         imports = line.split()
         if imports[0] == "--":
             continue
+        if imports[0] == "#align_import":
+            continue
         if imports[0] != "import":
             import_only_file = False
             break
@@ -212,13 +214,13 @@ def regular_check(lines, path):
         if copy_done and line == "\n":
             continue
         words = line.split()
-        if words[0] != "import" and words[0] != "/-!":
+        if words[0] != "import" and words[0] != "/-!" and words[0] != "#align_import":
             errors += [(ERR_MOD, line_nr, path)]
             break
         if words[0] == "/-!":
             break
         # final case: words[0] == "import"
-        if len(words) > 2:
+        if words[0] == "import" and len(words) > 2:
             if words[2] != "--":
                 errors += [(ERR_IMP, line_nr, path)]
     return errors

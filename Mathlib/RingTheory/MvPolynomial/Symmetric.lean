@@ -75,7 +75,7 @@ variable {σ : Type _} {R : Type _}
 variable {τ : Type _} {S : Type _}
 
 /-- A `MvPolynomial φ` is symmetric if it is invariant under
-permutations of its variables by the  `rename` operation -/
+permutations of its variables by the `rename` operation -/
 def IsSymmetric [CommSemiring R] (φ : MvPolynomial σ R) : Prop :=
   ∀ e : Perm σ, rename e φ = φ
 #align mv_polynomial.is_symmetric MvPolynomial.IsSymmetric

@@ -78,7 +78,7 @@ instance (priority := 100) toExistsAddOfLE [NonUnitalSemiring R] [PartialOrder R
 -- see note [lower instance priority]
 instance (priority := 100) toOrderedAddCommGroup [NonUnitalRing R] [PartialOrder R]
     [StarOrderedRing R] : OrderedAddCommGroup R where
-  add_le_add_left := @add_le_add_left  _ _ _ _
+  add_le_add_left := @add_le_add_left _ _ _ _
 
 #align star_ordered_ring.to_ordered_add_comm_group StarOrderedRing.toOrderedAddCommGroup
 

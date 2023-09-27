@@ -617,7 +617,7 @@ abbrev coprod.desc {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶
 #align category_theory.limits.coprod.desc CategoryTheory.Limits.coprod.desc
 
 /-- codiagonal arrow of the binary coproduct -/
-abbrev codiag (X : C) [HasBinaryCoproduct X X] : X ⨿ X ⟶  X :=
+abbrev codiag (X : C) [HasBinaryCoproduct X X] : X ⨿ X ⟶ X :=
   coprod.desc (𝟙 _) (𝟙 _)
 #align category_theory.limits.codiag CategoryTheory.Limits.codiag
 

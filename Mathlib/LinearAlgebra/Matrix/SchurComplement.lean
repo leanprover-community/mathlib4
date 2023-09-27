@@ -194,7 +194,7 @@ theorem isUnit_fromBlocks_zero₂₁ {A : Matrix m m α} {B : Matrix m n α} {D 
 
 /-- A lower block-triangular matrix is invertible iff both elements of its diagonal are.
 
-This is a propositional form of  `Matrix.fromBlocksZero₁₂InvertibleEquiv` forms an `iff`. -/
+This is a propositional form of `Matrix.fromBlocksZero₁₂InvertibleEquiv` forms an `iff`. -/
 @[simp]
 theorem isUnit_fromBlocks_zero₁₂ {A : Matrix m m α} {C : Matrix n m α} {D : Matrix n n α} :
     IsUnit (fromBlocks A 0 C D) ↔ IsUnit A ∧ IsUnit D := by

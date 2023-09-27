@@ -518,7 +518,7 @@ section LComapDomain
 variable {β : Type _}
 
 /-- Given `f : α → β` and a proof `hf` that `f` is injective, `lcomapDomain f hf` is the linear map
-sending  `l : β →₀ M` to the finitely supported function from `α` to `M` given by composing
+sending `l : β →₀ M` to the finitely supported function from `α` to `M` given by composing
 `l` with `f`.
 
 This is the linear version of `Finsupp.comapDomain`. -/

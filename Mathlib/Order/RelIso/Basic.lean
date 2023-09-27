@@ -256,7 +256,7 @@ def Simps.apply (h : r ↪r s) : α → β :=
 initialize_simps_projections RelEmbedding (toFun → apply)
 
 @[simp]
-theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β)  = f :=
+theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β) = f :=
   rfl
 #align rel_embedding.coe_fn_to_embedding RelEmbedding.coe_toEmbedding
 

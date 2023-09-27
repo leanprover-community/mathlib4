@@ -173,7 +173,7 @@ In the current implementation, this is the Fourier Motzkin elimination routine i
 `Elimination.lean`, but other oracles could easily be swapped in.
 
 The returned certificate is a map `m` from hypothesis indices to natural number coefficients.
-If our set of hypotheses has the form  `{tᵢ Rᵢ 0}`,
+If our set of hypotheses has the form `{tᵢ Rᵢ 0}`,
 then the elimination process should have guaranteed that
 1.\ `∑ (m i)*tᵢ = 0`,
 with at least one `i` such that `m i > 0` and `Rᵢ` is `<`.

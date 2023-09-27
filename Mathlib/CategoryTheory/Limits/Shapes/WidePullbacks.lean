@@ -87,14 +87,14 @@ aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
-      (_: WidePullbackShape _) ⟶  (_ : WidePullbackShape _) ))
+      (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _) ))
 
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash
 
 instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
   constructor
   intro a b
-  casesm* WidePullbackShape _, (_: WidePullbackShape _) ⟶  (_ : WidePullbackShape _)
+  casesm* WidePullbackShape _, (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _)
   rfl; rfl; rfl
 #align category_theory.limits.wide_pullback_shape.subsingleton_hom CategoryTheory.Limits.WidePullbackShape.subsingleton_hom
 
@@ -201,14 +201,14 @@ open Lean Elab Tactic
 def evalCasesBash' : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePushoutShape _,
-      (_: WidePushoutShape _) ⟶  (_ : WidePushoutShape _) ))
+      (_: WidePushoutShape _) ⟶ (_ : WidePushoutShape _) ))
 
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash'
 
 instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by
   constructor
   intro a b
-  casesm* WidePushoutShape _, (_: WidePushoutShape _) ⟶  (_ : WidePushoutShape _)
+  casesm* WidePushoutShape _, (_: WidePushoutShape _) ⟶ (_ : WidePushoutShape _)
   repeat rfl
 #align category_theory.limits.wide_pushout_shape.subsingleton_hom CategoryTheory.Limits.WidePushoutShape.subsingleton_hom
 
@@ -261,7 +261,7 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
           | none => f
           | some j => ι j
         naturality := fun j j' f => by
-          cases j <;> cases j' <;> cases f <;> refine id _  <;> dsimp <;> simp [w] } }
+          cases j <;> cases j' <;> cases f <;> refine id _ <;> dsimp <;> simp [w] } }
 #align category_theory.limits.wide_pushout_shape.mk_cocone CategoryTheory.Limits.WidePushoutShape.mkCocone
 
 /-- Wide pushout diagrams of equivalent index types are equivalent. -/

@@ -48,7 +48,7 @@ to some injective object `J`.
 structure InjectivePresentation (X : C) where
   J : C
   injective : Injective J := by infer_instance
-  f : X ⟶  J
+  f : X ⟶ J
   mono : Mono f := by infer_instance
 #align category_theory.injective_presentation CategoryTheory.InjectivePresentation
 
@@ -216,7 +216,7 @@ section EnoughInjectives
 variable [EnoughInjectives C]
 
 /-- `Injective.under X` provides an arbitrarily chosen injective object equipped with
-a monomorphism `Injective.ι : X ⟶  Injective.under X`.
+a monomorphism `Injective.ι : X ⟶ Injective.under X`.
 -/
 def under (X : C) : C :=
   (EnoughInjectives.presentation X).some.J
@@ -226,7 +226,7 @@ instance injective_under (X : C) : Injective (under X) :=
   (EnoughInjectives.presentation X).some.injective
 #align category_theory.injective.injective_under CategoryTheory.Injective.injective_under
 
-/-- The monomorphism `Injective.ι : X ⟶  Injective.under X`
+/-- The monomorphism `Injective.ι : X ⟶ Injective.under X`
 from the arbitrarily chosen injective object under `X`.
 -/
 def ι (X : C) : X ⟶ under X :=
@@ -376,4 +376,3 @@ theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInject
 end Equivalence
 
 end CategoryTheory
-

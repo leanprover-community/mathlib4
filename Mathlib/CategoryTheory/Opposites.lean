@@ -646,7 +646,7 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ
     where
   functor :=
     { obj := fun F => F.unop.rightOp
-      map := fun η => NatTrans.rightOp η.unop  }
+      map := fun η => NatTrans.rightOp η.unop }
   inverse :=
     { obj := fun F => op F.leftOp
       map := fun η => η.leftOp.op }

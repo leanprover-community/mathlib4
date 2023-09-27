@@ -384,7 +384,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     simpa only [exists_prop, mem_iUnion, mem_singleton_iff, mem_closedBall, Subtype.exists,
       Subtype.coe_mk]
   choose! g hg using this
-  -- Choose for each `k < N` an ordinal `G k < i`  giving a ball of color `k` intersecting
+  -- Choose for each `k < N` an ordinal `G k < i` giving a ball of color `k` intersecting
   -- the last ball.
   let G : ℕ → Ordinal := fun n => if n = N then i else g n
   have color_G : ∀ n, n ≤ N → p.color (G n) = n := by

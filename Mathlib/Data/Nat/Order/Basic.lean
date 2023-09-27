@@ -685,7 +685,7 @@ protected theorem bit1_le {n m : ℕ} (h : n ≤ m) : bit1 n ≤ bit1 m :=
 #align nat.bit1_le Nat.bit1_le
 
 theorem bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
-  | true, _, _, h => Nat.bit1_le  h
+  | true, _, _, h => Nat.bit1_le h
   | false, _, _, h => Nat.bit0_le h
 #align nat.bit_le Nat.bit_le
 

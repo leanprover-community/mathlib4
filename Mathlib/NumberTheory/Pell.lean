@@ -456,7 +456,7 @@ to the Pell equation `x^2 - d*y^2 = 1`. -/
 theorem exists_nontrivial_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ a : Solution₁ d, a ≠ 1 ∧ a ≠ -1 := by
   obtain ⟨x, y, prop, hy⟩ := exists_of_not_isSquare h₀ hd
-  refine' ⟨mk x y prop, fun H => _, fun H => _⟩ <;> apply_fun Solution₁.y at H  <;>
+  refine' ⟨mk x y prop, fun H => _, fun H => _⟩ <;> apply_fun Solution₁.y at H <;>
     simp [hy] at H
 #align pell.solution₁.exists_nontrivial_of_not_is_square Pell.Solution₁.exists_nontrivial_of_not_isSquare
 

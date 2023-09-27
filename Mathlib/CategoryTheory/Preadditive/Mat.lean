@@ -386,7 +386,7 @@ set_option linter.uppercaseLean3 false in
 
 @[reassoc (attr := simp)]
 lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
-    (additiveObjIsoBiproduct F M).hom ≫ biproduct.π _ i  =
+    (additiveObjIsoBiproduct F M).hom ≫ biproduct.π _ i =
       F.map (M.isoBiproductEmbedding.hom ≫ biproduct.π _ i) := by
   dsimp [additiveObjIsoBiproduct]
   rw [biproduct.lift_π, Category.assoc]

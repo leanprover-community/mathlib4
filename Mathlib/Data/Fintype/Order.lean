@@ -34,7 +34,7 @@ and set membership is undecidable in general.
 On a `Fintype`, we can promote:
 * a `Lattice` to a `CompleteLattice`.
 * a `DistribLattice` to a `CompleteDistribLattice`.
-* a `LinearOrder`  to a `CompleteLinearOrder`.
+* a `LinearOrder` to a `CompleteLinearOrder`.
 * a `BooleanAlgebra` to a `CompleteAtomicBooleanAlgebra`.
 
 Those are marked as `def` to avoid typeclass loops.

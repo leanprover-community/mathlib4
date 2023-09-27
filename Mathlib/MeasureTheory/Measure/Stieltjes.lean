@@ -393,7 +393,7 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
     still covered by the sets `s i` and moreover `f b - f a'` is very close to `f b - f a`
     (up to `ε/2`).
     Also, by definition one can cover `s i` by a half-closed interval `(p i, q i]` with `f`-length
-    very close to  that of `s i` (within a suitably small `ε' i`, say). If one moves `q i` very
+    very close to that of `s i` (within a suitably small `ε' i`, say). If one moves `q i` very
     slightly to the right, then the `f`-length will change very little by right continuity, and we
     will get an open interval `(p i, q' i)` covering `s i` with `f (q' i) - f (p i)` within `ε' i`
     of the `f`-length of `s i`. -/

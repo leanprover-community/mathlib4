@@ -582,7 +582,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
 #align real.exists_rat_eq_convergent' Real.exists_rat_eq_convergent'
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
-if `ξ` is a real number and  `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
+if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This version uses `Real.convergent`. -/
 theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
@@ -600,7 +600,7 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
 #align real.exists_rat_eq_convergent Real.exists_rat_eq_convergent
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
-if `ξ` is a real number and  `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
+if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This is the version using `generalized_contined_fraction.convergents`. -/
 theorem exists_continued_fraction_convergent_eq_rat {q : ℚ}

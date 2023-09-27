@@ -83,7 +83,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       simp_rw [coe_mul, Pi.mul_apply,
         ← ContinuousMap.tsum_apply (summable_of_locally_summable_norm hf), tsum_mul_left]
     -- Swap sum and integral.
-    _ =  ∑' n : ℤ, ∫ x in (0:ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
+    _ = ∑' n : ℤ, ∫ x in (0:ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
       refine' (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm _).symm
       convert hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
       exact funext fun n => neK _ _

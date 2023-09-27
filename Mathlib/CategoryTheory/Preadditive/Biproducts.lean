@@ -309,9 +309,9 @@ def isBinaryBilimitOfTotal {X Y : C} (b : BinaryBicone X Y)
     (total : b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.pt) : b.IsBilimit where
   isLimit :=
     { lift := fun s =>
-      (BinaryFan.fst s ≫ b.inl : s.pt ⟶  b.pt) + (BinaryFan.snd s ≫ b.inr : s.pt ⟶ b.pt)
+      (BinaryFan.fst s ≫ b.inl : s.pt ⟶ b.pt) + (BinaryFan.snd s ≫ b.inr : s.pt ⟶ b.pt)
       uniq := fun s m h => by
-        have reassoced (j : WalkingPair) {W : C} (h' : _ ⟶  W) :
+        have reassoced (j : WalkingPair) {W : C} (h' : _ ⟶ W) :
           m ≫ b.toCone.π.app ⟨j⟩ ≫ h' = s.π.app ⟨j⟩ ≫ h' := by
             rw [← Category.assoc, eq_whisker (h ⟨j⟩)]
         erw [← Category.comp_id m, ← total, comp_add, reassoced WalkingPair.left,
@@ -319,7 +319,7 @@ def isBinaryBilimitOfTotal {X Y : C} (b : BinaryBicone X Y)
       fac := fun s j => by rcases j with ⟨⟨⟩⟩ <;> simp }
   isColimit :=
     { desc := fun s =>
-        (b.fst ≫ BinaryCofan.inl s : b.pt ⟶  s.pt) + (b.snd ≫ BinaryCofan.inr s : b.pt ⟶  s.pt)
+        (b.fst ≫ BinaryCofan.inl s : b.pt ⟶ s.pt) + (b.snd ≫ BinaryCofan.inr s : b.pt ⟶ s.pt)
       uniq := fun s m h => by
         erw [← Category.id_comp m, ← total, add_comp, Category.assoc, Category.assoc,
           h ⟨WalkingPair.left⟩, h ⟨WalkingPair.right⟩]
@@ -533,7 +533,7 @@ def BinaryBicone.isBilimitOfKernelInl {X Y : C} (b : BinaryBicone X Y)
     BinaryFan.IsLimit.mk _ (fun f g => f ≫ b.inl + g ≫ b.inr) (fun f g => by simp)
       (fun f g => by simp) fun {T} f g m h₁ h₂ => by
       dsimp at m
-      have h₁' : ((m : T ⟶  b.pt) - (f ≫ b.inl + g ≫ b.inr)) ≫ b.fst = 0 := by
+      have h₁' : ((m : T ⟶ b.pt) - (f ≫ b.inl + g ≫ b.inr)) ≫ b.fst = 0 := by
         simpa using sub_eq_zero.2 h₁
       have h₂' : (m - (f ≫ b.inl + g ≫ b.inr)) ≫ b.snd = 0 := by simpa using sub_eq_zero.2 h₂
       obtain ⟨q : T ⟶ X, hq : q ≫ b.inl = m - (f ≫ b.inl + g ≫ b.inr)⟩ :=
@@ -846,8 +846,8 @@ theorem Biproduct.column_nonzero_of_iso' {σ τ : Type} [Finite τ] {S : σ → 
     (∀ t : τ, biproduct.ι S s ≫ f ≫ biproduct.π T t = 0) → 𝟙 (S s) = 0 := by
   cases nonempty_fintype τ
   intro z
-  have reassoced {t : τ} {W : C} (h : _ ⟶  W) :
-    biproduct.ι S s ≫ f ≫ biproduct.π T t ≫ h =  0 ≫ h := by
+  have reassoced {t : τ} {W : C} (h : _ ⟶ W) :
+    biproduct.ι S s ≫ f ≫ biproduct.π T t ≫ h = 0 ≫ h := by
     simp only [← Category.assoc]
     apply eq_whisker
     simp only [Category.assoc]

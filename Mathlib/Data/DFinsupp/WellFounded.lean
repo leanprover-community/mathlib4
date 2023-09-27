@@ -235,10 +235,10 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
     exact ⟨i, fun j hj ↦ Quot.sound (he j hj), hl⟩⟩
 #align dfinsupp.well_founded_lt DFinsupp.wellFoundedLT
 
-instance DFinsupp.well_founded_lt' [∀ i, CanonicallyOrderedAddMonoid (α i)]
+instance DFinsupp.wellFoundedLT' [∀ i, CanonicallyOrderedAddMonoid (α i)]
     [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Π₀ i, α i) :=
   DFinsupp.wellFoundedLT fun _i a => (zero_le a).not_lt
-#align dfinsupp.well_founded_lt' DFinsupp.well_founded_lt'
+#align dfinsupp.well_founded_lt' DFinsupp.wellFoundedLT'
 
 instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (∀ i, α i) :=
@@ -261,4 +261,3 @@ instance DFinsupp.wellFoundedLT_of_finite [Finite ι] [∀ i, Zero (α i)] [∀ 
   have := Fintype.ofFinite ι
   ⟨InvImage.wf equivFunOnFintype Pi.wellFoundedLT.wf⟩
 #align dfinsupp.well_founded_lt_of_finite DFinsupp.wellFoundedLT_of_finite
-

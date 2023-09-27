@@ -901,7 +901,7 @@ theorem exists_of_mem_map {f : α → β} {b : β} {s : Computation α} (h : b �
 #align computation.exists_of_mem_map Computation.exists_of_mem_map
 
 instance terminates_map (f : α → β) (s : Computation α) [Terminates s] : Terminates (map f s) := by
-  rw [← bind_pure];  exact terminates_of_mem (mem_bind (get_mem s) (get_mem (f (get s))))
+  rw [← bind_pure]; exact terminates_of_mem (mem_bind (get_mem s) (get_mem (f (get s))))
 #align computation.terminates_map Computation.terminates_map
 
 theorem terminates_map_iff (f : α → β) (s : Computation α) : Terminates (map f s) ↔ Terminates s :=

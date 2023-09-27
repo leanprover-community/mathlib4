@@ -109,7 +109,7 @@ theorem coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgH
 #align weak_dual.character_space.coe_to_non_unital_alg_hom WeakDual.CharacterSpace.coe_toNonUnitalAlgHom
 
 instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
-  ⟨fun φ =>  φ.prop.1 <|
+  ⟨fun φ => φ.prop.1 <|
     ContinuousLinearMap.ext fun x => by
       rw [show x = 0 from Subsingleton.elim x 0, map_zero, map_zero] ⟩
 

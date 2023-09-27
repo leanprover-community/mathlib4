@@ -8,7 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Calculus.BumpFunctionFindim
+import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 import Mathlib.Geometry.Manifold.ContMDiff
 
 /-!

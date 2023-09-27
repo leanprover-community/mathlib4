@@ -130,7 +130,7 @@ example (h : ¬ p ∨ ¬ q): ¬ (p ∧ q) := by
   guard_target = ¬p ∨ ¬q
   exact h
 
-example : p →  ¬ ¬ ¬ ¬ ¬ ¬ p := by
+example : p → ¬ ¬ ¬ ¬ ¬ ¬ p := by
   push_neg
   guard_target = p → p
   exact id

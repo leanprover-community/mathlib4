@@ -43,9 +43,9 @@ $$
 $$
 Using this notation we can describe the uniform space structure and the topology it induces.
 Specifically:
- *  A subset `X ⊆ C(α, β) × C(α, β)` is an entourage for the uniform space structure on `C(α, β)`
+  * A subset `X ⊆ C(α, β) × C(α, β)` is an entourage for the uniform space structure on `C(α, β)`
     iff there exists a compact `K` and entourage `V` such that `E(K, V) ⊆ X`.
- *  A subset `Y ⊆ C(α, β)` is a neighbourhood of `f` iff there exists a compact `K` and entourage
+  * A subset `Y ⊆ C(α, β)` is a neighbourhood of `f` iff there exists a compact `K` and entourage
     `V` such that `N(K, V, f) ⊆ Y`.
 
 The topology on `C(α, β)` thus has a natural subbasis (the compact-open subbasis) and a natural

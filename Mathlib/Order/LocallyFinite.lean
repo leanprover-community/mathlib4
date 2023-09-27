@@ -110,8 +110,9 @@ as `Icc (-1) 1` is infinite.
 
 open Finset Function
 
-/-- A locally finite order is an order where bounded intervals are finite. When you don't care too
-much about definitional equality, you can use `LocallyFiniteOrder.ofIcc` or
+/-- This is a mixin class describing a locally finite order,
+that is, is an order where bounded intervals are finite.
+When you don't care too much about definitional equality, you can use `LocallyFiniteOrder.ofIcc` or
 `LocallyFiniteOrder.ofFiniteIcc` to build a locally finite order from just `Finset.Icc`. -/
 class LocallyFiniteOrder (α : Type _) [Preorder α] where
   /-- Left-closed right-closed interval -/
@@ -132,7 +133,7 @@ class LocallyFiniteOrder (α : Type _) [Preorder α] where
   finset_mem_Ioo : ∀ a b x : α, x ∈ finsetIoo a b ↔ a < x ∧ x < b
 #align locally_finite_order LocallyFiniteOrder
 
-/-- A locally finite order top is an order where all intervals bounded above are finite. This is
+/-- This mixin class describes an order where all intervals bounded below are finite. This is
 slightly weaker than `LocallyFiniteOrder` + `OrderTop` as it allows empty types. -/
 class LocallyFiniteOrderTop (α : Type _) [Preorder α] where
   /-- Left-open right-infinite interval -/
@@ -145,7 +146,7 @@ class LocallyFiniteOrderTop (α : Type _) [Preorder α] where
   finset_mem_Ioi : ∀ a x : α, x ∈ finsetIoi a ↔ a < x
 #align locally_finite_order_top LocallyFiniteOrderTop
 
-/-- A locally finite order bot is an order where all intervals bounded below are finite. This is
+/-- This mixin class describes an order where all intervals bounded above are finite. This is
 slightly weaker than `LocallyFiniteOrder` + `OrderBot` as it allows empty types. -/
 class LocallyFiniteOrderBot (α : Type _) [Preorder α] where
   /-- Left-infinite right-open interval -/

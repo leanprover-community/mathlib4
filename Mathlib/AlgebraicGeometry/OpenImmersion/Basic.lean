@@ -324,7 +324,7 @@ theorem to_iso (f : X ⟶ Y) [h : IsOpenImmersion f] [h' : Epi f.base] : IsIso f
       dsimp only [Functor.op, Opens.map]
       congr
       exact (Set.image_preimage_eq _ ((TopCat.epi_iff_surjective _).mp h')).symm
-    convert @IsOpenImmersion.c_iso _ _ _ _  _ h ((Opens.map f.base).obj (unop U))
+    convert @IsOpenImmersion.c_iso _ _ _ _ _ h ((Opens.map f.base).obj (unop U))
   have : IsIso f.base
   · let t : X ≃ₜ Y :=
       (Homeomorph.ofEmbedding _ h.base_open.toEmbedding).trans

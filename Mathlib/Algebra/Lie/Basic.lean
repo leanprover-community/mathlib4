@@ -288,7 +288,7 @@ instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) :=
 instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ (fun _ => L₂) :=
   { coe := fun f => f.toFun,
     coe_injective' := fun x y h =>
-      by cases x; cases y; simp at h; simp [h]  }
+      by cases x; cases y; simp at h; simp [h] }
 
 initialize_simps_projections LieHom (toFun → apply)
 
@@ -719,7 +719,7 @@ instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
 instance : FunLike (M →ₗ⁅R, L⁆ N) M (fun _ => N) :=
   { coe := fun f => f.toFun,
     coe_injective' := fun x y h =>
-      by cases x; cases y; simp at h; simp [h]  }
+      by cases x; cases y; simp at h; simp [h] }
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
@@ -843,7 +843,7 @@ theorem comp_apply (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) (m : M) :
 #align lie_module_hom.comp_apply LieModuleHom.comp_apply
 
 @[norm_cast, simp]
-theorem coe_comp (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) : ⇑(f.comp g)  = f ∘ g :=
+theorem coe_comp (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) : ⇑(f.comp g) = f ∘ g :=
   rfl
 #align lie_module_hom.coe_comp LieModuleHom.coe_comp
 

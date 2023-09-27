@@ -172,7 +172,7 @@ theorem hom.inj_on_objects : Function.Injective (hom S).obj := by
 #align category_theory.subgroupoid.hom.inj_on_objects CategoryTheory.Subgroupoid.hom.inj_on_objects
 
 theorem hom.faithful : ∀ c d, Function.Injective fun f : c ⟶ d => (hom S).map f := by
-  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.eq  hfg
+  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.eq hfg
 #align category_theory.subgroupoid.hom.faithful CategoryTheory.Subgroupoid.hom.faithful
 
 /-- The subgroup of the vertex group at `c` given by the subgroupoid -/

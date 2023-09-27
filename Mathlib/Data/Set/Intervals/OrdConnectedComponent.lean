@@ -32,7 +32,7 @@ def ordConnectedComponent (s : Set α) (x : α) : Set α :=
   { y | [[x, y]] ⊆ s }
 #align set.ord_connected_component Set.ordConnectedComponent
 
-theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔  [[x, y]] ⊆ s :=
+theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔ [[x, y]] ⊆ s :=
   Iff.rfl
 #align set.mem_ord_connected_component Set.mem_ordConnectedComponent
 

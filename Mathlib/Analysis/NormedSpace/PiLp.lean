@@ -85,7 +85,7 @@ instance (p : ℝ≥0∞) {ι : Type _} (α : ι → Type _) [∀ i, Inhabited (
   ⟨fun _ => default⟩
 
 @[ext] -- porting note: new lemma
-protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type _} {α : ι → Type _} {x y : PiLp p  α}
+protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type _} {α : ι → Type _} {x y : PiLp p α}
     (h : ∀ i, x i = y i) : x = y := funext h
 
 namespace PiLp
@@ -715,7 +715,7 @@ variable {ι' : Type _}
 variable [Fintype ι']
 
 variable (p 𝕜)
-variable  (E : Type _) [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (E : Type _) [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- An equivalence of finite domains induces a linearly isometric equivalence of finitely supported
 functions-/

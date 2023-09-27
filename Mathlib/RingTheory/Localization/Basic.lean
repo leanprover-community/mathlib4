@@ -899,7 +899,7 @@ local macro "localization_tac" : tactic =>
      simp only [add_mk, Localization.mk_mul, ← Localization.mk_zero 1]
      refine mk_eq_mk_iff.mpr (r_of_eq ?_)
      simp only [Submonoid.coe_mul]
-     ring  })
+     ring })
 
 instance : CommSemiring (Localization M) :=
   { (show CommMonoidWithZero (Localization M) by infer_instance) with

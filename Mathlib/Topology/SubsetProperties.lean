@@ -1820,7 +1820,7 @@ theorem isIrreducible_irreducibleComponent {x : α} : IsIrreducible (irreducible
   ⟨⟨x, mem_irreducibleComponent⟩, (irreducibleComponent_property x).1⟩
 #align is_irreducible_irreducible_component isIrreducible_irreducibleComponent
 
-theorem eq_irreducibleComponent {x : α}  {s : Set α} :
+theorem eq_irreducibleComponent {x : α} {s : Set α} :
     IsPreirreducible s → irreducibleComponent x ⊆ s → s = irreducibleComponent x :=
   (irreducibleComponent_property x).2.2 _
 #align eq_irreducible_component eq_irreducibleComponent

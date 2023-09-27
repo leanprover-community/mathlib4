@@ -170,7 +170,7 @@ def PredOrder.ofCore {α} [LinearOrder α] (pred : α → α)
       by_cases (fun h hab => (hm b h).symm ▸ hab.le) fun h => (hn h a).mpr
     pred_le := fun a =>
       by_cases (fun h => (hm a h).le) fun h => le_of_lt <| by simpa using (hn h a).not
-    le_of_pred_lt :=  fun {a b} hab =>
+    le_of_pred_lt := fun {a b} hab =>
       by_cases (fun h => hm a h ▸ hab.le) fun h => by simpa [hab] using (hn h b).not
     min_of_le_pred := fun {a} => not_imp_not.mp fun h => by simpa using (hn h a).not }
 #align pred_order.of_core PredOrder.ofCore
