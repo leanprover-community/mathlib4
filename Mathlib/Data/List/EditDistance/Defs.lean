@@ -23,14 +23,14 @@ particularly
 
 ```
 theorem suffixLevenshtein_eq_tails_map :
-  (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := ...
+    (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := ...
 ```
 
 and
 
 ```
 theorem levenshtein_cons_cons :
-  levenshtein C (x :: xs) (y :: ys) =
+    levenshtein C (x :: xs) (y :: ys) =
     min (C.delete x + levenshtein C xs (y :: ys))
       (min (C.insert y + levenshtein C (x :: xs) ys)
         (C.substitute x y + levenshtein C xs ys)) := ...

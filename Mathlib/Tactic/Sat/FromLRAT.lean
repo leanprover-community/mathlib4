@@ -181,7 +181,7 @@ theorem Fmla.refute {ps} (f : Fmla) (hf : f.proof [])
 
 /-- Negation turns AND into OR, so `¬⟦f₁ ∧ f₂⟧_v ≡ ¬⟦f₁⟧_v ∨ ¬⟦f₂⟧_v`. -/
 theorem Fmla.reify_or (h₁ : Fmla.reify v f₁ a) (h₂ : Fmla.reify v f₂ b) :
-  Fmla.reify v (f₁.and f₂) (a ∨ b) := by
+    Fmla.reify v (f₁.and f₂) (a ∨ b) := by
   refine ⟨fun H ↦ by_contra fun hn ↦ H ⟨fun c h ↦ by_contra fun hn' ↦ ?_⟩⟩
   rcases List.mem_append.1 h with h | h
   · exact hn $ Or.inl $ h₁.1 fun Hc ↦ hn' $ Hc.1 _ h
@@ -201,7 +201,7 @@ structure Literal.reify (v : Valuation) (l : Literal) (p : Prop) : Prop where
 
 /-- Negation turns OR into AND, so `¬⟦l ∨ c⟧_v ≡ ¬⟦l⟧_v ∧ ¬⟦c⟧_v`. -/
 theorem Clause.reify_and (h₁ : Literal.reify v l a) (h₂ : Clause.reify v c b) :
-  Clause.reify v (Clause.cons l c) (a ∧ b) :=
+    Clause.reify v (Clause.cons l c) (a ∧ b) :=
   ⟨fun H ↦ ⟨h₁.1 (by_contra fun hn ↦ H hn.elim), h₂.1 fun h ↦ H fun _ ↦ h⟩⟩
 
 /-- The reification of the empty clause is `True`: `¬⟦⊥⟧_v ≡ True`. -/

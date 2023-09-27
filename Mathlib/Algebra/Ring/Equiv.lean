@@ -120,8 +120,8 @@ instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
 `RingEquiv`. This is declared as the default coercion from `F` to `α ≃+* β`. -/
 @[coe]
 def toRingEquiv [Mul α] [Add α] [Mul β] [Add β] [RingEquivClass F α β] (f : F) :
-  α ≃+* β :=
-{ (f : α ≃* β), (f : α ≃+ β) with }
+    α ≃+* β :=
+  { (f : α ≃* β), (f : α ≃+ β) with }
 
 end RingEquivClass
 
