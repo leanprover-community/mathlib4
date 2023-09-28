@@ -10,10 +10,9 @@ universe v v₁ u u₁ w
 
 /-
 - The section `ExtensiveRegular` has been moved to a new file, `Condensed/RegularExtensive`. All
-  that material is PRs #6876, #6877, #6896, and #6919 (awaiting review). Once these are merged,
-  the sections `CompHausExplicitSheaves` and  `ProfiniteExplicitSheaves` can be PR-ed.
-- The section `StoneanPullback` is PR #6779 (awaiting review). Once that is merged, in addition to
-  the four PRs mentioned in the previous point, the section `StoneanExplicitSheaves` can be PR-ed.
+  that material is PRs #6876, #6877, and #6919 (awaiting review). Once these are merged,
+  the sections `CompHausExplicitSheaves`,  `ProfiniteExplicitSheaves`, and `StoneanExplicitSheaves`
+  can be PR-ed.
 - TODO: Do we want to state an equivalent `EqualizerCondition` with the explicit pullbacks?
 -/
 
