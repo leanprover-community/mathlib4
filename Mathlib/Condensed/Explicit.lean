@@ -9,8 +9,6 @@ import Mathlib.Topology.Category.Stonean.EffectiveEpi
 universe v v₁ u u₁ w
 
 /-
-- FIRST TODO: prove the three lemmas in section `EffectiveEpis` and PR it. They should follow easily
-  from existing API and `effectiveEpiFamily_tfae`.
 - The section `ExtensiveRegular` has been moved to a new file, `Condensed/RegularExtensive`. All
   that material is PRs #6876, #6877, #6896, and #6919 (awaiting review). Once these are merged,
   the sections `CompHausExplicitSheaves` and  `ProfiniteExplicitSheaves` can be PR-ed.
@@ -21,27 +19,83 @@ universe v v₁ u u₁ w
 
 section EffectiveEpis
 
+namespace CategoryTheory
+
+variable {C : Type*} [Category C]
+
+/--
+A single element `EffectiveEpiFamily` constists of an `EffectiveEpi`
+-/
+noncomputable
+def EffectiveEpiStruct_ofFamily {B X : C} (f : X ⟶ B)
+    [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
+    EffectiveEpiStruct f where
+  desc e h := EffectiveEpiFamily.desc
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg)
+  fac e h := EffectiveEpiFamily.fac
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg) ()
+  uniq e h m hm := EffectiveEpiFamily.uniq
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg) m (fun _ ↦ hm)
+
+instance {B X : C} (f : X ⟶ B) [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
+    EffectiveEpi f :=
+  ⟨⟨EffectiveEpiStruct_ofFamily f⟩⟩
+
+lemma effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
+    EffectiveEpi f ↔ EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+end CategoryTheory
+
 open CategoryTheory
 
 lemma CompHaus.effectiveEpi_iff_surjective {X Y : CompHaus} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := by
   refine ⟨fun _ ↦ ?_, fun hf ↦ ?_⟩
   · haveI : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) := inferInstance
-    have h := (CompHaus.effectiveEpiFamily_tfae (fun () ↦ X) (fun () ↦ f)).out 0 2
+    have h := (effectiveEpiFamily_tfae (fun () ↦ X) (fun () ↦ f)).out 0 2
     rw [h] at this
     intro a
     obtain ⟨_, x, _⟩ := this a
     use x
-  · have h := (CompHaus.effectiveEpiFamily_tfae (fun () ↦ X) (fun () ↦ f)).out 0 1
-    rw [← CompHaus.epi_iff_surjective] at hf
-    have : Epi (Limits.Sigma.desc (f := (fun () ↦ X)) (fun () ↦ f)) := sorry
-    sorry
+  · have h := (effectiveEpiFamily_tfae (fun () ↦ X) (fun () ↦ f)).out 0 1
+    rw [← epi_iff_surjective] at hf
+    rw [effectiveEpi_iff_effectiveEpiFamily, h]
+    have w : f = (Limits.Sigma.ι (fun () ↦ X) ()) ≫ (Limits.Sigma.desc (fun () ↦ f))
+    · simp only [Limits.colimit.ι_desc, Limits.Cofan.mk_pt, Limits.Cofan.mk_ι_app]
+    exact epi_of_epi_fac w.symm
 
 lemma Profinite.effectiveEpi_iff_surjective {X Y : Profinite} (f : X ⟶ Y) :
-    EffectiveEpi f ↔ Function.Surjective f := sorry
+    EffectiveEpi f ↔ Function.Surjective f := by
+  refine ⟨fun _ ↦ ?_, fun hf ↦ ?_⟩
+  · haveI : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) := inferInstance
+    have h := (effectiveEpiFamily_tfae (fun () ↦ X) (fun () ↦ f)).out 0 2
+    rw [h] at this
+    intro a
+    obtain ⟨_, x, _⟩ := this a
+    use x
+  · have h := (effectiveEpiFamily_tfae (fun () ↦ X) (fun () ↦ f)).out 0 1
+    rw [← epi_iff_surjective] at hf
+    rw [effectiveEpi_iff_effectiveEpiFamily, h]
+    have w : f = (Limits.Sigma.ι (fun () ↦ X) ()) ≫ (Limits.Sigma.desc (fun () ↦ f))
+    · simp only [Limits.colimit.ι_desc, Limits.Cofan.mk_pt, Limits.Cofan.mk_ι_app]
+    exact epi_of_epi_fac w.symm
 
 lemma Stonean.effectiveEpi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
-    EffectiveEpi f ↔ Function.Surjective f := sorry
+    EffectiveEpi f ↔ Function.Surjective f := by
+  refine ⟨fun _ ↦ ?_, fun hf ↦ ?_⟩
+  · haveI : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) := inferInstance
+    have h := (effectiveEpiFamily_tfae (fun () ↦ X) (fun () ↦ f)).out 0 2
+    rw [h] at this
+    intro a
+    obtain ⟨_, x, _⟩ := this a
+    use x
+  · have h := (effectiveEpiFamily_tfae (fun () ↦ X) (fun () ↦ f)).out 0 1
+    rw [← epi_iff_surjective] at hf
+    rw [effectiveEpi_iff_effectiveEpiFamily, h]
+    have w : f = (Limits.Sigma.ι (fun () ↦ X) ()) ≫ (Limits.Sigma.desc (fun () ↦ f))
+    · simp only [Limits.colimit.ι_desc, Limits.Cofan.mk_pt, Limits.Cofan.mk_ι_app]
+    exact epi_of_epi_fac w.symm
 
 end EffectiveEpis
 
