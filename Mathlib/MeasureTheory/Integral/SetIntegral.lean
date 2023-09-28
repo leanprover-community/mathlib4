@@ -404,7 +404,7 @@ theorem set_integral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s →
 #align measure_theory.set_integral_eq_integral_of_forall_compl_eq_zero MeasureTheory.set_integral_eq_integral_of_forall_compl_eq_zero
 
 lemma ae_restrict_eq_zero_iff_ae_eq_zero_of_mem {E : Type*} [Zero E] [MeasurableSpace E]
-    [MeasurableSingletonClass E] (f : α → E) {s : Set α}
+    [MeasurableSingletonClass E] {f : α → E} {s : Set α}
     (f_mble : NullMeasurable f (μ.restrict s)) :
     f =ᵐ[Measure.restrict μ s] 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 := by
   simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
