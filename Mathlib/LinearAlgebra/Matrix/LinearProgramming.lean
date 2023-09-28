@@ -73,10 +73,14 @@ def StandardLP.Permits {K V : Type} [LinearOrderedField K] [AddCommGroup V] [Mod
 
 
 /-- Linear program in a more versatile form. -/
-structure SomeLP (K V : Type) [LinearOrderedField K] [AddCommGroup V] [Module K V] where
-  eq : Finset (AffineMap K V K)
-  le : Finset (AffineMap K V K)
-  obj : AffineMap K V K
+structure SomeLP (K : Type*) {V : Type*} (P : Type*)
+    [LinearOrderedField K] [AddCommGroup V] [Module K V] [AddTorsor K P] where
+  /-- Equality constraints -/
+  eq : Finset (P →ᵃ[K] K)
+  /-- Inequality constraints -/
+  le : Finset (P →ᵃ[K] K)
+  /-- The objective function -/
+  obj : P →ᵃ[K] K
 
 def SomeLP.Solutions {K V : Type} [LinearOrderedField K] [AddCommGroup V] [Module K V]
     (P : SomeLP K V) : Set V :=
