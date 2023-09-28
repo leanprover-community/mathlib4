@@ -1894,28 +1894,6 @@ theorem exists_mem_of_measure_ne_zero_of_ae (hs : μ s ≠ 0) {p : α → Prop}
   exact (hs.and_eventually hp).exists
 #align measure_theory.measure.exists_mem_of_measure_ne_zero_of_ae MeasureTheory.Measure.exists_mem_of_measure_ne_zero_of_ae
 
-section
-
-variable {E : Type*} [Zero E] (f : α → E)
-
-lemma ae_restrict_eq_zero_iff_ae_eq_zero_of_mem [MeasurableSpace E] [MeasurableSingletonClass E]
-    {s : Set α} (f_mble : NullMeasurable f (μ.restrict s)) :
-    f =ᵐ[Measure.restrict μ s] 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 := by
-  simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
-             Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
-  rw [Measure.restrict_apply₀]
-  · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
-  · apply NullMeasurableSet.compl
-    convert f_mble (MeasurableSet.singleton 0)
-
-lemma ae_restrict_eq_zero_iff_ae_eq_zero_of_mem' {s : Set α} (s_mble : MeasurableSet s) :
-    f =ᵐ[Measure.restrict μ s] 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 := by
-  simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
-             Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
-  rw [Measure.restrict_apply_eq_zero']
-  · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
-  · exact s_mble
-
 lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_const
     {β : Type*} [MeasurableSpace β] {b : β} {f : α → β} {s : Set α}
     (f_mble : NullMeasurable f (μ.restrict s)) (hs : f =ᵐ[Measure.restrict μ sᶜ] (fun _ ↦ b))
@@ -1937,8 +1915,6 @@ lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_e
       exact ht (hfx ▸ hx)
     simp only [obs, add_zero, le_refl]
   · exact NullMeasurableSet.of_null hs
-
-end
 
 /-! ### Extensionality results -/
 
