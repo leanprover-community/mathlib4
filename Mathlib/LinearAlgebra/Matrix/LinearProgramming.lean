@@ -64,8 +64,10 @@ end canonical
 
 /-- Linear program in the standard form. -/
 structure StandardLP (K V : Type) [LinearOrderedField K] [AddCommGroup V] [Module K V] where
+  /-- Inequality constraints -/
   constr : Finset (AffineMap K V K)
-  obj : AffineMap K V K
+  /-- The objective function -/
+  objective : AffineMap K V K
 
 def StandardLP.Permits {K V : Type} [LinearOrderedField K] [AddCommGroup V] [Module K V]
     (P : StandardLP K V) (x : V) : Prop :=
