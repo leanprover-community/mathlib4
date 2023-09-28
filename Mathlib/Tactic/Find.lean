@@ -320,8 +320,11 @@ def parseFindFilters (args : TSyntax ``find_filters) : TermElabM Arguments :=
       for arg in args'.getElems do
         match arg with
         | `(find_filter| $_:turnstyle $s:term) => do
-          let t ← elabTerm' s none
-          terms := terms.push (true, t)
+          let e ← elabTerm' s (some (mkSort (← mkFreshLevelMVar)))
+          let t := ← inferType e
+          unless t.isSort do
+            throwErrorAt s "Conclusion pattern is of type {t}, should be of type `Sort`"
+          terms := terms.push (true, e)
         | `(find_filter| $ss:str) => do
           let str := Lean.TSyntax.getString ss
           if str = "" || str = "." then
@@ -336,8 +339,8 @@ def parseFindFilters (args : TSyntax ``find_filters) : TermElabM Arguments :=
             throwErrorAt arg ("Cannot search for _. " ++
               "Did you forget to put a term pattern in parentheses?")
         | `(find_filter| $s:term) => do
-          let t ← elabTerm' s none
-          terms := terms.push (false, t)
+          let e ← elabTerm' s none
+          terms := terms.push (false, e)
         | _ => throwErrorAt args "unexpected argument to #find"
     | _ => throwErrorAt args "unexpected argument to #find"
     pure {idents, namePats, terms}

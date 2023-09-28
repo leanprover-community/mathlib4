@@ -231,3 +231,28 @@ Of these, 2 have a name containing "uniquenameforThisTest".
 -/
 #guard_msgs in
 #find "uniquenameforThisTest" -- checks for case-insensitivity
+
+
+-- Check that |- only allows Sort-typed things
+
+/--
+info: Found 0 definitions mentioning And, True and uniquenameforthistest.
+Of these, 0 match your patterns.
+-/
+#guard_msgs in
+#find uniquenameforthistest, And True
+
+/-- error: Conclusion pattern is of type Bool, should be of type `Sort` -/
+#guard_msgs in
+#find uniquenameforthistest, |- true
+
+/-- error: Conclusion pattern is of type Prop → Prop, should be of type `Sort` -/
+#guard_msgs in
+#find uniquenameforthistest, |- And True
+
+/--
+info: Found 0 definitions mentioning And, True and uniquenameforthistest.
+Of these, 0 match your patterns.
+-/
+#guard_msgs in
+#find |- And True True, uniquenameforthistest
