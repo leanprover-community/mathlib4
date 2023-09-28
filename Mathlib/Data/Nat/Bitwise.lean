@@ -336,8 +336,7 @@ lemma div2_eq_zero {x : ℕ} :
 lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
     (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
     bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
-  unfold bitwise'
-  rw [binaryRec_eq', binaryRec_eq']
+  rw [bitwise', binaryRec_eq', binaryRec_eq']
   · apply Or.inr hbn
   · apply Or.inr ham
 
