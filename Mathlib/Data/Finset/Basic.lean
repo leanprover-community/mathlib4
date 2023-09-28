@@ -3109,11 +3109,9 @@ theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then 
   · simp
 #align finset.range_filter_eq Finset.range_filter_eq
 
-lemma range_nontrivial {n : ℕ} (hn : 2 ≤ n) : (Finset.range n).Nontrivial := by
-  refine' Set.nontrivial_of_exists_lt ⟨0,_,1,_,zero_lt_one⟩ <;>
-  simp only [Finset.coe_range, Set.mem_Iio]
-  exact lt_of_lt_of_le zero_lt_two hn
-  exact lt_of_lt_of_le one_lt_two hn
+lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := by
+  rw [Finset.Nontrivial, Finset.coe_range]
+  exact ⟨0, zero_lt_one.trans hn, 1, hn, zero_ne_one⟩
 
 end Range
 
