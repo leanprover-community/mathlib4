@@ -17,7 +17,7 @@ universe v v₁ u u₁ w
 - TODO: Do we want to state an equivalent `EqualizerCondition` with the explicit pullbacks?
 -/
 
-section EffectiveEpis
+section EffectiveEpis -- this section is PRs #7420 and #7421
 
 namespace CategoryTheory
 
