@@ -24,7 +24,18 @@ section EffectiveEpis
 open CategoryTheory
 
 lemma CompHaus.effectiveEpi_iff_surjective {X Y : CompHaus} (f : X ⟶ Y) :
-    EffectiveEpi f ↔ Function.Surjective f := sorry
+    EffectiveEpi f ↔ Function.Surjective f := by
+  refine ⟨fun _ ↦ ?_, fun hf ↦ ?_⟩
+  · haveI : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) := inferInstance
+    have h := (CompHaus.effectiveEpiFamily_tfae (fun () ↦ X) (fun () ↦ f)).out 0 2
+    rw [h] at this
+    intro a
+    obtain ⟨_, x, _⟩ := this a
+    use x
+  · have h := (CompHaus.effectiveEpiFamily_tfae (fun () ↦ X) (fun () ↦ f)).out 0 1
+    rw [← CompHaus.epi_iff_surjective] at hf
+    have : Epi (Limits.Sigma.desc (f := (fun () ↦ X)) (fun () ↦ f)) := sorry
+    sorry
 
 lemma Profinite.effectiveEpi_iff_surjective {X Y : Profinite} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := sorry
