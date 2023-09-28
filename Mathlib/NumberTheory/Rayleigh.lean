@@ -174,16 +174,16 @@ theorem rayleigh_pos' {r s : ℝ} (hrs : r.IsConjugateExponent s) :
   rw [symmDiff_comm, rayleigh_pos hrs.symm]
 
 /-- Let `r` be an irrational number. Then `B⁺_r` and `B⁺'_r` are equal. -/
-theorem irr_beattySequence_pos_eq {r : ℝ} (hr : Irrational r) :
-    {beattySequence r k | k > 0} = {beattySequence' r k | k > 0} := by
+theorem Irrational.beattySequence_pos_eq {r : ℝ} (hr : Irrational r) :
+    {beattySequence' r k | k > 0} = {beattySequence r k | k > 0} := by
   dsimp only [beattySequence, beattySequence']
   congr! 4; rename_i k; rw [and_congr_right_iff]; intro hk; congr!
-  symm; rw [sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one, add_sub_cancel]
+  rw [sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one, add_sub_cancel]
   refine ⟨lt_of_le_of_ne (Int.floor_le _) fun h ↦ ?_, (Int.lt_floor_add_one _).le⟩
-  exact Irrational.ne_int (hr.int_mul hk.ne') ⌊k * r⌋ h.symm
+  exact (hr.int_mul hk.ne').ne_int ⌊k * r⌋ h.symm
 
 /-- Rayleigh's theorem on Beatty sequences. Let `r` be an irrational number greater than 1, and
 `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺_s` partition the positive integers. -/
 theorem rayleigh_irr_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) (hr : Irrational r) :
     {beattySequence r k | k > 0} ∆ {beattySequence s k | k > 0} = {n | 0 < n} := by
-  rw [irr_beattySequence_pos_eq hr, rayleigh_pos' hrs]
+  rw [← hr.beattySequence_pos_eq, rayleigh_pos' hrs]
