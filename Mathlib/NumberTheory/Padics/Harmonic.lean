@@ -44,7 +44,7 @@ lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicVa
 lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) :
     max (log 2 n) (padicValNat 2 (n + 1)) = log 2 (n + 1) := by
   apply le_antisymm (max_le (le_log_of_pow_le one_lt_two (pow_log_le_add_one 2 n))
-    (le_log_of_pow_le one_lt_two (le_of_dvd n.succ_pos pow_padicValNat_dvd)))
+    (padicValNat_le_nat_log (n + 1)))
   rw [le_max_iff, or_iff_not_imp_left, not_le]
   intro h
   replace h := le_antisymm (add_one_le_iff.mpr (lt_pow_of_log_lt one_lt_two h))
