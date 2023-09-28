@@ -32,8 +32,7 @@ variable {T : Type _}
 
 /-- One step of context-free transformation. -/
 def Produces (g : ContextFreeGrammar T) (w₁ w₂ : List (Symbol T g.NT)) : Prop :=
-  ∃ r : g.NT × List (Symbol T g.NT),
-    r ∈ g.rules ∧
+  ∃ r ∈ g.rules,
     ∃ u v : List (Symbol T g.NT),
       w₁ = u ++ [Symbol.nonterminal r.fst] ++ v ∧ w₂ = u ++ r.snd ++ v
 
