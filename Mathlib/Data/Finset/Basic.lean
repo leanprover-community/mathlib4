@@ -3248,7 +3248,7 @@ theorem toFinset_ssubset : s.toFinset ⊂ t.toFinset ↔ s ⊂ t := by
 
 @[simp]
 theorem toFinset_dedup (m : Multiset α) : m.dedup.toFinset = m.toFinset := by
-  simp_rw [toFinset, dedup_idempotent]
+  simp_rw [toFinset, dedup_idem]
 #align multiset.to_finset_dedup Multiset.toFinset_dedup
 
 @[simp]

@@ -461,7 +461,7 @@ theorem Bornology.relativelyCompact.isBounded_iff [T1Space α] {s : Set α} :
   constructor
   · rintro ⟨t, ht₁, ht₂, hst⟩
     rw [compl_subset_compl] at hst
-    exact isCompact_of_isClosed_subset ht₂ isClosed_closure (closure_minimal hst ht₁)
+    exact ht₂.of_isClosed_subset isClosed_closure (closure_minimal hst ht₁)
   · intro h
     exact ⟨closure s, isClosed_closure, h, compl_subset_compl.mpr subset_closure⟩
 #align bornology.relatively_compact.is_bounded_iff Bornology.relativelyCompact.isBounded_iff
@@ -1343,7 +1343,7 @@ theorem IsCompact.inter [T2Space α] {s t : Set α} (hs : IsCompact s) (ht : IsC
 
 theorem isCompact_closure_of_subset_compact [T2Space α] {s t : Set α} (ht : IsCompact t)
     (h : s ⊆ t) : IsCompact (closure s) :=
-  isCompact_of_isClosed_subset ht isClosed_closure (closure_minimal h ht.isClosed)
+  ht.of_isClosed_subset isClosed_closure (closure_minimal h ht.isClosed)
 #align is_compact_closure_of_subset_compact isCompact_closure_of_subset_compact
 
 @[simp]
