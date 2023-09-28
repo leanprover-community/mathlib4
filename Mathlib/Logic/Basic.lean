@@ -1280,4 +1280,12 @@ theorem ite_ite_comm (h : P → ¬Q) :
   dite_dite_comm P Q h
 #align ite_ite_comm ite_ite_comm
 
+variable {R : Prop}
+
+theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬ P ∧ R) := by
+  by_cases p : P <;> simp [p]
+
+@[simp] theorem ite_prop_iff_and : (if P then Q else R) ↔ ((P → Q) ∧ (¬ P → R)) := by
+  by_cases p : P <;> simp [p]
+
 end ite
