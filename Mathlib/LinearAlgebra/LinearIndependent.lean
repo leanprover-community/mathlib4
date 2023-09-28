@@ -7,6 +7,8 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.LinearCombination
 
 #align_import linear_algebra.linear_independent from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -111,7 +113,7 @@ theorem linearIndependent_iff' :
     ⟨fun hf s g hg i his =>
       have h :=
         hf (∑ i in s, Finsupp.single i (g i)) <| by
-          simpa only [LinearMap.map_sum, Finsupp.total_single] using hg
+          simpa only [map_sum, Finsupp.total_single] using hg
       calc
         g i = (Finsupp.lapply i : (ι →₀ R) →ₗ[R] R) (Finsupp.single i (g i)) := by
           { rw [Finsupp.lapply_apply, Finsupp.single_eq_same] }
@@ -120,10 +122,8 @@ theorem linearIndependent_iff' :
             Finset.sum_eq_single i
               (fun j _hjs hji => by rw [Finsupp.lapply_apply, Finsupp.single_eq_of_ne hji])
               fun hnis => hnis.elim his
-        _ = (∑ j in s, Finsupp.single j (g j)) i :=
-          (Finsupp.lapply i : (ι →₀ R) →ₗ[R] R).map_sum.symm
-        _ = 0 := FunLike.ext_iff.1 h i
-        ,
+        _ = (∑ j in s, Finsupp.single j (g j)) i := (map_sum ..).symm
+        _ = 0 := FunLike.ext_iff.1 h i,
       fun hf l hl =>
       Finsupp.ext fun i =>
         _root_.by_contradiction fun hni => hni <| hf _ _ hl _ <| Finsupp.mem_support_iff.2 hni⟩
@@ -194,6 +194,16 @@ lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, 
     Finset.mem_univ, forall_true_left] at this
   exact ⟨this 0, this 1⟩
 
+lemma LinearIndependent.pair_iff {x y : M} :
+    LinearIndependent R ![x, y] ↔ ∀ (s t : R), s • x + t • y = 0 → s = 0 ∧ t = 0 := by
+  refine ⟨fun h s t hst ↦ h.eq_zero_of_pair hst, fun h ↦ ?_⟩
+  apply Fintype.linearIndependent_iff.2
+  intro g hg
+  simp only [Fin.sum_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons] at hg
+  intro i
+  fin_cases i
+  exacts [(h _ _ hg).1, (h _ _ hg).2]
+
 /-- A subfamily of a linearly independent family (i.e., a composition with an injective map) is a
 linearly independent family. -/
 theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf : Injective f) :
@@ -250,7 +260,7 @@ theorem LinearIndependent.of_comp (f : M →ₗ[R] M') (hfv : LinearIndependent 
     LinearIndependent R v :=
   linearIndependent_iff'.2 fun s g hg i his =>
     have : (∑ i : ι in s, g i • f (v i)) = 0 := by
-      simp_rw [← f.map_smul, ← f.map_sum, hg, f.map_zero]
+      simp_rw [← map_smul, ← map_sum, hg, f.map_zero]
     linearIndependent_iff'.1 hfv s g this i his
 #align linear_independent.of_comp LinearIndependent.of_comp
 
@@ -570,6 +580,29 @@ lemma LinearIndependent.eq_of_pair {x y : M} (h : LinearIndependent R ![x, y])
     simp only [sub_smul]
     abel
   simpa [sub_eq_zero] using h.eq_zero_of_pair this
+
+lemma LinearIndependent.eq_zero_of_pair' {x y : M} (h : LinearIndependent R ![x, y])
+    {s t : R} (h' : s • x = t • y) : s = 0 ∧ t = 0 := by
+  suffices H : s = 0 ∧ 0 = t from ⟨H.1, H.2.symm⟩
+  exact h.eq_of_pair (by simpa using h')
+
+/-- If two vectors `x` and `y` are linearly independent, so are their linear combinations
+`a x + b y` and `c x + d y` provided the determinant `a * d - b * c` is nonzero. -/
+lemma LinearIndependent.linear_combination_pair_of_det_ne_zero {R M : Type*} [CommRing R]
+    [NoZeroDivisors R] [AddCommGroup M] [Module R M]
+    {x y : M} (h : LinearIndependent R ![x, y])
+    {a b c d : R} (h' : a * d - b * c ≠ 0) :
+    LinearIndependent R ![a • x + b • y, c • x + d • y] := by
+  apply LinearIndependent.pair_iff.2 (fun s t hst ↦ ?_)
+  have H : (s * a + t * c) • x + (s * b + t * d) • y = 0 := by
+    convert hst using 1
+    simp only [_root_.add_smul, smul_add, smul_smul]
+    abel
+  have I1 : s * a + t * c = 0 := (h.eq_zero_of_pair H).1
+  have I2 : s * b + t * d = 0 := (h.eq_zero_of_pair H).2
+  have J1 : (a * d - b * c) * s = 0 := by linear_combination d * I1 - c * I2
+  have J2 : (a * d - b * c) * t = 0 := by linear_combination -b * I1 + a * I2
+  exact ⟨by simpa [h'] using mul_eq_zero.1 J1, by simpa [h'] using mul_eq_zero.1 J2⟩
 
 section Maximal
 

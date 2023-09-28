@@ -254,10 +254,10 @@ private theorem exists_mono_in_high_dimension' :
       ∀ r : ℕ,
         ∃ (ι : Type) (_ : Fintype ι),
           ∀ C : (ι → Option α) → κ,
-            (∃ s : ColorFocused C, Multiset.card s.lines = r) ∨ ∃ l, IsMono C l
-    -- Given the key claim, we simply take `r = |κ| + 1`. We cannot have this many distinct colors
-    -- so we must be in the second case, where there is a monochromatic line.
-    · obtain ⟨ι, _inst, hι⟩ := key (Fintype.card κ + 1)
+            (∃ s : ColorFocused C, Multiset.card s.lines = r) ∨ ∃ l, IsMono C l by
+      -- Given the key claim, we simply take `r = |κ| + 1`. We cannot have this many distinct colors
+      -- so we must be in the second case, where there is a monochromatic line.
+      obtain ⟨ι, _inst, hι⟩ := key (Fintype.card κ + 1)
       refine' ⟨ι, _inst, fun C => (hι C).resolve_left _⟩
       rintro ⟨s, sr⟩
       apply Nat.not_succ_le_self (Fintype.card κ)

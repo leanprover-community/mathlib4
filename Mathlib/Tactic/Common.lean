@@ -56,7 +56,6 @@ import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.LabelAttr
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
@@ -113,6 +112,7 @@ import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
+import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Imports
 import Mathlib.Util.WhatsNew

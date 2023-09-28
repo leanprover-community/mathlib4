@@ -92,7 +92,6 @@ theorem homology_ext' {M : ModuleCat R} (i : ι) {h k : C.homology i ⟶ M}
 set_option linter.uppercaseLean3 false in
 #align Module.homology_ext' ModuleCat.homology_ext'
 
-set_option maxHeartbeats 400000 in
 -- porting note: `erw` had to be used instead of `simp`
 -- see https://github.com/leanprover-community/mathlib4/issues/5026
 /-- We give an alternative proof of `homology_map_eq_of_homotopy`,
