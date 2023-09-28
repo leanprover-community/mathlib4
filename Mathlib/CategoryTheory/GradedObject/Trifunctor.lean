@@ -262,8 +262,8 @@ noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
   have h₁₂'' : ∀ i, IsColimit (c₁₂'' i) := fun _ =>
     (IsColimit.precomposeHomEquiv _ _).symm (IsColimit.whiskerEquivalenceEquiv _ (hc₁₂' _))
   refine' IsColimit.ofIsoColimit (isColimitCofanMapObjComp Z p' ρ₁₂.q r ρ₁₂.hpq j
-    (fun ⟨i₁₂, i₃⟩ h => c₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) (fun ⟨i₁₂, i₃⟩ h => h₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) c hc) _
-  refine' Cocones.ext (Iso.refl _) (fun ⟨⟨i₁, i₂, i₃⟩, h⟩  => _)
+    (fun ⟨i₁₂, i₃⟩ h => c₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) (fun ⟨i₁₂, i₃⟩ h => h₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) c hc)
+    (Cocones.ext (Iso.refl _) (fun ⟨⟨i₁, i₂, i₃⟩, h⟩  => _))
   dsimp [Cofan.proj]
   rw [comp_id, Functor.map_id, id_comp]
   rfl
@@ -281,7 +281,7 @@ noncomputable def mapBifunctor₁₂BifunctorMapObjIso
     mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ :=
   isoMk _ _ (fun j => (CofanMapObjFun.iso (isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j)).symm)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma ι_mapBifunctor₁₂BifunctorMapObjIso_hom (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r ⟨i₁, i₂, i₃⟩ = j) :
     have := H.hasMap
     ιMapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ (mapBifunctor₁₂BifunctorMapObjIso F₁₂ G ρ₁₂ X₁ X₂ X₃).hom j =
@@ -375,8 +375,34 @@ noncomputable def cofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
 
 noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
     IsColimit (cofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j) := by
-  have := H
-  sorry
+  let c₂₃ := fun i₂₃ => (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃).cofanMapObj ρ₂₃.p i₂₃
+  have h₂₃ : ∀ i₂₃, IsColimit (c₂₃ i₂₃) := fun i₂₃ => (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃).isColimitCofanMapObj ρ₂₃.p i₂₃
+  let c := (((mapBifunctor F I₁ ρ₂₃.I₂₃).obj X₁).obj (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃)).cofanMapObj ρ₂₃.q j
+  have hc : IsColimit c := (((mapBifunctor F I₁ ρ₂₃.I₂₃).obj X₁).obj (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃)).isColimitCofanMapObj ρ₂₃.q j
+  let c₂₃' := fun (i : ρ₂₃.q ⁻¹' {j}) => (F.obj (X₁ i.1.1)).mapCocone (c₂₃ i.1.2)
+  have hc₂₃' : ∀ i, IsColimit (c₂₃' i) := fun i => isColimitOfPreserves _ (h₂₃ i.1.2)
+  let Z := (((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃
+  let p' : I₁ × I₂ × I₃ → I₁ × ρ₂₃.I₂₃ := fun ⟨i₁, i₂, i₃⟩ => ⟨i₁, ρ₂₃.p ⟨i₂, i₃⟩⟩
+  let e : ∀ (i₁ : I₁) (i₂₃ : ρ₂₃.I₂₃) , p' ⁻¹' {(i₁, i₂₃)} ≃ ρ₂₃.p ⁻¹' {i₂₃} := fun i₁ i₂₃ =>
+    { toFun := fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => ⟨⟨i₂, i₃⟩, by aesop⟩
+      invFun := fun ⟨⟨i₂, i₃⟩, hi⟩  => ⟨⟨i₁, i₂, i₃⟩, by aesop⟩
+      left_inv := fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => by
+        obtain rfl : i₁ = i₁' := by aesop
+        rfl
+      right_inv := fun _ => rfl }
+  let c₂₃'' : ∀ (i : ρ₂₃.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) := fun ⟨⟨i₁, i₂₃⟩, hi⟩ => by
+    refine' (Cocones.precompose (Iso.hom _)).obj ((Cocones.whiskeringEquivalence (Discrete.equivalence (e i₁ i₂₃))).functor.obj (c₂₃' ⟨⟨i₁, i₂₃⟩, hi⟩))
+    refine' Discrete.natIso (fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => eqToIso _)
+    obtain rfl : i₁' = i₁ := congr_arg _root_.Prod.fst hi
+    rfl
+  have h₂₃'' : ∀ i, IsColimit (c₂₃'' i) := fun _ =>
+    (IsColimit.precomposeHomEquiv _ _).symm (IsColimit.whiskerEquivalenceEquiv _ (hc₂₃' _))
+  refine' IsColimit.ofIsoColimit (isColimitCofanMapObjComp Z p' ρ₂₃.q r ρ₂₃.hpq j
+    (fun ⟨i₁, i₂₃⟩ h => c₂₃'' ⟨⟨i₁, i₂₃⟩, h⟩) (fun ⟨i₁, i₂₃⟩ h => h₂₃'' ⟨⟨i₁, i₂₃⟩, h⟩) c hc)
+    (Cocones.ext (Iso.refl _) (fun ⟨⟨i₁, i₂, i₃⟩, h⟩  => _))
+  dsimp [Cofan.proj]
+  rw [comp_id, id_comp]
+  rfl
 
 variable {F G₂₃ ρ₂₃ X₁ X₂ X₃}
 
@@ -391,7 +417,7 @@ noncomputable def mapBifunctorBifunctor₂₃MapObjIso
     mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) :=
   isoMk _ _ (fun j => (CofanMapObjFun.iso (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j)).symm)
 
---@[reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma ι_mapBifunctorBifunctor₂₃MapObjIso_hom (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r ⟨i₁, i₂, i₃⟩ = j) :
     have := H.hasMap
     ιMapTrifunctorMapObj (bifunctorComp₂₃ F G₂₃) r X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ (mapBifunctorBifunctor₂₃MapObjIso F G₂₃ ρ₂₃ X₁ X₂ X₃).hom j =
@@ -455,13 +481,18 @@ noncomputable def mapBifunctorBifunctorAssociator :
     mapIso ((((mapTrifunctorMapIso associator I₁ I₂ I₃).app X₁).app X₂).app X₃) r ≪≫
     mapBifunctorBifunctor₂₃MapObjIso F G₂₃ ρ₂₃ X₁ X₂ X₃
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma ι_mapBifunctorBifunctorAssociator_hom (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r (i₁, i₂, i₃) = j) :
     ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
       (mapBifunctorBifunctorAssociator associator ρ₁₂ ρ₂₃ X₁ X₂ X₃).hom j =
         ((associator.hom.app (X₁ i₁)).app (X₂ i₂)).app (X₃ i₃) ≫
-          ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h :=
-  sorry
+          ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h := by
+  have := H₁₂.hasMap
+  have := H₂₃.hasMap
+  dsimp [mapBifunctorBifunctorAssociator]
+  rw [ι_mapBifunctor₁₂BifunctorMapObjIso_inv_assoc, ιMapTrifunctorMapObj,
+    ι_mapMap_assoc, mapTrifunctorMapNatTrans_app_app_app]
+  erw [ι_mapBifunctorBifunctor₂₃MapObjIso_hom]
 
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorBifunctorAssociator_inv (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r (i₁, i₂, i₃) = j) :

@@ -161,13 +161,6 @@ abbrev HasGoodTensor₁₂Tensor (X₁ X₂ X₃ : GradedObject I C) :=
 abbrev HasGoodTensorTensor₂₃ (X₁ X₂ X₃ : GradedObject I C) :=
   HasGoodBifunctorBifunctor₂₃Obj (curryObj (MonoidalCategory.tensor C)) (curryObj (MonoidalCategory.tensor C)) ρ₂₃ X₁ X₂ X₃
 
---class HasAssociator (X₁ X₂ X₃ : GradedObject I C) [HasTensor X₁ X₂] [HasTensor X₂ X₃]
---   [HasTensor (tensorObj X₁ X₂) X₃] [HasTensor X₁ (tensorObj X₂ X₃)] where
---   H₁₂ : HasGoodBifunctor₁₂BifunctorObj (curryObj (MonoidalCategory.tensor C)) (curryObj (MonoidalCategory.tensor C)) ρ₁₂ X₁ X₂ X₃ := by infer_instance
---   H₂₃ : HasGoodBifunctorBifunctor₂₃Obj (curryObj (MonoidalCategory.tensor C)) (curryObj (MonoidalCategory.tensor C)) ρ₂₃ X₁ X₂ X₃ := by infer_instance
---
---attribute [instance] HasAssociator.H₁₂ HasAssociator.H₂₃
-
 section
 
 variable (X₁ X₂ X₃ : GradedObject I C) [HasTensor X₁ X₂] [HasTensor X₂ X₃]
