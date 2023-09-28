@@ -174,7 +174,7 @@ This section is devoted to the proof of Dirichlet's unit theorem.
 We define a group morphism from `(𝓞 K)ˣ` to `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is a
 distinguished (arbitrary) infinite place, prove that its kernel is the torsion subgroup (see
 `logEmbedding_eq_zero_iff`) and that its image, called `unitLattice`, is a full `ℤ`-lattice. It
-follows that `unitLattice` is a free `ℤ`-module (see `unitLattice_moduleFree `) of rank
+follows that `unitLattice` is a free `ℤ`-module (see `instModuleFree_unitLattice`) of rank
 `card (InfinitePlaces K) - 1` (see `unitLattice_rank`). To prove that the `unitLattice` is a full
 `ℤ`-lattice, we need to prove that it is discrete (see `unitLattice_inter_ball_finite`) and that it
 spans the full space over `ℝ` (see ` unitLattice_span_eq_top`); this is the main part of the proof,
@@ -399,7 +399,7 @@ theorem seq_norm_le (n : ℕ) :
 
 /-- Construct a unit associated to the place `w₁`. The family, for `w₁ ≠ w₀`, formed by the
 image by the `logEmbedding` of these units  is `ℝ`-linearly independent, see
-`unit_lattice_span_eq_top`. -/
+`unitLattice_span_eq_top`. -/
 theorem exists_unit (w₁ : InfinitePlace K ) :
     ∃ u : (𝓞 K)ˣ, ∀ w : InfinitePlace K, w ≠ w₁ → Real.log (w u) < 0 := by
   obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K < (convexBodyLtFactor K) * B := by
@@ -553,7 +553,7 @@ def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
 
 /-- The exponents that appear in the unique decomposition of a unit as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem` (see
-`exist_unique_eq_mul_prod`) are given by the representation of the unit of `basisModTorsion`. -/
+`exist_unique_eq_mul_prod`) are given by the representation of the unit on `basisModTorsion`. -/
 theorem fun_eq_repr {x ζ : (𝓞 K)ˣ} {f : Fin (rank K) → ℤ} (hζ : ζ ∈ torsion K)
     (h : x = ζ * ∏ i, (fundSystem K i) ^ (f i)) :
     f = (basisModTorsion K).repr (Additive.ofMul ↑x) := by
