@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
 import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 
 /-! # Linear programming
 
@@ -12,7 +13,9 @@ TODO
 ## Main definitions
 
  * `CanonicalLP` defines a linear program in the canonical form.
- * `CanonicalLP.Admits` tells if given vector is an admissible solution to given LP.
+ * `CanonicalLP.Admits` tells if given vector is an admissible solution to given canonical LP.
+ * `StandardLP` defines a linear program in the standard form.
+ * `StandardLP.Permits` tells if given vector is an admissible solution to given standard LP.
 
 -/
 
@@ -41,7 +44,7 @@ def CanonicalLP.Minimum (P : CanonicalLP m n K) (d : K) : Prop :=
 -- Or `CanonicalLP.Minimum (P) : P.HasMin → K` something?
 
 example : (@CanonicalLP.mk (Fin 2) (Fin 3) ℚ _ _ _
-      (Matrix.toLin' ![![1, 2, 0], ![1, -1, 4]]) ![5, 3] 0
+      (Matrix.toLin' !![1, 2, 0; 1, -1, 4]) ![5, 3] 0
     ).Admits ![1, 2, 1] := by
   constructor
   · ext i : 1
@@ -51,3 +54,24 @@ example : (@CanonicalLP.mk (Fin 2) (Fin 3) ℚ _ _ _
     | 1 =>
       rfl
   · simp [LE.le]
+
+
+/-- Linear program in the standard form. -/
+structure StandardLP (K V : Type) [LinearOrderedField K] [AddCommGroup V] [Module K V] where
+  constr : Finset (AffineMap K V K)
+  obj : AffineMap K V K
+
+def StandardLP.Permits {K V : Type} [LinearOrderedField K] [AddCommGroup V] [Module K V]
+    (P : StandardLP K V) (x : V) : Prop :=
+  ∀ c ∈ P.constr, 0 ≤ c x
+
+
+/-- Linear program in a more versatile form. -/
+structure SomeLP (K V : Type) [LinearOrderedField K] [AddCommGroup V] [Module K V] where
+  eq : Finset (AffineMap K V K)
+  le : Finset (AffineMap K V K)
+  obj : AffineMap K V K
+
+def SomeLP.Solutions {K V : Type} [LinearOrderedField K] [AddCommGroup V] [Module K V]
+    (P : SomeLP K V) : Set V :=
+  { x : V | (∀ e ∈ P.eq, e x = 0) ∧ (∀ i ∈ P.le, 0 ≤ i x) }
