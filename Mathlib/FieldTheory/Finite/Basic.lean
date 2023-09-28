@@ -183,8 +183,8 @@ theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
   rcases (exists_pow_ne_one_of_isCyclic k_pos k_lt_card_G) with ⟨a, ha⟩
   rw [Finset.sum_eq_multiset_sum]
   have h_multiset_map :
-    Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k)  =
-      Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k)  := by
+    Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k) =
+      Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k) := by
     simp_rw [← mul_pow]
     have as_comp :
       (fun x : ↥G => (((x : Kˣ) : K) * ((a : Kˣ) : K)) ^ k)
