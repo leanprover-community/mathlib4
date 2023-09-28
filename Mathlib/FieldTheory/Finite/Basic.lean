@@ -163,6 +163,7 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   rwa [←sub_eq_zero]
 
 /-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
+@[simp]
 theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
     {G : Subgroup Kˣ} [Fintype G] [Decidable (G = ⊥)] :
     ∑ x : G, (x.val : K) = if G = ⊥ then 1 else 0 := by
@@ -173,6 +174,7 @@ theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
   · simp only [G_bot, ite_false]
     exact sum_subgroup_units_eq_zero G_bot
 
+@[simp]
 theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
     {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Fintype.card G) :
     ∑ x : G, ((x : Kˣ) : K) ^ k = 0 := by
