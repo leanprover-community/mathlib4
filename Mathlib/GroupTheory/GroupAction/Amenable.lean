@@ -47,15 +47,15 @@ structure Mean where
   /-- function giving the measure of a measurable subset-/
   measureOf : {S // MeasurableSet (α := α) S} → NNReal
   /-- μ should be normalised  -/
-  measureOf_univ : μ Set.univ = 1
+  measureOf_univ : measureOf ⟨Set.univ, MeasurableSet.univ⟩ = 1
   /-- μ has to be finitely additive -/
   fin_add : ∀ (X Y : Set α),
       (hX : MeasurableSet X) → (hY: MeasurableSet Y) → Disjoint X Y
-      → μ (⟨X ∪ Y, MeasurableSet.union hX hY⟩) = μ ⟨X, hX⟩ + μ ⟨Y, hY⟩
+      → measureOf (⟨X ∪ Y, MeasurableSet.union hX hY⟩) = measureOf ⟨X, hX⟩ + measureOf ⟨Y, hY⟩
 
 @[coe]
 instance : CoeFun (Mean α) (λ _ => {S // MeasurableSet (α := α) S} → NNReal) where
-  coe := Mean.μ
+  coe := Mean.measureOf
 
 
 variable (G : Type u) [Monoid G] [MulAction G α]
@@ -63,8 +63,8 @@ variable (G : Type u) [Monoid G] [MulAction G α]
 
 instance MeanSMul : SMul G (Mean α) where
   smul g μ := {
-    μ := λ S => μ ⟨(λ (x : α) => g • x)⁻¹' S, (MulActionMeasurable.out g S.property)⟩
-    norm := by simp only [Set.preimage_univ, μ.norm]
+    measureOf := λ S => μ ⟨(λ (x : α) => g • x)⁻¹' S, (MulActionMeasurable.out g S.property)⟩
+    measureOf_univ := by simp only [Set.preimage_univ, μ.measureOf_univ]
     fin_add := by
       intro X Y hX hY disjXY
       simp only [Set.preimage_union]
