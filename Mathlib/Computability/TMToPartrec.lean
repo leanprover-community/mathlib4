@@ -312,8 +312,8 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         show ∀ x, pure x = [x] from fun _ => rfl, Bind.bind, Functor.map]
     suffices ∀ a b, a + b = n →
       (n.succ :: 0 ::
-        g (n ::ᵥ Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) n ::ᵥ v.tail)
-          :: v.val.tail : List ℕ) ∈
+        g (n ::ᵥ Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) n ::ᵥ v.tail) ::
+            v.val.tail : List ℕ) ∈
         PFun.fix
           (fun v : List ℕ => Part.bind (cg.eval (v.headI :: v.tail.tail))
             (fun x => Part.some (if v.tail.headI = 0
@@ -1545,7 +1545,6 @@ theorem succ_ok {q s n} {c d : List Γ'} :
     simp [trPosNum]
   · obtain ⟨l₁', l₂', s', e, h⟩ := IH (Γ'.bit0 :: l₁)
     refine' ⟨l₁', l₂', s', e, TransGen.head _ h⟩
-    swap
     simp [PosNum.succ, trPosNum]
     rfl
   · refine' ⟨l₁, _, some Γ'.bit0, rfl, TransGen.single _⟩

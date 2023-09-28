@@ -253,7 +253,7 @@ variable [SeminormedAddCommGroup α]
 theorem linfty_op_norm_def (A : Matrix m n α) :
     ‖A‖ = ((Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ : ℝ≥0) := by
   -- porting note: added
-  change ‖fun i => (PiLp.equiv 1 _).symm (A i)‖ = _
+  change ‖fun i => (WithLp.equiv 1 _).symm (A i)‖ = _
   simp [Pi.norm_def, PiLp.nnnorm_eq_sum ENNReal.one_ne_top]
 #align matrix.linfty_op_norm_def Matrix.linfty_op_norm_def
 
@@ -434,10 +434,10 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
 theorem frobenius_nnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
-  -- porting note: added, along with `PiLp.equiv_symm_apply` below
-  change ‖(PiLp.equiv 2 _).symm <| fun i => (PiLp.equiv 2 _).symm <| fun j => A i j‖₊ = _
+  -- porting note: added, along with `WithLp.equiv_symm_pi_apply` below
+  change ‖(WithLp.equiv 2 _).symm <| fun i => (WithLp.equiv 2 _).symm <| fun j => A i j‖₊ = _
   simp_rw [PiLp.nnnorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two,
-    PiLp.equiv_symm_apply]
+    WithLp.equiv_symm_pi_apply]
 #align matrix.frobenius_nnnorm_def Matrix.frobenius_nnnorm_def
 
 theorem frobenius_norm_def (A : Matrix m n α) :
@@ -485,30 +485,30 @@ instance frobenius_normedStarGroup [StarAddMonoid α] [NormedStarGroup α] :
 #align matrix.frobenius_normed_star_group Matrix.frobenius_normedStarGroup
 
 @[simp]
-theorem frobenius_norm_row (v : m → α) : ‖row v‖ = ‖(PiLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_row (v : m → α) : ‖row v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [row_apply, Real.rpow_two, PiLp.equiv_symm_apply]
+  simp only [row_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
 #align matrix.frobenius_norm_row Matrix.frobenius_norm_row
 
 @[simp]
-theorem frobenius_nnnorm_row (v : m → α) : ‖row v‖₊ = ‖(PiLp.equiv 2 _).symm v‖₊ :=
+theorem frobenius_nnnorm_row (v : m → α) : ‖row v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
   Subtype.ext <| frobenius_norm_row v
 #align matrix.frobenius_nnnorm_row Matrix.frobenius_nnnorm_row
 
 @[simp]
-theorem frobenius_norm_col (v : n → α) : ‖col v‖ = ‖(PiLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_col (v : n → α) : ‖col v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   simp_rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [col_apply, Real.rpow_two, PiLp.equiv_symm_apply]
+  simp only [col_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
 #align matrix.frobenius_norm_col Matrix.frobenius_norm_col
 
 @[simp]
-theorem frobenius_nnnorm_col (v : n → α) : ‖col v‖₊ = ‖(PiLp.equiv 2 _).symm v‖₊ :=
+theorem frobenius_nnnorm_col (v : n → α) : ‖col v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
   Subtype.ext <| frobenius_norm_col v
 #align matrix.frobenius_nnnorm_col Matrix.frobenius_nnnorm_col
 
 @[simp]
 theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
-    ‖diagonal v‖₊ = ‖(PiLp.equiv 2 _).symm v‖₊ := by
+    ‖diagonal v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ := by
   simp_rw [frobenius_nnnorm_def, ← Finset.sum_product', Finset.univ_product_univ,
     PiLp.nnnorm_eq_of_L2]
   let s := (Finset.univ : Finset n).map ⟨fun i : n => (i, i), fun i j h => congr_arg Prod.fst h⟩
@@ -523,7 +523,7 @@ theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
 
 @[simp]
 theorem frobenius_norm_diagonal [DecidableEq n] (v : n → α) :
-    ‖diagonal v‖ = ‖(PiLp.equiv 2 _).symm v‖ :=
+    ‖diagonal v‖ = ‖(WithLp.equiv 2 _).symm v‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_diagonal v : _).trans rfl
 #align matrix.frobenius_norm_diagonal Matrix.frobenius_norm_diagonal
 
@@ -552,9 +552,9 @@ theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
     mul_div_cancel' (1 : ℝ) two_ne_zero, NNReal.rpow_one, NNReal.mul_rpow]
   dsimp only
   have :=
-    @nnnorm_inner_le_nnnorm α _ _ _ _ ((PiLp.equiv 2 fun _ => α).symm fun j => star (A i j))
-      ((PiLp.equiv 2 fun _ => α).symm fun k => B k j)
-  simpa only [PiLp.equiv_symm_apply, PiLp.inner_apply, IsROrC.inner_apply, starRingEnd_apply,
+    @nnnorm_inner_le_nnnorm α _ _ _ _ ((WithLp.equiv 2 <| _ → α).symm fun j => star (A i j))
+      ((WithLp.equiv 2 <| _ → α).symm fun k => B k j)
+  simpa only [WithLp.equiv_symm_pi_apply, PiLp.inner_apply, IsROrC.inner_apply, starRingEnd_apply,
     Pi.nnnorm_def, PiLp.nnnorm_eq_of_L2, star_star, nnnorm_star, NNReal.sqrt_eq_rpow,
     NNReal.rpow_two] using this
 #align matrix.frobenius_nnnorm_mul Matrix.frobenius_nnnorm_mul

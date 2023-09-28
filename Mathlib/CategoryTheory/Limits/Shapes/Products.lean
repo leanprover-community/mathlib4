@@ -38,7 +38,7 @@ set_option autoImplicit true
 
 noncomputable section
 
-universe w w₂ w₃ v v₂ u u₂
+universe w w' w₂ w₃ v v₂ u u₂
 
 open CategoryTheory
 
@@ -75,13 +75,15 @@ def Cofan.mk {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) : Cofan f where
   ι := Discrete.natTrans (fun X => p X.as)
 #align category_theory.limits.cofan.mk CategoryTheory.Limits.Cofan.mk
 
-/-- Get the `j`th map in the fan -/
+/-- Get the `j`th "projection" in the fan.
+(Note that the initial letter of `proj` matches the greek letter in `Cone.π`.) -/
 def Fan.proj {f : β → C} (p : Fan f) (j : β) : p.pt ⟶ f j :=
   p.π.app (Discrete.mk j)
 #align category_theory.limits.fan.proj CategoryTheory.Limits.Fan.proj
 
-/-- Get the `j`th map in the cofan -/
-def Cofan.proj {f : β → C} (p : Cofan f) (j : β) : f j ⟶ p.pt :=
+/-- Get the `j`th "injection" in the cofan.
+(Note that the initial letter of `inj` matches the greek letter in `Cocone.ι`.) -/
+def Cofan.inj {f : β → C} (p : Cofan f) (j : β) : f j ⟶ p.pt :=
   p.ι.app (Discrete.mk j)
 
 @[simp]
@@ -90,8 +92,8 @@ theorem fan_mk_proj {f : β → C} (P : C) (p : ∀ b, P ⟶ f b) (j : β) : (Fa
 #align category_theory.limits.fan_mk_proj CategoryTheory.Limits.fan_mk_proj
 
 @[simp]
-theorem cofan_mk_proj {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) (j : β) :
-    (Cofan.mk P p).proj j = p j :=
+theorem cofan_mk_inj {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) (j : β) :
+    (Cofan.mk P p).inj j = p j :=
   rfl
 
 /-- An abbreviation for `HasLimit (Discrete.functor f)`. -/
@@ -119,8 +121,8 @@ def mkFanLimit {f : β → C} (t : Fan f) (lift : ∀ s : Fan f, s.pt ⟶ t.pt)
   just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]
 def mkCofanColimit {f : β → C} (s : Cofan f) (desc : ∀ t : Cofan f, s.pt ⟶ t.pt)
-    (fac : ∀ (t : Cofan f) (j : β), s.proj j ≫ desc t = t.proj j := by aesop_cat)
-    (uniq : ∀ (t : Cofan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, s.proj j ≫ m = t.proj j),
+    (fac : ∀ (t : Cofan f) (j : β), s.inj j ≫ desc t = t.inj j := by aesop_cat)
+    (uniq : ∀ (t : Cofan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, s.inj j ≫ m = t.inj j),
       m = desc t := by aesop_cat) :
     IsColimit s :=
   { desc }
@@ -229,6 +231,10 @@ abbrev Pi.map {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶
   limMap (Discrete.natTrans fun X => p X.as)
 #align category_theory.limits.pi.map CategoryTheory.Limits.Pi.map
 
+@[simp]
+lemma Pi.map_id {f : α → C} [HasProduct f] : Pi.map (fun a => 𝟙 (f a)) = 𝟙 (∏ f) := by
+  ext; simp
+
 lemma Pi.map_comp_map {f g h : α → C} [HasProduct f] [HasProduct g] [HasProduct h]
     (q : ∀ (a : α), f a ⟶ g a) (q' : ∀ (a : α), g a ⟶ h a) :
     Pi.map q ≫ Pi.map q' = Pi.map (fun a => q a ≫ q' a) := by
@@ -251,6 +257,9 @@ lemma Pi.map'_comp_π {f : α → C} {g : β → C} [HasProduct f] [HasProduct g
     (q : ∀ (b : β), f (p b) ⟶ g b) (b : β) : Pi.map' p q ≫ Pi.π g b = Pi.π f (p b) ≫ q b :=
   limit.lift_π _ _
 
+lemma Pi.map'_id_id {f : α → C} [HasProduct f] : Pi.map' id (fun a => 𝟙 (f a)) = 𝟙 (∏ f) := by
+  ext; simp
+
 @[simp]
 lemma Pi.map'_id {f g : α → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) :
     Pi.map' id p = Pi.map p :=
@@ -272,6 +281,11 @@ lemma Pi.map_comp_map' {f g : α → C} {h : β → C} [HasProduct f] [HasProduc
     Pi.map q ≫ Pi.map' p q' = Pi.map' p (fun b => q (p b) ≫ q' b) := by
   ext; simp
 
+lemma Pi.map'_eq {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] {p p' : β → α}
+    {q : ∀ (b : β), f (p b) ⟶ g b} {q' : ∀ (b : β), f (p' b) ⟶ g b} (hp : p = p')
+    (hq : ∀ (b : β), eqToHom (hp ▸ rfl) ≫ q b = q' b) : Pi.map' p q = Pi.map' p' q' := by
+  aesop_cat
+
 /-- Construct an isomorphism between categorical products (indexed by the same type)
 from a family of isomorphisms between the factors.
 -/
@@ -285,6 +299,10 @@ from a family of morphisms between the factors.
 abbrev Sigma.map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) : ∐ f ⟶ ∐ g :=
   colimMap (Discrete.natTrans fun X => p X.as)
 #align category_theory.limits.sigma.map CategoryTheory.Limits.Sigma.map
+
+@[simp]
+lemma Sigma.map_id {f : α → C} [HasCoproduct f] : Sigma.map (fun a => 𝟙 (f a)) = 𝟙 (∐ f) := by
+  ext; simp
 
 lemma Sigma.map_comp_map {f g h : α → C} [HasCoproduct f] [HasCoproduct g] [HasCoproduct h]
     (q : ∀ (a : α), f a ⟶ g a) (q' : ∀ (a : α), g a ⟶ h a) :
@@ -309,6 +327,10 @@ lemma Sigma.ι_comp_map' {f : α → C} {g : β → C} [HasCoproduct f] [HasCopr
     Sigma.ι f a ≫ Sigma.map' p q = q a ≫ Sigma.ι g (p a) :=
   colimit.ι_desc _ _
 
+lemma Sigma.map'_id_id {f : α → C} [HasCoproduct f] :
+    Sigma.map' id (fun a => 𝟙 (f a)) = 𝟙 (∐ f) := by
+  ext; simp
+
 @[simp]
 lemma Sigma.map'_id {f g : α → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) :
     Sigma.map' id p = Sigma.map p :=
@@ -329,6 +351,12 @@ lemma Sigma.map_comp_map' {f g : α → C} {h : β → C} [HasCoproduct f] [HasC
     [HasCoproduct h] (p : α → β) (q : ∀ (a : α), f a ⟶ g a) (q' : ∀ (a : α), g a ⟶ h (p a)) :
     Sigma.map q ≫ Sigma.map' p q' = Sigma.map' p (fun a => q a ≫ q' a) := by
   ext; simp
+
+lemma Sigma.map'_eq {f : α → C} {g : β → C} [HasCoproduct f] [HasCoproduct g]
+    {p p' : α → β} {q : ∀ (a : α), f a ⟶ g (p a)} {q' : ∀ (a : α), f a ⟶ g (p' a)}
+    (hp : p = p') (hq : ∀ (a : α), q a ≫ eqToHom (hp ▸ rfl) = q' a) :
+    Sigma.map' p q = Sigma.map' p' q' := by
+  aesop_cat
 
 /-- Construct an isomorphism between categorical coproducts (indexed by the same type)
 from a family of isomorphisms between the factors.
@@ -377,7 +405,7 @@ instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
     { cocone := Cofan.mk (∐ fun i => ∐ g i)
         (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
       isColimit := mkCofanColimit _
-        (fun s => Sigma.desc fun b => Sigma.desc fun c => s.proj ⟨b, c⟩) }
+        (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩) }
 
 /-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]
@@ -546,7 +574,7 @@ end Unique
 
 section Reindex
 
-variable {γ : Type v} (ε : β ≃ γ) (f : γ → C)
+variable {γ : Type w'} (ε : β ≃ γ) (f : γ → C)
 
 section
 

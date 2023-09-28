@@ -29,11 +29,11 @@ TODO: If `C` has binary products, then `forget X : Over X ⥤ C` has a right adj
 noncomputable section
 
 -- morphism levels before object levels. See note [category_theory universes].
-universe v u
+universe w' w v u
 
 open CategoryTheory CategoryTheory.Limits
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type w} [Category.{w'} J]
 
 variable {C : Type u} [Category.{v} C]
 
@@ -51,9 +51,9 @@ instance [HasColimitsOfShape J C] : HasColimitsOfShape J (Over X) where
 instance [HasColimits C] : HasColimits (Over X) :=
   ⟨inferInstance⟩
 
-instance createsColimits : CreatesColimits (forget X) :=
-  CostructuredArrow.createsColimits
-#align category_theory.over.creates_colimits CategoryTheory.Over.createsColimits
+instance createsColimitsOfSize : CreatesColimitsOfSize.{w, w'} (forget X) :=
+  CostructuredArrow.createsColimitsOfSize
+#align category_theory.over.creates_colimits CategoryTheory.Over.createsColimitsOfSize
 
 -- We can automatically infer that the forgetful functor preserves and reflects colimits.
 example [HasColimits C] : PreservesColimits (forget X) :=
@@ -150,9 +150,9 @@ theorem mono_iff_mono_right [HasPullbacks C] {f g : Under X} (h : f ⟶ g) : Mon
   StructuredArrow.mono_iff_mono_right _
 #align category_theory.under.mono_iff_mono_right CategoryTheory.Under.mono_iff_mono_right
 
-instance createsLimits : CreatesLimits (forget X) :=
-  StructuredArrow.createsLimits
-#align category_theory.under.creates_limits CategoryTheory.Under.createsLimits
+instance createsLimitsOfSize : CreatesLimitsOfSize.{w, w'} (forget X) :=
+  StructuredArrow.createsLimitsOfSize
+#align category_theory.under.creates_limits CategoryTheory.Under.createsLimitsOfSize
 
 -- We can automatically infer that the forgetful functor preserves and reflects limits.
 example [HasLimits C] : PreservesLimits (forget X) :=

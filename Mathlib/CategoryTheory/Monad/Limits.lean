@@ -343,8 +343,8 @@ noncomputable def monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape (R : D
 
 /-- A monadic functor creates colimits if it preserves colimits. -/
 noncomputable def monadicCreatesColimitsOfPreservesColimits (R : D ⥤ C) [MonadicRightAdjoint R]
-    [PreservesColimitsOfSize.{v, u} R] : CreatesColimitsOfSize.{v, u} R
-    where CreatesColimitsOfShape :=
+    [PreservesColimitsOfSize.{v, u} R] : CreatesColimitsOfSize.{v, u} R where
+  CreatesColimitsOfShape :=
     monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape _
 #align category_theory.monadic_creates_colimits_of_preserves_colimits CategoryTheory.monadicCreatesColimitsOfPreservesColimits
 
