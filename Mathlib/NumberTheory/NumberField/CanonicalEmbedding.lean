@@ -475,8 +475,8 @@ noncomputable abbrev convexBodyLtFactor : ℝ≥0∞ :=
     (NNReal.pi : ℝ≥0∞) ^ card {w : InfinitePlace K // IsComplex w}
 
 theorem convexBodyLtFactor_pos : 0 < (convexBodyLtFactor K) := by
-  refine mul_pos (NeZero.ne _) ?_
-  exact ENNReal.pow_ne_zero (ne_of_gt (measure_ball_pos _ _ (by norm_num))) _
+  refine mul_pos (NeZero.ne _) (ENNReal.pow_ne_zero ?_ _)
+  exact ne_of_gt (coe_pos.mpr Real.pi_pos)
 
 theorem convexBodyLtFactor_lt_top : (convexBodyLtFactor K) < ⊤ := by
   refine mul_lt_top ?_ ?_
@@ -548,7 +548,7 @@ theorem minkowskiBound_lt_top : minkowskiBound K < ⊤ := by
 
 variable {f : InfinitePlace K → ℝ≥0}
 
-instance : @IsAddHaarMeasure (E K) _ _ _ volume := prod.instIsAddHaarMeasure volume volume
+instance : IsAddHaarMeasure (volume : Measure (E K)) := prod.instIsAddHaarMeasure volume volume
 
 /-- Assume that `f : InfinitePlace K → ℝ≥0` is such that
 `minkowskiBound K < volume (convexBodyLt K f)` where `convexBodyLt K f` is the set of
