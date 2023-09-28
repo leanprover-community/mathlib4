@@ -566,6 +566,17 @@ theorem ker_int_castRingHom (n : ℕ) :
   rw [Ideal.mem_span_singleton, RingHom.mem_ker, Int.coe_castRingHom, int_cast_zmod_eq_zero_iff_dvd]
 #align zmod.ker_int_cast_ring_hom ZMod.ker_int_castRingHom
 
+theorem cast_injective_of_lt {m n : ℕ} [nzm : NeZero m] (h : m < n) :
+  Function.Injective (@ZMod.cast (ZMod n) _ m) := by
+  cases m with
+  | zero => cases nzm; simp_all
+  | succ m =>
+    rintro ⟨x, hx⟩ ⟨y, hy⟩ f
+    simp only [ZMod.cast, ZMod.val, ZMod.nat_cast_eq_nat_cast_iff',
+      Nat.mod_eq_of_lt (lt_trans hx h), Nat.mod_eq_of_lt (lt_trans hy h)] at f
+    apply Fin.ext
+    exact f
+
 --Porting note: commented
 -- attribute [local semireducible] Int.NonNeg
 
@@ -598,6 +609,20 @@ theorem val_add {n : ℕ} [NeZero n] (a b : ZMod n) : (a + b).val = (a.val + b.v
   · cases NeZero.ne 0 rfl
   · apply Fin.val_add
 #align zmod.val_add ZMod.val_add
+
+theorem ZMod.val_add_of_lt {n : ℕ} [NeZero n] {a b : ZMod n} (h : a.val + b.val < n) :
+    (a + b).val = a.val + b.val := by rw [ZMod.val_add, Nat.mod_eq_of_lt h]
+
+theorem ZMod.val_add_val_of_le  {n : ℕ} [NeZero n] {a b : ZMod n} (h : n ≤ a.val + b.val) :
+    a.val + b.val = (a + b).val + n := by
+  rw [ZMod.val_add, Nat.add_mod_add_of_le_add_mod, Nat.mod_eq_of_lt (ZMod.val_lt _),
+    Nat.mod_eq_of_lt (ZMod.val_lt _)]
+  rwa [Nat.mod_eq_of_lt (ZMod.val_lt _), Nat.mod_eq_of_lt (ZMod.val_lt _)]
+
+theorem ZMod.val_add_of_le {n : ℕ} [NeZero n] {a b : ZMod n} (h : n ≤ a.val + b.val) :
+    (a + b).val = a.val + b.val - n := by
+  rw [ZMod.val_add_val_of_le h]
+  exact eq_tsub_of_add_eq rfl
 
 theorem val_mul {n : ℕ} (a b : ZMod n) : (a * b).val = a.val * b.val % n := by
   cases n
@@ -872,6 +897,28 @@ theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 e
   contrapose! h
   rwa [le_zero_iff, val_eq_zero] at h
 #align zmod.neg_val ZMod.neg_val
+
+theorem val_neg_of_ne_zero {n : ℕ} [nz : NeZero n] (a : ZMod n) [na : NeZero a] :
+    (- a).val = n - a.val := by simp_all [neg_val a, na.out]
+
+theorem ZMod.val_sub {n : ℕ} [NeZero n] {a b : ZMod n} (h : b.val ≤ a.val) :
+    (a - b).val = a.val - b.val := by
+  by_cases hb : b = 0
+  · cases hb; simp
+  · haveI : NeZero b := ⟨hb⟩
+    rw [sub_eq_add_neg, ZMod.val_add, ZMod.val_neg_of_ne_zero,
+      ← Nat.add_sub_assoc (le_of_lt (ZMod.val_lt _)), add_comm, Nat.add_sub_assoc h,
+      Nat.add_mod_left]
+    apply Nat.mod_eq_of_lt (tsub_lt_of_lt (val_lt _))
+
+theorem ZMod.val_cast_eq_val_of_lt {m n : ℕ} [nzm : NeZero m] [nzn : NeZero n] {a : ZMod m}
+    (h : a.val < n) : (a.cast : ZMod n).val = a.val := by
+  cases m with
+  | zero => cases nzm; simp_all
+  | succ m =>
+    cases n with
+    | zero => cases nzn; simp_all
+    | succ n => exact Fin.val_cast_of_lt h
 
 /-- `valMinAbs x` returns the integer in the same equivalence class as `x` that is closest to `0`,
   The result will be in the interval `(-n/2, n/2]`. -/
