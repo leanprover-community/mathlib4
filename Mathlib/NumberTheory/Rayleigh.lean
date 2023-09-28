@@ -30,7 +30,7 @@ Define the following Beatty sets, where `r` denotes a real number:
 
 The main statements are:
 
-* `rayleigh_compl`: Let `r` be a real number greater than 1, and `1/r + 1/s = 1`.
+* `compl_beattySequence`: Let `r` be a real number greater than 1, and `1/r + 1/s = 1`.
   Then the complement of `B_r` is `B'_s`.
 * `rayleigh_pos`: Let `r` be a real number greater than 1, and `1/r + 1/s = 1`.
   Then `B⁺_r` and `B⁺'_s` partition the positive integers.
@@ -124,7 +124,7 @@ end Beatty
 
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
 than 1, and `1/r + 1/s = 1`. Then the complement of `B_r` is `B'_s`. -/
-theorem rayleigh_compl {r s : ℝ} (hrs : r.IsConjugateExponent s) :
+theorem compl_beattySequence {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     {beattySequence r k | k}ᶜ = {beattySequence' s k | k} := by
   ext j
   by_cases h₁ : j ∈ {beattySequence r k | k}
@@ -136,6 +136,10 @@ theorem rayleigh_compl {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     · have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hrs.pos).resolve_left h₁
       have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hrs.symm.pos).resolve_left h₂
       exact (Beatty.no_anticollision hrs ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
+
+theorem compl_beattySequence' {r s : ℝ} (hrs : r.IsConjugateExponent s) :
+    {beattySequence' r k | k}ᶜ = {beattySequence s k | k} := by
+  rw [← compl_beattySequence hrs.symm, compl_compl]
 
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
 than 1, and `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺'_s` partition the positive integers. -/
@@ -161,9 +165,13 @@ theorem rayleigh_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     have hj := Int.ceil_pos.1 (lt_trans zero_lt_one hj)
     have := pos_of_mul_pos_left hj hs
     rwa [Int.cast_pos] at this
-  rw [Set.mem_symmDiff, hb₁ _ hrs.nonneg, hb₂ _ hrs.symm.nonneg, ← rayleigh_compl hrs,
+  rw [Set.mem_symmDiff, hb₁ _ hrs.nonneg, hb₂ _ hrs.symm.nonneg, ← compl_beattySequence hrs,
     Set.not_mem_compl_iff, Set.mem_compl_iff, and_self, and_self]
   exact or_not
+
+theorem rayleigh_pos' {r s : ℝ} (hrs : r.IsConjugateExponent s) :
+    {beattySequence' r k | k > 0} ∆ {beattySequence s k | k > 0} = {n | 0 < n} := by
+  rw [symmDiff_comm, rayleigh_pos hrs.symm]
 
 /-- Let `r` be an irrational number. Then `B⁺_r` and `B⁺'_r` are equal. -/
 theorem irr_beattySequence_pos_eq {r : ℝ} (hr : Irrational r) :
@@ -178,4 +186,4 @@ theorem irr_beattySequence_pos_eq {r : ℝ} (hr : Irrational r) :
 `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺_s` partition the positive integers. -/
 theorem rayleigh_irr_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) (hr : Irrational r) :
     {beattySequence r k | k > 0} ∆ {beattySequence s k | k > 0} = {n | 0 < n} := by
-  rw [symmDiff_comm, irr_beattySequence_pos_eq hr, rayleigh_pos hrs.symm]
+  rw [irr_beattySequence_pos_eq hr, rayleigh_pos' hrs]
