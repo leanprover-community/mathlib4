@@ -35,7 +35,7 @@ namespace ContextFreeGrammar
 
 variable {T : Type _}
 
-/-- One step of context-free transformation. -/
+/-- One step of context-free transformation: `g.Produces w₁ w₂` means that a single rewrite turns `w₁` into `w₂`. -/
 def Produces (g : ContextFreeGrammar T) (w₁ w₂ : List (Symbol T g.NT)) : Prop :=
   ∃ r ∈ g.rules,
     ∃ u v : List (Symbol T g.NT),
