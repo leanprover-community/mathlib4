@@ -90,7 +90,7 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     getSimpTheorems
   let congrTheorems ← getSimpCongrTheorems
   let ctx : Simp.Context := {
-    config      := cfg
+    config       := cfg
     simpTheorems := #[simpTheorems], congrTheorems
   }
   if !hasStar then

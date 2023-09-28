@@ -932,16 +932,21 @@ theorem nontrivial_iff_exists_ne_one (H : Subgroup G) : Nontrivial H ↔ ∃ x �
 #align subgroup.nontrivial_iff_exists_ne_one Subgroup.nontrivial_iff_exists_ne_one
 #align add_subgroup.nontrivial_iff_exists_ne_zero AddSubgroup.nontrivial_iff_exists_ne_zero
 
+@[to_additive]
+theorem exists_ne_one_of_nontrivial (H : Subgroup G) [Nontrivial H] :
+    ∃ x ∈ H, x ≠ 1 := by
+  rwa [←Subgroup.nontrivial_iff_exists_ne_one]
+
+@[to_additive]
+theorem nontrivial_iff_ne_bot (H : Subgroup G) : Nontrivial H ↔ H ≠ ⊥ := by
+  rw [nontrivial_iff_exists_ne_one, ne_eq, eq_bot_iff_forall]
+  simp only [ne_eq, not_forall, exists_prop]
+
 /-- A subgroup is either the trivial subgroup or nontrivial. -/
 @[to_additive "A subgroup is either the trivial subgroup or nontrivial."]
 theorem bot_or_nontrivial (H : Subgroup G) : H = ⊥ ∨ Nontrivial H := by
-  classical
-    by_cases h : ∀ x ∈ H, x = (1 : G)
-    · left
-      exact H.eq_bot_iff_forall.mpr h
-    · right
-      simp only [not_forall] at h
-      simpa [nontrivial_iff_exists_ne_one] using h
+  have := nontrivial_iff_ne_bot H
+  tauto
 #align subgroup.bot_or_nontrivial Subgroup.bot_or_nontrivial
 #align add_subgroup.bot_or_nontrivial AddSubgroup.bot_or_nontrivial
 
@@ -952,6 +957,11 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
   rw [nontrivial_iff_exists_ne_one]
 #align subgroup.bot_or_exists_ne_one Subgroup.bot_or_exists_ne_one
 #align add_subgroup.bot_or_exists_ne_zero AddSubgroup.bot_or_exists_ne_zero
+
+@[to_additive]
+lemma ne_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
+  rw [←nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one]
+  simp only [ne_eq, Subtype.exists, mk_eq_one_iff, exists_prop]
 
 /-- The inf of two subgroups is their intersection. -/
 @[to_additive "The inf of two `AddSubgroup`s is their intersection."]
