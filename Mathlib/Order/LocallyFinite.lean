@@ -1489,14 +1489,6 @@ variable [LocallyFiniteOrder α]
 @[simp] lemma toFinset_Ioo (a b : α) [Fintype (Ioo a b)] : (Ioo a b).toFinset = Finset.Ioo a b := by
   ext; simp
 
-namespace Finite
-
-@[simp] lemma toFinset_Icc (a b : α) : (finite_Icc a b).toFinset = Finset.Icc a b := by ext; simp
-@[simp] lemma toFinset_Ico (a b : α) : (finite_Ico a b).toFinset = Finset.Ico a b := by ext; simp
-@[simp] lemma toFinset_Ioc (a b : α) : (finite_Ioc a b).toFinset = Finset.Ioc a b := by ext; simp
-@[simp] lemma toFinset_Ioo (a b : α) : (finite_Ioo a b).toFinset = Finset.Ioo a b := by ext; simp
-
-end Finite
 end LocallyFiniteOrder
 
 section LocallyFiniteOrderTop
@@ -1508,12 +1500,6 @@ lemma toFinset_Ici (a : α) [Fintype (Ici a)] : (Ici a).toFinset = Finset.Ici a 
 @[simp]
 lemma toFinset_Ioi (a : α) [Fintype (Ioi a)] : (Ioi a).toFinset = Finset.Ioi a := by ext; simp
 
-namespace Finite
-
-@[simp] lemma toFinset_Ici (a : α) : (finite_Ici a).toFinset = Finset.Ici a := by ext; simp
-@[simp] lemma toFinset_Ioi (a : α) : (finite_Ioi a).toFinset = Finset.Ioi a := by ext; simp
-
-end Finite
 end LocallyFiniteOrderTop
 
 section LocallyFiniteOrderBot
@@ -1525,11 +1511,5 @@ lemma toFinset_Iic (a : α) [Fintype (Iic a)] : (Iic a).toFinset = Finset.Iic a 
 @[simp]
 lemma toFinset_Iio (a : α) [Fintype (Iio a)] : (Iio a).toFinset = Finset.Iio a := by ext; simp
 
-namespace Finite
-
-@[simp] lemma toFinset_Iic (a : α) : (finite_Iic a).toFinset = Finset.Iic a := by ext; simp
-@[simp] lemma toFinset_Iio (a : α) : (finite_Iio a).toFinset = Finset.Iio a := by ext; simp
-
-end Finite
 end LocallyFiniteOrderBot
 end Set
