@@ -405,9 +405,9 @@ theorem set_integral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s →
 
 /-- If a function equals zero almost everywhere w.r.t. restriction of the measure to `sᶜ`, then its
 integral on `s` coincides with its integral on the whole space. -/
-lemma set_integral_eq_integral_of_ae_restrict_eq_zero
-    [MeasurableSpace E] [MeasurableSingletonClass E] (hs : f =ᵐ[μ.restrict sᶜ] 0) :
+lemma set_integral_eq_integral_of_ae_restrict_eq_zero (hs : f =ᵐ[μ.restrict sᶜ] 0) :
     ∫ ω in s, f ω ∂μ = ∫ ω, f ω ∂μ := by
+  borelize E
   refine set_integral_eq_integral_of_ae_compl_eq_zero ?_
   have f_mble : NullMeasurable f (μ.restrict sᶜ) :=
     NullMeasurable.congr measurable_const.nullMeasurable hs.symm
