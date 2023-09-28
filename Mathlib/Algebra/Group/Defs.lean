@@ -1193,6 +1193,8 @@ theorem Group.toDivInvMonoid_injective {G : Type*} :
 class AddCommGroup (G : Type u) extends AddCommMonoid G, AddGroup G
 #align add_comm_group AddCommGroup
 
+attribute [nolint docBlame] AddCommGroup.zsmul
+
 /-- A commutative group is a group with commutative `(*)`. -/
 @[to_additive]
 class CommGroup (G : Type u) extends CommMonoid G, Group G
