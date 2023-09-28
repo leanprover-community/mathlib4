@@ -30,6 +30,10 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
   * `Algebra.TensorProduct.assoc : ((A ⊗[R] B) ⊗[R] C) ≃ₐ[R] (A ⊗[R] (B ⊗[R] C))`
 - `Algebra.TensorProduct.liftEquiv`: a universal property for the tensor product of algebras.
 
+## References
+
+* [C. Kassel, *Quantum Groups* (§II.4)][kasselTensorProducts1995]
+
 -/
 
 open scoped TensorProduct
