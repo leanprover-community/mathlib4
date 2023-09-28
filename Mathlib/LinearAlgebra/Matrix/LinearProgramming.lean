@@ -28,9 +28,9 @@ structure CanonicalLP (m n K : Type _) [Fintype m] [Fintype n] [LinearOrderedFie
   /-- (possibly not a) matrix of coefficients -/
   A : (n → K) →ₗ[K] (m → K)
   /-- Right-hand side -/
-  b : m → K              
-  /-- Objective function coefficients -/  
-  c : n → K                
+  b : m → K
+  /-- Objective function coefficients -/
+  c : n → K
 
 variable {m n K : Type _} [Fintype m] [Fintype n] [LinearOrderedField K]
 
