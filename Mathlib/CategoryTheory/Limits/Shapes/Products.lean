@@ -150,11 +150,11 @@ def Cofan.IsColimit.desc {F : β → C} {c : Cofan F} (hc : IsColimit c) {A : C}
 @[reassoc (attr := simp)]
 lemma Cofan.IsColimit.fac {F : β → C} {c : Cofan F} (hc : IsColimit c) {A : C}
     (f : ∀ i, F i ⟶ A) (i : β) :
-    c.proj i ≫ Cofan.IsColimit.desc hc f = f i :=
+    c.inj i ≫ Cofan.IsColimit.desc hc f = f i :=
   hc.fac (Cofan.mk A f) ⟨i⟩
 
 lemma Cofan.IsColimit.hom_ext {F : I → C} {c : Cofan F} (hc : IsColimit c) {A : C}
-    (f g : c.pt ⟶ A) (h : ∀ i, c.proj i ≫ f = c.proj i ≫ g) : f = g :=
+    (f g : c.pt ⟶ A) (h : ∀ i, c.inj i ≫ f = c.inj i ≫ g) : f = g :=
   hc.hom_ext (fun ⟨i⟩ => h i)
 
 section

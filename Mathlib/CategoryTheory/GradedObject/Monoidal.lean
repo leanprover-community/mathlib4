@@ -66,7 +66,7 @@ def TensorCofan.mk (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
 @[simp]
 lemma TensorCofan.mk_inj (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
     (ι : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = j), X₁ i₁ ⊗ X₂ i₂ ⟶ pt) (i₁ i₂ : I) (h : i₁ + i₂ = j) :
-    (TensorCofan.mk X₁ X₂ j pt ι).proj ⟨⟨i₁, i₂⟩, h⟩ = ι i₁ i₂ h := rfl
+    (TensorCofan.mk X₁ X₂ j pt ι).inj ⟨⟨i₁, i₂⟩, h⟩ = ι i₁ i₂ h := rfl
 
 lemma TensorCofan.hasTensor (X₁ X₂ : GradedObject I C)
     (c : ∀ i, TensorCofan X₁ X₂ i) (hc : ∀ i, IsColimit (c i)) :
@@ -354,7 +354,7 @@ noncomputable def unitTensorCofan (i : I) : TensorCofan tensorUnit X i :=
 
 @[simp]
 lemma unitTensorCofan_ι₀ (i : I) :
-    (unitTensorCofan X i).proj ⟨⟨0, i⟩, zero_add i⟩ =
+    (unitTensorCofan X i).inj ⟨⟨0, i⟩, zero_add i⟩ =
       ((tensorUnit₀ I C).hom ⊗ (𝟙 (X i))) ≫ (λ_ (X i)).hom := by
   dsimp [unitTensorCofan]
   rw [dif_pos rfl]
@@ -363,7 +363,7 @@ lemma unitTensorCofan_ι₀ (i : I) :
 noncomputable def isColimitUnitTensorCofan (i : I) : IsColimit (unitTensorCofan X i) :=
   mkCofanColimit _
     (fun s => (leftUnitor (X i)).inv ≫
-      ((tensorUnit₀ I C).inv ⊗ 𝟙 (X i)) ≫ s.proj ⟨⟨0, i⟩, zero_add i⟩)
+      ((tensorUnit₀ I C).inv ⊗ 𝟙 (X i)) ≫ s.inj ⟨⟨0, i⟩, zero_add i⟩)
     (fun s ⟨⟨a, b⟩, (hi : a + b = i)⟩ => by
       by_cases a = 0
       · subst h
@@ -424,7 +424,7 @@ noncomputable def tensorUnitCofan (i : I) : TensorCofan X tensorUnit i :=
 
 @[simp]
 lemma tensorUnitCofan_ι₀ (i : I) :
-    (tensorUnitCofan X i).proj ⟨⟨i, 0⟩, add_zero i⟩ =
+    (tensorUnitCofan X i).inj ⟨⟨i, 0⟩, add_zero i⟩ =
       (𝟙 (X i) ⊗ (tensorUnit₀ I C).hom) ≫ (rightUnitor (X i)).hom := by
   dsimp [tensorUnitCofan]
   rw [dif_pos rfl]
@@ -433,7 +433,7 @@ lemma tensorUnitCofan_ι₀ (i : I) :
 noncomputable def isColimitTensorUnitCofan (i : I) : IsColimit (tensorUnitCofan X i) :=
   mkCofanColimit _
     (fun s => (rightUnitor (X i)).inv ≫
-      (𝟙 (X i) ⊗ (tensorUnit₀ I C).inv) ≫ s.proj ⟨⟨i, 0⟩, add_zero i⟩)
+      (𝟙 (X i) ⊗ (tensorUnit₀ I C).inv) ≫ s.inj ⟨⟨i, 0⟩, add_zero i⟩)
     (fun s ⟨⟨a, b⟩, (hi : a + b = i)⟩ => by
       by_cases b = 0
       · subst h

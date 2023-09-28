@@ -29,7 +29,7 @@ variable (k : K) (c : ∀ (j : J) (_ : q j = k), X.CofanMapObjFun p j)
 @[simp]
 def cofanMapObjComp : X.CofanMapObjFun r k :=
   CofanMapObjFun.mk _ _ _ c'.pt (fun i hi =>
-    (c (p i) (by rw [← hpqr, hi])).proj ⟨i, rfl⟩ ≫ c'.proj (⟨p i, by
+    (c (p i) (by rw [← hpqr, hi])).inj ⟨i, rfl⟩ ≫ c'.inj (⟨p i, by
       rw [Set.mem_preimage, Set.mem_singleton_iff, ← hpqr, hi]⟩))
 
 @[simp]
@@ -38,7 +38,7 @@ def isColimitCofanMapObjComp :
   mkCofanColimit _
     (fun s => Cofan.IsColimit.desc hc'
       (fun ⟨j, (hj : q j = k)⟩ => Cofan.IsColimit.desc (hc j hj)
-        (fun ⟨i, (hi : p i = j)⟩ => s.proj ⟨i, by
+        (fun ⟨i, (hi : p i = j)⟩ => s.inj ⟨i, by
           simp only [Set.mem_preimage, Set.mem_singleton_iff, hpqr, hi, hj]⟩)))
     (fun s ⟨i, (hi : r i = k)⟩ => by simp)
     (fun s m hm => by

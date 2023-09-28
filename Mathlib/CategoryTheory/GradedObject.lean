@@ -276,20 +276,20 @@ namespace GradedObject
 variable {I J : Type*} {C : Type*} [Category C]
   (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 
-/-- If `X : GradedObject I C` and `p : I → J`, `mapObjFun` is the family of objects `X i`
+/-- If `X : GradedObject I C` and `p : I → J`, `X.mapObjFun p j` is the family of objects `X i`
 for `i : I` such that `p i = j`. -/
 abbrev mapObjFun (j : J) := (fun (i : (p ⁻¹' {j})) => X i)
 
 variable (j : J)
 
-/-- Given `X : GradedObject I C` and `p : I → J`, `X.HasMap p` is the condition that for
-all `j : J`, the coproduct of all `X i` such `p i = j` exists. -/
+/-- Given `X : GradedObject I C` and `p : I → J`, `X.HasMap p` is the condition that
+for all `j : J`, the coproduct of all `X i` such `p i = j` exists. -/
 abbrev HasMap : Prop := ∀ (j : J), HasCoproduct (X.mapObjFun p j)
 
 variable [X.HasMap p] [Y.HasMap p] [Z.HasMap p]
 
-/-- Given `X : GradedObject I C` and `p : I → J`, `X.mapObj p` is the graded object by
-`J` which in degree `i` consists of the coproduct of the `X i` such that `p i = j`. -/
+/-- Given `X : GradedObject I C` and `p : I → J`, `X.mapObj p` is the graded object by `J`
+which in degree `j` consists of the coproduct of the `X i` such that `p i = j`. -/
 noncomputable def mapObj : GradedObject J C := fun j => ∐ (X.mapObjFun p j)
 
 /-- The canonical inclusion `X i ⟶ X.mapObj p j` when `i : I` and `j : J` are such
@@ -302,10 +302,12 @@ noncomputable def ιMapObj (i : I) (j : J) (hij : p i = j) : X i ⟶ X.mapObj p 
 such colimits cofans are isomorphic to `X.mapObj p j`, see `CofanMapObjFun.iso`. -/
 abbrev CofanMapObjFun (j : J) := Cofan (X.mapObjFun p j)
 
--- in order to use the cofan API, some definitions have a `simp` attribute rather than `simps`
+-- in order to use the cofan API, some definitions below
+-- have a `simp` attribute rather than `simps`
 /-- Constructor for `CofanMapObjFun X p j`. -/
 @[simp]
-def CofanMapObjFun.mk (j : J) (pt : C) (ι' : ∀ (i : I) (_ : p i = j), X i ⟶ pt) : CofanMapObjFun X p j :=
+def CofanMapObjFun.mk (j : J) (pt : C) (ι' : ∀ (i : I) (_ : p i = j), X i ⟶ pt) :
+    CofanMapObjFun X p j :=
   Cofan.mk pt (fun ⟨i, hi⟩ => ι' i hi)
 
 /-- The tautological cofan corresponding to the coproduct decomposition of `X.mapObj p j`. -/
@@ -331,7 +333,8 @@ noncomputable def descMapObj {A : C} {j : J} (φ : ∀ (i : I) (_ : p i = j), X 
   Cofan.IsColimit.desc (X.isColimitCofanMapObj p j) (fun ⟨i, hi⟩ => φ i hi)
 
 @[reassoc (attr := simp)]
-lemma ι_descMapObj {A : C} {j : J} (φ : ∀ (i : I) (_ : p i = j), X i ⟶ A) (i : I) (hi : p i = j) :
+lemma ι_descMapObj {A : C} {j : J}
+    (φ : ∀ (i : I) (_ : p i = j), X i ⟶ A) (i : I) (hi : p i = j) :
     X.ιMapObj p i j hi ≫ X.descMapObj p φ = φ i hi := by
   apply Cofan.IsColimit.fac
 
@@ -349,13 +352,13 @@ noncomputable def iso : c.pt ≅ X.mapObj p j :=
   IsColimit.coconePointUniqueUpToIso hc (X.isColimitCofanMapObj p j)
 
 @[reassoc (attr := simp)]
-lemma proj_iso_hom (i : I) (hi : p i = j) :
-    c.proj ⟨i, hi⟩ ≫ (c.iso hc).hom = X.ιMapObj p i j hi := by
+lemma inj_iso_hom (i : I) (hi : p i = j) :
+    c.inj ⟨i, hi⟩ ≫ (c.iso hc).hom = X.ιMapObj p i j hi := by
   apply IsColimit.comp_coconePointUniqueUpToIso_hom
 
 @[reassoc (attr := simp)]
 lemma ιMapObj_iso_inv (i : I) (hi : p i = j) :
-    X.ιMapObj p i j hi ≫ (c.iso hc).inv = c.proj ⟨i, hi⟩ := by
+    X.ιMapObj p i j hi ≫ (c.iso hc).inv = c.inj ⟨i, hi⟩ := by
   apply IsColimit.comp_coconePointUniqueUpToIso_inv
 
 end CofanMapObjFun
@@ -364,12 +367,13 @@ variable {X Y}
 
 /-- The canonical morphism of `J`-graded objects `X.mapObj p ⟶ Y.mapObj p` induced by
 a morphism `X ⟶ Y` of `I`-graded objects and a map `p : I → J`. -/
-noncomputable def mapMap : X.mapObj p ⟶ Y.mapObj p := fun _ => Limits.Sigma.map (fun i => φ i)
+noncomputable def mapMap : X.mapObj p ⟶ Y.mapObj p := fun j =>
+  X.descMapObj p (fun i hi => φ i ≫ Y.ιMapObj p i j hi)
 
 @[reassoc (attr := simp)]
 lemma ι_mapMap (i : I) (j : J) (hij : p i = j) :
     X.ιMapObj p i j hij ≫ mapMap φ p j = φ i ≫ Y.ιMapObj p i j hij := by
-  simp [ιMapObj, mapMap]
+  simp only [mapMap, ι_descMapObj]
 
 lemma congr_mapMap (φ₁ φ₂ : X ⟶ Y) (h : φ₁ = φ₂) : mapMap φ₁ p = mapMap φ₂ p := by
   subst h
