@@ -9,9 +9,9 @@ import Mathlib.Geometry.Synthetic.Avigad.Axioms
 Tactics document for permutation of arguments
 -/
 
-open incidence_geometry
+open IncidenceGeometry
 
-variable [i: incidence_geometry] {a b c : point}
+variable [i: IncidenceGeometry] {a b c : Point}
 
 lemma ar132  : area a b c = area a c b := by exact (area_invariant a b c).2
 
@@ -68,10 +68,10 @@ lemma tr312  : triangle a b c ↔ triangle c a b := by
 lemma tr321  : triangle a b c ↔ triangle c b a := by
   constructor; all_goals dsimp [triangle]; rw [col321]; tauto
 
-lemma ss21 {a b : point} {L : line}: sameside a b L ↔ sameside b a L := by
+lemma ss21 {a b : Point} {L : Line}: sameside a b L ↔ sameside b a L := by
   constructor; repeat exact sameside_symm
 
-lemma ds21 {a b : point} {L : line}: diffside a b L ↔ diffside b a L := by
+lemma ds21 {a b : Point} {L : Line}: diffside a b L ↔ diffside b a L := by
   constructor
   all_goals
     intro h
@@ -79,7 +79,7 @@ lemma ds21 {a b : point} {L : line}: diffside a b L ↔ diffside b a L := by
     rw [ss21] at nss
     exact ⟨ nbL, naL, nss ⟩
 
-lemma para21 {L M : line}: para L M ↔ para M L := by
+lemma para21 {L M : Line}: para L M ↔ para M L := by
   constructor
   all_goals
     intros p e
