@@ -9,7 +9,13 @@ import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.Data.ZMod.Basic
 
 /-!
-# Graded tensor products over super- (`ZMod 2`-graded) algebras
+# Graded tensor products over super- (`ZMod 2`-graded)
+
+The graded product  $A \otimes B$ is defined on homogeneous tensors by
+
+$$ (a \otimes b) \cdot (a' \otimes b') = (-1)^{\deg a' \deg b} (a \cdot a') \otimes (b \cdot b') $$
+
+See also https://math.stackexchange.com/a/2024228/1896
 -/
 
 local notation "ℤ₂" => ZMod 2
