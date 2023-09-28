@@ -82,6 +82,7 @@ structure SomeLP (K : Type*) {V : Type*} (P : Type*)
   /-- The objective function -/
   obj : P →ᵃ[K] K
 
-def SomeLP.Solutions {K V : Type} [LinearOrderedField K] [AddCommGroup V] [Module K V]
-    (P : SomeLP K V) : Set V :=
+def SomeLP.Solutions (K : Type*) {V : Type*} (P : Type*)
+    [LinearOrderedField K] [AddCommGroup V] [Module K V] [AddTorsor K P]
+    (P : SomeLP K V P) : Set V :=
   { x : V | (∀ e ∈ P.eq, e x = 0) ∧ (∀ i ∈ P.le, 0 ≤ i x) }
