@@ -620,6 +620,22 @@ theorem map_toAddSubmonoid' (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M)
 #align submodule.map_to_add_submonoid' Submodule.map_toAddSubmonoid'
 
 @[simp]
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_map {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
+    (f : A →+ A₂) (s : AddSubgroup A):
+    (AddSubgroup.toIntSubmodule  s).map f.toIntLinearMap =
+      AddSubgroup.toIntSubmodule (s.map f) := rfl
+
+@[simp]
+theorem _root_.MonoidHom.coe_toAdditive_map {G G₂ : Type*} [Group G] [Group G₂] (f : G →* G₂)
+    (s : Subgroup G) :
+    s.toAddSubgroup.map (MonoidHom.toAdditive f) = Subgroup.toAddSubgroup (s.map f) := rfl
+
+@[simp]
+theorem _root_.AddMonoidHom.coe_toMultiplicative_map {G G₂ : Type*} [AddGroup G] [AddGroup G₂]
+    (f : G →+ G₂) (s : AddSubgroup G) :
+    s.toSubgroup.map (AddMonoidHom.toMultiplicative f) = AddSubgroup.toSubgroup (s.map f) := rfl
+
+@[simp]
 theorem mem_map {f : F} {p : Submodule R M} {x : M₂} : x ∈ map f p ↔ ∃ y, y ∈ p ∧ f y = x :=
   Iff.rfl
 #align submodule.mem_map Submodule.mem_map
@@ -701,6 +717,12 @@ def comap (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
 theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=
   rfl
 #align submodule.comap_coe Submodule.comap_coe
+
+@[simp]
+theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
+    (f : A →+ A₂) (s : AddSubgroup A₂):
+    (AddSubgroup.toIntSubmodule  s).comap f.toIntLinearMap =
+      AddSubgroup.toIntSubmodule (s.comap f) := rfl
 
 @[simp]
 theorem mem_comap {f : F} {p : Submodule R₂ M₂} : x ∈ comap f p ↔ f x ∈ p :=
