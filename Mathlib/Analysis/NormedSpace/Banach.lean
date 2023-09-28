@@ -223,7 +223,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   simp only [fsumeq] at L₁
   have L₂ : Tendsto (fun n => y - h^[n] y) atTop (𝓝 (y - 0)) := by
     refine' tendsto_const_nhds.sub _
-    rw [tendsto_iff_norm_tendsto_zero]
+    rw [tendsto_iff_norm_sub_tendsto_zero]
     simp only [sub_zero]
     refine' squeeze_zero (fun _ => norm_nonneg _) hnle _
     rw [← zero_mul ‖y‖]

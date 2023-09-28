@@ -70,8 +70,8 @@ instance category : LargeCategory.{max v u} Grpd.{v, u} where
   Hom C D := C ⥤ D
   id C := 𝟭 C
   comp F G := F ⋙ G
-  id_comp _ := by rfl
-  comp_id _ := by rfl
+  id_comp _ := rfl
+  comp_id _ := rfl
   assoc := by intros; rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.category CategoryTheory.Grpd.category
