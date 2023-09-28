@@ -50,16 +50,16 @@ namespace UpperSet
 variable [SemilatticeInf α] {s : UpperSet α} {a : α}
 
 @[simp] lemma infIrred_Ici (a : α) : InfIrred (Ici a) := by
-  refine' ⟨λ h ↦ Ici_ne_top _ h.eq_top, λ s t hst ↦ _⟩
+  refine' ⟨fun h ↦ Ici_ne_top _ h.eq_top, fun s t hst ↦ _⟩
   have := mem_Ici_iff.2 (le_refl a)
   rw [←hst] at this
-  exact this.imp (λ ha ↦ le_antisymm (le_Ici.2 ha) $ hst.ge.trans inf_le_left) λ ha ↦
+  exact this.imp (fun ha ↦ le_antisymm (le_Ici.2 ha) $ hst.ge.trans inf_le_left) fun ha ↦
       le_antisymm (le_Ici.2 ha) $ hst.ge.trans inf_le_right
 
 variable [Finite α]
 
 @[simp] protected lemma infIrred : InfIrred s ↔ ∃ a, Ici a = s := by
-  refine' ⟨λ hs ↦ _, _⟩
+  refine' ⟨fun hs ↦ _, _⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal_wrt id _ (coe_nonempty.2 hs.ne_top)
     exact ⟨a, (hs.2 $ erase_inf_Ici has ha).resolve_left (lt_erase ha).ne'⟩
   · rintro ⟨a, rfl⟩
@@ -71,16 +71,16 @@ namespace LowerSet
 variable [SemilatticeSup α] {s : LowerSet α} {a : α}
 
 @[simp] lemma supIrred_Iic (a : α) : SupIrred (Iic a) := by
-  refine' ⟨λ h ↦ Iic_ne_bot _ h.eq_bot, λ s t hst ↦ _⟩
+  refine' ⟨fun h ↦ Iic_ne_bot _ h.eq_bot, fun s t hst ↦ _⟩
   have := mem_Iic_iff.2 (le_refl a)
   rw [←hst] at this
-  exact this.imp (λ ha ↦ (le_sup_left.trans_eq hst).antisymm $ Iic_le.2 ha) λ ha ↦
+  exact this.imp (fun ha ↦ (le_sup_left.trans_eq hst).antisymm $ Iic_le.2 ha) fun ha ↦
     (le_sup_right.trans_eq hst).antisymm $ Iic_le.2 ha
 
 variable [Finite α]
 
 @[simp] protected lemma supIrred : SupIrred s ↔ ∃ a, Iic a = s := by
-  refine' ⟨λ hs ↦ _, _⟩
+  refine' ⟨fun hs ↦ _, _⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal_wrt id _ (coe_nonempty.2 hs.ne_bot)
     exact ⟨a, (hs.2 $ erase_sup_Iic has ha).resolve_left (erase_lt ha).ne⟩
   · rintro ⟨a, rfl⟩
@@ -100,22 +100,22 @@ open scoped Classical
 the lattice of lower sets of its sup-irreducible elements. -/
 noncomputable def OrderIso.lowerSetSupIrred : α ≃o LowerSet {a : α // SupIrred a} :=
   Equiv.toOrderIso
-    { toFun := λ a ↦ ⟨{b | ↑b ≤ a}, λ b c hcb hba ↦ hba.trans' hcb⟩
-      invFun := λ s ↦ (s : Set {a : α // SupIrred a}).toFinset.sup (↑)
-      left_inv := λ a ↦ by
-        refine' le_antisymm (Finset.sup_le λ b ↦ Set.mem_toFinset.1) _
+    { toFun := fun a ↦ ⟨{b | ↑b ≤ a}, fun b c hcb hba ↦ hba.trans' hcb⟩
+      invFun := fun s ↦ (s : Set {a : α // SupIrred a}).toFinset.sup (↑)
+      left_inv := fun a ↦ by
+        refine' le_antisymm (Finset.sup_le fun b ↦ Set.mem_toFinset.1) _
         obtain ⟨s, rfl, hs⟩ := exists_supIrred_decomposition a
-        exact Finset.sup_le λ i hi ↦
+        exact Finset.sup_le fun i hi ↦
           le_sup_of_le (b := ⟨i, hs hi⟩) (Set.mem_toFinset.2 $ le_sup (f := id) hi) le_rfl
-      right_inv := λ s ↦ by
+      right_inv := fun s ↦ by
         ext a
         dsimp
-        refine' ⟨λ ha ↦ _, λ ha ↦ _⟩
+        refine' ⟨fun ha ↦ _, fun ha ↦ _⟩
         · obtain ⟨i, hi, ha⟩ := a.2.supPrime.le_finset_sup.1 ha
           exact s.lower ha (Set.mem_toFinset.1 hi)
         · dsimp
           exact le_sup (Set.mem_toFinset.2 ha) }
-    (λ b c hbc d ↦ le_trans' hbc) λ s t hst ↦ Finset.sup_mono $ Set.toFinset_mono hst
+    (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono $ Set.toFinset_mono hst
 
 attribute [-instance] Set.fintypeIic
 
@@ -123,9 +123,9 @@ attribute [-instance] Set.fintypeIic
 sets. -/
 noncomputable def OrderIso.supIrredLowerSet : α ≃o {s : LowerSet α // SupIrred s} :=
   Equiv.toOrderIso
-    { toFun := λ a ↦ ⟨LowerSet.Iic a, LowerSet.supIrred_Iic _⟩
-      invFun := λ s ↦ ((s : LowerSet α) : Set α).toFinset.sup id
-      left_inv := λ a ↦ by
+    { toFun := fun a ↦ ⟨LowerSet.Iic a, LowerSet.supIrred_Iic _⟩
+      invFun := fun s ↦ ((s : LowerSet α) : Set α).toFinset.sup id
+      left_inv := fun a ↦ by
         have : LocallyFiniteOrder α := Fintype.toLocallyFiniteOrder
         simp
       right_inv := by
@@ -134,7 +134,7 @@ noncomputable def OrderIso.supIrredLowerSet : α ≃o {s : LowerSet α // SupIrr
         rintro ⟨s, hs⟩
         obtain ⟨a, rfl⟩ := LowerSet.supIrred.1 hs
         simp }
-    (λ b c hbc d ↦ le_trans' hbc) λ s t hst ↦ Finset.sup_mono $ Set.toFinset_mono hst
+    (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono $ Set.toFinset_mono hst
 
 end Fintype
 
