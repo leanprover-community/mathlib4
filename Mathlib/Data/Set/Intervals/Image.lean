@@ -30,7 +30,7 @@ lemma MonotoneOn.mapsTo_Iic (h : MonotoneOn f (Iic b)) : MapsTo f (Iic b) (Iic (
 
 lemma MonotoneOn.mapsTo_Icc (h : MonotoneOn f (Icc a b)) : MapsTo f (Icc a b) (Icc (f a) (f b)) :=
   fun _c hc ↦
-    ⟨h (left_mem_Icc.2 $ hc.1.trans hc.2) hc hc.1, h hc (right_mem_Icc.2 $ hc.1.trans hc.2) hc.2⟩
+    ⟨h (left_mem_Icc.2 <| hc.1.trans hc.2) hc hc.1, h hc (right_mem_Icc.2 <| hc.1.trans hc.2) hc.2⟩
 
 lemma AntitoneOn.mapsTo_Ici (h : AntitoneOn f (Ici a)) : MapsTo f (Ici a) (Iic (f a)) :=
   fun _ _ ↦ by aesop
@@ -40,7 +40,7 @@ lemma AntitoneOn.mapsTo_Iic (h : AntitoneOn f (Iic b)) : MapsTo f (Iic b) (Ici (
 
 lemma AntitoneOn.mapsTo_Icc (h : AntitoneOn f (Icc a b)) : MapsTo f (Icc a b) (Icc (f b) (f a)) :=
   fun _c hc ↦
-    ⟨h hc (right_mem_Icc.2 $ hc.1.trans hc.2) hc.2, h (left_mem_Icc.2 $ hc.1.trans hc.2) hc hc.1⟩
+    ⟨h hc (right_mem_Icc.2 <| hc.1.trans hc.2) hc.2, h (left_mem_Icc.2 <| hc.1.trans hc.2) hc hc.1⟩
 
 lemma StrictMonoOn.mapsTo_Ioi (h : StrictMonoOn f (Ici a)) : MapsTo f (Ioi a) (Ioi (f a)) :=
   fun _c hc ↦ h le_rfl hc.le hc
@@ -127,8 +127,7 @@ lemma StrictMonoOn.image_Iio_subset (h : StrictMonoOn f (Iic b)) : f '' Iio b �
   h.mapsTo_Iio.image_subset
 
 lemma StrictMonoOn.image_Ioo_subset (h : StrictMonoOn f (Icc a b)) :
-    f '' Ioo a b ⊆ Ioo (f a) (f b) :=
-  h.mapsTo_Ioo.image_subset
+    f '' Ioo a b ⊆ Ioo (f a) (f b) := h.mapsTo_Ioo.image_subset
 
 lemma StrictAntiOn.image_Ioi_subset (h : StrictAntiOn f (Ici a)) : f '' Ioi a ⊆ Iio (f a) :=
   h.mapsTo_Ioi.image_subset
@@ -137,8 +136,7 @@ lemma StrictAntiOn.image_Iio_subset (h : StrictAntiOn f (Iic b)) : f '' Iio b �
   h.mapsTo_Iio.image_subset
 
 lemma StrictAntiOn.image_Ioo_subset (h : StrictAntiOn f (Icc a b)) :
-    f '' Ioo a b ⊆ Ioo (f b) (f a) :=
-  h.mapsTo_Ioo.image_subset
+    f '' Ioo a b ⊆ Ioo (f b) (f a) := h.mapsTo_Ioo.image_subset
 
 lemma Monotone.image_Ici_subset (h : Monotone f) : f '' Ici a ⊆ Ici (f a) :=
   (h.monotoneOn _).image_Ici_subset
@@ -183,23 +181,23 @@ variable [PartialOrder α] [Preorder β]
 
 lemma StrictMonoOn.mapsTo_Ico (h : StrictMonoOn f (Icc a b)) :
     MapsTo f (Ico a b) (Ico (f a) (f b)) :=
-  fun _c hc ↦ ⟨h.monotoneOn (left_mem_Icc.2 $ hc.1.trans hc.2.le) (Ico_subset_Icc_self hc) hc.1,
-    h (Ico_subset_Icc_self hc) (right_mem_Icc.2 $ hc.1.trans hc.2.le) hc.2⟩
+  fun _c hc ↦ ⟨h.monotoneOn (left_mem_Icc.2 <| hc.1.trans hc.2.le) (Ico_subset_Icc_self hc) hc.1,
+    h (Ico_subset_Icc_self hc) (right_mem_Icc.2 <| hc.1.trans hc.2.le) hc.2⟩
 
 lemma StrictMonoOn.mapsTo_Ioc (h : StrictMonoOn f (Icc a b)) :
     MapsTo f (Ioc a b) (Ioc (f a) (f b)) :=
-  fun _c hc ↦ ⟨h (left_mem_Icc.2 $ hc.1.le.trans hc.2) (Ioc_subset_Icc_self hc) hc.1,
-    h.monotoneOn (Ioc_subset_Icc_self hc) (right_mem_Icc.2 $ hc.1.le.trans hc.2) hc.2⟩
+  fun _c hc ↦ ⟨h (left_mem_Icc.2 <| hc.1.le.trans hc.2) (Ioc_subset_Icc_self hc) hc.1,
+    h.monotoneOn (Ioc_subset_Icc_self hc) (right_mem_Icc.2 <| hc.1.le.trans hc.2) hc.2⟩
 
 lemma StrictAntiOn.mapsTo_Ico (h : StrictAntiOn f (Icc a b)) :
     MapsTo f (Ico a b) (Ioc (f b) (f a)) :=
-  fun _c hc ↦ ⟨h (Ico_subset_Icc_self hc) (right_mem_Icc.2 $ hc.1.trans hc.2.le) hc.2,
-    h.antitoneOn (left_mem_Icc.2 $ hc.1.trans hc.2.le) (Ico_subset_Icc_self hc) hc.1⟩
+  fun _c hc ↦ ⟨h (Ico_subset_Icc_self hc) (right_mem_Icc.2 <| hc.1.trans hc.2.le) hc.2,
+    h.antitoneOn (left_mem_Icc.2 <| hc.1.trans hc.2.le) (Ico_subset_Icc_self hc) hc.1⟩
 
 lemma StrictAntiOn.mapsTo_Ioc (h : StrictAntiOn f (Icc a b)) :
     MapsTo f (Ioc a b) (Ico (f b) (f a)) :=
-  fun _c hc ↦ ⟨h.antitoneOn (Ioc_subset_Icc_self hc) (right_mem_Icc.2 $ hc.1.le.trans hc.2) hc.2,
-    h (left_mem_Icc.2 $ hc.1.le.trans hc.2) (Ioc_subset_Icc_self hc) hc.1⟩
+  fun _c hc ↦ ⟨h.antitoneOn (Ioc_subset_Icc_self hc) (right_mem_Icc.2 <| hc.1.le.trans hc.2) hc.2,
+    h (left_mem_Icc.2 <| hc.1.le.trans hc.2) (Ioc_subset_Icc_self hc) hc.1⟩
 
 lemma StrictMono.mapsTo_Ico (h : StrictMono f) : MapsTo f (Ico a b) (Ico (f a) (f b)) :=
   (h.strictMonoOn _).mapsTo_Ico
@@ -214,20 +212,17 @@ lemma StrictAnti.mapsTo_Ioc (h : StrictAnti f) : MapsTo f (Ioc a b) (Ico (f b) (
   (h.strictAntiOn _).mapsTo_Ioc
 
 lemma StrictMonoOn.image_Ico_subset (h : StrictMonoOn f (Icc a b)) :
-    f '' Ico a b ⊆ Ico (f a) (f b) :=
-  h.mapsTo_Ico.image_subset
+    f '' Ico a b ⊆ Ico (f a) (f b) := h.mapsTo_Ico.image_subset
 
 lemma StrictMonoOn.image_Ioc_subset (h : StrictMonoOn f (Icc a b)) :
     f '' Ioc a b ⊆ Ioc (f a) (f b) :=
   h.mapsTo_Ioc.image_subset
 
 lemma StrictAntiOn.image_Ico_subset (h : StrictAntiOn f (Icc a b)) :
-    f '' Ico a b ⊆ Ioc (f b) (f a) :=
-  h.mapsTo_Ico.image_subset
+    f '' Ico a b ⊆ Ioc (f b) (f a) := h.mapsTo_Ico.image_subset
 
 lemma StrictAntiOn.image_Ioc_subset (h : StrictAntiOn f (Icc a b)) :
-    f '' Ioc a b ⊆ Ico (f b) (f a) :=
-  h.mapsTo_Ioc.image_subset
+    f '' Ioc a b ⊆ Ico (f b) (f a) := h.mapsTo_Ioc.image_subset
 
 lemma StrictMono.image_Ico_subset (h : StrictMono f) : f '' Ico a b ⊆ Ico (f a) (f b) :=
   (h.strictMonoOn _).image_Ico_subset

@@ -186,12 +186,12 @@ section Lattice
 variable [Lattice β] {f : α → β} {s : Set α} {a b : α}
 
 lemma _root_.MonotoneOn.mapsTo_uIcc (hf : MonotoneOn f (uIcc a b)) :
-  MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
+    MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
   rw [uIcc, uIcc, ←hf.map_sup, ←hf.map_inf] <;>
     apply_rules [left_mem_uIcc, right_mem_uIcc, hf.mapsTo_Icc]
 
 lemma _root_.AntitoneOn.mapsTo_uIcc (hf : AntitoneOn f (uIcc a b)) :
-  MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
+    MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
   rw [uIcc, uIcc, ←hf.map_sup, ←hf.map_inf] <;>
     apply_rules [left_mem_uIcc, right_mem_uIcc, hf.mapsTo_Icc]
 
@@ -202,12 +202,10 @@ lemma _root_.Antitone.mapsTo_uIcc (hf : Antitone f) : MapsTo f (uIcc a b) (uIcc 
   (hf.antitoneOn _).mapsTo_uIcc
 
 lemma _root_.MonotoneOn.image_uIcc_subset (hf : MonotoneOn f (uIcc a b)) :
-  f '' uIcc a b ⊆ uIcc (f a) (f b) :=
-hf.mapsTo_uIcc.image_subset
+    f '' uIcc a b ⊆ uIcc (f a) (f b) := hf.mapsTo_uIcc.image_subset
 
 lemma _root_.AntitoneOn.image_uIcc_subset (hf : AntitoneOn f (uIcc a b)) :
-  f '' uIcc a b ⊆ uIcc (f a) (f b) :=
-hf.mapsTo_uIcc.image_subset
+    f '' uIcc a b ⊆ uIcc (f a) (f b) := hf.mapsTo_uIcc.image_subset
 
 lemma _root_.Monotone.image_uIcc_subset (hf : Monotone f) : f '' uIcc a b ⊆ uIcc (f a) (f b) :=
   (hf.monotoneOn _).image_uIcc_subset
