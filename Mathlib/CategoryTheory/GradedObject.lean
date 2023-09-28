@@ -25,6 +25,11 @@ functor on `β`-graded objects
 
 When `C` has coproducts we construct the `total` functor `GradedObject β C ⥤ C`,
 show that it is faithful, and deduce that when `C` is concrete so is `GradedObject β C`.
+
+A covariant functoriality of `GradedObject β C` with respect to the index set `β` is also
+introduced: if `p : I → J` is a map such that `C` has coproducts indexed by `p ⁻¹' {j}`, we
+have a functor `map : GradedObject I C ⥤ GradedObject J C`.
+
 -/
 
 set_option autoImplicit true
