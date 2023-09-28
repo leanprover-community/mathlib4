@@ -184,8 +184,8 @@ lemma map_sups (f : F) (hf) (s t : Finset α) :
   simpa [map_eq_image] using image_sups f s t
 
 lemma subset_sups_self : s ⊆ s ⊻ s := fun _a ha ↦ mem_sups.2 ⟨_, ha, _, ha, sup_idem⟩
-lemma sups_self_subset : s ⊻ s ⊆ s ↔ SupClosed (s : Set α) := sups_subset_iff
-@[simp] lemma sups_self : s ⊻ s = s ↔ SupClosed (s : Set α) := by simp [←coe_inj]
+lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed (s : Set α) := sups_subset_iff
+@[simp] lemma sups_eq_self : s ⊻ s = s ↔ SupClosed (s : Set α) := by simp [←coe_inj]
 
 lemma filter_sups_le [@DecidableRel α (· ≤ ·)] (s t : Finset α) (a : α) :
     (s ⊻ t).filter (· ≤ a) = s.filter (· ≤ a) ⊻ t.filter (· ≤ a) := by

@@ -173,10 +173,10 @@ lemma image_sups (f : F) (s t : Set α) : f '' (s ⊻ t) = f '' s ⊻ f '' t :=
   image_image2_distrib $ map_sup f
 
 lemma subset_sups_self : s ⊆ s ⊻ s := λ _a ha ↦ mem_sups.2 ⟨_, ha, _, ha, sup_idem⟩
-lemma sups_self_subset : s ⊻ s ⊆ s ↔ SupClosed s := sups_subset_iff
+lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed s := sups_subset_iff
 
-@[simp] lemma sups_self : s ⊻ s = s ↔ SupClosed s :=
-  subset_sups_self.le.le_iff_eq.symm.trans sups_self_subset
+@[simp] lemma sups_eq_self : s ⊻ s = s ↔ SupClosed s :=
+  subset_sups_self.le.le_iff_eq.symm.trans sups_subset_self
 
 lemma sep_sups_le (s t : Set α) (a : α) :
     {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by ext; aesop
