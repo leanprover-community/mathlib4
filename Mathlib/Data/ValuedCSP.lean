@@ -55,17 +55,6 @@ def ValuedCspInstance.optimumSolution {C : Type} [LinearOrderedAddCommMonoid C]
 
 
 
-private def Bool_nsmul_zero (b : Bool) :
-  ((fun (n : ℕ) (a : Bool) => a && decide (n > 0)) 0 b) = false :=
-by
-  simp
-
-private def Bool_nsmul_succ (n : ℕ) (b : Bool) :
-  (fun m a ↦ a && decide (m > 0)) (n + 1) b = (b || (fun m a ↦ a && decide (m > 0)) n b) :=
-by
-  cases b with
-  | false => rfl
-  | true => simp [Nat.succ_pos n]
 
 private def Bool_add_le_add_left (a b : Bool) :
   (a = false ∨ b = true) → ∀ (c : Bool), (((c || a) = false) ∨ ((c || b) = true)) :=
@@ -80,9 +69,6 @@ instance crispCodomain : LinearOrderedAddCommMonoid Bool where
   zero := false
   zero_add (_ : Bool) := rfl
   add_zero := Bool.or_false
-  nsmul (n : ℕ) (a : Bool) := a && (n > 0)
-  nsmul_zero := Bool_nsmul_zero
-  nsmul_succ := Bool_nsmul_succ
   add_comm := Bool.or_comm
   add_le_add_left := Bool_add_le_add_left
 
