@@ -45,9 +45,9 @@ variable (α : Type v) [MeasurableSpace α]
 - is finitely additive under disjoint unions -/
 structure Mean where
   /-- function giving the measure of a measurable subset-/
-  μ : {S // MeasurableSet (α := α) S} → NNReal
+  measureOf : {S // MeasurableSet (α := α) S} → NNReal
   /-- μ should be normalised  -/
-  norm : μ ⟨Set.univ, MeasurableSet.univ⟩ = 1
+  measureOf_univ : μ Set.univ = 1
   /-- μ has to be finitely additive -/
   fin_add : ∀ (X Y : Set α),
       (hX : MeasurableSet X) → (hY: MeasurableSet Y) → Disjoint X Y
