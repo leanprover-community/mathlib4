@@ -18,5 +18,7 @@ def ofArity (α β : Type _) : ℕ → Type
 
 /-- A template for a valued CSP problem with costs in `C` which is usually `ℚ≥0` -/
 structure ValuedCspTemplate (C : Type) [LinearOrderedAddCommMonoid C] where
-  D : Type                           -- Domain of "labels"
-  F : Set (Σ (k : ℕ), ofArity D C k) -- Cost functions `D^k → C` for any `k`
+  /-- Domain of "labels" -/
+  D : Type
+  /-- Cost functions `D^k → C` for any `k` -/
+  F : Set (Σ (k : ℕ), ofArity D C k)
