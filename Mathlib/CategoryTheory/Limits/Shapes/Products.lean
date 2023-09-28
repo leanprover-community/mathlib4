@@ -75,12 +75,14 @@ def Cofan.mk {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) : Cofan f where
   ι := Discrete.natTrans (fun X => p X.as)
 #align category_theory.limits.cofan.mk CategoryTheory.Limits.Cofan.mk
 
-/-- Get the `j`th map in the fan -/
+/-- Get the `j`th "projection" in the fan.
+(Note that the initial letter of `proj` matches the greek letter in `Cone.π`.) -/
 def Fan.proj {f : β → C} (p : Fan f) (j : β) : p.pt ⟶ f j :=
   p.π.app (Discrete.mk j)
 #align category_theory.limits.fan.proj CategoryTheory.Limits.Fan.proj
 
-/-- Get the `j`th map in the cofan -/
+/-- Get the `j`th "injection" in the cofan.
+(Note that the initial letter of `inj` matches the greek letter in `Cocone.ι`.) -/
 def Cofan.inj {f : β → C} (p : Cofan f) (j : β) : f j ⟶ p.pt :=
   p.ι.app (Discrete.mk j)
 
