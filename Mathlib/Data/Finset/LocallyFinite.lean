@@ -758,6 +758,7 @@ end BoundedPartialOrder
 section SemilatticeSup
 variable [SemilatticeSup α] [LocallyFiniteOrderBot α]
 
+-- TODO: Why does `id_eq` simplify the LHS here but not the LHS of `Finset.sup_Iic`?
 @[simp] lemma sup'_Iic (a : α) : (Iic a).sup' nonempty_Iic id = a :=
   le_antisymm (sup'_le _ _ fun _ ↦ mem_Iic.1) <| le_sup' (f := id) <| mem_Iic.2 <| le_refl a
 
@@ -769,7 +770,7 @@ end SemilatticeSup
 section SemilatticeInf
 variable [SemilatticeInf α] [LocallyFiniteOrderTop α]
 
-@[simp] lemma inf'_Ici (a : α) : (Ici a).inf' nonempty_Ici id = a :=
+lemma inf'_Ici (a : α) : (Ici a).inf' nonempty_Ici id = a :=
   ge_antisymm (le_inf' _ _ fun _ ↦ mem_Ici.1) <| inf'_le (f := id) <| mem_Ici.2 <| le_refl a
 
 @[simp] lemma inf_Ici [OrderTop α] (a : α) : (Ici a).inf id = a :=
