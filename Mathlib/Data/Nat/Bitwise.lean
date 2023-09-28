@@ -319,8 +319,8 @@ theorem lt_lxor'_cases {a b c : ℕ} (h : a < lxor' b c) : lxor' a c < b ∨ lxo
   (or_iff_right fun h' => (h.asymm h').elim).1 <| lxor'_trichotomy h.ne
 #align nat.lt_lxor_cases Nat.lt_lxor'_cases
 
-lemma div2_succ_succ (x) :
-    div2 (x + 2) = (div2 x) + 1 := by
+lemma div2_add_two (x) :
+    div2 (x + 2) = div2 x + 1 := by
   simp only [div2_succ, bodd_succ, Bool.cond_not]
   cases bodd x <;> simp only [cond_false, cond_true]
 
@@ -328,13 +328,12 @@ lemma div2_eq_zero {x : ℕ} :
     div2 x = 0 → x = 0 ∨ x = 1 := by
   intro h
   rcases x with ⟨⟩ | ⟨⟩ | x
-  next => apply Or.inl rfl
-  next => apply Or.inr rfl
-  next =>
-    rw[div2_succ_succ] at h
+  · apply Or.inl rfl
+  · apply Or.inr rfl
+  · rw[div2_add_two] at h
     contradiction
 
-lemma bitwise'_bit' {f : Bool → Bool → Bool} (a m b n)
+lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
     (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
     bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
   unfold bitwise'
@@ -344,8 +343,7 @@ lemma bitwise'_bit' {f : Bool → Bool → Bool} (a m b n)
 
 lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
   funext x y
-  have ⟨k, hk⟩ : ∃ k, k = x+y := by use x+y
-  induction' k using Nat.strongInductionOn with k ih generalizing x y
+  induction' hk : x + y using Nat.strongInductionOn with k ih generalizing x y
   by_cases h1 : x = 0 <;> by_cases h2 : y = 0
   · unfold bitwise
     simp [h1, h2]
@@ -362,7 +360,7 @@ lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
       <;> cases' hy: bodd y
       <;> ring_nf
       <;> rw [ih (div2 x + div2 y)
-              (by rw [hk, div2_val, div2_val]
+              (by rw [←hk, div2_val, div2_val]
                   simp[add_lt_add (bitwise_rec_lemma h1) (bitwise_rec_lemma h2)])
               (x/2) (y/2) (by simp[div2_val])]
       <;> simp [h1, h2, hx, hy, bit_val, div2_val, mul_comm, add_comm]
