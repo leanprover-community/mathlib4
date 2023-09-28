@@ -25,9 +25,12 @@ open Matrix
 
 /-- Linear program in the canonical form. -/
 structure CanonicalLP (m n K : Type _) [Fintype m] [Fintype n] [LinearOrderedField K] where
-  A : (n → K) →ₗ[K] (m → K) /- (possibly not a) matrix of coefficients -/
-  b : m → K                /- right-hand side -/
-  c : n → K                /- objective function coefficients -/
+  /-- (possibly not a) matrix of coefficients -/
+  A : (n → K) →ₗ[K] (m → K)
+  /-- Right-hand side -/
+  b : m → K              
+  /-- Objective function coefficients -/  
+  c : n → K                
 
 variable {m n K : Type _} [Fintype m] [Fintype n] [LinearOrderedField K]
 
