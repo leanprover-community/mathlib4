@@ -67,6 +67,7 @@ theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioc, Set.nonempty_Ioc]
 #align finset.nonempty_Ioc Finset.nonempty_Ioc
 
+-- TODO: This is nonsense. A locally finite order is never densely ordered
 @[simp]
 theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioo, Set.nonempty_Ioo]
@@ -87,6 +88,7 @@ theorem Ioc_eq_empty_iff : Ioc a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioc, Set.Ioc_eq_empty_iff]
 #align finset.Ioc_eq_empty_iff Finset.Ioc_eq_empty_iff
 
+-- TODO: This is nonsense. A locally finite order is never densely ordered
 @[simp]
 theorem Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioo, Set.Ioo_eq_empty_iff]
@@ -400,6 +402,9 @@ section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α]
 
+@[simp] lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
+@[simp] lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
+
 theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by
   simpa [← coe_subset] using Set.Icc_subset_Ici_self
 #align finset.Icc_subset_Ici_self Finset.Icc_subset_Ici_self
@@ -429,6 +434,9 @@ end LocallyFiniteOrderTop
 section LocallyFiniteOrderBot
 
 variable [LocallyFiniteOrderBot α]
+
+@[simp] lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
+@[simp] lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
 
 theorem Icc_subset_Iic_self : Icc a b ⊆ Iic b := by
   simpa [← coe_subset] using Set.Icc_subset_Iic_self
@@ -746,6 +754,28 @@ theorem card_Iio_eq_card_Iic_sub_one (a : α) : (Iio a).card = (Iic a).card - 1 
 end OrderBot
 
 end BoundedPartialOrder
+
+section SemilatticeSup
+variable [SemilatticeSup α] [LocallyFiniteOrderBot α]
+
+@[simp] lemma sup'_Iic (a : α) : (Iic a).sup' nonempty_Iic id = a :=
+  le_antisymm (sup'_le _ _ fun _ ↦ mem_Iic.1) <| le_sup' (f := id) <| mem_Iic.2 <| le_refl a
+
+@[simp] lemma sup_Iic [OrderBot α] (a : α) : (Iic a).sup id = a :=
+  le_antisymm (Finset.sup_le fun _ ↦ mem_Iic.1) <| le_sup (f := id) <| mem_Iic.2 <| le_refl a
+
+end SemilatticeSup
+
+section SemilatticeInf
+variable [SemilatticeInf α] [LocallyFiniteOrderTop α]
+
+@[simp] lemma inf'_Ici (a : α) : (Ici a).inf' nonempty_Ici id = a :=
+  ge_antisymm (le_inf' _ _ fun _ ↦ mem_Ici.1) <| inf'_le (f := id) <| mem_Ici.2 <| le_refl a
+
+@[simp] lemma inf_Ici [OrderTop α] (a : α) : (Ici a).inf id = a :=
+  le_antisymm (inf_le (f := id) <| mem_Ici.2 <| le_refl a) <| Finset.le_inf fun _ ↦ mem_Ici.1
+
+end SemilatticeInf
 
 section LinearOrder
 
