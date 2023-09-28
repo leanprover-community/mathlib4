@@ -105,39 +105,48 @@ theorem mulAux_of_tmul_of (i₁ j₁ i₂ j₂ : ℤ₂)
 
 theorem mulAux_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     mulAux R 𝒜 ℬ 1 x = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
+  suffices mulAux R 𝒜 ℬ 1 = LinearMap.id by
+    exact FunLike.congr_fun this x
+  ext ia a ib b
+  dsimp only [LinearMap.coe_comp, Function.comp_apply, TensorProduct.AlgebraTensorModule.curry_apply,
+    TensorProduct.curry_apply, LinearMap.coe_restrictScalars, LinearMap.id_coe, id_eq]
+  rw [Algebra.TensorProduct.one_def]
+  erw [mulAux_of_tmul_of]
+  rw [zero_mul, z₂pow_zero, one_smul]
+  simp_rw [DirectSum.lof_eq_of]
+  rw [←DirectSum.of_mul_of, ←DirectSum.of_mul_of]
+  erw [one_mul, one_mul]
 
-theorem one_mulAux (x : ⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
+theorem one_mulAux (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     mulAux R 𝒜 ℬ x 1 = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
-#exit
+  suffices (mulAux R 𝒜 ℬ).flip 1 = LinearMap.id by
+    exact FunLike.congr_fun this x
+  ext
+  dsimp
+  rw [Algebra.TensorProduct.one_def]
+  erw [mulAux_of_tmul_of]
+  rw [mul_zero, z₂pow_zero, one_smul]
+  simp_rw [DirectSum.lof_eq_of]
+  rw [←DirectSum.of_mul_of, ←DirectSum.of_mul_of]
+  erw [mul_one, mul_one]
+
 theorem mulAux_assoc (x y z : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
-    mulAux R (mulAux R x y) z = mulAux R x (mulAux R y z) := by
-  let mA := mulAux R (𝒜 := 𝒜) (ℬ := ℬ)
+    mulAux R 𝒜 ℬ (mulAux R 𝒜 ℬ x y) z = mulAux R 𝒜 ℬ x (mulAux R 𝒜 ℬ y z) := by
+  let mA := mulAux R 𝒜 ℬ
     -- restate as an equality of morphisms so that we can use `ext`
   suffices LinearMap.llcomp R _ _ _ mA ∘ₗ mA =
       (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mA.flip ∘ₗ mA).flip by
     exact FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this x) y) z
-  ext ⟨ixa, ixb⟩ xa xb ⟨iya, iyb⟩ ya yb ⟨iza, izb⟩ za zb
-  dsimp [DirectSum.lof_eq_of]
-  rw [mulAux_of_tmul_of_tmul, mulAux_of_tmul_of_tmul]
-  rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply]
-  rw [mulAux_of_tmul_of_tmul, mulAux_of_tmul_of_tmul]
-  rw [smul_smul, smul_smul, ←z₂pow_add, ←z₂pow_add, add_mul, mul_add]
-  congr 1
-  · congr 1
-    abel
-  · erw [←TensorProduct.directSum_lof_tmul_lof]
-    erw [←TensorProduct.directSum_lof_tmul_lof]
-    congr 1
-    · refine of_eq_of_gradedMonoid_eq ?_
-      sorry
-    · sorry
-  -- refine congr_arg₂ (· ⊗ₜ ·)
-#check 1
-
-example (a b c : ℕ) : a + b + c = b + a + c := by abel
-#exit
+  ext ixa xa ixb xb iya ya iyb yb iza za izb zb
+  dsimp
+  save
+  simp_rw [mulAux_of_tmul_of, Units.smul_def, zsmul_eq_smul_cast R,
+    LinearMap.map_smul₂, LinearMap.map_smul, mulAux_of_tmul_of, DirectSum.lof_eq_of,
+    ←DirectSum.of_mul_of, mul_assoc]
+  save
+  simp_rw [←zsmul_eq_smul_cast R, ←Units.smul_def, smul_smul, ←z₂pow_add, add_mul, mul_add]
+  congr 2
+  abel
 
 end external
 
@@ -158,15 +167,10 @@ def SuperTensorProduct
 
 scoped[TensorProduct] notation:100 𝒜 " ⊗'[" R "] " ℬ:100 => SuperTensorProduct R 𝒜 ℬ
 
-instance : AddCommGroup (𝒜 ⊗'[R] ℬ) := TensorProduct.addCommGroup
+instance : AddCommGroupWithOne (𝒜 ⊗'[R] ℬ) := Algebra.TensorProduct.instAddCommGroupWithOne
 instance : Module R (𝒜 ⊗'[R] ℬ) := TensorProduct.leftModule
 
-instance : One (𝒜 ⊗'[R] ℬ) where one := 1 ⊗ₜ 1
-
-
 local notation "↥" P => { x // x ∈ P}
-
-#exit
 
 def mul : (𝒜 ⊗'[R] ℬ) →ₗ[R] (𝒜 ⊗'[R] ℬ) →ₗ[R] (𝒜 ⊗'[R] ℬ) := by
   let fA := (decomposeAlgEquiv 𝒜).toLinearEquiv
