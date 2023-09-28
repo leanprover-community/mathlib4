@@ -509,6 +509,10 @@ instance {B X : C} (f : X ⟶ B) [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ 
     EffectiveEpi f :=
   ⟨⟨EffectiveEpiStruct_ofFamily f⟩⟩
 
+lemma effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
+    EffectiveEpi f ↔ EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
 /--
 A family of morphisms with the same target inducing an isomorphism from the coproduct to the target
 is an `EffectiveEpiFamily`.
