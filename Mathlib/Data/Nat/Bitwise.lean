@@ -333,6 +333,9 @@ lemma div2_eq_zero {x : ℕ} :
   · rw[div2_add_two] at h
     contradiction
 
+section
+variable {f : Bool → Bool → Bool}
+
 lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
     (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
     bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
@@ -340,14 +343,41 @@ lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool)
   · apply Or.inr hbn
   · apply Or.inr ham
 
+@[simp]
+lemma bitwise_zero_left {m : Nat} : bitwise f 0 m = if f false true then m else 0 := by
+  rfl
+
+@[simp]
+lemma bitwise_zero_right {n : Nat} : bitwise f n 0 = if f true false then n else 0 := by
+  unfold bitwise
+  simp only [ite_self, decide_False, Nat.zero_div, ite_true, ite_eq_right_iff]
+  rintro ⟨⟩
+  split_ifs <;> rfl
+
+#check bitwise'_zero_right
+
+@[simp]
+theorem bitwise'_zero_right' (f : Bool → Bool → Bool) (m) :
+    bitwise' f m 0 = cond (f true false) m 0 := by
+  unfold bitwise' binaryRec
+  simp only [if_true, if_false, dite_false]
+  split_ifs with hx <;> simp? [hx, bit_decomp]
+
+@[simp]
+lemma bitwise_zero : bitwise f 0 0 = 0 := by
+  simp only [bitwise_zero_right, ite_self]
+
+-- lemma bitwise_of_ne_zero (n \ne 0) (m \ne 0) :
+
 lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
   funext x y
   induction' hk : x + y using Nat.strongInductionOn with k ih generalizing x y
   by_cases h1 : x = 0 <;> by_cases h2 : y = 0
-  · unfold bitwise
-    simp [h1, h2]
-  · unfold bitwise bitwise'; simp[h1]; aesop
-  · unfold bitwise bitwise' binaryRec
+  · simp only [h1, h2, bitwise_zero, bitwise'_zero]
+  · simp only [h1, bitwise_zero_left, bitwise'_zero_left]
+    split_ifs with h <;> simp [h]
+  · simp only [h2, bitwise_zero_right]
+    unfold bitwise' binaryRec
     simp only [h1, h2, if_true, if_false, dite_false]
     split_ifs with hx <;>
     simp [hx, bit_decomp]
@@ -369,5 +399,6 @@ lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
       rcases div2_eq_zero h with ⟨⟩|⟨⟨⟩⟩;
       · contradiction
       · rfl
+end
 
 end Nat
