@@ -38,7 +38,7 @@ def curriedAssociatorNatIso :
       (fun X₂ => NatIso.ofComponents
         (fun X₃ => associator X₁ X₂ X₃)
           (fun {X₃ Y₃} φ => by simpa using associator_naturality (𝟙 X₁) (𝟙 X₂) φ))
-        (by aesop_cat)) (by aesop_cat)
+      (by aesop_cat)) (by aesop_cat)
 
 end MonoidalCategory
 
@@ -154,13 +154,19 @@ def r₁₂₃ : I × I × I → I := fun ⟨i, j, k⟩ => i + j + k
   q := fun ⟨i₁₂, i₃⟩ => i₁₂ + i₃
   hpq _ := add_assoc _ _ _
 
+abbrev HasGoodTensor₁₂Tensor (X₁ X₂ X₃ : GradedObject I C) :=
+  HasGoodBifunctor₁₂BifunctorObj (curryObj (MonoidalCategory.tensor C))
+    (curryObj (MonoidalCategory.tensor C)) ρ₁₂ X₁ X₂ X₃
 
-class HasAssociator (X₁ X₂ X₃ : GradedObject I C) [HasTensor X₁ X₂] [HasTensor X₂ X₃]
-   [HasTensor (tensorObj X₁ X₂) X₃] [HasTensor X₁ (tensorObj X₂ X₃)] where
-   H₁₂ : HasGoodBifunctor₁₂BifunctorObj (curryObj (MonoidalCategory.tensor C)) (curryObj (MonoidalCategory.tensor C)) ρ₁₂ X₁ X₂ X₃ := by infer_instance
-   H₂₃ : HasGoodBifunctorBifunctor₂₃Obj (curryObj (MonoidalCategory.tensor C)) (curryObj (MonoidalCategory.tensor C)) ρ₂₃ X₁ X₂ X₃ := by infer_instance
+abbrev HasGoodTensorTensor₂₃ (X₁ X₂ X₃ : GradedObject I C) :=
+  HasGoodBifunctorBifunctor₂₃Obj (curryObj (MonoidalCategory.tensor C)) (curryObj (MonoidalCategory.tensor C)) ρ₂₃ X₁ X₂ X₃
 
-attribute [instance] HasAssociator.H₁₂ HasAssociator.H₂₃
+--class HasAssociator (X₁ X₂ X₃ : GradedObject I C) [HasTensor X₁ X₂] [HasTensor X₂ X₃]
+--   [HasTensor (tensorObj X₁ X₂) X₃] [HasTensor X₁ (tensorObj X₂ X₃)] where
+--   H₁₂ : HasGoodBifunctor₁₂BifunctorObj (curryObj (MonoidalCategory.tensor C)) (curryObj (MonoidalCategory.tensor C)) ρ₁₂ X₁ X₂ X₃ := by infer_instance
+--   H₂₃ : HasGoodBifunctorBifunctor₂₃Obj (curryObj (MonoidalCategory.tensor C)) (curryObj (MonoidalCategory.tensor C)) ρ₂₃ X₁ X₂ X₃ := by infer_instance
+--
+--attribute [instance] HasAssociator.H₁₂ HasAssociator.H₂₃
 
 section
 
@@ -169,7 +175,7 @@ variable (X₁ X₂ X₃ : GradedObject I C) [HasTensor X₁ X₂] [HasTensor X�
   {Y₁ Y₂ Y₃ : GradedObject I C} [HasTensor Y₁ Y₂] [HasTensor Y₂ Y₃]
   [HasTensor (tensorObj Y₁ Y₂) Y₃] [HasTensor Y₁ (tensorObj Y₂ Y₃)]
 
-noncomputable def associator [HasAssociator X₁ X₂ X₃] :
+noncomputable def associator [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGoodTensorTensor₂₃ X₁ X₂ X₃] :
   tensorObj (tensorObj X₁ X₂) X₃ ≅ tensorObj X₁ (tensorObj X₂ X₃) :=
     mapBifunctorBifunctorAssociator (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃
 
@@ -226,19 +232,19 @@ section
 
 @[ext]
 lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
-    [H : HasAssociator X₁ X₂ X₃]
+    [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
     (h : ∀ (i₁ i₂ i₃ : I) (hi : i₁ + i₂ + i₃ = j),
       ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi ≫ f = ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi ≫ g) : f = g := by
-  apply mapBifunctorBifunctor₂₃MapObj_ext (H := H.H₂₃)
+  apply mapBifunctorBifunctor₂₃MapObj_ext (H := H)
   intro i₁ i₂ i₃ hi
   exact h i₁ i₂ i₃ hi
 
 @[ext]
 lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X₃ j ⟶ A)
-    [H : HasAssociator X₁ X₂ X₃]
+    [H : HasGoodTensor₁₂Tensor X₁ X₂ X₃]
     (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),
       ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f = ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
-  apply mapBifunctor₁₂BifunctorMapObj_ext (H := H.H₁₂)
+  apply mapBifunctor₁₂BifunctorMapObj_ext (H := H)
   intro i₁ i₂ i₃ hi
   exact h i₁ i₂ i₃ hi
 
@@ -252,13 +258,13 @@ variable {X₁ X₂ X₃}
 
 @[ext]
 lemma left_tensor_tensorObj₃_ext {j : I} {A : C} (Z : C) (f g : Z ⊗ tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
-    [H : HasAssociator X₁ X₂ X₃]
+    [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
     [hZ : HasLeftTensor₃ObjExt X₁ X₂ X₃ Z j]
     (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),
       (𝟙 Z ⊗ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h) ≫ f =
         (𝟙 Z ⊗ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h) ≫ g) : f = g := by
     refine' (@isColimitOfPreserves C _ C _ _ _ _ ((curryObj (MonoidalCategory.tensor C)).obj Z) _
-      (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (H := H.H₂₃) j) hZ).hom_ext _
+      (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (H := H) j) hZ).hom_ext _
     intro ⟨⟨i₁, i₂, i₃⟩, hi⟩
     exact h _ _ _ hi
 
@@ -267,13 +273,17 @@ end
 variable (X₁ X₂ X₃)
 
 @[reassoc (attr := simp)]
-lemma ιTensorObj₃'_associator_hom [HasAssociator X₁ X₂ X₃] (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
+lemma ιTensorObj₃'_associator_hom
+    [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGoodTensorTensor₂₃ X₁ X₂ X₃]
+    (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ (associator X₁ X₂ X₃).hom j =
       (α_ _ _ _).hom ≫ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h :=
   ι_mapBifunctorBifunctorAssociator_hom (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h
 
 @[reassoc (attr := simp)]
-lemma ιTensorObj₃_associator_inv [HasAssociator X₁ X₂ X₃] (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
+lemma ιTensorObj₃_associator_inv
+    [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGoodTensorTensor₂₃ X₁ X₂ X₃]
+    (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ (associator X₁ X₂ X₃).inv j =
       (α_ _ _ _).inv ≫ ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h :=
   ι_mapBifunctorBifunctorAssociator_inv (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h
@@ -281,7 +291,8 @@ lemma ιTensorObj₃_associator_inv [HasAssociator X₁ X₂ X₃] (i₁ i₂ i�
 variable {X₁ X₂ X₃}
 
 lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃)
-    [HasAssociator X₁ X₂ X₃] [HasAssociator Y₁ Y₂ Y₃] :
+    [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGoodTensorTensor₂₃ X₁ X₂ X₃]
+    [HasGoodTensor₁₂Tensor Y₁ Y₂ Y₃] [HasGoodTensorTensor₂₃ Y₁ Y₂ Y₃] :
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
       (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by aesop_cat
 
@@ -472,7 +483,8 @@ lemma ιTensorObj_rightUnitor_hom (X : GradedObject I C) (i : I) :
 
 lemma triangle (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂]
     [HasTensor (tensorObj X₁ tensorUnit) X₂]
-    [HasTensor X₁ (tensorObj tensorUnit X₂)] [HasAssociator X₁ tensorUnit X₂] :
+    [HasTensor X₁ (tensorObj tensorUnit X₂)] [HasGoodTensor₁₂Tensor X₁ tensorUnit X₂]
+    [HasGoodTensorTensor₂₃ X₁ tensorUnit X₂] :
   (associator X₁ tensorUnit X₂).hom ≫ tensorHom (𝟙 X₁) (leftUnitor X₂).hom =
     tensorHom (rightUnitor X₁).hom (𝟙 X₂) := by
   ext j i₁ k i₂ h
@@ -517,20 +529,18 @@ lemma ιTensorObj₄_eq (i₁ i₂ i₃ i₄ j : I) (h : i₁ + i₂ + i₃ + i�
   subst hi
   rfl
 
-class HasTensor₄ObjExt (j : I) where
-  hasLeftTensor₃ObjExt : ∀ (i₁ i₂₃₄ : I) (_ : i₁ + i₂₃₄ = j), HasLeftTensor₃ObjExt X₂ X₃ X₄ (X₁ i₁) i₂₃₄ := by infer_instance
+abbrev HasTensor₄ObjExt := ∀ (i₁ i₂₃₄ : I), HasLeftTensor₃ObjExt X₂ X₃ X₄ (X₁ i₁) i₂₃₄
 
 variable {X₁ X₂ X₃ X₄}
 
 @[ext]
 lemma tensorObj₄_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ (tensorObj X₃ X₄)) j ⟶ A)
-    [HasTensor X₂ X₃] [HasTensor (tensorObj X₂ X₃) X₄] [HasAssociator X₂ X₃ X₄]
-    [H : HasTensor₄ObjExt X₁ X₂ X₃ X₄ j]
+    [HasTensor X₂ X₃] [HasTensor (tensorObj X₂ X₃) X₄] [HasGoodTensorTensor₂₃ X₂ X₃ X₄]
+    [H : HasTensor₄ObjExt X₁ X₂ X₃ X₄]
     (h : ∀ (i₁ i₂ i₃ i₄ : I) (h : i₁ + i₂ + i₃ + i₄ = j),
       ιTensorObj₄ X₁ X₂ X₃ X₄ i₁ i₂ i₃ i₄ j h ≫ f = ιTensorObj₄ X₁ X₂ X₃ X₄ i₁ i₂ i₃ i₄ j h ≫ g) : f = g := by
   apply tensorObj_ext
   intro i₁ i₂₃₄ h'
-  have := H.hasLeftTensor₃ObjExt _ _ h'
   apply left_tensor_tensorObj₃_ext
   intro i₂ i₃ i₄ h''
   have hj : i₁ + i₂ + i₃ + i₄ = j := by simp only [← h', ← h'', add_assoc]
@@ -549,12 +559,17 @@ variable (X₁ X₂ X₃ X₄ : GradedObject I C)
   [HasTensor X₁ (tensorObj (tensorObj X₂ X₃) X₄)]
   [HasTensor X₁ (tensorObj X₂ (tensorObj X₃ X₄))]
   [HasTensor (tensorObj X₁ X₂) (tensorObj X₃ X₄)]
-  [HasAssociator X₁ X₂ X₃]
-  [HasAssociator X₁ (tensorObj X₂ X₃) X₄]
-  [HasAssociator X₂ X₃ X₄]
-  [HasAssociator (tensorObj X₁ X₂) X₃ X₄]
-  [HasAssociator X₁ X₂ (tensorObj X₃ X₄)]
-  [∀ j, HasTensor₄ObjExt X₁ X₂ X₃ X₄ j]
+  [HasGoodTensor₁₂Tensor X₁ X₂ X₃]
+  [HasGoodTensorTensor₂₃ X₁ X₂ X₃]
+  [HasGoodTensor₁₂Tensor X₁ (tensorObj X₂ X₃) X₄]
+  [HasGoodTensorTensor₂₃ X₁ (tensorObj X₂ X₃) X₄]
+  [HasGoodTensor₁₂Tensor X₂ X₃ X₄]
+  [HasGoodTensorTensor₂₃ X₂ X₃ X₄]
+  [HasGoodTensor₁₂Tensor (tensorObj X₁ X₂) X₃ X₄]
+  [HasGoodTensorTensor₂₃ (tensorObj X₁ X₂) X₃ X₄]
+  [HasGoodTensor₁₂Tensor X₁ X₂ (tensorObj X₃ X₄)]
+  [HasGoodTensorTensor₂₃ X₁ X₂ (tensorObj X₃ X₄)]
+  [HasTensor₄ObjExt X₁ X₂ X₃ X₄]
 
 @[reassoc]
 lemma pentagon_inv :
@@ -609,13 +624,14 @@ section
 
 variable
   [∀ (X₁ X₂ : GradedObject I C), HasTensor X₁ X₂]
-  [∀ (X₁ X₂ X₃ : GradedObject I C), HasAssociator X₁ X₂ X₃]
+  [∀ (X₁ X₂ X₃ : GradedObject I C), HasGoodTensor₁₂Tensor X₁ X₂ X₃]
+  [∀ (X₁ X₂ X₃ : GradedObject I C), HasGoodTensorTensor₂₃ X₁ X₂ X₃]
   [DecidableEq I] [HasInitial C]
   [∀ X₁, PreservesColimit (Functor.empty.{0} C)
     ((curryObj (MonoidalCategory.tensor C)).obj X₁)]
   [∀ X₂, PreservesColimit (Functor.empty.{0} C)
     ((curryObj (MonoidalCategory.tensor C)).flip.obj X₂)]
-  [∀ (X₁ X₂ X₃ X₄ : GradedObject I C), ∀ i, HasTensor₄ObjExt X₁ X₂ X₃ X₄ i]
+  [∀ (X₁ X₂ X₃ X₄ : GradedObject I C), HasTensor₄ObjExt X₁ X₂ X₃ X₄]
 
 noncomputable instance monoidalCategory : MonoidalCategory (GradedObject I C) where
   tensorObj X Y := tensorObj X Y
@@ -638,11 +654,6 @@ end
 
 section
 
-variable [HasFiniteCoproducts C]
-  [∀ (X : C), PreservesFiniteCoproducts ((curryObj (tensor C)).obj X)]
-  [∀ (X : C), PreservesFiniteCoproducts ((curryObj (tensor C)).flip.obj X)]
-  (X₁ X₂ X₃ X₄ : GradedObject ℕ C)
-
 instance (n : ℕ) : Finite ((fun (i : ℕ × ℕ) => i.1 + i.2) ⁻¹' {n}) := by
   refine' Finite.of_injective (fun ⟨⟨i₁, i₂⟩, (hi : i₁ + i₂ = n)⟩ =>
     ((⟨i₁, by linarith⟩, ⟨i₂, by linarith⟩) : Fin (n + 1) × Fin (n + 1) )) _
@@ -656,15 +667,10 @@ instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n
   rintro ⟨⟨i₁, i₂, i₃⟩, hi : i₁ + i₂ + i₃ = n⟩ ⟨⟨j₁, j₂, j₃⟩, hj : j₁ + j₂ + j₃ = n⟩ h
   simpa using h
 
-instance : HasGoodBifunctor₁₂BifunctorObj (curryObj (tensor C)) (curryObj (tensor C)) ρ₁₂ X₁ X₂ X₃ where
-
-instance : HasGoodBifunctorBifunctor₂₃Obj (curryObj (tensor C)) (curryObj (tensor C)) ρ₂₃ X₁ X₂ X₃ where
-
-instance : HasAssociator X₁ X₂ X₃ where
-
-noncomputable instance (n : ℕ) : HasTensor₄ObjExt X₁ X₂ X₃ X₄ n where
-
-noncomputable example : MonoidalCategory (GradedObject ℕ C) := inferInstance
+noncomputable example [HasFiniteCoproducts C]
+    [∀ (X : C), PreservesFiniteCoproducts ((curryObj (tensor C)).obj X)]
+    [∀ (X : C), PreservesFiniteCoproducts ((curryObj (tensor C)).flip.obj X)] :
+    MonoidalCategory (GradedObject ℕ C) := inferInstance
 
 end
 

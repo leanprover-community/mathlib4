@@ -219,9 +219,9 @@ variable (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ :
   [HasMap (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) ρ₁₂.p]
   [HasMap (((mapBifunctor G ρ₁₂.I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂)).obj X₃) ρ₁₂.q]
 
-class HasGoodBifunctor₁₂BifunctorObj : Prop :=
-  nonempty_preservesColimit (i₁₂ : ρ₁₂.I₁₂) (i₃ : I₃) : Nonempty (PreservesColimit (Discrete.functor (mapObjFun (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) ρ₁₂.p i₁₂))
-    ((Functor.flip G).obj (X₃ i₃))) := by intros; constructor; infer_instance
+abbrev HasGoodBifunctor₁₂BifunctorObj :=
+  ∀ (i₁₂ : ρ₁₂.I₁₂) (i₃ : I₃), (PreservesColimit (Discrete.functor (mapObjFun (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) ρ₁₂.p i₁₂))
+    ((Functor.flip G).obj (X₃ i₃)))
 
 noncomputable def ιMapBifunctor₁₂BifunctorMapObj (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r (i₁, i₂, i₃) = j) :
     (G.obj ((F₁₂.obj (X₁ i₁)).obj (X₂ i₂))).obj (X₃ i₃) ⟶
@@ -239,7 +239,6 @@ noncomputable def cofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
 
 noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
     IsColimit (cofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j) := by
-  have := fun i j => (H.nonempty_preservesColimit i j).some
   let c₁₂ := fun i₁₂ => (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂).cofanMapObj ρ₁₂.p i₁₂
   have h₁₂ : ∀ i₁₂, IsColimit (c₁₂ i₁₂) := fun i₁₂ => (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂).isColimitCofanMapObj ρ₁₂.p i₁₂
   let c := (((mapBifunctor G ρ₁₂.I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂)).obj X₃).cofanMapObj ρ₁₂.q j
@@ -358,9 +357,9 @@ variable (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ :
   [HasMap (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃) ρ₂₃.p]
   [HasMap (((mapBifunctor F I₁ ρ₂₃.I₂₃).obj X₁).obj (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃)) ρ₂₃.q]
 
-class HasGoodBifunctorBifunctor₂₃Obj : Prop where
-  nonempty_preservesColimit (i₁ : I₁) (i₂₃ : ρ₂₃.I₂₃) : Nonempty (PreservesColimit (Discrete.functor (mapObjFun (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃) ρ₂₃.p i₂₃))
-    (F.obj (X₁ i₁))) := by intros; constructor; infer_instance
+abbrev HasGoodBifunctorBifunctor₂₃Obj :=
+  ∀ (i₁ : I₁) (i₂₃ : ρ₂₃.I₂₃), PreservesColimit (Discrete.functor (mapObjFun (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃) ρ₂₃.p i₂₃))
+    (F.obj (X₁ i₁))
 
 noncomputable def ιMapBifunctorBifunctor₂₃MapObj (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r (i₁, i₂, i₃) = j) :
     (F.obj (X₁ i₁)).obj ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶ mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j :=
