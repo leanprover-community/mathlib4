@@ -97,28 +97,26 @@ end Polynomial
 
 namespace Module
 
-open Polynomial Module
+open Polynomial
 /--
 Suppose `a` is an element of an `R`-algebra `A` and `M` is an `A`-module.
-Then `compAeval R M a` is the `R[X]`-module with carrier `M`,
+Then `Module.comp_aeval R M a` is the `R[X]`-module with carrier `M`,
 where the action of `f : R[X]` is `f • m = (aeval a f) • m`.
 -/
-@[nolint unusedArguments] def compAeval (R M: Type*) {A : Type*} [CommSemiring R]
-    [Semiring A] [Algebra R A][AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] :=
-  Function.const A M
+@[nolint unusedArguments] def comp_aeval (R M: Type*) {A : Type*} [CommSemiring R] [Semiring A]
+  [Algebra R A][AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
 variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
   [Module R M] [IsScalarTower R A M]
-instance : AddCommMonoid <| compAeval R M a     := by assumption
-instance : Module R <| compAeval R M a          := by assumption
-instance : Module A <| compAeval R M a          := by assumption
-instance : IsScalarTower R A <| compAeval R M a := by assumption
-instance : Module R[X] <| compAeval R M a       := Module.compHom M <| (aeval a).toRingHom
+instance : AddCommMonoid <| comp_aeval R M a     := by assumption
+instance : Module R <| comp_aeval R M a          := by assumption
+instance : Module A <| comp_aeval R M a          := by assumption
+instance : IsScalarTower R A <| comp_aeval R M a := by assumption
+instance : Module R[X] <| comp_aeval R M a       := Module.compHom M <| (aeval a).toRingHom
 
-lemma compAeval_smul_def (f : R[X]) (a : A) (m : compAeval R M a) :
+@[simp] lemma comp_aeval_smul_def (f : R[X]) (a : A) (m : comp_aeval R M a) :
     f • m = (aeval a f) • m := by rfl
 
-instance : IsScalarTower R R[X] <| compAeval R M a where
-  smul_assoc r f m := by rw [compAeval_smul_def, compAeval_smul_def, map_smul, smul_assoc]
+instance : IsScalarTower R R[X] <| comp_aeval R M a := ⟨by simp⟩
 
 end Module
 
@@ -130,43 +128,31 @@ variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCom
 open Polynomial Module
 
 /--
-For a derivation `d : A → M` and an element `a : A`, `d.compAeval a` is the
+For a derivation `d : A → M` and an element `a : A`, `d.comp_aeval a` is the
 derivation of `R[X]` which takes a polynomial `f` to `d(aeval a f)`.
 
-This derivation takes values in `compAeval R M a`, which is `M`, regarded as an
-`R[X]`-module, with the action of `f` defined by `f • m = f(a) • m`.
+This derivation takes values in `comp_aeval R M a`, which is `M`, regarded as an
+`R[X]`-module, with the action of a polynomial `f` defined by `f • m = (aeval a f) • m`.
 -/
-def compAeval : Derivation R R[X] <| compAeval R M a where
-  toFun            := d ∘ (aeval a)
-  map_add' _ _     := by dsimp; rw [map_add, map_add]
-  map_smul' _ _    := by dsimp; rw [SMulHomClass.map_smul, map_smul]
-  leibniz' _ _     := by dsimp; rw [map_mul, leibniz]; rfl
-  map_one_eq_zero' := by dsimp; rw [map_one, map_one_eq_zero]
-
-lemma compAeval_apply (d : Derivation R A M) (f : R[X]) :
-    d.compAeval a f = d (aeval a f) := by rfl
-
-/--
-  A form of the chain rule: if `f` is a polynomial over `R`
-  and `d : A → M` is an `R`-derivation then for all `a : A` we have
-
-    `d(f(a)) = f.derivative (a) * d a`.
-
-  Here `M` is regarded as an `R[X]` module with the action of `X`
-  given by `a • _`. For a statement involving only the `A`-module `M`,
-  use `comp_aeval_eq` instead.
--/
-lemma compAeval_eq (d : Derivation R A <| Module.compAeval R M a) (f : R[X]) :
-    d.compAeval a f = (aeval a (derivative' f)) • d a := by
-  rw [←compAeval_smul_def, ←mkDerivation_apply]
-  congr 1
-  apply derivation_ext
-  rw [compAeval_apply, aeval_X, mkDerivation_X (R := R)]
+def comp_aeval : Derivation R R[X] <| comp_aeval R M a where
+  toFun             := d ∘ (aeval a)
+  map_add'          := by simp
+  map_smul'         := by simp
+  leibniz'          := by simp
+  map_one_eq_zero'  := by simp
+lemma comp_aeval_def (d : Derivation R A M) : ↑(d.comp_aeval a) = d ∘ aeval a := by
+  rfl
+lemma comp_aeval_apply (d : Derivation R A M) (f : R[X]) : d.comp_aeval a f = d (aeval a f) := by
+  rfl
 
 /--
   A form of the chain rule: if `f` is a polynomial over `R`
   and `d : A → M` is an `R`-derivation then for all `a : A` we have
   $$ d(f(a)) = f' (a) d a. $$
 -/
-theorem comp_aeval_eq (d : Derivation R A M) (f : R[X]) :
-    d (aeval a f) = aeval a (derivative' f) • d a := d.compAeval_eq a f
+theorem comp_aeval_eq' (d : Derivation R A M) (f : R[X]) :
+    d (aeval a f) = aeval a (derivative' f) • d a := by
+  rw [←comp_aeval_apply, ←comp_aeval_smul_def, ←mkDerivation_apply]
+  congr 1
+  apply derivation_ext
+  rw [comp_aeval_def, Function.comp_apply, aeval_X, mkDerivation_X]
