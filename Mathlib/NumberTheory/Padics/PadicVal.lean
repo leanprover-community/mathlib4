@@ -594,7 +594,7 @@ lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
   · simp
   exact Nat.le_log_of_pow_le p.one_lt_succ_succ (le_of_dvd n.succ_pos pow_padicValNat_dvd)
 
-lemma le_nat_log_of_le {n₁ n₂ : ℕ} [Fact (Nat.Prime p)] (hn : n₁ ≤ n₂) :
+lemma le_nat_log_of_le {n₁ n₂ : ℕ} (hn : n₁ ≤ n₂) :
     padicValNat p n₁ ≤ Nat.log p n₂ := le_trans (padicValNat_le_nat_log n₁) (Nat.log_mono_right hn)
 
 /-- The p-adic valuation of `n` is equal to the logarithm w.r.t `p` iff
