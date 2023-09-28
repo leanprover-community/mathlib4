@@ -31,7 +31,6 @@ noncomputable def ιMapBifunctorMapObj (p : I × J → K) (X : GradedObject I C�
     (F.obj (X i)).obj (Y j) ⟶ mapBifunctorMapObj F p X Y k :=
   (((mapBifunctor F I J).obj X).obj Y).ιMapObj p ⟨i, j⟩ k h
 
-@[simp]
 noncomputable def mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂)
     {Y₁ Y₂ : GradedObject J C₂} (g : Y₁ ⟶ Y₂)
     [HasMap (((mapBifunctor F I J).obj X₁).obj Y₁) p]
@@ -48,6 +47,8 @@ lemma ι_mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂
     ιMapBifunctorMapObj F p X₁ Y₁ i j k h ≫ mapBifunctorMapMap F p f g k =
       (F.map (f i)).app (Y₁ j) ≫ (F.obj (X₂ i)).map (g j) ≫ ιMapBifunctorMapObj F p X₂ Y₂ i j k h := by
   simp [ιMapBifunctorMapObj, mapBifunctorMapMap]
+
+attribute [local simp] mapBifunctorMapMap
 
 @[simps]
 noncomputable def mapBifunctorMap [∀ X Y, HasMap (((mapBifunctor F I J).obj X).obj Y) p] :
