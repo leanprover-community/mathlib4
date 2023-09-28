@@ -1520,7 +1520,7 @@ section SemilatticeSup
 variable [SemilatticeSup α] [OrderBot α] [LocallyFiniteOrderBot α]
 
 @[simp] lemma sup_Iic (a : α) : (Iic a).sup id = a :=
-  le_antisymm (Finset.sup_le λ _ ↦ mem_Iic.1) $ le_sup (f := id) $ mem_Iic.2 $ le_refl a
+  le_antisymm (Finset.sup_le fun _ ↦ mem_Iic.1) $ le_sup (f := id) $ mem_Iic.2 $ le_refl a
 
 end SemilatticeSup
 
@@ -1528,7 +1528,7 @@ section SemilatticeInf
 variable [SemilatticeInf α] [OrderTop α] [LocallyFiniteOrderTop α]
 
 @[simp] lemma inf_Ici (a : α) : (Ici a).inf id = a :=
-  le_antisymm (inf_le (f := id) $ mem_Ici.2 $ le_refl a) $ Finset.le_inf λ _ ↦ mem_Ici.1
+  le_antisymm (inf_le (f := id) $ mem_Ici.2 $ le_refl a) $ Finset.le_inf fun _ ↦ mem_Ici.1
 
 end SemilatticeInf
 end Finset
