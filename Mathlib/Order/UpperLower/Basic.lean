@@ -200,11 +200,11 @@ alias ⟨_, IsLowerSet.ofDual⟩ := isUpperSet_preimage_toDual_iff
 
 lemma IsUpperSet.sdiff (hs : IsUpperSet s) (ht : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
     IsUpperSet (s \ t) :=
-  λ _b _c hbc hb ↦ ⟨hs hbc hb.1, λ hc ↦ hb.2 $ ht _ hb.1 _ hc hbc⟩
+  fun _b _c hbc hb ↦ ⟨hs hbc hb.1, fun hc ↦ hb.2 $ ht _ hb.1 _ hc hbc⟩
 
 lemma IsLowerSet.sdiff (hs : IsLowerSet s) (ht : ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t) :
     IsLowerSet (s \ t) :=
-  λ _b _c hcb hb ↦ ⟨hs hcb hb.1, λ hc ↦ hb.2 $ ht _ hb.1 _ hc hcb⟩
+  fun _b _c hcb hb ↦ ⟨hs hcb hb.1, fun hc ↦ hb.2 $ ht _ hb.1 _ hc hcb⟩
 
 lemma IsUpperSet.erase (hs : IsUpperSet s) (has : ∀ b ∈ s, b ≤ a → b = a) : IsUpperSet (s \ {a}) :=
   hs.sdiff $ by simpa using has
@@ -912,7 +912,7 @@ lemma lt_erase {has} (ha : a ∈ s) : s < s.erase a has :=
 lemma coe_erase (s : UpperSet α) (a : α) (ha) : (s.erase a ha : Set α) = ↑s \ {a} := rfl
 
 @[simp] lemma erase_idem (s : UpperSet α) (a : α) (ha) :
-    ((s.erase a ha).erase a λ _b hb ↦ ha _ hb.1) = s.erase a ha :=
+    ((s.erase a ha).erase a fun _b hb ↦ ha _ hb.1) = s.erase a ha :=
   SetLike.coe_injective sdiff_idem
 
 end UpperSet
@@ -998,7 +998,7 @@ lemma erase_lt {has} (ha : a ∈ s) : s.erase a has < s :=
 lemma coe_erase (s : LowerSet α) (a : α) (ha) : (s.erase a ha : Set α) = ↑s \ {a} := rfl
 
 @[simp] lemma erase_idem (s : LowerSet α) (a : α) (ha) :
-    ((s.erase a ha).erase a λ _b hb ↦ ha _ hb.1) = s.erase a ha :=
+    ((s.erase a ha).erase a fun _b hb ↦ ha _ hb.1) = s.erase a ha :=
   SetLike.coe_injective sdiff_idem
 
 end LowerSet
@@ -1224,10 +1224,10 @@ nonrec theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ⊤ :=
 #align upper_set.Ioi_top UpperSet.Ioi_top
 
 @[simp] lemma Ici_ne_top (a : α) : Ici a ≠ ⊤ := SetLike.coe_ne_coe.1 nonempty_Ici.ne_empty
-@[simp] lemma le_Ici : s ≤ Ici a ↔ a ∈ s := ⟨λ h ↦ h le_rfl, λ ha ↦ s.upper.Ici_subset ha⟩
+@[simp] lemma le_Ici : s ≤ Ici a ↔ a ∈ s := ⟨fun h ↦ h le_rfl, fun ha ↦ s.upper.Ici_subset ha⟩
 
 @[simp] lemma erase_inf_Ici (has) (ha : a ∈ s) : s.erase a has ⊓ Ici a = s := by
-  refine' ge_antisymm (le_inf le_erase $ le_Ici.2 ha) λ b hb ↦ _
+  refine' ge_antisymm (le_inf le_erase $ le_Ici.2 ha) fun b hb ↦ _
   obtain rfl | hba := eq_or_ne b a
   · exact subset_union_right _ _ (mem_Ici.2 le_rfl)
   · exact subset_union_left _ _ ⟨hb, hba⟩
@@ -1240,7 +1240,7 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α] {a b : α}
 
-nonrec lemma Ici_injective : Injective (Ici : α → UpperSet α) := λ _a _b hab ↦
+nonrec lemma Ici_injective : Injective (Ici : α → UpperSet α) := fun _a _b hab ↦
   Ici_injective $ congr_arg ((↑) : _ → Set α) hab
 
 @[simp] lemma Ici_inj : Ici a = Ici b ↔ a = b := Ici_injective.eq_iff
@@ -1341,10 +1341,10 @@ nonrec theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ⊥ :=
 #align lower_set.Iio_bot LowerSet.Iio_bot
 
 @[simp] lemma Iic_ne_bot (a : α) : Iic a ≠ ⊥ := SetLike.coe_ne_coe.1 nonempty_Iic.ne_empty
-@[simp] lemma Iic_le : Iic a ≤ s ↔ a ∈ s := ⟨λ h ↦ h le_rfl, λ ha ↦ s.lower.Iic_subset ha⟩
+@[simp] lemma Iic_le : Iic a ≤ s ↔ a ∈ s := ⟨fun h ↦ h le_rfl, fun ha ↦ s.lower.Iic_subset ha⟩
 
 @[simp] lemma erase_sup_Iic (has) (ha : a ∈ s) : s.erase a has ⊔ Iic a = s := by
-  refine' le_antisymm (sup_le erase_le $ Iic_le.2 ha) λ b hb ↦ _
+  refine' le_antisymm (sup_le erase_le $ Iic_le.2 ha) fun b hb ↦ _
   obtain rfl | hba := eq_or_ne b a
   · exact subset_union_right _ _ (mem_Iic.2 le_rfl)
   · exact subset_union_left _ _ ⟨hb, hba⟩
@@ -1357,7 +1357,7 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α] {a b : α}
 
-nonrec lemma Iic_injective : Injective (Iic : α → LowerSet α) := λ _a _b hab ↦
+nonrec lemma Iic_injective : Injective (Iic : α → LowerSet α) := fun _a _b hab ↦
   Iic_injective $ congr_arg ((↑) : _ → Set α) hab
 
 @[simp] lemma Iic_inj : Iic a = Iic b ↔ a = b := Iic_injective.eq_iff
@@ -1617,12 +1617,12 @@ theorem ordConnected_iff_upperClosure_inter_lowerClosure :
 
 @[simp]
 theorem upperBounds_lowerClosure : upperBounds (lowerClosure s : Set α) = upperBounds s :=
-  (upperBounds_mono_set subset_lowerClosure).antisymm λ _a ha _b ⟨_c, hc, hcb⟩ => hcb.trans <| ha hc
+  (upperBounds_mono_set subset_lowerClosure).antisymm fun _a ha _b ⟨_c, hc, hcb⟩ => hcb.trans <| ha hc
 #align upper_bounds_lower_closure upperBounds_lowerClosure
 
 @[simp]
 theorem lowerBounds_upperClosure : lowerBounds (upperClosure s : Set α) = lowerBounds s :=
-  (lowerBounds_mono_set subset_upperClosure).antisymm λ _a ha _b ⟨_c, hc, hcb⟩ => (ha hc).trans hcb
+  (lowerBounds_mono_set subset_upperClosure).antisymm fun _a ha _b ⟨_c, hc, hcb⟩ => (ha hc).trans hcb
 #align lower_bounds_upper_closure lowerBounds_upperClosure
 
 @[simp]
