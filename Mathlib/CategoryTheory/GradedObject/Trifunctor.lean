@@ -79,15 +79,9 @@ noncomputable def mapTrifunctorMapObj (X₁ : GradedObject I₁ C₁) (X₂ : Gr
     GradedObject J C₄ :=
   ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj p
 
-abbrev mapTrifunctorMapObjFun (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂)
-  (X₃ : GradedObject I₃ C₃) (j : J) : p ⁻¹' {j}  → C₄ :=
-    (fun (⟨⟨i₁, i₂, i₃⟩, _⟩) => ((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃))
-
-/-example (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂)
-  (X₃ : GradedObject I₃ C₃)(j : J)
-  [H : HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) p] :
-  HasCoproduct (mapTrifunctorMapObjFun F p X₁ X₂ X₃ j) := by
- apply H -/
+--abbrev mapTrifunctorMapObjFun (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂)
+--  (X₃ : GradedObject I₃ C₃) (j : J) : p ⁻¹' {j}  → C₄ :=
+--    (fun (⟨⟨i₁, i₂, i₃⟩, _⟩) => ((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃))
 
 noncomputable def ιMapTrifunctorMapObj (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂)
     (X₃ : GradedObject I₃ C₃) (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : p ⟨i₁, i₂, i₃⟩ = j)
@@ -206,170 +200,121 @@ def _root_.CategoryTheory.bifunctorComp₁₂ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ 
         simp only [← NatTrans.comp_app, ← G.map_comp, NatTrans.naturality] }
 
 variable
-  {I₁ I₂ I₁₂ I₃ J : Type*} (p : I₁ × I₂ → I₁₂) (q : I₁₂ × I₃ → J)
-    (r : I₁ × I₂ × I₃ → J) (hr : ∀ (i : I₁ × I₂ × I₃), r i = q ⟨p ⟨i.1, i.2.1⟩, i.2.2⟩)
+  {I₁ I₂ I₃ J : Type*}
+    (r : I₁ × I₂ × I₃ → J)
 
-variable (I₃)
+structure Bifunctor₁₂BifunctorIndexData :=
+  I₁₂ : Type*
+  p : I₁ × I₂ → I₁₂
+  q : I₁₂ × I₃ → J
+  hpq : ∀ (i : I₁ × I₂ × I₃), r i = q ⟨p ⟨i.1, i.2.1⟩, i.2.2⟩
 
-def p' : I₁ × I₂ × I₃ → I₁₂ × I₃ := fun ⟨i₁, i₂, i₃⟩ => ⟨p ⟨i₁, i₂⟩, i₃⟩
-
-variable (I₁ I₂)
-
-@[simps]
-def π₁₂_₃ : I₁ × I₂ × I₃ → I₁ × I₂ := fun ⟨i₁, i₂, _⟩ => ⟨i₁, i₂⟩
-
-variable {I₁ I₂ I₃} (I₁₂)
-
-def γ (X₃ : GradedObject I₃ C₃) : GradedObject (I₁₂ × I₃) (C₁₂ ⥤ C₄) :=
-  fun ⟨_, k⟩ => G.flip.obj (X₃ k)
-
-variable {I₁₂}
+variable (ρ₁₂ : Bifunctor₁₂BifunctorIndexData r)
 
 section
 
-class HasGoodBifunctor₁₂BifunctorObj (hr : ∀ (i : I₁ × I₂ × I₃), r i = q ⟨p ⟨i.1, i.2.1⟩, i.2.2⟩)
-  (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
-    [HasMap (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) p]
-    [HasMap (((mapBifunctor G I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ p X₁ X₂)).obj X₃) q] :=
-  hasMap₂ : HasMap ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r
-  hasMap₃ : HasMap ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) (p' I₃ p)
-  hasMap₄ : HasMap (((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj (p' I₃ p)) q
-  hasMap₅ : HasMap ((comap _ (π₁₂_₃ I₁ I₂ I₃)).obj (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂)) (p' I₃ p)
-  preservesMap : PreservesMap (γ G I₁₂ X₃) (p' I₃ p) ((comap _ (π₁₂_₃ I₁ I₂ I₃)).obj (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂))
-
-attribute [instance] HasGoodBifunctor₁₂BifunctorObj.hasMap₄
+variable {r}
 
 variable (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
-  [HasMap (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) p]
-  [HasMap (((mapBifunctor G I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ p X₁ X₂)).obj X₃) q]
+  [HasMap (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) ρ₁₂.p]
+  [HasMap (((mapBifunctor G ρ₁₂.I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂)).obj X₃) ρ₁₂.q]
 
-variable [H : HasGoodBifunctor₁₂BifunctorObj F₁₂ G p q r hr X₁ X₂ X₃]
+class HasGoodBifunctor₁₂BifunctorObj : Prop :=
+  nonempty_preservesColimit (i₁₂ : ρ₁₂.I₁₂) (i₃ : I₃) : Nonempty (PreservesColimit (Discrete.functor (mapObjFun (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) ρ₁₂.p i₁₂))
+    ((Functor.flip G).obj (X₃ i₃))) := by intros; constructor; infer_instance
 
-/-noncomputable def mapBifunctor₁₂BifunctorMapObjIso₁ :
-    have := H.hasMap₂
-    have := H.hasMap₃
-    (((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj (p' I₃ p)).mapObj q ≅
-      mapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ :=
-  have := H.hasMap₂
-  have := H.hasMap₃
-  ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObjMapObjIso (p' I₃ p) q r hr
-
-noncomputable def mapBifunctor₁₂BifunctorMapObjIso₂ :
-    have := H.hasMap₃
-    have := H.hasMap₅
-    ((((mapTrifunctor
-      (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj (p' I₃ p) ≅
-    (applyFunctorsObj (γ G I₁₂ X₃)).obj
-      (((comap _ (π₁₂_₃ I₁ I₂ I₃)).obj (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂)).mapObj (p' I₃ p)) :=
-  have := H.hasMap₅
-  letI := H.preservesMap
-  (comapObjApplyFunctorsObjObjMapObjIso (γ G I₁₂ X₃) (p' I₃ p) ((comap _ (π₁₂_₃ I₁ I₂ I₃)).obj (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂)))
-
-noncomputable def mapBifunctor₁₂BifunctorMapObjIso₃ :
-    have := H.hasMap₅
-    ((mapBifunctor G I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ p X₁ X₂)).obj X₃ ≅
-    (applyFunctorsObj (γ G I₁₂ X₃)).obj
-      (((comap _ (π₁₂_₃ I₁ I₂ I₃)).obj (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂)).mapObj (p' I₃ p)) :=
-  have := H.hasMap₅
-  isoMk  _ _ (fun ⟨i₁₂, j⟩ => by
-    refine' (G.mapIso _).app (X₃ j)
-    exact
-      { hom := descMapObj _ _ (fun ⟨i₁, i₂⟩ _ =>
-          ((comap C₁₂ (π₁₂_₃ I₁ I₂ I₃)).obj
-            (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂)).ιMapObj (p' I₃ p) ⟨i₁, i₂, j⟩ ⟨i₁₂, j⟩ (by aesop))
-        inv := descMapObj _ _ (fun ⟨i₁, i₂, i₃⟩ h =>
-          (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂).ιMapObj p ⟨i₁, i₂⟩ i₁₂ (congr_arg _root_.Prod.fst h))
-        inv_hom_id := by
-          ext ⟨i₁, i₂, i₃⟩ h
-          obtain rfl : i₃ = j := congr_arg _root_.Prod.snd h
-          simp })
-
-noncomputable def mapBifunctor₁₂BifunctorMapObjIso' :
-    have := H.hasMap₂
-    mapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ ≅
-    mapBifunctorMapObj G q (mapBifunctorMapObj F₁₂ p X₁ X₂) X₃ :=
-  (mapBifunctor₁₂BifunctorMapObjIso₁ F₁₂ G p q r hr X₁ X₂ X₃).symm ≪≫
-    mapIso ((mapBifunctor₁₂BifunctorMapObjIso₂ F₁₂ G p q r hr X₁ X₂ X₃) ≪≫
-      (mapBifunctor₁₂BifunctorMapObjIso₃ F₁₂ G p q r hr X₁ X₂ X₃).symm) q-/
-
-noncomputable def ιMapBifunctor₁₂BifunctorMapObj (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : q (p (i₁, i₂), i₃) = j) :
+noncomputable def ιMapBifunctor₁₂BifunctorMapObj (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r (i₁, i₂, i₃) = j) :
     (G.obj ((F₁₂.obj (X₁ i₁)).obj (X₂ i₂))).obj (X₃ i₃) ⟶
-      mapBifunctorMapObj G q (mapBifunctorMapObj F₁₂ p X₁ X₂) X₃ j :=
-  (G.map (ιMapBifunctorMapObj F₁₂ p X₁ X₂ i₁ i₂ _ rfl)).app (X₃ i₃) ≫
-    ιMapBifunctorMapObj G q (mapBifunctorMapObj F₁₂ p X₁ X₂) X₃ (p ⟨i₁, i₂⟩) i₃ j h
+      mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j :=
+  (G.map (ιMapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂ i₁ i₂ _ rfl)).app (X₃ i₃) ≫
+    ιMapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ (ρ₁₂.p ⟨i₁, i₂⟩) i₃ j (by rw [← h, ρ₁₂.hpq])
+
+variable [H : HasGoodBifunctor₁₂BifunctorObj F₁₂ G ρ₁₂ X₁ X₂ X₃]
 
 noncomputable def cofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
-    Cofan (mapTrifunctorMapObjFun (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ j) :=
-  Cofan.mk (mapBifunctorMapObj G q (mapBifunctorMapObj F₁₂ p X₁ X₂) X₃ j)
+    ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).CofanMapObjFun r j :=
+  Cofan.mk (mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j)
     (fun ⟨⟨i₁, i₂, i₃⟩, (hi : r ⟨i₁, i₂, i₃⟩ = j)⟩ =>
-      ιMapBifunctor₁₂BifunctorMapObj F₁₂ G p q X₁ X₂ X₃ i₁ i₂ i₃ j
-        (by rw [← hi, hr]))
+      ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j hi)
 
--- instead of composing three isomorphisms as above, it seems better to formulate
--- what we want by saying the cofan₃ is colimit: this gives the expected iso and ext lemma
+noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
+    IsColimit (cofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j) := by
+  have := fun i j => (H.nonempty_preservesColimit i j).some
+  let c₁₂ := fun i₁₂ => (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂).cofanMapObj ρ₁₂.p i₁₂
+  have h₁₂ : ∀ i₁₂, IsColimit (c₁₂ i₁₂) := fun i₁₂ => (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂).isColimitCofanMapObj ρ₁₂.p i₁₂
+  let c := (((mapBifunctor G ρ₁₂.I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂)).obj X₃).cofanMapObj ρ₁₂.q j
+  have hc : IsColimit c := (((mapBifunctor G ρ₁₂.I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂)).obj X₃).isColimitCofanMapObj ρ₁₂.q j
+  let c₁₂' := fun (i : ρ₁₂.q ⁻¹' {j}) => (G.flip.obj (X₃ i.1.2)).mapCocone (c₁₂ i.1.1)
+  have hc₁₂' : ∀ i, IsColimit (c₁₂' i) := fun i => isColimitOfPreserves _ (h₁₂ i.1.1)
+  let Z := (((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃
+  let p' : I₁ × I₂ × I₃ → ρ₁₂.I₁₂ × I₃ := fun ⟨i₁, i₂, i₃⟩ => ⟨ρ₁₂.p ⟨i₁, i₂⟩, i₃⟩
+  let e : ∀ (i₁₂ : ρ₁₂.I₁₂) (i₃ : I₃), p' ⁻¹' {(i₁₂, i₃)} ≃ ρ₁₂.p ⁻¹' {i₁₂} := fun i₁₂ i₃ =>
+    { toFun := fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ => ⟨⟨i₁, i₂⟩, by aesop⟩
+      invFun := fun ⟨⟨i₁, i₂⟩, hi⟩ => ⟨⟨i₁, i₂, i₃⟩, by aesop⟩
+      left_inv := fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ => by
+        obtain rfl : i₃ = i₃' := by aesop
+        rfl
+      right_inv := fun _ => rfl }
+  let c₁₂'' : ∀ (i : ρ₁₂.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) := fun ⟨⟨i₁₂, i₃⟩, hi⟩ => by
+    refine' (Cocones.precompose (Iso.hom _)).obj ((Cocones.whiskeringEquivalence (Discrete.equivalence (e i₁₂ i₃))).functor.obj (c₁₂' ⟨⟨i₁₂, i₃⟩, hi⟩))
+    refine' (Discrete.natIso (fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ => (G.obj ((F₁₂.obj (X₁ i₁)).obj (X₂ i₂))).mapIso (eqToIso _)))
+    obtain rfl : i₃' = i₃ := congr_arg _root_.Prod.snd hi
+    rfl
+  have h₁₂'' : ∀ i, IsColimit (c₁₂'' i) := fun _ =>
+    (IsColimit.precomposeHomEquiv _ _).symm (IsColimit.whiskerEquivalenceEquiv _ (hc₁₂' _))
+  refine' IsColimit.ofIsoColimit (isColimitCofanMapObjComp Z p' ρ₁₂.q r ρ₁₂.hpq j
+    (fun ⟨i₁₂, i₃⟩ h => c₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) (fun ⟨i₁₂, i₃⟩ h => h₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) c hc) _
+  refine' Cocones.ext (Iso.refl _) (fun ⟨⟨i₁, i₂, i₃⟩, h⟩  => _)
+  dsimp [Cofan.proj]
+  rw [comp_id, Functor.map_id, id_comp]
+  rfl
 
-def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
-  IsColimit (cofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G p q r hr X₁ X₂ X₃ j) :=
-  have := H
-  sorry
+variable {F₁₂ G ρ₁₂ X₁ X₂ X₃}
+
+lemma HasGoodBifunctor₁₂BifunctorObj.hasMap : HasMap ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r :=
+  fun j => ⟨_, isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j⟩
+
+variable (F₁₂ G ρ₁₂ X₁ X₂ X₃)
+
+noncomputable def mapBifunctor₁₂BifunctorMapObjIso
+    [HasMap ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r] :
+    mapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ ≅
+    mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ :=
+  isoMk _ _ (fun j => (CofanMapObjFun.iso (isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j)).symm)
+
+@[reassoc (attr := simp)]
+lemma ι_mapBifunctor₁₂BifunctorMapObjIso_hom (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r ⟨i₁, i₂, i₃⟩ = j) :
+    have := H.hasMap
+    ιMapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ (mapBifunctor₁₂BifunctorMapObjIso F₁₂ G ρ₁₂ X₁ X₂ X₃).hom j =
+      ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j (by rw [← h, ρ₁₂.hpq]) := by
+  have := H.hasMap
+  dsimp [mapBifunctor₁₂BifunctorMapObjIso]
+  apply CofanMapObjFun.ιMapObj_iso_inv
 
 variable {X₁ X₂ X₃}
 
 @[ext]
 lemma mapBifunctor₁₂BifunctorMapObj_ext {j : J} {A : C₄}
-    (f g : mapBifunctorMapObj G q (mapBifunctorMapObj F₁₂ p X₁ X₂) X₃ j ⟶ A)
-    (h : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : q (p ⟨i₁, i₂⟩, i₃) = j),
-      ιMapBifunctor₁₂BifunctorMapObj F₁₂ G p q X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f =
-        ιMapBifunctor₁₂BifunctorMapObj F₁₂ G p q X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
-  apply Cofan.IsColimit.hom_ext (isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G p q r hr X₁ X₂ X₃ j)
-  intros
-  apply h
+    (f g : mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j ⟶ A)
+    (h : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : r ⟨i₁, i₂, i₃⟩ = j),
+      ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f =
+        ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
+  apply Cofan.IsColimit.hom_ext (isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j)
+  rintro ⟨i, hi⟩
+  exact h _ _ _ hi
 
 variable (X₁ X₂ X₃)
 
-noncomputable def mapBifunctor₁₂BifunctorMapObjIso :
-    have := H.hasMap₂
-    mapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ ≅
-    mapBifunctorMapObj G q (mapBifunctorMapObj F₁₂ p X₁ X₂) X₃ :=
-  isoMk _ _ (fun j => by
-    have : ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).HasMap r := sorry
-    let hc := isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G p q r hr X₁ X₂ X₃ j
-    exact (CofanMapObjFun.iso (X := ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃))
-      (hc := isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G p q r hr X₁ X₂ X₃ j)).symm)
-
 @[reassoc (attr := simp)]
-lemma ι_mapBifunctor₁₂BifunctorMapObjIso_hom (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r ⟨i₁, i₂, i₃⟩ = j) :
-    have := H.hasMap₂
-    ιMapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ (mapBifunctor₁₂BifunctorMapObjIso F₁₂ G p q r hr X₁ X₂ X₃).hom j =
-      ιMapBifunctor₁₂BifunctorMapObj F₁₂ G p q X₁ X₂ X₃ i₁ i₂ i₃ j (by rw [← h, hr]) := by
-  have : HasMap ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r := H.hasMap₂
-  apply CofanMapObjFun.ιMapObj_iso_inv
-  exact isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G p q r hr X₁ X₂ X₃ j
-
-@[reassoc (attr := simp)]
-lemma ι_mapBifunctor₁₂BifunctorMapObjIso_inv (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : q ⟨p ⟨i₁, i₂⟩, i₃⟩ = j) :
-    have := H.hasMap₂
-    ιMapBifunctor₁₂BifunctorMapObj F₁₂ G p q X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
-      (mapBifunctor₁₂BifunctorMapObjIso F₁₂ G p q r hr X₁ X₂ X₃).inv j =
-    ιMapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ i₁ i₂ i₃ j (by rw [hr, h]) := by
+lemma ι_mapBifunctor₁₂BifunctorMapObjIso_inv (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r ⟨i₁, i₂, i₃⟩ = j) :
+    have := H.hasMap
+    ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
+      (mapBifunctor₁₂BifunctorMapObjIso F₁₂ G ρ₁₂ X₁ X₂ X₃).inv j =
+    ιMapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ i₁ i₂ i₃ j h := by
+  have := H.hasMap
   dsimp only
-  rw [← cancel_mono ((mapBifunctor₁₂BifunctorMapObjIso F₁₂ G p q r hr X₁ X₂ X₃).hom j), assoc,
+  rw [← cancel_mono ((mapBifunctor₁₂BifunctorMapObjIso F₁₂ G ρ₁₂ X₁ X₂ X₃).hom j), assoc,
     iso_inv_hom_id_apply, comp_id, ι_mapBifunctor₁₂BifunctorMapObjIso_hom]
-
-
-/-variable {X₁ X₂ X₃}
-
-@[ext]
-lemma mapBifunctor₁₂BifunctorMapObj_ext {j : J} {A : C₄}
-    (f g : mapBifunctorMapObj G q (mapBifunctorMapObj F₁₂ p X₁ X₂) X₃ j ⟶ A)
-    (h : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : q (p ⟨i₁, i₂⟩, i₃) = j),
-      ιMapBifunctor₁₂BifunctorMapObj F₁₂ G p q X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f =
-        ιMapBifunctor₁₂BifunctorMapObj F₁₂ G p q X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
-  rw [← cancel_epi ((mapBifunctor₁₂BifunctorMapObjIso F₁₂ G p q r hr X₁ X₂ X₃).hom j)]
-  have := H.hasMap₂
-  ext i₁ i₂ i₃ hi
-  simp only [ι_mapBifunctor₁₂BifunctorMapObjIso_hom_assoc]
-  apply h-/
 
 end
 
@@ -397,164 +342,89 @@ def _root_.CategoryTheory.bifunctorComp₂₃ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ 
     { app := fun X₂ =>
         { app := fun X₃ => (F.map φ).app ((G₂₃.obj X₂).obj X₃) } }
 
-variable
-  {I₁ I₂ I₃ I₂₃ J : Type*} (p : I₂ × I₃ → I₂₃) (q : I₁ × I₂₃ → J)
-    (r : I₁ × I₂ × I₃ → J) (hr : ∀ (i : I₁ × I₂ × I₃), r i = q ⟨i.1, p i.2⟩)
+variable {I₁ I₂ I₃ J : Type*} (r : I₁ × I₂ × I₃ → J)
 
-variable (I₁)
+structure BifunctorBifunctor₂₃IndexData :=
+  I₂₃ : Type*
+  p : I₂ × I₃ → I₂₃
+  q : I₁ × I₂₃ → J
+  hpq : ∀ (i : I₁ × I₂ × I₃), r i = q ⟨i.1, p i.2⟩
 
-def p'' : I₁ × I₂ × I₃ → I₁ × I₂₃ := fun ⟨i₁, i₂₃⟩ => ⟨i₁, p i₂₃⟩
-
-variable {I₁} (I₂₃)
-
-def γ' (X₁ : GradedObject I₁ C₁) : GradedObject (I₁ × I₂₃) (C₂₃ ⥤ C₄) :=
-  fun ⟨i₁, _⟩ => F.obj (X₁ i₁)
-
-variable {I₂₃}
+variable {r} (ρ₂₃ : BifunctorBifunctor₂₃IndexData r)
 
 section
 
-class HasGoodBifunctorBifunctor₂₃Obj (hr : ∀ (i : I₁ × I₂ × I₃), r i = q ⟨i.1, p i.2⟩)
-  (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
-    [HasMap (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃) p]
-    [HasMap (((mapBifunctor F I₁ I₂₃).obj X₁).obj (mapBifunctorMapObj G₂₃ p X₂ X₃)) q] :=
-  hasMap₂ : HasMap ((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r
-  hasMap₃ : HasMap ((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) (p'' I₁ p)
-  hasMap₄ : HasMap (((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj (p'' I₁ p)) q
-  hasMap₅ : HasMap ((comap C₂₃ _root_.Prod.snd).obj (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃)) (p'' I₁ p)
-  preservesMap : PreservesMap (γ' F I₂₃ X₁) (p'' I₁ p) ((comap C₂₃ _root_.Prod.snd).obj (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃))
-
-attribute [instance] HasGoodBifunctorBifunctor₂₃Obj.hasMap₄
-
 variable (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
-  [HasMap (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃) p]
-  [HasMap (((mapBifunctor F I₁ I₂₃).obj X₁).obj (mapBifunctorMapObj G₂₃ p X₂ X₃)) q]
-  [H : HasGoodBifunctorBifunctor₂₃Obj F G₂₃ p q r hr X₁ X₂ X₃]
+  [HasMap (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃) ρ₂₃.p]
+  [HasMap (((mapBifunctor F I₁ ρ₂₃.I₂₃).obj X₁).obj (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃)) ρ₂₃.q]
 
-attribute [local ext] mapObj_ext
+class HasGoodBifunctorBifunctor₂₃Obj : Prop where
+  nonempty_preservesColimit (i₁ : I₁) (i₂₃ : ρ₂₃.I₂₃) : Nonempty (PreservesColimit (Discrete.functor (mapObjFun (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃) ρ₂₃.p i₂₃))
+    (F.obj (X₁ i₁))) := by intros; constructor; infer_instance
 
-noncomputable def mapBifunctorBifunctor₂₃MapObjIso₁ :
-    have := H.hasMap₂
-    have := H.hasMap₃
-    (((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj (p'' I₁ p)).mapObj q ≅
-      mapTrifunctorMapObj (bifunctorComp₂₃ F G₂₃) r X₁ X₂ X₃ :=
-  have := H.hasMap₂
-  have := H.hasMap₃
-  ((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObjMapObjIso (p'' I₁ p) q r hr
+noncomputable def ιMapBifunctorBifunctor₂₃MapObj (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r (i₁, i₂, i₃) = j) :
+    (F.obj (X₁ i₁)).obj ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶ mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j :=
+  (F.obj (X₁ i₁)).map (ιMapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃ i₂ i₃ _ rfl) ≫
+    ιMapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) i₁ (ρ₂₃.p ⟨i₂, i₃⟩) j (by rw [← h, ρ₂₃.hpq])
 
-noncomputable def mapBifunctorBifunctor₂₃MapObjIso₂ :
-    have := H.hasMap₃
-    have := H.hasMap₅
-    (((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj (p'' I₁ p)) ≅
-      (applyFunctorsObj (γ' F I₂₃ X₁)).obj (((comap _ _root_.Prod.snd).obj (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃)).mapObj (p'' I₁ p)) :=
-  have := H.hasMap₃
-  have := H.hasMap₅
-  have := H.preservesMap
-  comapObjApplyFunctorsObjObjMapObjIso (γ' F I₂₃ X₁) (p'' I₁ p) ((comap _ _root_.Prod.snd).obj (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃))
+variable [H : HasGoodBifunctorBifunctor₂₃Obj F G₂₃ ρ₂₃ X₁ X₂ X₃]
 
-noncomputable def mapBifunctorBifunctor₂₃MapObjIso₃ :
-    have := H.hasMap₅
-    ((mapBifunctor F I₁ I₂₃).obj X₁).obj (mapBifunctorMapObj G₂₃ p X₂ X₃) ≅
-      (applyFunctorsObj (γ' F I₂₃ X₁)).obj (((comap _ _root_.Prod.snd).obj (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃)).mapObj (p'' I₁ p)) :=
-  have := H.hasMap₅
-  isoMk _ _ (fun ⟨i₁, i₂₃⟩ => (F.obj (X₁ i₁)).mapIso
-    { hom := descMapObj _ _ (fun ⟨i₂, i₃⟩ _ =>
-        ((comap C₂₃ _root_.Prod.snd).obj (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃)).ιMapObj (p'' I₁ p) ⟨i₁, i₂, i₃⟩ ⟨i₁, i₂₃⟩ (by aesop))
-      inv := descMapObj _ _ (fun ⟨i₁', i₂, i₃⟩ h =>
-        (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃).ιMapObj p ⟨i₂, i₃⟩ i₂₃ (congr_arg _root_.Prod.snd h))
-      inv_hom_id := by
-        ext ⟨i₁', i₂, i₃⟩ h
-        obtain rfl : i₁' = i₁ := (congr_arg _root_.Prod.fst h)
-        simp })
+noncomputable def cofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
+    ((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).CofanMapObjFun r j :=
+  Cofan.mk (mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j) (fun ⟨⟨i₁, i₂, i₃⟩, (hi : r ⟨i₁, i₂, i₃⟩ = j)⟩ =>
+    ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi)
 
-noncomputable def mapBifunctorBifunctor₂₃MapObjIso :
-    have := H.hasMap₂
+noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
+    IsColimit (cofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j) := by
+  have := H
+  sorry
+
+variable {F G₂₃ ρ₂₃ X₁ X₂ X₃}
+
+lemma HasGoodBifunctorBifunctor₂₃Obj.hasMap : HasMap ((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r :=
+  fun j => ⟨_, isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j⟩
+
+variable (F G₂₃ ρ₂₃ X₁ X₂ X₃)
+
+noncomputable def mapBifunctorBifunctor₂₃MapObjIso
+    [HasMap ((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r] :
     mapTrifunctorMapObj (bifunctorComp₂₃ F G₂₃) r X₁ X₂ X₃ ≅
-      mapBifunctorMapObj F q X₁ (mapBifunctorMapObj G₂₃ p X₂ X₃) :=
-  (mapBifunctorBifunctor₂₃MapObjIso₁ F G₂₃ p q r hr X₁ X₂ X₃).symm ≪≫
-    mapIso (mapBifunctorBifunctor₂₃MapObjIso₂ F G₂₃ p q r hr X₁ X₂ X₃ ≪≫
-      (mapBifunctorBifunctor₂₃MapObjIso₃ F G₂₃ p q r hr X₁ X₂ X₃).symm) q
+    mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) :=
+  isoMk _ _ (fun j => (CofanMapObjFun.iso (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j)).symm)
 
-noncomputable def ιMapBifunctorBifunctor₂₃MapObj (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : q ⟨i₁, p ⟨i₂, i₃⟩⟩ = j) :
-    (F.obj (X₁ i₁)).obj ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶
-      mapBifunctorMapObj F q X₁ (mapBifunctorMapObj G₂₃ p X₂ X₃) j :=
-  (F.obj (X₁ i₁)).map (ιMapBifunctorMapObj G₂₃ p X₂ X₃ i₂ i₃ _ rfl) ≫
-    ιMapBifunctorMapObj F q X₁ (mapBifunctorMapObj G₂₃ p X₂ X₃) i₁ (p ⟨i₂, i₃⟩) j h
-
-@[reassoc (attr := simp)]
+--@[reassoc (attr := simp)]
 lemma ι_mapBifunctorBifunctor₂₃MapObjIso_hom (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r ⟨i₁, i₂, i₃⟩ = j) :
-    have := H.hasMap₂
-    ιMapTrifunctorMapObj (bifunctorComp₂₃ F G₂₃) r X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
-      (mapBifunctorBifunctor₂₃MapObjIso F G₂₃ p q r hr X₁ X₂ X₃).hom j =
-      ιMapBifunctorBifunctor₂₃MapObj F G₂₃ p q X₁ X₂ X₃ i₁ i₂ i₃ j (by rw [← h, hr]) := by
-  -- needs cleaning up...
-  have := H.hasMap₂
-  have := H.hasMap₃
-  have := H.hasMap₅
-  dsimp only [ιMapTrifunctorMapObj, mapBifunctorBifunctor₂₃MapObjIso]
-  simp only [bifunctorComp₂₃_obj, bifunctorComp₂₃Obj_obj_obj, mapBifunctorMapObj, mapTrifunctorMapObj,
-    mapTrifunctor_obj, Iso.trans_hom, Iso.symm_hom, categoryOfGradedObjects_comp]
-  dsimp only [mapBifunctorBifunctor₂₃MapObjIso₁]
-  simp only [mapTrifunctor_obj, mapObjMapObjIso_inv, mapTrifunctorObj_obj_obj, bifunctorComp₂₃_obj,
-    bifunctorComp₂₃Obj_obj_obj]
-  erw [ι_descMapObj_assoc]
-  dsimp only [mapIso]
-  simp only [mapTrifunctor_obj, mapTrifunctorObj_obj_obj, bifunctorComp₂₃_obj, bifunctorComp₂₃Obj_obj_obj,
-    Iso.trans_hom, Iso.symm_hom, assoc]
-  have : HasMap (((mapBifunctor F I₁ I₂₃).obj X₁).obj (mapObj (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃) p)) q := by
-    assumption
-  rw [ι_mapMap]
-  simp only [mapTrifunctor_obj, mapBifunctor_obj_obj, categoryOfGradedObjects_comp, applyFunctorsObj_obj,
-    assoc]
-  dsimp only [mapBifunctorBifunctor₂₃MapObjIso₂, comapObjApplyFunctorsObjObjMapObjIso, asIso]
-  have : HasMap (fun x ↦ (G₂₃.obj (X₂ x.snd.fst)).obj (X₃ x.snd.snd)) (p'' I₁ p) := by assumption
-  have : HasMap
-    ((applyFunctorsObj ((comap (C₂₃ ⥤ C₄) (p'' I₁ p)).obj (γ' F I₂₃ X₁))).obj
-      (fun x ↦
-        (G₂₃.obj (X₂ x.snd.fst)).obj (X₃ x.snd.snd))) (p'' I₁ p) := by assumption
-  erw [ι_comapObjApplyFunctorsObjObjMapObj_assoc (γ' F I₂₃ X₁) (p'' I₁ p)]
-  dsimp only [γ', mapBifunctorBifunctor₂₃MapObjIso₃]
-  simp only [applyFunctorsObj_obj, Pi.comap_obj, mapBifunctorMapObj, isoMk_inv, mapBifunctor_obj_obj,
-    Functor.mapIso_inv]
-  rw [← Functor.map_comp_assoc]
-  erw [ι_descMapObj]
-  rfl
-
-@[reassoc (attr := simp)]
-lemma ι_mapBifunctorBifunctor₂₃MapObjIso_inv (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : q ⟨i₁, p ⟨i₂, i₃⟩⟩ = j) :
-  ιMapBifunctorBifunctor₂₃MapObj F G₂₃ p q X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
-    (mapBifunctorBifunctor₂₃MapObjIso F G₂₃ p q r hr X₁ X₂ X₃).inv j =
-    have := H.hasMap₂
-    ιMapTrifunctorMapObj (bifunctorComp₂₃ F G₂₃) r X₁ X₂ X₃ i₁ i₂ i₃ j (by rw [hr, h]) := by
-  rw [← cancel_mono ((mapBifunctorBifunctor₂₃MapObjIso F G₂₃ p q r hr X₁ X₂ X₃).hom j),
-    assoc, ι_mapBifunctorBifunctor₂₃MapObjIso_hom, iso_inv_hom_id_apply, comp_id]
+    have := H.hasMap
+    ιMapTrifunctorMapObj (bifunctorComp₂₃ F G₂₃) r X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ (mapBifunctorBifunctor₂₃MapObjIso F G₂₃ ρ₂₃ X₁ X₂ X₃).hom j =
+      ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j (by rw [←h, ρ₂₃.hpq]) := by
+  have := H.hasMap
+  dsimp [mapBifunctorBifunctor₂₃MapObjIso]
+  apply CofanMapObjFun.ιMapObj_iso_inv
 
 variable {X₁ X₂ X₃}
 
 @[ext]
 lemma mapBifunctorBifunctor₂₃MapObj_ext {j : J} {A : C₄}
-    (f g : mapBifunctorMapObj F q X₁ (mapBifunctorMapObj G₂₃ p X₂ X₃) j ⟶ A)
-    (h : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : q ⟨i₁, p ⟨i₂, i₃⟩⟩ = j),
-      ιMapBifunctorBifunctor₂₃MapObj F G₂₃ p q X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f =
-        ιMapBifunctorBifunctor₂₃MapObj F G₂₃ p q X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
-  rw [← cancel_epi ((mapBifunctorBifunctor₂₃MapObjIso F G₂₃ p q r hr X₁ X₂ X₃).hom j)]
-  have := H.hasMap₂
-  ext i₁ i₂ i₃ hi
-  simp only [ι_mapBifunctorBifunctor₂₃MapObjIso_hom_assoc]
-  apply h
+    (f g : mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j ⟶ A)
+    (h : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : r ⟨i₁, i₂, i₃⟩ = j),
+      ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f =
+        ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
+  apply Cofan.IsColimit.hom_ext (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j)
+  rintro ⟨i, hi⟩
+  exact h _ _ _ hi
 
 variable (X₁ X₂ X₃)
 
-noncomputable def cofanMapBifunctorBifunctor₂₃MapObj (j : J) :
-    ((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).CofanMapObjFun r j :=
-  CofanMapObjFun.mk _ _ _ (mapBifunctorMapObj F q X₁ (mapBifunctorMapObj G₂₃ p X₂ X₃) j)
-    (fun ⟨i₁, i₂, i₃⟩ hi =>
-      ιMapBifunctorBifunctor₂₃MapObj F G₂₃ p q X₁ X₂ X₃ i₁ i₂ i₃ j (by rw [←hi, hr]))
-
-noncomputable def isColimitCofanMapBifunctorBifunctor₂₃MapObj (j : J) :
-    IsColimit (cofanMapBifunctorBifunctor₂₃MapObj F G₂₃ p q r hr X₁ X₂ X₃ j) := by
-  have := H
-  sorry
+@[reassoc (attr := simp)]
+lemma ι_mapBifunctorBifunctor₂₃MapObjIso_inv (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r ⟨i₁, i₂, i₃⟩ = j) :
+  have := H.hasMap
+  ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
+    (mapBifunctorBifunctor₂₃MapObjIso F G₂₃ ρ₂₃ X₁ X₂ X₃).inv j =
+    ιMapTrifunctorMapObj (bifunctorComp₂₃ F G₂₃) r X₁ X₂ X₃ i₁ i₂ i₃ j h := by
+  have := H.hasMap
+  dsimp only
+  rw [← cancel_mono ((mapBifunctorBifunctor₂₃MapObjIso F G₂₃ ρ₂₃ X₁ X₂ X₃).hom j),
+    assoc, ι_mapBifunctorBifunctor₂₃MapObjIso_hom, iso_inv_hom_id_apply, comp_id]
 
 end
 
@@ -566,59 +436,41 @@ variable
   {F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂} {G : C₁₂ ⥤ C₃ ⥤ C₄}
   {F : C₁ ⥤ C₂₃ ⥤ C₄} {G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃}
   (associator : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)
-  {I₁ I₂ I₃ I₁₂ I₂₃ J : Type*} (p₁₂ : I₁ × I₂ → I₁₂) (q₁₂ : I₁₂ × I₃ → J)
-    (p₂₃ : I₂ × I₃ → I₂₃) (q₂₃ : I₁ × I₂₃ → J)
-    (r : I₁ × I₂ × I₃ → J) (hr₁₂ : ∀ (i : I₁ × I₂ × I₃), r i = q₁₂ ⟨p₁₂ ⟨i.1, i.2.1⟩, i.2.2⟩)
-    (hr₂₃ : ∀ (i : I₁ × I₂ × I₃), r i = q₂₃ ⟨i.1, p₂₃ i.2⟩)
+  {I₁ I₂ I₃ J : Type*} {r : I₁ × I₂ × I₃ → J}
+  (ρ₁₂ : Bifunctor₁₂BifunctorIndexData r)
+  (ρ₂₃ : BifunctorBifunctor₂₃IndexData r)
   (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
-  [HasMap (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) p₁₂]
-  [HasMap (((mapBifunctor G I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ p₁₂ X₁ X₂)).obj X₃) q₁₂]
-  [HasMap (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃) p₂₃]
-  [HasMap (((mapBifunctor F I₁ I₂₃).obj X₁).obj (mapBifunctorMapObj G₂₃ p₂₃ X₂ X₃)) q₂₃]
-
-class HasGoodAssociator
-  (associator : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)
-  {I₁ I₂ I₃ I₁₂ I₂₃ J : Type*} (p₁₂ : I₁ × I₂ → I₁₂) (q₁₂ : I₁₂ × I₃ → J)
-    (p₂₃ : I₂ × I₃ → I₂₃) (q₂₃ : I₁ × I₂₃ → J)
-    (r : I₁ × I₂ × I₃ → J) (hr₁₂ : ∀ (i : I₁ × I₂ × I₃), r i = q₁₂ ⟨p₁₂ ⟨i.1, i.2.1⟩, i.2.2⟩)
-    (hr₂₃ : ∀ (i : I₁ × I₂ × I₃), r i = q₂₃ ⟨i.1, p₂₃ i.2⟩)
-  (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
-  [HasMap (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) p₁₂]
-  [HasMap (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃) p₂₃]
-  [h₁₂ : HasMap (((mapBifunctor G I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ p₁₂ X₁ X₂)).obj X₃) q₁₂]
-  [h₂₃ : HasMap (((mapBifunctor F I₁ I₂₃).obj X₁).obj (mapBifunctorMapObj G₂₃ p₂₃ X₂ X₃)) q₂₃]
-  where
-  H₁₂ : HasGoodBifunctor₁₂BifunctorObj F₁₂ G p₁₂ q₁₂ r hr₁₂ X₁ X₂ X₃
-  H₂₃ : HasGoodBifunctorBifunctor₂₃Obj F G₂₃ p₂₃ q₂₃ r hr₂₃ X₁ X₂ X₃
-
-variable [H : HasGoodAssociator associator p₁₂ q₁₂ p₂₃ q₂₃ r hr₁₂ hr₂₃ X₁ X₂ X₃]
+  [HasMap (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) ρ₁₂.p]
+  [HasMap (((mapBifunctor G ρ₁₂.I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂)).obj X₃) ρ₁₂.q]
+  [HasMap (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃) ρ₂₃.p]
+  [HasMap (((mapBifunctor F I₁ ρ₂₃.I₂₃).obj X₁).obj (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃)) ρ₂₃.q]
+  [H₁₂ : HasGoodBifunctor₁₂BifunctorObj F₁₂ G ρ₁₂ X₁ X₂ X₃]
+  [H₂₃ : HasGoodBifunctorBifunctor₂₃Obj F G₂₃ ρ₂₃ X₁ X₂ X₃]
 
 noncomputable def mapBifunctorBifunctorAssociator :
-    mapBifunctorMapObj G q₁₂ (mapBifunctorMapObj F₁₂ p₁₂ X₁ X₂) X₃ ≅
-      mapBifunctorMapObj F q₂₃ X₁ (mapBifunctorMapObj G₂₃ p₂₃ X₂ X₃) :=
-  have := H.H₁₂.hasMap₂
-  have := H.H₂₃.hasMap₂
-  letI := H.H₁₂
-  letI := H.H₂₃
-  (mapBifunctor₁₂BifunctorMapObjIso F₁₂ G p₁₂ q₁₂ r hr₁₂ X₁ X₂ X₃).symm ≪≫
+    mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ ≅
+      mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) :=
+  have := H₁₂.hasMap
+  have := H₂₃.hasMap
+  (mapBifunctor₁₂BifunctorMapObjIso F₁₂ G ρ₁₂ X₁ X₂ X₃).symm ≪≫
     mapIso ((((mapTrifunctorMapIso associator I₁ I₂ I₃).app X₁).app X₂).app X₃) r ≪≫
-    mapBifunctorBifunctor₂₃MapObjIso F G₂₃ p₂₃ q₂₃ r hr₂₃ X₁ X₂ X₃
+    mapBifunctorBifunctor₂₃MapObjIso F G₂₃ ρ₂₃ X₁ X₂ X₃
 
 @[reassoc (attr := simp)]
-lemma ι_mapBifunctorBifunctorAssociator_hom (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : q₁₂ (p₁₂ (i₁, i₂), i₃) = j) :
-    ιMapBifunctor₁₂BifunctorMapObj F₁₂ G p₁₂ q₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
-      (mapBifunctorBifunctorAssociator associator p₁₂ q₁₂ p₂₃ q₂₃ r hr₁₂ hr₂₃ X₁ X₂ X₃).hom j =
+lemma ι_mapBifunctorBifunctorAssociator_hom (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r (i₁, i₂, i₃) = j) :
+    ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
+      (mapBifunctorBifunctorAssociator associator ρ₁₂ ρ₂₃ X₁ X₂ X₃).hom j =
         ((associator.hom.app (X₁ i₁)).app (X₂ i₂)).app (X₃ i₃) ≫
-          ιMapBifunctorBifunctor₂₃MapObj F G₂₃ p₂₃ q₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j (by rw [← h, ← hr₁₂ ⟨i₁, i₂, i₃⟩, hr₂₃]) :=
+          ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h :=
   sorry
 
 @[reassoc (attr := simp)]
-lemma ι_mapBifunctorBifunctorAssociator_inv (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : q₂₃ (i₁, p₂₃ (i₂, i₃)) = j) :
-    ιMapBifunctorBifunctor₂₃MapObj F G₂₃ p₂₃ q₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
-      (mapBifunctorBifunctorAssociator associator p₁₂ q₁₂ p₂₃ q₂₃ r hr₁₂ hr₂₃ X₁ X₂ X₃).inv j =
+lemma ι_mapBifunctorBifunctorAssociator_inv (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r (i₁, i₂, i₃) = j) :
+    ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫
+      (mapBifunctorBifunctorAssociator associator ρ₁₂ ρ₂₃ X₁ X₂ X₃).inv j =
     ((associator.inv.app (X₁ i₁)).app (X₂ i₂)).app (X₃ i₃) ≫
-      ιMapBifunctor₁₂BifunctorMapObj F₁₂ G p₁₂ q₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j (by rw [← h, ← hr₁₂ ⟨i₁, i₂, i₃⟩, hr₂₃]) := by
-  rw [← cancel_mono ((mapBifunctorBifunctorAssociator associator p₁₂ q₁₂ p₂₃ q₂₃ r hr₁₂ hr₂₃ X₁ X₂ X₃).hom j),
+      ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h := by
+  rw [← cancel_mono ((mapBifunctorBifunctorAssociator associator ρ₁₂ ρ₂₃ X₁ X₂ X₃).hom j),
     assoc, assoc, iso_inv_hom_id_apply, comp_id, ι_mapBifunctorBifunctorAssociator_hom,
     ← NatTrans.comp_app_assoc, ← NatTrans.comp_app, Iso.inv_hom_id_app,
     NatTrans.id_app, NatTrans.id_app, id_comp]
