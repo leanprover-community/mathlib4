@@ -450,7 +450,7 @@ def preadditive : Preadditive C where
       add_zero := add_zero
       neg := fun f => -f
       add_left_neg := neg_add_self
-      sub_eq_add_neg  := fun f g => (add_neg f g).symm -- Porting note: autoParam failed
+      sub_eq_add_neg := fun f g => (add_neg f g).symm -- Porting note: autoParam failed
       add_comm := add_comm }
   add_comp := add_comp
   comp_add := comp_add

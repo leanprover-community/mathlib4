@@ -474,9 +474,9 @@ noncomputable abbrev convexBodyLtFactor : ℝ≥0∞ :=
   (2 : ℝ≥0∞) ^ card {w : InfinitePlace K // IsReal w} *
     (NNReal.pi : ℝ≥0∞) ^ card {w : InfinitePlace K // IsComplex w}
 
-theorem convexBodyLtFactor_lt_pos : 0 < (convexBodyLtFactor K) := by
-  refine mul_pos (NeZero.ne _) (ENNReal.pow_ne_zero ?_ _)
-  exact ne_of_gt (coe_pos.mpr Real.pi_pos)
+theorem convexBodyLtFactor_pos : 0 < (convexBodyLtFactor K) := by
+  refine mul_pos (NeZero.ne _) ?_
+  exact ENNReal.pow_ne_zero (ne_of_gt (measure_ball_pos _ _ (by norm_num))) _
 
 theorem convexBodyLtFactor_lt_top : (convexBodyLtFactor K) < ⊤ := by
   refine mul_lt_top ?_ ?_
