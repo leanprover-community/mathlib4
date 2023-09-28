@@ -34,237 +34,6 @@ lemma Stonean.effectiveEpi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
 
 end EffectiveEpis
 
-section StoneanPullback -- This section is PR #6779
-
-open CategoryTheory Limits
-
-def OpenEmbeddingConePt {X Y Z : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i) :
-    Stonean where
-  compHaus := {
-    toTop := TopCat.of (f ⁻¹' (Set.range i))
-    is_compact := by
-      dsimp [TopCat.of]
-      rw [← isCompact_iff_compactSpace]
-      apply IsClosed.isCompact
-      refine' IsClosed.preimage f.continuous _
-      apply IsCompact.isClosed
-      simp only [← Set.image_univ]
-      exact IsCompact.image isCompact_univ i.continuous
-    is_hausdorff := by
-      dsimp [TopCat.of]
-      exact inferInstance
-  }
-  extrDisc := by
-    constructor
-    have h : IsClopen (f ⁻¹' (Set.range i))
-    · constructor
-      · exact IsOpen.preimage f.continuous hi.open_range
-      · refine' IsClosed.preimage f.continuous _
-        apply IsCompact.isClosed
-        simp only [← Set.image_univ]
-        exact IsCompact.image isCompact_univ i.continuous
-    intro U hU
-    dsimp at U
-    have hU' : IsOpen (Subtype.val '' U) := h.1.openEmbedding_subtype_val.isOpenMap U hU
-    have := ExtremallyDisconnected.open_closure _ hU'
-    rw [h.2.closedEmbedding_subtype_val.closure_image_eq U] at this
-    suffices hhU : closure U = Subtype.val ⁻¹' (Subtype.val '' (closure U))
-    · rw [hhU]
-      exact isOpen_induced this
-    exact ((closure U).preimage_image_eq Subtype.coe_injective).symm
-
-noncomputable
-def OpenEmbedding.InvRange {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {i : X → Y}
-    (hi : OpenEmbedding i) : C(Set.range i, X) where
-  toFun := (Homeomorph.ofEmbedding i hi.toEmbedding).invFun
-  continuous_toFun := (Homeomorph.ofEmbedding i hi.toEmbedding).symm.continuous
-
-noncomputable
-def OpenEmbedding.ToRange {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {i : X → Y}
-    (hi : OpenEmbedding i) : C(X, Set.range i) where
-  toFun := (Homeomorph.ofEmbedding i hi.toEmbedding).toFun
-  continuous_toFun := (Homeomorph.ofEmbedding i hi.toEmbedding).continuous
-
-lemma aux_forall_mem {X Y Z : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (_ : OpenEmbedding i) :
-    ∀ x : f ⁻¹' (Set.range i), f x.val ∈ Set.range i := by
-  rintro ⟨x, hx⟩
-  simpa only [Set.mem_preimage]
-
-lemma aux_continuous_restrict {X Y Z : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (_ : OpenEmbedding i) :
-    Continuous ((f ⁻¹' (Set.range i)).restrict f) := by
-  apply ContinuousOn.restrict
-  apply Continuous.continuousOn
-  exact f.continuous
-
-noncomputable
-def OpenEmbeddingConeRightMap {X Y Z : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i) :
-    C(f ⁻¹' (Set.range i), Y) :=
-  ContinuousMap.comp (OpenEmbedding.InvRange hi)
-  ⟨(Set.range i).codRestrict ((f ⁻¹' (Set.range i)).restrict f)
-  (aux_forall_mem f hi), Continuous.codRestrict
-  (aux_continuous_restrict f hi) (aux_forall_mem f hi)⟩
-
-noncomputable
-def OpenEmbeddingCone {X Y Z : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i) :
-    Cone (cospan f i) where
-  pt := OpenEmbeddingConePt f hi
-  π := {
-    app := by
-      intro W
-      dsimp
-      match W with
-      | none =>
-        exact ⟨Set.restrict _ f, ContinuousOn.restrict (Continuous.continuousOn f.continuous)⟩
-      | some W' =>
-        · induction W' with
-        | left =>
-          · exact ⟨Subtype.val, continuous_subtype_val⟩
-        | right =>
-          · exact OpenEmbeddingConeRightMap f hi
-    naturality := by
-      intro W V q
-      simp only [CategoryTheory.Functor.const_obj_obj,
-        CategoryTheory.Functor.const_obj_map, cospan_one,
-        cospan_left, id_eq, Category.id_comp]
-      induction q with
-      | id =>
-        · simp only [cospan_one, cospan_left, WidePullbackShape.hom_id,
-            CategoryTheory.Functor.map_id, Category.comp_id]
-      | term j =>
-        · induction j with
-          | left =>
-            · simp only [cospan_one, cospan_left, cospan_map_inl]
-              congr
-          | right =>
-            · simp only [cospan_one, cospan_right, cospan_map_inr]
-              dsimp [OpenEmbeddingConeRightMap, ContinuousMap.comp, Set.restrict, Set.codRestrict,
-                OpenEmbedding.InvRange]
-              congr
-              ext x
-              simp only [Function.comp_apply]
-              obtain ⟨y, hy⟩ := x.prop
-              rw [← hy]
-              congr
-              suffices : y = (Homeomorph.ofEmbedding i hi.toEmbedding).symm
-                (⟨f x.val, by rw [← hy] ; simp⟩)
-              · rw [this]
-                rfl
-              apply_fun (Homeomorph.ofEmbedding i hi.toEmbedding)
-              simp only [Homeomorph.apply_symm_apply]
-              dsimp [Homeomorph.ofEmbedding]
-              simp_rw [hy]
-  }
-
-namespace Stonean
-
-def pullback.fst {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
-    (hi : OpenEmbedding i) : (OpenEmbeddingCone f hi).pt ⟶ X :=
-  ⟨Subtype.val, continuous_subtype_val⟩
-
-noncomputable
-def pullback.snd {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
-    (hi : OpenEmbedding i) : (OpenEmbeddingCone f hi).pt ⟶ Y :=
-  (OpenEmbeddingCone f hi).π.app WalkingCospan.right
-
-def pullback.lift {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i)
-    (a : W ⟶ X) (b : W ⟶ Y) (w : a ≫ f = b ≫ i) :
-    W ⟶ (OpenEmbeddingCone f hi).pt where
-  toFun := fun z => ⟨a z, by
-    simp only [Set.mem_preimage]
-    use (b z)
-    exact congr_fun (FunLike.ext'_iff.mp w.symm) z⟩
-  continuous_toFun := by
-    apply Continuous.subtype_mk
-    exact a.continuous
-
-lemma pullback.condition {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
-    (hi : OpenEmbedding i) : pullback.fst f hi ≫ f = pullback.snd f hi ≫ i :=
-  PullbackCone.condition (OpenEmbeddingCone f hi)
-
-@[reassoc (attr := simp)]
-lemma pullback.lift_fst {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i)
-    (a : W ⟶ X) (b : W ⟶ Y) (w : a ≫ f = b ≫ i) :
-  pullback.lift f hi a b w ≫ pullback.fst f hi = a := rfl
-
-lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i)
-    (a : W ⟶ X) (b : W ⟶ Y) (w : a ≫ f = b ≫ i) :
-    pullback.lift f hi a b w ≫ Stonean.pullback.snd f hi = b := by
-  dsimp [lift, snd, OpenEmbeddingCone, OpenEmbeddingConeRightMap, ContinuousMap.comp, Set.restrict,
-    Set.codRestrict, OpenEmbedding.InvRange]
-  congr
-  ext z
-  simp only [Function.comp_apply]
-  have := congr_fun (FunLike.ext'_iff.mp w.symm) z
-  have h : i (b z) = f (a z) := this
-  suffices : b z = (Homeomorph.ofEmbedding i hi.toEmbedding).symm
-    (⟨f (a z), by rw [← h] ; simp⟩)
-  · exact this.symm
-  apply_fun (Homeomorph.ofEmbedding i hi.toEmbedding)
-  simp only [Homeomorph.apply_symm_apply]
-  dsimp [Homeomorph.ofEmbedding]
-  simp_rw [h]
-
-lemma pullback.hom_ext {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i)
-    (a : W ⟶ (OpenEmbeddingCone f hi).pt) (b : W ⟶ (OpenEmbeddingCone f hi).pt)
-    (hfst : a ≫ pullback.fst f hi = b ≫ pullback.fst f hi) : a = b := by
-  ext z
-  apply_fun (fun q => q z) at hfst--  hsnd
-  apply Subtype.ext
-  exact hfst
-
-def OpenEmbeddingLimitCone {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
-    (hi : OpenEmbedding i) : IsLimit (OpenEmbeddingCone f hi) :=
-  Limits.PullbackCone.isLimitAux _
-    (fun s => pullback.lift f hi s.fst s.snd s.condition)
-    (fun _ => pullback.lift_fst _ _ _ _ _)
-    (fun _ => pullback.lift_snd _ _ _ _ _)
-    (fun _ _ hm => pullback.hom_ext _ _ _ _ (hm WalkingCospan.left))
-
-lemma HasPullbackOpenEmbedding {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
-    (hi : OpenEmbedding i) : HasPullback f i := by
-  constructor
-  use OpenEmbeddingCone f hi
-  exact Stonean.OpenEmbeddingLimitCone f hi
-
-section Isos
-
-variable {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}  (hi : OpenEmbedding i) [HasPullback f i]
-
-noncomputable
-def toExplicit : pullback f i ⟶ (OpenEmbeddingCone f hi).pt :=
-  pullback.lift f hi Limits.pullback.fst Limits.pullback.snd Limits.pullback.condition
-
-noncomputable
-def fromExplicit : (OpenEmbeddingCone f hi).pt ⟶ pullback f i :=
-  Limits.pullback.lift (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi)
-
-@[simp]
-theorem toExplicitCompFromExcplict :
-    (toExplicit f hi ≫ fromExplicit f hi) = 𝟙 _ := by
-  refine' Limits.pullback.hom_ext (k := (toExplicit f hi ≫ fromExplicit f hi)) _ _
-  · simp [toExplicit, fromExplicit]
-  · rw [Category.id_comp, Category.assoc, fromExplicit, Limits.pullback.lift_snd,
-      toExplicit, pullback.lift_snd]
-
-@[simp]
-theorem fromExcplictComptoExplicit :
-    (fromExplicit f hi ≫ toExplicit f hi) = 𝟙 _ :=
-  pullback.hom_ext f hi _ _ (by simp [toExplicit, fromExplicit])
-
-@[simps]
-noncomputable
-def fromExplicitIso : (OpenEmbeddingCone f hi).pt ≅ pullback f i where
-  hom := fromExplicit f hi
-  inv := toExplicit f hi
-  hom_inv_id := fromExcplictComptoExplicit f hi
-  inv_hom_id := toExplicitCompFromExcplict f hi
-
-end Isos
-
-end Stonean
-
-end StoneanPullback
-
 section CompHausExplicitSheaves
 
 open CategoryTheory CompHaus Opposite CategoryTheory.Limits Functor Presieve
@@ -652,10 +421,10 @@ theorem Sigma.ι_comp_toFiniteCoproduct {α : Type} [Fintype α] {Z : α → Sto
 instance : Extensive Stonean where
   sigma_desc_iso := @fun α _ X Z i Y f H => by
     have hOpen := openEmbedding_of_sigma_desc_iso H
-    let θ := Sigma.mapIso (fun a => fromExplicitIso f (hOpen a))
+    let θ := Sigma.mapIso (fun a => pullbackIsoPullback f (hOpen a))
     suffices IsIso (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
       · apply IsIso.of_isIso_comp_left θ.hom
-    let δ := coproductIsoCoproduct (fun a => (OpenEmbeddingCone f (hOpen a)).pt)
+    let δ := coproductIsoCoproduct (fun a => (pullback.cone f (hOpen a)).pt)
     suffices IsIso <| δ.hom ≫ (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
       · apply IsIso.of_isIso_comp_left δ.hom
     have HIso : IsIso (finiteCoproduct.desc _ i) := by
@@ -668,12 +437,12 @@ instance : Extensive Stonean where
         finiteCoproduct.ι_desc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
     convert extensivity_explicit f HIso hOpen
     refine' Stonean.finiteCoproduct.hom_ext _ _ _ (fun a => _)
-    rw [finiteCoproduct.ι_desc, ← Category.assoc, ← Sigma.ι_comp_toFiniteCoproduct]
-    simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id, fromExplicitIso, fromExplicit._eq_1,
-      mapIso_hom, colim_map, colimit.map_desc, Eq.ndrec, id_eq, colimit.ι_desc,
-      Cocones.precompose_obj_pt, Cofan.mk_pt, Cocones.precompose_obj_ι, NatTrans.comp_app,
-      Discrete.functor_obj, const_obj_obj, Discrete.natIso_hom_app, Cofan.mk_ι_app,
-      limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+    erw [finiteCoproduct.ι_desc, ← Category.assoc, ← Sigma.ι_comp_toFiniteCoproduct]
+    simp only [pullback.cone_pt, Category.assoc, Iso.inv_hom_id, Category.comp_id, mapIso_hom,
+      colim_map, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_pt, Cofan.mk_pt,
+      Cocones.precompose_obj_ι, NatTrans.comp_app, Discrete.functor_obj, const_obj_obj,
+      Discrete.natIso_hom_app, pullbackIsoPullback_hom, Cofan.mk_ι_app, limit.lift_π,
+      PullbackCone.mk_pt, PullbackCone.mk_π_app]
 
 instance everything_proj (X : Stonean) : Projective X where
   factors := by
