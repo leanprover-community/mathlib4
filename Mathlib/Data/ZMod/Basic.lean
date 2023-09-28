@@ -88,6 +88,9 @@ theorem val_nat_cast {n : ℕ} (a : ℕ) : (a : ZMod n).val = a % n := by
   rfl
 #align zmod.val_nat_cast ZMod.val_nat_cast
 
+theorem val_nat_cast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
+  rwa [val_nat_cast, Nat.mod_eq_of_lt]
+
 instance charP (n : ℕ) : CharP (ZMod n) n where
     cast_eq_zero_iff' := by
       intro k
@@ -577,6 +580,11 @@ theorem cast_injective_of_lt {m n : ℕ} [nzm : NeZero m] (h : m < n) :
     apply Fin.ext
     exact f
 
+theorem cast_ZMod_eq_zero_iff_of_lt {m n : ℕ} [NeZero m] (h : m < n) (a : ZMod m) :
+    (a : ZMod n) = 0 ↔ a = 0 := by
+  rw [← ZMod.cast_zero (n := m)]
+  exact Injective.eq_iff' (cast_injective_of_lt h) rfl
+
 --Porting note: commented
 -- attribute [local semireducible] Int.NonNeg
 
@@ -642,7 +650,7 @@ theorem val_mul_le {n : ℕ} (a b : ZMod n) : (a * b).val ≤ a.val * b.val := b
 
 theorem val_mul_of_lt {n : ℕ} {a b : ZMod n} (h : a.val * b.val < n) :
     (a * b).val = a.val * b.val := by
-  rw [ZMod.val_mul]
+  rw [val_mul]
   apply Nat.mod_eq_of_lt h
 
 instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
