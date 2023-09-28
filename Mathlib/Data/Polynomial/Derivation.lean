@@ -61,7 +61,7 @@ def mkDerivation : A →ₗ[R] Derivation R R[X] A where
   map_smul' := fun t a ↦ by ext; simp
 
 lemma mkDerivation_apply (a : A) (f : R[X]) :
-    mkDerivation R a f = derivative f • a := by
+    mkDerivation R a f = derivative' f • a := by
   rfl
 
 @[simp]
@@ -93,66 +93,58 @@ def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
     (mkDerivationEquiv R).symm D = D X := rfl
 
 end CommSemiring
-
-section PullbackModule
-
-lemma eval₂_algebraMap_smul {R A} [CommSemiring R] [CommSemiring A] [Algebra R A] (r : R) (f : R[X])
-    (a : A) : (r • f).eval₂ (algebraMap R A) a = r • f.eval₂ (algebraMap R A) a := by
-  rw [eval₂_smul, Algebra.smul_def]
-
-/--
-Suppose `A` is an `R`-algebra.
-For an `A`-module `M` and an element `a : A`, `eval₂PullbackModule R M a`
-is the `R[X]`-module with carrier `M`, where the action of `X` if given by multiplication by `a`.
-More generally, the action of `f : R[X]` is given by `f • m = f(a) • m`.
--/
-def eval₂PullbackModule (R M: Type*) {A} [CommSemiring R] [CommSemiring A] [Algebra R A]
-    [AddCommMonoid M] [Module A M] := Function.const A M
-variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
-    [Module A M] [Module R M] [IsScalarTower R A M] (a : A)
-instance : AddCommMonoid <| eval₂PullbackModule R M a := by assumption
-instance : Module R[X] <| eval₂PullbackModule R M a :=
-  Module.compHom M <| eval₂RingHom (algebraMap R A) a
-instance : Module A <| eval₂PullbackModule R M a := by assumption
-instance : Module R <| eval₂PullbackModule R M a := by assumption
-instance : IsScalarTower R A <| eval₂PullbackModule R M a := by assumption
-
-lemma eval₂PullbackModule_smul_def (f : R[X]) (a : A) (m : eval₂PullbackModule R M a) :
-    f • m = (eval₂ (algebraMap R A) a f) • m := by rfl
-
-instance [IsScalarTower R A M] : IsScalarTower R R[X] <| eval₂PullbackModule R M a where
-  smul_assoc r f m := by
-    rw [eval₂PullbackModule_smul_def, eval₂PullbackModule_smul_def, eval₂_algebraMap_smul,
-      smul_assoc]
-
-lemma eval₂PullbackModule_def : eval₂PullbackModule R M a = M := rfl
-
-end PullbackModule
 end Polynomial
 
+namespace Module
+
+open Polynomial Module
+/--
+Suppose `a` is an element of an `R`-algebra `A` and `M` is an `A`-module.
+Then `compAeval R M a` is the `R[X]`-module with carrier `M`,
+where the action of `f : R[X]` is `f • m = (aeval a f) • m`.
+-/
+@[nolint unusedArguments] def compAeval (R M: Type*) {A : Type*} [CommSemiring R]
+    [Semiring A] [Algebra R A][AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] :=
+  Function.const A M
+variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
+  [Module R M] [IsScalarTower R A M]
+instance : AddCommMonoid <| compAeval R M a     := by assumption
+instance : Module R <| compAeval R M a          := by assumption
+instance : Module A <| compAeval R M a          := by assumption
+instance : IsScalarTower R A <| compAeval R M a := by assumption
+instance : Module R[X] <| compAeval R M a       := Module.compHom M <| (aeval a).toRingHom
+
+lemma compAeval_smul_def (f : R[X]) (a : A) (m : compAeval R M a) :
+    f • m = (aeval a f) • m := by rfl
+
+instance : IsScalarTower R R[X] <| compAeval R M a where
+  smul_assoc r f m := by rw [compAeval_smul_def, compAeval_smul_def, map_smul, smul_assoc]
+
+end Module
+
 namespace Derivation
+
 variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
   [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
-open Polynomial Function
+
+open Polynomial Module
 
 /--
-For a derivation `d : A → M` and an element `a : A`, `d.comp_eval₂ a` is the
-derivation `R[X] → M` which takes a polynomial `f` to `d (f a)`.
+For a derivation `d : A → M` and an element `a : A`, `d.compAeval a` is the
+derivation of `R[X]` which takes a polynomial `f` to `d(aeval a f)`.
 
-Here `M` is regarded as an `R[X]`-module, with the action of `f` defined
-by `f • m = f(a) • m`.
+This derivation takes values in `compAeval R M a`, which is `M`, regarded as an
+`R[X]`-module, with the action of `f` defined by `f • m = f(a) • m`.
 -/
-def comp_eval₂ : Derivation R R[X] <| eval₂PullbackModule R M a where
-  toFun            := d ∘ (eval₂RingHom (algebraMap R A) a)
-  map_add' _ _     := by dsimp; rw [eval₂_add, map_add]
-  map_smul' _ _    := by dsimp; rw [eval₂_algebraMap_smul, d.map_smul]
-  leibniz' _ _     := by
-    dsimp; rw [eval₂_mul, d.leibniz, eval₂PullbackModule_smul_def, eval₂PullbackModule_smul_def]
-  map_one_eq_zero' := by
-    rw [LinearMap.coe_mk, AddHom.coe_mk, comp_apply, coe_eval₂RingHom, eval₂_one, map_one_eq_zero]
+def compAeval : Derivation R R[X] <| compAeval R M a where
+  toFun            := d ∘ (aeval a)
+  map_add' _ _     := by dsimp; rw [map_add, map_add]
+  map_smul' _ _    := by dsimp; rw [SMulHomClass.map_smul, map_smul]
+  leibniz' _ _     := by dsimp; rw [map_mul, leibniz]; rfl
+  map_one_eq_zero' := by dsimp; rw [map_one, map_one_eq_zero]
 
-lemma comp_eval₂_def (d : Derivation R A M) (f : R[X]) :
-    d.comp_eval₂ a f = d (f.eval₂ (algebraMap R A) a) := by rfl
+lemma compAeval_apply (d : Derivation R A M) (f : R[X]) :
+    d.compAeval a f = d (aeval a f) := by rfl
 
 /--
   A form of the chain rule: if `f` is a polynomial over `R`
@@ -162,23 +154,19 @@ lemma comp_eval₂_def (d : Derivation R A M) (f : R[X]) :
 
   Here `M` is regarded as an `R[X]` module with the action of `X`
   given by `a • _`. For a statement involving only the `A`-module `M`,
-  use `comp_eval₂_eq` instead.
+  use `comp_aeval_eq` instead.
 -/
-lemma comp_eval₂_eq' (d : Derivation R A <| eval₂PullbackModule R M a) (f : R[X]) :
-    d.comp_eval₂ a f = f.derivative.eval₂ (algebraMap R A) a • d a := by
-  rw [←eval₂PullbackModule_smul_def, ←mkDerivation_apply]
-  congr
+lemma compAeval_eq (d : Derivation R A <| Module.compAeval R M a) (f : R[X]) :
+    d.compAeval a f = (aeval a (derivative' f)) • d a := by
+  rw [←compAeval_smul_def, ←mkDerivation_apply]
+  congr 1
   apply derivation_ext
-  rw [comp_eval₂_def, eval₂_X, mkDerivation_X (R := R)]
+  rw [compAeval_apply, aeval_X, mkDerivation_X (R := R)]
 
 /--
   A form of the chain rule: if `f` is a polynomial over `R`
   and `d : A → M` is an `R`-derivation then for all `a : A` we have
-
-    `d(f(a)) = f.derivative (a) * d a`.
+  $$ d(f(a)) = f' (a) d a. $$
 -/
-theorem comp_eval₂_eq (d : Derivation R A M) (f : R[X]) :
-    d (f.eval₂ (algebraMap R A) a) = f.derivative.eval₂ (algebraMap R A) a • d a :=
-  d.comp_eval₂_eq' a f
-
-end Derivation
+theorem comp_aeval_eq (d : Derivation R A M) (f : R[X]) :
+    d (aeval a f) = aeval a (derivative' f) • d a := d.compAeval_eq a f
