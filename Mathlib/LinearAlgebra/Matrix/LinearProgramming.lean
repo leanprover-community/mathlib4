@@ -78,9 +78,9 @@ def StandardLP.Permits {K V : Type} [LinearOrderedField K] [AddCommGroup V] [Mod
 structure SomeLP (K : Type*) {V : Type*} (P : Type*)
     [LinearOrderedField K] [AddCommGroup V] [Module K V] [AddTorsor V P] where
   /-- Equality constraints -/
-  eq : Finset (P →ᵃ[K] K)
+  eq : List (P →ᵃ[K] K)
   /-- Inequality constraints -/
-  le : Finset (P →ᵃ[K] K)
+  le : List (P →ᵃ[K] K)
   /-- The objective function -/
   obj : P →ᵃ[K] K
 
@@ -88,3 +88,11 @@ def SomeLP.Solutions {K V P : Type*}
     [LinearOrderedField K] [AddCommGroup V] [Module K V] [AddTorsor V P]
     (lp : SomeLP K P) : Set P :=
   { x : P | (∀ e ∈ lp.eq, e x = 0) ∧ (∀ i ∈ lp.le, 0 ≤ i x) }
+
+/-- Convert equality constraints to inequality constraints -/
+def SomeLP.removeEQs {K V P : Type*}
+    [LinearOrderedField K] [AddCommGroup V] [Module K V] [AddTorsor V P]
+    (lp : SomeLP K P) : SomeLP K P where
+  eq := []
+  le := lp.le ++ lp.eq ++ lp.eq.map Neg.neg
+  obj := lp.obj
