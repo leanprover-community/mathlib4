@@ -29,10 +29,12 @@ def powersetAux (l : List α) : List (Multiset α) :=
   l.foldr (fun a acc => acc >>= (fun x => [x, a ::ₘ x])) [0]
 #align multiset.powerset_aux Multiset.powersetAux
 
+-- The obvious implementation of powersetAux, namely (sublists l).map (↑),
+-- reduces poorly in the kernel due to `sublists`'s usage of Array.push
 theorem powersetAux_eq_map_coe {l : List α} : powersetAux l = (sublists l).map (↑) := by
-  induction l
-  · case nil => rfl
-  · case cons hd tl ih =>
+  induction l with
+  | nil => rfl
+  | cons hd tl ih =>
     have : List.map ofList (List.bind (sublists tl) fun x => [x, hd :: x]) =
         List.bind (List.map ofList (sublists tl)) fun x => [x, hd ::ₘ x] := by
       simp [List.bind_map, List.map_bind]
