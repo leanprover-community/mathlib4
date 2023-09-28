@@ -17,14 +17,19 @@ Derivation by a grammar is inherently nondeterministic.
 The type of symbols is the disjoint union of terminals `T` and nonterminals `N`.
 -/
 inductive Symbol (T : Type _) (N : Type _)
+  /-- Terminal symbols (of the same type as the language) -/
   | terminal    (t : T) : Symbol T N
+  /-- Nonterminal symbols (must not be present at the end of word being generated) -/
   | nonterminal (n : N) : Symbol T N
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
 structure ContextFreeGrammar (T : Type _) where
-  NT : Type _                            -- type of nonterminals
-  initial : NT                           -- initial nonterminal
-  rules : List (NT × List (Symbol T NT)) -- rewrite rules
+  /-- Type of nonterminals -/
+  NT : Type _
+  /-- Initial nonterminal -/
+  initial : NT
+  /-- Rewrite rules -/
+  rules : List (NT × List (Symbol T NT))
 
 namespace ContextFreeGrammar
 
