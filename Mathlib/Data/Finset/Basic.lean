@@ -2329,7 +2329,7 @@ theorem Nontrivial.sdiff_singleton_nonempty {c : α} {s : Finset α} (hS : s.Non
     (s \ {c}).Nonempty := by
   rw [Finset.sdiff_nonempty, Finset.subset_singleton_iff]
   push_neg
-  exact ⟨by rintro rfl; exact Finset.not_nontrivial_empty hS, Finset.Nontrivial.ne_singleton hS⟩
+  exact ⟨by rintro rfl; exact Finset.not_nontrivial_empty hS, hS.ne_singleton⟩
 
 theorem sdiff_sdiff_left' (s t u : Finset α) : (s \ t) \ u = s \ t ∩ (s \ u) :=
   _root_.sdiff_sdiff_left'
