@@ -46,9 +46,9 @@ variable (α : Type v) [MeasurableSpace α]
 structure Mean where
   /-- function giving the measure of a measurable subset-/
   measureOf : {S // MeasurableSet (α := α) S} → NNReal
-  /-- μ should be normalised  -/
+  /-- Set.univ has measure 1  -/
   measureOf_univ : measureOf ⟨Set.univ, MeasurableSet.univ⟩ = 1
-  /-- μ has to be finitely additive -/
+  /-- measureOf is finitely additive -/
   fin_add : ∀ (X Y : Set α),
       (hX : MeasurableSet X) → (hY: MeasurableSet Y) → Disjoint X Y
       → measureOf (⟨X ∪ Y, MeasurableSet.union hX hY⟩) = measureOf ⟨X, hX⟩ + measureOf ⟨Y, hY⟩
