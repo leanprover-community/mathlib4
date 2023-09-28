@@ -106,6 +106,11 @@ lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
 
 namespace PowerSeries
 
+lemma aeval_trunc_eq_sum_range {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    (s : S) (n) (f : R⟦X⟧) : aeval s (trunc n f) = ∑ i in range n, (coeff R i f) • s ^ i := by
+  simp_rw [aeval_def, Algebra.smul_def]
+  apply eval₂_trunc_eq_sum_range
+
 section CommutativeSemiring
 variable {R : Type*} [CommSemiring R]
 
