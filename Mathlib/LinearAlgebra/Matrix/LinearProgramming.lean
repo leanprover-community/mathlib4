@@ -84,5 +84,5 @@ structure SomeLP (K : Type*) {V : Type*} (P : Type*)
 
 def SomeLP.Solutions {K V P : Type*}
     [LinearOrderedField K] [AddCommGroup V] [Module K V] [AddTorsor V P]
-    (P : SomeLP K P) : Set V :=
-  { x : V | (∀ e ∈ P.eq, e x = 0) ∧ (∀ i ∈ P.le, 0 ≤ i x) }
+    (lp : SomeLP K P) : Set P :=
+  { x : P | (∀ e ∈ lp.eq, e x = 0) ∧ (∀ i ∈ lp.le, 0 ≤ i x) }
