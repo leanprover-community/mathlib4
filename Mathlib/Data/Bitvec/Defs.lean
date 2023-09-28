@@ -6,6 +6,7 @@ Authors: Wojciech Nawrocki, Joe Hendrix, Harun Khan, Abdalrhman M Mohamed
 
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Bitwise
+import Mathlib.Data.ZMod.Defs
 
 /-!
 # Basic operations on bitvectors
@@ -46,16 +47,8 @@ instance : Zero (BitVec w) := ⟨BitVec.zero w⟩
 
 /-!
 ## Arithmetic
-We inherit `Fin` implementations when fast but write mod/div
-ourselves to avoid the extra modulo operation.
+We inherit `Fin` implementations.
 -/
-/-- The mod of two bitvectors. -/
-protected def mod (x y : BitVec w) : BitVec w :=
-  ⟨x.val % y.val, Nat.lt_of_le_of_lt (Nat.mod_le _ _) x.isLt⟩
-
-/-- Dividing two bitvectors. -/
-protected def div (x y : BitVec w) : BitVec w :=
-  ⟨x.val / y.val, Nat.lt_of_le_of_lt (Nat.div_le_self _ _) x.isLt⟩
 
 /-- Less than for two bitvectors. -/
 protected def lt (x y : BitVec w) : Bool :=
@@ -65,12 +58,9 @@ protected def lt (x y : BitVec w) : Bool :=
 protected def le (x y : BitVec w) : Bool :=
   x.val ≤ y.val
 
-instance : Add (BitVec w) := inferInstanceAs (Add (Fin _))
-instance : Sub (BitVec w) := inferInstanceAs (Sub (Fin _))
-instance : Mul (BitVec w) := inferInstanceAs (Mul (Fin _))
-instance : Neg (BitVec w) := inferInstanceAs (Neg (Fin _))
-instance : Mod (BitVec w) := ⟨BitVec.mod⟩
-instance : Div (BitVec w) := ⟨BitVec.div⟩
+instance : Ring (BitVec w) := inferInstanceAs (Ring (Fin _))
+instance : Mod (BitVec w) := inferInstanceAs (Mod (Fin _))
+instance : Div (BitVec w) := inferInstanceAs (Div (Fin _))
 instance : LT (BitVec w)  := ⟨fun x y => BitVec.lt x y⟩
 instance : LE (BitVec w)  := ⟨fun x y => BitVec.le x y⟩
 
