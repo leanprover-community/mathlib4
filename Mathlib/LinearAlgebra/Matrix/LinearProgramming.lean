@@ -74,7 +74,7 @@ def StandardLP.Permits {K V : Type} [LinearOrderedField K] [AddCommGroup V] [Mod
 
 /-- Linear program in a more versatile form. -/
 structure SomeLP (K : Type*) {V : Type*} (P : Type*)
-    [LinearOrderedField K] [AddCommGroup V] [Module K V] [AddTorsor K P] where
+    [LinearOrderedField K] [AddCommGroup V] [Module K V] [AddTorsor V P] where
   /-- Equality constraints -/
   eq : Finset (P →ᵃ[K] K)
   /-- Inequality constraints -/
@@ -83,6 +83,6 @@ structure SomeLP (K : Type*) {V : Type*} (P : Type*)
   obj : P →ᵃ[K] K
 
 def SomeLP.Solutions (K : Type*) {V : Type*} (P : Type*)
-    [LinearOrderedField K] [AddCommGroup V] [Module K V] [AddTorsor K P]
-    (P : SomeLP K V P) : Set V :=
+    [LinearOrderedField K] [AddCommGroup V] [Module K V] [AddTorsor V P]
+    (P : SomeLP K P) : Set V :=
   { x : V | (∀ e ∈ P.eq, e x = 0) ∧ (∀ i ∈ P.le, 0 ≤ i x) }
