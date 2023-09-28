@@ -3,6 +3,8 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Sites.Coherent
 /-!
 
@@ -195,7 +197,7 @@ lemma extensive_regular_generate_coherent [Preregular C] [Extensive C] [Precoher
 
 section ExtensiveSheaves
 
-variable [Extensive C]
+variable [Extensive C] {C}
 
 /-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
 coproduct to the target. -/
@@ -225,7 +227,7 @@ open Opposite
 
 instance {α : Type} {Z : α → C} {X : C} {π : (a : α) → Z a ⟶ X} [Fintype α] :
     HasProduct fun (x : Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f }) ↦ (op x.1) :=
-  haveI := Finite.of_surjective _ (sigma_surjective π)
+  haveI := Finite.of_surjective _ (sigma_surjective.{v, u} π)
   inferInstance
 
 /-- The canonical map from `Equalizer.FirstObj` to a product indexed by `α` -/
