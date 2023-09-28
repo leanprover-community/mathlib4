@@ -281,10 +281,18 @@ def refl (M : Type*) [Mul M] : M ≃* M :=
 @[to_additive]
 instance : Inhabited (M ≃* M) := ⟨refl M⟩
 
+/-- An alias for `h.symm.map_mul`. Introduced to fix the issue in
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234183.20.60simps.60.20maximum.20recursion.20depth
+-/
+@[to_additive]
+lemma symm_map_mul {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) (x y : N) :
+    h.symm (x * y) = h.symm x * h.symm y :=
+  (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul x y
+
 /-- The inverse of an isomorphism is an isomorphism. -/
 @[to_additive (attr := symm) "The inverse of an isomorphism is an isomorphism."]
 def symm {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
-  ⟨h.toEquiv.symm, (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul⟩
+  ⟨h.toEquiv.symm, h.symm_map_mul⟩
 #align mul_equiv.symm MulEquiv.symm
 #align add_equiv.symm AddEquiv.symm
 
@@ -344,7 +352,7 @@ theorem symm_bijective : Function.Bijective (symm : M ≃* N → N ≃* M) :=
 -- because the signature of `MulEquiv.mk` has changed.
 @[to_additive (attr := simp)]
 theorem symm_mk (f : M ≃ N) (h) :
-    (MulEquiv.mk f h).symm = ⟨f.symm, (MulEquiv.mk f h).symm.map_mul'⟩ := rfl
+    (MulEquiv.mk f h).symm = ⟨f.symm, (MulEquiv.mk f h).symm_map_mul⟩ := rfl
 #align mul_equiv.symm_mk MulEquiv.symm_mkₓ
 #align add_equiv.symm_mk AddEquiv.symm_mkₓ
 

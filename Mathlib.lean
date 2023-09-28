@@ -2114,6 +2114,7 @@ import Mathlib.GroupTheory.Submonoid.Center
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Submonoid.Inverses
 import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.GroupTheory.Submonoid.MulOpposite
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.GroupTheory.Submonoid.Pointwise
 import Mathlib.GroupTheory.Submonoid.ZeroDivisors
@@ -2471,6 +2472,7 @@ import Mathlib.MeasureTheory.Group.Pointwise
 import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.CircleTransform
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
@@ -2527,6 +2529,7 @@ import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Sub
+import Mathlib.MeasureTheory.Measure.Trim
 import Mathlib.MeasureTheory.Measure.VectorMeasure
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.PiSystem
@@ -2643,6 +2646,7 @@ import Mathlib.Order.Atoms
 import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
+import Mathlib.Order.Booleanisation
 import Mathlib.Order.Bounded
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
