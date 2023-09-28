@@ -79,10 +79,10 @@ jump over `j` (i.e. an anti-collision). Then this leads to a contradiction. -/
 theorem no_anticollision :
     ¬∃ (j k m : ℤ), k * r < j ∧ j + 1 ≤ (k + 1) * r ∧ m * s ≤ j ∧ j + 1 < (m + 1) * s := by
   intro ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩
-  have h₁₁ := (lt_div_iff hrs.pos).2 h₁₁
-  have h₁₂ := (div_le_iff hrs.pos).2 h₁₂
-  have h₂₁ := (le_div_iff hrs.symm.pos).2 h₂₁
-  have h₂₂ := (div_lt_iff hrs.symm.pos).2 h₂₂
+  replace h₁₁ := (lt_div_iff hrs.pos).2 h₁₁
+  replace h₁₂ := (div_le_iff hrs.pos).2 h₁₂
+  replace h₂₁ := (le_div_iff hrs.symm.pos).2 h₂₁
+  replace h₂₂ := (div_lt_iff hrs.symm.pos).2 h₂₂
   have h₃ := add_lt_add_of_lt_of_le h₁₁ h₂₁
   have h₄ := add_lt_add_of_le_of_lt h₁₂ h₂₂
   simp_rw [← inv_mul_eq_div, ← right_distrib, inv_eq_one_div, hrs.inv_add_inv_conj,
@@ -142,8 +142,7 @@ than 1, and `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺'_s` partition the positive 
 theorem rayleigh_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     {beattySequence r k | k > 0} ∆ {beattySequence' s k | k > 0} = {n | 0 < n} := by
   apply Set.eq_of_subset_of_subset
-  · intro j hj
-    rcases Set.mem_of_mem_of_subset hj Set.symmDiff_subset_union with ⟨k, hk, hjk⟩ | ⟨k, hk, hjk⟩
+  · rintro j (⟨⟨k, hk, hjk⟩, -⟩ | ⟨⟨k, hk, hjk⟩, -⟩)
     · rw [Set.mem_setOf_eq, ← hjk, beattySequence, Int.floor_pos]
       exact one_le_mul_of_one_le_of_one_le (by norm_cast) hrs.one_lt.le
     · rw [Set.mem_setOf_eq, ← hjk, beattySequence', ← Int.ceil_sub_one, Int.ceil_pos, sub_pos]
@@ -166,25 +165,17 @@ theorem rayleigh_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     Set.not_mem_compl_iff, Set.mem_compl_iff, and_self, and_self]
   exact or_not
 
+/-- Let `r` be an irrational number. Then `B⁺_r` and `B⁺'_r` are equal. -/
+theorem irr_beattySequence_pos_eq {r : ℝ} (hr : Irrational r) :
+    {beattySequence r k | k > 0} = {beattySequence' r k | k > 0} := by
+  dsimp only [beattySequence, beattySequence']
+  congr! 4; rename_i k; rw [and_congr_right_iff]; intro hk; congr!
+  symm; rw [sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one, add_sub_cancel]
+  refine ⟨lt_of_le_of_ne (Int.floor_le _) fun h ↦ ?_, (Int.lt_floor_add_one _).le⟩
+  exact Irrational.ne_int (hr.int_mul hk.ne') ⌊k * r⌋ h.symm
+
 /-- Rayleigh's theorem on Beatty sequences. Let `r` be an irrational number greater than 1, and
 `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺_s` partition the positive integers. -/
 theorem rayleigh_irr_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) (hr : Irrational r) :
     {beattySequence r k | k > 0} ∆ {beattySequence s k | k > 0} = {n | 0 < n} := by
-  apply Set.eq_of_subset_of_subset
-  · intro j hj
-    rcases Set.mem_of_mem_of_subset hj Set.symmDiff_subset_union with
-      ⟨k, hk, hjk⟩ | ⟨k, hk, hjk⟩ <;>
-      rw [Set.mem_setOf_eq, ← hjk, beattySequence, Int.floor_pos] <;>
-      apply one_le_mul_of_one_le_of_one_le (by norm_cast) <;>
-      [exact hrs.one_lt.le; exact hrs.symm.one_lt.le]
-  intro j hj
-  have hs : Irrational s := by
-    convert ((hr.sub_int 1).int_div one_ne_zero).int_add 1
-    rw [Int.cast_one, add_div' _ _ _ hrs.sub_one_ne_zero, one_mul, sub_add_cancel, hrs.conj_eq]
-  have hb : {beattySequence s k | k > 0} = {beattySequence' s k | k > 0} := by
-    dsimp only [beattySequence, beattySequence']
-    congr! 4; rename_i k; rw [and_congr_right_iff]; intro hk; congr!
-    symm; rw [sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one, add_sub_cancel]
-    refine ⟨lt_of_le_of_ne (Int.floor_le _) fun h ↦ ?_, (Int.lt_floor_add_one _).le⟩
-    exact Irrational.ne_int (hs.int_mul hk.ne') ⌊k * s⌋ h.symm
-  rwa [hb, rayleigh_pos hrs]
+  rw [symmDiff_comm, irr_beattySequence_pos_eq hr, rayleigh_pos hrs.symm]
