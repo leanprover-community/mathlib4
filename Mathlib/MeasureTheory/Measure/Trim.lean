@@ -8,9 +8,6 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 /-!
 # Restriction of a measure to a sub-σ-algebra
 
-It is common to see a measure `μ` on a measurable space structure `m0` as being also a measure on
-any `m ≤ m0`. Since measures in mathlib have to be trimmed to the measurable space, `μ` itself
-cannot be a measure on `m`, hence the definition of `μ.trim hm`.
 
 ## Main definitions
 
