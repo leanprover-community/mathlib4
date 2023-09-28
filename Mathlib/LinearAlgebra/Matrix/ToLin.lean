@@ -617,6 +617,7 @@ theorem LinearMap.toMatrix_id : LinearMap.toMatrix v₁ v₁ id = 1 := by
   simp [LinearMap.toMatrix_apply, Matrix.one_apply, Finsupp.single_apply, eq_comm]
 #align linear_map.to_matrix_id LinearMap.toMatrix_id
 
+@[simp]
 theorem LinearMap.toMatrix_one : LinearMap.toMatrix v₁ v₁ 1 = 1 :=
   LinearMap.toMatrix_id v₁
 #align linear_map.to_matrix_one LinearMap.toMatrix_one
@@ -647,6 +648,11 @@ theorem LinearMap.toMatrix_mul (f g : M₁ →ₗ[R] M₁) :
     LinearMap.toMatrix v₁ v₁ (f * g) = LinearMap.toMatrix v₁ v₁ f * LinearMap.toMatrix v₁ v₁ g := by
   rw [LinearMap.mul_eq_comp, LinearMap.toMatrix_comp v₁ v₁ v₁ f g]
 #align linear_map.to_matrix_mul LinearMap.toMatrix_mul
+
+lemma LinearMap.toMatrix_pow (f : M₁ →ₗ[R] M₁) (k : ℕ) :
+    (toMatrix v₁ v₁ f) ^ k = toMatrix v₁ v₁ (f ^ k) := by
+  induction' k with k ih; simp
+  rw [pow_succ, pow_succ, ih, ← toMatrix_mul]
 
 @[simp]
 theorem LinearMap.toMatrix_algebraMap (x : R) :
@@ -959,7 +965,6 @@ is compatible with the algebra structures. -/
 def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R :=
   { LinearMap.toMatrix' with
     map_mul' := LinearMap.toMatrix'_comp
-    map_add' := LinearMap.toMatrix'.map_add
     -- porting note: golfed away messy failing proof
     commutes' := LinearMap.toMatrix'_algebraMap }
 #align alg_equiv_matrix' algEquivMatrix'
@@ -969,7 +974,6 @@ endomorphisms. -/
 def LinearEquiv.algConj (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃ₐ[R] Module.End R M₂ :=
   { e.conj with
     map_mul' := fun f g => by apply e.arrowCongr_comp
-    map_add' := e.conj.map_add
     commutes' := fun r => by
       change e.conj (r • LinearMap.id) = r • LinearMap.id
       rw [LinearEquiv.map_smul, LinearEquiv.conj_id] }

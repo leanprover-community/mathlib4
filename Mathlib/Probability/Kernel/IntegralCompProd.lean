@@ -238,7 +238,7 @@ theorem kernel.continuous_integral_integral :
   simp_rw [← kernel.lintegral_compProd _ _ _ (this _), ← L1.ofReal_norm_sub_eq_lintegral, ←
     ofReal_zero]
   refine' (continuous_ofReal.tendsto 0).comp _
-  rw [← tendsto_iff_norm_tendsto_zero]
+  rw [← tendsto_iff_norm_sub_tendsto_zero]
   exact tendsto_id
 #align probability_theory.kernel.continuous_integral_integral ProbabilityTheory.kernel.continuous_integral_integral
 

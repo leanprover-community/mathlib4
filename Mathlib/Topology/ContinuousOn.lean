@@ -955,6 +955,13 @@ theorem ContinuousWithinAt.preimage_mem_nhdsWithin' {f : α → β} {x : α} {s 
   h.tendsto_nhdsWithin (mapsTo_image _ _) ht
 #align continuous_within_at.preimage_mem_nhds_within' ContinuousWithinAt.preimage_mem_nhdsWithin'
 
+theorem ContinuousWithinAt.preimage_mem_nhdsWithin''
+    {f : α → β} {x : α} {y : β} {s t : Set β}
+    (h : ContinuousWithinAt f (f ⁻¹' s) x) (ht : t ∈ 𝓝[s] y) (hxy : y = f x) :
+    f ⁻¹' t ∈ 𝓝[f ⁻¹' s] x := by
+  rw [hxy] at ht
+  exact h.preimage_mem_nhdsWithin' (nhdsWithin_mono _ (image_preimage_subset f s) ht)
+
 theorem Filter.EventuallyEq.congr_continuousWithinAt {f g : α → β} {s : Set α} {x : α}
     (h : f =ᶠ[𝓝[s] x] g) (hx : f x = g x) : ContinuousWithinAt f s x ↔ ContinuousWithinAt g s x :=
   by rw [ContinuousWithinAt, hx, tendsto_congr' h, ContinuousWithinAt]

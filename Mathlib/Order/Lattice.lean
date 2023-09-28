@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Bool.Basic
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.ULift
 import Mathlib.Tactic.GCongr.Core
@@ -376,7 +376,7 @@ instance OrderDual.semilatticeInf (α) [SemilatticeSup α] : SemilatticeInf α�
   le_inf := fun _ _ _ hca hcb => @sup_le α _ _ _ _ hca hcb
 
 theorem SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
-  OrderDual.semilatticeSup αᵒᵈ = H :=
+    OrderDual.semilatticeSup αᵒᵈ = H :=
   SemilatticeSup.ext $ fun _ _ => Iff.rfl
 #align semilattice_sup.dual_dual SemilatticeSup.dual_dual
 
@@ -583,7 +583,7 @@ theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
 #align semilattice_inf.ext SemilatticeInf.ext
 
 theorem SemilatticeInf.dual_dual (α : Type*) [H : SemilatticeInf α] :
-  OrderDual.semilatticeInf αᵒᵈ = H :=
+    OrderDual.semilatticeInf αᵒᵈ = H :=
   SemilatticeInf.ext $ fun _ _ => Iff.rfl
 #align semilattice_inf.dual_dual SemilatticeInf.dual_dual
 

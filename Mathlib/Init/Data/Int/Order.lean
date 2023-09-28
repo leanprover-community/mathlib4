@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 import Mathlib.Init.Data.Int.Basic
 
 /-! # The order relation on the integers -/
