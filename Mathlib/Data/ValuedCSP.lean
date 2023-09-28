@@ -74,22 +74,7 @@ by
 
 -- Upside down !!
 instance crispCodomain : LinearOrderedAddCommMonoid Bool where
-  le := Bool.linearOrder.le
-  lt := Bool.linearOrder.lt
-  le_refl := Bool.linearOrder.le_refl
-  le_trans := Bool.linearOrder.le_trans
-  lt_iff_le_not_le := Bool.linearOrder.lt_iff_le_not_le
-  le_antisymm := Bool.linearOrder.le_antisymm
-  min := Bool.linearOrder.min
-  max := Bool.linearOrder.max
-  compare := Bool.linearOrder.compare
-  le_total := Bool.linearOrder.le_total
-  decidableLE := Bool.linearOrder.decidableLE
-  decidableEq := Bool.linearOrder.decidableEq
-  decidableLT := Bool.linearOrder.decidableLT
-  min_def := Bool.linearOrder.min_def
-  max_def := Bool.linearOrder.max_def
-  compare_eq_compareOfLessAndEq := Bool.linearOrder.compare_eq_compareOfLessAndEq
+  __ := Bool.linearOrder
   add (a b : Bool) := a || b
   add_assoc := Bool.or_assoc
   zero := false
