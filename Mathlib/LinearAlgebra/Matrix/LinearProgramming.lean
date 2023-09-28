@@ -19,6 +19,8 @@ TODO
 
 -/
 
+section canonical
+
 open Matrix
 
 /-- Linear program in the canonical form. -/
@@ -54,6 +56,8 @@ example : (@CanonicalLP.mk (Fin 2) (Fin 3) ℚ _ _ _
     | 1 =>
       rfl
   · simp [LE.le]
+
+end canonical
 
 
 /-- Linear program in the standard form. -/
