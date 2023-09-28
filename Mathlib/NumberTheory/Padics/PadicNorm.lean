@@ -308,6 +308,7 @@ theorem nat_lt_one_iff (m : ℕ) : padicNorm p m < 1 ↔ p ∣ m := by
 lemma _root_.Rat.isInt.eq_num {q : ℚ} (h : q.isInt) : q = q.num := by
   rw [Rat.isInt, Nat.beq_eq_true_eq] at h
   exact (Rat.coe_int_num_of_den_eq_one h).symm
+
 /-- If a rational is not a p-adic integer, it is not an integer. -/
 theorem not_int_of_not_padic_int (p : ℕ) {a : ℚ} [hp : Fact (Nat.Prime p)]
     (H : 1 < padicNorm p a) : ¬ a.isInt := by
