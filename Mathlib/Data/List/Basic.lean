@@ -2069,6 +2069,9 @@ theorem tail_drop (l : List α) (n : ℕ) : (l.drop n).tail = l.drop (n + 1) := 
     · simp [hl]
 #align list.tail_drop List.tail_drop
 
+theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
+  induction' l <;> simp
+
 theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 := by
   induction' l with hd tl hl
