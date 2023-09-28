@@ -97,12 +97,12 @@ theorem mulAux_of_tmul_of (i₁ j₁ i₂ j₂ : ℤ₂)
       (-1 : ℤˣ)^(j₁ * i₂)
         • (lof R _ 𝒜 _ (GMul.mul a₁ a₂) ⊗ₜ lof R _ ℬ _ (GMul.mul b₁ b₂)) := by
   rw [mulAux]
-  dsimp?
-  -- dsimp
-  -- rw [TensorProduct.directSum_lof_tmul_lof, TensorProduct.directSum_lof_tmul_lof,
-  --   mulAux1_lof_tmul_lof_tmul, ←LinearEquiv.coe_toLinearMap, map_smul_of_tower]
-  sorry
-#exit
+  dsimp only [TensorProduct.curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    TensorProduct.map_tmul, TensorProduct.lift.tmul]
+  rw [TensorProduct.directSum_lof_tmul_lof, TensorProduct.directSum_lof_tmul_lof,
+    mulAux1_lof_tmul_lof_tmul, Units.smul_def, zsmul_eq_smul_cast R, map_smul,
+    TensorProduct.directSum_symm_lof_tmul, ←zsmul_eq_smul_cast, ←Units.smul_def]
+
 theorem mulAux_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     mulAux R 𝒜 ℬ 1 x = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
@@ -111,7 +111,7 @@ theorem one_mulAux (x : ⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     mulAux R 𝒜 ℬ x 1 = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #exit
-theorem mulAux_assoc (x y z : ⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
+theorem mulAux_assoc (x y z : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     mulAux R (mulAux R x y) z = mulAux R x (mulAux R y z) := by
   let mA := mulAux R (𝒜 := 𝒜) (ℬ := ℬ)
     -- restate as an equality of morphisms so that we can use `ext`
