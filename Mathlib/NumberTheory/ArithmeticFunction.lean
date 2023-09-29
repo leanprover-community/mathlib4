@@ -93,7 +93,7 @@ theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := rfl
 
 @[simp]
 theorem coe_mk (f : ℕ → R) (hf) : @FunLike.coe (ArithmeticFunction R) _ _ _
-  (ZeroHom.mk f hf) = f := rfl
+    (ZeroHom.mk f hf) = f := rfl
 
 @[simp]
 theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
@@ -711,7 +711,7 @@ theorem pmul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicat
 #align nat.arithmetic_function.is_multiplicative.pmul Nat.ArithmeticFunction.IsMultiplicative.pmul
 
 theorem pdiv [CommGroupWithZero R] {f g : ArithmeticFunction R} (hf : IsMultiplicative f)
-  (hg : IsMultiplicative g) : IsMultiplicative (pdiv f g) :=
+    (hg : IsMultiplicative g) : IsMultiplicative (pdiv f g) :=
   ⟨ by simp [hf, hg], fun {m n} cop => by
     simp only [pdiv_apply, map_mul_of_coprime hf cop, map_mul_of_coprime hg cop,
       div_eq_mul_inv, mul_inv]

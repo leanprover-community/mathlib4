@@ -320,7 +320,7 @@ theorem subset_append_of_subset_right' (l l₁ l₂ : List α) : l ⊆ l₂ → 
 #align list.cons_subset List.cons_subset
 
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
-  (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
+    (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
   cons_subset.2 ⟨ainm, lsubm⟩
 #align list.cons_subset_of_subset_of_mem List.cons_subset_of_subset_of_mem
 

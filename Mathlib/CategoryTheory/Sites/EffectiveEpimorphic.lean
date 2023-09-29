@@ -106,8 +106,8 @@ def EffectiveEpi.getStruct {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : EffectiveE
 /-- Descend along an effective epi. -/
 noncomputable
 def EffectiveEpi.desc {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
-  (e : Y ⟶ W) (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e) :
-  X ⟶ W := (EffectiveEpi.getStruct f).desc e h
+    (e : Y ⟶ W) (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e) :
+    X ⟶ W := (EffectiveEpi.getStruct f).desc e h
 
 @[reassoc (attr := simp)]
 lemma EffectiveEpi.fac {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
