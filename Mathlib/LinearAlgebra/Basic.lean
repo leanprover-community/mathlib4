@@ -621,8 +621,8 @@ theorem map_toAddSubmonoid' (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M)
 
 @[simp]
 theorem _root_.AddMonoidHom.coe_toIntLinearMap_map {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
-    (f : A →+ A₂) (s : AddSubgroup A):
-    (AddSubgroup.toIntSubmodule  s).map f.toIntLinearMap =
+    (f : A →+ A₂) (s : AddSubgroup A) :
+    (AddSubgroup.toIntSubmodule s).map f.toIntLinearMap =
       AddSubgroup.toIntSubmodule (s.map f) := rfl
 
 @[simp]
@@ -720,8 +720,8 @@ theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f �
 
 @[simp]
 theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
-    (f : A →+ A₂) (s : AddSubgroup A₂):
-    (AddSubgroup.toIntSubmodule  s).comap f.toIntLinearMap =
+    (f : A →+ A₂) (s : AddSubgroup A₂) :
+    (AddSubgroup.toIntSubmodule s).comap f.toIntLinearMap =
       AddSubgroup.toIntSubmodule (s.comap f) := rfl
 
 @[simp]
