@@ -917,6 +917,24 @@ end Monoidal
 
 section
 
+variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+variable [Semiring B] [Algebra R B]
+variable [CommSemiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
+
+/-- If `A`, `B`, `C` are `R`-algebras, `A` and `C` are also `S`-algebras (forming a tower as
+`·/S/R`), then the product map of `f : A →ₐ[S] C` and `g : B →ₐ[R] C` is an `S`-algebra
+homomorphism.
+
+This is just a special case of `Algebra.TensorProduct.lift` for when `C` is commutative. -/
+abbrev productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
+  lift f g (fun _ _ => Commute.all _ _)
+#align algebra.tensor_product.product_left_alg_hom Algebra.TensorProduct.productLeftAlgHom
+
+end
+
+section
+
 variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
 
 variable [Algebra R A] [Algebra R B] [Algebra R S]
@@ -956,9 +974,10 @@ theorem lmul'_comp_includeRight : (lmul' R : _ →ₐ[R] S).comp includeRight = 
 /-- If `S` is commutative, for a pair of morphisms `f : A →ₐ[R] S`, `g : B →ₐ[R] S`,
 We obtain a map `A ⊗[R] B →ₐ[R] S` that commutes with `f`, `g` via `a ⊗ b ↦ f(a) * g(b)`.
 
-This is a special case of ` Algebra.TensorProduct.lift`
+This is a special case of `Algebra.TensorProduct.productLeftAlgHom` for when the two base rings are
+the same.
 -/
-def productMap : A ⊗[R] B →ₐ[R] S := lift f g (fun _ _ => Commute.all _ _)
+def productMap : A ⊗[R] B →ₐ[R] S := productLeftAlgHom f g
 #align algebra.tensor_product.product_map Algebra.TensorProduct.productMap
 
 theorem productMap_eq_comp_map : productMap f g = (lmul' R).comp (TensorProduct.map f g) := by
@@ -975,7 +994,7 @@ theorem productMap_left_apply (a : A) : productMap f g (a ⊗ₜ 1) = f a := by
 
 @[simp]
 theorem productMap_left : (productMap f g).comp includeLeft = f :=
-  lift_comp_includeLeft _ _ _
+  lift_comp_includeLeft _ _ (fun _ _ => Commute.all _ _)
 #align algebra.tensor_product.product_map_left Algebra.TensorProduct.productMap_left
 
 theorem productMap_right_apply (b : B) :
@@ -993,24 +1012,6 @@ theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
     ← AlgHom.comp_assoc, ← AlgHom.comp_assoc, lmul'_comp_includeLeft, lmul'_comp_includeRight,
     AlgHom.id_comp, AlgHom.id_comp]
 #align algebra.tensor_product.product_map_range Algebra.TensorProduct.productMap_range
-
-end
-
-section
-
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
-variable [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-variable [Semiring B] [Algebra R B]
-variable [CommSemiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
-
-/-- If `A`, `B`, `C` are `R`-algebras, `A` and `C` are also `S`-algebras (forming a tower as
-`·/S/R`), then the product map of `f : A →ₐ[S] C` and `g : B →ₐ[R] C` is an `S`-algebra
-homomorphism.
-
-This is just a special case of `Algebra.TensorProduct.lift`. -/
-abbrev productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
-  lift f g (fun _ _ => Commute.all _ _)
-#align algebra.tensor_product.product_left_alg_hom Algebra.TensorProduct.productLeftAlgHom
 
 end
 
