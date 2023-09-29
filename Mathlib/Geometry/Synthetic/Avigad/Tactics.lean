@@ -68,7 +68,7 @@ lemma tr312  : triangle a b c ↔ triangle c a b := by
 lemma tr321  : triangle a b c ↔ triangle c b a := by
   constructor; all_goals dsimp [triangle]; rw [col321]; tauto
 
-lemma ss21 {a b : Point} {L : Line}: sameside a b L ↔ sameside b a L := by
+lemma ss21 {a b : Point} {L : Line}: SameSide a b L ↔ SameSide b a L := by
   constructor; repeat exact sameside_symm
 
 lemma ds21 {a b : Point} {L : Line}: diffside a b L ↔ diffside b a L := by
@@ -240,7 +240,7 @@ macro_rules
       try conv in (occs := *) triangle _ _ _ => all_goals triangle_nf
       try conv in (occs := *) length _ _ => all_goals length_nf
       try conv in (occs := *) angle _ _ _ => all_goals angle_nf
-      try conv in (occs := *) sameside _ _ _ => all_goals sameside_nf
+      try conv in (occs := *) SameSide _ _ _ => all_goals sameside_nf
       try conv in (occs := *) diffside _ _ _ => all_goals diffside_nf
       try conv in (occs := *) para _ _ => all_goals para_nf
     ))
@@ -251,7 +251,7 @@ macro_rules
       try conv at $h in (occs := *) triangle _ _ _ => all_goals triangle_nf
       try conv at $h in (occs := *) length _ _ => all_goals length_nf
       try conv at $h in (occs := *) angle _ _ _ => all_goals angle_nf
-      try conv at $h in (occs := *) sameside _ _ _ => all_goals sameside_nf
+      try conv at $h in (occs := *) SameSide _ _ _ => all_goals sameside_nf
       try conv at $h in (occs := *) diffside _ _ _ => all_goals diffside_nf
       try conv at $h in (occs := *) para _ _ => all_goals para_nf
     ))
@@ -294,8 +294,8 @@ elab_rules: tactic
       evalTactic (← `(tactic| try conv in (occs := *) length _ _ => all_goals length_nf))
     else if perm_type == mkIdent `angle then
       evalTactic (← `(tactic| try conv in (occs := *) angle _ _ _ => all_goals angle_nf))
-    else if perm_type == mkIdent `sameside then
-      evalTactic (← `(tactic| try conv in (occs := *) sameside _ _ _ => all_goals sameside_nf))
+    else if perm_type == mkIdent `SameSide then
+      evalTactic (← `(tactic| try conv in (occs := *) SameSide _ _ _ => all_goals sameside_nf))
     else if perm_type == mkIdent `diffside then
       evalTactic (← `(tactic| try conv in (occs := *) diffside _ _ _ => all_goals diffside_nf))
     else if perm_type == mkIdent `para then
@@ -316,8 +316,8 @@ elab_rules: tactic
       evalTactic (← `(tactic| try conv at $h in (occs := *) length _ _ => all_goals length_nf))
     else if perm_type == mkIdent `angle then
       evalTactic (← `(tactic| try conv at $h in (occs := *) angle _ _ _ => all_goals angle_nf))
-    else if perm_type == mkIdent `sameside then
-      evalTactic (← `(tactic| try conv at $h in (occs := *) sameside _ _ _
+    else if perm_type == mkIdent `SameSide then
+      evalTactic (← `(tactic| try conv at $h in (occs := *) SameSide _ _ _
         => all_goals sameside_nf))
     else if perm_type == mkIdent `diffside then
       evalTactic (← `(tactic| try conv at $h in (occs := *) diffside _ _ _

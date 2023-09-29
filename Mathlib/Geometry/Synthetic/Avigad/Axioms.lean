@@ -24,23 +24,23 @@ class IncidenceGeometry :=
 (Circle : Type u)
 
 /--A Point being on a line-/
-(online : Point → Line → Prop)
+(OnLine : Point → Line → Prop)
 /--Two points being on the sameside of a line-/
-(sameside : Point → Point → Line → Prop)
+(SameSide : Point → Point → Line → Prop)
 /--Three points being in a row-/
 (B : Point → Point → Point → Prop)
 /--A point being the center of a center-/
-(center_circle : Point → Circle → Prop)
+(CenterCircle : Point → Circle → Prop)
 /--A point being on a circle-/
-(on_circle : Point → Circle → Prop)
+(OnCircle : Point → Circle → Prop)
 /--A point being inside a circle-/
-(in_circle : Point → Circle → Prop)
+(InCircle : Point → Circle → Prop)
 /--That two lines intersect-/
-(lines_inter : Line → Line → Prop)
+(LinesInter : Line → Line → Prop)
 /--A line and a circle intersect-/
-(line_circle_inter : Line → Circle → Prop)
+(LineCircleInter : Line → Circle → Prop)
 /--Two circles intersect-/
-(circles_inter : Circle → Circle → Prop)
+(CirclesInter : Circle → Circle → Prop)
 /--The distance between two points-/
 (length : Point → Point → ℝ)
 /--The angle made between three points-/
@@ -57,42 +57,39 @@ class IncidenceGeometry :=
 /--Extending a segment by an arbitrary amount-/
 (pt_extension_of_ne : ∀ {b c : Point}, b ≠ c → ∃ (a : Point), B b c a)
 /--Obtaining a point opposite a line and point-/
-(diffside_of_not_online : ∀ {L : Line}, ∀ {a : Point}, ¬online a L →
-    ∃ (b : Point), ¬online b L ∧ ¬sameside a b L)
+(diffside_of_not_online : ∀ {L : Line}, ∀ {a : Point}, ¬OnLine a L →
+  ∃ (b : Point), ¬OnLine b L ∧ ¬SameSide a b L)
 /--Get a line from two points-/
-(line_of_pts : ∀ (a b : Point), ∃ (L : Line), online a L ∧ online b L)
+(line_of_pts : ∀ (a b : Point), ∃ (L : Line), OnLine a L ∧ OnLine b L)
 /--Getting a circle with center and point on it-/
-(circle_of_ne : ∀ {a b : Point}, a ≠ b → ∃ (α : Circle), center_circle a α ∧ on_circle b α)
+(circle_of_ne : ∀ {a b : Point}, a ≠ b → ∃ (α : Circle), CenterCircle a α ∧ OnCircle b α)
 /--If lines intersect then this gives you the point of intersection-/
-(pt_of_lines_inter : ∀ {L M : Line}, lines_inter L M →
-  ∃ (a : Point), online a L ∧ online a M)
+(pt_of_linesinter : ∀ {L M : Line}, LinesInter L M → ∃ (a : Point), OnLine a L ∧ OnLine a M)
 /--Gives you the points of intersection when a circle and line intersect-/
-(pts_of_line_circle_inter : ∀ {L : Line}, ∀ {α : Circle}, line_circle_inter L α →
-  ∃ (a b : Point),  a ≠ b ∧ online a L ∧ online b L ∧ on_circle a α ∧ on_circle b α )
+(pts_of_linecircleinter : ∀ {L : Line}, ∀ {α : Circle}, LineCircleInter L α →
+  ∃ (a b : Point), a ≠ b ∧ OnLine a L ∧ OnLine b L ∧ OnCircle a α ∧ OnCircle b α)
 /--Getting points on circles-/
 (pt_on_circle_of_inside_outside : ∀ {b c : Point}, ∀ {α : Circle},
-  ¬on_circle c α → in_circle b α → ¬in_circle c α →
-  ∃ (a : Point), B b a c ∧ on_circle a α)
+  ¬OnCircle c α → InCircle b α → ¬InCircle c α → ∃ (a : Point), B b a c ∧ OnCircle a α)
 /--Getting points on circles-/
-(pt_oncircle_of_inside_ne : ∀ {a b : Point}, ∀ {α : Circle}, a ≠ b → in_circle b α →
-  ∃ (c : Point), B a b c ∧ on_circle c α)
+(pt_oncircle_of_inside_ne : ∀ {a b : Point}, ∀ {α : Circle}, a ≠ b → InCircle b α →
+  ∃ (c : Point), B a b c ∧ OnCircle c α)
 /--Getting points of intersection of two circles-/
-(pts_of_circles_inter : ∀ {α β : Circle}, circles_inter α β →
-  ∃ (a b : Point), a ≠ b ∧ on_circle a α ∧ on_circle a β ∧ on_circle b α ∧ on_circle b β)
+(pts_of_circlesinter : ∀ {α β : Circle}, CirclesInter α β →
+  ∃ (a b : Point), a ≠ b ∧ OnCircle a α ∧ OnCircle a β ∧ OnCircle b α ∧ OnCircle b β)
 /--Obtaining a specific point of intersection between a line and a circle-/
-(pt_sameside_of_circles_inter : ∀ {b c d : Point}, ∀ {L : Line}, ∀ {α β : Circle},
-  online c L → online d L → ¬online b L  → center_circle c α → center_circle d β → circles_inter α β
-  → ∃ (a : Point), sameside a b L ∧ on_circle a α ∧  on_circle a β)
+(pt_sameside_of_circlesinter : ∀ {b c d : Point}, ∀ {L : Line}, ∀ {α β : Circle},
+  OnLine c L → OnLine d L → ¬OnLine b L  → CenterCircle c α → CenterCircle d β → CirclesInter α β
+  → ∃ (a : Point), SameSide a b L ∧ OnCircle a α ∧  OnCircle a β)
 /--Condition to remark that two points uniquely determine a line-/
-(line_unique_of_pts : ∀ {a b : Point}, ∀ {L M : Line}, a ≠ b → online a L → online b L →
-  online a M → online b M → L = M)
+(line_unique_of_pts : ∀ {a b : Point}, ∀ {L M : Line}, a ≠ b → OnLine a L → OnLine b L →
+  OnLine a M → OnLine b M → L = M)
 /--The center of a circle is unique-/
-(center_circle_unique : ∀ {a b : Point}, ∀ {α : Circle}, center_circle a α → center_circle b α →
-  a = b)
+(centercircle_unique : ∀ {a b : Point}, ∀ {α : Circle}, CenterCircle a α → CenterCircle b α → a = b)
 /--The center of a circle is inside the circle-/
-(inside_circle_of_center : ∀ {a : Point}, ∀ {α : Circle}, center_circle a α → in_circle a α)
+(inside_circle_of_center : ∀ {a : Point}, ∀ {α : Circle}, CenterCircle a α → InCircle a α)
 /--If a point is on a circle then it is not inside-/
-(not_on_circle_of_inside : ∀ {a : Point}, ∀ {α : Circle}, in_circle a α → ¬on_circle a α)
+(not_on_circle_of_inside : ∀ {a : Point}, ∀ {α : Circle}, InCircle a α → ¬OnCircle a α)
 /--Symmetry of Betweeness-/
 (B_symm : ∀ {a b c : Point}, B a b c → B c b a)
 /--B is strict-/
@@ -104,71 +101,69 @@ class IncidenceGeometry :=
 /--If you are between then the other configurations are impossible-/
 (not_B_of_B : ∀ {a b c : Point}, B a b c → ¬B b a c)
 /--From two points being on a line the B forces the third point-/
-(online_3_of_B : ∀ {a b c : Point}, ∀ {L : Line}, B a b c → online a L → online b L → online c L)
+(online_3_of_B : ∀ {a b c : Point}, ∀ {L : Line}, B a b c → OnLine a L → OnLine b L → OnLine c L)
 /--From two points being on a line the B forces the third point-/
-(online_2_of_B : ∀ {a b c : Point}, ∀ {L : Line}, B a b c → online a L → online c L → online b L)
+(online_2_of_B : ∀ {a b c : Point}, ∀ {L : Line}, B a b c → OnLine a L → OnLine c L → OnLine b L)
 /--Deducing betweeness from four points on a line-/
 (B124_of_B134_B123 : ∀ {a b c d : Point}, B a b c → B a d b → B a d c)
 /--Deducing betweeness from four points on a line-/
 (B124_of_B123_B234 : ∀ {a b c d : Point}, B a b c → B b c d → B a b d)
 /--If three distict points are on a line then they are between in some way-/
-(B_of_three_online_ne : ∀ {a b c : Point}, ∀ {L : Line}, a ≠ b → a ≠ c → b ≠ c → online a L →
-  online b L → online c L →  B a b c ∨ B b a c ∨ B a c b)
+(B_of_three_online_ne : ∀ {a b c : Point}, ∀ {L : Line}, a ≠ b → a ≠ c → b ≠ c → OnLine a L →
+  OnLine b L → OnLine c L →  B a b c ∨ B b a c ∨ B a c b)
 /--Conditions for not B given four points on a line-/
 (not_B324_of_B123_B124 : ∀ {a b c d : Point}, B a b c → B a b d → ¬B c b d)
 /--Sameside is reflective-/
-(sameside_rfl_of_not_online : ∀ {a : Point}, ∀ {L : Line}, ¬online a L → sameside a a L)
+(sameside_rfl_of_not_online : ∀ {a : Point}, ∀ {L : Line}, ¬OnLine a L → SameSide a a L)
 /--Sameside is symmetric-/
-(sameside_symm : ∀ {a b : Point}, ∀ {L : Line}, sameside a b L → sameside b a L)
+(sameside_symm : ∀ {a b : Point}, ∀ {L : Line}, SameSide a b L → SameSide b a L)
 /--Being on the sameside of a line implies you are not on the line-/
-(not_online_of_sameside : ∀ {a b : Point}, ∀ {L : Line}, sameside a b L → ¬online a L)
+(not_online_of_sameside : ∀ {a b : Point}, ∀ {L : Line}, SameSide a b L → ¬OnLine a L)
 /--Sameside is transitive-/
-(sameside_trans : ∀ {a b c : Point}, ∀ {L : Line}, sameside a b L → sameside a c L →
-  sameside b c L)
+(sameside_trans : ∀ {a b c : Point}, ∀ {L : Line}, SameSide a b L → SameSide a c L → SameSide b c L)
 /--If you are not on a line and two points are on opposite sides then you are on the same side as
 one of the points-/
-(sameside_or_of_diffside : ∀ {a b c : Point}, ∀ {L : Line}, ¬online a L → ¬online b L →
-  ¬online c L → ¬sameside a b L → sameside a c L ∨ sameside b c L)
+(sameside_or_of_diffside : ∀ {a b c : Point}, ∀ {L : Line}, ¬OnLine a L → ¬OnLine b L →
+  ¬OnLine c L → ¬SameSide a b L → SameSide a c L ∨ SameSide b c L)
 /--Relations between sidedness and betweeness-/
-(sameside12_of_B123_sameside13 : ∀ {a b c : Point}, ∀ {L : Line}, B a b c → sameside a c L →
-  sameside a b L)
+(sameside12_of_B123_sameside13 : ∀ {a b c : Point}, ∀ {L : Line}, B a b c → SameSide a c L →
+  SameSide a b L)
 /--Relations between sidedness and betweeness-/
-(sameside_of_B_not_online_2 : ∀ {a b c : Point}, ∀ {L : Line}, B a b c → online a L → ¬online b L
-  → sameside b c L)
+(sameside_of_B_not_online_2 : ∀ {a b c : Point}, ∀ {L : Line}, B a b c → OnLine a L → ¬OnLine b L
+  → SameSide b c L)
 /--Relations between sidedness and betweeness-/
-(not_sameside13_of_B123_online2 : ∀ {a b c : Point}, ∀ {L : Line}, B a b c → online b L →
-  ¬sameside a c L)
+(not_sameside13_of_B123_online2 : ∀ {a b c : Point}, ∀ {L : Line}, B a b c → OnLine b L →
+  ¬SameSide a c L)
 /--Relations between sidedness and betweeness-/
 (B_of_online_inter : ∀ {a b c : Point}, ∀ {L M : Line}, a ≠ b → b ≠ c → a ≠ c → L ≠ M →
-  online a L → online b L → online c L → online b M → ¬sameside a c M → B a b c)
+  OnLine a L → OnLine b L → OnLine c L → OnLine b M → ¬SameSide a c M → B a b c)
 /--Deducing sidedness from three lines intersecting-/
-(not_sameside_of_sameside_sameside : ∀ {a b c d : Point}, ∀ {L M N : Line}, online a L →
-  online a M → online a N → online b L → online c M → online d N → sameside c d L →
-  sameside b c N → ¬sameside b d M)
+(not_sameside_of_sameside_sameside : ∀ {a b c d : Point}, ∀ {L M N : Line}, OnLine a L → OnLine a M
+  → OnLine a N → OnLine b L → OnLine c M → OnLine d N → SameSide c d L → SameSide b c N →
+  ¬SameSide b d M)
 /--Deducing sidedness from three lines intersecting-/
-(sameside_of_sameside_not_sameside : ∀ {a b c d : Point}, ∀ {L M N : Line}, a≠ b → online a L →
-  online a M → online a N → online b L → online c M → online d N → ¬online d M → sameside c d L →
-  ¬sameside b d M → sameside b c N)
+(sameside_of_sameside_not_sameside : ∀ {a b c d : Point}, ∀ {L M N : Line}, a ≠ b → OnLine a L →
+  OnLine a M → OnLine a N → OnLine b L → OnLine c M → OnLine d N → ¬OnLine d M → SameSide c d L →
+  ¬SameSide b d M → SameSide b c N)
 /--Points of intersection of a line and circle-/
-(B_of_line_circle_inter : ∀ {a b c : Point}, ∀ {L : Line}, ∀ {α : Circle}, b ≠ c → online a L →
-  online b L → online c L → on_circle b α → on_circle c α → in_circle a α → B b a c)
+(B_of_linecircleinter : ∀ {a b c : Point}, ∀ {L : Line}, ∀ {α : Circle}, b ≠ c → OnLine a L →
+  OnLine b L → OnLine c L → OnCircle b α → OnCircle c α → InCircle a α → B b a c)
 /--The points of intersection of circles are on opposite sides the line that joins the centers-/
 (not_sameside_of_circle_inter : ∀ {a b c d : Point}, ∀ {L : Line}, ∀ {α β : Circle},  c ≠ d →
-  α ≠ β →  online a L → online b L  → on_circle c α → on_circle c β → on_circle d α →
-  on_circle d β → center_circle a α → center_circle b β → circles_inter α β → ¬sameside c d L)
+  α ≠ β →  OnLine a L → OnLine b L  → OnCircle c α → OnCircle c β → OnCircle d α →
+  OnCircle d β → CenterCircle a α → CenterCircle b β → CirclesInter α β → ¬SameSide c d L)
 /--Condition for lines intersecting-/
-(lines_inter_of_not_sameside : ∀ {a b : Point}, ∀ {L M : Line}, online a M → online b M →
-  ¬sameside a b L → lines_inter L M)
+(lines_inter_of_not_sameside : ∀ {a b : Point}, ∀ {L M : Line}, OnLine a M → OnLine b M →
+  ¬SameSide a b L → LinesInter L M)
 /--Condition for line circle intersection-/
-(line_circle_inter_of_not_sameside : ∀ {a b : Point}, ∀ {L : Line}, ∀ {α : Circle},
-  ¬sameside a b L → on_circle a α ∨ in_circle a α→ on_circle b α ∨ in_circle b α →
-  line_circle_inter L α)
+(linecircleinter_of_not_sameside : ∀ {a b : Point}, ∀ {L : Line}, ∀ {α : Circle}, ¬SameSide a b L →
+  OnCircle a α ∨ InCircle a α → OnCircle b α ∨ InCircle b α → LineCircleInter L α)
 /--Condition for line circle intersection-/
-(line_circle_inter_of_inside_online : ∀ {a : Point}, ∀ {L : Line}, ∀ {α : Circle}, online a L →
-  in_circle a α →  line_circle_inter L α)
+(linecircleinter_of_inside_online : ∀ {a : Point}, ∀ {L : Line}, ∀ {α : Circle}, OnLine a L →
+  InCircle a α → LineCircleInter L α)
 /--Condition for circle circle intersection-/
-(circles_inter_of_inside_on_circle : ∀ {a b : Point}, ∀ {α β : Circle}, on_circle b α →
-  on_circle a β → in_circle a α →  in_circle b β → circles_inter α β)
+(circlesinter_of_inside_on_circle : ∀ {a b : Point}, ∀ {α β : Circle}, OnCircle b α →
+  OnCircle a β → InCircle a α →  InCircle b β → CirclesInter α β)
 /--A length is zero iff the points are equal-/
 (length_eq_zero_iff : ∀ {a b : Point}, length a b = 0 ↔ a = b)
 /--Length is symmetric-/
@@ -191,35 +186,35 @@ one of the points-/
 /--Given betweeness the lengths of segments add as expected-/
 (length_sum_of_B : ∀ {a b c : Point}, B a b c → length a b + length b c = length a c)
 /--Points on a circle have the same distance from the radius-/
-(on_circle_iff_length_eq : ∀ {a b c : Point}, ∀ {α : Circle},  center_circle a α →
-  on_circle b α → (length a b = length a c ↔ on_circle c α))
+(on_circle_iff_length_eq : ∀ {a b c : Point}, ∀ {α : Circle}, CenterCircle a α → OnCircle b α →
+  (length a b = length a c ↔ OnCircle c α))
 /--A point on a circle has a greater distance from the center than a point inside the circle-/
-(in_circle_iff_length_lt : ∀ {a b c : Point}, ∀ {α : Circle}, center_circle a α → on_circle b α →
-  (length a c < length a b ↔ in_circle c α))
+(in_circle_iff_length_lt : ∀ {a b c : Point}, ∀ {α : Circle}, CenterCircle a α → OnCircle b α →
+  (length a c < length a b ↔ InCircle c α))
 /--One kind of degenerate angle is zero-/
-(angle_zero_iff_online : ∀ {a b c : Point}, ∀ {L : Line}, a ≠ b → a ≠ c → online a L →
-  online b L → (online c L ∧ ¬B b a c ↔ angle b a c = 0))
+(angle_zero_iff_online : ∀ {a b c : Point}, ∀ {L : Line}, a ≠ b → a ≠ c → OnLine a L → OnLine b L →
+  (OnLine c L ∧ ¬B b a c ↔ angle b a c = 0))
 /--Conditions for a split angle to add as expected-/
-(angle_add_iff_sameside : ∀ {a b c d : Point}, ∀ {L M : Line}, a ≠ b → a ≠ c → online a L →
-  online b L → online a M → online c M → ¬online d M → ¬online d L → L ≠ M →
-  (angle b a c = angle b a d + angle d a c ↔ sameside b d M ∧ sameside c d L))
+(angle_add_iff_sameside : ∀ {a b c d : Point}, ∀ {L M : Line}, a ≠ b → a ≠ c → OnLine a L →
+  OnLine b L → OnLine a M → OnLine c M → ¬OnLine d M → ¬OnLine d L → L ≠ M →
+  (angle b a c = angle b a d + angle d a c ↔ SameSide b d M ∧ SameSide c d L))
 /--Betweeness forces equal angles across the middle to be right angles-/
-(angle_eq_iff_rightangle : ∀ {a b c d : Point}, ∀ {L : Line}, online a L → online b L →
-  ¬online d L → B a c b → (angle a c d = angle d c b ↔ angle a c d = rightangle))
+(angle_eq_iff_rightangle : ∀ {a b c d : Point}, ∀ {L : Line}, OnLine a L → OnLine b L →
+  ¬OnLine d L → B a c b → (angle a c d = angle d c b ↔ angle a c d = rightangle))
 /--A condition to extend angles in a predictable way-/
 (angle_extension : ∀ {a b c a1 b1 c1 : Point}, ∀ {L M : Line}, b ≠ a → b1 ≠ a → c ≠ a → c1 ≠ a →
-  online a L → online b L → online b1 L → online a M → online c M → online c1 M →
+  OnLine a L → OnLine b L → OnLine b1 L → OnLine a M → OnLine c M → OnLine c1 M →
   ¬B b a b1 → ¬B c a c1 → angle b a c = angle b1 a1 c1)
 /--The unparallel postulate-/
-(unparallel_postulate : ∀ {a b c d : Point}, ∀ {L M N : Line}, b ≠ c → online a L → online b L →
-  online b M → online c M → online c N → online d N →  sameside a d M → angle a b c +
-  angle b c d < 2 * rightangle → ∃ (e : Point), online e L ∧ online e N ∧ sameside e a M)
+(unparallel_postulate : ∀ {a b c d : Point}, ∀ {L M N : Line}, b ≠ c → OnLine a L → OnLine b L →
+  OnLine b M → OnLine c M → OnLine c N → OnLine d N →  SameSide a d M → angle a b c +
+  angle b c d < 2 * rightangle → ∃ (e : Point), OnLine e L ∧ OnLine e N ∧ SameSide e a M)
 /--Areas of degenerate triangles equal zero-/
-(area_zero_iff_online : ∀ {a b c : Point}, ∀ {L : Line}, a ≠ b → online a L → online b L →
-  (area a b c = 0 ↔ online c L))
+(area_zero_iff_online : ∀ {a b c : Point}, ∀ {L : Line}, a ≠ b → OnLine a L → OnLine b L →
+  (area a b c = 0 ↔ OnLine c L))
 /--Areas adding on a triangle given a betweeness condition-/
-(area_add_iff_B : ∀ {a b c d : Point}, ∀ {L : Line}, a ≠ b → b ≠ c → c ≠ a → online a L →
-  online b L → online c L → ¬online d L → (B a b c ↔ area d a b + area d c b = area d a c))
+(area_add_iff_B : ∀ {a b c d : Point}, ∀ {L : Line}, a ≠ b → b ≠ c → c ≠ a → OnLine a L →
+  OnLine b L → OnLine c L → ¬OnLine d L → (B a b c ↔ area d a b + area d c b = area d a c))
 /--SAS is equivalent to SSS-/
 (SAS_iff_SSS : ∀ {a b c d e f : Point}, length a b = length d e → length a c = length d f →
   (angle b a c = angle e d f ↔ length b c = length e f))
@@ -228,11 +223,11 @@ variable [i : IncidenceGeometry]
 open IncidenceGeometry
 -------------------------------------------------- Definitions -----------------------------------
 /--Points being on different sides of a line-/
-def diffside (a b : Point) (L : Line) := ¬online a L ∧ ¬online b L ∧ ¬sameside a b L
+def diffside (a b : Point) (L : Line) := ¬OnLine a L ∧ ¬OnLine b L ∧ ¬SameSide a b L
 /--A point being outside a circle-/
-def out_circle (a : Point) (α : Circle) := ¬on_circle a α ∧ ¬in_circle a α
+def out_circle (a : Point) (α : Circle) := ¬OnCircle a α ∧ ¬InCircle a α
 /--Points being colinear-/
-def colinear (a b c : Point) := ∃ L : Line, online a L ∧ online b L ∧ online c L
+def colinear (a b c : Point) := ∃ L : Line, OnLine a L ∧ OnLine b L ∧ OnLine c L
 /--Definition of a triangle-/
 def triangle (a b c : Point) := ¬colinear a b c
 /--Definition of an equilateral triangle-/
@@ -241,10 +236,10 @@ def eq_tri (a b c : Point) := triangle a b c ∧ length a b = length a c ∧ len
 /--Definition of an isosoles triangle-/
 def iso_tri (a b c : Point) := triangle a b c ∧ length a b = length a c
 /--Definition of parallel-/
-def para (M N : Line) := ∀ e, ¬online e M ∨ ¬online e N
+def para (M N : Line) := ∀ e, ¬OnLine e M ∨ ¬OnLine e N
 /--Definition of parallelogram-/
-def paragram (a b c d : Point) (L M N O : Line) := online a L ∧ online b L ∧ online b M ∧
-    online c M ∧ online c N ∧ online d N ∧ online d O ∧ online a O ∧ para L N ∧ para M O
+def paragram (a b c d : Point) (L M N O : Line) := OnLine a L ∧ OnLine b L ∧ OnLine b M ∧
+    OnLine c M ∧ OnLine c N ∧ OnLine d N ∧ OnLine d O ∧ OnLine a O ∧ para L N ∧ para M O
 /--Definition of a square-/
 def square (a b c d : Point) := length a b = length b c ∧ length a b = length c d ∧
     length a b = length d a ∧ angle a b c = rightangle ∧ angle b c d = rightangle ∧
