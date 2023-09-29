@@ -52,7 +52,7 @@ namespace ContextFreeGrammar
 
 /-- One step of context-free transformation. -/
 def Produces (g : ContextFreeGrammar T) (u v : List (Symbol T g.NT)) : Prop :=
-  ∃ r ∈ g.rules, ContextFreeRule.RewritesTo r u v
+  ∃ r ∈ g.rules, r.RewritesTo u v
 
 /-- Any number of steps of context-free transformation. -/
 def Derives (g : ContextFreeGrammar T) : List (Symbol T g.NT) → List (Symbol T g.NT) → Prop :=
