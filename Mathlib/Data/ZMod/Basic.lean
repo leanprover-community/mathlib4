@@ -868,6 +868,10 @@ theorem val_eq_zero : ∀ {n : ℕ} (a : ZMod n), a.val = 0 ↔ a = 0
     exact Iff.rfl
 #align zmod.val_eq_zero ZMod.val_eq_zero
 
+theorem val_ne_zero {n : ℕ}  (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 := by
+  rw [not_iff_not]
+  apply val_eq_zero
+
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
   cases n
