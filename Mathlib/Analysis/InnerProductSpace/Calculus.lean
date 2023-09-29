@@ -262,9 +262,8 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → �
     by_cases hf1 : f 1 ≥ 0
     · use a', habU (Set.Ioo_subset_Ioo_right (le_of_lt hb0) ha'),
         ne_of_lt (Set.mem_Ioo.mp ha').right
-      rw [← mul_one a', ← smul_eq_mul, ContinuousLinearMap.map_smul, @smul_eq_mul _ _ _ (f 1),
+      rwa [← mul_one a', ← smul_eq_mul, ContinuousLinearMap.map_smul, @smul_eq_mul _ _ _ (f 1),
         ← mul_zero a', mul_le_mul_left_of_neg (Set.mem_Ioo.mp ha').right]
-      exact hf1
     · use b', habU (Set.Ioo_subset_Ioo_left (le_of_lt ha0) hb'), ne_of_gt (Set.mem_Ioo.mp hb').left
       push_neg at hf1
       rw [← mul_one b', ← smul_eq_mul, ContinuousLinearMap.map_smul, @smul_eq_mul _ _ _ (f 1),
