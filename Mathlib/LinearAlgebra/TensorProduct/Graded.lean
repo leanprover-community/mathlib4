@@ -192,6 +192,7 @@ variable (R) in
 /-- A Type synonym for `A ⊗[R] B`, but with multiplication as `TensorProduct.gradedMul`.
 
 This has notation `𝒜 ⊗'[R] ℬ`. -/
+@[nolint unusedArguments]
 def SuperTensorProduct
     (𝒜 : ZMod 2 → Submodule R A) (ℬ : ZMod 2 → Submodule R B)
     [GradedAlgebra 𝒜] [GradedAlgebra ℬ] :
@@ -210,6 +211,7 @@ instance instAddCommGroupWithOne : AddCommGroupWithOne (𝒜 ⊗'[R] ℬ) :=
 instance : Module R (𝒜 ⊗'[R] ℬ) := TensorProduct.leftModule
 
 variable (R) in
+/-- The casting equivalence to move between regular and graded tensor products. -/
 def of : A ⊗[R] B ≃ₗ[R] 𝒜 ⊗'[R] ℬ := LinearEquiv.refl _ _
 
 @[simp]
@@ -218,18 +220,27 @@ theorem of_one : of R 𝒜 ℬ 1 = 1 := rfl
 @[simp]
 theorem of_symm_one : (of R 𝒜 ℬ).symm 1 = 1 := rfl
 
-@[simp] theorem of_symm_of (x : A ⊗[R] B) : (of R 𝒜 ℬ).symm (of R 𝒜 ℬ x) = x := rfl
-@[simp] theorem symm_of_of (x : 𝒜 ⊗'[R] ℬ) : of R 𝒜 ℬ ((of R 𝒜 ℬ).symm x) = x := rfl
+-- for dsimp
+@[simp, nolint simpNF]
+theorem of_symm_of (x : A ⊗[R] B) : (of R 𝒜 ℬ).symm (of R 𝒜 ℬ x) = x := rfl
+
+-- for dsimp
+@[simp, nolint simpNF]
+theorem symm_of_of (x : 𝒜 ⊗'[R] ℬ) : of R 𝒜 ℬ ((of R 𝒜 ℬ).symm x) = x := rfl
 
 variable (R) {𝒜 ℬ} in
+/-- The graded tensor product of two elements of graded rings. -/
 abbrev tmul (a : A) (b : B) := of R 𝒜 ℬ (a ⊗ₜ b)
 
+@[inherit_doc]
 notation:100 x " ⊗ₜ'" y:100 => tmul _ x y
+
+@[inherit_doc]
 notation:100 x " ⊗ₜ'[" R "] " y:100 => tmul R x y
 
-local notation "↥" P => { x // x ∈ P}
-
 variable (R) in
+/-- An auxiliary construction to move between the graded tensor product of internally-graded objects
+and the product of direct sums.-/
 noncomputable def auxEquiv : (𝒜 ⊗'[R] ℬ) ≃ₗ[R] (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i) :=
   let fA := (decomposeAlgEquiv 𝒜).toLinearEquiv
   let fB := (decomposeAlgEquiv ℬ).toLinearEquiv
