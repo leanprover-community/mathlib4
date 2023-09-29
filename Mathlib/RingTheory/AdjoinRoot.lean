@@ -630,7 +630,7 @@ theorem Minpoly.toAdjoin_apply' (a : AdjoinRoot (minpoly R x)) :
 
 theorem Minpoly.toAdjoin.apply_X :
     Minpoly.toAdjoin R x (mk (minpoly R x) X) = ⟨x, self_mem_adjoin_singleton R x⟩ := by
-    simp [toAdjoin]
+  simp [toAdjoin]
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.minpoly.to_adjoin.apply_X AdjoinRoot.Minpoly.toAdjoin.apply_X
 
