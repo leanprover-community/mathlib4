@@ -7,6 +7,8 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Instances.ENNReal
 
+
+
 #align_import analysis.normed.field.basic from "leanprover-community/mathlib"@"f06058e64b7e8397234455038f3f8aec83aaba5a"
 
 /-!
@@ -101,6 +103,13 @@ instance (priority := 100) NormedRing.toNonUnitalNormedRing [β : NormedRing α]
     NonUnitalNormedRing α :=
   { β with }
 #align normed_ring.to_non_unital_normed_ring NormedRing.toNonUnitalNormedRing
+
+/-- A nontrivially normed division is a normed division ring in which there is an element of norm different
+from `0` and `1`. This makes it possible to bring any element arbitrarily close to `0` by
+multiplication by the powers of any element, and thus to relate algebra and topology. -/
+class NontriviallyNormedDivisionRing (α : Type*) extends NormedDivisionRing α where
+  /-- The norm attains a value exceeding 1. -/
+  non_trivial : ∃ x : α, 1 < ‖x‖
 
 /-- A seminormed commutative ring is a commutative ring endowed with a seminorm which satisfies
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
@@ -696,6 +705,8 @@ instance (priority := 100) NormedField.toNormedDivisionRing : NormedDivisionRing
   { ‹NormedField α› with }
 #align normed_field.to_normed_division_ring NormedField.toNormedDivisionRing
 
+
+
 -- see Note [lower instance priority]
 instance (priority := 100) NormedField.toNormedCommRing : NormedCommRing α :=
   { ‹NormedField α› with norm_mul := fun a b => (norm_mul a b).le }
@@ -713,30 +724,39 @@ theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖₊ =
 
 end NormedField
 
-namespace NormedField
+
 
 section Nontrivially
 
 variable (α) [NontriviallyNormedField α]
 
+
+instance (priority := 100) NontriviallyNormedField.toNontriviallyNormedDivisionRing : NontriviallyNormedDivisionRing α :=
+  { NormedField.toNormedDivisionRing with 
+  non_trivial := ‹NontriviallyNormedField α›.non_trivial
+  }
+
+end Nontrivially 
+
+namespace NormedField
+
+section Nontrivially 
+variable (α) [NontriviallyNormedDivisionRing α]
+
 theorem exists_one_lt_norm : ∃ x : α, 1 < ‖x‖ :=
-  ‹NontriviallyNormedField α›.non_trivial
-#align normed_field.exists_one_lt_norm NormedField.exists_one_lt_norm
+  ‹NontriviallyNormedDivisionRing α›.non_trivial
 
 theorem exists_lt_norm (r : ℝ) : ∃ x : α, r < ‖x‖ :=
   let ⟨w, hw⟩ := exists_one_lt_norm α
   let ⟨n, hn⟩ := pow_unbounded_of_one_lt r hw
   ⟨w ^ n, by rwa [norm_pow]⟩
-#align normed_field.exists_lt_norm NormedField.exists_lt_norm
 
 theorem exists_norm_lt {r : ℝ} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < r :=
   let ⟨w, hw⟩ := exists_lt_norm α r⁻¹
   ⟨w⁻¹, by rwa [← Set.mem_Ioo, norm_inv, ← Set.mem_inv, Set.inv_Ioo_0_left hr]⟩
-#align normed_field.exists_norm_lt NormedField.exists_norm_lt
 
 theorem exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=
   exists_norm_lt α one_pos
-#align normed_field.exists_norm_lt_one NormedField.exists_norm_lt_one
 
 variable {α}
 
@@ -747,18 +767,20 @@ theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
   refine' ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, _⟩
   rwa [dist_comm, dist_eq_norm, add_sub_cancel']
-#align normed_field.punctured_nhds_ne_bot NormedField.punctured_nhds_neBot
 
 @[instance]
 theorem nhdsWithin_isUnit_neBot : NeBot (𝓝[{ x : α | IsUnit x }] 0) := by
   simpa only [isUnit_iff_ne_zero] using punctured_nhds_neBot (0 : α)
-#align normed_field.nhds_within_is_unit_ne_bot NormedField.nhdsWithin_isUnit_neBot
 
 end Nontrivially
+end NormedField
 
+namespace NormedField
 section Densely
 
 variable (α) [DenselyNormedField α]
+
+set_option align.precheck false
 
 theorem exists_lt_norm_lt {r₁ r₂ : ℝ} (h₀ : 0 ≤ r₁) (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖ ∧ ‖x‖ < r₂ :=
   DenselyNormedField.lt_norm_lt r₁ r₂ h₀ h

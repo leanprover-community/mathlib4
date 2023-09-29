@@ -63,9 +63,9 @@ instance [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] : FiniteDimension
 
 end Field
 
-section NormedField
+section NormedDivisionRing 
 
-variable {𝕜 : Type u} [hnorm : NontriviallyNormedField 𝕜] {E : Type v} [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 : Type u} [hnorm : NontriviallyNormedDivisionRing 𝕜] {E : Type v} [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E] {F : Type w} [AddCommGroup F]
   [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜 F] {F' : Type x}
   [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [TopologicalAddGroup F']
@@ -277,7 +277,21 @@ theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Fintype ι] (ξ : Ba
   ξ.equivFun.toLinearMap.continuous_of_finiteDimensional
 #align continuous_equiv_fun_basis continuous_equivFun_basis
 
+end NormedDivisionRing 
+
+
+
+section NormedField 
+
+
+variable {𝕜 : Type u} [hnorm : NontriviallyNormedField 𝕜] {E : Type v} [AddCommGroup E] [Module 𝕜 E]
+  [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E] {F : Type w} [AddCommGroup F]
+  [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜 F] {F' : Type x}
+  [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [TopologicalAddGroup F']
+  [ContinuousSMul 𝕜 F'] [CompleteSpace 𝕜]
+
 namespace LinearMap
+
 
 variable [T2Space E] [FiniteDimensional 𝕜 E]
 
@@ -327,6 +341,8 @@ theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
   rfl
 #align linear_map.range_to_continuous_linear_map LinearMap.range_toContinuousLinearMap
 
+
+
 /-- A surjective linear map `f` with finite dimensional codomain is an open map. -/
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f := by
@@ -346,7 +362,17 @@ instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F
 
 end LinearMap
 
-section
+end NormedField 
+
+section NormedDivisionRing 
+
+variable {𝕜 : Type u} [hnorm : NontriviallyNormedDivisionRing 𝕜] {E : Type v} [AddCommGroup E] [Module 𝕜 E]
+  [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E] {F : Type w} [AddCommGroup F]
+  [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜 F] {F' : Type x}
+  [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [TopologicalAddGroup F']
+  [ContinuousSMul 𝕜 F'] [CompleteSpace 𝕜]
+
+section 
 
 variable [T2Space E] [T2Space F] [FiniteDimensional 𝕜 E]
 
@@ -430,6 +456,16 @@ def ContinuousLinearEquiv.ofFinrankEq (cond : finrank 𝕜 E = finrank 𝕜 F) :
 
 end
 
+end NormedDivisionRing
+
+section NormedField
+
+variable {𝕜 : Type u} [hnorm : NontriviallyNormedField 𝕜] {E : Type v} [AddCommGroup E] [Module 𝕜 E]
+  [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E] {F : Type w} [AddCommGroup F]
+  [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜 F] {F' : Type x}
+  [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [TopologicalAddGroup F']
+  [ContinuousSMul 𝕜 F'] [CompleteSpace 𝕜]
+
 namespace Basis
 
 set_option linter.uppercaseLean3 false
@@ -509,7 +545,7 @@ end NormedField
 
 section UniformAddGroup
 
-variable (𝕜 E : Type _) [NontriviallyNormedField 𝕜]
+variable (𝕜 E : Type _) [NontriviallyNormedDivisionRing 𝕜]
   [CompleteSpace 𝕜] [AddCommGroup E] [UniformSpace E] [T2Space E] [UniformAddGroup E]
   [Module 𝕜 E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
 
