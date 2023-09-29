@@ -368,7 +368,7 @@ theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K)
 
 /-- The sequence is strictly decreasing at infinite places distinct from `w₁`. -/
 theorem seq_decreasing {n m : ℕ} (h : n < m) (w : InfinitePlace K) (hw : w ≠ w₁) :
-     w (seq K w₁ hB m) < w (seq K w₁ hB n) := by
+    w (seq K w₁ hB m) < w (seq K w₁ hB n) := by
   induction m with
   | zero =>
       exfalso
