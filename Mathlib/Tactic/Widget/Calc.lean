@@ -60,7 +60,7 @@ open Lean Meta
 
 /-- Return the link text and inserted text above and below of the calc widget. -/
 def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcParams) :
-    MetaM (String × String) := do
+    MetaM (String × String × Option (String.Pos × String.Pos)) := do
   let subexprPos := getGoalLocations pos
   let some (rel, lhs, rhs) ← Lean.Elab.Term.getCalcRelation? goalType |
       throwError "invalid 'calc' step, relation expected{indentExpr goalType}"
@@ -107,7 +107,8 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   | true, true => "Create two new steps"
   | true, false | false, true => "Create a new step"
   | false, false => "This should not happen"
-  return (stepInfo, toString insertedCode)
+  let pos : String.Pos := insertedCode.find (fun c => c == '?')
+  return (stepInfo, insertedCode, some (pos, ⟨pos.byteIdx + 2⟩) )
 
 /-- Rpc function for the calc widget. -/
 @[server_rpc_method]
@@ -139,3 +140,7 @@ elab_rules : tactic
     ProofWidgets.savePanelWidgetInfo proofTerm `CalcPanel (pure json)
     isFirst := false
   evalCalc (← `(tactic|calc%$calcstx $stx))
+
+example (a b c d : Nat) : a = d := by
+  calc a = ?_ := by sorry
+  _ = d := by sorry

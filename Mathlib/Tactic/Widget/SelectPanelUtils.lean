@@ -77,7 +77,8 @@ argument but that extraction would happen in every example, hence it is factored
 We also make sure `mkCmdStr` is executed in the right context.
  -/
 def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
-    (mkCmdStr : (pos : Array GoalsLocation) → (goalType : Expr) → Params → MetaM (String × String))
+  (mkCmdStr : (pos : Array GoalsLocation) → (goalType : Expr) → Params →
+   MetaM (String × String × Option (String.Pos × String.Pos)))
   (helpMsg : String) (title : String) (onlyGoal := true) (onlyOne := false) :
   (params : Params) → RequestM (RequestTask Html) :=
 fun params ↦ RequestM.asTask do
@@ -103,10 +104,11 @@ if h : 0 < (goals params).size then
       let md ← mainGoal.mvarId.getDecl
       let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
       Meta.withLCtx lctx md.localInstances do
-        let (linkText, newCode) ← mkCmdStr (selectedLocations params) md.type.consumeMData params
+        let (linkText, newCode, range?) ← mkCmdStr (selectedLocations params) md.type.consumeMData
+          params
         return .ofComponent
           MakeEditLink
-          (.ofReplaceRange doc.meta (replaceRange params) newCode)
+          (.ofReplaceRange' doc.meta (replaceRange params) newCode range?)
           #[ .text linkText ])
   return <details «open»={true}>
       <summary className="mv2 pointer">{.text title}</summary>
