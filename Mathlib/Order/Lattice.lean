@@ -798,7 +798,7 @@ theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y �
 #align le_of_inf_le_sup_le le_of_inf_le_sup_le
 
 theorem eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁ : b ⊓ a = c ⊓ a)
-  (h₂ : b ⊔ a = c ⊔ a) :
+    (h₂ : b ⊔ a = c ⊔ a) :
     b = c :=
   le_antisymm (le_of_inf_le_sup_le (le_of_eq h₁) (le_of_eq h₂))
     (le_of_inf_le_sup_le (le_of_eq h₁.symm) (le_of_eq h₂.symm))
