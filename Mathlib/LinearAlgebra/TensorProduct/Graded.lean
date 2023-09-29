@@ -124,32 +124,39 @@ theorem gradedMul_of_tmul_of (i₁ j₁ i₂ j₂ : ℤ₂)
     gradedMulAux_lof_tmul_lof_tmul, Units.smul_def, zsmul_eq_smul_cast R, map_smul,
     TensorProduct.directSum_symm_lof_tmul, ←zsmul_eq_smul_cast, ←Units.smul_def]
 
-theorem one_gradedMul (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
-    gradedMul R 𝒜 ℬ 1 x = x := by
-  suffices gradedMul R 𝒜 ℬ 1 = LinearMap.id by
+theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
+    gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) x = r • x := by
+  suffices gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) = DistribMulAction.toLinearMap R _ r by
     exact FunLike.congr_fun this x
   ext ia a ib b
-  dsimp only [LinearMap.coe_comp, Function.comp_apply, TensorProduct.AlgebraTensorModule.curry_apply,
-    TensorProduct.curry_apply, LinearMap.coe_restrictScalars, LinearMap.id_coe, id_eq]
-  rw [Algebra.TensorProduct.one_def]
+  dsimp
   erw [gradedMul_of_tmul_of]
   rw [zero_mul, z₂pow_zero, one_smul]
   simp_rw [DirectSum.lof_eq_of]
-  rw [←DirectSum.of_mul_of, ←DirectSum.of_mul_of]
-  erw [one_mul, one_mul]
+  rw [←DirectSum.of_mul_of, ←DirectSum.of_mul_of, smul_tmul']
+  erw [one_mul, _root_.Algebra.smul_def]
+  rfl
 
-theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
-    gradedMul R 𝒜 ℬ x 1 = x := by
-  suffices (gradedMul R 𝒜 ℬ).flip 1 = LinearMap.id by
+theorem one_gradedMul (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
+    gradedMul R 𝒜 ℬ 1 x = x := by
+  simpa only [_root_.map_one, one_smul] using algebraMap_gradedMul 𝒜 ℬ 1 x
+
+theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R) :
+    gradedMul R 𝒜 ℬ x (algebraMap R _ r ⊗ₜ 1) = r • x := by
+  suffices (gradedMul R 𝒜 ℬ).flip (algebraMap R _ r ⊗ₜ 1) = DistribMulAction.toLinearMap R _ r by
     exact FunLike.congr_fun this x
   ext
   dsimp
-  rw [Algebra.TensorProduct.one_def]
   erw [gradedMul_of_tmul_of]
   rw [mul_zero, z₂pow_zero, one_smul]
   simp_rw [DirectSum.lof_eq_of]
-  rw [←DirectSum.of_mul_of, ←DirectSum.of_mul_of]
-  erw [mul_one, mul_one]
+  rw [←DirectSum.of_mul_of, ←DirectSum.of_mul_of, smul_tmul']
+  erw [mul_one, _root_.Algebra.smul_def, Algebra.commutes]
+  rfl
+
+theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
+    gradedMul R 𝒜 ℬ x 1 = x := by
+  simpa only [_root_.map_one, one_smul] using gradedMul_algebraMap 𝒜 ℬ x 1
 
 theorem gradedMul_assoc (x y z : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
@@ -228,11 +235,12 @@ noncomputable def auxEquiv : (𝒜 ⊗'[R] ℬ) ≃ₗ[R] (⨁ i, 𝒜 i) ⊗[R]
   let fB := (decomposeAlgEquiv ℬ).toLinearEquiv
   (of R 𝒜 ℬ).symm.trans (TensorProduct.congr fA fB)
 
+@[simp] theorem auxEquiv_tmul (a : A) (b : B) :
+    auxEquiv R 𝒜 ℬ (a ⊗ₜ' b : 𝒜 ⊗'[R] ℬ) = decompose 𝒜 a ⊗ₜ decompose ℬ b := rfl
+
 @[simp] theorem auxEquiv_one : auxEquiv R 𝒜 ℬ 1 = 1 := by
-  dsimp [auxEquiv]
-  simp_rw [Algebra.TensorProduct.one_def, congr_tmul]
-  dsimp [-decomposeAlgEquiv_apply]
-  rw [AlgEquiv.map_one, AlgEquiv.map_one]
+  rw [←of_one, Algebra.TensorProduct.one_def, auxEquiv_tmul 𝒜 ℬ, ←decomposeAlgEquiv_apply,
+    ←decomposeAlgEquiv_apply, AlgEquiv.map_one, AlgEquiv.map_one, Algebra.TensorProduct.one_def]
 
 /-- Auxiliary construction used to build the `Mul` instance and get distributivity of `+` and
 `\smul`. -/
@@ -318,10 +326,15 @@ noncomputable instance instAlgebra : Algebra R (𝒜 ⊗'[R] ℬ) where
   toRingHom := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
   commutes' r x := by
     dsimp
-    sorry
+    simp_rw [mul_def, mulHom_apply, auxEquiv_tmul]
+    rw [←decomposeAlgEquiv_apply, ←decomposeAlgEquiv_apply]
+    simp_rw [AlgEquiv.commutes, _root_.map_one, algebraMap_gradedMul, gradedMul_algebraMap]
   smul_def' r x := by
     dsimp
-    sorry
+    simp_rw [mul_def, mulHom_apply, auxEquiv_tmul]
+    rw [←decomposeAlgEquiv_apply, ←decomposeAlgEquiv_apply]
+    simp_rw [AlgEquiv.commutes, _root_.map_one, algebraMap_gradedMul, map_smul,
+      LinearEquiv.symm_apply_apply]
 
 end SuperTensorProduct
 
