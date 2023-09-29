@@ -95,6 +95,7 @@ def isoMk (e : ∀ i, X i ≅ Y i) : X ≅ Y where
 
 variable {X Y}
 
+-- this lemma is not an instance as it may create a loop with `isIso_apply_of_isIso`
 lemma isIso_of_isIso_apply (f : X ⟶ Y) [hf : ∀ i, IsIso (f i)] :
     IsIso f := by
   change IsIso (isoMk X Y (fun i => asIso (f i))).hom
@@ -110,7 +111,7 @@ lemma iso_inv_hom_id_apply (e : X ≅ Y) (i : β) :
     e.inv i ≫ e.hom i = 𝟙 _ :=
   congr_fun e.inv_hom_id i
 
-instance (f : X ⟶ Y) [IsIso f] (i : β) : IsIso (f i) := by
+instance isIso_apply_of_isIso (f : X ⟶ Y) [IsIso f] (i : β) : IsIso (f i) := by
   change IsIso ((eval i).map f)
   infer_instance
 
