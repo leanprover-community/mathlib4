@@ -88,6 +88,17 @@ noncomputable def ιTensorObj (i₁ i₂ i₁₂ : I) (h : i₁ + i₂ = i₁₂
 
 variable {X₁ X₂}
 
+noncomputable def descTensor {A : C} {j : I}
+    (f : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = j), X₁ i₁ ⊗ X₂ i₂ ⟶ A) :
+    tensorObj X₁ X₂ j ⟶ A :=
+  descMapObj _ _ (fun ⟨i₁, i₂⟩ hi => f i₁ i₂ hi)
+
+@[reassoc (attr := simp)]
+lemma ι_descTensor {A : C} (j : I) (f : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = j), X₁ i₁ ⊗ X₂ i₂ ⟶ A)
+    (i₁ i₂ : I) (hi : i₁ + i₂ = j) :
+    ιTensorObj X₁ X₂ i₁ i₂ j hi ≫ descTensor f = f i₁ i₂ hi := by
+  apply Cofan.IsColimit.fac
+
 @[ext]
 lemma tensorObj_ext {A : C} {j : I} (f g : tensorObj X₁ X₂ j ⟶ A)
     (h : ∀ (i₁ i₂ : I) (hi : i₁ + i₂ = j),
