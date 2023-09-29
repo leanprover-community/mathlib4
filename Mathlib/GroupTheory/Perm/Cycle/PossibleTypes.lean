@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.GroupTheory.Perm.Cycle.Concrete
--- import Mathlib.GroupTheory.Perm.Cycle.Type
 
 /-! # Possible cycle types of permutations
 
@@ -221,8 +220,7 @@ theorem Equiv.Perm.with_cycleType_nonempty_iff {m : Multiset ℕ} :
     obtain ⟨p, hp_length, hp_nodup, hp_disj⟩ := List.exists_pw_disjoint_with_card hc'
     use List.prod (List.map (fun l => List.formPerm l) p)
     simp only [Set.mem_setOf_eq]
-    have hp2 : ∀ x ∈ p, 2 ≤ x.length :=
-      by
+    have hp2 : ∀ x ∈ p, 2 ≤ x.length := by
       intro x hx
       apply h2c x.length
       rw [← Multiset.mem_toList, ← hp_length, List.mem_map]
