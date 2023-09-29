@@ -130,38 +130,6 @@ def CalcPanel.rpc := mkSelectionPanelRPC suggestSteps
 def CalcPanel : Component CalcParams :=
   mk_rpc_widget% CalcPanel.rpc
 
-namespace Lean.Elab.Term
-open Meta
-
-/-- Extract the first step of a calc block. This is a tiny improvement over
-`getCalcFirstStep` from core. -/
-def getCalcFirstStep' (step0 : TSyntax ``calcFirstStep) : TermElabM (TSyntax ``calcStep) :=
-  withRef step0 do
-  match step0  with
-  | `(calcFirstStep| $term:term) =>
-    `(calcStep| $term = _ := rfl)
-  | `(calcFirstStep| $term := $proof) =>
-    `(calcStep| $term := $proof)
-  | _ => throwUnsupportedSyntax
-
-/-- Extract calc steps. This is the same as `getCalcSteps` from core except it uses
-the improved `getCalcFirstStep'`.
-
-Beware this should be updated to track core once Mathlib gets
-https://github.com/leanprover/lean4/commit/3e755dc0e199b40367a8ec9a592a343108a71c5a
-(unless `getCalcFirstStep'` reaches core in between, in which both `getCalcFirstStep'` and
-`getCalcSteps'` will become erasable).
--/
-def getCalcSteps' (steps : TSyntax ``calcSteps) : TermElabM (Array (TSyntax ``calcStep)) :=
-  match steps with
-  | `(calcSteps| $step0:calcFirstStep $rest*) => do
-    let step0 ← getCalcFirstStep' step0
-    pure (#[step0] ++ rest)
-  | _ => unreachable!
-
-end Lean.Elab.Term
-
-
 namespace Lean.Elab.Tactic
 open Meta
 
@@ -173,7 +141,7 @@ elab_rules : tactic
   let some calcRange := (← getFileMap).rangeOfStx? calcstx | unreachable!
   let indent := calcRange.start.character
   let mut isFirst := true
-  for step in ← Lean.Elab.Term.getCalcSteps' steps do
+  for step in ← Lean.Elab.Term.getCalcSteps steps do
     let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
     let `(calcStep| $(_) := $proofTerm) := step | unreachable!
     let json := open scoped ProofWidgets.Json in json% {"replaceRange": $(replaceRange),
