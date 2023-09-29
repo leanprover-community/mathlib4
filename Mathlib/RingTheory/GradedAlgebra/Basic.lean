@@ -218,6 +218,16 @@ lemma decomposeAlgEquiv_apply (a : A) :
 lemma decomposeAlgEquiv_symm_apply (a : ⨁ i, 𝒜 i) :
     (decomposeAlgEquiv 𝒜).symm a = (decompose 𝒜).symm a := rfl
 
+@[simp]
+lemma decompose_algebraMap (r : R) :
+    decompose 𝒜 (algebraMap R A r) = algebraMap R (⨁ i, 𝒜 i) r :=
+  (decomposeAlgEquiv 𝒜).commutes r
+
+@[simp]
+lemma decompose_symm_algebraMap (r : R) :
+    (decompose 𝒜).symm (algebraMap R (⨁ i, 𝒜 i) r) = algebraMap R A r :=
+  (decomposeAlgEquiv 𝒜).symm.commutes r
+
 end DirectSum
 
 open DirectSum
