@@ -2335,6 +2335,12 @@ theorem sdiff_singleton_eq_self (ha : a ∉ s) : s \ {a} = s :=
   sdiff_eq_self_iff_disjoint.2 <| by simp [ha]
 #align finset.sdiff_singleton_eq_self Finset.sdiff_singleton_eq_self
 
+theorem Nontrivial.sdiff_singleton_nonempty {c : α} {s : Finset α} (hS : s.Nontrivial) :
+    (s \ {c}).Nonempty := by
+  rw [Finset.sdiff_nonempty, Finset.subset_singleton_iff]
+  push_neg
+  exact ⟨by rintro rfl; exact Finset.not_nontrivial_empty hS, hS.ne_singleton⟩
+
 theorem sdiff_sdiff_left' (s t u : Finset α) : (s \ t) \ u = s \ t ∩ (s \ u) :=
   _root_.sdiff_sdiff_left'
 #align finset.sdiff_sdiff_left' Finset.sdiff_sdiff_left'
@@ -3117,6 +3123,10 @@ theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then 
     rw [eq_comm]
   · simp
 #align finset.range_filter_eq Finset.range_filter_eq
+
+lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := by
+  rw [Finset.Nontrivial, Finset.coe_range]
+  exact ⟨0, zero_lt_one.trans hn, 1, hn, zero_ne_one⟩
 
 end Range
 
