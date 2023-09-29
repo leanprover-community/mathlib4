@@ -270,7 +270,7 @@ instance instProdNorm : Norm (WithLp p (α × β)) where
 variable {p α β}
 
 @[simp]
-theorem prod_norm_eq_card (f : WithLp 0 (α × β)) [DecidableEq α] [DecidableEq β] :
+theorem prod_norm_eq_card (f : WithLp 0 (α × β)) :
     ‖f‖ = (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1) := by
   convert if_pos rfl
 
