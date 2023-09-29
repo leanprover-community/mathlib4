@@ -1,6 +1,7 @@
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.CategoryTheory.GradedObject.Monoidal
 import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.HomologicalBicomplex
 import Mathlib.Algebra.GroupPower.NegOnePow
 
 open CategoryTheory Category Limits MonoidalCategory Preadditive
@@ -113,8 +114,11 @@ variable (s : c.TensorSigns)
 
 attribute [local simp] add_comp comp_add zsmul_comp comp_zsmul
 
--- this should be defined more generally uder the assumption [HasTensor K.toGradedObject L.toGradedObject]
--- so that one may introduce the tensor product on K^-
+
+-- this is ok, but these verifications should be part of a more general construction
+-- HomologicalComplex C₁ c ⥤ HomologicalComplex C₂ c' ⥤ HomologicalComplex C₃ c''
+-- for a bifunctor C₁ ⥤ C₂ ⥤ C₃`, some map `ι × ι' → ι''`, + conditions, + bunch of signs
+-- see Algebra.Homology.HomologicalBicomplex
 
 noncomputable def tensorObj (K L : HomologicalComplex C c) [HasTensor K L] :
     HomologicalComplex C c :=
