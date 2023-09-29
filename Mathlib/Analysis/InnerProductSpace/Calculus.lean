@@ -249,8 +249,8 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (fun x : ℝ ↦
   rw [DifferentiableAt]
   push_neg
   intro f
-  simp only [HasFDerivAt, HasFDerivAtFilter, abs_zero, sub_zero, Asymptotics.isLittleO_iff, norm_eq_abs, not_forall,
-    not_eventually, not_le, exists_prop]
+  simp only [HasFDerivAt, HasFDerivAtFilter, abs_zero, sub_zero,
+    Asymptotics.isLittleO_iff, norm_eq_abs, not_forall, not_eventually, not_le, exists_prop]
   use 2⁻¹
   use by norm_num
   rw [Filter.frequently_iff]
