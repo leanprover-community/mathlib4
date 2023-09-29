@@ -32,7 +32,8 @@ namespace Linarith
 
 /-! ### Preprocessing -/
 
-open Lean Elab Tactic Meta
+open Lean hiding Rat
+open Elab Tactic Meta
 open Qq
 
 /-- Processor that recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
@@ -114,26 +115,32 @@ partial def isNatProp (e : Expr) : Bool :=
   | (``Not, #[e]) => isNatProp e
   | _ => false
 
-/-- If `e` is of the form `((n : ℕ) : ℤ)`, `isNatIntCoe e` returns `n : ℕ`. -/
-def isNatIntCoe (e : Expr) : Option Expr :=
+
+/-- If `e` is of the form `((n : ℕ) : C)`, `isNatIntCoe e` returns `⟨n, C⟩`. -/
+def isNatCoe (e: Expr) : Option (Expr × Expr) :=
   match e.getAppFnArgs with
-  | (``Nat.cast, #[.const ``Int [], _, n]) => some n
+  | (``Nat.cast, #[target, _, n]) => some ⟨n, target⟩
   | _ => none
 
 /--
 `getNatComparisons e` returns a list of all subexpressions of `e` of the form `((t : ℕ) : ℤ)`.
 -/
-partial def getNatComparisons (e : Expr) : List Expr :=
-  match isNatIntCoe e with
-  | some n => [n]
+partial def getNatComparisons (e : Expr) : List (Expr × Expr) :=
+  match isNatCoe e with
+  | some x => [x]
   | none => match e.getAppFnArgs with
     | (``HAdd.hAdd, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
     | (``HMul.hMul, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
     | _ => []
 
-/-- If `e : ℕ`, returns a proof of `0 ≤ (e : ℤ)`. -/
-def mk_coe_nat_nonneg_prf (e : Expr) : MetaM Expr :=
-  mkAppM ``Int.coe_nat_nonneg #[e]
+/-- If `e : ℕ`, returns a proof of `0 ≤ (e : C)`. -/
+def mk_coe_nat_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
+  match p with
+  | ⟨e, target⟩ => try commitIfNoEx (mkAppM ``nat_cast_nonneg #[target, e])
+    catch e => do
+      trace[linarith] "Got exception when using cast {e.toMessageData}"
+      return none
+
 
 open Std
 
@@ -141,6 +148,11 @@ open Std
 -- We only define this so we can use `RBSet Expr`. Perhaps `HashSet` would be more appropriate?
 def Expr.compare (a b : Expr) : Ordering :=
   if Expr.lt a b then .lt else if a.equal b then .eq else .gt
+
+def compare_nat_casts (a b: Expr × Expr): Ordering :=
+  match Expr.compare a.fst b.fst with
+  | .eq => Expr.compare a.snd b.snd
+  | o => o
 
 /--
 If `h` is an equality or inequality between natural numbers,
@@ -166,12 +178,12 @@ def natToInt : GlobalBranchingPreprocessor where
           pure h
       else
         pure h
-    let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet Expr Expr.compare) h => do
+    let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet (Expr × Expr) compare_nat_casts) h => do
       try
         let (a, b) ← getRelSides (← inferType h)
         pure <| (es.insertList (getNatComparisons a)).insertList (getNatComparisons b)
       catch _ => pure es
-    pure [(g, ((← nonnegs.toList.mapM mk_coe_nat_nonneg_prf) ++ l : List Expr))]
+    pure [(g, ((← nonnegs.toList.filterMapM mk_coe_nat_nonneg_prf) ++ l : List Expr))]
 
 end natToInt
 
