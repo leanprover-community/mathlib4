@@ -176,8 +176,8 @@ def four_spaces_in_second_line(lines, path):
         if (not is_comment) and re.search(r"^(protected )?(def|lemma|theorem) (?!.*:=).*(where)?$",
                                           line):
             # Calculate the number of spaces before the first non-space character in the next line
-            if next_line and not next_line.startswith("#"):
-                stripped_next_line = next_line.lstrip()
+            stripped_next_line = next_line.lstrip()
+            if next_line and not (next_line.startswith("#") or stripped_next_line.startswith("--")):
                 num_spaces = len(next_line) - len(stripped_next_line)
                 # The match with "| " could potentially match with a different usage of the same
                 # symbol, e.g. some sort of norm. In that case a space is not necessary, so
