@@ -251,8 +251,7 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (fun x : ℝ ↦
   intro f
   simp only [HasFDerivAt, HasFDerivAtFilter, abs_zero, sub_zero,
     Asymptotics.isLittleO_iff, norm_eq_abs, not_forall, not_eventually, not_le, exists_prop]
-  use 2⁻¹
-  use by norm_num
+  use 2⁻¹, by norm_num
   rw [Filter.frequently_iff]
   intro U hU
   obtain ⟨ε, hε⟩ : ∃ ε ∈ U, ε ≠ 0 ∧ f ε ≤ 0 := by
