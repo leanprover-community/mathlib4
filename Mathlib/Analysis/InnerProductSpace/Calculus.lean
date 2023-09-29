@@ -245,7 +245,7 @@ theorem DifferentiableAt.norm (hf : DifferentiableAt ℝ f x) (h0 : f x ≠ 0) :
   ((contDiffAt_norm 𝕜 h0).differentiableAt le_rfl).comp x hf
 #align differentiable_at.norm DifferentiableAt.norm
 
-theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (fun x : ℝ ↦ abs x) 0 := by
+theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → ℝ) 0 := by
   rw [DifferentiableAt]
   push_neg
   intro f
