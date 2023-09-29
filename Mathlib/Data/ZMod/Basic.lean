@@ -618,10 +618,12 @@ theorem val_add {n : ℕ} [NeZero n] (a b : ZMod n) : (a + b).val = (a.val + b.v
   · apply Fin.val_add
 #align zmod.val_add ZMod.val_add
 
-theorem val_add_of_lt {n : ℕ} [NeZero n] {a b : ZMod n} (h : a.val + b.val < n) :
-    (a + b).val = a.val + b.val := by rw [ZMod.val_add, Nat.mod_eq_of_lt h]
+theorem val_add_of_lt {n : ℕ} {a b : ZMod n} (h : a.val + b.val < n) :
+    (a + b).val = a.val + b.val := by
+  have : NeZero n := by constructor; rintro rfl; simp at h
+  rw [ZMod.val_add, Nat.mod_eq_of_lt h]
 
-theorem val_add_val_of_le  {n : ℕ} [NeZero n] {a b : ZMod n} (h : n ≤ a.val + b.val) :
+theorem val_add_val_of_le {n : ℕ} [NeZero n] {a b : ZMod n} (h : n ≤ a.val + b.val) :
     a.val + b.val = (a + b).val + n := by
   rw [val_add, Nat.add_mod_add_of_le_add_mod, Nat.mod_eq_of_lt (val_lt _),
     Nat.mod_eq_of_lt (val_lt _)]
@@ -868,9 +870,8 @@ theorem val_eq_zero : ∀ {n : ℕ} (a : ZMod n), a.val = 0 ↔ a = 0
     exact Iff.rfl
 #align zmod.val_eq_zero ZMod.val_eq_zero
 
-theorem val_ne_zero {n : ℕ}  (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 := by
-  rw [not_iff_not]
-  apply val_eq_zero
+theorem val_ne_zero {n : ℕ}  (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
+  (val_eq_zero a).not
 
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
@@ -936,8 +937,9 @@ theorem val_sub {n : ℕ} [NeZero n] {a b : ZMod n} (h : b.val ≤ a.val) :
       add_comm, Nat.add_sub_assoc h, Nat.add_mod_left]
     apply Nat.mod_eq_of_lt (tsub_lt_of_lt (val_lt _))
 
-theorem val_cast_eq_val_of_lt {m n : ℕ} [nzm : NeZero m] [nzn : NeZero n] {a : ZMod m}
+theorem val_cast_eq_val_of_lt {m n : ℕ} [nzm : NeZero m] {a : ZMod m}
     (h : a.val < n) : (a.cast : ZMod n).val = a.val := by
+  have nzn : NeZero n := by constructor; rintro rfl; simp at h
   cases m with
   | zero => cases nzm; simp_all
   | succ m =>
