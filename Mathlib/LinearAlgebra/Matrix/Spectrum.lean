@@ -120,7 +120,7 @@ theorem transpose_eigenvectorMatrix_apply (i : n) :
 theorem xeigenvectorMatrixInv_apply (i : Fin (vn))(j : n) :
     hA.xeigenvectorMatrixInv i j = star (hA.xeigenvectorBasis i j) := by
   rw [xeigenvectorMatrixInv, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
-    OrthonormalBasis.repr_apply_apply, PiLp.basisFun_apply, PiLp.equiv_symm_single,
+    OrthonormalBasis.repr_apply_apply, PiLp.basisFun_apply,  WithLp.equiv_symm_single,
     EuclideanSpace.inner_single_right, one_mul, IsROrC.star_def]
 
 theorem eigenvectorMatrixInv_apply (i j : n) :
@@ -169,35 +169,22 @@ theorem spectral_theorem :
       OrthonormalBasis.repr_reindex, eigenvalues₀, PiLp.basisFun_apply, WithLp.equiv_symm_single]
 #align matrix.is_hermitian.spectral_theorem Matrix.IsHermitian.spectral_theorem
 
-variable (p : ENNReal)
-
-nonrec theorem xbasis_toMatrix_basisFun_mul (b : Basis (Fin (Fintype.card n)) 𝕜 (PiLp p fun _ : n => 𝕜))
-    (A : Matrix n n 𝕜) :
-    b.toMatrix (PiLp.basisFun _ _ _) * A =
-      Matrix.of fun i j => b.repr ((PiLp.equiv _ _).symm (Aᵀ j)) i := by sorry
-  -- have := basis_toMatrix_basisFun_mul (b.map (PiLp.linearEquiv _ 𝕜 _)) A
-  -- simp_rw [← PiLp.basisFun_map p, Basis.map_repr, LinearEquiv.trans_apply,
-  --   WithLp.linearEquiv_symm_apply, Basis.toMatrix_map, Function.comp, Basis.map_apply,
-  --   LinearEquiv.symm_apply_apply] at this
-  -- exact this
-
 theorem xspectral_theorem :
     hA.xeigenvectorMatrixInv * A = diagonal ((↑) ∘ hA.xeigenvalues) * hA.xeigenvectorMatrixInv := by
   rw [xeigenvectorMatrixInv]
-  rw [xbasis_toMatrix_basisFun_mul]
+  rw [PiLp.xbasis_toMatrix_basisFun_mul]
   ext i j
   have := isHermitian_iff_isSymmetric.1 hA
   convert this.xeigenvectorBasis_apply_self_apply finrank_euclideanSpace
     (EuclideanSpace.single j 1) i
   · dsimp only [EuclideanSpace.single, toEuclideanLin_piLp_equiv_symm, toLin'_apply,
       Matrix.of_apply, IsHermitian.xeigenvectorBasis]
-    simp_rw [mulVec_single, mul_one, OrthonormalBasis.coe_toBasis_repr_apply,
-      OrthonormalBasis.repr_reindex]
+    simp_rw [mulVec_single, OrthonormalBasis.coe_toBasis_repr_apply, mul_one]
     rfl
-
   · simp only [diagonal_mul, (· ∘ ·), xeigenvalues]
     rw [xeigenvectorBasis, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
-      PiLp.basisFun_apply, PiLp.equiv_symm_single]
+      PiLp.basisFun_apply]
+    rfl
 
 theorem eigenvalues_eq (i : n) :
     hA.eigenvalues i =
@@ -231,53 +218,6 @@ lemma xspectral_theorem' :
   simpa [ ← Matrix.mul_assoc, hA.xeigenvectorMatrix_mul_inv, Matrix.one_mul] using
     congr_arg (hA.xeigenvectorMatrix * ·) hA.xspectral_theorem
 
-
-/-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
-lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  conv_lhs => rw [hA.spectral_theorem']
-  have hE := isUnit_det_of_invertible (hA.eigenvectorMatrix)
-  have hiE := isUnit_det_of_invertible (hA.eigenvectorMatrixInv)
-  simp only [rank_mul_eq_right_of_isUnit_det hA.eigenvectorMatrix _ hE,
-    rank_mul_eq_left_of_isUnit_det hA.eigenvectorMatrixInv _ hiE,
-    rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
-
-/-- All the elements `· ≤ a` appear the start of a sorted tuple -/
-lemma sortingLemma {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
-    (h_sorted : Monotone f)
-    (j : Fin m) (h : j < Fintype.card {i // f i ≤ a}) :
-    f j ≤ a := by
-  contrapose! h
-  have := Fintype.card_subtype_compl (¬f · ≤ a)
-  simp_rw [not_not, not_le] at this
-  rw [this, Fintype.card_fin, tsub_le_iff_tsub_le, Fintype.card_subtype]
-  refine le_trans (by simp) (Finset.card_mono $ show Finset.Ici j ≤ _ from fun k hk ↦ ?_)
-  simp only [Finset.mem_Ici] at hk
-  exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, h.trans_le (h_sorted hk)⟩
-
-lemma xeigenvalues_zero_lt_size_sub_rank (j : Fin (Fintype.card n))
-    (hj : j < Fintype.card n - A.rank) :
-    hA.xeigenvalues j = 0 := by
-  -- unfold xeigenvalues LinearMap.IsSymmetric.xeigenvalues
-  have : hA.xeigenvalues j = 0 ↔ ‖ hA.xeigenvalues j‖ ≤ 0 := by
-    simp only [Real.norm_eq_abs, abs_nonpos_iff]
-  rw [this]
-  refine' sortingLemma (Fintype.card n) (fun j => ‖hA.xeigenvalues j‖) (0:ℝ) ?_ ?_ ?_
-  unfold xeigenvalues
-  by sorry
-
-
-
--- lemma xrank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.xeigenvalues).rank := by
-  -- conv_lhs => rw [hA.xspectral_theorem']
---   have hE := isUnit_det_of_invertible (hA.xeigenvectorMatrix)
---   have hiE := isUnit_det_of_invertible (hA.eigenvectorMatrixInv)
---   simp only [rank_mul_eq_right_of_isUnit_det hA.eigenvectorMatrix _ hE,
---     rank_mul_eq_left_of_isUnit_det hA.eigenvectorMatrixInv _ hiE,
---     rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
-
-/-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
-lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
-  rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
 
 end IsHermitian
 
