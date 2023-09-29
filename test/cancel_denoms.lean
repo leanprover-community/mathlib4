@@ -98,3 +98,14 @@ example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   rw [← h]
   ring
 end
+
+-- check that we can use cancel denoms on local free variables
+example {K : Type _} [Field K] : False := by
+  obtain ⟨ε, hε⟩ : ∃ ε : K, ε ≠ 0 := by
+    sorry
+  have a : 0 = 2⁻¹ * ε := sorry
+  cancel_denoms at a
+  suffices a : 0 = 2⁻¹ * ε by
+    sorry
+  cancel_denoms
+  sorry

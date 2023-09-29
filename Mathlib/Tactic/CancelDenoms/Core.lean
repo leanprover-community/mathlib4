@@ -295,7 +295,7 @@ def cancelDenominatorsAt (fvar : FVarId) : TacticM Unit := do
     return res.mvarId
 
 def cancelDenominatorsTarget : TacticM Unit := do
-  let (new, eqPrf) ← CancelDenoms.cancelDenominatorsInType (← getMainTarget)
+  let (new, eqPrf) ← withMainContext <| CancelDenoms.cancelDenominatorsInType (← getMainTarget)
   liftMetaTactic' fun g => g.replaceTargetEq new eqPrf
 
 def cancelDenominators (loc : Location) : TacticM Unit := do
