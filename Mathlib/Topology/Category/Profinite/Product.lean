@@ -14,7 +14,7 @@ Hausdorff spaces as a limit in `Profinite` indexed by `Finset ι`.
 ## Main definitions
 
 - `FinsetsToProfinite` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps `J` to
-  `C.proj J`, the restriction of `C` to `J`
+  the restriction of `C` to `J`
 - `FinsetsCone` is a cone on `FinsetsToProfinite` with cone point `C`
 
 ## Main results
@@ -29,6 +29,7 @@ Hausdorff spaces as a limit in `Profinite` indexed by `Finset ι`.
 
 universe u
 
+/-- "Precomposition" as a continuous map between dependent types. -/
 def precomp {ι ι' : Type*} {π : ι → Type*} [(i : ι) → TopologicalSpace (π i)]
   (φ : ι' → ι) : C((i : ι) → π i, (i : ι') → π (φ i)) := ⟨_, Pi.continuous_precomp' φ⟩
 
@@ -37,73 +38,62 @@ variable {ι : Type u} {X : ι → Type} [∀ i, TopologicalSpace (X i)]
 
 variable (J K L : ι → Prop)
 
-def Proj : ((i : ι) → X i) → ((i : {i // J i}) → X i.val) := precomp (Subtype.val (p := J))
+namespace FinsetFunctor
 
-/-- The image of `Proj π J` -/
-def Set.proj : Set ((i : {i : ι // J i}) → X i) := Proj J '' C
+/-- The object part of the functor `FinsetsToProfinite : (Finset ι)ᵒᵖ ⥤ Profinite`. -/
+def obj : Set ((i : {i : ι // J i}) → X i) := precomp (Subtype.val (p := J)) '' C
 
-/-- The restriction of `Proj π J` to a subset, mapping to its image. -/
-@[simps!]
-def ProjRestrict : C → C.proj J :=
-  Set.MapsTo.restrict (Proj J) _ _ (Set.mapsTo_image _ _)
+/-- The projection maps in the limit cone `FinsetsCone`. -/
+def π_app : C(C, FinsetFunctor.obj C J) :=
+  ⟨Set.MapsTo.restrict (precomp (Subtype.val (p := J))) _ _ (Set.mapsTo_image _ _),
+    Continuous.restrict _ (Pi.continuous_precomp' _)⟩
 
-@[simp]
-theorem continuous_projRestrict : Continuous (ProjRestrict C J) :=
-  Continuous.restrict _ (Pi.continuous_precomp' _)
+variable {J K L}
 
-theorem surjective_projRestrict :
-    Function.Surjective (ProjRestrict C J) := by
+/-- The morphism part of the functor `FinsetsToProfinite : (Finset ι)ᵒᵖ ⥤ Profinite`. -/
+def map (h : ∀ i, J i → K i) : C(obj C K, obj C J) :=
+  ⟨Set.MapsTo.restrict (precomp (Set.inclusion h)) _ _ (fun _ hx ↦ by
+    obtain ⟨y, hy⟩ := hx
+    rw [← hy.2]
+    refine ⟨y, hy.1, rfl⟩), Continuous.restrict _ (Pi.continuous_precomp' _)⟩
+
+theorem surjective_π_app :
+    Function.Surjective (π_app C J) := by
   intro x
   obtain ⟨y, hy⟩ := x.prop
   refine ⟨⟨y, hy.1⟩, ?_⟩
   exact Subtype.ext hy.2
 
-variable {J K L}
+theorem map_comp_π_app (h : ∀ i, J i → K i) :
+    map C h ∘ π_app C K = π_app C J := rfl
 
-def Projs (h : ∀ i, J i → K i) : ((i : {i // K i}) → X i) → ((i : {i // J i}) → X i.val) :=
-  precomp (Set.inclusion h)
-
-def ProjRestricts (h : ∀ i, J i → K i) : C.proj K → C.proj J :=
-  Set.MapsTo.restrict (Projs h) _ _ (fun _ hx ↦ by
-    obtain ⟨y, hy⟩ := hx
-    rw [← hy.2]
-    refine ⟨y, hy.1, rfl⟩)
-
-@[simp]
-theorem continuous_projRestricts (h : ∀ i, J i → K i) : Continuous (ProjRestricts C h) :=
-  Continuous.restrict _ (Pi.continuous_precomp' _)
-
-theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
-    ProjRestricts C h ∘ ProjRestrict C K = ProjRestrict C J := rfl
-
-section Profinite
+end FinsetFunctor
 
 variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)]
   {J K L : Finset ι} [∀ (J : Finset ι) i, Decidable (i ∈ J)]
   {C} (hC : IsCompact C)
 
-open CategoryTheory Limits Opposite
+open CategoryTheory Limits Opposite FinsetFunctor
 
 /-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
 noncomputable
-def FinsetsToProfinite :
-    (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
-  obj J := @Profinite.of (C.proj (· ∈ (unop J))) _
+def FinsetsToProfinite : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
+  obj J := @Profinite.of (obj C (· ∈ (unop J))) _
     (by rw [← isCompact_iff_compactSpace]; exact hC.image (Pi.continuous_precomp' _)) _ _
-  map h := ⟨(ProjRestricts C (leOfHom h.unop)), continuous_projRestricts _ _⟩
+  map h := map C (leOfHom h.unop)
 
 /-- The limit cone on `FinsetsToProfinite` -/
 noncomputable
 def FinsetsCone : Cone (FinsetsToProfinite hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
-  π := { app := fun J ↦ ⟨ProjRestrict C (· ∈ (J.unop)), continuous_projRestrict _ _⟩ }
+  π := { app := fun J ↦ π_app C (· ∈ unop J) }
 
-theorem eq_of_forall_proj_eq (a b : C) (h : ∀ (J : Finset ι), ProjRestrict C (· ∈ J) a =
-    ProjRestrict C (· ∈ J) b) : a = b := by
+theorem eq_of_forall_π_app_eq (a b : C) (h : ∀ (J : Finset ι), π_app C (· ∈ J) a =
+    π_app C (· ∈ J) b) : a = b := by
   ext i
   specialize h ({i} : Finset ι)
   rw [Subtype.ext_iff] at h
-  simp only [ProjRestrict, Proj, precomp, ContinuousMap.coe_mk,
+  simp only [π_app, precomp, ContinuousMap.coe_mk,
     Set.MapsTo.val_restrict_apply] at h
   exact congr_fun h ⟨i, Finset.mem_singleton.mpr rfl⟩
 
@@ -114,33 +104,33 @@ instance isIso_finsetsCone_lift [DecidableEq ι] :
   isIso_of_bijective _
     (by
       refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
-      · refine eq_of_forall_proj_eq a b (fun J ↦ ?_)
+      · refine eq_of_forall_π_app_eq a b (fun J ↦ ?_)
         apply_fun fun f : (limitCone (FinsetsToProfinite hC)).pt => f.val (op J) at h
         exact h
-      · suffices : ∃ (x : C), ∀ (J : Finset ι), ProjRestrict C (· ∈ J) x = a.val (op J)
+      · suffices : ∃ (x : C), ∀ (J : Finset ι), π_app C (· ∈ J) x = a.val (op J)
         · obtain ⟨b, hb⟩ := this
           use b
           apply Subtype.ext
           apply funext
           intro J
           exact hb (unop J)
-        have hc : ∀ (J : Finset ι) s, IsClosed ((ProjRestrict C (· ∈ J)) ⁻¹' {s})
+        have hc : ∀ (J : Finset ι) s, IsClosed ((π_app C (· ∈ J)) ⁻¹' {s})
         · intro J s
-          refine IsClosed.preimage (continuous_projRestrict C (· ∈ J)) ?_
+          refine IsClosed.preimage (π_app C (· ∈ J)).continuous ?_
           exact T1Space.t1 s
         have H₁ : ∀ (Q₁ Q₂ : Finset ι), Q₁ ≤ Q₂ →
-            ProjRestrict C (· ∈ Q₁) ⁻¹' {a.val (op Q₁)} ⊇
-            ProjRestrict C (· ∈ Q₂) ⁻¹' {a.val (op Q₂)}
+            π_app C (· ∈ Q₁) ⁻¹' {a.val (op Q₁)} ⊇
+            π_app C (· ∈ Q₂) ⁻¹' {a.val (op Q₂)}
         · intro J K h x hx
           simp only [Set.mem_preimage, Set.mem_singleton_iff] at hx ⊢
-          rw [← projRestricts_comp_projRestrict C h, Function.comp_apply,
+          rw [← map_comp_π_app C h, Function.comp_apply,
             hx, ← a.prop (homOfLE h).op]
           rfl
         obtain ⟨x, hx⟩ :
-            Set.Nonempty (⋂ (J : Finset ι), ProjRestrict C (· ∈ J) ⁻¹' {a.val (op J)}) :=
+            Set.Nonempty (⋂ (J : Finset ι), π_app C (· ∈ J) ⁻¹' {a.val (op J)}) :=
           IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
-            (fun J : Finset ι => ProjRestrict C (· ∈ J) ⁻¹' {a.val (op J)}) (directed_of_sup H₁)
-            (fun J => (Set.singleton_nonempty _).preimage (surjective_projRestrict _ _))
+            (fun J : Finset ι => π_app C (· ∈ J) ⁻¹' {a.val (op J)}) (directed_of_sup H₁)
+            (fun J => (Set.singleton_nonempty _).preimage (surjective_π_app _))
             (fun J => (hc J (a.val (op J))).isCompact) fun J => hc J (a.val (op J))
         exact ⟨x, Set.mem_iInter.1 hx⟩)
 
@@ -160,5 +150,3 @@ def asLimitFinsetsConeIso [DecidableEq ι] : FinsetsCone hC ≅ Profinite.limitC
 noncomputable
 def finsetsCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (FinsetsCone hC) :=
   Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _) (asLimitFinsetsConeIso hC).symm
-
-end Profinite
