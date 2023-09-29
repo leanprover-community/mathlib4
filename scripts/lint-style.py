@@ -49,7 +49,7 @@ ERR_SEM = 13 # the substring " ;"
 ERR_WIN = 14 # Windows line endings "\r\n"
 ERR_TWS = 15 # trailing whitespace
 ERR_CLN = 16 # line starts with a colon
-ERR_4SP = 17 # second line not indented
+ERR_IND = 17 # second line not correctly indented
 
 exceptions = []
 
@@ -177,7 +177,7 @@ def four_spaces_in_second_line(lines, path):
                                           line):
             # Calculate the number of spaces before the first non-space character in the next line
             stripped_next_line = next_line.lstrip()
-            if next_line and not (next_line.startswith("#") or stripped_next_line.startswith("--")):
+            if next_line != '\n' and not (next_line.startswith("#") or stripped_next_line.startswith("--")):
                 num_spaces = len(next_line) - len(stripped_next_line)
                 # The match with "| " could potentially match with a different usage of the same
                 # symbol, e.g. some sort of norm. In that case a space is not necessary, so
@@ -185,12 +185,12 @@ def four_spaces_in_second_line(lines, path):
                 if stripped_next_line.startswith("| ") or line.endswith("where\n"):
                     # Check and fix if the number of leading space is not 2
                     if num_spaces != 2:
-                        errors += [(ERR_4SP, next_line_nr, path)]
+                        errors += [(ERR_IND, next_line_nr, path)]
                         new_next_line = ' ' * 2 + stripped_next_line
                 # Check and fix if the number of leading spaces is not 4
                 else:
                     if num_spaces != 4:
-                        errors += [(ERR_4SP, next_line_nr, path)]
+                        errors += [(ERR_IND, next_line_nr, path)]
                         new_next_line = ' ' * 4 + stripped_next_line
         newlines.append((next_line_nr, new_next_line))
     return errors, newlines
@@ -341,8 +341,8 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
         if errno == ERR_CLN:
             output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
-        if errno == ERR_4SP:
-            output_message(path, line_nr, "ERR_4SP", "If the theorem/def statement requires multiple lines, indent the subsequent lines by 4 spaces")
+        if errno == ERR_IND:
+            output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
 
 def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:
