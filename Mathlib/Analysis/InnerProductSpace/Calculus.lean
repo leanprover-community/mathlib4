@@ -249,9 +249,10 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (fun x : ℝ ↦
   rw [DifferentiableAt]
   push_neg
   intro f
-  simp [HasFDerivAt, HasFDerivAtFilter, Asymptotics.isLittleO_iff]
+  simp only [HasFDerivAt, HasFDerivAtFilter, abs_zero, sub_zero, Asymptotics.isLittleO_iff, norm_eq_abs, not_forall,
+    not_eventually, not_le, exists_prop]
   use 2⁻¹
-  norm_num
+  use by norm_num
   rw [Filter.frequently_iff]
   intro U hU
   obtain ⟨ε, hε⟩ : ∃ ε ∈ U, ε ≠ 0 ∧ f ε ≤ 0 := by
@@ -274,8 +275,7 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (fun x : ℝ ↦
   rw [lt_abs]
   left
   rw [lt_sub_comm, ← one_mul |ε|, ← mul_assoc, ← sub_mul]
-  norm_num
-  simp [lt_of_le_of_lt hε.right.right, hε.right.left]
+  norm_num [lt_of_le_of_lt hε.right.right, hε.right.left]
 
 theorem DifferentiableAt.dist (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
     (hne : f x ≠ g x) : DifferentiableAt ℝ (fun y => dist (f y) (g y)) x := by
