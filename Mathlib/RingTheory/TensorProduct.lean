@@ -699,6 +699,16 @@ theorem lift_includeLeft_includeRight :
       .id S (A ⊗[R] B) := by
   ext <;> simp
 
+@[simp]
+theorem lift_comp_includeLeft (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (g y)) :
+    (lift f g hfg).comp includeLeft = f :=
+  AlgHom.ext <| by simp
+
+@[simp]
+theorem lift_comp_includeRight (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (g y)) :
+    ((lift f g hfg).restrictScalars R).comp includeRight = g :=
+  AlgHom.ext <| by simp
+
 /-- The universal property of the tensor product of algebras.
 
 Pairs of algebra morphisms that commute are equivalent to algebra morphisms from the tensor product.
@@ -945,10 +955,14 @@ theorem lmul'_comp_includeRight : (lmul' R : _ →ₐ[R] S).comp includeRight = 
 
 /-- If `S` is commutative, for a pair of morphisms `f : A →ₐ[R] S`, `g : B →ₐ[R] S`,
 We obtain a map `A ⊗[R] B →ₐ[R] S` that commutes with `f`, `g` via `a ⊗ b ↦ f(a) * g(b)`.
+
+This is a special case of ` Algebra.TensorProduct.lift`
 -/
-def productMap : A ⊗[R] B →ₐ[R] S :=
-  (lmul' R).comp (TensorProduct.map f g)
+def productMap : A ⊗[R] B →ₐ[R] S := lift f g (fun _ _ => Commute.all _ _)
 #align algebra.tensor_product.product_map Algebra.TensorProduct.productMap
+
+theorem productMap_eq_comp_map : productMap f g = (lmul' R).comp (TensorProduct.map f g) := by
+  ext <;> rfl
 
 @[simp]
 theorem productMap_apply_tmul (a : A) (b : B) : productMap f g (a ⊗ₜ b) = f a * g b := rfl
@@ -961,7 +975,7 @@ theorem productMap_left_apply (a : A) : productMap f g (a ⊗ₜ 1) = f a := by
 
 @[simp]
 theorem productMap_left : (productMap f g).comp includeLeft = f :=
-  AlgHom.ext <| by simp
+  lift_comp_includeLeft _ _ _
 #align algebra.tensor_product.product_map_left Algebra.TensorProduct.productMap_left
 
 theorem productMap_right_apply (b : B) :
@@ -970,11 +984,12 @@ theorem productMap_right_apply (b : B) :
 
 @[simp]
 theorem productMap_right : (productMap f g).comp includeRight = g :=
-  AlgHom.ext <| by simp
+  lift_comp_includeRight _ _ (fun _ _ => Commute.all _ _)
 #align algebra.tensor_product.product_map_right Algebra.TensorProduct.productMap_right
 
 theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
-  rw [productMap, AlgHom.range_comp, map_range, map_sup, ← AlgHom.range_comp, ← AlgHom.range_comp,
+  rw [productMap_eq_comp_map, AlgHom.range_comp, map_range, map_sup, ← AlgHom.range_comp,
+    ← AlgHom.range_comp,
     ← AlgHom.comp_assoc, ← AlgHom.comp_assoc, lmul'_comp_includeLeft, lmul'_comp_includeRight,
     AlgHom.id_comp, AlgHom.id_comp]
 #align algebra.tensor_product.product_map_range Algebra.TensorProduct.productMap_range
@@ -990,13 +1005,11 @@ variable [CommSemiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
 
 /-- If `A`, `B`, `C` are `R`-algebras, `A` and `C` are also `S`-algebras (forming a tower as
 `·/S/R`), then the product map of `f : A →ₐ[S] C` and `g : B →ₐ[R] C` is an `S`-algebra
-homomorphism. -/
-@[simps!]
-def productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
-  { (productMap (f.restrictScalars R) g).toRingHom with
-    commutes' := fun r => by
-      dsimp
-      simp }
+homomorphism.
+
+This is just a special case of `Algebra.TensorProduct.lift`. -/
+abbrev productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
+  lift f g (fun _ _ => Commute.all _ _)
 #align algebra.tensor_product.product_left_alg_hom Algebra.TensorProduct.productLeftAlgHom
 
 end
