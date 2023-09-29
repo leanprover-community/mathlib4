@@ -40,7 +40,7 @@ structure UniformInducing (f : α → β) : Prop where
 
 protected lemma UniformInducing.comap_uniformSpace {f : α → β} (hf : UniformInducing f) :
     ‹UniformSpace β›.comap f = ‹UniformSpace α› :=
-  uniformSpace_eq hf.1
+  UniformSpace.ext hf.1
 #align uniform_inducing.comap_uniform_space UniformInducing.comap_uniformSpace
 
 lemma uniformInducing_iff' {f : α → β} :

@@ -19,6 +19,8 @@ import Std.Data.RBMap
 These should be replaced by proper implementations in Std.
 -/
 
+set_option autoImplicit true
+
 namespace Std.HashMap
 
 -- not an exact match, the Lean3 version was dependently-typed

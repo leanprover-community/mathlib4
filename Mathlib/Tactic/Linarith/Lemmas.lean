@@ -19,6 +19,8 @@ Those in the `Linarith` namespace should stay here.
 Those outside the `Linarith` namespace may be deleted as they are ported to mathlib4.
 -/
 
+set_option autoImplicit true
+
 namespace Linarith
 
 theorem lt_irrefl {α : Type u} [Preorder α] {a : α} : ¬a < a := _root_.lt_irrefl a
@@ -57,14 +59,14 @@ lemma eq_of_not_lt_of_not_gt {α} [LinearOrder α] (a b : α) (h1 : ¬ a < b) (h
 -- used in the `nlinarith` normalization steps. The `_` argument is for uniformity.
 @[nolint unusedArguments]
 lemma mul_zero_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (_ : R a 0) (h : b = 0) :
-  a * b = 0 :=
-by simp [h]
+    a * b = 0 := by
+  simp [h]
 
 -- used in the `nlinarith` normalization steps. The `_` argument is for uniformity.
 @[nolint unusedArguments]
 lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a = 0) (_ : R b 0) :
-  a * b = 0 :=
-by simp [h]
+    a * b = 0 := by
+  simp [h]
 
 
 end Linarith

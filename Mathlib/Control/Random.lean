@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
 
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Control.ULiftable
@@ -34,6 +34,8 @@ defining objects that can be created randomly.
 * Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
 
 -/
+
+set_option autoImplicit true
 
 /-- A monad to generate random objects using the generic generator type `g` -/
 abbrev RandG (g : Type) := StateM (ULift g)

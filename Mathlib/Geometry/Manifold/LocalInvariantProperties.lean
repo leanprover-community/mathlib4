@@ -545,7 +545,7 @@ theorem liftProp_id (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y) :
 theorem liftPropAt_iff_comp_inclusion (hG : LocalInvariantProp G G' P) {U V : Opens M} (hUV : U ≤ V)
     (f : V → M') (x : U) :
     LiftPropAt P f (Set.inclusion hUV x) ↔ LiftPropAt P (f ∘ Set.inclusion hUV : U → M') x := by
-  change (_ ∧ _) ↔ (_ ∧ _); congr! 1 -- Porting note: was `congrm _ ∧ _`
+  congrm ?_ ∧ ?_
   · simp [continuousWithinAt_univ,
       (TopologicalSpace.Opens.openEmbedding_of_le hUV).continuousAt_iff]
   · apply hG.congr_iff

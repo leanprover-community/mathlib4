@@ -152,6 +152,16 @@ theorem orderOf_eq_card_of_forall_mem_zpowers [Fintype α] {g : α} (hx : ∀ x,
 #align order_of_eq_card_of_forall_mem_zpowers orderOf_eq_card_of_forall_mem_zpowers
 #align add_order_of_eq_card_of_forall_mem_zmultiples addOrderOf_eq_card_of_forall_mem_zmultiples
 
+@[to_additive exists_nsmul_ne_zero_of_isAddCyclic]
+theorem exists_pow_ne_one_of_isCyclic {G : Type*} [Group G] [Fintype G] [G_cyclic : IsCyclic G]
+  {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Fintype.card G) : ∃ a : G, a ^ k ≠ 1 := by
+  rcases G_cyclic with ⟨a, ha⟩
+  use a
+  contrapose! k_lt_card_G
+  convert orderOf_le_of_pow_eq_one k_pos.bot_lt k_lt_card_G
+  rw [orderOf_eq_card_zpowers, eq_comm, Subgroup.card_eq_iff_eq_top, eq_top_iff]
+  exact fun x _ ↦ ha x
+
 @[to_additive Infinite.addOrderOf_eq_zero_of_forall_mem_zmultiples]
 theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
     (h : ∀ x, x ∈ zpowers g) : orderOf g = 0 := by
@@ -263,7 +273,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
       let ⟨m, hm⟩ := Nat.gcd_dvd_right n (Fintype.card α)
       have hm0 : 0 < m :=
         Nat.pos_of_ne_zero fun hm0 => by
-          rw [hm0, MulZeroClass.mul_zero, Fintype.card_eq_zero_iff] at hm
+          rw [hm0, mul_zero, Fintype.card_eq_zero_iff] at hm
           exact hm.elim' 1
       simp only [Set.toFinset_card, SetLike.coe_sort_coe]
       rw [← orderOf_eq_card_zpowers, orderOf_pow g, orderOf_eq_card_of_forall_mem_zpowers hg]

@@ -151,7 +151,7 @@ def Equiv : PSet → PSet → Prop
 #align pSet.equiv PSet.Equiv
 
 theorem equiv_iff :
-   ∀ {x y : PSet},
+    ∀ {x y : PSet},
       Equiv x y ↔ (∀ i, ∃ j, Equiv (x.Func i) (y.Func j)) ∧ ∀ j, ∃ i, Equiv (x.Func i) (y.Func j)
   | ⟨_, _⟩, ⟨_, _⟩ => Iff.rfl
 #align pSet.equiv_iff PSet.equiv_iff
@@ -557,6 +557,7 @@ def Resp.Equiv {n} (a b : Resp n) : Prop :=
   Arity.Equiv a.1 b.1
 #align pSet.resp.equiv PSet.Resp.Equiv
 
+@[refl]
 protected theorem Resp.Equiv.refl {n} (a : Resp n) : Resp.Equiv a a :=
   a.2
 #align pSet.resp.equiv.refl PSet.Resp.Equiv.refl
@@ -568,10 +569,12 @@ protected theorem Resp.Equiv.euc :
     @Resp.Equiv.euc n (a.f x) (b.f y) (c.f y) (hab _ _ h) (hcb _ _ <| PSet.Equiv.refl y)
 #align pSet.resp.equiv.euc PSet.Resp.Equiv.euc
 
+@[symm]
 protected theorem Resp.Equiv.symm {n} {a b : Resp n} : Resp.Equiv a b → Resp.Equiv b a :=
   (Resp.Equiv.refl b).euc
 #align pSet.resp.equiv.symm PSet.Resp.Equiv.symm
 
+@[trans]
 protected theorem Resp.Equiv.trans {n} {x y z : Resp n} (h1 : Resp.Equiv x y)
     (h2 : Resp.Equiv y z) : Resp.Equiv x z :=
   h1.euc h2.symm
@@ -1417,7 +1420,7 @@ theorem hereditarily_iff : Hereditarily p x ↔ p x ∧ ∀ y ∈ x, Hereditaril
   rw [← Hereditarily]
 #align Set.hereditarily_iff ZFSet.hereditarily_iff
 
-alias hereditarily_iff ↔ Hereditarily.def _
+alias ⟨Hereditarily.def, _⟩ := hereditarily_iff
 #align Set.hereditarily.def ZFSet.Hereditarily.def
 
 theorem Hereditarily.self (h : x.Hereditarily p) : p x :=
@@ -1818,5 +1821,24 @@ theorem choice_mem (y : ZFSet.{u}) (yx : y ∈ x) : (choice x ′ y : Class.{u})
   rw [@map_fval _ (Classical.allDefinable _) x y yx, Class.coe_mem, Class.coe_apply]
   exact choice_mem_aux x h y yx
 #align Set.choice_mem ZFSet.choice_mem
+
+private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
+  (mk $ PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
+    ext x
+    rw [mem_toSet, ←mk_out x, mk_mem_iff, mk_out]
+    refine' ⟨_, λ xs ↦ ⟨equivShrink s (Subtype.mk x xs), _⟩⟩
+    · rintro ⟨b, h2⟩
+      rw [←ZFSet.eq, ZFSet.mk_out] at h2
+      simp [h2]
+    · simp [PSet.Equiv.refl]
+
+/-- `ZFSet.toSet` as an equivalence. -/
+@[simps apply_coe]
+noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
+  toFun x := ⟨x.toSet, x.small_toSet⟩
+  invFun := λ ⟨s, h⟩ ↦ mk $ PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
+  left_inv := Function.rightInverse_of_injective_of_leftInverse (by intros x y; simp)
+    λ s ↦ Subtype.coe_injective $ toSet_equiv_aux s.2
+  right_inv s := Subtype.coe_injective $ toSet_equiv_aux s.2
 
 end ZFSet

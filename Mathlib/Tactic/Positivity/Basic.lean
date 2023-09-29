@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Std.Lean.Parser
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.HaveI
@@ -17,6 +18,8 @@ import Qq
 
 This file sets up the basic `positivity` extensions tagged with the `@[positivity]` attribute.
 -/
+
+set_option autoImplicit true
 
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function

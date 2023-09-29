@@ -45,7 +45,7 @@ We provide the following notations for expressing the integral of a function on 
 * `∫ a in s, f a ∂μ` is `MeasureTheory.integral (μ.restrict s) f`
 * `∫ a in s, f a` is `∫ a in s, f a ∂volume`
 
-Note that the set notations are defined in the file `MeasureTheory/Integral/Bochner`,
+Note that the set notations are defined in the file `MeasureTheory/Integral/Bochner.lean`,
 but we reference them here because all theorems about set integrals are in this file.
 
 -/
@@ -955,10 +955,12 @@ open MeasureTheory Asymptotics Metric
 
 variable {ι : Type*} [NormedAddCommGroup E]
 
-/-- Fundamental theorem of calculus for set integrals: if `μ` is a measure that is finite at a
-filter `l` and `f` is a measurable function that has a finite limit `b` at `l ⊓ μ.ae`, then `∫ x in
-s i, f x ∂μ = μ (s i) • b + o(μ (s i))` at a filter `li` provided that `s i` tends to `l.small_sets`
-along `li`. Since `μ (s i)` is an `ℝ≥0∞` number, we use `(μ (s i)).toReal` in the actual statement.
+/-- Fundamental theorem of calculus for set integrals:
+if `μ` is a measure that is finite at a filter `l` and
+`f` is a measurable function that has a finite limit `b` at `l ⊓ μ.ae`, then
+`∫ x in s i, f x ∂μ = μ (s i) • b + o(μ (s i))` at a filter `li` provided that
+`s i` tends to `l.smallSets` along `li`.
+Since `μ (s i)` is an `ℝ≥0∞` number, we use `(μ (s i)).toReal` in the actual statement.
 
 Often there is a good formula for `(μ (s i)).toReal`, so the formalization can take an optional
 argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
@@ -970,9 +972,10 @@ theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae [NormedSpace ℝ E] [Com
     (m : ι → ℝ := fun i => (μ (s i)).toReal)
     (hsμ : (fun i => (μ (s i)).toReal) =ᶠ[li] m := by rfl) :
     (fun i => (∫ x in s i, f x ∂μ) - m i • b) =o[li] m := by
-  suffices : (fun s => (∫ x in s, f x ∂μ) - (μ s).toReal • b) =o[l.smallSets] fun s => (μ s).toReal
-  exact (this.comp_tendsto hs).congr'
-    (hsμ.mono fun a ha => by dsimp only [Function.comp_apply] at ha ⊢; rw [ha]) hsμ
+  suffices
+      (fun s => (∫ x in s, f x ∂μ) - (μ s).toReal • b) =o[l.smallSets] fun s => (μ s).toReal from
+    (this.comp_tendsto hs).congr'
+      (hsμ.mono fun a ha => by dsimp only [Function.comp_apply] at ha ⊢; rw [ha]) hsμ
   refine' isLittleO_iff.2 fun ε ε₀ => _
   have : ∀ᶠ s in l.smallSets, ∀ᶠ x in μ.ae, x ∈ s → f x ∈ closedBall b ε :=
     eventually_smallSets_eventually.2 (h.eventually <| closedBall_mem_nhds _ ε₀)
@@ -1336,7 +1339,7 @@ theorem Integrable.simpleFunc_mul (g : SimpleFunc β ℝ) (hf : Integrable f μ)
     by_cases hx : x ∈ s
     · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, Algebra.id.smul_eq_mul,
         ← Function.const_def]
-    · simp only [hx, Pi.mul_apply, Set.indicator_of_not_mem, not_false_iff, MulZeroClass.zero_mul]
+    · simp only [hx, Pi.mul_apply, Set.indicator_of_not_mem, not_false_iff, zero_mul]
   rw [this, integrable_indicator_iff hs]
   exact (hf.smul c).integrableOn
 #align measure_theory.integrable.simple_func_mul MeasureTheory.Integrable.simpleFunc_mul

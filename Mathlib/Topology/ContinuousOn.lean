@@ -28,6 +28,8 @@ equipped with the subspace topology.
 
 -/
 
+set_option autoImplicit true
+
 
 open Set Filter Function Topology Filter
 
@@ -605,7 +607,7 @@ theorem continuousOn_iff_continuous_restrict {f : α → β} {s : Set α} :
 #align continuous_on_iff_continuous_restrict continuousOn_iff_continuous_restrict
 
 -- porting note: 2 new lemmas
-alias continuousOn_iff_continuous_restrict ↔ ContinuousOn.restrict _
+alias ⟨ContinuousOn.restrict, _⟩ := continuousOn_iff_continuous_restrict
 
 theorem ContinuousOn.restrict_mapsTo {f : α → β} {s : Set α} {t : Set β} (hf : ContinuousOn f s)
     (ht : MapsTo f s t) : Continuous (ht.restrict f s t) :=
@@ -767,7 +769,7 @@ theorem continuousWithinAt_insert_self {f : α → β} {x : α} {s : Set α} :
     true_and_iff]
 #align continuous_within_at_insert_self continuousWithinAt_insert_self
 
-alias continuousWithinAt_insert_self ↔ _ ContinuousWithinAt.insert_self
+alias ⟨_, ContinuousWithinAt.insert_self⟩ := continuousWithinAt_insert_self
 #align continuous_within_at.insert_self ContinuousWithinAt.insert_self
 
 theorem ContinuousWithinAt.diff_iff {f : α → β} {s t : Set α} {x : α}
@@ -952,6 +954,13 @@ theorem ContinuousWithinAt.preimage_mem_nhdsWithin' {f : α → β} {x : α} {s 
     (h : ContinuousWithinAt f s x) (ht : t ∈ 𝓝[f '' s] f x) : f ⁻¹' t ∈ 𝓝[s] x :=
   h.tendsto_nhdsWithin (mapsTo_image _ _) ht
 #align continuous_within_at.preimage_mem_nhds_within' ContinuousWithinAt.preimage_mem_nhdsWithin'
+
+theorem ContinuousWithinAt.preimage_mem_nhdsWithin''
+    {f : α → β} {x : α} {y : β} {s t : Set β}
+    (h : ContinuousWithinAt f (f ⁻¹' s) x) (ht : t ∈ 𝓝[s] y) (hxy : y = f x) :
+    f ⁻¹' t ∈ 𝓝[f ⁻¹' s] x := by
+  rw [hxy] at ht
+  exact h.preimage_mem_nhdsWithin' (nhdsWithin_mono _ (image_preimage_subset f s) ht)
 
 theorem Filter.EventuallyEq.congr_continuousWithinAt {f g : α → β} {s : Set α} {x : α}
     (h : f =ᶠ[𝓝[s] x] g) (hx : f x = g x) : ContinuousWithinAt f s x ↔ ContinuousWithinAt g s x :=

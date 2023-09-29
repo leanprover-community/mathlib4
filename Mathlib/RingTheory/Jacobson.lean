@@ -35,6 +35,8 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
 Jacobson, Jacobson Ring
 -/
 
+set_option autoImplicit true
+
 universe u
 namespace Ideal
 
@@ -595,7 +597,7 @@ set_option linter.uppercaseLean3 false in
 #align ideal.polynomial.is_maximal_comap_C_of_is_jacobson Ideal.Polynomial.isMaximal_comap_C_of_isJacobson
 
 lemma isMaximal_comap_C_of_isJacobson' {P : Ideal R[X]} (hP : IsMaximal P) :
-  (P.comap (C : R →+* R[X])).IsMaximal := by
+    (P.comap (C : R →+* R[X])).IsMaximal := by
   haveI := hP
   exact isMaximal_comap_C_of_isJacobson P
 

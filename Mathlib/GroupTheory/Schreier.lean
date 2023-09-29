@@ -152,7 +152,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
       (center G).index ^ ((center G).index * Nat.card (commutatorSet G) + 1) := by
   -- First handle the case when `Z(G)` has infinite index and `[G : Z(G)]` is defined to be `0`
   by_cases hG : (center G).index = 0
-  · simp_rw [hG, MulZeroClass.zero_mul, zero_add, pow_one, dvd_zero]
+  · simp_rw [hG, zero_mul, zero_add, pow_one, dvd_zero]
   haveI : FiniteIndex (center G) := ⟨hG⟩
   -- Rewrite as `|Z(G) ∩ G'| * [G' : Z(G) ∩ G'] ∣ [G : Z(G)] ^ ([G : Z(G)] * n) * [G : Z(G)]`
   rw [← ((center G).subgroupOf (_root_.commutator G)).card_mul_index, pow_succ']

@@ -24,6 +24,8 @@ Theorems that require decidability hypotheses are in the namespace `Decidable`.
 Classical versions are in the namespace `Classical`.
 -/
 
+set_option autoImplicit true
+
 open Function
 attribute [local instance 10] Classical.propDecidable
 
@@ -160,7 +162,7 @@ instance : IsRefl Prop Iff := ⟨Iff.refl⟩
 
 instance : IsTrans Prop Iff := ⟨fun _ _ _ ↦ Iff.trans⟩
 
-alias imp_congr ← Iff.imp
+alias Iff.imp := imp_congr
 #align iff.imp Iff.imp
 
 @[simp] theorem eq_true_eq_id : Eq True = id := by
@@ -183,13 +185,13 @@ protected theorem Function.mt : (a → b) → ¬b → ¬a := mt
 
 /-! ### Declarations about `not` -/
 
-alias Decidable.em ← dec_em
+alias dec_em := Decidable.em
 #align dec_em dec_em
 
 theorem dec_em' (p : Prop) [Decidable p] : ¬p ∨ p := (dec_em p).symm
 #align dec_em' dec_em'
 
-alias Classical.em ← em
+alias em := Classical.em
 #align em em
 
 theorem em' (p : Prop) : ¬p ∨ p := (em p).symm
@@ -218,7 +220,7 @@ theorem by_cases {q : Prop} (hpq : p → q) (hnpq : ¬p → q) : q :=
 if hp : p then hpq hp else hnpq hp
 #align classical.by_cases by_cases
 
-alias by_contradiction ← by_contra
+alias by_contra := by_contradiction
 #align by_contra by_contra
 
 library_note "decidable namespace"/--
@@ -254,7 +256,7 @@ theorem not_ne_iff : ¬a ≠ b ↔ a = b := not_not
 theorem of_not_imp {a b : Prop} : ¬(a → b) → a := Decidable.of_not_imp
 #align of_not_imp of_not_imp
 
-alias Decidable.not_imp_symm ← Not.decidable_imp_symm
+alias Not.decidable_imp_symm := Decidable.not_imp_symm
 #align not.decidable_imp_symm Not.decidable_imp_symm
 
 theorem Not.imp_symm : (¬a → b) → ¬b → a := Not.decidable_imp_symm
@@ -269,7 +271,7 @@ theorem not_imp_comm : ¬a → b ↔ ¬b → a := Decidable.not_imp_comm
 theorem Imp.swap : a → b → c ↔ b → a → c := ⟨Function.swap, Function.swap⟩
 #align imp.swap Imp.swap
 
-alias not_congr ← Iff.not
+alias Iff.not := not_congr
 #align iff.not Iff.not
 
 theorem Iff.not_left (h : a ↔ ¬b) : ¬a ↔ b := h.not.trans not_not
@@ -308,14 +310,14 @@ protected theorem Xor'.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
 
 /-! ### Declarations about `and` -/
 
-alias and_congr ← Iff.and
+alias Iff.and := and_congr
 #align iff.and Iff.and
 #align and_congr_left and_congr_leftₓ -- reorder implicits
 #align and_congr_right' and_congr_right'ₓ -- reorder implicits
 #align and.right_comm and_right_comm
 #align and_and_distrib_left and_and_left
 #align and_and_distrib_right and_and_right
-alias and_rotate ↔ And.rotate _
+alias ⟨And.rotate, _⟩ := and_rotate
 #align and.rotate And.rotate
 #align and.congr_right_iff and_congr_right_iff
 #align and.congr_left_iff and_congr_left_iffₓ -- reorder implicits
@@ -325,12 +327,12 @@ theorem and_symm_left (a b : α) (p : Prop) : a = b ∧ p ↔ b = a ∧ p := by 
 
 /-! ### Declarations about `or` -/
 
-alias or_congr ← Iff.or
+alias Iff.or := or_congr
 #align iff.or Iff.or
 #align or_congr_left' or_congr_left
 #align or_congr_right' or_congr_rightₓ -- reorder implicits
 #align or.right_comm or_right_comm
-alias or_rotate ↔ Or.rotate _
+alias ⟨Or.rotate, _⟩ := or_rotate
 #align or.rotate Or.rotate
 
 @[deprecated Or.imp]
@@ -407,7 +409,7 @@ theorem or_congr_right' (h : ¬a → (b ↔ c)) : a ∨ b ↔ a ∨ c := Decidab
 
 /-! Declarations about `iff` -/
 
-alias iff_congr ← Iff.iff
+alias Iff.iff := iff_congr
 #align iff.iff Iff.iff
 
 -- @[simp] -- FIXME simp ignores proof rewrites
@@ -492,8 +494,8 @@ end Propositional
 
 /-! ### Declarations about equality -/
 
-alias ne_of_mem_of_not_mem ← Membership.mem.ne_of_not_mem
-alias ne_of_mem_of_not_mem' ← Membership.mem.ne_of_not_mem'
+alias Membership.mem.ne_of_not_mem := ne_of_mem_of_not_mem
+alias Membership.mem.ne_of_not_mem' := ne_of_mem_of_not_mem'
 
 #align has_mem.mem.ne_of_not_mem Membership.mem.ne_of_not_mem
 #align has_mem.mem.ne_of_not_mem' Membership.mem.ne_of_not_mem'
@@ -589,7 +591,7 @@ theorem Eq.congr_left {x y z : α} (h : x = y) : x = z ↔ y = z := by rw [h]
 theorem Eq.congr_right {x y z : α} (h : x = y) : z = x ↔ z = y := by rw [h]
 #align eq.congr_right Eq.congr_right
 
-alias congrArg₂ ← congr_arg₂
+alias congr_arg₂ := congrArg₂
 #align congr_arg2 congr_arg₂
 
 variable {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
@@ -675,7 +677,7 @@ theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x
 #align forall_exists_index forall_exists_index
 
 #align exists_imp_distrib exists_imp
-alias exists_imp ↔ _ not_exists_of_forall_not
+alias ⟨_, not_exists_of_forall_not⟩ := exists_imp
 #align not_exists_of_forall_not not_exists_of_forall_not
 
 #align Exists.some Exists.choose

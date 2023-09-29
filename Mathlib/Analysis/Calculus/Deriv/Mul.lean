@@ -231,9 +231,9 @@ theorem deriv_mul_const (hc : DifferentiableAt 𝕜 c x) (d : 𝔸) :
 theorem deriv_mul_const_field (v : 𝕜') : deriv (fun y => u y * v) x = deriv u x * v := by
   by_cases hu : DifferentiableAt 𝕜 u x
   · exact deriv_mul_const hu v
-  · rw [deriv_zero_of_not_differentiableAt hu, MulZeroClass.zero_mul]
+  · rw [deriv_zero_of_not_differentiableAt hu, zero_mul]
     rcases eq_or_ne v 0 with (rfl | hd)
-    · simp only [MulZeroClass.mul_zero, deriv_const]
+    · simp only [mul_zero, deriv_const]
     · refine' deriv_zero_of_not_differentiableAt (mt (fun H => _) hu)
       simpa only [mul_inv_cancel_right₀ hd] using H.mul_const v⁻¹
 #align deriv_mul_const_field deriv_mul_const_field
