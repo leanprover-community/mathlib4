@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Data.Bool.Basic
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Data.Finset.Basic
-import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.Data.Rat.Order
+import Mathlib.Tactic.Linarith
+import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Fin.VecNotation
 
 /-!
 
@@ -51,15 +52,47 @@ def ValuedCspInstance.optimumSolution {C : Type} [LinearOrderedAddCommMonoid C]
 
 
 
+-- Examples will be thrown away ...
+
+section exampleRat
+open Rat
+
+-- Example: minimize |x| + |y| where x and y are rational numbers
+
+private def exampleAbs : Σ (k : ℕ), (Fin k → ℚ) → ℚ := ⟨1, fun a => |a 0|⟩
+
+private def exampleFiniteValuedCsp : ValuedCspTemplate ℚ :=
+  ValuedCspTemplate.mk ℚ [exampleAbs]
+
+private def exampleFiniteValuedInstance : ValuedCspInstance exampleFiniteValuedCsp (Fin 2) :=
+  [ValuedCspTerm.mk exampleAbs (by simp [exampleFiniteValuedCsp]) ![0],
+   ValuedCspTerm.mk exampleAbs (by simp [exampleFiniteValuedCsp]) ![1]]
+
+#eval exampleFiniteValuedInstance.evalSolution ![(3 : ℚ), (-2 : ℚ)]
+
+example : exampleFiniteValuedInstance.optimumSolution ![(0 : ℚ), (0 : ℚ)] := by
+  unfold ValuedCspInstance.optimumSolution
+  unfold exampleFiniteValuedCsp
+  intro s
+  convert_to 0 ≤ ValuedCspInstance.evalSolution exampleFiniteValuedInstance s
+  rw [ValuedCspInstance.evalSolution, exampleFiniteValuedInstance,
+      List.map_cons, List.map_cons, List.map_nil, List.sum_cons, List.sum_cons, List.sum_nil,
+      add_zero]
+  show 0 ≤ |s 0| + |s 1|
+  have s0nn : 0 ≤ |s 0|
+  · exact abs_nonneg (s 0)
+  have s1nn : 0 ≤ |s 1|
+  · exact abs_nonneg (s 1)
+  linarith
+
+end exampleRat
 
 
-
-
+section exampleBool
 
 private def Bool_add_le_add_left (a b : Bool) :
   (a = false ∨ b = true) → ∀ (c : Bool), (((c || a) = false) ∨ ((c || b) = true)) :=
-by
-  simp
+by simp
 
 -- Upside down !!
 instance crispCodomain : LinearOrderedAddCommMonoid Bool where
@@ -72,7 +105,7 @@ instance crispCodomain : LinearOrderedAddCommMonoid Bool where
   add_comm := Bool.or_comm
   add_le_add_left := Bool_add_le_add_left
 
--- example : B ≠ A ≠ C ≠ D ≠ B ≠ C with three available colors
+-- Example: B ≠ A ≠ C ≠ D ≠ B ≠ C with three available labels (i.e., 3-coloring of K₄⁻)
 
 private def exampleEqualit : (Fin 2 → Fin 3) → Bool := fun d => d 0 == d 1
 
@@ -130,6 +163,7 @@ private def exampleSolutionIncorrect7 : Fin 4 → Fin 3 := ![2, 2, 0, 2]
 #eval exampleCrispCspInstance.evalSolution exampleSolutionIncorrect7 -- `true` means WRONG here
 
 example : exampleCrispCspInstance.optimumSolution exampleSolutionCorrect0 := by
-  unfold ValuedCspInstance.optimumSolution
-  intro s
-  exact Bool.false_le
+  intro _
+  apply Bool.false_le
+
+end exampleBool
