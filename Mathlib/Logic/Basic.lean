@@ -1285,8 +1285,16 @@ variable {R : Prop}
 theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬ P ∧ R) := by
   by_cases p : P <;> simp [p]
 
+theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
+    dite P Q R ↔ (∃ p, Q p) ∨ (∃ p, R p) := by
+  by_cases h : P <;> simp [h, exists_prop_of_false, exists_prop_of_true]
+
 -- TODO make this a simp lemma in a future PR
 theorem ite_prop_iff_and : (if P then Q else R) ↔ ((P → Q) ∧ (¬ P → R)) := by
   by_cases p : P <;> simp [p]
+
+theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
+    dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := by
+  by_cases h : P <;> simp [h, forall_prop_of_false, forall_prop_of_true]
 
 end ite
