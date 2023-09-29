@@ -580,7 +580,7 @@ theorem cast_injective_of_lt {m n : ℕ} [nzm : NeZero m] (h : m < n) :
     apply Fin.ext
     exact f
 
-theorem cast_ZMod_eq_zero_iff_of_lt {m n : ℕ} [NeZero m] (h : m < n) (a : ZMod m) :
+theorem cast_zmod_eq_zero_iff_of_lt {m n : ℕ} [NeZero m] (h : m < n) (a : ZMod m) :
     (a : ZMod n) = 0 ↔ a = 0 := by
   rw [← ZMod.cast_zero (n := m)]
   exact Injective.eq_iff' (cast_injective_of_lt h) rfl
