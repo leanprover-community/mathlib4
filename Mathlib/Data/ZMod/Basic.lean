@@ -927,7 +927,7 @@ theorem val_sub {n : ℕ} [NeZero n] {a b : ZMod n} (h : b.val ≤ a.val) :
     (a - b).val = a.val - b.val := by
   by_cases hb : b = 0
   · cases hb; simp
-  · haveI : NeZero b := ⟨hb⟩
+  · have : NeZero b := ⟨hb⟩
     rw [sub_eq_add_neg, val_add, val_neg_of_ne_zero, ← Nat.add_sub_assoc (le_of_lt (val_lt _)),
       add_comm, Nat.add_sub_assoc h, Nat.add_mod_left]
     apply Nat.mod_eq_of_lt (tsub_lt_of_lt (val_lt _))
