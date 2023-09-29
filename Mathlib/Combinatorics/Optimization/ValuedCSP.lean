@@ -30,15 +30,16 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 -/
 
 /-- A template for a valued CSP problem with costs in `C`. -/
-structure ValuedCspTemplate (C : Type) [LinearOrderedAddCommMonoid C] where
+structure ValuedCspTemplate (C : Type _) [LinearOrderedAddCommMonoid C] where
   /-- Domain of "labels" -/
   D : Type
   /-- Cost functions `D^k → C` for any `k` -/
   F : Set (Σ (k : ℕ), (Fin k → D) → C)
 
+variable {C : Type _} [LinearOrderedAddCommMonoid C]
+
 /-- A term in a valued CSP instance over the template `Γ`. -/
-structure ValuedCspTerm {C : Type} [LinearOrderedAddCommMonoid C] (Γ : ValuedCspTemplate C)
-    (ι : Type) where
+structure ValuedCspTerm (Γ : ValuedCspTemplate C) (ι : Type _) where
   /-- Which cost function is instantiated -/
   f : Σ (k : ℕ), (Fin k → Γ.D) → C
   /-- The cost function comes from the template -/
@@ -47,25 +48,21 @@ structure ValuedCspTerm {C : Type} [LinearOrderedAddCommMonoid C] (Γ : ValuedCs
   app : Fin f.fst → ι
 
 /-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
-def ValuedCspInstance {C : Type} [LinearOrderedAddCommMonoid C] (Γ : ValuedCspTemplate C)
-    (ι : Type) : Type :=
+def ValuedCspInstance (Γ : ValuedCspTemplate C) (ι : Type _) : Type :=
   List (ValuedCspTerm Γ ι)
 
 /-- Evaluation of a `Γ` term `t` for given solution `x`. -/
-def ValuedCspTerm.evalSolution {C : Type} [LinearOrderedAddCommMonoid C]
-    {Γ : ValuedCspTemplate C} {ι : Type}
+def ValuedCspTerm.evalSolution {Γ : ValuedCspTemplate C} {ι : Type _}
     (t : ValuedCspTerm Γ ι) (x : ι → Γ.D) : C :=
   t.f.snd (x ∘ t.app)
 
 /-- Evaluation of a `Γ` instance `I` for given solution `x`. -/
-def ValuedCspInstance.evalSolution {C : Type} [LinearOrderedAddCommMonoid C]
-    {Γ : ValuedCspTemplate C} {ι : Type}
+def ValuedCspInstance.evalSolution {Γ : ValuedCspTemplate C} {ι : Type _}
     (I : ValuedCspInstance Γ ι) (x : ι → Γ.D) : C :=
   (I.map (fun t => t.evalSolution x)).sum
 
 /-- Condition for `x` being an optimum solution (min) to given `Γ` instance `I`.-/
-def ValuedCspInstance.optimumSolution {C : Type} [LinearOrderedAddCommMonoid C]
-    {Γ : ValuedCspTemplate C} {ι : Type}
+def ValuedCspInstance.optimumSolution {Γ : ValuedCspTemplate C} {ι : Type _}
     (I : ValuedCspInstance Γ ι) (x : ι → Γ.D) : Prop :=
   ∀ y : ι → Γ.D, I.evalSolution x ≤ I.evalSolution y
 
