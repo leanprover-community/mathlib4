@@ -1208,9 +1208,10 @@ theorem C_eq_int_cast (n : ℤ) : C (n : R) = n := by simp
 end Ring
 
 instance commRing [CommRing R] : CommRing R[X] :=
-  { Function.Injective.commRing toFinsupp toFinsupp_injective (toFinsupp_zero (R := R)) toFinsupp_one
-      toFinsupp_add toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
-      (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl with
+  { Function.Injective.commRing toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
+      toFinsupp_one toFinsupp_add toFinsupp_mul toFinsupp_neg toFinsupp_sub
+      (fun _ _ => toFinsupp_smul _ _) (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow (fun _ => rfl)
+      fun _ => rfl with
     toRing := Polynomial.ring }
 #align polynomial.comm_ring Polynomial.commRing
 
