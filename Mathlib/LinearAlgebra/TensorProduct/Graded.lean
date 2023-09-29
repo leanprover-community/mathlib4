@@ -118,8 +118,8 @@ theorem gradedMul_of_tmul_of (i₁ j₁ i₂ j₂ : ℤ₂)
       (-1 : ℤˣ)^(j₁ * i₂)
         • (lof R _ 𝒜 _ (GMul.mul a₁ a₂) ⊗ₜ lof R _ ℬ _ (GMul.mul b₁ b₂)) := by
   rw [gradedMul]
-  dsimp only [TensorProduct.curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    TensorProduct.map_tmul, TensorProduct.lift.tmul]
+  dsimp only [TensorProduct.curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    Function.comp_apply, TensorProduct.map_tmul, TensorProduct.lift.tmul]
   rw [TensorProduct.directSum_lof_tmul_lof, TensorProduct.directSum_lof_tmul_lof,
     gradedMulAux_lof_tmul_lof_tmul, Units.smul_def, zsmul_eq_smul_cast R, map_smul,
     TensorProduct.directSum_symm_lof_tmul, ←zsmul_eq_smul_cast, ←Units.smul_def]
@@ -257,7 +257,8 @@ noncomputable def auxEquiv : (𝒜 ⊗'[R] ℬ) ≃ₗ[R] (⨁ i, 𝒜 i) ⊗[R]
 `\smul`. -/
 noncomputable def mulHom : (𝒜 ⊗'[R] ℬ) →ₗ[R] (𝒜 ⊗'[R] ℬ) →ₗ[R] (𝒜 ⊗'[R] ℬ) := by
   letI fAB1 := auxEquiv R 𝒜 ℬ
-  have := ((gradedMul R (𝒜 ·) (ℬ ·)).compl₁₂ fAB1.toLinearMap fAB1.toLinearMap).compr₂ fAB1.symm.toLinearMap
+  have := ((gradedMul R (𝒜 ·) (ℬ ·)).compl₁₂ fAB1.toLinearMap fAB1.toLinearMap).compr₂
+    fAB1.symm.toLinearMap
   exact this
 
 theorem mulHom_apply (x y : 𝒜 ⊗'[R] ℬ) :
