@@ -98,7 +98,8 @@ noncomputable instance : Invertible hA.eigenvectorMatrixInv :=
 noncomputable instance : Invertible hA.eigenvectorMatrix :=
   invertibleOfRightInverse _ _ hA.eigenvectorMatrix_mul_inv
 
-theorem xeigenvectorMatrix_apply (i: n)(j : Fin (vn)) : hA.xeigenvectorMatrix i j = hA.xeigenvectorBasis j i := by
+theorem xeigenvectorMatrix_apply (i: n)(j : Fin (vn)) :
+    hA.xeigenvectorMatrix i j = hA.xeigenvectorBasis j i := by
   simp_rw [xeigenvectorMatrix, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis,
     PiLp.basisFun_repr]
 
@@ -130,7 +131,8 @@ theorem eigenvectorMatrixInv_apply (i j : n) :
     EuclideanSpace.inner_single_right, one_mul, IsROrC.star_def]
 #align matrix.is_hermitian.eigenvector_matrix_inv_apply Matrix.IsHermitian.eigenvectorMatrixInv_apply
 
-theorem xconjTranspose_eigenvectorMatrixInv : hA.xeigenvectorMatrixInvᴴ = hA.xeigenvectorMatrix := by
+theorem xconjTranspose_eigenvectorMatrixInv :
+    hA.xeigenvectorMatrixInvᴴ = hA.xeigenvectorMatrix := by
   ext i j
   rw [conjTranspose_apply, xeigenvectorMatrixInv_apply, xeigenvectorMatrix_apply, star_star]
 
