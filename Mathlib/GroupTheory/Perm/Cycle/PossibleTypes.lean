@@ -148,8 +148,7 @@ theorem ranges_lt (l : List ℕ) {s : List ℕ} {n : ℕ}
 /-- For any `c : List ℕ` whose sum is at most `Fintype.card α`,
   we can find `o : List (List α)` whose members have no duplicate,
   whose lengths given by `c`, and which are pairwise disjoint -/
-theorem exists_pw_disjoint_with_card
-    {α : Type*} [Fintype α] [DecidableEq α]
+theorem exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     {c : List ℕ} (hc : c.sum ≤ Fintype.card α) :
     ∃ o : List (List α),
       o.map length = c ∧ (∀ s ∈ o, s.Nodup) ∧ Pairwise List.Disjoint o := by
