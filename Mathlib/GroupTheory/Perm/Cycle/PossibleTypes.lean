@@ -80,7 +80,8 @@ theorem ranges_disjoint (l : List ℕ) :
   · intro s hs
     obtain ⟨s', _, rfl⟩ := mem_map.mp hs
     intro u hu
-    rw [mem_map]; rintro ⟨v, _, rfl⟩
+    rw [mem_map]
+    rintro ⟨v, _, rfl⟩
     rw [mem_range] at hu
     exact lt_iff_not_le.mp hu le_self_add
   · rw [pairwise_map]
@@ -105,8 +106,7 @@ theorem ranges_nodup (l : List ℕ) :
     rw [hs]
     exact nodup_range a
     -- s ∈ l
-    rw [mem_map] at hs ;
-    obtain ⟨t, ht, rfl⟩ := hs
+    obtain ⟨t, ht, rfl⟩ := mem_map.mp hs
     refine' Nodup.map (fun u v => Nat.add_left_cancel) (hl t ht)
 
 /-- The lengths of the members of `l.ranges` are those given by `l` -/
@@ -122,7 +122,7 @@ theorem ranges_length (l : List ℕ) :
   intro s _
   simp only [Function.comp_apply, length_map]
 
-/-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum`  -/
+/-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum` -/
 theorem ranges_lt (l : List ℕ) {s : List ℕ} {n : ℕ}
     (hs : s ∈ List.ranges l) (hn : n ∈ s) :
     n < l.sum := by
@@ -154,7 +154,7 @@ theorem exists_pw_disjoint_with_card
     {c : List ℕ} (hc : c.sum ≤ Fintype.card α) :
     ∃ o : List (List α),
       o.map length = c ∧ (∀ s ∈ o, s.Nodup) ∧ Pairwise List.Disjoint o := by
-  let klift  (n : ℕ) (hn : n < Fintype.card α) : Fin (Fintype.card α) :=
+  let klift (n : ℕ) (hn : n < Fintype.card α) : Fin (Fintype.card α) :=
     (⟨n, hn⟩ : Fin (Fintype.card α))
   let klift' (l : List ℕ) (hl : ∀ a ∈ l, a < Fintype.card α) :
     List (Fin (Fintype.card α)) := List.pmap klift l hl
