@@ -229,7 +229,7 @@ noncomputable def total : HomologicalComplex C c₃ :=
     (fun i₃ i₃' i₃'' _ _ => by
       ext ⟨i₁, i₂⟩ h₀
       dsimp
-      rw [GradedObject.ι_descMapObj_assoc, Preadditive.add_comp, comp_zero, zsmul_comp,
+      rw [GradedObject.ι_descMapObj_assoc, add_comp, comp_zero, zsmul_comp,
         zsmul_comp, assoc, assoc]
       dsimp
       by_cases h₁ : τ.π (c₁.next i₁, i₂) = i₃'
