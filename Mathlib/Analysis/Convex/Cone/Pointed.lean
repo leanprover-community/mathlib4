@@ -49,11 +49,11 @@ def toConvexCone (S : PointedCone 𝕜 E) : ConvexCone 𝕜 E where
 instance : Coe (PointedCone 𝕜 E) (ConvexCone 𝕜 E) where
   coe := toConvexCone
 
-theorem coe_injective : Injective ((↑) : PointedCone 𝕜 E → ConvexCone 𝕜 E) :=
+theorem toConvexCone_injective : Injective ((↑) : PointedCone 𝕜 E → ConvexCone 𝕜 E) :=
   fun _ _ => by simp [toConvexCone]
 
 @[simp]
-theorem coe_pointed (S : PointedCone 𝕜 E) : (S : ConvexCone 𝕜 E).Pointed := by
+theorem toConvexCone_pointed (S : PointedCone 𝕜 E) : (S : ConvexCone 𝕜 E).Pointed := by
   simp [toConvexCone, ConvexCone.Pointed]
 
 @[ext]
@@ -84,12 +84,12 @@ lemma _root_.ConvexCone.mem_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointe
   Iff.rfl
 
 @[simp, norm_cast]
-lemma _root_.ConvexCone.coe_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) :
-    (S.toPointedCone hS : ConvexCone 𝕜 E) = S :=
+lemma _root_.ConvexCone.toConvexCone_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) :
+    S.toPointedCone hS = S :=
   rfl
 
-instance canLift : CanLift (ConvexCone 𝕜 E) (PointedCone 𝕜 E) (↑) fun S => S.Pointed where
-  prf S hS := ⟨S.toPointedCone hS, S.coe_toPointedCone hS⟩
+instance canLift : CanLift (ConvexCone 𝕜 E) (PointedCone 𝕜 E) (↑) ConvexCone.Pointed where
+  prf S hS := ⟨S.toPointedCone hS, rfl⟩
 
 end Definitions
 
@@ -175,7 +175,7 @@ theorem mem_positive {x : E} : x ∈ positive 𝕜 E ↔ 0 ≤ x :=
   Iff.rfl
 
 @[simp, norm_cast]
-theorem coe_positive : ↑(positive 𝕜 E) = ConvexCone.positive 𝕜 E :=
+theorem toConvexCone_positive : ↑(positive 𝕜 E) = ConvexCone.positive 𝕜 E :=
   rfl
 
 end PositiveCone
@@ -188,7 +188,7 @@ def dual (S : PointedCone ℝ E) : PointedCone ℝ E :=
   ((S : Set E).innerDualCone).toPointedCone <| pointed_innerDualCone (S : Set E)
 
 @[simp, norm_cast]
-theorem coe_dual (S : PointedCone ℝ E) : ↑(dual S) = (S : Set E).innerDualCone :=
+theorem toConvexCone_dual (S : PointedCone ℝ E) : ↑(dual S) = (S : Set E).innerDualCone :=
   rfl
 
 @[simp]
