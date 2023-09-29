@@ -13,7 +13,7 @@ import Mathlib.Analysis.Normed.Group.Completion
 
 Given two (semi) normed groups `G` and `H` and a normed group hom `f : NormedAddGroupHom G H`,
 we build and study a normed group hom
-`f.completion  : NormedAddGroupHom (completion G) (completion H)` such that the diagram
+`f.completion : NormedAddGroupHom (completion G) (completion H)` such that the diagram
 
 ```
                    f

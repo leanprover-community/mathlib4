@@ -20,6 +20,7 @@ import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Change
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
+import Mathlib.Tactic.Clean
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
@@ -66,7 +67,6 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.LabelAttr
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift

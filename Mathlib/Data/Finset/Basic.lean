@@ -1972,6 +1972,13 @@ theorem insert_erase {a : α} {s : Finset α} (h : a ∈ s) : insert a (erase s 
     exact h
 #align finset.insert_erase Finset.insert_erase
 
+lemma erase_eq_iff_eq_insert (hs : a ∈ s) (ht : a ∉ t) : erase s a = t ↔ s = insert a t := by
+  have := insert_erase hs; aesop
+
+lemma insert_erase_invOn :
+    Set.InvOn (insert a) (λ s ↦ erase s a) {s : Finset α | a ∈ s} {s : Finset α | a ∉ s} :=
+  ⟨λ _s ↦ insert_erase, λ _s ↦ erase_insert⟩
+
 theorem erase_subset_erase (a : α) {s t : Finset α} (h : s ⊆ t) : erase s a ⊆ erase t a :=
   val_le_iff.1 <| erase_le_erase _ <| val_le_iff.2 h
 #align finset.erase_subset_erase Finset.erase_subset_erase
@@ -2221,6 +2228,9 @@ theorem insert_sdiff_of_mem (s : Finset α) {x : α} (h : x ∈ t) : insert x s 
   exact Set.insert_diff_of_mem _ h
 #align finset.insert_sdiff_of_mem Finset.insert_sdiff_of_mem
 
+lemma insert_sdiff_cancel (ha : a ∉ s) : insert a s \ s = {a} := by
+  rw [insert_sdiff_of_not_mem _ ha, Finset.sdiff_self, insert_emptyc_eq]
+
 @[simp]
 theorem insert_sdiff_insert (s t : Finset α) (x : α) : insert x s \ insert x t = s \ insert x t :=
   insert_sdiff_of_mem _ (mem_insert_self _ _)
@@ -2325,6 +2335,12 @@ theorem sdiff_singleton_eq_self (ha : a ∉ s) : s \ {a} = s :=
   sdiff_eq_self_iff_disjoint.2 <| by simp [ha]
 #align finset.sdiff_singleton_eq_self Finset.sdiff_singleton_eq_self
 
+theorem Nontrivial.sdiff_singleton_nonempty {c : α} {s : Finset α} (hS : s.Nontrivial) :
+    (s \ {c}).Nonempty := by
+  rw [Finset.sdiff_nonempty, Finset.subset_singleton_iff]
+  push_neg
+  exact ⟨by rintro rfl; exact Finset.not_nontrivial_empty hS, hS.ne_singleton⟩
+
 theorem sdiff_sdiff_left' (s t u : Finset α) : (s \ t) \ u = s \ t ∩ (s \ u) :=
   _root_.sdiff_sdiff_left'
 #align finset.sdiff_sdiff_left' Finset.sdiff_sdiff_left'
@@ -2419,6 +2435,10 @@ theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a �
 theorem coe_symmDiff : (↑(s ∆ t) : Set α) = (s : Set α) ∆ t :=
   Set.ext fun x => by simp [mem_symmDiff, Set.mem_symmDiff]
 #align finset.coe_symm_diff Finset.coe_symmDiff
+
+@[simp] lemma symmDiff_eq_empty : s ∆ t = ∅ ↔ s = t := symmDiff_eq_bot
+@[simp] lemma symmDiff_nonempty : (s ∆ t).Nonempty ↔ s ≠ t :=
+  nonempty_iff_ne_empty.trans symmDiff_eq_empty.not
 
 end SymmDiff
 
@@ -2639,33 +2659,34 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
   Multiset.decidableDforallMultiset
 #align finset.decidable_dforall_finset Finset.decidableDforallFinset
 
--- porting notes: In lean3, the above was picked up when decidability of s ⊆ t was needed
--- in lean4 it seems this is not the case.
-instance decidableSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊆ t) :=
-  decidableDforallFinset
+-- porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
+-- needed. In lean4 it seems this is not the case.
+instance instDecidableRelSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊆ ·) :=
+  λ _ _ ↦ decidableDforallFinset
 
--- porting notes: In lean3, the above was picked up when decidability of s ⊂ t was needed
--- in lean4 it seems this is not the case.
-instance decidableSSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊂ t) := by
-  rw [ssubset_iff_subset_ne]
-  have h₁ : Decidable (s ⊆ t) := decidableSubsetFinset
-  have h₂ : Decidable (s ≠ t) := instDecidableNot
-  exact instDecidableAnd
+instance instDecidableRelSSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊂ ·) :=
+  λ _ _ ↦ instDecidableAnd
+
+instance instDecidableLE [DecidableEq α] : @DecidableRel (Finset α) (· ≤ ·) :=
+  instDecidableRelSubset
+
+instance instDecidableLT [DecidableEq α] : @DecidableRel (Finset α) (· < ·) :=
+  instDecidableRelSSubset
+
+instance decidableDExistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
+    Decidable (∃ (a : _) (h : a ∈ s), p a h) :=
+  Multiset.decidableDexistsMultiset
+#align finset.decidable_dexists_finset Finset.decidableDExistsFinset
+
+instance decidableExistsAndFinset {p : α → Prop} [_hp : ∀ (a), Decidable (p a)] :
+    Decidable (∃ a ∈ s, p a) :=
+  decidable_of_iff (∃ (a : _) (_ : a ∈ s), p a) (by simp)
 
 /-- decidable equality for functions whose domain is bounded by finsets -/
 instance decidableEqPiFinset {β : α → Type*} [_h : ∀ a, DecidableEq (β a)] :
     DecidableEq (∀ a ∈ s, β a) :=
   Multiset.decidableEqPiMultiset
 #align finset.decidable_eq_pi_finset Finset.decidableEqPiFinset
-
-instance decidableDexistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
-    Decidable (∃ (a : _) (h : a ∈ s), p a h) :=
-  Multiset.decidableDexistsMultiset
-#align finset.decidable_dexists_finset Finset.decidableDexistsFinset
-
-instance decidableExistsAndFinset {p : α → Prop} [_hp : ∀ (a), Decidable (p a)] :
-    Decidable (∃ a ∈ s, p a) :=
-  decidable_of_iff (∃ (a : _) (_ : a ∈ s), p a) (by simp)
 
 end DecidablePiExists
 
@@ -3103,6 +3124,10 @@ theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then 
   · simp
 #align finset.range_filter_eq Finset.range_filter_eq
 
+lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := by
+  rw [Finset.Nontrivial, Finset.coe_range]
+  exact ⟨0, zero_lt_one.trans hn, 1, hn, zero_ne_one⟩
+
 end Range
 
 -- useful rules for calculations with quantifiers
@@ -3248,7 +3273,7 @@ theorem toFinset_ssubset : s.toFinset ⊂ t.toFinset ↔ s ⊂ t := by
 
 @[simp]
 theorem toFinset_dedup (m : Multiset α) : m.dedup.toFinset = m.toFinset := by
-  simp_rw [toFinset, dedup_idempotent]
+  simp_rw [toFinset, dedup_idem]
 #align multiset.to_finset_dedup Multiset.toFinset_dedup
 
 @[simp]
