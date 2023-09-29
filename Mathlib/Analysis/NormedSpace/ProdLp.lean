@@ -151,7 +151,7 @@ literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance instProdEDist : EDist (WithLp p (α × β)) where
   edist f g :=
     if _hp : p = 0 then
-      (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1)
+      (if edist f.fst g.fst = 0 then 0 else 1) + (if edist f.snd g.snd = 0 then 0 else 1)
     else if p = ∞ then
       edist f.fst g.fst ⊔ edist f.snd g.snd
     else
@@ -162,7 +162,8 @@ variable (x y : WithLp p (α × β)) (x' : α × β)
 
 @[simp]
 theorem prod_edist_eq_card [DecidableEq α] [DecidableEq β] (f g : WithLp 0 (α × β)) :
-    edist f g = (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1) := by
+    edist f g =
+      (if edist f.fst g.fst = 0 then 0 else 1) + (if edist f.snd g.snd = 0 then 0 else 1) := by
   convert if_pos rfl
 
 theorem prod_edist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
@@ -201,7 +202,7 @@ from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 theorem prod_edist_comm (f g : WithLp p (α × β)) : edist f g = edist g f := by
   classical
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp [prod_edist_eq_card, eq_comm]
+  · simp only [prod_edist_eq_card, edist_comm]
   · simp only [prod_edist_eq_sup, edist_comm]
   · simp only [prod_edist_eq_add h, edist_comm]
 
@@ -222,7 +223,7 @@ literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance instProdDist : Dist (WithLp p (α × β)) where
   dist f g :=
     if _hp : p = 0 then
-      (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1)
+      (if dist f.fst g.fst = 0 then 0 else 1) + (if dist f.snd g.snd = 0 then 0 else 1)
     else if p = ∞ then
       dist f.fst g.fst ⊔ dist f.snd g.snd
     else
@@ -231,7 +232,7 @@ instance instProdDist : Dist (WithLp p (α × β)) where
 variable {p α β}
 
 theorem prod_dist_eq_card [DecidableEq α] [DecidableEq β] (f g : WithLp 0 (α × β)) : dist f g =
-    (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1) := by
+    (if dist f.fst g.fst = 0 then 0 else 1) + (if dist f.snd g.snd = 0 then 0 else 1) := by
   convert if_pos rfl
 
 theorem prod_dist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
