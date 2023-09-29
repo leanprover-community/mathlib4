@@ -1260,3 +1260,16 @@ initialize_simps_projections Group
 initialize_simps_projections AddGroup
 initialize_simps_projections CommGroup
 initialize_simps_projections AddCommGroup
+
+library_note "Instance Performance" /--
+When defining instances, a slightly different definition on the instance can have a major impact on
+performance.
+
+Usually all fields that can be filled in using an earlier instance on the same type should be filled
+in that way. It may be necessary to check what the fields of particular class are when defining an
+instance.
+
+For example,
+
+
+-/
