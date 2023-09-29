@@ -121,6 +121,7 @@ theorem condDistrib_ae_eq_of_measure_eq_compProd (hX : Measurable X) (hY : Measu
   refine' eq_condKernel_of_measure_eq_compProd _ _ _
   convert hκ
   exact heq.symm
+
 section Integrability
 
 theorem integrable_toReal_condDistrib (hX : AEMeasurable X μ) (hs : MeasurableSet s) :

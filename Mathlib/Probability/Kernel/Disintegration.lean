@@ -572,7 +572,7 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
     rfl
   suffices : ρ.map (Prod.map id f) =
     (kernel.const Unit (ρ.map (Prod.map id f)).fst ⊗ₖ
-     kernel.prodMkLeft Unit (kernel.map (Measure.condKernel ρ) f hf.measurable)) ()
+      kernel.prodMkLeft Unit (kernel.map (Measure.condKernel ρ) f hf.measurable)) ()
   · have heq := eq_condKernel_of_measure_eq_compProd_real _ _ this
     rw [hprod] at heq
     filter_upwards [heq] with x hx s hs
