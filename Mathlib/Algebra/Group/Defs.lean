@@ -1271,8 +1271,8 @@ instance. This is particularly important to pay attention to when instances are 
 a definitionally equal type, or where instance constructors like `Function.Injective.group` are
 being used.
 
-For example, when defining the `AddCommGroup` instance on a `Submodule`, `p` of a `Module`. The following
-definition is preferred
+For example, when defining the `AddCommGroup` instance on a `Submodule`, `p` of a `Module`. The
+following definition is preferred
 
 ```
 instance Submonoid.addCommGroup : AddCommGroup p :=
