@@ -193,7 +193,7 @@ theorem toConvexCone_dual (S : PointedCone ℝ E) : ↑(dual S) = (S : Set E).in
 
 @[simp]
 theorem mem_dual {S : PointedCone ℝ E} {y : E} : y ∈ dual S ↔ ∀ ⦃x⦄, x ∈ S → 0 ≤ ⟪x, y⟫_ℝ := by
-  aesop
+  rfl
 
 end Dual
 
