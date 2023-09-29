@@ -318,6 +318,19 @@ def FinsetsToProfinite :
   map_id J := by dsimp; simp_rw [projRestricts_eq_id C (· ∈ (unop J))]; rfl
   map_comp _ _ := by dsimp; congr; dsimp; rw [projRestricts_eq_comp]
 
+-- noncomputable
+-- def FinsetsToProfiniteIso : FinsetsToProfinite hC ≅ FinsetsToProfinite' hC :=
+--   NatIso.ofComponents (fun X ↦ {
+--     hom := by
+--       dsimp [FinsetsToProfinite, FinsetsToProfinite', Set.proj, Set.proj', Proj, Proj', precomp]
+--       refine ⟨?_, ?_⟩
+--       ·
+--       · sorry
+--     inv := sorry
+--     hom_inv_id := sorry
+--     inv_hom_id := sorry
+--   }) sorry
+
 /-- The limit cone on `FinsetsToProfinite` -/
 noncomputable
 def FinsetsCone : Cone (FinsetsToProfinite hC) where
