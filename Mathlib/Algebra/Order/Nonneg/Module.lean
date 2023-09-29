@@ -31,7 +31,7 @@ section SMul
 variable [SMul 𝕜 𝕜']
 
 instance instSMul : SMul 𝕜≥0 𝕜' where
-  smul c a := c.val • a
+  smul c x := c.val • x
 
 @[simp, norm_cast]
 lemma coe_smul (a : 𝕜≥0) (x : 𝕜') : (a : 𝕜) • x = a • x :=
