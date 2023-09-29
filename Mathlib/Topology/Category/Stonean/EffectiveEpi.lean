@@ -167,19 +167,8 @@ theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : Stonean}
 
 lemma effectiveEpi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := by
-  refine ⟨fun _ ↦ ?_, fun hf ↦ ?_⟩
-  · haveI : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) := inferInstance
-    have h := (effectiveEpiFamily_tfae (fun () ↦ X) (fun () ↦ f)).out 0 2
-    rw [h] at this
-    intro a
-    obtain ⟨_, x, _⟩ := this a
-    use x
-  · have h := (effectiveEpiFamily_tfae (fun () ↦ X) (fun () ↦ f)).out 0 1
-    rw [← epi_iff_surjective] at hf
-    rw [effectiveEpi_iff_effectiveEpiFamily, h]
-    have w : f = (Limits.Sigma.ι (fun () ↦ X) ()) ≫ (Limits.Sigma.desc (fun () ↦ f))
-    · simp only [Limits.colimit.ι_desc, Limits.Cofan.mk_pt, Limits.Cofan.mk_ι_app]
-    exact epi_of_epi_fac w.symm
+  rw [← epi_iff_surjective]
+  exact effectiveEpi_iff_epi (fun _ _ ↦ (effectiveEpiFamily_tfae _ _).out 0 1) f
 
 end JointlySurjective
 
