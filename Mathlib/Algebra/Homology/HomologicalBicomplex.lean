@@ -10,6 +10,33 @@ variable {C D C₁ C₂ C₃ : Type*} [Category C] [Category D]
   (F : C₁ ⥤ C₂ ⥤ C₃)
   {I₁ I₂ I₃ : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c₃ : ComplexShape I₃)
 
+namespace HomologicalComplex
+
+variable [HasZeroMorphisms C] {I : Type*} {c : ComplexShape I}
+
+abbrev toGradedObject (K : HomologicalComplex C c) : GradedObject I C := K.X
+
+variable (C c)
+
+@[simps]
+def toGradedObjectFunctor : HomologicalComplex C c ⥤ GradedObject I C where
+  obj K := K.toGradedObject
+  map f := f.f
+
+instance : Faithful (toGradedObjectFunctor C c) where
+  map_injective {K L} f g h := by
+    ext n
+    exact congr_fun h n
+
+variable {C c}
+
+lemma toGradedObjectFunctor_map_injective {K L : HomologicalComplex C c} (f g : K ⟶ L)
+    (h : f.f = g.f) :
+    f = g :=
+  (toGradedObjectFunctor C c).map_injective h
+
+end HomologicalComplex
+
 namespace CategoryTheory.GradedObject
 
 variable [HasZeroMorphisms C] {I J : Type*} (X : GradedObject I C) (p : I → J) [X.HasMap p]
@@ -42,12 +69,12 @@ def HomologicalComplex.ofGradedObject [HasZeroMorphisms C] {I : Type*} (X : Grad
 
 variable (C)
 
-abbrev HomologicalBicomplex [HasZeroMorphisms C] := HomologicalComplex (HomologicalComplex C c₂) c₁
+abbrev HomologicalComplex₂ [HasZeroMorphisms C] := HomologicalComplex (HomologicalComplex C c₂) c₁
 
 variable {C}
 
 @[simps]
-def HomologicalBicomplex.ofGradedObject [HasZeroMorphisms C] (X : GradedObject (I₁ × I₂) C)
+def HomologicalComplex₂.ofGradedObject [HasZeroMorphisms C] (X : GradedObject (I₁ × I₂) C)
     (d₁ : ∀ (i₁ i₁' : I₁) (i₂ : I₂), X ⟨i₁, i₂⟩ ⟶ X ⟨i₁', i₂⟩)
     (d₂ : ∀ (i₁ : I₁) (i₂ i₂' : I₂), X ⟨i₁, i₂⟩ ⟶ X ⟨i₁, i₂'⟩)
     (shape₁ : ∀ (i₁ i₁' : I₁) (_ : ¬c₁.Rel i₁ i₁') (i₂ : I₂), d₁ i₁ i₁' i₂ = 0)
@@ -55,7 +82,7 @@ def HomologicalBicomplex.ofGradedObject [HasZeroMorphisms C] (X : GradedObject (
     (d_comp_d₁ : ∀ (i₁ i₁' i₁'' : I₁) (i₂ : I₂), d₁ i₁ i₁' i₂ ≫ d₁ i₁' i₁'' i₂ = 0)
     (d_comp_d₂ : ∀ (i₁ : I₁) (i₂ i₂' i₂'' : I₂), d₂ i₁ i₂ i₂' ≫ d₂ i₁ i₂' i₂'' = 0)
     (comm : ∀ (i₁ i₁' : I₁) (i₂ i₂' : I₂), d₁ i₁ i₁' i₂ ≫ d₂ i₁' i₂ i₂' = d₂ i₁ i₂ i₂' ≫ d₁ i₁ i₁' i₂') :
-    HomologicalBicomplex C c₁ c₂ where
+    HomologicalComplex₂ C c₁ c₂ where
   X i₁ :=
     { X := fun i₂ => X ⟨i₁, i₂⟩
       d := fun i₂ i₂' => d₂ i₁ i₂ i₂'
@@ -78,9 +105,9 @@ variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [HasZeroMorphisms C₃]
 variable {c₁ c₂}
 
 @[simps!]
-def mapBicomplexObjObj [F.PreservesZeroMorphisms] [∀ (X : C₁), (F.obj X).PreservesZeroMorphisms]
-    (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂) : HomologicalBicomplex C₃ c₁ c₂ :=
-  HomologicalBicomplex.ofGradedObject c₁ c₂ (((GradedObject.mapBifunctor F I₁ I₂).obj K₁.X).obj K₂.X)
+def mapHomologicalComplex₂ObjObj [F.PreservesZeroMorphisms] [∀ (X : C₁), (F.obj X).PreservesZeroMorphisms]
+    (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂) : HomologicalComplex₂ C₃ c₁ c₂ :=
+  HomologicalComplex₂.ofGradedObject c₁ c₂ (((GradedObject.mapBifunctor F I₁ I₂).obj K₁.X).obj K₂.X)
     (fun i₁ i₁' i₂ => (F.map (K₁.d i₁ i₁')).app (K₂.X i₂))
     (fun i₁ i₂ i₂' => (F.obj (K₁.X i₁)).map (K₂.d i₂ i₂'))
     (fun i₁ i₁' h₁ i₂ => by
@@ -102,9 +129,9 @@ def mapBicomplexObjObj [F.PreservesZeroMorphisms] [∀ (X : C₁), (F.obj X).Pre
 variable (c₂)
 
 @[simps]
-def mapBicomplexObj [F.PreservesZeroMorphisms] [∀ (X : C₁), (F.obj X).PreservesZeroMorphisms] (K₁ : HomologicalComplex C₁ c₁) :
-    HomologicalComplex C₂ c₂ ⥤ HomologicalBicomplex C₃ c₁ c₂ where
-  obj K₂ := mapBicomplexObjObj F K₁ K₂
+def mapHomologicalComplex₂Obj [F.PreservesZeroMorphisms] [∀ (X : C₁), (F.obj X).PreservesZeroMorphisms] (K₁ : HomologicalComplex C₁ c₁) :
+    HomologicalComplex C₂ c₂ ⥤ HomologicalComplex₂ C₃ c₁ c₂ where
+  obj K₂ := mapHomologicalComplex₂ObjObj F K₁ K₂
   map {K₂ L₂} φ :=
     { f := fun i₁ =>
         { f := fun i₂ => ((GradedObject.mapBifunctor F I₁ I₂).obj K₁.X).map φ.f ⟨i₁, i₂⟩
@@ -124,11 +151,13 @@ def mapBicomplexObj [F.PreservesZeroMorphisms] [∀ (X : C₁), (F.obj X).Preser
     dsimp
     rw [Functor.map_comp]
 
+variable (c₁)
+
 set_option maxHeartbeats 400000 in
 @[simps]
-def mapBicomplex [F.PreservesZeroMorphisms] [∀ (X : C₁), (F.obj X).PreservesZeroMorphisms] : HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂ ⥤
-    HomologicalBicomplex C₃ c₁ c₂ where
-  obj K₁ := mapBicomplexObj F c₂ K₁
+def mapHomologicalComplex₂ [F.PreservesZeroMorphisms] [∀ (X : C₁), (F.obj X).PreservesZeroMorphisms] : HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂ ⥤
+    HomologicalComplex₂ C₃ c₁ c₂ where
+  obj K₁ := mapHomologicalComplex₂Obj F c₂ K₁
   map {K₁ L₁} φ :=
     { app := fun K₂ =>
         { f := fun i₁ =>
@@ -146,7 +175,6 @@ end Functor
 
 end CategoryTheory
 
-@[pp_dot]
 structure TotalComplexShape (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
     (c₃ : ComplexShape I₃) where
   π : I₁ × I₂ → I₃
@@ -189,15 +217,28 @@ def TotalComplexShape.downNat :
     dsimp
     simp only [pow_succ, neg_mul, mul_one, one_mul, add_right_neg]
 
-namespace HomologicalBicomplex
+namespace HomologicalComplex₂
 
 variable {c₁ c₂}
-variable [Preadditive C] (K : HomologicalBicomplex C c₁ c₂) [DecidableEq I₃]
 
 @[pp_dot]
-def toGradedObject : GradedObject (I₁ × I₂) C := fun ⟨i₁, i₂⟩ => (K.X i₁).X i₂
+def toGradedObject [HasZeroMorphisms C] (K : HomologicalComplex₂ C c₁ c₂) :
+  GradedObject (I₁ × I₂) C := fun ⟨i₁, i₂⟩ => (K.X i₁).X i₂
+
+variable (c₁ c₂ C)
+
+@[reducible]
+def toGradedObjectFunctor [HasZeroMorphisms C] :
+    HomologicalComplex₂ C c₁ c₂ ⥤ GradedObject (I₁ × I₂) C where
+  obj := toGradedObject
+  map φ := fun ⟨i₁, i₂⟩ => (φ.f i₁).f i₂
+
+variable {c₁ c₂ c₃ C}
+variable [Preadditive C] (K L : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) [DecidableEq I₃]
+
 
 variable (τ : TotalComplexShape c₁ c₂ c₃) [K.toGradedObject.HasMap τ.π]
+  [L.toGradedObject.HasMap τ.π]
 
 attribute [reassoc] HomologicalComplex.comp_f
 
@@ -278,4 +319,48 @@ noncomputable def total : HomologicalComplex C c₃ :=
           · rw [HomologicalComplex.shape _ _ _ h₃, zero_comp, smul_zero, smul_zero]
         · rw [GradedObject.ιMapObjOrZero_eq_zero _ _ _ _ h₂, zero_comp, comp_zero, smul_zero])
 
-end HomologicalBicomplex
+variable {K L}
+
+@[simps]
+noncomputable def totalMap : K.total τ ⟶ L.total τ where
+  f := GradedObject.mapMap ((toGradedObjectFunctor C c₁ c₂).map φ) τ.π
+  comm' i₃ i₃' _ := by
+    apply GradedObject.mapObj_ext
+    rintro ⟨i₁, i₂⟩ h
+    dsimp [total]
+    simp only [GradedObject.ι_mapMap_assoc, GradedObject.ι_descMapObj, comp_add, comp_zsmul,
+      GradedObject.ι_descMapObj_assoc, add_comp, zsmul_comp, assoc]
+    congr 2
+    · by_cases τ.π (c₁.next i₁, i₂) = i₃'
+      · simp only [GradedObject.ιMapObjOrZero_eq _ _ _ _ h, GradedObject.ι_mapMap,
+          ← HomologicalComplex.comp_f_assoc, φ.comm]
+      · simp only [GradedObject.ιMapObjOrZero_eq_zero _ _ _ _ h, comp_zero, zero_comp]
+    · by_cases τ.π (i₁, c₂.next i₂) = i₃'
+      · simp only [GradedObject.ιMapObjOrZero_eq _ _ _ _ h, GradedObject.ι_mapMap,
+          HomologicalComplex.Hom.comm_from_assoc]
+      · simp only [GradedObject.ιMapObjOrZero_eq_zero _ _ _ _ h, comp_zero, zero_comp]
+
+end HomologicalComplex₂
+
+namespace TotalComplexShape
+
+variable {c₁ c₂ c₃}
+
+variable (τ : TotalComplexShape c₁ c₂ c₃) [DecidableEq I₃]
+
+@[simps]
+noncomputable def totalFunctor (C : Type*) [Category C] [Preadditive C]
+    [∀ (K : HomologicalComplex₂ C c₁ c₂), K.toGradedObject.HasMap τ.π] :
+    HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₃ where
+  obj K := K.total τ
+  map φ := HomologicalComplex₂.totalMap φ τ
+  map_id K := by
+    apply (HomologicalComplex.toGradedObjectFunctor _ _).map_injective
+    apply GradedObject.mapMap_id
+  map_comp {K₁ K₂ K₃} φ ψ := by
+    intros
+    apply (HomologicalComplex.toGradedObjectFunctor _ _).map_injective
+    exact GradedObject.mapMap_comp ((HomologicalComplex₂.toGradedObjectFunctor C c₁ c₂).map φ)
+      ((HomologicalComplex₂.toGradedObjectFunctor C c₁ c₂).map ψ) τ.π
+
+end TotalComplexShape
