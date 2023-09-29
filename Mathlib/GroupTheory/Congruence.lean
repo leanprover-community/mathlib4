@@ -1176,9 +1176,7 @@ an `AddSemigroup`."]
 instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient :=
   { (Function.Surjective.semigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl :
       Semigroup c.Quotient) with
-    /- The `toMul` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.semigroup` when the type checker is checking
-    that instance diagrams commute -/
+    /- See note [instance def-eq performance] -/
     toMul := Con.hasMul _ }
 #align con.semigroup Con.semigroup
 #align add_con.add_semigroup AddCon.addSemigroup
@@ -1189,9 +1187,7 @@ an `AddCommSemigroup`."]
 instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
   { (Function.Surjective.commSemigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl :
       CommSemigroup c.Quotient) with
-    /- The `toSemigroup` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.commSemigroup` when the type checker is
-    checking that instance diagrams commute -/
+    /- See note [instance def-eq performance] -/
     toSemigroup := Con.semigroup _ }
 #align con.comm_semigroup Con.commSemigroup
 #align add_con.add_comm_semigroup AddCon.addCommSemigroup
@@ -1202,9 +1198,7 @@ an `AddMonoid`."]
 instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
   { (Function.Surjective.monoid _ Quotient.surjective_Quotient_mk'' rfl
       (fun _ _ => rfl) fun _ _ => rfl : Monoid c.Quotient) with
-    /- The `toSemigroup` and `toOne` fields are given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.monoid` when the type checker is
-    checking that instance diagrams commute -/
+    /- See note [instance def-eq performance] -/
     toSemigroup := Con.semigroup _
     toOne := Con.one _ }
 #align con.monoid Con.monoid
@@ -1216,9 +1210,7 @@ relation is an `AddCommMonoid`."]
 instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient :=
   { (Function.Surjective.commMonoid _ Quotient.surjective_Quotient_mk'' rfl
       (fun _ _ => rfl) fun _ _ => rfl : CommMonoid c.Quotient) with
-    /- The `toMonoid` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.commMonoid` when the type checker is
-    checking that instance diagrams commute -/
+    /- See note [instance def-eq performance] -/
     toMonoid := Con.monoid _ }
 #align con.comm_monoid Con.commMonoid
 #align add_con.add_comm_monoid AddCon.addCommMonoid
@@ -1312,6 +1304,7 @@ instance group : Group c.Quotient :=
   { (Function.Surjective.group Quotient.mk''
       Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
         (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl : Group c.Quotient) with
+    /- See note [instance def-eq performance] -/
     toMonoid := Con.monoid _
     toInv := Con.hasInv _
     toDiv := Con.hasDiv _ }

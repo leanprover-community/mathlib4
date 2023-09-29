@@ -1261,15 +1261,32 @@ initialize_simps_projections AddGroup
 initialize_simps_projections CommGroup
 initialize_simps_projections AddCommGroup
 
-library_note "Instance Performance" /--
+library_note "instance def-eq performance" /--
 When defining instances, a slightly different definition on the instance can have a major impact on
-performance.
+performance when checking definitional equality of instances.
 
 Usually all fields that can be filled in using an earlier instance on the same type should be filled
 in that way. It may be necessary to check what the fields of particular class are when defining an
-instance.
+instance. This is particularly important to pay attention to when instances are being inherited from
+a definitionally equal type, or where instance constructors like `Function.Injective.group` are
+being used.
 
-For example,
+For example, when defining the `AddCommGroup` instance on a `Submodule`, `p` of a `Module`. The following
+definition is preferred
 
+```
+instance Submonoid.addCommGroup : AddCommGroup p :=
+  { p.toAddSubgroup.toAddCommGroup with
+    toAddMonoid := p.addCommMonoid.toAddMonoid }
+```
 
+A simpler definition would be
+```
+instance Submonoid.addCommGroup : AddCommGroup p :=
+  p.toAddSubgroup.toAddCommGroup
+```
+However this second definition will be slower because checking the definitional equality
+`p.addCommGroup.toAddMonoid = p.addMonoid` requires much more unfolding the for the first
+definition. This equality is almost immediate after unfolding `Submonoid.addCommGroup`, but
+for the second definition it also requires unfolding `AddSubgroup.toAddCommGroup`.
 -/

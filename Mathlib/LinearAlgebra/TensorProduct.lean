@@ -96,9 +96,7 @@ protected instance add : Add (M ⊗[R] N) :=
 
 instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
-    /- The `toAdd` field is given explicitly as `TensorProduct.add` for performance reasons.
-    This avoids any need to unfold `Con.addMonoid` when the type checker is checking
-    that instance diagrams commute -/
+    /- See note [instance def-eq performance] -/
     toAdd := TensorProduct.add _ _ }
 
 instance addSemigroup : AddSemigroup (M ⊗[R] N) :=
