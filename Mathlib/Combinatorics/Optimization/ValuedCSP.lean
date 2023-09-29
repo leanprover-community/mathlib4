@@ -39,9 +39,9 @@ structure ValuedCspTemplate (C : Type) [LinearOrderedAddCommMonoid C] where
 /-- A term in a valued CSP instance over the template `Γ`. -/
 structure ValuedCspTerm {C : Type} [LinearOrderedAddCommMonoid C] (Γ : ValuedCspTemplate C)
     (ι : Type) where
-  /-- Which cost function used -/
+  /-- Which cost function is instantiated -/
   f : Σ (k : ℕ), (Fin k → Γ.D) → C
-  /-- The cost function is in the template -/
+  /-- The cost function comes from the template -/
   inΓ : f ∈ Γ.F
   /-- Which variables as plugged as arguments to the cost function -/
   app : Fin f.fst → ι
