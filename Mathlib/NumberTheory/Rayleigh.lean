@@ -174,7 +174,7 @@ theorem rayleigh_pos' {r s : ℝ} (hrs : r.IsConjugateExponent s) :
   rw [symmDiff_comm, rayleigh_pos hrs.symm]
 
 /-- Let `r` be an irrational number. Then `B⁺_r` and `B⁺'_r` are equal. -/
-theorem Irrational.beattySequence_pos_eq {r : ℝ} (hr : Irrational r) :
+theorem Irrational.beattySequence'_pos_eq {r : ℝ} (hr : Irrational r) :
     {beattySequence' r k | k > 0} = {beattySequence r k | k > 0} := by
   dsimp only [beattySequence, beattySequence']
   congr! 4; rename_i k; rw [and_congr_right_iff]; intro hk; congr!
@@ -186,4 +186,4 @@ theorem Irrational.beattySequence_pos_eq {r : ℝ} (hr : Irrational r) :
 `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺_s` partition the positive integers. -/
 theorem rayleigh_irr_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) (hr : Irrational r) :
     {beattySequence r k | k > 0} ∆ {beattySequence s k | k > 0} = {n | 0 < n} := by
-  rw [← hr.beattySequence_pos_eq, rayleigh_pos' hrs]
+  rw [← hr.beattySequence'_pos_eq, rayleigh_pos' hrs]
