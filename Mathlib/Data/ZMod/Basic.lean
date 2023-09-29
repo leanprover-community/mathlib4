@@ -570,7 +570,7 @@ theorem ker_int_castRingHom (n : ℕ) :
 #align zmod.ker_int_cast_ring_hom ZMod.ker_int_castRingHom
 
 theorem cast_injective_of_lt {m n : ℕ} [nzm : NeZero m] (h : m < n) :
-  Function.Injective (@cast (ZMod n) _ m) := by
+    Function.Injective (@cast (ZMod n) _ m) := by
   cases m with
   | zero => cases nzm; simp_all
   | succ m =>
