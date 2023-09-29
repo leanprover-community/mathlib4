@@ -17,7 +17,7 @@ These instances are useful for working with `ConvexCone`.
 
 -/
 
-variable {𝕜 E : Type*}
+variable {𝕜 𝕜' E : Type*}
 
 variable [OrderedSemiring 𝕜]
 
@@ -26,7 +26,53 @@ local notation3 (prettyPrint := false) "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
 namespace Nonneg
 
-section AddCommMonoid
+section SMul
+
+variable [SMul 𝕜 𝕜']
+
+instance instSMul : SMul 𝕜≥0 𝕜' where
+  smul c a := c.val • a
+
+@[simp, norm_cast]
+lemma coe_smul (a : 𝕜≥0) (x : 𝕜') : (a : 𝕜) • x = a • x :=
+  rfl
+
+@[simp]
+lemma mk_smul (a) (ha) (x : 𝕜') : (⟨a, ha⟩ : 𝕜≥0) • x = a • x :=
+  rfl
+
+end SMul
+
+section IsScalarTower
+
+variable [SMul 𝕜 𝕜'] [SMul 𝕜 E] [SMul 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
+
+instance instIsScalarTower : IsScalarTower 𝕜≥0 𝕜' E :=
+  SMul.comp.isScalarTower ↑Nonneg.coeRingHom
+
+end IsScalarTower
+
+section SMulWithZero
+
+variable [Zero 𝕜'] [h : SMulWithZero 𝕜 𝕜']
+
+instance instSMulWithZero : SMulWithZero 𝕜≥0 𝕜' where
+  smul a b := a.val • b
+  smul_zero _ := smul_zero _
+  zero_smul _ := zero_smul _ _
+
+end SMulWithZero
+
+section OrderedAddCommMonoid
+
+variable [OrderedAddCommMonoid E] [SMulWithZero 𝕜 E] [hE : OrderedSMul 𝕜 E]
+
+instance instOrderedSmul : OrderedSMul 𝕜≥0 E :=
+  ⟨hE.1, hE.2⟩
+
+end OrderedAddCommMonoid
+
+section Module
 
 variable [AddCommMonoid E] [Module 𝕜 E]
 
@@ -34,26 +80,6 @@ variable [AddCommMonoid E] [Module 𝕜 E]
 instance instModule : Module 𝕜≥0 E :=
   Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
 
-@[simp, norm_cast]
-lemma coe_smul (a : 𝕜≥0) (x : E) : (a : 𝕜) • x = a • x :=
-  rfl
-
-@[simp]
-lemma mk_smul (a) (ha) (x : E) : (⟨a, ha⟩ : 𝕜≥0) • x = a • x :=
-  rfl
-
-instance instIsScalarTower : IsScalarTower 𝕜≥0 𝕜 E :=
-  SMul.comp.isScalarTower ↑Nonneg.coeRingHom
-
-end AddCommMonoid
-
-section OrderedAddCommMonoid
-
-variable [OrderedAddCommMonoid E] [Module 𝕜 E] [hE : OrderedSMul 𝕜 E]
-
-instance instOrderedSmul : OrderedSMul 𝕜≥0 E :=
-  ⟨hE.1, hE.2⟩
-
-end OrderedAddCommMonoid
+end Module
 
 end Nonneg
