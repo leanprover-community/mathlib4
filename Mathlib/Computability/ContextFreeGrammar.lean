@@ -22,6 +22,10 @@ inductive Symbol (T : Type _) (N : Type _)
   /-- Nonterminal symbols (must not be present at the end of word being generated) -/
   | nonterminal (n : N) : Symbol T N
 
+structure ContextFreeRule (T : Type _) (N : Type _) where
+  input : N
+  output : List (Symbol T N)
+
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
 structure ContextFreeGrammar (T : Type _) where
   /-- Type of nonterminals -/
@@ -29,17 +33,24 @@ structure ContextFreeGrammar (T : Type _) where
   /-- Initial nonterminal -/
   initial : NT
   /-- Rewrite rules -/
-  rules : List (NT × List (Symbol T NT))
-
-namespace ContextFreeGrammar
+  rules : List (ContextFreeRule T NT)
 
 variable {T : Type _}
 
+inductive ContextFreeRule.RewritesTo {N : Type _} (r : ContextFreeRule T N) :
+    List (Symbol T N) → List (Symbol T N) → Prop
+  /-- The replacement is at the start of the remaining string. -/
+  | head (xs : List (Symbol T N)) :
+      r.RewritesTo (Symbol.nonterminal r.input :: xs) (r.output ++ xs)
+  /-- There is a replacement later in the string. -/
+  | cons (x : Symbol T N) {s₁ s₂ : List (Symbol T N)} (h : RewritesTo r s₁ s₂) :
+      r.RewritesTo (x :: s₁) (x :: s₂)
+
+namespace ContextFreeGrammar
+
 /-- One step of context-free transformation. -/
-def Produces (g : ContextFreeGrammar T) (w₁ w₂ : List (Symbol T g.NT)) : Prop :=
-  ∃ r ∈ g.rules,
-    ∃ u v : List (Symbol T g.NT),
-      w₁ = u ++ [Symbol.nonterminal r.fst] ++ v ∧ w₂ = u ++ r.snd ++ v
+def Produces (g : ContextFreeGrammar T) (u v : List (Symbol T g.NT)) : Prop :=
+  ∃ r ∈ g.rules, ContextFreeRule.RewritesTo r u v
 
 /-- Any number of steps of context-free transformation. -/
 def Derives (g : ContextFreeGrammar T) : List (Symbol T g.NT) → List (Symbol T g.NT) → Prop :=
