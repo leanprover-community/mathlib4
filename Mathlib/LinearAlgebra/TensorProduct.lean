@@ -94,12 +94,16 @@ def addMonoid : AddMonoid (M ⊗[R] N) :=
 protected instance add : Add (M ⊗[R] N) :=
   (addConGen (TensorProduct.Eqv R M N)).hasAdd
 
+instance zero : Zero (M ⊗[R] N) :=
+  (addConGen (TensorProduct.Eqv R M N)).addMonoid.toZero
+
 instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
     /- The `toAdd` field is given explicitly as `TensorProduct.add` for performance reasons.
     This avoids any need to unfold `Con.addMonoid` when the type checker is checking
     that instance diagrams commute -/
-    toAdd := TensorProduct.add _ _ }
+    toAdd := TensorProduct.add _ _
+    toZero := TensorProduct.zero _ _ }
 
 instance addSemigroup : AddSemigroup (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
@@ -286,7 +290,7 @@ instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
   { TensorProduct.addCommSemigroup _ _,
     TensorProduct.addZeroClass _ _ with
     toAddSemigroup := TensorProduct.addSemigroup _ _
-    toZero := (TensorProduct.addZeroClass _ _).toZero
+    toZero := TensorProduct.zero _ _
     nsmul := fun n v => n • v
     nsmul_zero := by simp [TensorProduct.zero_smul]
     nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
