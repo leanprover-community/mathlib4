@@ -492,6 +492,28 @@ instance {B X : C} (f : X ⟶ B) [EffectiveEpi f] : EffectiveEpiFamily (fun () �
   ⟨⟨EffectiveEpi_familyStruct f⟩⟩
 
 /--
+A single element `EffectiveEpiFamily` constists of an `EffectiveEpi`
+-/
+noncomputable
+def EffectiveEpiStruct_ofFamily {B X : C} (f : X ⟶ B)
+    [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
+    EffectiveEpiStruct f where
+  desc e h := EffectiveEpiFamily.desc
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg)
+  fac e h := EffectiveEpiFamily.fac
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg) ()
+  uniq e h m hm := EffectiveEpiFamily.uniq
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg) m (fun _ ↦ hm)
+
+instance {B X : C} (f : X ⟶ B) [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
+    EffectiveEpi f :=
+  ⟨⟨EffectiveEpiStruct_ofFamily f⟩⟩
+
+lemma effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
+    EffectiveEpi f ↔ EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+/--
 A family of morphisms with the same target inducing an isomorphism from the coproduct to the target
 is an `EffectiveEpiFamily`.
 -/
