@@ -220,6 +220,17 @@ lemma xspectral_theorem' :
   simpa [ ← Matrix.mul_assoc, hA.xeigenvectorMatrix_mul_inv, Matrix.one_mul] using
     congr_arg (hA.xeigenvectorMatrix * ·) hA.xspectral_theorem
 
+lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
+  conv_lhs => rw [hA.spectral_theorem']
+  have hE := isUnit_det_of_invertible (hA.eigenvectorMatrix)
+  have hiE := isUnit_det_of_invertible (hA.eigenvectorMatrixInv)
+  simp only [rank_mul_eq_right_of_isUnit_det hA.eigenvectorMatrix _ hE,
+    rank_mul_eq_left_of_isUnit_det hA.eigenvectorMatrixInv _ hiE,
+    rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
+
+/-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
+lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
+  rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
 
 end IsHermitian
 
