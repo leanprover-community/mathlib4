@@ -57,7 +57,6 @@ section SMulWithZero
 variable [Zero 𝕜'] [h : SMulWithZero 𝕜 𝕜']
 
 instance instSMulWithZero : SMulWithZero 𝕜≥0 𝕜' where
-  smul a b := a.val • b
   smul_zero _ := smul_zero _
   zero_smul _ := zero_smul _ _
 
