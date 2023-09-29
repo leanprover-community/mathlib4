@@ -759,7 +759,7 @@ section SemilatticeSup
 variable [SemilatticeSup α] [LocallyFiniteOrderBot α]
 
 -- TODO: Why does `id_eq` simplify the LHS here but not the LHS of `Finset.sup_Iic`?
-@[simp] lemma sup'_Iic (a : α) : (Iic a).sup' nonempty_Iic id = a :=
+lemma sup'_Iic (a : α) : (Iic a).sup' nonempty_Iic id = a :=
   le_antisymm (sup'_le _ _ fun _ ↦ mem_Iic.1) <| le_sup' (f := id) <| mem_Iic.2 <| le_refl a
 
 @[simp] lemma sup_Iic [OrderBot α] (a : α) : (Iic a).sup id = a :=
