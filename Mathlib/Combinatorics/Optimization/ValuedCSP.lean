@@ -34,7 +34,7 @@ structure ValuedCspTemplate (C : Type) [LinearOrderedAddCommMonoid C] where
   /-- Domain of "labels" -/
   D : Type
   /-- Cost functions `D^k → C` for any `k` -/
-  F : List (Σ (k : ℕ), (Fin k → D) → C)
+  F : Set (Σ (k : ℕ), (Fin k → D) → C)
 
 /-- A term in a valued CSP instance over the template `Γ`. -/
 structure ValuedCspTerm {C : Type} [LinearOrderedAddCommMonoid C] (Γ : ValuedCspTemplate C)
@@ -43,7 +43,7 @@ structure ValuedCspTerm {C : Type} [LinearOrderedAddCommMonoid C] (Γ : ValuedCs
   f : Σ (k : ℕ), (Fin k → Γ.D) → C
   /-- The cost function comes from the template -/
   inΓ : f ∈ Γ.F
-  /-- Which variables as plugged as arguments to the cost function -/
+  /-- Which variables are plugged as arguments to the cost function -/
   app : Fin f.fst → ι
 
 /-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
@@ -83,7 +83,7 @@ open Rat
 private def exampleAbs : Σ (k : ℕ), (Fin k → ℚ) → ℚ := ⟨1, fun a => |a 0|⟩
 
 private def exampleFiniteValuedCsp : ValuedCspTemplate ℚ :=
-  ValuedCspTemplate.mk ℚ [exampleAbs]
+  ValuedCspTemplate.mk ℚ {exampleAbs}
 
 private def exampleFiniteValuedInstance : ValuedCspInstance exampleFiniteValuedCsp (Fin 2) :=
   [ValuedCspTerm.mk exampleAbs (by simp [exampleFiniteValuedCsp]) ![0],
@@ -133,7 +133,7 @@ private def exampleEqualit : (Fin 2 → Fin 3) → Bool := fun d => d 0 == d 1
 private def exampleEquality : Σ (k : ℕ), (Fin k → Fin 3) → Bool := ⟨2, exampleEqualit⟩
 
 private def exampleCrispCsp : ValuedCspTemplate Bool :=
-  ValuedCspTemplate.mk (Fin 3) [exampleEquality]
+  ValuedCspTemplate.mk (Fin 3) {exampleEquality}
 
 private def exampleTermAB : ValuedCspTerm exampleCrispCsp (Fin 4) :=
   ValuedCspTerm.mk exampleEquality (by simp [exampleCrispCsp]) ![0, 1]
