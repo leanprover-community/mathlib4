@@ -176,6 +176,17 @@ theorem prod_inter_prod : s₁ ×ˢ t₁ ∩ s₂ ×ˢ t₂ = (s₁ ∩ s₂) ×
   simp [and_assoc, and_left_comm]
 #align set.prod_inter_prod Set.prod_inter_prod
 
+lemma compl_prod_eq_union {α β : Type*} (s : Set α) (t : Set β) :
+    (s ×ˢ t)ᶜ = (sᶜ ×ˢ univ) ∪ (univ ×ˢ tᶜ) := by
+  ext p
+  simp only [mem_compl_iff, mem_prod, not_and, mem_union, mem_univ, and_true, true_and]
+  constructor <;> intro h
+  · by_cases fst_in_s : p.fst ∈ s
+    · exact Or.inr (h fst_in_s)
+    · exact Or.inl fst_in_s
+  · intro fst_in_s
+    simpa only [fst_in_s, not_true, false_or] using h
+
 @[simp]
 theorem disjoint_prod : Disjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) ↔ Disjoint s₁ s₂ ∨ Disjoint t₁ t₂ := by
   simp_rw [disjoint_left, mem_prod, not_and_or, Prod.forall, and_imp, ← @forall_or_right α, ←

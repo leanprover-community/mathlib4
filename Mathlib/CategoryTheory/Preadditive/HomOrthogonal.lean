@@ -30,7 +30,7 @@ then decompositions of an object as a biproduct of the family have uniquely defi
 We state this as:
 ```
 theorem HomOrthogonal.equiv_of_iso (o : HomOrthogonal s) {f : α → ι} {g : β → ι}
-  (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) : ∃ e : α ≃ β, ∀ a, g (e a) = f a
+    (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) : ∃ e : α ≃ β, ∀ a, g (e a) = f a
 ```
 
 This is preliminary to defining semisimple categories.

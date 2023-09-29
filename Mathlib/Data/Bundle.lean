@@ -21,8 +21,8 @@ general, the constructions of fiber bundles we will make will be of this form.
 ## Main Definitions
 
 * `Bundle.TotalSpace` the total space of a bundle.
-* `bundle.total_space.proj` the projection from the total space to the base space.
-* `bundle.total_space.mk` the constructor for the total space.
+* `Bundle.TotalSpace.proj` the projection from the total space to the base space.
+* `Bundle.TotalSpace.mk` the constructor for the total space.
 
 ## Implementation Notes
 
@@ -31,7 +31,7 @@ general, the constructions of fiber bundles we will make will be of this form.
   Lean 4 `simp` fails to apply lemmas about `Σ x, E x` to elements of the total space.
 
 - The definition of `Bundle.TotalSpace` has an unused argument `F`. The reason is that in some
-  constructions (e.g., `bundle.continuous_linear_map.vector_bundle`) we need access to the atlas of
+  constructions (e.g., `Bundle.ContinuousLinearMap.vectorBundle`) we need access to the atlas of
   trivializations of original fiber bundles to construct the topology on the total space of the new
   fiber bundle.
 
