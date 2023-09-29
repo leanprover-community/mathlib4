@@ -115,7 +115,6 @@ theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
   rfl
 #align nat.digits_one_succ Nat.digits_one_succ
 
-@[simp]
 theorem digits_add_two_add_one (b n : ℕ) :
     digits (b + 2) (n + 1) = ((n + 1) % (b + 2)) :: digits (b + 2) ((n + 1) / (b + 2)) := by
   simp [digits, digitsAux_def]
