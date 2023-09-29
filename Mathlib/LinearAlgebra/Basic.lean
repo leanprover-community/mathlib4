@@ -1016,11 +1016,7 @@ section Finsupp
 
 variable {γ : Type*} [Zero γ]
 
-@[simp]
-theorem map_finsupp_sum (f : M →ₛₗ[σ₁₂] M₂) {t : ι →₀ γ} {g : ι → γ → M} :
-    f (t.sum g) = t.sum fun i d => f (g i d) :=
-  f.map_sum
-#align linear_map.map_finsupp_sum LinearMap.map_finsupp_sum
+#align linear_map.map_finsupp_sum map_finsupp_sumₓ
 
 theorem coe_finsupp_sum (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) :
     ⇑(t.sum g) = t.sum fun i d => g i d := rfl
@@ -1817,23 +1813,7 @@ end
 
 section Finsupp
 
-variable {γ : Type*}
-
-variable [Semiring R] [Semiring R₂]
-
-variable [AddCommMonoid M] [AddCommMonoid M₂]
-
-variable [Module R M] [Module R₂ M₂] [Zero γ]
-
-variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
-
-variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
-
-@[simp]
-theorem map_finsupp_sum (f : M ≃ₛₗ[τ₁₂] M₂) {t : ι →₀ γ} {g : ι → γ → M} :
-    f (t.sum g) = t.sum fun i d => f (g i d) :=
-  f.map_sum _
-#align linear_equiv.map_finsupp_sum LinearEquiv.map_finsupp_sum
+#align linear_equiv.map_finsupp_sum map_finsupp_sumₓ
 
 end Finsupp
 

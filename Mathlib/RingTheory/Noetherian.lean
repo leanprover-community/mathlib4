@@ -286,6 +286,21 @@ instance isNoetherian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M
 
 end
 
+section CommRing
+
+variable (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+  [IsNoetherian R M] [Module.Finite R N]
+
+instance isNoetherian_linearMap_pi {ι : Type*} [Finite ι] : IsNoetherian R ((ι → R) →ₗ[R] M) :=
+  let _i : Fintype ι := Fintype.ofFinite ι; isNoetherian_of_linearEquiv (Module.piEquiv ι R M)
+
+instance isNoetherian_linearMap : IsNoetherian R (N →ₗ[R] M) := by
+  obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R N
+  let g : (N →ₗ[R] M) →ₗ[R] (Fin n → R) →ₗ[R] M := (LinearMap.llcomp R (Fin n → R) N M).flip f
+  exact isNoetherian_of_injective g hf.injective_linearMapComp_right
+
+end CommRing
+
 open IsNoetherian Submodule Function
 
 section
