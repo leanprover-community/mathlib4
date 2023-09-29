@@ -23,7 +23,9 @@ inductive Symbol (T : Type _) (N : Type _)
   | nonterminal (n : N) : Symbol T N
 
 structure ContextFreeRule (T : Type _) (N : Type _) where
+  /-- Input nonterminal a.k.a. left-hand side -/
   input : N
+  /-- Output string a.k.a. right-hand side -/
   output : List (Symbol T N)
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
