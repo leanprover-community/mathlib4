@@ -15,8 +15,6 @@ The graded product  $A \otimes B$ is defined on homogeneous tensors by
 
 $$(a \otimes b) \cdot (a' \otimes b') = (-1)^{\deg a' \deg b} (a \cdot a') \otimes (b \cdot b')$$
 
-See also https://math.stackexchange.com/a/2024228/1896
-
 ## Main results
 
 * `TensorProduct.gradedMul`: this multiplication on externally-graded rings, as a bilinear map
@@ -27,6 +25,11 @@ See also https://math.stackexchange.com/a/2024228/1896
 ## Notation
 
 `𝒜 ⊗'[R] ℬ` is notation for `SuperTensorProduct R 𝒜 ℬ`
+
+## References
+
+* https://math.stackexchange.com/q/202718/1896
+* TODO: find appropriate part of Bourbaki
 -/
 
 local notation "ℤ₂" => ZMod 2
@@ -250,8 +253,8 @@ noncomputable def auxEquiv : (𝒜 ⊗'[R] ℬ) ≃ₗ[R] (⨁ i, 𝒜 i) ⊗[R]
     auxEquiv R 𝒜 ℬ (a ⊗ₜ' b : 𝒜 ⊗'[R] ℬ) = decompose 𝒜 a ⊗ₜ decompose ℬ b := rfl
 
 @[simp] theorem auxEquiv_one : auxEquiv R 𝒜 ℬ 1 = 1 := by
-  rw [←of_one, Algebra.TensorProduct.one_def, auxEquiv_tmul 𝒜 ℬ, ←decomposeAlgEquiv_apply,
-    ←decomposeAlgEquiv_apply, AlgEquiv.map_one, AlgEquiv.map_one, Algebra.TensorProduct.one_def]
+  rw [←of_one, Algebra.TensorProduct.one_def, auxEquiv_tmul 𝒜 ℬ, DirectSum.decompose_one,
+    DirectSum.decompose_one, Algebra.TensorProduct.one_def]
 
 /-- Auxiliary construction used to build the `Mul` instance and get distributivity of `+` and
 `\smul`. -/
@@ -266,27 +269,12 @@ theorem mulHom_apply (x y : 𝒜 ⊗'[R] ℬ) :
       = (auxEquiv R 𝒜 ℬ).symm (gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y)) :=
   rfl
 
+/-- The multipication on the super tensor product.
+
+See `SuperTensorProduct.coe_mul_coe` for a characterization on pure tensors. -/
 noncomputable instance : Mul (𝒜 ⊗'[R] ℬ) where mul x y := mulHom 𝒜 ℬ x y
 
 theorem mul_def (x y : 𝒜 ⊗'[R] ℬ) : x * y = mulHom 𝒜 ℬ x y := rfl
-
-set_option maxHeartbeats 800000 in
-private theorem coe_mul_coe' {i₁ j₁ i₂ j₂ : ℤ₂} (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
-    ((a₁ : A) ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] (b₂ : B) : 𝒜 ⊗'[R] ℬ) =
-      (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ⊗ₜ' (b₁ * b₂ : B)) := by
-  dsimp only [mul_def, mulHom_apply, of_symm_of]
-  dsimp [auxEquiv, tmul]
-  erw [decompose_coe, decompose_coe, decompose_coe, decompose_coe]
-  dsimp
-  simp_rw [←lof_eq_of R]
-  rw [gradedMul_of_tmul_of]
-  simp_rw [lof_eq_of R]
-  rw [LinearEquiv.symm_symm]
-  rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, map_smul,
-    ←zsmul_eq_smul_cast R, ←@Units.smul_def _ _ (_) (_)]
-  rw [congr_symm_tmul]
-  dsimp
-  rw [decompose_symm_of, decompose_symm_of, SetLike.coe_gMul, SetLike.coe_gMul]
 
 noncomputable instance instMonoid : Monoid (𝒜 ⊗'[R] ℬ) where
   mul_one x := by
@@ -305,6 +293,25 @@ noncomputable instance instRing : Ring (𝒜 ⊗'[R] ℬ) where
   mul_zero x := by simp_rw [mul_def, map_zero]
   zero_mul x := by simp_rw [mul_def, LinearMap.map_zero₂]
 
+-- extracted to an auxiliary lemmas as it is so slow
+set_option maxHeartbeats 800000 in
+private theorem coe_mul_coe_aux {i₁ j₁ i₂ j₂ : ℤ₂} (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
+    ((a₁ : A) ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] (b₂ : B) : 𝒜 ⊗'[R] ℬ) =
+      (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ⊗ₜ' (b₁ * b₂ : B)) := by
+  dsimp only [mul_def, mulHom_apply, of_symm_of]
+  dsimp [auxEquiv, tmul]
+  erw [decompose_coe, decompose_coe, decompose_coe, decompose_coe]
+  dsimp
+  simp_rw [←lof_eq_of R]
+  rw [gradedMul_of_tmul_of]
+  simp_rw [lof_eq_of R]
+  rw [LinearEquiv.symm_symm]
+  rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, map_smul,
+    ←zsmul_eq_smul_cast R, ←@Units.smul_def _ _ (_) (_)]
+  rw [congr_symm_tmul]
+  dsimp
+  rw [decompose_symm_of, decompose_symm_of, SetLike.coe_gMul, SetLike.coe_gMul]
+
 /-- The characterization of this multiplication on partially homogenous elements. -/
 theorem coe_mul_coe {j₁ i₂ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) =
@@ -314,7 +321,7 @@ theorem coe_mul_coe {j₁ i₂ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (a₂ : �
   rw [Finset.sum_mul, Finset.mul_sum]
   simp_rw [tmul, sum_tmul, tmul_sum, map_sum, Finset.smul_sum]
   rw [Finset.sum_mul]
-  simp_rw [Finset.mul_sum, coe_mul_coe']
+  simp_rw [Finset.mul_sum, coe_mul_coe_aux]
 
 /-- The ring morphism `A →+* A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 @[simps]
@@ -336,16 +343,13 @@ def includeLeftRingHom : A →+* 𝒜 ⊗'[R] ℬ where
 noncomputable instance instAlgebra : Algebra R (𝒜 ⊗'[R] ℬ) where
   toRingHom := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
   commutes' r x := by
-    dsimp
-    simp_rw [mul_def, mulHom_apply, auxEquiv_tmul]
-    rw [←decomposeAlgEquiv_apply, ←decomposeAlgEquiv_apply]
-    simp_rw [AlgEquiv.commutes, _root_.map_one, algebraMap_gradedMul, gradedMul_algebraMap]
+    dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
+    simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul,
+      gradedMul_algebraMap]
   smul_def' r x := by
-    dsimp
-    simp_rw [mul_def, mulHom_apply, auxEquiv_tmul]
-    rw [←decomposeAlgEquiv_apply, ←decomposeAlgEquiv_apply]
-    simp_rw [AlgEquiv.commutes, _root_.map_one, algebraMap_gradedMul, map_smul,
-      LinearEquiv.symm_apply_apply]
+    dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
+    simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul,
+      map_smul, LinearEquiv.symm_apply_apply]
 
 end SuperTensorProduct
 
