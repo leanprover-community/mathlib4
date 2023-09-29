@@ -537,6 +537,10 @@ instance : Module.Finite ℤ (Additive (𝓞 K)ˣ) := by
     have : Finite (Subgroup.toAddSubgroup (torsion K)) := (inferInstance : Finite (torsion K))
     exact AddGroup.fg_of_finite
 
+instance : Monoid.FG (𝓞 K)ˣ := by
+  rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]
+  infer_instance
+
 theorem rank_modTorsion :
     FiniteDimensional.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (unitLatticeEquiv K), unitLattice_rank]
