@@ -48,6 +48,13 @@ inductive ContextFreeRule.RewritesTo {N : Type _} (r : ContextFreeRule T N) :
   | cons (x : Symbol T N) {s₁ s₂ : List (Symbol T N)} (h : RewritesTo r s₁ s₂) :
       r.RewritesTo (x :: s₁) (x :: s₂)
 
+lemma ContextFreeRule.rewritesTo_of_parts {N : Type _}
+    (r : ContextFreeRule T N) (u v : List (Symbol T N)) :
+    r.RewritesTo (u ++ [Symbol.nonterminal r.input] ++ v) (u ++ r.output ++ v) := by
+  induction u with
+  | nil         => exact ContextFreeRule.RewritesTo.head v
+  | cons d l ih => exact ContextFreeRule.RewritesTo.cons d ih
+
 namespace ContextFreeGrammar
 
 /-- One step of context-free transformation. -/
