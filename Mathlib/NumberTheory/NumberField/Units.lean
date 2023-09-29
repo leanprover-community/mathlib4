@@ -524,6 +524,9 @@ instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
 instance : Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Module.Finite.equiv (unitLatticeEquiv K)
 
+-- Note that we prove this instance first and then deduce from it the instance
+-- ` Monoid.FG (𝓞 K)ˣ`, and not the other way around, due to no `Subgroup` version
+-- of `Submodule.fg_of_fg_map_of_fg_inf_ker` existing.
 instance : Module.Finite ℤ (Additive (𝓞 K)ˣ) := by
   rw [Module.finite_def]
   refine Submodule.fg_of_fg_map_of_fg_inf_ker
