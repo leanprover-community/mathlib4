@@ -54,7 +54,7 @@ end IsScalarTower
 
 section SMulWithZero
 
-variable [Zero 𝕜'] [h : SMulWithZero 𝕜 𝕜']
+variable [Zero 𝕜'] [SMulWithZero 𝕜 𝕜']
 
 instance instSMulWithZero : SMulWithZero 𝕜≥0 𝕜' where
   smul_zero _ := smul_zero _
