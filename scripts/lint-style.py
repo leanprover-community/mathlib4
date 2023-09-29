@@ -177,7 +177,7 @@ def four_spaces_in_second_line(lines, path):
                                           line):
             # Calculate the number of spaces before the first non-space character in the next line
             stripped_next_line = next_line.lstrip()
-            if next_line != '\n' and not (next_line.startswith("#") or stripped_next_line.startswith("--")):
+            if not (next_line == '\n' or next_line.startswith("#") or stripped_next_line.startswith("--")):
                 num_spaces = len(next_line) - len(stripped_next_line)
                 # The match with "| " could potentially match with a different usage of the same
                 # symbol, e.g. some sort of norm. In that case a space is not necessary, so
