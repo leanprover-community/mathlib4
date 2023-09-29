@@ -12,12 +12,13 @@ import Mathlib.Data.Bool.Basic
 
 /-!
 
-# General Valued Constraint Satisfaction Problems
+# General-Valued Constraint Satisfaction Problems
 
-Generalization of Min-Cost-Hom (incl. 3-SAT) and Finite-Valued Constraint Satisfaction Problems
+General-Valued CSP is a very broad class of problems in discrete optimization.
+General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finite-Valued CSP.
 
 ## Main definitions
-* `ValuedCspTemplate`: A template for so-called fixed-language VCSPs.
+* `ValuedCspTemplate`: A template for so-called fixed-language VCSP.
 * `ValuedCspInstance`: An instance of a VCSP problem over given template.
 * `ValuedCspInstance.evalSolution`: An evaluation of the VCSP instance for given solution.
 * `ValuedCspInstance.optimumSolution`: Is given solution a minimum of the VCSP instance?
@@ -28,7 +29,7 @@ Generalization of Min-Cost-Hom (incl. 3-SAT) and Finite-Valued Constraint Satisf
 
 -/
 
-/-- A template for a valued CSP problem with costs in `C` which is usually `ℚ≥0` -/
+/-- A template for a valued CSP problem with costs in `C`. -/
 structure ValuedCspTemplate (C : Type) [LinearOrderedAddCommMonoid C] where
   /-- Domain of "labels" -/
   D : Type
@@ -38,8 +39,11 @@ structure ValuedCspTemplate (C : Type) [LinearOrderedAddCommMonoid C] where
 /-- A term in a valued CSP instance over the template `Γ`. -/
 structure ValuedCspTerm {C : Type} [LinearOrderedAddCommMonoid C] (Γ : ValuedCspTemplate C)
     (ι : Type) where
+  /-- Which cost function used -/
   f : Σ (k : ℕ), (Fin k → Γ.D) → C
+  /-- The cost function is in the template -/
   inΓ : f ∈ Γ.F
+  /-- Which variables as plugged as arguments to the cost function -/
   app : Fin f.fst → ι
 
 /-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
