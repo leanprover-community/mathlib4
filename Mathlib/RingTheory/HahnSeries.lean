@@ -501,7 +501,6 @@ theorem smul_coeff {r : R} {x : HahnSeries Γ V} {a : Γ} : (r • x).coeff a = 
 #align hahn_series.smul_coeff HahnSeries.smul_coeff
 
 instance : DistribMulAction R (HahnSeries Γ V) where
-  smul := (· • ·)
   one_smul _ := by
     ext
     simp
@@ -1580,7 +1579,6 @@ theorem smul_apply {x : HahnSeries Γ R} {s : SummableFamily Γ R α} {a : α} :
 #align hahn_series.summable_family.smul_apply HahnSeries.SummableFamily.smul_apply
 
 instance : Module (HahnSeries Γ R) (SummableFamily Γ R α) where
-  smul := (· • ·)
   smul_zero _ := ext fun _ => mul_zero _
   zero_smul _ := ext fun _ => zero_mul _
   one_smul _ := ext fun _ => one_mul _

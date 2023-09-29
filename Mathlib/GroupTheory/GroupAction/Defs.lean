@@ -517,7 +517,6 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
-  smul := (· • ·)
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
   mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
 #align function.injective.mul_action Function.Injective.mulAction
@@ -530,7 +529,6 @@ See note [reducible non-instances]. -/
 protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
-  smul := (· • ·)
   one_smul y := by
     rcases hf y with ⟨x, rfl⟩
     rw [← smul, one_smul]
@@ -550,7 +548,6 @@ def Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R M]
     [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     MulAction S M where
-  smul := (· • ·)
   one_smul b := by rw [← f.map_one, hsmul, one_smul]
   mul_smul := hf.forall₂.mpr fun a b x => by simp only [← f.map_mul, hsmul, mul_smul]
 #align function.surjective.mul_action_left Function.Surjective.mulActionLeft
@@ -719,7 +716,6 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom B A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
-  smul := (· • ·)
   smul_zero c := hf <| by simp only [smul, map_zero, smul_zero]
 #align function.injective.smul_zero_class Function.Injective.smulZeroClass
 
@@ -742,7 +738,6 @@ def Function.Surjective.smulZeroClassLeft {R S M : Type*} [Zero M] [SMulZeroClas
     [SMul S M] (f : R → S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     SMulZeroClass S M where
-  smul := (· • ·)
   smul_zero := hf.forall.mpr fun c => by rw [hsmul, smul_zero]
 #align function.surjective.smul_zero_class_left Function.Surjective.smulZeroClassLeft
 

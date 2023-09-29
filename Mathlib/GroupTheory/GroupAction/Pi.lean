@@ -127,7 +127,6 @@ instance faithfulSMul {α : Type*} [Nonempty I] [∀ i, SMul α <| f i] [∀ i, 
 @[to_additive]
 instance mulAction (α) {m : Monoid α} [∀ i, MulAction α <| f i] :
     @MulAction α (∀ i : I, f i) m where
-  smul := (· • ·)
   mul_smul _ _ _ := funext fun _ => mul_smul _ _ _
   one_smul _ := funext fun _ => one_smul α _
 #align pi.mul_action Pi.mulAction
@@ -137,7 +136,6 @@ instance mulAction (α) {m : Monoid α} [∀ i, MulAction α <| f i] :
 instance mulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} [∀ i, MulAction (f i) (g i)] :
     @MulAction (∀ i, f i) (∀ i : I, g i)
       (@Pi.monoid I f m) where
-  smul := (· • ·)
   mul_smul _ _ _ := funext fun _ => mul_smul _ _ _
   one_smul _ := funext fun _ => one_smul _ _
 #align pi.mul_action' Pi.mulAction'

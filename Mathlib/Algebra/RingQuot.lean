@@ -38,7 +38,6 @@ variable {A : Type uA} [Semiring A] [Algebra S A]
 namespace RingCon
 
 instance (c : RingCon A) : Algebra S c.Quotient where
-  smul := (· • ·)
   toRingHom := c.mk'.comp (algebraMap S A)
   commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
   smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
@@ -398,7 +397,6 @@ instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩
 
 instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
-  smul := (· • ·)
   toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
   map_one' := by simp [← one_quot]
   map_mul' := by simp [mul_quot]

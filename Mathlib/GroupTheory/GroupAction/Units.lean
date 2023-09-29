@@ -60,7 +60,6 @@ instance [Monoid M] [MulAction M α] :
 
 instance [Monoid M] [Zero α] [SMulZeroClass M α] :
     SMulZeroClass Mˣ α where
-  smul := (· • ·)
   smul_zero m := smul_zero (m : M)
 
 instance instDistribSMulUnits [Monoid M] [AddZeroClass α] [DistribSMul M α] :
@@ -147,7 +146,6 @@ example [Monoid M] [Monoid N] [MulAction M N] [SMulCommClass M N N] [IsScalarTow
 instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SMulCommClass G M M]
     [IsScalarTower G M M] : MulDistribMulAction G Mˣ :=
   { Units.mulAction' with
-    smul := (· • ·),
     smul_one := fun _ => Units.ext <| smul_one _,
     smul_mul := fun _ _ _ => Units.ext <| smul_mul' _ _ _ }
 #align units.mul_distrib_mul_action' Units.mulDistribMulAction'

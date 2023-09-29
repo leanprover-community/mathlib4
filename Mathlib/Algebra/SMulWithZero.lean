@@ -59,7 +59,6 @@ instance MulZeroClass.toSMulWithZero [MulZeroClass R] : SMulWithZero R R where
 
 /-- Like `MulZeroClass.toSMulWithZero`, but multiplies on the right. -/
 instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass R] : SMulWithZero Rᵐᵒᵖ R where
-  smul := (· • ·)
   smul_zero _ := zero_mul _
   zero_smul := mul_zero
 #align mul_zero_class.to_opposite_smul_with_zero MulZeroClass.toOppositeSMulWithZero
@@ -90,7 +89,6 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.smulWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
     (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
     SMulWithZero R M' where
-  smul := (· • ·)
   zero_smul a := hf <| by simp [smul]
   smul_zero a := hf <| by simp [smul]
 #align function.injective.smul_with_zero Function.Injective.smulWithZero
@@ -101,7 +99,6 @@ See note [reducible non-instances]. -/
 protected def Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function.Surjective f)
     (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
     SMulWithZero R M' where
-  smul := (· • ·)
   zero_smul m := by
     rcases hf m with ⟨x, rfl⟩
     simp [← smul]

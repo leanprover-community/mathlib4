@@ -479,7 +479,6 @@ theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂]) = x * y := by ext <;> simp
 -- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
 -- for `ℍ[R]`)
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂] where
-  smul := (· • ·)
   toFun s := coe (algebraMap S R s)
   map_one' := by simp only [map_one, coe_one]
   map_zero' := by simp only [map_zero, coe_zero]

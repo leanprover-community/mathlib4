@@ -385,7 +385,6 @@ private theorem zero_smul' (x : LocalizedModule S M) : (0 : Localization S) • 
   rw [← Localization.mk_zero s, mk_smul_mk, zero_smul, zero_mk]
 
 instance isModule : Module (Localization S) (LocalizedModule S M) where
-  smul := (· • ·)
   one_smul := one_smul'
   mul_smul := mul_smul'
   smul_add := smul_add'
