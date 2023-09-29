@@ -84,7 +84,7 @@ lemma _root_.ConvexCone.mem_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointe
   Iff.rfl
 
 @[simp, norm_cast]
-lemma _root_.ConvexCone.toConvexCone_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) :
+lemma _root_.ConvexCone.coe_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) :
     S.toPointedCone hS = S :=
   rfl
 
