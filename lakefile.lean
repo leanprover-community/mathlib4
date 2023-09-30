@@ -77,6 +77,3 @@ lean_exe graph where
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where
   roots := #[`docs]
-
-lean_exe m_test where
-  root := `test.M
