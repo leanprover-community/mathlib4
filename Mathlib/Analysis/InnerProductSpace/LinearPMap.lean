@@ -7,6 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.Topology.Algebra.Module.LinearPMap
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.LinearAlgebra.Prod
 
 #align_import analysis.inner_product_space.linear_pmap from "leanprover-community/mathlib"@"8b981918a93bc45a8600de608cde7944a80d92b9"
 
@@ -52,7 +53,7 @@ Unbounded operators, closed operators
 
 noncomputable section
 
-open IsROrC
+open IsROrC LinearPMap
 
 open scoped ComplexConjugate Classical
 
@@ -274,21 +275,22 @@ end Star
 
 namespace Submodule
 
+/-- The adjoint of a submodule -/
 protected noncomputable
 def adjoint (g : Submodule 𝕜 (E × F)) : Submodule 𝕜 (F × E) :=
-    (g.map <| (ProdLp.linearEquiv 2 𝕜 F E).symm.comp (skewSwap 𝕜 E F).symm).orthogonal.map
-      (ProdLp.linearEquiv 2 𝕜 F E)
+    (g.map <| (LinearEquiv.skewSwap 𝕜 F E).symm.trans
+      (WithLp.linearEquiv 2 𝕜 (F × E)).symm).orthogonal.map (WithLp.linearEquiv 2 𝕜 (F × E))
 
 @[simp]
 theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E):
     x ∈ g.adjoint ↔
     ∀ a b, (a, b) ∈ g → inner (𝕜 := 𝕜) b x.fst - inner a x.snd = 0 := by
   simp only [Submodule.adjoint, Submodule.mem_map, Submodule.mem_orthogonal, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, ProdLp.linearEquiv_symm_apply, Function.comp_apply, skewSwap_symm_apply,
-    Prod.exists, ProdLp.inner_apply, forall_exists_index, and_imp, ProdLp.linearEquiv_apply]
+    LinearEquiv.coe_coe, WithLp.linearEquiv_symm_apply, Function.comp_apply, LinearEquiv.skewSwap_symm_apply,
+    Prod.exists, WithLp.prod_inner_apply, forall_exists_index, and_imp, WithLp.linearEquiv_apply]
   constructor
   · rintro ⟨y, h1, h2⟩ a b hab
-    rw [← h2, ProdLp.equiv_fst, ProdLp.equiv_snd]
+    rw [← h2, WithLp.equiv_fst, WithLp.equiv_snd]
     specialize h1 (b, -a) a b hab rfl
     simp only [inner_neg_left, ← sub_eq_add_neg] at h1
     exact h1
@@ -297,10 +299,12 @@ theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E):
     intro u a b hab hu
     simp [← hu, ← sub_eq_add_neg, h a b hab]
 
+variable {T : E →ₗ.[𝕜] F} [CompleteSpace E]
+
 theorem _root_.LinearPMap.adjoint_graph_eq_graph_adjoint (hT : Dense (T.domain : Set E)) :
     T†.graph = T.graph.adjoint := by
   ext x
-  simp only [mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left, mem_adjoint_graph_iff,
+  simp only [mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left, mem_adjoint_iff,
     forall_exists_index, forall_apply_eq_imp_iff']
   constructor
   · rintro ⟨hx, h⟩ a ha
@@ -324,7 +328,7 @@ theorem _root_.LinearPMap.graph_adjoint_toLinearPMap_eq_adjoint (hT : Dense (T.d
   rw [adjoint_graph_eq_graph_adjoint hT]
   apply Submodule.toLinearPMap_graph_eq
   intro x hx hx'
-  simp only [mem_adjoint_graph_iff, mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left,
+  simp only [mem_adjoint_iff, mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left,
     forall_exists_index, forall_apply_eq_imp_iff', hx', inner_zero_right, zero_sub,
     neg_eq_zero] at hx
   apply hT.eq_zero_of_inner_right
@@ -337,12 +341,14 @@ end Submodule
 
 namespace LinearPMap
 
+variable {T : E →ₗ.[𝕜] F} [CompleteSpace E]
+
 theorem adjoint_isClosed (hT : Dense (T.domain : Set E)) :
     T†.IsClosed := by
   rw [IsClosed, adjoint_graph_eq_graph_adjoint hT, Submodule.adjoint]
-  simp only [Submodule.map_coe, ProdLp.linearEquiv_apply]
+  simp only [Submodule.map_coe, WithLp.linearEquiv_apply]
   rw [Equiv.image_eq_preimage]
-  exact (Submodule.isClosed_orthogonal _).preimage (ProdLp.continuous_equiv_symm _ _ _)
+  exact (Submodule.isClosed_orthogonal _).preimage (WithLp.prod_continuous_equiv_symm _ _ _)
 
 /-- Every self-adjoint `LinearPMap` is closed. -/
 theorem _root_.IsSelfAdjoint.isClosed {A : E →ₗ.[𝕜] E} (hA : IsSelfAdjoint A) : A.IsClosed := by
