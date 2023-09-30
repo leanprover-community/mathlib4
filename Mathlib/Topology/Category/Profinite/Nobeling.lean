@@ -42,6 +42,233 @@ namespace NobelingProof
 
 variable {I : Type u} [Inhabited I] [LinearOrder I] [IsWellOrder I (·<·)] (C : Set (I → Bool))
 
+section Projections
+
+variable (J K L : I → Prop) [∀ i, Decidable (J i)] [∀ i, Decidable (K i)] [∀ i, Decidable (L i)]
+
+/-- The projection mapping everything that satisfies `J i` to itself, and everything else to
+    `false` -/
+def Proj : (I → Bool) → (I → Bool) :=
+  fun c i ↦ if J i then c i else false
+
+@[simp]
+theorem continuous_proj :
+    Continuous (Proj J : (I → Bool) → (I → Bool)) := by
+  refine continuous_pi ?_
+  intro i
+  dsimp [Proj]
+  split_ifs
+  · exact continuous_apply _
+  · exact continuous_const
+
+/-- The image of `Proj π J` -/
+def _root_.Set.proj : Set (I → Bool) := (Proj J) '' C
+
+/-- The restriction of `Proj π J` to a subset, mapping to its image. -/
+@[simps!]
+def ProjRestrict : C → C.proj J :=
+  Set.MapsTo.restrict (Proj J) _ _ (Set.mapsTo_image _ _)
+
+@[simp]
+theorem continuous_projRestrict : Continuous (ProjRestrict C J) :=
+  Continuous.restrict _ (continuous_proj _)
+
+theorem surjective_projRestrict :
+    Function.Surjective (ProjRestrict C J) := by
+  intro x
+  obtain ⟨y, hy⟩ := x.prop
+  refine ⟨⟨y, hy.1⟩, ?_⟩
+  exact Subtype.ext hy.2
+
+theorem proj_eq_self {x : I → Bool} (h : ∀ i, x i ≠ false → J i) : Proj J x = x := by
+  ext i
+  simp only [Proj, ite_eq_left_iff]
+  rw [← not_imp_not, not_not, eq_comm, ← ne_eq]
+  exact h i
+
+theorem proj_prop_eq_self (hh : ∀ i x, x ∈ C → x i ≠ false → J i) : C.proj J = C := by
+  ext x
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨y, hy⟩ := h
+    suffices x = y by rw [this]; exact hy.1
+    rw [← hy.2, proj_eq_self]
+    exact fun i ↦ hh i y hy.1
+  · refine ⟨x, ⟨h, ?_⟩⟩
+    rw [proj_eq_self]
+    exact fun i ↦ hh i x h
+
+theorem proj_comp_of_subset (h : ∀ i, J i → K i) : (Proj J ∘ Proj K) =
+    (Proj J : (I → Bool) → (I → Bool)) := by
+  ext x i
+  dsimp [Proj]
+  split_ifs with hh hh'
+  · rfl
+  · exfalso; exact hh' (h i hh)
+  · rfl
+
+theorem proj_eq_of_subset (h : ∀ i, J i → K i) : (C.proj K).proj J = C.proj J := by
+  ext x
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨y, hy⟩ := h
+    obtain ⟨z, hz⟩ := hy.1
+    rw [← hy.2, ← hz.2]
+    suffices Proj J z = (Proj J ∘ Proj K) z by exact ⟨z, ⟨hz.1, this⟩⟩
+    rw [proj_comp_of_subset J K h]
+  · obtain ⟨y, hy⟩ := h
+    dsimp [Set.proj]
+    rw [← Set.image_comp]
+    refine ⟨y, ⟨hy.1, ?_⟩⟩
+    rw [← hy.2, proj_comp_of_subset J K h]
+
+variable {J K L}
+
+/-- A variant of `ProjRestrict` with domain of the form `C.proj K` -/
+@[simps!]
+def ProjRestricts (h : ∀ i, J i → K i) : C.proj K → C.proj J :=
+  Homeomorph.setCongr (proj_eq_of_subset C J K h) ∘ ProjRestrict (C.proj K) J
+
+@[simp]
+theorem continuous_projRestricts (h : ∀ i, J i → K i) : Continuous (ProjRestricts C h) :=
+  Continuous.comp (Homeomorph.continuous _) (continuous_projRestrict _ _)
+
+theorem surjective_projRestricts (h : ∀ i, J i → K i) : Function.Surjective (ProjRestricts C h) :=
+  Function.Surjective.comp (Homeomorph.surjective _) (surjective_projRestrict _ _)
+
+variable (J) in
+theorem projRestricts_eq_id  :
+    ProjRestricts C (fun i (h : J i) ↦ h) = id := by
+  ext x i
+  simp only [Set.proj, Proj, ProjRestricts_coe, id_eq, ite_eq_left_iff]
+  obtain ⟨y, hy⟩ := x.prop
+  intro h
+  rw [← hy.2, Proj, if_neg h]
+
+theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
+    ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
+  ext x i
+  simp only [Set.proj, Proj, Function.comp_apply, ProjRestricts_coe]
+  split_ifs with h hh
+  · rfl
+  · exfalso; exact hh (hJK i h)
+  · rfl
+
+theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
+    ProjRestricts C h ∘ ProjRestrict C K = ProjRestrict C J := by
+  ext x i
+  simp only [Set.proj, Proj, Function.comp_apply, ProjRestricts_coe, ProjRestrict_coe]
+  split_ifs with hh hh'
+  · rfl
+  · exfalso; exact hh' (h i hh)
+  · rfl
+
+variable (J)
+
+/-- The objectwise map in the isomorphism `FinsetsToProfinite' ≅ FinsetsToProfinite`. -/
+def iso_map : C(C.proj J, (FinsetFunctor.obj C J)) :=
+  ⟨fun x ↦ ⟨fun i ↦ x.val i.val, by
+    obtain ⟨y, hy⟩ := x.prop
+    refine ⟨y, hy.1, ?_⟩
+    rw [precomp, ContinuousMap.coe_mk, ← hy.2]
+    ext i
+    exact (if_pos i.prop).symm⟩, by
+    refine Continuous.subtype_mk (continuous_pi fun i ↦ ?_) _
+    exact (Continuous.comp (continuous_apply i.val) continuous_subtype_val)⟩
+
+lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
+  refine ⟨?_, ?_⟩
+  · intro a b h
+    dsimp [iso_map] at h
+    ext i
+    rw [Subtype.ext_iff] at h
+    dsimp at h
+    by_cases hi : J i
+    · exact congr_fun h ⟨i, hi⟩
+    · obtain ⟨c, hc⟩ := a.prop
+      obtain ⟨d, hd⟩ := b.prop
+      rw [← hc.2, ← hd.2, Proj, Proj, if_neg hi, if_neg hi]
+  · intro a
+    refine ⟨⟨fun i ↦ if hi : J i then a.val ⟨i, hi⟩ else false, ?_⟩, ?_⟩
+    · obtain ⟨y, hy⟩ := a.prop
+      refine ⟨y, hy.1, ?_⟩
+      rw [← hy.2]
+      rfl
+    · ext i
+      exact dif_pos i.prop
+
+variable (K)
+
+lemma iso_naturality (h : ∀ i, J i → K i) :
+    iso_map C J ∘ ProjRestricts C h = FinsetFunctor.map C h ∘ iso_map C K := by
+  ext x i
+  simp only [iso_map, ContinuousMap.coe_mk, Function.comp_apply, ProjRestricts_coe,
+    Proj._eq_1, precomp._eq_1, Set.coe_inclusion]
+  rw [if_pos i.prop]
+  rfl
+
+lemma cones_naturality :
+    iso_map C J ∘ ProjRestrict C J = FinsetFunctor.π_app C J := by
+  ext _ i
+  exact dif_pos i.prop
+
+open CategoryTheory Limits Opposite
+
+variable {C} (hC : IsCompact C)
+
+/-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
+noncomputable
+def FinsetsToProfinite' :
+    (Finset I)ᵒᵖ ⥤ Profinite.{u} where
+  obj J := @Profinite.of (C.proj (· ∈ (unop J))) _
+    (by rw [← isCompact_iff_compactSpace]; exact hC.image (continuous_proj _)) _ _
+  map h := ⟨(ProjRestricts C (leOfHom h.unop)), continuous_projRestricts _ _⟩
+  map_id J := by dsimp; simp_rw [projRestricts_eq_id C (· ∈ (unop J))]; rfl
+  map_comp _ _ := by dsimp; congr; dsimp; rw [projRestricts_eq_comp]
+
+/-- The natural isomorphism `FinsetsToProfinite' ≅ FinsetsToProfinite`. -/
+noncomputable
+def FinsetsToProfiniteIso : FinsetsToProfinite' hC ≅ FinsetsToProfinite hC := NatIso.ofComponents
+  (fun J ↦ (Profinite.isoOfBijective (iso_map C (· ∈ unop J)) (iso_map_bijective C (· ∈ unop J))))
+  (by
+    intro ⟨J⟩ ⟨K⟩ ⟨⟨⟨f⟩⟩⟩
+    ext x
+    exact congr_fun (iso_naturality C (· ∈ K) (· ∈ J) f) x)
+
+/-- The limit cone on `FinsetsToProfinite` -/
+noncomputable
+def FinsetsCone' : Cone (FinsetsToProfinite' hC) where
+  pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
+  π := {
+    app := fun J ↦ ⟨ProjRestrict C (· ∈ unop J), continuous_projRestrict _ _⟩
+    naturality := by
+      intro _ _ h
+      simp only [Functor.const_obj_obj, FinsetsToProfinite', ProjRestricts, Homeomorph.setCongr,
+        Homeomorph.homeomorph_mk_coe, ProjRestrict, Functor.const_obj_map, Category.id_comp]
+      congr
+      ext x i
+      dsimp [Proj]
+      split_ifs with h₁ h₂
+      · rfl
+      · simp only [(leOfHom h.unop h₁), not_true] at h₂
+      · rfl
+  }
+
+/-- The isomorphism of cones `FinsetsCone' ≅ FinsetsCone` -/
+noncomputable
+def FinsetsConeIso :
+    (Cones.postcompose (FinsetsToProfiniteIso hC).hom).obj (FinsetsCone' hC) ≅ FinsetsCone hC :=
+  Cones.ext (Iso.refl _) (by
+    intro ⟨J⟩
+    ext x
+    exact congr_fun (cones_naturality C (· ∈ J)) x)
+
+/-- `FinsetsCone'` is a limit cone. -/
+noncomputable
+def finsetsCone_isLimit' : CategoryTheory.Limits.IsLimit (FinsetsCone' hC) :=
+  (IsLimit.postcomposeHomEquiv (FinsetsToProfiniteIso hC) (FinsetsCone' hC))
+    (IsLimit.ofIsoLimit (finsetsCone_isLimit hC) (FinsetsConeIso _).symm)
+
+end Projections
+
 section Products
 
 /-- The locally constant map from `C` to `ℤ` whose `i`-th projection is given by 1 if
@@ -102,8 +329,8 @@ def GoodProducts := {l : Products I | l.isGood C}
 namespace GoodProducts
 
 /-- Evaluation of good products. -/
-def eval (l : {l : Products I // l.isGood C}) :
-  LocallyConstant C ℤ := Products.eval C l.1
+def eval (l : {l : Products I // l.isGood C}) : LocallyConstant C ℤ :=
+  Products.eval C l.1
 
 theorem injective : Function.Injective (eval C) := by
   intro ⟨a,ha⟩ ⟨b,hb⟩ h
@@ -123,8 +350,7 @@ noncomputable
 def equiv_range : GoodProducts C ≃ range C :=
   Equiv.ofInjective (eval C) (injective C)
 
-theorem equiv_toFun_eq_eval : (equiv_range C).toFun =
-  Set.rangeFactorization (eval C) := by rfl
+theorem equiv_toFun_eq_eval : (equiv_range C).toFun = Set.rangeFactorization (eval C) := by rfl
 
 theorem linearIndependent_iff_range : LinearIndependent ℤ (GoodProducts.eval C) ↔
     LinearIndependent ℤ (fun (p : range C) ↦ p.1) := by
@@ -1159,7 +1385,7 @@ theorem C0_projOrd {x : I → Bool} (hx : x ∈ C0 C ho) : Proj (ord I · < o) x
     rw [← not_imp_not] at hsC
     simp only [not_lt, Bool.not_eq_true, Order.succ_le_iff] at hsC
     exact (hsC hi).symm
-  · simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq, ← Bool.default_bool] at hx
+  · simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
     rw [eq_comm, ord_term ho] at hi
     rw [← hx.2, hi]
 
