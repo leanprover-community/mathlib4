@@ -1251,6 +1251,39 @@ end ContinuousConstSMul
 
 section ContinuousSMul
 
+variable (α)
+
+/-- Given a compact set `K` inside an open set `U` in a space on which a group acts continuously,
+  there is an open neighborhood `V` of `1` such that `V • K ⊆ U`. -/
+@[to_additive
+  "Given a compact set `K` inside an open set `U` in a space on which an additive group acts
+  continuously, there is an open neighborhood `V` of `0` such that `V +ᵥ K ⊆ U`."]
+theorem compact_open_separated_smul
+    [TopologicalSpace α] [TopologicalSpace β] [Monoid α] [MulAction α β] [ContinuousSMul α β]
+    {K U : Set β} (hK : IsCompact K) (hU : IsOpen U)
+    (hKU : K ⊆ U) : ∃ V ∈ 𝓝 (1 : α), V • K ⊆ U := by
+  refine hK.induction_on ?_ ?_ ?_ ?_
+  · exact ⟨univ, by simp⟩
+  · rintro s t hst ⟨V, hV, hV'⟩
+    refine ⟨V, hV, (smul_subset_smul_left hst).trans hV'⟩
+  · rintro s t ⟨V, V_in, hV'⟩ ⟨W, W_in, hW'⟩
+    use V ∩ W, inter_mem V_in W_in
+    rw [smul_union]
+    apply union_subset
+    · exact (smul_subset_smul_right (inter_subset_left _ _)).trans hV'
+    · exact (smul_subset_smul_right (inter_subset_right _ _)).trans hW'
+  · intro x hx
+    have : (fun (p : α × β) ↦ p.fst • p.snd) ⁻¹' U ∈ 𝓝 (1, x) := by
+      apply (continuous_smul.continuousAt (x := ((1, x) : α × β)) ).preimage_mem_nhds
+      simpa only [one_smul] using hU.mem_nhds (hKU hx)
+    rw [nhds_prod_eq, mem_prod_iff] at this
+    rcases this with ⟨V, hV, t, ht, h⟩
+    refine ⟨t, mem_nhdsWithin_of_mem_nhds ht, V, hV, ?_⟩
+    rintro z ⟨a, b, ha, hb, rfl⟩
+    exact h (⟨ha, hb⟩ : (a, b) ∈ V ×ˢ t)
+
+variable {α}
+
 variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β] [ContinuousInv α]
   [ContinuousSMul α β] {s : Set α} {t : Set β}
 
@@ -1590,8 +1623,18 @@ section
 
 /-! Some results about an open set containing the product of two sets in a topological group. -/
 
+variable [TopologicalSpace G] [Monoid G] [ContinuousMul G]
 
-variable [TopologicalSpace G] [MulOneClass G] [ContinuousMul G]
+/-- Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of `1`
+  such that `V * K ⊆ U`. -/
+@[to_additive
+  "Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of
+  `0` such that `V + K ⊆ U`."]
+theorem compact_open_separated_mul_left {K U : Set G} (hK : IsCompact K) (hU : IsOpen U)
+    (hKU : K ⊆ U) : ∃ V ∈ 𝓝 (1 : G), V * K ⊆ U :=
+  compact_open_separated_smul G hK hU hKU
+#align compact_open_separated_mul_left compact_open_separated_mul_left
+#align compact_open_separated_add_left compact_open_separated_add_left
 
 /-- Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of `1`
   such that `K * V ⊆ U`. -/
@@ -1600,42 +1643,16 @@ variable [TopologicalSpace G] [MulOneClass G] [ContinuousMul G]
   `0` such that `K + V ⊆ U`."]
 theorem compact_open_separated_mul_right {K U : Set G} (hK : IsCompact K) (hU : IsOpen U)
     (hKU : K ⊆ U) : ∃ V ∈ 𝓝 (1 : G), K * V ⊆ U := by
-  refine hK.induction_on ?_ ?_ ?_ ?_
-  · exact ⟨univ, by simp⟩
-  · rintro s t hst ⟨V, hV, hV'⟩
-    exact ⟨V, hV, (mul_subset_mul_right hst).trans hV'⟩
-  · rintro s t ⟨V, V_in, hV'⟩ ⟨W, W_in, hW'⟩
-    use V ∩ W, inter_mem V_in W_in
-    rw [union_mul]
-    exact
-      union_subset ((mul_subset_mul_left (V.inter_subset_left W)).trans hV')
-        ((mul_subset_mul_left (V.inter_subset_right W)).trans hW')
-  · intro x hx
-    have := tendsto_mul (show U ∈ 𝓝 (x * 1) by simpa using hU.mem_nhds (hKU hx))
-    rw [nhds_prod_eq, mem_map, mem_prod_iff] at this
-    rcases this with ⟨t, ht, s, hs, h⟩
-    rw [← image_subset_iff, image_mul_prod] at h
-    exact ⟨t, mem_nhdsWithin_of_mem_nhds ht, s, hs, h⟩
+  rcases compact_open_separated_mul_left (hK.image continuous_op) (opHomeomorph.isOpenMap U hU)
+      (image_subset op hKU) with
+    ⟨V, hV : V ∈ 𝓝 (op (1 : G)), hV' : V * op '' K ⊆ op '' U⟩
+  refine' ⟨op ⁻¹' V, continuous_op.continuousAt hV, _⟩
+  rwa [← image_preimage_eq V op_surjective, ← image_op_mul, image_subset_iff,
+    preimage_image_eq _ op_injective] at hV'
 #align compact_open_separated_mul_right compact_open_separated_mul_right
 #align compact_open_separated_add_right compact_open_separated_add_right
 
 open MulOpposite
-
-/-- Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of `1`
-  such that `V * K ⊆ U`. -/
-@[to_additive
-  "Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of
-  `0` such that `V + K ⊆ U`."]
-theorem compact_open_separated_mul_left {K U : Set G} (hK : IsCompact K) (hU : IsOpen U)
-    (hKU : K ⊆ U) : ∃ V ∈ 𝓝 (1 : G), V * K ⊆ U := by
-  rcases compact_open_separated_mul_right (hK.image continuous_op) (opHomeomorph.isOpenMap U hU)
-      (image_subset op hKU) with
-    ⟨V, hV : V ∈ 𝓝 (op (1 : G)), hV' : op '' K * V ⊆ op '' U⟩
-  refine' ⟨op ⁻¹' V, continuous_op.continuousAt hV, _⟩
-  rwa [← image_preimage_eq V op_surjective, ← image_op_mul, image_subset_iff,
-    preimage_image_eq _ op_injective] at hV'
-#align compact_open_separated_mul_left compact_open_separated_mul_left
-#align compact_open_separated_add_left compact_open_separated_add_left
 
 end
 
