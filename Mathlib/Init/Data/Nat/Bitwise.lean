@@ -275,27 +275,16 @@ def bitwise' (f : Bool → Bool → Bool) : ℕ → ℕ → ℕ :=
     binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n)
 #align nat.bitwise Nat.bitwise'
 
-/--`lor'` takes two natural numbers and returns their bitwise `or`-/
-def lor' : ℕ → ℕ → ℕ :=
-  bitwise' or
-#align nat.lor Nat.lor'
-
-/--`land'` takes two naturals numbers and returns their `and`-/
-def land' : ℕ → ℕ → ℕ :=
-  bitwise' and
-#align nat.land Nat.land'
+#align nat.lor Nat.lor
+#align nat.land Nat.land
+#align nat.lxor Nat.xor
 
 /--`ldiff' a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
   boolean operation `aᵢ ∧ bᵢ` to obtain the `iᵗʰ` bit of the result.-/
-def ldiff' : ℕ → ℕ → ℕ :=
-  bitwise' fun a b => a && not b
-#align nat.ldiff Nat.ldiff'
-
-/--`lxor'` computes the bitwise `xor` of two natural numbers-/
-def lxor' : ℕ → ℕ → ℕ :=
-  bitwise' bxor
-#align nat.lxor Nat.lxor'
+def ldiff : ℕ → ℕ → ℕ :=
+  bitwise fun a b => a && not b
+#align nat.ldiff Nat.ldiff
 
 @[simp]
 theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
@@ -433,57 +422,5 @@ theorem bitwise'_bit {f : Bool → Bool → Bool} (h : f false false = false) (a
       · rw [← bitwise'_bit_aux h, ftf] }
   · exact bitwise'_bit_aux h
 #align nat.bitwise_bit Nat.bitwise'_bit
-
-@[simp]
-theorem lor'_bit : ∀ a m b n, lor' (bit a m) (bit b n) = bit (a || b) (lor' m n) :=
-  bitwise'_bit rfl
-#align nat.lor_bit Nat.lor'_bit
-
-@[simp]
-theorem land'_bit : ∀ a m b n, land' (bit a m) (bit b n) = bit (a && b) (land' m n) :=
-  bitwise'_bit rfl
-#align nat.land_bit Nat.land'_bit
-
-@[simp]
-theorem ldiff'_bit : ∀ a m b n, ldiff' (bit a m) (bit b n) = bit (a && not b) (ldiff' m n) :=
-  bitwise'_bit rfl
-#align nat.ldiff_bit Nat.ldiff'_bit
-
-@[simp]
-theorem lxor'_bit : ∀ a m b n, lxor' (bit a m) (bit b n) = bit (bxor a b) (lxor' m n) :=
-  bitwise'_bit rfl
-#align nat.lxor_bit Nat.lxor'_bit
-
-@[simp]
-theorem testBit_bitwise' {f : Bool → Bool → Bool} (h : f false false = false) (m n k) :
-    testBit (bitwise' f m n) k = f (testBit m k) (testBit n k) := by
-  revert m n; induction' k with k IH <;>
-  intros m n <;>
-  apply bitCasesOn m <;> intros a m' <;>
-  apply bitCasesOn n <;> intros b n' <;>
-  rw [bitwise'_bit h]
-  · simp [testBit_zero]
-  · simp [testBit_succ, IH]
-#align nat.test_bit_bitwise Nat.testBit_bitwise'
-
-@[simp]
-theorem testBit_lor' : ∀ m n k, testBit (lor' m n) k = (testBit m k || testBit n k) :=
-  testBit_bitwise' rfl
-#align nat.test_bit_lor Nat.testBit_lor'
-
-@[simp]
-theorem testBit_land' : ∀ m n k, testBit (land' m n) k = (testBit m k && testBit n k) :=
-  testBit_bitwise' rfl
-#align nat.test_bit_land Nat.testBit_land'
-
-@[simp]
-theorem testBit_ldiff' : ∀ m n k, testBit (ldiff' m n) k = (testBit m k && not (testBit n k)) :=
-  testBit_bitwise' rfl
-#align nat.test_bit_ldiff Nat.testBit_ldiff'
-
-@[simp]
-theorem testBit_lxor' : ∀ m n k, testBit (lxor' m n) k = bxor (testBit m k) (testBit n k) :=
-  testBit_bitwise' rfl
-#align nat.test_bit_lxor Nat.testBit_lxor'
 
 end Nat

@@ -112,22 +112,6 @@ lemma bitwise'_eq_bitwise (f) : bitwise' f = bitwise f := by
     simp only [ne_eq, succ_ne_zero, not_false_eq_true, bitwise'_of_ne_zero, ih, bitwise_of_ne_zero]
 
 @[simp]
-theorem lor'_eq_lor : lor' = lor :=
-  bitwise'_eq_bitwise _
-
-@[simp]
-theorem land'_eq_land : land' = land :=
-  bitwise'_eq_bitwise _
-
-@[simp]
-theorem lxor'_eq_xor : lxor' = xor := by
-  unfold lxor' xor
-  have : _root_.xor = bne := by
-    funext x y; cases x <;> cases y <;> rfl
-  rw [this]
-  exact bitwise'_eq_bitwise _
-
-@[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => { unfold bitwise }
@@ -141,14 +125,22 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
 @[simp]
 theorem lor_bit : ∀ a m b n, lor (bit a m) (bit b n) = bit (a || b) (lor m n) :=
   bitwise_bit
+#align nat.lor_bit Nat.lor_bit
 
 @[simp]
 theorem land_bit : ∀ a m b n, land (bit a m) (bit b n) = bit (a && b) (land m n) :=
   bitwise_bit
+#align nat.land_bit Nat.land_bit
 
 @[simp]
-theorem lxor_bit : ∀ a m b n, xor (bit a m) (bit b n) = bit (bne a b) (xor m n) :=
+theorem ldiff_bit : ∀ a m b n, ldiff (bit a m) (bit b n) = bit (a && not b) (ldiff m n) :=
   bitwise_bit
+#align nat.ldiff_bit Nat.ldiff_bit
+
+@[simp]
+theorem xor_bit : ∀ a m b n, xor (bit a m) (bit b n) = bit (bne a b) (xor m n) :=
+  bitwise_bit
+#align nat.xor_bit Nat.xor_bit
 
 @[simp]
 theorem testBit_bitwise {f : Bool → Bool → Bool} (h : f false false = false) (m n k) :
@@ -163,14 +155,22 @@ theorem testBit_bitwise {f : Bool → Bool → Bool} (h : f false false = false)
 @[simp]
 theorem testBit_lor : ∀ m n k, testBit (lor m n) k = (testBit m k || testBit n k) :=
   testBit_bitwise rfl
+#align nat.test_bit_lor Nat.testBit_lor
 
 @[simp]
 theorem testBit_land : ∀ m n k, testBit (land m n) k = (testBit m k && testBit n k) :=
   testBit_bitwise rfl
+#align nat.test_bit_land Nat.testBit_land
+
+@[simp]
+theorem testBit_ldiff : ∀ m n k, testBit (ldiff m n) k = (testBit m k && not (testBit n k)) :=
+  testBit_bitwise rfl
+#align nat.test_bit_ldiff Nat.testBit_ldiff
 
 @[simp]
 theorem testBit_xor : ∀ m n k, testBit (xor m n) k = bne (testBit m k) (testBit n k) :=
   testBit_bitwise rfl
+#align nat.test_bit_lxor Nat.testBit_xor
 
 end
 
