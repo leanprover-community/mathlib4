@@ -153,8 +153,12 @@ theorem lxor_bit : ∀ a m b n, xor (bit a m) (bit b n) = bit (bne a b) (xor m n
 @[simp]
 theorem testBit_bitwise {f : Bool → Bool → Bool} (h : f false false = false) (m n k) :
     testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
-  simp only [←bitwise'_eq_bitwise, testBit_bitwise' h]
-
+  induction' k with k ih generalizing m n
+  <;> cases' m using bitCasesOn with a m
+  <;> cases' n using bitCasesOn with b n
+  <;> rw [bitwise_bit h]
+  · simp [testBit_zero]
+  · simp [testBit_succ, ih]
 
 @[simp]
 theorem testBit_lor : ∀ m n k, testBit (lor m n) k = (testBit m k || testBit n k) :=
