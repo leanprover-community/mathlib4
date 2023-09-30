@@ -123,15 +123,12 @@ theorem eq_mk_of_is_sol_of_eq_init' {u : ℕ → α} {init : Fin E.order → α}
   funext (E.eq_mk_of_is_sol_of_eq_init h heq)
 #align linear_recurrence.eq_mk_of_is_sol_of_eq_init' LinearRecurrence.eq_mk_of_is_sol_of_eq_init'
 
-set_option synthInstance.maxHeartbeats 1000000 in
 /-- The space of solutions of `E`, as a `Submodule` over `α` of the module `ℕ → α`. -/
 def solSpace : Submodule α (ℕ → α) where
   carrier := { u | E.IsSolution u }
   zero_mem' n := by simp
   add_mem' {u v} hu hv n := by simp [mul_add, sum_add_distrib, hu n, hv n]
-  smul_mem' a u hu n := by
-    rw [Pi.smul_apply, hu n, smul_eq_mul, mul_sum];
-    congr; ext; rw [Pi.smul_apply, smul_eq_mul]; ac_rfl
+  smul_mem' a u hu n := by simp [hu n, mul_sum]; congr; ext; ac_rfl
 #align linear_recurrence.sol_space LinearRecurrence.solSpace
 
 /-- Defining property of the solution space : `u` is a solution
@@ -149,7 +146,7 @@ def toInit : E.solSpace ≃ₗ[α] Fin E.order → α where
     simp
   map_smul' a u := by
     ext
-    simp; rfl
+    simp
   invFun u := ⟨E.mkSol u, E.is_sol_mkSol u⟩
   left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.2; intro k; rfl
   right_inv u := Function.funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
@@ -184,7 +181,6 @@ def tupleSucc : (Fin E.order → α) →ₗ[α] Fin E.order → α where
     split_ifs with h <;> simp [h, mul_add, sum_add_distrib]
   map_smul' x y := by
     ext i
-    rw [Pi.smul_apply, Pi.smul_def]
     simp only
     split_ifs with h <;> simp [h, mul_sum]
     exact sum_congr rfl fun x _ ↦ by ac_rfl

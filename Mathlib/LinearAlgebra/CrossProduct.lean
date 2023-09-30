@@ -44,7 +44,6 @@ open Matrix
 
 variable {R : Type*} [CommRing R]
 
-set_option synthInstance.maxHeartbeats 100000 in
 /-- The cross product of two vectors in $R^3$ for $R$ a commutative ring. -/
 def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R := by
   apply LinearMap.mk₂ R fun a b : Fin 3 → R =>
@@ -53,16 +52,12 @@ def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R :
     simp_rw [vec3_add, Pi.add_apply]
     apply vec3_eq <;> ring
   · intros
-    rw [Pi.smul_apply, Pi.smul_apply, Pi.smul_apply, smul_vec3]
-    simp [smul_sub, smul_mul_assoc, mul_sub, mul_assoc]
+    simp_rw [smul_vec3, Pi.smul_apply, smul_sub, smul_mul_assoc]
   · intros
     simp_rw [vec3_add, Pi.add_apply]
     apply vec3_eq <;> ring
   · intros
-    rw [Pi.smul_apply, Pi.smul_apply, Pi.smul_apply, smul_vec3,
-      smul_sub]
-    simp [smul_sub, smul_mul_assoc, mul_sub, mul_assoc,
-      mul_comm, mul_left_comm]
+    simp_rw [smul_vec3, Pi.smul_apply, smul_sub, mul_smul_comm]
 #align cross_product crossProduct
 
 scoped[Matrix] infixl:74 " ×₃ " => crossProduct

@@ -98,7 +98,6 @@ theorem invFun_add (M N : Matrix n n A) : invFun R A n (M + N) = invFun R A n M 
   by simp [invFun, add_tmul, Finset.sum_add_distrib]
 #align matrix_equiv_tensor.inv_fun_add MatrixEquivTensor.invFun_add
 
-set_option synthInstance.maxHeartbeats 40000 in
 @[simp]
 theorem invFun_smul (a : A) (M : Matrix n n A) : invFun R A n (a • M) = a ⊗ₜ 1 * invFun R A n M :=
   by simp [invFun, Finset.mul_sum]
