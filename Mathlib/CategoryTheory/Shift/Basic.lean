@@ -714,7 +714,7 @@ lemma map_hasShiftOfFullyFaithful_add_hom_app (a b : A) (X : C) :
 lemma map_hasShiftOfFullyFaithful_add_inv_app (a b : A) (X : C) :
     F.map ((hasShiftOfFullyFaithful_add F s i a b).inv.app X) =
       (i b).hom.app ((s a).obj X) ≫ ((i a).hom.app X)⟦b⟧' ≫
-        (shiftFunctorAdd D a b).inv.app (F.obj X) ≫ (i (a + b)).inv.app X  := by
+        (shiftFunctorAdd D a b).inv.app (F.obj X) ≫ (i (a + b)).inv.app X := by
   dsimp [hasShiftOfFullyFaithful_add]
   simp
 #align category_theory.map_has_shift_of_fully_faithful_add_inv_app CategoryTheory.map_hasShiftOfFullyFaithful_add_inv_app
