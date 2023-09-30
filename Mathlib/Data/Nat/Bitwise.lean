@@ -164,7 +164,7 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
 
 @[simp]
 theorem bitwise'_zero_right {f : Bool → Bool → Bool} {m : Nat} :
-    bitwise' f m 0 = if f true false then m else 0 := by
+    bitwise' f m 0 = bif f true false then m else 0 := by
   unfold bitwise' binaryRec
   simp only [Bool.cond_eq_ite, eq_mpr_eq_cast, cast_eq, dite_eq_ite]
   split_ifs with hx <;> simp only [bit_decomp, binaryRec_zero, hx]
