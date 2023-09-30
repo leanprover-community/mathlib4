@@ -434,14 +434,6 @@ theorem bitwise'_bit {f : Bool → Bool → Bool} (h : f false false = false) (a
   · exact bitwise'_bit_aux h
 #align nat.bitwise_bit Nat.bitwise'_bit
 
--- Porting note:
--- If someone wants to merge `bitwise` and `bitwise'`
--- (and similarly `lor` / `lor'` and `land` / `land'`)
--- they could start by proving the next theorem:
--- lemma bitwise_eq_bitwise' (f : Bool → Bool → Bool) :
---     bitwise f = bitwise' f := by
---   sorry
-
 -- @[simp]
 -- theorem bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false) (a m b n) :
 --     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
