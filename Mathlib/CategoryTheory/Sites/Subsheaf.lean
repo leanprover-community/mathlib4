@@ -94,8 +94,8 @@ instance : Mono G.ι :=
 
 /-- The inclusion of a subpresheaf to a larger subpresheaf -/
 @[simps]
-def Subpresheaf.homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPresheaf
-    where app U x := ⟨x, h U x.prop⟩
+def Subpresheaf.homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPresheaf where
+  app U x := ⟨x, h U x.prop⟩
 #align category_theory.grothendieck_topology.subpresheaf.hom_of_le CategoryTheory.GrothendieckTopology.Subpresheaf.homOfLe
 
 instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
@@ -143,7 +143,7 @@ def Subpresheaf.lift (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) : F' �
 
 @[reassoc (attr := simp)]
 theorem Subpresheaf.lift_ι (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) :
-  G.lift f hf ≫ G.ι = f := by
+    G.lift f hf ≫ G.ι = f := by
   ext
   rfl
 #align category_theory.grothendieck_topology.subpresheaf.lift_ι CategoryTheory.GrothendieckTopology.Subpresheaf.lift_ι
