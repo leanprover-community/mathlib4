@@ -434,11 +434,6 @@ theorem bitwise'_bit {f : Bool → Bool → Bool} (h : f false false = false) (a
   · exact bitwise'_bit_aux h
 #align nat.bitwise_bit Nat.bitwise'_bit
 
--- @[simp]
--- theorem bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false) (a m b n) :
---     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
---   simp only [bitwise_eq_bitwise', bitwise'_bit h]
-
 @[simp]
 theorem lor'_bit : ∀ a m b n, lor' (bit a m) (bit b n) = bit (a || b) (lor' m n) :=
   bitwise'_bit rfl

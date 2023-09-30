@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
+Authors: Markus Himmel, Alex Keizer
 -/
 import Lean.Elab.Tactic
 import Mathlib.Data.List.Basic
@@ -44,6 +44,114 @@ open Function
 namespace Nat
 
 set_option linter.deprecated false
+
+section
+variable {f : Bool → Bool → Bool}
+
+lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
+    (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
+    bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
+  rw [bitwise', binaryRec_eq', binaryRec_eq']
+  · apply Or.inr hbn
+  · apply Or.inr ham
+
+@[simp]
+lemma bitwise_zero_left {m : Nat} : bitwise f 0 m = if f false true then m else 0 := by
+  rfl
+
+@[simp]
+lemma bitwise_zero_right {n : Nat} : bitwise f n 0 = if f true false then n else 0 := by
+  unfold bitwise
+  simp only [ite_self, decide_False, Nat.zero_div, ite_true, ite_eq_right_iff]
+  rintro ⟨⟩
+  split_ifs <;> rfl
+
+@[simp]
+theorem bitwise'_zero_right {m : Nat} :
+    bitwise' f m 0 = bif f true false then m else 0 := by
+  unfold bitwise' binaryRec
+  simp only [Bool.cond_eq_ite, eq_mpr_eq_cast, cast_eq, dite_eq_ite]
+  split_ifs with hx <;> simp only [bit_decomp, binaryRec_zero, hx]
+
+@[simp]
+lemma bitwise_zero : bitwise f 0 0 = 0 := by
+  simp only [bitwise_zero_right, ite_self]
+
+@[simp]
+lemma bitwise_succ {n m : Nat} :
+    bitwise f (n + 1) (m + 1) =
+    bitwise f ((n+1) / 2) ((m+1) / 2) + bitwise f ((n+1) / 2) ((m+1) / 2)
+      + if f (!bodd n) (!bodd m) then 1 else 0 := by
+  conv_lhs => { unfold bitwise }
+  have mod_two_iff_bod x : ((x+1) % 2 = 1 : Bool) = !bodd x := by
+    simp [mod_two_of_bodd, cond]; cases bodd x <;> rfl
+  simp only [add_eq_zero_iff, and_false, ite_false, mod_two_iff_bod]
+  split_ifs <;> rfl
+
+@[simp]
+lemma bitwise'_succ {n m : Nat} :
+    bitwise' f (n + 1) (m + 1) =
+    bitwise' f (div2 (n + 1)) (div2 (m + 1)) + bitwise' f (div2 (n + 1)) (div2 (m + 1))
+      + if f (!bodd n) (!bodd m) then 1 else 0 := by
+  conv_lhs => { rw [←bit_decomp (n + 1), ←bit_decomp (m + 1)] }
+  simp only [bodd_succ, div2_succ, Bool.cond_eq_ite]
+  rw [bitwise'_bit', bit]
+  case ham =>
+    rcases n with ⟨⟩|⟨⟩|n
+    <;> simp only [div2_succ, cond, bodd_succ, Bool.not_not]
+    cases bodd n <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff,
+      ite_true, ite_false]
+  case hbn =>
+    rcases m with ⟨⟩|⟨⟩|m
+    <;> simp only [div2_succ, cond, bodd_succ, Bool.not_not]
+    cases bodd m <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff,
+      ite_true, ite_false]
+  simp [bit1, bit0]
+  cases f (!bodd n) (!bodd m)
+  <;> simp only [Bool.cond_eq_ite, ite_false, add_zero, ite_true]
+
+@[simp]
+lemma bitwise'_eq_bitwise (f) : bitwise' f = bitwise f := by
+  funext x y
+  induction' x using Nat.strongInductionOn with x ih generalizing y
+  cases' x with x <;> cases' y with y
+  · simp only [bitwise_zero, bitwise'_zero]
+  · simp only [bitwise_zero_left, bitwise'_zero_left, Bool.cond_eq_ite]
+  · simp only [bitwise_zero_right, bitwise'_zero_right, Bool.cond_eq_ite]
+  · specialize ih ((x+1) / 2) (div_lt_self' ..)
+    simp only [bitwise_succ, bitwise'_succ, div2_val, ih]
+
+theorem lor'_eq_lor : lor' = lor :=
+  bitwise'_eq_bitwise _
+
+theorem land'_eq_land : land' = land :=
+  bitwise'_eq_bitwise _
+
+theorem xor'_eq_xor : lxor' = xor := by
+  unfold lxor' xor
+  have : _root_.xor = bne := by
+    funext x y; cases x <;> cases y <;> rfl
+  rw [this]
+  exact bitwise'_eq_bitwise _
+
+@[simp]
+lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
+    bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
+  simp only [←bitwise'_eq_bitwise, bitwise'_bit h]
+
+@[simp]
+theorem lor_bit : ∀ a m b n, lor (bit a m) (bit b n) = bit (a || b) (lor m n) :=
+  bitwise_bit
+
+@[simp]
+theorem land_bit : ∀ a m b n, land (bit a m) (bit b n) = bit (a && b) (land m n) :=
+  bitwise_bit
+
+@[simp]
+theorem lxor_bit : ∀ a m b n, xor (bit a m) (bit b n) = bit (bne a b) (xor m n) :=
+  bitwise_bit
+
+end
 
 @[simp]
 theorem bit_false : bit false = bit0 :=
@@ -162,13 +270,6 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
-@[simp]
-theorem bitwise'_zero_right {f : Bool → Bool → Bool} {m : Nat} :
-    bitwise' f m 0 = bif f true false then m else 0 := by
-  unfold bitwise' binaryRec
-  simp only [Bool.cond_eq_ite, eq_mpr_eq_cast, cast_eq, dite_eq_ite]
-  split_ifs with hx <;> simp only [bit_decomp, binaryRec_zero, hx]
-
 theorem bitwise'_swap {f : Bool → Bool → Bool} (h : f false false = false) :
     bitwise' (Function.swap f) = Function.swap (bitwise' f) := by
   funext m n; revert n
@@ -233,6 +334,7 @@ theorem lor'_zero (n : ℕ) : lor' n 0 = n := by simp [lor']
 /-- Proving associativity of bitwise operations in general essentially boils down to a huge case
     distinction, so it is shorter to use this tactic instead of proving it in the general case. -/
 macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
+  -- simp
   induction' n using Nat.binaryRec with b n hn generalizing m k
   · simp
   induction' m using Nat.binaryRec with b' m hm
@@ -336,89 +438,5 @@ theorem lxor'_trichotomy {a b c : ℕ} (h : a ≠ lxor' b c) :
 theorem lt_lxor'_cases {a b c : ℕ} (h : a < lxor' b c) : lxor' a c < b ∨ lxor' a b < c :=
   (or_iff_right fun h' => (h.asymm h').elim).1 <| lxor'_trichotomy h.ne
 #align nat.lt_lxor_cases Nat.lt_lxor'_cases
-
-lemma div2_add_two (x) :
-    div2 (x + 2) = div2 x + 1 := by
-  simp only [div2_succ, bodd_succ, Bool.cond_not]
-  cases bodd x <;> simp only [cond_false, cond_true]
-
-lemma div2_eq_zero {x : ℕ} :
-    div2 x = 0 → x = 0 ∨ x = 1 := by
-  intro h
-  rcases x with ⟨⟩ | ⟨⟩ | x
-  · apply Or.inl rfl
-  · apply Or.inr rfl
-  · rw[div2_add_two] at h
-    contradiction
-
-section
-variable {f : Bool → Bool → Bool}
-
-lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
-    (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
-    bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
-  rw [bitwise', binaryRec_eq', binaryRec_eq']
-  · apply Or.inr hbn
-  · apply Or.inr ham
-
-@[simp]
-lemma bitwise_zero_left {m : Nat} : bitwise f 0 m = if f false true then m else 0 := by
-  rfl
-
-@[simp]
-lemma bitwise_zero_right {n : Nat} : bitwise f n 0 = if f true false then n else 0 := by
-  unfold bitwise
-  simp only [ite_self, decide_False, Nat.zero_div, ite_true, ite_eq_right_iff]
-  rintro ⟨⟩
-  split_ifs <;> rfl
-
-@[simp]
-lemma bitwise_zero : bitwise f 0 0 = 0 := by
-  simp only [bitwise_zero_right, ite_self]
-
-@[simp]
-lemma bitwise_succ {n m : Nat} :
-    bitwise f (n + 1) (m + 1) =
-    bitwise f ((n+1) / 2) ((m+1) / 2) + bitwise f ((n+1) / 2) ((m+1) / 2)
-      + if f (!bodd n) (!bodd m) then 1 else 0 := by
-  conv_lhs => { unfold bitwise }
-  have mod_two_iff_bod x : ((x+1) % 2 = 1 : Bool) = !bodd x := by
-    simp [mod_two_of_bodd, cond]; cases bodd x <;> rfl
-  simp only [add_eq_zero_iff, and_false, ite_false, mod_two_iff_bod]
-  split_ifs <;> rfl
-
-@[simp]
-lemma bitwise'_succ {n m : Nat} :
-    bitwise' f (n + 1) (m + 1) =
-    bitwise' f (div2 (n + 1)) (div2 (m + 1)) + bitwise' f (div2 (n + 1)) (div2 (m + 1))
-      + if f (!bodd n) (!bodd m) then 1 else 0 := by
-  conv_lhs => { rw [←bit_decomp (n + 1), ←bit_decomp (m + 1)] }
-  simp only [bodd_succ, div2_succ, Bool.cond_eq_ite]
-  rw [bitwise'_bit', bit]
-  case ham =>
-    rcases n with ⟨⟩|⟨⟩|n
-    <;> simp only [div2_succ, cond, bodd_succ, Bool.not_not]
-    cases bodd n <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff,
-      ite_true, ite_false]
-  case hbn =>
-    rcases m with ⟨⟩|⟨⟩|m
-    <;> simp only [div2_succ, cond, bodd_succ, Bool.not_not]
-    cases bodd m <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff,
-      ite_true, ite_false]
-  simp [bit1, bit0]
-  cases f (!bodd n) (!bodd m)
-  <;> simp only [Bool.cond_eq_ite, ite_false, add_zero, ite_true]
-
-lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
-  funext x y
-  induction' x using Nat.strongInductionOn with x ih generalizing y
-  cases' x with x <;> cases' y with y
-  · simp only [bitwise_zero, bitwise'_zero]
-  · simp only [bitwise_zero_left, bitwise'_zero_left, Bool.cond_eq_ite]
-  · simp only [bitwise_zero_right, bitwise'_zero_right, Bool.cond_eq_ite]
-  · specialize ih ((x+1) / 2) (div_lt_self' ..)
-    simp only [bitwise_succ, bitwise'_succ, div2_val, ih]
-
-end
 
 end Nat
