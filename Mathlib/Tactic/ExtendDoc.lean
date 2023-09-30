@@ -1,4 +1,26 @@
+/-
+Copyright (c) 2023 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+
 import Lean.Elab.ElabRules
+
+/-!
+#  `extend_doc` command
+
+In a file where declaration `decl` is defined, writing
+```lean
+extend_doc decl
+  before "I will be added as a prefix to the docs of `decl`"
+  after "I will be added as a suffix to the docs of `decl`"
+```
+
+does what is probably clear: it extends the doc-string of `decl` by adding the string of
+`before` at the beginning and the string of `after` at the end.
+
+At least one of `before` and `after` must appear, but either one of them is optional.
+-/
 
 namespace Mathlib.Tactic.ExtendDocs
 
