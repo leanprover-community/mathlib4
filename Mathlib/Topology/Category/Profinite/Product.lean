@@ -29,9 +29,11 @@ Hausdorff spaces as a limit in `Profinite` indexed by `Finset ι`.
 
 universe u
 
+section
+
 /-- "Precomposition" as a continuous map between dependent types. -/
 def precomp {ι ι' : Type*} {π : ι → Type*} [(i : ι) → TopologicalSpace (π i)]
-  (φ : ι' → ι) : C((i : ι) → π i, (i : ι') → π (φ i)) := ⟨_, Pi.continuous_precomp' φ⟩
+    (φ : ι' → ι) : C((i : ι) → π i, (i : ι') → π (φ i)) := ⟨_, Pi.continuous_precomp' φ⟩
 
 variable {ι : Type u} {X : ι → Type} [∀ i, TopologicalSpace (X i)] (C : Set ((i : ι) → X i))
     (J K : ι → Prop)
@@ -53,14 +55,13 @@ def map (h : ∀ i, J i → K i) : C(obj C K, obj C J) :=
   ⟨Set.MapsTo.restrict (precomp (Set.inclusion h)) _ _ (fun _ hx ↦ by
     obtain ⟨y, hy⟩ := hx
     rw [← hy.2]
-    refine ⟨y, hy.1, rfl⟩), Continuous.restrict _ (Pi.continuous_precomp' _)⟩
+    exact ⟨y, hy.1, rfl⟩), Continuous.restrict _ (Pi.continuous_precomp' _)⟩
 
 theorem surjective_π_app :
     Function.Surjective (π_app C J) := by
   intro x
   obtain ⟨y, hy⟩ := x.prop
-  refine ⟨⟨y, hy.1⟩, ?_⟩
-  exact Subtype.ext hy.2
+  exact ⟨⟨y, hy.1⟩, Subtype.ext hy.2⟩
 
 theorem map_comp_π_app (h : ∀ i, J i → K i) : map C h ∘ π_app C K = π_app C J := rfl
 
@@ -145,3 +146,5 @@ def asLimitFinsetsConeIso [DecidableEq ι] : FinsetsCone hC ≅ Profinite.limitC
 noncomputable
 def finsetsCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (FinsetsCone hC) :=
   Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _) (asLimitFinsetsConeIso hC).symm
+
+end
