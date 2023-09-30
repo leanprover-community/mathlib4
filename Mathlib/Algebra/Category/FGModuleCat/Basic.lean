@@ -265,7 +265,7 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
 
 -- Porting note: extremely slow, was fast in mathlib3.
 -- I tried many things using `dsimp` and `change`, but couldn't find anything faster than this.
-set_option maxHeartbeats 1500000 in
+set_option maxHeartbeats 2000000 in
 private theorem coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V
     (𝟙 V' ⊗ FGModuleCatCoevaluation K V) ≫ (α_ V' V V').inv ≫ (FGModuleCatEvaluation K V ⊗ 𝟙 V') =
