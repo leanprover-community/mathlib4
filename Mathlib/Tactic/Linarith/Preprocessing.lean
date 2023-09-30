@@ -116,14 +116,14 @@ partial def isNatProp (e : Expr) : Bool :=
   | _ => false
 
 
-/-- If `e` is of the form `((n : ℕ) : C)`, `isNatIntCoe e` returns `⟨n, C⟩`. -/
+/-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
 def isNatCoe (e: Expr) : Option (Expr × Expr) :=
   match e.getAppFnArgs with
   | (``Nat.cast, #[target, _, n]) => some ⟨n, target⟩
   | _ => none
 
 /--
-`getNatComparisons e` returns a list of all subexpressions of `e` of the form `((t : ℕ) : ℤ)`.
+`getNatComparisons e` returns a list of all subexpressions of `e` of the form `((t : ℕ) : C)`.
 -/
 partial def getNatComparisons (e : Expr) : List (Expr × Expr) :=
   match isNatCoe e with
@@ -147,11 +147,12 @@ def mk_coe_nat_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
 open Std
 
 /-- Ordering on `Expr`. -/
--- We only define this so we can use `RBSet Expr`. Perhaps `HashSet` would be more appropriate?
 def Expr.compare (a b : Expr) : Ordering :=
   if Expr.lt a b then .lt else if a.equal b then .eq else .gt
 
-def compare_nat_casts (a b: Expr × Expr): Ordering :=
+/-- Ordering on `Expr × Expr`. -/
+-- We only define this so we can use `RBSet Expr`. Perhaps `HashSet` would be more appropriate?
+def compare_nat_casts (a b : Expr × Expr): Ordering :=
   match Expr.compare a.fst b.fst with
   | .eq => Expr.compare a.snd b.snd
   | o => o
