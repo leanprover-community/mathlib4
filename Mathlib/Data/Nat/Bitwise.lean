@@ -407,20 +407,13 @@ lemma bitwise'_succ {n m : Nat} :
 
 lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
   funext x y
-  induction' hk : x + y using Nat.strongInductionOn with k ih generalizing x y
-  cases x <;> cases y
+  induction' x using Nat.strongInductionOn with x ih generalizing y
+  cases' x with x <;> cases' y with y
   · simp only [bitwise_zero, bitwise'_zero]
   · simp only [bitwise_zero_left, bitwise'_zero_left, Bool.cond_eq_ite]
   · simp only [bitwise_zero_right, bitwise'_zero_right', Bool.cond_eq_ite]
-  next x y =>
-    simp only [bitwise_succ, bitwise'_succ, div2_val,
-      ih (div2 (x+1) + div2 (y+1))
-          (by rw [←hk, div2_val, div2_val]
-              apply add_lt_add
-              <;> (apply bitwise_rec_lemma; simp)
-              )
-          ((x+1)/2) ((y+1)/2) (by simp only [div2_val])
-    ]
+  · specialize ih ((x+1) / 2) (div_lt_self' ..)
+    simp only [bitwise_succ, bitwise'_succ, div2_val, ih]
 
 end
 
