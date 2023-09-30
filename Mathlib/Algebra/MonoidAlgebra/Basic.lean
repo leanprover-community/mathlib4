@@ -85,9 +85,13 @@ instance MonoidAlgebra.inhabited : Inhabited (MonoidAlgebra k G) :=
   inferInstanceAs (Inhabited (G →₀ k))
 #align monoid_algebra.inhabited MonoidAlgebra.inhabited
 
+instance MonoidAlgebra.addMonoid : AddMonoid (MonoidAlgebra k G) :=
+  inferInstanceAs (AddMonoid (G →₀ k))
+
 -- Porting note: The compiler couldn't derive this.
 instance MonoidAlgebra.addCommMonoid : AddCommMonoid (MonoidAlgebra k G) :=
-  inferInstanceAs (AddCommMonoid (G →₀ k))
+  { inferInstanceAs (AddCommMonoid (G →₀ k)) with
+    toAddMonoid := MonoidAlgebra.addMonoid _ _ }
 #align monoid_algebra.add_comm_monoid MonoidAlgebra.addCommMonoid
 
 instance MonoidAlgebra.coeFun : CoeFun (MonoidAlgebra k G) fun _ => G → k :=
@@ -172,8 +176,7 @@ theorem mul_def {f g : MonoidAlgebra k G} :
 #align monoid_algebra.mul_def MonoidAlgebra.mul_def
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k G) :=
-  { Finsupp.addCommMonoid with
-    -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
+  { -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
     left_distrib := fun f g h => by
       haveI := Classical.decEq G
       simp only [mul_def]
@@ -211,8 +214,7 @@ section Semigroup
 variable [Semiring k] [Semigroup G] [Semiring R]
 
 instance nonUnitalSemiring : NonUnitalSemiring (MonoidAlgebra k G) :=
-  { MonoidAlgebra.nonUnitalNonAssocSemiring with
-    mul_assoc := fun f g h => by
+  { mul_assoc := fun f g h => by
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [mul_def]
       rw [sum_sum_index]; congr; ext a₁ b₁
@@ -250,11 +252,17 @@ section MulOneClass
 
 variable [Semiring k] [MulOneClass G]
 
+instance natCast : NatCast (MonoidAlgebra k G) :=
+  { natCast := fun n => single 1 n }
+
+theorem nat_cast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
+  rfl
+#align monoid_algebra.nat_cast_def MonoidAlgebra.nat_cast_def
+
 instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
-  { MonoidAlgebra.nonUnitalNonAssocSemiring with
-    natCast := fun n => single 1 n
-    natCast_zero := by simp
-    natCast_succ := fun _ => by simp; rfl
+  { toNatCast := MonoidAlgebra.natCast
+    natCast_zero := by simp [nat_cast_def]
+    natCast_succ := fun _ => by simp [nat_cast_def]; rfl
     one_mul := fun f => by
       simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
         one_mul, sum_single]
@@ -262,10 +270,6 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
       simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, sum_zero, add_zero,
         mul_one, sum_single] }
 #align monoid_algebra.non_assoc_semiring MonoidAlgebra.nonAssocSemiring
-
-theorem nat_cast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
-  rfl
-#align monoid_algebra.nat_cast_def MonoidAlgebra.nat_cast_def
 
 end MulOneClass
 
@@ -277,8 +281,9 @@ section Semiring
 variable [Semiring k] [Monoid G]
 
 instance semiring : Semiring (MonoidAlgebra k G) :=
-  { MonoidAlgebra.nonUnitalSemiring,
-    MonoidAlgebra.nonAssocSemiring with }
+  { MonoidAlgebra.nonAssocSemiring with
+    toOne := MonoidAlgebra.one
+    toNonUnitalSemiring := MonoidAlgebra.nonUnitalSemiring }
 #align monoid_algebra.semiring MonoidAlgebra.semiring
 
 variable [Semiring R]
@@ -295,8 +300,7 @@ end Semiring
 
 instance nonUnitalCommSemiring [CommSemiring k] [CommSemigroup G] :
     NonUnitalCommSemiring (MonoidAlgebra k G) :=
-  { MonoidAlgebra.nonUnitalSemiring with
-    mul_comm := fun f g => by
+  { mul_comm := fun f g => by
       simp only [mul_def, Finsupp.sum, mul_comm]
       rw [Finset.sum_comm]
       simp only [mul_comm] }
@@ -312,69 +316,98 @@ instance nontrivial [Semiring k] [Nontrivial k] [Nonempty G] : Nontrivial (Monoi
 section DerivedInstances
 
 instance commSemiring [CommSemiring k] [CommMonoid G] : CommSemiring (MonoidAlgebra k G) :=
-  { MonoidAlgebra.nonUnitalCommSemiring, MonoidAlgebra.semiring with }
+  { mul_comm := mul_comm }
 #align monoid_algebra.comm_semiring MonoidAlgebra.commSemiring
 
 instance unique [Semiring k] [Subsingleton k] : Unique (MonoidAlgebra k G) :=
   Finsupp.uniqueOfRight
 #align monoid_algebra.unique MonoidAlgebra.unique
 
+instance neg [Ring k] : Neg (MonoidAlgebra k G) :=
+  Finsupp.neg
+
+instance sub [Ring k] : Sub (MonoidAlgebra k G) :=
+  Finsupp.sub
+
 instance addCommGroup [Ring k] : AddCommGroup (MonoidAlgebra k G) :=
-  Finsupp.addCommGroup
+  { Finsupp.addCommGroup with
+    toNeg := MonoidAlgebra.neg
+    toSub := MonoidAlgebra.sub
+    toAddMonoid := MonoidAlgebra.addMonoid _ _ }
 #align monoid_algebra.add_comm_group MonoidAlgebra.addCommGroup
 
 instance nonUnitalNonAssocRing [Ring k] [Mul G] : NonUnitalNonAssocRing (MonoidAlgebra k G) :=
-  { MonoidAlgebra.addCommGroup, MonoidAlgebra.nonUnitalNonAssocSemiring with }
+  { left_distrib := mul_add
+    right_distrib := add_mul
+    zero_mul := zero_mul
+    mul_zero := mul_zero }
 #align monoid_algebra.non_unital_non_assoc_ring MonoidAlgebra.nonUnitalNonAssocRing
 
 instance nonUnitalRing [Ring k] [Semigroup G] : NonUnitalRing (MonoidAlgebra k G) :=
-  { MonoidAlgebra.addCommGroup, MonoidAlgebra.nonUnitalSemiring with }
+  { mul_assoc := mul_assoc }
 #align monoid_algebra.non_unital_ring MonoidAlgebra.nonUnitalRing
 
-instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G) :=
-  { MonoidAlgebra.addCommGroup,
-    MonoidAlgebra.nonAssocSemiring with
-    intCast := fun z => single 1 (z : k)
-    -- Porting note: Both were `simpa`.
-    intCast_ofNat := fun n => by simp; rfl
-    intCast_negSucc := fun n => by simp; rfl }
-#align monoid_algebra.non_assoc_ring MonoidAlgebra.nonAssocRing
+instance intCast [Ring k] [MulOneClass G] : IntCast (MonoidAlgebra k G) :=
+  { intCast := fun n => single 1 (n : k) }
 
 theorem int_cast_def [Ring k] [MulOneClass G] (z : ℤ) :
     (z : MonoidAlgebra k G) = single (1 : G) (z : k) :=
   rfl
 #align monoid_algebra.int_cast_def MonoidAlgebra.int_cast_def
 
+instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G) :=
+  { MonoidAlgebra.nonAssocSemiring (k := k) (G := G),
+    MonoidAlgebra.addCommGroup (k := k) (G := G) with
+    toNonUnitalNonAssocRing := MonoidAlgebra.nonUnitalNonAssocRing
+    toOne := MonoidAlgebra.one
+    toNatCast := MonoidAlgebra.natCast
+    toIntCast := MonoidAlgebra.intCast
+    -- Porting note: Both were `simpa`.
+    intCast_ofNat := fun n => by simp [int_cast_def]; rfl
+    intCast_negSucc := fun n => by simp [int_cast_def]; rfl }
+#align monoid_algebra.non_assoc_ring MonoidAlgebra.nonAssocRing
+
 instance ring [Ring k] [Monoid G] : Ring (MonoidAlgebra k G) :=
-  { MonoidAlgebra.nonAssocRing, MonoidAlgebra.semiring with }
+  { MonoidAlgebra.nonAssocRing (k := k) (G := G) with
+    toSemiring := MonoidAlgebra.semiring
+    toNeg := MonoidAlgebra.neg
+    toSub := MonoidAlgebra.sub
+    toIntCast := MonoidAlgebra.intCast }
 #align monoid_algebra.ring MonoidAlgebra.ring
 
 instance nonUnitalCommRing [CommRing k] [CommSemigroup G] :
     NonUnitalCommRing (MonoidAlgebra k G) :=
-  { MonoidAlgebra.nonUnitalCommSemiring, MonoidAlgebra.nonUnitalRing with }
+  { mul_comm := mul_comm }
 #align monoid_algebra.non_unital_comm_ring MonoidAlgebra.nonUnitalCommRing
 
 instance commRing [CommRing k] [CommMonoid G] : CommRing (MonoidAlgebra k G) :=
-  { MonoidAlgebra.nonUnitalCommRing, MonoidAlgebra.ring with }
+  { mul_comm := mul_comm }
 #align monoid_algebra.comm_ring MonoidAlgebra.commRing
 
 variable {S : Type*}
 
+instance smul [Semiring k] [SMulZeroClass R k] : SMul R (MonoidAlgebra k G) :=
+  Finsupp.smulZeroClass.toSMul
+
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R (MonoidAlgebra k G) :=
-  Finsupp.smulZeroClass
+  { Finsupp.smulZeroClass with
+    toSMul := MonoidAlgebra.smul }
 #align monoid_algebra.smul_zero_class MonoidAlgebra.smulZeroClass
 
 instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (MonoidAlgebra k G) :=
-  Finsupp.distribSMul _ _
+  { Finsupp.distribSMul _ _ with
+    toSMulZeroClass := MonoidAlgebra.smulZeroClass }
 #align monoid_algebra.distrib_smul MonoidAlgebra.distribSMul
 
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R (MonoidAlgebra k G) :=
-  Finsupp.distribMulAction G k
+  { Finsupp.distribMulAction G k with
+    toSMul := MonoidAlgebra.smul }
 #align monoid_algebra.distrib_mul_action MonoidAlgebra.distribMulAction
 
 instance module [Semiring R] [Semiring k] [Module R k] : Module R (MonoidAlgebra k G) :=
-  Finsupp.module G k
+  { Finsupp.module G k with
+    toDistribMulAction := MonoidAlgebra.distribMulAction }
 #align monoid_algebra.module MonoidAlgebra.module
 
 instance faithfulSMul [Monoid R] [Semiring k] [DistribMulAction R k] [FaithfulSMul R k]
@@ -784,6 +817,7 @@ In particular this provides the instance `Algebra k (MonoidAlgebra k G)`.
 instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
     Algebra k (MonoidAlgebra A G) :=
   { singleOneRingHom.comp (algebraMap k A) with
+    toSMul := MonoidAlgebra.smul
     -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
     smul_def' := fun r a => by
       refine Finsupp.ext fun _ => ?_
@@ -1189,9 +1223,13 @@ instance inhabited : Inhabited k[G] :=
   inferInstanceAs (Inhabited (G →₀ k))
 #align add_monoid_algebra.inhabited AddMonoidAlgebra.inhabited
 
+instance addMonoid : AddMonoid k[G] :=
+  inferInstanceAs (AddMonoid (G →₀ k))
+
 -- Porting note: The compiler couldn't derive this.
 instance addCommMonoid : AddCommMonoid k[G] :=
-  inferInstanceAs (AddCommMonoid (G →₀ k))
+  { inferInstanceAs (AddCommMonoid (G →₀ k)) with
+    toAddMonoid := MonoidAlgebra.addMonoid _ _ }
 #align add_monoid_algebra.add_comm_monoid AddMonoidAlgebra.addCommMonoid
 
 instance coeFun : CoeFun k[G] fun _ => G → k :=
@@ -1273,9 +1311,9 @@ variable [Semiring k] [Add G]
   whose value at `a` is the sum of `f x * g y` over all pairs `x, y`
   such that `x + y = a`. (Think of the product of multivariate
   polynomials where `α` is the additive monoid of monomial exponents.) -/
-instance hasMul : Mul k[G] :=
+instance mul : Mul k[G] :=
   ⟨fun f g => f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ + a₂) (b₁ * b₂)⟩
-#align add_monoid_algebra.has_mul AddMonoidAlgebra.hasMul
+#align add_monoid_algebra.has_mul AddMonoidAlgebra.mul
 
 theorem mul_def {f g : k[G]} :
     f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ + a₂) (b₁ * b₂) :=
@@ -1353,8 +1391,7 @@ section Semigroup
 variable [Semiring k] [AddSemigroup G]
 
 instance nonUnitalSemiring : NonUnitalSemiring k[G] :=
-  { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
-    mul_assoc := fun f g h => by
+  { mul_assoc := fun f g h => by
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [mul_def]
       rw [sum_sum_index]; congr; ext a₁ b₁
@@ -1371,11 +1408,17 @@ section MulOneClass
 
 variable [Semiring k] [AddZeroClass G]
 
+instance natCast : NatCast k[G] :=
+  { natCast := fun n => single 0 n }
+
+theorem nat_cast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
+  rfl
+#align add_monoid_algebra.nat_cast_def AddMonoidAlgebra.nat_cast_def
+
 instance nonAssocSemiring : NonAssocSemiring k[G] :=
-  { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
-    natCast := fun n => single 0 n
-    natCast_zero := by simp
-    natCast_succ := fun _ => by simp; rfl
+  { toNatCast := AddMonoidAlgebra.natCast
+    natCast_zero := by simp [nat_cast_def]
+    natCast_succ := fun _ => by simp [nat_cast_def]; rfl
     one_mul := fun f => by
       simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
         one_mul, sum_single]
@@ -1384,10 +1427,6 @@ instance nonAssocSemiring : NonAssocSemiring k[G] :=
         mul_one, sum_single] }
 #align add_monoid_algebra.non_assoc_semiring AddMonoidAlgebra.nonAssocSemiring
 
-theorem nat_cast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
-  rfl
-#align add_monoid_algebra.nat_cast_def AddMonoidAlgebra.nat_cast_def
-
 end MulOneClass
 
 /-! #### Semiring structure -/
@@ -1395,16 +1434,13 @@ end MulOneClass
 
 section Semiring
 
-instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R k[G] :=
-  Finsupp.smulZeroClass
-#align add_monoid_algebra.smul_zero_class AddMonoidAlgebra.smulZeroClass
-
 variable [Semiring k] [AddMonoid G]
 
 instance semiring : Semiring k[G] :=
-  { AddMonoidAlgebra.nonUnitalSemiring,
-    AddMonoidAlgebra.nonAssocSemiring with }
-#align add_monoid_algebra.semiring AddMonoidAlgebra.semiring
+  { AddMonoidAlgebra.nonAssocSemiring with
+    toOne := AddMonoidAlgebra.one
+    toNonUnitalSemiring := AddMonoidAlgebra.nonUnitalSemiring }
+  #align add_monoid_algebra.semiring AddMonoidAlgebra.semiring
 
 variable [Semiring R]
 
@@ -1420,8 +1456,7 @@ end Semiring
 
 instance nonUnitalCommSemiring [CommSemiring k] [AddCommSemigroup G] :
     NonUnitalCommSemiring k[G] :=
-  { AddMonoidAlgebra.nonUnitalSemiring with
-    mul_comm := @mul_comm (MonoidAlgebra k <| Multiplicative G) _ }
+  { mul_comm := @mul_comm (MonoidAlgebra k <| Multiplicative G) _ }
 #align add_monoid_algebra.non_unital_comm_semiring AddMonoidAlgebra.nonUnitalCommSemiring
 
 instance nontrivial [Semiring k] [Nontrivial k] [Nonempty G] : Nontrivial k[G] :=
@@ -1434,61 +1469,93 @@ instance nontrivial [Semiring k] [Nontrivial k] [Nonempty G] : Nontrivial k[G] :
 section DerivedInstances
 
 instance commSemiring [CommSemiring k] [AddCommMonoid G] : CommSemiring k[G] :=
-  { AddMonoidAlgebra.nonUnitalCommSemiring, AddMonoidAlgebra.semiring with }
+  { mul_comm := mul_comm }
 #align add_monoid_algebra.comm_semiring AddMonoidAlgebra.commSemiring
 
 instance unique [Semiring k] [Subsingleton k] : Unique k[G] :=
   Finsupp.uniqueOfRight
 #align add_monoid_algebra.unique AddMonoidAlgebra.unique
 
+instance neg [Ring k] : Neg k[G] :=
+  Finsupp.neg
+
+instance sub [Ring k] : Sub k[G] :=
+  Finsupp.sub
+
 instance addCommGroup [Ring k] : AddCommGroup k[G] :=
-  Finsupp.addCommGroup
+  { Finsupp.addCommGroup with
+    toNeg := AddMonoidAlgebra.neg
+    toSub := AddMonoidAlgebra.sub
+    toAddMonoid := AddMonoidAlgebra.addMonoid _ _ }
 #align add_monoid_algebra.add_comm_group AddMonoidAlgebra.addCommGroup
 
 instance nonUnitalNonAssocRing [Ring k] [Add G] : NonUnitalNonAssocRing k[G] :=
-  { AddMonoidAlgebra.addCommGroup, AddMonoidAlgebra.nonUnitalNonAssocSemiring with }
+  { left_distrib := mul_add
+    right_distrib := add_mul
+    zero_mul := zero_mul
+    mul_zero := mul_zero }
 #align add_monoid_algebra.non_unital_non_assoc_ring AddMonoidAlgebra.nonUnitalNonAssocRing
 
 instance nonUnitalRing [Ring k] [AddSemigroup G] : NonUnitalRing k[G] :=
-  { AddMonoidAlgebra.addCommGroup, AddMonoidAlgebra.nonUnitalSemiring with }
+  { mul_assoc := mul_assoc }
 #align add_monoid_algebra.non_unital_ring AddMonoidAlgebra.nonUnitalRing
 
-instance nonAssocRing [Ring k] [AddZeroClass G] : NonAssocRing k[G] :=
-  { AddMonoidAlgebra.addCommGroup,
-    AddMonoidAlgebra.nonAssocSemiring with
-    intCast := fun z => single 0 (z : k)
-    -- Porting note: Both were `simpa`.
-    intCast_ofNat := fun n => by simp; rfl
-    intCast_negSucc := fun n => by simp; rfl }
-#align add_monoid_algebra.non_assoc_ring AddMonoidAlgebra.nonAssocRing
+instance intCast [Ring k] [AddZeroClass G] : IntCast k[G] :=
+  { intCast := fun z => single 0 (z : k) }
 
 theorem int_cast_def [Ring k] [AddZeroClass G] (z : ℤ) :
     (z : k[G]) = single (0 : G) (z : k) :=
   rfl
 #align add_monoid_algebra.int_cast_def AddMonoidAlgebra.int_cast_def
 
+instance nonAssocRing [Ring k] [AddZeroClass G] : NonAssocRing k[G] :=
+  { AddMonoidAlgebra.nonAssocSemiring (k := k) (G := G),
+    AddMonoidAlgebra.addCommGroup (k := k) (G := G) with
+    toNonUnitalNonAssocRing := AddMonoidAlgebra.nonUnitalNonAssocRing
+    toOne := AddMonoidAlgebra.one
+    toNatCast := AddMonoidAlgebra.natCast
+    toIntCast := AddMonoidAlgebra.intCast
+    -- Porting note: Both were `simpa`.
+    intCast_ofNat := fun n => by simp [int_cast_def]; rfl
+    intCast_negSucc := fun n => by simp [int_cast_def]; rfl }
+#align add_monoid_algebra.non_assoc_ring AddMonoidAlgebra.nonAssocRing
+
 instance ring [Ring k] [AddMonoid G] : Ring k[G] :=
-  { AddMonoidAlgebra.nonAssocRing, AddMonoidAlgebra.semiring with }
+  { AddMonoidAlgebra.nonAssocRing (k := k) (G := G) with
+    toSemiring := AddMonoidAlgebra.semiring
+    toNeg := AddMonoidAlgebra.neg
+    toSub := AddMonoidAlgebra.sub
+    toIntCast := AddMonoidAlgebra.intCast }
 #align add_monoid_algebra.ring AddMonoidAlgebra.ring
 
 instance nonUnitalCommRing [CommRing k] [AddCommSemigroup G] :
     NonUnitalCommRing k[G] :=
-  { AddMonoidAlgebra.nonUnitalCommSemiring, AddMonoidAlgebra.nonUnitalRing with }
+  { mul_comm := mul_comm }
 #align add_monoid_algebra.non_unital_comm_ring AddMonoidAlgebra.nonUnitalCommRing
 
 instance commRing [CommRing k] [AddCommMonoid G] : CommRing k[G] :=
-  { AddMonoidAlgebra.nonUnitalCommRing, AddMonoidAlgebra.ring with }
+  { mul_comm := mul_comm }
 #align add_monoid_algebra.comm_ring AddMonoidAlgebra.commRing
 
 variable {S : Type*}
 
+instance smul [Semiring k] [SMulZeroClass R k] : SMul R k[G] :=
+  Finsupp.smulZeroClass.toSMul
+
+instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R k[G] :=
+  { Finsupp.smulZeroClass with
+    toSMul := AddMonoidAlgebra.smul }
+#align add_monoid_algebra.smul_zero_class AddMonoidAlgebra.smulZeroClass
+
 instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R k[G] :=
-  Finsupp.distribSMul G k
+  { Finsupp.distribSMul _ _ with
+    toSMulZeroClass := AddMonoidAlgebra.smulZeroClass }
 #align add_monoid_algebra.distrib_smul AddMonoidAlgebra.distribSMul
 
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R k[G] :=
-  Finsupp.distribMulAction G k
+  { Finsupp.distribMulAction G k with
+    toSMul := AddMonoidAlgebra.smul }
 #align add_monoid_algebra.distrib_mul_action AddMonoidAlgebra.distribMulAction
 
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
@@ -1497,7 +1564,8 @@ instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonem
 #align add_monoid_algebra.faithful_smul AddMonoidAlgebra.faithfulSMul
 
 instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
-  Finsupp.module G k
+  { Finsupp.module G k with
+    toDistribMulAction := AddMonoidAlgebra.distribMulAction }
 #align add_monoid_algebra.module AddMonoidAlgebra.module
 
 instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMul R S]
@@ -1894,6 +1962,7 @@ In particular this provides the instance `Algebra k k[G]`.
 instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
     Algebra R k[G] :=
   { singleZeroRingHom.comp (algebraMap R k) with
+    toSMul := AddMonoidAlgebra.smul
     -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
     smul_def' := fun r a => by
       refine Finsupp.ext fun _ => ?_
