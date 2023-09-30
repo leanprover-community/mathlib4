@@ -216,12 +216,11 @@ noncomputable def classes_equiv_quotient (r : Setoid α) : Quotient r ≃ Setoid
     rw [←h_eq]
     exact Setoid.refl a
   · simp only [Quot.surjective_lift f_respects_relation]
-    intro ⟨c, c_in_cls⟩
-    obtain ⟨a, a_in_c⟩ := Set.nonempty_iff_ne_empty.mpr <| fun c_empty : c = ∅ ↦ by
-      rw [c_empty] at c_in_cls; exact Setoid.empty_not_mem_classes c_in_cls
+    intro ⟨c, a, hc⟩
+    have a_in_c : a ∈ c := by rw [hc]; exact Setoid.refl' r a
     exists a
     rw [Subtype.mk.injEq]
-    exact Setoid.eq_of_mem_classes (Setoid.mem_classes r a) (Setoid.refl a) c_in_cls a_in_c
+    exact Setoid.eq_of_mem_classes (Setoid.mem_classes r a) (Setoid.refl a) ⟨a, hc⟩ a_in_c
 
 section Partition
 
