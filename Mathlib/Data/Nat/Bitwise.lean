@@ -354,14 +354,20 @@ lemma bitwise_zero_right {n : Nat} : bitwise f n 0 = if f true false then n else
   rintro ⟨⟩
   split_ifs <;> rfl
 
-#check bitwise'_zero_right
-
+/-
+  This theorem already exists as `bitwise'_zero_right` in `Mathlib.Init.Data.Nat.Bitwise`, but that
+  one has the dreaded `f false false = false` assumption.
+  The following proof does not need this assumption, but instead relies on `eq_mpr_eq_cast` from
+  `Mathlib.Logic.Basic`. Since the other version exists in an `Init` file, we probably don't
+  want to add this dependency there
+-/
 @[simp]
 theorem bitwise'_zero_right' (f : Bool → Bool → Bool) (m) :
     bitwise' f m 0 = cond (f true false) m 0 := by
   unfold bitwise' binaryRec
   simp only [if_true, if_false, dite_false]
-  split_ifs with hx <;> simp? [hx, bit_decomp]
+  split_ifs with hx
+  <;> simp only [bit_decomp, eq_mpr_eq_cast, cast_eq, binaryRec_zero, hx, Bool.cond_self]
 
 @[simp]
 lemma bitwise_zero : bitwise f 0 0 = 0 := by
@@ -375,12 +381,9 @@ lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
   by_cases h1 : x = 0 <;> by_cases h2 : y = 0
   · simp only [h1, h2, bitwise_zero, bitwise'_zero]
   · simp only [h1, bitwise_zero_left, bitwise'_zero_left]
-    split_ifs with h <;> simp [h]
-  · simp only [h2, bitwise_zero_right]
-    unfold bitwise' binaryRec
-    simp only [h1, h2, if_true, if_false, dite_false]
-    split_ifs with hx <;>
-    simp [hx, bit_decomp]
+    split_ifs with h <;> simp only [h, cond_true, cond_false]
+  · simp only [h2, bitwise_zero_right, bitwise'_zero_right']
+    split_ifs with hx <;> simp only [hx, cond_true, cond_false]
   · unfold bitwise
     rw [mod_two_of_bodd, mod_two_of_bodd, if_neg h1, if_neg h2]
     conv_rhs => rw [← bit_decomp x, ← bit_decomp y]
