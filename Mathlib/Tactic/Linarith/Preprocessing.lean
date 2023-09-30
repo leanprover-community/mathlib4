@@ -131,6 +131,8 @@ partial def getNatComparisons (e : Expr) : List (Expr × Expr) :=
   | none => match e.getAppFnArgs with
     | (``HAdd.hAdd, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
     | (``HMul.hMul, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
+    | (``HSub.hSub, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
+    | (``Neg.neg, #[_, _, a]) => getNatComparisons a
     | _ => []
 
 /-- If `e : ℕ`, returns a proof of `0 ≤ (e : C)`. -/
