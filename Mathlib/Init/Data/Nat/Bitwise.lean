@@ -265,15 +265,7 @@ def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 #align nat.bits Nat.bits
 
--- Porting note: There is a `Nat.bitwise` in Lean 4 core,
--- but it is different from the one in mathlib3, so we just port blindly here.
-/-- `Nat.bitwise'` (different from `Nat.bitwise` in Lean 4 core)
-  applies the function `f` to pairs of bits in the same position in
-  the binary representations of its inputs. -/
-def bitwise' (f : Bool → Bool → Bool) : ℕ → ℕ → ℕ :=
-  binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
-    binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n)
-#align nat.bitwise Nat.bitwise'
+#align nat.bitwise Nat.bitwise
 
 #align nat.lor Nat.lor
 #align nat.land Nat.land
@@ -390,37 +382,5 @@ theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false
         show cond (f true false) (bit false 0) 0 = 0 by cases f true false <;> rfl]
     rfl
 #align nat.bitwise_bit_aux Nat.bitwise'_bit_aux
-
-
--- Porting Note : This was a @[simp] lemma in mathlib3
-theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
-    bitwise' f 0 n = cond (f false true) n 0 := by
-  unfold bitwise'; rw [binaryRec_zero]
-#align nat.bitwise_zero_left Nat.bitwise'_zero_left
-
-theorem bitwise'_zero (f : Bool → Bool → Bool) : bitwise' f 0 0 = 0 := by
-  rw [bitwise'_zero_left]
-  cases f false true <;> rfl
-#align nat.bitwise_zero Nat.bitwise'_zero
-
-@[simp]
-theorem bitwise'_bit {f : Bool → Bool → Bool} (h : f false false = false) (a m b n) :
-    bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
-  unfold bitwise'
-  rw [binaryRec_eq, binaryRec_eq]
-  · induction' ftf : f true false
-    rw [show f a false = false by cases a <;> assumption]
-    apply @congr_arg _ _ _ 0 (bit false)
-    swap
-    rw [show f a false = a by cases a <;> assumption]
-    apply congr_arg (bit a)
-    all_goals
-    { apply bitCasesOn m
-      intro a m
-      rw [binaryRec_eq, binaryRec_zero]
-      · rfl
-      · rw [← bitwise'_bit_aux h, ftf] }
-  · exact bitwise'_bit_aux h
-#align nat.bitwise_bit Nat.bitwise'_bit
 
 end Nat
