@@ -33,10 +33,8 @@ universe u
 def precomp {ι ι' : Type*} {π : ι → Type*} [(i : ι) → TopologicalSpace (π i)]
   (φ : ι' → ι) : C((i : ι) → π i, (i : ι') → π (φ i)) := ⟨_, Pi.continuous_precomp' φ⟩
 
-variable {ι : Type u} {X : ι → Type} [∀ i, TopologicalSpace (X i)]
-  (C : Set ((i : ι) → X i))
-
-variable (J K L : ι → Prop)
+variable {ι : Type u} {X : ι → Type} [∀ i, TopologicalSpace (X i)] (C : Set ((i : ι) → X i))
+    (J K : ι → Prop)
 
 namespace FinsetFunctor
 
@@ -48,7 +46,7 @@ def π_app : C(C, FinsetFunctor.obj C J) :=
   ⟨Set.MapsTo.restrict (precomp (Subtype.val (p := J))) _ _ (Set.mapsTo_image _ _),
     Continuous.restrict _ (Pi.continuous_precomp' _)⟩
 
-variable {J K L}
+variable {J K}
 
 /-- The morphism part of the functor `FinsetsToProfinite : (Finset ι)ᵒᵖ ⥤ Profinite`. -/
 def map (h : ∀ i, J i → K i) : C(obj C K, obj C J) :=
@@ -64,14 +62,11 @@ theorem surjective_π_app :
   refine ⟨⟨y, hy.1⟩, ?_⟩
   exact Subtype.ext hy.2
 
-theorem map_comp_π_app (h : ∀ i, J i → K i) :
-    map C h ∘ π_app C K = π_app C J := rfl
+theorem map_comp_π_app (h : ∀ i, J i → K i) : map C h ∘ π_app C K = π_app C J := rfl
 
 end FinsetFunctor
 
-variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)]
-  {J K L : Finset ι} [∀ (J : Finset ι) i, Decidable (i ∈ J)]
-  {C} (hC : IsCompact C)
+variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)] {C} (hC : IsCompact C)
 
 open CategoryTheory Limits Opposite FinsetFunctor
 
@@ -88,8 +83,8 @@ def FinsetsCone : Cone (FinsetsToProfinite hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
   π := { app := fun J ↦ π_app C (· ∈ unop J) }
 
-theorem eq_of_forall_π_app_eq (a b : C) (h : ∀ (J : Finset ι), π_app C (· ∈ J) a =
-    π_app C (· ∈ J) b) : a = b := by
+theorem eq_of_forall_π_app_eq (a b : C)
+    (h : ∀ (J : Finset ι), π_app C (· ∈ J) a = π_app C (· ∈ J) b) : a = b := by
   ext i
   specialize h ({i} : Finset ι)
   rw [Subtype.ext_iff] at h
