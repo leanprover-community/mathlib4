@@ -6,6 +6,8 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Tactic.Zify
+import Mathlib.Tactic.Ring
 
 #align_import data.fin.tuple.basic from "leanprover-community/mathlib"@"ef997baa41b5c428be3fb50089a7139bf4ee886b"
 
@@ -428,13 +430,15 @@ inductively from `Fin n` starting from the left, not from the right. This implie
 more help to realize that elements belong to the right types, i.e., we need to insert casts at
 several places. -/
 
-theorem castSucc_eq_rev_succ_rev {n : ℕ} (i : Fin n) : (castSucc i) = rev (rev i).succ  := by
-  unfold castSucc succ
+@[simp]
+theorem succ_rev {n : ℕ} (k : Fin n) : succ (rev k) = rev (castSucc k) := by
   ext
-  simp only [coe_castAdd, val_rev, ge_iff_le, add_le_add_iff_right, Nat.succ_sub_succ_eq_sub]
-  cases i
+  simp only [val_succ, val_rev, coe_castSucc, Nat.succ_sub_succ_eq_sub]
+  zify [show k + 1 ≤ n from k.is_lt, show k ≤ n from is_le']
+  ring
+
+theorem rev_succ_rev {n : ℕ} (k : Fin n) : rev (succ (rev k)) = castSucc k := by
   simp
-  sorry
 
 /-- Reverses a tuple, turning the 0th entry into the n-1st, and so forth. -/
 def reverse {α : Fin n → Type u} (q : ∀ i, α i) : ∀ i : Fin n, α (rev i) :=
