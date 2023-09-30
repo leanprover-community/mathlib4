@@ -105,11 +105,17 @@ where the action of `f : R[X]` is `f • m = (aeval a f) • m`.
 -/
 structure CompAEval (R M: Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) where
+  /--
+  The element of `M` corresponding to an element of `Module.CompAEval R M a`.
+  -/
   val : M
 
 variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
   [Module R M] [IsScalarTower R A M]
 
+/--
+The natural equivalence between `Module.CompAEval R M a` and `M`, taking `⟨m⟩` to `m`.
+-/
 def CompAEval.equiv : CompAEval R M a ≃ M where
   toFun       := CompAEval.val
   invFun      := CompAEval.mk
