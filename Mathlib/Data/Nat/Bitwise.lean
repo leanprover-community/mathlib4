@@ -130,7 +130,13 @@ theorem lxor'_eq_xor : lxor' = xor := by
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
-  simp only [←bitwise'_eq_bitwise, bitwise'_bit h]
+  conv_lhs => { unfold bitwise }
+  simp only [bit, bit1, bit0, Bool.cond_eq_ite]
+  have h1 x :     (x + x) % 2 = 0   := by ring_nf; apply mul_mod_left
+  have h2 x : (x + x + 1) % 2 = 1   := by ring_nf; apply add_mul_mod_self_right
+  have h3 x :     (x + x) / 2 = x   := by ring_nf; apply mul_div_left _ zero_lt_two
+  have h4 x : (x + x + 1) / 2 = x   := by ring_nf; simp [add_mul_div_right]
+  cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs <;> simp_all
 
 @[simp]
 theorem lor_bit : ∀ a m b n, lor (bit a m) (bit b n) = bit (a || b) (lor m n) :=
@@ -281,37 +287,38 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
-theorem bitwise_swap {f : Bool → Bool → Bool} (h : f false false = false) :
+theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
-  funext m n; revert n
-  simp only [Function.swap, ←bitwise'_eq_bitwise]
-  apply binaryRec _ _ m <;> intro n
-  · rw [bitwise'_zero_left, bitwise'_zero_right, Bool.cond_eq_ite]
-  · intros a ih m'
-    apply bitCasesOn m'; intro b n'
-    rw [bitwise'_bit, bitwise'_bit, ih] <;> exact h
+  funext m n
+  simp only [Function.swap]
+  induction' m using Nat.strongInductionOn with m ih generalizing n
+  cases' m with m
+  <;> cases' n with n
+  <;> try rw [bitwise_zero_left, bitwise_zero_right]
+  · specialize ih ((m+1) / 2) (div_lt_self' ..)
+    simp [bitwise_succ, bitwise_succ, ih]
 #align nat.bitwise_swap Nat.bitwise_swap
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
-theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b)
-    (hf' : f false false = false) (n m : ℕ) : bitwise f n m = bitwise f m n :=
+theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b) (n m : ℕ) :
+    bitwise f n m = bitwise f m n :=
   suffices bitwise f = swap (bitwise f) by conv_lhs => rw [this]
   calc
     bitwise f = bitwise (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
-    _ = swap (bitwise f) := bitwise_swap hf'
+    _ = swap (bitwise f) := bitwise_swap
 #align nat.bitwise_comm Nat.bitwise_comm
 
 theorem lor_comm (n m : ℕ) : lor n m = lor m n :=
-  bitwise_comm Bool.or_comm rfl n m
+  bitwise_comm Bool.or_comm n m
 #align nat.lor_comm Nat.lor_comm
 
 theorem land_comm (n m : ℕ) : land n m = land m n :=
-  bitwise_comm Bool.and_comm rfl n m
+  bitwise_comm Bool.and_comm n m
 #align nat.land_comm Nat.land_comm
 
 theorem xor_comm (n m : ℕ) : xor n m = xor m n :=
-  bitwise_comm (Bool.bne_eq_xor ▸ Bool.xor_comm) rfl n m
+  bitwise_comm (Bool.bne_eq_xor ▸ Bool.xor_comm) n m
 #align nat.lxor_comm Nat.xor_comm
 
 @[simp]
