@@ -333,10 +333,10 @@ theorem lnot_bit (b) : ∀ n, lnot (bit b n) = bit (not b) (lnot n)
 theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
     testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
   cases m <;> cases n <;> simp only [testBit, bitwise, natBitwise]
-  · by_cases h : f false false <;> simp [h]
-  · by_cases h : f false true <;> simp [h]
-  · by_cases h : f true false <;> simp [h]
-  · by_cases h : f true true <;> simp [h]
+  · by_cases h : f false false <;> simp [h, -Nat.bitwise'_eq_bitwise]
+  · by_cases h : f false true <;> simp [h, -Nat.bitwise'_eq_bitwise]
+  · by_cases h : f true false <;> simp [h, -Nat.bitwise'_eq_bitwise]
+  · by_cases h : f true true <;> simp [h, -Nat.bitwise'_eq_bitwise]
 #align int.test_bit_bitwise Int.testBit_bitwise
 
 @[simp]
