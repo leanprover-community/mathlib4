@@ -240,7 +240,7 @@ theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
 
 -- porting note: deprecate?
 @[to_additive]
-theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : opposite H) (s : Set G) :
+theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) :=
   smul_opposite_image_mul_preimage' g h s
 #align subgroup.smul_opposite_image_mul_preimage Subgroup.smul_opposite_image_mul_preimage
