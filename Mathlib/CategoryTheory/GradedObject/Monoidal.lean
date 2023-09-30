@@ -388,7 +388,7 @@ noncomputable def isColimitUnitTensorCofan (i : I) : IsColimit (unitTensorCofan 
       rw [← hm ⟨⟨0, i⟩, zero_add i⟩ ]
       simp)
 
-instance : HasTensor tensorUnit X :=
+instance hasTensor_tensorUnit : HasTensor tensorUnit X :=
   TensorCofan.hasTensor _ _ _ (fun i => isColimitUnitTensorCofan X i)
 
 noncomputable def leftUnitor :

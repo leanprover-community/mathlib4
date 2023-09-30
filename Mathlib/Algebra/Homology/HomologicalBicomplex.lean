@@ -1,5 +1,5 @@
 import Mathlib.CategoryTheory.GradedObject.Bifunctor
-import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.Flip
 import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.Tactic.Linarith
 
@@ -221,11 +221,18 @@ namespace HomologicalComplex₂
 
 variable {c₁ c₂}
 
+@[simps!]
+def flip [HasZeroMorphisms C] (K : HomologicalComplex₂ C c₁ c₂) :
+  HomologicalComplex₂ C c₂ c₁ := HomologicalComplex.flipObj K
+
 @[pp_dot]
 def toGradedObject [HasZeroMorphisms C] (K : HomologicalComplex₂ C c₁ c₂) :
   GradedObject (I₁ × I₂) C := fun ⟨i₁, i₂⟩ => (K.X i₁).X i₂
 
 variable (c₁ c₂ C)
+
+def flipFunctor [HasZeroMorphisms C]:
+    HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex₂ C c₂ c₁ := HomologicalComplex.flip C c₂ c₁
 
 @[reducible]
 def toGradedObjectFunctor [HasZeroMorphisms C] :
@@ -235,7 +242,6 @@ def toGradedObjectFunctor [HasZeroMorphisms C] :
 
 variable {c₁ c₂ c₃ C}
 variable [Preadditive C] (K L : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) [DecidableEq I₃]
-
 
 variable (τ : TotalComplexShape c₁ c₂ c₃) [K.toGradedObject.HasMap τ.π]
   [L.toGradedObject.HasMap τ.π]
@@ -364,3 +370,38 @@ noncomputable def totalFunctor (C : Type*) [Category C] [Preadditive C]
       ((HomologicalComplex₂.toGradedObjectFunctor C c₁ c₂).map ψ) τ.π
 
 end TotalComplexShape
+
+namespace CategoryTheory
+
+namespace Functor
+
+variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [HasZeroMorphisms C₃]
+  [F.PreservesZeroMorphisms] [∀ (X : C₁), (F.obj X).PreservesZeroMorphisms]
+  [F.flip.PreservesZeroMorphisms] [∀ (X : C₂), (F.flip.obj X).PreservesZeroMorphisms]
+
+variable {c₁ c₂}
+
+@[simps!]
+def mapHomologicalComplex₂FlipObjObjIso (K₁ : HomologicalComplex C₁ c₁)
+  (K₂ : HomologicalComplex C₂ c₂) :
+    ((mapHomologicalComplex₂ F.flip c₂ c₁).obj K₂).obj K₁ ≅
+      (((mapHomologicalComplex₂ F c₁ c₂).obj K₁).obj K₂).flip :=
+  HomologicalComplex.Hom.isoOfComponents
+    (fun i₂ => HomologicalComplex.Hom.isoOfComponents (fun i₁ => Iso.refl _ )
+      (by aesop_cat)) (by aesop_cat)
+
+variable (c₁ c₂)
+
+@[simps!]
+def mapHomologicalComplex₂FlipIso :
+    mapHomologicalComplex₂ F.flip c₂ c₁ ≅
+      (mapHomologicalComplex₂ F c₁ c₂).flip ⋙
+        (whiskeringRight _ _ _).obj (HomologicalComplex₂.flipFunctor C₃ c₁ c₂) :=
+  NatIso.ofComponents
+    (fun K₂ => NatIso.ofComponents
+      (fun K₁ => mapHomologicalComplex₂FlipObjObjIso F K₁ K₂)
+        (by aesop_cat)) (by aesop_cat)
+
+end Functor
+
+end CategoryTheory
