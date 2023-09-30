@@ -171,7 +171,7 @@ instance (priority := 100) completable : CompletableTopField K :=
         simp only [mem_setOf_eq]
         specialize H₁ x x_in₁ y y_in₁
         replace x_in₀ := H₀ x x_in₀
-        replace  := H₀ y y_in₀
+        replace := H₀ y y_in₀
         clear H₀
         apply Valuation.inversion_estimate
         · have : (v x : Γ₀) ≠ 0 := by

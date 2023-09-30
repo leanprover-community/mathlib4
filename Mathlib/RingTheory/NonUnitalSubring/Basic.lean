@@ -534,7 +534,7 @@ instance : Inf (NonUnitalSubring R) :=
 
 @[simp]
 theorem coe_inf (p p' : NonUnitalSubring R) :
-  ((p ⊓ p' : NonUnitalSubring R) : Set R) = (p : Set R) ∩ p' :=
+    ((p ⊓ p' : NonUnitalSubring R) : Set R) = (p : Set R) ∩ p' :=
   rfl
 
 @[simp]

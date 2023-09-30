@@ -26,7 +26,7 @@ group naturally induces a uniform structure.
 
 ## Main results
 
-* `TopologicalAddGroup.to_uniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
+* `TopologicalAddGroup.toUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
   to construct a canonical uniformity for a topological add group.
 
 * extension of ℤ-bilinear maps to complete groups (useful for ring completions)
@@ -982,7 +982,7 @@ already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `TopologicalGroup.to_uniformSpace`.
+uniform structure, so it is still provided manually via `TopologicalGroup.toUniformSpace`.
 In the most common use cases, this coincides (definitionally) with the uniform structure on the
 quotient obtained via other means.  -/
 @[to_additive "The quotient `G ⧸ N` of a complete first countable uniform additive group
@@ -992,7 +992,7 @@ subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in thi
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `TopologicalAddGroup.to_uniformSpace`.
+uniform structure, so it is still provided manually via `TopologicalAddGroup.toUniformSpace`.
 In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
 significant care was taken so that the uniform structure inherent in that setting coincides
 (definitionally) with the uniform structure provided here."]
