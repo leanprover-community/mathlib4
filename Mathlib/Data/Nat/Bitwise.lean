@@ -363,11 +363,10 @@ lemma bitwise_zero_right {n : Nat} : bitwise f n 0 = if f true false then n else
 -/
 @[simp]
 theorem bitwise'_zero_right' {m : Nat} :
-    bitwise' f m 0 = cond (f true false) m 0 := by
+    bitwise' f m 0 = if f true false then m else 0 := by
   unfold bitwise' binaryRec
-  simp only [if_true, if_false, dite_false]
-  split_ifs with hx
-  <;> simp only [bit_decomp, eq_mpr_eq_cast, cast_eq, binaryRec_zero, hx, Bool.cond_self]
+  simp only [Bool.cond_eq_ite, eq_mpr_eq_cast, cast_eq, dite_eq_ite]
+  split_ifs with hx <;> simp only [bit_decomp, binaryRec_zero, hx]
 
 @[simp]
 lemma bitwise_zero : bitwise f 0 0 = 0 := by
