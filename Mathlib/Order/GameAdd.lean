@@ -29,6 +29,8 @@ We also define `Sym2.GameAdd`, which is the unordered pair analog of `Prod.GameA
 decreases at a time.
 -/
 
+set_option autoImplicit true
+
 
 variable {α β : Type*} {rα : α → α → Prop} {rβ : β → β → Prop}
 

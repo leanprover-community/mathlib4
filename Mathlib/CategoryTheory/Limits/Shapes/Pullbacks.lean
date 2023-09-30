@@ -1708,8 +1708,8 @@ theorem pullbackConeOfRightIso_π_app_left : (pullbackConeOfRightIso f g).π.app
 #align category_theory.limits.pullback_cone_of_right_iso_π_app_left CategoryTheory.Limits.pullbackConeOfRightIso_π_app_left
 
 @[simp]
-theorem pullbackConeOfRightIso_π_app_right : (pullbackConeOfRightIso f g).π.app right = f ≫ inv g
-  := rfl
+theorem pullbackConeOfRightIso_π_app_right : (pullbackConeOfRightIso f g).π.app right = f ≫ inv g :=
+  rfl
 #align category_theory.limits.pullback_cone_of_right_iso_π_app_right CategoryTheory.Limits.pullbackConeOfRightIso_π_app_right
 
 /-- Verify that the constructed limit cone is indeed a limit. -/

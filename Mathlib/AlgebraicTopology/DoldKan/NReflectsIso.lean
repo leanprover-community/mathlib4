@@ -8,7 +8,7 @@ import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 
-#align_import algebraic_topology.dold_kan.n_reflects_iso from "leanprover-community/mathlib"@"88bca0ce5d22ebfd9e73e682e51d60ea13b48347"
+#align_import algebraic_topology.dold_kan.n_reflects_iso from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -18,6 +18,8 @@ In this file, it is shown that the functors
 `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)` and
 `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ))`
 reflect isomorphisms for any preadditive category `C`.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 

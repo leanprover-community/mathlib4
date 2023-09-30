@@ -14,19 +14,20 @@ The `L²` norm on product of two inner product spaces is compatible with an inne
 $$
 \langle x, y\rangle = \langle x_1, y_1 \rangle + \langle x_2, y_2 \rangle.
 $$
-This is recorded in this file as an inner product space instance on `ProdLp 2`.
+This is recorded in this file as an inner product space instance on `WithLp 2 (E × F)`.
 -/
 
-noncomputable section
+namespace WithLp
 
-variable {𝕜 : Type _} [IsROrC 𝕜]
+variable {𝕜 : Type*} (E F : Type*)
+variable [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
+  [InnerProductSpace 𝕜 F]
 
-instance ProdLp.instInnerProductSpace (E F : Type _) [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] :
-    InnerProductSpace 𝕜 (ProdLp 2 E F) where
+noncomputable instance instProdInnerProductSpace :
+    InnerProductSpace 𝕜 (WithLp 2 (E × F)) where
   inner x y := inner x.fst y.fst + inner x.snd y.snd
   norm_sq_eq_inner x := by
-    simp [ProdLp.norm_sq_eq_of_L2, ← norm_sq_eq_inner]
+    simp [prod_norm_sq_eq_of_L2, ← norm_sq_eq_inner]
   conj_symm x y := by
     simp
   add_left x y z := by
@@ -36,10 +37,8 @@ instance ProdLp.instInnerProductSpace (E F : Type _) [NormedAddCommGroup E] [Inn
     simp only [smul_fst, inner_smul_left, smul_snd]
     ring
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
-variable {F : Type _} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable {E F}
 
 @[simp]
-theorem ProdLp.inner_apply (x y : ProdLp 2 E F) :
-    @inner 𝕜 _ _ x y = inner x.fst y.fst + inner x.snd y.snd := rfl
+theorem prod_inner_apply (x y : WithLp 2 (E × F)) :
+    inner (𝕜 := 𝕜) x y = inner x.fst y.fst + inner x.snd y.snd := rfl

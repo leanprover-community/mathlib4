@@ -25,6 +25,8 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
    value
 -/
 
+set_option autoImplicit true
+
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
 the maps that preserve `*`, are nonnegative, positive definite and satisfy the triangle equality. -/
@@ -458,8 +460,8 @@ theorem abv_one' : abv 1 = 1 :=
 #align is_absolute_value.abv_one' IsAbsoluteValue.abv_one'
 
 /-- An absolute value as a monoid with zero homomorphism, assuming the target is a semifield. -/
-def abvHom' : R →*₀ S :=
-  ⟨⟨abv, abv_zero abv⟩, abv_one' abv, abv_mul abv⟩
+def abvHom' : R →*₀ S where
+  toFun := abv; map_zero' := abv_zero abv; map_one' := abv_one' abv; map_mul' := abv_mul abv
 #align is_absolute_value.abv_hom' IsAbsoluteValue.abvHom'
 
 end Semiring

@@ -143,6 +143,29 @@ theorem map_ne_zero [Semiring S] [Nontrivial S] {f : R →+* S} (hp : p ≠ 0) :
   mt (map_eq_zero f).1 hp
 #align polynomial.map_ne_zero Polynomial.map_ne_zero
 
+@[simp]
+theorem degree_map [Semiring S] [Nontrivial S] (p : R[X]) (f : R →+* S) :
+    degree (p.map f) = degree p :=
+  p.degree_map_eq_of_injective f.injective
+#align polynomial.degree_map Polynomial.degree_map
+
+@[simp]
+theorem natDegree_map [Semiring S] [Nontrivial S] (f : R →+* S) :
+    natDegree (p.map f) = natDegree p :=
+  natDegree_eq_of_degree_eq (degree_map _ f)
+#align polynomial.nat_degree_map Polynomial.natDegree_map
+
+@[simp]
+theorem leadingCoeff_map [Semiring S] [Nontrivial S] (f : R →+* S) :
+    leadingCoeff (p.map f) = f (leadingCoeff p) := by
+  simp only [← coeff_natDegree, coeff_map f, natDegree_map]
+#align polynomial.leading_coeff_map Polynomial.leadingCoeff_map
+
+theorem monic_map_iff [Semiring S] [Nontrivial S] {f : R →+* S} {p : R[X]} :
+    (p.map f).Monic ↔ p.Monic := by
+  rw [Monic, leadingCoeff_map, ← f.map_one, Function.Injective.eq_iff f.injective, Monic]
+#align polynomial.monic_map_iff Polynomial.monic_map_iff
+
 end DivisionRing
 
 section Field
@@ -239,12 +262,12 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
 theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
     have := EuclideanDomain.div_add_mod p q;
-      rwa [h, MulZeroClass.mul_zero, zero_add, mod_eq_self_iff hq0] at this,
+      rwa [h, mul_zero, zero_add, mod_eq_self_iff hq0] at this,
     fun h => by
     have hlt : degree p < degree (q * C (leadingCoeff q)⁻¹) := by
       rwa [degree_mul_leadingCoeff_inv q hq0]
     have hm : Monic (q * C (leadingCoeff q)⁻¹) := monic_mul_leadingCoeff_inv hq0
-    rw [div_def, (divByMonic_eq_zero_iff hm).2 hlt, MulZeroClass.mul_zero]⟩
+    rw [div_def, (divByMonic_eq_zero_iff hm).2 hlt, mul_zero]⟩
 #align polynomial.div_eq_zero_iff Polynomial.div_eq_zero_iff
 
 theorem degree_add_div (hq0 : q ≠ 0) (hpq : degree q ≤ degree p) :
@@ -271,26 +294,6 @@ theorem degree_div_lt (hp : p ≠ 0) (hq : 0 < degree q) : degree (p / q) < degr
       degree_divByMonic_lt _ (monic_mul_leadingCoeff_inv hq0) hp
         (by rw [degree_mul_leadingCoeff_inv _ hq0]; exact hq)
 #align polynomial.degree_div_lt Polynomial.degree_div_lt
-
-@[simp]
-theorem degree_map [DivisionRing k] (p : R[X]) (f : R →+* k) : degree (p.map f) = degree p :=
-  p.degree_map_eq_of_injective f.injective
-#align polynomial.degree_map Polynomial.degree_map
-
-@[simp]
-theorem natDegree_map [DivisionRing k] (f : R →+* k) : natDegree (p.map f) = natDegree p :=
-  natDegree_eq_of_degree_eq (degree_map _ f)
-#align polynomial.nat_degree_map Polynomial.natDegree_map
-
-@[simp]
-theorem leadingCoeff_map [DivisionRing k] (f : R →+* k) :
-    leadingCoeff (p.map f) = f (leadingCoeff p) := by
-  simp only [← coeff_natDegree, coeff_map f, natDegree_map]
-#align polynomial.leading_coeff_map Polynomial.leadingCoeff_map
-
-theorem monic_map_iff [DivisionRing k] {f : R →+* k} {p : R[X]} : (p.map f).Monic ↔ p.Monic := by
-  rw [Monic, leadingCoeff_map, ← f.map_one, Function.Injective.eq_iff f.injective, Monic]
-#align polynomial.monic_map_iff Polynomial.monic_map_iff
 
 theorem isUnit_map [Field k] (f : R →+* k) : IsUnit (p.map f) ↔ IsUnit p := by
   simp_rw [isUnit_iff_degree_eq_zero, degree_map]
@@ -326,24 +329,24 @@ theorem eval₂_gcd_eq_zero [CommSemiring k] [DecidableEq R]
     {ϕ : R →+* k} {f g : R[X]} {α : k} (hf : f.eval₂ ϕ α = 0)
     (hg : g.eval₂ ϕ α = 0) : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0 := by
   rw [EuclideanDomain.gcd_eq_gcd_ab f g, Polynomial.eval₂_add, Polynomial.eval₂_mul,
-    Polynomial.eval₂_mul, hf, hg, MulZeroClass.zero_mul, MulZeroClass.zero_mul, zero_add]
+    Polynomial.eval₂_mul, hf, hg, zero_mul, zero_mul, zero_add]
 #align polynomial.eval₂_gcd_eq_zero Polynomial.eval₂_gcd_eq_zero
 
 theorem eval_gcd_eq_zero [DecidableEq R] {f g : R[X]} {α : R}
-  (hf : f.eval α = 0) (hg : g.eval α = 0) : (EuclideanDomain.gcd f g).eval α = 0 :=
+    (hf : f.eval α = 0) (hg : g.eval α = 0) : (EuclideanDomain.gcd f g).eval α = 0 :=
   eval₂_gcd_eq_zero hf hg
 #align polynomial.eval_gcd_eq_zero Polynomial.eval_gcd_eq_zero
 
 theorem root_left_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : f.eval₂ ϕ α = 0 := by
   cases' EuclideanDomain.gcd_dvd_left f g with p hp
-  rw [hp, Polynomial.eval₂_mul, hα, MulZeroClass.zero_mul]
+  rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 #align polynomial.root_left_of_root_gcd Polynomial.root_left_of_root_gcd
 
 theorem root_right_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : g.eval₂ ϕ α = 0 := by
   cases' EuclideanDomain.gcd_dvd_right f g with p hp
-  rw [hp, Polynomial.eval₂_mul, hα, MulZeroClass.zero_mul]
+  rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 #align polynomial.root_right_of_root_gcd Polynomial.root_right_of_root_gcd
 
 theorem root_gcd_iff_root_left_right [CommSemiring k] [DecidableEq R]
@@ -370,7 +373,7 @@ theorem mem_roots_map [CommRing k] [IsDomain k] {f : R →+* k} {x : k} (hp : p 
 theorem rootSet_monomial [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
     (ha : a ≠ 0) : (monomial n a).rootSet S = {0} := by
   classical
-  rw [rootSet, map_monomial, roots_monomial ((_root_.map_ne_zero (algebraMap R S)).2 ha),
+  rw [rootSet, aroots_monomial ha,
     Multiset.toFinset_nsmul _ _ hn, Multiset.toFinset_singleton, Finset.coe_singleton]
 #align polynomial.root_set_monomial Polynomial.rootSet_monomial
 
@@ -390,7 +393,7 @@ set_option linter.uppercaseLean3 false in
 theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type*} (f : ι → R[X])
     (s : Finset ι) (h : s.prod f ≠ 0) : (s.prod f).rootSet S = ⋃ i ∈ s, (f i).rootSet S := by
   classical
-  simp only [rootSet, ← Finset.mem_coe]
+  simp only [rootSet, aroots, ← Finset.mem_coe]
   rw [Polynomial.map_prod, roots_prod, Finset.bind_toFinset, s.val_toFinset, Finset.coe_biUnion]
   rwa [← Polynomial.map_prod, Ne, map_eq_zero]
 #align polynomial.root_set_prod Polynomial.rootSet_prod
@@ -458,7 +461,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.dvd_C_mul Polynomial.dvd_C_mul
 
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
-  (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
+    (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
   simp [CommGroupWithZero.coe_normUnit _ this]
 #align polynomial.coe_norm_unit_of_ne_zero Polynomial.coe_normUnit_of_ne_zero

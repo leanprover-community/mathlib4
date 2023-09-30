@@ -150,7 +150,7 @@ theorem basisSets_smul_right (v : E) (U : Set E) (hU : U ∈ p.basisSets) :
   · simp_rw [(lt_div_iff h).symm]
     rw [← _root_.ball_zero_eq]
     exact Metric.ball_mem_nhds 0 (div_pos hr h)
-  simp_rw [le_antisymm (not_lt.mp h) (map_nonneg _ v), MulZeroClass.mul_zero, hr]
+  simp_rw [le_antisymm (not_lt.mp h) (map_nonneg _ v), mul_zero, hr]
   exact IsOpen.mem_nhds isOpen_univ (mem_univ 0)
 #align seminorm_family.basis_sets_smul_right SeminormFamily.basisSets_smul_right
 
@@ -447,10 +447,7 @@ theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf [TopologicalAd
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     TopologicalAddGroup.ext_iff inferInstance (topologicalAddGroup_iInf fun i => inferInstance),
     nhds_iInf]
-  -- Porting note: next three lines was `congrm (_ = ⨅ i, _)`
-  refine Eq.to_iff ?_
-  congr
-  funext i
+  congrm _ = ⨅ i, ?_
   exact @comap_norm_nhds_zero _ (p i).toSeminormedAddGroup
 #align seminorm_family.with_seminorms_iff_topological_space_eq_infi SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf
 
@@ -472,10 +469,7 @@ theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace 
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
     toTopologicalSpace_iInf, nhds_iInf]
-  -- Porting note: next three lines was `congrm (_ = ⨅ i, _)`
-  refine Eq.to_iff ?_
-  congr
-  funext i
+  congrm _ = ⨅ i, ?_
   exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
 #align seminorm_family.with_seminorms_iff_uniform_space_eq_infi SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf
 

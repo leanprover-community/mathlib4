@@ -69,8 +69,7 @@ theorem degree_pos_of_root {p : R[X]} (hp : p ≠ 0) (h : IsRoot p a) : 0 < degr
 #align polynomial.degree_pos_of_root Polynomial.degree_pos_of_root
 
 theorem natDegree_le_iff_coeff_eq_zero : p.natDegree ≤ n ↔ ∀ N : ℕ, n < N → p.coeff N = 0 := by
-  simp_rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero, Nat.cast_withBot,
-    WithBot.coe_lt_coe]
+  simp_rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero, Nat.cast_lt]
 #align polynomial.nat_degree_le_iff_coeff_eq_zero Polynomial.natDegree_le_iff_coeff_eq_zero
 
 theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n) :
@@ -232,8 +231,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     have hs : s.Nonempty := ⟨x, hx⟩
     refine' natDegree_eq_of_degree_eq_some _
     rw [degree_sum_eq_of_disjoint]
-    · dsimp
-      rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs,
+    · rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs,
         Nat.cast_withBot, Finset.coe_sup' hs, ←
         Finset.sup'_eq_sup hs]
       refine' le_antisymm _ _
@@ -288,7 +286,7 @@ theorem degree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z 
 theorem coe_lt_degree {p : R[X]} {n : ℕ} : (n : WithBot ℕ) < degree p ↔ n < natDegree p := by
   by_cases h : p = 0
   · simp [h]
-  simp [degree_eq_natDegree h, Nat.cast_withBot, WithBot.coe_lt_coe]
+  simp [degree_eq_natDegree h, Nat.cast_lt]
 #align polynomial.coe_lt_degree Polynomial.coe_lt_degree
 
 end Degree

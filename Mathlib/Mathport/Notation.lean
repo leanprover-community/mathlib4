@@ -22,6 +22,8 @@ initialize registerTraceClass `notation3
 
 /-! ### Syntaxes supporting `notation3` -/
 
+set_option autoImplicit true
+
 /--
 Expands binders into nested combinators.
 For example, the familiar exists is given by:
@@ -95,8 +97,8 @@ structure MatchState where
   We store the contexts since we need to delaborate expressions after we leave
   scoping constructs. -/
   vars : HashMap Name (SubExpr × LocalContext × LocalInstances)
-  /-- The binders accumulated when matching a `scoped` expression. -/
-  scopeState : Array (TSyntax ``extBinderParenthesized)
+  /-- The binders accumulated while matching a `scoped` expression. -/
+  scopeState : Option (Array (TSyntax ``extBinderParenthesized))
   /-- The arrays of delaborated `Term`s accumulated while matching
   `foldl` and `foldr` expressions. For `foldl`, the arrays are stored in reverse order. -/
   foldState : HashMap Name (Array Term)
@@ -108,7 +110,7 @@ def Matcher := MatchState → DelabM MatchState
 /-- The initial state. -/
 def MatchState.empty : MatchState where
   vars := {}
-  scopeState := #[]
+  scopeState := none
   foldState := {}
 
 /-- Evaluate `f` with the given variable's value as the `SubExpr` and within that subexpression's
@@ -132,18 +134,15 @@ def MatchState.delabVar (s : MatchState) (name : Name) (checkNot? : Option Expr 
 def MatchState.captureSubexpr (s : MatchState) (name : Name) : DelabM MatchState := do
   return {s with vars := s.vars.insert name (← readThe SubExpr, ← getLCtx, ← getLocalInstances)}
 
-/-- Push a binder onto the binder array. For `scoped`. -/
-def MatchState.pushBinder (s : MatchState) (b : TSyntax ``extBinderParenthesized) :
-    DelabM MatchState := do
-  let binders := s.scopeState
-  -- TODO merge binders as an inverse to `satisfies_binder_pred%`
-  let binders := binders.push b
-  return {s with scopeState := binders}
-
 /-- Get the accumulated array of delaborated terms for a given foldr/foldl.
 Returns `#[]` if nothing has been pushed yet. -/
 def MatchState.getFoldArray (s : MatchState) (name : Name) : Array Term :=
   (s.foldState.find? name).getD #[]
+
+/-- Get the accumulated array of delaborated terms for a given foldr/foldl.
+Returns `#[]` if nothing has been pushed yet. -/
+def MatchState.getBinders (s : MatchState) : Array (TSyntax ``extBinderParenthesized) :=
+  s.scopeState.getD #[]
 
 /-- Push a delaborated term onto a foldr/foldl array. -/
 def MatchState.pushFold (s : MatchState) (name : Name) (t : Term) : MatchState :=
@@ -266,46 +265,44 @@ where
 against is in the `lit` variable.
 
 Runs `smatcher`, extracts the resulting `scopeId` variable, processes this value
-(which must be a lambda) to produce a binder, and loops.
-
-Succeeds even if it matches nothing, so it is up to the caller to decide if the
-empty scope state is ok. -/
-partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := fun s => do
-  -- `lit` is bound to the SubExpr that the `scoped` syntax produced
-  s.withVar lit do
-  try
-    -- Run `smatcher` at `lit`, clearing the `scopeId` variable so that it can get a fresh value
-    let s ← smatcher {s with vars := s.vars.erase scopeId}
-    s.withVar scopeId do
-      guard (← getExpr).isLambda
-      let prop ← try Meta.isProp (← getExpr).bindingDomain! catch _ => pure false
-      let isDep := (← getExpr).bindingBody!.hasLooseBVar 0
-      let ppTypes ← getPPOption getPPPiBinderTypes -- the same option controlling ∀
-      let dom ← withBindingDomain delab
-      withBindingBodyUnusedName <| fun x => do
-        let x : Ident := ⟨x⟩
-        let binder ←
-          if prop && !isDep then
-            -- this underscore is used to support binder predicates, since it indicates
-            -- the variable is unused and this binder is safe to merge into another
-            `(extBinderParenthesized|(_ : $dom))
-          else if prop || ppTypes then
-            `(extBinderParenthesized|($x:ident : $dom))
-          else
-            `(extBinderParenthesized|($x:ident))
-        -- Now use the body of the lambda for `lit` for the next iteration
-        let s ← s.captureSubexpr lit
-        let s ← s.pushBinder binder
-        matchScoped lit scopeId smatcher s
-  catch _ =>
-    return s
-
-/-- Like `matchScoped` but ensures that it matches at least one binder. -/
-partial def matchScoped' (lit scopeId : Name) (smatcher : Matcher) : Matcher := fun s => do
-  guard <| s.scopeState.isEmpty
-  let s ← matchScoped lit scopeId smatcher s
-  guard <| !s.scopeState.isEmpty
-  return s
+(which must be a lambda) to produce a binder, and loops. -/
+partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := go #[] where
+  /-- Variant of `matchScoped` after some number of `binders` have already been captured. -/
+  go (binders : Array (TSyntax ``extBinderParenthesized)) : Matcher := fun s => do
+    -- `lit` is bound to the SubExpr that the `scoped` syntax produced
+    s.withVar lit do
+    try
+      -- Run `smatcher` at `lit`, clearing the `scopeId` variable so that it can get a fresh value
+      let s ← smatcher {s with vars := s.vars.erase scopeId}
+      s.withVar scopeId do
+        guard (← getExpr).isLambda
+        let prop ← try Meta.isProp (← getExpr).bindingDomain! catch _ => pure false
+        let isDep := (← getExpr).bindingBody!.hasLooseBVar 0
+        let ppTypes ← getPPOption getPPPiBinderTypes -- the same option controlling ∀
+        let dom ← withBindingDomain delab
+        withBindingBodyUnusedName <| fun x => do
+          let x : Ident := ⟨x⟩
+          let binder ←
+            if prop && !isDep then
+              -- this underscore is used to support binder predicates, since it indicates
+              -- the variable is unused and this binder is safe to merge into another
+              `(extBinderParenthesized|(_ : $dom))
+            else if prop || ppTypes then
+              `(extBinderParenthesized|($x:ident : $dom))
+            else
+              `(extBinderParenthesized|($x:ident))
+          -- Now use the body of the lambda for `lit` for the next iteration
+          let s ← s.captureSubexpr lit
+          -- TODO merge binders as an inverse to `satisfies_binder_pred%`
+          let binders := binders.push binder
+          go binders s
+    catch _ =>
+      guard <| !binders.isEmpty
+      if let some binders₂ := s.scopeState then
+        guard <| binders == binders₂ -- TODO: this might be a bit too strict, but it seems to work
+        return s
+      else
+        return {s with scopeState := binders}
 
 /- Create a `Term` that represents a matcher for `scoped` notation.
 Fails in the `OptionT` sense if a matcher couldn't be constructed.
@@ -315,7 +312,7 @@ partial def mkScopedMatcher (lit scopeId : Name) (scopedTerm : Term) (boundNames
     OptionT TermElabM (List Name × Term) := do
   -- Build the matcher for `scopedTerm` with `scopeId` as an additional variable
   let (keys, smatcher) ← mkExprMatcher scopedTerm (boundNames.insert scopeId)
-  return (keys, ← ``(matchScoped' $(quote lit) $(quote scopeId) $smatcher))
+  return (keys, ← ``(matchScoped $(quote lit) $(quote scopeId) $smatcher))
 
 /-- Matcher for expressions produced by `foldl`. -/
 partial def matchFoldl (lit x y : Name) (smatcher : Matcher) (sinit : Matcher) :
@@ -480,8 +477,6 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
             mkFoldrMatcher id.getId x.getId y.getId scopedTerm init (getBoundNames boundValues)
         | _ => throwUnsupportedSyntax
     | `(notation3Item| $lit:ident $(prec?)? : (scoped $scopedId:ident => $scopedTerm)) =>
-      if hasScoped then
-        throwErrorAt item "Cannot have more than one `scoped` item."
       hasScoped := true
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
         `(macroArg| $lit:ident:term $(prec?)?)
@@ -545,7 +540,7 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
         | .foldr => result ←
           `(let $id := MatchState.getFoldArray s $(quote name); $result)
       if hasBindersItem then
-        result ← `(`(extBinders| $$(MatchState.scopeState s)*) >>= fun binders => $result)
+        result ← `(`(extBinders| $$(MatchState.getBinders s)*) >>= fun binders => $result)
       elabCommand <| ← `(command|
         def $(Lean.mkIdent delabName) : Delab := whenPPOption getPPNotation <|
           getExpr >>= fun e => $matcher MatchState.empty >>= fun s => $result)

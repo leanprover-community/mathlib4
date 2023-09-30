@@ -62,13 +62,13 @@ theorem map_empty (f : α ↪ β) : (∅ : Finset α).map f = ∅ :=
 
 variable {f : α ↪ β} {s : Finset α}
 
---Porting note: Lower priority because `mem_map_equiv` is better when it applies
-@[simp 900]
+@[simp]
 theorem mem_map {b : β} : b ∈ s.map f ↔ ∃ a ∈ s, f a = b :=
   mem_map.trans <| by simp only [exists_prop]; rfl
 #align finset.mem_map Finset.mem_map
 
-@[simp]
+--Porting note: Higher priority to apply before `mem_map`.
+@[simp 1100]
 theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f.symm b ∈ s := by
   rw [mem_map]
   exact
@@ -77,6 +77,10 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
       simpa, fun h => ⟨_, h, by simp⟩⟩
 #align finset.mem_map_equiv Finset.mem_map_equiv
 
+-- The simpNF linter says that the LHS can be simplified via `Finset.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
 theorem mem_map' (f : α ↪ β) {a} {s : Finset α} : f a ∈ s.map f ↔ a ∈ s :=
   mem_map_of_injective f.2
 #align finset.mem_map' Finset.mem_map'
@@ -244,7 +248,7 @@ theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne.def, map_eq_empty]
 #align finset.map_nonempty Finset.map_nonempty
 
-alias map_nonempty ↔ _ Nonempty.map
+alias ⟨_, Nonempty.map⟩ := map_nonempty
 #align finset.nonempty.map Finset.Nonempty.map
 
 theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s :=
@@ -332,6 +336,10 @@ theorem mem_image_of_mem (f : α → β) {a} (h : a ∈ s) : f a ∈ s.image f :
 theorem forall_image {p : β → Prop} : (∀ b ∈ s.image f, p b) ↔ ∀ a ∈ s, p (f a) := by
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 #align finset.forall_image Finset.forall_image
+
+theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
+  eq_of_veq (s.map f).2.dedup.symm
+#align finset.map_eq_image Finset.map_eq_image
 
 --@[simp] Porting note: removing simp, `simp` [Nonempty] can prove it
 theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c := by
@@ -447,12 +455,22 @@ theorem image_subset_iff : s.image f ⊆ t ↔ ∀ x ∈ s, f x ∈ t :=
 theorem image_mono (f : α → β) : Monotone (Finset.image f) := fun _ _ => image_subset_image
 #align finset.image_mono Finset.image_mono
 
+lemma image_injective (hf : Injective f) : Injective (image f) := by
+  simpa only [funext (map_eq_image _)] using map_injective ⟨f, hf⟩
+
+lemma image_inj {t : Finset α} (hf : Injective f) : s.image f = t.image f ↔ s = t :=
+  (image_injective hf).eq_iff
+
 theorem image_subset_image_iff {t : Finset α} (hf : Injective f) :
     s.image f ⊆ t.image f ↔ s ⊆ t := by
   simp_rw [← coe_subset]
   push_cast
   exact Set.image_subset_image_iff hf
 #align finset.image_subset_image_iff Finset.image_subset_image_iff
+
+lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t := by
+  simp_rw [←lt_iff_ssubset]
+  exact lt_iff_lt_of_le_iff_le' (image_subset_image_iff hf) (image_subset_image_iff hf)
 
 theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=
   calc
@@ -461,7 +479,7 @@ theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=
 #align finset.coe_image_subset_range Finset.coe_image_subset_range
 
 theorem image_filter {p : β → Prop} [DecidablePred p] :
-    (s.image f).filter p = (s.filter (p ∘ f)).image f :=
+    (s.image f).filter p = (s.filter λ a ↦ p (f a)).image f :=
   ext fun b => by
     simp only [mem_filter, mem_image, exists_prop]
     exact
@@ -595,10 +613,6 @@ theorem attach_insert [DecidableEq α] {a : α} {s : Finset α} :
         mem_insert_of_mem <| mem_image.2 <| ⟨⟨x, h⟩, mem_attach _ _, Subtype.eq rfl⟩,
       fun _ => Finset.mem_attach _ _⟩
 #align finset.attach_insert Finset.attach_insert
-
-theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
-  eq_of_veq (s.map f).2.dedup.symm
-#align finset.map_eq_image Finset.map_eq_image
 
 @[simp]
 theorem disjoint_image {s t : Finset α} {f : α → β} (hf : Injective f) :

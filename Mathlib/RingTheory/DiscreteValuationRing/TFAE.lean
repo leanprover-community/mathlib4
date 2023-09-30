@@ -176,9 +176,9 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     exact ⟨inferInstance, ((DiscreteValuationRing.iff_pid_with_one_nonzero_prime R).mp H).2⟩
   tfae_have 4 → 3
   · rintro ⟨h₁, h₂⟩;
-    exact
-      ⟨inferInstance, ⟨fun hI hI' =>
-        ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸ maximalIdeal.isMaximal R⟩, h₁⟩
+    exact { h₁ with
+      maximalOfPrime := fun hI hI' => ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸
+        maximalIdeal.isMaximal R, }
   tfae_have 3 → 5
   · intro h; exact maximalIdeal_isPrincipal_of_isDedekindDomain R
   tfae_have 5 → 6
@@ -236,6 +236,12 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     intro H
     constructor
     intro I J
+    -- `by_cases` should invoke `classical` by itself if it can't find a `Decidable` instance,
+    -- however the `tfae` hypotheses trigger a looping instance search.
+    -- See also:
+    -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/.60by_cases.60.20trying.20to.20find.20a.20weird.20instance
+    -- As a workaround, add the desired instance ourselves.
+    let _ := Classical.decEq (Ideal R)
     by_cases hI : I = ⊥; · subst hI; left; exact bot_le
     by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
     obtain ⟨n, rfl⟩ := H I hI

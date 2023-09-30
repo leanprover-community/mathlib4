@@ -38,6 +38,8 @@ In particular, we can't use the plugin on sums containing variables.
    normalization?)
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Meta
 
 open Lean hiding Rat mkRat

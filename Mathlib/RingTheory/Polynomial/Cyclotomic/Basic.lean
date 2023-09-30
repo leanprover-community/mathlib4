@@ -615,8 +615,8 @@ theorem cyclotomic_coeff_zero (R : Type*) [CommRing R] {n : ℕ} (hn : 1 < n) :
 /-- If `(a : ℕ)` is a root of `cyclotomic n (ZMod p)`, where `p` is a prime, then `a` and `p` are
 coprime. -/
 theorem coprime_of_root_cyclotomic {n : ℕ} (hpos : 0 < n) {p : ℕ} [hprime : Fact p.Prime] {a : ℕ}
-    (hroot : IsRoot (cyclotomic n (ZMod p)) (Nat.castRingHom (ZMod p) a)) : a.coprime p := by
-  apply Nat.coprime.symm
+    (hroot : IsRoot (cyclotomic n (ZMod p)) (Nat.castRingHom (ZMod p) a)) : a.Coprime p := by
+  apply Nat.Coprime.symm
   rw [hprime.1.coprime_iff_not_dvd]
   intro h
   replace h := (ZMod.nat_cast_zmod_eq_zero_iff_dvd a p).2 h
@@ -645,7 +645,7 @@ theorem orderOf_root_cyclotomic_dvd {n : ℕ} (hpos : 0 < n) {p : ℕ} [Fact p.P
     simp only [sub_eq_zero.mp hpow, ZMod.coe_unitOfCoprime, Units.val_pow_eq_pow_val]
   rw [IsRoot.def] at hroot
   rw [← prod_cyclotomic_eq_X_pow_sub_one hpos (ZMod p), ← Nat.cons_self_properDivisors hpos.ne',
-    Finset.prod_cons, eval_mul, hroot, MulZeroClass.zero_mul]
+    Finset.prod_cons, eval_mul, hroot, zero_mul]
 #align polynomial.order_of_root_cyclotomic_dvd Polynomial.orderOf_root_cyclotomic_dvd
 
 end Order

@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
 import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
 
-#align_import algebraic_topology.dold_kan.n_comp_gamma from "leanprover-community/mathlib"@"19d6240dcc5e5c8bd6e1e3c588b92e837af76f9e"
+#align_import algebraic_topology.dold_kan.n_comp_gamma from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-! The unit isomorphism of the Dold-Kan equivalence
 
@@ -18,6 +18,8 @@ It is then shown that `Γ₂N₂.natTrans` is an isomorphism by using
 that it becomes an isomorphism after the application of the functor
 `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)`
 which reflects isomorphisms.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 
@@ -228,8 +230,8 @@ theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
   rw [comp_id, Iso.inv_hom_id_app_assoc]
 
 theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
-  (N₂Γ₂.inv.app (N₂.obj P) : N₂.obj P ⟶ N₂.obj (Γ₂.obj (N₂.obj P))) ≫ N₂.map (Γ₂N₂.natTrans.app P) =
-    𝟙 (N₂.obj P) := by
+    (N₂Γ₂.inv.app (N₂.obj P) : N₂.obj P ⟶ N₂.obj (Γ₂.obj (N₂.obj P))) ≫
+    N₂.map (Γ₂N₂.natTrans.app P) = 𝟙 (N₂.obj P) := by
   ext n
   have eq₁ : (N₂Γ₂.inv.app (N₂.obj P)).f.f n = PInfty.f n ≫ P.p.app (op [n]) ≫
       (Γ₀.splitting (N₂.obj P).X).ιSummand (Splitting.IndexSet.id (op [n])) := by
@@ -252,7 +254,7 @@ set_option linter.uppercaseLean3 false in
 
 -- porting note: `Functor.associator` was added to the statement in order to prevent a timeout
 theorem identity_N₂ :
-  (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
+    (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
     (Functor.associator _ _ _).inv ≫ Γ₂N₂.natTrans ◫ 𝟙 (@N₂ C _ _) = 𝟙 N₂ := by
   ext P : 2
   dsimp only [NatTrans.comp_app, NatTrans.hcomp_app, Functor.comp_map, Functor.associator,

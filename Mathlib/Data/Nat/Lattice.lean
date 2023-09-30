@@ -132,7 +132,15 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
       simp only [sSup_def, Set.mem_empty_iff_false, forall_const, forall_prop_of_false,
         not_false_iff, exists_const]
       apply bot_unique (Nat.find_min' _ _)
-      trivial }
+      trivial
+    csSup_of_not_bddAbove := by
+      intro s hs
+      simp only [mem_univ, forall_true_left, sSup,
+        mem_empty_iff_false, IsEmpty.forall_iff, forall_const, exists_const, dite_true]
+      rw [dif_neg]
+      · exact le_antisymm (zero_le _) (find_le trivial)
+      · exact hs
+    csInf_of_not_bddBelow := fun s hs ↦ by simp at hs }
 
 theorem sSup_mem {s : Set ℕ} (h₁ : s.Nonempty) (h₂ : BddAbove s) : sSup s ∈ s :=
   let ⟨k, hk⟩ := h₂

@@ -15,10 +15,13 @@ import Mathlib.Algebra.Ring.Opposite
 * `MulOpposite.instAlgebra`: the algebra on `Aᵐᵒᵖ`
 * `AlgHom.op`/`AlgHom.unop`: simultaneously convert the domain and codomain of a morphism to the
   opposite algebra.
+* `AlgHom.opComm`: swap which side of a morphism lies in the opposite algebra.
 * `AlgEquiv.op`/`AlgEquiv.unop`: simultaneously convert the source and target of an isomorphism to
   the opposite algebra.
+* `AlgEquiv.opOp`: any algebra is isomorphic to the opposite of its opposite.
 * `AlgEquiv.toOpposite`: in a commutative algebra, the opposite algebra is isomorphic to the
   original algebra.
+* `AlgEquiv.opComm`: swap which side of an isomorphism lies in the opposite algebra.
 -/
 
 
@@ -51,6 +54,19 @@ theorem algebraMap_apply (c : R) : algebraMap R Aᵐᵒᵖ c = op (algebraMap R 
 
 end MulOpposite
 
+namespace AlgEquiv
+variable (R A)
+
+/-- An algebra is isomorphic to the opposite of its opposite. -/
+@[simps!]
+def opOp : A ≃ₐ[R] Aᵐᵒᵖᵐᵒᵖ where
+  __ := RingEquiv.opOp A
+  commutes' _ := rfl
+
+@[simp] theorem toRingEquiv_opOp : (opOp R A : A ≃+* Aᵐᵒᵖᵐᵒᵖ) = RingEquiv.opOp A := rfl
+
+end AlgEquiv
+
 namespace AlgHom
 
 /--
@@ -64,7 +80,7 @@ def fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : Aᵐ�
 
 @[simp]
 theorem toLinearMap_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
-    (f.fromOpposite hf : Aᵐᵒᵖ →ₗ[R] B) = f ∘ₗ (opLinearEquiv R).symm.toLinearMap :=
+    (f.fromOpposite hf).toLinearMap = f.toLinearMap ∘ₗ (opLinearEquiv R (M := A)).symm :=
   rfl
 
 @[simp]
@@ -83,7 +99,7 @@ def toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : A →�
 
 @[simp]
 theorem toLinearMap_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
-    (f.toOpposite hf : A →ₗ[R] Bᵐᵒᵖ) = (opLinearEquiv R : B ≃ₗ[R] Bᵐᵒᵖ) ∘ₗ f.toLinearMap :=
+    (f.toOpposite hf).toLinearMap = (opLinearEquiv R : B ≃ₗ[R] Bᵐᵒᵖ) ∘ₗ f.toLinearMap :=
   rfl
 
 @[simp]
@@ -108,6 +124,11 @@ abbrev unop : (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) ≃ (A →ₐ[R] B) := AlgHom.op
 
 theorem toRingHom_unop (f : Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) : f.unop.toRingHom = RingHom.unop f.toRingHom :=
   rfl
+
+/-- Swap the `ᵐᵒᵖ` on an algebra hom to the opposite side. -/
+@[simps!]
+def opComm : (A →ₐ[R] Bᵐᵒᵖ) ≃ (Aᵐᵒᵖ →ₐ[R] B) :=
+  AlgHom.op.trans <| AlgEquiv.refl.arrowCongr (AlgEquiv.opOp R B).symm
 
 end AlgHom
 
@@ -134,7 +155,7 @@ theorem toRingEquiv_op (f : A ≃ₐ[R] B) :
     (AlgEquiv.op f).toRingEquiv = RingEquiv.op f.toRingEquiv :=
   rfl
 
-/-- The 'unopposite' of an algebra iso  `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`. Inverse to `alg_equiv.op`. -/
+/-- The 'unopposite' of an algebra iso  `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`. Inverse to `AlgEquiv.op`. -/
 abbrev unop : (Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) ≃ A ≃ₐ[R] B := AlgEquiv.op.symm
 
 theorem toAlgHom_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) : f.unop.toAlgHom = AlgHom.unop f.toAlgHom :=
@@ -143,6 +164,11 @@ theorem toAlgHom_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) : f.unop.toAlgHom = 
 theorem toRingEquiv_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) :
     (AlgEquiv.unop f).toRingEquiv = RingEquiv.unop f.toRingEquiv :=
   rfl
+
+/-- Swap the `ᵐᵒᵖ` on an algebra isomorphism to the opposite side. -/
+@[simps!]
+def opComm : (A ≃ₐ[R] Bᵐᵒᵖ) ≃ (Aᵐᵒᵖ ≃ₐ[R] B) :=
+  AlgEquiv.op.trans <| AlgEquiv.refl.equivCongr (opOp R B).symm
 
 end AlgEquiv
 

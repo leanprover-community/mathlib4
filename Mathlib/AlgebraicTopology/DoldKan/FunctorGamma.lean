@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 
-#align_import algebraic_topology.dold_kan.functor_gamma from "leanprover-community/mathlib"@"5b8284148e8149728f4b90624888d98c36284454"
+#align_import algebraic_topology.dold_kan.functor_gamma from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -24,6 +24,8 @@ By construction, `Γ₀.obj K` is a split simplicial object whose splitting is `
 
 We also construct `Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C)`
 which shall be an equivalence for any additive category `C`.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 
@@ -130,7 +132,7 @@ variable {K K'}
 
 @[reassoc (attr := simp)]
 theorem mapMono_naturality (i : Δ ⟶ Δ') [Mono i] :
-  mapMono K i ≫ f.f Δ.len = f.f Δ'.len ≫ mapMono K' i := by
+    mapMono K i ≫ f.f Δ.len = f.f Δ'.len ≫ mapMono K' i := by
   unfold mapMono
   split_ifs with h
   · subst h
@@ -143,7 +145,7 @@ variable (K)
 
 @[reassoc (attr := simp)]
 theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
-  mapMono K i ≫ mapMono K i' = mapMono K (i' ≫ i) := by
+    mapMono K i ≫ mapMono K i' = mapMono K (i' ≫ i) := by
   -- case where i : Δ' ⟶ Δ is the identity
   by_cases h₁ : Δ = Δ'
   · subst h₁

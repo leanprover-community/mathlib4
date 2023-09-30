@@ -64,25 +64,6 @@ open MeasureTheory Filter TopologicalSpace Function Set MeasureTheory.Measure
 
 open ENNReal Topology MeasureTheory NNReal BigOperators
 
-/-- The typeclass `SecondCountableTopologyEither α β` registers the fact that at least one of
-the two spaces has second countable topology. This is the right assumption to ensure that continuous
-maps from `α` to `β` are strongly measurable. -/
-class SecondCountableTopologyEither (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] :
-  Prop where
-  /-- The projection out of `SecondCountableTopologyEither` -/
-  out : SecondCountableTopology α ∨ SecondCountableTopology β
-#align second_countable_topology_either SecondCountableTopologyEither
-
-instance (priority := 100) secondCountableTopologyEither_of_left (α β : Type*) [TopologicalSpace α]
-    [TopologicalSpace β] [SecondCountableTopology α] : SecondCountableTopologyEither α β
-    where out := Or.inl (by infer_instance)
-#align second_countable_topology_either_of_left secondCountableTopologyEither_of_left
-
-instance (priority := 100) secondCountableTopologyEither_of_right (α β : Type*)
-    [TopologicalSpace α] [TopologicalSpace β] [SecondCountableTopology β] :
-    SecondCountableTopologyEither α β where out := Or.inr (by infer_instance)
-#align second_countable_topology_either_of_right secondCountableTopologyEither_of_right
-
 variable {α β γ ι : Type*} [Countable ι]
 
 namespace MeasureTheory
@@ -153,6 +134,11 @@ theorem stronglyMeasurable_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} [Top
     (f : α → β) : StronglyMeasurable f :=
   ⟨fun _ => SimpleFunc.ofIsEmpty, isEmptyElim⟩
 #align measure_theory.strongly_measurable_of_is_empty MeasureTheory.stronglyMeasurable_of_isEmpty
+
+theorem stronglyMeasurable_of_fintype [Fintype α] {_ : MeasurableSpace α}
+    [MeasurableSingletonClass α] [TopologicalSpace β]
+    (f : α → β) : StronglyMeasurable f :=
+  ⟨fun _ => SimpleFunc.ofFintype f, fun _ => tendsto_const_nhds⟩
 
 theorem stronglyMeasurable_const {α β} {_ : MeasurableSpace α} [TopologicalSpace β] {b : β} :
     StronglyMeasurable fun _ : α => b :=
@@ -257,7 +243,7 @@ theorem norm_approxBounded_le {β} {f : α → β} [SeminormedAddCommGroup β] [
   simp only [StronglyMeasurable.approxBounded, SimpleFunc.coe_map, Function.comp_apply]
   refine' (norm_smul_le _ _).trans _
   by_cases h0 : ‖hf.approx n x‖ = 0
-  · simp only [h0, _root_.div_zero, min_eq_right, zero_le_one, norm_zero, MulZeroClass.mul_zero]
+  · simp only [h0, _root_.div_zero, min_eq_right, zero_le_one, norm_zero, mul_zero]
     exact hc
   cases' le_total ‖hf.approx n x‖ c with h h
   · rw [min_eq_left _]
@@ -441,7 +427,7 @@ theorem const_mul [Mul β] [ContinuousMul β] (hf : StronglyMeasurable f) (c : �
 #align measure_theory.strongly_measurable.const_add MeasureTheory.StronglyMeasurable.const_add
 
 @[to_additive (attr := measurability)]
-protected theorem inv [Group β] [TopologicalGroup β] (hf : StronglyMeasurable f) :
+protected theorem inv [Inv β] [ContinuousInv β] (hf : StronglyMeasurable f) :
     StronglyMeasurable f⁻¹ :=
   ⟨fun n => (hf.approx n)⁻¹, fun x => (hf.tendsto_approx x).inv⟩
 #align measure_theory.strongly_measurable.inv MeasureTheory.StronglyMeasurable.inv
@@ -480,6 +466,45 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
   continuous_smul.comp_stronglyMeasurable (hf.prod_mk stronglyMeasurable_const)
 #align measure_theory.strongly_measurable.smul_const MeasureTheory.StronglyMeasurable.smul_const
 #align measure_theory.strongly_measurable.vadd_const MeasureTheory.StronglyMeasurable.vadd_const
+
+/-- In a normed vector space, the addition of a measurable function and a strongly measurable
+function is measurable. Note that this is not true without further second-countability assumptions
+for the addition of two measurable functions. -/
+theorem _root_.Measurable.add_stronglyMeasurable
+    {α E : Type*} {_ : MeasurableSpace α} [AddGroup E] [TopologicalSpace E]
+    [MeasurableSpace E] [BorelSpace E] [ContinuousAdd E] [PseudoMetrizableSpace E]
+    {g f : α → E} (hg : Measurable g) (hf : StronglyMeasurable f) :
+    Measurable (g + f) := by
+  rcases hf with ⟨φ, hφ⟩
+  have : Tendsto (fun n x ↦ g x + φ n x) atTop (𝓝 (g + f)) :=
+    tendsto_pi_nhds.2 (fun x ↦ tendsto_const_nhds.add (hφ x))
+  apply measurable_of_tendsto_metrizable (fun n ↦ ?_) this
+  exact hg.add_simpleFunc _
+
+/-- In a normed vector space, the subtraction of a measurable function and a strongly measurable
+function is measurable. Note that this is not true without further second-countability assumptions
+for the subtraction of two measurable functions. -/
+theorem _root_.Measurable.sub_stronglyMeasurable
+    {α E : Type*} {_ : MeasurableSpace α} [AddCommGroup E] [TopologicalSpace E]
+    [MeasurableSpace E] [BorelSpace E] [ContinuousAdd E] [ContinuousNeg E] [PseudoMetrizableSpace E]
+    {g f : α → E} (hg : Measurable g) (hf : StronglyMeasurable f) :
+    Measurable (g - f) := by
+  rw [sub_eq_add_neg]
+  exact hg.add_stronglyMeasurable hf.neg
+
+/-- In a normed vector space, the addition of a strongly measurable function and a measurable
+function is measurable. Note that this is not true without further second-countability assumptions
+for the addition of two measurable functions. -/
+theorem _root_.Measurable.stronglyMeasurable_add
+    {α E : Type*} {_ : MeasurableSpace α} [AddGroup E] [TopologicalSpace E]
+    [MeasurableSpace E] [BorelSpace E] [ContinuousAdd E] [PseudoMetrizableSpace E]
+    {g f : α → E} (hg : Measurable g) (hf : StronglyMeasurable f) :
+    Measurable (f + g) := by
+  rcases hf with ⟨φ, hφ⟩
+  have : Tendsto (fun n x ↦ φ n x + g x) atTop (𝓝 (f + g)) :=
+    tendsto_pi_nhds.2 (fun x ↦ (hφ x).add tendsto_const_nhds)
+  apply measurable_of_tendsto_metrizable (fun n ↦ ?_) this
+  exact hg.simpleFunc_add _
 
 end Arithmetic
 
@@ -1338,7 +1363,7 @@ protected theorem const_mul [Mul β] [ContinuousMul β] (hf : AEStronglyMeasurab
 #align measure_theory.ae_strongly_measurable.const_add MeasureTheory.AEStronglyMeasurable.const_add
 
 @[to_additive (attr := measurability)]
-protected theorem inv [Group β] [TopologicalGroup β] (hf : AEStronglyMeasurable f μ) :
+protected theorem inv [Inv β] [ContinuousInv β] (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable f⁻¹ μ :=
   ⟨(hf.mk f)⁻¹, hf.stronglyMeasurable_mk.inv, hf.ae_eq_mk.inv⟩
 #align measure_theory.ae_strongly_measurable.inv MeasureTheory.AEStronglyMeasurable.inv

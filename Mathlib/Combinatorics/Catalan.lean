@@ -87,12 +87,10 @@ private def gosperCatalan (n j : ℕ) : ℚ :=
 private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
     gosperCatalan (n + 1) (i + 1) - gosperCatalan (n + 1) i =
       Nat.centralBinom i / (i + 1) * Nat.centralBinom (n - i) / (n - i + 1) := by
-  have l₁ : (n : ℚ) + 1 ≠ 0 := by norm_cast; exact n.succ_ne_zero
-  have l₂ : (n : ℚ) + 1 + 1 ≠ 0 := by norm_cast; exact (n + 1).succ_ne_zero
-  have l₃ : (i : ℚ) + 1 ≠ 0 := by norm_cast; exact i.succ_ne_zero
-  have l₄ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast; exact (n - i).succ_ne_zero
-  have h₁ := (mul_div_cancel_left (↑(Nat.centralBinom (i + 1))) l₃).symm
-  have h₂ := (mul_div_cancel_left (↑(Nat.centralBinom (n - i + 1))) l₄).symm
+  have l₁ : (i : ℚ) + 1 ≠ 0 := by norm_cast; exact i.succ_ne_zero
+  have l₂ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast; exact (n - i).succ_ne_zero
+  have h₁ := (mul_div_cancel_left (↑(Nat.centralBinom (i + 1))) l₁).symm
+  have h₂ := (mul_div_cancel_left (↑(Nat.centralBinom (n - i + 1))) l₂).symm
   have h₃ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom := by
     exact_mod_cast Nat.succ_mul_centralBinom_succ i
   have h₄ :
@@ -142,10 +140,12 @@ theorem succ_mul_catalan_eq_centralBinom (n : ℕ) : (n + 1) * catalan n = n.cen
   (Nat.eq_mul_of_div_eq_right n.succ_dvd_centralBinom (catalan_eq_centralBinom_div n).symm).symm
 #align succ_mul_catalan_eq_central_binom succ_mul_catalan_eq_centralBinom
 
-theorem catalan_two : catalan 2 = 2 := by unfold catalan; rfl
+theorem catalan_two : catalan 2 = 2 := by
+  norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 #align catalan_two catalan_two
 
-theorem catalan_three : catalan 3 = 5 := by unfold catalan; rfl
+theorem catalan_three : catalan 3 = 5 := by
+  norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 #align catalan_three catalan_three
 
 namespace Tree

@@ -111,7 +111,7 @@ theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
     simpa using h
   rw [← natDegree_scaleRoots p (den A r)] at *
   rw [coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne (le_of_not_gt h) hj.symm),
-    MulZeroClass.zero_mul]
+    zero_mul]
   exact dvd_zero _
 #align denom_dvd_of_is_root den_dvd_of_is_root
 

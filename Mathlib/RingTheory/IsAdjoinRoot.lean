@@ -204,7 +204,7 @@ theorem eval₂_repr_eq_eval₂_of_map_eq (h : IsAdjoinRoot S f) (z : S) (w : R[
     (hzw : h.map w = z) : (h.repr z).eval₂ i x = w.eval₂ i x := by
   rw [eq_comm, ← sub_eq_zero, ← h.map_repr z, ← map_sub, h.map_eq_zero_iff] at hzw
   obtain ⟨y, hy⟩ := hzw
-  rw [← sub_eq_zero, ← eval₂_sub, hy, eval₂_mul, hx, MulZeroClass.zero_mul]
+  rw [← sub_eq_zero, ← eval₂_sub, hy, eval₂_mul, hx, zero_mul]
 #align is_adjoin_root.eval₂_repr_eq_eval₂_of_map_eq IsAdjoinRoot.eval₂_repr_eq_eval₂_of_map_eq
 
 variable (i x)

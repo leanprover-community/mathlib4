@@ -16,6 +16,8 @@ and `c : M`, then `(.mk c : Mᵈᵐᵃ) • [f]` is represented by the function 
 We also prove basic properties of this action.
 -/
 
+set_option autoImplicit true
+
 open MeasureTheory Filter
 open scoped ENNReal
 
