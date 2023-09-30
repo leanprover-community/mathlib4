@@ -403,20 +403,20 @@ theorem set_integral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s →
   set_integral_eq_integral_of_ae_compl_eq_zero (eventually_of_forall h)
 #align measure_theory.set_integral_eq_integral_of_forall_compl_eq_zero MeasureTheory.set_integral_eq_integral_of_forall_compl_eq_zero
 
-lemma ae_restrict_eq_zero_iff_ae_eq_zero_of_mem {E : Type*} [Zero E] [MeasurableSpace E]
-    [MeasurableSingletonClass E] {f : α → E} {s : Set α}
+lemma ae_restrict_eq_const_iff_ae_eq_const_of_mem {E : Type*} [MeasurableSpace E]
+    [MeasurableSingletonClass E] {f : α → E} (c : E) {s : Set α}
     (f_mble : NullMeasurable f (μ.restrict s)) :
-    f =ᵐ[Measure.restrict μ s] 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 := by
+    f =ᵐ[Measure.restrict μ s] (fun _ ↦ c) ↔ ∀ᵐ x ∂μ, x ∈ s → f x = c := by
   simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
              Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
   rw [Measure.restrict_apply₀]
   · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
   · apply NullMeasurableSet.compl
-    convert f_mble (MeasurableSet.singleton 0)
+    convert f_mble (MeasurableSet.singleton c)
 
-lemma ae_restrict_eq_zero_iff_ae_eq_zero_of_mem' {E : Type*} [Zero E] (f : α → E) {s : Set α}
+lemma ae_restrict_eq_const_iff_ae_eq_const_of_mem' {E : Type*} (c : E) (f : α → E) {s : Set α}
     (s_mble : MeasurableSet s) :
-    f =ᵐ[Measure.restrict μ s] 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 := by
+    f =ᵐ[Measure.restrict μ s] (fun _ ↦ c) ↔ ∀ᵐ x ∂μ, x ∈ s → f x = c := by
   simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
              Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
   rw [Measure.restrict_apply_eq_zero']
@@ -431,7 +431,7 @@ lemma set_integral_eq_integral_of_ae_restrict_eq_zero (hs : f =ᵐ[μ.restrict s
   refine set_integral_eq_integral_of_ae_compl_eq_zero ?_
   have f_mble : NullMeasurable f (μ.restrict sᶜ) :=
     NullMeasurable.congr measurable_const.nullMeasurable hs.symm
-  rwa [ae_restrict_eq_zero_iff_ae_eq_zero_of_mem f_mble] at hs
+  simpa only [mem_compl_iff] using (ae_restrict_eq_const_iff_ae_eq_const_of_mem 0 f_mble).mp hs
 
 theorem set_integral_neg_eq_set_integral_nonpos [LinearOrder E] {f : α → E}
     (hf : AEStronglyMeasurable f μ) :
