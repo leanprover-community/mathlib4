@@ -142,7 +142,7 @@ lemma ofScott_inj {a b : WithScott α} : ofScott a = ofScott b ↔ a = b := Iff.
 
 /-- A recursor for `WithScott`. Use as `induction x using WithScott.rec`. -/
 protected def rec {β : WithScott α → Sort _}
-  (h : ∀ a, β (toScott a)) : ∀ a, β a := fun a => h (ofScott a)
+    (h : ∀ a, β (toScott a)) : ∀ a, β a := fun a => h (ofScott a)
 
 instance [Nonempty α] : Nonempty (WithScott α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithScott α) := ‹Inhabited α›
@@ -176,7 +176,7 @@ section preorder
 variable [Preorder α]
 
 lemma isOpen_iff_upper_and_Scott_Hausdorff_Open' {u : Set α} :
-  IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ scottHausdorff.IsOpen u := Iff.rfl
+    IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ scottHausdorff.IsOpen u := Iff.rfl
 
 variable [TopologicalSpace α] [IsScott α]
 
