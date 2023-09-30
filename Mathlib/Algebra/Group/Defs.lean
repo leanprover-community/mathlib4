@@ -341,7 +341,7 @@ lemma CommMul.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommMul G] [IsLef
 @[to_additive AddComm.IsLeftCancelAdd.toIsCancelAdd "Any `AddComm G` that satisfies
 `IsLeftCancelAdd G` also satisfies `IsCancelAdd G`."]
 lemma CommMul.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommMul G] [IsLeftCancelMul G] :
-  IsCancelMul G := { CommMul.IsLeftCancelMul.toIsRightCancelMul G with }
+    IsCancelMul G := { CommMul.IsLeftCancelMul.toIsRightCancelMul G with }
 #align comm_semigroup.is_left_cancel_mul.to_is_cancel_mul CommMul.IsLeftCancelMul.toIsCancelMul
 #align add_comm_semigroup.is_left_cancel_add.to_is_cancel_add AddComm.IsLeftCancelAdd.toIsCancelAdd
 
@@ -349,7 +349,7 @@ lemma CommMul.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommMul G] [IsLeftCanc
 @[to_additive AddComm.IsRightCancelAdd.toIsCancelAdd "Any `AddComm G` that satisfies
 `IsRightCancelAdd G` also satisfies `IsCancelAdd G`."]
 lemma CommSemigroup.IsRightCancelMul.toIsCancelMul (G : Type u) [CommMul G] [IsRightCancelMul G] :
-  IsCancelMul G := { CommMul.IsRightCancelMul.toIsLeftCancelMul G with }
+    IsCancelMul G := { CommMul.IsRightCancelMul.toIsLeftCancelMul G with }
 #align comm_semigroup.is_right_cancel_mul.to_is_cancel_mul CommSemigroup.IsRightCancelMul.toIsCancelMul
 #align add_comm_semigroup.is_right_cancel_add.to_is_cancel_add AddComm.IsRightCancelAdd.toIsCancelAdd
 
@@ -960,7 +960,7 @@ theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻�
 #align zpow_neg_succ_of_nat zpow_negSucc
 
 theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
-  Int.negSucc n • a = -((n + 1) • a) := by
+    Int.negSucc n • a = -((n + 1) • a) := by
   rw [← ofNat_zsmul]
   exact SubNegMonoid.zsmul_neg' n a
 #align zsmul_neg_succ_of_nat negSucc_zsmul
