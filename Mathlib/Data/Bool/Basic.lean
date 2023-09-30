@@ -259,6 +259,8 @@ theorem or_not_self : ∀ x, (x || !x) = true := by decide
 theorem not_or_self : ∀ x, (!x || x) = true := by decide
 #align bool.bnot_bor_self Bool.not_or_self
 
+theorem bne_eq_xor : bne = xor := by funext a b; revert a b; decide
+
 theorem xor_comm : ∀ a b, xor a b = xor b a := by decide
 #align bool.bxor_comm Bool.xor_comm
 

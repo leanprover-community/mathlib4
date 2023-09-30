@@ -18,7 +18,7 @@ import Mathlib.Tactic.Ring
 
 In the first half of this file, we provide theorems for reasoning about natural numbers from their
 bitwise properties. In the second half of this file, we show properties of the bitwise operations
-`lor'`, `land'` and `lxor'`, which are defined in core.
+`lor`, `land` and `xor'`, which are defined in core.
 
 ## Main results
 * `eq_of_testBit_eq`: two natural numbers are equal if they have equal bits at every position.
@@ -111,13 +111,16 @@ lemma bitwise'_eq_bitwise (f) : bitwise' f = bitwise f := by
   · specialize ih ((x+1) / 2) (div_lt_self' ..)
     simp only [ne_eq, succ_ne_zero, not_false_eq_true, bitwise'_of_ne_zero, ih, bitwise_of_ne_zero]
 
+@[simp]
 theorem lor'_eq_lor : lor' = lor :=
   bitwise'_eq_bitwise _
 
+@[simp]
 theorem land'_eq_land : land' = land :=
   bitwise'_eq_bitwise _
 
-theorem xor'_eq_xor : lxor' = xor := by
+@[simp]
+theorem lxor'_eq_xor : lxor' = xor := by
   unfold lxor' xor
   have : _root_.xor = bne := by
     funext x y; cases x <;> cases y <;> rfl
@@ -140,6 +143,24 @@ theorem land_bit : ∀ a m b n, land (bit a m) (bit b n) = bit (a && b) (land m 
 @[simp]
 theorem lxor_bit : ∀ a m b n, xor (bit a m) (bit b n) = bit (bne a b) (xor m n) :=
   bitwise_bit
+
+@[simp]
+theorem testBit_bitwise {f : Bool → Bool → Bool} (h : f false false = false) (m n k) :
+    testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
+  simp only [←bitwise'_eq_bitwise, testBit_bitwise' h]
+
+
+@[simp]
+theorem testBit_lor : ∀ m n k, testBit (lor m n) k = (testBit m k || testBit n k) :=
+  testBit_bitwise rfl
+
+@[simp]
+theorem testBit_land : ∀ m n k, testBit (land m n) k = (testBit m k && testBit n k) :=
+  testBit_bitwise rfl
+
+@[simp]
+theorem testBit_xor : ∀ m n k, testBit (xor m n) k = bne (testBit m k) (testBit n k) :=
+  testBit_bitwise rfl
 
 end
 
@@ -260,65 +281,67 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
-theorem bitwise'_swap {f : Bool → Bool → Bool} (h : f false false = false) :
-    bitwise' (Function.swap f) = Function.swap (bitwise' f) := by
+theorem bitwise_swap {f : Bool → Bool → Bool} (h : f false false = false) :
+    bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n; revert n
-  dsimp [Function.swap]
+  simp only [Function.swap, ←bitwise'_eq_bitwise]
   apply binaryRec _ _ m <;> intro n
   · rw [bitwise'_zero_left, bitwise'_zero_right, Bool.cond_eq_ite]
   · intros a ih m'
     apply bitCasesOn m'; intro b n'
     rw [bitwise'_bit, bitwise'_bit, ih] <;> exact h
-#align nat.bitwise_swap Nat.bitwise'_swap
+#align nat.bitwise_swap Nat.bitwise_swap
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
-theorem bitwise'_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b)
-    (hf' : f false false = false) (n m : ℕ) : bitwise' f n m = bitwise' f m n :=
-  suffices bitwise' f = swap (bitwise' f) by conv_lhs => rw [this]
+theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b)
+    (hf' : f false false = false) (n m : ℕ) : bitwise f n m = bitwise f m n :=
+  suffices bitwise f = swap (bitwise f) by conv_lhs => rw [this]
   calc
-    bitwise' f = bitwise' (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
-    _ = swap (bitwise' f) := bitwise'_swap hf'
-#align nat.bitwise_comm Nat.bitwise'_comm
+    bitwise f = bitwise (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
+    _ = swap (bitwise f) := bitwise_swap hf'
+#align nat.bitwise_comm Nat.bitwise_comm
 
-theorem lor'_comm (n m : ℕ) : lor' n m = lor' m n :=
-  bitwise'_comm Bool.or_comm rfl n m
-#align nat.lor_comm Nat.lor'_comm
+theorem lor_comm (n m : ℕ) : lor n m = lor m n :=
+  bitwise_comm Bool.or_comm rfl n m
+#align nat.lor_comm Nat.lor_comm
 
-theorem land'_comm (n m : ℕ) : land' n m = land' m n :=
-  bitwise'_comm Bool.and_comm rfl n m
-#align nat.land_comm Nat.land'_comm
+theorem land_comm (n m : ℕ) : land n m = land m n :=
+  bitwise_comm Bool.and_comm rfl n m
+#align nat.land_comm Nat.land_comm
 
-theorem lxor'_comm (n m : ℕ) : lxor' n m = lxor' m n :=
-  bitwise'_comm Bool.xor_comm rfl n m
-#align nat.lxor_comm Nat.lxor'_comm
-
-@[simp]
-theorem zero_lxor' (n : ℕ) : lxor' 0 n = n := by
- simp only [Bool.xor_false_left, Nat.bitwise'_zero_left, eq_self_iff_true, Bool.cond_true, lxor']
-#align nat.zero_lxor Nat.zero_lxor'
+theorem xor_comm (n m : ℕ) : xor n m = xor m n :=
+  bitwise_comm (Bool.bne_eq_xor ▸ Bool.xor_comm) rfl n m
+#align nat.lxor_comm Nat.xor_comm
 
 @[simp]
-theorem lxor'_zero (n : ℕ) : lxor' n 0 = n := by simp [lxor']
-#align nat.lxor_zero Nat.lxor'_zero
+theorem zero_xor (n : ℕ) : xor 0 n = n := by
+ simp only [xor, bitwise_zero_left, ite_true]
+#align nat.zero_lxor Nat.zero_xor
 
 @[simp]
-theorem zero_land' (n : ℕ) : land' 0 n = 0 := by
-  simp only [Nat.bitwise'_zero_left, Bool.cond_false, eq_self_iff_true, land', Bool.false_and]
-#align nat.zero_land Nat.zero_land'
+theorem xor_zero (n : ℕ) : xor n 0 = n := by simp [xor]
+#align nat.lxor_zero Nat.xor_zero
 
 @[simp]
-theorem land'_zero (n : ℕ) : land' n 0 = 0 := by simp [land']
-#align nat.land_zero Nat.land'_zero
+theorem zero_land (n : ℕ) : land 0 n = 0 := by
+  simp only [land, bitwise_zero_left, ite_false];
+#align nat.zero_land Nat.zero_land
 
 @[simp]
-theorem zero_lor' (n : ℕ) : lor' 0 n = n := by --simp [lor']
-  simp only [Nat.bitwise'_zero_left, Bool.false_or, eq_self_iff_true, Bool.cond_true, Nat.lor']
-#align nat.zero_lor Nat.zero_lor'
+theorem land_zero (n : ℕ) : land n 0 = 0 := by
+  simp only [land, bitwise_zero_right, ite_false]
+#align nat.land_zero Nat.land_zero
 
 @[simp]
-theorem lor'_zero (n : ℕ) : lor' n 0 = n := by simp [lor']
-#align nat.lor_zero Nat.lor'_zero
+theorem zero_lor (n : ℕ) : lor 0 n = n := by
+  simp only [lor, bitwise_zero_left, ite_true]
+#align nat.zero_lor Nat.zero_lor
+
+@[simp]
+theorem lor_zero (n : ℕ) : lor n 0 = n := by
+  simp only [lor, bitwise_zero_right, ite_true]
+#align nat.lor_zero Nat.lor_zero
 
 
 /-- Proving associativity of bitwise operations in general essentially boils down to a huge case
@@ -331,81 +354,81 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction' k using Nat.binaryRec with b'' k hk
   -- Porting note: was `simp [hn]`
   -- This is necessary because these are simp lemmas in mathlib
-  <;> simp [hn, Bool.or_assoc, Bool.and_assoc]))
+  <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
 
-theorem lxor'_assoc (n m k : ℕ) : lxor' (lxor' n m) k = lxor' n (lxor' m k) := by bitwise_assoc_tac
-#align nat.lxor_assoc Nat.lxor'_assoc
+theorem xor_assoc (n m k : ℕ) : xor (xor n m) k = xor n (xor m k) := by bitwise_assoc_tac
+#align nat.lxor_assoc Nat.xor_assoc
 
-theorem land'_assoc (n m k : ℕ) : land' (land' n m) k = land' n (land' m k) := by bitwise_assoc_tac
-#align nat.land_assoc Nat.land'_assoc
+theorem land_assoc (n m k : ℕ) : land (land n m) k = land n (land m k) := by bitwise_assoc_tac
+#align nat.land_assoc Nat.land_assoc
 
-theorem lor'_assoc (n m k : ℕ) : lor' (lor' n m) k = lor' n (lor' m k) := by bitwise_assoc_tac
-#align nat.lor_assoc Nat.lor'_assoc
+theorem lor_assoc (n m k : ℕ) : lor (lor n m) k = lor n (lor m k) := by bitwise_assoc_tac
+#align nat.lor_assoc Nat.lor_assoc
 
 @[simp]
-theorem lxor'_self (n : ℕ) : lxor' n n = 0 :=
+theorem xor_self (n : ℕ) : xor n n = 0 :=
   zero_of_testBit_eq_false fun i => by simp
-#align nat.lxor_self Nat.lxor'_self
+#align nat.lxor_self Nat.xor_self
 
 -- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
-theorem lxor_cancel_right (n m : ℕ) : lxor' (lxor' m n) n = m := by
-  rw [lxor'_assoc, lxor'_self, lxor'_zero]
+theorem lxor_cancel_right (n m : ℕ) : xor (xor m n) n = m := by
+  rw [xor_assoc, xor_self, xor_zero]
 #align nat.lxor_cancel_right Nat.lxor_cancel_right
 
-theorem lxor'_cancel_left (n m : ℕ) : lxor' n (lxor' n m) = m := by
-  rw [← lxor'_assoc, lxor'_self, zero_lxor']
-#align nat.lxor_cancel_left Nat.lxor'_cancel_left
+theorem xor_cancel_left (n m : ℕ) : xor n (xor n m) = m := by
+  rw [← xor_assoc, xor_self, zero_xor]
+#align nat.lxor_cancel_left Nat.xor_cancel_left
 
-theorem lxor'_right_injective {n : ℕ} : Function.Injective (lxor' n) := fun m m' h => by
-  rw [← lxor'_cancel_left n m, ← lxor'_cancel_left n m', h]
-#align nat.lxor_right_injective Nat.lxor'_right_injective
+theorem xor_right_injective {n : ℕ} : Function.Injective (xor n) := fun m m' h => by
+  rw [← xor_cancel_left n m, ← xor_cancel_left n m', h]
+#align nat.lxor_right_injective Nat.xor_right_injective
 
-theorem lxor'_left_injective {n : ℕ} : Function.Injective fun m => lxor' m n :=
-  fun m m' (h : lxor' m n = lxor' m' n) => by
+theorem xor_left_injective {n : ℕ} : Function.Injective fun m => xor m n :=
+  fun m m' (h : xor m n = xor m' n) => by
   rw [← lxor_cancel_right n m, ← lxor_cancel_right n m', h]
-#align nat.lxor_left_injective Nat.lxor'_left_injective
+#align nat.lxor_left_injective Nat.xor_left_injective
 
 @[simp]
-theorem lxor'_right_inj {n m m' : ℕ} : lxor' n m = lxor' n m' ↔ m = m' :=
-  lxor'_right_injective.eq_iff
-#align nat.lxor_right_inj Nat.lxor'_right_inj
+theorem xor_right_inj {n m m' : ℕ} : xor n m = xor n m' ↔ m = m' :=
+  xor_right_injective.eq_iff
+#align nat.lxor_right_inj Nat.xor_right_inj
 
 @[simp]
-theorem lxor'_left_inj {n m m' : ℕ} : lxor' m n = lxor' m' n ↔ m = m' :=
-  lxor'_left_injective.eq_iff
-#align nat.lxor_left_inj Nat.lxor'_left_inj
+theorem xor_left_inj {n m m' : ℕ} : xor m n = xor m' n ↔ m = m' :=
+  xor_left_injective.eq_iff
+#align nat.lxor_left_inj Nat.xor_left_inj
 
 @[simp]
-theorem lxor'_eq_zero {n m : ℕ} : lxor' n m = 0 ↔ n = m := by
-  rw [← lxor'_self n, lxor'_right_inj, eq_comm]
-#align nat.lxor_eq_zero Nat.lxor'_eq_zero
+theorem xor_eq_zero {n m : ℕ} : xor n m = 0 ↔ n = m := by
+  rw [← xor_self n, xor_right_inj, eq_comm]
+#align nat.lxor_eq_zero Nat.xor_eq_zero
 
-theorem lxor'_ne_zero {n m : ℕ} : lxor' n m ≠ 0 ↔ n ≠ m :=
-  lxor'_eq_zero.not
-#align nat.lxor_ne_zero Nat.lxor'_ne_zero
+theorem xor_ne_zero {n m : ℕ} : xor n m ≠ 0 ↔ n ≠ m :=
+  xor_eq_zero.not
+#align nat.lxor_ne_zero Nat.xor_ne_zero
 
-theorem lxor'_trichotomy {a b c : ℕ} (h : a ≠ lxor' b c) :
-    lxor' b c < a ∨ lxor' a c < b ∨ lxor' a b < c := by
-  set v := lxor' a (lxor' b c) with hv
+theorem xor_trichotomy {a b c : ℕ} (h : a ≠ xor b c) :
+    xor b c < a ∨ xor a c < b ∨ xor a b < c := by
+  set v := xor a (xor b c) with hv
   -- The xor of any two of `a`, `b`, `c` is the xor of `v` and the third.
-  have hab : lxor' a b = lxor' c v := by
+  have hab : xor a b = xor c v := by
     rw [hv]
     conv_rhs =>
-      rw [lxor'_comm]
-      simp [lxor'_assoc]
-  have hac : lxor' a c = lxor' b v := by
+      rw [xor_comm]
+      simp [xor_assoc]
+  have hac : xor a c = xor b v := by
     rw [hv]
     conv_rhs =>
       right
-      rw [← lxor'_comm]
-    rw [← lxor'_assoc, ← lxor'_assoc, lxor'_self, zero_lxor', lxor'_comm]
-  have hbc : lxor' b c = lxor' a v := by simp [hv, ← lxor'_assoc]
+      rw [← xor_comm]
+    rw [← xor_assoc, ← xor_assoc, xor_self, zero_xor, xor_comm]
+  have hbc : xor b c = xor a v := by simp [hv, ← xor_assoc]
   -- If `i` is the position of the most significant bit of `v`, then at least one of `a`, `b`, `c`
   -- has a one bit at position `i`.
-  obtain ⟨i, ⟨hi, hi'⟩⟩ := exists_most_significant_bit (lxor'_ne_zero.2 h)
+  obtain ⟨i, ⟨hi, hi'⟩⟩ := exists_most_significant_bit (xor_ne_zero.2 h)
   have : testBit a i = true ∨ testBit b i = true ∨ testBit c i = true := by
     contrapose! hi
-    simp only [Bool.eq_false_eq_not_eq_true, Ne, testBit_lxor'] at hi ⊢
+    simp only [Bool.eq_false_eq_not_eq_true, Ne, testBit_xor, Bool.bne_eq_xor] at hi ⊢
     rw [hi.1, hi.2.1, hi.2.2, Bool.xor_false, Bool.xor_false]
   -- If, say, `a` has a one bit at position `i`, then `a xor v` has a zero bit at position `i`, but
   -- the same bits as `a` in positions greater than `j`, so `a xor v < a`.
@@ -416,16 +439,16 @@ theorem lxor'_trichotomy {a b c : ℕ} (h : a ≠ lxor' b c) :
   all_goals
     exact lt_of_testBit i (by
       -- Porting note: this was originally `simp [h, hi]`
-      rw [Nat.testBit_lxor', h, Bool.true_xor,hi]
+      rw [Nat.testBit_xor, h, Bool.bne_eq_xor, Bool.true_xor,hi]
       rfl
     ) h fun j hj => by
       -- Porting note: this was originally `simp [hi' _ hj]`
-      rw [Nat.testBit_lxor', hi' _ hj, Bool.xor_false_right, eq_self_iff_true]
+      rw [Nat.testBit_xor, hi' _ hj, Bool.bne_eq_xor, Bool.xor_false_right, eq_self_iff_true]
       trivial
-#align nat.lxor_trichotomy Nat.lxor'_trichotomy
+#align nat.lxor_trichotomy Nat.xor_trichotomy
 
-theorem lt_lxor'_cases {a b c : ℕ} (h : a < lxor' b c) : lxor' a c < b ∨ lxor' a b < c :=
-  (or_iff_right fun h' => (h.asymm h').elim).1 <| lxor'_trichotomy h.ne
-#align nat.lt_lxor_cases Nat.lt_lxor'_cases
+theorem lt_xor_cases {a b c : ℕ} (h : a < xor b c) : xor a c < b ∨ xor a b < c :=
+  (or_iff_right fun h' => (h.asymm h').elim).1 <| xor_trichotomy h.ne
+#align nat.lt_lxor_cases Nat.lt_xor_cases
 
 end Nat
