@@ -197,7 +197,8 @@ theorem sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
   Set.eq_univ_of_forall fun x => Set.mem_sUnion.2 ⟨{ y | r.Rel y x }, ⟨x, rfl⟩, Setoid.refl _⟩
 #align setoid.sUnion_classes Setoid.sUnion_classes
 
-/-- The equivalence between the type of equivalence classes of an equivalence relation and its quotient. -/
+/-- The equivalence between the type of equivalence classes of an equivalence relation and its
+quotient. -/
 noncomputable def classes_equiv_quotient (r : Setoid α) : Quotient r ≃ Setoid.classes r := by
   let f (a : α) : Setoid.classes r := ⟨{ x | Setoid.r x a }, Setoid.mem_classes r a⟩
   have f_respects_relation (a b : α) (a_rel_b : Setoid.r a b) : f a = f b := by
@@ -206,7 +207,7 @@ noncomputable def classes_equiv_quotient (r : Setoid α) : Quotient r ≃ Setoid
         (Setoid.mem_classes r b) (Setoid.refl b)
   apply Equiv.ofBijective (Quot.lift f f_respects_relation)
   constructor
-  . intro (q_a : Quotient r) (q_b : Quotient r) h_eq
+  · intro (q_a : Quotient r) (q_b : Quotient r) h_eq
     obtain ⟨a, ha⟩ := Quotient.exists_rep q_a
     obtain ⟨b, hb⟩ := Quotient.exists_rep q_b
     simp only [←ha, ←hb, Quotient.lift_mk, Subtype.mk.injEq] at *
@@ -214,7 +215,7 @@ noncomputable def classes_equiv_quotient (r : Setoid α) : Quotient r ≃ Setoid
     show a ∈ { x | Setoid.r x b }
     rw [←h_eq]
     exact Setoid.refl a
-  . simp only [Quot.surjective_lift f_respects_relation]
+  · simp only [Quot.surjective_lift f_respects_relation]
     intro ⟨c, c_in_cls⟩
     obtain ⟨a, a_in_c⟩ := Set.nonempty_iff_ne_empty.mpr <| fun c_empty : c = ∅ ↦ by
       rw [c_empty] at c_in_cls; exact Setoid.empty_not_mem_classes c_in_cls
