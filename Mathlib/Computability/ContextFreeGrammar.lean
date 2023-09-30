@@ -42,18 +42,42 @@ variable {T : Type _}
 inductive ContextFreeRule.RewritesTo {N : Type _} (r : ContextFreeRule T N) :
     List (Symbol T N) → List (Symbol T N) → Prop
   /-- The replacement is at the start of the remaining string. -/
-  | head (xs : List (Symbol T N)) :
-      r.RewritesTo (Symbol.nonterminal r.input :: xs) (r.output ++ xs)
+  | head (s : List (Symbol T N)) :
+      r.RewritesTo (Symbol.nonterminal r.input :: s) (r.output ++ s)
   /-- There is a replacement later in the string. -/
   | cons (x : Symbol T N) {s₁ s₂ : List (Symbol T N)} (h : RewritesTo r s₁ s₂) :
       r.RewritesTo (x :: s₁) (x :: s₂)
 
+lemma ContextFreeRule.RewritesTo.toParts {N : Type _} {r : ContextFreeRule T N}
+    {u v : List (Symbol T N)} (hyp : r.RewritesTo u v) :
+    ∃ p : List (Symbol T N), ∃ q : List (Symbol T N),
+      u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q := by
+  induction hyp with
+  | head xs =>
+    use [], xs
+    simp
+  | @cons x s₁ s₂ _ ih =>
+    rcases ih with ⟨p', q', bef, aft⟩
+    use x :: p', q'
+    simp [bef, aft]
+
 lemma ContextFreeRule.rewritesTo_of_parts {N : Type _}
-    (r : ContextFreeRule T N) (u v : List (Symbol T N)) :
-    r.RewritesTo (u ++ [Symbol.nonterminal r.input] ++ v) (u ++ r.output ++ v) := by
-  induction u with
-  | nil         => exact ContextFreeRule.RewritesTo.head v
+    (r : ContextFreeRule T N) (p q : List (Symbol T N)) :
+    r.RewritesTo (p ++ [Symbol.nonterminal r.input] ++ q) (p ++ r.output ++ q) := by
+  induction p with
+  | nil         => exact ContextFreeRule.RewritesTo.head q
   | cons d l ih => exact ContextFreeRule.RewritesTo.cons d ih
+
+theorem ContextFreeRule.rewritesTo_iff {N : Type _} {r : ContextFreeRule T N}
+    (u v : List (Symbol T N)) :
+    r.RewritesTo u v ↔
+      ∃ p : List (Symbol T N), ∃ q : List (Symbol T N),
+        u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q := by
+  constructor
+  · apply ContextFreeRule.RewritesTo.toParts
+  · rintro ⟨p, q, bef, aft⟩
+    rw [bef, aft]
+    apply ContextFreeRule.rewritesTo_of_parts
 
 namespace ContextFreeGrammar
 
