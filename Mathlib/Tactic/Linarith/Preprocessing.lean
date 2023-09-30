@@ -152,7 +152,7 @@ def Expr.compare (a b : Expr) : Ordering :=
 
 /-- Ordering on `Expr × Expr`. -/
 -- We only define this so we can use `RBSet Expr`. Perhaps `HashSet` would be more appropriate?
-def compare_nat_casts (a b : Expr × Expr): Ordering :=
+def compare_nat_casts (a b : Expr × Expr) : Ordering :=
   match Expr.compare a.fst b.fst with
   | .eq => Expr.compare a.snd b.snd
   | o => o
