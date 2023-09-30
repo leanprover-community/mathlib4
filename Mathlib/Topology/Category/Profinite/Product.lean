@@ -274,6 +274,49 @@ theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
   · exfalso; exact hh' (h i hh)
   · rfl
 
+variable (J)
+
+def iso_map : C(C.proj J, (FinsetFunctor.obj C J)) :=
+  ⟨fun x ↦ ⟨fun i ↦ x.val i.val, by
+    obtain ⟨y, hy⟩ := x.prop
+    refine ⟨y, hy.1, ?_⟩
+    rw [precomp, ContinuousMap.coe_mk, ← hy.2]
+    ext i
+    exact (if_pos i.prop).symm⟩,
+  Continuous.subtype_mk (continuous_pi fun i ↦ Continuous.comp (continuous_apply _)
+    continuous_subtype_val) _⟩
+
+lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
+  refine ⟨?_, ?_⟩
+  · intro a b h
+    dsimp [iso_map] at h
+    ext i
+    rw [Subtype.ext_iff] at h
+    dsimp at h
+    by_cases hi : J i
+    · exact congr_fun h ⟨i, hi⟩
+    · obtain ⟨c, hc⟩ := a.prop
+      obtain ⟨d, hd⟩ := b.prop
+      rw [← hc.2, ← hd.2, Proj, Proj, if_neg hi, if_neg hi]
+  · intro a
+    refine ⟨⟨fun i ↦ if hi : J i then a.val ⟨i, hi⟩ else default, ?_⟩, ?_⟩
+    · obtain ⟨y, hy⟩ := a.prop
+      refine ⟨y, hy.1, ?_⟩
+      rw [← hy.2]
+      rfl
+    · ext i
+      exact dif_pos i.prop
+
+variable (K)
+
+lemma naturality (h : ∀ i, J i → K i) :
+    iso_map C J ∘ ProjRestricts C h = FinsetFunctor.map C h ∘ iso_map C K := by
+  ext x i
+  simp only [iso_map, ContinuousMap.coe_mk, Function.comp_apply, ProjRestricts_coe,
+    Proj._eq_1, precomp._eq_1, Set.coe_inclusion]
+  rw [if_pos i.prop]
+  rfl
+
 end General
 
 section Profinite
@@ -292,6 +335,14 @@ def FinsetsToProfinite' :
   map h := ⟨(ProjRestricts C (leOfHom h.unop)), continuous_projRestricts _ _⟩
   map_id J := by dsimp; simp_rw [projRestricts_eq_id C (· ∈ (unop J))]; rfl
   map_comp _ _ := by dsimp; congr; dsimp; rw [projRestricts_eq_comp]
+
+noncomputable
+def FinsetsToProfiniteIso : FinsetsToProfinite' hC ≅ FinsetsToProfinite hC := NatIso.ofComponents
+  (fun J ↦ (Profinite.isoOfBijective (iso_map C (· ∈ unop J)) (iso_map_bijective C (· ∈ unop J))))
+  (by
+    intro ⟨J⟩ ⟨K⟩ ⟨⟨⟨f⟩⟩⟩
+    ext x
+    exact congr_fun (naturality C (· ∈ K) (· ∈ J) f) x)
 
 /-- The limit cone on `FinsetsToProfinite` -/
 noncomputable
