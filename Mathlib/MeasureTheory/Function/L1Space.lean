@@ -812,7 +812,7 @@ theorem Memℒp.integrable {q : ℝ≥0∞} (hq1 : 1 ≤ q) {f : α → β} [IsF
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ ≥ ε` is finite for all positive `ε`. -/
-theorem Integrable.measure_ge_lt_top {f : α → β} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
+theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     μ { x | ε ≤ ‖f x‖ } < ∞ := by
   rw [show { x | ε ≤ ‖f x‖ } = { x | ENNReal.ofReal ε ≤ ‖f x‖₊ } by
       simp only [ENNReal.ofReal, Real.toNNReal_le_iff_le_coe, ENNReal.coe_le_coe, coe_nnnorm]]
@@ -823,7 +823,45 @@ theorem Integrable.measure_ge_lt_top {f : α → β} (hf : Integrable f μ) {ε 
       ENNReal.ofReal_eq_zero, not_le] using hε
   simpa only [ENNReal.one_toReal, ENNReal.rpow_one] using
     (memℒp_one_iff_integrable.2 hf).snorm_ne_top
-#align measure_theory.integrable.measure_ge_lt_top MeasureTheory.Integrable.measure_ge_lt_top
+#align measure_theory.integrable.measurege_lt_top MeasureTheory.Integrable.measure_norm_ge_lt_top
+
+/-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
+where `‖f x‖ > ε` is finite for all positive `ε`. -/
+lemma Integrable.measure_norm_gt_lt_top {f : α → β} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
+    μ {x | ε < ‖f x‖} < ∞ :=
+  lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le)) (hf.measure_norm_ge_lt_top hε)
+
+/-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
+measure. -/
+lemma Integrable.measure_ge_lt_top {f : α → ℝ} (hf : Integrable f μ) {ε : ℝ} (ε_pos : 0 < ε) :
+    μ {a : α | ε ≤ f a} < ∞ := by
+  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top ε_pos)
+  intro x hx
+  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
+  exact hx.trans (le_abs_self _)
+
+/-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
+measure. -/
+lemma Integrable.measure_le_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
+    μ {a : α | f a ≤ c} < ∞ := by
+  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (show 0 < -c by linarith))
+  intro x hx
+  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
+  exact (show -c ≤ - f x by linarith).trans (neg_le_abs_self _)
+
+/-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x > c}` has finite
+measure. -/
+lemma Integrable.measure_gt_lt_top {f : α → ℝ} (hf : Integrable f μ) {ε : ℝ} (ε_pos : 0 < ε) :
+    μ {a : α | ε < f a} < ∞ :=
+  lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
+    (Integrable.measure_ge_lt_top hf ε_pos)
+
+/-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x < c}` has finite
+measure. -/
+lemma Integrable.measure_lt_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
+    μ {a : α | f a < c} < ∞ :=
+  lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
+    (Integrable.measure_le_lt_top hf c_neg)
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ > ε` is finite for all positive `ε`. -/
@@ -1462,40 +1500,6 @@ lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
 lemma Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
     Integrable f (μ.restrict s) :=
   ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
-
-lemma Integrable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_zero
-    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
-    {f : α → E} (f_intble : Integrable f μ) {s : Set α}
-    (hs : f =ᵐ[Measure.restrict μ sᶜ] 0) {t : Set E} (t_mble : MeasurableSet t) (ht : 0 ∉ t) :
-    (μ (f ⁻¹' t)) = ((μ.restrict s) (f ⁻¹' t)) := by
-  rw [Measure.restrict_apply₀]
-  · simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
-                MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at hs
-    rw [Measure.restrict_apply₀] at hs
-    · apply le_antisymm _ (measure_mono (inter_subset_left _ _))
-      apply (measure_mono (Eq.symm (inter_union_compl (f ⁻¹' t) s)).le).trans
-      apply (measure_union_le _ _).trans
-      have obs : μ ((f ⁻¹' t) ∩ sᶜ) = 0 := by
-        apply le_antisymm _ (zero_le _)
-        rw [← hs]
-        apply measure_mono
-        gcongr
-        intro x hx hfx
-        simp only [mem_preimage, mem_setOf_eq] at hx hfx
-        exact ht (hfx ▸ hx)
-      simp only [obs, add_zero, le_refl]
-    · exact NullMeasurableSet.of_null hs
-  · exact f_intble.restrict.aemeasurable.nullMeasurable t_mble
-
-lemma restrict_aeeq_zero_iff_ae_mem_eq_zero [MeasurableSpace E] [MeasurableSingletonClass E]
-    {s : Set α} (f_mble : NullMeasurable f (μ.restrict s)) :
-    f =ᵐ[Measure.restrict μ s] 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 := by
-  simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
-             Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
-  rw [Measure.restrict_apply₀]
-  · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
-  · apply NullMeasurableSet.compl
-    convert f_mble (MeasurableSet.singleton 0)
 
 end restrict
 
