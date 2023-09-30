@@ -162,6 +162,24 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
+@[simp]
+theorem bitwise'_zero_right {f : Bool → Bool → Bool} {m : Nat} :
+    bitwise' f m 0 = if f true false then m else 0 := by
+  unfold bitwise' binaryRec
+  simp only [Bool.cond_eq_ite, eq_mpr_eq_cast, cast_eq, dite_eq_ite]
+  split_ifs with hx <;> simp only [bit_decomp, binaryRec_zero, hx]
+
+theorem bitwise'_swap {f : Bool → Bool → Bool} (h : f false false = false) :
+    bitwise' (Function.swap f) = Function.swap (bitwise' f) := by
+  funext m n; revert n
+  dsimp [Function.swap]
+  apply binaryRec _ _ m <;> intro n
+  · rw [bitwise'_zero_left, bitwise'_zero_right, Bool.cond_eq_ite]
+  · intros a ih m'
+    apply bitCasesOn m'; intro b n'
+    rw [bitwise'_bit, bitwise'_bit, ih] <;> exact h
+#align nat.bitwise_swap Nat.bitwise'_swap
+
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
 theorem bitwise'_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b)
@@ -354,20 +372,6 @@ lemma bitwise_zero_right {n : Nat} : bitwise f n 0 = if f true false then n else
   rintro ⟨⟩
   split_ifs <;> rfl
 
-/-
-  This theorem already exists as `bitwise'_zero_right` in `Mathlib.Init.Data.Nat.Bitwise`, but that
-  one has the dreaded `f false false = false` assumption.
-  The following proof does not need this assumption, but instead relies on `eq_mpr_eq_cast` from
-  `Mathlib.Logic.Basic`. Since the other version exists in an `Init` file, we probably don't
-  want to add this dependency there
--/
-@[simp]
-theorem bitwise'_zero_right' {m : Nat} :
-    bitwise' f m 0 = if f true false then m else 0 := by
-  unfold bitwise' binaryRec
-  simp only [Bool.cond_eq_ite, eq_mpr_eq_cast, cast_eq, dite_eq_ite]
-  split_ifs with hx <;> simp only [bit_decomp, binaryRec_zero, hx]
-
 @[simp]
 lemma bitwise_zero : bitwise f 0 0 = 0 := by
   simp only [bitwise_zero_right, ite_self]
@@ -411,7 +415,7 @@ lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
   cases' x with x <;> cases' y with y
   · simp only [bitwise_zero, bitwise'_zero]
   · simp only [bitwise_zero_left, bitwise'_zero_left, Bool.cond_eq_ite]
-  · simp only [bitwise_zero_right, bitwise'_zero_right', Bool.cond_eq_ite]
+  · simp only [bitwise_zero_right, bitwise'_zero_right, Bool.cond_eq_ite]
   · specialize ih ((x+1) / 2) (div_lt_self' ..)
     simp only [bitwise_succ, bitwise'_succ, div2_val, ih]
 

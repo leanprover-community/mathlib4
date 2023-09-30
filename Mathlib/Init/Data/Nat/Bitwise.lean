@@ -409,13 +409,6 @@ theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
 #align nat.bitwise_zero_left Nat.bitwise'_zero_left
 
 @[simp]
-theorem bitwise'_zero_right (f : Bool → Bool → Bool) (h : f false false = false) (m) :
-    bitwise' f m 0 = cond (f true false) m 0 := by
-  unfold bitwise'; apply bitCasesOn m; intros; rw [binaryRec_eq, binaryRec_zero]
-  exact bitwise'_bit_aux h
-#align nat.bitwise_zero_right Nat.bitwise'_zero_right
-
-@[simp]
 theorem bitwise'_zero (f : Bool → Bool → Bool) : bitwise' f 0 0 = 0 := by
   rw [bitwise'_zero_left]
   cases f false true <;> rfl
@@ -440,18 +433,6 @@ theorem bitwise'_bit {f : Bool → Bool → Bool} (h : f false false = false) (a
       · rw [← bitwise'_bit_aux h, ftf] }
   · exact bitwise'_bit_aux h
 #align nat.bitwise_bit Nat.bitwise'_bit
-
-theorem bitwise'_swap {f : Bool → Bool → Bool} (h : f false false = false) :
-    bitwise' (Function.swap f) = Function.swap (bitwise' f) := by
-  funext m n; revert n
-  dsimp [Function.swap]
-  apply binaryRec _ _ m <;> intro n
-  · rw [bitwise'_zero_left, bitwise'_zero_right]
-    exact h
-  · intros a ih m'
-    apply bitCasesOn m'; intro b n'
-    rw [bitwise'_bit, bitwise'_bit, ih] <;> exact h
-#align nat.bitwise_swap Nat.bitwise'_swap
 
 -- Porting note:
 -- If someone wants to merge `bitwise` and `bitwise'`
