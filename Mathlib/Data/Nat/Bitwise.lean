@@ -362,7 +362,7 @@ lemma bitwise_zero_right {n : Nat} : bitwise f n 0 = if f true false then n else
   want to add this dependency there
 -/
 @[simp]
-theorem bitwise'_zero_right' (f : Bool → Bool → Bool) (m) :
+theorem bitwise'_zero_right' {m : Nat} :
     bitwise' f m 0 = cond (f true false) m 0 := by
   unfold bitwise' binaryRec
   simp only [if_true, if_false, dite_false]
@@ -373,35 +373,63 @@ theorem bitwise'_zero_right' (f : Bool → Bool → Bool) (m) :
 lemma bitwise_zero : bitwise f 0 0 = 0 := by
   simp only [bitwise_zero_right, ite_self]
 
--- lemma bitwise_of_ne_zero (n \ne 0) (m \ne 0) :
+lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
+    bitwise f n m =
+    bitwise f (n / 2) (m / 2) + bitwise f (n / 2) (m / 2)
+      + if f (bodd n) (bodd m) then 1 else 0 := by
+  conv_lhs => { unfold bitwise }
+  have bodd_simp x : ((bif bodd x then 1 else 0) = 1 : Bool) = bodd x := by
+    simp [cond]; cases bodd x <;> rfl
+  simp only [hn, hm, mod_two_of_bodd, bodd_simp, ite_false]
+  split_ifs <;> rfl
+
+lemma bitwise'_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
+    bitwise' f n m =
+    bitwise' f (div2 n) (div2 m) + bitwise' f (div2 n) (div2 m)
+      + if f (bodd n) (bodd m) then 1 else 0 := by
+  conv_lhs => { rw [←bit_decomp n, ←bit_decomp m] }
+  rw [bitwise'_bit', bit]
+  case ham =>
+    rcases n with ⟨⟩|⟨⟩|n
+    · contradiction
+    · intro; rfl
+    · simp only [div2_succ, cond, bodd_succ, Bool.not_not]
+      cases bodd n <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff]
+  case hbn =>
+    rcases m with ⟨⟩|⟨⟩|m
+    · contradiction
+    · intro; rfl
+    · simp only [div2_succ, cond, bodd_succ, Bool.not_not]
+      cases bodd m <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff]
+  simp [bit1, bit0]
+  cases f (bodd n) (bodd m)
+  <;> simp only [cond_false, ite_false, add_zero, cond_true, ite_true]
+
+@[simp]
+lemma bitwise_succ {n m : Nat} :
+    bitwise f (n + 1) (m + 1) =
+    bitwise f ((n+1) / 2) ((m+1) / 2) + bitwise f ((n+1) / 2) ((m+1) / 2)
+      + if f (!bodd n) (!bodd m) then 1 else 0 := by
+  conv_lhs => { unfold bitwise }
+  have mod_two_iff_bod x : ((x+1) % 2 = 1 : Bool) = !bodd x := by
+    simp [mod_two_of_bodd, cond]; cases bodd x <;> rfl
+  simp only [add_eq_zero_iff, and_false, ite_false, mod_two_iff_bod]
+  split_ifs <;> rfl
 
 lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
   funext x y
   induction' hk : x + y using Nat.strongInductionOn with k ih generalizing x y
   by_cases h1 : x = 0 <;> by_cases h2 : y = 0
   · simp only [h1, h2, bitwise_zero, bitwise'_zero]
-  · simp only [h1, bitwise_zero_left, bitwise'_zero_left]
-    split_ifs with h <;> simp only [h, cond_true, cond_false]
-  · simp only [h2, bitwise_zero_right, bitwise'_zero_right']
-    split_ifs with hx <;> simp only [hx, cond_true, cond_false]
-  · unfold bitwise
-    rw [mod_two_of_bodd, mod_two_of_bodd, if_neg h1, if_neg h2]
-    conv_rhs => rw [← bit_decomp x, ← bit_decomp y]
-    rw [bitwise'_bit']
-    · cases' hx: bodd x
-      <;> cases' hy: bodd y
-      <;> ring_nf
-      <;> rw [ih (div2 x + div2 y)
-              (by rw [←hk, div2_val, div2_val]
-                  simp[add_lt_add (bitwise_rec_lemma h1) (bitwise_rec_lemma h2)])
-              (x/2) (y/2) (by simp[div2_val])]
-      <;> simp [h1, h2, hx, hy, bit_val, div2_val, mul_comm, add_comm]
-      <;> aesop
-    all_goals
-      intro h
-      rcases div2_eq_zero h with ⟨⟩|⟨⟨⟩⟩;
-      · contradiction
-      · rfl
+  · simp only [h1, bitwise_zero_left, bitwise'_zero_left, Bool.cond_eq_ite]
+  · simp only [h2, bitwise_zero_right, bitwise'_zero_right', Bool.cond_eq_ite]
+  · simp only [bitwise_of_ne_zero h1 h2, bitwise'_of_ne_zero h1 h2, div2_val,
+      ih (div2 x + div2 y)
+          (by rw [←hk, div2_val, div2_val]
+              simp[add_lt_add (bitwise_rec_lemma h1) (bitwise_rec_lemma h2)])
+          (x/2) (y/2) (by simp[div2_val])
+    ]
+
 end
 
 end Nat
