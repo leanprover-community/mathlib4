@@ -332,7 +332,6 @@ theorem lor'_zero (n : ℕ) : lor' n 0 = n := by simp [lor']
 /-- Proving associativity of bitwise operations in general essentially boils down to a huge case
     distinction, so it is shorter to use this tactic instead of proving it in the general case. -/
 macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
-  -- simp
   induction' n using Nat.binaryRec with b n hn generalizing m k
   · simp
   induction' m using Nat.binaryRec with b' m hm
