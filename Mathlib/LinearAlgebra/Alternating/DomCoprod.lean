@@ -9,15 +9,14 @@ import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 /-!
 # Exterior product of alternating maps
 
-In this file we define `AlternatingMap.domCoprod` to be the exterior product of two alternating maps,
+In this file we define `AlternatingMap.domCoprod`
+to be the exterior product of two alternating maps,
 taking values in the tensor product of the codomains of the original maps.
 -/
 
-section Coprod
+#align_import linear_algebra.alternating from "leanprover-community/mathlib"@"0c1d80f5a86b36c1db32e021e8d19ae7809d5b79"
 
-open BigOperators
-
-open TensorProduct
+open BigOperators TensorProduct
 
 variable {ιa ιb : Type*} [Fintype ιa] [Fintype ιb]
 
@@ -285,6 +284,3 @@ theorem MultilinearMap.domCoprod_alternization_eq [DecidableEq ιa] [DecidableEq
     LinearMap.map_smul_of_tower AlternatingMap.domCoprod',
     LinearMap.map_smul_of_tower AlternatingMap.domCoprod']
 #align multilinear_map.dom_coprod_alternization_eq MultilinearMap.domCoprod_alternization_eq
-
-end Coprod
-
