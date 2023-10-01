@@ -1984,7 +1984,7 @@ def kernMap (m : α → β) (f : Filter α) : Filter β where
   sets_of_superset := by
     rintro _ t ⟨s, hs, rfl⟩ hst
     refine ⟨s ∪ m ⁻¹' t, mem_of_superset hs (subset_union_left s _), ?_⟩
-    rw [kernImage_union_preimage, union_eq_right_iff_subset.mpr hst]
+    rw [kernImage_union_preimage, union_eq_right.mpr hst]
   inter_sets := by
     rintro _ _ ⟨s₁, h₁, rfl⟩ ⟨s₂, h₂, rfl⟩
     exact ⟨s₁ ∩ s₂, f.inter_sets h₁ h₂, Set.preimage_kernImage.u_inf⟩

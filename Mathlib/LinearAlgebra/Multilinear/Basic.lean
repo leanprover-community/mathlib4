@@ -564,7 +564,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
       have : A i₀ = B i₀ ∪ C i₀ := by
         simp only [Function.update_same, Finset.sdiff_union_self_eq_union]
         symm
-        simp only [hj₂, Finset.singleton_subset_iff, Finset.union_eq_left_iff_subset]
+        simp only [hj₂, Finset.singleton_subset_iff, Finset.union_eq_left]
       rw [this]
       refine Finset.sum_union <| Finset.disjoint_right.2 fun j hj => ?_
       have : j = j₂ := by
