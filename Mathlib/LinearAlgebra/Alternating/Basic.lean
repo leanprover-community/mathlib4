@@ -1062,12 +1062,10 @@ theorem curryLeft_compAlternatingMap {n : ℕ} (g : N'' →ₗ[R'] N₂'')
 theorem curryLeft_compLinearMap {n : ℕ} (g : M₂'' →ₗ[R'] M'')
     (f : AlternatingMap R' M'' N'' (Fin n.succ)) (m : M₂'') :
     (f.compLinearMap g).curryLeft m = (f.curryLeft (g m)).compLinearMap g :=
-  ext fun v =>
-    congr_arg f <|
-      funext <| by
-        refine' Fin.cases _ _
-        · rfl
-        · simp
+  ext fun v => congr_arg f <| funext <| by
+    refine' Fin.cases _ _
+    · rfl
+    · simp
 #align alternating_map.curry_left_comp_linear_map AlternatingMap.curryLeft_compLinearMap
 
 /-- The space of constant maps is equivalent to the space of maps that are alternating with respect
