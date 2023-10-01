@@ -170,6 +170,13 @@ noncomputable def ιTensorObj (i₁ i₂ i₁₂ : I) (h : i₁ + i₂ = i₁₂
   K₁.X i₁ ⊗ K₂.X i₂ ⟶ (tensorObj s K₁ K₂).X i₁₂ :=
     GradedObject.Monoidal.ιTensorObj K₁.toGradedObject K₂.toGradedObject i₁ i₂ i₁₂ h
 
+@[reassoc (attr := simp)]
+lemma ι_tensorHom {K₁ K₂ L₁ L₂ : HomologicalComplex C c} (f₁ : K₁ ⟶ L₁) (f₂ : K₂ ⟶ L₂)
+    [HasTensor K₁ K₂] [HasTensor L₁ L₂] (i₁ i₂ i₁₂ : I) (h : i₁ + i₂ = i₁₂) :
+    ιTensorObj s K₁ K₂ i₁ i₂ i₁₂ h ≫ (tensorHom s f₁ f₂).f i₁₂ =
+      (f₁.f i₁ ⊗ f₂.f i₂) ≫ ιTensorObj s L₁ L₂ i₁ i₂ i₁₂ h := by
+  apply GradedObject.Monoidal.ι_tensorHom
+
 noncomputable def ιTensorObjOrZero (i₁ i₂ i₁₂ : I) :
   K₁.X i₁ ⊗ K₂.X i₂ ⟶ (tensorObj s K₁ K₂).X i₁₂ :=
   if h : i₁ + i₂ = i₁₂
@@ -381,6 +388,28 @@ noncomputable def associator :
           · rw [K₃.shape _ _ h₁, tensor_zero, tensor_zero,
               zero_comp, zero_comp, tensor_zero, zero_comp, comp_zero,
               comp_zero])
+
+@[reassoc (attr := simp)]
+lemma ιTensorObj₃'_associator_hom
+    (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
+    ιTensorObj₃' s K₁ K₂ K₃ i₁ i₂ i₃ j h ≫ (associator s K₁ K₂ K₃).hom.f j =
+      (α_ _ _ _).hom ≫ ιTensorObj₃ s K₁ K₂ K₃ i₁ i₂ i₃ j h := by
+  have : GradedObject.HasTensor (GradedObject.Monoidal.tensorObj K₁.toGradedObject K₂.toGradedObject) K₃.toGradedObject :=
+    (inferInstance : HasTensor (tensorObj s K₁ K₂) K₃)
+  have : GradedObject.HasTensor K₁.toGradedObject (GradedObject.Monoidal.tensorObj K₂.toGradedObject K₃.toGradedObject) :=
+    (inferInstance : HasTensor K₁ (tensorObj s K₂ K₃))
+  apply GradedObject.Monoidal.ιTensorObj₃'_associator_hom
+
+@[reassoc (attr := simp)]
+lemma ιTensorObj₃_associator_inv
+    (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
+    ιTensorObj₃ s K₁ K₂ K₃ i₁ i₂ i₃ j h ≫ (associator s K₁ K₂ K₃).inv.f j =
+      (α_ _ _ _).inv ≫ ιTensorObj₃' s K₁ K₂ K₃ i₁ i₂ i₃ j h := by
+  have : GradedObject.HasTensor (GradedObject.Monoidal.tensorObj K₁.toGradedObject K₂.toGradedObject) K₃.toGradedObject :=
+    (inferInstance : HasTensor (tensorObj s K₁ K₂) K₃)
+  have : GradedObject.HasTensor K₁.toGradedObject (GradedObject.Monoidal.tensorObj K₂.toGradedObject K₃.toGradedObject) :=
+    (inferInstance : HasTensor K₁ (tensorObj s K₂ K₃))
+  apply GradedObject.Monoidal.ιTensorObj₃_associator_inv
 
 end
 

@@ -2,7 +2,7 @@ import Mathlib.Algebra.Homology.Monoidal
 import Mathlib.Algebra.Homology.HomologicalBicomplex
 import Mathlib.CategoryTheory.Monoidal.Braided
 
-open CategoryTheory Category Limits MonoidalCategory
+open CategoryTheory Category Limits MonoidalCategory Preadditive MonoidalPreadditive
 
 namespace CategoryTheory
 
@@ -76,7 +76,8 @@ def tensorBicomplexFlipNatIso :
 
 structure _root_.ComplexShape.TensorSigns.Braiding where
   σ : TotalComplexShapeSymmetry s.totalComplexShape s.totalComplexShape
-  symm (i₁ i₂ : I) : σ.ε i₁ i₂ = σ.ε i₂ i₁ -- this should be necessary for the hexagon relation?
+  σ_add₁ (i₁ i₁' i₂ : I) : σ.ε (i₁ + i₁') i₂ = σ.ε i₁ i₂ * σ.ε i₁' i₂
+  σ_add₂ (i₁ i₂ i₂' : I) : σ.ε i₁ (i₂ + i₂') = σ.ε i₁ i₂ * σ.ε i₁ i₂'
 
 variable {s} (β : s.Braiding) [h₁ : HasTensor K L] [h₂ : HasTensor L K]
 
@@ -86,16 +87,19 @@ instance : (tensorBicomplex K L).flip.toGradedObject.HasMap s.totalComplexShape.
 
 namespace Monoidal
 
+open BraidedCategory
+
 noncomputable def braiding : Monoidal.tensorObj s K L ≅ Monoidal.tensorObj s L K :=
   HomologicalComplex₂.totalSymmIso β.σ (tensorBicomplex K L) ≪≫
     HomologicalComplex₂.totalMapIso (tensorBicomplexFlipIso L K).symm s.totalComplexShape
 
-/-lemma ιTensorObj_braiding_hom (i₁ i₂ i₃ : I) (h : i₁ + i₂ = i₃) :
+@[reassoc (attr := simp)]
+lemma ιTensorObj_braiding_hom (i₁ i₂ i₃ : I) (h : i₁ + i₂ = i₃) :
   ιTensorObj s K L i₁ i₂ i₃ h ≫ (braiding K L β).hom.f i₃ =
-    (β_ (K.X i₁) (L.X i₂)).hom ≫ ιTensorObj s L K i₂ i₁ i₃ (by rw [add_comm, h]) :=
+    β.σ.ε i₁ i₂ • (β_ (K.X i₁) (L.X i₂)).hom ≫ ιTensorObj s L K i₂ i₁ i₃ (by rw [add_comm, h]) := by
   -- with this definition of braiding, we may get `(β_ (L.X i₂) (K.X i₁)).inv` instead
   -- of `(β_ (K.X i₁) (L.X i₂)).hom` in which case the definition should be fixed...
-  sorry-/
+  sorry
 
 variable (X Y Z : HomologicalComplex C c)
   [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
@@ -116,16 +120,44 @@ variable (X Y Z : HomologicalComplex C c)
   [GradedObject.HasGoodTensor₁₂Tensor X.X Z.X Y.X]
   [GradedObject.HasGoodTensorTensor₂₃ X.X Z.X Y.X]
 
-/-lemma hexagon_forward :
+lemma hexagon_forward :
   (associator s X Y Z).hom ≫ (braiding X (tensorObj s Y Z) β).hom ≫ (associator s Y Z X).hom =
-    tensorHom s (braiding X Y β).hom (𝟙 Z) ≫ (associator s Y X Z).hom ≫ tensorHom s (𝟙 Y) (braiding X Z β).hom := by
+    tensorHom s (braiding X Y β).hom (𝟙 Z) ≫ (associator s Y X Z).hom ≫
+      tensorHom s (𝟙 Y) (braiding X Z β).hom := by
   ext n x y z h
   dsimp
-  sorry
+  rw [ιTensorObj₃'_associator_hom_assoc, ιTensorObj₃_eq _ _ _ _ _ _ _ _ _ _ rfl, assoc,
+    ιTensorObj_braiding_hom_assoc, zsmul_comp, comp_zsmul, comp_zsmul, assoc, braiding_naturality_assoc,
+    ← ιTensorObj₃'_eq_assoc _ _ _ _ _ _ _ _ (by rw [← h]; abel), ιTensorObj₃'_associator_hom,
+    hexagon_forward_assoc]
+  rw [ιTensorObj₃'_eq _ _ _ _ _ _ _ _ _ _ rfl, assoc, ι_tensorHom_assoc, id_f,
+    ← comp_tensor_id_assoc, ιTensorObj_braiding_hom, zsmul_tensor, zsmul_comp,
+    comp_tensor_id, assoc,
+    ← ιTensorObj₃'_eq_assoc _ _ _ _ _ _ _ _ (by rw [← h]; abel),
+    ιTensorObj₃'_associator_hom_assoc, ιTensorObj₃_eq s Y X Z _ _ _ _ _ _ rfl, assoc,
+    ι_tensorHom, id_f, ← id_tensor_comp_assoc, ιTensorObj_braiding_hom, tensor_zsmul,
+    zsmul_comp, comp_zsmul, comp_zsmul, id_tensor_comp, assoc,
+    ← ιTensorObj₃_eq _ _ _ _ _ _ _ _ _ _ (add_comm z x), smul_smul, β.σ_add₂]
 
-lemma hexagon_reverse : (associator s X Y Z).inv ≫ (braiding (tensorObj s X Y) Z β).hom ≫ (associator s Z X Y).inv =
-    tensorHom s (𝟙 X) (braiding Y Z β).hom ≫ (associator s X Z Y).inv ≫ tensorHom s (braiding X Z β).hom (𝟙 Y) := by
-  sorry-/
+lemma hexagon_reverse :
+    (associator s X Y Z).inv ≫ (braiding (tensorObj s X Y) Z β).hom ≫ (associator s Z X Y).inv =
+      tensorHom s (𝟙 X) (braiding Y Z β).hom ≫ (associator s X Z Y).inv ≫
+        tensorHom s (braiding X Z β).hom (𝟙 Y) := by
+  ext n x y z h
+  dsimp
+  rw [ιTensorObj₃_associator_inv_assoc, ιTensorObj₃'_eq _ _ _ _ _ _ _ _ _ _ rfl, assoc,
+    ιTensorObj_braiding_hom_assoc, zsmul_comp, comp_zsmul, comp_zsmul, assoc, braiding_naturality_assoc,
+    ← ιTensorObj₃_eq_assoc _ _ _ _ _ _ _ _ (by rw [← h]; abel), ιTensorObj₃_associator_inv,
+    hexagon_reverse_assoc]
+  rw [ιTensorObj₃_eq _ _ _ _ _ _ _ _ _ _ rfl, assoc, ι_tensorHom_assoc, id_f,
+    ← id_tensor_comp_assoc, ιTensorObj_braiding_hom, tensor_zsmul, zsmul_comp,
+    id_tensor_comp, assoc,
+    ← ιTensorObj₃_eq_assoc _ _ _ _ _ _ _ _ (by rw [← h]; abel),
+    ιTensorObj₃_associator_inv_assoc, ιTensorObj₃'_eq s X Z Y _ _ _ _ _ _ rfl, assoc,
+    ι_tensorHom, id_f, ← comp_tensor_id_assoc, ιTensorObj_braiding_hom, zsmul_tensor,
+    zsmul_comp, comp_zsmul, comp_zsmul, comp_tensor_id, assoc,
+    ← ιTensorObj₃'_eq _ _ _ _ _ _ _ _ (by rw [← h]; abel) _ (add_comm z x), smul_smul, β.σ_add₁,
+    mul_comm]
 
 end Monoidal
 
