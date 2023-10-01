@@ -568,45 +568,7 @@ end LayercakeLT
 
 section LayercakeIntegral
 
-<<<<<<< HEAD
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {f : α → ℝ}
-
-/-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
-measure. -/
-lemma Integrable.measure_const_le_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
-    μ {a : α | c ≤ f a} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_) (f_intble.measure_ge_lt_top c_pos)
-  intro x hx
-  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
-  exact hx.trans (le_abs_self _)
-
-/-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
-measure. -/
-lemma Integrable.measure_le_const_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
-    μ {a : α | f a ≤ c} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_) (f_intble.measure_ge_lt_top (show 0 < -c by linarith))
-  intro x hx
-  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
-  exact (show -c ≤ - f x by linarith).trans (neg_le_abs_self _)
-
-/-- If `f` is `ℝ`-valued and integrable, then for any `t > 0` the set `{x | f x > t}` has finite
-measure. -/
-lemma Integrable.measure_const_lt_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_pos : 0 < c) :
-    μ {a : α | c < f a} < ∞ :=
-  lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
-    (Integrable.measure_const_le_lt_top f_intble c_pos)
-
-/-- If `f` is `ℝ`-valued and integrable, then for any `t < 0` the set `{x | f x < t}` has finite
-measure. -/
-lemma Integrable.measure_lt_const_lt_top (f_intble : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
-    μ {a : α | f a < c} < ∞ :=
-  lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
-    (Integrable.measure_le_const_lt_top f_intble c_neg)
-=======
-namespace MeasureTheory
-
-variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {f : α → ℝ}
->>>>>>> origin/master
 
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
@@ -617,46 +579,15 @@ See `lintegral_eq_lintegral_meas_lt` for a version with Lebesgue integral `∫�
 theorem Integrable.integral_eq_integral_meas_lt
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
     (∫ ω, f ω ∂μ) = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t < f a}) := by
-<<<<<<< HEAD
   have key := lintegral_eq_lintegral_meas_lt μ f_nn f_intble.aemeasurable
   have lhs_finite : ∫⁻ (ω : α), ENNReal.ofReal (f ω) ∂μ < ∞ := Integrable.lintegral_lt_top f_intble
   have rhs_finite : ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a} < ∞ := by simp only [← key, lhs_finite]
   have rhs_integrand_finite : ∀ (t : ℝ), t > 0 → μ {a | t < f a} < ∞ :=
-    fun t ht ↦ Integrable.measure_const_lt_lt_top f_intble ht
+    fun t ht ↦ measure_gt_lt_top f_intble ht
   convert (ENNReal.toReal_eq_toReal lhs_finite.ne rhs_finite.ne).mpr key
   · exact integral_eq_lintegral_of_nonneg_ae f_nn f_intble.aestronglyMeasurable
   · have aux := @integral_eq_lintegral_of_nonneg_ae _ _ ((volume : Measure ℝ).restrict (Set.Ioi 0))
       (fun t ↦ ENNReal.toReal (μ {a : α | t < f a})) ?_ ?_
-=======
-  obtain ⟨s, ⟨_, f_ae_zero_outside, s_sigmafin⟩⟩ :=
-    f_intble.aefinStronglyMeasurable.exists_set_sigmaFinite
-  have f_nn' : 0 ≤ᵐ[μ.restrict s] f := ae_restrict_of_ae f_nn
-  have f_intble' : Integrable f (μ.restrict s) := f_intble.restrict
-  have f_aemble' : AEMeasurable f (μ.restrict s) := f_intble.aemeasurable.restrict
-  rw [(set_integral_eq_integral_of_ae_restrict_eq_zero f_ae_zero_outside).symm]
-  have obs : ∀ t ∈ Ioi (0 : ℝ), (μ {a : α | t < f a}) = ((μ.restrict s) {a : α | t < f a}) := by
-    intro t ht
-    convert NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_const
-              f_intble.restrict.aemeasurable.nullMeasurable f_ae_zero_outside measurableSet_Ioi ?_
-    simp only [mem_Ioi, not_lt] at ht ⊢
-    exact ht.le
-  have obs' := @set_integral_congr ℝ ℝ _ _ (fun t ↦ ENNReal.toReal (μ {a : α | t < f a}))
-          (fun t ↦ ENNReal.toReal ((μ.restrict s) {a : α | t < f a})) _ (volume : Measure ℝ) _
-          (measurableSet_Ioi (a := (0 : ℝ)))
-          (fun x x_in_Ioi ↦ congrArg ENNReal.toReal (obs x x_in_Ioi))
-  rw [obs']
-  have key := lintegral_eq_lintegral_meas_lt (μ.restrict s) f_nn' f_aemble'
-  have lhs_finite : ∫⁻ (ω : α), ENNReal.ofReal (f ω) ∂(μ.restrict s) < ∞ :=
-    Integrable.lintegral_lt_top f_intble'
-  have rhs_finite : ∫⁻ (t : ℝ) in Set.Ioi 0, (μ.restrict s) {a | t < f a} < ∞ :=
-    by simp only [← key, lhs_finite]
-  have rhs_integrand_finite : ∀ (t : ℝ), t > 0 → (μ.restrict s) {a | t < f a} < ∞ :=
-    fun t ht ↦ Integrable.measure_gt_lt_top f_intble' ht
-  convert (ENNReal.toReal_eq_toReal lhs_finite.ne rhs_finite.ne).mpr key
-  · exact integral_eq_lintegral_of_nonneg_ae f_nn' f_intble'.aestronglyMeasurable
-  · have aux := @integral_eq_lintegral_of_nonneg_ae _ _ ((volume : Measure ℝ).restrict (Set.Ioi 0))
-      (fun t ↦ ENNReal.toReal ((μ.restrict s) {a : α | t < f a})) ?_ ?_
->>>>>>> origin/master
     · rw [aux]
       congr 1
       apply set_lintegral_congr_fun measurableSet_Ioi (eventually_of_forall _)
@@ -666,12 +597,6 @@ theorem Integrable.integral_eq_integral_meas_lt
       refine Measurable.ennreal_toReal ?_
       exact Antitone.measurable (fun _ _ hst ↦ measure_mono (fun _ h ↦ lt_of_le_of_lt hst h))
 
-<<<<<<< HEAD
 end LayercakeIntegral
 
 end MeasureTheory
-=======
-end MeasureTheory
-
-end LayercakeIntegral
->>>>>>> origin/master
