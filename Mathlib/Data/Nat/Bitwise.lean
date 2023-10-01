@@ -224,7 +224,7 @@ theorem testBit_ofBits {f i j} (h1: i < j) : (ofBits f 0 j).testBit i = f i := b
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
 theorem bitwise'_comm {f} (hf : ∀ b b', f b b' = f b' b) (hf' : f false false = false) (n m) :
-  bitwise' f n m = bitwise' f m n :=
+    bitwise' f n m = bitwise' f m n :=
   suffices bitwise' f = swap (bitwise' f) by conv_lhs => rw [this]
   calc
     bitwise' f = bitwise' (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
