@@ -8,7 +8,7 @@ open CategoryTheory Category Limits Preadditive
 variable {C D C₁ C₂ C₃ : Type*} [Category C] [Category D]
   [Category C₁] [Category C₂] [Category C₃]
   (F G : C₁ ⥤ C₂ ⥤ C₃) (τ : F ⟶ G) (e : F ≅ G)
-  {I₁ I₂ I₃ : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c₃ : ComplexShape I₃)
+  {I₁ I₂ I₃ : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
 
 namespace HomologicalComplex
 
@@ -175,8 +175,11 @@ end Functor
 
 end CategoryTheory
 
-structure TotalComplexShape (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
-    (c₃ : ComplexShape I₃) where
+section
+
+variable (c₃ : ComplexShape I₃)
+
+class TotalComplexShape  where
   π : I₁ × I₂ → I₃
   ε₁ : I₁ × I₂ → ℤ
   ε₂ : I₁ × I₂ → ℤ
@@ -185,37 +188,34 @@ structure TotalComplexShape (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂
   eq ⦃i₁ i₁' : I₁⦄ ⦃i₂ i₂' : I₂⦄ (h₁ : c₁.Rel i₁ i₁') (h₂ : c₂.Rel i₂ i₂') :
     ε₁ ⟨i₁, i₂⟩ * ε₂ ⟨i₁', i₂⟩ + ε₂ ⟨i₁, i₂⟩ * ε₁ ⟨i₁, i₂'⟩ = 0
 
-def TotalComplexShape.upInt :
-    TotalComplexShape (ComplexShape.up ℤ) (ComplexShape.up ℤ) (ComplexShape.up ℤ) where
-  π := fun ⟨p, q⟩ => p + q
-  ε₁ := fun ⟨_, _⟩ => 1
-  ε₂ := fun ⟨p, _⟩ => p.negOnePow
-  rel₁ {p p'} h q := by
-    simp only [ComplexShape.up_Rel] at h ⊢
-    linarith
-  rel₂ p {q q'} h := by
-    simp only [ComplexShape.up_Rel] at h ⊢
-    linarith
-  eq := by
-    rintro p _ q _ rfl rfl
-    dsimp
-    simp only [Int.negOnePow_succ, mul_neg, one_mul, mul_one, add_left_neg]
+variable [TotalComplexShape c₁ c₂ c₃]
 
-def TotalComplexShape.downNat :
-    TotalComplexShape (ComplexShape.down ℕ) (ComplexShape.down ℕ) (ComplexShape.down ℕ) where
-  π := fun ⟨p, q⟩ => p + q
-  ε₁ := fun ⟨_, _⟩ => 1
-  ε₂ := fun ⟨p, _⟩ => (-1) ^ p
-  rel₁ {p p'} h q := by
-    simp only [ComplexShape.down_Rel] at h ⊢
-    linarith
-  rel₂ p {q q'} h := by
-    simp only [ComplexShape.down_Rel] at h ⊢
-    linarith
-  eq := by
-    rintro _ p _ q rfl rfl
-    dsimp
-    simp only [pow_succ, neg_mul, mul_one, one_mul, add_right_neg]
+namespace ComplexShape
+
+abbrev π (i : I₁ × I₂) : I₃ := TotalComplexShape.π c₁ c₂ c₃ i
+abbrev ε₁ (i : I₁ × I₂) : ℤ := TotalComplexShape.ε₁ c₁ c₂ c₃ i
+abbrev ε₂ (i : I₁ × I₂) : ℤ := TotalComplexShape.ε₂ c₁ c₂ c₃ i
+
+variable {c₁}
+
+lemma rel_π₁ {i₁ i₁' : I₁} (h : c₁.Rel i₁ i₁') (i₂ : I₂) : c₃.Rel (π c₁ c₂ c₃ ⟨i₁, i₂⟩) (π c₁ c₂ c₃ ⟨i₁', i₂⟩) :=
+  TotalComplexShape.rel₁ h i₂
+
+variable (c₁) {c₂}
+
+lemma rel_π₂ (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') : c₃.Rel (π c₁ c₂ c₃ ⟨i₁, i₂⟩) (π c₁ c₂ c₃ ⟨i₁, i₂'⟩) :=
+  TotalComplexShape.rel₂ i₁ h
+
+variable {c₁}
+
+lemma totalComplexShape_compatibility
+    {i₁ i₁' : I₁} {i₂ i₂' : I₂} (h₁ : c₁.Rel i₁ i₁') (h₂ : c₂.Rel i₂ i₂') :
+    ε₁ c₁ c₂ c₃ ⟨i₁, i₂⟩ * ε₂ c₁ c₂ c₃ ⟨i₁', i₂⟩ + ε₂ c₁ c₂ c₃ ⟨i₁, i₂⟩ * ε₁ c₁ c₂ c₃ ⟨i₁, i₂'⟩ = 0 :=
+  TotalComplexShape.eq h₁ h₂
+
+end ComplexShape
+
+end
 
 namespace HomologicalComplex₂
 
@@ -240,39 +240,42 @@ def toGradedObjectFunctor [HasZeroMorphisms C] :
   obj := toGradedObject
   map φ := fun ⟨i₁, i₂⟩ => (φ.f i₁).f i₂
 
-variable {c₁ c₂ c₃ C}
-variable [Preadditive C] (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (ψ : L ⟶ M) (e : K ≅ L) [DecidableEq I₃]
+variable {c₁ c₂ C}
+variable [Preadditive C] (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (ψ : L ⟶ M) (e : K ≅ L)
+  (c₃ : ComplexShape I₃) [DecidableEq I₃]
 
-variable (τ : TotalComplexShape c₁ c₂ c₃) [K.toGradedObject.HasMap τ.π]
-  [L.toGradedObject.HasMap τ.π] [M.toGradedObject.HasMap τ.π]
+variable [TotalComplexShape c₁ c₂ c₃] [K.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₃)]
+  [L.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₃)] [M.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₃)]
 
 attribute [reassoc] HomologicalComplex.comp_f
 
 @[pp_dot]
 noncomputable def total : HomologicalComplex C c₃ :=
-  HomologicalComplex.ofGradedObject (K.toGradedObject.mapObj τ.π) c₃
-    (fun i₃ i₃' => GradedObject.descMapObj _ τ.π
-      (fun ⟨i₁, i₂⟩ _ => τ.ε₁ ⟨i₁, i₂⟩ • ((K.d i₁ (c₁.next i₁)).f i₂ ≫ K.toGradedObject.ιMapObjOrZero τ.π ⟨_, i₂⟩ i₃') +
-        τ.ε₂ ⟨i₁, i₂⟩ • ((K.X i₁).d i₂ (c₂.next i₂) ≫ K.toGradedObject.ιMapObjOrZero τ.π ⟨i₁, _⟩ i₃')))
+  HomologicalComplex.ofGradedObject (K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₃)) c₃
+    (fun i₃ i₃' => GradedObject.descMapObj _ (ComplexShape.π c₁ c₂ c₃)
+      (fun ⟨i₁, i₂⟩ _ => ComplexShape.ε₁ c₁ c₂ c₃ ⟨i₁, i₂⟩ • ((K.d i₁ (c₁.next i₁)).f i₂ ≫ K.toGradedObject.ιMapObjOrZero (ComplexShape.π c₁ c₂ c₃) ⟨_, i₂⟩ i₃') +
+        ComplexShape.ε₂ c₁ c₂ c₃ ⟨i₁, i₂⟩ • ((K.X i₁).d i₂ (c₂.next i₂) ≫ K.toGradedObject.ιMapObjOrZero (ComplexShape.π c₁ c₂ c₃) ⟨i₁, _⟩ i₃')))
     (fun i₃ i₃' h₃ => by
       ext ⟨i₁, i₂⟩ h₀
       dsimp
       simp only [Prod.mk.eta, GradedObject.ι_descMapObj, comp_zero]
       conv_rhs => rw [← add_zero 0]
       congr 1
-      · by_cases h₁ : τ.π ⟨c₁.next i₁, i₂⟩ = i₃'
+      · by_cases h₁ : (ComplexShape.π c₁ c₂ c₃) ⟨c₁.next i₁, i₂⟩ = i₃'
         · rw [K.shape, HomologicalComplex.zero_f, zero_comp, smul_zero]
           intro h₂
           apply h₃
           rw [← h₀, ← h₁]
-          exact τ.rel₁ h₂ _
+          apply ComplexShape.rel_π₁
+          exact h₂
         · rw [GradedObject.ιMapObjOrZero_eq_zero _ _ _ _ h₁, comp_zero, smul_zero]
-      · by_cases h₁ : τ.π ⟨i₁, c₂.next i₂⟩ = i₃'
+      · by_cases h₁ : (ComplexShape.π c₁ c₂ c₃) ⟨i₁, c₂.next i₂⟩ = i₃'
         · rw [(K.X i₁).shape, zero_comp, smul_zero]
           intro h₂
           apply h₃
           rw [← h₀, ← h₁]
-          exact τ.rel₂ _ h₂
+          apply ComplexShape.rel_π₂
+          exact h₂
         · rw [GradedObject.ιMapObjOrZero_eq_zero _ _ _ _ h₁, comp_zero, smul_zero])
     (fun i₃ i₃' i₃'' _ _ => by
       ext ⟨i₁, i₂⟩ h₀
@@ -280,12 +283,12 @@ noncomputable def total : HomologicalComplex C c₃ :=
       rw [GradedObject.ι_descMapObj_assoc, add_comp, comp_zero, zsmul_comp,
         zsmul_comp, assoc, assoc]
       dsimp
-      by_cases h₁ : τ.π (c₁.next i₁, i₂) = i₃'
+      by_cases h₁ : (ComplexShape.π c₁ c₂ c₃) (c₁.next i₁, i₂) = i₃'
       · rw [GradedObject.ιMapObjOrZero_eq _ _ _ _ h₁, GradedObject.ι_descMapObj,
           comp_add]
         simp only [comp_zsmul, ← HomologicalComplex.comp_f_assoc, HomologicalComplex.d_comp_d,
           HomologicalComplex.zero_f, zero_comp, zsmul_zero, zero_add]
-        by_cases h₂ : τ.π (i₁, c₂.next i₂) = i₃'
+        by_cases h₂ : (ComplexShape.π c₁ c₂ c₃) (i₁, c₂.next i₂) = i₃'
         · dsimp
           rw [GradedObject.ιMapObjOrZero_eq _ _ _ _ h₂, GradedObject.ι_descMapObj,
             comp_add, comp_zsmul, comp_zsmul, HomologicalComplex.d_comp_d_assoc, zero_comp,
@@ -294,7 +297,7 @@ noncomputable def total : HomologicalComplex C c₃ :=
           dsimp
           by_cases h₃ : c₂.Rel i₂ (c₂.next i₂)
           · by_cases h₄ : c₁.Rel i₁ (c₁.next i₁)
-            · rw [τ.eq h₄ h₃, zero_smul]
+            · rw [ComplexShape.totalComplexShape_compatibility c₃ h₄ h₃, zero_smul]
             · rw [K.shape _ _ h₄, HomologicalComplex.zero_f, zero_comp, comp_zero, smul_zero]
           · rw [(K.X i₁).shape _ _ h₃, zero_comp, smul_zero]
         · rw [GradedObject.ιMapObjOrZero_eq_zero _ _ _ _ h₂, zero_comp, comp_zero,
@@ -303,14 +306,14 @@ noncomputable def total : HomologicalComplex C c₃ :=
           · by_cases h₄ : c₁.Rel i₁ (c₁.next i₁)
             · exfalso
               apply h₂
-              simpa only [c₃.next_eq' (τ.rel₁ h₄ i₂), ← c₃.next_eq' (τ.rel₂ i₁ h₃)]
+              simpa only [c₃.next_eq' (ComplexShape.rel_π₁ c₂ c₃ h₄ i₂), ← c₃.next_eq' (ComplexShape.rel_π₂ c₁ c₃ i₁ h₃)]
                 using h₁
             · rw [HomologicalComplex.shape _ _ _ h₄, HomologicalComplex.zero_f, zero_comp,
                 smul_zero, smul_zero]
           · rw [HomologicalComplex.shape _ _ _ h₃, zero_comp, comp_zero, smul_zero, smul_zero]
       · rw [GradedObject.ιMapObjOrZero_eq_zero _ _ _ _ h₁, zero_comp, comp_zero, smul_zero,
           zero_add]
-        by_cases h₂ : τ.π (i₁, c₂.next i₂) = i₃'
+        by_cases h₂ : (ComplexShape.π c₁ c₂ c₃) (i₁, c₂.next i₂) = i₃'
         · rw [GradedObject.ιMapObjOrZero_eq _ _ _ _ h₂, GradedObject.ι_descMapObj,
             comp_add, comp_zsmul, comp_zsmul, HomologicalComplex.d_comp_d_assoc, zero_comp,
             smul_zero, add_zero]
@@ -319,61 +322,61 @@ noncomputable def total : HomologicalComplex C c₃ :=
           · by_cases h₄ : c₁.Rel i₁ (c₁.next i₁)
             · exfalso
               apply h₁
-              simpa only [c₃.next_eq' (τ.rel₁ h₄ i₂), ← c₃.next_eq' (τ.rel₂ i₁ h₃)]
+              simpa only [c₃.next_eq' (ComplexShape.rel_π₁ c₂ c₃ h₄ i₂), ← c₃.next_eq' (ComplexShape.rel_π₂ c₁ c₃ i₁ h₃)]
                 using h₂
             · rw [HomologicalComplex.shape _ _ _ h₄, HomologicalComplex.zero_f,
                 zero_comp, comp_zero, smul_zero, smul_zero]
           · rw [HomologicalComplex.shape _ _ _ h₃, zero_comp, smul_zero, smul_zero]
         · rw [GradedObject.ιMapObjOrZero_eq_zero _ _ _ _ h₂, zero_comp, comp_zero, smul_zero])
 
-noncomputable def ιTotal (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : τ.π ⟨i₁, i₂⟩ = i₃) :
-    (K.X i₁).X i₂ ⟶ (K.total τ).X i₃ :=
-  K.toGradedObject.ιMapObj τ.π ⟨i₁, i₂⟩ i₃ h
+noncomputable def ιTotal (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : (ComplexShape.π c₁ c₂ c₃) ⟨i₁, i₂⟩ = i₃) :
+    (K.X i₁).X i₂ ⟶ (K.total c₃).X i₃ :=
+  K.toGradedObject.ιMapObj (ComplexShape.π c₁ c₂ c₃) ⟨i₁, i₂⟩ i₃ h
 
-noncomputable def descTotal {A : C} {i₃ : I₃} (f : ∀ (i₁ : I₁) (i₂ : I₂) (_ : τ.π ⟨i₁, i₂⟩ = i₃), (K.X i₁).X i₂ ⟶ A) :
-    (K.total τ).X i₃ ⟶ A :=
-  K.toGradedObject.descMapObj τ.π (fun ⟨i₁, i₂⟩ h => f i₁ i₂ h)
+noncomputable def descTotal {A : C} {i₃ : I₃} (f : ∀ (i₁ : I₁) (i₂ : I₂) (_ : (ComplexShape.π c₁ c₂ c₃) ⟨i₁, i₂⟩ = i₃), (K.X i₁).X i₂ ⟶ A) :
+    (K.total c₃).X i₃ ⟶ A :=
+  K.toGradedObject.descMapObj (ComplexShape.π c₁ c₂ c₃) (fun ⟨i₁, i₂⟩ h => f i₁ i₂ h)
 
 @[reassoc (attr := simp)]
-lemma ι_descTotal {A : C} (i₃ : I₃) (f : ∀ (i₁ : I₁) (i₂ : I₂) (_ : τ.π ⟨i₁, i₂⟩ = i₃), (K.X i₁).X i₂ ⟶ A)
-    (i₁ : I₁) (i₂ : I₂) (h : τ.π ⟨i₁, i₂⟩ = i₃) :
-      ιTotal K τ i₁ i₂ i₃ h ≫ descTotal K τ f = f i₁ i₂ h := by
+lemma ι_descTotal {A : C} (i₃ : I₃) (f : ∀ (i₁ : I₁) (i₂ : I₂) (_ : (ComplexShape.π c₁ c₂ c₃) ⟨i₁, i₂⟩ = i₃), (K.X i₁).X i₂ ⟶ A)
+    (i₁ : I₁) (i₂ : I₂) (h : (ComplexShape.π c₁ c₂ c₃) ⟨i₁, i₂⟩ = i₃) :
+      K.ιTotal c₃ i₁ i₂ i₃ h ≫ K.descTotal c₃ f = f i₁ i₂ h := by
   apply K.toGradedObject.ι_descMapObj
 
-variable {K τ}
+variable {K c₃}
 
 @[ext]
-lemma descTotal_ext {A : C} {i₃ : I₃} (f g : (K.total τ).X i₃ ⟶ A)
-    (h : ∀ (i₁ : I₁) (i₂ : I₂) (h : τ.π ⟨i₁, i₂⟩ = i₃), K.ιTotal τ i₁ i₂ i₃ h ≫ f = K.ιTotal τ i₁ i₂ i₃ h ≫ g) : f = g :=
+lemma descTotal_ext {A : C} {i₃ : I₃} (f g : (K.total c₃).X i₃ ⟶ A)
+    (h : ∀ (i₁ : I₁) (i₂ : I₂) (h : (ComplexShape.π c₁ c₂ c₃) ⟨i₁, i₂⟩ = i₃), K.ιTotal c₃ i₁ i₂ i₃ h ≫ f = K.ιTotal c₃ i₁ i₂ i₃ h ≫ g) : f = g :=
   GradedObject.mapObj_ext _ _ _ _ (fun ⟨i₁, i₂⟩ hi => h i₁ i₂ hi)
 
-variable (K τ)
+variable (K c₃)
 
 noncomputable def ιTotalOrZero (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
-    (K.X i₁).X i₂ ⟶ (K.total τ).X i₃ :=
-  if h : τ.π ⟨i₁, i₂⟩ = i₃
-    then K.toGradedObject.ιMapObj τ.π ⟨i₁, i₂⟩ i₃ h
+    (K.X i₁).X i₂ ⟶ (K.total c₃).X i₃ :=
+  if h : (ComplexShape.π c₁ c₂ c₃) ⟨i₁, i₂⟩ = i₃
+    then K.toGradedObject.ιMapObj (ComplexShape.π c₁ c₂ c₃) ⟨i₁, i₂⟩ i₃ h
     else 0
 
-lemma ιTotalOrZero_eq (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : τ.π ⟨i₁, i₂⟩ = i₃):
-  K.ιTotalOrZero τ i₁ i₂ i₃ = K.ιTotal τ i₁ i₂ i₃ h := dif_pos h
+lemma ιTotalOrZero_eq (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : (ComplexShape.π c₁ c₂ c₃) ⟨i₁, i₂⟩ = i₃):
+  K.ιTotalOrZero c₃ i₁ i₂ i₃ = K.ιTotal c₃ i₁ i₂ i₃ h := dif_pos h
 
-lemma ιTotalOrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : τ.π ⟨i₁, i₂⟩ ≠ i₃):
-  K.ιTotalOrZero τ i₁ i₂ i₃ = 0 := dif_neg h
+lemma ιTotalOrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : (ComplexShape.π c₁ c₂ c₃) ⟨i₁, i₂⟩ ≠ i₃):
+  K.ιTotalOrZero c₃ i₁ i₂ i₃ = 0 := dif_neg h
 
 @[reassoc]
-lemma ιTotal_d (i₁ : I₁) (i₂ : I₂) (i₃ i₃' : I₃) (h : τ.π ⟨i₁, i₂⟩ = i₃) :
-    K.ιTotal τ i₁ i₂ i₃ h ≫ (K.total τ).d i₃ i₃' =
-      τ.ε₁ ⟨i₁, i₂⟩ • ((K.d i₁ (c₁.next i₁)).f i₂) ≫ K.ιTotalOrZero τ _ _ _ +
-        τ.ε₂ ⟨i₁, i₂⟩ • ((K.X i₁).d i₂ (c₂.next i₂) ≫ K.ιTotalOrZero τ _ _ _) := by
+lemma ιTotal_d (i₁ : I₁) (i₂ : I₂) (i₃ i₃' : I₃) (h : (ComplexShape.π c₁ c₂ c₃) ⟨i₁, i₂⟩ = i₃) :
+    K.ιTotal c₃ i₁ i₂ i₃ h ≫ (K.total c₃).d i₃ i₃' =
+      ComplexShape.ε₁ c₁ c₂ c₃ ⟨i₁, i₂⟩ • ((K.d i₁ (c₁.next i₁)).f i₂) ≫ K.ιTotalOrZero c₃ _ _ _ +
+        ComplexShape.ε₂ c₁ c₂ c₃ ⟨i₁, i₂⟩ • ((K.X i₁).d i₂ (c₂.next i₂) ≫ K.ιTotalOrZero c₃ _ _ _) := by
   dsimp [total, ιTotal]
   apply GradedObject.ι_descMapObj
 
 variable {K L}
 
 @[simps]
-noncomputable def totalMap : K.total τ ⟶ L.total τ where
-  f := GradedObject.mapMap ((toGradedObjectFunctor C c₁ c₂).map φ) τ.π
+noncomputable def totalMap : K.total c₃ ⟶ L.total c₃ where
+  f := GradedObject.mapMap ((toGradedObjectFunctor C c₁ c₂).map φ) (ComplexShape.π c₁ c₂ c₃)
   comm' i₃ i₃' _ := by
     apply GradedObject.mapObj_ext
     rintro ⟨i₁, i₂⟩ h
@@ -381,11 +384,11 @@ noncomputable def totalMap : K.total τ ⟶ L.total τ where
     simp only [GradedObject.ι_mapMap_assoc, GradedObject.ι_descMapObj, comp_add, comp_zsmul,
       GradedObject.ι_descMapObj_assoc, add_comp, zsmul_comp, assoc]
     congr 2
-    · by_cases τ.π (c₁.next i₁, i₂) = i₃'
+    · by_cases (ComplexShape.π c₁ c₂ c₃) (c₁.next i₁, i₂) = i₃'
       · simp only [GradedObject.ιMapObjOrZero_eq _ _ _ _ h, GradedObject.ι_mapMap,
           ← HomologicalComplex.comp_f_assoc, φ.comm]
       · simp only [GradedObject.ιMapObjOrZero_eq_zero _ _ _ _ h, comp_zero, zero_comp]
-    · by_cases τ.π (i₁, c₂.next i₂) = i₃'
+    · by_cases (ComplexShape.π c₁ c₂ c₃) (i₁, c₂.next i₂) = i₃'
       · simp only [GradedObject.ιMapObjOrZero_eq _ _ _ _ h, GradedObject.ι_mapMap,
           HomologicalComplex.Hom.comm_from_assoc]
       · simp only [GradedObject.ιMapObjOrZero_eq_zero _ _ _ _ h, comp_zero, zero_comp]
@@ -393,22 +396,22 @@ noncomputable def totalMap : K.total τ ⟶ L.total τ where
 variable (K)
 
 @[simp]
-lemma totalMap_id : totalMap (𝟙 K) τ = 𝟙 _ := by
+lemma totalMap_id : totalMap (𝟙 K) c₃ = 𝟙 _ := by
   apply (HomologicalComplex.toGradedObjectFunctor _ _).map_injective
   apply GradedObject.mapMap_id
 
 variable {K M}
 
 @[simp, reassoc]
-lemma totalMap_comp : totalMap (φ ≫ ψ) τ = totalMap φ τ ≫ totalMap ψ τ := by
+lemma totalMap_comp : totalMap (φ ≫ ψ) c₃ = totalMap φ c₃ ≫ totalMap ψ c₃ := by
   apply (HomologicalComplex.toGradedObjectFunctor _ _).map_injective
   exact GradedObject.mapMap_comp ((HomologicalComplex₂.toGradedObjectFunctor C c₁ c₂).map φ)
-    ((HomologicalComplex₂.toGradedObjectFunctor C c₁ c₂).map ψ) τ.π
+    ((HomologicalComplex₂.toGradedObjectFunctor C c₁ c₂).map ψ) (ComplexShape.π c₁ c₂ c₃)
 
 @[simps]
-noncomputable def totalMapIso : K.total τ ≅ L.total τ where
-  hom := totalMap e.hom τ
-  inv := totalMap e.inv τ
+noncomputable def totalMapIso : K.total c₃ ≅ L.total c₃ where
+  hom := totalMap e.hom c₃
+  inv := totalMap e.inv c₃
   hom_inv_id := by rw [← totalMap_comp, e.hom_inv_id, totalMap_id]
   inv_hom_id := by rw [← totalMap_comp, e.inv_hom_id, totalMap_id]
 
@@ -416,16 +419,16 @@ end HomologicalComplex₂
 
 namespace TotalComplexShape
 
-variable {c₁ c₂ c₃}
+variable {c₁ c₂} (c₃ : ComplexShape I₃)
 
-variable (τ : TotalComplexShape c₁ c₂ c₃) [DecidableEq I₃]
+variable [TotalComplexShape c₁ c₂ c₃] [DecidableEq I₃]
 
 @[simps]
 noncomputable def totalFunctor (C : Type*) [Category C] [Preadditive C]
-    [∀ (K : HomologicalComplex₂ C c₁ c₂), K.toGradedObject.HasMap τ.π] :
+    [∀ (K : HomologicalComplex₂ C c₁ c₂), K.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₃)] :
     HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₃ where
-  obj K := K.total τ
-  map φ := HomologicalComplex₂.totalMap φ τ
+  obj K := K.total c₃
+  map φ := HomologicalComplex₂.totalMap φ c₃
 
 end TotalComplexShape
 
@@ -512,36 +515,63 @@ end NatIso
 
 end CategoryTheory
 
-variable {c₁ c₂ c₃}
+variable (c₃ : ComplexShape I₃) [TotalComplexShape c₁ c₂ c₃] [TotalComplexShape c₂ c₁ c₃]
 
-structure TotalComplexShapeSymmetry (τ : TotalComplexShape c₁ c₂ c₃) (τ' : TotalComplexShape c₂ c₁ c₃) where
-  symm (i₁ : I₁) (i₂ : I₂) : τ'.π ⟨i₂, i₁⟩ = τ.π ⟨i₁, i₂⟩
-  ε (i₁ : I₁) (i₂ : I₂) : ℤ
-  ε_mul_self (i₁ : I₁) (i₂ : I₂) : ε i₁ i₂ * ε i₁ i₂ = 1
+class TotalComplexShapeSymmetry where --(τ : TotalComplexShape c₁ c₂ c₃) (τ' : TotalComplexShape c₂ c₁ c₃) where
+  symm (i₁ : I₁) (i₂ : I₂) : ComplexShape.π c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.π c₁ c₂ c₃ ⟨i₁, i₂⟩
+  σ (i₁ : I₁) (i₂ : I₂) : ℤ
+  σ_mul_self (i₁ : I₁) (i₂ : I₂) : σ i₁ i₂ * σ i₁ i₂ = 1
   compatibility₁ ⦃i₁ i₁' : I₁⦄ (h₁ : c₁.Rel i₁ i₁') (i₂ : I₂) :
-    ε i₁ i₂ * τ'.ε₂ ⟨i₂, i₁⟩ = τ.ε₁ ⟨i₁, i₂⟩ * ε i₁' i₂
+    σ i₁ i₂ * ComplexShape.ε₂ c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.ε₁ c₁ c₂ c₃ ⟨i₁, i₂⟩ * σ i₁' i₂
   compatibility₂ (i₁ : I₁) ⦃i₂ i₂' : I₂⦄ (h₂ : c₂.Rel i₂ i₂') :
-    ε i₁ i₂ * τ'.ε₁ ⟨i₂, i₁⟩ = τ.ε₂ ⟨i₁, i₂⟩ * ε i₁ i₂'
+    σ i₁ i₂ * ComplexShape.ε₁ c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.ε₂ c₁ c₂ c₃ ⟨i₁, i₂⟩ * σ i₁ i₂'
 
-attribute [simp] TotalComplexShapeSymmetry.ε_mul_self
+variable [TotalComplexShapeSymmetry c₁ c₂ c₃]
+
+namespace ComplexShape
+
+abbrev σ (i₁ : I₁) (i₂ : I₂) : ℤ := TotalComplexShapeSymmetry.σ c₁ c₂ c₃ i₁ i₂
+
+lemma π_symm (i₁ : I₁) (i₂ : I₂) :
+    ComplexShape.π c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.π c₁ c₂ c₃ ⟨i₁, i₂⟩ := by
+  apply TotalComplexShapeSymmetry.symm
+
+@[simp]
+lemma σ_mul_self (i₁ : I₁) (i₂ : I₂) : σ c₁ c₂ c₃ i₁ i₂ * σ c₁ c₂ c₃ i₁ i₂ = 1 := by
+  apply TotalComplexShapeSymmetry.σ_mul_self
+
+variable {c₁}
+
+lemma σ_compatibility₁ {i₁ i₁' : I₁} (h₁ : c₁.Rel i₁ i₁') (i₂ : I₂) :
+    σ c₁ c₂ c₃ i₁ i₂ * ComplexShape.ε₂ c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.ε₁ c₁ c₂ c₃ ⟨i₁, i₂⟩ * σ c₁ c₂ c₃ i₁' i₂ :=
+  TotalComplexShapeSymmetry.compatibility₁ h₁ i₂
+
+variable (c₁) {c₂}
+
+lemma σ_compatibility₂ (i₁ : I₁) {i₂ i₂' : I₂} (h₂ : c₂.Rel i₂ i₂') :
+    σ c₁ c₂ c₃ i₁ i₂ * ComplexShape.ε₁ c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.ε₂ c₁ c₂ c₃ ⟨i₁, i₂⟩ * σ c₁ c₂ c₃ i₁ i₂' :=
+  TotalComplexShapeSymmetry.compatibility₂ i₁ h₂
+
+end ComplexShape
+
+--attribute [simp] TotalComplexShapeSymmetry.σ_mul
 
 namespace HomologicalComplex₂
 
+variable {c₁ c₂}
 variable [Preadditive C] [DecidableEq I₃]
-  {τ : TotalComplexShape c₁ c₂ c₃} {τ' : TotalComplexShape c₂ c₁ c₃}
-  (σ : TotalComplexShapeSymmetry τ τ')
   (K : HomologicalComplex₂ C c₁ c₂)
-  [K.toGradedObject.HasMap τ.π]
-  [K.flip.toGradedObject.HasMap τ'.π]
+  [K.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₃)]
+  [K.flip.toGradedObject.HasMap (ComplexShape.π c₂ c₁ c₃)]
 
 attribute [local simp] zsmul_comp smul_smul ιTotal_d_assoc
 
-noncomputable def totalSymmIso : K.total τ ≅ K.flip.total τ' :=
+noncomputable def totalSymmIso : K.total c₃ ≅ K.flip.total c₃ :=
   HomologicalComplex.Hom.isoOfComponents (fun i₃ =>
-    { hom := K.descTotal τ
-        (fun i₁ i₂ h => σ.ε i₁ i₂ • K.flip.ιTotal τ' i₂ i₁ i₃ (by rw [σ.symm, h]))
-      inv := K.flip.descTotal τ'
-        (fun i₂ i₁ h => σ.ε i₁ i₂ • K.ιTotal τ i₁ i₂ i₃ (by rw [← σ.symm, h]))}) (by
+    { hom := K.descTotal c₃
+          (fun i₁ i₂ h => ComplexShape.σ c₁ c₂ c₃ i₁ i₂ • K.flip.ιTotal c₃ i₂ i₁ i₃ (by rw [ComplexShape.π_symm, h]))
+      inv := K.flip.descTotal c₃
+        (fun i₂ i₁ h => ComplexShape.σ c₁ c₂ c₃ i₁ i₂ • K.ιTotal c₃ i₁ i₂ i₃ (by rw [← ComplexShape.π_symm, h])) }) (by
     intro i₃ i₃' _
     ext i₁ i₂ h'
     dsimp
@@ -550,23 +580,23 @@ noncomputable def totalSymmIso : K.total τ ≅ K.flip.total τ' :=
     rw [add_comm]
     congr 1
     · by_cases h₁ : c₁.Rel i₁ (c₁.next i₁)
-      · by_cases h₂ : τ.π ⟨c₁.next i₁, i₂⟩ = i₃'
-        · have h₃ : τ'.π ⟨i₂, c₁.next i₁⟩ = i₃' := by rw [σ.symm, h₂]
-          rw [K.ιTotalOrZero_eq τ _ _ _ h₂, K.flip.ιTotalOrZero_eq τ' _ _ _ h₃,
-            ι_descTotal, comp_zsmul, smul_smul, σ.compatibility₁ h₁ i₂]
-        · rw [K.ιTotalOrZero_eq_zero τ _ _ _ h₂, zero_comp, comp_zero, smul_zero,
-            K.flip.ιTotalOrZero_eq_zero τ', comp_zero, smul_zero]
-          rw [σ.symm]
+      · by_cases h₂ : (ComplexShape.π c₁ c₂ c₃) ⟨c₁.next i₁, i₂⟩ = i₃'
+        · have h₃ : (ComplexShape.π c₂ c₁ c₃) ⟨i₂, c₁.next i₁⟩ = i₃' := by rw [ComplexShape.π_symm, h₂]
+          rw [K.ιTotalOrZero_eq c₃ _ _ _ h₂, K.flip.ιTotalOrZero_eq c₃ _ _ _ h₃,
+            ι_descTotal, comp_zsmul, smul_smul, ComplexShape.σ_compatibility₁ c₂ c₃ h₁ i₂]
+        · rw [K.ιTotalOrZero_eq_zero c₃ _ _ _ h₂, zero_comp, comp_zero, smul_zero,
+            K.flip.ιTotalOrZero_eq_zero, comp_zero, smul_zero]
+          rw [ComplexShape.π_symm]
           exact h₂
       · rw [K.shape _ _ h₁, HomologicalComplex.zero_f, zero_comp, zero_comp, smul_zero, smul_zero]
     · by_cases h₁ : c₂.Rel i₂ (c₂.next i₂)
-      · by_cases h₂ : τ.π ⟨i₁, c₂.next i₂⟩ = i₃'
-        · have h₃ : τ'.π ⟨c₂.next i₂, i₁⟩ = i₃' := by rw [σ.symm, h₂]
-          rw [K.ιTotalOrZero_eq τ _ _ _ h₂, K.flip.ιTotalOrZero_eq τ' _ _ _ h₃,
-            ι_descTotal, comp_zsmul, smul_smul, σ.compatibility₂ i₁ h₁]
-        · rw [K.ιTotalOrZero_eq_zero τ _ _ _ h₂, zero_comp, comp_zero, smul_zero,
+      · by_cases h₂ : (ComplexShape.π c₁ c₂ c₃) ⟨i₁, c₂.next i₂⟩ = i₃'
+        · have h₃ : (ComplexShape.π c₂ c₁ c₃) ⟨c₂.next i₂, i₁⟩ = i₃' := by rw [ComplexShape.π_symm, h₂]
+          rw [K.ιTotalOrZero_eq c₃ _ _ _ h₂, K.flip.ιTotalOrZero_eq c₃ _ _ _ h₃,
+            ι_descTotal, comp_zsmul, smul_smul, ComplexShape.σ_compatibility₂ c₁ c₃ i₁ h₁]
+        · rw [K.ιTotalOrZero_eq_zero c₃ _ _ _ h₂, zero_comp, comp_zero, smul_zero,
             K.flip.ιTotalOrZero_eq_zero, comp_zero, smul_zero]
-          rw [σ.symm]
+          rw [ComplexShape.π_symm]
           exact h₂
       · rw [(K.X i₁).shape _ _ h₁, zero_comp, zero_comp, smul_zero, smul_zero])
 

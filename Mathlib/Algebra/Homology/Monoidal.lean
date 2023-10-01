@@ -40,7 +40,7 @@ class TensorSigns where
 
 variable [TensorSigns c]
 
-def ε (i : I) : ℤ := TensorSigns.ε c i
+abbrev ε (i : I) : ℤ := TensorSigns.ε c i
 
 lemma rel_add {p q : I} (hpq : c.Rel p q) (r : I) : c.Rel (p + r) (q + r) :=
   TensorSigns.rel_add _ _ _ hpq
@@ -67,7 +67,7 @@ lemma next_add' (p q : I) (hq : c.Rel q (c.next q)) :
   c.next_eq' (c.add_rel p hq)
 
 @[simps]
-def totalComplexShape : TotalComplexShape c c c where
+instance : TotalComplexShape c c c where
   π := fun ⟨p, q⟩ => p + q
   ε₁ := fun _ => 1
   ε₂ := fun ⟨p, _⟩ => c.ε p
@@ -77,6 +77,7 @@ def totalComplexShape : TotalComplexShape c c c where
     dsimp
     rw [one_mul, mul_one, c.ε_succ h, add_left_neg]
 
+@[simps]
 instance : TensorSigns (ComplexShape.down ℕ) where
   ε p := (-1) ^ p
   rel_add p q r (hpq : q + 1 = p) := by
@@ -94,6 +95,7 @@ instance : TensorSigns (ComplexShape.down ℕ) where
     rw [pow_add]
   ε_zero := by simp
 
+@[simps]
 instance : TensorSigns (ComplexShape.up ℤ) where
   ε := Int.negOnePow
   rel_add p q r (hpq : p + 1 = q) := by
@@ -148,11 +150,11 @@ attribute [local simp] add_comp comp_add zsmul_comp comp_zsmul
 
 instance (K L : HomologicalComplex C c) [h : HasTensor K L] :
   (((Functor.mapHomologicalComplex₂ (curryObj (tensor C)) c c).obj K).obj L).toGradedObject.HasMap
-      c.totalComplexShape.π := h
+      (ComplexShape.π c c c) := h
 
 noncomputable def tensorObj (K L : HomologicalComplex C c) [HasTensor K L] :
     HomologicalComplex C c :=
-  (((Functor.mapHomologicalComplex₂ (curryObj (MonoidalCategory.tensor C)) c c).obj K).obj L).total c.totalComplexShape
+  (((Functor.mapHomologicalComplex₂ (curryObj (MonoidalCategory.tensor C)) c c).obj K).obj L).total c
 
 noncomputable def tensorHom {K₁ L₁ K₂ L₂ : HomologicalComplex C c}
     (f₁ : K₁ ⟶ L₁) (f₂ : K₂ ⟶ L₂) [HasTensor K₁ K₂] [HasTensor L₁ L₂] :

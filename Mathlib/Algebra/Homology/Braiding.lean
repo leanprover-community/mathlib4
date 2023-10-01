@@ -48,10 +48,10 @@ section
 variable [ComplexShape.TensorSigns c]
 
 instance [h : HasTensor K L] :
-    GradedObject.HasMap (tensorBicomplex K L).toGradedObject c.totalComplexShape.π := h
+    GradedObject.HasMap (tensorBicomplex K L).toGradedObject (ComplexShape.π c c c) := h
 
 noncomputable def tensorBiComplexTotalIso [HasTensor K L] [HasTensor L K] :
-    Monoidal.tensorObj K L ≅ (tensorBicomplex K L).total c.totalComplexShape := Iso.refl _
+    Monoidal.tensorObj K L ≅ (tensorBicomplex K L).total c := Iso.refl _
 
 variable [BraidedCategory C]
 
@@ -81,25 +81,34 @@ end
 
 variable (c)
 
-class _root_.ComplexShape.Braiding extends c.TensorSigns where
-  σ : TotalComplexShapeSymmetry c.totalComplexShape c.totalComplexShape
-  σ_add₁ (i₁ i₁' i₂ : I) : σ.ε (i₁ + i₁') i₂ = σ.ε i₁ i₂ * σ.ε i₁' i₂
-  σ_add₂ (i₁ i₂ i₂' : I) : σ.ε i₁ (i₂ + i₂') = σ.ε i₁ i₂ * σ.ε i₁ i₂'
+class _root_.ComplexShape.Braiding  extends c.TensorSigns,
+    TotalComplexShapeSymmetry c c c where
+  σ_add₁ (i₁ i₁' i₂ : I) : ComplexShape.σ c c c (i₁ + i₁') i₂ = ComplexShape.σ c c c i₁ i₂ * ComplexShape.σ c c c i₁' i₂
+  σ_add₂ (i₁ i₂ i₂' : I) : ComplexShape.σ c c c i₁ (i₂ + i₂') = ComplexShape.σ c c c i₁ i₂ * ComplexShape.σ c c c i₁ i₂'
+
+lemma _root_.ComplexShape.σ_add₁ (i₁ i₁' i₂ : I) [c.Braiding] :
+  ComplexShape.σ c c c (i₁ + i₁') i₂ = ComplexShape.σ c c c i₁ i₂ * ComplexShape.σ c c c i₁' i₂ := by
+  apply ComplexShape.Braiding.σ_add₁
+
+lemma _root_.ComplexShape.σ_add₂ (i₁ i₂ i₂' : I) [c.Braiding] :
+  ComplexShape.σ c c c i₁ (i₂ + i₂') = ComplexShape.σ c c c i₁ i₂ * ComplexShape.σ c c c i₁ i₂' := by
+  apply ComplexShape.Braiding.σ_add₂
+
+@[simps]
+instance : TotalComplexShapeSymmetry (ComplexShape.up ℤ) (ComplexShape.up ℤ) (ComplexShape.up ℤ) where
+  symm := fun p q => add_comm q p
+  σ := fun p q => (p * q).negOnePow
+  σ_mul_self := by aesop
+  compatibility₁ := by
+    rintro p _ rfl q
+    dsimp
+    rw [one_mul, ← Int.negOnePow_add, add_mul, one_mul]
+  compatibility₂ := by
+    rintro p q _ rfl
+    dsimp
+    rw [mul_one, add_comm q 1, mul_add, mul_one, Int.negOnePow_add, ← mul_assoc, Int.negOnePow_mul_self, one_mul]
 
 instance : (ComplexShape.up ℤ).Braiding where
-  σ := -- this should be a typeclass/instance
-    { symm := fun p q => add_comm q p
-      ε := fun p q => (p * q).negOnePow
-      ε_mul_self := by aesop
-      compatibility₁ := by
-        rintro p _ rfl q
-        simp only [ComplexShape.totalComplexShape_ε₂, ComplexShape.ε, ComplexShape.TensorSigns.ε,
-          ComplexShape.totalComplexShape_ε₁, one_mul, ← Int.negOnePow_add, add_mul, one_mul]
-      compatibility₂ := by
-        rintro p q _ rfl
-        simp only [ComplexShape.totalComplexShape_ε₁, mul_one, ComplexShape.totalComplexShape_ε₂,
-          ComplexShape.ε, ComplexShape.TensorSigns.ε]
-        rw [add_comm q 1, mul_add, mul_one, Int.negOnePow_add, ← mul_assoc, Int.negOnePow_mul_self, one_mul] }
   σ_add₁ p p' q := by
     dsimp
     rw [← Int.negOnePow_add, add_mul]
@@ -109,21 +118,10 @@ instance : (ComplexShape.up ℤ).Braiding where
 
 variable [c.Braiding] [BraidedCategory C]
 
-def _root_.ComplexShape.σ : TotalComplexShapeSymmetry c.totalComplexShape c.totalComplexShape :=
-  ComplexShape.Braiding.σ
-
-lemma _root_.ComplexShape.σ_add₁ (i₁ i₁' i₂ : I) :
-    c.σ.ε (i₁ + i₁') i₂ = c.σ.ε i₁ i₂ * c.σ.ε i₁' i₂ := by
-  apply ComplexShape.Braiding.σ_add₁
-
-lemma _root_.ComplexShape.σ_add₂ (i₁ i₂ i₂' : I) :
-    c.σ.ε i₁ (i₂ + i₂') = c.σ.ε i₁ i₂ * c.σ.ε i₁ i₂' := by
-  apply ComplexShape.Braiding.σ_add₂
-
 variable {c}
 variable [HasTensor K L] [HasTensor L K]
 
-instance : (tensorBicomplex K L).flip.toGradedObject.HasMap c.totalComplexShape.π := by
+instance : (tensorBicomplex K L).flip.toGradedObject.HasMap (ComplexShape.π c c c) := by
   refine' @GradedObject.hasMap_of_iso (I × I) I C _ _ _ _ _ (inferInstance : HasTensor L K)
   exact GradedObject.isoMk _ _ (fun ⟨i₁, i₂⟩ => β_ (K.X i₂) (L.X i₁))
 
@@ -131,14 +129,15 @@ namespace Monoidal
 
 open BraidedCategory
 
+
 noncomputable def braiding : Monoidal.tensorObj K L ≅ Monoidal.tensorObj L K :=
-  HomologicalComplex₂.totalSymmIso c.σ (tensorBicomplex K L) ≪≫
-    HomologicalComplex₂.totalMapIso (tensorBicomplexFlipIso L K).symm c.totalComplexShape
+  HomologicalComplex₂.totalSymmIso c (tensorBicomplex K L) ≪≫
+    HomologicalComplex₂.totalMapIso (tensorBicomplexFlipIso L K).symm c
 
 @[reassoc (attr := simp)]
 lemma ιTensorObj_braiding_hom (i₁ i₂ i₃ : I) (h : i₁ + i₂ = i₃) :
   ιTensorObj K L i₁ i₂ i₃ h ≫ (braiding K L).hom.f i₃ =
-    c.σ.ε i₁ i₂ • (β_ (K.X i₁) (L.X i₂)).hom ≫ ιTensorObj L K i₂ i₁ i₃ (by rw [add_comm, h]) := by
+    ComplexShape.σ c c c i₁ i₂ • (β_ (K.X i₁) (L.X i₂)).hom ≫ ιTensorObj L K i₂ i₁ i₃ (by rw [add_comm, h]) := by
   -- with this definition of braiding, we may get `(β_ (L.X i₂) (K.X i₁)).inv` instead
   -- of `(β_ (K.X i₁) (L.X i₂)).hom` in which case the definition should be fixed...
   sorry

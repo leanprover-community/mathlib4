@@ -7,14 +7,14 @@ namespace ComplexShape
 variable {I : Type*} [AddCommMonoid I] (c : ComplexShape I)
 
 class Symmetry extends c.Braiding where
-  symm (i₁ i₂ : I) : c.σ.ε i₁ i₂ = c.σ.ε i₂ i₁
+  σ_symm (i₁ i₂ : I) : ComplexShape.σ c c c i₁ i₂ = ComplexShape.σ c c c i₂ i₁
 
-lemma σ_ε_symm [c.Symmetry] (i₁ i₂ : I) : c.σ.ε i₁ i₂ = c.σ.ε i₂ i₁ := by
-  apply Symmetry.symm
+lemma σ_ε_symm [c.Symmetry] (i₁ i₂ : I) : ComplexShape.σ c c c i₁ i₂ = ComplexShape.σ c c c i₂ i₁ := by
+  apply Symmetry.σ_symm
 
 instance : (ComplexShape.up ℤ).Symmetry where
-  symm p q := by
-    change Int.negOnePow _ = Int.negOnePow _
+  σ_symm p q := by
+    dsimp
     rw [mul_comm]
 
 end ComplexShape
@@ -39,7 +39,7 @@ lemma symmetry :
   ext n x y h
   rw [comp_f, ιTensorObj_braiding_hom_assoc, id_f, comp_id, zsmul_comp, assoc,
     ιTensorObj_braiding_hom, comp_zsmul, smul_smul, symmetry_assoc, c.σ_ε_symm,
-    TotalComplexShapeSymmetry.ε_mul_self, one_smul]
+    ComplexShape.σ_mul_self, one_smul]
 
 end Monoidal
 
