@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Group.UniqueProds
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 #align_import algebra.monoid_algebra.no_zero_divisors from "leanprover-community/mathlib"@"3e067975886cf5801e597925328c335609511b1a"
 
@@ -104,11 +103,3 @@ instance [NoZeroDivisors R] [Add A] [UniqueSums A] : NoZeroDivisors R[A] :=
 MonoidAlgebra.instNoZeroDivisorsOfUniqueProds (A := Multiplicative A)
 
 end AddMonoidAlgebra
-
-/-- The proof goes via the equivalence `A ≃ₗ[ℚ] (Basis.ofVectorSpaceIndex ℚ A) →₀ ℚ`,
-i.e. choosing a basis.
-Once we have a basis, we use the embedding into sequences of coordinates and all the instances
-that `ℚ` already has.
--/
-instance [AddCommGroup A] [Module ℚ A] : UniqueSums A :=
-  UniqueSums.addHom_image_of_injective _ (Basis.ofVectorSpace ℚ A).repr.injective inferInstance

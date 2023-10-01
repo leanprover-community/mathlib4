@@ -403,7 +403,7 @@ def toZModPow (n : ℕ) : ℤ_[p] →+* ZMod (p ^ n) :=
 #align padic_int.to_zmod_pow PadicInt.toZModPow
 
 theorem ker_toZModPow (n : ℕ) :
-  RingHom.ker (toZModPow n : ℤ_[p] →+* ZMod (p ^ n)) = Ideal.span {(p : ℤ_[p]) ^ n} := by
+    RingHom.ker (toZModPow n : ℤ_[p] →+* ZMod (p ^ n)) = Ideal.span {(p : ℤ_[p]) ^ n} := by
   ext x
   rw [RingHom.mem_ker]
   constructor
