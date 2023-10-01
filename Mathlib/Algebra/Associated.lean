@@ -60,6 +60,12 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
   exact ih dvd_pow
 #align prime.dvd_of_dvd_pow Prime.dvd_of_dvd_pow
 
+theorem dvd_mul {a b : α} : p ∣ a * b ↔ p ∣ a ∨ p ∣ b :=
+  ⟨hp.dvd_or_dvd, (Or.elim · (dvd_mul_of_dvd_left · _) (dvd_mul_of_dvd_right · _))⟩
+
+theorem not_dvd_mul {a b : α} (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ a * b :=
+  hp.dvd_mul.not.mpr <| not_or.mpr ⟨ha, hb⟩
+
 end Prime
 
 @[simp]
@@ -595,12 +601,24 @@ protected theorem Associated.prime [CommMonoidWithZero α] {p q : α} (h : p ~�
         exact hp.dvd_or_dvd⟩⟩
 #align associated.prime Associated.prime
 
-theorem Irreducible.associated_of_dvd [CancelMonoidWithZero α] {p q : α} (p_irr : Irreducible p)
-    (q_irr : Irreducible q) (dvd : p ∣ q) : Associated p q :=
-  associated_of_dvd_dvd dvd (p_irr.dvd_symm q_irr dvd)
-#align irreducible.associated_of_dvd Irreducible.associated_of_dvd
+theorem Irreducible.dvd_iff [Monoid α] {x y : α} (hx : Irreducible x) :
+    y ∣ x ↔ IsUnit y ∨ Associated x y := by
+  constructor
+  · rintro ⟨z, hz⟩
+    obtain (h|h) := hx.isUnit_or_isUnit' _ _ hz
+    · exact Or.inl h
+    · rw [hz]
+      exact Or.inr (associated_mul_unit_left _ _ h)
+  · rintro (hy|h)
+    · exact hy.dvd
+    · exact h.symm.dvd
 
-theorem Irreducible.dvd_irreducible_iff_associated [CancelMonoidWithZero α] {p q : α}
+theorem Irreducible.associated_of_dvd [Monoid α] {p q : α} (p_irr : Irreducible p)
+    (q_irr : Irreducible q) (dvd : p ∣ q) : Associated p q :=
+  ((q_irr.dvd_iff.mp dvd).resolve_left p_irr.not_unit).symm
+#align irreducible.associated_of_dvd Irreducible.associated_of_dvdₓ
+
+theorem Irreducible.dvd_irreducible_iff_associated [Monoid α] {p q : α}
     (pp : Irreducible p) (qp : Irreducible q) : p ∣ q ↔ Associated p q :=
   ⟨Irreducible.associated_of_dvd pp qp, Associated.dvd⟩
 #align irreducible.dvd_irreducible_iff_associated Irreducible.dvd_irreducible_iff_associated
@@ -627,6 +645,10 @@ protected theorem Associated.isUnit [Monoid α] {a b : α} (h : a ~ᵤ b) : IsUn
 theorem Associated.isUnit_iff [Monoid α] {a b : α} (h : a ~ᵤ b) : IsUnit a ↔ IsUnit b :=
   ⟨h.isUnit, h.symm.isUnit⟩
 #align associated.is_unit_iff Associated.isUnit_iff
+
+theorem Irreducible.isUnit_iff_not_associated_of_dvd [Monoid α]
+    {x y : α} (hx : Irreducible x) (hy : y ∣ x) : IsUnit y ↔ ¬ Associated x y :=
+  ⟨fun hy hxy => hx.1 (hxy.symm.isUnit hy), (hx.dvd_iff.mp hy).resolve_right⟩
 
 protected theorem Associated.irreducible [Monoid α] {p q : α} (h : p ~ᵤ q) (hp : Irreducible p) :
     Irreducible q :=
