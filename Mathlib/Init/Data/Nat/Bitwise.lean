@@ -408,7 +408,6 @@ theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
   unfold bitwise'; rw [binaryRec_zero]
 #align nat.bitwise_zero_left Nat.bitwise'_zero_left
 
-@[simp]
 theorem bitwise'_zero (f : Bool → Bool → Bool) : bitwise' f 0 0 = 0 := by
   rw [bitwise'_zero_left]
   cases f false true <;> rfl
