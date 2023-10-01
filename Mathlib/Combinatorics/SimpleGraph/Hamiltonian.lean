@@ -68,7 +68,7 @@ structure IsHamiltonianCycle (p : G.Walk v v) extends p.IsCycle : Prop :=
   path_hamiltonian : (p.tail toIsCycle.not_Nil).IsHamiltonian
 
 lemma IsHamiltonianCycle.isCycle {p : G.Walk v v} (hp : p.IsHamiltonianCycle) :
-  p.IsCycle := hp.toIsCycle
+    p.IsCycle := hp.toIsCycle
 
 lemma IsHamiltonianCycle_def {p : G.Walk v v} :
     p.IsHamiltonianCycle ↔ ∃ h : p.IsCycle, (p.tail h.not_Nil).IsHamiltonian :=
