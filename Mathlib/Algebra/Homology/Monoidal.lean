@@ -35,8 +35,8 @@ structure TensorSigns where
   rel_add (p q r : I) (hpq : c.Rel p q) : c.Rel (p + r) (q + r)
   add_rel (p q r : I) (hpq : c.Rel p q) : c.Rel (r + p) (r + q)
   ε_succ (p q : I) (hpq : c.Rel p q) : ε q = - ε p
-  ε_add (p q : I) : ε (p + q) = ε p * ε q -- needed for the associator
-  ε_zero : ε 0 = 1 -- should be necessary for one of the unitor
+  ε_add (p q : I) : ε (p + q) = ε p * ε q
+  ε_zero : ε 0 = 1
 
 attribute [simp] TensorSigns.ε_zero
 
@@ -97,7 +97,7 @@ end ComplexShape
 namespace HomologicalComplex
 
 variable {C : Type*} [Category C] [Preadditive C] [MonoidalCategory C] [MonoidalPreadditive C]
-  {I : Type*} [AddCommMonoid I] {c : ComplexShape I} [DecidableEq I]
+  {I : Type*} [AddMonoid I] {c : ComplexShape I} [DecidableEq I]
 
 noncomputable def _root_.CategoryTheory.GradedObject.Monoidal.ιTensorObjOrZero (X₁ X₂ : GradedObject I C)
     [GradedObject.HasTensor X₁ X₂]
