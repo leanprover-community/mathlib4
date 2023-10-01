@@ -1640,7 +1640,7 @@ Fill as needed!
 variable [TopologicalSpace β] [TopologicalSpace γ]
 
 @[simps]
-def compContinuousStarAlgHom {𝕜 : Type*} [NormedField 𝕜] [NormedRing α] [NormedAlgebra 𝕜 α]
+def compContinuousStarAlgHom (𝕜 : Type*) [NormedField 𝕜] [NormedRing α] [NormedAlgebra 𝕜 α]
     [StarAddMonoid α] [NormedStarGroup α] (f : C(β, γ)) : (γ →ᵇ α) →⋆ₐ[𝕜] (β →ᵇ α) where
   toFun φ := φ.compContinuous f
   map_one' := one_compContinuous f

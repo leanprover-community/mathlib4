@@ -51,12 +51,13 @@ theorem continuous_evalCharacterSpace :
     Continuous (evalCharacterSpace X) :=
   continuous_induced_rng.mpr <| continuous_of_continuous_eval fun f ↦ f.continuous
 
-#check BoundedContinuousFunction.semilatticeInf
+#check ContinuousMap.compRightAlgHom
 
 noncomputable
 def foo (X : Type*) [TopologicalSpace X] : characterSpace ℂ (X →ᵇ ℂ) ≃ₜ StoneCech X where
-  toFun := (CharacterSpace.homeoEval (StoneCech X) ℂ).symm ∘ CharacterSpace.compContinuousMap
-    sorry
+  toFun :=
+    (CharacterSpace.homeoEval (StoneCech X) ℂ).symm ∘ CharacterSpace.compContinuousMap
+      (StarAlgHom.comp (compContinuousStarAlgHom ) <| ContinuousMap.starAlgEquivBoundedOfCompact (StoneCech X) ℂ ℂ) -- BoundedContinuousFunction.starAlgEquivBoundedOfCompact
   invFun := stoneCechExtend (continuous_evalCharacterSpace X)
   left_inv := sorry
   right_inv := sorry
