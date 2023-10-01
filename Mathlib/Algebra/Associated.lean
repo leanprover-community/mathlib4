@@ -605,7 +605,7 @@ theorem Irreducible.dvd_iff [Monoid α] {x y : α} (hx : Irreducible x) :
     y ∣ x ↔ IsUnit y ∨ Associated x y := by
   constructor
   · rintro ⟨z, hz⟩
-    obtain (h|h) := hx.isUnit_or_isUnit' _ _ hz
+    obtain (h|h) := hx.isUnit_or_isUnit hz
     · exact Or.inl h
     · rw [hz]
       exact Or.inr (associated_mul_unit_left _ _ h)
