@@ -8,6 +8,7 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.ZMod.Defs
 
+
 /-!
 # Basic operations on bitvectors
 We define bitvectors. We choose the `Fin` representation over others for its relative efficiency
@@ -23,46 +24,11 @@ of SMT-LIBv2.
 /-- A bitvector of the specified width. This is represented as the underlying `Nat` number
 in both the runtime and the kernel, inheriting all the special support for `Nat`. -/
 
-def BitVec (w : Nat) := Fin (2^w)
+abbrev BitVec (w : Nat) := Fin (2^w)
 
 variable {w v : Nat}
 
-instance : DecidableEq (BitVec w) :=
-  inferInstanceAs (DecidableEq (Fin _))
-
 namespace BitVec
-
-
-/-- The zero bitvector. -/
-protected def zero (w : Nat) : BitVec w :=
-  ⟨0, Nat.two_pow_pos w⟩
-
-/-- The bitvector `n mod 2^w`. -/
-protected def ofNat (w : Nat) (n : Nat) : BitVec w :=
-  Fin.ofNat' n (Nat.two_pow_pos w)
-
-instance : Inhabited (BitVec w) := ⟨BitVec.zero w⟩
-
-instance : Zero (BitVec w) := ⟨BitVec.zero w⟩
-
-/-!
-## Arithmetic
-We inherit `Fin` implementations.
--/
-
-/-- Less than for two bitvectors. -/
-protected def lt (x y : BitVec w) : Bool :=
-  x.val < y.val
-
-/-- Less than or equal to for two bitvectors. -/
-protected def le (x y : BitVec w) : Bool :=
-  x.val ≤ y.val
-
-instance : Ring (BitVec w) := inferInstanceAs (Ring (Fin _))
-instance : Mod (BitVec w) := inferInstanceAs (Mod (Fin _))
-instance : Div (BitVec w) := inferInstanceAs (Div (Fin _))
-instance : LT (BitVec w)  := ⟨fun x y => BitVec.lt x y⟩
-instance : LE (BitVec w)  := ⟨fun x y => BitVec.le x y⟩
 
 /-!
 ## Bitwise operations
@@ -70,29 +36,7 @@ instance : LE (BitVec w)  := ⟨fun x y => BitVec.le x y⟩
 
 /-- The complement of a bitvector. -/
 protected def complement (x : BitVec w) : BitVec w :=
-  0 - (x + .ofNat w 1)
-
-/-- The and of two bitvectors. -/
-protected def and (x y : BitVec w) : BitVec w :=
-  ⟨x.val &&& y.val, by simp [HAnd.hAnd, AndOp.and, Nat.land, Nat.bitwise_lt]⟩
-
-/-- The or of two bitvectors. -/
-protected def or (x y : BitVec w) : BitVec w :=
-  ⟨x.val ||| y.val, by simp [HOr.hOr, OrOp.or, Nat.lor, Nat.bitwise_lt]⟩
-
-/-- The xor of two bitvectors. -/
-protected def xor (x y : BitVec w) : BitVec w :=
-  ⟨x.val ^^^ y.val, by simp [HXor.hXor, Xor.xor, Nat.xor, Nat.bitwise_lt]⟩
-
-/-- The left-shift of a bitvector by some amount. -/
-protected def shiftLeft (x : BitVec w) (n : Nat) : BitVec w :=
-  .ofNat w (x.val <<< n)
-
-/-- The right-shift of a bitvector by some amount. -/
-protected def shiftRight (x : BitVec w) (n : Nat) : BitVec w :=
-  ⟨x.val >>> n, by
-      simp only [Nat.shiftRight_eq_div_pow]
-      exact lt_of_le_of_lt (Nat.div_le_self' _ _) (x.isLt) ⟩
+  0 - (x + (1 : BitVec w))
 
 /-- Signed less than for bitvectors. -/
 protected def slt (x y : BitVec (w + 1)) : Prop :=
@@ -108,31 +52,36 @@ protected def sgt (x y : BitVec (w + 1)) : Prop := BitVec.slt y x
 /-- Signed greater than or equal to for bitvectors. -/
 protected def sge (x y : BitVec (w + 1)) : Prop := BitVec.sle y x
 
+/-- The left-shift of a bitvector by some amount. -/
+protected def shiftLeft (x : BitVec w) (n : Nat) : BitVec w := (x.val <<< n)
+
+/-- The right-shift of a bitvector by some amount. -/
+protected def shiftRight (x : BitVec w) (n : Nat) : BitVec w :=
+  ⟨x.val >>> n, by
+      simp only [Nat.shiftRight_eq_div_pow]
+      exact lt_of_le_of_lt (Nat.div_le_self' _ _) (x.isLt) ⟩
+
 instance : Complement (BitVec w) := ⟨BitVec.complement⟩
-instance : AndOp (BitVec w) := ⟨BitVec.and⟩
-instance : OrOp (BitVec w) := ⟨BitVec.or⟩
-instance : Xor (BitVec w) := ⟨BitVec.xor⟩
 instance : HShiftLeft (BitVec w) Nat (BitVec w) := ⟨BitVec.shiftLeft⟩
 instance : HShiftRight (BitVec w) Nat (BitVec w) := ⟨BitVec.shiftRight⟩
 
-/-- Left rotation by some amount. -/
+/-- Rotate `n` times to the left so that the lsb is `x [w - n]`. -/
 def rotateLeft (x : BitVec w) (n : Nat) : BitVec w :=
   x <<< n ||| x >>> (w - n)
 
-/-- Right rotation by some amount. -/
-def rotateRight (x : BitVec w) (n : Nat) : BitVec w :=
-  x >>> n ||| x <<< (w - n)
+/-- Rotate `l` times to the right so that the lsb is `x [l]`. -/
+def rotateRight (x : BitVec w) (l : Nat) : BitVec w :=
+  x >>> l ||| x <<< (w - l)
 
-/-- Concatenation of two bitvectors. -/
+/-- Concatenation of two bitvectors. where `x` forms the most significant bits. -/
 protected def append (x : BitVec w) (y : BitVec v) : BitVec (w + v) :=
   ⟨x.val <<< v ||| y.val, Nat.add_comm _ _ ▸ Nat.append_lt y.isLt x.isLt⟩
 
 instance : HAppend (BitVec w) (BitVec v) (BitVec (w + v)) := ⟨BitVec.append⟩
 
-/-- Extract the bitvector between indices i and j. -/
+/-- Extract the bitvector between indices i (exclusive) and j (inclusive) where i > j. -/
 @[simp]
-def extract (i j) (x : BitVec w) : BitVec (i - j + 1) :=
-  BitVec.ofNat _ (x.val >>> j)
+def extract (i j) (x : BitVec w) : BitVec (i - j) := x.val >>> j
 
 /-- Generate and concatenate `i` copies of a bitvector. -/
 def replicate : (i : Nat) → BitVec w → BitVec (w * i)
@@ -142,7 +91,7 @@ def replicate : (i : Nat) → BitVec w → BitVec (w * i)
       rw [Nat.mul_add, Nat.add_comm, Nat.mul_one]
     hEq ▸ (x ++ replicate n x)
 
-/-- Pad a bitvector by the zero bitvector of length `i`. -/
+/-- Pad a bitvector by `i` zeros as the most significant bits. -/
 def zeroExtend (i : Nat) (x : BitVec w) : BitVec (w + i) :=
   have hEq : w+i = i+w := Nat.add_comm _ _
   hEq ▸ ((0 : BitVec i) ++ x)
@@ -151,23 +100,14 @@ def zeroExtend (i : Nat) (x : BitVec w) : BitVec (w + i) :=
 def signExtend (i) (x : BitVec w) : BitVec (w + i) :=
   have hEq : ((w - 1) - (w - 1) + 1) * i + w = w + i := by
     rw [Nat.sub_self, Nat.zero_add, Nat.one_mul, Nat.add_comm]
-  hEq ▸ ((replicate i (extract (w - 1) (w - 1) x)) ++ x)
-
-/-- Keep the `v` least significant bits of a bitvector. -/
-def shrink (v) (x : BitVec w) : BitVec v :=
-  if hZero : 0 < v then
-    have hEq : v - 1 + 0 + 1 = v := by
-      rw [Nat.add_zero]
-      exact Nat.sub_add_cancel hZero
-    hEq ▸ x.extract (v - 1) 0
-  else 0
+  hEq ▸ ((replicate i (extract w (w - 1) x)) ++ x)
 
 /-- Return the `i`-th least significant bit. -/
 @[simp]
 def get (x : BitVec w) (i : Nat) : Bool :=
-  x.extract i i != 0
+  !(x.extract (i + 1) i = 0)
 
-/-- View a bitvector as a list of booleans. -/
+/-- Convert a list of booleans to a bitvector. -/
 def bbT (bs : List Bool) : BitVec bs.length :=
   ⟨Nat.ofBits (λ i => bs[i]!) 0 bs.length, @Nat.ofBits_lt _ (bs.length)⟩
 

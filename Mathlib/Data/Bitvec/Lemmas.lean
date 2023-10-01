@@ -25,33 +25,32 @@ theorem val_inj {x y : BitVec w} : x.val = y.val ↔ x = y :=
 /-- `x < y` as natural numbers if and only if `x < y` as `BitVec w`. -/
 @[norm_cast]
 theorem val_lt_val {x y : BitVec w} : x.val < y.val ↔ x < y := by
-  simp [LT.lt, BitVec.lt]
+  simp only [Fin.val_fin_lt]
 
-/-- `x ≠ y` as natural numbers if and only if `x != y` as `BitVec w`. -/
+@[simp]
+lemma ofNat_eq_mod_two_pow (n : Nat) : (n : BitVec w).val = n % 2^w := rfl
+
 @[norm_cast]
-theorem val_ne_val_iff_bne {x y : BitVec w} : x.val ≠ y.val ↔ x != y := by
-  simp [bne, val_inj]
+lemma val_ofNat {m} (h : m < 2^w) : (m : BitVec w).val = m := Fin.val_cast_of_lt h
 
-lemma val_ofNat {m} (h : m < 2^w) : (BitVec.ofNat w m).val = m := by
-  simp [BitVec.ofNat, Fin.ofNat', mod_eq_of_lt h]
-
-lemma ofNat_val (x : BitVec w) : BitVec.ofNat w x.val = x := by
-  simp [BitVec.ofNat, Fin.ofNat', mod_eq_of_lt x.isLt]
+@[norm_cast]
+lemma ofNat_val (x : BitVec w) : (x.val : BitVec w) = x := Fin.cast_val_eq_self x
 
 lemma ofNat_val' (x : BitVec w) (h : v = w):
-  HEq x (BitVec.ofNat v x.val) := h ▸ heq_of_eq (ofNat_val x).symm
+  HEq x (x.val : BitVec v) := h ▸ heq_of_eq (ofNat_val x).symm
 
 theorem val_append {x : BitVec w} {y : BitVec v} :
   (x ++ y).val = x.val <<< v ||| y.val := rfl
 
 theorem val_extract {i j} {x : BitVec w} :
-  (extract i j x).val = x.val / 2 ^ j % (2 ^ (i - j + 1)) := by
-  simp [extract, BitVec.ofNat, Fin.ofNat', shiftRight_eq_div_pow]
+  (extract i j x).val = x.val / 2 ^ j % (2 ^ (i - j)) := by
+  simp [extract, shiftRight_eq_div_pow]
 
 theorem get_eq_testBit {x : BitVec w} {i} : x.get i = x.val.testBit i := by
-  cases' h: Nat.bodd (x.val >>> i)
-  <;> simp [testBit, BitVec.ofNat, Fin.ofNat', h,
-            mod_two_of_bodd, ← val_inj]
-  norm_cast
+  cases' h : bodd (x.val >>> i)
+  <;> simp [mod_two_of_bodd, h, ← val_inj, testBit]
+
+
+
 
 end BitVec
