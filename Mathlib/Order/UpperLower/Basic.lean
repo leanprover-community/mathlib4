@@ -56,12 +56,14 @@ variable [LE α] [LE β] {s t : Set α} {a : α}
 
 /-- An upper set in an order `α` is a set such that any element greater than one of its members is
 also a member. Also called up-set, upward-closed set. -/
+@[aesop norm unfold]
 def IsUpperSet (s : Set α) : Prop :=
   ∀ ⦃a b : α⦄, a ≤ b → a ∈ s → b ∈ s
 #align is_upper_set IsUpperSet
 
 /-- A lower set in an order `α` is a set such that any element less than one of its members is also
 a member. Also called down-set, downward-closed set. -/
+@[aesop norm unfold]
 def IsLowerSet (s : Set α) : Prop :=
   ∀ ⦃a b : α⦄, b ≤ a → a ∈ s → b ∈ s
 #align is_lower_set IsLowerSet
@@ -198,6 +200,12 @@ alias ⟨_, IsUpperSet.ofDual⟩ := isLowerSet_preimage_toDual_iff
 alias ⟨_, IsLowerSet.ofDual⟩ := isUpperSet_preimage_toDual_iff
 #align is_lower_set.of_dual IsLowerSet.ofDual
 
+lemma IsUpperSet.isLowerSet_preimage_coe (hs : IsUpperSet s) :
+    IsLowerSet ((↑) ⁻¹' t : Set s) ↔ ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t := by aesop
+
+lemma IsLowerSet.isUpperSet_preimage_coe (hs : IsLowerSet s) :
+    IsUpperSet ((↑) ⁻¹' t : Set s) ↔ ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t := by aesop
+
 lemma IsUpperSet.sdiff (hs : IsUpperSet s) (ht : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
     IsUpperSet (s \ t) :=
   fun _b _c hbc hb ↦ ⟨hs hbc hb.1, fun hc ↦ hb.2 $ ht _ hb.1 _ hc hbc⟩
@@ -205,6 +213,12 @@ lemma IsUpperSet.sdiff (hs : IsUpperSet s) (ht : ∀ b ∈ s, ∀ c ∈ t, b ≤
 lemma IsLowerSet.sdiff (hs : IsLowerSet s) (ht : ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t) :
     IsLowerSet (s \ t) :=
   fun _b _c hcb hb ↦ ⟨hs hcb hb.1, fun hc ↦ hb.2 $ ht _ hb.1 _ hc hcb⟩
+
+lemma IsUpperSet.sdiff_of_isLowerSet (hs : IsUpperSet s) (ht : IsLowerSet t) : IsUpperSet (s \ t) :=
+  hs.sdiff $ by aesop
+
+lemma IsLowerSet.sdiff_of_isUpperSet (hs : IsLowerSet s) (ht : IsUpperSet t) : IsLowerSet (s \ t) :=
+  hs.sdiff $ by aesop
 
 lemma IsUpperSet.erase (hs : IsUpperSet s) (has : ∀ b ∈ s, b ≤ a → b = a) : IsUpperSet (s \ {a}) :=
   hs.sdiff $ by simpa using has
@@ -460,8 +474,7 @@ theorem carrier_eq_coe (s : UpperSet α) : s.carrier = s :=
   rfl
 #align upper_set.carrier_eq_coe UpperSet.carrier_eq_coe
 
-protected theorem upper (s : UpperSet α) : IsUpperSet (s : Set α) :=
-  s.upper'
+@[simp] protected lemma upper (s : UpperSet α) : IsUpperSet (s : Set α) := s.upper'
 #align upper_set.upper UpperSet.upper
 
 @[simp, norm_cast] lemma coe_mk (s : Set α) (hs) : mk s hs = s := rfl
@@ -491,8 +504,7 @@ theorem carrier_eq_coe (s : LowerSet α) : s.carrier = s :=
   rfl
 #align lower_set.carrier_eq_coe LowerSet.carrier_eq_coe
 
-protected theorem lower (s : LowerSet α) : IsLowerSet (s : Set α) :=
-  s.lower'
+@[simp] protected lemma lower (s : LowerSet α) : IsLowerSet (s : Set α) := s.lower'
 #align lower_set.lower LowerSet.lower
 
 @[simp, norm_cast] lemma coe_mk (s : Set α) (hs) : mk s hs = s := rfl
@@ -897,24 +909,6 @@ theorem compl_iInf₂ (f : ∀ i, κ i → UpperSet α) :
     (⨅ (i) (j), f i j).compl = ⨅ (i) (j), (f i j).compl := by simp_rw [UpperSet.compl_iInf]
 #align upper_set.compl_infi₂ UpperSet.compl_iInf₂
 
--- TODO: Introduce an `IsMinOn` predicate?
-/-- Remove a maximal element from a lower set. -/
-def erase (s : UpperSet α) (a : α) (has : ∀ b ∈ s, b ≤ a → b = a) : UpperSet α where
-  carrier := s \ {a}
-  upper' := s.upper.erase has
-
-lemma le_erase {has} : s ≤ s.erase a has := diff_subset _ _
-
-lemma lt_erase {has} (ha : a ∈ s) : s < s.erase a has :=
-  coe_ssubset_coe.1 $ sdiff_lt (singleton_subset_iff.2 ha) $ singleton_ne_empty _
-
-@[simp, norm_cast]
-lemma coe_erase (s : UpperSet α) (a : α) (ha) : (s.erase a ha : Set α) = ↑s \ {a} := rfl
-
-@[simp] lemma erase_idem (s : UpperSet α) (a : α) (ha) :
-    ((s.erase a ha).erase a fun _b hb ↦ ha _ hb.1) = s.erase a ha :=
-  SetLike.coe_injective sdiff_idem
-
 end UpperSet
 
 namespace LowerSet
@@ -982,24 +976,6 @@ theorem compl_iSup₂ (f : ∀ i, κ i → LowerSet α) :
 theorem compl_iInf₂ (f : ∀ i, κ i → LowerSet α) :
     (⨅ (i) (j), f i j).compl = ⨅ (i) (j), (f i j).compl := by simp_rw [LowerSet.compl_iInf]
 #align lower_set.compl_infi₂ LowerSet.compl_iInf₂
-
--- TODO: Introduce an `IsMaxOn` predicate?
-/-- Remove a maximal element from a lower set. -/
-def erase (s : LowerSet α) (a : α) (has : ∀ b ∈ s, a ≤ b → b = a) : LowerSet α where
-  carrier := s \ {a}
-  lower' := s.lower.erase has
-
-lemma erase_le {has} : s.erase a has ≤ s :=diff_subset _ _
-
-lemma erase_lt {has} (ha : a ∈ s) : s.erase a has < s :=
-  sdiff_lt (singleton_subset_iff.2 ha) $ singleton_ne_empty _
-
-@[simp, norm_cast]
-lemma coe_erase (s : LowerSet α) (a : α) (ha) : (s.erase a ha : Set α) = ↑s \ {a} := rfl
-
-@[simp] lemma erase_idem (s : LowerSet α) (a : α) (ha) :
-    ((s.erase a ha).erase a fun _b hb ↦ ha _ hb.1) = s.erase a ha :=
-  SetLike.coe_injective sdiff_idem
 
 end LowerSet
 
@@ -1223,17 +1199,9 @@ nonrec theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ⊤ :=
   SetLike.coe_injective Ioi_top
 #align upper_set.Ioi_top UpperSet.Ioi_top
 
-@[simp] lemma Ici_ne_top (a : α) : Ici a ≠ ⊤ := SetLike.coe_ne_coe.1 nonempty_Ici.ne_empty
+@[simp] lemma Ici_ne_top : Ici a ≠ ⊤ := SetLike.coe_ne_coe.1 nonempty_Ici.ne_empty
+@[simp] lemma Ici_lt_top : Ici a < ⊤ := lt_top_iff_ne_top.2 Ici_ne_top
 @[simp] lemma le_Ici : s ≤ Ici a ↔ a ∈ s := ⟨fun h ↦ h le_rfl, fun ha ↦ s.upper.Ici_subset ha⟩
-
-@[simp] lemma erase_inf_Ici (has) (ha : a ∈ s) : s.erase a has ⊓ Ici a = s := by
-  refine' ge_antisymm (le_inf le_erase $ le_Ici.2 ha) fun b hb ↦ _
-  obtain rfl | hba := eq_or_ne b a
-  · exact subset_union_right _ _ (mem_Ici.2 le_rfl)
-  · exact subset_union_left _ _ ⟨hb, hba⟩
-
-@[simp] lemma Ici_inf_erase (has) (ha : a ∈ s) : Ici a ⊓ s.erase a has = s := by
-  rw [inf_comm, erase_inf_Ici _ ha]
 
 end Preorder
 
@@ -1340,17 +1308,9 @@ nonrec theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ⊥ :=
   SetLike.coe_injective Iio_bot
 #align lower_set.Iio_bot LowerSet.Iio_bot
 
-@[simp] lemma Iic_ne_bot (a : α) : Iic a ≠ ⊥ := SetLike.coe_ne_coe.1 nonempty_Iic.ne_empty
+@[simp] lemma Iic_ne_bot : Iic a ≠ ⊥ := SetLike.coe_ne_coe.1 nonempty_Iic.ne_empty
+@[simp] lemma bot_lt_Iic : ⊥ < Iic a := bot_lt_iff_ne_bot.2 Iic_ne_bot
 @[simp] lemma Iic_le : Iic a ≤ s ↔ a ∈ s := ⟨fun h ↦ h le_rfl, fun ha ↦ s.lower.Iic_subset ha⟩
-
-@[simp] lemma erase_sup_Iic (has) (ha : a ∈ s) : s.erase a has ⊔ Iic a = s := by
-  refine' le_antisymm (sup_le erase_le $ Iic_le.2 ha) fun b hb ↦ _
-  obtain rfl | hba := eq_or_ne b a
-  · exact subset_union_right _ _ (mem_Iic.2 le_rfl)
-  · exact subset_union_left _ _ ⟨hb, hba⟩
-
-@[simp] lemma Iic_sup_erase (has) (ha : a ∈ s) : Iic a ⊔ s.erase a has = s := by
-  rw [sup_comm, erase_sup_Iic _ ha]
 
 end Preorder
 
@@ -1493,16 +1453,21 @@ theorem LowerSet.iSup_Iic (s : Set α) : ⨆ a ∈ s, LowerSet.Iic a = lowerClos
   simp
 #align lower_set.supr_Iic LowerSet.iSup_Iic
 
+@[simp] lemma lowerClosure_le {t : LowerSet α} : lowerClosure s ≤ t ↔ s ⊆ t :=
+  ⟨fun h ↦ subset_lowerClosure.trans $ LowerSet.coe_subset_coe.2 h,
+    fun h ↦ lowerClosure_min h t.lower⟩
+
+@[simp] lemma le_upperClosure {s : UpperSet α} : s ≤ upperClosure t ↔ t ⊆ s :=
+  ⟨fun h ↦ subset_upperClosure.trans $ UpperSet.coe_subset_coe.2 h,
+    fun h ↦ upperClosure_min h s.upper⟩
+
 theorem gc_upperClosure_coe :
-    GaloisConnection (toDual ∘ upperClosure : Set α → (UpperSet α)ᵒᵈ) ((↑) ∘ ofDual) := fun _s t =>
-  ⟨fun h => subset_upperClosure.trans <| UpperSet.coe_subset_coe.2 h, fun h =>
-    upperClosure_min h t.upper⟩
+    GaloisConnection (toDual ∘ upperClosure : Set α → (UpperSet α)ᵒᵈ) ((↑) ∘ ofDual) :=
+  fun _s _t ↦ le_upperClosure
 #align gc_upper_closure_coe gc_upperClosure_coe
 
 theorem gc_lowerClosure_coe :
-    GaloisConnection (lowerClosure : Set α → LowerSet α) (↑) := fun _s t =>
-  ⟨fun h => subset_lowerClosure.trans <| LowerSet.coe_subset_coe.2 h, fun h =>
-    lowerClosure_min h t.lower⟩
+    GaloisConnection (lowerClosure : Set α → LowerSet α) (↑) := fun _s _t ↦ lowerClosure_le
 #align gc_lower_closure_coe gc_lowerClosure_coe
 
 /-- `upperClosure` forms a reversed Galois insertion with the coercion from upper sets to sets. -/
@@ -1635,18 +1600,155 @@ theorem bddBelow_upperClosure : BddBelow (upperClosure s : Set α) ↔ BddBelow 
   simp_rw [BddBelow, lowerBounds_upperClosure]
 #align bdd_below_upper_closure bddBelow_upperClosure
 
-alias ⟨BddAbove.of_lowerClosure, BddAbove.lowerClosure⟩ := bddAbove_lowerClosure
+protected alias ⟨BddAbove.of_lowerClosure, BddAbove.lowerClosure⟩ := bddAbove_lowerClosure
 #align bdd_above.of_lower_closure BddAbove.of_lowerClosure
 #align bdd_above.lower_closure BddAbove.lowerClosure
 
-alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelow_upperClosure
+protected alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelow_upperClosure
 #align bdd_below.of_upper_closure BddBelow.of_upperClosure
 #align bdd_below.upper_closure BddBelow.upperClosure
 
--- Porting note: attribute [protected] doesn't work
--- attribute protected BddAbove.lowerClosure BddBelow.upperClosure
+@[simp] lemma IsLowerSet.disjoint_upperClosure_left (ht : IsLowerSet t) :
+    Disjoint ↑(upperClosure s) t ↔ Disjoint s t := by
+  refine ⟨Disjoint.mono_left subset_upperClosure, ?_⟩
+  simp only [disjoint_left, SetLike.mem_coe, mem_upperClosure, forall_exists_index, and_imp]
+  exact fun h a b hb hba ha ↦ h hb $ ht hba ha
+
+@[simp] lemma IsLowerSet.disjoint_upperClosure_right (hs : IsLowerSet s) :
+    Disjoint s (upperClosure t) ↔ Disjoint s t := by
+  simpa only [disjoint_comm] using hs.disjoint_upperClosure_left
+
+@[simp] lemma IsUpperSet.disjoint_lowerClosure_left (ht : IsUpperSet t) :
+    Disjoint ↑(lowerClosure s) t ↔ Disjoint s t := ht.toDual.disjoint_upperClosure_left
+
+@[simp] lemma IsUpperSet.disjoint_lowerClosure_right (hs : IsUpperSet s) :
+    Disjoint s (lowerClosure t) ↔ Disjoint s t := hs.toDual.disjoint_upperClosure_right
 
 end closure
+
+/-! ### Set Difference -/
+
+namespace LowerSet
+variable [Preorder α] {s : LowerSet α} {t : Set α} {a : α}
+
+/-- The biggest lower subset of a lower set `s` disjoint from a set `t`. -/
+def sdiff (s : LowerSet α) (t : Set α) : LowerSet α where
+  carrier := s \ upperClosure t
+  lower' := s.lower.sdiff_of_isUpperSet (upperClosure t).upper
+
+/-- The biggest lower subset of a lower set `s` not containing an element `a`. -/
+def erase (s : LowerSet α) (a : α) : LowerSet α where
+  carrier := s \ UpperSet.Ici a
+  lower' := s.lower.sdiff_of_isUpperSet (UpperSet.Ici a).upper
+
+@[simp, norm_cast]
+lemma coe_sdiff (s : LowerSet α) (t : Set α) : s.sdiff t = (s : Set α) \ upperClosure t := rfl
+
+@[simp, norm_cast]
+lemma coe_erase (s : LowerSet α) (a : α) : s.erase a = (s : Set α) \ UpperSet.Ici a := rfl
+
+@[simp] lemma sdiff_singleton (s : LowerSet α) (a : α) : s.sdiff {a} = s.erase a := by
+  simp [sdiff, erase]
+
+lemma sdiff_le_left : s.sdiff t ≤ s := diff_subset _ _
+lemma erase_le : s.erase a ≤ s := diff_subset _ _
+
+@[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
+  simp [←SetLike.coe_set_eq]
+
+@[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [←sdiff_singleton]; simp [-sdiff_singleton]
+
+@[simp] lemma sdiff_lt_left : s.sdiff t < s ↔ ¬ Disjoint ↑s t :=
+  sdiff_le_left.lt_iff_ne.trans LowerSet.sdiff_eq_left.not
+
+@[simp] lemma erase_lt : s.erase a < s ↔ a ∈ s := erase_le.lt_iff_ne.trans erase_eq.not_left
+
+@[simp] protected lemma sdiff_idem (s : LowerSet α) (t : Set α) : (s.sdiff t).sdiff t = s.sdiff t :=
+  SetLike.coe_injective sdiff_idem
+
+@[simp] lemma erase_idem (s : LowerSet α) (a : α) : (s.erase a).erase a = s.erase a :=
+  SetLike.coe_injective sdiff_idem
+
+lemma sdiff_sup_lowerClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t) :
+    s.sdiff t ⊔ lowerClosure t = s := by
+  refine' le_antisymm (sup_le sdiff_le_left $ lowerClosure_le.2 hts) fun a ha ↦ _
+  obtain hat | hat := em (a ∈ t)
+  · exact subset_union_right _ _ (subset_lowerClosure hat)
+  · refine subset_union_left _ _ ⟨ha, ?_⟩
+    rintro ⟨b, hb, hba⟩
+    exact hat $ hst _ ha _ hb hba
+
+lemma lowerClosure_sup_sdiff (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t) :
+    lowerClosure t ⊔ s.sdiff t = s := by rw [sup_comm, sdiff_sup_lowerClosure hts hst]
+
+lemma erase_sup_Iic (ha : a ∈ s) (has : ∀ b ∈ s, a ≤ b → b = a) : s.erase a ⊔ Iic a = s := by
+  rw [←lowerClosure_singleton, ←sdiff_singleton, sdiff_sup_lowerClosure] <;> simpa
+
+lemma Iic_sup_erase (ha : a ∈ s) (has : ∀ b ∈ s, a ≤ b → b = a) : Iic a ⊔ s.erase a = s := by
+  rw [sup_comm, erase_sup_Iic ha has]
+
+end LowerSet
+
+namespace UpperSet
+variable [Preorder α] {s : UpperSet α} {t : Set α} {a : α}
+
+/-- The biggest upper subset of a upper set `s` disjoint from a set `t`. -/
+def sdiff (s : UpperSet α) (t : Set α) : UpperSet α where
+  carrier := s \ lowerClosure t
+  upper' := s.upper.sdiff_of_isLowerSet (lowerClosure t).lower
+
+/-- The biggest upper subset of a upper set `s` not containing an element `a`. -/
+def erase (s : UpperSet α) (a : α) : UpperSet α where
+  carrier := s \ LowerSet.Iic a
+  upper' := s.upper.sdiff_of_isLowerSet (LowerSet.Iic a).lower
+
+@[simp, norm_cast]
+lemma coe_sdiff (s : UpperSet α) (t : Set α) : s.sdiff t = (s : Set α) \ lowerClosure t := rfl
+
+@[simp, norm_cast]
+lemma coe_erase (s : UpperSet α) (a : α) : s.erase a = (s : Set α) \ LowerSet.Iic a := rfl
+
+@[simp] lemma sdiff_singleton (s : UpperSet α) (a : α) : s.sdiff {a} = s.erase a := by
+  simp [sdiff, erase]
+
+lemma le_sdiff_left : s ≤ s.sdiff t := diff_subset _ _
+lemma le_erase : s ≤ s.erase a := diff_subset _ _
+
+@[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
+  simp [←SetLike.coe_set_eq]
+
+@[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [←sdiff_singleton]; simp [-sdiff_singleton]
+
+@[simp] lemma lt_sdiff_left : s < s.sdiff t ↔ ¬ Disjoint ↑s t :=
+  le_sdiff_left.gt_iff_ne.trans UpperSet.sdiff_eq_left.not
+
+@[simp] lemma lt_erase : s < s.erase a ↔ a ∈ s := le_erase.gt_iff_ne.trans erase_eq.not_left
+
+@[simp] protected lemma sdiff_idem (s : UpperSet α) (t : Set α) : (s.sdiff t).sdiff t = s.sdiff t :=
+  SetLike.coe_injective sdiff_idem
+
+@[simp] lemma erase_idem (s : UpperSet α) (a : α) : (s.erase a).erase a = s.erase a :=
+  SetLike.coe_injective sdiff_idem
+
+lemma sdiff_inf_upperClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
+    s.sdiff t ⊓ upperClosure t = s := by
+  refine' ge_antisymm (le_inf le_sdiff_left $ le_upperClosure.2 hts) fun a ha ↦ _
+  obtain hat | hat := em (a ∈ t)
+  · exact subset_union_right _ _ (subset_upperClosure hat)
+  · refine subset_union_left _ _ ⟨ha, ?_⟩
+    rintro ⟨b, hb, hab⟩
+    exact hat $ hst _ ha _ hb hab
+
+lemma upperClosure_inf_sdiff (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
+    upperClosure t ⊓ s.sdiff t = s := by rw [inf_comm, sdiff_inf_upperClosure hts hst]
+
+lemma erase_inf_Ici (ha : a ∈ s) (has : ∀ b ∈ s, b ≤ a → b = a) : s.erase a ⊓ Ici a = s := by
+  rw [←upperClosure_singleton, ←sdiff_singleton, sdiff_inf_upperClosure] <;> simpa
+
+lemma Ici_inf_erase (ha : a ∈ s) (has : ∀ b ∈ s, b ≤ a → b = a) : Ici a ⊓ s.erase a = s := by
+  rw [inf_comm, erase_inf_Ici ha has]
+
+end UpperSet
 
 /-! ### Product -/
 
