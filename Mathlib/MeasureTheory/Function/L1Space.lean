@@ -863,12 +863,6 @@ lemma Integrable.measure_lt_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : 
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_le_lt_top hf c_neg)
 
-/-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
-where `‖f x‖ > ε` is finite for all positive `ε`. -/
-lemma Integrable.measure_gt_lt_top {f : α → β} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
-    μ {x | ε < ‖f x‖} < ∞ :=
-  lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le)) (hf.measure_ge_lt_top hε)
-
 theorem LipschitzWith.integrable_comp_iff_of_antilipschitz {K K'} {f : α → β} {g : β → γ}
     (hg : LipschitzWith K g) (hg' : AntilipschitzWith K' g) (g0 : g 0 = 0) :
     Integrable (g ∘ f) μ ↔ Integrable f μ := by
