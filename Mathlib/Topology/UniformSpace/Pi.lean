@@ -120,21 +120,6 @@ instance Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α
     apply H
 #align Pi.separated Pi.separated
 
-lemma Pi.uniformSpace_comap_precomp' (f : ι' → ι) :
-    UniformSpace.comap (fun g i' ↦ g (f i')) (Pi.uniformSpace (fun i' ↦ α (f i'))) =
-    ⨅ i', UniformSpace.comap (eval (f i')) (U (f i')) := by
-  simp [Pi.uniformSpace_eq, UniformSpace.comap_iInf, ← UniformSpace.comap_comap, comp]
-
-lemma Pi.uniformSpace_comap_restrict (S : Set ι) :
-    UniformSpace.comap (S.restrict) (Pi.uniformSpace (fun i : S ↦ α i)) =
-    ⨅ i ∈ S, UniformSpace.comap (eval i) (U i) := by
-  simp [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.restrict]
-
-lemma Pi.uniformSpace_comap_precomp (f : ι' → ι) :
-    UniformSpace.comap (· ∘ f) (Pi.uniformSpace (fun _ ↦ β)) =
-    ⨅ i', UniformSpace.comap (eval (f i')) ‹UniformSpace β› :=
-  uniformSpace_comap_precomp' (fun _ ↦ β) f
-
 lemma Pi.uniformSpace_comap_restrict_sUnion (𝔖 : Set (Set ι)) :
     UniformSpace.comap ((⋃₀ 𝔖).restrict) (Pi.uniformSpace (fun i : (⋃₀ 𝔖) ↦ α i)) =
     ⨅ S ∈ 𝔖, UniformSpace.comap S.restrict (Pi.uniformSpace (fun i : S ↦ α i)) := by
