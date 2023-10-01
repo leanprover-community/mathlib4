@@ -73,7 +73,6 @@ theorem bitwise'_zero_right {m : Nat} :
   simp only [Bool.cond_eq_ite, eq_mpr_eq_cast, cast_eq, dite_eq_ite]
   split_ifs with hx <;> simp only [bit_decomp, binaryRec_zero, hx]
 
-@[simp]
 lemma bitwise_zero : bitwise f 0 0 = 0 := by
   simp only [bitwise_zero_right, ite_self]
 
