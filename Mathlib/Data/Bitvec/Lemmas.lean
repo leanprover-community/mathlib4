@@ -43,7 +43,7 @@ theorem val_append {x : BitVec w} {y : BitVec v} :
   (x ++ y).val = x.val <<< v ||| y.val := rfl
 
 theorem val_extract {i j} {x : BitVec w} :
-  (extract i j x).val = x.val / 2 ^ j % (2 ^ (i - j)) := by
+    (extract i j x).val = x.val / 2 ^ j % (2 ^ (i - j)) := by
   simp [extract, shiftRight_eq_div_pow]
 
 theorem get_eq_testBit {x : BitVec w} {i} : x.get i = x.val.testBit i := by
