@@ -27,6 +27,7 @@ namespace Mathlib.Tactic.ExtendDocs
 /-- `extend_docs <declName> before <prefix_string> after <suffix_string>` extends the
 docs of `<declName>` by adding `<prefix_string>` before and `<suffix_string>` after. -/
 syntax "extend_docs" ident (colGt "before" str)? (colGt "after" str)? : command
+
 open Lean in
 elab_rules : command
   | `(command| extend_docs $na:ident $[before $bef:str]? $[after $aft:str]?) => do
@@ -38,16 +39,3 @@ elab_rules : command
     addDocString declName <| bef ++ oldDoc ++ aft
 
 end Mathlib.Tactic.ExtendDocs
-
-/- redefine `rw`, since I cannot find a way to replace the doc-string of a declaration that
-has been defined in an earlier file.
-The "new" `rw` inherits the docs of `rewrite`. -/
-open Lean.Parser.Tactic Lean in
-@[inherit_doc rewriteSeq]
-macro (name := my_rw) "rw" c:(config)? s:rwRuleSeq l:(location)? : tactic =>
-  `(tactic| (rw $(c)? $s $(l)?))
-
--- now we add to the docs of the "new" `rw` the prefix that we want.
-extend_docs my_rw
-  before "`rw` is like `rewrite` (see below), but also tries to close the goal by \"cheap\"
-    (reducible) `rfl` afterwards."
