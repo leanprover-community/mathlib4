@@ -1053,7 +1053,7 @@ lemma Pi.isCompact_iff_of_isClosed {s : Set (∀ i, π i)} (hs : IsClosed s) :
     IsCompact s ↔ ∀ i, IsCompact (eval i '' s) := by
   constructor <;> intro H
   · exact fun i ↦ H.image <| continuous_apply i
-  · exact isCompact_of_isClosed_subset (isCompact_univ_pi H) hs (subset_pi_eval_image univ s)
+  · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H) hs (subset_pi_eval_image univ s)
 
 protected lemma Pi.exists_compact_superset_iff {s : Set (∀ i, π i)} :
     (∃ K, IsCompact K ∧ s ⊆ K) ↔ ∀ i, ∃ Ki, IsCompact Ki ∧ s ⊆ eval i ⁻¹' Ki := by

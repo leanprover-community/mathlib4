@@ -235,7 +235,7 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
   rw [← forall_sUnion] at F_pointwiseCompact
   choose! Q Q_compact F_in_Q using F_pointwiseCompact
   rw [← isCompact_univ_iff, ← this.isCompact_iff, image_univ]
-  refine isCompact_of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.2) F_cl
+  refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.2) F_cl
     (range_subset_iff.mpr fun i x _ ↦ F_in_Q x x.2 i)
 
 theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖 : Set (Set X)}
@@ -249,7 +249,7 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖
     rwa [Equicontinuous.inducing_uniformOnFun_iff_pi 𝔖_covers 𝔖_compact F_eqcont] at F_ind
   choose K K_compact F_in_K using F_pointwiseCompact
   rw [← isCompact_univ_iff, ← this.isCompact_iff, image_univ]
-  refine isCompact_of_isClosed_subset (isCompact_univ_pi fun x ↦ K_compact x) F_cl
+  refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ K_compact x) F_cl
     (range_subset_iff.mpr fun i x _ ↦ F_in_K x i)
 
 theorem ArzelaAscoli.compactSpace_of_closedEmbedding [TopologicalSpace ι] {𝔖 : Set (Set X)}
