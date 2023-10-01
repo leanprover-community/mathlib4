@@ -138,9 +138,19 @@ noncomputable def braiding : Monoidal.tensorObj K L ≅ Monoidal.tensorObj L K :
 lemma ιTensorObj_braiding_hom (i₁ i₂ i₃ : I) (h : i₁ + i₂ = i₃) :
   ιTensorObj K L i₁ i₂ i₃ h ≫ (braiding K L).hom.f i₃ =
     ComplexShape.σ c c c i₁ i₂ • (β_ (K.X i₁) (L.X i₂)).hom ≫ ιTensorObj L K i₂ i₁ i₃ (by rw [add_comm, h]) := by
-  -- with this definition of braiding, we may get `(β_ (L.X i₂) (K.X i₁)).inv` instead
-  -- of `(β_ (K.X i₁) (L.X i₂)).hom` in which case the definition should be fixed...
-  sorry
+  -- this proof needs some cleaning up
+  dsimp [braiding, HomologicalComplex₂.totalSymmIso, ιTensorObj,
+    HomologicalComplex₂.descTotal, GradedObject.Monoidal.ιTensorObj,
+     GradedObject.ιMapBifunctorMapObj]
+  erw [GradedObject.ι_descMapObj_assoc, zsmul_comp]
+  dsimp
+  congr 1
+  dsimp [HomologicalComplex₂.ιTotal]
+  erw [GradedObject.ι_descMapObj]
+  dsimp
+  erw [comp_id]
+  dsimp [NatTrans.mapHomologicalComplex₂, curriedBraidingNatIso, HomologicalComplex₂.flipFunctor]
+  rfl
 
 variable (X Y Z : HomologicalComplex C c)
   [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
