@@ -184,7 +184,7 @@ theorem testBit_two_pow_mul_add {n b w i} (h: i < w) :
   simp [mul_comm, Nat.mul_div_assoc b (pow_dvd_pow 2 (le_of_lt h)), mul_mod, h1]
 
 theorem testBit_two_pow_mul_toNat_add {n w b} (h: n < 2 ^ w) :
-  testBit (2 ^ w * b.toNat + n) w = b := by
+    testBit (2 ^ w * b.toNat + n) w = b := by
   simp only [testBit, shiftRight_eq_div_pow]
   rw [Nat.add_div_of_dvd_right (Dvd.intro _ rfl), Nat.div_eq_zero h, add_zero]
   cases' b <;> simp
