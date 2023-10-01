@@ -3,12 +3,9 @@ Copyright (c) 2020 Zhangir Azerbayev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Zhangir Azerbayev
 -/
-import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.GroupTheory.Perm.Subgroup
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.Data.Fintype.Perm
 import Mathlib.LinearAlgebra.Multilinear.Basis
-import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 
 #align_import linear_algebra.alternating from "leanprover-community/mathlib"@"0c1d80f5a86b36c1db32e021e8d19ae7809d5b79"
 
@@ -27,7 +24,6 @@ arguments of the same type.
   matches the definitions over `MultilinearMap`s.
 * `MultilinearMap.domDomCongr`, for permutating the elements within a family.
 * `MultilinearMap.alternatization`, which makes an alternating map out of a non-alternating one.
-* `AlternatingMap.domCoprod`, which behaves as a product between two alternating maps.
 * `AlternatingMap.curryLeft`, for binding the leftmost argument of an alternating map indexed
   by `Fin n.succ`.
 
@@ -739,8 +735,7 @@ def domDomCongr (σ : ι ≃ ι') (f : AlternatingMap R M N ι) : AlternatingMap
 #align alternating_map.dom_dom_congr_apply AlternatingMap.domDomCongr_apply
 
 @[simp]
-theorem domDomCongr_refl (f : AlternatingMap R M N ι) : f.domDomCongr (Equiv.refl ι) = f :=
-  ext fun _ => rfl
+theorem domDomCongr_refl (f : AlternatingMap R M N ι) : f.domDomCongr (Equiv.refl ι) = f := rfl
 #align alternating_map.dom_dom_congr_refl AlternatingMap.domDomCongr_refl
 
 theorem domDomCongr_trans (σ₁ : ι ≃ ι') (σ₂ : ι' ≃ ι'') (f : AlternatingMap R M N ι) :
@@ -790,8 +785,7 @@ variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 
 /-- `alternating_map.dom_dom_congr` as a linear equivalence. -/
 @[simps apply symm_apply]
-def domDomLcongr (σ : ι ≃ ι') : AlternatingMap R M N ι ≃ₗ[S] AlternatingMap R M N ι'
-    where
+def domDomLcongr (σ : ι ≃ ι') : AlternatingMap R M N ι ≃ₗ[S] AlternatingMap R M N ι' where
   toFun := domDomCongr σ
   invFun := domDomCongr σ.symm
   left_inv f := by ext; simp [Function.comp]
@@ -804,7 +798,7 @@ def domDomLcongr (σ : ι ≃ ι') : AlternatingMap R M N ι ≃ₗ[S] Alternati
 theorem domDomLcongr_refl :
     (domDomLcongr S (Equiv.refl ι) : AlternatingMap R M N ι ≃ₗ[S] AlternatingMap R M N ι) =
       LinearEquiv.refl _ _ :=
-  LinearEquiv.ext domDomCongr_refl
+  rfl
 #align alternating_map.dom_dom_lcongr_refl AlternatingMap.domDomLcongr_refl
 
 @[simp]
