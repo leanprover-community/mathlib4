@@ -139,18 +139,23 @@ lemma ιTensorObj_braiding_hom (i₁ i₂ i₃ : I) (h : i₁ + i₂ = i₃) :
   ιTensorObj K L i₁ i₂ i₃ h ≫ (braiding K L).hom.f i₃ =
     ComplexShape.σ c c c i₁ i₂ • (β_ (K.X i₁) (L.X i₂)).hom ≫ ιTensorObj L K i₂ i₁ i₃ (by rw [add_comm, h]) := by
   -- this proof needs some cleaning up
-  dsimp [braiding, HomologicalComplex₂.totalSymmIso, ιTensorObj,
-    HomologicalComplex₂.descTotal, GradedObject.Monoidal.ιTensorObj,
-     GradedObject.ιMapBifunctorMapObj]
-  erw [GradedObject.ι_descMapObj_assoc, zsmul_comp]
-  dsimp
-  congr 1
-  dsimp [HomologicalComplex₂.ιTotal]
-  erw [GradedObject.ι_descMapObj]
+  dsimp [braiding, HomologicalComplex₂.totalSymmIso]
+  erw [GradedObject.ι_descMapObj_assoc, zsmul_comp, GradedObject.ι_descMapObj]
   dsimp
   erw [comp_id]
-  dsimp [NatTrans.mapHomologicalComplex₂, curriedBraidingNatIso, HomologicalComplex₂.flipFunctor]
   rfl
+
+@[reassoc (attr := simp)]
+lemma ιTensorObj_braiding_inv (i₁ i₂ i₃ : I) (h : i₁ + i₂ = i₃) :
+    ιTensorObj L K i₁ i₂ i₃ h ≫ (braiding K L).inv.f i₃ =
+      ComplexShape.σ c c c i₂ i₁ • (β_ (K.X i₂) (L.X i₁)).inv ≫
+        ιTensorObj K L i₂ i₁ i₃ (by rw [add_comm, h]) := by
+  have : IsIso ((braiding K L).hom.f i₃) := by
+    change IsIso ((HomologicalComplex.eval C c i₃).mapIso (braiding K L)).hom
+    infer_instance
+  rw [← cancel_mono ((braiding K L).hom.f i₃), assoc, ← comp_f, Iso.inv_hom_id, id_f, comp_id,
+    zsmul_comp, assoc, ιTensorObj_braiding_hom, comp_zsmul, smul_smul, Iso.inv_hom_id_assoc,
+    ComplexShape.σ_mul_self, one_smul]
 
 variable (X Y Z : HomologicalComplex C c)
   [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
