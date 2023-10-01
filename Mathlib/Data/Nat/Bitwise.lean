@@ -110,7 +110,6 @@ lemma bitwise'_succ {n m : Nat} :
   cases f (!bodd n) (!bodd m)
   <;> simp only [Bool.cond_eq_ite, ite_false, add_zero, ite_true]
 
-@[simp]
 lemma bitwise'_eq_bitwise (f) : bitwise' f = bitwise f := by
   funext x y
   induction' x using Nat.strongInductionOn with x ih generalizing y
