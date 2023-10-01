@@ -16,17 +16,21 @@ This file defines a few binary operations on `Finset α` for use in set family c
 
 ## Main declarations
 
-* `s ⊻ t`: Finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`.
-* `s ⊼ t`: Finset of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`.
+* `Finset.sups s t`: Finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`.
+* `Finset.infss t`: Finset of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`.
 * `Finset.disjSups s t`: Finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t` and `a`
   and `b` are disjoint.
+* `Finset.diffs`: Finset of elements of the form `a \ b` where `a ∈ s`, `b ∈ t`.
+* `Finset.compls`: Finset of elements of the form `aᶜ` where `a ∈ s`.
 
 ## Notation
 
 We define the following notation in locale `FinsetFamily`:
-* `s ⊻ t`
-* `s ⊼ t`
+* `s ⊻ t` for `Finset.sups`
+* `s ⊼ t` for `Finset.infs`
 * `s ○ t` for `Finset.disjSups s t`
+* `s \\ t` for `Finset.diffs`
+* `sᶜˢ` for `Finset.compls`
 
 ## References
 
@@ -95,12 +99,10 @@ theorem sups_subset_right : s₁ ⊆ s₂ → s₁ ⊻ t ⊆ s₂ ⊻ t :=
   image₂_subset_right
 #align finset.sups_subset_right Finset.sups_subset_right
 
-theorem image_subset_sups_left : b ∈ t → (s.image fun a => a ⊔ b) ⊆ s ⊻ t :=
-  image_subset_image₂_left
+lemma image_subset_sups_left : b ∈ t → s.image (· ⊔ b) ⊆ s ⊻ t := image_subset_image₂_left
 #align finset.image_subset_sups_left Finset.image_subset_sups_left
 
-theorem image_subset_sups_right : a ∈ s → t.image (a ⊔ ·) ⊆ s ⊻ t :=
-  image_subset_image₂_right (f := (· ⊔ ·))
+lemma image_subset_sups_right : a ∈ s → t.image (a ⊔ ·) ⊆ s ⊻ t := image_subset_image₂_right
 #align finset.image_subset_sups_right Finset.image_subset_sups_right
 
 theorem forall_sups_iff {p : α → Prop} : (∀ c ∈ s ⊻ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, p (a ⊔ b) :=
@@ -144,14 +146,10 @@ theorem sups_eq_empty : s ⊻ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 #align finset.sups_eq_empty Finset.sups_eq_empty
 
-@[simp]
-theorem singleton_sups : {a} ⊻ t = t.image fun b => a ⊔ b :=
-  image₂_singleton_left
+@[simp] lemma singleton_sups : {a} ⊻ t = t.image (a ⊔ ·) := image₂_singleton_left
 #align finset.singleton_sups Finset.singleton_sups
 
-@[simp]
-theorem sups_singleton : s ⊻ {b} = s.image fun a => a ⊔ b :=
-  image₂_singleton_right
+@[simp] lemma sups_singleton : s ⊻ {b} = s.image (· ⊔ b) := image₂_singleton_right
 #align finset.sups_singleton Finset.sups_singleton
 
 theorem singleton_sups_singleton : ({a} ⊻ {b} : Finset α) = {a ⊔ b} :=
@@ -181,12 +179,10 @@ theorem subset_sups {s t : Set α} :
 
 variable (s t u)
 
-theorem biUnion_image_sup_left : (s.biUnion fun a => t.image <| (· ⊔ ·) a) = s ⊻ t :=
-  biUnion_image_left
+lemma biUnion_image_sup_left : s.biUnion (fun a ↦ t.image (a ⊔ ·)) = s ⊻ t := biUnion_image_left
 #align finset.bUnion_image_sup_left Finset.biUnion_image_sup_left
 
-theorem biUnion_image_sup_right : (t.biUnion fun b => s.image fun a => a ⊔ b) = s ⊻ t :=
-  biUnion_image_right
+lemma biUnion_image_sup_right : t.biUnion (fun b ↦ s.image (· ⊔ b)) = s ⊻ t := biUnion_image_right
 #align finset.bUnion_image_sup_right Finset.biUnion_image_sup_right
 
 -- Porting note: simpNF linter doesn't like @[simp]
@@ -269,12 +265,10 @@ theorem infs_subset_right : s₁ ⊆ s₂ → s₁ ⊼ t ⊆ s₂ ⊼ t :=
   image₂_subset_right
 #align finset.infs_subset_right Finset.infs_subset_right
 
-theorem image_subset_infs_left : b ∈ t → (s.image fun a => a ⊓ b) ⊆ s ⊼ t :=
-  image_subset_image₂_left
+lemma image_subset_infs_left : b ∈ t → s.image (· ⊓ b) ⊆ s ⊼ t := image_subset_image₂_left
 #align finset.image_subset_infs_left Finset.image_subset_infs_left
 
-theorem image_subset_infs_right : a ∈ s → t.image (a ⊓ ·) ⊆ s ⊼ t :=
-  image_subset_image₂_right (f := (· ⊓ ·))
+lemma image_subset_infs_right : a ∈ s → t.image (a ⊓ ·) ⊆ s ⊼ t := image_subset_image₂_right
 #align finset.image_subset_infs_right Finset.image_subset_infs_right
 
 theorem forall_infs_iff {p : α → Prop} : (∀ c ∈ s ⊼ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, p (a ⊓ b) :=
@@ -318,14 +312,10 @@ theorem infs_eq_empty : s ⊼ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 #align finset.infs_eq_empty Finset.infs_eq_empty
 
-@[simp]
-theorem singleton_infs : {a} ⊼ t = t.image fun b => a ⊓ b :=
-  image₂_singleton_left
+@[simp] lemma singleton_infs : {a} ⊼ t = t.image (a ⊓ ·) := image₂_singleton_left
 #align finset.singleton_infs Finset.singleton_infs
 
-@[simp]
-theorem infs_singleton : s ⊼ {b} = s.image fun a => a ⊓ b :=
-  image₂_singleton_right
+@[simp] lemma infs_singleton : s ⊼ {b} = s.image (· ⊓ b) := image₂_singleton_right
 #align finset.infs_singleton Finset.infs_singleton
 
 theorem singleton_infs_singleton : ({a} ⊼ {b} : Finset α) = {a ⊓ b} :=
@@ -355,12 +345,10 @@ theorem subset_infs {s t : Set α} :
 
 variable (s t u)
 
-theorem biUnion_image_inf_left : (s.biUnion fun a => t.image <| (· ⊓ ·) a) = s ⊼ t :=
-  biUnion_image_left
+lemma biUnion_image_inf_left : s.biUnion (fun a ↦ t.image (a ⊓ ·)) = s ⊼ t := biUnion_image_left
 #align finset.bUnion_image_inf_left Finset.biUnion_image_inf_left
 
-theorem biUnion_image_inf_right : (t.biUnion fun b => s.image fun a => a ⊓ b) = s ⊼ t :=
-  biUnion_image_right
+lemma biUnion_image_inf_right : t.biUnion (fun b ↦ s.image (· ⊓ b)) = s ⊼ t := biUnion_image_right
 #align finset.bUnion_image_inf_right Finset.biUnion_image_inf_right
 
 -- Porting note: simpNF linter doesn't like @[simp]
@@ -589,11 +577,9 @@ lemma diffs_subset : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ \\ t₁ ⊆ s₂ \
 lemma diffs_subset_left : t₁ ⊆ t₂ → s \\ t₁ ⊆ s \\ t₂ := image₂_subset_left
 lemma diffs_subset_right : s₁ ⊆ s₂ → s₁ \\ t ⊆ s₂ \\ t := image₂_subset_right
 
-lemma image_subset_diffs_left : b ∈ t → (s.image fun a ↦ a \ b) ⊆ s \\ t :=
-  image_subset_image₂_left
+lemma image_subset_diffs_left : b ∈ t → s.image (· \ b) ⊆ s \\ t := image_subset_image₂_left
 
-lemma image_subset_diffs_right : a ∈ s → t.image (a \ ·) ⊆ s \\ t :=
-  image_subset_image₂_right (f := (· \ ·))
+lemma image_subset_diffs_right : a ∈ s → t.image (a \ ·) ⊆ s \\ t := image_subset_image₂_right
 
 lemma forall_mem_diffs {p : α → Prop} : (∀ c ∈ s \\ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, p (a \ b) :=
   forall_image₂_iff
@@ -611,8 +597,8 @@ lemma Nonempty.of_diffs_right : (s \\ t).Nonempty → t.Nonempty := Nonempty.of_
 @[simp] lemma diffs_empty : s \\ ∅ = ∅ := image₂_empty_right
 @[simp] lemma diffs_eq_empty : s \\ t = ∅ ↔ s = ∅ ∨ t = ∅ := image₂_eq_empty_iff
 
-@[simp] lemma singleton_diffs : {a} \\ t = t.image fun b ↦ a \ b := image₂_singleton_left
-@[simp] lemma diffs_singleton : s \\ {b} = s.image fun a ↦ a \ b := image₂_singleton_right
+@[simp] lemma singleton_diffs : {a} \\ t = t.image (a \ ·) := image₂_singleton_left
+@[simp] lemma diffs_singleton : s \\ {b} = s.image (· \ b) := image₂_singleton_right
 lemma singleton_diffs_singleton : ({a} \\ {b} : Finset α) = {a \ b} := image₂_singleton
 
 lemma diffs_union_left : (s₁ ∪ s₂) \\ t = s₁ \\ t ∪ s₂ \\ t := image₂_union_left
@@ -627,10 +613,8 @@ lemma subset_diffs {s t : Set α} :
 
 variable (s t u)
 
-lemma biUnion_image_sdiff_left : s.biUnion (fun a ↦ t.image $ (· \ ·) a) = s \\ t :=
-  biUnion_image_left
-
-lemma biUnion_image_sdiff_right : t.biUnion (fun b ↦ s.image fun a ↦ a \ b) = s \\ t :=
+lemma biUnion_image_sdiff_left : s.biUnion (fun a ↦ t.image (a \ ·)) = s \\ t := biUnion_image_left
+lemma biUnion_image_sdiff_right : t.biUnion (fun b ↦ s.image (· \ b)) = s \\ t :=
   biUnion_image_right
 
 lemma image_sdiff_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· \ ·)) = s \\ t :=
@@ -643,7 +627,7 @@ end Diffs
 section Compls
 variable [BooleanAlgebra α] (s s₁ s₂ t t₁ t₂ u v : Finset α)
 
-/-- `s` is the finset of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`. -/
+/-- `sᶜˢ` is the finset of elements of the form `aᶜ` where `a ∈ s`. -/
 def compls : Finset α → Finset α := map ⟨compl, compl_injective⟩
 
 @[inherit_doc]
