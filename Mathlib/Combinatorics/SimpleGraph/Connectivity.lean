@@ -857,7 +857,7 @@ lemma not_nil_iff {p : G.Walk v w} :
 
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
 lemma Nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
-| .nil | .cons _ _ => by simp
+  | .nil | .cons _ _ => by simp
 
 lemma Nil.eq_nil {p : G.Walk v v} (hp : p.Nil) : p = Walk.nil := Nil_iff_eq_nil.1 hp
 
@@ -909,7 +909,7 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
   rw [← length_cons, cons_tail_eq]
 
 lemma support_tail {p : G.Walk v v} (hp : ¬p.Nil) :
-   (p.tail hp).support = p.support.tail := by
+    (p.tail hp).support = p.support.tail := by
   rw [←cons_support_tail p hp, List.tail_cons]
 
 /-! ### Trails, paths, circuits, cycles -/
