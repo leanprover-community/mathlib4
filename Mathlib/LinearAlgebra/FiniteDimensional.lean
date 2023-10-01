@@ -1166,7 +1166,7 @@ lemma exists_smul_eq_of_finrank_eq_one
     apply eq_top_of_finrank_eq
     rw [h]
     exact finrank_span_singleton hx
-  have : y ∈ Submodule.span K {x} := by rw [this]; trivial
+  have : y ∈ Submodule.span K {x} := by rw [this]; exact mem_top
   exact mem_span_singleton.1 this
 
 theorem Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
@@ -1182,11 +1182,7 @@ theorem span_eq_top_of_linearIndependent_of_card_eq_finrank {ι : Type*} [hι : 
     [Fintype ι] {b : ι → V} (lin_ind : LinearIndependent K b)
     (card_eq : Fintype.card ι = finrank K V) : span K (Set.range b) = ⊤ := by
   by_cases fin : FiniteDimensional K V
-  · -- Porting note: fails without this line
-    -- This will presumably be fixed by the changes discussed at
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.232894/near/342121059
-    replace fin : FiniteDimensional _ _ := fin
-    by_contra ne_top
+  · by_contra ne_top
     have lt_top : span K (Set.range b) < ⊤ := lt_of_le_of_ne le_top ne_top
     exact ne_of_lt (Submodule.finrank_lt lt_top)
       (_root_.trans (finrank_span_eq_card lin_ind) card_eq)

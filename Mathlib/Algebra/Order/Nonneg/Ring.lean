@@ -3,7 +3,7 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Algebra.GroupPower.Order
@@ -89,15 +89,10 @@ The `Set.Ici` data fields are definitionally equal, but that requires unfolding 
 definitions, so type-class inference won't see this. -/
 @[reducible]
 protected noncomputable def conditionallyCompleteLinearOrderBot [ConditionallyCompleteLinearOrder α]
-    {a : α} (h : sSup ∅ ≤ a) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
+    (a : α) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
   { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
-    csSup_empty :=
-      (Function.funext_iff.1 (@subset_sSup_def α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩) ∅).trans <|
-        Subtype.eq <| by
-          rw [bot_eq]
-          cases' h.lt_or_eq with h2 h2
-          · simp [h2.not_le]
-          simp [h2] }
+    csSup_empty := by
+      rw [@subset_sSup_def α (Set.Ici a) _ _ ⟨⟨a, le_rfl⟩⟩]; simp [bot_eq] }
 #align nonneg.conditionally_complete_linear_order_bot Nonneg.conditionallyCompleteLinearOrderBot
 
 instance inhabited [Preorder α] {a : α} : Inhabited { x : α // a ≤ x } :=
@@ -204,8 +199,8 @@ theorem mk_eq_one [OrderedSemiring α] {x : α} (hx : 0 ≤ x) :
   Subtype.ext_iff
 #align nonneg.mk_eq_one Nonneg.mk_eq_one
 
-instance mul [OrderedSemiring α] : Mul { x : α // 0 ≤ x }
-    where mul x y := ⟨x * y, mul_nonneg x.2 y.2⟩
+instance mul [OrderedSemiring α] : Mul { x : α // 0 ≤ x } where
+  mul x y := ⟨x * y, mul_nonneg x.2 y.2⟩
 #align nonneg.has_mul Nonneg.mul
 
 @[simp, norm_cast]
@@ -238,8 +233,8 @@ theorem mk_nat_cast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : {
   rfl
 #align nonneg.mk_nat_cast Nonneg.mk_nat_cast
 
-instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ
-    where pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
+instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ where
+  pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
 #align nonneg.has_pow Nonneg.pow
 
 @[simp, norm_cast]

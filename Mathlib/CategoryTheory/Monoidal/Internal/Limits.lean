@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 If `C` has limits, so does `Mon_ C`, and the forgetful functor preserves these limits.
 
 (This could potentially replace many individual constructions for concrete categories,
-in particular `Mon`, `SemiRing`, `Ring`, and `Algebra R`.)
+in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgebraCat R`.)
 -/
 
 
@@ -71,7 +71,11 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
     { hom := limit.lift (F ⋙ Mon_.forget C) ((Mon_.forget C).mapCone s)
       mul_hom := by
         dsimp
-        ext; simp
+        ext
+        simp only [Functor.comp_obj, forget_obj, Category.assoc, limit.lift_π, Functor.mapCone_pt,
+          Functor.mapCone_π_app, forget_map, Hom.mul_hom, limit_mul, Cones.postcompose_obj_pt,
+          Cones.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj, tensorObj_obj,
+          MonFunctorCategoryEquivalence.Inverse.obj_mul_app]
         slice_rhs 1 2 => rw [← MonoidalCategory.tensor_comp, limit.lift_π] }
   fac s h := by ext; simp
   uniq s m w := by
@@ -82,8 +86,8 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
 set_option linter.uppercaseLean3 false in
 #align Mon_.limit_cone_is_limit Mon_.limitConeIsLimit
 
-instance hasLimits : HasLimits (Mon_ C)
-    where has_limits_of_shape _ _ :=
+instance hasLimits : HasLimits (Mon_ C) where
+  has_limits_of_shape _ _ :=
     { has_limit := fun F =>
         HasLimit.mk
           { cone := limitCone F

@@ -6,7 +6,8 @@ Authors: Leonardo de Moura, Jeremy Avigad
 import Std.Data.Nat.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Div
-import Mathlib.Init.Algebra.Functions
+import Mathlib.Init.Order.LinearOrder
+import Mathlib.Tactic.Cases
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
 
@@ -673,16 +674,6 @@ instance decidableDvd : @DecidableRel ℕ (· ∣ ·) := fun _m _n =>
 
 #align nat.dvd_of_mul_dvd_mul_right Nat.dvd_of_mul_dvd_mul_rightₓ
 
-/-! iterate -/
-
-
-def iterate {α : Sort u} (op : α → α) : ℕ → α → α
-  | 0, a => a
-  | succ k, a => iterate op k (op a)
-#align nat.iterate Nat.iterate
-
-notation:max f "^["n"]" => iterate f n
-
 /-! find -/
 
 
@@ -748,7 +739,7 @@ protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
 #align nat.find_min' Nat.find_min'
 
 lemma to_digits_core_lens_eq_aux (b f : Nat) :
-  ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
+    ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
     (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
   induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
   | zero => assumption

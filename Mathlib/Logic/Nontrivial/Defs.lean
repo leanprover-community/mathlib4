@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Logic.Basic
+import Mathlib.Init.Function
 
 #align_import logic.nontrivial from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -48,9 +48,7 @@ protected theorem Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) 
   · exact ⟨y, Ne.symm hx⟩
 #align decidable.exists_ne Decidable.exists_ne
 
-
-theorem exists_ne [Nontrivial α] (x : α) : ∃ y, y ≠ x := by
-  letI := Classical.decEq α; exact Decidable.exists_ne x
+theorem exists_ne [Nontrivial α] (x : α) : ∃ y, y ≠ x := Decidable.exists_ne x
 #align exists_ne exists_ne
 
 -- `x` and `y` are explicit here, as they are often needed to guide typechecking of `h`.

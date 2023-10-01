@@ -172,7 +172,7 @@ open Polynomial
 @[simp]
 theorem iterate_derivative_at_0 (n ν : ℕ) :
     (Polynomial.derivative^[ν] (bernsteinPolynomial R n ν)).eval 0 =
-      (pochhammer R ν).eval ((n - (ν - 1) : ℕ) : R) := by
+      (ascPochhammer R ν).eval ((n - (ν - 1) : ℕ) : R) := by
   by_cases h : ν ≤ n
   · induction' ν with ν ih generalizing n
     · simp [eval_at_0]
@@ -180,13 +180,13 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
       simp only [derivative_succ, ih (n - 1) h', iterate_derivative_succ_at_0_eq_zero,
         Nat.succ_sub_succ_eq_sub, tsub_zero, sub_zero, iterate_derivative_sub,
         iterate_derivative_nat_cast_mul, eval_one, eval_mul, eval_add, eval_sub, eval_X, eval_comp,
-        eval_nat_cast, Function.comp_apply, Function.iterate_succ, pochhammer_succ_left]
+        eval_nat_cast, Function.comp_apply, Function.iterate_succ, ascPochhammer_succ_left]
       obtain rfl | h'' := ν.eq_zero_or_pos
       · simp
       · have : n - 1 - (ν - 1) = n - ν := by
           rw [gt_iff_lt, ← Nat.succ_le_iff] at h''
           rw [← tsub_add_eq_tsub_tsub, add_comm, tsub_add_cancel_of_le h'']
-        rw [this, pochhammer_eval_succ]
+        rw [this, ascPochhammer_eval_succ]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
   · simp only [not_le] at h
     rw [tsub_eq_zero_iff_le.mpr (Nat.le_pred_of_lt h), eq_zero_of_lt R h]
@@ -197,13 +197,13 @@ theorem iterate_derivative_at_0_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n)
     (Polynomial.derivative^[ν] (bernsteinPolynomial R n ν)).eval 0 ≠ 0 := by
   simp only [Int.coe_nat_eq_zero, bernsteinPolynomial.iterate_derivative_at_0, Ne.def,
     Nat.cast_eq_zero]
-  simp only [← pochhammer_eval_cast]
+  simp only [← ascPochhammer_eval_cast]
   norm_cast
   apply ne_of_gt
   obtain rfl | h' := Nat.eq_zero_or_pos ν
   · simp
   · rw [← Nat.succ_pred_eq_of_pos h'] at h
-    exact pochhammer_pos _ _ (tsub_pos_of_lt (Nat.lt_of_succ_le h))
+    exact ascPochhammer_pos _ _ (tsub_pos_of_lt (Nat.lt_of_succ_le h))
 #align bernstein_polynomial.iterate_derivative_at_0_ne_zero bernsteinPolynomial.iterate_derivative_at_0_ne_zero
 
 /-!
@@ -222,7 +222,7 @@ theorem iterate_derivative_at_1_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
 @[simp]
 theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 =
-      (-1) ^ (n - ν) * (pochhammer R (n - ν)).eval (ν + 1 : R) := by
+      (-1) ^ (n - ν) * (ascPochhammer R (n - ν)).eval (ν + 1 : R) := by
   rw [flip' _ _ _ h]
   simp [Polynomial.eval_comp, h]
   obtain rfl | h' := h.eq_or_lt
@@ -235,8 +235,8 @@ theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
 theorem iterate_derivative_at_1_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 ≠ 0 := by
   rw [bernsteinPolynomial.iterate_derivative_at_1 _ _ _ h, Ne.def, neg_one_pow_mul_eq_zero_iff, ←
-    Nat.cast_succ, ← pochhammer_eval_cast, ← Nat.cast_zero, Nat.cast_inj]
-  exact (pochhammer_pos _ _ (Nat.succ_pos ν)).ne'
+    Nat.cast_succ, ← ascPochhammer_eval_cast, ← Nat.cast_zero, Nat.cast_inj]
+  exact (ascPochhammer_pos _ _ (Nat.succ_pos ν)).ne'
 #align bernstein_polynomial.iterate_derivative_at_1_ne_zero bernsteinPolynomial.iterate_derivative_at_1_ne_zero
 
 open Submodule

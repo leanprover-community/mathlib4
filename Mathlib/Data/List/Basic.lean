@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Init.Core
 import Std.Data.List.Lemmas
+import Mathlib.Tactic.Common
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"9da1b3534b65d9661eb8f42443598a92bbb49211"
 
@@ -319,13 +320,13 @@ theorem subset_append_of_subset_right' (l l₁ l₂ : List α) : l ⊆ l₂ → 
 #align list.cons_subset List.cons_subset
 
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
-  (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
-cons_subset.2 ⟨ainm, lsubm⟩
+    (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
+  cons_subset.2 ⟨ainm, lsubm⟩
 #align list.cons_subset_of_subset_of_mem List.cons_subset_of_subset_of_mem
 
 theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l₁ ⊆ l) (l₂subl : l₂ ⊆ l) :
-  l₁ ++ l₂ ⊆ l :=
-fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
+    l₁ ++ l₂ ⊆ l :=
+  fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 #align list.append_subset_of_subset_of_subset List.append_subset_of_subset_of_subset
 
 -- Porting note: in Std
@@ -650,10 +651,6 @@ theorem length_dropLast : ∀ l : List α, length l.dropLast = length l - 1
     simp
 #align list.length_init List.length_dropLast
 
--- Porting note: `rw [dropLast]` in Lean4 generates a goal `(b::l) ≠ []`
--- so we use this lemma instead
-theorem dropLast_cons_cons (a b : α) (l : List α) : dropLast (a::b::l) = a::dropLast (b::l) := rfl
-
 /-! ### getLast -/
 
 @[simp]
@@ -698,7 +695,7 @@ theorem dropLast_append_getLast : ∀ {l : List α} (h : l ≠ []), dropLast l +
   | [], h => absurd rfl h
   | [a], h => rfl
   | a :: b :: l, h => by
-    rw [dropLast_cons_cons, cons_append, getLast_cons (cons_ne_nil _ _)]
+    rw [dropLast_cons₂, cons_append, getLast_cons (cons_ne_nil _ _)]
     congr
     exact dropLast_append_getLast (cons_ne_nil b l)
 #align list.init_append_last List.dropLast_append_getLast
@@ -781,7 +778,7 @@ theorem dropLast_append_getLast? : ∀ {l : List α}, ∀ a ∈ l.getLast?, drop
   | [a], _, rfl => rfl
   | a :: b :: l, c, hc => by
     rw [getLast?_cons_cons] at hc
-    rw [dropLast_cons_cons, cons_append, dropLast_append_getLast? _ hc]
+    rw [dropLast_cons₂, cons_append, dropLast_append_getLast? _ hc]
 #align list.init_append_last' List.dropLast_append_getLast?
 
 theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.iget
@@ -822,12 +819,12 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 #align list.head_eq_head' List.head!_eq_head?
 
-theorem surjective_head [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
-#align list.surjective_head List.surjective_head
+theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
+#align list.surjective_head List.surjective_head!
 
-theorem surjective_head' : Surjective (@head? α) :=
+theorem surjective_head? : Surjective (@head? α) :=
   Option.forall.2 ⟨⟨[], rfl⟩, fun x => ⟨[x], rfl⟩⟩
-#align list.surjective_head' List.surjective_head'
+#align list.surjective_head' List.surjective_head?
 
 theorem surjective_tail : Surjective (@tail α)
   | [] => ⟨[], rfl⟩
@@ -890,6 +887,9 @@ theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! �
   have h' := mem_cons_self l.head! l.tail
   rwa [cons_head!_tail h] at h'
 #align list.head_mem_self List.head!_mem_self
+
+theorem head_mem {l : List α} : ∀ (h : l ≠ nil), l.head h ∈ l := by
+  cases l <;> simp
 
 @[simp]
 theorem head?_map (f : α → β) (l) : head? (map f l) = (head? l).map f := by cases l <;> rfl
@@ -1873,9 +1873,6 @@ theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as 
 
 /-! ### take, drop -/
 
-@[simp]
-theorem take_zero (l : List α) : take 0 l = [] :=
-  rfl
 #align list.take_zero List.take_zero
 
 #align list.take_nil List.take_nil
@@ -2039,7 +2036,7 @@ theorem dropLast_take {n : ℕ} {l : List α} (h : n < l.length) :
 #align list.init_take List.dropLast_take
 
 theorem dropLast_cons_of_ne_nil {α : Type*} {x : α}
-    {l : List α} (h : l ≠ []) : (x :: l).dropLast = x :: l.dropLast := by simp [h]
+    {l : List α} (h : l ≠ []) : (x :: l).dropLast = x :: l.dropLast := by simp [h, dropLast]
 #align list.init_cons_of_ne_nil List.dropLast_cons_of_ne_nil
 
 @[simp]
@@ -2128,17 +2125,8 @@ theorem drop_length_cons {l : List α} (h : l ≠ []) (a : α) :
     exact ih h₁ y
 #align list.drop_length_cons List.drop_length_cons
 
-/-- Dropping the elements up to `n` in `l₁ ++ l₂` is the same as dropping the elements up to `n`
-in `l₁`, dropping the elements up to `n - l₁.length` in `l₂`, and appending them. -/
-theorem drop_append_eq_append_drop {l₁ l₂ : List α} {n : ℕ} :
-    drop n (l₁ ++ l₂) = drop n l₁ ++ drop (n - l₁.length) l₂ := by
-  induction l₁ generalizing n; · simp
-  cases n <;> simp [*]
 #align list.drop_append_eq_append_drop List.drop_append_eq_append_drop
 
-theorem drop_append_of_le_length {l₁ l₂ : List α} {n : ℕ} (h : n ≤ l₁.length) :
-    (l₁ ++ l₂).drop n = l₁.drop n ++ l₂ := by
-  simp [drop_append_eq_append_drop, tsub_eq_zero_iff_le.mpr h]
 #align list.drop_append_of_le_length List.drop_append_of_le_length
 
 /-- Dropping the elements up to `l₁.length + i` in `l₁ + l₂` is the same as dropping the elements
@@ -2348,26 +2336,9 @@ theorem foldr_ext (f g : α → β → β) (b : β) {l : List α} (H : ∀ a ∈
   simp only [foldr, ih H.2, H.1]
 #align list.foldr_ext List.foldr_ext
 
-@[simp]
-theorem foldl_nil (f : α → β → α) (a : α) : foldl f a [] = a :=
-  rfl
 #align list.foldl_nil List.foldl_nil
-
-@[simp]
-theorem foldl_cons (f : α → β → α) (a : α) (b : β) (l : List β) :
-    foldl f a (b :: l) = foldl f (f a b) l :=
-  rfl
 #align list.foldl_cons List.foldl_cons
-
-@[simp]
-theorem foldr_nil (f : α → β → β) (b : β) : foldr f b [] = b :=
-  rfl
 #align list.foldr_nil List.foldr_nil
-
-@[simp]
-theorem foldr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
-    foldr f b (a :: l) = f a (foldr f b l) :=
-  rfl
 #align list.foldr_cons List.foldr_cons
 
 #align list.foldl_append List.foldl_append
@@ -2753,18 +2724,9 @@ section FoldlMFoldrM
 
 variable {m : Type v → Type w} [Monad m]
 
-@[simp]
-theorem foldlM_nil (f : β → α → m β) {b} : List.foldlM f b [] = pure b :=
-  rfl
 #align list.mfoldl_nil List.foldlM_nil
-
 -- Porting note: now in std
 #align list.mfoldr_nil List.foldrM_nil
-
-@[simp]
-theorem foldlM_cons {f : β → α → m β} {b a l} :
-    List.foldlM f b (a :: l) = f b a >>= fun b' => List.foldlM f b' l :=
-  rfl
 #align list.mfoldl_cons List.foldlM_cons
 
 /- Porting note: now in std; now assumes an instance of `LawfulMonad m`, so we make everything
@@ -2784,7 +2746,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
     List.foldlM f b l = foldl (fun mb a => mb >>= fun b => f b a) (pure b) l := by
   suffices h :
     ∀ mb : m β, (mb >>= fun b => List.foldlM f b l) = foldl (fun mb a => mb >>= fun b => f b a) mb l
-  · simp [← h (pure b)]
+    by simp [← h (pure b)]
   induction l with
   | nil => intro; simp
   | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ←l_ih, functor_norm]
@@ -2800,9 +2762,6 @@ end FoldlMFoldrM
 
 /-! ### intersperse -/
 
-@[simp]
-theorem intersperse_nil {α : Type u} (a : α) : intersperse a [] = [] :=
-  rfl
 #align list.intersperse_nil List.intersperse_nil
 
 @[simp]
@@ -3200,18 +3159,13 @@ section find?
 
 variable {p : α → Bool} {l : List α} {a : α}
 
-@[simp]
-theorem find?_nil (p : α → Bool) : find? p [] = none :=
-  rfl
 #align list.find_nil List.find?_nil
 
--- Porting note: List.find? is given @[simp] in Std.Data.List.Init.Lemmas
 -- @[simp]
 -- Later porting note (at time of this lemma moving to Std): removing attribute `nolint simpNF`
 attribute [simp 1100] find?_cons_of_pos
 #align list.find_cons_of_pos List.find?_cons_of_pos
 
--- Porting note: List.find? is given @[simp] in Std.Data.List.Init.Lemmas
 -- @[simp]
 -- Later porting note (at time of this lemma moving to Std): removing attribute `nolint simpNF`
 attribute [simp 1100] find?_cons_of_neg
@@ -3554,7 +3508,7 @@ theorem filter_false (l : List α) :
 
 /- Porting note: need a helper theorem for span.loop. -/
 theorem span.loop_eq_take_drop :
-  ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
+    ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
   | [], l₂ => by simp [span.loop, takeWhile, dropWhile]
   | (a :: l), l₂ => by
     cases hp : p a <;> simp [hp, span.loop, span.loop_eq_take_drop, takeWhile, dropWhile]
@@ -3588,20 +3542,36 @@ theorem dropWhile_eq_nil_iff : dropWhile p l = [] ↔ ∀ x ∈ l, p x := by
   · by_cases hp : p x <;> simp [hp, dropWhile, IH]
 #align list.drop_while_eq_nil_iff List.dropWhile_eq_nil_iff
 
+@[simp] theorem takeWhile_nil : List.takeWhile p [] = [] := rfl
+
+theorem takeWhile_cons {x : α} :
+    List.takeWhile p (x :: l) = (match p x with
+      | true  => x :: takeWhile p l
+      | false => []) :=
+  rfl
+
+theorem takeWhile_cons_of_pos {x : α} (h : p x) :
+    List.takeWhile p (x :: l) = x :: takeWhile p l := by
+  simp [takeWhile_cons, h]
+
+theorem takeWhile_cons_of_neg {x : α} (h : ¬ p x) :
+    List.takeWhile p (x :: l) = [] := by
+  simp [takeWhile_cons, h]
+
 @[simp]
 theorem takeWhile_eq_self_iff : takeWhile p l = l ↔ ∀ x ∈ l, p x := by
   induction' l with x xs IH
-  · simp [takeWhile]
-  · by_cases hp : p x <;> simp [hp, takeWhile, IH]
+  · simp
+  · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH]
 #align list.take_while_eq_self_iff List.takeWhile_eq_self_iff
 
 @[simp]
 theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
   induction' l with x xs IH
-  · simp [takeWhile, true_iff]
+  · simp only [takeWhile_nil, Bool.not_eq_true, true_iff]
     intro h
     simp at h
-  · by_cases hp : p x <;> simp [hp, takeWhile, IH, nthLe_cons]
+  · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH, nthLe_cons]
 #align list.take_while_eq_nil_iff List.takeWhile_eq_nil_iff
 
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
@@ -3618,7 +3588,7 @@ theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
 theorem takeWhile_takeWhile (p q : α → Bool) (l : List α) :
     takeWhile p (takeWhile q l) = takeWhile (fun a => p a ∧ q a) l := by
   induction' l with hd tl IH
-  · simp [takeWhile]
+  · simp
   · by_cases hp : p hd <;> by_cases hq : q hd <;> simp [takeWhile, hp, hq, IH]
 #align list.take_while_take_while List.takeWhile_takeWhile
 
@@ -3823,15 +3793,8 @@ theorem enum_nil : enum ([] : List α) = [] :=
   rfl
 #align list.enum_nil List.enum_nil
 
-@[simp]
-theorem enumFrom_nil (n : ℕ) : enumFrom n ([] : List α) = [] :=
-  rfl
 #align list.enum_from_nil List.enumFrom_nil
 
-@[simp]
-theorem enumFrom_cons (x : α) (xs : List α) (n : ℕ) :
-    enumFrom n (x :: xs) = (n, x) :: enumFrom (n + 1) xs :=
-  rfl
 #align list.enum_from_cons List.enumFrom_cons
 
 @[simp]

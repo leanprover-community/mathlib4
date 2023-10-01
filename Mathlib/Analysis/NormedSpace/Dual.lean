@@ -38,7 +38,7 @@ dual
 
 noncomputable section
 
-open Classical Topology
+open Classical Topology Bornology
 
 universe u v
 
@@ -53,35 +53,16 @@ variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The topological dual of a seminormed space `E`. -/
-def Dual :=
-  E →L[𝕜] 𝕜
+abbrev Dual : Type _ := E →L[𝕜] 𝕜
 #align normed_space.dual NormedSpace.Dual
 
--- Porting note: added manually
-section DerivedInstances
+-- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_eq until
+-- leanprover/lean4#2522 is resolved; remove once fixed
+instance : NormedSpace 𝕜 (Dual 𝕜 E) := inferInstance
 
-instance : Inhabited (Dual 𝕜 E) :=
-  inferInstanceAs (Inhabited (E →L[𝕜] 𝕜))
-
-instance : SeminormedAddCommGroup (Dual 𝕜 E) :=
-  inferInstanceAs (SeminormedAddCommGroup (E →L[𝕜] 𝕜))
-
-instance : NormedSpace 𝕜 (Dual 𝕜 E) :=
-  inferInstanceAs (NormedSpace 𝕜 (E →L[𝕜] 𝕜))
-
-end DerivedInstances
-
-instance : ContinuousLinearMapClass (Dual 𝕜 E) 𝕜 E 𝕜 :=
-  ContinuousLinearMap.continuousSemilinearMapClass
-
-instance : CoeFun (Dual 𝕜 E) fun _ => E → 𝕜 :=
-  FunLike.hasCoeToFun
-
-instance : NormedAddCommGroup (Dual 𝕜 F) :=
-  ContinuousLinearMap.toNormedAddCommGroup
-
-instance [FiniteDimensional 𝕜 E] : FiniteDimensional 𝕜 (Dual 𝕜 E) :=
-  inferInstanceAs (FiniteDimensional 𝕜 (E →L[𝕜] 𝕜))
+-- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_le until
+-- leanprover/lean4#2522 is resolved; remove once fixed
+instance : SeminormedAddCommGroup (Dual 𝕜 E) := inferInstance
 
 /-- The inclusion of a normed space in its double (topological) dual, considered
    as a bounded linear map. -/
@@ -244,7 +225,6 @@ theorem polar_ball_subset_closedBall_div {c : 𝕜} (hc : 1 < ‖c‖) {r : ℝ}
   calc
     ‖x' x‖ ≤ 1 := hx' _ h₂
     _ ≤ ‖c‖ / r * ‖x‖ := (inv_pos_le_iff_one_le_mul' hcr).1 (by rwa [inv_div])
-
 #align normed_space.polar_ball_subset_closed_ball_div NormedSpace.polar_ball_subset_closedBall_div
 
 variable (𝕜)
@@ -273,15 +253,14 @@ theorem polar_closedBall {𝕜 E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [
 
 /-- Given a neighborhood `s` of the origin in a normed space `E`, the dual norms
 of all elements of the polar `polar 𝕜 s` are bounded by a constant. -/
-theorem bounded_polar_of_mem_nhds_zero {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
-    Bounded (polar 𝕜 s) := by
+theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
+    IsBounded (polar 𝕜 s) := by
   obtain ⟨a, ha⟩ : ∃ a : 𝕜, 1 < ‖a‖ := NormedField.exists_one_lt_norm 𝕜
   obtain ⟨r, r_pos, r_ball⟩ : ∃ r : ℝ, 0 < r ∧ ball 0 r ⊆ s := Metric.mem_nhds_iff.1 s_nhd
-  exact
-    bounded_closedBall.mono
-      (((dualPairing 𝕜 E).flip.polar_antitone r_ball).trans <|
-        polar_ball_subset_closedBall_div ha r_pos)
-#align normed_space.bounded_polar_of_mem_nhds_zero NormedSpace.bounded_polar_of_mem_nhds_zero
+  exact isBounded_closedBall.subset
+    (((dualPairing 𝕜 E).flip.polar_antitone r_ball).trans <|
+      polar_ball_subset_closedBall_div ha r_pos)
+#align normed_space.bounded_polar_of_mem_nhds_zero NormedSpace.isBounded_polar_of_mem_nhds_zero
 
 end PolarSets
 

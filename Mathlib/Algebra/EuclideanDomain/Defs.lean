@@ -272,7 +272,7 @@ theorem gcdB_zero_left {s : R} : gcdB 0 s = 1 := by
 #align euclidean_domain.gcd_b_zero_left EuclideanDomain.gcdB_zero_left
 
 theorem xgcd_val (x y : R) : xgcd x y = (gcdA x y, gcdB x y) :=
-  Prod.mk.eta.symm
+  rfl
 #align euclidean_domain.xgcd_val EuclideanDomain.xgcd_val
 
 end GCD
