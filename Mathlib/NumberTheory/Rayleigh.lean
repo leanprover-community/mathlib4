@@ -32,10 +32,10 @@ The main statements are:
 
 * `compl_beattySequence`: Let `r` be a real number greater than 1, and `1/r + 1/s = 1`.
   Then the complement of `B_r` is `B'_s`.
-* `rayleigh_pos`: Let `r` be a real number greater than 1, and `1/r + 1/s = 1`.
-  Then `B⁺_r` and `B⁺'_s` partition the positive integers.
-* `rayleigh_irr_pos`: Let `r` be an irrational number greater than 1, and `1/r + 1/s = 1`.
-  Then `B⁺_r` and `B⁺_s` partition the positive integers.
+* `beattySequence_symmDiff_beattySequence'_pos`: Let `r` be a real number greater than 1, and
+  `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺'_s` partition the positive integers.
+* `Irrational.beattySequence_symmDiff_beattySequence_pos`: Let `r` be an irrational number greater
+  than 1, and `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺_s` partition the positive integers.
 
 ## References
 
@@ -143,7 +143,7 @@ theorem compl_beattySequence' {r s : ℝ} (hrs : r.IsConjugateExponent s) :
 
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
 than 1, and `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺'_s` partition the positive integers. -/
-theorem rayleigh_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
+theorem beattySequence_symmDiff_beattySequence'_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     {beattySequence r k | k > 0} ∆ {beattySequence' s k | k > 0} = {n | 0 < n} := by
   apply Set.eq_of_subset_of_subset
   · rintro j (⟨⟨k, hk, hjk⟩, -⟩ | ⟨⟨k, hk, hjk⟩, -⟩)
@@ -169,9 +169,9 @@ theorem rayleigh_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     Set.not_mem_compl_iff, Set.mem_compl_iff, and_self, and_self]
   exact or_not
 
-theorem rayleigh_pos' {r s : ℝ} (hrs : r.IsConjugateExponent s) :
+theorem beattySequence'_symmDiff_beattySequence_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     {beattySequence' r k | k > 0} ∆ {beattySequence s k | k > 0} = {n | 0 < n} := by
-  rw [symmDiff_comm, rayleigh_pos hrs.symm]
+  rw [symmDiff_comm, beattySequence_symmDiff_beattySequence'_pos hrs.symm]
 
 /-- Let `r` be an irrational number. Then `B⁺_r` and `B⁺'_r` are equal. -/
 theorem Irrational.beattySequence'_pos_eq {r : ℝ} (hr : Irrational r) :
@@ -184,6 +184,7 @@ theorem Irrational.beattySequence'_pos_eq {r : ℝ} (hr : Irrational r) :
 
 /-- Rayleigh's theorem on Beatty sequences. Let `r` be an irrational number greater than 1, and
 `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺_s` partition the positive integers. -/
-theorem rayleigh_irr_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) (hr : Irrational r) :
+theorem Irrational.beattySequence_symmDiff_beattySequence_pos {r s : ℝ}
+    (hrs : r.IsConjugateExponent s) (hr : Irrational r) :
     {beattySequence r k | k > 0} ∆ {beattySequence s k | k > 0} = {n | 0 < n} := by
-  rw [← hr.beattySequence'_pos_eq, rayleigh_pos' hrs]
+  rw [← hr.beattySequence'_pos_eq, beattySequence'_symmDiff_beattySequence_pos hrs]
