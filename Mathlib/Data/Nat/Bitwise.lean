@@ -286,7 +286,7 @@ lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
       · rfl
 
 theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false = false) :
-  bitwise f x y < 2 ^ n := by
+    bitwise f x y < 2 ^ n := by
   rw [bitwise_eq_bitwise' f]
   apply lt_of_testBit n (by simp [testBit_bitwise' h x y n,
                                   testBit_eq_false_of_lt hx,
