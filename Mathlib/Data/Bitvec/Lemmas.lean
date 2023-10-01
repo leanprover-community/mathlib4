@@ -37,7 +37,7 @@ lemma val_ofNat {m} (h : m < 2^w) : (m : BitVec w).val = m := Fin.val_cast_of_lt
 lemma ofNat_val (x : BitVec w) : (x.val : BitVec w) = x := Fin.cast_val_eq_self x
 
 lemma ofNat_val' (x : BitVec w) (h : v = w):
-  HEq x (x.val : BitVec v) := h ▸ heq_of_eq (ofNat_val x).symm
+    HEq x (x.val : BitVec v) := h ▸ heq_of_eq (ofNat_val x).symm
 
 theorem val_append {x : BitVec w} {y : BitVec v} :
     (x ++ y).val = x.val <<< v ||| y.val := rfl
