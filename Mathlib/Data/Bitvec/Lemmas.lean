@@ -40,7 +40,7 @@ lemma ofNat_val' (x : BitVec w) (h : v = w):
   HEq x (x.val : BitVec v) := h ▸ heq_of_eq (ofNat_val x).symm
 
 theorem val_append {x : BitVec w} {y : BitVec v} :
-  (x ++ y).val = x.val <<< v ||| y.val := rfl
+    (x ++ y).val = x.val <<< v ||| y.val := rfl
 
 theorem val_extract {i j} {x : BitVec w} :
     (extract i j x).val = x.val / 2 ^ j % (2 ^ (i - j)) := by
