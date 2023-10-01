@@ -286,8 +286,9 @@ theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E):
     x ∈ g.adjoint ↔
     ∀ a b, (a, b) ∈ g → inner (𝕜 := 𝕜) b x.fst - inner a x.snd = 0 := by
   simp only [Submodule.adjoint, Submodule.mem_map, Submodule.mem_orthogonal, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, WithLp.linearEquiv_symm_apply, Function.comp_apply, LinearEquiv.skewSwap_symm_apply,
-    Prod.exists, WithLp.prod_inner_apply, forall_exists_index, and_imp, WithLp.linearEquiv_apply]
+    LinearEquiv.coe_coe, WithLp.linearEquiv_symm_apply, Function.comp_apply,
+    LinearEquiv.skewSwap_symm_apply, Prod.exists, WithLp.prod_inner_apply, forall_exists_index,
+    and_imp, WithLp.linearEquiv_apply]
   constructor
   · rintro ⟨y, h1, h2⟩ a b hab
     rw [← h2, WithLp.equiv_fst, WithLp.equiv_snd]
