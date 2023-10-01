@@ -7,7 +7,6 @@ import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.Topology.Algebra.Module.LinearPMap
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.LinearAlgebra.Prod
 
 #align_import analysis.inner_product_space.linear_pmap from "leanprover-community/mathlib"@"8b981918a93bc45a8600de608cde7944a80d92b9"
 
@@ -29,6 +28,7 @@ We will develop the basics of the theory of unbounded operators on Hilbert space
 * `LinearPMap.IsFormalAdjoint.le_adjoint`: Every formal adjoint is contained in the adjoint
 * `ContinuousLinearMap.toPMap_adjoint_eq_adjoint_toPMap_of_dense`: The adjoint on
   `ContinuousLinearMap` and `LinearPMap` coincide.
+* `LinearPMap.adjoint_isClosed`: The adjoint is a closed operator.
 
 ## Notation
 
