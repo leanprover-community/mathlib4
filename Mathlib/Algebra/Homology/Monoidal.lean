@@ -230,7 +230,7 @@ variable (K₁ K₂ K₃ : HomologicalComplex C c)
   [GradedObject.HasGoodTensor₁₂Tensor K₁.X K₂.X K₃.X]
   [GradedObject.HasGoodTensorTensor₂₃ K₁.X K₂.X K₃.X]
 
--- this construction should be seen as a particular case of the "associator" isomorphism
+-- this construction should be refactored so as to be a particular case of the "associator" isomorphism
 -- for the total complex of a triple complex, see `Associator.lean`
 noncomputable def associator :
     tensorObj (tensorObj K₁ K₂) K₃ ≅ tensorObj K₁ (tensorObj K₂ K₃) :=
