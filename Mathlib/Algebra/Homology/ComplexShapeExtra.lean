@@ -2,8 +2,9 @@ import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.Tactic.Linarith
 
-variable {I I₁ I₂ I₃ : Type*} (c : ComplexShape I)
+variable {I I₁ I₂ I₃ I₁₂ I₂₃ : Type*}
   (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c₃ : ComplexShape I₃)
+  (c₁₂ : ComplexShape I₁₂) (c₂₃ : ComplexShape I₂₃) (c : ComplexShape I)
 
 /-- A total complex shape for three complexes shapes `c₁`, `c₂`, `c₃` on three types `I₁`, `I₂`,
 `I₃`, consists of the data and properties that will allow the construction of a total
@@ -12,7 +13,7 @@ complex functor `HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₃
 class TotalComplexShape  where
   π : I₁ × I₂ → I₃
   /-- the sign of the horizontal differential in the differential of the total complex -/
-  ε₁ : I₁ × I₂ → ℤ -- it seems this is usually the constant `1`, but some applications *may* need others signs?
+  ε₁ : I₁ × I₂ → ℤ -- it seems this is usually the constant `1`, but some applications may need others signs
   /-- the sign of the vertical differential in the differential of the total complex -/
   ε₂ : I₁ × I₂ → ℤ
   rel₁ {i₁ i₁' : I₁} (h : c₁.Rel i₁ i₁') (i₂ : I₂) : c₃.Rel (π ⟨i₁, i₂⟩) (π ⟨i₁', i₂⟩)
@@ -171,7 +172,7 @@ namespace ComplexShape
 abbrev σ (i₁ : I₁) (i₂ : I₂) : ℤ := TotalComplexShapeSymmetry.σ c₁ c₂ c₃ i₁ i₂
 
 lemma π_symm (i₁ : I₁) (i₂ : I₂) :
-    ComplexShape.π c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.π c₁ c₂ c₃ ⟨i₁, i₂⟩ := by
+    π c₂ c₁ c₃ ⟨i₂, i₁⟩ = π c₁ c₂ c₃ ⟨i₁, i₂⟩ := by
   apply TotalComplexShapeSymmetry.symm
 
 @[simp]
@@ -181,17 +182,17 @@ lemma σ_mul_self (i₁ : I₁) (i₂ : I₂) : σ c₁ c₂ c₃ i₁ i₂ * σ
 variable {c₁}
 
 lemma σ_compatibility₁ {i₁ i₁' : I₁} (h₁ : c₁.Rel i₁ i₁') (i₂ : I₂) :
-    σ c₁ c₂ c₃ i₁ i₂ * ComplexShape.ε₂ c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.ε₁ c₁ c₂ c₃ ⟨i₁, i₂⟩ * σ c₁ c₂ c₃ i₁' i₂ :=
+    σ c₁ c₂ c₃ i₁ i₂ * ε₂ c₂ c₁ c₃ ⟨i₂, i₁⟩ = ε₁ c₁ c₂ c₃ ⟨i₁, i₂⟩ * σ c₁ c₂ c₃ i₁' i₂ :=
   TotalComplexShapeSymmetry.compatibility₁ h₁ i₂
 
 variable (c₁) {c₂}
 
 lemma σ_compatibility₂ (i₁ : I₁) {i₂ i₂' : I₂} (h₂ : c₂.Rel i₂ i₂') :
-    σ c₁ c₂ c₃ i₁ i₂ * ComplexShape.ε₁ c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.ε₂ c₁ c₂ c₃ ⟨i₁, i₂⟩ * σ c₁ c₂ c₃ i₁ i₂' :=
+    σ c₁ c₂ c₃ i₁ i₂ * ε₁ c₂ c₁ c₃ ⟨i₂, i₁⟩ = ε₂ c₁ c₂ c₃ ⟨i₁, i₂⟩ * σ c₁ c₂ c₃ i₁ i₂' :=
   TotalComplexShapeSymmetry.compatibility₂ i₁ h₂
 
 @[simps]
-instance : TotalComplexShapeSymmetry (ComplexShape.down ℕ) (ComplexShape.down ℕ) (ComplexShape.down ℕ) where
+instance : TotalComplexShapeSymmetry (down ℕ) (down ℕ) (down ℕ) where
   symm p q := add_comm q p
   σ p q := (-1) ^ (p * q)
   σ_mul_self p q := by
@@ -207,7 +208,7 @@ instance : TotalComplexShapeSymmetry (ComplexShape.down ℕ) (ComplexShape.down 
     rw [mul_one, ← pow_add, add_comm q 1, mul_add, mul_one]
 
 @[simps]
-instance : TotalComplexShapeSymmetry (ComplexShape.up ℤ) (ComplexShape.up ℤ) (ComplexShape.up ℤ) where
+instance : TotalComplexShapeSymmetry (up ℤ) (up ℤ) (up ℤ) where
   symm p q := add_comm q p
   σ p q := (p * q).negOnePow
   σ_mul_self := by aesop
@@ -247,7 +248,7 @@ lemma σ_add₂ (i₁ i₂ i₂' : I) [c.Braided] :
   σ c c c i₁ (i₂ + i₂') = σ c c c i₁ i₂ * σ c c c i₁ i₂' := by
   apply ComplexShape.Braided.σ_add₂
 
-instance : (ComplexShape.down ℕ).Braided where
+instance : (down ℕ).Braided where
   σ_add₁ p p' q := by
     dsimp
     rw [← pow_add, add_mul]
@@ -255,7 +256,7 @@ instance : (ComplexShape.down ℕ).Braided where
     dsimp
     rw [← pow_add, mul_add]
 
-instance : (ComplexShape.up ℤ).Braided where
+instance : (up ℤ).Braided where
   σ_add₁ p p' q := by
     dsimp
     rw [← Int.negOnePow_add, add_mul]
@@ -274,19 +275,116 @@ that the braiding for the tensor product of complexes is symmetric. -/
 class Symmetry extends c.Braided where
   σ_symm (i₁ i₂ : I) : ComplexShape.σ c c c i₁ i₂ = ComplexShape.σ c c c i₂ i₁
 
-lemma σ_ε_symm [c.Symmetry] (i₁ i₂ : I) : ComplexShape.σ c c c i₁ i₂ = ComplexShape.σ c c c i₂ i₁ := by
+lemma σ_ε_symm [c.Symmetry] (i₁ i₂ : I) : σ c c c i₁ i₂ = σ c c c i₂ i₁ := by
   apply Symmetry.σ_symm
 
-instance : (ComplexShape.down ℕ).Symmetry where
+instance : (down ℕ).Symmetry where
   σ_symm p q := by
     dsimp
     rw [mul_comm]
 
-instance : (ComplexShape.up ℤ).Symmetry where
+instance : (up ℤ).Symmetry where
   σ_symm p q := by
     dsimp
     rw [mul_comm]
 
 end
+
+section
+
+-- If we have three complexes shapes `c₁`, `c₂`, `c₃`, `c₁₂`, `c₂₃`, `c`, and total functors
+-- `HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂`,
+-- `HomologicalComplex₂ C c₁₂ c₃ ⥤ HomologicalComplex C c`,
+-- `HomologicalComplex₂ C c₂ c₃ ⥤ HomologicalComplex C c₂₃`,
+-- `HomologicalComplex₂ C c₁ c₂₂₃ ⥤ HomologicalComplex C c`, we get two ways to
+-- compute the total complex of a triple complex in `HomologicalComplex₃ C c₁ c₂ c₃`, then
+-- under the conditions below , these two canonical identify (without introducing signs)
+class Associator [TotalComplexShape c₁ c₂ c₁₂] [TotalComplexShape c₁₂ c₃ c]
+    [TotalComplexShape c₂ c₃ c₂₃] [TotalComplexShape c₁ c₂₃ c] : Prop where
+  assoc (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩
+  ε₁_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₁ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) =
+      ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₁ c₁ c₂ c₁₂ (i₁, i₂)
+  ε₂_ε₁ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₁ c₂ c₃ c₂₃ (i₂, i₃) =
+      ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₂ c₁ c₂ c₁₂ (i₁, i₂)
+  ε₂_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₂ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) =
+      (ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₂ c₂ c₃ c₂₃ (i₂, i₃))
+
+variable [TotalComplexShape c₁ c₂ c₁₂] [TotalComplexShape c₁₂ c₃ c]
+  [TotalComplexShape c₂ c₃ c₂₃] [TotalComplexShape c₁ c₂₃ c] [Associator c₁ c₂ c₃ c₁₂ c₂₃ c]
+
+lemma assoc (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+      π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩ := by
+  apply Associator.assoc
+
+lemma associator_ε₁_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₁ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) =
+      ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₁ c₁ c₂ c₁₂ (i₁, i₂) := by
+  apply Associator.ε₁_eq_mul
+
+lemma associator_ε₂_ε₁ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₁ c₂ c₃ c₂₃ (i₂, i₃) =
+      ε₁ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ε₂ c₁ c₂ c₁₂ (i₁, i₂) := by
+  apply Associator.ε₂_ε₁
+
+lemma associator_ε₂_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
+    ε₂ c₁₂ c₃ c (π c₁ c₂ c₁₂ (i₁, i₂), i₃) =
+      (ε₂ c₁ c₂₃ c (i₁, π c₂ c₃ c₂₃ (i₂, i₃)) * ε₂ c₂ c₃ c₂₃ (i₂, i₃)) := by
+  apply Associator.ε₂_eq_mul
+
+end
+
+instance [AddMonoid I] [c.TensorSigns] :
+    Associator c c c c c c where
+  assoc := add_assoc
+  ε₁_eq_mul _ _ _ := by dsimp; rw [one_mul]
+  ε₂_ε₁ _ _ _ := by dsimp; rw [one_mul, mul_one]
+  ε₂_eq_mul _ _ _ := by dsimp; rw [ε_add]
+
+-- given a bifunctor F : C₁ᵒᵖ × C₂ ⥤ C₃ like an internal Hom functor (X, Y) -> HOM(X, Y)
+-- we may transform F into F' : C₁ ⥤ C₂ᵒᵖ ⥤ C₃ᵒᵖ, and using the `TotalComplexShape` defined
+-- below, we may get a functor `CochainComplex C₁ ℤ ⥤ ChainComplex C₂ᵒᵖ ⥤ ChainComplex C₃ᵒᵖ`
+-- which can be transformed into `CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ⥤ CochainComplex C₃`
+@[simps]
+instance : TotalComplexShape (up ℤ) (down ℤ) (down ℤ) where
+  π := fun ⟨a, b⟩ => b - a
+  ε₁ := fun ⟨a, b⟩ => (b - a + 1).negOnePow
+  ε₂ _ := 1
+  rel₁ := by
+    rintro a _ rfl b
+    simp only [down_Rel]
+    linarith
+  rel₂ := by
+    rintro a _ b rfl
+    simp only [down_Rel]
+    linarith
+  add_eq_zero := by
+    rintro a _ _ b rfl rfl
+    dsimp
+    rw [one_mul, mul_one, Int.negOnePow_succ, neg_add_eq_zero]
+    congr 1
+    linarith
+
+-- this should be useful for "chers à Cartan" isomorphisms `HOM(K ⊗ L, M) ≅ HOM(K, HOM(L, M))`
+instance : Associator (up ℤ) (up ℤ) (down ℤ) (up ℤ) (down ℤ) (down ℤ) where
+  assoc a b c := by
+    dsimp
+    linarith
+  ε₁_eq_mul a b c := by
+    dsimp
+    rw [mul_one]
+    congr 1
+    linarith
+  ε₂_ε₁ a b c := by
+    dsimp
+    rw [one_mul, ← Int.negOnePow_add]
+    congr 1
+    linarith
+  ε₂_eq_mul _ _ _ := by
+    dsimp
+    rw [one_mul]
 
 end ComplexShape

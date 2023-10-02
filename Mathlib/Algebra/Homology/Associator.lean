@@ -15,7 +15,7 @@ namespace HomologicalComplex₃
 
 variable {C c₁ c₂ c₃}
 
--- `[HasZeroMorphisms C]` is sufficient, but `Functor.mapHomologicalComplex` has a `Preadditive C` assumption
+-- `[HasZeroMorphisms C]` is sufficient, but we use `Functor.mapHomologicalComplex` which has a `Preadditive C` assumption
 set_option maxHeartbeats 400000 in
 @[simps]
 def rotate [Preadditive C] (K : HomologicalComplex₃ C c₁ c₂ c₃) :
@@ -44,34 +44,6 @@ variable [Preadditive C] (K : HomologicalComplex₃ C c₁ c₂ c₃)
   (c₁₂ : ComplexShape I₁₂) [DecidableEq I₁₂]
   (c₂₃ : ComplexShape I₂₃) [DecidableEq I₂₃]
   (c : ComplexShape J) [DecidableEq J]
-
-namespace ComplexShape
-
-class Associator [TotalComplexShape c₁ c₂ c₁₂] [TotalComplexShape c₁₂ c₃ c]
-    [TotalComplexShape c₂ c₃ c₂₃] [TotalComplexShape c₁ c₂₃ c] where
-  assoc (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
-    π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩
-  compatibility₁ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
-    ComplexShape.ε₁ c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) =
-      ComplexShape.ε₁ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂)
-
-section
-
-variable [TotalComplexShape c₁ c₂ c₁₂] [TotalComplexShape c₁₂ c₃ c]
-  [TotalComplexShape c₂ c₃ c₂₃] [TotalComplexShape c₁ c₂₃ c] [Associator c₁ c₂ c₃ c₁₂ c₂₃ c]
-
-lemma assoc (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
-      π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩ := by
-  apply Associator.assoc
-
-lemma associator_ε₁_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
-    ComplexShape.ε₁ c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) =
-      ComplexShape.ε₁ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂) := by
-  apply Associator.compatibility₁
-
-end
-
-end ComplexShape
 
 namespace HomologicalComplex₃
 
@@ -118,7 +90,7 @@ variable
   [HasTotal₁₂ K c₁₂] [(K.total₁₂ c₁₂).HasTotal c]
   [ComplexShape.Associator c₁ c₂ c₃ c₁₂ c₂₃ c]
 
-noncomputable def totalAssociatorX (j : J) :
+noncomputable def totalXAssociator (j : J) :
     ((K.total₁₂ c₁₂).total c).X j ≅ ((K.total₂₃ c₂₃).total c).X j where
   hom := HomologicalComplex₂.descTotal _ _
     (fun i₁₂ i₃ h => HomologicalComplex₂.descTotal _ _
@@ -147,13 +119,12 @@ noncomputable def totalAssociatorX (j : J) :
     dsimp
     simp
 
-/-
 noncomputable def totalAssociator : (K.total₁₂ c₁₂).total c ≅ (K.total₂₃ c₂₃).total c :=
-  HomologicalComplex.Hom.isoOfComponents (K.totalAssociatorX c₁₂ c₂₃ c) (fun j j' _ => by
+  HomologicalComplex.Hom.isoOfComponents (K.totalXAssociator c₁₂ c₂₃ c) (fun j j' _ => by
     ext i₁₂ i₃ h
     apply HomologicalComplex₂.total_ext
     intro i₁ i₂ h'
-    dsimp [totalAssociatorX]
+    dsimp [totalXAssociator]
     conv_lhs =>
       rw [HomologicalComplex₂.ι_descTotal_assoc, HomologicalComplex₂.ι_descTotal_assoc, assoc,
         HomologicalComplex₂.ιTotal_d, comp_add, comp_zsmul, comp_zsmul]
@@ -165,8 +136,8 @@ noncomputable def totalAssociator : (K.total₁₂ c₁₂).total c ≅ (K.total
         comp_zsmul, comp_zsmul, assoc, assoc]
       dsimp
       erw [HomologicalComplex₂.ιTotal_d_assoc]
-      rw [add_comp, zsmul_comp, zsmul_comp, assoc, assoc, zsmul_add, smul_smul, smul_smul]
-    rw [add_assoc]
+      rw [add_comp, zsmul_comp, zsmul_comp, assoc, assoc, zsmul_add, smul_smul, smul_smul,
+        add_assoc]
     congr 1
     · congr 1
       · rw [← h', ComplexShape.associator_ε₁_eq_mul c₁ c₂ c₃ c₁₂ c₂₃ c]
@@ -193,11 +164,14 @@ noncomputable def totalAssociator : (K.total₁₂ c₁₂).total c ≅ (K.total
             HomologicalComplex.zero_f, HomologicalComplex.zero_f, zero_comp, comp_zero,
             zero_comp]
     · congr 1
-      · sorry
-      · sorry
-    )-/
+      · congr 1
+        · rw [ComplexShape.associator_ε₂_ε₁ c₁ c₂ c₃ c₁₂ c₂₃ c, h']
+        · sorry
+      · congr 1
+        · rw [← h', ComplexShape.associator_ε₂_eq_mul c₁ c₂ c₃ c₁₂ c₂₃ c]
+        · sorry
+    )
 
 end
-
 
 end HomologicalComplex₃
