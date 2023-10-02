@@ -305,8 +305,7 @@ namespace NonemptyInterval
 @[to_additive]
 theorem coe_pow_interval [OrderedCommMonoid α] (s : NonemptyInterval α) (n : ℕ) :
     (s ^ n : Interval α) = (s : Interval α) ^ n :=
-  map_pow ({ toFun := (↑), map_one' := coe_one_interval, map_mul' := coe_mul_interval }
-    : NonemptyInterval α →* Interval α) _ _
+  map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
 #align nonempty_interval.coe_pow_interval NonemptyInterval.coe_pow_interval
 #align nonempty_interval.coe_nsmul_interval NonemptyInterval.coe_nsmul_interval
 
@@ -667,8 +666,7 @@ theorem length_sub : (s - t).length = s.length + t.length := by simp [sub_eq_add
 @[simp]
 theorem length_sum (f : ι → NonemptyInterval α) (s : Finset ι) :
     (∑ i in s, f i).length = ∑ i in s, (f i).length :=
-  map_sum ({ toFun := length, map_zero' := length_zero, map_add' := length_add}
-    : NonemptyInterval α →+ α) _ _
+  map_sum (⟨⟨length, length_zero⟩, length_add⟩ : NonemptyInterval α →+ α) _ _
 #align nonempty_interval.length_sum NonemptyInterval.length_sum
 
 end NonemptyInterval

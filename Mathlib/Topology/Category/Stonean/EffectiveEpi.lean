@@ -65,8 +65,8 @@ which is an epi in `CompHaus` covering `Z` where `βZ` lies in the image of `Sto
 -/
 lemma lift_desc_condition {W : Stonean} {e : (a : α) → X a ⟶ W}
     (h : ∀ {Z : Stonean} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
-      g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂)
-    : ∀ {Z : CompHaus} (a₁ a₂ : α) (g₁ : Z ⟶ F.obj (X a₁)) (g₂ : Z ⟶ F.obj (X a₂)),
+      g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂) :
+    ∀ {Z : CompHaus} (a₁ a₂ : α) (g₁ : Z ⟶ F.obj (X a₁)) (g₂ : Z ⟶ F.obj (X a₂)),
         g₁ ≫ (π a₁) = g₂ ≫ (π a₂) → g₁ ≫ e a₁ = g₂ ≫ e a₂ := by
   intro Z a₁ a₂ g₁ g₂ hg
   -- The Stone-Cech-compactification `βZ` of `Z : CompHaus` is in `Stonean`
