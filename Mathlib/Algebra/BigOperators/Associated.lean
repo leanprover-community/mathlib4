@@ -57,6 +57,19 @@ theorem Prod.associated_iff {M N : Type*} [Monoid M] [Monoid N] {x z : M × N} :
   fun ⟨⟨u₁, h₁⟩, ⟨u₂, h₂⟩⟩ =>
     ⟨MulEquiv.prodUnits.invFun (u₁, u₂), Prod.eq_iff_fst_eq_snd_eq.2 ⟨h₁, h₂⟩⟩⟩
 
+theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) (f : ι → M)
+    (g : ι → M) (h : ∀ i, i ∈ s → Associated (f i) (g i)) : (∏ i in s, f i) ~ᵤ (∏ i in s, g i) := by
+  induction s using Finset.induction with
+  | empty =>
+    simp only [Finset.prod_empty]
+    rfl
+  | @insert j s hjs IH =>
+    classical
+    convert_to Associated (∏ i in insert j s, f i) (∏ i in insert j s, g i)
+    rw [Finset.prod_insert hjs, Finset.prod_insert hjs]
+    exact Associated.mul_mul (h j (Finset.mem_insert_self j s))
+      (IH (fun i hi ↦ h i (Finset.mem_insert_of_mem hi)))
+
 theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α} (hp : Prime p)
     {s : Multiset α} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
   Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_unit]) fun a s ih hs hps => by
