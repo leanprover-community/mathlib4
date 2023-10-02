@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer, Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.FilteredColimits
-import Mathlib.AlgebraicGeometry.SheafedSpace
+import Mathlib.Geometry.RingedSpace.SheafedSpace
 import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Limits

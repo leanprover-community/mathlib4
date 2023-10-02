@@ -62,7 +62,11 @@ instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [M
 #align quotient_group.has_measurable_smul QuotientGroup.measurableSMul
 #align quotient_add_group.has_measurable_vadd QuotientAddGroup.measurableVAdd
 
+<<<<<<< HEAD
 end
+=======
+variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 μ)
+>>>>>>> origin/master
 
 section smulInvariantMeasure
 

@@ -72,7 +72,7 @@ theorem chain_iff_forall₂ :
   | a, [] => by simp
   | a, b :: l => by
     by_cases h : l = [] <;>
-    simp [@chain_iff_forall₂ b l, *]
+    simp [@chain_iff_forall₂ b l, dropLast, *]
 #align list.chain_iff_forall₂ List.chain_iff_forall₂
 
 theorem chain_append_singleton_iff_forall₂ : Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) :=
@@ -164,9 +164,9 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
 set_option linter.deprecated false in
 @[deprecated chain_iff_get]
 theorem chain_iff_nthLe {R} {a : α} {l : List α} : Chain R a l ↔
-        (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
-          ∀ (i) (h : i < length l - 1),
-            R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h)) :=
+    (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
+    ∀ (i) (h : i < length l - 1),
+    R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h)) :=
   by rw [chain_iff_get]; simp [nthLe]
 #align list.chain_iff_nth_le List.chain_iff_nthLe
 
@@ -375,7 +375,7 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
 
 -- porting note: new
 lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
-  (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
+    (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
     L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
 | [], _ => by simp
 | [l], _ => by simp [join]

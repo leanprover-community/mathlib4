@@ -100,6 +100,14 @@ theorem SameCycle.trans : SameCycle f x y → SameCycle f y z → SameCycle f x 
   fun ⟨i, hi⟩ ⟨j, hj⟩ => ⟨j + i, by rw [zpow_add, mul_apply, hi, hj]⟩
 #align equiv.perm.same_cycle.trans Equiv.Perm.SameCycle.trans
 
+variable (f) in
+theorem SameCycle.equivalence : Equivalence (SameCycle f) :=
+  ⟨SameCycle.refl f, SameCycle.symm, SameCycle.trans⟩
+
+/-- The setoid defined by the `SameCycle` relation. -/
+def SameCycle.setoid (f : Perm α) : Setoid α where
+  iseqv := SameCycle.equivalence f
+
 @[simp]
 theorem sameCycle_one : SameCycle 1 x y ↔ x = y := by simp [SameCycle]
 #align equiv.perm.same_cycle_one Equiv.Perm.sameCycle_one
@@ -609,7 +617,7 @@ theorem IsCycle.eq_on_support_inter_nonempty_congr (hf : IsCycle f) (hg : IsCycl
     intro y hy
     obtain ⟨k, rfl⟩ := hf.exists_pow_eq (mem_support.mp hx') (mem_support.mp hy)
     rwa [pow_eq_on_of_mem_support h _ _ (mem_inter_of_mem hx' hx''), pow_apply_mem_support]
-  rw [(inter_eq_left_iff_subset _ _).mpr this] at h
+  rw [inter_eq_left.mpr this] at h
   exact hf.support_congr hg this h
 #align equiv.perm.is_cycle.eq_on_support_inter_nonempty_congr Equiv.Perm.IsCycle.eq_on_support_inter_nonempty_congr
 
