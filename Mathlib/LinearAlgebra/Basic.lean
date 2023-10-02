@@ -168,10 +168,7 @@ variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₂
 variable [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
 variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃)
 
-@[simp]
-theorem map_sum {ι : Type*} {t : Finset ι} {g : ι → M} : f (∑ i in t, g i) = ∑ i in t, f (g i) :=
-  f.toAddMonoidHom.map_sum _ _
-#align linear_map.map_sum LinearMap.map_sum
+#align linear_map.map_sum map_sumₓ
 
 
 /-- The restriction of a linear map `f : M → M₂` to a submodule `p ⊆ M` gives a linear map
@@ -1759,10 +1756,7 @@ variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPai
 
 variable (e e' : M ≃ₛₗ[σ₁₂] M₂)
 
-@[simp]
-theorem map_sum {s : Finset ι} (u : ι → M) : e (∑ i in s, u i) = ∑ i in s, e (u i) :=
-  e.toLinearMap.map_sum
-#align linear_equiv.map_sum LinearEquiv.map_sum
+#align linear_equiv.map_sum map_sumₓ
 
 theorem map_eq_comap {p : Submodule R M} :
     (p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) = p.comap (e.symm : M₂ →ₛₗ[σ₂₁] M) :=
