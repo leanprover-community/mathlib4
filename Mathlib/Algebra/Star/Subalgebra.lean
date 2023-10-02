@@ -445,13 +445,10 @@ theorem adjoin_toSubalgebra (s : Set A) :
   rfl
 #align star_subalgebra.adjoin_to_subalgebra StarSubalgebra.adjoin_toSubalgebra
 
+@[set_like 20]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   (Set.subset_union_left s (star s)).trans Algebra.subset_adjoin
 #align star_subalgebra.subset_adjoin StarSubalgebra.subset_adjoin
-
-@[set_like 20]
-lemma mem_adjoin_of_mem (s : Set A) {x : A} (hx : x ∈ s) : x ∈ adjoin R s :=
-  subset_adjoin R s hx
 
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
   (Set.subset_union_right s (star s)).trans Algebra.subset_adjoin

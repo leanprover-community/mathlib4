@@ -40,13 +40,10 @@ variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
 variable {s t : Set A}
 
+@[set_like 20]
 theorem subset_adjoin : s ⊆ adjoin R s :=
   Algebra.gc.le_u_l s
 #align algebra.subset_adjoin Algebra.subset_adjoin
-
-@[set_like 20]
-lemma mem_adjoin_of_mem {x : A} (hx : x ∈ s) : x ∈ Algebra.adjoin R s :=
-  subset_adjoin hx
 
 theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
   Algebra.gc.l_le H

@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike.Macro
 
 #align_import data.set_like.basic from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
 
@@ -173,6 +174,9 @@ theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
 theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2
 #align set_like.coe_mem SetLike.coe_mem
+
+@[set_like 20]
+lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
 -- porting note: removed `@[simp]` because `simpNF` linter complained
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl

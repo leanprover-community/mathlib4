@@ -514,12 +514,9 @@ theorem adjoin_toSubmodule (s : Set A) :
     (adjoin R s).toSubmodule = Submodule.span R (NonUnitalSubsemiring.closure s : Set A) :=
   rfl
 
+@[set_like 20]
 theorem subset_adjoin {s : Set A} : s ⊆ adjoin R s :=
   NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span
-
-@[set_like 20]
-lemma mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s :=
-  subset_adjoin R hx
 
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   NonUnitalAlgebra.subset_adjoin R (Set.mem_singleton x)

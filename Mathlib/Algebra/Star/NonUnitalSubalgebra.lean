@@ -633,12 +633,9 @@ theorem adjoin_toNonUnitalSubalgebra (s : Set A) :
     (adjoin R s).toNonUnitalSubalgebra = NonUnitalAlgebra.adjoin R (s ∪ star s) :=
   rfl
 
+@[set_like 20]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   (Set.subset_union_left s (star s)).trans <| NonUnitalAlgebra.subset_adjoin R
-
-@[set_like 20]
-lemma mem_adjoin_of_mem (s : Set A) {x : A} (hx : x ∈ s) : x ∈ adjoin R s :=
-  subset_adjoin R s hx
 
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
   (Set.subset_union_right s (star s)).trans <| NonUnitalAlgebra.subset_adjoin R

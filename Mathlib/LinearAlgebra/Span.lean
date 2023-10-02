@@ -58,11 +58,9 @@ theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p
   mem_iInter₂
 #align submodule.mem_span Submodule.mem_span
 
+@[set_like 20]
 theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
 #align submodule.subset_span Submodule.subset_span
-
-@[set_like 20]
-lemma mem_span_of_mem {x : M} (hx : x ∈ s) : x ∈ span R s := subset_span hx
 
 theorem span_le {p} : span R s ≤ p ↔ s ⊆ p :=
   ⟨Subset.trans subset_span, fun ss _ h => mem_span.1 h _ ss⟩
