@@ -288,7 +288,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed {ι : Type
     (hZc : ∀ i, IsCompact (Z i)) (hZcl : ∀ i, IsClosed (Z i)) : (⋂ i, Z i).Nonempty := by
   let i₀ := hι.some
   suffices (Z i₀ ∩ ⋂ i, Z i).Nonempty by
-    rwa [inter_eq_right_iff_subset.mpr (iInter_subset _ i₀)] at this
+    rwa [inter_eq_right.mpr (iInter_subset _ i₀)] at this
   simp only [nonempty_iff_ne_empty] at hZn ⊢
   apply mt ((hZc i₀).elim_directed_family_closed Z hZcl)
   push_neg
@@ -885,11 +885,16 @@ theorem Embedding.isCompact_iff_isCompact_image {f : α → β} (hf : Embedding 
   hf.toInducing.isCompact_iff.symm
 #align embedding.is_compact_iff_is_compact_image Embedding.isCompact_iff_isCompact_image
 
+/-- The preimage of a compact set under an inducing map is a compact set. -/
+theorem Inducing.isCompact_preimage {f : α → β} (hf : Inducing f) (hf' : IsClosed (range f))
+    {K : Set β} (hK : IsCompact K) : IsCompact (f ⁻¹' K) := by
+  replace hK := hK.inter_right hf'
+  rwa [← hf.isCompact_iff, image_preimage_eq_inter_range]
+
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
-theorem ClosedEmbedding.isCompact_preimage {f : α → β} (hf : ClosedEmbedding f) {K : Set β}
-    (hK : IsCompact K) : IsCompact (f ⁻¹' K) := by
-  replace hK := hK.inter_right hf.closed_range
-  rwa [← hf.toInducing.isCompact_iff, image_preimage_eq_inter_range]
+theorem ClosedEmbedding.isCompact_preimage {f : α → β} (hf : ClosedEmbedding f)
+    {K : Set β} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
+  hf.toInducing.isCompact_preimage (hf.closed_range) hK
 #align closed_embedding.is_compact_preimage ClosedEmbedding.isCompact_preimage
 
 /-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.

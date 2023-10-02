@@ -168,10 +168,7 @@ variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₂
 variable [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
 variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃)
 
-@[simp]
-theorem map_sum {ι : Type*} {t : Finset ι} {g : ι → M} : f (∑ i in t, g i) = ∑ i in t, f (g i) :=
-  f.toAddMonoidHom.map_sum _ _
-#align linear_map.map_sum LinearMap.map_sum
+#align linear_map.map_sum map_sumₓ
 
 
 /-- The restriction of a linear map `f : M → M₂` to a submodule `p ⊆ M` gives a linear map
@@ -1150,6 +1147,11 @@ theorem range_neg {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semirin
   rw [range_comp, Submodule.map_neg, Submodule.map_id]
 #align linear_map.range_neg LinearMap.range_neg
 
+lemma range_domRestrict_le_range [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (S : Submodule R M) :
+    LinearMap.range (f.domRestrict S) ≤ LinearMap.range f := by
+  rintro x ⟨⟨y, hy⟩, rfl⟩
+  exact LinearMap.mem_range_self f y
+
 /-- A linear map version of `AddMonoidHom.eqLocusM` -/
 def eqLocus (f g : F) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
@@ -1439,6 +1441,19 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
     suffices z + x - x ∈ p by simpa only [this, add_sub_cancel]
     exact p.sub_mem hxz hx'
 #align linear_map.ker_le_iff LinearMap.ker_le_iff
+
+@[simp] lemma injective_domRestrict_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
+    Injective (f.domRestrict S) ↔ S ⊓ LinearMap.ker f = ⊥ := by
+  rw [← LinearMap.ker_eq_bot]
+  refine ⟨fun h ↦ le_bot_iff.1 ?_, fun h ↦ le_bot_iff.1 ?_⟩
+  · intro x ⟨hx, h'x⟩
+    have : ⟨x, hx⟩ ∈ LinearMap.ker (LinearMap.domRestrict f S) := by simpa using h'x
+    rw [h] at this
+    simpa using this
+  · rintro ⟨x, hx⟩ h'x
+    have : x ∈ S ⊓ LinearMap.ker f := ⟨hx, h'x⟩
+    rw [h] at this
+    simpa using this
 
 end Ring
 
@@ -1759,10 +1774,7 @@ variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPai
 
 variable (e e' : M ≃ₛₗ[σ₁₂] M₂)
 
-@[simp]
-theorem map_sum {s : Finset ι} (u : ι → M) : e (∑ i in s, u i) = ∑ i in s, e (u i) :=
-  e.toLinearMap.map_sum
-#align linear_equiv.map_sum LinearEquiv.map_sum
+#align linear_equiv.map_sum map_sumₓ
 
 theorem map_eq_comap {p : Submodule R M} :
     (p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) = p.comap (e.symm : M₂ →ₛₗ[σ₂₁] M) :=
