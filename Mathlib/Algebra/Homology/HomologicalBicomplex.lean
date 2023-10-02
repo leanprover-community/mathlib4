@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.GradedObject.Bifunctor
+import Mathlib.Algebra.Homology.ComplexShapeExtra
 import Mathlib.Algebra.Homology.Flip
 import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.Tactic.Linarith
@@ -175,48 +176,6 @@ end Functor
 
 end CategoryTheory
 
-section
-
-variable (c₃ : ComplexShape I₃)
-
-class TotalComplexShape  where
-  π : I₁ × I₂ → I₃
-  ε₁ : I₁ × I₂ → ℤ
-  ε₂ : I₁ × I₂ → ℤ
-  rel₁ ⦃i₁ i₁' : I₁⦄ (h : c₁.Rel i₁ i₁') (i₂ : I₂) : c₃.Rel (π ⟨i₁, i₂⟩) (π ⟨i₁', i₂⟩)
-  rel₂ (i₁ : I₁) ⦃i₂ i₂' : I₂⦄ (h : c₂.Rel i₂ i₂') : c₃.Rel (π ⟨i₁, i₂⟩) (π ⟨i₁, i₂'⟩)
-  eq ⦃i₁ i₁' : I₁⦄ ⦃i₂ i₂' : I₂⦄ (h₁ : c₁.Rel i₁ i₁') (h₂ : c₂.Rel i₂ i₂') :
-    ε₁ ⟨i₁, i₂⟩ * ε₂ ⟨i₁', i₂⟩ + ε₂ ⟨i₁, i₂⟩ * ε₁ ⟨i₁, i₂'⟩ = 0
-
-variable [TotalComplexShape c₁ c₂ c₃]
-
-namespace ComplexShape
-
-abbrev π (i : I₁ × I₂) : I₃ := TotalComplexShape.π c₁ c₂ c₃ i
-abbrev ε₁ (i : I₁ × I₂) : ℤ := TotalComplexShape.ε₁ c₁ c₂ c₃ i
-abbrev ε₂ (i : I₁ × I₂) : ℤ := TotalComplexShape.ε₂ c₁ c₂ c₃ i
-
-variable {c₁}
-
-lemma rel_π₁ {i₁ i₁' : I₁} (h : c₁.Rel i₁ i₁') (i₂ : I₂) : c₃.Rel (π c₁ c₂ c₃ ⟨i₁, i₂⟩) (π c₁ c₂ c₃ ⟨i₁', i₂⟩) :=
-  TotalComplexShape.rel₁ h i₂
-
-variable (c₁) {c₂}
-
-lemma rel_π₂ (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') : c₃.Rel (π c₁ c₂ c₃ ⟨i₁, i₂⟩) (π c₁ c₂ c₃ ⟨i₁, i₂'⟩) :=
-  TotalComplexShape.rel₂ i₁ h
-
-variable {c₁}
-
-lemma totalComplexShape_compatibility
-    {i₁ i₁' : I₁} {i₂ i₂' : I₂} (h₁ : c₁.Rel i₁ i₁') (h₂ : c₂.Rel i₂ i₂') :
-    ε₁ c₁ c₂ c₃ ⟨i₁, i₂⟩ * ε₂ c₁ c₂ c₃ ⟨i₁', i₂⟩ + ε₂ c₁ c₂ c₃ ⟨i₁, i₂⟩ * ε₁ c₁ c₂ c₃ ⟨i₁, i₂'⟩ = 0 :=
-  TotalComplexShape.eq h₁ h₂
-
-end ComplexShape
-
-end
-
 namespace HomologicalComplex₂
 
 variable {c₁ c₂}
@@ -297,7 +256,7 @@ noncomputable def total : HomologicalComplex C c₃ :=
           dsimp
           by_cases h₃ : c₂.Rel i₂ (c₂.next i₂)
           · by_cases h₄ : c₁.Rel i₁ (c₁.next i₁)
-            · rw [ComplexShape.totalComplexShape_compatibility c₃ h₄ h₃, zero_smul]
+            · rw [ComplexShape.add_eq_zero c₃ h₄ h₃, zero_smul]
             · rw [K.shape _ _ h₄, HomologicalComplex.zero_f, zero_comp, comp_zero, smul_zero]
           · rw [(K.X i₁).shape _ _ h₃, zero_comp, smul_zero]
         · rw [GradedObject.ιMapObjOrZero_eq_zero _ _ _ _ h₂, zero_comp, comp_zero,
@@ -415,13 +374,7 @@ noncomputable def totalMapIso : K.total c₃ ≅ L.total c₃ where
   hom_inv_id := by rw [← totalMap_comp, e.hom_inv_id, totalMap_id]
   inv_hom_id := by rw [← totalMap_comp, e.inv_hom_id, totalMap_id]
 
-end HomologicalComplex₂
-
-namespace TotalComplexShape
-
-variable {c₁ c₂} (c₃ : ComplexShape I₃)
-
-variable [TotalComplexShape c₁ c₂ c₃] [DecidableEq I₃]
+variable (c₁ c₂)
 
 @[simps]
 noncomputable def totalFunctor (C : Type*) [Category C] [Preadditive C]
@@ -430,7 +383,7 @@ noncomputable def totalFunctor (C : Type*) [Category C] [Preadditive C]
   obj K := K.total c₃
   map φ := HomologicalComplex₂.totalMap φ c₃
 
-end TotalComplexShape
+end HomologicalComplex₂
 
 namespace CategoryTheory
 
@@ -516,45 +469,7 @@ end NatIso
 end CategoryTheory
 
 variable (c₃ : ComplexShape I₃) [TotalComplexShape c₁ c₂ c₃] [TotalComplexShape c₂ c₁ c₃]
-
-class TotalComplexShapeSymmetry where --(τ : TotalComplexShape c₁ c₂ c₃) (τ' : TotalComplexShape c₂ c₁ c₃) where
-  symm (i₁ : I₁) (i₂ : I₂) : ComplexShape.π c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.π c₁ c₂ c₃ ⟨i₁, i₂⟩
-  σ (i₁ : I₁) (i₂ : I₂) : ℤ
-  σ_mul_self (i₁ : I₁) (i₂ : I₂) : σ i₁ i₂ * σ i₁ i₂ = 1
-  compatibility₁ ⦃i₁ i₁' : I₁⦄ (h₁ : c₁.Rel i₁ i₁') (i₂ : I₂) :
-    σ i₁ i₂ * ComplexShape.ε₂ c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.ε₁ c₁ c₂ c₃ ⟨i₁, i₂⟩ * σ i₁' i₂
-  compatibility₂ (i₁ : I₁) ⦃i₂ i₂' : I₂⦄ (h₂ : c₂.Rel i₂ i₂') :
-    σ i₁ i₂ * ComplexShape.ε₁ c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.ε₂ c₁ c₂ c₃ ⟨i₁, i₂⟩ * σ i₁ i₂'
-
-variable [TotalComplexShapeSymmetry c₁ c₂ c₃]
-
-namespace ComplexShape
-
-abbrev σ (i₁ : I₁) (i₂ : I₂) : ℤ := TotalComplexShapeSymmetry.σ c₁ c₂ c₃ i₁ i₂
-
-lemma π_symm (i₁ : I₁) (i₂ : I₂) :
-    ComplexShape.π c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.π c₁ c₂ c₃ ⟨i₁, i₂⟩ := by
-  apply TotalComplexShapeSymmetry.symm
-
-@[simp]
-lemma σ_mul_self (i₁ : I₁) (i₂ : I₂) : σ c₁ c₂ c₃ i₁ i₂ * σ c₁ c₂ c₃ i₁ i₂ = 1 := by
-  apply TotalComplexShapeSymmetry.σ_mul_self
-
-variable {c₁}
-
-lemma σ_compatibility₁ {i₁ i₁' : I₁} (h₁ : c₁.Rel i₁ i₁') (i₂ : I₂) :
-    σ c₁ c₂ c₃ i₁ i₂ * ComplexShape.ε₂ c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.ε₁ c₁ c₂ c₃ ⟨i₁, i₂⟩ * σ c₁ c₂ c₃ i₁' i₂ :=
-  TotalComplexShapeSymmetry.compatibility₁ h₁ i₂
-
-variable (c₁) {c₂}
-
-lemma σ_compatibility₂ (i₁ : I₁) {i₂ i₂' : I₂} (h₂ : c₂.Rel i₂ i₂') :
-    σ c₁ c₂ c₃ i₁ i₂ * ComplexShape.ε₁ c₂ c₁ c₃ ⟨i₂, i₁⟩ = ComplexShape.ε₂ c₁ c₂ c₃ ⟨i₁, i₂⟩ * σ c₁ c₂ c₃ i₁ i₂' :=
-  TotalComplexShapeSymmetry.compatibility₂ i₁ h₂
-
-end ComplexShape
-
---attribute [simp] TotalComplexShapeSymmetry.σ_mul
+  [TotalComplexShapeSymmetry c₁ c₂ c₃]
 
 namespace HomologicalComplex₂
 

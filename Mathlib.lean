@@ -222,7 +222,9 @@ import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
+import Mathlib.Algebra.Homology.Braiding
 import Mathlib.Algebra.Homology.ComplexShape
+import Mathlib.Algebra.Homology.ComplexShapeExtra
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Exact
 import Mathlib.Algebra.Homology.Flip
@@ -255,6 +257,7 @@ import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
+import Mathlib.Algebra.Homology.Symmetry
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Algebra.Invertible.Defs

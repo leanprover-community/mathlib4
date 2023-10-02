@@ -3,6 +3,7 @@ import Mathlib.CategoryTheory.GradedObject.Monoidal
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.HomologicalBicomplex
 import Mathlib.Algebra.Homology.Single
+import Mathlib.Algebra.Homology.ComplexShapeExtra
 import Mathlib.Algebra.GroupPower.NegOnePow
 
 open CategoryTheory Category Limits MonoidalCategory Preadditive
@@ -25,92 +26,6 @@ lemma zsmul_tensor (n : ℤ) : tensorHom (n • f₁) f₂ = n • tensorHom f�
 end MonoidalPreadditive
 
 end CategoryTheory
-
-namespace ComplexShape
-
-variable {I : Type*} [AddMonoid I] (c : ComplexShape I)
-
-class TensorSigns where
-  ε : I → ℤ
-  rel_add (p q r : I) (hpq : c.Rel p q) : c.Rel (p + r) (q + r)
-  add_rel (p q r : I) (hpq : c.Rel p q) : c.Rel (r + p) (r + q)
-  ε_succ (p q : I) (hpq : c.Rel p q) : ε q = - ε p
-  ε_zero : ε 0 = 1
-  ε_add (p q : I) : ε (p + q) = ε p * ε q
-
-variable [TensorSigns c]
-
-abbrev ε (i : I) : ℤ := TensorSigns.ε c i
-
-lemma rel_add {p q : I} (hpq : c.Rel p q) (r : I) : c.Rel (p + r) (q + r) :=
-  TensorSigns.rel_add _ _ _ hpq
-
-lemma add_rel (r : I) {p q : I} (hpq : c.Rel p q) : c.Rel (r + p) (r + q) :=
-  TensorSigns.add_rel _ _ _ hpq
-
-lemma ε_succ {p q : I} (hpq : c.Rel p q) : c.ε q = - c.ε p :=
-  TensorSigns.ε_succ p q hpq
-
-lemma ε_add (p q : I) : c.ε (p + q) = c.ε p * c.ε q :=
-  TensorSigns.ε_add p q
-
-@[simp]
-lemma ε_zero : c.ε 0 = 1 :=
-  TensorSigns.ε_zero
-
-lemma next_add (p q : I) (hp : c.Rel p (c.next p)) :
-    c.next (p + q) = c.next p + q :=
-  c.next_eq' (c.rel_add hp q)
-
-lemma next_add' (p q : I) (hq : c.Rel q (c.next q)) :
-    c.next (p + q) = p + c.next q :=
-  c.next_eq' (c.add_rel p hq)
-
-@[simps]
-instance : TotalComplexShape c c c where
-  π := fun ⟨p, q⟩ => p + q
-  ε₁ := fun _ => 1
-  ε₂ := fun ⟨p, _⟩ => c.ε p
-  rel₁ p p' h q := c.rel_add h q
-  rel₂ p q q' h := c.add_rel p h
-  eq p p' _ _ h _ := by
-    dsimp
-    rw [one_mul, mul_one, c.ε_succ h, add_left_neg]
-
-@[simps]
-instance : TensorSigns (ComplexShape.down ℕ) where
-  ε p := (-1) ^ p
-  rel_add p q r (hpq : q + 1 = p) := by
-    simp only [down_Rel]
-    linarith
-  add_rel p q r (hpq : q + 1 = p) := by
-    simp only [down_Rel]
-    linarith
-  ε_succ := by
-    rintro _ q rfl
-    dsimp
-    rw [pow_add, pow_one, mul_neg, mul_one, neg_neg]
-  ε_add p q := by
-    dsimp
-    rw [pow_add]
-  ε_zero := by simp
-
-@[simps]
-instance : TensorSigns (ComplexShape.up ℤ) where
-  ε := Int.negOnePow
-  rel_add p q r (hpq : p + 1 = q) := by
-    simp only [up_Rel]
-    linarith
-  add_rel p q r (hpq : p + 1 = q) := by
-    simp only [up_Rel]
-    linarith
-  ε_succ := by
-    rintro p _ rfl
-    rw [Int.negOnePow_succ]
-  ε_add := Int.negOnePow_add
-  ε_zero := Int.negOnePow_zero
-
-end ComplexShape
 
 namespace HomologicalComplex
 

@@ -2,23 +2,6 @@ import Mathlib.Algebra.Homology.Braiding
 
 open CategoryTheory Category Limits MonoidalCategory Preadditive
 
-namespace ComplexShape
-
-variable {I : Type*} [AddCommMonoid I] (c : ComplexShape I)
-
-class Symmetry extends c.Braiding where
-  σ_symm (i₁ i₂ : I) : ComplexShape.σ c c c i₁ i₂ = ComplexShape.σ c c c i₂ i₁
-
-lemma σ_ε_symm [c.Symmetry] (i₁ i₂ : I) : ComplexShape.σ c c c i₁ i₂ = ComplexShape.σ c c c i₂ i₁ := by
-  apply Symmetry.σ_symm
-
-instance : (ComplexShape.up ℤ).Symmetry where
-  σ_symm p q := by
-    dsimp
-    rw [mul_comm]
-
-end ComplexShape
-
 namespace HomologicalComplex
 
 variable {C : Type*} [Category C] [Preadditive C] [MonoidalCategory C] [MonoidalPreadditive C]

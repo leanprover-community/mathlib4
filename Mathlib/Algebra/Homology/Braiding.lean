@@ -81,42 +81,7 @@ end
 
 variable (c)
 
-class _root_.ComplexShape.Braiding  extends c.TensorSigns,
-    TotalComplexShapeSymmetry c c c where
-  σ_add₁ (i₁ i₁' i₂ : I) : ComplexShape.σ c c c (i₁ + i₁') i₂ = ComplexShape.σ c c c i₁ i₂ * ComplexShape.σ c c c i₁' i₂
-  σ_add₂ (i₁ i₂ i₂' : I) : ComplexShape.σ c c c i₁ (i₂ + i₂') = ComplexShape.σ c c c i₁ i₂ * ComplexShape.σ c c c i₁ i₂'
-
-lemma _root_.ComplexShape.σ_add₁ (i₁ i₁' i₂ : I) [c.Braiding] :
-  ComplexShape.σ c c c (i₁ + i₁') i₂ = ComplexShape.σ c c c i₁ i₂ * ComplexShape.σ c c c i₁' i₂ := by
-  apply ComplexShape.Braiding.σ_add₁
-
-lemma _root_.ComplexShape.σ_add₂ (i₁ i₂ i₂' : I) [c.Braiding] :
-  ComplexShape.σ c c c i₁ (i₂ + i₂') = ComplexShape.σ c c c i₁ i₂ * ComplexShape.σ c c c i₁ i₂' := by
-  apply ComplexShape.Braiding.σ_add₂
-
-@[simps]
-instance : TotalComplexShapeSymmetry (ComplexShape.up ℤ) (ComplexShape.up ℤ) (ComplexShape.up ℤ) where
-  symm := fun p q => add_comm q p
-  σ := fun p q => (p * q).negOnePow
-  σ_mul_self := by aesop
-  compatibility₁ := by
-    rintro p _ rfl q
-    dsimp
-    rw [one_mul, ← Int.negOnePow_add, add_mul, one_mul]
-  compatibility₂ := by
-    rintro p q _ rfl
-    dsimp
-    rw [mul_one, add_comm q 1, mul_add, mul_one, Int.negOnePow_add, ← mul_assoc, Int.negOnePow_mul_self, one_mul]
-
-instance : (ComplexShape.up ℤ).Braiding where
-  σ_add₁ p p' q := by
-    dsimp
-    rw [← Int.negOnePow_add, add_mul]
-  σ_add₂ p q q' := by
-    dsimp
-    rw [← Int.negOnePow_add, mul_add]
-
-variable [c.Braiding] [BraidedCategory C]
+variable [c.Braided] [BraidedCategory C]
 
 variable {c}
 variable [HasTensor K L] [HasTensor L K]
