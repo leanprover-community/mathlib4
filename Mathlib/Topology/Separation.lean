@@ -1682,6 +1682,40 @@ instance {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)] [∀ 
     RegularSpace (∀ i, π i) :=
   regularSpace_iInf fun _ => regularSpace_induced _
 
+/-- In a regular space, the union of two discrete closed subsets is discrete. -/
+lemma discreteTopology_union {S T : Set α} (hS : DiscreteTopology S) (hS' : IsClosed S)
+    (hT : DiscreteTopology T) (hT' : IsClosed T) : DiscreteTopology ↑(S ∪ T) := by
+  simp_rw [discreteTopology_subtype_iff, ←disjoint_iff] at hS hT ⊢
+  intro x h
+  wlog hx : x ∈ S generalizing S T
+  · simp_rw [union_comm S T] at this h ⊢
+    exact this hT' hS' hT hS h (((mem_union _ _ _).mp h).resolve_right hx)
+  rw [←sup_principal, disjoint_sup_right]
+  by_cases hx' : x ∈ T
+  exacts [⟨hS x hx, hT x hx'⟩, ⟨hS x hx, (RegularSpace.regular hT' hx').symm.mono
+      nhdsWithin_le_nhds principal_le_nhdsSet⟩]
+
+section codiscrete_filter
+
+/-- In a regular space, intersections of codiscrete sets are codiscrete. -/
+lemma IsCodiscrete.inter {U V : Set α}
+    (hU : IsCodiscrete U) (hV : IsCodiscrete V) : IsCodiscrete (U ∩ V) := by
+  refine ⟨hU.1.inter hV.1, ?_⟩
+  rw [compl_inter]
+  rw [IsCodiscrete, ← isClosed_compl_iff] at hU hV
+  exact discreteTopology_union hU.2 hU.1 hV.2 hV.1
+
+variable (α)
+
+/-- The filter of codiscrete subsets, in a regular space. -/
+def Filter.Codiscrete [RegularSpace α] : Filter α where
+  sets := IsCodiscrete
+  univ_sets := isCodiscrete_univ
+  sets_of_superset := IsCodiscrete.mono
+  inter_sets := IsCodiscrete.inter
+
+end codiscrete_filter
+
 end RegularSpace
 
 section T3

@@ -2041,3 +2041,32 @@ theorem IsPreirreducible.preimage {Z : Set α} (hZ : IsPreirreducible Z) {f : β
 #align is_preirreducible.preimage IsPreirreducible.preimage
 
 end Preirreducible
+
+section codiscrete
+
+/-- The empty subset of any topological space is a discrete set in its
+subspace topology. -/
+lemma discreteTopology_emptyset : DiscreteTopology ↑(∅ : Set α) :=
+  discreteTopology_iff_nhds.mpr (fun x ↦ False.elim x.property)
+
+/-- We say a set `U` in a topological space `α` is *codiscrete* if it is
+open with discrete complement. -/
+def IsCodiscrete (U : Set α) : Prop := IsOpen U ∧ DiscreteTopology ↑Uᶜ
+
+/-- The universe is codiscrete. -/
+lemma isCodiscrete_univ : IsCodiscrete (univ : Set α) :=
+⟨isOpen_univ, compl_univ.symm ▸ discreteTopology_emptyset⟩
+
+/-- A superset of a codiscrete set is codiscrete. -/
+lemma IsCodiscrete.mono {U V : Set α} (hU : IsCodiscrete U) (hV : U ⊆ V) :
+    IsCodiscrete V := by
+  cases' hU with hU hU'
+  rw [←isClosed_compl_iff] at hU
+  rw [←compl_subset_compl] at hV
+  refine ⟨?_, DiscreteTopology.of_subset hU' hV⟩
+  let f : ↑Uᶜ → α := Subtype.val
+  have he := hU.closedEmbedding_subtype_val
+  simpa only [Subtype.image_preimage_val, inter_eq_self_of_subset_left hV, 
+    isClosed_compl_iff] using he.isClosedMap _ (isClosed_discrete (f ⁻¹' Vᶜ))
+
+end codiscrete
