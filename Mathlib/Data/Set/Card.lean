@@ -668,7 +668,7 @@ theorem ncard_image_of_injective (s : Set α) (H : f.Injective) : (f '' s).ncard
 #align set.ncard_image_of_injective Set.ncard_image_of_injective
 
 theorem ncard_preimage_of_injective_subset_range {s : Set β} (H : f.Injective)
-  (hs : s ⊆ Set.range f) :
+    (hs : s ⊆ Set.range f) :
     (f ⁻¹' s).ncard = s.ncard := by
   rw [← ncard_image_of_injective _ H, image_preimage_eq_iff.mpr hs]
 #align set.ncard_preimage_of_injective_subset_range Set.ncard_preimage_of_injective_subset_range
@@ -768,7 +768,7 @@ theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, 
 #align set.ncard_le_ncard_of_inj_on Set.ncard_le_ncard_of_injOn
 
 theorem exists_ne_map_eq_of_ncard_lt_of_maps_to {t : Set β} (hc : t.ncard < s.ncard) {f : α → β}
-  (hf : ∀ a ∈ s, f a ∈ t) (ht : t.Finite := by toFinite_tac) :
+    (hf : ∀ a ∈ s, f a ∈ t) (ht : t.Finite := by toFinite_tac) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   by_contra h'
   simp only [Ne.def, exists_prop, not_exists, not_and, not_imp_not] at h'
@@ -776,15 +776,15 @@ theorem exists_ne_map_eq_of_ncard_lt_of_maps_to {t : Set β} (hc : t.ncard < s.n
 #align set.exists_ne_map_eq_of_ncard_lt_of_maps_to Set.exists_ne_map_eq_of_ncard_lt_of_maps_to
 
 theorem le_ncard_of_inj_on_range {n : ℕ} (f : ℕ → α) (hf : ∀ i < n, f i ∈ s)
-  (f_inj : ∀ i < n, ∀ j < n, f i = f j → i = j) (hs : s.Finite := by toFinite_tac) :
+    (f_inj : ∀ i < n, ∀ j < n, f i = f j → i = j) (hs : s.Finite := by toFinite_tac) :
     n ≤ s.ncard := by
   rw [ncard_eq_toFinset_card _ hs]
   apply Finset.le_card_of_inj_on_range <;> simpa
 #align set.le_ncard_of_inj_on_range Set.le_ncard_of_inj_on_range
 
 theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
-  (hinj : ∀ a₁ a₂ ha₁ ha₂, f a₁ ha₁ = f a₂ ha₂ → a₁ = a₂) (hst : t.ncard ≤ s.ncard)
-  (ht : t.Finite := by toFinite_tac) :
+    (hinj : ∀ a₁ a₂ ha₁ ha₂, f a₁ ha₁ = f a₂ ha₂ → a₁ = a₂) (hst : t.ncard ≤ s.ncard)
+    (ht : t.Finite := by toFinite_tac) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
   intro b hb
   set f' : s → t := fun x ↦ ⟨f x.1 x.2, hf _ _⟩
@@ -894,7 +894,7 @@ theorem diff_nonempty_of_ncard_lt_ncard (h : s.ncard < t.ncard) (hs : s.Finite :
 #align set.diff_nonempty_of_ncard_lt_ncard Set.diff_nonempty_of_ncard_lt_ncard
 
 theorem exists_mem_not_mem_of_ncard_lt_ncard (h : s.ncard < t.ncard)
-  (hs : s.Finite := by toFinite_tac) : ∃ e, e ∈ t ∧ e ∉ s :=
+    (hs : s.Finite := by toFinite_tac) : ∃ e, e ∈ t ∧ e ∉ s :=
   diff_nonempty_of_ncard_lt_ncard h hs
 #align set.exists_mem_not_mem_of_ncard_lt_ncard Set.exists_mem_not_mem_of_ncard_lt_ncard
 
@@ -1039,7 +1039,7 @@ theorem ncard_le_one_iff_eq (hs : s.Finite := by toFinite_tac) :
 #align set.ncard_le_one_iff_eq Set.ncard_le_one_iff_eq
 
 theorem ncard_le_one_iff_subset_singleton [Nonempty α]
-  (hs : s.Finite := by toFinite_tac) :
+    (hs : s.Finite := by toFinite_tac) :
     s.ncard ≤ 1 ↔ ∃ x : α, s ⊆ {x} := by
   simp_rw [ncard_eq_toFinset_card _ hs, Finset.card_le_one_iff_subset_singleton,
     Finite.toFinset_subset, Finset.coe_singleton]

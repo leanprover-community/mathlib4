@@ -819,6 +819,12 @@ theorem norm_coe_le_norm (x : α) : ‖f x‖ ≤ ‖f‖ :=
     _ ≤ ‖f‖ := dist_coe_le_dist _
 #align bounded_continuous_function.norm_coe_le_norm BoundedContinuousFunction.norm_coe_le_norm
 
+lemma neg_norm_le_apply (f : α →ᵇ ℝ) (x : α) :
+    -‖f‖ ≤ f x := (abs_le.mp (norm_coe_le_norm f x)).1
+
+lemma apply_le_norm (f : α →ᵇ ℝ) (x : α) :
+    f x ≤ ‖f‖ := (abs_le.mp (norm_coe_le_norm f x)).2
+
 theorem dist_le_two_norm' {f : γ → β} {C : ℝ} (hC : ∀ x, ‖f x‖ ≤ C) (x y : γ) :
     dist (f x) (f y) ≤ 2 * C :=
   calc
@@ -1426,12 +1432,12 @@ show that the space of bounded continuous functions from `α` to `β` is natural
 module over the algebra of bounded continuous functions from `α` to `𝕜`. -/
 end NormedAlgebra
 
-theorem Nnreal.upper_bound {α : Type*} [TopologicalSpace α] (f : α →ᵇ ℝ≥0) (x : α) :
+theorem NNReal.upper_bound {α : Type*} [TopologicalSpace α] (f : α →ᵇ ℝ≥0) (x : α) :
     f x ≤ nndist f 0 := by
   have key : nndist (f x) ((0 : α →ᵇ ℝ≥0) x) ≤ nndist f 0 := @dist_coe_le_dist α ℝ≥0 _ _ f 0 x
   simp only [coe_zero, Pi.zero_apply] at key
   rwa [NNReal.nndist_zero_eq_val' (f x)] at key
-#align bounded_continuous_function.nnreal.upper_bound BoundedContinuousFunction.Nnreal.upper_bound
+#align bounded_continuous_function.nnreal.upper_bound BoundedContinuousFunction.NNReal.upper_bound
 
 /-!
 ### Star structures
@@ -1628,6 +1634,25 @@ theorem abs_self_eq_nnrealPart_add_nnrealPart_neg (f : α →ᵇ ℝ) :
 #align bounded_continuous_function.abs_self_eq_nnreal_part_add_nnreal_part_neg BoundedContinuousFunction.abs_self_eq_nnrealPart_add_nnrealPart_neg
 
 end NonnegativePart
+
+section
+
+variable {α : Type*} [TopologicalSpace α]
+
+lemma add_norm_nonneg (f : α →ᵇ ℝ) :
+    0 ≤ f + const _ ‖f‖ := by
+  intro x
+  dsimp
+  linarith [(abs_le.mp (norm_coe_le_norm f x)).1]
+
+lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
+    0 ≤ const _ ‖f‖ - f := by
+  intro x
+  dsimp
+  linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
+
+end
+
 
 section compContinuous_algebra
 
