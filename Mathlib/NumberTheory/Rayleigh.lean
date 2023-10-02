@@ -60,7 +60,7 @@ variable {r s : ℝ} (hrs : r.IsConjugateExponent s) {j k : ℤ}
 
 /-- Let `r > 1` and `1/r + 1/s = 1`. Then `B_r` and `B'_s` are disjoint (i.e. no collision exists).
 -/
-theorem no_collision : Disjoint {beattySequence r k | k} {beattySequence' s k | k} := by
+private theorem no_collision : Disjoint {beattySequence r k | k} {beattySequence' s k | k} := by
   rw [Set.disjoint_left]
   intro j ⟨k, h₁⟩ ⟨m, h₂⟩
   rw [beattySequence, Int.floor_eq_iff, ← div_le_iff hrs.pos, ← lt_div_iff hrs.pos] at h₁
@@ -76,7 +76,7 @@ theorem no_collision : Disjoint {beattySequence r k | k} {beattySequence' s k | 
 
 /-- Let `r > 1` and `1/r + 1/s = 1`. Suppose there is an integer `j` where `B_r` and `B'_s` both
 jump over `j` (i.e. an anti-collision). Then this leads to a contradiction. -/
-theorem no_anticollision :
+private theorem no_anticollision :
     ¬∃ (j k m : ℤ), k * r < j ∧ j + 1 ≤ (k + 1) * r ∧ m * s ≤ j ∧ j + 1 < (m + 1) * s := by
   intro ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩
   replace h₁₁ := (lt_div_iff hrs.pos).2 h₁₁
@@ -92,7 +92,7 @@ theorem no_anticollision :
   exact (lt_self_iff_false _).1 (lt_of_le_of_lt' h₄ h₃)
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B_r` or `B_r` jumps over `j`. -/
-theorem hit_or_miss (h : r > 0) :
+private theorem hit_or_miss (h : r > 0) :
     j ∈ {beattySequence r k | k} ∨ (∃ k : ℤ, k * r < j ∧ j + 1 ≤ (k + 1) * r) := by
   -- for both cases, the candidate is `k = ⌈(j + 1) / r⌉ - 1`
   cases lt_or_ge ((⌈(j + 1) / r⌉ - 1) * r) j
@@ -107,7 +107,7 @@ theorem hit_or_miss (h : r > 0) :
     apply Int.ceil_lt_add_one
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B'_r` or `B'_r` jumps over `j`. -/
-theorem hit_or_miss' (h : r > 0) :
+private theorem hit_or_miss' (h : r > 0) :
     j ∈ {beattySequence' r k | k} ∨ (∃ k : ℤ, k * r ≤ j ∧ j + 1 < (k + 1) * r) := by
   -- for both cases, the candidate is `k = ⌊(j + 1) / r⌋`
   cases le_or_gt (⌊(j + 1) / r⌋ * r) j
