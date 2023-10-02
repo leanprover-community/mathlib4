@@ -9,9 +9,9 @@ import Mathlib.Data.Real.Irrational
 /-!
 # Rayleigh's theorem on Beatty sequences
 
-This file proves Rayleigh's theorem on Beatty sequences. We start by proving `rayleigh_compl`, which
-is a generalization of Rayleigh's theorem, and eventually prove `rayleigh_irr_pos`, which is
-Rayleigh's theorem.
+This file proves Rayleigh's theorem on Beatty sequences. We start by proving `compl_beattySequence`,
+which is a generalization of Rayleigh's theorem, and eventually prove
+`Irrational.beattySequence_symmDiff_beattySequence_pos`, which is Rayleigh's theorem.
 
 ## Main definitions
 
