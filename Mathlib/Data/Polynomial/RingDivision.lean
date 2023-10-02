@@ -854,6 +854,29 @@ theorem mem_nthRootsFinset {n : ℕ} (h : 0 < n) {x : R} :
 theorem nthRootsFinset_zero : nthRootsFinset 0 R = ∅ := by classical simp [nthRootsFinset_def]
 #align polynomial.nth_roots_finset_zero Polynomial.nthRootsFinset_zero
 
+theorem mul_mem_nthRootsFinset
+    {η₁ : R} (hη₁ : η₁ ∈ nthRootsFinset n R) {η₂ : R} (hη₂ : η₂ ∈ nthRootsFinset n R) :
+    η₁ * η₂ ∈ nthRootsFinset n R := by
+  cases n with
+  | zero =>
+    simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη₁
+  | succ n =>
+    rw [mem_nthRootsFinset n.succ_pos] at hη₁ hη₂ ⊢
+    rw [mul_pow, hη₁, hη₂, one_mul]
+
+theorem ne_zero_of_mem_nthRootsFinset {η : R} (hη : η ∈ nthRootsFinset n R) : η ≠ 0 := by
+  nontriviality R
+  rintro rfl
+  cases n with
+  | zero =>
+    simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη
+  | succ n =>
+    rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_pos] at hη
+    exact zero_ne_one hη
+
+theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n R := by
+  rw [mem_nthRootsFinset hn, one_pow]
+
 end NthRoots
 
 theorem Monic.comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.comp q).Monic := by
