@@ -838,7 +838,7 @@ theorem isCoprime_iff_sup : IsCoprime I J ↔ I ⊔ J = ⊤ := by
     refine' ⟨1, 1, _⟩
     simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
 
-theorem isCoprime_span_singleton_iff {R : Type*} [CommRing R] (x y : R) :
+theorem isCoprime_span_singleton_iff (x y : R) :
     IsCoprime (span <| singleton x) (span <| singleton y) ↔ IsCoprime x y := by
   simp_rw [isCoprime_iff_sup, eq_top_iff_one, mem_span_singleton_sup, mem_span_singleton]
   constructor
