@@ -22,7 +22,7 @@ open Lean Meta Server ProofWidgets
 /-- Return the link text and inserted text above and below of the congrm widget. -/
 @[nolint unusedArguments]
 def makeCongrmString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
-    (_ : SelectInsertParams) : MetaM (String × String) := do
+    (_ : SelectInsertParams) : MetaM (String × String × Option (String.Pos × String.Pos)) := do
   let subexprPos := getGoalLocations pos
   unless goalType.isAppOf `Eq || goalType.isAppOf `Iff do
     throwError "The goal must be an equality or iff."
@@ -33,7 +33,7 @@ def makeCongrmString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   let side := if subexprPos[0]!.toArray[0]! = 0 then 1 else 2
   let sideExpr := goalTypeWithMetaVars.getAppArgs[side]!
   let res := "congrm " ++ (toString (← Meta.ppExpr sideExpr)).renameMetaVar
-  return (res, res)
+  return (res, res, none)
 
 /-- Rpc function for the congrm widget. -/
 @[server_rpc_method]

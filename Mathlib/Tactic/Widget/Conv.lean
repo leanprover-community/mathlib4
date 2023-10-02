@@ -85,7 +85,7 @@ open Lean Syntax in
 /-- Return the link text and inserted text above and below of the conv widget. -/
 @[nolint unusedArguments]
 def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
-    (params : SelectInsertParams): MetaM (String × String) := do
+    (params : SelectInsertParams): MetaM (String × String × Option (String.Pos × String.Pos)) := do
   let some pos := locations[0]? | throwError "You must select something."
   let ⟨_, .target subexprPos⟩ := pos | throwError "You must select something in the goal."
   let mut list := (SubExpr.Pos.toArray subexprPos).toList
@@ -107,7 +107,7 @@ def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   let mut enterval := s!"conv =>\n{spc} enter {retList}"
   if enterval.contains '0' then enterval := "Error: Not a valid conv target"
   if retList.isEmpty then enterval := ""
-  return ("Generate conv", enterval)
+  return ("Generate conv", enterval, none)
 
 /-- Rpc function for the conv widget. -/
 @[server_rpc_method]

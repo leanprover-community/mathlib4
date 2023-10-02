@@ -140,7 +140,3 @@ elab_rules : tactic
     ProofWidgets.savePanelWidgetInfo proofTerm `CalcPanel (pure json)
     isFirst := false
   evalCalc (← `(tactic|calc%$calcstx $stx))
-
-example (a b c d : Nat) : a = d := by
-  calc a = ?_ := by sorry
-  _ = d := by sorry

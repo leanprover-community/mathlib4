@@ -108,7 +108,7 @@ if h : 0 < (goals params).size then
           params
         return .ofComponent
           MakeEditLink
-          (.ofReplaceRange' doc.meta (replaceRange params) newCode range?)
+          (.ofReplaceRange doc.meta (replaceRange params) newCode range?)
           #[ .text linkText ])
   return <details «open»={true}>
       <summary className="mv2 pointer">{.text title}</summary>
