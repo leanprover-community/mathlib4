@@ -1016,6 +1016,4 @@ end LocalRing
 
 section MinimalPrimes
 
-#check Ideal.MinimalPrimes
-
 end MinimalPrimes

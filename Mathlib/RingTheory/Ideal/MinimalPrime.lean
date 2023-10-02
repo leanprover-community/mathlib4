@@ -221,6 +221,53 @@ theorem Ideal.not_mem_nonZeroDivisors_of_mem_minimalPrime (is_minimal : I ∈ mi
     rw [Submonoid.mem_sup] at r
     obtain ⟨a, (ha : a ∉ I), b, hb, hab⟩ := r
     exact (hb a hab ▸ ha) I.zero_mem
+  let A := {p : Ideal R // (p : Set R) ⊓ S = ∅}
+  have H := @zorn_partialOrder A _ fun a ha ↦ ⟨⟨⨆ (y ∈ a), y, ?_⟩, ?_⟩
+  pick_goal 2
+  · rw [Set.eq_empty_iff_forall_not_mem]
+    rintro x ⟨hx1, hx2⟩
+    by_cases Ha : a = ∅
+    · subst Ha
+      rw [iSup_emptyset] at hx1
+      subst hx1
+      exact mem1 hx2
+    · have : Nonempty a
+      · rwa [Set.nonempty_iff_ne_empty']
+      rw [SetLike.mem_coe, iSup_subtype', Submodule.mem_iSup_of_directed] at hx1
+      pick_goal 2
+      · intro x y
+        by_cases heq : x = y
+        · subst heq; exact ⟨x, by rfl, by rfl⟩
+        obtain h|h := ha x.2 y.2 (fun r ↦ heq <| Subtype.coe_injective r)
+        · exact ⟨y, h, by rfl⟩
+        · exact ⟨x, by rfl, h⟩
+      obtain ⟨⟨p, hp1⟩, (hp2 : x ∈ p.1)⟩ := hx1
+      exact Set.eq_empty_iff_forall_not_mem.mp p.2 x ⟨hp2, hx2⟩
+  pick_goal 2
+  · rintro z hz
+    change z.1 ≤ iSup _
+    rw [iSup_subtype', le_iSup_iff]
+    intro p hp
+    exact hp ⟨z, hz⟩
+  obtain ⟨Q, hQ⟩ := H
+  have Q_prime := Ideal.isPrime_of_maximally_disjoint S Q.1 Q.2 ?_
+  pick_goal 2
+  · intro J hJ r
+    specialize hQ ⟨J, r⟩ (le_of_lt hJ)
+    rw [← hQ] at hJ
+    exact lt_irrefl _ hJ
+  have hQ2 := Q.2
+  simp only [Set.inf_eq_inter, ge_iff_le, Set.le_eq_subset] at hQ2
+  rw [← Set.disjoint_iff_inter_eq_empty, ← Set.subset_compl_iff_disjoint_right] at hQ2
+  have ineq1 := hQ2.trans <| Set.compl_subset_compl.mpr <| le_sup_left (α := Submonoid R)
+  erw [compl_compl] at ineq1
+  have eq1 := (is_minimal.2 ⟨Q_prime, bot_le⟩ ineq1).antisymm ineq1
+  rw [← eq1] at hQ2
+  specialize hQ2 mem
+  simp only [ge_iff_le, Set.mem_compl_iff, SetLike.mem_coe] at hQ2
+  contrapose! hQ2
+  rw [Submonoid.mem_sup]
+  exact ⟨1, Submonoid.one_mem _, x, hQ2, (one_mul x).symm ▸ rfl⟩
 
 
 end
