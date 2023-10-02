@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Prod
+import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.Topology.Sets.Closeds
@@ -1012,3 +1013,9 @@ theorem PrimeSpectrum.comap_residue (x : PrimeSpectrum (ResidueField R)) :
 #align local_ring.prime_spectrum.comap_residue LocalRing.PrimeSpectrum.comap_residue
 
 end LocalRing
+
+section MinimalPrimes
+
+#check Ideal.MinimalPrimes
+
+end MinimalPrimes

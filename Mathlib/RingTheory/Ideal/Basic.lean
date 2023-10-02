@@ -814,6 +814,36 @@ theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsFiel
   rwa [hm.1.2 I Ibot] at Itop
 #align ideal.bot_lt_of_maximal Ideal.bot_lt_of_maximal
 
+lemma Ideal.isPrime_of_maximally_disjoint [CommSemiring α] (S : Submonoid α) (I : Ideal α)
+    (disjoint : (I : Set α) ⊓ S = ∅)
+    (maximally_disjoint : ∀ (J : Ideal α), I < J → (J : Set α) ⊓ S ≠ ∅) :
+    I.IsPrime where
+  ne_top' := by
+    rintro rfl
+    simp only [Submodule.top_coe, ge_iff_le, le_eq_subset, subset_univ, inf_of_le_right] at disjoint
+    exact (mem_empty_iff_false _).mp <| disjoint ▸ SetLike.mem_coe.mpr S.one_mem
+  mem_or_mem' {x y} hxy := by
+    let Jx := I ⊔ Ideal.span {x}
+    let Jy := I ⊔ Ideal.span {y}
+    by_contra rid
+    push_neg at rid
+    have hx := (maximally_disjoint Jx) ⟨le_sup_left (α := Ideal α), fun r ↦ rid.1 <| r <|
+      le_sup_right (α := Ideal α) <| Submodule.mem_span_singleton_self _⟩
+    have hy := (maximally_disjoint Jy) ⟨le_sup_left (α := Ideal α), fun r ↦ rid.2 <| r <|
+      le_sup_right (α := Ideal α) <| Submodule.mem_span_singleton_self _⟩
+    rw [← Set.nonempty_iff_ne_empty, Set.nonempty_def] at hx hy
+    simp_rw [SetLike.mem_coe, inf_eq_inter, mem_inter_iff, SetLike.mem_coe, Submodule.mem_sup,
+      Ideal.mem_span_singleton] at hx hy
+    obtain ⟨s₁, ⟨i₁, hi₁, ⟨_, ⟨r₁, rfl⟩, hr₁'⟩⟩, hs₁⟩ := hx
+    obtain ⟨s₂, ⟨i₂, hi₂, ⟨_, ⟨r₂, rfl⟩, hr₂'⟩⟩, hs₂⟩ := hy
+    rw [eq_empty_iff_forall_not_mem] at disjoint
+    refine disjoint (s₁ * s₂) ⟨hr₁' ▸ hr₂' ▸ ?_, S.mul_mem hs₁ hs₂⟩
+    ring_nf
+    refine I.add_mem (I.add_mem (I.add_mem (I.mul_mem_left _ hi₂) (I.mul_mem_right _ <|
+      I.mul_mem_right _ hi₁)) <| I.mul_mem_left _ hi₂) <| ?_
+    rw [show x * r₁ * y * r₂ = (x * y) * (r₁ * r₂) by ring]
+    exact I.mul_mem_right _ hxy
+
 end Ideal
 
 variable {a b : α}

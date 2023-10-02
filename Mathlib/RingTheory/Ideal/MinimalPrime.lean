@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.Order.Minimal
 
 #align_import ring_theory.ideal.minimal_prime from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -163,7 +164,7 @@ theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
   exact (H.2 ⟨inferInstance, Ideal.comap_mono hq.1.2⟩ this).antisymm this
 #align ideal.exists_minimal_primes_comap_eq Ideal.exists_minimalPrimes_comap_eq
 
-theorem Ideal.mimimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
+theorem Ideal.minimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
   have := h.1.1
   refine' ⟨⟨inferInstance, Ideal.comap_mono h.1.2⟩, _⟩
@@ -174,7 +175,7 @@ theorem Ideal.mimimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.
   apply h.2 _ _
   · exact ⟨Ideal.map_isPrime_of_surjective hf this, Ideal.le_map_of_comap_le_of_surjective f hf e₁⟩
   · exact Ideal.map_le_of_le_comap e₂
-#align ideal.mimimal_primes_comap_of_surjective Ideal.mimimal_primes_comap_of_surjective
+#align ideal.mimimal_primes_comap_of_surjective Ideal.minimal_primes_comap_of_surjective
 
 theorem Ideal.comap_minimalPrimes_eq_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     (I : Ideal S) : (I.comap f).minimalPrimes = Ideal.comap f '' I.minimalPrimes := by
@@ -184,7 +185,7 @@ theorem Ideal.comap_minimalPrimes_eq_of_surjective {f : R →+* S} (hf : Functio
     obtain ⟨p, h, rfl⟩ := Ideal.exists_minimalPrimes_comap_eq f J H
     exact ⟨p, h, rfl⟩
   · rintro ⟨J, hJ, rfl⟩
-    exact Ideal.mimimal_primes_comap_of_surjective hf hJ
+    exact Ideal.minimal_primes_comap_of_surjective hf hJ
 #align ideal.comap_minimal_primes_eq_of_surjective Ideal.comap_minimalPrimes_eq_of_surjective
 
 theorem Ideal.minimalPrimes_eq_comap :
@@ -210,5 +211,16 @@ theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes =
   · rintro (rfl : J = I)
     refine' ⟨⟨inferInstance, rfl.le⟩, fun _ h _ => h.2⟩
 #align ideal.minimal_primes_eq_subsingleton_self Ideal.minimalPrimes_eq_subsingleton_self
+
+theorem Ideal.not_mem_nonZeroDivisors_of_mem_minimalPrime (is_minimal : I ∈ minimalPrimes R)
+    {x : R} (mem : x ∈ I) : x ∉ nonZeroDivisors R := by
+  have i1 : I.IsPrime := is_minimal.1.1
+  let S : Submonoid R := I.primeCompl ⊔ nonZeroDivisors R
+  have mem1 : 0 ∉ S
+  · intro r
+    rw [Submonoid.mem_sup] at r
+    obtain ⟨a, (ha : a ∉ I), b, hb, hab⟩ := r
+    exact (hb a hab ▸ ha) I.zero_mem
+
 
 end
