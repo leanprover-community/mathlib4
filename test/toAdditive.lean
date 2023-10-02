@@ -131,7 +131,7 @@ run_cmd do
   let mul1 := `test.toAdditive._auxLemma |>.mkNum 1
   let mul2 := `test.toAdditive._auxLemma |>.mkNum 2
   let add1 := `test.toAdditive._auxLemma |>.mkNum 3
-  let add2 := `test.toAdditive._auxLemma |>.mkNum 4
+  let add2 := Additive._auxLemma |>.mkNum 4
   unless findTranslation? (← getEnv) mul1 == some add1 do throwError "1"
   unless findTranslation? (← getEnv) mul2 == some add2 do throwError "2"
 
