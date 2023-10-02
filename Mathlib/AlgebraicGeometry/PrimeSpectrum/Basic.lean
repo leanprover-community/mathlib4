@@ -76,6 +76,7 @@ instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
 /-- The prime spectrum of the zero ring is empty. -/
 instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
   ⟨fun x ↦ x.IsPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
+#noalign prime_spectrum.punit
 
 variable (R S)
 
