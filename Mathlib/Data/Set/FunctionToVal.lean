@@ -21,17 +21,16 @@ set_option autoImplicit true
 
 open Set Function
 
-variable {s : Set α} {t : Set β} [Nonempty ↑t] [DecidablePred (· ∈ s)]
+variable {s : Set α} {t : Set β} [Nonempty β]
 
 /-- Given a function `f : s → t`, extend it to `f.toval : α → β` by
 filling in the undefined parts with some constant function.
 Notice that this constant function is not uniquely determined by `f`.-/
-noncomputable def Function.toval (f : s → t) [DecidablePred (· ∈ s)] : α → β := by
-  have ht : Set.Nonempty t := by rw [← @nonempty_coe_sort]; assumption
-  let y := ht.some
-  exact fun x =>
+noncomputable def Function.toval (f : s → t) : α → β :=
+  fun x =>
+    haveI : Decidable (x ∈ s) := Classical.propDecidable _
     if hx : x ∈ s then (f ⟨x, hx⟩).val
-    else y
+    else Classical.choice ‹_›
 
 namespace Set2Set
 
