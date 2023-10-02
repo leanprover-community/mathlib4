@@ -93,7 +93,7 @@ theorem gcd_self_add_right (m n : ℕ) : gcd m (m + n) = gcd m n := by
 @[simp]
 theorem gcd_sub_self_left {m n : ℕ} (h : m ≤ n) : gcd (n - m) m = gcd n m := by
   calc
-    gcd (n - m) m = gcd (n - m + m) m  := by rw [← gcd_add_self_left (n - m) m]
+    gcd (n - m) m = gcd (n - m + m) m := by rw [← gcd_add_self_left (n - m) m]
                 _ = gcd n m := by rw [Nat.sub_add_cancel h]
 
 @[simp]
