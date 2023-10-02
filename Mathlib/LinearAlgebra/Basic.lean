@@ -1147,6 +1147,11 @@ theorem range_neg {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semirin
   rw [range_comp, Submodule.map_neg, Submodule.map_id]
 #align linear_map.range_neg LinearMap.range_neg
 
+lemma range_domRestrict_le_range [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (S : Submodule R M) :
+    LinearMap.range (f.domRestrict S) ≤ LinearMap.range f := by
+  rintro x ⟨⟨y, hy⟩, rfl⟩
+  exact LinearMap.mem_range_self f y
+
 /-- A linear map version of `AddMonoidHom.eqLocusM` -/
 def eqLocus (f g : F) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
@@ -1436,6 +1441,19 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
     suffices z + x - x ∈ p by simpa only [this, add_sub_cancel]
     exact p.sub_mem hxz hx'
 #align linear_map.ker_le_iff LinearMap.ker_le_iff
+
+@[simp] lemma injective_domRestrict_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
+    Injective (f.domRestrict S) ↔ S ⊓ LinearMap.ker f = ⊥ := by
+  rw [← LinearMap.ker_eq_bot]
+  refine ⟨fun h ↦ le_bot_iff.1 ?_, fun h ↦ le_bot_iff.1 ?_⟩
+  · intro x ⟨hx, h'x⟩
+    have : ⟨x, hx⟩ ∈ LinearMap.ker (LinearMap.domRestrict f S) := by simpa using h'x
+    rw [h] at this
+    simpa using this
+  · rintro ⟨x, hx⟩ h'x
+    have : x ∈ S ⊓ LinearMap.ker f := ⟨hx, h'x⟩
+    rw [h] at this
+    simpa using this
 
 end Ring
 
