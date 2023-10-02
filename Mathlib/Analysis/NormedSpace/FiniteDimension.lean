@@ -584,7 +584,7 @@ section LocallyCompactField
 variable (𝕜 : Type u) [NontriviallyNormedField 𝕜] (E : Type v) [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] [LocallyCompactSpace 𝕜]
 
-/-- Any finite-dimensional vector space over a proper field is proper.
+/-- Any finite-dimensional vector space over a locally compact field is proper.
 We do not register this as an instance to avoid an instance loop when trying to prove the
 properness of `𝕜`, and the search for `𝕜` as an unknown metavariable. Declare the instance
 explicitly when needed. -/

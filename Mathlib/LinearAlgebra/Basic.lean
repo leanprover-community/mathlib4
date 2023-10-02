@@ -1514,7 +1514,7 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
     exact p.sub_mem hxz hx'
 #align linear_map.ker_le_iff LinearMap.ker_le_iff
 
-lemma injective_domRestrict_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
+@[simp] lemma injective_domRestrict_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     Injective (f.domRestrict S) ↔ S ⊓ LinearMap.ker f = ⊥ := by
   rw [← LinearMap.ker_eq_bot]
   refine ⟨fun h ↦ le_bot_iff.1 ?_, fun h ↦ le_bot_iff.1 ?_⟩

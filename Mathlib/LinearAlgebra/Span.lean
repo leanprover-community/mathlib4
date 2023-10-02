@@ -855,7 +855,7 @@ lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂]
       Submodule.mem_sup.1 (by simp [h])
     exact ⟨⟨s, hs⟩, by simp [LinearMap.mem_ker.1 ht]⟩
 
-lemma _root_.LinearMap.surjective_domRestrict_iff
+@[simp] lemma _root_.LinearMap.surjective_domRestrict_iff
     {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} (hf : Surjective f) :
     Surjective (f.domRestrict S) ↔ S ⊔ LinearMap.ker f = ⊤ := by
   rw [← LinearMap.range_eq_top] at hf ⊢
