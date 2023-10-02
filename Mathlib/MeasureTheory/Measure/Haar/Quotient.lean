@@ -312,7 +312,7 @@ theorem IsAddFundamentalDomain.AddQuotientVolumeEqVolumePreimage_HaarMeasure {�
       apply hV.preimage'
       simp
     · apply measure_mono_null (h := interior_subset)
-      apply h𝓕.measure_zero_of_invariant (ht := fun g ↦ QuotientGroup.sound _ _ g)
+      apply h𝓕.measure_zero_of_invariant (ht := fun g ↦ QuotientAddGroup.sound _ _ g)
       exact c_eq_zero
   · exact hμK
   · exact neTopV
