@@ -201,7 +201,7 @@ theorem sum_multiset_singleton (s : Finset α) : (s.sum fun x => {x}) = s.val :=
 
 end Finset
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_prod [CommMonoid β] [CommMonoid γ] {G : Type*} [MonoidHomClass G β γ] (g : G)
     (f : α → β) (s : Finset α) : g (∏ x in s, f x) = ∏ x in s, g (f x) := by
   simp only [Finset.prod_eq_multiset_prod, map_multiset_prod, Multiset.map_map]; rfl
