@@ -2139,7 +2139,7 @@ theorem sphere_pi (x : ∀ b, π b) {r : ℝ} (h : 0 < r ∨ Nonempty β) :
     sphere x r = (⋃ i : β, Function.eval i ⁻¹' sphere (x i) r) ∩ closedBall x r := by
   obtain hr | rfl | hr := lt_trichotomy r 0
   · simp [hr]
-  · rw [closedBall_eq_sphere_of_nonpos le_rfl, eq_comm, Set.inter_eq_right_iff_subset]
+  · rw [closedBall_eq_sphere_of_nonpos le_rfl, eq_comm, Set.inter_eq_right]
     letI := h.resolve_left (lt_irrefl _)
     inhabit β
     refine' subset_iUnion_of_subset default _
