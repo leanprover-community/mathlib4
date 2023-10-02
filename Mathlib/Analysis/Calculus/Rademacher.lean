@@ -7,9 +7,9 @@ import Mathlib.Analysis.Calculus.LineDeriv.Measurable
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Analysis.BoundedVariation
-import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+import Mathlib.MeasureTheory.Measure.Haar.Disintegration
 
 /-!
 # Rademacher's theorem: a Lipschitz function is differentiable almost everywhere
@@ -56,43 +56,21 @@ This follows from the one-dimensional result that a Lipschitz function on `ℝ` 
 variation, and is therefore ae differentiable, together with a Fubini argument.
 -/
 
-theorem ae_lineDifferentiableAt_of_prod
-    {C : ℝ≥0} {f : E × ℝ → ℝ} (hf : LipschitzWith C f) {μ : Measure E} :
-    ∀ᵐ p ∂(μ.prod volume), LineDifferentiableAt ℝ f p (0, 1) := by
-  apply (ae_prod_mem_iff_ae_ae_mem (measurableSet_lineDifferentiableAt hf.continuous)).2
-  apply eventually_of_forall (fun x ↦ ?_)
-  have : ∀ᵐ (y : ℝ), DifferentiableAt ℝ (fun z ↦ f (x, z)) y :=
-    (hf.comp (LipschitzWith.prod_mk_left x)).ae_differentiableAt_real
-  filter_upwards [this] with y hy
-  have h'y : DifferentiableAt ℝ (fun z ↦ f (x, z)) (y + 0) := by simpa using hy
-  have : DifferentiableAt ℝ (fun t ↦ y + t) 0 := differentiableAt_id.const_add _
-  simpa [LineDifferentiableAt] using h'y.comp 0 this
-
 theorem ae_lineDifferentiableAt (hf : LipschitzWith C f) (v : E) :
     ∀ᵐ p ∂μ, LineDifferentiableAt ℝ f p v := by
-  rcases eq_or_ne v 0 with rfl|hv
-  · simp [lineDifferentiableAt_zero]
-  let n := finrank ℝ E
-  let F := Fin (n-1) → ℝ
-  obtain ⟨L, hL⟩ : ∃ L : (F × ℝ) ≃L[ℝ] E, L (0, 1) = v := by
-    have : Nontrivial E := nontrivial_of_ne v 0 hv
-    have M : (F × ℝ) ≃L[ℝ] E := by
-      apply ContinuousLinearEquiv.ofFinrankEq
-      simpa using Nat.sub_add_cancel finrank_pos
-    obtain ⟨N, hN⟩ : ∃ N : E ≃L[ℝ] E, N (M (0, 1)) = v :=
-      SeparatingDual.exists_continuousLinearEquiv_apply_eq (by simp) hv
-    exact ⟨M.trans N, hN⟩
-  let ρ : Measure (F × ℝ) := addHaar.prod volume
-  have : IsAddHaarMeasure (Measure.map L ρ) := L.isAddHaarMeasure_map ρ
-  suffices H : ∀ᵐ p ∂(Measure.map L ρ), LineDifferentiableAt ℝ f p v from
-    absolutelyContinuous_isAddHaarMeasure _ _ H
-  apply (ae_map_iff L.continuous.aemeasurable (measurableSet_lineDifferentiableAt hf.continuous)).2
-  have : ∀ᵐ p ∂ρ, LineDifferentiableAt ℝ (f ∘ L) p (0, 1) :=
-    (hf.comp L.lipschitz).ae_lineDifferentiableAt_of_prod
-  filter_upwards [this] with p hp
-  have h'p : LineDifferentiableAt ℝ (f ∘ (L : (F × ℝ) →ₗ[ℝ] E)) p (0, 1) := hp
-  rw [← hL]
-  exact LineDifferentiableAt.of_comp h'p
+  let L : ℝ →L[ℝ] E := ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) v
+  suffices A : ∀ p, ∀ᵐ (t : ℝ) ∂volume, LineDifferentiableAt ℝ f (p + t • v) v from
+    ae_mem_of_ae_add_linearMap_mem L.toLinearMap volume μ
+      (measurableSet_lineDifferentiableAt hf.continuous) A
+  intro p
+  have : ∀ᵐ (s : ℝ), DifferentiableAt ℝ (fun t ↦ f (p + t • v)) s :=
+    (hf.comp ((LipschitzWith.const p).add L.lipschitz)).ae_differentiableAt_real
+  filter_upwards [this] with s hs
+  have h's : DifferentiableAt ℝ (fun t ↦ f (p + t • v)) (s + 0) := by simpa using hs
+  have : DifferentiableAt ℝ (fun t ↦ s + t) 0 := differentiableAt_id.const_add _
+  simp only [LineDifferentiableAt]
+  convert h's.comp 0 this with _ t
+  simp only [LineDifferentiableAt, add_assoc, Function.comp_apply, add_smul]
 
 theorem memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
     Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
