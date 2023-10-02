@@ -177,8 +177,8 @@ jobs:
         run: |
           lake exe cache get
           # We pipe the output of `lake build` to a file,
-          # and if we find " Building " in that file we kill `lake build`, and error.
-          lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building " && kill $! ))
+          # and if we find " Building Mathlib" in that file we kill `lake build`, and error.
+          lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building Mathlib" && kill $! ))
 
       - name: build archive
         run: |
@@ -208,6 +208,11 @@ jobs:
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
           lake exe checkYaml
 
+      - name: verify `lake exe graph` works
+        run: |
+          lake exe graph
+          rm import_graph.dot
+
       - name: test mathlib
         id: test
         run: make -j 8 test
@@ -217,7 +222,7 @@ jobs:
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe runMathlibLinter
 
       - name: Post comments for lean-pr-testing branch
         if: always()
