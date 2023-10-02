@@ -330,7 +330,7 @@ The operations above on the quotient by `c : RingCon R` preserve the algebraic s
 
 section Algebraic
 
-@[inline] instance [NonUnitalNonAssocSemiring R] (c : RingCon R) : 
+@[inline] instance [NonUnitalNonAssocSemiring R] (c : RingCon R) :
     NonUnitalNonAssocSemiring c.Quotient :=
   Function.Surjective.nonUnitalNonAssocSemiring _ Quotient.surjective_Quotient_mk'' rfl
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
