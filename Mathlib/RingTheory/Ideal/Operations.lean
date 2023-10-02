@@ -825,6 +825,26 @@ theorem span_pair_mul_span_pair (w x y z : R) :
   simp_rw [span_insert, sup_mul, mul_sup, span_singleton_mul_span_singleton, sup_assoc]
 #align ideal.span_pair_mul_span_pair Ideal.span_pair_mul_span_pair
 
+theorem isCoprime_iff_sup : IsCoprime I J ↔ I ⊔ J = ⊤ := by
+  rw [IsCoprime]
+  constructor
+  · rintro ⟨x, y, hxy⟩
+    rw [eq_top_iff_one]
+    apply (show x * I + y * J ≤ I ⊔ J from
+      sup_le (mul_le_left.trans le_sup_left) (mul_le_left.trans le_sup_right))
+    rw [hxy]
+    simp only [one_eq_top, Submodule.mem_top]
+  · intro h
+    refine' ⟨1, 1, _⟩
+    simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
+
+theorem isCoprime_span_singleton_iff {R : Type*} [CommRing R] (x y : R) :
+    IsCoprime (span <| singleton x) (span <| singleton y) ↔ IsCoprime x y := by
+  simp_rw [isCoprime_iff_sup, eq_top_iff_one, mem_span_singleton_sup, mem_span_singleton]
+  constructor
+  · rintro ⟨a, _, ⟨b, rfl⟩, e⟩; exact ⟨a, b, mul_comm b y ▸ e⟩
+  · rintro ⟨a, b, e⟩; exact ⟨a, _, ⟨b, rfl⟩, mul_comm y b ▸ e⟩
+
 /-- The radical of an ideal `I` consists of the elements `r` such that `r ^ n ∈ I` for some `n`. -/
 def radical (I : Ideal R) : Ideal R where
   carrier := { r | ∃ n : ℕ, r ^ n ∈ I }
