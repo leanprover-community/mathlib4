@@ -668,16 +668,15 @@ variable (f g : α →ᵇ β) {x : α} {C : ℝ}
 /-- The pointwise sum of two bounded continuous functions is again bounded continuous. -/
 instance : Add (α →ᵇ β) where
   add f g :=
-    BoundedContinuousFunction.mkOfBound (f.toContinuousMap + g.toContinuousMap)
-      (↑(LipschitzAdd.C β) * max (Classical.choose f.bounded) (Classical.choose g.bounded))
-      (by
+    BoundedContinuousFunction.mk (f.toContinuousMap + g.toContinuousMap)
+      ⟨↑(LipschitzAdd.C β) * max (Classical.choose f.bounded) (Classical.choose g.bounded), by
         intro x y
         refine' le_trans (lipschitz_with_lipschitz_const_add ⟨f x, g x⟩ ⟨f y, g y⟩) _
         rw [Prod.dist_eq]
         refine' mul_le_mul_of_nonneg_left _ (LipschitzAdd.C β).coe_nonneg
         apply max_le_max
         exact Classical.choose_spec f.bounded x y
-        exact Classical.choose_spec g.bounded x y)
+        exact Classical.choose_spec g.bounded x y⟩
 
 @[simp]
 theorem coe_add : ⇑(f + g) = f + g := rfl
@@ -872,18 +871,18 @@ theorem norm_const_eq [h : Nonempty α] (b : β) : ‖const α b‖ = ‖b‖ :=
 /-- Constructing a bounded continuous function from a uniformly bounded continuous
 function taking values in a normed group. -/
 def ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α] [SeminormedAddCommGroup β]
-    (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) : α →ᵇ β :=
-  ⟨⟨fun n => f n, Hf⟩, ⟨_, dist_le_two_norm' H⟩⟩
+    (f : α → β) (Hf : Continuous f) (H : ∃ C, ∀ x, ‖f x‖ ≤ C) : α →ᵇ β :=
+  ⟨⟨fun n => f n, Hf⟩, ⟨_, dist_le_two_norm' H.choose_spec⟩⟩
 #align bounded_continuous_function.of_normed_add_comm_group BoundedContinuousFunction.ofNormedAddCommGroup
 
 @[simp]
 theorem coe_ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α]
-    [SeminormedAddCommGroup β] (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
-    (ofNormedAddCommGroup f Hf C H : α → β) = f := rfl
+    [SeminormedAddCommGroup β] (f : α → β) (Hf : Continuous f) (H : ∃ C, ∀ x, ‖f x‖ ≤ C) :
+    (ofNormedAddCommGroup f Hf H : α → β) = f := rfl
 #align bounded_continuous_function.coe_of_normed_add_comm_group BoundedContinuousFunction.coe_ofNormedAddCommGroup
 
 theorem norm_ofNormedAddCommGroup_le {f : α → β} (hfc : Continuous f) {C : ℝ} (hC : 0 ≤ C)
-    (hfC : ∀ x, ‖f x‖ ≤ C) : ‖ofNormedAddCommGroup f hfc C hfC‖ ≤ C :=
+    (hfC : ∀ x, ‖f x‖ ≤ C) : ‖ofNormedAddCommGroup f hfc ⟨C, hfC⟩‖ ≤ C :=
   (norm_le hC).2 hfC
 #align bounded_continuous_function.norm_of_normed_add_comm_group_le BoundedContinuousFunction.norm_ofNormedAddCommGroup_le
 
@@ -891,7 +890,7 @@ theorem norm_ofNormedAddCommGroup_le {f : α → β} (hfc : Continuous f) {C : �
 function on a discrete space, taking values in a normed group. -/
 def ofNormedAddCommGroupDiscrete {α : Type u} {β : Type v} [TopologicalSpace α] [DiscreteTopology α]
     [SeminormedAddCommGroup β] (f : α → β) (C : ℝ) (H : ∀ x, norm (f x) ≤ C) : α →ᵇ β :=
-  ofNormedAddCommGroup f continuous_of_discreteTopology C H
+  ofNormedAddCommGroup f continuous_of_discreteTopology ⟨C, H⟩
 #align bounded_continuous_function.of_normed_add_comm_group_discrete BoundedContinuousFunction.ofNormedAddCommGroupDiscrete
 
 @[simp]
@@ -930,16 +929,16 @@ instance [Nonempty α] [One β] [NormOneClass β] : NormOneClass (α →ᵇ β) 
 /-- The pointwise opposite of a bounded continuous function is again bounded continuous. -/
 instance : Neg (α →ᵇ β) :=
   ⟨fun f =>
-    ofNormedAddCommGroup (-f) f.continuous.neg ‖f‖ fun x =>
-      norm_neg ((⇑f) x) ▸ f.norm_coe_le_norm x⟩
+    ofNormedAddCommGroup (-f) f.continuous.neg ⟨‖f‖, fun x =>
+      norm_neg ((⇑f) x) ▸ f.norm_coe_le_norm x⟩⟩
 
 /-- The pointwise difference of two bounded continuous functions is again bounded continuous. -/
 instance : Sub (α →ᵇ β) :=
   ⟨fun f g =>
-    ofNormedAddCommGroup (f - g) (f.continuous.sub g.continuous) (‖f‖ + ‖g‖) fun x => by
+    ofNormedAddCommGroup (f - g) (f.continuous.sub g.continuous) ⟨‖f‖ + ‖g‖, fun x => by
       simp only [sub_eq_add_neg]
       exact le_trans (norm_add_le _ _)
-        (add_le_add (f.norm_coe_le_norm x) <| norm_neg ((⇑g) x) ▸ g.norm_coe_le_norm x)⟩
+        (add_le_add (f.norm_coe_le_norm x) <| norm_neg ((⇑g) x) ▸ g.norm_coe_le_norm x)⟩⟩
 
 @[simp]
 theorem coe_neg : ⇑(-f) = -f := rfl
@@ -1191,8 +1190,8 @@ protected def _root_.ContinuousLinearMap.compLeftContinuousBounded (g : β →L[
     (α →ᵇ β) →L[𝕜] α →ᵇ γ :=
   LinearMap.mkContinuous
     { toFun := fun f =>
-        ofNormedAddCommGroup (g ∘ f) (g.continuous.comp f.continuous) (‖g‖ * ‖f‖) fun x =>
-          g.le_op_norm_of_le (f.norm_coe_le_norm x)
+        ofNormedAddCommGroup (g ∘ f) (g.continuous.comp f.continuous) ⟨‖g‖ * ‖f‖, fun x =>
+          g.le_op_norm_of_le (f.norm_coe_le_norm x)⟩
       map_add' := fun f g => by ext; simp
       map_smul' := fun c f => by ext; simp } ‖g‖ fun f =>
         norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg g) (norm_nonneg f))
@@ -1224,11 +1223,13 @@ section Seminormed
 
 variable [NonUnitalSeminormedRing R]
 
-instance : Mul (α →ᵇ R) where
+private lemma mulBound {f g : α →ᵇ R} (x : α) : ‖f x * g x‖ ≤ ‖f‖ * ‖g‖ :=
+  le_trans (norm_mul_le (f x) (g x)) <|
+    mul_le_mul (f.norm_coe_le_norm x) (g.norm_coe_le_norm x) (norm_nonneg _) (norm_nonneg _)
+
+instance instMul : Mul (α →ᵇ R) where
   mul f g :=
-    ofNormedAddCommGroup (f * g) (f.continuous.mul g.continuous) (‖f‖ * ‖g‖) fun x =>
-      le_trans (norm_mul_le (f x) (g x)) <|
-        mul_le_mul (f.norm_coe_le_norm x) (g.norm_coe_le_norm x) (norm_nonneg _) (norm_nonneg _)
+    ofNormedAddCommGroup (f * g) (f.continuous.mul g.continuous) ⟨‖f‖ * ‖g‖, mulBound⟩
 
 @[simp]
 theorem coe_mul (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
@@ -1246,8 +1247,7 @@ instance : NonUnitalRing (α →ᵇ R) :=
 
 instance nonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) :=
   { BoundedContinuousFunction.seminormedAddCommGroup with
-    norm_mul := fun _ _ =>
-      norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
+    norm_mul := fun _ _ => norm_le (mul_nonneg (norm_nonneg _) (norm_nonneg _)) |>.mpr mulBound
     -- Porting note: These 5 fields were missing. Add them.
     left_distrib, right_distrib, zero_mul, mul_zero, mul_assoc }
 
@@ -1397,16 +1397,17 @@ If `β` is a normed `𝕜`-space, then we show that the space of bounded continu
 functions from `α` to `β` is naturally a module over the algebra of bounded continuous
 functions from `α` to `𝕜`. -/
 
+private lemma smulBound {f : α →ᵇ 𝕜} {g : α →ᵇ β} (x : α) : ‖f x • g x‖ ≤ ‖f‖ * ‖g‖ :=
+  calc
+    ‖f x • g x‖ ≤ ‖f x‖ * ‖g x‖ := norm_smul_le _ _
+    _ ≤ ‖f‖ * ‖g‖ :=
+      mul_le_mul (f.norm_coe_le_norm _) (g.norm_coe_le_norm _) (norm_nonneg _) (norm_nonneg _)
 
-instance hasSmul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) :=
+instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) :=
   ⟨fun (f : α →ᵇ 𝕜) (g : α →ᵇ β) =>
-    ofNormedAddCommGroup (fun x => f x • g x) (f.continuous.smul g.continuous) (‖f‖ * ‖g‖) fun x =>
-      calc
-        ‖f x • g x‖ ≤ ‖f x‖ * ‖g x‖ := norm_smul_le _ _
-        _ ≤ ‖f‖ * ‖g‖ :=
-          mul_le_mul (f.norm_coe_le_norm _) (g.norm_coe_le_norm _) (norm_nonneg _) (norm_nonneg _)
-        ⟩
-#align bounded_continuous_function.has_smul' BoundedContinuousFunction.hasSmul'
+    ofNormedAddCommGroup (fun x => f x • g x) (f.continuous.smul g.continuous)
+      ⟨‖f‖ * ‖g‖, smulBound⟩⟩
+#align bounded_continuous_function.has_smul' BoundedContinuousFunction.instSMul'
 
 instance module' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
   Module.ofCore <|
@@ -1418,7 +1419,7 @@ instance module' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
 #align bounded_continuous_function.module' BoundedContinuousFunction.module'
 
 theorem norm_smul_le (f : α →ᵇ 𝕜) (g : α →ᵇ β) : ‖f • g‖ ≤ ‖f‖ * ‖g‖ :=
-  norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
+  norm_le (mul_nonneg (norm_nonneg _) (norm_nonneg _)) |>.mpr smulBound
 #align bounded_continuous_function.norm_smul_le BoundedContinuousFunction.norm_smul_le
 
 /- TODO: When `NormedModule` has been added to `Analysis.NormedSpace.Basic`, the above facts
