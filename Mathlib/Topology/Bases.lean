@@ -209,11 +209,11 @@ theorem IsTopologicalBasis.open_eq_iUnion {B : Set (Set α)} (hB : IsTopological
 #align topological_space.is_topological_basis.open_eq_Union TopologicalSpace.IsTopologicalBasis.open_eq_iUnion
 
 lemma IsTopologicalBasis.subset_of_forall_subset {t : Set α} (hB : IsTopologicalBasis B)
-  (hs : IsOpen s) (h : ∀ U ∈ B, U ⊆ s → U ⊆ t) : s ⊆ t := by
+    (hs : IsOpen s) (h : ∀ U ∈ B, U ⊆ s → U ⊆ t) : s ⊆ t := by
   rw [hB.open_eq_sUnion' hs]; simpa [sUnion_subset_iff]
 
 lemma IsTopologicalBasis.eq_of_forall_subset_iff {t : Set α} (hB : IsTopologicalBasis B)
-  (hs : IsOpen s) (ht : IsOpen t) (h : ∀ U ∈ B, U ⊆ s ↔ U ⊆ t) : s = t := by
+    (hs : IsOpen s) (ht : IsOpen t) (h : ∀ U ∈ B, U ⊆ s ↔ U ⊆ t) : s = t := by
   rw [hB.open_eq_sUnion' hs, hB.open_eq_sUnion' ht]
   exact congr_arg _ (Set.ext λ U ↦ and_congr_right $ h _)
 

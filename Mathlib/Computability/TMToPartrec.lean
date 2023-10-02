@@ -1101,7 +1101,7 @@ def tr : Λ' → Stmt'
 we replace equation lemmas of `tr`. -/
 
 theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
-  pop' k₁ (branch (fun s => s.elim true p) (goto fun _ => q)
+    pop' k₁ (branch (fun s => s.elim true p) (goto fun _ => q)
       (push' k₂ <| goto fun _ => Λ'.move p k₁ k₂ q)) := rfl
 
 theorem tr_push (k f q) : tr (Λ'.push k f q) = branch (fun s => (f s).isSome)
@@ -1122,7 +1122,7 @@ theorem tr_succ (q) : tr (Λ'.succ q) = pop' main (branch (fun s => s = some Γ'
         ((push main fun _ => Γ'.bit1) <| goto fun _ => unrev q)) := rfl
 
 theorem tr_pred (q₁ q₂) : tr (Λ'.pred q₁ q₂) = pop' main (branch (fun s => s = some Γ'.bit0)
-      ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
+    ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
     branch (fun s => natEnd s.iget) (goto fun _ => q₁)
       (peek' main <|
         branch (fun s => natEnd s.iget) (goto fun _ => unrev q₂)
@@ -1838,7 +1838,7 @@ theorem codeSupp_comp (f g k) :
       trStmts₁ (trNormal (Code.comp f g) k) ∪ codeSupp g (Cont'.comp f k) := by
   simp [codeSupp, codeSupp', contSupp, Finset.union_assoc]
   rw [← Finset.union_assoc _ _ (contSupp k),
-    Finset.union_eq_right_iff_subset.2 (codeSupp'_self _ _)]
+    Finset.union_eq_right.2 (codeSupp'_self _ _)]
 #align turing.partrec_to_TM2.code_supp_comp Turing.PartrecToTM2.codeSupp_comp
 
 @[simp]

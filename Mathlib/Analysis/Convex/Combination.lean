@@ -74,7 +74,7 @@ theorem Finset.centerMass_singleton (hw : w i ≠ 0) : ({i} : Finset ι).centerM
   simp [centerMass, inv_neg]
 
 lemma Finset.centerMass_smul_left {c : R'} [Module R' R] [Module R' E] [SMulCommClass R' R R]
-  [IsScalarTower R' R R] [SMulCommClass R R' E] [IsScalarTower R' R E] (hc : c ≠ 0) :
+    [IsScalarTower R' R R] [SMulCommClass R R' E] [IsScalarTower R' R E] (hc : c ≠ 0) :
     t.centerMass (c • w) z = t.centerMass w z := by
   simp [centerMass, -smul_assoc, smul_assoc c, ←smul_sum, smul_inv₀, smul_smul_smul_comm, hc]
 
@@ -252,7 +252,7 @@ theorem Finset.centerMass_id_mem_convexHull (t : Finset E) {w : E → R} (hw₀ 
 
 /-- A version of `Finset.centerMass_mem_convexHull` for when the weights are nonpositive. -/
 lemma Finset.centerMass_id_mem_convexHull_of_nonpos (t : Finset E) {w : E → R}
-  (hw₀ : ∀ i ∈ t, w i ≤ 0) (hws : ∑ i in t, w i < 0) :
+    (hw₀ : ∀ i ∈ t, w i ≤ 0) (hws : ∑ i in t, w i < 0) :
     t.centerMass w id ∈ convexHull R (t : Set E) :=
   t.centerMass_mem_convexHull_of_nonpos hw₀ hws fun _ ↦ mem_coe.2
 
