@@ -12,7 +12,7 @@
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "4f8b397237411249930791f1cba0a9d2880a02dd",
+    "rev": "70026c244bc61d55d695d8beb5dd4626ecb5a70e",
     "opts": {},
     "name": "aesop",
     "inputRev?": "master",
