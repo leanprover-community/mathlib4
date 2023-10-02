@@ -641,8 +641,8 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   exact ⟨f x ^ (n + 1), mul_comm _ _⟩
 #align ideal.span_pow_eq_top Ideal.span_pow_eq_top
 
-lemma isPrime_of_maximally_disjoint (S : Submonoid α) (I : Ideal α)
-    (disjoint : (I : Set α) ⊓ S = ∅)
+lemma isPrime_of_maximally_disjoint (I : Ideal α)
+    (S : Submonoid α) (disjoint : (I : Set α) ⊓ S = ∅)
     (maximally_disjoint : ∀ (J : Ideal α), I < J → (J : Set α) ⊓ S ≠ ∅) :
     I.IsPrime where
   ne_top' := by
