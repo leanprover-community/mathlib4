@@ -29,7 +29,7 @@ variable {C : Type u} [Category.{v} C]
 and the condition that their composition equals `f`. -/
 structure Factorisation {X Y : C} (f : X ⟶ Y) where
   /-- The midpoint of the factorisation. -/
-  mid  : C
+  mid : C
   /-- The morphism into the factorisation midpoint. -/
   ι   : X ⟶ mid
   /-- The morphism out of the factorisation midpoint. -/

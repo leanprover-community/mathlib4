@@ -119,7 +119,7 @@ theorem CancelCommMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelCommMonoid M⦄ (h
 
 @[to_additive (attr := ext)]
 theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : m₁.mul = m₂.mul)
-  (h_inv : m₁.inv = m₂.inv) : m₁ = m₂ := by
+    (h_inv : m₁.inv = m₂.inv) : m₁ = m₂ := by
   have h_mon := Monoid.ext h_mul
   have h₁ : m₁.one = m₂.one := congr_arg (·.one) h_mon
   let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
