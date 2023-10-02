@@ -88,6 +88,23 @@ instance isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T)) wher
   measure_univ_lt_top := by simp
 #align add_circle.is_finite_measure AddCircle.isFiniteMeasure
 
+instance : HasAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) ℝ where
+  has_add_fundamental_domain_characterization := by
+    use Ioc (0 : ℝ) (0 + T)
+    apply isAddFundamentalDomain_Ioc'
+    exact hT.out
+--- ALEX HOMEWORK : termify
+
+instance : IsAddLeftInvariant (volume : Measure (AddCircle T)) := inferInstance
+
+instance : AddQuotientVolumeEqVolumePreimage (volume : Measure (AddCircle T)) := by
+    apply MeasureTheory.LeftInvariantIsAddQuotientVolumeEqVolumePreimage
+
+#exit
+
+  have := MeasureTheory.LeftInvariantIsAddQuotientVolumeEqVolumePreimage
+
+
 /-- The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass `T`)
 on the additive circle, and with respect to the restriction of Lebsegue measure on `ℝ` to an
@@ -95,6 +112,7 @@ interval (t, t + T]. -/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
       (volume.restrict (Ioc t (t + T))) := by
+
   apply MeasurePreservingQuotientAddGroup.mk'
   · exact isAddFundamentalDomain_Ioc' hT.out t
   · simp
