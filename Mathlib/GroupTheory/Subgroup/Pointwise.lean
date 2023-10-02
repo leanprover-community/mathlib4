@@ -145,13 +145,13 @@ theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure
 #align add_subgroup.closure_add_le AddSubgroup.closure_add_le
 
 @[to_additive]
-theorem sup_eq_closure (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
+theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
   le_antisymm
     (sup_le (fun h hh => subset_closure ⟨h, 1, hh, K.one_mem, mul_one h⟩) fun k hk =>
       subset_closure ⟨1, k, H.one_mem, hk, one_mul k⟩)
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
-#align subgroup.sup_eq_closure Subgroup.sup_eq_closure
-#align add_subgroup.sup_eq_closure AddSubgroup.sup_eq_closure
+#align subgroup.sup_eq_closure Subgroup.sup_eq_closure_mul
+#align add_subgroup.sup_eq_closure AddSubgroup.sup_eq_closure_add
 
 @[to_additive]
 theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
