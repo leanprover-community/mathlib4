@@ -1653,7 +1653,6 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 
 end
 
-
 section compContinuous_algebra
 
 /-!
