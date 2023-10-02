@@ -221,6 +221,7 @@ import Mathlib.Algebra.Hom.Ring.Basic
 import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.Homology.Associator
 import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.Braiding
 import Mathlib.Algebra.Homology.ComplexShape

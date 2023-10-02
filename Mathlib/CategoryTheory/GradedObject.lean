@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Preadditive.Basic
 
 #align_import category_theory.graded_object from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -418,6 +419,57 @@ noncomputable def map [∀ (j : J), HasColimitsOfShape (Discrete (p ⁻¹' {j}))
     GradedObject I C ⥤ GradedObject J C where
   obj X := X.mapObj p
   map φ := mapMap φ p
+
+section
+
+variable [Preadditive C] {P Q : GradedObject I C} {C}
+
+instance : AddCommGroup (P ⟶ Q) := by
+  change AddCommGroup (∀ i, _)
+  infer_instance
+
+@[simp]
+theorem add_apply (f g : P ⟶ Q) (i : I) : (f + g) i = f i + g i := rfl
+
+@[simp]
+theorem sub_apply (f g : P ⟶ Q) (i : I) : (f - g) i = f i - g i := rfl
+
+@[simp]
+theorem neg_apply (f : P ⟶ Q) (i : I) : (-f) i = -f i := rfl
+
+@[simp]
+theorem zsmul_apply (f : P ⟶ Q) (n : ℤ) (i : I) : (n • f) i = n • f i := rfl
+
+instance : Preadditive (GradedObject I C) where
+
+variable (P Q)
+
+@[simp]
+noncomputable def mapMap_zero (p : I → J) [HasMap P p] [HasMap Q p]:
+    mapMap (0 : P ⟶ Q) p = 0 := by aesop_cat
+
+variable {P Q}
+
+@[simp]
+noncomputable def mapMap_add (f g : P ⟶ Q) (p : I → J) [HasMap P p] [HasMap Q p]:
+    mapMap (f + g) p = mapMap f p + mapMap g p := by aesop_cat
+
+@[simp]
+noncomputable def mapMap_sub (f g : P ⟶ Q) (p : I → J) [HasMap P p] [HasMap Q p]:
+    mapMap (f - g) p = mapMap f p - mapMap g p := by aesop_cat
+
+@[simp]
+noncomputable def mapMap_neg (f : P ⟶ Q) (p : I → J) [HasMap P p] [HasMap Q p]:
+    mapMap (-f) p = -mapMap f p := by aesop_cat
+
+@[simp]
+noncomputable def mapMap_zsmul (f : P ⟶ Q) (n : ℤ) (p : I → J) [HasMap P p] [HasMap Q p]:
+    mapMap (n • f) p = n • mapMap f p := by
+  ext
+  dsimp
+  simp [Preadditive.zsmul_comp, Preadditive.comp_zsmul]
+
+end
 
 end GradedObject
 

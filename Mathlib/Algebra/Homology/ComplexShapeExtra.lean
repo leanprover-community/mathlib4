@@ -35,10 +35,16 @@ variable {c₁}
 lemma rel_π₁ {i₁ i₁' : I₁} (h : c₁.Rel i₁ i₁') (i₂ : I₂) : c₃.Rel (π c₁ c₂ c₃ ⟨i₁, i₂⟩) (π c₁ c₂ c₃ ⟨i₁', i₂⟩) :=
   TotalComplexShape.rel₁ h i₂
 
+lemma next_π₁ {i₁ i₁' : I₁} (h : c₁.Rel i₁ i₁') (i₂ : I₂) : c₃.next (π c₁ c₂ c₃ ⟨i₁, i₂⟩) = π c₁ c₂ c₃ ⟨i₁', i₂⟩ :=
+  c₃.next_eq' (rel_π₁ c₂ c₃ h i₂)
+
 variable (c₁) {c₂}
 
 lemma rel_π₂ (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') : c₃.Rel (π c₁ c₂ c₃ ⟨i₁, i₂⟩) (π c₁ c₂ c₃ ⟨i₁, i₂'⟩) :=
   TotalComplexShape.rel₂ i₁ h
+
+lemma next_π₂ (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') : c₃.next (π c₁ c₂ c₃ ⟨i₁, i₂⟩) = π c₁ c₂ c₃ ⟨i₁, i₂'⟩ :=
+  c₃.next_eq' (rel_π₂ c₁ c₃ i₁ h)
 
 variable {c₁}
 

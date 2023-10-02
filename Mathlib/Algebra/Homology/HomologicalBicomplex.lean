@@ -1,6 +1,7 @@
 import Mathlib.CategoryTheory.GradedObject.Bifunctor
 import Mathlib.Algebra.Homology.ComplexShapeExtra
 import Mathlib.Algebra.Homology.Flip
+import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.Tactic.Linarith
 
@@ -23,6 +24,8 @@ variable (C c)
 def toGradedObjectFunctor : HomologicalComplex C c ⥤ GradedObject I C where
   obj K := K.toGradedObject
   map f := f.f
+
+instance [Preadditive D] : (toGradedObjectFunctor D c).Additive where
 
 instance : Faithful (toGradedObjectFunctor C c) where
   map_injective {K L} f g h := by
@@ -200,11 +203,12 @@ def toGradedObjectFunctor [HasZeroMorphisms C] :
   map φ := fun ⟨i₁, i₂⟩ => (φ.f i₁).f i₂
 
 variable {c₁ c₂ C}
-variable [Preadditive C] (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (ψ : L ⟶ M) (e : K ≅ L)
+variable [Preadditive C] (K L M : HomologicalComplex₂ C c₁ c₂) (φ φ' : K ⟶ L) (ψ : L ⟶ M) (e : K ≅ L)
   (c₃ : ComplexShape I₃) [DecidableEq I₃]
 
-variable [TotalComplexShape c₁ c₂ c₃] [K.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₃)]
-  [L.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₃)] [M.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₃)]
+abbrev HasTotal [TotalComplexShape c₁ c₂ c₃] := K.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₃)
+
+variable [TotalComplexShape c₁ c₂ c₃] [K.HasTotal c₃] [L.HasTotal c₃] [M.HasTotal c₃]
 
 attribute [reassoc] HomologicalComplex.comp_f
 
@@ -305,7 +309,7 @@ lemma ι_descTotal {A : C} (i₃ : I₃) (f : ∀ (i₁ : I₁) (i₂ : I₂) (_
 variable {K c₃}
 
 @[ext]
-lemma descTotal_ext {A : C} {i₃ : I₃} (f g : (K.total c₃).X i₃ ⟶ A)
+lemma total_ext {A : C} {i₃ : I₃} (f g : (K.total c₃).X i₃ ⟶ A)
     (h : ∀ (i₁ : I₁) (i₂ : I₂) (h : (ComplexShape.π c₁ c₂ c₃) ⟨i₁, i₂⟩ = i₃), K.ιTotal c₃ i₁ i₂ i₃ h ≫ f = K.ιTotal c₃ i₁ i₂ i₃ h ≫ g) : f = g :=
   GradedObject.mapObj_ext _ _ _ _ (fun ⟨i₁, i₂⟩ hi => h i₁ i₂ hi)
 
@@ -366,6 +370,42 @@ lemma totalMap_comp : totalMap (φ ≫ ψ) c₃ = totalMap φ c₃ ≫ totalMap 
   apply (HomologicalComplex.toGradedObjectFunctor _ _).map_injective
   exact GradedObject.mapMap_comp ((HomologicalComplex₂.toGradedObjectFunctor C c₁ c₂).map φ)
     ((HomologicalComplex₂.toGradedObjectFunctor C c₁ c₂).map ψ) (ComplexShape.π c₁ c₂ c₃)
+
+@[simp]
+lemma totalMap_add : totalMap (φ + φ') c₃ = totalMap φ c₃ + totalMap φ' c₃ := by
+  apply (HomologicalComplex.toGradedObjectFunctor _ _).map_injective
+  ext i₃
+  dsimp
+  ext i₁ i₂ h
+  simp [totalMap, ιTotal]
+
+@[simp]
+lemma totalMap_sub : totalMap (φ - φ') c₃ = totalMap φ c₃ - totalMap φ' c₃ := by
+  apply (HomologicalComplex.toGradedObjectFunctor _ _).map_injective
+  ext i₃
+  dsimp
+  ext i₁ i₂ h
+  simp [totalMap, ιTotal]
+
+@[simp]
+lemma totalMap_neg : totalMap (-φ) c₃ = -totalMap φ c₃ := by
+  apply (HomologicalComplex.toGradedObjectFunctor _ _).map_injective
+  ext i₃
+  dsimp
+  ext i₁ i₂ h
+  simp [totalMap, ιTotal]
+
+variable (K L)
+
+@[simp]
+lemma totalMap_zero : totalMap (0 : K ⟶ L) c₃ = 0 := by
+  apply (HomologicalComplex.toGradedObjectFunctor _ _).map_injective
+  ext i₃
+  dsimp
+  ext i₁ i₂ h
+  simp [totalMap, ιTotal]
+
+variable {K L}
 
 @[simps]
 noncomputable def totalMapIso : K.total c₃ ≅ L.total c₃ where
