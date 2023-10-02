@@ -105,7 +105,7 @@ theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
 
 open scoped Pointwise in
 @[to_additive]
-theorem sound (U : Set (G ⧸ N)) (g : Subgroup.opposite N) :
+theorem sound (U : Set (G ⧸ N)) (g : N.op) :
     g • mk' N ⁻¹' U = mk' N ⁻¹' U := by
   ext x
   simp only [Set.mem_preimage, Set.mem_smul_set_iff_inv_smul_mem]
