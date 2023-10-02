@@ -21,18 +21,18 @@ variable {G : Type*} [Group G]
 
 namespace Subgroup
 
-/-- pull a subgroup back to an opposite subgroup along `unop`-/
+/-- Pull a subgroup back to an opposite subgroup along `MulOpposite.unop`-/
 @[to_additive (attr := simps)
-"pull an additive subgroup back to an opposite additive subgroup along `unop`"]
+"Pull an additive subgroup back to an opposite additive subgroup along `AddOpposite.unop`"]
 protected def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
   carrier := MulOpposite.unop ⁻¹' (H : Set G)
   one_mem' := H.one_mem
   mul_mem' ha hb := H.mul_mem hb ha
   inv_mem' := H.inv_mem
 
-/-- pull an opposite subgroup back to a subgroup along `op`-/
+/-- Pull an opposite subgroup back to a subgroup along `MulOpposite.op`-/
 @[to_additive (attr := simps)
-"pull an opposite additive subgroup back to an additive subgroup along `op`"]
+"Pull an opposite additive subgroup back to an additive subgroup along `AddOpposite.op`"]
 protected def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
   carrier := MulOpposite.op ⁻¹' (H : Set Gᵐᵒᵖ)
   one_mem' := H.one_mem
@@ -47,9 +47,9 @@ protected def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
     H.unop.toSubmonoid = H.toSubmonoid.unop :=
   rfl
 
-/-- A subgroup `H` of `G` determines a subgroup `H.opposite` of the opposite group `Gᵐᵒᵖ`. -/
+/-- A subgroup `H` of `G` determines a subgroup `H.op` of the opposite group `Gᵐᵒᵖ`. -/
 @[to_additive (attr := simps) "An additive subgroup `H` of `G` determines an additive subgroup
-`H.opposite` of the opposite additive group `Gᵃᵒᵖ`."]
+`H.op` of the opposite additive group `Gᵃᵒᵖ`."]
 def opEquiv : Subgroup G ≃ Subgroup Gᵐᵒᵖ where
   toFun := Subgroup.op
   invFun := Subgroup.unop
