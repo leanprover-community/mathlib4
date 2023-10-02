@@ -2066,7 +2066,7 @@ lemma IsCodiscrete.mono {U V : Set α} (hU : IsCodiscrete U) (hV : U ⊆ V) :
   refine ⟨?_, DiscreteTopology.of_subset hU' hV⟩
   let f : ↑Uᶜ → α := Subtype.val
   have he := hU.closedEmbedding_subtype_val
-  simpa only [Subtype.image_preimage_val, inter_eq_self_of_subset_left hV, 
+  simpa only [Subtype.image_preimage_val, inter_eq_self_of_subset_left hV,
     isClosed_compl_iff] using he.isClosedMap _ (isClosed_discrete (f ⁻¹' Vᶜ))
 
 end codiscrete
