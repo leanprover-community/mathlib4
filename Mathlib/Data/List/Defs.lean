@@ -298,7 +298,7 @@ def permutations'Aux (t : α) : List α → List (List α)
 
 /-- List of all permutations of `l`. This version of `permutations` is less efficient but has
 simpler definitional equations. The permutations are in a different order,
-but are equal up to permutation, as shown by `list.permutations_perm_permutations'`.
+but are equal up to permutation, as shown by `List.permutations_perm_permutations'`.
 
      permutations [1, 2, 3] =
        [[1, 2, 3], [2, 1, 3], [2, 3, 1],

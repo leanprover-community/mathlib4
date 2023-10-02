@@ -977,7 +977,7 @@ namespace Classical
 variable {p : α → Prop}
 
 -- use shortened names to avoid conflict when classical namespace is open.
-/-- Any prop `p` is decidable classically. A shorthand for `classical.prop_decidable`. -/
+/-- Any prop `p` is decidable classically. A shorthand for `Classical.propDecidable`. -/
 noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 #align classical.dec Classical.dec
 

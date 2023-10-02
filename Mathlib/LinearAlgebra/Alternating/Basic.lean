@@ -783,7 +783,7 @@ section DomDomLcongr
 
 variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 
-/-- `alternating_map.dom_dom_congr` as a linear equivalence. -/
+/-- `AlternatingMap.domDomCongr` as a linear equivalence. -/
 @[simps apply symm_apply]
 def domDomLcongr (σ : ι ≃ ι') : AlternatingMap R M N ι ≃ₗ[S] AlternatingMap R M N ι' where
   toFun := domDomCongr σ
