@@ -24,7 +24,25 @@ A measure is `WeaklyRegular` if it satisfies the following properties:
 * it is inner regular for open sets with respect to closed sets: the measure of any open set `U`
   is the supremum of `μ F` over all closed sets `F` contained in `U`.
 
-In a Hausdorff topological space, regularity implies weak regularity. These three conditions are
+A measure is `InnerRegular` if it is inner regular for measurable sets with respect to compact
+sets: the measure of any measurable set `s` is the supremum of `μ K` over all compact sets
+contained in `s`.
+
+There is a reason for this zoo of regularity classes:
+* A finite or sigma-finite measure on a metric space is always weakly regular. Therefore, in
+probability theory, weakly regular measures play a prominent role.
+* In locally compact topological spaces, there are two competing notions of Radon measures: the
+ones that are regular, and the ones that are inner regular. For any of these two notions, there is
+a Riesz representation theorem, and an existence and uniqueness statement for the Haar measure in
+locally compact topological groups. The two notions coincide in sigma-compact spaces, but they
+differ in general, so it is worth having the two of them.
+
+While traditional textbooks on measure theory emphasize regular measures, more recent textbooks
+emphasize that inner regular Haar measures are better behaved than regular Haar measures, so our
+notion of Haar measure will be in terms of inner regular measures, although we will prove some
+statements for regular measures also.
+
+In a Hausdorff topological space, regularity implies weak regularity. These four conditions are
 registered as typeclasses for a measure `μ`, and this implication is recorded as an instance.
 
 In order to avoid code duplication, we also define a measure `μ` to be `InnerRegular` for sets
@@ -36,19 +54,17 @@ inner regularity for all measurable sets of finite measure (with respect to
 compact sets or closed sets respectively), and register some corollaries for (weakly) regular
 measures.
 
-Note that a similar statement for measurable sets of infinite mass can fail. For a counterexample,
-consider the group `ℝ × ℝ` where the first factor has the discrete topology and the second one the
-usual topology. It is a locally compact Hausdorff topological group, with Haar measure equal to
-Lebesgue measure on each vertical fiber. The set `ℝ × {0}` has infinite measure (by outer
-regularity), but any compact set it contains has zero measure (as it is finite).
+Here is an example showing how regularity and inner regularity may differ even on locally compact
+spaces. Consider the group `ℝ × ℝ` where the first factor has the discrete topology and the second
+one the usual topology. It is a locally compact Hausdorff topological group, with Haar measure equal
+to Lebesgue measure on each vertical fiber. Let us consider the regular version of Haar measure.
+Then the set `ℝ × {0}` has infinite measure (by outer regularity), but any compact set it contains
+has zero measure (as it is finite). In fact, this set only contains subset with measure zero or
+infinity. The inner regular version of Haar measure, on the other hand, gives zero mass to the
+set `ℝ × {0}`.
 
-Several authors require as a definition of regularity that all measurable sets are inner regular.
-We have opted for the slightly weaker definition above as it holds for all Haar measures, it is
-enough for essentially all applications, and it is equivalent to the other definition when the
-measure is finite.
-
-The interest of the notion of weak regularity is that it is enough for many applications, and it
-is automatically satisfied by any finite measure on a metric space.
+Several authors require both regularity and inner regularity for their measures. We have opted
+for the more fine grained definitions above as they apply more generally.
 
 ## Main definitions
 
