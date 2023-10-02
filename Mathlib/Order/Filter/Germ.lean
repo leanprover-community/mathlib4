@@ -366,7 +366,6 @@ instance commSemigroup [CommSemigroup M] : CommSemigroup (Germ l M) :=
 @[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ l M) :=
   { Germ.semigroup with
-    mul := (· * ·)
     mul_left_cancel := fun f₁ f₂ f₃ =>
       inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
         coe_eq.2 ((coe_eq.1 H).mono fun _x => mul_left_cancel) }
@@ -374,7 +373,6 @@ instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ
 @[to_additive]
 instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (Germ l M) :=
   { Germ.semigroup with
-    mul := (· * ·)
     mul_right_cancel := fun f₁ f₂ f₃ =>
       inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
         coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel }
@@ -419,8 +417,8 @@ instance monoid [Monoid M] : Monoid (Germ l M) :=
 
 /-- Coercion from functions to germs as a monoid homomorphism. -/
 @[to_additive "Coercion from functions to germs as an additive monoid homomorphism."]
-def coeMulHom [Monoid M] (l : Filter α) : (α → M) →* Germ l M :=
-  ⟨⟨ofFun, rfl⟩, fun _ _ => rfl⟩
+def coeMulHom [Monoid M] (l : Filter α) : (α → M) →* Germ l M where
+  toFun := ofFun; map_one' := rfl; map_mul' _ _ := rfl
 #align filter.germ.coe_mul_hom Filter.Germ.coeMulHom
 #align filter.germ.coe_add_hom Filter.Germ.coeAddHom
 

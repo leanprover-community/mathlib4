@@ -120,6 +120,20 @@ element, and `0` is left and right absorbing. -/
 class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
 #align comm_monoid_with_zero CommMonoidWithZero
 
+section CancelMonoidWithZero
+
+variable [CancelMonoidWithZero M₀] {a b c : M₀}
+
+theorem mul_left_inj' (hc : c ≠ 0) : a * c = b * c ↔ a = b :=
+  (mul_left_injective₀ hc).eq_iff
+#align mul_left_inj' mul_left_inj'
+
+theorem mul_right_inj' (ha : a ≠ 0) : a * b = a * c ↔ b = c :=
+  (mul_right_injective₀ ha).eq_iff
+#align mul_right_inj' mul_right_inj'
+
+end CancelMonoidWithZero
+
 section CommSemigroup
 
 variable [CommSemigroup M₀] [Zero M₀]
@@ -187,6 +201,26 @@ such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
 class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
 #align comm_group_with_zero CommGroupWithZero
+
+section GroupWithZero
+
+variable [GroupWithZero G₀] {a b c g h x : G₀}
+
+@[simp]
+theorem mul_inv_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b * b⁻¹ = a :=
+  calc
+    a * b * b⁻¹ = a * (b * b⁻¹) := mul_assoc _ _ _
+    _ = a := by simp [h]
+#align mul_inv_cancel_right₀ mul_inv_cancel_right₀
+
+@[simp]
+theorem mul_inv_cancel_left₀ (h : a ≠ 0) (b : G₀) : a * (a⁻¹ * b) = b :=
+  calc
+    a * (a⁻¹ * b) = a * a⁻¹ * b := (mul_assoc _ _ _).symm
+    _ = b := by simp [h]
+#align mul_inv_cancel_left₀ mul_inv_cancel_left₀
+
+end GroupWithZero
 
 section MulZeroClass
 

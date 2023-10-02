@@ -107,8 +107,8 @@ theorem SupIndep.image [DecidableEq ι] {s : Finset ι'} {g : ι' → ι} (hs : 
   rw [mem_image] at hi
   obtain ⟨i, hi, rfl⟩ := hi
   haveI : DecidableEq ι' := Classical.decEq _
-  suffices hts : t ⊆ (s.erase i).image g
-  · refine' (supIndep_iff_disjoint_erase.1 hs i hi).mono_right ((sup_mono hts).trans _)
+  suffices hts : t ⊆ (s.erase i).image g by
+    refine' (supIndep_iff_disjoint_erase.1 hs i hi).mono_right ((sup_mono hts).trans _)
     rw [sup_image]
   rintro j hjt
   obtain ⟨j, hj, rfl⟩ := mem_image.1 (ht hjt)
@@ -336,7 +336,6 @@ theorem SetIndependent.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : 
 
   Example: an indexed family of submodules of a module is independent in this sense if
   and only the natural map from the direct sum of the submodules to the module is injective. -/
--- Porting note: needed to use `_H`
 def Independent {ι : Sort*} {α : Type*} [CompleteLattice α] (t : ι → α) : Prop :=
   ∀ i : ι, Disjoint (t i) (⨆ (j) (_ : j ≠ i), t j)
 #align complete_lattice.independent CompleteLattice.Independent

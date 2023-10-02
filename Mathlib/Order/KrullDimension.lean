@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
 
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.RelSeries
-import Mathlib.Order.RelIso.Basic
+import Mathlib.Order.WithBot
+import Mathlib.Data.Nat.Lattice
 
 /-!
 # Krull dimension of a preordered set
@@ -89,7 +88,7 @@ lemma eq_top_of_infiniteDimensional [r.InfiniteDimensional] :
   krullDimOfRel r = ⊤ :=
 le_antisymm le_top $ le_iSup_iff.mpr $ fun m hm => match m, hm with
 | ⊥, hm => False.elim $ by
-  haveI : Inhabited α := r.inhabited_of_infiniteDimensional
+  haveI : Inhabited α := ⟨RelSeries.withLength r 0 0⟩
   exact not_le_of_lt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) $ hm default
 | some ⊤, _ => le_refl _
 | some (some m), hm => by
@@ -100,11 +99,11 @@ le_antisymm le_top $ le_iSup_iff.mpr $ fun m hm => match m, hm with
   assumption
 
 lemma eq_len_of_finiteDimensional [r.FiniteDimensional] :
-  krullDimOfRel r = r.longestRelSeries.length :=
+  krullDimOfRel r = (RelSeries.longestOf r).length :=
 le_antisymm
   (iSup_le $ fun _ => WithBot.coe_le_coe.mpr $ WithTop.coe_le_coe.mpr $
-    r.longestRelSeries_is_longest _) $
-  le_iSup (fun (i : RelSeries r) => (i.length : WithBot (WithTop ℕ))) r.longestRelSeries
+    RelSeries.length_le_length_longestOf _ _) $
+  le_iSup (fun (i : RelSeries r) => (i.length : WithBot (WithTop ℕ))) $ RelSeries.longestOf _
 
 end krullDimOfRel
 
@@ -119,23 +118,27 @@ lemma nonneg_of_Nonempty [Nonempty α] : 0 ≤ krullDim α :=
 
 lemma eq_bot_of_isEmpty [IsEmpty α] : krullDim α = ⊥ := krullDimOfRel.eq_bot_of_isEmpty _
 
-lemma eq_top_of_infiniteDimensionalType [InfiniteDimensionalType α] :
+lemma eq_top_of_infiniteDimensionalType [InfiniteDimensionalOrder α] :
   krullDim α = ⊤ := krullDimOfRel.eq_top_of_infiniteDimensional _
 
-lemma eq_len_of_finiteDimensionalType [FiniteDimensionalType α] :
-  krullDim α = (longestLTSeries α).length := krullDimOfRel.eq_len_of_finiteDimensional _
+lemma eq_len_of_finiteDimensionalType [FiniteDimensionalOrder α] :
+  krullDim α = (LTSeries.longestOf α).length := krullDimOfRel.eq_len_of_finiteDimensional _
 
 /-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
   is `β`. -/
-def infiniteDimensional_of_strictMono
-    (f : α → β) (hf : StrictMono f) [h : InfiniteDimensionalType α] :
-    InfiniteDimensionalType β where
-  longRelSeries := λ n ↦ LTSeries.map (h.longRelSeries n) f hf
-  longRelSeries_length := λ n ↦ h.longRelSeries_length n
+lemma infiniteDimensional_of_strictMono
+    (f : α → β) (hf : StrictMono f) [InfiniteDimensionalOrder α] :
+    InfiniteDimensionalOrder β :=
+  ⟨fun n ↦ ⟨(LTSeries.withLength _ n).map f hf, LTSeries.length_withLength α n⟩⟩
+  -- longRelSeries := λ n ↦ LTSeries.map (h.longRelSeries n) f hf
+  -- longRelSeries_length := λ n ↦ h.longRelSeries_length n
 
 lemma eq_zero_of_unique [Unique α] : krullDim α = 0 := by
-  rw [eq_len_of_finiteDimensionalType]
-  rfl
+  rw [eq_len_of_finiteDimensionalType, Nat.cast_eq_zero]
+  refine (LTSeries.longestOf_len_unique (default : LTSeries α) fun q ↦ show _ ≤ 0 from ?_).symm
+  by_contra r
+  rw [not_le] at r
+  exact ne_of_lt (q.step ⟨0, r⟩) <| Subsingleton.elim _ _
 
 lemma le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
   krullDimOfRel.le_of_map f hf

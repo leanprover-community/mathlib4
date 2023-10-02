@@ -114,9 +114,9 @@ theorem tail_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) :
 #align vector.tail_map Vector.tail_map
 
 theorem get_eq_get (v : Vector α n) (i : Fin n) :
-    v.get i = v.toList.get (Fin.castIso v.toList_length.symm i) :=
+    v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
-#align vector.nth_eq_nth_le Vector.get_eq_get
+#align vector.nth_eq_nth_le Vector.get_eq_getₓ
 
 -- porting notes: `nthLe` deprecated for `get`
 @[deprecated get_eq_get]
@@ -300,7 +300,8 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
   rw [← get_zero, last_def, get_eq_get, get_eq_get]
   simp_rw [toList_reverse]
-  rw [← Option.some_inj, ← List.get?_eq_get, ← List.get?_eq_get, List.get?_reverse]
+  rw [← Option.some_inj, Fin.cast, Fin.cast, ← List.get?_eq_get, ← List.get?_eq_get,
+    List.get?_reverse]
   · congr
     simp
   · simp
@@ -392,7 +393,7 @@ theorem scanl_get (i : Fin n) :
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
-    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get]
+    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get, List.get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine' Fin.cases _ _ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
@@ -515,26 +516,27 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
 
 /-- Define `motive v` by case-analysis on `v : Vector α n` -/
 def casesOn {motive : ∀ {n}, Vector α n → Sort*} (v : Vector α m)
-    (nil : motive nil) (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
+    (nil : motive nil)
+    (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
     motive v :=
   inductionOn (C := motive) v nil @fun _ hd tl _ => cons hd tl
 
 /-- Define `motive v₁ v₂` by case-analysis on `v₁ : Vector α n` and `v₂ : Vector β n` -/
 def casesOn₂  {motive : ∀{n}, Vector α n → Vector β n → Sort*} (v₁ : Vector α m) (v₂ : Vector β m)
-              (nil : motive nil nil)
-              (cons : ∀{n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
-                      → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
-              motive v₁ v₂ :=
-    inductionOn₂ (C := motive) v₁ v₂ nil @fun _ x y xs ys _ => cons x y xs ys
+    (nil : motive nil nil)
+    (cons : ∀{n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
+      → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
+    motive v₁ v₂ :=
+  inductionOn₂ (C := motive) v₁ v₂ nil @fun _ x y xs ys _ => cons x y xs ys
 
 /-- Define `motive v₁ v₂ v₃` by case-analysis on `v₁ : Vector α n`, `v₂ : Vector β n`, and
     `v₃ : Vector γ n` -/
 def casesOn₃  {motive : ∀{n}, Vector α n → Vector β n → Vector γ n → Sort*} (v₁ : Vector α m)
-              (v₂ : Vector β m) (v₃ : Vector γ m) (nil : motive nil nil nil)
-              (cons : ∀{n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
-                        → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
-              motive v₁ v₂ v₃ :=
-    inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
+    (v₂ : Vector β m) (v₃ : Vector γ m) (nil : motive nil nil nil)
+    (cons : ∀{n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
+      → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
+    motive v₁ v₂ v₃ :=
+  inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
 
 /-- Cast a vector to an array. -/
 def toArray : Vector α n → Array α
@@ -621,8 +623,6 @@ theorem toList_set (v : Vector α n) (i : Fin n) (a : α) :
 @[simp]
 theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).get i = a := by
   cases v; cases i; simp [Vector.set, get_eq_get]
-  dsimp
-  exact List.get_set_eq _ _ _ _
 #align vector.nth_update_nth_same Vector.get_set_same
 
 theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
@@ -630,7 +630,6 @@ theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
   cases v; cases i; cases j
   simp [Vector.set, Vector.get_eq_get, List.get_set_of_ne (Fin.vne_of_ne h)]
   rw [List.get_set_of_ne]
-  · rfl
   · simpa using h
 #align vector.nth_update_nth_of_ne Vector.get_set_of_ne
 

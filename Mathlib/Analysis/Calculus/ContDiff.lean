@@ -84,7 +84,7 @@ theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
 /-- Constants are `C^∞`.
 -/
 theorem contDiff_const {c : F} : ContDiff 𝕜 n fun _ : E => c := by
-  suffices h : ContDiff 𝕜 ∞ fun _ : E => c; · exact h.of_le le_top
+  suffices h : ContDiff 𝕜 ∞ fun _ : E => c from h.of_le le_top
   rw [contDiff_top_iff_fderiv]
   refine' ⟨differentiable_const c, _⟩
   rw [fderiv_const]
@@ -142,7 +142,7 @@ theorem iteratedFDeriv_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) :
 /-- Unbundled bounded linear functions are `C^∞`.
 -/
 theorem IsBoundedLinearMap.contDiff (hf : IsBoundedLinearMap 𝕜 f) : ContDiff 𝕜 n f := by
-  suffices h : ContDiff 𝕜 ∞ f; · exact h.of_le le_top
+  suffices h : ContDiff 𝕜 ∞ f from h.of_le le_top
   rw [contDiff_top_iff_fderiv]
   refine' ⟨hf.differentiable, _⟩
   simp_rw [hf.fderiv]
@@ -186,7 +186,7 @@ theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
 /-- Bilinear functions are `C^∞`.
 -/
 theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContDiff 𝕜 n b := by
-  suffices h : ContDiff 𝕜 ∞ b; · exact h.of_le le_top
+  suffices h : ContDiff 𝕜 ∞ b from h.of_le le_top
   rw [contDiff_top_iff_fderiv]
   refine' ⟨hb.differentiable, _⟩
   simp only [hb.fderiv]
@@ -429,8 +429,8 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_right (g : G ≃L[𝕜] 
     simp only [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, comp_apply,
       ContinuousMultilinearMap.compContinuousLinearMapEquivL_apply,
       ContinuousMultilinearMap.compContinuousLinearMap_apply]
-    rw [ContinuousLinearEquiv.comp_right_fderivWithin _ (g.uniqueDiffOn_preimage_iff.2 hs x hx)]
-    rfl
+    rw [ContinuousLinearEquiv.comp_right_fderivWithin _ (g.uniqueDiffOn_preimage_iff.2 hs x hx),
+      ContinuousLinearMap.coe_comp', coe_coe, comp_apply, tail_def, tail_def]
 #align continuous_linear_equiv.iterated_fderiv_within_comp_right ContinuousLinearEquiv.iteratedFDerivWithin_comp_right
 
 /-- The iterated derivative of the composition with a linear map on the right is
@@ -2064,6 +2064,21 @@ theorem ContDiffAt.exists_lipschitzOnWith {f : E' → F'} {x : E'} (hf : ContDif
   (hf.hasStrictFDerivAt le_rfl).exists_lipschitzOnWith
 #align cont_diff_at.exists_lipschitz_on_with ContDiffAt.exists_lipschitzOnWith
 
+/-- If `f` is `C^1`, it is locally Lipschitz. -/
+lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : LocallyLipschitz f := by
+  intro x
+  rcases hf.contDiffAt.exists_lipschitzOnWith with ⟨K, t, ht, hf⟩
+  use K, t
+
+/-- A `C^1` function with compact support is Lipschitz. -/
+theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'} {n : ℕ∞}
+    (hf : HasCompactSupport f) (h'f : ContDiff 𝕂 n f) (hn : 1 ≤ n) :
+    ∃ C, LipschitzWith C f := by
+  obtain ⟨C, hC⟩ := (hf.fderiv 𝕂).exists_bound_of_continuous (h'f.continuous_fderiv hn)
+  refine ⟨⟨max C 0, le_max_right _ _⟩, ?_⟩
+  apply lipschitzWith_of_nnnorm_fderiv_le (h'f.differentiable hn) (fun x ↦ ?_)
+  simp [← NNReal.coe_le_coe, hC x]
+
 end Real
 
 section deriv
@@ -2345,7 +2360,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
       (fun i j => ‖iteratedFDerivWithin 𝕜 i f s x‖ * ‖iteratedFDerivWithin 𝕜 j g s x‖) n).symm
 #align continuous_linear_map.norm_iterated_fderiv_within_le_of_bilinear_aux ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux
 
-set_option maxHeartbeats 900000 in -- 4.5× the default limit
+set_option maxHeartbeats 700000 in -- 3.5× the default limit
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` within a set in terms of the
 iterated derivatives of `f` and `g` when `B` is bilinear:
 `‖D^n (x ↦ B (f x) (g x))‖ ≤ ‖B‖ ∑_{k ≤ n} n.choose k ‖D^k f‖ ‖D^{n-k} g‖` -/
@@ -2542,7 +2557,6 @@ theorem norm_iteratedFDeriv_mul_le {f : E → A} {g : E → A} {N : ℕ∞} (hf 
 
 end
 
-set_option maxHeartbeats 300000 in
 /-- If the derivatives within a set of `g` at `f x` are bounded by `C`, and the `i`-th derivative
 within a set of `f` at `x` is bounded by `D^i` for all `1 ≤ i ≤ n`, then the `n`-th derivative
 of `g ∘ f` is bounded by `n! * C * D^n`.

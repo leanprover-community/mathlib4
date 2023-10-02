@@ -7,7 +7,8 @@ import Mathlib.Init.Control.Combinators
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relator
-import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
+import Aesop
 
 #align_import data.option.basic from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
@@ -140,7 +141,7 @@ theorem map_eq_id {f : α → α} : Option.map f = id ↔ f = id :=
 #align option.map_eq_id Option.map_eq_id
 
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ} (h : g₁ ∘ f₁ = g₂ ∘ f₂)
-  (a : α) :
+    (a : α) :
     (Option.map f₁ a).map g₁ = (Option.map f₂ a).map g₂ := by rw [map_map, h, ← map_map]
 #align option.map_comm Option.map_comm
 

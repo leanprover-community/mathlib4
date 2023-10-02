@@ -848,7 +848,7 @@ namespace IsIntegralClosure
 
 -- Porting note: added to work around missing infer kind support
 theorem algebraMap_injective (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing B]
-  [Algebra R B] [Algebra A B] [IsIntegralClosure A R B] : Function.Injective (algebraMap A B) :=
+    [Algebra R B] [Algebra A B] [IsIntegralClosure A R B] : Function.Injective (algebraMap A B) :=
   algebraMap_injective' R
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
@@ -1204,7 +1204,7 @@ instance : IsDomain (integralClosure R S) :=
   inferInstance
 
 theorem roots_mem_integralClosure {f : R[X]} (hf : f.Monic) {a : S}
-    (ha : a ∈ (f.map <| algebraMap R S).roots) : a ∈ integralClosure R S :=
+    (ha : a ∈ f.aroots S) : a ∈ integralClosure R S :=
   ⟨f, hf, (eval₂_eq_eval_map _).trans <| (mem_roots <| (hf.map _).ne_zero).1 ha⟩
 #align roots_mem_integral_closure roots_mem_integralClosure
 
