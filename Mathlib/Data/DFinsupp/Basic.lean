@@ -2255,8 +2255,8 @@ variable {R S : Type*}
 
 variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
-#noalign monoid_hom.map_dfinsupp_prod
-#noalign add_monoid_hom.map_dfinsupp_sum
+#align monoid_hom.map_dfinsupp_prod map_dfinsupp_prodₓ
+#align add_monoid_hom.map_dfinsupp_sum map_dfinsupp_sumₓ
 
 @[to_additive]
 theorem coe_dfinsupp_prod [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
@@ -2274,10 +2274,10 @@ theorem dfinsupp_prod_apply [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : �
 
 end MonoidHom
 
-#noalign ring_hom.map_dfinsupp_prod
-#noalign ring_hom.map_dfinsupp_sum
-#noalign mul_equiv.map_dfinsupp_prod
-#noalign add_equiv.map_dfinsupp_sum
+#align ring_hom.map_dfinsupp_prod map_dfinsupp_prodₓ
+#align ring_hom.map_dfinsupp_sum map_dfinsupp_sumₓ
+#align mul_equiv.map_dfinsupp_prod map_dfinsupp_prodₓ
+#align add_equiv.map_dfinsupp_sum map_dfinsupp_sumₓ
 
 /-! The above lemmas, repeated for `DFinsupp.sumAddHom`. -/
 

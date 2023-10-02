@@ -154,7 +154,7 @@ theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
 /-- Use linearity of `cramer` to take it out of a summation. -/
 theorem sum_cramer {β} (s : Finset β) (f : β → n → α) :
     (∑ x in s, cramer A (f x)) = cramer A (∑ x in s, f x) :=
-  (LinearMap.map_sum (cramer A)).symm
+  (map_sum (cramer A) ..).symm
 #align matrix.sum_cramer Matrix.sum_cramer
 
 /-- Use linearity of `cramer` and vector evaluation to take `cramer A _ i` out of a summation. -/
@@ -277,7 +277,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
   conv_lhs =>
     rw [this]
   ext k
-  simp [mulVec, dotProduct, mul_comm]
+  simp [mulVec, dotProduct, mul_comm, map_sum]
 #align matrix.cramer_eq_adjugate_mul_vec Matrix.cramer_eq_adjugate_mulVec
 
 theorem mul_adjugate_apply (A : Matrix n n α) (i j k) :

@@ -238,6 +238,9 @@ def equivEven : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra.even (Q' Q) :=
   AlgEquiv.ofAlgHom (toEven Q) (ofEven Q) (toEven_comp_ofEven Q) (ofEven_comp_toEven Q)
 #align clifford_algebra.equiv_even CliffordAlgebra.equivEven
 
+-- Note: times out on linting CI
+attribute [nolint simpNF] equivEven_symm_apply
+
 /-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
 subalgebra is just the reverse of the representation. -/
 theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
@@ -296,5 +299,8 @@ def evenEquivEvenNeg : CliffordAlgebra.even Q ≃ₐ[R] CliffordAlgebra.even (-Q
   AlgEquiv.ofAlgHom (evenToNeg Q _ rfl) (evenToNeg (-Q) _ (neg_neg _).symm)
     (evenToNeg_comp_evenToNeg _ _ _ _) (evenToNeg_comp_evenToNeg _ _ _ _)
 #align clifford_algebra.even_equiv_even_neg CliffordAlgebra.evenEquivEvenNeg
+
+-- Note: times out on linting CI
+attribute [nolint simpNF] evenEquivEvenNeg_apply evenEquivEvenNeg_symm_apply
 
 end CliffordAlgebra

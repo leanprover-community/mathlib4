@@ -113,9 +113,7 @@ variable [Monoid R] [MulAction R M] [Monoid M] [IsScalarTower R M M] [SMulCommCl
 
 instance : Monoid (SubMulAction R M) :=
   { SubMulAction.semiGroup,
-    SubMulAction.mulOneClass with
-    mul := (· * ·)
-    one := 1 }
+    SubMulAction.mulOneClass with }
 
 theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), (p ^ n : Set M) = ((p : Set M) ^ n)
   | 0, hn => (hn rfl).elim
