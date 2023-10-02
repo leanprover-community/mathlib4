@@ -2581,6 +2581,7 @@ import Mathlib.NumberTheory.DirichletCharacter.Basic
 import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.Four
+import Mathlib.NumberTheory.FLT.OfOddPrimes
 import Mathlib.NumberTheory.FermatPsp
 import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.NumberTheory.FunctionField
