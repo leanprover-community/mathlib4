@@ -73,9 +73,6 @@ variable {G : Type*} [AddGroup G] [MeasureSpace G] [TopologicalSpace G] [Topolog
   [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
   [AddQuotientVolumeEqVolumePreimage μ]
 
----- should not need this!!!?
-variable [MeasurableVAdd G (G ⧸ Γ)]
-
 local notation "π" => @QuotientAddGroup.mk G _ Γ
 
 /-- If `μ` satisfies `AddQuotientVolumeEqVolumePreimage` relative to a both left- and right-
@@ -174,9 +171,6 @@ variable {G : Type*} [AddGroup G] [MeasureSpace G] [TopologicalSpace G] [Topolog
 
 section addInvariantMeasure
 
--- should not be needed??? Why can't it figure this out?
-variable [MeasurableAdd (G ⧸ Γ)] [MeasurableVAdd G (G ⧸ Γ)]
-
 /-- If `μ` on `G ⧸ Γ` satisfies `AddQuotientVolumeEqVolumePreimage` relative to a both left- and
 right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant measure.-/
 instance MeasureTheory.AddQuotientVolumeEqVolumePreimage.addInvariantMeasure_quotient
@@ -191,9 +185,6 @@ instance MeasureTheory.AddQuotientVolumeEqVolumePreimage.addInvariantMeasure_quo
     rfl
 
 variable [IsAddLeftInvariant μ] [SigmaFinite μ]
-
---- should not need this!!!
-variable [MeasurableAdd₂ (G ⧸ Γ)] [MeasurableNeg (G ⧸ Γ)]
 
 local notation "π" => @QuotientAddGroup.mk G _ Γ
 
@@ -253,9 +244,6 @@ section addHaarMeasure
 
 variable [SigmaFinite (volume : Measure G)] [IsAddHaarMeasure (volume : Measure G)]
   [IsAddRightInvariant (volume : Measure G)]
-
----should not be needed???
-variable [BorelSpace (G ⧸ Γ)]
 
 local notation "π" => @QuotientAddGroup.mk G _ Γ
 
