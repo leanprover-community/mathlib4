@@ -193,8 +193,10 @@ instance IsSeparable.isAlgebraic [Algebra k K] [IsSeparable k K] : Algebra.IsAlg
 
 namespace IsSepClosure
 
+instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
+  IsSepClosure.separable
+
 instance isAlgebraic [Algebra k K] [IsSepClosure k K] : Algebra.IsAlgebraic k K :=
-  have : IsSeparable k K := IsSepClosure.separable
   IsSeparable.isAlgebraic
 
 instance (priority := 100) normal [Algebra k K] [IsSepClosure k K] : Normal k K :=
