@@ -14,3 +14,4 @@ example {α β γ : Type*} (f : α → β) : True := by
     let mvarid ← mvarid.tryClear ldecl.fvarId
     replaceMainGoal <| [mvarid] ++ mvs.toList.map fun e => e.mvarId!
   sorry
+  sorry
