@@ -210,8 +210,8 @@ variable (op : Name) (R : Expr) in
 returns the Array of those recursively determined arguments whose type is DefEq to `R`. -/
 partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
   if sum.isAppOf op then
-    let inR := ← sum.getAppArgs.filterM fun r => do isDefEq R (← inferType r <|> pure R)
-    let new := ← inR.mapM (getAddends ·)
+    let inR ← sum.getAppArgs.filterM fun r => do isDefEq R (← inferType r <|> pure R)
+    let new ← inR.mapM (getAddends ·)
     return new.foldl Array.append  #[]
   else return #[sum]
 
@@ -222,10 +222,10 @@ looking for instance of the operation `op`.
 Possibly returns duplicates!
 -/
 partial def getOps (sum : Expr) : MetaM (Array ((Array Expr) × Expr)) := do
-  let summands := ← getAddends op (← inferType sum <|> return sum) sum
+  let summands ← getAddends op (← inferType sum <|> return sum) sum
   let (first, rest) := if summands.size == 1 then (#[], sum.getExprInputs) else
     (#[(summands, sum)], summands)
-  let rest := ← rest.mapM getOps
+  let rest ← rest.mapM getOps
   return rest.foldl Array.append  first
 
 /-- `prepareOp sum` takes an `Expr`ession as input.  It assumes that `sum` is a well-formed
@@ -267,7 +267,7 @@ In particular, a subexpression of an `old_sum` can only appear *after* its over-
 -/
 def rankSums (op : Name) (tgt : Expr) (instructions : List (Expr × Bool)) :
     MetaM (List (Expr × Expr)) := do
-  let sums := ← getOps op (← instantiateMVars tgt)
+  let sums ← getOps op (← instantiateMVars tgt)
   let candidates := sums.map fun (addends, sum) => do
     let reord := reorderUsing addends.toList instructions
     let resummed := sumList (prepareOp sum) reord
@@ -280,7 +280,7 @@ expression obtained from `tgt` by replacing all `old_sum`s by the corresponding 
 If there were no required changes, then `permuteExpr` reports this in its second factor. -/
 def permuteExpr (op : Name) (tgt : Expr) (instructions : List (Expr × Bool)) :
     MetaM Expr := do
-  let permInstructions := ← rankSums op tgt instructions
+  let permInstructions ← rankSums op tgt instructions
   if permInstructions == [] then throwError "The goal is already in the required form"
   let mut permTgt := tgt
   for (old, new) in permInstructions do
@@ -377,7 +377,7 @@ def unifyMovements (data : Array (Expr × Bool × Syntax)) (op : Name) (tgt : Ex
   let ops ← getOps op tgt
   let atoms := (ops.map Prod.fst).flatten.toList.filter (!isBVar ·)
   -- `instr` are the unified user-provided terms, `neverMatched` are non-unified ones
-  let (instr, neverMatched) := ← pairUp data.toList atoms
+  let (instr, neverMatched) ← pairUp data.toList atoms
   let dbgMsg := #[m!"Matching of input variables:\n* pre-match:  {
     data.map (Prod.snd ∘ Prod.snd)}\n* post-match: {instr}",
     m!"\nMaximum number of iterations: {ops.size}"]
@@ -429,7 +429,7 @@ elab (name := moveOperTac) "move_oper" "(" id:ident ")" rws:rwRuleSeq  dbg:"-deb
   -- prepare the various error messages
   let finErr := if unmatched.length = 0 then .nil else
     m!"\nErrors:\nThe terms in '{unmatched}' were not matched to any atom"
-  let _ := ← stxs.mapM (logErrorAt · "") -- underline all non-matching terms
+  let _ ← stxs.mapM (logErrorAt · "") -- underline all non-matching terms
   let _ := ← match dbg, unmatched with
     | none, []      => return ()                                  -- no `debug`-mode: successful
     | none, _       => throwErrorAt stxs[0]! finErr               -- no `debug`-mode: unsuccessful
