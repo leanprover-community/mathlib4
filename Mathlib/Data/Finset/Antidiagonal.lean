@@ -1,7 +1,6 @@
 /-
 Copyright (c) 2023 Antoine Chambert-Loir and María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Inspired by a mathlib3 file by Bhavik Mehta
 -/
 
 import Mathlib.Data.Finset.Basic
@@ -32,6 +31,8 @@ but `Finset.antidiagonal s` has only 4.
 -- #eval (Finset.antidiagonal s).card -- 4
 -- #eval Multiset.card (Multiset.antidiagonal s) -- 8
 
+This is mostly taken from a mathlib3 file of Bhavik Mehta,
+https://leanprover-community.github.io/mathlib_docs/wiedijk_100_theorems/partition.html
 -/
 
 open scoped BigOperators
