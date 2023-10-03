@@ -19,7 +19,9 @@ General-Valued CSP is a very broad class of problems in discrete optimization.
 General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finite-Valued CSP.
 
 ## Main definitions
-* `ValuedCspTemplate`: A template for so-called fixed-language VCSP.
+* `ValuedCspTemplate`: A VCSP template; specifies domain, codomain, and allowed cost functions.
+* `ValuedCspTerm`: One summand in a VCSP instance; calls a concrete function from given template.
+* `ValuedCspTerm.evalSolution`: An evaluation of the VCSP term for given solution.
 * `ValuedCspInstance`: An instance of a VCSP problem over given template.
 * `ValuedCspInstance.evalSolution`: An evaluation of the VCSP instance for given solution.
 * `ValuedCspInstance.optimumSolution`: Is given solution a minimum of the VCSP instance?
@@ -30,10 +32,10 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 
 -/
 
-def nary1_of_unary {α β : Type _} (f : α → β) : (Fin 1 → α) → β :=
+def n1ary_of_unary {α β : Type _} (f : α → β) : (Fin 1 → α) → β :=
   fun a => f (a 0)
 
-def nary2_of_binary {α β : Type _} (f : α → α → β) : (Fin 2 → α) → β :=
+def n2ary_of_binary {α β : Type _} (f : α → α → β) : (Fin 2 → α) → β :=
   fun a => f (a 0) (a 1)
 
 /-- A template for a valued CSP problem with costs in `C`. -/
@@ -57,21 +59,21 @@ structure ValuedCspTerm (Γ : ValuedCspTemplate C) (ι : Type _) where
   app : Fin k → ι
 
 def valuedCspTerm_of_unary {Γ : ValuedCspTemplate C} {ι : Type _} {f₁ : Γ.D → C}
-    (ok : ⟨1, nary1_of_unary f₁⟩ ∈ Γ.F) (i : ι) : ValuedCspTerm Γ ι :=
-  ⟨1, nary1_of_unary f₁, ok, ![i]⟩
+    (ok : ⟨1, n1ary_of_unary f₁⟩ ∈ Γ.F) (i : ι) : ValuedCspTerm Γ ι :=
+  ⟨1, n1ary_of_unary f₁, ok, ![i]⟩
 
 def valuedCspTerm_of_binary {Γ : ValuedCspTemplate C} {ι : Type _} {f₂ : Γ.D → Γ.D → C}
-    (ok : ⟨2, nary2_of_binary f₂⟩ ∈ Γ.F) (i j : ι) : ValuedCspTerm Γ ι :=
-  ⟨2, nary2_of_binary f₂, ok, ![i, j]⟩
-
-/-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
-def ValuedCspInstance (Γ : ValuedCspTemplate C) (ι : Type _) : Type :=
-  List (ValuedCspTerm Γ ι)
+    (ok : ⟨2, n2ary_of_binary f₂⟩ ∈ Γ.F) (i j : ι) : ValuedCspTerm Γ ι :=
+  ⟨2, n2ary_of_binary f₂, ok, ![i, j]⟩
 
 /-- Evaluation of a `Γ` term `t` for given solution `x`. -/
 def ValuedCspTerm.evalSolution {Γ : ValuedCspTemplate C} {ι : Type _}
     (t : ValuedCspTerm Γ ι) (x : ι → Γ.D) : C :=
   t.f (x ∘ t.app)
+
+/-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
+def ValuedCspInstance (Γ : ValuedCspTemplate C) (ι : Type _) : Type :=
+  List (ValuedCspTerm Γ ι)
 
 /-- Evaluation of a `Γ` instance `I` for given solution `x`. -/
 def ValuedCspInstance.evalSolution {Γ : ValuedCspTemplate C} {ι : Type _}
@@ -95,7 +97,7 @@ def ValuedCspInstance.optimumSolution {Γ : ValuedCspTemplate C} {ι : Type _}
 
 -- Example: minimize |x| + |y| where x and y are rational numbers
 
-private def absRat : (Fin 1 → ℚ) → ℚ := @nary1_of_unary ℚ ℚ Abs.abs
+private def absRat : (Fin 1 → ℚ) → ℚ := @n1ary_of_unary ℚ ℚ Abs.abs
 
 private def exampleAbs : Σ (k : ℕ), (Fin k → ℚ) → ℚ := ⟨1, absRat⟩
 
@@ -143,7 +145,7 @@ instance crispCodomain : LinearOrderedAddCommMonoid Bool where
 
 -- Example: B ≠ A ≠ C ≠ D ≠ B ≠ C with three available labels (i.e., 3-coloring of K₄⁻)
 
-private def beqBool : (Fin 2 → Fin 3) → Bool := nary2_of_binary BEq.beq
+private def beqBool : (Fin 2 → Fin 3) → Bool := n2ary_of_binary BEq.beq
 
 private def exampleEquality : Σ (k : ℕ), (Fin k → Fin 3) → Bool := ⟨2, beqBool⟩
 
@@ -203,3 +205,12 @@ private def exampleSolutionIncorrect7 : Fin 4 → Fin 3 := ![2, 2, 0, 2]
 example : exampleCrispCspInstance.optimumSolution exampleSolutionCorrect0 := by
   intro _
   apply Bool.false_le
+
+
+
+
+
+-- What kind of infinite sets of functions can appear in `Γ.F` ...
+example : Set ((Fin 5 → Fin 2) → ℕ) :=
+  { f | ∃ (m n k : ℕ),
+        f = (fun x => 10 * m + 8 * n + (if x 0 = x 1 then 1 else 0) * k) }
