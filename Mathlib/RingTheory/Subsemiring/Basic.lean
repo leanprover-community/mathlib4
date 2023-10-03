@@ -79,7 +79,8 @@ theorem coe_nat_mem (n : ℕ) : (n : R) ∈ s := by
 namespace SubsemiringClass
 
 -- Prefer subclasses of `NonUnitalNonAssocSemiring` over subclasses of `SubsemiringClass`.
-/-- A subsemiring of a `NonUnitalNonAssocSemiring` inherits a `NonUnitalNonAssocSemiring` structure -/
+/-- A subsemiring of a `NonUnitalNonAssocSemiring` inherits a
+  `NonUnitalNonAssocSemiring` structure -/
 instance (priority := 75) toNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring s :=
   { Subtype.coe_injective.nonUnitalNonAssocSemiring (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) with
@@ -139,8 +140,8 @@ theorem coe_pow {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] (x : s) (n
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
     CommSemiring s :=
-  { Subtype.coe_injective.commSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl with
+  { Subtype.coe_injective.commSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl with
     toSemiring := toSemiring _ }
 #align subsemiring_class.to_comm_semiring SubsemiringClass.toCommSemiring
 
