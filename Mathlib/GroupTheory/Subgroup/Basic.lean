@@ -501,7 +501,7 @@ abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
   Subgroup.toAddSubgroup.symm
 #align add_subgroup.to_subgroup' AddSubgroup.toSubgroup'
 
-/-- Additive supgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
+/-- Additive subgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
 -/
 @[simps!]
 def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) where
