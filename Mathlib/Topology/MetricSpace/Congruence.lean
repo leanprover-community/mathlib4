@@ -23,8 +23,7 @@ Set.range v₁ ≃ᵢ Set.range v₂.
 
 -/
 
-
-variables {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
+variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
 
 noncomputable section
 
@@ -103,7 +102,7 @@ lemma of_Pairwise_dist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] [Dec
 
 section PseudoEMetricSpace
 
-variables [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace P₃]
+variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace P₃]
 
 
 @[refl] protected lemma refl (v₁ : ι → P₁): v₁ ≅ v₁ := fun _ _ => rfl
@@ -131,7 +130,7 @@ end PseudoEMetricSpace
 
 section EMetricSpace
 
-variables [EMetricSpace P₁] [EMetricSpace P₂] [EMetricSpace P₃]
+variable [EMetricSpace P₁] [EMetricSpace P₂] [EMetricSpace P₃]
 
 /-- `congruence_map` maps the congruent points in one space to the corresponding points
 in the other space. -/
@@ -187,14 +186,12 @@ lemma isometry_refl_apply (a : Set.range v₁)
     : Congruence.isometry (Congruence.refl v₁) a = a :=
   map_refl_apply a
 
--- TODO - Fix
--- lemma isometry_symm (h : v₁ ≅ v₂)
---     : Congruence.isometry <| Congruence.symm h =
---       Congruence.symm <| Congruence.isometry h :=
---   rfl
+lemma isometry_symm (h : v₁ ≅ v₂) : Congruence.isometry (Congruence.symm h) =
+    IsometryEquiv.symm (Congruence.isometry h) :=
+  rfl
 
 lemma isometry_sound (h : v₁ ≅ v₂) (i : ι)
-    : ↑(Congruence.isometry h (Set.rangeFactorization v₁ i)) = v₂ i :=
+    : (Congruence.isometry h (Set.rangeFactorization v₁ i)) = v₂ i :=
   map_sound h i
 
 lemma isometry_comp_apply (h₁₂ : v₁ ≅ v₂) (h₂₃ : v₂ ≅ v₃) (a : Set.range v₁)
@@ -207,14 +204,13 @@ lemma isometry_comp (h₁₂ : v₁ ≅ v₂) (h₂₃ : v₂ ≅ v₃)
       Congruence.isometry (Congruence.trans h₁₂ h₂₃) :=
   map_comp v₁ h₂₃
 
--- TODO - Fix
--- lemma isometry_trans (h₁₂ : v₁ ≅ v₂) (h₂₃ : v₂ ≅ v₃)
---     : Congruence.isometry (Congruence.trans h₁₂ h₂₃) =
---       Congruence.trans ((Congruence.isometry h₁₂) (Congruence.isometry h₂₃)) := by
-  -- unfold Congruence.isometry
-  -- congr
-  -- rw [← map_comp v₁ h₂₃]; rfl
-  -- rw [← map_comp v₃ (Congruence.symm h₁₂)]; rfl
+lemma isometry_trans (h₁₂ : v₁ ≅ v₂) (h₂₃ : v₂ ≅ v₃)
+    : Congruence.isometry (Congruence.trans h₁₂ h₂₃) =
+      IsometryEquiv.trans (Congruence.isometry h₁₂) (Congruence.isometry h₂₃) := by
+    simp only [Congruence.isometry]
+    congr
+    · rw [← map_comp v₁ h₂₃]; rfl
+    · rw [← map_comp v₃ (Congruence.symm h₁₂)]; rfl
 
 end EMetricSpace
 
