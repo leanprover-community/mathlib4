@@ -172,7 +172,8 @@ end Monoid
 variable [∀ i, Group (G i)] [Group H] {φ : ∀ i, H →* G i}
 
 instance : Group (PushoutI φ) :=
-  Con.group (PushoutI.con φ)
+  { Con.group (PushoutI.con φ) with
+    toMonoid := PushoutI.monoid }
 
 namespace NormalWord
 
