@@ -22,11 +22,7 @@ then `C` is also abelian.
 
 See <https://stacks.math.columbia.edu/tag/03A3>
 
-## enough-injectives
-If `C, D` are abelian categories with adjoint functors `L ⊣ R` where `L` is a faithful exact
-functor from `C` to `D`, then `D` having enough injectives implies that `C` has enough injectives.
-
-## Notes
+### Notes
 The hypotheses, following the statement from the Stacks project,
 may appear surprising: we don't ask that the counit of the adjunction is an isomorphism,
 but just that we have some potentially unrelated isomorphism `i : F ⋙ G ≅ 𝟭 C`.
@@ -36,6 +32,18 @@ must be an isomorphism, and thus that `C` is a reflective subcategory of `D`.
 
 Someone may like to formalize that lemma, and restate this theorem in terms of `Reflective`.
 (That lemma has a nice string diagrammatic proof that holds in any bicategory.)
+
+## enough-injectives
+If `C, D` are abelian categories with adjoint functors `L ⊣ R` where `L` is a faithful exact
+functor from `C` to `D`, then `D` having enough injectives implies that `C` has enough injectives.
+
+### Notes
+
+In `EnoughInjectives.of_equivalence`, if we require `C` and `D` to have morphisms at the same
+universe level, then it suffices to assume only `abelian C`, since `abelian D` would be implied by
+`abelian_of_adjunction`. Maybe "transferring abelian-ness" should have a more relaxed universe
+level?
+
 -/
 
 
@@ -344,12 +352,7 @@ lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
     ⟨⟨_, injective_adjointObjectOfInjectivePresentation_of_adj adj
       (EnoughInjectives.presentation _).some, _, mono_toUnder adj _⟩⟩
 
--- Implementation note: If we require `C` and `D` to have morphisms at the same universe level,
--- then it suffices to assume only `abelian C`, since `abelian D` would be implied by
--- `abelian_of_adjunction`; but in this implementation, we choose not to impose this restriction on
--- the universe levels of morphisms, so we need an additional assumption `abelian D`.
-
-/-- An equivalence of categories transfers enough injectiveness. -/
+/-- An equivalence of categories transfers enough injectives. -/
 lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
   [Category.{v₁} C] [Category.{v₂} D] [Abelian C] [Abelian D]
   (e : C ⥤ D) [IsEquivalence e] [EnoughInjectives D] : EnoughInjectives C :=
