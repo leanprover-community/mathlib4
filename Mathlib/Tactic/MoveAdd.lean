@@ -247,7 +247,7 @@ If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList` 
 `op (op( ... op (op e₁ e₂) e₃) ... eₙ)`.
 -/
 partial
-def sumList1 (prepOp : Expr) : List Expr → Expr
+def sumList (prepOp : Expr) : List Expr → Expr
   | []    => default
   | [a]    => a
   | a::as => as.foldl (fun x y => Expr.app (prepOp.app x) y) a
@@ -268,10 +268,10 @@ In particular, a subexpression of an `old_sum` can only appear *after* its over-
 def rankSums (op : Name) (tgt : Expr) (instructions : List (Expr × Bool)) :
     MetaM (List (Expr × Expr)) := do
   let sums := ← getOps op (← instantiateMVars tgt)
-  let candidates := ← sums.mapM fun (addends, sum) => do
+  let candidates := sums.map fun (addends, sum) => do
     let reord := reorderUsing addends.toList instructions
-    let resummed := sumList1 (prepareOp sum) reord
-    if (resummed != sum) then return some (sum, resummed) else return none
+    let resummed := sumList (prepareOp sum) reord
+    if (resummed != sum) then some (sum, resummed) else none
   return (candidates.toList.reduceOption.toArray.qsort
     (fun x y : Expr × Expr ↦ (y.1.size  ≤ x.1.size))).toList
 
@@ -314,8 +314,8 @@ def pairUp : List (Expr × Bool × Syntax) → List Expr →
     MetaM ((List (Expr × Bool)) × List (Expr × Bool × Syntax))
   | (m::ms), l => do
     match ← l.findM? (isDefEq · m.1) with
-      | none => let (found, unfound) := ← pairUp ms l; return (found, m::unfound)
-      | some d => let (found, unfound) := ← pairUp ms (l.erase d)
+      | none => let (found, unfound) ← pairUp ms l; return (found, m::unfound)
+      | some d => let (found, unfound) ← pairUp ms (l.erase d)
                   return ((d, m.2.1)::found, unfound)
   | _, _ => return ([], [])
 
@@ -326,7 +326,6 @@ To support a new binary operation, extend the list in this definition, so that i
 enough lemmas to allow `simp` to close a generic permutation goal for the new binary operation.
 -/
 def move_oper_simpCtx : MetaM Simp.Context := do
-  -- the `simpOnlyBuiltins` are `eq_self` and `iff_self`
   let simpNames := simpOnlyBuiltins ++ [
     ``add_comm, ``add_assoc, ``add_left_comm,  -- for `HAdd.hAdd`
     ``mul_comm, ``mul_assoc, ``mul_left_comm,  -- for `HMul.hMul`
@@ -335,7 +334,7 @@ def move_oper_simpCtx : MetaM Simp.Context := do
     ``max_comm, ``max_assoc, ``max_left_comm,  -- for `max`
     ``min_comm, ``min_assoc, ``min_left_comm   -- for `min`
     ]
-  let simpThms := ← simpNames.foldlM (·.addConst ·) ({} : SimpTheorems)
+  let simpThms ← simpNames.foldlM (·.addConst ·) ({} : SimpTheorems)
   return { simpTheorems := #[simpThms] }
 
 /-- `reorderAndSimp mv op instr` takes as input an `MVarId`  `mv`, the name `op` of a binary
@@ -350,14 +349,14 @@ operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
 -/
 def reorderAndSimp (mv : MVarId) (op : Name) (instr : List (Expr × Bool)) :
     MetaM (List MVarId) := do
-  let permExpr := ← permuteExpr op (← mv.getType'') instr
+  let permExpr ← permuteExpr op (← mv.getType'') instr
   -- generate the implication `permutedMv → mv = permutedMv → mv`
-  let eqmpr := ← mkAppM ``Eq.mpr #[← mkFreshExprMVar (← mkEq (← mv.getType) permExpr)]
-  let twoGoals := ← mv.apply eqmpr
+  let eqmpr ← mkAppM ``Eq.mpr #[← mkFreshExprMVar (← mkEq (← mv.getType) permExpr)]
+  let twoGoals ← mv.apply eqmpr
   guard (twoGoals.length == 2) <|>
     throwError m!"There should only be 2 goals, instead of {twoGoals.length}"
   -- `permGoal` is the single goal `mv_permuted`, possibly more operations will be permuted later on
-  let permGoal := ← twoGoals.filterM fun v => return !(← v.isAssigned)
+  let permGoal ← twoGoals.filterM fun v => return !(← v.isAssigned)
   match ← (simpGoal (permGoal[1]!) (← move_oper_simpCtx)) with
     | (some x, _) => throwError m!"'move_oper' could not solve {indentD x.2}"
     | (none, _) => return permGoal
@@ -365,7 +364,7 @@ def reorderAndSimp (mv : MVarId) (op : Name) (instr : List (Expr × Bool)) :
 section parsing
 open Elab Parser Tactic
 
-/-- `parsing` parses an input of the form `[a, ← b, _ * (1 : ℤ)]`, consisting of a list of
+/-- `parseMovements` parses an input of the form `[a, ← b, _ * (1 : ℤ)]`, consisting of a list of
 terms, each optionally preceded by the arrow `←`.
 It unifies the terms with the atoms for the operation `op` in the expression `tgt`, returning
 * the lists of pairs of a matched subexpression with `true` for an arrow `←` and `false` otherwise;
@@ -376,14 +375,14 @@ E.g. convert `[a, ← b, _ * (1 : ℤ)]` to `pairs = ([(a, false), (z * 1, false
 `b` does not match a subexpression of `tgt` and the first summand involving a multiplication by `1`
 is `z * 1`.
 -/
-def parsing (rws : TSyntax `Lean.Parser.Tactic.rwRuleSeq) (op : Name) (tgt : Expr) :
+def parseMovements (rws : TSyntax `Lean.Parser.Tactic.rwRuleSeq) (op : Name) (tgt : Expr) :
     TermElabM (List (Expr × Bool) × (List MessageData × List Syntax) × Array MessageData) := do
   match rws with
     | `(rwRuleSeq| [$rs,*]) => do
-      let pairs := ← rs.getElems.mapM fun rstx => do
+      let pairs ← rs.getElems.mapM fun rstx => do
         let r : Syntax := rstx
         return (← Term.elabTerm r[1]! none, ! r[0]!.isNone, rstx)
-      let ops := ← getOps op tgt
+      let ops ← getOps op tgt
       let atoms := (ops.map Prod.fst).flatten.toList.filter (!isBVar ·)
       -- `instr` are the unified user-provided terms, `neverMatched` are non-unified ones
       let (instr, neverMatched) := ← pairUp pairs.toList atoms
@@ -414,7 +413,8 @@ elab (name := moveOperTac) "move_oper" "(" oper:term ")" rws:rwRuleSeq  dbg:"-de
   -- parse the operation
   let op := (← Term.elabTerm oper none).getAppFn.constName
   -- parse the list of terms
-  let (instr, (unmatched, stxs), dbgMsg) ← parsing rws op (← instantiateMVars (← getMainTarget))
+  let (instr, (unmatched, stxs), dbgMsg) ← parseMovements rws op
+                                                              (← instantiateMVars (← getMainTarget))
   -- prepare the various error messages
   let finErr := if unmatched.length = 0 then .nil else
     m!"\nErrors:\nThe terms in '{unmatched}' were not matched to any atom"
