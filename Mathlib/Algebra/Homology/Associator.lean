@@ -533,13 +533,16 @@ lemma ιMapBifunctorBifunctor₂₃MapObj_d (i₁ : I₁) (i₂ : I₂) (i₃ : 
     · congr 1
       by_cases h₁ : c₂.Rel i₂ (c₂.next i₂)
       · by_cases h₂ : ComplexShape.π c₁ c₂₃ c (i₁, c₂₃.next (ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃))) = j'
-        · have h₃ : ComplexShape.π c₂ c₃ c₂₃ (c₂.next i₂, i₃) = c₂₃.next (ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) := sorry
-          have h₄ : ComplexShape.π₃ c₁ c₂ c₃ c₁₂ c (i₁, c₂.next i₂, i₃) = j' := sorry
+        · have h₃ : ComplexShape.π₃ c₁ c₂ c₃ c₁₂ c (i₁, c₂.next i₂, i₃) = j' := by
+            rw [← h₂, ComplexShape.next_π₁ c₃ c₂₃ h₁ i₃,
+              ← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c]
+            rfl
           rw [Functor.map_comp, assoc, ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ h₂,
-            ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ h₃]
-          erw [GradedObject.ιMapBifunctorBifunctor₂₃MapObjOrZero_eq _ _ _ _ _ _ _ _ _ _ h₄]
-          dsimp [GradedObject.ιMapBifunctorBifunctor₂₃MapObj, ιBifunctorObj]
-          sorry
+            ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ (ComplexShape.next_π₁ c₃ c₂₃ h₁ i₃).symm]
+          erw [GradedObject.ιMapBifunctorBifunctor₂₃MapObjOrZero_eq _ _ _ _ _ _ _ _ _ _ h₃]
+          congr 1
+          symm
+          apply GradedObject.ιMapBifunctorBifunctor₂₃MapObj_eq
         · rw [ιBifunctorObjOrZero_eq_zero _ _ _ _ _ _ _ h₂, comp_zero]
           erw [GradedObject.ιMapBifunctorBifunctor₂₃MapObjOrZero_eq_zero, comp_zero]
           intro h₃
@@ -550,8 +553,15 @@ lemma ιMapBifunctorBifunctor₂₃MapObj_d (i₁ : I₁) (i₂ : I₂) (i₃ : 
           zero_comp, Functor.map_zero, zero_comp]
     · congr 1
       by_cases h₁ : c₃.Rel i₃ (c₃.next i₃)
-      · rw [Functor.map_comp, assoc]
-        sorry
+      · by_cases h₂ : ComplexShape.π c₁ c₂₃ c (i₁, c₂₃.next (ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃))) = j'
+        · rw [ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ h₂]
+          sorry
+        · rw [ιBifunctorObjOrZero_eq_zero _ _ _ _ _ _ _ h₂, comp_zero]
+          erw [GradedObject.ιMapBifunctorBifunctor₂₃MapObjOrZero_eq_zero, comp_zero]
+          intro h₃
+          apply h₂
+          rw [← h₃, ComplexShape.next_π₂ c₂ c₂₃ i₂ h₁, ← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c]
+          rfl
       · rw [shape _ _ _ h₁, Functor.map_zero, Functor.map_zero, zero_comp, zero_comp,
           Functor.map_zero, zero_comp]
 

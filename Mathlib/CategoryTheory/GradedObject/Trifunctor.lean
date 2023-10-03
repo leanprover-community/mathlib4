@@ -387,6 +387,14 @@ noncomputable def ιMapBifunctorBifunctor₂₃MapObj (i₁ : I₁) (i₂ : I₂
   (F.obj (X₁ i₁)).map (ιMapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃ i₂ i₃ _ rfl) ≫
     ιMapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) i₁ (ρ₂₃.p ⟨i₂, i₃⟩) j (by rw [← h, ρ₂₃.hpq])
 
+@[reassoc]
+noncomputable def ιMapBifunctorBifunctor₂₃MapObj_eq (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : r (i₁, i₂, i₃) = j) (i₂₃ : ρ₂₃.I₂₃) (h' : ρ₂₃.p ⟨i₂, i₃⟩ = i₂₃) :
+    ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h =
+    (F.obj (X₁ i₁)).map (ιMapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃ i₂ i₃ i₂₃ h') ≫
+    ιMapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) i₁ i₂₃ j (by rw [← h, ρ₂₃.hpq, h']) := by
+  subst h'
+  rfl
+
 noncomputable def ιMapBifunctorBifunctor₂₃MapObjOrZero [HasZeroMorphisms C₄] (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) [DecidableEq J] :
     (F.obj (X₁ i₁)).obj ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶ mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j :=
   if h : r (i₁, i₂, i₃) = j
