@@ -315,6 +315,8 @@ theorem minpoly_sub_one_eq_cyclotomic_comp [Algebra K A] [IsDomain A] {ζ : A}
 
 open scoped Cyclotomic
 
+set_option maxHeartbeats 300000 in
+set_option synthInstance.maxHeartbeats 40000 in
 /-- If `Irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
 then the norm of `ζ ^ (p ^ s) - 1` is `p ^ (p ^ s)` if `p ^ (k - s + 1) ≠ 2`. See the next lemmas
 for similar results. -/
