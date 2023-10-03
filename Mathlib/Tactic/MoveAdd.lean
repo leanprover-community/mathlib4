@@ -27,7 +27,7 @@ A term preceded by `←` gets moved to the left, while a term without `←` gets
   * `move_add [← a]` changes the goal to `0 < if a + b < a + b + c then a + b else a + b`
     (`a` again moved to the left in three sums).
 
-* Longer iputs: `move_add [..., a, ..., ← b, ...]`
+* Longer inputs: `move_add [..., a, ..., ← b, ...]`
 
   If the list contains more than one term, the tactic effectively tries to move each term preceded
   by `←` to the left, each term not preceded by `←` to the right
@@ -108,7 +108,7 @@ namespace Mathlib.MoveAdd
 section ExprProcessing
 
 section reorder
-variable {α :Type*} [BEq α]
+variable {α : Type*} [BEq α]
 
 /-!
 ##  Reordering the variables
@@ -138,11 +138,8 @@ def uniquify : List α → List (α × ℕ)
 
 variable [Inhabited α]
 
-/--  `weight L` takes a list of pairs `(a, h?)` where
-* `a` is a term of some type `α` and
-* `h?` is a `Bool`ean
-
-and returns a function `α → ℤ`.
+/-- Return a sorting key so that all `(a, true)`s are in the list's order
+and sorted before all `(a, false)`s, which are also in the list's order.
 Although `weight` does not require this, we use `weight` in the case where the list obtained
 from `L` by only keeping the first component (i.e. `L.map Prod.fst`) has no duplicates.
 The properties that we mention here assume that this is the case.
@@ -168,9 +165,9 @@ match L.find? (Prod.fst · == a) with
 following the requirements imposed by `instructions : List (α × Bool)`.
 
 These are the requirements:
-* elements of `toReorder` that appear with `true` in `instructions appear at the
+* elements of `toReorder` that appear with `true` in `instructions` appear at the
   *beginning* of the reordered list, in the order in which they appear in `instructions`;
-* similarly, elements of `toReorder` that appear with `false` in `instructions appear at the
+* similarly, elements of `toReorder` that appear with `false` in `instructions` appear at the
   *end* of the reordered list, in the order in which they appear in `instructions`;
 * finally, elements of `toReorder` that do not appear in `instructions` appear "in the middle"
   with the order that they had in `toReorder`.
