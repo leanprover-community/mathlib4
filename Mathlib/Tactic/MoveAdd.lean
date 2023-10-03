@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Init.Order.LinearOrder
 
 /-!
 
@@ -280,8 +281,8 @@ def rankSums (op : Name) (tgt : Expr) (instructions : List (Expr × Bool)) :
     let reord := reorderUsing addends.toList instructions
     let resummed := sumList1 (prepareOp sum) reord
     if (resummed != sum) then return some (sum, resummed) else return none
-  let _ : LE (Expr × Expr) := { le := fun f g => g.1.size  ≤ f.1.size }
-  return (candidates.toList.reduceOption.toArray.qsort (· ≤ ·)).toList
+  return (candidates.toList.reduceOption.toArray.qsort
+    (fun x y : Expr × Expr ↦ (y.1.size  ≤ x.1.size))).toList
 
 /-- `permuteExpr op tgt instructions` takes the same input as `rankSums` and returns the
 expression obtained from `tgt` by replacing all `old_sum`s by the corresponding `new_sum`.
