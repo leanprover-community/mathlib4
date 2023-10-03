@@ -62,8 +62,8 @@ theorem cast_div_charZero {k : Type*} [DivisionRing k] [CharZero k] {m n : ℤ} 
 
 -- Necessary for confluence with `ofNat_ediv` and `cast_div_charZero`.
 @[simp, norm_cast]
-theorem cast_div_ofNat_charZero {k : Type*} [DivisionRing k] [CharZero k] {m n : ℕ} (n_dvd : n ∣ m) :
-    (((m : ℤ) / (n : ℤ) : ℤ) : k) = m / n := by
+theorem cast_div_ofNat_charZero {k : Type*} [DivisionRing k] [CharZero k] {m n : ℕ}
+    (n_dvd : n ∣ m) : (((m : ℤ) / (n : ℤ) : ℤ) : k) = m / n := by
   rw [cast_div_charZero (Int.ofNat_dvd.mpr n_dvd), cast_ofNat, cast_ofNat]
 
 end Int
