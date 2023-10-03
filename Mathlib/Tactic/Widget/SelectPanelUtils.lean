@@ -14,7 +14,7 @@ import Mathlib.Tactic.Widget.SelectInsertParamsClass
 
 /-! # Selection panel utilities
 
-The mail declaration is `mkSelectionPanelRPC` which helps creating rpc methods for widgets
+The main declaration is `mkSelectionPanelRPC` which helps creating rpc methods for widgets
 generating tactic calls based on selected sub-expressions in the main goal.
 
 There are also some minor helper functions.

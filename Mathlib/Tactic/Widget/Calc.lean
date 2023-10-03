@@ -50,7 +50,7 @@ open Lean Server in
 
 /-- Parameters for the calc widget. -/
 structure CalcParams extends SelectInsertParams where
-  /-- If this the first calc step? -/
+  /-- Is this the first calc step? -/
   isFirst : Bool
   /-- indentation level of the calc block. -/
   indent : Nat
@@ -136,7 +136,6 @@ open Meta
 /-- Elaborator for the `calc` tactic mode variant with widgets. -/
 elab_rules : tactic
 | `(tactic|calc%$calcstx $stx) => do
-  dbg_trace "Fooo"
   let steps : TSyntax ``calcSteps := ⟨stx⟩
   let some calcRange := (← getFileMap).rangeOfStx? calcstx | unreachable!
   let indent := calcRange.start.character
