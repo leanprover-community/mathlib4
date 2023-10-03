@@ -554,8 +554,15 @@ lemma ιMapBifunctorBifunctor₂₃MapObj_d (i₁ : I₁) (i₂ : I₂) (i₃ : 
     · congr 1
       by_cases h₁ : c₃.Rel i₃ (c₃.next i₃)
       · by_cases h₂ : ComplexShape.π c₁ c₂₃ c (i₁, c₂₃.next (ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃))) = j'
-        · rw [ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ h₂]
-          sorry
+        · have h₃ : ComplexShape.π₃ c₁ c₂ c₃ c₁₂ c (i₁, i₂, c₃.next i₃) = j' := by
+            rw [← h₂, ComplexShape.next_π₂ c₂ c₂₃ i₂ h₁, ← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c]
+            rfl
+          rw [Functor.map_comp, assoc, ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ h₂,
+            ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ (ComplexShape.next_π₂ c₂ c₂₃ i₂ h₁).symm]
+          erw [GradedObject.ιMapBifunctorBifunctor₂₃MapObjOrZero_eq _ _ _ _ _ _ _ _ _ _ h₃]
+          congr 1
+          symm
+          apply GradedObject.ιMapBifunctorBifunctor₂₃MapObj_eq
         · rw [ιBifunctorObjOrZero_eq_zero _ _ _ _ _ _ _ h₂, comp_zero]
           erw [GradedObject.ιMapBifunctorBifunctor₂₃MapObjOrZero_eq_zero, comp_zero]
           intro h₃
@@ -565,25 +572,38 @@ lemma ιMapBifunctorBifunctor₂₃MapObj_d (i₁ : I₁) (i₂ : I₂) (i₃ : 
       · rw [shape _ _ _ h₁, Functor.map_zero, Functor.map_zero, zero_comp, zero_comp,
           Functor.map_zero, zero_comp]
 
-noncomputable def bifunctorObjXAssociator :
-    (bifunctorObj (bifunctorObj K₁ K₂ F₁₂ c₁₂) K₃ G c).toGradedObject ≅
-      (bifunctorObj K₁ (bifunctorObj K₂ K₃ G₂₃ c₂₃) F c).toGradedObject :=
-  GradedObject.mapBifunctorBifunctorAssociator associator (ρ₁₂ c₁ c₂ c₃ c₁₂ c) (ρ₂₃ c₁ c₂ c₃ c₁₂ c₂₃ c) K₁.X K₂.X K₃.X
+@[reassoc]
+lemma ιMapBifunctor₁₂BifunctorMapObj_d (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j j' : J) (h : ComplexShape.π₃ c₁ c₂ c₃ c₁₂ c (i₁, i₂, i₃) = j) :
+    GradedObject.ιMapBifunctor₁₂BifunctorMapObj F₁₂ G (ρ₁₂ c₁ c₂ c₃ c₁₂ c) K₁.X K₂.X K₃.X i₁ i₂ i₃ j h ≫
+      d (bifunctorObj (bifunctorObj K₁ K₂ F₁₂ c₁₂) K₃ G c) j j' =
+        ComplexShape.ε₁ c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) • (G.map ((F₁₂.map (K₁.d i₁ (c₁.next i₁))).app (K₂.X i₂))).app (K₃.X i₃) ≫
+          GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero _ _ (ρ₁₂ c₁ c₂ c₃ c₁₂ c) _ _ _ _ _ _ _ +
+        (ComplexShape.ε₂ c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) * ComplexShape.ε₁ c₂ c₃ c₂₃ (i₂, i₃)) • (G.map ((F₁₂.obj (K₁.X i₁)).map (K₂.d i₂ (c₂.next i₂)))).app (K₃.X i₃) ≫
+          GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero _ _ (ρ₁₂ c₁ c₂ c₃ c₁₂ c) _ _ _ _ _ _ _ +
+        (ComplexShape.ε₂ c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) * ComplexShape.ε₂ c₂ c₃ c₂₃ (i₂, i₃)) •
+          (G.obj ((F₁₂.obj (K₁.X i₁)).obj (K₂.X i₂))).map (K₃.d i₃ (c₃.next i₃)) ≫
+          GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero _ _ (ρ₁₂ c₁ c₂ c₃ c₁₂ c) _ _ _ _ _ _ _ := sorry
 
+set_option maxHeartbeats 400000 in
 noncomputable def bifunctorObjAssociator : bifunctorObj (bifunctorObj K₁ K₂ F₁₂ c₁₂) K₃ G c ≅
     bifunctorObj K₁ (bifunctorObj K₂ K₃ G₂₃ c₂₃) F c :=
   Hom.isoOfComponents
-    (fun j => (GradedObject.eval j).mapIso (bifunctorObjXAssociator associator K₁ K₂ K₃ c₁₂ c₂₃ c))
-      (fun j j' _ => by
-        apply GradedObject.mapBifunctor₁₂BifunctorMapObj_ext F₁₂ G (ρ₁₂ c₁ c₂ c₃ c₁₂ c)
-        intro i₁ i₂ i₃ h
-        dsimp [bifunctorObjXAssociator]
-        erw [GradedObject.ι_mapBifunctorBifunctorAssociator_hom_assoc]
-        rw [ιMapBifunctorBifunctor₂₃MapObj_d, comp_add, comp_add, comp_zsmul, comp_zsmul, comp_zsmul]
-        have h₁ := congr_app (congr_app (associator.hom.naturality (K₁.d i₁ (c₁.next i₁))) (K₂.X i₂)) (K₃.X i₃)
-        dsimp at h₁
-        rw [← reassoc_of% h₁]
-        erw [← GradedObject.ιOrZero_mapBifunctorBifunctorAssociator_hom associator (ρ₁₂ c₁ c₂ c₃ c₁₂ c) (ρ₂₃ c₁ c₂ c₃ c₁₂ c₂₃ c) K₁.X K₂.X K₃.X]
-        sorry)
+    (fun j => (GradedObject.eval j).mapIso
+        (GradedObject.mapBifunctorBifunctorAssociator associator (ρ₁₂ c₁ c₂ c₃ c₁₂ c) (ρ₂₃ c₁ c₂ c₃ c₁₂ c₂₃ c) K₁.X K₂.X K₃.X))
+    (fun j j' _ => by
+      apply GradedObject.mapBifunctor₁₂BifunctorMapObj_ext F₁₂ G (ρ₁₂ c₁ c₂ c₃ c₁₂ c)
+      intro i₁ i₂ i₃ h
+      dsimp
+      have h₁ := congr_app (congr_app (associator.hom.naturality (K₁.d i₁ (c₁.next i₁))) (K₂.X i₂)) (K₃.X i₃)
+      have h₂ := congr_app ((associator.hom.app (K₁.X i₁)).naturality (K₂.d i₂ (c₂.next i₂))) (K₃.X i₃)
+      have h₃ := ((associator.hom.app (K₁.X i₁)).app (K₂.X i₂)).naturality (K₃.d i₃ (c₃.next i₃))
+      have H := GradedObject.ιOrZero_mapBifunctorBifunctorAssociator_hom associator (ρ₁₂ c₁ c₂ c₃ c₁₂ c) (ρ₂₃ c₁ c₂ c₃ c₁₂ c₂₃ c) K₁.X K₂.X K₃.X
+      dsimp at h₁ h₂ h₃
+      erw [GradedObject.ι_mapBifunctorBifunctorAssociator_hom_assoc]
+      rw [ιMapBifunctorBifunctor₂₃MapObj_d, comp_add, comp_add, comp_zsmul, comp_zsmul,
+        comp_zsmul, ιMapBifunctor₁₂BifunctorMapObj_d_assoc K₁ K₂ K₃ c₁₂ c₂₃,
+        add_comp, add_comp, zsmul_comp, zsmul_comp, zsmul_comp,
+        assoc, assoc, assoc,
+        ← reassoc_of% h₁, ← reassoc_of% h₂, ← reassoc_of% h₃, ← H, ← H, ← H])
 
 end HomologicalComplex
