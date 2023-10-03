@@ -72,9 +72,9 @@ protected instance one : One (PushoutI φ) := by
   delta PushoutI; infer_instance
 
 instance monoid : Monoid (PushoutI φ) :=
-  { mul_assoc := (Con.monoid _).mul_assoc,
-    one_mul := (Con.monoid _).one_mul
-    mul_one := (Con.monoid _).mul_one }
+  { Con.monoid _ with
+    toMul := PushoutI.mul
+    toOne := PushoutI.one }
 
 /-- The map from each indexing group into the pushout -/
 def of (i : ι) : G i →* PushoutI φ :=
