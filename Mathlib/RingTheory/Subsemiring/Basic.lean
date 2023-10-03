@@ -78,11 +78,26 @@ theorem coe_nat_mem (n : ℕ) : (n : R) ∈ s := by
 
 namespace SubsemiringClass
 
+-- Prefer subclasses of `NonUnitalNonAssocSemiring` over subclasses of `SubsemiringClass`.
+/-- A subsemiring of a `NonUnitalNonAssocSemiring` inherits a `NonUnitalNonAssocSemiring` structure -/
+instance (priority := 75) toNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring s :=
+  { Subtype.coe_injective.nonUnitalNonAssocSemiring (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) with
+    toAddCommMonoid := AddSubmonoidClass.toAddCommMonoid s
+    toMul := MulOneClass.toMul }
+
+-- -- Prefer subclasses of `NonUnitalSemiring` over subclasses of `SubsemiringClass`.
+-- /-- A subsemiring of a `NonUnitalSemiring` inherits a `NonUnitalSemiring` structure -/
+-- instance (priority := 75) toNonUnitalSemiring [NonUnitalSemiring R] : NonUnitalSemiring s :=
+--   { Subtype.coe_injective.nonUnitalSemiring (↑) (by rfl) (fun _ _ => by rfl) (fun _ _ => by rfl)
+--     (fun _ _ => by rfl) with
+--     toNonUnitalNonAssocSemiring := toNonUnitalNonAssocSemiring s }
+
 -- Prefer subclasses of `NonAssocSemiring` over subclasses of `SubsemiringClass`.
 /-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
 instance (priority := 75) toNonAssocSemiring : NonAssocSemiring s :=
-  Subtype.coe_injective.nonAssocSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+  { AddSubmonoidWithOneClass.toAddMonoidWithOne s, SubmonoidClass.toMulOneClass s with
+    toNonUnitalNonAssocSemiring := toNonUnitalNonAssocSemiring s }
 #align subsemiring_class.to_non_assoc_semiring SubsemiringClass.toNonAssocSemiring
 
 instance nontrivial [Nontrivial R] : Nontrivial s :=
@@ -103,12 +118,15 @@ theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
 #align subsemiring_class.coe_subtype SubsemiringClass.coe_subtype
 
+variable [Semiring R] [SetLike S R] [SubsemiringClass S R]
+
 -- Prefer subclasses of `Semiring` over subclasses of `SubsemiringClass`.
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
 instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] :
     Semiring s :=
-  Subtype.coe_injective.semiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+  { toNonAssocSemiring s with
+    mul_assoc := (Subtype.coe_injective.semiring (↑) rfl rfl
+      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl).mul_assoc }
 #align subsemiring_class.to_semiring SubsemiringClass.toSemiring
 
 @[simp, norm_cast]
@@ -122,8 +140,9 @@ theorem coe_pow {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] (x : s) (n
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
     CommSemiring s :=
-  Subtype.coe_injective.commSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+  { Subtype.coe_injective.commSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ => rfl with
+    toSemiring := toSemiring _ }
 #align subsemiring_class.to_comm_semiring SubsemiringClass.toCommSemiring
 
 /-- A subsemiring of an `OrderedSemiring` is an `OrderedSemiring`. -/
