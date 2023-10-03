@@ -19,7 +19,7 @@ General-Valued CSP is a very broad class of problems in discrete optimization.
 General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finite-Valued CSP.
 
 ## Main definitions
-* `ValuedCspTemplate`: A VCSP template; specifies domain, codomain, and allowed cost functions.
+* `ValuedCspTemplate`: A VCSP template; fixes a domain, a codomain, and allowed cost functions.
 * `ValuedCspTerm`: One summand in a VCSP instance; calls a concrete function from given template.
 * `ValuedCspTerm.evalSolution`: An evaluation of the VCSP term for given solution.
 * `ValuedCspInstance`: An instance of a VCSP problem over given template.
