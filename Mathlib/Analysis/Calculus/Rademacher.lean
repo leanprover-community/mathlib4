@@ -143,7 +143,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
       have B : f (x + t • v) = 0 := by
         rw [← Function.nmem_support]
         contrapose! hx
-        apply mem_cthickening_of_dist_le _ _  (‖v‖) (tsupport f) (subset_tsupport _ hx)
+        apply mem_cthickening_of_dist_le _ _ (‖v‖) (tsupport f) (subset_tsupport _ hx)
         simp only [dist_eq_norm, sub_add_cancel', norm_neg, norm_smul, Real.norm_eq_abs,
           abs_of_nonneg t_pos.le, norm_pos_iff]
         exact mul_le_of_le_one_left (norm_nonneg v) ht.2
@@ -276,7 +276,7 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
   rcases eq_or_ne v 0 with rfl|v_ne
   · simp
   obtain ⟨w, ρ, w_mem, hvw, hρ⟩ : ∃ w ρ, w ∈ sphere 0 1 ∧ v = ρ • w ∧ ρ = ‖v‖ := by
-    refine ⟨‖v‖⁻¹ •  v, ‖v‖, by simp [norm_smul, inv_mul_cancel (norm_ne_zero_iff.2 v_ne)], ?_, rfl⟩
+    refine ⟨‖v‖⁻¹ • v, ‖v‖, by simp [norm_smul, inv_mul_cancel (norm_ne_zero_iff.2 v_ne)], ?_, rfl⟩
     simp [smul_smul, mul_inv_cancel (norm_ne_zero_iff.2 v_ne)]
   have norm_rho : ‖ρ‖ = ρ := by rw [hρ, norm_norm]
   have rho_pos : 0 ≤ ρ := by simp [hρ]
