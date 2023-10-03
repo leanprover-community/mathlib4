@@ -175,11 +175,9 @@ variable (G A B)
 coset of both `A` and `B`, such that the chosen element of the subgroup itself is `1`. -/
 structure TransversalPair : Type _ :=
   /-- The transversal of each subgroup -/
-  (set : ℤˣ → Set G)
-  -- /-- The chosen element of the subgroup itself is the identity -/
-  -- (one_mem : ∀u, 1 ∈ set u)
+  set : ℤˣ → Set G
   /-- We have exactly one element of each coset of the subgroup -/
-  (compl : ∀ u, IsComplement (toSubgroup A B u : Subgroup G) (set u))
+  compl : ∀ u, IsComplement (toSubgroup A B u : Subgroup G) (set u)
 
 instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
   have := fun u => exists_right_transversal (H := toSubgroup A B u) (1 : G)
@@ -188,7 +186,6 @@ instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
   apply Nonempty.intro
   exact
     { set := t
-      -- one_mem := fun i => (ht i).2
       compl := fun i => (ht i).1 }
 
 /-- A reduced word is a `head`, which is an element of `G`, followed by the product list of pairs.
@@ -197,12 +194,12 @@ There should also be no sequences of the form `t^u * g * t^-u`, where `g` is in
 structure ReducedWord : Type _ :=
   /-- Every `ReducedWord` is the product of an element of the group and a word made up
   of letters each of which is in the transversal. `head` is that element of the base group. -/
-  (head : G)
+  head : G
   /-- The list of pairs `(ℤˣ × G)`, where each pair `(u, g)` represents the element `t^u * g` of
   `HNNExtension G A B φ` -/
-  (toList : List (ℤˣ × G))
+  toList : List (ℤˣ × G)
   /-- There are no sequences of the form `t^u * g * t^-u` where `g ∈ toSubgroup A B u` -/
-  (chain : toList.Chain' (fun a b => a.2 ∈ toSubgroup A B a.1 → a.1 = b.1))
+  chain : toList.Chain' (fun a b => a.2 ∈ toSubgroup A B a.1 → a.1 = b.1)
 
 /-- The empty reduced word. -/
 @[simps]
@@ -224,7 +221,7 @@ where `g ∈ toSubgroup A B u` -/
 structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B)
     extends ReducedWord G A B : Type _ :=
   /-- Every element `g : G` in the list is the chosen element of its coset -/
-  (mem_set : ∀ (u : ℤˣ) (g : G), (u, g) ∈ toList → g ∈ d.set u)
+  mem_set : ∀ (u : ℤˣ) (g : G), (u, g) ∈ toList → g ∈ d.set u
 
 variable {d : TransversalPair G A B}
 
@@ -285,7 +282,7 @@ def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
       · exact w.mem_set _ _ h'
     chain := by
       refine List.chain'_cons'.2 ⟨?_, w.chain⟩
-      rintro ⟨ u', g'⟩ hu' hw1
+      rintro ⟨u', g'⟩ hu' hw1
       exact h2 _ (by simp_all) hw1 }
 
 /-- A recursor to induct on a `NormalWord`, by proving the propert is preserved under `cons` -/
@@ -442,10 +439,10 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
 /-- the equivalence given by multiplication on the left by `t`  -/
 @[simps]
 noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
-{ toFun := unitsSMul φ 1
-  invFun := unitsSMul φ (-1),
-  left_inv := fun _ => by rw [unitsSMul_neg]
-  right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
+  { toFun := unitsSMul φ 1
+    invFun := unitsSMul φ (-1),
+    left_inv := fun _ => by rw [unitsSMul_neg]
+    right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
 
 theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     unitsSMul φ 1 ((g : G) • w) = (φ g : G) • (unitsSMul φ 1 w) := by
@@ -484,8 +481,8 @@ theorem t_smul_eq_unitsSMul (w : NormalWord d) :
 
 theorem t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (t ^ (u : ℤ) : HNNExtension G A B φ) • w = unitsSMul φ u w := by
-  simp [instHSMul, SMul.smul, MulAction.toEndHom]
-  rcases Int.units_eq_one_or u with (rfl | rfl) <;> simp [Equiv.Perm.inv_def]
+  rcases Int.units_eq_one_or u with (rfl | rfl) <;>
+    simp [instHSMul, SMul.smul, MulAction.toEndHom, Equiv.Perm.inv_def]
 
 @[simp]
 theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
@@ -522,8 +519,7 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
   | t => simp [t_smul_eq_unitsSMul, prod_unitsSMul, mul_assoc]
   | mul => simp_all [mul_smul, mul_assoc]
   | inv x ih =>
-    apply (mul_right_inj x).1
-    rw [← ih]
+    rw [← mul_right_inj x, ← ih]
     simp
 
 @[simp]
