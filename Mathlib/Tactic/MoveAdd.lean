@@ -420,9 +420,9 @@ In this case the syntax requires providing first a term whose head symbol is the
 E.g. `move_oper (0 + 0) [...]` is the same as `move_add`, while `move_oper (max 0 0) [...]`
 rearranges `max`s.
 -/
-elab (name := moveOperTac) "move_oper" "(" oper:term ")" rws:rwRuleSeq  dbg:"-debug"? : tactic => do
+elab (name := moveOperTac) "move_oper" "(" id:ident ")" rws:rwRuleSeq  dbg:"-debug"? : tactic => do
   -- parse the operation
-  let op := (← Term.elabTerm oper none).getAppFn.constName
+  let op := id.getId
   -- parse the list of terms
   let (instr, (unmatched, stxs), dbgMsg) ← unifyMovements (← parseArrows rws) op
                                                               (← instantiateMVars (← getMainTarget))
@@ -440,9 +440,13 @@ elab (name := moveOperTac) "move_oper" "(" oper:term ")" rws:rwRuleSeq  dbg:"-de
   replaceMainGoal (← reorderAndSimp (← getMainGoal) op instr)
 
 @[inherit_doc moveOperTac]
-elab "move_add" rws:rwRuleSeq : tactic => do evalTactic (← `(tactic| move_oper (0 + 0) $rws))
+elab "move_add" rws:rwRuleSeq : tactic => do
+  let hadd := mkIdent ``HAdd.hAdd
+  evalTactic (← `(tactic| move_oper ($hadd) $rws))
 
 @[inherit_doc moveOperTac]
-elab "move_mul" rws:rwRuleSeq : tactic => do evalTactic (← `(tactic| move_oper (1 * 1) $rws))
+elab "move_mul" rws:rwRuleSeq : tactic => do
+  let hmul := mkIdent ``HMul.hMul
+  evalTactic (← `(tactic| move_oper ($hmul) $rws))
 
 end parsing
