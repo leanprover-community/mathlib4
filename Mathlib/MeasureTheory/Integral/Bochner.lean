@@ -1646,8 +1646,7 @@ theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α �
 
 theorem set_integral_eq_subtype' {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) (f : α → G) :
-    ∫ x in s, f x ∂μ =
-      ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ):= by
+    ∫ x in s, f x ∂μ = ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ) := by
   rw [← map_comap_subtype_coe hs]
   exact (MeasurableEmbedding.subtype_coe hs).integral_map _
 
