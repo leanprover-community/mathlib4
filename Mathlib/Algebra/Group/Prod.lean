@@ -13,8 +13,8 @@ import Mathlib.Algebra.Hom.Commute
 /-!
 # Monoid, group etc structures on `M × N`
 
-In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`. We also prove
-trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
+In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`.
+We also prove trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
 
 * `fst M N : M × N →* M`, `snd M N : M × N →* N`: projections `Prod.fst` and `Prod.snd`
   as `MonoidHom`s;
@@ -24,6 +24,7 @@ trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
 * (when `P` is commutative) `f.coprod g : M × N →* P` sends `(x, y)` to `f x * g y`,
   and `comm` says that the elements in the ranges of `f` and `g` commute pairwise,
   `f.noncommCoprod g comm` is the analogous `M × N →* P`.
+  (For general `Pi` types, there is `MonoidHom.noncommPiCoprod`.)
 * `f.prodMap g : M × N → M' × N'`: `prod.map f g` as a `MonoidHom`,
   sends `(x, y)` to `(f x, g y)`.
 
