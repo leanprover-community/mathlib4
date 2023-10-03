@@ -121,7 +121,7 @@ theorem digits_add_two_add_one (b n : ℕ) :
 #align nat.digits_add_two_add_one Nat.digits_add_two_add_one
 
 @[simp]
-lemma digits_of_two_le_of_pos {b : ℕ} (hm : 2 ≤ b) (hn : 0 < n) :
+lemma digits_of_two_le_of_pos {b : ℕ} (hb : 2 ≤ b) (hn : 0 < n) :
     Nat.digits b n = n % b :: Nat.digits b (n / b) := by
   rw [Nat.eq_add_of_sub_eq hb rfl, Nat.eq_add_of_sub_eq hn rfl, Nat.digits_add_two_add_one]
 
