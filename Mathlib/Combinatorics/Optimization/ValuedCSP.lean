@@ -33,19 +33,20 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 structure ValuedCspTemplate (C : Type _) [LinearOrderedAddCommMonoid C] where
   /-- Domain of "labels" -/
   D : Type
-  /-- Cost functions `D^k → C` for any `k` -/
+  /-- Cost functions from `D^k` to `C` for any `k` -/
   F : Set (Σ (k : ℕ), (Fin k → D) → C)
 
 variable {C : Type _} [LinearOrderedAddCommMonoid C]
 
 /-- A term in a valued CSP instance over the template `Γ`. -/
 structure ValuedCspTerm (Γ : ValuedCspTemplate C) (ι : Type _) where
+  k : ℕ
   /-- Which cost function is instantiated -/
-  f : Σ (k : ℕ), (Fin k → Γ.D) → C
+  f : (Fin k → Γ.D) → C
   /-- The cost function comes from the template -/
-  inΓ : f ∈ Γ.F
+  inΓ : ⟨k, f⟩ ∈ Γ.F
   /-- Which variables are plugged as arguments to the cost function -/
-  app : Fin f.fst → ι
+  app : Fin k → ι
 
 /-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
 def ValuedCspInstance (Γ : ValuedCspTemplate C) (ι : Type _) : Type :=
@@ -54,7 +55,7 @@ def ValuedCspInstance (Γ : ValuedCspTemplate C) (ι : Type _) : Type :=
 /-- Evaluation of a `Γ` term `t` for given solution `x`. -/
 def ValuedCspTerm.evalSolution {Γ : ValuedCspTemplate C} {ι : Type _}
     (t : ValuedCspTerm Γ ι) (x : ι → Γ.D) : C :=
-  t.f.snd (x ∘ t.app)
+  t.f (x ∘ t.app)
 
 /-- Evaluation of a `Γ` instance `I` for given solution `x`. -/
 def ValuedCspInstance.evalSolution {Γ : ValuedCspTemplate C} {ι : Type _}
@@ -83,8 +84,8 @@ private def exampleFiniteValuedCsp : ValuedCspTemplate ℚ :=
   ValuedCspTemplate.mk ℚ {exampleAbs}
 
 private def exampleFiniteValuedInstance : ValuedCspInstance exampleFiniteValuedCsp (Fin 2) :=
-  [ValuedCspTerm.mk exampleAbs (by simp [exampleFiniteValuedCsp]) ![0],
-   ValuedCspTerm.mk exampleAbs (by simp [exampleFiniteValuedCsp]) ![1]]
+  [ValuedCspTerm.mk 1 (fun a => |a 0|) (by simp [exampleFiniteValuedCsp, exampleAbs]) ![0],
+   ValuedCspTerm.mk 1 (fun a => |a 0|) (by simp [exampleFiniteValuedCsp, exampleAbs]) ![1]]
 
 #eval exampleFiniteValuedInstance.evalSolution ![(3 : ℚ), (-2 : ℚ)]
 
@@ -133,19 +134,19 @@ private def exampleCrispCsp : ValuedCspTemplate Bool :=
   ValuedCspTemplate.mk (Fin 3) {exampleEquality}
 
 private def exampleTermAB : ValuedCspTerm exampleCrispCsp (Fin 4) :=
-  ValuedCspTerm.mk exampleEquality (by simp [exampleCrispCsp]) ![0, 1]
+  ValuedCspTerm.mk 2 exampleEqualit (by simp [exampleCrispCsp, exampleEquality]) ![0, 1]
 
 private def exampleTermBC : ValuedCspTerm exampleCrispCsp (Fin 4) :=
-  ValuedCspTerm.mk exampleEquality (by simp [exampleCrispCsp]) ![1, 2]
+  ValuedCspTerm.mk 2 exampleEqualit (by simp [exampleCrispCsp, exampleEquality]) ![0, 1]
 
 private def exampleTermCA : ValuedCspTerm exampleCrispCsp (Fin 4) :=
-  ValuedCspTerm.mk exampleEquality (by simp [exampleCrispCsp]) ![2, 0]
+  ValuedCspTerm.mk 2 exampleEqualit (by simp [exampleCrispCsp, exampleEquality]) ![0, 1]
 
 private def exampleTermBD : ValuedCspTerm exampleCrispCsp (Fin 4) :=
-  ValuedCspTerm.mk exampleEquality (by simp [exampleCrispCsp]) ![1, 3]
+  ValuedCspTerm.mk 2 exampleEqualit (by simp [exampleCrispCsp, exampleEquality]) ![0, 1]
 
 private def exampleTermCD : ValuedCspTerm exampleCrispCsp (Fin 4) :=
-  ValuedCspTerm.mk exampleEquality (by simp [exampleCrispCsp]) ![2, 3]
+  ValuedCspTerm.mk 2 exampleEqualit (by simp [exampleCrispCsp, exampleEquality]) ![0, 1]
 
 private def exampleCrispCspInstance : ValuedCspInstance exampleCrispCsp (Fin 4) :=
   [exampleTermAB, exampleTermBC, exampleTermCA, exampleTermBD, exampleTermCD]
