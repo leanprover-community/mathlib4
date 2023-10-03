@@ -436,7 +436,7 @@ theorem span_singleton_absNorm_le (I : Ideal S) : Ideal.span {(Ideal.absNorm I :
   simp only [Ideal.span_le, Set.singleton_subset_iff, SetLike.mem_coe, Ideal.absNorm_mem I]
 #align ideal.span_singleton_abs_norm_le Ideal.span_singleton_absNorm_le
 
-theorem span_singleton_absNorm (I : Ideal S) (hI : (Ideal.absNorm I).Prime) :
+theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
     Ideal.span (singleton (Ideal.absNorm I : ℤ)) = I.comap (algebraMap ℤ S) := by
   have : Ideal.IsPrime (Ideal.span (singleton (Ideal.absNorm I : ℤ))) := by
     rwa [Ideal.span_singleton_prime (Int.ofNat_ne_zero.mpr hI.ne_zero), ← Nat.prime_iff_prime_int]
@@ -465,7 +465,7 @@ theorem finite_setOf_absNorm_eq [CharZero S] {n : ℕ} (hn : 0 < n) :
     congr
 #align ideal.finite_set_of_abs_norm_eq Ideal.finite_setOf_absNorm_eq
 
-theorem norm_dvd_iff (x : S) (hx : Prime (Algebra.norm ℤ x)) {y : ℤ} :
+theorem norm_dvd_iff {x : S} (hx : Prime (Algebra.norm ℤ x)) {y : ℤ} :
     Algebra.norm ℤ x ∣ y ↔ x ∣ y := by
   rw [← Ideal.mem_span_singleton (y := x), ← eq_intCast (algebraMap ℤ S), ← Ideal.mem_comap,
     ← Ideal.span_singleton_absNorm, Ideal.mem_span_singleton, Ideal.absNorm_span_singleton,
