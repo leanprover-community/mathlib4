@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Antoine Chambert-Loir and María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir and María Inés de Frutos-Fernández and Bhavik Mehta
+Inspired by a mathlib3 file by Bhavik Mehta
 -/
 
 import Mathlib.Data.Finset.Basic
@@ -12,7 +12,8 @@ import Mathlib.Data.Finsupp.Interval
 
 Let `n : μ`, where `μ` is a canonically ordered add monoid with locally finite order.
 
-* For `s : Finset ι`, we define `Finset.Pi.antidiagonal s n` as the `Finset (ι → μ)` of functions with support in `s` whose sum is equal to `n`.
+* For `s : Finset ι`, we define `Finset.Pi.antidiagonal s n` as the `Finset (ι → μ)`
+of functions with support in `s` whose sum is equal to `n`.
 
 * We define `Finset.antidiagonal n : Finset (μ × μ)` of pairs adding to `n`.
 
