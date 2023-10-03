@@ -116,8 +116,7 @@ lemma coverPreserving :
   rw [coherentTopology_is_induced]
   exact LocallyCoverDense.inducedTopology_coverPreserving (CoverDense.locallyCoverDense coverDense)
 
-lemma coverLifting :
-  CoverLifting (coherentTopology _) (coherentTopology _) Stonean.toCompHaus := by
+lemma coverLifting : CoverLifting (coherentTopology _) (coherentTopology _) Stonean.toCompHaus := by
   rw [coherentTopology_is_induced]
   exact LocallyCoverDense.inducedTopology_coverLifting (CoverDense.locallyCoverDense coverDense)
 
