@@ -65,10 +65,10 @@ section Monoid
 
 variable [∀ i, Monoid (G i)] [Monoid H] {φ : ∀ i, H →* G i}
 
-@[instance] protected def mul : Mul (PushoutI φ) := by
+protected instance mul : Mul (PushoutI φ) := by
   delta PushoutI; infer_instance
 
-@[instance] protected def one : One (PushoutI φ) := by
+protected instance one : One (PushoutI φ) := by
   delta PushoutI; infer_instance
 
 instance monoid : Monoid (PushoutI φ) :=
@@ -172,8 +172,7 @@ end Monoid
 variable [∀ i, Group (G i)] [Group H] {φ : ∀ i, H →* G i}
 
 instance : Group (PushoutI φ) :=
-  { Con.group (PushoutI.con φ) with
-    toMonoid := PushoutI.monoid }
+  Con.group (PushoutI.con φ)
 
 namespace NormalWord
 
