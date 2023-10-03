@@ -100,14 +100,14 @@ attribute [nolint docBlame] EffectiveEpi.effectiveEpi
 
 /-- Some chosen `EffectiveEpiStruct` associated to an effective epi. -/
 noncomputable
-def EffectiveEpi.getStruct {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] :
-  EffectiveEpiStruct f := EffectiveEpi.effectiveEpi.some
+def EffectiveEpi.getStruct {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : EffectiveEpiStruct f :=
+  EffectiveEpi.effectiveEpi.some
 
 /-- Descend along an effective epi. -/
 noncomputable
 def EffectiveEpi.desc {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
-  (e : Y ⟶ W) (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e) :
-  X ⟶ W := (EffectiveEpi.getStruct f).desc e h
+    (e : Y ⟶ W) (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e) :
+    X ⟶ W := (EffectiveEpi.getStruct f).desc e h
 
 @[reassoc (attr := simp)]
 lemma EffectiveEpi.fac {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
@@ -444,5 +444,102 @@ theorem Sieve.effectiveEpimorphic_family {B : C} {α : Type*}
     show Nonempty _
     rw [Sieve.generateFamily_eq]
     apply Nonempty.map (isColimitOfEffectiveEpiFamilyStruct _ _) h
+
+
+section instances
+
+/--
+Given an `EffectiveEpiFamily X π` such that the coproduct of `X` exists, `Sigma.desc π` is an
+`EffectiveEpi`.
+-/
+noncomputable
+def EffectiveEpiFamily_descStruct {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
+    [HasCoproduct X] [EffectiveEpiFamily X π] : EffectiveEpiStruct (Sigma.desc π) where
+  desc e h := EffectiveEpiFamily.desc X π (fun a ↦ Sigma.ι X a ≫ e) (fun a₁ a₂ g₁ g₂ hg ↦ by
+    simp only [← Category.assoc]
+    apply h (g₁ ≫ Sigma.ι X a₁) (g₂ ≫ Sigma.ι X a₂)
+    simpa only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app])
+  fac e h := by
+    ext a
+    simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app,
+      EffectiveEpiFamily.fac]
+  uniq e _ m hm := by
+    have := EffectiveEpiFamily.uniq X π (fun a ↦ Sigma.ι X a ≫ e) ?_ m
+    · apply this
+      intro a
+      rw [← hm]
+      simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
+    · intro Z a₁ a₂ g₁ g₂ hg
+      rw [← hm]
+      simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
+      rw [← Category.assoc, hg, Category.assoc]
+
+instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
+    [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) :=
+  ⟨⟨EffectiveEpiFamily_descStruct X π⟩⟩
+
+/--
+An `EffectiveEpiFamily` consisting of a single `EffectiveEpi`
+-/
+noncomputable
+def EffectiveEpi_familyStruct {B X : C} (f : X ⟶ B) [EffectiveEpi f] :
+    EffectiveEpiFamilyStruct (fun () ↦ X) (fun () ↦ f) where
+  desc e h := EffectiveEpi.desc f (e ()) (fun g₁ g₂ hg ↦ h () () g₁ g₂ hg)
+  fac e h := fun _ ↦ EffectiveEpi.fac f (e ()) (fun g₁ g₂ hg ↦ h () () g₁ g₂ hg)
+  uniq e h m hm := by apply EffectiveEpi.uniq f (e ()) (h () ()); exact hm ()
+
+instance {B X : C} (f : X ⟶ B) [EffectiveEpi f] : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
+  ⟨⟨EffectiveEpi_familyStruct f⟩⟩
+
+/--
+A single element `EffectiveEpiFamily` constists of an `EffectiveEpi`
+-/
+noncomputable
+def EffectiveEpiStruct_ofFamily {B X : C} (f : X ⟶ B)
+    [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
+    EffectiveEpiStruct f where
+  desc e h := EffectiveEpiFamily.desc
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg)
+  fac e h := EffectiveEpiFamily.fac
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg) ()
+  uniq e h m hm := EffectiveEpiFamily.uniq
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg) m (fun _ ↦ hm)
+
+instance {B X : C} (f : X ⟶ B) [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
+    EffectiveEpi f :=
+  ⟨⟨EffectiveEpiStruct_ofFamily f⟩⟩
+
+lemma effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
+    EffectiveEpi f ↔ EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+/--
+A family of morphisms with the same target inducing an isomorphism from the coproduct to the target
+is an `EffectiveEpiFamily`.
+-/
+noncomputable
+def EffectiveEpiFamilyStruct_of_isIso_desc {B : C} {α : Type*} (X : α → C)
+    (π : (a : α) → (X a ⟶ B)) [HasCoproduct X] [IsIso (Sigma.desc π)] :
+    EffectiveEpiFamilyStruct X π where
+  desc e _ := (asIso (Sigma.desc π)).inv ≫ (Sigma.desc e)
+  fac e h := by
+    intro a
+    have : π a = Sigma.ι X a ≫ (asIso (Sigma.desc π)).hom := by simp only [asIso_hom,
+      colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+    rw [this, Category.assoc]
+    simp only [asIso_hom, asIso_inv, IsIso.hom_inv_id_assoc, colimit.ι_desc, Cofan.mk_pt,
+      Cofan.mk_ι_app]
+  uniq e h m hm := by
+    simp only [asIso_inv, IsIso.eq_inv_comp]
+    ext a
+    simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app,
+      colimit.ι_desc]
+    exact hm a
+
+instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
+    [IsIso (Sigma.desc π)] : EffectiveEpiFamily X π :=
+  ⟨⟨EffectiveEpiFamilyStruct_of_isIso_desc X π⟩⟩
+
+end instances
 
 end CategoryTheory

@@ -768,7 +768,7 @@ protected theorem decode₂ : Primrec (decode₂ α) :=
 #align primrec.decode₂ Primrec.decode₂
 
 theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
-  ∀ l : List β, Primrec fun a => l.findIdx (p a)
+    ∀ l : List β, Primrec fun a => l.findIdx (p a)
 | [] => const 0
 | a :: l => (cond (hp.comp .id (const a)) (const 0) (succ.comp (list_findIdx₁ hp l))).of_eq fun n =>
   by simp [List.findIdx_cons]
@@ -902,8 +902,8 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
     (fst.comp <|
       nat_iterate (encode_iff.2 hf) (pair hg hf) <|
       hG)
-  suffices : ∀ a n, F a n = (((f a).take n).foldl (fun s b => h a (s, b)) (g a), (f a).drop n)
-  · refine hF.of_eq fun a => ?_
+  suffices ∀ a n, F a n = (((f a).take n).foldl (fun s b => h a (s, b)) (g a), (f a).drop n) by
+    refine hF.of_eq fun a => ?_
     rw [this, List.take_all_of_le (length_le_encode _)]
   introv
   dsimp only

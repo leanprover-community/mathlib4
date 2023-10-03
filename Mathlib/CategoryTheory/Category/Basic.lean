@@ -5,8 +5,8 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.PPWithUniv
+import Mathlib.Tactic.Common
 
 #align_import category_theory.category.basic from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
@@ -215,14 +215,12 @@ scoped infixr:80 " ≫= " => whisker_eq
 
 theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
     f = g := by
-  convert w (𝟙 Y) <;>
-  aesop
+  convert w (𝟙 Y) <;> simp
 #align category_theory.eq_of_comp_left_eq CategoryTheory.eq_of_comp_left_eq
 
 theorem eq_of_comp_right_eq {f g : Y ⟶ Z} (w : ∀ {X : C} (h : X ⟶ Y), h ≫ f = h ≫ g) :
     f = g := by
-  convert w (𝟙 Y) <;>
-  aesop
+  convert w (𝟙 Y) <;> simp
 #align category_theory.eq_of_comp_right_eq CategoryTheory.eq_of_comp_right_eq
 
 theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
@@ -237,12 +235,12 @@ theorem eq_of_comp_right_eq' (f g : Y ⟶ Z)
 
 theorem id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
   convert w (𝟙 X)
-  aesop
+  simp
 #align category_theory.id_of_comp_left_id CategoryTheory.id_of_comp_left_id
 
 theorem id_of_comp_right_id (f : X ⟶ X) (w : ∀ {Y : C} (g : Y ⟶ X), g ≫ f = g) : f = 𝟙 X := by
   convert w (𝟙 X)
-  aesop
+  simp
 #align category_theory.id_of_comp_right_id CategoryTheory.id_of_comp_right_id
 
 theorem comp_ite {P : Prop} [Decidable P] {X Y Z : C} (f : X ⟶ Y) (g g' : Y ⟶ Z) :

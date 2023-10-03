@@ -50,8 +50,7 @@ polynomial over the fraction field. See `minpoly.isIntegrallyClosed_eq_field_fra
 theorem isIntegrallyClosed_eq_field_fractions [IsDomain S] {s : S} (hs : IsIntegral R s) :
     minpoly K (algebraMap S L s) = (minpoly R s).map (algebraMap R K) := by
   refine' (eq_of_irreducible_of_monic _ _ _).symm
-  · exact
-      (Polynomial.Monic.irreducible_iff_irreducible_map_fraction_map (monic hs)).1 (irreducible hs)
+  · exact ((monic hs).irreducible_iff_irreducible_map_fraction_map).1 (irreducible hs)
   · rw [aeval_map_algebraMap, aeval_algebraMap_apply, aeval, map_zero]
   · exact (monic hs).map _
 #align minpoly.is_integrally_closed_eq_field_fractions minpoly.isIntegrallyClosed_eq_field_fractions
@@ -62,9 +61,7 @@ this version is useful if the element is in a ring that is already a `K`-algebra
 theorem isIntegrallyClosed_eq_field_fractions' [IsDomain S] [Algebra K S] [IsScalarTower R K S]
     {s : S} (hs : IsIntegral R s) : minpoly K s = (minpoly R s).map (algebraMap R K) := by
   let L := FractionRing S
-  rw [← isIntegrallyClosed_eq_field_fractions K L hs]
-  refine'
-    minpoly.eq_of_algebraMap_eq (IsFractionRing.injective S L) (isIntegral_of_isScalarTower hs) rfl
+  rw [← isIntegrallyClosed_eq_field_fractions K L hs, algebraMap_eq (IsFractionRing.injective S L)]
 #align minpoly.is_integrally_closed_eq_field_fractions' minpoly.isIntegrallyClosed_eq_field_fractions'
 
 end
@@ -80,6 +77,8 @@ theorem isIntegrallyClosed_dvd [Nontrivial R] {s : S} (hs : IsIntegral R s) {p :
     (hp : Polynomial.aeval s p = 0) : minpoly R s ∣ p := by
   let K := FractionRing R
   let L := FractionRing S
+  let _ : Algebra K L := FractionRing.liftAlgebra R L
+  have := FractionRing.isScalarTower_liftAlgebra R L
   have : minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (p %ₘ minpoly R s) := by
     rw [map_modByMonic _ (minpoly.monic hs), modByMonic_eq_sub_mul_div]
     refine' dvd_sub (minpoly.dvd K (algebraMap S L s) _) _
@@ -181,7 +180,7 @@ def _root_.Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
 
 @[simp]
 theorem _root_.Algebra.adjoin.powerBasis'_dim (hx : IsIntegral R x) :
-  (Algebra.adjoin.powerBasis' hx).dim = (minpoly R x).natDegree := rfl
+    (Algebra.adjoin.powerBasis' hx).dim = (minpoly R x).natDegree := rfl
 #align algebra.adjoin.power_basis'_dim Algebra.adjoin.powerBasis'_dim
 
 @[simp]

@@ -10,12 +10,12 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 #align_import category_theory.monoidal.internal.Module from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
 
 /-!
-# `Mon_ (Module R) ≌ Algebra R`
+# `Mon_ (ModuleCat R) ≌ AlgebraCat R`
 
-The category of internal monoid objects in `Module R`
+The category of internal monoid objects in `ModuleCat R`
 is equivalent to the category of "native" bundled `R`-algebras.
 
-Moreover, this equivalence is compatible with the forgetful functors to `Module R`.
+Moreover, this equivalence is compatible with the forgetful functors to `ModuleCat R`.
 -/
 
 set_option linter.uppercaseLean3 false
@@ -90,7 +90,7 @@ theorem algebraMap (A : Mon_ (ModuleCat.{u} R)) (r : R) : algebraMap R A.X r = A
   rfl
 #align Module.Mon_Module_equivalence_Algebra.algebra_map ModuleCat.MonModuleEquivalenceAlgebra.algebraMap
 
-/-- Converting a monoid object in `Module R` to a bundled algebra.
+/-- Converting a monoid object in `ModuleCat R` to a bundled algebra.
 -/
 @[simps!]
 def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
@@ -103,7 +103,7 @@ def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
       commutes' := fun r => LinearMap.congr_fun f.one_hom r }
 #align Module.Mon_Module_equivalence_Algebra.functor ModuleCat.MonModuleEquivalenceAlgebra.functor
 
-/-- Converting a bundled algebra to a monoid object in `Module R`.
+/-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[simps]
 def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
@@ -153,12 +153,12 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     simp only [LinearMap.mul'_apply, mul_assoc]
 #align Module.Mon_Module_equivalence_Algebra.inverse_obj ModuleCat.MonModuleEquivalenceAlgebra.inverseObj
 
-/-- Converting a bundled algebra to a monoid object in `Module R`.
+/-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[simps]
 def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   obj := inverseObj
-  map := @fun A B f =>
+  map f :=
     { hom := f.toLinearMap
       one_hom := LinearMap.ext f.commutes
       mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| f.map_mul }
@@ -169,7 +169,7 @@ end MonModuleEquivalenceAlgebra
 open MonModuleEquivalenceAlgebra
 
 set_option maxHeartbeats 500000 in
-/-- The category of internal monoid objects in `Module R`
+/-- The category of internal monoid objects in `ModuleCat R`
 is equivalent to the category of "native" bundled `R`-algebras.
 -/
 def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
@@ -223,8 +223,8 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
       (by intros; rfl)
 #align Module.Mon_Module_equivalence_Algebra ModuleCat.monModuleEquivalenceAlgebra
 
-/-- The equivalence `Mon_ (Module R) ≌ Algebra R`
-is naturally compatible with the forgetful functors to `Module R`.
+/-- The equivalence `Mon_ (ModuleCat R) ≌ AlgebraCat R`
+is naturally compatible with the forgetful functors to `ModuleCat R`.
 -/
 def monModuleEquivalenceAlgebraForget :
     MonModuleEquivalenceAlgebra.functor ⋙ forget₂ (AlgebraCat.{u} R) (ModuleCat.{u} R) ≅

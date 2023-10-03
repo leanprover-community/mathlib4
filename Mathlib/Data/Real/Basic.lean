@@ -960,8 +960,8 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
     refine' (ciInf_le _ _).trans _
     · refine' ⟨hf.some, fun z => _⟩
       rintro ⟨u, rfl⟩
-      suffices hfu : f u ∈ f '' Ioi x
-      exact hf.choose_spec hfu
+      suffices hfu : f u ∈ f '' Ioi x by
+        exact hf.choose_spec hfu
       exact ⟨u, u.prop, rfl⟩
     · exact ⟨y, hxy⟩
     · refine' hf_mono (le_trans _ hyq.le)

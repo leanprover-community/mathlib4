@@ -52,16 +52,14 @@ theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebr
   refine DFinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
 #align exterior_algebra.graded_algebra.ι_sq_zero ExteriorAlgebra.GradedAlgebra.ι_sq_zero
 
-set_option maxHeartbeats 400000 in
 /-- `ExteriorAlgebra.GradedAlgebra.ι` lifted to exterior algebra. This is
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 def GradedAlgebra.liftι :
-  ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ,
+    ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ,
     (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i : Submodule R (ExteriorAlgebra R M)) :=
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem GradedAlgebra.liftι_eq (i : ℕ)
     (x : (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i :
       Submodule R (ExteriorAlgebra R M))) :
@@ -85,14 +83,13 @@ theorem GradedAlgebra.liftι_eq (i : ℕ)
       exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext (add_comm _ _) rfl)
 #align exterior_algebra.graded_algebra.lift_ι_eq ExteriorAlgebra.GradedAlgebra.liftι_eq
 
-set_option maxHeartbeats 400000 in
 /-- The exterior algebra is graded by the powers of the submodule `(ExteriorAlgebra.ι R).range`. -/
 instance gradedAlgebra :
     GradedAlgebra (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ · : ℕ → Submodule R _) :=
   GradedAlgebra.ofAlgHom _
     (-- while not necessary, the `by apply` makes this elaborate faster
     by apply GradedAlgebra.liftι R M)
-    -- the proof from here onward is identical to the `tensor_algebra` case
+    -- the proof from here onward is identical to the `TensorAlgebra` case
     (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
