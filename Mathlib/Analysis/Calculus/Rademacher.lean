@@ -36,6 +36,10 @@ is line-differentiable in all these directions and the line derivative is linear
 any direction by a direction in `s` and using the fact that `f` is Lipschitz to control the error,
 it follows that `f` is Fréchet-differentiable at these points.
 See `LipschitzWith.hasFderivAt_of_hasLineDerivAt_of_closure`.
+
+## References
+
+* [Pertti Mattila, Geometry of sets and measures in Euclidean spaces, Theorem 7.3][Federer1996]
 -/
 
 open Filter MeasureTheory Measure FiniteDimensional Metric Set Asymptotics
