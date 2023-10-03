@@ -124,9 +124,8 @@ variable [Semiring R] [SetLike S R] [SubsemiringClass S R]
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
 instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] :
     Semiring s :=
-  { toNonAssocSemiring s with
-    mul_assoc := (Subtype.coe_injective.semiring (↑) rfl rfl
-      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl).mul_assoc }
+  { toNonAssocSemiring s, Subtype.coe_injective.semiring (↑) rfl rfl
+      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl with }
 #align subsemiring_class.to_semiring SubsemiringClass.toSemiring
 
 @[simp, norm_cast]

@@ -470,7 +470,7 @@ instance {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
 
 /-- A subring of a domain is a domain. -/
 instance {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
-  NoZeroDivisors.to_isDomain _
+  NoZeroDivisors.to_isDomain s
 
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
 instance toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
