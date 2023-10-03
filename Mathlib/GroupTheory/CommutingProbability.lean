@@ -241,28 +241,70 @@ lemma _root_.Set.Finite.pow {A : Set G} (hA : A.Finite) (n : ℕ) : (A ^ n).Fini
   · exact Set.finite_one
   · exact hA.mul hn
 
+lemma _root_.Set.Infinite.mul_nonempty {A B : Set G} (hA : A.Infinite) (hB : B.Nonempty) :
+    (A * B).Infinite :=
+  Set.infinite_mul.mpr (Or.inl ⟨hA, hB⟩)
+
+lemma _root_.Set.Infinite.nonempty_mul {A B : Set G} (hA : A.Infinite) (hB : B.Nonempty) :
+    (B * A).Infinite :=
+  Set.infinite_mul.mpr (Or.inr ⟨hA, hB⟩)
+
 lemma _root_.Set.Infinite.mul {A B : Set G} (hA : A.Infinite) (hB : B.Infinite) :
     (A * B).Infinite :=
-  Set.infinite_mul.mpr (Or.inl ⟨hA, hB.nonempty⟩)
+  hA.mul_nonempty hB.nonempty
 
 lemma _root_.Set.Infinite.pow_succ {A : Set G} (hA : A.Infinite) (n : ℕ) : (A ^ (n + 1)).Infinite := by
   induction' n with n hn
-  · rwa [Nat.zero_add, pow_one]
+  · exact hA.mul_nonempty Set.one_nonempty
   · exact hA.mul hn
 
 lemma Set.ncard_smul (A : Set G) (g : G) : Set.ncard (g • A) = Set.ncard A :=
   (Set.ncard_congr (fun a _ ↦ g • a) (fun _ => Set.smul_mem_smul_set)
     (fun _ _ _ _ h => mul_right_injective g h) (fun _ ⟨a, ha, hb⟩ => ⟨a, ha, hb⟩)).symm
 
--- growth lemma for powers of symmetric sets
-lemma mylem (A : Set G) (hA : A⁻¹ = A) (k : ℕ) (g : G)
+lemma Set.ncard_le_card [Finite G] (A : Set G) : A.ncard ≤ Nat.card G :=
+  Set.ncard_univ G ▸ Set.ncard_mono A.subset_univ
+
+lemma Set.ncard_pos_of_mem {A : Set G} (hA : Set.Finite A) {g : G} (h : g ∈ A) : 0 < A.ncard :=
+  (Set.ncard_pos hA).mpr ⟨g, h⟩
+
+/-- Growth lemma for powers of symmetric sets. -/
+lemma smul_subset_diff (A : Set G) (hA : A⁻¹ = A) (k : ℕ) (g : G)
     (h : g ∈ A ^ (k + 2) \ A ^ (k + 1)) : g • A ⊆ A ^ (k + 3) \ A ^ k := by
   rintro - ⟨a, ha, rfl⟩
-  refine' ⟨_, fun hg => h.2 _⟩ <;> rw [pow_succ', Set.mem_mul]
-  · exact ⟨g, a, h.1, ha, rfl⟩
-  · exact ⟨g * a, a⁻¹, hg, Set.mem_inv.mp (hA.symm ▸ ha), mul_inv_cancel_right g a⟩
+  refine' h.imp _ (mt _) <;> intro hg <;> rw [pow_succ']
+  · exact Set.mul_mem_mul hg ha
+  · rw [← hA, Set.mem_inv] at ha
+    rw [← mul_inv_cancel_right g a]
+    exact Set.mul_mem_mul hg ha
 
--- growth lemma for powers of symmetric sets
+-- 1 ∈ A, A⁻¹ = A
+-- prove g * a ∉ A
+
+lemma mylem3 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
+    (h : (A ^ (3 * k - 1) : Set G).ncard < (A ^ (3 * k) : Set G).ncard) :
+    (k + 1) * A.ncard ≤ (A ^ (3 * k + 1) : Set G).ncard := by
+  sorry
+
+-- {-n,...,n} (2n+1)
+-- {-2n,...,2n} (4n+1) (not quite double yet)
+-- {-3n,...,3n} (6n+1) (double, does not contain A and translate of A, does contain two translates of A)
+-- Let g₁, g₂ ∈ A^2 ∖ A
+-- g₁ • A ⊆ A^3
+-- g₂ • A ⊆ A^3
+
+-- Suppose g₁ a₁ = g₂ a₂
+-- Pick g₁ ∈ A^2 ∖ A first
+-- Pick g₂ ∉ g₁ • A^2
+-- Doable as long as A^2 is not a subgroup
+-- If A^2 < A^3, then
+
+-- can you prove |A^3| ≥ 2 |A|
+-- g • A ⊆ A^3
+-- (g ∈ A^2)
+-- g • A = A'
+
+/-- Growth lemma for powers of symmetric sets. -/
 lemma mylem2 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
     (h : (A ^ (k + 1) : Set G).ncard < (A ^ (k + 2) : Set G).ncard) :
     A.ncard + (A ^ k : Set G).ncard ≤ (A ^ (k + 3) : Set G).ncard := by
@@ -272,7 +314,9 @@ lemma mylem2 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
   obtain ⟨g, hg⟩ := Set.exists_mem_not_mem_of_ncard_lt_ncard h (h'.pow (k + 1))
   rw [← Set.ncard_smul A g, ← Set.ncard_diff_add_ncard_of_subset
       (Set.pow_subset_pow_of_one_mem hA1 le_self_add) (h'.pow (k + 3)), add_le_add_iff_right]
-  exact Set.ncard_le_of_subset (mylem A hA k g hg) ((h'.pow (k + 3)).diff (A ^ k))
+  exact Set.ncard_le_of_subset (smul_subset_diff A hA k g hg) ((h'.pow (k + 3)).diff (A ^ k))
+
+-- A ^ 2 < A ^ 3 implies 2 * A <= A ^ 4
 
 -- growth lemma for powers of symmetric sets
 lemma mylem4 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
@@ -294,12 +338,6 @@ lemma mylem4 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
   rw [Nat.mul_succ, Nat.succ_sub_one] at h''
   rw [Nat.mul_succ, Nat.mul_succ, Nat.succ_sub_one, pow_add A _ 3, h'', ← pow_add] at h
   exact lt_irrefl _ h
-
-lemma ncard_le_card [Finite G] (A : Set G) : A.ncard ≤ Nat.card G :=
-  le_of_le_of_eq (Set.ncard_mono A.subset_univ) (Set.ncard_univ G)
-
-lemma ncard_pos_off_mem  {A : Set G} (hA : Set.Finite A) {g : G} (h : g ∈ A) : 0 < A.ncard := by
-  refine' (Set.ncard_pos hA).mpr ⟨g, h⟩
 
 lemma mylem9 (A : Set G) (k : ℕ) : A ^ k ⊆ Subgroup.closure A := by
   induction' k with k hk
