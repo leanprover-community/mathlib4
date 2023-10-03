@@ -855,7 +855,7 @@ theorem nthRootsFinset_zero : nthRootsFinset 0 R = ∅ := by classical simp [nth
 #align polynomial.nth_roots_finset_zero Polynomial.nthRootsFinset_zero
 
 theorem mul_mem_nthRootsFinset
-    {η₁ : R} (hη₁ : η₁ ∈ nthRootsFinset n R) {η₂ : R} (hη₂ : η₂ ∈ nthRootsFinset n R) :
+    {η₁ η₂ : R} (hη₁ : η₁ ∈ nthRootsFinset n R) (hη₂ : η₂ ∈ nthRootsFinset n R) :
     η₁ * η₂ ∈ nthRootsFinset n R := by
   cases n with
   | zero =>
