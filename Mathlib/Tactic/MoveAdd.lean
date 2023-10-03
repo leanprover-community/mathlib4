@@ -372,15 +372,14 @@ for the operation `op` in the expression `tgt`, returning
   should be thrown;
 * an array of debugging messages.
 -/
-def unifyMovements (pairs : Array (Expr × Bool × Syntax)) (op : Name) (tgt : Expr) :
+def unifyMovements (data : Array (Expr × Bool × Syntax)) (op : Name) (tgt : Expr) :
     MetaM (List (Expr × Bool) × (List MessageData × List Syntax) × Array MessageData) := do
---  let pairs ← parseArrows rws
   let ops ← getOps op tgt
   let atoms := (ops.map Prod.fst).flatten.toList.filter (!isBVar ·)
   -- `instr` are the unified user-provided terms, `neverMatched` are non-unified ones
-  let (instr, neverMatched) := ← pairUp pairs.toList atoms
+  let (instr, neverMatched) := ← pairUp data.toList atoms
   let dbgMsg := #[m!"Matching of input variables:\n* pre-match:  {
-    pairs.map (Prod.snd ∘ Prod.snd)}\n* post-match: {instr}",
+    data.map (Prod.snd ∘ Prod.snd)}\n* post-match: {instr}",
     m!"\nMaximum number of iterations: {ops.size}"]
   -- if there are `neverMatched` terms, return the parsed terms and the syntax
   let errMsg := neverMatched.map fun (t, a, stx) => (if a then m!"← {t}" else m!"{t}", stx)
