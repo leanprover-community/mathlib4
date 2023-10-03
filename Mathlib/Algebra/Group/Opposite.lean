@@ -37,34 +37,25 @@ instance intCast [IntCast α] : IntCast αᵐᵒᵖ :=
   ⟨fun n => op n⟩
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup αᵐᵒᵖ :=
-  { unop_injective.addSemigroup _ fun _ _ => by rfl with
-    toAdd := add _ }
+  unop_injective.addSemigroup _ fun _ _ => rfl
 
 instance addLeftCancelSemigroup [AddLeftCancelSemigroup α] : AddLeftCancelSemigroup αᵐᵒᵖ :=
-  { unop_injective.addLeftCancelSemigroup _ fun _ _ => by rfl with
-    toAddSemigroup := addSemigroup _ }
+  unop_injective.addLeftCancelSemigroup _ fun _ _ => rfl
 
 instance addRightCancelSemigroup [AddRightCancelSemigroup α] : AddRightCancelSemigroup αᵐᵒᵖ :=
-  { unop_injective.addRightCancelSemigroup _ fun _ _ => by rfl with
-    toAddSemigroup := addSemigroup _ }
+  unop_injective.addRightCancelSemigroup _ fun _ _ => rfl
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αᵐᵒᵖ :=
-  { unop_injective.addCommSemigroup _ fun _ _ => by rfl with
-    toAddSemigroup := addSemigroup _ }
+  unop_injective.addCommSemigroup _ fun _ _ => rfl
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass αᵐᵒᵖ :=
-  { unop_injective.addZeroClass _ (by exact rfl) fun _ _ => by rfl with
-    toAdd := add _
-    toZero := zero _ }
+  unop_injective.addZeroClass _ (by exact rfl) fun _ _ => rfl
 
 instance addMonoid [AddMonoid α] : AddMonoid αᵐᵒᵖ :=
- { unop_injective.addMonoid _ (by exact rfl) (fun _ _ => by rfl) fun _ _ => by rfl with
-   toZero := zero _
-   toAddSemigroup := addSemigroup _ }
+  unop_injective.addMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid αᵐᵒᵖ :=
-  { unop_injective.addCommMonoid _ (by rfl) (fun _ _ => by rfl) fun _ _ => by rfl with
-    toAddMonoid := addMonoid _ }
+  unop_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne αᵐᵒᵖ :=
   { MulOpposite.addMonoid α, MulOpposite.one α, MulOpposite.natCast _ with
@@ -75,18 +66,16 @@ instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne �
   { MulOpposite.addMonoidWithOne α, MulOpposite.addCommMonoid α with }
 
 instance subNegMonoid [SubNegMonoid α] : SubNegMonoid αᵐᵒᵖ :=
-  { unop_injective.subNegMonoid _ (by rfl) (fun _ _ => by rfl) (fun _ => by rfl) (fun _ _ => by rfl)
-    (fun _ _ => by rfl) fun _ _ => by rfl with
-    toAddMonoid := addMonoid _
-    toNeg := neg _
-    toSub := sub _ }
+  unop_injective.subNegMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 instance addGroup [AddGroup α] : AddGroup αᵐᵒᵖ :=
   unop_injective.addGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
   (fun _ _ => rfl) fun _ _ => rfl
 
 instance addCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
-  { add_comm := add_comm }
+  unop_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ :=
   { MulOpposite.addMonoidWithOne α, MulOpposite.addGroup α with
@@ -304,25 +293,19 @@ end MulOpposite
 namespace AddOpposite
 
 instance semigroup [Semigroup α] : Semigroup αᵃᵒᵖ :=
-  { unop_injective.semigroup _ fun _ _ => by rfl with
-    toMul := mul }
+  unop_injective.semigroup _ fun _ _ => rfl
 
 instance leftCancelSemigroup [LeftCancelSemigroup α] : LeftCancelSemigroup αᵃᵒᵖ :=
-  { unop_injective.leftCancelSemigroup _ fun _ _ => by rfl with
-    toSemigroup := semigroup _ }
+  unop_injective.leftCancelSemigroup _ fun _ _ => rfl
 
 instance rightCancelSemigroup [RightCancelSemigroup α] : RightCancelSemigroup αᵃᵒᵖ :=
-  { unop_injective.rightCancelSemigroup _ fun _ _ => by rfl with
-    toSemigroup := semigroup _ }
+  unop_injective.rightCancelSemigroup _ fun _ _ => rfl
 
 instance commSemigroup [CommSemigroup α] : CommSemigroup αᵃᵒᵖ :=
-  { unop_injective.commSemigroup _ fun _ _ => by rfl with
-    toSemigroup := semigroup _ }
+  unop_injective.commSemigroup _ fun _ _ => rfl
 
 instance mulOneClass [MulOneClass α] : MulOneClass αᵃᵒᵖ :=
-  { unop_injective.mulOneClass _ (by rfl) fun _ _ => by rfl with
-    toMul := mul
-    toOne := one }
+  unop_injective.mulOneClass _ (by exact rfl) fun _ _ => rfl
 
 instance pow {β} [Pow α β] : Pow αᵃᵒᵖ β where pow a b := op (unop a ^ b)
 
@@ -337,27 +320,22 @@ theorem unop_pow {β} [Pow α β] (a : αᵃᵒᵖ) (b : β) : unop (a ^ b) = un
 #align add_opposite.unop_pow AddOpposite.unop_pow
 
 instance monoid [Monoid α] : Monoid αᵃᵒᵖ :=
-  { mulOneClass _,
-    unop_injective.monoid _ (by exact rfl) (fun _ _ => by rfl) fun _ _ => by rfl with
-    toSemigroup := semigroup _ }
+  unop_injective.monoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance commMonoid [CommMonoid α] : CommMonoid αᵃᵒᵖ :=
-  { mul_comm := mul_comm }
+  unop_injective.commMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance divInvMonoid [DivInvMonoid α] : DivInvMonoid αᵃᵒᵖ :=
-  { unop_injective.divInvMonoid _ (by rfl) (fun _ _ => by rfl) (fun _ => by rfl) (fun _ _ => by rfl)
-    (fun _ _ => by rfl) fun _ _ => by rfl with
-    toMonoid := monoid _
-    toDiv := div
-    toInv := inv }
+  unop_injective.divInvMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 instance group [Group α] : Group αᵃᵒᵖ :=
-  { unop_injective.group _ (by rfl) (fun _ _ => by rfl) (fun _ => by rfl) (fun _ _ => by rfl)
-    (fun _ _ => by rfl) fun _ _ => by rfl with
-    toDivInvMonoid := divInvMonoid _ }
+  unop_injective.group _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 instance commGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
-  { mul_comm := mul_comm }
+  unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 -- NOTE: `addMonoidWithOne α → addMonoidWithOne αᵃᵒᵖ` does not hold
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵃᵒᵖ :=
