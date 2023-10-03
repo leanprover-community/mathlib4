@@ -1,19 +1,19 @@
 import Mathlib.Algebra.Homology.HomologicalBicomplex
+import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 open CategoryTheory Limits Category Preadditive
 
-variable (C : Type*) [Category C]
+variable (C C₁ C₂ C₃ C₁₂ C₂₃ : Type*) [Category C] [Category C₁] [Category C₂] [Category C₃]
+  [Category C₁₂] [Category C₂₃]
   {I₁ I₂ I₃ I₁₂ I₂₃ J : Type*}
-  (c₁ : ComplexShape I₁)
-  (c₂ : ComplexShape I₂)
-  (c₃ : ComplexShape I₃)
 
-abbrev HomologicalComplex₃ [HasZeroMorphisms C] :=
+abbrev HomologicalComplex₃ [HasZeroMorphisms C] (c₁ : ComplexShape I₁)
+  (c₂ : ComplexShape I₂) (c₃ : ComplexShape I₃) :=
   HomologicalComplex (HomologicalComplex (HomologicalComplex C c₃) c₂) c₁
 
 namespace HomologicalComplex₃
 
-variable {C c₁ c₂ c₃}
+variable {C} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂} {c₃ : ComplexShape I₃}
 
 -- `[HasZeroMorphisms C]` is sufficient, but we use `Functor.mapHomologicalComplex` which has a `Preadditive C` assumption
 set_option maxHeartbeats 400000 in
@@ -40,14 +40,17 @@ def rotate [Preadditive C] (K : HomologicalComplex₃ C c₁ c₂ c₃) :
 
 end HomologicalComplex₃
 
-variable [Preadditive C] (K : HomologicalComplex₃ C c₁ c₂ c₃)
+section
+
+variable [Preadditive C] {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂} {c₃ : ComplexShape I₃}
+  (K : HomologicalComplex₃ C c₁ c₂ c₃)
   (c₁₂ : ComplexShape I₁₂) [DecidableEq I₁₂]
   (c₂₃ : ComplexShape I₂₃) [DecidableEq I₂₃]
   (c : ComplexShape J) [DecidableEq J]
 
 namespace HomologicalComplex₃
 
-variable {C c₁ c₂ c₃}
+variable {C}
 
 section
 
@@ -257,3 +260,171 @@ def ι_totalAssociator_inv_f (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
 end
 
 end HomologicalComplex₃
+
+end
+
+namespace CategoryTheory
+
+namespace Functor
+
+variable {C C₁ C₂ C₃}
+variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [HasZeroMorphisms C₃] [HasZeroMorphisms C]
+  (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C) (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c₃ : ComplexShape I₃)
+  [F.PreservesZeroMorphisms]
+  [∀ (X₁ : C₁), PreservesZeroMorphisms (F.obj X₁)]
+  [∀ (X₁ : C₁) (X₂ : C₂), PreservesZeroMorphisms ((F.obj X₁).obj X₂)]
+
+@[simps]
+def mapHomologicalComplex₃ObjObj (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂) :
+      HomologicalComplex C₃ c₃ ⥤ HomologicalComplex₃ C c₁ c₂ c₃ where
+  obj K₃ :=
+    { X := fun i₁ => ((mapHomologicalComplex₂ (F.obj (K₁.X i₁)) c₂ c₃).obj K₂).obj K₃
+      d := fun i₁ i₁' => ((NatTrans.mapHomologicalComplex₂ (F.map (K₁.d i₁ i₁')) c₂ c₃).app K₂).app K₃
+      shape := fun i₁ i₁' h => by
+        ext i₂ i₃
+        dsimp [NatTrans.mapHomologicalComplex₂]
+        rw [K₁.shape _ _ h, F.map_zero]
+        rfl
+      d_comp_d' := fun i₁ i₁' i₁'' _ _ => by
+        ext i₂ i₃
+        dsimp
+        rw [← NatTrans.comp_app, ← NatTrans.comp_app, ← F.map_comp, K₁.d_comp_d, F.map_zero]
+        rfl }
+  map {K₃ K₃'} φ :=
+    { f := fun i₁ => ((mapHomologicalComplex₂ (F.obj (K₁.X i₁)) c₂ c₃).obj K₂).map φ
+      comm' := fun i₁ i₁' _ => by
+        ext i₂ i₃
+        dsimp
+        rw [NatTrans.naturality] }
+  map_id K₃ := by
+    ext1 i₁
+    dsimp
+    rw [Functor.map_id]
+    rfl
+  map_comp {K₃ K₃' K₃''} φ φ' := by
+    ext1 i₁
+    dsimp
+    rw [Functor.map_comp]
+
+@[simps]
+def mapHomologicalComplex₃ObjMap (K₁ : HomologicalComplex C₁ c₁)
+    {K₂ K₂' : HomologicalComplex C₂ c₂} (φ : K₂ ⟶ K₂') :
+    mapHomologicalComplex₃ObjObj F c₁ c₂ c₃ K₁ K₂ ⟶
+    mapHomologicalComplex₃ObjObj F c₁ c₂ c₃ K₁ K₂' :=
+  { app := fun K₃ =>
+      { f := fun i₁ =>
+          { f := fun i₂ =>
+              { f := fun i₃ => ((F.obj (K₁.X i₁)).map (φ.f i₂)).app (K₃.X i₃)
+                comm' := fun i₃ i₃' _ => by
+                  dsimp
+                  rw [NatTrans.naturality] }
+            comm' := fun i₂ i₂' _ => by
+              ext i₃
+              dsimp
+              rw [← NatTrans.comp_app, ← NatTrans.comp_app, ← Functor.map_comp,
+                ← Functor.map_comp, φ.comm] }
+        comm' := fun i₁ i₁' _ => by
+          ext i₂ i₃
+          dsimp
+          rw [← NatTrans.comp_app, ← NatTrans.comp_app, NatTrans.naturality] } }
+
+@[simps]
+def mapHomologicalComplex₃Obj (K₁ : HomologicalComplex C₁ c₁) :
+    HomologicalComplex C₂ c₂ ⥤
+      HomologicalComplex C₃ c₃ ⥤ HomologicalComplex₃ C c₁ c₂ c₃ where
+  obj := mapHomologicalComplex₃ObjObj F c₁ c₂ c₃ K₁
+  map {K₂ K₂'} φ := mapHomologicalComplex₃ObjMap F c₁ c₂ c₃ K₁ φ
+
+@[simps]
+def mapHomologicalComplex₃MapApp {K₁ K₁' : HomologicalComplex C₁ c₁} (φ : K₁ ⟶ K₁')
+    (K₂ : HomologicalComplex C₂ c₂) :
+    (mapHomologicalComplex₃Obj F c₁ c₂ c₃ K₁).obj K₂ ⟶
+      (mapHomologicalComplex₃Obj F c₁ c₂ c₃ K₁').obj K₂ where
+  app K₃ :=
+    { f := fun i₁ =>
+        { f := fun i₂ =>
+            { f := fun i₃ => ((F.map (φ.f i₁)).app _).app _ }
+          comm' := fun i₃ i₃' _ => by
+            ext i₃
+            dsimp
+            rw [← NatTrans.comp_app, ← NatTrans.comp_app, NatTrans.naturality] }
+      comm' := fun i₂ i₂' _ => by
+        ext i₂ i₃
+        dsimp
+        rw [← NatTrans.comp_app, ← NatTrans.comp_app, ← NatTrans.comp_app,
+          ← NatTrans.comp_app, ← F.map_comp, ← F.map_comp, φ.comm] }
+
+@[simps]
+def mapHomologicalComplex₃Map {K₁ K₁' : HomologicalComplex C₁ c₁} (φ : K₁ ⟶ K₁') :
+    mapHomologicalComplex₃Obj F c₁ c₂ c₃ K₁ ⟶ mapHomologicalComplex₃Obj F c₁ c₂ c₃ K₁' where
+  app := mapHomologicalComplex₃MapApp F c₁ c₂ c₃ φ
+  naturality := fun K₂ K₂' φ => by
+    ext
+    dsimp
+    rw [← NatTrans.comp_app, ← NatTrans.comp_app, NatTrans.naturality]
+
+@[simps]
+def mapHomologicalComplex₃ : HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂ ⥤
+    HomologicalComplex C₃ c₃ ⥤ HomologicalComplex₃ C c₁ c₂ c₃ where
+  obj K₁ := mapHomologicalComplex₃Obj F c₁ c₂ c₃ K₁
+  map {K₁ K₁'} φ := mapHomologicalComplex₃Map F c₁ c₂ c₃ φ
+
+end Functor
+
+end CategoryTheory
+
+namespace HomologicalComplex
+
+section
+
+variable {C C₁ C₂}
+variable {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂} [Preadditive C₁] [Preadditive C₂]
+  [Preadditive C]
+  (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂)
+  (F : C₁ ⥤ C₂ ⥤ C)
+  [F.Additive] [∀ (X₁ : C₁), (F.obj X₁).Additive]
+  (c₁₂ : ComplexShape I₁₂) [TotalComplexShape c₁ c₂ c₁₂] [DecidableEq I₁₂]
+
+abbrev HasBifunctorObj : Prop :=
+  (((F.mapHomologicalComplex₂ c₁ c₂).obj K₁).obj K₂).HasTotal c₁₂
+
+noncomputable def bifunctorObj [HasBifunctorObj K₁ K₂ F c₁₂] : HomologicalComplex C c₁₂ :=
+  (((F.mapHomologicalComplex₂ c₁ c₂).obj K₁).obj K₂).total c₁₂
+
+end
+
+variable {C C₁ C₂ C₃ C₁₂ C₂₃}
+variable
+  [Preadditive C₁] [Preadditive C₂] [Preadditive C₃]
+  [Preadditive C₁₂] [Preadditive C₂₃] [Preadditive C]
+  {F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂} {G : C₁₂ ⥤ C₃ ⥤ C}
+  {F : C₁ ⥤ C₂₃ ⥤ C} {G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃}
+  [F₁₂.Additive] [∀ (X₁ : C₁), (F₁₂.obj X₁).Additive]
+  [G.Additive] [∀ (X₁₂ : C₁₂), (G.obj X₁₂).Additive]
+  [G₂₃.Additive] [∀ (X₂ : C₂), (G₂₃.obj X₂).Additive]
+  [F.Additive] [∀ (X₁ : C₁), (F.obj X₁).Additive]
+  (associator : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)
+  {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂} {c₃ : ComplexShape I₃}
+  (K₁ : HomologicalComplex C₁ c₁)
+  (K₂ : HomologicalComplex C₂ c₂)
+  (K₃ : HomologicalComplex C₃ c₃)
+  (c₁₂ : ComplexShape I₁₂) (c₂₃ : ComplexShape I₂₃) (c : ComplexShape J)
+  [DecidableEq I₁₂] [DecidableEq I₂₃] [DecidableEq J]
+  [TotalComplexShape c₁ c₂ c₁₂] [TotalComplexShape c₁₂ c₃ c]
+  [TotalComplexShape c₂ c₃ c₂₃] [TotalComplexShape c₁ c₂₃ c]
+  [ComplexShape.Associator c₁ c₂ c₃ c₁₂ c₂₃ c]
+  [HasBifunctorObj K₁ K₂ F₁₂ c₁₂] [HasBifunctorObj (bifunctorObj K₁ K₂ F₁₂ c₁₂) K₃ G c]
+  [HasBifunctorObj K₂ K₃ G₂₃ c₂₃] [HasBifunctorObj K₁ (bifunctorObj K₂ K₃ G₂₃ c₂₃) F c]
+
+instance : (bifunctorComp₁₂ F₁₂ G).Additive where
+instance (X₁ : C₁) : ((bifunctorComp₁₂ F₁₂ G).obj X₁).Additive where
+instance (X₁ : C₁) (X₂ : C₂) : (((bifunctorComp₁₂ F₁₂ G).obj X₁).obj X₂).Additive where
+instance : (bifunctorComp₂₃ F G₂₃).Additive where
+instance (X₁ : C₁) : ((bifunctorComp₂₃ F G₂₃).obj X₁).Additive where
+instance (X₁ : C₁) (X₂ : C₂) : (((bifunctorComp₂₃ F G₂₃).obj X₁).obj X₂).Additive where
+
+--noncomputable def bifunctorObjAssociator : bifunctorObj (bifunctorObj K₁ K₂ F₁₂ c₁₂) K₃ G c ≅
+--    bifunctorObj K₁ (bifunctorObj K₂ K₃ G₂₃ c₂₃) F c :=
+--  sorry
+
+end HomologicalComplex
