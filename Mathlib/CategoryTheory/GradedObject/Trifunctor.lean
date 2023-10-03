@@ -234,6 +234,22 @@ noncomputable def ιMapBifunctor₁₂BifunctorMapObj (i₁ : I₁) (i₂ : I₂
   (G.map (ιMapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂ i₁ i₂ _ rfl)).app (X₃ i₃) ≫
     ιMapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ (ρ₁₂.p ⟨i₁, i₂⟩) i₃ j (by rw [← h, ρ₁₂.hpq])
 
+noncomputable def ιMapBifunctor₁₂BifunctorMapObjOrZero [HasZeroMorphisms C₄] (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) [DecidableEq J] :
+    (G.obj ((F₁₂.obj (X₁ i₁)).obj (X₂ i₂))).obj (X₃ i₃) ⟶
+      mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j :=
+  if h : r (i₁, i₂, i₃) = j
+    then ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h
+    else 0
+
+noncomputable def ιMapBifunctor₁₂BifunctorMapObjOrZero_eq [HasZeroMorphisms C₄] (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) [DecidableEq J]
+    (h : r (i₁, i₂, i₃) = j) :
+    ιMapBifunctor₁₂BifunctorMapObjOrZero F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j =
+      ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h := dif_pos h
+
+noncomputable def ιMapBifunctor₁₂BifunctorMapObjOrZero_eq_zero [HasZeroMorphisms C₄] (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) [DecidableEq J]
+    (h : r (i₁, i₂, i₃) ≠ j) :
+    ιMapBifunctor₁₂BifunctorMapObjOrZero F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j = 0 := dif_neg h
+
 variable [H : HasGoodBifunctor₁₂BifunctorObj F₁₂ G ρ₁₂ X₁ X₂ X₃]
 
 noncomputable def cofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
@@ -370,6 +386,21 @@ noncomputable def ιMapBifunctorBifunctor₂₃MapObj (i₁ : I₁) (i₂ : I₂
     (F.obj (X₁ i₁)).obj ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶ mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j :=
   (F.obj (X₁ i₁)).map (ιMapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃ i₂ i₃ _ rfl) ≫
     ιMapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) i₁ (ρ₂₃.p ⟨i₂, i₃⟩) j (by rw [← h, ρ₂₃.hpq])
+
+noncomputable def ιMapBifunctorBifunctor₂₃MapObjOrZero [HasZeroMorphisms C₄] (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) [DecidableEq J] :
+    (F.obj (X₁ i₁)).obj ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶ mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j :=
+  if h : r (i₁, i₂, i₃) = j
+    then ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h
+    else 0
+
+noncomputable def ιMapBifunctorBifunctor₂₃MapObjOrZero_eq [HasZeroMorphisms C₄] (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) [DecidableEq J]
+    (h : r (i₁, i₂, i₃) = j) :
+    ιMapBifunctorBifunctor₂₃MapObjOrZero F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j =
+      ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h := dif_pos h
+
+noncomputable def ιMapBifunctorBifunctor₂₃MapObjOrZero_eq_zero [HasZeroMorphisms C₄] (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) [DecidableEq J]
+    (h : r (i₁, i₂, i₃) ≠ j) :
+    ιMapBifunctorBifunctor₂₃MapObjOrZero F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j = 0 := dif_neg h
 
 variable [H : HasGoodBifunctorBifunctor₂₃Obj F G₂₃ ρ₂₃ X₁ X₂ X₃]
 
@@ -509,6 +540,18 @@ lemma ι_mapBifunctorBifunctorAssociator_inv (i₁ : I₁) (i₂ : I₂) (i₃ :
     assoc, assoc, iso_inv_hom_id_apply, comp_id, ι_mapBifunctorBifunctorAssociator_hom,
     ← NatTrans.comp_app_assoc, ← NatTrans.comp_app, Iso.inv_hom_id_app,
     NatTrans.id_app, NatTrans.id_app, id_comp]
+
+lemma ιOrZero_mapBifunctorBifunctorAssociator_hom [HasZeroMorphisms C₄] [DecidableEq J] (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) :
+    ιMapBifunctor₁₂BifunctorMapObjOrZero F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j ≫
+      (mapBifunctorBifunctorAssociator associator ρ₁₂ ρ₂₃ X₁ X₂ X₃).hom j =
+        ((associator.hom.app (X₁ i₁)).app (X₂ i₂)).app (X₃ i₃) ≫
+          ιMapBifunctorBifunctor₂₃MapObjOrZero F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j := by
+  by_cases r (i₁, i₂, i₃) = j
+  · rw [ιMapBifunctor₁₂BifunctorMapObjOrZero_eq _ _ _ _ _ _ _ _ _ _ h,
+      ιMapBifunctorBifunctor₂₃MapObjOrZero_eq _ _ _ _ _ _ _ _ _ _ h,
+      ι_mapBifunctorBifunctorAssociator_hom]
+  · rw [ιMapBifunctor₁₂BifunctorMapObjOrZero_eq_zero _ _ _ _ _ _ _ _ _ _ h,
+      ιMapBifunctorBifunctor₂₃MapObjOrZero_eq_zero _ _ _ _ _ _ _ _ _ _ h, zero_comp, comp_zero]
 
 end
 
