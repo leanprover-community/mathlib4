@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.NatAntidiagonal
+import Mathlib.Data.Finset.Antidiagonal
 
 #align_import data.finset.nat_antidiagonal from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -15,9 +16,14 @@ This file defines the antidiagonals of ℕ × ℕ as finsets: the `n`-th antidia
 pairs `(i, j)` such that `i + j = n`. This is useful for polynomial multiplication and more
 generally for sums going from `0` to `n`.
 
+
 ## Notes
 
 This refines files `Data.List.NatAntidiagonal` and `Data.Multiset.NatAntidiagonal`.
+
+It coincides with the output of `Finset.antidiagonal` defined in `Data.Finset.Antidiagonal`
+but the definition here is inherited from an actual list.
+
 -/
 
 open Function
@@ -37,6 +43,12 @@ def antidiagonal (n : ℕ) : Finset (ℕ × ℕ) :=
 theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
   rw [antidiagonal, mem_def, Multiset.Nat.mem_antidiagonal]
 #align finset.nat.mem_antidiagonal Finset.Nat.mem_antidiagonal
+
+/-- `Finset.Nat.antidiagonal` coincides with `Finset.antidiagonal` -/
+lemma antidiagonal_eq_antidiagonal (n : ℕ) :
+    Finset.Nat.antidiagonal n = Finset.antidiagonal n := by
+    ext ⟨p,q⟩
+    simp only [Finset.Nat.mem_antidiagonal, Finset.mem_antidiagonal]
 
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]

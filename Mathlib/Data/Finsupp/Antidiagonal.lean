@@ -50,6 +50,12 @@ theorem mem_antidiagonal {f : α →₀ ℕ} {p : (α →₀ ℕ) × (α →₀ 
     ← Multiset.toFinsupp_eq_iff (f := f)]
 #align finsupp.mem_antidiagonal Finsupp.mem_antidiagonal
 
+/-- Finsupp.antidiagonal coincides with Finset.antidiagonal -/
+lemma antidiagonal_eq_antidiagonal (f : α →₀ ℕ) :
+    antidiagonal f = Finset.antidiagonal f := by
+  ext p
+  simp only [mem_antidiagonal, Finset.mem_antidiagonal]
+
 theorem swap_mem_antidiagonal {n : α →₀ ℕ} {f : (α →₀ ℕ) × (α →₀ ℕ)} :
     f.swap ∈ antidiagonal n ↔ f ∈ antidiagonal n := by
   simp only [mem_antidiagonal, add_comm, Prod.swap]
