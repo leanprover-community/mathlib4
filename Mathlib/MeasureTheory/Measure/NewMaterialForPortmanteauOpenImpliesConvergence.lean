@@ -15,6 +15,89 @@ to the file `Mathlib.MeasureTheory.Measure.Portmanteau`.
 open MeasureTheory Filter
 open scoped ENNReal NNReal BoundedContinuousFunction Topology
 
+
+section yet_another_map_liminf_lemma
+
+variable {ι R S : Type*} {F : Filter ι} [NeBot F]
+  [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
+  [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S]
+
+/-- An antitone function between (conditionally) complete linear ordered spaces sends a
+`Filter.limsSup` to the `Filter.liminf` of the image if the function is continuous at the `limsSup`
+(and the filter is bounded from above and below). -/
+theorem AntitoneOn.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R → S}
+    {R' : Set R} (f_decr : AntitoneOn f R') (f_cont : ContinuousAt f F.limsSup)
+    (hF : Filter.principal R' ≤ F)
+    (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
+    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) :
+    f F.limsSup = F.liminf f := by
+  sorry
+/-
+  have cobdd : F.IsCobounded (· ≤ ·) := bdd_below.isCobounded_flip
+  apply le_antisymm
+  · rw [limsSup, f_decr.map_sInf_of_continuousAt' f_cont bdd_above cobdd]
+    apply le_of_forall_lt
+    intro c hc
+    simp only [liminf, limsInf, eventually_map] at hc ⊢
+    obtain ⟨d, hd, h'd⟩ :=
+      exists_lt_of_lt_csSup (bdd_above.recOn fun x hx ↦ ⟨f x, Set.mem_image_of_mem f hx⟩) hc
+    apply lt_csSup_of_lt ?_ ?_ h'd
+    · exact (Antitone.isBoundedUnder_le_comp f_decr bdd_below).isCoboundedUnder_flip
+    · rcases hd with ⟨e, ⟨he, fe_eq_d⟩⟩
+      filter_upwards [he] with x hx using (fe_eq_d.symm ▸ f_decr hx)
+  · by_cases h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
+    · rcases h' with ⟨c, c_lt, hc⟩
+      have B : ∃ᶠ n in F, F.limsSup ≤ n := by
+        apply (frequently_lt_of_lt_limsSup cobdd c_lt).mono
+        intro x hx
+        by_contra'
+        have : (Set.Ioo c F.limsSup).Nonempty := ⟨x, ⟨hx, this⟩⟩
+        simp only [hc, Set.not_nonempty_empty] at this
+      apply liminf_le_of_frequently_le _ (bdd_above.isBoundedUnder f_decr)
+      exact (B.mono fun x hx ↦ f_decr hx)
+    push_neg at h'
+    by_contra' H
+    have not_bot : ¬ IsBot F.limsSup := fun maybe_bot ↦
+      lt_irrefl (F.liminf f) <| lt_of_le_of_lt
+        (liminf_le_of_frequently_le (frequently_of_forall (fun r ↦ f_decr (maybe_bot r)))
+          (bdd_above.isBoundedUnder f_decr)) H
+    obtain ⟨l, l_lt, h'l⟩ : ∃ l < F.limsSup, Set.Ioc l F.limsSup ⊆ { x : R | f x < F.liminf f }
+    · apply exists_Ioc_subset_of_mem_nhds ((tendsto_order.1 f_cont.tendsto).2 _ H)
+      simpa [IsBot] using not_bot
+    obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo l F.limsSup).Nonempty := by
+      contrapose! h'
+      refine' ⟨l, l_lt, by rwa [Set.not_nonempty_iff_eq_empty] at h'⟩
+    have B : F.liminf f ≤ f m := by
+      apply liminf_le_of_frequently_le _ _
+      · apply (frequently_lt_of_lt_limsSup cobdd m_lt).mono
+        exact fun x hx ↦ f_decr hx.le
+      · exact IsBounded.isBoundedUnder f_decr bdd_above
+    have I : f m < F.liminf f := h'l ⟨l_m, m_lt.le⟩
+    exact lt_irrefl _ (B.trans_lt I)
+ -/
+
+theorem MonotoneOn.map_limsInf_of_continuousAt {F : Filter R} [NeBot F] {f : R → S}
+    {R' : Set R} (f_incr : MonotoneOn f R') (f_cont : ContinuousAt f F.limsInf)
+    (hF : Filter.principal R' ≤ F)
+    (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
+    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) :
+    f F.limsInf = F.liminf f := by
+  exact @AntitoneOn.map_limsSup_of_continuousAt Rᵒᵈ S _ _ _ _ F _ f R'
+          (antitone_on_dual_iff.mp f_incr) f_cont hF bdd_below bdd_above
+
+theorem MonotoneOn.map_liminf_of_continuousAt {F : Filter ι} [NeBot F]
+    {f : R → S} {R' : Set R} (f_incr : MonotoneOn f R')
+    (a : ι → R) (f_cont : ContinuousAt f (F.liminf a)) (hF : Filter.principal R' ≤ F.map a)
+    (bdd_above : F.IsBoundedUnder (· ≤ ·) a := by isBoundedDefault)
+    (bdd_below : F.IsBoundedUnder (· ≥ ·) a := by isBoundedDefault) :
+    f (F.liminf a) = F.liminf (f ∘ a) := by
+  apply @MonotoneOn.map_limsInf_of_continuousAt  R S _ _ _ _ (F.map a) _ f R' f_incr f_cont hF
+          bdd_above bdd_below
+
+end yet_another_map_liminf_lemma
+
+
+
 -- NOTE: Missing from Mathlib?
 -- What would be a good generality?
 -- (Mixes order-boundedness and metric-boundedness, so typeclasses don't readily exist.)
@@ -55,7 +138,7 @@ lemma fatou_argument_lintegral
 
 -- NOTE: I think this is the version I prefer to use, after all...
 lemma fatou_argument_integral_nonneg
-    {μ : Measure Ω} [IsFiniteMeasure μ] {μs : ℕ → Measure Ω} [∀ i, IsFiniteMeasure (μs i)]
+    {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ℕ → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
     {f : Ω →ᵇ ℝ} (f_nn : 0 ≤ f)
     (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
       ∫ x, (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)) := by
@@ -65,10 +148,30 @@ lemma fatou_argument_integral_nonneg
   convert (ENNReal.toReal_le_toReal ?_ ?_).mpr earlier
   · simp only [fun i ↦ @integral_eq_lintegral_of_nonneg_ae Ω _ (μs i) f (eventually_of_forall f_nn)
                         f.continuous.measurable.aestronglyMeasurable]
-    --have := @Monotone.map_liminf_of_continuousAt
-    sorry
-  · sorry
-  · sorry
+    have aux : MonotoneOn ENNReal.toReal {∞}ᶜ := by sorry
+    apply (@MonotoneOn.map_liminf_of_continuousAt ℕ ℝ≥0∞ ℝ _ _ _ _ atTop _ ENNReal.toReal {∞}ᶜ aux
+              (fun i ↦ ∫⁻ (x : Ω), ENNReal.ofReal (f x) ∂(μs i)) ?_ ?_ ?_ ?_).symm
+    · --have := ENNReal.continuousOn_toNNReal
+      sorry
+    · sorry
+    · exact ⟨∞, eventually_of_forall (fun x ↦ by simp only [le_top])⟩
+    · exact ⟨0, eventually_of_forall (fun x ↦ by simp only [ge_iff_le, zero_le])⟩
+  · exact (f.lintegral_of_real_lt_top μ).ne
+  · apply ne_of_lt
+    have obs := fun (i : ℕ) ↦ @BoundedContinuousFunction.lintegral_nnnorm_le Ω _ _ (μs i) ℝ _ f
+    simp at obs
+    apply lt_of_le_of_lt _ (show (‖f‖₊ : ℝ≥0∞) < ∞ from ENNReal.coe_lt_top)
+    apply liminf_le_of_le
+    · refine ⟨0, eventually_of_forall (by simp only [ge_iff_le, zero_le, forall_const])⟩
+    · intro x hx
+      obtain ⟨i, hi⟩ := hx.exists
+      apply le_trans hi
+      convert obs i with x
+      have aux := ENNReal.ofReal_eq_coe_nnreal (f_nn x)
+      simp only [ContinuousMap.toFun_eq_coe, BoundedContinuousFunction.coe_to_continuous_fun] at aux
+      rw [aux]
+      congr
+      exact (Real.norm_of_nonneg (f_nn x)).symm
 
 -- A direct proof attempt (should be discarded).
 lemma fatou_argument_integral_nonneg'
