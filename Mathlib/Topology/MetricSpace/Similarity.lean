@@ -34,7 +34,7 @@ scoped[Similarity] infixl:25 " ∼ " => similarity
 
 /-- Similarity holds if and only if and only if all extended distances are the same. -/
 lemma similarity_iff_exists_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] :
-  similarity v₁ v₂ ↔
+    similarity v₁ v₂ ↔
     (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) = r * edist (v₂ i₁) (v₂ i₂))) :=
   refl _
 
