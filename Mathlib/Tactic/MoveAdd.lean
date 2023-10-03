@@ -364,6 +364,20 @@ def reorderAndSimp (mv : MVarId) (op : Name) (instr : List (Expr × Bool)) :
 section parsing
 open Elab Parser Tactic
 
+/-- `parseArrows` parses an input of the form `[a, ← b, _ * (1 : ℤ)]`, consisting of a list of
+terms, each optionally preceded by the arrow `←`.
+It returns an array of triples consisting of
+* the `Expr`ession corresponding to the parsed term,
+* the `Bool`ean `true` if the arrow was not present in front of the term,
+* the `Syntax` of the given term.
+-/
+def parseArrows : TSyntax `Lean.Parser.Tactic.rwRuleSeq → TermElabM (Array (Expr × Bool × Syntax))
+  | `(rwRuleSeq| [$rs,*]) => do
+    rs.getElems.mapM fun rstx => do
+      let r : Syntax := rstx
+      return (← Term.elabTerm r[1]! none, ! r[0]!.isNone, rstx)
+  | _ => failure
+
 /-- `parseMovements` parses an input of the form `[a, ← b, _ * (1 : ℤ)]`, consisting of a list of
 terms, each optionally preceded by the arrow `←`.
 It unifies the terms with the atoms for the operation `op` in the expression `tgt`, returning
@@ -375,24 +389,19 @@ E.g. convert `[a, ← b, _ * (1 : ℤ)]` to `pairs = ([(a, false), (z * 1, false
 `b` does not match a subexpression of `tgt` and the first summand involving a multiplication by `1`
 is `z * 1`.
 -/
-def parseMovements (rws : TSyntax `Lean.Parser.Tactic.rwRuleSeq) (op : Name) (tgt : Expr) :
-    TermElabM (List (Expr × Bool) × (List MessageData × List Syntax) × Array MessageData) := do
-  match rws with
-    | `(rwRuleSeq| [$rs,*]) => do
-      let pairs ← rs.getElems.mapM fun rstx => do
-        let r : Syntax := rstx
-        return (← Term.elabTerm r[1]! none, ! r[0]!.isNone, rstx)
-      let ops ← getOps op tgt
-      let atoms := (ops.map Prod.fst).flatten.toList.filter (!isBVar ·)
-      -- `instr` are the unified user-provided terms, `neverMatched` are non-unified ones
-      let (instr, neverMatched) := ← pairUp pairs.toList atoms
-      let dbgMsg := #[m!"Matching of input variables:\n* pre-match:  {
-        pairs.map (Prod.snd ∘ Prod.snd)}\n* post-match: {instr}",
-        m!"\nMaximum number of iterations: {ops.size}"]
-      -- if there are `neverMatched` terms, return the parsed terms and the syntax
-      let errMsg := neverMatched.map fun (t, a, stx) => (if a then m!"← {t}" else m!"{t}", stx)
-      return (instr, errMsg.unzip, dbgMsg)
-    | _ => failure
+def parseMovements (pairs : Array (Expr × Bool × Syntax)) (op : Name) (tgt : Expr) :
+    MetaM (List (Expr × Bool) × (List MessageData × List Syntax) × Array MessageData) := do
+--  let pairs ← parseArrows rws
+  let ops ← getOps op tgt
+  let atoms := (ops.map Prod.fst).flatten.toList.filter (!isBVar ·)
+  -- `instr` are the unified user-provided terms, `neverMatched` are non-unified ones
+  let (instr, neverMatched) := ← pairUp pairs.toList atoms
+  let dbgMsg := #[m!"Matching of input variables:\n* pre-match:  {
+    pairs.map (Prod.snd ∘ Prod.snd)}\n* post-match: {instr}",
+    m!"\nMaximum number of iterations: {ops.size}"]
+  -- if there are `neverMatched` terms, return the parsed terms and the syntax
+  let errMsg := neverMatched.map fun (t, a, stx) => (if a then m!"← {t}" else m!"{t}", stx)
+  return (instr, errMsg.unzip, dbgMsg)
 
 /--  The tactic `move_add` rearranges summands of expressions.
 Calling `move_add [a, ← b, ...]` matches `a, b,...` with summands in the main goal.
@@ -413,7 +422,7 @@ elab (name := moveOperTac) "move_oper" "(" oper:term ")" rws:rwRuleSeq  dbg:"-de
   -- parse the operation
   let op := (← Term.elabTerm oper none).getAppFn.constName
   -- parse the list of terms
-  let (instr, (unmatched, stxs), dbgMsg) ← parseMovements rws op
+  let (instr, (unmatched, stxs), dbgMsg) ← parseMovements (← parseArrows rws) op
                                                               (← instantiateMVars (← getMainTarget))
   -- prepare the various error messages
   let finErr := if unmatched.length = 0 then .nil else
