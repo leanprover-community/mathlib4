@@ -226,7 +226,7 @@ partial def getOps (sum : Expr) : MetaM (Array ((Array Expr) × Expr)) := do
   let (first, rest) := if summands.size == 1 then (#[], sum.getExprInputs) else
     (#[(summands, sum)], summands)
   let rest ← rest.mapM getOps
-  return rest.foldl Array.append  first
+  return rest.foldl Array.append first
 
 /-- `prepareOp sum` takes an `Expr`ession as input.  It assumes that `sum` is a well-formed
 term representing a repeated application of a binary operation and that the summands are the
