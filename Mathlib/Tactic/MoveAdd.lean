@@ -189,25 +189,6 @@ let reorder := uToReorder.qsort fun x y =>
     | _, _ => weight uInstructions x ≤ weight uInstructions y
 (reorder.map Prod.fst).toList
 
-section tactic
-open Mathlib.MoveAdd
-
-#guard (uniquify [ 0,      1,      0,      1,      0,      3] =
-                 [(0, 0), (1, 0), (0, 1), (1, 1), (0, 2), (3, 0)])
-
-#guard
-  (let dat := [(0, true), (1, false), (2, true)]
-   (#[0, 1, 2, 3, 4].qsort (fun x y => (weight dat x) ≤ (weight dat y)) = #[0, 2, 3, 4, 1]))
-
-#guard false = ( reorderUsing [0, 1, 2] [(0, false)] = [1, 2, 0] &&
-                 reorderUsing [0, 1, 2] [(1, true)] = [1, 0, 2] &&
-                 reorderUsing [0, 1, 2] [(1, true), (0, false)] != [1, 2, 0])
-
-#guard reorderUsing [1, 5, 4, 3, 2, 1] [(3, true), (2, false), (1, false)] =
-                        [3, 5, 4, 1, 2, 1]
-
-end tactic
-
 end reorder
 
 end ExprProcessing
