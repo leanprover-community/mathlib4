@@ -60,8 +60,8 @@ example [CommSemigroup R] (a b c d : R) (h : a * b * c = d) : b * (a * c) = d :=
   assumption
 
 example (a b : ℕ) : a + max a b = max b a + a := by
-  move_oper (Max.max) [← a]
-  move_oper (HAdd.hAdd) [a]
+  move_oper Max.max [← a]
+  move_oper HAdd.hAdd [a]
   rfl
 
 example {R : Type u} [CommSemigroup R] {a b : R} :

@@ -419,10 +419,10 @@ There is a multiplicative variant, called `move_mul`.
 
 There is also a general tactic for a "binary associative commutative operation": `move_oper`.
 In this case the syntax requires providing first a term whose head symbol is the operation.
-E.g. `move_oper (HAdd.hAdd) [...]` is the same as `move_add`, while `move_oper (Max.max) [...]`
+E.g. `move_oper HAdd.hAdd [...]` is the same as `move_add`, while `move_oper Max.max [...]`
 rearranges `max`s.
 -/
-elab (name := moveOperTac) "move_oper" "(" id:ident ")" rws:rwRuleSeq : tactic => do
+elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => do
   -- parse the operation
   let op := id.getId
   -- parse the list of terms
@@ -438,11 +438,11 @@ elab (name := moveOperTac) "move_oper" "(" id:ident ")" rws:rwRuleSeq : tactic =
 @[inherit_doc moveOperTac]
 elab "move_add" rws:rwRuleSeq : tactic => do
   let hadd := mkIdent ``HAdd.hAdd
-  evalTactic (← `(tactic| move_oper ($hadd) $rws))
+  evalTactic (← `(tactic| move_oper $hadd $rws))
 
 @[inherit_doc moveOperTac]
 elab "move_mul" rws:rwRuleSeq : tactic => do
   let hmul := mkIdent ``HMul.hMul
-  evalTactic (← `(tactic| move_oper ($hmul) $rws))
+  evalTactic (← `(tactic| move_oper $hmul $rws))
 
 end parsing
