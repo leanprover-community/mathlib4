@@ -37,7 +37,7 @@ namespace Set2Set
 theorem toval_eq (f : s → t) : (Subtype.val ∘ f) = (s.restrict f.toval) := by
   rw [@restrict_eq, @funext_iff]
   unfold toval
-  aesop
+  simp
 
 theorem toval_mapsto (f : s → t) : MapsTo f.toval s t := by
   intro x hx
@@ -86,20 +86,10 @@ theorem toval_surjOn {f : s → t} : Surjective f ↔ SurjOn f.toval s t := by
     aesop
 
 theorem toval_bijOn {f : s → t} : Bijective f ↔ BijOn f.toval s t := by
-  constructor
-  · intro hf_bij
-    exact BijOn.mk (toval_mapsto f) (toval_injOn.mp $ Bijective.injective hf_bij)
-        (toval_surjOn.mp $ Bijective.surjective hf_bij)
-  · intro hf_bijOn
-    refine (bijective_iff_existsUnique f).mpr ?_
-    intro b
-    choose a ha using hf_bijOn.2.2 b.property
-    use ⟨a, ha.1⟩
-    constructor
-    · exact toval_mem_iff.mpr ha.2
-    · intro a' ha'
-      rw [@toval_mem_iff, ← ha.2] at ha'
-      exact Subtype.coe_eq_of_eq_mk (hf_bijOn.2.1 ha.1 a'.property ha'.symm).symm
+  unfold Bijective BijOn
+  rw [@toval_injOn, @toval_surjOn]
+  simp only [iff_and_self, and_imp]
+  exact fun _ _ ↦ toval_mapsto f
 
 theorem toval_continuous [TopologicalSpace α] [TopologicalSpace β] {f : s → t} :
     Continuous f ↔ ContinuousOn f.toval s := by
