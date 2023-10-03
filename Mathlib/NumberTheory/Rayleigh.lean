@@ -76,7 +76,7 @@ private theorem no_collision : Disjoint {beattySeq r k | k} {beattySeq' s k | k}
 /-- Let `r > 1` and `1/r + 1/s = 1`. Suppose there is an integer `j` where `B_r` and `B'_s` both
 jump over `j` (i.e. an anti-collision). Then this leads to a contradiction. -/
 private theorem no_anticollision :
-    ¬∃ (j k m : ℤ), k * r < j ∧ j + 1 ≤ (k + 1) * r ∧ m * s ≤ j ∧ j + 1 < (m + 1) * s := by
+    ¬∃ j k m : ℤ, k * r < j ∧ j + 1 ≤ (k + 1) * r ∧ m * s ≤ j ∧ j + 1 < (m + 1) * s := by
   intro ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩
   replace h₁₁ := (lt_div_iff hrs.pos).2 h₁₁
   replace h₁₂ := (div_le_iff hrs.pos).2 h₁₂
@@ -92,7 +92,7 @@ private theorem no_anticollision :
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B_r` or `B_r` jumps over `j`. -/
 private theorem hit_or_miss (h : r > 0) :
-    j ∈ {beattySeq r k | k} ∨ (∃ k : ℤ, k * r < j ∧ j + 1 ≤ (k + 1) * r) := by
+    j ∈ {beattySeq r k | k} ∨ ∃ k : ℤ, k * r < j ∧ j + 1 ≤ (k + 1) * r := by
   -- for both cases, the candidate is `k = ⌈(j + 1) / r⌉ - 1`
   cases lt_or_ge ((⌈(j + 1) / r⌉ - 1) * r) j
   · refine Or.inr ⟨⌈(j + 1) / r⌉ - 1, by simpa, ?_⟩
@@ -107,7 +107,7 @@ private theorem hit_or_miss (h : r > 0) :
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B'_r` or `B'_r` jumps over `j`. -/
 private theorem hit_or_miss' (h : r > 0) :
-    j ∈ {beattySeq' r k | k} ∨ (∃ k : ℤ, k * r ≤ j ∧ j + 1 < (k + 1) * r) := by
+    j ∈ {beattySeq' r k | k} ∨ ∃ k : ℤ, k * r ≤ j ∧ j + 1 < (k + 1) * r := by
   -- for both cases, the candidate is `k = ⌊(j + 1) / r⌋`
   cases le_or_gt (⌊(j + 1) / r⌋ * r) j
   · refine Or.inr ⟨⌊(j + 1) / r⌋, ‹_›, ?_⟩
