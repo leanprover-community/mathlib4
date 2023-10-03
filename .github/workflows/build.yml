@@ -226,6 +226,15 @@ jobs:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe runMathlibLinter
 
+      - name: check environments using lean4checker
+        id: lean4checker
+        run: |
+          git clone https://github.com/leanprover/lean4checker
+          cd lean4checker
+          lake build
+          cd ..
+          lake env lean4checker/build/bin/lean4checker
+
       - name: Post comments for lean-pr-testing branch
         if: always()
         env:
