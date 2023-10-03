@@ -361,35 +361,18 @@ def reorderAndSimp (mv : MVarId) (op : Name) (instr : List (Expr × Bool)) :
     | (some x, _) => throwError m!"'move_oper' could not solve {indentD x.2}"
     | (none, _) => return permGoal
 
-section parsing
-open Elab Parser Tactic
-
-/-- `parseArrows` parses an input of the form `[a, ← b, _ * (1 : ℤ)]`, consisting of a list of
-terms, each optionally preceded by the arrow `←`.
-It returns an array of triples consisting of
-* the `Expr`ession corresponding to the parsed term,
-* the `Bool`ean `true` if the arrow was not present in front of the term,
-* the `Syntax` of the given term.
--/
-def parseArrows : TSyntax `Lean.Parser.Tactic.rwRuleSeq → TermElabM (Array (Expr × Bool × Syntax))
-  | `(rwRuleSeq| [$rs,*]) => do
-    rs.getElems.mapM fun rstx => do
-      let r : Syntax := rstx
-      return (← Term.elabTerm r[1]! none, ! r[0]!.isNone, rstx)
-  | _ => failure
-
-/-- `parseMovements` parses an input of the form `[a, ← b, _ * (1 : ℤ)]`, consisting of a list of
-terms, each optionally preceded by the arrow `←`.
-It unifies the terms with the atoms for the operation `op` in the expression `tgt`, returning
-* the lists of pairs of a matched subexpression with `true` for an arrow `←` and `false` otherwise;
-* an array of error messages;
+/-- `unifyMovements` takes as input
+* an array of `Expr × Bool × Syntax`, as in the output of `parseArrows`,
+* the `Name` `op` of a binary operation,
+* an `Expr`ession `tgt`.
+It unifies each `Expr`ession appearing as a first factor of the array with the atoms
+for the operation `op` in the expression `tgt`, returning
+* the lists of pairs of a matched subexpression with the corresponding `Bool`ean;
+* a pair of a list of error messages and the corresponding list of Syntax terms where the error
+  should be thrown;
 * an array of debugging messages.
-
-E.g. convert `[a, ← b, _ * (1 : ℤ)]` to `pairs = ([(a, false), (z * 1, false)], , [(b, true)]`, if
-`b` does not match a subexpression of `tgt` and the first summand involving a multiplication by `1`
-is `z * 1`.
 -/
-def parseMovements (pairs : Array (Expr × Bool × Syntax)) (op : Name) (tgt : Expr) :
+def unifyMovements (pairs : Array (Expr × Bool × Syntax)) (op : Name) (tgt : Expr) :
     MetaM (List (Expr × Bool) × (List MessageData × List Syntax) × Array MessageData) := do
 --  let pairs ← parseArrows rws
   let ops ← getOps op tgt
@@ -402,6 +385,26 @@ def parseMovements (pairs : Array (Expr × Bool × Syntax)) (op : Name) (tgt : E
   -- if there are `neverMatched` terms, return the parsed terms and the syntax
   let errMsg := neverMatched.map fun (t, a, stx) => (if a then m!"← {t}" else m!"{t}", stx)
   return (instr, errMsg.unzip, dbgMsg)
+
+section parsing
+open Elab Parser Tactic
+
+/-- `parseArrows` parses an input of the form `[a, ← b, _ * (1 : ℤ)]`, consisting of a list of
+terms, each optionally preceded by the arrow `←`.
+It returns an array of triples consisting of
+* the `Expr`ession corresponding to the parsed term,
+* the `Bool`ean `true` if the arrow is present in front of the term,
+* the underlying `Syntax` of the given term.
+
+E.g. convert `[a, ← b, _ * (1 : ℤ)]` to
+``[(a, false, `(a)), (b, true, `(b)), (_ * 1, false, `(_ * 1))]``.
+-/
+def parseArrows : TSyntax `Lean.Parser.Tactic.rwRuleSeq → TermElabM (Array (Expr × Bool × Syntax))
+  | `(rwRuleSeq| [$rs,*]) => do
+    rs.getElems.mapM fun rstx => do
+      let r : Syntax := rstx
+      return (← Term.elabTerm r[1]! none, ! r[0]!.isNone, rstx)
+  | _ => failure
 
 /--  The tactic `move_add` rearranges summands of expressions.
 Calling `move_add [a, ← b, ...]` matches `a, b,...` with summands in the main goal.
@@ -422,7 +425,7 @@ elab (name := moveOperTac) "move_oper" "(" oper:term ")" rws:rwRuleSeq  dbg:"-de
   -- parse the operation
   let op := (← Term.elabTerm oper none).getAppFn.constName
   -- parse the list of terms
-  let (instr, (unmatched, stxs), dbgMsg) ← parseMovements (← parseArrows rws) op
+  let (instr, (unmatched, stxs), dbgMsg) ← unifyMovements (← parseArrows rws) op
                                                               (← instantiateMVars (← getMainTarget))
   -- prepare the various error messages
   let finErr := if unmatched.length = 0 then .nil else
