@@ -34,6 +34,10 @@ theorem inl_injective : Function.Injective (inl : α → Sum α β) := fun _ _ �
 theorem inr_injective : Function.Injective (inr : β → Sum α β) := fun _ _ ↦ inr.inj
 #align sum.inr_injective Sum.inr_injective
 
+theorem sum_rec_congr (P : α ⊕ β → Sort*) (f : ∀ i, P (inl i)) (g : ∀ i, P (inr i))
+    {x y : α ⊕ β} (h : x = y) :
+    @Sum.rec _ _ _ f g x = cast (congr_arg P h.symm) (@Sum.rec _ _ _ f g y) := by cases h; rfl
+
 section get
 
 #align sum.is_left Sum.isLeft
