@@ -44,10 +44,13 @@ A term preceded by `←` gets moved to the left, while a term without `←` gets
   In particular, `move_add [a, b]` likely has the same effect as
   `move_add [a]; move_add [b]`: first, we move `a` to the right, then we move `b` also to the
   right, *after* `a`.
-  However, `move_add [← a, ← b]` likely has the same effect as
-  `move_add [b]; move_add [a]`: first, we move `b` to the left, then we move `a` also to the
-  left, *before* `a`.
-  Also note, though, that `move_add [a, b]` may differ `move_add [b]; move_add [a]`,
+  However, if the terms matched by `a` and `b` do not overlap, then `move_add [← a, ← b]`
+  has the same effect as `move_add [b]; move_add [a]`:
+  first, we move `b` to the left, then we move `a` also to the left, *before* `a`.
+  The behaviour in the situation where `a` and `b` overlap is unspecified: `move_add`
+  will descend into subexpressions, but the order in which they are visited depends
+  on which rearrangements have already happened.
+  Also note, though, that `move_add [a, b]` may differ `move_add [a]; move_add [b]`,
   for instance when `a` and `b` are `DefEq`.
 
 * Unification of inputs and repetitions: `move_add [_, ← _, a * _]`
@@ -83,6 +86,8 @@ Currently, `move_oper` supports `HAdd.hAdd`, `HAdd.hAdd`, `and`, `or`, `max`, `m
 These lemmas should be added to `Mathlib.MoveAdd.move_oper_simpCtx`.
 
 ## Implementation notes
+
+The main driver behind the tactic is `Mathlib.MoveAdd.reorderAndSimp`.
 
 The tactic takes the target, replaces the maximal subexpressions whose head symbol is the given
 operation and replaces them by their reordered versions.
@@ -162,10 +167,10 @@ then `a'` appears before `b'` in `L` if and only if `weight L a < weight L b` an
 similarly for the pairs with second coordinate equal to `false`.
 -/
 def weight (L : List (α × Bool)) (a : α) : ℤ :=
-let l := L.length
-match L.find? (Prod.fst · == a) with
-  | some (_, b) => if b then - l + (L.indexOf (a, b) : ℤ) else (L.indexOf (a, b) + 1 : ℤ)
-  | none => 0
+  let l := L.length
+  match L.find? (Prod.fst · == a) with
+    | some (_, b) => if b then - l + (L.indexOf (a, b) : ℤ) else (L.indexOf (a, b) + 1 : ℤ)
+    | none => 0
 
 /--  `reorderUsing toReorder instructions` produces a reordering of `toReorder : List α`,
 following the requirements imposed by `instructions : List (α × Bool)`.
@@ -184,15 +189,15 @@ For example,
 * `reorderUsing [0, 1, 2] [(1, true), (0, false)] = [1, 2, 0]`.
 -/
 def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List α :=
-let uInstructions :=
-  let (as, as?) := instructions.unzip
-  (uniquify as).zip as?
-let uToReorder := (uniquify toReorder).toArray
-let reorder := uToReorder.qsort fun x y =>
-  match uInstructions.find? (Prod.fst · == x), uInstructions.find? (Prod.fst · == y) with
-    | none, none => (uToReorder.getIdx? x).get! ≤ (uToReorder.getIdx? y).get!
-    | _, _ => weight uInstructions x ≤ weight uInstructions y
-(reorder.map Prod.fst).toList
+  let uInstructions :=
+    let (as, as?) := instructions.unzip
+    (uniquify as).zip as?
+  let uToReorder := (uniquify toReorder).toArray
+  let reorder := uToReorder.qsort fun x y =>
+    match uInstructions.find? (Prod.fst · == x), uInstructions.find? (Prod.fst · == y) with
+      | none, none => (uToReorder.getIdx? x).get! ≤ (uToReorder.getIdx? y).get!
+      | _, _ => weight uInstructions x ≤ weight uInstructions y
+  (reorder.map Prod.fst).toList
 
 end reorder
 
@@ -204,11 +209,11 @@ variable (op : Name) (R : Expr) in
 /--  If `sum` is an expression consisting of repeated applications of `op`, then `getAddends`
 returns the Array of those recursively determined arguments whose type is DefEq to `R`. -/
 partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
-if sum.isAppOf op then
-  let inR := ← sum.getAppArgs.filterM fun r => do isDefEq R (← inferType r <|> pure R)
-  let new := ← inR.mapM (getAddends ·)
-  return new.foldl Array.append  #[]
-else return #[sum]
+  if sum.isAppOf op then
+    let inR := ← sum.getAppArgs.filterM fun r => do isDefEq R (← inferType r <|> pure R)
+    let new := ← inR.mapM (getAddends ·)
+    return new.foldl Array.append  #[]
+  else return #[sum]
 
 variable (op : Name) in
 /-- Recursively compute the Array of `getAddends` Arrays by recursing into the expression `sum`
@@ -217,11 +222,11 @@ looking for instance of the operation `op`.
 Possibly returns duplicates!
 -/
 partial def getOps (sum : Expr) : MetaM (Array ((Array Expr) × Expr)) := do
-let summands := ← getAddends op (← inferType sum <|> return sum) sum
-let (first, rest) := if summands.size == 1 then (#[], sum.getExprInputs) else
-  (#[(summands, sum)], summands)
-let rest := ← rest.mapM getOps
-return rest.foldl Array.append  first
+  let summands := ← getAddends op (← inferType sum <|> return sum) sum
+  let (first, rest) := if summands.size == 1 then (#[], sum.getExprInputs) else
+    (#[(summands, sum)], summands)
+  let rest := ← rest.mapM getOps
+  return rest.foldl Array.append  first
 
 /-- `prepareOp sum` takes an `Expr`ession as input.  It assumes that `sum` is a well-formed
 term representing a repeated application of a binary operation and that the summands are the
@@ -234,8 +239,8 @@ primed to work with operands of the same type as the ones already appearing in `
 This is useful to rearrange the operands.
 -/
 def prepareOp (sum : Expr) : Expr :=
-let opargs := sum.getAppArgs
-(opargs.toList.take (opargs.size - 2)).foldl (fun x y => Expr.app x y) sum.getAppFn
+  let opargs := sum.getAppArgs
+  (opargs.toList.take (opargs.size - 2)).foldl (fun x y => Expr.app x y) sum.getAppFn
 
 /--  `sumList op exs` assumes that `op` is the `Name` of a binary operation.
 If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList` returns
@@ -372,23 +377,23 @@ E.g. convert `[a, ← b, _ * (1 : ℤ)]` to `pairs = ([(a, false), (z * 1, false
 is `z * 1`.
 -/
 def parsing (rws : TSyntax `Lean.Parser.Tactic.rwRuleSeq) (op : Name) (tgt : Expr) :
-    TermElabM (List (Expr × Bool) × (List MessageData × List Syntax) × Array MessageData) :=
-do match rws with
-  | `(rwRuleSeq| [$rs,*]) => do
-    let pairs := ← rs.getElems.mapM fun rstx => do
-      let r : Syntax := rstx
-      return (← Term.elabTerm r[1]! none, ! r[0]!.isNone, rstx)
-    let ops := ← getOps op tgt
-    let atoms := ((ops.map Prod.fst).foldl (· ++ ·) #[]).toList.filter ((!isBVar ·))
-    -- `instr` are the unified user-provided terms, `neverMatched` are non-unified ones
-    let (instr, neverMatched) := ← pairUp pairs.toList atoms
-    let dbgMsg := #[m!"Matching of input variables:\n* pre-match:  {
-      pairs.map (Prod.snd ∘ Prod.snd)}\n* post-match: {instr}",
-      m!"\nMaximum number of iterations: {ops.size}"]
-    -- if there are `neverMatched` terms, return the parsed terms and the syntax
-    let errMsg := neverMatched.map fun (t, a, stx) => (if a then m!"← {t}" else m!"{t}", stx)
-    return (instr, errMsg.unzip, dbgMsg)
-  | _ => failure
+    TermElabM (List (Expr × Bool) × (List MessageData × List Syntax) × Array MessageData) := do
+  match rws with
+    | `(rwRuleSeq| [$rs,*]) => do
+      let pairs := ← rs.getElems.mapM fun rstx => do
+        let r : Syntax := rstx
+        return (← Term.elabTerm r[1]! none, ! r[0]!.isNone, rstx)
+      let ops := ← getOps op tgt
+      let atoms := (ops.map Prod.fst).flatten.toList.filter (!isBVar ·)
+      -- `instr` are the unified user-provided terms, `neverMatched` are non-unified ones
+      let (instr, neverMatched) := ← pairUp pairs.toList atoms
+      let dbgMsg := #[m!"Matching of input variables:\n* pre-match:  {
+        pairs.map (Prod.snd ∘ Prod.snd)}\n* post-match: {instr}",
+        m!"\nMaximum number of iterations: {ops.size}"]
+      -- if there are `neverMatched` terms, return the parsed terms and the syntax
+      let errMsg := neverMatched.map fun (t, a, stx) => (if a then m!"← {t}" else m!"{t}", stx)
+      return (instr, errMsg.unzip, dbgMsg)
+    | _ => failure
 
 /--  The tactic `move_add` rearranges summands of expressions.
 Calling `move_add [a, ← b, ...]` matches `a, b,...` with summands in the main goal.
