@@ -405,6 +405,8 @@ def parseArrows : TSyntax `Lean.Parser.Tactic.rwRuleSeq → TermElabM (Array (Ex
       return (← Term.elabTerm r[1]! none, ! r[0]!.isNone, rstx)
   | _ => failure
 
+initialize registerTraceClass `Tactic.move_oper
+
 /--  The tactic `move_add` rearranges summands of expressions.
 Calling `move_add [a, ← b, ...]` matches `a, b,...` with summands in the main goal.
 It then moves `a` to the far right and `b` to the far left of each addition in which they appear.
@@ -417,25 +419,19 @@ There is a multiplicative variant, called `move_mul`.
 
 There is also a general tactic for a "binary associative commutative operation": `move_oper`.
 In this case the syntax requires providing first a term whose head symbol is the operation.
-E.g. `move_oper (0 + 0) [...]` is the same as `move_add`, while `move_oper (max 0 0) [...]`
+E.g. `move_oper (HAdd.hAdd) [...]` is the same as `move_add`, while `move_oper (Max.max) [...]`
 rearranges `max`s.
 -/
-elab (name := moveOperTac) "move_oper" "(" id:ident ")" rws:rwRuleSeq  dbg:"-debug"? : tactic => do
+elab (name := moveOperTac) "move_oper" "(" id:ident ")" rws:rwRuleSeq : tactic => do
   -- parse the operation
   let op := id.getId
   -- parse the list of terms
   let (instr, (unmatched, stxs), dbgMsg) ← unifyMovements (← parseArrows rws) op
                                                               (← instantiateMVars (← getMainTarget))
-  -- prepare the various error messages
-  let finErr := if unmatched.length = 0 then .nil else
-    m!"\nErrors:\nThe terms in '{unmatched}' were not matched to any atom"
-  let _ ← stxs.mapM (logErrorAt · "") -- underline all non-matching terms
-  let _ := ← match dbg, unmatched with
-    | none, []      => return ()                                  -- no `debug`-mode: successful
-    | none, _       => throwErrorAt stxs[0]! finErr               -- no `debug`-mode: unsuccessful
-    | some dbs,  _  =>  let finDbg : MessageData := dbgMsg.foldl  -- `debug`-mode
-                          (fun x y => (x.compose y).compose "\n\n---\n") ""
-                        logInfoAt dbs (finDbg.compose finErr)
+  unless unmatched.length = 0 do
+    let _ ← stxs.mapM (logErrorAt · "") -- underline all non-matching terms
+    trace[Tactic.move_oper] dbgMsg.foldl (fun x y => (x.compose y).compose "\n\n---\n") ""
+    throwErrorAt stxs[0]! m!"Errors:\nThe terms in '{unmatched}' were not matched to any atom"
   -- move around the operands
   replaceMainGoal (← reorderAndSimp (← getMainGoal) op instr)
 
