@@ -83,7 +83,7 @@ open Mathlib.MoveAdd
 
 #guard
   (let dat := [(0, true), (1, false), (2, true)]
-   (#[0, 1, 2, 3, 4].qsort (fun x y => (weight dat x) ≤ (weight dat y)) = #[0, 2, 3, 4, 1]))
+   #[0, 1, 2, 3, 4].qsort (weight dat · ≤ weight dat ·) = #[0, 2, 3, 4, 1])
 
 #guard false = ( reorderUsing [0, 1, 2] [(0, false)] = [1, 2, 0] &&
                  reorderUsing [0, 1, 2] [(1, true)] = [1, 0, 2] &&
