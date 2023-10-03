@@ -202,7 +202,7 @@ theorem prod_eq_one_iff_of_le_one' :
 @[to_additive single_le_sum]
 theorem single_le_prod' (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a ∈ s) : f a ≤ ∏ x in s, f x :=
   calc
-    f a = ∏ i in {a}, f i := prod_singleton.symm
+    f a = ∏ i in {a}, f i := (prod_singleton _ _).symm
     _ ≤ ∏ i in s, f i :=
       prod_le_prod_of_subset_of_one_le' (singleton_subset_iff.2 h) fun i hi _ ↦ hf i hi
 #align finset.single_le_prod' Finset.single_le_prod'
@@ -494,7 +494,7 @@ theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i �
 theorem single_lt_prod' {i j : ι} (hij : j ≠ i) (hi : i ∈ s) (hj : j ∈ s) (hlt : 1 < f j)
     (hle : ∀ k ∈ s, k ≠ i → 1 ≤ f k) : f i < ∏ k in s, f k :=
   calc
-    f i = ∏ k in {i}, f k := prod_singleton.symm
+    f i = ∏ k in {i}, f k := by rw [prod_singleton]
     _ < ∏ k in s, f k :=
       prod_lt_prod_of_subset' (singleton_subset_iff.2 hi) hj (mt mem_singleton.1 hij) hlt
         fun k hks hki ↦ hle k hks (mt mem_singleton.2 hki)
@@ -682,23 +682,60 @@ end CanonicallyOrderedCommSemiring
 end Finset
 
 namespace Fintype
-
-variable [Fintype ι]
+section OrderedCommMonoid
+variable [Fintype ι] [OrderedCommMonoid M] {f : ι → M}
 
 @[to_additive (attr := mono) sum_mono]
-theorem prod_mono' [OrderedCommMonoid M] : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
+theorem prod_mono' : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
   Finset.prod_le_prod' fun x _ ↦ hfg x
 #align fintype.prod_mono' Fintype.prod_mono'
 #align fintype.sum_mono Fintype.sum_mono
 
+@[to_additive sum_nonneg]
+lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' λ _ _ ↦ hf _
+
+@[to_additive] lemma prod_le_one (hf : f ≤ 1) : ∏ i, f i ≤ 1 := Finset.prod_le_one' λ _ _ ↦ hf _
+
+end OrderedCommMonoid
+
+section OrderedCancelCommMonoid
+variable [Fintype ι] [OrderedCancelCommMonoid M] {f : ι → M}
+
 @[to_additive sum_strictMono]
-theorem prod_strictMono' [OrderedCancelCommMonoid M] : StrictMono fun f : ι → M ↦ ∏ x, f x :=
+theorem prod_strictMono' : StrictMono fun f : ι → M ↦ ∏ x, f x :=
   fun _ _ hfg ↦
   let ⟨hle, i, hlt⟩ := Pi.lt_def.mp hfg
   Finset.prod_lt_prod' (fun i _ ↦ hle i) ⟨i, Finset.mem_univ i, hlt⟩
 #align fintype.prod_strict_mono' Fintype.prod_strictMono'
 #align fintype.sum_strict_mono Fintype.sum_strictMono
 
+@[to_additive sum_pos]
+lemma one_lt_prod (hf : 1 < f) : 1 < ∏ i, f i :=
+  Finset.one_lt_prod' (λ _ _ ↦ hf.le _) $ by simpa using (Pi.lt_def.1 hf).2
+
+@[to_additive]
+lemma prod_lt_one (hf : f < 1) : ∏ i, f i < 1 :=
+  Finset.prod_lt_one' (λ _ _ ↦ hf.le _) $ by simpa using (Pi.lt_def.1 hf).2
+
+@[to_additive sum_pos_iff_of_nonneg]
+lemma one_lt_prod_iff_of_one_le (hf : 1 ≤ f) : 1 < ∏ i, f i ↔ 1 < f := by
+  obtain rfl | hf := hf.eq_or_lt <;> simp [*, one_lt_prod]
+
+@[to_additive]
+lemma prod_lt_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i < 1 ↔ f < 1 := by
+  obtain rfl | hf := hf.eq_or_lt <;> simp [*, prod_lt_one]
+
+@[to_additive]
+lemma prod_eq_one_iff_of_one_le (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 := by
+  simpa only [(one_le_prod hf).not_gt_iff_eq, hf.not_gt_iff_eq]
+    using (one_lt_prod_iff_of_one_le hf).not
+
+@[to_additive]
+lemma prod_eq_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 := by
+  simpa only [(prod_le_one hf).not_gt_iff_eq, hf.not_gt_iff_eq, eq_comm]
+    using (prod_lt_one_iff_of_le_one hf).not
+
+end OrderedCancelCommMonoid
 end Fintype
 
 namespace WithTop
