@@ -376,7 +376,7 @@ def Scheme.restrict {U : TopCat} (X : Scheme) {f : U ⟶ TopCat.of X} (h : OpenE
     toPresheafedSpace := X.toPresheafedSpace.restrict h }
 #align algebraic_geometry.Scheme.restrict AlgebraicGeometry.Scheme.restrict
 
-/-- The canonical map from the restriction to the supspace. -/
+/-- The canonical map from the restriction to the subspace. -/
 @[simps!]
 def Scheme.ofRestrict {U : TopCat} (X : Scheme) {f : U ⟶ TopCat.of X}
     (h : OpenEmbedding f) : X.restrict h ⟶ X :=
