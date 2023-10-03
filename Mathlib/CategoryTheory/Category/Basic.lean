@@ -77,15 +77,6 @@ Often, however, it's not even necessary to include the `.{v}`.
 If it is omitted a "free" universe will be used.
 -/
 
-namespace Std.Tactic.Ext
-open Lean Elab Tactic
-
-/-- A wrapper for `ext` that we can pass to `aesop`. -/
-def extCore' : TacticM Unit := do
-  evalTactic (← `(tactic| ext))
-
-end Std.Tactic.Ext
-
 universe v u
 
 namespace CategoryTheory
@@ -135,10 +126,6 @@ macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_cla
   `(tactic|
     aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false })
     (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
-
-
--- We turn on `ext` inside `aesop_cat`.
-attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
 
 -- Porting note:
 -- Workaround for issue discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Failure.20of.20TC.20search.20in.20.60simp.60.20with.20.60etaExperiment.60.2E
