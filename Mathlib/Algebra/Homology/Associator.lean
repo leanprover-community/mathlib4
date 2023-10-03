@@ -516,13 +516,36 @@ lemma ιMapBifunctorBifunctor₂₃MapObj_d (i₁ : I₁) (i₂ : I₂) (i₃ : 
   congr 1
   · congr 1
     by_cases h₁ : c₁.Rel i₁ (c₁.next i₁)
-    · sorry
+    · by_cases h₂ : ComplexShape.π c₁ c₂₃ c (c₁.next i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) = j'
+      · rw [ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ h₂]
+        erw [GradedObject.ιMapBifunctorBifunctor₂₃MapObjOrZero_eq]; swap
+        · dsimp [ComplexShape.π₃]
+          rw [ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c, h₂]
+        rfl
+      · rw [ιBifunctorObjOrZero_eq_zero _ _ _ _ _ _ _ h₂, comp_zero, comp_zero]
+        erw [GradedObject.ιMapBifunctorBifunctor₂₃MapObjOrZero_eq_zero, comp_zero]
+        intro h₃
+        apply h₂
+        rw [← h₃, ← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c]
+        rfl
     · rw [shape _ _ _ h₁, F.map_zero, zero_app, zero_comp, zero_comp]
   · congr 1
     · congr 1
       by_cases h₁ : c₂.Rel i₂ (c₂.next i₂)
-      · rw [Functor.map_comp, assoc]
-        sorry
+      · by_cases h₂ : ComplexShape.π c₁ c₂₃ c (i₁, c₂₃.next (ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃))) = j'
+        · have h₃ : ComplexShape.π c₂ c₃ c₂₃ (c₂.next i₂, i₃) = c₂₃.next (ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) := sorry
+          have h₄ : ComplexShape.π₃ c₁ c₂ c₃ c₁₂ c (i₁, c₂.next i₂, i₃) = j' := sorry
+          rw [Functor.map_comp, assoc, ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ h₂,
+            ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ h₃]
+          erw [GradedObject.ιMapBifunctorBifunctor₂₃MapObjOrZero_eq _ _ _ _ _ _ _ _ _ _ h₄]
+          dsimp [GradedObject.ιMapBifunctorBifunctor₂₃MapObj, ιBifunctorObj]
+          sorry
+        · rw [ιBifunctorObjOrZero_eq_zero _ _ _ _ _ _ _ h₂, comp_zero]
+          erw [GradedObject.ιMapBifunctorBifunctor₂₃MapObjOrZero_eq_zero, comp_zero]
+          intro h₃
+          apply h₂
+          rw [← h₃, ComplexShape.next_π₁ c₃ c₂₃ h₁ i₃, ← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c]
+          rfl
       · rw [shape _ _ _ h₁, Functor.map_zero, zero_app, Functor.map_zero, zero_comp,
           zero_comp, Functor.map_zero, zero_comp]
     · congr 1
