@@ -400,7 +400,7 @@ theorem seq_norm_le (n : ℕ) :
 /-- Construct a unit associated to the place `w₁`. The family, for `w₁ ≠ w₀`, formed by the
 image by the `logEmbedding` of these units  is `ℝ`-linearly independent, see
 `unit_lattice_span_eq_top`. -/
-theorem exists_unit (w₁ : InfinitePlace K ) :
+theorem exists_unit (w₁ : InfinitePlace K) :
     ∃ u : (𝓞 K)ˣ, ∀ w : InfinitePlace K, w ≠ w₁ → Real.log (w u) < 0 := by
   obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K < (convexBodyLtFactor K) * B := by
     simp_rw [mul_comm]

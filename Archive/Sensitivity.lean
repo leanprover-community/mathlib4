@@ -138,7 +138,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
     q ∈ p.adjacent ↔ π q ∈ (π p).adjacent := by
   constructor
   · rintro ⟨i, h_eq, h_uni⟩
-    have h_i : i ≠ 0 := fun h_i => absurd h₀ (by rwa [h_i] at h_eq )
+    have h_i : i ≠ 0 := fun h_i => absurd h₀ (by rwa [h_i] at h_eq)
     use i.pred h_i,
       show p (Fin.succ (Fin.pred i _)) ≠ q (Fin.succ (Fin.pred i _)) by rwa [Fin.succ_pred]
     intro y hy
