@@ -877,10 +877,12 @@ theorem ne_zero_of_mem_nthRootsFinset {η : R} (hη : η ∈ nthRootsFinset n R)
 theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n R := by
   rw [mem_nthRootsFinset hn, one_pow]
 
+/-- The finset `nthRootsFinset n R` as a `Subsemigroup`. -/
 def nthRootsSubsemigroup (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Subsemigroup R where
   carrier := nthRootsFinset n R
   mul_mem' hη₁ hη₂ := mul_mem_nthRootsFinset hη₁ hη₂
 
+/-- The finset `nthRootsFinset n R` as a `Submonoid`. -/
 def nthRootsSubmonoid (n : ℕ) (hn : 0 < n) (R : Type*) [CommRing R] [IsDomain R] : Submonoid R where
   __ := nthRootsSubsemigroup n R
   one_mem' := one_mem_nthRootsFinset hn
