@@ -205,7 +205,9 @@ end ExprProcessing
 
 open Meta
 
-variable (op : Name) (R : Expr) in
+variable (op : Name)
+
+variable (R : Expr) in
 /--  If `sum` is an expression consisting of repeated applications of `op`, then `getAddends`
 returns the Array of those recursively determined arguments whose type is DefEq to `R`. -/
 partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
@@ -215,7 +217,6 @@ partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
     return new.foldl Array.append  #[]
   else return #[sum]
 
-variable (op : Name) in
 /-- Recursively compute the Array of `getAddends` Arrays by recursing into the expression `sum`
 looking for instance of the operation `op`.
 
@@ -265,8 +266,7 @@ it returns the list of pairs of expressions `(old_sum, new_sum)`, for which `old
 sorted by decreasing value of `Lean.Expr.size`.
 In particular, a subexpression of an `old_sum` can only appear *after* its over-expression.
 -/
-def rankSums (op : Name) (tgt : Expr) (instructions : List (Expr × Bool)) :
-    MetaM (List (Expr × Expr)) := do
+def rankSums (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM (List (Expr × Expr)) := do
   let sums ← getOps op (← instantiateMVars tgt)
   let candidates := sums.map fun (addends, sum) => do
     let reord := reorderUsing addends.toList instructions
@@ -278,8 +278,7 @@ def rankSums (op : Name) (tgt : Expr) (instructions : List (Expr × Bool)) :
 /-- `permuteExpr op tgt instructions` takes the same input as `rankSums` and returns the
 expression obtained from `tgt` by replacing all `old_sum`s by the corresponding `new_sum`.
 If there were no required changes, then `permuteExpr` reports this in its second factor. -/
-def permuteExpr (op : Name) (tgt : Expr) (instructions : List (Expr × Bool)) :
-    MetaM Expr := do
+def permuteExpr (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM Expr := do
   let permInstructions ← rankSums op tgt instructions
   if permInstructions == [] then throwError "The goal is already in the required form"
   let mut permTgt := tgt
@@ -347,7 +346,7 @@ operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
 * It tries to solve the goal `mv = permuted_mv` by a simple-minded `simp` call, using the
   `op`-analogues of `add_comm, add_assoc, add_left_comm`.
 -/
-def reorderAndSimp (mv : MVarId) (op : Name) (instr : List (Expr × Bool)) :
+def reorderAndSimp (mv : MVarId) (instr : List (Expr × Bool)) :
     MetaM (List MVarId) := do
   let permExpr ← permuteExpr op (← mv.getType'') instr
   -- generate the implication `permutedMv → mv = permutedMv → mv`
@@ -372,7 +371,7 @@ for the operation `op` in the expression `tgt`, returning
   should be thrown;
 * an array of debugging messages.
 -/
-def unifyMovements (data : Array (Expr × Bool × Syntax)) (op : Name) (tgt : Expr) :
+def unifyMovements (data : Array (Expr × Bool × Syntax)) (tgt : Expr) :
     MetaM (List (Expr × Bool) × (List MessageData × List Syntax) × Array MessageData) := do
   let ops ← getOps op tgt
   let atoms := (ops.map Prod.fst).flatten.toList.filter (!isBVar ·)
@@ -426,14 +425,14 @@ elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => do
   -- parse the operation
   let op := id.getId
   -- parse the list of terms
-  let (instr, (unmatched, stxs), dbgMsg) ← unifyMovements (← parseArrows rws) op
+  let (instr, (unmatched, stxs), dbgMsg) ← unifyMovements op (← parseArrows rws)
                                                               (← instantiateMVars (← getMainTarget))
   unless unmatched.length = 0 do
     let _ ← stxs.mapM (logErrorAt · "") -- underline all non-matching terms
     trace[Tactic.move_oper] dbgMsg.foldl (fun x y => (x.compose y).compose "\n\n---\n") ""
     throwErrorAt stxs[0]! m!"Errors:\nThe terms in '{unmatched}' were not matched to any atom"
   -- move around the operands
-  replaceMainGoal (← reorderAndSimp (← getMainGoal) op instr)
+  replaceMainGoal (← reorderAndSimp op (← getMainGoal) instr)
 
 @[inherit_doc moveOperTac]
 elab "move_add" rws:rwRuleSeq : tactic => do
