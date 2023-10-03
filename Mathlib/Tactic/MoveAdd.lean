@@ -15,6 +15,11 @@ The tactic `move_add` rearranges summands in expressions.
 The tactic takes as input a list of terms, each one optionally preceded by `←`.
 A term preceded by `←` gets moved to the left, while a term without `←` gets moved to the right.
 
+* Empty input: `move_add []`
+
+  In this case, the effect of `move_add []` is equivalent to `simp only [← add_assoc]`:
+  essentially the tactic removes all visible parentheses.
+
 * Singleton input: `move_add [a]` and `move_add [← a]`
 
   If `⊢ b + a + c` is (a summand in) the goal, then
