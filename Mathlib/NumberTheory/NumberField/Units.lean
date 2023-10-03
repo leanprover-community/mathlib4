@@ -56,6 +56,10 @@ theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 
     Subtype.coe_injective.eq_iff]; rfl
 #align rat.ring_of_integers.is_unit_iff Rat.RingOfIntegers.isUnit_iff
 
+theorem Algebra.coe_norm_int {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) :
+    Algebra.norm ℤ x = Algebra.norm ℚ (x : K) :=
+  (Algebra.norm_localization (R := ℤ) (Rₘ := ℚ) (S := 𝓞 K) (Sₘ := K) (nonZeroDivisors ℤ) x).symm
+
 end Rat
 
 variable (K : Type*) [Field K]
@@ -392,9 +396,7 @@ theorem seq_norm_le (n : ℕ) :
         simp only [Nat.lt_one_iff.mp hB, CharP.cast_eq_zero, mul_zero, zero_le]
       simp only [ne_eq, seq, map_one, Int.natAbs_one, this]
   | succ n =>
-      rw [← Nat.cast_le (α := ℚ), Int.cast_natAbs, Int.cast_abs]
-      change |algebraMap ℤ ℚ _| ≤ _
-      rw [← Algebra.norm_localization ℤ (Sₘ := K) (nonZeroDivisors ℤ)]
+      rw [← Nat.cast_le (α := ℚ), Int.cast_natAbs, Int.cast_abs, Algebra.coe_norm_int]
       exact (seq_next K w₁ hB (seq K w₁ hB n).prop).choose_spec.2.2
 
 /-- Construct a unit associated to the place `w₁`. The family, for `w₁ ≠ w₀`, formed by the
