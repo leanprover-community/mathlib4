@@ -355,7 +355,7 @@ lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
 /-- An equivalence of categories transfers enough injectives. -/
 lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
     [Category.{v₁} C] [Category.{v₂} D] [Abelian C] [Abelian D]
-  (e : C ⥤ D) [IsEquivalence e] [EnoughInjectives D] : EnoughInjectives C :=
+    (e : C ⥤ D) [IsEquivalence e] [EnoughInjectives D] : EnoughInjectives C :=
 EnoughInjectives.of_adjunction (adj := e.asEquivalence.toAdjunction)
 
 end CategoryTheory
