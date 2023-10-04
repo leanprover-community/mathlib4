@@ -34,8 +34,6 @@ import Mathlib.RingTheory.IsTensorProduct
 - Define the `IsKaehlerDifferential` predicate.
 -/
 
-suppress_compilation
-
 section KaehlerDifferential
 
 open scoped TensorProduct
@@ -61,7 +59,7 @@ variable {R}
 variable {M : Type*} [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
 /-- For a `R`-derivation `S → M`, this is the map `S ⊗[R] S →ₗ[S] M` sending `s ⊗ₜ t ↦ s • D t`. -/
-def Derivation.tensorProductTo (D : Derivation R S M) : S ⊗[R] S →ₗ[S] M :=
+noncomputable def Derivation.tensorProductTo (D : Derivation R S M) : S ⊗[R] S →ₗ[S] M :=
   TensorProduct.AlgebraTensorModule.lift ((LinearMap.lsmul S (S →ₗ[R] M)).flip D.toLinearMap)
 #align derivation.tensor_product_to Derivation.tensorProductTo
 
@@ -147,11 +145,11 @@ def KaehlerDifferential : Type v :=
   (KaehlerDifferential.ideal R S).Cotangent
 #align kaehler_differential KaehlerDifferential
 
-instance : AddCommGroup (KaehlerDifferential R S) := by
+noncomputable instance : AddCommGroup (KaehlerDifferential R S) := by
   unfold KaehlerDifferential
   infer_instance
 
-instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R S) :=
+noncomputable instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R S) :=
   Ideal.Cotangent.moduleOfTower _
 #align kaehler_differential.module KaehlerDifferential.module
 
@@ -160,16 +158,17 @@ notation:100 "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
 instance : Nonempty (Ω[S⁄R]) := ⟨0⟩
 
-instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
+noncomputable instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
   [SMulCommClass R R' S] :
     Module R' (Ω[S⁄R]) :=
   Submodule.Quotient.module' _
 #align kaehler_differential.module' KaehlerDifferential.module'
 
-instance : IsScalarTower S (S ⊗[R] S) (Ω[S⁄R]) :=
+noncomputable instance : IsScalarTower S (S ⊗[R] S) (Ω[S⁄R]) :=
   Ideal.Cotangent.isScalarTower _
 
-instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
+noncomputable instance KaehlerDifferential.isScalarTower_of_tower
+    {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
     [SMulCommClass R R₁ S] [SMulCommClass R R₂ S] [IsScalarTower R₁ R₂ S] :
     IsScalarTower R₁ R₂ (Ω[S⁄R]) :=
@@ -182,12 +181,13 @@ instance KaehlerDifferential.isScalarTower' : IsScalarTower R (S ⊗[R] S) (Ω[S
 #align kaehler_differential.is_scalar_tower' KaehlerDifferential.isScalarTower'
 
 /-- The quotient map `I → Ω[S⁄R]` with `I` being the kernel of `S ⊗[R] S → S`. -/
-def KaehlerDifferential.fromIdeal : KaehlerDifferential.ideal R S →ₗ[S ⊗[R] S] Ω[S⁄R] :=
+noncomputable def KaehlerDifferential.fromIdeal :
+    KaehlerDifferential.ideal R S →ₗ[S ⊗[R] S] Ω[S⁄R] :=
   (KaehlerDifferential.ideal R S).toCotangent
 #align kaehler_differential.from_ideal KaehlerDifferential.fromIdeal
 
 /-- (Implementation) The underlying linear map of the derivation into `Ω[S⁄R]`. -/
-def KaehlerDifferential.DLinearMap : S →ₗ[R] Ω[S⁄R] :=
+noncomputable def KaehlerDifferential.DLinearMap : S →ₗ[R] Ω[S⁄R] :=
   ((KaehlerDifferential.fromIdeal R S).restrictScalars R).comp
     ((TensorProduct.includeRight.toLinearMap - TensorProduct.includeLeft.toLinearMap :
             S →ₗ[R] S ⊗[R] S).codRestrict
@@ -205,7 +205,7 @@ set_option linter.uppercaseLean3 false in
 #align kaehler_differential.D_linear_map_apply KaehlerDifferential.DLinearMap_apply
 
 /-- The universal derivation into `Ω[S⁄R]`. -/
-def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
+noncomputable def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
   { toLinearMap := KaehlerDifferential.DLinearMap R S
     map_one_eq_zero' := by
       dsimp [KaehlerDifferential.DLinearMap_apply]
@@ -257,7 +257,7 @@ theorem KaehlerDifferential.span_range_derivation :
 variable {R S}
 
 /-- The linear map from `Ω[S⁄R]`, associated with a derivation. -/
-def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ[S] M := by
+noncomputable def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ[S] M := by
   refine LinearMap.comp ((((KaehlerDifferential.ideal R S) •
     (⊤ : Submodule (S ⊗[R] S) (KaehlerDifferential.ideal R S))).restrictScalars S).liftQ ?_ ?_)
     (Submodule.Quotient.restrictScalarsEquiv S _).symm.toLinearMap
@@ -337,7 +337,8 @@ theorem KaehlerDifferential.tensorProductTo_surjective :
 
 /-- The `S`-linear maps from `Ω[S⁄R]` to `M` are (`S`-linearly) equivalent to `R`-derivations
 from `S` to `M`.  -/
-def KaehlerDifferential.linearMapEquivDerivation : (Ω[S⁄R] →ₗ[S] M) ≃ₗ[S] Derivation R S M :=
+noncomputable def KaehlerDifferential.linearMapEquivDerivation :
+    (Ω[S⁄R] →ₗ[S] M) ≃ₗ[S] Derivation R S M :=
   { Derivation.llcomp.flip <| KaehlerDifferential.D R S with
     invFun := Derivation.liftKaehlerDifferential
     left_inv := fun _ =>
@@ -346,7 +347,7 @@ def KaehlerDifferential.linearMapEquivDerivation : (Ω[S⁄R] →ₗ[S] M) ≃�
 #align kaehler_differential.linear_map_equiv_derivation KaehlerDifferential.linearMapEquivDerivation
 
 /-- The quotient ring of `S ⊗ S ⧸ J ^ 2` by `Ω[S⁄R]` is isomorphic to `S`. -/
-def KaehlerDifferential.quotientCotangentIdealRingEquiv :
+noncomputable def KaehlerDifferential.quotientCotangentIdealRingEquiv :
     (S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) ⧸ (KaehlerDifferential.ideal R S).cotangentIdeal ≃+*
       S := by
   have : Function.RightInverse (TensorProduct.includeLeft (R := R) (A := S) (B := S))
@@ -359,7 +360,7 @@ def KaehlerDifferential.quotientCotangentIdealRingEquiv :
 #align kaehler_differential.quotient_cotangent_ideal_ring_equiv KaehlerDifferential.quotientCotangentIdealRingEquiv
 
 /-- The quotient ring of `S ⊗ S ⧸ J ^ 2` by `Ω[S⁄R]` is isomorphic to `S` as an `S`-algebra. -/
-def KaehlerDifferential.quotientCotangentIdeal :
+noncomputable def KaehlerDifferential.quotientCotangentIdeal :
     ((S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) ⧸
         (KaehlerDifferential.ideal R S).cotangentIdeal) ≃ₐ[S] S :=
   { KaehlerDifferential.quotientCotangentIdealRingEquiv R S with
@@ -392,7 +393,7 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
   Without them the endEquivDerivation' and endEquivAuxEquiv both have significant timeouts.
   In Mathlib 3, it was slow but not this slow. -/
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance smul_SSmod_SSmod : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+noncomputable local instance smul_SSmod_SSmod : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Mul.toSMul _
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
@@ -414,15 +415,16 @@ local instance isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
   IsScalarTower.right
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
+noncomputable local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
   Submodule.module' _
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
+noncomputable local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
   Submodule.module' _
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal :=
+noncomputable local instance instSS :
+    Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal :=
   Submodule.module' _
 
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
@@ -652,7 +654,7 @@ A --→ B
 ↑     ↑
 |     |
 R --→ S -/
-def KaehlerDifferential.map : Ω[A⁄R] →ₗ[A] Ω[B⁄S] :=
+noncomputable def KaehlerDifferential.map : Ω[A⁄R] →ₗ[A] Ω[B⁄S] :=
   Derivation.liftKaehlerDifferential
     (((KaehlerDifferential.D S B).restrictScalars R).compAlgebraMap A)
 #align kaehler_differential.map KaehlerDifferential.map
