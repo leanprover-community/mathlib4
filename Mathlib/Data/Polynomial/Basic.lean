@@ -291,6 +291,7 @@ instance natCast : NatCast R[X] :=
 #align polynomial.has_nat_cast Polynomial.natCast
 
 instance semiring : Semiring R[X] :=
+  --TODO: add reference to library note in PR #7432
   { Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
       toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl with
     toNatCast := Polynomial.natCast
@@ -303,12 +304,14 @@ instance semiring : Semiring R[X] :=
 #align polynomial.semiring Polynomial.semiring
 
 instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
+  --TODO: add reference to library note in PR #7432
   { Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
       toFinsupp_smul with
     toSMulZeroClass := Polynomial.smulZeroClass }
 #align polynomial.distrib_smul Polynomial.distribSMul
 
 instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulAction S R[X] :=
+  --TODO: add reference to library note in PR #7432
   { Function.Injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩
       toFinsupp_injective toFinsupp_smul with
     toSMul := Polynomial.smulZeroClass.toSMul }
@@ -320,6 +323,7 @@ instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul 
 #align polynomial.has_faithful_smul Polynomial.faithfulSMul
 
 instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
+  --TODO: add reference to library note in PR #7432
   { Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
       toFinsupp_smul with
     toDistribMulAction := Polynomial.distribMulAction }
@@ -1164,6 +1168,7 @@ instance intCast : IntCast R[X] :=
 #align polynomial.has_int_cast Polynomial.intCast
 
 instance ring : Ring R[X] :=
+  --TODO: add reference to library note in PR #7432
   { Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
       toFinsupp_one toFinsupp_add
       toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
@@ -1208,11 +1213,9 @@ theorem C_eq_int_cast (n : ℤ) : C (n : R) = n := by simp
 end Ring
 
 instance commRing [CommRing R] : CommRing R[X] :=
-  { Function.Injective.commRing toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
-      toFinsupp_one toFinsupp_add toFinsupp_mul toFinsupp_neg toFinsupp_sub
-      (fun _ _ => toFinsupp_smul _ _) (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow (fun _ => rfl)
-      fun _ => rfl with
-    toRing := Polynomial.ring }
+  --TODO: add reference to library note in PR #7432
+  { toRing := Polynomial.ring
+    mul_comm := mul_comm }
 #align polynomial.comm_ring Polynomial.commRing
 
 section NonzeroSemiring
