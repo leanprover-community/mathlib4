@@ -164,7 +164,7 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
     · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inr_injective]
       erw [subtypePerm_apply]
-      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
+      rw [ofInjective_apply]
 #align equiv.perm.mem_sum_congr_hom_range_of_perm_maps_to_inl Equiv.Perm.mem_sumCongrHom_range_of_perm_mapsTo_inl
 
 nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
@@ -183,7 +183,7 @@ theorem Disjoint.extendDomain {α : Type*} {p : β → Prop} [DecidablePred p] (
   by_cases pb : p b
   · refine' (h (f.symm ⟨b, pb⟩)).imp _ _ <;>
       · intro h
-        rw [extendDomain_apply_subtype _ _ pb, h, apply_symm_apply, Subtype.coe_mk]
+        rw [extendDomain_apply_subtype _ _ pb, h, apply_symm_apply]
   · left
     rw [extendDomain_apply_not_subtype _ _ pb]
 #align equiv.perm.disjoint.extend_domain Equiv.Perm.Disjoint.extendDomain
