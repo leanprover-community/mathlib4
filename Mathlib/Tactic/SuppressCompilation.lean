@@ -60,21 +60,6 @@ def expandSuppressCompilationNotation : Macro := fun
   `(unsuppress_compilation in $(⟨defn⟩):command)
 | _ => Macro.throwUnsupported
 
-/-- The command `unsuppress_compilation in def foo : ...` makes sure that the definition is
-compiled to executable code, even if `suppress_compilation` is active. -/
-macro_rules
-| `(unsuppress_compilation $[in $cmd?]?) => do
-  let declElab := mkCIdent ``elabSuppressCompilationDecl
-  let notaMacro := mkCIdent ``expandSuppressCompilationNotation
-  let attrCmds ← `(
-    attribute [-command_elab] $declElab
-    attribute [-macro] $notaMacro
-  )
-  if let some cmd := cmd? then
-    `(section $attrCmds:command $cmd:command end)
-  else
-    return attrCmds
-
 /-- Replacing `def` and `instance` by `noncomputable def` and `noncomputable instance`, designed
 to disable the compiler in a given file or a given section.
 This is a hack to work around mathlib4#7103. -/
@@ -87,3 +72,18 @@ macro "suppress_compilation" : command => do
   attribute [local command_elab $declKind] $declElab
   attribute [local macro $notaKind] $notaMacro
   )
+
+/-- The command `unsuppress_compilation in def foo : ...` makes sure that the definition is
+compiled to executable code, even if `suppress_compilation` is active. -/
+macro_rules
+| `(unsuppress_compilation $[in $cmd?]?) => do
+  let declElab := mkCIdent ``elabSuppressCompilationDecl
+  let notaMacro := mkCIdent ``expandSuppressCompilationNotation
+  let attrCmds ← `(
+    attribute [-command_elab] $declElab
+    attribute [-macro] $notaMacro
+  )
+  if let some cmd := cmd? then
+    `($attrCmds:command $cmd:command suppress_compilation)
+  else
+    return attrCmds
