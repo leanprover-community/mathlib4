@@ -89,12 +89,8 @@ instance isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T)) wher
 #align add_circle.is_finite_measure AddCircle.isFiniteMeasure
 
 instance hasFunDom : HasAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) ℝ where
-  has_add_fundamental_domain_characterization := by
-    use Ioc (0 : ℝ) (0 + T)
-    apply isAddFundamentalDomain_Ioc'
-    exact hT.out
---- ALEX HOMEWORK : termify DO 10/04/23
-
+  has_add_fundamental_domain_characterization :=
+  ⟨Ioc 0 (0 + T), isAddFundamentalDomain_Ioc' Fact.out 0⟩
 
 -- Note: Not finding this instance automatically, so we name it to fill explicitly in typeclass
 -- arguments
@@ -104,11 +100,7 @@ instance sigmaFinite : SigmaFinite (volume : Measure (AddCircle T)) := inferInst
 -- arguments
 instance isAddLeftInv : IsAddLeftInvariant (volume : Measure (AddCircle T)) := inferInstance
 
--- Note: Not finding this instance automatically, so we name it to fill explicitly in typeclass
--- arguments
-noncomputable instance pseudoMetricSpace : PseudoMetricSpace (AddCircle T) := inferInstance
-
-instance addQVEVP : AddQuotientVolumeEqVolumePreimage (volume : Measure (AddCircle T)) := by
+instance : AddQuotientVolumeEqVolumePreimage (volume : Measure (AddCircle T)) := by
   apply @MeasureTheory.LeftInvariantIsAddQuotientVolumeEqVolumePreimage ℝ _ _ _ _ _ _
     (zmultiples T) _ _ _ _ (volume : Measure (AddCircle T)) _ _ _ (isAddLeftInv T)
     (sigmaFinite T) (isFiniteMeasure T)
