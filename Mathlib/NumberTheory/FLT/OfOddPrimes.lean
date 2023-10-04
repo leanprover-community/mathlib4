@@ -17,7 +17,7 @@ theorem FermatLastTheoremWith.of_odd_primes
     (hprimes : ∀ p : ℕ, Nat.Prime p → Odd p → FermatLastTheoremWith ℕ p) : FermatLastTheorem := by
   intro n h
   rw [ge_iff_le, Nat.succ_le_iff] at h
-  obtain hdvd|⟨p, hdvd, hpprime, hpodd⟩ := Nat.four_dvd_or_exists_odd_prime_and_dvd_of_two_lt h <;>
+  obtain hdvd|⟨p, hpprime, hdvd, hpodd⟩ := Nat.four_dvd_or_exists_odd_prime_and_dvd_of_two_lt h <;>
     apply FermatLastTheoremWith.mono hdvd
   · have := (fermatLastTheoremWith_nat_int_rat_tfae 4).out 0 1
     rw [this]

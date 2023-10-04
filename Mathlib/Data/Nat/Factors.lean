@@ -301,12 +301,12 @@ theorem eq_two_pow_or_exists_odd_prime_and_dvd (n : ℕ) :
 #align nat.eq_two_pow_or_exists_odd_prime_and_dvd Nat.eq_two_pow_or_exists_odd_prime_and_dvd
 
 theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
-    4 ∣ n ∨ ∃ p, p ∣ n ∧ Prime p ∧ Odd p := by
+    4 ∣ n ∨ ∃ p, Prime p ∧ p ∣ n ∧ Odd p := by
   obtain ⟨_ | _ | k, rfl⟩ | ⟨p, hp, hdvd, hodd⟩ := n.eq_two_pow_or_exists_odd_prime_and_dvd
   · contradiction
   · contradiction
   · simp [pow_succ, mul_assoc]
-  · exact Or.inr ⟨p, hdvd, hp, hodd⟩
+  · exact Or.inr ⟨p, hp, hdvd, hodd⟩
 
 end Nat
 
