@@ -38,6 +38,7 @@ variable [PartialOrder α] [OrderBot α] {a b c d : α}
 Note that we define this without reference to `⊓`, as this allows us to talk about orders where
 the infimum is not unique, or where implementing `Inf` would require additional `Decidable`
 arguments. -/
+@[aesop norm unfold]
 def Disjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, x ≤ a → x ≤ b → x ≤ ⊥
 #align disjoint Disjoint

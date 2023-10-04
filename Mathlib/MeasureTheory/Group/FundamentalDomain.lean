@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury G. Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Integral.SetIntegral
@@ -717,9 +717,6 @@ variable (G) [Group G] [MulAction G α] [MeasurableSpace α] {s : Set α}
 local notation "α_mod_G" => MulAction.orbitRel G α
 
 local notation "π" => @Quotient.mk _ α_mod_G
-
--- note: should this be globally the case wherever `Disjoint` is first defined?
-attribute [local aesop norm unfold] Disjoint
 
 /-- Given a measurable subset `s` of a `MeasurableSpace` `α`, a group `G` acting on `α`, and a
 measure `μ` on `α`, one can define a `Measure` on the `Quotient` of `α ⧸ G` by lifting to `α` and
