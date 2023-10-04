@@ -5,8 +5,6 @@ Authors: Alex J. Best, Mac Malone
 -/
 import Lean
 
-import Mathlib.Mathport.Notation
-
 /-!
 # Supressing compilation to executable code in a file or in a section
 
