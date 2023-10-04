@@ -67,11 +67,10 @@ private theorem no_collision : Disjoint {beattySeq r k | k} {beattySeq' s k | k}
     add_sub_cancel, ← div_lt_iff hrs.symm.pos, ← le_div_iff hrs.symm.pos] at h₂
   have h₃ := add_lt_add_of_le_of_lt h₁.1 h₂.1
   have h₄ := add_lt_add_of_lt_of_le h₁.2 h₂.2
-  simp_rw [← inv_mul_eq_div, ← right_distrib, inv_eq_one_div, hrs.inv_add_inv_conj,
-    one_mul] at h₃ h₄
+  simp_rw [div_eq_inv_mul, ← right_distrib, inv_eq_one_div, hrs.inv_add_inv_conj, one_mul] at h₃ h₄
   rw [← Int.cast_one] at h₄
   simp_rw [← Int.cast_add, Int.cast_lt, Int.lt_add_one_iff] at h₃ h₄
-  exact (lt_self_iff_false _).1 (lt_of_le_of_lt' h₄ h₃)
+  exact h₄.not_lt h₃
 
 /-- Let `r > 1` and `1/r + 1/s = 1`. Suppose there is an integer `j` where `B_r` and `B'_s` both
 jump over `j` (i.e. an anti-collision). Then this leads to a contradiction. -/
@@ -84,11 +83,10 @@ private theorem no_anticollision :
   replace h₂₂ := (div_lt_iff hrs.symm.pos).2 h₂₂
   have h₃ := add_lt_add_of_lt_of_le h₁₁ h₂₁
   have h₄ := add_lt_add_of_le_of_lt h₁₂ h₂₂
-  simp_rw [← inv_mul_eq_div, ← right_distrib, inv_eq_one_div, hrs.inv_add_inv_conj,
-    one_mul] at h₃ h₄
+  simp_rw [div_eq_inv_mul, ← right_distrib, inv_eq_one_div, hrs.inv_add_inv_conj, one_mul] at h₃ h₄
   rw [← Int.cast_one, ← add_assoc, add_lt_add_iff_right, add_right_comm] at h₄
   simp_rw [← Int.cast_add, Int.cast_lt, Int.lt_add_one_iff] at h₃ h₄
-  exact (lt_self_iff_false _).1 (lt_of_le_of_lt' h₄ h₃)
+  exact h₄.not_lt h₃
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B_r` or `B_r` jumps over `j`. -/
 private theorem hit_or_miss (h : r > 0) :
@@ -161,7 +159,7 @@ theorem beattySeq_symmDiff_beattySeq'_pos {r s : ℝ} (hrs : r.IsConjugateExpone
     intro _ hs
     refine ⟨fun ⟨k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨k, hk⟩ ↦ ⟨k, ?_, hk⟩⟩
     rw [← hk, beattySeq', lt_sub_iff_add_lt, zero_add] at hj
-    have hj := Int.ceil_pos.1 (lt_trans zero_lt_one hj)
+    replace hj := Int.ceil_pos.1 (lt_trans zero_lt_one hj)
     have := pos_of_mul_pos_left hj hs
     rwa [Int.cast_pos] at this
   rw [Set.mem_symmDiff, hb₁ _ hrs.nonneg, hb₂ _ hrs.symm.nonneg, ← compl_beattySeq hrs,
