@@ -103,10 +103,10 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
       s!"_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
   | false, false => "This should not happen"
 
-  let stepInfo := match (if isSelectedLeft then 1 else 0) + (if isSelectedRight then 1 else 0) with
-  | 2 => "Create two new steps"
-  | 1  => "Create a new step"
-  | _ => "This should not happen"
+  let stepInfo := match isSelectedLeft, isSelectedRight with
+  | true, true => "Create two new steps"
+  | true, false | false, true => "Create a new step"
+  | false, false => "This should not happen"
   return (stepInfo, toString insertedCode)
 
 /-- Rpc function for the calc widget. -/
