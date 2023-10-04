@@ -11,7 +11,7 @@ import Mathlib.Tactic.Widget.SelectPanelUtils
 
 /-! # Calc widget
 
-This file redefines the `calc` tactic so that is displays a widget panel allowing to create
+This file redefines the `calc` tactic so that it displays a widget panel allowing to create
 new calc steps with holes specified by selected sub-expressions in the goal.
 -/
 
@@ -60,7 +60,7 @@ open Lean Meta
 
 /-- A string representation for equality and inequalities.  -/
 def Lean.Expr.relStr : Expr → String
-| .const ``Eq _ => "="
+  | .const ``Eq _ => "="
 | .const ``LE.le _ => "≤"
 | .const ``LT.lt _ => "<"
 | .const ``GE.ge _ => "≥"
