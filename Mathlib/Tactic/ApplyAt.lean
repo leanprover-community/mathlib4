@@ -29,32 +29,13 @@ def Lean.Meta.forallMetaTelescopeReducingUntilDefEq
 namespace Mathlib.Tactic
 
 elab "apply" t:term "at" i:ident : tactic => withMainContext do
+  let t ← `(@$t)
   let f ← Term.elabTerm t none
   let ldecl ← (← getLCtx).findFromUserName? i.getId
   let (mvs, _, tp) ← forallMetaTelescopeReducingUntilDefEq (← inferType f) ldecl.type
   let mainGoal ← getMainGoal
   let mainGoal ← mainGoal.tryClear ldecl.fvarId
-  let mainGoal ← mainGoal.assert ldecl.userName tp (mkAppN f (mvs.pop.push ldecl.toExpr))
+  let mainGoal ← mainGoal.assert ldecl.userName tp
+    (← mkAppOptM' f (mvs.pop.push ldecl.toExpr |>.map fun e => some e))
   let (_, mainGoal) ← mainGoal.intro1P
   replaceMainGoal <| [mainGoal] ++ mvs.pop.toList.map fun e => e.mvarId!
-
-variable (α β γ δ : Type*) (f : α → β → γ → δ)
-
-example (g : γ) (a : α) (b : β) : δ := by
-  apply f at g
-  exact g
-  exact a
-  exact b
-
-open Nat
-
-theorem succ_inj2 (a b : Nat) : succ a = succ b → a = b := by simp
-
-example (a b : Nat) (h : succ a = succ b) : a = b := by
-  apply succ_inj2 at h
-  exact h
-
-example (A B C : Prop) (ha : A) (f : A → B) (g : B → C) : C := by
-  apply f at ha
-  apply g at ha
-  exact ha
