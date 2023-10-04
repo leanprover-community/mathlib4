@@ -32,7 +32,8 @@ of a quotient of `α` by a group `G`, which under reasonable conditions does not
 of fundamental domain.
 
 * We define the `QuotientVolumeEqVolume` typeclass to describe a situation in which a measure `μ` on
-`α ⧸ G` can be computed by taking the measure on `α` of the intersection of the pullback with a fundamental domain.
+`α ⧸ G` can be computed by taking the measure on `α` of the intersection of the pullback with a
+fundamental domain.
 
 ## Main declarations
 
@@ -759,10 +760,9 @@ lemma NullMeasurableSet.quotientMeasure_eq_map_restrict :
     Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
   exact hs.quotientMeasure_apply μ meas_U
 
-set_option linter.unusedVariables false in
 @[to_additive NullMeasurableSet.eq_addQuotientMeasure]
 lemma NullMeasurableSet.eq_quotientMeasure {ν : Measure (Quotient α_mod_G)}
-    (h : ∀ (U : Set (Quotient α_mod_G)) (meas_U : MeasurableSet U), ν U = μ (π ⁻¹' U ∩ s)) :
+    (h : ∀ (U : Set (Quotient α_mod_G)) (_ : MeasurableSet U), ν U = μ (π ⁻¹' U ∩ s)) :
     ν = hs.quotientMeasure G μ := by
   ext V meas_V
   rw [h V meas_V, hs.quotientMeasure_apply μ meas_V]
@@ -862,13 +862,12 @@ local notation "α_mod_G" => AddAction.orbitRel G α
 
 local notation "π" => @Quotient.mk _ α_mod_G
 
-set_option linter.unusedVariables false in
 /-- A measure `μ` on the `AddQuotient` of `α` mod `G` satisfies `AddQuotientVolumeEqVolumePreimage`
 if: for any fundamental domain `t`, and any measurable subset `U` of the quotient,
 `μ U = volume ((π ⁻¹' U) ∩ t)`. -/
 class AddQuotientVolumeEqVolumePreimage (μ : Measure (Quotient α_mod_G)) : Prop where
 add_projection_respects_measure' : ∀ (t : Set α) (fund_dom_t : IsAddFundamentalDomain G t)
-  (U : Set (Quotient α_mod_G)) (meas_U : MeasurableSet U),
+  (U : Set (Quotient α_mod_G)) (_ : MeasurableSet U),
   μ U = volume (π ⁻¹' U ∩ t)
 
 end additive
@@ -879,13 +878,12 @@ local notation "α_mod_G" => MulAction.orbitRel G α
 
 local notation "π" => @Quotient.mk _ α_mod_G
 
-set_option linter.unusedVariables false in
 /-- A measure `μ` on the `Quotient` of `α` mod `G` satisfies `QuotientVolumeEqVolumePreimage` if:
 for any fundamental domain `t`, and any measurable subset `U` of the quotient,
 `μ U = volume ((π ⁻¹' U) ∩ t)`. -/
 class QuotientVolumeEqVolumePreimage (μ : Measure (Quotient α_mod_G)) : Prop where
 projection_respects_measure' : ∀ (t : Set α) (fund_dom_t : IsFundamentalDomain G t)
-  (U : Set (Quotient α_mod_G)) (meas_U : MeasurableSet U),
+  (U : Set (Quotient α_mod_G)) (_ : MeasurableSet U),
   μ U = volume (π ⁻¹' U ∩ t)
 
 attribute [to_additive existing MeasureTheory.AddQuotientVolumeEqVolumePreimage]
@@ -913,13 +911,12 @@ lemma IsFundamentalDomain.quotientVolumeEqVolumePreimage_quotientMeasure
       rw [fund_dom_s.quotientMeasure_invariant _ fund_dom_t,
         fund_dom_t.nullMeasurableSet.quotientMeasure_apply volume meas_U] }
 
-set_option linter.unusedVariables false in
 /-- One can prove `QuotientVolumeEqVolumePreimage` by checking behavior with respect to a single
 fundamental domain. -/
 @[to_additive IsAddFundamentalDomain.addQuotientVolumeEqVolumePreimage]
 lemma IsFundamentalDomain.quotientVolumeEqVolumePreimage {μ : Measure (Quotient α_mod_G)}
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s)
-    (h : ∀ (U : Set (Quotient α_mod_G)) (meas_U : MeasurableSet U), μ U = volume (π ⁻¹' U ∩ s)) :
+    (h : ∀ (U : Set (Quotient α_mod_G)) (_ : MeasurableSet U), μ U = volume (π ⁻¹' U ∩ s)) :
     QuotientVolumeEqVolumePreimage μ := by
   rw [fund_dom_s.nullMeasurableSet.eq_quotientMeasure volume h (ν := μ)]
   exact fund_dom_s.quotientVolumeEqVolumePreimage_quotientMeasure
