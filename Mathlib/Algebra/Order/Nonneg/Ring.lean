@@ -24,7 +24,7 @@ When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
 
 ## Main declarations
 
-* `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedAddMonoid` if `α` is a `LinearOrderedRing`.
+* `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedAddCommMonoid` if `α` is a `LinearOrderedRing`.
 
 ## Implementation Notes
 
@@ -334,10 +334,10 @@ instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α]
       simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
 #align nonneg.canonically_ordered_comm_semiring Nonneg.canonicallyOrderedCommSemiring
 
-instance canonicallyLinearOrderedAddMonoid [LinearOrderedRing α] :
-    CanonicallyLinearOrderedAddMonoid { x : α // 0 ≤ x } :=
+instance canonicallyLinearOrderedAddCommMonoid [LinearOrderedRing α] :
+    CanonicallyLinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
   { Subtype.linearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
-#align nonneg.canonically_linear_ordered_add_monoid Nonneg.canonicallyLinearOrderedAddMonoid
+#align nonneg.canonically_linear_ordered_add_monoid Nonneg.canonicallyLinearOrderedAddCommMonoid
 
 section LinearOrder
 

@@ -333,26 +333,26 @@ end NeZero
 
 /-- A canonically linear-ordered additive monoid is a canonically ordered additive monoid
     whose ordering is a linear order. -/
-class CanonicallyLinearOrderedAddMonoid (α : Type*)
+class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
   extends CanonicallyOrderedAddCommMonoid α, LinearOrder α
-#align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddMonoid
+#align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddCommMonoid
 
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
     whose ordering is a linear order. -/
 @[to_additive]
-class CanonicallyLinearOrderedMonoid (α : Type*) extends CanonicallyOrderedCommMonoid α, LinearOrder α
-#align canonically_linear_ordered_monoid CanonicallyLinearOrderedMonoid
+class CanonicallyLinearOrderedCommMonoid (α : Type*) extends CanonicallyOrderedCommMonoid α, LinearOrder α
+#align canonically_linear_ordered_monoid CanonicallyLinearOrderedCommMonoid
 
-section CanonicallyLinearOrderedMonoid
+section CanonicallyLinearOrderedCommMonoid
 
-variable [CanonicallyLinearOrderedMonoid α]
+variable [CanonicallyLinearOrderedCommMonoid α]
 
 -- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 100) CanonicallyLinearOrderedMonoid.semilatticeSup : SemilatticeSup α :=
+instance (priority := 100) CanonicallyLinearOrderedCommMonoid.semilatticeSup : SemilatticeSup α :=
   { LinearOrder.toLattice with }
-#align canonically_linear_ordered_monoid.semilattice_sup CanonicallyLinearOrderedMonoid.semilatticeSup
-#align canonically_linear_ordered_add_monoid.semilattice_sup CanonicallyLinearOrderedAddMonoid.semilatticeSup
+#align canonically_linear_ordered_monoid.semilattice_sup CanonicallyLinearOrderedCommMonoid.semilatticeSup
+#align canonically_linear_ordered_add_monoid.semilattice_sup CanonicallyLinearOrderedAddCommMonoid.semilatticeSup
 
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by
@@ -392,4 +392,4 @@ theorem bot_eq_one' : (⊥ : α) = 1 :=
 #align bot_eq_one' bot_eq_one'
 #align bot_eq_zero' bot_eq_zero'
 
-end CanonicallyLinearOrderedMonoid
+end CanonicallyLinearOrderedCommMonoid

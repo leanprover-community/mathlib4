@@ -228,9 +228,9 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
 
 end CanonicallyOrderedAddCommMonoid
 
-section CanonicallyLinearOrderedAddMonoid
+section CanonicallyLinearOrderedAddCommMonoid
 
-variable [CanonicallyLinearOrderedAddMonoid α]
+variable [CanonicallyLinearOrderedAddCommMonoid α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by
@@ -254,7 +254,7 @@ nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.s
     rfl
 #align finsupp.disjoint_iff Finsupp.disjoint_iff
 
-end CanonicallyLinearOrderedAddMonoid
+end CanonicallyLinearOrderedAddCommMonoid
 
 /-! ### Some lemmas about `ℕ` -/
 

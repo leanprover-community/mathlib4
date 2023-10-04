@@ -249,9 +249,9 @@ theorem subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
 
 end CanonicallyOrderedAddCommMonoid
 
-section CanonicallyLinearOrderedAddMonoid
+section CanonicallyLinearOrderedAddCommMonoid
 
-variable [∀ i, CanonicallyLinearOrderedAddMonoid (α i)] [DecidableEq ι] {f g : Π₀ i, α i}
+variable [∀ i, CanonicallyLinearOrderedAddCommMonoid (α i)] [DecidableEq ι] {f g : Π₀ i, α i}
 
 @[simp]
 theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
@@ -273,6 +273,6 @@ nonrec theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := b
   rfl
 #align dfinsupp.disjoint_iff DFinsupp.disjoint_iff
 
-end CanonicallyLinearOrderedAddMonoid
+end CanonicallyLinearOrderedAddCommMonoid
 
 end DFinsupp

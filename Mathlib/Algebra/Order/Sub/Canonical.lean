@@ -412,9 +412,9 @@ end CanonicallyOrderedAddCommMonoid
 /-! ### Lemmas in a linearly canonically ordered monoid. -/
 
 
-section CanonicallyLinearOrderedAddMonoid
+section CanonicallyLinearOrderedAddCommMonoid
 
-variable [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
 @[simp]
 theorem tsub_pos_iff_lt : 0 < a - b ↔ b < a := by rw [tsub_pos_iff_not_le, not_le]
@@ -509,4 +509,4 @@ theorem tsub_add_min : a - b + min a b = a := by
   apply min_le_left
 #align tsub_add_min tsub_add_min
 
-end CanonicallyLinearOrderedAddMonoid
+end CanonicallyLinearOrderedAddCommMonoid

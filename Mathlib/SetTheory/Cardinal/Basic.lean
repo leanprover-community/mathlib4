@@ -692,7 +692,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
       inductionOn₂ a b fun α β => by
         simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
 
-instance : CanonicallyLinearOrderedAddMonoid Cardinal.{u} :=
+instance : CanonicallyLinearOrderedAddCommMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring, Cardinal.linearOrder with }
 
 -- Computable instance to prevent a non-computable one being found via the one above

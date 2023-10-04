@@ -174,13 +174,13 @@ instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
 
 end CanonicallyOrderedCommMonoid
 
-section CanonicallyLinearOrderedMonoid
+section CanonicallyLinearOrderedCommMonoid
 
-instance canonicallyLinearOrderedAddMonoid (α : Type*)
-    [CanonicallyLinearOrderedAddMonoid α] : CanonicallyLinearOrderedAddMonoid (WithZero α) :=
+instance canonicallyLinearOrderedAddCommMonoid (α : Type*)
+    [CanonicallyLinearOrderedAddCommMonoid α] : CanonicallyLinearOrderedAddCommMonoid (WithZero α) :=
   { WithZero.canonicallyOrderedAddCommMonoid, WithZero.linearOrder with }
-#align with_zero.canonically_linear_ordered_add_monoid WithZero.canonicallyLinearOrderedAddMonoid
+#align with_zero.canonically_linear_ordered_add_monoid WithZero.canonicallyLinearOrderedAddCommMonoid
 
-end CanonicallyLinearOrderedMonoid
+end CanonicallyLinearOrderedCommMonoid
 
 end WithZero
