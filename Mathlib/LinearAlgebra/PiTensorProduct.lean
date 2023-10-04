@@ -62,6 +62,7 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 multilinear, tensor, tensor product
 -/
 
+suppress_compilation
 
 open Function
 

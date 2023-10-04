@@ -42,6 +42,7 @@ Additionally, in the `pointwise` locale we promote `Submodule.pointwiseDistribMu
 multiplication of submodules, division of submodules, submodule semiring
 -/
 
+suppress_compilation
 
 universe uι u v
 
