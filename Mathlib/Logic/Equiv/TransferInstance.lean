@@ -534,7 +534,7 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : by
     { Equiv.addEquiv e with
       map_smul' := fun r x => by
         apply e.symm.injective
-        simp
+        simp?
         exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
 #align equiv.linear_equiv Equiv.linearEquiv
 

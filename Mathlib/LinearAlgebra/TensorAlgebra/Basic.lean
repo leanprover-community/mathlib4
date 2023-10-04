@@ -206,7 +206,7 @@ theorem induction {C : TensorAlgebra R M → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
     ext
-    simp
+    simp?
     erw [LinearMap.codRestrict_apply]
   -- finding a proof is finding an element of the subalgebra
   rw [← AlgHom.id_apply (R := R) a, of_id]

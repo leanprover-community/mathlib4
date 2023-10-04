@@ -437,7 +437,7 @@ def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
           simp
         · exact hf
         · rw [C.shape, comp_zero]
-          simp
+          simp?
           exact j.succ_succ_ne_one.symm }
   left_inv f := by
     ext i
