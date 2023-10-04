@@ -113,6 +113,9 @@ def PiTensorProduct : Type _ :=
 
 variable {R}
 
+open Lean Parser Elab Command
+
+unsuppress_compilation in
 -- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type*`.
 --scoped[TensorProduct] -- Porting note: `scoped` caused an error, so I commented it out.
 /-- notation for tensor product over some indexed type -/
@@ -308,6 +311,7 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
 
 variable {R}
 
+unsuppress_compilation in
 /-- pure tensor in tensor product over some index type -/
 -- Porting note: use `FunLike.coe` as an explicit coercion to help `notation3` pretty print,
 -- was just `tprod R f`.

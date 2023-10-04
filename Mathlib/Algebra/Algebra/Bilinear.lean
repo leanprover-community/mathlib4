@@ -18,8 +18,6 @@ in order to avoid importing `LinearAlgebra.BilinearMap` and
 `LinearAlgebra.TensorProduct` unnecessarily.
 -/
 
-suppress_compilation
-
 open TensorProduct Module
 
 namespace LinearMap
@@ -37,7 +35,7 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
 #align linear_map.mul LinearMap.mul
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
-def mul' : A ⊗[R] A →ₗ[R] A :=
+noncomputable def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 #align linear_map.mul' LinearMap.mul'
 
