@@ -1838,7 +1838,7 @@ theorem codeSupp_comp (f g k) :
       trStmts₁ (trNormal (Code.comp f g) k) ∪ codeSupp g (Cont'.comp f k) := by
   simp [codeSupp, codeSupp', contSupp, Finset.union_assoc]
   rw [← Finset.union_assoc _ _ (contSupp k),
-    Finset.union_eq_right_iff_subset.2 (codeSupp'_self _ _)]
+    Finset.union_eq_right.2 (codeSupp'_self _ _)]
 #align turing.partrec_to_TM2.code_supp_comp Turing.PartrecToTM2.codeSupp_comp
 
 @[simp]

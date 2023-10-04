@@ -1497,25 +1497,17 @@ theorem insert_union_distrib (a : α) (s t : Finset α) :
   simp only [insert_union, union_insert, insert_idem]
 #align finset.insert_union_distrib Finset.insert_union_distrib
 
-@[simp]
-theorem union_eq_left_iff_subset {s t : Finset α} : s ∪ t = s ↔ t ⊆ s :=
-  sup_eq_left
-#align finset.union_eq_left_iff_subset Finset.union_eq_left_iff_subset
+@[simp] lemma union_eq_left : s ∪ t = s ↔ t ⊆ s := sup_eq_left
+#align finset.union_eq_left_iff_subset Finset.union_eq_left
 
-@[simp]
-theorem left_eq_union_iff_subset {s t : Finset α} : s = s ∪ t ↔ t ⊆ s := by
-  rw [← union_eq_left_iff_subset, eq_comm]
-#align finset.left_eq_union_iff_subset Finset.left_eq_union_iff_subset
+@[simp] lemma left_eq_union : s = s ∪ t ↔ t ⊆ s := by rw [eq_comm, union_eq_left]
+#align finset.left_eq_union_iff_subset Finset.left_eq_union
 
-@[simp]
-theorem union_eq_right_iff_subset {s t : Finset α} : s ∪ t = t ↔ s ⊆ t :=
-  sup_eq_right
-#align finset.union_eq_right_iff_subset Finset.union_eq_right_iff_subset
+@[simp] lemma union_eq_right : s ∪ t = t ↔ s ⊆ t := sup_eq_right
+#align finset.union_eq_right_iff_subset Finset.union_eq_right
 
-@[simp]
-theorem right_eq_union_iff_subset {s t : Finset α} : s = t ∪ s ↔ t ⊆ s := by
-  rw [← union_eq_right_iff_subset, eq_comm]
-#align finset.right_eq_union_iff_subset Finset.right_eq_union_iff_subset
+@[simp] lemma right_eq_union : s = t ∪ s ↔ t ⊆ s := by rw [eq_comm, union_eq_right]
+#align finset.right_eq_union_iff_subset Finset.right_eq_union
 
 -- Porting note: replaced `⊔` in RHS
 theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ∪ u :=
@@ -1813,9 +1805,8 @@ theorem inter_inter_inter_comm (s t u v : Finset α) : s ∩ t ∩ (u ∩ v) = s
   inf_inf_inf_comm _ _ _ _
 #align finset.inter_inter_inter_comm Finset.inter_inter_inter_comm
 
-theorem union_eq_empty_iff (A B : Finset α) : A ∪ B = ∅ ↔ A = ∅ ∧ B = ∅ :=
-  sup_eq_bot_iff
-#align finset.union_eq_empty_iff Finset.union_eq_empty_iff
+lemma union_eq_empty : s ∪ t = ∅ ↔ s = ∅ ∧ t = ∅ := sup_eq_bot_iff
+#align finset.union_eq_empty_iff Finset.union_eq_empty
 
 theorem union_subset_iff : s ∪ t ⊆ u ↔ s ⊆ u ∧ t ⊆ u :=
   (sup_le_iff : s ⊔ t ≤ u ↔ s ≤ u ∧ t ≤ u)
@@ -1825,15 +1816,11 @@ theorem subset_inter_iff : s ⊆ t ∩ u ↔ s ⊆ t ∧ s ⊆ u :=
   (le_inf_iff : s ≤ t ⊓ u ↔ s ≤ t ∧ s ≤ u)
 #align finset.subset_inter_iff Finset.subset_inter_iff
 
-@[simp]
-theorem inter_eq_left_iff_subset (s t : Finset α) : s ∩ t = s ↔ s ⊆ t :=
-  inf_eq_left
-#align finset.inter_eq_left_iff_subset Finset.inter_eq_left_iff_subset
+@[simp] lemma inter_eq_left : s ∩ t = s ↔ s ⊆ t := inf_eq_left
+#align finset.inter_eq_left_iff_subset_iff_subset Finset.inter_eq_left
 
-@[simp]
-theorem inter_eq_right_iff_subset (s t : Finset α) : t ∩ s = s ↔ s ⊆ t :=
-  inf_eq_right
-#align finset.inter_eq_right_iff_subset Finset.inter_eq_right_iff_subset
+@[simp] lemma inter_eq_right : t ∩ s = s ↔ s ⊆ t := inf_eq_right
+#align finset.inter_eq_right_iff_subset Finset.inter_eq_right
 
 theorem inter_congr_left (ht : s ∩ u ⊆ t) (hu : s ∩ t ⊆ u) : s ∩ t = s ∩ u :=
   inf_congr_left ht hu

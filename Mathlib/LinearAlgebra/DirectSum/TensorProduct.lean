@@ -156,6 +156,13 @@ theorem directSum_lof_tmul_lof (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) 
 #align tensor_product.direct_sum_lof_tmul_lof TensorProduct.directSum_lof_tmul_lof
 
 @[simp]
+theorem directSum_symm_lof_tmul (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) (m₂ : M₂ i₂) :
+    (TensorProduct.directSum R M₁ M₂).symm
+      (DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂)) =
+      (DirectSum.lof R ι₁ M₁ i₁ m₁ ⊗ₜ DirectSum.lof R ι₂ M₂ i₂ m₂) := by
+  rw [LinearEquiv.symm_apply_eq, directSum_lof_tmul_lof]
+
+@[simp]
 theorem directSumLeft_tmul_lof (i : ι₁) (x : M₁ i) (y : M₂') :
     directSumLeft R M₁ M₂' (DirectSum.lof R _ _ i x ⊗ₜ[R] y) =
     DirectSum.lof R _ _ i (x ⊗ₜ[R] y) := by
