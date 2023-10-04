@@ -122,7 +122,7 @@ theorem Finite.encard_lt_top (h : s.Finite) : s.encard < ⊤ := by
   refine' h.induction_on (by simpa using WithTop.zero_lt_top) _
   rintro a t hat _ ht'
   rw [encard_insert_of_not_mem hat]
-  sorry --exact lt_tsub_iff_right.1 ht'
+  exact lt_tsub_iff_right.1 ht'
 
 theorem Finite.encard_eq_coe (h : s.Finite) : s.encard = ENat.toNat s.encard :=
   (ENat.coe_toNat h.encard_lt_top.ne).symm
@@ -225,7 +225,7 @@ theorem encard_le_encard_diff_add_encard (s t : Set α) : s.encard ≤ (s \ t).e
   (encard_mono (subset_union_left s t)).trans_eq (encard_diff_add_encard _ _).symm
 
 theorem tsub_encard_le_encard_diff (s t : Set α) : s.encard - t.encard ≤ (s \ t).encard := by
-  sorry --rw [tsub_le_iff_left, add_comm]; apply encard_le_encard_diff_add_encard
+  rw [tsub_le_iff_left, add_comm]; apply encard_le_encard_diff_add_encard
 
 theorem encard_add_encard_compl (s : Set α) : s.encard + sᶜ.encard = (univ : Set α).encard := by
   rw [←encard_union_eq disjoint_compl_right, union_compl_self]
@@ -246,8 +246,8 @@ theorem encard_diff_singleton_add_one (h : a ∈ s) :
 
 theorem encard_diff_singleton_of_mem (h : a ∈ s) :
     (s \ {a}).encard = s.encard - 1 := by
-  sorry /-rw [←encard_diff_singleton_add_one h, ←WithTop.add_right_cancel_iff WithTop.one_ne_top,
-    tsub_add_cancel_of_le (self_le_add_left _ _)]-/
+  rw [←encard_diff_singleton_add_one h, ←WithTop.add_right_cancel_iff WithTop.one_ne_top,
+    tsub_add_cancel_of_le (self_le_add_left _ _)]
 
 theorem encard_tsub_one_le_encard_diff_singleton (s : Set α) (x : α) :
     s.encard - 1 ≤ (s \ {x}).encard := by

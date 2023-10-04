@@ -199,7 +199,7 @@ instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
       rw [mul_comm, distrib', mul_comm b, mul_comm c] }
 
 instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
-  { WithTop.commSemiring, WithTop.CanonicallyOrderedAddCommMonoid with
+  { WithTop.commSemiring, WithTop.canonicallyOrderedAddCommMonoid with
   eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero}
 
 /-- A version of `WithTop.map` for `RingHom`s. -/

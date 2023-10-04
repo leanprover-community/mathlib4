@@ -30,10 +30,10 @@ instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
   { ‹LinearOrderedCommMonoidWithZero α› with }
 #align linear_ordered_comm_monoid_with_zero.to_zero_le_one_class LinearOrderedCommMonoidWithZero.toZeroLeOneClass
 
-instance (priority := 100) CanonicallyOrderedAddCommMonoid.toZeroLeOneClass
+instance (priority := 100) canonicallyOrderedAddCommMonoid.toZeroLeOneClass
     [CanonicallyOrderedAddCommMonoid α] [One α] : ZeroLEOneClass α :=
   ⟨zero_le 1⟩
-#align canonically_ordered_add_monoid.to_zero_le_one_class CanonicallyOrderedAddCommMonoid.toZeroLeOneClass
+#align canonically_ordered_add_monoid.to_zero_le_one_class canonicallyOrderedAddCommMonoid.toZeroLeOneClass
 
 namespace WithZero
 
@@ -159,7 +159,7 @@ instance existsAddOfLE [Add α] [Preorder α] [ExistsAddOfLE α] :
 
 -- This instance looks absurd: a monoid already has a zero
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/
-instance CanonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
+instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
     CanonicallyOrderedAddCommMonoid (WithZero α) :=
   { WithZero.orderBot,
     WithZero.orderedAddCommMonoid _root_.zero_le,
@@ -170,7 +170,7 @@ instance CanonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
       induction b using WithZero.cases_on
       · exact le_rfl
       · exact WithZero.coe_le_coe.2 le_self_add }
-#align with_zero.canonically_ordered_add_monoid WithZero.CanonicallyOrderedAddCommMonoid
+#align with_zero.canonically_ordered_add_monoid WithZero.canonicallyOrderedAddCommMonoid
 
 end CanonicallyOrderedCommMonoid
 
@@ -178,7 +178,7 @@ section CanonicallyLinearOrderedMonoid
 
 instance canonicallyLinearOrderedAddMonoid (α : Type*)
     [CanonicallyLinearOrderedAddMonoid α] : CanonicallyLinearOrderedAddMonoid (WithZero α) :=
-  { WithZero.CanonicallyOrderedAddCommMonoid, WithZero.linearOrder with }
+  { WithZero.canonicallyOrderedAddCommMonoid, WithZero.linearOrder with }
 #align with_zero.canonically_linear_ordered_add_monoid WithZero.canonicallyLinearOrderedAddMonoid
 
 end CanonicallyLinearOrderedMonoid
