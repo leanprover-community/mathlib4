@@ -604,7 +604,7 @@ theorem IsAffineOpen.fromSpec_primeIdealOf {X : Scheme} {U : Opens X} (hU : IsAf
 
 -- Porting note : the original proof does not compile under 0 `heartbeat`, so partially rewritten
 -- but after the rewrite, I still can't get it compile under `200000`
-set_option maxHeartbeats 990000 in
+set_option maxHeartbeats 1200000 in
 theorem IsAffineOpen.isLocalization_stalk_aux {X : Scheme} (U : Opens X)
     [IsAffine (X.restrict U.openEmbedding)] :
     (inv (ΓSpec.adjunction.unit.app (X.restrict U.openEmbedding))).1.c.app
@@ -658,7 +658,7 @@ theorem IsAffineOpen.isLocalization_stalk_aux' {X : Scheme} {U : Opens X} (hU : 
   rw [Category.id_comp]
   rfl
 
-set_option maxHeartbeats 900000 in
+set_option maxHeartbeats 1200000 in
 theorem IsAffineOpen.isLocalization_stalk' {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (y : PrimeSpectrum (X.presheaf.obj <| op U)) (hy : hU.fromSpec.1.base y ∈ U) :
   haveI : IsAffine _ := hU
