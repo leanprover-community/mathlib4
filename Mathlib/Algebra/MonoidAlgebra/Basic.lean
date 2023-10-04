@@ -90,6 +90,7 @@ instance MonoidAlgebra.addMonoid : AddMonoid (MonoidAlgebra k G) :=
 
 -- Porting note: The compiler couldn't derive this.
 instance MonoidAlgebra.addCommMonoid : AddCommMonoid (MonoidAlgebra k G) :=
+  --TODO: add reference to library note in PR #7432
   { inferInstanceAs (AddCommMonoid (G →₀ k)) with
     toAddMonoid := MonoidAlgebra.addMonoid _ _ }
 #align monoid_algebra.add_comm_monoid MonoidAlgebra.addCommMonoid
@@ -260,6 +261,7 @@ theorem nat_cast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k
 #align monoid_algebra.nat_cast_def MonoidAlgebra.nat_cast_def
 
 instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
+  --TODO: add reference to library note in PR #7432
   { toNatCast := MonoidAlgebra.natCast
     natCast_zero := by simp [nat_cast_def]
     natCast_succ := fun _ => by simp [nat_cast_def]; rfl
@@ -281,6 +283,7 @@ section Semiring
 variable [Semiring k] [Monoid G]
 
 instance semiring : Semiring (MonoidAlgebra k G) :=
+  --TODO: add reference to library note in PR #7432
   { MonoidAlgebra.nonAssocSemiring with
     toOne := MonoidAlgebra.one
     toNonUnitalSemiring := MonoidAlgebra.nonUnitalSemiring }
@@ -330,6 +333,7 @@ instance sub [Ring k] : Sub (MonoidAlgebra k G) :=
   Finsupp.sub
 
 instance addCommGroup [Ring k] : AddCommGroup (MonoidAlgebra k G) :=
+  --TODO: add reference to library note in PR #7432
   { Finsupp.addCommGroup with
     toNeg := MonoidAlgebra.neg
     toSub := MonoidAlgebra.sub
@@ -356,6 +360,7 @@ theorem int_cast_def [Ring k] [MulOneClass G] (z : ℤ) :
 #align monoid_algebra.int_cast_def MonoidAlgebra.int_cast_def
 
 instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G) :=
+  --TODO: add reference to library note in PR #7432
   { MonoidAlgebra.nonAssocSemiring (k := k) (G := G),
     MonoidAlgebra.addCommGroup (k := k) (G := G) with
     toNonUnitalNonAssocRing := MonoidAlgebra.nonUnitalNonAssocRing
@@ -368,6 +373,7 @@ instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G
 #align monoid_algebra.non_assoc_ring MonoidAlgebra.nonAssocRing
 
 instance ring [Ring k] [Monoid G] : Ring (MonoidAlgebra k G) :=
+  --TODO: add reference to library note in PR #7432
   { MonoidAlgebra.nonAssocRing (k := k) (G := G) with
     toSemiring := MonoidAlgebra.semiring
     toNeg := MonoidAlgebra.neg
@@ -390,22 +396,26 @@ instance smul [Semiring k] [SMulZeroClass R k] : SMul R (MonoidAlgebra k G) :=
   Finsupp.smulZeroClass.toSMul
 
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R (MonoidAlgebra k G) :=
+  --TODO: add reference to library note in PR #7432
   { Finsupp.smulZeroClass with
     toSMul := MonoidAlgebra.smul }
 #align monoid_algebra.smul_zero_class MonoidAlgebra.smulZeroClass
 
 instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (MonoidAlgebra k G) :=
+  --TODO: add reference to library note in PR #7432
   { Finsupp.distribSMul _ _ with
     toSMulZeroClass := MonoidAlgebra.smulZeroClass }
 #align monoid_algebra.distrib_smul MonoidAlgebra.distribSMul
 
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R (MonoidAlgebra k G) :=
+  --TODO: add reference to library note in PR #7432
   { Finsupp.distribMulAction G k with
     toSMul := MonoidAlgebra.smul }
 #align monoid_algebra.distrib_mul_action MonoidAlgebra.distribMulAction
 
 instance module [Semiring R] [Semiring k] [Module R k] : Module R (MonoidAlgebra k G) :=
+  --TODO: add reference to library note in PR #7432
   { Finsupp.module G k with
     toDistribMulAction := MonoidAlgebra.distribMulAction }
 #align monoid_algebra.module MonoidAlgebra.module
@@ -816,6 +826,7 @@ In particular this provides the instance `Algebra k (MonoidAlgebra k G)`.
 -/
 instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
     Algebra k (MonoidAlgebra A G) :=
+  --TODO: add reference to library note in PR #7432
   { singleOneRingHom.comp (algebraMap k A) with
     toSMul := MonoidAlgebra.smul
     -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
@@ -1228,6 +1239,7 @@ instance addMonoid : AddMonoid k[G] :=
 
 -- Porting note: The compiler couldn't derive this.
 instance addCommMonoid : AddCommMonoid k[G] :=
+  --TODO: add reference to library note in PR #7432
   { inferInstanceAs (AddCommMonoid (G →₀ k)) with
     toAddMonoid := MonoidAlgebra.addMonoid _ _ }
 #align add_monoid_algebra.add_comm_monoid AddMonoidAlgebra.addCommMonoid
@@ -1416,6 +1428,7 @@ theorem nat_cast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
 #align add_monoid_algebra.nat_cast_def AddMonoidAlgebra.nat_cast_def
 
 instance nonAssocSemiring : NonAssocSemiring k[G] :=
+  --TODO: add reference to library note in PR #7432
   { toNatCast := AddMonoidAlgebra.natCast
     natCast_zero := by simp [nat_cast_def]
     natCast_succ := fun _ => by simp [nat_cast_def]; rfl
@@ -1437,6 +1450,7 @@ section Semiring
 variable [Semiring k] [AddMonoid G]
 
 instance semiring : Semiring k[G] :=
+  --TODO: add reference to library note in PR #7432
   { AddMonoidAlgebra.nonAssocSemiring with
     toOne := AddMonoidAlgebra.one
     toNonUnitalSemiring := AddMonoidAlgebra.nonUnitalSemiring }
@@ -1483,6 +1497,7 @@ instance sub [Ring k] : Sub k[G] :=
   Finsupp.sub
 
 instance addCommGroup [Ring k] : AddCommGroup k[G] :=
+  --TODO: add reference to library note in PR #7432
   { Finsupp.addCommGroup with
     toNeg := AddMonoidAlgebra.neg
     toSub := AddMonoidAlgebra.sub
@@ -1509,6 +1524,7 @@ theorem int_cast_def [Ring k] [AddZeroClass G] (z : ℤ) :
 #align add_monoid_algebra.int_cast_def AddMonoidAlgebra.int_cast_def
 
 instance nonAssocRing [Ring k] [AddZeroClass G] : NonAssocRing k[G] :=
+  --TODO: add reference to library note in PR #7432
   { AddMonoidAlgebra.nonAssocSemiring (k := k) (G := G),
     AddMonoidAlgebra.addCommGroup (k := k) (G := G) with
     toNonUnitalNonAssocRing := AddMonoidAlgebra.nonUnitalNonAssocRing
@@ -1521,6 +1537,7 @@ instance nonAssocRing [Ring k] [AddZeroClass G] : NonAssocRing k[G] :=
 #align add_monoid_algebra.non_assoc_ring AddMonoidAlgebra.nonAssocRing
 
 instance ring [Ring k] [AddMonoid G] : Ring k[G] :=
+  --TODO: add reference to library note in PR #7432
   { AddMonoidAlgebra.nonAssocRing (k := k) (G := G) with
     toSemiring := AddMonoidAlgebra.semiring
     toNeg := AddMonoidAlgebra.neg
@@ -1543,17 +1560,20 @@ instance smul [Semiring k] [SMulZeroClass R k] : SMul R k[G] :=
   Finsupp.smulZeroClass.toSMul
 
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R k[G] :=
+  --TODO: add reference to library note in PR #7432
   { Finsupp.smulZeroClass with
     toSMul := AddMonoidAlgebra.smul }
 #align add_monoid_algebra.smul_zero_class AddMonoidAlgebra.smulZeroClass
 
 instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R k[G] :=
+  --TODO: add reference to library note in PR #7432
   { Finsupp.distribSMul _ _ with
     toSMulZeroClass := AddMonoidAlgebra.smulZeroClass }
 #align add_monoid_algebra.distrib_smul AddMonoidAlgebra.distribSMul
 
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R k[G] :=
+  --TODO: add reference to library note in PR #7432
   { Finsupp.distribMulAction G k with
     toSMul := AddMonoidAlgebra.smul }
 #align add_monoid_algebra.distrib_mul_action AddMonoidAlgebra.distribMulAction
@@ -1564,6 +1584,7 @@ instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonem
 #align add_monoid_algebra.faithful_smul AddMonoidAlgebra.faithfulSMul
 
 instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
+  --TODO: add reference to library note in PR #7432
   { Finsupp.module G k with
     toDistribMulAction := AddMonoidAlgebra.distribMulAction }
 #align add_monoid_algebra.module AddMonoidAlgebra.module
@@ -1961,6 +1982,7 @@ In particular this provides the instance `Algebra k k[G]`.
 -/
 instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
     Algebra R k[G] :=
+  --TODO: add reference to library note in PR #7432
   { singleZeroRingHom.comp (algebraMap R k) with
     toSMul := AddMonoidAlgebra.smul
     -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
