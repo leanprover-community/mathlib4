@@ -200,8 +200,8 @@ def nonterminal_simp_check(lines, path):
     errors = []
     newlines = []
     annotated_lines = list(annotate_comments(lines))
-    for (line_nr, line, is_comment), (next_line_nr, next_line, _) in zip(annotated_lines,
-                                                                   annotated_lines[1:]):
+    for (line_nr, line, is_comment), (_, next_line, _) in zip(annotated_lines,
+                                                              annotated_lines[1:]):
         # Check if the current line matches whitespace followed by "simp"
         new_line = line
         if (not is_comment) and re.search(r"^\s*simp$", line):
@@ -217,6 +217,7 @@ def nonterminal_simp_check(lines, path):
                     errors += [(ERR_NSP, line_nr, path)]
                     new_line = line.replace("simp", "simp?")
         newlines.append((line_nr, new_line))
+    newlines.append(lines[-1])
     return errors, newlines
 
 def long_lines_check(lines, path):
