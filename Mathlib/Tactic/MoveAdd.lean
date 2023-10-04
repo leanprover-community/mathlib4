@@ -215,9 +215,12 @@ def prepareOp (sum : Expr) : Expr :=
   let opargs := sum.getAppArgs
   (opargs.toList.take (opargs.size - 2)).foldl (fun x y => Expr.app x y) sum.getAppFn
 
-/--  `sumList op exs` assumes that `op` is the `Name` of a binary operation.
-If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList` returns
-`op (op( ... op (op e₁ e₂) e₃) ... eₙ)`.
+/--  `sumList prepOp exs` assumes that `prepOp` is an `Expr`ession representing a binary operation
+already fully applied up until its last two arguments and assumes that the last two arguments
+are the operands of the operation.
+Such an expression is the result of `prepareOp`.
+If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList prepOp exs` returns
+`prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`.
 -/
 partial
 def sumList (prepOp : Expr) : List Expr → Expr
