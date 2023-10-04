@@ -152,7 +152,7 @@ theorem NoetherianSpace.iUnion {ι : Type*} (f : ι → Set α) [Finite ι]
     [hf : ∀ i, NoetherianSpace (f i)] : NoetherianSpace (⋃ i, f i) := by
   simp_rw [noetherianSpace_set_iff] at hf ⊢
   intro t ht
-  rw [← Set.inter_eq_left_iff_subset.mpr ht, Set.inter_iUnion]
+  rw [← Set.inter_eq_left.mpr ht, Set.inter_iUnion]
   exact isCompact_iUnion fun i => hf i _ (Set.inter_subset_right _ _)
 #align topological_space.noetherian_space.Union TopologicalSpace.NoetherianSpace.iUnion
 

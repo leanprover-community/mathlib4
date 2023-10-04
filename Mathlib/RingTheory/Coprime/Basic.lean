@@ -5,7 +5,7 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
 import Mathlib.Tactic.Ring
 import Mathlib.GroupTheory.GroupAction.Units
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.GroupPower.Ring
 

@@ -124,7 +124,7 @@ instance : Epi S.cokernelToAbelianCoimage :=
   epi_of_epi_fac S.cokernel_π_comp_cokernelToAbelianCoimage
 
 lemma kernel_ι_comp_cokernel_π_comp_cokernelToAbelianCoimage :
-  (kernel.ι S.g ≫ cokernel.π S.f) ≫ S.cokernelToAbelianCoimage = 0 := by simp
+    (kernel.ι S.g ≫ cokernel.π S.f) ≫ S.cokernelToAbelianCoimage = 0 := by simp
 
 /-- `Abelian.coimage S.g` is the cokernel of `kernel.ι S.g ≫ cokernel.π S.f` -/
 noncomputable def cokernelToAbelianCoimageIsCokernel :

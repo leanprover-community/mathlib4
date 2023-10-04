@@ -40,8 +40,7 @@ instance Discrete.monoidal : MonoidalCategory (Discrete M)
 #align category_theory.discrete.add_monoidal CategoryTheory.Discrete.addMonoidal
 
 @[to_additive (attr := simp) Discrete.addMonoidal_tensorUnit_as]
-lemma Discrete.monoidal_tensorUnit_as :
-  (𝟙_ (Discrete M)).as = 1 := rfl
+lemma Discrete.monoidal_tensorUnit_as : (𝟙_ (Discrete M)).as = 1 := rfl
 
 -- porting note: we do not necessarily want to unfold the definition of `Discrete.monoidal`,
 -- in `mathlib`, it was done by making it locally reducible or not, instead one may

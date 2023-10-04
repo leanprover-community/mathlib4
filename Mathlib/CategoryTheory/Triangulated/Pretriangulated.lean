@@ -191,7 +191,7 @@ See <https://stacks.math.columbia.edu/tag/0146>
 -/
 @[reassoc]
 theorem comp_dist_triangle_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
-  T.mor₂ ≫ T.mor₃ = 0 :=
+    T.mor₂ ≫ T.mor₃ = 0 :=
   comp_dist_triangle_mor_zero₁₂ T.rotate (rot_of_dist_triangle T H)
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₂₃ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₂₃
 
@@ -437,7 +437,7 @@ lemma shift_distinguished (n : ℤ) :
     isomorphic_distinguished _ (rot_of_dist_triangle _
       (rot_of_dist_triangle _ (rot_of_dist_triangle _ hT))) _
         ((rotateRotateRotateIso C).symm.app T)
-  have H_neg_one : H (-1):= fun T hT =>
+  have H_neg_one : H (-1) := fun T hT =>
     isomorphic_distinguished _ (inv_rot_of_dist_triangle _
       (inv_rot_of_dist_triangle _ (inv_rot_of_dist_triangle _ hT))) _
         ((invRotateInvRotateInvRotateIso C).symm.app T)

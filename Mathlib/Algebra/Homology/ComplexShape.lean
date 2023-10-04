@@ -183,7 +183,7 @@ def down' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α w
 #align complex_shape.down'_rel ComplexShape.down'_Rel
 
 theorem down'_mk {α : Type*} [AddRightCancelSemigroup α] (a : α) (i j : α) (h : j + a = i) :
-  (down' a).Rel i j := h
+    (down' a).Rel i j := h
 #align complex_shape.down'_mk ComplexShape.down'_mk
 
 /-- The `ComplexShape` appropriate for cohomology, so `d : X i ⟶ X j` only when `j = i + 1`.
@@ -208,8 +208,8 @@ def down (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
 instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
   DecidableRel (down α).Rel := fun _ _ => by dsimp ; infer_instance
 
-theorem down_mk {α : Type _} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
-  (down α).Rel i j :=
+theorem down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
+    (down α).Rel i j :=
   down'_mk (1 : α) i j h
 #align complex_shape.down_mk ComplexShape.down_mk
 
