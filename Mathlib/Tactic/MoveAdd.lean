@@ -285,6 +285,8 @@ def permuteExpr (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM Expr :
   let permInstructions ← rankSums op tgt instructions
   if permInstructions == [] then throwError "The goal is already in the required form"
   let mut permTgt := tgt
+  -- We cannot do `Expr.replace` all at once here, we need to follow
+  -- the order of the instructions.
   for (old, new) in permInstructions do
     permTgt := permTgt.replace (if · == old then new else none)
   return permTgt
