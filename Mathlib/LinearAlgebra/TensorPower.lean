@@ -29,6 +29,8 @@ In this file we use `ₜ1` and `ₜ*` as local notation for the graded multiplic
 tensor powers. Elsewhere, using `1` and `*` on `GradedMonoid` should be preferred.
 -/
 
+suppress_compilation
+
 open scoped TensorProduct
 
 /-- Homogenous tensor powers $M^{\otimes n}$. `⨂[R]^n M` is a shorthand for
@@ -65,7 +67,7 @@ open scoped TensorProduct DirectSum
 open PiTensorProduct
 
 /-- As a graded monoid, `⨂[R]^i M` has a `1 : ⨂[R]^0 M`. -/
-noncomputable instance gOne :
+instance gOne :
     GradedMonoid.GOne fun i => (⨂[R]^i) M where one := tprod R <| @Fin.elim0' M
 #align tensor_power.ghas_one TensorPower.gOne
 
@@ -76,12 +78,12 @@ theorem gOne_def : ₜ1 = tprod R (@Fin.elim0' M) :=
 #align tensor_power.ghas_one_def TensorPower.gOne_def
 
 /-- A variant of `PiTensorProduct.tmulEquiv` with the result indexed by `Fin (n + m)`. -/
-noncomputable def mulEquiv {n m : ℕ} : (⨂[R]^n) M ⊗[R] (⨂[R]^m) M ≃ₗ[R] (⨂[R]^(n + m)) M :=
+def mulEquiv {n m : ℕ} : (⨂[R]^n) M ⊗[R] (⨂[R]^m) M ≃ₗ[R] (⨂[R]^(n + m)) M :=
   (tmulEquiv R M).trans (reindex R M finSumFinEquiv)
 #align tensor_power.mul_equiv TensorPower.mulEquiv
 
 /-- As a graded monoid, `⨂[R]^i M` has a `(*) : ⨂[R]^i M → ⨂[R]^j M → ⨂[R]^(i + j) M`. -/
-noncomputable instance gMul : GradedMonoid.GMul fun i => (⨂[R]^i) M where
+instance gMul : GradedMonoid.GMul fun i => (⨂[R]^i) M where
   mul {i j} a b :=
     (TensorProduct.mk R _ _).compr₂ (↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(i + j)) M)) a b
 #align tensor_power.ghas_mul TensorPower.gMul
@@ -102,7 +104,7 @@ theorem gMul_eq_coe_linearMap {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
 variable (R M)
 
 /-- Cast between "equal" tensor powers. -/
-noncomputable def cast {i j} (h : i = j) : (⨂[R]^i) M ≃ₗ[R] (⨂[R]^j) M :=
+def cast {i j} (h : i = j) : (⨂[R]^i) M ≃ₗ[R] (⨂[R]^j) M :=
   reindex R M (Fin.castIso h).toEquiv
 #align tensor_power.cast TensorPower.cast
 
@@ -212,8 +214,6 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
   refine' congr_arg (Fin.append a (Fin.append b c)) (Fin.ext _)
   rw [Fin.coe_cast, Fin.coe_cast]
 #align tensor_power.mul_assoc TensorPower.mul_assoc
-
-suppress_compilation
 
 -- for now we just use the default for the `gnpow` field as it's easier.
 instance gmonoid : GradedMonoid.GMonoid fun i => (⨂[R]^i) M :=
