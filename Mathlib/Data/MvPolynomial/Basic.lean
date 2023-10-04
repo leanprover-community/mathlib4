@@ -127,7 +127,7 @@ instance faithfulSMul [CommSemiring S₁] [SMulZeroClass R S₁] [FaithfulSMul R
     FaithfulSMul R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.faithfulSMul
 
-instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=]
+instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=
   --TODO: add reference to library note in PR #7432
   { AddMonoidAlgebra.module with
     toDistribMulAction := MvPolynomial.distribMulAction }
