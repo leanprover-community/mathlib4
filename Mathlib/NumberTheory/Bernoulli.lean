@@ -88,7 +88,7 @@ theorem bernoulli'_spec (n : ℕ) :
 #align bernoulli'_spec bernoulli'_spec
 
 theorem bernoulli'_spec' (n : ℕ) :
-    (∑ k in antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli' k.1) = 1 := by
+    (∑ k in Nat.antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli' k.1) = 1 := by
   refine' ((sum_antidiagonal_eq_sum_range_succ_mk _ n).trans _).trans (bernoulli'_spec n)
   refine' sum_congr rfl fun x hx => _
   simp only [add_tsub_cancel_of_le, mem_range_succ_iff.mp hx, cast_sub]
@@ -161,14 +161,14 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
   cases' n with n
   · simp
   rw [bernoulli'PowerSeries, coeff_mul, mul_comm X, sum_antidiagonal_succ']
-  suffices (∑ p in antidiagonal n,
+  suffices (∑ p in Nat.antidiagonal n,
       bernoulli' p.1 / p.1! * ((p.2 + 1) * p.2! : ℚ)⁻¹) = (n ! : ℚ)⁻¹ by
     simpa [map_sum, Nat.factorial] using congr_arg (algebraMap ℚ A) this
   apply eq_inv_of_mul_eq_one_left
   rw [sum_mul]
   convert bernoulli'_spec' n using 1
   apply sum_congr rfl
-  simp_rw [mem_antidiagonal]
+  simp_rw [Nat.mem_antidiagonal]
   rintro ⟨i, j⟩ rfl
   have := factorial_mul_factorial_dvd_factorial_add i j
   field_simp [mul_comm _ (bernoulli' i), mul_assoc, add_choose]
@@ -245,13 +245,13 @@ theorem sum_bernoulli (n : ℕ) :
 #align sum_bernoulli sum_bernoulli
 
 theorem bernoulli_spec' (n : ℕ) :
-    (∑ k in antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli k.1) =
+    (∑ k in Nat.antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli k.1) =
       if n = 0 then 1 else 0 := by
   cases' n with n n;
   · simp
   rw [if_neg (succ_ne_zero _)]
   -- algebra facts
-  have h₁ : (1, n) ∈ antidiagonal n.succ := by simp [mem_antidiagonal, add_comm]
+  have h₁ : (1, n) ∈ Nat.antidiagonal n.succ := by simp [Nat.mem_antidiagonal, add_comm]
   have h₂ : (n : ℚ) + 1 ≠ 0 := by norm_cast; exact succ_ne_zero _
   have h₃ : (1 + n).choose n = n + 1 := by simp [add_comm]
   -- key equation: the corresponding fact for `bernoulli'`
@@ -289,7 +289,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   simp only [CharP.cast_eq_zero, zero_add, inv_one, map_one, sub_self, mul_zero, add_eq]
   rw [← map_zero (algebraMap ℚ A), ← zero_div (n.succ ! : ℚ), ← hite2, ← bernoulli_spec', sum_div]
   refine' congr_arg (algebraMap ℚ A) (sum_congr rfl fun x h => eq_div_of_mul_eq (hfact n.succ) _)
-  rw [mem_antidiagonal] at h
+  rw [Nat.mem_antidiagonal] at h
   rw [← h, add_choose, cast_div_charZero (factorial_mul_factorial_dvd_factorial_add _ _)]
   field_simp [hfact x.1, mul_comm _ (bernoulli x.1), mul_assoc]
   -- porting note: was `cc`, which was not yet ported
