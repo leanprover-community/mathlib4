@@ -173,7 +173,7 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
 theorem testBit_two_pow_mul_add {n b w i} (h: i < w) :
-  Nat.testBit (2 ^ w * b + n) i = Nat.testBit n i := by
+    Nat.testBit (2 ^ w * b + n) i = Nat.testBit n i := by
   simp only [testBit, shiftRight_eq_div_pow, bodd_eq_bodd_iff]
   rw [Nat.add_div_of_dvd_right (by simp [Dvd.dvd.mul_right, pow_dvd_pow, le_of_lt h]), add_mod]
   have h1: (2 ^ w / 2 ^ i) % 2 = 0 := by
@@ -184,7 +184,7 @@ theorem testBit_two_pow_mul_add {n b w i} (h: i < w) :
   simp [mul_comm, Nat.mul_div_assoc b (pow_dvd_pow 2 (le_of_lt h)), mul_mod, h1]
 
 theorem testBit_two_pow_mul_toNat_add {n w b} (h: n < 2 ^ w) :
-  testBit (2 ^ w * b.toNat + n) w = b := by
+    testBit (2 ^ w * b.toNat + n) w = b := by
   simp only [testBit, shiftRight_eq_div_pow]
   rw [Nat.add_div_of_dvd_right (Dvd.intro _ rfl), Nat.div_eq_zero h, add_zero]
   cases' b <;> simp
@@ -224,7 +224,7 @@ theorem testBit_ofBits {f i j} (h1: i < j) : (ofBits f 0 j).testBit i = f i := b
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
 theorem bitwise'_comm {f} (hf : ∀ b b', f b b' = f b' b) (hf' : f false false = false) (n m) :
-  bitwise' f n m = bitwise' f m n :=
+    bitwise' f n m = bitwise' f m n :=
   suffices bitwise' f = swap (bitwise' f) by conv_lhs => rw [this]
   calc
     bitwise' f = bitwise' (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
@@ -286,7 +286,7 @@ lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
       · rfl
 
 theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false = false) :
-  bitwise f x y < 2 ^ n := by
+    bitwise f x y < 2 ^ n := by
   rw [bitwise_eq_bitwise' f]
   apply lt_of_testBit n (by simp [testBit_bitwise' h x y n,
                                   testBit_eq_false_of_lt hx,
