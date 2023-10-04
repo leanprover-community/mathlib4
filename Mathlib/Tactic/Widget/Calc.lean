@@ -58,33 +58,24 @@ structure CalcParams extends SelectInsertParams where
 
 open Lean Meta
 
-/-- A string representation for equality and inequalities.  -/
-def Lean.Expr.relStr : Expr → String
-  | .const ``Eq _ => "="
-| .const ``LE.le _ => "≤"
-| .const ``LT.lt _ => "<"
-| .const ``GE.ge _ => "≥"
-| .const ``GT.gt _ => ">"
-| _ => "Unknow relation"
-
 /-- Return the link text and inserted text above and below of the calc widget. -/
 def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcParams) :
     MetaM (String × String) := do
   let subexprPos := getGoalLocations pos
   let some (rel, lhs, rhs) ← Lean.Elab.Term.getCalcRelation? goalType |
       throwError "invalid 'calc' step, relation expected{indentExpr goalType}"
-  let relStr := rel.getAppFn.relStr
-  let selectedLeft := subexprPos.filter (fun L ↦ #[0, 1].isPrefixOf L.toArray)
-  let selectedRight := subexprPos.filter (fun L ↦ #[1].isPrefixOf L.toArray)
+  let relApp := mkApp2 rel
+    (← mkFreshExprMVar none)
+    (← mkFreshExprMVar none)
+  let some relStr := (← Meta.ppExpr relApp) |> toString |>.splitOn |>.get? 1
+    | throwError "could not find relation symbol in {relApp}"
+  let isSelectedLeft := subexprPos.any (fun L ↦ #[0, 1].isPrefixOf L.toArray)
+  let isSelectedRight := subexprPos.any (fun L ↦ #[1].isPrefixOf L.toArray)
 
-  let mut goalTypeWithMetaVarsLeft := goalType
-  for pos in selectedLeft do
-    goalTypeWithMetaVarsLeft ← insertMetaVar goalTypeWithMetaVarsLeft pos
-  let some (_, newLhs, _) ← Lean.Elab.Term.getCalcRelation? goalTypeWithMetaVarsLeft | unreachable!
-  let mut goalTypeWithMetaVarsRight := goalType
-  for pos in selectedRight do
-    goalTypeWithMetaVarsRight ← insertMetaVar goalTypeWithMetaVarsRight pos
-  let some (_, _, newRhs) ← Lean.Elab.Term.getCalcRelation? goalTypeWithMetaVarsRight | unreachable!
+  let mut goalType := goalType
+  for pos in subexprPos do
+    goalType ← insertMetaVar goalType pos
+  let some (_, newLhs, newRhs) ← Lean.Elab.Term.getCalcRelation? goalType | unreachable!
 
   let lhsStr := (toString <| ← Meta.ppExpr lhs).renameMetaVar
   let newLhsStr := (toString <| ← Meta.ppExpr newLhs).renameMetaVar
@@ -92,31 +83,30 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   let newRhsStr := (toString <| ← Meta.ppExpr newRhs).renameMetaVar
 
   let spc := String.replicate params.indent ' '
-  let insertedCode := match selectedLeft.isEmpty, selectedRight.isEmpty with
-  | false, false =>
+  let insertedCode := match isSelectedLeft, isSelectedRight with
+  | true, true =>
     if params.isFirst then
       s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n" ++
       s!"{spc}_ {relStr} {rhsStr} := by sorry"
     else
       s!"_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n" ++
       s!"{spc}_ {relStr} {rhsStr} := by sorry"
-  | true, false  =>
+  | false, true  =>
     if params.isFirst then
       s!"{lhsStr} {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
     else
       s!"_ {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
-  | false, true =>
+  | true, false =>
     if params.isFirst then
       s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
     else
       s!"_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
-  | true, true => "This should not happen"
+  | false, false => "This should not happen"
 
-  let stepInfo := match selectedLeft.isEmpty, selectedRight.isEmpty with
-  | false, false => "Create two new steps"
-  | true, false  => "Create a new step"
-  | false, true => "Create a new step"
-  | true, true => "This should not happen"
+  let stepInfo := match (if isSelectedLeft then 1 else 0) + (if isSelectedRight then 1 else 0) with
+  | 2 => "Create two new steps"
+  | 1  => "Create a new step"
+  | _ => "This should not happen"
   return (stepInfo, toString insertedCode)
 
 /-- Rpc function for the calc widget. -/
