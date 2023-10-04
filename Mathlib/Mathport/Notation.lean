@@ -408,7 +408,7 @@ for the notation.
 This command can be used in mathlib4 but it has an uncertain future and was created primarily
 for backward compatibility.
 -/
-elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
+elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
     "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)? pp?:(prettyPrintOpt)?
     ppSpace items:(notation3Item)+ " => " val:term : command => do
   -- We use raw `Name`s for variables. This maps variable names back to the
@@ -553,3 +553,5 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       logWarning s!"Could not generate matchers for a delaborator, so notation will not be pretty{
         ""} printed. Consider either adjusting the expansions or use{
         ""} `notation3 (prettyPrint := false)`."
+
+initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
