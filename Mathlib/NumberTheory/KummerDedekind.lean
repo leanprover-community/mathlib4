@@ -107,10 +107,11 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
     rw [Algebra.id.smul_eq_mul, mul_assoc, mul_comm, mul_assoc, Set.mem_image]
     refine Exists.intro
         (algebraMap R R<x> a * ⟨l a * algebraMap R S p,
-          show l a * algebraMap R S p ∈ R<x> from ?_⟩) ?_
+          show l a * algebraMap R S p ∈ R<x> from ?h⟩) ?_
+    case h =>
+      rw [mul_comm]
+      exact mem_conductor_iff.mp (Ideal.mem_comap.mp hp) _
     · refine ⟨?_, ?_⟩
-      · rw [mul_comm]
-        exact mem_conductor_iff.mp (Ideal.mem_comap.mp hp) _
       · rw [mul_comm]
         apply Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ ha)
       · simp only [RingHom.map_mul, mul_comm (algebraMap R S p) (l a)]

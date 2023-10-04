@@ -176,7 +176,7 @@ def _root_.Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
 
 @[simp]
 theorem _root_.Algebra.adjoin.powerBasis'_dim (hx : IsIntegral R x) :
-  (Algebra.adjoin.powerBasis' hx).dim = (minpoly R x).natDegree := rfl
+    (Algebra.adjoin.powerBasis' hx).dim = (minpoly R x).natDegree := rfl
 #align algebra.adjoin.power_basis'_dim Algebra.adjoin.powerBasis'_dim
 
 @[simp]

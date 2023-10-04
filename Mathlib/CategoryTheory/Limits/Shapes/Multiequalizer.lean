@@ -90,11 +90,11 @@ instance : SmallCategory (WalkingMulticospan fst snd) where
 
 @[simp] -- Porting note: added simp lemma
 lemma Hom.id_eq_id (X : WalkingMulticospan fst snd) :
-  Hom.id X = 𝟙 X := rfl
+    Hom.id X = 𝟙 X := rfl
 
 @[simp] -- Porting note: added simp lemma
 lemma Hom.comp_eq_comp {X Y Z : WalkingMulticospan fst snd}
-  (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
+    (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
 end WalkingMulticospan
 
@@ -138,12 +138,11 @@ instance : SmallCategory (WalkingMultispan fst snd) where
     rintro (_ | _) (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) (_ | _ | _) <;> rfl
 
 @[simp] -- Porting note: added simp lemma
-lemma Hom.id_eq_id (X : WalkingMultispan fst snd) :
-  Hom.id X = 𝟙 X := rfl
+lemma Hom.id_eq_id (X : WalkingMultispan fst snd) : Hom.id X = 𝟙 X := rfl
 
 @[simp] -- Porting note: added simp lemma
 lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan fst snd}
-  (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
+    (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
 end WalkingMultispan
 

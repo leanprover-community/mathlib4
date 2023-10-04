@@ -100,14 +100,14 @@ attribute [nolint docBlame] EffectiveEpi.effectiveEpi
 
 /-- Some chosen `EffectiveEpiStruct` associated to an effective epi. -/
 noncomputable
-def EffectiveEpi.getStruct {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] :
-  EffectiveEpiStruct f := EffectiveEpi.effectiveEpi.some
+def EffectiveEpi.getStruct {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : EffectiveEpiStruct f :=
+  EffectiveEpi.effectiveEpi.some
 
 /-- Descend along an effective epi. -/
 noncomputable
 def EffectiveEpi.desc {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
-  (e : Y ⟶ W) (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e) :
-  X ⟶ W := (EffectiveEpi.getStruct f).desc e h
+    (e : Y ⟶ W) (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e) :
+    X ⟶ W := (EffectiveEpi.getStruct f).desc e h
 
 @[reassoc (attr := simp)]
 lemma EffectiveEpi.fac {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
@@ -490,6 +490,28 @@ def EffectiveEpi_familyStruct {B X : C} (f : X ⟶ B) [EffectiveEpi f] :
 
 instance {B X : C} (f : X ⟶ B) [EffectiveEpi f] : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
   ⟨⟨EffectiveEpi_familyStruct f⟩⟩
+
+/--
+A single element `EffectiveEpiFamily` constists of an `EffectiveEpi`
+-/
+noncomputable
+def EffectiveEpiStruct_ofFamily {B X : C} (f : X ⟶ B)
+    [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
+    EffectiveEpiStruct f where
+  desc e h := EffectiveEpiFamily.desc
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg)
+  fac e h := EffectiveEpiFamily.fac
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg) ()
+  uniq e h m hm := EffectiveEpiFamily.uniq
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg) m (fun _ ↦ hm)
+
+instance {B X : C} (f : X ⟶ B) [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
+    EffectiveEpi f :=
+  ⟨⟨EffectiveEpiStruct_ofFamily f⟩⟩
+
+lemma effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
+    EffectiveEpi f ↔ EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
 /--
 A family of morphisms with the same target inducing an isomorphism from the coproduct to the target
