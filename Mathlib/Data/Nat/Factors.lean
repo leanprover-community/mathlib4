@@ -302,19 +302,10 @@ theorem eq_two_pow_or_exists_odd_prime_and_dvd (n : ℕ) :
 
 theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
     4 ∣ n ∨ ∃ p, p ∣ n ∧ Prime p ∧ Odd p := by
-  obtain ⟨k, rfl⟩ | ⟨p, hp, hdvd, hodd⟩ := n.eq_two_pow_or_exists_odd_prime_and_dvd
-  · refine Or.inl ⟨2 ^ (k - 2), ?_⟩
-    calc
-      2 ^ k
-      _ = 2 ^ 2 * 2 ^ (k - 2) := (pow_mul_pow_sub _ ?_).symm
-      _ = 4 * 2 ^ (k - 2) := rfl
-
-    rcases k with (_ | _ | _)
-    · apply n2.not_le.elim
-      decide
-    · apply n2.not_le.elim
-      decide
-    · exact le_add_self
+  obtain ⟨_ | _ | k, rfl⟩ | ⟨p, hp, hdvd, hodd⟩ := n.eq_two_pow_or_exists_odd_prime_and_dvd
+  · contradiction
+  · contradiction
+  · simp [pow_succ, mul_assoc]
   · exact Or.inr ⟨p, hdvd, hp, hodd⟩
 
 end Nat
