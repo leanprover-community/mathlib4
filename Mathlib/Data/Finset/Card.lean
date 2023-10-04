@@ -462,6 +462,9 @@ theorem card_sdiff_add_card : (s \ t).card + t.card = (s ∪ t).card := by
   rw [← card_disjoint_union sdiff_disjoint, sdiff_union_self_eq_union]
 #align finset.card_sdiff_add_card Finset.card_sdiff_add_card
 
+lemma card_sdiff_comm (h : s.card = t.card) : (s \ t).card = (t \ s).card :=
+  add_left_injective t.card $ by simp_rw [card_sdiff_add_card, ←h, card_sdiff_add_card, union_comm]
+
 end Lattice
 
 theorem filter_card_add_filter_neg_card_eq_card
