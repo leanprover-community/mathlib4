@@ -113,8 +113,6 @@ def PiTensorProduct : Type _ :=
 
 variable {R}
 
-open Lean Parser Elab Command
-
 unsuppress_compilation in
 -- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type*`.
 --scoped[TensorProduct] -- Porting note: `scoped` caused an error, so I commented it out.
