@@ -100,7 +100,7 @@ lemma hasMap (c : ∀ j, MapObjCandidate X p j) (hc : ∀ j, IsColimit (c j)) :
 variable {j X p}
   (c : MapObjCandidate X p j) (hc : IsColimit c) [X.HasMap p]
 
-abbrev ι' (i : I) (hi : p i = j) : X i ⟶ c.pt := c.proj ⟨i, hi⟩
+abbrev ι' (i : I) (hi : p i = j) : X i ⟶ c.pt := c.inj ⟨i, hi⟩
 
 noncomputable def iso : c.pt ≅ X.mapObj p j :=
   IsColimit.coconePointUniqueUpToIso hc (X.isColimitCoconeMapObj p j)

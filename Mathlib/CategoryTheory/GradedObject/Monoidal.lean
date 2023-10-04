@@ -262,7 +262,7 @@ lemma unitTensorCandidate_ι₀ (i : I) :
 noncomputable def isColimitUnitTensorCandidate (i : I) : IsColimit (unitTensorCandidate X i) :=
   mkCofanColimit _
     (fun s => (leftUnitor (X i)).inv ≫
-      ((tensorUnit₀ I C).inv ⊗ 𝟙 (X i)) ≫ s.proj ⟨⟨0, i⟩, zero_add i⟩)
+      ((tensorUnit₀ I C).inv ⊗ 𝟙 (X i)) ≫ s.inj ⟨⟨0, i⟩, zero_add i⟩)
     (fun s ⟨⟨a, b⟩, (hi : a + b = i)⟩ => by
       by_cases a = 0
       · subst h
@@ -332,7 +332,7 @@ lemma tensorUnitCandidate_ι₀ (i : I) :
 noncomputable def isColimitTensorUnitCandidate (i : I) : IsColimit (tensorUnitCandidate X i) :=
   mkCofanColimit _
     (fun s => (rightUnitor (X i)).inv ≫
-      (𝟙 (X i) ⊗ (tensorUnit₀ I C).inv) ≫ s.proj ⟨⟨i, 0⟩, add_zero i⟩)
+      (𝟙 (X i) ⊗ (tensorUnit₀ I C).inv) ≫ s.inj ⟨⟨i, 0⟩, add_zero i⟩)
     (fun s ⟨⟨a, b⟩, (hi : a + b = i)⟩ => by
       by_cases b = 0
       · subst h
