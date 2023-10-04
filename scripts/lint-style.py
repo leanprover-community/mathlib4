@@ -368,6 +368,8 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
         if errno == ERR_IND:
             output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
+        if errno == ERR_NSP:
+            output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
 
 def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:
