@@ -846,7 +846,7 @@ def nthRootsFinset (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Subsemigrou
       rw [mul_pow, hη₁, hη₂, one_mul]
 #align polynomial.nth_roots_finset Polynomial.nthRootsFinset
 
-instance  (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] [DecidableEq R] :
+instance (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] :
     Fintype (nthRootsFinset n R : Set R) := by
   simp only [nthRootsFinset, Subsemigroup.coe_set_mk, Finset.coe_sort_coe]
   infer_instance
