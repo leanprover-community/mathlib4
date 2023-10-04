@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Miyahara Kō All rights reserved.
+Copyright (c) 2023 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
@@ -36,26 +36,12 @@ def quiz (question : String) (correct : String) (hint : String → String) : Str
       ⟨some (hint answer), id⟩
   M.mk ⟨some question, M.corec cycle⟩
 
-def runList (game : StringGame) (answers : List String)
+def eval (game : StringGame) (answers : List String)
     (finished : String := "Right! The game is over!") : String :=
   match M.dest game, answers with
-  | ⟨some _, answered⟩, answer :: answers => runList (answered answer) answers finished
+  | ⟨some _, answered⟩, answer :: answers => eval (answered answer) answers finished
   | ⟨some hint, _⟩, [] => hint
   | ⟨none, _⟩, _ => finished
-
-def run (game : StringGame) (finished : String := "Right! The game is over!") : IO Unit := do
-  let stdin ← IO.getStdin
-  let stdout ← IO.getStdout
-  IO.iterate game fun game => do
-    match M.dest game with
-    | ⟨some hint, answered⟩ =>
-      stdout.putStrLn hint
-      let input ← stdin.getLine
-      let answer := input.dropRightWhile Char.isWhitespace
-      pure <| Sum.inl <| answered answer
-    | ⟨none, _⟩ =>
-      stdout.putStrLn finished
-      pure <| Sum.inr ()
 
 def hintLengthDiff (correct : String) (answer : String) : String :=
   if correct.length = answer.length then
@@ -84,19 +70,12 @@ def quiz (question : String) (correct : String) (hint : String → String) : Str
       ⟨some (hint answer), id⟩
   MIntl.mk ⟨some question, MIntl.corec cycle⟩
 
-def run (game : StringGameIntl) (finished : String := "Right! The game is over!") : IO Unit := do
-  let stdin ← IO.getStdin
-  let stdout ← IO.getStdout
-  IO.iterate game fun game => do
-    match MIntl.dest game with
-    | ⟨some hint, answered⟩ =>
-      stdout.putStrLn hint
-      let input ← stdin.getLine
-      let answer := input.dropRightWhile Char.isWhitespace
-      pure <| Sum.inl <| answered answer
-    | ⟨none, _⟩ =>
-      stdout.putStrLn finished
-      pure <| Sum.inr ()
+def eval (game : StringGameIntl) (answers : List String)
+    (finished : String := "Right! The game is over!") : String :=
+  match MIntl.dest game, answers with
+  | ⟨some _, answered⟩, answer :: answers => eval (answered answer) answers finished
+  | ⟨some hint, _⟩, [] => hint
+  | ⟨none, _⟩, _ => finished
 
 def familyNameQuiz (familyName : String) : StringGameIntl :=
   quiz "What's my family name?" familyName (hintLengthDiff familyName)
@@ -108,32 +87,26 @@ def myGame : StringGame := StringGame.nameQuiz "Miyahara" "Kō"
 def myGameIntl : StringGameIntl := StringGameIntl.familyNameQuiz "Miyahara"
 
 #eval
-  myGame.runList ["Keizer"]
+  myGame.eval ["Keizer"]
 
 #eval
-  myGame.runList ["Keizer", "Carneiro"]
+  myGame.eval (List.replicate 1000 "Keizer")
+
+-- benchmark, too slow:
+-- #eval
+--   myGameIntl.eval (List.replicate 1000 "Keizer")
 
 #eval
-  myGame.runList ["Keizer", "Carneiro", "Miyahara"]
+  myGame.eval ["Keizer", "Carneiro"]
 
 #eval
-  myGame.runList ["Keizer", "Carneiro", "Miyahara", "Mario"]
+  myGame.eval ["Keizer", "Carneiro", "Miyahara"]
 
 #eval
-  myGame.runList ["Keizer", "Carneiro", "Miyahara", "Mario", "Ko"]
+  myGame.eval ["Keizer", "Carneiro", "Miyahara", "Mario"]
 
 #eval
-  myGame.runList ["Keizer", "Carneiro", "Miyahara", "Mario", "Ko", "Kō"]
+  myGame.eval ["Keizer", "Carneiro", "Miyahara", "Mario", "Ko"]
 
-def help : String := "Mathlib4 M-type testing CLI
-Usage: m_test [COMMAND]
-
-Commands:
-  # No privilege required
-  intl         Test using the internal definition of M-type which isn't optimized"
-
-def main (args : List String) : IO Unit :=
-  match args with
-  | [] => myGame.run
-  | ["intl"] => myGameIntl.run
-  | _ => IO.println help
+#eval
+  myGame.eval ["Keizer", "Carneiro", "Miyahara", "Mario", "Ko", "Kō"]
