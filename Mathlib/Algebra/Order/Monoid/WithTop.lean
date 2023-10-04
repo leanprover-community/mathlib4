@@ -383,8 +383,8 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
       exact ⟨c, rfl⟩
     | ⊤, (b : α) => fun h => (not_top_le_coe _ h).elim⟩
 
-instance canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
-    CanonicallyOrderedAddMonoid (WithTop α) :=
+instance CanonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
+    CanonicallyOrderedAddCommMonoid (WithTop α) :=
   { WithTop.orderBot, WithTop.orderedAddCommMonoid, WithTop.existsAddOfLE with
     le_self_add := fun a b =>
       match a, b with
@@ -394,7 +394,7 @@ instance canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
       | ⊤, (b : α) => le_rfl }
 
 instance [CanonicallyLinearOrderedAddMonoid α] : CanonicallyLinearOrderedAddMonoid (WithTop α) :=
-  { WithTop.canonicallyOrderedAddMonoid, WithTop.linearOrder with }
+  { WithTop.CanonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
 
 @[simp, norm_cast]
 theorem coe_nat [AddMonoidWithOne α] (n : ℕ) : ((n : α) : WithTop α) = n :=

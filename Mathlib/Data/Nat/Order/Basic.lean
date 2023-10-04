@@ -74,7 +74,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ :=
     eq_zero_or_eq_zero_of_mul_eq_zero := Nat.eq_zero_of_mul_eq_zero }
 
 instance canonicallyLinearOrderedAddMonoid : CanonicallyLinearOrderedAddMonoid ℕ :=
-  { (inferInstance : CanonicallyOrderedAddMonoid ℕ), Nat.linearOrder with }
+  { (inferInstance : CanonicallyOrderedAddCommMonoid ℕ), Nat.linearOrder with }
 
 variable {m n k l : ℕ}
 

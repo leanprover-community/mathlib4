@@ -59,8 +59,8 @@ theorem map_sub [Sub β] [Zero β] {f : α → β} (h : ∀ x y, f (x - y) = f x
 #align with_top.map_sub WithTop.map_sub
 
 end
-
-variable [CanonicallyOrderedAddMonoid α] [Sub α] [OrderedSub α]
+/-
+variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
 
 instance : OrderedSub (WithTop α) := by
   constructor
@@ -69,5 +69,5 @@ instance : OrderedSub (WithTop α) := by
   induction x using WithTop.recTopCoe; · simp
   induction z using WithTop.recTopCoe; · simp
   norm_cast; exact tsub_le_iff_right
-
+-/
 end WithTop

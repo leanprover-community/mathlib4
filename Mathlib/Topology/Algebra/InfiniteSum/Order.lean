@@ -190,9 +190,9 @@ theorem tsum_pos (hsum : Summable g) (hg : ∀ i, 0 ≤ g i) (i : ι) (hi : 0 < 
 
 end OrderedAddCommGroup
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddMonoid α] [TopologicalSpace α] [OrderClosedTopology α] {f : ι → α}
+variable [CanonicallyOrderedAddCommMonoid α] [TopologicalSpace α] [OrderClosedTopology α] {f : ι → α}
   {a : α}
 
 theorem le_hasSum' (hf : HasSum f a) (i : ι) : f i ≤ a :=
@@ -219,7 +219,7 @@ theorem isLUB_hasSum' (hf : HasSum f a) : IsLUB (Set.range fun s => ∑ i in s, 
   isLUB_of_tendsto_atTop (Finset.sum_mono_set f) hf
 #align is_lub_has_sum' isLUB_hasSum'
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 section LinearOrder
 

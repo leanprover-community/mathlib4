@@ -307,9 +307,9 @@ end ExistsAddOfLE
 /-! ### Lemmas in a canonically ordered monoid. -/
 
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
 theorem add_tsub_cancel_iff_le : a + (b - a) = b ↔ a ≤ b :=
   ⟨fun h => le_iff_exists_add.mpr ⟨b - a, h.symm⟩, add_tsub_cancel_of_le⟩
@@ -394,20 +394,20 @@ theorem tsub_right_inj (hba : b ≤ a) (hca : c ≤ a) : a - b = a - c ↔ b = c
 
 variable (α)
 
-/-- A `CanonicallyOrderedAddMonoid` with ordered subtraction and order-reflecting addition is
+/-- A `CanonicallyOrderedAddCommMonoid` with ordered subtraction and order-reflecting addition is
 cancellative. This is not an instance as it would form a typeclass loop.
 
 See note [reducible non-instances]. -/
 @[reducible]
-def CanonicallyOrderedAddMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
+def CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
   { (by infer_instance : AddCommMonoid α) with
     add_left_cancel := fun a b c h => by
       simpa only [add_tsub_cancel_left] using congr_arg (fun x => x - a) h }
-#align canonically_ordered_add_monoid.to_add_cancel_comm_monoid CanonicallyOrderedAddMonoid.toAddCancelCommMonoid
+#align canonically_ordered_add_monoid.to_add_cancel_comm_monoid CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid
 
 end Contra
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 /-! ### Lemmas in a linearly canonically ordered monoid. -/
 
