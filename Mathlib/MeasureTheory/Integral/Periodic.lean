@@ -88,22 +88,33 @@ instance isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T)) wher
   measure_univ_lt_top := by simp
 #align add_circle.is_finite_measure AddCircle.isFiniteMeasure
 
-instance : HasAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) ℝ where
+instance hasFunDom : HasAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) ℝ where
   has_add_fundamental_domain_characterization := by
     use Ioc (0 : ℝ) (0 + T)
     apply isAddFundamentalDomain_Ioc'
     exact hT.out
---- ALEX HOMEWORK : termify
+--- ALEX HOMEWORK : termify DO 10/04/23
 
-instance : IsAddLeftInvariant (volume : Measure (AddCircle T)) := inferInstance
 
-instance : AddQuotientVolumeEqVolumePreimage (volume : Measure (AddCircle T)) := by
-    apply MeasureTheory.LeftInvariantIsAddQuotientVolumeEqVolumePreimage
+-- Note: Not finding this instance automatically, so we name it to fill explicitly in typeclass
+-- arguments
+instance sigmaFinite : SigmaFinite (volume : Measure (AddCircle T)) := inferInstance
 
-#exit
+-- Note: Not finding this instance automatically, so we name it to fill explicitly in typeclass
+-- arguments
+instance isAddLeftInv : IsAddLeftInvariant (volume : Measure (AddCircle T)) := inferInstance
 
-  have := MeasureTheory.LeftInvariantIsAddQuotientVolumeEqVolumePreimage
+-- Note: Not finding this instance automatically, so we name it to fill explicitly in typeclass
+-- arguments
+noncomputable instance pseudoMetricSpace : PseudoMetricSpace (AddCircle T) := inferInstance
 
+instance addQVEVP : AddQuotientVolumeEqVolumePreimage (volume : Measure (AddCircle T)) := by
+  apply @MeasureTheory.LeftInvariantIsAddQuotientVolumeEqVolumePreimage ℝ _ _ _ _ _ _
+    (zmultiples T) _ _ _ _ (volume : Measure (AddCircle T)) _ _ _ (isAddLeftInv T)
+    (sigmaFinite T) (isFiniteMeasure T)
+  rw [IsAddFundamentalDomain.covolume_eq_volume (isAddFundamentalDomain_Ioc' hT.out 0),
+      AddCircle.measure_univ]
+  simp
 
 /-- The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass `T`)
@@ -111,13 +122,9 @@ on the additive circle, and with respect to the restriction of Lebsegue measure 
 interval (t, t + T]. -/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
-      (volume.restrict (Ioc t (t + T))) := by
-
-  apply MeasurePreservingQuotientAddGroup.mk'
-  · exact isAddFundamentalDomain_Ioc' hT.out t
-  · simp
-  · haveI : CompactSpace (ℝ ⧸ zmultiples T) := inferInstanceAs (CompactSpace (AddCircle T))
-    simp [← ENNReal.ofReal_coe_nnreal, Real.coe_toNNReal T hT.out.le, -Real.coe_toNNReal']
+      (volume.restrict (Ioc t (t + T))) :=
+  measurePreserving_addQuotientGroup_mk_of_addQuotientVolumeEqVolumePreimage
+    (𝓕 := Ioc t (t+T)) (isAddFundamentalDomain_Ioc' hT.out _) _
 #align add_circle.measure_preserving_mk AddCircle.measurePreserving_mk
 
 theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
