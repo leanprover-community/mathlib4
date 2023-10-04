@@ -201,6 +201,30 @@ def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List
 
 end reorder
 
+/-- `prepareOp sum` takes an `Expr`ession as input.  It assumes that `sum` is a well-formed
+term representing a repeated application of a binary operation and that the summands are the
+last two arguments passed to the operation.
+It returns the expression consisting of the operation with all its arguments already applied,
+except for the last two.
+This is similar to `Lean.Meta.mkAdd, Lean.Meta.mkMul`, except that the resulting operation is
+primed to work with operands of the same type as the ones already appearing in `sum`.
+
+This is useful to rearrange the operands.
+-/
+def prepareOp (sum : Expr) : Expr :=
+  let opargs := sum.getAppArgs
+  (opargs.toList.take (opargs.size - 2)).foldl (fun x y => Expr.app x y) sum.getAppFn
+
+/--  `sumList op exs` assumes that `op` is the `Name` of a binary operation.
+If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList` returns
+`op (op( ... op (op e₁ e₂) e₃) ... eₙ)`.
+-/
+partial
+def sumList (prepOp : Expr) : List Expr → Expr
+  | []    => default
+  | [a]    => a
+  | a::as => as.foldl (fun x y => Expr.app (prepOp.app x) y) a
+
 end ExprProcessing
 
 open Meta
@@ -228,30 +252,6 @@ partial def getOps (sum : Expr) : MetaM (Array ((Array Expr) × Expr)) := do
     (#[(summands, sum)], summands)
   let rest ← rest.mapM getOps
   return rest.foldl Array.append first
-
-/-- `prepareOp sum` takes an `Expr`ession as input.  It assumes that `sum` is a well-formed
-term representing a repeated application of a binary operation and that the summands are the
-last two arguments passed to the operation.
-It returns the expression consisting of the operation with all its arguments already applied,
-except for the last two.
-This is similar to `Lean.Meta.mkAdd, Lean.Meta.mkMul`, except that the resulting operation is
-primed to work with operands of the same type as the ones already appearing in `sum`.
-
-This is useful to rearrange the operands.
--/
-def prepareOp (sum : Expr) : Expr :=
-  let opargs := sum.getAppArgs
-  (opargs.toList.take (opargs.size - 2)).foldl (fun x y => Expr.app x y) sum.getAppFn
-
-/--  `sumList op exs` assumes that `op` is the `Name` of a binary operation.
-If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList` returns
-`op (op( ... op (op e₁ e₂) e₃) ... eₙ)`.
--/
-partial
-def sumList (prepOp : Expr) : List Expr → Expr
-  | []    => default
-  | [a]    => a
-  | a::as => as.foldl (fun x y => Expr.app (prepOp.app x) y) a
 
 /-- `rankSums op tgt instructions` takes as input
 * the name `op` of a binary operation,
@@ -318,14 +318,12 @@ def pairUp : List (Expr × Bool × Syntax) → List Expr →
                   return ((d, m.2.1)::found, unfound)
   | _, _ => return ([], [])
 
-open Elab.Tactic
-
 /-- `move_oper_simpCtx` is the `Simp.Context` for the reordering internal to `move_oper`.
 To support a new binary operation, extend the list in this definition, so that it contains
 enough lemmas to allow `simp` to close a generic permutation goal for the new binary operation.
 -/
 def move_oper_simpCtx : MetaM Simp.Context := do
-  let simpNames := simpOnlyBuiltins ++ [
+  let simpNames := Elab.Tactic.simpOnlyBuiltins ++ [
     ``add_comm, ``add_assoc, ``add_left_comm,  -- for `HAdd.hAdd`
     ``mul_comm, ``mul_assoc, ``mul_left_comm,  -- for `HMul.hMul`
     ``and_comm, ``and_assoc, ``and_left_comm,  -- for `and`
