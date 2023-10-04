@@ -117,8 +117,9 @@ instance smulZeroClass [CommSemiring S₁] [SMulZeroClass R S₁] :
     SMulZeroClass R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.smulZeroClass
 
-instance distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
+instance distribMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
     DistribMulAction R (MvPolynomial σ S₁) :=
+  --TODO: add reference to library note in PR #7432
   { AddMonoidAlgebra.distribMulAction with
     toSMul := MvPolynomial.smulZeroClass.toSMul }
 
@@ -126,9 +127,10 @@ instance faithfulSMul [CommSemiring S₁] [SMulZeroClass R S₁] [FaithfulSMul R
     FaithfulSMul R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.faithfulSMul
 
-instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=
+instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=]
+  --TODO: add reference to library note in PR #7432
   { AddMonoidAlgebra.module with
-    toDistribMulAction := MvPolynomial.distribuMulAction }
+    toDistribMulAction := MvPolynomial.distribMulAction }
 
 instance isScalarTower [CommSemiring S₂] [SMul R S₁] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
     [IsScalarTower R S₁ S₂] : IsScalarTower R S₁ (MvPolynomial σ S₂) :=
@@ -144,6 +146,7 @@ instance isCentralScalar [CommSemiring S₁] [SMulZeroClass R S₁] [SMulZeroCla
 
 instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
     Algebra R (MvPolynomial σ S₁) :=
+  --TODO: add reference to library note in PR #7432
   { AddMonoidAlgebra.algebra with
     toSMul := MvPolynomial.smulZeroClass.toSMul }
 
