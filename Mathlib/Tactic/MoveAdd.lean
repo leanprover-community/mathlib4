@@ -172,7 +172,7 @@ def weight (L : List (α × Bool)) (a : α) : ℤ :=
     | some (_, b) => if b then - l + (L.indexOf (a, b) : ℤ) else (L.indexOf (a, b) + 1 : ℤ)
     | none => 0
 
-/--  `reorderUsing toReorder instructions` produces a reordering of `toReorder : List α`,
+/-- `reorderUsing toReorder instructions` produces a reordering of `toReorder : List α`,
 following the requirements imposed by `instructions : List (α × Bool)`.
 
 These are the requirements:
@@ -215,7 +215,7 @@ def prepareOp (sum : Expr) : Expr :=
   let opargs := sum.getAppArgs
   (opargs.toList.take (opargs.size - 2)).foldl (fun x y => Expr.app x y) sum.getAppFn
 
-/--  `sumList prepOp exs` assumes that `prepOp` is an `Expr`ession representing a binary operation
+/-- `sumList prepOp exs` assumes that `prepOp` is an `Expr`ession representing a binary operation
 already fully applied up until its last two arguments and assumes that the last two arguments
 are the operands of the operation.
 Such an expression is the result of `prepareOp`.
@@ -235,7 +235,7 @@ open Meta
 variable (op : Name)
 
 variable (R : Expr) in
-/--  If `sum` is an expression consisting of repeated applications of `op`, then `getAddends`
+/-- If `sum` is an expression consisting of repeated applications of `op`, then `getAddends`
 returns the Array of those recursively determined arguments whose type is DefEq to `R`. -/
 partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
   if sum.isAppOf op then
@@ -289,7 +289,7 @@ def permuteExpr (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM Expr :
     permTgt := permTgt.replace (if · == old then new else none)
   return permTgt
 
-/--  `pairUp L R` takes to lists `L R : List Expr` as inputs.
+/-- `pairUp L R` takes to lists `L R : List Expr` as inputs.
 It scans the elements of `L`, looking for a corresponding `DefEq` `Expr`ession in `R`.
 If it finds one such element `d`, then it sets the element `d : R` aside, removing it from `R`, and
 it continues with the matching on the remainder of `L` and on `R.erase d`.
@@ -305,7 +305,7 @@ Example:
   let L := [mkNatLit 0, (← mkFreshExprMVar (some (mkConst ``Nat))), mkNatLit 0] -- i.e. [0, _, 0]
   let R := [mkNatLit 0, mkNatLit 0,                                 mkNatLit 1] -- i.e. [0, 1]
   dbg_trace f!"{(← pairUp L R)}"
-/-  output:
+/- output:
 `([0, 0], [0])`
 the output LHS list `[0, 0]` consists of the first `0` and the `MVarId`.
 the output RHS list `[0]` corresponds to the last `0` in `L`.
@@ -407,7 +407,7 @@ def parseArrows : TSyntax `Lean.Parser.Tactic.rwRuleSeq → TermElabM (Array (Ex
 
 initialize registerTraceClass `Tactic.move_oper
 
-/--  The tactic `move_add` rearranges summands of expressions.
+/-- The tactic `move_add` rearranges summands of expressions.
 Calling `move_add [a, ← b, ...]` matches `a, b,...` with summands in the main goal.
 It then moves `a` to the far right and `b` to the far left of each addition in which they appear.
 The side to which the summands are moved is determined by the presence or absence of the arrow `←`.
