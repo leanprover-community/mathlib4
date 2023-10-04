@@ -131,9 +131,9 @@ theorem roots_of_cyclotomic (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] :
 /-- If there is a primitive `n`th root of unity in `K`, then `X ^ n - 1 = ∏ (X - μ)`, where `μ`
 varies over the `n`-th roots of unity. -/
 theorem X_pow_sub_one_eq_prod {ζ : R} {n : ℕ} (hpos : 0 < n) (h : IsPrimitiveRoot ζ n) :
-    X ^ n - 1 = ∏ ζ in nthRootsFinset n R, (X - C ζ) := by
-  rw [nthRootsFinset, ← Multiset.toFinset_eq (IsPrimitiveRoot.nthRoots_nodup h)]
-  simp only [Finset.prod_mk, RingHom.map_one]
+    X ^ n - 1 = ∏ ζ in (nthRootsFinset n R : Set R).toFinset, (X - C ζ) := by
+  simp_rw [nthRootsFinset_def, ← Multiset.toFinset_eq (IsPrimitiveRoot.nthRoots_nodup h)]
+  simp only [Finset.toFinset_coe, Finset.prod_mk]
   rw [nthRoots]
   have hmonic : (X ^ n - C (1 : R)).Monic := monic_X_pow_sub_C (1 : R) (ne_of_lt hpos).symm
   symm
@@ -171,7 +171,7 @@ theorem prod_cyclotomic'_eq_X_pow_sub_one {K : Type*} [CommRing K] [IsDomain K] 
   have hd : (n.divisors : Set ℕ).PairwiseDisjoint fun k => primitiveRoots k K :=
     fun x _ y _ hne => IsPrimitiveRoot.disjoint hne
   simp only [X_pow_sub_one_eq_prod hpos h, cyclotomic', ← Finset.prod_biUnion hd,
-    h.nthRoots_one_eq_biUnion_primitiveRoots]
+    h.nthRoots_one_eq_biUnion_primitiveRoots, Finset.toFinset_coe]
 set_option linter.uppercaseLean3 false in
 #align polynomial.prod_cyclotomic'_eq_X_pow_sub_one Polynomial.prod_cyclotomic'_eq_X_pow_sub_one
 

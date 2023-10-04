@@ -856,8 +856,10 @@ theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) : (nthRoots
 
 @[simp]
 theorem card_nthRootsFinset {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
-    (nthRootsFinset n R).card = n := by
-  rw [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_nodup h), card_mk, h.card_nthRoots]
+    Nat.card (nthRootsFinset n R) = n := by
+  simp only [nthRootsFinset, Subsemigroup.mem_mk, mem_coe, Nat.card_eq_fintype_card,
+    Fintype.card_coe]
+  rw [← Multiset.toFinset_eq (nthRoots_nodup h), card_mk, h.card_nthRoots]
 #align is_primitive_root.card_nth_roots_finset IsPrimitiveRoot.card_nthRootsFinset
 
 open scoped Nat
@@ -891,12 +893,15 @@ theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (prim
       (isPrimitiveRoot_of_mem_primitiveRoots hk).unique <| isPrimitiveRoot_of_mem_primitiveRoots hl
 #align is_primitive_root.disjoint IsPrimitiveRoot.disjoint
 
-/-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`
+/-- `nthRoots n` as a `Set` is equal to the union of `primitiveRoots i R` for `i ∣ n`
 if there is a primitive root of unity in `R`.
 This holds for any `Nat`, not just `PNat`, see `nthRoots_one_eq_bUnion_primitive_roots`. -/
 theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
-    nthRootsFinset n R = (Nat.divisors ↑n).biUnion fun i => primitiveRoots i R := by
+    (nthRootsFinset n R : Set R) = (Nat.divisors ↑n).biUnion fun i => primitiveRoots i R := by
   symm
+  simp only [mem_coe, Nat.mem_divisors, Nat.isUnit_iff, ne_eq, PNat.ne_zero, not_false_eq_true,
+    and_true, nthRootsFinset, Subsemigroup.coe_set_mk]
+  apply congr_arg
   apply Finset.eq_of_subset_of_card_le
   · intro x
     simp only [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_nodup h), exists_prop,
@@ -910,7 +915,10 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ+} (h : IsPrimi
     rw [mem_primitiveRoots hazero] at ha
     rw [hd, pow_mul, ha.pow_eq_one, one_pow]
   · apply le_of_eq
-    rw [h.card_nthRootsFinset, Finset.card_biUnion]
+    have := h.card_nthRootsFinset
+    simp only [nthRootsFinset, Subsemigroup.mem_mk, mem_coe, Nat.card_eq_fintype_card,
+      Fintype.card_coe] at this
+    rw [this, Finset.card_biUnion]
     · nth_rw 1 [← Nat.sum_totient n]
       refine' sum_congr rfl _
       simp only [Nat.mem_divisors]
@@ -921,10 +929,10 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ+} (h : IsPrimi
       exact disjoint hdiff
 #align is_primitive_root.nth_roots_one_eq_bUnion_primitive_roots' IsPrimitiveRoot.nthRoots_one_eq_biUnion_primitiveRoots'
 
-/-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`
+/-- `nthRoots n` as a `Set` is equal to the union of `primitiveRoots i R` for `i ∣ n`
 if there is a primitive root of unity in `R`. -/
 theorem nthRoots_one_eq_biUnion_primitiveRoots {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
-    nthRootsFinset n R = (Nat.divisors n).biUnion fun i => primitiveRoots i R := by
+    (nthRootsFinset n R : Set R) = (Nat.divisors n).biUnion fun i => primitiveRoots i R := by
   by_cases hn : n = 0
   · simp [hn]
   exact nthRoots_one_eq_biUnion_primitiveRoots' (n := ⟨n, Nat.pos_of_ne_zero hn⟩) h

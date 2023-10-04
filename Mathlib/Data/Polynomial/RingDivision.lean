@@ -832,60 +832,58 @@ theorem nthRoots_two_eq_zero_iff {r : R} : nthRoots 2 r = 0 ↔ ¬IsSquare r := 
 #align polynomial.nth_roots_two_eq_zero_iff Polynomial.nthRoots_two_eq_zero_iff
 
 /-- The multiset `nthRoots ↑n (1 : R)` as a Finset. -/
-def nthRootsFinset (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
-  haveI := Classical.decEq R
-  Multiset.toFinset (nthRoots n (1 : R))
+def nthRootsFinset (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Subsemigroup R where
+  carrier :=
+    haveI := Classical.decEq R
+    Multiset.toFinset (nthRoots n (1 : R))
+  mul_mem' hη₁ hη₂ := by
+    classical
+    cases n with
+    | zero =>
+      simp [(toFinset_zero)] at hη₁
+    | succ n =>
+      rw [Finset.mem_coe, mem_toFinset, mem_nthRoots n.succ_pos] at hη₁ hη₂ ⊢
+      rw [mul_pow, hη₁, hη₂, one_mul]
 #align polynomial.nth_roots_finset Polynomial.nthRootsFinset
+
+instance  (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] [DecidableEq R] :
+    Fintype (nthRootsFinset n R : Set R) := by
+  simp only [nthRootsFinset, Subsemigroup.coe_set_mk, Finset.coe_sort_coe]
+  infer_instance
 
 -- porting note: new
 lemma nthRootsFinset_def (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] [DecidableEq R] :
-    nthRootsFinset n R = Multiset.toFinset (nthRoots n (1 : R)) := by
+    (nthRootsFinset n R : Set R) = Multiset.toFinset (nthRoots n (1 : R)) := by
   unfold nthRootsFinset
+  simp only [Subsemigroup.coe_set_mk, coe_inj]
   convert rfl
 
 @[simp]
 theorem mem_nthRootsFinset {n : ℕ} (h : 0 < n) {x : R} :
     x ∈ nthRootsFinset n R ↔ x ^ (n : ℕ) = 1 := by
   classical
-  rw [nthRootsFinset_def, mem_toFinset, mem_nthRoots h]
+  simp [nthRootsFinset, mem_nthRoots h, (mem_toFinset)]
 #align polynomial.mem_nth_roots_finset Polynomial.mem_nthRootsFinset
 
 @[simp]
-theorem nthRootsFinset_zero : nthRootsFinset 0 R = ∅ := by classical simp [nthRootsFinset_def]
+theorem nthRootsFinset_zero : nthRootsFinset 0 R = ⊥ := by
+  classical
+  rw [← SetLike.coe_set_eq]
+  simp [nthRootsFinset_def]
 #align polynomial.nth_roots_finset_zero Polynomial.nthRootsFinset_zero
-
-theorem mul_mem_nthRootsFinset
-    {η₁ η₂ : R} (hη₁ : η₁ ∈ nthRootsFinset n R) (hη₂ : η₂ ∈ nthRootsFinset n R) :
-    η₁ * η₂ ∈ nthRootsFinset n R := by
-  cases n with
-  | zero =>
-    simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη₁
-  | succ n =>
-    rw [mem_nthRootsFinset n.succ_pos] at hη₁ hη₂ ⊢
-    rw [mul_pow, hη₁, hη₂, one_mul]
 
 theorem ne_zero_of_mem_nthRootsFinset {η : R} (hη : η ∈ nthRootsFinset n R) : η ≠ 0 := by
   nontriviality R
   rintro rfl
   cases n with
   | zero =>
-    simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη
+    simp [Subsemigroup.not_mem_bot] at hη
   | succ n =>
     rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_pos] at hη
     exact zero_ne_one hη
 
 theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n R := by
   rw [mem_nthRootsFinset hn, one_pow]
-
-/-- The finset `nthRootsFinset n R` as a `Subsemigroup`. -/
-def nthRootsSubsemigroup (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Subsemigroup R where
-  carrier := nthRootsFinset n R
-  mul_mem' hη₁ hη₂ := mul_mem_nthRootsFinset hη₁ hη₂
-
-/-- The finset `nthRootsFinset n R` as a `Submonoid`. -/
-def nthRootsSubmonoid (n : ℕ) (hn : 0 < n) (R : Type*) [CommRing R] [IsDomain R] : Submonoid R where
-  __ := nthRootsSubsemigroup n R
-  one_mem' := one_mem_nthRootsFinset hn
 
 end NthRoots
 
