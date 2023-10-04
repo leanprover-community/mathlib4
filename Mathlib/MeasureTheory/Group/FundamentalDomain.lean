@@ -729,7 +729,9 @@ local notation "π" => @Quotient.mk _ α_mod_G
 /-- Given a measurable subset `s` of a `MeasurableSpace` `α`, a group `G` acting on `α`, and a
 measure `μ` on `α`, one can define a `Measure` on the `Quotient` of `α ⧸ G` by lifting to `α` and
 intersecting with `s`. -/
-@[to_additive NullMeasurableSet.addQuotientMeasure]
+@[to_additive NullMeasurableSet.addQuotientMeasure "Given a measurable subset `s` of a
+`MeasurableSpace` `α`, an additive group `G` acting on `α`, and a measure `μ` on `α`, one can define
+a `Measure` on the `Quotient` of `α ⧸ G` by lifting to `α` and intersecting with `s`."]
 noncomputable def NullMeasurableSet.quotientMeasure : Measure (Quotient α_mod_G) := by
   apply Measure.ofMeasurable (fun U _ => μ ((π ⁻¹' U) ∩ s)) (by simp)
   intro f meas_f disjoint_f
@@ -816,7 +818,10 @@ class HasFundamentalDomain (G : Type*) (α : Type*) [One G] [SMul G α] [Measure
 attribute [to_additive existing MeasureTheory.HasAddFundamentalDomain]
   MeasureTheory.HasFundamentalDomain
 
-@[to_additive addCovolume]
+/-- The `covolume` of an action of `G` on `α` which has a fundamental domain is the volume of some
+fundamental domain. -/
+@[to_additive addCovolume "The `addCovolume` of an action of `G` on `α` which has a fundamental
+domain is the volume of some fundamental domain."]
 def covolume (G α : Type*) [One G] [SMul G α] [MeasureSpace α]
     [funDom : HasFundamentalDomain G α] : ℝ≥0∞ :=
   volume funDom.has_fundamental_domain_characterization.choose
