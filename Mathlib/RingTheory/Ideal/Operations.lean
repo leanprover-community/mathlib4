@@ -825,8 +825,8 @@ theorem span_pair_mul_span_pair (w x y z : R) :
   simp_rw [span_insert, sup_mul, mul_sup, span_singleton_mul_span_singleton, sup_assoc]
 #align ideal.span_pair_mul_span_pair Ideal.span_pair_mul_span_pair
 
-theorem isCoprime_iff_sup : IsCoprime I J ↔ I ⊔ J = ⊤ := by
-  rw [IsCoprime]
+theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
+  rw [IsCoprime, codisjoint_iff]
   constructor
   · rintro ⟨x, y, hxy⟩
     rw [eq_top_iff_one]
@@ -839,11 +839,12 @@ theorem isCoprime_iff_sup : IsCoprime I J ↔ I ⊔ J = ⊤ := by
     simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
 
 theorem isCoprime_iff_add : IsCoprime I J ↔ I + J = 1 := by
-  rw [isCoprime_iff_sup, Submodule.add_eq_sup, one_eq_top]
+  rw [isCoprime_iff_codisjoint, codisjoint_iff, Submodule.add_eq_sup, one_eq_top]
 
 theorem isCoprime_span_singleton_iff (x y : R) :
     IsCoprime (span <| singleton x) (span <| singleton y) ↔ IsCoprime x y := by
-  simp_rw [isCoprime_iff_sup, eq_top_iff_one, mem_span_singleton_sup, mem_span_singleton]
+  simp_rw [isCoprime_iff_codisjoint, codisjoint_iff, eq_top_iff_one, mem_span_singleton_sup,
+    mem_span_singleton]
   constructor
   · rintro ⟨a, _, ⟨b, rfl⟩, e⟩; exact ⟨a, b, mul_comm b y ▸ e⟩
   · rintro ⟨a, b, e⟩; exact ⟨a, _, ⟨b, rfl⟩, mul_comm y b ▸ e⟩

@@ -876,7 +876,7 @@ theorem inf_eq_mul_of_coprime {I J : Ideal A} (coprime : I ⊔ J = ⊤) : I ⊓ 
 #align ideal.inf_eq_mul_of_coprime Ideal.inf_eq_mul_of_coprime
 
 theorem isCoprime_iff_gcd {I J : Ideal A} : IsCoprime I J ↔ gcd I J = 1 := by
-  rw [Ideal.isCoprime_iff_sup, one_eq_top, gcd_eq_sup]
+  rw [Ideal.isCoprime_iff_codisjoint, codisjoint_iff, one_eq_top, gcd_eq_sup]
 
 end Ideal
 
