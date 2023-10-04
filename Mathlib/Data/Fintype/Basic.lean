@@ -1234,15 +1234,12 @@ theorem map_univ_val_equiv (e : α ≃ β) :
 theorem bijective_iff_map_univ_eq_univ (f : α → β) :
     Function.Bijective f ↔ map f (Finset.univ : Finset α).val = univ.val := by
   constructor
-  {
-    intro ⟨inj, surj⟩
+  · intro ⟨inj, surj⟩
     have k : f = ↑(Embedding.mk f inj) := rfl
     rw [k, ←map_val, map_univ_of_surjective (f := Embedding.mk _ _) surj]
-  }
   intro univ_eq
   constructor
-  { -- injective
-    intro a b fab
+  · intro a b fab
     have h : count (f a) (Multiset.map f univ.val) = 1
     rw [univ_eq, count_univ]
     rw [count_map] at h
@@ -1255,9 +1252,7 @@ theorem bijective_iff_map_univ_eq_univ (f : α → β) :
     · apply Multiset.mem_singleton.mp
       simp [←hc, fab]
     rw [ha,hb]
-  }
-  { -- surjective
-    intro b
+  · intro b
     have h : count b (Multiset.map f univ.val) = 1
     rw [univ_eq, count_univ]
     rw [count_map] at h
@@ -1268,8 +1263,6 @@ theorem bijective_iff_map_univ_eq_univ (f : α → β) :
     rw [ha, Multiset.mem_singleton]
     simp only [Multiset.mem_filter, mem_val, mem_univ, true_and] at ha2
     rw [ha2]
-  }
-
 
 end Multiset
 
