@@ -177,7 +177,8 @@ end CanonicallyOrderedCommMonoid
 section CanonicallyLinearOrderedCommMonoid
 
 instance canonicallyLinearOrderedAddCommMonoid (α : Type*)
-    [CanonicallyLinearOrderedAddCommMonoid α] : CanonicallyLinearOrderedAddCommMonoid (WithZero α) :=
+    [CanonicallyLinearOrderedAddCommMonoid α] :
+    CanonicallyLinearOrderedAddCommMonoid (WithZero α) :=
   { WithZero.canonicallyOrderedAddCommMonoid, WithZero.linearOrder with }
 #align with_zero.canonically_linear_ordered_add_monoid WithZero.canonicallyLinearOrderedAddCommMonoid
 

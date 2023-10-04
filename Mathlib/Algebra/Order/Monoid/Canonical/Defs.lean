@@ -319,9 +319,9 @@ theorem of_gt {M} [CanonicallyOrderedAddCommMonoid M] {x y : M} (h : x < y) : Ne
 -- 1 < p is still an often-used `Fact`, due to `Nat.Prime` implying it, and it implying `Nontrivial`
 -- on `ZMod`'s ring structure. We cannot just set this to be any `x < y`, else that becomes a
 -- metavariable and it will hugely slow down typeclass inference.
-instance (priority := 10) of_gt' [CanonicallyOrderedAddCommMonoid M] [One M] {y : M} [Fact (1 < y)] :
+instance (priority := 10) of_gt' [CanonicallyOrderedAddCommMonoid M] [One M] {y : M}
   -- Porting note: Fact.out has different type signature from mathlib3
-  NeZero y := of_gt <| @Fact.out (1 < y) _
+  [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 #align ne_zero.of_gt' NeZero.of_gt'
 
 set_option linter.deprecated false in
@@ -340,7 +340,8 @@ class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
     whose ordering is a linear order. -/
 @[to_additive]
-class CanonicallyLinearOrderedCommMonoid (α : Type*) extends CanonicallyOrderedCommMonoid α, LinearOrder α
+class CanonicallyLinearOrderedCommMonoid (α : Type*) extends CanonicallyOrderedCommMonoid α,
+  LinearOrder α
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedCommMonoid
 
 section CanonicallyLinearOrderedCommMonoid

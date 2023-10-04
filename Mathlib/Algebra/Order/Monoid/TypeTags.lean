@@ -106,11 +106,13 @@ instance Additive.canonicallyOrderedAddCommMonoid [CanonicallyOrderedCommMonoid 
   { Additive.orderedAddCommMonoid, Additive.orderBot, Additive.existsAddOfLe with
     le_self_add := @le_self_mul α _ }
 
-instance Multiplicative.canonicallyLinearOrderedCommMonoid [CanonicallyLinearOrderedAddCommMonoid α] :
+instance Multiplicative.canonicallyLinearOrderedCommMonoid
+    [CanonicallyLinearOrderedAddCommMonoid α] :
     CanonicallyLinearOrderedCommMonoid (Multiplicative α) :=
   { Multiplicative.canonicallyOrderedCommMonoid, Multiplicative.linearOrder with }
 
-instance [CanonicallyLinearOrderedCommMonoid α] : CanonicallyLinearOrderedAddCommMonoid (Additive α) :=
+instance [CanonicallyLinearOrderedCommMonoid α] :
+    CanonicallyLinearOrderedAddCommMonoid (Additive α) :=
   { Additive.canonicallyOrderedAddCommMonoid, Additive.linearOrder with }
 
 namespace Additive
