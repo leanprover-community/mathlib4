@@ -67,8 +67,7 @@ open scoped TensorProduct DirectSum
 open PiTensorProduct
 
 /-- As a graded monoid, `⨂[R]^i M` has a `1 : ⨂[R]^0 M`. -/
-instance gOne :
-    GradedMonoid.GOne fun i => (⨂[R]^i) M where one := tprod R <| @Fin.elim0' M
+instance gOne : GradedMonoid.GOne fun i => (⨂[R]^i) M where one := tprod R <| @Fin.elim0' M
 #align tensor_power.ghas_one TensorPower.gOne
 
 local notation "ₜ1" => @GradedMonoid.GOne.one ℕ (fun i => (⨂[R]^i) M) _ _
