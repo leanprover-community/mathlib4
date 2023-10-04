@@ -566,12 +566,12 @@ end CommRing
 /-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely rings, by treating both as `ℤ`-algebras.
 -/
-noncomputable example [Ring A] [Ring B] : Ring (A ⊗[ℤ] B) := by infer_instance
+example [Ring A] [Ring B] : Ring (A ⊗[ℤ] B) := by infer_instance
 
 /-- Verify that typeclass search finds the comm_ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely comm_rings, by treating both as `ℤ`-algebras.
 -/
-noncomputable example [CommRing A] [CommRing B] : CommRing (A ⊗[ℤ] B) := by infer_instance
+example [CommRing A] [CommRing B] : CommRing (A ⊗[ℤ] B) := by infer_instance
 
 /-!
 We now build the structure maps for the symmetric monoidal category of `R`-algebras.
@@ -929,7 +929,7 @@ variable [CommSemiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
 homomorphism.
 
 This is just a special case of `Algebra.TensorProduct.lift` for when `C` is commutative. -/
-noncomputable abbrev productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
+abbrev productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
   lift f g (fun _ _ => Commute.all _ _)
 #align algebra.tensor_product.product_left_alg_hom Algebra.TensorProduct.productLeftAlgHom
 

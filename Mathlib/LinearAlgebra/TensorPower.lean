@@ -266,7 +266,7 @@ instance gsemiring : DirectSum.GSemiring fun i => (⨂[R]^i) M :=
     natCast_succ := fun n => by simp only [Nat.cast_succ, map_add, algebraMap₀_one] }
 #align tensor_power.gsemiring TensorPower.gsemiring
 
-noncomputable example : Semiring (⨁ n : ℕ, (⨂[R]^n) M) := by infer_instance
+example : Semiring (⨁ n : ℕ, (⨂[R]^n) M) := by infer_instance
 
 /-- The tensor powers form a graded algebra.
 
@@ -293,6 +293,6 @@ theorem galgebra_toFun_def (r : R) :
   rfl
 #align tensor_power.galgebra_to_fun_def TensorPower.galgebra_toFun_def
 
-noncomputable example : Algebra R (⨁ n : ℕ, (⨂[R]^n) M) := by infer_instance
+example : Algebra R (⨁ n : ℕ, (⨂[R]^n) M) := by infer_instance
 
 end TensorPower

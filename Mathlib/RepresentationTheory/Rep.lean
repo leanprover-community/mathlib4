@@ -544,7 +544,7 @@ namespace Rep
 variable {k G : Type u} [CommRing k] [Monoid G]
 
 -- Verify that the symmetric monoidal structure is available.
-noncomputable example : SymmetricCategory (Rep k G) := by infer_instance
+example : SymmetricCategory (Rep k G) := by infer_instance
 
 example : MonoidalPreadditive (Rep k G) := by infer_instance
 

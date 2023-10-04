@@ -168,7 +168,7 @@ variable (R)
 
 /-- The restriction of scalars by the identity morphisms identify to the
 identity functor. -/
-noncomputable abbrev restrictScalarsId := restrictScalarsId'.{v} (RingHom.id R) rfl
+abbrev restrictScalarsId := restrictScalarsId'.{v} (RingHom.id R) rfl
 
 end
 
@@ -192,7 +192,7 @@ lemma restrictScalarsComp'_inv_apply (M : ModuleCat R₃) (x : M) :
 
 /-- The restriction of scalars by a composition of ring morphisms identify to the
 composition of the restriction of scalars functors. -/
-noncomputable abbrev restrictScalarsComp := restrictScalarsComp'.{v} f g _ rfl
+abbrev restrictScalarsComp := restrictScalarsComp'.{v} f g _ rfl
 
 end
 
