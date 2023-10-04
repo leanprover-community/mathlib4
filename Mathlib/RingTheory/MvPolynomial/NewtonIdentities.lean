@@ -251,8 +251,8 @@ theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
     neg_one_pow_mul_eq_zero_iff.mpr rfl]
 
 theorem sum_antidiagonal_card_esymm_psum_eq_zero :
-    ∑ a in Nat.antidiagonal (Fintype.card σ), (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0 :=
-    by
+    ∑ a in Nat.antidiagonal (Fintype.card σ), (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd =
+    0 := by
   let k := Fintype.card σ
   suffices : (-1 : MvPolynomial σ R) ^ (k + 1) *
     ∑ a in Nat.antidiagonal k, (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0
