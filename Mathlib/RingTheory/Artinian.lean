@@ -255,6 +255,13 @@ theorem eventually_isCompl_ker_pow_range_pow [IsNoetherian R M] (f : M →ₗ[R]
     f.eventually_codisjoint_ker_pow_range_pow] with n hn
   simpa only [isCompl_iff]
 
+theorem isCompl_iSup_ker_pow_iInf_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
+    IsCompl (⨆ n,LinearMap.ker (f ^ n)) (⨅ n, LinearMap.range (f ^ n)) := by
+  obtain ⟨k, hk⟩ := Filter.eventually_atTop.mp <| f.eventually_isCompl_ker_pow_range_pow.and <|
+    f.eventually_iInf_range_pow_eq.and f.eventually_iSup_ker_pow_eq
+  obtain ⟨h₁, h₂, h₃⟩ := hk k (le_refl k)
+  rwa [h₂, h₃]
+
 end LinearMap
 
 namespace IsArtinian
