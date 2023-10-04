@@ -108,8 +108,8 @@ theorem cells_ssubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ 
   Iff.rfl
 #align young_diagram.cells_ssubset_iff YoungDiagram.cells_ssubset_iff
 
-instance : Sup YoungDiagram
-    where sup μ ν :=
+instance : Sup YoungDiagram where
+  sup μ ν :=
     { cells := μ.cells ∪ ν.cells
       isLowerSet := by
         rw [Finset.coe_union]
@@ -130,8 +130,8 @@ theorem mem_sup {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊔ ν ↔ x 
   Finset.mem_union
 #align young_diagram.mem_sup YoungDiagram.mem_sup
 
-instance : Inf YoungDiagram
-    where inf μ ν :=
+instance : Inf YoungDiagram where
+  inf μ ν :=
     { cells := μ.cells ∩ ν.cells
       isLowerSet := by
         rw [Finset.coe_inter]

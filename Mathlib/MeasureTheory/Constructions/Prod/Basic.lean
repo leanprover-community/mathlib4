@@ -294,8 +294,8 @@ protected irreducible_def prod (μ : Measure α) (ν : Measure β) : Measure (α
   bind μ fun x : α => map (Prod.mk x) ν
 #align measure_theory.measure.prod MeasureTheory.Measure.prod
 
-instance prod.measureSpace {α β} [MeasureSpace α] [MeasureSpace β] : MeasureSpace (α × β)
-    where volume := volume.prod volume
+instance prod.measureSpace {α β} [MeasureSpace α] [MeasureSpace β] : MeasureSpace (α × β) where
+  volume := volume.prod volume
 #align measure_theory.measure.prod.measure_space MeasureTheory.Measure.prod.measureSpace
 
 variable [SigmaFinite ν]
@@ -344,6 +344,14 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
       _ = μ.prod ν ST := (prod_apply hSTm).symm
       _ = μ.prod ν (s ×ˢ t) := measure_toMeasurable _
 #align measure_theory.measure.prod_prod MeasureTheory.Measure.prod_prod
+
+@[simp] lemma map_fst_prod : Measure.map Prod.fst (μ.prod ν) = (ν univ) • μ := by
+  ext s hs
+  simp [Measure.map_apply measurable_fst hs, ← prod_univ, mul_comm]
+
+@[simp] lemma map_snd_prod : Measure.map Prod.snd (μ.prod ν) = (μ univ) • ν := by
+  ext s hs
+  simp [Measure.map_apply measurable_snd hs, ← univ_prod]
 
 instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {m : MeasurableSpace X} {μ : Measure X} [IsOpenPosMeasure μ] {m' : MeasurableSpace Y}
@@ -454,6 +462,29 @@ theorem ae_ae_of_ae_prod {p : α × β → Prop} (h : ∀ᵐ z ∂μ.prod ν, p 
 theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :
     (∀ᵐ z ∂μ.prod ν, z ∈ s) ↔ ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, (x, y) ∈ s :=
   measure_prod_null hs.compl
+
+lemma measure_prod_compl_eq_zero {s : Set α} {t : Set β}
+    (s_ae_univ : μ sᶜ = 0) (t_ae_univ : ν tᶜ = 0) :
+    μ.prod ν (s ×ˢ t)ᶜ = 0 := by
+  rw [Set.compl_prod_eq_union]
+  apply le_antisymm ((measure_union_le _ _).trans _) (zero_le _)
+  simp [s_ae_univ, t_ae_univ]
+
+lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}
+    (s_mble : NullMeasurableSet s μ) (t_mble : NullMeasurableSet t ν) :
+    NullMeasurableSet (s ×ˢ t) (μ.prod ν) := by
+  obtain ⟨s₀, ⟨mble_s₀, s_aeeq_s₀⟩⟩ := s_mble
+  obtain ⟨t₀, ⟨mble_t₀, t_aeeq_t₀⟩⟩ := t_mble
+  refine ⟨s₀ ×ˢ t₀, ⟨mble_s₀.prod mble_t₀, ?_⟩⟩
+  rw [Measure.ae, Filter.eventuallyEq_iff_exists_mem] at *
+  simp only [Filter.mem_mk, mem_setOf_eq] at *
+  rcases s_aeeq_s₀ with ⟨u, ⟨u_mem, s_eq_s₀⟩⟩
+  rcases t_aeeq_t₀ with ⟨v, ⟨v_mem, t_eq_t₀⟩⟩
+  refine ⟨u ×ˢ v, ⟨measure_prod_compl_eq_zero u_mem v_mem, ?_⟩⟩
+  intro p hp
+  change (p ∈ s ×ˢ t) = (p ∈ s₀ ×ˢ t₀)
+  simp [show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀ hp.1),
+        show p.snd ∈ t ↔ p.snd ∈ t₀ from Iff.of_eq (t_eq_t₀ hp.2)]
 
 /-- `μ.prod ν` has finite spanning sets in rectangles of finite spanning sets. -/
 noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)} {D : Set (Set β)}

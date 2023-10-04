@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Operations
 
@@ -323,7 +324,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
     · exact fun _ _ _ => add_smul _ _ _
   · rw [LinearMap.mem_ker, f.map_sub, ← hl2]
     rw [Finsupp.total_apply, Finsupp.total_apply, Finsupp.lmapDomain_apply]
-    rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, f.map_sum]
+    rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, map_sum]
     rw [sub_eq_zero]
     refine' Finset.sum_congr rfl fun y hy => _
     unfold id
@@ -550,9 +551,15 @@ theorem iff_addGroup_fg {G : Type*} [AddCommGroup G] : Module.Finite ℤ G ↔ A
 
 variable {R M N}
 
+/-- See also `Module.Finite.exists_fin'`. -/
 theorem exists_fin [Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.span R (range s) = ⊤ :=
   Submodule.fg_iff_exists_fin_generating_family.mp out
 #align module.finite.exists_fin Module.Finite.exists_fin
+
+lemma exists_fin' (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] [Finite R M] :
+    ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
+  have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
+  exact ⟨n, piEquiv (Fin n) R M s, by simpa⟩
 
 theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) : Finite R N :=
   ⟨by
@@ -608,6 +615,8 @@ instance pi {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMo
 theorem equiv [Finite R M] (e : M ≃ₗ[R] N) : Finite R N :=
   of_surjective (e : M →ₗ[R] N) e.surjective
 #align module.finite.equiv Module.Finite.equiv
+
+instance ulift [Finite R M] : Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
 section Algebra
 
