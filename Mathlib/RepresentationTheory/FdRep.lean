@@ -34,6 +34,7 @@ We verify that `FdRep k G` is a `k`-linear monoidal category, and rigid when `G`
 
 -/
 
+suppress_compilation
 
 universe u
 
@@ -110,7 +111,7 @@ theorem forget₂_ρ (V : FdRep k G) : ((forget₂ (FdRep k G) (Rep k G)).obj V)
 #align fdRep.forget₂_ρ FdRep.forget₂_ρ
 
 -- Verify that the monoidal structure is available.
-example : MonoidalCategory (FdRep k G) := by infer_instance
+noncomputable example : MonoidalCategory (FdRep k G) := by infer_instance
 
 example : MonoidalPreadditive (FdRep k G) := by infer_instance
 
