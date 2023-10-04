@@ -169,7 +169,8 @@ jobs:
           # run this in CI if it gets an incorrect lake hash for existing cache files somehow
           # lake exe cache pack! || true
           lake exe cache commit || true
-          lake exe cache put || true
+          # try twice in case of network errors
+          lake exe cache put || lake exe cache put || true
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -189,17 +190,18 @@ jobs:
           # it should be possible to determine whether they need to be built without actually
           # storing and transferring oleans over the network.
           # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
-          lake exe cache get Archive.lean
+          # We retry twice in case of network errors.
+          lake exe cache get Archive.lean || lake exe cache get Archive.lean
           lake build Archive
-          lake exe cache put Archive.lean
+          lake exe cache put Archive.lean || lake exe cache put Archive.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: build counterexamples
         run: |
-          lake exe cache get Counterexamples.lean
+          lake exe cache get Counterexamples.lean || lake exe cache get Counterexamples.lean
           lake build Counterexamples
-          lake exe cache put Counterexamples.lean
+          lake exe cache put Counterexamples.lean || lake exe cache put Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
