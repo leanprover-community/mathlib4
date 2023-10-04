@@ -27,6 +27,13 @@ two fundamental domains are equal to each other.
 
 We also generate additive versions of all theorems in this file using the `to_additive` attribute.
 
+* We define the `HasFundamentalDomain` typeclass, in particular to be able to define the `covolume`
+of a quotient of `α` by a group `G`, which under reasonable conditions does not depend on the choice
+of fundamental domain.
+
+* We define the `QuotientVolumeEqVolume` typeclass to describe a situation in which a measure `μ` on
+`α ⧸ G` can be computed by taking the measure on `α` of the intersection of the pullback with a fundamental domain.
+
 ## Main declarations
 
 * `MeasureTheory.IsFundamentalDomain`: Predicate for a set to be a fundamental domain of the
