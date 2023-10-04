@@ -109,6 +109,7 @@ instance smul [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
   Submodule.Quotient.instSMul' _
 
 instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
+  --TODO: add reference to library note in PR #7432
   { Submodule.Quotient.distribSMul' _ with
     toSMul := AdjoinRoot.smul _ }
 
