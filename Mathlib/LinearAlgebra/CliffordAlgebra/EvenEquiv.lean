@@ -256,7 +256,7 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
   case h_mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
   case h_add x y hx hy =>
     simp only [map_add]
-    rw [map_add, Subalgebra.coe_add, hx, hy, map_add]
+    rw [map_add, map_add, Subalgebra.coe_add, hx, hy]
     simp
 #align clifford_algebra.coe_to_even_reverse_involute CliffordAlgebra.coe_toEven_reverse_involute
 

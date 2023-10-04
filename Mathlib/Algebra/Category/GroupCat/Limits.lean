@@ -461,4 +461,6 @@ def kernelIsoKerOver {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_over AddCommGroupCat.kernelIsoKerOver
 
+attribute [nolint simpNF] kernelIsoKerOver_hom_left_apply_coe
+
 end AddCommGroupCat
