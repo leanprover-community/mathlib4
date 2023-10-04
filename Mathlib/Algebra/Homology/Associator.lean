@@ -576,13 +576,75 @@ lemma ιMapBifunctorBifunctor₂₃MapObj_d (i₁ : I₁) (i₂ : I₂) (i₃ : 
 lemma ιMapBifunctor₁₂BifunctorMapObj_d (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j j' : J) (h : ComplexShape.π₃ c₁ c₂ c₃ c₁₂ c (i₁, i₂, i₃) = j) :
     GradedObject.ιMapBifunctor₁₂BifunctorMapObj F₁₂ G (ρ₁₂ c₁ c₂ c₃ c₁₂ c) K₁.X K₂.X K₃.X i₁ i₂ i₃ j h ≫
       d (bifunctorObj (bifunctorObj K₁ K₂ F₁₂ c₁₂) K₃ G c) j j' =
-        ComplexShape.ε₁ c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) • (G.map ((F₁₂.map (K₁.d i₁ (c₁.next i₁))).app (K₂.X i₂))).app (K₃.X i₃) ≫
+        (ComplexShape.ε₁ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂)) •
+          (G.map ((F₁₂.map (K₁.d i₁ (c₁.next i₁))).app (K₂.X i₂))).app (K₃.X i₃) ≫
           GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero _ _ (ρ₁₂ c₁ c₂ c₃ c₁₂ c) _ _ _ _ _ _ _ +
-        (ComplexShape.ε₂ c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) * ComplexShape.ε₁ c₂ c₃ c₂₃ (i₂, i₃)) • (G.map ((F₁₂.obj (K₁.X i₁)).map (K₂.d i₂ (c₂.next i₂)))).app (K₃.X i₃) ≫
+        (ComplexShape.ε₁ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) * ComplexShape.ε₂ c₁ c₂ c₁₂ (i₁, i₂)) •
+          (G.map ((F₁₂.obj (K₁.X i₁)).map (K₂.d i₂ (c₂.next i₂)))).app (K₃.X i₃) ≫
           GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero _ _ (ρ₁₂ c₁ c₂ c₃ c₁₂ c) _ _ _ _ _ _ _ +
-        (ComplexShape.ε₂ c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) * ComplexShape.ε₂ c₂ c₃ c₂₃ (i₂, i₃)) •
+        ComplexShape.ε₂ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) •
           (G.obj ((F₁₂.obj (K₁.X i₁)).obj (K₂.X i₂))).map (K₃.d i₃ (c₃.next i₃)) ≫
-          GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero _ _ (ρ₁₂ c₁ c₂ c₃ c₁₂ c) _ _ _ _ _ _ _ := sorry
+          GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero _ _ (ρ₁₂ c₁ c₂ c₃ c₁₂ c) _ _ _ _ _ _ _ := by
+  dsimp [GradedObject.ιMapBifunctor₁₂BifunctorMapObj]
+  rw [assoc]
+  erw [ιBifunctorObj_d (bifunctorObj K₁ K₂ F₁₂ c₁₂) K₃ G c]
+  rw [comp_add, comp_zsmul, comp_zsmul, ← NatTrans.comp_app_assoc, ← G.map_comp]
+  erw [ιBifunctorObj_d]
+  rw [G.map_add, G.map_zsmul, G.map_zsmul, NatTrans.app_add, NatTrans.app_zsmul,
+    NatTrans.app_zsmul, G.map_comp, G.map_comp, NatTrans.comp_app, NatTrans.comp_app, add_comp,
+    zsmul_comp, zsmul_comp, assoc, assoc, smul_add, smul_smul, smul_smul]
+  congr 1
+  · congr 1
+    · by_cases h₁ : c₁.Rel i₁ (c₁.next i₁)
+      · by_cases h₂ : ComplexShape.π c₁₂ c₃ c (c₁₂.next (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂)), i₃) = j'
+        · have h₃ : ComplexShape.π₃ c₁ c₂ c₃ c₁₂ c (c₁.next i₁, i₂, i₃) = j' := by
+            rw [← h₂, ComplexShape.next_π₁ c₂ c₁₂ h₁ i₂]
+            rfl
+          rw [ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ h₂,
+            ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ (ComplexShape.next_π₁ c₂ c₁₂ h₁ i₂).symm]
+          erw [GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero_eq _ _ _ _ _ _ _ _ _ _ h₃]
+          congr 2
+          symm
+          apply GradedObject.ιMapBifunctor₁₂BifunctorMapObj_eq
+        · rw [ιBifunctorObjOrZero_eq_zero _ _ _ _ _ _ _ h₂, comp_zero, comp_zero, smul_zero]
+          erw [GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero_eq_zero, comp_zero, smul_zero]
+          intro h₃
+          apply h₂
+          rw [ComplexShape.next_π₁ c₂ c₁₂ h₁ i₂]
+          exact h₃
+      · rw [shape _ _ _ h₁, Functor.map_zero, zero_app, Functor.map_zero, zero_app,
+          zero_comp, zero_comp, smul_zero]
+    · by_cases h₁ : c₂.Rel i₂ (c₂.next i₂)
+      · by_cases h₂ : ComplexShape.π c₁₂ c₃ c (c₁₂.next (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂)), i₃) = j'
+        · have h₃ : ComplexShape.π₃ c₁ c₂ c₃ c₁₂ c (i₁, ComplexShape.next c₂ i₂, i₃) = j' := by
+            rw [← h₂, ComplexShape.next_π₂ c₁ c₁₂ i₁ h₁]
+            rfl
+          rw [ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ h₂,
+            ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ (ComplexShape.next_π₂ c₁ c₁₂ i₁ h₁).symm]
+          erw [GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero_eq _ _ _ _ _ _ _ _ _ _ h₃]
+          congr 2
+          symm
+          apply GradedObject.ιMapBifunctor₁₂BifunctorMapObj_eq
+        · rw [ιBifunctorObjOrZero_eq_zero _ _ _ _ _ _ _ h₂, comp_zero, comp_zero, smul_zero]
+          erw [GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero_eq_zero, comp_zero, smul_zero]
+          intro h₃
+          apply h₂
+          rw [ComplexShape.next_π₂ c₁ c₁₂ i₁ h₁]
+          exact h₃
+      · rw [shape _ _ _ h₁, Functor.map_zero, Functor.map_zero, zero_app, zero_comp,
+          zero_comp, smul_zero]
+  · by_cases h₁ : c₃.Rel i₃ (c₃.next i₃)
+    · by_cases h₂ : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), c₃.next i₃) = j'
+      · rw [ιBifunctorObjOrZero_eq _ _ _ _ _ _ _ h₂]
+        erw [GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero_eq _ _ _ _ _ _ _ _ _ _ h₂]
+        congr 1
+        erw [← NatTrans.naturality_assoc]
+        rfl
+      · rw [ιBifunctorObjOrZero_eq_zero _ _ _ _ _ _ _ h₂, comp_zero, comp_zero, smul_zero]
+        erw [GradedObject.ιMapBifunctor₁₂BifunctorMapObjOrZero_eq_zero, comp_zero, smul_zero]
+        exact h₂
+    · rw [shape _ _ _ h₁, Functor.map_zero, zero_comp, comp_zero, smul_zero,
+        Functor.map_zero, zero_comp, smul_zero]
 
 set_option maxHeartbeats 400000 in
 noncomputable def bifunctorObjAssociator : bifunctorObj (bifunctorObj K₁ K₂ F₁₂ c₁₂) K₃ G c ≅
@@ -601,9 +663,12 @@ noncomputable def bifunctorObjAssociator : bifunctorObj (bifunctorObj K₁ K₂ 
       dsimp at h₁ h₂ h₃
       erw [GradedObject.ι_mapBifunctorBifunctorAssociator_hom_assoc]
       rw [ιMapBifunctorBifunctor₂₃MapObj_d, comp_add, comp_add, comp_zsmul, comp_zsmul,
-        comp_zsmul, ιMapBifunctor₁₂BifunctorMapObj_d_assoc K₁ K₂ K₃ c₁₂ c₂₃,
+        comp_zsmul, ιMapBifunctor₁₂BifunctorMapObj_d_assoc K₁ K₂ K₃ c₁₂,
         add_comp, add_comp, zsmul_comp, zsmul_comp, zsmul_comp,
         assoc, assoc, assoc,
-        ← reassoc_of% h₁, ← reassoc_of% h₂, ← reassoc_of% h₃, ← H, ← H, ← H])
+        ← reassoc_of% h₁, ← reassoc_of% h₂, ← reassoc_of% h₃, ← H, ← H, ← H,
+        ComplexShape.associator_ε₁_eq_mul c₁ c₂ c₃ c₁₂ c₂₃ c,
+        ComplexShape.associator_ε₂_ε₁ c₁ c₂ c₃ c₁₂ c₂₃ c,
+        ComplexShape.associator_ε₂_eq_mul c₁ c₂ c₃ c₁₂ c₂₃ c])
 
 end HomologicalComplex
