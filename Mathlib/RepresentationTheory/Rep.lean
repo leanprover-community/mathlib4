@@ -26,6 +26,7 @@ We construct the categorical equivalence `Rep k G ≌ ModuleCat (MonoidAlgebra k
 We verify that `Rep k G` is a `k`-linear abelian symmetric monoidal category with all (co)limits.
 -/
 
+suppress_compilation
 
 universe u
 
@@ -543,7 +544,7 @@ namespace Rep
 variable {k G : Type u} [CommRing k] [Monoid G]
 
 -- Verify that the symmetric monoidal structure is available.
-example : SymmetricCategory (Rep k G) := by infer_instance
+noncomputable example : SymmetricCategory (Rep k G) := by infer_instance
 
 example : MonoidalPreadditive (Rep k G) := by infer_instance
 
