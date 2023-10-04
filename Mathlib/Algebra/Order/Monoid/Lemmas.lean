@@ -304,8 +304,8 @@ theorem mul_right_cancel'' [ContravariantClass α α (swap HMul.hMul) LE.le] {a 
 #align mul_right_cancel'' mul_right_cancel''
 #align add_right_cancel'' add_right_cancel''
 
-@[to_additive] lemma mul_le_mul_iff_of_ge [CovariantClass α α (· * ·) (· < ·)]
-    [CovariantClass α α (swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
+@[to_additive] lemma mul_le_mul_iff_of_ge [CovariantClass α α HMul.hMul LT.lt]
+    [CovariantClass α α (swap HMul.hMul) LT.lt] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
     a₂ * b₂ ≤ a₁ * b₁ ↔ a₁ = a₂ ∧ b₁ = b₂ := by
   haveI := covariantClass_le_of_lt α α (· * ·)
   haveI := covariantClass_le_of_lt α α (swap (· * ·))
@@ -316,8 +316,8 @@ theorem mul_right_cancel'' [ContravariantClass α α (swap HMul.hMul) LE.le] {a 
 #align add_le_add_iff_of_ge add_le_add_iff_of_geₓ
 #align mul_le_mul_iff_of_ge mul_le_mul_iff_of_geₓ
 
-@[to_additive] theorem mul_eq_mul_iff_eq_and_eq [CovariantClass α α (· * ·) (· < ·)]
-    [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c d : α} (hac : a ≤ c) (hbd : b ≤ d) :
+@[to_additive] theorem mul_eq_mul_iff_eq_and_eq [CovariantClass α α HMul.hMul LT.lt]
+    [CovariantClass α α (swap HMul.hMul) LT.lt] {a b c d : α} (hac : a ≤ c) (hbd : b ≤ d) :
     a * b = c * d ↔ a = c ∧ b = d := by
   haveI := covariantClass_le_of_lt α α (· * ·)
   haveI := covariantClass_le_of_lt α α (swap (· * ·))
@@ -331,24 +331,24 @@ section LinearOrder
 variable [LinearOrder α] {a b c d : α}
 
 @[to_additive] lemma min_lt_max_of_mul_lt_mul
-    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+    [CovariantClass α α HMul.hMul LE.le] [CovariantClass α α (swap HMul.hMul) LE.le]
     (h : a * b < c * d) : min a b < max c d := by
   simp_rw [min_lt_iff, lt_max_iff]; contrapose! h; exact mul_le_mul' h.1.1 h.2.2
 #align min_lt_max_of_mul_lt_mul min_lt_max_of_mul_lt_mulₓ
 #align min_lt_max_of_add_lt_add min_lt_max_of_add_lt_addₓ
 
 @[to_additive] lemma Left.min_le_max_of_mul_le_mul
-    [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+    [CovariantClass α α HMul.hMul LT.lt] [CovariantClass α α (swap HMul.hMul) LE.le]
     (h : a * b ≤ c * d) : min a b ≤ max c d := by
   simp_rw [min_le_iff, le_max_iff]; contrapose! h; exact mul_lt_mul_of_le_of_lt h.1.1.le h.2.2
 
 @[to_additive] lemma Right.min_le_max_of_mul_le_mul
-    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· < ·)]
+    [CovariantClass α α HMul.hMul LE.le] [CovariantClass α α (swap HMul.hMul) LT.lt]
     (h : a * b ≤ c * d) : min a b ≤ max c d := by
   simp_rw [min_le_iff, le_max_iff]; contrapose! h; exact mul_lt_mul_of_lt_of_le h.1.1 h.2.2.le
 
 @[to_additive] lemma min_le_max_of_mul_le_mul
-    [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (swap (· * ·)) (· < ·)]
+    [CovariantClass α α HMul.hMul LT.lt] [CovariantClass α α (swap HMul.hMul) LT.lt]
     (h : a * b ≤ c * d) : min a b ≤ max c d :=
   let _ := covariantClass_le_of_lt α α (swap (· * ·))
   Left.min_le_max_of_mul_le_mul h

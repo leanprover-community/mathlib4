@@ -353,12 +353,12 @@ instance covariant_lt_of_contravariant_le [LinearOrder N]
 
 @[to_additive]
 instance covariant_swap_mul_of_covariant_mul [CommSemigroup N]
-    [CovariantClass N N (· * ·) r] : CovariantClass N N (swap (· * ·)) r where
+    [CovariantClass N N HMul.hMul r] : CovariantClass N N (swap HMul.hMul) r where
   elim := (covariant_flip_iff N r (· * ·)).mpr CovariantClass.elim
 
 @[to_additive]
 instance contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
-    [ContravariantClass N N (· * ·) r] : ContravariantClass N N (swap (· * ·)) r where
+    [ContravariantClass N N HMul.hMul r] : ContravariantClass N N (swap HMul.hMul) r where
   elim := (contravariant_flip_iff N r (· * ·)).mpr ContravariantClass.elim
 
 theorem covariant_lt_of_covariant_le_of_contravariant_eq [ContravariantClass M N μ Eq]
