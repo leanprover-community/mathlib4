@@ -132,8 +132,8 @@ theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
     simp
     refine' Eq.trans _ (congr_arg succ (bodd_add_div2 n))
     cases bodd n <;> simp [cond, not]
-    · rw [Nat.add_comm, Nat.add_succ]
-    · rw [succ_mul, Nat.add_comm 1, Nat.add_succ]
+    · rw [Nat.add_comm]
+    · rw [succ_mul, Nat.add_comm 1]
 #align nat.bodd_add_div2 Nat.bodd_add_div2
 
 theorem div2_val (n) : div2 n = n / 2 := by
