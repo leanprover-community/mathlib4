@@ -732,7 +732,7 @@ set_option linter.uppercaseLean3 false in
 this can be an infinite structure. -/
 unsafe inductive CofixI (F : PFunctor.{u})
   /-- Construct `CofixI` from a thunk. Actually, children of the tree is lazy evaluated without
-  thunk, but this is useful to construct the equivalence to `Qpf.Cofix`. -/
+  thunk, but this is useful to construct the equivalence to `QPF.Cofix`. -/
   | mk (t : Thunk (F.Obj (CofixI F))) : CofixI F
 
 namespace M
