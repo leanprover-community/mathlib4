@@ -26,16 +26,16 @@ This is a hack to work around mathlib4#7103. -/
 def elabSuppressCompilationDecl : CommandElab := fun
 | `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)? $(recKind?)?
     def $id $sig:optDeclSig $val:declVal $(term?)? $(decr?)?) => do
-  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)? $(recKind?)?
-    def $id $sig:optDeclSig $val:declVal $(term?)? $(decr?)?)
+  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
+    $(recKind?)? def $id $sig:optDeclSig $val:declVal $(term?)? $(decr?)?)
 | `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)? $(recKind?)?
     def $id $sig:optDeclSig $val:declVal deriving $derivs,* $(term?)? $(decr?)?) => do
-  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)? $(recKind?)?
-    def $id $sig:optDeclSig $val:declVal deriving $derivs,* $(term?)? $(decr?)?)
+  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
+    $(recKind?)? def $id $sig:optDeclSig $val:declVal deriving $derivs,* $(term?)? $(decr?)?)
 | `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)? $(recKind?)?
     $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal $(term?)?) => do
-  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)? $(recKind?)?
-    $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal $(term?)?)
+  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
+    $(recKind?)? $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal $(term?)?)
 | _ => throwUnsupportedSyntax
 
 /-- The command `unsuppress_compilation in def foo : ...` makes sure that the definition is
@@ -55,7 +55,7 @@ def expandSuppressCompilationNotation : Macro := fun
 /-- The command `unsuppress_compilation in def foo : ...` makes sure that the definition is
 compiled to executable code, even if `suppress_compilation` is active. -/
 macro_rules
-| `(unsuppress_compilation $[in $cmd?]?)  => do
+| `(unsuppress_compilation $[in $cmd?]?) => do
   let declElab := mkCIdent ``elabSuppressCompilationDecl
   let notaMacro := mkCIdent ``expandSuppressCompilationNotation
   let attrCmds ← `(

@@ -18,6 +18,7 @@ in order to avoid importing `LinearAlgebra.BilinearMap` and
 `LinearAlgebra.TensorProduct` unnecessarily.
 -/
 
+suppress_compilation
 
 open TensorProduct Module
 
