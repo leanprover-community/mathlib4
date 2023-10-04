@@ -24,6 +24,8 @@ We construct various limits and colimits in the category of schemes.
 
 -/
 
+suppress_compilation
+
 set_option linter.uppercaseLean3 false
 
 universe u
