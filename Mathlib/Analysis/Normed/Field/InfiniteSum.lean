@@ -73,16 +73,16 @@ open Finset.Nat
 
 theorem summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
-    Summable fun n => ‖∑ kl in antidiagonal n, f kl.1 * g kl.2‖ := by
+    Summable fun n => ‖∑ kl in Nat.antidiagonal n, f kl.1 * g kl.2‖ := by
   have :=
     summable_sum_mul_antidiagonal_of_summable_mul
       (Summable.mul_of_nonneg hf hg (fun _ => norm_nonneg _) fun _ => norm_nonneg _)
   refine' summable_of_nonneg_of_le (fun _ => norm_nonneg _) _ this
   intro n
   calc
-    ‖∑ kl in antidiagonal n, f kl.1 * g kl.2‖ ≤ ∑ kl in antidiagonal n, ‖f kl.1 * g kl.2‖ :=
+    ‖∑ kl in Nat.antidiagonal n, f kl.1 * g kl.2‖ ≤ ∑ kl in Nat.antidiagonal n, ‖f kl.1 * g kl.2‖ :=
       norm_sum_le _ _
-    _ ≤ ∑ kl in antidiagonal n, ‖f kl.1‖ * ‖g kl.2‖ := by gcongr; apply norm_mul_le
+    _ ≤ ∑ kl in Nat.antidiagonal n, ‖f kl.1‖ * ‖g kl.2‖ := by gcongr; apply norm_mul_le
 #align summable_norm_sum_mul_antidiagonal_of_summable_norm summable_norm_sum_mul_antidiagonal_of_summable_norm
 
 /-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
@@ -91,7 +91,7 @@ theorem summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → R}
     *not* absolutely summable. -/
 theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm [CompleteSpace R] {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
-    ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl in antidiagonal n, f kl.1 * g kl.2 :=
+    ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl in Nat.antidiagonal n, f kl.1 * g kl.2 :=
   tsum_mul_tsum_eq_tsum_sum_antidiagonal (summable_of_summable_norm hf)
     (summable_of_summable_norm hg) (summable_mul_of_summable_norm hf hg)
 #align tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm
