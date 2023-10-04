@@ -5,6 +5,8 @@ Authors: Alex J. Best, Mac Malone
 -/
 import Lean
 
+import Mathlib.Mathport.Notation
+
 /-!
 # Supressing compilation to executable code in a file or in a section
 
@@ -16,6 +18,9 @@ on all definitions (in a section or in a whole file). See the issue mathlib4#710
 To compile a definition even when `suppress_compilation` is active, use
 `unsuppress_compilation in def foo : ...`. This is activated by default on notations to make
 sure that they work properly.
+
+Note that `suppress_compilation` does not work with `notation3`. You need to prefix such a notation
+declaration with `unsuppress_compilation` if `suppress_compilation` is active.
 -/
 
 open Lean Parser Elab Command
@@ -62,7 +67,9 @@ def expandSuppressCompilationNotation : Macro := fun
 
 /-- Replacing `def` and `instance` by `noncomputable def` and `noncomputable instance`, designed
 to disable the compiler in a given file or a given section.
-This is a hack to work around mathlib4#7103. -/
+This is a hack to work around mathlib4#7103.
+Note that it does not work with `notation3`. You need to prefix such a notation declaration with
+`unsuppress_compilation` if `suppress_compilation` is active. -/
 macro "suppress_compilation" : command => do
   let declKind := mkIdent ``declaration
   let notaKind := mkIdent ``«notation»
