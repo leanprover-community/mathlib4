@@ -1315,25 +1315,25 @@ namespace LinearMap
 @[simp]
 theorem lTensor_sub (f g : N →ₗ[R] P) : (f - g).lTensor M = f.lTensor M - g.lTensor M := by
   simp_rw [← coe_lTensorHom]
-  exact (lTensorHom (R:=R) (N:=N) (P:=P) M).map_sub f g
+  exact (lTensorHom (R := R) (N := N) (P := P) M).map_sub f g
 #align linear_map.ltensor_sub LinearMap.lTensor_sub
 
 @[simp]
 theorem rTensor_sub (f g : N →ₗ[R] P) : (f - g).rTensor M = f.rTensor M - g.rTensor M := by
   simp only [← coe_rTensorHom]
-  exact (rTensorHom (R:=R) (N:=N) (P:=P) M).map_sub f g
+  exact (rTensorHom (R := R) (N := N) (P := P) M).map_sub f g
 #align linear_map.rtensor_sub LinearMap.rTensor_sub
 
 @[simp]
 theorem lTensor_neg (f : N →ₗ[R] P) : (-f).lTensor M = -f.lTensor M := by
   simp only [← coe_lTensorHom]
-  exact (lTensorHom (R:=R) (N:=N) (P:=P) M).map_neg f
+  exact (lTensorHom (R := R) (N := N) (P := P) M).map_neg f
 #align linear_map.ltensor_neg LinearMap.lTensor_neg
 
 @[simp]
 theorem rTensor_neg (f : N →ₗ[R] P) : (-f).rTensor M = -f.rTensor M := by
   simp only [← coe_rTensorHom]
-  exact (rTensorHom (R:=R) (N:=N) (P:=P) M).map_neg f
+  exact (rTensorHom (R := R) (N := N) (P := P) M).map_neg f
 #align linear_map.rtensor_neg LinearMap.rTensor_neg
 
 end LinearMap
