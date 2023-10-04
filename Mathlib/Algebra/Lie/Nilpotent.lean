@@ -7,6 +7,8 @@ import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.Order.Filter.AtTopBot
+import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.Tactic.Monotonicity
 
@@ -67,6 +69,11 @@ theorem lcs_zero (N : LieSubmodule R L M) : N.lcs 0 = N :=
 theorem lcs_succ : N.lcs (k + 1) = ⁅(⊤ : LieIdeal R L), N.lcs k⁆ :=
   Function.iterate_succ_apply' (fun N' => ⁅⊤, N'⁆) k N
 #align lie_submodule.lcs_succ LieSubmodule.lcs_succ
+
+lemma lcs_sup {N₁ N₂ : LieSubmodule R L M} {k : ℕ} :
+    (N₁ ⊔ N₂).lcs k = N₁.lcs k ⊔ N₂.lcs k := by
+  induction' k with k ih; simp
+  simp only [LieSubmodule.lcs_succ, ih, LieSubmodule.lie_sup]
 
 end LieSubmodule
 
@@ -133,6 +140,17 @@ theorem antitone_lowerCentralSeries : Antitone <| lowerCentralSeries R L M := by
       exact (LieSubmodule.mono_lie_right _ _ ⊤ (ih hk)).trans (LieSubmodule.lie_le_right _ _)
     · exact hk.symm ▸ le_rfl
 #align lie_module.antitone_lower_central_series LieModule.antitone_lowerCentralSeries
+
+theorem eventually_iInf_lowerCentralSeries_eq [IsArtinian R M] :
+    ∀ᶠ l in Filter.atTop, ⨅ k, lowerCentralSeries R L M k = lowerCentralSeries R L M l := by
+  have h_wf : WellFounded ((· > ·) : (LieSubmodule R L M)ᵒᵈ → (LieSubmodule R L M)ᵒᵈ → Prop) :=
+    LieSubmodule.wellFounded_of_isArtinian R L M
+  obtain ⟨n, hn : ∀ m, n ≤ m → lowerCentralSeries R L M n = lowerCentralSeries R L M m⟩ :=
+    WellFounded.monotone_chain_condition.mp h_wf ⟨_, antitone_lowerCentralSeries R L M⟩
+  refine Filter.eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
+  cases' le_or_lt l m with h h
+  · rw [← hn _ hl, ← hn _ (hl.trans h)]
+  · exact antitone_lowerCentralSeries R L M (le_of_lt h)
 
 theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries R L M 1 = ⊥ := by
   constructor <;> intro h

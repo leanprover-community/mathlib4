@@ -252,6 +252,16 @@ theorem LieSubalgebra.toEndomorphism_mk (K : LieSubalgebra R L) {x : L} (hx : x 
   rfl
 #align lie_subalgebra.to_endomorphism_mk LieSubalgebra.toEndomorphism_mk
 
+lemma LieModule.toEndomorphism_pow_apply_map
+    {M₂ : Type w₁} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
+    (f : M →ₗ⁅R,L⁆ M₂) (k : ℕ) (x : L) (m : M) :
+    (toEndomorphism R L M₂ x ^ k) (f m) = f ((toEndomorphism R L M x ^ k) m) := by
+  suffices : (toEndomorphism R L M₂ x ^ k) ∘ₗ f = f ∘ₗ toEndomorphism R L M x ^ k
+  · simpa using LinearMap.congr_fun this m
+  apply LinearMap.commute_pow_left_of_commute
+  ext
+  simp
+
 variable {R L M}
 
 namespace LieSubmodule
