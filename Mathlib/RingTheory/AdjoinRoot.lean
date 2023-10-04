@@ -144,6 +144,7 @@ instance [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
     toSMul := AdjoinRoot.smul _ }
 
 instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
+  --TODO: add reference to library note in PR #7432
   { Ideal.Quotient.algebra S with
     toSMul := AdjoinRoot.smul _ }
 
