@@ -46,11 +46,11 @@ theorem val_extract {i j} {x : BitVec w} :
   (extract i j x).val = x.val / 2 ^ j % (2 ^ (i - j)) := by
   simp [extract, shiftRight_eq_div_pow]
 
+lemma bne_eq_not (x y : BitVec w) : (x != y) = !(decide (x =y)) := by
+  cases' h : x == y <;> aesop
+
 theorem get_eq_testBit {x : BitVec w} {i} : x.get i = x.val.testBit i := by
   cases' h : bodd (x.val >>> i)
-  <;> simp [mod_two_of_bodd, h, ← val_inj, testBit]
-
-
-
+  <;> simp [bne_eq_not, mod_two_of_bodd, h, ← val_inj, testBit]
 
 end BitVec

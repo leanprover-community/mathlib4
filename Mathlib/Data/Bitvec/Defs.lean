@@ -34,10 +34,6 @@ namespace BitVec
 ## Bitwise operations
 -/
 
-/-- The complement of a bitvector. -/
-protected def complement (x : BitVec w) : BitVec w :=
-  0 - (x + (1 : BitVec w))
-
 /-- Signed less than for bitvectors. -/
 protected def slt (x y : BitVec (w + 1)) : Prop :=
   ((x.val >>> w = 1) ∧ (y.val >>> w = 0)) ∨ ((x.val >>> w = y.val >>> w) ∧ x < y)
@@ -59,11 +55,14 @@ protected def shiftLeft (x : BitVec w) (n : Nat) : BitVec w := (x.val <<< n)
 protected def shiftRight (x : BitVec w) (n : Nat) : BitVec w :=
   ⟨x.val >>> n, by
       simp only [Nat.shiftRight_eq_div_pow]
-      exact lt_of_le_of_lt (Nat.div_le_self' _ _) (x.isLt) ⟩
+      exact lt_of_le_of_lt (Nat.div_le_self' _ _) (x.isLt)⟩
 
-instance : Complement (BitVec w) := ⟨BitVec.complement⟩
+instance : Complement (BitVec w) := ⟨(· + (1 : BitVec w))⟩
 instance : HShiftLeft (BitVec w) Nat (BitVec w) := ⟨BitVec.shiftLeft⟩
 instance : HShiftRight (BitVec w) Nat (BitVec w) := ⟨BitVec.shiftRight⟩
+
+@[simp] lemma shiftLeft_def (x : BitVec w) (n: Nat) : BitVec.shiftLeft x n = x <<< n := rfl
+@[simp] lemma shiftRight_def (x : BitVec w) (n: Nat) : BitVec.shiftRight x n = x >>> n := rfl
 
 /-- Rotate `n` times to the left so that the lsb is `x [w - n]`. -/
 def rotateLeft (x : BitVec w) (n : Nat) : BitVec w :=
@@ -78,6 +77,9 @@ protected def append (x : BitVec w) (y : BitVec v) : BitVec (w + v) :=
   ⟨x.val <<< v ||| y.val, Nat.add_comm _ _ ▸ Nat.append_lt y.isLt x.isLt⟩
 
 instance : HAppend (BitVec w) (BitVec v) (BitVec (w + v)) := ⟨BitVec.append⟩
+
+@[simp]
+lemma append_def (x : BitVec w) (y : BitVec v) : BitVec.append x y = x ++ y := rfl
 
 /-- Extract the bitvector between indices i (exclusive) and j (inclusive) where i > j. -/
 @[simp]
@@ -105,13 +107,13 @@ def signExtend (i) (x : BitVec w) : BitVec (w + i) :=
 /-- Return the `i`-th least significant bit. -/
 @[simp]
 def get (x : BitVec w) (i : Nat) : Bool :=
-  !(x.extract (i + 1) i = 0)
+  x.extract (i + 1) i != 0
 
 /-- Convert a list of booleans to a bitvector. -/
-def bbT (bs : List Bool) : BitVec bs.length :=
+def to_BV (bs : List Bool) : BitVec bs.length :=
   ⟨Nat.ofBits (λ i => bs[i]!) 0 bs.length, @Nat.ofBits_lt _ (bs.length)⟩
 
-instance : GetElem (BitVec w) Nat Bool (fun _ i => i < w) where
-  getElem x i _ := Nat.testBit x.val i
+instance : GetElem (BitVec w) Nat Bool (Function.const _ (· < w)) where
+  getElem x i _ := x.get i
 
 end BitVec
