@@ -314,7 +314,7 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
 
 theorem div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
-  <;> cases b
+  all_goals cases b
   <;> exact by decide
 #align nat.div2_bit Nat.div2_bit
 
@@ -450,7 +450,8 @@ theorem bitwise'_swap {f : Bool → Bool → Bool} (h : f false false = false) :
     exact h
   · intros a ih m'
     apply bitCasesOn m'; intro b n'
-    rw [bitwise'_bit, bitwise'_bit, ih] <;> exact h
+    rw [bitwise'_bit, bitwise'_bit, ih]
+    all_goals exact h
 #align nat.bitwise_swap Nat.bitwise'_swap
 
 -- Porting note:
