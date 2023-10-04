@@ -1382,8 +1382,13 @@ lemma eq_image_iff_symm_image_eq (e : α ≃ᵐ β) (s : Set β) (t : Set α) :
     s = e '' t ↔ e.symm '' s = t := by
   rw [← coe_toEquiv, Equiv.eq_image_iff_symm_image_eq, coe_toEquiv_symm]
 
+@[simp]
 lemma image_preimage (e : α ≃ᵐ β) (s : Set β) : e '' (e ⁻¹' s) = s := by
   rw [← coe_toEquiv, Equiv.image_preimage]
+
+@[simp]
+lemma preimage_image (e : α ≃ᵐ β) (s : Set α) : e ⁻¹' (e '' s) = s := by
+  rw [← coe_toEquiv, Equiv.preimage_image]
 
 @[simp]
 theorem measurableSet_preimage (e : α ≃ᵐ β) {s : Set β} :
