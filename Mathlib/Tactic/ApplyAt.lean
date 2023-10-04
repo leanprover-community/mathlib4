@@ -1,33 +1,42 @@
 import Mathlib.Tactic
 import Lean
 
-namespace Mathlib.Tactic
 open Lean Meta Elab Tactic Term
 
+/--
+This function is similar to `forallMetaTelescopeReducingUntilDefEq` except that
+it will construct mvars until it reaches one whose type is defeq to the given
+type `t`. It uses `forallMetaTelescopeReducing`.
+-/
+def Lean.Meta.forallMetaTelescopeReducingUntilDefEq
+    (e t : Expr) (kind : MetavarKind := MetavarKind.natural) :
+    MetaM (Array Expr × Array BinderInfo × Expr) := do
+  let mut mvs : Array Expr := #[]
+  let mut bis : Array BinderInfo := #[]
+  let (ms, bs, tp) ← forallMetaTelescopeReducing e (some 1) kind
+  unless ms.size == 1 do throwError "Error"
+  mvs := ms
+  bis := bs
+  let mut out : Expr := tp
+  while !(← isDefEq (← inferType mvs.toList.getLast!) t) do
+    let (ms, bs, tp) ← forallMetaTelescopeReducing out (some 1) kind
+    unless ms.size == 1 do throwError "Error"
+    mvs := mvs ++ ms
+    bis := bis ++ bs
+    out := tp
+  return (mvs, bis, out)
+
+namespace Mathlib.Tactic
+
 elab "apply" t:term "at" i:ident : tactic => withMainContext do
-  let fn ← Term.elabTerm t none
-  let fnTp ← inferType fn
-  let (ms, _, foutTp) ← forallMetaTelescopeReducing fnTp (some 1)
-  unless ms.size == 1 do throwError "oops!"
-  let finTp ← inferType ms[0]!
+  let f ← Term.elabTerm t none
   let ldecl ← (← getLCtx).findFromUserName? i.getId
-  let (mvs, outTp) ← show TacticM (Array Expr × Expr) from do
-    let mut mvs := #[ms[0]!]
-    let mut cmpTp := finTp
-    let mut outTp := foutTp
-    while !(← isDefEq cmpTp ldecl.type) do
-      let (ms, _, newfoutTp) ← forallMetaTelescopeReducing outTp (some 1)
-      unless ms.size == 1 do throwError "oops!"
-      mvs := mvs ++ ms
-      cmpTp ← inferType ms[0]!
-      outTp := newfoutTp
-    mvs := mvs.pop
-    return (mvs, outTp)
+  let (mvs, _, tp) ← forallMetaTelescopeReducingUntilDefEq (← inferType f) ldecl.type
   let mainGoal ← getMainGoal
   let mainGoal ← mainGoal.tryClear ldecl.fvarId
-  let mainGoal ← mainGoal.assert ldecl.userName outTp (mkAppN fn (mvs.push ldecl.toExpr))
+  let mainGoal ← mainGoal.assert ldecl.userName tp (mkAppN f (mvs.pop.push ldecl.toExpr))
   let (_, mainGoal) ← mainGoal.intro1P
-  replaceMainGoal <| [mainGoal] ++ mvs.toList.map fun e => e.mvarId!
+  replaceMainGoal <| [mainGoal] ++ mvs.pop.toList.map fun e => e.mvarId!
 
 variable (α β γ δ : Type*) (f : α → β → γ → δ)
 
