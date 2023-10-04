@@ -722,7 +722,7 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
         simp
         have := mt repr_inj.1 e0
         refine' Ordinal.add_sub_cancel_of_le _
-        have:= (one_le_iff_ne_zero.2 this)
+        have := (one_le_iff_ne_zero.2 this)
         exact this
       intros
       substs o' m
