@@ -336,7 +336,7 @@ protected theorem IsCycle.extendDomain {p : β → Prop} [DecidablePred p] (f : 
   · rw [extendDomain_apply_image]
     exact Subtype.coe_injective.ne (f.injective.ne ha)
   have h : b = f (f.symm ⟨b, of_not_not <| hb ∘ extendDomain_apply_not_subtype _ _⟩) := by
-    rw [apply_symm_apply, Subtype.coe_mk]
+    rw [apply_symm_apply]
   rw [h] at hb ⊢
   simp only [extendDomain_apply_image, Subtype.coe_injective.ne_iff, f.injective.ne_iff] at hb
   exact (ha' hb).extendDomain
