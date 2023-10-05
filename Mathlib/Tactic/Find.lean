@@ -36,7 +36,7 @@ def MessageData.andList (xs : Array MessageData) : MessageData :=
 
 /-- Formats a list of names, as you would expect from a lemma-searching command.  -/
 def MessageData.bulletListOfConsts {m} [Monad m] [MonadEnv m] [MonadError m]
-  (names : Array Name) : m MessageData := do
+    (names : Array Name) : m MessageData := do
     let es ← names.mapM mkConstWithLevelParams
     pure (MessageData.bulletList (es.map ppConst))
 
