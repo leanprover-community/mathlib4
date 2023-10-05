@@ -27,11 +27,11 @@ open CategoryTheory.Limits
 
 open Opposite
 
-universe w v u
+universe w v v' u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-variable {D : Type w} [Category.{max v u} D]
+variable {D : Type w} [Category.{v'} D]
 
 noncomputable section
 

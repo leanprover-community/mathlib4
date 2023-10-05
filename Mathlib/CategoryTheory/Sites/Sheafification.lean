@@ -27,15 +27,15 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits Opposite
 
-universe w v u
+universe w v v' u
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
-variable {D : Type w} [Category.{max v u} D]
+variable {D : Type w} [Category.{v'} D]
 
 section
 
-variable [ConcreteCategory.{max v u} D]
+variable [ConcreteCategory.{v'} D]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
@@ -50,7 +50,7 @@ end
 
 namespace Meq
 
-variable [ConcreteCategory.{max v u} D]
+variable [ConcreteCategory.{v'} D]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
@@ -114,10 +114,10 @@ theorem mk_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) 
   rfl
 #align category_theory.meq.mk_apply CategoryTheory.Meq.mk_apply
 
-variable [PreservesLimits (forget D)]
+variable [PreservesLimitsOfSize.{max u v} (forget D)] [UnivLE.{max u v, v'}]
 
 /-- The equivalence between the type associated to `multiequalizer (S.index P)` and `Meq P S`. -/
-noncomputable def equiv {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) [HasMultiequalizer (S.index P)] :
+noncomputable def equiv {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) [HasMultiequalizer (S.index P)]  :
     (multiequalizer (S.index P) : D) ≃ Meq P S :=
   Limits.Concrete.multiequalizerEquiv _
 #align category_theory.meq.equiv CategoryTheory.Meq.equiv
@@ -125,8 +125,8 @@ noncomputable def equiv {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) [HasMultiequ
 @[simp]
 theorem equiv_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMultiequalizer (S.index P)]
     (x : (multiequalizer (S.index P) : D)) (I : S.Arrow) :
-    equiv P S x I = Multiequalizer.ι (S.index P) I x :=
-  rfl
+    equiv P S x I = Multiequalizer.ι (S.index P) I x := by
+  apply Concrete.multiequalizerEquiv_apply
 #align category_theory.meq.equiv_apply CategoryTheory.Meq.equiv_apply
 
 @[simp]
@@ -143,11 +143,11 @@ namespace GrothendieckTopology
 
 namespace Plus
 
-variable [ConcreteCategory.{max v u} D]
+variable [ConcreteCategory.{v'} D]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
-variable [PreservesLimits (forget D)]
+variable [PreservesLimitsOfSize.{max u v} (forget D)] [UnivLE.{max u v, v'}]
 
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
@@ -169,8 +169,7 @@ theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x :
   apply (Meq.equiv P _).injective
   erw [Equiv.apply_symm_apply]
   ext i
-  simp only [Functor.op_obj, unop_op, pullback_obj, diagram_obj, Functor.comp_obj,
-    diagramPullback_app, Meq.equiv_apply, Meq.pullback_apply]
+  rw [Meq.equiv_apply, Meq.pullback_apply]
   erw [← comp_apply, Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
   cases i; rfl
 #align category_theory.grothendieck_topology.plus.res_mk_eq_mk_pullback CategoryTheory.GrothendieckTopology.Plus.res_mk_eq_mk_pullback
@@ -325,8 +324,7 @@ theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
         (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y)
     (X : C) : Function.Injective ((J.toPlus P).app (op X)) := by
   intro x y h
-  simp only [toPlus_eq_mk] at h
-  rw [eq_mk_iff_exists] at h
+  rw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
   obtain ⟨W, h1, h2, hh⟩ := h
   apply hsep X W
   intro I
@@ -440,6 +438,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     rw [← ht]
     ext i
     dsimp
+    rw [Meq.equiv_apply ]
     erw [← comp_apply]
     rw [Multiequalizer.lift_ι]
     rfl
@@ -600,10 +599,11 @@ end GrothendieckTopology
 
 variable (J)
 
-variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
+variable [ConcreteCategory.{v'} D] [PreservesLimitsOfSize.{max u v} (forget D)]
   [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
+  [UnivLE.{max u v, v'}]
 
 theorem GrothendieckTopology.sheafify_isSheaf (P : Cᵒᵖ ⥤ D) : Presheaf.IsSheaf J (J.sheafify P) :=
   GrothendieckTopology.Plus.isSheaf_plus_plus _ _
