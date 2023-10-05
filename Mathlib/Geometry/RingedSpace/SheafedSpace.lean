@@ -21,7 +21,8 @@ presheaves.
 open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
   CategoryTheory.Functor
 
-variable (C : Type*) [Category C]
+universe u v
+variable (C : Type u) [Category.{v} C]
 
 -- Porting note: removed
 -- local attribute [tidy] tactic.op_induction'
@@ -229,13 +230,14 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.Γ_map_op AlgebraicGeometry.SheafedSpace.Γ_map_op
 
 noncomputable instance [HasLimits C] :
-    CreatesColimits (forgetToPresheafedSpace : SheafedSpace C ⥤ _) :=
+    CreatesColimits (forgetToPresheafedSpace : SheafedSpace.{_, _, v} C ⥤ _) :=
   ⟨fun {_ _} =>
     ⟨fun {K} =>
       createsColimitOfFullyFaithfulOfIso
         ⟨(PresheafedSpace.colimitCocone (K ⋙ forgetToPresheafedSpace)).pt,
           limit_isSheaf _ fun j => Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
-        (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩⟩
+        (colimit.isoColimitCocone ⟨_,
+          PresheafedSpace.colimitCoconeIsColimit (K ⋙ forgetToPresheafedSpace)⟩).symm⟩⟩
 
 instance [HasLimits C] : HasColimits (SheafedSpace C) :=
   hasColimits_of_hasColimits_createsColimits forgetToPresheafedSpace

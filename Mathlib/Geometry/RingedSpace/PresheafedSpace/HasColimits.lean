@@ -109,7 +109,7 @@ def componentwiseDiagram (F : J ⥤ PresheafedSpace.{_, _, v} C) [HasColimit F]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.componentwise_diagram AlgebraicGeometry.PresheafedSpace.componentwiseDiagram
 
-variable [HasColimitsOfShape J TopCat.{v}]
+variable [UnivLE.{u', v}]
 
 /-- Given a diagram of presheafed spaces,
 we can push all the presheaves forward to the colimit `X` of the underlying topological spaces,
