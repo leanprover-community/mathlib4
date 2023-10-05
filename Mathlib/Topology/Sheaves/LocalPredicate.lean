@@ -290,14 +290,14 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
   obtain ⟨V, ⟨fV, hV⟩, rfl⟩ := jointly_surjective'.{v, v} tV
   · -- Decompose everything into its constituent parts:
     dsimp
-    simp only [stalkToFiber, Types.Colimit.ι_desc_apply'] at h
+    simp only [stalkToFiber, Types.Colimit.ι_desc_apply] at h
     specialize w (unop U) (unop V) fU hU fV hV h
     rcases w with ⟨W, iU, iV, w⟩
     -- and put it back together again in the correct order.
     refine' ⟨op W, fun w => fU (iU w : (unop U).1), P.res _ _ hU, _⟩
     rcases W with ⟨W, m⟩
     · exact iU
-    · exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩
+    · exact ⟨colimit_sound.{v, v} iU.op (Subtype.eq rfl), colimit_sound.{v, v} iV.op (Subtype.eq (funext w).symm)⟩
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber_injective TopCat.stalkToFiber_injective
 

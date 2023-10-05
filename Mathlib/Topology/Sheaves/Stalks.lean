@@ -493,16 +493,14 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_injective_iff_stalk_functor_map_injective TopCat.Presheaf.app_injective_iff_stalkFunctor_map_injective
 
 instance stalkFunctor_preserves_mono (x : X) :
-    Functor.PreservesMonomorphisms (Sheaf.forget C X ⋙ stalkFunctor C x) :=
-  ⟨@fun _𝓐 _𝓑 f m =>
-    ConcreteCategory.mono_of_injective _ <|
-      (app_injective_iff_stalkFunctor_map_injective f.1).mpr
-        (fun c =>
-          (@ConcreteCategory.mono_iff_injective_of_preservesPullback _ _ _ _ _ (f.1.app (op c))).mp
-            ((NatTrans.mono_iff_mono_app _ f.1).mp
-                (@CategoryTheory.presheaf_mono_of_mono _ _ _ _ _ _ _ _ _ _ _ _ _ _ m) <|
-              op c))
-        x⟩
+    Functor.PreservesMonomorphisms (Sheaf.forget C X ⋙ stalkFunctor C x) where
+  preserves {𝓐 𝓑} f _ := by
+    apply ConcreteCategory.mono_of_injective
+    apply (app_injective_iff_stalkFunctor_map_injective f.1).mpr
+    intro U
+    rw [← ConcreteCategory.mono_iff_injective_of_preservesPullback (f := f.1.app (op U))]
+    apply (NatTrans.mono_iff_mono_app _ f.1).mp
+    apply CategoryTheory.presheaf_mono_of_mono
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_functor_preserves_mono TopCat.Presheaf.stalkFunctor_preserves_mono
 
@@ -513,12 +511,14 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_mono_of_mono TopCat.Presheaf.stalk_mono_of_mono
 
 theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stalkFunctor C x).map f.1] :
-    Mono f :=
-  (Sheaf.Hom.mono_iff_presheaf_mono _ _ _).mpr <|
-    (NatTrans.mono_iff_mono_app _ _).mpr fun U =>
-      (ConcreteCategory.mono_iff_injective_of_preservesPullback _).mpr <|
-        app_injective_of_stalkFunctor_map_injective f.1 U.unop fun ⟨_x, _hx⟩ =>
-          (ConcreteCategory.mono_iff_injective_of_preservesPullback _).mp <| inferInstance
+    Mono f := by
+  rw [Sheaf.Hom.mono_iff_presheaf_mono, NatTrans.mono_iff_mono_app _ _]
+  intro U
+  rw [ConcreteCategory.mono_iff_injective_of_preservesPullback]
+  apply app_injective_of_stalkFunctor_map_injective
+  rintro ⟨x, hx⟩
+  rw [← ConcreteCategory.mono_iff_injective_of_preservesPullback]
+  infer_instance
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.mono_of_stalk_mono TopCat.Presheaf.mono_of_stalk_mono
 
