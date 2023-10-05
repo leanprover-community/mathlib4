@@ -181,8 +181,8 @@ theorem colimitLimitToLimitColimit_surjective :
       have t : (f, g j) =
           (((f, 𝟙 (k j)) : (j, k j) ⟶ (j', k j)) ≫ (𝟙 j', g j) : (j, k j) ⟶ (j', k')) := by
         simp only [id_comp, comp_id, prod_comp]
-      erw [Colimit.w_apply', t, FunctorToTypes.map_comp_apply, Colimit.w_apply', e, ←
-        Limit.w_apply' f, ← e]
+      erw [Colimit.w_apply'.{v, v}, t, FunctorToTypes.map_comp_apply, Colimit.w_apply'.{v, v}, e,
+        ← Limit.w_apply' f, ← e]
       simp
     -- Because `K` is filtered, we can restate this as saying that
     -- for each such `f`, there is some place to the right of `k'`

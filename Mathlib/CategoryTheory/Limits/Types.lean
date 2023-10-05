@@ -440,13 +440,13 @@ theorem Colimit.ι_map_apply [UnivLE.{v, u}] {F G : J ⥤ Type u} (α : F ⟶ G)
   congr_fun (colimit.ι_map α j) x
 #align category_theory.limits.types.colimit.ι_map_apply CategoryTheory.Limits.Types.Colimit.ι_map_apply
 
-/-@[simp]
-theorem Colimit.w_apply' {F : J ⥤ Type v} {j j' : J} {x : F.obj j} (f : j ⟶ j') :
+@[simp]
+theorem Colimit.w_apply' [UnivLE.{v, u}] {F : J ⥤ Type u} {j j' : J} {x : F.obj j} (f : j ⟶ j') :
     colimit.ι F j' (F.map f x) = colimit.ι F j x :=
   congr_fun (colimit.w F f) x
 #align category_theory.limits.types.colimit.w_apply' CategoryTheory.Limits.Types.Colimit.w_apply'
 
-@[simp]
+/-@[simp]
 theorem Colimit.ι_desc_apply' (F : J ⥤ Type v) (s : Cocone F) (j : J) (x : F.obj j) :
     colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
   congr_fun (colimit.ι_desc s j) x
@@ -459,17 +459,18 @@ theorem Colimit.ι_map_apply' {F G : J ⥤ Type v} (α : F ⟶ G) (j : J) (x) :
 #align category_theory.limits.types.colimit.ι_map_apply' CategoryTheory.Limits.Types.Colimit.ι_map_apply'-/
 
 theorem colimit_sound
-    [UnivLE.{v, u}] {F : J ⥤ Type u} {j j' : J} {x : F.obj j} {x' : F.obj j'} (f : j ⟶ j')
+    {F : J ⥤ Type u} [UnivLE.{v, u}] {j j' : J} {x : F.obj j} {x' : F.obj j'} (f : j ⟶ j')
     (w : F.map f x = x') : colimit.ι F j x = colimit.ι F j' x' := by
   rw [← w, Colimit.w_apply]
 #align category_theory.limits.types.colimit_sound CategoryTheory.Limits.Types.colimit_sound
 
-/-theorem colimit_sound' {F : J ⥤ TypeMax.{v, u}} {j j' : J} {x : F.obj j} {x' : F.obj j'} {j'' : J}
+theorem colimit_sound' {F : J ⥤ Type u} [UnivLE.{v, u}]
+    {j j' : J} {x : F.obj j} {x' : F.obj j'} {j'' : J}
     (f : j ⟶ j'') (f' : j' ⟶ j'') (w : F.map f x = F.map f' x') :
     colimit.ι F j x = colimit.ι F j' x' := by
   rw [← colimit.w _ f, ← colimit.w _ f']
   rw [types_comp_apply, types_comp_apply, w]
-#align category_theory.limits.types.colimit_sound' CategoryTheory.Limits.Types.colimit_sound'-/
+#align category_theory.limits.types.colimit_sound' CategoryTheory.Limits.Types.colimit_sound'
 
 theorem colimit_eq [UnivLE.{v, u}] {F : J ⥤ Type u} {j j' : J} {x : F.obj j} {x' : F.obj j'}
     (w : colimit.ι F j x = colimit.ι F j' x') :
