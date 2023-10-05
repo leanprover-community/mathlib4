@@ -1873,8 +1873,7 @@ theorem iUnion_prod {ι ι' α β} (s : ι → Set α) (t : ι' → Set β) :
 #align set.Union_prod Set.iUnion_prod
 
 /-- Analogue of `iSup.prod` for sets. -/
-lemma Set.iUnion_prod' (f : α × β → Set γ) :
-    ⋃ t : α × β, (f t) = ⋃ (x : α) (y : β), (f ⟨x, y⟩) := by
+lemma Set.iUnion_prod' (f : β × γ → Set α) : ⋃ x : β × γ, f x = ⋃ (i : β) (j : γ), (f ⟨i, j⟩) := by
   symm
   simp only [iUnion, iSup_eq_iUnion, iSup_prod]
 
