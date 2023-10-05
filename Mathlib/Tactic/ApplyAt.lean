@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2023 Adam Topaz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Adam Topaz
+-/
+
 import Mathlib.Tactic
 import Lean
 
@@ -29,8 +35,7 @@ def Lean.Meta.forallMetaTelescopeReducingUntilDefEq
 namespace Mathlib.Tactic
 
 elab "apply" t:term "at" i:ident : tactic => withMainContext do
-  let t ← `(@$t)
-  let f ← Term.elabTerm t none
+  let f ← Term.elabTerm (← `(@$t)) none
   let ldecl ← (← getLCtx).findFromUserName? i.getId
   let (mvs, _, tp) ← forallMetaTelescopeReducingUntilDefEq (← inferType f) ldecl.type
   let mainGoal ← getMainGoal
