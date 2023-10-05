@@ -3,7 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion.Basic
+import Mathlib.Geometry.RingedSpace.OpenImmersion
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 
@@ -376,7 +376,7 @@ def Scheme.restrict {U : TopCat} (X : Scheme) {f : U ⟶ TopCat.of X} (h : OpenE
     toPresheafedSpace := X.toPresheafedSpace.restrict h }
 #align algebraic_geometry.Scheme.restrict AlgebraicGeometry.Scheme.restrict
 
-/-- The canonical map from the restriction to the supspace. -/
+/-- The canonical map from the restriction to the subspace. -/
 @[simps!]
 def Scheme.ofRestrict {U : TopCat} (X : Scheme) {f : U ⟶ TopCat.of X}
     (h : OpenEmbedding f) : X.restrict h ⟶ X :=
@@ -694,7 +694,7 @@ theorem image_basicOpen {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] {U 
   -- Porting note : this `dsimp` was not necessary
   dsimp [Opens.map]
   refine' Set.image_preimage_eq_inter_range.trans _
-  erw [Set.inter_eq_left_iff_subset]
+  erw [Set.inter_eq_left]
   refine' Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
   refine' le_trans (Scheme.basicOpen_le _ _) (le_of_eq _)
   ext1
@@ -1122,7 +1122,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y)
   rw [eqToHom_op, eqToHom_op, eqToHom_map, eqToHom_trans]
   erw [← e]
   ext1; dsimp [Opens.map, Opens.inclusion]
-  rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff_subset, ContinuousMap.coe_mk,
+  rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, ContinuousMap.coe_mk,
     Subtype.range_val]
   exact Y.basicOpen_le r
 #align algebraic_geometry.morphism_restrict_restrict_basic_open AlgebraicGeometry.morphismRestrictRestrictBasicOpen
