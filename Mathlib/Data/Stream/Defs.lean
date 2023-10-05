@@ -55,7 +55,9 @@ abbrev tail (s : Stream' α) : Stream' α := s.dest.2
 #align stream.tail Stream'.tail
 
 /-- `n`-th element of a stream. -/
-def nth (s : Stream' α) (n : ℕ) : α := s n
+def nth (s : Stream' α) : ℕ → α
+  | 0     => head s
+  | n + 1 => nth (tail s) n
 #align stream.nth Stream'.nth
 
 /-- Drop first `n` elements of a stream. -/
@@ -99,16 +101,19 @@ def iterate (f : α → α) (a : α) : Stream' α
   | n + 1 => f (iterate f a n)
 #align stream.iterate Stream'.iterate
 
-def corec (f : α → β) (g : α → α) : α → Stream' β := fun a => map f (iterate g a)
+@[inline]
+def corec' (f : α → MProd β α) : α → Stream' β :=
+  Cofix.corec f
+#align stream.corec' Stream'.corec'
+
+@[inline]
+def corec (f : α → β) (g : α → α) : α → Stream' β :=
+  corec' (fun a => ⟨f a, g a⟩)
 #align stream.corec Stream'.corec
 
-def corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
+abbrev corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
   corec f g a
 #align stream.corec_on Stream'.corecOn
-
-def corec' (f : α → β × α) : α → Stream' β :=
-  corec (Prod.fst ∘ f) (Prod.snd ∘ f)
-#align stream.corec' Stream'.corec'
 
 -- porting note: this `#align` should be elsewhere but idk where
 #align state StateM
