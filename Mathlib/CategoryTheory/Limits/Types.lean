@@ -353,6 +353,12 @@ noncomputable def colimitCoconeIsColimit [UnivLE.{v, u}] (F : J ⥤ Type u) : Is
     exact congr_fun (hm y.1) _
 #align category_theory.limits.types.colimit_cocone_is_colimit CategoryTheory.Limits.Types.colimitCoconeIsColimit
 
+@[simp]
+lemma colimitCoconeIsColimit_desc_apply [UnivLE.{v, u}] (F : J ⥤ Type u) (s : Cocone F)
+    (j : J) (x : F.obj j) :
+    (colimitCoconeIsColimit F).desc s ((equivShrink _) (Quot.mk _ ⟨j, x⟩)) = s.ι.app j x := by
+  simp [colimitCoconeIsColimit, Quot]
+
 instance hasColimit [UnivLE.{v, u}] (F : J ⥤ Type u) : HasColimit F :=
   ⟨_, colimitCoconeIsColimit F⟩
 
