@@ -692,6 +692,9 @@ theorem comm_symm_tmul (m : M) (n : N) : (TensorProduct.comm R M N).symm (n ⊗�
   rfl
 #align tensor_product.comm_symm_tmul TensorProduct.comm_symm_tmul
 
+lemma lift_comp_comm_eq  (f : M →ₗ[R] N →ₗ[R] P) :
+    lift f ∘ₗ TensorProduct.comm R N M = lift f.flip :=
+  ext rfl
 end
 
 section
@@ -758,6 +761,11 @@ def map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[R] P ⊗[R] 
 theorem map_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (m : M) (n : N) : map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
   rfl
 #align tensor_product.map_tmul TensorProduct.map_tmul
+
+lemma map_comp_comm_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
+    map f g ∘ₗ TensorProduct.comm R N M =
+      TensorProduct.comm R Q P ∘ₗ map g f :=
+  ext rfl
 
 theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
@@ -1027,6 +1035,16 @@ theorem lTensor_tmul (m : M) (n : N) : f.lTensor M (m ⊗ₜ n) = m ⊗ₜ f n :
 theorem rTensor_tmul (m : M) (n : N) : f.rTensor M (n ⊗ₜ m) = f n ⊗ₜ m :=
   rfl
 #align linear_map.rtensor_tmul LinearMap.rTensor_tmul
+
+lemma comm_comp_rTensor_comp_comm_eq (g : N →ₗ[R] P) :
+    TensorProduct.comm R P Q ∘ₗ rTensor Q g ∘ₗ TensorProduct.comm R Q N =
+      lTensor Q g :=
+  TensorProduct.ext rfl
+
+lemma comm_comp_lTensor_comp_comm_eq (g : N →ₗ[R] P) :
+    TensorProduct.comm R Q P ∘ₗ lTensor Q g ∘ₗ TensorProduct.comm R N Q =
+      rTensor Q g :=
+  TensorProduct.ext rfl
 
 open TensorProduct
 
@@ -1315,25 +1333,25 @@ namespace LinearMap
 @[simp]
 theorem lTensor_sub (f g : N →ₗ[R] P) : (f - g).lTensor M = f.lTensor M - g.lTensor M := by
   simp_rw [← coe_lTensorHom]
-  exact (lTensorHom (R:=R) (N:=N) (P:=P) M).map_sub f g
+  exact (lTensorHom (R := R) (N := N) (P := P) M).map_sub f g
 #align linear_map.ltensor_sub LinearMap.lTensor_sub
 
 @[simp]
 theorem rTensor_sub (f g : N →ₗ[R] P) : (f - g).rTensor M = f.rTensor M - g.rTensor M := by
   simp only [← coe_rTensorHom]
-  exact (rTensorHom (R:=R) (N:=N) (P:=P) M).map_sub f g
+  exact (rTensorHom (R := R) (N := N) (P := P) M).map_sub f g
 #align linear_map.rtensor_sub LinearMap.rTensor_sub
 
 @[simp]
 theorem lTensor_neg (f : N →ₗ[R] P) : (-f).lTensor M = -f.lTensor M := by
   simp only [← coe_lTensorHom]
-  exact (lTensorHom (R:=R) (N:=N) (P:=P) M).map_neg f
+  exact (lTensorHom (R := R) (N := N) (P := P) M).map_neg f
 #align linear_map.ltensor_neg LinearMap.lTensor_neg
 
 @[simp]
 theorem rTensor_neg (f : N →ₗ[R] P) : (-f).rTensor M = -f.rTensor M := by
   simp only [← coe_rTensorHom]
-  exact (rTensorHom (R:=R) (N:=N) (P:=P) M).map_neg f
+  exact (rTensorHom (R := R) (N := N) (P := P) M).map_neg f
 #align linear_map.rtensor_neg LinearMap.rTensor_neg
 
 end LinearMap

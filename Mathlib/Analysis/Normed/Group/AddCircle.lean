@@ -20,7 +20,7 @@ We define the normed group structure on `AddCircle p`, for `p : ℝ`. For exampl
 
 ## TODO
 
- * The fact `inner_product_geometry.angle (Real.cos θ) (Real.sin θ) = ‖(θ : Real.Angle)‖`
+ * The fact `InnerProductGeometry.angle (Real.cos θ) (Real.sin θ) = ‖(θ : Real.Angle)‖`
 
 -/
 
