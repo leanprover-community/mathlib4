@@ -167,7 +167,6 @@ instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
         ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (RingHom.map_mul _ _ _)
     commutes' := fun _ _ => mul_comm _ _ }
 #align ideal.quotient.algebra Ideal.Quotient.algebra
-#print Quotient.algebra
 
 -- Lean can struggle to find this instance later if we don't provide this shortcut
 -- Porting note: this can probably now be deleted
