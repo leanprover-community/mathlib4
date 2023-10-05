@@ -1872,6 +1872,11 @@ theorem iUnion_prod {ι ι' α β} (s : ι → Set α) (t : ι' → Set β) :
   simp
 #align set.Union_prod Set.iUnion_prod
 
+/-- Analogue of `iSup.prod` for sets. -/
+lemma Set.iUnion_prod' {X Y Z : Type*} (f : X × Y → Set Z) :
+    ⋃ (x : X) (y : Y), (f ⟨x, y⟩) = ⋃ t : X × Y, (f t) := by
+  simp only [iUnion, iSup_eq_iUnion, iSup_prod]
+
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem iUnion_prod_of_monotone [SemilatticeSup α] {s : α → Set β} {t : α → Set γ} (hs : Monotone s)
