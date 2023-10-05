@@ -850,6 +850,13 @@ theorem isCoprime_iff_exists : IsCoprime I J ↔ ∃ i ∈ I, ∃ j ∈ J, i + j
 theorem isCoprime_iff_sup_eq : IsCoprime I J ↔ I ⊔ J = ⊤ := by
   rw [isCoprime_iff_codisjoint, codisjoint_iff]
 
+open List in
+theorem isCoprime_tfae : TFAE [IsCoprime I J, Codisjoint I J, I + J = 1,
+                               ∃ i ∈ I, ∃ j ∈ J, i + j = 1, I ⊔ J = ⊤] := by
+  rw [← isCoprime_iff_codisjoint, ← isCoprime_iff_add, ← isCoprime_iff_exists,
+      ← isCoprime_iff_sup_eq]
+  simp
+
 theorem _root_.IsCoprime.codisjoint (h : IsCoprime I J) : Codisjoint I J :=
 isCoprime_iff_codisjoint.mp h
 
