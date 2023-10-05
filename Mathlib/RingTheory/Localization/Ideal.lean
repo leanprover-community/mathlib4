@@ -182,7 +182,9 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
       rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_comap] at hM
       convert I.mul_mem_right (mk' S (1 : R) ⟨m, hm⟩) hM
       rw [← mk'_eq_mul_mk'_one, mk'_self]
-    exact ⟨0, eq_comm.1 (by simp [Ideal.Quotient.eq_zero_iff_mem, this])⟩
+    refine ⟨0, eq_comm.1 ?_⟩
+    rw [map_zero]
+    simp [Ideal.Quotient.eq_zero_iff_mem, this]
   · rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient] at hI
     obtain ⟨n, hn⟩ := hI.3 hM
     obtain ⟨rn, rfl⟩ := Ideal.Quotient.mk_surjective n

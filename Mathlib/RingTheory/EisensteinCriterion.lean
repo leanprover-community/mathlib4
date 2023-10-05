@@ -34,7 +34,7 @@ theorem map_eq_C_mul_X_pow_of_forall_coeff_mem {f : R[X]} {P : Ideal R}
     map (mk P) f = C ((mk P) f.leadingCoeff) * X ^ f.natDegree :=
   Polynomial.ext fun n => by
     by_cases hf0 : f = 0
-    · simp [hf0]
+    · congr; rw [hf0]; dsimp; rw [map_zero, map_zero]; simp
     rcases lt_trichotomy (n : WithBot ℕ) (degree f) with (h | h | h)
     · erw [coeff_map, eq_zero_iff_mem.2 (hfP n h), coeff_C_mul, coeff_X_pow, if_neg,
         mul_zero]
