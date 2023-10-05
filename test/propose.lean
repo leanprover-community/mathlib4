@@ -71,6 +71,8 @@ info: Try this: have : IsUnit p := isUnit_of_dvd_one h
 ---
 info: Try this: have : p ≠ 1 := ne_one hp
 ---
+info: Try this: have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := dvd_mul hp
+---
 info: Try this: have : p ∣ a := Prime.dvd_of_dvd_pow hp h
 ---
 info: Try this: have : p ≠ 0 := ne_zero hp

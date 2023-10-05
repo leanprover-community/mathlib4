@@ -1242,7 +1242,7 @@ theorem get?_injective {α : Type u} {xs : List α} {i j : ℕ} (h₀ : i < xs.l
     case succ.succ =>
       congr; cases h₁
       apply tail_ih <;> solve_by_elim [lt_of_succ_lt_succ]
-    all_goals ( dsimp at h₂; cases' h₁ with _ _ h h')
+    all_goals (dsimp at h₂; cases' h₁ with _ _ h h')
     · cases (h x (mem_iff_get?.mpr ⟨_, h₂.symm⟩) rfl)
     · cases (h x (mem_iff_get?.mpr ⟨_, h₂⟩) rfl)
 #align list.nth_injective List.get?_injective
@@ -2061,6 +2061,7 @@ theorem drop_eq_nil_iff_le {l : List α} {k : ℕ} : l.drop k = [] ↔ l.length 
       simpa [Nat.succ_le_succ_iff] using hk h
 #align list.drop_eq_nil_iff_le List.drop_eq_nil_iff_le
 
+@[simp]
 theorem tail_drop (l : List α) (n : ℕ) : (l.drop n).tail = l.drop (n + 1) := by
   induction' l with hd tl hl generalizing n
   · simp
@@ -2068,6 +2069,10 @@ theorem tail_drop (l : List α) (n : ℕ) : (l.drop n).tail = l.drop (n + 1) := 
     · simp
     · simp [hl]
 #align list.tail_drop List.tail_drop
+
+@[simp]
+theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
+  induction' l <;> simp
 
 theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 := by
@@ -3542,20 +3547,36 @@ theorem dropWhile_eq_nil_iff : dropWhile p l = [] ↔ ∀ x ∈ l, p x := by
   · by_cases hp : p x <;> simp [hp, dropWhile, IH]
 #align list.drop_while_eq_nil_iff List.dropWhile_eq_nil_iff
 
+@[simp] theorem takeWhile_nil : List.takeWhile p [] = [] := rfl
+
+theorem takeWhile_cons {x : α} :
+    List.takeWhile p (x :: l) = (match p x with
+      | true  => x :: takeWhile p l
+      | false => []) :=
+  rfl
+
+theorem takeWhile_cons_of_pos {x : α} (h : p x) :
+    List.takeWhile p (x :: l) = x :: takeWhile p l := by
+  simp [takeWhile_cons, h]
+
+theorem takeWhile_cons_of_neg {x : α} (h : ¬ p x) :
+    List.takeWhile p (x :: l) = [] := by
+  simp [takeWhile_cons, h]
+
 @[simp]
 theorem takeWhile_eq_self_iff : takeWhile p l = l ↔ ∀ x ∈ l, p x := by
   induction' l with x xs IH
-  · simp [takeWhile]
-  · by_cases hp : p x <;> simp [hp, takeWhile, IH]
+  · simp
+  · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH]
 #align list.take_while_eq_self_iff List.takeWhile_eq_self_iff
 
 @[simp]
 theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
   induction' l with x xs IH
-  · simp [takeWhile, true_iff]
+  · simp only [takeWhile_nil, Bool.not_eq_true, true_iff]
     intro h
     simp at h
-  · by_cases hp : p x <;> simp [hp, takeWhile, IH, nthLe_cons]
+  · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH, nthLe_cons]
 #align list.take_while_eq_nil_iff List.takeWhile_eq_nil_iff
 
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
@@ -3572,7 +3593,7 @@ theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
 theorem takeWhile_takeWhile (p q : α → Bool) (l : List α) :
     takeWhile p (takeWhile q l) = takeWhile (fun a => p a ∧ q a) l := by
   induction' l with hd tl IH
-  · simp [takeWhile]
+  · simp
   · by_cases hp : p hd <;> by_cases hq : q hd <;> simp [takeWhile, hp, hq, IH]
 #align list.take_while_take_while List.takeWhile_takeWhile
 
