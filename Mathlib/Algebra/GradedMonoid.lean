@@ -263,8 +263,8 @@ variable [AddZeroClass ι] [GMul A]
 /-- `(•) : A 0 → A i → A i` is the value provided in `GradedMonoid.GMul.mul`, composed with
 an `Eq.rec` to turn `A (0 + i)` into `A i`.
 -/
-instance GradeZero.smul (i : ι) : SMul (A 0) (A i)
-    where smul x y := @Eq.rec ι (0+i) (fun a _ => A a) (GMul.mul x y) i (zero_add i)
+instance GradeZero.smul (i : ι) : SMul (A 0) (A i) where
+  smul x y := @Eq.rec ι (0+i) (fun a _ => A a) (GMul.mul x y) i (zero_add i)
 #align graded_monoid.grade_zero.has_smul GradedMonoid.GradeZero.smul
 
 /-- `(*) : A 0 → A 0 → A 0` is the value provided in `GradedMonoid.GMul.mul`, composed with
@@ -496,8 +496,8 @@ theorem SetLike.one_mem_graded {S : Type*} [SetLike S R] [One R] [Zero ι] (A : 
 #align set_like.one_mem_graded SetLike.one_mem_graded
 
 instance SetLike.gOne {S : Type*} [SetLike S R] [One R] [Zero ι] (A : ι → S)
-    [SetLike.GradedOne A] : GradedMonoid.GOne fun i => A i
-    where one := ⟨1, SetLike.one_mem_graded _⟩
+    [SetLike.GradedOne A] : GradedMonoid.GOne fun i => A i where
+  one := ⟨1, SetLike.one_mem_graded _⟩
 #align set_like.ghas_one SetLike.gOne
 
 @[simp]
@@ -518,8 +518,8 @@ theorem SetLike.mul_mem_graded {S : Type*} [SetLike S R] [Mul R] [Add ι] {A : �
 #align set_like.mul_mem_graded SetLike.mul_mem_graded
 
 instance SetLike.gMul {S : Type*} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
-    [SetLike.GradedMul A] : GradedMonoid.GMul fun i => A i
-    where mul := fun a b => ⟨(a * b : R), SetLike.mul_mem_graded a.prop b.prop⟩
+    [SetLike.GradedMul A] : GradedMonoid.GMul fun i => A i where
+  mul := fun a b => ⟨(a * b : R), SetLike.mul_mem_graded a.prop b.prop⟩
 #align set_like.ghas_mul SetLike.gMul
 
 /-
@@ -658,7 +658,7 @@ theorem SetLike.coe_list_dProd (A : ι → S) [SetLike.GradedMonoid A] (fι : α
 /-- A version of `List.coe_dProd_set_like` with `Subtype.mk`. -/
 theorem SetLike.list_dProd_eq (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι) (fA : ∀ a, A (fι a))
     (l : List α) :
-    (@List.dProd _ _ (fun i => ↥(A i)) _ _ l fι fA ) =
+    (@List.dProd _ _ (fun i => ↥(A i)) _ _ l fι fA) =
       ⟨List.prod (l.map fun a => fA a),
         (l.dProdIndex_eq_map_sum fι).symm ▸
           list_prod_map_mem_graded l _ _ fun i _ => (fA i).prop⟩ :=

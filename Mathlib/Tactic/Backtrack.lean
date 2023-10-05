@@ -6,9 +6,8 @@ Authors: Scott Morrison
 import Lean.Meta.Basic
 import Mathlib.Data.Nondet.Basic
 import Lean.Meta.Tactic.Util
-import Mathlib.Control.Basic
+import Std.Data.List.Basic
 import Mathlib.Lean.Meta
-import Mathlib.Data.Sum.Basic
 
 /-!
 # `backtrack`
@@ -53,7 +52,7 @@ we can perform backtracking search by repeatedly applying the tactic.
 -/
 def firstContinuation (results : MVarId → Nondet MetaM (List MVarId))
     (cont : List MVarId → MetaM α) (g : MVarId) : MetaM α := do
-  (results g).firstM fun r => try? do cont r
+  (results g).firstM fun r => observing? do cont r
 
 end Lean.MVarId
 

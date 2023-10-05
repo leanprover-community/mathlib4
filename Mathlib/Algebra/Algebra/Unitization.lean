@@ -16,7 +16,7 @@ import Mathlib.Algebra.Star.Module
 
 Given a non-unital `R`-algebra `A` (given via the type classes
 `[NonUnitalRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]`) we construct
-the minimal unital `R`-algebra containing `A` as an ideal. This object `algebra.unitization R A` is
+the minimal unital `R`-algebra containing `A` as an ideal. This object `Unitization R A` is
 a type synonym for `R × A` on which we place a different multiplicative structure, namely,
 `(r₁, a₁) * (r₂, a₂) = (r₁ * r₂, r₁ • a₂ + r₂ • a₁ + a₁ * a₂)` where the multiplicative identity
 is `(1, 0)`.
@@ -197,7 +197,7 @@ instance instIsScalarTower [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMul T S
     [IsScalarTower T S R] [IsScalarTower T S A] : IsScalarTower T S (Unitization R A) :=
   Prod.isScalarTower
 
-instance instSmulCommClass [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMulCommClass T S R]
+instance instSMulCommClass [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMulCommClass T S R]
     [SMulCommClass T S A] : SMulCommClass T S (Unitization R A) :=
   Prod.smulCommClass
 

@@ -90,9 +90,9 @@ instance (priority := 900) smul : SMul R s :=
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
 theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α] [SMul M N]
-  [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
-  SMulMemClass S M α :=
-{ smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
+    [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
+    SMulMemClass S M α :=
+  { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
 instance instIsScalarTower [Mul M] [MulMemClass S M] [IsScalarTower R M M]
     (s : S) : IsScalarTower R s s where
@@ -276,8 +276,8 @@ instance isScalarTower : IsScalarTower S R p where
 #align sub_mul_action.is_scalar_tower SubMulAction.isScalarTower
 
 instance isScalarTower' {S' : Type*} [SMul S' R] [SMul S' S] [SMul S' M] [IsScalarTower S' R M]
-    [IsScalarTower S' S M] : IsScalarTower S' S p
-    where smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
+    [IsScalarTower S' S M] : IsScalarTower S' S p where
+  smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 #align sub_mul_action.is_scalar_tower' SubMulAction.isScalarTower'
 
 @[simp, norm_cast]
@@ -325,7 +325,7 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
 
 /- -- Previously, the relatively useless :
 lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
-  (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
+    (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
 -/
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :

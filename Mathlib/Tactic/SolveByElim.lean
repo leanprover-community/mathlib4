@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, David Renshaw
 -/
 import Mathlib.Tactic.Backtrack
+import Mathlib.Tactic.Relation.Symm
 import Lean.Meta.Tactic.Apply
+import Std.Tactic.LabelAttr
+import Std.Data.Sum.Basic
 
 /-!
 # `solve_by_elim`, `apply_rules`, and `apply_assumption`.
@@ -29,7 +32,7 @@ calls to `apply` succeeded or failed.
 -/
 def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
     (lemmas : List Expr) (g : MVarId) : Nondet MetaM (List MVarId) :=
-  (Nondet.ofList lemmas).filterMapM fun e => try? do
+  (Nondet.ofList lemmas).filterMapM fun e => observing? do
     withTraceNode `Meta.Tactic.solveByElim (return m!"{·.emoji} trying to apply: {e}") do
       let goals ← withTransparency transparency (g.apply e cfg)
       -- When we call `apply` interactively, `Lean.Elab.Tactic.evalApplyLikeTactic`
@@ -247,7 +250,7 @@ def _root_.Lean.MVarId.applyRules (cfg : Config) (lemmas : List (TermElabM Expr)
   solveByElim { cfg with backtracking := false } lemmas ctx [g]
 
 open Lean.Parser.Tactic
-open Mathlib.Tactic.LabelAttr
+open Std.Tactic.LabelAttr
 
 /--
 `mkAssumptionSet` builds a collection of lemmas for use in

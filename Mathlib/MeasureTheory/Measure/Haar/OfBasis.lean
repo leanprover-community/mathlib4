@@ -54,7 +54,7 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
   congr 1 with t
-  simp only [Function.comp_apply, LinearMap.map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
+  simp only [Function.comp_apply, map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
 #align image_parallelepiped image_parallelepiped
 
 /-- Reindexing a family of vectors does not change their parallelepiped. -/
@@ -193,7 +193,7 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
 
 @[simp]
 theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
-   (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
+    (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
 #align basis.coe_parallelepiped Basis.coe_parallelepiped
 
 @[simp]
@@ -293,5 +293,8 @@ protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
 
 theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
 #align euclidean_space.coe_measurable_equiv EuclideanSpace.coe_measurableEquiv
+
+theorem coe_measurableEquiv_symm :
+    ⇑(EuclideanSpace.measurableEquiv ι).symm = (WithLp.equiv 2 _).symm := rfl
 
 end EuclideanSpace

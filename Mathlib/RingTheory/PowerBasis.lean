@@ -256,7 +256,7 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
     rw [← pb.natDegree_minpoly]
     apply natDegree_lt_natDegree hf
     exact degree_modByMonic_lt _ (minpoly.monic pb.isIntegral_gen)
-  rw [aeval_eq_sum_range' this, aeval_eq_sum_range' this, LinearMap.map_sum]
+  rw [aeval_eq_sum_range' this, aeval_eq_sum_range' this, map_sum]
   refine' Finset.sum_congr rfl fun i (hi : i ∈ Finset.range pb.dim) => _
   rw [Finset.mem_range] at hi
   rw [LinearMap.map_smul]
