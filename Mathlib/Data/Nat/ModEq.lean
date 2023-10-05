@@ -458,7 +458,7 @@ theorem add_div {a b c : ℕ} (hc0 : 0 < c) :
     by simpa only [mul_add, add_comm, add_left_comm, add_assoc]
   rw [mod_add_div, mod_add_div, mod_add_div, mul_ite, add_assoc, add_assoc]
   conv_lhs => rw [← add_mod_add_ite]
-  simp
+  simp only [mul_one, mul_zero]
   ac_rfl
 #align nat.add_div Nat.add_div
 

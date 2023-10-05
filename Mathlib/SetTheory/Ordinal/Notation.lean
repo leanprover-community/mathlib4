@@ -719,7 +719,8 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
       simp [split_eq_scale_split' h', split, split']
       have : 1 + (e - 1) = e := by
         refine' repr_inj.1 _
-        simp
+        simp only [repr_add, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero,
+          repr_sub]
         have := mt repr_inj.1 e0
         refine' Ordinal.add_sub_cancel_of_le _
         have := (one_le_iff_ne_zero.2 this)
