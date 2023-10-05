@@ -128,10 +128,10 @@ variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
 /-- The direct map in `lTensor.equiv` -/
 def lTensor.toFun :
-  Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) →ₗ[R] Q ⊗[R] P :=
-    Submodule.liftQ _ (lTensor Q g) <| by
-      rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp,
-        ← lTensor_comp, hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
+    Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) →ₗ[R] Q ⊗[R] P :=
+  Submodule.liftQ _ (lTensor Q g) <| by
+    rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp,
+      ← lTensor_comp, hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
 
 /-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse)-/
 def lTensor.inverse_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
@@ -232,7 +232,7 @@ lemma lTensor_mkQ (N : Submodule R M) :
 
 /-- The direct map in `rTensor.equiv` -/
 def rTensor.toFun :
-  N ⊗[R] Q ⧸ range (rTensor Q f) →ₗ[R] P ⊗[R] Q :=
+    N ⊗[R] Q ⧸ range (rTensor Q f) →ₗ[R] P ⊗[R] Q :=
   Submodule.liftQ _ (rTensor Q g) <| by
     rw [range_le_iff_comap, ← ker_comp, ← rTensor_comp,
       hfg.linearMap_comp_eq_zero, rTensor_zero, ker_zero]
