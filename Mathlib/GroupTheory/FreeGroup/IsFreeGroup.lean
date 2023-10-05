@@ -37,7 +37,7 @@ universe u
 /- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4:
 #[`MulEquiv] [] -/
 /- Porting Note regarding the comment above:
-The mathlib3 version makes `G` explicit in `is_free_group.mul_equiv`. -/
+The mathlib3 version makes `G` explicit in `IsFreeGroup.MulEquiv`. -/
 
 /-- `IsFreeGroup G` means that `G` isomorphic to a free group. -/
 class IsFreeGroup (G : Type u) [Group G] where

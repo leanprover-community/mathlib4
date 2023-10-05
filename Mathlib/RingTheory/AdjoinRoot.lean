@@ -852,7 +852,7 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
         rfl
       rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C]
       -- Porting note: the following `rfl` was not needed
-      rfl )
+      rfl)
 #align adjoin_root.quot_equiv_quot_map AdjoinRoot.quotEquivQuotMap
 
 @[simp]
