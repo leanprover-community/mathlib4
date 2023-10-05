@@ -64,8 +64,8 @@ theorem pi_lift_π_apply [UnivLE.{v, u}] {β : Type v} (f : β → Type u) {P : 
 with specialized universes. -/
 theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
-    (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
-  by simp
+    (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x := by
+  simp
 #align category_theory.limits.types.pi_lift_π_apply' CategoryTheory.Limits.Types.pi_lift_π_apply'
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`. -/
@@ -79,8 +79,8 @@ theorem pi_map_π_apply [UnivLE.{v, u}] {β : Type v} {f g : β → Type u}
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`,
 with specialized universes. -/
 theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
-    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
-   by simp
+    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) := by
+  simp
 #align category_theory.limits.types.pi_map_π_apply' CategoryTheory.Limits.Types.pi_map_π_apply'
 
 /-- The category of types has `PUnit` as a terminal object. -/
@@ -426,7 +426,7 @@ theorem productIso_hom_comp_eval {J : Type v} (F : J → Type u) [UnivLE.{v, u}]
 -- `elementwise` seems to be broken. Applied to the previous lemma, it should produce:
 @[simp]
 theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) (x) :
-   (equivShrink _).symm ((productIso F).hom x) j = Pi.π F j x :=
+    (equivShrink _).symm ((productIso F).hom x) j = Pi.π F j x :=
   congr_fun (productIso_hom_comp_eval F j) x
 
 @[elementwise (attr := simp)]

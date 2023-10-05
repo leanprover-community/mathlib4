@@ -663,7 +663,7 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
 instance : WfDvdMonoid (Ideal A) where
   wellFounded_dvdNotUnit := by
     have : WellFounded ((· > ·) : Ideal A → Ideal A → Prop) :=
-      isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindDomain.toIsNoetherian)
+      isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindRing.toIsNoetherian)
     convert this
     ext
     rw [Ideal.dvdNotUnit_iff_lt]
@@ -874,6 +874,9 @@ theorem lcm_eq_inf (I J : Ideal A) : lcm I J = I ⊓ J := rfl
 theorem inf_eq_mul_of_coprime {I J : Ideal A} (coprime : I ⊔ J = ⊤) : I ⊓ J = I * J := by
   rw [← associated_iff_eq.mp (gcd_mul_lcm I J), lcm_eq_inf I J, gcd_eq_sup, coprime, top_mul]
 #align ideal.inf_eq_mul_of_coprime Ideal.inf_eq_mul_of_coprime
+
+theorem isCoprime_iff_gcd {I J : Ideal A} : IsCoprime I J ↔ gcd I J = 1 := by
+  rw [Ideal.isCoprime_iff_codisjoint, codisjoint_iff, one_eq_top, gcd_eq_sup]
 
 end Ideal
 

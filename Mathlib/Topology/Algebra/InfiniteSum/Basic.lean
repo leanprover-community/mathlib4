@@ -8,7 +8,7 @@ import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.Star
 
-#align_import topology.algebra.infinite_sum.basic from "leanprover-community/mathlib"@"3b1890e71632be9e3b2086ab512c3259a7e9a3ef"
+#align_import topology.algebra.infinite_sum.basic from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Infinite sum over a topological monoid
@@ -512,8 +512,8 @@ theorem sum_eq_tsum_indicator (f : β → α) (s : Finset β) :
     (tsum_eq_sum this).symm
 #align sum_eq_tsum_indicator sum_eq_tsum_indicator
 
-theorem tsum_bool (f : Bool → α) : ∑' i : Bool, f i = f False + f True := by
-  rw [tsum_fintype, Finset.sum_eq_add] <;> simp
+theorem tsum_bool (f : Bool → α) : ∑' i : Bool, f i = f false + f true := by
+  rw [tsum_fintype, Fintype.sum_bool, add_comm]
 #align tsum_bool tsum_bool
 
 theorem tsum_eq_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 0) :
@@ -697,7 +697,7 @@ variable [Encodable γ]
   taking a supremum. This is useful for outer measures. -/
 theorem tsum_iSup_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (s : γ → β) :
     ∑' i : ℕ, m (⨆ b ∈ decode₂ γ i, s b) = ∑' b : γ, m (s b) := by
-  have H : ∀ n, m (⨆ b ∈ decode₂ γ n, s b) ≠ 0 → (decode₂ γ n).isSome :=by
+  have H : ∀ n, m (⨆ b ∈ decode₂ γ n, s b) ≠ 0 → (decode₂ γ n).isSome := by
     intro n h
     generalize decode₂ γ n = foo at *
     cases' foo with b
@@ -1266,7 +1266,7 @@ theorem Summable.tendsto_atTop_zero {f : ℕ → G} (hf : Summable f) : Tendsto 
 
 theorem Summable.countable_support [TopologicalSpace.FirstCountableTopology G] [T1Space G]
     (hf : Summable f) : f.support.Countable := by
-  simpa only [sInter_sets_nhds] using hf.tendsto_cofinite_zero.countable_compl_preimage_sInter_sets
+  simpa only [ker_nhds] using hf.tendsto_cofinite_zero.countable_compl_preimage_ker
 
 end TopologicalGroup
 
@@ -1283,9 +1283,42 @@ theorem Summable.const_smul (b : γ) (hf : Summable f) : Summable fun i => b •
   (hf.hasSum.const_smul _).summable
 #align summable.const_smul Summable.const_smul
 
+/-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Monoid`, but
+  requiring a summability hypothesis. -/
 theorem tsum_const_smul [T2Space α] (b : γ) (hf : Summable f) : ∑' i, b • f i = b • ∑' i, f i :=
   (hf.hasSum.const_smul _).tsum_eq
 #align tsum_const_smul tsum_const_smul
+
+/-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Group`, but
+  not requiring any summability hypothesis. -/
+lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
+    [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
+  by_cases hf : Summable f
+  · exact tsum_const_smul g hf
+  rw [tsum_eq_zero_of_not_summable hf]
+  simp only [smul_zero]
+  let mul_g : α ≃+ α := DistribMulAction.toAddEquiv α g
+  apply tsum_eq_zero_of_not_summable
+  change ¬ Summable (mul_g ∘ f)
+  rwa [Summable.map_iff_of_equiv mul_g]
+  · apply continuous_const_smul
+  · apply continuous_const_smul
+
+/-- Infinite sums commute with scalar multiplication. Version for scalars living in a
+  `DivisionRing`; no summability hypothesis. This could be made to work for a
+  `[GroupWithZero γ]` if there was such a thing as `DistribMulActionWithZero`. -/
+lemma tsum_const_smul'' {γ : Type*} [DivisionRing γ] [Module γ α] [ContinuousConstSMul γ α]
+    [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
+  by_cases hf : Summable f
+  · exact tsum_const_smul g hf
+  rw [tsum_eq_zero_of_not_summable hf]
+  simp only [smul_zero]
+  by_cases hg : g = 0
+  · simp [hg]
+  let mul_g : α ≃+ α := DistribMulAction.toAddEquiv₀ α g hg
+  apply tsum_eq_zero_of_not_summable
+  change ¬ Summable (mul_g ∘ f)
+  rwa [Summable.map_iff_of_equiv] <;> apply continuous_const_smul
 
 end ConstSmul
 
@@ -1426,3 +1459,104 @@ theorem tsum_star : star (∑' b, f b) = ∑' b, star (f b) := by
 #align tsum_star tsum_star
 
 end ContinuousStar
+
+section automorphize
+
+variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Type*}
+  [DivisionRing R] [Module R M] [ContinuousConstSMul R M]
+
+/-- Given a group `α` acting on a type `β`, and a function `f : β → M`, we "automorphize" `f` to a
+  function `β ⧸ α → M` by summing over `α` orbits, `b ↦ ∑' (a : α), f(a • b)`. -/
+@[to_additive "Given an additive group `α` acting on a type `β`, and a function `f : β → M`,
+  we automorphize `f` to a function `β ⧸ α → M` by summing over `α` orbits,
+  `b ↦ ∑' (a : α), f(a • b)`."]
+noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β → M) :
+    Quotient (MulAction.orbitRel α β) → M := by
+  refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
+  intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
+  simp only
+  rw [← ha]
+  convert (Equiv.mulRight a).tsum_eq (fun a' ↦ f (a' • b₂)) using 1
+  simp only [Equiv.coe_mulRight]
+  congr
+  ext
+  congr 1
+  simp only [mul_smul]
+
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/
+lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
+    (g : Quotient (MulAction.orbitRel α β) → R) :
+    MulAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
+      = g • (MulAction.automorphize f : Quotient (MulAction.orbitRel α β) → M) := by
+  ext x
+  apply @Quotient.inductionOn' β (MulAction.orbitRel α β) _ x _
+  intro b
+  simp only [automorphize, Pi.smul_apply', comp_apply]
+  set π : β → Quotient (MulAction.orbitRel α β) := Quotient.mk (MulAction.orbitRel α β)
+  have H₁ : ∀ a : α, π (a • b) = π b
+  · intro a
+    apply (@Quotient.eq _ (MulAction.orbitRel α β) (a • b) b).mpr
+    use a
+  change ∑' a : α, g (π (a • b)) • f (a • b) = g (π b) • ∑' a : α, f (a • b)
+  simp_rw [H₁]
+  exact tsum_const_smul'' _
+
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/
+lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β]  (f : β → M)
+    (g : Quotient (AddAction.orbitRel α β) → R) :
+    AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
+      = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
+  ext x
+  apply @Quotient.inductionOn' β (AddAction.orbitRel α β) _ x _
+  intro b
+  simp only [automorphize, Pi.smul_apply', comp_apply]
+  set π : β → Quotient (AddAction.orbitRel α β) := Quotient.mk (AddAction.orbitRel α β)
+  have H₁ : ∀ a : α, π (a +ᵥ b) = π b
+  · intro a
+    apply (@Quotient.eq _ (AddAction.orbitRel α β) (a +ᵥ b) b).mpr
+    use a
+  change ∑' a : α, g (π (a +ᵥ b)) • f (a +ᵥ b) = g (π b) • ∑' a : α, f (a +ᵥ b)
+  simp_rw [H₁]
+  exact tsum_const_smul'' _
+
+attribute [to_additive existing MulAction.automorphize_smul_left] AddAction.automorphize_smul_left
+
+section
+
+variable {G : Type*} [Group G] {Γ : Subgroup G}
+
+/-- Given a subgroup `Γ` of a group `G`, and a function `f : G → M`, we "automorphize" `f` to a
+  function `G ⧸ Γ → M` by summing over `Γ` orbits, `g ↦ ∑' (γ : Γ), f(γ • g)`. -/
+@[to_additive "Given a subgroup `Γ` of an additive group `G`, and a function `f : G → M`, we
+  automorphize `f` to a function `G ⧸ Γ → M` by summing over `Γ` orbits,
+  `g ↦ ∑' (γ : Γ), f(γ • g)`."]
+noncomputable def QuotientGroup.automorphize  (f : G → M) : G ⧸ Γ → M := MulAction.automorphize f
+
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/
+lemma QuotientGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
+    (QuotientGroup.automorphize ((g ∘ (@Quotient.mk' _ (_)) : G → R) • f) : G ⧸ Γ → M)
+      = g • (QuotientGroup.automorphize f : G ⧸ Γ → M) :=
+  MulAction.automorphize_smul_left f g
+
+end
+
+section
+
+variable {G : Type*} [AddGroup G] {Γ : AddSubgroup G}
+
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/
+lemma QuotientAddGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
+    QuotientAddGroup.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
+      = g • (QuotientAddGroup.automorphize f : G ⧸ Γ → M) :=
+  AddAction.automorphize_smul_left f g
+
+end
+
+attribute [to_additive existing QuotientGroup.automorphize_smul_left]
+  QuotientAddGroup.automorphize_smul_left
+
+end automorphize

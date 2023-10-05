@@ -203,7 +203,7 @@ theorem tensorHom_id {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
   simp [tensorHom_def]
 
 theorem whisker_exchange {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) :
-     W ◁ g ≫ f ▷ Z = f ▷ Y ≫ X ◁ g := by
+    W ◁ g ≫ f ▷ Z = f ▷ Y ≫ X ◁ g := by
   simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
 
 @[reassoc]
@@ -292,8 +292,9 @@ theorem rightUnitor_conjugation {X Y : C} (f : X ⟶ Y) :
 #align category_theory.monoidal_category.right_unitor_conjugation CategoryTheory.MonoidalCategory.rightUnitor_conjugation
 
 @[simp]
-theorem leftUnitor_conjugation {X Y : C} (f : X ⟶ Y) : 𝟙 (𝟙_ C) ⊗ f = (λ_ X).hom ≫ f ≫ (λ_ Y).inv
-  := by rw [← leftUnitor_naturality_assoc, Iso.hom_inv_id, Category.comp_id]
+theorem leftUnitor_conjugation {X Y : C} (f : X ⟶ Y) :
+    𝟙 (𝟙_ C) ⊗ f = (λ_ X).hom ≫ f ≫ (λ_ Y).inv := by
+  rw [← leftUnitor_naturality_assoc, Iso.hom_inv_id, Category.comp_id]
 #align category_theory.monoidal_category.left_unitor_conjugation CategoryTheory.MonoidalCategory.leftUnitor_conjugation
 
 @[reassoc]

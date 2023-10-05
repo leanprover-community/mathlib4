@@ -116,18 +116,19 @@ theorem convexHull_diam (s : Set E) : Metric.diam (convexHull ℝ s) = Metric.di
 
 /-- Convex hull of `s` is bounded if and only if `s` is bounded. -/
 @[simp]
-theorem bounded_convexHull {s : Set E} : Metric.Bounded (convexHull ℝ s) ↔ Metric.Bounded s := by
-  simp only [Metric.bounded_iff_ediam_ne_top, convexHull_ediam]
-#align bounded_convex_hull bounded_convexHull
+theorem isBounded_convexHull {s : Set E} :
+    Bornology.IsBounded (convexHull ℝ s) ↔ Bornology.IsBounded s := by
+  simp only [Metric.isBounded_iff_ediam_ne_top, convexHull_ediam]
+#align bounded_convex_hull isBounded_convexHull
 
-instance (priority := 100) NormedSpace.path_connected : PathConnectedSpace E :=
+instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
   TopologicalAddGroup.pathConnectedSpace
-#align normed_space.path_connected NormedSpace.path_connected
+#align normed_space.path_connected NormedSpace.instPathConnectedSpace
 
-instance (priority := 100) NormedSpace.loc_path_connected : LocPathConnectedSpace E :=
+instance (priority := 100) NormedSpace.instLocPathConnectedSpace : LocPathConnectedSpace E :=
   locPathConnected_of_bases (fun x => Metric.nhds_basis_ball) fun x r r_pos =>
     (convex_ball x r).isPathConnected <| by simp [r_pos]
-#align normed_space.loc_path_connected NormedSpace.loc_path_connected
+#align normed_space.loc_path_connected NormedSpace.instLocPathConnectedSpace
 
 theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
     dist x y + dist y z = dist x z := by

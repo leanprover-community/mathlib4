@@ -603,10 +603,10 @@ theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (
   have h2 := liftRel_destruct h2
   refine'
     Computation.liftRel_def.2
-      ⟨(Computation.terminates_of_LiftRel h1).trans (Computation.terminates_of_LiftRel h2),
+      ⟨(Computation.terminates_of_liftRel h1).trans (Computation.terminates_of_liftRel h2),
         fun {a c} ha hc => _⟩
   rcases h1.left ha with ⟨b, hb, t1⟩
-  have t2 := Computation.rel_of_LiftRel h2 hb hc
+  have t2 := Computation.rel_of_liftRel h2 hb hc
   cases' a with a <;> cases' c with c
   · trivial
   · cases b
@@ -1612,7 +1612,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
   intro S T ST a ra; simp [destruct_join] at ra
   exact
     let ⟨o, m, k, rs1, rs2, en⟩ := of_results_bind ra
-    let ⟨p, mT, rop⟩ := Computation.exists_of_LiftRel_left (liftRel_destruct ST) rs1.mem
+    let ⟨p, mT, rop⟩ := Computation.exists_of_liftRel_left (liftRel_destruct ST) rs1.mem
     match o, p, rop, rs1, rs2, mT with
     | none, none, _, _, rs2, mT => by
       simp only [destruct_join]
@@ -1622,7 +1622,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
       exact
         let ⟨k1, rs3, ek⟩ := of_results_think rs2
         let ⟨o', m1, n1, rs4, rs5, ek1⟩ := of_results_bind rs3
-        let ⟨p', mt, rop'⟩ := Computation.exists_of_LiftRel_left (liftRel_destruct st) rs4.mem
+        let ⟨p', mt, rop'⟩ := Computation.exists_of_liftRel_left (liftRel_destruct st) rs4.mem
         match o', p', rop', rs4, rs5, mt with
         | none, none, _, _, rs5', mt => by
           have : n1 < n := by
@@ -1700,7 +1700,7 @@ theorem join_pure (s : WSeq α) : join (pure s) ≈ s := by simp [pure]; apply t
 theorem join_map_pure (s : WSeq α) : join (map pure s) ≈ s := by
   refine' ⟨fun s1 s2 => join (map pure s2) = s1, rfl, _⟩
   intro s' s h; rw [← h]
-  apply lift_rel_rec fun c1 c2 => ∃ s, c1 = destruct (join (map pure s)) ∧ c2 = destruct s
+  apply liftRel_rec fun c1 c2 => ∃ s, c1 = destruct (join (map pure s)) ∧ c2 = destruct s
   · exact fun {c1 c2} h =>
       match c1, c2, h with
       | _, _, ⟨s, rfl, rfl⟩ => by
@@ -1723,7 +1723,7 @@ theorem join_append (S T : WSeq (WSeq α)) : join (S ++ T) ≈ join S ++ join T 
       ⟨nil, S, T, by simp, by simp⟩, _⟩
   intro s1 s2 h
   apply
-    lift_rel_rec
+    liftRel_rec
       (fun c1 c2 =>
         ∃ (s : WSeq α) (S T : _),
           c1 = destruct (s ++ join (S ++ T)) ∧
@@ -1782,7 +1782,7 @@ theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ≈ join (map jo
       ⟨nil, nil, SS, by simp, by simp⟩, _⟩
   intro s1 s2 h
   apply
-    lift_rel_rec
+    liftRel_rec
       (fun c1 c2 =>
         ∃ s S SS,
           c1 = destruct (s ++ join (S ++ join SS)) ∧

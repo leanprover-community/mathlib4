@@ -50,7 +50,7 @@ output, with enough expressivity to write any partial recursive function. The pr
 * `comp f g` calls `f` on the output of `g`:
   * `comp f g v = f (g v)`
 * `case f g` cases on the head of the input, calling `f` or `g` depending on whether it is zero or
-  a successor (similar to `nat.cases_on`).
+  a successor (similar to `Nat.casesOn`).
   * `case f g [] = f []`
   * `case f g (0 :: v) = f v`
   * `case f g (n+1 :: v) = g (n :: v)`
@@ -312,8 +312,8 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         show ∀ x, pure x = [x] from fun _ => rfl, Bind.bind, Functor.map]
     suffices ∀ a b, a + b = n →
       (n.succ :: 0 ::
-        g (n ::ᵥ Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) n ::ᵥ v.tail)
-          :: v.val.tail : List ℕ) ∈
+        g (n ::ᵥ Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) n ::ᵥ v.tail) ::
+            v.val.tail : List ℕ) ∈
         PFun.fix
           (fun v : List ℕ => Part.bind (cg.eval (v.headI :: v.tail.tail))
             (fun x => Part.some (if v.tail.headI = 0
@@ -1101,7 +1101,7 @@ def tr : Λ' → Stmt'
 we replace equation lemmas of `tr`. -/
 
 theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
-  pop' k₁ (branch (fun s => s.elim true p) (goto fun _ => q)
+    pop' k₁ (branch (fun s => s.elim true p) (goto fun _ => q)
       (push' k₂ <| goto fun _ => Λ'.move p k₁ k₂ q)) := rfl
 
 theorem tr_push (k f q) : tr (Λ'.push k f q) = branch (fun s => (f s).isSome)
@@ -1122,7 +1122,7 @@ theorem tr_succ (q) : tr (Λ'.succ q) = pop' main (branch (fun s => s = some Γ'
         ((push main fun _ => Γ'.bit1) <| goto fun _ => unrev q)) := rfl
 
 theorem tr_pred (q₁ q₂) : tr (Λ'.pred q₁ q₂) = pop' main (branch (fun s => s = some Γ'.bit0)
-      ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
+    ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
     branch (fun s => natEnd s.iget) (goto fun _ => q₁)
       (peek' main <|
         branch (fun s => natEnd s.iget) (goto fun _ => unrev q₂)
@@ -1545,7 +1545,6 @@ theorem succ_ok {q s n} {c d : List Γ'} :
     simp [trPosNum]
   · obtain ⟨l₁', l₂', s', e, h⟩ := IH (Γ'.bit0 :: l₁)
     refine' ⟨l₁', l₂', s', e, TransGen.head _ h⟩
-    swap
     simp [PosNum.succ, trPosNum]
     rfl
   · refine' ⟨l₁, _, some Γ'.bit0, rfl, TransGen.single _⟩
@@ -1839,7 +1838,7 @@ theorem codeSupp_comp (f g k) :
       trStmts₁ (trNormal (Code.comp f g) k) ∪ codeSupp g (Cont'.comp f k) := by
   simp [codeSupp, codeSupp', contSupp, Finset.union_assoc]
   rw [← Finset.union_assoc _ _ (contSupp k),
-    Finset.union_eq_right_iff_subset.2 (codeSupp'_self _ _)]
+    Finset.union_eq_right.2 (codeSupp'_self _ _)]
 #align turing.partrec_to_TM2.code_supp_comp Turing.PartrecToTM2.codeSupp_comp
 
 @[simp]

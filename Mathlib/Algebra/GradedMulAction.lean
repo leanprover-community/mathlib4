@@ -120,8 +120,8 @@ class SetLike.GradedSmul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M
 
 instance SetLike.toGSmul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
     (A : ι → S) (B : ι → N) [SetLike.GradedSmul A B] :
-    GradedMonoid.GSmul (fun i ↦ A i) fun i ↦ B i
-    where smul a b := ⟨a.1 • b.1, SetLike.GradedSmul.smul_mem a.2 b.2⟩
+    GradedMonoid.GSmul (fun i ↦ A i) fun i ↦ B i where
+  smul a b := ⟨a.1 • b.1, SetLike.GradedSmul.smul_mem a.2 b.2⟩
 #align set_like.ghas_smul SetLike.toGSmul
 
 /-
@@ -141,8 +141,8 @@ theorem SetLike.coe_GSmul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R 
 
 /-- Internally graded version of `Mul.toSMul`. -/
 instance SetLike.GradedMul.toGradedSmul [AddMonoid ι] [Monoid R] {S : Type*} [SetLike S R]
-    (A : ι → S) [SetLike.GradedMonoid A] : SetLike.GradedSmul A A
-    where smul_mem _ _ _ _ hi hj := SetLike.GradedMonoid.toGradedMul.mul_mem hi hj
+    (A : ι → S) [SetLike.GradedMonoid A] : SetLike.GradedSmul A A where
+  smul_mem _ _ _ _ hi hj := SetLike.GradedMonoid.toGradedMul.mul_mem hi hj
 #align set_like.has_graded_mul.to_has_graded_smul SetLike.GradedMul.toGradedSmul
 
 end Subobjects

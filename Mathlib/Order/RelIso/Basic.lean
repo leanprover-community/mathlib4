@@ -183,20 +183,14 @@ theorem RelHom.injective_of_increasing [IsTrichotomous α r] [IsIrrefl β s] (f 
   _root_.injective_of_increasing r s f f.map_rel
 #align rel_hom.injective_of_increasing RelHom.injective_of_increasing
 
--- TODO: define a `RelIffClass` so we don't have to do all the `convert` trickery?
-theorem Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
+theorem Function.Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
     (o : ∀ {a b}, r a b ↔ s (f a) (f b)) :
     WellFounded r ↔ WellFounded s :=
   Iff.intro
-    (by
-      refine RelHomClass.wellFounded (RelHom.mk ?_ ?_ : s →r r)
-      · exact Classical.choose hf.hasRightInverse
-      intro a b h
-      apply o.2
-      convert h
-      iterate 2 apply Classical.choose_spec hf.hasRightInverse)
+    (RelHomClass.wellFounded (⟨surjInv hf,
+      fun h => by simpa only [o, surjInv_eq hf] using h⟩ : s →r r))
     (RelHomClass.wellFounded (⟨f, o.1⟩ : r →r s))
-#align surjective.well_founded_iff Surjective.wellFounded_iff
+#align surjective.well_founded_iff Function.Surjective.wellFounded_iff
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
