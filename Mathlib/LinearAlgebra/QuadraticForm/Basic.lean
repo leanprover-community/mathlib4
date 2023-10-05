@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.Algebra.Module.LinearMap
 
 #align_import linear_algebra.quadratic_form.basic from "leanprover-community/mathlib"@"11b92770e4d49ff3982504c4dab918ac0887fe33"
 
@@ -413,13 +414,20 @@ section SMul
 variable [Monoid S] [Monoid T]
 --variable [DistribMulAction S R] [DistribMulAction T R]
 variable [DistribMulAction S N] [DistribMulAction T N]
-variable [SMulCommClass S R N] [SMulCommClass S Rᵐᵒᵖ N] [SMulCommClass T R N] [SMulCommClass T Rᵐᵒᵖ N]
+variable [SMulCommClass R S N] [SMulCommClass  Rᵐᵒᵖ S N] [SMulCommClass T R N] [SMulCommClass T Rᵐᵒᵖ N]
 
+#check instSMulCommClass
+
+instance : SMulCommClass S R N := instSMulCommClass
+/-
 instance : SMul S (M →ₗ[Rᵐᵒᵖ] N) where
   smul s L := ⟨⟨fun a => s • L a, fun _ _ => by simp⟩,fun r a => by
     simp
     rw [smul_comm]
     ⟩
+
+
+-- instance : SMul S (M →ₗ[Rᵐᵒᵖ] N) := LinearMap.instSMulLinearMap
 
 lemma smul (s : S) (L : M →ₗ[Rᵐᵒᵖ] N) (a : M) : (s • L) a = s • (L a) := rfl
 
@@ -437,17 +445,24 @@ instance : DistribMulAction S (M →ₗ[Rᵐᵒᵖ] N) where
   smul_add a L₁ L₂ := by
     ext
     rw [smul, LinearMap.add_apply, smul_add, LinearMap.add_apply, smul, smul]
+-/
 
-instance : SMulCommClass S R (M →ₗ[Rᵐᵒᵖ] N) where
-  smul_comm s r L := by
+instance : SMulCommClass R S (M →ₗ[Rᵐᵒᵖ] N) := by infer_instance
+  --smul_comm s r L := sorry
+  /-
+  by
     ext
     rw [smul, LinearMap.smul_apply, LinearMap.smul_apply, smul, smul_comm]
+  -/
 
-instance : SMul S (M →ₗ[R] M →ₗ[Rᵐᵒᵖ] N) where
+instance : SMul S (M →ₗ[R] M →ₗ[Rᵐᵒᵖ] N) := by infer_instance
+/-
+ where
   smul s B := ⟨⟨fun a => s • B a, fun _ _ => by simp⟩,fun r a => by
     simp
     rw [smul_comm]
     ⟩
+-/
 
 /-- `QuadraticForm R M` inherits the scalar action from any algebra over `R`.
 
@@ -455,7 +470,9 @@ When `R` is commutative, this provides an `R`-action via `Algebra.id`. -/
 instance : SMul S (QuadraticForm R M N) :=
   ⟨fun a Q =>
     { toFun := a • ⇑Q
-      toFun_smul := fun b x => by rw [Pi.smul_apply, map_smul, Pi.smul_apply, smul_comm]
+      toFun_smul := fun b x => by
+        rw [Pi.smul_apply, map_smul, Pi.smul_apply]
+        rw [smul_comm]
       toFun_smulr := fun b x => by rw [Pi.smul_apply, map_smulr, Pi.smul_apply, smul_comm]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
@@ -581,40 +598,41 @@ end SemiringOperators
 
 section RingOperators
 
-variable [Ring R] [AddCommGroup M] [Module R M]
+variable [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [AddCommGroup N] [Module R N] [Module Rᵐᵒᵖ N] [SMulCommClass Rᵐᵒᵖ R N]
 
 instance : Neg (QuadraticForm R M N) :=
   ⟨fun Q =>
     { toFun := -Q
-      toFun_smul := fun a x => by simp only [Pi.neg_apply, map_smul, mul_neg]
+      toFun_smul := fun a x => by simp [Pi.neg_apply, map_smul, smul_neg]
+      toFun_smulr := fun a x => by simp [Pi.neg_apply, map_smulr, smul_neg]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
-        ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, BilinForm.neg_apply, neg_add]⟩ }⟩
+        ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, LinearMap.neg_apply, neg_add]⟩ }⟩
 
 @[simp]
-theorem coeFn_neg (Q : QuadraticForm R M) : ⇑(-Q) = -Q :=
+theorem coeFn_neg (Q : QuadraticForm R M N) : ⇑(-Q) = -Q :=
   rfl
 #align quadratic_form.coe_fn_neg QuadraticForm.coeFn_neg
 
 @[simp]
-theorem neg_apply (Q : QuadraticForm R M) (x : M) : (-Q) x = -Q x :=
+theorem neg_apply (Q : QuadraticForm R M N) (x : M) : (-Q) x = -Q x :=
   rfl
 #align quadratic_form.neg_apply QuadraticForm.neg_apply
 
-instance : Sub (QuadraticForm R M) :=
+instance : Sub (QuadraticForm R M N) :=
   ⟨fun Q Q' => (Q + -Q').copy (Q - Q') (sub_eq_add_neg _ _)⟩
 
 @[simp]
-theorem coeFn_sub (Q Q' : QuadraticForm R M) : ⇑(Q - Q') = Q - Q' :=
+theorem coeFn_sub (Q Q' : QuadraticForm R M N) : ⇑(Q - Q') = Q - Q' :=
   rfl
 #align quadratic_form.coe_fn_sub QuadraticForm.coeFn_sub
 
 @[simp]
-theorem sub_apply (Q Q' : QuadraticForm R M) (x : M) : (Q - Q') x = Q x - Q' x :=
+theorem sub_apply (Q Q' : QuadraticForm R M N) (x : M) : (Q - Q') x = Q x - Q' x :=
   rfl
 #align quadratic_form.sub_apply QuadraticForm.sub_apply
 
-instance : AddCommGroup (QuadraticForm R M) :=
+instance : AddCommGroup (QuadraticForm R M N) :=
   FunLike.coe_injective.addCommGroup _ coeFn_zero coeFn_add coeFn_neg coeFn_sub
     (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
 
@@ -622,17 +640,21 @@ end RingOperators
 
 section Comp
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
 
-variable {N : Type v} [AddCommMonoid N] [Module R N]
+variable [AddCommMonoid N] [Module R N] [Module Rᵐᵒᵖ N]
+
+variable {N' : Type v} [AddCommMonoid N'] [Module R N'] [Module Rᵐᵒᵖ N'] [SMulCommClass Rᵐᵒᵖ R N]
 
 /-- Compose the quadratic form with a linear function. -/
-def comp (Q : QuadraticForm R N) (f : M →ₗ[R] N) : QuadraticForm R M where
+def comp (Q : QuadraticForm R N' N) (f : M →ₗ[R] N') (hf : IsLinearMap Rᵐᵒᵖ f): QuadraticForm R M N where
   toFun x := Q (f x)
   toFun_smul a x := by simp only [map_smul, f.map_smul]
+  toFun_smulr a x := by
+    simp  [map_smulr, f.map_smul, hf.map_smul]
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
-    ⟨B.comp f f, fun x y => by simp_rw [f.map_add, h, BilinForm.comp_apply]⟩
+    ⟨LinearMap.compl₁₂ f (IsLinearMap.mk' f hf), fun x y => by simp_rw [f.map_add, h]⟩
 #align quadratic_form.comp QuadraticForm.comp
 
 @[simp]
