@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.LinearAlgebra.TensorProduct
@@ -153,7 +154,18 @@ end NonUnital
 
 section Semiring
 
-variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+variable {R A B} in
+/-- An `LinearMap` preserves multiplication if pre- and post- composition with
+`LinearMap.mul` are equivalent. By converting the statement into an equality of
+`LinearMap`s, this lemma allows various specialized `ext` lemmas about `→+` to then be applied.
+
+This is the `LinearMap` version of `AddMonoidHom.map_mul_iff`. -/
+theorem map_mul_iff (f : A →ₗ[R] B) :
+    (∀ x y, f (x * y) = f x * f y) ↔
+      (LinearMap.mul R A).compr₂ f = (LinearMap.mul R B).compl₂ f ∘ₗ f :=
+  Iff.symm LinearMap.ext_iff₂
 
 /-- The multiplication in an algebra is an algebra homomorphism into the endomorphisms on
 the algebra.
