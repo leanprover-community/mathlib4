@@ -296,7 +296,7 @@ theorem IntegrableOn.restrict_toMeasurable (hf : IntegrableOn f s μ) (h's : ∀
     intro n
     rw [inter_comm, ← Measure.restrict_apply (measurableSet_toMeasurable _ _),
       measure_toMeasurable]
-    exact (hf.measure_ge_lt_top (u_pos n)).ne
+    exact (hf.measure_norm_ge_lt_top (u_pos n)).ne
   apply Measure.restrict_toMeasurable_of_cover _ A
   intro x hx
   have : 0 < ‖f x‖ := by simp only [h's x hx, norm_pos_iff, Ne.def, not_false_iff]
@@ -418,6 +418,12 @@ protected theorem IntegrableAtFilter.sub {f g : α → E}
     IntegrableAtFilter (f - g) l μ := by
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
+
+protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
+    [BoundedSMul 𝕜 E] {f : α → E} (hf : IntegrableAtFilter f l μ) (c : 𝕜) :
+    IntegrableAtFilter (c • f) l μ := by
+  rcases hf with ⟨s, sl, hs⟩
+  refine ⟨s, sl, hs.smul c⟩
 
 theorem IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
     IntegrableAtFilter f l μ :=

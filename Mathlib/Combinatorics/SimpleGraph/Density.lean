@@ -8,6 +8,7 @@ import Mathlib.Order.Partition.Finpartition
 import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.GCongr
 
 #align_import combinatorics.simple_graph.density from "leanprover-community/mathlib"@"a4ec43f53b0bd44c697bcc3f5a62edd56f269ef1"
@@ -25,7 +26,6 @@ Between two finsets of vertices,
 * `SimpleGraph.interedges`: Finset of edges of a graph.
 * `SimpleGraph.edgeDensity`: Edge density of a graph.
 -/
-
 
 open Finset
 

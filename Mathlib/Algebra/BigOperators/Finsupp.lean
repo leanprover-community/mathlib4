@@ -7,6 +7,8 @@ import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Data.Finsupp.Fin
 import Mathlib.GroupTheory.Submonoid.Membership
 
 #align_import algebra.big_operators.finsupp from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
@@ -209,6 +211,16 @@ theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.s
   Finset.prod_congr rfl h
 #align finsupp.prod_congr Finsupp.prod_congr
 #align finsupp.sum_congr Finsupp.sum_congr
+
+@[to_additive]
+theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
+    (h₀ : ∀ b, f b ≠ 0 → b ≠ a → g b (f b) = 1) (h₁ : f a = 0 → g a 0 = 1) :
+    f.prod g = g a (f a) := by
+  refine Finset.prod_eq_single a (fun b hb₁ hb₂ => ?_) (fun h => ?_)
+  · exact h₀ b (mem_support_iff.mp hb₁) hb₂
+  · simp only [not_mem_support_iff] at h
+    rw [h]
+    refine h₁ h
 
 end SumProd
 
@@ -626,6 +638,18 @@ lemma prod_indicator_index [Zero M] [CommMonoid N]
     {s : Finset α} (f : α → M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
     (indicator s (fun x _ ↦ f x)).prod h = ∏ x in s, h x (f x) :=
   (prod_indicator_index_eq_prod_attach _ h_zero).trans <| prod_attach (f := fun x ↦ h x (f x))
+
+lemma sum_cons [AddCommMonoid M] (n : ℕ) (σ : Fin n →₀ M) (i : M) :
+    (sum (cons i σ) fun _ e ↦ e) = i + sum σ (fun _ e ↦ e) := by
+  rw [sum_fintype _ _ (fun _ => rfl), sum_fintype _ _ (fun _ => rfl)]
+  exact Fin.sum_cons i σ
+
+lemma sum_cons' [AddCommMonoid M] [AddCommMonoid N] (n : ℕ) (σ : Fin n →₀ M) (i : M)
+    (f : Fin (n+1) → M → N) (h : ∀ x, f x 0 = 0) :
+    (sum (Finsupp.cons i σ) f) = f 0 i + sum σ (Fin.tail f) := by
+  rw [sum_fintype _ _ (fun _ => by apply h), sum_fintype _ _ (fun _ => by apply h)]
+  simp_rw [Fin.sum_univ_succ, cons_zero, cons_succ]
+  congr
 
 end Finsupp
 

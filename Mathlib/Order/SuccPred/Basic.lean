@@ -256,14 +256,16 @@ theorem succ_le_iff_of_not_isMax (ha : ¬IsMax a) : succ a ≤ b ↔ a < b :=
 #align order.succ_le_iff_of_not_is_max Order.succ_le_iff_of_not_isMax
 
 lemma succ_lt_succ_of_not_isMax (h : a < b) (hb : ¬ IsMax b) : succ a < succ b :=
-(lt_succ_iff_of_not_isMax hb).2 $ succ_le_of_lt h
+  (lt_succ_iff_of_not_isMax hb).2 $ succ_le_of_lt h
 
-theorem succ_lt_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) : succ a < succ b ↔ a < b :=
-  by rw [lt_succ_iff_of_not_isMax hb, succ_le_iff_of_not_isMax ha]
+theorem succ_lt_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
+    succ a < succ b ↔ a < b := by
+  rw [lt_succ_iff_of_not_isMax hb, succ_le_iff_of_not_isMax ha]
 #align order.succ_lt_succ_iff_of_not_is_max Order.succ_lt_succ_iff_of_not_isMax
 
-theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) : succ a ≤ succ b ↔ a ≤ b :=
-  by rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
+theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
+    succ a ≤ succ b ↔ a ≤ b := by
+  rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
 #align order.succ_le_succ_iff_of_not_is_max Order.succ_le_succ_iff_of_not_isMax
 
 @[simp, mono]
@@ -642,7 +644,7 @@ theorem le_pred_iff_of_not_isMin (ha : ¬IsMin a) : b ≤ pred a ↔ b < a :=
 #align order.le_pred_iff_of_not_is_min Order.le_pred_iff_of_not_isMin
 
 lemma pred_lt_pred_of_not_isMin (h : a < b) (ha : ¬ IsMin a) : pred a < pred b :=
-(pred_lt_iff_of_not_isMin ha).2 $ le_pred_of_lt h
+  (pred_lt_iff_of_not_isMin ha).2 $ le_pred_of_lt h
 
 @[simp, mono]
 theorem pred_le_pred {a b : α} (h : a ≤ b) : pred a ≤ pred b :=
@@ -1473,7 +1475,7 @@ section bdd_range
 variable [Preorder α] [Nonempty α] [Preorder β] {f : α → β}
 
 lemma StrictMono.not_bddAbove_range [NoMaxOrder α] [SuccOrder β] [IsSuccArchimedean β]
-  (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
+    (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
   rintro ⟨m, hm⟩
   have hm' : ∀ a, f a ≤ m := λ a ↦ hm $ Set.mem_range_self _
   obtain ⟨a₀⟩ := ‹Nonempty α›
@@ -1482,18 +1484,18 @@ lemma StrictMono.not_bddAbove_range [NoMaxOrder α] [SuccOrder β] [IsSuccArchim
     exact ha.not_le (hm' a)
   have h : ∀ a, ∃ a', f a < f a' := λ a ↦ (exists_gt a).imp (λ a' h ↦ hf h)
   apply Succ.rec
-  { exact h a₀ }
+  · exact h a₀
   rintro b _ ⟨a, hba⟩
   exact (h a).imp (λ a' ↦ (succ_le_of_lt hba).trans_lt)
 
 lemma StrictMono.not_bddBelow_range [NoMinOrder α] [PredOrder β] [IsPredArchimedean β]
-  (hf : StrictMono f) : ¬ BddBelow (Set.range f) := hf.dual.not_bddAbove_range
+    (hf : StrictMono f) : ¬ BddBelow (Set.range f) := hf.dual.not_bddAbove_range
 
 lemma StrictAnti.not_bddAbove_range [NoMinOrder α] [SuccOrder β] [IsSuccArchimedean β]
-  (hf : StrictAnti f) : ¬ BddAbove (Set.range f) := hf.dual_right.not_bddBelow_range
+    (hf : StrictAnti f) : ¬ BddAbove (Set.range f) := hf.dual_right.not_bddBelow_range
 
 lemma StrictAnti.not_bddBelow_range [NoMaxOrder α] [PredOrder β] [IsPredArchimedean β]
-  (hf : StrictAnti f) : ¬ BddBelow (Set.range f) := hf.dual_right.not_bddAbove_range
+    (hf : StrictAnti f) : ¬ BddBelow (Set.range f) := hf.dual_right.not_bddAbove_range
 
 end bdd_range
 
