@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
+import Mathlib.Data.Rat.Order
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.NeZero
@@ -37,13 +38,13 @@ See the implementation notes for remarks about non-associative and non-unital al
 * `algebraMap R A : R →+* A`: the canonical map from `R` to `A`, as a `RingHom`. This is the
   preferred spelling of this map, it is also available as:
   * `Algebra.linearMap R A : R →ₗ[R] A`, a `LinearMap`.
-  * `algebra.ofId R A : R →ₐ[R] A`, an `AlgHom` (defined in a later file).
+  * `Algebra.ofId R A : R →ₐ[R] A`, an `AlgHom` (defined in a later file).
 * Instances of `Algebra` in this file:
   * `Algebra.id`
   * `algebraNat`
   * `algebraInt`
   * `algebraRat`
-  * `module.End.algebra`
+  * `Module.End.instAlgebra`
 
 ## Implementation notes
 

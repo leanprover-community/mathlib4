@@ -28,7 +28,7 @@ theorem units_sq (u : ℤˣ) : u ^ 2 = 1 := by
   rw [Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one, isUnit_sq u.isUnit]
 #align int.units_sq Int.units_sq
 
-alias units_sq ← units_pow_two
+alias units_pow_two := units_sq
 #align int.units_pow_two Int.units_pow_two
 
 @[simp]

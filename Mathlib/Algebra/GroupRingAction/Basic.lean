@@ -82,7 +82,7 @@ variable {M N}
 See note [reducible non-instances]. -/
 @[reducible]
 def MulSemiringAction.compHom (f : N →* M) [MulSemiringAction M R] : MulSemiringAction N R :=
-  { DistribMulAction.compHom R f, MulDistribMulAction.compHom R f with smul := SMul.comp.smul f }
+  { DistribMulAction.compHom R f, MulDistribMulAction.compHom R f with }
 #align mul_semiring_action.comp_hom MulSemiringAction.compHom
 
 end

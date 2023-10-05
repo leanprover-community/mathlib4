@@ -27,6 +27,8 @@ When `C` has coproducts we construct the `total` functor `GradedObject β C ⥤ 
 show that it is faithful, and deduce that when `C` is concrete so is `GradedObject β C`.
 -/
 
+set_option autoImplicit true
+
 
 open CategoryTheory.Limits
 

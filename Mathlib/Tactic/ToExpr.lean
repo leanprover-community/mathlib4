@@ -16,6 +16,8 @@ that come from core Lean 4 that do not handle universe polymorphism.
 In addition, we provide some additional `ToExpr` instances for core definitions.
 -/
 
+set_option autoImplicit true
+
 section override
 namespace Lean
 
@@ -62,6 +64,9 @@ deriving instance ToExpr for Syntax.Preresolved
 deriving instance ToExpr for Syntax
 
 open DataValue in
+/-- Core of a hand-written `ToExpr` handler for `MData`.
+Uses the `KVMap.set*` functions rather than going into the internals
+of the `KVMap` data structure. -/
 private def toExprMData (md : MData) : Expr := Id.run do
   let mut e := mkConst ``MData.empty
   for (k, v) in md do

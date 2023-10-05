@@ -292,7 +292,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → 
 
 /-- A family `F` of functions in `C(α, β)` converges in the compact-open topology, if and only if
 it converges in the compact-open topology on each compact subset of `α`. -/
-theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space β]
+theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace α] [T2Space β]
     {ι : Type*} {l : Filter ι} [Filter.NeBot l] (F : ι → C(α, β)) :
     (∃ f, Filter.Tendsto F l (𝓝 f)) ↔
     ∀ (s : Set α) (hs : IsCompact s), ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) := by
@@ -314,11 +314,7 @@ theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space 
       exact tendsto_nhds_unique h₁ h₂
     -- So glue the `f s hs` together and prove that this glued function `f₀` is a limit on each
     -- compact set `s`
-    have hs : ∀ x : α, ∃ (s : _), IsCompact s ∧ s ∈ 𝓝 x := by
-      intro x
-      obtain ⟨s, hs, hs'⟩ := exists_compact_mem_nhds x
-      exact ⟨s, hs, hs'⟩
-    refine ⟨liftCover' _ _ h hs, ?_⟩
+    refine ⟨liftCover' _ _ h exists_compact_mem_nhds, ?_⟩
     rw [tendsto_compactOpen_iff_forall]
     intro s hs
     rw [liftCover_restrict']

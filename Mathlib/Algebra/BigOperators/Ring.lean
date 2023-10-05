@@ -68,6 +68,11 @@ end Semiring
 
 section Semiring
 
+theorem dvd_sum [NonUnitalSemiring β]
+    {b : β} {s : Finset α} {f : α → β} (h : ∀ x ∈ s, b ∣ f x) : b ∣ ∑ x in s, f x :=
+  Multiset.dvd_sum fun y hy => by rcases Multiset.mem_map.1 hy with ⟨x, hx, rfl⟩; exact h x hx
+#align finset.dvd_sum Finset.dvd_sum
+
 variable [NonAssocSemiring β]
 
 theorem sum_mul_boole [DecidableEq α] (s : Finset α) (f : α → β) (a : α) :
@@ -151,8 +156,7 @@ theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
             (by simp) (by simp))
         (fun t _ a _ => a ∈ t)
         (by simp [Classical.em])
-        (by simp_rw [mem_filter, Function.funext_iff, eq_iff_iff, mem_singleton, mem_pi,
-          mem_insert, iff_true, iff_false]; tauto)
+        (by simp_rw [mem_filter, Function.funext_iff, eq_iff_iff, mem_pi, mem_insert]; tauto)
         (by simp_rw [ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
 #align finset.prod_add Finset.prod_add
 
@@ -209,10 +213,6 @@ theorem sum_pow_mul_eq_add_pow {α R : Type*} [CommSemiring R] (a b : R) (s : Fi
   refine' Finset.sum_congr rfl fun t ht => _
   rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]
 #align finset.sum_pow_mul_eq_add_pow Finset.sum_pow_mul_eq_add_pow
-
-theorem dvd_sum {b : β} {s : Finset α} {f : α → β} (h : ∀ x ∈ s, b ∣ f x) : b ∣ ∑ x in s, f x :=
-  Multiset.dvd_sum fun y hy => by rcases Multiset.mem_map.1 hy with ⟨x, hx, rfl⟩; exact h x hx
-#align finset.dvd_sum Finset.dvd_sum
 
 @[norm_cast]
 theorem prod_natCast (s : Finset α) (f : α → ℕ) : ↑(∏ x in s, f x : ℕ) = ∏ x in s, (f x : β) :=

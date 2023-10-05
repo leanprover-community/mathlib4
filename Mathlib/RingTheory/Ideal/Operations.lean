@@ -260,7 +260,7 @@ submodule `M'` of `x`, we only need to show that `r ^ n • x ∈ M'` for some `
 theorem mem_of_span_eq_top_of_smul_pow_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤)
     (x : M) (H : ∀ r : s, ∃ n : ℕ, ((r : R) ^ n : R) • x ∈ M') : x ∈ M' := by
   obtain ⟨s', hs₁, hs₂⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
-  replace H : ∀ r : s', ∃ n : ℕ, ((r : R) ^ n  : R) • x ∈ M' := fun r => H ⟨_, hs₁ r.2⟩
+  replace H : ∀ r : s', ∃ n : ℕ, ((r : R) ^ n : R) • x ∈ M' := fun r => H ⟨_, hs₁ r.2⟩
   choose n₁ n₂ using H
   let N := s'.attach.sup n₁
   have hs' := Ideal.span_pow_eq_top (s' : Set R) hs₂ N
@@ -810,8 +810,8 @@ theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal 
     fun h => by cases' h with h h <;> rw [← Ideal.mul_bot, h, Ideal.mul_comm]⟩
 #align ideal.mul_eq_bot Ideal.mul_eq_bot
 
-instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R)
-    where eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
+instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
 /-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
 theorem prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
@@ -824,6 +824,30 @@ theorem span_pair_mul_span_pair (w x y z : R) :
     (span {w, x} : Ideal R) * span {y, z} = span {w * y, w * z, x * y, x * z} := by
   simp_rw [span_insert, sup_mul, mul_sup, span_singleton_mul_span_singleton, sup_assoc]
 #align ideal.span_pair_mul_span_pair Ideal.span_pair_mul_span_pair
+
+theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
+  rw [IsCoprime, codisjoint_iff]
+  constructor
+  · rintro ⟨x, y, hxy⟩
+    rw [eq_top_iff_one]
+    apply (show x * I + y * J ≤ I ⊔ J from
+      sup_le (mul_le_left.trans le_sup_left) (mul_le_left.trans le_sup_right))
+    rw [hxy]
+    simp only [one_eq_top, Submodule.mem_top]
+  · intro h
+    refine' ⟨1, 1, _⟩
+    simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
+
+theorem isCoprime_iff_add : IsCoprime I J ↔ I + J = 1 := by
+  rw [isCoprime_iff_codisjoint, codisjoint_iff, Submodule.add_eq_sup, one_eq_top]
+
+theorem isCoprime_span_singleton_iff (x y : R) :
+    IsCoprime (span <| singleton x) (span <| singleton y) ↔ IsCoprime x y := by
+  simp_rw [isCoprime_iff_codisjoint, codisjoint_iff, eq_top_iff_one, mem_span_singleton_sup,
+    mem_span_singleton]
+  constructor
+  · rintro ⟨a, _, ⟨b, rfl⟩, e⟩; exact ⟨a, b, mul_comm b y ▸ e⟩
+  · rintro ⟨a, b, e⟩; exact ⟨a, _, ⟨b, rfl⟩, mul_comm y b ▸ e⟩
 
 /-- The radical of an ideal `I` consists of the elements `r` such that `r ^ n ∈ I` for some `n`. -/
 def radical (I : Ideal R) : Ideal R where
@@ -862,7 +886,7 @@ theorem radical_eq_iff : I.radical = I ↔ I.IsRadical := by
   rw [le_antisymm_iff, and_iff_left le_radical, IsRadical]
 #align ideal.radical_eq_iff Ideal.radical_eq_iff
 
-alias radical_eq_iff ↔ _ IsRadical.radical
+alias ⟨_, IsRadical.radical⟩ := radical_eq_iff
 #align ideal.is_radical.radical Ideal.IsRadical.radical
 
 variable (R)
@@ -1134,7 +1158,6 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
         exact h
       specialize ih hp' hn' h'
       refine' ih.imp id (Or.imp id (Exists.imp fun k => _))
-      simp only [exists_prop]
       exact And.imp (fun hk => Finset.insert_subset_insert i (Finset.subset_insert j u) hk) id
     by_cases Ha : f a ≤ f i
     · have h' : (I : Set R) ⊆ f i ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j := by

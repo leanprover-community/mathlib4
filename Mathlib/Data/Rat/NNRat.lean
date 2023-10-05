@@ -350,7 +350,7 @@ theorem toNNRat_eq_zero : toNNRat q = 0 ↔ q ≤ 0 := by
   simpa [-toNNRat_pos] using (@toNNRat_pos q).not
 #align rat.to_nnrat_eq_zero Rat.toNNRat_eq_zero
 
-alias toNNRat_eq_zero ↔ _ toNNRat_of_nonpos
+alias ⟨_, toNNRat_of_nonpos⟩ := toNNRat_eq_zero
 #align rat.to_nnrat_of_nonpos Rat.toNNRat_of_nonpos
 
 @[simp]

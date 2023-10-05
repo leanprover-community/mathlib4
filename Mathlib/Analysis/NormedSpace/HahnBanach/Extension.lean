@@ -87,10 +87,10 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 F) (f : p →L[𝕜] 𝕜) :
     rw [this]
     apply ext
     · simp only [add_zero, Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub,
-        I_im', MulZeroClass.zero_mul, ofReal_re, eq_self_iff_true, sub_zero, mul_neg, ofReal_neg,
-        mul_re, MulZeroClass.mul_zero, sub_neg_eq_add, ContinuousLinearMap.map_smul]
+        I_im', zero_mul, ofReal_re, eq_self_iff_true, sub_zero, mul_neg, ofReal_neg,
+        mul_re, mul_zero, sub_neg_eq_add, ContinuousLinearMap.map_smul]
     · simp only [Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub, I_im',
-        MulZeroClass.zero_mul, ofReal_re, mul_neg, mul_im, zero_add, ofReal_neg, mul_re,
+        zero_mul, ofReal_re, mul_neg, mul_im, zero_add, ofReal_neg, mul_re,
         sub_neg_eq_add, ContinuousLinearMap.map_smul]
   -- And we derive the equality of the norms by bounding on both sides.
   refine' ⟨h, le_antisymm _ _⟩

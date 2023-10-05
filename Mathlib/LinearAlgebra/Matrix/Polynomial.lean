@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Data.Polynomial.Degree.Lemmas
 import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.Tactic.ComputeDegree
 
 #align_import linear_algebra.matrix.polynomial from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -53,17 +54,8 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
       (natDegree_prod_le (Finset.univ : Finset n) fun i : n => (X • A.map C + B.map C) (g i) i)
     _ ≤ Finset.univ.card • 1 := (Finset.sum_le_card_nsmul _ _ 1 fun (i : n) _ => ?_)
     _ ≤ Fintype.card n := by simp [mul_one, Algebra.id.smul_eq_mul, Finset.card_univ]
-
-  calc
-    natDegree (((X : α[X]) • A.map C + B.map C) (g i) i) =
-        natDegree ((X : α[X]) * C (A (g i) i) + C (B (g i) i)) :=
-      by simp
-    _ ≤ max (natDegree ((X : α[X]) * C (A (g i) i))) (natDegree (C (B (g i) i))) :=
-      (natDegree_add_le _ _)
-    _ = natDegree ((X : α[X]) * C (A (g i) i)) :=
-      (max_eq_left ((natDegree_C _).le.trans (zero_le _)))
-    _ ≤ natDegree (X : α[X]) := (natDegree_mul_C_le _ _)
-    _ ≤ 1 := natDegree_X_le
+  dsimp only [add_apply, smul_apply, map_apply, smul_eq_mul]
+  compute_degree
 #align polynomial.nat_degree_det_X_add_C_le Polynomial.natDegree_det_X_add_C_le
 
 theorem coeff_det_X_add_C_zero (A B : Matrix n n α) :
@@ -89,9 +81,8 @@ theorem coeff_det_X_add_C_card (A B : Matrix n n α) :
   convert (coeff_prod_of_natDegree_le (R := α) _ _ _ _).symm
   · simp [coeff_C]
   · rintro p -
-    refine' (natDegree_add_le _ _).trans _
-    simpa [Pi.smul_apply, map_apply, Algebra.id.smul_eq_mul, X_mul_C, natDegree_C,
-      max_eq_left, zero_le'] using (natDegree_C_mul_le _ _).trans (natDegree_X_le (R := α))
+    dsimp only [add_apply, smul_apply, map_apply, smul_eq_mul]
+    compute_degree
 #align polynomial.coeff_det_X_add_C_card Polynomial.coeff_det_X_add_C_card
 
 theorem leadingCoeff_det_X_one_add_C (A : Matrix n n α) :

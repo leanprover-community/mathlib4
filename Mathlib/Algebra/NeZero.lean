@@ -3,10 +3,9 @@ Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-
 import Mathlib.Logic.Basic
 import Mathlib.Init.ZeroOne
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 
 #align_import algebra.ne_zero from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
@@ -19,6 +18,8 @@ We create a typeclass `NeZero n` which carries around the fact that `(n : R) ≠
 
 * `NeZero`: `n ≠ 0` as a typeclass.
 -/
+
+set_option autoImplicit true
 
 /-- A type-class version of `n ≠ 0`.  -/
 class NeZero {R} [Zero R] (n : R) : Prop where

@@ -177,7 +177,7 @@ theorem coe_eq : (f : Germ l β) = g ↔ f =ᶠ[l] g :=
   Quotient.eq''
 #align filter.germ.coe_eq Filter.Germ.coe_eq
 
-alias coe_eq ↔ _ _root_.Filter.EventuallyEq.germ_eq
+alias ⟨_, _root_.Filter.EventuallyEq.germ_eq⟩ := coe_eq
 #align filter.eventually_eq.germ_eq Filter.EventuallyEq.germ_eq
 
 /-- Lift a function `β → γ` to a function `Germ l β → Germ l γ`. -/
@@ -224,7 +224,7 @@ theorem coe_tendsto {f : α → β} {lb : Filter β} : (f : Germ l β).Tendsto l
   Iff.rfl
 #align filter.germ.coe_tendsto Filter.Germ.coe_tendsto
 
-alias coe_tendsto ↔ _ _root_.Filter.Tendsto.germ_tendsto
+alias ⟨_, _root_.Filter.Tendsto.germ_tendsto⟩ := coe_tendsto
 #align filter.tendsto.germ_tendsto Filter.Tendsto.germ_tendsto
 
 /-- Given two germs `f : Germ l β`, and `g : Germ lc α`, where `l : Filter α`, if `g` tends to `l`,
@@ -366,7 +366,6 @@ instance commSemigroup [CommSemigroup M] : CommSemigroup (Germ l M) :=
 @[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ l M) :=
   { Germ.semigroup with
-    mul := (· * ·)
     mul_left_cancel := fun f₁ f₂ f₃ =>
       inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
         coe_eq.2 ((coe_eq.1 H).mono fun _x => mul_left_cancel) }
@@ -374,7 +373,6 @@ instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ
 @[to_additive]
 instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (Germ l M) :=
   { Germ.semigroup with
-    mul := (· * ·)
     mul_right_cancel := fun f₁ f₂ f₃ =>
       inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
         coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel }
@@ -419,8 +417,8 @@ instance monoid [Monoid M] : Monoid (Germ l M) :=
 
 /-- Coercion from functions to germs as a monoid homomorphism. -/
 @[to_additive "Coercion from functions to germs as an additive monoid homomorphism."]
-def coeMulHom [Monoid M] (l : Filter α) : (α → M) →* Germ l M :=
-  ⟨⟨ofFun, rfl⟩, fun _ _ => rfl⟩
+def coeMulHom [Monoid M] (l : Filter α) : (α → M) →* Germ l M where
+  toFun := ofFun; map_one' := rfl; map_mul' _ _ := rfl
 #align filter.germ.coe_mul_hom Filter.Germ.coeMulHom
 #align filter.germ.coe_add_hom Filter.Germ.coeAddHom
 
@@ -846,8 +844,8 @@ instance existsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (Germ
     rw [dif_pos hx, hc]
 
 @[to_additive]
-instance canonicallyOrderedMonoid [CanonicallyOrderedMonoid β] :
-    CanonicallyOrderedMonoid (Germ l β) :=
+instance CanonicallyOrderedCommMonoid [CanonicallyOrderedCommMonoid β] :
+    CanonicallyOrderedCommMonoid (Germ l β) :=
   { orderedCommMonoid, orderBot, existsMulOfLE with
     le_self_mul := fun x y ↦ inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul }
 

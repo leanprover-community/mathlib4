@@ -12,6 +12,8 @@ import Std.Data.RBMap
 We provide `NameMap.filter` and `NameMap.filterMap`.
 -/
 
+set_option autoImplicit true
+
 namespace Lean.NameMap
 
 instance : ForIn m (NameMap β) (Name × β) :=

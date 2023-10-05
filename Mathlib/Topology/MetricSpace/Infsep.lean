@@ -148,7 +148,8 @@ theorem einfsep_insert_le : (insert x s).einfsep ≤ ⨅ (y ∈ s) (_ : x ≠ y)
 
 theorem le_einfsep_pair : edist x y ⊓ edist y x ≤ ({x, y} : Set α).einfsep := by
   simp_rw [le_einfsep_iff, inf_le_iff, mem_insert_iff, mem_singleton_iff]
-  rintro a (rfl | rfl) b (rfl | rfl) hab <;> simp only [le_refl, true_or, or_true] <;> contradiction
+  rintro a (rfl | rfl) b (rfl | rfl) hab <;> (try simp only [le_refl, true_or, or_true]) <;>
+    contradiction
 #align set.le_einfsep_pair Set.le_einfsep_pair
 
 theorem einfsep_pair_le_left (hxy : x ≠ y) : ({x, y} : Set α).einfsep ≤ edist x y :=

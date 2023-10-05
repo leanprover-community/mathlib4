@@ -20,6 +20,8 @@ bool, boolean, Bool, De Morgan
 
 -/
 
+set_option autoImplicit true
+
 namespace Bool
 
 theorem decide_True {h} : @decide True h = true :=

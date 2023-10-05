@@ -289,7 +289,7 @@ theorem num_series' [Field α] (i : ℕ) :
           rw [Nat.mul_sub_left_distrib, ← hp, ← a_left, mul_one, Nat.add_sub_cancel]
         · rintro ⟨rfl, rfl⟩
           match p with
-          | 0 => rw [MulZeroClass.mul_zero] at hp; cases hp
+          | 0 => rw [mul_zero] at hp; cases hp
           | p + 1 => rw [hp]; simp [mul_add]
       · suffices
           (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (Nat.antidiagonal n.succ)).card =

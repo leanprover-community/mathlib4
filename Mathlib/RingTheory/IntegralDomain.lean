@@ -120,7 +120,7 @@ variable [CommRing R] [IsDomain R] [Group G]
 -- porting note: Finset doesn't seem to have `{g ∈ univ | g^n = g₀}` notation anymore,
 -- so we have to use `Finset.filter` instead
 theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
-  {n : ℕ} (hn : 0 < n) (g₀ : G) :
+    {n : ℕ} (hn : 0 < n) (g₀ : G) :
     Finset.card (Finset.univ.filter (fun g ↦ g^n = g₀)) ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
   refine' le_trans _ (nthRoots n (f g₀)).toFinset_card_le
@@ -270,7 +270,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
                by dsimp at hn ⊢; rw [← pow_eq_mod_orderOf, hn]⟩)
       _ = 0 := ?_
 
-    rw [← mul_left_inj' hx1, MulZeroClass.zero_mul, geom_sum_mul]
+    rw [← mul_left_inj' hx1, zero_mul, geom_sum_mul]
     norm_cast
     simp [pow_orderOf_eq_one]
 #align sum_hom_units_eq_zero sum_hom_units_eq_zero

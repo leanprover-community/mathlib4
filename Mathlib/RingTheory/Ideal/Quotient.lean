@@ -104,6 +104,9 @@ def mk (I : Ideal R) : R →+* R ⧸ I where
   map_add' _ _ := rfl
 #align ideal.quotient.mk Ideal.Quotient.mk
 
+instance {I : Ideal R} : Coe R (R ⧸ I) :=
+  ⟨Ideal.Quotient.mk I⟩
+
 /-- Two `RingHom`s from the quotient by an ideal are equal if their
 compositions with `Ideal.Quotient.mk'` are equal.
 
@@ -129,6 +132,9 @@ theorem mk_eq_mk (x : R) : (Submodule.Quotient.mk x : R ⧸ I) = mk I x := rfl
 theorem eq_zero_iff_mem {I : Ideal R} : mk I a = 0 ↔ a ∈ I :=
   Submodule.Quotient.mk_eq_zero _
 #align ideal.quotient.eq_zero_iff_mem Ideal.Quotient.eq_zero_iff_mem
+
+theorem eq_zero_iff_dvd (x y : R) : Ideal.Quotient.mk (Ideal.span ({x} : Set R)) y = 0 ↔ x ∣ y := by
+  rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
 
 -- Porting note: new theorem
 theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
@@ -255,8 +261,6 @@ lift it to the quotient by this ideal. -/
 def lift (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) : R ⧸ I →+* S :=
   { QuotientAddGroup.lift I.toAddSubgroup f.toAddMonoidHom H with
     map_one' := f.map_one
-    map_zero' := f.map_zero
-    map_add' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_add
     map_mul' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_mul }
 #align ideal.quotient.lift Ideal.Quotient.lift
 
@@ -380,7 +384,7 @@ theorem map_pi {ι : Type*} [Finite ι] {ι' : Type w} (x : ι → R) (hi : ∀ 
   classical
     cases nonempty_fintype ι
     rw [pi_eq_sum_univ x]
-    simp only [Finset.sum_apply, smul_eq_mul, LinearMap.map_sum, Pi.smul_apply, LinearMap.map_smul]
+    simp only [Finset.sum_apply, smul_eq_mul, map_sum, Pi.smul_apply, map_smul]
     exact I.sum_mem fun j _ => I.mul_mem_right _ (hi j)
 #align ideal.map_pi Ideal.map_pi
 

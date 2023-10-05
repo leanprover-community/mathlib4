@@ -11,6 +11,8 @@ import Std.Data.List.Basic
 Definitions for `List` not (yet) in `Std`
 -/
 
+set_option autoImplicit true
+
 
 open Decidable List
 

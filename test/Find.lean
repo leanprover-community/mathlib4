@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Find
 
-theorem add_comm_zero : 0 + n = n + 0 := Nat.add_comm _ _
+theorem add_comm_zero {n} : 0 + n = n + 0 := Nat.add_comm _ _
 
 #find _ + _ = _ + _
 #find ?n + _ = _ + ?n

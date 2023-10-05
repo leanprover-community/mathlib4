@@ -144,7 +144,7 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   simp only [map_sub, map_add, algebraMap_eq_ofReal, ← ofReal_mul, conj_ofReal, map_mul, conj_I]
   rw [add_comm y x, norm_sub_rev]
   by_cases hI : (I : 𝕜) = 0
-  · simp only [hI, neg_zero, MulZeroClass.zero_mul]
+  · simp only [hI, neg_zero, zero_mul]
   -- Porting note: this replaces `norm_I_of_ne_zero` which does not exist in Lean 4
   have : ‖(I : 𝕜)‖ = 1 := by
     rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,
@@ -219,14 +219,14 @@ private theorem add_left_aux7 (y z : E) :
     2 * (‖(I : 𝕜) • y + z‖ * ‖(I : 𝕜) • y + z‖ + ‖z‖ * ‖z‖) - ‖(I : 𝕜) • y‖ * ‖(I : 𝕜) • y‖ := by
   apply eq_sub_of_add_eq
   have h₀ := parallelogram_identity ((I : 𝕜) • y + z) z
-  convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
+  convert h₀ using 4 <;> · (try simp only [two_smul, smul_add]); abel
 
 private theorem add_left_aux8 (y z : E) :
     ‖(I : 𝕜) • y - 2 • z‖ * ‖(I : 𝕜) • y - 2 • z‖ =
     2 * (‖(I : 𝕜) • y - z‖ * ‖(I : 𝕜) • y - z‖ + ‖z‖ * ‖z‖) - ‖(I : 𝕜) • y‖ * ‖(I : 𝕜) • y‖ := by
   apply eq_sub_of_add_eq'
   have h₀ := parallelogram_identity ((I : 𝕜) • y - z) z
-  convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
+  convert h₀ using 4 <;> · (try simp only [two_smul, smul_add]); abel
 
 theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 𝕜 y z := by
   simp only [inner_, ← mul_add]
@@ -243,8 +243,8 @@ theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 
 
 theorem nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) * inner_ 𝕜 x y := by
   induction' n with n ih
-  · simp only [inner_, Nat.zero_eq, zero_sub, Nat.cast_zero, MulZeroClass.zero_mul,
-      eq_self_iff_true, zero_smul, zero_add, MulZeroClass.mul_zero, sub_self, norm_neg, smul_zero]
+  · simp only [inner_, Nat.zero_eq, zero_sub, Nat.cast_zero, zero_mul,
+      eq_self_iff_true, zero_smul, zero_add, mul_zero, sub_self, norm_neg, smul_zero]
   · simp only [Nat.cast_succ, add_smul, one_smul]
     rw [add_left, ih, add_mul, one_mul]
 #align inner_product_spaceable.nat InnerProductSpaceable.nat
@@ -260,8 +260,8 @@ private theorem int_prop (n : ℤ) : innerProp' E (n : 𝕜) := by
   · rw [Int.sign_eq_neg_one_of_neg hn, innerProp_neg_one ((n.natAbs : 𝕜) • x), nat]
     simp only [map_neg, neg_mul, one_mul, mul_eq_mul_left_iff, true_or_iff, Int.natAbs_eq_zero,
       eq_self_iff_true, Int.cast_one, map_one, neg_inj, Nat.cast_eq_zero, Int.cast_neg]
-  · simp only [inner_, Int.cast_zero, zero_sub, Nat.cast_zero, MulZeroClass.zero_mul,
-      eq_self_iff_true, Int.sign_zero, zero_smul, zero_add, MulZeroClass.mul_zero, smul_zero,
+  · simp only [inner_, Int.cast_zero, zero_sub, Nat.cast_zero, zero_mul,
+      eq_self_iff_true, Int.sign_zero, zero_smul, zero_add, mul_zero, smul_zero,
       sub_self, norm_neg, Int.natAbs_zero]
   · rw [Int.sign_eq_one_of_pos hn]
     simp only [one_mul, mul_eq_mul_left_iff, true_or_iff, Int.natAbs_eq_zero, eq_self_iff_true,
