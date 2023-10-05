@@ -441,6 +441,9 @@ instance : Mul (Ideal R) :=
 theorem one_eq_top : (1 : Ideal R) = ⊤ := by erw [Submodule.one_eq_range, LinearMap.range_id]
 #align ideal.one_eq_top Ideal.one_eq_top
 
+theorem add_eq_one_iff : I + J = 1 ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = 1 := by
+  rw [one_eq_top, eq_top_iff_one, add_eq_sup, Submodule.mem_sup]
+
 theorem mul_mem_mul {r s} (hr : r ∈ I) (hs : s ∈ J) : r * s ∈ I * J :=
   Submodule.smul_mem_smul hr hs
 #align ideal.mul_mem_mul Ideal.mul_mem_mul
@@ -839,7 +842,13 @@ theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
     simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
 
 theorem isCoprime_iff_add : IsCoprime I J ↔ I + J = 1 := by
-  rw [isCoprime_iff_codisjoint, codisjoint_iff, Submodule.add_eq_sup, one_eq_top]
+  rw [isCoprime_iff_codisjoint, codisjoint_iff, add_eq_sup, one_eq_top]
+
+theorem isCoprime_iff_exists : IsCoprime I J ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = 1 := by
+  rw [← add_eq_one_iff, isCoprime_iff_add]
+
+theorem isCoprime_iff_sup_eq : IsCoprime I J ↔ I ⊔ J = ⊤ := by
+  rw [isCoprime_iff_codisjoint, codisjoint_iff]
 
 theorem isCoprime_span_singleton_iff (x y : R) :
     IsCoprime (span <| singleton x) (span <| singleton y) ↔ IsCoprime x y := by
