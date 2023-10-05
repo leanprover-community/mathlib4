@@ -33,13 +33,13 @@ Similarly, for other concrete categories for which we need to refer to the maxim
 @[nolint checkUnivs]
 abbrev TopCatMax.{u, v} := TopCat.{max u v}
 
-universe v u w
+universe v u w v'
 
 noncomputable section
 
 namespace TopCat
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type v} [Category.{v'} J]
 
 local notation "forget" => forget TopCat
 
@@ -150,9 +150,9 @@ instance forgetPreservesLimits : PreservesLimits forget :=
 Generally you should just use `colimit.cocone F`, unless you need the actual definition
 (which is in terms of `Types.colimitCocone`).
 -/
-def colimitCocone (F : J ⥤ TopCatMax.{v, u}) : Cocone F where
+def colimitCocone (F : J ⥤ TopCat.{u}) [UnivLE.{v, u}]: Cocone F where
   pt :=
-    ⟨(Types.colimitCocone.{v,u} (F ⋙ forget)).pt,
+    ⟨(Types.colimitCocone (F ⋙ forget)).pt,
       ⨆ j, (F.obj j).str.coinduced ((Types.colimitCocone (F ⋙ forget)).ι.app j)⟩
   ι :=
     { app := fun j =>
@@ -167,39 +167,35 @@ def colimitCocone (F : J ⥤ TopCatMax.{v, u}) : Cocone F where
 Generally you should just use `colimit.isColimit F`, unless you need the actual definition
 (which is in terms of `Types.colimitCoconeIsColimit`).
 -/
-def colimitCoconeIsColimit (F : J ⥤ TopCatMax.{v, u}) : IsColimit (colimitCocone F) := by
+def colimitCoconeIsColimit (F : J ⥤ TopCat.{u}) [UnivLE.{v, u}] : IsColimit (colimitCocone F) := by
   refine
-    IsColimit.ofFaithful forget (Types.colimitCoconeIsColimit _) (fun s =>
-    -- Porting note: it appears notation for forget breaks dot notation (also above)
-    -- Porting note: previously function was inferred
-      ⟨Quot.lift (fun p => (Functor.mapCocone forget s).ι.app p.fst p.snd) ?_, ?_⟩) fun s => ?_
-  · intro _ _ ⟨_, h⟩
-    dsimp
-    rw [h, Functor.comp_map, ← comp_apply', s.ι.naturality]
-    dsimp
-    rw [Category.comp_id]
-  · exact
-    continuous_iff_le_induced.mpr
-      (iSup_le fun j =>
-        coinduced_le_iff_le_induced.mp <|
-          (continuous_iff_coinduced_le.mp (s.ι.app j).continuous : _))
-  · rfl
+    IsColimit.ofFaithful forget (Types.colimitCoconeIsColimit _)
+      (fun s => ⟨(Types.colimitCoconeIsColimit (F ⋙ forget)).desc
+        (Functor.mapCocone forget s), ?_⟩) (fun s => rfl)
+  refine'
+    continuous_iff_le_induced.mpr (iSup_le fun j => _)
+  have H := continuous_iff_coinduced_le.mp (s.ι.app j).continuous
+  rw [coinduced_le_iff_le_induced] at H ⊢
+  rw [induced_compose]
+  convert H
+  ext x
+  apply congr_fun ((Types.colimitCoconeIsColimit (F ⋙ forget)).fac
+    (Functor.mapCocone forget s) j)
 #align Top.colimit_cocone_is_colimit TopCat.colimitCoconeIsColimit
 
-instance topCat_hasColimitsOfSize : HasColimitsOfSize.{v,v} TopCatMax.{v, u} where
-  has_colimits_of_shape _ :=
-    { has_colimit := fun F =>
-        HasColimit.mk
-          { cocone := colimitCocone F
-            isColimit := colimitCoconeIsColimit F } }
+instance (F : J ⥤ TopCat.{u}) [UnivLE.{v, u}] : HasColimit F := ⟨_, colimitCoconeIsColimit F⟩
+
+instance [UnivLE.{v, u}] : HasColimitsOfShape J (TopCat.{u}) where
+
+instance topCat_hasColimitsOfSize [UnivLE.{v, u}] : HasColimitsOfSize.{v', v} (TopCat.{u}) where
 #align Top.Top_has_colimits_of_size TopCat.topCat_hasColimitsOfSize
 
 instance topCat_hasColimits : HasColimits TopCat.{u} :=
-  TopCat.topCat_hasColimitsOfSize.{u, u}
+  inferInstance
 #align Top.Top_has_colimits TopCat.topCat_hasColimits
 
-instance forgetPreservesColimitsOfSize :
-    PreservesColimitsOfSize.{v, v} forget where
+instance forgetPreservesColimitsOfSize [UnivLE.{v, u}]:
+    PreservesColimitsOfSize.{v', v} forget where
   preservesColimitsOfShape :=
     { preservesColimit := fun {F} =>
         preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
