@@ -1665,7 +1665,7 @@ theorem factors_prime_pow [Nontrivial α] {p : Associates α} (hp : Irreducible 
   eq_of_prod_eq_prod
     (by
       rw [Associates.factors_prod, FactorSet.prod]
-      dsimp; rw [Multiset.map_replicate, Multiset.prod_replicate, Subtype.coe_mk])
+      dsimp; rw [Multiset.map_replicate, Multiset.prod_replicate])
 #align associates.factors_prime_pow Associates.factors_prime_pow
 
 theorem prime_pow_dvd_iff_le [Nontrivial α] {m p : Associates α} (h₁ : m ≠ 0) (h₂ : Irreducible p)
