@@ -249,12 +249,18 @@ lemma eventually_iInf_range_pow_eq (f : Module.End R M) :
   · rw [← hn _ (hl.trans h), hn _ hl]
   · exact f.iterateRange.monotone h.le
 
+/-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
+
+See also `LinearMap.isCompl_iSup_ker_pow_iInf_range_pow` for an alternative spelling. -/
 theorem eventually_isCompl_ker_pow_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
     ∀ᶠ n in Filter.atTop, IsCompl (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
   filter_upwards [f.eventually_disjoint_ker_pow_range_pow.and
     f.eventually_codisjoint_ker_pow_range_pow] with n hn
   simpa only [isCompl_iff]
 
+/-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
+
+See also `LinearMap.eventually_isCompl_ker_pow_range_pow` for an alternative spelling. -/
 theorem isCompl_iSup_ker_pow_iInf_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
     IsCompl (⨆ n,LinearMap.ker (f ^ n)) (⨅ n, LinearMap.range (f ^ n)) := by
   obtain ⟨k, hk⟩ := Filter.eventually_atTop.mp <| f.eventually_isCompl_ker_pow_range_pow.and <|
