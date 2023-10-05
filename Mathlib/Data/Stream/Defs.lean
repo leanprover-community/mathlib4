@@ -61,7 +61,9 @@ def get (s : Stream' α) : ℕ → α
 #align stream.nth Stream'.get
 
 /-- Drop first `n` elements of a stream. -/
-def drop (n : Nat) (s : Stream' α) : Stream' α := fun i => s.get (i + n)
+def drop : ℕ → Stream' α → Stream' α
+  | 0    , s => s
+  | n + 1, s => drop n (tail s)
 #align stream.drop Stream'.drop
 
 /-- Proposition saying that all elements of a stream satisfy a predicate. -/
@@ -76,31 +78,6 @@ def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (get s n)
 instance : Membership α (Stream' α) :=
   ⟨fun a s => Any (fun b => a = b) s⟩
 
-/-- Apply a function `f` to all elements of a stream `s`. -/
-def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (get s n)
-#align stream.map Stream'.map
-
-/-- Zip two streams using a binary operation:
-`Stream'.get n (Stream'.zip f s₁ s₂) = f (Stream'.get s₁) (Stream'.get s₂)`. -/
-def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ :=
-  fun n => f (get s₁ n) (get s₂ n)
-#align stream.zip Stream'.zip
-
-/-- Enumerate a stream by tagging each element with its index. -/
-def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.get n)
-#align stream.enum Stream'.enum
-
-/-- The constant stream: `Stream'.get n (Stream'.const a) = a`. -/
-def const (a : α) : Stream' α := fun _ => a
-#align stream.const Stream'.const
-
--- porting note: used to be implemented using RecOn
-/-- Iterates of a function as a stream. -/
-def iterate (f : α → α) (a : α) : Stream' α
-  | 0 => a
-  | n + 1 => f (iterate f a n)
-#align stream.iterate Stream'.iterate
-
 @[inline]
 def corec' (f : α → MProd β α) : α → Stream' β :=
   Cofix.corec f
@@ -114,6 +91,35 @@ def corec (f : α → β) (g : α → α) : α → Stream' β :=
 abbrev corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
   corec f g a
 #align stream.corec_on Stream'.corecOn
+
+/-- Apply a function `f` to all elements of a stream `s`. -/
+@[inline]
+def map (f : α → β) : Stream' α → Stream' β :=
+  corec (f ∘ head) tail
+#align stream.map Stream'.map
+
+/-- Zip two streams using a binary operation:
+`Stream'.get n (Stream'.zip f s₁ s₂) = f (Stream'.get s₁) (Stream'.get s₂)`. -/
+@[inline]
+def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ :=
+  corec (fun (s₁, s₂) => f (head s₁) (head s₂)) (fun (s₁, s₂) => (tail s₁, tail s₂)) (s₁, s₂)
+#align stream.zip Stream'.zip
+
+/-- Enumerate a stream by tagging each element with its index. -/
+def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.get n)
+#align stream.enum Stream'.enum
+
+/-- The constant stream: `Stream'.get n (Stream'.const a) = a`. -/
+def const (a : α) : Stream' α :=
+  corec (fun _ : PUnit => a) id ⟨⟩
+#align stream.const Stream'.const
+
+-- porting note: used to be implemented using RecOn
+/-- Iterates of a function as a stream. -/
+def iterate (f : α → α) (a : α) : Stream' α
+  | 0 => a
+  | n + 1 => f (iterate f a n)
+#align stream.iterate Stream'.iterate
 
 -- porting note: this `#align` should be elsewhere but idk where
 #align state StateM

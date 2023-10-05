@@ -578,7 +578,6 @@ instance [Inhabited (F PUnit)] : Inhabited (Cofix F) where
   default := Cofix.corec (fun _ => default) PUnit.unit
 
 /-- The implemention of `dest`. This unfolds `Cofix`. -/
-@[inline]
 unsafe def destUnsafe (x : Cofix F) : F (Cofix F) :=
   match toI x with
   | ⟨t⟩ => ofIMap t.get

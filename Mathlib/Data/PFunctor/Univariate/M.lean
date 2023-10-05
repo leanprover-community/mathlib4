@@ -828,7 +828,6 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.inhabited PFunctor.M.inhabited
 
 /-- The implemention of `dest`. This unfolds an M-type. -/
-@[inline]
 unsafe def destUnsafe (x : M F) : F.Obj (M F) :=
   match toI x with
   | ⟨t⟩ =>
