@@ -23,7 +23,7 @@ implies that `forget (ModuleCat R)` preserves filtered colimits.
 -/
 
 
-universe v u
+universe v u w
 
 noncomputable section
 
@@ -39,28 +39,30 @@ namespace ModuleCat.FilteredColimits
 
 section
 
-variable {R : Type u} [Ring R] {J : Type v} [SmallCategory J] [IsFiltered J]
+variable {R : Type u} [Ring R] {J : Type v} [Category.{w} J] [IsFiltered J]
 
-variable (F : J ⥤ ModuleCatMax.{v, u, u} R)
+variable (F : J ⥤ ModuleCat.{w} R) [UnivLE.{v, w}]
 
 /-- The colimit of `F ⋙ forget₂ (ModuleCat R) AddCommGroupCat` in the category `AddCommGroupCat`.
 In the following, we will show that this has the structure of an `R`-module.
 -/
 abbrev M : AddCommGroupCat :=
-  AddCommGroupCat.FilteredColimits.colimit.{v, u}
-    (F ⋙ forget₂ (ModuleCat R) AddCommGroupCat.{max v u})
+  AddCommGroupCat.FilteredColimits.colimit
+    (F ⋙ forget₂ (ModuleCat R) AddCommGroupCat)
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.M ModuleCat.FilteredColimits.M
 
 /-- The canonical projection into the colimit, as a quotient type. -/
 abbrev M.mk : (Σ j, F.obj j) → M F :=
-  Quot.mk (Types.Quot.Rel (F ⋙ forget (ModuleCat R)))
+  AddGroupCat.FilteredColimits.G.mk (F ⋙ forget₂ (ModuleCat R)
+    AddCommGroupCat ⋙ forget₂ _ AddGroupCat)
+  --Quot.mk (Types.Quot.Rel (F ⋙ forget (ModuleCat R)))
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.M.mk ModuleCat.FilteredColimits.M.mk
 
 theorem M.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) : M.mk F x = M.mk F y :=
-  Quot.EqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget (ModuleCat R)) x y h)
+  AddGroupCat.FilteredColimits.G.mk_eq _ _ _ h
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.M.mk_eq ModuleCat.FilteredColimits.M.mk_eq
 
@@ -71,7 +73,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_smul_aux ModuleCat.FilteredColimits.colimitSMulAux
 
 theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
-    (h : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget (ModuleCat R)) x y) :
+    (h : Types.FilteredColimit.Rel (F ⋙ forget (ModuleCat R)) x y) :
     colimitSMulAux F r x = colimitSMulAux F r y := by
   apply M.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
