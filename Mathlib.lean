@@ -1274,6 +1274,7 @@ import Mathlib.Combinatorics.SetFamily.Intersecting
 import Mathlib.Combinatorics.SetFamily.Kleitman
 import Mathlib.Combinatorics.SetFamily.LYM
 import Mathlib.Combinatorics.SetFamily.Shadow
+import Mathlib.Combinatorics.SetFamily.Shatter
 import Mathlib.Combinatorics.SimpleGraph.Acyclic
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.Basic
