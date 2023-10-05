@@ -1171,9 +1171,8 @@ instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
 @[to_additive "The quotient of an `AddSemigroup` by an additive congruence relation is
 an `AddSemigroup`."]
 instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient :=
-  { (Function.Surjective.semigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl :
-      Semigroup c.Quotient) with
-    toMul := Con.hasMul _ }
+  { mul_assoc := fun a b c =>
+      Quotient.inductionOn₃' a b c fun _ _ _ => congrArg _ <| mul_assoc .. }
 #align con.semigroup Con.semigroup
 #align add_con.add_semigroup AddCon.addSemigroup
 
@@ -1181,9 +1180,7 @@ instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient 
 @[to_additive "The quotient of an `AddCommSemigroup` by an additive congruence relation is
 an `AddCommSemigroup`."]
 instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
-  { (Function.Surjective.commSemigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl :
-      CommSemigroup c.Quotient) with
-    toSemigroup := Con.semigroup _ }
+  { mul_comm := Quotient.ind₂' fun _ _ => congrArg _ <| mul_comm .. }
 #align con.comm_semigroup Con.commSemigroup
 #align add_con.add_comm_semigroup AddCon.addCommSemigroup
 
@@ -1194,6 +1191,7 @@ instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
   { (Function.Surjective.monoid _ Quotient.surjective_Quotient_mk'' rfl
       (fun _ _ => rfl) fun _ _ => rfl : Monoid c.Quotient) with
     toSemigroup := Con.semigroup _
+    npow := fun n x => x ^ n
     toOne := Con.one _ }
 #align con.monoid Con.monoid
 #align add_con.add_monoid AddCon.addMonoid
@@ -1202,9 +1200,7 @@ instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
 @[to_additive "The quotient of an `AddCommMonoid` by an additive congruence
 relation is an `AddCommMonoid`."]
 instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient :=
-  { (Function.Surjective.commMonoid _ Quotient.surjective_Quotient_mk'' rfl
-      (fun _ _ => rfl) fun _ _ => rfl : CommMonoid c.Quotient) with
-    toMonoid := Con.monoid _ }
+  { mul_comm := mul_comm }
 #align con.comm_monoid Con.commMonoid
 #align add_con.add_comm_monoid AddCon.addCommMonoid
 
@@ -1290,18 +1286,26 @@ instance zpowinst : Pow c.Quotient ℤ :=
   ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
 #align con.has_zpow Con.zpowinst
 
+@[to_additive "A quotient of a `SubNegMonoid` by an additive congruence relation is
+a `SubNegMonoid`."]
+instance divInvMonoid : DivInvMonoid c.Quotient :=
+  { Function.Surjective.divInvMonoid (M₂ := c.Quotient) Quotient.mk''
+      Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
+      (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl with
+    toMonoid := Con.monoid _
+    toInv := Con.hasInv _
+    toDiv := Con.hasDiv _
+    zpow := fun z q => q ^ z }
+
 /-- The quotient of a group by a congruence relation is a group. -/
 @[to_additive "The quotient of an `AddGroup` by an additive congruence relation is
 an `AddGroup`."]
 instance group : Group c.Quotient :=
-  { (Function.Surjective.group Quotient.mk''
-      Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
-        (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl : Group c.Quotient) with
-    toMonoid := Con.monoid _
-    toInv := Con.hasInv _
-    toDiv := Con.hasDiv _ }
+  { mul_left_inv := Quotient.ind' fun _ => congrArg _ <| mul_left_inv _ }
 #align con.group Con.group
 #align add_con.add_group AddCon.addGroup
+
+example (x : c.Quotient) (z : ℤ) : (group c).zpow z x = (zpowinst c).pow x z := rfl
 
 end Groups
 
@@ -1377,8 +1381,7 @@ theorem coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M 
 
 @[to_additive]
 instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [IsScalarTower α M M]
-    (c : Con M) : MulAction α c.Quotient
-    where
+    (c : Con M) : MulAction α c.Quotient where
   one_smul := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| one_smul _ _
   mul_smul _ _ := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| mul_smul _ _ _
 #align con.mul_action Con.mulAction
