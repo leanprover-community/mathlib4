@@ -32,6 +32,13 @@ def Lean.Meta.forallMetaTelescopeReducingUntilDefEq
 
 namespace Mathlib.Tactic
 
+/--
+`apply t at i` will apply a function `t` at `i`.
+Explicitly, if `t : α₁ → ⋯ → αᵢ → ⋯ → αₙ` and `i` has type `αᵢ`, then this tactic will add
+metavariables/goals for any terms of `αⱼ` for `j = 1, …, i-1`,
+then replace the type of `i` with `αᵢ₊₁ → ⋯ → αₙ` by applying those metavariables and the
+original `i`.
+-/
 elab "apply" t:term "at" i:ident : tactic => withMainContext do
   let f ← Term.elabTerm (← `(@$t)) none
   let some ldecl := (← getLCtx).findFromUserName? i.getId |
