@@ -522,6 +522,8 @@ theorem nhdsWithin_prod_eq (a : α) (b : β) (s : Set α) (t : Set β) :
   simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
 #align nhds_within_prod_eq nhdsWithin_prod_eq
 
+#noalign continuous_uncurry_of_discrete_topology
+
 theorem mem_nhds_prod_iff {a : α} {b : β} {s : Set (α × β)} :
     s ∈ 𝓝 (a, b) ↔ ∃ u ∈ 𝓝 a, ∃ v ∈ 𝓝 b, u ×ˢ v ⊆ s := by rw [nhds_prod_eq, mem_prod_iff]
 #align mem_nhds_prod_iff mem_nhds_prod_iff
@@ -664,6 +666,8 @@ theorem prod_induced_induced (f : α → β) (g : γ → δ) :
   simp_rw [induced_inf, induced_compose]
   rfl
 #align prod_induced_induced prod_induced_induced
+
+#noalign continuous_uncurry_of_discrete_topology_left
 
 /-- Given a neighborhood `s` of `(x, x)`, then `(x, x)` has a square open neighborhood
   that is a subset of `s`. -/
