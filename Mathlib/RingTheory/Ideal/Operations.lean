@@ -850,6 +850,16 @@ theorem isCoprime_iff_exists : IsCoprime I J ↔ ∃ i ∈ I, ∃ j ∈ J, i + j
 theorem isCoprime_iff_sup_eq : IsCoprime I J ↔ I ⊔ J = ⊤ := by
   rw [isCoprime_iff_codisjoint, codisjoint_iff]
 
+theorem _root_.IsCoprime.codisjoint (h : IsCoprime I J) : Codisjoint I J :=
+isCoprime_iff_codisjoint.mp h
+
+theorem _root_.IsCoprime.add_eq (h : IsCoprime I J) : I + J = 1 := isCoprime_iff_add.mp h
+
+theorem _root_.IsCoprime.exists (h : IsCoprime I J) : ∃ i ∈ I, ∃ j ∈ J, i + j = 1 :=
+  isCoprime_iff_exists.mp h
+
+theorem _root_.IsCoprime.sup_eq (h : IsCoprime I J) : I ⊔ J = ⊤ := isCoprime_iff_sup_eq.mp h
+
 theorem isCoprime_span_singleton_iff (x y : R) :
     IsCoprime (span <| singleton x) (span <| singleton y) ↔ IsCoprime x y := by
   simp_rw [isCoprime_iff_codisjoint, codisjoint_iff, eq_top_iff_one, mem_span_singleton_sup,
