@@ -3,7 +3,6 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Tactic
 import Lean
 
 open Lean Meta Elab Tactic Term
@@ -35,7 +34,8 @@ namespace Mathlib.Tactic
 
 elab "apply" t:term "at" i:ident : tactic => withMainContext do
   let f ← Term.elabTerm (← `(@$t)) none
-  let ldecl ← (← getLCtx).findFromUserName? i.getId
+  let some ldecl := (← getLCtx).findFromUserName? i.getId |
+    throwError "Error"
   let (mvs, _, tp) ← forallMetaTelescopeReducingUntilDefEq (← inferType f) ldecl.type
   let mainGoal ← getMainGoal
   let mainGoal ← mainGoal.tryClear ldecl.fvarId
