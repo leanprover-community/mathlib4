@@ -111,8 +111,8 @@ theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [F
   ext; simp
 #align finset.univ_pi_univ Finset.univ_pi_univ
 
-lemma Fin.succ_mem_piFinset_iff {n : ℕ} {α : Fin (n + 1) → Type*} (p : ∀ i, α i)
-  (S : ∀ i, Finset (α i)) :
+lemma Fin.mem_piFinset_succ_iff {n : ℕ} {α : Fin (n + 1) → Type*} (p : (i : Fin (n + 1)) → α i)
+    (S : (i : Fin (n + 1)) → Finset (α i)) :
     p ∈ Fintype.piFinset S ↔ p 0 ∈ S 0 ∧ Fin.tail p ∈ Fintype.piFinset (Fin.tail S) := by
   simp only [Fintype.mem_piFinset]
   constructor
