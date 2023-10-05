@@ -58,7 +58,7 @@ lemma ContextFreeRule.RewritesTo.toParts {N : Type _} {r : ContextFreeRule T N}
   | head xs =>
     use [], xs
     simp
-  | @cons x s₁ s₂ _ ih =>
+  | cons x _ ih =>
     rcases ih with ⟨p', q', bef, aft⟩
     use x :: p', q'
     simp [bef, aft]
@@ -102,17 +102,14 @@ def language (g : ContextFreeGrammar T) : Language T :=
 variable {g : ContextFreeGrammar T}
 
 @[refl]
-lemma Derives.refl {w : List (Symbol T g.NT)} :
-    g.Derives w w :=
+lemma Derives.refl {w : List (Symbol T g.NT)} : g.Derives w w :=
   Relation.ReflTransGen.refl
 
-lemma Produces.single {v w : List (Symbol T g.NT)} (hvw : g.Produces v w) :
-    g.Derives v w :=
+lemma Produces.single {v w : List (Symbol T g.NT)} (hvw : g.Produces v w) : g.Derives v w :=
   Relation.ReflTransGen.single hvw
 
 @[trans]
-lemma Derives.trans {u v w : List (Symbol T g.NT)}
-    (huv : g.Derives u v) (hvw : g.Derives v w) :
+lemma Derives.trans {u v w : List (Symbol T g.NT)} (huv : g.Derives u v) (hvw : g.Derives v w) :
     g.Derives u w :=
   Relation.ReflTransGen.trans huv hvw
 
