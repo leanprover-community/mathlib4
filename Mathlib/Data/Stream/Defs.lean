@@ -41,7 +41,7 @@ def cons (a : α) (s : Stream' α) : Stream' α :=
 
 scoped infixr:67 " :: " => cons
 
-/-- Destructor for a sequence, returning `⟨a, s⟩` for `cons a s`. -/
+/-- Destructor for a stream, returning `⟨a, s⟩` for `cons a s`. -/
 @[inline]
 def dest (s : Stream' α) : MProd α (Stream' α) :=
   Cofix.dest s
