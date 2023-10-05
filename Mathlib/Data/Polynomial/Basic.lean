@@ -1153,8 +1153,7 @@ section CommSemiring
 variable [CommSemiring R]
 
 instance commSemiring : CommSemiring R[X] :=
-  { Function.Injective.commMonoid toFinsupp toFinsupp_injective toFinsupp_one
-      toFinsupp_mul toFinsupp_pow  with
+  { Function.Injective.commSemigroup toFinsupp toFinsupp_injective toFinsupp_mul with
     toSemiring := Polynomial.semiring }
 #align polynomial.comm_semiring Polynomial.commSemiring
 
