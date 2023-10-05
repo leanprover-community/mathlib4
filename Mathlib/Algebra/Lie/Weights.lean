@@ -280,11 +280,15 @@ lemma iSup_ucs_eq_weightSpace_zero [LieAlgebra.IsNilpotent R L] [IsNoetherian R 
 variable {L}
 
 /-- If `M` is a representation of a nilpotent Lie algebra `L`, and `x : L`, then
-`posFittingCompOf R M x` is the positive Fitting component of the action of `x` on `M`.
+`posFittingCompOf R M x` is the infimum of the decreasing system
+`range φₓ ⊇ range φₓ² ⊇ range φₓ³ ⊇ ⋯` where `φₓ : End R M := toEndomorphism R L M x`. We call this
+the "positive Fitting component" because with appropriate assumptions (e.g., `R` is a field and
+`M` is finite-dimensional) `φₓ` induces the so-called Fitting decomposition: `M = M₀ ⊕ M₁` where
+`M₀ = weightSpaceOf M 0 x` and `M₁ = posFittingCompOf R M x`.
 
 It is a Lie submodule because `L` is nilpotent. -/
 def posFittingCompOf [LieAlgebra.IsNilpotent R L] (x : L) : LieSubmodule R L M :=
-  { ⨅ k, LinearMap.range (toEndomorphism R L M x ^ k) with
+  { toSubmodule := ⨅ k, LinearMap.range (toEndomorphism R L M x ^ k)
     lie_mem := by
       set φ := toEndomorphism R L M x
       intros y m hm
