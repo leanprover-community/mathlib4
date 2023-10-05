@@ -178,8 +178,8 @@ theorem Group.covariant_iff_contravariant [Group N] :
 #align group.covariant_iff_contravariant Group.covariant_iff_contravariant
 #align add_group.covariant_iff_contravariant AddGroup.covariant_iff_contravariant
 
-notation "(" "+" ")" => HAdd.hAdd
-notation "(" "*" ")" => HMul.hMul
+@[inherit_doc] notation "(" "+" ")" => HAdd.hAdd
+@[inherit_doc] notation "(" "*" ")" => HMul.hMul
 
 @[to_additive]
 instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (*) r] :
