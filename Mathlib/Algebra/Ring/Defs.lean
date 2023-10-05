@@ -139,7 +139,7 @@ class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiri
 
 /-- A set with commutative addition, multiplication, zero, one, and distributivity of
 multiplication over addition  -/
-class Semiring (α : Type u) extends AddCommMonoid α, Monoid α, NonAssocSemiring α
+class Semiring (α : Type u) extends AddCommMonoid α, MonoidWithZero α, NonAssocSemiring α
 #align semiring Semiring
 
 instance Semiring.toNonUnitalSemiring {α : Type u} [Semiring α] : NonUnitalSemiring α :=
