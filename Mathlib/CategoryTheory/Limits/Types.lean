@@ -416,18 +416,19 @@ theorem colimitEquivQuot_apply [UnivLE.{v, u}] (F : J ⥤ Type u) (j : J) (x : F
 #align category_theory.limits.types.colimit_equiv_quot_apply CategoryTheory.Limits.Types.colimitEquivQuot_apply
 
 --porting note: @[simp] was removed because the linter said it was useless
+@[simp]
 theorem Colimit.w_apply [UnivLE.{v, u}] {F : J ⥤ Type u} {j j' : J} {x : F.obj j} (f : j ⟶ j') :
     colimit.ι F j' (F.map f x) = colimit.ι F j x :=
   congr_fun (colimit.w F f) x
 #align category_theory.limits.types.colimit.w_apply CategoryTheory.Limits.Types.Colimit.w_apply
 
---porting note: @[simp] was removed because the linter said it was useless
+@[simp]
 theorem Colimit.ι_desc_apply [UnivLE.{v, u}] (F : J ⥤ Type u) (s : Cocone F) (j : J) (x : F.obj j) :
     colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
    congr_fun (colimit.ι_desc s j) x
 #align category_theory.limits.types.colimit.ι_desc_apply CategoryTheory.Limits.Types.Colimit.ι_desc_apply
 
---porting note: @[simp] was removed because the linter said it was useless
+@[simp]
 theorem Colimit.ι_map_apply [UnivLE.{v, u}] {F G : J ⥤ Type u} (α : F ⟶ G) (j : J) (x : F.obj j) :
     colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
   congr_fun (colimit.ι_map α j) x
