@@ -13,15 +13,16 @@ single nonterminal symbol on the left-hand side of each rule.
 Derivation by a grammar is inherently nondeterministic.
 -/
 
-/--
-The type of symbols is the disjoint union of terminals `T` and nonterminals `N`.
--/
+/-- The type of symbols is the disjoint union of terminals `T` and nonterminals `N`. -/
 inductive Symbol (T : Type _) (N : Type _)
   /-- Terminal symbols (of the same type as the language) -/
   | terminal    (t : T) : Symbol T N
   /-- Nonterminal symbols (must not be present at the end of word being generated) -/
   | nonterminal (n : N) : Symbol T N
+  -- If we have `[BEq T]` and `[BEq N]` then `[BEq (Symbol T N)]` is added.
+  deriving BEq
 
+/-- Rule that rewrites a single nonterminal to any list of symbols. -/
 structure ContextFreeRule (T : Type _) (N : Type _) where
   /-- Input nonterminal a.k.a. left-hand side -/
   input : N
@@ -39,13 +40,14 @@ structure ContextFreeGrammar (T : Type _) where
 
 variable {T : Type _}
 
+/-- One application of single context-free rule. -/
 inductive ContextFreeRule.RewritesTo {N : Type _} (r : ContextFreeRule T N) :
     List (Symbol T N) → List (Symbol T N) → Prop
   /-- The replacement is at the start of the remaining string. -/
   | head (s : List (Symbol T N)) :
       r.RewritesTo (Symbol.nonterminal r.input :: s) (r.output ++ s)
   /-- There is a replacement later in the string. -/
-  | cons (x : Symbol T N) {s₁ s₂ : List (Symbol T N)} (h : RewritesTo r s₁ s₂) :
+  | cons (x : Symbol T N) {s₁ s₂ : List (Symbol T N)} (hrs : RewritesTo r s₁ s₂) :
       r.RewritesTo (x :: s₁) (x :: s₂)
 
 lemma ContextFreeRule.RewritesTo.toParts {N : Type _} {r : ContextFreeRule T N}
