@@ -1876,9 +1876,9 @@ theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
   rfl
 #align fin.coe_of_nat_eq_mod Fin.coe_ofNat_eq_mod
 
-theorem eq_castSucc_or_eq_last {n : Nat} : ∀ i : Fin (n + 1),
+theorem eq_castSucc_or_eq_last {n : Nat} (i : Fin (n + 1)) :
     (∃ j : Fin n, i = j.castSucc) ∨ i = last n := by
-  intro ⟨i, hi⟩
+  obtain ⟨i : ℕ, hi : i < n + 1⟩ := i
   by_cases h : i < n
   · left
     use ⟨i, by assumption⟩
