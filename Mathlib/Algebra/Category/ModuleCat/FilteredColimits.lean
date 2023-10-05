@@ -56,9 +56,19 @@ set_option linter.uppercaseLean3 false in
 abbrev M.mk : (Σ j, F.obj j) → M F :=
   AddGroupCat.FilteredColimits.G.mk (F ⋙ forget₂ (ModuleCat R)
     AddCommGroupCat ⋙ forget₂ _ AddGroupCat)
-  --Quot.mk (Types.Quot.Rel (F ⋙ forget (ModuleCat R)))
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.M.mk ModuleCat.FilteredColimits.M.mk
+
+@[simp]
+lemma M.equivShrink_symm_mk (x : Σ j, F.obj j) :
+    (equivShrink _).symm (M.mk F x) = Quot.mk _ x := by
+  apply Equiv.symm_apply_apply
+
+lemma M.surjective_mk : Function.Surjective (M.mk F) := by
+  intro x
+  obtain ⟨x, rfl⟩ := (equivShrink _).surjective x
+  obtain ⟨x, rfl⟩ := surjective_quot_mk _ x
+  exact ⟨x, rfl⟩
 
 theorem M.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) : M.mk F x = M.mk F y :=
@@ -86,35 +96,31 @@ set_option linter.uppercaseLean3 false in
 /-- Scalar multiplication in the colimit. See also `colimitSMulAux`. -/
 instance colimitHasSmul : SMul R (M F) where
   smul r x := by
-    refine' Quot.lift (colimitSMulAux F r) _ x
+    refine Quot.lift (colimitSMulAux F r) ?_ ((equivShrink _).symm x)
     intro x y h
     apply colimitSMulAux_eq_of_rel
     apply Types.FilteredColimit.rel_of_quot_rel
     exact h
+
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_has_smul ModuleCat.FilteredColimits.colimitHasSmul
 
 @[simp]
-theorem colimit_smul_mk_eq (r : R) (x : Σ j, F.obj j) : r • M.mk F x = M.mk F ⟨x.1, r • x.2⟩ :=
+theorem colimit_smul_mk_eq (r : R) (x : Σ j, F.obj j) : r • M.mk F x = M.mk F ⟨x.1, r • x.2⟩ := by
+  dsimp [HSMul.hSMul, colimitHasSmul]
+  simp only [M.equivShrink_symm_mk]
   rfl
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_smul_mk_eq ModuleCat.FilteredColimits.colimit_smul_mk_eq
 
-private theorem colimitModule.one_smul (x : (M F)) : (1 : R) • x = x := by
-  refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
-  erw [colimit_smul_mk_eq F 1 ⟨j, x⟩]
-  simp
-  rfl
-
 -- Porting note: writing directly the `Module` instance makes things very slow.
 instance colimitMulAction : MulAction R (M F) where
   one_smul x := by
-    refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
-    erw [colimit_smul_mk_eq F 1 ⟨j, x⟩, one_smul]
-    rfl
+    obtain ⟨⟨j, x⟩, rfl⟩ := M.surjective_mk _ x
+    rw [colimit_smul_mk_eq F 1 ⟨j, x⟩, one_smul]
   mul_smul r s x := by
-    refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
-    erw [colimit_smul_mk_eq F (r * s) ⟨j, x⟩, colimit_smul_mk_eq F s ⟨j, x⟩,
+    obtain ⟨⟨j, x⟩, rfl⟩ := M.surjective_mk _ x
+    rw [colimit_smul_mk_eq F (r * s) ⟨j, x⟩, colimit_smul_mk_eq F s ⟨j, x⟩,
       colimit_smul_mk_eq F r ⟨j, _⟩, mul_smul]
 
 instance colimitSMulWithZero : SMulWithZero R (M F) :=
@@ -123,12 +129,12 @@ instance colimitSMulWithZero : SMulWithZero R (M F) :=
     erw [colimit_zero_eq _ (IsFiltered.Nonempty.some : J), colimit_smul_mk_eq, smul_zero]
     rfl
   zero_smul := fun x => by
-    refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
-    erw [colimit_smul_mk_eq, zero_smul, colimit_zero_eq _ j]
+    obtain ⟨⟨j, x⟩, rfl⟩ := M.surjective_mk _ x
+    rw [colimit_smul_mk_eq, zero_smul, colimit_zero_eq _ j]
     rfl }
 
 private theorem colimitModule.add_smul (r s : R) (x : (M F)) : (r + s) • x = r • x + s • x := by
-  refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
+  obtain ⟨⟨j, x⟩, rfl⟩ := M.surjective_mk _ x
   erw [colimit_smul_mk_eq, _root_.add_smul, colimit_smul_mk_eq, colimit_smul_mk_eq,
       colimit_add_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j), CategoryTheory.Functor.map_id, id_apply,
       id_apply]
@@ -138,19 +144,19 @@ instance colimitModule : Module R (M F) :=
 { colimitMulAction F,
   colimitSMulWithZero F with
   smul_add := fun r x y => by
-    refine' Quot.induction_on₂ x y _; clear x y; intro x y; cases' x with i x; cases' y with j y
+    obtain ⟨⟨i, x⟩, rfl⟩ := M.surjective_mk _ x
+    obtain ⟨⟨j, y⟩, rfl⟩ := M.surjective_mk _ y
     erw [colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
-      (IsFiltered.rightToMax i j), colimit_smul_mk_eq, smul_add, colimit_smul_mk_eq,
-      colimit_smul_mk_eq, colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
+      (IsFiltered.rightToMax i j), colimit_smul_mk_eq, smul_add, colimit_smul_mk_eq]
+    erw [colimit_smul_mk_eq, colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j), LinearMap.map_smul, LinearMap.map_smul]
     rfl
   add_smul := colimitModule.add_smul F }
-
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_module ModuleCat.FilteredColimits.colimitModule
 
 /-- The bundled `R`-module giving the filtered colimit of a diagram. -/
-def colimit : ModuleCatMax.{v, u, u} R :=
+def colimit : ModuleCat.{w} R :=
   ModuleCat.of R (M F)
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit ModuleCat.FilteredColimits.colimit
@@ -158,7 +164,7 @@ set_option linter.uppercaseLean3 false in
 /-- The linear map from a given `R`-module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
   { (AddCommGroupCat.FilteredColimits.colimitCocone
-      (F ⋙ forget₂ (ModuleCat R) AddCommGroupCat.{max v u})).ι.app j with
+      (F ⋙ forget₂ (ModuleCat R) AddCommGroupCat)).ι.app j with
     map_smul' := fun r x => by erw [colimit_smul_mk_eq F r ⟨j, x⟩]; rfl }
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.cocone_morphism ModuleCat.FilteredColimits.coconeMorphism
@@ -177,14 +183,19 @@ set_option linter.uppercaseLean3 false in
 We already know that this is a morphism between additive groups. The only thing left to see is that
 it is a linear map, i.e. preserves scalar multiplication.
 -/
-def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
-  { (AddCommGroupCat.FilteredColimits.colimitCoconeIsColimit
-          (F ⋙ forget₂ (ModuleCatMax.{v, u} R) AddCommGroupCat.{max v u})).desc
-      ((forget₂ (ModuleCat R) AddCommGroupCat.{max v u}).mapCocone t) with
-    map_smul' := fun r x => by
-      refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
-      erw [colimit_smul_mk_eq]
-      exact LinearMap.map_smul (t.ι.app j) r x }
+def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt where
+  toFun :=
+    (AddCommGroupCat.FilteredColimits.colimitCoconeIsColimit
+      (F ⋙ forget₂ (ModuleCat R) AddCommGroupCat)).desc
+        ((forget₂ (ModuleCat R) AddCommGroupCat).mapCocone t)
+  map_add' _ _ := map_add _ _ _
+  map_smul' r x := by
+    obtain ⟨⟨j, x⟩, rfl⟩ := M.surjective_mk _ x
+    erw [colimit_smul_mk_eq]
+    simp only [Functor.mapCocone_pt, forget₂_obj, RingHom.id_apply]
+    erw [AddCommGroupCat.FilteredColimits.colimitCoconeIsColimit_desc_apply,
+      AddCommGroupCat.FilteredColimits.colimitCoconeIsColimit_desc_apply]
+    exact LinearMap.map_smul (t.ι.app j) r x
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_desc ModuleCat.FilteredColimits.colimitDesc
 
@@ -193,7 +204,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
   fac t j :=
     LinearMap.coe_injective <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget (ModuleCat R))).fac
+      (Types.colimitCoconeIsColimit (F ⋙ forget (ModuleCat R))).fac
         ((forget (ModuleCat R)).mapCocone t) j
   uniq t _ h :=
     LinearMap.coe_injective <|

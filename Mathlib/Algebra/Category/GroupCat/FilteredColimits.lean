@@ -74,7 +74,7 @@ lemma G.equivShrink_symm_mk (x : Σ j, F.obj j) :
 lemma G.surjective_mk : Function.Surjective (G.mk F) := by
   intro x
   obtain ⟨x, rfl⟩ := (equivShrink _).surjective x
-  obtain ⟨x, rfl⟩ :=  surjective_quot_mk _ x
+  obtain ⟨x, rfl⟩ := surjective_quot_mk _ x
   exact ⟨x, rfl⟩
 
 @[to_additive]
@@ -234,6 +234,10 @@ noncomputable def colimit : CommGroupCat :=
 #align CommGroup.filtered_colimits.colimit CommGroupCat.FilteredColimits.colimit
 #align AddCommGroup.filtered_colimits.colimit AddCommGroupCat.FilteredColimits.colimit
 
+@[to_additive]
+noncomputable def colimit_mk (x : Σ j, F.obj j) : colimit F :=
+  GroupCat.FilteredColimits.G.mk (F ⋙ forget₂ CommGroupCat.{u} GroupCat.{u}) x
+
 /-- The cocone over the proposed colimit commutative group. -/
 @[to_additive "The cocone over the proposed colimit additive commutative group."]
 noncomputable def colimitCocone : Cocone F where
@@ -261,6 +265,12 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
         ((forget CommGroupCat).mapCocone t) _ fun j => funext fun x => FunLike.congr_fun (h j) x
 #align CommGroup.filtered_colimits.colimit_cocone_is_colimit CommGroupCat.FilteredColimits.colimitCoconeIsColimit
 #align AddCommGroup.filtered_colimits.colimit_cocone_is_colimit AddCommGroupCat.FilteredColimits.colimitCoconeIsColimit
+
+@[to_additive (attr := simp)]
+lemma colimitCoconeIsColimit_desc_apply (s : Cocone F) (j : J) (x : F.obj j) :
+    (colimitCoconeIsColimit F).desc s (colimit_mk F ⟨j, x⟩) = s.ι.app j x := by
+  rw [← ((colimitCoconeIsColimit F).fac s) j, comp_apply]
+  rfl
 
 @[to_additive]
 noncomputable instance forget₂GroupPreservesFilteredColimits :
