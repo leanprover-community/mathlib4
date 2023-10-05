@@ -872,8 +872,7 @@ theorem lcm_eq_inf (I J : Ideal A) : lcm I J = I ⊓ J := rfl
 #align ideal.lcm_eq_inf Ideal.lcm_eq_inf
 
 theorem inf_eq_mul_of_coprime {I J : Ideal A} (coprime : IsCoprime I J) : I ⊓ J = I * J := by
-  rw [← associated_iff_eq.mp (gcd_mul_lcm I J), lcm_eq_inf I J, gcd_eq_sup,
-      isCoprime_iff_sup_eq.mp coprime, top_mul]
+  rw [← associated_iff_eq.mp (gcd_mul_lcm I J), lcm_eq_inf I J, gcd_eq_sup, coprime.sup_eq, top_mul]
 #align ideal.inf_eq_mul_of_coprime Ideal.inf_eq_mul_of_coprime
 
 theorem isCoprime_iff_gcd {I J : Ideal A} : IsCoprime I J ↔ gcd I J = 1 := by
