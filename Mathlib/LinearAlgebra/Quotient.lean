@@ -163,7 +163,7 @@ section Module
 variable {S : Type*}
 
 -- Performance of `Function.Surjective.mulAction` is worse since it has to unify data to apply
--- see leanprover-community/mathlib4#7432
+-- TODO: leanprover-community/mathlib4#7432
 instance mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : MulAction S (M ⧸ P) :=
   { Function.Surjective.mulAction mk (surjective_quot_mk _) <| Submodule.Quotient.mk_smul P with
@@ -186,7 +186,7 @@ instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
 #align submodule.quotient.smul_zero_class Submodule.Quotient.smulZeroClass
 
 -- Performance of `Function.Surjective.distribSMul` is worse since it has to unify data to apply
--- see leanprover-community/mathlib4#7432
+-- TODO: leanprover-community/mathlib4#7432
 instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
     DistribSMul S (M ⧸ P) :=
   { Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
@@ -200,7 +200,7 @@ instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
 #align submodule.quotient.distrib_smul Submodule.Quotient.distribSMul
 
 -- Performance of `Function.Surjective.distribMulAction` is worse since it has to unify data to apply
--- see leanprover-community/mathlib4#7432
+-- TODO: leanprover-community/mathlib4#7432
 instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : DistribMulAction S (M ⧸ P) :=
   { Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
@@ -214,7 +214,7 @@ instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
 #align submodule.quotient.distrib_mul_action Submodule.Quotient.distribMulAction
 
 -- Performance of `Function.Surjective.module` is worse since it has to unify data to apply
--- see leanprover-community/mathlib4#7432
+-- TODO: leanprover-community/mathlib4#7432
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P : Submodule R M) :
     Module S (M ⧸ P) :=
   { Function.Surjective.module _ {toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
