@@ -106,7 +106,7 @@ theorem ranges_nodup (l : List ℕ) :
     exact nodup_range a
     -- s ∈ l
     obtain ⟨t, ht, rfl⟩ := mem_map.mp hs
-    refine' Nodup.map (fun u v => Nat.add_left_cancel) (hl t ht)
+    exact Nodup.map (fun u v => Nat.add_left_cancel) (hl t ht)
 
 /-- The lengths of the members of `l.ranges` are those given by `l` -/
 theorem ranges_length (l : List ℕ) :
