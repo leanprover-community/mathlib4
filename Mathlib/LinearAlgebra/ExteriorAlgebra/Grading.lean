@@ -55,7 +55,7 @@ theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebr
 /-- `ExteriorAlgebra.GradedAlgebra.ι` lifted to exterior algebra. This is
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 def GradedAlgebra.liftι :
-  ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ,
+    ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ,
     (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i : Submodule R (ExteriorAlgebra R M)) :=
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
@@ -89,7 +89,7 @@ instance gradedAlgebra :
   GradedAlgebra.ofAlgHom _
     (-- while not necessary, the `by apply` makes this elaborate faster
     by apply GradedAlgebra.liftι R M)
-    -- the proof from here onward is identical to the `tensor_algebra` case
+    -- the proof from here onward is identical to the `TensorAlgebra` case
     (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,

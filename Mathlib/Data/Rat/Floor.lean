@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Ring
 
 #align_import data.rat.floor from "leanprover-community/mathlib"@"e1bccd6e40ae78370f01659715d3c948716e3b7e"
 
@@ -95,12 +96,12 @@ theorem Int.mod_nat_eq_sub_mul_floor_rat_div {n : ℤ} {d : ℕ} : n % d = n - d
   rw [eq_sub_of_add_eq <| Int.emod_add_ediv n d, Rat.floor_int_div_nat_eq_div]
 #align int.mod_nat_eq_sub_mul_floor_rat_div Int.mod_nat_eq_sub_mul_floor_rat_div
 
-theorem Nat.coprime_sub_mul_floor_rat_div_of_coprime {n d : ℕ} (n_coprime_d : n.coprime d) :
-    ((n : ℤ) - d * ⌊(n : ℚ) / d⌋).natAbs.coprime d := by
+theorem Nat.coprime_sub_mul_floor_rat_div_of_coprime {n d : ℕ} (n_coprime_d : n.Coprime d) :
+    ((n : ℤ) - d * ⌊(n : ℚ) / d⌋).natAbs.Coprime d := by
   have : (n : ℤ) % d = n - d * ⌊(n : ℚ) / d⌋ := Int.mod_nat_eq_sub_mul_floor_rat_div
   rw [← this]
-  have : d.coprime n := n_coprime_d.symm
-  rwa [Nat.coprime, Nat.gcd_rec] at this
+  have : d.Coprime n := n_coprime_d.symm
+  rwa [Nat.Coprime, Nat.gcd_rec] at this
 #align nat.coprime_sub_mul_floor_rat_div_of_coprime Nat.coprime_sub_mul_floor_rat_div_of_coprime
 
 namespace Rat
@@ -140,7 +141,7 @@ theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).n
   suffices (q.den : ℤ) - q.num * ⌊q_inv⌋ < q.num by
     -- use that `q.num` and `q.den` are coprime to show that the numerator stays unreduced
     have : ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num = q.den - q.num * ⌊q_inv⌋ := by
-      suffices ((q.den : ℤ) - q.num * ⌊q_inv⌋).natAbs.coprime q.num.natAbs by
+      suffices ((q.den : ℤ) - q.num * ⌊q_inv⌋).natAbs.Coprime q.num.natAbs by
         exact_mod_cast Rat.num_div_eq_of_coprime q_num_pos this
       have tmp := Nat.coprime_sub_mul_floor_rat_div_of_coprime q.reduced.symm
       simpa only [Nat.cast_natAbs, abs_of_nonneg q_num_pos.le] using tmp
@@ -153,7 +154,7 @@ theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).n
   -- use that `q.num` and `q.den` are coprime to show that q_inv is the unreduced reciprocal
   -- of `q`
   have : q_inv.num = q.den ∧ q_inv.den = q.num.natAbs := by
-    have coprime_q_denom_q_num : q.den.coprime q.num.natAbs := q.reduced.symm
+    have coprime_q_denom_q_num : q.den.Coprime q.num.natAbs := q.reduced.symm
     have : Int.natAbs q.den = q.den := by simp
     rw [← this] at coprime_q_denom_q_num
     rw [q_inv_def]

@@ -269,7 +269,7 @@ theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ => a / 2 / 2 ^ n) 
   convert HasSum.mul_left (a / 2)
       (hasSum_geometric_of_lt_1 (le_of_lt one_half_pos) one_half_lt_one) using 1
   · funext n
-    simp
+    simp only [one_div, inv_pow]
     rfl
   · norm_num
 #align has_sum_geometric_two' hasSum_geometric_two'
@@ -294,9 +294,9 @@ theorem NNReal.summable_geometric {r : ℝ≥0} (hr : r < 1) : Summable fun n : 
   ⟨_, NNReal.hasSum_geometric hr⟩
 #align nnreal.summable_geometric NNReal.summable_geometric
 
-theorem tsum_geometric_nNReal {r : ℝ≥0} (hr : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
+theorem tsum_geometric_nnreal {r : ℝ≥0} (hr : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   (NNReal.hasSum_geometric hr).tsum_eq
-#align tsum_geometric_nnreal tsum_geometric_nNReal
+#align tsum_geometric_nnreal tsum_geometric_nnreal
 
 /-- The series `pow r` converges to `(1-r)⁻¹`. For `r < 1` the RHS is a finite number,
 and for `1 ≤ r` the RHS equals `∞`. -/

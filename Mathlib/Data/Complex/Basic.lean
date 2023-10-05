@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Algebra.GroupWithZero.Bitwise
 
 #align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -431,9 +432,6 @@ instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
 -- Porting note: proof needed modifications and rewritten fields
 instance commRing : CommRing ℂ :=
   { Complex.addGroupWithOne with
-    zero := (0 : ℂ)
-    add := (· + ·)
-    one := 1
     mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
     add_comm := by intros; ext <;> simp [add_comm]
@@ -1176,7 +1174,7 @@ noncomputable def cauSeqIm (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=
 #align complex.cau_seq_im Complex.cauSeqIm
 
 theorem isCauSeq_abs {f : ℕ → ℂ} (hf : IsCauSeq Complex.abs f) :
-  IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
+    IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
   let ⟨i, hi⟩ := hf ε ε0
   ⟨i, fun j hj => lt_of_le_of_lt
     (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
@@ -1188,7 +1186,7 @@ noncomputable def limAux (f : CauSeq ℂ Complex.abs) : ℂ :=
 #align complex.lim_aux Complex.limAux
 
 theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
-  f ≈ CauSeq.const Complex.abs (limAux f) := fun ε ε0 =>
+    f ≈ CauSeq.const Complex.abs (limAux f) := fun ε ε0 =>
   (exists_forall_ge_and
   (CauSeq.equiv_lim ⟨_, isCauSeq_re f⟩ _ (half_pos ε0))
         (CauSeq.equiv_lim ⟨_, isCauSeq_im f⟩ _ (half_pos ε0))).imp
@@ -1224,7 +1222,7 @@ theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := b
 #align complex.lim_im Complex.lim_im
 
 theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
-  IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
+    IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
   let ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
     rw [← RingHom.map_sub, abs_conj]; exact hi j hj⟩

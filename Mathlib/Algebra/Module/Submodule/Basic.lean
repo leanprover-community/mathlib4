@@ -344,14 +344,11 @@ theorem coe_mem (x : p) : (x : M) ∈ p :=
 variable (p)
 
 instance addCommMonoid : AddCommMonoid p :=
-  { p.toAddSubmonoid.toAddCommMonoid with
-    add := (· + ·)
-    zero := 0 }
+  { p.toAddSubmonoid.toAddCommMonoid with }
 #align submodule.add_comm_monoid Submodule.addCommMonoid
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
   { (show MulAction S p from p.toSubMulAction.mulAction') with
-    smul := (· • ·)
     smul_zero := fun a => by ext; simp
     zero_smul := fun a => by ext; simp
     add_smul := fun a b x => by ext; simp [add_smul]
@@ -397,7 +394,7 @@ section AddAction
 These instances transfer the action by an element `m : M` of an `R`-module `M` written as `m +ᵥ a`
 onto the action by an element `s : S` of a submodule `S : Submodule R M` such that
 `s +ᵥ a = (s : M) +ᵥ a`.
-These instances work particularly well in conjunction with `add_group.to_add_action`, enabling
+These instances work particularly well in conjunction with `AddGroup.toAddAction`, enabling
 `s +ᵥ m` as an alias for `↑s + m`.
 -/
 
@@ -493,8 +490,6 @@ as turning it into a type and adding a module structure. -/
 @[simps (config := { simpRhs := true })]
 def restrictScalarsEquiv (p : Submodule R M) : p.restrictScalars S ≃ₗ[R] p :=
   { AddEquiv.refl p with
-    toFun := id
-    invFun := id
     map_smul' := fun _ _ => rfl }
 #align submodule.restrict_scalars_equiv Submodule.restrictScalarsEquiv
 #align submodule.restrict_scalars_equiv_symm_apply Submodule.restrictScalarsEquiv_symm_apply
@@ -592,10 +587,7 @@ theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
 #align submodule.sub_mem_iff_right Submodule.sub_mem_iff_right
 
 instance addCommGroup : AddCommGroup p :=
-  { p.toAddSubgroup.toAddCommGroup with
-    add := (· + ·)
-    zero := 0
-    neg := Neg.neg }
+  { p.toAddSubgroup.toAddCommGroup with }
 #align submodule.add_comm_group Submodule.addCommGroup
 
 end AddCommGroup

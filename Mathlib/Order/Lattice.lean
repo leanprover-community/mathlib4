@@ -376,7 +376,7 @@ instance OrderDual.semilatticeInf (α) [SemilatticeSup α] : SemilatticeInf α�
   le_inf := fun _ _ _ hca hcb => @sup_le α _ _ _ _ hca hcb
 
 theorem SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
-  OrderDual.semilatticeSup αᵒᵈ = H :=
+    OrderDual.semilatticeSup αᵒᵈ = H :=
   SemilatticeSup.ext $ fun _ _ => Iff.rfl
 #align semilattice_sup.dual_dual SemilatticeSup.dual_dual
 
@@ -583,7 +583,7 @@ theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
 #align semilattice_inf.ext SemilatticeInf.ext
 
 theorem SemilatticeInf.dual_dual (α : Type*) [H : SemilatticeInf α] :
-  OrderDual.semilatticeInf αᵒᵈ = H :=
+    OrderDual.semilatticeInf αᵒᵈ = H :=
   SemilatticeInf.ext $ fun _ _ => Iff.rfl
 #align semilattice_inf.dual_dual SemilatticeInf.dual_dual
 
@@ -798,7 +798,7 @@ theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y �
 #align le_of_inf_le_sup_le le_of_inf_le_sup_le
 
 theorem eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁ : b ⊓ a = c ⊓ a)
-  (h₂ : b ⊔ a = c ⊔ a) :
+    (h₂ : b ⊔ a = c ⊔ a) :
     b = c :=
   le_antisymm (le_of_inf_le_sup_le (le_of_eq h₁) (le_of_eq h₂))
     (le_of_inf_le_sup_le (le_of_eq h₁.symm) (le_of_eq h₂.symm))
@@ -1179,7 +1179,6 @@ theorem map_sup [SemilatticeSup β] (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y
     first
     | assumption
     | simp only [*, sup_of_le_left, sup_of_le_right]
-
 #align monotone_on.map_sup MonotoneOn.map_sup
 
 theorem map_inf [SemilatticeInf β] (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
