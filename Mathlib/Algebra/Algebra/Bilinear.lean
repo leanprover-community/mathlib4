@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.LinearAlgebra.TensorProduct
@@ -153,7 +154,21 @@ end NonUnital
 
 section Semiring
 
-variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+variable {R A} in
+
+/-- A variant of `AlgHom.ofLinearMap` that is suitable for use with `ext` lemmas. -/
+abbrev _root_.AlgHom.ofLinearMap' (f : A →ₗ[R] B) (map_one : f 1 = 1)
+    (mul_comp : (LinearMap.mul R A).compr₂ f = (LinearMap.mul R B).compl₂ f ∘ₗ f) :
+    A →ₐ[R] B :=
+  AlgHom.ofLinearMap f map_one fun x y => FunLike.congr_fun (FunLike.congr_fun mul_comp x) y
+
+/-- A variant of `AlgEquiv.ofLinearEquiv` that is suitable for use with `ext` lemmas. -/
+abbrev _root_.AlgEquiv.ofLinearEquiv' (f : A ≃ₗ[R] B) (map_one : f 1 = 1)
+    (mul_comp : (LinearMap.mul R A).compr₂ f = (LinearMap.mul R B).compl₂ (f : A →ₗ[R] B) ∘ₗ f) :
+    A →ₐ[R] B :=
+  AlgEquiv.ofLinearEquiv f map_one fun x y => FunLike.congr_fun (FunLike.congr_fun mul_comp x) y
 
 /-- The multiplication in an algebra is an algebra homomorphism into the endomorphisms on
 the algebra.
