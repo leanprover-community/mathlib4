@@ -71,7 +71,12 @@ variable (R)
 
 /-- The tensor product of two modules `M` and `N` over the same commutative semiring `R`.
 The localized notations are `M ⊗ N` and `M ⊗[R] N`, accessed by `open scoped TensorProduct`. -/
-structure TensorProduct where ofQuotient ::
+structure TensorProduct where
+  /-- The map from `(addConGen (TensorProduct.Eqv R M N)).Quotient` to `TensorProduct`.
+  It should not be used often, only to set up the basic defintions on `TensorProduct` -/
+  ofQuotient ::
+  /-- The map from `TensorProduct` to `(addConGen (TensorProduct.Eqv R M N)).Quotient`.
+  It should not be used often, only to set up the basic defintions on `TensorProduct` -/
   toQuotient : (addConGen (TensorProduct.Eqv R M N)).Quotient
 #align tensor_product TensorProduct
 
