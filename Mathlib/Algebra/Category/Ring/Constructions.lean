@@ -80,6 +80,7 @@ theorem pushoutCocone_pt :
 set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone_X CommRingCat.pushoutCocone_pt
 
+set_option maxHeartbeats 400000 in
 /-- Verify that the `pushout_cocone` is indeed the colimit. -/
 def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
   Limits.PushoutCocone.isColimitAux' _ fun s => by
