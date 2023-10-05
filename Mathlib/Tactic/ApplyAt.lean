@@ -5,6 +5,12 @@ Authors: Adam Topaz
 -/
 import Lean
 
+/-!
+# Apply at
+
+A tactic for applying functions at hypotheses.
+-/
+
 open Lean Meta Elab Tactic Term
 
 /--
