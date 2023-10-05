@@ -147,10 +147,8 @@ namespace Swap
 /-- `swap` gives an equivalence between `C ⊕ D` and `D ⊕ C`. -/
 def equivalence : Sum C D ≌ Sum D C :=
   Equivalence.mk (swap C D) (swap D C)
-    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
-      (by aesop_cat (add norm simp swap)))
-    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
-      (by aesop_cat (add norm simp swap)))
+    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
+    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
 #align category_theory.sum.swap.equivalence CategoryTheory.Sum.Swap.equivalence
 
 instance isEquivalence : IsEquivalence (swap C D) :=
