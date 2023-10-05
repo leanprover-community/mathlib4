@@ -53,7 +53,7 @@ theorem pow_card_le_prod [Monoid M] [Preorder M]
 #align list.card_nsmul_le_sum List.card_nsmul_le_sum
 
 @[to_additive]
-theorem prod_eq_one_iff [CanonicallyOrderedMonoid M] (l : List M) :
+theorem prod_eq_one_iff [CanonicallyOrderedCommMonoid M] (l : List M) :
     l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
     rw [List.eq_replicate.2 ⟨_, h⟩, prod_replicate, one_pow]; exact (length l); rfl⟩

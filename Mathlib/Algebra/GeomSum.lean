@@ -85,7 +85,7 @@ theorem op_geom_sum (x : α) (n : ℕ) : op (∑ i in range n, x ^ i) = ∑ i in
 --porting note: linter suggested to change left hand side
 @[simp]
 theorem op_geom_sum₂ (x y : α) (n : ℕ) : ∑ i in range n, op y ^ (n - 1 - i) * op x ^ i =
-    ∑ i in range n, op y ^ i * op x ^ (n - 1 - i):= by
+    ∑ i in range n, op y ^ i * op x ^ (n - 1 - i) := by
   rw [← sum_range_reflect]
   refine' sum_congr rfl fun j j_in => _
   rw [mem_range, Nat.lt_iff_add_one_le] at j_in

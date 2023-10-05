@@ -243,7 +243,7 @@ open SetLike.GradedMonoid DirectSum
 
 variable [Semiring A] [DecidableEq ι]
 
-variable [CanonicallyOrderedAddMonoid ι]
+variable [CanonicallyOrderedAddCommMonoid ι]
 
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
