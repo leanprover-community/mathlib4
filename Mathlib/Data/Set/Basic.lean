@@ -1172,7 +1172,7 @@ theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
 theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ => Or.imp_right (@h _)
 #align set.insert_subset_insert Set.insert_subset_insert
 
-theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
+@[simp] theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
   refine' ⟨fun h x hx => _, insert_subset_insert⟩
   rcases h (subset_insert _ _ hx) with (rfl | hxt)
   exacts [(ha hx).elim, hxt]
