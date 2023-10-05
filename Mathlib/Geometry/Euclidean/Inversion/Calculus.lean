@@ -100,9 +100,26 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
     (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
   · have : ((‖x‖ ^ 2) ^ 2)⁻¹ * (‖x‖ ^ 2) = (‖x‖ ^ 2)⁻¹
     · rw [← div_eq_inv_mul, sq (‖x‖ ^ 2), div_self_mul_self']
-    simp [reflection_orthogonalComplement_singleton_eq_neg, real_inner_self_eq_norm_sq,
-      two_mul, this, div_eq_mul_inv, mul_add, add_smul, mul_pow]
-  · simp [Submodule.mem_orthogonal_singleton_iff_inner_right.1 hy,
+    dsimp
+    simp only [add_sub_cancel', ContinuousLinearMap.comp_id, neg_smul, smul_neg,
+      dist_self_add_left, div_eq_mul_inv, mul_pow, inv_pow, eqOn_singleton,
+      ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul',
+      ContinuousLinearMap.coe_id', Pi.smul_apply, id_eq, ContinuousLinearMap.smulRight_apply,
+      ContinuousLinearMap.neg_apply, innerSL_apply_coe, nsmul_eq_mul, Nat.cast_ofNat,
+      two_mul, smul_add, Pi.add_apply, neg_add_rev, add_smul,
+      reflection_orthogonalComplement_singleton_eq_neg]
+    rw [Pi.smul_apply, Pi.smul_apply, real_inner_self_eq_norm_sq]
+    simp only [smul_eq_mul, this, add_neg_cancel_comm_assoc]
+  · simp only [id_eq, Function.comp_apply, add_sub_cancel', ContinuousLinearMap.comp_id,
+      neg_smul, smul_neg, ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul',
+      ContinuousLinearMap.coe_id', Pi.smul_apply, ContinuousLinearMap.smulRight_apply,
+      ContinuousLinearMap.neg_apply, innerSL_apply_coe, nsmul_eq_mul, Nat.cast_ofNat,
+      dist_self_add_left, div_eq_mul_inv, mul_pow, inv_pow, ContinuousLinearEquiv.coe_coe,
+      LinearIsometryEquiv.coe_coe, reflection_mem_subspace_eq_self hy, add_right_eq_self,
+      neg_eq_zero, smul_eq_zero]
+    rw [Pi.smul_apply, Pi.smul_apply]
+    simp [Submodule.mem_orthogonal_singleton_iff_inner_right.1 hy,
       reflection_mem_subspace_eq_self hy, div_eq_mul_inv, mul_pow]
+
 
 end EuclideanGeometry

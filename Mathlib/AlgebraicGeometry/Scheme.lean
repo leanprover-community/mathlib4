@@ -360,14 +360,17 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
     (Scheme.Spec.obj <| op R).basicOpen ((SpecΓIdentity.app R).inv f) =
       PrimeSpectrum.basicOpen f := by
   ext x
+  have : IsUnit (StructureSheaf.toStalk R x f) ↔ f ∉ PrimeSpectrum.asIdeal x := by
+    erw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x),
+      StructureSheaf.stalkToFiberRingHom_toStalk]
+    exact
+      (IsLocalization.AtPrime.isUnit_to_map_iff (Localization.AtPrime (PrimeSpectrum.asIdeal x))
+          (PrimeSpectrum.asIdeal x) f :
+        _)
+  dsimp at this
+  convert this
   erw [Scheme.mem_basicOpen_top]
-  suffices IsUnit (StructureSheaf.toStalk R x f) ↔ f ∉ PrimeSpectrum.asIdeal x by exact this
-  erw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x),
-    StructureSheaf.stalkToFiberRingHom_toStalk]
-  exact
-    (IsLocalization.AtPrime.isUnit_to_map_iff (Localization.AtPrime (PrimeSpectrum.asIdeal x))
-        (PrimeSpectrum.asIdeal x) f :
-      _)
+  rfl
 #align algebraic_geometry.basic_open_eq_of_affine AlgebraicGeometry.basicOpen_eq_of_affine
 
 @[simp]

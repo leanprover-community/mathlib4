@@ -54,7 +54,8 @@ variable [CommRing R]
 variable {p q : MvPolynomial σ R}
 
 instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
-  AddMonoidAlgebra.commRing
+  { AddMonoidAlgebra.commRing with
+    toSemiring := MvPolynomial.commSemiring.toSemiring }
 
 variable (σ a a')
 

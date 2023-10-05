@@ -106,7 +106,6 @@ theorem WeakDual.CharacterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
     simp only [map_sub, sub_eq_zero, AlgHomClass.commutes, Algebra.id.map_eq_id,
       RingHom.id_apply] at hf
     refine ⟨f, ?_⟩
-    rw [AlgHomClass.commutes, Algebra.id.map_eq_id, RingHom.id_apply] at hf
     exact hf.symm
   · rintro ⟨f, rfl⟩
     exact AlgHom.apply_mem_spectrum f a

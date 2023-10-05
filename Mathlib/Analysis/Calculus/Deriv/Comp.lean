@@ -125,6 +125,8 @@ theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[�
     (hL : Tendsto f L'' L') : HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') x L'' := by
   convert (hh₂.restrictScalars 𝕜).comp x hf hL
   ext x
+  dsimp
+  rw [Pi.smul_apply]
   simp [mul_comm]
 #align has_deriv_at_filter.comp_has_fderiv_at_filter HasDerivAtFilter.comp_hasFDerivAtFilter
 
@@ -134,6 +136,8 @@ theorem HasStrictDerivAt.comp_hasStrictFDerivAt {f : E → 𝕜'} {f' : E →L[�
   rw [HasStrictDerivAt] at hh
   convert (hh.restrictScalars 𝕜).comp x hf
   ext x
+  dsimp
+  rw [Pi.smul_apply]
   simp [mul_comm]
 #align has_strict_deriv_at.comp_has_strict_fderiv_at HasStrictDerivAt.comp_hasStrictFDerivAt
 

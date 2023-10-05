@@ -221,6 +221,7 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
     rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc,
       ← X.presheaf.map_comp]
     convert this using 1
+    rotate_left
     dsimp only [Functor.op, unop_op]
     rw [Opens.openEmbedding_obj_top]
     congr 1
@@ -578,7 +579,7 @@ theorem affineLocally_of_isOpenImmersion (hP : RingHom.PropertyIsLocal @P) {X Y 
   · intro; exact H
 #align ring_hom.property_is_local.affine_locally_of_is_open_immersion RingHom.PropertyIsLocal.affineLocally_of_isOpenImmersion
 
-set_option maxHeartbeats 3000000 in
+set_option maxHeartbeats 4000000 in
 theorem affineLocally_of_comp
     (H : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
       ∀ (f : R →+* S) (g : S →+* T), P (g.comp f) → P g)

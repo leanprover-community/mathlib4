@@ -113,20 +113,22 @@ instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
 instance inhabited [CommSemiring R] : Inhabited (MvPolynomial σ R) :=
   ⟨0⟩
 
-instance distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
-    DistribMulAction R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.distribMulAction
-
 instance smulZeroClass [CommSemiring S₁] [SMulZeroClass R S₁] :
     SMulZeroClass R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.smulZeroClass
+
+instance distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
+    DistribMulAction R (MvPolynomial σ S₁) :=
+  { AddMonoidAlgebra.distribMulAction with
+    toSMul := MvPolynomial.smulZeroClass.toSMul }
 
 instance faithfulSMul [CommSemiring S₁] [SMulZeroClass R S₁] [FaithfulSMul R S₁] :
     FaithfulSMul R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.faithfulSMul
 
 instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.module
+  { AddMonoidAlgebra.module with
+    toDistribMulAction := MvPolynomial.distribuMulAction }
 
 instance isScalarTower [CommSemiring S₂] [SMul R S₁] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
     [IsScalarTower R S₁ S₂] : IsScalarTower R S₁ (MvPolynomial σ S₂) :=
@@ -142,7 +144,8 @@ instance isCentralScalar [CommSemiring S₁] [SMulZeroClass R S₁] [SMulZeroCla
 
 instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
     Algebra R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.algebra
+  { AddMonoidAlgebra.algebra with
+    toSMul := MvPolynomial.smulZeroClass.toSMul }
 
 instance isScalarTower_right [CommSemiring S₁] [DistribSMul R S₁] [IsScalarTower R S₁ S₁] :
     IsScalarTower R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=

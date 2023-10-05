@@ -578,7 +578,9 @@ theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S 
       "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
 instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : MulOneClass S :=
-    Subtype.coe_injective.mulOneClass (↑) rfl (fun _ _ => rfl)
+    { Subtype.coe_injective.mulOneClass (↑) rfl (fun _ _ => rfl) with
+      toMul := MulMemClass.mul S
+      toOne := OneMemClass.one S }
 #align submonoid_class.to_mul_one_class SubmonoidClass.toMulOneClass
 #align add_submonoid_class.to_add_zero_class AddSubmonoidClass.toAddZeroClass
 
@@ -587,7 +589,8 @@ instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} 
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure."]
 instance (priority := 75) toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : Monoid S :=
-  Subtype.coe_injective.monoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  { Subtype.coe_injective.monoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl) with
+    toSemigroup := MulMemClass.toSemigroup S }
 #align submonoid_class.to_monoid SubmonoidClass.toMonoid
 #align add_submonoid_class.to_add_monoid AddSubmonoidClass.toAddMonoid
 
@@ -596,7 +599,8 @@ instance (priority := 75) toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A
 @[to_additive "An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`."]
 instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : CommMonoid S :=
-  Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
+  { Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl with
+    toMonoid := toMonoid _ }
 #align submonoid_class.to_comm_monoid SubmonoidClass.toCommMonoid
 #align add_submonoid_class.to_add_comm_monoid AddSubmonoidClass.toAddCommMonoid
 
@@ -709,7 +713,8 @@ theorem one_def : (1 : S) = ⟨1, S.one_mem⟩ :=
 @[to_additive
       "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
 instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) : MulOneClass S :=
-  Subtype.coe_injective.mulOneClass (↑) rfl fun _ _ => rfl
+  { Subtype.coe_injective.mulOneClass (↑) rfl fun _ _ => rfl with
+    toMul := mul _ }
 #align submonoid.to_mul_one_class Submonoid.toMulOneClass
 #align add_submonoid.to_add_zero_class AddSubmonoid.toAddZeroClass
 
@@ -727,14 +732,17 @@ protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx :
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure."]
 instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S :=
-  Subtype.coe_injective.monoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
+  { Subtype.coe_injective.monoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl with
+    toSemigroup := MulMemClass.toSemigroup _
+    toOne := one _ }
 #align submonoid.to_monoid Submonoid.toMonoid
 #align add_submonoid.to_add_monoid AddSubmonoid.toAddMonoid
 
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive "An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`."]
 instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S :=
-  Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
+  { Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl with
+    toMonoid := toMonoid _ }
 #align submonoid.to_comm_monoid Submonoid.toCommMonoid
 #align add_submonoid.to_add_comm_monoid AddSubmonoid.toAddCommMonoid
 
