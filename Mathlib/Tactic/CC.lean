@@ -69,33 +69,9 @@ initialize
   registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
 
 
-def isNum : Expr → Bool
-  | .app (.app (.app (.const ``OfNat.ofNat _) _) (.lit (.natVal _))) _ => true
-  | .lit (.natVal _) => true
-  | _ => false
-
-def toNat : Expr → Option Nat
-  | .app (.app (.app (.const ``OfNat.ofNat _) _) (.lit (.natVal n))) _ => some n
-  | .lit (.natVal n) => some n
-  | _ => none
-
-def toInt : Expr → Option Int
-  | .app (.app (.app (.const ``OfNat.ofNat _) _) (.lit (.natVal n))) _ => some n
-  | .lit (.natVal n) => some n
-  | .app (.app (.app (.const ``Neg.neg _) _) _) r =>
-    match toNat r with
-    | some n => some (-n)
-    | none => none
-  | _ => none
-
-def isSignedNum (e : Expr) : Bool :=
-  if isNum e then true
-  else if let .app (.app (.app (.const ``Neg.neg _) _) _) r := e then isNum r
-  else false
-
 /-- Return true if `e` represents a value (numeral, character, or string). -/
 def isValue (e : Expr) : Bool :=
-  isSignedNum e || e.isCharLit || e.isStringLit
+  e.int?.isSome || e.isCharLit || e.isStringLit
 
 private def getAppAppsAux : Expr → Array Expr → Nat → Array Expr
   | .app f a, as, i => getAppAppsAux f (as.set! i (.app f a)) (i-1)
@@ -119,7 +95,7 @@ def pureIsDefEq (e₁ e₂ : Expr) : MetaM Bool :=
 def isInterpretedValue (e : Expr) : MetaM Bool := do
   if e.isCharLit || e.isStringLit then
     return true
-  else if isSignedNum e then
+  else if e.int?.isSome then
     let type ← inferType e
     pureIsDefEq type (.const ``Nat []) <||> pureIsDefEq type (.const ``Int [])
   else
@@ -155,7 +131,7 @@ def liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
 
 /-- Ordering on `Expr`. -/
 local instance : Ord Expr where
-  compare a b := if Expr.lt a b then .lt else if Expr.eqv b a then .eq else .gt
+  compare a b := bif Expr.lt a b then .lt else bif Expr.eqv b a then .eq else .gt
 
 def reduceProjStruct? (e : Expr) : MetaM (Option Expr) :=
   e.withApp fun cfn args => do
@@ -206,7 +182,7 @@ def toForallNot (ex hNotEx : Expr) : MetaM (Expr × Expr) := do
   let .app (.app (.const ``Exists [lvl]) A) p := ex | failure
   toForallNotAux lvl A p hNotEx
 
-def isReflRelation (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
+def isReflRel (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
   if let some (_, lhs, rhs) := e.eq? then
     return (``Eq, lhs, rhs)
   if let some (lhs, rhs) := e.iff? then
@@ -220,7 +196,7 @@ def isReflRelation (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
       | none => return none
   return none
 
-def isSymmRelation (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
+def isSymmRel (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
   if let some (_, lhs, rhs) := e.eq? then
     return (``Eq, lhs, rhs)
   if let some (lhs, rhs) := e.iff? then
@@ -505,7 +481,7 @@ def ACOccurrences.erase (aco : ACOccurrences) (e : ACApp) : ACOccurrences :=
       size := aco.size - 1 }
   else aco
 
-instance : ForIn m ACOccurrences ACApp where
+instance {m} : ForIn m ACOccurrences ACApp where
   forIn o := forIn o.occs
 
 structure ACEntry where
@@ -1136,8 +1112,8 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
   mkEqRec motive r lhsFnEqRhsFn
 
 partial def mkSymmCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM (Option Expr) := do
-  let some (R₁, lhs₁, rhs₁) ← isSymmRelation e₁ | return none
-  let some (R₂, lhs₂, rhs₂) ← isSymmRelation e₂ | return none
+  let some (R₁, lhs₁, rhs₁) ← isSymmRel e₁ | return none
+  let some (R₂, lhs₂, rhs₂) ← isSymmRel e₂ | return none
   if R₁ != R₂ then return none
   if !(← isEqv lhs₁ lhs₂) then
     guard (← isEqv lhs₁ rhs₂)
@@ -1193,9 +1169,9 @@ partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Ex
   | .eqTrue =>
     let (flip, some (R, a, b)) ←
       if lhs == .const ``True [] then
-        ((true, ·)) <$> isReflRelation rhs
+        ((true, ·)) <$> isReflRel rhs
       else
-        ((false, ·)) <$> isReflRelation lhs
+        ((false, ·)) <$> isReflRel lhs
       | failure
     let aRb ←
       if R == ``Eq then
@@ -1339,12 +1315,12 @@ def compareSymm (k₁ k₂ : Expr × Name) : CCM Bool := do
   if k₁.2 == ``Eq || k₁.2 == ``Iff then
     compareSymmAux e₁.appFn!.appArg! e₁.appArg! e₂.appFn!.appArg! e₂.appArg!
   else
-    let some (_, lhs₁, rhs₁) ← isSymmRelation e₁ | failure
-    let some (_, lhs₂, rhs₂) ← isSymmRelation e₂ | failure
+    let some (_, lhs₁, rhs₁) ← isSymmRel e₁ | failure
+    let some (_, lhs₂, rhs₂) ← isSymmRel e₂ | failure
     compareSymmAux lhs₁ rhs₁ lhs₂ rhs₂
 
 def checkEqTrue (e : Expr) : CCM Unit := do
-  let some (_, lhs, rhs) ← isReflRelation e | return
+  let some (_, lhs, rhs) ← isReflRel e | return
   if ← isEqv e (.const ``True []) then return -- it is already equivalent to `True`
   let lhsR ← getRoot lhs
   let rhsR ← getRoot rhs
@@ -1375,7 +1351,7 @@ def addCongruenceTable (e : Expr) : CCM Unit := do
       { ccs with congruences := ccs.congruences.insert k [e] }
 
 def addSymmCongruenceTable (e : Expr) : CCM Unit := do
-  let some (rel, lhs, rhs) ← isSymmRelation e | failure
+  let some (rel, lhs, rhs) ← isSymmRel e | failure
   let k ← mkSymmCongruencesKey lhs rhs
   let newP := (e, rel)
   if let some ps := (← getState).symmCongruences.find? k then
@@ -1858,7 +1834,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
   else
     mkEntry e false gen
     if (← getState).config.values && isValue e then return -- we treat values as atomic symbols
-  if let some (_, lhs, rhs) ← isSymmRelation e then
+  if let some (_, lhs, rhs) ← isSymmRel e then
     internalizeCore lhs (some e) gen
     internalizeCore rhs (some e) gen
     addOccurrence e lhs true
@@ -2216,7 +2192,7 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr) : CCM (Array Expr
       parentsToPropagate := parentsToPropagate.push p
     if p.isApp then
       if pocc.symmTable then
-        let some (rel, lhs, rhs) ← isSymmRelation p | failure
+        let some (rel, lhs, rhs) ← isSymmRel p | failure
         let k' ← mkSymmCongruencesKey lhs rhs
         if let some lst := (← getState).symmCongruences.find? k' then
           let k := (p, rel)
@@ -2481,8 +2457,8 @@ where
     if r₁.interpreted && r₂.interpreted then
       if n₁.root.isConstOf ``True || n₂.root.isConstOf ``True then
         modifyState fun ccs => { ccs with inconsistent := true }
-      else if isNum n₁.root && isNum n₂.root then
-        valueInconsistency := toInt n₁.root != toInt n₂.root
+      else if n₁.root.int?.isSome && n₂.root.int?.isSome then
+        valueInconsistency := n₁.root.int? != n₂.root.int?
       else
         valueInconsistency := true
 
