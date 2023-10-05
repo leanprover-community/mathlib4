@@ -108,7 +108,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   conv_rhs => rw [← Nat.cast_one, ← Nat.cast_add, ← C_eq_nat_cast, C_mul_monomial, mul_comm]
   rw [mul_assoc, mul_assoc, ← Nat.cast_mul, ← Nat.cast_mul]
   congr 3
-  rw [(choose_mul_succ_eq k m).symm, mul_comm]
+  rw [(choose_mul_succ_eq k m).symm]
 #align polynomial.derivative_bernoulli_add_one Polynomial.derivative_bernoulli_add_one
 
 theorem derivative_bernoulli (k : ℕ) :
