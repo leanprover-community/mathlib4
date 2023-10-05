@@ -14,6 +14,8 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Semicontinuous
+import Mathlib.Topology.Instances.Discrete
+import Mathlib.Topology.CountableSeparatingOn
 
 #align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
@@ -319,6 +321,11 @@ theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
 instance (priority := 500) {s : Set α} [HasCountableSeparatingOn α IsOpen s] :
     HasCountableSeparatingOn α MeasurableSet s :=
   .mono (fun _ ↦ IsOpen.measurableSet) Subset.rfl
+
+instance separatesPoints_of_t0Space [T0Space α] : SeparatesPoints α := by
+  refine' ⟨fun x y hxy ↦ Inseparable.eq _⟩
+  rw [inseparable_iff_forall_open]
+  exact fun s hs ↦ hxy _ hs.measurableSet
 
 @[measurability]
 theorem measurableSet_interior : MeasurableSet (interior s) :=
@@ -995,6 +1002,25 @@ theorem Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
     (h.toMeasurableEquiv.symm : γ₂ → γ) = h.symm :=
   rfl
 #align homeomorph.to_measurable_equiv_symm_coe Homeomorph.toMeasurableEquiv_symm_coe
+
+theorem Homeomorph.comap_borel {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] (h : α ≃ₜ β) :
+    MeasurableSpace.comap h (borel β) = borel α := by
+  borelize α β
+  exact h.toMeasurableEquiv.measurableEmbedding.comap_eq
+
+/-- If `α` is a type with `TopologicalSpace` and `MeasurableSpace` instances, and some function
+`α → β` is both a homeomorphism and measure equivalence with some `BorelSpace` `β`,
+then `α` is also a `BorelSpace`.-/
+theorem Homeomorph.borelSpace_of_measurableEquiv {α β : Type*}
+    [TopologicalSpace α] [mα : MeasurableSpace α]
+    [TopologicalSpace β] [mβ : MeasurableSpace β] [BorelSpace β]
+    (h : α ≃ₜ β) (e : α ≃ᵐ β) (heq : h.toFun = e.toFun) : BorelSpace α :=
+  ⟨calc
+    mα = MeasurableSpace.comap e mβ := e.measurableEmbedding.comap_eq.symm
+    _ = MeasurableSpace.comap e.toFun mβ := rfl
+    _ = MeasurableSpace.comap h.toFun (borel β) := by rw[← heq, ← BorelSpace.measurable_eq]
+    _ = MeasurableSpace.comap h (borel β) := rfl
+    _ = borel α := by rw[h.comap_borel]⟩
 
 end Homeomorph
 
@@ -1840,6 +1866,27 @@ theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpa
   tendsto_measure_cthickening_of_isClosed
     ⟨1, zero_lt_one, hs.isBounded.cthickening.measure_lt_top.ne⟩ hs.isClosed
 #align tendsto_measure_cthickening_of_is_compact tendsto_measure_cthickening_of_isCompact
+
+/-- If a measurable space is countably generated and separates points, it arises as
+the borel sets of some second countable t4 topology (i.e. a separable metrizable one). -/
+theorem borelSpace_secondCountableTopology_t4_of_countablyGenerated (α : Type*)
+    [m : MeasurableSpace α] [CountablyGenerated α] [SeparatesPoints α] :
+    ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ BorelSpace α := by
+  rcases measurableEquiv_nat_bool_of_countablyGenerated α with ⟨s, ⟨f⟩⟩
+  letI := induced f inferInstance
+  let F := f.toEquiv.toHomeomorphOfInducing $ inducing_induced _
+  exact ⟨inferInstance, F.secondCountableTopology, F.symm.t4Space,
+    F.borelSpace_of_measurableEquiv f rfl⟩
+
+/-- If a measurable space on `α` is countably generated and separates points, there is some
+second countable t4 topology on `α` (i.e. a separable metrizable one) for which every
+open set is measurable. -/
+theorem opensMeasurableSpace_secondCountableTopology_t4_of_hasCountableSeparatingOn (α : Type*)
+  [m : MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
+  ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ OpensMeasurableSpace α := by
+rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩
+rcases borelSpace_secondCountableTopology_t4_of_countablyGenerated (m := m') with ⟨τ, _, _, τm'⟩
+refine' ⟨τ, ‹_›, ‹_›, @OpensMeasurableSpace.mk _ _ m (τm'.measurable_eq.symm.le.trans m'le)⟩
 
 namespace Real
 
