@@ -28,6 +28,15 @@ def FermatLastTheoremFor (n : ℕ) : Prop := FermatLastTheoremWith ℕ n
 when `n ≥ 3`. -/
 def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremFor n
 
+lemma fermatLastTheorem_zero : FermatLastTheoremFor 0 :=
+  fun _ _ _ _ _ _ ↦ by norm_num
+
+lemma not_fermatLastTheorem_one : ¬ FermatLastTheoremFor 1 :=
+  fun h ↦ h 1 1 2 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+
+lemma not_fermatLastTheorem_two : ¬ FermatLastTheoremFor 2 :=
+  fun h ↦ h 3 4 5 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+
 variable {α : Type*} [Semiring α] [NoZeroDivisors α] {m n : ℕ}
 
 lemma FermatLastTheoremWith.mono (hmn : m ∣ n) (hm : FermatLastTheoremWith α m) :
@@ -36,6 +45,10 @@ lemma FermatLastTheoremWith.mono (hmn : m ∣ n) (hm : FermatLastTheoremWith α 
   obtain ⟨k, rfl⟩ := hmn
   simp_rw [pow_mul']
   refine hm _ _ _ ?_ ?_ ?_ <;> exact pow_ne_zero _ ‹_›
+
+lemma FermatLastTheoremFor.mono (hmn : m ∣ n) (hm : FermatLastTheoremFor m) :
+    FermatLastTheoremFor n := by
+  exact FermatLastTheoremWith.mono hmn hm
 
 lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     TFAE [FermatLastTheoremWith ℕ n, FermatLastTheoremWith ℤ n, FermatLastTheoremWith ℚ n] := by
