@@ -132,7 +132,7 @@ lemma injective_lift_iff {I : Ideal R} {f : R →+* S} (H : ∀ (a : R), a ∈ I
   rw [injective_iff_ker_eq_bot, ker_quotient_lift, map_eq_bot_iff_le_ker, mk_ker]
   constructor
   · exact fun h ↦ le_antisymm h H
-  · rintro rfl ; rfl
+  · rintro rfl; rfl
 
 lemma ker_Pi_Quotient_mk {ι : Type*} (I : ι → Ideal R) :
     ker (Pi.ringHom fun i : ι ↦ Quotient.mk (I i)) = ⨅ i, I i := by
@@ -173,11 +173,11 @@ def quotientInfToPiQuotient (I : ι → Ideal R) : (R ⧸ ⨅ i, I i) →+* ∀ 
     (by simp [← RingHom.mem_ker, ker_Pi_Quotient_mk])
 
 lemma quotientInfToPiQuotient_mk (I : ι → Ideal R) (x : R) :
-  quotientInfToPiQuotient I (Quotient.mk _ x) = fun i : ι ↦ Quotient.mk (I i) x :=
+    quotientInfToPiQuotient I (Quotient.mk _ x) = fun i : ι ↦ Quotient.mk (I i) x :=
 rfl
 
 lemma quotientInfToPiQuotient_mk' (I : ι → Ideal R) (x : R) (i : ι) :
-  quotientInfToPiQuotient I (Quotient.mk _ x) i = Quotient.mk (I i) x :=
+    quotientInfToPiQuotient I (Quotient.mk _ x) i = Quotient.mk (I i) x :=
 rfl
 
 lemma quotientInfToPiQuotient_inj (I : ι → Ideal R) : Injective (quotientInfToPiQuotient I) := by
