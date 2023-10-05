@@ -689,7 +689,7 @@ theorem integral_Ico_eq_integral_Ioo : ∫ t in Ico a b, f t ∂μ = ∫ t in Io
 #align measure_theory.integral_Ico_eq_integral_Ioo MeasureTheory.integral_Ico_eq_integral_Ioo
 
 theorem integral_Icc_eq_integral_Ioo : ∫ t in Icc a b, f t ∂μ = ∫ t in Ico a b, f t ∂μ := by
-  rw [integral_Icc_eq_integral_Ico, integral_Ico_eq_integral_Ioo]
+  rw [integral_Icc_eq_integral_Ico]
 #align measure_theory.integral_Icc_eq_integral_Ioo MeasureTheory.integral_Icc_eq_integral_Ioo
 
 theorem integral_Iic_eq_integral_Iio : ∫ t in Iic a, f t ∂μ = ∫ t in Iio a, f t ∂μ :=
