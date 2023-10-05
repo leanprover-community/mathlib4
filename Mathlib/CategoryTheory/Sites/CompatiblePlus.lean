@@ -24,11 +24,11 @@ namespace CategoryTheory.GrothendieckTopology
 
 open CategoryTheory Limits Opposite
 
-universe w₁ w₂ v u
+universe w₁ w₂ v v' v'' u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-variable {D : Type w₁} [Category.{max v u} D]
-variable {E : Type w₂} [Category.{max v u} E]
+variable {D : Type w₁} [Category.{v'} D]
+variable {E : Type w₂} [Category.{v''} E]
 variable (F : D ⥤ E)
 
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]

@@ -24,26 +24,26 @@ open CategoryTheory.Limits
 
 open Opposite
 
-universe w₁ w₂ v u
+universe w₁ w₂ v v' v'' u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-variable {D : Type w₁} [Category.{max v u} D]
+variable {D : Type w₁} [Category.{v'} D]
 
-variable {E : Type w₂} [Category.{max v u} E]
+variable {E : Type w₂} [Category.{v''} E]
 
 variable (F : D ⥤ E)
 
 -- porting note: Removed this and made whatever necessary noncomputable
 -- noncomputable section
 
-variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
+variable [∀ (α β : Type max u v) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
 
-variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) E]
+variable [∀ (α β : Type max u v) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) E]
 
-variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
+variable [∀ X : C, HasColimitsOfShape.{max u v} (J.Cover X)ᵒᵖ D] [UnivLE.{max u v, v'}]
 
-variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
+variable [∀ X : C, HasColimitsOfShape.{max u v} (J.Cover X)ᵒᵖ E] [UnivLE.{max u v, v''}]
 
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
 
@@ -51,6 +51,7 @@ variable [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.ind
 
 variable (P : Cᵒᵖ ⥤ D)
 
+#check GrothendieckTopology.plusCompIso
 /-- The isomorphism between the sheafification of `P` composed with `F` and
 the sheafification of `P ⋙ F`.
 
@@ -143,13 +144,13 @@ theorem toSheafify_comp_sheafifyCompIso_inv :
 section
 
 -- We will sheafify `D`-valued presheaves in this section.
-variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
+variable [ConcreteCategory.{v'} D] [PreservesLimitsOfSize.{max u v} (forget D)]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
 
 @[simp]
 theorem sheafifyCompIso_inv_eq_sheafifyLift :
     (J.sheafifyCompIso F P).inv =
-      J.sheafifyLift (whiskerRight (J.toSheafify P) F) ((J.sheafify_isSheaf _).comp _) := by
+      J.sheafifyLift (whiskerRight (J.toSheafify P) F) ((J.sheafify_isSheaf P).comp _) := by
   apply J.sheafifyLift_unique
   rw [Iso.comp_inv_eq]
   simp
