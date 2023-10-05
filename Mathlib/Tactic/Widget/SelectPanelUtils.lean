@@ -77,7 +77,7 @@ argument but that extraction would happen in every example, hence it is factored
 We also make sure `mkCmdStr` is executed in the right context.
  -/
 def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
-  (mkCmdStr : (pos : Array GoalsLocation) → (goalType : Expr) → Params →
+    (mkCmdStr : (pos : Array GoalsLocation) → (goalType : Expr) → Params →
    MetaM (String × String × Option (String.Pos × String.Pos)))
   (helpMsg : String) (title : String) (onlyGoal := true) (onlyOne := false) :
   (params : Params) → RequestM (RequestTask Html) :=
