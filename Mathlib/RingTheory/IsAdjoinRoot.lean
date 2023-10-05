@@ -552,7 +552,7 @@ theorem coeff_root_pow (h : IsAdjoinRootMonic S f) {n} (hn : n < natDegree f) :
   split_ifs with hi
   · calc
       h.basis.repr (h.root ^ n) ⟨i, _⟩ = h.basis.repr (h.basis ⟨n, hn⟩) ⟨i, hi⟩ := by
-        rw [h.basis_apply, Fin.val_mk]
+        rw [h.basis_apply]
       _ = Pi.single (f := fun _ => R) ((⟨n, hn⟩ : Fin _) : ℕ) (1 : (fun _ => R) n)
         ↑(⟨i, _⟩ : Fin _) := by
         rw [h.basis.repr_self, ← Finsupp.single_eq_pi_single,
