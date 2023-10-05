@@ -393,4 +393,8 @@ theorem bot_eq_one' : (⊥ : α) = 1 :=
 #align bot_eq_one' bot_eq_one'
 #align bot_eq_zero' bot_eq_zero'
 
+@[to_additive]
+instance CanonicallyLinearOrderedCommMonoid.linearOrderedCommMonoid : LinearOrderedCommMonoid α :=
+  { ‹CanonicallyLinearOrderedCommMonoid α› with }
+
 end CanonicallyLinearOrderedCommMonoid
