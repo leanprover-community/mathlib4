@@ -591,6 +591,8 @@ theorem continuousOn_prod_of_discrete_right [DiscreteTopology β] {f : α × β 
     ContinuousOn f s ↔ ∀ b, ContinuousOn (f ⟨·, b⟩) {a | (a, b) ∈ s} := by
   simp_rw [ContinuousOn, Prod.forall, continuousWithinAt_prod_of_discrete_right]; apply forall_swap
 
+/-- If a function `f a b` is such that `y ↦ f a b` is continuous for all `a`, and `a` lives in a
+discrete space, then `f` is continuous, and vice versa. -/
 theorem continuous_prod_of_discrete_left [DiscreteTopology α] {f : α × β → γ} :
     Continuous f ↔ ∀ a, Continuous (f ⟨a, ·⟩) := by
   simp_rw [continuous_iff_continuousOn_univ]; exact continuousOn_prod_of_discrete_left
