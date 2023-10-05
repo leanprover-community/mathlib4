@@ -55,7 +55,7 @@ theorem log_of_pos (hx : 0 < x) : log x = expOrderIso.symm ⟨x, hx⟩ := by
 #align real.log_of_pos Real.log_of_pos
 
 theorem exp_log_eq_abs (hx : x ≠ 0) : exp (log x) = |x| := by
-  rw [log_of_ne_zero hx, ← coe_expOrderIso_apply, OrderIso.apply_symm_apply, Subtype.coe_mk]
+  rw [log_of_ne_zero hx, ← coe_expOrderIso_apply, OrderIso.apply_symm_apply]
 #align real.exp_log_eq_abs Real.exp_log_eq_abs
 
 theorem exp_log (hx : 0 < x) : exp (log x) = x := by

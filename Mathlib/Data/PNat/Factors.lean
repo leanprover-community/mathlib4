@@ -227,7 +227,7 @@ theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = Pow.pow u.pro
   induction' d with n ih
   · rfl
   · have : ∀ n' : ℕ, Pow.pow (prod u) n' = Monoid.npow n' (prod u) := fun _ ↦ rfl
-    rw [succ_nsmul, prod_add, ih, this, this, Monoid.npow_succ, mul_comm]
+    rw [succ_nsmul, prod_add, ih, this, this, Monoid.npow_succ]
 #align prime_multiset.prod_smul PrimeMultiset.prod_smul
 
 end PrimeMultiset

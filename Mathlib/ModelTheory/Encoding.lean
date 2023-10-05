@@ -89,7 +89,7 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
         rw [h, get?_append, get?_map]
         · simp only [Option.map_eq_some', Function.comp_apply, get?_eq_some]
           refine' ⟨i, ⟨lt_of_lt_of_le i.2 (ge_of_eq (length_finRange _)), _⟩, rfl⟩
-          rw [get_finRange, Fin.eta]
+          rw [get_finRange]
         · refine' lt_of_lt_of_le i.2 _
           simp
       refine' (dif_pos fun i => Option.isSome_iff_exists.2 ⟨ts i, _⟩).trans _

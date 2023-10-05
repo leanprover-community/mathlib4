@@ -1047,7 +1047,7 @@ theorem toSpanNonzeroSingleton_one :
       (⟨x, Submodule.mem_span_singleton_self x⟩ : R ∙ x) := by
   apply SetLike.coe_eq_coe.mp
   have : ↑(toSpanNonzeroSingleton R M x h 1) = toSpanSingleton R M x 1 := rfl
-  rw [this, toSpanSingleton_one, Submodule.coe_mk]
+  rw [this, toSpanSingleton_one]
 #align linear_equiv.to_span_nonzero_singleton_one LinearEquiv.toSpanNonzeroSingleton_one
 
 /-- Given a nonzero element `x` of a torsion-free module `M` over a ring `R`, the natural

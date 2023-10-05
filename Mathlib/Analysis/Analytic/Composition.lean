@@ -115,7 +115,7 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
   intro j hjn hj1
   obtain rfl : j = 0 := by linarith
   refine' congr_arg v _
-  rw [Fin.ext_iff, Fin.coe_castLE, Composition.ones_embedding, Fin.val_mk]
+  rw [Fin.ext_iff, Fin.coe_castLE, Composition.ones_embedding]
 #align formal_multilinear_series.apply_composition_ones FormalMultilinearSeries.applyComposition_ones
 
 theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n)
@@ -408,7 +408,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) : p.comp (id 𝕜 E) = p 
     intros
     rw [applyComposition_ones]
     refine' congr_arg v _
-    rw [Fin.ext_iff, Fin.coe_castLE, Fin.val_mk]
+    rw [Fin.ext_iff, Fin.coe_castLE]
   show
     ∀ b : Composition n,
       b ∈ Finset.univ → b ≠ Composition.ones n → compAlongComposition p (id 𝕜 E) b = 0

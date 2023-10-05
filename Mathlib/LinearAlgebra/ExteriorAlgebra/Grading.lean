@@ -94,7 +94,7 @@ instance gradedAlgebra :
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
         AlgHom.id_apply, GradedAlgebra.liftι]
-      rw [lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.coeAlgHom_of, Subtype.coe_mk])
+      rw [lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.coeAlgHom_of])
     (by apply GradedAlgebra.liftι_eq R M)
 #align exterior_algebra.graded_algebra ExteriorAlgebra.gradedAlgebra
 

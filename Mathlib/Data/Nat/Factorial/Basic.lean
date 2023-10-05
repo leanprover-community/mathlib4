@@ -253,10 +253,10 @@ theorem ascFactorial_succ {n k : ℕ} : n.ascFactorial k.succ = (n + k + 1) * n.
 -- Porting note: Explicit arguments are required to show that the recursion terminates
 theorem succ_ascFactorial (n : ℕ) :
     ∀ k, (n + 1) * n.succ.ascFactorial k = (n + k + 1) * n.ascFactorial k
-  | 0 => by rw [add_zero, ascFactorial_zero, ascFactorial_zero]
+  | 0 => by rw [ascFactorial_zero, ascFactorial_zero]
   | k + 1 => by
     rw [ascFactorial, mul_left_comm, succ_ascFactorial n k, ascFactorial,
-      succ_add, ← add_assoc, succ_eq_add_one]
+      succ_add, ← add_assoc]
 #align nat.succ_asc_factorial Nat.succ_ascFactorial
 
 /-- `n.ascFactorial k = (n + k)! / n!` but without ℕ-division. See `Nat.ascFactorial_eq_div` for

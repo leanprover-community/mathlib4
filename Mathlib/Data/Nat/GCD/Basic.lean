@@ -106,7 +106,7 @@ theorem gcd_self_sub_left {m n : ℕ} (h : m ≤ n) : gcd (n - m) n = gcd m n :=
   rw [gcd_comm m n, ← this, gcd_add_self_left (n - m) m]
   have : gcd (n - m) n = gcd (n - m) m := by
     nth_rw 2 [← Nat.add_sub_cancel' h]
-    rw [gcd_add_self_right, gcd_comm]
+    rw [gcd_add_self_right]
   convert this
 
 @[simp]

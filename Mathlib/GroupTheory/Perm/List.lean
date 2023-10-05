@@ -374,7 +374,7 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
         IH (k.lt_succ_self.trans hk), ← h, formPerm_apply_nthLe _ hd]
       congr 1
       have h1 : 1 = 1 % (x' :: y' :: l').length := by simp
-      rw [hl, Nat.mod_eq_of_lt hk', h1, ← Nat.add_mod, Nat.succ_add, Nat.succ_eq_add_one]
+      rw [hl, Nat.mod_eq_of_lt hk', h1, ← Nat.add_mod, Nat.succ_add]
 #align list.form_perm_ext_iff List.formPerm_ext_iff
 
 set_option linter.deprecated false in

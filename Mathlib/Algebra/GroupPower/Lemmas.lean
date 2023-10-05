@@ -235,7 +235,7 @@ theorem mul_zpow_self (b : G) (m : ℤ) : b ^ m * b = b ^ (m + 1) := by
     congr
     · skip
     rw [← zpow_one b]
-  rw [← zpow_add, add_comm]
+  rw [← zpow_add]
 #align mul_zpow_self mul_zpow_self
 #align add_self_zsmul add_self_zsmul
 

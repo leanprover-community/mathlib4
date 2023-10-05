@@ -310,8 +310,7 @@ theorem lxor'_trichotomy {a b c : ℕ} (h : a ≠ lxor' b c) :
       rfl
     ) h fun j hj => by
       -- Porting note: this was originally `simp [hi' _ hj]`
-      rw [Nat.testBit_lxor', hi' _ hj, Bool.xor_false_right, eq_self_iff_true]
-      trivial
+      rw [Nat.testBit_lxor', hi' _ hj, Bool.xor_false_right]
 #align nat.lxor_trichotomy Nat.lxor'_trichotomy
 
 theorem lt_lxor'_cases {a b c : ℕ} (h : a < lxor' b c) : lxor' a c < b ∨ lxor' a b < c :=

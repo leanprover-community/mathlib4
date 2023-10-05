@@ -730,7 +730,7 @@ instance : LinearOrderedAddCommMonoidWithTop ERealᵒᵈ where
   top_add' := by
     rw [OrderDual.forall]
     intro x
-    rw [← OrderDual.toDual_bot, ← toDual_add, bot_add, OrderDual.toDual_bot]
+    rw [← OrderDual.toDual_bot, ← toDual_add, bot_add]
 
 /-! ### Negation -/
 

@@ -1470,7 +1470,6 @@ theorem direction_affineSpan_insert {s : AffineSubspace k P} {p1 p2 : P} (hp1 : 
 theorem mem_affineSpan_insert_iff {s : AffineSubspace k P} {p1 : P} (hp1 : p1 ∈ s) (p2 p : P) :
     p ∈ affineSpan k (insert p2 (s : Set P)) ↔
       ∃ (r : k) (p0 : P) (_hp0 : p0 ∈ s), p = r • (p2 -ᵥ p1 : V) +ᵥ p0 := by
-  rw [← mem_coe] at hp1
   rw [← vsub_right_mem_direction_iff_mem (mem_affineSpan k (Set.mem_insert_of_mem _ hp1)),
     direction_affineSpan_insert hp1, Submodule.mem_sup]
   constructor
@@ -1484,7 +1483,7 @@ theorem mem_affineSpan_insert_iff {s : AffineSubspace k P} {p1 : P} (hp1 : p1 �
   · rintro ⟨r, p3, hp3, rfl⟩
     use r • (p2 -ᵥ p1), Submodule.mem_span_singleton.2 ⟨r, rfl⟩, p3 -ᵥ p1,
       vsub_mem_direction hp3 hp1
-    rw [vadd_vsub_assoc, add_comm]
+    rw [vadd_vsub_assoc]
 #align affine_subspace.mem_affine_span_insert_iff AffineSubspace.mem_affineSpan_insert_iff
 
 end AffineSubspace
