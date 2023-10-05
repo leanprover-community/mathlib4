@@ -168,10 +168,10 @@ def Cofix.corec'₁ {α : TypeVec n} {β : Type u} (g : ∀ {X}, (β → X) → 
 
 /-- More flexible corecursor for `Cofix F`. Allows the return of a fully formed
 value instead of making a recursive call -/
-def Cofix.corec' {α : TypeVec n} {β : Type u} (g : β → F (α.append1 (Sum (Cofix F α) β))) (x : β) :
+def Cofix.corec' {α : TypeVec n} {β : Type u} (g : β → F (α.append1 (Cofix F α ⊕ β))) (x : β) :
     Cofix F α :=
-  let f : (α ::: Cofix F α) ⟹ (α ::: Sum (Cofix F α) β) := id ::: Sum.inl
-  Cofix.corec (Sum.elim (MvFunctor.map f ∘ Cofix.dest) g) (Sum.inr x : Sum (Cofix F α) β)
+  let f : (α ::: Cofix F α) ⟹ (α ::: (Cofix F α ⊕ β)) := id ::: Sum.inl
+  Cofix.corec (Sum.elim (MvFunctor.map f ∘ Cofix.dest) g) (Sum.inr x : Cofix F α ⊕ β)
 #align mvqpf.cofix.corec' MvQPF.Cofix.corec'
 
 /-- Corecursor for `Cofix F`. The shape allows recursive calls to
@@ -527,7 +527,7 @@ theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F 
 #align mvqpf.corec_roll MvQPF.corec_roll
 
 theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}
-    (g : β → F (α.append1 (Sum (Cofix F α) β))) (x : β) :
+    (g : β → F (α.append1 (Cofix F α ⊕ β))) (x : β) :
     Cofix.dest (Cofix.corec' g x) =
       appendFun id (Sum.elim _root_.id (Cofix.corec' g)) <$$> g x := by
   rw [Cofix.corec', Cofix.dest_corec]; dsimp
@@ -554,7 +554,7 @@ theorem Cofix.dest_corec₁ {α : TypeVec n} {β : Type u}
 #align mvqpf.cofix.dest_corec₁ MvQPF.Cofix.dest_corec₁
 
 instance mvqpfCofix : MvQPF (Cofix F) where
-  P         := q.P.mp
+  P         := q.P.MP
   abs       := Quot.mk Mcongr
   repr      := Cofix.repr
   abs_repr  := Cofix.abs_repr

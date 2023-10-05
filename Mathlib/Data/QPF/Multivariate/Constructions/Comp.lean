@@ -40,15 +40,15 @@ variable {F G} {α β : TypeVec.{u} m} (f : α ⟹ β)
 instance [I : Inhabited (F fun i : Fin2 n ↦ G i α)] : Inhabited (Comp F G α) := I
 
 /-- Constructor for functor composition -/
-protected def mk (x : F fun i ↦ G i α) : (Comp F G) α := x
+protected def mk (x : F fun i ↦ G i α) : Comp F G α := x
 #align mvqpf.comp.mk MvQPF.Comp.mk
 
 /-- Destructor for functor composition -/
-protected def get (x : (Comp F G) α) : F fun i ↦ G i α := x
+protected def get (x : Comp F G α) : F fun i ↦ G i α := x
 #align mvqpf.comp.get MvQPF.Comp.get
 
 @[simp]
-protected theorem mk_get (x : (Comp F G) α) : Comp.mk (Comp.get x) = x := rfl
+protected theorem mk_get (x : Comp F G α) : Comp.mk (Comp.get x) = x := rfl
 #align mvqpf.comp.mk_get MvQPF.Comp.mk_get
 
 @[simp]
@@ -75,14 +75,14 @@ theorem get_map (x : Comp F G α) :
 #align mvqpf.comp.get_map MvQPF.Comp.get_map
 
 instance : MvQPF (Comp F G) where
-  P := MvPFunctor.comp (P F) fun i ↦ P <| G i
-  abs := Comp.mk ∘ (map fun i ↦ abs) ∘ abs ∘ MvPFunctor.comp.get
-  repr {α} := MvPFunctor.comp.mk ∘ repr ∘
+  P := MvPFunctor.Comp (P F) fun i ↦ P <| G i
+  abs := Comp.mk ∘ (map fun i ↦ abs) ∘ abs ∘ MvPFunctor.Comp.get
+  repr {α} := MvPFunctor.Comp.mk ∘ repr ∘
               (map fun i ↦ (repr : G i α → (fun i : Fin2 n ↦ Obj (P (G i)) α) i)) ∘ Comp.get
-  abs_repr := by intros; simp only [(· ∘ ·), comp.get_mk, abs_repr, map_map,
+  abs_repr := by intros; simp only [(· ∘ ·), MvPFunctor.Comp.get_mk, abs_repr, map_map,
                                     TypeVec.comp, MvFunctor.id_map', Comp.mk_get]
   abs_map := by intros; simp only [(· ∘ ·)]; rw [← abs_map]
-                simp only [comp.get_map, map_map, TypeVec.comp, abs_map, map_mk]
+                simp only [MvPFunctor.Comp.get_map, map_map, TypeVec.comp, abs_map, map_mk]
 
 end Comp
 
