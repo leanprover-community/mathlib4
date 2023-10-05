@@ -1873,8 +1873,9 @@ theorem iUnion_prod {ι ι' α β} (s : ι → Set α) (t : ι' → Set β) :
 #align set.Union_prod Set.iUnion_prod
 
 /-- Analogue of `iSup.prod` for sets. -/
-lemma Set.iUnion_prod' {X Y Z : Type*} (f : X × Y → Set Z) :
-    ⋃ (x : X) (y : Y), (f ⟨x, y⟩) = ⋃ t : X × Y, (f t) := by
+lemma Set.iUnion_prod' (f : α × β → Set γ) :
+    ⋃ t : α × β, (f t) = ⋃ (x : α) (y : β), (f ⟨x, y⟩) := by
+  symm
   simp only [iUnion, iSup_eq_iUnion, iSup_prod]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
