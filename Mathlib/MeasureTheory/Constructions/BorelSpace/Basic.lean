@@ -1003,8 +1003,8 @@ theorem Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
   rfl
 #align homeomorph.to_measurable_equiv_symm_coe Homeomorph.toMeasurableEquiv_symm_coe
 
-theorem Homeomorph.comap_borel {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] (h : α ≃ₜ β) :
-    MeasurableSpace.comap h (borel β) = borel α := by
+theorem Homeomorph.comap_borel {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+    (h : α ≃ₜ β) : MeasurableSpace.comap h (borel β) = borel α := by
   borelize α β
   exact h.toMeasurableEquiv.measurableEmbedding.comap_eq
 
