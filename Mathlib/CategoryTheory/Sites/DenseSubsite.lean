@@ -42,7 +42,7 @@ we would need, and some sheafification would be needed for here and there.
 -/
 
 
-universe w v u
+universe w v v' u
 
 namespace CategoryTheory
 
@@ -509,7 +509,7 @@ variable {G : C ⥤ D} [Full G] [Faithful G]
 
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
 
-variable {A : Type w} [Category.{max u v} A] [Limits.HasLimits A]
+variable {A : Type w} [Category.{v'} A] [Limits.HasLimitsOfSize.{max u v, max u v} A]
 
 variable (Hd : CoverDense K G) (Hp : CoverPreserving J K G) (Hl : CoverLifting J K G)
 
@@ -519,7 +519,7 @@ it induces an equivalence of category of sheaves valued in a complete category.
 @[simps! functor inverse]
 noncomputable def sheafEquivOfCoverPreservingCoverLifting : Sheaf J A ≌ Sheaf K A := by
   symm
-  let α := Sites.pullbackCopullbackAdjunction.{w, v, u} A Hp Hl Hd.compatiblePreserving
+  let α := Sites.pullbackCopullbackAdjunction A Hp Hl Hd.compatiblePreserving
   have : ∀ X : Sheaf J A, IsIso (α.counit.app X) := by
     intro ℱ
     -- porting note: I don't know how to do `apply_with foo { instances := ff }`
@@ -544,8 +544,8 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.cover_dense.Sheaf_equiv_of_cover_preserving_cover_lifting CategoryTheory.CoverDense.sheafEquivOfCoverPreservingCoverLifting
 
 variable
-  [ConcreteCategory.{max v u} A]
-  [Limits.PreservesLimits (forget A)]
+  [ConcreteCategory.{v'} A]
+  [Limits.PreservesLimitsOfSize.{max u v, max u v} (forget A)] [UnivLE.{max u v, v'}]
   [ReflectsIsomorphisms (forget A)]
   [∀ (X : C), Limits.PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget A)]
   [∀ (X : C), Limits.HasColimitsOfShape (J.Cover X)ᵒᵖ A]

@@ -44,7 +44,7 @@ but they are actually equivalent via `CategoryTheory.GrothendieckTopology.supers
 -/
 
 
-universe w v v₁ v₂ v₃ u u₁ u₂ u₃
+universe w v v' v₁ v₂ v₃ u u₁ u₂ u₃
 
 noncomputable section
 
@@ -115,7 +115,7 @@ A `X ⟶ 𝒢(U)`. The remaining work is to verify that this is indeed the amalg
 
 variable {C D : Type u} [Category.{v} C] [Category.{v} D]
 
-variable {A : Type w} [Category.{max u v} A] [HasLimits A]
+variable {A : Type w} [Category.{v'} A] [HasLimitsOfSize.{max u v} A]
 
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
 
@@ -352,9 +352,9 @@ noncomputable def Sites.pullbackCopullbackAdjunction {G : C ⥤ D} (Hp : CoverPr
 namespace Sites
 
 variable
-  [ConcreteCategory.{max v u} A]
-  [PreservesLimits (forget A)]
-  [ReflectsIsomorphisms (forget A)]
+  [ConcreteCategory.{v'} A]
+  [PreservesLimitsOfSize.{max u v, max u v} (forget A)]
+  [ReflectsIsomorphisms (forget A)] [UnivLE.{max u v, v'}]
   [∀ (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget A)]
   [∀ (X : C), HasColimitsOfShape (J.Cover X)ᵒᵖ A]
   [∀ (X : D), PreservesColimitsOfShape (K.Cover X)ᵒᵖ (forget A)]
@@ -380,7 +380,7 @@ lemma toSheafify_pullbackSheafificationCompatibility
     {G : C ⥤ D} (Hp : CoverPreserving J K G)
     (Hl : CoverLifting J K G) (Hc : CompatiblePreserving K G) (F) :
     J.toSheafify (G.op ⋙ F) ≫
-    ((pullbackSheafificationCompatibility.{w, v, u} A Hp Hl Hc).hom.app F).val =
+    ((pullbackSheafificationCompatibility A Hp Hl Hc).hom.app F).val =
     whiskerLeft _ (K.toSheafify _) := by
   dsimp [pullbackSheafificationCompatibility, Adjunction.leftAdjointUniq]
   apply Quiver.Hom.op_inj
@@ -406,7 +406,7 @@ lemma toSheafify_pullbackSheafificationCompatibility
 lemma pullbackSheafificationCompatibility_hom_app_val
     {G : C ⥤ D} (Hp : CoverPreserving J K G)
     (Hl : CoverLifting J K G) (Hc : CompatiblePreserving K G) (F : Dᵒᵖ ⥤ A) :
-    ((pullbackSheafificationCompatibility.{w, v, u} A Hp Hl Hc).hom.app F).val =
+    ((pullbackSheafificationCompatibility A Hp Hl Hc).hom.app F).val =
     J.sheafifyLift (whiskerLeft G.op <| K.toSheafify F)
       ((presheafToSheaf K A ⋙ pullback A Hc Hp).obj F).cond := by
   apply J.sheafifyLift_unique

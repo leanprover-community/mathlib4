@@ -135,7 +135,7 @@ theorem IsLocallySurjective.comp {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ �
 
 section
 
-variable (F : Cᵒᵖ ⥤ Type max u v)
+variable (F : Cᵒᵖ ⥤ Type v') [UnivLE.{max u v, v'}]
 
 /-- The image of `F` in `J.sheafify F` is isomorphic to the sheafification. -/
 noncomputable def sheafificationIsoImagePresheaf :
@@ -156,7 +156,7 @@ noncomputable def sheafificationIsoImagePresheaf :
 #align category_theory.sheafification_iso_image_presheaf CategoryTheory.sheafificationIsoImagePresheaf
 
 -- We need to sheafify
-variable {B : Type w} [Category.{max u v} B] [ConcreteCategory.{max u v} B]
+variable {B : Type w} [Category.{v'} B] [ConcreteCategory.{v'} B]
   [∀ X : C, Limits.HasColimitsOfShape (J.Cover X)ᵒᵖ B]
   [∀ (P : Cᵒᵖ ⥤ B) (X : C) (S : J.Cover X), Limits.HasMultiequalizer (S.index P)]
   [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ B),

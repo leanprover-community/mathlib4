@@ -51,7 +51,6 @@ variable [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.ind
 
 variable (P : Cᵒᵖ ⥤ D)
 
-#check GrothendieckTopology.plusCompIso
 /-- The isomorphism between the sheafification of `P` composed with `F` and
 the sheafification of `P ⋙ F`.
 

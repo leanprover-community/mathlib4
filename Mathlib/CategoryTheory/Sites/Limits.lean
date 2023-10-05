@@ -28,6 +28,7 @@ This allows us to show that `Sheaf J D` has colimits (of a certain shape) as soo
 
 -/
 
+universe v₁ u₁ w v v' v'' u z
 
 namespace CategoryTheory
 
@@ -39,13 +40,11 @@ open Opposite
 
 section Limits
 
-universe w v u z
-
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
-variable {D : Type w} [Category.{max v u} D]
+variable {D : Type w} [Category.{v'} D]
 
-variable {K : Type z} [SmallCategory K]
+variable {K : Type z} [Category.{v''} K]
 
 noncomputable section
 
@@ -168,10 +167,10 @@ instance : HasLimitsOfShape K (Sheaf J D) :=
 
 end
 
-instance createsLimits [HasLimits D] : CreatesLimits (sheafToPresheaf J D) :=
+instance createsLimitsOfSize [HasLimitsOfSize.{v₁, u₁} D] : CreatesLimitsOfSize.{v₁, u₁} (sheafToPresheaf J D) :=
   ⟨createsLimitsOfShape⟩
 
-instance [HasLimits D] : HasLimits (Sheaf J D) :=
+instance hasLimitsOfSize [HasLimitsOfSize.{v₁, u₁} D] : HasLimitsOfSize.{v₁, u₁} (Sheaf J D) :=
   hasLimits_of_hasLimits_createsLimits (sheafToPresheaf J D)
 
 end
@@ -180,20 +179,18 @@ end Limits
 
 section Colimits
 
-universe w v u
-
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
-variable {D : Type w} [Category.{max v u} D]
+variable {D : Type w} [Category.{v'} D]
 
-variable {K : Type max v u} [SmallCategory K]
+variable {K : Type z} [Category.{v''} K]
 
 -- Now we need a handful of instances to obtain sheafification...
-variable [ConcreteCategory.{max v u} D]
+variable [ConcreteCategory.{v'} D]
 
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
-variable [PreservesLimits (forget D)]
+variable [PreservesLimitsOfSize.{max u v} (forget D)] [UnivLE.{max u v, v'}]
 
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
@@ -245,7 +242,7 @@ instance [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
   ⟨fun _ => HasColimit.mk
     ⟨sheafifyCocone (colimit.cocone _), isColimitSheafifyCocone _ (colimit.isColimit _)⟩⟩
 
-instance [HasColimits D] : HasColimits (Sheaf J D) :=
+instance [HasColimitsOfSize.{v₁, u₁} D] : HasColimitsOfSize (Sheaf J D) :=
   ⟨inferInstance⟩
 
 end Colimits
