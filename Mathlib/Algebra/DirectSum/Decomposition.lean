@@ -116,7 +116,7 @@ theorem decompose_of_mem {x : M} {i : ι} (hx : x ∈ ℳ i) :
 #align direct_sum.decompose_of_mem DirectSum.decompose_of_mem
 
 theorem decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) : (decompose ℳ x i : M) = x := by
-  rw [decompose_of_mem _ hx, DirectSum.of_eq_same, Subtype.coe_mk]
+  rw [decompose_of_mem _ hx, DirectSum.of_eq_same]
 #align direct_sum.decompose_of_mem_same DirectSum.decompose_of_mem_same
 
 theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j) :
