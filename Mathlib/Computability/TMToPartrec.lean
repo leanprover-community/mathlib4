@@ -50,7 +50,7 @@ output, with enough expressivity to write any partial recursive function. The pr
 * `comp f g` calls `f` on the output of `g`:
   * `comp f g v = f (g v)`
 * `case f g` cases on the head of the input, calling `f` or `g` depending on whether it is zero or
-  a successor (similar to `nat.cases_on`).
+  a successor (similar to `Nat.casesOn`).
   * `case f g [] = f []`
   * `case f g (0 :: v) = f v`
   * `case f g (n+1 :: v) = g (n :: v)`

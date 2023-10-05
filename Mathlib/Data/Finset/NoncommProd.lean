@@ -353,7 +353,7 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
 #align finset.noncomm_sum_eq_sum Finset.noncommSum_eq_sum
 
 /-- The non-commutative version of `Finset.prod_union` -/
-@[to_additive "The non-commutative version of `finset.sum_union`"]
+@[to_additive "The non-commutative version of `Finset.sum_union`"]
 theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Disjoint s t)
     (f : α → β) (comm : { x | x ∈ s ∪ t }.Pairwise fun a b => Commute (f a) (f b)) :
     noncommProd (s ∪ t) f comm =

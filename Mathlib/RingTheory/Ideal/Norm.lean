@@ -393,6 +393,18 @@ theorem absNorm_span_insert (r : S) (s : Set S) :
         (by rw [absNorm_span_singleton])⟩
 #align ideal.abs_norm_span_insert Ideal.absNorm_span_insert
 
+theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := by
+  constructor
+  · intro hI
+    rw [← le_bot_iff]
+    intros x hx
+    rw [mem_bot, ← Algebra.norm_eq_zero_iff (R := ℤ), ← Int.natAbs_eq_zero,
+      ← Ideal.absNorm_span_singleton, ← zero_dvd_iff, ← hI]
+    apply Ideal.absNorm_dvd_absNorm_of_le
+    rwa [Ideal.span_singleton_le_iff_mem]
+  · rintro rfl
+    exact absNorm_bot
+
 theorem irreducible_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Ideal.absNorm I)) :
     Irreducible I :=
   irreducible_iff.mpr
@@ -424,6 +436,18 @@ theorem span_singleton_absNorm_le (I : Ideal S) : Ideal.span {(Ideal.absNorm I :
   simp only [Ideal.span_le, Set.singleton_subset_iff, SetLike.mem_coe, Ideal.absNorm_mem I]
 #align ideal.span_singleton_abs_norm_le Ideal.span_singleton_absNorm_le
 
+theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
+    Ideal.span (singleton (Ideal.absNorm I : ℤ)) = I.comap (algebraMap ℤ S) := by
+  have : Ideal.IsPrime (Ideal.span (singleton (Ideal.absNorm I : ℤ))) := by
+    rwa [Ideal.span_singleton_prime (Int.ofNat_ne_zero.mpr hI.ne_zero), ← Nat.prime_iff_prime_int]
+  apply (this.isMaximal _).eq_of_le
+  · exact ((isPrime_of_irreducible_absNorm
+      ((Nat.irreducible_iff_nat_prime _).mpr hI)).comap (algebraMap ℤ S)).ne_top
+  · rw [span_singleton_le_iff_mem, mem_comap, algebraMap_int_eq, map_natCast]
+    exact absNorm_mem I
+  · rw [Ne.def, span_singleton_eq_bot]
+    exact Int.ofNat_ne_zero.mpr hI.ne_zero
+
 theorem finite_setOf_absNorm_eq [CharZero S] {n : ℕ} (hn : 0 < n) :
     {I : Ideal S | Ideal.absNorm I = n}.Finite := by
   let f := fun I : Ideal S => Ideal.map (Ideal.Quotient.mk (@Ideal.span S _ {↑n})) I
@@ -440,6 +464,13 @@ theorem finite_setOf_absNorm_eq [CharZero S] {n : ℕ} (hn : 0 < n) :
       comap_map_mk (span_singleton_absNorm_le J), ← hJ.symm]
     congr
 #align ideal.finite_set_of_abs_norm_eq Ideal.finite_setOf_absNorm_eq
+
+theorem norm_dvd_iff {x : S} (hx : Prime (Algebra.norm ℤ x)) {y : ℤ} :
+    Algebra.norm ℤ x ∣ y ↔ x ∣ y := by
+  rw [← Ideal.mem_span_singleton (y := x), ← eq_intCast (algebraMap ℤ S), ← Ideal.mem_comap,
+    ← Ideal.span_singleton_absNorm, Ideal.mem_span_singleton, Ideal.absNorm_span_singleton,
+    Int.natAbs_dvd]
+  rwa [Ideal.absNorm_span_singleton, ← Int.prime_iff_natAbs_prime]
 
 end Ideal
 
