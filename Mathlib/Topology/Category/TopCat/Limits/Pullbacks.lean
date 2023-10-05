@@ -21,13 +21,13 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-universe v u w
+universe v u w v'
 
 noncomputable section
 
 namespace TopCat
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type v} [Category.{v'} J]
 
 section Pullback
 
@@ -396,24 +396,30 @@ theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) 
 end Pullback
 
 --TODO: Add analogous constructions for `pushout`.
-theorem coinduced_of_isColimit {F : J ⥤ TopCatMax.{v, u}} (c : Cocone F) (hc : IsColimit c) :
+
+theorem isOpen_iff_of_isColimit {F : J ⥤ TopCat.{u}} [UnivLE.{v, u}] (c : Cocone F) (hc : IsColimit c)
+    (U : Set c.pt) :
+    IsOpen U ↔ ∀ j, IsOpen (c.ι.app j ⁻¹' U) := by
+  simp only [← (homeoOfIso (hc.coconePointUniqueUpToIso
+    (colimitCoconeIsColimit F))).symm.isOpen_preimage, isOpen_iSup_iff, ← isOpen_coinduced]
+  apply forall_congr'
+  intro i
+  rw [← hc.comp_coconePointUniqueUpToIso_inv (colimitCoconeIsColimit F)]
+
+theorem coinduced_of_isColimit {F : J ⥤ TopCat.{u}} [UnivLE.{v, u}] (c : Cocone F) (hc : IsColimit c) :
     c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
-  let homeo := homeoOfIso (hc.coconePointUniqueUpToIso (colimitCoconeIsColimit F))
-  ext
-  refine' homeo.symm.isOpen_preimage.symm.trans (Iff.trans _ isOpen_iSup_iff.symm)
-  exact isOpen_iSup_iff
+  ext X
+  simp only [isOpen_iff_of_isColimit _ hc, isOpen_iSup_iff, ← isOpen_coinduced]
 #align Top.coinduced_of_is_colimit TopCat.coinduced_of_isColimit
 
-theorem colimit_topology (F : J ⥤ TopCatMax.{v, u}) :
+theorem colimit_topology (F : J ⥤ TopCat.{u}) [UnivLE.{v, u}] :
     (colimit F).str = ⨆ j, (F.obj j).str.coinduced (colimit.ι F j) :=
   coinduced_of_isColimit _ (colimit.isColimit F)
 #align Top.colimit_topology TopCat.colimit_topology
 
-theorem colimit_isOpen_iff (F : J ⥤ TopCatMax.{v, u}) (U : Set ((colimit F : _) : Type max v u)) :
-    IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
-  dsimp [topologicalSpace_coe]
-  conv_lhs => rw [colimit_topology F]
-  exact isOpen_iSup_iff
+theorem colimit_isOpen_iff (F : J ⥤ TopCat.{u}) [UnivLE.{v, u}] (U : Set ((colimit F : _) : Type u)) :
+    IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) :=
+  isOpen_iff_of_isColimit _ (colimit.isColimit F) U
 #align Top.colimit_is_open_iff TopCat.colimit_isOpen_iff
 
 theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})

@@ -150,7 +150,7 @@ instance forgetPreservesLimits : PreservesLimits forget :=
 Generally you should just use `colimit.cocone F`, unless you need the actual definition
 (which is in terms of `Types.colimitCocone`).
 -/
-def colimitCocone (F : J ⥤ TopCat.{u}) [UnivLE.{v, u}]: Cocone F where
+def colimitCocone (F : J ⥤ TopCat.{u}) [UnivLE.{v, u}] : Cocone F where
   pt :=
     ⟨(Types.colimitCocone (F ⋙ forget)).pt,
       ⨆ j, (F.obj j).str.coinduced ((Types.colimitCocone (F ⋙ forget)).ι.app j)⟩
