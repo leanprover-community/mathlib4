@@ -28,13 +28,13 @@ def FermatLastTheoremFor (n : ℕ) : Prop := FermatLastTheoremWith ℕ n
 when `n ≥ 3`. -/
 def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremFor n
 
-lemma fermatLastTheorem_zero : FermatLastTheoremFor 0 :=
+lemma fermatLastTheoremFor_zero : FermatLastTheoremFor 0 :=
   fun _ _ _ _ _ _ ↦ by norm_num
 
-lemma not_fermatLastTheorem_one : ¬ FermatLastTheoremFor 1 :=
+lemma not_fermatLastTheoremFor_one : ¬ FermatLastTheoremFor 1 :=
   fun h ↦ h 1 1 2 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
 
-lemma not_fermatLastTheorem_two : ¬ FermatLastTheoremFor 2 :=
+lemma not_fermatLastTheoremFor_two : ¬ FermatLastTheoremFor 2 :=
   fun h ↦ h 3 4 5 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
 
 variable {α : Type*} [Semiring α] [NoZeroDivisors α] {m n : ℕ}
