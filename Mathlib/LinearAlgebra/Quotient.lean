@@ -199,7 +199,7 @@ instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
   Quotient.distribSMul' P
 #align submodule.quotient.distrib_smul Submodule.Quotient.distribSMul
 
--- Performance of `Function.Surjective.distribMulAction` is worse since it has to unify data to apply
+-- Performance of `Function.Surjective.distribMulAction` is worse since it has to unify data
 -- TODO: leanprover-community/mathlib4#7432
 instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : DistribMulAction S (M ⧸ P) :=
