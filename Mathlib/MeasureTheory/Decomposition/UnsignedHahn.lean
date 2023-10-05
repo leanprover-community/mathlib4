@@ -106,7 +106,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     · have := he₂ m
       simp_rw [Nat.Ico_succ_singleton, Finset.inf_singleton]
       linarith
-    · intro n(hmn : m ≤ n)ih
+    · intro n (hmn : m ≤ n) ih
       have : γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) ≤ γ + d (f m (n + 1)) := by
         calc
           γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) ≤

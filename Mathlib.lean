@@ -2510,6 +2510,7 @@ import Mathlib.MeasureTheory.Measure.Doubling
 import Mathlib.MeasureTheory.Measure.FiniteMeasure
 import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.MeasureTheory.Measure.Haar.Basic
+import Mathlib.MeasureTheory.Measure.Haar.Disintegration
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
@@ -3213,6 +3214,7 @@ import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.SudoSetOption
+import Mathlib.Tactic.SuppressCompilation
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Tauto
