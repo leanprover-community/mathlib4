@@ -410,10 +410,44 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] [AddC
 
 section SMul
 
-variable [Monoid S] [Monoid T] [DistribMulAction S R] [DistribMulAction T R] [DistribMulAction S N]
-variable [SMulCommClass S R N] [SMulCommClass T R R]
+variable [Monoid S] [Monoid T]
+--variable [DistribMulAction S R] [DistribMulAction T R]
+variable [DistribMulAction S N] [DistribMulAction T N]
+variable [SMulCommClass S R N] [SMulCommClass S Rᵐᵒᵖ N] [SMulCommClass T R N] [SMulCommClass T Rᵐᵒᵖ N]
 
-#check mul_smul_comm
+instance : SMul S (M →ₗ[Rᵐᵒᵖ] N) where
+  smul s L := ⟨⟨fun a => s • L a, fun _ _ => by simp⟩,fun r a => by
+    simp
+    rw [smul_comm]
+    ⟩
+
+lemma smul (s : S) (L : M →ₗ[Rᵐᵒᵖ] N) (a : M) : (s • L) a = s • (L a) := rfl
+
+instance : DistribMulAction S (M →ₗ[Rᵐᵒᵖ] N) where
+  one_smul L := by
+    ext
+    rw [smul, one_smul]
+  mul_smul s t L := by
+    ext a
+    rw [smul, smul, mul_smul]
+    rfl
+  smul_zero s := by
+    ext
+    simp [smul]
+  smul_add a L₁ L₂ := by
+    ext
+    rw [smul, LinearMap.add_apply, smul_add, LinearMap.add_apply, smul, smul]
+
+instance : SMulCommClass S R (M →ₗ[Rᵐᵒᵖ] N) where
+  smul_comm s r L := by
+    ext
+    rw [smul, LinearMap.smul_apply, LinearMap.smul_apply, smul, smul_comm]
+
+instance : SMul S (M →ₗ[R] M →ₗ[Rᵐᵒᵖ] N) where
+  smul s B := ⟨⟨fun a => s • B a, fun _ _ => by simp⟩,fun r a => by
+    simp
+    rw [smul_comm]
+    ⟩
 
 /-- `QuadraticForm R M` inherits the scalar action from any algebra over `R`.
 
@@ -421,78 +455,82 @@ When `R` is commutative, this provides an `R`-action via `Algebra.id`. -/
 instance : SMul S (QuadraticForm R M N) :=
   ⟨fun a Q =>
     { toFun := a • ⇑Q
-      toFun_smul := fun b x => by
-        rw [Pi.smul_apply, map_smul, Pi.smul_apply]
-        simp_rw [mul_smul_comm]
-      toFun_smulr := fun b x => by rw [Pi.smul_apply, map_smul, Pi.smul_apply, mul_smul_comm]
+      toFun_smul := fun b x => by rw [Pi.smul_apply, map_smul, Pi.smul_apply, smul_comm]
+      toFun_smulr := fun b x => by rw [Pi.smul_apply, map_smulr, Pi.smul_apply, smul_comm]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
-        ⟨a • B, by simp [h]⟩ }⟩
+        ⟨a • B, by
+          intros
+          simp [h]
+          abel
+          ⟩ }⟩
 
 @[simp]
-theorem coeFn_smul (a : S) (Q : QuadraticForm R M) : ⇑(a • Q) = a • ⇑Q :=
+theorem coeFn_smul (a : S) (Q : QuadraticForm R M N) : ⇑(a • Q) = a • ⇑Q :=
   rfl
 #align quadratic_form.coe_fn_smul QuadraticForm.coeFn_smul
 
 @[simp]
-theorem smul_apply (a : S) (Q : QuadraticForm R M) (x : M) : (a • Q) x = a • Q x :=
+theorem smul_apply (a : S) (Q : QuadraticForm R M N) (x : M) : (a • Q) x = a • Q x :=
   rfl
 #align quadratic_form.smul_apply QuadraticForm.smul_apply
 
-instance [SMulCommClass S T R] : SMulCommClass S T (QuadraticForm R M) where
+instance [SMulCommClass S T N] : SMulCommClass S T (QuadraticForm R M N) where
   smul_comm _s _t _q := ext <| fun _ => smul_comm _ _ _
 
-instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T (QuadraticForm R M) where
+instance [SMul S T] [IsScalarTower S T N] : IsScalarTower S T (QuadraticForm R M N) where
   smul_assoc _s _t _q := ext <| fun _ => smul_assoc _ _ _
 
 end SMul
 
-instance : Zero (QuadraticForm R M) :=
+instance : Zero (QuadraticForm R M N) :=
   ⟨{  toFun := fun _ => 0
-      toFun_smul := fun a _ => by simp only [mul_zero]
-      exists_companion' := ⟨0, fun _ _ => by simp only [add_zero, BilinForm.zero_apply]⟩ }⟩
+      toFun_smul := fun a _ => by simp only [smul_zero]
+      toFun_smulr := fun a _ => by simp only [smul_zero]
+      exists_companion' := ⟨0, fun _ _ => by simp only [add_zero, LinearMap.zero_apply]⟩ }⟩
 
 @[simp]
-theorem coeFn_zero : ⇑(0 : QuadraticForm R M) = 0 :=
+theorem coeFn_zero : ⇑(0 : QuadraticForm R M N) = 0 :=
   rfl
 #align quadratic_form.coe_fn_zero QuadraticForm.coeFn_zero
 
 @[simp]
-theorem zero_apply (x : M) : (0 : QuadraticForm R M) x = 0 :=
+theorem zero_apply (x : M) : (0 : QuadraticForm R M N) x = 0 :=
   rfl
 #align quadratic_form.zero_apply QuadraticForm.zero_apply
 
-instance : Inhabited (QuadraticForm R M) :=
+instance : Inhabited (QuadraticForm R M N) :=
   ⟨0⟩
 
-instance : Add (QuadraticForm R M) :=
+instance : Add (QuadraticForm R M N) :=
   ⟨fun Q Q' =>
     { toFun := Q + Q'
-      toFun_smul := fun a x => by simp only [Pi.add_apply, map_smul, mul_add]
+      toFun_smul := fun a x => by simp only [Pi.add_apply, smul_add, map_smul]
+      toFun_smulr := fun a x => by simp only [Pi.add_apply, map_smulr, smul_add]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
         let ⟨B', h'⟩ := Q'.exists_companion
         ⟨B + B', fun x y => by
-          simp_rw [Pi.add_apply, h, h', BilinForm.add_apply, add_add_add_comm]⟩ }⟩
+          simp_rw [Pi.add_apply, h, h', LinearMap.add_apply, add_add_add_comm]⟩ }⟩
 
 @[simp]
-theorem coeFn_add (Q Q' : QuadraticForm R M) : ⇑(Q + Q') = Q + Q' :=
+theorem coeFn_add (Q Q' : QuadraticForm R M N) : ⇑(Q + Q') = Q + Q' :=
   rfl
 #align quadratic_form.coe_fn_add QuadraticForm.coeFn_add
 
 @[simp]
-theorem add_apply (Q Q' : QuadraticForm R M) (x : M) : (Q + Q') x = Q x + Q' x :=
+theorem add_apply (Q Q' : QuadraticForm R M N) (x : M) : (Q + Q') x = Q x + Q' x :=
   rfl
 #align quadratic_form.add_apply QuadraticForm.add_apply
 
-instance : AddCommMonoid (QuadraticForm R M) :=
+instance : AddCommMonoid (QuadraticForm R M N) :=
   FunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
 
 /-- `@CoeFn (QuadraticForm R M)` as an `AddMonoidHom`.
 
 This API mirrors `AddMonoidHom.coeFn`. -/
 @[simps apply]
-def coeFnAddMonoidHom : QuadraticForm R M →+ M → R where
+def coeFnAddMonoidHom : QuadraticForm R M N →+ M → N where
   toFun := FunLike.coe
   map_zero' := coeFn_zero
   map_add' := coeFn_add
@@ -500,28 +538,28 @@ def coeFnAddMonoidHom : QuadraticForm R M →+ M → R where
 
 /-- Evaluation on a particular element of the module `M` is an additive map over quadratic forms. -/
 @[simps! apply]
-def evalAddMonoidHom (m : M) : QuadraticForm R M →+ R :=
+def evalAddMonoidHom (m : M) : QuadraticForm R M N →+ N :=
   (Pi.evalAddMonoidHom _ m).comp coeFnAddMonoidHom
 #align quadratic_form.eval_add_monoid_hom QuadraticForm.evalAddMonoidHom
 
 section Sum
 
 @[simp]
-theorem coeFn_sum {ι : Type*} (Q : ι → QuadraticForm R M) (s : Finset ι) :
+theorem coeFn_sum {ι : Type*} (Q : ι → QuadraticForm R M N) (s : Finset ι) :
     ⇑(∑ i in s, Q i) = ∑ i in s, ⇑(Q i) :=
-  (coeFnAddMonoidHom : QuadraticForm R M →+ M → R).map_sum Q s
+  (coeFnAddMonoidHom : QuadraticForm R M N →+ M → N).map_sum Q s
 #align quadratic_form.coe_fn_sum QuadraticForm.coeFn_sum
 
 @[simp]
-theorem sum_apply {ι : Type*} (Q : ι → QuadraticForm R M) (s : Finset ι) (x : M) :
+theorem sum_apply {ι : Type*} (Q : ι → QuadraticForm R M N) (s : Finset ι) (x : M) :
     (∑ i in s, Q i) x = ∑ i in s, Q i x :=
-  (evalAddMonoidHom x : _ →+ R).map_sum Q s
+  (evalAddMonoidHom x : _ →+ N).map_sum Q s
 #align quadratic_form.sum_apply QuadraticForm.sum_apply
 
 end Sum
 
-instance [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] :
-    DistribMulAction S (QuadraticForm R M) where
+instance [Monoid S] [DistribMulAction S N] [SMulCommClass S R N] [SMulCommClass S Rᵐᵒᵖ N] :
+    DistribMulAction S (QuadraticForm R M N) where
   mul_smul a b Q := ext fun x => by simp only [smul_apply, mul_smul]
   one_smul Q := ext fun x => by simp only [QuadraticForm.smul_apply, one_smul]
   smul_add a Q Q' := by
@@ -531,7 +569,7 @@ instance [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] :
     ext
     simp only [zero_apply, smul_apply, smul_zero]
 
-instance [Semiring S] [Module S R] [SMulCommClass S R R] : Module S (QuadraticForm R M) where
+instance [Semiring S] [Module S N] [SMulCommClass S R N] [SMulCommClass S Rᵐᵒᵖ N] : Module S (QuadraticForm R M N) where
   zero_smul Q := by
     ext
     simp only [zero_apply, smul_apply, zero_smul]
@@ -545,7 +583,7 @@ section RingOperators
 
 variable [Ring R] [AddCommGroup M] [Module R M]
 
-instance : Neg (QuadraticForm R M) :=
+instance : Neg (QuadraticForm R M N) :=
   ⟨fun Q =>
     { toFun := -Q
       toFun_smul := fun a x => by simp only [Pi.neg_apply, map_smul, mul_neg]
