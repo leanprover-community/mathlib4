@@ -671,7 +671,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.nth_of_bisim PFunctor.MIntl.nth_of_bisim
 
 theorem eq_of_bisim [Nonempty (MIntl F)] (bisim : IsBisimulation R) :
-   ∀ s₁ s₂, R s₁ s₂ → s₁ = s₂ := by
+    ∀ s₁ s₂, R s₁ s₂ → s₁ = s₂ := by
   inhabit MIntl F
   introv Hr; apply ext
   introv
