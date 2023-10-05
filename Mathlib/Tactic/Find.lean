@@ -237,7 +237,7 @@ def find (index : Index) (args : Arguments) (maxShown := 200) :
     -- Filter by name patterns
     let nameMatchers := args.namePats.map (String.Matcher.ofString ·.toLower)
     let hits2 := indexHits.filter fun n => nameMatchers.all fun m =>
-      m.find? n.toString |>.isSome
+      m.find? n.toString.toLower |>.isSome
 
     -- Obtain ConstantInfos
     let env ← getEnv

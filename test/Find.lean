@@ -31,49 +31,57 @@ def uniquenameforthistest : Bool := true
 theorem uniquenameforthistest_eq_true:
   uniquenameforthistest = true := rfl
 
+theorem uniquenameforthistest_eq_True: -- intentionally capitalized
+  uniquenameforthistest = true := rfl
+
 /--
-info: Found 1 definitions mentioning uniquenameforthistest.
+info: Found 2 definitions mentioning uniquenameforthistest.
+• uniquenameforthistest_eq_True
 • uniquenameforthistest_eq_true
 -/
 #guard_msgs in
 #find uniquenameforthistest
 
 /--
-info: Found 2 definitions whose name contains "uniquenameforthistest".
-Of these, 2 have a name containing "uniquenameforthistest".
+info: Found 3 definitions whose name contains "uniquenameforthistest".
+Of these, 3 have a name containing "uniquenameforthistest".
 • uniquenameforthistest
+• uniquenameforthistest_eq_True
 • uniquenameforthistest_eq_true
 -/
 #guard_msgs in
 #find "uniquenameforthistest"
 
 /--
-info: Found 2 definitions whose name contains "uenameforthis".
-Of these, 2 have a name containing "uenameforthis".
+info: Found 3 definitions whose name contains "uenameforthis".
+Of these, 3 have a name containing "uenameforthis".
 • uniquenameforthistest
+• uniquenameforthistest_eq_True
 • uniquenameforthistest_eq_true
 -/
 #guard_msgs in
 #find "uenameforthis"
 
 /--
-info: Found 1 definitions mentioning uniquenameforthistest.
-Of these, 1 have a name containing "eq".
+info: Found 2 definitions mentioning uniquenameforthistest.
+Of these, 2 have a name containing "eq".
+• uniquenameforthistest_eq_True
 • uniquenameforthistest_eq_true
 -/
 #guard_msgs in
 #find uniquenameforthistest, "eq"
 
 /--
-info: Found 1 definitions mentioning uniquenameforthistest and Eq.
-Of these, 1 match your patterns.
+info: Found 2 definitions mentioning uniquenameforthistest and Eq.
+Of these, 2 match your patterns.
+• uniquenameforthistest_eq_True
 • uniquenameforthistest_eq_true
 -/
 #guard_msgs in
 #find uniquenameforthistest = _
 
 /--
-info: Found 1 definitions mentioning uniquenameforthistest and Eq.
+info: Found 2 definitions mentioning uniquenameforthistest and Eq.
 Of these, 0 match your patterns.
 -/
 #guard_msgs in
@@ -224,9 +232,10 @@ end ListMapTest
 #find "."
 
 /--
-info: Found 2 definitions whose name contains "uniquenameforThisTest".
-Of these, 2 have a name containing "uniquenameforThisTest".
+info: Found 3 definitions whose name contains "uniquenameforThisTest".
+Of these, 3 have a name containing "uniquenameforThisTest".
 • uniquenameforthistest
+• uniquenameforthistest_eq_True
 • uniquenameforthistest_eq_true
 -/
 #guard_msgs in
