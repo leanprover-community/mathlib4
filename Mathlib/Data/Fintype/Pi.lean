@@ -124,23 +124,20 @@ lemma Fin.mem_piFinset_succ_iff {n : ℕ} {α : Fin (n + 1) → Type*} (p : (i :
 
 @[simp]
 lemma Fin.cons_mem_piFinset_cons_iff {α} {n : ℕ} (p : Fin n → α) (x : α)
-  (S₀ : Finset α) (Sᵢ : Fin n → Finset α) :
+    (S₀ : Finset α) (Sᵢ : Fin n → Finset α) :
     Fin.cons x p ∈ Fintype.piFinset (Fin.cons (α := fun _ => Finset α) S₀ Sᵢ)
       ↔
     x ∈ S₀ ∧ p ∈ Fintype.piFinset Sᵢ := by
-  simp_rw [Fin.succ_mem_piFinset_iff, cons_zero, tail_cons]
+  simp_rw [Fin.mem_piFinset_succ_iff, cons_zero, tail_cons]
 
-lemma Fin.succ_mem_piFinset_iff' {n : ℕ} {α : Fin (n + 1) → Type*} (p : ∀ i, α i)
-  (S : ∀ i, Finset (α i)) :
+lemma Fin.mem_piFinset_succ_iff' {n : ℕ} {α : Fin (n + 1) → Type*} (p : (i : Fin (n + 1)) → α i)
+    (S : (i : Fin (n + 1)) → Finset (α i)) :
     p ∈ Fintype.piFinset S
       ↔
     Fin.init p ∈ Fintype.piFinset (Fin.init S) ∧ p (Fin.last n) ∈ S (Fin.last n) := by
   simp only [Fintype.mem_piFinset]
   constructor
-  · intros h1
-    constructor
-    · exact fun a_1 ↦ h1 (Fin.castSucc a_1)
-    · exact h1 (Fin.last n)
+  · exact fun h1 ↦ ⟨fun a_1 ↦ h1 (castSucc a_1), h1 (last n)⟩
   · intro ⟨h1, h2⟩ a1
     rcases Fin.eq_castSucc_or_eq_last a1 with ⟨j, rfl⟩ | rfl
     · apply h1
@@ -148,8 +145,8 @@ lemma Fin.succ_mem_piFinset_iff' {n : ℕ} {α : Fin (n + 1) → Type*} (p : ∀
 
 @[simp]
 lemma Fin.snoc_mem_piFinset_snoc_iff {α} {n : ℕ} (p : Fin n → α) (x : α)
-  (Sᵢ : Fin n → Finset α) (Sₙ : Finset α) :
+    (Sᵢ : Fin n → Finset α) (Sₙ : Finset α) :
     Fin.snoc p x ∈ Fintype.piFinset (Fin.snoc (α := fun _ => Finset α) Sᵢ Sₙ)
       ↔
     p ∈ Fintype.piFinset Sᵢ ∧ x ∈ Sₙ := by
-  simp_rw [Fin.succ_mem_piFinset_iff', init_snoc, snoc_last]
+  simp_rw [Fin.mem_piFinset_succ_iff', init_snoc, snoc_last]
