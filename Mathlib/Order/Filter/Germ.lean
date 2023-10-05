@@ -357,11 +357,12 @@ theorem coe_one [One M] : ↑(1 : α → M) = (1 : Germ l M) :=
 
 @[to_additive]
 instance semigroup [Semigroup M] : Semigroup (Germ l M) :=
-  Function.Surjective.semigroup ofFun (surjective_quot_mk _) fun a b => coe_mul a b
+  { mul_assoc := fun a b c => Quotient.inductionOn₃' a b c
+      fun _ _ _ => congrArg Quotient.mk'' <| mul_assoc .. }
 
 @[to_additive]
 instance commSemigroup [CommSemigroup M] : CommSemigroup (Germ l M) :=
-  Function.Surjective.commSemigroup ofFun (surjective_quot_mk _) fun a b => coe_mul a b
+  { mul_comm := Quotient.ind₂' fun _ _ => congrArg Quotient.mk'' <| mul_comm .. }
 
 @[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ l M) :=
@@ -379,7 +380,8 @@ instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (G
 
 @[to_additive]
 instance mulOneClass [MulOneClass M] : MulOneClass (Germ l M) :=
-  Function.Surjective.mulOneClass ofFun (surjective_quot_mk _) rfl fun _ _ ↦ rfl
+  { one_mul := Quotient.ind' fun _ => congrArg Quotient.mk'' <| one_mul _
+    mul_one := Quotient.ind' fun _ => congrArg Quotient.mk'' <| mul_one _ }
 
 @[to_additive]
 instance smul [SMul M G] : SMul M (Germ l G) :=
@@ -411,9 +413,14 @@ theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : 
   rfl
 #align filter.germ.const_pow Filter.Germ.const_pow
 
+-- TODO: #7432
 @[to_additive]
 instance monoid [Monoid M] : Monoid (Germ l M) :=
-  Function.Surjective.monoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) fun _ _ => rfl
+  { Function.Surjective.monoid ofFun (surjective_quot_mk _) (by rfl)
+      (fun _ _ => by rfl) fun _ _ => by rfl with
+    toSemigroup := semigroup
+    toOne := one
+    npow := fun n a => a ^ n }
 
 /-- Coercion from functions to germs as a monoid homomorphism. -/
 @[to_additive "Coercion from functions to germs as an additive monoid homomorphism."]
@@ -430,9 +437,9 @@ theorem coe_coeMulHom [Monoid M] : (coeMulHom l : (α → M) → Germ l M) = ofF
 
 @[to_additive]
 instance commMonoid [CommMonoid M] : CommMonoid (Germ l M) :=
-  Function.Surjective.commMonoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) fun _ _ => rfl
+  { mul_comm := mul_comm }
 
-instance [NatCast M] : NatCast (Germ l M) where
+instance natCast [NatCast M] : NatCast (Germ l M) where
   natCast n := (n : α → M)
 
 @[simp]
@@ -457,14 +464,16 @@ instance [IntCast M] : IntCast (Germ l M) where
 @[simp]
 theorem coe_int [IntCast M] (n : ℤ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
 
+-- TODO: #7432
 instance addMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) :=
-  Function.Surjective.addMonoidWithOne ofFun (surjective_quot_mk _) rfl rfl (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) fun _ ↦ rfl
+  { Function.Surjective.addMonoidWithOne ofFun (surjective_quot_mk _)
+      (by rfl) (by rfl) (fun _ _ ↦ by rfl) (fun _ _ ↦ by rfl) fun _ ↦ by rfl with
+    toNatCast := natCast
+    toAddMonoid := addMonoid
+    toOne := one }
 
-instance addCommMonoidWithOne [AddCommMonoidWithOne M] : AddCommMonoidWithOne (Germ l M) where
-  toAddMonoidWithOne := addMonoidWithOne
-  __ := addCommSemigroup
-
+instance addCommMonoidWithOne [AddCommMonoidWithOne M] : AddCommMonoidWithOne (Germ l M) :=
+  { add_comm := add_comm }
 
 @[to_additive]
 instance inv [Inv G] : Inv (Germ l G) :=
@@ -500,10 +509,11 @@ theorem const_div [Div M] (a b : M) : (↑(a / b) : Germ l M) = ↑a / ↑b :=
 
 @[to_additive]
 instance involutiveInv [InvolutiveInv G] : InvolutiveInv (Germ l G) :=
-  Function.Surjective.involutiveInv ofFun (surjective_quot_mk _) fun _ ↦ rfl
+  { inv_inv := Quotient.ind' fun _ => congrArg Quotient.mk''<| inv_inv _ }
 
 instance hasDistribNeg [Mul G] [HasDistribNeg G] : HasDistribNeg (Germ l G) :=
-  Function.Surjective.hasDistribNeg ofFun (surjective_quot_mk _) (fun _ ↦ rfl) fun _ _ ↦ rfl
+  { neg_mul := sorry
+    mul_neg := sorry }
 
 @[to_additive]
 instance invOneClass [InvOneClass G] : InvOneClass (Germ l G) :=
