@@ -120,7 +120,7 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
 
 variable {X : Type w}
 
-variable (f : X → F.Obj X)
+variable (f : X → F X)
 
 /-- `sCorec f i n` creates an approximation of height `n`
 of the final coalgebra of `f` -/
@@ -220,7 +220,7 @@ set_option linter.uppercaseLean3 false in
 
 variable {X : Type*}
 
-variable (f : X → F.Obj X)
+variable (f : X → F X)
 
 /-- Corecursor for the M-type defined by `F`. -/
 protected def corec (i : X) : MIntl F where
@@ -270,7 +270,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.truncate_approx PFunctor.MIntl.truncate_approx
 
 /-- This unfolds an M-type. -/
-def dest (x : MIntl F) : F.Obj (MIntl F) :=
+def dest (x : MIntl F) : F (MIntl F) :=
   ⟨head x, fun i => children x i⟩
 
 /-- select a subtree using an `i : F.Idx` or return an arbitrary tree if
@@ -284,13 +284,13 @@ set_option linter.uppercaseLean3 false in
 namespace Approx
 
 /-- generates the approximations needed for `MIntl.mk` -/
-protected def sMk (x : F.Obj <| MIntl F) : ∀ n, CofixA F n
+protected def sMk (x : F (MIntl F)) : ∀ n, CofixA F n
   | 0 => CofixA.continue
   | succ n => CofixA.intro x.1 fun i => (x.2 i).approx n
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.approx.s_mk PFunctor.MIntl.Approx.sMk
 
-protected theorem P_mk (x : F.Obj <| MIntl F) : AllAgree (Approx.sMk x)
+protected theorem P_mk (x : F (MIntl F)) : AllAgree (Approx.sMk x)
   | 0 => by constructor
   | succ n => by
     constructor
@@ -302,7 +302,7 @@ set_option linter.uppercaseLean3 false in
 end Approx
 
 /-- constructor for M-types -/
-protected def mk (x : F.Obj <| MIntl F) : MIntl F where
+protected def mk (x : F (MIntl F)) : MIntl F where
   approx := Approx.sMk x
   consistent := Approx.P_mk x
 
@@ -317,7 +317,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.agree' PFunctor.MIntl.Agree'
 
 @[simp]
-theorem dest_mk (x : F.Obj <| MIntl F) : dest (MIntl.mk x) = x :=
+theorem dest_mk (x : F (MIntl F)) : dest (MIntl.mk x) = x :=
   rfl
 
 @[simp]
@@ -346,11 +346,11 @@ theorem mk_dest (x : MIntl F) : MIntl.mk (dest x) = x := by
     cases hh
     rfl
 
-theorem mk_inj {x y : F.Obj <| MIntl F} (h : MIntl.mk x = MIntl.mk y) : x = y := by
+theorem mk_inj {x y : F (MIntl F)} (h : MIntl.mk x = MIntl.mk y) : x = y := by
   rw [← dest_mk x, h, dest_mk]
 
 /-- destructor for M-types -/
-protected def cCases {r : MIntl F → Sort w} (f : ∀ x : F.Obj <| MIntl F, r (MIntl.mk x))
+protected def cCases {r : MIntl F → Sort w} (f : ∀ x : F (MIntl F), r (MIntl.mk x))
     (x : MIntl F) : r x :=
   suffices r (MIntl.mk (dest x)) by
     rw [← mk_dest x]
@@ -359,7 +359,7 @@ protected def cCases {r : MIntl F → Sort w} (f : ∀ x : F.Obj <| MIntl F, r (
 
 /-- destructor for M-types -/
 protected def cCasesOn {r : MIntl F → Sort w} (x : MIntl F)
-    (f : ∀ x : F.Obj <| MIntl F, r (MIntl.mk x)) : r x :=
+    (f : ∀ x : F (MIntl F), r (MIntl.mk x)) : r x :=
   MIntl.cCases f x
 
 /-- destructor for M-types, similar to `cCasesOn` but also
@@ -414,8 +414,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.agree_iff_agree' PFunctor.MIntl.agree_iff_agree'
 
 @[simp]
-theorem cCases_mk {r : MIntl F → Sort*} (x : F.Obj <| MIntl F)
-    (f : ∀ x : F.Obj <| MIntl F, r (MIntl.mk x)) :
+theorem cCases_mk {r : MIntl F → Sort*} (x : F (MIntl F)) (f : ∀ x : F (MIntl F), r (MIntl.mk x)) :
     PFunctor.MIntl.cCases f (MIntl.mk x) = f x := by
   dsimp only [MIntl.mk, PFunctor.MIntl.cCases, dest, head, Approx.sMk, head']
   cases x; dsimp only [Approx.sMk]
@@ -424,8 +423,8 @@ theorem cCases_mk {r : MIntl F → Sort*} (x : F.Obj <| MIntl F)
   rfl
 
 @[simp]
-theorem cCasesOn_mk {r : MIntl F → Sort*} (x : F.Obj <| MIntl F)
-    (f : ∀ x : F.Obj <| MIntl F, r (MIntl.mk x)) :
+theorem cCasesOn_mk {r : MIntl F → Sort*} (x : F (MIntl F))
+    (f : ∀ x : F (MIntl F), r (MIntl.mk x)) :
     PFunctor.MIntl.cCasesOn (MIntl.mk x) f = f x :=
   cCases_mk x f
 
@@ -506,7 +505,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.iselect_eq_default PFunctor.MIntl.iselect_eq_default
 
 @[simp]
-theorem head_mk (x : F.Obj (MIntl F)) : head (MIntl.mk x) = x.1 :=
+theorem head_mk (x : F (MIntl F)) : head (MIntl.mk x) = x.1 :=
   Eq.symm <|
     calc
       x.1 = (dest (MIntl.mk x)).1 := by rw [dest_mk]
@@ -520,7 +519,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.children_mk PFunctor.MIntl.children_mk
 
 @[simp]
-theorem ichildren_mk [DecidableEq F.A] [Inhabited (MIntl F)] (x : F.Obj (MIntl F)) (i : F.Idx) :
+theorem ichildren_mk [DecidableEq F.A] [Inhabited (MIntl F)] (x : F (MIntl F)) (i : F.Idx) :
     ichildren i (MIntl.mk x) = x.iget i := by
   dsimp only [ichildren, PFunctor.Obj.iget]
   congr with h
@@ -549,7 +548,7 @@ theorem iselect_cons [DecidableEq F.A] [Inhabited (MIntl F)]
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.iselect_cons PFunctor.MIntl.iselect_cons
 
-theorem corec_def {X} (f : X → F.Obj X) (x₀ : X) :
+theorem corec_def {X} (f : X → F X) (x₀ : X) :
     MIntl.corec f x₀ = MIntl.mk (MIntl.corec f <$> f x₀) := by
   dsimp only [MIntl.corec, MIntl.mk]
   congr with n
@@ -1021,7 +1020,7 @@ theorem bisim_equiv (R : M P → M P → Prop)
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.bisim_equiv PFunctor.M.bisim_equiv
 
-theorem corec_unique (g : α → P.Obj α) (f : α → M P) (hyp : ∀ x, M.dest (f x) = f <$> g x) :
+theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f x) = f <$> g x) :
     f = M.corec g := by
   ext x
   apply bisim' (fun _ => True) _ _ _ _ trivial
@@ -1049,7 +1048,7 @@ theorem ofIntl_eq_ofIntlComputable : @ofIntl.{u} = @ofIntlComputable.{u} := by
 /-- corecursor where the state of the computation can be sent downstream
 in the form of a recursive call -/
 @[inline]
-def corec₁ {α : Type u} (F : ∀ X, (α → X) → α → P.Obj X) : α → M P :=
+def corec₁ {α : Type u} (F : ∀ X, (α → X) → α → P X) : α → M P :=
   M.corec (F _ id)
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec₁ PFunctor.M.corec₁
@@ -1071,7 +1070,7 @@ unsafe def corec'Unsafe {α : Type u} (F : α → M P ⊕ P.Obj α) (x : α) : M
 /-- corecursor where it is possible to return a fully formed value at any point
 of the computation -/
 @[implemented_by corec'Unsafe]
-def corec' {α : Type u} (F : α → M P ⊕ P.Obj α) (x : α) : M P :=
+def corec' {α : Type u} (F : α → M P ⊕ P α) (x : α) : M P :=
   M.corec
     (fun (s : M P ⊕ α) =>
       match s >>= F with

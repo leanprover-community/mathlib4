@@ -62,7 +62,7 @@ set_option linter.uppercaseLean3 false in
 #align mvqpf.recF MvQPF.recF
 
 theorem recF_eq {α : TypeVec n} {β : Type _} (g : F (α.append1 β) → β) (a : q.P.A)
-    (f' : q.P.drop.B a ⟹ α) (f : q.P.last.B a → q.P.W α) :
+    (f' : q.P.Drop.B a ⟹ α) (f : q.P.Last.B a → q.P.W α) :
     recF g (q.P.wMk a f' f) = g (abs ⟨a, splitFun f' (recF g ∘ f)⟩) := by
   rw [recF, MvPFunctor.wRec_eq]; rfl
 set_option linter.uppercaseLean3 false in
@@ -79,10 +79,10 @@ set_option linter.uppercaseLean3 false in
 /-- Equivalence relation on W-types that represent the same `Fix F`
 value -/
 inductive WEquiv {α : TypeVec n} : q.P.W α → q.P.W α → Prop
-  | ind (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f₀ f₁ : q.P.last.B a → q.P.W α) :
+  | ind (a : q.P.A) (f' : q.P.Drop.B a ⟹ α) (f₀ f₁ : q.P.Last.B a → q.P.W α) :
     (∀ x, WEquiv (f₀ x) (f₁ x)) → WEquiv (q.P.wMk a f' f₀) (q.P.wMk a f' f₁)
-  | abs (a₀ : q.P.A) (f'₀ : q.P.drop.B a₀ ⟹ α) (f₀ : q.P.last.B a₀ → q.P.W α) (a₁ : q.P.A)
-    (f'₁ : q.P.drop.B a₁ ⟹ α) (f₁ : q.P.last.B a₁ → q.P.W α) :
+  | abs (a₀ : q.P.A) (f'₀ : q.P.Drop.B a₀ ⟹ α) (f₀ : q.P.Last.B a₀ → q.P.W α) (a₁ : q.P.A)
+    (f'₁ : q.P.Drop.B a₁ ⟹ α) (f₁ : q.P.Last.B a₁ → q.P.W α) :
     abs ⟨a₀, q.P.appendContents f'₀ f₀⟩ = abs ⟨a₁, q.P.appendContents f'₁ f₁⟩ →
       WEquiv (q.P.wMk a₀ f'₀ f₀) (q.P.wMk a₁ f'₁ f₁)
   | trans (u v w : q.P.W α) : WEquiv u v → WEquiv v w → WEquiv u w
@@ -136,8 +136,8 @@ def wrepr {α : TypeVec n} : q.P.W α → q.P.W α :=
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wrepr MvQPF.wrepr
 
-theorem wrepr_wMk {α : TypeVec n} (a : q.P.A) (f' : q.P.drop.B a ⟹ α)
-    (f : q.P.last.B a → q.P.W α) :
+theorem wrepr_wMk {α : TypeVec n} (a : q.P.A) (f' : q.P.Drop.B a ⟹ α)
+    (f : q.P.Last.B a → q.P.W α) :
     wrepr (q.P.wMk a f' f) =
       q.P.wMk' (repr (abs (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))) :=
   by rw [wrepr, recF_eq', q.P.wDest'_wMk]; rfl
@@ -239,7 +239,7 @@ theorem Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 
   rw [← MvPFunctor.comp_map, abs_map, ← h, abs_repr, ← appendFun_comp, id_comp, this]
 #align mvqpf.fix.rec_eq MvQPF.Fix.rec_eq
 
-theorem Fix.ind_aux (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f : q.P.last.B a → q.P.W α) :
+theorem Fix.ind_aux (a : q.P.A) (f' : q.P.Drop.B a ⟹ α) (f : q.P.Last.B a → q.P.W α) :
     Fix.mk (abs ⟨a, q.P.appendContents f' fun x => ⟦f x⟧⟩) = ⟦q.P.wMk a f' f⟧ := by
   have : Fix.mk (abs ⟨a, q.P.appendContents f' fun x => ⟦f x⟧⟩) = ⟦wrepr (q.P.wMk a f' f)⟧ := by
     apply Quot.sound; apply wEquiv.abs'
@@ -324,7 +324,7 @@ theorem Fix.ind {α : TypeVec n} (p : Fix F α → Prop)
 #align mvqpf.fix.ind MvQPF.Fix.ind
 
 instance mvqpfFix : MvQPF (Fix F) where
-  P := q.P.wp
+  P := q.P.WP
   abs α := Quot.mk WEquiv α
   repr α := fixToW α
   abs_repr := by
